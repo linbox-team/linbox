@@ -26,14 +26,14 @@
 
 #include <list>
 #include <vector>
-#include <linbox/util/error.h>
-#include <linbox/algorithms/matrix-hom.h>
+#include "linbox/util/error.h"
+#include "linbox/algorithms/matrix-hom.h"
 #ifdef __LINBOX_HAVE_NTL
-#include <linbox/algorithms/smith-form-adaptive.h>
+#include "linbox/algorithms/smith-form-adaptive.h"
 #endif
-#include <linbox/field/PID-integer.h>
-//#include <linbox/algorithms/smith-form.h>
-//#include <linbox/algorithms/smith-form-local.h>
+#include "linbox/field/PID-integer.h"
+//#include "linbox/algorithms/smith-form.h"
+//#include "linbox/algorithms/smith-form-local.h"
 
 namespace LinBox
 {
@@ -87,7 +87,7 @@ namespace LinBox
 			  const DomainCategory  &tag,
 			  const SmithMethod  &M)
 	{
-		throw LinBoxError( "Smith form solution implemented only for DenseMatrix<PID_integer>.\n                 Please reconfigure LinBox with NTL enabled.");
+		throw LinBoxError( "Smith form solution implemented only for NTL.\n                 Please reconfigure LinBox with NTL enabled.");
 	}
 
 	// The smithForm with default Method
@@ -146,12 +146,13 @@ namespace LinBox
 #endif
 
 #ifdef __LINBOX_HAVE_NTL
-	// The smithForm with Hybrid Method
+
 	template<>
-	std::list<std::pair<integer, size_t> > &smithForm(std::list<std::pair<integer, size_t> >& S,
-							  const DenseMatrix<PID_integer> 	&A,
-							  const RingCategories::IntegerTag          &tag,
-							  const Method::Hybrid& M)
+	std::list<std::pair<integer, size_t> > &
+	smithForm(std::list<std::pair<integer, size_t> >& S,
+		  const BlasMatrix<PID_integer> 	&A,
+		  const RingCategories::IntegerTag      &tag,
+		  const Method::Hybrid			& M)
 	{
 		std::vector<integer> v (A.rowdim() < A.coldim() ? A.rowdim() : A.coldim());
 		SmithFormAdaptive::smithForm(v, A);
@@ -159,36 +160,7 @@ namespace LinBox
 
 		return S;
 	}
-#endif
 
-#if 0
-	// The smithForm with Elimination Method
-	template<class Output, class Ring>
-	Output &smithForm(Output & S,
-			  const DenseMatrix<Ring> &A,
-			  const RingCategories::IntegerTag          &tag,
-			  const Method::Elimination& M)
-	{
-		typename Ring::Element d;
-		det(d, A, tag, M); // or just use default hybrid?  What does elim mean?
-		integer D;
-		A.field().convert(D, d);
-		if (D < Modular<int>::MaxModulus)
-		{  typedef Modular<int> Ring2;
-			Ring2 R2(D);
-			MatrixHom::map(B, A, R2);
-			IliolopousElimination::smithIn(B);
-			//return diagonal of B in Output object.
-		}
-		else
-		{  typedef Modular<integer> Ring2;
-			Ring2 R2(D);
-			MatrixHom::map(B, A, R2);
-			IliolopousElimination::smithIn(B);
-			//return diagonal of B in Output object.
-		}
-
-	}
 #endif
 
 #if 0

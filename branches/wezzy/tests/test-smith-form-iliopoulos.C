@@ -30,21 +30,20 @@
 
 
 
-#include <linbox/field/ntl-ZZ.h>
-#include <linbox/field/modular-int32.h>
-#include <linbox/field/PIR-ntl-ZZ_p.h>
-#include <linbox/field/PIR-modular-int32.h>
-#include <linbox/integer.h>
-#include <linbox/randiter/random-prime.h>
-#include <linbox/blackbox/dense.h>
-#include <linbox/algorithms/last-invariant-factor.h>
-#include <linbox/algorithms/smith-form-iliopoulos.h>
-#include <linbox/algorithms/rational-solver.h>
+#include "linbox/field/ntl.h"
+#include "linbox/field/modular.h"
+#include "linbox/field/PIR-ntl-ZZ_p.h"
+#include "linbox/field/PIR-modular-int32.h"
+#include "linbox/integer.h"
+#include "linbox/randiter/random-prime.h"
+#include "linbox/algorithms/last-invariant-factor.h"
+#include "linbox/algorithms/smith-form-iliopoulos.h"
+#include "linbox/algorithms/rational-solver.h"
 #include <time.h>
-#include <linbox/util/commentator.h>
-#include <linbox/vector/stream.h>
+#include "linbox/util/commentator.h"
+#include "linbox/vector/stream.h"
 #include "test-common.h"
-#include <linbox/algorithms/matrix-hom.h>
+#include "linbox/algorithms/matrix-hom.h"
 
 #ifndef __LINBOX_HAVE_NTL
 #error "you can't compile this test without NTL enabled. Please make sure you configured Linbox with --with-ntl=path/to/ntl"
@@ -95,7 +94,7 @@ bool testRandom(const Ring& R,
 		VD.write (report, d);
                 report << endl;
 
-		DenseMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
+		BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
 		int i, j;
 
@@ -113,7 +112,7 @@ bool testRandom(const Ring& R,
 
 		std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
 
-		typename DenseMatrix<Ring>::ColIterator col_p;
+		typename BlasMatrix<Ring>::ColIterator col_p;
 
 		i = 0;
 		for (col_p = A.colBegin(); col_p != A.colEnd(); ++ col_p, ++ i) {
@@ -150,7 +149,7 @@ bool testRandom(const Ring& R,
 
 			PIR_ntl_ZZ_p PIR(s);
 
-			DenseMatrix<PIR_ntl_ZZ_p> Ap(PIR, A.rowdim(), A.coldim());
+			BlasMatrix<PIR_ntl_ZZ_p> Ap(PIR, A.rowdim(), A.coldim());
 
 			MatrixHom::map (Ap, A, PIR);
 
@@ -186,7 +185,7 @@ bool testRandom(const Ring& R,
 
 			PIRModular<int32_t> PIR( (int32_t)(s % LINBOX_MAX_MODULUS));
 
-			DenseMatrix<PIRModular<int32_t> > Ap(PIR, A.rowdim(), A.coldim());
+			BlasMatrix<PIRModular<int32_t> > Ap(PIR, A.rowdim(), A.coldim());
 
 			MatrixHom::map (Ap, A, PIR);
 

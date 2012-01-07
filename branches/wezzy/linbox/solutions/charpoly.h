@@ -29,7 +29,6 @@
 #include "linbox/solutions/methods.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 
@@ -92,9 +91,9 @@ namespace LinBox
 	// The charpoly with Hybrid Method
 	template<class Polynomial, class Blackbox>
 	Polynomial &charpoly (Polynomial            &P,
-			      const Blackbox        &A,
-			      const RingCategories::ModularTag  &tag,
-			      const Method::Hybrid  &M)
+			      const Blackbox                   & A,
+			      const RingCategories::ModularTag & tag,
+			      const Method::Hybrid             & M)
 	{
 		// not yet a hybrid
 		//return charpoly(P, A, tag, Method::Blackbox(M));
@@ -104,19 +103,20 @@ namespace LinBox
 	// The charpoly with Hybrid Method
 	template<class Polynomial, class Domain>
 	Polynomial &charpoly (Polynomial            &P,
-			      const SparseMatrix<Domain>  &A,
-			      const RingCategories::ModularTag  &tag,
-			      const Method::Hybrid  &M)
+			      const SparseMatrix<Domain>       & A,
+			      const RingCategories::ModularTag & tag,
+			      const Method::Hybrid             & M)
 	{
 		// not yet a hybrid
 		return charpoly(P, A, tag, Method::Blackbox(M));
 	}
+
 	// The charpoly with Hybrid Method
 	template<class Polynomial, class Domain>
 	Polynomial &charpoly (Polynomial            &P,
-			      const DenseMatrix<Domain> &A,
-			      const RingCategories::ModularTag  &tag,
-			      const Method::Hybrid  &M)
+			      const BlasMatrix<Domain>         & A,
+			      const RingCategories::ModularTag & tag,
+			      const Method::Hybrid             & M)
 	{
 		// not yet a hybrid
 		return charpoly(P, A, tag, Method::BlasElimination(M));
@@ -124,10 +124,10 @@ namespace LinBox
 
 	// The charpoly with Elimination Method
 	template<class Polynomial, class Blackbox>
-	Polynomial &charpoly (Polynomial                &P,
-			      const Blackbox            &A,
-			      const RingCategories::ModularTag      &tag,
-			      const Method::Elimination &M)
+	Polynomial & charpoly (Polynomial                       & P,
+			       const Blackbox                   & A,
+			       const RingCategories::ModularTag & tag,
+			       const Method::Elimination        & M)
 	{
 		return charpoly(P, A, tag, Method::BlasElimination(M));
 	}
@@ -152,9 +152,9 @@ namespace LinBox
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
-		BlasBlackbox< typename Blackbox::Field >     BBB (A);
+		BlasMatrix< typename Blackbox::Field >     BBB (A);
 		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
-		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field::Element> >(BBB));
+		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field> >(BBB));
 	}
 
 }
@@ -226,16 +226,18 @@ namespace LinBox
 
 	template < class IntRing, class Polynomial >
 	Polynomial& charpoly (Polynomial                       & P,
-			      const DenseMatrix<IntRing>         & A,
+			      const BlasMatrix<IntRing>         & A,
 			      const RingCategories::IntegerTag & tag,
 			      const Method::Hybrid             & M)
 	{
-		commentator.start ("DenseMatrix Integer Charpoly", "Icharpoly");
+		commentator.start ("BlasMatrix Integer Charpoly", "Icharpoly");
 		charpoly(P, A, tag, Method::BlasElimination(M) );
 		commentator.stop ("done", NULL, "Icharpoly");
 		return P;
 	}
 
+
+#if 0
 	template < class IntRing, class Polynomial >
 	Polynomial& charpoly (Polynomial                       & P,
 			      const BlasMatrix<IntRing>         & A,
@@ -247,6 +249,7 @@ namespace LinBox
 		commentator.stop ("done", NULL, "Icharpoly");
 		return P;
 	}
+#endif
 
 	/** @brief Compute the characteristic polynomial over {\bf Z}
 	 *
@@ -349,8 +352,8 @@ namespace LinBox
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 #if 0
-		typename Blackbox::ConstRawIterator it = A.rawBegin();
-		typename Blackbox::ConstRawIterator it_end = A.rawEnd();
+		typename Blackbox::ConstIterator it = A.Begin();
+		typename Blackbox::ConstIterator it_end = A.End();
 		integer max = 1,min=0;
 		while( it != it_end ){
 			//      cerr<<"it="<<(*it)<<endl;
@@ -389,8 +392,8 @@ namespace LinBox
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 #if 0
-		typename Blackbox::ConstRawIterator it = A.rawBegin();
-		typename Blackbox::ConstRawIterator it_end = A.rawEnd();
+		typename Blackbox::ConstIterator it = A.Begin();
+		typename Blackbox::ConstIterator it_end = A.End();
 		integer max = 1,min=0;
 		while( it != it_end ){
 			//      cerr<<"it="<<(*it)<<endl;
@@ -468,16 +471,6 @@ namespace LinBox
 		return P;
 	}
 
-	template < class Field, template <class> class Polynomial, class MyMethod>
-	Polynomial<typename Field::Element> &charpoly (Polynomial<typename Field::Element>& P, const DenseMatrix<Field>& A,
-						       const RingCategories::RationalTag& tag, const MyMethod& M)
-	{
-		commentator.start ("Dense Rational Charpoly", "Rcharpoly");
-		rational_charpoly(P,A,M);
-
-		commentator.stop ("done", NULL, "Rcharpoly");
-		return P;
-	}
 }  // end of LinBox namespace
 #endif // __LINBOX_charpoly_H
 

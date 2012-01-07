@@ -24,15 +24,14 @@
 #include "linbox/linbox-config.h"
 #include <iostream>
 #include <string>
-#include <linbox/integer.h>
-#include <linbox/matrix/dense.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/field/modular.h>
-#include <linbox/randiter/nonzero.h>
-#include <linbox/util/commentator.h>
-#include <linbox/algorithms/blas-domain.h>
+#include "linbox/integer.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/field/modular.h"
+#include "linbox/randiter/nonzero.h"
+#include "linbox/util/commentator.h"
+#include "linbox/algorithms/blas-domain.h"
 
 #include <vector>
 
@@ -63,7 +62,7 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 
 	typedef typename Field::Element     Element;
 	typedef typename Field::RandIter   RandIter;
-	typedef BlasMatrix<Element>          Matrix;
+	typedef BlasMatrix<Field>          Matrix;
 
 	//Commentator mycommentator (std::cout);
 	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -162,7 +161,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	for (int k=0;k<iterations; ++k) {
 
 		mycommentator.progress(k);
-		BlasMatrix<Element> A(n,n),S(n,n), L(n,n);
+		BlasMatrix<Field> A(n,n),S(n,n), L(n,n);
 
 		r = rand() % n;
 		// create S as an upper triangular matrix with r nonzero rows
@@ -223,7 +222,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 		G.random(d);
 
-		BlasMatrix<Element> A(n,n),S(n,n), L(n,n);
+		BlasMatrix<Field> A(n,n),S(n,n), L(n,n);
 
 		// create S as an upper triangular matrix of full rank
 		// with diagonal's element equal to 1 except the first entry wich equals to d
@@ -267,7 +266,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef  BlasMatrix<Element> Matrix;
+	typedef  BlasMatrix<Field> Matrix;
 
 	//Commentator mycommentator (std::cout);
 	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -337,8 +336,8 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 {
 
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
-	typedef TriangularBlasMatrix<Element>   TriangularMatrix;
+	typedef BlasMatrix<Field>                       Matrix;
+	typedef TriangularBlasMatrix<Field>   TriangularMatrix;
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator (std::cout);
@@ -389,7 +388,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 		}
 
 		// Create 2 trinagular matrix as view of matrix
-		TriangularMatrix TAl(Al,BlasTag::low,BlasTag::nonunit), TAu(Au,BlasTag::up,BlasTag::nonunit);
+		TriangularMatrix TAl(Al,LinBoxTag::Lower,LinBoxTag::NonUnit), TAu(Au,LinBoxTag::Upper,LinBoxTag::NonUnit);
 
 		// testing solver with matrix right hand side
 		BMD.left_solve(X,TAl,B);
@@ -451,7 +450,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 {
 
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
+	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator (std::cout);
@@ -568,7 +567,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 {
 
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
+	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator (std::cout);
@@ -874,7 +873,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 {
 
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
+	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator (std::cout);
@@ -924,8 +923,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
 		LQUPMatrix<Field> X(F,A,P,Q);
 
-		TriangularBlasMatrix<Element> L(m,m,BlasTag::low,BlasTag::unit);
-		TriangularBlasMatrix<Element> U(m,n,BlasTag::up,BlasTag::nonunit);
+		TriangularBlasMatrix<Field> L(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
+		TriangularBlasMatrix<Field> U(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
 		X.getL(L);
 		X.getU(U);
 		P=X.getP();
@@ -950,8 +949,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 		LQUPMatrix<Field> Y(F,A,P,Q);
 
-		TriangularBlasMatrix<Element> L2(m,m,BlasTag::low,BlasTag::unit);
-		TriangularBlasMatrix<Element> U2(m,n,BlasTag::up,BlasTag::nonunit);
+		TriangularBlasMatrix<Field> L2(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
+		TriangularBlasMatrix<Field> U2(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
 		Y.getL(L2);
 		Y.getU(U2);
 		P=Y.getP();
@@ -978,7 +977,7 @@ template <class Field>
 static bool testMinPoly (const Field& F, size_t n, int iterations)
 {
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
+	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
 
@@ -986,13 +985,13 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing minpoly"),"testMinPoly",iterations);
-	Element tmp, one, zero,mone;
+	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 	F.init(one, 1UL);
 	F.init(zero, 0UL);
-	F.neg(mone, one);
-	//F.neg( mone, one);
+	F.neg(mOne, one);
+	//F.neg( mOne, one);
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 
@@ -1010,7 +1009,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 
 		if ( P.size() !=2 )
 			ret = false;
-		if ( !F.areEqual(P[0], mone) )
+		if ( !F.areEqual(P[0], mOne) )
 			ret = false;
 		if ( !F.areEqual(P[1], one) )
 			ret = false;
@@ -1060,20 +1059,20 @@ template <class Field>
 static bool testCharPoly (const Field& F, size_t n, int iterations)
 {
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
+	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
 
 	//Commentator mycommentator (std::cout);
 	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing charpoly"),"testCharPoly",iterations);
-	Element tmp, one, zero,mone;
+	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 	F.init(one, 1UL);
 	F.init(zero, 0UL);
-	F.neg(mone, one);
-	//F.neg( mone, one);
+	F.neg(mOne, one);
+	//F.neg( mOne, one);
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 
@@ -1098,7 +1097,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 		while (P_it != P.end()){
 			if ( P_it->size() !=2 )
 				ret = false;
-			if ( !F.areEqual(P_it->operator[](0), mone) )
+			if ( !F.areEqual(P_it->operator[](0), mOne) )
 				ret = false;
 			if ( !F.areEqual(P_it->operator[](1), one) )
 				ret = false;

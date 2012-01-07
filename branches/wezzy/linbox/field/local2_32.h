@@ -28,9 +28,9 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
-#include <linbox/field/field-traits.h>
-#include <linbox/integer.h>
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
+#include "linbox/integer.h"
+#include "linbox/field/field-traits.h"
 
 namespace LinBox
 {
@@ -38,7 +38,7 @@ namespace LinBox
 	template<typename Ring>
 	struct ClassifyRing;
 
-	class Local2_32;
+	struct Local2_32;
 
 	template<>
 	struct ClassifyRing<Local2_32> {

@@ -16,8 +16,8 @@
  *   - New read/write implementations for SparseMatrixBase, supporting multiple
  *     formats
  *   - Eliminated Gaussian elimination code
- *   - Added iterators, including ColOfRowsIterator, RawIterator, and
- *     RawIndexIterator
+ *   - Added iterators, including ColOfRowsIterator, Iterator, and
+ *     IndexIterator
  *   - Eliminated operator []; added getEntry; changed put_value to setEntry
  * ------------------------------------
  *
@@ -37,10 +37,10 @@ namespace LinBox
 	{
 		SparseMatrix<Field, _Row> *A = new SparseMatrix<Field, _Row> (F, rowdim (), coldim ());
 
-		typename SparseMatrixBase<BElement, BRow>::ConstRawIterator i;
-		typename SparseMatrixBase<BElement, BRow>::ConstRawIndexedIterator j;
+		typename SparseMatrixBase<BElement, BRow>::ConstIterator i;
+		typename SparseMatrixBase<BElement, BRow>::ConstIndexedIterator j;
 
-		for (i = _A.rawBegin (), j = _A.rawIndexedBegin (); i != _A.rawEnd (); ++i, ++j)
+		for (i = _matA.Begin (), j = _matA.IndexedBegin (); i != _matA.End (); ++i, ++j)
 			F.init (A->refEntry (j.rowIndex (), j.colIndex ()), *i);
 
 		return A;

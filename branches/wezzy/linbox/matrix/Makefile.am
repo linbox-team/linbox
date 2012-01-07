@@ -8,14 +8,16 @@ BASIC_HDRS =                                     \
     matrix-category.h                            \
     sparse.h             sparse.inl              \
     transpose-matrix.h                           \
-    dense.h              dense.inl               \
-    dense-submatrix.h    dense-submatrix.inl     \
     dense-rows-matrix.h                          \
     matrix-domain.h      matrix-domain.inl       \
+    matrix-domain-gf2.h                          \
     blas-matrix.h                                \
+    blas-matrix.inl      blas-submatrix.inl      \
+    blas-matrix-multimod.h                       \
     factorized-matrix.h  factorized-matrix.inl   \
-    matrix-permutation.h matrix-permutation.inl  \
-    random-matrix.h
+    blas-triangularmatrix.inl                    \
+    permutation-matrix.h permutation-matrix.inl  \
+    random-matrix.h      random-matrix.inl
 
 NTL_HDRS =
 GIVARO_HDRS =

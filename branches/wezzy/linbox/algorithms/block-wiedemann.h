@@ -4,7 +4,7 @@
  * Copyright (C) 2004 Pascal Giorgi
  *
  * Written by Pascal Giorgi pascal.giorgi@ens-lyon.fr
- *
+ * modified by Pascal Giorgi (pascal.giorgi@lirmm.fr) 2011
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -27,16 +27,16 @@
 
 #include <vector>
 
-#include <linbox/integer.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/algorithms/blackbox-block-container.h>
-#include <linbox/algorithms/block-massey-domain.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/blackbox/transpose.h>
+#include "linbox/integer.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/block-massey-domain.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/blackbox/transpose.h"
 
-#include <linbox/util/error.h>
-#include <linbox/util/debug.h>
+#include "linbox/util/error.h"
+#include "linbox/util/debug.h"
 
 namespace LinBox
 {
@@ -52,26 +52,23 @@ namespace LinBox
 		typedef BlasMatrix<Element>           Block;
 
 	protected:
-		Field                         _F;
+		Field                         _field;
 		BlasMatrixDomain<Field>     _BMD;
 		VectorDomain<Field>         _VDF;
 		RandIter                   _rand;
 
 	public:
 		BlockWiedemannSolver (const Field &F) :
-			_F(F), _BMD(F), _VDF(F), _rand(F)
+			_field(F), _BMD(F), _VDF(F), _rand(F)
 		{}
 
 		BlockWiedemannSolver (const Field &F, const RandIter &rand) :
-			_F(F), _BMD(F), _VDF(F), _rand(rand)
+			_field(F), _BMD(F), _VDF(F), _rand(rand)
 		{}
-
 
 		template <class Blackbox>
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
-
-
 			Transpose<Blackbox> A(B);
 
 			size_t m,n;
@@ -81,13 +78,13 @@ namespace LinBox
 			size_t p,q;
 			integer tmp;
 			tmp = m;
-			//p = tmp.bitsize()-1;
-			p=sqrt(tmp);
+			p = tmp.bitsize()-1;
+			//p=sqrt(tmp);
 			tmp = n;
-			//q = tmp.bitsize()-1;
-			q=sqrt(tmp);
-			//cout<<"row block: "<<p<<endl;
-			//cout<<"col block: "<<q<<endl;
+			q = tmp.bitsize()-1;
+			//q=sqrt(tmp);
+			std::cout<<"row block: "<<p<<std::endl;
+			std::cout<<"col block: "<<q<<std::endl;
 
 
 			Block U(p,m), UA(p-1,m), V(n,q);
@@ -109,19 +106,19 @@ namespace LinBox
 			for (size_t i=0;i<m;++i)
 				U.setEntry(0,i,y[i]);
 
-			BlackboxBlockContainer<Field,Transpose<Blackbox> > Sequence (&A,_F,U,V);
+			BlackboxBlockContainer<Field,Transpose<Blackbox> > Sequence (&A,_field,U,V);
 			BlockMasseyDomain <Field,BlackboxBlockContainer<Field,Transpose<Blackbox> > > MBD(&Sequence);
 
 			std::vector<Block> minpoly;
 			std::vector<size_t> degree;
-			MBD.left_minpoly(minpoly,degree);
-
+			MBD.left_minpoly_rec(minpoly,degree);
+			MBD.printTimer();
 
 			size_t idx=0;
-			if ( _F.isZero(minpoly[0].getEntry(0,0))) {
+			if ( _field.isZero(minpoly[0].getEntry(0,0))) {
 
 				size_t i=1;
-				while ( _F.isZero(minpoly[0].getEntry(i,0)))
+				while ( _field.isZero(minpoly[0].getEntry(i,0)))
 					++i;
 				if (i == m)
 					throw LinboxError(" block minpoly: matrix seems to be singular - abort");
@@ -130,7 +127,7 @@ namespace LinBox
 			}
 
 
-			bool classic = false;
+			bool classic = true;
 			if ( classic) {
 				/*
 				 * Compute the solution according to the polynomial combination
@@ -165,15 +162,12 @@ namespace LinBox
 						_VDF.axpy (lhs, combi[k][i], row, lhsbis);
 						A.applyTranspose (lhsbis, lhs);
 					}
-
-
 					_VDF.addin(accu,lhs);
 				}
-
 				Element scaling;
-				_F.init(scaling);
-				_F.neg(scaling,combi[0][0]);
-				_F.invin(scaling);
+				_field.init(scaling);
+				_field.neg(scaling,combi[0][0]);
+				_field.invin(scaling);
 				_VDF.mul(x,accu,scaling);
 
 			}
@@ -192,7 +186,6 @@ namespace LinBox
 				Block Combi(deg+1,m);
 				_BMD.mul(Combi,idx_poly,UA);
 
-
 				Vector lhs(n),row(m);
 				for (size_t i=0;i<m;++i)
 					row[i]= Combi.getEntry(deg,i);
@@ -208,7 +201,6 @@ namespace LinBox
 
 				Vector accu (lhs);
 
-
 				A.applyTranspose(lhs,y);
 				_VDF.mulin(lhs,minpoly[deg].getEntry(idx,0));
 				lhsbis=lhs;
@@ -219,9 +211,9 @@ namespace LinBox
 
 				_VDF.addin(accu,lhs);
 				Element scaling;
-				_F.init(scaling);
-				_F.neg(scaling,minpoly[0].getEntry(idx,0));
-				_F.invin(scaling);
+				_field.init(scaling);
+				_field.neg(scaling,minpoly[0].getEntry(idx,0));
+				_field.invin(scaling);
 				_VDF.mul(x,accu,scaling);
 			}
 

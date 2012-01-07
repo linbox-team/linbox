@@ -141,8 +141,8 @@ void launch_bench_square(Field & F // const problem
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
 		LinBox::TriangularBlasMatrix<Element> A (ii,ii,
-							 (TriSup?LinBox::BlasTag::up:LinBox::BlasTag::low),
-							 (UnitDiag?LinBox::BlasTag::unit:LinBox::BlasTag::nonunit));
+							 (TriSup?LinBox::LinBoxTag::Upper:LinBox::LinBoxTag::Lower),
+							 (UnitDiag?LinBox::LinBoxTag::Unit:LinBox::LinBoxTag::NonUnit));
 		LinBox::BlasMatrix<Element> B (ii,ii);
 		if (!series_nb)
 			Data.setAbsciName(l,i); // only write abscissa for serie 0
@@ -286,8 +286,8 @@ void launch_bench_rectangular(Field & F // const problem
 	index_t k = (LeftSide?m:n);
 
 	TriangularMatrix A (k,k,
-			    (TriSup?LinBox::BlasTag::up:LinBox::BlasTag::low),
-			    (UnitDiag?LinBox::BlasTag::unit:LinBox::BlasTag::nonunit));
+			    (TriSup?LinBox::LinBoxTag::Upper:LinBox::LinBoxTag::Lower),
+			    (UnitDiag?LinBox::LinBoxTag::Unit:LinBox::LinBoxTag::NonUnit));
 	Matrix B ((int)m,(int)n);
 
 	index_t j = 0 ;
@@ -366,8 +366,8 @@ void launch_bench_scalar(Field & F // const problem
 	index_t k = (LeftSide?m:n);
 
 	TriangularMatrix A (k,k,
-			    (TriSup?LinBox::BlasTag::up:LinBox::BlasTag::low),
-			    (UnitDiag?LinBox::BlasTag::unit:LinBox::BlasTag::nonunit));
+			    (TriSup?LinBox::LinBoxTag::Upper:LinBox::LinBoxTag::Lower),
+			    (UnitDiag?LinBox::LinBoxTag::Unit:LinBox::LinBoxTag::NonUnit));
 	TransposedTriangular At(A);
 	Matrix B (m,n);
 
@@ -439,22 +439,22 @@ void bench_square( index_t min, index_t max, int step, int charac )
 	LinBox::PlotStyle Style;
 	int it = 0 ;
 	Field F(charac) ;
-	std::cout << "0..";
+	std::cout << "0.." << std::flush;
 	/* _LB_LEFT,_LB_UNIT,_LB_TSUP */
 	launch_bench_square<Field,true,true,true>(F,min,max,step,Data,it++);
-	std::cout << "1..";
+	std::cout << "1.." << std::flush;
 	launch_bench_square<Field,true,true,false>(F,min,max,step,Data,it++);
-	std::cout << "2..";
+	std::cout << "2.." << std::flush;
 	launch_bench_square<Field,true,false,true>(F,min,max,step,Data,it++);
-	std::cout << "3..";
+	std::cout << "3.." << std::flush;
 	launch_bench_square<Field,true,false,false>(F,min,max,step,Data,it++);
-	std::cout << "4..";
+	std::cout << "4.." << std::flush;
 	launch_bench_square<Field,false,true,true>(F,min,max,step,Data,it++);
-	std::cout << "5..";
+	std::cout << "5.." << std::flush;
 	launch_bench_square<Field,false,true,false>(F,min,max,step,Data,it++);
-	std::cout << "6..";
+	std::cout << "6.." << std::flush;
 	launch_bench_square<Field,false,false,true>(F,min,max,step,Data,it++);
-	std::cout << "7..";
+	std::cout << "7.." << std::flush;
 	launch_bench_square<Field,false,false,false>(F,min,max,step,Data,it++);
 	std::cout << "9!!" << std::endl;
 
@@ -506,14 +506,14 @@ void bench_fields( index_t min, index_t max, int step )
 	LinBox::PlotData<index_t>  Data(nb_pts,nb);
 	LinBox::PlotStyle Style;
 	int it = 0 ;
-	std::cout << "0..";
+	std::cout << "0.." << std::flush;
 	/* _LB_LEFT,_LB_UNIT,_LB_TSUP */
 	launch_bench_square<Field0,true,true,true>(F0,min,max,step,Data,it++);
-	std::cout << "1..";
+	std::cout << "1.." << std::flush;
 	launch_bench_square<Field1,true,true,true>(F1,min,max,step,Data,it++);
-	std::cout << "2..";
+	std::cout << "2.." << std::flush;
 	launch_bench_square<Field2,true,true,true>(F2,min,max,step,Data,it++);
-	std::cout << "3..";
+	std::cout << "3.." << std::flush;
 	launch_bench_square<Field3,true,true,true>(F3,min,max,step,Data,it++);
 	std::cout << "4!!" << std::endl;
 
@@ -665,9 +665,9 @@ void bench_transpose( index_t k, int charac)
 	LinBox::PlotData<std::string>  Data(nb,1);
 	Data.setSerieName(0,"fgemm");
 
-	Element one, zero, mone, alpha, beta ;
+	Element one, zero, mOne, alpha, beta ;
 	F.init(one,1);
-	F.init(mone,-1);
+	F.init(mOne,-1);
 	F.init(zero,0);
 
 
@@ -675,10 +675,10 @@ void bench_transpose( index_t k, int charac)
 	linbox_check(charac >=5) ;
 
 	do { R.random(alpha) ; } // non trivial alpha
-	while (F.areEqual(alpha,one) || F.areEqual(alpha,mone) || F.areEqual(alpha,zero)) ;
+	while (F.areEqual(alpha,one) || F.areEqual(alpha,mOne) || F.areEqual(alpha,zero)) ;
 
 	do { R.random(beta) ; }// non trivial beta
-	while (F.areEqual(beta,one) || F.areEqual(beta,mone) || F.areEqual(beta,zero)) ;
+	while (F.areEqual(beta,one) || F.areEqual(beta,mOne) || F.areEqual(beta,zero)) ;
 
 
 	// D = A^xB^y

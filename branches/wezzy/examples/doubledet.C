@@ -35,7 +35,6 @@
 #include "linbox/field/PID-integer.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/solutions/det.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/algorithms/double-det.h"
 
 
@@ -56,7 +55,7 @@ int main (int argc, char **argv)
 		return -1;
 	}
 	MatrixStream <PID_integer> ms (ZZ, input);
-	BlasBlackbox <PID_integer> A (ms);
+	BlasMatrix <PID_integer> A (ms);
 	cout << "Matrix is " << A.rowdim() << " by " << A.coldim() << endl;
 
 	if (A.rowdim() != A.coldim() + 1){
@@ -77,7 +76,7 @@ int main (int argc, char **argv)
 
 	// Check solution
 	size_t n = A.coldim();
-	BlasBlackbox<PID_integer> B (ZZ, n, n);
+	BlasMatrix<PID_integer> B (ZZ, n, n);
 	for (size_t i=0; i<n-1; ++i)
 		for (size_t j=0; j<n; ++j)
 			B.setEntry (i,j,A.getEntry(i,j));

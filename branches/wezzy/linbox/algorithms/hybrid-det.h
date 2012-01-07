@@ -25,42 +25,18 @@
 #ifndef __LINBOX_hybrid_det_H
 #define __LINBOX_hybrid_det_H
 
-//#include "linbox/blackbox/diagonal.h"
-//#include "linbox/blackbox/compose.h"
-//#include "linbox/solutions/methods.h"
-#include "linbox/blackbox/dense.h"
-#include "linbox/blackbox/sparse.h"
-//#include "linbox/blackbox/blas-blackbox.h"
-//#include "linbox/matrix/blas-matrix.h"
-//#include "linbox/algorithms/blackbox-container.h"
-//#include "linbox/algorithms/blackbox-container-symmetric.h"
-//#include "linbox/algorithms/massey-domain.h"
-//#include "linbox/algorithms/blas-domain.h"
-//#include "linbox/vector/vector-traits.h"
-//#include "linbox/util/prime-stream.h"
-//#include "linbox/util/debug.h"
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
 
-//#include "linbox/solutions/solve.h"
-//#include "linbox/field/gmp-rational.h"
-//#include "linbox/field/gmp-integers.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/last-invariant-factor.h"
-//#include "linbox/field/PIR-modular-int32.h"
-//#include "linbox/field/PIR-ntl-ZZ_p.h"
-//#include "linbox/field/ntl-ZZ_p.h"
-
-// Namespace in which all LinBox library code resides
-
-//#include "linbox/algorithms/cra.h"
-//#include "linbox/field/modular.h"
-#include "linbox/field/modular-double.h"
-//#include "linbox/field/givaro-zpz.h"
+#include "linbox/field/modular.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
-
 #include "linbox/solutions/det.h"
 
 // #define _LB_H_DET_TIMING

@@ -24,8 +24,8 @@
 #ifndef __LINBOX_bb_polynomial_H
 #define __LINBOX_bb_polynomial_H
 
-#include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/vector/vector-domain.h>
+#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/vector/vector-domain.h"
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
@@ -205,7 +205,7 @@ namespace LinBox
 		{}
 
 		PolynomialBBOwner (const Blackbox *A_data, const Polynomial * P_data) :
-			_A_data(*A_data), _P_data(*P_data), _VD(A_data.field())
+			_A_data(*A_data), _P_data(*P_data), _VD(A_data->field())
 		{
 		}
 

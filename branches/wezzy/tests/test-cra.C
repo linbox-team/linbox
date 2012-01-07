@@ -38,6 +38,8 @@
 #include "linbox/algorithms/cra-full-multip.h"
 #include "linbox/algorithms/cra-full-multip-fixed.h"
 
+#include "linbox/field/unparametric.h"
+
 #define _LB_REPEAT(command) \
 do { for (size_t i = 0 ; pass && i < iters ; ++i) {  command } } while(0)
 
@@ -197,19 +199,23 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 
 #if 1 /* testing FullMultipBlasMatCRA */
 template< class T>
-int test_full_multip_matrix(std::ostream & report, size_t PrimeSize, size_t Size, std::pair<size_t, size_t> dims)
+int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
+			    size_t Size, std::pair<size_t, size_t> dims)
 {
 
-	typedef typename std::vector<T>                    Vect ;
-	typedef typename LinBox::BlasMatrix<T>           Matrix ;
-	typedef typename std::vector<Matrix>            MatVect ;
-	typedef typename Vect::iterator                 Iterator;
-	typedef typename MatVect::iterator           MatIterator;
-	typedef typename LinBox::BlasMatrix<Integer>  IntMatrix ;
+	typedef typename LinBox::UnparametricField<T>        Unparam ;
+	typedef typename std::vector<T>                         Vect ;
+	typedef typename LinBox::BlasMatrix<Unparam>          Matrix ;
+	typedef typename std::vector<Matrix>                 MatVect ;
+	typedef typename Vect::iterator                      Iterator;
+	typedef typename MatVect::iterator                MatIterator;
+	typedef typename LinBox::BlasMatrix<PID_integer>   IntMatrix ;
 
-	typedef LinBox::Modular<double>            ModularField ;
-	typedef ModularField::Element                    Element;
-	typedef typename LinBox::BlasMatrix<Element>    pMatrix ;
+	typedef LinBox::Modular<double>                        Field ;
+	typedef Field::Element                                Element;
+	typedef typename LinBox::BlasMatrix<Field>           pMatrix ;
+
+	PID_integer Z ;
 
 	Vect primes(Size) ;
 	/*  probably not all coprime... */
@@ -220,8 +226,9 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize, size_t Size
 	}
 
 	/*  residues */
-	const Matrix Zero (dims.first,dims.second);
-	MatVect residues(Size) ;
+	Unparam U ;
+	const Matrix Zero (U,dims.first,dims.second);
+	MatVect residues(Size,Zero) ;
 	for (size_t k = 0 ; k < Size ; ++k) {
 		residues[k] = Zero ;
 		for (size_t i = 0 ; i < Zero.rowdim() ; ++i)
@@ -237,11 +244,12 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize, size_t Size
 	std::pair<size_t,double> my_pair(dims.first*dims.second,LogIntSize)  ;
 
 	report << "FullMultipBlasMatCRA (" <<  my_pair.first << ", " << my_pair.second << ')' << std::endl;
-	FullMultipBlasMatCRA<ModularField> cra( my_pair ) ;
-	IntMatrix result(dims.first,dims.second); // the result
-	pMatrix residue(dims.first,dims.second) ; // temporary
+	FullMultipBlasMatCRA<Field> cra( my_pair ) ;
+	IntMatrix result(Z,dims.first,dims.second); // the result
 	{ /* init */
-		ModularField F(*genprime);
+		Field F(*genprime);
+		pMatrix residue(F,dims.first,dims.second) ; // temporary
+		//! @bug it is not possible to allocate some memory and use submatrices ?
 		for (size_t i = 0 ; i < residue.rowdim(); ++i)
 			for (size_t j = 0 ; j < residue.coldim(); ++j)
 				F.init(residue.refEntry(i,j),(*residu).getEntry(i,j));
@@ -251,13 +259,13 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize, size_t Size
 	}
 	while (genprime < primes.end() /*  && !cra.terminated() */ )
 	{ /* progress */
-		if (cra.noncoprime((integer)*genprime))
-		{
+		if (cra.noncoprime((integer)*genprime)) {
 			report << "bad luck, you picked twice the same prime..." <<std::endl;
 			report << "FullMultipBlasMatCRA exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
-		ModularField F(*genprime);
+		Field F(*genprime);
+		pMatrix residue(F,dims.first,dims.second) ; // temporary
 		for (size_t i = 0 ; i < residue.rowdim(); ++i)
 			for (size_t j = 0 ; j < residue.coldim(); ++j)
 				F.init(residue.refEntry(i,j),(*residu).getEntry(i,j));
@@ -270,7 +278,7 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize, size_t Size
 	cra.result(result);
 
 	for (size_t i = 0 ; i < Size ; ++i){
-		ModularField F(primes[i]);
+		Field F(primes[i]);
 		for (size_t l = 0 ; l < dims.first ; ++l)
 			for (size_t m = 0 ; m < dims.second ; ++m) {
 				Element tmp1,tmp2 ;

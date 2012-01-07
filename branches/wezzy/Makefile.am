@@ -14,23 +14,23 @@ SUBDIRS=linbox macros tests interfaces doc examples benchmarks
 
 #  Fullcheck provides a full check for regression testing purposes.
 fullcheck:
-	(make ; cd tests; make fullcheck)
+	(${MAKE} ; cd tests; ${MAKE} fullcheck)
 
 docs:doc/linbox-html/index.html
 
 doc/linbox-html/index.html:
-	(cd doc; make docs)
+	(cd doc; ${MAKE} docs)
 
-docs_dev:doc/linbox-dev-html/index.html
+docs_dev:doc/linbox-dev-html/pages.html
 
-doc/linbox-dev-html/index.html:
-	(cd doc; make docs_dev)
+doc/linbox-dev-html/pages.html:
+	(cd doc; ${MAKE} docs_dev)
 
 examples:
-	(cd examples; make examples)
+	(cd examples; ${MAKE} examples)
 
 benchmarks:
-	(cd benchmarks; make benchmarks)
+	(cd benchmarks; ${MAKE} benchmarks)
 
 .PHONY:examples benchmarks
 
@@ -39,7 +39,30 @@ bin_SCRIPTS=linbox-config
 bundled:
 	sh auto-install.sh
 
-VERSION=1.2.1
+uninstall-hook:
+	(test -d "$(includedir)/linbox" && rmdir "$(bindir)" \
+		"$(libdir)" \
+		"$(mandir)/man1" \
+		"$(mandir)" \
+		"$(includedir)/linbox/algorithms" \
+		"$(includedir)/linbox/blackbox" \
+		"$(includedir)/linbox/element" \
+		"$(includedir)/linbox/field/Givaro" \
+		"$(includedir)/linbox/field/Modular" \
+		"$(includedir)/linbox/field/NTL" \
+		"$(includedir)/linbox/field/" \
+		"$(includedir)/linbox/kaapi" \
+		"$(includedir)/linbox/matrix" \
+		"$(includedir)/linbox/randiter" \
+		"$(includedir)/linbox/ring" \
+		"$(includedir)/linbox/solutions" \
+		"$(includedir)/linbox/switch" \
+		"$(includedir)/linbox/util/formats" \
+		"$(includedir)/linbox/util" \
+		"$(includedir)/linbox/vector" \
+		"$(includedir)/linbox" ) || true
+
+VERSION=1.3.0
 
 EXTRA_DIST=auto-install.sh
 #incremente-versions

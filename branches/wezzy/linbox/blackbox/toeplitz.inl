@@ -24,7 +24,7 @@
 #include <iostream>
 #include <fstream>
 #include <cassert> // JGD 26.09.2003
-#include <linbox/algorithms/toeplitz-det.h>
+#include "linbox/algorithms/toeplitz-det.h"
 
 namespace LinBox
 {
@@ -225,7 +225,7 @@ namespace LinBox
 			std::ofstream o_fp(outFileName, std::ios::out);
 			o_fp << this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl ;
 			o_fp << "[";
-			for (size_t i = this->rowDim + this->colDim - 2; i>= 0;i--)
+			for (size_t i = this->rowDim + this->colDim - 1 ; i-- ; )
 				this->K.write(o_fp,this->P.getCoeff(temp,this->pdata,i))
 				<< " ";
 			o_fp << "]\n";

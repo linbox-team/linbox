@@ -15,10 +15,10 @@
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/diagonal-gf2.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/permutation.h"
 #include "linbox/blackbox/transpose.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/algorithms/blackbox-container-symmetrize.h"
 #include "linbox/algorithms/blackbox-container-symmetric.h"
 #include "linbox/algorithms/blackbox-container.h"
@@ -68,7 +68,8 @@ namespace LinBox
 	inline unsigned long &rank (unsigned long                           &r,
 				    const Blackbox                          &A,
 				    const RingCategories::RationalTag     &tag,
-				    const Method                           &M){
+				    const Method                           &M)
+	{
 		commentator.start ("Rational Rank", "Rrank");
 		// Same mapping as the integer one
 		rank(r, A, RingCategories::IntegerTag(), M);
@@ -564,7 +565,7 @@ namespace LinBox
 		integer a, b; F.characteristic(a); F.cardinality(b);
 		linbox_check( a == b );
 		linbox_check( a < LinBox::BlasBound);
-		BlasMatrix<typename Field::Element> B(A);
+		BlasMatrix<Field> B(A);
 		BlasMatrixDomain<Field> D(F);
 		r = D.rank(B);
 		commentator.stop ("done", NULL, "blasrank");
@@ -590,7 +591,7 @@ namespace LinBox
 	/// A is modified.
 	template <class Field>
 	inline unsigned long &rankin (unsigned long                     &r,
-				      BlasBlackbox<Field>               &A,
+				      BlasMatrix<Field>               &A,
 				      const RingCategories::ModularTag  &tag,
 				      const Method::BlasElimination     &M)
 	{
@@ -598,7 +599,7 @@ namespace LinBox
 		commentator.start ("BlasBB Rank", "blasbbrank");
 		const Field F = A.field();
 		BlasMatrixDomain<Field> D(F);
-		r = D.rankin(static_cast< BlasMatrix<typename Field::Element>& >(A));
+		r = D.rankin(static_cast< BlasMatrix<Field>& >(A));
 		commentator.stop ("done", NULL, "blasbbrank");
 		return r;
 	}
@@ -632,7 +633,7 @@ namespace LinBox
 #define LINBOX_EXTENSION_DEGREE_MAX 19
 #endif
 
-#include "linbox/field/givaro-extension.h"
+#include "linbox/field/givaro.h"
 namespace LinBox
 {
 	template <class Blackbox>
@@ -647,7 +648,7 @@ namespace LinBox
 			const Field& F = A.field();
 			integer a,c; F.cardinality(a); F.characteristic(c);
 			if (a != c) {
-				unsigned long extend = (unsigned long)FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
+				unsigned long extend = (unsigned long)Givaro::FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 				if (extend > 1) {
 					commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
 					GivaroExtension<Field> EF( F, extend);
@@ -659,7 +660,7 @@ namespace LinBox
 					rank(r, A, tag, Method::Wiedemann(m));
 			}
 			else {
-				unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
+				unsigned long extend = (unsigned long)Givaro::FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 				if (extend > 1) {
 					commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
 					GivaroGfq EF( (unsigned long)c, extend);

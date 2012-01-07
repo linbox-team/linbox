@@ -22,7 +22,6 @@
 
 #include "linbox/util/debug.h"
 #include "linbox/solutions/methods.h"
-#include "linbox/matrix/dense-submatrix.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
@@ -32,10 +31,6 @@
 
 #include "eliminator.h"
 
-#undef _F
-#undef _N
-#undef _S
-#undef _T
 
 namespace LinBox
 {
@@ -57,9 +52,9 @@ namespace LinBox
 
 	template <class Field, class Matrix>
 	Eliminator<Field, Matrix>::Eliminator (const Field &F, unsigned int N) :
-		_F (F), _VD (F), _MD (F), _N (N), _S (N), _T (N)
+		_field (F), _VD (F), _MD (F), _number (N), _indepRows (N), _indepCols (N)
 	{
-		_F.init (_one, 1);
+		_field.init (_one, 1);
 	}
 
 	template <class Field, class Matrix>
@@ -82,8 +77,8 @@ namespace LinBox
 		std::vector<unsigned int>::iterator i;
 		unsigned int idx;
 
-		_A.resize (A.rowdim (), A.coldim ());
-		_U.resize (A.rowdim (), A.rowdim ());
+		_matA.resize (A.rowdim (), A.coldim ());
+		_matU.resize (A.rowdim (), A.rowdim ());
 		_tmp.resize (A.rowdim (), A.coldim ());
 		_profile.resize (A.coldim ());
 		_indices.resize (A.rowdim ());
@@ -91,35 +86,35 @@ namespace LinBox
 		for (i = _indices.begin (), idx = 0; i != _indices.end (); ++i, ++idx)
 			*i = idx;
 
-		_MD.subin (_A, _A);
+		_MD.subin (_matA, _matA);
 
-		DenseSubmatrix<Element> A1 (_A, 0, 0, A.rowdim (), A.coldim ());
+		BlasMatrix<Field> A1 (_matA, 0, 0, A.rowdim (), A.coldim ());
 		_MD.copy (A1, A);
 
-		setIN (_U);
-		_P.clear ();
+		setIN (_matU);
+		_perm.clear ();
 		_profile_idx = 0;
 
 		kthGaussJordan (rank, d, 0, 0, A.coldim (), _one);
 
-		buildMinimalPermutation (P, rank, A.rowdim (), _P);
+		buildMinimalPermutation (P, rank, A.rowdim (), _perm);
 		buildMinimalPermutationFromProfile (Q, rank, A.coldim (), _profile);
 
-		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
-		_MD.permuteColumns (_U, P.begin (), P.end ());
+		_MD.permuteColumns (_matU, _perm.rbegin (), _perm.rend ());
+		_MD.permuteColumns (_matU, P.begin (), P.end ());
 
-		DenseSubmatrix<Element> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
-		DenseSubmatrix<Element> U2 (_U, rank, 0, A.rowdim () - rank, rank);
+		BlasMatrix<Field> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
+		BlasMatrix<Field> U2 (_matU, rank, 0, A.rowdim () - rank, rank);
 		_MD.copy (Tu1, U2);
 
-		DenseSubmatrix<Element> Ainv1 (Ainv, 0, 0, rank, rank);
-		DenseSubmatrix<Element> U1 (_U, 0, 0, rank, rank);
-		_F.inv (dinv, d);
+		BlasMatrix<Field> Ainv1 (Ainv, 0, 0, rank, rank);
+		BlasMatrix<Field> U1 (_matU, 0, 0, rank, rank);
+		_field.inv (dinv, d);
 		_MD.mul (Ainv1, U1, dinv);
 
-		DenseSubmatrix<Element> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
-		DenseSubmatrix<Element> U3 (_U, 0, 0, rank, A.rowdim ());
-		DenseSubmatrix<Element> A2 (_A, 0, rank, A.rowdim (), A.coldim () - rank);
+		BlasMatrix<Field> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
+		BlasMatrix<Field> U3 (_matU, 0, 0, rank, A.rowdim ());
+		BlasMatrix<Field> A2 (_matA, 0, rank, A.rowdim (), A.coldim () - rank);
 		_MD.copy (A1, A);
 		_MD.permuteColumns (A1, Q.begin (), Q.end ());
 		_MD.permuteRows (A2, P.begin (), P.end ());
@@ -161,22 +156,22 @@ namespace LinBox
 
 		timer.start ();
 
-		linbox_check (_N == S.size ());
-		linbox_check (_N == T.size ());
-		linbox_check (_N == W.rowdim ());
-		linbox_check (_N == W.coldim ());
-		linbox_check (_N == A.rowdim ());
-		linbox_check (_N == A.coldim ());
+		linbox_check (_number == S.size ());
+		linbox_check (_number == T.size ());
+		linbox_check (_number == W.rowdim ());
+		linbox_check (_number == W.coldim ());
+		linbox_check (_number == A.rowdim ());
+		linbox_check (_number == A.coldim ());
 
 #ifdef ELIM_DETAILED_TRACE
-		commentator.start ("Computing W, S, T", "Eliminator::permuteAndInvert", _N);
+		commentator.start ("Computing W, S, T", "Eliminator::permuteAndInvert", _number);
 
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input matrix:" << std::endl;
 		_MD.write (report, A);
 #endif
 
-		/* Apply initial permutations to A, copying to _A */
+		/* Apply initial permutations to A, copying to _matA */
 
 		buildPermutation (Qp, rightPriorityIdx); // Column permutation
 
@@ -185,64 +180,64 @@ namespace LinBox
 		reportPermutation (report, Qp) << endl;
 #endif
 
-		_A.resize (A.rowdim (), A.coldim ());
-		_U.resize (A.rowdim (), A.rowdim ());
+		_matA.resize (A.rowdim (), A.coldim ());
+		_matU.resize (A.rowdim (), A.rowdim ());
 		_tmp.resize (A.rowdim (), A.coldim ());
 		_indices.resize (A.rowdim ());
 
 		for (i = _indices.begin (), idx = 0; i != _indices.end (); ++i, ++idx)
 			*i = idx;
 
-		_MD.copy (_A, A);
+		_MD.copy (_matA, A);
 
-		_MD.permuteColumns (_A, Qp.begin (), Qp.end ());
+		_MD.permuteColumns (_matA, Qp.begin (), Qp.end ());
 
 		/* Initialise temporaries for the computation */
 
-		setIN (_U);
-		_P.clear ();
+		setIN (_matU);
+		_perm.clear ();
 		_profile.resize (A.coldim ());
 		_profile_idx = 0;
-		std::fill (_T.begin (), _T.end (), false);
+		std::fill (_indepCols.begin (), _indepCols.end (), false);
 
 		/* Run the computation */
 
-		kthGaussJordan (rank, d, 0, 0, _A.coldim (), _one);
+		kthGaussJordan (rank, d, 0, 0, _matA.coldim (), _one);
 
-		/* Set _S based on the permutation */
-		std::fill (_S.begin (), _S.begin () + rank, true);
-		std::fill (_S.begin () + rank, _S.end (), false);
-		permute (_S, _P.rbegin (), _P.rend ());
+		/* Set _indepRows based on the permutation */
+		std::fill (_indepRows.begin (), _indepRows.begin () + rank, true);
+		std::fill (_indepRows.begin () + rank, _indepRows.end (), false);
+		permute (_indepRows, _perm.rbegin (), _perm.rend ());
 
-		permute (_T, Qp.rbegin (), Qp.rend ());
+		permute (_indepCols, Qp.rbegin (), Qp.rend ());
 
-		/* Apply final permutations to _U, copying to W */
-		DenseSubmatrix<Element> U1 (_U, rank, 0, _U.rowdim () - rank, _U.coldim ());
+		/* Apply final permutations to _matU, copying to W */
+		BlasMatrix<Field> U1 (_matU, rank, 0, _matU.rowdim () - rank, _matU.coldim ());
 		_MD.subin (U1, U1);
 
-		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
+		_MD.permuteColumns (_matU, _perm.rbegin (), _perm.rend ());
 
-		/* Divide _U by the determinant and copy to W */
-		_F.invin (d);
-		_MD.mulin (_U, d);
+		/* Divide _matU by the determinant and copy to W */
+		_field.invin (d);
+		_MD.mulin (_matU, d);
 
 		_MD.subin (W, W);
 
 		typename std::vector<unsigned int>::iterator pi;
 
-		for (pi = _profile.begin (), ui = _U.rowBegin (); pi != _profile.begin () + rank; ++ui, ++pi)
+		for (pi = _profile.begin (), ui = _matU.rowBegin (); pi != _profile.begin () + rank; ++ui, ++pi)
 			_VD.copy (*(W.rowBegin () + *pi), *ui);
 
 		//	_MD.permuteRows (W, Qp.rbegin (), Qp.rend ());
 
 		/* Rebuild leftPriorityIdx and rightPriorityIdx */
-		cleanPriorityIndexList (rightPriorityIdx, _T, T);
+		cleanPriorityIndexList (rightPriorityIdx, _indepCols, T);
 
 		/* Reverse the row priority index list */
 		std::reverse (_indices.begin (), _indices.end ());
 
-		S = _S;
-		T = _T;
+		S = _indepRows;
+		T = _indepCols;
 
 #ifdef ELIM_DETAILED_TRACE
 		report << "Computed W:" << std::endl;
@@ -274,8 +269,8 @@ namespace LinBox
 		std::vector<unsigned int>::iterator i;
 		unsigned int idx;
 
-		_A.resize (A.rowdim (), A.coldim ());
-		_U.resize (A.rowdim (), A.rowdim ());
+		_matA.resize (A.rowdim (), A.coldim ());
+		_matU.resize (A.rowdim (), A.rowdim ());
 		_tmp.resize (A.rowdim (), A.coldim ());
 		_profile.resize (A.coldim ());
 		_indices.resize (A.rowdim ());
@@ -283,32 +278,32 @@ namespace LinBox
 		for (i = _indices.begin (), idx = 0; i != _indices.end (); ++i, ++idx)
 			*i = idx;
 
-		setIN (_U);
-		_P.clear ();
-		_MD.copy (_A, A);
+		setIN (_matU);
+		_perm.clear ();
+		_MD.copy (_matA, A);
 		_profile_idx = 0;
 		kthGaussJordan (rank, det, 0, 0,  (unsigned int) A.coldim (), _one);
 
-		buildMinimalPermutation (P, rank,  (unsigned int) A.rowdim (), _P);
+		buildMinimalPermutation (P, rank,  (unsigned int) A.rowdim (), _perm);
 		buildMinimalPermutationFromProfile (Q, rank,  (unsigned int) A.coldim (), _profile);
 
-		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
-		_MD.permuteColumns (_U, P.begin (), P.end ());
+		_MD.permuteColumns (_matU, _perm.rbegin (), _perm.rend ());
+		_MD.permuteColumns (_matU, P.begin (), P.end ());
 
-		DenseSubmatrix<Element> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
-		DenseSubmatrix<Element> U2 (_U, rank, 0, A.rowdim () - rank, rank);
+		BlasMatrix<Field> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
+		BlasMatrix<Field> U2 (_matU, rank, 0, A.rowdim () - rank, rank);
 		_MD.copy (Tu1, U2);
 
-		DenseSubmatrix<Element> Ainv1 (U, 0, 0, rank, rank);
-		DenseSubmatrix<Element> U1 (_U, 0, 0, rank, rank);
-		_F.inv (dinv, det);
+		BlasMatrix<Field> Ainv1 (U, 0, 0, rank, rank);
+		BlasMatrix<Field> U1 (_matU, 0, 0, rank, rank);
+		_field.inv (dinv, det);
 		_MD.mul (Ainv1, U1, dinv);
 
-		DenseSubmatrix<Element> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
-		DenseSubmatrix<Element> U3 (_U, 0, 0, rank, A.rowdim ());
-		DenseSubmatrix<Element> A2 (_A, 0, rank, A.rowdim (), A.coldim () - rank);
-		_MD.copy (_A, A);
-		_MD.permuteColumns (_A, Q.begin (), Q.end ());
+		BlasMatrix<Field> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
+		BlasMatrix<Field> U3 (_matU, 0, 0, rank, A.rowdim ());
+		BlasMatrix<Field> A2 (_matA, 0, rank, A.rowdim (), A.coldim () - rank);
+		_MD.copy (_matA, A);
+		_MD.permuteColumns (_matA, Q.begin (), Q.end ());
 		_MD.permuteRows (A2, P.begin (), P.end ());
 		_MD.mul (Tv1, U3, A2);
 		_MD.negin (Tv1);
@@ -345,9 +340,9 @@ namespace LinBox
 		return out;
 	}
 
-	/* Perform the kth indexed Gauss-Jordan transform on _A, storing the
-	 * transformation matrix in _U and the permutation in _P. The caller is
-	 * responsible for ensuring that _U and _P are the identity and that _A is set
+	/* Perform the kth indexed Gauss-Jordan transform on _matA, storing the
+	 * transformation matrix in _matU and the permutation in _perm. The caller is
+	 * responsible for ensuring that _matU and _perm are the identity and that _matA is set
 	 * to a copy of the input on the initial call.
 	 */
 
@@ -370,43 +365,43 @@ namespace LinBox
 		report << "Starting column: " << s << std::endl;
 		report << "Column dimension: " << m << std::endl;
 
-		DenseMatrixBase<Element> Acopy (_A);
+		BlasMatrix<Field> Acopy (_matA);
 
-		unsigned int P_start = _P.size ();
+		unsigned int P_start = _perm.size ();
 #endif
 
-		DenseSubmatrix<Element> Ap (_A, k, s, _A.rowdim () - k, m);
+		BlasMatrix<Field> Ap (_matA, k, s, _matA.rowdim () - k, m);
 
 		if (_MD.isZero (Ap)) {
 			r = 0;
-			_F.assign (d, d0);
+			_field.assign (d, d0);
 		}
 		else if (m == 1) {
-			// Find minimal index i > k with _A[i, 1] != 0
-			for (i = 0; i < _A.rowdim (); ++i)
-				if (_indices[i] >= k && !_F.isZero (_A.getEntry (_indices[i], s)))
+			// Find minimal index i > k with _matA[i, 1] != 0
+			for (i = 0; i < _matA.rowdim (); ++i)
+				if (_indices[i] >= k && !_field.isZero (_matA.getEntry (_indices[i], s)))
 					break;
 
-			linbox_check (i < _A.rowdim ());
+			linbox_check (i < _matA.rowdim ());
 
-			_T[s] = true;  // This column is independent
+			_indepCols[s] = true;  // This column is independent
 
-			if (_indices[i] != k) _P.push_back (Transposition (_indices[i], k));
+			if (_indices[i] != k) _perm.push_back (Transposition (_indices[i], k));
 
 			r = 1;
-			_A.getEntry (d, _indices[i], s);
+			_matA.getEntry (d, _indices[i], s);
 
-			typename Matrix::ColIterator Uk = _U.colBegin () + k;
-			typename Matrix::ColIterator A1 = _A.colBegin () + s;
+			typename Matrix::ColIterator Uk = _matU.colBegin () + k;
+			typename Matrix::ColIterator A1 = _matA.colBegin () + s;
 
 			_VD.neg (*Uk, *A1);
-			_F.assign ((*Uk)[_indices[i]], (*Uk)[k]);
-			_F.assign ((*Uk)[k], d0);
+			_field.assign ((*Uk)[_indices[i]], (*Uk)[k]);
+			_field.assign ((*Uk)[k], d0);
 
 			std::swap (_indices[i], _indices[k]);
 
-			for (i = k + 1; i < _U.rowdim (); ++i)
-				_U.setEntry (i, i, d);
+			for (i = k + 1; i < _matU.rowdim (); ++i)
+				_matU.setEntry (i, i, d);
 
 			_profile[_profile_idx++] = s;
 		}
@@ -416,30 +411,30 @@ namespace LinBox
 			unsigned int r1, r2;
 			typename Field::Element d1, d0inv, d1inv, d1neg;
 
-			DenseSubmatrix<Element> B (_A, 0, s + m1, _A.rowdim (), m2);
+			BlasMatrix<Field> B (_matA, 0, s + m1, _matA.rowdim (), m2);
 
-			unsigned int P_start = (unsigned int) _P.size ();
+			unsigned int P_start = (unsigned int) _perm.size ();
 
 			kthGaussJordan (r1, d1, k, s, m1, d0);
 
-			unsigned int P_end =  (unsigned int) _P.size ();
+			unsigned int P_end =  (unsigned int) _perm.size ();
 
-			_MD.permuteRows (B, _P.begin () + P_start, _P.end ());
+			_MD.permuteRows (B, _perm.begin () + P_start, _perm.end ());
 
-			unsigned int l1 = (unsigned int) _U.rowdim () - (k + r1);
+			unsigned int l1 = (unsigned int) _matU.rowdim () - (k + r1);
 
-			DenseSubmatrix<Element> a (_U,    0,      k,      k,  r1);
-			DenseSubmatrix<Element> u (_U,    k,      k,      r1, r1);
-			DenseSubmatrix<Element> c (_U,    k + r1, k,      l1, r1);
+			BlasMatrix<Field> a (_matU,    0,      k,      k,  r1);
+			BlasMatrix<Field> u (_matU,    k,      k,      r1, r1);
+			BlasMatrix<Field> c (_matU,    k + r1, k,      l1, r1);
 
-			DenseSubmatrix<Element> et (_tmp, 0,      0,      k,  m2);
-			DenseSubmatrix<Element> gt (_tmp, 0,      0,      l1, m2);
+			BlasMatrix<Field> et (_tmp, 0,      0,      k,  m2);
+			BlasMatrix<Field> gt (_tmp, 0,      0,      l1, m2);
 
-			DenseSubmatrix<Element> e (_A,    0,      s + m1, k,  m2);
-			DenseSubmatrix<Element> f (_A,    k,      s + m1, r1, m2);
-			DenseSubmatrix<Element> g (_A,    k + r1, s + m1, l1, m2);
+			BlasMatrix<Field> e (_matA,    0,      s + m1, k,  m2);
+			BlasMatrix<Field> f (_matA,    k,      s + m1, r1, m2);
+			BlasMatrix<Field> g (_matA,    k + r1, s + m1, l1, m2);
 
-			_F.inv (d0inv, d0);
+			_field.inv (d0inv, d0);
 
 			_MD.mul (et, a, f);
 			_MD.mulin (e, d1);
@@ -456,52 +451,52 @@ namespace LinBox
 
 #ifdef ELIM_DETAILED_TRACE
 			report << "(" << k << ") Matrix A prepared for second recursive call: " << std::endl;
-			_MD.write (report, _A);
+			_MD.write (report, _matA);
 #endif
 
 			kthGaussJordan (r2, d, k + r1, s + m1, m2, d1);
 
 #ifdef ELIM_DETAILED_TRACE
 			report << "(" << k << ") Transform U after recursive calls: " << std::endl;
-			_MD.write (report, _U);
+			_MD.write (report, _matU);
 #endif
 
-			DenseSubmatrix<Element> U1 (_U, 0, k, _U.rowdim (), r1);
+			BlasMatrix<Field> U1 (_matU, 0, k, _matU.rowdim (), r1);
 
-			_F.neg (d1neg, d1);
-			adddIN (_U, d1neg);
-			_MD.permuteRows (U1, _P.begin () + P_end, _P.end ());
-			adddIN (_U, d1);
+			_field.neg (d1neg, d1);
+			adddIN (_matU, d1neg);
+			_MD.permuteRows (U1, _perm.begin () + P_end, _perm.end ());
+			adddIN (_matU, d1);
 
 #ifdef ELIM_DETAILED_TRACE
 			report << "(" << k << ") P2 U P2^-1: " << std::endl;
-			_MD.write (report, _U);
+			_MD.write (report, _matU);
 #endif
 
 			r = r1 + r2;
 
-			unsigned int l2 = (unsigned int) _U.rowdim () - (k + r);
+			unsigned int l2 = (unsigned int) _matU.rowdim () - (k + r);
 
-			DenseSubmatrix<Element> a1    (_U, 0,      k,      k,  r1);
-			DenseSubmatrix<Element> u1    (_U, k,      k,      r1, r1);
-			DenseSubmatrix<Element> c1    (_U, k + r1, k,      r2, r1);
-			DenseSubmatrix<Element> c1bar (_U, k + r,  k,      l2, r1);
+			BlasMatrix<Field> a1    (_matU, 0,      k,      k,  r1);
+			BlasMatrix<Field> u1    (_matU, k,      k,      r1, r1);
+			BlasMatrix<Field> c1    (_matU, k + r1, k,      r2, r1);
+			BlasMatrix<Field> c1bar (_matU, k + r,  k,      l2, r1);
 
-			DenseSubmatrix<Element> &a11 = a1;
-			DenseSubmatrix<Element> &u11 = u1;
-			DenseSubmatrix<Element> &u21 = c1;
-			DenseSubmatrix<Element> &c11 = c1bar;
+			BlasMatrix<Field> &a11 = a1;
+			BlasMatrix<Field> &u11 = u1;
+			BlasMatrix<Field> &u21 = c1;
+			BlasMatrix<Field> &c11 = c1bar;
 
-			DenseSubmatrix<Element> a11t  (_tmp, 0,    0,      k,  r1);
-			DenseSubmatrix<Element> u11t  (_tmp, 0,    0,      r1, r1);
-			DenseSubmatrix<Element> c11t  (_tmp, 0,    0,      l2, r1);
+			BlasMatrix<Field> a11t  (_tmp, 0,    0,      k,  r1);
+			BlasMatrix<Field> u11t  (_tmp, 0,    0,      r1, r1);
+			BlasMatrix<Field> c11t  (_tmp, 0,    0,      l2, r1);
 
-			DenseSubmatrix<Element> a2    (_U, 0,      k + r1, k,  r2);
-			DenseSubmatrix<Element> a2bar (_U, k,      k + r1, r1, r2);
-			DenseSubmatrix<Element> u2    (_U, k + r1, k + r1, r2, r2);
-			DenseSubmatrix<Element> c2    (_U, k + r,  k + r1, l2, r2);
+			BlasMatrix<Field> a2    (_matU, 0,      k + r1, k,  r2);
+			BlasMatrix<Field> a2bar (_matU, k,      k + r1, r1, r2);
+			BlasMatrix<Field> u2    (_matU, k + r1, k + r1, r2, r2);
+			BlasMatrix<Field> c2    (_matU, k + r,  k + r1, l2, r2);
 
-			_F.inv (d1inv, d1);
+			_field.inv (d1inv, d1);
 
 			_MD.mul (a11t, a2, c1);
 			_MD.mulin (a1, d);
@@ -524,20 +519,20 @@ namespace LinBox
 
 #ifdef ELIM_DETAILED_TRACE
 		report << "(" << k << ") Finished U: " << std::endl;
-		_MD.write (report, _U);
+		_MD.write (report, _matU);
 
 		report << "(" << k << ") Finished P: " << std::endl;
-		reportPermutation (report, _P);
+		reportPermutation (report, _perm);
 
 		typename Field::Element dinv, d0inv;
 
-		_F.inv (dinv, d);
-		_F.inv (d0inv, d0);
+		_field.inv (dinv, d);
+		_field.inv (d0inv, d0);
 
-		DenseMatrixBase<Element> R (_A.rowdim () - k, _A.coldim () - s);
-		DenseSubmatrix<Element> Atest (Acopy, k, s, _A.rowdim () - k, _A.coldim () - s);
-		DenseSubmatrix<Element> Utest (_U, k, k, _U.rowdim () - k, _U.coldim () - k);
-		_MD.permuteRows (Acopy, _P.begin () + P_start, _P.end ());
+		BlasMatrix<Field> R (_matA.rowdim () - k, _matA.coldim () - s);
+		BlasMatrix<Field> Atest (Acopy, k, s, _matA.rowdim () - k, _matA.coldim () - s);
+		BlasMatrix<Field> Utest (_matU, k, k, _matU.rowdim () - k, _matU.coldim () - k);
+		_MD.permuteRows (Acopy, _perm.begin () + P_start, _perm.end ());
 
 		report << "(" << k << ") PA: " << std::endl;
 		_MD.write (report, Acopy);
@@ -552,7 +547,7 @@ namespace LinBox
 		commentator.stop ("done", NULL, "Eliminator::kthGaussJordan");
 #endif
 
-		return _U;
+		return _matU;
 	}
 
 	template <class Field, class Matrix>
@@ -565,7 +560,7 @@ namespace LinBox
 		unsigned int idx;
 
 		for (i = A.rowBegin (), idx = 0; i != A.rowEnd (); ++i, ++idx)
-			_F.addin ((*i)[idx], d);
+			_field.addin ((*i)[idx], d);
 
 		return A;
 	}
@@ -581,7 +576,7 @@ namespace LinBox
 
 		for (i = A.rowBegin (), i_idx = 0; i != A.rowEnd (); ++i, ++i_idx) {
 			_VD.subin (*i, *i);
-			_F.assign ((*i)[i_idx], _one);
+			_field.assign ((*i)[i_idx], _one);
 		}
 
 		return A;
@@ -672,21 +667,21 @@ namespace LinBox
 
 		P.clear ();
 
-		std::fill (_S.begin (), _S.begin () + rank, true);
-		std::fill (_S.begin () + rank, _S.begin () + dim, false);
+		std::fill (_indepRows.begin (), _indepRows.begin () + rank, true);
+		std::fill (_indepRows.begin () + rank, _indepRows.begin () + dim, false);
 
 		for (j = Pold.rbegin (); j != Pold.rend (); ++j) {
-			bool tmp = _S[j->first];
-			_S[j->first] = _S[j->second];
-			_S[j->second] = tmp;
+			bool tmp = _indepRows[j->first];
+			_indepRows[j->first] = _indepRows[j->second];
+			_indepRows[j->second] = tmp;
 		}
 
 		idx = 0;
 		idx2 = dim - 1;
 
 		while (idx < rank && idx2 >= rank) {
-			while (_S[idx] && idx < rank) ++idx;
-			while (!_S[idx2] && idx2 >= rank) --idx2;
+			while (_indepRows[idx] && idx < rank) ++idx;
+			while (!_indepRows[idx2] && idx2 >= rank) --idx2;
 
 			if (idx < rank && idx2 >= rank)
 				P.push_back (Transposition (idx, idx2));

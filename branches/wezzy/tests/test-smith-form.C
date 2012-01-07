@@ -30,18 +30,17 @@
 
 #include <time.h>
 //#ifdef __LINBOX_HAVE_NTL
-//#include <linbox/field/ntl-ZZ.h>
+//#include "linbox/field/ntl-ZZ.h"
 //#endif
-#include <linbox/field/PID-integer.h>
-#include <linbox/util/commentator.h>
-#include <linbox/vector/stream.h>
+#include "linbox/field/PID-integer.h"
+#include "linbox/util/commentator.h"
+#include "linbox/vector/stream.h"
 #include "test-common.h"
-#include <linbox/blackbox/dense.h>
-#include <linbox/solutions/smith-form.h>
+#include "linbox/solutions/smith-form.h"
 using LinBox::commentator;
 using LinBox::Commentator;
 using LinBox::integer;
-using LinBox::DenseMatrix;
+using LinBox::BlasMatrix;
 
 template <class Ring, class Vector>
 bool testRandom(const Ring& R,
@@ -82,7 +81,7 @@ bool testRandom(const Ring& R,
 		VD.write (report, d);
                 report << endl;
 
-		DenseMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
+		BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
 		int i, j;
 
@@ -103,7 +102,7 @@ bool testRandom(const Ring& R,
 
 		std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
 
-		typename DenseMatrix<Ring>::ColIterator col_p;
+		typename BlasMatrix<Ring>::ColIterator col_p;
 
 		i = 0;
 		for (col_p = A.colBegin();

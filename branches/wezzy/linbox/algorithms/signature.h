@@ -25,14 +25,13 @@
 #define __LINBOX_signature_H
 /* Function related to the signature computation of symmetric matrices */
 
-#include <linbox/field/modular-double.h>
-#include <linbox/field/modular-int32.h>
-#include <linbox/algorithms/cra-early-multip.h>
+#include "linbox/field/modular.h"
+#include "linbox/algorithms/cra-early-multip.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
-#include <linbox/randiter/random-prime.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/solutions/minpoly.h>
+#include "linbox/randiter/random-prime.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/solutions/minpoly.h"
 
 namespace LinBox
 {
@@ -215,7 +214,7 @@ namespace LinBox
 			size_t j = 0;
 			Field K2;
 			bool faithful = true;
-			typename Matrix::ConstRawIterator raw_p;
+			typename Matrix::ConstIterator raw_p;
 
 			do {
 				// get a prime.
@@ -225,7 +224,7 @@ namespace LinBox
 				K2 = K1;
 
 				//clog << "Computing blackbox matrix mod " << prime;
-				for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
+				for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
 					K1. init (*p, *raw_p);
 
 				//clog << "\rComputing lup mod " << prime << ". ";
@@ -253,7 +252,7 @@ namespace LinBox
 				++primeg; while(cra.noncoprime(*primeg)) ++primeg;
 				Field K3(*primeg);
 				//clog << "Computing blackbox matrix mod " << prime;
-				for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
+				for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
 					K3. init (*p, *raw_p);
 
 				//clog << "\rComputing lup mod " << prime << ". ";
@@ -304,7 +303,7 @@ namespace LinBox
 			typedef Modular<int32_t> Field;
 			// typedef Modular<double> Field;
 			typedef Field::Element Element;
-			typedef DenseMatrix<Field> FMatrix;
+			typedef BlasMatrix<Field> FMatrix;
 			RandomPrimeIterator primeg(20);
 			Field F ((unsigned long)*primeg);
 			FMatrix FM(F, IM.rowdim(), IM.coldim());
@@ -384,7 +383,7 @@ namespace LinBox
 			return v;
 		}
 
-		// This assumes Matrix is DenseMatrix
+		// This assumes Matrix is BlasMatrix
 		// (that it's rawiterator will go thru n^2 values row by row.)
 		template <class Matrix>
 		static long rank_random (const Matrix& M)
@@ -409,8 +408,8 @@ namespace LinBox
 			// Compute the rank mod that prime. Accumulate into v with CRA.
 			Field K(*primeg);
 
-			typename Matrix::ConstRawIterator raw_p;
-			for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
+			typename Matrix::ConstIterator raw_p;
+			for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
 				K. init (*p, *raw_p);
 
 			long r = FFPACK::Rank( K, n, n, FA, n);

@@ -57,7 +57,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 	private:
-		const Field         &_F;
+		const Field         &_field;
 
 	public:
 
@@ -65,18 +65,18 @@ namespace LinBox
 		 * over which to perform computations
 		 */
 		GaussDomain (const Field &F) :
-			_F (F)
+			_field (F)
 		{}
 
 		//Copy constructor
 		///
 		GaussDomain (const GaussDomain &Mat) :
-			_F (Mat._F)
+			_field (Mat._field)
 		{}
 
 		/** accessor for the field of computation
 		*/
-		const Field &field () const { return _F; }
+		const Field &field () const { return _field; }
 
 		/** @name rank
 		  Callers of the different rank routines\\
@@ -334,12 +334,12 @@ Using : FindPivot and LU
 
 } // namespace LinBox
 
-#include "linbox/algorithms/gauss.inl"
-#include "linbox/algorithms/gauss-pivot.inl"
-#include "linbox/algorithms/gauss-elim.inl"
-#include "linbox/algorithms/gauss-solve.inl"
-#include "linbox/algorithms/gauss-nullspace.inl"
-#include "linbox/algorithms/gauss-rank.inl"
-#include "linbox/algorithms/gauss-det.inl"
+#include "linbox/algorithms/gauss/gauss.inl"
+#include "linbox/algorithms/gauss/gauss-pivot.inl"
+#include "linbox/algorithms/gauss/gauss-elim.inl"
+#include "linbox/algorithms/gauss/gauss-solve.inl"
+#include "linbox/algorithms/gauss/gauss-nullspace.inl"
+#include "linbox/algorithms/gauss/gauss-rank.inl"
+#include "linbox/algorithms/gauss/gauss-det.inl"
 
 #endif // __LINBOX_gauss_H

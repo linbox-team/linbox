@@ -31,9 +31,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/matrix/dense.h"
-#include "linbox/blackbox/dense.h"
-#include "linbox/matrix/dense-submatrix.h"
+#include "linbox/matrix/blas-matrix.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -53,20 +51,18 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
+// using long on purpose
 template <class Field>
-static bool testIdentity (Field &F, long n, int iterations)
+static bool testIdentity (Field &F, size_t n, int iterations)
 {
 	typedef typename Vector<Field>::Dense Vector;
-	typedef DenseMatrixBase <typename Field::Element> Base;
-	typedef DenseSubmatrix <typename Field::Element> Matrix;
-	typedef DenseMatrix <Field> Blackbox;
+	typedef BlasMatrix<Field> Base;
+	typedef BlasMatrix<Field>           Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentity", iterations);
 
 	bool ret = true;
 	bool iter_passed = true;
-
-	int i, j;
 
 	Blackbox I(F, n, n);
 	// Matrix K(I);
@@ -77,20 +73,20 @@ static bool testIdentity (Field &F, long n, int iterations)
 
 	F.init (one, 1);
 
-	for (i = 0; i < n; i++)
+	for (size_t i = 0; i < n; i++)
 		I.setEntry (i, i, one);
 
 	Vector v(n), w(n);
 	typename Field::RandIter r (F);
 
-	for (i = 0; i < iterations; i++) {
+	for (int i = 0; i < iterations; i++) {
 		char buf[80];
 		snprintf (buf, 80, "Iteration %d", i);
 		commentator.start (buf);
 
 		iter_passed = true;
 
-		for (j = 0; j < n; j++)
+		for (size_t j = 0; j < n; j++)
 			r.random (v[j]);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -101,12 +97,12 @@ static bool testIdentity (Field &F, long n, int iterations)
 		printVector<Field> (F, report, w);
 
 		Base J (I);
-		Blackbox KK(F, J);
+		Blackbox KK( J);
 		KK.apply (w, v);
 		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
-		for (j = 0; j < n; j++)
+		for (size_t j = 0; j < (size_t)n; j++)
 			if (!F.areEqual (w[j], v[j]))
 				ret = iter_passed = false;
 
@@ -142,11 +138,11 @@ static bool testIdentity (Field &F, long n, int iterations)
  */
 
 template <class Field>
-static bool testVandermonde (Field &F, long n, int iterations, int N)
+static bool testVandermonde (Field &F, size_t n, int iterations, int N)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef vector <typename Field::Element> Polynomial;
-	typedef DenseMatrix <Field> Blackbox;
+	typedef BlasMatrix <Field> Blackbox;
 
 	commentator.start ("Testing Vandermonde apply", "testVandermonde", iterations);
 
@@ -255,7 +251,7 @@ static bool testRandomLinearity (const Field                                 &F,
 {
 	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
-	DenseMatrix<Field> A (F, A_stream);
+	BlasMatrix<Field> A (F, A_stream);
 
 	bool ret = testLinearity (F, A, v1_stream, v2_stream);
 
@@ -289,7 +285,7 @@ static bool testRandomTranspose (const Field                                 &F,
 {
 	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 
-	DenseMatrix<Field> A (F, A_stream);
+	BlasMatrix<Field> A (F, A_stream);
 
 	bool ret = testTranspose (F, A, v1_stream, v2_stream);
 
@@ -324,7 +320,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator.start("Dense matrix black box test suite", "DenseMatrix");
+	commentator.start("Dense matrix black box test suite", "BlasMatrix");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);

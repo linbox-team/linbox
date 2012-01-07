@@ -35,17 +35,17 @@ namespace LinBox
 	// Dot product structure enabling std::transform call
 	template<class Blackbox, class InVector>
 	struct dotp {
-		const typename Blackbox::Field& _F;
+		const typename Blackbox::Field& _field;
 		const InVector& _x;
 		dotp(const typename Blackbox::Field& F, const InVector& x) :
-			_F(F), _x(x)
+			_field(F), _x(x)
 		{}
 
 		bool operator()(const typename Blackbox::Row_t& row) const
 		{
 			bool tmp(false);
 			for(typename Blackbox::Row_t::const_iterator loc = row.begin(); loc != row.end(); ++loc) {
-				_F.addin(tmp,_x[*loc]);
+				_field.addin(tmp,_x[*loc]);
 			}
 			return tmp;
 		}
@@ -55,7 +55,7 @@ namespace LinBox
 	template<class OutVector, class InVector>
 	inline OutVector & ZeroOne<GF2>::apply(OutVector & y, const InVector & x) const
 	{
-		dotp<Self_t,InVector> mydp(this->_F, x);
+		dotp<Self_t,InVector> mydp(this->_field, x);
 		std::transform(this->begin(), this->end(), y.begin(), mydp );
 		return y;
 	}
@@ -69,7 +69,7 @@ namespace LinBox
 		for( ; row != this->end(); ++yit, ++row) {
 			bool tmp(false);
 			for(Row_t::const_iterator loc = row->begin();loc != row->end(); ++loc)
-				_F.addin(tmp,x[*loc]);
+				_field.addin(tmp,x[*loc]);
 			*yit = tmp;
 		}
 		return y;
@@ -84,7 +84,7 @@ namespace LinBox
 		Self_t::const_iterator row = this->begin();
 		for( ; row != this->end(); ++row, ++xit) {
 			for(typename Self_t::Row_t::const_iterator loc = row->begin(); loc != row->end(); ++loc) {
-				_F.addin(y[*loc],*xit);
+				_field.addin(y[*loc],*xit);
 			}
 		}
 		return y;
@@ -94,7 +94,7 @@ namespace LinBox
 	inline void ZeroOne<GF2>::setEntry(size_t i, size_t j, const Element& v) {
 		Row_t& rowi = this->operator[](i);
 		Row_t::iterator there = std::lower_bound(rowi.begin(), rowi.end(), j);
-		if (! _F.isZero(v) ) {
+		if (! _field.isZero(v) ) {
 			if ( (there == rowi.end() ) || (*there != j) ) {
 				rowi.insert(there, j);
 				++_nnz;
@@ -115,7 +115,7 @@ namespace LinBox
 		if (there != rowi.end() )
 			return r=*there;
 		else
-			return r=_F.zero;
+			return r=_field.zero;
 	}
 
 	inline const ZeroOne<GF2>::Element& ZeroOne<GF2>::getEntry(size_t i, size_t j) const
@@ -125,7 +125,7 @@ namespace LinBox
 		if (there != rowi.end() )
 			return reinterpret_cast<const ZeroOne<GF2>::Element&>(*there);
 		else
-			return _F.zero;
+			return _field.zero;
 	}
 
 	inline std::istream &ZeroOne<GF2>::read (std::istream &is) {
@@ -193,19 +193,19 @@ namespace LinBox
 	/*! Raw iterator.
 	 * @ingroup iterators
 	 */
-	class ZeroOne<GF2>::RawIterator {
+	class ZeroOne<GF2>::Iterator {
 	public:
 		typedef Element value_type;
 
-		RawIterator(size_t pos, Element elem) :
+		Iterator(size_t pos, Element elem) :
 			_elem(elem),_pos(pos)
 		{}
 
-		RawIterator(const RawIterator &In) :
+		Iterator(const Iterator &In) :
 			_elem(In._elem),_pos(In._pos)
 		{}
 
-		const RawIterator& operator=(const RawIterator& rhs)
+		const Iterator& operator=(const Iterator& rhs)
 		{
 			_pos = rhs._pos;
 			_elem = rhs._elem;
@@ -213,25 +213,25 @@ namespace LinBox
 		}
 
 
-		bool operator==(const RawIterator &rhs)
+		bool operator==(const Iterator &rhs)
 		{
 			return ( _pos == rhs._pos && _elem == rhs._elem);
 		}
 
-		bool operator!=(const RawIterator &rhs)
+		bool operator!=(const Iterator &rhs)
 		{
 			return ( _pos != rhs._pos || _elem != rhs._elem );
 		}
 
-		RawIterator & operator++()
+		Iterator & operator++()
 		{
 			++_pos;
 			return *this;
 		}
 
-		RawIterator operator++(int)
+		Iterator operator++(int)
 		{
-			RawIterator tmp = *this;
+			Iterator tmp = *this;
 			_pos++;
 			return tmp;
 		}
@@ -249,41 +249,41 @@ namespace LinBox
 	};
 
 	/* STL standard Begin and End functions.  Used to get
-	 * the beginning and end of the data.  So that RawIterator
+	 * the beginning and end of the data.  So that Iterator
 	 * can be used in algorithms like a normal STL iterator.
 	 */
-	inline ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawBegin()
+	inline ZeroOne<GF2>::Iterator ZeroOne<GF2>::Begin()
 	{
-		return RawIterator( 0, _F.one );
+		return Iterator( 0, _field.one );
 	}
 
-	inline ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawEnd()
+	inline ZeroOne<GF2>::Iterator ZeroOne<GF2>::End()
 	{
-		return RawIterator( _nnz, _F.one );
+		return Iterator( _nnz, _field.one );
 	}
 
-	inline const ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawBegin() const
+	inline const ZeroOne<GF2>::Iterator ZeroOne<GF2>::Begin() const
 	{
-		return RawIterator(0, _F.one );
+		return Iterator(0, _field.one );
 	}
 
-	inline const ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawEnd() const
+	inline const ZeroOne<GF2>::Iterator ZeroOne<GF2>::End() const
 	{
-		return RawIterator(_nnz, _F.one );
+		return Iterator(_nnz, _field.one );
 	}
 
-	/*! RawIndexIterator.
+	/*! IndexIterator.
 	 * @ingroup iterators
 	 * Iterates through the i and j of the current element
 	 * and when accessed returns an STL pair containing the coordinates
 	 */
-	class ZeroOne<GF2>::RawIndexIterator {
+	class ZeroOne<GF2>::IndexIterator {
 	public:
 		typedef std::pair<size_t, size_t> value_type;
 
-		RawIndexIterator() {}
+		IndexIterator() {}
 
-		RawIndexIterator(size_t rowidx,
+		IndexIterator(size_t rowidx,
 				 LightContainer<LightContainer<size_t> >::const_iterator rowbeg,
 				 LightContainer<LightContainer<size_t> >::const_iterator rowend,
 				 size_t colidx,
@@ -307,11 +307,11 @@ namespace LinBox
 
 		}
 
-		RawIndexIterator(const RawIndexIterator &In) :
+		IndexIterator(const IndexIterator &In) :
 			_rowbeg(In._rowbeg), _rowend(In._rowend), _colbeg(In._colbeg), _row(In._row), _col(In._col)
 		{}
 
-		const RawIndexIterator &operator=(const RawIndexIterator &rhs)
+		const IndexIterator &operator=(const IndexIterator &rhs)
 		{
 			_rowbeg = rhs._rowbeg;
 			_rowend = rhs._rowend;
@@ -321,17 +321,17 @@ namespace LinBox
 			return *this;
 		}
 
-		bool operator==(const RawIndexIterator &rhs)
+		bool operator==(const IndexIterator &rhs)
 		{
 			return _rowbeg == rhs._rowbeg && _colbeg == rhs._colbeg;
 		}
 
-		bool operator!=(const RawIndexIterator &rhs)
+		bool operator!=(const IndexIterator &rhs)
 		{
 			return _rowbeg != rhs._rowbeg || _colbeg != rhs._colbeg;
 		}
 
-		const RawIndexIterator& operator++() {
+		const IndexIterator& operator++() {
 
 
 
@@ -347,9 +347,9 @@ namespace LinBox
 			return *this;
 		}
 
-		const RawIndexIterator operator++(int)
+		const IndexIterator operator++(int)
 		{
-			RawIndexIterator tmp = *this;
+			IndexIterator tmp = *this;
 			this->operator++();
 			return tmp;
 		}
@@ -369,24 +369,24 @@ namespace LinBox
 		size_t _row, _col;
 	};
 
-	inline ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexBegin()
+	inline ZeroOne<GF2>::IndexIterator ZeroOne<GF2>::indexBegin()
 	{
-		return RawIndexIterator(0, this->begin(), this->end(), 0, this->front().begin() );
+		return IndexIterator(0, this->begin(), this->end(), 0, this->front().begin() );
 	}
 
-	inline const ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexBegin() const
+	inline const ZeroOne<GF2>::IndexIterator ZeroOne<GF2>::indexBegin() const
 	{
-		return RawIndexIterator(0, this->begin(), this->end(), 0, this->front().begin() );
+		return IndexIterator(0, this->begin(), this->end(), 0, this->front().begin() );
 	}
 
-	inline ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexEnd()
+	inline ZeroOne<GF2>::IndexIterator ZeroOne<GF2>::indexEnd()
 	{
-		return RawIndexIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
+		return IndexIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
 	}
 
-	inline const ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexEnd() const
+	inline const ZeroOne<GF2>::IndexIterator ZeroOne<GF2>::indexEnd() const
 	{
-		return RawIndexIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
+		return IndexIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
 	}
 
 

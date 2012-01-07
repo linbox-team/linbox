@@ -142,7 +142,7 @@ namespace LinBox
 	template <class Field>
 	void Hankel<Field>::print( char *outFileName) const
 	{
-		int i, j, N;
+		// int i, j, N;
 
 		std::cout << "Printing hankel matrix to " << outFileName << std::endl;
 

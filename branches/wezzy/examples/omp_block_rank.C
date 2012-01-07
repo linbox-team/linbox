@@ -49,10 +49,10 @@ FFTSeeder  FFTgenerator;
 // **********************************************************
 
 
-#include "linbox/field/givaro-gfq.h"
+#include "linbox/field/givaro.h"
 #define LINBOX_EXTENSION_DEGREE_MAX 20
-#include "linbox/field/givaro-extension.h"
-#include "linbox/field/modular-double.h"
+#include "linbox/field/givaro.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/zero-one.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/rank.h"
@@ -63,8 +63,8 @@ FFTSeeder  FFTgenerator;
 
 template<class Field>
 void extractLeftSigma(const Field &F,
-		      std::vector<LinBox::BlasMatrix<typename Field::Element> >              &S,
-		      std::vector<LinBox::BlasMatrix<typename Field::Element> >      &SigmaBase,
+		      std::vector<LinBox::BlasMatrix<Field> >        &S,
+		      std::vector<LinBox::BlasMatrix<Field> >&SigmaBase,
 		      std::vector<size_t>                       &defect,
 		      size_t                                      block)
 {
@@ -96,7 +96,7 @@ void extractLeftSigma(const Field &F,
 			max=defect[i];
 
 	// prepare S to receive the sigma base
-	const LinBox::BlasMatrix<Element> Zero(block,block);
+	const LinBox::BlasMatrix<Field> Zero(Z,block,block);
 	S.resize(max+1, Zero);
 
 	// extract the sigma base
@@ -118,7 +118,7 @@ void extractLeftSigma(const Field &F,
 }
 
 template<class Field>
-void write_sigma(const Field &_F, const char* name, const std::vector<LinBox::BlasMatrix<typename Field::Element> > & P)
+void write_sigma(const Field &F, const char* name, const std::vector<LinBox::BlasMatrix<Field> > & P)
 {
 	size_t m,n;
 	m = P[0].rowdim();
@@ -129,42 +129,42 @@ void write_sigma(const Field &_F, const char* name, const std::vector<LinBox::Bl
 		for (size_t i=0;i<m-1;++i){
 			std::cerr<<"[";
 			for (size_t j=0;j<n-1;++j)
-				_F.write(std::cerr,P[k].getEntry(i,j))<<",";
-			_F.write(std::cerr, P[k].getEntry(i,n-1))<<"] , ";
+				F.write(std::cerr,P[k].getEntry(i,j))<<",";
+			F.write(std::cerr, P[k].getEntry(i,n-1))<<"] , ";
 		}
 		std::cerr<<"[";
 		for (size_t j=0;j<n-1;++j)
-			_F.write(std::cerr,P[k].getEntry(m-1,j))<<",";
-		_F.write(std::cerr, P[k].getEntry(m-1,n-1))<<"]]) , ";
+			F.write(std::cerr,P[k].getEntry(m-1,j))<<",";
+		F.write(std::cerr, P[k].getEntry(m-1,n-1))<<"]]) , ";
 	}
 
 	std::cerr<<"Matrix([";
 	for (size_t i=0;i<m-1;++i){
 		std::cerr<<"[";
 		for (size_t j=0;j<n-1;++j)
-			_F.write(std::cerr,P[P.size()-1].getEntry(i,j))<<",";
-		_F.write(std::cerr, P[P.size()-1].getEntry(i,n-1))<<"] , ";
+			F.write(std::cerr,P[P.size()-1].getEntry(i,j))<<",";
+		F.write(std::cerr, P[P.size()-1].getEntry(i,n-1))<<"] , ";
 	}
 	std::cerr<<"[";
 	for (size_t j=0;j<n-1;++j)
-		_F.write(std::cerr,P[P.size()-1].getEntry(m-1,j))<<",";
-	_F.write(std::cerr, P[P.size()-1].getEntry(m-1,n-1))<<"]])]; \n";
+		F.write(std::cerr,P[P.size()-1].getEntry(m-1,j))<<",";
+	F.write(std::cerr, P[P.size()-1].getEntry(m-1,n-1))<<"]])]; \n";
 }
 
 
 template<class Container, class Field>
 void scalarmulin(Container& C, const Field& F, const typename Field::Element& x)
 {
-	for(typename Container::RawIterator it=C.rawBegin();it!=C.rawEnd();++it)
+	for(typename Container::Iterator it=C.Begin();it!=C.End();++it)
 		F.mulin(*it, x);
 }
 
 template<class Container1, class Field, class Container2>
 void contaddin(Container1& C, const Field& F, const Container2& V)
 {
-	typename Container1::RawIterator cit=C.rawBegin();
-	typename Container2::ConstRawIterator vit=V.rawBegin();
-	for( ; cit!=C.rawEnd(); ++cit, ++vit)
+	typename Container1::Iterator cit=C.Begin();
+	typename Container2::ConstIterator vit=V.Begin();
+	for( ; cit!=C.End(); ++cit, ++vit)
 		F.addin(*cit, *vit);
 }
 
@@ -205,8 +205,8 @@ void WhisartTrace(
 	// Trace of ExtD B InD B^T ExtD
 	// is sum ExtD_i^2 B_{i,j} InD_j
 	F.init(trace, 0);
-	for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
-	    it != A.rawIndexedEnd(); ++it) {
+	for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
+	    it != A.IndexedEnd(); ++it) {
 		typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
 		F.mul(tmp,it.value(),it.value());
 		ExtD.getEntry(e, it.rowIndex(),it.rowIndex());
@@ -228,8 +228,8 @@ void WhisartTraceTranspose(
 	// Trace of ExtD B^T  InD B ExtD
 	// is sum ExtD_j^2 B_{i,j} InD_i
 	F.init(trace, 0);
-	for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
-	    it != A.rawIndexedEnd(); ++it) {
+	for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
+	    it != A.IndexedEnd(); ++it) {
 		typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
 		F.mul(tmp,it.value(),it.value());
 		ExtD.getEntry(e, it.colIndex(),it.colIndex());
@@ -264,7 +264,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	std::ifstream input (argv[1]);
 	LinBox::MatrixStream<Field> ms( F, input );
 	typedef LinBox::SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq > Blackbox;
-	typedef LinBox::BlasBlackbox<Field> Block_t;
+	typedef LinBox::BlasMatrix<Field> Block_t;
 
 	Blackbox B (ms);
 
@@ -300,7 +300,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 
 	chrono2.start();
 
-	typedef LinBox::BlasMatrix<typename Field::Element>        Matrix;
+	typedef LinBox::BlasMatrix<Field>        Matrix;
 	typedef std::vector<Matrix>   Polynomial;
 
 

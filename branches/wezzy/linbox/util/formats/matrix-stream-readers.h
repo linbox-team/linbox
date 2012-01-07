@@ -35,17 +35,18 @@
  * reader should be included with a line of the form: #include "my-reader.h"
  */
 
-#define __MATRIX_STREAM_READERDEFS \
-	addReader( new SMSReader<Field>() ); \
-	addReader( new SparseRowReader<Field>() ); \
-	addReader( new MatrixMarketReader<Field>() ); \
-	addReader( new MapleReader<Field>() ); \
-	addReader( new DenseReader<Field>() );
 
 #include "sms.h"
 #include "sparse-row.h"
 #include "generic-dense.h"
 #include "matrix-market.h"
 #include "maple.h"
+
+#define __MATRIX_STREAM_READERDEFS \
+	addReader( new SMSReader<Field>() ); \
+	addReader( new SparseRowReader<Field>() ); \
+	addReader( new MatrixMarketReader<Field>() ); \
+	addReader( new MapleReader<Field>() ); \
+	addReader( new DenseReader<Field>() );
 
 #endif //__LINBOX_matrix_stream_readers_H

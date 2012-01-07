@@ -19,7 +19,6 @@
 #include "linbox/algorithms/wiedemann.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/diophantine-solver.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/matrix/factorized-matrix.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/error.h"
@@ -118,7 +117,7 @@ namespace LinBox
 	{
 		commentator.start ("Sparse Elimination Solve In Place", "sesolvein");
 		GaussDomain<Field> GD ( A.field() );
-		GD.solvein(x, A, b);
+		GD.solvein(x, A, b, true);
 		commentator.stop ("done", NULL, "sesolvein");
 		return x;
 	}
@@ -187,12 +186,12 @@ namespace LinBox
 		      const RingCategories::ModularTag & tag,
 		      const Method::BlasElimination& m)
 	{
-		BlasBlackbox<typename BB::Field> B(A); // copy A into a BlasBlackbox
+		BlasMatrix<typename BB::Field> B(A); // copy A into a BlasMatrix
 		return solve(x, B, b, tag, m);
 	}
 
 	template <class Vector, class Field>
-	Vector& solve(Vector& x, const BlasBlackbox<Field>& A, const Vector& b,
+	Vector& solve(Vector& x, const BlasMatrix<Field>& A, const Vector& b,
 		      const RingCategories::ModularTag & tag,
 		      const Method::BlasElimination& m)
 	{
@@ -333,19 +332,19 @@ namespace LinBox
 	/* Specializations for BlasElimination over the integers
 	*/
 
-	// input matrix is generic (copying it into a BlasBlackbox)
+	// input matrix is generic (copying it into a BlasMatrix)
 	template <class RatVector, class Vector, class BB>
 	RatVector& solve(RatVector& x, const BB& A, const Vector& b,
 			 const RingCategories::IntegerTag & tag,
 			 const Method::BlasElimination& m)
 	{
-		BlasBlackbox<typename BB::Field> B(A); // copy A into a BlasBlackbox
+		BlasMatrix<typename BB::Field> B(A); // copy A into a BlasMatrix
 		return solve(x, B, b, tag, m);
 	}
 
-	// input matrix is a BlasBlackbox (no copy)
+	// input matrix is a BlasMatrix (no copy)
 	template <class RatVector, class Vector, class Ring>
-	RatVector& solve(RatVector& x, const BlasBlackbox<Ring>& A, const Vector& b,
+	RatVector& solve(RatVector& x, const BlasMatrix<Ring>& A, const Vector& b,
 			 const RingCategories::IntegerTag & tag,
 			 const Method::BlasElimination& m)
 	{
@@ -355,28 +354,6 @@ namespace LinBox
 		std::vector< typename Ring::Element> num(A.coldim());
 		solve (num, d, A, b, tag, mDixon);
 
-		typename RatVector::iterator it_x= x.begin();
-		typename std::vector< typename Ring::Element>::const_iterator it_num= num.begin();
-		integer n,den;
-		A.field().convert(den,d);
-		for (; it_x != x.end(); ++it_x, ++it_num){
-			A.field().convert(n, *it_num);
-			*it_x = typename RatVector::value_type(n, den);
-		}
-
-		return x;
-	}
-
-	// input matrix is a DenseMatrix (no copy)
-	template <class RatVector, class Vector, class Ring>
-	RatVector& solve(RatVector& x, const DenseMatrix<Ring>& A, const Vector& b,
-			 const RingCategories::IntegerTag & tag,
-			 const Method::BlasElimination& m)
-	{
-		Method::Dixon mDixon(m);
-		typename Ring::Element d;
-		std::vector< typename Ring::Element> num(A.coldim());
-		solve (num, d, A, b, tag, mDixon);
 		typename RatVector::iterator it_x= x.begin();
 		typename std::vector< typename Ring::Element>::const_iterator it_num= num.begin();
 		integer n,den;
@@ -413,34 +390,24 @@ namespace LinBox
 	/* Specialization for BlasElimination over the integers
 	*/
 
-	// input matrix is generic (copying it into a BlasBlackbox)
+	// input matrix is generic (copying it into a BlasMatrix)
 	template <class Vector, class BB>
 	Vector& solve(Vector& x, typename BB::Field::Element &d, const BB& A, const Vector& b,
 		      const RingCategories::IntegerTag & tag,
 		      const Method::BlasElimination& m)
 	{
-		BlasBlackbox<typename BB::Field> B(A); // copy A into a BlasBlackbox
+		BlasMatrix<typename BB::Field> B(A); // copy A into a BlasMatrix
 		return solve(x, d, B, b, tag, m);
 	}
 
-	// input matrix is a BlasBlackbox (no copy)
+	// input matrix is a BlasMatrix (no copy)
 	template <class Vector, class Ring>
 	Vector& solve(Vector& x, typename Ring::Element &d,
-		      const BlasBlackbox<Ring>& A, const Vector& b,
+		      const BlasMatrix<Ring>& A, const Vector& b,
 		      const RingCategories::IntegerTag & tag,
 		      const Method::BlasElimination& m)
 	{
-		Method::Dixon mDixon(m);
-		return solve(x, d, A, b, tag, mDixon);
-	}
-
-	// input matrix is a DenseMatrix (no copy)
-	template <class Vector, class Ring>
-	Vector& solve(Vector& x, typename Ring::Element &d,
-		      const DenseMatrix<Ring>& A, const Vector& b,
-		      const RingCategories::IntegerTag & tag,
-		      const Method::BlasElimination& m)
-	{
+		//!@bug check we don't copy
 		Method::Dixon mDixon(m);
 		return solve(x, d, A, b, tag, mDixon);
 	}
@@ -462,7 +429,9 @@ namespace LinBox
 	/** \brief solver specialization with the 2nd API and DixonTraits over integer (no copying)
 	*/
 	template <class Vector, class Ring>
-	Vector& solve(Vector& x, typename Ring::Element &d, const BlasBlackbox<Ring>& A, const Vector& b,
+	Vector& solve(Vector& x, typename Ring::Element &d,
+		      const BlasMatrix<Ring>& A,
+		      const Vector& b,
 		      const RingCategories::IntegerTag tag, Method::Dixon& m)
 	{
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
@@ -552,93 +521,6 @@ namespace LinBox
 		}
 		return x;
 	}
-
-	/** \brief solver specialization with the 2nd API and DixonTraits over integer (no copying)
-	*/
-	template <class Vector, class Ring>
-	Vector& solve(Vector& x, typename Ring::Element &d, const DenseMatrix<Ring>& A, const Vector& b,
-		      const RingCategories::IntegerTag tag, Method::Dixon& m)
-	{
-		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
-			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-
-		commentator.start ("Padic Integer Blas-based Solving", "solving");
-
-		typedef Modular<double> Field;
-		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
-		RationalSolver<Ring, Field, RandomPrimeIterator, DixonTraits> rsolve(A.field(), genprime);
-		SolverReturnStatus status = SS_OK;
-		// if singularity unknown and matrix is square, we try nonsingular solver
-		switch ( m.singular() ) {
-		case Specifier::SINGULARITY_UNKNOWN:
-			switch (A.rowdim() == A.coldim() ?
-				status=rsolve.solveNonsingular(x, d, A, b, false ,(int)m.maxTries()) : SS_SINGULAR) {
-			case SS_OK:
-				m.singular(Specifier::NONSINGULAR);
-				break;
-			case SS_SINGULAR:
-				switch (m.solution()){
-				case DixonTraits::DETERMINIST:
-					status= rsolve.monolithicSolve(x, d, A, b, false, false, (int)m.maxTries(),
-								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-					break;
-				case DixonTraits::RANDOM:
-					status= rsolve.monolithicSolve(x, d, A, b, false, true, (int)m.maxTries(),
-								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-					break;
-				case DixonTraits::DIOPHANTINE:
-					DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
-					status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
-									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-					break;
-					//default:
-					//	break;
-				}
-				break;
-			}
-
-		case Specifier::NONSINGULAR:
-			rsolve.solveNonsingular(x, d, A, b, false ,(int)m.maxTries());
-			break;
-
-		case Specifier::SINGULAR:
-			switch (m.solution()){
-			case DixonTraits::DETERMINIST:
-				status= rsolve.monolithicSolve(x, d, A, b,
-							       false, false, (int)m.maxTries(),
-							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-				break;
-
-			case DixonTraits::RANDOM:
-				status= rsolve.monolithicSolve(x, d, A, b,
-							       false, true, (int)m.maxTries(),
-							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-				break;
-
-			case DixonTraits::DIOPHANTINE:
-				DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
-				status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
-								(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-				break;
-
-				//default:
-				//	break;
-			}
-		default:
-			break;
-		}
-
-		commentator.stop("done", NULL, "solving");
-		if ( status == SS_INCONSISTENT ) {
-			throw LinboxMathInconsistentSystem("Linear system is inconsistent");
-			// 			typename Ring::Element zero; A.field().init(zero, 0);
-			// 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
-		}
-		return x;
-	}
-
-
 
 	/** \brief solver specialization with the 2nd API and DixonTraits over integer (no copying)
 	*/
@@ -742,75 +624,21 @@ namespace LinBox
 	}
 
 
-
-#if 0
-	struct BlasEliminationCRASpecifier;
-	// Extra case put in (1) for timing comparison or (2) for parallelism or
-	// (3) as an example of how we might leave an abandoned choice around in a
-	// callable state for future reference
-	template <class Vector, class Field>
-	Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b,
-		      const RingCategories::IntegerTag & tag,
-		      const BlasEliminationCRASpecifier & m)
-	{ // (low priority) J-G puts in code using CRA object CRA and solve(x, A, b, ModularTag, Method::BlasElimination)
-		typename Field::Element zero; A.field().init(zero, 0);
-		for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
-		return x;
-	}
-#endif
-
 	// NonBlasElimination section ////////////////
 
 	template <class Vector, class BB>
 	Vector& solve(Vector& x, const BB& A, const Vector& b,
 		      const RingCategories::ModularTag & tag,
 		      const Method::NonBlasElimination& m)
-	{	DenseMatrix<typename BB::Field> B(A); // copy
+	{
+		BlasMatrix<typename BB::Field> B(A); // copy
 		return solve(x, B, b, tag, m);
-	}
-
-	// specialization when no need to copy
-	template <class Vector, class Field>
-	Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b,
-		      const RingCategories::ModularTag & tag,
-		      const Method::NonBlasElimination& m)
-	{ //Do we have a non blas elimination?  There was not one in the original solve.h (now algorithms/bbsolve.h).
-		return x;
 	}
 
 	// note: no need for NonBlasElimination when RingCategory is integer
 
 	// Lanczos ////////////////
 	// may throw SolverFailed or InconsistentSystem
-#if 0
-
-	template <class Vector, class BB>
-	Vector& solve(Vector& x, const BB& A, const Vector& b,
-		      const RingCategories::ModularTag & tag,
-		      const Method::Lanczos& m)
-	{
-		solve(A, x, b, A.field(), m);
-		return x;
-	}
-
-
-
-	template <class Vector, class BB>
-	Vector& solve(Vector& x, const BB& A, const Vector& b,
-		      const RingCategories::ModularTag & tag,
-		      const Method::BlockLanczos& m)
-	{
-		try {
-			solve(A, x, b, A.field(), m);
-		} catch (SolveFailed) {
-			typename BB::Field::Element zero; A.field().init(zero, 0);
-			for (typename Vector::iterator i = x.begin();
-			     i != x.end(); ++i)
-				*i = zero;
-		}
-		return x;
-	}
-#endif
 
 	// Wiedemann section ////////////////
 

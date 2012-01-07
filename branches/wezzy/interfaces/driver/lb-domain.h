@@ -25,7 +25,7 @@
 #define __LINBOX_lb_domain_H
 
 #include <lb-domain-collection.h>
-#include <linbox/integer.h>
+#include "linbox/integer.h"
 
 /*************************
  * Initializer of Domain *

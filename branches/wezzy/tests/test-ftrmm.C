@@ -32,15 +32,8 @@
 //#define __LINBOX_HAVE_INT64
 
 
-#include "linbox/field/modular-balanced-int32.h"
-#include "linbox/field/modular-int32.h"
-#ifdef __LINBOX_HAVE_INT64
-#include "linbox/field/modular-balanced-int64.h"
-#endif
-#include "linbox/field/modular-balanced-double.h"
-#include "linbox/field/modular-double.h"
-#include "linbox/field/modular-balanced-float.h"
-#include "linbox/field/modular-float.h"
+#include "linbox/field/modular-balanced.h"
+#include "linbox/field/modular.h"
 #include "fflas-ffpack/utils/Matio.h"
 #include "test-common.h"
 

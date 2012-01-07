@@ -34,8 +34,7 @@
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/field/modular-float.h"
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 
 #include "linbox/blackbox/dense-zero-one.h"
 
@@ -53,16 +52,16 @@ struct BlackboxDomain : public _Field
 	typedef typename _Field::Element Scalar;
 	typedef typename _Field::Element Element; // transitional
 	typedef typename _Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Block;
-	/*struct Block: public BlasMatrix<Element> {
-		Block( int m, int n ): BlasMatrix<Element> ( m, n ) {}
+	typedef BlasMatrix<Field> Block;
+	/*struct Block: public BlasMatrix<Field> {
+		Block( int m, int n ): BlasMatrix<Field> ( m, n ) {}
 		Block& subBlock( Block & B, size_t i, size_t j, size_t m, size_t n ) {
-			return B = BlasMatrix<Element>(*this, i, j, m, n);
+			return B = BlasMatrix<Field>(*this, i, j, m, n);
 		}
 		const Block& subBlock( const Block & B, size_t i, size_t j, size_t m, size_t n ) {
-			return B = BlasMatrix<Element>(static_cast<DenseMatrixBase<Element> >(*this), i, j, m, n);
+			return B = BlasMatrix<Field>(static_cast<BlasMatrix<Field> >(*this), i, j, m, n);
 		}
-		Block & operator= (BlasMatrix<Element> & rhs){
+		Block & operator= (BlasMatrix<Field> & rhs){
 			*this = rhs;
 			return *this;
 		}
@@ -100,7 +99,7 @@ struct BlackboxDomain : public _Field
 
 	// Set the entries in a block to zero.
 	void zero( Block& B ) const {
-		for ( typename Block::RawIterator raw = B.rawBegin(); raw != B.rawEnd(); ++raw )
+		for ( typename Block::Iterator raw = B.Begin(); raw != B.End(); ++raw )
 			init(*raw, 0);
 	}
 

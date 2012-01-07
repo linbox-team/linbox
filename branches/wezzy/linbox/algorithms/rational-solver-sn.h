@@ -28,23 +28,20 @@
 
 #include <iostream>
 
-#include <linbox/integer.h>
-#include <linbox/field/param-fuzzy.h>
-#include <linbox/solutions/methods.h>
-#include <linbox/blackbox/archetype.h>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/algorithms/dyadic-to-rational.h>
-#include <linbox/blackbox/compose.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/vector-fraction.h>
-#include <linbox/algorithms/matrix-hom.h>
-#include <linbox/util/timer.h>
-#include <linbox/field/PID-integer.h>
+#include "linbox/integer.h"
+#include "linbox/field/param-fuzzy.h"
+#include "linbox/solutions/methods.h"
+#include "linbox/blackbox/archetype.h"
+#include "linbox/algorithms/dyadic-to-rational.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/vector-fraction.h"
+#include "linbox/algorithms/matrix-hom.h"
+#include "linbox/util/timer.h"
+#include "linbox/field/PID-integer.h"
 
 namespace LinBox {
 
-	// bsd and mac problem
-#undef _R
 
 	/** \brief define the possible return status of the solver's computation.
 	*/
@@ -73,18 +70,18 @@ namespace LinBox {
 		typedef ParamFuzzy Field;
 		typedef typename Field::Element Float;
 		typedef std::vector<Float> FVector;
-		typedef BlasBlackbox<Field> FMatrix;
+		typedef BlasMatrix<Field> FMatrix;
 
 	protected:
-		Ring _R;
+		Ring _ring;
 		VectorDomain<Ring> _VDR;
-		Field _F;
+		Field _field;
 		VectorDomain<Field> _VDF;
-		NumericSolver _S;
+		NumericSolver _numsolver;
 		//inline static int check (int n, const double* M, integer* numx, integer& denx, double* b) ;
 		//inline void update_r_xs (double* r, double* xs_int, double* xs_frac,
 		//							int n, const double* M, double* x, int shift);
-		//inline int rat_sol(IVector& numx, Int& denx, NumericSolver& _S, FVector& r, integer Bd);
+		//inline int rat_sol(IVector& numx, Int& denx, NumericSolver& _numsolver, FVector& r, integer Bd);
 		//inline void dyadicToRational(ZIVector& num, Int& den, vector<integer>& numx, integer& denx, integer Bd);
 	private:
 		size_t shift, shift_prev, shift_max, SHIFT_BOUND, HIT, MISS, iterations;
@@ -96,11 +93,11 @@ namespace LinBox {
 
 		RationalSolverSN(const Ring& R = Ring(), const NumericSolver& S = NumericSolver(),
 				 bool ea=false) :
-		       	_R(R), _VDR(R), _F(Field()), _VDF(Field()), _S(S), exact_apply(ea)
+		       	_ring(R), _VDR(R), _field(Field()), _VDF(Field()), _numsolver(S), exact_apply(ea)
 		{}
 
 		/**
-		 * IMatrix is matrix of integer type, eg. BlasBlackbox<PID-integer>
+		 * IMatrix is matrix of integer type, eg. BlasMatrix<PID-integer>
 		 * IVector is linbox Vector of integer, eg. vector<PID-integer::Element>
 		 * M is the matrix, b is rhs.
 		 * num, den are the output  such that M*num = den*b (and den != 0 if successful).
@@ -118,10 +115,10 @@ namespace LinBox {
 			linbox_check((b.size() == M.rowdim()) && (num. size() == M.coldim()));
 
 			// DM is M as matrix of doubles
-			FMatrix DM(_F, n, n);
+			FMatrix DM(_field, n, n);
 			//  Fix MatrixHom?
 			//FMatrix* DMp = &DM;
-			//MatrixHom::map<FMatrix, IMatrix, Field>(DMp, M, _F);
+			//MatrixHom::map<FMatrix, IMatrix, Field>(DMp, M, _field);
 
 			if(n != M. rowdim() || n != M. coldim() || n != num.size()) {
 				// std::cerr << "solve fail 1 - dimension mismatch" << std::endl;
@@ -133,14 +130,14 @@ namespace LinBox {
 			SHIFT_BOUND = 52;
 
 			//  why can't i put this in the for loop def???
-			typename FMatrix::RawIterator dm_p = DM.rawBegin();
-			for (typename IMatrix::ConstRawIterator raw_p = M.rawBegin();
-			     raw_p != M. rawEnd(); ++ raw_p, ++dm_p) {
-				_F.init(*dm_p, *raw_p);
+			typename FMatrix::Iterator dm_p = DM.Begin();
+			for (typename IMatrix::ConstIterator raw_p = M.Begin();
+			     raw_p != M. End(); ++ raw_p, ++dm_p) {
+				_field.init(*dm_p, *raw_p);
 			}
 
 			// build a numeric solver from new double matrix
-			_S.init(DM);
+			_numsolver.init(DM);
 
 			// r is b as vector of doubles.  (r is initial residual)
 			FVector r(n);
@@ -150,15 +147,15 @@ namespace LinBox {
 			typename FVector::iterator r_p = r.begin();
 			for (  ; b_p != b. begin() + n; ++b_p, ++r_p, ++bi_p) {
 				*bi_p = *b_p;  //  copy original RHS
-				_F.init(*r_p, *b_p);
+				_field.init(*r_p, *b_p);
 			}
 
 			//  denBound is the Hadamard bound, loopBound is roughly twice as much
 			integer denBound, loopBound;
-			zw_hbound (denBound, (int)n, (int)n, &*(DM.rawBegin()));
+			zw_hbound (denBound, (int)n, (int)n, &*(DM.Begin()));
 			loopBound = denBound*denBound;
 
-			mnorm = zw_dOOnorm(&*(DM.rawBegin()), (int)n, (int)n);  //  infinity-norm of matrix
+			mnorm = zw_dOOnorm(&*(DM.Begin()), (int)n, (int)n);  //  infinity-norm of matrix
 			//  set max shift to avoid exact applys
 			size_t bits = 0;
 			size_t mn2 = nextPower2((size_t)mnorm);
@@ -269,7 +266,7 @@ namespace LinBox {
 				return SNSS_FAILED;
 			}
 
-			if (_R.isZero(den)) {
+			if (_ring.isZero(den)) {
 				// std::cerr << "fail: zero denominator after rat-recons" << std::endl;
 				return SNSS_FAILED;
 			}

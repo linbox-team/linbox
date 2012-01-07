@@ -30,12 +30,11 @@
 
 
 
-#include <linbox/field/PID-integer.h>
-#include <linbox/field/modular-int32.h>
-#include <linbox/blackbox/dense.h>
-#include <linbox/blackbox/diagonal.h>
-#include <linbox/algorithms/rational-solver.h>
-#include <linbox/randiter/random-prime.h>
+#include "linbox/field/PID-integer.h"
+#include "linbox/field/modular.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/algorithms/rational-solver.h"
+#include "linbox/randiter/random-prime.h"
 #include <iostream>
 #include "test-common.h"
 #include "linbox/vector/stream.h"
@@ -98,7 +97,7 @@ bool testRandomSolve (const Ring& R,
 
                 //Diagonal<Ring> D(R, d);
 
-		DenseMatrix<Ring> D(R, n, n);
+		BlasMatrix<Ring> D(R, n, n);
 
 		for(int i = 0; i < n; ++i) R.init (D[i][i],  d[i]);
 

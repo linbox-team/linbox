@@ -29,8 +29,8 @@ namespace LinBox
 	 \ingroup blackbox
 	 */
 	template<>
-	struct ZeroOne<GF2> : public LightContainer< LightContainer< size_t > >
-	{
+	class ZeroOne<GF2> : public LightContainer< LightContainer< size_t > > {
+	public:
 		typedef LightContainer< LightContainer< size_t > > Father_t;
 		typedef LightContainer< size_t > Row_t;
 		typedef GF2::Element Element;
@@ -38,7 +38,7 @@ namespace LinBox
 		typedef ZeroOne<GF2> Self_t;
 		typedef GF2 Field;
 
-		const GF2 _F;
+		const GF2 _field;
 
 		ZeroOne(const GF2& ) :
 			_nnz(0)
@@ -105,7 +105,7 @@ namespace LinBox
 		std::istream &read (std::istream &is) ;
 		std::ostream& write (std::ostream& out, FileFormatTag format=FORMAT_GUILLAUME) const ;
 
-		const Field& field() const { return _F; }
+		const Field& field() const { return _field; }
 
 		template<typename _Tp1>
 		struct rebind {
@@ -123,7 +123,7 @@ namespace LinBox
 		ZeroOne(ZeroOne<_Tp1>& A, const GF2 F2) :
 			Father_t(A.rowdim()), _rowdim(A.rowdim()), _coldim(A.coldim()), _nnz(0)
 		{
-			for(typename ZeroOne<_Tp1>::RawIndexIterator it = A.indexBegin();
+			for(typename ZeroOne<_Tp1>::IndexIterator it = A.indexBegin();
 			    it != A.indexEnd(); ++it,++_nnz) {
 				this->operator[]( it->first ).push_back( it->second );
 			}
@@ -133,23 +133,23 @@ namespace LinBox
 		bool isRowSorted() const { return true; }
 		bool isColSorted() const { return true; }
 
-		/** RawIterator class.  Iterates straight through the values of the matrix
+		/** Iterator class.  Iterates straight through the values of the matrix
 		*/
-		class RawIterator;
+		class Iterator;
 
-		RawIterator rawBegin();
-		RawIterator rawEnd();
-		const RawIterator rawBegin() const;
-		const RawIterator rawEnd() const;
+		Iterator Begin();
+		Iterator End();
+		const Iterator Begin() const;
+		const Iterator End() const;
 
-		/** RawIndexIterator - Iterates through the i and j of the current element
+		/** IndexIterator - Iterates through the i and j of the current element
 		 * and when accessed returns an STL pair containing the coordinates
 		 */
-		class RawIndexIterator;
-		RawIndexIterator indexBegin();
-		const RawIndexIterator indexBegin() const;
-		RawIndexIterator indexEnd();
-		const RawIndexIterator indexEnd() const;
+		class IndexIterator;
+		IndexIterator indexBegin();
+		const IndexIterator indexBegin() const;
+		IndexIterator indexEnd();
+		const IndexIterator indexEnd() const;
 
 
 	private:

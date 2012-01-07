@@ -25,10 +25,10 @@
 #define __LINBOX_bb_block_hankel_H
 
 #include <vector>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/util/debug.h>
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/util/debug.h"
 
 //#define BHANKEL_TIMER
 
@@ -50,12 +50,12 @@ namespace LinBox
 				const typename Field::Element                             &a)
 	{
 		R= P[0];
-		typename BlasMatrix<typename Field::Element>::RawIterator it_R;
-		typename BlasMatrix<typename Field::Element>::ConstRawIterator it_P;
+		typename BlasMatrix<typename Field::Element>::Iterator it_R;
+		typename BlasMatrix<typename Field::Element>::ConstIterator it_P;
 		for (size_t k=1; k<P.size(); ++k){
-			it_R = R.rawBegin();
-			it_P = P[k].rawBegin();
-			for (;it_R != R.rawEnd(); ++it_R, ++it_P){
+			it_R = R.Begin();
+			it_P = P[k].Begin();
+			for (;it_R != R.End(); ++it_R, ++it_P){
 				F.mulin(*it_R, a);
 				F.addin(*it_R, *it_P);
 			}
@@ -78,8 +78,8 @@ namespace LinBox
 		for (size_t i=0; i<block;++i)
 			F.assign(E[i], P[P.size()-block+i]);
 
-		for (int i=numblock-2; i>=0;--i)
-			for (size_t j= block*i; j< block*(i+1); ++j){
+		for (size_t i=numblock-1; i--;)
+			for (size_t j= (size_t)block*i; j< (size_t) block*(i+1); ++j){
 				idx= j%block;
 				F.mulin(E[idx], a);
 				F.addin(E[idx], P[j]);
@@ -158,7 +158,7 @@ namespace LinBox
 			typename std::list<typename Field::Element>::const_reverse_iterator rit=L.rbegin();
 			F.assign(P[i][deg-2],*rit);
 			++rit;
-			for (int j=deg-3; j>=0;--j, ++rit)
+			for (int j= (int) deg-3; j>=0;--j, ++rit)
 				F.axpy(P[i][j], a, P[i][j+1], *rit);
 		}
 

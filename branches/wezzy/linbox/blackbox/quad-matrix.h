@@ -9,18 +9,19 @@
 #ifndef __LINBOX_quad_matrix_H
 #define __LINBOX_quad_matrix_H
 
+
 #include <algorithm>
-#include <linbox/field/hom.h>
+#include "linbox/field/hom.h"
 #include <vector>
 #include <iterator>
 //#include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
-#include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/blackbox/scalar-matrix.h>
-#include <linbox/blackbox/zo.h>
-//#include <linbox/blackbox/side-by-side.h>
-//#include <linbox/blackbox/over-under.h>
+#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/blackbox/scalar-matrix.h"
+#include "linbox/blackbox/zo.h"
+//#include "linbox/blackbox/side-by-side.h"
+//#include "linbox/blackbox/over-under.h"
 
 namespace LinBox
 {
@@ -60,7 +61,7 @@ namespace LinBox
 		static const unsigned int smallThreshold = 60000;
 
 	protected:
-		_Field _F;
+		_Field _field;
 	public:
 		typedef _Field Field;
 
@@ -199,16 +200,16 @@ namespace LinBox
 				{
 					out << "sidebyside(";
 					const SideBySide<Field> *A(static_cast< const SideBySide<Field>* >(_BBp));
-					(A->_L)->write(out) << ", ";
-					(A->_R)->write(out) << ") ";
+					(A->_quadLeft)->write(out) << ", ";
+					(A->_quadRight)->write(out) << ") ";
 					break;
 				}
 			case ou:
 				{
 					out << "overunder(";
 					const OverUnder<Field> *A(static_cast< const OverUnder<Field>* >(_BBp));
-					(A->_U)->write(out) << ", ";
-					(A->_D)->write(out) << ") ";
+					(A->_quadUp)->write(out) << ", ";
+					(A->_quadDown)->write(out) << ") ";
 					break;
 				}
 			}
@@ -415,12 +416,12 @@ namespace LinBox
 	class SideBySide {
 		typedef ZOQuad<Field> Quad;
 	public://temp
-		const Quad *_L, *_R;
+		const Quad *_quadLeft, *_quadRight;
 	public:
 		SideBySide(const Quad* A, const Quad* B) :
-			_L(A), _R(B)
+			_quadLeft(A), _quadRight(B)
 		{}
-		//~SideBySide() {delete _L; delete _R;}
+		//~SideBySide() {delete _quadLeft; delete _quadRight;}
 
 		template <typename InVector, typename OutVector>
 		OutVector& apply(OutVector& y, const InVector& x) const
@@ -428,14 +429,14 @@ namespace LinBox
 		{
 			std::vector<typename Field::Element> z(y.size());
 			VectorDomain<Field> VD(field());
-			//std::vector<typename Field::Element> x_1( x.begin(), x.begin() + _L->coldim() );
-			//std::vector<typename Field::Element> x_2( x.begin() + _L->coldim(), x.end() );
-			Subvector<typename InVector::const_iterator> x_1(x.begin(), x.begin()+_L->coldim());
-			Subvector<typename InVector::const_iterator> x_2(x.begin()+_L->coldim(), x.end());
+			//std::vector<typename Field::Element> x_1( x.begin(), x.begin() + _quadLeft->coldim() );
+			//std::vector<typename Field::Element> x_2( x.begin() + _quadLeft->coldim(), x.end() );
+			Subvector<typename InVector::const_iterator> x_1(x.begin(), x.begin()+_quadLeft->coldim());
+			Subvector<typename InVector::const_iterator> x_2(x.begin()+_quadLeft->coldim(), x.end());
 			//std::cout << " side-by-side apply size of x: " << x.size() << " " << " size of y: " << y.size() << endl;
 			//std::cout << " side-by-side apply size of x_1: " << x_1.size() << " " << " size of x_2: " << x_2.size() << endl;
-			_L->apply (y, x_1);
-			_R->apply (z, x_2);
+			_quadLeft->apply (y, x_1);
+			_quadRight->apply (z, x_2);
 			VD.addin(y, z);
 
 			return y;
@@ -445,46 +446,46 @@ namespace LinBox
 		OutVector& applyTranspose(OutVector& y, const InVector& x) const
 		//OutVector& applyTranspose(OutVector& y, const InVector& x)
 		{
-			//std::vector<typename Field::Element> y_1( y.begin(), y.begin() + _L->coldim() );
-			//std::vector<typename Field::Element> y_2( y.begin() + _L->coldim(), y.end() );
-			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_1(y.begin(), y.begin()+_L->coldim());
-			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_2(y.begin()+_L->coldim(), y.end());
-			_L->applyTranspose (y_1, x);
-			_R->applyTranspose (y_2, x);
+			//std::vector<typename Field::Element> y_1( y.begin(), y.begin() + _quadLeft->coldim() );
+			//std::vector<typename Field::Element> y_2( y.begin() + _quadLeft->coldim(), y.end() );
+			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_1(y.begin(), y.begin()+_quadLeft->coldim());
+			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_2(y.begin()+_quadLeft->coldim(), y.end());
+			_quadLeft->applyTranspose (y_1, x);
+			_quadRight->applyTranspose (y_2, x);
 			copy(y_1.begin(), y_1.end(), y.begin());
 			copy(y_2.begin(), y_2.end(), y.begin() + y_1.size());
 			return y;
 		}
 
-		size_t rowdim()const{return _L->rowdim();}
-		size_t coldim()const{return _L->coldim() + _R->coldim();}
-		const Field& field()const {return _L->field();}
+		size_t rowdim()const{return _quadLeft->rowdim();}
+		size_t coldim()const{return _quadLeft->coldim() + _quadRight->coldim();}
+		const Field& field()const {return _quadLeft->field();}
 	};
 
 	template <typename Field>
 	class OverUnder {
 		typedef ZOQuad<Field> Quad;
 	public://temp
-		const Quad *_U, *_D;
+		const Quad *_quadUp, *_quadDown;
 	public:
 		OverUnder(const Quad* A, const Quad* B) :
-			_U(A), _D(B)
+			_quadUp(A), _quadDown(B)
 		{}
-		//~OverUnder() {delete _U; delete _D;}
+		//~OverUnder() {delete _quadUp; delete _quadDown;}
 
 		template <typename InVector, typename OutVector>
 		OutVector& apply(OutVector& y, const InVector& x) const
 		//OutVector& apply(OutVector& y, const InVector& x)
 		{
-			//std::vector<typename Field::Element> y_1( y.begin(), y.begin() + _U->rowdim() );
-			//std::vector<typename Field::Element> y_2( y.begin() + _U->rowdim(), y.end() );
-			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_1(y.begin(), y.begin()+_U->rowdim());
-			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_2(y.begin()+_U->rowdim(), y.end());
+			//std::vector<typename Field::Element> y_1( y.begin(), y.begin() + _quadUp->rowdim() );
+			//std::vector<typename Field::Element> y_2( y.begin() + _quadUp->rowdim(), y.end() );
+			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_1(y.begin(), y.begin()+_quadUp->rowdim());
+			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_2(y.begin()+_quadUp->rowdim(), y.end());
 			//if ((_A_ptr == 0) || (_B_ptr == 0)) { throw error }
 			//std::cout << " over-under apply size of x: " << x.size() << " " << " size of y: " << y.size() << endl;
 			//std::cout << " over-under apply size of y_1: " << y_1.size() << " " << " size of y_2: " << y_2.size() << endl;
-			_U->apply (y_1, x);
-			_D->apply (y_2, x);
+			_quadUp->apply (y_1, x);
+			_quadDown->apply (y_2, x);
 			//copy(y_1.begin(), y_1.end(), y.begin());
 			//copy(y_2.begin(), y_2.end(), y.begin() + y_1.size());
 
@@ -497,19 +498,19 @@ namespace LinBox
 		{
 			std::vector<typename Field::Element> z(y.size());
 			VectorDomain<Field> VD(field());
-			std::vector<typename Field::Element> x_1( x.begin(), x.begin() + _U->rowdim() );
-			std::vector<typename Field::Element> x_2( x.begin() + _U->rowdim(), x.end() );
-			//Subvector<typename InVector::iterator, typename InVector::const_iterator> x_1(x.begin(), x.begin()+_U->rowdim());
-			//Subvector<typename InVector::iterator, typename InVector::const_iterator> x_2(x.begin()+_U->rowdim(), x.end());
-			_U->applyTranspose (y, x_1);
-			_D->applyTranspose (z, x_2);
+			std::vector<typename Field::Element> x_1( x.begin(), x.begin() + _quadUp->rowdim() );
+			std::vector<typename Field::Element> x_2( x.begin() + _quadUp->rowdim(), x.end() );
+			//Subvector<typename InVector::iterator, typename InVector::const_iterator> x_1(x.begin(), x.begin()+_quadUp->rowdim());
+			//Subvector<typename InVector::iterator, typename InVector::const_iterator> x_2(x.begin()+_quadUp->rowdim(), x.end());
+			_quadUp->applyTranspose (y, x_1);
+			_quadDown->applyTranspose (z, x_2);
 			VD.addin(y, z);
 			return y;
 		}
 
-		size_t coldim() const{return _U->coldim();}
-		size_t rowdim() const{return _U->rowdim() + _D->rowdim();}
-		const Field& field() const {return _U->field();}
+		size_t coldim() const{return _quadUp->coldim();}
+		size_t rowdim() const{return _quadUp->rowdim() + _quadDown->rowdim();}
+		const Field& field() const {return _quadUp->field();}
 	};
 
 	// similar class OverUnder<Field>

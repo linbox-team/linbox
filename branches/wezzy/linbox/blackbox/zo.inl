@@ -52,7 +52,7 @@ namespace LinBox
 
 		linbox_check((y.size()==rowdim())&&(x.size()==coldim()));
 
-		FieldAXPY<Field> accum (_F);
+		FieldAXPY<Field> accum (_field);
 
 		typename OutVector::iterator yp;
 		typename InVector::const_iterator xp;
@@ -124,7 +124,7 @@ namespace LinBox
 	   {
 	   linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
 
-	   FieldAXPY<Field> accum (_F);
+	   FieldAXPY<Field> accum (_field);
 
 	   typename OutVector::iterator yp;
 	   typename InVector::const_iterator xp;
@@ -154,7 +154,7 @@ namespace LinBox
 	{
 		linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
 
-		FieldAXPY<Field> accum (_F);
+		FieldAXPY<Field> accum (_field);
 
 		typename OutVector::iterator yp;
 		typename InVector::const_iterator xp;

@@ -32,14 +32,15 @@
 #include <string>
 #include <algorithm>
 
-#include "linbox/integer.h"
-#include <linbox/field/field-interface.h>
-#include "linbox/randiter/unparametric.h"
 #include "linbox/linbox-config.h"
-#include <linbox/field/field-traits.h>
+#include "linbox/integer.h"
+#include "linbox/field/field-interface.h"
+#include "linbox/randiter/unparametric.h"
+#include "linbox/field/field-traits.h"
 #include <fflas-ffpack/field/unparametric.h>
+#include "linbox/randiter/nonzero.h"
 //#if __LINBOX_HAVE_NTL
-//#include <linbox/field/ntl-RR.h>
+//#include "linbox/field/ntl-RR.h"
 //#endif // __LINBOX_HAVE_NTL
 
 
@@ -68,6 +69,9 @@ namespace LinBox
 
 	template <class K>
 	class UnparametricField;
+
+	// using FFPACK::UnparametricField ;
+	using FFPACK::UnparametricOperations;
 
 	template <class K>
 	struct ClassifyRing<UnparametricField<K> > {
@@ -131,9 +135,9 @@ namespace LinBox
 		UnparametricField(integer q = 0, size_t e = 1) :
 			FFPACK::UnparametricField<K>(q, e),
 			//FFPACK::UnparametricField<K>((unsigned long)q,(unsigned long)e)
-			_p(q), 
-			_card(q == 0 ? 
-			integer(-1) : 
+			_p(q),
+			_card(q == 0 ?
+			integer(-1) :
 			pow(q, e) )
 			{}  // assuming q is a prime or zero.
 
@@ -155,6 +159,7 @@ namespace LinBox
 		long unsigned int characteristic()const{return FFPACK::UnparametricField<K>::characteristic();};
 		long unsigned int cardinality()const{return FFPACK::UnparametricField<K>::cardinality();};
 		template<typename Src>Element&init(Element&x, const Src&s)const{return Caster (x, s);}
+		Element&init(Element&x)const{return Caster (x, 0);}
 		std::istream&read(std::istream&is, Element&x)const{return FFPACK::UnparametricField<K>::read(is,x);}
 		std::istream&read(std::istream&is)const{return FFPACK::UnparametricField<K>::read(is);}
 		template<typename T>T&convert(T&x,const Element&y)const{return Caster(x,y);}
@@ -233,14 +238,14 @@ namespace LinBox
 		 * @param F field F in which arithmetic is done
 		 */
 		FieldAXPY (const Field &F) :
-			_F (F)
+			_field (F)
 		{ _y = 0; }
 
 		/** Copy constructor.
 		 * @param faxpy
 		 */
 		FieldAXPY (const FieldAXPY<Field> &faxpy) :
-			_F (faxpy._F), _y (faxpy._y)
+			_field (faxpy._field), _y (faxpy._y)
 		{}
 
 		/** Assignment operator
@@ -291,7 +296,7 @@ namespace LinBox
 	private:
 
 		/// Field in which arithmetic is done
-		Field _F;
+		Field _field;
 
 		/// Field element for arithmetic
 		Element _y;

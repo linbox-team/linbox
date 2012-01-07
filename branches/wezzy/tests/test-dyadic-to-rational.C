@@ -16,9 +16,9 @@ using namespace LinBox;
 
 #include <vector>
 #include <cmath>
-#include <linbox/field/PID-integer.h>
+#include "linbox/field/PID-integer.h"
 #include "linbox/util/timer.h"
-#include <linbox/util/commentator.h>
+#include "linbox/util/commentator.h"
 
 int test1(size_t k, size_t dxa, size_t denBs)
 {

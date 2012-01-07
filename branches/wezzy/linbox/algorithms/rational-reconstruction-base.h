@@ -30,7 +30,7 @@
 #include <deque>
 #include <math.h>
 
-#include <linbox/field/PID-integer.h>
+#include "linbox/field/PID-integer.h"
 
 namespace LinBox
 {
@@ -47,7 +47,7 @@ namespace LinBox
 	 * together with method reconstructRational(a,b,x,m)
 	 * implements scheduling INCREMENTAL, QUADRATIC, GEOMETRIC, CERTIFIED
 	 * implements vector reconstruction
-	 * _Z is the integer ring used for reconstruction, default PID_integer
+	 * _intRing is the integer ring used for reconstruction, default PID_integer
 	 * _RR is the rational reconstruction method, see fast-ratioinal-reconstruction.h, classic-rational-reconstruction.h
 	 * THRESHOLD_ - treshold for INCREMENTAL schedule
 	 * rbound_ - min number of iterations for all schedule
@@ -55,35 +55,35 @@ namespace LinBox
 	template <class Ring=PID_integer, class RRBase=RReconstructionBase<PID_integer> >
 	struct RReconstruction {
 	protected:
-		Ring _Z;
+		Ring _intRing;
 		RRBase _RR;
 		mutable size_t RecCounter;
-		const RReconstructionSchedule  _M;
+		const RReconstructionSchedule  _meth;
 		const size_t THRESHOLD_;
 		const size_t rbound_;
 	public:
 		typedef typename Ring::Element Element;
 
 		RReconstruction(const Ring& Z=Ring(), const RReconstructionSchedule Meth = GEOMETRIC, size_t T=DEF_RR_THRESH, size_t b= 0) :
-			_Z(Z), _RR(Z), _M(Meth), THRESHOLD_(T), rbound_(b)
+			_intRing(Z), _RR(Z), _meth(Meth), THRESHOLD_(T), rbound_(b)
 		{
 			RecCounter =0;
-			if (_M == QUADRATIC) {
+			if (_meth == QUADRATIC) {
 				RecCounter = (int)sqrt((double)rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
 			}
-			else if (_M == GEOMETRIC) {
+			else if (_meth == GEOMETRIC) {
 				RecCounter = (size_t) log((double)rbound_) ;//2^RecCounter < rbound_ <=2^(RecCounter+1)
 			}
 		}
 
 		RReconstruction(const RRBase& RR, const RReconstructionSchedule Meth = GEOMETRIC, size_t T=DEF_RR_THRESH, size_t b = 0) :
-			_Z(RR._Z), _RR(RR),_M(Meth), THRESHOLD_(T), rbound_(b)
+			_intRing(RR._intRing), _RR(RR),_meth(Meth), THRESHOLD_(T), rbound_(b)
 		{
 			RecCounter =0;
-			if (_M == QUADRATIC) {
+			if (_meth == QUADRATIC) {
 				RecCounter = (size_t)sqrt((double)rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
 			}
-			else if (_M == GEOMETRIC) {
+			else if (_meth == GEOMETRIC) {
 				RecCounter = (size_t)((double)log((double)rbound_)/log(2));//2^RecCounter < rbound_ <=2^(RecCounter+1)
 			}
 
@@ -98,19 +98,19 @@ namespace LinBox
 		{
 			//if (RecCounter ==0)  return true;
 			if (i < rbound_) return false; //skip first rbound iterations
-			if (_M == INCREMENTAL) {
+			if (_meth == INCREMENTAL) {
 				if (RecCounter%THRESHOLD_==0 ) return true;
 				else return false;
 			}
-			else if (_M == QUADRATIC) {
+			else if (_meth == QUADRATIC) {
 				if (RecCounter*RecCounter < i) return true;
 				else return false;
 			}
-			else if (_M == GEOMETRIC) {
+			else if (_meth == GEOMETRIC) {
 				if ((1UL << RecCounter) < i) return true;
 				else return false;
 			}
-			else if (_M == CERTIFIED) {
+			else if (_meth == CERTIFIED) {
 				if ( i > rbound_) return true;
 				else return false;
 			}
@@ -289,15 +289,15 @@ namespace LinBox
 	template <class Ring>
 	class RReconstructionBase {
 	public:
-		Ring _Z;
+		Ring _intRing;
 		mutable OpCounter C;
 		typedef typename Ring::Element Element;
 
 		RReconstructionBase(const Ring& Z) :
-			_Z(Z)
+			_intRing(Z)
 		{}
 		RReconstructionBase(const RReconstructionBase<Ring>& RR) :
-			_Z(RR._Z)
+			_intRing(RR._intRing)
 		{}
 
 		virtual bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const =0;
@@ -319,26 +319,26 @@ namespace LinBox
 	class RReconstructionBase<PID_integer> {
 	public:
 		typedef PID_integer Ring;
-		Ring _Z;
+		Ring _intRing;
 		mutable OpCounter C;
 		typedef Ring::Element Element;
 
 		RReconstructionBase(const Ring& Z) :
-			_Z(Z)
+			_intRing(Z)
 		{}
 		RReconstructionBase(const RReconstructionBase<Ring>& RR) :
-			_Z(RR._Z)
+			_intRing(RR._intRing)
 		{}
 
 		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m)
 		{
-			Element a_bound; _Z.sqrt(a_bound,m/2);
-			return _Z.reconstructRational(a,b,x,m,a_bound,a_bound);
+			Element a_bound; _intRing.sqrt(a_bound,m/2);
+			return _intRing.reconstructRational(a,b,x,m,a_bound,a_bound);
 		}
 
 		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound)
 		{
-			_Z.reconstructRational(a,b,x,m,a_bound);
+			_intRing.reconstructRational(a,b,x,m,a_bound);
 			return true;
 		}
 

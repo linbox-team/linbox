@@ -40,7 +40,6 @@ using namespace std;
 #include "linbox/algorithms/2local-smith.h"
 #include "linbox/algorithms/local-smith.h"
 #include "linbox/algorithms/iliopoulos-elimination.h"
-#include "linbox/blackbox/dense.h"
 
 using namespace LinBox;
 #ifndef BIG

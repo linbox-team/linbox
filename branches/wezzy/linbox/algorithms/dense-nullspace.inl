@@ -491,7 +491,7 @@ namespace LinBox
 			Ker = BlasMatrix<typename Field::Element>(kerdim,A.coldim());
 		}
 		//! @todo this is slow : use a constructor from Ker ?
-		for(typename BlasMatrix<typename Field::Element>::RawIterator it=Ker.rawBegin(); it!= Ker.rawEnd(); ++it,++Ker_ptr)
+		for(typename BlasMatrix<typename Field::Element>::Iterator it=Ker.Begin(); it!= Ker.End(); ++it,++Ker_ptr)
 			*it=*Ker_ptr;
 		delete[] Ker_ptr ;
 		return kerdim;

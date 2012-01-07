@@ -70,8 +70,8 @@ namespace LinBox
 		VectorWrapper::ensureDim (_w[1], A.coldim ());
 		VectorWrapper::ensureDim (_Aw, A.coldim ());
 
-		NonzeroRandIter<Field> real_ri (_F, _randiter);
-		RandomDenseStream<Field, LVector, NonzeroRandIter<Field> > stream (_F, real_ri, A.coldim ());
+		NonzeroRandIter<Field> real_ri (_field, _randiter);
+		RandomDenseStream<Field, LVector, NonzeroRandIter<Field> > stream (_field, real_ri, A.coldim ());
 
 		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
 			std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -101,7 +101,7 @@ namespace LinBox
 					VectorWrapper::ensureDim (y, A.coldim ());
 
 					stream >> d1;
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (_F, d1);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (_field, d1);
 					Compose<Blackbox, Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> > B (&A, &D);
 
 					report << "Random D: ";
@@ -120,7 +120,7 @@ namespace LinBox
 					VectorWrapper::ensureDim (bp, A.coldim ());
 
 					stream >> d1;
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (_F, d1);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (_field, d1);
 					Transpose<Blackbox> AT (&A);
 					Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>, Blackbox> B1 (&D, &A);
 					Compose<Transpose<Blackbox>, Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>, Blackbox> > B (&AT, &B1);
@@ -146,8 +146,8 @@ namespace LinBox
 					VectorWrapper::ensureDim (y, A.coldim ());
 
 					stream >> d1 >> d2;
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D1 (_F, d1);
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D2 (_F, d2);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D1 (_field, d1);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D2 (_field, d2);
 					Transpose<Blackbox> AT (&A);
 
 					Compose<Blackbox,
@@ -262,7 +262,7 @@ namespace LinBox
 		_VD.subin (_w[0], _w[0]);
 
 		// Get a random vector _w[1]
-		RandomDenseStream<Field, LVector> stream (_F, _randiter, A.coldim ());
+		RandomDenseStream<Field, LVector> stream (_field, _randiter, A.coldim ());
 		stream >> _w[1];
 
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -272,28 +272,28 @@ namespace LinBox
 		A.apply (_Aw, _w[j]);                // Aw_j
 		_VD.dot (delta[j], _w[j], _Aw);      // delta_j <- <w_j, Aw_j>
 
-		if (_F.isZero (delta[j])) {
+		if (_field.isZero (delta[j])) {
 			commentator.stop ("FAILED", "<w_1, Aw_1> = 0", "LanczosSolver::iterate");
 			return false;
 		}
 
 		_VD.dot (alpha, _Aw, _Aw);           //   alpha <- -<Aw_j, Aw_j> / delta_j
-		_F.divin (alpha, delta[j]);
-		_F.negin (alpha);
+		_field.divin (alpha, delta[j]);
+		_field.negin (alpha);
 
-		_F.subin (beta, beta);               //    beta <- 0
+		_field.subin (beta, beta);               //    beta <- 0
 
 		_VD.dot (wb, _w[j], b);              //       x <- <w_j, b> / delta_j w_j
-		_F.divin (wb, delta[j]);
+		_field.divin (wb, delta[j]);
 		_VD.mul (x, _w[j], wb);
 
-		while (!_F.isZero (delta[j])) {
+		while (!_field.isZero (delta[j])) {
 			commentator.progress ();
 
 			report << "Total matrix-vector products so far: " << prods << std::endl;
 
-			// 		traceReport (report, _F, "alpha", iter, alpha);
-			// 		traceReport (report, _F, "beta", iter, alpha);
+			// 		traceReport (report, _field, "alpha", iter, alpha);
+			// 		traceReport (report, _field, "beta", iter, alpha);
 			traceReport (report, _VD, "w", iter - 1, _w[1 - j]);
 			traceReport (report, _VD, "w", iter, _w[j]);
 
@@ -310,19 +310,19 @@ namespace LinBox
 
 			_VD.dot (delta[j], _w[j], _Aw); // delta_j <- <w_j, Aw_j>
 
-			// 		traceReport (report, _F, "delta", iter - 1, delta[1 - j]);
-			// 		traceReport (report, _F, "delta", iter, delta[j]);
+			// 		traceReport (report, _field, "delta", iter - 1, delta[1 - j]);
+			// 		traceReport (report, _field, "delta", iter, delta[j]);
 
-			if (!_F.isZero (delta[j])) {
+			if (!_field.isZero (delta[j])) {
 				_VD.dot (alpha, _Aw, _Aw);             // alpha <- -<Aw_j, Aw_j> / delta_j
-				_F.divin (alpha, delta[j]);
-				_F.negin (alpha);
+				_field.divin (alpha, delta[j]);
+				_field.negin (alpha);
 
-				_F.div (beta, delta[j], delta[1 - j]); //  beta <- -delta_j / delta_j-1
-				_F.negin (beta);
+				_field.div (beta, delta[j], delta[1 - j]); //  beta <- -delta_j / delta_j-1
+				_field.negin (beta);
 
 				_VD.dot (wb, _w[j], b);                //     x <- x + <w_j, b> / delta_j w_j
-				_F.divin (wb, delta[j]);
+				_field.divin (wb, delta[j]);
 				_VD.axpyin (x, wb, _w[j]);
 			}
 

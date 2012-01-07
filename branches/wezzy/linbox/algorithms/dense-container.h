@@ -14,9 +14,9 @@
 #ifndef __LINBOX_blackbox_container_H
 #define __LINBOX_blackbox_container_H
 
-#include <linbox/randiter/archetype.h>
-#include <linbox/algorithms/blackbox-container-base.h>
-#include <linbox/util/timer.h>
+#include "linbox/randiter/archetype.h"
+#include "linbox/algorithms/blackbox-container-base.h"
+#include "linbox/util/timer.h"
 
 namespace LinBox
 {
@@ -105,7 +105,7 @@ namespace LinBox
 				i=0;
 				for (; it!=v.end(); it++, i++){
 					*(Up+i) = *it;
-					_F.convert(tmp,*it);
+					_field.convert(tmp,*it);
 					cerr<<" copie of "<<tmp;
 				}
 				cerr<<endl;
@@ -129,7 +129,7 @@ namespace LinBox
 				it = w.begin();
 				i=0;
 				for (; it!=w.end(); it++, i++){
-					_F.convert(tmp,*it);
+					_field.convert(tmp,*it);
 					cerr<<" copie of "<<tmp;
 					*(Up+i) = *it;
 				}

@@ -33,11 +33,12 @@
 #ifndef __LINBOX_method_H
 #define __LINBOX_method_H
 
+#include <string> // size_t
+
 #ifndef DEFAULT_EARLY_TERM_THRESHOLD
 #  define DEFAULT_EARLY_TERM_THRESHOLD 20
 #endif
 
-#include "linbox/blackbox/dense.h"
 #ifdef __LINBOX_HAVE_MPI
 #include "linbox/util/mpicpp.h"
 #endif
@@ -369,7 +370,7 @@ namespace LinBox
 		{
 			Specifier::_preconditioner = (Precond);
 			Specifier::_maxTries       = (MaxTries);
-			Specifier::_blockingFactor = (BlockingFactor);
+			Specifier::_blockingFactor = (unsigned long) (BlockingFactor);
 		}
 
 		BlockLanczosTraits( const Specifier& S) :
@@ -409,7 +410,7 @@ namespace LinBox
 			_solution                  = (Solution);
 			Specifier::_singular       = (Singular);
 			Specifier::_certificate    = (Certificate);
-			Specifier::_maxTries       = (MaxTries);
+			Specifier::_maxTries       = (unsigned long) (MaxTries);
 			Specifier::_preconditioner = (Precond);
 			Specifier::_rank           = (Rank);
 		}
@@ -539,8 +540,13 @@ namespace LinBox
 		return (A.coldim() > 1000) && (A.rowdim() > 1000);
 	}
 
+
+	template<class _Field>
+	class BlasMatrix ; // forward declaration...
+
 	template<class Field>
-	bool useBB(const DenseMatrix<Field>& A) { return false; }
+	bool useBB(const BlasMatrix<Field>& A) { return false; }
+
 
 	/** Solver traits.
 	 *

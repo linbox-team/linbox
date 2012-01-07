@@ -3,7 +3,7 @@
 # see COPYING for licence
 AC_PREREQ(2.61)
 
-AC_INIT([LinBox], [1.2.1],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.3.0],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -55,6 +55,9 @@ AC_SUBST([TESTS_CFLAGS])
 
 TESTS_CFLAGS="-O0"
 DEBUG_CFLAGS="-g"
+
+DEFAULT_CFLAGS=""
+# solaris: remove -pipe to compile large programs (such as linbox examples)
 DEFAULT_CFLAGS="-pipe"
 WARN_CFLAGS="-Wall"
 
@@ -72,24 +75,28 @@ if test "x$PROF" = "xyes" ; then
 fi
 
 if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
-	if test "x${CCNAM}" = "xicc" ; then
+	case x${CCNAM} in
+		xicc)
 		WARN_CFLAGS="${WARN_CFLAGS} -Wcheck"
 		# DEBUG_CFLAGS="-fast"
-	else
-		if test "x${CCNAM}" = "xgcc" -o "x${CCNAM}" = "xeko" ; then
+			;;
+		xeko)
+			WARN_CFLAGS="${WARN_CFLAGS} -Wno-unused-parameter"
+			;;
+		xgcc|xclang)
 			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
 			if test "x${WARN}" = "xfull" ; then
 				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -ansi -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long"
 			fi
-		else
+		;;
+		*)
 			echo
 			echo "*******************************************************"
 			echo "unsupported compiler ($CCNAM). Please file a bug."
 			echo "*******************************************************"
 			echo
 			WARN_CFLAGS="${WARN_CFLAGS}"
-		fi
-	fi
+	esac
 fi
 
 
@@ -212,18 +219,23 @@ exit 1
 
 LB_CHECK_IML
 LB_CHECK_M4RI
+LB_CHECK_MPFR
+# we nedd mpfr next :
+LB_CHECK_FPLLL
 
 LB_CHECK_NTL
 LB_CHECK_GIVARO(,,[
 echo '*******************************************************************************'
 echo ' ERROR: GIVARO not found!'
 echo
-echo ' GIVARO version 3.4.0 or greater (<3.5) is required for this library to compile.'
+echo ' GIVARO version 3.6.0 or greater (<3.7) is required for this library to compile.'
 echo ' Please make sure GIVARO is installed and specify its location with the'
 echo ' option --with-givaro=<prefix> when running configure.'
 echo '*******************************************************************************'
 exit 1
 ])
+
+
 LB_CHECK_SACLIB
 LB_CHECK_LIDIA
 LB_CHECK_MAPLE
@@ -248,7 +260,7 @@ echo ''
 echo '*******************************************************************************'
 echo ' ERROR: Fflas-Ffpack not found!'
 echo
-echo ' Fflas-Ffpack routines are required for this library to compile. Please'
+echo ' Fflas-Ffpack routines (>=1.4.4) are required for this library to compile. Please'
 echo ' make sure they are installed and specify its location with the option'
 echo ' --with-fflas-ffpack=<lib> when running configure.'
 echo '*******************************************************************************'
@@ -290,9 +302,15 @@ examples/Readme-make
 doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
+linbox/algorithms/gauss/Makefile
+linbox/algorithms/matrix-blas2/Makefile
+linbox/algorithms/matrix-blas3/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
+linbox/field/NTL/Makefile
+linbox/field/Givaro/Makefile
+linbox/field/Modular/Makefile
 linbox/matrix/Makefile
 linbox/randiter/Makefile
 linbox/ring/Makefile

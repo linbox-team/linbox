@@ -21,9 +21,9 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/modular.h"
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
-// For STL pair in RawIndexIterator
+// For STL pair in IndexIterator
 #include <utility>
 #include <vector> // For vectors in _col2row and _row2col
 #include <cstdlib> // For randomness in randomized quicksort
@@ -71,7 +71,7 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& apply(OutVector& y, const InVector& x) const // y = Ax;
 		{
-			return applySpecialization(y,x,getType(_F));
+			return applySpecialization(y,x,getType(_field));
 		}
 
 		/** applyTranspose.
@@ -85,7 +85,7 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose(OutVector& y, const InVector& x) const // y = ATx
 		{
-			return applyTransposeSpecialization(y,x,getType(_F));
+			return applyTransposeSpecialization(y,x,getType(_field));
 		}
 
 		size_t rowdim() const
@@ -111,7 +111,7 @@ namespace LinBox
 
 		template<typename _Tp1>
 		ZeroOne(const ZeroOne<_Tp1>& Z, const Field& F) :
-			_F(F),
+			_field(F),
 			_rows(Z.rowdim()), _cols(Z.coldim()), _nnz(Z.nnz()),
 			_rowP(new Index[Z.nnz()]), _colP(new Index[Z.nnz()]),
 			_rowSort(Z.isRowSorted()), _colSort(Z.isColSorted()),
@@ -121,32 +121,32 @@ namespace LinBox
 			Index * rowit = _rowP;
 			Index * colit = _colP;
 
-			for(typename ZeroOne<_Tp1>::RawIndexIterator it = Z.indexBegin();
+			for(typename ZeroOne<_Tp1>::IndexIterator it = Z.indexBegin();
 			    it != Z.indexEnd(); ++it,++rowit,++colit) {
 				*rowit = (*it).first;
 				*colit = (*it).second;
 			}
 		}
 
-		/** RawIterator class.
+		/** Iterator class.
 		 * Iterates straight through the values of the matrix
 		 */
-		class RawIterator;
+		class Iterator;
 
-		RawIterator rawBegin();
-		RawIterator rawEnd();
-		const RawIterator rawBegin() const;
-		const RawIterator rawEnd() const;
+		Iterator Begin();
+		Iterator End();
+		const Iterator Begin() const;
+		const Iterator End() const;
 
-		/** RawIndexIterator.
+		/** IndexIterator.
 		 * Iterates through the i and j of the current element
 		 * and when accessed returns an STL pair containing the coordinates
 		 */
-		class RawIndexIterator;
-		RawIndexIterator indexBegin();
-		const RawIndexIterator indexBegin() const;
-		RawIndexIterator indexEnd();
-		const RawIndexIterator indexEnd() const;
+		class IndexIterator;
+		IndexIterator indexBegin();
+		const IndexIterator indexBegin() const;
+		IndexIterator indexEnd();
+		const IndexIterator indexEnd() const;
 
 		/** Read the matrix from a stream in the JGD's SMS format.
 		 *  @param is Input stream from which to read the matrix
@@ -194,7 +194,7 @@ namespace LinBox
 
 		const Field& field() const
 		{
-			return _F;
+			return _field;
 		}
 
 		bool isRowSorted() const
@@ -215,11 +215,11 @@ namespace LinBox
 	protected:
 
 
-		Field _F; //!< @internal The field used by this class
+		Field _field; //!< @internal The field used by this class
 
-		/*! @internal A temporary element used for initalization for the rawBegin() and
-		 * rawEnd() methods of the ZeroOne class.  Is used to initalize a 1
-		 * so that the RawIterator returned stores a 1
+		/*! @internal A temporary element used for initalization for the Begin() and
+		 * End() methods of the ZeroOne class.  Is used to initalize a 1
+		 * so that the Iterator returned stores a 1
 		 */
 		Element _tmp;
 

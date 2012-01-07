@@ -24,9 +24,9 @@
 #ifndef __LINBOX_whisart_trace_H
 #define __LINBOX_whisart_trace_H
 
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/lambda-sparse.h"
 // #include "linbox/blackbox/subrowmatrix.h"
@@ -35,36 +35,37 @@
 namespace LinBox
 {
 
-	// Trait to show whether or not the BB class has a RawIndexed iterator
-	template<class BB> struct RawIndexedCategory;
+	// Trait to show whether or not the BB class has a Indexed iterator
+	template<class BB> struct IndexedCategory;
 
 	/// limited doc so far
-	namespace RawIndexedTags
+	namespace IndexedTags
 	{
-		struct HasRawIndexed{};
-		struct NoRawIndexed{};
+		struct HasIndexed{};
+		struct NoIndexed{};
 	}
 
-	template<class BB> struct RawIndexedCategory {
-	typedef RawIndexedTags::NoRawIndexed Tag;
+	template<class BB> struct IndexedCategory {
+		typedef IndexedTags::NoIndexed Tag;
 	};
 
 	template<class Field>
-	struct RawIndexedCategory< DenseMatrix<Field> > 	{
-		typedef RawIndexedTags::HasRawIndexed Tag; };
+	struct IndexedCategory< BlasMatrix<Field> > 	{
+		typedef IndexedTags::HasIndexed Tag; };
+
 
 	template<class Field, class Row>
-	struct RawIndexedCategory< LambdaSparseMatrix<Field,Row> > 	{
-		typedef RawIndexedTags::HasRawIndexed Tag; };
+	struct IndexedCategory< LambdaSparseMatrix<Field,Row> > 	{
+		typedef IndexedTags::HasIndexed Tag; };
 
 	template<class Field, class Row>
-	struct RawIndexedCategory< SparseMatrix<Field,Row> > 	{
-		typedef RawIndexedTags::HasRawIndexed Tag; };
+	struct IndexedCategory< SparseMatrix<Field,Row> > 	{
+		typedef IndexedTags::HasIndexed Tag; };
 
 #if 0
 	template<class Matrix, class MatrixCategory>
-	struct RawIndexedCategory< SubRowMatrix<Matrix,MatrixCategory> > 	{
-		typedef RawIndexedTags::HasRawIndexed Tag;
+	struct IndexedCategory< SubRowMatrix<Matrix,MatrixCategory> > 	{
+		typedef IndexedTags::HasIndexed Tag;
 	};
 #endif
 
@@ -78,7 +79,7 @@ namespace LinBox
 					      const BB& A,
 					      const LinBox::Diagonal<Field>& InD)
 	{
-		return WhisartTrace(trace, F, ExtD, A, InD, typename RawIndexedCategory<BB>::Tag() );
+		return WhisartTrace(trace, F, ExtD, A, InD, typename IndexedCategory<BB>::Tag() );
 	}
 
 	template<class Field, class BB>
@@ -89,7 +90,7 @@ namespace LinBox
 						       const BB& A,
 						       const LinBox::Diagonal<Field>& InD)
 	{
-		return WhisartTraceTranspose(trace, F, ExtD, A, InD, typename RawIndexedCategory<BB>::Tag() );
+		return WhisartTraceTranspose(trace, F, ExtD, A, InD, typename IndexedCategory<BB>::Tag() );
 	}
 
 	template<class Field, class BB>
@@ -98,7 +99,7 @@ namespace LinBox
 					      const Field& F,
 					      const LinBox::Diagonal<Field>& ExtD,
 					      const BB& A,
-					      const LinBox::Diagonal<Field>& InD, RawIndexedTags::NoRawIndexed t)
+					      const LinBox::Diagonal<Field>& InD, IndexedTags::NoIndexed t)
 	{
 		// Trace of ExtD B InD B^T ExtD
 		typedef Compose<Diagonal<Field>, BB > C_DB;
@@ -120,7 +121,7 @@ namespace LinBox
 						       const LinBox::Diagonal<Field>& ExtD,
 						       const BB& A,
 						       const LinBox::Diagonal<Field>& InD,
-						       RawIndexedTags::NoRawIndexed t)
+						       IndexedTags::NoIndexed t)
 	{
 		// Trace of ExtD A^T  InD A ExtD
 		Transpose<BB> AT (&A);
@@ -144,14 +145,16 @@ namespace LinBox
 					      const LinBox::Diagonal<Field>& ExtD,
 					      const BB& A,
 					      const LinBox::Diagonal<Field>& InD,
-					      RawIndexedTags::HasRawIndexed )
+					      IndexedTags::HasIndexed )
 	{
 		// Trace of ExtD B InD B^T ExtD
 		// is sum ExtD_i^2 B_{i,j} InD_j
 		F.init(tr, 0);
-		for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
-		    it != A.rawIndexedEnd(); ++it) {
-			typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
+		for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
+		    it != A.IndexedEnd(); ++it) {
+			typename Field::Element tmp,e,i;
+			F.init(tmp);
+			F.init(e);F.init(i);
 			F.mul(tmp,it.value(),it.value());
 			ExtD.getEntry(e, it.rowIndex(),it.rowIndex());
 			InD.getEntry(i, it.colIndex(),it.colIndex());
@@ -170,13 +173,13 @@ namespace LinBox
 						       const LinBox::Diagonal<Field>& ExtD,
 						       const BB& A,
 						       const LinBox::Diagonal<Field>& InD,
-						       RawIndexedTags::HasRawIndexed )
+						       IndexedTags::HasIndexed )
 	{
 		// Trace of ExtD B^T  InD B ExtD
 		// is sum ExtD_j^2 B_{i,j} InD_i
 		F.init(tr, 0);
-		for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
-		    it != A.rawIndexedEnd(); ++it) {
+		for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
+		    it != A.IndexedEnd(); ++it) {
 
 			typename Field::Element tmp,e,i;
 			F.init(tmp,0UL);

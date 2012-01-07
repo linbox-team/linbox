@@ -32,10 +32,11 @@
  *
  *  This matrix is \f$2C + 3I\f$. It has 2 nonzero entries per row and per column.
  *  It is an \f$ n \times n\f$ matrix whose determinant is considerably less than the
- *  Hadamard bound.
+ *  Hadamard bound (but is large -- 3^n +- 2^n).
  *
  */
 #include <iostream>
+#include <cstdlib>
 using namespace std;
 
 int main(int argc, char* argv[])

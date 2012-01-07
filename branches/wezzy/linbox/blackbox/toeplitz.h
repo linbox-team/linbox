@@ -18,10 +18,10 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/methods.h"  // for shape
 #include "linbox/linbox-config.h"
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 #ifdef __LINBOX_HAVE_NTL
-#include <linbox/field/ntl-ZZ_pX.h>
+#include "linbox/field/ntl.h"
 #endif
 
 //#define DBGMSGS 1
@@ -219,7 +219,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#include <linbox/blackbox/toeplitz.inl>
+#include "linbox/blackbox/toeplitz.inl"
 // Hide the implementation; include it here because
 // older compilers want everything in one template file
 

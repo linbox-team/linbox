@@ -31,16 +31,12 @@
 #ifndef __LINBOX_field_vector_domain_INL
 #define __LINBOX_field_vector_domain_INL
 
-#include "linbox/linbox-config.h"
 
 #include <iostream>
 #include <cctype>
 
-#include "linbox/vector/vector-domain.h"
-#include "linbox/util/debug.h"
-
 namespace LinBox
-{
+{ /*  VectorDomain */
 	template <class Field>
 	template <class Vector>
 	std::ostream &VectorDomain<Field>::writeSpecialized (std::ostream &os, const Vector &x,
@@ -51,7 +47,7 @@ namespace LinBox
 		os << '[';
 
 		for (i = x.begin (); i != x.end ();) {
-			VectorDomainBase<Field>::_F.write (os, *i);
+			VectorDomainBase<Field>::_field.write (os, *i);
 
 			if (++i != x.end ())
 				os << ", ";
@@ -76,7 +72,7 @@ namespace LinBox
 			while (idx++ < i->first)
 				os << "0, ";
 
-			VectorDomainBase<Field>::_F.write (os, i->second);
+			VectorDomainBase<Field>::_field.write (os, i->second);
 
 			if (++i != x.end ())
 				os << ", ";
@@ -101,7 +97,7 @@ namespace LinBox
 			while (idx++ < i->first)
 				os << "0, ";
 
-			VectorDomainBase<Field>::_F.write (os, i->second);
+			VectorDomainBase<Field>::_field.write (os, i->second);
 
 			if (++i != x.end ())
 				os << ", ";
@@ -127,7 +123,7 @@ namespace LinBox
 			while (idx++ < *i)
 				os << "0, ";
 
-			VectorDomainBase<Field>::_F.write (os, *j);
+			VectorDomainBase<Field>::_field.write (os, *j);
 
 			if (++i != x.first.end ())
 				os << ", ";
@@ -157,9 +153,9 @@ namespace LinBox
 		while (i != x.end() && is) {
 			do is >> c; while (!isdigit(c) && c != '-');
 			is.unget ();
-			VectorDomainBase<Field>::_F.read (is, *i++);
+			VectorDomainBase<Field>::_field.read (is, *i++);
 			//std::cerr << std::endl << "just read this: ";
-			//VectorDomainBase<Field>::_F.write(cerr, *(i-1)) << " at index " << (i-x.begin());
+			//VectorDomainBase<Field>::_field.write(cerr, *(i-1)) << " at index " << (i-x.begin());
 		}
 		if (seekrightbracket) do is >> c; while (is && c != ']');
 
@@ -185,8 +181,8 @@ namespace LinBox
 		while (is && c == ',') {
 			do is >> c; while (is && isspace (c));
 			is.unget ();
-			VectorDomainBase<Field>::_F.read (is, tmp);
-			if (!VectorDomainBase<Field>::_F.isZero (tmp))
+			VectorDomainBase<Field>::_field.read (is, tmp);
+			if (!VectorDomainBase<Field>::_field.isZero (tmp))
 				x.push_back (std::pair <size_t, typename Field::Element> (idx, tmp));
 			is >> c;
 			idx++;
@@ -214,8 +210,8 @@ namespace LinBox
 		while (is && c == ',') {
 			do is >> c; while (is && isspace (c));
 			is.unget ();
-			VectorDomainBase<Field>::_F.read (is, tmp);
-			if (!VectorDomainBase<Field>::_F.isZero (tmp))
+			VectorDomainBase<Field>::_field.read (is, tmp);
+			if (!VectorDomainBase<Field>::_field.isZero (tmp))
 				x[idx] = tmp;
 			is >> c;
 			idx++;
@@ -243,9 +239,9 @@ namespace LinBox
 		while (is && c == ',') {
 			do is >> c; while (is && isspace (c));
 			is.unget ();
-			VectorDomainBase<Field>::_F.read (is, tmp);
+			VectorDomainBase<Field>::_field.read (is, tmp);
 
-			if (!VectorDomainBase<Field>::_F.isZero (tmp)) {
+			if (!VectorDomainBase<Field>::_field.isZero (tmp)) {
 				x.first.push_back (idx);
 				x.second.push_back (tmp);
 			}
@@ -269,7 +265,7 @@ namespace LinBox
 		if (v1.size () != v2.size ()) return false;
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end (); i++, j++)
-			if (!VectorDomainBase<Field>::_F.areEqual (*i, *j))
+			if (!VectorDomainBase<Field>::_field.areEqual (*i, *j))
 				return false;
 
 		return true;
@@ -287,11 +283,11 @@ namespace LinBox
 
 		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); j++, idx++) {
 			if (i->first == idx) {
-				if (!VectorDomainBase<Field>::_F.areEqual (i->second, *j))
+				if (!VectorDomainBase<Field>::_field.areEqual (i->second, *j))
 					return false;
 				i++;
 			}
-			else if (!VectorDomainBase<Field>::_F.isZero (*j))
+			else if (!VectorDomainBase<Field>::_field.isZero (*j))
 				return false;
 		}
 
@@ -310,11 +306,11 @@ namespace LinBox
 
 		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); j++, idx++) {
 			if (i->first == idx) {
-				if (!VectorDomainBase<Field>::_F.areEqual (i->second, *j))
+				if (!VectorDomainBase<Field>::_field.areEqual (i->second, *j))
 					return false;
 				i++;
 			}
-			else if (!VectorDomainBase<Field>::_F.isZero (*j))
+			else if (!VectorDomainBase<Field>::_field.isZero (*j))
 				return false;
 		}
 
@@ -337,13 +333,13 @@ namespace LinBox
 		     j++, idx++)
 		{
 			if (*i_idx == idx) {
-				if (!VectorDomainBase<Field>::_F.areEqual (*i_elt, *j))
+				if (!VectorDomainBase<Field>::_field.areEqual (*i_elt, *j))
 					return false;
 				++i_idx;
 				++i_elt;
 			}
 
-			else if (!VectorDomainBase<Field>::_F.isZero (*j))
+			else if (!VectorDomainBase<Field>::_field.isZero (*j))
 				return false;
 		}
 
@@ -361,19 +357,19 @@ namespace LinBox
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () || j != v2.end ();) {
 			while (i != v1.end () && (j == v2.end () || i->first < j->first)) {
-				if (!VectorDomainBase<Field>::_F.isZero (i->second))
+				if (!VectorDomainBase<Field>::_field.isZero (i->second))
 					return false;
 				i++;
 			}
 
 			while (j != v2.end () && (i == v1.end () || j->first < i->first)) {
-				if (!VectorDomainBase<Field>::_F.isZero (j->second))
+				if (!VectorDomainBase<Field>::_field.isZero (j->second))
 					return false;
 				j++;
 			}
 
 			if (i != v1.end () && j != v2.end () && i->first == j->first) {
-				if (!VectorDomainBase<Field>::_F.areEqual (i->second, j->second))
+				if (!VectorDomainBase<Field>::_field.areEqual (i->second, j->second))
 					return false;
 
 				i++; j++;
@@ -394,19 +390,19 @@ namespace LinBox
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () || j != v2.end ();) {
 			while (i != v1.end () && (j == v2.end () || i->first < j->first)) {
-				if (!VectorDomainBase<Field>::_F.isZero (i->second))
+				if (!VectorDomainBase<Field>::_field.isZero (i->second))
 					return false;
 				i++;
 			}
 
 			while (j != v2.end () && (i == v1.end () || j->first < i->first)) {
-				if (!VectorDomainBase<Field>::_F.isZero (j->second))
+				if (!VectorDomainBase<Field>::_field.isZero (j->second))
 					return false;
 				j++;
 			}
 
 			if (i != v1.end () && j != v2.end () && i->first == j->first) {
-				if (!VectorDomainBase<Field>::_F.areEqual (i->second, j->second))
+				if (!VectorDomainBase<Field>::_field.areEqual (i->second, j->second))
 					return false;
 
 				i++; j++;
@@ -430,20 +426,20 @@ namespace LinBox
 		     i_idx != v1.first.end () || j != v2.end ();)
 		{
 			while (i_idx != v1.first.end () && (j == v2.end () || *i_idx < j->first)) {
-				if (!VectorDomainBase<Field>::_F.isZero (*i_elt))
+				if (!VectorDomainBase<Field>::_field.isZero (*i_elt))
 					return false;
 				i_idx++;
 				i_elt++;
 			}
 
 			while (j != v2.end () && (i_idx == v1.first.end () || j->first < *i_idx)) {
-				if (!VectorDomainBase<Field>::_F.isZero (j->second))
+				if (!VectorDomainBase<Field>::_field.isZero (j->second))
 					return false;
 				j++;
 			}
 
 			if (i_idx != v1.first.end () && j != v2.end () && *i_idx == j->first) {
-				if (!VectorDomainBase<Field>::_F.areEqual (*i_elt, j->second))
+				if (!VectorDomainBase<Field>::_field.areEqual (*i_elt, j->second))
 					return false;
 
 				i_idx++; i_elt++; j++;
@@ -464,19 +460,19 @@ namespace LinBox
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () || j != v2.end ();) {
 			while (i != v1.end () && (j == v2.end () || i->first < j->first)) {
-				if (!VectorDomainBase<Field>::_F.isZero (i->second))
+				if (!VectorDomainBase<Field>::_field.isZero (i->second))
 					return false;
 				i++;
 			}
 
 			while (j != v2.end () && (i == v1.end () || j->first < i->first)) {
-				if (!VectorDomainBase<Field>::_F.isZero (j->second))
+				if (!VectorDomainBase<Field>::_field.isZero (j->second))
 					return false;
 				j++;
 			}
 
 			if (i != v1.end () && j != v2.end () && i->first == j->first) {
-				if (!VectorDomainBase<Field>::_F.areEqual (i->second, j->second))
+				if (!VectorDomainBase<Field>::_field.areEqual (i->second, j->second))
 					return false;
 
 				i++; j++;
@@ -498,20 +494,20 @@ namespace LinBox
 
 		while (i_idx != v1.first.end () || j != v2.end ()) {
 			while (i_idx != v1.first.end () && (j == v2.end () || *i_idx < j->first)) {
-				if (!VectorDomainBase<Field>::_F.isZero (*i_elt))
+				if (!VectorDomainBase<Field>::_field.isZero (*i_elt))
 					return false;
 				i_idx++;
 				i_elt++;
 			}
 
 			while (j != v2.end () && (i_idx == v1.first.end () || j->first < *i_idx)) {
-				if (!VectorDomainBase<Field>::_F.isZero (j->second))
+				if (!VectorDomainBase<Field>::_field.isZero (j->second))
 					return false;
 				j++;
 			}
 
 			if (i_idx != v1.first.end () && j != v2.end () && *i_idx == j->first) {
-				if (!VectorDomainBase<Field>::_F.areEqual (*i_elt, j->second))
+				if (!VectorDomainBase<Field>::_field.areEqual (*i_elt, j->second))
 					return false;
 
 				i_idx++; i_elt++; j++;
@@ -534,21 +530,21 @@ namespace LinBox
 
 		while (i_idx != v1.first.end () || j_idx != v2.first.end ()) {
 			while (i_idx != v1.first.end () && (j_idx == v2.first.end () || *i_idx < *j_idx)) {
-				if (!VectorDomainBase<Field>::_F.isZero (*i_elt))
+				if (!VectorDomainBase<Field>::_field.isZero (*i_elt))
 					return false;
 				i_idx++;
 				i_elt++;
 			}
 
 			while (j_idx != v2.first.end () && (i_idx == v1.first.end () || *j_idx < *i_idx)) {
-				if (!VectorDomainBase<Field>::_F.isZero (*j_elt))
+				if (!VectorDomainBase<Field>::_field.isZero (*j_elt))
 					return false;
 				j_idx++;
 				j_elt++;
 			}
 
 			if (i_idx != v1.first.end () && j_idx != v2.first.end () && *i_idx == *j_idx) {
-				if (!VectorDomainBase<Field>::_F.areEqual (*i_elt, *j_elt))
+				if (!VectorDomainBase<Field>::_field.areEqual (*i_elt, *j_elt))
 					return false;
 
 				i_idx++; i_elt++; j_idx++; j_elt++;
@@ -565,7 +561,7 @@ namespace LinBox
 		typename Vector::const_iterator i;
 
 		for (i = v.begin (); i != v.end (); i++)
-			if (!VectorDomainBase<Field>::_F.isZero (*i))
+			if (!VectorDomainBase<Field>::_field.isZero (*i))
 				return false;
 
 		return true;
@@ -578,7 +574,7 @@ namespace LinBox
 		typename Vector::const_iterator i;
 
 		for (i = v.begin (); i != v.end (); i++)
-			if (!VectorDomainBase<Field>::_F.isZero (i->second))
+			if (!VectorDomainBase<Field>::_field.isZero (i->second))
 				return false;
 
 		return true;
@@ -591,7 +587,7 @@ namespace LinBox
 		typename Vector::const_iterator i;
 
 		for (i = v.begin (); i != v.end (); i++)
-			if (!VectorDomainBase<Field>::_F.isZero (i->second))
+			if (!VectorDomainBase<Field>::_field.isZero (i->second))
 				return false;
 
 		return true;
@@ -604,7 +600,7 @@ namespace LinBox
 		typename Vector::second_type::const_iterator i;
 
 		for (i = v.second.begin (); i != v.second.end (); i++)
-			if (!VectorDomainBase<Field>::_F.isZero (*i))
+			if (!VectorDomainBase<Field>::_field.isZero (*i))
 				return false;
 
 		return true;
@@ -622,7 +618,7 @@ namespace LinBox
 		res.clear ();
 
 		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++)
-			if (!VectorDomainBase<Field>::_F.isZero (*i))
+			if (!VectorDomainBase<Field>::_field.isZero (*i))
 				res.push_back (std::pair <size_t, typename Field::Element> (idx, *i));
 
 		return res;
@@ -640,7 +636,7 @@ namespace LinBox
 		res.clear ();
 
 		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++)
-			if (!VectorDomainBase<Field>::_F.isZero (*i))
+			if (!VectorDomainBase<Field>::_field.isZero (*i))
 				res[idx] = *i;
 
 		return res;
@@ -659,7 +655,7 @@ namespace LinBox
 		res.second.clear ();
 
 		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++) {
-			if (!VectorDomainBase<Field>::_F.isZero (*i)) {
+			if (!VectorDomainBase<Field>::_field.isZero (*i)) {
 				res.first.push_back (idx);
 				res.second.push_back (*i);
 			}
@@ -680,7 +676,7 @@ namespace LinBox
 
 		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); i++, j++, idx++) {
 			while (idx < j->first) {
-				VectorDomainBase<Field>::_F.init (*i, 0);
+				VectorDomainBase<Field>::_field.init (*i, 0);
 				i++; idx++;
 			}
 
@@ -737,7 +733,7 @@ namespace LinBox
 
 		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); i++, j++, idx++) {
 			while (idx < j->first) {
-				VectorDomainBase<Field>::_F.init (*i, 0);
+				VectorDomainBase<Field>::_field.init (*i, 0);
 				i++; idx++;
 			}
 
@@ -811,7 +807,7 @@ namespace LinBox
 
 		while (j_idx != v.first.end ()) {
 			while (idx < *j_idx) {
-				VectorDomainBase<Field>::_F.init (*i, 0);
+				VectorDomainBase<Field>::_field.init (*i, 0);
 				++i; ++idx;
 			}
 
@@ -1099,7 +1095,7 @@ namespace LinBox
 		linbox_check (res.size () == x.size ());
 
 		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
-			VectorDomainBase<Field>::_F.add (*k, *i, *j);
+			VectorDomainBase<Field>::_field.add (*k, *i, *j);
 
 		return res;
 	}
@@ -1124,8 +1120,8 @@ namespace LinBox
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				VectorDomainBase<Field>::_F.add (tmp, i->second, j->second);
-				if (!VectorDomainBase<Field>::_F.isZero (tmp))
+				VectorDomainBase<Field>::_field.add (tmp, i->second, j->second);
+				if (!VectorDomainBase<Field>::_field.isZero (tmp))
 					res.push_back (std::pair <size_t, Element> (j->first, tmp));
 				i++;
 			}
@@ -1162,7 +1158,7 @@ namespace LinBox
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				res[j->first] = VectorDomainBase<Field>::_F.add (tmp, i->second, j->second);
+				res[j->first] = VectorDomainBase<Field>::_field.add (tmp, i->second, j->second);
 				i++;
 			}
 			else {
@@ -1202,8 +1198,8 @@ namespace LinBox
 			}
 
 			if (i_idx != y.first.end () && *i_idx == *j_idx) {
-				VectorDomainBase<Field>::_F.add (tmp, *i_elt, *j_elt);
-				if (!VectorDomainBase<Field>::_F.isZero (tmp)) {
+				VectorDomainBase<Field>::_field.add (tmp, *i_elt, *j_elt);
+				if (!VectorDomainBase<Field>::_field.isZero (tmp)) {
 					res.first.push_back (*j_idx);
 					res.second.push_back (tmp);
 				}
@@ -1236,7 +1232,7 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 
 		for (i = y.begin (), j = x.begin (); i != y.end (); i++, j++)
-			VectorDomainBase<Field>::_F.addin (*i, *j);
+			VectorDomainBase<Field>::_field.addin (*i, *j);
 
 		return y;
 	}
@@ -1267,7 +1263,7 @@ namespace LinBox
 			while (i != y.end () && i->first < j->first) i++;
 
 			if (i != y.end () && i->first == j->first)
-				VectorDomainBase<Field>::_F.addin (i->second, j->second);
+				VectorDomainBase<Field>::_field.addin (i->second, j->second);
 			else
 				y[j->first] = j->second;
 		}
@@ -1303,7 +1299,7 @@ namespace LinBox
 		linbox_check (res.size () == x.size ());
 
 		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
-			VectorDomainBase<Field>::_F.sub (*k, *i, *j);
+			VectorDomainBase<Field>::_field.sub (*k, *i, *j);
 
 		return res;
 	}
@@ -1328,13 +1324,13 @@ namespace LinBox
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				VectorDomainBase<Field>::_F.sub (tmp, i->second, j->second);
-				if (!VectorDomainBase<Field>::_F.isZero (tmp))
+				VectorDomainBase<Field>::_field.sub (tmp, i->second, j->second);
+				if (!VectorDomainBase<Field>::_field.isZero (tmp))
 					res.push_back (std::pair <size_t, Element> (j->first, tmp));
 				i++;
 			}
 			else {
-				res.push_back (std::pair <size_t, Element> (j->first, VectorDomainBase<Field>::_F.neg (tmp, j->second)));
+				res.push_back (std::pair <size_t, Element> (j->first, VectorDomainBase<Field>::_field.neg (tmp, j->second)));
 			}
 		}
 
@@ -1366,11 +1362,11 @@ namespace LinBox
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				res[j->first] = VectorDomainBase<Field>::_F.sub (tmp, i->second, j->second);
+				res[j->first] = VectorDomainBase<Field>::_field.sub (tmp, i->second, j->second);
 				i++;
 			}
 			else {
-				res[j->first] = VectorDomainBase<Field>::_F.neg (tmp, j->second);
+				res[j->first] = VectorDomainBase<Field>::_field.neg (tmp, j->second);
 			}
 		}
 
@@ -1406,8 +1402,8 @@ namespace LinBox
 			}
 
 			if (i_idx != y.first.end () && *i_idx == *j_idx) {
-				VectorDomainBase<Field>::_F.sub (tmp, *i_elt, *j_elt);
-				if (!VectorDomainBase<Field>::_F.isZero (tmp)) {
+				VectorDomainBase<Field>::_field.sub (tmp, *i_elt, *j_elt);
+				if (!VectorDomainBase<Field>::_field.isZero (tmp)) {
 					res.first.push_back (*j_idx);
 					res.second.push_back (tmp);
 				}
@@ -1415,7 +1411,7 @@ namespace LinBox
 			}
 			else {
 				res.first.push_back (*j_idx);
-				res.second.push_back (VectorDomainBase<Field>::_F.neg (tmp, *j_elt));
+				res.second.push_back (VectorDomainBase<Field>::_field.neg (tmp, *j_elt));
 			}
 		}
 
@@ -1440,7 +1436,7 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 
 		for (i = y.begin (), j = x.begin (); i != y.end (); i++, j++)
-			VectorDomainBase<Field>::_F.subin (*i, *j);
+			VectorDomainBase<Field>::_field.subin (*i, *j);
 
 		return y;
 	}
@@ -1472,9 +1468,9 @@ namespace LinBox
 			while (i != y.end () && i->first < j->first) i++;
 
 			if (i != y.end () && i->first == j->first)
-				VectorDomainBase<Field>::_F.subin (i->second, j->second);
+				VectorDomainBase<Field>::_field.subin (i->second, j->second);
 			else
-				y[j->first] = VectorDomainBase<Field>::_F.neg (tmp, j->second);
+				y[j->first] = VectorDomainBase<Field>::_field.neg (tmp, j->second);
 		}
 
 		return y;
@@ -1505,7 +1501,7 @@ namespace LinBox
 		linbox_check (res.size () == x.size ());
 
 		for (j = x.begin (), k = res.begin (); j != x.end (); ++j, ++k)
-			VectorDomainBase<Field>::_F.neg (*k, *j);
+			VectorDomainBase<Field>::_field.neg (*k, *j);
 
 		return res;
 	}
@@ -1522,7 +1518,7 @@ namespace LinBox
 		res.clear ();
 
 		for (j = x.begin (); j != x.end (); ++j)
-			res.push_back (std::pair <size_t, Element> (j->first, VectorDomainBase<Field>::_F.neg (tmp, j->second)));
+			res.push_back (std::pair <size_t, Element> (j->first, VectorDomainBase<Field>::_field.neg (tmp, j->second)));
 
 		return res;
 	}
@@ -1539,7 +1535,7 @@ namespace LinBox
 		res.clear ();
 
 		for (j = x.begin (); j != x.end (); ++j)
-			res[j->first] = VectorDomainBase<Field>::_F.neg (tmp, j->second);
+			res[j->first] = VectorDomainBase<Field>::_field.neg (tmp, j->second);
 
 		return res;
 	}
@@ -1559,7 +1555,7 @@ namespace LinBox
 		std::copy (x.first.begin (), x.first.end (), res.first.begin ());
 
 		for (j = x.second.begin (); j != x.second.end (); ++j)
-			res.second.push_back (VectorDomainBase<Field>::_F.neg (tmp, *j));
+			res.second.push_back (VectorDomainBase<Field>::_field.neg (tmp, *j));
 
 		return res;
 	}
@@ -1572,7 +1568,7 @@ namespace LinBox
 		typename Vector::iterator i;
 
 		for (i = y.begin (); i != y.end (); ++i)
-			VectorDomainBase<Field>::_F.negin (*i);
+			VectorDomainBase<Field>::_field.negin (*i);
 
 		return y;
 	}
@@ -1585,7 +1581,7 @@ namespace LinBox
 		typename Vector::iterator i;
 
 		for (i = y.begin (); i != y.end (); ++i)
-			VectorDomainBase<Field>::_F.negin (i->second);
+			VectorDomainBase<Field>::_field.negin (i->second);
 
 		return y;
 	}
@@ -1598,7 +1594,7 @@ namespace LinBox
 		typename Vector::iterator i;
 
 		for (i = y.begin (); i != y.end (); ++i)
-			VectorDomainBase<Field>::_F.negin (i->second);
+			VectorDomainBase<Field>::_field.negin (i->second);
 
 		return y;
 	}
@@ -1611,7 +1607,7 @@ namespace LinBox
 		typename Vector::second_type::iterator i;
 
 		for (i = y.second.begin (); i != y.second.end (); ++i)
-			VectorDomainBase<Field>::_F.negin (*i);
+			VectorDomainBase<Field>::_field.negin (*i);
 
 		return y;
 	}
@@ -1630,7 +1626,7 @@ namespace LinBox
 		linbox_check (res.size () == x.size ());
 
 		for (i = x.begin (), j = res.begin (); i != x.end (); ++i, ++j)
-			VectorDomainBase<Field>::_F.mul (*j, *i, a);
+			VectorDomainBase<Field>::_field.mul (*j, *i, a);
 
 		return res;
 	}
@@ -1648,11 +1644,11 @@ namespace LinBox
 
 		res.clear ();
 
-		if (VectorDomainBase<Field>::_F.isZero (a))
+		if (VectorDomainBase<Field>::_field.isZero (a))
 			return res;
 
 		for (i = x.begin (); i != x.end (); i++)
-			res.push_back (std::pair <size_t, Element> (i->first, VectorDomainBase<Field>::_F.mul (tmp, i->second, a)));
+			res.push_back (std::pair <size_t, Element> (i->first, VectorDomainBase<Field>::_field.mul (tmp, i->second, a)));
 
 		return res;
 	}
@@ -1670,11 +1666,11 @@ namespace LinBox
 
 		res.clear ();
 
-		if (VectorDomainBase<Field>::_F.isZero (a))
+		if (VectorDomainBase<Field>::_field.isZero (a))
 			return res;
 
 		for (i = x.begin (); i != x.end (); i++)
-			res[i->first] = VectorDomainBase<Field>::_F.mul (tmp, i->second, a);
+			res[i->first] = VectorDomainBase<Field>::_field.mul (tmp, i->second, a);
 
 		return res;
 	}
@@ -1694,14 +1690,14 @@ namespace LinBox
 		res.first.clear ();
 		res.second.clear ();
 
-		if (VectorDomainBase<Field>::_F.isZero (a))
+		if (VectorDomainBase<Field>::_field.isZero (a))
 			return res;
 
 		for (i_idx = x.first.begin (); i_idx != x.first.end (); ++i_idx)
 			res.first.push_back (*i_idx);
 
 		for (i_elt = x.second.begin (); i_elt != x.second.end (); ++i_elt)
-			res.second.push_back (VectorDomainBase<Field>::_F.mul (tmp, *i_elt, a));
+			res.second.push_back (VectorDomainBase<Field>::_field.mul (tmp, *i_elt, a));
 
 		return res;
 	}
@@ -1716,7 +1712,7 @@ namespace LinBox
 		typename Vector::iterator i;
 
 		for (i = x.begin (); i != x.end (); i++)
-			VectorDomainBase<Field>::_F.mulin (*i, a);
+			VectorDomainBase<Field>::_field.mulin (*i, a);
 
 		return x;
 	}
@@ -1730,13 +1726,13 @@ namespace LinBox
 	{
 		typename Vector::iterator i;
 
-		if (VectorDomainBase<Field>::_F.isZero (a)) {
+		if (VectorDomainBase<Field>::_field.isZero (a)) {
 			x.clear ();
 			return x;
 		}
 
 		for (i = x.begin (); i != x.end (); i++)
-			VectorDomainBase<Field>::_F.mulin (i->second, a);
+			VectorDomainBase<Field>::_field.mulin (i->second, a);
 
 		return x;
 	}
@@ -1750,13 +1746,13 @@ namespace LinBox
 	{
 		typename Vector::iterator i;
 
-		if (VectorDomainBase<Field>::_F.isZero (a)) {
+		if (VectorDomainBase<Field>::_field.isZero (a)) {
 			x.clear ();
 			return x;
 		}
 
 		for (i = x.begin (); i != x.end (); i++)
-			VectorDomainBase<Field>::_F.mulin (i->second, a);
+			VectorDomainBase<Field>::_field.mulin (i->second, a);
 
 		return x;
 	}
@@ -1770,14 +1766,14 @@ namespace LinBox
 	{
 		typename Vector::second_type::iterator i;
 
-		if (VectorDomainBase<Field>::_F.isZero (a)) {
+		if (VectorDomainBase<Field>::_field.isZero (a)) {
 			x.first.clear ();
 			x.second.clear ();
 			return x;
 		}
 
 		for (i = x.second.begin (); i != x.second.end (); i++)
-			VectorDomainBase<Field>::_F.mulin (*i, a);
+			VectorDomainBase<Field>::_field.mulin (*i, a);
 
 		return x;
 	}
@@ -1799,7 +1795,7 @@ namespace LinBox
 		linbox_check (res.size () == x.size ());
 
 		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
-			VectorDomainBase<Field>::_F.axpy (*k, a, *j, *i);
+			VectorDomainBase<Field>::_field.axpy (*k, a, *j, *i);
 
 		return res;
 	}
@@ -1826,13 +1822,13 @@ namespace LinBox
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				VectorDomainBase<Field>::_F.axpy (tmp, a, j->second, i->second);
+				VectorDomainBase<Field>::_field.axpy (tmp, a, j->second, i->second);
 				i++;
 			}
 			else
-				VectorDomainBase<Field>::_F.mul (tmp, a, j->second);
+				VectorDomainBase<Field>::_field.mul (tmp, a, j->second);
 
-			if (!VectorDomainBase<Field>::_F.isZero (tmp))
+			if (!VectorDomainBase<Field>::_field.isZero (tmp))
 				res.push_back (std::pair <size_t, Element> (j->first, tmp));
 		}
 
@@ -1865,11 +1861,11 @@ namespace LinBox
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				VectorDomainBase<Field>::_F.axpy (res[j->first], a, j->second, i->second);
+				VectorDomainBase<Field>::_field.axpy (res[j->first], a, j->second, i->second);
 				i++;
 			}
 			else
-				VectorDomainBase<Field>::_F.mul (res[j->first], a, j->second);
+				VectorDomainBase<Field>::_field.mul (res[j->first], a, j->second);
 		}
 
 		while (i != y.end ()) {
@@ -1906,8 +1902,8 @@ namespace LinBox
 			}
 
 			if (i_idx != y.first.end () && *i_idx == *j_idx) {
-				VectorDomainBase<Field>::_F.axpy (tmp, a, *j_elt, *i_elt);
-				if (!VectorDomainBase<Field>::_F.isZero (tmp)) {
+				VectorDomainBase<Field>::_field.axpy (tmp, a, *j_elt, *i_elt);
+				if (!VectorDomainBase<Field>::_field.isZero (tmp)) {
 					res.first.push_back (*j_idx);
 					res.second.push_back (tmp);
 				}
@@ -1915,7 +1911,7 @@ namespace LinBox
 			}
 			else {
 				res.first.push_back (*j_idx);
-				res.second.push_back (VectorDomainBase<Field>::_F.mul (tmp, *j_elt, a));
+				res.second.push_back (VectorDomainBase<Field>::_field.mul (tmp, *j_elt, a));
 			}
 		}
 
@@ -1943,7 +1939,7 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 
 		for (i = y.begin (), j = x.begin (); i != y.end (); ++i, ++j)
-			VectorDomainBase<Field>::_F.axpyin (*i, a, *j);
+			VectorDomainBase<Field>::_field.axpyin (*i, a, *j);
 
 		return y;
 	}
@@ -1960,7 +1956,7 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 
 		for (j = x.begin (); j != x.end (); ++j)
-			VectorDomainBase<Field>::_F.axpyin (y[j->first], a, j->second);
+			VectorDomainBase<Field>::_field.axpyin (y[j->first], a, j->second);
 
 		return y;
 	}
@@ -1977,7 +1973,7 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 
 		for (j = x.begin (); j != x.end (); ++j)
-			VectorDomainBase<Field>::_F.axpyin (y[j->first], a, j->second);
+			VectorDomainBase<Field>::_field.axpyin (y[j->first], a, j->second);
 
 		return y;
 	}
@@ -1995,7 +1991,7 @@ namespace LinBox
 		typename Vector2::second_type::const_iterator j_elt = x.second.begin ();
 
 		for (; j_idx != x.first.end (); ++j_idx, ++j_elt)
-			VectorDomainBase<Field>::_F.axpyin (y[*j_idx], a, *j_elt);
+			VectorDomainBase<Field>::_field.axpyin (y[*j_idx], a, *j_elt);
 
 		return y;
 	}
@@ -2029,7 +2025,7 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		Element tmp;
 
-		if (VectorDomainBase<Field>::_F.isZero (a)) {
+		if (VectorDomainBase<Field>::_field.isZero (a)) {
 			y.clear ();
 			return y;
 		}
@@ -2038,9 +2034,9 @@ namespace LinBox
 			while (i != y.end () && i->first != j->first) i++;
 
 			if (i != y.end () && i->first == j->first)
-				VectorDomainBase<Field>::_F.axpyin (i->second, a, j->second);
-			else if (!VectorDomainBase<Field>::_F.isZero (j->second))
-				y[j->first] = VectorDomainBase<Field>::_F.mul (tmp, a, j->second);
+				VectorDomainBase<Field>::_field.axpyin (i->second, a, j->second);
+			else if (!VectorDomainBase<Field>::_field.isZero (j->second))
+				y[j->first] = VectorDomainBase<Field>::_field.mul (tmp, a, j->second);
 		}
 
 		return y;
@@ -2370,4 +2366,5 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_field_vector_domain_INL
+
 

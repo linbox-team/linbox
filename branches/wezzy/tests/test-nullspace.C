@@ -62,6 +62,35 @@ void RandomPermutation ( size_t * P, const size_t & len)
 	return;
 }
 
+/**
+ * @brief Checks we got the right rank.
+ *
+ * @param F field
+ * @param A matrix
+ * @param m rows
+ * @param n cols
+ * @param lda leadin dimmension
+ * @param alledged_rank supposedly correct rank.
+ *
+ * @return \c alledged_rank==rank(A)
+ */
+template <class Field>
+bool CheckRank( const Field & F,
+		const typename Field::Element * A,
+		const size_t & m,
+		const size_t & n,
+		const size_t & lda,
+		const size_t & alledged_rank)
+{
+	//                std::cout << " is rank truely " << alledged_rank << " ?" << std::endl;
+	typename Field::Element * Acopy = new typename Field::Element[m*n] ;
+	FFLAS::fcopy(F,m*n,Acopy,1,A,1);
+	size_t true_rank = FFPACK::Rank(F,m,n,Acopy,lda);
+	delete[] Acopy ;
+	//                std::cout << "It is " << true_rank << "." << std::endl;
+	return (alledged_rank == true_rank);
+}
+
 
 /*!
  * Builds a \p m x \p n random matrix of rank \p rank over field \p F.
@@ -134,34 +163,6 @@ void RandomMatrixWithRank(const Field & F,
 }
 
 
-/**
- * @brief Checks we got the right rank.
- *
- * @param F field
- * @param A matrix
- * @param m rows
- * @param n cols
- * @param lda leadin dimmension
- * @param alledged_rank supposedly correct rank.
- *
- * @return \c alledged_rank==rank(A)
- */
-template <class Field>
-bool CheckRank( const Field & F,
-		const typename Field::Element * A,
-		const size_t & m,
-		const size_t & n,
-		const size_t & lda,
-		const size_t & alledged_rank)
-{
-	//                std::cout << " is rank truely " << alledged_rank << " ?" << std::endl;
-	typename Field::Element * Acopy = new typename Field::Element[m*n] ;
-	FFLAS::fcopy(F,m*n,Acopy,1,A,1);
-	size_t true_rank = FFPACK::Rank(F,m,n,Acopy,lda);
-	delete[] Acopy ;
-	//                std::cout << "It is " << true_rank << "." << std::endl;
-	return (alledged_rank == true_rank);
-}
 
 /*!
  * @brief Tests the NullSpace routines.

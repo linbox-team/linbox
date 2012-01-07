@@ -42,13 +42,13 @@
 
 #include <iostream>
 
-//#include "linbox/field/archetype.h"
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/field-axpy.h"
-#include "linbox/util/debug.h"
 
 namespace LinBox
-{
+{ /*  VectorDomainBase */
 	/** @name Vector domain base
 	 *
 	 * This class provides a virtual base for the VectorDomain and the
@@ -60,20 +60,23 @@ namespace LinBox
 	class VectorDomainBase {
 	public:
 		VectorDomainBase (const Field &F) :
-			_F (F), accu(F)
+			_field (F), accu(F)
 		{}
 
 		VectorDomainBase& operator= (const VectorDomainBase& VD)
-		{	_F = VD._F;
+		{	_field = VD._field;
 			accu = VD.accu;
 			return *this;
 		}
 
 	protected:
-		Field _F;
+		Field _field;
 		mutable FieldAXPY<Field> accu;
 	};
+}
 
+namespace LinBox
+{ /*  Dot Product */
 	/** @name Dot product domain
 	 * @brief Performance-critical dotproducts
 	 *
@@ -104,6 +107,10 @@ namespace LinBox
 
 	};
 
+}
+
+namespace LinBox
+{ /*  Vector Domain */
 
 	/** @name Vector Domain
 	 * @brief Vector arithmetic
@@ -134,7 +141,7 @@ namespace LinBox
 		 * @param  VD VectorDomain object.
 		 */
 		VectorDomain (const VectorDomain &VD) :
-			VectorDomainBase<Field> (VD._F), DotProductDomain<Field> (VD._F)
+			VectorDomainBase<Field> (VD._field), DotProductDomain<Field> (VD._field)
 		{}
 
 		/** Assignment operator.
@@ -143,8 +150,8 @@ namespace LinBox
 		 */
 		VectorDomain &operator = (const VectorDomain &VD)
 		{
-			VectorDomainBase<Field>::_F = VD._F;
-			VectorDomainBase<Field>::accu = VD.accu;
+			VectorDomainBase<Field>:: _field = VD._field;
+			VectorDomainBase<Field>:: accu = VD.accu;
 			return *this;
 		}
 
@@ -156,7 +163,7 @@ namespace LinBox
 
 		const Field &field () const
 		{
-			return VectorDomainBase<Field>::_F;
+			return VectorDomainBase<Field>:: _field;
 		}
 
 		/** Vector input/output operations
@@ -720,6 +727,7 @@ namespace LinBox
 		{
 			return DotProductDomain<Field>::dotSpecializedDD (res, v1, v2);
 		}
+
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseSequenceVectorTag,
@@ -1262,7 +1270,9 @@ namespace LinBox
 
 } // namespace LinBox
 
-#include "linbox/vector/vector-domain.inl"
 
 #endif // __LINBOX_field_vector_domain_H
+
+#include "linbox/vector/vector-domain.inl"
+#include "linbox/vector/vector-domain-gf2.h"
 

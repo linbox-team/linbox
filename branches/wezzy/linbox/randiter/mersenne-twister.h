@@ -67,7 +67,7 @@ namespace LinBox
 }
 
 #ifdef LinBoxSrcOnly
-#include <linbox/randiter/mersenne-twister.C>
+#include "linbox/randiter/mersenne-twister.C"
 #endif
 #endif // __LINBOX_mersenne_twister_H
 

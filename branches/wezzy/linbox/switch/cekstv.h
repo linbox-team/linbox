@@ -171,4 +171,5 @@ namespace LinBox
 
 }
 
+#include "linbox/switch/cekstv-gf2.h"
 #endif // __LINBOX_cekstv_H

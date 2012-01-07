@@ -25,8 +25,8 @@
 #define __LINBOX_lb_utilities_H
 
 
-#include <linbox/util/error.h>
-#include <linbox/util/debug.h>
+#include "linbox/util/error.h"
+#include "linbox/util/debug.h"
 
 #include <iostream>
 #include <sstream>

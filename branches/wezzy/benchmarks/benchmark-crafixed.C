@@ -47,7 +47,7 @@
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/algorithms/rns.h"
 
-#include <linbox/algorithms/cra-domain.h>
+#include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/integer.h"
 
@@ -57,7 +57,7 @@
 
 #define _LB_LOG2 0.69314718055994530941
 
-using ::Givaro::Timer ;
+using Givaro::Timer ;
 using LinBox::integer;
 
 // typedef std::vector<LinBox::integer> Ivect ;

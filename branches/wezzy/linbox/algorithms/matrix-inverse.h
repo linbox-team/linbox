@@ -27,8 +27,8 @@
 #ifndef __LINBOX_matrix_inverse_H
 #define __LINBOX_matrix_inverse_H
 
-#include <linbox/util/debug.h>
-#include <linbox/util/error.h>
+#include "linbox/util/debug.h"
+#include "linbox/util/error.h"
 #include <vector>
 #include <algorithm>
 
@@ -43,24 +43,24 @@ namespace LinBox
 		 *  It returns 0, if an inverse is found, and
 		 *  returns 1, otherwise.
 		 */
-		template<class Field, class DenseMatrix>
-		static  long matrixInverseIn(const Field& F, DenseMatrix& A)
+		template<class Field, class AnyDenseMatrix>
+		static  long matrixInverseIn(const Field& F, AnyDenseMatrix& A)
 		{
 
 			// check if A is a square matrix
 			linbox_check(A.rowdim() == A. coldim());
 
 			// PG 1/07/04
-			//typedef typename DenseMatrix::Field Field;
+			//typedef typename AnyDenseMatrix::Field Field;
 
 			// step1 PLU Inplcae, actually, LPA = U.
 			std::vector<std::pair<int,int> > P;
 			P.reserve (A.rowdim());
 
-			typename DenseMatrix::RowIterator cur_r, tmp_r;
-			typename DenseMatrix::ColIterator cur_c, tmp_c;
-			typename DenseMatrix::Row::iterator cur_rp, tmp_rp;
-			typename DenseMatrix::Col::iterator cur_cp, tmp_cp;
+			typename AnyDenseMatrix::RowIterator cur_r, tmp_r;
+			typename AnyDenseMatrix::ColIterator cur_c, tmp_c;
+			typename AnyDenseMatrix::Row::iterator cur_rp, tmp_rp;
+			typename AnyDenseMatrix::Col::iterator cur_cp, tmp_cp;
 
 			std::vector<typename Field::Element> tmp_v (A.rowdim());
 
@@ -123,7 +123,7 @@ namespace LinBox
 
 
 			//second compute inverse of A.
-			DenseMatrix tmp(A);
+			AnyDenseMatrix tmp(A);
 
 
 			//2a compute inverse of PA, by solving upper-triangeular system, PA = U^{-1} L.
@@ -190,7 +190,7 @@ namespace LinBox
 	};
 
 	template<>
-	inline long MatrixInverse::matrixInverseIn(const MultiModDouble& F, BlasBlackbox<MultiModDouble>& A) {
+	inline long MatrixInverse::matrixInverseIn(const MultiModDouble& F, BlasMatrix<MultiModDouble>& A) {
 		throw LinboxError("LinBox ERROR: use of MultiModDouble with too large moduli is not allowed at this time\n");
 		return 0;
 	}

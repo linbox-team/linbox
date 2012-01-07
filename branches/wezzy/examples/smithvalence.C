@@ -31,8 +31,8 @@
 #include <iostream>
 
 #include "linbox/field/gf2.h"
-#include "linbox/field/modular-double.h"
-#include "linbox/field/givaro-zpz.h"
+#include "linbox/field/modular.h"
+#include "linbox/field/givaro.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/blackbox/compose.h"
@@ -54,7 +54,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
 	LinBox::MatrixStream< Field > msf( F, input );
 	LinBox::SparseMatrix<Field,typename LinBox::Vector<Field>::SparseSeq> FA(msf);
 	input.close();
-	::Givaro::Timer tim; tim.start();
+ Givaro::Timer tim; tim.start();
 	LinBox::rankin(r, FA);
 	tim.stop();
 	F.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
@@ -67,7 +67,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 	LinBox::ZeroOne<LinBox::GF2> A;
 	A.read(input);
 	input.close();
-	::Givaro::Timer tim; tim.start();
+ Givaro::Timer tim; tim.start();
 	LinBox::rankin(r, A, LinBox::Method::SparseElimination() );
 	tim.stop();
 	F2.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
@@ -79,21 +79,21 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 unsigned long& LRank(unsigned long& r, char * filename, integer p)
 {
 
-	integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std16> >::maxModulus(maxmod16);
-	integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std32> >::maxModulus(maxmod32);
+	integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz< Givaro::Std16> >::maxModulus(maxmod16);
+	integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz< Givaro::Std32> >::maxModulus(maxmod32);
 	integer maxmod53; LinBox::FieldTraits<LinBox::Modular<double> >::maxModulus(maxmod53);
-	integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std64> >::maxModulus(maxmod64);
+	integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz< Givaro::Std64> >::maxModulus(maxmod64);
 	if (p == 2) {
 		LinBox::GF2 F2;
 		return TempLRank(r, filename, F2);
 	}
 	else if (p <= maxmod16) {
-		typedef LinBox::GivaroZpz< ::Givaro::Std16> Field;
+		typedef LinBox::GivaroZpz< Givaro::Std16> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
 	else if (p <= maxmod32) {
-		typedef LinBox::GivaroZpz< ::Givaro::Std32> Field;
+		typedef LinBox::GivaroZpz< Givaro::Std32> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
@@ -103,7 +103,7 @@ unsigned long& LRank(unsigned long& r, char * filename, integer p)
 		return TempLRank(r, filename, F);
 	}
 	else if (p <= maxmod64) {
-		typedef LinBox::GivaroZpz< ::Givaro::Std64> Field;
+		typedef LinBox::GivaroZpz< Givaro::Std64> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
@@ -118,9 +118,9 @@ unsigned long& LRank(unsigned long& r, char * filename, integer p)
 std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, integer p, size_t e, size_t intr)
 {
 	integer maxmod;
-	LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std64> >::maxModulus(maxmod);
+	LinBox::FieldTraits<LinBox::GivaroZpz< Givaro::Std64> >::maxModulus(maxmod);
 	if (p <= maxmod) {
-		typedef LinBox::GivaroZpz< ::Givaro::Std64> Ring;
+		typedef LinBox::GivaroZpz< Givaro::Std64> Ring;
 		int64_t lp(p);
 		integer q = pow(p,e); int64_t lq(q);
 		if (q > integer(lq)) {
@@ -183,7 +183,7 @@ int main (int argc, char **argv)
 
 	PID_integer::Element val_A;
 
-	::Givaro::Timer chrono; chrono.start();
+ Givaro::Timer chrono; chrono.start();
 	if (argc >= 3) {
 		Transpose<Blackbox> T(&A);
 		if (strcmp(argv[2],"-ata") == 0) {
@@ -214,7 +214,7 @@ int main (int argc, char **argv)
 
 	std::vector<integer> Moduli;
 	std::vector<size_t> exponents;
-	::Givaro::IntFactorDom<> FTD;
+ Givaro::IntFactorDom<> FTD;
 
 	typedef std::pair<integer,unsigned long> PairIntRk;
 	std::vector< PairIntRk > smith;

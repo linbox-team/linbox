@@ -57,11 +57,10 @@
 #include <string>
 #include <list>
 #include <vector>
-#include <linbox/blackbox/direct-sum.h>
-#include <linbox/blackbox/companion.h>
-#include <linbox/blackbox/dense.h>
-#include <linbox/algorithms/matrix-hom.h>
-#include <linbox/field/ntl-ZZ.h>
+#include "linbox/blackbox/direct-sum.h"
+#include "linbox/blackbox/companion.h"
+#include "linbox/algorithms/matrix-hom.h"
+#include "linbox/field/ntl-ZZ.h"
 #include <NTL/ZZX.h>
 
 using std::string;
@@ -69,7 +68,7 @@ using std::list;
 using std::vector;
 using LinBox::Companion;
 using LinBox::DirectSum;
-using LinBox::DenseMatrix;
+using LinBox::BlasMatrix;
 using LinBox::NTL_ZZ;
 using NTL::ZZX;
 
@@ -135,7 +134,7 @@ void augmentBB(List& L, char* code, int e, int k, const Ring& R)
 }
 
 template < class Ring >
-void scramble(DenseMatrix<Ring>& M)
+void scramble(BlasMatrix<Ring>& M)
 {
 
 	Ring R = M.field();
@@ -253,7 +252,7 @@ int main(int ac, char* av[])
 	{	if (opts[0] == 'r')
 		{
 			// into sparse matrix, then 3n row ops with corresponding col ops
-			DenseMatrix<Ring>* B;//(Z,A.rowdim(), A.coldim());
+			BlasMatrix<Ring>* B;//(Z,A.rowdim(), A.coldim());
 			//MatrixDomain<Ring> MD(Z);
 			LinBox::MatrixHom::map (B, A, Z);
 

@@ -25,7 +25,7 @@
 #define __LINBOX_lb_charpoly_C
 
 
-#include <linbox/solutions/charpoly.h>
+#include "linbox/solutions/charpoly.h"
 #ifdef __LINBOX_HAVE_GIVARO
 #include "linbox/ring/givaro-polynomial.h"
 #endif
@@ -56,7 +56,7 @@ public:
 		typedef typename Field::Element Element;
 #ifdef __LINBOX_HAVE_GIVARO
 		// use givpolynomial du to non genericity of charpoly over integer
-		typename LinBox::GivPolynomialRing<Field, ::Givaro::Dense>::Element pol;
+		typename LinBox::GivPolynomialRing<Field, Givaro::Dense>::Element pol;
 		LinBox::charpoly(pol, *B, meth);
 
 		// convert back the result to std::vector

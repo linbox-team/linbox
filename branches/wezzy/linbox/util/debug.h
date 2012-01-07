@@ -60,6 +60,12 @@
 #  endif
 #endif
 
+#define THIS_CODE_COMPILES_BUT_IS_NOT_TESTED \
+     std::cout << "*** Warning *** " << std::endl << __func__ << " in " << __FILE__ << ':' << __LINE__ << " is not tested" << std::endl;
+
+#define THIS_CODE_MAY_NOT_COMPILE_AND_IS_NOT_TESTED \
+" *** Warning ***  this piece of code is not compiled by default and may not work"
+
 namespace LinBox
 {
 	/*!  A precondtion failed.
@@ -250,7 +256,7 @@ namespace LinBox
 
 #ifdef LinBoxSrcOnly
 // for all-source compilation
-#include <linbox/util/debug.C>
+#include "linbox/util/debug.C"
 #endif
 
 #include <fflas-ffpack/utils/print-utils.h>

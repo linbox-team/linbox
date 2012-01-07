@@ -25,8 +25,8 @@
 #ifndef __LINBOX_random_fftprime_H
 #define __LINBOX_random_fftprime_H
 
-#include <linbox/integer.h>
-#include <linbox/util/timer.h>
+#include "linbox/integer.h"
+#include "linbox/util/timer.h"
 
 namespace LinBox
 {
@@ -40,7 +40,7 @@ namespace LinBox
 			_bits(bits)
 		{
 			if (! seed)
-				RandomFFTPrime::setSeed( BaseTimer::seed() );
+				RandomFFTPrime::setSeed( (unsigned long)BaseTimer::seed() );
 			else
 				RandomFFTPrime::setSeed( seed );
 		}
@@ -58,12 +58,12 @@ namespace LinBox
 			size_t tresh;
 			do {
 				tresh = 1<<(cbits);
-				size_t p = 1<<(_bits-cbits);
+				size_t p = 1<<((size_t)_bits-cbits);
 				do {
 					integer::random(tmp,cbits);
 					tmp = tmp*p+1;
 					tresh--;
-				} while ((::Givaro::probab_prime(tmp)<2) && (tresh));
+				} while (( Givaro::probab_prime(tmp)<2) && (tresh));
 				cbits++;
 			}
 			while(tresh==0);
@@ -79,7 +79,7 @@ namespace LinBox
 			size_t tresh;
 			do {
 				tresh = 1<<(cbits);
-				size_t p = 1<<(_bits-cbits);
+				size_t p = 1<<((size_t)_bits-cbits);
 				do {
 					integer::random(t,cbits);
 					t = t*p+1;

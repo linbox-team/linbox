@@ -1,4 +1,4 @@
-# Copyright (c) 2010 the LinBox group
+# Copyright (c) 2010-2011 the LinBox group
 # This file is part of LinBox
 # see COPYING for licence
 
@@ -18,7 +18,7 @@ AM_CXXFLAGS = -DLinBoxSrcOnly  @TESTS_CFLAGS@ @DEBUG_CFLAGS@
 SUBDIRS = data matrix
 
 AM_CPPFLAGS+= $(CBLAS_FLAG) $(FFLAS_FFPACK_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
-LDADD = $(GIVARO_LIBS) $(BLAS_LIBS) $(NTL_LIBS)  $(GMP_LIBS) $(LIDIA_LIBS) $(LDFLAGS)
+LDADD = $(GIVARO_LIBS) $(BLAS_LIBS) $(NTL_LIBS)  $(GMP_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS)
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,$(GIVARO_LIBS)
 
 EXTRA_DIST=            \
@@ -49,6 +49,7 @@ BASIC_TESTS =  \
 
 FULLCHECK_TESTS =                 \
         test-bitonic-sort             \
+	test-blackbox-block-container \
         test-blas-domain              \
         test-butterfly                \
         test-companion                \
@@ -83,6 +84,7 @@ FULLCHECK_TESTS =                 \
         test-randiter-nonzero         \
         test-rational-matrix-factory  \
         test-scalar-matrix            \
+	test-solve-nonsingular        \
         test-sparse                   \
         test-subiterator              \
         test-submatrix                \
@@ -223,6 +225,14 @@ test_modular_SOURCES =                        \
         test-modular.C                        \
         test-generic.h                        \
         test-common.h
+
+test_blackbox_block_container_SOURCES =   \
+	test-blackbox-block-container.C    \
+	test-common.h
+
+test_solve_nonsingular_SOURCES =   \
+	test-solve-nonsingular.C   \
+	test-common.h
 
 test_block_ring_SOURCES =                 \
         test-block-ring.C                 \

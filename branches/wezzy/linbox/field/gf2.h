@@ -17,12 +17,19 @@
 #include <climits>
 #include <cmath>
 
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
-#include "linbox/util/debug.h"
 #include "linbox/vector/bit-vector.h"
-#include "linbox/linbox-config.h"
 #include "linbox/field/field-traits.h"
+// #include "linbox/vector/vector-domain.h"
+
+#ifndef __PATHCC__
+#define stdBitReference std::_Bit_reference
+#else
+#define stdBitReference std::vector<bool>::reference
+#endif
 
 // Namespace in which all LinBox code resides
 namespace LinBox
@@ -52,7 +59,7 @@ namespace LinBox
 
 	class GF2 : public FieldInterface {
 	public:
-		const bool zero,one,mone;
+		const bool zero,one,mOne;
 
 
 		/** Element type
@@ -72,10 +79,10 @@ namespace LinBox
 		/** Default constructor.
 		*/
 		GF2 () :
-			zero(false),one(true),mone(true)
+			zero(false),one(true),mOne(true)
 		{}
 		GF2 (int p, int exp = 1) :
-			zero(false),one(true),mone(true)
+			zero(false),one(true),mOne(true)
 		{
 			if(p != 2) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 2");
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
@@ -88,7 +95,7 @@ namespace LinBox
 		 * @param  F Modular object.
 		 */
 		GF2 (const GF2 & F ) :
-			zero(false),one(true),mone(true) {}
+			zero(false),one(true),mOne(true) {}
 
 		/** Assignment operator.
 		 * Required by the archetype
@@ -111,22 +118,22 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		Element &init (Element &x, const int &y = 0) const
+		Element &init (Element &x, const int &y ) const
 		{
 			return x = y & 1;
 		}
 
-		Element &init (Element &x, const unsigned int &y = 0) const
+		Element &init (Element &x, const unsigned int &y ) const
 		{
 			return x = y & 1;
 		}
 
-		Element &init (Element &x, const long &y = 0) const
+		Element &init (Element &x, const long &y ) const
 		{
 			return x = y & 1;
 		}
 
-		Element &init (Element &x, const unsigned long &y = 0) const
+		Element &init (Element &x, const unsigned long &y ) const
 		{
 			return x = y & 1;
 		}
@@ -146,12 +153,18 @@ namespace LinBox
 			return x = static_cast<long>(y) & 1;
 		}
 
+
+		Element &init(Element&x) const
+		{
+			return x = false;
+		}
+
 		BitVector::reference init (BitVector::reference x, const integer &y = 0) const
 		{
 			return x = long (y) & 1;
 		}
 
-		std::_Bit_reference init (std::_Bit_reference x, const integer &y = 0) const
+		stdBitReference init (stdBitReference x, const integer &y = 0) const
 		{
 			return x = long (y) & 1;
 		}
@@ -168,7 +181,7 @@ namespace LinBox
 			return x = y;
 		}
 
-		std::_Bit_reference convert (std::_Bit_reference x, Element y) const
+		stdBitReference convert (stdBitReference x, Element y) const
 		{
 			return x = y;
 		}
@@ -228,7 +241,7 @@ namespace LinBox
 			return x = y;
 		}
 
-		std::_Bit_reference assign (std::_Bit_reference x, Element y) const
+		stdBitReference assign (stdBitReference x, Element y) const
 		{
 			return x = y;
 		}
@@ -362,7 +375,7 @@ namespace LinBox
 		 * @param x
 		 * @return  \c is
 		 */
-		std::istream &read (std::istream &is, std::_Bit_reference x) const
+		std::istream &read (std::istream &is, stdBitReference x) const
 		{ bool a; is >> a; x=a; return is;
 		}
 
@@ -405,7 +418,7 @@ namespace LinBox
 		 * @param y
 		 * @param z
 		 */
-		std::_Bit_reference add (std::_Bit_reference x, Element y, Element z) const
+		stdBitReference add (stdBitReference x, Element y, Element z) const
 		{
 			return x = y ^ z;
 		}
@@ -439,7 +452,7 @@ namespace LinBox
 		 * @param y
 		 * @param z
 		 */
-		std::_Bit_reference sub (std::_Bit_reference x, Element y, Element z) const
+		stdBitReference sub (stdBitReference x, Element y, Element z) const
 		{
 			return x = y ^ z;
 		}
@@ -473,7 +486,7 @@ namespace LinBox
 		 * @param y
 		 * @param z
 		 */
-		std::_Bit_reference mul (std::_Bit_reference x, Element y, Element z) const
+		stdBitReference mul (stdBitReference x, Element y, Element z) const
 		{
 			return x = y & z;
 		}
@@ -508,7 +521,7 @@ namespace LinBox
 		 * @param y
 		 * @param z
 		 */
-		std::_Bit_reference div (std::_Bit_reference x, Element y, Element z ) const
+		stdBitReference div (stdBitReference x, Element y, Element z ) const
 		{
 			return x = y;
 		}
@@ -541,7 +554,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		std::_Bit_reference neg (std::_Bit_reference x, Element y) const
+		stdBitReference neg (stdBitReference x, Element y) const
 		{
 			return x = y;
 		}
@@ -574,7 +587,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		std::_Bit_reference inv (std::_Bit_reference x, Element y) const
+		stdBitReference inv (stdBitReference x, Element y) const
 		{
 			return x = y;
 		}
@@ -604,7 +617,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		std::_Bit_reference axpy (std::_Bit_reference r,
+		stdBitReference axpy (stdBitReference r,
 					  Element a,
 					  Element x,
 					  Element y) const
@@ -659,7 +672,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		std::_Bit_reference addin (std::_Bit_reference x, Element y) const
+		stdBitReference addin (stdBitReference x, Element y) const
 		{
 			return x = x ^ y;
 		}
@@ -692,7 +705,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		std::_Bit_reference subin (std::_Bit_reference x, Element y) const
+		stdBitReference subin (stdBitReference x, Element y) const
 		{
 			return x = x ^ y;
 		}
@@ -725,7 +738,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		Element& mulin (std::_Bit_reference& x, Element y) const
+		Element& mulin (stdBitReference& x, Element y) const
 		{
 			return mulin((bool&)x,y);
 		}
@@ -761,7 +774,7 @@ namespace LinBox
 		 * @param  y
 		 * @bug y is unused
 		 */
-		std::_Bit_reference divin (std::_Bit_reference x, Element y ) const
+		stdBitReference divin (stdBitReference x, Element y ) const
 		{
 			return x;
 		}
@@ -793,7 +806,7 @@ namespace LinBox
 		 * @param  x
 		 * @bug y is unused
 		 */
-		std::_Bit_reference negin (std::_Bit_reference x) const
+		stdBitReference negin (stdBitReference x) const
 		{
 			return x;
 		}
@@ -823,7 +836,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x
 		 */
-		std::_Bit_reference invin (std::_Bit_reference x) const
+		stdBitReference invin (stdBitReference x) const
 		{
 			return x;
 		}
@@ -860,7 +873,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		std::_Bit_reference axpyin (std::_Bit_reference r, Element a, Element x) const
+		stdBitReference axpyin (stdBitReference r, Element a, Element x) const
 		{
 			return r = r ^ (a & x);
 		}
@@ -871,7 +884,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		Element &axpyin (Element &r, const std::_Bit_reference a, Element x) const
+		Element &axpyin (Element &r, const stdBitReference a, Element x) const
 		{
 			return r ^= a & x;
 		}
@@ -882,7 +895,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		std::_Bit_reference axpyin (std::_Bit_reference r, const std::_Bit_reference a, Element x) const
+		stdBitReference axpyin (stdBitReference r, const stdBitReference a, Element x) const
 		{
 			return r = r ^ (a & x);
 		}
@@ -893,7 +906,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		Element &axpyin (Element &r, Element a, const std::_Bit_reference x) const
+		Element &axpyin (Element &r, Element a, const stdBitReference x) const
 		{
 			return r ^= a & static_cast<bool>(x);
 		}
@@ -904,7 +917,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		std::_Bit_reference axpyin (std::_Bit_reference r, Element a, const std::_Bit_reference x) const
+		stdBitReference axpyin (stdBitReference r, Element a, const stdBitReference x) const
 		{
 			return r = r ^ (a & static_cast<bool>(x));
 		}
@@ -915,7 +928,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		Element &axpyin (Element &r, const std::_Bit_reference a, const std::_Bit_reference x) const
+		Element &axpyin (Element &r, const stdBitReference a, const stdBitReference x) const
 		{
 			return r ^= a & static_cast<bool>(x);
 		}
@@ -926,7 +939,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		std::_Bit_reference axpyin (std::_Bit_reference r, const std::_Bit_reference a, const std::_Bit_reference x) const
+		stdBitReference axpyin (stdBitReference r, const stdBitReference a, const stdBitReference x) const
 		{
 			return r = r ^ (a & static_cast<bool>(x));
 		}
@@ -942,328 +955,18 @@ namespace LinBox
 
 } // namespace LinBox
 
-
-// Specialization of GivaroField for GF2
-#include "linbox/field/givaro-field.h"
-namespace LinBox
-{
-
-	/**
-	  \brief give LinBox fields an allure of Givaro Fields
-	  \ingroup field
-
-	 *  This class adds the necessary requirements allowing
-	 *  the construction of an extension of a LinBox field.
-	 */
-	template<>
-	struct GivaroField<LinBox::GF2> : public LinBox::GF2
-	{
-		typedef LinBox::GF2 BaseField;
-		typedef BaseField::Element TT;
-		typedef Signed_Trait<TT>::unsigned_type UTT;
-		typedef TT Rep;
-		typedef GivaroField<BaseField> Self_t;
-		typedef Rep Element;
-		typedef UTT Residu_t;
-
-		Element zero, one;
-		GivaroField(const BaseField& bf) :
-			BaseField(bf)
-		{
-			this->init(zero,0UL);
-			this->init(one, 1UL);
-		}
-
-
-		// -- amxy: r <- c - a * b mod p
-		Rep& amxy (Rep& r, const Rep a, const Rep b, const Rep c) const
-		{
-			Rep tmp;
-			this->mul(tmp, a, b);
-			this->assign(r,c);
-			return this->subin(r,tmp);
-		}
-		std::_Bit_reference amxy (std::_Bit_reference r, const Rep a, const Rep b, const Rep c) const
-		{
-			Rep tmp;
-			this->mul(tmp, a, b);
-			this->assign(r,c);
-			return this->subin(r,tmp);
-		}
-
-
-		// -- maxpy: r <- y - a * x
-		Rep& maxpy (Rep& r, const Rep a, const Rep x, const Rep y) const
-		{
-			Rep tmp; this->mul(tmp, a, x);
-			return this->sub(r,y,tmp);
-		}
-		std::_Bit_reference maxpy (std::_Bit_reference r, const Rep a, const Rep x, const Rep y) const
-		{
-			Rep tmp; this->mul(tmp, a, x);
-			return this->sub(r,y,tmp);
-		}
-		// -- axmyin: r <-  a * x - r
-		Rep& axmyin (Rep& r, const Rep a, const Rep x) const
-		{
-			maxpyin(r,a,x);
-			return negin(r);
-		}
-		std::_Bit_reference axmyin (std::_Bit_reference r, const Rep a, const Rep x) const
-		{
-			maxpyin(r,a,x);
-			return negin(r);
-		}
-		// -- maxpyin: r <- r - a * x
-		Rep& maxpyin (Rep& r, const Rep a, const Rep x) const
-		{
-			Rep tmp; this->mul(tmp, a, x);
-			return this->subin(r,tmp);
-		}
-		std::_Bit_reference maxpyin (std::_Bit_reference r, const Rep a, const Rep x) const
-		{
-			Rep tmp; this->mul(tmp, a, x);
-			return this->subin(r,tmp);
-		}
-
-
-
-		bool areNEqual ( const Rep a, const Rep b) const
-		{
-			return ! this->areEqual(a,b);
-		}
-
-		// Access to the modulus, characteristic, size, exponent
-		UTT residu() const
-		{
-			integer c;
-			BaseField::characteristic(c);
-			return UTT(c);
-		}
-
-		UTT characteristic() const
-		{
-			integer c; BaseField::characteristic(c); return UTT(c);
-		}
-		UTT cardinality() const
-		{
-			integer c; BaseField::cardinality(c); return UTT(c);
-		}
-		UTT exponent() const
-		{
-			return 1;
-		}
-		UTT size() const
-		{ integer c; BaseField::cardinality(c); return UTT(c);
-		}
-
-
-		// ----- random generators
-		template<class RandIter> Rep& random(RandIter& g, Rep& r) const
-		{
-			return r = g() ;
-		}
-		template<class RandIter> Rep& random(RandIter& g, Rep& r, long s) const
-		{
-			return r = g() ;
-		}
-		template<class RandIter> Rep& random(RandIter& g, Rep& r, const Rep& b) const
-		{
-			return r = g() ;
-		}
-		template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r) const
-		{
-			return r = g() ;
-		}
-		template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, long s) const
-		{
-			return r = g() ;
-		}
-		template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, const Rep& b) const
-		{
-			return r = g() ;
-		}
-
-		template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r) const
-		{
-			return r = g() ;
-		}
-		template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r, long s) const
-		{
-			return r = g() ;
-		}
-		template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r, const std::_Bit_reference b) const
-		{
-			return r = g() ;
-		}
-		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r) const
-		{
-			return r = g() ;
-		}
-		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, long s) const
-		{
-			return r = g() ;
-		}
-		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, const Rep& b) const
-		{
-			return r = g() ;
-		}
-		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, const std::_Bit_reference b) const
-		{
-			return r = g() ;
-		}
-
-	};
-
-}
-
+// #define LINBOX_field_gf2_H
+// #include "linbox/vector/vector-domain.h"
 
 
 // Specialization of homomorphism for basefield
-#include "linbox/field/hom.h"
-#include "linbox/field/givaro-extension.h"
-namespace LinBox
-{
-
-	template <>
-	class Hom<GF2,GF2> {
-
-	public:
-		typedef GF2 Target;
-		typedef GF2 Source;
-		typedef Source::Element SrcElt;
-		typedef Target::Element Elt;
-
-		Hom(const Source& S, const Target& ) :
-			_source (S)
-		{}
-		Elt& image(Elt& t, const SrcElt& s)
-		{
-			return _source.assign (t, s);
-		}
-		SrcElt& preimage(SrcElt& s, const Elt& t)
-		{
-			return _source.assign (s, t);
-		}
-		const Source& source()
-		{
-			return _source;
-		}
-		const Target& target()
-		{
-			return _source;
-		}
-
-	protected:
-		Source _source;
-	};
-
-	template<class Target >
-	class Hom<GF2, Target > {
-	public:
-		typedef GF2 Source;
-		typedef typename GF2::Element SrcElt;
-		typedef typename Target::Element Elt;
-
-		Hom(const Source& S, const Target& T) :
-			_source(S), _target(T)
-		{ }
-		Elt& image(Elt& t, const SrcElt& s)
-		{
-			return _source.convert(t,s);
-		}
-		SrcElt& preimage(SrcElt& s, const Elt& t)
-		{
-			return _target.convert(s,t);
-		}
-		std::_Bit_reference preimage(std::_Bit_reference s, const Elt& t) const
-		{
-			int ts;
-			return s = _target.convert(ts, t);
-		}
-
-		const Source& source()
-		{
-			return _source;
-		}
-		const Target& target()
-		{
-			return _target;
-		}
-
-	private:
-		Source _source;
-		Target _target;
-	}; // end Hom
-
-
-
-	template<>
-	class Hom < GF2, GivaroExtension<GF2> > {
-		typedef GF2 Source;
-		typedef GivaroExtension<GF2> Target;
-	public:
-		typedef Source::Element SrcElt;
-		typedef Target::Element Elt;
-
-		//Hom(){}
-		/**
-		 * Construct a homomorphism from a specific source ring S and target
-		 * field T with Hom(S, T).  The default behaviour is error.
-		 * Specializations define all actual homomorphisms.
-		 */
-		Hom(const Source& S, const Target& T) :
-			_source(S), _target(T)
-		{}
-
-		/**
-		 * image(t, s) implements the homomorphism, assigning the
-		 * t the value of the image of s under the mapping.
-		 *
-		 * The default behaviour is a no-op.
-		 */
-		Elt& image(Elt& t, const SrcElt& s) const
-		{
-			return _target.assign(t,s);
-		}
-
-		/** If possible, preimage(s,t) assigns a value to s such that
-		 * the image of s is t.  Otherwise behaviour is unspecified.
-		 * An error may be thrown, a conventional value may be set, or
-		 * an arb value set.
-		 *
-		 * The default behaviour is a no-op.
-		 */
-		SrcElt& preimage(SrcElt& s, const Elt& t) const
-		{
-			return _target.convert(s, t);
-		}
-		std::_Bit_reference preimage(std::_Bit_reference s, const Elt& t) const
-		{
-			bool ts;
-			return s = _target.convert(ts, t);
-		}
-
-		const Source& source() const
-		{
-			return _source;
-		}
-		const Target& target() const
-		{
-			return _target;
-		}
-
-	private:
-		Source _source;
-		Target _target;
-	}; // end Hom
-}
+#include "linbox/randiter/gf2.h"
 
 // #include <bits/stl_bvector.h>
 namespace std
 {
 	//! @todo JGD 05.11.2009 : it should be in bits/stl_bvector.h  ...
-	inline void swap(_Bit_reference __x, _Bit_reference __y)
+	inline void swap(stdBitReference __x, stdBitReference __y)
 	{
 		bool __tmp = __x;
 		__x = __y;
@@ -1272,7 +975,6 @@ namespace std
 }
 
 
-#include "linbox/randiter/gf2.h"
 #include "linbox/field/gf2.inl"
 
 #endif // __LINBOX_field_gf2_H

@@ -2,6 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/lifting-container-base.h
  * Copyright (C) 2005  Pascal Giorgi
+ * Copyright (C) 2011  LinBox
  *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
@@ -25,15 +26,27 @@
 #ifndef __LINBOX_ternary_lattice_H
 #define __LINBOX_ternary_lattice_H
 
+
+/*! @file algorithms/short-vector.h
+ * @brief  NO DOC
+ * @ingroup algorithms
+ * @ingroup lattice
+ *
+ * NO DOC
+ */
+
 #include <iostream>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/field/PID-integer.h>
-#include <linbox/util/timer.h>
-#include <linbox/integer.h>
+#include "linbox/field/PID-integer.h"
+#include "linbox/util/timer.h"
+#include "linbox/integer.h"
 #include <algorithm>
 #include <vector>
 
-#include <dpe.h>
+#ifdef __LINBOX_HAVE_FPLLL
+#include <fplll/dpe.h>
+#else
+#error "you need fplll here"
+#endif
 #include <math.h>
 
 
@@ -48,14 +61,15 @@ struct StopReduce{};
 namespace LinBox
 {
 
+	//! NO DOC
 	int large_double_division(integer &x, const integer &y, const integer &z)
 	{
 		double x_m, y_m, z_m;
 		long   x_e, y_e, z_e;
 		Timer t;
 
-		y_m = mpz_get_d_2exp(&y_e, y.get_mpz());
-		z_m = mpz_get_d_2exp(&z_e, z.get_mpz());
+		y_m = mpz_get_d_2exp(&y_e, y.get_mpz_const());
+		z_m = mpz_get_d_2exp(&z_e, z.get_mpz_const());
 		x_e = y_e - z_e;
 
 
@@ -70,7 +84,7 @@ namespace LinBox
 				int e;
 				x_m = frexp(x_m,&e);
 				x_e +=e;
-				x= round(ldexp(x_m,x_e));
+				x= round(ldexp(x_m,(int)x_e));
 				return 0;
 				//return x= ldexp(x_m,x_e);
 			}
@@ -83,6 +97,7 @@ namespace LinBox
 	}
 
 
+	//! NO DOC
 	class TernaryLattice {
 	public:
 
@@ -99,13 +114,15 @@ namespace LinBox
 		integer B1B2LB1, B1B2LB2, B2B3LB2, B1B3LB1;
 		integer x10,x11,x12,x20,x21,x22;
 
-		inline void innerProduct(integer &z, const integer x[3] , const integer  y[3]){
+		inline void innerProduct(integer &z, const integer x[3] , const integer  y[3])
+		{
 			integer::mul(z,x[0],y[0]);
 			integer::axpyin(z,x[1],y[1]);
 			integer::axpyin(z,x[2],y[2]);
 		}
 
-		inline void SquareEuclideanLength(integer& l, const integer y[3]){
+		inline void SquareEuclideanLength(integer& l, const integer y[3])
+		{
 			innerProduct(l, y, y);
 		}
 
@@ -113,7 +130,7 @@ namespace LinBox
 		inline void EuclideanLength(integer& l, const integer y[3] )
 		{
 			innerProduct(l, y, y);
-			::sqrt(l,l);
+			Givaro::sqrt(l,l);
 		}
 
 		inline void swap(integer x[3], integer y[3] )
@@ -134,9 +151,9 @@ namespace LinBox
 		{
 			if ((a.bitsize()<32) && (a >= 0)){
 				unsigned long aa= a;
-				mpz_submul_ui(r[0].get_mpz(), y[0].get_mpz(), aa);
-				mpz_submul_ui(r[1].get_mpz(), y[1].get_mpz(), aa);
-				mpz_submul_ui(r[2].get_mpz(), y[2].get_mpz(), aa);
+				mpz_submul_ui(r[0].get_mpz(), y[0].get_mpz_const(), aa);
+				mpz_submul_ui(r[1].get_mpz(), y[1].get_mpz_const(), aa);
+				mpz_submul_ui(r[2].get_mpz(), y[2].get_mpz_const(), aa);
 			}
 			else {
 				integer::maxpyin(r[0],a,y[0]);
@@ -149,9 +166,9 @@ namespace LinBox
 		{
 			if ((a.bitsize()<32) && (a >= 0)){
 				unsigned long aa= a;
-				mpz_addmul_ui(r[0].get_mpz(), y[0].get_mpz(), aa);
-				mpz_addmul_ui(r[1].get_mpz(), y[1].get_mpz(), aa);
-				mpz_addmul_ui(r[2].get_mpz(), y[2].get_mpz(), aa);
+				mpz_addmul_ui(r[0].get_mpz(), y[0].get_mpz_const(), aa);
+				mpz_addmul_ui(r[1].get_mpz(), y[1].get_mpz_const(), aa);
+				mpz_addmul_ui(r[2].get_mpz(), y[2].get_mpz_const(), aa);
 			}
 			else {
 				integer::axpyin(r[0],a,y[0]);
@@ -216,7 +233,8 @@ namespace LinBox
 		}
 
 
-		inline integer SEL(integer &l, const integer &x1, const integer &y1, const integer &y2, const integer &y3)
+		inline integer SEL(integer &l, const integer &x1,
+				   const integer &my1, const integer &my2, const integer &y3)
 		{
 			Timer t;
 			t.start();
@@ -230,17 +248,17 @@ namespace LinBox
 			integer::axpyin(l, tmp, x1);
 
 			tmp = rr;
-			integer::axpyin(tmp, y1, lb2);
-			tmp*=y1;
+			integer::axpyin(tmp, my1, lb2);
+			integer::mulin(tmp,my1);
 			tmp_min=tmp;
-			y_min  =y1;
+			y_min  =my1;
 
 			tmp = rr;
-			integer::axpyin(tmp, y2, lb2);
-			tmp*=y2;
+			integer::axpyin(tmp, my2, lb2);
+			integer::mulin(tmp,my2);
 			if (tmp < tmp_min){
 				tmp_min=tmp;
-				y_min=y2;
+				y_min=my2;
 			}
 
 			tmp = rr;
@@ -428,7 +446,7 @@ namespace LinBox
 		void print()
 		{
 			PID_integer Z;
-			BlasBlackbox<PID_integer> M(Z,3,3);
+			BlasMatrix<PID_integer> M(Z,3,3);
 			M.setEntry(0,0,b1[0]);
 			M.setEntry(0,1,b1[1]);
 			M.setEntry(0,2,b1[2]);
@@ -457,6 +475,7 @@ namespace LinBox
 
 	};
 
+	//! NO DOC
 	class LargeDouble{
 	protected:
 		double _m;
@@ -464,7 +483,7 @@ namespace LinBox
 	public:
 		LargeDouble(const integer &x)
 		{
-			_m=mpz_get_d_2exp(&_e, x.get_mpz());
+			_m=mpz_get_d_2exp(&_e, x.get_mpz_const());
 		}
 
 		LargeDouble() {}
@@ -486,10 +505,11 @@ namespace LinBox
 				if (_m == 0.)
 					return x=integer(0);
 				else
-					return x=integer(round(ldexp(_m,_e)));
+					return x=integer(round(ldexp(_m,(int)_e)));
 			}
 			else{
-				x = (_m* 0x1P53);//9007199254740992;
+				// x = (_m* 0x1P53);//9007199254740992;
+				x = (_m* 9007199254740992UL);
 				x = x<<(_e-53);
 				return x;
 			}
@@ -532,10 +552,10 @@ namespace LinBox
 				else {
 					long ee = x._e - e;
 					if (ee >=0){
-						x._m += ldexp( m, -ee);
+						x._m += ldexp( m, (int)-ee);
 					}
 					else {
-						x._m = m + ldexp( x._m, ee);
+						x._m = m + ldexp( x._m, (int)ee);
 						x._e = e;
 					}
 					int t;
@@ -562,10 +582,10 @@ namespace LinBox
 				else {
 					long ee = x._e - e;
 					if (ee >=0){
-						x._m -= ldexp( m, -ee);
+						x._m -= ldexp( m, (int)-ee);
 					}
 					else {
-						x._m = ldexp( x._m, ee) -m ;
+						x._m = ldexp( x._m, (int)ee) -m ;
 						x._e = e;
 					}
 					int t;

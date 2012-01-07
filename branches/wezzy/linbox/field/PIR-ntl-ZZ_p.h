@@ -25,16 +25,16 @@
 #ifndef __LINBOX_pir_ntl_zz_p_H
 #define __LINBOX_pir_ntl_zz_p_H
 
-#include <linbox/field/unparametric.h>
+#include "linbox/field/unparametric.h"
 #include "linbox/linbox-config.h"
-#include <linbox/util/debug.h>
+#include "linbox/util/debug.h"
 #include <NTL/ZZ.h>
 #include <NTL/ZZ_p.h>
-#include "linbox/field/ntl-ZZ_p.h"
-#include <linbox/vector/vector-domain.h>
+#include "linbox/field/NTL/ntl-ZZ_p.h"
+#include "linbox/vector/vector-domain.h"
 #include <sstream>
-#include <linbox/integer.h>
-#include <linbox/field/field-traits.h>
+#include "linbox/integer.h"
+#include "linbox/field/field-traits.h"
 
 namespace LinBox
 {
@@ -56,28 +56,35 @@ namespace LinBox
 	  \ingroup field
 	  */
 
-	class PIR_ntl_ZZ_p : public UnparametricField<NTL::ZZ_p> {
+	class PIR_ntl_ZZ_p :  public NTL_ZZ_p {
+		//public UnparametricField<NTL::ZZ_p> {
 
+		// typedef UnparametricField<NTL::ZZ_p> Father_t ;
+		typedef NTL_ZZ_p Father_t ;
 	public:
-		typedef NTL::ZZ_p Element;
+		typedef Father_t::Element Element;
 
-		template <class Element2>
-		PIR_ntl_ZZ_p(const Element2& d) {
-
-			NTL::ZZ_p::init (NTL::to_ZZ(d));
+		template <class Int_t>
+		PIR_ntl_ZZ_p(const Int_t& d) :
+			Father_t(d)
+		{
+			// NTL::ZZ_p::init (NTL::to_ZZ(d));
 		}
 
-		PIR_ntl_ZZ_p (const NTL::ZZ& d) {
-
-			NTL::ZZ_p::init(d);
-
+		PIR_ntl_ZZ_p (const NTL::ZZ& d) :
+		Father_t(d)
+		{
+			// NTL::ZZ_p::init(d);
 		}
 
-		PIR_ntl_ZZ_p (const integer& d, int exp = 1 ) {
+		PIR_ntl_ZZ_p (const integer& d, int e = 1 )  :
+			Father_t(d,e)
+		{
 
-			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+			// if(e != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+			linbox_check(e == 1);
 
-			NTL::ZZ_p::init (NTL::to_ZZ(((std::string)d). c_str()));
+			// NTL::ZZ_p::init (NTL::to_ZZ(((std::string)d). c_str()));
 
 		}
 
@@ -558,14 +565,14 @@ namespace LinBox
 		 * @param F field F in which arithmetic is done
 		 */
 		FieldAXPY (const Field &F) :
-		       	_F (F)
+		       	_field (F)
 		{ _y = NTL::ZZ::zero(); }
 
 		/** Copy constructor.
 		 * @param faxpy
 		 */
 		FieldAXPY (const FieldAXPY<Field> &faxpy) :
-		       	_F (faxpy._F), _y (faxpy._y)
+		       	_field (faxpy._field), _y (faxpy._y)
 	       	{}
 
 		/** Assignment operator
@@ -615,7 +622,7 @@ namespace LinBox
 
 		/// Field in which arithmetic is done
 		/// Not sure why it must be mutable, but the compiler complains otherwise
-		Field _F;
+		Field _field;
 
 		/// Field element for arithmetic
 		NTL::ZZ _y;

@@ -33,13 +33,17 @@
 
 #include <iostream>
 
-#include <linbox/solutions/methods.h>
-#include <linbox/blackbox/archetype.h>
-#include <linbox/blackbox/lambda-sparse.h>
-#include <linbox/blackbox/compose.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/vector-fraction.h>
-#include <linbox/util/timer.h>
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
+
+// #include "linbox/field/multimod-field.h"
+#include "linbox/solutions/methods.h"
+#include "linbox/blackbox/archetype.h"
+#include "linbox/blackbox/lambda-sparse.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/vector-fraction.h"
+#include "linbox/util/timer.h"
 
 //#define RSTIMING
 #define DEFAULT_PRIMESIZE 20
@@ -47,8 +51,6 @@
 namespace LinBox
 {// LinBox
 
-// bsd and mac problem
-#undef _R
 
 #define SINGULARITY_THRESHOLD 5
 #define BAD_PRECONTITIONER_THRESHOLD 5
@@ -62,7 +64,7 @@ namespace LinBox
 	 *  i.e. solution over the rational for an integer linear system.
 	 *
 	 * \par Headers
-	 *  <code>\#include <linbox/algorithms/rational-solver.h></code>
+	 *  <code>\#include "linbox/algorithms/rational-solver.h></code>
 	 *
 	 *  See the following reference for details on this algorithm:
 	 * \bib
@@ -244,7 +246,7 @@ namespace LinBox
 		typedef std::vector<Element>              FPolynomial;
 
 	protected:
-		Ring                       _R;
+		Ring                       _ring;
 		mutable RandomPrime _genprime;
 		mutable Prime          _prime;
 		WiedemannTraits       _traits;
@@ -266,7 +268,7 @@ namespace LinBox
 		RationalSolver (const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
 				const WiedemannTraits& traits=WiedemannTraits()) :
-			_R(r), _genprime(rp), _traits(traits)
+			_ring(r), _genprime(rp), _traits(traits)
 		{
 
 			++_genprime; _prime=*_genprime;
@@ -284,7 +286,7 @@ namespace LinBox
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
 				const WiedemannTraits& traits=WiedemannTraits()) :
-			_R(r), _genprime(rp), _prime(p), _traits(traits)
+			_ring(r), _genprime(rp), _prime(p), _traits(traits)
 		{
 
 #ifdef RSTIMING
@@ -443,12 +445,12 @@ namespace LinBox
 		typedef typename Ring::Element                Integer;
 		typedef typename Field::Element               Element;
 		typedef typename RandomPrime::Prime_Type        Prime;
-		typedef BlasMatrix<Element>               Coefficient;
+		typedef BlasMatrix<Field>               Coefficient;
 		typedef std::vector<Element>              FPolynomial;
 		typedef std::vector<Coefficient>     FBlockPolynomial;
 
 	protected:
-		Ring                         _R;
+		Ring                         _ring;
 		RandomPrime           _genprime;
 		mutable Prime            _prime;
 		BlockWiedemannTraits    _traits;
@@ -470,7 +472,7 @@ namespace LinBox
 		RationalSolver (const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
 				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
-			_R(r), _genprime(rp), _traits(traits)
+			_ring(r), _genprime(rp), _traits(traits)
 		{
 
 			++_genprime; _prime=*_genprime;
@@ -488,7 +490,7 @@ namespace LinBox
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
 				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
-			_R(r), _genprime(rp), _prime(p), _traits(traits)
+			_ring(r), _genprime(rp), _prime(p), _traits(traits)
 		{
 
 #ifdef RSTIMING
@@ -633,7 +635,7 @@ namespace LinBox
 
 		mutable RandomPrime             _genprime;
 		mutable Prime                   _prime;
-		Ring                            _R;
+		Ring                            _ring;
 #ifdef RSTIMING
 		mutable Timer
 		tSetup,           ttSetup,
@@ -663,7 +665,7 @@ namespace LinBox
 		 */
 		RationalSolver (const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
-			lastCertificate(r, 0), _genprime(rp), _R(r)
+			lastCertificate(r, 0), _genprime(rp), _ring(r)
 		{
 			++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
@@ -679,7 +681,7 @@ namespace LinBox
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
-			lastCertificate(r, 0), _genprime(rp), _prime(p), _R(r)
+			lastCertificate(r, 0), _genprime(rp), _prime(p), _ring(r)
 		{
 #ifdef RSTIMING
 			clearTimers();
@@ -804,7 +806,7 @@ namespace LinBox
 
 		Ring getRing() const
 		{
-			return _R;
+			return _ring;
 		}
 
 		void chooseNewPrime() const
@@ -901,7 +903,7 @@ namespace LinBox
 		Keep it just for interface consistency.
 	 */
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, NumericalTraits>; 
+	class RationalSolver<Ring, Field, RandomPrime, NumericalTraits>;
 
 	/** \brief solver using a hybrid Numeric/Symbolic computation.
 	 *
@@ -937,7 +939,7 @@ namespace LinBox
 	protected:
 		RandomPrime                     _genprime;
 		mutable Prime                   _prime;
-		Ring                            _R;
+		Ring                            _ring;
 
 	public:
 
@@ -948,7 +950,7 @@ namespace LinBox
 		 */
 		RationalSolver (const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
-			_genprime(rp), _R(r)
+			_genprime(rp), _ring(r)
 		{
 			_prime=_genprime.randomPrime();
 		}
@@ -961,7 +963,7 @@ namespace LinBox
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
-			_genprime(rp), _prime(p), _R(r)
+			_genprime(rp), _prime(p), _ring(r)
 		{}
 
 
@@ -992,7 +994,7 @@ namespace LinBox
 	protected:
 		RandomPrime                     _genprime;
 		mutable Prime                   _prime;
-		Ring                            _R;
+		Ring                            _ring;
 
 	public:
 
@@ -1003,7 +1005,7 @@ namespace LinBox
 		 */
 		RationalSolver (const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
-			_genprime(rp), _R(r)
+			_genprime(rp), _ring(r)
 		{
 			_prime=_genprime.randomPrime();
 		}
@@ -1016,7 +1018,7 @@ namespace LinBox
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
-			_genprime(rp), _prime(p), _R(r)
+			_genprime(rp), _prime(p), _ring(r)
 		{}
 
 
@@ -1030,7 +1032,7 @@ namespace LinBox
 }
 
 
-#include <linbox/algorithms/rational-solver.inl>
+#include "linbox/algorithms/rational-solver.inl"
 
 #endif //__LINBOX_rational_solver_H
 

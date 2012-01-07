@@ -15,7 +15,7 @@
 
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/blackbox/dense.h"
+#include "linbox/matrix/blas-matrix.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/compose.h"
@@ -71,7 +71,6 @@ namespace LinBox
 	}
 
 	// BBs that offer a local getEntry.
-	template<class Field> struct GetEntryCategory<DenseMatrix<Field> > { typedef GetEntryTags::Local Tag; };
 	template<class A, class B> struct GetEntryCategory<SparseMatrix<A,B> > { typedef GetEntryTags::Local Tag; };
 	template<class A, class B, class C> struct GetEntryCategory<SparseMatrixBase<A,B,C> > { typedef GetEntryTags::Local Tag; };
 	template<class Field, class Trait> struct GetEntryCategory<Diagonal<Field, Trait> > { typedef GetEntryTags::Local Tag; };

@@ -56,7 +56,7 @@
 using namespace std;
 
 
-#include "linbox/field/modular-int32.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
 
@@ -66,10 +66,8 @@ using namespace std;
 #include "linbox/field/local2_32.h"
 #include "linbox/field/PIR-modular-int32.h"
 #include "linbox/algorithms/smith-form-local.h"
-#include "linbox/algorithms/smith-form-local2.h"
-#include <linbox/algorithms/smith-form-iliopoulos.h>
+#include "linbox/algorithms/smith-form-iliopoulos.h"
 #include "linbox/algorithms/smith-form-adaptive.h"
-#include "linbox/blackbox/dense.h"
 
 using namespace LinBox;
 
@@ -77,7 +75,7 @@ using namespace LinBox;
 
 
 template<class PIR>
-void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
+void Mat(BlasMatrix<PIR>& M, PIR& R, int n,
 	 string src, string file, string format);
 
 template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
@@ -119,7 +117,7 @@ int main(int argc, char* argv[])
 	{
 		typedef PID_integer Ints;
 		Ints Z;
-		DenseMatrix<Ints> M(Z);
+		BlasMatrix<Ints> M(Z);
 		Mat(M, Z, n, src, file, format);
 		vector<integer> v(n);
 		T.start();
@@ -142,7 +140,7 @@ int main(int argc, char* argv[])
 
 		PIR R(m);
 
-		DenseMatrix<PIR> M(R);
+		BlasMatrix<PIR> M(R);
 
 		Mat(M, R, n, src, file, format);
 
@@ -156,7 +154,8 @@ int main(int argc, char* argv[])
 
 		List L;
 
-		for (size_t i = 0; i < M.rowdim(); ++i) L.push_back(M[i][i]);
+		for (size_t i = 0; i < M.rowdim(); ++i)
+			L.push_back(M[(int)i][i]);
 
 		list<pair<PIR::Element, size_t> > p;
 
@@ -188,8 +187,8 @@ int main(int argc, char* argv[])
 
 			Integer p(m), im(m);
 			// Should better ask user to give the prime !!!
-			for(unsigned int k = 2; ( ( ! ::Givaro::probab_prime(p) ) && (p > 1) ); ++k)
-				::Givaro::root( p, im, k );
+			for(unsigned int k = 2; ( ( ! Givaro::probab_prime(p) ) && (p > 1) ); ++k)
+			 Givaro::root( p, im, k );
 
 			// using Sparse Elimination
 			LinBox::PowerGaussDomain< Field > PGD( F );
@@ -223,7 +222,7 @@ int main(int argc, char* argv[])
 
 			PIR R(m);
 
-			DenseMatrix<PIR> M(R);
+			BlasMatrix<PIR> M(R);
 
 			Mat(M, R, n, src, file, format);
 
@@ -257,7 +256,7 @@ int main(int argc, char* argv[])
 
 		Local2_32 R;
 
-		DenseMatrix<Local2_32> M(R);
+		BlasMatrix<Local2_32> M(R);
 
 		Mat(M, R, n, src, file, format);
 
@@ -299,6 +298,267 @@ int main(int argc, char* argv[])
 	return 0 ;
 }
 
+template < class Ring >
+void scramble(BlasMatrix<Ring>& M)
+{
+
+	Ring R = M.field();
+
+	int N,n = (int)M.rowdim(); // number of random basic row and col ops.
+	N = n;
+
+	for (int k = 0; k < N; ++k) {
+
+		int i = rand()%(int)M.rowdim();
+
+		int j = rand()%(int)M.coldim();
+
+		if (i == j) continue;
+
+		// M*i += alpha M*j and Mi* += beta Mj
+
+		//int a = rand()%2;
+		int a = 0;
+
+		for (size_t l = 0; l < M.rowdim(); ++l) {
+
+			if (a)
+
+				R.subin(M[(int)l][i], M[(int)l][j]);
+
+			else
+
+				R.addin(M[(int)l][i], M[(int)l][j]);
+
+			//K.axpy(c, M.getEntry(l, i), x, M.getEntry(l, j));
+			//M.setEntry(l, i, c);
+				}
+
+		//a = rand()%2;
+
+		for (size_t l = 0; l < M.coldim(); ++l) {
+
+			if (a)
+
+				R.subin(M[i][l], M[j][l]);
+			else
+
+				R.addin(M[i][l], M[j][l]);
+		}
+	}
+
+	std::ofstream out("matrix", std::ios::out);
+
+	out << n << " " << n << "\n";
+
+	for (int i = 0; i < n; ++ i) {
+
+		for ( int j = 0; j < n; ++ j) {
+
+			R. write(out, M[i][j]);
+
+			out << " ";
+		}
+
+		out << "\n";
+
+		}
+
+	//}
+}
+
+
+// This mat will have s, near sqrt(n), distinct invariant factors,
+// each repeated twice), involving the s primes 101, 103, ...
+template <class PIR>
+void RandomRoughMat(BlasMatrix<PIR>& M, PIR& R, int n) {
+	typename PIR::Element zero; R.init(zero, 0);
+	M.resize(n, n, zero);
+	if (n > 10000) {cerr << "n too big" << endl; exit(-1);}
+	int jth_factor[130] =
+	{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
+		71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149,
+		151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229,
+		233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313,
+		317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
+		419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499,
+		503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601,
+		607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691,
+		701, 709, 719, 727, 733};
+
+	for (int j= 0, i = 0 ; i < n; ++j)
+	{
+		typename PIR::Element v; R.init(v, jth_factor[25+j]);
+		for (int k = j ; k > 0 && i < n ; --k)
+		{   M[i][i] = v; ++i;
+			if (i < n) {M[i][i] = v; ++i;}
+		}
+	}
+	scramble(M);
+}
+
+// This mat will have the same nontrivial invariant factors as
+// diag(1,2,3,5,8, ... 999, 0, 1, 2, ...).
+template <class PIR>
+void RandomFromDiagMat(BlasMatrix<PIR>& M, PIR& R, int n) {
+	typename PIR::Element zero; R.init(zero, 0);
+	M.resize(n, n, zero);
+
+	for (int i= 0 ; i < n; ++i)
+
+		R.init(M[i][i], i % 1000 + 1);
+	scramble(M);
+
+}
+
+// This mat will have the same nontrivial invariant factors as
+// diag(1,2,3,5,8, ... fib(k)), where k is about sqrt(n).
+// The basic matrix is block diagonal with i-th block of order i and
+// being a tridiagonal {-1,0,1} matrix whose snf = diag(i-1 1's, fib(i)),
+// where fib(1) = 1, fib(2) = 2.  But note that, depending on n,
+// the last block may be truncated, thus repeating an earlier fibonacci number.
+template <class PIR>
+void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
+	typename PIR::Element zero; R.init(zero, 0);
+	M.resize(n, n, zero);
+
+	typename PIR::Element one; R.init(one, 1);
+
+	for (int i= 0 ; i < n; ++i) M[i][i] = one;
+
+	int j = 1, k = 0;
+
+	for (int i= 0 ; i < n-1; ++i) {
+
+		if ( i == k) {
+
+			M[i][i+1] = zero;
+
+			k += ++j;
+		}
+
+		else {
+
+			M[i][i+1] = one;
+
+			R.negin(one);
+		}
+		R.neg(M[i+1][i], M[i][i+1]);
+	}
+	scramble(M);
+}
+
+
+//////////////////////////////////
+// special mats tref and krat
+
+// Trefethen's challenge #7 mat (primes on diag, 1's on 2^e bands).
+template <class PIR>
+void TrefMat(BlasMatrix<PIR>& M, PIR& R, int n) {
+	typename PIR::Element zero; R.init(zero, 0);
+	M.resize(n, n, zero);
+
+	std::vector<int> power2;
+
+	int i = 1;
+
+	do {
+
+		power2. push_back(i);
+
+		i *= 2;
+	} while (i < n);
+
+	std::ifstream in ("prime", std::ios::in);
+
+	for ( i = 0; i < n; ++ i)
+
+		in >> M[i][i];
+
+	std::vector<int>::iterator p;
+
+	for ( i = 0; i < n; ++ i) {
+
+		for ( p = power2. begin(); (p != power2. end()) && (*p <= i); ++ p)
+			M[i][i - *p] = 1;
+
+		for ( p = power2. begin(); (p != power2. end()) && (*p < n - i); ++ p)
+			M[i][i + *p] = 1;
+	}
+
+}
+//// end tref ///////  begin krat /////////////////////////////
+
+struct pwrlist
+{
+	vector<integer> m;
+	pwrlist(integer q)
+	{ m.push_back(1); m.push_back(q); //cout << "pwrlist " << m[0] << " " << m[1] << endl;
+	}
+	integer operator[](int e)
+	{
+		for (int i = (int)m.size(); i <= e; ++i) m.push_back(m[1]*m[i-1]);
+		return m[e];
+	}
+};
+
+// Read "1" or "q" or "q^e", for some (small) exponent e.
+// Return value of the power of q at q = _q.
+template <class num>
+num& qread(num& Val, pwrlist& M, istream& in)
+{
+	char c;
+	in >> c; // next nonwhitespace
+	if (c == '0') return Val = 0;
+	if (c == '1') return Val = 1;
+	if (c != 'p' && c != 'q') { cout << "exiting due to unknown char " << c << endl; exit(-1);}
+	in.get(c);
+	if (c !='^') {in.putback(c); return Val = M[1];}
+	else
+	{ int expt; in >> expt;
+		return Val = M[expt];
+	};
+}
+
+template <class PIR>
+void KratMat(BlasMatrix<PIR>& M, PIR& R, int q, istream& in)
+{
+	pwrlist pwrs(q);
+	for (unsigned int i = 0; i < M.rowdim(); ++ i)
+
+		for ( unsigned int j = 0; j < M.coldim(); ++ j) {
+			int Val;
+			qread(Val, pwrs, in);
+			R. init (M[i][j], Val);
+		}
+}
+
+///// end krat ////////////////////////////
+template<class I1, class Lp>
+void distinct (I1 a, I1 b, Lp& c)
+{ typename I1::value_type e;
+	size_t count = 0;
+	if (a != b) {e = *a; ++a; count = 1;}
+	else return;
+	while (a != b)
+	{  if (*a == e) ++count;
+		else
+		{ c.push_back(typename Lp::value_type(e, count));
+			e = *a; count = 1;
+		}
+		++a;
+	}
+	c.push_back(typename Lp::value_type(e, count));
+	return;
+}
+
+template <class I>
+void display(I b, I e)
+{ cout << "(";
+	for (I p = b; p != e; ++p) cout << p->first << " " << p->second << ", ";
+	cout << ")" << endl;
+}
+
 /** Output matrix is determined by src which may be:
   "random-rough"
   This mat will have s, near sqrt(n), distinct invariant factors,
@@ -318,7 +578,7 @@ int main(int argc, char* argv[])
   Also "tref" and file with format "kdense"
   */
 template <class PIR>
-void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
+void Mat(BlasMatrix<PIR>& M, PIR& R, int n,
 	 string src, string file, string format) {
 
 	typename PIR::Element zero; R.init(zero, 0);
@@ -401,262 +661,4 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 	/* some row ops and some col ops */
 } // Mat
 
-// This mat will have s, near sqrt(n), distinct invariant factors,
-// each repeated twice), involving the s primes 101, 103, ...
-template <class PIR>
-void RandomRoughMat(DenseMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
-	if (n > 10000) {cerr << "n too big" << endl; exit(-1);}
-	int jth_factor[130] =
-	{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
-		71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149,
-		151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229,
-		233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313,
-		317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
-		419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499,
-		503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601,
-		607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691,
-		701, 709, 719, 727, 733};
-
-	for (int j= 0, i = 0 ; i < n; ++j)
-	{
-		typename PIR::Element v; R.init(v, jth_factor[25+j]);
-		for (int k = j ; k > 0 && i < n ; --k)
-		{   M[i][i] = v; ++i;
-			if (i < n) {M[i][i] = v; ++i;}
-		}
-	}
-	scramble(M);
-}
-
-// This mat will have the same nontrivial invariant factors as
-// diag(1,2,3,5,8, ... 999, 0, 1, 2, ...).
-template <class PIR>
-void RandomFromDiagMat(DenseMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
-
-	for (int i= 0 ; i < n; ++i)
-
-		R.init(M[i][i], i % 1000 + 1);
-	scramble(M);
-
-}
-
-// This mat will have the same nontrivial invariant factors as
-// diag(1,2,3,5,8, ... fib(k)), where k is about sqrt(n).
-// The basic matrix is block diagonal with i-th block of order i and
-// being a tridiagonal {-1,0,1} matrix whose snf = diag(i-1 1's, fib(i)),
-// where fib(1) = 1, fib(2) = 2.  But note that, depending on n,
-// the last block may be truncated, thus repeating an earlier fibonacci number.
-template <class PIR>
-void RandomFibMat(DenseMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
-
-	typename PIR::Element one; R.init(one, 1);
-
-	for (int i= 0 ; i < n; ++i) M[i][i] = one;
-
-	int j = 1, k = 0;
-
-	for (int i= 0 ; i < n-1; ++i) {
-
-		if ( i == k) {
-
-			M[i][i+1] = zero;
-
-			k += ++j;
-		}
-
-		else {
-
-			M[i][i+1] = one;
-
-			R.negin(one);
-		}
-		R.neg(M[i+1][i], M[i][i+1]);
-	}
-	scramble(M);
-}
-
-template < class Ring >
-void scramble(DenseMatrix<Ring>& M)
-{
-
-	Ring R = M.field();
-
-	int N,n = (int)M.rowdim(); // number of random basic row and col ops.
-	N = n;
-
-	for (int k = 0; k < N; ++k) {
-
-		int i = rand()%(int)M.rowdim();
-
-		int j = rand()%(int)M.coldim();
-
-		if (i == j) continue;
-
-		// M*i += alpha M*j and Mi* += beta Mj
-
-		//int a = rand()%2;
-		int a = 0;
-
-		for (size_t l = 0; l < M.rowdim(); ++l) {
-
-			if (a)
-
-				R.subin(M[l][i], M[l][j]);
-
-			else
-
-				R.addin(M[l][i], M[l][j]);
-
-			//K.axpy(c, M.getEntry(l, i), x, M.getEntry(l, j));
-			//M.setEntry(l, i, c);
-		}
-
-		//a = rand()%2;
-
-		for (size_t l = 0; l < M.coldim(); ++l) {
-
-			if (a)
-
-				R.subin(M[i][l], M[j][l]);
-			else
-
-				R.addin(M[i][l], M[j][l]);
-		}
-	}
-
-	std::ofstream out("matrix", std::ios::out);
-
-	out << n << " " << n << "\n";
-
-	for (int i = 0; i < n; ++ i) {
-
-		for ( int j = 0; j < n; ++ j) {
-
-			R. write(out, M[i][j]);
-
-			out << " ";
-		}
-
-		out << "\n";
-
-	}
-
-	//}
-}
-
-//////////////////////////////////
-// special mats tref and krat
-
-// Trefethen's challenge #7 mat (primes on diag, 1's on 2^e bands).
-template <class PIR>
-void TrefMat(DenseMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
-
-	std::vector<int> power2;
-
-	int i = 1;
-
-	do {
-
-		power2. push_back(i);
-
-		i *= 2;
-	} while (i < n);
-
-	std::ifstream in ("prime", std::ios::in);
-
-	for ( i = 0; i < n; ++ i)
-
-		in >> M[i][i];
-
-	std::vector<int>::iterator p;
-
-	for ( i = 0; i < n; ++ i) {
-
-		for ( p = power2. begin(); (p != power2. end()) && (*p <= i); ++ p)
-			M[i][i - *p] = 1;
-
-		for ( p = power2. begin(); (p != power2. end()) && (*p < n - i); ++ p)
-			M[i][i + *p] = 1;
-	}
-
-}
-//// end tref ///////  begin krat /////////////////////////////
-
-struct pwrlist
-{
-	vector<integer> m;
-	pwrlist(integer q)
-	{ m.push_back(1); m.push_back(q); //cout << "pwrlist " << m[0] << " " << m[1] << endl;
-	}
-	integer operator[](int e)
-	{
-		for (int i = (int)m.size(); i <= e; ++i) m.push_back(m[1]*m[i-1]);
-		return m[e];
-	}
-};
-
-// Read "1" or "q" or "q^e", for some (small) exponent e.
-// Return value of the power of q at q = _q.
-template <class num>
-num& qread(num& Val, pwrlist& M, istream& in)
-{
-	char c;
-	in >> c; // next nonwhitespace
-	if (c == '0') return Val = 0;
-	if (c == '1') return Val = 1;
-	if (c != 'p' && c != 'q') { cout << "exiting due to unknown char " << c << endl; exit(-1);}
-	in.get(c);
-	if (c !='^') {in.putback(c); return Val = M[1];}
-	else
-	{ int expt; in >> expt;
-		return Val = M[expt];
-	};
-}
-
-template <class PIR>
-void KratMat(DenseMatrix<PIR>& M, PIR& R, int q, istream& in)
-{
-	pwrlist pwrs(q);
-	for (unsigned int i = 0; i < M.rowdim(); ++ i)
-
-		for ( unsigned int j = 0; j < M.coldim(); ++ j) {
-			int Val;
-			qread(Val, pwrs, in);
-			R. init (M[i][j], Val);
-		}
-}
-
-///// end krat ////////////////////////////
-template<class I1, class Lp>
-void distinct (I1 a, I1 b, Lp& c)
-{ typename I1::value_type e;
-	size_t count = 0;
-	if (a != b) {e = *a; ++a; count = 1;}
-	else return;
-	while (a != b)
-	{  if (*a == e) ++count;
-		else
-		{ c.push_back(typename Lp::value_type(e, count));
-			e = *a; count = 1;
-		}
-		++a;
-	}
-	c.push_back(typename Lp::value_type(e, count));
-	return;
-}
-
-template <class I>
-void display(I b, I e)
-{ cout << "(";
-	for (I p = b; p != e; ++p) cout << p->first << " " << p->second << ", ";
-	cout << ")" << endl;
-}
 //@}

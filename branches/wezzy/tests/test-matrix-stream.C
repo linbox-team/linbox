@@ -36,12 +36,10 @@
 #include <string>
 #include <vector>
 #include "test-common.h"
-#include <linbox/field/unparametric.h>
-#include <linbox/util/matrix-stream.h>
-#include <linbox/integer.h>
-#include <linbox/blackbox/dense.h>
-#include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/blas-blackbox.h>
+#include "linbox/field/unparametric.h"
+#include "linbox/util/matrix-stream.h"
+#include "linbox/integer.h"
+#include "linbox/blackbox/sparse.h"
 
 using namespace LinBox;
 
@@ -204,13 +202,13 @@ bool testMatrixStream(const string& matfile)
 	}
 
 /* later
-	if( !testMatrix< DenseMatrix<TestField> >
+	if( !testMatrix< BlasMatrix<TestField> >
 			( out, matfile[0], "Dense BlackBox Matrix" )
 	  ) pass = false;
 	if( !testMatrix< SparseMatrix<TestField> >
 			( out, matfile[0], "Sparse BlackBox Matrix" )
 	  ) pass = false;
-	if( !testMatrix< BlasBlackbox<TestField> >
+	if( !testMatrix< BlasMatrix<TestField> >
 			( out, matfile[0], "BLAS BlackBox Matrix" )
 	  ) pass = false;
 

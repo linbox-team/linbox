@@ -24,19 +24,19 @@
 #ifndef __LINBOX_ith_invariant_factor_H
 #define __LINBOX_ith_invariant_factor_H
 
-#include <linbox/util/debug.h>
-#include <linbox/algorithms/default.h>
-#include <linbox/blackbox/compose.h>
-#include <linbox/blackbox/random-matrix-traits.h>
+#include "linbox/util/debug.h"
+#include "linbox/algorithms/default.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/blackbox/random-matrix-traits.h"
 
 namespace LinBox
 {
 
 	/// \brief Limited doc so far.
 	template<class _Ring,
-	class _LastInvariantFactor,
-	class _Compose,
-	class _RandomMatrix>
+		class _LastInvariantFactor,
+		class _Compose,
+		class _RandomMatrix>
 
 	class OneInvariantFactor {
 

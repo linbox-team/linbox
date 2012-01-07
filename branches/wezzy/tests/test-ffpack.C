@@ -35,9 +35,9 @@
 #include <iostream>
 #include <vector>
 
-#include <linbox/integer.h>
-#include <linbox/matrix/matrix-domain.h>
-#include "linbox/field/givaro-zpz.h"
+#include "linbox/integer.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/field/givaro.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-balanced.h"
 #include "fflas-ffpack/ffpack/ffpack.h"
@@ -445,13 +445,13 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator.start (pretty("Testing minpoly"),"testMinPoly",iterations);
-	Element tmp, one, zero,mone;
+	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 	F.init(one, 1UL);
 	F.init(zero, 0UL);
-	F.neg(mone, one);
-	//F.neg( mone, one);
+	F.neg(mOne, one);
+	//F.neg( mOne, one);
 	bool ret = true;
 
 	for (int k=0;k<iterations;++k) {
@@ -474,7 +474,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 
 		if ( P.size() !=2 )
 			ret = false;
-		if ( !F.areEqual(P[0], mone) )
+		if ( !F.areEqual(P[0], mOne) )
 			ret = false;
 		if ( !F.areEqual(P[1], one) )
 			ret = false;
@@ -551,12 +551,12 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator.start (pretty("Testing charpoly"),"testCharPoly",iterations);
-	Element tmp, one, zero,mone;
+	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 	F.init(one, 1UL);
 	F.init(zero, 0UL);
-	F.neg(mone, one);
+	F.neg(mOne, one);
 	bool ret = true;
 
 	for (int k=0;k<iterations;++k) {
@@ -584,7 +584,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 			if ( P_it->size() !=2 ){
 				ret = false;
 			}
-			if ( !F.areEqual(P_it->operator[](0), mone) ){
+			if ( !F.areEqual(P_it->operator[](0), mOne) ){
 				ret = false;
 			}
 			if ( !F.areEqual(P_it->operator[](1), one) ){
@@ -955,7 +955,6 @@ int main(int argc, char** argv)
 	}
 #endif
 
-#if 0 // no NonZeroRandIter
 	/* Modular uint32_t */
 	{
 		typedef Modular<uint32_t> Field;
@@ -977,12 +976,10 @@ int main(int argc, char** argv)
 		if (!testMinPoly (F,n,iterations)) pass=false;
 		if (!testCharPoly (F,n,iterations)) pass=false;
 	}
-#endif
 
-#if 0 // no NonZeroRandIter
 	/* GivaroZpz int32_t */
 	{
-		typedef GivaroZpz<Std32> Field;
+		typedef GivaroZpz<Givaro::Std32> Field;
 
 		Field F (q);
 
@@ -1001,7 +998,6 @@ int main(int argc, char** argv)
 		if (!testMinPoly (F,n,iterations)) pass=false;
 		if (!testCharPoly (F,n,iterations)) pass=false;
 	}
-#endif
 #endif
 	commentator.stop(MSG_STATUS(pass),"ffpack test suite");
 

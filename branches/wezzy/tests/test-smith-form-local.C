@@ -29,10 +29,9 @@
 #include "linbox/field/PIR-modular-int32.h"
 //#include "linbox/field/PIR-modular-double.h"
 #include "linbox/field/local2_32.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/algorithms/smith-form-local.h"
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/util/timer.h>
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/util/timer.h"
 
 using namespace LinBox;
 
@@ -118,7 +117,7 @@ template <class LocalPIR>
 static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element>& d, string s)
 {
 	typedef typename LocalPIR::Element Elt;
-	typedef DenseMatrix<LocalPIR> Blackbox;
+	typedef BlasMatrix<LocalPIR> Blackbox;
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << s << endl;

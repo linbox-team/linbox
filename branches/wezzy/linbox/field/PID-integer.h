@@ -34,17 +34,17 @@
 #include <limits.h>
 #include <iostream>
 // #include <gmp++/gmp++_int.h>
-#include <linbox/integer.h>
-#include <linbox/field/unparametric.h>
-#include <linbox/field/field-traits.h>
-#include <linbox/field/gmp-rational.h>
+#include "linbox/integer.h"
+#include "linbox/field/unparametric.h"
+#include "linbox/field/field-traits.h"
+#include "linbox/field/gmp-rational.h"
 
 
 namespace LinBox
 {
 
 	template <class Ring>
-	class ClassifyRing;
+	struct ClassifyRing;
 
 	/*! \ingroup integers
 	 * @brief Domain for integer operations.
@@ -120,7 +120,7 @@ namespace LinBox
 		 */
 		inline  Element& gcd (Element& g, const Element& a, const Element& b) const
 		{
-			return ::Givaro::gcd(g,a,b);
+			return Givaro::gcd(g,a,b);
 		}
 
 		/** @brief gcdin(g, b)
@@ -140,10 +140,10 @@ namespace LinBox
 		 */
 		inline  Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b) const
 		{
-#if (GIVARO_VERSION < 30403) // newer givaro has gcd with constant signature "guvab"
-			return ::Givaro::gcd(g,a,b,s,t);
+#if (GIVARO_VERSION < 30500) // newer givaro has gcd with constant signature "guvab"
+			return Givaro::gcd(g,a,b,s,t);
 #else
-			return ::Givaro::gcd(g,s,t,a,b);
+			return Givaro::gcd(g,s,t,a,b);
 #endif
 		}
 
@@ -185,7 +185,7 @@ namespace LinBox
 
 		inline  void reconstructRational (Element& a, Element& b, const Element& x, const Element& m) const
 		{
-			RationalReconstruction(a,b, x, m, ::Givaro::sqrt(m), true, true);
+			RationalReconstruction(a,b, x, m, Givaro::sqrt(m), true, true);
 		}
 
 		inline  void reconstructRational (Element& a, Element& b, const Element& x, const Element& m, const Element& bound) const
@@ -263,7 +263,7 @@ namespace LinBox
 		 */
 		inline Element& sqrt(Element& x, const Element& y) const
 		{
-			return ::Givaro::sqrt(x,y);
+			return Givaro::sqrt(x,y);
 		}
 
 		inline  Element powtwo(Element& z, const Element& x) const

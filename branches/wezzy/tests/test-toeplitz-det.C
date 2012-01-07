@@ -32,19 +32,17 @@
 
 #include <iostream>
 #include <vector>
-#include <linbox/blackbox/toeplitz.h>
+#include "linbox/blackbox/toeplitz.h"
 #ifdef __LINBOX_HAVE_NTL
-#include <linbox/field/ntl-lzz_p.h>
-#include <linbox/field/ntl-lzz_pX.h>
+#include "linbox/field/ntl.h"
 #endif
-#include <linbox/solutions/det.h>
-#include <linbox/blackbox/dense.h>
-#include <linbox/randiter/random-prime.h>
-#include <linbox/util/commentator.h>
+#include "linbox/solutions/det.h"
+#include "linbox/randiter/random-prime.h"
+#include "linbox/util/commentator.h"
 #include "test-common.h"
 #include <cstdlib>
 #include <ctime>
-#include <linbox/integer.h>
+#include "linbox/integer.h"
 
 using namespace std;
 using namespace LinBox;
@@ -77,7 +75,7 @@ int main(int argc, char* argv[])
 	NTL_zz_p CF( *rp );
 	NTL_zz_pX PF(CF);
 
-	DenseMatrix<NTL_zz_p> A(CF,n,n);
+	BlasMatrix<NTL_zz_p> A(CF,n,n);
 
 	NTL_zz_p::Element temp;
 	NTL_zz_pX::Element poly;

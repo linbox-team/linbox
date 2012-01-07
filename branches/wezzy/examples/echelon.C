@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/algorithms/echelon-form.h"
 
@@ -52,8 +52,8 @@ int main (int argc, char **argv)
 	Field F(q);
 
 	MatrixStream<Field> ms(F,input);
-	BlasMatrix<Field::Element> A(ms);
-	BlasMatrix<Field::Element> E(A.rowdim(),A.coldim());
+	BlasMatrix<Field> A(ms);
+	BlasMatrix<Field> E(F,A.rowdim(),A.coldim());
 	cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 	EchelonFormDomain<Modular<double> > EFD (F);
@@ -61,7 +61,7 @@ int main (int argc, char **argv)
 	EFD.rowReducedEchelon(E,A);
 
 	if (E.coldim() <20)
-		E.write(cerr<<"Echelon = "<<endl,F)<<endl;
+		E.write(cerr<<"Echelon = "<<endl)<<endl;
 
 	return 0;
 }

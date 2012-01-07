@@ -13,9 +13,9 @@
 #define __LINBOX_subrowmatrix_H
 
 #include <iostream>
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/blackbox/blackbox-interface.h"
 
 namespace LinBox
 {
@@ -66,10 +66,10 @@ namespace LinBox
 		typedef typename Matrix::Row                    Row;
 		typedef typename Matrix::ConstRow               ConstRow;
 
-		typedef typename Matrix::ConstRawIterator RawIterator;
-		typedef typename Matrix::ConstRawIterator ConstRawIterator;
-		typedef typename Matrix::ConstRawIndexedIterator RawIndexedIterator;
-		typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
+		typedef typename Matrix::ConstIterator Iterator;
+		typedef typename Matrix::ConstIterator ConstIterator;
+		typedef typename Matrix::ConstIndexedIterator IndexedIterator;
+		typedef typename Matrix::ConstIndexedIterator ConstIndexedIterator;
 
 		SubRowMatrix (const Matrix* BB,
 			      size_t row,
@@ -180,10 +180,10 @@ namespace LinBox
 		 * I maybe implement in future
 		 */
 #if 0
-		RawIterator rawBegin ();
-		RawIterator rawEnd ();
-		ConstRawIterator rawBegin () const;
-		ConstRawIterator rawEnd () const;
+		Iterator Begin ();
+		Iterator End ();
+		ConstIterator Begin () const;
+		ConstIterator End () const;
 #endif
 	};
 	//@}

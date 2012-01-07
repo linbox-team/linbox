@@ -76,7 +76,7 @@ namespace LinBox
 		GenericRandIter (const Field &F,
 				 const integer &size = 0,
 				 const integer &seed = 0) :
-			_F (F), _size (size), _seed (seed)
+			_field (F), _size (size), _seed (seed)
 		{
 			if (_seed == 0) _seed = time (NULL);
 
@@ -98,7 +98,7 @@ namespace LinBox
 		}
 
 		GenericRandIter (const GenericRandIter<Field> &R) :
-			_F (R._F), _size (R._size), _seed (R._seed)
+			_field (R._field), _size (R._size), _seed (R._seed)
 		{}
 
 		~GenericRandIter () {}
@@ -120,7 +120,7 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		Element &random (Element &a) const
-		{ return _F.init(a,rand()); }
+		{ return _field.init(a,rand()); }
 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
@@ -139,7 +139,7 @@ namespace LinBox
 	private:
 
 		/// Field in which arithmetic is done
-		Field _F;
+		Field _field;
 
 		/// Sampling size
 		integer _size;

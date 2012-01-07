@@ -32,7 +32,8 @@
 
 using namespace LinBox;
 
-int main (int argc, char **argv) {
+int main (int argc, char **argv)
+{
 
 	static size_t n = 10000;
 	static int iterations = 1;
@@ -45,24 +46,24 @@ int main (int argc, char **argv) {
 
         parseArguments (argc, argv, args);
 
-	commentator.start("UnparametricField<NTL::RR> field test suite", "UnparametricField<NTL::RR>");
+	commentator.start("NTL_RR field test suite", "NTL_RR");
 	bool pass = true;
 
-	UnparametricField<NTL::RR> F;
+	NTL_RR F;
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	if (!runFieldTests (F, "UnparametricField<NTL::RR>", iterations, n, false)) pass = false;
+	if (!runFieldTests (F, "NTL_RR", iterations, n, false)) pass = false;
 
 #if 0
-	FieldArchetype K(new UnparametricField<NTL::RR>);
+	FieldArchetype K(new NTL_RR);
 
 	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField<NTL::RR> field"))
 		pass = false;
 #endif
 
-	commentator.stop("UnparametricField<NTL::RR> field test suite");
+	commentator.stop("NTL_RR field test suite");
 	// We're going to allow failed tests here because the floating-point
 	// approximation tends to screw things up anyway.
 

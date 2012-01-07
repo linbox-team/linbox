@@ -29,7 +29,8 @@
 
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/matrix/blas-matrix.h"
 
 namespace LinBox
 {
@@ -394,7 +395,6 @@ namespace LinBox
 } // namespace LinBox
 
 // was compose-traits.h (by Zhendong Wan)
-#include <linbox/blackbox/dense.h>
 namespace LinBox
 {
 
@@ -407,11 +407,13 @@ namespace LinBox
 
 	/// used in smith-binary, for example
 	template<class Field>
-	class ComposeTraits<DenseMatrix<Field> > {
+	class ComposeTraits<  BlasMatrix<Field> > {
 	public:
 
 		// define the return value type
-		typedef DenseMatrix<Field> value_type;         };
+		typedef BlasMatrix<Field> value_type;
+	};
+
 }
 
 
@@ -469,7 +471,7 @@ namespace LinBox
 		{
 			linbox_check (A_data != (Blackbox1 *) 0);
 			linbox_check (B_data != (Blackbox2 *) 0);
-			linbox_check (A_data.coldim () == B_data.rowdim ());
+			linbox_check (A_data->coldim () == B_data->rowdim ());
 
 			// VectorWrapper::ensureDim (_z, _A_data.coldim ());
 			_z.resize(_A_data.coldim());

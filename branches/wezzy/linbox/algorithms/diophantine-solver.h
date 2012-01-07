@@ -25,11 +25,11 @@
 #ifndef __LINBOX_diophantine_solver_H
 #define __LINBOX_diophantine_solver_H
 
-#include <linbox/algorithms/rational-solver.h>
-#include <linbox/solutions/methods.h>
-#include <linbox/blackbox/archetype.h>
-#include <linbox/blackbox/lambda-sparse.h>
-#include <linbox/blackbox/compose.h>
+#include "linbox/algorithms/rational-solver.h"
+#include "linbox/solutions/methods.h"
+#include "linbox/blackbox/archetype.h"
+#include "linbox/blackbox/lambda-sparse.h"
+#include "linbox/blackbox/compose.h"
 
 namespace LinBox
 {
@@ -52,8 +52,7 @@ namespace LinBox
 		typedef typename QSolver::RingType    Ring;
 		typedef typename Ring::Element        Integer;
 		QSolver&                              _rationalSolver;
-		Ring                                  _R;
-		Integer                               _rone;
+		Ring                                  _ring;
 
 	public:
 		// information for last diophantine solve
@@ -67,9 +66,8 @@ namespace LinBox
 		 * @param rs  a rationalSolver
 		 */
 		DiophantineSolver (QSolver& rs) :
-			_rationalSolver(rs), _R(rs.getRing()), lastCertificate(_R, 0) {
-				_R.init(_rone, 1);
-			};
+			_rationalSolver(rs), _ring(rs.getRing()), lastCertificate(_ring, 0)
+		{ }
 
 		/** Solve a linear system \c Ax=b over quotient field of a ring.
 		 *
@@ -131,7 +129,7 @@ namespace LinBox
 	};
 
 }
-#include <linbox/algorithms/diophantine-solver.inl>
+#include "linbox/algorithms/diophantine-solver.inl"
 
 #endif //__LINBOX_diophantine_solver_H
 

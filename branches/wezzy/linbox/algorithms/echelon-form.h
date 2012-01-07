@@ -26,11 +26,11 @@
 #ifndef __LINBOX_echelon_form_H
 #define __LINBOX_echelon_form_H
 
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/blas-domain.h>
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
 
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/matrix/factorized-matrix.h>
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/matrix/factorized-matrix.h"
 
 namespace LinBox
 {
@@ -40,7 +40,7 @@ namespace LinBox
 
 	private:
 
-		Field                      _F;
+		Field                      _field;
 		BlasMatrixDomain<Field>  _BMD;
 		MatrixDomain<Field>       _MD;
 
@@ -49,7 +49,7 @@ namespace LinBox
 
 		// constructor
 		EchelonFormDomain(const Field &F) :
-			_F(F), _BMD(F), _MD(F)
+			_field(F), _BMD(F), _MD(F)
 		{}
 
 
@@ -64,7 +64,7 @@ namespace LinBox
 			n = A.coldim();
 
 			// get the transposed of A
-			BlasMatrix<Element> At(n, m);
+			BlasMatrix<Field> At(_field,n, m);
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
 					At.setEntry(j,i,A.getEntry(i,j));
@@ -77,7 +77,7 @@ namespace LinBox
 				for (size_t j=0;j<n;++j){
 					E.setEntry(i,j, At.getEntry(j,i));
 				}
-			return rank;
+			return (int)rank;
 		}
 
 
@@ -93,7 +93,7 @@ namespace LinBox
 			n = A.coldim();
 
 			// get the transposed of A
-			BlasMatrix<Element> At(n, m);
+			BlasMatrix<Field> At(_field,n, m);
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
 					At.setEntry(j,i,A.getEntry(i,j));
@@ -153,16 +153,16 @@ namespace LinBox
 			m = E.rowdim();
 			n = E.coldim();
 			Element zero, one;
-			_F.init(zero,0);
-			_F.init(one,1);
+			_field.init(zero,0);
+			_field.init(one,1);
 
 			BlasPermutation<size_t> P(E.coldim());
 			BlasPermutation<size_t> Qt(E.rowdim());
 			// compute the LQUP of E
-			LQUPMatrix<Field> LQUP(_F, E,P,Qt);
+			LQUPMatrix<Field> LQUP(E,P,Qt);
 
 			// get the rank
-			rank = LQUP.getrank();
+			rank = LQUP.getRank();
 
 			// get permutation Qt
 			// BlasPermutation<size_t> Qt = LQUP.getQ();
@@ -177,7 +177,7 @@ namespace LinBox
 				E.setEntry(*(Qt.getPointer()+i),i,one);
 			}
 
-			return rank;
+			return (int)rank;
 		}
 
 		// column reduced echelon form (IN-PLACE VERSION)
@@ -189,17 +189,17 @@ namespace LinBox
 			m = E.rowdim();
 			n = E.coldim();
 			Element zero, one;
-			_F.init(zero,0);
-			_F.init(one,1);
+			_field.init(zero,0);
+			_field.init(one,1);
 
 			// compute the LQUP of E
 			BlasPermutation<size_t> P(E.coldim());
 			BlasPermutation<size_t> Qt(E.rowdim());
 
-			LQUPMatrix<Field> LQUP(_F, E, P, Qt);
+			LQUPMatrix<Field> LQUP( E, P, Qt);
 
 			// get the rank
-			rank = LQUP.getrank();
+			rank = LQUP.getRank();
 
 			// BlasPermutation<size_t> Qt = LQUP.getQ();
 			TransposedBlasMatrix<BlasPermutation<size_t> > Q(Qt);
@@ -217,9 +217,9 @@ namespace LinBox
 				E.setEntry(i,i, one);//*(Qt.getPointer()+i),one);
 
 			// Update the first r columns of E by Err^(-1)
-			BlasMatrix<Element> Er(E,0,0,rank,rank);
-			TriangularBlasMatrix<Element> Err(Er, BlasTag::low, BlasTag::unit);
-			BlasMatrix<Element> En(E,rank,0,m-rank,rank);
+			BlasMatrix<Field> Er(E,0,0,rank,rank);
+			TriangularBlasMatrix<Field> Err(Er, LinBoxTag::Lower, LinBoxTag::Unit);
+			BlasMatrix<Field> En(E,rank,0,m-rank,rank);
 
 			_BMD.right_solve(Err, En);
 
@@ -246,13 +246,13 @@ namespace LinBox
 			for (size_t i=0;i<m-1;++i){
 				std::cout<<"[";
 				for (size_t j=0;j<n-1;++j)
-					_F.write(std::cout,A.getEntry(i,j))<<",";
-				_F.write(std::cout, A.getEntry(i,n-1))<<"] , ";
+					_field.write(std::cout,A.getEntry(i,j))<<",";
+				_field.write(std::cout, A.getEntry(i,n-1))<<"] , ";
 			}
 			std::cout<<"[";
 			for (size_t j=0;j<n-1;++j)
-				_F.write(std::cout,A.getEntry(m-1,j))<<",";
-			_F.write(std::cout, A.getEntry(m-1,n-1))<<"]]);\n ";
+				_field.write(std::cout,A.getEntry(m-1,j))<<",";
+			_field.write(std::cout, A.getEntry(m-1,n-1))<<"]]);\n ";
 		}
 
 	};

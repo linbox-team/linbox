@@ -14,9 +14,9 @@
 #ifndef __LINBOX_blackbox_container_H
 #define __LINBOX_blackbox_container_H
 
-#include <linbox/randiter/archetype.h>
-#include <linbox/algorithms/blackbox-container-base.h>
-#include <linbox/util/timer.h>
+#include "linbox/randiter/archetype.h"
+#include "linbox/algorithms/blackbox-container-base.h"
+#include "linbox/util/timer.h"
 
 namespace LinBox
 {

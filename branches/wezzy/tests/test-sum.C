@@ -32,7 +32,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/field/givaro.h"
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl-lzz_p.h"
+#include "linbox/field/ntl.h"
 #endif
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/diagonal.h"
@@ -216,7 +216,7 @@ int main (int argc, char **argv)
 #endif
 	Field F1(q1);
 
-        GivaroZpz< ::Givaro::Std32> F2(q2);
+        GivaroZpz< Givaro::Std32> F2(q2);
 
 	typedef vector<Field::Element> Vector;
 

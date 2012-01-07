@@ -60,14 +60,14 @@ int main (int argc, char **argv)
 	ostream& report = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 	report << "over Modular<double>" << endl;
 	typedef Modular<double> Field;
-	typedef BlasMatrix<double> Block;
-	typedef BlasBlackbox<Field> Blackbox;
+	typedef BlasMatrix<Field> Block;
+	typedef BlasMatrix<Field> Blackbox;
 	Modular<double> F (q);
 
 	Blackbox A(F, n, n);
-	Block U(k, n);
-	Block V(n, k);
-	Block W(k, k);
+	Block U(F, k, n);
+	Block V(F, n, k);
+	Block W(F, k, k);
 
 	// Solved a segfault in init.
 	BlackboxBlockContainer<Field, Blackbox> B(&A, F, U, V);

@@ -26,17 +26,17 @@ namespace LinBox
 	 * @ingroup iterators
 	 */
 	template<class Field>
-	class ZeroOne<Field>::RawIterator {
+	class ZeroOne<Field>::Iterator {
 	public:
 		typedef Element value_type;
 
-		RawIterator(size_t pos, Element elem) :
+		Iterator(size_t pos, Element elem) :
 			_pos(pos), _elem(elem) {}
 
-		RawIterator(const RawIterator &In) :
+		Iterator(const Iterator &In) :
 			_pos(In._pos), _elem(In._elem) {}
 
-		const RawIterator& operator=(const RawIterator& rhs)
+		const Iterator& operator=(const Iterator& rhs)
 		{
 			_pos = rhs._pos;
 			_elem = rhs._elem;
@@ -44,25 +44,25 @@ namespace LinBox
 		}
 
 
-		bool operator==(const RawIterator &rhs)
+		bool operator==(const Iterator &rhs)
 		{
 			return ( _pos == rhs._pos && _elem == rhs._elem);
 		}
 
-		bool operator!=(const RawIterator &rhs)
+		bool operator!=(const Iterator &rhs)
 		{
 			return ( _pos != rhs._pos || _elem != rhs._elem );
 		}
 
-		RawIterator & operator++()
+		Iterator & operator++()
 		{
 			++_pos;
 			return *this;
 		}
 
-		RawIterator operator++(int)
+		Iterator operator++(int)
 		{
-			RawIterator tmp = *this;
+			Iterator tmp = *this;
 			_pos++;
 			return tmp;
 		}
@@ -77,78 +77,78 @@ namespace LinBox
 	};
 
 	/* STL standard Begin and End functions.  Used to get
-	 * the beginning and end of the data.  So that RawIterator
+	 * the beginning and end of the data.  So that Iterator
 	 * can be used in algorithms like a normal STL iterator.
 	 */
 	template<class Field> typename
-	ZeroOne<Field>::RawIterator ZeroOne<Field>::rawBegin()
+	ZeroOne<Field>::Iterator ZeroOne<Field>::Begin()
 	{
-	       	return RawIterator( 0, _F.init(_tmp, 1) );
+	       	return Iterator( 0, _field.init(_tmp, 1) );
 	}
 
 	template<class Field> typename
-	ZeroOne<Field>::RawIterator ZeroOne<Field>::rawEnd()
+	ZeroOne<Field>::Iterator ZeroOne<Field>::End()
 	{
-	       	return RawIterator( _nnz, _F.init(_tmp, 1) );
+	       	return Iterator( _nnz, _field.init(_tmp, 1) );
 	}
 
 	template<class Field>
-	const typename ZeroOne<Field>::RawIterator ZeroOne<Field>::rawBegin() const
+	const typename ZeroOne<Field>::Iterator ZeroOne<Field>::Begin() const
 	{
-	       	return RawIterator(0, _F.init(_tmp, 1) );
+	       	return Iterator(0, _field.init(_tmp, 1) );
 	}
 
 	template<class Field>
-	const typename ZeroOne<Field>::RawIterator ZeroOne<Field>::rawEnd() const
+	const typename ZeroOne<Field>::Iterator ZeroOne<Field>::End() const
 	{
-	       	return RawIterator(_nnz, _F.init(_tmp, 1) );
+	       	return Iterator(_nnz, _field.init(_tmp, 1) );
 	}
 
-	/*! RawIndexIterator.
+	/*! IndexIterator.
 	 * @ingroup iterators
 	 * Iterates through the i and j of the current element
 	 * and when accessed returns an STL pair containing the coordinates
 	 */
 	template<class Field>
-	class ZeroOne<Field>::RawIndexIterator {
+	class ZeroOne<Field>::IndexIterator {
 	public:
 		typedef std::pair<size_t, size_t> value_type;
 
-		RawIndexIterator() {}
+		IndexIterator() {}
 
-		RawIndexIterator(size_t* row, size_t* col):
+		IndexIterator(size_t* row, size_t* col):
 			_row(row), _col(col) {}
 
-		RawIndexIterator(const RawIndexIterator &In):
+		IndexIterator(const IndexIterator &In):
 			_row(In._row), _col(In._col)
 		{}
 
-		const RawIndexIterator &operator=(const RawIndexIterator &rhs)
+		const IndexIterator &operator=(const IndexIterator &rhs)
 		{
 			_row = rhs._row;
 			_col = rhs._col;
 			return *this;
 		}
 
-		bool operator==(const RawIndexIterator &rhs)
+		bool operator==(const IndexIterator &rhs)
 		{
 			return _row == rhs._row && _col == rhs._col;
 		}
 
-		bool operator!=(const RawIndexIterator &rhs)
+		bool operator!=(const IndexIterator &rhs)
 		{
 			return _row != rhs._row || _col != rhs._col;
 		}
 
-		const RawIndexIterator& operator++()
+		const IndexIterator& operator++()
 		{
 			++_row; ++_col;
 			return *this;
 		}
 
-		const RawIndexIterator operator++(int)
+		const IndexIterator operator++(int)
 		{
-			RawIndexIterator tmp = *this;
+			IndexIterator tmp = *this;
 			++_row; ++_col;
 			return tmp;
 		}
@@ -167,32 +167,32 @@ namespace LinBox
 	};
 
 	template<class Field> typename
-	ZeroOne<Field>::RawIndexIterator ZeroOne<Field>::indexBegin()
+	ZeroOne<Field>::IndexIterator ZeroOne<Field>::indexBegin()
 	{
-		return RawIndexIterator(_rowP, _colP);
+		return IndexIterator(_rowP, _colP);
 	}
 
 	template<class Field>
-	const typename ZeroOne<Field>::RawIndexIterator ZeroOne<Field>::indexBegin() const
+	const typename ZeroOne<Field>::IndexIterator ZeroOne<Field>::indexBegin() const
 	{
-		return RawIndexIterator(_rowP, _colP);
+		return IndexIterator(_rowP, _colP);
 	}
 
 	template<class Field> typename
-	ZeroOne<Field>::RawIndexIterator ZeroOne<Field>::indexEnd()
+	ZeroOne<Field>::IndexIterator ZeroOne<Field>::indexEnd()
 	{
-		return RawIndexIterator(_rowP + _nnz, _colP + _nnz);
+		return IndexIterator(_rowP + _nnz, _colP + _nnz);
 	}
 
 	template<class Field>
-	const typename ZeroOne<Field>::RawIndexIterator ZeroOne<Field>::indexEnd() const
+	const typename ZeroOne<Field>::IndexIterator ZeroOne<Field>::indexEnd() const
 	{
-		return RawIndexIterator(_rowP + _nnz, _colP + _nnz);
+		return IndexIterator(_rowP + _nnz, _colP + _nnz);
 	}
 
 	template<class Field>
 	ZeroOne<Field>::ZeroOne(const Field& F) :
-	       	_F(F)
+	       	_field(F)
        	{
 		srand((unsigned int) time(NULL) );
 		dynamic = false;
@@ -201,7 +201,7 @@ namespace LinBox
 	template<class Field>
 	ZeroOne<Field>::ZeroOne(Field F, Index* rowP, Index* colP,
 				Index rows, Index cols, Index NNz, bool RowSort, bool ColSort):
-		_F(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(RowSort), _colSort(ColSort) , dynamic(false)
+		_field(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(RowSort), _colSort(ColSort) , dynamic(false)
 	{
 	       	srand((unsigned)time(NULL));
 	}
@@ -312,7 +312,7 @@ namespace LinBox
 
 		// 0 out y.  Note, this implementation assumes a dense vector.
 		for(yp = y.begin(); yp != y.end(); ++yp)
-			_F.init(*yp , 0);
+			_field.init(*yp , 0);
 
 		rowSort();
 
@@ -325,7 +325,7 @@ namespace LinBox
 		for(; ip <_rowP+nnz(); ++ip,++jp)
 		{
 			if( *ip == rowI)
-				_F.addin(*yp,*(xp + *jp));
+				_field.addin(*yp,*(xp + *jp));
 			else
 			{
 				if((*ip-rowI)==1)
@@ -334,7 +334,7 @@ namespace LinBox
 					yp=y.begin()+*ip;
 
 				rowI=*ip;
-				_F.addin(*yp,*(xp + *jp));
+				_field.addin(*yp,*(xp + *jp));
 			}
 		}
 		return y;
@@ -354,7 +354,7 @@ namespace LinBox
 		Index* ip, *jp;
 
 		for(yp = y.begin(); yp != y.end(); ++yp)
-			_F.init(*yp , 0);
+			_field.init(*yp , 0);
 
 		rowSort();
 
@@ -365,7 +365,7 @@ namespace LinBox
 		size_t rowI =0;
 		integer _prime;
 
-		_F.characteristic(_prime);
+		_field.characteristic(_prime);
 
 		uint32_t prime = static_cast<uint32_t>(_prime);
 
@@ -406,7 +406,7 @@ namespace LinBox
 
 		// 0 out y.  Note, this implementation assumes a dense vector.
 		for(yp = y.begin(); yp != y.end(); ++yp)
-			_F.init(*yp , 0);
+			_field.init(*yp , 0);
 
 		rowSort();
 
@@ -419,7 +419,7 @@ namespace LinBox
 		for(; ip <_rowP+nnz(); ++ip,++jp)
 		{
 			if( *ip == rowI)
-				_F.addin(*(yp+*jp),*xp);
+				_field.addin(*(yp+*jp),*xp);
 			else
 			{
 				if((*ip-rowI)==1)
@@ -428,7 +428,7 @@ namespace LinBox
 					xp=x.begin()+*ip;
 
 				rowI=*ip;
-				_F.addin(*(yp+*jp),*xp);
+				_field.addin(*(yp+*jp),*xp);
 			}
 		}
 
@@ -476,7 +476,7 @@ namespace LinBox
 		}
 
 		integer _prime;
-		_F.characteristic(_prime);
+		_field.characteristic(_prime);
 		uint32_t prime = static_cast<uint32_t>(_prime);
 
 		yp=y.begin();

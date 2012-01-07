@@ -31,8 +31,8 @@
 #include <iostream>
 
 #include "linbox/integer.h"
-#include <linbox/field/field-interface.h>
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-interface.h"
+#include "linbox/field/field-traits.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox
@@ -75,6 +75,7 @@ namespace LinBox
 		 */
 		ParamFuzzy (const double &value = .000000001) :
 			_fuzz (value)
+			,one(1),zero(0),mOne(-one)
 		{}
 
 		/** Copy constructor.
@@ -85,6 +86,7 @@ namespace LinBox
 		 */
 		ParamFuzzy (const ParamFuzzy &F) :
 			_fuzz (F._fuzz)
+			,one(F.one),zero(F.zero),mOne(F.mOne)
 		{}
 
 		/** Assignment operator.
@@ -407,6 +409,8 @@ namespace LinBox
 
 		/// Private static double for fuzz value
 		double _fuzz;
+	public:
+		const Element one,zero,mOne;
 
 	}; // class ParamFuzzy
 

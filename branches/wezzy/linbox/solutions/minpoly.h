@@ -24,6 +24,8 @@
 #ifndef __LINBOX_minpoly_H
 #define __LINBOX_minpoly_H
 
+#include <string>
+#include "linbox/linbox-config.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/util/commentator.h"
 
@@ -42,15 +44,16 @@
 namespace LinBox
 {
 
-	/*- @brief Minimal polynomial of a blackbox linear operator A.
+	/*! @internal
+	 * @brief Minimal polynomial of a blackbox linear operator A.
 	 * The resulting polynomial is a vector of coefficients.
 	 * Somewhere we should document our handling of polys.
 	 */
 	template < class Blackbox, class Polynomial, class DomainCategory, class MyMethod>
-	Polynomial &minpoly (Polynomial& P,
-			     const Blackbox& A,
-			     const DomainCategory& tag,
-			     const MyMethod& M);
+	Polynomial &minpoly (Polynomial           & P,
+			     const Blackbox       & A,
+			     const DomainCategory & tag,
+			     const MyMethod       & M);
 
 	/*
 	   template < class Blackbox, class Polynomial, class MyMethod>
@@ -63,22 +66,23 @@ namespace LinBox
 	   }
 	   */
 
-	/** \brief  ...using an optional Method parameter
-	  \param P - the output minimal polynomial.  If the polynomial is
-	  of degree d, this random access container has size d+1, the 0-th entry is
-	  the constant coefficient and the d-th is 1 since the minpoly is monic.
-	  \param A - a blackbox matrix
-	  Optional \param M - the method object.  Generally, the default
-	  object suffices and the algorithm used is determined by the class of M.
-	  Basic methods are Method::Blackbox, Method::Elimination, and Method::Hybrid
-	  (the default).
-	  See methods.h for more options.
-	  \return a reference to P.
+	/** @internal
+	 * \brief  ...using an optional Method parameter
+	 * \param P  the output minimal polynomial.  If the polynomial is
+	 * of degree d, this random access container has size d+1, the 0-th entry is
+	 * the constant coefficient and the d-th is 1 since the minpoly is monic.
+	 * \param A  a blackbox matrix
+	 * \param M  the method object.  Generally, the default
+	 * object suffices and the algorithm used is determined by the class of M.
+	 * Basic methods are Method::Blackbox, Method::Elimination, and Method::Hybrid
+	 * (the default).
+	 * See methods.h for more options.
+	 * \return a reference to P.
 	  */
 	template < class Blackbox, class Polynomial, class MyMethod>
-	Polynomial &minpoly (Polynomial& P,
-			     const Blackbox& A,
-			     const MyMethod& M)
+	Polynomial &minpoly (Polynomial     & P,
+			     const Blackbox & A,
+			     const MyMethod & M)
 	{
 		return minpoly (P, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
@@ -93,85 +97,74 @@ namespace LinBox
 
 
 
-	// The minpoly with Hybrid Method
+	//! @internal The minpoly with Hybrid Method
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
-			     Polynomial         &P,
-			     const Blackbox                            &A,
-			     const RingCategories::ModularTag          &tag,
-			     const Method::Hybrid& M)
+			     Polynomial                       & P,
+			     const Blackbox                   & A,
+			     const RingCategories::ModularTag & tag,
+			     const Method::Hybrid             & M)
 	{
 		// not yet a hybrid
 		return minpoly(P, A, tag, Method::Blackbox(M));
 	}
 
-	// The minpoly with Hybrid Method on DenseMatrix
+	//! @internal The minpoly with Hybrid Method on BlasMatrix
 	template<class Polynomial, class Field>
 	Polynomial &minpoly (
-			     Polynomial         &P,
-			     const DenseMatrix<Field> 			&A,
-			     const RingCategories::ModularTag          &tag,
-			     const Method::Hybrid& M)
+			     Polynomial                       & P,
+			     const BlasMatrix<Field>          & A,
+			     const RingCategories::ModularTag & tag,
+			     const Method::Hybrid             & M)
 	{
 		return minpoly(P, A, tag, Method::Elimination(M));
 	}
 
-	// The minpoly with Hybrid Method on BlasBlackbox
-	template<class Polynomial, class Field>
-	Polynomial &minpoly (
-			     Polynomial         &P,
-			     const BlasBlackbox<Field> 			&A,
-			     const RingCategories::ModularTag          &tag,
-			     const Method::Hybrid& M)
-	{
-		return minpoly(P, A, tag, Method::Elimination(M));
-	}
-
-	// The minpoly with Elimination Method
+	//! @internal The minpoly with Elimination Method
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
-			     Polynomial         &P,
-			     const Blackbox                            &A,
-			     const RingCategories::ModularTag          &tag,
-			     const Method::Elimination& M)
+			     Polynomial                       & P,
+			     const Blackbox                   & A,
+			     const RingCategories::ModularTag & tag,
+			     const Method::Elimination        & M)
 	{
 		return minpoly(P, A, tag, Method::BlasElimination(M));
 	}
 
-	// The minpoly with BlasElimination Method
+	//! @internal The minpoly with BlasElimination Method
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
-			     Polynomial         &P,
-			     const Blackbox                            &A,
-			     const RingCategories::ModularTag          &tag,
-			     const Method::BlasElimination& M)
+			     Polynomial                       & P,
+			     const Blackbox                   & A,
+			     const RingCategories::ModularTag & tag,
+			     const Method::BlasElimination    & M)
 	{
 		commentator.start ("Convertion to BLAS Minimal polynomial", "blasconvert");
 
 		if (A.coldim() != A.rowdim()) {
 			commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Squarize matrix" << std::endl;
 			Squarize<Blackbox> B(&A);
-			BlasBlackbox< typename Blackbox::Field > BBB (B);
+			BlasMatrix< typename Blackbox::Field > BBB (B);
 			BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
 			commentator.stop ("done", NULL, "blasconvert");
 
-			return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field::Element>& >(BBB));
+			return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field>& >(BBB));
 		}
 		else {
-			BlasBlackbox< typename Blackbox::Field > BBB (A);
+			BlasMatrix< typename Blackbox::Field > BBB (A);
 			BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
 			commentator.stop ("done", NULL, "blasconvert");
-			return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field::Element>& >(BBB));
+			return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field>& >(BBB));
 		}
 	}
 
-	// The minpoly with BlackBox Method
+	//! @internal The minpoly with BlackBox Method
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
-			     Polynomial         &P,
-			     const Blackbox                            &A,
-			     const RingCategories::ModularTag          &tag,
-			     const Method::Blackbox& M)
+			     Polynomial                       & P,
+			     const Blackbox                   & A,
+			     const RingCategories::ModularTag & tag,
+			     const Method::Blackbox           & M)
 	{
 		if (M.certificate()) {
 			// Will make a word size extension
@@ -190,7 +183,7 @@ namespace LinBox
 // Chinese Remaindering generic wrappers for integer minpoly
 // ---------------------------------------------------------
 
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
@@ -268,8 +261,10 @@ namespace LinBox
 	}
 
 	template < class Blackbox, class Polynomial, class MyMethod>
-	Polynomial &minpoly (Polynomial& P, const Blackbox& A,
-			     const RingCategories::RationalTag& tag, const MyMethod& M)
+	Polynomial &minpoly (Polynomial                        & P,
+			     const Blackbox                    & A,
+			     const RingCategories::RationalTag & tag,
+			     const MyMethod                    & M)
 	{
 		commentator.start ("Rational Minpoly", "Rminpoly");
 
@@ -291,14 +286,17 @@ namespace LinBox
 	}
 
 	template < class Field, template<class> class Polynomial, class MyMethod>
-	Polynomial<typename Field::Element> &minpoly (Polynomial<typename Field::Element>& P, const DenseMatrix<Field>& A,
-						      const RingCategories::RationalTag& tag, const MyMethod& M)
+	Polynomial<typename Field::Element> &minpoly (Polynomial<typename Field::Element>& P,
+						      const BlasMatrix<Field>            & A,
+						      const RingCategories::RationalTag  & tag,
+						      const MyMethod                     & M)
 	{
 		commentator.start ("Dense Rational Minpoly", "Rminpoly");
 
 		rational_minpoly(P,A,M);
 		return P;
 	}
+
 } // end of LinBox namespace
 #endif // __LINBOX_minpoly_H
 

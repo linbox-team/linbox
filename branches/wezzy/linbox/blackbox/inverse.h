@@ -24,7 +24,7 @@
 #ifndef __LINBOX_inverse_H
 #define __LINBOX_inverse_H
 
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/minpoly.h"

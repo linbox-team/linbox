@@ -23,13 +23,18 @@
  * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
+
+/*! @file algorithms/cra-domain-omp.h
+ * @brief Parallel (OMP) version of \ref CRA
+ * @ingroup CRA
+ */
+
 #ifndef __LINBOX_omp_cra_H
 #define __LINBOX_omp_cra_H
 // commentator is not thread safe
 #define DISABLE_COMMENTATOR
 #include "linbox/algorithms/cra-domain-seq.h"
 #include <set>
-#include <vector>
 
 namespace LinBox
 {

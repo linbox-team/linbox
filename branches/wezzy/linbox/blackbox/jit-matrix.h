@@ -11,7 +11,7 @@
 #ifndef __LINBOX_jitmatrix_H
 #define __LINBOX_jitmatrix_H
 
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 namespace LinBox
 {
@@ -62,7 +62,7 @@ namespace LinBox
 
 		JIT_Matrix (_Field& F, const size_t m, const size_t n,
 			    const JIT_EntryGenerator& JIT) :
-			_F(F), _m(m), _n(n), _gen(JIT)
+			_field(F), _m(m), _n(n), _gen(JIT)
 		{};
 
 		template<class OutVector, class InVector>
@@ -75,12 +75,12 @@ namespace LinBox
 		//OutVector& applyTranspose (OutVector& y, const InVector& x) const;
 		size_t rowdim (void) const { return _m; }
 		size_t coldim (void) const { return _n; }
-		const Field& field() const { return _F; }
+		const Field& field() const { return _field; }
 
 	protected:
 
 		// Field for arithmetic
-		Field _F;
+		Field _field;
 
 		// Number of rows and columns of matrix.
 		size_t _m;
@@ -99,13 +99,13 @@ namespace LinBox
 	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::apply (OutVector& y, const InVector& x)
 	{
 		Element entry;
-		_F.init(entry,0);
+		_field.init(entry,0);
 		for (size_t i = 0; i < _m; ++i) {
-			_F.init(y[i], 0);
+			_field.init(y[i], 0);
 			for (size_t j = 0; j < _n; ++j) {
 				_gen(entry, i, j);
 
-				_F.axpyin (y[i], entry, x[j]);
+				_field.axpyin (y[i], entry, x[j]);
 			}
 		}
 		return y;
@@ -117,11 +117,11 @@ namespace LinBox
 	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::applyTranspose (OutVector& y, const InVector& x)
 	{
 		Element entry;
-		_F.init(entry,0);
+		_field.init(entry,0);
 		for (size_t i = 0; i < _m; ++i) {
-			_F.init(y[i], 0);
+			_field.init(y[i], 0);
 			for (size_t j = 0; j < _n; ++j) {
-				_F.axpyin ( y[i], x[j], _gen(entry, j, i) );
+				_field.axpyin ( y[i], x[j], _gen(entry, j, i) );
 			}
 		}
 		return y;

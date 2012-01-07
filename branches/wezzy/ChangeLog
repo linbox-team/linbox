@@ -1,3 +1,25 @@
+2011-03-10 bboyer
+        * Implement DublinBox Mother model for dense matrices (BlasM* own, BlasS* share)
+	* Change BlasSubmatrix private members (and add one to make Iterators faster)
+	* Change <> includes to "" so I have no surprise when the compiler looks them in a non expected place
+	* add a const in Field Categories for a weird bug...
+	* RawIterators are renamed to Iterators (impossible to pronounce, easy to misspell)
+	* add functions to blas-domain and blas-matrix
+
+2011-24-09 bboyer
+        * replace DenseMatrix(Base) by Blas(Matrix/Blackbox)
+	* put these classes (and DenseSubmatrix) in a Protected namespace (users will be warned...)
+	* update Blas(Mat/Bb)  interface
+	* clean DenseMatrix(Base) from LinBox
+	* Delete BlasTag (use LinBoxTag class instead, avoids branching)
+	* Update to Givaro gcd new clean intefarce
+	* Update to one/zero in (some) Fflas-Ffpack fields
+	* Rename Flaflas to more serious FFLAS-FFPACK
+	* Minor updates in some classes.
+	* martin albretch patch to update linbox-sage.h
+	* M4RI checks
+	* Ekopath (pathscale) checks
+
 2011-05-11 bboyer
         linbox-1.2.0 released:
 	* Many many bug fixes, many memleaks, much code beautify.
@@ -24,6 +46,7 @@
 	* Some new field functions like characteristic()
 	* Work on synchronising field member functions signatures for
 	better compatibility between all fields (in progress)
+
 2010-11-03 cpernet
 	linbox-1.1.7 released:
 	* bug fixes and minor enhancements
@@ -32,9 +55,11 @@
 	* new rebind interface
 	* incorporate the code for computations over the rationals (by A
 	Ubranska), still waiting to be cleaned-up (it is not used yet by default)
+
 2008-09-22 cpernet
 	linbox-1.1.6 released:
 	* compilation pb, and bug fixes, for cygwin support and debianization
+
 2008-06-10 cpernet
 	* Upgrade fflas-ffpack to v1.3.3 (safer and tighter bounds, bug
 	fixes,...)
@@ -43,6 +68,7 @@
 	* Add new interface to Sage
 	* bugs and documentation fixes
 	* remove gmp++ from LinBox, and thus make Givaro a necessary package
+
 2008_03-02 cpernet
 	linbox-1.1.5 released: 
 	* drivers are back to the source code,
@@ -51,6 +77,7 @@
 	* new double-determinant algorithm
 	* changed the rawIndexedIterator interface, fixing the broken previous one. 
 	* many minor fixes, mostly memleaks. 
+
 2007-10-27 cpernet
 	linbox-1.1.4 has been released including the following most important
 	changes:
@@ -59,27 +86,34 @@
 	* increased system solver functionalities (rectangular, rank deficient
 	matrices)
 	* support for g++/gcc v4.2
+
 2007-09-28 cpernet
 	* Add support for more general dense system solving:
 	  The system can be rectangular (over/underdetermined), singular.	
+
 2007-09-07 bds
 	* This changelog is being widely ignored.  Today buildbot test is on.
+
 2007-01-31 bds 
 	* This entry is just to record that version 1.1.0 has been released by 
 	  Jean-Guillaume Dumas and the current svn version is just a couple of 
 	  steps from the release version.
+
 2006-08-08 bds 
 	* examples/det.C, solutions/det.h, methods.h modified in preparation for
 	* mpi based paralle cra loop in algorithms/cra-domain.h (by Bryan Youse).
 	* also a stub of util/mpicpp.h added (will become the mpi interface).
+
 2006-07-27 Hui Wang and bds 
 	* Add blackbox/quad-matrix.h which defines the ZOQuad matrix, 
 	* which is a cache efficient {0,1}-matrix rep.
 	* Add it's tests, modify also blackbox/zo.h, 
 	* and accumulate-special in field/modular.h to better support sums of field elements efficiently.
+
 2006-06-01 bds 
 	* rank.h adjusted to work around faulty PIVOT_LINEAR code in sparse elim.
 	* test-rank.C now tests blackbox, elimination, hybrid methods as well as...
+
 2006-04-18 bds and Hui Wang
 	* examples/smith.C minor changes
 	* linbox/blackbox/apply.h - don't recall what we did to wreck this.
@@ -106,6 +140,7 @@
 	
 2005-12-8 bds
 	* minor cleanups
+
 2005-11-17 Pascal Giorgi:
 	* macros/blas-check.m4: adding new support for blas libraries
 	* macros/linbox-opt.m4: adding new support for blas libraries

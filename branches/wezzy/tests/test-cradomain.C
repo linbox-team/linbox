@@ -27,8 +27,9 @@
  * @test tests LinBox::ChineseRemainer (see \ref CRA)
  */
 
-#include <linbox/algorithms/cra-domain.h>
-#include <linbox/field/modular-double.h>
+
+#include "linbox/algorithms/cra-domain.h"
+#include "linbox/field/modular.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/algorithms/cra-full-multip.h"
@@ -48,7 +49,7 @@ struct Interator {
 	{
 		for(std::vector<integer>::const_iterator it=_v.begin();
 		    it != _v.end(); ++it) {
-			double ds = ::Givaro::naturallog(*it);
+			double ds = Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
 		}
 	}
@@ -59,7 +60,7 @@ struct Interator {
 		for(std::vector<integer>::iterator it=_v.begin();
 		    it != _v.end(); ++it) {
 			Integer::random<false>(*it, s);
-			double ds = ::Givaro::naturallog(*it);
+			double ds = Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
 		}
 	}
@@ -98,25 +99,25 @@ namespace LinBox
 
 struct InteratorIt : public Interator {
 
-	mutable std::vector<double> _C;
+	mutable std::vector<double> _vectC;
 
 	InteratorIt(const std::vector<integer>& v) :
-		Interator(v), _C(v.size())
+		Interator(v), _vectC(v.size())
 	{}
 	InteratorIt(int n, int s) :
-		Interator(n,s), _C(n)
+		Interator(n,s), _vectC(n)
 	{}
 
 	template<typename Iterator, typename Field>
 	Iterator& operator()(Iterator& res, const Field& F) const
 	{
 		std::vector<integer>::const_iterator vit=this->_v.begin();
-		std::vector<double>::iterator eit=_C.begin();
+		std::vector<double>::iterator eit=_vectC.begin();
 		for( ; vit != _v.end(); ++vit, ++eit) {
 			F.init(*eit, *vit);
 		}
 
-		return res=_C.begin();
+		return res=_vectC.begin();
 	}
 
 };
@@ -125,28 +126,29 @@ template<typename Field> struct InteratorBlas;
 namespace LinBox
 {
 	template<class Element,class Field> struct CRATemporaryVectorTrait<InteratorBlas<Field> , Element> {
-		typedef typename LinBox::BlasMatrix<Element>::pointer Type_t;
+		typedef typename LinBox::BlasMatrix<Field>::pointer Type_t;
 	};
 }
 
 template<typename Field>
 struct InteratorBlas : public Interator {
 	typedef typename Field::Element Element;
-	typedef LinBox::BlasMatrix<Element> Matrix;
+	typedef LinBox::BlasMatrix<LinBox::UnparametricField<Element> > Matrix;
 	typedef typename Matrix::pointer Pointer;
-	mutable Matrix _C;
+	typename LinBox::UnparametricField<Element> _field;
+	mutable Matrix _vectC;
 
-	InteratorBlas(const std::vector<integer>& v) : Interator(v), _C((int)v.size(), (int)1) {}
-	InteratorBlas(int n, int s) : Interator(n,s), _C(n,1) {}
+	InteratorBlas(const std::vector<integer>& v) : Interator(v),_field(), _vectC(_field,(int)v.size(), (int)1) {}
+	InteratorBlas(int n, int s) : Interator(n,s), _field(),_vectC(_field,n,1) {}
 
 	Pointer& operator()(Pointer& res, const Field& F) const
 	{
 		std::vector<integer>::const_iterator vit=this->_v.begin();
-		res = _C.getWritePointer();
+		res = _vectC.getWritePointer();
 		for( ; vit != _v.end(); ++vit, ++res)
 			F.init(*res, *vit);
 
-		return res=_C.getWritePointer();
+		return res=_vectC.getWritePointer();
 	}
 
 };
@@ -202,7 +204,8 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-	LinBox::BlasMatrix<integer> Res( (int)N, (int)N);
+	PID_integer Z ;
+	LinBox::BlasMatrix<PID_integer> Res(Z, (int)N, (int)N);
 	cra( Res.getWritePointer(), iteration, genprime);
 	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getWritePointer() );
 
@@ -281,7 +284,7 @@ bool TestCra(int N, int S, size_t seed)
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
             if (find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
                 PrimeSet.push_back( *genprime );
-                PrimeSize += ::Givaro::naturallog(*genprime);
+                PrimeSize += Givaro::naturallog(*genprime);
             }
         }
 
@@ -328,6 +331,6 @@ int main (int argc, char **argv)
 	for(int i=0; pass && i<iterations; ++i)
 		pass &= TestCra((int)n,(int)s,seed);
 
-	LinBox::commentator.stop(MSG_STATUS (pass), (const char *) 0,"CRA-Domain test suite");
+	LinBox::commentator.stop(MSG_STATUS (pass), "CRA-Domain test suite");
 	return pass ? 0 : -1;
 }

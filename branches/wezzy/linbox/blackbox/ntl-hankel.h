@@ -12,7 +12,7 @@
 #ifndef __LINBOX_ntl_hankel_H
 #define __LINBOX_ntl_hankel_H
 
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 #include "toeplitz.h" // we inherit everything from ntl-toeplitz
 
 //#define DBGMSGS 1
@@ -68,7 +68,7 @@ namespace LinBox
 
 } // namespace Linbox
 
-#include <linbox/blackbox/ntl-hankel.inl>
+#include "linbox/blackbox/ntl-hankel.inl"
 
 #endif //__LINBOX_ntl_hankel_H
 

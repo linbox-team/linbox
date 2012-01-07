@@ -20,8 +20,8 @@ using std::max;
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
-#include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/field/hom.h>
+#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/field/hom.h"
 
 #include <vector>
 
@@ -100,7 +100,7 @@ namespace LinBox
 
 		template<typename _Tp1>
 		TriplesBB(const TriplesBB<_Tp1>& T, const Field& F) :
-			_F(F), _values(T.size()), _RowV(T.getRows()), _ColV(T.getCols()), _rows(T.rowdim()), _cols(T.coldim()), _faxpy(max(T.getRows(),T.getCols()), FieldAXPY<Field>(F)), _RowSortFlag(T.isRowSorted()), _ColSortFlag(T.isColSorted())
+			_field(F), _values(T.size()), _RowV(T.getRows()), _ColV(T.getCols()), _rows(T.rowdim()), _cols(T.coldim()), _faxpy(max(T.getRows(),T.getCols()), FieldAXPY<Field>(F)), _RowSortFlag(T.isRowSorted()), _ColSortFlag(T.isColSorted())
 		{}
 
 
@@ -111,7 +111,7 @@ namespace LinBox
 		// Add entry function, element e is added in the i,j position.  Zero based?
 		void addEntry(const Element & e, const size_t i, const size_t j);
 
-		const Field & field() const { return _F; }
+		const Field & field() const { return _field; }
 
 		/* Data accessors.  Used to access the 3 vectors containing Matrix data
 		*/
@@ -123,7 +123,7 @@ namespace LinBox
 
 
 	protected:
-		Field _F; // The field used by this class
+		Field _field; // The field used by this class
 
 		/// _values contains the nonzero elements of the BlackBox
 		std::vector<Element> _values;
@@ -174,7 +174,7 @@ namespace LinBox
 				    size_t cols,
 				    bool RowSortFlag,
 				    bool ColSortFlag) :
-		_F(F), _values(values), _RowV(RowV), _ColV(ColV), _rows(rows), _cols(cols), _faxpy(max(rows,cols), FieldAXPY<Field>(F)), _RowSortFlag(RowSortFlag), _ColSortFlag(ColSortFlag)
+		_field(F), _values(values), _RowV(RowV), _ColV(ColV), _rows(rows), _cols(cols), _faxpy(max(rows,cols), FieldAXPY<Field>(F)), _RowSortFlag(RowSortFlag), _ColSortFlag(ColSortFlag)
 	{}
 
 	/* Better constructor that only takes the field, m, n and recommended
@@ -184,7 +184,7 @@ namespace LinBox
 	 */
 	template<class Field>
 	TriplesBB<Field>::TriplesBB( Field F, size_t rows, size_t cols, size_t res):
-		_F(F), _rows(rows), _cols(cols), _faxpy( max(rows, cols), FieldAXPY<Field>(F)), _RowSortFlag(false), _ColSortFlag(false)
+		_field(F), _rows(rows), _cols(cols), _faxpy( max(rows, cols), FieldAXPY<Field>(F)), _RowSortFlag(false), _ColSortFlag(false)
 	{
 		if(res != 0) {
 			_values.reserve(res);
@@ -197,8 +197,8 @@ namespace LinBox
 
 	template<class Field>
 	TriplesBB<Field>::TriplesBB(const TriplesBB<Field> &In) :
-		_faxpy( max(In._rows, In._cols), FieldAXPY<Field>(In._F)),
-		_F ( In._F ),
+		_faxpy( max(In._rows, In._cols), FieldAXPY<Field>(In._field)),
+		_field ( In._field ),
 		_values ( In._values ),
 		_RowV ( In._RowV ),
 		_ColV ( In._ColV ),
@@ -212,7 +212,7 @@ namespace LinBox
 	template<class Field>
 	const TriplesBB<Field> & TriplesBB<Field>::operator=(const TriplesBB<Field> & rhs)
 	{
-		_F = rhs._F;
+		_field = rhs._field;
 		_values = rhs._values;
 		_RowV = rhs._RowV;
 		_ColV = rhs._ColV;
@@ -220,7 +220,7 @@ namespace LinBox
 		_RowSortFlag = rhs._RowSortFlag;
 		_ColSortFlag  = rhs._ColSortFlag;
 
-		_faxpy.resize(rhs._faxpy.size(), FieldAXPY<Field>(_F));
+		_faxpy.resize(rhs._faxpy.size(), FieldAXPY<Field>(_field));
 
 		return *this;
 	}
@@ -261,7 +261,7 @@ namespace LinBox
 		typename std::vector<Element>::const_iterator v;
 		typename std::vector<FieldAXPY<Field> >::iterator fa_i;
 
-		_F.init(zero,0);
+		_field.init(zero,0);
 
 		for(fa_i = _faxpy.begin(); fa_i != _faxpy.end(); ++fa_i)
 			fa_i->assign(zero);
@@ -299,7 +299,7 @@ namespace LinBox
 		RowWiseLessThan<Field,Vector> rwlt;
 		if(_RowSortFlag) return; // If already sorted, bail
 
-		std::sort( rawIndexedBegin(), rawIndexedEnd(), rwlt  );
+		std::sort( IndexedBegin(), IndexedEnd(), rwlt  );
 		_RowSortFlag = true;     // Sets the row sort flag
 		_ColSortFlag = false;    // Unset the col sort flag
 
@@ -312,7 +312,7 @@ namespace LinBox
 		ColWiseLessThan<Field,Vector> cwlt;
 		if(_ColSortFlag) return;  // If already sorted, bail
 
-		std::sort( rawIndexedBegin(), rawIndexedEnd(), cwlt );
+		std::sort( IndexedBegin(), IndexedEnd(), cwlt );
 		_ColSortFlag = true;     // Sets the Col sort flag
 		_RowSortFlag = false;    // Unset the Row sort flag
 	}

@@ -29,9 +29,9 @@
 #define __LINBOX_valence_H
 
 #include <vector>
-#include <linbox/blackbox/transpose.h>
+#include "linbox/blackbox/transpose.h"
 
-#include <linbox/solutions/minpoly.h>
+#include "linbox/solutions/minpoly.h"
 
 namespace LinBox
 {
@@ -95,8 +95,8 @@ namespace LinBox
 
 }
 
-#include "linbox/field/modular-double.h"
-#include "linbox/field/givaro-zpz.h"
+#include "linbox/field/modular.h"
+#include "linbox/field/givaro.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-early-single.h"
 #include "linbox/randiter/random-prime.h"
@@ -145,7 +145,7 @@ namespace LinBox
 		commentator.start ("Integer Valence", "Ivalence");
 #if __LINBOX_SIZEOF_LONG == 8
 		RandomPrimeIterator genprime( 31 );
-		ChineseRemainder< EarlySingleCRA< GivaroZpz< ::Givaro::Std64> > > cra(3UL);
+		ChineseRemainder< EarlySingleCRA< GivaroZpz< Givaro::Std64> > > cra(3UL);
 #else
 		RandomPrimeIterator genprime( 26 );
 		ChineseRemainder< EarlySingleCRA< Modular<double> > > cra(3UL);
@@ -269,7 +269,8 @@ namespace LinBox
 			int n_bit = (int)(log_max_mod / M_LN2 - 2);
 			unsigned long d;
 			RandomPrimeIterator g(n_bit); Field::Element v;
-			++g; Field F(*g);
+			++g;
+			Field F((int32_t)*g);
 			FBlackbox Ap(A, F);
 			one_valence(v, d, Ap);
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);

@@ -48,7 +48,7 @@ namespace LinBox
 		ParamFuzzyRandIter (/*const ParamFuzzy &F, */
 				   const integer &size = 0,
 				   const integer &seed = 0) :
-		       	/*_F (F),*/ _size (size), _seed (seed)
+		       	/*_field (F),*/ _size (size), _seed (seed)
 		{
 			/*if (_size == 0) F.cardinality (_size);*/
 			if (_seed == 0) _seed = time (NULL);
@@ -57,14 +57,14 @@ namespace LinBox
 		ParamFuzzyRandIter (const ParamFuzzy &F,
 				    const integer &size = 0,
 				    const integer &seed = 0) :
-		       	_F (F), _size (size), _seed (seed)
+		       	_field (F), _size (size), _seed (seed)
 		{
 			if (_size == 0) F.cardinality (_size);
 			if (_seed == 0) _seed = time (NULL);
 		}
 
 		ParamFuzzyRandIter (const ParamFuzzyRandIter &R) :
-		       	/*_F (R._F),*/ _size (R._size), _seed (R._seed)
+		       	/*_field (R._field),*/ _size (R._size), _seed (R._seed)
 		{}
 
 		~ParamFuzzyRandIter () {}
@@ -99,7 +99,7 @@ namespace LinBox
 	    private:
 
 		/// Field in which arithmetic is done
-		ParamFuzzy _F;
+		ParamFuzzy _field;
 
 		/// Sampling size
 		integer _size;

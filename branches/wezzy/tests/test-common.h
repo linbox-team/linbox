@@ -24,18 +24,15 @@
 #include <fstream>
 #include <vector>
 
+#include "linbox/linbox-config.h"
 #include "linbox/field/archetype.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/integer.h"
 
 using namespace std;
-
 #include "linbox/util/commentator.h"
 #include "fflas-ffpack/utils/args-parser.h"
 
-template <class Field, class Vector>
-void printVector (Field &F, ostream &output, const Vector &v)
-{ printVectorSpecialized(F, output, v, typename LinBox::VectorTraits<Vector>::VectorCategory()); }
 
 template <class Field, class Vector>
 void printVectorSpecialized(
@@ -106,6 +103,12 @@ void printVectorSpecialized(
 			output << ", ";
 	}
 	output << ')' << endl;
+}
+
+template <class Field, class Vector>
+void printVector (Field &F, ostream &output, const Vector &v)
+{
+	printVectorSpecialized(F, output, v, typename LinBox::VectorTraits<Vector>::VectorCategory());
 }
 
 template <class Field, class Vector>

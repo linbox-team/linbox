@@ -21,7 +21,6 @@
 #include "linbox/util/field-axpy.h"
 #include "linbox/vector/stream.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/integer.h"
 
 #include "test-common.h"
@@ -60,7 +59,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 	LinBox::VectorWrapper::ensureDim (v1, stream1.n ());
 	LinBox::VectorWrapper::ensureDim (v2, stream2.n ());
 
-	::Givaro::Timer timer;
+ Givaro::Timer timer;
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {

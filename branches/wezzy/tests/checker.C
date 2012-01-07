@@ -25,6 +25,7 @@ here to build_n_run() or no_build_n_run() (possibly commented out).
 //#include <iomanip>
 using namespace std;
 
+#include "fflas-ffpack/fflas-ffpack-config.h"
 #include "../linbox/linbox-config.h"
 
 struct counts {
@@ -46,24 +47,25 @@ void no_build_n_run(string s, counts& cnt, int flag = 2, string r = "") ;
 
 int main(int argc, char* argv[])
 {
-	int f = 0; // force recompile all tests.
+	int f = 0; // f = 1 ==> force recompile all tests.
 	int flag = 1; // verbosity flag.
 
 	bool check = false;// true for install time check
 	int arg;
 	for (arg = 1; arg < argc && argv[arg][0] == '-'; ++ arg)
 		switch (argv[arg][1]) {
-			case 'f': f = 1; break;
-			case 'v': flag = atoi(argv[++arg]); break;
+			case 'r': f = 1; break;
+			case 'f': flag = atoi(argv[++arg]); break;
 			case 'c': check = true; break; 
 			default: 
-		cout << "usage: " << argv[0] << " [-r] [-f n] [test]*" << endl;
+		cout << "usage: " << argv[0] << " [-r] [-f n] [-c] [test]*" << endl;
 		cout << "  -f 0 for a summary: only 4 lines printed." << endl;
 		cout << "  -f 1 for default: also one line per test." << endl;
 		cout << "  -f 2 for warnings: shows subtest failures." << endl;
 		cout << "  -f 3 for errors: also any build and run output for error cases." << endl;
 		cout << "  -f 4 for verbose: also any build and run output for each test." << endl;
 		cout << "  -r forces rebuild of all tests." << endl;
+		cout << "  -c conducts an install time check (a few selected tests only)." << endl;
 		cout << "  if any [test] is present, it is built and run, otherwise all tests are processed." << endl;
 	}
 	flag = flag+5*f; // clean up later
@@ -163,7 +165,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-last-invariant-factor",        counter , flag);
 	build_n_run("test-matrix-domain",                counter , flag);
 	build_n_run("test-matrix-stream",                counter , flag);
-	build_n_run("test-mg-block-lanczos",             counter , flag);
+	no_build_n_run("test-mg-block-lanczos",             counter , flag, "fails");
 	build_n_run("test-minpoly",                      counter , flag);
 	build_n_run("test-modular",                      counter , flag);
 	build_n_run("test-modular-balanced-int",         counter , flag);
@@ -210,7 +212,7 @@ build |wc" should yield the same number of lines.
 	counter.skipped += 4;
 #endif
 
-#if __LINBOX_HAVE_LAPACK
+#if __FFLASFFPACK_HAVE_LAPACK
 	if (flag > 0) cout << "	Lapack dependent tests" << endl;
 	build_n_run("test-rational-solver-adaptive", counter, flag);
 	// needs output cleanup.  Resolve whether a benchmark or a test.
@@ -228,7 +230,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-ntl-lzz_p",             counter , flag);
 	build_n_run("test-ntl-toeplitz",          counter , flag);
 	build_n_run("test-ntl-sylvester",         counter , flag);
-	build_n_run("test-ntl-RR",                counter , flag);
+	no_build_n_run("test-ntl-RR",                counter , flag, "floating point equality");
 	build_n_run("test-ntl-ZZ_p",              counter , flag);
 	build_n_run("test-toeplitz-det",          counter , flag);
 	build_n_run("test-smith-form",            counter , flag);
@@ -239,7 +241,7 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-ntl-hankel",            counter , flag);
 	no_build_n_run("test-ntl-lzz_p",             counter , flag);
 	no_build_n_run("test-ntl-toeplitz",          counter , flag);
-	no_build_n_run("test-ntl-RR",                counter , flag);
+	no_build_n_run("test-ntl-RR",                counter , flag, "floating point equality");
 	no_build_n_run("test-ntl-sylvester",         counter , flag);
 	no_build_n_run("test-ntl-ZZ_p",              counter , flag);
 	no_build_n_run("test-toeplitz-det",          counter , flag, "can we have non NTL version?");

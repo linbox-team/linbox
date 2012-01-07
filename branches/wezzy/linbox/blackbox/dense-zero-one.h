@@ -15,10 +15,10 @@
 
 
 #include <iostream>
-//#include <linbox/field/hom.h>
+//#include "linbox/field/hom.h"
 #include "linbox/linbox-config.h"
 #include <vector>
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 
 //const size_t SIZE = sizeof(LinBox::uint64_t) * 8;

@@ -14,27 +14,28 @@
  * ------------------------------------
  * Modified by Zhendong Wan
  *
- * Added specialization for DenseMatrix.
+ * Added specialization for BlasMatrix.
  *
  * -------
  *
  * See COPYING for license information.
  */
 
-#ifndef __LINBOX_bb_submatrix_H
-#define __LINBOX_bb_submatrix_H
+#ifndef __LINBOX_blackbox_submatrix_H
+#define __LINBOX_blackbox_submatrix_H
 
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/error.h"
-#include <linbox/matrix/dense-submatrix.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/vector/vector-domain.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/blackbox/blackbox-interface.h"
+
 
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{ /*  Submatrix */
 
 	/** \brief leading principal minor of existing matrix without copying.
 	 * \ingroup blackbox
@@ -76,7 +77,7 @@ namespace LinBox
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{ /* Submatrix */
 
 	/** Specialization for dense vectors */
 	template <class Blackbox>
@@ -156,8 +157,7 @@ namespace LinBox
 
 
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef SubmatrixOwner<typename Blackbox_t::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other;
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
 				typename Blackbox_t::template rebind<_Tp1> Rebinder;
@@ -172,23 +172,38 @@ namespace LinBox
 		 * @return integer number of _rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-		{ return _rowdim; }
+		{
+			return _rowdim;
+		}
 
 		/** Retreive _column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of _columns of black box matrix.
 		 */
 		size_t coldim (void) const
-		{ return _coldim; }
+		{
+			return _coldim;
+		}
 
-		size_t rowfirst() const { return _row; }
-		size_t colfirst() const { return _col; }
+		size_t rowfirst() const
+		{
+			return _row;
+		}
 
+		size_t colfirst() const
+		{
+			return _col;
+		}
 
+		const Field& field() const
+		{
+			return _BB->field();
+		}
 
-		const Field& field() const {return _BB->field();}
-
-		const Blackbox * getPtr() const { return _BB; }
+		const Blackbox * getPtr() const
+		{
+			return _BB;
+		}
 
 	private:
 
@@ -231,18 +246,14 @@ namespace LinBox
 		{}
 	};
 
-	template <class Field>
-	class DenseMatrix;
 
-	/** special case for the submatrix of a dense matrix
-	*/
 	template<class _Field>
-	class Submatrix<DenseMatrix<_Field>, VectorCategories::DenseVectorTag> : public DenseSubmatrix<typename _Field::Element> {
+	class Submatrix<BlasMatrix<_Field>, VectorCategories::DenseVectorTag> : public BlasSubmatrix<_Field> {
 	public:
 
 		typedef _Field Field;
-		typedef Submatrix<DenseMatrix<_Field>, VectorCategories::DenseVectorTag> Self_t;
-		typedef DenseSubmatrix<typename _Field::Element> Father_t;
+		typedef Submatrix<BlasMatrix<_Field>, VectorCategories::DenseVectorTag> Self_t;
+		typedef BlasSubmatrix<_Field> Father_t;
 
 	private:
 
@@ -254,39 +265,37 @@ namespace LinBox
 
 		typedef typename Field::Element Element;
 
-		/** Constructor from an existing \ref DenseMatrix  and dimensions
-		 * @param M Pointer to \ref DenseMatrix  of which to construct submatrix
+		/** Constructor from an existing \ref BlasMatrix  and dimensions
+		 * @param M Pointer to \ref BlasMatrix  of which to construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
-
-		Submatrix (const DenseMatrix<Field> *Mat,
+		Submatrix (const BlasMatrix<Field> *Mat,
 			   size_t row,
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim) :
-			DenseSubmatrix<Element>(const_cast<DenseMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
+			BlasSubmatrix<Field>(const_cast<BlasMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
 			f(Mat -> field()), vd(Mat -> field())
-		{
-		}
+		{ }
 
-		/** Constructor from an existing \ref DenseMatrix  and dimensions
-		 * @param M reference to \ref DenseMatrix  of which to construct submatrix
+		/** Constructor from an existing \ref BlasMatrix  and dimensions
+		 * @param M reference to \ref BlasMatrix  of which to construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
-		Submatrix (const DenseMatrix<Field> &Mat,
+		Submatrix (const BlasMatrix<Field> &Mat,
 			   size_t row,
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim) :
-			DenseSubmatrix<Element>(const_cast<DenseMatrix<Field>& >(Mat), row, col, Rowdim, Coldim),
-			f(Mat.field()), vd(Mat.field()) {
-			}
+			BlasSubmatrix<Field>(const_cast<BlasMatrix<Field>& >(Mat), row, col, Rowdim, Coldim),
+			f(Mat.field()), vd(Mat.field())
+		{ }
 
 		/** Constructor from an existing submatrix and dimensions
 		 * @param SM pointer to Submatrix from which to
@@ -296,13 +305,14 @@ namespace LinBox
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
-		Submatrix (const Submatrix<DenseMatrix<Field> > *SM,
+		Submatrix (const Submatrix<BlasMatrix<Field> > *SM,
 			   size_t row,
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim ) :
-			DenseSubmatrix<Element> (const_cast<Submatrix<DenseMatrix<Field> >&>(*SM), row, col, Rowdim, Coldim),
-			f (SM ->  field()), vd(SM -> field()){
+			BlasSubmatrix<Field> (const_cast<Submatrix<BlasMatrix<Field> >&>(*SM), row, col, Rowdim, Coldim),
+			f (SM ->  field()), vd(SM -> field())
+		{
 			}
 
 		/** Constructor from an existing submatrix and dimensions
@@ -313,30 +323,33 @@ namespace LinBox
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
-		Submatrix (const Submatrix<DenseMatrix<Field> >& SM,
+		Submatrix (const Submatrix<BlasMatrix<Field> >& SM,
 			   size_t row,
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim ) :
-			DenseSubmatrix<Element> (const_cast<Submatrix<DenseMatrix<Field> >&>(SM), row, col, Rowdim, Coldim),
-			f (SM. field()), vd(SM. field()){
-			}
+			BlasSubmatrix<Field> (const_cast<Submatrix<BlasMatrix<Field> >&>(SM), row, col, Rowdim, Coldim),
+			f (SM. field()), vd(SM. field())
+		{ }
 
-		const Field& field() const {
+		const Field& field() const
+		{
 
 			return f;
 		}
 
-		std::istream& read (std::istream& is) {
+		std::istream& read (std::istream& is)
+		{
 
-			DenseSubmatrix<Element>::read (is, f);
+			BlasSubmatrix<Field>::read (is, f);
 
 			return is;
 		}
 
-		std::ostream& write (std::ostream& os) const {
+		std::ostream& write (std::ostream& os) const
+		{
 
-			DenseSubmatrix<Element>::write (os, f);
+			BlasSubmatrix<Field>::write (os, f);
 
 			return os;
 		}
@@ -349,9 +362,10 @@ namespace LinBox
 		 * @return Reference to output vector
 		 */
 		template<class Vect1, class Vect2>
-		Vect1 &apply (Vect1 &y, const Vect2 &x) const {
+		Vect1 &apply (Vect1 &y, const Vect2 &x) const
+		{
 
-			typename DenseSubmatrix<Element>::ConstRowIterator p;
+			typename BlasSubmatrix<Field>::ConstRowIterator p;
 
 			typename Vect1::iterator p_y = y.begin ();
 
@@ -370,9 +384,10 @@ namespace LinBox
 		 * @return Reference to output vector
 		 */
 		template<class Vect1, class Vect2>
-		Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const {
+		Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const
+		{
 
-			typename DenseSubmatrix<Element>::ConstColIterator colp;
+			typename BlasSubmatrix<Field>::ConstColIterator colp;
 
 			typename Vect1::iterator p_y = y.begin ();
 
@@ -383,29 +398,27 @@ namespace LinBox
 		}
 
 		template<typename _Tp1>
-		struct rebind
-		{
-			typedef SubmatrixOwner<DenseMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
+		struct rebind {
+			typedef SubmatrixOwner<BlasMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
 
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
 
 				typename other::Father_t A1;
 				typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A), F);
-				Ap = other(A1, A._row, A._col, A._rowdim, A._coldim);
+				Ap = other(A1, A.rowfirst(), A.colfirst(), A.rowdim(), A.coldim());
 			}
 
 		};
 	};
 
+
 	//@}
 } // namespace LinBox
 
 
-
-
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{ /*  SubmatrixOwner dense vector specialisation  */
 
 	/** Specialization for dense vectors */
 	template <class Blackbox>
@@ -520,22 +533,42 @@ namespace LinBox
 		 * @return integer number of _rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-		{ return _rowdim; }
+		{
+			return _rowdim;
+		}
 
 		/** Retreive _column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of _columns of black box matrix.
 		 */
 		size_t coldim (void) const
-		{ return _coldim; }
+		{
+			return _coldim;
+		}
 
-		size_t rowfirst() const { return _row; }
-		size_t colfirst() const { return _col; }
+		size_t rowfirst() const
+		{
+			return _row;
+		}
+		size_t colfirst() const
+		{
+			return _col;
+		}
 
-		const Field& field() const {return _BB_data.field();}
+		const Field& field() const
+		{
+			return _BB_data.field();
+		}
 
-		const Blackbox& getData() const {return  _BB_data;}
-		Blackbox& getData() {return  _BB_data;}
+		const Blackbox& getData() const
+		{
+			return  _BB_data;
+		}
+
+		Blackbox& getData()
+		{
+			return  _BB_data;
+		}
 
 	private:
 
@@ -554,7 +587,6 @@ namespace LinBox
 
 	//@}
 } // namespace LinBox
-
 
 
 #endif // __LINBOX_bb_submatrix_H

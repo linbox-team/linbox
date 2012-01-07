@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/csr.h
- * Compressed Sparse Format BB  
+ * Compressed Sparse Format BB
  * Author: Bryan Youse
  * overhaul of ./zo.h, a CSR formatted BB for {0,1}-Matrices
  * ------------------------------------
@@ -16,9 +16,9 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/field/modular.h"
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
-// For STL pair in RawIndexIterator
+// For STL pair in IndexIterator
 #include <utility>
 #include <iterator>
 #include <vector> // For vectors in _col2row and _row2col
@@ -29,7 +29,7 @@ namespace LinBox
 {
 	/** \brief Space efficient representation of sparse matrices.
 	 *
-	 * Compressed Sparse Row/Column (CSR/C) involves two arrays of length NNZ (number of non-zeros) 
+	 * Compressed Sparse Row/Column (CSR/C) involves two arrays of length NNZ (number of non-zeros)
 	 * One of column indices and another of matrix values.
 	 * A third array contains pointers indicating the division of the two NNZ arrays into rows.
 	 * (or vice versa w/r/t rows & columns)
@@ -69,7 +69,7 @@ namespace LinBox
 
 		// basic constructor, can be used with subsequent read.
 		CSF(const Field& F) :
-			_F(F), sorted(true)
+			_field(F), sorted(true)
 		{}
 
 		/* The real constructor /TODO give docs here
@@ -79,7 +79,7 @@ namespace LinBox
 		  */
 		CSF
 		(Field& F, Index* rowP, Index* colP, Element* valP, Index rows, Index cols, Index nnz) :
-			_F(F), _rowdim(rows), _coldim(cols), sorted(true), isCSR(true)
+			_field(F), _rowdim(rows), _coldim(cols), sorted(true), isCSR(true)
 		{
 			Data data;
 			for (Index i = 0; i < nnz; ++i, ++rowP, ++colP, ++valP)
@@ -88,13 +88,13 @@ namespace LinBox
 		}
 
 		/* constructor from a MatrixStream */
-		CSF( MatrixStream<Field>& ms ) : _F(ms.getField()){ 
-			read(ms);	
+		CSF( MatrixStream<Field>& ms ) : _field(ms.getField()){
+			read(ms);
 		}
 
 		//  copy constructor, easy enough
 		CSF(const CSF<Field>& A) :
-			_F(A._F), _inds(A._inds), _vals(A._vals), _ptrs(A._ptrs), _rowdim(A._rowdim), _coldim(A._coldim), sorted(A.sorted)
+			_field(A._field), _inds(A._inds), _vals(A._vals), _ptrs(A._ptrs), _rowdim(A._rowdim), _coldim(A._coldim), sorted(A.sorted)
 		{ }
 
 		// TODO
@@ -146,7 +146,7 @@ namespace LinBox
 		OutVector & apply(OutVector & y, const InVector & x) const {
 			linbox_check((y.size()==rowdim())&&(x.size()==coldim()));
 
-			FieldAXPY<Field> accum (_F);
+			FieldAXPY<Field> accum (_field);
 
 			typename OutVector::iterator yp;
 			typename InVector::const_iterator xp;
@@ -173,13 +173,13 @@ namespace LinBox
 		}
 
 		double &d00norm(double &norm){
-			norm = 0;	
+			norm = 0;
 			double old = 0, t;
 			//  maximal row inf (OO) norm
 			for(Index i = _ptrs[0]; (size_t)i < _ptrs.size()-1; ++i) {
-				old = norm;	
+				old = norm;
 				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j) {
-					_F.convert(t, _vals[j]);
+					_field.convert(t, _vals[j]);
 					norm += abs(t);
 				}
 				if (norm < old) norm = old;
@@ -205,7 +205,7 @@ namespace LinBox
 			return res;
 		}
 
-		/** Read the matrix from a matrix stream 
+		/** Read the matrix from a matrix stream
 		 *  @param ms Stream from which to read the matrix
 		 */
 		void read(MatrixStream<Field> &ms) {
@@ -261,7 +261,7 @@ namespace LinBox
 			integer val;
 			for(Index i = 0; i < _ptrs.size() - 1; ++i, ++row)
 				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j){
-					_F.convert(val, _vals[j]);
+					_field.convert(val, _vals[j]);
 					out << row << " " << _inds[j] << " " << val << std::endl;
 				}
 
@@ -279,7 +279,7 @@ namespace LinBox
 				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j){
 					//  print zeros up to data
 					for(; k<_inds[j]; ++k) out << " 0";
-					_F.convert(val, _vals[j]);
+					_field.convert(val, _vals[j]);
 					//  print data
 					out << " " <<  val;
 					++k;  //  adjust zero printing counter by one
@@ -292,7 +292,7 @@ namespace LinBox
 		}
 
 		const Field& field() const
-		{ return _F; }
+		{ return _field; }
 
 		/* Non blackbox function.  Tells the number of nonzero entries */
 		size_t nnz() const
@@ -315,7 +315,7 @@ namespace LinBox
 #endif
 
 	protected:
-		Field _F; // The field used by this class
+		Field _field; // The field used by this class
 		IndexVector _inds; // The nnz indices sorted by row or by col
 		ElementVector _vals; // The values corresonding to nnz indices
 		PtrVector _ptrs; // the pointers to beginning of each (row/col)
@@ -329,8 +329,8 @@ namespace LinBox
 			public:
 				sort_data_by_col(Data d) : _d(d) {}
 				//  col sorted
-				bool operator()(const Triple &a, const Triple &b){ 
-					return (a.first.second < b.first.second || 
+				bool operator()(const Triple &a, const Triple &b){
+					return (a.first.second < b.first.second ||
 						(a.first.second == b.first.second && a.first.first < b.first.first));
 				}
 		};
@@ -358,7 +358,7 @@ namespace LinBox
 			}
 
 			// p represents position in the index/value arrays
-			Index p = 0;  
+			Index p = 0;
 
 			// set up _ptrs
 			_ptrs.push_back(p);

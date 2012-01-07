@@ -27,30 +27,29 @@
 
 #include <math.h>
 #include <vector>
-#include <linbox/linbox-config.h>
-#include <linbox/integer.h>
-#include <linbox/util/debug.h>
-#include <linbox/field/PIR-modular-int32.h>
-#include <linbox/field/local2_32.h>
-#include <linbox/blackbox/dense.h>
-#include <linbox/algorithms/smith-form-iliopoulos.h>
-#include <linbox/algorithms/smith-form-local.h>
-#include <linbox/algorithms/rational-solver-adaptive.h>
-#include <linbox/algorithms/last-invariant-factor.h>
-#include <linbox/algorithms/one-invariant-factor.h>
-#include <linbox/algorithms/matrix-rank.h>
-#include <linbox/algorithms/matrix-hom.h>
-#include <linbox/blackbox/random-matrix.h>
-#include <linbox/blackbox/scompose.h>
+#include "linbox/linbox-config.h"
+#include "linbox/integer.h"
+#include "linbox/util/debug.h"
+#include "linbox/field/PIR-modular-int32.h"
+#include "linbox/field/local2_32.h"
+#include "linbox/algorithms/smith-form-iliopoulos.h"
+#include "linbox/algorithms/smith-form-local.h"
+#include "linbox/algorithms/rational-solver-adaptive.h"
+#include "linbox/algorithms/last-invariant-factor.h"
+#include "linbox/algorithms/one-invariant-factor.h"
+#include "linbox/algorithms/matrix-rank.h"
+#include "linbox/algorithms/matrix-hom.h"
+#include "linbox/blackbox/random-matrix.h"
+#include "linbox/blackbox/scompose.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
-#include <linbox/algorithms/smith-form-binary.h>
-#include <linbox/algorithms/smith-form-adaptive.inl>
-#include <linbox/solutions/valence.h>
+#include "linbox/algorithms/smith-form-binary.h"
+#include "linbox/algorithms/smith-form-adaptive.inl"
+#include "linbox/solutions/valence.h"
 
 
 
 #ifdef __LINBOX_HAVE_NTL
-#include <linbox/field/PIR-ntl-ZZ_p.h>
+#include "linbox/field/PIR-ntl-ZZ_p.h"
 #endif
 
 namespace LinBox
@@ -72,7 +71,7 @@ namespace LinBox
 			Local2_32 R;
 			std::list <Local2_32::Element> l;
 			SmithFormLocal<Local2_32> SF;
-			DenseMatrix <Local2_32> A_local(R, A.rowdim(),A.coldim());
+			BlasMatrix <Local2_32> A_local(R, A.rowdim(),A.coldim());
 			MatrixHom::map (A_local, A, R);
 			SF (l, A_local, R);
 			std::list <Local2_32::Element>::iterator l_p;
@@ -87,13 +86,13 @@ namespace LinBox
 			Modular<double> F (p); Modular<double>::Element elt;
 			int n = A. rowdim(); int m = A. coldim();
 			Modular<double>::Element* A_local = new Modular<double>::Element [n * m];
-			typename Matrix::ConstRawIndexedIterator rawi_p;
-			typename Matrix::ConstRawIterator raw_p;
+			typename Matrix::ConstIndexedIterator rawi_p;
+			typename Matrix::ConstIterator raw_p;
 			Modular<double>::Element* A_local_p;
 			for (A_local_p = A_local; A_local_p != A_local + (n*m); ++ A_local_p)
 				F. init (*A_local_p, 0);
 			integer tmp;
-			for (rawi_p = A. rawIndexedBegin(), raw_p = A. rawBegin(), A_local_p = A_local; rawi_p != A. rawIndexedEnd(); ++ rawi_p, ++ raw_p, ++ A_local_p) {
+			for (rawi_p = A. IndexedBegin(), raw_p = A. Begin(), A_local_p = A_local; rawi_p != A. IndexedEnd(); ++ rawi_p, ++ raw_p, ++ A_local_p) {
 				//F. init (*A_local_p, *raw_p);
 				A. field(). convert (tmp, *raw_p);
 				F. init (elt, tmp);
@@ -110,7 +109,7 @@ namespace LinBox
 			delete[] A_local;
 #endif
 			typedef Modular<int32_t> Field;
-			typedef DenseMatrix<Field> FMatrix;
+			typedef BlasMatrix<Field> FMatrix;
 			MatrixRank<typename Matrix::Field, Field> MR;
 			Field F((unsigned long)p);
 			FMatrix A_local(A, F);
@@ -131,7 +130,7 @@ namespace LinBox
 				m *= p;
 			typedef PIRModular<int32_t> PIR;
 			PIR R((unsigned int)m);
-			DenseMatrix <PIR> A_local(R, A.rowdim(), A.coldim());
+			BlasMatrix <PIR> A_local(R, A.rowdim(), A.coldim());
 			SmithFormLocal <PIR> SF;
 			std::list <PIR::Element> l;
 			MatrixHom::map (A_local, A, R);
@@ -161,7 +160,7 @@ namespace LinBox
 		if (1) {
 			report << "      Compute local Smith at " << p << '^' << e << " over PIR-ntl-ZZ_p\n";
 			PIR_ntl_ZZ_p R(m);
-			DenseMatrix <PIR_ntl_ZZ_p> A_local(R, A.rowdim(), A.coldim());
+			BlasMatrix <PIR_ntl_ZZ_p> A_local(R, A.rowdim(), A.coldim());
 			SmithFormLocal <PIR_ntl_ZZ_p> SF;
 			std::list <PIR_ntl_ZZ_p::Element> l;
 			MatrixHom::map (A_local, A, R);
@@ -269,7 +268,7 @@ namespace LinBox
 		else if ( m <=  FieldTraits< PIRModular<int32_t> >::maxModulus() ) {
 			report << "    Elimination starts:\n";
 			PIRModular<int32_t> R (m);
-			DenseMatrix<PIRModular<int32_t> > A_ilio(R, A.rowdim(), A.coldim());
+			BlasMatrix<PIRModular<int32_t> > A_ilio(R, A.rowdim(), A.coldim());
 			MatrixHom::map (A_ilio, A, R);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; std::vector<integer>::iterator s_p;
@@ -300,7 +299,7 @@ namespace LinBox
 		else {
 			report << "    Elimination start:\n";
 			PIR_ntl_ZZ_p R (m);
-			DenseMatrix<PIR_ntl_ZZ_p> A_ilio(R, A.rowdim(), A.coldim());
+			BlasMatrix<PIR_ntl_ZZ_p> A_ilio(R, A.rowdim(), A.coldim());
 			MatrixHom::map (A_ilio, A, R);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; std::vector<integer>::iterator s_p;
@@ -382,11 +381,11 @@ namespace LinBox
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
-		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
+		int order = (A. rowdim() < A. coldim()) ? (int)A. rowdim() : (int)A. coldim();
 		report << "Computation of the rank starts:\n";
 		typedef typename Matrix::Field Ring;
 		unsigned long r;
-		MatrixRank<Ring, Modular<int> > MR;
+		MatrixRank<Ring, Modular<int32_t> > MR;
 		r = MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << '\n';
 		report << "Computation of the rank finished.\n";
@@ -394,10 +393,10 @@ namespace LinBox
 		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
 
 		report <<"   Compute the degree of min poly of AA^T: \n";
-		typedef Modular<int> Field;
+		typedef Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
 		RandomPrimeIterator rg ((int)(log( (double)(FieldTraits<Field>::maxModulus()) ) /  M_LN2 - 2));
-		Field F (*rg);
+		Field F ((unsigned long)*rg);
 		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
 		MatrixHom::map (Ap, A, F);
 		Valence::one_valence (v, degree, Ap);
@@ -432,9 +431,9 @@ namespace LinBox
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 		OIF oif; oif. setThreshold  (4); oif.getLastInvariantFactor().setThreshold (6);
 		typename Ring::Element _lif, _bonus; integer lif, bonus;
-		//Chnage A to DenseMatrix
+		//Chnage A to BlasMatrix
 		Ring R(A. field());
-		DenseMatrix<Ring> DA(R,A.rowdim(),A.coldim());
+		BlasMatrix<Ring> DA(R,A.rowdim(),A.coldim());
 		MatrixHom::map (DA, A, R);
 		do {
 			oif. oneInvariantFactor_Bonus (_lif, _bonus, DA, (int)r);
@@ -492,7 +491,7 @@ namespace LinBox
 	 * then based on that, compute the rough and smooth part, seperately.
 	 */
 	template <class IRing>
-	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const DenseMatrix<IRing>& A)
+	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const BlasMatrix<IRing>& A)
 	{
 		//commentator.start ("Smith Form starts", "Smithform");
 
@@ -502,9 +501,9 @@ namespace LinBox
 		// compute the rank over a random prime field.
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		report << "Computation of the rank starts:\n";
-		typedef typename DenseMatrix<IRing>::Field Ring;
+		typedef typename BlasMatrix<IRing>::Field Ring;
 		unsigned long r;
-		MatrixRank<Ring, Modular<int> > MR;
+		MatrixRank<Ring, Modular<int32_t> > MR;
 		r = MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << '\n';
 		report << "Computation of the rank finished.\n";
@@ -512,11 +511,11 @@ namespace LinBox
 		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
 
 		report <<"   Compute the degree of min poly of AA^T: \n";
-		typedef Modular<int> Field;
+		typedef Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
 		RandomPrimeIterator rg ((int)(log( (double)(FieldTraits<Field>::maxModulus()) ) / M_LN2 - 2));
 		Field F ((unsigned long)*rg);
-		typename MatrixHomTrait<DenseMatrix<IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
+		typename MatrixHomTrait<BlasMatrix <IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A, F);
 		Valence::one_valence (v, degree, Ap);
 		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';
@@ -550,7 +549,7 @@ namespace LinBox
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 		OIF oif; oif. setThreshold  (10); oif.getLastInvariantFactor().setThreshold (6);
 		typename Ring::Element _lif, _bonus; integer lif, bonus;
-		//Chnage A to DenseMatrix
+		//Chnage A to BlasMatrix
 		do {
 			oif. oneInvariantFactor_Bonus (_lif, _bonus, A, (int)r);
 			A. field(). convert (lif, _lif); A. field(). convert (bonus, _bonus);
@@ -598,6 +597,7 @@ namespace LinBox
 		report << "Computation of the invariant factors ends." << std::endl;
 		//commentator. stop ("done", NULL, "Smithform");
 	}
+
 }
 
 #endif //__LINBOX_smith_form_adaptive_INL

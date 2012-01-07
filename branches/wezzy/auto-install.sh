@@ -10,12 +10,11 @@
 # TODO : manage icc/gcc
 # TODO : add gmp in givaro and use auto-install in givaro
 # TODO : use an optionnal message in die function.
-# TODO : add options to make like '-j'
 
-STABLE_FFLAS=1.4.1
-STABLE_GIVARO=3.4.2
-GIV_TAR=125
-GIV_MD5=126
+STABLE_FFLAS=1.4.3
+STABLE_GIVARO=3.5.0
+GIV_TAR=133
+GIV_MD5=134
 
 #switches
 STABLE_VAR="true"
@@ -38,12 +37,13 @@ EXTRA=""
 EXTRA_VAR=""
 IML="--with-iml"
 IML_VAR=""
-SAGE="--enable-sage"
-SAGE_VAR=""
-DRIV="--enable-drivers"
-DRIV_VAR=""
+SAGE=""
+SAGE_VAR="false"
+DRIV=""
+DRIV_VAR="false"
 
-
+MAKEOPT= 
+MAKE_VAR=""
 
 DONE="\033[0;36m done !\033[0m"
 BEG="\033[1;32m * \033[0m"
@@ -91,6 +91,8 @@ help() {
 	echo " --with-iml=IML/PATH   : same as GMP for IML. (default)"
 	echo " --extra-flags=\"\"      : give extra compiler flags."
 	echo "                         Default : empty"
+	echo " --make-flags=\"\"      : give extra makefile flags."
+	echo "                         Default : empty"
 	echo
 	echo " >> for the next switches, nothing, Y, y, yes or 1 after \"=\"   <<"
 	echo " >> means enabled. Anything else or omission means disabled    <<"
@@ -104,9 +106,9 @@ help() {
 	echo " --enable-optimization : build with compile-time optimization."
 	echo "                         Default : enabled."
 	echo " --enable-sage         : build with sage support."
-	echo "                         Default : enabled."
+	echo "                         Default : disabled."
 	echo " --enable-drivers      : build with drivers support."
-	echo "                         Default : enabled."
+	echo "                         Default : disabled."
 	echo 
 	echo " >> calling helllp <<"
 	echo 
@@ -117,7 +119,7 @@ help() {
 #  parser  # 
 ############
 
-for i in $* ; do
+for i in "$@" ; do
 	case "$i" in
 		# switches
 		"--help"|"-h"|"-?") 
@@ -147,6 +149,22 @@ for i in $* ; do
 		OPTIM="$i";
 		OPTIM_VAR="true";
 		;;
+	"--disable-debug")
+		if [ "x$DEBUG_VAR" = "xtrue" ]  ; then  echo "enable-debug or not ?" ;        help ; exit -1 ; fi
+		DEBUG_VAR="false";
+		;;
+	"--disable-check")
+		if [ "x$CHECK_VAR" = "xtrue" ] ; then   echo "enable-check or not ?";        help ; exit -1; fi
+		CHECK_VAR="false";
+		;;
+	"--disable-warnings")
+		if [ "x$WARNINGS_VAR" = "xtrue" ] ; then   echo "enable-warnings or not ?";     help ; exit -1; fi
+		WARNINGS_VAR="false";
+		;;
+	"--disable-optimization")
+		if	[ "x$OPTIM_VAR" = "xtrue" ] ; then   echo "enable-optimization or not ?"; help ; exit -1; fi
+		OPTIM_VAR="false";
+		;;
 	"--with-ntl")
 		if	[ "x$NTL_VAR" = "xfalse" ] ; then   echo "with-ntl or not ?";            help ; exit -1; fi
 		NTL="$i";
@@ -171,6 +189,16 @@ for i in $* ; do
 		if	[ "x$DRIV_VAR" = "xfalse" ] ; then  echo "enable-drivers or not ?" ;      help ; exit -1; fi
 		DRIV="$i"
 		DRIV_VAR="true"
+		;;
+	"--disable-sage")
+		if	[ "x$SAGE_VAR" = "xtrue" ] ; then  echo "enable-sage or not ?";          help ; exit -1; fi
+		SAGE=""
+		SAGE_VAR="false"
+		;;
+	"--disable-drivers")
+		if	[ "x$DRIV_VAR" = "xtrue" ] ; then  echo "enable-drivers or not ?" ;      help ; exit -1; fi
+		DRIV=""
+		DRIV_VAR="false"
 		;;
 
 	*)
@@ -204,8 +232,13 @@ for i in $* ; do
 				;;
 			"--extra-flags")
 				if	[ "x$EXTRA_VAR" = "xtrue" ] ; then  echo "extra-flags already set ?" ;      help ; exit -1; fi
-				EXTRA=$QUOI
+				EXTRA="$QUOI"
 				EXTRA_VAR="true"
+				;;
+			"--make-flags")
+				if	[ "x$MAKE_VAR" = "xtrue" ] ; then  echo "make-flags already set ?" ;      help ; exit -1; fi
+				MAKEOPT="$QUOI"
+				MAKE_VAR="true"
 				;;
 			"--with-gmp")
 				if		[ "x$GMP_VAR" = "xtrue" ] ; then  echo "GMP path already set ?" ;      help ; exit -1; fi
@@ -214,7 +247,7 @@ for i in $* ; do
 				;;
 			"--with-blas")
 				if	[ "x$BLAS_VAR" = "xtrue" ] ; then  echo "GMP path already set ?" ;      help ; exit -1; fi
-				BLAS="$i"
+				BLAS=$QUI=\"$QUOI\"
 				BLAS_VAR="true"
 				;;
 			"--with-ntl")
@@ -283,9 +316,9 @@ for i in $* ; do
 				if		[ "x$OPTIM_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "drivers or not drivers ?" ;      help ; exit -1; fi
 				if		[ "x$OPTIM_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "drivers or not drivers ?" ;      help ; exit -1; fi
 				if		[[ "x$OK" = "x1" ]] ; then 
-					OPTIM=$QUI ; OPTIM_VAR="true"
+					DRIV=$QUI ; DRIV_VAR="true"
 				else
-					OPTIM_VAR="false" 
+					DRIV_VAR="false" 
 				fi
 				;;
 			*)
@@ -297,6 +330,8 @@ for i in $* ; do
 		;;
 esac
 done
+
+MAKEPROG="make ${MAKEOPT}"
 
 ######################
 #  create build dir  #
@@ -322,34 +357,6 @@ cool
 ####################
 
 cd build ;
-
-### Fflas-ffpack ###
-
-echo -en "${BEG}fecthing Fflas-Ffpack..."
-if [ "$STABLE_VAR" = "true" ]; then
-	if [ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] ; then
-		echo "already there"
-		echo -ne "${BEG}fetching md5sum" ; 
-		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
-		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
-		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] || die
-		cool
-		echo -ne "${BEG}"
-		md5sum -c fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum || die
-	else
-		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz  >/dev/null 2>&1 || die
-		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] || die
-		echo -ne "${BEG}fetching md5sum" ; 
-		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
-		cool
-		echo -ne "${BEG}"
-		md5sum -c fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum || die
-	fi
-else
-	OK=0 ;
-	svn co svn://linalg.org/fflas-ffpack 2>&1 >/dev/null && OK=1 
-	[ "$OK" = "1" ] &&  cool  || die
-fi
 
 ### Givaro ###
 
@@ -379,10 +386,47 @@ else
 	[ "$OK" = "1" ] &&  cool  || die 
 fi
 
+### Fflas-ffpack ###
+
+echo -en "${BEG}fecthing Fflas-Ffpack..."
+if [ "$STABLE_VAR" = "true" ]; then
+	if [ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] ; then
+		echo "already there"
+		echo -ne "${BEG}fetching md5sum" ; 
+		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
+		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
+		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] || die
+		cool
+		echo -ne "${BEG}"
+		md5sum -c fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum || die
+	else
+		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz  >/dev/null 2>&1 || die
+		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] || die
+		echo -ne "${BEG}fetching md5sum" ; 
+		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
+		cool
+		echo -ne "${BEG}"
+		md5sum -c fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum || die
+	fi
+else
+	OK=0 ;
+	svn co svn://linalg.org/fflas-ffpack 2>&1 >/dev/null && OK=1 
+	[ "$OK" = "1" ] &&  cool  || die
+fi
+
 
 #####################
 #  extract sources  #
 #####################
+
+### Givaro ###
+
+OK=0
+if [ "$STABLE_VAR" = "true" ]; then
+	echo -en "${BEG}extracting Givaro..."
+	tar xzf givaro-$STABLE_GIVARO.tar.gz  && OK=1
+	[ "$OK" = "1" ] &&  cool   || die 
+fi
 
 ### Fflas-ffpack ###
 
@@ -393,14 +437,65 @@ if [ "$STABLE_VAR" = "true" ]; then
 	[ "$OK" = "1" ] &&  cool   || die
 fi
 
-### Givaro ###
 
-OK=0
+
+####################
+#  install Givaro  #
+####################
+
 if [ "$STABLE_VAR" = "true" ]; then
-	echo -en "${BEG}extracting Givaro..."
-	tar xzf givaro-$STABLE_GIVARO.tar.gz  && OK=1
-	[ "$OK" = "1" ] &&  cool   || die 
+	cd givaro-$STABLE_GIVARO || die
+else
+	cd trunk/ || die
 fi
+
+if [ -f Makefile ] ; then
+	echo -e "${BEG}cleaning Givaro..."
+	${MAKEPROG} clean || die
+	${MAKEPROG} distclean || die 
+	# ${MAKEPROG} unistall || die
+	cool
+fi
+
+echo -e "${BEG}configuring Givaro..."
+
+if [ "$STABLE_VAR" = "true" ]; then
+	echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"
+	echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS" > configure.givaro.exe
+	chmod +x configure.givaro.exe
+	./configure.givaro.exe
+	rm rf configure.givaro.exe
+	#./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
+else
+	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"
+	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS" > autogen.givaro.exe
+	chmod +x autogen.givaro.exe
+	./autogen.givaro.exe
+	rm rf autogen.givaro.exe
+	#./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
+fi
+
+echo -e "${BEG}building Givaro..."
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
+
+if [ -n "$EXTRA" ] ; then
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" || die
+else
+	${MAKEPROG} || die
+fi
+
+if [ "$CHECK_VAR" = "true" ] ; then
+	echo -e "${BEG}checking Fflas-Ffpack..."
+	${MAKEPROG} check || die
+fi
+
+echo -e "${BEG}installing Givaro..."
+${MAKEPROG} install || die
+
+#return in build
+cd ..
+
+cool
 
 ##########################
 #  install fflas-ffpack  #
@@ -415,9 +510,9 @@ fi
 
 if [ -f Makefile ] ; then
 	echo -e "${BEG}cleaning Fflas-Ffpack..."
-	make clean || die
-	make distclean || die 
-	# make unistall || die
+	${MAKEPROG} clean || die
+	${MAKEPROG} distclean || die 
+	# ${MAKEPROG} unistall || die
 	cool
 fi
 
@@ -425,82 +520,40 @@ echo -e "${BEG}configuring Fflas-Ffpack..."
 
 if [ "$STABLE_VAR" = "true" ]; then
 	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
-	./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS || die
+	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS" > configure.fflas.exe
+	chmod +x configure.fflas.exe
+	./configure.fflas.exe
+	rm rf configure.fflas.exe
+	#./configure  "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
 else
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
-	./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS || die
+	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS" > configure.fflas.exe
+	chmod +x configure.fflas.exe
+	./configure.fflas.exe
+	rm rf configure.fflas.exe
+	#./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
 fi
 
 echo -e "${BEG}building Fflas-Ffpack..."
-echo "make CXXFLAGS+=\"$EXTRA\""
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
 if [ -n "$EXTRA" ] ; then
-	make "CXXFLAGS+=\"$EXTRA\"" || die
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" || die
 else
-	make || die
+	${MAKEPROG} || die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
 	echo -e "${BEG}checking Fflas-Ffpack..."
-	make check || die
+	${MAKEPROG} check || die
 fi
 
 
 echo -e "${BEG}installing Fflas-Ffpack..."
-make install || die
+${MAKEPROG} install || die
 
 cool
 #return in build
 cd ..
-
-####################
-#  install Givaro  #
-####################
-
-if [ "$STABLE_VAR" = "true" ]; then
-	cd givaro-$STABLE_GIVARO || die
-else
-	cd trunk/ || die
-fi
-
-if [ -f Makefile ] ; then
-	echo -e "${BEG}cleaning Givaro..."
-	make clean || die
-	make distclean || die 
-	# make unistall || die
-	cool
-fi
-
-echo -e "${BEG}configuring Givaro..."
-
-if [ "$STABLE_VAR" = "true" ]; then
-	echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"
-	./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
-else
-	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"
-	./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
-fi
-
-echo -e "${BEG}building Givaro..."
-echo "make CXXFLAGS+=\"$EXTRA\""
-
-if [ -n "$EXTRA" ] ; then
-	make "CXXFLAGS+=\"$EXTRA\"" || die
-else
-	make || die
-fi
-
-if [ "$CHECK_VAR" = "true" ] ; then
-	echo -e "${BEG}checking Fflas-Ffpack..."
-	make check || die
-fi
-
-echo -e "${BEG}installing Givaro..."
-make install || die
-
-#return in build
-cd ..
-
-cool
 
 #return in linbox
 cd ..
@@ -511,9 +564,9 @@ cd ..
 
 if [ -f Makefile ] ; then
 	echo -e "${BEG}cleaning LinBox..."
-	make clean || die
-	make distclean || die 
-	# make unistall || die
+	${MAKEPROG} clean || die
+	${MAKEPROG} distclean || die 
+	# ${MAKEPROG} unistall || die
 	cool
 fi
 
@@ -525,35 +578,36 @@ FFLAFLAS="--with-fflas-ffpack=$PREFIX_LOC"
 
 if [ -x autogen.sh ] ;  then 
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"
-	./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV || die
+	./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$GIVARO" "$FFLAFLAS" "$WARNINGS" "$IML" "$SAGE" "$DRIV" || die
 else
 	echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"
-	./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS  $IML $SAGE $DRIV || die
+	# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS  $IML $SAGE $DRIV || die
+	./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$GIVARO" "$FFLAFLAS" "$WARNINGS" "$IML" "$SAGE" "$DRIV" || die
 fi
 
 echo -e "${BEG}building LinBox..."
-echo "make CXXFLAGS+=\"$EXTRA\""
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
 
 if [ -n "$EXTRA" ] ; then
-	make "CXXFLAGS+=\"$EXTRA\"" || die
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" || die
 else
-	make || die
+	${MAKEPROG} || die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
 	echo -e "${BEG}checking LinBox..."
-	make check || die
+	${MAKEPROG} check || die
 fi
 
 echo -e "${BEG}installing LinBox..."
-make install || die
+${MAKEPROG} install || die
 
 cool
 
 echo
 echo -e "${BEG}Don't forget to run something like"
 echo -e " *   'export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$PREFIX_LOC/lib'"
-echo -e " * to ensure you don't get undefined symobols !"
+echo -e " * to ensure you don't get undefined symbols !"
 echo 
 echo -e " * Happy LinBoxing ! (installed in $PREFIX_LOC)"
 echo

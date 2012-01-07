@@ -27,7 +27,7 @@
 #define __LINBOX_randiter_abstract_H
 
 #include <iostream>
-#include <linbox/integer.h>
+#include "linbox/integer.h"
 
 namespace LinBox
 {

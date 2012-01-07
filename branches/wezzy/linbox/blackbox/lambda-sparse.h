@@ -25,11 +25,11 @@
 #ifndef __LINBOX_lambda_sparse_H
 #define __LINBOX_lambda_sparse_H
 
-#include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/archetype.h>
-#include <linbox/vector/stream.h>
-#include <linbox/vector/vector-traits.h>
-#include <linbox/integer.h>
+#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/archetype.h"
+#include "linbox/vector/stream.h"
+#include "linbox/vector/vector-traits.h"
+#include "linbox/integer.h"
 
 namespace LinBox
 {
@@ -115,12 +115,12 @@ namespace LinBox
 			SparseMatrix<Field,Row> (F,L.rowdim(),L.coldim())
 		{
 
-			//typename LambdaSparseMatrix<_Ring,_IRow>::ConstRawIterator Liter = L.rawBegin();
-			typename LambdaSparseMatrix<_Ring,_IRow>::ConstRawIndexedIterator Literindex = L.rawIndexedBegin();
+			//typename LambdaSparseMatrix<_Ring,_IRow>::ConstIterator Liter = L.Begin();
+			typename LambdaSparseMatrix<_Ring,_IRow>::ConstIndexedIterator Literindex = L.IndexedBegin();
 
 			integer tmp;
 			_Ring r= L.field();
-			for (;  Literindex!=L.rawIndexedEnd();  ++Literindex) {
+			for (;  Literindex!=L.IndexedEnd();  ++Literindex) {
 				r.convert(tmp,*Literindex);
 				F.init(refEntry(Literindex.rowIndex(),Literindex.colIndex()),tmp);
 			}
@@ -133,12 +133,12 @@ namespace LinBox
 		{
 			typename Field::Element max;
 			// Dan Roche 7-20-04 added typename here to stop compiler warning
-			typename LambdaSparseMatrix<_Field,_Row>::ConstRawIterator iter= this->rawBegin();
+			typename LambdaSparseMatrix<_Field,_Row>::ConstIterator iter= this->Begin();
 			max = *iter;
-			for (; iter != this->rawEnd(); ++iter)
+			for (; iter != this->End(); ++iter)
 				if (*iter > max) max=*iter;
 
-			this->_F.convert(norm,max);
+			this->_field.convert(norm,max);
 			return norm;
 		}
 

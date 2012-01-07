@@ -125,7 +125,7 @@ namespace LinBox
 
 
 	private:
-		mutable Reader _R;
+		mutable Reader _reader;
 		bool _isField;
 		int _fieldType;
 		std::string _implDetail;
@@ -184,56 +184,56 @@ namespace LinBox
 	bool FieldReaderAnalyzer::reset(Reader &R) {
 		long e;
 		std::string s;
-		_R = R;
+		_reader = R;
 
-		if(!_R.expectTagName("field") ||!_R.expectAttributeNum("cardinality", _card) || !_R.expectChildTag()) {
+		if(!_reader.expectTagName("field") ||!_reader.expectAttributeNum("cardinality", _card) || !_reader.expectChildTag()) {
 			_isField = false;
 			_fieldType = FieldReaderAnalyzer::NotField;
 			_card = integer(-1);
 			return false;
 		}
 		_isField = true;
-		if(!_R.checkAttributeString("implDetail", _implDetail))
+		if(!_reader.checkAttributeString("implDetail", _implDetail))
 			_implDetail = s;
 
 		// now check the Field type
-		_R.traverseChild();
-		if(_R.checkTagName("finite")) {
-			if(!_R.expectChildTag()) {
+		_reader.traverseChild();
+		if(_reader.checkTagName("finite")) {
+			if(!_reader.expectChildTag()) {
 				// uh-oh, mal-formed field
 				_isField = false;
 				_fieldType = FieldReaderAnalyzer::NotField;
 				_card = integer(-1);
 				return false;
 			}
-			_R.traverseChild();
-			if(!_R.expectTagName("characteristic")) {
+			_reader.traverseChild();
+			if(!_reader.expectTagName("characteristic")) {
 				// uh-oh, mal-formed field
 				_isField = false;
 				_fieldType = FieldReaderAnalyzer::NotField;
 				_card = integer(-1);
 				return false;
 			}
-			_R.upToParent();
+			_reader.upToParent();
 			// check for extended field
-			if(_R.getNextChild()) {
-				if(!_R.expectChildTag()) {
+			if(_reader.getNextChild()) {
+				if(!_reader.expectChildTag()) {
 					// uh-oh, mal-formed field
 					_isField = false;
 					_fieldType = FieldReaderAnalyzer::NotField;
 					_card = integer(-1);
 					return false;
 				}
-				_R.traverseChild();
-				if(!_R.expectTagName("extension") || !_R.expectChildTag()) {
+				_reader.traverseChild();
+				if(!_reader.expectTagName("extension") || !_reader.expectChildTag()) {
 					// uh-oh, mal-formed field
 					_isField = false;
 					_fieldType = FieldReaderAnalyzer::NotField;
 					_card = integer(-1);
 					return false;
 				}
-				_R.traverseChild();
-				if(!_R.expectTagNum(e)) {
+				_reader.traverseChild();
+				if(!_reader.expectTagNum(e)) {
 					// uh-oh, mal-formed field
 					_isField = false;
 					_fieldType = FieldReaderAnalyzer::NotField;
@@ -245,26 +245,26 @@ namespace LinBox
 				}
 				else
 					_fieldType = FieldReaderAnalyzer::Finite;
-				_R.Up(2);
-				_R.Left(1);
+				_reader.Up(2);
+				_reader.Left(1);
 			}
 			else
 				_fieldType = FieldReaderAnalyzer::Finite;
 		}
-		else if(_R.checkTagName("rational")) {
+		else if(_reader.checkTagName("rational")) {
 			_fieldType = FieldReaderAnalyzer::Rational;
 		}
-		else if(_R.checkTagName("real")) {
+		else if(_reader.checkTagName("real")) {
 			_fieldType = FieldReaderAnalyzer::Real;
 		}
-		else if(_R.checkTagName("integer")) {
+		else if(_reader.checkTagName("integer")) {
 			_fieldType = FieldReaderAnalyzer::Integer;
 		}
 		else
 			_fieldType = FieldReaderAnalyzer::Unknown;
 
 
-		_R.Up(1);
+		_reader.Up(1);
 		return true;
 	}
 
@@ -354,66 +354,66 @@ namespace LinBox
 		case FieldReaderAnalyzer::Finite: {
 
 							  if(_implDetail == "gf2") {
-								  GF2* p = new GF2(_R);
+								  GF2* p = new GF2(_reader);
 								  return FT(p, AuxUserData);
 							  }
 							  else if(_implDetail == "modular-uint8") {
-								  Modular<uint8_t>* p = new Modular<uint8_t>(_R);
+								  Modular<uint8_t>* p = new Modular<uint8_t>(_reader);
 								  return FT(p, AuxUserData);
 							  }
 							  else if(_implDetail == "modular-uint16") {
-								  Modular<uint16_t>* p = new Modular<uint16_t>(_R);
+								  Modular<uint16_t>* p = new Modular<uint16_t>(_reader);
 								  return FT(p, AuxUserData);
 							  }
 							  else if(_implDetail == "modular-uint32_t") {
-								  Modular<uint32_t>* p = new Modular<uint32_t>(_R);
+								  Modular<uint32_t>* p = new Modular<uint32_t>(_reader);
 								  return FT(p, AuxUserData);
 							  }
 							  else if(_implDetail == "modular-integer") {
-								  Modular<integer> *p = new Modular<integer>(_R);
+								  Modular<integer> *p = new Modular<integer>(_reader);
 								  return FT(p, AuxUserData);
 							  }
 							  else if(_implDetail == "modular") {
-								  Modular<integer> *p = new Modular<integer>(_R);
+								  Modular<integer> *p = new Modular<integer>(_reader);
 								  return FT(p, AuxUserData);
 							  }
 							  else if(_implDetail == "ntl-zzp") {
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
-								  UnparametricField<NTL::zz_p> *p = new UnparametricField<NTL::zz_p>(_R);
+								  NTL_zz_p *p = new NTL_zz_p(_reader);
 #else // the default
-								  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
+								  Modular<uint32_t> *p = new Modular<uint32_t>(_reader);
 #endif
 								  return FT(p, AuxUserData);
 
 							  }
 							  else if(_implDetail == "ntl-ZZp") {
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
-								  UnparametricField<NTL::ZZ_p> *p = new UnparametricField<NTL::ZZ_p>(_R);
+								  NTL_ZZ_p *p = new NTL_ZZ_p(_reader);
 #else
-								  Modular<integer> *p = new Modular<integer>(_R);
+								  Modular<integer> *p = new Modular<integer>(_reader);
 #endif
 								  return FT(p, AuxUserData);
 							  }
 #if 0
 							  else if(_implDetail == "givaro-zpz-std16") {
 #ifdef __LINBOX_HAVE_GIVARO // if we have Givaro
-								  GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_R);
+								  GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_reader);
 #else
-								  Modular<uint16_t> *p = new Modular<uint16_t>(_R);
+								  Modular<uint16_t> *p = new Modular<uint16_t>(_reader);
 #endif
 								  return FT(p, AuxUserData);
 							  }
 							  else if(_implDetail == "givaro-zpz-std32") {
 #ifdef __LINBOX_HAVE_GIVARO
-								  GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_R);
+								  GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_reader);
 #else
-								  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
+								  Modular<uint32_t> *p = new Modular<uint32_t>(_reader);
 #endif
 								  return FT(p, AuxUserData);
 							  }
 							  else if(_implDetail == "givaro-zpz-log16") {
 #ifdef __LINBOX_HAVE_GIVARO
-								  GivaroZpz<Log16> *p = new GivaroZpz<Log16>(_R);
+								  GivaroZpz<Log16> *p = new GivaroZpz<Log16>(_reader);
 #else
 								  // crap, we're screwed, just throw the
 								  // exception and bail
@@ -423,7 +423,7 @@ namespace LinBox
 							  }
 #endif
 							  else { // we take our chances w/ Modular<integer>
-								  Modular<integer> *p = new Modular<integer>(_R);
+								  Modular<integer> *p = new Modular<integer>(_reader);
 								  return FT(p, AuxUserData);
 							  }
 							  break;
@@ -444,7 +444,7 @@ namespace LinBox
 
 								   if(_implDetail == "ntl-ZZpE") {
 #ifdef __LINBOX_HAVE_NTL
-									   UnparametricField<NTL::ZZ_pE>* p = new UnparametricField<NTL::ZZ_pE>(_R);
+									   UnparametricField<NTL::ZZ_pE>* p = new UnparametricField<NTL::ZZ_pE>(_reader);
 									   return FT(p, AuxUserData);
 #endif // if we don't have the package, fall through to the
 									   // "we'll use anything!" stage
@@ -452,13 +452,13 @@ namespace LinBox
 #if 0
 								   else if(_implDetail == "givaro-gfq") {
 #ifdef __LINBOX_HAVE_GIVARO
-									   GivaroGfq *p = new GivaroGfq(_R);
+									   GivaroGfq *p = new GivaroGfq(_reader);
 									   return FT(p, AuxUserData);
 #endif
 								   }
 								   else if(_implDetail == "lidia-gfq") {
 #ifdef __LINBOX_HAVE_LIDIA
-									   LidiaGfq *p = new LidiaGfq(_R);
+									   LidiaGfq *p = new LidiaGfq(_reader);
 									   return FT(p, AuxUserData);
 #endif
 								   }
@@ -470,16 +470,16 @@ namespace LinBox
 								   else {
 #if 0
 #ifdef __LINBOX_HAVE_GIVARO
-									   GivaroGfq *p = new GivaroGfq(_R);
+									   GivaroGfq *p = new GivaroGfq(_reader);
 									   return FT(p, AuxUserData);
 #elif __LINBOX_HAVE_LIDIA
-									   LidiaGfq *p = new LidiaGfq(_R);
+									   LidiaGfq *p = new LidiaGfq(_reader);
 									   return FT(p, AuxUserData);
 #endif
 #endif
 
 #ifdef __LINBOX_HAVE_NTL // Our last resort
-									   UnparametricField<NTL::ZZ_pE> *p = new UnparametricField<NTL::ZZ_pE>(_R);
+									   UnparametricField<NTL::ZZ_pE> *p = new UnparametricField<NTL::ZZ_pE>(_reader);
 									   return FT(p, AuxUserData);
 #else // uh-oh, we're cooked
 									   throw NoFiniteExtendedInLinBox;
@@ -491,7 +491,7 @@ namespace LinBox
 							   // LinBox, GMPRationalField, so just use it
 
 		case FieldReaderAnalyzer::Rational : {
-							     GMPRationalField *p = new GMPRationalField(_R);
+							     GMPRationalField *p = new GMPRationalField(_reader);
 							     return FT(p, AuxUserData);
 							     break;
 						     }
@@ -507,9 +507,9 @@ namespace LinBox
 							 // produces a real field, NTL::RR.  Let's hope we
 							 // have it
 #ifdef __LINBOX_HAVE_NTL
-							 UnparametricField<NTL::RR>* p = new UnparametricField<NTL::RR>(_R);
+							 UnparametricField<NTL::RR>* p = new UnparametricField<NTL::RR>(_reader);
 #else
-							 UnparametricField<double>* p = new UnparametricField<double>(_R);
+							 UnparametricField<double>* p = new UnparametricField<double>(_reader);
 #endif
 							 return FT(p, AuxUserData);
 							 break;
@@ -523,7 +523,7 @@ namespace LinBox
 						 // LinBox, so just use UnparametricField<integer>
 		case FieldReaderAnalyzer::Integer : {
 
-							    UnparametricField<integer> *p = new UnparametricField<integer>(_R);
+							    UnparametricField<integer> *p = new UnparametricField<integer>(_reader);
 							    return FT(p, AuxUserData);
 							    break;
 						    }
@@ -533,7 +533,7 @@ namespace LinBox
 						    // so we need to add a new type.
 						    //
 		case FieldReaderAnalyzer::Unknown : {
-							    UnparametricField<integer> *p = new UnparametricField<integer>(_R);
+							    UnparametricField<integer> *p = new UnparametricField<integer>(_reader);
 							    return FT(p, AuxUserData);
 							    break;
 						    }
@@ -588,66 +588,66 @@ namespace LinBox
 		case FieldReaderAnalyzer::Finite: {
 
 							  if(_implDetail == "gf2") {
-								  GF2* p = new GF2(_R);
+								  GF2* p = new GF2(_reader);
 								  return FT(p);
 							  }
 							  else if(_implDetail == "modular-uint8") {
-								  Modular<uint8_t>* p = new Modular<uint8_t>(_R);
+								  Modular<uint8_t>* p = new Modular<uint8_t>(_reader);
 								  return FT(p);
 							  }
 							  else if(_implDetail == "modular-uint16") {
-								  Modular<uint16_t>* p = new Modular<uint16_t>(_R);
+								  Modular<uint16_t>* p = new Modular<uint16_t>(_reader);
 								  return FT(p);
 							  }
 							  else if(_implDetail == "modular-uint32_t") {
-								  Modular<uint32_t>* p = new Modular<uint32_t>(_R);
+								  Modular<uint32_t>* p = new Modular<uint32_t>(_reader);
 								  return FT(p);
 							  }
 							  else if(_implDetail == "modular-integer") {
-								  Modular<integer> *p = new Modular<integer>(_R);
+								  Modular<integer> *p = new Modular<integer>(_reader);
 								  return FT(p);
 							  }
 							  else if(_implDetail == "modular") {
-								  Modular<integer> *p = new Modular<integer>(_R);
+								  Modular<integer> *p = new Modular<integer>(_reader);
 								  return FT(p);
 							  }
 							  else if(_implDetail == "ntl-zzp") {
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
-								  UnparametricField<NTL::zz_p> *p = new UnparametricField<NTL::zz_p>(_R);
+								  NTL_zz_p *p = new NTL_zz_p(_reader);
 #else // the default
-								  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
+								  Modular<uint32_t> *p = new Modular<uint32_t>(_reader);
 #endif
 								  return FT(p);
 
 							  }
 							  else if(_implDetail == "ntl-ZZp") {
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
-								  UnparametricField<NTL::ZZ_p> *p = new UnparametricField<NTL::ZZ_p>(_R);
+								  NTL_ZZ_p *p = new NTL_ZZ_p(_reader);
 #else
-								  Modular<integer> *p = new Modular<integer>(_R);
+								  Modular<integer> *p = new Modular<integer>(_reader);
 #endif
 								  return FT(p);
 							  }
 #if 0
 							  else if(_implDetail == "givaro-zpz-std16") {
 #ifdef __LINBOX_HAVE_GIVARO // if we have Givaro
-								  GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_R);
+								  GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_reader);
 #else
-								  Modular<uint16_t> *p = new Modular<uint16_t>(_R);
+								  Modular<uint16_t> *p = new Modular<uint16_t>(_reader);
 #endif
 								  return FT(p);
 							  }
 							  else if(_implDetail == "givaro-zpz-std32") {
 #ifdef __LINBOX_HAVE_GIVARO
-								  GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_R);
+								  GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_reader);
 #else
-								  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
+								  Modular<uint32_t> *p = new Modular<uint32_t>(_reader);
 #endif
 								  return FT(p);
 							  }
 							  else if(_implDetail == "givaro-zpz-log16") {
 #ifdef __LINBOX_HAVE_GIVARO
-								  GivaroZpz<Log16> *p = new GivaroZpz<Log16>(_R);
+								  GivaroZpz<Log16> *p = new GivaroZpz<Log16>(_reader);
 #else
 
 								  // crap, we're screwed, just throw the
@@ -658,7 +658,7 @@ namespace LinBox
 							  }
 #endif
 							  else { // we take our chances w/ Modular<integer>
-								  Modular<integer> *p = new Modular<integer>(_R);
+								  Modular<integer> *p = new Modular<integer>(_reader);
 								  return FT(p);
 							  }
 							  break;
@@ -679,7 +679,7 @@ namespace LinBox
 
 								   if(_implDetail == "ntl-ZZpE") {
 #ifdef __LINBOX_HAVE_NTL
-									   UnparametricField<NTL::ZZ_pE>* p = new UnparametricField<NTL::ZZ_pE>(_R);
+									   UnparametricField<NTL::ZZ_pE>* p = new UnparametricField<NTL::ZZ_pE>(_reader);
 									   return FT(p);
 #endif // if we don't have the package, fall through to the
 									   // "we'll use anything!" stage
@@ -687,13 +687,13 @@ namespace LinBox
 #if 0
 								   else if(_implDetail == "givaro-gfq") {
 #ifdef __LINBOX_HAVE_GIVARO
-									   GivaroGfq *p = new GivaroGfq(_R);
+									   GivaroGfq *p = new GivaroGfq(_reader);
 									   return FT(p);
 #endif
 								   }
 								   else if(_implDetail == "lidia-gfq") {
 #ifdef __LINBOX_HAVE_LIDIA
-									   LidiaGfq *p = new LidiaGfq(_R);
+									   LidiaGfq *p = new LidiaGfq(_reader);
 									   return FT(p);
 #endif
 								   }
@@ -704,15 +704,15 @@ namespace LinBox
 								   else {
 #if 0
 #ifdef __LINBOX_HAVE_GIVARO
-									   GivaroGfq *p = new GivaroGfq(_R);
+									   GivaroGfq *p = new GivaroGfq(_reader);
 									   return FT(p);
 #elif __LINBOX_HAVE_LIDIA
-									   LidiaGfq *p = new LidiaGfq(_R);
+									   LidiaGfq *p = new LidiaGfq(_reader);
 									   return FT(p);
 #endif
 #endif
 #ifdef __LINBOX_HAVE_NTL // Our last resort
-									   UnparametricField<NTL::ZZ_pE> *p = new UnparametricField<NTL::ZZ_pE>(_R);
+									   UnparametricField<NTL::ZZ_pE> *p = new UnparametricField<NTL::ZZ_pE>(_reader);
 									   return FT(p);
 #else // uh-oh, we're cooked
 									   throw NoFiniteExtendedInLinBox;
@@ -725,7 +725,7 @@ namespace LinBox
 							   // LinBox, GMPRationalField, so just use it
 
 		case FieldReaderAnalyzer::Rational : {
-							     GMPRationalField *p = new GMPRationalField(_R);
+							     GMPRationalField *p = new GMPRationalField(_reader);
 							     return FT(p);
 							     break;
 						     }
@@ -741,9 +741,9 @@ namespace LinBox
 							 // produces a real field, NTL::RR.  Let's hope we
 							 // have it
 #ifdef __LINBOX_HAVE_NTL
-							 UnparametricField<NTL::RR>* p = new UnparametricField<NTL::RR>(_R);
+							 UnparametricField<NTL::RR>* p = new UnparametricField<NTL::RR>(_reader);
 #else
-							 UnparametricField<double>* p = new UnparametricField<double>(_R);
+							 UnparametricField<double>* p = new UnparametricField<double>(_reader);
 #endif
 							 return FT(p);
 							 break;
@@ -757,7 +757,7 @@ namespace LinBox
 						 // LinBox, so just use UnparametricField<integer>
 		case FieldReaderAnalyzer::Integer : {
 
-							    UnparametricField<integer> *p = new UnparametricField<integer>(_R);
+							    UnparametricField<integer> *p = new UnparametricField<integer>(_reader);
 							    return FT(p);
 							    break;
 						    }
@@ -767,7 +767,7 @@ namespace LinBox
 						    // added.
 						    //
 		case FieldReaderAnalyzer::Unknown: {
-							   UnparametricField<integer> *p = new UnparametricField<integer>(_R);
+							   UnparametricField<integer> *p = new UnparametricField<integer>(_reader);
 							   return FT(p);
 							   break;
 						   }

@@ -24,10 +24,9 @@
 #ifndef __LINBOX_smith_form_iliopoulos_H
 #define __LINBOX_smith_form_iliopoulos_H
 
-#include <linbox/util/debug.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/blackbox/dense.h>
-#include <linbox/blackbox/submatrix-traits.h>
+#include "linbox/util/debug.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/blackbox/submatrix-traits.h"
 
 namespace LinBox
 {
@@ -406,11 +405,12 @@ namespace LinBox
 
 				eliminationCol (A, r);
 			}
-
 			while (!check(A, r));
 
-			typename SubMatrixTraits<Matrix>::value_type
-			sub(A, (unsigned int)1, (unsigned int)1,
+			typedef typename SubMatrixTraits<Matrix>::value_type sub_mat_t ;
+
+			sub_mat_t sub(A,
+				      (unsigned int)1, (unsigned int)1,
 			    A.rowdim() - 1, A.coldim() - 1);
 
 			diagonalizationIn(sub, r);

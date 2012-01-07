@@ -25,12 +25,12 @@
 #ifndef __LINBOX_direct_sum_H
 #define __LINBOX_direct_sum_H
 
-#include <linbox/blackbox/null-matrix.h>
-#include <linbox/vector/vector-traits.h>
-#include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/vector/subvector.h>
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/vector/light_container.h>
+#include "linbox/blackbox/null-matrix.h"
+#include "linbox/vector/vector-traits.h"
+#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/vector/subvector.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/vector/light_container.h"
 
 namespace LinBox
 {
@@ -361,18 +361,18 @@ namespace LinBox
 
 	template <class Matrix> struct MatrixTraits;
 
-	#ifndef __INTEL_COMPILER
+#if !defined __INTEL_COMPILER && !defined(__clang__)
 	template<>
-	#endif
+#endif
 	template <class BB1, class BB2>
 	struct MatrixTraits< DirectSum<BB1, BB2> > {
 		typedef DirectSum<BB1, BB2> MatrixType;
 		typedef MatrixCategories::BlackboxTag MatrixCategory;
 	};
 
-#ifndef __INTEL_COMPILER
+#if !defined __INTEL_COMPILER && !defined(__clang__)
 	template<>
-	#endif
+#endif
 	template <class BB1, class BB2>
 	struct MatrixTraits< const DirectSum<BB1, BB2> > {
 		typedef const DirectSum<BB1, BB2> MatrixType;

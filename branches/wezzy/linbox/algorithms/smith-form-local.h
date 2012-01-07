@@ -17,7 +17,8 @@
 #include <list>
 //#include <algorithm>
 
-#include "linbox/matrix/dense-submatrix.h"
+// #include "linbox/field/multimod-field.h"
+#include "linbox/matrix/blas-matrix.h"
 
 namespace LinBox
 {
@@ -25,7 +26,7 @@ namespace LinBox
 	/**
 	  \brief Smith normal form (invariant factors) of a matrix over a local ring.
 
-	  The matrix must be a DenseMatrix over a LocalPID.
+	  The matrix must be a BlasMatrix over a LocalPID.
 	  A localPID has the standard ring/field arithmetic functions plus gcdin().
 
 */
@@ -90,13 +91,13 @@ namespace LinBox
 						for ( q = p->begin() + 1, r = A.rowBegin()->begin() + 1, f = *(p -> begin()); q != p->end(); ++q, ++r )
 							R.axpyin( *q, f, *r );
 
-					DenseSubmatrix<Elt> Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
+					BlasMatrix<LocalPID> Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
 					L.push_back(d);
 					return smithStep(L, d, Ap, R);
 				}
 			else  {
-				typename Matrix::RawIterator p_it;
-				for (p_it = A.rawBegin(); p_it != A.rawEnd(); ++p_it)
+				typename Matrix::Iterator p_it;
+				for (p_it = A.Begin(); p_it != A.End(); ++p_it)
 					R.divin(*p_it, g);
 				return smithStep(L, R.mulin(d, g), A, R);
 			}
@@ -106,5 +107,5 @@ namespace LinBox
 
 } // end LinBox
 
-#include <linbox/algorithms/smith-form-local2.h>
+#include "linbox/algorithms/smith-form-local2.inl"
 #endif // __LINBOX_smith_form_local_H

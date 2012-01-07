@@ -39,7 +39,6 @@
 #include <vector>
 
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/solutions/det.h"
 
 using namespace LinBox;

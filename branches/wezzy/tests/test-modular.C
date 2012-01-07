@@ -95,6 +95,6 @@ int main (int argc, char **argv)
 	if (!testRandomIterator (F_uint16_t,  "Modular<uint16_t>",  trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F_uint8_t,    "Modular<uint8_t>",  trials, categories, hist_level)) pass = false;
 
-	commentator.stop("Modular test suite");
+	commentator.stop(MSG_STATUS (pass), "Modular test suite");
 	return pass ? 0 : -1;
 }

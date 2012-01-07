@@ -26,12 +26,11 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 
 //#include "linbox/field/gmp-rational.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/algorithms/varprec-cra-early-single.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/rational-reconstruction-base.h"
@@ -156,9 +155,9 @@ namespace LinBox
 	}
 
 	template <class Rationals, class MyMethod >
-	typename Rationals::Element& rational_det (typename Rationals::Element &d,
-						   const DenseMatrix<Rationals > &A,
-						   const MyMethod &Met=  Method::Hybrid())
+	typename Rationals::Element& rational_det (typename Rationals::Element    &d,
+						   const BlasMatrix<Rationals > &A,
+						   const MyMethod                 &Met=  Method::Hybrid())
 	{
 
 		typedef Modular<double> myModular;
@@ -171,8 +170,8 @@ namespace LinBox
 		Integer F = 1;
 		Integer M = 1;
 
-		//DenseMatrixBase<Quotient> ABase(A);
-		RationalMatrixFactory<PID_integer,Rationals, DenseMatrix<Rationals > > FA(&A);
+		//BlasMatrixBase<Quotient> ABase(A);
+		RationalMatrixFactory<PID_integer,Rationals, BlasMatrix<Rationals > > FA(&A);
 		Integer di=1;
 
 		for (int i=(int)A.rowdim()-1; i >= 0 ; --i) {
@@ -181,7 +180,7 @@ namespace LinBox
 		}
 
 		PID_integer Z;
-		DenseMatrix<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
+		BlasMatrix<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
 		UserTimer t0, t1,t2;bool term = false;
@@ -191,10 +190,10 @@ namespace LinBox
 		corrections(Atilde,F);
 
 		ChineseRemainder< VarPrecEarlySingleCRA<Modular<double> > > cra(3UL);
-		MyRationalModularDet<DenseMatrix<Rationals > , MyMethod> iteration1(A, Met, M, F);
-		MyIntegerModularDet<DenseMatrix<PID_integer>, MyMethod> iteration2(Atilde, Met);
-		MyModularDet<MyRationalModularDet<DenseMatrix<Rationals > , MyMethod>,
-		MyIntegerModularDet<DenseMatrix<PID_integer>, MyMethod> >  iteration(&iteration1,&iteration2);
+		MyRationalModularDet<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M, F);
+		MyIntegerModularDet<BlasMatrix<PID_integer>, MyMethod> iteration2(Atilde, Met);
+		MyModularDet<MyRationalModularDet<BlasMatrix<Rationals > , MyMethod>,
+		MyIntegerModularDet<BlasMatrix<PID_integer>, MyMethod> >  iteration(&iteration1,&iteration2);
 
 		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR;
 

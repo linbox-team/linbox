@@ -20,9 +20,8 @@ BASIC_HDRS =			\
 	transpose.h               \
 	sum.h                     \
 	diagonal.h                \
+	diagonal-gf2.h            \
 	moore-penrose.h           \
-	dense.h                   \
-	dense.inl                 \
 	direct-sum.h              \
 	null-matrix.h             \
 	matrix-blackbox.h         \
@@ -42,7 +41,6 @@ BASIC_HDRS =			\
 	blackbox-interface.h      \
 	random-matrix.h           \
 	lambda-sparse.h           \
-	blas-blackbox.h           \
 	polynomial.h              \
 	block-hankel.h            \
 	block-toeplitz.h          \

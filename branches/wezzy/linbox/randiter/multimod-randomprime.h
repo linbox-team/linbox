@@ -14,8 +14,8 @@
 #ifndef __LINBOX_multimod_random_prime_H
 #define __LINBOX_multimod_random_prime_H
 
-#include <linbox/integer.h>
-#include <linbox/util/timer.h>
+#include "linbox/integer.h"
+#include "linbox/util/timer.h"
 #include <vector>
 
 namespace LinBox
@@ -37,7 +37,7 @@ namespace LinBox
 			_shift = integer(1)<<_bits;
 
 			if (! seed)
-				MultiModRandomPrime::setSeed( BaseTimer::seed() );
+				MultiModRandomPrime::setSeed( (unsigned long) BaseTimer::seed() );
 			else
 				MultiModRandomPrime::setSeed( seed );
 		}
@@ -57,7 +57,8 @@ namespace LinBox
 					integer::random(tmp[i],_bits-1);
 					tmp[i]= _shift-tmp[i];
 					nextprime(tmp[i],tmp[i]);
-				} while (std::find(tmp.begin(), tmp.begin()+i, tmp[i]) != (tmp.begin()+i ));
+			}
+				while (std::find(tmp.begin(), tmp.begin()+(const long)i, tmp[i]) != (tmp.begin()+(const long)i ));
 			}
 			return tmp;
 		}
@@ -72,7 +73,8 @@ namespace LinBox
 					integer::random(p[i],_bits-1);
 					p[i]= _shift-p[i];
 					nextprime(p[i],p[i]);
-				} while (std::find(p.begin(), p.begin()+i-1, p[i]) != (p.begin()+i-1 ));
+			}
+				while (std::find(p.begin(), p.begin()+(long)(i-1), p[i]) != (p.begin()+(long)(i-1) ));
 			}
 			return p;
 		}

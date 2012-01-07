@@ -23,17 +23,8 @@
 #include "linbox/field/archetype.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
-#include "linbox/blackbox/dense.h"
-#include "linbox/matrix/dense-submatrix.h"
 #include "linbox/solutions/methods.h"
 
-// Fix for Solaris wierdness
-#undef _S
-#undef _M
-#undef _N
-#undef _P
-#undef _U
-#undef _T
 
 namespace LinBox
 {
@@ -43,7 +34,7 @@ namespace LinBox
 	 * This is the supporting elimination system for a lookahead-based
 	 * variant of block Lanczos.
 	 */
-	template <class Field, class Matrix = DenseMatrixBase<typename Field::Element> >
+	template <class Field, class Matrix = BlasMatrix<Field> >
 	class Eliminator {
 	public:
 
@@ -216,26 +207,26 @@ namespace LinBox
 
 		// Private variables
 
-		const Field                      &_F;
+		const Field                      &_field;
 		VectorDomain<Field>               _VD;
 		MatrixDomain<Field>               _MD;
-		unsigned int                      _N;
+		unsigned int                      _number;
 
 		typename Field::Element           _one;
 
 		// Temporaries used in the computation
 
-		mutable Permutation               _P;
+		mutable Permutation               _perm;
 
-		mutable DenseMatrixBase<Element>  _A;         // Variable
-		mutable DenseMatrixBase<Element>  _U;         // Variable
-		mutable DenseMatrixBase<Element>  _tmp;
+		mutable BlasMatrix<Field>  _matA;         // Variable
+		mutable BlasMatrix<Field>  _matU;         // Variable
+		mutable BlasMatrix<Field>  _tmp;
 
 		// These record the independent rows and columns found during the
 		// elimination process
 
-		mutable std::vector<bool>         _S;         // Independent rows
-		mutable std::vector<bool>         _T;         // Independent columns
+		mutable std::vector<bool>         _indepRows;         // Independent rows
+		mutable std::vector<bool>         _indepCols;         // Independent columns
 
 		std::vector<unsigned int>         _profile;
 		unsigned int                      _profile_idx;

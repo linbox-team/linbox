@@ -79,7 +79,8 @@ int main()
 	// NTL arbitrary precision real field
 	// (Could be parameterized by the precision)
 
-	UnparametricField<NTL::RR> K2;
+	// UnparametricField<NTL::RR> K2;
+	NTL_RR K2 ;
 	NTL::RR::SetPrecision(500);
 	NTL::RR::SetOutputPrecision(50);
 

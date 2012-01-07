@@ -31,7 +31,7 @@
 
 #include <string>
 #include <sstream>
-#include <linbox/util/matrix-stream.h>
+#include "linbox/util/matrix-stream.h"
 
 #if 0
 namespace LinBox__FORMAT_MATRIX_MARKET_H
@@ -48,17 +48,21 @@ namespace LinBox
 	class integer;
 #endif
 
-	static bool equalCaseInsensitive(const std::string s1, const char* s2)
+#if 1 /* Unused */
+	bool equalCaseInsensitive(const std::string s1, const char* s2)
 	{
 		int len = int(s1.size());
 		int counter = 0;
 		while( counter < len && s2[counter] != '\0' &&
-		       toupper(s1[counter]) == toupper(s2[counter]) ) ++counter;
+		       toupper(s1[(size_t)counter]) == toupper(s2[counter]) ) {
+			++counter;
+		}
 		return( counter == len && s2[counter] == '\0' );
 	}
+#endif
 
 	template<class Field>
-	class MatrixMarketReader :public MatrixStreamReader<Field> {
+	class MatrixMarketReader : public MatrixStreamReader<Field> {
 	public:
 		typedef typename MatrixStreamReader<Field>::Element Element;
 	private:
@@ -150,11 +154,12 @@ namespace LinBox
 			--j;
 			if(  i >= this->_m || j >= this->_n )
 				return BAD_FORMAT;
-			if( symmetric && (i != j) ) saveTriple(j,i,v);
+			if( symmetric && (i != j) ) this->saveTriple(j,i,v);
 
 			return GOOD;
 		}
 
+#if 1 /* Unused */
 		MatrixStreamError initImpl( const char* firstLine )
 		{
 			std::string st(firstLine);
@@ -198,6 +203,7 @@ namespace LinBox
 
 			return GOOD;
 		}
+#endif
 
 	public:
 		MatrixMarketReader()

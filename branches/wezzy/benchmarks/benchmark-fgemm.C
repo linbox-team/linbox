@@ -44,7 +44,7 @@
 /*        Outils          */
 /* ********************** */
 
-using ::Givaro::Timer;
+using Givaro::Timer;
 
 /*! @brief Watches a timer and a number and repet and signals if over.
  *
@@ -616,9 +616,9 @@ void bench_scalar( index_t k, int charac, bool inplace )
 	LinBox::PlotData<std::string>  Data(nb,1);
 	Data.setSerieName(0,"fgemm");
 
-	Element one, zero, mone, alpha, beta ;
+	Element one, zero, mOne, alpha, beta ;
 	F.init(one,1);
-	F.init(mone,-1);
+	F.init(mOne,-1);
 	F.init(zero,0);
 
 
@@ -626,27 +626,27 @@ void bench_scalar( index_t k, int charac, bool inplace )
 	linbox_check(charac >=5) ;
 
 	do { R.random(alpha) ; } // non trivial alpha
-	while (F.areEqual(alpha,one) || F.areEqual(alpha,mone) || F.areEqual(alpha,zero)) ;
+	while (F.areEqual(alpha,one) || F.areEqual(alpha,mOne) || F.areEqual(alpha,zero)) ;
 
 	do { R.random(beta) ; }// non trivial beta
-	while (F.areEqual(beta,one) || F.areEqual(beta,mone) || F.areEqual(beta,zero)) ;
+	while (F.areEqual(beta,one) || F.areEqual(beta,mOne) || F.areEqual(beta,zero)) ;
 
 
 	// D = AB + beta C
 	launch_bench_scalar<Field,0,0>(F,k,k,k,one,zero,Data,it++,inplace);
-	launch_bench_scalar<Field,0,0>(F,k,k,k,one,mone,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,one,mOne,Data,it++,inplace);
 	launch_bench_scalar<Field,0,0>(F,k,k,k,one,one ,Data,it++,inplace);
 	launch_bench_scalar<Field,0,0>(F,k,k,k,one,beta,Data,it++,inplace);
 
 	// D = -AB + beta C
-	launch_bench_scalar<Field,0,0>(F,k,k,k,mone,zero,Data,it++,inplace);
-	launch_bench_scalar<Field,0,0>(F,k,k,k,mone,mone,Data,it++,inplace);
-	launch_bench_scalar<Field,0,0>(F,k,k,k,mone,one ,Data,it++,inplace);
-	launch_bench_scalar<Field,0,0>(F,k,k,k,mone,beta,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,mOne,zero,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,mOne,mOne,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,mOne,one ,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,mOne,beta,Data,it++,inplace);
 
 	// D = alpha AB + beta C
 	launch_bench_scalar<Field,0,0>(F,k,k,k,alpha,zero,Data,it++,inplace);
-	launch_bench_scalar<Field,0,0>(F,k,k,k,alpha,mone,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,alpha,mOne,Data,it++,inplace);
 	launch_bench_scalar<Field,0,0>(F,k,k,k,alpha,one ,Data,it++,inplace);
 	launch_bench_scalar<Field,0,0>(F,k,k,k,alpha,beta,Data,it++,inplace);
 
@@ -694,9 +694,9 @@ void bench_transpose( index_t k, int charac, bool inplace )
 	LinBox::PlotData<std::string>  Data(nb,1);
 	Data.setSerieName(0,"fgemm");
 
-	Element one, zero, mone, alpha, beta ;
+	Element one, zero, mOne, alpha, beta ;
 	F.init(one,1);
-	F.init(mone,-1);
+	F.init(mOne,-1);
 	F.init(zero,0);
 
 
@@ -704,10 +704,10 @@ void bench_transpose( index_t k, int charac, bool inplace )
 	linbox_check(charac >=5) ;
 
 	do { R.random(alpha) ; } // non trivial alpha
-	while (F.areEqual(alpha,one) || F.areEqual(alpha,mone) || F.areEqual(alpha,zero)) ;
+	while (F.areEqual(alpha,one) || F.areEqual(alpha,mOne) || F.areEqual(alpha,zero)) ;
 
 	do { R.random(beta) ; }// non trivial beta
-	while (F.areEqual(beta,one) || F.areEqual(beta,mone) || F.areEqual(beta,zero)) ;
+	while (F.areEqual(beta,one) || F.areEqual(beta,mOne) || F.areEqual(beta,zero)) ;
 
 
 	// D = A^xB^y

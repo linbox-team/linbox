@@ -34,7 +34,7 @@
 
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -58,7 +58,7 @@ namespace LinBox
 	 */
 	template<class _Field, class _Storage = __LINBOX_PERMUTATION_STORAGE >
 	class Permutation : public  BlackboxInterface {
-		const _Field& _F;
+		const _Field& _field;
 	public:
 		typedef Permutation<_Field, _Storage>	Self_t;
 		typedef _Storage 			Storage;
@@ -71,7 +71,7 @@ namespace LinBox
 		 * @param indices Vector of indices representing the permutation
 		 */
 		Permutation (Storage & indices, const Field& F = Field()) :
-			_F(F), _indices (indices)
+			_field(F), _indices (indices)
 		{}
 
 		/** Constructor from a dimension.
@@ -80,7 +80,7 @@ namespace LinBox
 		 * @param F
 		 */
 		Permutation (int n, const Field& F = Field()) :
-			_F(F)
+			_field(F)
 		{
 			identity(n);
 		}
@@ -99,7 +99,7 @@ namespace LinBox
 		 * @param M constant reference to compose black box matrix
 		 */
 		Permutation (const Permutation &Mat) :
-			_F(Mat._F),_indices (Mat._indices)
+			_field(Mat._field),_indices (Mat._indices)
 		{}
 
 #ifdef __LINBOX_XMLENABLED
@@ -140,7 +140,7 @@ namespace LinBox
 			linbox_check (y.size () == _indices.size ());
 
 			for (i = 0; i < x.size(); ++i)
-				_F.assign(y[i], x[_indices[i]]);
+				_field.assign(y[i], x[_indices[i]]);
 
 			return y;
 		}
@@ -166,7 +166,7 @@ namespace LinBox
 			linbox_check (y.size () == _indices.size ());
 
 			for (i = 0; i < _indices.size (); ++i)
-				_F.assign(y[_indices[i]], x[i]);
+				_field.assign(y[_indices[i]], x[i]);
 
 			return y;
 		}
@@ -215,7 +215,7 @@ namespace LinBox
 
 		}
 
-		const Field& field() { return _F; }
+		const Field& field() { return _field; }
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -248,7 +248,7 @@ namespace LinBox
 		{
 			// 		for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it)
 			//                     std::cerr << *it << ' ';
-			typename Field::Element one, zero; _F.init(one,1UL);_F.init(zero,0UL);
+			typename Field::Element one, zero; _field.init(one,1UL);_field.init(zero,0UL);
 			os << "[";
 			bool firstrow=true;
 			long nmu = _indices.size()-1;
@@ -262,13 +262,13 @@ namespace LinBox
 
 				long i=0;
 				for( ; i< *it ; ++i) {
-					_F.write(os, zero);
+					_field.write(os, zero);
 					if (i < nmu) os << ',';
 				}
-				_F.write(os, one);
+				_field.write(os, one);
 				if (i < nmu) os << ',';
 				for(++i ; i< static_cast<long>(_indices.size()) ; ++i) {
-					_F.write(os, zero);
+					_field.write(os, zero);
 					if (i < nmu) os << ',';
 				}
 				os << " ]";

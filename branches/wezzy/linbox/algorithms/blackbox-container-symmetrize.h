@@ -24,7 +24,7 @@
 #ifndef __LINBOX_blackbox_container_symmetrize_H
 #define __LINBOX_blackbox_container_symmetrize_H
 
-#include <linbox/algorithms/blackbox-container-base.h>
+#include "linbox/algorithms/blackbox-container-base.h"
 
 namespace LinBox
 {
@@ -60,7 +60,7 @@ namespace LinBox
 		       	init (u0);
 	       	}
 
-		//BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter(_F) )
+		//BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter(_field) )
 		BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter() ) :
 			BlackboxContainerBase<Field, Blackbox> (D, F)
 		{

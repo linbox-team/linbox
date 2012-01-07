@@ -28,7 +28,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/gmp-rational.h"
-#include "linbox/blackbox/dense.h"
+#include "linbox/matrix/blas-matrix.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
 
 #include "test-common.h"
@@ -57,7 +57,7 @@ static bool testDiagonalMatrix (size_t n)
 	size_t j;
 
 	GMPRationalField Q;
-	DenseMatrix<GMPRationalField > A(Q,n,n);
+	BlasMatrix<GMPRationalField > A(Q,n,n);
 	integer lcm_n=1;
 
 	for (j = 0; j < n; j++) {
@@ -68,7 +68,7 @@ static bool testDiagonalMatrix (size_t n)
 		lcm(lcm_n,lcm_n,j+1);
 	}
 
-	RationalMatrixFactory<PID_integer, GMPRationalField, DenseMatrix<GMPRationalField > > FA(&A);
+	RationalMatrixFactory<PID_integer, GMPRationalField, BlasMatrix<GMPRationalField > > FA(&A);
 
 	integer ratnorm,aprimnorm,atildenorm;
 	FA.getNorms(ratnorm,aprimnorm,atildenorm);
@@ -129,8 +129,8 @@ static bool testDiagonalMatrix (size_t n)
 	}
 
 	PID_integer Z;
-	DenseMatrix<PID_integer> Aprim(Z,n,n);
-	DenseMatrix<PID_integer> Atilde(Z,n,n);
+	BlasMatrix<PID_integer> Aprim(Z,n,n);
+	BlasMatrix<PID_integer> Atilde(Z,n,n);
 
 	FA.makeAprim(Aprim);
 	FA.makeAtilde(Atilde);

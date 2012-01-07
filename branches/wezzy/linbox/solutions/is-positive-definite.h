@@ -23,7 +23,7 @@
 #define __LINBOX_is_positive_definite_H
 
 #include "linbox/util/error.h"
-#include <linbox/algorithms/matrix-hom.h>
+#include "linbox/algorithms/matrix-hom.h"
 #include "linbox/algorithms/signature.h"
 
 namespace LinBox
@@ -130,21 +130,21 @@ namespace LinBox
 				 const Method::BlasElimination       &M)
 	{
 		// call BlasElimination code
-		DenseMatrix<typename Blackbox::Field> DA(A.field(), A.rowdim(), A.coldim());
+		BlasMatrix<typename Blackbox::Field> DA(A.field(), A.rowdim(), A.coldim());
 		MatrixHom::map(DA, A, A. field());
 		return Signature::isPosDef(DA, Signature::BLAS_LPM_Method() );
 	}
 
-	// the isPositiveDefinite with Blas, DenseMatrix
 	template <class Ring>
 	bool isPositiveDefinite (
-				 const DenseMatrix<Ring> &A,
+				 const BlasMatrix<Ring> &A,
 				 const RingCategories::IntegerTag    &tag,
 				 const Method::BlasElimination       &M)
 	{
 		// call BlasElimination code
 		return Signature::isPosDef(A, Signature::BLAS_LPM_Method() );
 	}
+
 
 } // end of LinBox namespace
 

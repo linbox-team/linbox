@@ -36,14 +36,14 @@
 
 
 
-#include <linbox/field/field-traits.h>
-#include <linbox/algorithms/matrix-hom.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/randiter/random-prime.h>
-//#include <linbox/solutions/minpoly.h>
-#include <linbox/util/commentator.h>
+#include "linbox/field/field-traits.h"
+#include "linbox/algorithms/matrix-hom.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/randiter/random-prime.h"
+//#include "linbox/solutions/minpoly.h"
+#include "linbox/util/commentator.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
-#include <linbox/algorithms/cra-early-multip.h>
+#include "linbox/algorithms/cra-early-multip.h"
 
 namespace LinBox
 {
@@ -86,13 +86,13 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 		template <class Poly, class Ring>
-		static Poly& minPolyBlas (Poly& y, const DenseMatrix<Ring>& M);
+		static Poly& minPolyBlas (Poly& y, const BlasMatrix<Ring>& M);
 
 		template <class Poly, class Ring>
-		static Poly& minPolyBlas (Poly& y, const DenseMatrix<Ring>& M, int degree);
+		static Poly& minPolyBlas (Poly& y, const BlasMatrix<Ring>& M, int degree);
 
 		template <class Ring>
-		static int minPolyDegreeBlas (const DenseMatrix<Ring>& M, int n_try = 1);
+		static int minPolyDegreeBlas (const BlasMatrix<Ring>& M, int n_try = 1);
 	};
 
 	template<class _Integer, class _Field>
@@ -254,7 +254,7 @@ namespace LinBox
 
 	template <class _Integer, class _Field>
 	template <class Poly, class Ring>
-	Poly& MinPolyBlas<_Integer, _Field>::minPolyBlas (Poly& y, const DenseMatrix<Ring>& M)
+	Poly& MinPolyBlas<_Integer, _Field>::minPolyBlas (Poly& y, const BlasMatrix<Ring>& M)
 	{
 		int degree = minPolyDegreeBlas (M);
 		minPolyBlas (y, M, degree);
@@ -263,7 +263,7 @@ namespace LinBox
 
 	template <class _Integer, class _Field>
 	template <class Poly, class Ring>
-	Poly& MinPolyBlas<_Integer, _Field>::minPolyBlas (Poly& y, const DenseMatrix<Ring>& M, int degree)
+	Poly& MinPolyBlas<_Integer, _Field>::minPolyBlas (Poly& y, const BlasMatrix<Ring>& M, int degree)
 	{
 
 		y. resize (degree + 1);
@@ -277,7 +277,7 @@ namespace LinBox
 		Element* X = new Element [n*(n+1)];
 		size_t* Perm = new size_t[n];
 		Element* p;
-		typename DenseMatrix<Ring>::ConstRawIterator raw_p;
+		typename BlasMatrix<Ring>::ConstIterator raw_p;
 		std::vector<Element> poly (degree + 1);
 		typename std::vector<Element>::iterator poly_ptr;
 
@@ -285,7 +285,7 @@ namespace LinBox
 		do {
 			++primeg; while(cra.noncoprime(*primeg)) ++primeg;
 			Field F(*primeg);
-			for (p = FA, raw_p = M. rawBegin();
+			for (p = FA, raw_p = M. Begin();
 			     p != FA + (n*n); ++ p, ++ raw_p)
 
 				F. init (*p, *raw_p);
@@ -298,7 +298,7 @@ namespace LinBox
 		while (! cra. terminated()) {
 			++primeg; while(cra.noncoprime(*primeg)) ++primeg;
 			Field F(*primeg);
-			for (p = FA, raw_p = M. rawBegin();
+			for (p = FA, raw_p = M. Begin();
 			     p != FA + (n*n); ++ p, ++ raw_p)
 
 				F. init (*p, *raw_p);
@@ -322,7 +322,7 @@ namespace LinBox
 
 	template <class _Integer, class _Field>
 	template <class Ring>
-	int MinPolyBlas<_Integer, _Field>::minPolyDegreeBlas (const DenseMatrix<Ring>& M, int n_try)
+	int MinPolyBlas<_Integer, _Field>::minPolyDegreeBlas (const BlasMatrix<Ring>& M, int n_try)
 	{
 		size_t n = M. rowdim();
 		int degree = 0;
@@ -338,11 +338,11 @@ namespace LinBox
 		long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
 		RandomPrimeIterator primeg(bit1 < bit2 ? bit1 : bit2);
 
-		typename DenseMatrix<Ring>::ConstRawIterator raw_p;
+		typename BlasMatrix<Ring>::ConstIterator raw_p;
 		for (int i = 0; i < n_try; ++ i) {
 			++primeg;
 			Field F(*primeg);
-			for (p = FA, raw_p = M. rawBegin();
+			for (p = FA, raw_p = M. Begin();
 			     p!= FA + (n*n); ++ p, ++ raw_p)
 				F. init (*p, *raw_p);
 

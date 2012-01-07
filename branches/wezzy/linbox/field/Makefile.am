@@ -3,6 +3,8 @@
 # see COPYING for licence
 pkgincludesubdir=$(pkgincludedir)/field
 
+SUBDIRS=NTL Givaro Modular
+
 BASIC_HDRS =            \
     field-interface.h   \
     field-traits.h      \
@@ -14,19 +16,7 @@ BASIC_HDRS =            \
     param-fuzzy.h       \
     gmp-rational.h      \
     modular.h           \
-    modular.inl         \
-    modular-int32.h     \
-    modular-int64.h     \
-    modular-short.h     \
-    modular-byte.h      \
     modular-balanced.h  \
-    modular-balanced-double.h   \
-    modular-balanced-float.h    \
-    modular-balanced-int32.h    \
-    modular-balanced-int64.h    \
-    modular-crooked-double.h    \
-    modular-double.h    \
-    modular-float.h     \
     gf2.h               \
     gf2.inl             \
     hom.h               \
@@ -40,27 +30,11 @@ BASIC_HDRS =            \
 
 NTL_HDRS =              \
     ntl.h               \
-    ntl-RR.h            \
-    ntl-ZZ_p.h          \
-    ntl-ZZ_pE.h         \
-    ntl-ZZ_pX.h         \
-    ntl-lzz_p.h         \
-    ntl-ZZ.h            \
-    ntl-lzz_pE.h        \
-    ntl-lzz_pX.h        \
-    ntl-GF2E.h          \
-    ntl-pid-lzz_p.h     \
+    PID-ntl-zz_p.h     \
     PIR-ntl-ZZ_p.h
 
 GIVARO_HDRS =           \
-    givaro.h            \
-    givaro-zpz.h        \
-    givaro-montg.h      \
-    givaro-zpz.inl      \
-    givaro-gfq.h        \
-    givaro-extension.h  \
-    givaro-field.h      \
-    givaro-rational.h
+    givaro.h
 
 LIDIA_HDRS =            \
     lidia.h             \

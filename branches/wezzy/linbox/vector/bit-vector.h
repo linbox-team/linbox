@@ -167,6 +167,20 @@ namespace LinBox
 
 } // namespace LinBox
 
+// RawVector for GF2
+namespace LinBox
+{
+	template <>
+	struct RawVector<bool> {
+	public:
+		typedef BitVector Dense;
+		typedef std::vector<size_t> Sparse;
+		typedef std::vector<size_t> SparseSeq;
+		typedef std::vector<size_t> SparseMap;
+		typedef std::vector<size_t> SparsePar;
+	};
+
+}
 #include "linbox/vector/bit-vector.inl"
 
 #endif // __LINBOX_bit_vector_H

@@ -18,24 +18,17 @@
 #define __LINBOX_mg_block_lanczos_H
 
 #include "linbox/linbox-config.h"
-#undef _T
+#undef _matT
 
 #include <vector>
 
 #include "linbox/field/archetype.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
-#include "linbox/blackbox/dense.h"
-#include "linbox/matrix/dense-submatrix.h"
 #include "linbox/solutions/methods.h"
 
 // I'm putting everything inside the LinBox namespace so that I can drop all of
 // this in to LinBox easily at a later date, without any messy porting.
-
-// Fix for Solaris wierdness
-#undef _S
-#undef _M
-#undef _N
 
 namespace LinBox
 {
@@ -56,7 +49,7 @@ namespace LinBox
 	 * Currently, only dense vectors are supported for this iteration, and it is
 	 * unlikely any other vector archetypes will be supported in the future.
 	 */
-	template <class Field, class Matrix = DenseMatrixBase<typename Field::Element> >
+	template <class Field, class Matrix = BlasMatrix<typename Field::Element> >
 	class MGBlockLanczosSolver {
 	public:
 
@@ -68,10 +61,10 @@ namespace LinBox
 		 *               options for the solver
 		 */
 		MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits) :
-			_traits (traits), _F (F), _VD (F), _MD (F), _randiter (F), _N (traits.blockingFactor ())
+			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (F), _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			_F.init (_one, 1);
+			_field.init (_one, 1);
 		}
 
 		/** Constructor with a random iterator
@@ -81,10 +74,10 @@ namespace LinBox
 		 * @param r Random iterator to use for randomization
 		 */
 		MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits, typename Field::RandIter r) :
-			_traits (traits), _F (F), _VD (F), _MD (F), _randiter (r), _N (traits.blockingFactor ())
+			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (r), _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			_F.init (_one, 1);
+			_field.init (_one, 1);
 		}
 
 		/** Solve the linear system Ax = b.
@@ -215,21 +208,21 @@ namespace LinBox
 		// Private variables
 
 		const BlockLanczosTraits _traits;
-		const Field              &_F;
+		const Field              &_field;
 		VectorDomain<Field>       _VD;
 		MatrixDomain<Field>       _MD;
 		typename Field::RandIter  _randiter;
 
 		// Temporaries used in the computation
 
-		Matrix  _V[3];             // n x N
+		Matrix  _matV[3];             // n x N
 		Matrix  _AV;               // n x N
 		Matrix  _VTAV;             // N x N
 		Matrix  _Winv[2];          // N x N
 		Matrix  _AVTAVSST_VTAV;    // N x N
-		Matrix  _T;                // N x N
+		Matrix  _matT;                // N x N
 		Matrix  _DEF;              // N x N
-		std::vector<bool>         _S;                // N-vector of bools
+		std::vector<bool>         _vecS;                // N-vector of bools
 
 		Matrix _x;                 // n x <=N
 		Matrix _y;                 // n x <=N
@@ -242,11 +235,11 @@ namespace LinBox
 
 		std::vector<size_t>       _indices;          // N
 
-		mutable Matrix _M;         // N x 2N
+		mutable Matrix _matM;         // N x 2N
 
 		// Blocking factor
 
-		size_t                    _N;
+		size_t                    _block;
 
 		// Construct a transpose matrix on the fly
 		template <class Matrix1>
