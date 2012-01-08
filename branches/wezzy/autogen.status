@@ -1,1 +1,0 @@
-./autogen.sh --prefix=/home/mwezz/LinBox --with-blas=/usr/local/atlas/ --with-fflas-ffpack=/home/youse/software/ --with-givaro=/home/youse/software/
