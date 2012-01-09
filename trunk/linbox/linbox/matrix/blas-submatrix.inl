@@ -899,78 +899,129 @@ namespace LinBox
 
 	template <class _Field>
 	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os,
-						       bool mapleFormat) const
+						     enum LinBoxTag::Format f) const
 	{
 
 		ConstRowIterator p;
+		switch(f) {
+		case (LinBoxTag::FormatPlain) : /*  raw output */
+			{
+				integer c;
+				int wid;
 
-		if (!mapleFormat) {
-			integer c;
-			int wid;
 
 
 
+				_Mat->_field.cardinality (c);
 
-			_Mat->_field.cardinality (c);
-
-			if (c >0)
-				wid = (int) ceil (log ((double) c) / M_LN10);
-			else {
-				integer tmp;
-				size_t max=0;
-				ConstIterator it = Begin();
-				for (; it != End(); ++it){
-					_Mat->_field.convert(tmp,*it);
-					if (tmp.bitsize() > max)
-						max= tmp.bitsize();
+				if (c >0)
+					wid = (int) ceil (log ((double) c) / M_LN10);
+				else {
+					integer tmp;
+					size_t max=0;
+					ConstIterator it = Begin();
+					for (; it != End(); ++it){
+						_Mat->_field.convert(tmp,*it);
+						if (tmp.bitsize() > max)
+							max= tmp.bitsize();
+					}
+					wid= (int) ceil ((double)max / M_LN10)+1;
 				}
-				wid= (int) ceil ((double)max / M_LN10)+1;
+
+				for (p = rowBegin (); p != rowEnd ();++p) {
+					typename ConstRow::const_iterator pe;
+
+					os << "  [ ";
+
+					for (pe = p->begin (); pe != p->end (); ++pe) {
+						os.width (wid);
+						/*!  @warning
+						 * matrix base does not provide this field(), maybe should?
+						 * _Mat.field ().write (os, *pe);
+						 * os << *pe;
+						 * fixed by using extra field
+						 */
+
+						_Mat->_field.write (os, *pe);
+						os << " ";
+					}
+
+					os << "]" << std::endl;
+				}
 			}
+			break;
+		case (LinBoxTag::FormatMaple) : /*  maple format */
+			{
 
-			for (p = rowBegin (); p != rowEnd ();++p) {
-				typename ConstRow::const_iterator pe;
+				os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+				for (p = rowBegin (); p != rowEnd (); ) {
+					typename ConstRow::const_iterator pe;
 
-				os << "  [ ";
+					os << " [ ";
 
-			for (pe = p->begin (); pe != p->end (); ++pe) {
-					os.width (wid);
-					/*!  @warning
-					 * matrix base does not provide this field(), maybe should?
-					 * _Mat.field ().write (os, *pe);
-					 * os << *pe;
-					 * fixed by using extra field
-					 */
+					for (pe = p->begin (); pe != p->end (); ) {
+						_Mat->_field.write (os, *pe);
+						++pe ;
+						if (pe != p->end())
+							os << ", ";
+					}
 
-					_Mat->_field.write (os, *pe);
-				os << " ";
+					os << "]" ;
+					++p ;
+					if (p != rowEnd() )
+						os << ',' << std::endl;;
+
+				}
+				os << "])" ;
 			}
+			break;
+		case (LinBoxTag::FormatHTML) : /*  HTML format */
+			{
 
-				os << "]" << std::endl;
+				os << "<table border=\"1\">" ;
+				for (p = rowBegin (); p != rowEnd (); ) {
+					typename ConstRow::const_iterator pe;
+
+					os << "<tr>";
+
+					for (pe = p->begin (); pe != p->end (); ) {
+						_Mat->_field.write (os<< "<td>", *pe)<<"</td>";
+						++pe ;
+					}
+
+					os << "</tr>" << std::endl;
+					++p ;
+
+				}
+				os << "</table>" ;
+			}
+			break;
+		case (LinBoxTag::FormatLaTeX) : /*  LaTex format */
+			{
+				os << "\\begin{pmatrix} " << std::endl;
+				for (p = rowBegin (); p != rowEnd (); ) {
+					typename ConstRow::const_iterator pe;
+
+					for (pe = p->begin (); pe != p->end (); ) {
+						_Mat->_field.write (os, *pe);
+						++pe ;
+						if (pe != p->end())
+							os << "& ";
+					}
+
+					os << "\\\\" << std::endl;
+					++p ;
+
+				}
+				os << "\\end{pmatrix}" ;
+			}
+			break;
+		default : /*  this is an error */
+			{
+				throw LinBoxError("unknown format to write matrix in");
 			}
 		}
-		else {
 
-			os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
-			for (p = rowBegin (); p != rowEnd (); ) {
-				typename ConstRow::const_iterator pe;
-
-				os << " [ ";
-
-				for (pe = p->begin (); pe != p->end (); ) {
-					_Mat->_field.write (os, *pe);
-					++pe ;
-					if (pe != p->end())
-						os << ", ";
-		}
-
-				os << "]" ;
-				++p ;
-				if (p != rowEnd() )
-					os << ',' << std::endl;;
-
-			}
-			os << "])" ;
-		}
 		return os;
 	}
 
