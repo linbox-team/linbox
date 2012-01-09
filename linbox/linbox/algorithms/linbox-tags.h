@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* Copyright (C) 2010 LinBox
+/* Copyright (C) 2010,2011,2012 LinBox
  * Written by <brice.boyer@imag.fr>
  *
  *
@@ -42,7 +42,7 @@ namespace LinBox
 	 *
 	 * There it total compatiblity with \c FFLAS tags (cross link)
 	 * For instance, in LinBox, it is similar to use \c LinBoxTag::Upper and
-	 * <code>(LinBoxTag::Shape) FFLAS::FflasUpper</code>
+	 * <code>(LinBoxTag::Shape) FFLAS::FflasUpper</code>.
 	 *
 	 * @note Tags are not Methods.
 	 */
@@ -53,19 +53,30 @@ namespace LinBox
 			Right = FFLAS::FflasRight  //!< Right
 		};
 
+		//! (No)Transpose Tag
 		enum Transpose {
 			NoTrans = FFLAS::FflasNoTrans,
 			Trans   = FFLAS::FflasTrans
 		};
 
+		//! (Upp/Low)er Tag
 		enum Shape {
 			Upper = FFLAS::FflasUpper,
 			Lower = FFLAS::FflasLower
 		} ;
 
+		//! (Non)Unit Diagonal Tag
 		enum Diag {
 			NonUnit = FFLAS::FflasNonUnit,
 			Unit    = FFLAS::FflasUnit
+		} ;
+
+		//! Dense format (table) output Tag
+		enum  Format {
+			FormatPlain = 0,
+			FormatMaple = 1,
+			FormatHTML  = 2,
+			FormatLaTeX = 3
 		} ;
 	} ;
 

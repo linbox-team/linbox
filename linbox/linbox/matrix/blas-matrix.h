@@ -445,20 +445,30 @@ namespace LinBox
 		///////////////////
 
 		/** Read the matrix from an input stream.
-		 * The stream is in SMS or DENSE format
+		 * The stream is in SMS or DENSE format and is autodetected.
 		 * @param file Input stream from which to read
-		 * @param F Field over which to read
 		 */
-		// template <class Field>
-		std::istream &read (std::istream &file/*  , const Field &F*/);
+		std::istream &read (std::istream &file);
 
-		/** Write brutally the matrix to an output stream.
-		 * This a raw version of \c write(os,F) (no field is given).
+		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
-		 * @param mapleFormat write in maple format ?
+		 * @param format write in some format (@ref LinBoxTag::Format). Default is Maple's.
 		 */
 		std::ostream &write (std::ostream &os,
-				     bool mapleFormat=true) const;
+				     enum LinBoxTag::Format f = LinBoxTag::FormatMaple) const;
+
+		/*! @deprecated Only for compatiblity.
+		 */
+		std::ostream &write (std::ostream &os,
+				     bool mapleFormat) const
+		{
+			if (mapleFormat)
+				return write(os,LinBoxTag::FormatMaple);
+			else
+				return write(os);
+		}
+
+
 
 
 		///////////////////
@@ -792,13 +802,22 @@ namespace LinBox
 
 
 		/** Write the matrix to an output stream.
-		 * This a raw version of \c write(os,F) (no field is given).
 		 * @param os Output stream to which to write
-		 * @param mapleFormat write in Maple(r) format ?
+		 * @param format write in some format (@ref LinBoxTag::Format). Default is Maple's.
 		 */
-		std::ostream& write (std::ostream &os,
-				     bool mapleFormat = true) const;
+		std::ostream &write (std::ostream &os,
+				     enum LinBoxTag::Format f = LinBoxTag::FormatMaple) const;
 
+		/*! @deprecated Only for compatiblity.
+		 */
+		std::ostream &write (std::ostream &os,
+				     bool mapleFormat) const
+		{
+			if (mapleFormat)
+				return write(os,LinBoxTag::FormatMaple);
+			else
+				return write(os);
+		}
 
 		//////////////////
 		//   ELEMENTS   //
@@ -1145,6 +1164,7 @@ namespace LinBox
 
 
 }
+
 
 #include "blas-matrix.inl"
 #include "blas-submatrix.inl"
