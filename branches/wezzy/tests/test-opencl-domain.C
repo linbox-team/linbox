@@ -19,16 +19,17 @@
  * @test NO DOC
  */
 
+//#include <new>
 #include <string>
 #include <iostream>
-#include <pthread.h>
+//#include <pthread.h>
 
-#include <linbox/field/modular.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/algorithms/opencl-domain.h>
-#include <linbox/randiter/nonzero.h>
-#include <linbox/util/commentator.h>
+#include "linbox/field/modular.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/algorithms/opencl-domain.h"
+#include "linbox/randiter/nonzero.h"
+#include "linbox/util/commentator.h"
 
 #include "test-common.h"
 
@@ -51,7 +52,7 @@ template <class Field>
 static bool testMul(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -64,10 +65,10 @@ static bool testMul(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C_b(n,n);
-		Matrix C_o(n,n);
+		Matrix A(F,n,n);
+		Matrix B(F,n,n);
+		Matrix C_b(F,n,n);
+		Matrix C_o(F,n,n);
 
 		Element tmp;
 
@@ -95,7 +96,7 @@ template <class Field>
 static bool testMulinLeft(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -108,9 +109,9 @@ static bool testMulinLeft(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A_b(n,n);
-		Matrix A_o(n,n);
-		Matrix B(n,n);
+		Matrix A_b(F,n,n);
+		Matrix A_o(F,n,n);
+		Matrix B(F,n,n);
 
 		Element tmp;
 
@@ -140,7 +141,7 @@ template <class Field>
 static bool testMulinRight(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -153,9 +154,9 @@ static bool testMulinRight(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B_b(n,n);
-		Matrix B_o(n,n);
+		Matrix A(F,n,n);
+		Matrix B_b(F,n,n);
+		Matrix B_o(F,n,n);
 
 		Element tmp;
 
@@ -185,7 +186,7 @@ template <class Field>
 static bool testAxpy(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -198,11 +199,11 @@ static bool testAxpy(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C(n,n);
-		Matrix D_b(n,n);
-		Matrix D_o(n,n);
+		Matrix A(F,n,n);
+		Matrix B(F,n,n);
+		Matrix C(F,n,n);
+		Matrix D_b(F,n,n);
+		Matrix D_o(F,n,n);
 
 		Element tmp;
 
@@ -231,7 +232,7 @@ template <class Field>
 static bool testAxpyin(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -244,10 +245,10 @@ static bool testAxpyin(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C_b(n,n);
-		Matrix C_o(n,n);
+		Matrix A(F,n,n);
+		Matrix B(F,n,n);
+		Matrix C_b(F,n,n);
+		Matrix C_o(F,n,n);
 
 		Element tmp;
 
@@ -278,7 +279,7 @@ template <class Field>
 static bool testMaxpy(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -291,11 +292,11 @@ static bool testMaxpy(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C(n,n);
-		Matrix D_b(n,n);
-		Matrix D_o(n,n);
+		Matrix A(F,n,n);
+		Matrix B(F,n,n);
+		Matrix C(F,n,n);
+		Matrix D_b(F,n,n);
+		Matrix D_o(F,n,n);
 
 		Element tmp;
 
@@ -324,7 +325,7 @@ template <class Field>
 static bool testMaxpyin(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -337,10 +338,10 @@ static bool testMaxpyin(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C_b(n,n);
-		Matrix C_o(n,n);
+		Matrix A(F,n,n);
+		Matrix B(F,n,n);
+		Matrix C_b(F,n,n);
+		Matrix C_o(F,n,n);
 
 		Element tmp;
 
@@ -371,7 +372,7 @@ template <class Field>
 static bool testAxmy(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -384,11 +385,11 @@ static bool testAxmy(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C(n,n);
-		Matrix D_b(n,n);
-		Matrix D_o(n,n);
+		Matrix A(F,n,n);
+		Matrix B(F,n,n);
+		Matrix C(F,n,n);
+		Matrix D_b(F,n,n);
+		Matrix D_o(F,n,n);
 
 		Element tmp;
 
@@ -417,7 +418,7 @@ template <class Field>
 static bool testAxmyin(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -430,10 +431,10 @@ static bool testAxmyin(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C_b(n,n);
-		Matrix C_o(n,n);
+		Matrix A(F,n,n);
+		Matrix B(F,n,n);
+		Matrix C_b(F,n,n);
+		Matrix C_o(F,n,n);
 
 		Element tmp;
 
@@ -464,7 +465,7 @@ template <class Field>
 static bool testMuladd(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -477,11 +478,11 @@ static bool testMuladd(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C(n,n);
-		Matrix D_b(n,n);
-		Matrix D_o(n,n);
+		Matrix A(F,n,n);
+		Matrix B(F,n,n);
+		Matrix C(F,n,n);
+		Matrix D_b(F,n,n);
+		Matrix D_o(F,n,n);
 
 		Element tmp;
 
@@ -533,7 +534,7 @@ template <class Field>
 static bool testMuladdin(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -546,10 +547,10 @@ static bool testMuladdin(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C_b(n,n);
-		Matrix C_o(n,n);
+		Matrix A(F,n,n);
+		Matrix B(F,n,n);
+		Matrix C_b(F,n,n);
+		Matrix C_o(F,n,n);
 
 		Element tmp;
 
@@ -580,7 +581,7 @@ template <class Field>
 static bool testMulscale(const Field& F, size_t n, int iterations){
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
+	typedef BlasMatrix<Field> Matrix;
 
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
@@ -593,10 +594,10 @@ static bool testMulscale(const Field& F, size_t n, int iterations){
 
 	for(int i = 0; i < iterations; i++){
 		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C_b(n,n);
-		Matrix C_o(n,n);
+		Matrix A(F,n,n);
+		Matrix B(F,n,n);
+		Matrix C_b(F,n,n);
+		Matrix C_o(F,n,n);
 
 		Element tmp;
 
@@ -663,6 +664,45 @@ int launch_tests(Field& F, int n, int iterations){
 
 	return pass;
 }
+
+/*
+void* performOpenCL_mul(void* t){
+	Modular<double> F(1000003U);
+
+	OpenCLMatrixDomain<Modular<double> > OMD(F);
+
+	Modular<double>::RandIter G(F);
+
+	BlasMatrix<Modular<double> > A(F,500,500);
+	BlasMatrix<Modular<double> > B(F,500,500);
+	BlasMatrix<Modular<double> > C(F,500,500);
+
+	double temp;
+
+	for(size_t k = 0; k < 500; k++){
+		for(size_t j = 0; j < 500; j++){
+			A.setEntry(k,j,G.random(temp));
+			B.setEntry(k,j,G.random(temp));
+		}
+	}
+
+	OMD.mul(C,A,B);
+
+	pthread_exit(NULL);
+}
+
+void testThreadSafe(int iterations){
+	pthread_t* pthreads = (pthread_t*)operator new(iterations * sizeof(pthread_t));
+
+	for(int i = 0; i < iterations; i++){
+		pthread_create(&pthreads[i], NULL, performOpenCL_mul, NULL);
+	}
+
+	for(int i = 0; i < iterations; i++){
+		pthread_join(pthreads[i], NULL);
+	}
+}
+*/
 
 int main(int argc, char** argv){
 	static size_t n = 500;
