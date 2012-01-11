@@ -901,7 +901,7 @@ namespace LinBox
 	template <class _Field>
 	void BlasMatrix< _Field>::transpose()
 	{
-		this->transpose<_Field,false>();
+		this->transpose<false>();
 	}
 
 	template <class _Field>
