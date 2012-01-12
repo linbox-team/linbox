@@ -116,7 +116,7 @@ namespace LinBox
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
 			   typename Ring::Element& short_col_sqr,
-			   const BlasSubmatrix<typename Ring::Element>& A)
+			   const BlasSubmatrix<Ring>& A)
 	{
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
