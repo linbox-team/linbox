@@ -1,6 +1,29 @@
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <!--  Copyright (C) 2005 LinBox team, part of LinBox, GNU LGPL, see COPYING
 -->
+<!--
+/*
+ * Coypright (c) LinBox
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+ *
+ */
+ -->
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -10,23 +33,23 @@
     &nbsp;
     <center>
       <p><b><font size=+2>How to install LinBox (from a distribution)</font></b></center>
-    
+
     <p><br>
     <blockquote>
       See also <a href="INSTALL">INSTALL</a>.&nbsp; Once the LinBox
       distribution has been downloaded from the <a href="http://www.linalg.org/download.html"> LinBox download section</a> ,
     </blockquote>
-    
+
     <blockquote>
       <p><b>1.</b>
 	Unpack the distribution using <tt>tar</tt> command:
-      <blockquote> 
-	<tt> 
+      <blockquote>
+	<tt>
 	  tar -xvzf linbox-X.X.X.tar.gz
 	</tt>
       </blockquote>
     </blockquote>
-    
+
     <blockquote>
       <b>2.</b> Go to the newly-created linbox directory and
       run the script
@@ -44,19 +67,19 @@
       <blockquote><tt>>&nbsp;./configure --with-atlas= &lt;atlas location>
 	  [...]</tt></blockquote>
       This sets up the library and runs&nbsp; .<tt>/configure</tt>
-      
+
       <p> <b>3.</b> Optional configurations
-	
-      <blockquote> 
+
+      <blockquote>
 	<b> 3.1.</b> Where to put the <tt>include/</tt> and <tt>lib/</tt> directories:
 	<blockquote><tt>--prefix= &lt;chosen installation directory></tt>
 	  <br>Ex:&nbsp; <tt> ./configure --prefix= `pwd` </tt>will put the files within the current
 	  directory</blockquote>
-	
+
 	<p><b> 3.2.</b> The use of an optional package is switched on by specifying the directory
 	  where it can be found:
 	<blockquote>
-	  --with-package=&lt;package_directory> 
+	  --with-package=&lt;package_directory>
 	  <br>
 	  <br>
 	  &lt;package_directory> can be left blank if the package is installed in a standard directory (<tt>/usr</tt> or <tt>/usr/local</tt>)
@@ -99,9 +122,9 @@
 	      <td>used to create the html reference manual.</td>
 	    </tr>
 	  </table>
-	  
+
 	  <br>
-	  Note: 
+	  Note:
 	  <blockquote>
 	    <p> the use of <tt> --with-default= &lt;default_directory></tt> can add a special directory to the default location of library
 	    <p> the use of <tt> --with-all</tt> specifies that all packages will be used
@@ -127,15 +150,15 @@
 	      <td> <tt> --enable-doc</tt> </td>
 	      <td> turn on the build of documentation via Doxygen.</td>
 	    </tr>
-	  </table>	 	  
+	  </table>
 	</blockquote>
       </blockquote>
       <b>4.&nbsp; </b>Install the library:
       <blockquote><tt>>&nbsp; make install</tt></blockquote>
     </blockquote>
-    
+
     <hr WIDTH="100%">
     <div align=right><font size=-1>Copyright 1999-2005 The Linbox Group.</font></div>
-    
+
   </body>
 </html>

@@ -1,10 +1,33 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=g0,t0,\:0
 
+/*
+ * Copyright (c) 2011 LinBox
+ * Written by bds.
+ *
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+
+ */
 /** @file tests/checker.C
 @brief script to run LinBox tests
 
-Checker is compiled and run by the check macro invoked by "make fullcheck" in the top source dir or in tests/.  
+Checker is compiled and run by the check macro invoked by "make fullcheck" in the top source dir or in tests/.
 
 Run without args, checker prints an explanation of command line options, then proceeds with default test behaviour.  "checker -h" just prints the options.
 
@@ -56,8 +79,8 @@ int main(int argc, char* argv[])
 		switch (argv[arg][1]) {
 			case 'r': f = 1; break;
 			case 'f': flag = atoi(argv[++arg]); break;
-			case 'c': check = true; break; 
-			default: 
+			case 'c': check = true; break;
+			default:
 		cout << "usage: " << argv[0] << " [-r] [-f n] [-c] [test]*" << endl;
 		cout << "  -f 0 for a summary: only 4 lines printed." << endl;
 		cout << "  -f 1 for default: also one line per test." << endl;
@@ -97,7 +120,7 @@ int main(int argc, char* argv[])
 
 	// if only specific test(s) specified
 	if (arg < argc) {
-		for (; arg < argc; ++arg) 
+		for (; arg < argc; ++arg)
 			build_n_run(argv[arg], counter , flag);
 		return counter.buildfail || counter.runfail ? -1 : 0;
 	}
@@ -132,7 +155,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-smith-form-iliopoulos", counter , flag);
 	build_n_run("test-smith-form-binary",            counter , flag);
 	return counter.buildfail || counter.runfail ? -1 : 0;
-  } else { 
+  } else {
 //BASIC_TESTS
 	build_n_run("test-bitonic-sort",                 counter , flag);
 	build_n_run("test-blackbox-block-container",     counter , flag);
