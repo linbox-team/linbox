@@ -1,18 +1,18 @@
-# Check for Maple, for maple examples
-# Rich Seagraves, 2002-10-31
-# Modified by PAscal Giorgi, 2003-12-03
-# a gutted and modified version of ntl-check.m4 by Bradford Hovinen, 2001-06-13
-# which was in turn inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
-# Stolen from Chris Lahey
-# stolen from Manish Singh again
-# stolen back from Frank Belew
-# stolen from Manish Singh
-# Shamelessly stolen from Owen Taylor
+dnl Check for Maple, for maple examples
+dnl Rich Seagraves, 2002-10-31
+dnl Modified by PAscal Giorgi, 2003-12-03
+dnl a gutted and modified version of ntl-check.m4 by Bradford Hovinen, 2001-06-13
+dnl which was in turn inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
+dnl Stolen from Chris Lahey
+dnl stolen from Manish Singh again
+dnl stolen back from Frank Belew
+dnl stolen from Manish Singh
+dnl Shamelessly stolen from Owen Taylor
 
 
-# Copyright (c) the LinBox group
-# This file is part of LinBox
-# see COPYING for licence
+dnl Copyright (c) the LinBox group
+dnl This file is part of LinBox
+dnl see COPYING for licence
 
 
 

@@ -1,8 +1,8 @@
-# Check for ATLAS
-# Copyright (c) 2011 the LinBox group
-# Written by BB <bboyer@imag.fr>
-# This file is part of LinBox
-# see COPYING for licence
+dnl Check for ATLAS
+dnl Copyright (c) 2011 the LinBox group
+dnl Written by BB <bboyer@imag.fr>
+dnl This file is part of LinBox
+dnl see COPYING for licence
 
 dnl LB_CHECK_LAPACK
 
