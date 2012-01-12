@@ -47,6 +47,10 @@
 #include "linbox/algorithms/rational-cra2.h"
 #include "linbox/algorithms/varprec-cra-early-multip.h"
 
+#ifdef __LINBOX_HAVE_IML
+#include "linbox/utils/iml_wrapper.h"
+#endif
+
 namespace LinBox
 {
 
