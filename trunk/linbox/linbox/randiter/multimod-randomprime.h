@@ -58,7 +58,7 @@ namespace LinBox
 					tmp[i]= _shift-tmp[i];
 					nextprime(tmp[i],tmp[i]);
 				}
-				while (std::find(tmp.begin(), tmp.begin()+(const long)i, tmp[i]) != (tmp.begin()+(const long)i ));
+				while (std::find(tmp.begin(), tmp.begin()+(long)i, tmp[i]) != (tmp.begin()+(long)i ));
 			}
 			return tmp;
 		}
