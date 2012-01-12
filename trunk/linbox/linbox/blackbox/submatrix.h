@@ -446,6 +446,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 		typedef Blackbox Blackbox_t;
 		typedef SubmatrixOwner<Blackbox_t, VectorCategories::DenseVectorTag > Self_t;
+		typedef Self_t Father_t ; // XXX ???
 
 		/** Constructor from field and dense vector of field elements.
 		 * @param BB   Black box from which to extract the submatrix

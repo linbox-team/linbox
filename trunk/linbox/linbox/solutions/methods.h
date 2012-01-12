@@ -447,6 +447,11 @@ namespace LinBox
 		SolutionType _solution;
 	};
 
+	/// Use IML solver.
+	struct IMLTraits : public Specifier {
+		IMLTraits () {} ;
+	} ;
+
 	///
 	struct BlockWiedemannTraits : public Specifier {
 		BlockWiedemannTraits ( Preconditioner Precond= NO_PRECONDITIONER,
@@ -549,6 +554,7 @@ namespace LinBox
 		typedef NonBlasEliminationTraits NonBlasElimination; //!< Method::NonBlasElimination : no doc.
 		typedef DixonTraits             Dixon;               //!< Method::Dixon : no doc
 		typedef BlockHankelTraits       BlockHankel;         //!< Method::BlockHankel : no doc
+		typedef IMLTraits               IML;                 //!< Method::IML : no doc
 		Method(){}
 	};
 

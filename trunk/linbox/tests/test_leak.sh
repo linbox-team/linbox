@@ -4,9 +4,9 @@
 # written by Brice Boyer <brice.boyer@imag.fr>
 # This file is part of LinBox
 # ========LICENCE========
-# This file is part of the library FFLAS-FFPACK.
+# This file is part of the library LinBox.
 #
-# FFLAS-FFPACK is free software: you can redistribute it and/or modify
+# LinBox is free software: you can redistribute it and/or modify
 # it under the terms of the  GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
