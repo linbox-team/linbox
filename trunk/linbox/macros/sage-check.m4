@@ -1,6 +1,6 @@
-# Copyright (c) the LinBox group
-# This file is part of LinBox
-# see COPYING for licence
+dnl Copyright (c) the LinBox group
+dnl This file is part of LinBox
+dnl see COPYING for licence
 
 
 AC_DEFUN([LB_CHECK_SAGE],

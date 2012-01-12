@@ -1,8 +1,8 @@
-# Copyright (c) 2011 the LinBox group
-# Brice Boyer <bboyer@imag.fr>
-# Adapted from linbox-doc.m4
-# This file is part of LinBox
-# see COPYING for licence
+dnl Copyright (c) 2011 the LinBox group
+dnl Brice Boyer <bboyer@imag.fr>
+dnl Adapted from linbox-doc.m4
+dnl This file is part of LinBox
+dnl see COPYING for licence
 
 AC_DEFUN([LB_BENCH],
 [

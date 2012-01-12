@@ -1,16 +1,16 @@
-# Check for Fflas-Ffpack
-# Copyright (c) the LinBox group
-# This file is part of LinBox
-# see COPYING for licence
-# Boyer Brice 19/04/11
-# Bradford Hovinen, 2001-06-13
-# Modified by Pascal Giorgi, 2003-12-03
-# Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
-# Stolen from Chris Lahey       99-2-5
-# stolen from Manish Singh again
-# stolen back from Frank Belew
-# stolen from Manish Singh
-# Shamelessly stolen from Owen Taylor
+dnl Check for Fflas-Ffpack
+dnl Copyright (c) the LinBox group
+dnl This file is part of LinBox
+dnl see COPYING for licence
+dnl Boyer Brice 19/04/11
+dnl Bradford Hovinen, 2001-06-13
+dnl Modified by Pascal Giorgi, 2003-12-03
+dnl Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
+dnl Stolen from Chris Lahey       99-2-5
+dnl stolen from Manish Singh again
+dnl stolen back from Frank Belew
+dnl stolen from Manish Singh
+dnl Shamelessly stolen from Owen Taylor
 
 dnl LB_CHECK_FFLAS_FFPACK ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl

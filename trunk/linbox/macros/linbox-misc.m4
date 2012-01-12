@@ -1,7 +1,7 @@
-# linbox miscellaneous functonnnalities
-# Copyright (c) the LinBox group
-# This file is part of LinBox
-# see COPYING for licence
+dnl linbox miscellaneous functonnnalities
+dnl Copyright (c) the LinBox group
+dnl This file is part of LinBox
+dnl see COPYING for licence
 
 
 
@@ -56,7 +56,7 @@ if test -n "$check_all"; then
 	LIDIA_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	SACLIB_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	MAPLE_HOME_PATH="${DEFAULT_CHECKING_PATH} unknown"
-#	EXPAT_HOME_PATH="${DEFAULT_CHECKING_PATH}"
+dnl EXPAT_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	BLAS_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 fi
 

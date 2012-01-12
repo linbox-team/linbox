@@ -1,14 +1,13 @@
-# Copyright (c) 2011 the LinBox group
-# This file is part of LinBox
-# see COPYING for licence
+dnl Copyright (c) 2011 the LinBox group
+dnl This file is part of LinBox
+dnl see COPYING for licence
 
 
-# aclocal-include.m4
-#
-# This macro adds the name macrodir to the set of directories
-# that `aclocal' searches for macros.
+dnl aclocal-include.m4
+dnl This macro adds the name macrodir to the set of directories
+dnl that `aclocal' searches for macros.
 
-# serial 1
+dnl serial 1
 
 dnl AM_ACLOCAL_INCLUDE(macrodir)
 AC_DEFUN([AM_ACLOCAL_INCLUDE],

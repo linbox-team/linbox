@@ -1,8 +1,8 @@
-# Check for GMP
-# Copyright (c) the LinBox group
-# This file is part of LinBox
-# see COPYING for licence
-# Modified by Pascal Giorgi, 2003-12-03
+dnl Check for GMP
+dnl Copyright (c) the LinBox group
+dnl This file is part of LinBox
+dnl see COPYING for licence
+dnl Modified by Pascal Giorgi, 2003-12-03
 
 dnl LB_CHECK_GMP ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl

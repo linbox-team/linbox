@@ -1,6 +1,6 @@
-# Copyright (c) 2011 the LinBox group
-# This file is part of LinBox
-# see COPYING for licence
+dnl Copyright (c) 2011 the LinBox group
+dnl This file is part of LinBox
+dnl see COPYING for licence
 
 
 

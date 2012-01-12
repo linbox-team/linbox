@@ -1,7 +1,7 @@
-# Copyright(c)'2011 LinBox
-# Written by BB <bboyer@imag.fr>
-# This file is part of LinBox.
-# see the COPYING file for more details.
+dnl Copyright(c)'2011 LinBox
+dnl Written by BB <bboyer@imag.fr>
+dnl This file is part of LinBox.
+dnl see the COPYING file for more details.
 
 dnl enable basic debug mode.
 AC_DEFUN([AC_DEBUG],
