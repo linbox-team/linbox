@@ -21,7 +21,7 @@
 
 pkgincludesubdir=$(pkgincludedir)/algorithms
 
-SUBDIRS=gauss matrix-blas3 matrix-blas2
+SUBDIRS=gauss
 
 noinst_LTLIBRARIES=libalgorithms.la
 
