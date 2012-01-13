@@ -45,12 +45,22 @@ namespace IML {
 	extern "C" {
 #include "iml.h"
 
+		/*  basisop.c */
+		void
+		maxMagnMP (mpz_t *mp_A, const long n, const long m, const long lda, \
+			              mpz_t mp_max) ;
+		/* RNSop.c */
+		FiniteField RNSbound (const long n) ;
+
 		FiniteField **
 		findRNS (const FiniteField RNS_bound, const mpz_t mp_maxInter, long *length) ;
+
 		FiniteField *
 		repBound (const long len, const FiniteField *basis, const FiniteField *cmbasis) ;
+
 		void
 		basisProd (const long len, const FiniteField *basis, mpz_t mp_prod) ;
+
 		void
 		ChineseRemainder (const long len, const mpz_t mp_prod, \
 				  const FiniteField *basis, const FiniteField *cmbasis, \
@@ -58,6 +68,7 @@ namespace IML {
 		void
 		ChineseRemainderPos (const long len, const FiniteField *basis, \
 				     const FiniteField *cmbasis, Double *Ac, mpz_t mp_Ac);
+
 
 	}
 	// #include <stdlib.h>
@@ -84,6 +95,11 @@ namespace IML {
 		void *xrealloc (void *p, size_t num);
 
 	}
+
+#define REINTERP_IML_CONST(GivMat) \
+	reinterpret_cast<mpz_t*>(const_cast<PID_integer::Element*>((GivMat)))
+#define REINTERP_IML(GivMat) \
+	reinterpret_cast<mpz_t*>((GivMat))
 
 }
 #else

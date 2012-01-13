@@ -22,20 +22,20 @@
  *
  * Added method traits for elimination and lanczos
  * ------------------------------------
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -281,6 +281,14 @@ namespace LinBox
 		{};
 	};
 
+	/// CRASpecifier
+	struct CRASpecifier : public Specifier {
+		CRASpecifier () {};
+		CRASpecifier (const Specifier &m) :
+			Specifier(m)
+		{};
+	};
+
 	///
 	struct WiedemannTraits : public Specifier {
 		/** Constructora.
@@ -447,10 +455,6 @@ namespace LinBox
 		SolutionType _solution;
 	};
 
-	/// Use IML solver.
-	struct IMLTraits : public Specifier {
-		IMLTraits () {} ;
-	} ;
 
 	///
 	struct BlockWiedemannTraits : public Specifier {
@@ -464,6 +468,7 @@ namespace LinBox
 		       	Specifier(S)
 		{}
 	};
+
 
 	//Using Wan's numeric/symbolic method to solve linear systems.
 	//based on a preprinted article, submitted to JSC 2004
@@ -538,11 +543,77 @@ namespace LinBox
 
 	};
 
+	struct IMLNonSing {} ;
+	struct IMLCertSolv {} ;
+	/*! IML wrapper.
+	 * IML proposes 2 system solving kinds:
+	 *  - (1) non singular where one can solve AX=B or XA=B for B a set of
+	 *  vectors and A non singular.
+	 *  - (2) certified system solving where we get a certificate for the
+	 *  rectangular cases : no solution, the smallest one
+	 *  .
+	 *
+	 * @todo enable multi-vectors.
+	 * @todo enable right/left solving.
+	 * @todo be input aware (long/Integer)
+	 */
+	struct IMLTraits : public Specifier {
+		bool _computeRNS ;
+		bool _reduce ;
+		unsigned int _nullcol ;
+		int _imlroutine;
+		/*! Constructor.
+		 *
+		 * @param imlroutine \c 1 -> non singular ; \c 2 -> certified
+		 * @param withRNS  computre RNS
+		 * @todo make the special flags available in \c Specifier.
+		 */
+		IMLTraits ( const IMLNonSing &, // routine 1
+			    bool withRNS = false) :
+			_computeRNS(withRNS),
+			_imlroutine(1)
+		{
+			singular(NONSINGULAR);
+		}
+
+		/*! Constructor.
+		 *
+		 * @param imlroutine2  \c 2 -> certified
+		 * @param certify
+		 * @param reduce reduce the result ?
+		 * @param nullcol look at IML doc.
+		 */
+
+		IMLTraits ( const IMLCertSolv &, // routine 2
+			    bool certify         = DONT_CERTIFY,
+			    bool reduce          = false ,
+			    unsigned int nullcol = 10  /* IML default */) :
+			_reduce(reduce),
+			_nullcol(nullcol),
+			_imlroutine(2)
+		{
+			certificate(certify);
+		}
+
+
+		//!@bug not complete
+		IMLTraits ( const Specifier & S) :
+			Specifier(S)
+		{}
+
+		int routine() const { return _imlroutine;  }
+		bool reduced () const { return _reduce ; }
+		bool computeRNS() const { return _computeRNS ;  }
+		} ;
+
+	struct CRATraits ;
+
 	/// Method specifiers for controlling algorithm choice
 	struct Method {
 		typedef HybridSpecifier		Hybrid;              //!< Method::Hybrid : no doc
 		typedef BlackboxSpecifier	Blackbox;            //!< Method::Blackbox : no doc
 		typedef EliminationSpecifier	Elimination;         //!< Method::Elimination : no doc
+		typedef CRATraits            CRA ;                //!< Use CRA for solving Integer systems.
 		typedef WiedemannTraits		Wiedemann;           //!< Method::Wiedemann : no doc
 		typedef WiedemannExtensionTraits ExtensionWiedemann; //!< Method::ExtensionWiedemann :  no doc
 		typedef LanczosTraits		Lanczos;             //!< Method::Lanczos : no doc.
@@ -554,9 +625,23 @@ namespace LinBox
 		typedef NonBlasEliminationTraits NonBlasElimination; //!< Method::NonBlasElimination : no doc.
 		typedef DixonTraits             Dixon;               //!< Method::Dixon : no doc
 		typedef BlockHankelTraits       BlockHankel;         //!< Method::BlockHankel : no doc
-		typedef IMLTraits               IML;                 //!< Method::IML : no doc
+		typedef IMLTraits               IML;                 //!< Use IML for solving Integer systems.
 		Method(){}
 	};
+
+	/// Solve using CRA (iterations uses SolveMethod)
+	struct CRATraits {
+	protected:
+		Specifier & _solveMethod ;
+	public:
+		CRATraits( Specifier & m) :
+			_solveMethod(m) {}
+
+		Specifier & iterationMethod() const {
+			return _solveMethod;
+		}
+	};
+
 
 	template<class BB>
 	bool useBB(const BB& A)
