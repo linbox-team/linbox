@@ -8,13 +8,10 @@
  *               Clément Pernet <clement.pernet@imag.fr>
  *               Brice Boyer    <bboyer@imag.fr>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,9 +19,9 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  */
 
 /*!@internal
@@ -66,7 +63,7 @@ namespace LinBox
 						size_t col,
 						size_t Rowdim,
 						size_t Coldim) :
-		_Mat (const_cast<BlasMatrix<_Field>*>(&Mat)),
+		_Mat (&(const_cast<BlasMatrix<Field>& >(Mat))),
 		_row (Rowdim), _col(Coldim),
 		_r0(row),_c0(col),
 		_stride(Mat.coldim()),_off(row*_stride+col)
@@ -81,7 +78,7 @@ namespace LinBox
 
 	template <class _Field>
 	BlasSubmatrix<_Field>::BlasSubmatrix (const BlasMatrix<_Field> &Mat) :
-		_Mat(&Mat),
+		_Mat(&(const_cast<BlasMatrix<Field>& >(Mat))),
 		_row(Mat.rowdim()), _col(Mat.coldim()),
 		_r0(0), _c0(0),
 		_stride(Mat.coldim()),_off(0)
@@ -902,129 +899,78 @@ namespace LinBox
 
 	template <class _Field>
 	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os,
-						     enum LinBoxTag::Format f) const
+						       bool mapleFormat) const
 	{
 
 		ConstRowIterator p;
-		switch(f) {
-		case (LinBoxTag::FormatPlain) : /*  raw output */
-			{
-				integer c;
-				int wid;
+
+		if (!mapleFormat) {
+			integer c;
+			int wid;
 
 
 
 
-				_Mat->_field.cardinality (c);
+			_Mat->_field.cardinality (c);
 
-				if (c >0)
-					wid = (int) ceil (log ((double) c) / M_LN10);
-				else {
-					integer tmp;
-					size_t max=0;
-					ConstIterator it = Begin();
-					for (; it != End(); ++it){
-						_Mat->_field.convert(tmp,*it);
-						if (tmp.bitsize() > max)
-							max= tmp.bitsize();
-					}
-					wid= (int) ceil ((double)max / M_LN10)+1;
+			if (c >0)
+				wid = (int) ceil (log ((double) c) / M_LN10);
+			else {
+				integer tmp;
+				size_t max=0;
+				ConstIterator it = Begin();
+				for (; it != End(); ++it){
+					_Mat->_field.convert(tmp,*it);
+					if (tmp.bitsize() > max)
+						max= tmp.bitsize();
 				}
-
-				for (p = rowBegin (); p != rowEnd ();++p) {
-					typename ConstRow::const_iterator pe;
-
-					os << "  [ ";
-
-					for (pe = p->begin (); pe != p->end (); ++pe) {
-						os.width (wid);
-						/*!  @warning
-						 * matrix base does not provide this field(), maybe should?
-						 * _Mat.field ().write (os, *pe);
-						 * os << *pe;
-						 * fixed by using extra field
-						 */
-
-						_Mat->_field.write (os, *pe);
-						os << " ";
-					}
-
-					os << "]" << std::endl;
-				}
+				wid= (int) ceil ((double)max / M_LN10)+1;
 			}
-			break;
-		case (LinBoxTag::FormatMaple) : /*  maple format */
-			{
 
-				os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
-				for (p = rowBegin (); p != rowEnd (); ) {
-					typename ConstRow::const_iterator pe;
+			for (p = rowBegin (); p != rowEnd ();++p) {
+				typename ConstRow::const_iterator pe;
 
-					os << " [ ";
+				os << "  [ ";
 
-					for (pe = p->begin (); pe != p->end (); ) {
-						_Mat->_field.write (os, *pe);
-						++pe ;
-						if (pe != p->end())
-							os << ", ";
-					}
+			for (pe = p->begin (); pe != p->end (); ++pe) {
+					os.width (wid);
+					/*!  @warning
+					 * matrix base does not provide this field(), maybe should?
+					 * _Mat.field ().write (os, *pe);
+					 * os << *pe;
+					 * fixed by using extra field
+					 */
 
-					os << "]" ;
-					++p ;
-					if (p != rowEnd() )
-						os << ',' << std::endl;;
-
-				}
-				os << "])" ;
+					_Mat->_field.write (os, *pe);
+				os << " ";
 			}
-			break;
-		case (LinBoxTag::FormatHTML) : /*  HTML format */
-			{
 
-				os << "<table border=\"1\">" ;
-				for (p = rowBegin (); p != rowEnd (); ) {
-					typename ConstRow::const_iterator pe;
-
-					os << "<tr>";
-
-					for (pe = p->begin (); pe != p->end (); ) {
-						_Mat->_field.write (os<< "<td>", *pe)<<"</td>";
-						++pe ;
-					}
-
-					os << "</tr>" << std::endl;
-					++p ;
-
-				}
-				os << "</table>" ;
-			}
-			break;
-		case (LinBoxTag::FormatLaTeX) : /*  LaTex format */
-			{
-				os << "\\begin{pmatrix} " << std::endl;
-				for (p = rowBegin (); p != rowEnd (); ) {
-					typename ConstRow::const_iterator pe;
-
-					for (pe = p->begin (); pe != p->end (); ) {
-						_Mat->_field.write (os, *pe);
-						++pe ;
-						if (pe != p->end())
-							os << "& ";
-					}
-
-					os << "\\\\" << std::endl;
-					++p ;
-
-				}
-				os << "\\end{pmatrix}" ;
-			}
-			break;
-		default : /*  this is an error */
-			{
-				throw LinBoxError("unknown format to write matrix in");
+				os << "]" << std::endl;
 			}
 		}
+		else {
 
+			os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+			for (p = rowBegin (); p != rowEnd (); ) {
+				typename ConstRow::const_iterator pe;
+
+				os << " [ ";
+
+				for (pe = p->begin (); pe != p->end (); ) {
+					_Mat->_field.write (os, *pe);
+					++pe ;
+					if (pe != p->end())
+						os << ", ";
+		}
+
+				os << "]" ;
+				++p ;
+				if (p != rowEnd() )
+					os << ',' << std::endl;;
+
+			}
+			os << "])" ;
+		}
 		return os;
 	}
 
