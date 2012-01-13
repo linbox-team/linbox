@@ -585,11 +585,11 @@ namespace LinBox
 		 */
 
 		IMLTraits ( const IMLCertSolv &, // routine 2
-			    bool certify         = DONT_CERTIFY,
-			    bool reduce          = false ,
-			    unsigned int nullcol = 10  /* IML default */) :
+			    bool certify            = DONT_CERTIFY,
+			    bool reduce             = false ,
+			    unsigned int nullcolred = 10  /* IML default */) :
 			_reduce(reduce),
-			_nullcol(nullcol),
+			_nullcol(nullcolred),
 			_imlroutine(2)
 		{
 			certificate(certify);
@@ -604,6 +604,7 @@ namespace LinBox
 		int routine() const { return _imlroutine;  }
 		bool reduced () const { return _reduce ; }
 		bool computeRNS() const { return _computeRNS ;  }
+		unsigned int nullcol() const { return _nullcol ; }
 		} ;
 
 	struct CRATraits ;

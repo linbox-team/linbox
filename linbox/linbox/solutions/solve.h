@@ -900,7 +900,7 @@ namespace LinBox
 				   }
 				   else {
 					   IML::certSolveRedMP(m.certificate(),
-							       10 //NULLSPACE_COLUMN
+							       m.nullcol() //NULLSPACE_COLUMN
 							       ,B.rowdim(),B.coldim(),
 							       mp_A, mp_b, mp_N, mp_D,
 							       mp_NZ, mp_DZ);
