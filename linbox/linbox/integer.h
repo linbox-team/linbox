@@ -153,13 +153,60 @@ namespace LinBox
 
 namespace LinBox
 {
-// Natural logarithm of a
-// log(2) being close to 0.69314718055994531
-inline double naturallog(const Givaro::Integer& a) {
-  signed long int exp;
-  double d = (double)mpz_get_d_2exp( &exp, (mpz_srcptr)(LinBox::SpyInteger::get_rep(a) ) );
-  return (double)exp*0.69314718055994531+log(d);
+
+	/** Natural logarithm (ln).
+	 * log(2) being close to 0.69314718055994531
+	 * @param a integer.
+	 * @return  ln(a).
+	 */
+#if (GIVARO_VERSION < 30305)
+	inline double naturallog(const Givaro::Integer& a) {
+		signed long int exp;
+		double d = (double)mpz_get_d_2exp( &exp, (mpz_srcptr)(LinBox::SpyInteger::get_rep(a) ) );
+		return (double)exp*0.69314718055994531+log(d);
+	}
+#else
+	inline double naturallog(const Givaro::Integer& a) {
+		return Givaro::naturallog(a);
+	}
+#endif
 }
+
+namespace LinBox { /*  signedness of integers */
+	/*! Positiveness of an integer.
+	 * Essentially usefull in debug mode to avoid compiler warnings
+	 * about comparison always true for some unsigned type.
+	 * @param x integer
+	 * @return \c true iff \c x>=0.
+	 */
+	//@{
+	template<class T>
+	inline bool isPositive( const T & x) {
+		return x>=0 ;
+	}
+	template<>
+	inline bool isPositive(const uint8_t &) {
+		return true ;
+	}
+	template<>
+	inline bool isPositive(const uint16_t &) {
+		return true ;
+	}
+	template<>
+	inline bool isPositive(const uint32_t &) {
+		return true ;
+	}
+#ifdef __APPLE__
+	template<>
+	inline bool isPositive(const unsigned long&) {
+		return true ;
+	}
+#endif
+	template<>
+	inline bool isPositive(const uint64_t &) {
+		return true ;
+	}
+	//@}
 }
 
 #endif // __LINBOX_integer_H
