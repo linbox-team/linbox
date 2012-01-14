@@ -24,12 +24,13 @@
 
 #include <new>
 #include <iostream>
+#include <cstdio>
 #include <cstring>
 #include <pthread.h>
 #include "linbox/algorithms/opencl-domain.h"
 #include "linbox/algorithms/opencl-kernels/opencl-domain-kernels.inl"
 
-#include "CL/cl.hpp"
+#include "CL/cl.h"
 
 namespace LinBox{
 
@@ -275,7 +276,8 @@ namespace LinBox{
 
 			//Build the program into executable
 			if(errcode == CL_SUCCESS){
-				errcode = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
+				const char* options = {"-cl-mad-enable -cl-no-signed-zeros -cl-finite-math-only -cl-nv-opt-level=<10>\0"};
+				errcode = clBuildProgram(program, 0, NULL, options, NULL, NULL);
 			}
 			/*
 			printf(kernelName);
@@ -291,8 +293,7 @@ namespace LinBox{
 			//Create kernel from executable
 			cl_kernel tempKernel = NULL;
 			if(errcode == CL_SUCCESS){
-				tempKernel = clCreateKernel(program,
-					kernelName, &errcode);
+				tempKernel = clCreateKernel(program, kernelName, &errcode);
 			}
 
 			//Releasing program
@@ -341,7 +342,8 @@ namespace LinBox{
 			//Proceed only if successful with previous phase
 			if(errcode == CL_SUCCESS){
 				//Create compute context
-				context = clCreateContext(0, 1, &device, NULL, NULL, &errcode);
+				cl_context_properties properties[3] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform, 0};
+				context = clCreateContext(properties, 1, &device, NULL, NULL, &errcode);
 			}
 
 			//Proceed only if successful with previous phase
@@ -505,12 +507,6 @@ namespace LinBox{
 				spKernelsAvailable[i] = true;
 			}
 
-			//Set all kernel flags to true for debugging
-			for(int i = 0; i < 22; i++){
-				dpKernelsAvailable[i] = true;
-				spKernelsAvailable[i] = true;
-			}
-
 			//Check if everthing is setup correctly
 			errcode = tempErrcode;
 			if(errcode != CL_SUCCESS){
@@ -587,7 +583,7 @@ namespace LinBox{
 
 			pthread_mutex_unlock(&factoryLock);
 		}
-	};
+	}; /* end of class OpenCLMatrixDomainFactory */
 
 	//Initialization of static members to default values
 	cl_context OpenCLMatrixDomainFactory::context = NULL;
@@ -614,6 +610,6 @@ namespace LinBox{
 	pthread_mutex_t OpenCLMatrixDomainFactory::factoryLock = PTHREAD_MUTEX_INITIALIZER;
 	pthread_mutex_t* OpenCLMatrixDomainFactory::deviceLock = (pthread_mutex_t*)operator new(sizeof(pthread_mutex_t));
 
-}
+} /* end of namespace LinBox */
 
 #endif

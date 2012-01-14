@@ -9,7 +9,7 @@
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
 __kernel void matrixAxpyKernelModular32DP(__global double* D, __global double* A, __global double* B,
-		__global double* C, int width_A, int width_B, double mod){
+		__global double* C, const int widthA, const int widthB, const double mod){
 	//Geet Workgroup ID
 	int bx = get_group_id(0);
 	int by = get_group_id(1);
@@ -19,13 +19,13 @@ __kernel void matrixAxpyKernelModular32DP(__global double* D, __global double* A
 	int ty = get_local_id(1);
 
 	//Range of indexies for submatrix of A
-	int aBegin= width_A * BLOCK_SIZE * by;
-	int aEnd = aBegin + width_A - 1;
+	int aBegin= widthA * BLOCK_SIZE * by;
+	int aEnd = aBegin + widthA - 1;
 	int aStep = BLOCK_SIZE;
 
 	//Range of indecies for sub-matrix of B
 	int bBegin = BLOCK_SIZE * bx;
-	int bStep = BLOCK_SIZE * width_B;
+	int bStep = BLOCK_SIZE * widthB;
 
 	//Local storage of sub-matrices of A and B;
 	__local double As[BLOCK_SIZE][BLOCK_SIZE];
@@ -42,8 +42,8 @@ __kernel void matrixAxpyKernelModular32DP(__global double* D, __global double* A
 	for(int a = aBegin, b = bBegin; a < aEnd; a += aStep, b += bStep){
 		//Load the matricies from global memory to local memory
 		//Each thread loads one element of each sub-matrix
-		As[ty][tx] = A[a + width_A * ty + tx];
-		Bs[ty][tx] = B[b + width_B * ty + tx];
+		As[ty][tx] = A[a + widthA * ty + tx];
+		Bs[ty][tx] = B[b + widthB * ty + tx];
 
 		//Synchronize threads
 		barrier(CLK_LOCAL_MEM_FENCE);
@@ -67,13 +67,13 @@ __kernel void matrixAxpyKernelModular32DP(__global double* D, __global double* A
 	Dsub = fmod(Dsub, mod);
 
 	//Calculates the offset inthe result matrix
-	int d = width_B * BLOCK_SIZE * by + BLOCK_SIZE * bx;
+	int d = widthB * BLOCK_SIZE * by + BLOCK_SIZE * bx;
 
 	//Load, add, and normalize with element from C
-	double c = C[d + ty * width_B + tx];
+	double c = C[d + ty * widthB + tx];
 	Dsub = Dsub + c;
 	Dsub = fmod(Dsub, mod);
 
 	//Add the sum to the appropriate spot
-	D[d + ty * width_B + tx] = Dsub;
+	D[d + ty * widthB + tx] = Dsub;
 }

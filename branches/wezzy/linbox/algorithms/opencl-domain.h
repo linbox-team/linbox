@@ -29,13 +29,14 @@
 #ifndef __LINBOX_opencl_matrix_domain_H
 #define __LINBOX_opencl_matrix_domain_H
 
+#include <vector>
 #include <iostream>
 #include <pthread.h>
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/util/debug.h"
 
-#include "CL/cl.hpp"
+#include "CL/cl.h"
 
 namespace LinBox{
 
@@ -105,30 +106,30 @@ namespace LinBox{
 		 * @internal
 		 * Checks to see if the memory levels required are possible
 		 */
-		template<typename T, class Operand1, class Operand2, class Operand3>
+		template <typename T, class Operand1, class Operand2, class Operand3>
 		bool oclMemCheck(Operand1 &C, const Operand2 &A, const Operand3 &B) const;
 
-		template<typename T, class Operand1, class Operand2, class Operand3>
+		template <typename T, class Operand1, class Operand2, class Operand3>
 		bool oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const;
 
 		/**
 		 * @internal
 		 * OpenCL memory management functions
 		 */
-		template<typename T, class Operand1>
+		template <typename T, class Operand1>
 		cl_mem oclCreateMatrixBuffer(Operand1 &matrix) const;
 
-		template<typename T, class Operand1>
+		template <typename T, class Operand1>
 		cl_mem oclCreateAndLoadMatrixBuffer(const Operand1 &matrix) const;
 
-		template<typename T, class Operand2>
+		template <typename T, class Operand2>
 		Operand2& oclReadMatrixBuffer(cl_mem buffer, Operand2 &matrix) const;
 
-		template<typename T, class Operand1>
+		template <typename T, class Operand1>
 		cl_mem oclPadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
 			int newDimX, const Operand1 &matrix) const;
 
-		template<typename T, class Operand1>
+		template <typename T, class Operand1>
 		Operand1& oclDepadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
 			int outputSize, int newDimX, Operand1& matrix) const;
 
@@ -139,6 +140,40 @@ namespace LinBox{
 		void updateErrcode(const cl_int err) const{
 			errcode = const_cast<cl_int>(err);
 		}
+
+		/**
+		 * @internal
+		 * Functions to call the passed kernel on the passed buffers
+		 */
+		template <typename T, typename U>
+		void oclCallKernel(cl_mem bufferC, cl_mem bufferA, cl_mem bufferB, int widthA, int heightA ,int widthB,
+			T p, cl_kernel selectedKernel) const;
+
+		template <typename T, typename U>
+		void oclCallKernel(cl_mem bufferD, cl_mem bufferA, cl_mem bufferB, cl_mem bufferC, int widthA, int heightA,
+			int widthB, T p, cl_kernel selectedKernel) const;
+
+		template <typename T, typename U>
+		void oclCallKernel(cl_mem bufferD, cl_mem bufferA, cl_mem bufferB, cl_mem bufferC, T alpha, T beta,
+			int widthA, int heightA, int widthB, T p, cl_kernel selectedKernel) const;
+
+		/**
+		 * @internal
+		 * Functions to partition the matrices into submatrix views
+		 */
+		typedef std::vector<BlasSubmatrix<Field> > SubmatrixVector;
+		typedef std::vector<BlasSubmatrix<Modular<double> > > SubmatrixVectorD;
+		typedef std::vector<BlasSubmatrix<Modular<float> > > SubmatrixVectorF;
+
+		template <class Operand1, class Operand2, class Operand3>
+		std::vector<int> oclPartition(Operand1& C, const Operand2& A, const Operand3& B, SubmatrixVector& VC,
+			SubmatrixVector& VA, SubmatrixVector& VB) const;
+
+		template <class Operand1, class Operand2, class Operand3>
+		std::vector<int> oclPartition(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C,
+			SubmatrixVector& VD, SubmatrixVector& VA, SubmatrixVector& VB, SubmatrixVector& VC) const;
+
+		void printClErrstring(cl_int err) const;
 
 	public:
 
@@ -626,7 +661,7 @@ namespace LinBox{
 
 } /* end of namespace LinBox */
 
-#include "linbox/algorithms/opencl-domain-setup.inl"
+#include "linbox/algorithms/opencl-domain-util.inl"
 #include "linbox/algorithms/opencl-domain-memory.inl"
 #include "linbox/algorithms/opencl-domain.inl"
 

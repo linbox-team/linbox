@@ -8,7 +8,7 @@
 #define BLOCK_SIZE 16
 
 __kernel void matrixAxmyKernelModular16SP(__global float* D, __global float* A, __global float* B,
-		__global float* C, int width_A, int width_B, float mod){
+		__global float* C, const int widthA, const int widthB, const float mod){
 	//Geet Workgroup ID
 	int bx = get_group_id(0);
 	int by = get_group_id(1);
@@ -18,13 +18,13 @@ __kernel void matrixAxmyKernelModular16SP(__global float* D, __global float* A, 
 	int ty = get_local_id(1);
 
 	//Range of indexies for submatrix of A
-	int aBegin= width_A * BLOCK_SIZE * by;
-	int aEnd = aBegin + width_A - 1;
+	int aBegin= widthA * BLOCK_SIZE * by;
+	int aEnd = aBegin + widthA - 1;
 	int aStep = BLOCK_SIZE;
 
 	//Range of indecies for sub-matrix of B
 	int bBegin = BLOCK_SIZE * bx;
-	int bStep = BLOCK_SIZE * width_B;
+	int bStep = BLOCK_SIZE * widthB;
 
 	//Local storage of sub-matrices of A and B;
 	__local float As[BLOCK_SIZE][BLOCK_SIZE];
@@ -38,8 +38,8 @@ __kernel void matrixAxmyKernelModular16SP(__global float* D, __global float* A, 
 	for(int a = aBegin, b = bBegin; a < aEnd; a += aStep, b += bStep){
 		//Load the matricies from global memory to local memory
 		//Each thread loads one element of each sub-matrix
-		As[ty][tx] = A[a + width_A * ty + tx];
-		Bs[ty][tx] = B[b + width_B * ty + tx];
+		As[ty][tx] = A[a + widthA * ty + tx];
+		Bs[ty][tx] = B[b + widthB * ty + tx];
 
 		//Synchronize threads
 		barrier(CLK_LOCAL_MEM_FENCE);
@@ -54,13 +54,13 @@ __kernel void matrixAxmyKernelModular16SP(__global float* D, __global float* A, 
 		barrier(CLK_LOCAL_MEM_FENCE);
 	}
 	//Calculates the offset inthe result matrix
-	int d = width_B * BLOCK_SIZE * by + BLOCK_SIZE * bx;
+	int d = widthB * BLOCK_SIZE * by + BLOCK_SIZE * bx;
 
 	//Load, add, and normalize with element from C
-	float c = C[d + ty * width_B + tx];
+	float c = C[d + ty * widthB + tx];
 	Dsub = Dsub - c;
 	Dsub = fmod((mod + Dsub), mod);
 
 	//Add the sum to the appropriate spot
-	D[d + ty * width_B + tx] = Dsub;
+	D[d + ty * widthB + tx] = Dsub;
 }

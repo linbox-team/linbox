@@ -33,6 +33,8 @@
 
 #include "test-common.h"
 
+#include "/home/mwezz/opencl-timer.h"
+
 using namespace LinBox;
 
 const int maxpretty = 35;
@@ -79,8 +81,13 @@ static bool testMul(const Field& F, size_t n, int iterations){
 			}
 		}
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.mul(C_b,A,B);
+		commentator.report() << "Blas mul() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.mul(C_o,A,B);
+		commentator.report() << "OpenCL mul() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
@@ -124,8 +131,13 @@ static bool testMulinLeft(const Field& F, size_t n, int iterations){
 
 		A_o = A_b;
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.mulin_left(A_b,B);
+		commentator.report() << "Blas mulin_left() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.mulin_left(A_o,B);
+		commentator.report() << "OpenCL mulin_left() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(A_b,A_o)){
 			ret = false;
@@ -169,8 +181,13 @@ static bool testMulinRight(const Field& F, size_t n, int iterations){
 
 		B_o = B_b;
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.mulin_right(A,B_b);
+		commentator.report() << "Blas mulin_right() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.mulin_right(A,B_o);
+		commentator.report() << "OpenCL mulin_right() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(B_b,B_o)){
 			ret = false;
@@ -215,8 +232,13 @@ static bool testAxpy(const Field& F, size_t n, int iterations){
 			}
 		}
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.axpy(D_b,A,B,C);
+		commentator.report() << "Blas axpy() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.axpy(D_o,A,B,C);
+		commentator.report() << "OpenCL axpy() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
 			ret = false;
@@ -262,8 +284,13 @@ static bool testAxpyin(const Field& F, size_t n, int iterations){
 
 		C_o = C_b;
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.axpyin(C_b,A,B);
+		commentator.report() << "Blas axpyin() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.axpyin(C_o,A,B);
+		commentator.report() << "OpenCL axpyin() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
@@ -308,8 +335,13 @@ static bool testMaxpy(const Field& F, size_t n, int iterations){
 			}
 		}
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.maxpy(D_b,A,B,C);
+		commentator.report() << "Blas maxpy() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.maxpy(D_o,A,B,C);
+		commentator.report() << "OpenCL maxpy() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
 			ret = false;
@@ -355,8 +387,13 @@ static bool testMaxpyin(const Field& F, size_t n, int iterations){
 
 		C_o = C_b;
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.maxpyin(C_b,A,B);
+		commentator.report() << "Blas maxpyin() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.maxpyin(C_o,A,B);
+		commentator.report() << "OpenCL maxpyin() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
@@ -401,8 +438,13 @@ static bool testAxmy(const Field& F, size_t n, int iterations){
 			}
 		}
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.axmy(D_b,A,B,C);
+		commentator.report() << "Blas axmy() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.axmy(D_o,A,B,C);
+		commentator.report() << "OpenCL axmy() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
 			ret = false;
@@ -448,8 +490,13 @@ static bool testAxmyin(const Field& F, size_t n, int iterations){
 
 		C_o = C_b;
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.axmyin(C_b,A,B);
+		commentator.report() << "Blas axmyin() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.axmyin(C_o,A,B);
+		commentator.report() << "OpenCL axmyin() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
@@ -494,8 +541,13 @@ static bool testMuladd(const Field& F, size_t n, int iterations){
 			}
 		}
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.muladd(D_b,1.0,C,2.0,A,B);
+		commentator.report() << "Blas muladd() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.muladd(D_o,1.0,C,2.0,A,B);
+		commentator.report() << "OpenCL muladd() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
 			ret = false;
@@ -564,8 +616,13 @@ static bool testMuladdin(const Field& F, size_t n, int iterations){
 
 		C_o = C_b;
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.muladdin(1.0,C_b,2.0,A,B);
+		commentator.report() << "Blas muladdin() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.muladdin(1.0,C_o,2.0,A,B);
+		commentator.report() << "OpenCL muladdin() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
@@ -608,8 +665,13 @@ static bool testMulscale(const Field& F, size_t n, int iterations){
 			}
 		}
 
+		OpenCLTimer timer;
+		timer.tic();
 		BMD.mul(C_b,2.0,A,B);
+		commentator.report() << "Blas mulscale() execution time: " << timer.toc() << std::endl;
+		timer.tic();
 		OMD.mul(C_o,2.0,A,B);
+		commentator.report() << "OpenCL mulscale() execution time: " << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
@@ -628,39 +690,39 @@ int launch_tests(Field& F, int n, int iterations){
 	if(!testMul(F, n, iterations)){
 		pass = false;
 	}
-	if(!testMulinLeft(F, n, iterations)){
-		pass = false;
-	}
-	if(!testMulinRight(F, n, iterations)){
-		pass = false;
-	}
+	// if(!testMulinLeft(F, n, iterations)){
+		// pass = false;
+	// }
+	// if(!testMulinRight(F, n, iterations)){
+		// pass = false;
+	// }
 	if(!testAxpy(F, n, iterations)){
 		pass = false;
 	}
-	if(!testAxpyin(F, n, iterations)){
-		pass = false;
-	}
+	// if(!testAxpyin(F, n, iterations)){
+		// pass = false;
+	// }
 	if(!testMaxpy(F, n, iterations)){
 		pass = false;
 	}
-	if(!testMaxpyin(F, n, iterations)){
-		pass = false;
-	}
+	// if(!testMaxpyin(F, n, iterations)){
+		// pass = false;
+	// }
 	if(!testAxmy(F, n, iterations)){
 		pass = false;
 	}
-	if(!testAxmyin(F, n, iterations)){
-		pass = false;
-	}
+	// if(!testAxmyin(F, n, iterations)){
+		// pass = false;
+	// }
 	if(!testMuladd(F, n, iterations)){
 		pass = false;
 	}
-	if(!testMuladdin(F, n, iterations)){
-		pass = false;
-	}
-	if(!testMulscale(F, n, iterations)){
-		pass = false;
-	}
+	// if(!testMuladdin(F, n, iterations)){
+		// pass = false;
+	// }
+	// if(!testMulscale(F, n, iterations)){
+		// pass = false;
+	// }
 
 	return pass;
 }
@@ -691,6 +753,7 @@ void* performOpenCL_mul(void* t){
 	pthread_exit(NULL);
 }
 
+
 void testThreadSafe(int iterations){
 	pthread_t* pthreads = (pthread_t*)operator new(iterations * sizeof(pthread_t));
 
@@ -703,6 +766,7 @@ void testThreadSafe(int iterations){
 	}
 }
 */
+
 
 int main(int argc, char** argv){
 	static size_t n = 500;
@@ -718,7 +782,7 @@ int main(int argc, char** argv){
 	parseArguments (argc, argv, args);
 
 	Modular<double> F(1000003U);
-	Modular<float> H(2011);
+	Modular<float> H(3);
 
 	bool pass = true;
 
@@ -731,6 +795,35 @@ int main(int argc, char** argv){
 
 	//For warmup of OpenCLMatrixDomainFactory
 	OpenCLMatrixDomain<Modular<double> > OMD(F);
+	
+	/*
+	OpenCLTimer timer;
+	
+	BlasMatrix<Modular<double> > A(F,n,n);
+	BlasMatrix<Modular<double> > B(F,n,n);
+
+	Modular<double>::RandIter G(F);
+	
+	double tmp;
+
+	timer.tic();
+	for(size_t k = 0; k < n; k++){
+		for(size_t j = 0; j < n; j++){
+			A.setEntry(k,j,G.random(tmp));
+		}
+	}
+	tmp = timer.toc();
+	commentator.report() << "Copy1: " << tmp << std::endl;
+	
+	timer.tic();
+	BlasMatrix<Modular<double> >::pointer b = B.getWritePointer();
+	for(int i = 0; i < (n * n); i++){
+		*b = G.random(tmp);
+		++b;
+	}
+	tmp = timer.toc();
+	commentator.report() << "Copy2: " << tmp << std::endl;
+	*/
 
 	pass &= launch_tests(F, (int)n, iterations);
 	pass &= launch_tests(H, (int)n, iterations);

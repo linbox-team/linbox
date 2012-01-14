@@ -63,7 +63,7 @@ namespace LinBox
 						size_t col,
 						size_t Rowdim,
 						size_t Coldim) :
-		_Mat (const_cast<BlasMatrix<_Field>*>(&Mat)),
+		_Mat (&(const_cast<BlasMatrix<Field>& >(Mat))),
 		_row (Rowdim), _col(Coldim),
 		_r0(row),_c0(col),
 		_stride(Mat.coldim()),_off(row*_stride+col)
@@ -78,7 +78,7 @@ namespace LinBox
 
 	template <class _Field>
 	BlasSubmatrix<_Field>::BlasSubmatrix (const BlasMatrix<_Field> &Mat) :
-		_Mat(&Mat),
+		_Mat(&(const_cast<BlasMatrix<Field>& >(Mat))),
 		_row(Mat.rowdim()), _col(Mat.coldim()),
 		_r0(0), _c0(0),
 		_stride(Mat.coldim()),_off(0)

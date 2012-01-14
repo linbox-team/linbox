@@ -24,74 +24,16 @@
 
 #include <new>
 
-#include "CL/cl.hpp"
+#include "CL/cl.h"
 
 namespace LinBox{
 
 	/**
 	 * @internal
-	 * Checks to see if the memory levels required are possible
-	 */
-	template<class Field>
-	template<typename T, class Operand1, class Operand2, class Operand3>
-	bool OpenCLMatrixDomain<Field>::oclMemCheck(Operand1 &C, const Operand2 &A, const Operand3 &B) const{
-
-		//Calculate dimensions after padding of matrices
-		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-		int newCDimX = ((C.coldim() + 15) / 16) * 16;
-		int newCDimY = ((C.rowdim() + 15) / 16) * 16;
-		int newADimX = ((A.coldim() + 15) / 16) * 16;
-		int newADimY = ((A.rowdim() + 15) / 16) * 16;
-		int newBDimX = ((B.coldim() + 15) / 16) * 16;
-		int newBDimY = ((B.rowdim() + 15) / 16) * 16;
-
-		//Determine if each individual matrix will fit in a buffer
-		bool temp = (maxBufferSize >= (newCDimX * newCDimY * sizeof(T)));
-		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(T));
-		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(T));
-
-		//Determine if all three buffers will fit at the same time
-		temp &= (memCapacity >= ((newCDimX * newCDimY) + (newADimX * newADimY) +
-			(newBDimX * newBDimY)) * sizeof(T));
-
-		return temp;
-	}
-
-	template<class Field>
-	template<typename T, class Operand1, class Operand2, class Operand3>
-	bool OpenCLMatrixDomain<Field>::oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B,
-		const Operand1& C) const{
-
-		//Calculate dimensions after padding of matrices
-		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-		int newDDimX = ((D.coldim() + 15) / 16) * 16;
-		int newDDimY = ((D.rowdim() + 15) / 16) * 16;
-		int newADimX = ((A.coldim() + 15) / 16) * 16;
-		int newADimY = ((A.rowdim() + 15) / 16) * 16;
-		int newBDimX = ((B.coldim() + 15) / 16) * 16;
-		int newBDimY = ((B.rowdim() + 15) / 16) * 16;
-		int newCDimX = ((C.coldim() + 15) / 16) * 16;
-		int newCDimY = ((C.rowdim() + 15) / 16) * 16;
-
-		//Determine if each individual matrix will fit in a buffer
-		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(T)));
-		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(T));
-		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(T));
-		temp &= (maxBufferSize >= (newCDimX * newCDimY) * sizeof(T));
-
-		//Determine if all three buffers will fit at the same time
-		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
-			(newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(T));
-
-		return temp;
-	}
-
-	/**
-	 * @internal
 	 * Pads a BlasMatrix into a form appropriate for OpenCL use and returns the OpenCL buffer
 	 */
-	template<class Field>
-	template<typename T, class Operand1>
+	template <class Field>
+	template <typename T, class Operand1>
 	cl_mem OpenCLMatrixDomain<Field>::oclPadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
 		int newDimX, const Operand1 &matrix) const{
 
@@ -155,7 +97,7 @@ namespace LinBox{
 			cl_int tempErrcode;
 			tempErrcode = clEnqueueWriteBuffer(commandQue, matrixBuffer, CL_TRUE,
 				(matrixBufferPosition * sizeof(T)), transferSize, paddingBuffer, 0, NULL, NULL);
-			//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+			////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 			//Increment position in matrixBuffer by the size of the paddingBuffer
 			matrixBufferPosition += paddingBufferSize;
@@ -171,8 +113,8 @@ namespace LinBox{
 	 * @internal
 	 * Dedads an OpenCL buffer and puts it back into a BlasMatrix
 	 */
-	template<class Field>
-	template<typename T, class Operand1>
+	template <class Field>
+	template <typename T, class Operand1>
 	Operand1& OpenCLMatrixDomain<Field>::oclDepadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
 		int outputSize, int newDimX, Operand1& matrix) const{
 
@@ -203,7 +145,7 @@ namespace LinBox{
 			tempErrcode = clEnqueueReadBuffer(commandQue, matrixBuffer, CL_TRUE,
 				(matrixBufferPosition * sizeof(T)), transferSize, depaddingBuffer,
 				0, NULL, NULL);
-			//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+			////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 			//Set depaddiingBuffer start position
 			int depaddingBufferPosition = 0;
@@ -247,9 +189,9 @@ namespace LinBox{
 	 * @internal
 	 * Creates an empty matrix buffer on the OpenCL device from the dimensions of the matrix
 	 */
-	template<class Field>
-	template<typename T, class Opernad1>
-	cl_mem OpenCLMatrixDomain<Field>::oclCreateMatrixBuffer(Opernad1& matrix) const{
+	template <class Field>
+	template <typename T, class Operand1>
+	cl_mem OpenCLMatrixDomain<Field>::oclCreateMatrixBuffer(Operand1& matrix) const{
 
 		//Calculate dimensions after padding of matrix
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -260,7 +202,7 @@ namespace LinBox{
 		cl_int tempErrcode;
 		cl_mem matrixBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE,
 			(newDimX * newDimY * sizeof(T)), 0, &tempErrcode);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+		////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		return matrixBuffer;
 	}
@@ -283,7 +225,7 @@ namespace LinBox{
 		cl_int tempErrcode;
 		cl_mem matrixBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE,
 			(newDimX * newDimY * sizeof(T)), 0, &tempErrcode);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+		////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Calculate number of elements in the matrixBuffer
 		int matrixBufferSize = newDimX * newDimY;
@@ -295,8 +237,8 @@ namespace LinBox{
 	 * @internal
 	 * Read back the contents of the matrix buffer into the matrix and return a refence to the matrix
 	 */
-	template<class Field>
-	template<typename T, class Operand2>
+	template <class Field>
+	template <typename T, class Operand2>
 	Operand2& OpenCLMatrixDomain<Field>::oclReadMatrixBuffer(cl_mem matrixBuffer, Operand2 &matrix) const{
 
 		//Calculate dimensions after padding of matrix
@@ -314,6 +256,6 @@ namespace LinBox{
 			newDimX, matrix);
 	}
 
-}; //end of namespace LinBox
+} //end of namespace LinBox
 
 #endif // __LINBOX_opencl_matrix_domain_memory_INL
