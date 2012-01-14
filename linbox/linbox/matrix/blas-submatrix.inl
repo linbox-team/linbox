@@ -899,7 +899,7 @@ namespace LinBox
 
 	template <class _Field>
 	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os,
-						       bool mapleFormat) const
+						       enum LinBoxTag::Format f) const
 	{
 
 		ConstRowIterator p;
