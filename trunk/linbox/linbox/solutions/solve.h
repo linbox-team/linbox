@@ -67,7 +67,6 @@ namespace LinBox
 			const Vector &			b,
 			const DomainCategory &        tag,
 			const SolveMethod &            M);
-	//		SolveStatus * 			s = 0);
 
 	/** \brief Solve Ax = b, for x.
 	 *
@@ -93,7 +92,6 @@ namespace LinBox
 			const Blackbox &                A,
 			const Vector &			b,
 			const SolveMethod &             M)
-	//		SolveStatus * 			s = 0)
 	{
 		return solve(x, A, b, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
