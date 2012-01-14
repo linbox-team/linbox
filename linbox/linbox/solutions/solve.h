@@ -767,7 +767,8 @@ namespace LinBox
 		}
 	};
 
-	// may throw SolverFailed or InconsistentSystem
+
+	//BB: How come I have to change the name so it works when directly called ?
 	template <class Vector, class BB, class MyMethod>
 	Vector& solveCRA(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
 		      const RingCategories::IntegerTag & tag,
@@ -802,6 +803,18 @@ namespace LinBox
 		commentator.stop ("done", NULL, "Isolve");
 		return x;
 	}
+
+	//BB: How come SparseElimination needs this ?
+	// may throw SolverFailed or InconsistentSystem
+	template <class Vector, class BB, class MyMethod>
+	Vector& solve(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
+		      const RingCategories::IntegerTag & tag,
+		      const MyMethod& M)
+	{
+		return solveCRA(x,d,A,b,tag,M);
+	}
+
+
 #if 0 /*  not working */
 	template <class Vector, class Field>
 	Vector& solve(Vector& x, typename Field::Element& d, const BlasMatrix<Field>& A, const Vector& b,

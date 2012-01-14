@@ -303,7 +303,7 @@ namespace LinBox
 		_row((size_t) m),_col((size_t)n),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(F),_MD(F),_VD(F)
 	{
-		linbox_check(n>=0);
+		linbox_check(isPositive<T>(n));
 		linbox_check(m>=0);
 		// makePointer();
 		_use_fflas = Protected::checkBlasApply(_field, _col);
