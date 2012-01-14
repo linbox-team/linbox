@@ -126,6 +126,7 @@ int main (int argc, char **argv)
 		Timer chrono;
 
 		// Sparse Elimination
+		std::cout << "Sparse Elimination" << std::endl;
 		chrono.clear();
 		chrono.start();
 		solve (X, A, B, Method::SparseElimination());
@@ -138,6 +139,7 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
 
 		// BlasElimination
+		std::cout << "BlasElimination" << std::endl;
 		chrono.start();
 		solve (X, A, B, Method::BlasElimination());
 		chrono.stop();
@@ -149,6 +151,7 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
 
 		// Wiedemann
+		std::cout << "Blackbox" << std::endl;
 		chrono.clear();
 		chrono.start();
 		solve (X, A, B, Method::Blackbox());
@@ -161,6 +164,7 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
 #if 0
 		// Lanczos
+		std::cout << "Lanczos" << std::endl;
 		chrono.clear();
 		chrono.start();
 		solve (X, A, B, Method::Lanczos());
@@ -174,6 +178,7 @@ int main (int argc, char **argv)
 
 
 		// Block Lanczos
+		std::cout << "Block Lanczos" << std::endl;
 		Method::BlockLanczos MBL;
 		MBL.preconditioner(Specifier::FULL_DIAGONAL);
 		chrono.clear();
@@ -225,6 +230,7 @@ int main (int argc, char **argv)
 		Timer chrono;
 
 		// Wiedemann
+		std::cout << "Wiedemann" << std::endl;
 		chrono.start();
 		solve (X, d, A, B, Method::Wiedemann());
 		chrono.stop();
@@ -237,6 +243,7 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 		// BlasElimination
+		std::cout << "BlasElimination" << std::endl;
 		chrono.start();
 		solve (X, d, A, B, Method::BlasElimination());
 		chrono.stop();
@@ -249,6 +256,7 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 		// Sparse Elimination
+		std::cout << "Sparse Elimination" << std::endl;
 		chrono.start();
 		solve (X, d, A, B, Method::SparseElimination());
 		chrono.stop();
@@ -262,6 +270,7 @@ int main (int argc, char **argv)
 
 #if 0
 		// Lanczos
+		std::cout << "Lanczos" << std::endl;
 		chrono.start();
 		solve (X, d, A, B, Method::Lanczos());
 		chrono.stop();
@@ -275,6 +284,7 @@ int main (int argc, char **argv)
 
 
 		// Block Lanczos
+		std::cout << "Block Lanczos" << std::endl;
 		chrono.clear();
 		chrono.start();
 		solve (X, d, A, B, Method::BlockLanczos());
