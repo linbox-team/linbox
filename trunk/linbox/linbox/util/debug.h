@@ -321,36 +321,6 @@ namespace LinBox
    } while(0)
 #endif
 
-namespace LinBox { /*  signedness of integers */
-	template<class T>
-	bool isPositive( const T & x) {
-		return x>=0 ;
-	}
-	template<>
-	bool isPositive(const unsigned int &) {
-		return true ;
-	}
-	template<>
-	bool isPositive(const unsigned long int&) {
-		return true ;
-	}
-	template<>
-	bool isPositive(const unsigned long long int&) {
-		return true ;
-	}
-#if 0
-	template<>
-	bool isPositive(size_t&) {
-		return true ;
-	}
-#endif
-	template<>
-	bool isPositive(const unsigned short int&) {
-		return true ;
-	}
-}
-
-
 
 
 #ifdef LinBoxSrcOnly
