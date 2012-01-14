@@ -820,6 +820,7 @@ namespace LinBox
 	}
 #endif
 
+#ifdef __LINBOX_HAVE_IML
 	//! IML wrapper.
 	//! @bug not recognised as template spec...
 	std::vector<PID_integer::Element>&
@@ -915,6 +916,7 @@ namespace LinBox
 		}
 		return x;
 	}
+#endif
 
 	template <class RatVector, class Vector, class BB, class MyMethod>
 	RatVector& solve(RatVector& x, const BB& A, const Vector& b,
