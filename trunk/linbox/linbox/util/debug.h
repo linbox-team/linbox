@@ -12,7 +12,7 @@
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -70,8 +70,8 @@
 " *** Warning ***  this piece of code is not compiled by default and may not work"
 
 namespace LinBox
-{
-	/*!  A precondtion failed.
+{ /*  Preconditions,Error,Failure,NotImplementedYet */
+	/*!  A precondition failed.
 	 * @ingroup util
 	 * The \c throw mechanism is usually used here as in
 	 \code
@@ -256,6 +256,102 @@ namespace LinBox
 		}
 	};
 }
+
+
+namespace LinBox
+{ /* Exceptions. */
+
+	/*! @defgroup exceptions Exceptions.
+	 * @brief Exceptions in LinBox (proposal, example in \c algorithms/hermite.h).
+	 * If the algorithms cannot return as expected, then an exception is
+	 * thrown. Hopefully it is catched later on.  Execptions, when thrown,
+	 * don't write to any stream except in debug mode.  However, they can
+	 * explain what they are for with the
+	 * <code>const char *what(void)</code> member.
+	 *
+	 * Any exception derives from the \c LinBox::Exception class.
+	 */
+
+	/*! This is the exception class in LinBox.
+	 * Any LinBox exception can derive from it.
+	 */
+	class Exception {
+	// public:
+		// Exception() {};
+	} ;
+
+	/*! Algorithmic exception.
+	 */
+	class algoException : public Exception {
+	// public:
+		// algoException() {};
+	};
+
+	/*! Not implemented yet.
+	 * This piece of code is not fully implemented.
+	 */
+	class NotImplementedYetException : public Exception {
+	};
+
+	/*! Something bad an unexpected happened.
+	 */
+	class IrrecuperableException : public Exception {
+	};
+
+	/*! The input is not as expected.
+	 */
+	class BadInputException : public Exception {
+	};
+}
+
+#define CONC(a,b) a ## b
+
+#define LINBOX_SILENT_EXCEPTION(name) \
+	   throw CONC(name,Exception) ()
+
+#ifndef DEBUG
+#define LINBOX_RAISE_EXCEPTION(name,why) \
+	   throw CONC(name,Exception) ()
+#else
+#define LINBOX_RAISE_EXCEPTION(name,why) \
+   do { \
+	   std::cerr << " *** EXCEPTION *** (at " << __func__ << " in " << __FILE__ << ':' <<  __LINE__ << ") " << std::endl; \
+	   std::cerr << "                   " << why << std::endl; \
+	   throw CONC(name,Exception) () ; \
+   } while(0)
+#endif
+
+namespace LinBox { /*  signedness of integers */
+	template<class T>
+	bool isPositive( const T & x) {
+		return x>=0 ;
+	}
+	template<>
+	bool isPositive(const unsigned int &) {
+		return true ;
+	}
+	template<>
+	bool isPositive(const unsigned long int&) {
+		return true ;
+	}
+	template<>
+	bool isPositive(const unsigned long long int&) {
+		return true ;
+	}
+#if 0
+	template<>
+	bool isPositive(size_t&) {
+		return true ;
+	}
+#endif
+	template<>
+	bool isPositive(const unsigned short int&) {
+		return true ;
+	}
+}
+
+
+
 
 #ifdef LinBoxSrcOnly
 // for all-source compilation
