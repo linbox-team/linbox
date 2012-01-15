@@ -1,6 +1,22 @@
 # Copyright (c) 2010 the LinBox group
 # This file is part of LinBox (and probably stolen here and there)
-# see COPYING for licence
+#  ========LICENCE========
+# This file is part of the library LinBox.
+#
+ LinBox is free software: you can redistribute it and/or modify
+# it under the terms of the  GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+# ========LICENCE========
 AC_PREREQ(2.61)
 
 AC_INIT([LinBox], [1.3.0],[linbox-use@googlegroups.com],[linbox],
@@ -303,8 +319,6 @@ doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
 linbox/algorithms/gauss/Makefile
-linbox/algorithms/matrix-blas2/Makefile
-linbox/algorithms/matrix-blas3/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile

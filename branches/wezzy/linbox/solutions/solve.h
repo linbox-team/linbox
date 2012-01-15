@@ -4,11 +4,35 @@
  * Copyright(C) LinBox
  *  Evolved from an earlier one by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * See COPYING for license information.
+ *
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+ *.
  */
 
 #ifndef __LINBOX_solve_H
 #define __LINBOX_solve_H
+
+/*! @file linbox/solutions/solve.h
+ * @ingroup solutions
+ * @brief System Solving.
+ * @details NO DOC
+ */
 
 #include <vector>
 #include <algorithm>
@@ -29,6 +53,10 @@
 #include "linbox/algorithms/rational-cra2.h"
 #include "linbox/algorithms/varprec-cra-early-multip.h"
 
+#ifdef __LINBOX_HAVE_IML
+#include "linbox/util/iml_wrapper.h"
+#endif
+
 namespace LinBox
 {
 
@@ -39,31 +67,38 @@ namespace LinBox
 			const Vector &			b,
 			const DomainCategory &        tag,
 			const SolveMethod &            M);
-	//		SolveStatus * 			s = 0);
 
 	/** \brief Solve Ax = b, for x.
 	 *
-	 * Vector x such that Ax = b is returned.
-	 In the case of a singular matrix A, if the system is consistent, a random
-	 solution is returned by default.  The method parameter may contain
-	 an indication that an arbitrary element of the solution space is
-	 acceptable, which can be faster to compute.
-	 If the system is inconsistent the zero vector is returned.
-
-	 \ingroup solutions
+	 * Vector x such that Ax = b is returned.  In the case of a singular
+	 * matrix A, if the system is consistent, a random solution is returned
+	 * by default.  The method parameter may contain an indication that an
+	 * arbitrary element of the solution space is acceptable, which can be
+	 * faster to compute.  If the system is inconsistent the zero vector is
+	 * returned.
+	 *
+	 * @warning no doc for when using what method
+	 *
+	 * @param [out] x solution
+	 * @param [in]  A matrix
+	 * @param [in]  b target
+	 * @param [in]  M method to use (\see solutions/method.h)
+	 * @return reference to \p x
 	 */
+	 // * \ingroup solutions
 	//and the SolveStatus, if non-null, is set to indicate inconsistency.
 	template< class Vector, class Blackbox, class SolveMethod>
 	Vector & solve (Vector &        		x,
 			const Blackbox &                A,
 			const Vector &			b,
 			const SolveMethod &             M)
-	//		SolveStatus * 			s = 0)
 	{
 		return solve(x, A, b, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
 
-	// the solve with default method
+	/*!
+	 * the solve with default method.
+	 */
 	template< class Vector, class Blackbox>
 	Vector& solve(Vector& x, const Blackbox& A, const Vector& b)
 	{
@@ -73,7 +108,7 @@ namespace LinBox
 	// in methods.h FoobarMethod and Method::Foobar are the same class.
 	// in methods.h template<BB> bool useBB(const BB& A) is defined.
 
-	// specialize this on blackboxes which have local methods
+	//! @internal specialize this on blackboxes which have local methods
 	template <class Vector, class BB>
 	Vector& solve(Vector& x, const BB& A, const Vector& b,
 		      const Method::Hybrid& m)
@@ -82,6 +117,7 @@ namespace LinBox
 		else return solve(x, A, b, Method::Elimination(m));
 	}
 
+	/**  @internal Blackbox method specialisation */
 	template <class Vector, class BB>
 	Vector& solve(Vector& x, const BB& A, const Vector& b,
 		      const Method::Blackbox& m)
@@ -92,9 +128,10 @@ namespace LinBox
 		return solve(x, A, b, Method::Wiedemann(m));
 	}
 
-	//! @todo temporary - fix this
-//#define inBlasRange(p) true
+	//x @todo temporary - fix this
+	//#define inBlasRange(p) true
 
+	/**  @internal Elimination method specialisation */
 	template <class Vector, class BB>
 	Vector& solve(Vector& x, const BB& A, const Vector& b,
 		      const Method::Elimination& m)
@@ -112,8 +149,10 @@ namespace LinBox
 		//			Method::NonBlasElimination(m));
 	}
 
+	//! @internal inplace Sparse Elimination.
 	template <class Vector, class Field>
-	Vector& solvein(Vector& x, SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>& A, const Vector& b, const Method::SparseElimination& m)
+	Vector& solvein(Vector& x, SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>& A,
+			const Vector& b, const Method::SparseElimination& m)
 	{
 		commentator.start ("Sparse Elimination Solve In Place", "sesolvein");
 		GaussDomain<Field> GD ( A.field() );
@@ -123,7 +162,7 @@ namespace LinBox
 	}
 
 
-	// Change of representation to be able to call the sparse elimination
+	//! @internal  Change of representation to be able to call the sparse elimination
 	template <class Vector, class Blackbox>
 	Vector& solve(Vector& x, const Blackbox& A, const Vector& b,
 		      const Method::SparseElimination& m)
@@ -135,6 +174,7 @@ namespace LinBox
 		return solvein(x, SpA, b, m);
 	}
 
+	//! @internal specialisation for inplace SparseElimination on GF2
 	template <class Vector>
 	Vector& solvein(Vector& x,
 			GaussDomain<GF2>::Matrix    &A,
@@ -147,6 +187,8 @@ namespace LinBox
 		commentator.stop ("done", NULL, "GF2sesolvein");
 		return x;
 	}
+
+	//! @internal specialisation for SparseElimination on GF2
 	template <class Vector>
 	Vector& solve(Vector& x,
 		      GaussDomain<GF2>::Matrix    &A,
@@ -159,6 +201,7 @@ namespace LinBox
 		return solvein(x, SpA, b, m);
 	}
 
+	//! @internal Generic Elimination for SparseMatrix
 	template <class Vector, class Field>
 	Vector& solve(Vector& x, const SparseMatrix<Field>& A, const Vector& b,
 		      const Method::Elimination& m)
@@ -181,6 +224,7 @@ namespace LinBox
 	}
 	// BlasElimination section ///////////////////
 
+	//! @internal Generic Elimination on Z/pZ (convert A to DenseMatrix)
 	template <class Vector, class BB>
 	Vector& solve(Vector& x, const BB& A, const Vector& b,
 		      const RingCategories::ModularTag & tag,
@@ -190,6 +234,7 @@ namespace LinBox
 		return solve(x, B, b, tag, m);
 	}
 
+	//! @internal Generic Elimination for DenseMatrix on Z/pZ
 	template <class Vector, class Field>
 	Vector& solve(Vector& x, const BlasMatrix<Field>& A, const Vector& b,
 		      const RingCategories::ModularTag & tag,
@@ -218,6 +263,13 @@ namespace LinBox
 		return x;
 	}
 
+	template <class Vector, class Field>
+	Vector& solve(Vector& x, const BlasMatrix<Field>& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::Dixon & m)
+	{
+		throw LinBoxFailure("You cannot do this");
+	}
 
 	/* Integer tag Specialization for Dixon method:
 	 * 2 interfaces:
@@ -227,6 +279,7 @@ namespace LinBox
 
 
 	// error handler for bad use of the integer solver API
+	//! @internal Generic Elimination for  Integer matrices
 	template <class Vector, class BB>
 	Vector& solve(Vector& x, const BB& A, const Vector& b,
 		      const RingCategories::IntegerTag & tag,
@@ -298,7 +351,8 @@ namespace LinBox
 
 	// API with Hybrid method
 	template<class RatVector, class Vector, class BB>
-	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const Method::Hybrid &m)
+	RatVector& solve(RatVector& x, const BB &A, const Vector &b,
+			 const Method::Hybrid &m)
 	{
 		if (useBB(A))
 			return solve(x, A, b, Method::Blackbox(m));
@@ -366,12 +420,14 @@ namespace LinBox
 		return x;
 	}
 
-	/*
+	/*!
 	 * 2nd integer solver API :
 	 * solution is a formed by a common denominator and a vector of integer numerator
 	 * solution is num/d
+	 * BB: why not a struct RatVector2 { IntVector _n ; Int _d } ; ?
 	 */
 
+	//@{
 
 	// default API (method is BlasElimination)
 	template< class Vector, class BB>
@@ -623,6 +679,7 @@ namespace LinBox
 		return x;
 	}
 
+	//@}
 
 	// NonBlasElimination section ////////////////
 
@@ -674,7 +731,7 @@ namespace LinBox
 #include "linbox/vector/vector-traits.h"
 
 namespace LinBox
-{
+{ /*  Integer */
 
 
 	template <class Blackbox, class Vector, class MyMethod>
@@ -708,9 +765,10 @@ namespace LinBox
 		}
 	};
 
-	// may throw SolverFailed or InconsistentSystem
+
+	//BB: How come I have to change the name so it works when directly called ?
 	template <class Vector, class BB, class MyMethod>
-	Vector& solve(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
+	Vector& solveCRA(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
 		      const RingCategories::IntegerTag & tag,
 		      const MyMethod& M)
 	{
@@ -743,6 +801,133 @@ namespace LinBox
 		commentator.stop ("done", NULL, "Isolve");
 		return x;
 	}
+
+	//BB: How come SparseElimination needs this ?
+	// may throw SolverFailed or InconsistentSystem
+	template <class Vector, class BB, class MyMethod>
+	Vector& solve(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
+		      const RingCategories::IntegerTag & tag,
+		      const MyMethod& M)
+	{
+		return solveCRA(x,d,A,b,tag,M);
+	}
+
+
+#if 0 /*  not working */
+	template <class Vector, class Field>
+	Vector& solve(Vector& x, typename Field::Element& d, const BlasMatrix<Field>& A, const Vector& b,
+		      const RingCategories::IntegerTag & tag,
+		      const Method::CRA & M)
+	{
+		return solve(x,d,A,b,tag,M.iterationMethod());
+	}
+
+	template <class Vector, class BB>
+	Vector& solve(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::CRA& m)
+	{
+		return solve(x, d, A, b, tag, m.iterationMethod());
+	}
+#endif
+
+#ifdef __LINBOX_HAVE_IML
+	//! IML wrapper.
+	//! @bug not recognised as template spec...
+	std::vector<PID_integer::Element>&
+	solveIML(std::vector<PID_integer::Element>& x, PID_integer::Element & d,
+			 const BlasMatrix<PID_integer>& B, const std::vector<PID_integer::Element>& b,
+			 const Method::IML& m)
+	{
+		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
+		switch (m.routine()) {
+		case(1) : { /*  non singular */
+					  linbox_check(B.rowdim()==B.coldim());
+					  mpz_t * mp_A = REINTERP_IML_CONST(B.getPointer()) ;
+					  // reinterpret_cast<mpz_t*>(const_cast<PID_integer::Element*>((B.getPointer())));
+					  //B.getConstPointer() ?
+					  mpz_t * mp_B = REINTERP_IML_CONST(&b[0]);
+					  mpz_t * mp_N = REINTERP_IML(&x[0]);
+					  mpz_t mp_D ;
+					  mpz_init(mp_D);
+				  if (!m.computeRNS()) {
+					  IML::nonsingSolvLlhsMM(IML::RightSolu,B.rowdim(),1,
+								 mp_A, mp_B, mp_N, mp_D);
+				  }
+				  else {
+					  long n = B.coldim();
+					  long basislen = 1;
+					  mpz_t mp_alpha, mp_maxInter;
+					  IML::FiniteField qh;
+					  IML::FiniteField *basis, **basiscmb;
+					  IML::Double ** ARNS ;
+					  mpz_init(mp_alpha);
+					  IML::maxMagnMP(mp_A, n, n, n, mp_alpha);
+					  mpz_init_set_ui(mp_maxInter, 1);
+					  mpz_addmul_ui(mp_maxInter, mp_alpha, 2);
+					  qh            = IML::RNSbound(n);
+					  basiscmb      = IML::findRNS(qh, mp_maxInter, &basislen);
+					  basis = basiscmb[0];
+					  mpz_clear(mp_maxInter);
+					  mpz_clear(mp_alpha);
+					  /*  CRNS[i] = [A_11, A_12] mod basis[i] */
+					  ARNS = IML_XMALLOC(IML::Double *, basislen);
+					  for (long i = 0; i < basislen; ++i)
+					  {
+						  ARNS[i] = IML_XMALLOC(IML::Double, n*n);
+						  for (long j = 0; j < n; ++j)
+							  for (long l = 0; l < n; l++)
+								  ARNS[i][j*n+l] = (IML::Double) mpz_fdiv_ui(mp_A[j * n + l], basis[i]);
+					  }
+					  IML::nonsingSolvRNSMM(IML::RightSolu, n, 1, basislen,
+								basis, ARNS, mp_B, mp_N, mp_D);
+
+				  }
+				  mpz_set(d.get_mpz(),mp_D);
+				  mpz_clear(mp_D);
+
+			  }
+			  //!@todo wrap nonsingSolvRNSMM too
+			  break;
+		case (2) : { /*  certified */
+				   mpz_t * mp_A = REINTERP_IML_CONST(B.getPointer()) ;
+				   // reinterpret_cast<mpz_t*>(const_cast<PID_integer::Element*>((B.getPointer())));
+				   //B.getConstPointer() ?
+				   mpz_t * mp_b = REINTERP_IML_CONST(&b[0]);
+				   mpz_t * mp_N = REINTERP_IML(&x[0]);
+				   mpz_t mp_D ;
+				   mpz_init(mp_D);
+				   mpz_t * mp_NZ = NULL;
+				   mpz_t mp_DZ ;
+				   if (m.certificate()) {
+					   mp_NZ = IML_XMALLOC(mpz_t,x.size());
+					   for (size_t i = 0; i < x.size(); ++i) { mpz_init(mp_NZ[i]); }
+					   mpz_init(mp_DZ);
+				   }
+				   if ( !m.reduced() ) {
+					   IML::certSolveMP(m.certificate(),
+							    B.rowdim(),B.coldim(),
+							    mp_A, mp_b, mp_N, mp_D,
+							    mp_NZ, mp_DZ);
+				   }
+				   else {
+					   IML::certSolveRedMP(m.certificate(),
+							       m.nullcol() //NULLSPACE_COLUMN
+							       ,B.rowdim(),B.coldim(),
+							       mp_A, mp_b, mp_N, mp_D,
+							       mp_NZ, mp_DZ);
+
+				   }
+				   mpz_set(d.get_mpz(),mp_D);
+				   mpz_clear(mp_D);
+			   }
+			   break;
+		default :
+			   throw LinBoxError("unknownn routine from IML (choice 1/2). Got XXX");
+		}
+		return x;
+	}
+#endif
 
 	template <class RatVector, class Vector, class BB, class MyMethod>
 	RatVector& solve(RatVector& x, const BB& A, const Vector& b,

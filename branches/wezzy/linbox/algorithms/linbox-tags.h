@@ -1,14 +1,17 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* Copyright (C) 2010 LinBox
+/* Copyright (C) 2010,2011,2012 LinBox
  * Written by <brice.boyer@imag.fr>
  *
  *
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+  * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,9 +19,9 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
  */
 
 /*! @file algorithms/linbox-tags.h
@@ -42,7 +45,7 @@ namespace LinBox
 	 *
 	 * There it total compatiblity with \c FFLAS tags (cross link)
 	 * For instance, in LinBox, it is similar to use \c LinBoxTag::Upper and
-	 * <code>(LinBoxTag::Shape) FFLAS::FflasUpper</code>
+	 * <code>(LinBoxTag::Shape) FFLAS::FflasUpper</code>.
 	 *
 	 * @note Tags are not Methods.
 	 */
@@ -53,19 +56,30 @@ namespace LinBox
 			Right = FFLAS::FflasRight  //!< Right
 		};
 
+		//! (No)Transpose Tag
 		enum Transpose {
 			NoTrans = FFLAS::FflasNoTrans,
 			Trans   = FFLAS::FflasTrans
 		};
 
+		//! (Upp/Low)er Tag
 		enum Shape {
 			Upper = FFLAS::FflasUpper,
 			Lower = FFLAS::FflasLower
 		} ;
 
+		//! (Non)Unit Diagonal Tag
 		enum Diag {
 			NonUnit = FFLAS::FflasNonUnit,
 			Unit    = FFLAS::FflasUnit
+		} ;
+
+		//! Dense format (table) output Tag
+		enum  Format {
+			FormatPlain = 0,
+			FormatMaple = 1,
+			FormatHTML  = 2,
+			FormatLaTeX = 3
 		} ;
 	} ;
 

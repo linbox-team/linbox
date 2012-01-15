@@ -8,10 +8,13 @@
  *               Clément Pernet <clement.pernet@imag.fr>
  *               Brice Boyer    <bboyer@imag.fr>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+  * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,9 +22,9 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
  */
 
 /*!@internal
@@ -300,7 +303,7 @@ namespace LinBox
 		_row((size_t) m),_col((size_t)n),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(F),_MD(F),_VD(F)
 	{
-		linbox_check(n>=0);
+		linbox_check(isPositive<T>(n));
 		linbox_check(m>=0);
 		// makePointer();
 		_use_fflas = Protected::checkBlasApply(_field, _col);
@@ -496,77 +499,125 @@ namespace LinBox
 
 	template <class _Field>
 	std::ostream& BlasMatrix< _Field>::write (std::ostream &os,
-						  bool mapleFormat) const
+						  enum LinBoxTag::Format f) const
 	{
 
 		ConstRowIterator p;
 
-		if (!mapleFormat) {
-			integer c;
-			int wid;
+		switch(f) {
+		case (LinBoxTag::FormatPlain) : /*  raw output */
+			{
+				integer c;
+				int wid;
 
+				_field.cardinality (c);
 
-
-
-			_field.cardinality (c);
-
-			if (c >0)
-				wid = (int) ceil (log ((double) c) / M_LN10);
-			else {
-				integer tmp;
-				size_t max=0;
-				ConstIterator it = Begin();
-				for (; it != End(); ++it){
-					_field.convert(tmp,*it);
-					if (tmp.bitsize() > max)
-						max= tmp.bitsize();
+				if (c >0) {
+					wid = (int) ceil (log ((double) c) / M_LN10);
 				}
-				wid= (int) ceil ((double)max / M_LN10)+1;
-			}
-
-			for (p = rowBegin (); p != rowEnd ();++p) {
-				typename ConstRow::const_iterator pe;
-
-				os << "  [ ";
-
-				for (pe = p->begin (); pe != p->end (); ++pe) {
-					os.width (wid);
-					/*!  @warning
-					 * matrix base does not provide this field(), maybe should?
-					 * _Mat.field ().write (os, *pe);
-					 * os << *pe;
-					 * fixed by using extra field
-					 */
-
-					_field.write (os, *pe);
-					os << " ";
+				else {
+					integer tmp;
+					size_t max=0;
+					ConstIterator it = Begin();
+					for (; it != End(); ++it){
+						_field.convert(tmp,*it);
+						if (tmp.bitsize() > max)
+							max= tmp.bitsize();
+					}
+					wid= (int) ceil ((double)max / M_LN10)+1;
 				}
 
-				os << "]" << std::endl;
-			}
-		}
-		else {
+				for (p = rowBegin (); p != rowEnd ();++p) {
+					typename ConstRow::const_iterator pe;
 
-			os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
-			for (p = rowBegin (); p != rowEnd (); ) {
-				typename ConstRow::const_iterator pe;
+					os << "  [ ";
 
-				os << " [ ";
+					for (pe = p->begin (); pe != p->end (); ++pe) {
+						os.width (wid);
+						/*!  @warning
+						 * matrix base does not provide this field(), maybe should?
+						 * _Mat.field ().write (os, *pe);
+						 * os << *pe;
+						 * fixed by using extra field
+						 */
 
-				for (pe = p->begin (); pe != p->end (); ) {
-					_field.write (os, *pe);
-					++pe ;
-					if (pe != p->end())
-						os << ", ";
+						_field.write (os, *pe);
+						os << " ";
+					}
+
+					os << "]" << std::endl;
 				}
-
-				os << "]" ;
-				++p ;
-				if (p != rowEnd() )
-					os << ',' << std::endl;;
-
 			}
-			os << "])" ;
+			break;
+		case (LinBoxTag::FormatMaple) : /*  maple format */
+			{
+				os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+				for (p = rowBegin (); p != rowEnd (); ) {
+					typename ConstRow::const_iterator pe;
+
+					os << " [ ";
+
+					for (pe = p->begin (); pe != p->end (); ) {
+						_field.write (os, *pe);
+						++pe ;
+						if (pe != p->end())
+							os << ", ";
+					}
+
+					os << "]" ;
+					++p ;
+					if (p != rowEnd() )
+						os << ',' << std::endl;;
+
+				}
+				os << "])" ;
+			}
+			break;
+		case (LinBoxTag::FormatHTML) : /*  html format */
+			{
+				os << "<table border=\"1\">" ;
+				for (p = rowBegin (); p != rowEnd (); ) {
+					typename ConstRow::const_iterator pe;
+
+					os << "<tr>";
+
+					for (pe = p->begin (); pe != p->end (); ) {
+						_field.write (os << "<td>", *pe)<<"</td>";
+						++pe ;
+					}
+
+					os << "</tr>" << std::endl;
+					++p ;
+				}
+				os << "</table>" ;
+			}
+			break;
+		case (LinBoxTag::FormatLaTeX) : /*  latex format (pmatrix) */
+			{
+
+				os << "\\begin{pmatrix} " << std::endl;
+				for (p = rowBegin (); p != rowEnd (); ) {
+					typename ConstRow::const_iterator pe;
+
+
+					for (pe = p->begin (); pe != p->end (); ) {
+						_field.write (os, *pe);
+						++pe ;
+						if (pe != p->end())
+							os << "& ";
+					}
+
+					os << "\\\\" << std::endl;
+					++p ;
+
+				}
+				os << "\\end{pmatrix}" ;
+			}
+			break;
+		default : /*  this is an error */
+			{
+				throw LinBoxError("unknown format to write matrix in");
+			}
 		}
 		return os;
 	}
@@ -853,7 +904,7 @@ namespace LinBox
 	template <class _Field>
 	void BlasMatrix< _Field>::transpose()
 	{
-		this->transpose<_Field,false>();
+		this->transpose<false>();
 	}
 
 	template <class _Field>

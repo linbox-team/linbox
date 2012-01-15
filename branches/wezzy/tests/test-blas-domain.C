@@ -8,7 +8,25 @@
  *
  * ---------------------------------------------------------
  *
- * See COPYING for license information.
+ * 
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ * 
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+ *.
  *
  *
  */
@@ -198,20 +216,20 @@ bool CheckMulAdd( const Integer & alpha ,
 
 	bool pass = MD.areEqual(Ep,Dp);
 	if (!pass) {
-#if 0
+#if 0 /*  maple check on stdout */
 		std::cout << "#########################################" << std::endl;
 		std::cout << "p := " << p << ';' << std::endl;
 		std::cout << "ap,bp := " << ap << ',' << bp << ';' << std::endl;
-		Ap.write(std::cout << "Ap :=", true) << ";" << std::endl;
-		Bp.write(std::cout << "Bp :=", true) << ";" << std::endl;
-		Cp.write(std::cout << "Cp :=", true) << ";" << std::endl;
-		Dp.write(std::cout << "Dp :=", true) << ";" << std::endl;
-		Ep.write(std::cout << "Ep :=", true) << ";" << std::endl;
+		Ap.write(std::cout << "Ap :=", LinBoxTag::FormatMaple) << ";" << std::endl;
+		Bp.write(std::cout << "Bp :=", LinBoxTag::FormatMaple) << ";" << std::endl;
+		Cp.write(std::cout << "Cp :=", LinBoxTag::FormatMaple) << ";" << std::endl;
+		Dp.write(std::cout << "Dp :=", LinBoxTag::FormatMaple) << ";" << std::endl;
+		Ep.write(std::cout << "Ep :=", LinBoxTag::FormatMaple) << ";" << std::endl;
 		std::cout << "alpha,beta := " << alpha << ',' << beta << ';' << std::endl;
-		A.write(std::cout << "A :=",true) << ';' << std::endl;
-		B.write(std::cout << "B :=",true) << ';' << std::endl;
-		C.write(std::cout << "C :=",true) << ';' << std::endl;
-		D.write(std::cout << "E :=",true) << ';' << std::endl;
+		A.write(std::cout << "A :=",LinBoxTag::FormatMaple) << ';' << std::endl;
+		B.write(std::cout << "B :=",LinBoxTag::FormatMaple) << ';' << std::endl;
+		C.write(std::cout << "C :=",LinBoxTag::FormatMaple) << ';' << std::endl;
+		D.write(std::cout << "E :=",LinBoxTag::FormatMaple) << ';' << std::endl;
 		std::cout << "evalm(E-alpha*A.B-beta*C);" << std::endl;
 		std::cout << "#########################################" << std::endl;
 #endif

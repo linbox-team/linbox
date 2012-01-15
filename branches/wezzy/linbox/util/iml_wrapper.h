@@ -6,10 +6,13 @@
  *
  *
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+  * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,9 +20,9 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
  */
 
 /*! @file util/iml_wrapper.h
@@ -42,12 +45,22 @@ namespace IML {
 	extern "C" {
 #include "iml.h"
 
+		/*  basisop.c */
+		void
+		maxMagnMP (mpz_t *mp_A, const long n, const long m, const long lda, \
+			              mpz_t mp_max) ;
+		/* RNSop.c */
+		FiniteField RNSbound (const long n) ;
+
 		FiniteField **
 		findRNS (const FiniteField RNS_bound, const mpz_t mp_maxInter, long *length) ;
+
 		FiniteField *
 		repBound (const long len, const FiniteField *basis, const FiniteField *cmbasis) ;
+
 		void
 		basisProd (const long len, const FiniteField *basis, mpz_t mp_prod) ;
+
 		void
 		ChineseRemainder (const long len, const mpz_t mp_prod, \
 				  const FiniteField *basis, const FiniteField *cmbasis, \
@@ -55,6 +68,7 @@ namespace IML {
 		void
 		ChineseRemainderPos (const long len, const FiniteField *basis, \
 				     const FiniteField *cmbasis, Double *Ac, mpz_t mp_Ac);
+
 
 	}
 	// #include <stdlib.h>
@@ -81,6 +95,11 @@ namespace IML {
 		void *xrealloc (void *p, size_t num);
 
 	}
+
+#define REINTERP_IML_CONST(GivMat) \
+	reinterpret_cast<mpz_t*>(const_cast<PID_integer::Element*>((GivMat)))
+#define REINTERP_IML(GivMat) \
+	reinterpret_cast<mpz_t*>((GivMat))
 
 }
 #else

@@ -4,22 +4,23 @@
  * examples/solve.C
  *
  * Copyright (C) 2005, 2010 J-G Dumas, D. Saunders, P. Giorgi
+ * ========LICENCE========
+ * This file is part of the library LinBox.
  *
- * This file is part of LinBox.
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- *   LinBox is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as
- *   published by the Free Software Foundation, either version 2 of
- *   the License, or (at your option) any later version.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- *   LinBox is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Lesser General Public License for more details.
- *
- *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see
- *   <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
  */
 
 /** @file examples/solve.C
@@ -125,6 +126,7 @@ int main (int argc, char **argv)
 		Timer chrono;
 
 		// Sparse Elimination
+		std::cout << "Sparse Elimination" << std::endl;
 		chrono.clear();
 		chrono.start();
 		solve (X, A, B, Method::SparseElimination());
@@ -137,6 +139,7 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
 
 		// BlasElimination
+		std::cout << "BlasElimination" << std::endl;
 		chrono.start();
 		solve (X, A, B, Method::BlasElimination());
 		chrono.stop();
@@ -148,6 +151,7 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
 
 		// Wiedemann
+		std::cout << "Blackbox" << std::endl;
 		chrono.clear();
 		chrono.start();
 		solve (X, A, B, Method::Blackbox());
@@ -160,6 +164,7 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
 #if 0
 		// Lanczos
+		std::cout << "Lanczos" << std::endl;
 		chrono.clear();
 		chrono.start();
 		solve (X, A, B, Method::Lanczos());
@@ -173,6 +178,7 @@ int main (int argc, char **argv)
 
 
 		// Block Lanczos
+		std::cout << "Block Lanczos" << std::endl;
 		Method::BlockLanczos MBL;
 		MBL.preconditioner(Specifier::FULL_DIAGONAL);
 		chrono.clear();
@@ -224,6 +230,7 @@ int main (int argc, char **argv)
 		Timer chrono;
 
 		// Wiedemann
+		std::cout << "Wiedemann" << std::endl;
 		chrono.start();
 		solve (X, d, A, B, Method::Wiedemann());
 		chrono.stop();
@@ -236,6 +243,7 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 		// BlasElimination
+		std::cout << "BlasElimination" << std::endl;
 		chrono.start();
 		solve (X, d, A, B, Method::BlasElimination());
 		chrono.stop();
@@ -248,6 +256,7 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 		// Sparse Elimination
+		std::cout << "Sparse Elimination" << std::endl;
 		chrono.start();
 		solve (X, d, A, B, Method::SparseElimination());
 		chrono.stop();
@@ -261,6 +270,7 @@ int main (int argc, char **argv)
 
 #if 0
 		// Lanczos
+		std::cout << "Lanczos" << std::endl;
 		chrono.start();
 		solve (X, d, A, B, Method::Lanczos());
 		chrono.stop();
@@ -274,6 +284,7 @@ int main (int argc, char **argv)
 
 
 		// Block Lanczos
+		std::cout << "Block Lanczos" << std::endl;
 		chrono.clear();
 		chrono.start();
 		solve (X, d, A, B, Method::BlockLanczos());

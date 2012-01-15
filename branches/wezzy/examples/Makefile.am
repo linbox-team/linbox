@@ -1,6 +1,23 @@
 # Copyright (c) 2010 the LinBox group
 # This file is part of LinBox
-# see COPYING for licence
+# ========LICENCE========
+# This file is part of the library LinBox.
+#
+# LinBox is free software: you can redistribute it and/or modify
+# it under the terms of the  GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+# ========LICENCE========
+#/
 
 #INCLUDES=-I$(top_srcdir)
 AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
@@ -17,11 +34,13 @@ AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 #  SAFER_FLAGS=-g -Wall -Wextra -Wno-unused-parameter
 
 # AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -DDEBUG -O0
-AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
-AM_CPPFLAGS += $(GMP_CFLAGS) $(NTL_CFLAGS) $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
+AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DLinBoxSrcOnly -DDISABLE_COMMENTATOR
+AM_CPPFLAGS += $(GMP_CFLAGS) $(NTL_CFLAGS) $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS)
 #LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)  "-Wl,-enable-auto-import"
-LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS)
+LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS)
 #  AM_LDFLAGS=-static
+AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
+
 
 #EX_LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS)
 #LDADD = $(LINBOX_LIBS) $(EX_LDADD)

@@ -7,10 +7,13 @@
  *               Pascal Giorgi  pascal.giorgi@ens-lyon.fr
  *               Clément Pernet clement.pernet@imag.fr
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+  * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,9 +21,9 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
  */
 
 /*! @file matrix/blas-matrix.h
@@ -445,20 +448,30 @@ namespace LinBox
 		///////////////////
 
 		/** Read the matrix from an input stream.
-		 * The stream is in SMS or DENSE format
+		 * The stream is in SMS or DENSE format and is autodetected.
 		 * @param file Input stream from which to read
-		 * @param F Field over which to read
 		 */
-		// template <class Field>
-		std::istream &read (std::istream &file/*  , const Field &F*/);
+		std::istream &read (std::istream &file);
 
-		/** Write brutally the matrix to an output stream.
-		 * This a raw version of \c write(os,F) (no field is given).
+		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
-		 * @param mapleFormat write in maple format ?
+		 * @param format write in some format (@ref LinBoxTag::Format). Default is Maple's.
 		 */
 		std::ostream &write (std::ostream &os,
-				     bool mapleFormat=true) const;
+				     enum LinBoxTag::Format f = LinBoxTag::FormatMaple) const;
+
+		/*! @deprecated Only for compatiblity.
+		 */
+		std::ostream &write (std::ostream &os,
+				     bool mapleFormat) const
+		{
+			if (mapleFormat)
+				return write(os,LinBoxTag::FormatMaple);
+			else
+				return write(os);
+		}
+
+
 
 
 		///////////////////
@@ -792,13 +805,22 @@ namespace LinBox
 
 
 		/** Write the matrix to an output stream.
-		 * This a raw version of \c write(os,F) (no field is given).
 		 * @param os Output stream to which to write
-		 * @param mapleFormat write in Maple(r) format ?
+		 * @param format write in some format (@ref LinBoxTag::Format). Default is Maple's.
 		 */
-		std::ostream& write (std::ostream &os,
-				     bool mapleFormat = true) const;
+		std::ostream &write (std::ostream &os,
+				     enum LinBoxTag::Format f = LinBoxTag::FormatMaple) const;
 
+		/*! @deprecated Only for compatiblity.
+		 */
+		std::ostream &write (std::ostream &os,
+				     bool mapleFormat) const
+		{
+			if (mapleFormat)
+				return write(os,LinBoxTag::FormatMaple);
+			else
+				return write(os);
+		}
 
 		//////////////////
 		//   ELEMENTS   //
@@ -1145,6 +1167,7 @@ namespace LinBox
 
 
 }
+
 
 #include "blas-matrix.inl"
 #include "blas-submatrix.inl"

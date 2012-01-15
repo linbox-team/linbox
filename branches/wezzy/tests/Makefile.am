@@ -1,6 +1,24 @@
 # Copyright (c) 2010-2011 the LinBox group
-# This file is part of LinBox
-# see COPYING for licence
+# ========LICENCE========
+# This file is part of the library LinBox.
+#
+# LinBox is free software: you can redistribute it and/or modify
+# it under the terms of the  GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+# ========LICENCE========
+
+
+
 
 AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 # AM_LDFLAGS = -llapack -lcblas -latlas
@@ -17,8 +35,8 @@ AM_CXXFLAGS = -DLinBoxSrcOnly  @TESTS_CFLAGS@ @DEBUG_CFLAGS@
 
 SUBDIRS = data matrix
 
-AM_CPPFLAGS+= $(CBLAS_FLAG) $(FFLAS_FFPACK_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
-LDADD = $(GIVARO_LIBS) $(BLAS_LIBS) $(NTL_LIBS)  $(GMP_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS)
+AM_CPPFLAGS+= $(CBLAS_FLAG) $(FFLAS_FFPACK_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS)
+LDADD = $(GIVARO_LIBS) $(BLAS_LIBS) $(NTL_LIBS)  $(GMP_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS)  $(IML_LIBS) $(LDFLAGS)
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,$(GIVARO_LIBS)
 
 EXTRA_DIST=            \
@@ -49,7 +67,7 @@ BASIC_TESTS =  \
 
 FULLCHECK_TESTS =                 \
         test-bitonic-sort             \
-	test-blackbox-block-container \
+        test-blackbox-block-container \
         test-blas-domain              \
         test-butterfly                \
         test-companion                \
@@ -84,7 +102,7 @@ FULLCHECK_TESTS =                 \
         test-randiter-nonzero         \
         test-rational-matrix-factory  \
         test-scalar-matrix            \
-	test-solve-nonsingular        \
+        test-solve-nonsingular        \
         test-sparse                   \
         test-subiterator              \
         test-submatrix                \
@@ -97,7 +115,8 @@ FULLCHECK_TESTS =                 \
         test-zero-one                 \
         test-last-invariant-factor    \
         test-cradomain                \
-		test-rational-reconstruction-base
+        test-opencl-domain            \
+        test-rational-reconstruction-base
 
 #  test-integer-tools
 
@@ -586,6 +605,10 @@ test_cradomain_SOURCES =                \
         test-cradomain.C                \
         test-common.h
 
+test_blas_domain_SOURCES=               \
+        test-common.h                   \
+        test-opencl-domain.C
+
 
 # NTL test
 
@@ -624,7 +647,7 @@ test_ftrmm_SOURCES =                  \
 
 # for compilation of new non-enumerated tests
 %:%.C
-	$(CXX) $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
+	$(CXX) $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD) -lOpenCL
 
 fullcheck: checker
 	./checker
