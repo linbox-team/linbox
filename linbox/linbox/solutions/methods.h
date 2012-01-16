@@ -611,22 +611,23 @@ namespace LinBox
 
 	/// Method specifiers for controlling algorithm choice
 	struct Method {
-		typedef HybridSpecifier		Hybrid;              //!< Method::Hybrid : no doc
-		typedef BlackboxSpecifier	Blackbox;            //!< Method::Blackbox : no doc
-		typedef EliminationSpecifier	Elimination;         //!< Method::Elimination : no doc
-		typedef CRATraits            CRA ;                //!< Use CRA for solving Integer systems.
-		typedef WiedemannTraits		Wiedemann;           //!< Method::Wiedemann : no doc
-		typedef WiedemannExtensionTraits ExtensionWiedemann; //!< Method::ExtensionWiedemann :  no doc
-		typedef LanczosTraits		Lanczos;             //!< Method::Lanczos : no doc.
-		typedef BlockLanczosTraits	BlockLanczos;        //!< Method::BlockLanczos : no doc.
-		typedef SparseEliminationTraits	SparseElimination;   //!< Method::SparseElimination : no doc
-		typedef NumericalTraits		Numerical;           //!< Method::Numerical : no doc.
-		typedef BlasEliminationTraits 	BlasElimination;     //!< Method::BlasElimination : no doc
-		typedef BlasExtensionTraits ExtensionBlasElimination;//!< Method::ExtensionBlasElimination : no doc
-		typedef NonBlasEliminationTraits NonBlasElimination; //!< Method::NonBlasElimination : no doc.
-		typedef DixonTraits             Dixon;               //!< Method::Dixon : no doc
-		typedef BlockHankelTraits       BlockHankel;         //!< Method::BlockHankel : no doc
-		typedef IMLTraits               IML;                 //!< Use IML for solving Integer systems.
+		typedef HybridSpecifier		 Hybrid;                  //!< Method::Hybrid : no doc
+		typedef BlackboxSpecifier	 Blackbox;                //!< Method::Blackbox : no doc
+		typedef EliminationSpecifier	 Elimination;             //!< Method::Elimination : no doc
+		typedef CRATraits                CRA ;                    //!< Use CRA for solving Integer systems.
+		typedef WiedemannTraits		 Wiedemann;               //!< Method::Wiedemann : no doc
+		typedef WiedemannExtensionTraits ExtensionWiedemann;      //!< Method::ExtensionWiedemann :  no doc
+		typedef LanczosTraits		 Lanczos;                 //!< Method::Lanczos : no doc.
+		typedef BlockLanczosTraits	 BlockLanczos;            //!< Method::BlockLanczos : no doc.
+		typedef SparseEliminationTraits	 SparseElimination;       //!< Method::SparseElimination : no doc
+		typedef NumericalTraits		 Numerical;               //!< Method::Numerical : no doc.
+		typedef WanTraits		 NumericalWan;            //!< Method::Numerical : no doc.
+		typedef BlasEliminationTraits 	 BlasElimination;         //!< Method::BlasElimination : no doc
+		typedef BlasExtensionTraits      ExtensionBlasElimination;//!< Method::ExtensionBlasElimination : no doc
+		typedef NonBlasEliminationTraits NonBlasElimination;      //!< Method::NonBlasElimination : no doc.
+		typedef DixonTraits              Dixon;                   //!< Method::Dixon : no doc
+		typedef BlockHankelTraits        BlockHankel;             //!< Method::BlockHankel : no doc
+		typedef IMLTraits                IML;                     //!< Use IML for solving Dense Integer systems.
 		Method(){}
 	};
 

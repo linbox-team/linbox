@@ -1005,8 +1005,53 @@ namespace LinBox
 
 } // LinBox
 
+#include "linbox/config-blas.h"
+#ifdef __LINBOX_HAVE_LAPACK
+#include "linbox/algorithms/numeric-solver-lapack.h"
+#include "linbox/algorithms/rational-solver-sn.h"
+namespace LinBox {
+	std::vector<PID_integer::Element>&
+	solveNum(std::vector<PID_integer::Element>& x, PID_integer::Element & d,
+		 const BlasMatrix<PID_integer>& B, const std::vector<PID_integer::Element>& b,
+		 const Method::Numerical & m)
+	{
+		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
 
+		typedef ParamFuzzy Field ;
+		typedef BlasMatrix<Field> FMatrix;
 
+		typedef LPS<FMatrix > NumSolver;
+		NumSolver numSolver;
+		bool e = false ;
+		RationalSolverSN<PID_integer, NumSolver > rsolver(PID_integer(), numSolver, e);
+
+		int status = rsolver.solve(x, d, B, b);
+		if (status)
+			throw LinBoxError("fail") ;
+		return x;
+	}
+}
+#endif
+
+namespace LinBox {
+	std::vector<PID_integer::Element>&
+	solveNum(std::vector<PID_integer::Element>& x, PID_integer::Element & d,
+		 const BlasMatrix<PID_integer>& B, const std::vector<PID_integer::Element>& b,
+		 const Method::NumericalWan & m)
+	{
+		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
+
+		typedef Modular<int32_t> ZField;
+		// typedef Modular<double> ZField;
+		PID_integer ZZ ;
+		RationalSolver<PID_integer, ZField, RandomPrimeIterator, WanTraits> rsolver(ZZ);
+
+		int status = rsolver.solve(x, d, B, b);
+		if (status)
+			throw "fail" ;
+		return x;
+	}
+}
 
 #endif // __LINBOX_solve_H
 
