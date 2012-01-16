@@ -91,7 +91,7 @@ LINBOX_BIN=@bindir@
 
 # for compilation of new examples
 %:%.C
-	$(CXX) $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
+	$(CXX) $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(AM_LDFLAGS) $(LDADD)
 
 %:%.cpp
-	$(CXX)  $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.cpp -o $@ $(LDADD)
+	$(CXX)  $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.cpp -o $@ $(AM_LDFLAGS) $(LDADD)
