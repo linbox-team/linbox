@@ -115,7 +115,7 @@ bool testRandomSolve (const Ring& R,
 
 		SolverReturnStatus solveResult = rsolver.solveNonsingular(num, den, D, b); //often 5 primes are not enough
 
-		/*
+#if 0
 		typename Ring::Element lden;
 
 		R. init (lden, 1);
@@ -126,10 +126,10 @@ bool testRandomSolve (const Ring& R,
 			R. lcm (lden, lden, p->second);
 		typename Vector::iterator p_x;
 		//typename Vector::iterator p_y;
-		*/
+#endif
 
 		if (solveResult == SS_OK) {
-		/*
+#if 0
 		  for (p = answer.begin(), p_x = x. begin();
 		       p != answer.end();
 		       ++ p, ++ p_x) {
@@ -141,7 +141,7 @@ bool testRandomSolve (const Ring& R,
 		  }
 
 		  D. apply (y, x);
-		  */
+#endif
 		  D. apply (y, num);
 
 		  VD. mulin(b, den);
