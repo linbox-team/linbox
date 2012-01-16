@@ -23,7 +23,6 @@
 #define __LINBOX_opencl_matrix_domain_INL
 
 //#include <cstdio>
-#include <cmath>
 #include <pthread.h>
 #include "linbox/matrix/blas-matrix.h"
 
@@ -74,9 +73,9 @@ namespace LinBox
 		pthread_mutex_lock(deviceLock);
 
 		//Partition the input matrices into chuncks that can fit onto the device
-		SubmatrixVectorD VC;
-		SubmatrixVectorD VA;
-		SubmatrixVectorD VB;
+		std::vector<SubmatrixAdapter<Operand1> > VC;
+		std::vector<SubmatrixAdapter<Operand2> > VA;
+		std::vector<SubmatrixAdapter<Operand3> > VB;
 		std::vector<int> partitionDims = oclPartition<Operand1,Operand2,Operand3>(C,A,B,VC,VA,VB);
 
 		//Break out the partitioned dimensions
@@ -113,14 +112,14 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < CBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < CBlocksY; blockRow++){
 
-				BlasSubmatrix<Modular<double> > SC = VC.at(blockRow * CBlocksX + blockCol);
-				BlasSubmatrix<Modular<double> > SA = VA.at(blockRow * ABlocksX);
-				BlasSubmatrix<Modular<double> > SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * CBlocksX + blockCol);
+				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
+				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
 
 				//Allocate buffers
-				cl_mem bufferC = oclCreateMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SC);
-				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SA);
-				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SB);
+				cl_mem bufferC = oclCreateMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(SC);
+				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand2> >(SA);
+				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand3> >(SB);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -141,14 +140,14 @@ namespace LinBox
 				////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 				//Create temporary accumulation buffer
-				cl_mem tempBuffer = oclCreateMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SC);
+				cl_mem tempBuffer = oclCreateMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(SC);
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
 					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SA);
+					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand2> >(SA);
 					SB = VB.at(blockCol + BBlocksX * sharedDim);
-					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SB);
+					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 					int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -174,7 +173,7 @@ namespace LinBox
 				}
 
 				//Read back buffer
-				SC = oclReadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(bufferC, SC);
+				SC = oclReadMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(bufferC, SC);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
@@ -225,9 +224,9 @@ namespace LinBox
 		pthread_mutex_lock(deviceLock);
 
 		//Partition the input matrices into chuncks that can fit onto the device
-		SubmatrixVectorF VC;
-		SubmatrixVectorF VA;
-		SubmatrixVectorF VB;
+		std::vector<SubmatrixAdapter<Operand1> > VC;
+		std::vector<SubmatrixAdapter<Operand2> > VA;
+		std::vector<SubmatrixAdapter<Operand3> > VB;
 		std::vector<int> partitionDims = oclPartition<Operand1,Operand2,Operand3>(C,A,B,VC,VA,VB);
 
 		//Break out the partitioned dimensions
@@ -264,14 +263,14 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < CBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < CBlocksY; blockRow++){
 
-				BlasSubmatrix<Modular<float> > SC = VC.at(blockRow * CBlocksX + blockCol);
-				BlasSubmatrix<Modular<float> > SA = VA.at(blockRow * ABlocksX);
-				BlasSubmatrix<Modular<float> > SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * CBlocksX + blockCol);
+				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
+				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
 
 				//Allocate buffers
-				cl_mem bufferC = oclCreateMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SC);
-				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SA);
-				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SB);
+				cl_mem bufferC = oclCreateMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(SC);
+				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand2> >(SA);
+				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand3> >(SB);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -292,14 +291,14 @@ namespace LinBox
 				////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 				//Create temporary accumulation buffer
-				cl_mem tempBuffer = oclCreateMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SC);
+				cl_mem tempBuffer = oclCreateMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(SC);
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
 					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SA);
+					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand2> >(SA);
 					SB = VB.at(blockCol + BBlocksX * sharedDim);
-					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SB);
+					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 					int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -325,7 +324,7 @@ namespace LinBox
 				}
 
 				//Read back buffer
-				SC = oclReadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(bufferC, SC);
+				SC = oclReadMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(bufferC, SC);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
@@ -495,10 +494,10 @@ namespace LinBox
 		pthread_mutex_lock(deviceLock);
 
 		//Partition the input matrices into chuncks that can fit onto the device
-		SubmatrixVectorD VD;
-		SubmatrixVectorD VA;
-		SubmatrixVectorD VB;
-		SubmatrixVectorD VC;
+		std::vector<SubmatrixAdapter<Operand1> > VD;
+		std::vector<SubmatrixAdapter<Operand2> > VA;
+		std::vector<SubmatrixAdapter<Operand3> > VB;
+		std::vector<SubmatrixAdapter<Operand1> > VC;
 		std::vector<int> partitionDims = oclPartition<Operand1,Operand2,Operand3>(D,A,B,C,VD,VA,VB,VC);
 
 		//Break out the partitioned dimensions
@@ -532,16 +531,16 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				BlasSubmatrix<Modular<double> > SD = VD.at(blockRow * DBlocksX + blockCol);
-				BlasSubmatrix<Modular<double> > SA = VA.at(blockRow * ABlocksX);
-				BlasSubmatrix<Modular<double> > SB = VB.at(blockCol);
-				BlasSubmatrix<Modular<double> > SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
+				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
 
 				//Allocate buffers
-				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SD);
-				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SA);
-				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SB);
-				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SC);
+				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(SD);
+				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand2> >(SA);
+				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand3> >(SB);
+				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -569,9 +568,9 @@ namespace LinBox
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
 					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SA);
+					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand2> >(SA);
 					SB = VB.at(blockCol + BBlocksX * sharedDim);
-					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SB);
+					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 					int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -598,7 +597,7 @@ namespace LinBox
 				}
 
 				//Read back buffer
-				SD = oclReadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(bufferC, SD);
+				SD = oclReadMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(bufferC, SD);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
@@ -646,10 +645,10 @@ namespace LinBox
 		pthread_mutex_lock(deviceLock);
 
 		//Partition the input matrices into chuncks that can fit onto the device
-		SubmatrixVectorF VD;
-		SubmatrixVectorF VA;
-		SubmatrixVectorF VB;
-		SubmatrixVectorF VC;
+		std::vector<SubmatrixAdapter<Operand1> > VD;
+		std::vector<SubmatrixAdapter<Operand2> > VA;
+		std::vector<SubmatrixAdapter<Operand3> > VB;
+		std::vector<SubmatrixAdapter<Operand1> > VC;
 		std::vector<int> partitionDims = oclPartition<Operand1,Operand2,Operand3>(D,A,B,C,VD,VA,VB,VC);
 
 		//Break out the partitioned dimensions
@@ -683,16 +682,16 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				BlasSubmatrix<Modular<float> > SD = VD.at(blockRow * DBlocksX + blockCol);
-				BlasSubmatrix<Modular<float> > SA = VA.at(blockRow * ABlocksX);
-				BlasSubmatrix<Modular<float> > SB = VB.at(blockCol);
-				BlasSubmatrix<Modular<float> > SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
+				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
 
 				//Allocate buffers
-				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SD);
-				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SA);
-				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SB);
-				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SC);
+				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(SD);
+				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand2> >(SA);
+				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand3> >(SB);
+				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -720,9 +719,9 @@ namespace LinBox
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
 					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SA);
+					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand2> >(SA);
 					SB = VB.at(blockCol + BBlocksX * sharedDim);
-					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SB);
+					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 					int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -749,7 +748,7 @@ namespace LinBox
 				}
 
 				//Read back buffer
-				SD = oclReadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(bufferC, SD);
+				SD = oclReadMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(bufferC, SD);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
@@ -877,10 +876,10 @@ namespace LinBox
 		pthread_mutex_lock(deviceLock);
 
 		//Partition the input matrices into chuncks that can fit onto the device
-		SubmatrixVectorD VD;
-		SubmatrixVectorD VA;
-		SubmatrixVectorD VB;
-		SubmatrixVectorD VC;
+		std::vector<SubmatrixAdapter<Operand1> > VD;
+		std::vector<SubmatrixAdapter<Operand2> > VA;
+		std::vector<SubmatrixAdapter<Operand3> > VB;
+		std::vector<SubmatrixAdapter<Operand1> > VC;
 		std::vector<int> partitionDims = oclPartition<Operand1,Operand2,Operand3>(D,A,B,C,VD,VA,VB,VC);
 
 		//Break out the partitioned dimensions
@@ -912,16 +911,16 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				BlasSubmatrix<Modular<double> > SD = VD.at(blockRow * DBlocksX + blockCol);
-				BlasSubmatrix<Modular<double> > SA = VA.at(blockRow * ABlocksX);
-				BlasSubmatrix<Modular<double> > SB = VB.at(blockCol);
-				BlasSubmatrix<Modular<double> > SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
+				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
 
 				//Allocate buffers
-				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SD);
-				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SA);
-				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SB);
-				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SC);
+				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(SD);
+				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand2> >(SA);
+				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand3> >(SB);
+				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -948,9 +947,9 @@ namespace LinBox
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
 					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SA);
+					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand2> >(SA);
 					SB = VB.at(blockCol + BBlocksX * sharedDim);
-					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SB);
+					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 					int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -976,7 +975,7 @@ namespace LinBox
 				}
 
 				//Read back buffer
-				SD = oclReadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(bufferC, SD);
+				SD = oclReadMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(bufferC, SD);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
@@ -1025,10 +1024,10 @@ namespace LinBox
 		pthread_mutex_lock(deviceLock);
 
 		//Partition the input matrices into chuncks that can fit onto the device
-		SubmatrixVectorF VD;
-		SubmatrixVectorF VA;
-		SubmatrixVectorF VB;
-		SubmatrixVectorF VC;
+		std::vector<SubmatrixAdapter<Operand1> > VD;
+		std::vector<SubmatrixAdapter<Operand2> > VA;
+		std::vector<SubmatrixAdapter<Operand3> > VB;
+		std::vector<SubmatrixAdapter<Operand1> > VC;
 		std::vector<int> partitionDims = oclPartition<Operand1,Operand2,Operand3>(D,A,B,C,VD,VA,VB,VC);
 
 		//Break out the partitioned dimensions
@@ -1060,16 +1059,16 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				BlasSubmatrix<Modular<float> > SD = VD.at(blockRow * DBlocksX + blockCol);
-				BlasSubmatrix<Modular<float> > SA = VA.at(blockRow * ABlocksX);
-				BlasSubmatrix<Modular<float> > SB = VB.at(blockCol);
-				BlasSubmatrix<Modular<float> > SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
+				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
 
 				//Allocate buffers
-				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SD);
-				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SA);
-				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SB);
-				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SC);
+				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(SD);
+				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand2> >(SA);
+				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand3> >(SB);
+				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -1096,9 +1095,9 @@ namespace LinBox
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
 					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SA);
+					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand2> >(SA);
 					SB = VB.at(blockCol + BBlocksX * sharedDim);
-					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SB);
+					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 					int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -1124,7 +1123,7 @@ namespace LinBox
 				}
 
 				//Read back buffer
-				SD = oclReadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(bufferC, SD);
+				SD = oclReadMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(bufferC, SD);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
@@ -1212,10 +1211,6 @@ namespace LinBox
 		kernelsAvailable &= dpKernelsAvailable[13];
 		kernelsAvailable &= dpKernelsAvailable[14];
 		kernelsAvailable &= dpKernelsAvailable[15];
-		kernelsAvailable &= dpKernelsAvailable[8];
-		kernelsAvailable &= dpKernelsAvailable[9];
-		kernelsAvailable &= dpKernelsAvailable[10];
-		kernelsAvailable &= dpKernelsAvailable[11];
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
@@ -1233,10 +1228,10 @@ namespace LinBox
 		pthread_mutex_lock(deviceLock);
 
 		//Partition the input matrices into chuncks that can fit onto the device
-		SubmatrixVectorD VD;
-		SubmatrixVectorD VA;
-		SubmatrixVectorD VB;
-		SubmatrixVectorD VC;
+		std::vector<SubmatrixAdapter<Operand1> > VD;
+		std::vector<SubmatrixAdapter<Operand2> > VA;
+		std::vector<SubmatrixAdapter<Operand3> > VB;
+		std::vector<SubmatrixAdapter<Operand1> > VC;
 		std::vector<int> partitionDims = oclPartition<Operand1,Operand2,Operand3>(D,A,B,C,VD,VA,VB,VC);
 
 		//Break out the partitioned dimensions
@@ -1251,38 +1246,33 @@ namespace LinBox
 
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^53
-		cl_kernel selectedMaxpyKernel;
-		cl_kernel selectedAxpyKernel;
+		cl_kernel selectedKernel;
 		if(p <= (1<<21)){
-			selectedMaxpyKernel = dpKernels[15];
-			selectedAxpyKernel = dpKernels[11];
+			selectedKernel = dpKernels[15];
 		}
 		else if(p <= (1<<24)){
-			selectedMaxpyKernel = dpKernels[14];
-			selectedAxpyKernel = dpKernels[10];
+			selectedKernel = dpKernels[14];
 		}
 		else if(p <= (1<<25)){
-			selectedMaxpyKernel = dpKernels[13];
-			selectedAxpyKernel = dpKernels[9];
+			selectedKernel = dpKernels[13];
 		}
 		else{
-			selectedMaxpyKernel = dpKernels[12];
-			selectedAxpyKernel = dpKernels[8];
+			selectedKernel = dpKernels[12];
 		}
 
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				BlasSubmatrix<Modular<double> > SD = VD.at(blockRow * DBlocksX + blockCol);
-				BlasSubmatrix<Modular<double> > SA = VA.at(blockRow * ABlocksX);
-				BlasSubmatrix<Modular<double> > SB = VB.at(blockCol);
-				BlasSubmatrix<Modular<double> > SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
+				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
 
 				//Allocate buffers
-				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SD);
-				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SA);
-				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SB);
-				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SC);
+				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(SD);
+				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand2> >(SA);
+				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand3> >(SB);
+				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -1290,7 +1280,7 @@ namespace LinBox
 				int widthB = ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
-				oclCallKernel<double,cl_double>(bufferD,bufferA,bufferB,bufferC,widthA,heightA,widthB,p,selectedMaxpyKernel);
+				oclCallKernel<double,cl_double>(bufferD,bufferA,bufferB,bufferC,widthA,heightA,widthB,p,selectedKernel);
 
 				//Block until kernel finishes
 				cl_int tempErrcode;
@@ -1309,9 +1299,9 @@ namespace LinBox
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
 					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SA);
+					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand2> >(SA);
 					SB = VB.at(blockCol + BBlocksX * sharedDim);
-					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SB);
+					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 					int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -1319,7 +1309,7 @@ namespace LinBox
 					int widthB = ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
-					oclCallKernel<double,cl_double>(tempBuffer,bufferA,bufferB,bufferC,widthA,heightA,widthB,p,selectedAxpyKernel);
+					oclCallKernel<double,cl_double>(tempBuffer,bufferA,bufferB,bufferC,widthA,heightA,widthB,p,selectedKernel);
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
@@ -1337,7 +1327,7 @@ namespace LinBox
 				}
 
 				//Read back buffer
-				SD = oclReadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(bufferC, SD);
+				SD = oclReadMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(bufferC, SD);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
@@ -1369,10 +1359,6 @@ namespace LinBox
 		kernelsAvailable &= spKernelsAvailable[13];
 		kernelsAvailable &= spKernelsAvailable[14];
 		kernelsAvailable &= spKernelsAvailable[15];
-		kernelsAvailable &= spKernelsAvailable[8];
-		kernelsAvailable &= spKernelsAvailable[9];
-		kernelsAvailable &= spKernelsAvailable[10];
-		kernelsAvailable &= spKernelsAvailable[11];
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
@@ -1390,10 +1376,10 @@ namespace LinBox
 		pthread_mutex_lock(deviceLock);
 
 		//Partition the input matrices into chuncks that can fit onto the device
-		SubmatrixVectorF VD;
-		SubmatrixVectorF VA;
-		SubmatrixVectorF VB;
-		SubmatrixVectorF VC;
+		std::vector<SubmatrixAdapter<Operand1> > VD;
+		std::vector<SubmatrixAdapter<Operand2> > VA;
+		std::vector<SubmatrixAdapter<Operand3> > VB;
+		std::vector<SubmatrixAdapter<Operand1> > VC;
 		std::vector<int> partitionDims = oclPartition<Operand1,Operand2,Operand3>(D,A,B,C,VD,VA,VB,VC);
 
 		//Break out the partitioned dimensions
@@ -1408,38 +1394,33 @@ namespace LinBox
 
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^23
-		cl_kernel selectedMaxpyKernel;
-		cl_kernel selectedAxpyKernel;
+		cl_kernel selectedKernel;;
 		if(p <= (1<<7)){
-			selectedMaxpyKernel = spKernels[15];
-			selectedAxpyKernel = spKernels[11];
+			selectedKernel = spKernels[15];
 		}
 		else if(p <= (1<<9)){
-			selectedMaxpyKernel = spKernels[14];
-			selectedAxpyKernel = spKernels[10];
+			selectedKernel = spKernels[14];
 		}
 		else if(p <= (1<<10)){
-			selectedMaxpyKernel = spKernels[13];
-			selectedAxpyKernel = spKernels[9];
+			selectedKernel = spKernels[13];
 		}
 		else{
-			selectedMaxpyKernel = spKernels[12];
-			selectedAxpyKernel = spKernels[8];
+			selectedKernel = spKernels[12];
 		}
 
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				BlasSubmatrix<Modular<float> > SD = VD.at(blockRow * DBlocksX + blockCol);
-				BlasSubmatrix<Modular<float> > SA = VA.at(blockRow * ABlocksX);
-				BlasSubmatrix<Modular<float> > SB = VB.at(blockCol);
-				BlasSubmatrix<Modular<float> > SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
+				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
 
 				//Allocate buffers
-				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SD);
-				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SA);
-				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SB);
-				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SC);
+				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(SD);
+				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand2> >(SA);
+				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand3> >(SB);
+				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -1447,7 +1428,7 @@ namespace LinBox
 				int widthB = ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
-				oclCallKernel<float,cl_float>(bufferD,bufferA,bufferB,bufferC,widthA,heightA,widthB,p,selectedMaxpyKernel);
+				oclCallKernel<float,cl_float>(bufferD,bufferA,bufferB,bufferC,widthA,heightA,widthB,p,selectedKernel);
 
 				//Block until kernel finishes
 				cl_int tempErrcode;
@@ -1466,9 +1447,9 @@ namespace LinBox
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
 					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SA);
+					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand2> >(SA);
 					SB = VB.at(blockCol + BBlocksX * sharedDim);
-					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SB);
+					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 					int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -1476,7 +1457,7 @@ namespace LinBox
 					int widthB = ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
-					oclCallKernel<float,cl_float>(tempBuffer,bufferA,bufferB,bufferC,widthA,heightA,widthB,p,selectedAxpyKernel);
+					oclCallKernel<float,cl_float>(tempBuffer,bufferA,bufferB,bufferC,widthA,heightA,widthB,p,selectedKernel);
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
@@ -1494,7 +1475,7 @@ namespace LinBox
 				}
 
 				//Read back buffer
-				SD = oclReadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(bufferC, SD);
+				SD = oclReadMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(bufferC, SD);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
@@ -1527,10 +1508,6 @@ namespace LinBox
 		kernelsAvailable &= dpKernelsAvailable[13];
 		kernelsAvailable &= dpKernelsAvailable[14];
 		kernelsAvailable &= dpKernelsAvailable[15];
-		kernelsAvailable &= dpKernelsAvailable[8];
-		kernelsAvailable &= dpKernelsAvailable[9];
-		kernelsAvailable &= dpKernelsAvailable[10];
-		kernelsAvailable &= dpKernelsAvailable[11];
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
@@ -1559,10 +1536,6 @@ namespace LinBox
 		kernelsAvailable &= spKernelsAvailable[13];
 		kernelsAvailable &= spKernelsAvailable[14];
 		kernelsAvailable &= spKernelsAvailable[15];
-		kernelsAvailable &= spKernelsAvailable[8];
-		kernelsAvailable &= spKernelsAvailable[9];
-		kernelsAvailable &= spKernelsAvailable[10];
-		kernelsAvailable &= spKernelsAvailable[11];
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
@@ -1611,10 +1584,10 @@ namespace LinBox
 		pthread_mutex_lock(deviceLock);
 
 		//Partition the input matrices into chuncks that can fit onto the device
-		SubmatrixVectorD VD;
-		SubmatrixVectorD VA;
-		SubmatrixVectorD VB;
-		SubmatrixVectorD VC;
+		std::vector<SubmatrixAdapter<Operand1> > VD;
+		std::vector<SubmatrixAdapter<Operand2> > VA;
+		std::vector<SubmatrixAdapter<Operand3> > VB;
+		std::vector<SubmatrixAdapter<Operand1> > VC;
 		std::vector<int> partitionDims = oclPartition<Operand1,Operand2,Operand3>(D,A,B,C,VD,VA,VB,VC);
 
 		//Break out the partitioned dimensions
@@ -1651,16 +1624,16 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 				
-				BlasSubmatrix<Modular<double> > SD = VD.at(blockRow * DBlocksX + blockCol);
-				BlasSubmatrix<Modular<double> > SA = VA.at(blockRow * ABlocksX);
-				BlasSubmatrix<Modular<double> > SB = VB.at(blockCol);
-				BlasSubmatrix<Modular<double> > SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
+				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
 
 				//Allocate buffers
-				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SD);
-				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SA);
-				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SB);
-				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SC);
+				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(SD);
+				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand2> >(SA);
+				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand3> >(SB);
+				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -1687,9 +1660,9 @@ namespace LinBox
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
 					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SA);
+					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand2> >(SA);
 					SB = VB.at(blockCol + BBlocksX * sharedDim);
-					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(SB);
+					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 					int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -1715,7 +1688,7 @@ namespace LinBox
 				}
 				
 				//Read back buffer
-				SD = oclReadMatrixBuffer<cl_double,BlasSubmatrix<Modular<double> > >(bufferC, SD);
+				SD = oclReadMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(bufferC, SD);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
@@ -1768,10 +1741,10 @@ namespace LinBox
 		pthread_mutex_lock(deviceLock);
 
 		//Partition the input matrices into chuncks that can fit onto the device
-		SubmatrixVectorF VD;
-		SubmatrixVectorF VA;
-		SubmatrixVectorF VB;
-		SubmatrixVectorF VC;
+		std::vector<SubmatrixAdapter<Operand1> > VD;
+		std::vector<SubmatrixAdapter<Operand2> > VA;
+		std::vector<SubmatrixAdapter<Operand3> > VB;
+		std::vector<SubmatrixAdapter<Operand1> > VC;
 		std::vector<int> partitionDims = oclPartition<Operand1,Operand2,Operand3>(D,A,B,C,VD,VA,VB,VC);
 
 		//Break out the partitioned dimensions
@@ -1808,16 +1781,16 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				BlasSubmatrix<Modular<float> > SD = VD.at(blockRow * DBlocksX + blockCol);
-				BlasSubmatrix<Modular<float> > SA = VA.at(blockRow * ABlocksX);
-				BlasSubmatrix<Modular<float> > SB = VB.at(blockCol);
-				BlasSubmatrix<Modular<float> > SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
+				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
 
 				//Allocate buffers
-				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SD);
-				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SA);
-				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SB);
-				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SC);
+				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(SD);
+				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand2> >(SA);
+				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand3> >(SB);
+				cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -1844,9 +1817,9 @@ namespace LinBox
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
 					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SA);
+					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand2> >(SA);
 					SB = VB.at(blockCol + BBlocksX * sharedDim);
-					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(SB);
+					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 					int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -1872,7 +1845,7 @@ namespace LinBox
 				}
 
 				//Read back buffer
-				SD = oclReadMatrixBuffer<cl_float,BlasSubmatrix<Modular<float> > >(bufferC, SD);
+				SD = oclReadMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(bufferC, SD);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);

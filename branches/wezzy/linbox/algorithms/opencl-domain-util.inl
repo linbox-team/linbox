@@ -22,6 +22,8 @@
 #ifndef __LINBOX_opencl_matrix_domain_util_INL
 #define __LINBOX_opencl_matrix_domain_util_INL
 
+#include <cstdio>
+#include <utility>
 #include "linbox/algorithms/opencl-domain-factory.h"
 
 namespace LinBox{
@@ -50,34 +52,9 @@ namespace LinBox{
 	 * @internal
 	 * Checks to see if the memory levels required are possible
 	 */
-	template <class Field>
-	template <typename T, class Operand1, class Operand2, class Operand3>
-	bool OpenCLMatrixDomain<Field>::oclMemCheck(Operand1 &C, const Operand2 &A, const Operand3 &B) const{
-
-		//Calculate dimensions after padding of matrices
-		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-		int newCDimX = ((C.coldim() + 15) / 16) * 16;
-		int newCDimY = ((C.rowdim() + 15) / 16) * 16;
-		int newADimX = ((A.coldim() + 15) / 16) * 16;
-		int newADimY = ((A.rowdim() + 15) / 16) * 16;
-		int newBDimX = ((B.coldim() + 15) / 16) * 16;
-		int newBDimY = ((B.rowdim() + 15) / 16) * 16;
-
-		//Determine if each individual matrix will fit in a buffer
-		bool temp = (maxBufferSize >= (newCDimX * newCDimY * sizeof(T)));
-		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(T));
-		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(T));
-
-		//Determine if all three buffers will fit at the same time
-		temp &= (memCapacity >= ((newCDimX * newCDimY) + (newADimX * newADimY) +
-			(newBDimX * newBDimY)) * sizeof(T));
-
-		return temp;
-	}
-
-	template <class Field>
-	template <typename T, class Operand1, class Operand2, class Operand3>
-	bool OpenCLMatrixDomain<Field>::oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B,
+	template <>
+	template <class Operand1, class Operand2, class Operand3>
+	bool OpenCLMatrixDomain<Modular<double> >::oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B,
 		const Operand1& C) const{
 
 		//Calculate dimensions after padding of matrices
@@ -92,14 +69,101 @@ namespace LinBox{
 		int newCDimY = ((C.rowdim() + 15) / 16) * 16;
 
 		//Determine if each individual matrix will fit in a buffer
-		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(T)));
-		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(T));
-		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(T));
-		temp &= (maxBufferSize >= (newCDimX * newCDimY) * sizeof(T));
+		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(cl_double)));
+		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(cl_double));
+		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(cl_double));
+		temp &= (maxBufferSize >= (newCDimX * newCDimY) * sizeof(cl_double));
 
 		//Determine if all three buffers will fit at the same time
 		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
-			(newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(T));
+			(newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_double));
+
+		return temp;
+	}
+
+	template <>
+	template <class Operand1, class Operand2, class Operand3>
+	bool OpenCLMatrixDomain<Modular<float> >::oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B,
+		const Operand1& C) const{
+
+		//Calculate dimensions after padding of matrices
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int newDDimX = ((D.coldim() + 15) / 16) * 16;
+		int newDDimY = ((D.rowdim() + 15) / 16) * 16;
+		int newADimX = ((A.coldim() + 15) / 16) * 16;
+		int newADimY = ((A.rowdim() + 15) / 16) * 16;
+		int newBDimX = ((B.coldim() + 15) / 16) * 16;
+		int newBDimY = ((B.rowdim() + 15) / 16) * 16;
+		int newCDimX = ((C.coldim() + 15) / 16) * 16;
+		int newCDimY = ((C.rowdim() + 15) / 16) * 16;
+
+		//Determine if each individual matrix will fit in a buffer
+		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(cl_float)));
+		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(cl_float));
+		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(cl_float));
+		temp &= (maxBufferSize >= (newCDimX * newCDimY) * sizeof(cl_float));
+
+		//Determine if all three buffers will fit at the same time
+		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
+			(newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_float));
+
+		return temp;
+	}
+
+	template <>
+	template <>
+	bool OpenCLMatrixDomain<Modular<double> >::oclMemCheck<std::pair<int,int> >(std::pair<int,int>& D,
+		std::pair<int,int>& A, std::pair<int,int>& B, std::pair<int,int>& C) const{
+
+		//Calculate dimensions after padding of matrices
+		//((A.second / 16) + (A.second % 16 == 0 ? 0 : 1)) * 16
+		int newDDimX = ((D.second + 15) / 16) * 16;
+		int newDDimY = ((D.first + 15) / 16) * 16;
+		int newADimX = ((A.second + 15) / 16) * 16;
+		int newADimY = ((A.first + 15) / 16) * 16;
+		int newBDimX = ((B.second + 15) / 16) * 16;
+		int newBDimY = ((B.first + 15) / 16) * 16;
+		int newCDimX = ((C.second + 15) / 16) * 16;
+		int newCDimY = ((C.first + 15) / 16) * 16;
+
+		//Determine if each individual matrix will fit in a buffer
+		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(cl_double)));
+		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(cl_double));
+		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(cl_double));
+		temp &= (maxBufferSize >= (newCDimX * newCDimY) * sizeof(cl_double));
+
+		//Determine if all three buffers will fit at the same time
+		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
+			(newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_double));
+
+		return temp;
+	}
+
+	template <>
+	template <>
+	bool OpenCLMatrixDomain<Modular<float> >::oclMemCheck<std::pair<int,int> >(std::pair<int,int>& D,
+		std::pair<int,int>& A, std::pair<int,int>& B, std::pair<int,int>& C) const{
+
+		//Calculate dimensions after padding of matrices
+		//((A.second / 16) + (A.second % 16 == 0 ? 0 : 1)) * 16
+		int newDDimX = ((D.second + 15) / 16) * 16;
+		int newDDimY = ((D.first + 15) / 16) * 16;
+		int newADimX = ((A.second + 15) / 16) * 16;
+		int newADimY = ((A.first + 15) / 16) * 16;
+		int newBDimX = ((B.second + 15) / 16) * 16;
+		int newBDimY = ((B.first + 15) / 16) * 16;
+		int newCDimX = ((C.second + 15) / 16) * 16;
+		int newCDimY = ((C.first + 15) / 16) * 16;
+
+		//Determine if each individual matrix will fit in a buffer
+		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(cl_float)));
+		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(cl_float));
+		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(cl_float));
+		temp &= (maxBufferSize >= (newCDimX * newCDimY) * sizeof(cl_float));
+
+		//Determine if all three buffers will fit at the same time
+		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
+			(newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_float));
 
 		return temp;
 	}
@@ -207,18 +271,20 @@ namespace LinBox{
 	template <class Field>
 	template <class Operand1, class Operand2, class Operand3>
 	std::vector<int> OpenCLMatrixDomain<Field>::oclPartition(Operand1& C, const Operand2& A, const Operand3& B,
-		SubmatrixVector& VC, SubmatrixVector& VA, SubmatrixVector& VB) const{
+		std::vector<SubmatrixAdapter<Operand1> >& VC, std::vector<SubmatrixAdapter<Operand2> >& VA,
+		std::vector<SubmatrixAdapter<Operand3> >& VB) const{
 
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
-		bool memLevelsAllowed = oclMemCheck<Element,Operand1,Operand2,Operand3>(C,A,B,C);
+		bool memLevelsAllowed = oclMemCheck<Operand1,Operand2,Operand3>(C,A,B,C);
 
 		std::vector<int> temp;
 
+		//If the input matrices fit on the device return the input matrices as Submatrices
 		if(memLevelsAllowed){
 			// Create Submatrix views
-			BlasSubmatrix<Field> SC(C);
-			BlasSubmatrix<Field> SA(A);
-			BlasSubmatrix<Field> SB(B);
+			SubmatrixAdapter<Operand1> SC(C);
+			SubmatrixAdapter<Operand2> SA(A);
+			SubmatrixAdapter<Operand3> SB(B);
 
 			// Place Submatrices at the beginning of the vectors
 			VC.push_back(SC);
@@ -227,7 +293,7 @@ namespace LinBox{
 
 			// Return the block dimensions
 			temp.push_back(1); //CBlocksX
-			temp.push_back(1); // CBlocksY
+			temp.push_back(1); //CBlocksY
 			temp.push_back(1); //ABlocksY
 			temp.push_back(1); //ABlocksY
 			temp.push_back(1); //CBlocksY
@@ -236,25 +302,150 @@ namespace LinBox{
 			return temp;
 		}
 
+		//Begin search for Submatrices small enough to search on the device
+		int divisionFactor = 1;
+		int CRows = C.rowdim();
+		int CCols = C.coldim();
+		int ARows = A.rowdim();
+		int ACols = A.rowdim();
+		int BRows = B.rowdim();
+		int BCols = B.coldim();
+
+		//Loop until Submatrices that fit on the device have been found
+		while(!memLevelsAllowed){
+			//Increase the number of subsections
+			divisionFactor++;
+
+			//Compute the number of rows and columns in each subsections
+			int subRows = CRows / divisionFactor;
+			int subCols = CCols / divisionFactor;
+			int subSharedDim = ACols / divisionFactor;
+
+			//Check if adjustment is need for some of the subsections
+			bool addToSubRows = false;
+			bool addToSubCols = false;
+			bool addToSubSharedDim = false;
+
+			if((subRows * divisionFactor) != CRows){
+				addToSubRows = true;
+			}
+			if((subCols * divisionFactor) != CCols){
+				addToSubCols = true;
+			}
+			if((subSharedDim * divisionFactor) != ACols){
+				addToSubSharedDim = true;
+			}
+
+			//Determine of the largest subsections will fit on the device together
+			int largestSubRows = (addToSubRows ? subRows : (subRows + 1));
+			int largestSubCols = (addToSubCols ? subCols : (subCols + 1));
+			int largestSubSharedDim = (addToSubSharedDim ? subSharedDim : (subSharedDim + 1));
+
+			std::pair<int,int> largestSubC(largestSubRows,largestSubCols);
+			std::pair<int,int> largestSubA(largestSubRows,largestSubSharedDim);
+			std::pair<int,int> largestSubB(largestSubSharedDim,largestSubCols);
+
+			memLevelsAllowed = oclMemCheck<std::pair<int,int> >(largestSubC,largestSubA,largestSubB,largestSubC);
+
+			//If the largest subsections can fit on the device together
+			//Begin partitioning the input matrices
+			if(memLevelsAllowed){
+				// Return the block dimensions
+				temp.push_back(divisionFactor); //CBlocksX
+				temp.push_back(divisionFactor); //CBlocksY
+				temp.push_back(divisionFactor); //ABlocksY
+				temp.push_back(divisionFactor); //ABlocksY
+				temp.push_back(divisionFactor); //CBlocksY
+				temp.push_back(divisionFactor); //CBlocksY
+
+				//Loop through all but the last row
+				for(int blockY = 0; blockY < (divisionFactor - 1); blockY++){
+					int CRowsOffset = blockY * subRows;
+					int ARowsOffset = blockY * subRows;
+					int BRowsOffset = blockY * subSharedDim;
+
+					//Loop through all but the last column
+					for(int blockX = 0; blockX < (divisionFactor - 1); blockX++){
+						int CColsOffset = blockX * subCols;
+						int AColsOffset = blockX * subSharedDim;
+						int BColsOffset = blockX * subCols;
+
+						SubmatrixAdapter<Operand1> SC(C,CRowsOffset,CColsOffset,subRows,subCols);
+						SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,subSharedDim);
+						SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,subCols);
+
+						VC.push_back(SC);
+						VA.push_back(SA);
+						VB.push_back(SB);
+					}
+
+					int CColsOffset = (divisionFactor - 1) * subCols;
+					int AColsOffset = (divisionFactor - 1) * subSharedDim;
+					int BColsOffset = (divisionFactor - 1) * subCols;
+
+					SubmatrixAdapter<Operand1> SC(C,CRowsOffset,CColsOffset,subRows,(CCols - CColsOffset));
+					SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,(ACols - AColsOffset));
+					SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,(BCols - BColsOffset));
+
+					VC.push_back(SC);
+					VA.push_back(SA);
+					VB.push_back(SB);
+				}
+
+				//Partition the last row
+				int CRowsOffset = (divisionFactor - 1) * subRows;
+				int ARowsOffset = (divisionFactor - 1) * subRows;
+				int BRowsOffset = (divisionFactor - 1) * subSharedDim;
+
+				for(int blockX = 0; blockX < (divisionFactor - 1); blockX++){
+					int CColsOffset = blockX * subCols;
+					int AColsOffset = blockX * subSharedDim;
+					int BColsOffset = blockX * subCols;
+
+					SubmatrixAdapter<Operand1> SC(C,CRowsOffset,CColsOffset,(CRows - CRowsOffset),subCols);
+					SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),subSharedDim);
+					SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),subCols);
+
+					VC.push_back(SC);
+					VA.push_back(SA);
+					VB.push_back(SB);
+				}
+
+				int CColsOffset = (divisionFactor - 1) * subCols;
+				int AColsOffset = (divisionFactor - 1) * subSharedDim;
+				int BColsOffset = (divisionFactor - 1) * subCols;
+
+				SubmatrixAdapter<Operand1> SC(C,CRowsOffset,CColsOffset,(CRows - CRowsOffset),(CCols - CColsOffset));
+				SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),(ACols - AColsOffset));
+				SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),(BCols - BColsOffset));
+
+				VC.push_back(SC);
+				VA.push_back(SA);
+				VB.push_back(SB);
+
+			}
+		}
+
 		return temp;
 	}
 
 	template <class Field>
 	template <class Operand1, class Operand2, class Operand3>
 	std::vector<int> OpenCLMatrixDomain<Field>::oclPartition(Operand1& D, const Operand2& A, const Operand3& B,
-		const Operand1& C, SubmatrixVector& VD, SubmatrixVector& VA, SubmatrixVector& VB, SubmatrixVector& VC) const{
+		const Operand1& C, std::vector<SubmatrixAdapter<Operand1> >& VD, std::vector<SubmatrixAdapter<Operand2> >& VA,
+		std::vector<SubmatrixAdapter<Operand3> >& VB, std::vector<SubmatrixAdapter<Operand1> >& VC) const{
 
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
-		bool memLevelsAllowed = oclMemCheck<Element,Operand1,Operand2,Operand3>(D,A,B,C);
+		bool memLevelsAllowed = oclMemCheck<Operand1,Operand2,Operand3>(D,A,B,C);
 
 		std::vector<int> temp;
 
 		if(memLevelsAllowed){
 			// Create Submatrix views
-			BlasSubmatrix<Field> SD(D);
-			BlasSubmatrix<Field> SA(A);
-			BlasSubmatrix<Field> SB(B);
-			BlasSubmatrix<Field> SC(C);
+			SubmatrixAdapter<Operand1> SD(D);
+			SubmatrixAdapter<Operand2> SA(A);
+			SubmatrixAdapter<Operand3> SB(B);
+			SubmatrixAdapter<Operand1> SC(C);
 
 			// Place Submatrices at the beginning of the vectors
 			VD.push_back(SD);
@@ -271,6 +462,139 @@ namespace LinBox{
 			temp.push_back(1); //CBlocksY
 
 			return temp;
+		}
+
+		//Begin search for Submatrices small enough to search on the device
+		int divisionFactor = 1;
+		int DRows = D.rowdim();
+		int DCols = D.coldim();
+		int ARows = A.rowdim();
+		int ACols = A.rowdim();
+		int BRows = B.rowdim();
+		int BCols = B.coldim();
+
+		//Loop until Submatrices that fit on the device have been found
+		while(!memLevelsAllowed){
+			//Increase the number of subsections
+			divisionFactor++;
+
+			//Compute the number of rows and columns in each subsections
+			int subRows = DRows / divisionFactor;
+			int subCols = DCols / divisionFactor;
+			int subSharedDim = ACols / divisionFactor;
+
+			//Check if adjustment is need for some of the subsections
+			bool addToSubRows = false;
+			bool addToSubCols = false;
+			bool addToSubSharedDim = false;
+
+			if((subRows * divisionFactor) != DRows){
+				addToSubRows = true;
+			}
+			if((subCols * divisionFactor) != DCols){
+				addToSubCols = true;
+			}
+			if((subSharedDim * divisionFactor) != ACols){
+				addToSubSharedDim = true;
+			}
+
+			//Determine of the largest subsections will fit on the device together
+			int largestSubRows = (addToSubRows ? subRows : (subRows + 1));
+			int largestSubCols = (addToSubCols ? subCols : (subCols + 1));
+			int largestSubSharedDim = (addToSubSharedDim ? subSharedDim : (subSharedDim + 1));
+
+			std::pair<int,int> largestSubD(largestSubRows,largestSubCols);
+			std::pair<int,int> largestSubA(largestSubRows,largestSubSharedDim);
+			std::pair<int,int> largestSubB(largestSubSharedDim,largestSubCols);
+			std::pair<int,int> largestSubC(largestSubRows,largestSubCols);
+
+			memLevelsAllowed = oclMemCheck<std::pair<int,int> >(largestSubD,largestSubA,largestSubB,largestSubC);
+
+			//If the largest subsections can fit on the device together
+			//Begin partitioning the input matrices
+			if(memLevelsAllowed){
+				// Return the block dimensions
+				temp.push_back(divisionFactor); //DBlocksX & CBlocksX
+				temp.push_back(divisionFactor); //DBlocksY & CBlocksY
+				temp.push_back(divisionFactor); //ABlocksY
+				temp.push_back(divisionFactor); //ABlocksY
+				temp.push_back(divisionFactor); //CBlocksY
+				temp.push_back(divisionFactor); //CBlocksY
+
+				//Loop through all but the last row
+				for(int blockY = 0; blockY < (divisionFactor - 1); blockY++){
+					int DRowsOffset = blockY * subRows;
+					int ARowsOffset = blockY * subRows;
+					int BRowsOffset = blockY * subSharedDim;
+
+					//Loop through all but the last column
+					for(int blockX = 0; blockX < (divisionFactor - 1); blockX++){
+						int DColsOffset = blockX * subCols;
+						int AColsOffset = blockX * subSharedDim;
+						int BColsOffset = blockX * subCols;
+
+						SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,subRows,subCols);
+						SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,subSharedDim);
+						SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,subCols);
+						SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,subRows,subCols);
+
+						VD.push_back(SD);
+						VA.push_back(SA);
+						VB.push_back(SB);
+						VC.push_back(SC);
+					}
+
+					int DColsOffset = (divisionFactor - 1) * subCols;
+					int AColsOffset = (divisionFactor - 1) * subSharedDim;
+					int BColsOffset = (divisionFactor - 1) * subCols;
+
+					SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,subRows,(DCols - DColsOffset));
+					SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,(ACols - AColsOffset));
+					SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,(BCols - BColsOffset));
+					SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,subRows,(DCols - DColsOffset));
+
+					VD.push_back(SD);
+					VA.push_back(SA);
+					VB.push_back(SB);
+					VC.push_back(SC);
+				}
+
+				//Partition the last row
+				int DRowsOffset = (divisionFactor - 1) * subRows;
+				int ARowsOffset = (divisionFactor - 1) * subRows;
+				int BRowsOffset = (divisionFactor - 1) * subSharedDim;
+
+				for(int blockX = 0; blockX < (divisionFactor - 1); blockX++){
+					int DColsOffset = blockX * subCols;
+					int AColsOffset = blockX * subSharedDim;
+					int BColsOffset = blockX * subCols;
+
+					SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,(DRows - DRowsOffset),subCols);
+					SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),subSharedDim);
+					SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),subCols);
+					SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,(DRows - DRowsOffset),subCols);
+
+					VD.push_back(SD);
+					VA.push_back(SA);
+					VB.push_back(SB);
+					VC.push_back(SC);
+				}
+
+				int DColsOffset = (divisionFactor - 1) * subCols;
+				int AColsOffset = (divisionFactor - 1) * subSharedDim;
+				int BColsOffset = (divisionFactor - 1) * subCols;
+
+				SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,(DRows - DRowsOffset),(DCols - DColsOffset));
+				SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),(ACols - AColsOffset));
+				SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),(BCols - BColsOffset));
+				SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,(DRows - DRowsOffset),(DCols - DColsOffset));
+
+				VD.push_back(SD);
+				VA.push_back(SA);
+				VB.push_back(SB);
+				VC.push_back(SC);
+
+			}
 		}
 
 		return temp;

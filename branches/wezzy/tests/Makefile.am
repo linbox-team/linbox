@@ -605,7 +605,7 @@ test_cradomain_SOURCES =                \
         test-cradomain.C                \
         test-common.h
 
-test_blas_domain_SOURCES=               \
+test_opencl_domain_SOURCES=               \
         test-common.h                   \
         test-opencl-domain.C
 

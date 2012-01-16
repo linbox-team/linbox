@@ -33,7 +33,7 @@
 #include <iostream>
 #include <pthread.h>
 #include "linbox/algorithms/blas-domain.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/submatrix-adapter.h"
 #include "linbox/util/debug.h"
 
 #include "CL/cl.h"
@@ -106,11 +106,11 @@ namespace LinBox{
 		 * @internal
 		 * Checks to see if the memory levels required are possible
 		 */
-		template <typename T, class Operand1, class Operand2, class Operand3>
-		bool oclMemCheck(Operand1 &C, const Operand2 &A, const Operand3 &B) const;
-
-		template <typename T, class Operand1, class Operand2, class Operand3>
+		template <class Operand1, class Operand2, class Operand3>
 		bool oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const;
+
+		template <class Operand1>
+		bool oclMemCheck(Operand1& D, Operand1& A, Operand1& B, Operand1& C) const;
 
 		/**
 		 * @internal
@@ -161,17 +161,15 @@ namespace LinBox{
 		 * @internal
 		 * Functions to partition the matrices into submatrix views
 		 */
-		typedef std::vector<BlasSubmatrix<Field> > SubmatrixVector;
-		typedef std::vector<BlasSubmatrix<Modular<double> > > SubmatrixVectorD;
-		typedef std::vector<BlasSubmatrix<Modular<float> > > SubmatrixVectorF;
-
 		template <class Operand1, class Operand2, class Operand3>
-		std::vector<int> oclPartition(Operand1& C, const Operand2& A, const Operand3& B, SubmatrixVector& VC,
-			SubmatrixVector& VA, SubmatrixVector& VB) const;
+		std::vector<int> oclPartition(Operand1& C, const Operand2& A, const Operand3& B,
+			std::vector<SubmatrixAdapter<Operand1> >& VC, std::vector<SubmatrixAdapter<Operand2> >& VA,
+			std::vector<SubmatrixAdapter<Operand3> >& VB) const;
 
 		template <class Operand1, class Operand2, class Operand3>
 		std::vector<int> oclPartition(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C,
-			SubmatrixVector& VD, SubmatrixVector& VA, SubmatrixVector& VB, SubmatrixVector& VC) const;
+			std::vector<SubmatrixAdapter<Operand1> >& VD, std::vector<SubmatrixAdapter<Operand2> >& VA,
+			std::vector<SubmatrixAdapter<Operand3> >& VB, std::vector<SubmatrixAdapter<Operand1> >& VC) const;
 
 		void printClErrstring(cl_int err) const;
 

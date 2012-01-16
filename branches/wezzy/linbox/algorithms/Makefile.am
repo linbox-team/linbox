@@ -21,7 +21,7 @@
 
 pkgincludesubdir=$(pkgincludedir)/algorithms
 
-SUBDIRS=gauss opencl-kernels
+SUBDIRS=gauss
 
 noinst_LTLIBRARIES=libalgorithms.la
 
