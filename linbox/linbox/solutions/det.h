@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/solutions/det.h
  * Copyright (C) 2001, 2002 LinBox
  * Time-stamp: <04 Oct 11 16:42:52 Jean-Guillaume.Dumas@imag.fr>
@@ -680,4 +678,13 @@ namespace LinBox
 #endif //__LINBOX_HAVE_MPI
 
 #endif // __LINBOX_det_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 
