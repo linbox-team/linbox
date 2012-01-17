@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/opencl-domain-setup.inl
- * Copyright (C) 2011 Matthew Wezowicz
+ * Copyright (C) 2011-2012 Matthew Wezowicz
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

@@ -1,7 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/opencl-domain.h
- * Copyright (C) 2011 Matthew Wezowicz, David Saunders
+ * Copyright (C) 2011      David Saunders
+ *               2011-2012 Matthew Wezowicz
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,12 +34,51 @@
 #include <iostream>
 #include <pthread.h>
 #include "linbox/algorithms/blas-domain.h"
-#include "linbox/matrix/submatrix-adapter.h"
 #include "linbox/util/debug.h"
 
 #include "CL/cl.h"
 
 namespace LinBox{
+
+	/**
+	 * Generic submatrix view adapter used internally in the OpenCLMatrixDomain
+	 */
+	template <class Matrix>
+	class SubmatrixAdapter{
+	private:
+		typedef typename Matrix::Element Element;
+
+		Matrix* _Mat;
+		size_t _row;
+		size_t _col;
+		size_t _r0;
+		size_t _c0;
+
+	public:
+		SubmatrixAdapter() : _Mat(NULL), _row(0), _col(0), _r0(0), _c0(0){}
+
+		SubmatrixAdapter(const Matrix& M) : _Mat(&(const_cast<Matrix&>(M))), _row(M.rowdim()),
+			_col(M.coldim()), _r0(0), _c0(0) {}
+
+		SubmatrixAdapter(const Matrix& M, size_t row, size_t col, size_t Rowdim, size_t Coldim) :
+			_Mat(&(const_cast<Matrix&>(M))), _row(Rowdim), _col(Coldim), _r0(row), _c0(col) {}
+
+		size_t rowdim() const{
+			return _row;
+		}
+
+		size_t coldim() const{
+			return _col;
+		}
+
+		void setEntry(size_t i, size_t j, const Element& a_ij){
+			_Mat->setEntry(_r0 + i, _c0 + j, a_ij);
+		}
+
+		const Element& getEntry(size_t i, size_t j) const{
+			return _Mat->getEntry(_r0 + i, _c0 + j);
+		}
+	};
 
 	/**
 	 * Interface for all functionnalities provided
@@ -94,7 +134,7 @@ namespace LinBox{
 		 * @internal
 		 * Initializes the OpenCL compute environment
 		 */
-		void oclMatrixDomainInit();
+		void oclMatrixDomainAcquire();
 
 		/**
 		 * @internal
@@ -190,7 +230,7 @@ namespace LinBox{
 #endif
 
 			//Initialize OpenCL environment
-			oclMatrixDomainInit();
+			oclMatrixDomainAcquire();
 		}
 
 		//! Copy constructor
@@ -205,7 +245,7 @@ namespace LinBox{
 #endif
 
 			//Initialize OpenCL environment
-			oclMatrixDomainInit();
+			oclMatrixDomainAcquire();
 		}
 
 		//! Deconstructor

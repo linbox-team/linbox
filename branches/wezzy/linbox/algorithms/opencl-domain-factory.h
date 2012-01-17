@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/opencl-domain-factory.h
- * Copyright (C) 2011 Matthew Wezowicz
+ * Copyright (C) 2011-2012 Matthew Wezowicz
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,6 @@
 #define __LINBOX_opencl_matrix_domain_factory_H
 
 #include <new>
-#include <iostream>
-#include <cstdio>
 #include <cstring>
 #include <pthread.h>
 #include "linbox/algorithms/opencl-domain.h"
@@ -522,7 +520,7 @@ namespace LinBox{
 
 	public:
 		template <class Field>
-		static void oclMatrixDomainCreate(OpenCLMatrixDomain<Field>* target){
+		static void oclMatrixDomainInstance(OpenCLMatrixDomain<Field>* target){
 
 			//Check if the OpenCL environment has been initialized
 			//It will only need to be initialized when the first OpenCLMatrixDomain instance
@@ -575,7 +573,7 @@ namespace LinBox{
 			pthread_mutex_unlock(&factoryLock);
 		}
 
-		static void oclMatrixDomainDestroy(unsigned int IDnum){
+		static void oclMatrixDomainDeallocate(unsigned int IDnum){
 			pthread_mutex_lock(&factoryLock);
 
 			//Decrease count of OpenCLMatrixDomain instances
