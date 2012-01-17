@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox-sage.h
  * Copyright (C) 2007 Martin Albrecht
  *               2008 Clement Pernet
@@ -143,3 +141,12 @@ std::vector<unsigned int> linbox_modn_sparse_matrix_solve (unsigned int modulus,
 						     int method);
 
 #endif // __LINBOX_SAGE_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

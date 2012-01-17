@@ -1,19 +1,15 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,=s,is,+s
-/* Copyright (C) <+year+> LinBox
- * Written by <+someone+> < <+her.mail@somewhere.net+> >
+/* Copyright (C) <+years+> the members of the LinBox group
+ * Written by <+someone+> < <+her mail+> >
  *
- *
+ * This file is part of the LinBox library.
  *
  * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
+ * LinBox is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
  * Lesser General Public License for more details.
@@ -22,6 +18,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
+ *
+ * other mentions
  */
 
 #ifndef __LINBOX_<+directory_file_name+>_H
@@ -58,18 +56,18 @@ namespace LinBox
 	 */
 	template<++>
 	void my_func(T & toto)
-		{
-			toto() ;
-			if (a) {
-				b();
-			}
-			else {
-				c() ;
-			}
+	{
+		toto() ;
+		if (a) {
+			b();
 		}
+		else {
+			c() ;
+		}
+	}
 
 	template<class A,
-		class B>
+	class B>
 	void foo() ;
 
 	switch(a) {
@@ -100,12 +98,12 @@ namespace LinBox
 		{} ;
 
 		A(int p, int q)
-			: _p(p), _q(q)
+		: _p(p), _q(q)
 		{} ;
 
 
 		~A() {} ;
-	}
+	};
 #if 0
 	int old_code()  // but maybe usefull later
 	{
@@ -122,4 +120,12 @@ namespace LinBox
 #undef LB_MACRO
 
 #endif //__LINBOX_<+directory_file_name+>_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

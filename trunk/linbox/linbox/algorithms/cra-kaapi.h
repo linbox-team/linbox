@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C)  LinBox
  * author: B. David Saunders and Zhendong Wan
  * parallelized for BOINC computing by Bryan Youse
@@ -187,4 +185,13 @@ a1::IStream& operator>>( a1::IStream& in,  LinBox::Residue<Function, Domain>&  )
 	return in;
 }
 #endif //__LINBOX_cra_kaapi_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 
