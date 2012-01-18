@@ -22,7 +22,7 @@
 #ifndef __LINBOX_opencl_matrix_domain_memory_INL
 #define __LINBOX_opencl_matrix_domain_memory_INL
 
-#include <new>
+#include <cstdlib>
 
 #include "CL/cl.h"
 
@@ -42,7 +42,7 @@ namespace LinBox{
 		int dataOffset = 0;
 
 		//Allocates a 32mb buffer for padding
-		T* paddingBuffer = (T*)operator new(32 * 1024 * 1024);
+		T* paddingBuffer = (T*)malloc(32 * 1024 * 1024);
 
 		//Calculate the size of the padding buffer in number of elements
 		const int paddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
@@ -104,7 +104,7 @@ namespace LinBox{
 		}
 
 		//Deallocates buffer
-		delete paddingBuffer;
+		free(paddingBuffer);
 
 		return matrixBuffer;
 	}
@@ -123,7 +123,7 @@ namespace LinBox{
 		int dataOffset = 0;
 
 		//Allocates a 32mb buffer for depadding
-		T* depaddingBuffer = (T*)operator new(32 * 1024 * 1024);
+		T* depaddingBuffer = (T*)malloc(32 * 1024 * 1024);
 
 		//Calculate the size of the depadding buffer in number of elements
 		const int depaddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
@@ -180,7 +180,7 @@ namespace LinBox{
 		}
 
 		//Deallocates buffer
-		delete depaddingBuffer;
+		free(depaddingBuffer);
 
 		return matrix;
 	}

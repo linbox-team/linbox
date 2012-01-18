@@ -753,7 +753,6 @@ void* performOpenCL_mul(void* t){
 	pthread_exit(NULL);
 }
 
-
 void testThreadSafe(int iterations){
 	pthread_t* pthreads = (pthread_t*)operator new(iterations * sizeof(pthread_t));
 
@@ -766,7 +765,6 @@ void testThreadSafe(int iterations){
 	}
 }
 */
-
 
 int main(int argc, char** argv){
 	static size_t n = 500;
@@ -796,34 +794,7 @@ int main(int argc, char** argv){
 	//For warmup of OpenCLMatrixDomainFactory
 	OpenCLMatrixDomain<Modular<double> > OMD(F);
 	
-	/*
-	OpenCLTimer timer;
-	
-	BlasMatrix<Modular<double> > A(F,n,n);
-	BlasMatrix<Modular<double> > B(F,n,n);
-
-	Modular<double>::RandIter G(F);
-	
-	double tmp;
-
-	timer.tic();
-	for(size_t k = 0; k < n; k++){
-		for(size_t j = 0; j < n; j++){
-			A.setEntry(k,j,G.random(tmp));
-		}
-	}
-	tmp = timer.toc();
-	commentator.report() << "Copy1: " << tmp << std::endl;
-	
-	timer.tic();
-	BlasMatrix<Modular<double> >::pointer b = B.getWritePointer();
-	for(int i = 0; i < (n * n); i++){
-		*b = G.random(tmp);
-		++b;
-	}
-	tmp = timer.toc();
-	commentator.report() << "Copy2: " << tmp << std::endl;
-	*/
+	//testThreadSafe(iterations * 5);
 
 	pass &= launch_tests(F, (int)n, iterations);
 	pass &= launch_tests(H, (int)n, iterations);

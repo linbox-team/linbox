@@ -22,53 +22,124 @@
 #ifndef __LINBOX_opencl_matrix_domain_factory_H
 #define __LINBOX_opencl_matrix_domain_factory_H
 
-#include <new>
+#include <iostream>
+#include <vector>
 #include <cstring>
+#include <cstdlib>
 #include <pthread.h>
 #include "linbox/algorithms/opencl-domain.h"
 #include "linbox/algorithms/opencl-kernels/opencl-domain-kernels.inl"
 
 #include "CL/cl.h"
 
+#define NUM_KERNELS 20
+
 namespace LinBox{
 
-	class OpenCLMatrixDomainFactory {
+	const char* dpKernelSources[] = {
+			matrixMulKernelModular1DP, matrixMulKernelModular8DP,
+			matrixMulKernelModular32DP, matrixMulKernelModular1024DP,
+			matrixMuladdKernelModular1DP, matrixMuladdKernelModular8DP,
+			matrixMuladdKernelModular32DP, matrixMuladdKernelModular1024DP,
+			matrixAxpyKernelModular1DP, matrixAxpyKernelModular8DP,
+			matrixAxpyKernelModular32DP, matrixAxpyKernelModular1024DP,
+			matrixMaxpyKernelModular1DP, matrixMaxpyKernelModular8DP,
+			matrixMaxpyKernelModular32DP, matrixMaxpyKernelModular1024DP,
+			matrixAxmyKernelModular1DP, matrixAxmyKernelModular8DP,
+			matrixAxmyKernelModular32DP, matrixAxmyKernelModular1024DP};
+
+		const char* dpKernelNames[] = {
+			"matrixMulKernelModular1DP", "matrixMulKernelModular8DP",
+			"matrixMulKernelModular32DP", "matrixMulKernelModular1024DP",
+			"matrixMuladdKernelModular1DP", "matrixMuladdKernelModular8DP",
+			"matrixMuladdKernelModular32DP", "matrixMuladdKernelModular1024DP",
+			"matrixAxpyKernelModular1DP", "matrixAxpyKernelModular8DP",
+			"matrixAxpyKernelModular32DP", "matrixAxpyKernelModular1024DP",
+			"matrixMaxpyKernelModular1DP", "matrixMaxpyKernelModular8DP",
+			"matrixMaxpyKernelModular32DP", "matrixMaxpyKernelModular1024DP",
+			"matrixAxmyKernelModular1DP", "matrixAxmyKernelModular8DP",
+			"matrixAxmyKernelModular32DP", "matrixAxmyKernelModular1024DP"};
+
+		const char* spKernelSources[] = {
+			matrixMulKernelModular1SP, matrixMulKernelModular16SP,
+			matrixMulKernelModular32SP, matrixMulKernelModular1024SP,
+			matrixMuladdKernelModular1SP, matrixMuladdKernelModular16SP,
+			matrixMuladdKernelModular32SP, matrixMuladdKernelModular1024SP,
+			matrixAxpyKernelModular1SP, matrixAxpyKernelModular16SP,
+			matrixAxpyKernelModular32SP, matrixAxpyKernelModular1024SP,
+			matrixMaxpyKernelModular1SP, matrixMaxpyKernelModular16SP,
+			matrixMaxpyKernelModular32SP, matrixMaxpyKernelModular1024SP,
+			matrixAxmyKernelModular1SP, matrixAxmyKernelModular16SP,
+			matrixAxmyKernelModular32SP, matrixAxmyKernelModular1024SP};
+
+		const char* spKernelNames[] = {
+			"matrixMulKernelModular1SP", "matrixMulKernelModular16SP",
+			"matrixMulKernelModular32SP", "matrixMulKernelModular1024SP",
+			"matrixMuladdKernelModular1SP", "matrixMuladdKernelModular16SP",
+			"matrixMuladdKernelModular32SP", "matrixMuladdKernelModular1024SP",
+			"matrixAxpyKernelModular1SP", "matrixAxpyKernelModular16SP",
+			"matrixAxpyKernelModular32SP", "matrixAxpyKernelModular1024SP",
+			"matrixMaxpyKernelModular1SP", "matrixMaxpyKernelModular16SP",
+			"matrixMaxpyKernelModular32SP", "matrixMaxpyKernelModular1024SP",
+			"matrixAxmyKernelModular1SP", "matrixAxmyKernelModular16SP",
+			"matrixAxmyKernelModular32SP", "matrixAxmyKernelModular1024SP"};
+
+	class OpenCLMatrixDomainFactory{
 
 	protected:
+		OpenCLMatrixDomainFactory();
+		OpenCLMatrixDomainFactory(const OpenCLMatrixDomainFactory&);
+		OpenCLMatrixDomainFactory& operator=(const OpenCLMatrixDomainFactory&);
+		~OpenCLMatrixDomainFactory();
 
-		//OpenCL specific variables
-		static cl_context context;
-		static cl_device_id device;
-		static cl_command_queue commandQue;
-		static cl_int errcode;
+		struct oclEnviron{
+			//OpenCL specific variables
+			cl_context context;
+			cl_device_id device;
+			cl_command_queue commandQue;
+			cl_int errcode;
 
-		//Storage for memory levels
-		static unsigned long memCapacity;
-		static unsigned long maxBufferSize;
+			//Storage for memory levels
+			unsigned long memCapacity;
+			unsigned long maxBufferSize;
 
-		//Type and Status flags
-		static bool GPUcontainer;
-		static bool CPUcontainer;
-		static bool setupCorrect;
-		static bool doubleSupported;
+			//Type and status flags
+			bool GPUcontainer;
+			bool CPUcontainer;
+			bool setupCorrect;
+			bool doubleSupported;
+
+			//Storage for kernels
+			cl_kernel* dpKernels;
+			bool* dpKernelsAvailable;
+			cl_kernel* spKernels;
+			bool* spKernelsAvailable;
+
+			//Mutex
+			pthread_mutex_t* deviceLock;
+		};
+
+		public:
+		typedef struct oclEnviron oclEnviron;
+
+		protected:
+
+		//Storage for all OpenCL evironments created by the factory
+		static std::vector<oclEnviron>* environs;
+		static std::vector<int>* instances;
+
+		//Initialization flag
 		static bool initialized;
 
-		//Storage for kernels
-		static cl_kernel* dpKernels;
-		static bool* dpKernelsAvailable;
-		static cl_kernel* spKernels;
-		static bool* spKernelsAvailable;
+		//Storage for the error code
+		static cl_int errcode;
 
-		//Count of instances
-		static int countOpenCLMatrixDomain;
-
-		//Mutexes
+		//Factory mutex
 		static pthread_mutex_t factoryLock;
-		static pthread_mutex_t* deviceLock;
 
 		/**
 		 * @internal
-		 * Picks the platform used for the container
+		 * Picks the platform used
 		 */
 		static cl_int oclGetPlatformID(cl_platform_id& selectedPlatform){
 			//Allocate temporary char array for platform name
@@ -77,7 +148,8 @@ namespace LinBox{
 			cl_platform_id* platforms;
 			selectedPlatform = NULL;
 
-			//OpenCL Platform count return custom error codes if there are no platforms
+			//Get OpenCL platform count
+			//return custom error codes if there are no platforms
 			//or could not get number of platforms
 			errcode = clGetPlatformIDs(0, NULL, &numPlatforms);
 			if(errcode != CL_SUCCESS){
@@ -88,62 +160,48 @@ namespace LinBox{
 			}
 
 			//Allocate space to store cl_platform_id's
-			platforms = (cl_platform_id*)operator new(numPlatforms * sizeof(cl_platform_id));
+			platforms = (cl_platform_id*)malloc(numPlatforms * sizeof(cl_platform_id));
 			errcode = clGetPlatformIDs(numPlatforms, platforms, NULL);
 
-			//Search through the platforms looking of a prefered one specified by a string
-			for(unsigned int i = 0; i < numPlatforms; i++){
-				errcode= clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, 256, &chBuffer, NULL);
+			//Search through the platforms looking for a prefered one specified by a string
+			for(int i = 0; i < (int)numPlatforms; i++){
+				errcode = clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, 256, (void*)chBuffer, NULL);
 
-				if(errcode == CL_SUCCESS && !(strcmp(chBuffer, "NVIDIA CUDA"))){
+				if(errcode == CL_SUCCESS && !(strcmp(chBuffer,"NVIDIA CUDA"))){
 					selectedPlatform = platforms[i];
 					break;
 				}
 			}
 
-			//If prefered platform could not be found use first platforms
+			//If prefered platform could not be found use first platform
 			if(selectedPlatform == NULL){
 				selectedPlatform = platforms[0];
 			}
 
 			//Clean up memory
-			delete platforms;
+			free(platforms);
 
 			return CL_SUCCESS;
 		}
 
 		/**
 		 * @internal
-		 * Picks the device used for the container
+		 * Computes a score for all devices
 		 */
-		static cl_device_id oclDeviceSelector(cl_int numDevices, cl_device_id* devices){
-			//If there is only one device on the selected platform
-			if(numDevices == 1){
+		static std::vector<long> oclComputeDeviceScores(cl_device_id* devices,
+			cl_uint numDevices){
+
+			std::vector<long> ret;
+
+			//For all devices, query information about them and compute a score
+			for(int i = 0; i < (int)numDevices; i++){
+
 				cl_device_type type;
-				errcode = clGetDeviceInfo(devices[0], CL_DEVICE_TYPE, sizeof(cl_device_type), &type, NULL);
+				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_TYPE, sizeof(cl_device_type),
+					&type, NULL);
 
-				//Set container type
-				GPUcontainer = (type == CL_DEVICE_TYPE_GPU);
-				CPUcontainer = (type == CL_DEVICE_TYPE_CPU);
+				bool GPU = (type == CL_DEVICE_TYPE_GPU);
 
-				return devices[0];
-			}
-
-			//Allocate space for the calculation of device scores
-			int rankings[numDevices];
-			int selected = 0;
-
-			//Query device info and compute weighted score
-			for(int i = 0; i < numDevices; i++){
-				cl_device_type type;
-				errcode = clGetDeviceInfo(devices[selected], CL_DEVICE_TYPE, sizeof(cl_device_type),
-				&type, NULL);
-
-				//Temp set container type
-				GPUcontainer = (type == CL_DEVICE_TYPE_GPU);
-				CPUcontainer = (type == CL_DEVICE_TYPE_CPU);
-
-				//Get the number of processors, clock rate, device type, maximum buffere size, and total memory
 				cl_uint computeUnits;
 				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint),
 					&computeUnits, NULL);
@@ -151,9 +209,6 @@ namespace LinBox{
 				cl_uint clockFrequency;
 				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(cl_uint),
 					&clockFrequency, NULL);
-
-				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_TYPE, sizeof(cl_device_type),
-					&type, NULL);
 
 				cl_ulong maxGlobalMemoryAllocSize;
 				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(cl_ulong),
@@ -163,37 +218,92 @@ namespace LinBox{
 				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong),
 					&globalMemory, NULL);
 
-				//Calculate score for device -- Subject to modification
-				rankings[i] = ((computeUnits * clockFrequency) * (type == CL_DEVICE_TYPE_GPU ? 4 : 1) +
-					(maxGlobalMemoryAllocSize / (1024 * 1024)) + (globalMemory / (1024 * 1024)));
+				long score = (computeUnits * clockFrequency);
+				score *= (GPU ? 8 : 1);
+				score += (maxGlobalMemoryAllocSize / (1024 * 1024));
+				score += (globalMemory / (1024 * 1024));
+
+				ret.push_back(score);
 			}
 
-			//Select the device with the highest score
-			for(int i = 0; i < numDevices; i++){
-				if(rankings[selected] < rankings[i]){
-					selected = i;
-				}
+			return ret;
+		}
+
+		/**
+		 * @internal
+		 * Creates a kernel given a file name and kernel name
+		 * Returns the kernel
+		 */
+		static cl_kernel oclCreateKernel(const char* kernel, const char* kernelName, cl_context& context){
+
+			//find length of the kernel
+			size_t kernelLength = strlen(kernel);
+
+			//Create program from file
+			cl_program program = clCreateProgramWithSource(context, 1,
+				(const char**)&kernel, &kernelLength, &errcode);
+
+			//Build the program into executable
+			if(errcode == CL_SUCCESS){
+				const char* options = {"-cl-mad-enable -cl-no-signed-zeros -cl-finite-math-only\0"};
+				errcode = clBuildProgram(program, 0, NULL, options, NULL, NULL);
 			}
+
+			//Create kernel from executable
+			cl_kernel tempKernel = NULL;
+			if(errcode == CL_SUCCESS){
+				tempKernel = clCreateKernel(program, kernelName, &errcode);
+			}
+
+			//Releasing program
+			clReleaseProgram(program);
+
+			//Return kernel
+			return tempKernel;
+		}
+
+		/**
+		 * @internal
+		 * Builds a single oclEnviron
+		 */
+		static oclEnviron& oclBuildEnviron(oclEnviron& environ, cl_platform_id& platform,
+			cl_device_id& device){
+
+			//Create OpenCL context
+			cl_context_properties properties[3] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform, 0};
+			environ.context = clCreateContext(properties, 1, &device, NULL, NULL, &errcode);
+
+			environ.device = device;
+
+			//Create OpenCL command queue
+			environ.commandQue = clCreateCommandQueue(environ.context, device, 0, &errcode);
+
+			//Get amount of memory that the device has
+			errcode = clGetDeviceInfo(device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong),
+				&(environ.memCapacity), NULL);
+			errcode = clGetDeviceInfo(device, CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(cl_ulong),
+				&(environ.maxBufferSize), NULL);
 
 			//Get the device type for the selected device
 			cl_device_type type;
-			errcode = clGetDeviceInfo(devices[selected], CL_DEVICE_TYPE, sizeof(cl_device_type),
+			errcode = clGetDeviceInfo(device, CL_DEVICE_TYPE, sizeof(cl_device_type),
 				&type, NULL);
 
 			//Set container type
-			GPUcontainer = (type == CL_DEVICE_TYPE_GPU);
-			CPUcontainer = (type == CL_DEVICE_TYPE_CPU);
+			environ.GPUcontainer = (type == CL_DEVICE_TYPE_GPU);
+			environ.CPUcontainer = (type == CL_DEVICE_TYPE_CPU);
+
 
 			//Determine double precision support for device by getting a listing of all
 			//OpenCL device extensions supported by the device and searching through them for
 			//the string "cl_khr_fp64"
-			doubleSupported = false;
+			environ.doubleSupported = false;
 
 			size_t sizeReturn;
 
-			errcode = clGetDeviceInfo(devices[selected], CL_DEVICE_EXTENSIONS, 0, NULL, &sizeReturn);
-			char* deviceExtensions = (char*) operator new(sizeReturn);
-			errcode = clGetDeviceInfo(devices[selected], CL_DEVICE_EXTENSIONS, sizeReturn, deviceExtensions, NULL);
+			errcode = clGetDeviceInfo(device, CL_DEVICE_EXTENSIONS, 0, NULL, &sizeReturn);
+			char* deviceExtensions = (char*)malloc(sizeReturn);
+			errcode = clGetDeviceInfo(device, CL_DEVICE_EXTENSIONS, sizeReturn, deviceExtensions, NULL);
 
 			char* exten[200];
 
@@ -212,310 +322,187 @@ namespace LinBox{
 						break;
 					}
 					if(!strcmp(exten[i], "cl_khr_fp64")){
-						doubleSupported = true;
+						environ.doubleSupported = true;
 					}
 				}
 			}
 
-			delete deviceExtensions;
+			free(deviceExtensions);
 
-			return devices[selected];
+			environ.errcode = errcode;
+
+			//Allocate memory for kernels and kernel flags
+			environ.dpKernels = (cl_kernel*)malloc(NUM_KERNELS * sizeof(cl_kernel));
+			environ.spKernels = (cl_kernel*)malloc(NUM_KERNELS * sizeof(cl_kernel));
+			environ.dpKernelsAvailable = (bool*)malloc(NUM_KERNELS * sizeof(bool));
+			environ.spKernelsAvailable = (bool*)malloc(NUM_KERNELS * sizeof(bool));
+
+			for(int i = 0; i < NUM_KERNELS; i++){
+				environ.dpKernelsAvailable[i] = false;
+				environ.spKernelsAvailable[i] = false;
+			}
+
+			//Compile all of the kernels
+			if(errcode == CL_SUCCESS){
+				for(int i = 0; i < NUM_KERNELS; i++){
+					environ.dpKernels[i] = oclCreateKernel(dpKernelSources[i], dpKernelNames[i], environ.context);
+					if(errcode == CL_SUCCESS){environ.dpKernelsAvailable[i] = true;}
+				}
+
+				for(int i = 0; i < NUM_KERNELS; i++){
+					environ.spKernels[i] = oclCreateKernel(spKernelSources[i], spKernelNames[i], environ.context);
+					if(errcode == CL_SUCCESS){environ.dpKernelsAvailable[i] = true;};
+				}
+			}
+
+			//Initialize the device mutex
+			environ.deviceLock = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+			pthread_mutex_init(environ.deviceLock, NULL);
+
+			return environ;
 		}
 
 		/**
 		 * @internal
-		 * Loads the contents of the specified file into memory
-		 * Returns a pointer to a char array and the length of the file
+		 * Builds the vector of oclEnvirons
 		 */
-		// static char* readFileContents(const char* fileName, int& length){
+		static std::vector<oclEnviron>* oclGetEnvirons(std::vector<oclEnviron>* environs,
+			cl_platform_id& platform, cl_device_id* devices, cl_uint numDevices){
 
-			// //Open file
-			// std::ifstream input;
-			// input.open(fileName);
+			//Compute a score for all devices
+			std::vector<long> rankings = oclComputeDeviceScores(devices, numDevices);
 
-			// //Get file size
-			// input.seekg(0, std::ios::end);
-			// length = input.tellg();
-			// input.seekg(0, std::ios::beg);
+			//Find the max score and calculate a lower bound for device selection
+			long maxScore = *(std::max_element(rankings.begin(), rankings.end()));
+			long lowerBound = maxScore * 0.90;
 
-			// //Allocate memory for file contents
-			// char* buffer = new char[(length + 1)];
+			for(int i = 0; i < (int)numDevices; i++){
+				if(rankings.at(i) < lowerBound){
+					continue;
+				}
 
-			// //Read the file
-			// input.read(buffer, length);
+				oclEnviron temp;
 
-			// //Close the file
-			// input.close();
+				temp = oclBuildEnviron(temp, platform, devices[i]);
 
-			// //Append null character to end of file contents
-			// buffer[length] = '\0';
-
-			// //Return the buffer
-			// return buffer;
-		// }
-
-		/**
-		 * @internal
-		 * Creates a kernel given a file name and kernel name
-		 * Returns the kernel
-		 */
-		static cl_kernel oclCreateKernel(const char* kernel, const char* kernelName){
-
-			//Load the file and get length
-			//int fileLength;
-			//char* fileContents = readFileContents(fileName, fileLength);
-
-			//find length of the kernel
-			size_t kernelLength = strlen(kernel);
-			//size_t kernelLength = fileLength;
-			//Create program from file
-			cl_program program = clCreateProgramWithSource(context, 1,
-				(const char**)&kernel, &kernelLength, &errcode);
-
-			//Build the program into executable
-			if(errcode == CL_SUCCESS){
-				const char* options = {"-cl-mad-enable -cl-no-signed-zeros -cl-finite-math-only -cl-nv-opt-level=<10>\0"};
-				errcode = clBuildProgram(program, 0, NULL, options, NULL, NULL);
-			}
-			/*
-			printf(kernelName);
-			printf("\n");
-			size_t ret;
-			errcode = clGetProgramBuildInfo(program,device,CL_PROGRAM_BUILD_LOG,0,NULL,&ret);
-			char* log = (char*)operator new(ret);
-			errcode = clGetProgramBuildInfo(program,device,CL_PROGRAM_BUILD_LOG,ret,log,NULL);
-			printf(log);
-			delete log;
-			*/
-
-			//Create kernel from executable
-			cl_kernel tempKernel = NULL;
-			if(errcode == CL_SUCCESS){
-				tempKernel = clCreateKernel(program, kernelName, &errcode);
+				environs->push_back(temp);
 			}
 
-			//Releasing program
-			clReleaseProgram(program);
-
-			//Return kernel
-			return tempKernel;
+			return environs;
 		}
-
 
 		/**
 		 * @internal
 		 * Initializes the OpenCL compute environment
 		 */
 		static void oclEnvironInit(){
-
 			//Declare OpenCL specific variables
 			cl_platform_id platform;
-			cl_uint numDevices;
+			cl_uint numDevices = 0;
 			cl_device_id* devices;
 
-			//Get platform id
+			//Get the platform to be used
 			errcode = oclGetPlatformID(platform);
 
 			//Proceed only if successful with previous phase
 			if(errcode == CL_SUCCESS){
-				//Get number of devices
-				errcode = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 0, 0, &numDevices);
+				//Get number of GPU's in the platform
+				errcode = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, NULL, &numDevices);
 			}
 
-			//Allocate memory for device array
-			devices = (cl_device_id*)operator new(numDevices * sizeof(cl_device_id));
+			//Build the oclEnvirons from the device array
+			environs = new std::vector<oclEnviron>();
+			instances = new std::vector<int>();
 
 			//Proceed only if successful with previous phase
-			if(errcode == CL_SUCCESS){
-				//Get device information
-				errcode = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, numDevices, devices, NULL);
+			if(errcode == CL_SUCCESS && numDevices != 0){
+				//Allocate memory for device array and read the devices into it
+				devices = (cl_device_id*)malloc(numDevices * sizeof(cl_device_id));
+				errcode = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, numDevices, devices, NULL);
+
+				environs = oclGetEnvirons(environs, platform, devices, numDevices);
+				for(int i = 0; i < (int)environs->size(); i++){
+					instances->push_back(0);
+				}
+
+				free(devices);
 			}
-
-			//Proceed only if successful with previous phase
-			if(errcode == CL_SUCCESS){
-				//Select Device
-				device = oclDeviceSelector(numDevices, devices);
-			}
-
-			//Proceed only if successful with previous phase
-			if(errcode == CL_SUCCESS){
-				//Create compute context
-				cl_context_properties properties[3] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform, 0};
-				context = clCreateContext(properties, 1, &device, NULL, NULL, &errcode);
-			}
-
-			//Proceed only if successful with previous phase
-			if(errcode == CL_SUCCESS){
-				//Create command queue for device
-				commandQue = clCreateCommandQueue(context, device, 0, &errcode);
-			}
-
-			delete devices;
-
-			cl_ulong memSize;
-			cl_ulong maxGlobalMemoryAllocSize;
-
-			//Proceed only if successful with previous phase
-			if(errcode == CL_SUCCESS){
-				//Get amount of memory that the device has
-				errcode = clGetDeviceInfo(device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(memSize),
-					&memSize, NULL);
-				errcode = clGetDeviceInfo(device, CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(cl_ulong),
-					&maxGlobalMemoryAllocSize, NULL);
-			}
-
-			memCapacity = (unsigned long)memSize;
-			maxBufferSize = (unsigned long)maxGlobalMemoryAllocSize;
-
-			//Initialize al kernel compilation flags to false
-			for(int i = 0; i < 20; i++){
-				dpKernelsAvailable[i] = false;
-				spKernelsAvailable[i] = false;
-			}
-
-			cl_int tempErrcode = errcode;
-
-			//Compile all of the kernels
-			if(errcode == CL_SUCCESS){
-				dpKernels[0] = oclCreateKernel(matrixMulKernelModular1DP, "matrixMulKernelModular1DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[0] = true;}
-
-				dpKernels[1] = oclCreateKernel(matrixMulKernelModular8DP, "matrixMulKernelModular8DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[1] = true;}
-
-				dpKernels[2] = oclCreateKernel(matrixMulKernelModular32DP, "matrixMulKernelModular32DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[2] = true;}
-
-				dpKernels[3] = oclCreateKernel(matrixMulKernelModular1024DP, "matrixMulKernelModular1024DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[3] = true;}
-
-				dpKernels[4] = oclCreateKernel(matrixMuladdKernelModular1DP, "matrixMuladdKernelModular1DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[4] = true;}
-
-				dpKernels[5] = oclCreateKernel(matrixMuladdKernelModular8DP, "matrixMuladdKernelModular8DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[5] = true;}
-
-				dpKernels[6] = oclCreateKernel(matrixMuladdKernelModular32DP, "matrixMuladdKernelModular32DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[6] = true;}
-
-				dpKernels[7] = oclCreateKernel(matrixMuladdKernelModular1024DP, "matrixMuladdKernelModular1024DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[7] = true;}
-
-				dpKernels[8] = oclCreateKernel(matrixAxpyKernelModular1DP, "matrixAxpyKernelModular1DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[8] = true;}
-
-				dpKernels[9] = oclCreateKernel(matrixAxpyKernelModular8DP, "matrixAxpyKernelModular8DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[9] = true;}
-
-				dpKernels[10] = oclCreateKernel(matrixAxpyKernelModular32DP, "matrixAxpyKernelModular32DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[10] = true;}
-
-				dpKernels[11] = oclCreateKernel(matrixAxpyKernelModular1024DP, "matrixAxpyKernelModular1024DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[11] = true;}
-
-				dpKernels[12] = oclCreateKernel(matrixMaxpyKernelModular1DP, "matrixMaxpyKernelModular1DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[12] = true;}
-
-				dpKernels[13] = oclCreateKernel(matrixMaxpyKernelModular8DP, "matrixMaxpyKernelModular8DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[13] = true;}
-
-				dpKernels[14] = oclCreateKernel(matrixMaxpyKernelModular32DP, "matrixMaxpyKernelModular32DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[14] = true;}
-
-				dpKernels[15] = oclCreateKernel(matrixMaxpyKernelModular1024DP, "matrixMaxpyKernelModular1024DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[15] = true;}
-
-				dpKernels[16] = oclCreateKernel(matrixAxmyKernelModular1DP, "matrixAxmyKernelModular1DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[16] = true;}
-
-				dpKernels[17] = oclCreateKernel(matrixAxmyKernelModular8DP, "matrixAxmyKernelModular8DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[17] = true;}
-
-				dpKernels[18] = oclCreateKernel(matrixAxmyKernelModular32DP, "matrixAxmyKernelModular32DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[18] = true;}
-
-				dpKernels[19] = oclCreateKernel(matrixAxmyKernelModular1024DP, "matrixAxmyKernelModular1024DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[19] = true;}
-
-
-				spKernels[0] = oclCreateKernel(matrixMulKernelModular1SP, "matrixMulKernelModular1SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[0] = true;}
-
-				spKernels[1] = oclCreateKernel(matrixMulKernelModular16SP, "matrixMulKernelModular16SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[1] = true;}
-
-				spKernels[2] = oclCreateKernel(matrixMulKernelModular32SP, "matrixMulKernelModular32SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[2] = true;}
-
-				spKernels[3] = oclCreateKernel(matrixMulKernelModular1024SP, "matrixMulKernelModular1024SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[3] = true;}
-
-				spKernels[4] = oclCreateKernel(matrixMuladdKernelModular1SP, "matrixMuladdKernelModular1SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[4] = true;}
-
-				spKernels[5] = oclCreateKernel(matrixMuladdKernelModular16SP, "matrixMuladdKernelModular16SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[5] = true;}
-
-				spKernels[6] = oclCreateKernel(matrixMuladdKernelModular32SP, "matrixMuladdKernelModular32SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[6] = true;}
-
-				spKernels[7] = oclCreateKernel(matrixMuladdKernelModular1024SP, "matrixMuladdKernelModular1024SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[7] = true;}
-
-				spKernels[8] = oclCreateKernel(matrixAxpyKernelModular1SP, "matrixAxpyKernelModular1SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[8] = true;}
-
-				spKernels[9] = oclCreateKernel(matrixAxpyKernelModular16SP, "matrixAxpyKernelModular16SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[9] = true;}
-
-				spKernels[10] = oclCreateKernel(matrixAxpyKernelModular32SP, "matrixAxpyKernelModular32SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[10] = true;}
-
-				spKernels[11] = oclCreateKernel(matrixAxpyKernelModular1024SP, "matrixAxpyKernelModular1024SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[11] = true;}
-
-				spKernels[12] = oclCreateKernel(matrixMaxpyKernelModular1SP, "matrixMaxpyKernelModular1SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[12] = true;}
-
-				spKernels[13] = oclCreateKernel(matrixMaxpyKernelModular16SP, "matrixMaxpyKernelModular16SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[13] = true;}
-
-				spKernels[14] = oclCreateKernel(matrixMaxpyKernelModular32SP, "matrixMaxpyKernelModular32SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[14] = true;}
-
-				spKernels[15] = oclCreateKernel(matrixMaxpyKernelModular1024SP, "matrixMaxpyKernelModular1024SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[15] = true;}
-
-				spKernels[16] = oclCreateKernel(matrixAxmyKernelModular1SP, "matrixAxmyKernelModular1SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[16] = true;}
-
-				spKernels[17] = oclCreateKernel(matrixAxmyKernelModular16SP, "matrixAxmyKernelModular16SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[17] = true;}
-
-				spKernels[18] = oclCreateKernel(matrixAxmyKernelModular32SP, "matrixAxmyKernelModular32SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[18] = true;}
-
-				spKernels[19] = oclCreateKernel(matrixAxmyKernelModular1024SP, "matrixAxmyKernelModular1024SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[19] = true;}
-			}
-
-			//Set all kernel flags to true for debugging
-			for(int i = 0; i < 20; i++){
-				dpKernelsAvailable[i] = true;
-				spKernelsAvailable[i] = true;
-			}
-
-			//Check if everthing is setup correctly
-			errcode = tempErrcode;
-			if(errcode != CL_SUCCESS){
-				setupCorrect = false;
-			}
+			//If there are no devices or if an error occured make a default oclEnviron that
+			//disables the OpenCLMatrixDomain and defaults it to BlasMatrixDomain methods
 			else{
-				setupCorrect = true;
+				oclEnviron temp;
+
+				temp.context = NULL;
+				temp.device = NULL;
+				temp.commandQue = NULL;
+				temp.errcode = CL_INVALID_PLATFORM;
+				temp.memCapacity = 0UL;
+				temp.maxBufferSize = 0UL;
+				temp.GPUcontainer = false;
+				temp.CPUcontainer = false;
+				temp.setupCorrect = false;
+				temp.doubleSupported = false;
+
+				temp.dpKernels = (cl_kernel*)malloc(NUM_KERNELS * sizeof(cl_kernel));
+				temp.spKernels = (cl_kernel*)malloc(NUM_KERNELS * sizeof(cl_kernel));
+				temp.dpKernelsAvailable = (bool*)malloc(NUM_KERNELS * sizeof(bool));
+				temp.spKernelsAvailable = (bool*)malloc(NUM_KERNELS * sizeof(bool));
+
+				for(int i = 0; i < NUM_KERNELS; i++){
+					temp.dpKernels[i] = NULL;
+					temp.spKernels[i] = NULL;
+					temp.dpKernelsAvailable[i] = false;
+					temp.spKernelsAvailable[i] = false;
+				}
+
+				temp.deviceLock = NULL;
+
+				environs->push_back(temp);
+				instances->push_back(0);
 			}
 
-			//Initialize the device mutex
-			pthread_mutex_init(deviceLock, NULL);
+		}
+
+		/**
+		 * @internal
+		 * Handles the releasing of resources at program exit
+		 */
+		static void oclResourceCleanUp(){
+			//Release all reources held in each oclEnviron
+			for(int i = 0; i < (int)environs->size(); i++){
+				oclEnviron current = environs->at(i);
+
+				//Release the kernels
+				for(int j = 0; j < NUM_KERNELS; j++){
+					errcode = clReleaseKernel(current.dpKernels[j]);
+					errcode = clReleaseKernel(current.spKernels[j]);
+				}
+
+				//Deallocate the array memory
+				free(current.dpKernels);
+				free(current.spKernels);
+				free(current.dpKernelsAvailable);
+				free(current.spKernelsAvailable);
+
+				//Destroy mutex and deallocate memory
+				pthread_mutex_destroy(current.deviceLock);
+				free(current.deviceLock);
+
+				//Release the command queue and context
+				errcode = clReleaseCommandQueue(current.commandQue);
+				errcode = clReleaseContext(current.context);
+			}
+
+
+			//Delete vectors
+			delete instances;
+			delete environs;
+
+			//Destroy factory mutex
+			pthread_mutex_destroy(&factoryLock);
+
+			//Set state to unitialized incase exit is aborted
+			initialized = false;
 		}
 
 	public:
@@ -532,6 +519,7 @@ namespace LinBox{
 				if(!initialized){
 					oclEnvironInit();
 					initialized = true;
+					atexit(oclResourceCleanUp);
 				}
 
 				pthread_mutex_unlock(&factoryLock);
@@ -539,36 +527,44 @@ namespace LinBox{
 
 			pthread_mutex_lock(&factoryLock);
 
+			//Selected least used oclEnviron
+			int leastUsedIndex = 0;
+			for(int i = 0; i < (int)instances->size(); i++){
+				if(instances->at(i) < instances->at(leastUsedIndex)){
+					leastUsedIndex = i;
+				}
+			}
+
+			//Increment use count
+			(instances->at(leastUsedIndex))++;
+
 			//Copy all of the data required for the OpenCLMatrixDomain instance to function
-			target->context = context;
-			target->device = device;
-			target->commandQue = commandQue;
-			target->errcode = errcode;
+			target->context = environs->at(leastUsedIndex).context;
+			target->device = environs->at(leastUsedIndex).device;
+			target->commandQue = environs->at(leastUsedIndex).commandQue;
+			target->errcode = environs->at(leastUsedIndex).errcode;
 
-			target->memCapacity = memCapacity;
-			target->maxBufferSize = maxBufferSize;
+			target->memCapacity = environs->at(leastUsedIndex).memCapacity;
+			target->maxBufferSize = environs->at(leastUsedIndex).maxBufferSize;
 
-			target->GPUcontainer = GPUcontainer;
-			target->CPUcontainer = CPUcontainer;
-			target->setupCorrect = setupCorrect;
-			target->doubleSupported = doubleSupported;
+			target->GPUcontainer = environs->at(leastUsedIndex).GPUcontainer;
+			target->CPUcontainer = environs->at(leastUsedIndex).CPUcontainer;
+			target->setupCorrect = environs->at(leastUsedIndex).setupCorrect;
+			target->doubleSupported = environs->at(leastUsedIndex).doubleSupported;
 
 			for(int i = 0; i < 20; i++){
-				target->dpKernels[i] = dpKernels[i];
-				target->dpKernelsAvailable[i] = dpKernelsAvailable[i];
-				target->spKernels[i] = spKernels[i];
-				target->spKernelsAvailable[i] = spKernelsAvailable[i];
+				target->dpKernels[i] = environs->at(leastUsedIndex).dpKernels[i];
+				target->dpKernelsAvailable[i] = environs->at(leastUsedIndex).dpKernelsAvailable[i];
+				target->spKernels[i] = environs->at(leastUsedIndex).spKernels[i];
+				target->spKernelsAvailable[i] = environs->at(leastUsedIndex).spKernelsAvailable[i];
 			}
 
 			//Assign an ID number the OpenCLMatrixDomain instance to be used for locking and
 			//releasing the OpenCL resources
-			target->IDnum = countOpenCLMatrixDomain;
-
-			//Increase count of OpenCLMatrixDomain instances
-			countOpenCLMatrixDomain++;
+			target->IDnum = leastUsedIndex;
 
 			//Point OpenCLMatrixDomain to the mutex
-			target->deviceLock = deviceLock;
+			target->deviceLock = environs->at(leastUsedIndex).deviceLock;
 
 			pthread_mutex_unlock(&factoryLock);
 		}
@@ -576,38 +572,17 @@ namespace LinBox{
 		static void oclMatrixDomainDeallocate(unsigned int IDnum){
 			pthread_mutex_lock(&factoryLock);
 
-			//Decrease count of OpenCLMatrixDomain instances
-			countOpenCLMatrixDomain--;
+			(instances->at(IDnum))--;
 
 			pthread_mutex_unlock(&factoryLock);
 		}
-	}; /* end of class OpenCLMatrixDomainFactory */
+	};
 
-	//Initialization of static members to default values
-	cl_context OpenCLMatrixDomainFactory::context = NULL;
-	cl_device_id OpenCLMatrixDomainFactory::device = NULL;
-	cl_command_queue OpenCLMatrixDomainFactory::commandQue = NULL;
-	cl_int OpenCLMatrixDomainFactory::errcode = CL_SUCCESS;
-
-	unsigned long OpenCLMatrixDomainFactory::memCapacity = 0L;
-	unsigned long OpenCLMatrixDomainFactory::maxBufferSize = 0L;
-
-	bool OpenCLMatrixDomainFactory::GPUcontainer = false;
-	bool OpenCLMatrixDomainFactory::CPUcontainer = false;
-	bool OpenCLMatrixDomainFactory::setupCorrect = false;
-	bool OpenCLMatrixDomainFactory::doubleSupported = false;
+	std::vector<OpenCLMatrixDomainFactory::oclEnviron>* OpenCLMatrixDomainFactory::environs = NULL;
+	std::vector<int>* OpenCLMatrixDomainFactory::instances = NULL;
 	bool OpenCLMatrixDomainFactory::initialized = false;
-
-	cl_kernel* OpenCLMatrixDomainFactory::dpKernels = (cl_kernel*)operator new(20 * sizeof(cl_kernel));
-	bool* OpenCLMatrixDomainFactory::dpKernelsAvailable = (bool*)operator new(20 * sizeof(bool));
-	cl_kernel* OpenCLMatrixDomainFactory::spKernels = (cl_kernel*)operator new(20 * sizeof(cl_kernel));
-	bool* OpenCLMatrixDomainFactory::spKernelsAvailable = (bool*)operator new(20 * sizeof(bool));
-
-	int OpenCLMatrixDomainFactory::countOpenCLMatrixDomain = 0;
-
+	cl_int OpenCLMatrixDomainFactory::errcode = CL_SUCCESS;
 	pthread_mutex_t OpenCLMatrixDomainFactory::factoryLock = PTHREAD_MUTEX_INITIALIZER;
-	pthread_mutex_t* OpenCLMatrixDomainFactory::deviceLock = (pthread_mutex_t*)operator new(sizeof(pthread_mutex_t));
-
-} /* end of namespace LinBox */
+}
 
 #endif
