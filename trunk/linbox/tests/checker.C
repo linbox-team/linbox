@@ -88,6 +88,7 @@ int main(int argc, char* argv[])
 		cout << "  -r forces rebuild of all tests." << endl;
 		cout << "  -c conducts an install time check (a few selected tests only)." << endl;
 		cout << "  if any [test] is present, it is built and run, otherwise all tests are processed." << endl;
+		return 0;
 	}
 	flag = flag+5*f; // clean up later
 #if 0
@@ -223,8 +224,9 @@ build |wc" should yield the same number of lines.
 
 #if __LINBOX_HAVE_GIVARO
 //	if (flag > 0) cout << "	Givaro tests" << endl;
-	build_n_run("test-givaro-zpz",    counter , flag);
-	build_n_run("test-givaro-zpzuns", counter , flag, "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
+	build_n_run("test-givaro-fields",    counter , flag, "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
+	//build_n_run("test-givaro-zpz", counter , flag, "superceded by test-givaro-fields");
+	//build_n_run("test-givaro-zpzuns", counter , flag, "superceded by test-givaro-fields");
 	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
 	build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures");
 #else
