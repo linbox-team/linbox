@@ -174,8 +174,7 @@ BENCHMARKS =                    \
 #        Compose is tested in test-butterfly
 
 GIVARO_TESTS =                        \
-        test-givaro-zpz               \
-        test-givaro-zpzuns
+        test-givaro-fields
 
 NTL_TESTS =                           \
         test-smith-form               \
@@ -459,14 +458,9 @@ test_ntl_lzz_p_SOURCES =                \
         test-generic.h                  \
         test-common.h
 
-test_givaro_zpz_SOURCES =                \
-        test-givaro-zpz.C                \
+test_givaro_fieids_SOURCES =                \
+        test-givaro-fields.C                \
         test-generic.h                   \
-        test-common.h
-
-test_givaro_zpzuns_SOURCES =                \
-        test-givaro-zpzuns.C                \
-        test-generic.h                      \
         test-common.h
 
 test_lidia_gfq_SOURCES =                \

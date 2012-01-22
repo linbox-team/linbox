@@ -1,16 +1,15 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
-/* tests/test-givaro-zpz.C
- * Copyright (C) 2002 Pascal Giorgi
+/* tests/test-givaro-fields.C
+ * -bds 2012.
+ * Merger of test-givaro-zpz.C and test-givaro-zpzuns.C
+ * written by Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
  *
- * Written by Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,15 +17,15 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  */
 
 
-/*! @file  tests/test-givaro-zpz.C
+/*! @file  tests/test-givaro-fields.C
  * @ingroup tests
- * @brief  no doc
+ * @brief  test fields build on Givaro
  * @test NO DOC
  */
 
@@ -178,11 +177,4 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
 

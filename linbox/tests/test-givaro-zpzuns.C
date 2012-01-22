@@ -41,7 +41,7 @@
 #include "linbox/field/givaro.h"
 
 #include "test-common.h"
-#include "test-generic.h"
+#include "test-field.h"
 
 #ifndef TEST_ARCHETYPES
 #define TEST_ARCHETYPES 1
