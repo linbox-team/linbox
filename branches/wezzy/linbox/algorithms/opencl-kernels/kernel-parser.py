@@ -149,7 +149,7 @@ def main():
 
     # Add end of header lines
     output.write("} /* end of namespace LinBox */\n\n")
-    output.write("#endif /* __LINBOX_opencl_matrix_domain_kernels_INL */")
+    output.write("#endif /* __LINBOX_opencl_matrix_domain_kernels_INL */\n")
 
     # Close the files
     fp.close()

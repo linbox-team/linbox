@@ -22,7 +22,6 @@
 #ifndef __LINBOX_opencl_matrix_domain_factory_H
 #define __LINBOX_opencl_matrix_domain_factory_H
 
-#include <iostream>
 #include <vector>
 #include <cstring>
 #include <cstdlib>
@@ -87,10 +86,11 @@ namespace LinBox{
 	class OpenCLMatrixDomainFactory{
 
 	protected:
-		OpenCLMatrixDomainFactory();
-		OpenCLMatrixDomainFactory(const OpenCLMatrixDomainFactory&);
-		OpenCLMatrixDomainFactory& operator=(const OpenCLMatrixDomainFactory&);
-		~OpenCLMatrixDomainFactory();
+		/*--- This class is a Singleton ---*/
+		OpenCLMatrixDomainFactory(); //No one can construct the class
+		OpenCLMatrixDomainFactory(const OpenCLMatrixDomainFactory&); //No one can copy the class
+		OpenCLMatrixDomainFactory& operator=(const OpenCLMatrixDomainFactory&); //No one can assign the class
+		~OpenCLMatrixDomainFactory(); //No one can destroy the class
 
 		struct oclEnviron{
 			//OpenCL specific variables
@@ -273,6 +273,7 @@ namespace LinBox{
 			cl_context_properties properties[3] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform, 0};
 			environ.context = clCreateContext(properties, 1, &device, NULL, NULL, &errcode);
 
+			//Assign device to environ
 			environ.device = device;
 
 			//Create OpenCL command queue
@@ -329,6 +330,7 @@ namespace LinBox{
 
 			free(deviceExtensions);
 
+			//Copy current errcode to environ as starting errcode
 			environ.errcode = errcode;
 
 			//Allocate memory for kernels and kernel flags
@@ -337,6 +339,7 @@ namespace LinBox{
 			environ.dpKernelsAvailable = (bool*)malloc(NUM_KERNELS * sizeof(bool));
 			environ.spKernelsAvailable = (bool*)malloc(NUM_KERNELS * sizeof(bool));
 
+			//Set kernel flags to default false
 			for(int i = 0; i < NUM_KERNELS; i++){
 				environ.dpKernelsAvailable[i] = false;
 				environ.spKernelsAvailable[i] = false;
@@ -351,11 +354,11 @@ namespace LinBox{
 
 				for(int i = 0; i < NUM_KERNELS; i++){
 					environ.spKernels[i] = oclCreateKernel(spKernelSources[i], spKernelNames[i], environ.context);
-					if(errcode == CL_SUCCESS){environ.dpKernelsAvailable[i] = true;};
+					if(errcode == CL_SUCCESS){environ.spKernelsAvailable[i] = true;};
 				}
 			}
 
-			//Initialize the device mutex
+			//Allocate and initialize the device mutex
 			environ.deviceLock = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
 			pthread_mutex_init(environ.deviceLock, NULL);
 
@@ -376,6 +379,9 @@ namespace LinBox{
 			long maxScore = *(std::max_element(rankings.begin(), rankings.end()));
 			long lowerBound = maxScore * 0.90;
 
+			//Build OpenCL compute environments only for devices within 10% of the top device.
+			//This should keep run times for identical computations relatively similar across different
+			//intstances of OpenCLMatrixDomain and eliminate the primary graphics adapter if there is one.
 			for(int i = 0; i < (int)numDevices; i++){
 				if(rankings.at(i) < lowerBound){
 					continue;
@@ -410,7 +416,7 @@ namespace LinBox{
 				errcode = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, NULL, &numDevices);
 			}
 
-			//Build the oclEnvirons from the device array
+			//Allocate the oclEnviron and instance count arrays
 			environs = new std::vector<oclEnviron>();
 			instances = new std::vector<int>();
 
@@ -420,7 +426,10 @@ namespace LinBox{
 				devices = (cl_device_id*)malloc(numDevices * sizeof(cl_device_id));
 				errcode = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, numDevices, devices, NULL);
 
+				//Build environs from devices
 				environs = oclGetEnvirons(environs, platform, devices, numDevices);
+
+				//Set intial instance count to zero
 				for(int i = 0; i < (int)environs->size(); i++){
 					instances->push_back(0);
 				}
@@ -428,7 +437,7 @@ namespace LinBox{
 				free(devices);
 			}
 			//If there are no devices or if an error occured make a default oclEnviron that
-			//disables the OpenCLMatrixDomain and defaults it to BlasMatrixDomain methods
+			//disables the OpenCLMatrixDomain and defaults it to BlasMatrixDomain methods.
 			else{
 				oclEnviron temp;
 
@@ -510,8 +519,7 @@ namespace LinBox{
 		static void oclMatrixDomainInstance(OpenCLMatrixDomain<Field>* target){
 
 			//Check if the OpenCL environment has been initialized
-			//It will only need to be initialized when the first OpenCLMatrixDomain instance
-			//is created otherwise it will just reuse the environment
+			//It will only need to be initialized when the first OpenCLMatrixDomain instance is created
 			//Double check locking ensures Singleton
 			if(!initialized){
 				pthread_mutex_lock(&factoryLock);
@@ -576,8 +584,30 @@ namespace LinBox{
 
 			pthread_mutex_unlock(&factoryLock);
 		}
+
+		static int oclGetNumberOfDevices(){
+
+			//Check if the OpenCL environment has been initialized
+			//It will only need to be initialized when the first OpenCLMatrixDomain instance is created
+			//Double check locking ensures Singleton
+			if(!initialized){
+				pthread_mutex_lock(&factoryLock);
+
+				if(!initialized){
+					oclEnvironInit();
+					initialized = true;
+					atexit(oclResourceCleanUp);
+				}
+
+				pthread_mutex_unlock(&factoryLock);
+			}
+
+			return environs->size();
+
+		}
 	};
 
+	//Static data fields used by OpenCLMatrixDomainFactory
 	std::vector<OpenCLMatrixDomainFactory::oclEnviron>* OpenCLMatrixDomainFactory::environs = NULL;
 	std::vector<int>* OpenCLMatrixDomainFactory::instances = NULL;
 	bool OpenCLMatrixDomainFactory::initialized = false;

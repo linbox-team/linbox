@@ -274,159 +274,8 @@ namespace LinBox{
 		std::vector<SubmatrixAdapter<Operand1> >& VC, std::vector<SubmatrixAdapter<Operand2> >& VA,
 		std::vector<SubmatrixAdapter<Operand3> >& VB) const{
 
-		//Compute if the OpenCL device is capable of working with the required ammounts of memory
-		bool memLevelsAllowed = oclMemCheck<Operand1,Operand2,Operand3>(C,A,B,C);
-
-		std::vector<int> temp;
-
-		//If the input matrices fit on the device return the input matrices as Submatrices
-		if(memLevelsAllowed){
-			// Create Submatrix views
-			SubmatrixAdapter<Operand1> SC(C);
-			SubmatrixAdapter<Operand2> SA(A);
-			SubmatrixAdapter<Operand3> SB(B);
-
-			// Place Submatrices at the beginning of the vectors
-			VC.push_back(SC);
-			VA.push_back(SA);
-			VB.push_back(SB);
-
-			// Return the block dimensions
-			temp.push_back(1); //CBlocksX
-			temp.push_back(1); //CBlocksY
-			temp.push_back(1); //ABlocksY
-			temp.push_back(1); //ABlocksY
-			temp.push_back(1); //CBlocksY
-			temp.push_back(1); //CBlocksY
-
-			return temp;
-		}
-
-		//Begin search for Submatrices small enough to search on the device
-		int divisionFactor = 1;
-		int CRows = C.rowdim();
-		int CCols = C.coldim();
-		int ARows = A.rowdim();
-		int ACols = A.rowdim();
-		int BRows = B.rowdim();
-		int BCols = B.coldim();
-
-		//Loop until Submatrices that fit on the device have been found
-		while(!memLevelsAllowed){
-			//Increase the number of subsections
-			divisionFactor++;
-
-			//Compute the number of rows and columns in each subsections
-			int subRows = CRows / divisionFactor;
-			int subCols = CCols / divisionFactor;
-			int subSharedDim = ACols / divisionFactor;
-
-			//Check if adjustment is need for some of the subsections
-			bool addToSubRows = false;
-			bool addToSubCols = false;
-			bool addToSubSharedDim = false;
-
-			if((subRows * divisionFactor) != CRows){
-				addToSubRows = true;
-			}
-			if((subCols * divisionFactor) != CCols){
-				addToSubCols = true;
-			}
-			if((subSharedDim * divisionFactor) != ACols){
-				addToSubSharedDim = true;
-			}
-
-			//Determine of the largest subsections will fit on the device together
-			int largestSubRows = (addToSubRows ? subRows : (subRows + 1));
-			int largestSubCols = (addToSubCols ? subCols : (subCols + 1));
-			int largestSubSharedDim = (addToSubSharedDim ? subSharedDim : (subSharedDim + 1));
-
-			std::pair<int,int> largestSubC(largestSubRows,largestSubCols);
-			std::pair<int,int> largestSubA(largestSubRows,largestSubSharedDim);
-			std::pair<int,int> largestSubB(largestSubSharedDim,largestSubCols);
-
-			memLevelsAllowed = oclMemCheck<std::pair<int,int> >(largestSubC,largestSubA,largestSubB,largestSubC);
-
-			//If the largest subsections can fit on the device together
-			//Begin partitioning the input matrices
-			if(memLevelsAllowed){
-				// Return the block dimensions
-				temp.push_back(divisionFactor); //CBlocksX
-				temp.push_back(divisionFactor); //CBlocksY
-				temp.push_back(divisionFactor); //ABlocksY
-				temp.push_back(divisionFactor); //ABlocksY
-				temp.push_back(divisionFactor); //CBlocksY
-				temp.push_back(divisionFactor); //CBlocksY
-
-				//Loop through all but the last row
-				for(int blockY = 0; blockY < (divisionFactor - 1); blockY++){
-					int CRowsOffset = blockY * subRows;
-					int ARowsOffset = blockY * subRows;
-					int BRowsOffset = blockY * subSharedDim;
-
-					//Loop through all but the last column
-					for(int blockX = 0; blockX < (divisionFactor - 1); blockX++){
-						int CColsOffset = blockX * subCols;
-						int AColsOffset = blockX * subSharedDim;
-						int BColsOffset = blockX * subCols;
-
-						SubmatrixAdapter<Operand1> SC(C,CRowsOffset,CColsOffset,subRows,subCols);
-						SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,subSharedDim);
-						SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,subCols);
-
-						VC.push_back(SC);
-						VA.push_back(SA);
-						VB.push_back(SB);
-					}
-
-					int CColsOffset = (divisionFactor - 1) * subCols;
-					int AColsOffset = (divisionFactor - 1) * subSharedDim;
-					int BColsOffset = (divisionFactor - 1) * subCols;
-
-					SubmatrixAdapter<Operand1> SC(C,CRowsOffset,CColsOffset,subRows,(CCols - CColsOffset));
-					SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,(ACols - AColsOffset));
-					SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,(BCols - BColsOffset));
-
-					VC.push_back(SC);
-					VA.push_back(SA);
-					VB.push_back(SB);
-				}
-
-				//Partition the last row
-				int CRowsOffset = (divisionFactor - 1) * subRows;
-				int ARowsOffset = (divisionFactor - 1) * subRows;
-				int BRowsOffset = (divisionFactor - 1) * subSharedDim;
-
-				for(int blockX = 0; blockX < (divisionFactor - 1); blockX++){
-					int CColsOffset = blockX * subCols;
-					int AColsOffset = blockX * subSharedDim;
-					int BColsOffset = blockX * subCols;
-
-					SubmatrixAdapter<Operand1> SC(C,CRowsOffset,CColsOffset,(CRows - CRowsOffset),subCols);
-					SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),subSharedDim);
-					SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),subCols);
-
-					VC.push_back(SC);
-					VA.push_back(SA);
-					VB.push_back(SB);
-				}
-
-				int CColsOffset = (divisionFactor - 1) * subCols;
-				int AColsOffset = (divisionFactor - 1) * subSharedDim;
-				int BColsOffset = (divisionFactor - 1) * subCols;
-
-				SubmatrixAdapter<Operand1> SC(C,CRowsOffset,CColsOffset,(CRows - CRowsOffset),(CCols - CColsOffset));
-				SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),(ACols - AColsOffset));
-				SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),(BCols - BColsOffset));
-
-				VC.push_back(SC);
-				VA.push_back(SA);
-				VB.push_back(SB);
-
-			}
-		}
-
-		return temp;
+		std::vector<SubmatrixAdapter<Operand1> > VT;
+		return oclPartition<Operand1,Operand2,Operand3>(C,A,B,C,VT,VA,VB,VC);
 	}
 
 	template <class Field>
@@ -473,70 +322,108 @@ namespace LinBox{
 		int BRows = B.rowdim();
 		int BCols = B.coldim();
 
-		//Loop until Submatrices that fit on the device have been found
-		while(!memLevelsAllowed){
-			//Increase the number of subsections
-			divisionFactor++;
+		if(true){ //Default partitioning scheme
 
-			//Compute the number of rows and columns in each subsections
-			int subRows = DRows / divisionFactor;
-			int subCols = DCols / divisionFactor;
-			int subSharedDim = ACols / divisionFactor;
+			//Loop until Submatrices that fit on the device have been found
+			while(!memLevelsAllowed){
+				//Increase the number of subsections
+				divisionFactor++;
 
-			//Check if adjustment is need for some of the subsections
-			bool addToSubRows = false;
-			bool addToSubCols = false;
-			bool addToSubSharedDim = false;
+				//Compute the number of rows and columns in each subsections
+				int subRows = DRows / divisionFactor;
+				int subCols = DCols / divisionFactor;
+				int subSharedDim = ACols / divisionFactor;
 
-			if((subRows * divisionFactor) != DRows){
-				addToSubRows = true;
-			}
-			if((subCols * divisionFactor) != DCols){
-				addToSubCols = true;
-			}
-			if((subSharedDim * divisionFactor) != ACols){
-				addToSubSharedDim = true;
-			}
+				//Check if adjustment is need for some of the subsections
+				bool addToSubRows = false;
+				bool addToSubCols = false;
+				bool addToSubSharedDim = false;
 
-			//Determine of the largest subsections will fit on the device together
-			int largestSubRows = (addToSubRows ? subRows : (subRows + 1));
-			int largestSubCols = (addToSubCols ? subCols : (subCols + 1));
-			int largestSubSharedDim = (addToSubSharedDim ? subSharedDim : (subSharedDim + 1));
+				if((subRows * divisionFactor) != DRows){
+					addToSubRows = true;
+				}
+				if((subCols * divisionFactor) != DCols){
+					addToSubCols = true;
+				}
+				if((subSharedDim * divisionFactor) != ACols){
+					addToSubSharedDim = true;
+				}
 
-			std::pair<int,int> largestSubD(largestSubRows,largestSubCols);
-			std::pair<int,int> largestSubA(largestSubRows,largestSubSharedDim);
-			std::pair<int,int> largestSubB(largestSubSharedDim,largestSubCols);
-			std::pair<int,int> largestSubC(largestSubRows,largestSubCols);
+				//Determine of the largest subsections will fit on the device together
+				int largestSubRows = (addToSubRows ? subRows : (subRows + 1));
+				int largestSubCols = (addToSubCols ? subCols : (subCols + 1));
+				int largestSubSharedDim = (addToSubSharedDim ? subSharedDim : (subSharedDim + 1));
 
-			memLevelsAllowed = oclMemCheck<std::pair<int,int> >(largestSubD,largestSubA,largestSubB,largestSubC);
+				std::pair<int,int> largestSubD(largestSubRows,largestSubCols);
+				std::pair<int,int> largestSubA(largestSubRows,largestSubSharedDim);
+				std::pair<int,int> largestSubB(largestSubSharedDim,largestSubCols);
+				std::pair<int,int> largestSubC(largestSubRows,largestSubCols);
 
-			//If the largest subsections can fit on the device together
-			//Begin partitioning the input matrices
-			if(memLevelsAllowed){
-				// Return the block dimensions
-				temp.push_back(divisionFactor); //DBlocksX & CBlocksX
-				temp.push_back(divisionFactor); //DBlocksY & CBlocksY
-				temp.push_back(divisionFactor); //ABlocksY
-				temp.push_back(divisionFactor); //ABlocksY
-				temp.push_back(divisionFactor); //CBlocksY
-				temp.push_back(divisionFactor); //CBlocksY
+				memLevelsAllowed = oclMemCheck<std::pair<int,int> >(largestSubD,largestSubA,largestSubB,largestSubC);
 
-				//Loop through all but the last row
-				for(int blockY = 0; blockY < (divisionFactor - 1); blockY++){
-					int DRowsOffset = blockY * subRows;
-					int ARowsOffset = blockY * subRows;
-					int BRowsOffset = blockY * subSharedDim;
+				//If the largest subsections can fit on the device together
+				//Begin partitioning the input matrices
+				if(memLevelsAllowed){
+					// Return the block dimensions
+					temp.push_back(divisionFactor); //DBlocksX & CBlocksX
+					temp.push_back(divisionFactor); //DBlocksY & CBlocksY
+					temp.push_back(divisionFactor); //ABlocksY
+					temp.push_back(divisionFactor); //ABlocksY
+					temp.push_back(divisionFactor); //CBlocksY
+					temp.push_back(divisionFactor); //CBlocksY
 
-					//Loop through all but the last column
+					//Loop through all but the last row
+					for(int blockY = 0; blockY < (divisionFactor - 1); blockY++){
+						int DRowsOffset = blockY * subRows;
+						int ARowsOffset = blockY * subRows;
+						int BRowsOffset = blockY * subSharedDim;
+
+						//Loop through all but the last column
+						for(int blockX = 0; blockX < (divisionFactor - 1); blockX++){
+							int DColsOffset = blockX * subCols;
+							int AColsOffset = blockX * subSharedDim;
+							int BColsOffset = blockX * subCols;
+
+							SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,subRows,subCols);
+							SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,subSharedDim);
+							SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,subCols);
+							SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,subRows,subCols);
+
+							VD.push_back(SD);
+							VA.push_back(SA);
+							VB.push_back(SB);
+							VC.push_back(SC);
+						}
+
+						int DColsOffset = (divisionFactor - 1) * subCols;
+						int AColsOffset = (divisionFactor - 1) * subSharedDim;
+						int BColsOffset = (divisionFactor - 1) * subCols;
+
+						SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,subRows,(DCols - DColsOffset));
+						SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,(ACols - AColsOffset));
+						SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,(BCols - BColsOffset));
+						SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,subRows,(DCols - DColsOffset));
+
+						VD.push_back(SD);
+						VA.push_back(SA);
+						VB.push_back(SB);
+						VC.push_back(SC);
+					}
+
+					//Partition the last row
+					int DRowsOffset = (divisionFactor - 1) * subRows;
+					int ARowsOffset = (divisionFactor - 1) * subRows;
+					int BRowsOffset = (divisionFactor - 1) * subSharedDim;
+
 					for(int blockX = 0; blockX < (divisionFactor - 1); blockX++){
 						int DColsOffset = blockX * subCols;
 						int AColsOffset = blockX * subSharedDim;
 						int BColsOffset = blockX * subCols;
 
-						SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,subRows,subCols);
-						SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,subSharedDim);
-						SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,subCols);
-						SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,subRows,subCols);
+						SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,(DRows - DRowsOffset),subCols);
+						SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),subSharedDim);
+						SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),subCols);
+						SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,(DRows - DRowsOffset),subCols);
 
 						VD.push_back(SD);
 						VA.push_back(SA);
@@ -548,52 +435,17 @@ namespace LinBox{
 					int AColsOffset = (divisionFactor - 1) * subSharedDim;
 					int BColsOffset = (divisionFactor - 1) * subCols;
 
-					SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,subRows,(DCols - DColsOffset));
-					SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,(ACols - AColsOffset));
-					SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,(BCols - BColsOffset));
-					SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,subRows,(DCols - DColsOffset));
+					SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,(DRows - DRowsOffset),(DCols - DColsOffset));
+					SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),(ACols - AColsOffset));
+					SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),(BCols - BColsOffset));
+					SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,(DRows - DRowsOffset),(DCols - DColsOffset));
 
 					VD.push_back(SD);
 					VA.push_back(SA);
 					VB.push_back(SB);
 					VC.push_back(SC);
+
 				}
-
-				//Partition the last row
-				int DRowsOffset = (divisionFactor - 1) * subRows;
-				int ARowsOffset = (divisionFactor - 1) * subRows;
-				int BRowsOffset = (divisionFactor - 1) * subSharedDim;
-
-				for(int blockX = 0; blockX < (divisionFactor - 1); blockX++){
-					int DColsOffset = blockX * subCols;
-					int AColsOffset = blockX * subSharedDim;
-					int BColsOffset = blockX * subCols;
-
-					SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,(DRows - DRowsOffset),subCols);
-					SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),subSharedDim);
-					SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),subCols);
-					SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,(DRows - DRowsOffset),subCols);
-
-					VD.push_back(SD);
-					VA.push_back(SA);
-					VB.push_back(SB);
-					VC.push_back(SC);
-				}
-
-				int DColsOffset = (divisionFactor - 1) * subCols;
-				int AColsOffset = (divisionFactor - 1) * subSharedDim;
-				int BColsOffset = (divisionFactor - 1) * subCols;
-
-				SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,(DRows - DRowsOffset),(DCols - DColsOffset));
-				SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),(ACols - AColsOffset));
-				SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),(BCols - BColsOffset));
-				SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,(DRows - DRowsOffset),(DCols - DColsOffset));
-
-				VD.push_back(SD);
-				VA.push_back(SA);
-				VB.push_back(SB);
-				VC.push_back(SC);
-
 			}
 		}
 
@@ -608,7 +460,7 @@ namespace LinBox{
 			std::cout << "Success!\n";
 			break;
 		case CL_DEVICE_NOT_FOUND:
-			std::cout << "Device not found.\n";
+			std::cout << "Device not found\n";
 			break;
 		case CL_DEVICE_NOT_AVAILABLE:
 			std::cout << "Device not available\n";

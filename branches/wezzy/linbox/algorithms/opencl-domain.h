@@ -43,25 +43,34 @@ namespace LinBox{
 	/**
 	 * Generic submatrix view adapter used internally in the OpenCLMatrixDomain
 	 */
-	template <class Matrix>
+	template <class _Matrix>
 	class SubmatrixAdapter{
 	private:
-		typedef typename Matrix::Element Element;
+		typedef typename _Matrix::Element Element;
 
-		Matrix* _Mat;
+		_Matrix* _Mat;
 		size_t _row;
 		size_t _col;
 		size_t _r0;
 		size_t _c0;
 
 	public:
+		//Access to underlying matrix
+		typedef _Matrix  Matrix;
+
 		SubmatrixAdapter() : _Mat(NULL), _row(0), _col(0), _r0(0), _c0(0){}
 
-		SubmatrixAdapter(const Matrix& M) : _Mat(&(const_cast<Matrix&>(M))), _row(M.rowdim()),
-			_col(M.coldim()), _r0(0), _c0(0) {}
+		SubmatrixAdapter(const _Matrix& M) :
+			_Mat(&(const_cast<_Matrix&>(M))), _row(M.rowdim()), _col(M.coldim()), _r0(0), _c0(0) {}
 
-		SubmatrixAdapter(const Matrix& M, size_t row, size_t col, size_t Rowdim, size_t Coldim) :
-			_Mat(&(const_cast<Matrix&>(M))), _row(Rowdim), _col(Coldim), _r0(row), _c0(col) {}
+		SubmatrixAdapter(const _Matrix& M, size_t row, size_t col, size_t Rowdim, size_t Coldim) :
+			_Mat(&(const_cast<_Matrix&>(M))), _row(Rowdim), _col(Coldim), _r0(row), _c0(col) {}
+
+		SubmatrixAdapter(const SubmatrixAdapter<_Matrix>& SM) :
+			_Mat(SM._Mat) , _row(SM._row), _col(SM._col), _r0(SM._r0), _c0(SM._c0) {}
+
+		SubmatrixAdapter(const SubmatrixAdapter<_Matrix>& SM, size_t row, size_t col, size_t Rowdim, size_t Coldim) :
+			_Mat(SM._Mat), _row(Rowdim), _col(Coldim), _r0(SM._r0 + row), _c0(SM._c0 + col) {}
 
 		size_t rowdim() const{
 			return _row;
@@ -75,8 +84,20 @@ namespace LinBox{
 			_Mat->setEntry(_r0 + i, _c0 + j, a_ij);
 		}
 
+		Element& refEntry(size_t i, size_t j){
+			_Mat->refEntry(_r0 + i, _c0 + j);
+		}
+
 		const Element& getEntry(size_t i, size_t j) const{
 			return _Mat->getEntry(_r0 + i, _c0 + j);
+		}
+
+		Element& getEntry(Element& x, size_t i, size_t j){
+			return _Mat->getEntry(x, _r0 + i, _c0 + j);
+		}
+
+		_Matrix& getMatrix(){
+			return *_Mat;
 		}
 	};
 
