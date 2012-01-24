@@ -73,8 +73,6 @@ TESTS_CFLAGS="-O0"
 DEBUG_CFLAGS="-g"
 
 DEFAULT_CFLAGS=""
-# solaris: remove -pipe to compile large programs (such as linbox examples)
-DEFAULT_CFLAGS="-pipe"
 WARN_CFLAGS="-Wall"
 
 #TODO use -fast for icc, -ipa for eko...

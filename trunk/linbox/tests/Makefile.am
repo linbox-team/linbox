@@ -458,7 +458,7 @@ test_ntl_lzz_p_SOURCES =                \
         test-generic.h                  \
         test-common.h
 
-test_givaro_fieids_SOURCES =                \
+test_givaro_fields_SOURCES =                \
         test-givaro-fields.C                \
         test-generic.h                   \
         test-common.h
