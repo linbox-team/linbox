@@ -33,7 +33,43 @@
 
 #include "test-common.h"
 
-#include "/home/mwezz/opencl-timer.h"
+#include <stack>
+#include <vector>
+#include <sys/time.h>
+
+class OpenCLTimer{
+
+private:
+	std::stack<struct timeval, std::vector<struct timeval> > timerStack;
+
+public:
+	OpenCLTimer(){}
+
+	~OpenCLTimer(){}
+
+	void tic(){
+		struct timeval tempTimeVal;
+		gettimeofday(&tempTimeVal, NULL);
+
+		timerStack.push(tempTimeVal);
+	}
+
+	double toc(){
+		double returnValue;
+		struct timeval now;
+		struct timeval then;
+
+		gettimeofday(&now, NULL);
+
+		then = timerStack.top();
+		timerStack.pop();
+
+		returnValue = ((double)(now.tv_sec - then.tv_sec) + ((double)(now.tv_usec - then.tv_usec) * 1e-6));
+
+		return returnValue;
+	}
+
+};
 
 using namespace LinBox;
 
