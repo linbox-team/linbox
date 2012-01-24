@@ -22,6 +22,7 @@
 #ifndef __LINBOX_opencl_matrix_domain_factory_H
 #define __LINBOX_opencl_matrix_domain_factory_H
 
+#include <cstdio>
 #include <vector>
 #include <cstring>
 #include <cstdlib>
@@ -332,6 +333,12 @@ namespace LinBox{
 
 			//Copy current errcode to environ as starting errcode
 			environ.errcode = errcode;
+			if(environ.errcode != CL_SUCCESS){
+				environ.setupCorrect = false;
+			}
+			else{
+				environ.setupCorrect = true;
+			}
 
 			//Allocate memory for kernels and kernel flags
 			environ.dpKernels = (cl_kernel*)malloc(NUM_KERNELS * sizeof(cl_kernel));
@@ -354,7 +361,7 @@ namespace LinBox{
 
 				for(int i = 0; i < NUM_KERNELS; i++){
 					environ.spKernels[i] = oclCreateKernel(spKernelSources[i], spKernelNames[i], environ.context);
-					if(errcode == CL_SUCCESS){environ.spKernelsAvailable[i] = true;};
+					if(errcode == CL_SUCCESS){environ.spKernelsAvailable[i] = true;}
 				}
 			}
 

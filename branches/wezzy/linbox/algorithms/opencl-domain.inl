@@ -23,7 +23,6 @@
 #ifndef __LINBOX_opencl_matrix_domain_INL
 #define __LINBOX_opencl_matrix_domain_INL
 
-//#include <cstdio>
 #include <pthread.h>
 #include "linbox/matrix/blas-matrix.h"
 
