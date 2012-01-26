@@ -225,7 +225,7 @@ namespace LinBox
 			r = _aat_diag + (integer)sqrt( _aat_radius * _aat_radius1 );
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 			//std::cout << "Cassini bound (AAT) =: " << r << std::endl;
-			//commentator. stop ("done", NULL, "cassini");
+			//commentator.stop ("done", NULL, "cassini");
 			return r;
 		}
 
@@ -255,7 +255,7 @@ namespace LinBox
 			//	std::ostream& report = std::cout;
 			report << "one valence =: " << v << " over ";
 			A. field(). write(report); report << std::endl;
-			//commentator. stop ("done", NULL, "one valence");
+			//commentator.stop ("done", NULL, "one valence");
 			return;
 		}
 
@@ -263,7 +263,7 @@ namespace LinBox
 		template <class Blackbox>
 		static void valence(Integer& val, const Blackbox& A)
 		{
-			commentator. start ("Valence (AAT)", "Valence");
+			commentator.start ("Valence (AAT)", "Valence");
 			typedef Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 			double log_max_mod = log((double)FieldTraits<Field>::maxModulus()) ;
