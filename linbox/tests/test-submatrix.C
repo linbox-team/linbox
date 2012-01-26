@@ -68,7 +68,7 @@ static bool testRandomApply (Field                                       &F,
 {
 	typedef BlasMatrix <Field> Blackbox;
 
-	commentator.start ("Testing random apply", "testRandomApply", iterations);
+	commentator().start ("Testing random apply", "testRandomApply", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -87,7 +87,7 @@ static bool testRandomApply (Field                                       &F,
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		iter_passed = true;
 
@@ -104,7 +104,7 @@ static bool testRandomApply (Field                                       &F,
 		stream.reset ();
 
 		while (stream) {
-			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+			ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 			stream.next (v);
 
@@ -132,16 +132,16 @@ static bool testRandomApply (Field                                       &F,
 		}
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply");
 
 	return ret;
 }
@@ -165,7 +165,7 @@ static bool testRandomLinearity (const Field                                 &F,
 				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
 				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
 {
-	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
+	commentator().start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
 	BlasMatrix<Field> A (F, A_stream);
 	Submatrix<BlasMatrix<Field> > Ap (&A, 0, 0, v1_stream.dim (), v2_stream.dim ());
@@ -176,7 +176,7 @@ static bool testRandomLinearity (const Field                                 &F,
 	v1_stream.reset ();
 	v2_stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
 
 	return ret;
 }
@@ -200,7 +200,7 @@ static bool testRandomTranspose (const Field                                 &F,
 				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
 				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
 {
-	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
+	commentator().start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 
 	BlasMatrix<Field> A (F, A_stream);
 	Submatrix<BlasMatrix<Field> > Ap (&A, 0, 0, v1_stream.dim (), v2_stream.dim ());
@@ -211,7 +211,7 @@ static bool testRandomTranspose (const Field                                 &F,
 	v1_stream.reset ();
 	v2_stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
 	return ret;
 }
@@ -238,10 +238,10 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator.start("Submatrix black box test suite", "Submatrix");
+	commentator().start("Submatrix black box test suite", "Submatrix");
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	RandomDenseStream<Field> stream (F, n, N);
 	RandomDenseStream<Field> A_stream (F, n, n);
@@ -254,7 +254,7 @@ int main (int argc, char **argv)
 	if (!testRandomLinearity (F, A_stream, v1_stream, v2_stream)) pass = false;
 	if (!testRandomTranspose (F, A_stream, v1_stream, v2_stream)) pass = false;
 
-	commentator.stop("Submatrix black box test suite");
+	commentator().stop("Submatrix black box test suite");
 	return pass ? 0 : -1;
 }
 

@@ -41,6 +41,7 @@
 
 int main(int argc, char **argv)
 {
+	using LinBox::parseArguments;
 	using LinBox::commentator;
 	bool pass = true;
 	uint32_t prime = 31337;
@@ -81,14 +82,14 @@ int main(int argc, char **argv)
 	   */
 
 
-	commentator.start("ZeroOne matrix blackbox test suite", "ZeroOne");
+	commentator().start("ZeroOne matrix blackbox test suite", "ZeroOne");
 
 	pass = pass && testBlackbox(testMatrix);
 
 	delete [] rows;
 	delete [] cols;
 
-	commentator.stop("ZeroOne matrix blackbox test suite");
+	commentator().stop("ZeroOne matrix blackbox test suite");
 	return pass ? 0 : -1;
 }
 

@@ -159,9 +159,9 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-	//     commentator.setMaxDetailLevel (-1);
-	//     commentator.setMaxDepth (-1);
-	//     commentator.setReportStream (std::cerr);
+	//     commentator().setMaxDetailLevel (-1);
+	//     commentator().setMaxDepth (-1);
+	//     commentator().setReportStream (std::cerr);
 
 
 	if (argc < 2 || argc > 4) {

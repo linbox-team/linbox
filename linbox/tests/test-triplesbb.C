@@ -84,7 +84,7 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator.start("triplesbb black box test suite", "triplesbb");
+	commentator().start("triplesbb black box test suite", "triplesbb");
 
 	typedef Modular<uint32_t> Field;
 	typedef Field::Element Element;
@@ -129,7 +129,7 @@ int main (int argc, char **argv)
 	for(size_t i = 0; i < rowP.size(); ++i) C.addEntry(values[i], rowP[i], colP[i]);
 	pass = pass && testBlackbox(C);
 
-	commentator.stop("triplesbb black box test suite");
+	commentator().stop("triplesbb black box test suite");
 	return pass ? 0 : -1;
 }
 

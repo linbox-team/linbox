@@ -42,9 +42,9 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
-	// commentator.setMaxDetailLevel (-1);
-	//     commentator.setMaxDepth (-1);
-	//     commentator.setReportStream (std::cerr);
+	// commentator().setMaxDetailLevel (-1);
+	//     commentator().setMaxDepth (-1);
+	//     commentator().setReportStream (std::cerr);
 
 	PID_integer ZZ;
 

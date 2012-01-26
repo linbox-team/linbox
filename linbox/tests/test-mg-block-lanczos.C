@@ -64,10 +64,10 @@ static bool testRandomSolve (const Field           &F,
 {
 	typedef MGBlockLanczosSolver<Field, BlasMatrix<Field> > MGBLSolver;
 
-	commentator.start ("Testing random solve (Block Lanczos)", "testRandomSolve", y_stream.size ());
+	commentator().start ("Testing random solve (Block Lanczos)", "testRandomSolve", y_stream.size ());
 
-	std::ostream &report1 = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report1 = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
 
@@ -99,29 +99,29 @@ static bool testRandomSolve (const Field           &F,
 	MGBLSolver mgblsolver (F, traits, ri);
 
 	while (y_stream) {
-		commentator.startIteration ((unsigned int) y_stream.pos ());
+		commentator().startIteration ((unsigned int) y_stream.pos ());
 
 		y_stream >> y;
 		A.apply (b, y);
 
-		std::ostream &raport = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &raport = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		raport << "Right-hand side b:";
 		VD.write (raport, b) << endl;
 
 		if (!mgblsolver.solve (A, x2, b)) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve failed to solve system" << endl;
 			ret = false;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	A_stream.reset ();
 	y_stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomSolve");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomSolve");
 
 	return ret;
 }
@@ -138,10 +138,10 @@ static bool testSampleNullspace (const Field           &F,
 	typedef BlasMatrix<Field> Matrix;
 	typedef MGBlockLanczosSolver<Field, Matrix> MGBLSolver;
 
-	commentator.start ("Testing sampling from nullspace (Block Lanczos)", "testSampleNullspace", num_iter);
+	commentator().start ("Testing sampling from nullspace (Block Lanczos)", "testSampleNullspace", num_iter);
 
-	std::ostream &report1 = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report1 = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
 	unsigned int number;
@@ -168,20 +168,20 @@ static bool testSampleNullspace (const Field           &F,
 	MGBLSolver mgblsolver (F, traits, ri);
 
 	for (unsigned int i = 0; i < num_iter; ++i) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		number = mgblsolver.sampleNullspace (A, x);
 
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Number of nullspace vectors found: " << number << std::endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	A_stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSampleNullspace");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testSampleNullspace");
 
 	return ret;
 }
@@ -210,23 +210,23 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator.start("Montgomery block Lanczos test suite");
+	commentator().start("Montgomery block Lanczos test suite");
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.getMessageClass (PROGRESS_REPORT).setMaxDepth (0);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().getMessageClass (PROGRESS_REPORT).setMaxDepth (0);
 
 	RandomSparseStream<Field> A_stream (F, (double) k / (double) n, n, n);
 	RandomDenseStream<Field> y_stream (F, n, i);
 
 	if (!testRandomSolve (F, A_stream, y_stream, N)) pass=false;;
-	commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+	commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 		<< "	Skipping Sample Nullspace test (which has mem problems)" << std::endl;
 	//if (!testSampleNullspace (F, A_stream, N, i)) pass=false;;
 
-	commentator.stop("Montgomery block Lanczos test suite");
+	commentator().stop("Montgomery block Lanczos test suite");
 	return pass ? 0 : -1;
 }
 

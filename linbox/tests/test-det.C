@@ -76,7 +76,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
-	commentator.start ("Testing nonsingular diagonal determinant (1)", "testDiagonalDet1", iterations);
+	commentator().start ("Testing nonsingular diagonal determinant (1)", "testDiagonalDet1", iterations);
 
 	bool ret = true;
 	bool done;
@@ -90,7 +90,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		F.init (pi, 1);
 
@@ -110,7 +110,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 			F.mulin (pi, d[j]);
 		}
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
 		VD.write (report, d);
 		report << endl;
@@ -137,15 +137,15 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 
 		if (!F.areEqual (pi, phi_wiedemann) || !F.areEqual (pi, phi_blas_elimination) || !F.areEqual(pi, phi_symm_wied)|| !F.areEqual(pi, phi_sparseelim)) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed determinant is incorrect" << endl;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalDet1");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalDet1");
 
 	return ret;
 }
@@ -170,7 +170,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
-	commentator.start ("Testing nonsingular diagonal determinant (2)", "testDiagonalDet2", iterations);
+	commentator().start ("Testing nonsingular diagonal determinant (2)", "testDiagonalDet2", iterations);
 
 	bool ret = true;
 	int i, k;
@@ -181,7 +181,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		F.init (pi, 1);
 
@@ -196,8 +196,8 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 			F.mulin (pi, d[j]);
 		}
 
-		//ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		ostream &report = commentator.report ();
+		//ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report ();
 		report << "Diagonal entries: ";
 		printVector<Field> (F, report, d);
 
@@ -230,15 +230,15 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 
 		if (!F.areEqual (pi, phi_wiedemann) || !F.areEqual (pi, phi_blas_elimination) || !F.areEqual(pi, phi_symm_wied) || !F.areEqual(pi, phi_sparseelim)) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed determinant is incorrect" << endl;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalDet2");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalDet2");
 
 	return ret;
 }
@@ -262,7 +262,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
-	commentator.start ("Testing singular diagonal determinant", "testSingularDiagonalDet", iterations);
+	commentator().start ("Testing singular diagonal determinant", "testSingularDiagonalDet", iterations);
 
 	bool ret = true;
 	int i;
@@ -273,7 +273,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		for (j = 0; j < n; j++)
 			r.random (d[j]);
@@ -282,7 +282,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 		F.init (d[1+ rand () % (n-1)], 0);
 		//F.init (d[rand () % n], 0);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
 		printVector<Field> (F, report, d);
 
@@ -312,15 +312,15 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 
 		if (!F.isZero (phi_wiedemann) || !F.isZero (phi_blas_elimination) || !F.isZero (phi_symm_wied)  || !F.isZero (phi_sparseelim) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed determinant is incorrect" << endl;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSingularDiagonalDet");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testSingularDiagonalDet");
 
 	return ret;
 }
@@ -338,12 +338,12 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 
 bool testIntegerDet (size_t n, int iterations)
 {
- 	commentator.start ("Testing integer determinant", "testIntegerDet", iterations);
+ 	commentator().start ("Testing integer determinant", "testIntegerDet", iterations);
 
 	bool ret = true;
 
 	for (int i = 0; i < iterations; ++i) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 		PID_integer R;
 		SparseMatrix<PID_integer> A (R, n, n);
 
@@ -369,7 +369,7 @@ bool testIntegerDet (size_t n, int iterations)
 
 		//GMP_Integers R;
 		//A.write(cout,R);
-	 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	 	report << "True determinant: ";
 		report << pi;
@@ -389,16 +389,16 @@ bool testIntegerDet (size_t n, int iterations)
 
 
 		if ((det_A_wiedemann != pi)||(det_A_blas_elimination != pi)||(det_A_symm_wied != pi))  {
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
 
-		commentator.stop ("done");
-	 	commentator.progress ();
+		commentator().stop ("done");
+	 	commentator().progress ();
  	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIntegerDet");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIntegerDet");
 
 	return ret;
 }
@@ -416,12 +416,12 @@ bool testIntegerDet (size_t n, int iterations)
 
 bool testIntegerDetGen (size_t n, int iterations)
 {
- 	commentator.start ("Testing integer determinant, generic methods", "testIntegerDeterminantGeneric", iterations);
+ 	commentator().start ("Testing integer determinant, generic methods", "testIntegerDeterminantGeneric", iterations);
 
 	bool ret = true;
 
 	for (int i = 0; i < iterations; ++i) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 		PID_integer R;
 		SparseMatrix<PID_integer> A (R, n, n);
 
@@ -439,14 +439,14 @@ bool testIntegerDetGen (size_t n, int iterations)
 	 		integer::negin(pi);
 	 	}
 
-	 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	 	report << "True determinant: " << pi << endl;
 
                 det (det_A, A);
  	 	report << "Computed integer determinant (Default): " << det_A << endl;
 		if (det_A != pi){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: Default (integer dense) Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
@@ -454,7 +454,7 @@ bool testIntegerDetGen (size_t n, int iterations)
                 det (det_A_H, A, Method::Hybrid());
 	 	report << "Computed integer determinant (Hybrid): " << det_A_H << endl;
 		if (det_A_H != pi){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: Hybrid Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
@@ -462,7 +462,7 @@ bool testIntegerDetGen (size_t n, int iterations)
                 det (det_A_B, A, Method::Blackbox());
 	 	report << "Computed integer determinant (Blackbox): " << det_A_B << endl;
 		if (det_A_B != pi){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: Blackbox Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
@@ -470,18 +470,18 @@ bool testIntegerDetGen (size_t n, int iterations)
                 det (det_A_E, A, Method::Elimination());
 	 	report << "Computed integer determinant (Elimination): " << det_A_E << endl;
 		if (det_A_E != pi){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: Elimination Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
 
 
-		commentator.stop ("done");
-	 	commentator.progress ();
-	 	//commentator.progress (i, iterations);
+		commentator().stop ("done");
+	 	commentator().progress ();
+	 	//commentator().progress (i, iterations);
  	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIntegerDeterminantGeneric");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIntegerDeterminantGeneric");
 
 	return ret;
 }
@@ -499,12 +499,12 @@ bool testIntegerDetGen (size_t n, int iterations)
 
 bool testRationalDetGen (size_t n, int iterations)
 {
- 	commentator.start ("Testing rational determinant, generic methods", "testRationalDeterminantGeneric", iterations);
+ 	commentator().start ("Testing rational determinant, generic methods", "testRationalDeterminantGeneric", iterations);
 
 	bool ret = true;
 
 	for (int i = 0; i < iterations; ++i) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 		GMPRationalField Q;
 		SparseMatrix<GMPRationalField > A (Q, n, n);
 		BlasMatrix <GMPRationalField > BB(Q, n, n);
@@ -530,14 +530,14 @@ bool testRationalDetGen (size_t n, int iterations)
 	 		Q.negin(pi);
 	 	}
 
-	 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	 	report << "True determinant: ";  Q.write(report,pi); report << endl;
 
                 det (det_A, A);
  	 	report << "Computed rational determinant (Default): "; Q.write(report, det_A); report << endl;
 		if (!Q.areEqual(det_A ,pi)){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: Default Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
@@ -545,7 +545,7 @@ bool testRationalDetGen (size_t n, int iterations)
                 det (det_A_H, A, Method::Hybrid());
 	 	report << "Computed rational determinant (Hybrid): "; Q.write(report, det_A_H); report << endl;
 		if (!Q.areEqual(det_A_H ,pi)){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: Hybrid Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
@@ -553,7 +553,7 @@ bool testRationalDetGen (size_t n, int iterations)
                 det (det_A_B, A, Method::Blackbox());
 	 	report << "Computed rational determinant (Blackbox): "; Q.write(report, det_A_B); report<< endl;
 		if (!Q.areEqual(det_A_B , pi)){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: Blackbox Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
@@ -561,7 +561,7 @@ bool testRationalDetGen (size_t n, int iterations)
                 det (det_A_E, A, Method::Elimination());
 	 	report << "Computed rational determinant (Elimination): "; Q.write(report, det_A_E); report << endl;
 		if (!Q.areEqual(det_A_E ,pi)){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: Elimination Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
@@ -569,7 +569,7 @@ bool testRationalDetGen (size_t n, int iterations)
 		det (det_B, BB);
  	 	report << "Computed rational determinant (Default): "; Q.write(report, det_A); report << endl;
 		if (!Q.areEqual(det_B ,pi)){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: (Dense) Default Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
@@ -577,14 +577,14 @@ bool testRationalDetGen (size_t n, int iterations)
                 det (det_B_H, BB, Method::Hybrid());
 	 	report << "Computed rational determinant (Hybrid): "; Q.write(report, det_A_H); report << endl;
 		if (!Q.areEqual(det_B_H ,pi)){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: (Dense) Hybrid Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
 		det (det_B_B, BB, Method::Blackbox());
 	 	report << "Computed rational determinant (Blackbox): "; Q.write(report, det_A_B); report<< endl;
 		if (!Q.areEqual(det_B_B , pi)){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: (Dense) Blackbox Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
@@ -592,18 +592,18 @@ bool testRationalDetGen (size_t n, int iterations)
 		det (det_B_E, BB, Method::Elimination());
 	 	report << "Computed rational determinant (BlasElimination): "; Q.write(report, det_A_E); report << endl;
 		if (!Q.areEqual(det_B_E ,pi)){
-	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 	 			<< "ERROR: (Dense) Elimination Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
 
 
-		commentator.stop ("done");
-	 	commentator.progress ();
-	 	//commentator.progress (i, iterations);
+		commentator().stop ("done");
+	 	commentator().progress ();
+	 	//commentator().progress (i, iterations);
  	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRationalDeterminantGeneric");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRationalDeterminantGeneric");
 
 	return ret;
 }
@@ -627,11 +627,11 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Modular<int> F (q);
 
-	commentator.start("Determinant test suite", "det");
+	commentator().start("Determinant test suite", "det");
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!testDiagonalDet1        (F, n, iterations)) pass = false;
 	if (!testDiagonalDet2        (F, n, iterations)) pass = false;
@@ -640,7 +640,7 @@ int main (int argc, char **argv)
 	if (!testIntegerDetGen          (n, iterations)) pass = false;
 	if (!testRationalDetGen          (n, iterations)) pass = false;
 
-	commentator.stop("determinant test suite");
+	commentator().stop("determinant test suite");
 	return pass ? 0 : -1;
 }
 

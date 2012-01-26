@@ -38,6 +38,7 @@
 #include "linbox/vector/stream.h"
 #include "test-common.h"
 #include "linbox/solutions/smith-form.h"
+using LinBox::parseArguments;
 using LinBox::commentator;
 using LinBox::Commentator;
 using LinBox::integer;
@@ -52,7 +53,7 @@ bool testRandom(const Ring& R,
 
 	str << "Testing the smithForm function in solutions directory:\n";
 
-        commentator.start (str.str ().c_str (), "testRandom");//, stream1.m ());
+        commentator().start (str.str ().c_str (), "testRandom");//, stream1.m ());
 
         bool ret = true;
         bool iter_passed = true;
@@ -70,9 +71,9 @@ bool testRandom(const Ring& R,
 
 	 while (stream1) {
 
-                commentator.startIteration ((unsigned)stream1.j ());
+                commentator().startIteration ((unsigned)stream1.j ());
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
                 iter_passed = true;
 
@@ -161,16 +162,16 @@ bool testRandom(const Ring& R,
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed Smith form is incorrect" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	 }
 
 	//stream1.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
 
 	return ret;
 }
@@ -195,13 +196,13 @@ int main(int argc, char** argv)
 //#endif
 	Ring R;
 
-	commentator.start("Smith form test suite", "Smith");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator().start("Smith form test suite", "Smith");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
 	LinBox::RandomDenseStream<Ring> s1 (R, n, iterations);
 	if (!testRandom(R, s1)) pass = false;
 
-	commentator.stop("Smith form test suite");
+	commentator().stop("Smith form test suite");
 	return pass ? 0 : -1;
 
 }

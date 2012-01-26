@@ -177,9 +177,9 @@ namespace LinBox
 		linbox_check (_number == A.coldim ());
 
 #ifdef ELIM_DETAILED_TRACE
-		commentator.start ("Computing W, S, T", "Eliminator::permuteAndInvert", _number);
+		commentator().start ("Computing W, S, T", "Eliminator::permuteAndInvert", _number);
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input matrix:" << std::endl;
 		_MD.write (report, A);
 #endif
@@ -256,7 +256,7 @@ namespace LinBox
 		report << "Computed W:" << std::endl;
 		_MD.write (report, W);
 
-		commentator.stop ("done", NULL, "Eliminator::permuteAndInvert");
+		commentator().stop ("done", NULL, "Eliminator::permuteAndInvert");
 #endif
 
 		timer.stop ();
@@ -371,9 +371,9 @@ namespace LinBox
 		unsigned int i;
 
 #ifdef ELIM_DETAILED_TRACE
-		commentator.start ("kth indexed Gauss-Jordan transform", "Eliminator::kthGaussJordan");
+		commentator().start ("kth indexed Gauss-Jordan transform", "Eliminator::kthGaussJordan");
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "k = " << k << std::endl;
 		report << "Starting column: " << s << std::endl;
 		report << "Column dimension: " << m << std::endl;
@@ -557,7 +557,7 @@ namespace LinBox
 		report << "(" << k << ") R:=1/d U 1/d0 PA: " << std::endl;
 		_MD.write (report, R);
 
-		commentator.stop ("done", NULL, "Eliminator::kthGaussJordan");
+		commentator().stop ("done", NULL, "Eliminator::kthGaussJordan");
 #endif
 
 		return _matU;

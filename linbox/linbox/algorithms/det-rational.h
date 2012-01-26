@@ -164,7 +164,7 @@ namespace LinBox
 		typedef Modular<double> myModular;
 		typedef typename Rationals::Element Quotient;
 
-		commentator.start ("Rational Det", "Rdeterminant");
+		commentator().start ("Rational Det", "Rdeterminant");
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 
@@ -319,7 +319,7 @@ namespace LinBox
 		//err = M/t;
 		//cout << "terminated by ET at step "<< (int)(log(k)/log(2)) << "in " << std::flush;
 
-		commentator.stop ("done", NULL, "Iminpoly");
+		commentator().stop ("done", NULL, "Iminpoly");
 
 		t0.stop();
 		return d;

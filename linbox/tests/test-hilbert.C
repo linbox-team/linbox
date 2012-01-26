@@ -67,7 +67,7 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator.start("Hilbert matrix blackbox test suite", "Hilbert");
+	commentator().start("Hilbert matrix blackbox test suite", "Hilbert");
 
 	typedef vector<Field::Element> Vector;
 	typedef Hilbert<Field> BB;
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
 
 	pass = pass && testBlackbox (A);
 
-	commentator.stop("Hilbert matrix blackbox test suite");
+	commentator().stop("Hilbert matrix blackbox test suite");
 	return pass ? 0 : -1;
 }
 

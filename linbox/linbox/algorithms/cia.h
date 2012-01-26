@@ -49,7 +49,7 @@ namespace LinBox
 	Polynomial& cia (Polynomial & P, const Blackbox & A,
 			 const Method::BlasElimination  & M)
 	{
-		commentator.start ("Integer Givaro::Dense Charpoly ", "CIA");
+		commentator().start ("Integer Givaro::Dense Charpoly ", "CIA");
 
 		typename Blackbox::Field intRing = A.field();
 		typedef Modular<double>                                                 Field;
@@ -115,7 +115,7 @@ namespace LinBox
 		}
 		for (size_t i = 0; i < nf; ++i)
 			delete intFactors[i];
-		commentator.stop ("done", NULL, "CIA");
+		commentator().stop ("done", NULL, "CIA");
 
 		return P = intCharPoly;
 	}

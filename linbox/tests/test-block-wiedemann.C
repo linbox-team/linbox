@@ -84,8 +84,8 @@ int main (int argc, char **argv)
 	Field F (q);
 	VectorDomain<Field> VD (F);
 
-	commentator.start("block wiedemann test suite", "block-wiedemann");
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	commentator().start("block wiedemann test suite", "block-wiedemann");
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	RandomDenseStream<Field> stream1 (F, n, 1), stream2 (F, n, 1);
 	Vector d(n), b(n), x(n), y(n);
@@ -129,7 +129,7 @@ int main (int argc, char **argv)
 
 #endif
 
-	commentator.stop("block wiedemann test suite");
+	commentator().stop("block wiedemann test suite");
     //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
 
 	return pass ? 0 : -1;

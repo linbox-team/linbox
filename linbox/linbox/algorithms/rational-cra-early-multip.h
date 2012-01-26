@@ -114,8 +114,8 @@ namespace LinBox
 			     ++ v1_p, ++ v2_p)
 				D.axpyin(z, (*v1_p), D.init(tmp, (*v2_p)));
 #if 0
-			commentator.report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) << "v: " << v2 << std::endl;
-			commentator.report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) << "z: " << z << std::endl;
+			commentator().report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) << "v: " << v2 << std::endl;
+			commentator().report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) << "z: " << z << std::endl;
 #endif
 			return z;
 		}

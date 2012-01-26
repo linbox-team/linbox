@@ -76,9 +76,9 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	typedef typename Field::RandIter RandIter;
 
 	//Commentator commentator;
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.start (pretty("Testing rank"),"testRank",iterations);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start (pretty("Testing rank"),"testRank",iterations);
 
 	Element one, zero;
 	F.init( one, 1UL);
@@ -91,7 +91,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 
 	for (int k=0;k<iterations; ++k) {
 
-		commentator.progress(k);
+		commentator().progress(k);
 		Element * A = new Element[n*n];
 		Element * S = new Element[n*n];
 		Element * L = new Element[n*n];
@@ -132,7 +132,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 			ret=false;
 	}
 
-	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testRank");
+	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testRank");
 
 	return ret;
 }
@@ -149,9 +149,9 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 	typedef typename Field::RandIter RandIter;
 
 	//Commentator commentator;
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.start (pretty("Testing TURBO"),"testTURBO",iterations);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start (pretty("Testing TURBO"),"testTURBO",iterations);
 
 	Element one, zero;
 	F.init( one, 1UL);
@@ -164,7 +164,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 
 	for (int k=0;k<iterations; ++k) {
 
-		commentator.progress(k);
+		commentator().progress(k);
 		Element * A = new Element[n*n];
 		Element * S = new Element[n*n];
 		Element * L = new Element[n*n];
@@ -213,7 +213,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 			ret=false;
 	}
 
-	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testTURBO");
+	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testTURBO");
 
 	return ret;
 }
@@ -231,9 +231,9 @@ static bool testDet (const Field& F,size_t n, int iterations)
 	typedef typename Field::RandIter RandIter;
 
 	//Commentator commentator;
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.start (pretty("Testing determinant"),"testDet",iterations);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start (pretty("Testing determinant"),"testDet",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -245,7 +245,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		commentator.progress(k);
+		commentator().progress(k);
 
 		G.random(d);
 
@@ -292,7 +292,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 			ret=false;
 	}
 
-	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testDet");
+	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testDet");
 
 	return ret;
 }
@@ -308,9 +308,9 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator commentator;
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -322,7 +322,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		commentator.progress(k);
+		commentator().progress(k);
 
 
 		Element * A = new Element[m*n];
@@ -431,7 +431,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 
 	}
 
-	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
+	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
 
 	return ret;
 }
@@ -443,9 +443,9 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
 	//Commentator commentator;
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.start (pretty("Testing minpoly"),"testMinPoly",iterations);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start (pretty("Testing minpoly"),"testMinPoly",iterations);
 	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -457,7 +457,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		commentator.progress(k);
+		commentator().progress(k);
 
 		Element * A = new Element[n*n];
 		Element * X = new Element[n*(n+1)];
@@ -537,7 +537,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	}
 
 
-	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
+	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
 
 	return ret;
 }
@@ -549,9 +549,9 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
 	//Commentator commentator;
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.start (pretty("Testing charpoly"),"testCharPoly",iterations);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start (pretty("Testing charpoly"),"testCharPoly",iterations);
 	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -562,7 +562,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		commentator.progress(k);
+		commentator().progress(k);
 
 		Element * A = new Element[n*n];
 
@@ -619,7 +619,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 		delete[] A;
 	}
 
-	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
+	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
 
 	return ret;
 }
@@ -632,9 +632,9 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	typedef typename Field::RandIter RandIter;
 
 	//Commentator commentator;
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.start (pretty("Testing inverse"),"testInv",iterations);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start (pretty("Testing inverse"),"testInv",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -652,7 +652,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	}
 	for (int k=0;k<iterations;++k) {
 
-		commentator.progress(k);
+		commentator().progress(k);
 
 
 		Element * A = new Element[n*n];
@@ -719,7 +719,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	}
 	delete[] Id;
 
-	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testInv");
+	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testInv");
 
 	return ret;
 }
@@ -732,9 +732,9 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 	typedef typename Field::RandIter RandIter;
 
 	//Commentator commentator;
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.start (pretty("Testing applyP"),"testapplyP",iterations);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start (pretty("Testing applyP"),"testapplyP",iterations);
 
 	RandIter G(F);
 	Element zero,one,tmp,tmp2;
@@ -747,7 +747,7 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		commentator.progress(k);
+		commentator().progress(k);
 
 
 		Element * A = new Element[n*n];
@@ -792,7 +792,7 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 		delete[] P;
 	}
 
-	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testApplyP");
+	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testApplyP");
 
 	return ret;
 }
@@ -824,9 +824,9 @@ int main(int argc, char** argv)
 
 		srand((unsigned)time (NULL));
 
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator.start("ffpack test suite", "ffpack");
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator().start("ffpack test suite", "ffpack");
 
 		if (!testLUdivine (F, m,n, iterations)) pass = false;
 		if (!testRank (F, n, iterations))       pass = false;
@@ -848,9 +848,9 @@ int main(int argc, char** argv)
 
 		srand((unsigned)time (NULL));
 
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator.start("ffpack test suite", "ffpack");
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator().start("ffpack test suite", "ffpack");
 
 		if (!testLUdivine (F, m,n, iterations)) pass = false;
 		if (!testRank (F, n, iterations))       pass = false;
@@ -871,9 +871,9 @@ int main(int argc, char** argv)
 
 		srand((unsigned)time (NULL));
 
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator.start("ffpack test suite", "ffpack");
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator().start("ffpack test suite", "ffpack");
 
 		if (!testLUdivine (F, m,n, iterations)) pass = false;
 		if (!testRank (F, n, iterations))       pass = false;
@@ -894,9 +894,9 @@ int main(int argc, char** argv)
 
 		srand((unsigned)time (NULL));
 
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator.start("ffpack test suite", "ffpack");
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator().start("ffpack test suite", "ffpack");
 
 		if (!testLUdivine (F, m,n, iterations)) pass = false;
 		if (!testRank (F, n, iterations))       pass = false;
@@ -917,9 +917,9 @@ int main(int argc, char** argv)
 
 		srand((unsigned)time (NULL));
 
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator.start("ffpack test suite", "ffpack");
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator().start("ffpack test suite", "ffpack");
 
 		if (!testLUdivine (F, m,n, iterations)) pass = false;
 		if (!testRank (F, n, iterations))       pass = false;
@@ -941,9 +941,9 @@ int main(int argc, char** argv)
 
 		srand((unsigned)time (NULL));
 
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator.start("ffpack test suite", "ffpack");
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator().start("ffpack test suite", "ffpack");
 
 		if (!testLUdivine (F, m,n, iterations)) pass = false;
 		if (!testRank (F, n, iterations))       pass = false;
@@ -964,9 +964,9 @@ int main(int argc, char** argv)
 
 		srand((unsigned)time (NULL));
 
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator.start("ffpack test suite", "ffpack");
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator().start("ffpack test suite", "ffpack");
 
 		if (!testLUdivine (F, m,n, iterations)) pass=false;
 		if (!testRank (F, n, iterations))   pass = false;
@@ -986,9 +986,9 @@ int main(int argc, char** argv)
 
 		srand((unsigned)time (NULL));
 
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator.start("ffpack test suite", "ffpack");
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator().start("ffpack test suite", "ffpack");
 
 		if (!testLUdivine (F, m,n, iterations)) pass=false;
 		if (!testRank (F, n, iterations))   pass = false;
@@ -1000,7 +1000,7 @@ int main(int argc, char** argv)
 		if (!testCharPoly (F,n,iterations)) pass=false;
 	}
 #endif
-	commentator.stop(MSG_STATUS(pass),"ffpack test suite");
+	commentator().stop(MSG_STATUS(pass),"ffpack test suite");
 
 	return pass ? 0 : -1;
 }

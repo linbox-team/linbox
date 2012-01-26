@@ -297,7 +297,7 @@ namespace LinBox
 
 		// Avoid massive unneeded overhead in the case that this
 		// printing is disabled
-		if (commentator.isNullStream (os))
+		if (commentator().isNullStream (os))
 			return os;
 
 		switch (format) {
@@ -458,7 +458,7 @@ namespace LinBox
 
 		// Avoid massive unneeded overhead in the case that this
 		// printing is disabled
-		if (commentator.isNullStream (os))
+		if (commentator().isNullStream (os))
 			return os;
 
 		switch (format) {

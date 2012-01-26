@@ -50,8 +50,8 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
-	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	LinBox::commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool pass = true;
 
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 		END_OF_ARGUMENTS
 	};
 
-	parseArguments (argc, argv, args);
+	LinBox::parseArguments (argc, argv, args);
 
 
 
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 	NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
 
 
-	LinBox::commentator.start("Hankel black box test test suite", "Hankel");
+	LinBox::commentator().start("Hankel black box test test suite", "Hankel");
 	report << "\tn= " <<  n << " \tq= " << q <<   endl ;
 
 	// typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
 
 	pass = testBlackbox(TT);
 
-	LinBox::commentator.stop("Hankel black box test test suite");
+	LinBox::commentator().stop("Hankel black box test test suite");
 	return pass ? 0 : -1;
 
 }

@@ -166,7 +166,7 @@ namespace LinBox
 		typedef Modular<double> myModular;
 		typedef typename Rationals::Element Quotient;
 
-		commentator.start ("Rational Charpoly", "Rminpoly");
+		commentator().start ("Rational Charpoly", "Rminpoly");
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 
@@ -323,7 +323,7 @@ namespace LinBox
 			//if (err.bitsize() > max_err) max_err = err.bitsize();
 		}
 
-		commentator.stop ("done", NULL, "Iminpoly");
+		commentator().stop ("done", NULL, "Iminpoly");
 
 		return p;
 

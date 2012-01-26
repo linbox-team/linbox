@@ -94,13 +94,13 @@ namespace LinBox
 		template<class Function, class PrimeIterator>
 		Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter)
 		{
-			commentator.start ("Modular iteration", "mmcrait");
+			commentator().start ("Modular iteration", "mmcrait");
 			if (IterCounter==0) {
 				++IterCounter;
 				Domain D(*primeiter);
-				std::ostream& report = commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+				std::ostream& report = commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 				report << "With prime " << *primeiter << std::endl;
-				//commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				//commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 				++primeiter;
 				DomainElement r; D.init(r);
 				Builder_.initialize( D, Iteration(r, D) );
@@ -121,12 +121,12 @@ namespace LinBox
 				}
 				coprime =0;
 				Domain D(*primeiter);
-				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
                                 ++primeiter;
 				DomainElement r; D.init(r);
 				Builder_.progress( D, Iteration(r, D) );
 			}
-			commentator.stop ("done", NULL, "mmcrait");
+			commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << IterCounter << " primes." << std::endl;
 			return Builder_.result(res);
 		}
@@ -144,7 +144,7 @@ namespace LinBox
 				++i;
 				++IterCounter;
 				Domain D(*primeiter);
-				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 				++primeiter;
 				DomainElement r; D.init(r);
 				Builder_.initialize( D, Iteration(r, D) );
@@ -167,7 +167,7 @@ namespace LinBox
 				coprime =0;
 
 				Domain D(*primeiter);
-				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 				++primeiter;
 				DomainElement r; D.init(r);
 				Builder_.progress( D, Iteration(r, D) );
@@ -181,11 +181,11 @@ namespace LinBox
 		template<class Iterator, class Function, class PrimeIterator>
 		Iterator& operator() (Iterator& res, Function& Iteration, PrimeIterator& primeiter)
 		{
-			commentator.start ("Modular vectorized iteration", "mmcravit");
+			commentator().start ("Modular vectorized iteration", "mmcravit");
 
 			if (IterCounter==0) {
 				Domain D(*primeiter);
-				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 				++primeiter;
 				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
 				Builder_.initialize( D, Iteration(r, D) );
@@ -206,12 +206,12 @@ namespace LinBox
 				}
 
                                 Domain D(*primeiter);
-				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
                                 ++primeiter;
 				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
 				Builder_.progress( D, Iteration(r, D) );
 			}
-			commentator.stop ("done", NULL, "mmcravit");
+			commentator().stop ("done", NULL, "mmcravit");
 			return Builder_.result(res);
 		}
 
@@ -228,7 +228,7 @@ namespace LinBox
 				++i;
 				++IterCounter;
 				Domain D(*primeiter);
-				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 				++primeiter;
 				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
 				Builder_.initialize( D, Iteration(r, D) );

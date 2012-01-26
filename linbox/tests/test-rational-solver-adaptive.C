@@ -54,7 +54,7 @@ bool testRandomSolve (const Ring& R,
 
 
 
-	commentator.start ("Testing Nonsingular Random Diagonal solve ", "testNonsingularRandomDiagonalSolve");
+	commentator().start ("Testing Nonsingular Random Diagonal solve ", "testNonsingularRandomDiagonalSolve");
 
 	bool ret = true;
 
@@ -73,9 +73,9 @@ bool testRandomSolve (const Ring& R,
 
 	while (stream1 && stream2) {
 
-		commentator.startIteration ((unsigned)stream1.j ());
+		commentator().startIteration ((unsigned)stream1.j ());
 
-                //ActivityState state = commentator.saveActivityState ();
+                //ActivityState state = commentator().saveActivityState ();
 
                 iter_passed = true;
 
@@ -89,7 +89,7 @@ bool testRandomSolve (const Ring& R,
 
                 stream2.next (b);
 
-                std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+                std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
                 report << "Diagonal entries: ";
                 VD.write (report, d);
                 report << endl;
@@ -146,18 +146,18 @@ bool testRandomSolve (const Ring& R,
 
 		  if (!VD.areEqual (y, b)) {
 		    ret = iter_passed = false;
-		    commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		    commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 		      << "ERROR: Computed solution is incorrect" << endl;
 		  }
 		}
 		else {
 		    ret = iter_passed = false;
-		    commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		    commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 		      << "ERROR: Did not return OK solving status" << endl;
 		}
 
-		commentator.stop ("done");
-                commentator.progress ();
+		commentator().stop ("done");
+                commentator().progress ();
 
 	}
 
@@ -165,7 +165,7 @@ bool testRandomSolve (const Ring& R,
 	stream1.reset ();
         stream2.reset ();
 
-        commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNonsingularRandomDiagonalSolve");
+        commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNonsingularRandomDiagonalSolve");
 
 	return ret;
 }

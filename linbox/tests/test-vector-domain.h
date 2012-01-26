@@ -60,7 +60,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 	std::ostringstream str;
 
 	str << "\t--Testing " << text << " dot product" << std::ends;
-	LinBox::commentator.start (str.str ().c_str (), "testDotProduct", stream1.m ());
+	LinBox::commentator().start (str.str ().c_str (), "testDotProduct", stream1.m ());
 
 	bool ret = true;
 
@@ -79,7 +79,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration ((unsigned)stream1.j ());
+		LinBox::commentator().startIteration ((unsigned)stream1.j ());
 
 		F.init (sigma, 0);
 
@@ -91,7 +91,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 				  LinBox::VectorWrapper::constRef<Field> (v1, j),
 				  LinBox::VectorWrapper::constRef<Field> (v2, j));
 
-		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1 of size " << v1.size() << ":  ";
 		VD.write (report, v1) << std::endl;
 
@@ -111,18 +111,18 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 
 		if (!F.areEqual (sigma, rho)) {
 			ret = false;
-			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Dot products are not equal" << std::endl;
 		}
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		LinBox::commentator().stop ("done");
+		LinBox::commentator().progress ();
 	}
 
-	LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+	LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
 	<< "Average time for dot product: " << (double)totaltime / (double)stream1.m () << std::endl;
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
+	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
 	stream1.reset ();
 	stream2.reset ();
@@ -149,7 +149,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	std::ostringstream str;
 
 	str << "\t--Testing " << text << " vector add, mul" << std::ends;
-	LinBox::commentator.start (str.str ().c_str (), "testAddMul", stream1.m ());
+	LinBox::commentator().start (str.str ().c_str (), "testAddMul", stream1.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -168,7 +168,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	LinBox::VectorDomain<Field> VD (F);
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration ((unsigned)stream1.j ());
+		LinBox::commentator().startIteration ((unsigned)stream1.j ());
 
 		iter_passed = true;
 
@@ -177,7 +177,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 
 		do r.random (a); while (F.isZero (a));
 
-		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1 of size " << v1.size() << ":  ";
 		VD.write (report, v1) << std::endl;
 
@@ -218,14 +218,14 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: (x + a*y) != a*(y + a^-1*x)" << std::endl;
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		LinBox::commentator().stop ("done");
+		LinBox::commentator().progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAddMul");
+	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testAddMul");
 
 	stream1.reset ();
 	stream2.reset ();
@@ -252,7 +252,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	std::ostringstream str;
 
 	str << "\t--Testing " << text << " vector sub, mul" << std::ends;
-	LinBox::commentator.start (str.str ().c_str (), "testSubMul", stream1.m ());
+	LinBox::commentator().start (str.str ().c_str (), "testSubMul", stream1.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -271,7 +271,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	LinBox::VectorDomain<Field> VD (F);
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration ((unsigned)stream1.j ());
+		LinBox::commentator().startIteration ((unsigned)stream1.j ());
 
 		iter_passed = true;
 
@@ -280,7 +280,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 
 		do r.random (a); while (F.isZero (a));
 
-		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1 of size " << v1.size() << ":  ";
 		VD.write (report, v1) << std::endl;
 
@@ -321,14 +321,14 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: (x - a*y) != a*(a^-1*x - y)" << std::endl;
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		LinBox::commentator().stop ("done");
+		LinBox::commentator().progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSubMul");
+	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testSubMul");
 
 	stream1.reset ();
 	stream2.reset ();
@@ -353,7 +353,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 {
 	std::ostringstream str;
 	str << "\t--Testing " << text << " vector axpy" << std::ends;
-	LinBox::commentator.start (str.str ().c_str (), "testAXPY", stream1.m ());
+	LinBox::commentator().start (str.str ().c_str (), "testAXPY", stream1.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -372,7 +372,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 	LinBox::VectorDomain<Field> VD (F);
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration ((unsigned)stream1.j ());
+		LinBox::commentator().startIteration ((unsigned)stream1.j ());
 
 		iter_passed = true;
 
@@ -381,7 +381,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 
 		do r.random (a); while (F.isZero (a));
 
-		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1 of size " << v1.size() << ":  ";
 		VD.write (report, v1) << std::endl;
 
@@ -404,14 +404,14 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << std::endl;
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		LinBox::commentator().stop ("done");
+		LinBox::commentator().progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAXPY");
+	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testAXPY");
 
 	stream1.reset ();
 	stream2.reset ();
@@ -436,7 +436,7 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 	std::ostringstream str;
 
 	str << "\t--Testing " << text << " vector copy, areEqual" << std::ends;
-	LinBox::commentator.start (str.str ().c_str (), "testCopyEqual", stream.m ());
+	LinBox::commentator().start (str.str ().c_str (), "testCopyEqual", stream.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -450,14 +450,14 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 	LinBox::VectorDomain<Field> VD (F);
 
 	while (stream) {
-		LinBox::commentator.startIteration ((unsigned)stream.j ());
+		LinBox::commentator().startIteration ((unsigned)stream.j ());
 
 		iter_passed = true;
 
 		stream.next (v);
 		VD.copy (w, v);
 
-		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:   ";
 		VD.write (report, v) << std::endl;
 
@@ -468,14 +468,14 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Vectors are not equal" << std::endl;
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		LinBox::commentator().stop ("done");
+		LinBox::commentator().progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testCopyEqual");
+	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testCopyEqual");
 
 	stream.reset ();
 	stream2.reset ();

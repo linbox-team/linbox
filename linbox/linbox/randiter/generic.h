@@ -105,7 +105,7 @@ namespace LinBox
 
 			linbox_check(cardinality>0); // could be -1
 
-			commentator.report (10, INTERNAL_DESCRIPTION)
+			commentator().report (10, INTERNAL_DESCRIPTION)
 			<< "Created random generator with size " << _size
 			<< " and seed " << _seed << std::endl;
 

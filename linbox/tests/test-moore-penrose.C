@@ -137,7 +137,7 @@ static bool testIdentityApply (Field                                           &
 	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix <Field, Row> Blackbox;
 
-	commentator.start ("Testing identity apply", "testIdentityApply", stream.m ());
+	commentator().start ("Testing identity apply", "testIdentityApply", stream.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -161,13 +161,13 @@ static bool testIdentityApply (Field                                           &
 	MoorePenrose<Blackbox> Adagger (&A, r);
 
 	while (stream) {
-		commentator.startIteration ((unsigned)i);
+		commentator().startIteration ((unsigned)i);
 
 		iter_passed = true;
 
 		stream.next (v);
 
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		report << "Input vector:  ";
 		printVector<Field> (F, report, v);
@@ -186,14 +186,14 @@ static bool testIdentityApply (Field                                           &
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Output vector is incorrect" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
 
 	return ret;
 }
@@ -228,7 +228,7 @@ static bool testRandomApply1 (Field                 &F,
 {
 	typedef SparseMatrix <Field, Row> Blackbox;
 
-	commentator.start ("Testing random apply", "testRandomApply1", iterations);
+	commentator().start ("Testing random apply", "testRandomApply1", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -250,19 +250,19 @@ static bool testRandomApply1 (Field                 &F,
 	typename Field::Element x;
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration ((unsigned)i);
+		commentator().startIteration ((unsigned)i);
 		iter_passed = true;
 
-		commentator.start ("Building requisite random sparse matrix");
+		commentator().start ("Building requisite random sparse matrix");
 		Blackbox *A = buildRandomSparseMatrix<Vector> (F, n, m, r, K, dinv, M_stream1, M_stream2);
-		commentator.stop ("done");
+		commentator().stop ("done");
 
-		commentator.start ("Constructing Moore-Penrose inverse");
+		commentator().start ("Constructing Moore-Penrose inverse");
 		MoorePenrose<Blackbox> Adagger (A, r);
-		commentator.stop ("done");
+		commentator().stop ("done");
 
 		{
-			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+			ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "Input matrix" << endl;
 			A->write (report, FORMAT_PRETTY);
 		}
@@ -271,18 +271,18 @@ static bool testRandomApply1 (Field                 &F,
 		LinBox::rank (rank_A, Aprime, Method::Wiedemann());
 
 		if (rank_A == r) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 				<< "Rank is correct. Good." << endl;
 		}
 		else
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "Rank is incorrect (" << rank_A << "). Not good." << endl;
 
 		while (stream) {
 			stream.next (lambda);
 			A->applyTranspose (x_correct, lambda);
 
-			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+			ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 			A->apply (w, x_correct);
 
@@ -299,9 +299,9 @@ static bool testRandomApply1 (Field                 &F,
 			report << "Right hand side: ";
 			printVector<Field> (F, report, w);
 
-			commentator.start ("Applying Moore-Penrose inverse");
+			commentator().start ("Applying Moore-Penrose inverse");
 			Adagger.apply (x_computed, w);
-			commentator.stop ("done");
+			commentator().stop ("done");
 
 			report << "Correct output:  ";
 			printVector<Field> (F, report, x_correct);
@@ -314,17 +314,17 @@ static bool testRandomApply1 (Field                 &F,
 					ret = iter_passed = false;
 
 			if (!iter_passed)
-				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Vectors are not equal" << endl;
 		}
 
 		delete A;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply1");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply1");
 
 	return ret;
 }
@@ -359,10 +359,10 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator.start("MoorePenrose black box test suite", "MoorePenrose");
+	commentator().start("MoorePenrose black box test suite", "MoorePenrose");
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
 
 	RandomDenseStream<Field, DenseVector> stream1 (F, n, iterations);
 	RandomDenseStream<Field, DenseVector> stream2 (F, n, k);
@@ -376,7 +376,7 @@ int main (int argc, char **argv)
 	if (!testRandomApply2 (F, n, m, r, iterations, stream2)) pass = false;
 #endif
 
-	commentator.stop("MoorePenrose black box test suite");
+	commentator().stop("MoorePenrose black box test suite");
 	return pass ? 0 : -1;
 }
 

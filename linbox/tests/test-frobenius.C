@@ -84,12 +84,12 @@ int main (int argc, char **argv)
 	for ( size_t i=0; i < pdeg; ++i) r.random(plist[2][i]);
 	F.init(plist[2][pdeg],1);
 
-	commentator.start("Frobenius form black box test suite", "frobenius");
+	commentator().start("Frobenius form black box test suite", "frobenius");
 	Frobenius<Field>  A(F, plist.begin(), plist.end());
 
 	pass = pass && testBlackbox(A);
 
-	commentator.stop("Frobenius form black box test suite");
+	commentator().stop("Frobenius form black box test suite");
 	return pass ? 0 : -1;
 }
 

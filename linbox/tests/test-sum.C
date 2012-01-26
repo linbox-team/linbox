@@ -88,7 +88,7 @@ static bool testBBrebind (const Field2 &F2, const Blackbox& B)
 template <class Field1, class Field2, class Vector>
 static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2)
 {
-	commentator.start ("Testing zero apply", "testZeroApply", stream1.m ());
+	commentator().start ("Testing zero apply", "testZeroApply", stream1.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -107,7 +107,7 @@ static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1
 	F1.init (neg_one, -1);
 
 	while (stream1) {
-		commentator.startIteration ((unsigned)stream1.j ());
+		commentator().startIteration ((unsigned)stream1.j ());
 		iter_passed = true;
 
 		stream1.next (d1);
@@ -117,7 +117,7 @@ static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1
 
 		Sum <Diagonal<Field1>,Diagonal <Field1> > A (&D1, &D2);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal matrix:  ";
 		VD.write (report, d1);
 		report << endl;
@@ -146,17 +146,17 @@ static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1
 		}
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vector is not zero" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 
                 ret = ret && testBBrebind(F2, A);
 
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testZeroApply");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testZeroApply");
 
 	return ret;
 }
@@ -180,7 +180,7 @@ static bool testRandomTranspose (Field &F, size_t n, int iterations)
 {
 	typedef vector <typename Field::Element> Vector;
 
-	commentator.start ("Testing random transpose", "testRandomTranspose", iterations);
+	commentator().start ("Testing random transpose", "testRandomTranspose", iterations);
 
 	Vector d(n);
 	typename Field::RandIter r (F);
@@ -190,14 +190,14 @@ static bool testRandomTranspose (Field &F, size_t n, int iterations)
 
 	Diagonal <Field, Vector> D (F, d);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "Diagonal vector: ";
 	printVector<Field> (F, report, d);
 
 	bool ret = testTranspose<Field> (F, D, iterations);
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
 	return ret;
 }
@@ -238,10 +238,10 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Sum black box test suite", "sum");
+	commentator().start("Sum black box test suite", "sum");
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	RandomDenseStream<Field> stream1 (F1, n, iterations1), stream2 (F1, n, iterations2);
 
@@ -267,7 +267,7 @@ int main (int argc, char **argv)
         Sum <Blackbox, Blackbox> Aref (&D1, &D2);
 	pass = pass && testBlackbox(Aref) && testBBrebind(F2, A);
 
-	commentator.stop("Sum black box test suite");
+	commentator().stop("Sum black box test suite");
 	return pass ? 0 : -1;
 }
 

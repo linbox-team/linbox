@@ -81,8 +81,8 @@ bool testMatrixStream(const string& matfile)
 {
 
 	bool pass = true;
-	commentator.start("Testing matrix-stream...", matfile.c_str());
-	std::ostream& out = commentator.report();
+	commentator().start("Testing matrix-stream...", matfile.c_str());
+	std::ostream& out = commentator().report();
 
 	std::ifstream fin(matfile.c_str());
 	if( !fin ) {
@@ -216,8 +216,8 @@ bool testMatrixStream(const string& matfile)
 */
 	if( !pass )	out << "FAIL: matrix-stream" << std::endl;
 	else 		out << "matrix-stream Passed" << std::endl;
-	commentator.stop(ms.getFormat());
-	//commentator.stop(MSG_STATUS(pass));
+	commentator().stop(ms.getFormat());
+	//commentator().stop(MSG_STATUS(pass));
 	return pass;
 }
 
@@ -279,9 +279,9 @@ int main(int argc, char* argv[])
 
 	for (size_t i = 0; i < 19; ++i) {matrix[2][2] *= 10; matrix[2][2] += 8; }
 
-	commentator.start("Matrix stream test suite", "matrix stream");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().start("Matrix stream test suite", "matrix stream");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 	bool pass = true;
 	pass = pass && testMatrixStream("data/sms.matrix");
 	pass = pass && testMatrixStream("data/matrix-market-array.matrix");
@@ -290,7 +290,7 @@ int main(int argc, char* argv[])
 	pass = pass && testMatrixStream("data/generic-dense.matrix");
 	pass = pass && testMatrixStream("data/sparse-row.matrix");
 	pass = pass && testMatrixStream("data/matrix-market-coordinate.matrix");
-	commentator.stop(MSG_STATUS(pass));
+	commentator().stop(MSG_STATUS(pass));
 	return pass ? 0 : -1;
 }
 

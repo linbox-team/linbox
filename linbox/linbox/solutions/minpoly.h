@@ -140,21 +140,21 @@ namespace LinBox
 			     const RingCategories::ModularTag & tag,
 			     const Method::BlasElimination    & M)
 	{
-		commentator.start ("Convertion to BLAS Minimal polynomial", "blasconvert");
+		commentator().start ("Convertion to BLAS Minimal polynomial", "blasconvert");
 
 		if (A.coldim() != A.rowdim()) {
-			commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Squarize matrix" << std::endl;
+			commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Squarize matrix" << std::endl;
 			Squarize<Blackbox> B(&A);
 			BlasMatrix< typename Blackbox::Field > BBB (B);
 			BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
-			commentator.stop ("done", NULL, "blasconvert");
+			commentator().stop ("done", NULL, "blasconvert");
 
 			return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field>& >(BBB));
 		}
 		else {
 			BlasMatrix< typename Blackbox::Field > BBB (A);
 			BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
-			commentator.stop ("done", NULL, "blasconvert");
+			commentator().stop ("done", NULL, "blasconvert");
 			return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field>& >(BBB));
 		}
 	}
@@ -229,14 +229,14 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_MPI
 		Communicator *c = M.communicatorp();
 		if(!c || c->rank() == 0)
-			commentator.start ("Integer Minpoly", "Iminpoly");
+			commentator().start ("Integer Minpoly", "Iminpoly");
 		else{
-			//commentator.setMaxDepth(0);
-			//commentator.setMaxDetailLevel(0);
-			//commentator.setPrintParameters(0, 0, 0);
+			//commentator().setMaxDepth(0);
+			//commentator().setMaxDetailLevel(0);
+			//commentator().setPrintParameters(0, 0, 0);
 		}
 #else
-		commentator.start ("Integer Minpoly", "Iminpoly");
+		commentator().start ("Integer Minpoly", "Iminpoly");
 #endif
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
@@ -257,7 +257,7 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_MPI
 		if(c || c->rank() == 0)
 #endif
-			commentator.stop ("done", NULL, "Iminpoly");
+			commentator().stop ("done", NULL, "Iminpoly");
 		return P;
 	}
 
@@ -267,7 +267,7 @@ namespace LinBox
 			     const RingCategories::RationalTag & tag,
 			     const MyMethod                    & M)
 	{
-		commentator.start ("Rational Minpoly", "Rminpoly");
+		commentator().start ("Rational Minpoly", "Rminpoly");
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 		RationalRemainder2< VarPrecEarlyMultipCRA<Modular<double> > > rra(3UL);
@@ -281,7 +281,7 @@ namespace LinBox
 		for (typename Polynomial::iterator it= P.begin(); it != P.end(); ++it, ++i)
 			A.field().init(*it, PP[i],den);
 
-		commentator.stop ("done", NULL, "Rminpoly");
+		commentator().stop ("done", NULL, "Rminpoly");
 
 		return P;
 	}
@@ -292,7 +292,7 @@ namespace LinBox
 						      const RingCategories::RationalTag  & tag,
 						      const MyMethod                     & M)
 	{
-		commentator.start ("Dense Rational Minpoly", "Rminpoly");
+		commentator().start ("Dense Rational Minpoly", "Rminpoly");
 
 		rational_minpoly(P,A,M);
 		return P;

@@ -68,7 +68,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Hom test suite", "Hom");
+	commentator().start("Hom test suite", "Hom");
 	bool pass = true;
 
 	Modular<uint32_t> F_uint32_t ((uint32_t) q);
@@ -99,7 +99,7 @@ int main (int argc, char **argv)
 	pass = pass && iso.areEqual(z, w);
 	*/
 
-	commentator.stop("Hom test suite");
+	commentator().stop("Hom test suite");
 	return pass ? 0 : -1;
 }
 

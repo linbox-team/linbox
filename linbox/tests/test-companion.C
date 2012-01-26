@@ -65,7 +65,7 @@ int main (int argc, char **argv)
 
 	srand ((unsigned int) time (NULL));
 
-	commentator.start("Companion matrix black box test suite", "companion");
+	commentator().start("Companion matrix black box test suite", "companion");
 
 	typedef Modular<uint32_t> Field;
 	typedef vector <Field::Element> Vector;
@@ -86,7 +86,7 @@ int main (int argc, char **argv)
 
 	pass = pass && testBlackbox(B);
 
-	commentator.stop("companion matrix black box test suite");
+	commentator().stop("companion matrix black box test suite");
 
 	return pass ? 0 : -1;
 }

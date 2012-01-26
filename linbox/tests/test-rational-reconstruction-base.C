@@ -88,7 +88,7 @@ struct ModularFraction {
 
 static bool testRandomFraction (size_t n, size_t d, int iterations)
 {
-	commentator.start ("Testing rational reconstruction on random fractions", "testRandFrac", iterations);
+	commentator().start ("Testing rational reconstruction on random fractions", "testRandFrac", iterations);
 
 	bool ret = true;
 	// bool done;
@@ -98,7 +98,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 	integer num,den;
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		integer::nonzerorandom(num, n);
 		integer::nonzerorandom(den, d);
@@ -106,7 +106,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		num /= g; den /= g;
 		if (i %2 ) integer::negin(num);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "True fraction: " << num << " / " << den;
 		report << endl;
 
@@ -129,7 +129,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra1_1(a1_1,b1_1,iteration,genprime);
 		if ((a1_1 != num)  || (b1_1 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (Wang, incremental, fast) failed" << endl;
 		}
 
@@ -139,7 +139,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra2_1(a2_1,b2_1,iteration,genprime);
 		if ((a2_1 != num)  || (b2_1 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (MaxQ, incremental, fast) failed" << endl;
 		}
 
@@ -149,7 +149,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra3_1(a3_1,b3_1,iteration,genprime);
 		if ((a3_1 != num)  || (b3_1 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (Wang, incremental, classic) failed" << endl;
 		}
 
@@ -159,7 +159,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra4_1(a4_1,b4_1,iteration,genprime);
 		if ((a4_1 != num)  || (b4_1 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (MaxQ, incremental, classic) failed" << endl;
 		}
 
@@ -169,7 +169,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra1_2(a1_2,b1_2,iteration,genprime);
 		if ((a1_2 != num)  || (b1_2 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (Wang, quadratic, fast) failed" << endl;
 		}
 
@@ -179,7 +179,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra2_2(a2_2,b2_2,iteration,genprime);
 		if ((a2_2 != num)  || (b2_2 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (MaxQ, quadratic, fast) failed" << endl;
 		}
 
@@ -189,7 +189,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra3_2(a3_2,b3_2,iteration,genprime);
 		if ((a3_2 != num)  || (b3_2 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (Wang, quadratic, classic) failed" << endl;
 		}
 
@@ -199,7 +199,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra4_2(a4_2,b4_2,iteration,genprime);
 		if ((a4_2 != num)  || (b4_2 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (MaxQ, quadratic, classic) failed" << endl;
 		}
 
@@ -210,7 +210,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra1_3(a1_3,b1_3,iteration,genprime);
 		if ((a1_3 != num)  || (b1_3 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (Wang, geometric, fast) failed" << endl;
 		}
 
@@ -220,7 +220,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra2_3(a2_3,b2_3,iteration,genprime);
 		if ((a2_3 != num)  || (b2_3 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (MaxQ, geometric, fast) failed" << endl;
 		}
 
@@ -230,7 +230,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra3_3(a3_3,b3_3,iteration,genprime);
 		if ((a3_3 != num)  || (b3_3 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (Wang, geometric, classic) failed" << endl;
 		}
 
@@ -240,7 +240,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra4_3(a4_3,b4_3,iteration,genprime);
 		if ((a4_3 != num)  || (b4_3 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (MaxQ, geometric, classic) failed" << endl;
 		}
 
@@ -255,7 +255,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra1_4(a1_4,b1_4,iteration,genprime);
 		if ((a1_4 != num)  || (b1_4 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (Wang, certified, fast) failed" << endl;
 		}
 
@@ -266,18 +266,18 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		cra3_4(a3_4,b3_4,iteration,genprime);
 		if ((a3_4 != num)  || (b3_4 != den) ) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (Wang, certified, classic) failed" << endl;
 		}
 
 		//RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR4_4(RRB2,CERTIFIED);
 
-		commentator.stop ("done");
-		commentator.progress ();
-		//commentator.progress (i, iterations);
+		commentator().stop ("done");
+		commentator().progress ();
+		//commentator().progress (i, iterations);
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRationalDeterminantGeneric");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRationalDeterminantGeneric");
 
 	return ret;
 }
@@ -300,15 +300,15 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	//Modular<int> F (q);
 
-	commentator.start("Rational reconstruction test suite", "rr");
+	commentator().start("Rational reconstruction test suite", "rr");
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!testRandomFraction          (n, n,iterations)) pass = false;
 
-	commentator.stop("Rational reconstruction test suite");
+	commentator().stop("Rational reconstruction test suite");
 	return pass ? 0 : -1;
 }
 

@@ -40,9 +40,9 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
-	commentator.setMaxDetailLevel (-1);
-	commentator.setMaxDepth (-1);
-	commentator.setReportStream (std::cerr);
+	commentator().setMaxDetailLevel (-1);
+	commentator().setMaxDepth (-1);
+	commentator().setReportStream (std::cerr);
 
 	if (argc <= 1 || argc > 3) {
 		cerr << "Usage: det <matrix-file-in-supported-format> [<p>]" << endl;

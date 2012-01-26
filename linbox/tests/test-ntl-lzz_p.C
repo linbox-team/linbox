@@ -58,7 +58,7 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	commentator.start("NTL_zz_p field test suite", "NTL_zz_p");
+	commentator().start("NTL_zz_p field test suite", "NTL_zz_p");
 	bool pass = true;
 
 	//NTL::zz_p::init(q);
@@ -70,7 +70,7 @@ int main (int argc, char **argv)
 		return false ;
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	if (!runFieldTests (F, "NTL_zz_p", iterations, n, false)) pass = false;
 
@@ -81,7 +81,7 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 
-	commentator.stop("NTL_zz_p field test suite");
+	commentator().stop("NTL_zz_p field test suite");
 	return pass ? 0 : -1;
 }
 

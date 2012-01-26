@@ -152,10 +152,10 @@ namespace LinBox
 	Vector& solvein(Vector& x, SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>& A,
 			const Vector& b, const Method::SparseElimination& m)
 	{
-		commentator.start ("Sparse Elimination Solve In Place", "sesolvein");
+		commentator().start ("Sparse Elimination Solve In Place", "sesolvein");
 		GaussDomain<Field> GD ( A.field() );
 		GD.solvein(x, A, b, true);
-		commentator.stop ("done", NULL, "sesolvein");
+		commentator().stop ("done", NULL, "sesolvein");
 		return x;
 	}
 
@@ -179,10 +179,10 @@ namespace LinBox
 			const Vector& b,
 			const Method::SparseElimination& m)
 	{
-		commentator.start ("Sparse Elimination Solve In Place over GF2", "GF2sesolvein");
+		commentator().start ("Sparse Elimination Solve In Place over GF2", "GF2sesolvein");
 		GaussDomain<GF2> GD ( A.field() );
 		GD.solvein(x, A, b);
-		commentator.stop ("done", NULL, "GF2sesolvein");
+		commentator().stop ("done", NULL, "GF2sesolvein");
 		return x;
 	}
 
@@ -241,7 +241,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
+		commentator().start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
 		//bool consistent = false;
 		LQUPMatrix<Field> LQUP(A);
 		//FactorizedMatrix<Field> LQUP(A);
@@ -257,7 +257,7 @@ namespace LinBox
 				*i = zero;
 		}
 #endif
-		commentator.stop ("done", NULL, "LQUP::left_solve");
+		commentator().stop ("done", NULL, "LQUP::left_solve");
 		return x;
 	}
 
@@ -300,7 +300,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Rational CRA Solve", "Rsolve");
+		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
 		RandomPrimeIterator genprime( bits);
 
@@ -319,7 +319,7 @@ namespace LinBox
 			*it_x = typename RatVector::value_type(*it_num/g, den/g);
 		}
 
-		commentator.stop ("done", NULL, "Rsolve");
+		commentator().stop ("done", NULL, "Rsolve");
 		return x;
 	}
 #endif
@@ -491,7 +491,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Padic Integer Blas-based Solving", "solving");
+		commentator().start ("Padic Integer Blas-based Solving", "solving");
 
 		typedef Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
@@ -566,7 +566,7 @@ namespace LinBox
 			break;
 		}
 
-		commentator.stop("done", NULL, "solving");
+		commentator().stop("done", NULL, "solving");
 
 		if ( status == SS_INCONSISTENT ) {
 			throw LinboxMathInconsistentSystem("Linear system is inconsistent");
@@ -588,7 +588,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Padic Integer Sparse Elimination Solving", "solving");
+		commentator().start ("Padic Integer Sparse Elimination Solving", "solving");
 
 		typedef Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
@@ -667,7 +667,7 @@ namespace LinBox
 			break;
 		}
 
-		commentator.stop("done", NULL, "solving");
+		commentator().stop("done", NULL, "solving");
 
 		if ( status == SS_INCONSISTENT ) {
 			throw LinboxMathInconsistentSystem("Linear system is inconsistent");
@@ -773,7 +773,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Integer CRA Solve", "Isolve");
+		commentator().start ("Integer CRA Solve", "Isolve");
 
 		RandomPrimeIterator genprime( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
 		//         RationalRemainder< Modular<double> > rra((double)
@@ -796,7 +796,7 @@ namespace LinBox
 			A.field().init(*it_x, *it_num);
 		A.field().init(d, den);
 
-		commentator.stop ("done", NULL, "Isolve");
+		commentator().stop ("done", NULL, "Isolve");
 		return x;
 	}
 
@@ -935,7 +935,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Rational CRA Solve", "Rsolve");
+		commentator().start ("Rational CRA Solve", "Rsolve");
 		typename BB::Field::Element den;
 		std::vector<typename BB::Field::Element > num(A.coldim());
 		solve (num, den, A, b, tag, M);
@@ -947,7 +947,7 @@ namespace LinBox
 			A.field().convert(n, *it_num);
 			*it_x = typename RatVector::value_type(n, d);
 		}
-		commentator.stop ("done", NULL, "Rsolve");
+		commentator().stop ("done", NULL, "Rsolve");
 		return x;
 	}
 
@@ -958,7 +958,7 @@ namespace LinBox
 	{
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-		commentator.start ("Rational CRA Solve", "Rsolve");
+		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
 		RandomPrimeIterator genprime( (unsigned) bits);
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
@@ -972,7 +972,7 @@ namespace LinBox
 			integer g = gcd( *it_num, den);
 			*it_x = typename RatVector::value_type(*it_num/g, den/g);
 		}
-		commentator.stop ("done", NULL, "Rsolve");
+		commentator().stop ("done", NULL, "Rsolve");
 		return x;
 	}
 
@@ -983,7 +983,7 @@ namespace LinBox
 	{
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-		commentator.start ("Rational CRA Solve", "Rsolve");
+		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
 		RandomPrimeIterator genprime((unsigned) bits);
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
@@ -997,7 +997,7 @@ namespace LinBox
 			integer g = gcd( *it_num, den);
 			*it_x = typename RatVector::value_type(*it_num/g, den/g);
 		}
-		commentator.stop ("done", NULL, "Rsolve");
+		commentator().stop ("done", NULL, "Rsolve");
 		return x;
 	}
 

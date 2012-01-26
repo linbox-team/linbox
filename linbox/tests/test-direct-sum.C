@@ -69,9 +69,9 @@ int main (int argc, char **argv)
 	Field F (q);
 	Field::Element k;
 
-	commentator.start("DirectSum black box test suite", "direct sum");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().start("DirectSum black box test suite", "direct sum");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	F.init(k, 5);
 	ScalarMatrix<Field> B(F, 10, k);
@@ -83,7 +83,7 @@ int main (int argc, char **argv)
 	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > D(B, C);
 	pass = pass && testBlackbox(D);
 
-	commentator.stop("DirectSum black box test suite");
+	commentator().stop("DirectSum black box test suite");
 	return pass ? 0 : -1;
 }
 

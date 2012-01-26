@@ -64,13 +64,13 @@ using namespace LinBox;
 template <class Field, class Meth>
 static bool testZeroMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& M)
 {
-	commentator.start ("Testing zero minpoly", "testZeroMinpoly");
+	commentator().start ("Testing zero minpoly", "testZeroMinpoly");
 	typedef vector <typename Field::Element> Polynomial;
 	Polynomial phi;
 	SparseMatrix<Field> A(F, n, n);
 	minpoly(phi, A, M);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
         A.write(report, FORMAT_MAPLE);
 	report << "Minimal polynomial is: ";
 
@@ -81,13 +81,13 @@ static bool testZeroMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& 
 		ret = true;
 	else
 	{
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: A = 0, should get x, got ";
 		printPolynomial<Field, Polynomial> (F, report, phi);
 		report << endl;
 		ret = false;
 	}
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testZeroMinpoly");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testZeroMinpoly");
 	return ret;
 }
 template <class Field>
@@ -115,7 +115,7 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Me
 	typedef SparseMatrix<Field> Blackbox;
 	typedef typename Blackbox::Row Row;
 
-	commentator.start ("Testing identity minpoly", "testIdentityMinpoly");
+	commentator().start ("Testing identity minpoly", "testIdentityMinpoly");
 
 	typename Field::Element c0, c1;
 
@@ -128,7 +128,7 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Me
 	//else minpoly (phi, A);
 	minpoly (phi, A, M );
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Minimal polynomial is: ";
 	printPolynomial<Field, Polynomial> (F, report, phi);
 
@@ -141,12 +141,12 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Me
 		ret = true;
 	else {
 		ret = false;
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: A = I, should get x-1, got ";
 		printPolynomial<Field, Polynomial> (F, report, phi);
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityMinpoly");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentityMinpoly");
 
 	return ret;
 }
@@ -176,7 +176,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 	typedef SparseMatrix <Field> Blackbox;
 	typedef typename Blackbox::Row Row;
 
-	commentator.start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
+	commentator().start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
 
 	bool ret;
 	bool lowerTermsCorrect = true;
@@ -192,7 +192,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 
 	minpoly (phi, A, M);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
         A.write (report, FORMAT_MAPLE);
 	report << "Minimal polynomial is: ";
 	printPolynomial (F, report, phi);
@@ -205,12 +205,12 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 		ret = true;
 	else {
 		ret = false;
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: A^n = 0, should get x^" << n <<", got ";
 		printPolynomial (F, report, phi);
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentMinpoly");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentMinpoly");
 
 	return ret;
 }
@@ -245,7 +245,7 @@ bool testRandomMinpoly (Field                 &F,
 	typedef SparseMatrix <Field> Blackbox;
         typedef typename VectStream::Vector Vector;
 
-        commentator.start ("Testing sparse random minpoly", "testRandomMinpoly", iterations);
+        commentator().start ("Testing sparse random minpoly", "testRandomMinpoly", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -258,14 +258,14 @@ bool testRandomMinpoly (Field                 &F,
 	VectorWrapper::ensureDim (w, v_stream.n ());
 
 	for (int i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		iter_passed = true;
 
 		A_stream.reset ();
 		Blackbox A (F, A_stream);
 
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
 		A.write (report, FORMAT_MAPLE);
 
@@ -276,7 +276,7 @@ bool testRandomMinpoly (Field                 &F,
 		report << "Minimal polynomial is: ";
 		printPolynomial (F, report, phi);
 
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "deg minpoly (A) = " << phi.size () - 1 << endl;
 
 		v_stream.reset ();
@@ -299,13 +299,13 @@ bool testRandomMinpoly (Field                 &F,
 		}
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: A = rand, purported-minpoly(A) is not zero." << endl;
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly");
 
 	return ret;
 }
@@ -331,7 +331,7 @@ bool testRandomMinpoly (Field                 &F,
 template <class Field, class Meth>
 static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& M)
 {
-	commentator.start ("Testing gram minpoly", "testGramMinpoly");
+	commentator().start ("Testing gram minpoly", "testGramMinpoly");
 	typedef vector <typename Field::Element> Polynomial;
 	integer n;
 	F.characteristic(n); n += 1;
@@ -343,7 +343,7 @@ static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& 
 	for (int i = 0; i < n; ++i) A.setEntry(i, i, zero);
 	minpoly(phi, A, M);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
         A.write (report);
 	report << "Minimal polynomial is: ";
 	printPolynomial<Field, Polynomial> (F, report, phi);
@@ -354,7 +354,7 @@ static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& 
 			ret = true;
 		else
 		{
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: A = gram, should get x^2 - x, got ";
 			printPolynomial<Field, Polynomial> (F, report, phi);
 			ret = false;
@@ -364,12 +364,12 @@ static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& 
 			ret = true;
 		else
 		{
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: A = gram, should get x^2 + x, got ";
 			printPolynomial<Field, Polynomial> (F, report, phi);
 			ret = false;
 		}
-		commentator.stop (MSG_STATUS (ret), (const char *) 0, "testGramMinpoly");
+		commentator().stop (MSG_STATUS (ret), (const char *) 0, "testGramMinpoly");
 		return ret;
 }
 
@@ -382,9 +382,9 @@ static bool testGramMinpoly (Field &F, size_t n)
 
 int main (int argc, char **argv)
 {
-	commentator.setMaxDetailLevel (-1);
+	commentator().setMaxDetailLevel (-1);
 
-	commentator.setMaxDepth (-1);
+	commentator().setMaxDepth (-1);
 	bool pass = true;
 
 	static size_t n = 10;
@@ -405,9 +405,9 @@ int main (int argc, char **argv)
 
 
 	parseArguments (argc, argv, args);
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	// /////////////// finite field part //////////////////
 	if (q > 5 && q % 2 != 0 && q % 3 != 0 && q % 5 != 0 )
@@ -418,7 +418,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		srand ((unsigned)time (NULL));
 
-		commentator.start("Blackbox prime field minpoly test suite", "Wminpoly");
+		commentator().start("Blackbox prime field minpoly test suite", "Wminpoly");
 
 		//no symmetrizing
 		if (!testZeroMinpoly  	  (F, n)) pass = false;
@@ -435,7 +435,7 @@ int main (int argc, char **argv)
 		//if (!testGramMinpoly      (F, n, true)) pass = false;
 		//need other tests...
 
-		commentator.stop("Blackbox prime field minpoly test suite");
+		commentator().stop("Blackbox prime field minpoly test suite");
 	}
 	else{
 
@@ -448,8 +448,8 @@ int main (int argc, char **argv)
 		Field F (p, e);
 		srand ((unsigned)time (NULL));
 
-		commentator.start("Blackbox non-prime field minpoly test suite", "Wminpoly");
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		commentator().start("Blackbox non-prime field minpoly test suite", "Wminpoly");
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		F.write(report);
 
 		//no symmetrizing
@@ -467,7 +467,7 @@ int main (int argc, char **argv)
 		//if (!testGramMinpoly      (F, n, true)) pass = false;
 		//need other tests...
 
-		commentator.stop("Blackbox non-prime field minpoly test suite");
+		commentator().stop("Blackbox non-prime field minpoly test suite");
 	}
 
 #if 0
@@ -475,20 +475,20 @@ int main (int argc, char **argv)
 	Modular<uint32_t> F (q);
 
 
-	commentator.start("Hybrid prime field minpoly test suite", "Hminpoly");
+	commentator().start("Hybrid prime field minpoly test suite", "Hminpoly");
 	if (!testIdentityMinpoly  (F, n, false,  Method::Hybrid())) pass = false;
 	if (!testNilpotentMinpoly (F, n, Method::Hybrid())) pass = false;
-	commentator.stop("Hybrid prime field minpoly test suite");
+	commentator().stop("Hybrid prime field minpoly test suite");
 
-	commentator.start("Blackbox prime field minpoly test suite", "Bminpoly");
+	commentator().start("Blackbox prime field minpoly test suite", "Bminpoly");
 	if (!testIdentityMinpoly  (F, n, false,  Method::Blackbox())) pass = false;
 	if (!testNilpotentMinpoly (F, n, Method::Blackbox())) pass = false;
-	commentator.stop("Blackbox prime field minpoly test suite");
+	commentator().stop("Blackbox prime field minpoly test suite");
 
-	commentator.start("Elimination prime field minpoly test suite", "Eminpoly");
+	commentator().start("Elimination prime field minpoly test suite", "Eminpoly");
 	if (!testIdentityMinpoly  (F, n, false,  Method::Elimination())) pass = false;
 	if (!testNilpotentMinpoly (F, n, Method::Elimination())) pass = false;
-	commentator.stop("Elimination prime field minpoly test suite");
+	commentator().stop("Elimination prime field minpoly test suite");
 
 	// /////////////// integer part //////////////////
 	typedef vector<PID_integer::Element> ZDenseVector;
@@ -497,11 +497,11 @@ int main (int argc, char **argv)
 	PID_integer Z;
 	srand ((unsigned)time (NULL));
 
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	commentator.start("Blackbox integer minpoly test suite", "WIminpoly");
+	commentator().start("Blackbox integer minpoly test suite", "WIminpoly");
 
 	RandomDenseStream<PID_integer, ZDenseVector, NonzeroRandIter<PID_integer> >
 	zv_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), n, numVectors);
@@ -518,22 +518,22 @@ int main (int argc, char **argv)
 	// symmetrizing
 	if (!testIdentityMinpoly  (Z, n, true)) pass = false;
 
-	commentator.stop("Blackbox integer minpoly test suite");
+	commentator().stop("Blackbox integer minpoly test suite");
 
-	commentator.start("Hybrid integer minpoly test suite", "HIminpoly");
+	commentator().start("Hybrid integer minpoly test suite", "HIminpoly");
 	if (!testIdentityMinpoly  (Z, n, false,  Method::Hybrid())) pass = false;
 	if (!testNilpotentMinpoly (Z, n, Method::Hybrid())) pass = false;
-	commentator.stop("Hybrid integer minpoly test suite");
+	commentator().stop("Hybrid integer minpoly test suite");
 
-	commentator.start("Blackbox integer minpoly test suite", "BIminpoly");
+	commentator().start("Blackbox integer minpoly test suite", "BIminpoly");
 	if (!testIdentityMinpoly  (Z, n, false,  Method::Blackbox())) pass = false;
 	if (!testNilpotentMinpoly (Z, n, Method::Blackbox())) pass = false;
-	commentator.stop("Blackbox integer minpoly test suite");
+	commentator().stop("Blackbox integer minpoly test suite");
 
-	commentator.start("Elimination integer minpoly test suite", "EIminpoly");
+	commentator().start("Elimination integer minpoly test suite", "EIminpoly");
 	if (!testIdentityMinpoly  (Z, n, false,  Method::Elimination())) pass = false;
 	if (!testNilpotentMinpoly (Z, n, Method::Elimination())) pass = false;
-	commentator.stop("Elimination integer minpoly test suite");
+	commentator().stop("Elimination integer minpoly test suite");
 
 #endif
 	return pass ? 0 : -1;

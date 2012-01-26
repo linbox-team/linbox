@@ -93,10 +93,10 @@ int main (int argc, char **argv)
 	GivaroZpz< Givaro::Unsigned32> F5u (65521);
 
 
-	LinBox::commentator.start("Givaro-zpz test suite", "GivZpz");
+	LinBox::commentator().start("Givaro-zpz test suite", "GivZpz");
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!runFieldTests (F1, "GivaroZpz< Givaro::Std16>", iterations, n, false)) pass = false;
 	if (!runFieldTests (F2, "GivaroZpz< Givaro::Std32>", iterations, n, false)) pass = false;
@@ -174,7 +174,7 @@ int main (int argc, char **argv)
 #endif
 
 
-	LinBox::commentator.stop(MSG_STATUS (pass), "GivaroZpz test suite");
+	LinBox::commentator().stop(MSG_STATUS (pass), "GivaroZpz test suite");
 	return pass ? 0 : -1;
 }
 

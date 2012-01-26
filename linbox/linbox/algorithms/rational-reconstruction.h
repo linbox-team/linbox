@@ -780,7 +780,7 @@ namespace LinBox
 #endif
 #ifdef LIFTING_PROGRESS
 			Commentator lifting_commentator;
-			lifting_commentator.start("Padic Lifting","LinBox::LiftingContainer",_lcontainer.length());
+			lifting_commentator().start("Padic Lifting","LinBox::LiftingContainer",_lcontainer.length());
 #endif
 #if 0
 			Timer eval_horner,eval_horn;
@@ -791,7 +791,7 @@ namespace LinBox
 			for (size_t i=0 ; iter != _lcontainer.end() && iter.next(digit_approximation[i]);++i) {
 
 #ifdef LIFTING_PROGRESS
-				lifting_commentator.progress(i);
+				lifting_commentator().progress(i);
 #endif
 #if 0
 				eval_horn.start();
@@ -804,7 +804,7 @@ namespace LinBox
 			}
 
 #ifdef LIFTING_PROGRESS
-			lifting_commentator.stop ("Done", "Done", "LinBox::LinBox::LiftingContainer");
+			lifting_commentator().stop ("Done", "Done", "LinBox::LinBox::LiftingContainer");
 #endif
 
 			// problem occured during lifting

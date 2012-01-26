@@ -221,7 +221,7 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 bool TestCra(int N, int S, size_t seed)
 {
 
-	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT,
+	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
 	// std::ostream &report = std::cout;
 
@@ -326,13 +326,13 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	LinBox::commentator.start("CRA-Domain test suite", "CRADom");
+	LinBox::commentator().start("CRA-Domain test suite", "CRADom");
 	bool pass = true;
 
 	for(int i=0; pass && i<iterations; ++i)
 		pass &= TestCra((int)n,(int)s,seed);
 
-	LinBox::commentator.stop(MSG_STATUS (pass), "CRA-Domain test suite");
+	LinBox::commentator().stop(MSG_STATUS (pass), "CRA-Domain test suite");
 	return pass ? 0 : -1;
 }
 

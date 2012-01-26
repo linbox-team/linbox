@@ -67,7 +67,7 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 {
 	bool res = true;
 
-	commentator.start ("Testing Sparse elimination qlup", "testQLUP", iterations);
+	commentator().start ("Testing Sparse elimination qlup", "testQLUP", iterations);
 
 	unsigned long Ni = n;
 	unsigned long Nj = n;
@@ -76,14 +76,14 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 	RandStream stream (F, generator, sparsity, n, n);
 
 	for (size_t i = 0; i < iterations; ++i) {
-		commentator.startIteration ((unsigned)i);
+		commentator().startIteration ((unsigned)i);
 
 
 		stream.reset();
 
 		Blackbox A (F, stream);
 
-		std::ostream & report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream & report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		F.write( report ) << endl;
 		A.write( report,FORMAT_MAPLE ) << endl;
@@ -149,11 +149,11 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 			report << "]" << std::endl;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (res), (const char *) 0, "testQLUP");
+	commentator().stop (MSG_STATUS (res), (const char *) 0, "testQLUP");
 
 	return res;
 }
@@ -169,7 +169,7 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 {
 	bool res = true;
 
-	commentator.start ("Testing Sparse elimination qlup solve", "testQLUPsolve", iterations);
+	commentator().start ("Testing Sparse elimination qlup solve", "testQLUPsolve", iterations);
 
 	unsigned long Ni = n;
 	unsigned long Nj = n;
@@ -180,12 +180,12 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
         GF2 F2; GF2::RandIter bitgenerator(F2,2,rseed); GF2::Element randomsolve;
 
 	for (size_t i = 0; i < iterations; ++i) {
-		commentator.startIteration ((unsigned)i);
+		commentator().startIteration ((unsigned)i);
 
 		stream.reset();
 		Blackbox A (F, stream);
 
-		std::ostream & report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream & report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		F.write( report ) << endl;
 		A.write( report, FORMAT_MAPLE ) << endl;
@@ -232,11 +232,11 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (res), (const char *) 0, "testQLUPsolve");
+	commentator().stop (MSG_STATUS (res), (const char *) 0, "testQLUPsolve");
 
 	return res;
 }
@@ -252,7 +252,7 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 {
 	bool res = true;
 
-	commentator.start ("Testing Sparse elimination qlup nullspacebasis", "testQLUPnullspace", iterations);
+	commentator().start ("Testing Sparse elimination qlup nullspacebasis", "testQLUPnullspace", iterations);
 
 	unsigned long Ni = n;
 	unsigned long Nj = n;
@@ -261,12 +261,12 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 	RandStream stream (F, generator, sparsity, n, n, rseed);
 
 	for (size_t i = 0; i < iterations; ++i) {
-		commentator.startIteration ((unsigned)i);
+		commentator().startIteration ((unsigned)i);
 
 		stream.reset();
 		Blackbox A (F, stream);
 
-		std::ostream & report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream & report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		F.write( report ) << endl;
 		A.write( report, FORMAT_MAPLE ) << endl;
@@ -313,11 +313,11 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (res), (const char *) 0, "testQLUPnullspace");
+	commentator().stop (MSG_STATUS (res), (const char *) 0, "testQLUPnullspace");
 
 	return res;
 }
@@ -325,10 +325,10 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 int main (int argc, char **argv)
 {
 
-	commentator.setMaxDepth (-1);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-// 	commentator.setMaxDetailLevel( 100000 );
-// 	commentator.setMaxDepth( 100000 );
+	commentator().setMaxDepth (-1);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+// 	commentator().setMaxDetailLevel( 100000 );
+// 	commentator().setMaxDepth( 100000 );
 
 	bool pass = true;
 
@@ -352,12 +352,12 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	srand (rseed);
 
-	commentator.start("QLUP  test suite", "qlup");
-        commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+	commentator().start("QLUP  test suite", "qlup");
+        commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
             << "Seed: " << rseed << endl;
 
         {
-            commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+            commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
                 << "over Modular<uint32_t>" << endl;
             typedef Modular<uint32_t> Field;
             Field F (q);
@@ -372,7 +372,7 @@ int main (int argc, char **argv)
         }
 
         {
-            commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+            commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
                 << "over Modular<double>" << endl;
             typedef Modular<double> Field;
             Field F (q);
@@ -388,7 +388,7 @@ int main (int argc, char **argv)
 
         {
 
-            commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+            commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
                 << "over GivaroZpz<Integer>" << endl;
             typedef GivaroZpz<Integer> Field;
             Field F (bigQ);
@@ -403,7 +403,7 @@ int main (int argc, char **argv)
         }
 
         {
-            commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+            commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
                 << "specialized over GF2>" << endl;
             typedef GF2 Field;
             Field F2;
@@ -415,7 +415,7 @@ int main (int argc, char **argv)
 		    pass = false;
         }
 
-	commentator.stop(MSG_STATUS (pass),"QLUP test suite");
+	commentator().stop(MSG_STATUS (pass),"QLUP test suite");
 	return pass ? 0 : -1;
 }
 

@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 	  END_OF_ARGUMENTS
   };
 
-  parseArguments(argc, argv, args);
+  LinBox::parseArguments(argc, argv, args);
 
   typedef LinBox::Modular<uint32_t> Field;
   //typedef LinBox::Modular<uint32_t> Field;
