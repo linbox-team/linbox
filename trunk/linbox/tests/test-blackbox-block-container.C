@@ -73,8 +73,8 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("block container test", "bbbc");
-	ostream& report = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+	commentator().start("block container test", "bbbc");
+	ostream& report = commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 	report << "over Modular<double>" << endl;
 	typedef Modular<double> Field;
 	typedef BlasMatrix<Field> Block;
@@ -91,8 +91,8 @@ int main (int argc, char **argv)
 
 	// A more thorough test should be constructed.
 
-	if (pass) commentator.stop("block container test pass");
-	else commentator.stop("block container test FAIL");
+	if (pass) commentator().stop("block container test pass");
+	else commentator().stop("block container test FAIL");
 	return pass ? 0 : -1;
 }
 

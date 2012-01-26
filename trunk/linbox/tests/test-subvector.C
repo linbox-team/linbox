@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     parseArguments (argc, argv, args);
 
     // start testing
-	commentator.start("Subvector test suite", "Subvector");
+	commentator().start("Subvector test suite", "Subvector");
     bool pass = true;
 
     // call tests
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
     pass = testSubvector<Field> (F, n);
 
     // finish
-	commentator.stop("Subvector test suite");
+	commentator().stop("Subvector test suite");
     return pass? 0 : -1;
 }
 
@@ -81,8 +81,8 @@ static bool testSubvector(Field &F, size_t n)
 {
 	// commentator setup
 	const char *  title = "Subvector test";
-	commentator.start(title, title, 1);
-	ostream &report = commentator.report
+	commentator().start(title, title, 1);
+	ostream &report = commentator().report
 		(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "This test currently neglects several members including constructors." << endl;
@@ -300,7 +300,7 @@ static bool testSubvector(Field &F, size_t n)
 #endif
 
 	// finish
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, title);
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, title);
 	return ret;
 }
 

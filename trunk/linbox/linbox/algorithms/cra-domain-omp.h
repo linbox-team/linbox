@@ -60,7 +60,7 @@ namespace LinBox
 		{
 			size_t NN = omp_get_max_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
-			// commentator.start ("Parallel OMP Modular iteration", "mmcrait");
+			// commentator().start ("Parallel OMP Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
 			int coprime =0;
@@ -101,7 +101,7 @@ namespace LinBox
 					++this->IterCounter;
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
-				// commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 			}
 
 			while( ! this->Builder_.terminated() ) {
@@ -140,7 +140,7 @@ namespace LinBox
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
 			}
-			// commentator.stop ("done", NULL, "mmcrait");
+			// commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res);
 		}
@@ -151,7 +151,7 @@ namespace LinBox
 			typedef typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t ElementContainer;
 			size_t NN = omp_get_max_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
-			// commentator.start ("Parallel OMP Modular iteration", "mmcrait");
+			// commentator().start ("Parallel OMP Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
 			int coprime =0;
@@ -194,7 +194,7 @@ namespace LinBox
 					++this->IterCounter;
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
-				// commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 			}
 
 			while( ! this->Builder_.terminated() ) {
@@ -235,7 +235,7 @@ namespace LinBox
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
 			}
-			// commentator.stop ("done", NULL, "mmcrait");
+			// commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res);
 		}

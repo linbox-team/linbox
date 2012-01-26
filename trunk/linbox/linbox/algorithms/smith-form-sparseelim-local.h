@@ -325,7 +325,7 @@ namespace LinBox
 		template<class Modulo, class BB, class D, class Container>
 		void gauss_rankin(Modulo FMOD, Modulo PRIME, Container& ranks, BB& LigneA, const size_t Ni, const size_t Nj, const D& density_trait)
 		{
-			commentator.start ("Gaussian elimination with reordering modulo a prime power",
+			commentator().start ("Gaussian elimination with reordering modulo a prime power",
 					   "PRGE", Ni);
 
 			ranks.resize(0);
@@ -372,7 +372,7 @@ namespace LinBox
 
 
 			for (unsigned long k=0; k<last;++k) {
-				if ( ! (k % maxout) ) commentator.progress (k);
+				if ( ! (k % maxout) ) commentator().progress (k);
 
 
 				unsigned long p=k;
@@ -447,7 +447,7 @@ namespace LinBox
 #ifdef GIVARO_JRANK_OUT
 			std::cerr << "Rank mod " << (unsigned long)FMOD << " : " << indcol << std::endl;
 #endif
-			commentator.stop ("done", 0, "PRGE");
+			commentator().stop ("done", 0, "PRGE");
 
 		}
 

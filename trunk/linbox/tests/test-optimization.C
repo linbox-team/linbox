@@ -60,8 +60,8 @@ int main (int argc, char ** argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Optimization suite", "Optim");
-	std::ostream& report = commentator.report();
+	commentator().start("Optimization suite", "Optim");
+	std::ostream& report = commentator().report();
 
 	Modular<double> F(17);
 	Timer chrono;

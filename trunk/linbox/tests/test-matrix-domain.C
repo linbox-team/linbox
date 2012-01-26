@@ -168,7 +168,7 @@ static bool testCopyEqual (Field &F, const char *text, const Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " matrix copy, areEqual" << ends;
-	commentator.start (str.str ().c_str (), "testCopyEqual");
+	commentator().start (str.str ().c_str (), "testCopyEqual");
 
 	bool ret = true;
 
@@ -176,7 +176,7 @@ static bool testCopyEqual (Field &F, const char *text, const Matrix &M)
 
 	BlasMatrix<Field> M1 (F,M.rowdim (), M.coldim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -186,12 +186,12 @@ static bool testCopyEqual (Field &F, const char *text, const Matrix &M)
 	MD.write (report, M1);
 
 	if (!MD.areEqual (M1, M)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrices M and M1 are not equal" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testCopyEqual");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testCopyEqual");
 
 	return ret;
 }
@@ -207,7 +207,7 @@ static bool testSubinIsZero (Field &F, const char *text, const Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " matrix subin, isZero" << ends;
-	commentator.start (str.str ().c_str (), "testSubinIsZero");
+	commentator().start (str.str ().c_str (), "testSubinIsZero");
 
 	bool ret = true;
 
@@ -215,7 +215,7 @@ static bool testSubinIsZero (Field &F, const char *text, const Matrix &M)
 
 	BlasMatrix<Field> M1 (F,M.rowdim (), M.coldim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -226,12 +226,12 @@ static bool testSubinIsZero (Field &F, const char *text, const Matrix &M)
 	MD.write (report, M1);
 
 	if (!MD.isZero (M1)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix M1 is not zero" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSubinIsZero");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testSubinIsZero");
 
 	return ret;
 }
@@ -247,7 +247,7 @@ static bool testAddNegSub (Field &F, const char *text, const Matrix &M1, const M
 	ostringstream str;
 
 	str << "Testing " << text << " matrix add-neg, sub" << ends;
-	commentator.start (str.str ().c_str (), "testAddNegSub");
+	commentator().start (str.str ().c_str (), "testAddNegSub");
 
 	bool ret = true;
 
@@ -257,7 +257,7 @@ static bool testAddNegSub (Field &F, const char *text, const Matrix &M1, const M
 	BlasMatrix<Field> M4 (F,M1.rowdim (), M1.coldim ());
 	BlasMatrix<Field> M5 (F,M1.rowdim (), M1.coldim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M1:" << endl;
 	MD.write (report, M1);
 
@@ -278,12 +278,12 @@ static bool testAddNegSub (Field &F, const char *text, const Matrix &M1, const M
 	MD.write (report, M5);
 
 	if (!MD.areEqual (M4, M5)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrices M4 and M5 are not equal" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAddNegSub");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testAddNegSub");
 
 	return ret;
 }
@@ -299,7 +299,7 @@ static bool testAddinNeginSub (Field &F, const char *text, const Matrix &M1, con
 	ostringstream str;
 
 	str << "Testing " << text << " matrix addin-negin, sub" << ends;
-	commentator.start (str.str ().c_str (), "testAddinNeginSub");
+	commentator().start (str.str ().c_str (), "testAddinNeginSub");
 
 	bool ret = true;
 
@@ -308,7 +308,7 @@ static bool testAddinNeginSub (Field &F, const char *text, const Matrix &M1, con
 	BlasMatrix<Field> M3 (F,M1.rowdim (), M1.coldim ());
 	BlasMatrix<Field> M4 (F,M1.rowdim (), M1.coldim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M1:" << endl;
 	MD.write (report, M1);
 
@@ -332,12 +332,12 @@ static bool testAddinNeginSub (Field &F, const char *text, const Matrix &M1, con
 	MD.write (report, M4);
 
 	if (!MD.areEqual (M3, M4)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrices M3 and M4 are not equal" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAddinNeginSub");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testAddinNeginSub");
 
 	return ret;
 }
@@ -357,7 +357,7 @@ static bool testInvMulSquare (Field &F, const char *text, const Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " matrix multiplication (square)" << ends;
-	commentator.start (str.str ().c_str (), "testInvMulSquare");
+	commentator().start (str.str ().c_str (), "testInvMulSquare");
 
 	bool ret = true;
 
@@ -374,7 +374,7 @@ static bool testInvMulSquare (Field &F, const char *text, const Matrix &M)
 	while (i != I.rowEnd ())
 		stream >> *i++;
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -382,8 +382,8 @@ static bool testInvMulSquare (Field &F, const char *text, const Matrix &M)
 		inv (MD, Minv, M);
 	}
 	catch (SingularMatrix) {
-		commentator.stop ("ok", (const char *) 0, "testInvMul");
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+		commentator().stop ("ok", (const char *) 0, "testInvMul");
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 			<< "WARNING: Matrix was found singular" << endl;
 		return true;
 	}
@@ -397,7 +397,7 @@ static bool testInvMulSquare (Field &F, const char *text, const Matrix &M)
 	MD.write (report, M2);
 
 	if (!MD.areEqual (M2, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix M Minv is not the identity" << endl;
 		ret = false;
 	}
@@ -408,12 +408,12 @@ static bool testInvMulSquare (Field &F, const char *text, const Matrix &M)
 	MD.write (report, M2);
 
 	if (!MD.areEqual (M2, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix Minv M is not the identity" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvMulSquare");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testInvMulSquare");
 
 	return ret;
 }
@@ -428,7 +428,7 @@ static bool testInvMulOver (Field &F, const char *text, Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " matrix multiplication (over-determined)" << ends;
-	commentator.start (str.str ().c_str (), "testInvMulOver");
+	commentator().start (str.str ().c_str (), "testInvMulOver");
 
 	bool ret = true;
 
@@ -449,7 +449,7 @@ static bool testInvMulOver (Field &F, const char *text, Matrix &M)
 	while (i != I.rowEnd ())
 		stream >> *i++;
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -459,8 +459,8 @@ static bool testInvMulOver (Field &F, const char *text, Matrix &M)
 		inv (MD, Minv, MTM);
 	}
 	catch (SingularMatrix) {
-		commentator.stop ("ok", (const char *) 0, "testInvMul");
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+		commentator().stop ("ok", (const char *) 0, "testInvMul");
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 			<< "WARNING: Matrix was found singular" << endl;
 		return true;
 	}
@@ -475,7 +475,7 @@ static bool testInvMulOver (Field &F, const char *text, Matrix &M)
 	MD.write (report, M3);
 
 	if (!MD.areEqual (M3, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix M^T M Minv is not the identity" << endl;
 		ret = false;
 	}
@@ -489,12 +489,12 @@ static bool testInvMulOver (Field &F, const char *text, Matrix &M)
 	MD.write (report, M3);
 
 	if (!MD.areEqual (M3, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix Minv M^T M is not the identity" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvMulOver");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testInvMulOver");
 
 	return ret;
 }
@@ -509,7 +509,7 @@ static bool testInvMulUnder (Field &F, const char *text, Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " matrix multiplication (under-determined)" << ends;
-	commentator.start (str.str ().c_str (), "testInvMulUnder");
+	commentator().start (str.str ().c_str (), "testInvMulUnder");
 
 	bool ret = true;
 
@@ -529,7 +529,7 @@ static bool testInvMulUnder (Field &F, const char *text, Matrix &M)
 	while (i != I.rowEnd ())
 		stream >> *i++;
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -539,8 +539,8 @@ static bool testInvMulUnder (Field &F, const char *text, Matrix &M)
 		inv (MD, Minv, MMT);
 	}
 	catch (SingularMatrix) {
-		commentator.stop ("ok", (const char *) 0, "testInvMul");
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+		commentator().stop ("ok", (const char *) 0, "testInvMul");
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 			<< "WARNING: Matrix was found singular" << endl;
 		return true;
 	}
@@ -555,7 +555,7 @@ static bool testInvMulUnder (Field &F, const char *text, Matrix &M)
 	MD.write (report, M3);
 
 	if (!MD.areEqual (M3, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix M M^T Minv is not the identity" << endl;
 		ret = false;
 	}
@@ -569,12 +569,12 @@ static bool testInvMulUnder (Field &F, const char *text, Matrix &M)
 	MD.write (report, M3);
 
 	if (!MD.areEqual (M3, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix Minv M M^T is not the identity" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvMulUnder");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testInvMulUnder");
 
 	return ret;
 }
@@ -594,7 +594,7 @@ static bool testInvLeftMulinSquare (Field &F, const char *text, const Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " left in-place matrix multiplication (square)" << ends;
-	commentator.start (str.str ().c_str (), "testInvLeftMulinSquare");
+	commentator().start (str.str ().c_str (), "testInvLeftMulinSquare");
 
 	bool ret = true;
 
@@ -602,7 +602,7 @@ static bool testInvLeftMulinSquare (Field &F, const char *text, const Matrix &M)
 
 	BlasMatrix<Field> Minv (F, M.rowdim (), M.rowdim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -618,8 +618,8 @@ static bool testInvLeftMulinSquare (Field &F, const char *text, const Matrix &M)
 		inv (MD, Minv, M);
 	}
 	catch (SingularMatrix) {
-		commentator.stop ("ok", (const char *) 0, "testInvLeftMulin");
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+		commentator().stop ("ok", (const char *) 0, "testInvLeftMulin");
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 			<< "WARNING: Matrix was found singular" << endl;
 		//! @bug we should check it is singular indeed
 		return true;
@@ -634,12 +634,12 @@ static bool testInvLeftMulinSquare (Field &F, const char *text, const Matrix &M)
 	MD.write (report, Minv);
 
 	if (!MD.areEqual (Minv, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix Minv M is not the identity" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvLeftMulinSquare");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testInvLeftMulinSquare");
 
 	return ret;
 }
@@ -654,7 +654,7 @@ static bool testInvLeftMulinOver (Field &F, const char *text, Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " left in-place matrix multiplication (over-determined)" << ends;
-	commentator.start (str.str ().c_str (), "testInvLeftMulinOver");
+	commentator().start (str.str ().c_str (), "testInvLeftMulinOver");
 
 	bool ret = true;
 
@@ -663,7 +663,7 @@ static bool testInvLeftMulinOver (Field &F, const char *text, Matrix &M)
 	BlasMatrix<Field> Minv (F, M.coldim (), M.coldim ());
 	BlasMatrix<Field> MTM (F, M.coldim (), M.coldim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -681,8 +681,8 @@ static bool testInvLeftMulinOver (Field &F, const char *text, Matrix &M)
 		inv (MD, Minv, MTM);
 	}
 	catch (SingularMatrix) {
-		commentator.stop ("ok", (const char *) 0, "testInvLeftMulin");
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+		commentator().stop ("ok", (const char *) 0, "testInvLeftMulin");
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 			<< "WARNING: Matrix was found singular" << endl;
 		//! @bug we should check it is singular indeed
 		return true;
@@ -697,12 +697,12 @@ static bool testInvLeftMulinOver (Field &F, const char *text, Matrix &M)
 	MD.write (report, MTM);
 
 	if (!MD.areEqual (MTM, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix Minv M^T M is not the identity" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvLeftMulinOver");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testInvLeftMulinOver");
 
 	return ret;
 }
@@ -717,7 +717,7 @@ static bool testInvLeftMulinUnder (Field &F, const char *text, Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " left in-place matrix multiplication (under-determined)" << ends;
-	commentator.start (str.str ().c_str (), "testInvLeftMulinUnder");
+	commentator().start (str.str ().c_str (), "testInvLeftMulinUnder");
 
 	bool ret = true;
 
@@ -726,7 +726,7 @@ static bool testInvLeftMulinUnder (Field &F, const char *text, Matrix &M)
 	BlasMatrix<Field> Minv (F, M.rowdim (), M.rowdim ());
 	BlasMatrix<Field> MMT (F, M.rowdim (), M.rowdim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -744,8 +744,8 @@ static bool testInvLeftMulinUnder (Field &F, const char *text, Matrix &M)
 		inv (MD, Minv, MMT);
 	}
 	catch (SingularMatrix) {
-		commentator.stop ("ok", (const char *) 0, "testInvLeftMulin");
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+		commentator().stop ("ok", (const char *) 0, "testInvLeftMulin");
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 			<< "WARNING: Matrix was found singular" << endl;
 		// BlasMatrix<Field> N(F,MMT) ;
 		// typename Field::Element d;
@@ -765,11 +765,11 @@ static bool testInvLeftMulinUnder (Field &F, const char *text, Matrix &M)
 	MD.write (report, MMT);
 
 	if (!MD.areEqual (MMT, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix Minv M M^T is not the identity" << endl;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvLeftMulinUnder");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testInvLeftMulinUnder");
 
 	return ret;
 }
@@ -789,7 +789,7 @@ static bool testInvRightMulinSquare (Field &F, const char *text, const Matrix &M
 	ostringstream str;
 
 	str << "Testing " << text << " right in-place matrix multiplication (square)" << ends;
-	commentator.start (str.str ().c_str (), "testInvRightMulinSquare");
+	commentator().start (str.str ().c_str (), "testInvRightMulinSquare");
 
 	bool ret = true;
 
@@ -797,7 +797,7 @@ static bool testInvRightMulinSquare (Field &F, const char *text, const Matrix &M
 
 	BlasMatrix<Field> Minv (F, M.rowdim (), M.rowdim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -813,8 +813,8 @@ static bool testInvRightMulinSquare (Field &F, const char *text, const Matrix &M
 		inv (MD, Minv, M);
 	}
 	catch (SingularMatrix) {
-		commentator.stop ("ok", (const char *) 0, "testInvRightMulin");
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+		commentator().stop ("ok", (const char *) 0, "testInvRightMulin");
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 			<< "WARNING: Matrix was found singular" << endl;
 		return true;
 	}
@@ -828,12 +828,12 @@ static bool testInvRightMulinSquare (Field &F, const char *text, const Matrix &M
 	MD.write (report, Minv);
 
 	if (!MD.areEqual (Minv, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix Minv M is not the identity" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvRightMulinSquare");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testInvRightMulinSquare");
 
 	return ret;
 }
@@ -848,7 +848,7 @@ static bool testInvRightMulinOver (Field &F, const char *text, Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " right in-place matrix multiplication (over-determined)" << ends;
-	commentator.start (str.str ().c_str (), "testInvRightMulinOver");
+	commentator().start (str.str ().c_str (), "testInvRightMulinOver");
 
 	bool ret = true;
 
@@ -857,7 +857,7 @@ static bool testInvRightMulinOver (Field &F, const char *text, Matrix &M)
 	BlasMatrix<Field> Minv (F, M.coldim (), M.coldim ());
 	BlasMatrix<Field> MTM (F, M.coldim (), M.coldim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -875,8 +875,8 @@ static bool testInvRightMulinOver (Field &F, const char *text, Matrix &M)
 		inv (MD, Minv, MTM);
 	}
 	catch (SingularMatrix) {
-		commentator.stop ("ok", (const char *) 0, "testInvRightMulin");
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+		commentator().stop ("ok", (const char *) 0, "testInvRightMulin");
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 			<< "WARNING: Matrix was found singular" << endl;
 		return true;
 	}
@@ -890,12 +890,12 @@ static bool testInvRightMulinOver (Field &F, const char *text, Matrix &M)
 	MD.write (report, MTM);
 
 	if (!MD.areEqual (MTM, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix M^T M Minv is not the identity" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvRightMulinOver");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testInvRightMulinOver");
 
 	return ret;
 }
@@ -910,7 +910,7 @@ static bool testInvRightMulinUnder (Field &F, const char *text, Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " right in-place matrix multiplication (under-determined)" << ends;
-	commentator.start (str.str ().c_str (), "testInvRightMulinUnder");
+	commentator().start (str.str ().c_str (), "testInvRightMulinUnder");
 
 	bool ret = true;
 
@@ -919,7 +919,7 @@ static bool testInvRightMulinUnder (Field &F, const char *text, Matrix &M)
 	BlasMatrix<Field> Minv (F, M.rowdim (), M.rowdim ());
 	BlasMatrix<Field> MMT (F, M.rowdim (), M.rowdim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -937,8 +937,8 @@ static bool testInvRightMulinUnder (Field &F, const char *text, Matrix &M)
 		inv (MD, Minv, MMT);
 	}
 	catch (SingularMatrix) {
-		commentator.stop ("ok", (const char *) 0, "testInvRightMulin");
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+		commentator().stop ("ok", (const char *) 0, "testInvRightMulin");
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 			<< "WARNING: Matrix was found singular" << endl;
 		return true;
 	}
@@ -952,12 +952,12 @@ static bool testInvRightMulinUnder (Field &F, const char *text, Matrix &M)
 	MD.write (report, MMT);
 
 	if (!MD.areEqual (MMT, I)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrix M M^T Minv is not the identity" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvRightMulinUnder");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testInvRightMulinUnder");
 
 	return ret;
 }
@@ -973,7 +973,7 @@ static bool testAddMulAxpyin (Field &F, const char *text, Matrix &M1, Matrix &M2
 	ostringstream str;
 
 	str << "Testing " << text << " matrix add-mul, axpyin" << ends;
-	commentator.start (str.str ().c_str (), "testAddMulAxpyin");
+	commentator().start (str.str ().c_str (), "testAddMulAxpyin");
 
 	bool ret = true;
 
@@ -983,7 +983,7 @@ static bool testAddMulAxpyin (Field &F, const char *text, Matrix &M1, Matrix &M2
 	BlasMatrix<Field> M5 (F, M1.rowdim (), M1.coldim ());
 	BlasMatrix<Field> M6 (F, M1.rowdim (), M1.coldim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M1:" << endl;
 	MD.write (report, M1);
 
@@ -1006,12 +1006,12 @@ static bool testAddMulAxpyin (Field &F, const char *text, Matrix &M1, Matrix &M2
 	MD.write (report, M6);
 
 	if (!MD.areEqual (M5, M6)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrices M5 and M6 are not equal" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAddMulAxpyin");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testAddMulAxpyin");
 
 	return ret;
 }
@@ -1027,7 +1027,7 @@ static bool testMVMulSub (Field &F, const char *text, const Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " matrix-vector mul" << ends;
-	commentator.start (str.str ().c_str (), "testMVMulSub");
+	commentator().start (str.str ().c_str (), "testMVMulSub");
 
 	bool ret = true;
 
@@ -1035,7 +1035,7 @@ static bool testMVMulSub (Field &F, const char *text, const Matrix &M)
 
 	BlasMatrix<Field> M1 (F, M.rowdim (), M.coldim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
@@ -1054,12 +1054,12 @@ static bool testMVMulSub (Field &F, const char *text, const Matrix &M)
 	MD.subin (M1, M);
 
 	if (!MD.isZero (M1)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: MatrixDomain reported matrices M and M1 are not equal" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testMVMulSub");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testMVMulSub");
 
 	return ret;
 }
@@ -1075,7 +1075,7 @@ static bool testMVAxpy (Field &F, const char *text, const Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " matrix-vector axpy" << ends;
-	commentator.start (str.str ().c_str (), "testMVAxpy");
+	commentator().start (str.str ().c_str (), "testMVAxpy");
 
 	bool ret = true;
 
@@ -1084,7 +1084,7 @@ static bool testMVAxpy (Field &F, const char *text, const Matrix &M)
 
 	BlasMatrix<Field> M1 (F, M.rowdim (), M.coldim ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M1:" << endl;
 	MD.write (report, M1);
 
@@ -1112,12 +1112,12 @@ static bool testMVAxpy (Field &F, const char *text, const Matrix &M)
 	VD.write (report, w1);
 
 	if (!VD.areEqual (w, w1)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: VectorDomain reported vectors w and w1 are not equal" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testMVAxpy");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testMVAxpy");
 
 	return ret;
 }
@@ -1134,7 +1134,7 @@ static bool testLeftBlackboxMul (Field &F, const char *text, const Blackbox &A,
 	ostringstream str;
 
 	str << "Testing " << text << " matrix-black box left mul" << ends;
-	commentator.start (str.str ().c_str (), "testLeftBlackboxMul");
+	commentator().start (str.str ().c_str (), "testLeftBlackboxMul");
 
 	bool ret = true;
 
@@ -1152,7 +1152,7 @@ static bool testLeftBlackboxMul (Field &F, const char *text, const Blackbox &A,
 
 	MD.blackboxMulLeft (AI, A, I);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Output matrix AI:" << endl;
 	MD.write (report, AI);
 
@@ -1165,13 +1165,13 @@ static bool testLeftBlackboxMul (Field &F, const char *text, const Blackbox &A,
 		MD.vectorMul (w2, AI, v);
 
 		if (!VD.areEqual (w1, w2)) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Av != AIv" << endl;
 			ret = false;
 		}
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testLeftBlackboxMul");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testLeftBlackboxMul");
 
 	return ret;
 }
@@ -1188,7 +1188,7 @@ static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
 	ostringstream str;
 
 	str << "Testing " << text << " matrix-black box right mul" << ends;
-	commentator.start (str.str ().c_str (), "testRightBlackboxMul");
+	commentator().start (str.str ().c_str (), "testRightBlackboxMul");
 
 	bool ret = true;
 
@@ -1206,7 +1206,7 @@ static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
 
 	MD.blackboxMulRight (IA, I, A);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Output matrix IA:" << endl;
 	MD.write (report, IA);
 
@@ -1219,13 +1219,13 @@ static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
 		MD.vectorMul (w2, IA, v);
 
 		if (!VD.areEqual (w1, w2)) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Av != IAv" << endl;
 			ret = false;
 		}
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRightBlackboxMul");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRightBlackboxMul");
 
 	return ret;
 }
@@ -1248,7 +1248,7 @@ bool testPermutation (const Field &F, const char *text, const Matrix &M)
 	ostringstream str;
 
 	str << "Testing " << text << " permutations" << ends;
-	commentator.start (str.str ().c_str (), "testPermutation");
+	commentator().start (str.str ().c_str (), "testPermutation");
 
 	bool ret = true;
 
@@ -1274,7 +1274,7 @@ bool testPermutation (const Field &F, const char *text, const Matrix &M)
 	std::copy (P.begin (), P.end (), Pinv.begin ());
 	std::reverse (Pinv.begin (), Pinv.end ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Permutation P:    ";
 	reportPermutation (report, P) << endl;
 	report << "Permutation P^-1: ";
@@ -1291,7 +1291,7 @@ bool testPermutation (const Field &F, const char *text, const Matrix &M)
 
 	// Compare M and M1
 	if (!MD.areEqual (M, M1)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: M != P^-1 PM" << endl;
 		ret = false;
 	}
@@ -1331,12 +1331,12 @@ bool testPermutation (const Field &F, const char *text, const Matrix &M)
 
 	// Compare M and M1
 	if (!MD.areEqual (M, M1)) {
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: M != MPP^-1" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testPermutation");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testPermutation");
 
 	return ret;
 }
@@ -1350,7 +1350,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 {
 	ostringstream str;
 	str << "Testing MatrixDomain with " << text << " matrices" << ends;
-	commentator.start (str.str ().c_str ());
+	commentator().start (str.str ().c_str ());
 
 	bool pass = true;
 
@@ -1384,7 +1384,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 	if (!testRightBlackboxMul (F, text, A, stream)) pass = false;
 	if (!testPermutation (F, text, M1))             pass = false;
 
-	commentator.stop (MSG_STATUS (pass));
+	commentator().stop (MSG_STATUS (pass));
 
 	return pass;
 }
@@ -1398,7 +1398,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 {
 	ostringstream str;
 	str << "Testing MatrixDomain with " << text << " matrices" << ends;
-	commentator.start (str.str ().c_str ());
+	commentator().start (str.str ().c_str ());
 
 	bool pass = true;
 
@@ -1424,7 +1424,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 	if (!testLeftBlackboxMul (F, text, A, stream)) pass = false;
 	if (!testPermutation (F, text, M1))            pass = false;
 
-	commentator.stop (MSG_STATUS (pass));
+	commentator().stop (MSG_STATUS (pass));
 
 	return pass;
 }
@@ -1438,7 +1438,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 {
 	ostringstream str;
 	str << "Testing MatrixDomain with " << text << " matrices" << ends;
-	commentator.start (str.str ().c_str ());
+	commentator().start (str.str ().c_str ());
 
 	bool pass = true;
 
@@ -1463,7 +1463,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 	if (!testMVAxpy (F, text, M1))                  pass = false;
 	if (!testRightBlackboxMul (F, text, A, stream)) pass = false;
 
-	commentator.stop (MSG_STATUS (pass));
+	commentator().stop (MSG_STATUS (pass));
 
 	return pass;
 }
@@ -1562,19 +1562,19 @@ int main (int argc, char **argv)
 	ModularBalanced<int32_t>         F2 (q);
 	GivaroZpz<Givaro::Unsigned32>    F3(q);
 
-	commentator.start("Matrix domain test suite", "MatrixDomain");
+	commentator().start("Matrix domain test suite", "MatrixDomain");
 
-	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
-	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (3);
+	commentator().setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
+	commentator().getMessageClass (BRIEF_REPORT).setMaxDepth (2);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (3);
 
 	pass &= launchTestMatrixDomain(F1,m,n,k,iterations);
 	pass &= launchTestMatrixDomain(F2,m,n,k,iterations);
 	pass &= launchTestMatrixDomain(F3,m,n,k,iterations);
 
-	commentator.stop (MSG_STATUS (pass), "Matrix domain test suite");
+	commentator().stop (MSG_STATUS (pass), "Matrix domain test suite");
 	return pass ? 0 : -1;
 }
 

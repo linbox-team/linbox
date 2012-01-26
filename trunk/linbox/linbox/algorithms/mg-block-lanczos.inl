@@ -76,7 +76,7 @@ namespace LinBox
 	void checkAConjugacy (const MatrixDomain<Field> &MD, const Matrix &AV, const Matrix &V, Matrix &T,
 			      size_t AV_iter, size_t V_iter)
 	{
-		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 		report << "Checking whether V_" << V_iter << " is A-conjugate to V_" << AV_iter << "...";
 
@@ -87,7 +87,7 @@ namespace LinBox
 		else {
 			report << "no" << std::endl;
 
-			std::ostream &err_report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+			std::ostream &err_report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
 			err_report << "ERROR: V_" << V_iter << " is not A-conjugate to V_" << AV_iter << std::endl;
 			err_report << "Computed V_" << V_iter << "^T AV_" << AV_iter << ":" << std::endl;
 			MD.write (report, T);
@@ -115,7 +115,7 @@ namespace LinBox
 #  define TIMER_START(part) part##_timer.start ()
 #  define TIMER_STOP(part) part##_timer.stop (); part##_time += part##_timer.time ()
 #  define TIMER_REPORT(part) \
-	commentator.report (Commentator::LEVEL_NORMAL, TIMING_MEASURE) \
+	commentator().report (Commentator::LEVEL_NORMAL, TIMING_MEASURE) \
 	<< "Total " #part " time: " << part##_time << "s" << std::endl;
 #else
 #  define TIMER_DECLARE(part)
@@ -133,7 +133,7 @@ namespace LinBox
 		linbox_check ((x.size () == A.coldim ()) &&
 			      (b.size () == A.rowdim ()));
 
-		commentator.start ("Solving linear system (Montgomery's block Lanczos)", "MGBlockLanczosSolver::solve");
+		commentator().start ("Solving linear system (Montgomery's block Lanczos)", "MGBlockLanczosSolver::solve");
 
 		bool success = false;
 		Vector d1, d2, b1, b2, bp, y, Ax, ATAx, ATb;
@@ -154,7 +154,7 @@ namespace LinBox
 		RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (_field, real_ri, A.coldim ());
 
 		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
-			std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "In try: " << i << std::endl;
 
 			switch (_traits.preconditioner ()) {
@@ -292,39 +292,39 @@ namespace LinBox
 					VectorWrapper::ensureDim (ATAx, A.coldim ());
 					VectorWrapper::ensureDim (ATb, A.coldim ());
 
-					commentator.start ("Checking whether A^T Ax = A^T b");
+					commentator().start ("Checking whether A^T Ax = A^T b");
 
 					A.apply (Ax, x);
 					A.applyTranspose (ATAx, Ax);
 					A.applyTranspose (ATb, b);
 
 					if (_VD.areEqual (ATAx, ATb)) {
-						commentator.stop ("passed");
+						commentator().stop ("passed");
 						success = true;
 					}
 					else {
-						commentator.stop ("FAILED");
+						commentator().stop ("FAILED");
 						success = false;
 					}
 				}
 				else if (_traits.checkResult ()) {
-					commentator.start ("Checking whether Ax=b");
+					commentator().start ("Checking whether Ax=b");
 
 					A.apply (Ax, x);
 
 					if (_VD.areEqual (Ax, b)) {
-						commentator.stop ("passed");
+						commentator().stop ("passed");
 						success = true;
 					}
 					else {
-						commentator.stop ("FAILED");
+						commentator().stop ("FAILED");
 						success = false;
 					}
 				}
 			}
 		}
 
-		commentator.stop ("done", (success ? "Solve successful" : "Solve failed"), "MGBlockLanczosSolver::solve");
+		commentator().stop ("done", (success ? "Solve successful" : "Solve failed"), "MGBlockLanczosSolver::solve");
 
 		return success;
 	}
@@ -335,7 +335,7 @@ namespace LinBox
 	{
 		linbox_check (x.rowdim () == A.coldim ());
 
-		commentator.start ("Sampling from nullspace (Montgomery's block Lanczos)", "MGBlockLanczosSolver::sampleNullspace");
+		commentator().start ("Sampling from nullspace (Montgomery's block Lanczos)", "MGBlockLanczosSolver::sampleNullspace");
 
 		unsigned int number = 0;
 
@@ -365,7 +365,7 @@ namespace LinBox
 		TransposeMatrix<Matrix> xT (_x);
 
 		for ( unsigned int i = 0; number < x.coldim () && i < _traits.maxTries (); ++i) {
-			std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "in try: " << i << std::endl;
 
 			// Fill y with random data
@@ -502,7 +502,7 @@ namespace LinBox
 			}
 		}
 
-		commentator.stop ("done", NULL, "MGBlockLanczosSolver::sampleNullspace");
+		commentator().stop ("done", NULL, "MGBlockLanczosSolver::sampleNullspace");
 
 		return number;
 	}
@@ -517,7 +517,7 @@ namespace LinBox
 		linbox_check (_matV[0].coldim () == _matV[1].coldim ());
 		linbox_check (_matV[0].coldim () == _matV[2].coldim ());
 
-		commentator.start ("Block Lanczos iteration", "MGBlockLanczosSolver::iterate", A.rowdim ());
+		commentator().start ("Block Lanczos iteration", "MGBlockLanczosSolver::iterate", A.rowdim ());
 
 		size_t    Ni;
 		size_t    total_dim = 0;
@@ -554,7 +554,7 @@ namespace LinBox
 		_MD.blackboxMulLeft (_AV, A, _matV[0]);
 		TIMER_STOP(AV);
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 		// Initialize S_-1 to IN
 		std::fill (_vecS.begin (), _vecS.end (), true);
@@ -570,7 +570,7 @@ namespace LinBox
 
 		// Check for catastrophic breakdown
 		if (Ni == 0) {
-			commentator.stop ("breakdown", NULL, "MGBlockLanczosSolver::iterate");
+			commentator().stop ("breakdown", NULL, "MGBlockLanczosSolver::iterate");
 			return false;
 		}
 
@@ -626,7 +626,7 @@ namespace LinBox
 		TIMER_STOP(terminationCheck);
 
 		if (done) {
-			commentator.stop ("done", NULL, "MGBlockLanczosSolver::iterate");
+			commentator().stop ("done", NULL, "MGBlockLanczosSolver::iterate");
 			return true;
 		}
 
@@ -651,7 +651,7 @@ namespace LinBox
 
 		// Check for catastrophic breakdown
 		if (Ni == 0) {
-			commentator.stop ("breakdown", NULL, "MGBlockLanczosSolver::iterate");
+			commentator().stop ("breakdown", NULL, "MGBlockLanczosSolver::iterate");
 			return false;
 		}
 
@@ -813,12 +813,12 @@ namespace LinBox
 			++iter;
 
 			if (!(iter % progress_interval))
-				commentator.progress (total_dim);
+				commentator().progress (total_dim);
 
 			if (total_dim > A.rowdim ()) {
-				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "Maximum number of iterations passed without termination" << std::endl;
-				commentator.stop ("ERROR", NULL, "MGBlockLanczosSolver::iterate");
+				commentator().stop ("ERROR", NULL, "MGBlockLanczosSolver::iterate");
 				return false;
 			}
 		}
@@ -837,7 +837,7 @@ namespace LinBox
 		TIMER_REPORT(orthogonalization);
 		TIMER_REPORT(terminationCheck);
 
-		commentator.stop (ret ? "done" : "breakdown", NULL, "MGBlockLanczosSolver::iterate");
+		commentator().stop (ret ? "done" : "breakdown", NULL, "MGBlockLanczosSolver::iterate");
 
 		return ret;
 	}
@@ -856,9 +856,9 @@ namespace LinBox
 		linbox_check (S.size () * 2 == _matM.coldim ());
 
 #ifdef MGBL_DETAILED_TRACE
-		commentator.start ("Computing Winv and S", "MGBlockLanczosSolver::compute_Winv_S", S.size ());
+		commentator().start ("Computing Winv and S", "MGBlockLanczosSolver::compute_Winv_S", S.size ());
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input T:" << std::endl;
 		_MD.write (report, T);
 #endif
@@ -879,16 +879,16 @@ namespace LinBox
 		for (row = 0; row < S.size (); ++row) {
 #ifdef MGBL_DETAILED_TRACE
 			if (!(row & ((1 << 10) - 1)))
-				commentator.progress (row);
+				commentator().progress (row);
 
-			std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "Iteration " << row << ": Matrix M = " << std::endl;
 			_MD.write (report, _matM);
 #endif
 
 			if (find_pivot_row (_matM, row, 0, _indices)) {
 #ifdef MGBL_DETAILED_TRACE
-				commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION)
+				commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION)
 				<< "Pivot found for column " << _indices[row] << std::endl;
 #endif
 
@@ -907,7 +907,7 @@ namespace LinBox
 			}
 			else {
 #ifdef MGBL_DETAILED_TRACE
-				commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+				commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 				<< "No pivot found for column " << _indices[row] << std::endl;
 #endif
 
@@ -935,7 +935,7 @@ namespace LinBox
 		report << "Computed Winv:" << std::endl;
 		_MD.write (report, Winv);
 
-		commentator.stop ("done", NULL, "MGBlockLanczosSolver::compute_Winv_S");
+		commentator().stop ("done", NULL, "MGBlockLanczosSolver::compute_Winv_S");
 #endif
 
 		return (int)Ni;
@@ -1291,7 +1291,7 @@ namespace LinBox
 	template <class Field, class Matrix>
 	inline bool MGBlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mul (int n) const
 	{
-		commentator.start ("Testing compute_Winv_S, mul, addIN, and isZero", "test_compute_Winv_S_mul");
+		commentator().start ("Testing compute_Winv_S, mul, addIN, and isZero", "test_compute_Winv_S_mul");
 
 		Matrix A (n, n);
 		Matrix AT (n, n);
@@ -1315,7 +1315,7 @@ namespace LinBox
 
 		_MD.mul (ATA, AT, A);
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Computed A^T A:" << std::endl;
 		_MD.write (report, ATA);
 
@@ -1331,7 +1331,7 @@ namespace LinBox
 		_MD.write (report, WA);
 
 		if (!isAlmostIdentity (WA)) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: WA^T A != I" << std::endl;
 			ret = false;
 		}
@@ -1344,12 +1344,12 @@ namespace LinBox
 		_MD.write (report, WA);
 
 		if (!isAlmostIdentity (WA)) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: A^T AW != I" << std::endl;
 			ret = false;
 		}
 
-		commentator.stop (MSG_STATUS (ret), NULL, "test_compute_Winv_S_mul");
+		commentator().stop (MSG_STATUS (ret), NULL, "test_compute_Winv_S_mul");
 
 		return ret;
 	}
@@ -1359,7 +1359,7 @@ namespace LinBox
 	template <class Field, class Matrix>
 	inline bool MGBlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mulin (int n) const
 	{
-		commentator.start ("Testing compute_Winv_S, copy, mulin, addIN, and isZero", "test_compute_Winv_S_mulin");
+		commentator().start ("Testing compute_Winv_S, copy, mulin, addIN, and isZero", "test_compute_Winv_S_mulin");
 
 		Matrix A (n, n);
 		Matrix AT (n, n);
@@ -1383,7 +1383,7 @@ namespace LinBox
 
 		_MD.mul (ATA, AT, A);
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Computed A^T A:" << std::endl;
 		_MD.write (report, ATA);
 
@@ -1401,7 +1401,7 @@ namespace LinBox
 		_MD.write (report, WA);
 
 		if (!isAlmostIdentity (WA)) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: WA^T A != I" << std::endl;
 			ret = false;
 		}
@@ -1416,12 +1416,12 @@ namespace LinBox
 		_MD.write (report, WA);
 
 		if (!isAlmostIdentity (WA)) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: A^T AW != I" << std::endl;
 			ret = false;
 		}
 
-		commentator.stop (MSG_STATUS (ret), NULL, "test_compute_Winv_S_mulin");
+		commentator().stop (MSG_STATUS (ret), NULL, "test_compute_Winv_S_mulin");
 
 		return ret;
 	}
@@ -1433,11 +1433,11 @@ namespace LinBox
 	template <class Field, class Matrix>
 	inline bool MGBlockLanczosSolver<Field, Matrix>::test_mul_SST (int n) const
 	{
-		commentator.start ("Testing addin", "test_mulTranspose");
+		commentator().start ("Testing addin", "test_mulTranspose");
 
 		bool ret = true;
 
-		commentator.stop (MSG_STATUS (ret), NULL, "test_mulTranspose");
+		commentator().stop (MSG_STATUS (ret), NULL, "test_mulTranspose");
 
 		return ret;
 	}
@@ -1448,11 +1448,11 @@ namespace LinBox
 	template <class Field, class Matrix>
 	inline bool MGBlockLanczosSolver<Field, Matrix>::test_mul_ABSST (int n) const
 	{
-		commentator.start ("Testing addin", "test_mulTranspose");
+		commentator().start ("Testing addin", "test_mulTranspose");
 
 		bool ret = true;
 
-		commentator.stop (MSG_STATUS (ret), NULL, "test_mulTranspose");
+		commentator().stop (MSG_STATUS (ret), NULL, "test_mulTranspose");
 
 		return ret;
 	}
@@ -1463,7 +1463,7 @@ namespace LinBox
 	template <class Field, class Matrix>
 	inline bool MGBlockLanczosSolver<Field, Matrix>::test_mulTranspose (int m, int n) const
 	{
-		commentator.start ("Testing mulTranspose, m-v mul", "test_mulTranspose");
+		commentator().start ("Testing mulTranspose, m-v mul", "test_mulTranspose");
 
 		Matrix A (m, n);
 		typename Vector<Field>::Dense x (m), y (n);
@@ -1478,7 +1478,7 @@ namespace LinBox
 		for (; i != A.rowEnd (); ++i)
 			stream >> *i;
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Computed A:" << std::endl;
 		_MD.write (report, A);
 
@@ -1515,12 +1515,12 @@ namespace LinBox
 		_field.write (report, xAy) << std::endl;
 
 		if (!_field.areEqual (ATxy, xAy)) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: <A^T x, y> != <x, Ay>" << std::endl;
 			ret = false;
 		}
 
-		commentator.stop (MSG_STATUS (ret), NULL, "test_mulTranspose");
+		commentator().stop (MSG_STATUS (ret), NULL, "test_mulTranspose");
 
 		return ret;
 	}
@@ -1530,11 +1530,11 @@ namespace LinBox
 	template <class Field, class Matrix>
 	inline bool MGBlockLanczosSolver<Field, Matrix>::test_mulTranspose_ABSST (int n) const
 	{
-		commentator.start ("Testing addin_ABSST", "test_mulTranspose_ABSST");
+		commentator().start ("Testing addin_ABSST", "test_mulTranspose_ABSST");
 
 		bool ret = true;
 
-		commentator.stop (MSG_STATUS (ret), NULL, "test_mulTranspose_ABSST");
+		commentator().stop (MSG_STATUS (ret), NULL, "test_mulTranspose_ABSST");
 
 		return ret;
 	}
@@ -1544,11 +1544,11 @@ namespace LinBox
 	template <class Field, class Matrix>
 	inline bool MGBlockLanczosSolver<Field, Matrix>::test_mulin_ABSST (int n) const
 	{
-		commentator.start ("Testing addin_ABSST", "test_mulin_ABSST");
+		commentator().start ("Testing addin_ABSST", "test_mulin_ABSST");
 
 		bool ret = true;
 
-		commentator.stop (MSG_STATUS (ret), NULL, "test_mulin_ABSST");
+		commentator().stop (MSG_STATUS (ret), NULL, "test_mulin_ABSST");
 
 		return ret;
 	}
@@ -1558,11 +1558,11 @@ namespace LinBox
 	template <class Field, class Matrix>
 	inline bool MGBlockLanczosSolver<Field, Matrix>::test_addin_ABSST (int n) const
 	{
-		commentator.start ("Testing addin_ABSST", "test_addin_ABSST");
+		commentator().start ("Testing addin_ABSST", "test_addin_ABSST");
 
 		bool ret = true;
 
-		commentator.stop (MSG_STATUS (ret), NULL, "test_addin_ABSST");
+		commentator().stop (MSG_STATUS (ret), NULL, "test_addin_ABSST");
 
 		return ret;
 	}
@@ -1572,7 +1572,7 @@ namespace LinBox
 	{
 		bool ret = true;
 
-		commentator.start ("Running self check", "runSelfCheck", 10);
+		commentator().start ("Running self check", "runSelfCheck", 10);
 
 		if (!test_compute_Winv_S_mul (_block)) ret = false;
 		if (!test_compute_Winv_S_mulin (_block)) ret = false;
@@ -1583,7 +1583,7 @@ namespace LinBox
 		if (!test_mulin_ABSST (_block)) ret = false;
 		if (!test_addin_ABSST (_block)) ret = false;
 
-		commentator.stop (MSG_STATUS (ret), NULL, "runSelfCheck");
+		commentator().stop (MSG_STATUS (ret), NULL, "runSelfCheck");
 
 		return ret;
 	}

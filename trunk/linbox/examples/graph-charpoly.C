@@ -70,8 +70,8 @@ typedef GivPolynomialRing<PID_integer, Givaro::Dense> IntPolRing;
 
 int main (int argc, char **argv)
 {
-	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
-	commentator.getMessageClass (BRIEF_REPORT).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (BRIEF_REPORT).setMaxDepth (2);
+	commentator().getMessageClass (BRIEF_REPORT).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 
 	if (argc != 2) {
@@ -89,7 +89,7 @@ int main (int argc, char **argv)
 	PID_integer ZZ;
 	Matrix A(ZZ);
 	A.read (input);
-	commentator.report(1, BRIEF_REPORT)<< "A is " << A.rowdim() << " by " << A.coldim() << endl;
+	commentator().report(1, BRIEF_REPORT)<< "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 	IntPolRing::Element c_A;
 

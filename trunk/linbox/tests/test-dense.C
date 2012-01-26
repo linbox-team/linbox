@@ -75,7 +75,7 @@ static bool testIdentity (Field &F, size_t n, int iterations)
 	typedef BlasMatrix<Field>               Base;
 	typedef BlasMatrix<Field>           Blackbox;
 
-	commentator.start ("Testing identity apply", "testIdentity", iterations);
+	commentator().start ("Testing identity apply", "testIdentity", iterations);
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -98,14 +98,14 @@ static bool testIdentity (Field &F, size_t n, int iterations)
 	for (int i = 0; i < iterations; i++) {
 		char buf[80];
 		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator().start (buf);
 
 		iter_passed = true;
 
 		for (size_t j = 0; j < n; j++)
 			r.random (v[j]);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector: ";
 		printVector<Field> (F, report, v);
 
@@ -123,14 +123,14 @@ static bool testIdentity (Field &F, size_t n, int iterations)
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentity");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentity");
 
 	return ret;
 }
@@ -160,7 +160,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations, int N)
 	typedef vector <typename Field::Element> Polynomial;
 	typedef BlasMatrix <Field> Blackbox;
 
-	commentator.start ("Testing Vandermonde apply", "testVandermonde", iterations);
+	commentator().start ("Testing Vandermonde apply", "testVandermonde", iterations);
 
 	bool ret = true;
 	bool inner_iter_passed;
@@ -176,7 +176,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations, int N)
 	for (i = 0; i < iterations; i++) {
 		char buf[80];
 		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator().start (buf);
 
 		/* Evaluation points */
 		for (j = 0; j < n; j++) {
@@ -192,7 +192,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations, int N)
 			}
 		}
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Evaluation points: ";
 		printVector<Field> (F, report, x);
 
@@ -233,15 +233,15 @@ static bool testVandermonde (Field &F, size_t n, int iterations, int N)
 					ret = inner_iter_passed = false;
 
 			if (!inner_iter_passed)
-				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Vectors are not equal" << endl;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testVandermonde");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testVandermonde");
 
 	return ret;
 }
@@ -265,7 +265,7 @@ static bool testRandomLinearity (const Field                                 &F,
 				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
 				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
 {
-	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
+	commentator().start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
 	BlasMatrix<Field> A (F, A_stream);
 
@@ -275,7 +275,7 @@ static bool testRandomLinearity (const Field                                 &F,
 	v1_stream.reset ();
 	v2_stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
 
 	return ret;
 }
@@ -299,7 +299,7 @@ static bool testRandomTranspose (const Field                                 &F,
 				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
 				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
 {
-	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
+	commentator().start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 
 	BlasMatrix<Field> A (F, A_stream);
 
@@ -309,7 +309,7 @@ static bool testRandomTranspose (const Field                                 &F,
 	v1_stream.reset ();
 	v2_stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
 	return ret;
 }
@@ -336,10 +336,10 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator.start("Dense matrix black box test suite", "BlasMatrix");
+	commentator().start("Dense matrix black box test suite", "BlasMatrix");
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	RandomDenseStream<Field> A_stream (F, n, n);
 	RandomDenseStream<Field> v1_stream (F, n, iterations);
@@ -350,7 +350,7 @@ int main (int argc, char **argv)
 	//if (!testRandomLinearity (F, A_stream, v1_stream, v2_stream)) pass = false;
 	//if (!testRandomTranspose (F, A_stream, v1_stream, v2_stream)) pass = false;
 
-	commentator.stop("dense matrix black box test suite");
+	commentator().stop("dense matrix black box test suite");
 	return pass ? 0 : -1;
 }
 

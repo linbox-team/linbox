@@ -68,7 +68,7 @@ int main (int argc, char **argv)
 	LidiaGfq F (q, 1);
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
 	if (!runFieldTests (F, "LidiaGfq (prime)", iterations, n, false)) pass = false;
 

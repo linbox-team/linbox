@@ -263,9 +263,9 @@ using namespace Givaro;
 template<class Field>
 int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 {
-	LinBox::commentator.setMaxDetailLevel (-1);
-	LinBox::commentator.setMaxDepth (-1);
-	LinBox::commentator.setReportStream (std::cerr);
+	LinBox::commentator().setMaxDetailLevel (-1);
+	LinBox::commentator().setMaxDepth (-1);
+	LinBox::commentator().setReportStream (std::cerr);
 
 	OMPTimer chrono1,chrono2,chrono3,chrono4; chrono1.clear(); chrono2.clear(); chrono3.clear(); chrono4.clear();
 

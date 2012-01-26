@@ -63,8 +63,8 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Trace test suite", "Trace");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().start("Trace test suite", "Trace");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
 	typedef Modular<int> Field;
 	typedef Field::Element Element;
@@ -95,7 +95,7 @@ int main (int argc, char **argv)
 	if (! F.areEqual(t1, t) pass = false;
 */
 
-	commentator.stop("Trace solution test suite");
+	commentator().stop("Trace solution test suite");
 	return pass ? 0 : -1;
 }
 

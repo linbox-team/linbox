@@ -73,7 +73,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Modular<double> field test suite", "Modular<double>");
+	commentator().start("Modular<double> field test suite", "Modular<double>");
 	bool pass = true;
 
 	//Modular<double> F2 (2);
@@ -90,9 +90,9 @@ int main (int argc, char **argv)
 
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	std::ostream& report = commentator.report();
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	std::ostream& report = commentator().report();
 	report << "Field F2" << std::endl;
 	//if (!runFieldTests (F2,  "Modular<double>",  iterations, n, false)) pass = false;
 	report << "Field F3" << std::endl;
@@ -112,7 +112,7 @@ int main (int argc, char **argv)
 	// if (!testRandomIterator (I_int,  "Modular<double>", trials, categories, hist_level)) pass = false;
 
 
-	commentator.stop("Modular<double> field test suite");
+	commentator().stop("Modular<double> field test suite");
 	return pass ? 0 : -1;
 }
 

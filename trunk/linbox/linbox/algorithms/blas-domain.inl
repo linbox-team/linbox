@@ -1383,7 +1383,7 @@ namespace LinBox
 	public:
 		Polynomial& operator() (const Field &F, Polynomial& P, const BlasMatrix<Field>& A) const
 		{
-			commentator.start ("Modular Dense Minpoly ", "MDMinpoly");
+			commentator().start ("Modular Dense Minpoly ", "MDMinpoly");
 
 			size_t n = A.coldim();
 			linbox_check( n == A.rowdim());
@@ -1392,11 +1392,11 @@ namespace LinBox
 			for ( size_t i=0; i<n; ++i)
 				Perm[i] = 0;
 			FFPACK::MinPoly<Field,Polynomial>( F, P, n, A.getPointer(), A.getStride(), X, n, Perm);
-			commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
+			commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
 
 			delete[] Perm;
 			delete[] X;
-			commentator.stop ("done",NULL,"MDMinpoly");
+			commentator().stop ("done",NULL,"MDMinpoly");
 			return P;
 		}
 	};

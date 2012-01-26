@@ -86,7 +86,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Modular test suite", "Modular ");
+	commentator().start("Modular test suite", "Modular ");
 	bool pass = true;
 
 	Modular<integer> F_integer (q1);
@@ -97,8 +97,8 @@ int main (int argc, char **argv)
 
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!runFieldTests (F_integer,"Modular<integer>", iterations, n, false)) pass = false;
 	if (!runFieldTests (F_uint32_t, "Modular<uint32_t>",  iterations, n, false)) pass = false;
@@ -111,7 +111,7 @@ int main (int argc, char **argv)
 	if (!testRandomIterator (F_uint16_t,  "Modular<uint16_t>",  trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F_uint8_t,    "Modular<uint8_t>",  trials, categories, hist_level)) pass = false;
 
-	commentator.stop(MSG_STATUS (pass), "Modular test suite");
+	commentator().stop(MSG_STATUS (pass), "Modular test suite");
 	return pass ? 0 : -1;
 }
 

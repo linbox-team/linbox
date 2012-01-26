@@ -174,7 +174,7 @@ namespace LinBox
 			FBlackbox fbb(M, F);
 			minpoly (fp, fbb);
 			if ((int)fp.size() - 1 != degree) {
-				commentator.report (Commentator::LEVEL_IMPORTANT,
+				commentator().report (Commentator::LEVEL_IMPORTANT,
 						    INTERNAL_DESCRIPTION) << "Bad prime.\n";
 				continue;
 			}
@@ -182,7 +182,7 @@ namespace LinBox
 		}
 
 		cra. result (y);
-		// commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) <<  "Number of primes needed: " << cra. steps() << std::endl;
+		// commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) <<  "Number of primes needed: " << cra. steps() << std::endl;
 		return y;
 	}
 
@@ -219,7 +219,7 @@ namespace LinBox
 			FBlackbox fbb(M,F);
 			minpolySymmetric (fp, fbb);
 			if ((int)fp.size() - 1 != degree) {
-				commentator.report (Commentator::LEVEL_IMPORTANT,
+				commentator().report (Commentator::LEVEL_IMPORTANT,
 						    INTERNAL_DESCRIPTION) << "Bad prime.\n";
 				continue;
 			}
@@ -307,7 +307,7 @@ namespace LinBox
 			FFPACK::MinPoly( F, poly, n, FA, n, X, n, Perm);
 
 			if(poly. size() != degree + 1) {
-				commentator.report (Commentator::LEVEL_IMPORTANT,
+				commentator().report (Commentator::LEVEL_IMPORTANT,
 						    INTERNAL_DESCRIPTION) << "Bad prime.\n";
 				continue;
 			}

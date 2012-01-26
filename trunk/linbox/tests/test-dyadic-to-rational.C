@@ -87,22 +87,22 @@ When dxa^2 <= denBs, 2 should be returned.
 #if 1
 	// check vector reconstruction
 	c = dyadicToRational(Z, n, d, nx, dx, denB);
-	commentator.report() << "In test1 dyadicToRational returns " << c << std::endl;
+	commentator().report() << "In test1 dyadicToRational returns " << c << std::endl;
 	claim = 0 < c;
 	if (claim) {
 		for (size_t i = 0; i < k ; ++i) claim = claim && (n[i] == (int(i)-int(kp)));
 	}
 	pass = pass && claim;
 	if (!claim) {
-		commentator.report() << "first example fails" << std::endl;
-		commentator.report() << "data for first example" << std::endl;
+		commentator().report() << "first example fails" << std::endl;
+		commentator().report() << "data for first example" << std::endl;
 		for (size_t i = 0; i < 10 ; ++i)
-			commentator.report() << nx[i] << std::endl;
-		commentator.report() << dx << " den in" << std::endl;
-		commentator.report() << "results for first example" << std::endl;
+			commentator().report() << nx[i] << std::endl;
+		commentator().report() << dx << " den in" << std::endl;
+		commentator().report() << "results for first example" << std::endl;
 		for (size_t i = 0; i < 10 ; ++i)
-			commentator.report() << n[i] << std::endl;
-		commentator.report() << d << " den out" << std::endl;
+			commentator().report() << n[i] << std::endl;
+		commentator().report() << d << " den out" << std::endl;
 	}
 
 	if (c < ret) ret = c;
@@ -129,13 +129,13 @@ bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 
 	clock.clear(); clock.start();
 	claim = 1 <= test1(k, pow2*pow2, k); // some 1's and some 2's
-	if (!claim) commentator.report() << "failure: 1 !=test1(k, k*k, k)" << std::endl;
+	if (!claim) commentator().report() << "failure: 1 !=test1(k, k*k, k)" << std::endl;
 	pass = pass && claim;
 	claim = 1 == test1(k, k*k, k*k); // all 1's
-	if (!claim) commentator.report() << "failure: 1 !=test1(k, k*k, k*k)" << std::endl;
+	if (!claim) commentator().report() << "failure: 1 !=test1(k, k*k, k*k)" << std::endl;
 	pass = pass && claim;
 	claim = 2 == test1(k, k*k+2*k + 1, k+1); // all 2's
-	if (!claim) commentator.report() << "failure: 2 !=test1(k, (k + 1)^2, k+1)" << std::endl;
+	if (!claim) commentator().report() << "failure: 2 !=test1(k, (k + 1)^2, k+1)" << std::endl;
 	pass = pass && claim;
 	clock.stop(); totaltime += clock.time();
 
@@ -166,7 +166,7 @@ bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 
 	claim = 0 < dyadicToRational(Z, n, d, nx, dxs, denB);
 
-	if (!claim) commentator.report() << "in special case 1 failure claimed" << std::endl;
+	if (!claim) commentator().report() << "in special case 1 failure claimed" << std::endl;
 
 	pass = pass && claim;
 
@@ -188,14 +188,14 @@ bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 
 	if (!claim)
 	{
-	commentator.report() << "data for failing special case 1" << std::endl;
+	commentator().report() << "data for failing special case 1" << std::endl;
 	for (size_t i = 0; i < k2 ; ++i)
-		commentator.report() << nx[i] << std::endl;
-	commentator.report() << dxs << " den in" << std::endl;
-	commentator.report() << "results for failing special case 1" << std::endl;
+		commentator().report() << nx[i] << std::endl;
+	commentator().report() << dxs << " den in" << std::endl;
+	commentator().report() << "results for failing special case 1" << std::endl;
 	for (size_t i = 0; i < k2 ; ++i)
-		commentator.report() << n[i] << std::endl;
-	commentator.report() << d << " den out" << std::endl;
+		commentator().report() << n[i] << std::endl;
+	commentator().report() << d << " den out" << std::endl;
 	}
 
 #endif
@@ -225,11 +225,11 @@ bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 //std::cout << "d " << d << " dxs " << dxs << " denB " << denB << std::endl;
 
     pass = pass && claim;
-	if (claim) commentator.report() << "third ratrecon falsely claims success" << std::endl;
+	if (claim) commentator().report() << "third ratrecon falsely claims success" << std::endl;
 #endif
 
 // done
-	if (benchmarking) commentator.report() << "vec size" << k << ", rat recon time: " << clock << " totaltime " << totaltime << std::endl;
+	if (benchmarking) commentator().report() << "vec size" << k << ", rat recon time: " << clock << " totaltime " << totaltime << std::endl;
 	return pass;
 }
 
@@ -246,14 +246,14 @@ int main (int argc, char **argv)
 	};
 	parseArguments (argc, argv, args);
 
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	// run test
-	LinBox::commentator.start("DyadicToRational unit/regression test");
+	LinBox::commentator().start("DyadicToRational unit/regression test");
 	bool pass = testDyadicToRational(n);
-	LinBox::commentator.stop("DyadicToRational unit/regression test");
+	LinBox::commentator().stop("DyadicToRational unit/regression test");
 	return pass ? 0 : -1;
 
 	/* parseArguments sets flags n and q, and arg structure ac, av, where ac, av refer to remaining args after flag processing.

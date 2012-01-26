@@ -70,8 +70,8 @@ int main (int argc, char **argv)
 {
 	unsigned long rank_A_Wiedemann, rank_A_elimination;
 
-	commentator.setMaxDepth (2);
-	commentator.setReportStream (cout);
+	commentator().setMaxDepth (2);
+	commentator().setReportStream (cout);
 
 	Field F (q);
 	FieldExtn E (q, 10);

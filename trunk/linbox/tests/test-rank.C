@@ -72,7 +72,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 {
 	typedef SparseMatrix<Field,typename Vector<Field>::SparseSeq> Blackbox;
 
-	commentator.start ("Testing elimination-based and blackbox rank", "testRankMethods", iterations);
+	commentator().start ("Testing elimination-based and blackbox rank", "testRankMethods", iterations);
 
 	bool ret = true;
 	unsigned int i;
@@ -83,26 +83,26 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 	typename Field::RandIter ri (F);
 
 	for (i = 0; i < iterations; ++i) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		RandomSparseStream<Field, typename Vector<Field>::SparseSeq> stream (F, ri, sparsity, n, n);
 		Blackbox A (F, stream);
 
-		F.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl;
-		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_MAPLE ) << endl;
+		F.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl;
+		A.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_MAPLE ) << endl;
 
 		LinBox::rank (rank_blackbox, A, Method::Blackbox ());
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "blackbox rank " << rank_blackbox << endl;
 		LinBox::rank (rank_elimination, A, Method::Elimination());
 		if (rank_blackbox != rank_elimination) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != elimination rank " << rank_elimination << endl;
 			ret = false;
 		}
 		LinBox::rank (rank_hybrid, A, Method::Hybrid());
 		if (rank_blackbox != rank_hybrid) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != hybrid rank " << rank_hybrid << endl;
 			ret = false;
 		}
@@ -113,23 +113,23 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 		rank_elimination = rank_Wiedemann;
 		rank (rank_blas_elimination, A, Method::BlasElimination ());
 
-		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Rank computed by Wiedemann: " << rank_Wiedemann << endl
 			<< "Rank computed by sparse elimination: " << rank_elimination << endl
 			<< "Rank computed by blas_elimination: " << rank_blas_elimination << endl;
 
 		if (rank_Wiedemann != rank_elimination || rank_elimination != rank_blas_elimination) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Ranks are not equal" << endl;
 			ret = false;
 		}
 		*/
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testEliminationRank");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testEliminationRank");
 
 	return ret;
 }
@@ -144,7 +144,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 	MdF2.init(mdone,1UL);
 
 
-	commentator.start ("Testing elimination-based and blackbox rank over GF2", "testRankMethodsGF2", iterations);
+	commentator().start ("Testing elimination-based and blackbox rank over GF2", "testRankMethodsGF2", iterations);
 
 	bool ret = true;
 	unsigned int i;
@@ -155,7 +155,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 	GF2::RandIter ri (F2);
 
 	for (i = 0; i < iterations; ++i) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		Blackbox A(F2,n,n);
 		MdBlackbox B(MdF2,n,n);
@@ -168,25 +168,25 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 			}
 		}
 
-		F2.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl;
-		B.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_GUILLAUME ) << endl;
-		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_GUILLAUME ) << endl;
+		F2.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl;
+		B.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_GUILLAUME ) << endl;
+		A.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_GUILLAUME ) << endl;
 
 
 		rank (rank_blackbox, A, Method::Blackbox ());
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "blackbox rank " << rank_blackbox << endl;
 
 		rank (rank_elimination, B, Method::BlasElimination());
 		if (rank_blackbox != rank_elimination) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != BLAS elimination rank " << rank_elimination << endl;
 			ret = false;
 		}
 
 		rankin (rank_sparselimination, A, Method::SparseElimination());
 		if (rank_blackbox != rank_sparselimination) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != sparse elimination GF2 rank " << rank_elimination << endl;
 			ret = false;
 		}
@@ -195,16 +195,16 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 		rankin (rank_sparse, B, Method::SparseElimination());
 
 		if (rank_sparselimination != rank_sparse) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: rank sparse elimination GF2 != sparse rank " << rank_sparse << endl;
 			ret = false;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testEliminationRank");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testEliminationRank");
 
 	return ret;
 }
@@ -217,7 +217,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 {
 	typedef ScalarMatrix<Field> Blackbox;
 
-	commentator.start ("Testing rank of zero and Identity and half/half matrices", "testZeroAndIdentRank", iterations);
+	commentator().start ("Testing rank of zero and Identity and half/half matrices", "testZeroAndIdentRank", iterations);
 
 	bool ret = true;
 	unsigned int i;
@@ -225,7 +225,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 	unsigned long r; // rank
 
 	for (i = 0; i < iterations; ++i) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		typename Field::Element zero, one;
 
@@ -233,7 +233,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		Blackbox A (F, n, zero);
 		rank (r, A, Method::Wiedemann ());
 		if (r != 0) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Wiedemann Rank of 0 is not 0, but is " << r << endl;
 			ret = false;
 		}
@@ -242,7 +242,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		Blackbox I (F, n, one);
 		rank (r, I, Method::Wiedemann ());
 		if (r != n) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Wiedemann Rank of I is " << r << ", should be " << n << endl;
 			ret = false;
 		}
@@ -250,22 +250,22 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		DirectSum<Blackbox> B(A, I);
 		rank (r, B, Method::Wiedemann ());
 		if (r != n) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Wiedemann Rank of I+0 is " << r << ", should be " << n << endl;
 			ret = false;
 		}
 
                 rank (r, B, Method::Wiedemann(Method::Wiedemann::SYMMETRIC));
 		if (r != n) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Symmetric Wiedemann Rank of I+0 is " << r << ", should be " << n << endl;
 			ret = false;
 		}
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testZeroAndIdentRank");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testZeroAndIdentRank");
 
 	return ret;
 }
@@ -273,8 +273,8 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 int main (int argc, char **argv)
 {
 
-//     commentator.setMaxDetailLevel( 100000 );
-//     commentator.setMaxDepth( 100000 );
+//     commentator().setMaxDetailLevel( 100000 );
+//     commentator().setMaxDepth( 100000 );
 
 	bool pass = true;
 
@@ -298,40 +298,40 @@ int main (int argc, char **argv)
 	srand ((unsigned)time (NULL));
 	// srand48 ((unsigned)time (NULL));
 
-	commentator.start("rank solution test suite", "rank");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start("rank solution test suite", "rank");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
-	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over Modular<uint32_t>" << endl;
 	Modular<uint32_t> F (q);
 	if (!testRankMethods (F, n, iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
 
-	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over Modular<int>" << endl;
 	Modular<double> G (q);
     	if (!testRankMethods (G, n, iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (G, n, 1)) pass = false;
 
-	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over PID_integer" << endl;
 	PID_integer R;
 	if (!testRankMethods (R, n, iterations, sparsity)) pass = false;
 
-	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over GivaroZpz<Integer>" << endl;
         GivaroZpz<Integer> Gq(bigQ);
 	if (!testRankMethods (Gq, n, iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (Gq, n, 1)) pass = false;
 
-	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over GF2" << endl;
         GF2 F2;
 	if (!testRankMethodsGF2 (F2, n, iterations, sparsity)) pass = false;
 
 
-	commentator.stop("rank solution test suite");
+	commentator().stop("rank solution test suite");
 	return pass ? 0 : -1;
 }
 

@@ -62,13 +62,13 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	commentator.start("NTL_RR field test suite", "NTL_RR");
+	commentator().start("NTL_RR field test suite", "NTL_RR");
 	bool pass = true;
 
 	NTL_RR F;
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	if (!runFieldTests (F, "NTL_RR", iterations, n, false)) pass = false;
 
@@ -79,7 +79,7 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 
-	commentator.stop("NTL_RR field test suite");
+	commentator().stop("NTL_RR field test suite");
 	// We're going to allow failed tests here because the floating-point
 	// approximation tends to screw things up anyway.
 

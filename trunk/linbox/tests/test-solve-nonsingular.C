@@ -102,7 +102,7 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 	VectorWrapper::ensureDim (x, stream1.n ());
 	VectorWrapper::ensureDim (y, stream1.n ());
 
-	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	int n =(int) d.size();
 
@@ -229,7 +229,7 @@ bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 
 	//std::ostringstream str;
 	//std::ostream &report = cerr;
-	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	//  print small mats
 	if(n <= 20){
@@ -311,11 +311,11 @@ int main(int argc, char** argv) {
    };
 	parseArguments (argc, argv, args);
 
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	typedef PID_integer	Ring;  		Ring R;
 

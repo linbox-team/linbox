@@ -89,7 +89,7 @@ namespace LinBox
 			if ((_size == 0) || (_size > cardinality))
 				_size = cardinality;
 
-			commentator.report (10, INTERNAL_DESCRIPTION)
+			commentator().report (10, INTERNAL_DESCRIPTION)
 			<< "Created random generator with size " << _size
 			<< " and seed " << _seed << std::endl;
 

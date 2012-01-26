@@ -72,7 +72,7 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 {
 	typedef Diagonal<Field> Blackbox;
 
-	commentator.start ("Testing identity inverse", "testIdentityInverse", stream.m ());
+	commentator().start ("Testing identity inverse", "testIdentityInverse", stream.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -96,13 +96,13 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 	VectorWrapper::ensureDim (w, stream.n ());
 
 	while (stream) {
-		commentator.startIteration ((unsigned)stream.j ());
+		commentator().startIteration ((unsigned)stream.j ());
 
 		iter_passed = true;
 
 		stream.next (v);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
 		VD.write (report, v);
 		report << endl;
@@ -117,16 +117,16 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityInverse");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentityInverse");
 
 	return ret;
 }
@@ -148,7 +148,7 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 {
 	typedef Hilbert <Field> Blackbox;
 
-	commentator.start ("Testing Hilbert inverse", "testHilbertInverse", stream.m ());
+	commentator().start ("Testing Hilbert inverse", "testHilbertInverse", stream.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -165,13 +165,13 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 	VectorWrapper::ensureDim (z, stream.n ());
 
 	while (stream) {
-		commentator.startIteration (stream.j ());
+		commentator().startIteration (stream.j ());
 
 		iter_passed = true;
 
 		stream.next (v);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector: ";
 		VD.write (report, v);
 		report << endl;
@@ -187,16 +187,16 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testHilbertInverse");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testHilbertInverse");
 
 	return ret;
 }
@@ -225,7 +225,7 @@ static bool testVandermondeInverse (const Field           &F,
 {
 	typedef BlasMatrix <Field> Blackbox;
 
-	commentator.start ("Testing Vandermonde inverse", "testVandermondeInverse", x_stream.m ());
+	commentator().start ("Testing Vandermonde inverse", "testVandermondeInverse", x_stream.m ());
 
 	bool ret = true;
 	bool inner_iter_passed;
@@ -244,12 +244,12 @@ static bool testVandermondeInverse (const Field           &F,
 	VectorWrapper::ensureDim (z, x_stream.n ());
 
 	while (x_stream) {
-		commentator.startIteration ((unsigned)x_stream.j ());
+		commentator().startIteration ((unsigned)x_stream.j ());
 
 		/* Evaluation points */
 		x_stream.next (x);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Evaluation points: ";
 		VD.write (report, x);
 		report << endl;
@@ -297,17 +297,17 @@ static bool testVandermondeInverse (const Field           &F,
 				ret = inner_iter_passed = false;
 
 			if (!inner_iter_passed)
-				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Vectors are not equal" << endl;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	x_stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testVandermondeInverse");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testVandermondeInverse");
 
 	return ret;
 }
@@ -330,7 +330,7 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 {
 	typedef Diagonal <Field> Blackbox;
 
-	commentator.start ("Testing diagonal inverse", "testDiagonalInverse", stream.m ());
+	commentator().start ("Testing diagonal inverse", "testDiagonalInverse", stream.m ());
 
 	VectorDomain<Field> VD (F);
 
@@ -348,7 +348,7 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 	VectorWrapper::ensureDim (DTe, stream.n ());
 
 	while (stream) {
-		commentator.startIteration ((unsigned)stream.j ());
+		commentator().startIteration ((unsigned)stream.j ());
 
 		iter_passed = true;
 
@@ -357,7 +357,7 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 		for (j = 0; j < stream.n (); j++)
 			F.inv (VectorWrapper::ref<Field> (di, j), VectorWrapper::ref<Field> (d, j));
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
 		VD.write (report, d);
 		report << endl;
@@ -384,16 +384,16 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed inverse does not match expected inverse" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalInverse");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalInverse");
 
 	return ret;
 }
@@ -417,7 +417,7 @@ static bool testRandomTranspose (Field &F,
 {
 	typedef BlasMatrix <Field> Blackbox;
 
-	commentator.start ("Testing random transpose", "testRandomTranspose", stream1.m ());
+	commentator().start ("Testing random transpose", "testRandomTranspose", stream1.m ());
 
 	size_t i, j;
 	typename Field::Element x;
@@ -435,7 +435,7 @@ static bool testRandomTranspose (Field &F,
 
 	bool ret = testTranspose (F, Ainv, stream1, stream2);
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
 	return ret;
 }
@@ -466,9 +466,9 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator.start("Inverse black box test suite", "Inverse");
+	commentator().start("Inverse black box test suite", "Inverse");
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
 	RandomDenseStream<Field, Vector> stream1 (F, n, iterations), stream2 (F, n, iterations);
 	RandomDenseStream<Field, Vector> stream3 (F, n, N);
@@ -478,7 +478,7 @@ int main (int argc, char **argv)
 	if (!testDiagonalInverse    (F, stream1)) pass = false;
 	if (!testRandomTranspose    (F, stream1, stream2)) pass = false;
 
-	commentator.stop("Inverse black box test suite");
+	commentator().stop("Inverse black box test suite");
 	return pass ? 0 : -1;
 }
 

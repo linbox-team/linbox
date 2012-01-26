@@ -58,7 +58,7 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 {
 	typedef SparseMatrix<Ring> Blackbox;
 
-	commentator.start ("Testing isPositiveDefinite", "testIsPosDef", iterations);
+	commentator().start ("Testing isPositiveDefinite", "testIsPosDef", iterations);
 
 	bool ret = true;
 	unsigned int i;
@@ -66,7 +66,7 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 	typename Ring::RandIter ri (Z);
 
 	for (i = 0; i < iterations; ++i) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		Blackbox A (Z, n, n);
 		typename Ring::Element e; Z.init(e, 1);
@@ -76,7 +76,7 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 		A.setEntry(1, 2, e);
 		A.setEntry(2, 1, e);
 		std::ostream & report =
-		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 		Z.write( report ) << endl;
 		A.write( report ) << endl;
@@ -95,11 +95,11 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 		report << "PositiveSemidefiniteness on indefinite example computed by default (Hybrid) method: " << p << endl;
 		if (p) {report << "ERROR: should not be pos semidef" << endl; ret = false;}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testEliminationRank");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testEliminationRank");
 
 	return ret;
 }
@@ -109,8 +109,8 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 int main (int argc, char **argv)
 {
 
-//     commentator.setMaxDetailLevel( 100000 );
-//     commentator.setMaxDepth( 100000 );
+//     commentator().setMaxDetailLevel( 100000 );
+//     commentator().setMaxDepth( 100000 );
 
 	bool pass = true;
 
@@ -132,17 +132,17 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator.start("isPositiveSemiDefinite solution test suite", "isPositiveSemiDefinite");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start("isPositiveSemiDefinite solution test suite", "isPositiveSemiDefinite");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
-//	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+//	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 
     PID_integer R;
 
 	if (!testIsPosDef(R, n, iterations, sparsity)) pass = false;
 
-	commentator.stop("isPositiveSemiDefinite solution test suite");
+	commentator().stop("isPositiveSemiDefinite solution test suite");
 	return pass ? 0 : -1;
 }
 

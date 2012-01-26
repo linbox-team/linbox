@@ -83,7 +83,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Modular<int32_t> field test suite", "Modular<int32_t>");
+	commentator().start("Modular<int32_t> field test suite", "Modular<int32_t>");
 	bool pass = true;
 
 	Modular<int32_t> F_int (1073741789);//(2147483629);//(2147483647);
@@ -93,8 +93,8 @@ int main (int argc, char **argv)
 
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!runFieldTests (F_int,  "Modular<int32_t>",  iterations, n, false)) pass = false;
 	if (!testRandomIterator (F_int,  "Modular<int32_t>", trials, categories, hist_level)) pass = false;
@@ -103,7 +103,7 @@ int main (int argc, char **argv)
 	if (!testRandomIterator (I_int,  "Modular<int32_t>", trials, categories, hist_level)) pass = false;
 
 
-	commentator.stop("Modular<int32_t> field test suite");
+	commentator().stop("Modular<int32_t> field test suite");
 	return pass ? 0 : -1;
 }
 

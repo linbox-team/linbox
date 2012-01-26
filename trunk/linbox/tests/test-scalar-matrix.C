@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator.start("Scalar black box test suite", "Scalar");
+	commentator().start("Scalar black box test suite", "Scalar");
 
 	typedef Modular<uint32_t> Field;
 
@@ -83,7 +83,7 @@ int main (int argc, char **argv)
 	//Blackbox C (F, 100000, d); // Test a large one.
 	//pass = pass && testBlackbox(C);
 
-	commentator.stop(MSG_STATUS(pass));
+	commentator().stop(MSG_STATUS(pass));
 	return pass ? 0 : -1;
 }
 

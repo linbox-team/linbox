@@ -66,7 +66,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("ModularBalanced<float> field test suite", "ModularBalanced<float>");
+	commentator().start("ModularBalanced<float> field test suite", "ModularBalanced<float>");
 	bool pass = true;
 
 	ModularBalanced<float> F_int (4093);//(2147483629);//(2147483647);
@@ -77,8 +77,8 @@ int main (int argc, char **argv)
 	ModularBalanced<float> I_int(k);
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!runFieldTests (F_int,  "ModularBalanced<float>",  iterations, n, false)) pass = false;
 	// if (!testRandomIterator (F_int,  "ModularBalanced<float>", trials, categories, hist_level)) pass = false;
@@ -95,7 +95,7 @@ int main (int argc, char **argv)
 
 
 
-	commentator.stop("ModularBalanced<float> field test suite");
+	commentator().stop("ModularBalanced<float> field test suite");
 	return pass ? 0 : -1;
 }
 

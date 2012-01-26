@@ -96,7 +96,7 @@ namespace LinBox
 #  define TIMER_START(part) part##_timer.start ()
 #  define TIMER_STOP(part) part##_timer.stop (); part##_time += part##_timer.time ()
 #  define TIMER_REPORT(part) \
-	commentator.report (Commentator::LEVEL_NORMAL, TIMING_MEASURE) \
+	commentator().report (Commentator::LEVEL_NORMAL, TIMING_MEASURE) \
 	<< "Total " #part " time: " << part##_time << "s" << std::endl;
 #else
 #  define TIMER_DECLARE(part)
@@ -132,10 +132,10 @@ namespace LinBox
 		linbox_check (b.size () == A.rowdim ());
 		linbox_check (A.rowdim () == A.coldim ());
 
-		commentator.start ("Solving linear system (Biorthogonalising block Lanczos)",
+		commentator().start ("Solving linear system (Biorthogonalising block Lanczos)",
 				   "LABlockLanczosSolver::solve");
 
-		std::ostream &reportU = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &reportU = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		Vector Ax;
 		bool success = false;
@@ -168,16 +168,16 @@ namespace LinBox
 				VectorWrapper::ensureDim (Ax, A.rowdim ());
 
 				if (_traits.checkResult ()) {
-					commentator.start ("Checking whether Ax=b");
+					commentator().start ("Checking whether Ax=b");
 
 					A.apply (Ax, x);
 
 					if (_VD.areEqual (Ax, b)) {
-						commentator.stop ("passed");
+						commentator().stop ("passed");
 						success = true;
 					}
 					else {
-						commentator.stop ("FAILED");
+						commentator().stop ("FAILED");
 						success = false;
 
 						reportU << "Ax = ";
@@ -203,7 +203,7 @@ namespace LinBox
 
 		_uAv.reset ();
 
-		commentator.stop ("done", (success ? "Solve successful" : "Solve failed"), "LABlockLanczosSolver::solve");
+		commentator().stop ("done", (success ? "Solve successful" : "Solve failed"), "LABlockLanczosSolver::solve");
 
 		return success;
 	}
@@ -217,7 +217,7 @@ namespace LinBox
 		linbox_check (x.coldim () == _traits.blockingFactor ());
 		linbox_check (A.rowdim () == A.coldim ());
 
-		commentator.start ("Sampling from nullspace (Lookahead-based block Lanczos)",
+		commentator().start ("Sampling from nullspace (Lookahead-based block Lanczos)",
 				   "LABlockLanczosSolver::sampleNullspace");
 
 		// Get the temporaries into the right sizes
@@ -277,7 +277,7 @@ namespace LinBox
 
 		_uAv.reset ();
 
-		commentator.stop ("done", NULL, "LABlockLanczosSolver::sampleNullspace");
+		commentator().stop ("done", NULL, "LABlockLanczosSolver::sampleNullspace");
 		return number;
 	}
 
@@ -288,7 +288,7 @@ namespace LinBox
 	{
 		linbox_check (A.rowdim () == A.coldim ());
 
-		commentator.start ("Rank (Lookahead-based block Lanczos)",
+		commentator().start ("Rank (Lookahead-based block Lanczos)",
 				   "LABlockLanczosSolver::rank");
 
 		// Get the temporaries into the right sizes
@@ -325,7 +325,7 @@ namespace LinBox
 
 		_uAv.reset ();
 
-		commentator.stop ("done", NULL, "LABlockLanczosSolver::rank");
+		commentator().stop ("done", NULL, "LABlockLanczosSolver::rank");
 		return _rank;
 	}
 
@@ -337,7 +337,7 @@ namespace LinBox
 	{
 		linbox_check (_history.empty ());
 
-		commentator.start ("Lookahead-based block Lanczos iteration",
+		commentator().start ("Lookahead-based block Lanczos iteration",
 				   "LABlockLanczosSolver::iterate", A.rowdim ());
 
 		typename std::list<Iterate *>::iterator j;
@@ -379,11 +379,11 @@ namespace LinBox
 		if (progress_interval == 0)
 			progress_interval = 1;
 
-		std::ostream &reportI = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		std::ostream &reportU = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &reportI = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &reportU = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 #ifdef LABL_DETAILED_TRACE
-		std::ostream &reportN = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+		std::ostream &reportN = commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 #endif
 
 		// Prepare the first iterate
@@ -555,10 +555,10 @@ namespace LinBox
 			checkInnerProducts (A);
 
 			if (!(_iter % progress_interval))
-				commentator.progress (_total_dim);
+				commentator().progress (_total_dim);
 
 			if (_total_dim > A.rowdim ()) {
-				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Maximum number of iterations passed without termination" << std::endl;
 				error = true;
 				break;
@@ -587,11 +587,11 @@ namespace LinBox
 		reportI << "Number of iterations: " << _iter << std::endl;
 
 		if (error)
-			commentator.stop ("ERROR", NULL, "LABlockLanczosSolver::iterate");
+			commentator().stop ("ERROR", NULL, "LABlockLanczosSolver::iterate");
 		else if (dead_iters >= max_dead_iters)
-			commentator.stop ("breakdown", NULL, "LABlockLanczosSolver::iterate");
+			commentator().stop ("breakdown", NULL, "LABlockLanczosSolver::iterate");
 		else
-			commentator.stop ("done", NULL, "LABlockLanczosSolver::iterate");
+			commentator().stop ("done", NULL, "LABlockLanczosSolver::iterate");
 	}
 
 	template <class Field, class Matrix>
@@ -610,7 +610,7 @@ namespace LinBox
 		_MD.axpyin (*_uAv.get ((*l)->_iter, iter + 1), uAvdot, Cv);
 
 #ifdef LABL_DETAILED_TRACE
-		std::ostream &reportN = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+		std::ostream &reportN = commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 		reportN << "fixInnerProducts: udot_" << (*l)->_iter << "^TAv_" << (*l)->_iter << ":" << std::endl;
 		_MD.write (reportN, udotAv);
@@ -628,10 +628,10 @@ namespace LinBox
 	(typename std::list<Iterate *>::iterator l, Iterate *i, const Blackbox &A)
 	{
 #ifdef LABL_DETAILED_TRACE
-		commentator.start ("Tail decomposition", "LABlockLanczosSolver::tailDecomp");
-		std::ostream &reportI = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		std::ostream &reportN = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
-		std::ostream &reportU = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		commentator().start ("Tail decomposition", "LABlockLanczosSolver::tailDecomp");
+		std::ostream &reportI = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &reportN = commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+		std::ostream &reportU = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 #endif
 
 		typename std::list<Iterate *>::iterator j;
@@ -897,7 +897,7 @@ namespace LinBox
 		i->_rho_u += rho_v;
 
 #ifdef LABL_DETAILED_TRACE
-		commentator.stop ("done", NULL, "LABlockLanczosSolver::tailDecomp");
+		commentator().stop ("done", NULL, "LABlockLanczosSolver::tailDecomp");
 #endif
 	}
 
@@ -913,8 +913,8 @@ namespace LinBox
 #ifdef LABL_DETAILED_TRACE
 		int discard_count = 0;
 
-		std::ostream &reportI = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		//	std::ostream &reportU = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &reportI = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		//	std::ostream &reportU = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 #endif
 
 		if ((*l)->_rho_u < N || (*l)->_rho_v < N)
@@ -980,7 +980,7 @@ namespace LinBox
 
 		if (_it_trashcan.empty ()) {
 #ifdef LABL_DETAILED_TRACE
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Allocating new iterate structure..." << std::endl;
 #endif
 			ret = new Iterate (*this, _x.rowdim (), _traits.blockingFactor (), iter);
@@ -988,7 +988,7 @@ namespace LinBox
 		}
 		else {
 #ifdef LABL_DETAILED_TRACE
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Taking iterate structure from trash can..." << std::endl;
 #endif
 			ret = _it_trashcan.top ();
@@ -1014,7 +1014,7 @@ namespace LinBox
 			return;
 
 #ifdef LABL_DETAILED_TRACE
-		std::ostream &report = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 		report << "Adjustment from iterate " << step._l->_iter << " for iterate " << (*j)->_iter << std::endl;
 		report << "Block is: " << std::endl;
 		_MD.write (report, *step._nuukAvj);
@@ -1036,7 +1036,7 @@ namespace LinBox
 	void LABlockLanczosSolver<Field, Matrix>::compute_uip1Abeta (typename std::list<Iterate *>::iterator j, unsigned int iter)
 	{
 #ifdef LABL_DETAILED_TRACE
-		commentator.start ("Applying history to u_{i+1}^TAv_j", "compute_uip1Abeta");
+		commentator().start ("Applying history to u_{i+1}^TAv_j", "compute_uip1Abeta");
 #endif
 
 		typename std::list<ElimStep>::iterator l;
@@ -1045,7 +1045,7 @@ namespace LinBox
 			adjust_uip1Abeta (j, *l, iter);
 
 #ifdef LABL_DETAILED_TRACE
-		commentator.stop ("done", NULL, "compute_uip1Abeta");
+		commentator().stop ("done", NULL, "compute_uip1Abeta");
 #endif
 	}
 
@@ -1061,7 +1061,7 @@ namespace LinBox
 			return;
 
 #ifdef LABL_DETAILED_TRACE
-		std::ostream &report = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 		report << "Adjustment from iterate " << step._l->_iter << " for iterate " << (*j)->_iter << std::endl;
 		report << "Block is: " << std::endl;
 		_MD.write (report, *step._ujAvkmu);
@@ -1083,7 +1083,7 @@ namespace LinBox
 	void LABlockLanczosSolver<Field, Matrix>::compute_alphaAvip1 (typename std::list<Iterate *>::iterator j, unsigned int iter)
 	{
 #ifdef LABL_DETAILED_TRACE
-		commentator.start ("Applying history to u_j^TAv_{i+1}", "compute_alphaAvip1");
+		commentator().start ("Applying history to u_j^TAv_{i+1}", "compute_alphaAvip1");
 #endif
 
 		typename std::list<ElimStep>::iterator l;
@@ -1092,7 +1092,7 @@ namespace LinBox
 			adjust_alphaAvip1 (j, *l, iter);
 
 #ifdef LABL_DETAILED_TRACE
-		commentator.stop ("done", NULL, "compute_alphaAvip1");
+		commentator().stop ("done", NULL, "compute_alphaAvip1");
 #endif
 	}
 
@@ -1449,7 +1449,7 @@ namespace LinBox
 	 size_t                   rho_u,
 	 size_t                   rho_v)
 	{
-		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 		report << "Checking whether u_" << u_iter << " is A-conjugate to v_" << v_iter << "...";
 
@@ -1465,7 +1465,7 @@ namespace LinBox
 		else {
 			report << "no" << std::endl;
 
-			std::ostream &err_report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+			std::ostream &err_report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
 			err_report << "ERROR: u_" << u_iter << " is not A-conjugate to v_" << v_iter << std::endl;
 			err_report << "Computed u_" << u_iter << "^T Av_" << v_iter << ":" << std::endl;
 			_MD.write (report, _T1);
@@ -1476,9 +1476,9 @@ namespace LinBox
 	template <class Blackbox>
 	void LABlockLanczosSolver<Field, Matrix>::checkInnerProducts (const Blackbox &A)
 	{
-		commentator.start ("Checking cached inner products", "LABlockLanczosSolver::checkInnerProducts");
+		commentator().start ("Checking cached inner products", "LABlockLanczosSolver::checkInnerProducts");
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 		typename std::list<Iterate *>::const_iterator i, j;
 
@@ -1510,7 +1510,7 @@ namespace LinBox
 			}
 		}
 
-		commentator.stop ("done", NULL, "LABlockLanczosSolver::checkInnerProducts");
+		commentator().stop ("done", NULL, "LABlockLanczosSolver::checkInnerProducts");
 	}
 
 #else // LABL_DETAILED_TRACE

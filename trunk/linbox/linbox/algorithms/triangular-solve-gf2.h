@@ -43,7 +43,7 @@ namespace LinBox
 		typedef GF2 Field;
 		const GF2 F2;
 
-		commentator.start ("Sparse Elimination Upper Triangular Solve over GF(2)", "utrsmGF2");
+		commentator().start ("Sparse Elimination Upper Triangular Solve over GF(2)", "utrsmGF2");
 
 		typename Vector2::const_iterator vec=b.begin();
 		typename Vector1::iterator res=x.begin();
@@ -102,7 +102,7 @@ namespace LinBox
 		//         if (! consistant) throw LinboxError ("upperTriangularSolveBinary returned INCONSISTENT");
 		linbox_check( consistant );
 
-		commentator.stop ("done", NULL, "utrsmGF2");
+		commentator().stop ("done", NULL, "utrsmGF2");
 		return x;
 	}
 
@@ -115,7 +115,7 @@ namespace LinBox
 		typedef _Matrix Matrix;
 		const GF2 F2;
 
-		commentator.start ("Sparse Elimination Lower Triangular Unitary Solve over GF2", "ltrsmGF2");
+		commentator().start ("Sparse Elimination Lower Triangular Unitary Solve over GF2", "ltrsmGF2");
 
 		typename Vector2::const_iterator vec=b.begin();
 		typename Vector1::iterator res=x.begin();
@@ -133,7 +133,7 @@ namespace LinBox
 			F2.assign(*res,tmp);
 		}
 
-		commentator.stop ("done", NULL, "ltrsmGF2");
+		commentator().stop ("done", NULL, "ltrsmGF2");
 		return x;
 	}
 

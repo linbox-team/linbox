@@ -35,7 +35,6 @@ noinst_LTLIBRARIES=libutil.la
 
 libutil_la_SOURCES=	\
 	error.C		    \
-	commentator.C	\
 	debug.C
 
 libutil_la_LDFLAGS=$(GIVARO_LIBS)  $(LDFLAGS)
@@ -48,6 +47,7 @@ pkgincludesub_HEADERS=      \
 	timer.h				    \
 	error.h				    \
 	commentator.h 			\
+	commentator.inl 			\
 	contracts.h 			\
 	prime-stream.h			\
 	iml_wrapper.h           \

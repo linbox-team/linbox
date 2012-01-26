@@ -62,18 +62,18 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("GMP rational field test suite", "GMPRationalField");
+	commentator().start("GMP rational field test suite", "GMPRationalField");
 	bool pass = true;
 
 	GMPRationalField F;
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!runFieldTests (F,  "GMP Rational",  iterations, n, false)) pass = false;
 
-	commentator.stop("GMP rational field test suite");
+	commentator().stop("GMP rational field test suite");
 	return pass ? 0 : -1;
 }
 

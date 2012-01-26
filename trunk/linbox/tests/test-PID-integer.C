@@ -65,19 +65,19 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("PID-integer ring test suite", "PID-integer");
+	commentator().start("PID-integer ring test suite", "PID-integer");
 	bool pass = true;
 
 	PID_integer ZZ;
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!runBasicRingTests (ZZ,  "PID-integer",  iterations, false)) pass = false;
 //	if (!testRandomIterator (ZZ,  "PID-integer", trials, categories, hist_level)) pass = false;
 
-	commentator.stop("PID-integer, field test suite");
+	commentator().stop("PID-integer, field test suite");
 	return pass ? 0 : -1;
 }
 

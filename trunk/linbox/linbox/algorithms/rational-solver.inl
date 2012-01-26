@@ -382,7 +382,7 @@ namespace LinBox
 #endif
 
 
-		commentator.start ("Constructing sparse preconditioner");
+		commentator().start ("Constructing sparse preconditioner");
 		typedef LambdaSparseMatrix<Ring>  IPreconditioner;
 		typedef LambdaSparseMatrix<Field> FPreconditioner;
 
@@ -415,7 +415,7 @@ namespace LinBox
 
 		PApQ = new Compose<FPreconditioner, Compose<FMatrix,FPreconditioner> > (Pmodp, ApQ);
 		std::cerr<<"Preconditioning done\n";
-		commentator.stop ("done");
+		commentator().stop ("done");
 
 	}
 
@@ -437,12 +437,12 @@ namespace LinBox
 		switch (_traits.preconditioner() ) {
 
 		case WiedemannTraits::BUTTERFLY:
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<<"ERROR: Butterfly preconditioner not implemented yet. Sorry." << std::endl;
 
 		case WiedemannTraits::SPARSE:
 			{
-				commentator.start ("Constructing sparse preconditioner");
+				commentator().start ("Constructing sparse preconditioner");
 
 				P = new LambdaSparseMatrix<Ring> (_ring,Ap->coldim(),Ap->rowdim(),2);
 
@@ -454,12 +454,12 @@ namespace LinBox
 
 				PApQ = new Compose<LambdaSparseMatrix<Field>, FMatrix> (Pmodp, *Ap);
 
-				commentator.stop ("done");
+				commentator().stop ("done");
 				break;
 			}
 
 		case WiedemannTraits::TOEPLITZ:
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
 
 		case WiedemannTraits::NONE:
@@ -1534,7 +1534,7 @@ namespace LinBox
 					newNNZ += row->size();
 				}
 			}
-			commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) << "Pruned : " << (origNNZ-newNNZ) << " unnecessary elements in upper triangle" << std::endl;
+			commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) << "Pruned : " << (origNNZ-newNNZ) << " unnecessary elements in upper triangle" << std::endl;
 		}
 
 

@@ -56,7 +56,7 @@ bool testVectorDomain (const Field &F, const char *text, size_t n, unsigned int 
 
 	ostringstream str;
 	str << "Testing VectorDomain <" << text << ">" << ends;
-	commentator.start (str.str ().c_str ());
+	commentator().start (str.str ().c_str ());
 
 	bool pass = true;
 
@@ -108,7 +108,7 @@ bool testVectorDomain (const Field &F, const char *text, size_t n, unsigned int 
 	if (!testCopyEqual (F, "sparse parallel/sparse associative", stream7, stream5)) pass = false;
 	if (!testCopyEqual (F, "sparse parallel/sparse parallel", stream7, stream8)) pass = false;
 
-	commentator.stop (MSG_STATUS (pass));
+	commentator().stop (MSG_STATUS (pass));
 
 	return pass;
 }
@@ -141,19 +141,19 @@ int main (int argc, char **argv)
 	Modular<uint16_t> F_uint16_t ((uint16_t) q3);
 	Modular<uint8_t> F_uint8_t ((uint8_t) q4);
 
-	commentator.start("Vector domain test suite", "VectorDomain");
+	commentator().start("Vector domain test suite", "VectorDomain");
 
-	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (3);
+	commentator().setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (3);
 
 	if (!testVectorDomain (F_integer, "Modular <integer>", n, iterations)) pass = false;
 	if (!testVectorDomain (F_uint32_t, "Modular <uint32_t>", n, iterations)) pass = false;
 	if (!testVectorDomain (F_uint16_t, "Modular <uint16_t>", n, iterations)) pass = false;
 	if (!testVectorDomain (F_uint8_t, "Modular <uint8_t>", n, iterations)) pass = false;
 
-	commentator.stop("Vector domain test suite");
+	commentator().stop("Vector domain test suite");
 	return pass ? 0 : -1;
 }
 

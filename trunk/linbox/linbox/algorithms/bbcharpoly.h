@@ -140,7 +140,7 @@ namespace LinBox
 				  const RingCategories::IntegerTag & tag,
 				  const Method::Blackbox           & M)
 		{
-			commentator.start ("Integer BlackBox Charpoly ", "IbbCharpoly");
+			commentator().start ("Integer BlackBox Charpoly ", "IbbCharpoly");
 
 			typename BlackBox::Field intRing = A.field();
 			typedef Modular<uint32_t> Field;
@@ -163,7 +163,7 @@ namespace LinBox
 			IntPoly intMinPoly;
 			minpoly (intMinPoly, A, M);
 			if (intMinPoly.size() == n+1){
-				commentator.stop ("done", NULL, "IbbCharpoly");
+				commentator().stop ("done", NULL, "IbbCharpoly");
 				return P = intMinPoly;
 			}
 			/* Factorization over the integers */
@@ -230,7 +230,7 @@ namespace LinBox
 				delete it_f->second->fieldP;
 				delete it_f->second;
 			}
-			commentator.stop ("done", NULL, "IbbCharpoly");
+			commentator().stop ("done", NULL, "IbbCharpoly");
 
 			return P = intCharPoly;
 		}
@@ -245,7 +245,7 @@ namespace LinBox
 				  const RingCategories::ModularTag                              & tag,
 				  const Method::Blackbox                                        & M)
 		{
-			commentator.start ("Modular BlackBox Charpoly ", "MbbCharpoly");
+			commentator().start ("Modular BlackBox Charpoly ", "MbbCharpoly");
 			typedef typename BlackBox::Field Field;
 			typedef GivPolynomialRing<Field, Givaro::Dense> PolyDom;
 			typedef typename PolyDom::Element Polynomial;
@@ -265,7 +265,7 @@ namespace LinBox
 			minpoly (minPoly, A, M);
 			//std::cerr<<"Minpoly = "<<minPoly;
 			if (minPoly.size() == n+1){
-				commentator.stop ("done", NULL, "MbbCharpoly");
+				commentator().stop ("done", NULL, "MbbCharpoly");
 				return P = minPoly;
 			}
 
@@ -329,7 +329,7 @@ namespace LinBox
 				}
 			}
 
-			commentator.stop ("done", NULL, "MbbCharpoly");
+			commentator().stop ("done", NULL, "MbbCharpoly");
 
 			return P = charPoly;
 		}

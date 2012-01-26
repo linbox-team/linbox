@@ -85,16 +85,16 @@ testTranspose (Field                             &F,
 	LinBox::VectorDomain <Field> VD (A.field());
 	//LinBox::VectorDomain <Field> VD (F);
 	typename Field::Element r1, r2;
-	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Blackbox transpose test [that u^T(Av) == (uA)^T v]" << std::endl;
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration ((unsigned int) stream1.j ());
+		LinBox::commentator().startIteration ((unsigned int) stream1.j ());
 
 		stream1.next (u);
 		stream2.next (v);
 
-		//ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		//ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		VD.write( report << "Input vector u:            ", u) << endl;
 		VD.write( report << "Input vector v:            ", v) << endl;
@@ -116,12 +116,12 @@ testTranspose (Field                             &F,
 
 		if (!F.areEqual (r1, r2)) {
 			ret = false;
-			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Values are not equal" << endl;
 		}
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		LinBox::commentator().stop ("done");
+		LinBox::commentator().progress ();
 	}
 
 	return ret;
@@ -164,11 +164,11 @@ testLinearity (Field                             &F,
 	LinBox::VectorWrapper::ensureDim (Ay, n);
 	LinBox::VectorWrapper::ensureDim (AxpaAy, n);
 
-	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Blackbox linearity test [that A.apply to (ax + y) == a A.apply to x + A.apply to y]" << std::endl;
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration ((unsigned int) stream1.j ());
+		LinBox::commentator().startIteration ((unsigned int) stream1.j ());
 
 		iter_passed = true;
 
@@ -177,7 +177,7 @@ testLinearity (Field                             &F,
 
 		r.random (alpha);
 
-		//ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		//ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		VD.write( report << "Input vector x: ", x) << endl;
 
 		VD.write( report << "Input vector y: ", y) << endl;
@@ -205,11 +205,11 @@ testLinearity (Field                             &F,
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Vectors are not equal" << endl;
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		LinBox::commentator().stop ("done");
+		LinBox::commentator().progress ();
 	}
 
 	return ret;
@@ -228,10 +228,10 @@ testBlackbox(BB &A)
 	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
 	typedef typename BB::Field Field;
 	typedef std::vector<typename Field::Element> DenseVector;
-	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "testBlackbox on " << A.rowdim() << " by " << A.coldim() << " matrix." << endl;
 
-	LinBox::commentator.setMaxDepth(-1);
+	LinBox::commentator().setMaxDepth(-1);
 	bool ret = true;
 	Field F = A.field();
 
@@ -244,17 +244,17 @@ testBlackbox(BB &A)
 
 		if (A.coldim() >= largeThresh)
 		{
-			LinBox::commentator.start ("\t--Timing Test (Av)","testApply", 1);
+			LinBox::commentator().start ("\t--Timing Test (Av)","testApply", 1);
 			A.apply(y, x);
-			LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApply");
+			LinBox::commentator().stop (MSG_STATUS (true), (const char *) 0, "testApply");
 		}
 
 		if (A.rowdim() >= largeThresh)
 		{
-			LinBox::commentator.start ("\t--Timing Test(v^T A)",
+			LinBox::commentator().start ("\t--Timing Test(v^T A)",
 						   "testApplyTranspose", 1);
 			A.applyTranspose(x, y);
-			LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApplyTranspose");
+			LinBox::commentator().stop (MSG_STATUS (true), (const char *) 0, "testApplyTranspose");
 		}
 
 	} // timing test block
@@ -267,20 +267,20 @@ testBlackbox(BB &A)
 	r.random(x);
 	LinBox::RandomDenseStream<Field, DenseVector> stream2 (F, r, A.coldim(), iterations);
 
-	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
+	LinBox::commentator().start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
 	ret = ret && testLinearity (F, A, stream1, stream2);
 
-	LinBox::commentator.stop (MSG_STATUS (ret),
+	LinBox::commentator().stop (MSG_STATUS (ret),
 				  (const char *) 0, "testLinearity");
 
-	LinBox::commentator.start ("\t--Testing u^T(Av) = (u^T A)v",
+	LinBox::commentator().start ("\t--Testing u^T(Av) = (u^T A)v",
 				   "testTranspose", 1);
 
 	LinBox::RandomDenseStream<Field, DenseVector> stream3 (F, r, A.rowdim(), iterations);
 	LinBox::RandomDenseStream<Field, DenseVector> stream4 (F, r, A.coldim(), iterations);
 
 	ret = ret && testTranspose (F, A, stream3, stream4);
-	LinBox::commentator.stop (MSG_STATUS (ret),
+	LinBox::commentator().stop (MSG_STATUS (ret),
 				  (const char *) 0, "testTranspose");
 
 #endif

@@ -57,7 +57,7 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 {
 	typedef SparseMatrix<Ring> Blackbox;
 
-	commentator.start ("Testing isPositiveDefinite", "testIsPosDef", iterations);
+	commentator().start ("Testing isPositiveDefinite", "testIsPosDef", iterations);
 
 	bool ret = true;
 	unsigned int i;
@@ -65,7 +65,7 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 	typename Ring::RandIter ri (Z);
 
 	for (i = 0; i < iterations; ++i) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		Blackbox A (Z, n, n);
 		typename Ring::Element e; Z.init(e, 1);
@@ -73,7 +73,7 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 			A.setEntry(j, j, e);
 
 		std::ostream & report =
-		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 		Z.write( report ) << endl;
 		A.write( report ) << endl;
@@ -92,11 +92,11 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 		report << "Positivedefiniteness on indefinite example computed by default (Hybrid) method: " << p << endl;
 		if (p) {report << "ERROR: should not be pos def" << endl; ret = false;}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testEliminationRank");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testEliminationRank");
 
 	return ret;
 }
@@ -106,8 +106,8 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 int main (int argc, char **argv)
 {
 
-//     commentator.setMaxDetailLevel( 100000 );
-//     commentator.setMaxDepth( 100000 );
+//     commentator().setMaxDetailLevel( 100000 );
+//     commentator().setMaxDepth( 100000 );
 
 	bool pass = true;
 
@@ -129,15 +129,15 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator.start("IsPositiveDefinite solution test suite", "IsPositiveDefinite");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start("IsPositiveDefinite solution test suite", "IsPositiveDefinite");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
     PID_integer R;
 
 	if (!testIsPosDef(R, n, iterations, sparsity)) pass = false;
 
-	commentator.stop("IsPositiveDefinite solution test suite");
+	commentator().stop("IsPositiveDefinite solution test suite");
 	return pass ? 0 : -1;
 }
 

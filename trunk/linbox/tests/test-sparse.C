@@ -74,7 +74,7 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 
 	ostringstream str;
 	str << "Testing identity apply (" << text << ")" << ends;
-	commentator.start (str.str ().c_str (), "testIdentityApply", stream.m ());
+	commentator().start (str.str ().c_str (), "testIdentityApply", stream.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -83,7 +83,7 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 	StandardBasisStream<Field, Row> f1 (F, stream.n ());
 	Blackbox A (F, f1);
 
-	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Matrix:" << endl;
 	A.write (report, FORMAT_PRETTY);
 
@@ -93,13 +93,13 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 	VectorWrapper::ensureDim (w, stream.n ());
 
 	while (stream) {
-		commentator.startIteration ((unsigned)stream.j ());
+		commentator().startIteration ((unsigned)stream.j ());
 
 		iter_passed = true;
 
 		stream.next (v);
 
-		ostream &Report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &Report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		Report << "Input vector:  ";
 		VD.write (Report, v);
 		Report << endl;
@@ -114,16 +114,16 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
 
 	return ret;
 }
@@ -148,7 +148,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 
 	ostringstream str;
 	str << "Testing nilpotent apply (" << text << ")" << ends;
-	commentator.start (str.str ().c_str (), "testNilpotentApply", stream.m ());
+	commentator().start (str.str ().c_str (), "testNilpotentApply", stream.m ());
 
 	bool ret = true;
 	bool even, iter_passed;
@@ -158,7 +158,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 	f1.next (tmp);  // Small trick: pull the first vector out to shift elements up one row
 	Blackbox A (F, f1);
 
-	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Matrix:" << endl;
 	A.write (report, FORMAT_PRETTY);
 
@@ -172,7 +172,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 	VectorWrapper::ensureDim (w, stream.n ());
 
 	while (stream) {
-		commentator.startIteration ((unsigned)stream.j ());
+		commentator().startIteration ((unsigned)stream.j ());
 
 		iter_passed = true;
 		even = false;
@@ -182,12 +182,12 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 		// Make sure last element is nonzero
 		r.random (VectorWrapper::ref<Field> (v, stream.n () - 1));
 
-		ostream &Report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &Report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		Report << "Input vector:  ";
 		VD.write (Report, v);
 		Report << endl;
 
-		commentator.start ("Applying vectors");
+		commentator().start ("Applying vectors");
 
 		for (j = 0; j < stream.n () - 1; j++, even = !even)
 			if (even)
@@ -195,7 +195,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 			else
 				A.apply (w, v);
 
-		commentator.stop ("Done");
+		commentator().stop ("Done");
 
 		Report << "A^(n-1) v:     ";
 		VD.write (Report, even ? w : v);
@@ -203,7 +203,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 
 		if (VD.isZero (even ? w : v)) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: A^(n-1) v is prematurely zero" << endl;
 		}
 
@@ -220,16 +220,16 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: A^n v is non-zero" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentApply");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentApply");
 
 	return ret;
 }
@@ -254,7 +254,7 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
 
 	ostringstream str;
 	str << "Testing sparse random apply (1, " << text << ")" << ends;
-	commentator.start (str.str ().c_str (), "testRandomApply1", iterations);
+	commentator().start (str.str ().c_str (), "testRandomApply1", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -270,14 +270,14 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
 	VectorWrapper::ensureDim (w, A_stream.m ());
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration ((unsigned)i);
+		commentator().startIteration ((unsigned)i);
 
 		iter_passed = true;
 
 		Blackbox A (F, A_stream);
 		A_stream.reset ();
 
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
 		A.write (report, FORMAT_PRETTY);
 
@@ -297,14 +297,14 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
 		}
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Output vectors were incorrect" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply1");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply1");
 
 	return ret;
 }
@@ -329,7 +329,7 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 
 	ostringstream str;
 	str << "Testing sparse random apply (2, " << text << ")" << ends;
-	commentator.start (str.str ().c_str (), "testRandomApply2", iterations);
+	commentator().start (str.str ().c_str (), "testRandomApply2", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -355,14 +355,14 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 		F.init (VectorWrapper::ref<Field> (v, k), 1);
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration ((unsigned)i);
+		commentator().startIteration ((unsigned)i);
 
 		iter_passed = true;
 
 		Blackbox A (F, A_stream);
 		A_stream.reset ();
 
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
 		A.write (report, FORMAT_PRETTY);
 
@@ -382,14 +382,14 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 		VD.write (report, w) << endl;
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Output vector was incorrect" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply2");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply2");
 
 	return ret;
 }
@@ -417,12 +417,12 @@ static bool testRandomTranspose (Field                &F,
 
 	ostringstream str;
 	str << "Testing random transpose (" << text << ")" << ends;
-	commentator.start (str.str ().c_str (), "testRandomTranspose", stream1.m ());
+	commentator().start (str.str ().c_str (), "testRandomTranspose", stream1.m ());
 
 	Blackbox A (F, A_stream);
 	A_stream.reset ();
 
-	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix:" << endl;
 	A.write (report, FORMAT_PRETTY);
 
@@ -431,7 +431,7 @@ static bool testRandomTranspose (Field                &F,
 	stream1.reset ();
 	stream2.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
 	return ret;
 }
@@ -458,12 +458,12 @@ static bool testRandomLinearity (Field                 &F,
 
 	ostringstream str;
 	str << "Testing linearity (" << text << ")" << ends;
-	commentator.start (str.str ().c_str (), "testRandomLinearity", stream1.m ());
+	commentator().start (str.str ().c_str (), "testRandomLinearity", stream1.m ());
 
 	Blackbox A (F, A_stream);
 	A_stream.reset ();
 
-	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix:" << endl;
 	A.write (report, FORMAT_PRETTY);
 
@@ -472,7 +472,7 @@ static bool testRandomLinearity (Field                 &F,
 	stream1.reset ();
 	stream2.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
 
 	return ret;
 }
@@ -490,16 +490,16 @@ bool runSparseMatrixTestsByVector (const Field           &F,
 	ostringstream str;
 
 	str << "Testing " << desc << " sparse matrix" << ends;
-	commentator.start (str.str ().c_str (), "runSparseMatrixTestsByVector", 6);
+	commentator().start (str.str ().c_str (), "runSparseMatrixTestsByVector", 6);
 
-	if (!testIdentityApply<Row>   (F, desc, v_stream1))                        pass = false; commentator.progress ();
-	if (!testNilpotentApply<Row>  (F, desc, v_stream1))                        pass = false; commentator.progress ();
-	if (!testRandomApply1<Vector> (F, desc, iterations, A_stream))             pass = false; commentator.progress ();
-	if (!testRandomApply2<Vector> (F, desc, iterations, A_stream))             pass = false; commentator.progress ();
-	if (!testRandomTranspose      (F, desc, A_stream, v_stream1, v_stream2)) pass = false; commentator.progress ();
-	if (!testRandomLinearity      (F, desc, A_stream, v_stream1, v_stream2)) pass = false; commentator.progress ();
+	if (!testIdentityApply<Row>   (F, desc, v_stream1))                        pass = false; commentator().progress ();
+	if (!testNilpotentApply<Row>  (F, desc, v_stream1))                        pass = false; commentator().progress ();
+	if (!testRandomApply1<Vector> (F, desc, iterations, A_stream))             pass = false; commentator().progress ();
+	if (!testRandomApply2<Vector> (F, desc, iterations, A_stream))             pass = false; commentator().progress ();
+	if (!testRandomTranspose      (F, desc, A_stream, v_stream1, v_stream2)) pass = false; commentator().progress ();
+	if (!testRandomLinearity      (F, desc, A_stream, v_stream1, v_stream2)) pass = false; commentator().progress ();
 
-	commentator.stop (MSG_STATUS (pass), (const char *) 0, "runSparseMatrixTests");
+	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runSparseMatrixTests");
 
 	return pass;
 }
@@ -520,7 +520,7 @@ bool runSparseMatrixTests (const Field       &F,
 	ostringstream str1, str2, str3, str4, str5;
 
 	str1 << "Testing sparse matrix with " << desc << " row type" << ends;
-	commentator.start (str1.str ().c_str (), "runSparseMatrixTests", 4);
+	commentator().start (str1.str ().c_str (), "runSparseMatrixTests", 4);
 
 	str2 << desc << "/dense" << ends;
 	str3 << desc << "/sparse sequence" << ends;
@@ -542,22 +542,22 @@ bool runSparseMatrixTests (const Field       &F,
 					   dense_stream1, dense_stream2, A_stream))
 		pass = false;
 #if 0
-	commentator.progress ();
+	commentator().progress ();
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
 					   sparse_seq_stream1, sparse_seq_stream2, A_stream))
 		pass = false;
-	commentator.progress ();
+	commentator().progress ();
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
 					   sparse_map_stream1, sparse_map_stream2, A_stream))
 		pass = false;
-	commentator.progress ();
+	commentator().progress ();
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
 					   sparse_par_stream1, sparse_par_stream2, A_stream))
 		pass = false;
-	commentator.progress ();
+	commentator().progress ();
 #endif
 
-	commentator.stop (MSG_STATUS (pass), (const char *) 0, "runSparseMatrixTests");
+	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runSparseMatrixTests");
 
 	return pass;
 }
@@ -594,10 +594,10 @@ int main (int argc, char **argv)
 
 	Field F (q);
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	commentator.start("Sparse matrix black box test suite", "Sparse");
+	commentator().start("Sparse matrix black box test suite", "Sparse");
 
 	RandomSparseStream<Field, SparseSeqVector>
 		stream1 (F, (double) k / (double) n, n, m);
@@ -610,7 +610,7 @@ int main (int argc, char **argv)
 	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2)) pass = false;
 	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3)) pass = false;
 
-	commentator.stop("Sparse matrix black box test suite");
+	commentator().stop("Sparse matrix black box test suite");
 	return pass ? 0 : -1;
 }
 

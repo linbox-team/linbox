@@ -208,7 +208,7 @@ namespace LinBox
 
 			integer card;
 
-			commentator.start ("Massey", "masseyd", END);
+			commentator().start ("Massey", "masseyd", END);
 
 			// ====================================================
 			// Sequence and iterator initialization
@@ -233,7 +233,7 @@ namespace LinBox
 			for (long NN = 0; NN < END && x < (long) EARLY_TERM_THRESHOLD; ++NN, ++_iter) {
 
 				if (!(NN % COMMOD))
-					commentator.progress (NN);
+					commentator().progress (NN);
 
 				// ====================================================
 				// Next coefficient in the sequence
@@ -342,8 +342,8 @@ namespace LinBox
 #endif // INCLUDE_TIMING
 			}
 
-			commentator.stop ("done", NULL, "masseyd");
-			//		commentator.stop ("Done", "Done", "LinBox::MasseyDomain::massey");
+			commentator().stop ("done", NULL, "masseyd");
+			//		commentator().stop ("Done", "Done", "LinBox::MasseyDomain::massey");
 
 			return L;
 		}
@@ -361,14 +361,14 @@ namespace LinBox
 
 		void valence (Element &Valence, unsigned long &rank)
 		{
-			commentator.start ("Valence", "LinBox::MasseyDomain::valence");
+			commentator().start ("Valence", "LinBox::MasseyDomain::valence");
 
 			std::vector<Element> phi;
 			massey (phi, 1);
 			rank = v_degree (phi) - v_val (phi);
 			Valence = phi[v_degree (phi)];
 
-			commentator.stop ("Done", "Done", "LinBox::MasseyDomain::valence");
+			commentator().stop ("Done", "Done", "LinBox::MasseyDomain::valence");
 		}
 
 		template<class Polynomial>

@@ -62,7 +62,7 @@ using namespace LinBox;
 
 static bool testDiagRatCharpoly (size_t n, int iterations)
 {
-	commentator.start ("Testing rational charpoly of diagonal matrix ", "testNonsingularRatIntSolve", iterations);
+	commentator().start ("Testing rational charpoly of diagonal matrix ", "testNonsingularRatIntSolve", iterations);
 
 	bool ret = true;
 	int i;
@@ -79,7 +79,7 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 	        Q.init(cn,0,1);
 
 
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		for (j=0; j < n; ++j) {
 			integer tmp_n, tmp_d;
@@ -99,25 +99,25 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 		}
 		if (n%2==0) Q.negin(cn);
 
-		// ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		// ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		charpoly (c, A);
 		if ((!Q.areEqual(c[0] , c0)) || (!Q.areEqual(c[n-1] , cn) ) ) {
-			commentator.report() << "ERROR: Sparse charpoly failed" << endl;
+			commentator().report() << "ERROR: Sparse charpoly failed" << endl;
 			ret = false;
 		}
 		c.clear();
 
 		charpoly (c, B);
 		if ((!Q.areEqual(c[0] , c0)) || (!Q.areEqual(c[n-1] , cn) ) ) {
-                        commentator.report() << "ERROR: Dense charpoly failed" << endl;
+                        commentator().report() << "ERROR: Dense charpoly failed" << endl;
                         ret = false;
                 }
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNonsingularRatIntSolve");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNonsingularRatIntSolve");
 
 	return ret;
 }
@@ -136,18 +136,18 @@ int main (int argc, char **argv)
 	};
 	parseArguments (argc, argv, args);
 
-	commentator.start("Rational solve test suite", "solve");
+	commentator().start("Rational solve test suite", "solve");
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.getMessageClass (PROGRESS_REPORT).setMaxDepth (5);
-	//commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().getMessageClass (PROGRESS_REPORT).setMaxDepth (5);
+	//commentator().getMessageClass (BRIEF_REPORT).setMaxDepth (4);
 
     if ( ! testDiagRatCharpoly(n,iterations) ) pass = false;
 
-	commentator.stop("solve test suite");
+	commentator().stop("solve test suite");
     //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
 
 	return pass ? 0 : -1;

@@ -549,8 +549,8 @@ unsigned long linbox_integer_dense_rank(mpz_t** matrix, size_t nrows,
 void linbox_integer_dense_det(mpz_t ans, mpz_t** matrix, size_t nrows,
 			      size_t ncols)
 {
-	commentator.setMaxDetailLevel(0);
-	commentator.setMaxDepth (0);
+	commentator().setMaxDetailLevel(0);
+	commentator().setMaxDepth (0);
 
 	BlasMatrix<IntegerRing> A(new_matrix_integers(matrix, nrows, ncols));
 	IntegerRing::Element d;

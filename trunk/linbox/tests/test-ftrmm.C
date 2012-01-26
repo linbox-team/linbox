@@ -647,8 +647,8 @@ int main(int ac, char ** av)
 	srand(time(NULL));
 	bool fail = false ;
 
-	LinBox::commentator.start("ftrmm and consorts full test suite", "ftrmm et al");
-	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT,
+	LinBox::commentator().start("ftrmm and consorts full test suite", "ftrmm et al");
+	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
 
 
@@ -937,7 +937,7 @@ int main(int ac, char ** av)
 #endif
 	if(our != tot) fail = true;
 
-	commentator.stop(MSG_STATUS (!fail), (const char *) 0,"ftrmm et al full tests suite");
+	commentator().stop(MSG_STATUS (!fail), (const char *) 0,"ftrmm et al full tests suite");
 #ifdef DEBUG
 	if (our != tot)
 		report << "# \033[1;31m>\033[0m fgemm failed" << std::endl;

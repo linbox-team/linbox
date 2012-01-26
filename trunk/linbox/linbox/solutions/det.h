@@ -211,7 +211,7 @@ namespace LinBox
 		Field F = A.field();
 
 		if(Meth.symmetric()) {
-			commentator.start ("Symmetric Wiedemann Determinant", "sdet");
+			commentator().start ("Symmetric Wiedemann Determinant", "sdet");
 			linbox_check (A.coldim () == A.rowdim ());
 			Polynomial               phi;
 			unsigned long            deg;
@@ -264,12 +264,12 @@ namespace LinBox
 				if ( (deg & 1) == 1)
 					F.negin (d);
 
-				commentator.stop ("done", NULL, "sdet");
+				commentator().stop ("done", NULL, "sdet");
 
 				return d;
 		}
 		else {
-			commentator.start ("Wiedemann Determinant", "wdet");
+			commentator().start ("Wiedemann Determinant", "wdet");
 			linbox_check (A.coldim () == A.rowdim ());
 
 			Polynomial               phi;
@@ -311,7 +311,7 @@ namespace LinBox
 					F.negin (d);
 
 
-				commentator.stop ("done", NULL, "wdet");
+				commentator().stop ("done", NULL, "wdet");
 
 				return d;
 		}
@@ -332,14 +332,14 @@ namespace LinBox
 		typedef typename Blackbox::Field Field;
 		Field F = A.field();
 
-		commentator.start ("Blas Determinant", "blasdet");
+		commentator().start ("Blas Determinant", "blasdet");
 
 		linbox_check (A.coldim () == A.rowdim ());
 
 		BlasMatrix<Field> B(A);
 		BlasMatrixDomain<Field> BMD(F);
 		d= BMD.detin(B);
-		commentator.stop ("done", NULL, "blasdet");
+		commentator().stop ("done", NULL, "blasdet");
 
 		return d;
 	}
@@ -354,7 +354,7 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
 
 		typedef typename Blackbox::Field Field;
-		commentator.start ("Sparse Elimination Determinant", "SEDet");
+		commentator().start ("Sparse Elimination Determinant", "SEDet");
 		// We make a copy as these data will be destroyed
 		SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> A1 (A.field(), A.rowdim(), A.coldim());
 		typename Blackbox::Field::Element tmp;
@@ -363,7 +363,7 @@ namespace LinBox
 				A1.setEntry(i,j,getEntry(tmp, A, i, j));
 		GaussDomain<Field> GD ( A1.field() );
 		GD.detin (d, A1, Meth.strategy ());
-		commentator.stop ("done", NULL, "SEDet");
+		commentator().stop ("done", NULL, "SEDet");
 		return d;
 
 	}
@@ -377,12 +377,12 @@ namespace LinBox
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
-		commentator.start ("Sparse Elimination Determinant", "SEDet");
+		commentator().start ("Sparse Elimination Determinant", "SEDet");
 		// We make a copy as these data will be destroyed
 		SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> A1 (A);
 		GaussDomain<Field> GD ( A.field() );
 		GD.detin (d, A1, Meth.strategy ());
-		commentator.stop ("done", NULL, "SEdet");
+		commentator().stop ("done", NULL, "SEdet");
 		return d;
 	}
 
@@ -394,10 +394,10 @@ namespace LinBox
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
-		commentator.start ("Sparse Elimination Determinant in place", "SEDetin");
+		commentator().start ("Sparse Elimination Determinant in place", "SEDetin");
 		GaussDomain<Field> GD ( A.field() );
 		GD.detin (d, A, Meth.strategy ());
-		commentator.stop ("done", NULL, "SEdetin");
+		commentator().stop ("done", NULL, "SEdetin");
 		return d;
 	}
 
@@ -501,12 +501,12 @@ namespace LinBox
 
 		Field F = A.field();
 
-		commentator.start ("Determinant", "detin");
+		commentator().start ("Determinant", "detin");
 		linbox_check (A.coldim () == A.rowdim ());
 
 		BlasMatrixDomain<Field> BMD(F);
 		d= BMD.detin(static_cast<BlasMatrix<Field>& > (A));
-		commentator.stop ("done", NULL, "detin");
+		commentator().stop ("done", NULL, "detin");
 
 		return d;
 	}
@@ -568,7 +568,7 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_MPI
 		if(!C || C->rank() == 0)
 #endif
-			commentator.start ("Integer Determinant", "idet");
+			commentator().start ("Integer Determinant", "idet");
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
@@ -580,13 +580,13 @@ namespace LinBox
 		cra(dd, iteration, genprime);
 		if(!C || C->rank() == 0){
 			A.field().init(d, dd); // convert the result from integer to original type
-			commentator.stop ("done", NULL, "det");
+			commentator().stop ("done", NULL, "det");
 		}
 #else
 		ChineseRemainder< EarlySingleCRA< Modular<double> > > cra(4UL);
 		cra(dd, iteration, genprime);
 		A.field().init(d, dd); // convert the result from integer to original type
-		commentator.stop ("done", NULL, "idet");
+		commentator().stop ("done", NULL, "idet");
 #endif
 
 		return d;
@@ -628,7 +628,7 @@ namespace LinBox
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
 
-		commentator.start ("Rational Determinant", "rdet");
+		commentator().start ("Rational Determinant", "rdet");
 
 		Integer num,den;
 
@@ -640,7 +640,7 @@ namespace LinBox
 
 		A.field().init(d, num,den); // convert the result from integer to original type
 
-		commentator.stop ("done", NULL, "rdet");
+		commentator().stop ("done", NULL, "rdet");
 		return d;
 	}
 
@@ -653,11 +653,11 @@ namespace LinBox
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
 
-		commentator.start ("Dense Rational Determinant", "rdet");
+		commentator().start ("Dense Rational Determinant", "rdet");
 
 		rational_det(d,A,Meth);
 
-		commentator.stop ("done", NULL, "rdet");
+		commentator().stop ("done", NULL, "rdet");
 		return d;
 	}
 

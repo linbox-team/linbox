@@ -120,8 +120,8 @@ namespace LinBox
 		template<typename Field>
 		typename Field::Element& operator()(typename Field::Element& v, const Field& F) const
 		{
-			commentator.start ("Modular Valence", "Mvalence");
-			std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			commentator().start ("Modular Valence", "Mvalence");
+			std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 			F.write(report) << std::endl;
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			report << typeid(A).name() << ", A is: " << A.rowdim() << 'x' << A.coldim() << std::endl;
@@ -132,7 +132,7 @@ namespace LinBox
 
 			valence( v, Ap, M);
 			F.write( F.write(report << "one valence: ", v) << " mod " ) << std::endl;;
-			commentator.stop ("done", NULL, "Mvalence");
+			commentator().stop ("done", NULL, "Mvalence");
 			return v;
 		}
 	};
@@ -143,7 +143,7 @@ namespace LinBox
 						    const RingCategories::IntegerTag   &tag,
 						    const MyMethod                     &M)
 	{
-		commentator.start ("Integer Valence", "Ivalence");
+		commentator().start ("Integer Valence", "Ivalence");
 #if __LINBOX_SIZEOF_LONG == 8
 		RandomPrimeIterator genprime( 31 );
 		ChineseRemainder< EarlySingleCRA< GivaroZpz< Givaro::Std64> > > cra(3UL);
@@ -153,7 +153,7 @@ namespace LinBox
 #endif
 		IntegerModularValence<Blackbox,MyMethod> iteration(A, M);
 		cra(V, iteration, genprime);
-		commentator.stop ("done", NULL, "Ivalence");
+		commentator().stop ("done", NULL, "Ivalence");
 		return V;
 	}
 
@@ -173,7 +173,7 @@ namespace LinBox
 		template <class Blackbox>
 		static integer& cassini (integer& r, const Blackbox& A)
 		{
-			//commentator.start ("Cassini bound", "cassini");
+			//commentator().start ("Cassini bound", "cassini");
 			integer _aat_diag, _aat_radius, _aat_radius1;
 			typedef typename Blackbox::Field Ring;
 			_aat_diag = 0; _aat_radius = 0, _aat_radius1 = 0;
@@ -223,9 +223,9 @@ namespace LinBox
 			}
 
 			r = _aat_diag + (integer)sqrt( _aat_radius * _aat_radius1 );
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 			//std::cout << "Cassini bound (AAT) =: " << r << std::endl;
-			//commentator.stop ("done", NULL, "cassini");
+			//commentator().stop ("done", NULL, "cassini");
 			return r;
 		}
 
@@ -233,7 +233,7 @@ namespace LinBox
 		template <class Blackbox>
 		static void one_valence(typename Blackbox::Element& v, unsigned long& r, const Blackbox& A)
 		{
-			//commentator.start ("One valence", "one valence");
+			//commentator().start ("One valence", "one valence");
 			typedef std::vector<typename Blackbox::Element> Poly; Poly poly;
 			typename Blackbox::Field F(A. field());
 			Transpose<Blackbox> AT (&A);
@@ -250,12 +250,12 @@ namespace LinBox
 				}
 
 			r = poly. size() -1;
-			std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 			//	std::ostream& report = std::cout;
 			report << "one valence =: " << v << " over ";
 			A. field(). write(report); report << std::endl;
-			//commentator.stop ("done", NULL, "one valence");
+			//commentator().stop ("done", NULL, "one valence");
 			return;
 		}
 
@@ -263,7 +263,7 @@ namespace LinBox
 		template <class Blackbox>
 		static void valence(Integer& val, const Blackbox& A)
 		{
-			commentator.start ("Valence (AAT)", "Valence");
+			commentator().start ("Valence (AAT)", "Valence");
 			typedef Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 			double log_max_mod = log((double)FieldTraits<Field>::maxModulus()) ;
@@ -274,12 +274,12 @@ namespace LinBox
 			Field F((int32_t)*g);
 			FBlackbox Ap(A, F);
 			one_valence(v, d, Ap);
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 			//std::cout<<"degree of minpoly of AAT: " << d << std::endl;
 			valence (val, d, A);
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Integer valence =: " << val << std::endl;
-			commentator. stop ("done", NULL, "Valence");
+			commentator().stop ("done", NULL, "Valence");
 			return;
 		}
 
@@ -299,7 +299,7 @@ namespace LinBox
 			unsigned long d1; Field::Element v; integer im = 1;
 			//compute an upper bound for val.
 			integer bound; cassini (bound, A); bound = pow (bound, d); bound *= 2;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Bound for valence: " << bound << std::endl;
 
 			do {

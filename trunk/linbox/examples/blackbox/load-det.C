@@ -63,8 +63,8 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
-	commentator.setMaxDepth (2);
-	commentator.setReportStream (cout);
+	commentator().setMaxDepth (2);
+	commentator().setReportStream (cout);
 
 	if (argc == 3) q = atoi(argv[2]);
 	Field F (q);
