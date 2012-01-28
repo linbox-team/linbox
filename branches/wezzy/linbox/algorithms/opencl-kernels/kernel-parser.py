@@ -56,7 +56,9 @@ def parse_kernel(file_name, output):
     # Write rest of file to the const char* block
     for line in fp.readlines():
         temp = string.split(line)
-        if(len(temp) > 0 and (temp[0] == '/*' or temp[0] == '*' or temp[0] == '*/')):
+        if(len(temp) > 0 and (temp[0] == '/*' or temp[0] == '*' or temp[0] == '*/' or temp[0][:2] == '//')):
+            continue
+        if(len(temp) == 0):
             continue
         output.write("\t\t\"")
         output.write(string.rstrip(line))
