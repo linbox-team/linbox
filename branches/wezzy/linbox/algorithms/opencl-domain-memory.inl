@@ -40,6 +40,7 @@ namespace LinBox{
 		//Set starting positions
 		int matrixBufferPosition = 0;
 		int dataOffset = 0;
+		int elementsPadded = 0;
 
 		//Allocates a 32mb buffer for padding
 		T* paddingBuffer = (T*)malloc(32 * 1024 * 1024);
@@ -69,6 +70,7 @@ namespace LinBox{
 					count++;
 					paddingBufferPosition++;
 					dataOffset++;
+					elementsPadded++;
 				}
 
 				//Padds 0's until end of padded row while there is still space in the buffer
@@ -80,6 +82,11 @@ namespace LinBox{
 					//Increment the count for the rwo and the paddingBuffer
 					count++;
 					paddingBufferPosition++;
+					elementsPadded++;
+				}
+
+				if(elementsPadded >= matrixBufferSize){
+					break;
 				}
 			}
 
@@ -169,10 +176,7 @@ namespace LinBox{
 				}
 
 				//Skip over the padding zero's
-				while(count < newDimX && depaddingBufferPosition < depaddingBufferSize){
-					count++;
-					depaddingBufferPosition++;
-				}
+				depaddingBufferPosition += (newDimX - count);
 			}
 
 			//Increment position in matrixBuffer by the size of the paddingBuffer

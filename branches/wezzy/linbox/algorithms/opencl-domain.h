@@ -46,124 +46,56 @@ namespace LinBox{
 	template <class _Matrix>
 	class SubmatrixAdapter{
 	private:
-		_Matrix* _Mat;  //!< Parent Matrix (ie raw vector)
-		size_t _row;    //!< row dimension of Submatrix
-		size_t _col;    //!< col dimension of Submatrix
-		size_t _r0;     //!< upper left corner row of Submatrix in \p _Mat
-		size_t _c0;     //!< upper left corner row of Submatrix in \p _Mat
-		size_t _stride; //!< number of columns in \p _Mat (or stride of \p _Mat)
-		size_t _off;    //!< offset from start of parent matrix
+		typedef typename _Matrix::Element Element;
+
+		_Matrix* _Mat;
+		size_t _row;
+		size_t _col;
+		size_t _r0;
+		size_t _c0;
 
 	public:
-		//Access to underlying types
-		typedef _Matrix                     Matrix;
-		typedef _Matrix::Field              Field;
-		typedef typename Field::Element     Element;
-		typedef SubmatrixAdapter<_Matrix>   Self_t;
+		//Access to underlying matrix
+		typedef _Matrix  Matrix;
 
-		/** NULL constructor.  */
-		SubmatrixAdapter() : _Mat(NULL), _row(0), _col(0), _r0(0), _c0(0), _stride(0), _off(0){}
+		SubmatrixAdapter() : _Mat(NULL), _row(0), _col(0), _r0(0), _c0(0){}
 
-		/** Constructor from an existing @refMatrix
-		 * \param M Pointer to @ref Matrix of which to construct submatrix
-		 */
 		SubmatrixAdapter(const _Matrix& M) :
-			_Mat(&(const_cast<_Matrix&>(M))), _row(M.rowdim()), _col(M.coldim()),
-			_r0(0), _c0(0), _stride(M.coldim()), _off(0) {}
+			_Mat(&(const_cast<_Matrix&>(M))), _row(M.rowdim()), _col(M.coldim()), _r0(0), _c0(0) {}
 
-		/** Constructor from an existing @ref Matrix and dimensions.
-		 * \param M Pointer to @ref Matrix of which to construct submatrix
-		 * \param rowbeg Starting row
-		 * \param colgeb Starting column
-		 * \param Rowdim Row dimension
-		 * \param Coldim Column dimension
-		 */
 		SubmatrixAdapter(const _Matrix& M, size_t row, size_t col, size_t Rowdim, size_t Coldim) :
-			_Mat(&(const_cast<_Matrix&>(M))), _row(Rowdim), _col(Coldim),
-			_r0(row), _c0(col), _stride(M.coldim()), _off(row * _stride + col) {}
+			_Mat(&(const_cast<_Matrix&>(M))), _row(Rowdim), _col(Coldim), _r0(row), _c0(col) {}
 
-		/** Constructor from an existing @ref SubmatrixAdapter
-		 * \param SM Pointer to @ref SubmatrixAdapter of which to construct submatrix
-		 */
 		SubmatrixAdapter(const SubmatrixAdapter<_Matrix>& SM) :
-			_Mat(SM._Mat) , _row(SM._row), _col(SM._col),
-			_r0(SM._r0), _c0(SM._c0), _stride(SM._stride), _off(SM._off) {}
+			_Mat(SM._Mat) , _row(SM._row), _col(SM._col), _r0(SM._r0), _c0(SM._c0) {}
 
-		/** Constructor from an existing submatrix and dimensions
-		 * @param SM Constant reference to SubmatrixAdapter from which to
-		 *           construct submatrix
-		 * @param rowbeg Starting row
-		 * @param colbeg Starting column
-		 * @param Rowdim Row dimension
-		 * @param Coldim Column dimension
-		 */
 		SubmatrixAdapter(const SubmatrixAdapter<_Matrix>& SM, size_t row, size_t col, size_t Rowdim, size_t Coldim) :
-			_Mat(SM._Mat), _row(Rowdim), _col(Coldim),
-			_r0(SM._r0 + row), _c0(SM._c0 + col), _stride(SM._stride), _off(SM._off + (row * _stride + col)) {}
+			_Mat(SM._Mat), _row(Rowdim), _col(Coldim), _r0(SM._r0 + row), _c0(SM._c0 + col) {}
 
-		/** Get the number of rows in the matrix
-		 * @return Number of rows in matrix
-		 */
 		size_t rowdim() const{
 			return _row;
 		}
 
-		/** Get the number of columns in the matrix
-		 * @return Number of columns in matrix
-		 */
 		size_t coldim() const{
 			return _col;
 		}
 
-		/*! Get the stride of the matrix.
-		 * @return stride of submatrix (number of cols of parent matrix)
-		 */
-		size_t getStride() const{
-			return _stride;
-		}
-
-		/** Set the entry at (i, j).
-		 * @param i Row index of entry, 0...rowdim () - 1
-		 * @param j Column index of entry, 0...coldim () - 1
-		 * @param a_ij Element to set
-		 */
 		void setEntry(size_t i, size_t j, const Element& a_ij){
 			_Mat->setEntry(_r0 + i, _c0 + j, a_ij);
 		}
 
-		/** Get a writeable reference to an entry in the matrix.
-		 * @param i Row index of entry,  0...rowdim () - 1
-		 * @param j Column index of entry, 0...coldim () - 1
-		 * @return Reference to matrix entry
-		 */
 		Element& refEntry(size_t i, size_t j){
 			_Mat->refEntry(_r0 + i, _c0 + j);
 		}
 
-		/** Get a read-only individual entry from the matrix.
-		 * @param i Row index of entry,  0...rowdim () - 1
-		 * @param j Column index of entry, 0...coldim () - 1
-		 * @return Const reference to matrix entry
-		 */
 		const Element& getEntry(size_t i, size_t j) const{
 			return _Mat->getEntry(_r0 + i, _c0 + j);
 		}
 
-		/** Get an entry and store it in the given value.
-		 * This form is more in the Linbox style and is provided for interface
-		 * compatibility with other parts of the library
-		 * @param x Element in which to store result
-		 * @param i Row index of entry,  0...rowdim () - 1
-		 * @param j Column index of entry, 0...coldim () - 1
-		 * @return Reference to x
-		 */
 		Element& getEntry(Element& x, size_t i, size_t j){
 			return _Mat->getEntry(x, _r0 + i, _c0 + j);
 		}
 
-		/** Access the parent matrix
-		 * @return Reference to _Mat
-		 */
 		_Matrix& getMatrix(){
 			return *_Mat;
 		}

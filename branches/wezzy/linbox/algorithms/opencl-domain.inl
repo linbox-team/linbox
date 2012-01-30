@@ -1620,10 +1620,10 @@ namespace LinBox
 			selectedAxmyKernel = dpKernels[16];
 			selectedAxpyKernel = dpKernels[8];
 		}
-		
+
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
-				
+
 				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
 				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
 				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
@@ -1639,7 +1639,7 @@ namespace LinBox
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
 				int heightA = ((SA.rowdim() + 15) / 16) * 16;
 				int widthB = ((SB.coldim() + 15) / 16) * 16;
-				
+
 				//Call the kernel
 				oclCallKernel<double,cl_double>(bufferD,bufferA,bufferB,bufferC,widthA,heightA,widthB,p,selectedAxmyKernel);
 
@@ -1656,7 +1656,7 @@ namespace LinBox
 				//Create temporary accumulation buffer
 				cl_mem tempBuffer = bufferC;
 				bufferC = bufferD;
-				
+
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
 					SA = VA.at(blockRow * ABlocksX + sharedDim);
@@ -1686,7 +1686,7 @@ namespace LinBox
 					bufferC = tempBuffer;
 					tempBuffer = placeHolder;
 				}
-				
+
 				//Read back buffer
 				SD = oclReadMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(bufferC, SD);
 
@@ -1777,7 +1777,7 @@ namespace LinBox
 			selectedAxmyKernel = spKernels[16];
 			selectedAxpyKernel = spKernels[8];
 		}
-		
+
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 

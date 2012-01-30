@@ -33,6 +33,9 @@
 
 #include "test-common.h"
 
+#ifndef _OPENCL_TIMER_
+#define _OPENCL_TIMER_
+
 #include <stack>
 #include <vector>
 #include <sys/time.h>
@@ -70,6 +73,8 @@ public:
 	}
 
 };
+
+#endif
 
 using namespace LinBox;
 
@@ -726,39 +731,39 @@ int launch_tests(Field& F, int n, int iterations){
 	if(!testMul(F, n, iterations)){
 		pass = false;
 	}
-	// if(!testMulinLeft(F, n, iterations)){
-		// pass = false;
-	// }
-	// if(!testMulinRight(F, n, iterations)){
-		// pass = false;
-	// }
+	if(!testMulinLeft(F, n, iterations)){
+		pass = false;
+	}
+	if(!testMulinRight(F, n, iterations)){
+		pass = false;
+	}
 	if(!testAxpy(F, n, iterations)){
 		pass = false;
 	}
-	// if(!testAxpyin(F, n, iterations)){
-		// pass = false;
-	// }
+	if(!testAxpyin(F, n, iterations)){
+		pass = false;
+	}
 	if(!testMaxpy(F, n, iterations)){
 		pass = false;
 	}
-	// if(!testMaxpyin(F, n, iterations)){
-		// pass = false;
-	// }
+	if(!testMaxpyin(F, n, iterations)){
+		pass = false;
+	}
 	if(!testAxmy(F, n, iterations)){
 		pass = false;
 	}
-	// if(!testAxmyin(F, n, iterations)){
-		// pass = false;
-	// }
+	if(!testAxmyin(F, n, iterations)){
+		pass = false;
+	}
 	if(!testMuladd(F, n, iterations)){
 		pass = false;
 	}
-	// if(!testMuladdin(F, n, iterations)){
-		// pass = false;
-	// }
-	// if(!testMulscale(F, n, iterations)){
-		// pass = false;
-	// }
+	if(!testMuladdin(F, n, iterations)){
+		pass = false;
+	}
+	if(!testMulscale(F, n, iterations)){
+		pass = false;
+	}
 
 	return pass;
 }
