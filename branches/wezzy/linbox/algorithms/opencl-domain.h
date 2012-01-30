@@ -88,6 +88,12 @@ namespace LinBox{
 	 */
 	template <class _Matrix>
 	class SubmatrixAdapter{
+	public:
+		//Access to underlying types
+		typedef typename _Matrix::Field     Field;
+		typedef typename Field::Element     Element;
+		typedef SubmatrixAdapter<_Matrix>   Self_t;
+
 	private:
 		_Matrix* _Mat;  //!< Parent Matrix (ie raw vector)
 		size_t _row;    //!< row dimension of Submatrix
@@ -98,12 +104,6 @@ namespace LinBox{
 		size_t _off;    //!< offset from start of parent matrix
 
 	public:
-		//Access to underlying types
-		typedef _Matrix                     Matrix;
-		typedef _Matrix::Field              Field;
-		typedef typename Field::Element     Element;
-		typedef SubmatrixAdapter<_Matrix>   Self_t;
-
 		/** NULL constructor.  */
 		SubmatrixAdapter() : _Mat(NULL), _row(0), _col(0), _r0(0), _c0(0), _stride(0), _off(0){}
 
