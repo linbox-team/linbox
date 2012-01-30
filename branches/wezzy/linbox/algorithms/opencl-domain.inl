@@ -64,9 +64,6 @@ namespace LinBox
 			return BlasMatrixDomainMul<Modular<double>,Operand1,Operand2,Operand3>()(_F,C,A,B);
 		}
 
-		OpenCLTimer timer;
-		timer.tic();
-
 		//Check dimensions
 		linbox_check( A.coldim() == B.rowdim());
 		linbox_check( C.rowdim() == A.rowdim());
@@ -112,8 +109,6 @@ namespace LinBox
 			selectedAxpyKernel = dpKernels[8];
 		}
 
-		commentator.report() << "Overhead time: " << timer.toc() << std::endl;
-
 		for(int blockCol = 0; blockCol < CBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < CBlocksY; blockRow++){
 
@@ -122,11 +117,9 @@ namespace LinBox
 				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
 
 				//Allocate buffers
-				timer.tic();
 				cl_mem bufferC = oclCreateMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(SC);
 				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand2> >(SA);
 				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double,SubmatrixAdapter<Operand3> >(SB);
-				commentator.report() << "Transfer time: " << timer.toc() << std::endl;
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -134,13 +127,11 @@ namespace LinBox
 				int widthB = ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
-				timer.tic();
 				oclCallKernel<double,cl_double>(bufferC,bufferA,bufferB,widthA,heightA,widthB,p,selectedMulKernel);
 
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
-				commentator.report() << "Execution time: " << timer.toc() << std::endl;
 				////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 				//Delete OpenCL buffers
@@ -182,9 +173,7 @@ namespace LinBox
 				}
 
 				//Read back buffer
-				timer.tic();
 				SC = oclReadMatrixBuffer<cl_double,SubmatrixAdapter<Operand1> >(bufferC, SC);
-				commentator.report() << "Readback time: " << timer.toc() << std::endl;
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
@@ -225,9 +214,6 @@ namespace LinBox
 		if(!setupCorrect || !kernelsAvailable){
 			return BlasMatrixDomainMul<Modular<float>,Operand1,Operand2,Operand3>()(_F,C,A,B);
 		}
-
-		OpenCLTimer timer;
-		timer.tic();
 
 		//Check dimensions
 		linbox_check( A.coldim() == B.rowdim());
@@ -274,8 +260,6 @@ namespace LinBox
 			selectedAxpyKernel = spKernels[8];
 		}
 
-		commentator.report() << "Overhead time: " << timer.toc() << std::endl;
-
 		for(int blockCol = 0; blockCol < CBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < CBlocksY; blockRow++){
 
@@ -284,11 +268,9 @@ namespace LinBox
 				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
 
 				//Allocate buffers
-				timer.tic();
 				cl_mem bufferC = oclCreateMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(SC);
 				cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand2> >(SA);
 				cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float,SubmatrixAdapter<Operand3> >(SB);
-				commentator.report() << "Transfer time: " << timer.toc() << std::endl;
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
 				int widthA = ((SA.coldim() + 15) / 16) * 16;
@@ -296,13 +278,11 @@ namespace LinBox
 				int widthB = ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
-				timer.tic();
 				oclCallKernel<float,cl_float>(bufferC,bufferA,bufferB,widthA,heightA,widthB,p,selectedMulKernel);
 
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
-				commentator.report() << "Execution time: " << timer.toc() << std::endl;
 				////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 				//Delete OpenCL buffers
@@ -344,9 +324,7 @@ namespace LinBox
 				}
 
 				//Read back buffer
-				timer.tic();
 				SC = oclReadMatrixBuffer<cl_float,SubmatrixAdapter<Operand1> >(bufferC, SC);
-				commentator.report() << "Readback time: " << timer.toc() << std::endl;
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
