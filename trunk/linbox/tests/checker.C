@@ -239,12 +239,12 @@ build |wc" should yield the same number of lines.
 	if (flag > 0) cout << "	Lapack dependent tests" << endl;
 	build_n_run("test-rational-solver-adaptive", counter, flag);
 	// needs output cleanup.  Resolve whether a benchmark or a test.
-	build_n_run("test-solve-nonsingular", counter, flag, "bds responsible");
+	build_n_run("test-solve-nonsingular", counter, flag, "BY responsible");
 #else
 	if (flag > 0) cout << "	not doing Lapack dependent tests" << endl;
 	no_build_n_run("test-rational-solver-adaptive", counter, flag);
 	// needs output cleanup.  Resolve whether a benchmark or a test.
-	no_build_n_run("test-solve-nonsingular", counter, flag, "Bryan responsible");
+	no_build_n_run("test-solve-nonsingular", counter, flag, "BY responsible");
 #endif
 
 #if __LINBOX_HAVE_NTL
