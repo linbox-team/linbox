@@ -221,11 +221,12 @@ bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 
 
 	// this should fail
-	claim = 2 > dyadicToRational(Z, n, d, nx, dxs, denB);
+	claim = dyadicToRational(Z, n, d, nx, dxs, denB);
 //std::cout << "d " << d << " dxs " << dxs << " denB " << denB << std::endl;
 
-    pass = pass && claim;
-	if (claim) commentator().report() << "third ratrecon falsely claims success" << std::endl;
+    pass = pass && (claim < 2);
+	if (claim == 2) commentator().report() << "third ratrecon in test falsely claims success" << std::endl;
+	if (claim == 1) commentator().report() << "third ratrecon in test (designed to fail) claims speculative success" << std::endl;
 #endif
 
 // done

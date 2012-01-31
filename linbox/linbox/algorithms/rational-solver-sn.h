@@ -247,7 +247,7 @@ namespace LinBox {
 			writeVec(numx, "numx", 0, 10);
 			std::cerr << denx << std::endl;
 			writeVec(num, "num");
-			std::cerr << "den: (large)" << std::endl;// << den << endl;
+			std::cerr << "den: " /*(large)" << std::endl;*/ << den << endl;
 #endif
 
 			if (recon_success) {
