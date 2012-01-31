@@ -31,19 +31,38 @@
 #include <givaro/givconfig.h> // for Signed_Trait
 #include "linbox/algorithms/gauss.h"
 
+
+template <bool Boolean> struct Boolean_Trait;
+template <> struct Boolean_Trait<true> {
+    typedef int BooleanType; // int does not matter, only that it differs from float
+};
+template <> struct Boolean_Trait<false> {
+    typedef float BooleanType;// float does not matter, only that it differs from int
+};
+
+// LINBOX_pp_gauss_steps_OUT outputs elimination steps
+#ifdef LINBOX_pp_gauss_steps_OUT 
+
+// LINBOX_PRESERVE_UPPERMATRIX does not erase parts unused anymore
+#ifndef LINBOX_PRESERVE_UPPERMATRIX
+#define LINBOX_PRESERVE_UPPERMATRIX
+#endif
+
+// LINBOX_PRANK_OUT outputs intermediate ranks
+#ifndef LINBOX_PRANK_OUT
+#define LINBOX_PRANK_OUT
+#endif
+
+#endif
+
+
 namespace LinBox
 {
 
-#if 0
-	template<class T, template <class X> class Container>
-	std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-		for(typename Container<T>::const_iterator refs =  C.begin();
-		    refs != C.end() ;
-		    ++refs )
-			o << (*refs) << " " ;
-		return o << std::endl;
-	}
-#endif
+    enum {
+        PRIVILEGIATENOCOLUMNPIVOTING = true,
+        PRIVILEGIATEREDUCINGFILLIN = false
+    };
 
 	/** \brief Repository of functions for rank modulo a prime power by elimination
 	  on sparse matrices.
@@ -74,12 +93,6 @@ namespace LinBox
 		// Modulo operators
 		template<class Modulu>
 		bool isNZero(const Modulu& a ) { return (bool)a ;}
-
-#ifdef GIVARO_PRANK_OUT
-#ifndef GIVARO_JRANK_OUT
-#define GIVARO_JRANK_OUT
-#endif
-#endif
 
 
 		template<class Ring>
@@ -138,6 +151,22 @@ namespace LinBox
 		// ------------------------------------------------
 		// Pivot Searchers and column strategy
 		// ------------------------------------------------
+        template<class Modulo, class Vecteur>
+        void SameColumnPivoting(Modulo PRIME,  const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, Boolean_Trait<false>::BooleanType ) {
+                // Do not try first in the same column
+        }
+
+        template<class Modulo, class Vecteur>
+        void SameColumnPivoting(Modulo PRIME,  const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, Boolean_Trait<true>::BooleanType ) {
+                // Try first in the same column
+			unsigned long nj =  lignepivot.size() ;
+			if (nj && (indcol == lignepivot[0].first) && (! this->MY_divides(PRIME,lignepivot[0].second) ) ) {
+                indpermut = indcol;
+                ++indcol;
+            }
+        }
+
+
 		template<class Vecteur>
 		void CherchePivot( Vecteur& lignepivot, unsigned long& indcol , long& indpermut )
 		{
@@ -146,7 +175,7 @@ namespace LinBox
 				indpermut= lignepivot[0].first;
 				if (indpermut != indcol)
 					lignepivot[0].first = (indcol);
-				indcol++ ;
+				++indcol;
 			}
 			else
 				indpermut = -1;
@@ -322,7 +351,7 @@ namespace LinBox
 		// Rank calculators, defining row strategy
 		// ------------------------------------------------------
 
-		template<class Modulo, class BB, class D, class Container>
+		template<class Modulo, class BB, class D, class Container, bool PrivilegiateNoColumnPivoting>
 		void gauss_rankin(Modulo FMOD, Modulo PRIME, Container& ranks, BB& LigneA, const size_t Ni, const size_t Nj, const D& density_trait)
 		{
 			commentator().start ("Gaussian elimination with reordering modulo a prime power",
@@ -333,7 +362,7 @@ namespace LinBox
 			typedef typename BB::Row Vecteur;
 
 			Modulo MOD = FMOD;
-#ifdef GIVARO_PRANK_OUT
+#ifdef LINBOX_PRANK_OUT
 			std::cerr << "Elimination mod " << MOD << std::endl;
 #endif
 
@@ -383,20 +412,29 @@ namespace LinBox
 					for(p=k; p<Ni; ++p)
 						psizes.insert( psizes.end(), std::pair<long,long>( LigneA[p].size(), p) );
 
-#if 0
-#ifdef  GIVARO_PRANK_OUT
-					std::cerr << "------------  ordered rows -----------" << std::endl;
+#ifdef  LINBOX_pp_gauss_steps_OUT
+					std::cerr << "------------ ordered rows " << k << " -----------" << std::endl;
 					for( std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter)
 					{
-						std::cerr << (*iter).first << " : " <<  (*iter).second << std::endl;
+						std::cerr << (*iter).second << " : #" << (*iter).first << std::endl;
 					}
-					std::cerr << "--------------------------------------" << std::endl;
-#endif
+					std::cerr << "---------------------------------------" << std::endl;
 #endif
 
+
+
+                    c=-2;
+					for( typename std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
+						p = (*iter).second;
+
+						SameColumnPivoting(PRIME, LigneA[p], indcol, c, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() ) ;
+						if (c > -2 ) break;
+					}
+					if (c > -2) break;
 
 					for( typename std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
 						p = (*iter).second;
+
 						CherchePivot( PRIME, LigneA[p], indcol, c , col_density) ;
 						if (c > -2 ) break;
 					}
@@ -408,29 +446,41 @@ namespace LinBox
 					MOD = MOD / PRIME;
 					ranks.push_back( indcol );
 					++ind_pow;
-#ifdef GIVARO_PRANK_OUT
+#ifdef LINBOX_PRANK_OUT
 					std::cerr << "Rank mod " << (unsigned long)PRIME << "^" << ind_pow << " : " << indcol << std::endl;
 					if (MOD == 1) std::cerr << "wattadayada inhere ?" << std::endl;
 #endif
 
 				}
 				if (p != k) {
+#ifdef  LINBOX_pp_gauss_steps_OUT
+					std::cerr << "------------ permuting rows " << p << " and " << k << " ---" << std::endl;
+#endif
 					Vecteur vtm = LigneA[k];
 					LigneA[k] = LigneA[p];
 					LigneA[p] = vtm;
 				}
+#ifdef  LINBOX_pp_gauss_steps_OUT
+                if (c != (long(indcol)-1L))
+					std::cerr << "------------ permuting cols " << (indcol-1) << " and " << c << " ---" << std::endl;
+#endif
 				if (c != -1)
 					for(unsigned long l=k + 1; l < Ni; ++l)
 						FaireElimination(MOD, LigneA[l], LigneA[k], indcol, c, col_density);
 
 
-				//                 LigneA.write(cout << "step[" << k << "], pivot: " << c << std::endl) << endl;
+#ifdef  LINBOX_pp_gauss_steps_OUT
+				LigneA.write(cerr << "step[" << k << "], pivot: " << c << std::endl) << endl;
+#endif
 
-#ifndef GIVARO_PRANK_OUT
+#ifndef LINBOX_PRESERVE_UPPERMATRIX
 				LigneA[k] = Vzer;
 #endif
 			}
-			CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
+
+            c = -2;
+            SameColumnPivoting(PRIME, LigneA[last], indcol, c, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() );
+            if (c == -2) CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
 			while( c == -2) {
 				ranks.push_back( indcol );
 				for(long jjj=LigneA[last].size();jjj--;)
@@ -444,7 +494,10 @@ namespace LinBox
 			}
 
 			//             ranks.push_back(indcol);
-#ifdef GIVARO_JRANK_OUT
+#ifdef LINBOX_pp_gauss_steps_OUT
+            LigneA.write(cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl) << endl;
+#endif
+#ifdef LINBOX_PRANK_OUT
 			std::cerr << "Rank mod " << (unsigned long)FMOD << " : " << indcol << std::endl;
 #endif
 			commentator().stop ("done", 0, "PRGE");
@@ -452,17 +505,20 @@ namespace LinBox
 		}
 
 		template<class Modulo, class BB, class D, class Container>
-		void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container& ranks, BB& SLA, const size_t Ni, const size_t Nj, const D& density_trait)
+		void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container& ranks, BB& SLA, const size_t Ni, const size_t Nj, const D& density_trait, bool PrivilegiateNoColumnPivoting)
 		{
-			gauss_rankin(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
+            if (PrivilegiateNoColumnPivoting)
+                gauss_rankin<Modulo,BB,D,Container,true>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
+            else
+                gauss_rankin<Modulo,BB,D,Container,false>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);                
 		}
 
 
 		template<class Modulo, class Matrix, template<class, class> class Container, template<class> class Alloc>
-		Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& operator()(Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& L, Matrix& A, Modulo FMOD, Modulo PRIME)
+		Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& operator()(Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& L, Matrix& A, Modulo FMOD, Modulo PRIME, bool PrivilegiateNoColumnPivoting=false)
 		{
 			Container<size_t, Alloc<size_t> > ranks;
-			prime_power_rankin( FMOD, PRIME, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
+			prime_power_rankin( FMOD, PRIME, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>(),PrivilegiateNoColumnPivoting);
 			L.resize( 0 ) ;
 			size_t MOD = 1;
 			size_t num = 0, diff;
