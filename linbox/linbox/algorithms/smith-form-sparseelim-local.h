@@ -519,7 +519,7 @@ namespace LinBox
 		}
 
 		template<class Modulo, class BB, class D, class Container>
-		void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container& ranks, BB& SLA, const size_t Ni, const size_t Nj, const D& density_trait, int StaticParameters)
+		void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container& ranks, BB& SLA, const size_t Ni, const size_t Nj, const D& density_trait, int StaticParameters=0)
 		{
             if (PRIVILEGIATE_NO_COLUMN_PIVOTING & StaticParameters) {
                 if (PRESERVE_UPPER_MATRIX & StaticParameters) {
