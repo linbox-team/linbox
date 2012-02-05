@@ -1012,7 +1012,8 @@ namespace LinBox
                 if (argv[i][1] == 0) {
                     LinBox::commentator().setReportStream (cout);
                     LinBox::commentator().setBriefReportStream (cout);
-                }
+                } else 
+		    ++i;
             } else {
                 LinBox::commentator().setDefaultReportFile (argv[i]);
                 LinBox::commentator().setBriefReportStream(cout);
