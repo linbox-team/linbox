@@ -1007,13 +1007,18 @@ namespace LinBox
 {
     void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = true) {
         for (int i = 1; i < argc; ++i) {
-                // std::cout << "i=" << i << std::endl;
             if (argv[i][0] == '-') {
                 if (argv[i][1] == 0) {
                     LinBox::commentator().setReportStream (cout);
                     LinBox::commentator().setBriefReportStream (cout);
-                } else 
-		    ++i;
+                } else {
+                        // Skip the argument next to "-xxx"
+                        // except if next argument is a switch
+                    if ( ((i+1) < argc) && 
+                         (argv[i+1][0] != '-') ) { 
+                        ++i;
+                    }
+                }
             } else {
                 LinBox::commentator().setDefaultReportFile (argv[i]);
                 LinBox::commentator().setBriefReportStream(cout);
@@ -1021,7 +1026,6 @@ namespace LinBox
         }
         FFLAS::parseArguments(argc,argv,args,printDefaults);
     }
-    
 }
 
 
