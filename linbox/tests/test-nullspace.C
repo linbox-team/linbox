@@ -29,14 +29,14 @@
  * @test dense nullspace
  */
 
-#include "../linbox/linbox-config.h"
+#include "linbox/linbox-config.h"
 #include <iostream>
-#include "../linbox/integer.h"
-#include "../linbox/matrix/matrix-domain.h"
+#include "linbox/integer.h"
+#include "linbox/matrix/matrix-domain.h"
 //#include "linbox/field/givaro-zpz.h"
-#include "../linbox/field/modular.h"
+#include "linbox/field/modular.h"
 //#include "fflas-ffpack/ffpack/ffpack.h"
-#include "../linbox/algorithms/dense-nullspace.h"
+#include "linbox/algorithms/dense-nullspace.h"
 #include <vector>
 #include "./test-common.h"
 // #include "fflas-ffpack/utils/Matio.h"

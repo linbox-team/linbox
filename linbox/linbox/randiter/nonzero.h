@@ -40,15 +40,6 @@
 #include <sys/time.h>
 #include <stdlib.h>
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <string>
-
-#endif
-
 namespace LinBox
 {
 	/** Random iterator for nonzero random numbers

@@ -46,6 +46,7 @@
  * @ingroup randiter
  * @brief Genric random iterator.
  */
+#error "deprecated and not tested"
 
 #ifndef __LINBOX_generic_randiter_H
 #define __LINBOX_generic_randiter_H

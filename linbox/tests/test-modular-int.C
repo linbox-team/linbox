@@ -64,9 +64,9 @@ int main (int argc, char **argv)
 	static int q4 = 101;
 	static size_t n = 10000;
 	static int iterations = 1;
-	static int trials = 100000;
-	static int categories = 100;
-	static int hist_level = 1;
+	static int trials = 10000;
+	static int categories = 1000;
+	static int hist_level = 10;
 
 	static Argument args[] = {
 		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q1 },
