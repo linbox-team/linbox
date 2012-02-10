@@ -798,8 +798,15 @@ namespace LinBox
 // #endif
 #include "linbox/util/commentator.inl"
 
+#define aside commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTON)
+// Usage: "aside << stuff" or "ostream& report = aside; report << stuff"
+
 #else //DISABLE_COMMENTATOR
 
+#define aside NoStream()
+struct NoStream {};
+template<typename T>
+NoStream & operator<< (NoStream& o, const T & x) { return o; }
 #if 0
 #  define Commentator CommentatorDisabled
 #  define MessageClass MessageClassDisabled
@@ -1027,8 +1034,6 @@ namespace LinBox
         FFLAS::parseArguments(argc,argv,args,printDefaults);
     }
 }
-
-
 
 #endif // __LINBOX_commentator_H
 

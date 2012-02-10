@@ -29,6 +29,34 @@
  * @test  tests field operations
  */
 
+/*
+// top level test that doesn't use subtests.
+bool testField 
+
+// top level test that uses subtest testRandomIteratorStep.
+bool testRandomIterator 
+
+// top level runBasicRingTests calls these subtests.
+bool testFieldNegation 
+bool testFieldDistributivity
+bool testFieldAssociativity
+bool testFieldCharacteristic 
+bool testGeometricSummation 
+bool testArithmeticConsistency 
+bool testAxpyConsistency 
+bool testRanditerBasic
+
+// top level runFieldTests calls these subtests after runBasicRingTests.
+bool testFieldInversion 
+bool testFieldCommutativity 
+bool testFreshmansDream 
+bool testRingTrivia 
+
+//called in subtest testArithmeticConsistency
+bool testRingArithmeticConsistency 
+bool testInvDivConsistency 
+*/
+
 #ifndef __LINBOX_test_field_H
 #define __LINBOX_test_field_H
 
@@ -1151,7 +1179,7 @@ namespace subtests {
 		delete[] st;
 		return ret;
 	}
-}
+} // namespace subtests
 
 	/* Convenience function to run all of the field tests on a given field */
 	template <class Field>
@@ -1202,6 +1230,9 @@ namespace subtests {
 	/* Random number test
 	 *
 	 * Test that the random iterator over the given field works
+	 *
+	 * What are good value combinations: num_trials, num_categories, hist_len? -bds
+	 *
 	 */
 	template <class Field>
 	bool testRandomIteratorStep (const Field &F,
@@ -1289,7 +1320,8 @@ namespace subtests {
 		report << "Test of distribution uniformity (high-order):     p = " << p << std::endl;
 
 		if (p < 0.05 || p > 0.95)
-			reportError("Consistency failure for addition", ret);
+			reportError("Random iterator's values do not appear to be uniformly distributed", ret);
+			//reportError("Consistency failure for addition", ret); // I don't understand this report phrase.  -bds
 
 		diff_cat_iter = diff_categories.begin ();
 
@@ -1321,7 +1353,6 @@ template <class Field>
 bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true)
 	// n is not used.
 {
-
 	ostringstream str;
 
 	str << "\t--Testing " << desc << " field" << ends;
@@ -1329,7 +1360,7 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 	strcpy (st, str.str().c_str());
 	commentator().start (st, "runFieldTests");
 	bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest) ;
-	ret &= subtests::testInvDivConsistency(F, desc, iterations) ;
+	//ret &= subtests::testInvDivConsistency(F, desc, iterations) ; // it's called in runBasicRingTests
 	ret &= subtests::testFieldInversion (F, desc, iterations) ;
 	ret &= subtests::testFieldCommutativity (F, desc, iterations) ;
 	ret &= subtests::testFreshmansDream(F, desc, iterations);
@@ -1346,8 +1377,9 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
  *
  * Test that the random iterator over the given field works.
  *
- * Test up to five times, accepting any one, to increase probability of
- * passing statistical tests.
+ * Test up to two times, accepting either one, to reduce probability of
+ * failing statistical tests.
+ * 
  */
 template <class Field>
 bool testRandomIterator (const Field &F, const char *text,
@@ -1355,28 +1387,29 @@ bool testRandomIterator (const Field &F, const char *text,
 			 unsigned int num_categories,
 			 unsigned int hist_len)
 {
+	bool pass = true;
 	std::ostringstream str;
 
 	str << "\t--Testing " << text << "::RandIter" << std::ends;
-	char * st = new char[str.str().size()];
-	strcpy (st, str.str().c_str());
+	//char * st = new char[str.str().size()];
+	//strcpy (st, str.str().c_str());
 
-	commentator().start (st, "testRandomIterator");
+	commentator().start (str.str().c_str(), "testRandomIterator");
 
-	std::ostream &report = commentator().report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 	/* This test either passes or runs a lot of times */
 	for (int i = 1;
-	     (!  subtests::testRandomIteratorStep (F, text, num_trials, num_categories, hist_len)) && (i < 20) ;
+	     (!  subtests::testRandomIteratorStep (F, text, num_trials, num_categories, hist_len)) && (i <= 2) ;
 	     ++i ){
-		if (0 == i % 10)
-			report << "Warning! Probable failure of uniformity" << std::endl;
+		//if (0 == i % 5)
+			//std::ostream &report = commentator().report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "Warning! Probable failure of uniformity" << std::endl;
+			reportError( "Warning! Probable failure of uniformity", pass);
 	};
 
 	commentator().stop (MSG_STATUS (true), (const char *) 0, "testRandomIterator");
 
-	delete[] st;
-	return true;
+	//delete[] st;
+	return pass;
 
 }
 

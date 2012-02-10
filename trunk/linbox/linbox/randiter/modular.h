@@ -50,6 +50,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 
 #include "time.h"
 #include "linbox/integer.h"
@@ -112,7 +113,7 @@ namespace LinBox
 			*/
 
 			// Seed random number generator
-			srand ((unsigned)_seed);
+			srandom ((unsigned)_seed);
 		}
 
 		/** Copy constructor.
@@ -152,7 +153,7 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		Element &random (Element &a) const
-		{ return _field.init(a,rand()); }
+		{ return _field.init(a, ::random()); }
 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
@@ -162,7 +163,7 @@ namespace LinBox
 		 */
 		Element &nonzerorandom (Element &a) const
 		{
-			//return a = rand() % (_field.modulus -1) + 1;
+			//return a = random() % (_field.modulus -1) + 1;
 
 			// CPernet: stupidly slow, but now way to get _field.modulus without changing the interface
 			while (_field.isZero (random(a))) ;

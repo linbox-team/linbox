@@ -109,8 +109,6 @@ int main (int argc, char **argv)
 	if (!runFieldTests (G,  "Modular<double>",  iterations, n, false)) pass = false;
 
 	if (!runFieldTests (I_int,  "Modular<double>",  iterations, n, false)) pass = false;
-	// if (!testRandomIterator (I_int,  "Modular<double>", trials, categories, hist_level)) pass = false;
-
 
 	commentator().stop("Modular<double> field test suite");
 	return pass ? 0 : -1;

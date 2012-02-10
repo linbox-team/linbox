@@ -75,23 +75,6 @@ namespace LinBox
 			_field (R._field), _size (R._size), _seed (R._seed)
 		{}
 
-
-#ifdef __LINBOX_XMLENABLED
-		GMPRationalRandIter(LinBox::Reader &R) :
-			_field(R.Down(1))
-		{
-			R.Up(1);
-			if(!R.expectTagName("randiter")) return;
-			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
-
-			if(_seed == 0) _seed = time( NULL);
-
-			return;
-
-		}
-#endif
-
-
 		/// Destructor.
 		~GMPRationalRandIter()
 		{}

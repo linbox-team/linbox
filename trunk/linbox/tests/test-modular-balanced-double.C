@@ -55,9 +55,9 @@ int main (int argc, char **argv)
 {
 	static size_t n = 1000;
 	static int iterations = 1;
-	static int trials = 100000;
-	static int categories = 100;
-	static int hist_level = 1;
+	static int trials = 10000;
+	static int categories = 1000;
+	static int hist_level = 10;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },

@@ -34,16 +34,6 @@
 #include "linbox/integer.h"
 #include "linbox/linbox-config.h"
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <string>
-
-#endif
-
 namespace LinBox
 {
 
