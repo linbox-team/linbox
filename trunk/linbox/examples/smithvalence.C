@@ -29,131 +29,7 @@
 //#include "linbox-config.h"
 #include <iostream>
 
-#include "linbox/field/gf2.h"
-#include "linbox/field/modular.h"
-#include "linbox/field/givaro.h"
-#include "linbox/field/field-traits.h"
-#include "linbox/blackbox/transpose.h"
-#include "linbox/blackbox/compose.h"
-#include "linbox/blackbox/sparse.h"
-#include "linbox/solutions/rank.h"
-#include "linbox/solutions/valence.h"
-#include "linbox/algorithms/smith-form-sparseelim-local.h"
-#include "linbox/util/matrix-stream.h"
-#include "linbox/integer.h"
-
-#include <givaro/givintnumtheo.h>
-
-using LinBox::integer;
-
-template<class Field>
-unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
-{
-	std::ifstream input(filename);
-	LinBox::MatrixStream< Field > msf( F, input );
-	LinBox::SparseMatrix<Field,typename LinBox::Vector<Field>::SparseSeq> FA(msf);
-	input.close();
- Givaro::Timer tim; tim.start();
-	LinBox::rankin(r, FA);
-	tim.stop();
-	F.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
-	return r;
-}
-
-unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F2)
-{
-	std::ifstream input(filename);
-	LinBox::ZeroOne<LinBox::GF2> A;
-	A.read(input);
-	input.close();
- Givaro::Timer tim; tim.start();
-	LinBox::rankin(r, A, LinBox::Method::SparseElimination() );
-	tim.stop();
-	F2.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
-	return r;
-}
-
-
-
-unsigned long& LRank(unsigned long& r, char * filename, integer p)
-{
-
-	integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz< Givaro::Std16> >::maxModulus(maxmod16);
-	integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz< Givaro::Std32> >::maxModulus(maxmod32);
-	integer maxmod53; LinBox::FieldTraits<LinBox::Modular<double> >::maxModulus(maxmod53);
-	integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz< Givaro::Std64> >::maxModulus(maxmod64);
-	if (p == 2) {
-		LinBox::GF2 F2;
-		return TempLRank(r, filename, F2);
-	}
-	else if (p <= maxmod16) {
-		typedef LinBox::GivaroZpz< Givaro::Std16> Field;
-		Field F(p);
-		return TempLRank(r, filename, F);
-	}
-	else if (p <= maxmod32) {
-		typedef LinBox::GivaroZpz< Givaro::Std32> Field;
-		Field F(p);
-		return TempLRank(r, filename, F);
-	}
-	else if (p <= maxmod53) {
-		typedef LinBox::Modular<double> Field;
-		Field F(p);
-		return TempLRank(r, filename, F);
-	}
-	else if (p <= maxmod64) {
-		typedef LinBox::GivaroZpz< Givaro::Std64> Field;
-		Field F(p);
-		return TempLRank(r, filename, F);
-	}
-	else {
-		typedef LinBox::GivaroZpz<integer> Field;
-		Field F(p);
-		return TempLRank(r, filename, F);
-	}
-	return r;
-}
-
-std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, integer p, size_t e, size_t intr)
-{
-	integer maxmod;
-	LinBox::FieldTraits<LinBox::GivaroZpz< Givaro::Std64> >::maxModulus(maxmod);
-	if (p <= maxmod) {
-		typedef LinBox::GivaroZpz< Givaro::Std64> Ring;
-		int64_t lp(p);
-		integer q = pow(p,e); int64_t lq(q);
-		if (q > integer(lq)) {
-			std::cerr << "Sorry power rank mod large composite not yet implemented" << std::endl;
-			q = p;
-			do {
-				q *= p; lq = (int64_t)q;
-			} while (q == integer(lq));
-			q/=p; lq = (int64_t)q;
-			std::cerr << "Trying: " << lq << std::endl;
-		}
-		Ring F(lq);
-		std::ifstream input(filename);
-		LinBox::MatrixStream<Ring> ms( F, input );
-		LinBox::SparseMatrix<Ring, LinBox::Vector<Ring>::SparseSeq > A (ms);
-		input.close();
-		LinBox::PowerGaussDomain< Ring > PGD( F );
-
-		PGD.prime_power_rankin( lq, lp, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
-		F.write(std::cout << "Ranks over ") << " are " ;
-		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-			std::cout << *rit << ' ';
-		std::cout << std::endl;
-	}
-	else {
-		std::cerr << "Sorry power rank mod large composite not yet implemented" << std::endl;
-		std::cerr << "Assuming integer rank" << std::endl;
-		ranks.resize(0); ranks.push_back(intr);
-	}
-	return ranks;
-}
-
-
-
+#include "smithvalence.h"
 
 using namespace LinBox;
 
@@ -264,20 +140,31 @@ int main (int argc, char **argv)
 		if (sit->second != coprimeR) {
 			std::vector<size_t> ranks;
 			ranks.push_back(sit->second);
+            size_t effexp;
 			if (*eit > 1) {
-				PRank(ranks, argv[1], sit->first, *eit, coprimeR);
+				PRank(ranks, effexp, argv[1], sit->first, *eit, coprimeR);
 			}
 			else {
-				PRank(ranks, argv[1], sit->first, 2, coprimeR);
+				PRank(ranks, effexp, argv[1], sit->first, 2, coprimeR);
 			}
 			if (ranks.size() == 1) ranks.push_back(coprimeR);
-			for(size_t expo = (*eit)<<1; ranks.back() < coprimeR; expo<<=1) {
-				PRank(ranks, argv[1], sit->first, expo, coprimeR);
-				if (ranks.size() < expo) {
-					std::cerr << "Larger prime power not yet implemented" << std::endl;
-					break;
-				}
-			}
+
+            if (effexp < *eit) {
+                for(size_t expo = effexp<<1; ranks.back() < coprimeR; expo<<=1) {
+                    PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
+                }
+            } else {
+
+                for(size_t expo = (*eit)<<1; ranks.back() < coprimeR; expo<<=1) {
+                    PRank(ranks, effexp, argv[1], sit->first, expo, coprimeR);
+                    if (ranks.size() < expo) {
+                        std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
+                            // break;
+                        PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
+                    }
+                }
+            }
+            
 			std::vector<size_t>::const_iterator rit=ranks.begin();
 			// unsigned long modrank = *rit;
 			for(++rit; rit!= ranks.end(); ++rit) {
