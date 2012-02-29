@@ -476,12 +476,10 @@ namespace LinBox
 				//file.ignore(1);
 				_field.read (file, *p);
 			}
-
 		}
 		else { // sparse file format - needs fixing
 			int i, j;
-			while (true)
-			{
+			while (true) {
 				file >> i >> j;
 				//file.ignore(1);
 				//if (! file) break;

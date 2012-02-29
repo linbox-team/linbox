@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2011 LinBox
  * Written by BB <brice.boyer@imag.fr>
  *
@@ -75,7 +74,9 @@ namespace LinBox
 				pdf  = 101, //!< pdf. Portable Document Format actually, this is eps converted to pdf.
 				eps  = 102, //!< eps. Encapsulated PostScript. Cool for inclusion in LaTex files. This is the default.
 				svg  = 103, //!< sgv. Scalable Vector Graphics.
-				other= 104 //!< don't know yet...
+				tex  = 104, //!< tex. Simple tabular.
+				html = 105, //!< html. HTML table.
+				other= 106 //!< don't know yet...
 			} ;
 		};
 

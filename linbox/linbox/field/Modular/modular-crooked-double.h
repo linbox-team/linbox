@@ -7,20 +7,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -90,6 +90,7 @@ namespace LinBox
 		friend class MultiModDouble;
 
 		typedef double Element;
+		const Element zero,one,mOne;
 		typedef ModularCrookedRandIter<double> RandIter;
 
 		static ClassifyRing <ModularCrooked<double> >::categoryTag
@@ -98,10 +99,13 @@ namespace LinBox
 			return ClassifyRing<ModularCrooked<double> >::categoryTag();
 		}
 
-		ModularCrooked () {}
+		ModularCrooked ()
+			: zero(0),one(1),mOne(-1)
+		{}
 
 		ModularCrooked (int32_t p, float f = 0.5, int exp = 1) :
-			modulus((double)p), up_mod( std::ceil((p-1.)*f) ), lo_mod( up_mod-modulus+1 ),lmodulus (p)
+			modulus((Element)p), up_mod( std::ceil((p-1.)*f) ), lo_mod( up_mod-modulus+1 ),lmodulus (p)
+			,zero(0),one(1),mOne(-1)
 		{
 #ifdef DEBUG
 			if(modulus <= 1)
@@ -120,7 +124,8 @@ namespace LinBox
 		}
 
 		ModularCrooked (double p, float f = 0.5) :
-			modulus((double)p), up_mod( std::ceil((p-1.)*f) ), lo_mod( up_mod-modulus+1 ),lmodulus (p)
+			modulus((Element)p), up_mod( std::ceil((p-1.)*f) ), lo_mod( up_mod-modulus+1 ),lmodulus ((unsigned long)p)
+			,zero(0),one(1),mOne(-1)
 		{
 #ifdef DEBUG
 			if (modulus <= 1)
@@ -136,7 +141,8 @@ namespace LinBox
 		}
 
 		ModularCrooked (long int p, float f = 0.5) :
-			modulus((double)p), up_mod( std::ceil((p-1.)*f) ), lo_mod(  up_mod-modulus+1 ),lmodulus (p)
+			modulus((double)p), up_mod( std::ceil((double)(p-1)*f) ), lo_mod(  up_mod-modulus+1 ),lmodulus ((unsigned long)p)
+			,zero(0),one(1),mOne(-1)
 		{
 #ifdef DEBUG
 			if ((double) modulus <= 1)
@@ -151,6 +157,7 @@ namespace LinBox
 
 		ModularCrooked (const integer& p, float f = 0.5)  :
 			modulus((double)p), up_mod( std::ceil((double)(p-1)*f) ), lo_mod(  up_mod-modulus+1 ),lmodulus (p)
+			,zero(0),one(1),mOne(-1)
 		{
 #ifdef DEBUG
 			if(modulus <= 1)
@@ -166,8 +173,10 @@ namespace LinBox
 			,up_mod (mf.up_mod)
 			,lo_mod (mf.lo_mod)
 			,lmodulus (mf.lmodulus)
+			,zero(mf.zero),one(mf.one),mOne(mf.mOne)
 		{}
 
+#if 1
 		const ModularCrooked &operator= (const ModularCrooked<double> &F)
 		{
 			modulus = F.modulus;
@@ -176,6 +185,7 @@ namespace LinBox
 			lmodulus= F.lmodulus;
 			return *this;
 		}
+#endif
 
 
 		inline integer &cardinality (integer &c) const
@@ -190,7 +200,7 @@ namespace LinBox
 
 		inline size_t characteristic () const
 		{
-			return modulus;
+			return (size_t)modulus;
 		}
 
 
@@ -207,7 +217,7 @@ namespace LinBox
 
 		inline float &convert (float &x, const Element& y) const
 		{
-			return x=y;
+			return x=(float)y;
 		}
 
 		std::ostream &write (std::ostream &os) const
@@ -259,10 +269,12 @@ namespace LinBox
 			return x;
 		}
 
-		inline Element& init(Element& x, const double y) const
+		inline Element& init(Element& x, const double y=0) const
 		{
 
-			x = drem (y, modulus);
+			// x = (Element)((long unsigned)y)%(lmodulus);
+			// x = ((long int)y) % (lmodulus);
+			x = fmod(y,modulus);
 			if (x < lo_mod) return x += modulus;
 			if (x > up_mod) x -= modulus;
 			return x;
