@@ -134,7 +134,7 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		Element &random (Element &a) const
-		{ return _field.init(a,(double)rand()); }
+		{ return _field.init(a,rand()); }
 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
