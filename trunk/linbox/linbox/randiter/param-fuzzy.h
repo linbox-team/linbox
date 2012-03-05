@@ -31,6 +31,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <time.h>
 
 #include "linbox/integer.h"
 #include "linbox/element/abstract.h"
