@@ -53,28 +53,40 @@ namespace LinBox
 	 *  @tparam StorageTag
 	 */
 	template <class Domain, class StorageTag= Givaro::Dense>
-	class GivPolynomialRing : public Givaro::Poly1Dom<GivaroField<Domain>,StorageTag> {
+	class GivPolynomialRing : public Givaro::Poly1FactorDom< GivaroField<Domain>,StorageTag> {
 	public:
 
-		//	using Givaro::Poly1Dom<Domain,StorageTag>::eval;
-		typedef typename Givaro::Poly1Dom<Domain,StorageTag>::Element Element;
-
+		//	using Givaro::Poly1FactorDom<Domain,StorageTag>::eval;
+        typedef typename Givaro::Poly1FactorDom<GivaroField<Domain>,StorageTag> Father_t;
+		typedef typename Father_t::Element Element;
 		typedef Element Polynomial;
 
 		GivPolynomialRing () {}
 
-		GivPolynomialRing (const Domain& D) :
-		 Givaro::Poly1Dom<GivaroField<Domain>,StorageTag>(D, Givaro::Indeter())
+		GivPolynomialRing (const Domain& D) : Father_t( GivaroField<Domain>(D) )
 		{}
 
 		GivPolynomialRing (const Domain& D, const Givaro::Indeter& I) :
-		 Givaro::Poly1Dom<GivaroField<Domain>,StorageTag>(D, I)
+                Father_t(GivaroField<Domain>(D), I)
 		{}
 
 		template<class PolyCont>
 		PolyCont& factor (PolyCont& factors,
-				  std::vector<unsigned long>& exp,
-				  const Polynomial& P);
+                          std::vector<unsigned long>& exp,
+                          const Polynomial& P) 
+            {
+
+                    // JGD 02.03.2012 : to be refactored
+                    // at least without pointers ...
+                std::vector<Polynomial> Lf;
+                CZfactor(Lf, exp, P); // Cantor-Zassenhaus factorization
+                factors.resize(Lf.size());
+                for(size_t i=0;  i<Lf.size(); ++i)
+                    factors[i] = new Polynomial(Lf[i]);
+
+                return factors;
+            }
+        
 
 	};
 
