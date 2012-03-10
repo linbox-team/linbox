@@ -49,21 +49,27 @@ int main (int argc, char **argv)
 	commentator().setMaxDepth (-1);
 	commentator().setReportStream (std::cerr);
 
-	if (argc < 2 || argc > 3)
-	{	cerr << "Usage: rank <matrix-file-in-supported-format> [<p>]" << endl; return -1; }
+	if (argc < 2 || argc > 3) {
+		cerr << "Usage: rank <matrix-file-in-supported-format> [<p>]" << endl;
+		return -1;
+	}
 
 	ifstream input (argv[1]);
-	if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
+	if (!input) {
+		cerr << "Error opening matrix file: " << argv[1] << endl;
+		return -1;
+	}
 
 	long unsigned int r;
 
 	if (argc == 2) { // rank over the rational numbers.
 
-		/* We could pick a random prime and work mod that prime, But the point here
-		   is that the rank function in solutions/ handles that issue.  Our matrix here
-		   is an integer or rational matrix and our concept is that we are getting the rank of that
-		   matrix by some blackbox magic inside linbox.
-		   */
+		/* We could pick a random prime and work mod that prime, But
+		 * the point here is that the rank function in solutions/
+		 * handles that issue.  Our matrix here is an integer or
+		 * rational matrix and our concept is that we are getting the
+		 * rank of that matrix by some blackbox magic inside linbox.
+		 */
 		LinBox::GivaroRational ZZ;
 		MatrixStream<GivaroRational> ms( ZZ, input );
 		SparseMatrix<GivaroRational> A ( ms );

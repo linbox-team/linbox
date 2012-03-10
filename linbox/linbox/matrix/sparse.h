@@ -35,20 +35,20 @@
  *   - Eliminated operator []; added getEntry; changed put_value to setEntry
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -1477,13 +1477,29 @@ public:
 		return ConstIterator (_matA.end (), _matA.back ().second.end (), _matA.end ());
 	}
 
+	/* Generic trait for iterators without type */
+	template<typename U>
+	struct IteratorValueType {
+		typedef typename U::value_type value_type;
+	};
+
+	template<typename X>
+	struct IteratorValueType<const X*> {
+		typedef X value_type;
+	};
+
+
 	template <class RepIterator, class RowIdxIterator>
 	class _IndexedIterator {
 	public:
-		typedef typename RepIterator::value_type::second_type::value_type value_type;
+		typedef typename IteratorValueType<RepIterator>::value_type PairValue ;
+		typedef typename PairValue::second_type::value_type value_type;
+
+		// typedef typename IteratorValueType< RepIterator >::second_type::value_type value_type;
 
 		// Dan Roche 7-6-05 Fixed a seg fault this code was causing
-		_IndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end) :
+		_IndexedIterator (size_t idx, const RepIterator &i,
+				const RowIdxIterator &j, const RepIterator &A_end) :
 			_i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index(0), _value_index(0)
 		{
 			if( _i == _A_end ) return;
@@ -1498,7 +1514,9 @@ public:
 		}
 
 		_IndexedIterator (const _IndexedIterator &iter) :
-			_i (iter._i), _j (iter._j), _A_end (iter._A_end), _r_index (iter._r_index), _c_index (iter._c_index), _value_index( iter._value_index )
+			_i (iter._i), _j (iter._j),
+			_A_end (iter._A_end), _r_index (iter._r_index),
+			_c_index (iter._c_index), _value_index( iter._value_index )
 		{}
 
 		_IndexedIterator ()
