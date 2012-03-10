@@ -48,7 +48,10 @@
 
 #include <cfloat> // BB : needed on some rare platforms...
 #ifdef __LINBOX_HAVE_STDINT_H
+#ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS
+// else ??
+#endif
 #include <stdint.h>
 #ifndef INT32_MAX
 #error "INT32_MAX is not defined. It should at least be defined in Givaro..."
