@@ -195,7 +195,7 @@ namespace LinBox
 	{
 		// We make a copy
 		GaussDomain<GF2>::Matrix SpA(A.field(), A.rowdim(), A.coldim());
-		MatrixHom::map(SpA, A, A.field());
+		MatrixHom::map(SpA, A );
 		return solvein(x, SpA, b, m);
 	}
 
