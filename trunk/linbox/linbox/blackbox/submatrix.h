@@ -16,20 +16,20 @@
  *
  * -------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -175,9 +175,9 @@ namespace LinBox
 		template<typename _Tp1>
 		struct rebind {
 			typedef SubmatrixOwner<typename Blackbox_t::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other;
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A) {
 				typename Blackbox_t::template rebind<_Tp1> Rebinder;
-				Rebinder( Ap.getData(), *(A.getPtr()), F);
+				Rebinder( Ap.getData(), *(A.getPtr()));
 			}
 		};
 
@@ -532,7 +532,7 @@ namespace LinBox
 			_rowdim(T.rowdim()), _coldim(T.coldim()),
 			_z (_BB_data.coldim ()), _y (_BB_data.rowdim ())
 		{
-			typename Submatrix<_BB,_Vc>::template rebind<Field>()(*this,T, F);
+			typename Submatrix<_BB,_Vc>::template rebind<Field>()(*this,T );
 		}
 		template<typename _BB, typename _Vc, class Field>
 		SubmatrixOwner (const SubmatrixOwner<_BB,_Vc>& T, const Field& F) :
@@ -541,7 +541,7 @@ namespace LinBox
 			_rowdim(T.rowdim()), _coldim(T.coldim()),
 			_z (_BB_data.coldim ()), _y (_BB_data.rowdim ())
 		{
-			typename SubmatrixOwner<_BB,_Vc>::template rebind<Field>()(*this,T, F);
+			typename SubmatrixOwner<_BB,_Vc>::template rebind<Field>()(*this,T);
 		}
 
 		/** Retreive _row dimensions of BlackBox matrix.

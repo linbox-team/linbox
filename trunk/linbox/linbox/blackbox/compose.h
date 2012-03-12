@@ -176,10 +176,10 @@ namespace LinBox
 				 typename Blackbox2::template rebind<_Tp2>::other
 				 > other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			void operator() (other & Ap, const Self_t& A)
 			{
-				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()), F);
-				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()), F);
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()));
+				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()));
 			}
 
 		};
@@ -335,17 +335,16 @@ namespace LinBox
 		}
 
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef Compose<typename Blackbox::template rebind<_Tp1>::other, typename Blackbox::template rebind<_Tp1>::other> other;
 
-			void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other *& Ap, const Self_t& A) {
 				std::vector<typename other::Blackbox *> newPtrV;
 				typename std::vector<typename other::Blackbox *>::iterator np;
 				typename std::vector<const Blackbox* >::const_iterator bp;
 				for( bp = A._BlackboxL.begin(), np = newPtrV.begin();
 				     bp != A._BlackboxL.end(); ++bp, ++np) {
-					typename Blackbox::template rebind<_Tp1> () (*np, *(*bp), F);
+					typename Blackbox::template rebind<_Tp1> () (*np, *(*bp));
 				}
 				Ap = new other(newPtrV);
 			}
@@ -538,9 +537,9 @@ namespace LinBox
 				 typename Blackbox2::template rebind<_Tp2>::other
 				 > other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData(), F);
-				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), A.getRightData(), F);
+			void operator() (other & Ap, const Self_t& A) {
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData());
+				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), A.getRightData());
 			}
 
 		};
@@ -552,7 +551,7 @@ namespace LinBox
 			_B_data(*(Mat.getRightPtr()), F),
 			_z(_A_data.coldim())
 		{
-			typename Compose<_BBt1, _BBt2>::template rebind<Field>()(*this,Mat,F);
+			typename Compose<_BBt1, _BBt2>::template rebind<Field>()(*this,Mat);
 		}
 
 		template<typename _BBt1, typename _BBt2, typename Field>
@@ -561,7 +560,7 @@ namespace LinBox
 			_B_data(Mat.getRightData(), F) ,
 			_z(_A_data.coldim())
 		{
-			typename ComposeOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,Mat,F);
+			typename ComposeOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,Mat);
 		}
 
 

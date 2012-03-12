@@ -766,9 +766,7 @@ namespace LinBox
 		BlasSubmatrix &operator = (const BlasSubmatrix<_Field> &SM);
 
 		template<typename _Tp1>
-		struct rebind {
-			typedef BlasSubmatrix<typename _Tp1::Element> other;
-		};
+		struct rebind ;
 
 		//////////////////
 		//  DIMENSIONS  //

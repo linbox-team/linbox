@@ -212,18 +212,19 @@ namespace LinBox
 		struct rebind {
 			typedef SparseMatrix<_Tp1, _Rw1> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A) {
 				// Ap = new other(F, A.rowdim(), A.coldim());
 
 				typename _Tp1::Element e;
-				Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+
+				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 				for( typename Self_t::ConstIndexedIterator
 				     indices = A.IndexedBegin();
 				     (indices != A.IndexedEnd()) ;
 				     ++indices ) {
 					// hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
 					hom. image (e, indices.value() );
-					if (!F.isZero(e))
+					if (!Ap.field().isZero(e))
 						Ap.setEntry (indices.rowIndex(),
 							     indices.colIndex(), e);
 				}
@@ -234,7 +235,7 @@ namespace LinBox
 		SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &Mat, const Field& F) :
 			SparseMatrixBase<Element, _Row> (Mat.rowdim(),Mat.coldim()),
 			_field (F), _VD (F), _MD (F), _AT (*this) {
-				typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,_Row>()(*this, Mat, F);
+				typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,_Row>()(*this, Mat);
 			}
 
 

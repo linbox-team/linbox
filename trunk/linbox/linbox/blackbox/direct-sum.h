@@ -189,10 +189,10 @@ namespace LinBox
 				 typename Blackbox2::template rebind<_Tp2>::other
 				 > other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			void operator() (other & Ap, const Self_t& A)
 			{
-				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()), F);
-				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()), F);
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()));
+				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()));
 			}
 
 		};
@@ -283,12 +283,12 @@ namespace LinBox
 				 > other;
 
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A) {
 				typename other::ListBB_t::iterator itp = Ap.getDataSum().begin();
 				typename Self_t::ListBB_t::const_iterator it = A.getSum().begin();
 
 				for( ; it != A.getSum().end(); ++itp,++it)
-					typename Blackbox::template rebind<_Tp1>()( *itp, *(*it), F);
+					typename Blackbox::template rebind<_Tp1>()( *itp, *(*it) );
 			}
 
 		};
@@ -469,16 +469,15 @@ namespace LinBox
 		}
 
 		template<typename _Tp1, typename _Tp2 = _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef DirectSumOwner<
 			typename Blackbox1::template rebind<_Tp1>::other,
 				 typename Blackbox2::template rebind<_Tp2>::other
 				 > other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData(), F);
-				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), A.getRightData(), F);
+			void operator() (other & Ap, const Self_t& A) {
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData());
+				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), A.getRightData());
 			}
 
 		};
@@ -489,7 +488,7 @@ namespace LinBox
 			_A_data(*(M.getLeftPtr()), F),
 			_B_data(*(M.getRightPtr()), F)
 		{
-			typename DirectSum<_BBt1, _BBt2>::template rebind<Field,Field>()(*this, M, F);
+			typename DirectSum<_BBt1, _BBt2>::template rebind<Field,Field>()(*this, M);
 		}
 
 		template<typename _BBt1, typename _BBt2, typename Field>
@@ -497,7 +496,7 @@ namespace LinBox
 			_A_data(M.getLeftData(), F),
 			_B_data(M.getRightData(), F)
 		{
-			typename DirectSumOwner<_BBt1, _BBt2>::template rebind<Field,Field>()(*this, M, F);
+			typename DirectSumOwner<_BBt1, _BBt2>::template rebind<Field,Field>()(*this, M);
 		}
 
 
@@ -581,21 +580,20 @@ namespace LinBox
 		{}
 
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef DirectSumOwner<
 			typename Blackbox::template rebind<_Tp1>::other,
 				 typename Blackbox::template rebind<_Tp1>::other
 				 > other;
 
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A) {
 				typename other::ListBB_t::iterator itp = Ap.getDataSum().begin();
 				typename Self_t::ListBB_t::const_iterator it = A.getDataSum().begin();
 
 
 				for( ; it != A.getDataSum().end(); ++itp,++it)
-					typename Blackbox::template rebind<_Tp1>()( *(itp->get()), *(*it), F);
+					typename Blackbox::template rebind<_Tp1>()( *(itp->get()), *(*it));
 			}
 
 		};
@@ -604,14 +602,14 @@ namespace LinBox
 		DirectSumOwner (const DirectSum<_BBt> &M, const Field& F) :
 			_VB_data( M.size() ), m( M.rowdim() ), n( M.coldim())
 		{
-			typename DirectSum<_BBt>::template rebind<Field>()(*this, M, F);
+			typename DirectSum<_BBt>::template rebind<Field>()(*this, M);
 		}
 
 		template<typename _BBt, typename Field>
 		DirectSumOwner (const DirectSumOwner<_BBt> &M, const Field& F) :
 			_VB_data( M.size() ), m( M.rowdim() ), n( M.coldim())
 		{
-			typename DirectSumOwner<_BBt>::template rebind<Field>()(*this, M, F);
+			typename DirectSumOwner<_BBt>::template rebind<Field>()(*this, M);
 		}
 
 

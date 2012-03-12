@@ -5,20 +5,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -154,15 +154,15 @@ namespace LinBox
 		}
 
 		template<typename _Tp1, typename _Tp2 = _Tp1>
-		struct rebind
-		{ typedef SumOwner<
+		struct rebind {
+			typedef SumOwner<
 			typename Blackbox1::template rebind<_Tp1>::other,
 				 typename Blackbox2::template rebind<_Tp2>::other
 				 > other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()), F);
-				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()), F);
+			void operator() (other & Ap, const Self_t& A) {
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()));
+				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()));
 			}
 
 
@@ -314,12 +314,12 @@ namespace LinBox
 		}
 
 		template<typename _Tp1, typename _Tp2 = _Tp1>
-		struct rebind
-		{ typedef SumOwner<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other;
+		struct rebind {
+			typedef SumOwner<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other;
 
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData(), F);
-				typename Blackbox2::template rebind<_Tp1> () ( Ap.getRightData(), A.getRightData(), F);
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData());
+				typename Blackbox2::template rebind<_Tp1> () ( Ap.getRightData(), A.getRightData());
 			}
 
 
@@ -332,7 +332,7 @@ namespace LinBox
 			_z2(_A_data.coldim()),
 			VD(F)
 		{
-			typename Sum<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
+			typename Sum<_BBt1, _BBt2>::template rebind<Field>()(*this,M);
 		}
 
 		template<typename _BBt1, typename _BBt2, typename Field>
@@ -343,7 +343,7 @@ namespace LinBox
 			_z2(_A_data.coldim()) ,
 			VD(F)
 		{
-			typename SumOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
+			typename SumOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,M);
 		}
 
 

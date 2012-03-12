@@ -435,8 +435,9 @@ namespace LinBox
 		typedef _SP_BB_VECTOR_<Row> Rep;
 
 		template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
-		struct rebind
-		{ typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseSequenceVectorTag> other; };
+		struct rebind {
+			typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseSequenceVectorTag> other;
+		};
 
 		SparseMatrixBase (size_t m, size_t n) :
 			_matA (m), _m (m), _n (n)
@@ -877,8 +878,9 @@ public:
 	typedef _SP_BB_VECTOR_<Row> Rep;
 
 	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
-	struct rebind
-	{ typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseAssociativeVectorTag> other; };
+	struct rebind {
+	       	typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseAssociativeVectorTag> other;
+	};
 
 	SparseMatrixBase (size_t m, size_t n) :
 		_matA (m), _m (m), _n (n)

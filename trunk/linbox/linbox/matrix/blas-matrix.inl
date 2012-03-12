@@ -384,7 +384,7 @@ namespace LinBox
 		_field(F),_MD(_field ),_VD(_field )
 	{
 		_use_fflas = Protected::checkBlasApply(_field, _col);
-		typename _Matrix::template rebind<_Field>()(*this,A,F);
+		typename _Matrix::template rebind<_Field>()(*this,A);
 	}
 
 	template <class _Field>
@@ -661,15 +661,14 @@ namespace LinBox
 	struct BlasMatrix< _Field>::rebind {
 		typedef BlasMatrix<_Tp1> other;
 
-		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+		void operator() (other & Ap, const Self_t& A) {
 			typedef typename BlasMatrix<_Field>::ConstIterator ConstSelfIterator ;
 			typedef typename other::Iterator OtherIterator ;
-			OtherIterator    Ap_p;
-			ConstSelfIterator A_p;
-			Hom<Field, _Tp1> hom(A. field(), F);
-			for (A_p = A. Begin(), Ap_p = Ap.Begin();
-			     A_p != A. End(); ++ A_p, ++ Ap_p)
-				hom.image (*Ap_p, *A_p);
+			OtherIterator    Ap_i = Ap.Begin();
+			ConstSelfIterator A_i = A.Begin();
+			Hom<Field, _Tp1> hom(A. field(), Ap. field()) ;
+			for ( ; A_i != A. End(); ++ A_i, ++ Ap_i)
+				hom.image (*Ap_i, *A_i);
 		}
 	};
 #endif
