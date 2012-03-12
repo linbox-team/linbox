@@ -13,20 +13,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -137,10 +137,10 @@ namespace LinBox
 		struct rebind {
 			typedef Diagonal<_Tp1, VectorCategories::DenseVectorTag> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			void operator() (other & Ap, const Self_t& A)
 			{
 
-				Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 
 				typename std::vector<typename _Tp1::Element>::iterator nit = Ap.getData().begin();
 				typename std::vector<Element>::const_iterator oit = A.getData().begin();
@@ -154,7 +154,7 @@ namespace LinBox
 		Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F) :
 			_field(F), _n(D.rowdim()), _v(D.rowdim())
 		{
-			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
+			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D);
 		}
 
 

@@ -22,20 +22,20 @@
  *
  * -----------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -146,11 +146,10 @@ namespace LinBox
 		OutVector& applyTranspose (OutVector& y, const InVector& x) const;
 
 		template<typename _Tp1, typename _Sw1 = typename Switch::template rebind<_Tp1>::other>
-		struct rebind
-		{
+		struct rebind {
 			typedef Butterfly<_Tp1, _Sw1> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A) {
 				//             other LAp(F,A._n);
 				Ap.n_vec() = A.n_vec();
 				Ap.l_vec() = A.l_vec();
@@ -160,7 +159,7 @@ namespace LinBox
 
 				for( ; sit != A.switchesEnd(); ++sit) {
 					_Sw1 newsw;
-					typename Switch::template rebind<_Tp1>() (newsw, *sit, F, A._field);
+					typename Switch::template rebind<_Tp1>() (newsw, *sit, Ap.field(), A._field);
 					Ap.switches().push_back( newsw );
 				}
 				//             Ap = new other(LAp);
@@ -171,7 +170,7 @@ namespace LinBox
 		Butterfly (const Butterfly<_Tp1,_Sw1>& B, const Field &F) :
 			_field (F), _VD (F), _n (B.rowdim())
 		{
-			typename Butterfly<_Tp1,_Sw1>::template rebind<Field>() (*this, B, F);
+			typename Butterfly<_Tp1,_Sw1>::template rebind<Field>() (*this, B);
 		}
 
 

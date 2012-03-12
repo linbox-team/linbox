@@ -41,7 +41,7 @@ template <> struct Boolean_Trait<false> {
 };
 
 // LINBOX_pp_gauss_steps_OUT outputs elimination steps
-#ifdef LINBOX_pp_gauss_steps_OUT 
+#ifdef LINBOX_pp_gauss_steps_OUT
 
 // LINBOX_PRANK_OUT outputs intermediate ranks
 #ifndef LINBOX_PRANK_OUT
@@ -57,7 +57,7 @@ namespace LinBox
     enum {
         PRIVILEGIATE_NO_COLUMN_PIVOTING	= 1,
         PRIVILEGIATE_REDUCING_FILLIN	= 2,
-        PRESERVE_UPPER_MATRIX			= 4,
+        PRESERVE_UPPER_MATRIX		= 4
     };
 
 	/** \brief Repository of functions for rank modulo a prime power by elimination
@@ -149,7 +149,7 @@ namespace LinBox
 		// ------------------------------------------------
         template<class Modulo, class Vecteur>
         void SameColumnPivoting(Modulo PRIME,  const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, Boolean_Trait<false>::BooleanType ) {}
-        
+
 
         template<class Modulo, class Vecteur>
         void SameColumnPivoting(Modulo PRIME,  const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, Boolean_Trait<true>::BooleanType ) {
@@ -175,11 +175,11 @@ namespace LinBox
                 SameColumnPivoting(PRIME, LigneA[p], indcol, c, truetrait ) ;
                 if (c > -2 ) break;
             }
-            if (c > -2) 
+            if (c > -2)
                 return true;
             else
                 return false;
-            
+
         }
 
 		template<class Vecteur>
@@ -250,12 +250,12 @@ namespace LinBox
 
         template<class Vecteur>
         void PreserveUpperMatrixRow(Vecteur& ligne, Boolean_Trait<true>::BooleanType ) {}
-        
+
         template<class Vecteur>
         void PreserveUpperMatrixRow(Vecteur& ligne, Boolean_Trait<false>::BooleanType ) {
             ligne = Vecteur(0);
         }
-        
+
 
 		template<class Modulo, class Vecteur, class De>
 		void FaireElimination( Modulo MOD,
@@ -446,7 +446,7 @@ namespace LinBox
 
 
                     if ( SameColumnPivotingTrait(PRIME, p, LigneA, psizes, indcol, c, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() ) )
-                        break;                    
+                        break;
 
 					for( typename std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
 						p = (*iter).second;
@@ -529,9 +529,9 @@ namespace LinBox
                 }
             } else {
                 if (PRESERVE_UPPER_MATRIX & StaticParameters) {
-                    gauss_rankin<Modulo,BB,D,Container,false,true>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);                
+                    gauss_rankin<Modulo,BB,D,Container,false,true>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
                 } else {
-                    gauss_rankin<Modulo,BB,D,Container,false,false>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);                
+                    gauss_rankin<Modulo,BB,D,Container,false,false>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
                 }
             }
 		}

@@ -1026,7 +1026,22 @@ namespace LinBox
 		return os;
 	}
 
+	template <class _Field>
+	template<typename _Tp1>
+	struct BlasSubmatrix< _Field>::rebind {
+		typedef BlasMatrix<_Tp1> other;
 
+		void operator() (other & Ap, const Self_t& A) {
+			typedef typename BlasSubmatrix<_Field>::ConstIterator ConstSelfIterator ;
+			typedef typename other::Iterator OtherIterator ;
+			OtherIterator    Ap_i;
+			ConstSelfIterator A_i;
+			Hom<Field, _Tp1> hom(A. field(), Ap. field());
+			for (A_i = A. Begin(), Ap_i = Ap.Begin();
+			     A_i != A. End(); ++ A_i, ++ Ap_i)
+				hom.image (*Ap_i, *A_i);
+		}
+	};
 
 } // LinBox
 

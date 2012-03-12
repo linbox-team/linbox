@@ -94,9 +94,9 @@ namespace LinBox
 		template<typename _Tp1>
 		struct rebind {
 			typedef TransposeOwner<typename Blackbox_t::template rebind<_Tp1>::other> other;
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			void operator() (other & Ap, const Self_t& A)
 			{
-				typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), *(A.getPtr()), F);
+				typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), *(A.getPtr()));
 			}
 		};
 
@@ -226,9 +226,9 @@ namespace LinBox
 		template<typename _Tp1>
 		struct rebind {
 			typedef TransposeOwner<typename Blackbox::template rebind<_Tp1>::other> other;
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			void operator() (other & Ap, const Self_t& A)
 			{
-				typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), A.getData(), F);
+				typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), A.getData());
 			}
 		};
 
@@ -236,13 +236,13 @@ namespace LinBox
 		TransposeOwner (const Transpose<_BB>& T, const Field& F) :
 			_A_data(*(T.getPtr()), F)
 		{
-			typename Transpose<_BB>::template rebind<Field>()(*this,T, F);
+			typename Transpose<_BB>::template rebind<Field>()(*this,T);
 		}
 		template<typename _BB, class Field>
 		TransposeOwner (const TransposeOwner<_BB>& T, const Field& F) :
 			_A_data(T.getData(), F)
 		{
-			typename TransposeOwner<_BB>::template rebind<Field>()(*this,T, F);
+			typename TransposeOwner<_BB>::template rebind<Field>()(*this,T);
 		}
 
 
