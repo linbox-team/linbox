@@ -89,10 +89,10 @@ namespace LinBox
 
 		//public:
 
-		template<class FMatrix, class IMatrix, class Field>
-		void map (FMatrix & Ap, const IMatrix& A, const Field& F)
+		template<class FMatrix, class IMatrix>
+		void map (FMatrix & Ap, const IMatrix& A)
 		{
-			typename IMatrix::template rebind<Field>()( Ap, A, F);
+			typename IMatrix::template rebind<typename FMatrix::Field>()( Ap, A);
 		}
 
 		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
@@ -101,7 +101,7 @@ namespace LinBox
 
 		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Vect1, class Field, class Vect2>
-		void map (SparseMatrix<Field, Vect2>& Ap, const SparseMatrix<Ring, Vect1>& A, const Field& F)
+		void map (SparseMatrix<Field, Vect2>& Ap, const SparseMatrix<Ring, Vect1>& A)
 		{
 			typename SparseMatrix<Ring,Vect1>::template rebind<Field,Vect2>()( Ap, A);
 		}
@@ -140,8 +140,7 @@ namespace LinBox
 
 		template <class Field, class Ring>
 		void map (ScalarMatrix<Field> &Ap,
-			  const ScalarMatrix<Ring> &A,
-			  const Field & F)
+			  const ScalarMatrix<Ring> &A)
 		{
 			typename ScalarMatrix<Ring>::template rebind<Field>() (Ap, A);
 		}
