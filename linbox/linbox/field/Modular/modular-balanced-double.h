@@ -88,9 +88,8 @@ namespace LinBox
 	class ModularBalanced<double> : public FieldInterface,
 	      public FFPACK::ModularBalanced<double> {
 
-	      protected:
-
 	      public:
+		      typedef FFPACK::ModularBalanced<double> Father_t ;
 		      friend class FieldAXPY<ModularBalanced<double> >;
 		      friend class DotProductDomain<ModularBalanced<double> >;
 		      friend class MultiModDouble;
@@ -104,7 +103,7 @@ namespace LinBox
 		      }
 
 		      ModularBalanced (const integer& p) :
-			      FFPACK::ModularBalanced<double>((unsigned long)p)
+			      Father_t((unsigned long)p)
 		      {
 #ifdef DEBUG
 			      if (p > (integer) ULONG_MAX)
@@ -117,28 +116,25 @@ namespace LinBox
 
 		      }
 
+		      using Father_t::cardinality ;
 		      integer &cardinality (integer &c) const
 		      {
 			      return c = integer(modulus);
 		      }
 
+		      using Father_t::characteristic ;
 		      integer &characteristic (integer &c) const
 		      {
 			      return c = integer(modulus);
 		      }
 
-		      long unsigned characteristic(long unsigned int&p) const { return FFPACK::ModularBalanced<double>::characteristic(p) ; }
-		      double & convert(double &x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
-		      float & convert(float&x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
-		      unsigned long characteristic()const{return FFPACK::ModularBalanced<double>::characteristic();}
-		      unsigned long cardinality()const{return FFPACK::ModularBalanced<double>::cardinality();}
-		      Element &init (Element&x, const double y) const { return FFPACK::  ModularBalanced<double>::init(x,y) ; }
-
+		      using Father_t::convert ;
 		      integer &convert (integer &x, const Element &y) const
 		      {
 			      return x = integer (y);
 		      }
 
+		      using Father_t::init ;
 		      Element &init (Element &x, const integer &y) const
 		      {
 			      x = (Element)(y%lmodulus);
@@ -146,7 +142,6 @@ namespace LinBox
 			      else if (x>half_mod) return x -= modulus ;
 			      return  x ;
 		      }
-
 
 		      Element &init(Element &x) const
 		      {

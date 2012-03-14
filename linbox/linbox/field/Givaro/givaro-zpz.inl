@@ -25,7 +25,10 @@
  *.
  */
 
-
+/*!@internal
+ * @file linbox/field/Givaro/givaro-zpz.inl
+ * @brief implementation of givaro-zpz.h.
+ */
 
 
 #ifndef __LINBOX_givaro_zpz_INL

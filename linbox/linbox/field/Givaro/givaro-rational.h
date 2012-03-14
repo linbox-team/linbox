@@ -126,7 +126,7 @@ namespace LinBox
 		Hom(const Source& S, const Target& T) :
 			_source (S), _target(T)
 		{
-}
+		}
 		Elt& image(Elt& t, const SrcElt& s)
 		{
 			_source. get_num (num, s);
@@ -143,24 +143,26 @@ namespace LinBox
 				_target. init (t, num);
 				return _target. divin (t, tmp);
 
-}
+			}
 			// 			_target. init (t, den);
 			// 			return _target. invin (t);
 
-}
+		}
 		SrcElt& preimage(SrcElt& s, const Elt& t)
 		{
 			_target. convert (num, t);
 			_source. init (s, num);
 			return s;
 
-}
-		const Source& source() {
-return _source;
-}
-		const Target& target() {
-return _target;
-}
+		}
+		const Source& source()
+		{
+			return _source;
+		}
+		const Target& target()
+		{
+			return _target;
+		}
 
 	protected:
 		integer num, den;

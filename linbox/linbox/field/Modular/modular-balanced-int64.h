@@ -76,30 +76,30 @@ namespace LinBox
 	template <>
 	class ModularBalanced<int64_t> : public FieldInterface
 	      public FFPACK::ModularBalanced<int64_t>	{
-	protected:
-		// int64_t modulus;
-		// int64_t half_mod;
-		// int64_t mhalf_mod;
-		// double modulusinv;
 
 	public:
 
 		friend class FieldAXPY<ModularBalanced<int64_t> >;
 		friend class DotProductDomain<ModularBalanced<int64_t> >;
 
+		typedef FFPACK::ModularBalanced<int64_t> Father_t ;
+
 		typedef int64_t Element;
 		typedef ModularBalancedRandIter<int64_t> RandIter;
 
+		using Father_t:: cardinality;
 		integer &cardinality (integer &c) const
 		{
 			return c = modulus;
 		}
 
+		using Father_t:: characteristic;
 		integer &characteristic (integer &c) const
 		{
 		       	return c = modulus;
 		}
 
+		using Father_t:: convert;
 		// this function converts an int to a natural number ?
 		integer &convert (integer &x, const Element &y) const
 		{
@@ -109,6 +109,7 @@ namespace LinBox
 				return x = y + modulus;
 		}
 
+		using Father_t:: init;
 		Element &init (Element &x, const integer &y) const
 		{
 			x = y % (long) (modulus);
