@@ -6,20 +6,20 @@
  * Modified   Brice Boyer <bboyer@imag.fr>
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -82,10 +82,8 @@ namespace LinBox
 	      public FFPACK::ModularBalanced<float> {
 	      public :
 		      typedef float Element;
+		      typedef FFPACK::ModularBalanced<float> Father_t ;
 
-	      protected:
-
-	      public:
 		      friend class FieldAXPY<ModularBalanced<Element> >;
 		      friend class DotProductDomain<ModularBalanced<Element> >;
 		      friend class MultiModFloat;
@@ -99,7 +97,7 @@ namespace LinBox
 		      }
 
 		      ModularBalanced (const integer& p) :
-			      FFPACK::ModularBalanced<float>((unsigned long)p)
+			      Father_t((unsigned long)p)
 		      {
 #ifdef DEBUG
 			      if(modulus <= 1)
@@ -112,23 +110,19 @@ namespace LinBox
 		      }
 
 
+		      using Father_t::cardinality ;
 		      inline integer &cardinality (integer &c) const
 		      {
 			      return c = integer(modulus);
 		      }
 
+		      using Father_t::characteristic ;
 		      inline integer &characteristic (integer &c) const
 		      {
 			      return c = integer(modulus);
 		      }
 
-		      long unsigned characteristic(long unsigned int&p)const{return FFPACK::ModularBalanced<float>::characteristic(p) ; }
-		      unsigned long characteristic()const{return FFPACK::ModularBalanced<float>::characteristic();}
-		      unsigned long cardinality()const{return FFPACK::ModularBalanced<float>::cardinality();}
-		      double&convert(double &x,const Element&y)const{return FFPACK::ModularBalanced<float>::convert(x,y) ; }
-		      float&convert(float&x,const Element&y)const{return FFPACK::ModularBalanced<float>::convert(x,y) ; }
-
-
+		      using Father_t::convert ;
 		      inline integer &convert (integer &x, const Element &y) const
 		      {
 			      // if ( y < 0. )
@@ -137,6 +131,7 @@ namespace LinBox
 				      return x = integer (y);
 		      }
 
+		      using Father_t::init ;
 		      inline Element &init (Element &x, const integer &y) const
 		      {
 			      x = (Element)(y%lmodulus);

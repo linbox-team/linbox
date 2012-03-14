@@ -290,7 +290,7 @@ LB_CHECK_LAPACK
 LB_CHECK_EXPAT
 
 LB_BENCH
-# LB_OPT
+LB_OPT
 LB_DOC
 
 if test ! -d ./benchmarks/data  ; then

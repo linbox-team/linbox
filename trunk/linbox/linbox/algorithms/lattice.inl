@@ -335,31 +335,31 @@ namespace LinBox
 		if (withU)
 			throw NotImplementedYet("not U");
 		// Convert H
-		ZZ_mat<ZT> B(H.rowdim(),H.coldim()) ;
+		FPLLL::ZZ_mat<ZT> B(H.rowdim(),H.coldim()) ;
 		for (size_t i = 0 ; i < H.rowdim() ; ++i) {
 			for (size_t j = 0 ; j < H.coldim() ; ++j) {
-				B.Set(i,j,Z_NR<ZT>(H.getEntry(i,j)) );
+				B.Set(i,j,FPLLL::Z_NR<ZT>(H.getEntry(i,j)) );
 			}
 		}
 		// LLL()
 		switch (meth.getMeth()) {
 		case (latticeMethod::latticeFPLLL::P) :
 			{
-				::proved<ZT,double> lllMethod(&B,meth.getPrecision(),
+				FPLLL::proved<ZT,double> lllMethod(&B,meth.getPrecision(),
 							      meth.getEta(),meth.getDelta());
 				lllMethod.LLL();
 			}
 			break;
 		case (latticeMethod::latticeFPLLL::W) :
 			{
-				::wrapper lllMethod(&B,meth.getPrecision(),
+				FPLLL::wrapper lllMethod(&B,meth.getPrecision(),
 						    meth.getEta(),meth.getDelta());
 				lllMethod.LLL();
 			}
 			break;
 		case (latticeMethod::latticeFPLLL::H) :
 			{
-				::heuristic<ZT,double> lllMethod(&B,meth.getPrecision(),
+				FPLLL::heuristic<ZT,double> lllMethod(&B,meth.getPrecision(),
 								 meth.getEta(),meth.getDelta(),
 								 meth.getSiegel());
 				lllMethod.LLL();
