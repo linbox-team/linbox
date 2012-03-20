@@ -86,7 +86,8 @@ namespace LinBox
 		/*! Constructor.
 		 * @param p is a pair such that
 		 * - \c p.first is the size of a residue (ie. it would be 1 for \"FullSingle\")
-		 * - \c p.second is the theoretical upperbound (natural logarithm) on the size of the integers to reconstruct.
+		 * - \c p.second is the theoretical upperbound (natural
+		 *   logarithm) on the size of the integers to reconstruct.
 		 * .
 		 */
 		FullMultipFixedCRA(const std::pair<size_t,double>& p ) :
@@ -334,7 +335,8 @@ namespace LinBox
 		/*! Constructor.
 		 * @param p is a pair such that
 		 * - \c p.first is the size of a residue, it would be 1 for \"FullSingle\"
-		 * - \c p.second is the theoretical upperbound (natural logarithm) on the size of the integers to reconstruct.
+		 * - \c p.second is the theoretical upperbound (natural
+		 *   logarithm) on the size of the integers to reconstruct.
 		 * .
 		 */
 		FullMultipBlasMatCRA(const std::pair<size_t,double>& p ) :

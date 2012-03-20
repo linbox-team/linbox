@@ -74,7 +74,6 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter
 	 *               and partial template specialization.
 	 */
-	//@{
 	// Basic declaration.
 	template <class Blackbox, class Trait = typename VectorTraits<typename LinBox::Vector<typename Blackbox::Field>::Dense >::VectorCategory>
 	class Submatrix : public BlackboxInterface {

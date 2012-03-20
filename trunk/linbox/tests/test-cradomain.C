@@ -210,7 +210,9 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 	cra( Res.getWritePointer(), iteration, genprime);
 	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getWritePointer() );
 
-	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+	if (locpass) {
+		report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+	}
 	else {
 		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
 	}

@@ -982,6 +982,8 @@ namespace LinBox
 			return y;
 		}
 
+		const _Field& field() const { return _Mat->field() ;}
+		_Field & field() { return _Mat->field(); }
 	};
 
 	template <class _Field>
