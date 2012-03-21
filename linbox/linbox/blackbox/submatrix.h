@@ -416,10 +416,10 @@ namespace LinBox
 		struct rebind {
 			typedef SubmatrixOwner<BlasMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A) {
 
 				typename other::Father_t A1;
-				typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A), F);
+				typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A) );
 				Ap = other(A1, A.rowfirst(), A.colfirst(), A.rowdim(), A.coldim());
 			}
 
