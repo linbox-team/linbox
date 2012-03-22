@@ -41,6 +41,8 @@
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 
+#include <iomanip> // setprecision
+
 /* ********************** */
 /*        Outils          */
 /* ********************** */
@@ -59,7 +61,7 @@ using Givaro::Timer;
  * @pre \c tim was clear at the beginning and never started.
  *
  */
-bool keepon(index_t & repet, Timer & tim, double maxtime=0.5)
+bool keepon(index_t & repet, Timer & tim, double maxtime=0.2)
 {
 	if (repet<2 || tim.usertime() < maxtime) {
 		++repet ;
@@ -126,19 +128,20 @@ void launch_bench_square(Field & F // const problem
 	LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
 	// index_t repet = 3 ;
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
+		std::cout<< std::setprecision(4) << "\033[2K" << "\033[30D" << min << '<' << i << '<' << max << " (" << double(i-min)/double(max-min)*100 << "%)" << std::flush;
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
-		LinBox::BlasMatrix<Element> A (ii,ii);
-		LinBox::BlasMatrix<Element> B (ii,ii);
-		LinBox::BlasMatrix<Element> C (ii,ii);
+		LinBox::BlasMatrix<Field> A (F,ii,ii);
+		LinBox::BlasMatrix<Field> B (F,ii,ii);
+		LinBox::BlasMatrix<Field> C (F,ii,ii);
 		if (!series_nb)
 			Data.setAbsciName(l,i); // only write abscissa for serie 0
 		index_t j = 0 ; // number of repets.
 		fgemm_sq_tim.clear() ;
-		while( keepon(j,fgemm_sq_tim) ) {
-			RandMat.random(A);
-			RandMat.random(B);
-			RandMat.random(C);
-			chrono.clear() ; chrono.start() ;
+		RandMat.random(A);
+		RandMat.random(B);
+		RandMat.random(C);
+		while( keepon(j, fgemm_sq_tim) ) {
+		chrono.clear() ; chrono.start() ;
 			BMD.mul(C,A,B) ; // C = AB
 			chrono.stop();
 			fgemm_sq_tim += chrono ;
@@ -153,7 +156,9 @@ void launch_bench_square(Field & F // const problem
 #endif
 		mflops = compute_mflops(fgemm_sq_tim,fgemm_mflops(i,i,i),j);
 		Data.setEntry(series_nb,l,mflops);
+
 	}
+	std::cout << std::endl;
 	std::ostringstream nam ;
 	nam << '\"' ;
 	F.write(nam);
@@ -254,9 +259,9 @@ void launch_bench_rectangular(Field & F // const problem
 	LinBox::BlasMatrixDomain<Field> BMD(F) ;
 	LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
 	// index_t repet = 3 ;
-	LinBox::BlasMatrix<Element> A (m,k);
-	LinBox::BlasMatrix<Element> B (k,n);
-	LinBox::BlasMatrix<Element> C (m,n);
+	LinBox::BlasMatrix<Field> A (F,m,k);
+	LinBox::BlasMatrix<Field> B (F,k,n);
+	LinBox::BlasMatrix<Field> C (F,m,n);
 	index_t j = 0 ;
 	fgemm_rect_tim.clear() ;
 	while (keepon(j,fgemm_rect_tim)) {
@@ -320,7 +325,7 @@ void launch_bench_scalar(Field & F // const problem
 	double mflops ;
 	typedef typename Field::Element  Element;
 	typedef typename Field::RandIter Randiter ;
-	typedef typename LinBox::BlasMatrix<Element >  Matrix ;
+	typedef typename LinBox::BlasMatrix<Field >  Matrix ;
 	typedef typename LinBox::TransposedBlasMatrix<Matrix > TransposedMatrix ;
 	Randiter R(F) ;
 	LinBox::BlasMatrixDomain<Field> BMD(F) ;
@@ -329,20 +334,20 @@ void launch_bench_scalar(Field & F // const problem
 	int mm = tA?k:m ;
 	int kk = tA?m:k ;
 	int nn = tB?k:n ;
-	Matrix A (mm,kk);
-	Matrix B (kk,nn);
-	Matrix C (m,n);
-	Matrix D (m,n);
+	Matrix A (F,mm,kk);
+	Matrix B (F,kk,nn);
+	Matrix C (F,m,n);
+	Matrix D (F,m,n);
 	TransposedMatrix At(A);
 	TransposedMatrix Bt(B);
-	// LinBox::BlasMatrix<Element > A (mm,kk);
-	// LinBox::BlasMatrix<Element > B (kk,nn);
-	// LinBox::BlasMatrix<Element > C (m,n);
-	// LinBox::BlasMatrix<Element > D (m,n);
+	// LinBox::BlasMatrix<Field > A (mm,kk);
+	// LinBox::BlasMatrix<Field > B (kk,nn);
+	// LinBox::BlasMatrix<Field > C (m,n);
+	// LinBox::BlasMatrix<Field > D (m,n);
 
 
-	// LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Element > > At(A);
-	// LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Element > > Bt(B);
+	// LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Field > > At(A);
+	// LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Field > > Bt(B);
 
 	index_t j = 0 ;
 	while (keepon(j,fgemm_scal_tim)) {
@@ -513,7 +518,7 @@ void bench_square( index_t min, index_t max, int step, int charac )
 	// Style.setTerm(LinBox::PlotStyle::Term::png);
 	// Style.setTerm(LinBox::PlotStyle::Term::svg);
 	Style.setTerm(LinBox::PlotStyle::Term::eps);
-	Style.setTitle("fgemm","x","y");
+	Style.setTitle("fgemm","Mflops","dimensions");
 
 	Style.setPlotType(LinBox::PlotStyle::Plot::graph);
 	Style.setLineType(LinBox::PlotStyle::Line::linespoints);
@@ -775,7 +780,7 @@ int main( int ac, char ** av)
 		END_OF_ARGUMENTS
 	};
 
-	parseArguments (ac, av, as);
+	LinBox::parseArguments (ac, av, as);
 
 	if (min >= max) {
 		throw LinBox::LinBoxError("min value should be smaller than max...");
