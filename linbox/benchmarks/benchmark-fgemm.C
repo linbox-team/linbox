@@ -90,6 +90,15 @@ bool whatchon(index_t & repet, Timer & tim, double maxtime=0.5)
 	return false ;
 }
 
+void showAdvanceLinear(int curr, int min, int max)
+{
+		std::cout<< std::setprecision(4) << "\033[2K" << "\033[30D" << min << '<' << curr << '<' << max << " (" << double(curr-min)/double(max-min)*100 << "%)" << std::flush;
+}
+void showFinish(int curr, int all)
+{
+	std::cout<<  "\033[2K" << "\033[30D" << "finished : " << curr << '/' << all << std::flush << std::endl;
+}
+
 
 double fgemm_mflops(int m, int n, int k)
 {
@@ -128,7 +137,7 @@ void launch_bench_square(Field & F // const problem
 	LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
 	// index_t repet = 3 ;
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
-		std::cout<< std::setprecision(4) << "\033[2K" << "\033[30D" << min << '<' << i << '<' << max << " (" << double(i-min)/double(max-min)*100 << "%)" << std::flush;
+		showAdvanceLinear(i,min,max);
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
 		LinBox::BlasMatrix<Field> A (F,ii,ii);
 		LinBox::BlasMatrix<Field> B (F,ii,ii);
@@ -136,12 +145,13 @@ void launch_bench_square(Field & F // const problem
 		if (!series_nb)
 			Data.setAbsciName(l,i); // only write abscissa for serie 0
 		index_t j = 0 ; // number of repets.
-		fgemm_sq_tim.clear() ;
+
 		RandMat.random(A);
 		RandMat.random(B);
 		RandMat.random(C);
+		fgemm_sq_tim.clear() ;
 		while( keepon(j, fgemm_sq_tim) ) {
-		chrono.clear() ; chrono.start() ;
+			chrono.clear() ; chrono.start() ;
 			BMD.mul(C,A,B) ; // C = AB
 			chrono.stop();
 			fgemm_sq_tim += chrono ;
@@ -158,7 +168,6 @@ void launch_bench_square(Field & F // const problem
 		Data.setEntry(series_nb,l,mflops);
 
 	}
-	std::cout << std::endl;
 	std::ostringstream nam ;
 	nam << '\"' ;
 	F.write(nam);
@@ -175,14 +184,15 @@ void launch_bench_square(Field & F // const problem
  * @param Data where data is stored
  * @param series_nb index of the current series.
  */
-template<class T>
-void launch_bench_blas(index_t min, index_t max, int step
+template<class Field>
+void launch_bench_blas(Field & F
+		       , index_t min, index_t max, int step
 		       , LinBox::PlotData<index_t> & Data
 		       , index_t series_nb
-		       , index_t charact)
+		       )
 {
-	typedef LinBox::Modular<T> Field ;
-	Field F((int)charact);
+	// typedef LinBox::Modular<T> Field ;
+	// Field F((int)charact);
 	index_t l = 0 ;
 	Timer fgemm_blas_tim ;
 	Timer chrono ;
@@ -197,20 +207,26 @@ void launch_bench_blas(index_t min, index_t max, int step
 	Element *  A = new Element[mm] ;
 	Element *  B = new Element[mm] ;
 	Element *  C = new Element[mm] ;
-	typedef typename LinBox::UnparametricField<T> FloatingDomain ;
-	FloatingDomain G ;
+	// typedef typename LinBox::UnparametricField<T> FloatingDomain ;
+	// FloatingDomain G ;
 
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
+		showAdvanceLinear(i,min,max);
+
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
 		index_t mimi = (index_t) ii*ii ;
+		if (!series_nb)
+			Data.setAbsciName(l,i); // only write abscissa for serie 0
 		index_t j = 0 ;
+
+		for (index_t j = 0 ; j < mimi ; ++j) R.random(A[j]);
+		for (index_t j = 0 ; j < mimi ; ++j) R.random(B[j]);
+		for (index_t j = 0 ; j < mimi ; ++j) R.random(C[j]);
+
 		fgemm_blas_tim.clear() ;
 		while(keepon(j,fgemm_blas_tim)) {
-			for (index_t j = 0 ; j < mimi ; ++j) R.random(A[j]);
-			for (index_t j = 0 ; j < mimi ; ++j) R.random(B[j]);
-			for (index_t j = 0 ; j < mimi ; ++j) R.random(C[j]);
 			chrono.clear(); chrono.start() ;
-			FFLAS::fgemm(G,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,
+			FFLAS::fgemm(F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,
 					     ii,ii,ii,
 					     1.,
 					     A,ii,B,ii,
@@ -220,6 +236,10 @@ void launch_bench_blas(index_t min, index_t max, int step
 			fgemm_blas_tim += chrono ;
 		}
 		mflops = compute_mflops(fgemm_blas_tim,fgemm_mflops(i,i,i),j);
+
+		if (i == min)
+			std::cerr << typeid(Element).name() << ' ' << i << ':' << mflops << std::endl;
+
 		Data.setEntry(series_nb,l,mflops);
 	}
 
@@ -228,7 +248,7 @@ void launch_bench_blas(index_t min, index_t max, int step
 	delete[] C ;
 	std::ostringstream nam ;
 	nam << '\"' ;
-	G.write(nam);
+	F.write(nam);
 	nam << '\"' ;
 	Data.setSerieName(series_nb,nam.str());
 
@@ -426,24 +446,43 @@ void launch_bench_scalar(Field & F // const problem
  * @param step step of the size between 2 benchmarks
  * @param charac characteristic of the field.
  */
-void bench_blas( index_t min, index_t max, int step )
+void bench_blas( index_t min, index_t max, int step, int charac )
 {
-	//!@todo compare to cblas_dgemm instead.
-	typedef LinBox::Modular<double> DoubleField ;
-	typedef LinBox::Modular<float>  FloatField ;
+	int nb = 1 ;// une col de plus (la première)
+	typedef LinBox::Modular<double>          Field0 ; ++nb ;
+	typedef LinBox::Modular<float>           Field1 ; ++nb ;
+	typedef LinBox::Modular<int32_t>         Field2 ; ++nb ;
+	typedef LinBox::ModularBalanced<double>  Field3 ; ++nb ;
+	typedef LinBox::ModularBalanced<float>   Field4 ; ++nb ;
+	typedef LinBox::ModularBalanced<int32_t> Field5 ; ++nb ;
 
 	int nb_pts = (int) std::ceil((double)(max-min)/(double)step) ;
-	int it = 0 ; int nb = 5 ;
 	LinBox::PlotData<index_t>  Data(nb_pts,nb);
-	FloatField F0(13) ;
-	launch_bench_square(F0,min,max,step,Data,it++);
-	launch_bench_blas<float>(min,max,step,Data,it++,13);
+	int it = 0 ;
 
-	DoubleField F1(65537) ;
-	launch_bench_square(F1,min,max,step,Data,it++);
-	launch_bench_blas<double>(min,max,step,Data,it++,65537);
-
-	linbox_check(it+1==nb);
+	Field0 F0(charac) ;
+	launch_bench_blas(F0,min,max,step,Data,it++);
+	showFinish(it,nb);
+	if (charac < 2048) {
+		Field1 F1(charac) ;
+		launch_bench_blas(F1,min,max,step,Data,it++);
+		showFinish(it,nb);
+	}
+	Field2 F2(charac) ;
+	launch_bench_blas(F2,min,max,step,Data,it++);
+	showFinish(it,nb);
+	Field3 F3(charac) ;
+	launch_bench_blas(F3,min,max,step,Data,it++);
+	showFinish(it,nb);
+	if (charac < 2048) {
+		Field4 F4(charac) ;
+		launch_bench_blas(F4,min,max,step,Data,it++);
+	showFinish(it,nb);
+	}
+	Field5 F5(charac) ;
+	launch_bench_blas(F5,min,max,step,Data,it++);
+	showFinish(it,nb);
+	linbox_check(it <= nb);
 
 
 	LinBox::PlotStyle Style;
@@ -451,7 +490,7 @@ void bench_blas( index_t min, index_t max, int step )
 	// Style.setTerm(LinBox::PlotStyle::png);
 	// Style.setTerm(LinBox::PlotStyle::svg);
 	Style.setTerm(LinBox::PlotStyle::Term::eps);
-	Style.setTitle("fgemm","x","y");
+	Style.setTitle("FFLAS::fgemm","Mflops","dimensions");
 	// Style.setType(LinBox::PlotStyle::histogram);
 	// Style.setStyle("set style histogram cluster gap 1");
 	// Style.addStyle("set style fill solid border -1");
@@ -495,22 +534,29 @@ void bench_square( index_t min, index_t max, int step, int charac )
 	int nb_pts = (int) std::ceil((double)(max-min)/(double)step) ;
 	LinBox::PlotData<index_t>  Data(nb_pts,nb);
 	int it = 0 ;
+
 	Field0 F0(charac) ;
 	launch_bench_square(F0,min,max,step,Data,it++);
+	showFinish(it,nb);
 	if (charac < 2048) {
 		Field1 F1(charac) ;
 		launch_bench_square(F1,min,max,step,Data,it++);
+		showFinish(it,nb);
 	}
 	Field2 F2(charac) ;
 	launch_bench_square(F2,min,max,step,Data,it++);
+	showFinish(it,nb);
 	Field3 F3(charac) ;
 	launch_bench_square(F3,min,max,step,Data,it++);
+	showFinish(it,nb);
 	if (charac < 2048) {
 		Field4 F4(charac) ;
 		launch_bench_square(F4,min,max,step,Data,it++);
+	showFinish(it,nb);
 	}
 	Field5 F5(charac) ;
 	launch_bench_square(F5,min,max,step,Data,it++);
+	showFinish(it,nb);
 	linbox_check(it <= nb);
 
 	LinBox::PlotStyle Style;
@@ -518,14 +564,14 @@ void bench_square( index_t min, index_t max, int step, int charac )
 	// Style.setTerm(LinBox::PlotStyle::Term::png);
 	// Style.setTerm(LinBox::PlotStyle::Term::svg);
 	Style.setTerm(LinBox::PlotStyle::Term::eps);
-	Style.setTitle("fgemm","Mflops","dimensions");
+	Style.setTitle("BlasMatrixDomain mul","Mflops","dimensions");
 
 	Style.setPlotType(LinBox::PlotStyle::Plot::graph);
 	Style.setLineType(LinBox::PlotStyle::Line::linespoints);
-	Style.setUsingSeries(std::pair<index_t,index_t>(2,it));
+	Style.setUsingSeries(std::pair<index_t,index_t>(2,nb));
 
 	LinBox::PlotGraph<index_t> Graph(Data,Style);
-	Graph.setOutFilename("fgemm_square");
+	Graph.setOutFilename("bmdmul_square");
 
 	// Graph.plot();
 
@@ -800,7 +846,9 @@ int main( int ac, char ** av)
 	/* against pure blas routine */
 	if (*it == 1) {
 		std::cout << "bench 1 : blas" << std::endl;
-		bench_blas(min,max,step);
+		bench_blas(min,max,step,13);
+		bench_blas(min,max,step,2011);
+		bench_blas(min,max,step,65537);
 		if (++it == lst.end()) return EXIT_SUCCESS ;
 	}
 
@@ -844,11 +892,11 @@ int main( int ac, char ** av)
 	return EXIT_SUCCESS ;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

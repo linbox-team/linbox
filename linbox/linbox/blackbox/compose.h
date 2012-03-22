@@ -214,15 +214,21 @@ namespace LinBox
 		}
 		/// The field.
 		const Field& field() const
-		{return _B_ptr->field();}
+		{
+			return _B_ptr->field();
+		}
 
 		/// accessor to the blackboxes
 		const Blackbox1* getLeftPtr() const
-		{return  _A_ptr;}
+		{
+			return  _A_ptr;
+		}
 
 		/// accessor to the blackboxes
 		const Blackbox2* getRightPtr() const
-		{return  _B_ptr;}
+		{
+			return  _B_ptr;
+		}
 
 	protected:
 
