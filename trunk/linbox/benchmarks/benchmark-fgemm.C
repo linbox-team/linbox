@@ -56,12 +56,12 @@ using Givaro::Timer;
  * @param repet number of previous repetitions. Should be 0 on the first time
  * \c whatchon is called.
  * @param tim timer to watch
- * @param maxtime maximum time (in seconds) until \c watchon tells stop.
+ * @param maxtime maximum time (in seconds) until \c keepon tells stop.
  * @return \c true if we conditions are not met to stop, \c false otherwise.
  * @pre \c tim was clear at the beginning and never started.
  *
  */
-bool keepon(index_t & repet, Timer & tim, double maxtime=0.2)
+bool keepon(index_t & repet, const Timer & tim, double maxtime=0.2)
 {
 	if (repet<2 || tim.usertime() < maxtime) {
 		++repet ;
@@ -81,7 +81,7 @@ bool keepon(index_t & repet, Timer & tim, double maxtime=0.2)
  * @pre \c tim should have been started previously !
  *
  */
-bool whatchon(index_t & repet, Timer & tim, double maxtime=0.5)
+bool whatchon(index_t & repet, /*  const */Timer & tim, double maxtime=0.5)
 {
 	if (repet<2 || tim.userElapsedTime() < maxtime) {
 		++repet ;
@@ -92,11 +92,14 @@ bool whatchon(index_t & repet, Timer & tim, double maxtime=0.5)
 
 void showAdvanceLinear(int curr, int min, int max)
 {
-		std::cout<< std::setprecision(4) << "\033[2K" << "\033[30D" << min << '<' << curr << '<' << max << " (" << double(curr-min)/double(max-min)*100 << "%)" << std::flush;
+	std::cout << std::setprecision(4) << "\033[2K" << "\033[30D" << min <<std::flush;
+	std::cout << '<' << curr << '<' << max << " (" << std::flush;
+	std::cout << double(curr-min)/double(max-min)*100 << "%)" << std::flush;
 }
 void showFinish(int curr, int all)
 {
-	std::cout<<  "\033[2K" << "\033[30D" << "finished : " << curr << '/' << all << std::flush << std::endl;
+	std::cout <<  "\033[2K" << "\033[30D" << "finished : " << curr << std::flush;
+	std::cout << '/' << all-1 << std::flush << std::endl;
 }
 
 
@@ -217,12 +220,12 @@ void launch_bench_blas(Field & F
 		index_t mimi = (index_t) ii*ii ;
 		if (!series_nb)
 			Data.setAbsciName(l,i); // only write abscissa for serie 0
-		index_t j = 0 ;
 
 		for (index_t j = 0 ; j < mimi ; ++j) R.random(A[j]);
 		for (index_t j = 0 ; j < mimi ; ++j) R.random(B[j]);
 		for (index_t j = 0 ; j < mimi ; ++j) R.random(C[j]);
 
+		index_t j = 0 ;
 		fgemm_blas_tim.clear() ;
 		while(keepon(j,fgemm_blas_tim)) {
 			chrono.clear(); chrono.start() ;
@@ -236,9 +239,10 @@ void launch_bench_blas(Field & F
 			fgemm_blas_tim += chrono ;
 		}
 		mflops = compute_mflops(fgemm_blas_tim,fgemm_mflops(i,i,i),j);
-
+#ifndef NDEBUG
 		if (i == min)
 			std::cerr << typeid(Element).name() << ' ' << i << ':' << mflops << std::endl;
+#endif
 
 		Data.setEntry(series_nb,l,mflops);
 	}
@@ -455,6 +459,8 @@ void bench_blas( index_t min, index_t max, int step, int charac )
 	typedef LinBox::ModularBalanced<double>  Field3 ; ++nb ;
 	typedef LinBox::ModularBalanced<float>   Field4 ; ++nb ;
 	typedef LinBox::ModularBalanced<int32_t> Field5 ; ++nb ;
+	typedef LinBox::UnparametricField<double>Field6 ; ++nb ;
+	typedef LinBox::UnparametricField<float> Field7 ; ++nb ;
 
 	int nb_pts = (int) std::ceil((double)(max-min)/(double)step) ;
 	LinBox::PlotData<index_t>  Data(nb_pts,nb);
@@ -482,6 +488,15 @@ void bench_blas( index_t min, index_t max, int step, int charac )
 	Field5 F5(charac) ;
 	launch_bench_blas(F5,min,max,step,Data,it++);
 	showFinish(it,nb);
+	Field6 F6(charac) ;
+	launch_bench_blas(F6,min,max,step,Data,it++);
+	showFinish(it,nb);
+	if (charac < 2048) {
+		Field7 F7((float)charac) ;
+		launch_bench_blas(F7,min,max,step,Data,it++);
+		showFinish(it,nb);
+	}
+
 	linbox_check(it <= nb);
 
 
