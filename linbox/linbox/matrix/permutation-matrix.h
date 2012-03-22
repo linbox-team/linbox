@@ -44,13 +44,6 @@
 namespace LinBox
 {
 
-#if 0
-	template<class _Uint>
-	class PermutationInterface {
-	public :
-		virtual _Uint getSize() = 0;
-	};
-#endif
 
 	// forward declaration
 	template<class _Uint>
@@ -83,32 +76,6 @@ namespace LinBox
 		BlasPermutation(const std::vector<_UnsignedInt> & V);
 		BlasPermutation(const MatrixPermutation<_UnsignedInt> &M);
 
-#if 0
-		BlasPermutation(MatrixPermutation & P);
-		BlasPermutation(TranspositionPermutation & P);
-
-		//        void Invert() ;
-		//        BlasPerm & getInverse(BlasPerm & P) ;
-
-
-		template<class _Perm>
-		_Perm & convert(_Perm & NewP);
-
-		template<class _Perm>
-		_Perm & convertTranspose(_Perm & NewP);
-
-		void getOrder() ;
-		void resize() ;
-		void size() ;
-
-
-		void Tranpsose() ;
-		BlasPerm & getTranspose(BlasPerm & P) ;
-		void Tranpsose(Index &i, Index & j);
-
-		void applyP( BlasPerm & P, enum Side s, enum Trans = NoTranspose) ;
-		void applyPT( BlasPerm & P, enum Side s) ;
-#endif
 
 		//! copy operator (with copy)
 		BlasPermutation<_UnsignedInt>& operator= (const BlasPermutation<_UnsignedInt> & P)
@@ -230,13 +197,9 @@ namespace LinBox
 	protected :
 		_UnsignedInt			        r_ ;	// size of compressed permutation
 		mutable _UnsignedInt			n_ ;	// dim of permutation
-		std::vector<_UnsignedInt>	        P_ ;	// blas permutation
+		std::vector<_UnsignedInt>	        P_ ;	// internal blas permutation
 		mutable std::vector<_UnsignedInt>       Q_ ;    // corresponding matrix permutation
 		bool                                    inv_ ;  // matrix is inverted ?
-
-		// hmmmm...
-		// using stl vectors instead of pointers for the sake of simplicity...
-		// this allows permutation up to MAX_INT size. Not so restricting for now...
 
 		void BuildQ_() const ;
 		void InvertQ_();
@@ -303,83 +266,6 @@ namespace LinBox
 
 } // LinBox
 
-#if 0 /* stuff to be removed */
-namespace LinBox
-{
-
-	//! produit de permutations
-	template<class _UnsignedInt>
-	class TranspositionPermutation {
-		typedef std::pair<_UnsignedInt,_UnsignedInt> Transposition  ;
-	private :
-		_UnsignedInt _n_ ;			// order of permutation
-		_UnsignedInt _r_ ;			//  number of transpositions
-		std::vector<Transposition> _T_ ;	// if _T_[k] = (i,j) then P(i) = j
-
-	public :
-	};
-
-	//!@todo produit de cycles à supports disjoints
-
-
-	//! on regroupe dedans les parties "BB" des perms précédentes.
-
-	template<class _Field>
-	class BlackboxInterface {
-	public :
-		typedef BlackboxInterface<_Field> Self_t ;
-		virtual size_t rowdim() const ;
-		virtual size_t coldim() const ;
-		template<class OutVec,InVec>
-		virtual OutVec &apply (OutVec & , const InVec & ) const ;
-		template<class OutVec,InVec>
-		virtual OutVec &applyTranspose (OutVec & , const InVec & ) const ;
-		virtual _Field & field() const ;
-		template<class _Tp1>
-		virtual struct rebind {
-			typedef BlackboxInterface<_Tp1> other ;
-			virtual void operator() (other &, cosnt Self_t &, const _Tp1 &) ;
-		} ;
-	};
-
-	template<class _Perm, class _Field>
-	class BlackBoxPermutation : public BlackboxInterface { // ?????????????
-	private :
-		_Perm  _P_ ;
-		_Field _F_ ; //????????????????????????
-	public :
-		size_t rowdim() ;
-		size_t coldim() ;
-		void permute( Index i, Index j);
-		const Field & field() { return _F_ ;}
-		apply();
-		applyTranspose() ;
-		template<typename _Tp1>
-		struct rebind {} ;
-
-		setStorage();
-		getStorage();
-
-	};
-
-#if 0
-	template<class _Perm>
-	class PermutationDomain {
-	private :
-		_Perm _P_ ;
-	public :
-		// P.permute(A) ??? :)
-		template<class _Matrix>
-		_Matrix & permute (_Matrix & M,  enum Side s, enum Trans t = NoTranspose) ;
-		template<class _Matrix>
-		_Matrix & invmute (_Matrix & M, enum Side s) ;
-
-
-
-	};
-#endif
-}
-#endif
 
 #include "permutation-matrix.inl"
 

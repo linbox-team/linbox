@@ -210,12 +210,15 @@ namespace LinBox
 		}
 		inv_ = false ;
 		getSize();
-		// if not already computed :
+		/* if not already computed, build standard permuation Q_ */
 		BuildQ_();
 		std::vector<_Uint> Qinv(n_) ;
+		/* invert standard matrix Q_*/
 		InvertQ_(Qinv);
+		/*  recover P_ from Qinv) */
 		BuildP_(Q_,Qinv);
-		Q_.resize(0);
+		/*  free Q_ (no longer representing P_ */
+		Q_.resize(0); // Q_ = Qinv ?
 		return ;
 	}
 
@@ -240,15 +243,9 @@ namespace LinBox
 		linbox_check(n_ && (n_ != (_Uint)-1) );
 		r_ = n_-1 ;
 		Compress();
-		// while (r && P_[r] == r) --r ;
-		// if (P_[0] != 0) ++r ;
-		//std::cout << "new :" << r << std::endl;
-		// r_ = r ;
-		// P_.resize(r_) ;
-		/* rebuild Q */
-		//for (_Uint i = 0 ; i < r_ ; ++i) std::swap(Q[i],Q[P_[i]]);
 	}
 
+	// apply P_ to identity to get Q_
 	template<class _Uint>
 	void BlasPermutation<_Uint>::BuildQ_() const
 	{
@@ -274,6 +271,7 @@ namespace LinBox
 		return true ;
 	}
 
+	// invert a standard permutation
 	template<class _Uint>
 	std::vector<_Uint> & BlasPermutation<_Uint>::InvertQ_(std::vector<_Uint> & Qinv)
 	{
@@ -282,16 +280,6 @@ namespace LinBox
 			Qinv[Q_[i]] = i ;
 		return Qinv ;
 	}
-
-#if 0 /*  non-sense */
-	template<class _Uint>
-	void BlasPermutation<_Uint>::InvertQ_()
-	{
-		linbox_check(n_ != (_Uint) -1);
-		for (_Uint i = 0 ; i < n_ ; ++i)
-			Q_[Q_[i]] = i ;
-	}
-#endif
 
 #if 0
 	template<class _Uint>
@@ -525,7 +513,7 @@ namespace LinBox
 	template<class _Uint>
 	void MatrixPermutation<_Uint>::Transpose()
 	{
-		/* out of place */
+		/* not in place */
 		std::vector<_Uint> Q(n_) ;
 		for (_Uint i = 0 ; i < (_Uint) n_ ; ++i)
 			Q[P_[i]] = i ;
