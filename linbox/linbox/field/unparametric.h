@@ -109,6 +109,7 @@ namespace LinBox
 	protected:
 		integer _p; integer _card;
 	public:
+		typedef typename FFPACK::UnparametricField<K> Father_t ;
 
 		/** @name Common Object Interface for a LinBox Field.
 		 * These methods and member types are required of all LinBox fields.
@@ -134,8 +135,8 @@ namespace LinBox
 		 *  This constructor must be defined in a specialization.
 		 */
 		UnparametricField(integer q = 0, size_t e = 1) :
-			FFPACK::UnparametricField<K>(q, e),
-			//FFPACK::UnparametricField<K>((unsigned long)q,(unsigned long)e)
+			Father_t(q, e),
+			//Father_t((unsigned long)q,(unsigned long)e)
 			_p(q),
 			_card(q == 0 ?
 			integer(-1) :
@@ -144,36 +145,45 @@ namespace LinBox
 
 		/// construct this field as copy of F.
 		UnparametricField (const UnparametricField &F) :
-			FFPACK::UnparametricField<K>(F),_p(F._p), _card(F._card)
+			Father_t(F),_p(F._p), _card(F._card)
 		{}
 
 
 		// field/ntl-ZZ_p.h me les demande... //
 
-		Element&inv (Element&x, const Element&y)const{return FFPACK::UnparametricField<K>::inv(x,y);}
-		Element&invin (Element&x)const{return FFPACK::UnparametricField<K>::invin(x);}
-		std::ostream&write (std::ostream&os)const{return FFPACK::UnparametricField<K>::write(os);}
-		std::ostream&write (std::ostream&os, const Element&p)const{return FFPACK::UnparametricField<K>::write(os,p);}
-		bool isZero(const Element&x)const{return FFPACK::UnparametricField<K>::isZero(x);}
-		bool isOne(const Element&x)const{return FFPACK::UnparametricField<K>::isOne(x);}
-		long unsigned int characteristic(long unsigned int&p)const{return FFPACK::UnparametricField<K>::characteristic(p);}
-		long unsigned int characteristic()const{return FFPACK::UnparametricField<K>::characteristic();};
-		long unsigned int cardinality()const{return FFPACK::UnparametricField<K>::cardinality();};
-		template<typename Src>Element&init(Element&x, const Src&s)const{return Caster (x, s);}
-		Element&init(Element&x)const{return Caster (x, 0);}
-		std::istream&read(std::istream&is, Element&x)const{return FFPACK::UnparametricField<K>::read(is,x);}
-		std::istream&read(std::istream&is)const{return FFPACK::UnparametricField<K>::read(is);}
-		template<typename T>T&convert(T&x,const Element&y)const{return Caster(x,y);}
+		using Father_t::inv ;
+		using Father_t::read ;
+		using Father_t::invin;
+		using Father_t::write;
+		using Father_t::isZero;
+		using Father_t::isOne;
+
+		template<typename Src>
+		Element&init(Element&x, const Src&s) const
+		{
+			return Caster (x, s);
+		}
+		Element&init(Element&x)const
+		{
+			return Caster (x, 0);
+		}
+		template<typename T>
+		T&convert(T&x, const Element&y) const
+		{
+			return Caster(x,y);
+		}
 
 		// fin des trucs zarbs //
 
 		/// c := cardinality of this field (-1 if infinite).
+		using Father_t::cardinality ;
 		integer &cardinality (integer &c) const
 		{
 			return c = _card;
 		}
 
 		/// c := characteristic of this field (zero or prime).
+		using Father_t::characteristic;
 		integer &characteristic (integer &c) const
 		{
 			return c = _p;
@@ -311,11 +321,11 @@ namespace LinBox
 #endif // __LINBOX_field_unparametric_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
