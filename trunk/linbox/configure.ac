@@ -73,7 +73,7 @@ TESTS_CFLAGS="-O0"
 DEBUG_CFLAGS="-g"
 
 DEFAULT_CFLAGS=""
-WARN_CFLAGS="-Wall"
+# WARN_CFLAGS="-Wall"
 
 #TODO use -fast for icc, -ipa for eko...
 if test "x$DBG" = "xyes" ; then
