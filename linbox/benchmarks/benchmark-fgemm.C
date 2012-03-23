@@ -110,6 +110,11 @@ void showFinish(int curr, int all)
 	std::cout <<  "\033[2K" << "\033[30D" << "finished : " << curr << std::flush;
 	std::cout << '/' << all-1 << std::flush << std::endl;
 }
+void showSkip(int curr, int all)
+{
+	std::cout <<  "\033[2K" << "\033[30D" << "skipped : " << curr << std::flush;
+	std::cout << '/' << all-1 << std::flush << std::endl;
+}
 
 
 double fgemm_mflops(int m, int n, int k)
@@ -245,7 +250,7 @@ void launch_bench_blas(Field & F
 		// double fgemm_blas_tim = 0 ;
 		while(keepon(j,fgemm_blas_tim)) {
 			chrono.clear(); chrono.start() ;
-			FFLAS::fgemm(F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t&)F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,
 					     ii,ii,ii,
 					     F.one,
 					     A,ii,B,ii,
@@ -490,6 +495,9 @@ void bench_blas( index_t min, index_t max, int step, int charac )
 		launch_bench_blas(F1,min,max,step,Data,it++);
 		showFinish(it,nb);
 	}
+	else {
+		showSkip(it,nb);
+	}
 	Field2 F2(charac) ;
 	launch_bench_blas(F2,min,max,step,Data,it++);
 	showFinish(it,nb);
@@ -501,6 +509,9 @@ void bench_blas( index_t min, index_t max, int step, int charac )
 		launch_bench_blas(F4,min,max,step,Data,it++);
 	showFinish(it,nb);
 	}
+	else {
+		showSkip(it,nb);
+	}
 	Field5 F5(charac) ;
 	launch_bench_blas(F5,min,max,step,Data,it++);
 	showFinish(it,nb);
@@ -511,6 +522,9 @@ void bench_blas( index_t min, index_t max, int step, int charac )
 		Field7 F7((float)charac) ;
 		launch_bench_blas(F7,min,max,step,Data,it++);
 		showFinish(it,nb);
+	}
+	else {
+		showSkip(it,nb);
 	}
 
 	linbox_check(it <= nb);
@@ -574,6 +588,9 @@ void bench_square( index_t min, index_t max, int step, int charac )
 		launch_bench_square(F1,min,max,step,Data,it++);
 		showFinish(it,nb);
 	}
+	else {
+		showSkip(it,nb);
+	}
 	Field2 F2(charac) ;
 	launch_bench_square(F2,min,max,step,Data,it++);
 	showFinish(it,nb);
@@ -584,6 +601,9 @@ void bench_square( index_t min, index_t max, int step, int charac )
 		Field4 F4(charac) ;
 		launch_bench_square(F4,min,max,step,Data,it++);
 	showFinish(it,nb);
+	}
+	else {
+		showSkip(it,nb);
 	}
 	Field5 F5(charac) ;
 	launch_bench_square(F5,min,max,step,Data,it++);

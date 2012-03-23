@@ -937,7 +937,7 @@ namespace LinBox
 			//_stride ?
 			if (_Mat->_use_fflas){
 				//!@bug this supposes &x[0]++ == &x[1]
-				FFLAS::fgemv( _Mat->_field, FFLAS::FflasNoTrans,
+				FFLAS::fgemv((typename Field::Father_t) _Mat->_field, FFLAS::FflasNoTrans,
 					      _row, _col,
 					      _Mat->_field.one,
 					      _Mat->_ptr, getStride(),
@@ -964,7 +964,7 @@ namespace LinBox
 
 			//_stride ?
 			if (_Mat->_use_fflas) {
-				FFLAS::fgemv( _Mat->_field, FFLAS::FflasTrans,
+				FFLAS::fgemv((typename Field::Father_t) _Mat->_field, FFLAS::FflasTrans,
 					      _row, _col,
 					      _Mat->_field.one,
 					      _Mat->_ptr, getStride(),
@@ -1096,6 +1096,7 @@ namespace LinBox
 	public:
 		typedef size_t Element;
 	public:
+		typedef indexDomain Father_t;
 		indexDomain() {};
 		template <class ANY>
 		size_t init(size_t& dst, const ANY& src) const {

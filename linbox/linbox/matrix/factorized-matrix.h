@@ -95,7 +95,7 @@ namespace LinBox
 		{
 			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
 
-			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
+			_rank= FFPACK::LUdivine((typename Field::Father_t) _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
 						 _factLU.getPointer(),_factLU.getStride(),
 						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
 			_permP.setOrder(_rank);
@@ -117,7 +117,7 @@ namespace LinBox
 			}
 			else {
 				//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
-				_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
+				_rank= FFPACK::LUdivine((typename Field::Father_t) _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
 							 _factLU.getPointer(),_factLU.getStride(),
 							 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
 			}
@@ -140,7 +140,7 @@ namespace LinBox
 
 			linbox_check(_permQ.getOrder()==A.rowdim());
 			linbox_check(_permP.getOrder()==A.coldim());
-			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
+			_rank= FFPACK::LUdivine((typename Field::Father_t) _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
 						 _factLU.getPointer(),_factLU.getStride(),
 						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
 			_permP.setOrder(_rank);
@@ -166,7 +166,7 @@ namespace LinBox
 			if (_permP.getOrder() == 0)
 				_permP.resize(A.coldim());
 
-			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
+			_rank= FFPACK::LUdivine((typename Field::Father_t) _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
 						 _factLU.getPointer(),_factLU.getStride(),
 						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
 			_permP.setOrder(_rank);
