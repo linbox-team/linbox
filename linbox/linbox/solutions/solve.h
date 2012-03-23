@@ -149,12 +149,21 @@ namespace LinBox
 
 	//! @internal inplace Sparse Elimination.
 	template <class Vector, class Field>
-	Vector& solvein(Vector& x, SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>& A,
-			const Vector& b, const Method::SparseElimination& m)
+	Vector& solvein(Vector& x, SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>& A, const Vector& b, const Method::SparseElimination& m)
 	{
 		commentator().start ("Sparse Elimination Solve In Place", "sesolvein");
 		GaussDomain<Field> GD ( A.field() );
-		GD.solvein(x, A, b, true);
+		GD.solvein(x, A, b);
+		commentator().stop ("done", NULL, "sesolvein");
+		return x;
+	}
+
+	template <class Vector, class Field, class Random>
+	Vector& solvein(Vector& x, SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>& A, const Vector& b, const Method::SparseElimination& m, Random& generator)
+	{
+		commentator().start ("Sparse Elimination Solve In Place with random solution", "sesolvein");
+		GaussDomain<Field> GD ( A.field() );
+		GD.solvein(x, A, b, generator);
 		commentator().stop ("done", NULL, "sesolvein");
 		return x;
 	}
@@ -172,6 +181,17 @@ namespace LinBox
 		return solvein(x, SpA, b, m);
 	}
 
+	template <class Vector, class Blackbox, class Random>
+	Vector& solve(Vector& x, const Blackbox& A, const Vector& b,
+		      const Method::SparseElimination& m, Random& generator)
+	{
+		typedef typename Blackbox::Field Field;
+		typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
+		SparseBB SpA(A.field(), A.rowdim(), A.coldim());
+		MatrixHom::map(SpA, A, A.field());
+		return solvein(x, SpA, b, generator);
+	}
+
 	//! @internal specialisation for inplace SparseElimination on GF2
 	template <class Vector>
 	Vector& solvein(Vector& x,
@@ -182,6 +202,19 @@ namespace LinBox
 		commentator().start ("Sparse Elimination Solve In Place over GF2", "GF2sesolvein");
 		GaussDomain<GF2> GD ( A.field() );
 		GD.solvein(x, A, b);
+		commentator().stop ("done", NULL, "GF2sesolvein");
+		return x;
+	}
+	template <class Vector, class Random>
+	Vector& solvein(Vector& x,
+			GaussDomain<GF2>::Matrix    &A,
+			const Vector& b,
+			const Method::SparseElimination& m, 
+            Random& generator)
+	{
+		commentator().start ("Sparse Elimination Solve In Place over GF2", "GF2sesolvein");
+		GaussDomain<GF2> GD ( A.field() );
+		GD.solvein(x, A, b, generator);
 		commentator().stop ("done", NULL, "GF2sesolvein");
 		return x;
 	}
@@ -197,6 +230,18 @@ namespace LinBox
 		GaussDomain<GF2>::Matrix SpA(A.field(), A.rowdim(), A.coldim());
 		MatrixHom::map(SpA, A );
 		return solvein(x, SpA, b, m);
+	}
+	template <class Vector, class Random>
+	Vector& solve(Vector& x,
+		      GaussDomain<GF2>::Matrix    &A,
+		      const Vector& b,
+		      const Method::SparseElimination& m,
+              Random& generator)
+	{
+		// We make a copy
+		GaussDomain<GF2>::Matrix SpA(A.field(), A.rowdim(), A.coldim());
+		MatrixHom::map(SpA, A );
+		return solvein(x, SpA, b, m, generator);
 	}
 
 	//! @internal Generic Elimination for SparseMatrix

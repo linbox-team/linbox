@@ -183,16 +183,18 @@ namespace LinBox
 				      unsigned long Nj) const;
 
 		template <class Matrix, class Perm, class Vector1, class Vector2>
-		Vector1& solve(Vector1& x, unsigned long rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b, bool randomsol=false)  const;
-
-		template <class Matrix, class Perm, class Vector1, class Vector2>
 		Vector1& solve(Vector1& x, Vector1& w, unsigned long rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const;
 
 
 		template <class Matrix, class Vector1, class Vector2>
 		Vector1& solvein(Vector1	&x,
 				 Matrix         &A,
-				 const Vector2	&b, bool randomsol=false)  const;
+				 const Vector2	&b)  const;
+
+		template <class Matrix, class Vector1, class Vector2, class Random>
+		Vector1& solvein(Vector1	&x,
+				 Matrix         &A,
+				 const Vector2	&b, Random& generator)  const;
 
 
 		template <class Matrix, class Perm, class Block>
