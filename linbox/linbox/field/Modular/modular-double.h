@@ -89,6 +89,7 @@ namespace LinBox
 	      protected:
 
 	      public:
+		      typedef typename FFPACK::Modular<double> Father_t;
 		      friend class FieldAXPY<Modular<Element> >;
 		      friend class DotProductDomain<Modular<Element> >;
 		      friend class MultiModDouble;
@@ -97,10 +98,13 @@ namespace LinBox
 
 		      typedef ModularRandIter<Element> RandIter;
 
-		      static ClassifyRing<Modular<Element> >::categoryTag getCategory() {return ClassifyRing<Modular<Element> >::categoryTag();}
+		      static ClassifyRing<Modular<Element> >::categoryTag getCategory()
+		      {
+			      return ClassifyRing<Modular<Element> >::categoryTag();
+		      }
 
 		      Modular (const integer& p, int e=1) :
-			      FFPACK::Modular<double>((unsigned long) p)
+			      Father_t((unsigned long) p)
 		      {
 			      linbox_check(e==1);
 #ifdef DEBUG
@@ -111,29 +115,27 @@ namespace LinBox
 #endif
 		      }
 
-		      Modular () : FFPACK::Modular<double>() {};
+		      Modular () : Father_t() {};
 
+		      using Father_t ::cardinality ;
 		      integer &cardinality (integer &c) const
 		      {
 			      return c = integer(modulus);
 		      }
 
+		      using Father_t ::characteristic;
 		      integer &characteristic (integer &c) const
 		      {
 			      return c = integer(modulus);
 		      }
 
+		      using Father_t ::convert;
 		      integer &convert (integer &x, const Element &y) const
 		      {
 			      return x = integer(y);
 		      }
 
-		      template<class T>T&convert(T&x,const Element&y)const{return x=T(y);}
-		      template<class T>T&characteristic(T&x)const{return x=T(lmodulus);}
-		      unsigned long characteristic()const{return FFPACK::Modular<double>::characteristic();}
-		      unsigned long cardinality()const{return FFPACK::Modular<double>::cardinality();}
 
-              using FFPACK::Modular<double>::init;
 
 		      //!@bug use FFPACK operator
 		      const Modular<double> &operator=(const Modular<double> &F)
@@ -150,6 +152,7 @@ namespace LinBox
 		      }
 
 
+		      using Father_t ::init;
 		      Element &init (Element &x, const integer &y) const
 		      {
 			      x = (Element)(y%lmodulus);

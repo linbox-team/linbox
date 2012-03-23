@@ -99,56 +99,56 @@ namespace LinBox
 		friend class DotProductDomain<Modular<int32_t> >;
 		friend class MVProductDomain<Modular<int32_t> >;
 
+		typedef typename FFPACK::Modular<int32_t> Father_t;
+
 		typedef int32_t Element;
 		typedef ModularRandIter<int32_t> RandIter;
 
 		Modular (integer &p) :
-			FFPACK::Modular<int32_t>((unsigned long)p)
+			Father_t((unsigned long)p)
 		{}
 
 	       	Modular (int32_t value, int32_t exp=1) :
-			FFPACK::Modular<int32_t>(value,exp)
+			Father_t(value,exp)
 		      {}
 #if (FFLAFLAS_VERSIONW>10400)
 		Modular (long value) :
-			FFPACK::Modular<int32_t>(value)
+			Father_t(value)
 		      {}
 #endif
 
 		Modular (unsigned long value) :
-			FFPACK::Modular<int32_t>(value)
+			Father_t(value)
 		      {}
 
+		using Father_t ::cardinality;
 		 integer &cardinality (integer &c) const
 		{
 			return c = modulus;
 		}
 
+		 using Father_t ::characteristic;
 		 integer &characteristic (integer &c) const
 		{
 		       	return c = modulus;
 		}
 
 
-		 template<class T>T&convert(T&x,const Element&y)const{return x=T(y);}
-		 template<class T>T&characteristic(T&x)const{return x=T(lmodulus);}
-		 unsigned long characteristic()const{return FFPACK::Modular<int32_t>::characteristic();}
-		 unsigned long cardinality()const{return FFPACK::Modular<int32_t>::cardinality();}
 
+		 using Father_t ::convert;
 		 integer &convert (integer &x, const Element &y) const
 		{
 			return x = y;
 		}
 
 
+		 using Father_t ::init;
 		 Element &init (Element &x, const integer &y) const
 		{
-			x = Element (y % modulus);
+			x = Element (y % lmodulus);
 			if (x < 0) x += modulus;
 			return x;
 		}
-
-		 Element init(Element&x) const { return FFPACK::Modular<int32_t>::init(x) ; }
 
 		unsigned long AccBound(const Element&r) const
 		{

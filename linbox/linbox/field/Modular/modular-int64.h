@@ -96,17 +96,20 @@ namespace LinBox
 	public:
 		typedef int64_t Element;
 
+		typedef typename FFPACK::Modular<int64_t> Father_t
 		friend class FieldAXPY<Modular<int64_t> >;
 		friend class DotProductDomain<Modular<int64_t> >;
 		friend class MVProductDomain<Modular<int64_t> >;
 
 		typedef ModularRandIter<int64_t> RandIter;
 
+		using Father_t ::cardinality;
 		inline integer &cardinality (integer &c) const
 		{
 			return c = modulus;
 		}
 
+		using Father_t ::characteristic;
 		inline integer &characteristic (integer &c) const
 		{
 			return c = modulus;
@@ -117,14 +120,16 @@ namespace LinBox
 			return modulus;
 		}
 
+		using Father_t ::convert;
 		inline integer &convert (integer &x, const Element &y) const
 		{
 			return x = y;
 		}
 
+		using Father_t ::init;
 		inline Element &init (Element &x, const integer &y) const
 		{
-			x = Element (y % modulus);
+			x = Element (y % lmodulus);
 			if (x < 0) x += modulus;
 			return x;
 		}

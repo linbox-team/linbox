@@ -33,10 +33,9 @@
 
 #include "benchmarks/benchmark.h"
 #include "linbox/util/error.h"
+#include "fflas-ffpack/fflas-ffpack.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-balanced.h"
-#include "fflas-ffpack/ffpack/ffpack.h"
-#include "fflas-ffpack/fflas/fflas.h"
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
@@ -69,6 +68,16 @@ bool keepon(index_t & repet, const Timer & tim, double maxtime=0.2)
 	}
 	return false ;
 }
+
+bool keepon(index_t & repet, const double & tim, double maxtime=0.2)
+{
+	if (repet<2 || tim < maxtime) {
+		++repet ;
+		return true;
+	}
+	return false ;
+}
+
 
 /*! @brief Watches a timer and a number and repet and signals if over.
  *
@@ -105,13 +114,19 @@ void showFinish(int curr, int all)
 
 double fgemm_mflops(int m, int n, int k)
 {
-	return (double)m*(double)n/1e6*(double)k ;
+	return 2*(double)m/100*(double)n/100*(double)k/100 ;
 }
 
 double compute_mflops(const Timer & t, const double mflo, const int rpt = 1)
 {
 	linbox_check(rpt);
 	return (double) ((mflo*rpt)/t.usertime());
+}
+
+double compute_mflops(const double & t, const double mflo, const int rpt = 1)
+{
+	linbox_check(rpt);
+	return (double) ((mflo*rpt)/t);
 }
 
 /*! @internal
@@ -227,22 +242,23 @@ void launch_bench_blas(Field & F
 
 		index_t j = 0 ;
 		fgemm_blas_tim.clear() ;
+		// double fgemm_blas_tim = 0 ;
 		while(keepon(j,fgemm_blas_tim)) {
 			chrono.clear(); chrono.start() ;
 			FFLAS::fgemm(F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,
 					     ii,ii,ii,
-					     1.,
+					     F.one,
 					     A,ii,B,ii,
-					     0.,
+					     F.zero,
 					     C,ii) ;
 			chrono.stop() ;
 			fgemm_blas_tim += chrono ;
 		}
 		mflops = compute_mflops(fgemm_blas_tim,fgemm_mflops(i,i,i),j);
-#ifndef NDEBUG
-		if (i == min)
-			std::cerr << typeid(Element).name() << ' ' << i << ':' << mflops << std::endl;
-#endif
+// #ifndef NDEBUG
+		if (i >=950 && i <= 1050 )
+			std::cerr << std::endl<< typeid(Field).name() << ' ' << i << ':' << mflops << std::endl;
+// #endif
 
 		Data.setEntry(series_nb,l,mflops);
 	}

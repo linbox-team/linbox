@@ -816,27 +816,36 @@ int main(int argc, char** argv)
 
 	parseArguments (argc, argv, args);
 
+
+	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start("ffpack test suite", "ffpack");
+
+
 	/* Modular Double */
 	{
 		typedef Modular<double> Field;
 
 		Field F (q);
+		F.write(report << "Field : " ) << std::endl;
 
 		srand((unsigned)time (NULL));
 
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator().start("ffpack test suite", "ffpack");
+		bool locpass = true ;
 
-		if (!testLUdivine (F, m,n, iterations)) pass = false;
-		if (!testRank (F, n, iterations))       pass = false;
-		if (!testDet (F, n, iterations))        pass = false;
-		if (!testTURBO (F, n, iterations))      pass = false;
-		if (!testapplyP  (F, n, iterations))    pass = false;
-		if (!testInv  (F, n, iterations))       pass = false;
-		if (!testMinPoly (F,n,iterations))      pass = false;
-		if (!testCharPoly (F,n,iterations))     pass = false;
+		if (!testLUdivine (F, m,n, iterations)) locpass = false;
+		if (!testRank (F, n, iterations))       locpass = false;
+		if (!testDet (F, n, iterations))        locpass = false;
+		if (!testTURBO (F, n, iterations))      locpass = false;
+		if (!testapplyP  (F, n, iterations))    locpass = false;
+		if (!testInv  (F, n, iterations))       locpass = false;
+		if (!testMinPoly (F,n,iterations))      locpass = false;
+		if (!testCharPoly (F,n,iterations))     locpass = false;
 
+		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
+
+		pass &= locpass ;
 	}
 
 #ifdef _LB_FULL_TEST
@@ -845,22 +854,23 @@ int main(int argc, char** argv)
 		typedef Modular<float> Field;
 
 		Field F (q);
+		F.write(report << "Field : " ) << std::endl;
 
 		srand((unsigned)time (NULL));
 
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator().start("ffpack test suite", "ffpack");
+		bool locpass = true ;
 
-		if (!testLUdivine (F, m,n, iterations)) pass = false;
-		if (!testRank (F, n, iterations))       pass = false;
-		if (!testDet (F, n, iterations))        pass = false;
-		if (!testTURBO (F, n, iterations))      pass = false;
-		if (!testapplyP  (F, n, iterations))    pass = false;
-		if (!testInv  (F, n, iterations))       pass = false;
-		if (!testMinPoly (F,n,iterations))      pass = false;
-		if (!testCharPoly (F,n,iterations))     pass = false;
+		if (!testLUdivine (F, m,n, iterations)) locpass = false;
+		if (!testRank (F, n, iterations))       locpass = false;
+		if (!testDet (F, n, iterations))        locpass = false;
+		if (!testTURBO (F, n, iterations))      locpass = false;
+		if (!testapplyP  (F, n, iterations))    locpass = false;
+		if (!testInv  (F, n, iterations))       locpass = false;
+		if (!testMinPoly (F,n,iterations))      locpass = false;
+		if (!testCharPoly (F,n,iterations))     locpass = false;
 
+		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
+		pass &= locpass ;
 	}
 
 	/* Modular Balanced Double */
@@ -868,22 +878,23 @@ int main(int argc, char** argv)
 		typedef LinBox::ModularBalanced<double> Field;
 
 		Field F (q);
+		F.write(report << "Field : " ) << std::endl;
 
 		srand((unsigned)time (NULL));
 
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator().start("ffpack test suite", "ffpack");
+		bool locpass = true ;
 
-		if (!testLUdivine (F, m,n, iterations)) pass = false;
-		if (!testRank (F, n, iterations))       pass = false;
-		if (!testDet (F, n, iterations))        pass = false;
-		if (!testTURBO (F, n, iterations))      pass = false;
-		if (!testapplyP  (F, n, iterations))    pass = false;
-		if (!testInv  (F, n, iterations))       pass = false;
-		if (!testMinPoly (F,n,iterations))      pass = false;
-		if (!testCharPoly (F,n,iterations))     pass = false;
+		if (!testLUdivine (F, m,n, iterations)) locpass = false;
+		if (!testRank (F, n, iterations))       locpass = false;
+		if (!testDet (F, n, iterations))        locpass = false;
+		if (!testTURBO (F, n, iterations))      locpass = false;
+		if (!testapplyP  (F, n, iterations))    locpass = false;
+		if (!testInv  (F, n, iterations))       locpass = false;
+		if (!testMinPoly (F,n,iterations))      locpass = false;
+		if (!testCharPoly (F,n,iterations))     locpass = false;
 
+		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
+		pass &= locpass ;
 	}
 
 	/* Modular Balanced Float */
@@ -891,22 +902,23 @@ int main(int argc, char** argv)
 		typedef ModularBalanced<float> Field;
 
 		Field F (q);
+		F.write(report << "Field : " ) << std::endl;
 
 		srand((unsigned)time (NULL));
 
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator().start("ffpack test suite", "ffpack");
+		bool locpass = true ;
 
-		if (!testLUdivine (F, m,n, iterations)) pass = false;
-		if (!testRank (F, n, iterations))       pass = false;
-		if (!testDet (F, n, iterations))        pass = false;
-		if (!testTURBO (F, n, iterations))      pass = false;
-		if (!testapplyP  (F, n, iterations))    pass = false;
-		if (!testInv  (F, n, iterations))       pass = false;
-		if (!testMinPoly (F,n,iterations))      pass = false;
-		if (!testCharPoly (F,n,iterations))     pass = false;
+		if (!testLUdivine (F, m,n, iterations)) locpass = false;
+		if (!testRank (F, n, iterations))       locpass = false;
+		if (!testDet (F, n, iterations))        locpass = false;
+		if (!testTURBO (F, n, iterations))      locpass = false;
+		if (!testapplyP  (F, n, iterations))    locpass = false;
+		if (!testInv  (F, n, iterations))       locpass = false;
+		if (!testMinPoly (F,n,iterations))      locpass = false;
+		if (!testCharPoly (F,n,iterations))     locpass = false;
 
+		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
+		pass &= locpass ;
 	}
 #pragma message "#warning some tests don't compile or fail"
 	/* Modular int32_t */
@@ -914,21 +926,23 @@ int main(int argc, char** argv)
 		typedef Modular<int32_t> Field;
 
 		Field F (q);
+		F.write(report << "Field : " ) << std::endl;
 
 		srand((unsigned)time (NULL));
 
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator().start("ffpack test suite", "ffpack");
+		bool locpass = true ;
 
-		if (!testLUdivine (F, m,n, iterations)) pass = false;
-		if (!testRank (F, n, iterations))       pass = false;
-		if (!testDet (F, n, iterations))        pass = false;
-		if (!testTURBO (F, n, iterations))      pass = false;
-		if (!testapplyP  (F, n, iterations))    pass = false;
-		if (!testInv  (F, n, iterations))       pass = false;
-		if (!testMinPoly (F,n,iterations))      pass = false;
-		if (!testCharPoly (F,n,iterations))     pass = false;
+		if (!testLUdivine (F, m,n, iterations)) locpass = false;
+		if (!testRank (F, n, iterations))       locpass = false;
+		if (!testDet (F, n, iterations))        locpass = false;
+		if (!testTURBO (F, n, iterations))      locpass = false;
+		if (!testapplyP  (F, n, iterations))    locpass = false;
+		if (!testInv  (F, n, iterations))       locpass = false;
+		if (!testMinPoly (F,n,iterations))      locpass = false;
+		if (!testCharPoly (F,n,iterations))     locpass = false;
+
+		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
+		pass &= locpass ;
 
 	}
 
@@ -938,21 +952,22 @@ int main(int argc, char** argv)
 		typedef ModularBalanced<int32_t > Field ;
 
 		Field F (q);
+		F.write(report << "Field : " ) << std::endl;
 
 		srand((unsigned)time (NULL));
 
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator().start("ffpack test suite", "ffpack");
+		bool locpass = true ;
 
-		if (!testLUdivine (F, m,n, iterations)) pass = false;
-		if (!testRank (F, n, iterations))       pass = false;
-		if (!testDet (F, n, iterations))        pass = false;
-		if (!testTURBO (F, n, iterations))      pass = false;
-		if (!testapplyP  (F, n, iterations))    pass = false;
-		if (!testInv  (F, n, iterations))       pass = false;
-		if (!testMinPoly (F,n,iterations))      pass = false;
-		if (!testCharPoly (F,n,iterations))     pass = false;
+		if (!testLUdivine (F, m,n, iterations)) locpass = false;
+		if (!testRank (F, n, iterations))       locpass = false;
+		if (!testDet (F, n, iterations))        locpass = false;
+		if (!testTURBO (F, n, iterations))      locpass = false;
+		if (!testapplyP  (F, n, iterations))    locpass = false;
+		if (!testInv  (F, n, iterations))       locpass = false;
+		if (!testMinPoly (F,n,iterations))      locpass = false;
+		if (!testCharPoly (F,n,iterations))     locpass = false;
+		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
+		pass &= locpass ;
 	}
 #endif
 
@@ -961,21 +976,22 @@ int main(int argc, char** argv)
 		typedef Modular<uint32_t> Field;
 
 		Field F (q);
+		F.write(report << "Field : " ) << std::endl;
 
 		srand((unsigned)time (NULL));
 
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator().start("ffpack test suite", "ffpack");
+		bool locpass = true ;
 
-		if (!testLUdivine (F, m,n, iterations)) pass=false;
-		if (!testRank (F, n, iterations))   pass = false;
-		if (!testDet (F, n, iterations))   pass = false;
-		if (!testTURBO (F, n, iterations))   pass = false;
-		if (!testapplyP  (F, n, iterations)) pass = false;
-		if (!testInv  (F, n, iterations)) pass = false;
-		if (!testMinPoly (F,n,iterations)) pass=false;
-		if (!testCharPoly (F,n,iterations)) pass=false;
+		if (!testLUdivine (F, m,n, iterations)) locpass = false;
+		if (!testRank (F, n, iterations))   locpass     = false;
+		if (!testDet (F, n, iterations))   locpass      = false;
+		if (!testTURBO (F, n, iterations))   locpass    = false;
+		if (!testapplyP  (F, n, iterations)) locpass    = false;
+		if (!testInv  (F, n, iterations)) locpass       = false;
+		if (!testMinPoly (F,n,iterations)) locpass      = false;
+		if (!testCharPoly (F,n,iterations)) locpass     = false;
+		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
+		pass &= locpass ;
 	}
 
 	/* GivaroZpz int32_t */
@@ -983,21 +999,22 @@ int main(int argc, char** argv)
 		typedef GivaroZpz<Givaro::Std32> Field;
 
 		Field F (q);
+		F.write(report << "Field : " ) << std::endl;
 
 		srand((unsigned)time (NULL));
 
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-		commentator().start("ffpack test suite", "ffpack");
+		bool locpass = true ;
 
-		if (!testLUdivine (F, m,n, iterations)) pass=false;
-		if (!testRank (F, n, iterations))   pass = false;
-		if (!testDet (F, n, iterations))   pass = false;
-		if (!testTURBO (F, n, iterations))   pass = false;
-		if (!testapplyP  (F, n, iterations)) pass = false;
-		if (!testInv  (F, n, iterations)) pass = false;
-		if (!testMinPoly (F,n,iterations)) pass=false;
-		if (!testCharPoly (F,n,iterations)) pass=false;
+		if (!testLUdivine (F, m,n, iterations)) locpass = false;
+		if (!testRank (F, n, iterations))   locpass     = false;
+		if (!testDet (F, n, iterations))   locpass      = false;
+		if (!testTURBO (F, n, iterations))   locpass    = false;
+		if (!testapplyP  (F, n, iterations)) locpass    = false;
+		if (!testInv  (F, n, iterations)) locpass       = false;
+		if (!testMinPoly (F,n,iterations)) locpass      = false;
+		if (!testCharPoly (F,n,iterations)) locpass     = false;
+		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
+		pass &= locpass ;
 	}
 #endif
 	commentator().stop(MSG_STATUS(pass),"ffpack test suite");
