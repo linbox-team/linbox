@@ -2,7 +2,7 @@
  * Copyright (C) 2009 The LinBox group
  * Written by JG Dumas
  *
- * Time-stamp: <14 Jun 10 15:36:56 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <23 Mar 12 17:28:19 Jean-Guillaume.Dumas@imag.fr>
  *
  * 
  * ========LICENCE========
@@ -164,17 +164,18 @@ namespace LinBox
 				      unsigned long Nj) const;
 
 		template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2>
-		Vector1& solve(Vector1& x, unsigned long Rank, const Perm& Q, const SparseSeqMatrix& L, const SparseSeqMatrix& U, const Perm& P, const Vector2& b, bool randomsol=false) const;
-
-
-		template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2>
 		Vector1& solve(Vector1& x, Vector1& w, unsigned long Rank, const Perm& Q, const SparseSeqMatrix& L, const SparseSeqMatrix& U, const Perm& P, const Vector2& b) const;
 
 
 		template <class SparseSeqMatrix, class Vector1, class Vector2>
 		Vector1& solvein(Vector1& x,
 				 SparseSeqMatrix        &A,
-				 const Vector2& b, bool randomsol=false) const;
+				 const Vector2& b) const;
+
+		template <class SparseSeqMatrix, class Vector1, class Vector2, class Random>
+		Vector1& solvein(Vector1& x,
+				 SparseSeqMatrix        &A,
+				 const Vector2& b, Random& generator) const;
 
 
 		template <class SparseSeqMatrix, class Perm>

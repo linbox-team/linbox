@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2009
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <21 Jan 10 15:55:07 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <23 Mar 12 17:32:19 Jean-Guillaume.Dumas@imag.fr>
  *
  * 
  * ========LICENCE========
@@ -54,32 +54,10 @@ namespace LinBox
 		return P.applyTranspose(x, w);
 	}
 
-	template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2>
-	Vector1& GaussDomain<GF2>::solve(Vector1& x, unsigned long Rank,
-					 const Perm& Q, const SparseSeqMatrix& L,
-					 const SparseSeqMatrix& U, const Perm& P,
-					 const Vector2& b, bool randomsol) const
-	{
-
-		Vector1 w(U.coldim());
-		const GF2 F2;
-		if (randomsol) {
-			typename GF2::RandIter generator(F2);
-			for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
-				generator.random( *it );
-		}
-		else {
-			for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
-				F2.init(*it,0);
-		}
-
-		return this->solve(x, w, Rank, Q, L, U, P, b);
-	}
-
 	template <class SparseSeqMatrix, class Vector1, class Vector2>
 	Vector1& GaussDomain<GF2>::solvein(Vector1& x,
 					   SparseSeqMatrix        &A,
-					   const Vector2& b, bool randomsol) const
+					   const Vector2& b) const
 	{
 
 		typename GF2::Element Det;
@@ -89,11 +67,38 @@ namespace LinBox
 		Permutation<GF2> Q((int)A.rowdim(),F2);
 		Permutation<GF2> P((int)A.coldim(),F2);
 
+		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
+		Vector1 w(A.coldim());
+
+        for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
+				F2.init(*it,0);
+
+		return this->solve(x, w, Rank, Q, L, A, P, b);
+	}
+
+	template <class SparseSeqMatrix, class Vector1, class Vector2, class Random>
+	Vector1& GaussDomain<GF2>::solvein(Vector1& x,
+					   SparseSeqMatrix        &A,
+					   const Vector2& b,
+                       Random& generator) const
+	{
+
+		typename GF2::Element Det;
+		unsigned long Rank;
+		const GF2 F2;
+		SparseSeqMatrix L(F2, A.rowdim(), A.rowdim());
+		Permutation<GF2> Q((int)A.rowdim(),F2);
+		Permutation<GF2> P((int)A.coldim(),F2);
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
-		return this->solve(x, Rank, Q, L, A, P, b, randomsol);
+		Vector1 w(A.coldim());
+
+        for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
+            generator.random( *it );        
+
+		return this->solve(x, w, Rank, Q, L, A, P, b);
 	}
 
 } // namespace LinBox

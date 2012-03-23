@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <21 Jan 10 17:01:22 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <23 Mar 12 17:33:46 Jean-Guillaume.Dumas@imag.fr>
  *
  * 
  * ========LICENCE========
@@ -53,27 +53,46 @@ namespace LinBox
 	}
 
 	template <class _Field>
-	template <class Matrix, class Perm, class Vector1, class Vector2> inline Vector1&
-	GaussDomain<_Field>::solve(Vector1& x, unsigned long Rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b, bool randomsol)  const
+	template <class Matrix, class Vector1, class Vector2> inline Vector1&
+	GaussDomain<_Field>::solvein(Vector1& x, Matrix& A, const Vector2& b)  const
 	{
 
-		Vector1 w(U.coldim());
-		if (randomsol) {
-			// Random solution is in output
-			typename _Field::RandIter generator(_field);
-			for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
-				generator.random( *it );
-		}
-		else {
-			for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
-				_field.init(*it,0);
-		}
-		return this->solve(x, w, Rank, Q, L, U, P, b);
+		typename Field::Element Det;
+		unsigned long Rank;
+		Matrix L(_field, A.rowdim(), A.rowdim());
+		Permutation<Field> Q((int)A.rowdim(),_field);
+		Permutation<Field> P((int)A.coldim(),_field);
+
+		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
+        
+			// Sets solution values to 0 for coldim()-Rank columns
+			// Therefore, prune unnecessary elements
+			// in those last columns of U
+        for(typename Matrix::RowIterator row=A.rowBegin();
+            row != A.rowEnd(); ++row) {
+            if (row->size()) {
+                size_t ns=0;
+                for(typename Matrix::Row::iterator it = row->begin();
+                    it != row->end(); ++it, ++ns) {
+                    if (it->first >= Rank) {
+                        row->resize(ns);
+                        break;
+                    }
+                }
+            }
+        }
+
+ 		Vector1 w(A.coldim());
+       
+        for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
+            _field.init(*it,0);
+
+		return this->solve(x, w, Rank, Q, L, A, P, b);
 	}
 
 	template <class _Field>
-	template <class Matrix, class Vector1, class Vector2> inline Vector1&
-	GaussDomain<_Field>::solvein(Vector1& x, Matrix& A, const Vector2& b, bool randomsol)  const
+	template <class Matrix, class Vector1, class Vector2, class Random> inline Vector1&
+	GaussDomain<_Field>::solvein(Vector1& x, Matrix& A, const Vector2& b, Random& generator)  const
 	{
 
 		typename Field::Element Det;
@@ -84,27 +103,13 @@ namespace LinBox
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
-		if (! randomsol) {
-			// Sets solution values to 0 for coldim()-Rank columns
-			// Therefore, prune unnecessary elements
-			// in those last columns of U
-			for(typename Matrix::RowIterator row=A.rowBegin();
-			    row != A.rowEnd(); ++row) {
-				if (row->size()) {
-					size_t ns=0;
-					for(typename Matrix::Row::iterator it = row->begin();
-					    it != row->end(); ++it, ++ns) {
-						if (it->first >= Rank) {
-							row->resize(ns);
-							break;
-						}
-					}
-				}
-			}
-		}
+		Vector1 w(A.coldim());
+        for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
+				generator.random( *it );
 
-		return this->solve(x, Rank, Q, L, A, P, b, randomsol);
+		return this->solve(x, w, Rank, Q, L, A, P, b);
 	}
+
 
 } // namespace LinBox
 
