@@ -155,7 +155,7 @@ namespace LinBox
 		{
 			// Create new random elements
 			if (_size == 0)
-				return x = rand();
+				return x = (Element) rand();
 			else
 				return x = static_cast<integer>((double(rand())/RAND_MAX)*double(_size));
 

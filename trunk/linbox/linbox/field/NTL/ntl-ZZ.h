@@ -59,6 +59,7 @@ namespace LinBox
 
 	public:
 		typedef NTL_ZZRandIter RandIter;
+		typedef NTL_ZZ Father_t ;
 
 		typedef NTL::ZZ Element;
 		Element zero,one,mOne;

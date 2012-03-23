@@ -3,20 +3,20 @@
  *
  * Written by JP May, with tweaks by D. Saunders, Z. Wan
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -371,7 +371,7 @@ namespace LinBox
 			Scalar* b=B.matrix->getPointer();
 			Scalar* c=C.matrix->getPointer();
 
-			//FFLAS::fcopy(_field, rows*cols, b, 1, c, 1); // C = B
+			//FFLAS::fcopy((typename Field::Father_t)_field, rows*cols, b, 1, c, 1); // C = B
 
 
 			for(size_t i=0; i < rows*cols; ++i) {
@@ -380,7 +380,7 @@ namespace LinBox
 			}
 
 			//Scalar alpha; _field.init(alpha, 1);
-			//FFLAS::faxpy(_field, rows*cols, alpha, a, 1, c, 1);
+			//FFLAS::faxpy((typename Field::Father_t)_field, rows*cols, alpha, a, 1, c, 1);
 
 			return C;
 		}

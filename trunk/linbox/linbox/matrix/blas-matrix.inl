@@ -1670,7 +1670,7 @@ namespace LinBox
 		//_stride ?
 		if (_use_fflas){
 			//!@bug this supposes &x[0]++ == &x[1]
-			FFLAS::fgemv( _field, FFLAS::FflasNoTrans,
+			FFLAS::fgemv((typename Field::Father_t) _field, FFLAS::FflasNoTrans,
 				      _row, _col,
 				      _field.one,
 				      _ptr, getStride(),
@@ -1698,7 +1698,7 @@ namespace LinBox
 
 		//_stride ?
 		if (_use_fflas) {
-			FFLAS::fgemv( _field, FFLAS::FflasTrans,
+			FFLAS::fgemv((typename Field::Father_t) _field, FFLAS::FflasTrans,
 				      _row, _col,
 				      _field.one,
 				      _ptr, getStride(),
