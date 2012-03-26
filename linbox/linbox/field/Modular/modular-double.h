@@ -89,7 +89,7 @@ namespace LinBox
 	      protected:
 
 	      public:
-		      typedef typename FFPACK::Modular<double> Father_t;
+		      typedef FFPACK::Modular<double> Father_t;
 		      friend class FieldAXPY<Modular<Element> >;
 		      friend class DotProductDomain<Modular<Element> >;
 		      friend class MultiModDouble;
