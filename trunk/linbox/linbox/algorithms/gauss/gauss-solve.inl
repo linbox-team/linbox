@@ -28,7 +28,7 @@
 #ifndef __LINBOX_gauss_solve_INL
 #define __LINBOX_gauss_solve_INL
 
-#include "linbox/algorithms/gauss.h"
+// #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/triangular-solve.h"
 #include "linbox/blackbox/permutation.h"
 
@@ -94,6 +94,7 @@ namespace LinBox
 	template <class Matrix, class Vector1, class Vector2, class Random> inline Vector1&
 	GaussDomain<_Field>::solvein(Vector1& x, Matrix& A, const Vector2& b, Random& generator)  const
 	{
+		THIS_CODE_MAY_NOT_COMPILE_AND_IS_NOT_TESTED;
 
 		typename Field::Element Det;
 		unsigned long Rank;

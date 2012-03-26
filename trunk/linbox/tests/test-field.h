@@ -1,19 +1,19 @@
 /* linbox/tests/test-field.h
  * Copyright (C) 2001, 2002 Bradford Hovinen
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -31,30 +31,30 @@
 
 /*
 // top level test that doesn't use subtests.
-bool testField 
+bool testField
 
 // top level test that uses subtest testRandomIteratorStep.
-bool testRandomIterator 
+bool testRandomIterator
 
 // top level runBasicRingTests calls these subtests.
-bool testFieldNegation 
+bool testFieldNegation
 bool testFieldDistributivity
 bool testFieldAssociativity
-bool testFieldCharacteristic 
-bool testGeometricSummation 
-bool testArithmeticConsistency 
-bool testAxpyConsistency 
+bool testFieldCharacteristic
+bool testGeometricSummation
+bool testArithmeticConsistency
+bool testAxpyConsistency
 bool testRanditerBasic
 
 // top level runFieldTests calls these subtests after runBasicRingTests.
-bool testFieldInversion 
-bool testFieldCommutativity 
-bool testFreshmansDream 
-bool testRingTrivia 
+bool testFieldInversion
+bool testFieldCommutativity
+bool testFreshmansDream
+bool testRingTrivia
 
 //called in subtest testArithmeticConsistency
-bool testRingArithmeticConsistency 
-bool testInvDivConsistency 
+bool testRingArithmeticConsistency
+bool testInvDivConsistency
 */
 
 #ifndef __LINBOX_test_field_H
@@ -181,16 +181,16 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	if (!F.isOne (F.one)) {
 		part_pass = reportError( "isOne (1) is false", pass);
 	}
-    
+
 	if ( !F.areEqual(F.mOne,mOne))
 		part_pass = reportError( "isMOne (-One) is false", pass);
-    
+
 	typename Field::Element mOneFromCst;
     F.init(mOneFromCst, -1);
-    
+
     if ( !F.areEqual(F.mOne,mOneFromCst))
 		part_pass = reportError( "isMOne (-1) is false", pass);
-        
+
 
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
@@ -395,7 +395,9 @@ namespace subtests {
 		commentator().start (st, "testFieldInversion", iterations);
 
 		typename Field::Element a, ainv, aainv, one;
-		F.init (a,0); F.init (ainv,0); F.init (aainv,0);
+		F.init (a,0);
+		F.init (ainv,0);
+		F.init (aainv,0);
 		F.init (one, 1);
 		typename Field::RandIter r (F);
 
@@ -1386,7 +1388,7 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
  *
  * Test up to two times, accepting either one, to reduce probability of
  * failing statistical tests.
- * 
+ *
  */
 template <class Field>
 bool testRandomIterator (const Field &F, const char *text,
