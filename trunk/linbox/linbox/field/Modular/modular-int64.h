@@ -96,7 +96,7 @@ namespace LinBox
 	public:
 		typedef int64_t Element;
 
-		typedef typename FFPACK::Modular<int64_t> Father_t
+		typedef FFPACK::Modular<int64_t> Father_t
 		friend class FieldAXPY<Modular<int64_t> >;
 		friend class DotProductDomain<Modular<int64_t> >;
 		friend class MVProductDomain<Modular<int64_t> >;

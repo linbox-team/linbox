@@ -99,7 +99,7 @@ namespace LinBox
 		friend class DotProductDomain<Modular<int32_t> >;
 		friend class MVProductDomain<Modular<int32_t> >;
 
-		typedef typename FFPACK::Modular<int32_t> Father_t;
+		typedef FFPACK::Modular<int32_t> Father_t;
 
 		typedef int32_t Element;
 		typedef ModularRandIter<int32_t> RandIter;

@@ -85,7 +85,7 @@ namespace LinBox
 
 	      public :
 		      typedef float Element;
-		      typedef typename FFPACK::Modular<float> Father_t ;
+		      typedef FFPACK::Modular<float> Father_t ;
 		      using Father_t::one ;
 		      using Father_t::zero ;
 		      using Father_t::mOne ;
