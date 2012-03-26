@@ -100,6 +100,22 @@ namespace LinBox
 			return x = (Element) (z);
 		}
 
+		Element &init (Element &x, const long int &y ) const
+		{
+			x = (Element)(abs (y) % (long int) (ModularBase<Element>::_modulus));
+			if (y < 0L)
+				x = Element(ModularBase<Element>::_modulus - x);
+			return x;
+		}
+
+		Element &init (Element &x, const int &y ) const
+		{
+			x = (Element)(abs (y) % (int) (ModularBase<Element>::_modulus));
+			if (y < 0)
+				x = Element(ModularBase<Element>::_modulus - x);
+			return x;
+		}
+
 		/*! add elements
 		 * @todo is it faster to use uint32 and multiple casts ?
 		 */
@@ -435,6 +451,22 @@ namespace LinBox
 			return x = (Element) (z);
 		}
 
+		Element &init (Element &x, const long int &y ) const
+		{
+			x = Element(abs (y) % (long int) (ModularBase<Element>::_modulus));
+			if (y < 0)
+				x = Element(ModularBase<Element>::_modulus - x);
+			return x;
+		}
+
+		Element &init (Element &x, const int &y ) const
+		{
+			x = Element(abs (y) % (int) (ModularBase<Element>::_modulus));
+			if (y < 0)
+				x = Element(ModularBase<Element>::_modulus - x);
+			return x;
+		}
+
 		Element &init(Element &x) const
 		{
 			return x = 0 ;
@@ -723,10 +755,14 @@ namespace LinBox
 		{}
 		Modular (uint32_t modulus)  :
 			ModularBase<uint32_t> (modulus),zero(0),one(1),mOne(modulus-1)
-		{ init_two_64 (); }
+		{
+			init_two_64 ();
+		}
 		Modular (const integer &modulus) :
 			ModularBase<uint32_t> (modulus),zero(0),one(1),mOne(modulus-1)
-		{ init_two_64 (); }
+		{
+			init_two_64 ();
+		}
 
 		const Modular &operator=(const Modular &F)
 		{

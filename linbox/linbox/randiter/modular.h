@@ -153,7 +153,9 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		Element &random (Element &a) const
-		{ return _field.init(a, ::random()); }
+		{
+			return _field.init(a, ::random()); // need init from long int
+		}
 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
@@ -211,11 +213,18 @@ namespace LinBox
 
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
-		{ _r = r._r; return *this; }
+		{
+			_r = r._r;
+			return *this;
+		}
 		Element &random (Element &a) const
-		{ return _r.random (a); }
+		{
+			return _r.random (a);
+		}
 		ElementAbstract &random (ElementAbstract &a) const
-		{ return _r.random (a); }
+		{
+			return _r.random (a);
+		}
 
 	};
 
