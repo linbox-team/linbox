@@ -83,7 +83,8 @@ namespace LinBox
 			A(b), M(n), mul(p)
 		{}
 		MyRationalModularMinpoly(MyRationalModularMinpoly& C) :
-			MyRationalModularMinpoly(C.A,C.M,C.mul)
+			// MyRationalModularMinpoly(C.A,C.M,C.mul) //-std=c++11
+			A(C.A), M(C.M), mul(C.mul)
 		{}
 
 		template<typename Polynomial, typename Field>
@@ -120,7 +121,8 @@ namespace LinBox
 			A(b), M(n), vD(ve), mul(p) {}
 
 		MyIntegerModularMinpoly(MyIntegerModularMinpoly& C) :
-			MyIntegerModularMinpoly(C.A,C.M,C.vD,C.mul)
+			// MyIntegerModularMinpoly(C.A,C.M,C.vD,C.mul) //-std=c++11
+			A(C.A), M(C.M),vD(C.vD),mul(C.mul)
 		{}
 
 		template<typename Polynomial, typename Field>
