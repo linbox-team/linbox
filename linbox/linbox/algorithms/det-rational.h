@@ -87,8 +87,10 @@ namespace LinBox
 				     const Integer & p1, const Integer & p2) :
 			A(b), M(n), mul(p1), div(p2)
 		{}
+
 		MyRationalModularDet(MyRationalModularDet& C) :
-			MyRationalModularDet(C.A,C.M,C.mul)
+			// MyRationalModularDet(C.A,C.M,C.mul)
+			A(C.A),M(C.M),mul(C.mul),div(C.div)
 		{}
 
 		void setDiv (const Integer& d) {div = d;}
@@ -121,7 +123,8 @@ namespace LinBox
 		{}
 
 		MyIntegerModularDet(MyIntegerModularDet& C) :
-			MyIntegerModularDet(C.A,C.M)
+			// MyIntegerModularDet(C.A,C.M)
+			A(C.A), M(C.M)
 		{}
 
 		template<typename Int, typename Field>

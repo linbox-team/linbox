@@ -85,7 +85,8 @@ namespace LinBox
 			A(b), M(n), mul(p)
 		{}
 		MyRationalModularCharpoly(MyRationalModularCharpoly& C) :
-			MyRationalModularCharpoly(C.A,C.M,C.mul)
+			// MyRationalModularCharpoly(C.A,C.M,C.mul)
+			A(C.A),M(C.M),mul(C.mul)
 		{}
 
 		template<typename Polynomial, typename Field>
@@ -121,7 +122,8 @@ namespace LinBox
 			A(b), M(n), vD(ve), mul(p) {}
 
 		MyIntegerModularCharpoly(MyIntegerModularCharpoly& C) :
-			MyIntegerModularCharpoly(C.A,C.M,C.vD,C.mul)
+			// MyIntegerModularCharpoly(C.A,C.M,C.vD,C.mul)
+			A(C.A),M(C.M),vD(C.vD),mul(C.mul)
 		{}
 
 		template<typename Polynomial, typename Field>

@@ -250,7 +250,7 @@ void launch_bench_blas(Field & F
 		// double fgemm_blas_tim = 0 ;
 		while(keepon(j,fgemm_blas_tim)) {
 			chrono.clear(); chrono.start() ;
-			FFLAS::fgemm((typename Field::Father_t&)F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t)F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,
 					     ii,ii,ii,
 					     F.one,
 					     A,ii,B,ii,
@@ -261,8 +261,10 @@ void launch_bench_blas(Field & F
 		}
 		mflops = compute_mflops(fgemm_blas_tim,fgemm_mflops(i,i,i),j);
 // #ifndef NDEBUG
-		if (i >=950 && i <= 1050 )
+		if (i >=950 && i <= 1050 ) {
 			std::cerr << std::endl<< typeid(Field).name() << ' ' << i << ':' << mflops << std::endl;
+			std::cerr << fgemm_blas_tim << std::endl;
+		}
 // #endif
 
 		Data.setEntry(series_nb,l,mflops);
