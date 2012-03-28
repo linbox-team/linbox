@@ -214,7 +214,6 @@ namespace LinBox
 	 * Adds only at apply time.
 	 * Given two black boxes A and B of the same dimensions, form a black
 	 * box representing A+B, i.e., SumOwner(A,B)x=(A+B)x=Ax+Bx
-	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 	template <class _Blackbox1, class _Blackbox2>
 	class SumOwner : public BlackboxInterface {
@@ -324,6 +323,7 @@ namespace LinBox
 
 
 		};
+
 		template<typename _BBt1, typename _BBt2, typename Field>
 		SumOwner (const Sum<_BBt1, _BBt2> &M, const Field& F) :
 			_A_data(*(M.getLeftPtr()), F),
@@ -347,32 +347,50 @@ namespace LinBox
 		}
 
 
-
-
 		/** Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
 		 * Required by abstract base class.
 		 * @return integer number of rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-		{ return _A_data.rowdim (); }
+		{
+			return _A_data.rowdim ();
+		}
 
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
 		size_t coldim (void) const
-		{ return _A_data.coldim (); }
+		{
+			return _A_data.coldim ();
+		}
 
 
-		const Field& field() const { return _A_data . field(); }
+		const Field& field() const
+		{
+			return _A_data . field();
+		}
 
 		// accessors to the blackboxes without ownership
-		const Blackbox1& getLeftData() const {return  _A_data;}
-		Blackbox1& getLeftData() {return  _A_data;}
+		const Blackbox1& getLeftData() const
+		{
+			return  _A_data;
+		}
+		Blackbox1& getLeftData()
+		{
+			return  _A_data;
+		}
 
-		const Blackbox2& getRightData() const {return  _B_data;}
-		Blackbox2& getRightData() {return  _B_data;}
+		const Blackbox2& getRightData() const
+		{
+			return  _B_data;
+		}
+
+		Blackbox2& getRightData()
+		{
+			return  _B_data;
+		}
 
 	protected:
 
