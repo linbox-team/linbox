@@ -173,10 +173,11 @@ namespace LinBox
 
 		template<typename _Tp1>
 		struct rebind {
-			typedef SubmatrixOwner<typename Blackbox_t::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other;
-			void operator() (other & Ap, const Self_t& A) {
-				typename Blackbox_t::template rebind<_Tp1> Rebinder;
-				Rebinder( Ap.getData(), *(A.getPtr()));
+			typedef typename Blackbox_t::template rebind<_Tp1> Rebinder;
+			typedef SubmatrixOwner<typename Rebinder::other, VectorCategories::DenseVectorTag> other;
+			void operator() (other & Ap, const Self_t& A)
+			{
+				Rebinder () ( Ap.getData(), *(A.getPtr()));
 			}
 		};
 
@@ -262,6 +263,7 @@ namespace LinBox
 	};
 
 
+	/** Specialization for BlasMatrix */
 	template<class _Field>
 	class Submatrix<BlasMatrix<_Field>, VectorCategories::DenseVectorTag> : public BlasSubmatrix<_Field> {
 	public:
@@ -515,11 +517,12 @@ namespace LinBox
 
 		template<typename _Tp1>
 		struct rebind {
-			typedef SubmatrixOwner< typename Blackbox::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other;
+			typedef typename Blackbox_t::template rebind<_Tp1> Rebinder ;
+			typedef SubmatrixOwner<typename Rebinder::other, VectorCategories::DenseVectorTag> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-				typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), A.getData(), F);
-
+			void operator() (other & Ap, const Self_t& A)
+			{
+				Rebinder () ( Ap.getData(), A.getData());
 			}
 
 		};
@@ -608,11 +611,11 @@ namespace LinBox
 #endif // __LINBOX_bb_submatrix_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
