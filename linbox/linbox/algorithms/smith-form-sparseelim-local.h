@@ -32,14 +32,6 @@
 #include "linbox/algorithms/gauss.h"
 
 
-template <bool Boolean> struct Boolean_Trait;
-template <> struct Boolean_Trait<true> {
-    typedef int BooleanType; // int does not matter, only that it differs from float
-};
-template <> struct Boolean_Trait<false> {
-    typedef float BooleanType;// float does not matter, only that it differs from int
-};
-
 // LINBOX_pp_gauss_steps_OUT outputs elimination steps
 #ifdef LINBOX_pp_gauss_steps_OUT
 
@@ -54,6 +46,14 @@ template <> struct Boolean_Trait<false> {
 namespace LinBox
 {
 
+    template <bool Boolean> struct Boolean_Trait;
+    template <> struct Boolean_Trait<true> {
+        typedef int BooleanType; // int does not matter, only that it differs from float
+    };
+    template <> struct Boolean_Trait<false> {
+        typedef float BooleanType;// float does not matter, only that it differs from int
+    };
+    
     enum {
         PRIVILEGIATE_NO_COLUMN_PIVOTING	= 1,
         PRIVILEGIATE_REDUCING_FILLIN	= 2,
@@ -88,55 +88,39 @@ namespace LinBox
 		// --------------------------------------------
 		// Modulo operators
 		template<class Modulu>
-		bool isNZero(const Modulu& a ) { return (bool)a ;}
-
-
-		template<class Ring>
-		Ring MY_Zpz_bezout(Ring a, Ring b, Ring& u)
-		{
-			Ring u1,u3 ;
-			Ring v1,v3 ;
-			u1 = 1 ; u3 = a ;
-			v1 = 0 ; v3 = b ;
-			while (v3 != 0)
-			{
-				Ring q , t1 ,t3 ;
-				q = u3 / v3 ;
-				t1 = u1 - q * v1 ; t3 = u3 - q * v3 ;
-				u1 = v1 ; u3 = v3 ; v1 = t1 ; v3 = t3 ;
-			}
-			u = u1 ;
-			return u3 ;
-		}
+		bool isNZero(const Modulu& a ) const { return (bool)a ;}
+		template<class Modulu>
+		bool isZero(const Modulu& a ) const { return a == 0UL;}
 
 		template<class Modulo, class Modulo2>
-		Modulo MY_Zpz_inv (const Modulo a, const Modulo2 pp)
+		Modulo MY_Zpz_inv (const Modulo a, const Modulo2 _p)
 		{
-			typedef Modulo Ring;
-			if (a == 1) return a;
-			if (a == -1) return a;
-			Ring u, d;
-			d = MY_Zpz_bezout(Ring(a),Ring(pp),u) ;
-
-			if (d == -1) { u = -u; }
-			if (u <0) u += pp ;
-			return u ;
-		}
-
-
-		template<class Ring, class Ring2>
-		Ring MY_gcd(Ring a, Ring2 b)
-		{
-			Ring q,r,d;
-			Ring ma=a, mb=b;
-			while (mb != 0) {
-				q = ma / mb;
-				r = ma - q * mb;
-				ma = mb;
-				mb = r;
-			}
-			return ma;
-		}
+                    Modulo u1(1UL);
+                    Modulo r0(_p), r1(a);
+                    Modulo q(r0/r1);
+                    
+                    r0 -= q * r1;
+                    if ( isZero(r0) ) return u1;
+                    Modulo u0 = q;
+                    
+                    q = r1/r0;
+                    r1 -= q * r0;
+                    
+                    while ( isNZero(r1) ) {
+                        u1 += q * u0;
+                        
+                        q = r0/r1;
+                        r0 -= q * r1;
+                        if ( isZero(r0) ) return u1;
+                        u0 += q * u1;
+                        
+                        q = r1/r0;
+                        r1 -= q * r0;
+                        
+                    }
+                    
+                    return u1=_p-u0;
+                }
 
 		template<class Ring1, class Ring2>
 		bool MY_divides(Ring1 a, Ring2 b)
