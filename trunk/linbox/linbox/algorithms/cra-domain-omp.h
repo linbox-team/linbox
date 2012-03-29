@@ -4,7 +4,7 @@
  * Naive parallel chinese remaindering
  * Launch NN iterations in parallel, where NN=omp_get_max_threads()
  * Then synchronization and termintation test.
- * Time-stamp: <16 Jul 10 16:59:17 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Mar 12 13:49:58 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -106,7 +106,6 @@ namespace LinBox
 
 			while( ! this->Builder_.terminated() ) {
 				//std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
-				size_t NN = omp_get_max_threads();
 				std::set<Integer> coprimeset;
 				while(coprimeset.size() < NN) {
 					++primeiter;
@@ -199,7 +198,6 @@ namespace LinBox
 
 			while( ! this->Builder_.terminated() ) {
 				//std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
-				size_t NN = omp_get_max_threads();
 				std::set<Integer> coprimeset;
 				while(coprimeset.size() < NN) {
 					++primeiter;

@@ -93,7 +93,7 @@ namespace LinBox
 		bool isZero(const Modulu& a ) const { return a == 0UL;}
 
 		template<class Modulo, class Modulo2>
-		Modulo MY_Zpz_inv (const Modulo a, const Modulo2 _p)
+		Modulo MY_Zpz_inv (const Modulo a, const Modulo2 _p) const
 		{
                     Modulo u1(1UL);
                     Modulo r0(_p), r1(a);
@@ -123,7 +123,7 @@ namespace LinBox
                 }
 
 		template<class Ring1, class Ring2>
-		bool MY_divides(Ring1 a, Ring2 b)
+		bool MY_divides(Ring1 a, Ring2 b) const
 		{
 			return (!(b%a));
 		}
