@@ -93,9 +93,9 @@ namespace LinBox
 		bool isZero(const Modulu& a ) const { return a == 0UL;}
 
 		template<class Modulo, class Modulo2>
-		Modulo MY_Zpz_inv (const Modulo a, const Modulo2 _p) const
+		Modulo& MY_Zpz_inv (Modulo& u1, const Modulo2 a, const Modulo2 _p) const
 		{
-                    Modulo u1(1UL);
+                    u1 = Modulo(1UL);
                     Modulo r0(_p), r1(a);
                     Modulo q(r0/r1);
                     
@@ -121,6 +121,11 @@ namespace LinBox
                     
                     return u1=_p-u0;
                 }
+		template<class Modulo, class Modulo2>
+		Modulo MY_Zpz_inv (const Modulo a, const Modulo2 _p) const
+		{
+			Modulo u1; return MY_Zpz_inv(u1,a,_p);
+		}
 
 		template<class Ring1, class Ring2>
 		bool MY_divides(Ring1 a, Ring2 b) const
@@ -297,12 +302,16 @@ namespace LinBox
 					unsigned long m=1;
 					unsigned long l(0);
 					// A[i,k] <-- A[i,k] / A[k,k]
-					lignecourante[0].second = (  ((UModulo)( ( MOD-(lignecourante[0].second) ) * ( MY_Zpz_inv( lignepivot[0].second, MOD) ) ) ) % (UModulo)MOD ) ;
-					F headcoeff = lignecourante[0].second ;
+					// lignecourante[0].second = (  ((UModulo)( ( MOD-(lignecourante[0].second) ) * ( MY_Zpz_inv( lignepivot[0].second, MOD) ) ) ) % (UModulo)MOD ) ;
+					// F headcoeff = lignecourante[0].second;
+					F headcoeff = MOD-(lignecourante[0].second);
+					UModulo invpiv; MY_Zpz_inv(invpiv, lignepivot[0].second, MOD);
+					headcoeff *= invpiv;
+					headcoeff %= (UModulo)MOD ;
+					lignecourante[0].second = headcoeff;
 					--columns[ lignecourante[0].first ];
 
 					unsigned long j_piv;
-					F tmp;
 					for(;l<npiv;++l)
 						if (lignepivot[l].first > k) break;
 					// for all j such that (j>k) and A[k,j]!=0
@@ -313,16 +322,23 @@ namespace LinBox
 							*ci++ = lignecourante[m++];
 						// if A[i,j]!=0, then A[i,j] <-- A[i,j] - A[i,k]*A[k,j]
 						if ((m<nj) && (lignecourante[m].first == j_piv)) {
-							lignecourante[m].second = ( ((UModulo)( headcoeff  *  lignepivot[l].second  + lignecourante[m].second ) ) % (UModulo)MOD );
+							//lignecourante[m].second = ( ((UModulo)( headcoeff  *  lignepivot[l].second  + lignecourante[m].second ) ) % (UModulo)MOD );
+							lignecourante[m].second += ( headcoeff  *  lignepivot[l].second );
+						        lignecourante[m].second %= (UModulo)MOD;
 							if (isNZero(lignecourante[m].second))
 								*ci++ = lignecourante[m++];
 							else
 								--columns[ lignecourante[m++].first ];
 							//                         m++;
 						}
-						else if (isNZero(tmp = ((UModulo)(headcoeff * lignepivot[l].second)) %(UModulo)MOD)) {
-							++columns[j_piv];
-							*ci++ =  E(j_piv, tmp );
+						else {
+							F tmp(headcoeff);
+							tmp *= lignepivot[l].second;
+							tmp %= (UModulo)MOD;
+							if (isNZero(tmp)) {
+								++columns[j_piv];
+								*ci++ =  E(j_piv, tmp );
+							}
 						}
 					}
 					// if A[k,j]=0, then A[i,j] <-- A[i,j]
@@ -383,8 +399,8 @@ namespace LinBox
 				unsigned long k=0,rs=0;
 				for(; k<tmp.size(); ++k) {
 					Modulo r = tmp[k].second;
-					if ((r <0) || (r >= MOD)) r = r % MOD ;
-					if (r <0) r = r + MOD ;
+					if ((r <0) || (r >= MOD)) r %= MOD ;
+					if (r <0) r += MOD ;
 					if (isNZero(r)) {
 						++col_density[ tmp[k].first ];
 						toto[rs] =tmp[k];
@@ -442,8 +458,8 @@ namespace LinBox
 					if (c > -2) break;
 					for(unsigned long ii=k;ii<Ni;++ii)
 						for(unsigned long jjj=LigneA[ii].size();jjj--;)
-							LigneA[ii][jjj].second = ( LigneA[ii][jjj].second / PRIME);
-					MOD = MOD / PRIME;
+							LigneA[ii][jjj].second /= PRIME;
+					MOD /= PRIME;
 					ranks.push_back( indcol );
 					++ind_pow;
 #ifdef LINBOX_PRANK_OUT
@@ -482,7 +498,7 @@ namespace LinBox
 			while( c == -2) {
 				ranks.push_back( indcol );
 				for(long jjj=LigneA[last].size();jjj--;)
-					LigneA[last][jjj].second = ( LigneA[last][jjj].second / PRIME);
+					LigneA[last][jjj].second /= PRIME;
 				MOD /= PRIME;
 				CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
 			}
