@@ -153,7 +153,8 @@ namespace LinBox
 
 		using Father_t::inv ;
 		//using Father_t::read ;
-                std::istream &read (std::istream &s, Element &a) const
+		std::istream &read(std::istream & is) { return Father_t::read(is); }
+                std::istream &read(std::istream & s, Element &a) const
 		{
                     Integer tmp;
                     s >> tmp;
