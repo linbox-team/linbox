@@ -25,6 +25,9 @@
   \brief Valence of sparse matrix over Z or Zp.
   \ingroup examples
   */
+#ifndef DISABLE_COMMENTATOR
+#define DISABLE_COMMENTATOR
+#endif
 
 #include <iostream>
 #include <omp.h>
