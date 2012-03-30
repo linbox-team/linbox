@@ -152,7 +152,14 @@ namespace LinBox
 		// field/ntl-ZZ_p.h me les demande... //
 
 		using Father_t::inv ;
-		using Father_t::read ;
+		//using Father_t::read ;
+                std::istream &read (std::istream &s, Element &a) const
+		{
+                    Integer tmp;
+                    s >> tmp;
+                    init(a, tmp);
+                    return s;
+		}
 		using Father_t::invin;
 		using Father_t::write;
 		using Father_t::isZero;
