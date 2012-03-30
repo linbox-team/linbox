@@ -51,7 +51,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
 	LinBox::Timer tim; tim.start();
 	LinBox::rankin(r, FA);
 	tim.stop();
-	F.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
+	F.write(std::cerr << "Rank over ") << " is " << r << ' ' << tim << std::endl;
 	return r;
 }
 
@@ -64,7 +64,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 	LinBox::Timer tim; tim.start();
 	LinBox::rankin(r, A, LinBox::Method::SparseElimination() );
 	tim.stop();
-	F2.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
+	F2.write(std::cerr << "Rank over ") << " is " << r << ' ' << tim << std::endl;
 	return r;
 }
 
@@ -133,11 +133,13 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		input.close();
 		LinBox::PowerGaussDomain< Ring > PGD( F );
 
+                LinBox::Timer tim; tim.clear(); tim.start();
 		PGD.prime_power_rankin( lq, lp, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
-		F.write(std::cout << "Ranks over ") << " are " ;
+                tim.stop();
+		F.write(std::cerr << "Ranks over ") << " are " ;
 		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-			std::cout << *rit << ' ';
-		std::cout << std::endl;
+			std::cerr << *rit << ' ';
+		std::cerr << ' ' << tim << std::endl;
 	}
 	else {
 		std::cerr << "*** WARNING *** Sorry power rank mod large composite not yet implemented" << std::endl;
@@ -168,11 +170,13 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
     input.close();
     LinBox::PowerGaussDomainPowerOfTwo< uint64_t > PGD;
     
+    LinBox::Timer tim; tim.clear(); tim.start();
     PGD.prime_power_rankin( effective_exponent, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
-    std::cout << "Ranks over 2^" << effective_exponent << " are " ;
+    tim.stop();
+    std::cerr << "Ranks over 2^" << effective_exponent << " are " ;
     for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-        std::cout << *rit << ' ';
-    std::cout << std::endl;
+        std::cerr << *rit << ' ';
+    std::cerr << ' ' << tim << std::endl;
     return ranks;
 }
 
@@ -187,11 +191,13 @@ std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Gi
     input.close();
     LinBox::PowerGaussDomain< Ring > PGD( F );
     
+    LinBox::Timer tim; tim.clear(); tim.start();
     PGD.prime_power_rankin( q, p, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
-    F.write(std::cout << "Ranks over ") << " are " ;
+    tim.stop();
+    F.write(std::cerr << "Ranks over ") << " are " ;
     for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-        std::cout << *rit << ' ';
-    std::cout << std::endl;
+        std::cerr << *rit << ' ';
+    std::cerr << ' ' << tim << std::endl;
     return ranks;
 }
 
@@ -205,10 +211,12 @@ std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, char * f
     input.close();
     LinBox::PowerGaussDomainPowerOfTwo< Givaro::Integer > PGD;
     
+    LinBox::Timer tim; tim.clear(); tim.start();
     PGD.prime_power_rankin( e, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
-    std::cout << "Ranks over 2^" << e << " are " ;
+    tim.stop();
+    std::cerr << "Ranks over 2^" << e << " are " ;
     for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-        std::cout << *rit << ' ';
-    std::cout << std::endl;
+        std::cerr << *rit << ' ';
+    std::cerr << ' ' << tim << std::endl;
     return ranks;
 }
