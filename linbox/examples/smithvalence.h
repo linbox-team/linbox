@@ -147,6 +147,35 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 	return ranks;
 }
 
+#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
+
+
+std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effective_exponent, char * filename, size_t e, size_t intr)
+{
+    effective_exponent = e;
+    typedef uint64_t RingElements;
+    if (e > 63) {
+        std::cerr << "Power rank power of two might need extra large composite (2^" << e << ")." << std::endl;
+        std::cerr << "First trying: 63, without further warning this will be sufficient)." << std::endl;
+        effective_exponent = 63;
+    }
+    
+    std::ifstream input(filename);
+    typedef LinBox::UnparametricField<int64_t> Ring;
+    Ring F;
+    LinBox::MatrixStream<Ring> ms( F, input );
+    LinBox::SparseMatrix<Ring, LinBox::Vector<Ring>::SparseSeq > A (ms);
+    input.close();
+    LinBox::PowerGaussDomainPowerOfTwo< uint64_t > PGD;
+    
+    PGD.prime_power_rankin( effective_exponent, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
+    std::cout << "Ranks over 2^" << effective_exponent << " are " ;
+    for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
+        std::cout << *rit << ' ';
+    std::cout << std::endl;
+    return ranks;
+}
+
 std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Givaro::Integer p, size_t e, size_t intr)
 {
     typedef LinBox::GivaroZpz<Givaro::Integer> Ring;
@@ -160,6 +189,24 @@ std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Gi
     
     PGD.prime_power_rankin( q, p, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
     F.write(std::cout << "Ranks over ") << " are " ;
+    for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
+        std::cout << *rit << ' ';
+    std::cout << std::endl;
+    return ranks;
+}
+
+std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, char * filename, size_t e, size_t intr)
+{
+    typedef LinBox::PID_integer Ring;
+    Ring ZZ;
+    std::ifstream input(filename);
+    LinBox::MatrixStream<Ring> ms( ZZ, input );
+    LinBox::SparseMatrix<Ring, LinBox::Vector<Ring>::SparseSeq > A (ms);
+    input.close();
+    LinBox::PowerGaussDomainPowerOfTwo< Givaro::Integer > PGD;
+    
+    PGD.prime_power_rankin( e, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
+    std::cout << "Ranks over 2^" << e << " are " ;
     for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
         std::cout << *rit << ' ';
     std::cout << std::endl;
