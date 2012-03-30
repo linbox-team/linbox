@@ -68,7 +68,7 @@ namespace LinBox
             // --------------------------------------------
             // Modulo operators
         bool isNZero(const UInt_t& a ) const { return (bool)a ;}
-        bool isZero(const UInt_t& a ) const { return a == 0UL;}
+        bool isZero(const UInt_t& a ) const { return a == 0U;}
         
         UInt_t& MY_Zpz_inv (UInt_t& u1, const UInt_t a, const UInt_t _p) const {
             u1 = 1UL;
@@ -103,7 +103,7 @@ namespace LinBox
         }
         
         bool isOdd(const UInt_t& b) const {
-            return (b & 1UL);
+            return (bool)(b & 1U);
         }   
         
         bool MY_divides(const UInt_t& a, const UInt_t& b) const {
