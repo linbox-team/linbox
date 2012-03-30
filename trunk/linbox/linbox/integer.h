@@ -134,6 +134,9 @@ namespace LinBox
 	    static mpz_ptr get_mpz(const integer& i) {
 	        return const_cast<InHeritsInteger&>(static_cast<const InHeritsInteger&>(i)).get_mpz();
 	    }
+	    static mpz_srcptr get_mpz_const(const integer& i) {
+	        return static_cast<const InHeritsInteger&>(i).get_mpz_const();
+	    }
         };
 
 
