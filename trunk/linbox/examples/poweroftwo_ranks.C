@@ -1,8 +1,8 @@
-
-/*
- * examples/power_rank.C
+/* examples/poweroftwo_ranks.C
  *
- * Copyright (C) 2012 J-G Dumas
+ * Copyright (C) 2012 LinBox
+ * Written by J-G Dumas
+ * Time-stamp: <06 Apr 12 11:08:48 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -22,9 +22,9 @@
  * ========LICENCE========
  */
 
-/** \file examples/power_rank.C
- * @example  examples/power_rank.C
-  \brief Rank of sparse matrix over Z or Zp.
+/** \file examples/poweroftwo_ranks.C
+ * @example  examples/poweroftwo_ranks.C
+  \brief Ranks of sparse matrix modulo 2^k
   \ingroup examples
   */
 #include "linbox/linbox-config.h"
@@ -56,10 +56,11 @@ int main (int argc, char **argv) {
     if (argc == 3) {
         LinBox::Timer tim; 
         size_t exponent = atoi(argv[2]);
-        std::vector<std::pair<size_t,size_t> > local;
         if (exponent > 63) {
+            typedef std::vector<std::pair<size_t,Integer> >  Smith_t;
             typedef LinBox::PID_integer Ring;
             Ring ZZ;
+            Smith_t local;
             LinBox::MatrixStream<Ring> ms( ZZ, input );
             LinBox::SparseMatrix<Ring, LinBox::Vector<Ring>::SparseSeq > A (ms);
             input.close();
@@ -68,8 +69,14 @@ int main (int argc, char **argv) {
             PGD(local, A, exponent);
             tim.stop();
             
+            std::cout << "Local Smith Form : (";
+            for (Smith_t::const_iterator  p = local.begin(); p != local.end(); ++p)
+                std::cout << '[' << p->second << ',' << p->first << "] ";
+            cout << ')' << endl;
         } else {
+            typedef std::vector<std::pair<size_t,uint64_t> > Smith_t;
             typedef LinBox::UnparametricField<int64_t> Ring;
+            Smith_t local;
             Ring R;
             LinBox::MatrixStream<Ring> ms( R, input );
             LinBox::SparseMatrix<Ring, LinBox::Vector<Ring>::SparseSeq > A (ms);
@@ -79,15 +86,14 @@ int main (int argc, char **argv) {
             tim.clear(); tim.start();
             PGD(local, A, exponent);
             tim.stop();
+
+            std::cout << "Local Smith Form : (";
+            for (Smith_t::const_iterator  p = local.begin(); p != local.end(); ++p)
+                std::cout << '[' << p->second << ',' << p->first << "] ";
+            cout << ')' << endl;
         }
         
 
-        std::cout << "Local Smith Form : (";
-        for (std::vector<std::pair<size_t,size_t> >::const_iterator  p = local.begin();
-             p != local.end(); ++p)
-            std::cout << '[' << p->second << ',' << p->first << "] ";
-        cout << ')' << endl;
-        
         
         std::cerr << tim << std::endl;
     }

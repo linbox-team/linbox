@@ -1,9 +1,7 @@
-/* Copyright (C) Givaro Team 1999
+/* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- *
- *
- *
+ * Time-stamp: <06 Apr 12 11:50:12 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -52,12 +50,14 @@ namespace LinBox
     class PowerGaussDomainPowerOfTwo  {
         typedef UnsignedIntType UInt_t;
         typedef UnsignedIntType Element;
+        const Element zero;
+        const Element one;
     public:
         
             /** \brief The field parameter is the domain
              * over which to perform computations
              */
-        PowerGaussDomainPowerOfTwo () {}
+        PowerGaussDomainPowerOfTwo () : zero(0U), one(1U) {}
         
             //Copy constructor
             ///
@@ -69,39 +69,7 @@ namespace LinBox
             // Modulo operators
         bool isNZero(const UInt_t& a ) const { return (bool)a ;}
         bool isZero(const UInt_t& a ) const { return a == 0U;}
-        
-        UInt_t& MY_Zpz_inv (UInt_t& u1, const UInt_t a, const UInt_t _p) const {
-            u1 = 1UL;
-            UInt_t r0(_p), r1(a);
-            UInt_t q(r0/r1);
-            
-            r0 -= q * r1;
-            if ( this->isZero(r0) ) return u1;
-            UInt_t u0 = q;
-            
-            q = r1/r0;
-            r1 -= q * r0;
-            
-            while ( this->isNZero(r1) ) {
-                u1 += q * u0;
-                
-                q = r0/r1;
-                r0 -= q * r1;
-                if ( this->isZero(r0) ) return u1;
-                u0 += q * u1;
-                
-                q = r1/r0;
-                r1 -= q * r0;
-                
-            }
-            
-            return u1=_p-u0;
-        }
-
-        UInt_t MY_Zpz_inv (const UInt_t a, const UInt_t _p) const {
-            UInt_t u1; return MY_Zpz_inv(u1,a,_p);
-        }
-        
+        bool isOne(const UInt_t& a ) const { return a == 1U;}
         bool isOdd(const UInt_t& b) const {
             return (bool)(b & 1U);
         }   
@@ -109,6 +77,57 @@ namespace LinBox
         bool MY_divides(const UInt_t& a, const UInt_t& b) const {
             return (!(b%a));
         }
+        
+        UInt_t& MY_Zpz_inv (UInt_t& u1, const UInt_t& a, const size_t exponent, const UInt_t& TWOTOEXPMONE) const {
+            static const UInt_t ttep2(TWOTOEXPMONE+3);
+            if (this->isOne(a)) return u1=this->one;
+            REQUIRE( (one<<exponent) == (TWOTOEXPMONE+1) );
+            REQUIRE( a <= TWOTOEXPMONE );
+            REQUIRE( (a & 1) );
+            u1=ttep2-a; // 2-a
+            UInt_t xmone(a-1);
+            for(size_t i=2; i<exponent; i<<=1) {
+                xmone *= xmone;
+                xmone &= TWOTOEXPMONE;
+                u1 *= ++xmone; --xmone;
+                u1 &= TWOTOEXPMONE;
+            }
+            ENSURE( ((a * u1) & TWOTOEXPMONE) == 1 );
+            return u1;
+        }
+
+//         UInt_t& MY_Zpz_inv (UInt_t& u1, const UInt_t a, const UInt_t _p) const {
+//             u1 = 1UL;
+//             UInt_t r0(_p), r1(a);
+//             UInt_t q(r0/r1);
+            
+//             r0 -= q * r1;
+//             if ( this->isZero(r0) ) return u1;
+//             UInt_t u0 = q;
+            
+//             q = r1/r0;
+//             r1 -= q * r0;
+            
+//             while ( this->isNZero(r1) ) {
+//                 u1 += q * u0;
+                
+//                 q = r0/r1;
+//                 r0 -= q * r1;
+//                 if ( this->isZero(r0) ) return u1;
+//                 u0 += q * u1;
+                
+//                 q = r1/r0;
+//                 r1 -= q * r0;
+                
+//             }
+            
+//             return u1=_p-u0;
+//         }
+
+//         UInt_t MY_Zpz_inv (const UInt_t a, const UInt_t _p) const {
+//             UInt_t u1; return MY_Zpz_inv(u1,a,_p);
+//         }
+        
         
             // ------------------------------------------------
             // Pivot Searchers and column strategy
@@ -218,7 +237,7 @@ namespace LinBox
         
         
         template<class Vecteur, class De>
-        void FaireElimination( const UInt_t& TWOK, const UInt_t& TWOKMONE,
+        void FaireElimination( const size_t EXPONENT, const UInt_t& TWOK, const UInt_t& TWOKMONE,
                                Vecteur& lignecourante,
                                const Vecteur& lignepivot,
                                const long& indcol,
@@ -271,7 +290,8 @@ namespace LinBox
                     unsigned long l(0);
                         // A[i,k] <-- A[i,k] / A[k,k]
                     UInt_t headcoeff = TWOK-(lignecourante[0].second);
-                    UInt_t invpiv; MY_Zpz_inv(invpiv, lignepivot[0].second, TWOK);
+//                     UInt_t invpiv; MY_Zpz_inv(invpiv, lignepivot[0].second, TWOK);
+                    UInt_t invpiv; MY_Zpz_inv(invpiv, lignepivot[0].second, EXPONENT, TWOKMONE);
                     headcoeff *= invpiv;
                     headcoeff &= TWOKMONE ;
 //                     lignecourante[0].second = (  ((UModulo)( ( MOD-(lignecourante[0].second) ) * ( MY_Zpz_inv( lignepivot[0].second, MOD) ) ) ) % (UModulo)MOD ) ;
@@ -342,7 +362,7 @@ namespace LinBox
             // ------------------------------------------------------
         
         template<class BB, class D, class Container, bool PrivilegiateNoColumnPivoting, bool PreserveUpperMatrix>
-        void gauss_rankin(size_t EXPONENT, Container& ranks, BB& LigneA, const size_t Ni, const size_t Nj, const D& density_trait)
+        void gauss_rankin(size_t EXPONENTMAX, Container& ranks, BB& LigneA, const size_t Ni, const size_t Nj, const D& density_trait)
             {
                 commentator().start ("Gaussian elimination with reordering modulo a prime power of 2",
                                      "PRGEPo2", Ni);
@@ -350,6 +370,7 @@ namespace LinBox
                 ranks.resize(0);
                 
                 typedef typename BB::Row Vecteur;
+                size_t EXPONENT = EXPONENTMAX;
                 UInt_t TWOK(1UL); TWOK <<= EXPONENT;
                 UInt_t TWOKMONE(TWOK); --TWOKMONE;
                 
@@ -367,8 +388,8 @@ namespace LinBox
                     unsigned long k=0,rs=0;
                     for(; k<tmp.size(); ++k) {
                         UInt_t r = tmp[k].second;
-                        if (r <0) r %= TWOK ;
-                        if (r <0) r += TWOK ;
+//                         if (r <0) r %= TWOK ;
+//                         if (r <0) r += TWOK ;
                         if (r >= TWOK) r &= TWOKMONE;
                         if (isNZero(r)) {
                             ++col_density[ tmp[k].first ];
@@ -428,6 +449,7 @@ namespace LinBox
                         for(unsigned long ii=k;ii<Ni;++ii)
                             for(unsigned long jjj=LigneA[ii].size();jjj--;)
                                 LigneA[ii][jjj].second >>= 1;
+                        --EXPONENT;
                         TWOK >>= 1;
                         TWOKMONE >>=1;
                         ranks.push_back( indcol );
@@ -452,7 +474,7 @@ namespace LinBox
 #endif
                     if (c != -1)
                         for(unsigned long l=k + 1; l < Ni; ++l)
-                            FaireElimination(TWOK, TWOKMONE, LigneA[l], LigneA[k], indcol, c, col_density);
+                            FaireElimination(EXPONENT, TWOK, TWOKMONE, LigneA[l], LigneA[k], indcol, c, col_density);
                     
                     
 #ifdef  LINBOX_pp_gauss_steps_OUT
@@ -507,7 +529,7 @@ namespace LinBox
 
         
         template<class Matrix, template<class, class> class Container, template<class> class Alloc>
-        Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& operator()(Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& L, Matrix& A, size_t EXPONENT, int StaticParameters=0) {
+        Container<std::pair<size_t,UInt_t>, Alloc<std::pair<size_t,UInt_t> > >& operator()(Container<std::pair<size_t,UInt_t>, Alloc<std::pair<size_t,UInt_t> > >& L, Matrix& A, size_t EXPONENT, int StaticParameters=0) {
             Container<size_t, Alloc<size_t> > ranks;
             prime_power_rankin( EXPONENT, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>(),StaticParameters);
             L.resize( 0 ) ;
@@ -516,7 +538,7 @@ namespace LinBox
             for( typename Container<size_t, Alloc<size_t> >::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
                 diff = *it-num;
                 if (diff > 0)
-                    L.push_back( std::pair<size_t,size_t>(*it-num,MOD) );
+                    L.push_back( std::pair<size_t,UInt_t>(*it-num,MOD) );
                 MOD <<= 1;
                 num = *it;
             }
