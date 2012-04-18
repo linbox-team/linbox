@@ -39,4 +39,6 @@ EXTRA_DIST=\
 	   saclib-check.m4         \
 	   mpfr-check.m4           \
 	   fplll-check.m4          \
+	   m4rie-check.m4          \
+	   m4ri-check.m4           \
 	   sage-check.m4
