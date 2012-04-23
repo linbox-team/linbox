@@ -1016,8 +1016,8 @@ namespace LinBox
         for (int i = 1; i < argc; ++i) {
             if (argv[i][0] == '-') {
                 if (argv[i][1] == 0) {
-                    LinBox::commentator().setReportStream (cout);
-                    LinBox::commentator().setBriefReportStream (cout);
+                    LinBox::commentator().setReportStream (std::cout);
+                    LinBox::commentator().setBriefReportStream (std::cout);
                 } else {
                         // Skip the argument next to "-xxx"
                         // except if next argument is a switch
@@ -1028,7 +1028,7 @@ namespace LinBox
                 }
             } else {
                 LinBox::commentator().setDefaultReportFile (argv[i]);
-                LinBox::commentator().setBriefReportStream(cout);
+                LinBox::commentator().setBriefReportStream(std::cout);
             }
         }
         FFLAS::parseArguments(argc,argv,args,printDefaults);
