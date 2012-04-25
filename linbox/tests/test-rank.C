@@ -107,7 +107,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 			ret = false;
 		}
 
-	/*
+#if 0 /*  not working */
 		rank (rank_Wiedemann, A, Method::Wiedemann ());
 		//rank (rank_elimination, B, Method::SparseElimination());
 		rank_elimination = rank_Wiedemann;
@@ -123,7 +123,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 				<< "ERROR: Ranks are not equal" << endl;
 			ret = false;
 		}
-		*/
+#endif
 
 		commentator().stop ("done");
 		commentator().progress ();
@@ -173,11 +173,11 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 		A.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_GUILLAUME ) << endl;
 
 
-		rank (rank_blackbox, A, Method::Blackbox ());
+		LinBox::rank (rank_blackbox, A, Method::Blackbox ());
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "blackbox rank " << rank_blackbox << endl;
 
-		rank (rank_elimination, B, Method::BlasElimination());
+			LinBox::rank (rank_elimination, B, Method::BlasElimination());
 		if (rank_blackbox != rank_elimination) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != BLAS elimination rank " << rank_elimination << endl;
@@ -231,7 +231,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 
 		F.init(zero, 0);
 		Blackbox A (F, n, zero);
-		rank (r, A, Method::Wiedemann ());
+		LinBox::rank (r, A, Method::Wiedemann ());
 		if (r != 0) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Wiedemann Rank of 0 is not 0, but is " << r << endl;
@@ -240,7 +240,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 
 		F.init(one, 1);
 		Blackbox I (F, n, one);
-		rank (r, I, Method::Wiedemann ());
+		LinBox::rank (r, I, Method::Wiedemann ());
 		if (r != n) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Wiedemann Rank of I is " << r << ", should be " << n << endl;
@@ -248,14 +248,14 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		}
 
 		DirectSum<Blackbox> B(A, I);
-		rank (r, B, Method::Wiedemann ());
+		LinBox::rank (r, B, Method::Wiedemann ());
 		if (r != n) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Wiedemann Rank of I+0 is " << r << ", should be " << n << endl;
 			ret = false;
 		}
 
-                rank (r, B, Method::Wiedemann(Method::Wiedemann::SYMMETRIC));
+		LinBox::rank (r, B, Method::Wiedemann(Method::Wiedemann::SYMMETRIC));
 		if (r != n) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Symmetric Wiedemann Rank of I+0 is " << r << ", should be " << n << endl;
@@ -335,7 +335,7 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8

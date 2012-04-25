@@ -74,7 +74,7 @@ int main (int argc, char **argv)
 		SparseMatrix<GivaroRational> A ( ms );
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
 
-		rank (r, A);
+		LinBox::rank (r, A);
 	}
 	if (argc == 3) { // rank mod a prime
 		/*
@@ -100,23 +100,23 @@ int main (int argc, char **argv)
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
 
 		// Using the adaptive LinBox Solution
-		rank(r,B);
+		LinBox::rank(r,B);
 
 		// using BlackBoxes
-		/*
+#if 0 /*  too bad */
 		   Method::Blackbox MBB;
 		   MBB.certificate(true);
-		   rank(r, B, MBB);
-		   */
+		   Linbox::rank(r, B, MBB);
+#endif
 
 		// using in place Sparse Elimination with linear pivoting
 
-		/*
+#if 0 /*  too bad */
 		   Method::SparseElimination SE;
 		   SE.strategy(Specifier::PIVOT_LINEAR);
 		   rankin (r, B, SE);
 		   if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
-		   */
+#endif
 
 
 	}
@@ -125,7 +125,7 @@ int main (int argc, char **argv)
 	return 0;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8

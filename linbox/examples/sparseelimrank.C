@@ -69,7 +69,7 @@ int main (int argc, char **argv)
 		SparseMatrix<GivaroRational> A ( ms );
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		rank (r, A, Method::SparseElimination() );
+		LinBox::rank (r, A, Method::SparseElimination() );
 
 		cout << "Rank is " << r << endl;
 	}
@@ -86,13 +86,13 @@ int main (int argc, char **argv)
 		Method::SparseElimination SE;
 		SE.strategy(Specifier::PIVOT_NONE);
 		// using Sparse Elimination
-		rank (r, B, SE);
+		LinBox::rank (r, B, SE);
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 		cout << "Rank is " << r << endl;
 
 		SE.strategy(Specifier::PIVOT_LINEAR);
 		// using Sparse Elimination
-		rank (r, B, SE);
+		LinBox::rank (r, B, SE);
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 		cout << "Rank is " << r << endl;
 
