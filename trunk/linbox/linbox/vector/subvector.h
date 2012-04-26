@@ -237,7 +237,7 @@ namespace std
 	template<class _Tp>
 	void swap (_Tp&, _Tp&)
 #ifdef __GNUC__
-#if __GNUC_PREREQ(4,7)
+#if (__GNUC__ == 4 && __GNUC_MINOR__ == 7)
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
 	    noexcept(__and_<is_nothrow_move_constructible<_Tp>,
 			                        is_nothrow_move_assignable<_Tp>>::value)
