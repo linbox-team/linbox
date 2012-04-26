@@ -152,63 +152,63 @@ AC_C_BIGENDIAN(
 # Create some useful data types of fixed, known lengths
 
 # We hereby assume that a character is always one byte
-LINBOX_INT8="char";
+# LINBOX_INT8="char";
 
-case $ac_cv_sizeof_char in
-  1)
-     TWO_BYTES=2;
-     FOUR_BYTES=4;
-     EIGHT_BYTES=8;
-     ;;
-  8)
-     TWO_BYTES=16;
-     FOUR_BYTES=32;
-     EIGHT_BYTES=64;
-esac
+# case $ac_cv_sizeof_char in
+  # 1)
+     # TWO_BYTES=2;
+     # FOUR_BYTES=4;
+     # EIGHT_BYTES=8;
+     # ;;
+  # 8)
+     # TWO_BYTES=16;
+     # FOUR_BYTES=32;
+     # EIGHT_BYTES=64;
+# esac
 
-case $TWO_BYTES in
-  $ac_cv_sizeof_short)
-     LINBOX_INT16="short";
-     ;;
-  $ac_cv_sizeof_int)
-     LINBOX_INT16="int";
-     ;;
-esac
+# case $TWO_BYTES in
+  # $ac_cv_sizeof_short)
+     # LINBOX_INT16="short";
+     # ;;
+  # $ac_cv_sizeof_int)
+     # LINBOX_INT16="int";
+     # ;;
+# esac
 
-case $FOUR_BYTES in
-  $ac_cv_sizeof_short)
-     LINBOX_INT32="short";
-     ;;
-  $ac_cv_sizeof_int)
-     LINBOX_INT32="int";
-     ;;
-  $ac_cv_sizeof_long)
-     LINBOX_INT32="long";
-     ;;
-esac
+# case $FOUR_BYTES in
+  # $ac_cv_sizeof_short)
+     # LINBOX_INT32="short";
+     # ;;
+  # $ac_cv_sizeof_int)
+     # LINBOX_INT32="int";
+     # ;;
+  # $ac_cv_sizeof_long)
+     # LINBOX_INT32="long";
+     # ;;
+# esac
 
-case $EIGHT_BYTES in
-  $ac_cv_sizeof_short)
-     LINBOX_INT64="short";
-     ;;
-  $ac_cv_sizeof_int)
-     LINBOX_INT64="int";
-     ;;
-  $ac_cv_sizeof_long)
-     LINBOX_INT64="long";
-     ;;
-  $ac_cv_sizeof_long_long)
-     LINBOX_INT64="long long";
-     ;;
-  $ac_cv_sizeof___int64)
-     LINBOX_INT64="__int64";
-     ;;
-esac
+# case $EIGHT_BYTES in
+  # $ac_cv_sizeof_short)
+     # LINBOX_INT64="short";
+     # ;;
+  # $ac_cv_sizeof_int)
+     # LINBOX_INT64="int";
+     # ;;
+  # $ac_cv_sizeof_long)
+     # LINBOX_INT64="long";
+     # ;;
+  # $ac_cv_sizeof_long_long)
+     # LINBOX_INT64="long long";
+     # ;;
+  # $ac_cv_sizeof___int64)
+     # LINBOX_INT64="__int64";
+     # ;;
+# esac
 
-AC_DEFINE_UNQUOTED(INT8, $LINBOX_INT8, Canonical 8-bit data type)
-AC_DEFINE_UNQUOTED(INT16, $LINBOX_INT16, Canonical 16-bit data type)
-AC_DEFINE_UNQUOTED(INT32, $LINBOX_INT32, Canonical 32-bit data type)
-AC_DEFINE_UNQUOTED(INT64, $LINBOX_INT64, Canonical 64-bit data type)
+# AC_DEFINE_UNQUOTED(INT8, $LINBOX_INT8, Canonical 8-bit data type)
+# AC_DEFINE_UNQUOTED(INT16, $LINBOX_INT16, Canonical 16-bit data type)
+# AC_DEFINE_UNQUOTED(INT32, $LINBOX_INT32, Canonical 32-bit data type)
+# AC_DEFINE_UNQUOTED(INT64, $LINBOX_INT64, Canonical 64-bit data type)
 
 echo "-----------------------------------------------"
 # Feature checks
@@ -218,9 +218,6 @@ LB_DRIVER
 AC_LANG_CPLUSPLUS
 
 echo "-----------------------------------------------"
-
-
-
 
 LB_CHECK_GMP(,,[
 echo '*******************************************************************************'

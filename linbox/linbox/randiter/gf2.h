@@ -152,7 +152,7 @@ namespace LinBox
 	template<size_t bitsize>
 	struct MTrandomInt {
 		template<typename M32Twister>
-		unsigned __LINBOX_INT32 operator() (M32Twister& MT) const
+		uint32_t operator() (M32Twister& MT) const
 		{
 			return MT.randomInt();
 		}
@@ -161,9 +161,9 @@ namespace LinBox
 	template<>
 	struct MTrandomInt<64> {
 		template<typename M32Twister>
-		unsigned __LINBOX_INT64 operator() (M32Twister& MT) const
+		uint64_t operator() (M32Twister& MT) const
 		{
-			unsigned __LINBOX_INT64 tmp = MT.randomInt();
+			uint64_t tmp = MT.randomInt();
 			tmp <<=32;
 			return tmp += MT.randomInt();
 		}
