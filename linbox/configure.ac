@@ -213,19 +213,21 @@ AC_DEFINE_UNQUOTED(INT64, $LINBOX_INT64, Canonical 64-bit data type)
 echo "-----------------------------------------------"
 # Feature checks
 LB_MISC
-echo "-----------------------------------------------"
-
 LB_DRIVER
 
 AC_LANG_CPLUSPLUS
+
+echo "-----------------------------------------------"
+
+
 
 
 LB_CHECK_GMP(,,[
 echo '*******************************************************************************'
 echo ' ERROR: GMP not found!'
 echo
-echo ' GMP version 3.1.1 or greater with --enable-cxx is required for this library to compile. Please'
-echo ' make sure GMP is installed and specify its location with the option'
+echo ' GMP library compiled with --enable-cxx is required for this library to compile.'
+echo ' Please make sure GMP is installed and specify its location with the option'
 echo ' --with-gmp=<prefix> when running configure.'
 echo '*******************************************************************************'
 exit 1
@@ -243,7 +245,7 @@ LB_CHECK_GIVARO(,,[
 echo '*******************************************************************************'
 echo ' ERROR: GIVARO not found!'
 echo
-echo ' GIVARO version 3.6.0 or greater (<3.7) is required for this library to compile.'
+echo ' GIVARO library is required for this library to compile.'
 echo ' Please make sure GIVARO is installed and specify its location with the'
 echo ' option --with-givaro=<prefix> when running configure.'
 echo '*******************************************************************************'
@@ -275,7 +277,7 @@ echo ''
 echo '*******************************************************************************'
 echo ' ERROR: Fflas-Ffpack not found!'
 echo
-echo ' Fflas-Ffpack routines (>=1.4.4) are required for this library to compile. Please'
+echo ' Fflas-Ffpack routines  are required for this library to compile. Please'
 echo ' make sure they are installed and specify its location with the option'
 echo ' --with-fflas-ffpack=<lib> when running configure.'
 echo '*******************************************************************************'
