@@ -1042,9 +1042,9 @@ namespace LinBox
 
 	};
 
-#if !defined (__INTEL_COMPILER) && !defined(__clang__)
-template<>
-#endif
+// #if !defined (__INTEL_COMPILER) && !defined(__clang__)
+// template<>
+// #endif
 	template <class Domain>
 	class MatrixApplyDomain<Domain, BlasMatrix<Domain> > : public BlasMatrixApplyDomain<Domain, BlasMatrix<Domain> > {
 
@@ -1056,9 +1056,9 @@ template<>
 	};
 
 #if 0
-#ifndef __INTEL_COMPILER
-	template<>
-	#endif
+// #ifndef __INTEL_COMPILER
+	// template<>
+// #endif
 	template <class Domain>
 	class MatrixApplyDomain<Domain, BlasMatrix<Domain> > :
 	public BlasMatrixApplyDomain<Domain, BlasMatrix<Domain> > {

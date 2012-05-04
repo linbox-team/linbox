@@ -362,18 +362,18 @@ namespace LinBox
 
 	template <class Matrix> struct MatrixTraits;
 
-#if !defined __INTEL_COMPILER && !defined(__clang__)
-	template<>
-#endif
+// #if !defined __INTEL_COMPILER && !defined(__clang__)
+	// template<>
+// #endif
 	template <class BB1, class BB2>
 	struct MatrixTraits< DirectSum<BB1, BB2> > {
 		typedef DirectSum<BB1, BB2> MatrixType;
 		typedef MatrixCategories::BlackboxTag MatrixCategory;
 	};
 
-#if !defined __INTEL_COMPILER && !defined(__clang__)
-	template<>
-#endif
+// #if !defined __INTEL_COMPILER && !defined(__clang__)
+	// template<>
+// #endif
 	template <class BB1, class BB2>
 	struct MatrixTraits< const DirectSum<BB1, BB2> > {
 		typedef const DirectSum<BB1, BB2> MatrixType;

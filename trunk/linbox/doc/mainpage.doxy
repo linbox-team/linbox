@@ -132,8 +132,8 @@
 /*!  \page inst Installing LinBox
  * To install from a distribution, the usual <em> configure, make</em> sequence
  * applies.  See \subpage dist "configuring and installing" for more details.
- * To install a development version from the SVN repository see the \subpage
- * dev "developer info".  The generic Free Software Foundation \subpage INSTALL
+ * To install a development version from the SVN repository see the \subpage  dev
+ * "developer info".  The generic Free Software Foundation \subpage INSTALL
  * "INSTALL" may also be of use.
  */
 

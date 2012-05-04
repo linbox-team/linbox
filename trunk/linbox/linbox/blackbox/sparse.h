@@ -409,9 +409,9 @@ namespace LinBox
 		}
 	};
 
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
-	template <>
-	#endif
+// #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
+	// template <>
+// #endif
 	template <class Field, class _Row>
 	struct MatrixTraits< SparseMatrix<Field, _Row> >
 	{
