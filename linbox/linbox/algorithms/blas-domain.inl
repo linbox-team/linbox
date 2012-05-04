@@ -1402,9 +1402,9 @@ namespace LinBox
 		}
 	};
 
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
-	template <>
-#endif
+// #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
+	// template <>
+// #endif
 	template< class Field,  class ContPol >
 	class BlasMatrixDomainCharpoly< Field,  ContPol, BlasMatrix<Field> > {
 	public:

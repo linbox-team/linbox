@@ -40,9 +40,9 @@ namespace LinBox
 
 	/*! specialisation for MultiModDouble.
 	*/
-#ifndef __INTEL_COMPILER
-	template <>
-#endif
+// #ifndef __INTEL_COMPILER
+	// template <>
+// #endif
 	class BlasMatrixDomainInv<MultiModDouble,BlasMatrix<MultiModDouble> > {
 	public:
 		int operator() (const MultiModDouble                   &F,

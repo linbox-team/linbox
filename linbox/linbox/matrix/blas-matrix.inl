@@ -635,7 +635,7 @@ namespace LinBox
 		return *this;
 	}
 
-#if 0
+#if 0 /*  loop rebind */
 	template <class _Field>
 	template<typename _Tp1>
 	struct BlasMatrix< _Field>::rebind {

@@ -72,17 +72,17 @@ namespace LinBox
 	template< class BaseField>
 	class GivaroExtension;
 
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
-	template<>
-#endif
+// #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
+	// template<>
+// #endif
 	template< class BaseField>
 	struct ClassifyRing<GivaroExtension<BaseField> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
-	template<>
-#endif
+// #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
+	// template<>
+// #endif
 	template< class BaseField>
 	struct FieldTraits< GivaroExtension<BaseField> > {
 		typedef RingCategories::ModularTag categoryTag;
@@ -191,9 +191,9 @@ namespace LinBox
 	 *  of Givaro.
 	 *  these class allow to construct only extension field with a prime characteristic.
 	 */
-#ifndef __INTEL_COMPILER
+// #ifndef __INTEL_COMPILER
 	template<>
-#endif
+// #endif
 	class GivaroExtension<LinBox::GivaroGfq> : public Givaro::Extension< Givaro::GFqDom<int32_t> >, public FieldInterface {
 
 		typedef GivaroExtension<GivaroGfq> Self_t;
