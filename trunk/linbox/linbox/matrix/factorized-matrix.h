@@ -51,8 +51,8 @@ namespace LinBox
 
 
 	/*! LQUP factorisation.
-	 * This is a class to ease the use LU factorisation (see \ref LUdivine
-	 * in \ref FFPACK)
+	 * This is a class to ease the use LU factorisation (see FFPACK::LUdivine
+	 * (bug link here.))
 	 *
 	 * The factorisation is \f$ A = L Q U P \f$ with \c L lower unit
 	 * triangular, \c U upper non-unit triangular, \c P and \c Q

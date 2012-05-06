@@ -433,40 +433,40 @@ namespace LinBox
 
 namespace LinBox
 {
-	template<class _Uint>
-	MatrixPermutation<_Uint>::MatrixPermutation() :
+	template<class _UnsignedInt>
+	MatrixPermutation<_UnsignedInt>::MatrixPermutation() :
 	       	n_(0), P_(0)
        	{}
 
-	template<class _Uint>
-	MatrixPermutation<_Uint>::MatrixPermutation(const _Uint *P, const _Uint &n) :
+	template<class _UnsignedInt>
+	MatrixPermutation<_UnsignedInt>::MatrixPermutation(const _UnsignedInt *P, const _UnsignedInt &n) :
 		n_(n), P_(n)
 	{
-		for (_Uint i = 0 ; i < n ; ++i)
+		for (_UnsignedInt i = 0 ; i < n ; ++i)
 			P_[i] = P[i] ;
 	}
 
-	template<class _Uint>
-	MatrixPermutation<_Uint>::MatrixPermutation(const std::vector<_Uint> & P) :
+	template<class _UnsignedInt>
+	MatrixPermutation<_UnsignedInt>::MatrixPermutation(const std::vector<_UnsignedInt> & P) :
 		n_(P.size()), P_(P)
        	{}
 
-	template<class _Uint>
-	inline  _Uint
-	MatrixPermutation<_Uint>::operator[](const _Uint  i) const
+	template<class _UnsignedInt>
+	inline  _UnsignedInt
+	MatrixPermutation<_UnsignedInt>::operator[](const _UnsignedInt  i) const
 	{
 		return P_[i] ;
 	}
 
 
-	template<class _Uint>
-	_Uint
-	MatrixPermutation<_Uint>::getSize() const
+	template<class _UnsignedInt>
+	_UnsignedInt
+	MatrixPermutation<_UnsignedInt>::getSize() const
 	{ return n_ ; }
 
-	template<class _Uint>
+	template<class _UnsignedInt>
 	void
-	MatrixPermutation<_Uint>::resize( _Uint  n)
+	MatrixPermutation<_UnsignedInt>::resize( _UnsignedInt  n)
 	{
 		if (n < n_) {
 #ifdef DEBUG
@@ -474,7 +474,7 @@ namespace LinBox
 			 * that don't alter the fact P_ is a permuation of [[1,n]].
 			 */
 			bool lost = false ;
-			for (_Uint i = n ; !lost && i < n_ ; ++i)
+			for (_UnsignedInt i = n ; !lost && i < n_ ; ++i)
 				if (P_[i]<n-1) lost = true ;
 			if (lost)
 				std::cerr << "Warning ! (in " << __FILE__ << " at " << __func__ << " (" << __LINE__ << ") your permutation is no longer consistent" << std::endl;
@@ -482,7 +482,7 @@ namespace LinBox
 		}
 		/* resizing to identity */
 		P_.resize(n);
-		for (_Uint i = n_ ; i< n ; ++i)
+		for (_UnsignedInt i = n_ ; i< n ; ++i)
 			P_[i] =  i ;
 		n_ = n ;
 
@@ -493,29 +493,29 @@ namespace LinBox
 	/* ****** */
 	/* output */
 	/* ****** */
-	template<class _Uint>
-	std::ostream & MatrixPermutation<_Uint>::write (std::ostream & o) const
+	template<class _UnsignedInt>
+	std::ostream & MatrixPermutation<_UnsignedInt>::write (std::ostream & o) const
 	{
 		o << '['  ;
-		for (_Uint i = 0 ; i < n_ ; ++i)
+		for (_UnsignedInt i = 0 ; i < n_ ; ++i)
 		{ o << P_[i]  ; if (i< n_-1) o << ','; }
 		o << ']' ;
 		return o;
 	}
 
 
-	template<class _Uint>
-	std::ostream & operator<<(std::ostream &o, MatrixPermutation<_Uint> & P)
+	template<class _UnsignedInt>
+	std::ostream & operator<<(std::ostream &o, MatrixPermutation<_UnsignedInt> & P)
 	{
 		return P.write(o) ;
 	}
 
-	template<class _Uint>
-	void MatrixPermutation<_Uint>::Transpose()
+	template<class _UnsignedInt>
+	void MatrixPermutation<_UnsignedInt>::Transpose()
 	{
 		/* not in place */
-		std::vector<_Uint> Q(n_) ;
-		for (_Uint i = 0 ; i < (_Uint) n_ ; ++i)
+		std::vector<_UnsignedInt> Q(n_) ;
+		for (_UnsignedInt i = 0 ; i < (_UnsignedInt) n_ ; ++i)
 			Q[P_[i]] = i ;
 		P_ = Q ;
 		/* in place */
@@ -523,14 +523,14 @@ namespace LinBox
 
 	}
 
-	template<class _Uint>
-	void MatrixPermutation<_Uint>::Invert()
+	template<class _UnsignedInt>
+	void MatrixPermutation<_UnsignedInt>::Invert()
 	{
 		Transpose() ;
 	}
 
-	template<class _Uint>
-	MatrixPermutation<_Uint> & MatrixPermutation<_Uint>::Transpose(MatrixPermutation<_Uint> &Mt)
+	template<class _UnsignedInt>
+	MatrixPermutation<_UnsignedInt> & MatrixPermutation<_UnsignedInt>::Transpose(Self_t &Mt)
 	{
 		//Mt(*this);
 		Mt.P_ = P_;
@@ -539,43 +539,43 @@ namespace LinBox
 		return Mt ;
 	}
 
-	template<class _Uint>
-	MatrixPermutation<_Uint> & MatrixPermutation<_Uint>::Invert(MatrixPermutation<_Uint> &Mt)
+	template<class _UnsignedInt>
+	MatrixPermutation<_UnsignedInt> & MatrixPermutation<_UnsignedInt>::Invert(Self_t &Mt)
 	{
 		return Transpose(Mt) ;
 	}
 
 
-	//        MatPerm & TransposeCols(_UnsignedInt i, _UnsignedInt j);
+	//        Self_t & TransposeCols(_UnsignedInt i, _UnsignedInt j);
 
-	template<class _Uint>
+	template<class _UnsignedInt>
 	template<class OutVector, class InVector>
-	OutVector &MatrixPermutation<_Uint>::apply (OutVector &y, const InVector &x) const
+	OutVector &MatrixPermutation<_UnsignedInt>::apply (OutVector &y, const InVector &x) const
 	{
-		linbox_check((_Uint)x.size() == n_);
-		linbox_check((_Uint)y.size() == n_);
-		_Uint i = n_;
+		linbox_check((_UnsignedInt)x.size() == n_);
+		linbox_check((_UnsignedInt)y.size() == n_);
+		_UnsignedInt i = n_;
 		for (;i--;)
 			y[i] = x[P_[i]] ; // no need for Field operations...
 
 		return y ;
 	}
 
-	template<class _Uint>
+	template<class _UnsignedInt>
 	template<class OutVector, class InVector>
-	OutVector &MatrixPermutation<_Uint>::applyTranspose (OutVector &y, const InVector &x) const
+	OutVector &MatrixPermutation<_UnsignedInt>::applyTranspose (OutVector &y, const InVector &x) const
 	{
-		linbox_check((_Uint)x.size() == n_);
-		linbox_check((_Uint)y.size() == n_);
-		_Uint i = n_;
+		linbox_check((_UnsignedInt)x.size() == n_);
+		linbox_check((_UnsignedInt)y.size() == n_);
+		_UnsignedInt i = n_;
 		for (;i--;)
 			y[P_[i]] = x[i] ; // no need for Field operations...
 
 		return y ;
 	}
 
-	template<class _Uint>
-	void MatrixPermutation<_Uint>::TransposeCols(_Uint i, _Uint j)
+	template<class _UnsignedInt>
+	void MatrixPermutation<_UnsignedInt>::TransposeCols(_UnsignedInt i, _UnsignedInt j)
 	{
 		linbox_check(i<n_);
 		linbox_check(j<n_);
@@ -583,15 +583,15 @@ namespace LinBox
 		std::swap(P_[i],P_[j]);
 	}
 
-	template<class _Uint>
-	void MatrixPermutation<_Uint>::TransposeRows(_Uint i, _Uint j)
+	template<class _UnsignedInt>
+	void MatrixPermutation<_UnsignedInt>::TransposeRows(_UnsignedInt i, _UnsignedInt j)
 	{
 		linbox_check(i<n_);
 		linbox_check(j<n_);
 		if (i == j) return ;
-		_Uint iloc = 0 ;
-		_Uint jloc = 0 ;
-		_Uint l = 0 ;
+		_UnsignedInt iloc = 0 ;
+		_UnsignedInt jloc = 0 ;
+		_UnsignedInt l = 0 ;
 		for ( ; l < n_ && !(iloc && jloc) ; ++l)
 			if (P_[l] == i)
 				iloc = l+1;

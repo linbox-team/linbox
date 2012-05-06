@@ -487,7 +487,6 @@ void bench_square( index_t min, index_t max, int step, int charac )
  * @param min min size
  * @param max max size
  * @param step step of the size between 2 benchmarks
- * @param charac characteristic of the field.
  */
 void bench_fields( index_t min, index_t max, int step )
 {
@@ -547,7 +546,6 @@ void bench_fields( index_t min, index_t max, int step )
  * @param min min size
  * @param max max size
  * @param step step of the size between 2 benchmarks
- * @param charac characteristic of the field.
  */
 void bench_blas( index_t min, index_t max, int step )
 {
@@ -601,7 +599,6 @@ void bench_blas( index_t min, index_t max, int step )
  *   .
  * @param k parameter.
  * @param charac characteristic of the field.
- * @param l small parameter (ie close to 1)
  */
 void bench_rectangular( index_t k, int charac )
 {

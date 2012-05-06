@@ -22,7 +22,7 @@
  * ========LICENCE========
  */
 
-/*! @file field/Modular/modular-int64_t.h
+/*! @file field/Modular/modular-int64.h
  * @ingroup field
  * @brief  representation of <code>Z/mZ</code> over \c int64_t .
  */

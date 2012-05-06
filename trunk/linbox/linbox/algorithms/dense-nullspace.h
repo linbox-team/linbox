@@ -22,7 +22,7 @@
  * ========LICENCE========
  */
 
-/** \file linbox/algorithm/dense-nullspace.h
+/** \file algorithms/dense-nullspace.h
  * @ingroup algorithm
  *
  * @brief We provide the right or left nullspace (kernel or cokernel) of a dense matrix.

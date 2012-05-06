@@ -841,7 +841,6 @@ namespace LinBox
 namespace LinBox
 {
 
-	//!@bug reading a submatrix should not be allowed !!
 	template <class _Field>
 	std::istream& BlasSubmatrix< _Field>::read (std::istream &file)
 	{

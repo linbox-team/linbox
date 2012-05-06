@@ -67,7 +67,7 @@ namespace LinBox
 
 		/** Copy constructor.
 		 * Creates new black box objects in dynamic memory.
-		 * @param M constant reference to compose black box matrix
+		 * @param Mat constant reference to compose black box matrix
 		 */
 		PolynomialBB (const PolynomialBB<Blackbox, Polynomial> &Mat) :
 			_A_ptr(Mat._A_ptr), _P_ptr(Mat._P_ptr), _VD(Mat._VD)
@@ -212,7 +212,7 @@ namespace LinBox
 
 		/** Copy constructor.
 		 * Creates new black box objects in dynamic memory.
-		 * @param M constant reference to compose black box matrix
+		 * @param Mat constant reference to compose black box matrix
 		 */
 		PolynomialBBOwner (const PolynomialBBOwner<Blackbox, Polynomial> &Mat) :
 			_A_data(Mat._A_data), _P_data(Mat._P_data), _VD(Mat._VD)

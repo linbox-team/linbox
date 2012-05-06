@@ -283,7 +283,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 		/** Constructor from an existing \ref BlasMatrix  and dimensions
-		 * @param M Pointer to \ref BlasMatrix  of which to construct submatrix
+		 * @param Mat Pointer to \ref BlasMatrix  of which to construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
 		 * @param Rowdim Row dimension
@@ -299,7 +299,7 @@ namespace LinBox
 		{ }
 
 		/** Constructor from an existing \ref BlasMatrix  and dimensions
-		 * @param M reference to \ref BlasMatrix  of which to construct submatrix
+		 * @param Mat reference to \ref BlasMatrix  of which to construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
 		 * @param Rowdim Row dimension
@@ -349,12 +349,14 @@ namespace LinBox
 			f (SM. field()), vd(SM. field())
 		{ }
 
+		//! get the field
 		const Field& field() const
 		{
 
 			return f;
 		}
 
+		//! read
 		std::istream& read (std::istream& is)
 		{
 
@@ -363,6 +365,7 @@ namespace LinBox
 			return is;
 		}
 
+		//! write
 		std::ostream& write (std::ostream& os) const
 		{
 
@@ -429,7 +432,6 @@ namespace LinBox
 	};
 
 
-	//@}
 } // namespace LinBox
 
 
@@ -604,7 +606,6 @@ namespace LinBox
 	}; // template <Vector> class SubmatrixOwner
 
 
-	//@}
 } // namespace LinBox
 
 

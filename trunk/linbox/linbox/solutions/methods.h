@@ -566,7 +566,7 @@ namespace LinBox
 		 * @param withRNS  computre RNS
 		 * @todo make the special flags available in \c Specifier.
 		 */
-		IMLTraits ( const IMLNonSing &, // routine 1
+		IMLTraits ( const IMLNonSing & imlroutine, // routine 1
 			    bool withRNS = false) :
 			_computeRNS(withRNS),
 			_imlroutine(1)
@@ -579,10 +579,10 @@ namespace LinBox
 		 * @param imlroutine2  \c 2 -> certified
 		 * @param certify
 		 * @param reduce reduce the result ?
-		 * @param nullcol look at IML doc.
+		 * @param nullcolred look at IML doc.
 		 */
 
-		IMLTraits ( const IMLCertSolv &, // routine 2
+		IMLTraits ( const IMLCertSolv & imlroutine2, // routine 2
 			    bool certify            = DONT_CERTIFY,
 			    bool reduce             = false ,
 			    unsigned int nullcolred = 10  /* IML default */) :
@@ -664,7 +664,7 @@ namespace LinBox
 	struct SolverTraits : public Specifier {
 		/** Constructor.
 		 *
-		 * @param checkResult True if and only if the solution should be checked
+		 * @param CheckResult True if and only if the solution should be checked
 		 * for correctness after it is computed (very much recommended for the
 		 * randomized algorithms Wiedemann and Lanczos); default is true
 		 */

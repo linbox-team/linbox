@@ -76,7 +76,7 @@ namespace LinBox
 		}
 
 		/** Copy constructor.
-		 * @param M constant reference to compose black box matrix
+		 * @param Mat constant reference to compose black box matrix
 		 */
 		Transpose (const Transpose<Blackbox> &Mat) :
 			_A_ptr(Mat._A_ptr)
@@ -206,7 +206,7 @@ namespace LinBox
 		{ }
 
 		/** Copy constructor.
-		 * @param M constant reference to compose black box matrix
+		 * @param Mat constant reference to compose black box matrix
 		 */
 		TransposeOwner (const TransposeOwner<Blackbox> &Mat) :
 			_A_data(Mat.getData())
