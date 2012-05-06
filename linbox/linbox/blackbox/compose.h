@@ -110,7 +110,7 @@ namespace LinBox
 		/** Copy constructor.
 		 * Copies the composed matrix (a small handle).  The underlying two matrices
 		 * are not copied.
-		 * @param[in] M blackbox to copy.
+		 * @param[in] Mat blackbox to copy.
 		 */
 		Compose (const Compose<Blackbox1, Blackbox2>& Mat) :
 			_A_ptr ( Mat._A_ptr), _B_ptr ( Mat._B_ptr)

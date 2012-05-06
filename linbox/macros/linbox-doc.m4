@@ -3,17 +3,17 @@ dnl This file is part of LinBox
 
  dnl ========LICENCE========
  dnl This file is part of the library LinBox.
- dnl 
+ dnl
  dnl LinBox is free software: you can redistribute it and/or modify
  dnl it under the terms of the  GNU Lesser General Public
  dnl License as published by the Free Software Foundation; either
  dnl version 2.1 of the License, or (at your option) any later version.
- dnl 
+ dnl
  dnl This library is distributed in the hope that it will be useful,
  dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
  dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  dnl Lesser General Public License for more details.
- dnl 
+ dnl
  dnl You should have received a copy of the GNU Lesser General Public
  dnl License along with this library; if not, write to the Free Software
  dnl Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -66,4 +66,20 @@ AS_IF([ test "x$enable_doc" = "xyes"],[
 ],[AC_MSG_RESULT(no)])
 
 AM_CONDITIONAL(LINBOX_BUILD_DOC, test "x$WANTDOC" != "xno" )
+
+
+AC_MSG_CHECKING(whether dot works)
+res=yes;
+(dot -V) < /dev/null > /dev/null 2>&1 || res=no
+AC_MSG_RESULT([$res])
+AS_IF([test $res = yes],
+[
+sed 's/^HAVE_DOT.*/HAVE_DOT = YES/' doc/Doxyfile.mod > docs/Doxyfile
+sed 's/^HAVE_DOT.*/HAVE_DOT = YES/' doc/DoxyfileDev.mod > docs/DoxyfileDev
+],
+[ cp doc/Doxyfile.mod doc/Doxyfile ;
+cp doc/DoxyfileDev.mod doc/DoxyfileDev
+])
+
+
 ])

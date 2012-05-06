@@ -104,6 +104,7 @@ namespace LinBox
 
 		/*! provide a matrix with prescribed rank.
 		 * Default method.
+		 * @param A
 		 * @param rank expected rank
 		 * @warning No certificate yet.
 		 */
@@ -112,6 +113,7 @@ namespace LinBox
 
 
 		/*! provide a matrix with prescribed rank.
+		 * @param A
 		 * @param rank expected rank
 		 * @param meth how is the matrix generated ? see \ref RankBuilder.
 		 * @warning No certificate yet.

@@ -46,10 +46,10 @@ namespace LinBox
 
 
 	// forward declaration
-	template<class _Uint>
+	template<class _UnsignedInt>
 	class MatrixPermutation ;
 
-	template<class _Uint>
+	template<class _UnsignedInt>
 	class BlasPermutation ;
 
 	/** Lapack-style permutation.
@@ -221,7 +221,7 @@ namespace LinBox
 	 */
 	template<class _UnsignedInt>
 	class MatrixPermutation /*  : PermutationInterface<_UnsignedInt> */ {
-		typedef MatrixPermutation<_UnsignedInt> MatPerm ;
+		typedef MatrixPermutation<_UnsignedInt> Self_t ;
 	private :
 		_UnsignedInt			n_ ; // order of permutation
 		std::vector<_UnsignedInt>	P_ ; // _M_[i] = j ssi P(i) = j
@@ -240,8 +240,8 @@ namespace LinBox
 
 		void Transpose();
 		void Invert();
-		MatPerm & Transpose(MatPerm &Mt);
-		MatPerm & Invert(MatPerm &Mt);
+		Self_t & Transpose(Self_t &Mt);
+		Self_t & Invert(Self_t &Mt);
 
 
 
@@ -251,7 +251,7 @@ namespace LinBox
 
 		/*! writes \p P on output stream \p o */
 		template<class _Uint>
-		friend std::ostream & operator<<(std::ostream &o, MatPerm & P) ;
+		friend std::ostream & operator<<(std::ostream &o, Self_t & P) ;
 
 		template<class OutVector, class InVector>
 		OutVector &apply (OutVector &y, const InVector &x) const ;

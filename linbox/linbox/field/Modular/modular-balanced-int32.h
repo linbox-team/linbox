@@ -24,7 +24,7 @@
  */
 
 
-/*! @file field/Modular/modular-balanced-int32_t.h
+/*! @file field/Modular/modular-balanced-int32.h
  * @ingroup field
  * @brief Balanced representation of <code>Z/mZ</code> over \c int32_t .
  */

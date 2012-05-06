@@ -33,7 +33,7 @@
  * a line of this macro should read: addReader( new MyReaderType() );
  *
  * Second, so those statements actually compile, the file containing each format
- * reader should be included with a line of the form: #include "my-reader.h"
+ * reader should be included with a line of the form: \verbatim #include "my-reader.h" \endverbatim
  */
 
 

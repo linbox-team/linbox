@@ -6,20 +6,20 @@
  * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -56,7 +56,6 @@
 namespace LinBox
 {
 
-	//@{
 
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been
@@ -130,7 +129,6 @@ namespace LinBox
 		return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
 
-	//@} doc of NTL_ZZ_p
 
 
 	class NTL_ZZ_p_Initialiser {
@@ -179,6 +177,8 @@ namespace LinBox
 		 * These specializations allow the \ref UnparametricField template class to be
 		 * used to wrap NTL's <code>ZZ_p</code> class as a LinBox field.
 		 */
+		//@{
+		//! @param q,e
 		NTL_ZZ_p(integer q, size_t e = 1) :
 			NTL_ZZ_p_Initialiser(q,e),Father_t ()
 			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mOne(-one)
@@ -186,16 +186,20 @@ namespace LinBox
 			// no default - allow initialization of ZZ_p directly by user.
 		}
 
+		//! @param d,e
 		NTL_ZZ_p( NTL::ZZ d, size_t e = 1) :
 			NTL_ZZ_p_Initialiser(d),Father_t()
 			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mOne(-one)
 		{
 			linbox_check(e == 1);
 		}
+
+		//! NULL constructor
 		NTL_ZZ_p() :
 			NTL_ZZ_p_Initialiser(), Father_t()
 			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mOne(-one)
 		{}
+		//@}
 
 		Element& init(Element& x, const integer& y) const
 		{
@@ -402,7 +406,15 @@ namespace LinBox
 			<< Element::modulus();
 		}
 
-		std::ostream &write (std::ostream &os, const Element &x) const { return FFPACK::UnparametricOperations<Element>::write(os,x); }
+		/** Print field.
+		 * @return output stream to which field is written.
+		 * @param os  output stream to which field is written.
+		 * @param x
+		 */
+		std::ostream &write (std::ostream &os, const Element &x) const
+		{
+		   	return FFPACK::UnparametricOperations<Element>::write(os,x);
+		}
 	};
 
 	template <class Ring>

@@ -31,7 +31,7 @@
  *
  */
 
-/*! @file matrix/blas-matrix-multimod.H
+/*! @file matrix/blas-matrix-multimod.h
  * @brief specialisation for mutlimod field.
  */
 
