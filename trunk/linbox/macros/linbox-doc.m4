@@ -74,8 +74,8 @@ res=yes;
 AC_MSG_RESULT([$res])
 AS_IF([test $res = yes],
 [
-sed 's/^HAVE_DOT.*/HAVE_DOT = YES/' doc/Doxyfile.mod > docs/Doxyfile
-sed 's/^HAVE_DOT.*/HAVE_DOT = YES/' doc/DoxyfileDev.mod > docs/DoxyfileDev
+sed 's/^HAVE_DOT.*/HAVE_DOT = YES/' doc/Doxyfile.mod > doc/Doxyfile
+sed 's/^HAVE_DOT.*/HAVE_DOT = YES/' doc/DoxyfileDev.mod > doc/DoxyfileDev
 ],
 [ cp doc/Doxyfile.mod doc/Doxyfile ;
 cp doc/DoxyfileDev.mod doc/DoxyfileDev

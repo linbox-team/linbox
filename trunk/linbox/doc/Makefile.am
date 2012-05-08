@@ -71,8 +71,8 @@ EXTRA_DIST=             \
     install-dev.html    \
     index-dev.html      \
     install-dist.html   \
-    Doxyfile            \
-    DoxyfileDev         \
+    Doxyfile.mod        \
+    DoxyfileDev.mod     \
     doc.doxy            \
     mainpage.doxy       \
     tutorial.doxy       \
