@@ -96,7 +96,7 @@ namespace LinBox
 			      return ClassifyRing<ModularBalanced<Element> >::categoryTag();
 		      }
 
-		      ModularBalanced (const integer& p) :
+		      ModularBalanced (const integer& p, int e = 1) :
 			      Father_t((unsigned long)p)
 		      {
 #ifdef DEBUG

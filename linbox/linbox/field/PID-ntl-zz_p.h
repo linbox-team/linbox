@@ -26,7 +26,7 @@
 #ifndef __LINBOX_ntl_pid_zz_p_H
 #define __LINBOX_ntl_pid_zz_p_H
 
-#include "linbox/field/ntl-lzz_p.h"
+#include "linbox/field/NTL/ntl-lzz_p.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include <NTL/ZZ.h>

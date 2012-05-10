@@ -73,7 +73,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 {
 
 	long vectorSize = 10000;
-	float sparsity = .01;
+	float sparsity = .01f;
 	long sparsity_inv = 100;
 	int i;
 
@@ -232,7 +232,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 	// Convert timings to mops (million operations per second)
 	for( i = 0; i < 9; i++ ) {
 		double t = array[i];
-		array[i] = iter / (t > 0 ? (t * 1000000) : 0) ;
+		array[i] = (double)iter / (t > 0 ? (t * 1000000) : 0) ;
 	}
 	// use s (just in case compiler cares)
 	if (f.isZero(s)) std::cout << "zero sum" << std::endl;
