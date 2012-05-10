@@ -102,7 +102,7 @@ namespace LinBox
 			      return ClassifyRing<Modular<Element> >::categoryTag();
 		      }
 
-		      Modular (const integer& p) :
+		      Modular (const integer& p, int e = 1) :
 			      Father_t((unsigned long)p)
 		      {
 #ifdef DEBUG

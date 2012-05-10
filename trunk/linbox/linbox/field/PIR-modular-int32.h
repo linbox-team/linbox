@@ -478,7 +478,7 @@ namespace LinBox
 
 			y %= (uint64_t) _field.modulus;
 
-			return res = y;
+			return res = (Element)y;
 		}
 	};
 
