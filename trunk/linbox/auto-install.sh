@@ -12,9 +12,9 @@
 # TODO : use an optionnal message in die function.
 
 STABLE_FFLAS=1.5.0
-STABLE_GIVARO=3.5.0
-GIV_TAR=133
-GIV_MD5=134
+STABLE_GIVARO=3.6.0
+GIV_TAR=202
+GIV_MD5=203
 
 #switches
 STABLE_VAR="true"

@@ -61,7 +61,7 @@ EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 
 CLEANFILES=$(EXTRA_PROGRAMS)
 
-EXTRA_DIST = examples.doxy
+EXTRA_DIST = examples.doxy smithvalence.h
 
 examples: ${EXTRA_PROGRAMS}
 
