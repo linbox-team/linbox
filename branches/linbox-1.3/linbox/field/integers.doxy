@@ -1,0 +1,53 @@
+// Copyright (C) 2010 LinBox, GNU LGPL, see COPYING for licence information
+/*
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+ */
+
+/*! @ingroup ring
+ * @defgroup integers Integers
+ * LinBox integer representation and operations.
+ *
+ * LinBox integers come from Givaro which uses GMP. This ensures fastest
+ * operations.
+ *
+ * LinBox provides :
+ * - LinBox::Integer is the Givaro representation of an integer (Givaro::Integer).
+ * - LinBox::integer is a synonym
+ * - LinBox::PID_integer is a domain (ref ???) to perform integers operation on.
+ * - Others ?
+ *
+ *
+ * other use of integers ?
+ *
+ * @warning due to the construction of Givaro, you should always prefer to
+ * group operations as in the example :
+ \code
+ Integer a=1,b=1,c=1;
+ c += a * b ;    // slow
+ axpyin(c,a,b) ; // faster
+ \endcode
+ * @see <a href="http://ljk.imag.fr/CASYS/LOGICIELS/givaro/">Givaro</a> for documentation.
+ */
+
+ /** @ingroup integers
+  * @defgroup primes Primes
+  * @brief NO DOC
+  */
+
+// vim:syn=doxygen
