@@ -63,6 +63,7 @@ uninstall-hook:
 		"$(libdir)" \
 		"$(mandir)/man1" \
 		"$(mandir)" \
+		"$(includedir)/linbox/algorithms/gauss" \
 		"$(includedir)/linbox/algorithms" \
 		"$(includedir)/linbox/blackbox" \
 		"$(includedir)/linbox/element" \
