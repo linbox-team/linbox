@@ -104,6 +104,7 @@ pkgincludesub_HEADERS =         \
     smith-form-adaptive.h       \
     smith-form-adaptive.inl     \
     smith-form-sparseelim-local.h           \
+    smith-form-sparseelim-poweroftwo.h      \
     rational-reconstruction2.h  \
     rational-solver-adaptive.h  \
     varprec-cra-early-single.h  \
