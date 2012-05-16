@@ -82,7 +82,7 @@ uninstall-hook:
 		"$(includedir)/linbox/vector" \
 		"$(includedir)/linbox" ) || true
 
-VERSION=1.3.0
+VERSION=1.3.1
 
 EXTRA_DIST=auto-install.sh
 #incremente-versions
