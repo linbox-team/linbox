@@ -209,54 +209,6 @@ void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::BlasMatrixDomain
 #include "linbox/algorithms/whisart_trace.h"
 
 
-#if 0 // now in LinBox
-template<class Field, class BB>
-void WhisartTrace(
-		  typename Field::Element& trace,
-		  const Field& F,
-		  const LinBox::Diagonal<Field>& ExtD,
-		  const BB& A,
-		  const LinBox::Diagonal<Field>& InD) {
-	// Trace of ExtD B InD B^T ExtD
-	// is sum ExtD_i^2 B_{i,j} InD_j
-	F.init(trace, 0);
-	for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
-	    it != A.IndexedEnd(); ++it) {
-		typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
-		F.mul(tmp,it.value(),it.value());
-		ExtD.getEntry(e, it.rowIndex(),it.rowIndex());
-		InD.getEntry(i, it.colIndex(),it.colIndex());
-		F.mulin(tmp,e);
-		F.mulin(tmp,e);
-		F.mulin(tmp,i);
-		F.addin(trace, tmp);
-	}
-}
-
-template<class Field, class BB>
-void WhisartTraceTranspose(
-			   typename Field::Element& trace,
-			   const Field& F,
-			   const LinBox::Diagonal<Field>& ExtD,
-			   const BB& A,
-			   const LinBox::Diagonal<Field>& InD) {
-	// Trace of ExtD B^T  InD B ExtD
-	// is sum ExtD_j^2 B_{i,j} InD_i
-	F.init(trace, 0);
-	for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
-	    it != A.IndexedEnd(); ++it) {
-		typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
-		F.mul(tmp,it.value(),it.value());
-		ExtD.getEntry(e, it.colIndex(),it.colIndex());
-		InD.getEntry(i, it.rowIndex(),it.rowIndex());
-		F.mulin(tmp,e);
-		F.mulin(tmp,e);
-		F.mulin(tmp,i);
-		F.addin(trace, tmp);
-	}
-}
-#endif
-
 using namespace Givaro;
 
 
