@@ -27,12 +27,16 @@
 
 #include <ctime>
 #include <vector>
+#include "linbox/field/unparametric.h"
+#include <givaro/givcaster.h>
 
 // #include <fflas-ffpack/field/unparametric.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
+    using Givaro::Caster;
+
 	// forward declarations
 	template <class K> class UnparametricField;
 	// using FFPACK::UnparametricField ;
@@ -157,7 +161,7 @@ namespace LinBox
 			if (_size == 0)
 				return x = (Element) rand();
 			else
-				return x = static_cast<integer>((double(rand())/RAND_MAX)*double(_size));
+				return Caster (x, (double(rand())/RAND_MAX)*double(_size));
 
 		} // element& operator() (void)
 

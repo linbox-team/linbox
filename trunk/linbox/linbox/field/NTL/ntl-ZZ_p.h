@@ -52,21 +52,21 @@
 #include "linbox/field/field-traits.h"
 
 
-// Namespace in which all LinBox library code resides
-namespace LinBox
+#include <givaro/givcaster.h>
+namespace Givaro
 {
 
 
-	/** Conversion of field element to an integer.
+	/** Conversion of field element to an Integer.
 	 * This function assumes the output field element x has already been
 	 * constructed, but that it is not already initialized.
 	 * This done by converting to a std::string : inefficient but correct.
-	 * @return reference to integer.
-	 * @param x reference to integer to contain output (reference returned).
+	 * @return reference to Integer.
+	 * @param x reference to Integer to contain output (reference returned).
 	 * @param y constant reference to field element.
 	 */
 	template <>
-	integer& Caster(integer& x, const NTL::ZZ_p& y)
+	Integer& Caster(Integer& x, const NTL::ZZ_p& y)
 	{
 		NTL::ZZ iy = y._ZZ_p__rep;
 
@@ -79,7 +79,7 @@ namespace LinBox
 
 		x = 0;
 		for (long i = 0; i < nb; i++) {
-			x += LinBox::integer( (unsigned long)txt[i] )<<(8*i) ;
+			x += Integer( (unsigned long)txt[i] )<<(8*i) ;
 		}
 		delete [] txt;
 		return x;
@@ -93,18 +93,18 @@ namespace LinBox
 		return x;
 	}
 
-	/**\brief Initialization of field element from an integer.
+	/**\brief Initialization of field element from an Integer.
 	 * Behaves like C++ allocator construct.
 	 * This function assumes the output field element x has already been
 	 * constructed, but that it is not already initialized.
 	 * This done by converting to a std::string : inefficient but correct.
 	 * @return reference to field element.
 	 * @param x field element to contain output (reference returned).
-	 * @param y integer.
+	 * @param y Integer.
 	 \ingroup field
 	 */
 	template <>
-	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const integer& y)
+	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const Integer& y)
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ( (static_cast<const std::string>(y)).c_str() ) );
 	}
@@ -128,7 +128,12 @@ namespace LinBox
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
+} // namespace Givaro
 
+
+// Namespace in which all LinBox library code resides
+namespace LinBox
+{
 
 
 	class NTL_ZZ_p_Initialiser {
