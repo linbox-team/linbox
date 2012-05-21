@@ -50,12 +50,12 @@
 #include "linbox/field/field-traits.h"
 
 
-// Namespace in which all LinBox library code resides
-namespace LinBox
+#include <givaro/givcaster.h>
+namespace Givaro
 {
 	template<>
-	//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const integer &y) const
-	NTL::GF2E& Caster(NTL::GF2E &x, const integer &y)
+	//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const Integer &y) const
+	NTL::GF2E& Caster(NTL::GF2E &x, const Integer &y)
 	{
 		x=NTL::to_GF2E(static_cast<long>(y));
 		return x;
@@ -70,8 +70,8 @@ namespace LinBox
 
 
 	template<>
-	//	integer& UnparametricField<NTL::GF2E>::convert (integer& x, const NTL::GF2E &y) const	{
-	integer& Caster(integer& x, const NTL::GF2E &y)
+	//	Integer& UnparametricField<NTL::GF2E>::convert (Integer& x, const NTL::GF2E &y) const	{
+	Integer& Caster(Integer& x, const NTL::GF2E &y)
 	{
 		NTL::GF2X poly = rep(y);
 
@@ -84,8 +84,14 @@ namespace LinBox
 		return x;
 	}
 
+} // namespace Givaro
 
 
+
+
+// Namespace in which all LinBox library code resides
+namespace LinBox
+{
 	/// \ingroup field
 
 	class NTL_GF2E_Initialiser {

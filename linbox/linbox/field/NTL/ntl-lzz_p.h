@@ -52,20 +52,19 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/integer.h"
 
-// Namespace in which all LinBox library code resides
-namespace LinBox
+#include <givaro/givcaster.h>
+namespace Givaro
 {
-
 
 	/** Initialization of field element from an integer.
 	 * This Uses NTL's <code>to_zz_p</code> function.
 	 *
 	 * @return reference to field element.
 	 * @param x field element to contain output (reference returned).
-	 * @param y integer.
+	 * @param y Integer.
 	 */
 	template <>
-	NTL::zz_p& Caster(NTL::zz_p& x, const integer& y)
+	NTL::zz_p& Caster(NTL::zz_p& x, const Integer& y)
 	{
 		return x = NTL::to_zz_p( y%NTL::zz_p::modulus() );
 	}
@@ -75,24 +74,28 @@ namespace LinBox
 		return x = NTL::to_zz_p((long)(y)%NTL::zz_p::modulus());
 	}
 
-	/** Conversion of field element to an integer.
+	/** Conversion of field element to an Integer.
 	 * This function assumes the output field element x has already been
 	 * constructed, but that it is not already initialized.
 	 * For now, this is done by converting the element type to a C++
-	 * long and then to the integer type through the use of static cast and
+	 * long and then to the Integer type through the use of static cast and
 	 * NTL's to_long function.
 	 * This, of course, assumes such static casts are possible.
 	 * This function should be changed in the future to avoid using long.
-	 * @return reference to integer.
-	 * @param x reference to integer to contain output (reference returned).
+	 * @return reference to Integer.
+	 * @param x reference to Integer to contain output (reference returned).
 	 * @param y constant reference to field element.
 	 */
  	template <>
-	integer& Caster(integer& x, const NTL::zz_p& y)
+	Integer& Caster(Integer& x, const NTL::zz_p& y)
 	{
-		return x = static_cast<integer>(rep(y));
+		return x = static_cast<Integer>(rep(y));
 	}
+} // namespace Givaro
 
+// Namespace in which all LinBox library code resides
+namespace LinBox
+{
 
 	class NTL_zz_p_Initialiser {
 	public :

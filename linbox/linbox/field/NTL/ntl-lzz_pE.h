@@ -50,12 +50,11 @@
 
 
 
-// Namespace in which all LinBox library code resides
-namespace LinBox
+#include <givaro/givcaster.h>
+namespace Givaro
 {
-
 	template<>
-	NTL::zz_pE& Caster(NTL::zz_pE &x, const integer &y)
+	NTL::zz_pE& Caster(NTL::zz_pE &x, const Integer &y)
 	{
 		x=NTL::to_zz_pE(static_cast<long>(y));
 		return x;
@@ -68,9 +67,9 @@ namespace LinBox
 	}
 
 	template<>
-	integer& Caster (integer& x, const NTL::zz_pE &y) {
+	Integer& Caster (Integer& x, const NTL::zz_pE &y) {
 		NTL::zz_pX poly = rep(y);
-		integer base = static_cast<integer>(NTL::zz_p::modulus());
+		Integer base = static_cast<Integer>(NTL::zz_p::modulus());
 		long i = deg(poly)+1;
 		x = 0;
 		for( ; i-- ; ) {
@@ -79,7 +78,13 @@ namespace LinBox
 		}
 		return x;
 	}
+} // namespace Givaro
 
+
+
+// Namespace in which all LinBox library code resides
+namespace LinBox
+{
 
 	class NTL_zz_pE_Initialiser {
 	public :

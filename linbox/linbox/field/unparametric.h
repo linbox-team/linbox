@@ -32,6 +32,7 @@
 
 #include <string>
 #include <algorithm>
+#include <givaro/givcaster.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -48,11 +49,7 @@
 namespace LinBox
 {
 
-	template <typename Target, typename Source>
-	Target& Caster (Target& t, const Source& s)
-	{
-		return t = static_cast<Target>(s);
-	}
+    using Givaro::Caster;
 
 #if 0
 #if __LINBOX_HAVE_NTL
@@ -154,12 +151,13 @@ namespace LinBox
 		using Father_t::inv ;
 		//using Father_t::read ;
 		std::istream &read(std::istream & is) { return Father_t::read(is); }
-                std::istream &read(std::istream & s, Element &a) const
+
+        std::istream &read(std::istream & s, Element &a) const
 		{
-                    Integer tmp;
-                    s >> tmp;
-                    init(a, tmp);
-                    return s;
+            Integer tmp;
+            s >> tmp;
+            init(a, tmp);
+            return s;
 		}
 		using Father_t::invin;
 		using Father_t::write;
