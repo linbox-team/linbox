@@ -362,10 +362,10 @@ cd build ;
 
 ### Givaro ###
 
-echo -en "${BEG}fecthing Givaro..."| tee -a ../auto-install.log
+echo -en "${BEG}fetching Givaro..."| tee -a ../auto-install.log
 if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f givaro-$STABLE_GIVARO.tar.gz ] ; then
-		echo "already there"
+		echo -ne " already there!\n"
 		echo -ne "${BEG}fetching md5sum" ; 
 		[ -f givaro-$STABLE_GIVARO.tar.gz.md5sum ] && rm givaro-${STABLE_GIVARO}.tar.gz.md5sum ;
 		wget --no-check-certificate https://forge.imag.fr/frs/download.php/$GIV_MD5/givaro-$STABLE_GIVARO.tar.gz.md5sum >/dev/null 2>&1 || die
@@ -390,10 +390,10 @@ fi
 
 ### Fflas-ffpack ###
 
-echo -en "${BEG}fecthing Fflas-Ffpack..."| tee -a ../auto-install.log
+echo -en "${BEG}fetching Fflas-Ffpack..."| tee -a ../auto-install.log
 if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] ; then
-		echo "already there"
+		echo -ne " already there!\n"
 		echo -ne "${BEG}fetching md5sum" ; 
 		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
 		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
@@ -478,10 +478,10 @@ else
 fi
 
 echo -e "${BEG}building Givaro..."| tee -a ../../auto-install.log
-echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,PREFIX_LOC\""| tee -a ../../auto-install.log
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../auto-install.log
 
 if [ -n "$EXTRA" ] ; then
-	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,PREFIX_LOC\"" | tee -a ../../auto-install.log|| die
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../auto-install.log|| die
 else
 	${MAKEPROG} | tee -a ../../auto-install.log|| die
 fi
@@ -597,12 +597,12 @@ else
 fi
 
 echo -e "${BEG}building LinBox..."| tee -a ./auto-install.log
-echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,PREFIX_LOC\""| tee -a ./auto-install.log
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ./auto-install.log
 
 if [ -n "$EXTRA" ] ; then
-	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,PREFIX_LOC\"" | tee -a ./auto-install.log|| die
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ./auto-install.log|| die
 else
-	${MAKEPROG} LDFLAGS+=\"-Wl,-rpath,PREFIX_LOC\"| tee -a ./auto-install.log|| die
+	${MAKEPROG} "LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ./auto-install.log|| die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
