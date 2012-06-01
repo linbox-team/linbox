@@ -222,8 +222,6 @@ for i in "$@" ; do
 				if [[ "$OK" = "2" ]] ; then 
 					echo "stable=[yes/no] !" ; help ; exit -1 ; 
 				fi
-				if	[ "x$STABLE_VAR" = "xfalse" -a "$OK" = "1" ] ; then  echo "stable or not ?";          help ; exit -1; fi
-				if	[ "x$STABLE_VAR" = "xtrue" -a "$OK" = "0" ] ; then  echo "stable or not ?";          help ; exit -1; fi
 				[[ "OK" = "1" ]] && STABLE_VAR="true" || STABLE_VAR="false"
 
 				;;
