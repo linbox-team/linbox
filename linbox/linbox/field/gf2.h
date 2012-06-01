@@ -754,9 +754,9 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		Element& mulin (stdBitReference& x, Element y) const
+		stdBitReference mulin (stdBitReference x, Element y) const
 		{
-			return mulin((bool&)x,y);
+			return x = (bool)x & y;
 		}
 
 		/** Inplace Division.
