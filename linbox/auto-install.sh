@@ -497,6 +497,9 @@ ${MAKEPROG} install | tee -a ../../auto-install.log|| die
 #return in build
 cd ..
 
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${PREFIX_LOC}/lib
+
+
 cool| tee -a ../auto-install.log
 
 ##########################
