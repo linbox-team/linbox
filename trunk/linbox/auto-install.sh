@@ -466,14 +466,14 @@ if [ "$STABLE_VAR" = "true" ]; then
 	echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS " > configure.givaro.exe
 	chmod +x configure.givaro.exe
 	./configure.givaro.exe | tee -a ../../auto-install.log
-	rm rf configure.givaro.exe
+	rm -rf configure.givaro.exe
 	#./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
 else
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS" > autogen.givaro.exe
 	chmod +x autogen.givaro.exe
 	./autogen.givaro.exe| tee -a ../../auto-install.log
-	rm rf autogen.givaro.exe
+	rm -rf autogen.givaro.exe
 	#./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
 fi
 
@@ -528,14 +528,14 @@ if [ "$STABLE_VAR" = "true" ]; then
 	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS" > configure.fflas.exe
 	chmod +x configure.fflas.exe
 	./configure.fflas.exe| tee -a ../../auto-install.log
-	rm rf configure.fflas.exe
+	rm -rf configure.fflas.exe
 	#./configure  "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
 else
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"| tee -a ../../auto-install.log
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS" > configure.fflas.exe
 	chmod +x configure.fflas.exe
 	./configure.fflas.exe| tee -a ../../auto-install.log
-	rm rf configure.fflas.exe
+	rm -rf configure.fflas.exe
 	#./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
 fi
 
