@@ -59,7 +59,7 @@ bundled:
 	sh auto-install.sh
 
 uninstall-hook:
-	(test -d "$(includedir)/linbox" && rmdir "$(bindir)" \
+	(test -d "$(includedir)/linbox" && rmdir  "$(bindir)" \
 		"$(libdir)" \
 		"$(mandir)/man1" \
 		"$(mandir)" \
@@ -80,7 +80,9 @@ uninstall-hook:
 		"$(includedir)/linbox/util/formats" \
 		"$(includedir)/linbox/util" \
 		"$(includedir)/linbox/vector" \
-		"$(includedir)/linbox" ) || true
+		"$(includedir)/linbox" \
+		"$(datarootdir)/" \
+		"$(includedir)" ) || true
 
 VERSION=1.3.1
 
