@@ -75,6 +75,7 @@ FULLCHECK_TESTS =                 \
         test-diagonal                 \
         test-dif                      \
         test-direct-sum               \
+        test-echelon-form             \
         test-ffpack                   \
         test-getentry                 \
         test-gf2                      \
@@ -423,6 +424,10 @@ test_solve_SOURCES =                        \
 test_direct_sum_SOURCES =                \
         test-direct-sum.C                \
         test-generic.h                   \
+        test-common.h
+
+test_echelon_form_SOURCES =                \
+        test-echelon-form.C                \
         test-common.h
 
 test_frobenius_SOURCES =                \
