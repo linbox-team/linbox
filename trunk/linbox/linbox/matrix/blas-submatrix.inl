@@ -71,7 +71,7 @@ namespace LinBox
 	{
 		linbox_check ( _r0  <= Mat.rowdim() ); // allow for NULL matrix
 		linbox_check ( _c0  <= Mat.coldim() );
-		linbox_check ( _row <= Mat.rowdim() );
+		// linbox_check ( _row <= Mat.rowdim() );
 		linbox_check ( _off <= Mat.rowdim()*Mat.coldim() );
 		linbox_check ( _col <= Mat.coldim() );
 	}
@@ -174,6 +174,28 @@ namespace LinBox
 namespace LinBox
 {
 
+
+	template <class _Field>
+	typename BlasSubmatrix< _Field>::pointer
+	BlasSubmatrix< _Field>::getPointer() const
+	{
+		return _Mat->getPointer();
+	}
+
+	template <class _Field>
+	typename BlasSubmatrix< _Field>::const_pointer &
+	BlasSubmatrix< _Field>::getConstPointer() const
+	{
+		return _Mat->getConstPointer();
+	}
+
+
+	template <class _Field>
+	typename BlasSubmatrix< _Field>::pointer&
+	BlasSubmatrix< _Field>::getWritePointer()
+	{
+		return _Mat->getWritePointer();
+	}
 
 	template <class _Field>
 	void BlasSubmatrix< _Field>::setEntry (size_t i, size_t j, const Element &a_ij)

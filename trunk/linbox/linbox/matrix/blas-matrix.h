@@ -699,6 +699,9 @@ namespace LinBox
 		typedef _Field                       Field;
 		typedef typename Field::Element      Element;      //!< Element type
 		typedef BlasSubmatrix<_Field>        Self_t;       //!< Self type
+		typedef typename RawVector<Element>::Dense      Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		typedef typename Rep::pointer        pointer;    //!< pointer type to elements
+		typedef const pointer                const_pointer;    //!< const pointer type
 
 
 	protected:
@@ -828,6 +831,20 @@ namespace LinBox
 		//////////////////
 		//   ELEMENTS   //
 		//////////////////
+
+		/*! @internal
+		 * Get read-only pointer to the matrix data.
+		 */
+		pointer getPointer() const ;
+
+		const_pointer &getConstPointer() const ;
+
+
+		/*! @internal
+		 * Get write pointer to the matrix data.
+		 * Data may be changed this way.
+		 */
+		pointer& getWritePointer() ;
 
 
 		/** Set the entry at (i, j).
