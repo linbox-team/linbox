@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* tests/test-local-smith.C
  * Copyright (C) LinBox
  *
@@ -137,7 +135,7 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 	typedef typename LocalPIR::Element Elt;
 	typedef BlasMatrix<LocalPIR> Blackbox;
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << s << endl;
 
 	MatrixDomain<LocalPIR> MR (R);
@@ -196,7 +194,7 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 			report << "ERROR: Computed invariants incorrect" << endl;
 			ret = false;
 		}
-		commentator.progress();
+		commentator().progress();
 	}
 	return ret;
 }
@@ -218,9 +216,9 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Local Smith Form test suite", "LocalSmith");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	commentator().start("Local Smith Form test suite", "LocalSmith");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 #if 0
 //PIRModular does not currently support the local ring interface -bds Mar2011
@@ -231,15 +229,15 @@ int main (int argc, char **argv)
 	//LocalPID R (32768);
 	vector<LocalPID::Element> d(n);
 
-	commentator.start ("Testing local smith on singular dense mat over PIRModular", "testSingular");
+	commentator().start ("Testing local smith on singular dense mat over PIRModular", "testSingular");
 	for( size_t i = 0; i < n; ++i ) d[i] = i;
 	if (!testLocalSmith<LocalPID> (R, d, "PIRModular<int32_t>")) pass1 = false;
-	commentator.stop ("testSingular");
+	commentator().stop ("testSingular");
 
-	commentator.start ("Testing local smith on nonsingular dense mat over PIRModular", "testNonsingular");
+	commentator().start ("Testing local smith on nonsingular dense mat over PIRModular", "testNonsingular");
 	for( size_t i = 0; i < n; ++i ) d[i] = i+1;
 	if (!testLocalSmith<LocalPID> (R, d, "PIRModular<int32_t>")) pass1 = false;
-	commentator.stop ("testNonsingular");
+	commentator().stop ("testNonsingular");
   }
   if (not pass1) report << "PIRModular FAIL" << std::endl;
 #endif
@@ -249,21 +247,30 @@ int main (int argc, char **argv)
 	LocalPID R;
 	vector<LocalPID::Element> d(n);
 
-	commentator.start ("Testing local smith on singular dense mat over Local2_32", "testSingular");
+	commentator().start ("Testing local smith on singular dense mat over Local2_32", "testSingular");
 	for( size_t i = 0; i < n; ++i )
 		d[i] = (LocalPID::Element) i;
 	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass = false;
-	commentator.stop ("testSingular");
+	commentator().stop ("testSingular");
 
-	commentator.start ("Testing local smith on nonsingular dense mat over Local2_32", "testNonsingular");
+	commentator().start ("Testing local smith on nonsingular dense mat over Local2_32", "testNonsingular");
 	for( size_t i = 0; i < n; ++i )
 		d[i] = (LocalPID::Element) i+1;
 	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass = false;
-	commentator.stop ("testNonsingular");
+	commentator().stop ("testNonsingular");
   }
   if (not pass) report << "PIRModular FAIL" << std::endl;
 
-	commentator.stop("Local Smith Form test suite");
+	commentator().stop("Local Smith Form test suite");
 	return pass and pass1 ? 0 : -1;
 }
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

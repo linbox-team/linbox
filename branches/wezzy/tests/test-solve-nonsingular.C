@@ -1,4 +1,3 @@
-/* -*- mode:C++ -*- */
 
 /* Copyright (c) LinBox
  *
@@ -103,7 +102,7 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 	VectorWrapper::ensureDim (x, stream1.n ());
 	VectorWrapper::ensureDim (y, stream1.n ());
 
-	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	int n =(int) d.size();
 
@@ -230,7 +229,7 @@ bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 
 	//std::ostringstream str;
 	//std::ostream &report = cerr;
-	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	//  print small mats
 	if(n <= 20){
@@ -291,7 +290,8 @@ bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 
 int main(int argc, char** argv) {
 	bool pass = true;
-	int run = 1;
+	bool part_pass = true;
+	int run = 7;
     static size_t n = 10;
 	static size_t k = 10;
 	bool e = false;
@@ -312,11 +312,11 @@ int main(int argc, char** argv) {
    };
 	parseArguments (argc, argv, args);
 
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	typedef PID_integer	Ring;  		Ring R;
 
@@ -338,6 +338,10 @@ int main(int argc, char** argv) {
 	generateProblem(R, A, b, s1, s2, mt, (int) k);
 
 	if(run & 1){
+	  if (sizeof(int) < 8) {
+	  	
+		report << "numsym: not done.  Requires 64 bit architecture." << std::endl << std::endl;
+	  } else {
 		/*  choose your numerical solver */
 		switch (st){
 #ifdef __LINBOX_HAVE_LAPACK
@@ -346,7 +350,7 @@ int main(int argc, char** argv) {
 				 typedef LPS<Matrix> NumSolver;
 				 NumSolver numSolver;
 				 RationalSolverSN<Ring, NumSolver > rsolver(R, numSolver, e);
-				 pass &= testRandomSolve(R, rsolver, A, b);
+				 part_pass &= testRandomSolve(R, rsolver, A, b);
 				}
 				break;
 #endif
@@ -356,7 +360,7 @@ int main(int argc, char** argv) {
 				 typedef MLS<Matrix> NumSolver;
 				 NumSolver numSolver;
 				 RationalSolverSN<Ring, NumSolver > rsolver(R, numSolver, e);
-				 pass &= testRandomSolve(R, rsolver, A, b);
+				 part_pass &= testRandomSolve(R, rsolver, A, b);
 				}
 				break;
 #endif
@@ -365,26 +369,38 @@ int main(int argc, char** argv) {
 				report << "Using SuperLU numeric solver." << endl;
 				typedef SLU<Matrix> NumSolver;	NumSolver numSolver(file);
 				SNRationalSolver<Ring, NumSolver > rsolver(R, numSolver);
-				pass &= testRandomSolve(R, rsolver, s1, s2, mt, 1, e, k);
+				part_pass &= testRandomSolve(R, rsolver, s1, s2, mt, 1, e, k);
 				}
 				break;
 #endif
 			default:
 				 break;
 		}
-		report << "numsym: " << (pass ? "pass" : "fail") << std::endl << std::endl;
+		report << "numsym: " << (part_pass ? "pass" : "fail") << std::endl << std::endl;
+	  }
 	}
+	pass = pass && part_pass;
 	if(run & 2){
 		RationalSolver<Ring, ZField, RandomPrimeIterator, WanTraits> rsolver(R);
-		pass = testRandomSolve(R, rsolver, A, b);
-		report << "zw: " << (pass ? "pass" : "fail") << std::endl << std::endl;
+		part_pass = testRandomSolve(R, rsolver, A, b);
+		report << "zw: " << (part_pass ? "pass" : "fail") << std::endl << std::endl;
 	}
+	pass = pass && part_pass;
 	if(run & 4){
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)n)*0.7213475205) );
 		RationalSolver<Ring, DField, RandomPrimeIterator, DixonTraits> rsolver(R, genprime);
-		pass = testRandomSolve(R, rsolver, A, b);
-		report << "dixon: " << (pass ? "pass" : "fail") << std::endl << std::endl;
+		part_pass = testRandomSolve(R, rsolver, A, b);
+		report << "dixon: " << (part_pass ? "pass" : "fail") << std::endl << std::endl;
 	}
 
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

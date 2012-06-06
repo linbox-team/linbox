@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  * Copyright (C) 2007 b d saunders
@@ -63,7 +61,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("block-ring test suite", "block-ring");
+	commentator().start("block-ring test suite", "block-ring");
 	bool pass = true;
 
 	typedef Modular<int> Field1;
@@ -76,15 +74,24 @@ int main (int argc, char **argv)
 	BlockRing<Field2> R2(F2, n);
 
 	// Make sure some more detailed messages get printed
-	//commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	//commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 
 	if (!runBasicRingTests(R1, "BlockRing of Modular<int>", iterations)) pass = false;
 	if (!runBasicRingTests(R2, "BlockRing of Modular<double>", iterations)) pass = false;
 
-	commentator.stop("block-ring test suite");
+	commentator().stop("block-ring test suite");
 	return pass ? 0 : -1;
 
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

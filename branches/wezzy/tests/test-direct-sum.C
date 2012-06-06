@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* tests/test-direct-sum.C
  * Copyright (C) LinBox
  * Written by David Saunders
@@ -71,9 +69,9 @@ int main (int argc, char **argv)
 	Field F (q);
 	Field::Element k;
 
-	commentator.start("DirectSum black box test suite", "direct sum");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().start("DirectSum black box test suite", "direct sum");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	F.init(k, 5);
 	ScalarMatrix<Field> B(F, 10, k);
@@ -85,6 +83,15 @@ int main (int argc, char **argv)
 	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > D(B, C);
 	pass = pass && testBlackbox(D);
 
-	commentator.stop("DirectSum black box test suite");
+	commentator().stop("DirectSum black box test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

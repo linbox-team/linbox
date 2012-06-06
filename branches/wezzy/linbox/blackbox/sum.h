@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/sum.h
  * Copyright (C) 2002 The LinBox group
  *
@@ -7,20 +5,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -156,15 +154,15 @@ namespace LinBox
 		}
 
 		template<typename _Tp1, typename _Tp2 = _Tp1>
-		struct rebind
-		{ typedef SumOwner<
+		struct rebind {
+			typedef SumOwner<
 			typename Blackbox1::template rebind<_Tp1>::other,
 				 typename Blackbox2::template rebind<_Tp2>::other
 				 > other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()), F);
-				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()), F);
+			void operator() (other & Ap, const Self_t& A) {
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()));
+				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()));
 			}
 
 
@@ -216,7 +214,6 @@ namespace LinBox
 	 * Adds only at apply time.
 	 * Given two black boxes A and B of the same dimensions, form a black
 	 * box representing A+B, i.e., SumOwner(A,B)x=(A+B)x=Ax+Bx
-	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 	template <class _Blackbox1, class _Blackbox2>
 	class SumOwner : public BlackboxInterface {
@@ -316,16 +313,17 @@ namespace LinBox
 		}
 
 		template<typename _Tp1, typename _Tp2 = _Tp1>
-		struct rebind
-		{ typedef SumOwner<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other;
+		struct rebind {
+			typedef SumOwner<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other;
 
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData(), F);
-				typename Blackbox2::template rebind<_Tp1> () ( Ap.getRightData(), A.getRightData(), F);
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData());
+				typename Blackbox2::template rebind<_Tp1> () ( Ap.getRightData(), A.getRightData());
 			}
 
 
 		};
+
 		template<typename _BBt1, typename _BBt2, typename Field>
 		SumOwner (const Sum<_BBt1, _BBt2> &M, const Field& F) :
 			_A_data(*(M.getLeftPtr()), F),
@@ -334,7 +332,7 @@ namespace LinBox
 			_z2(_A_data.coldim()),
 			VD(F)
 		{
-			typename Sum<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
+			typename Sum<_BBt1, _BBt2>::template rebind<Field>()(*this,M);
 		}
 
 		template<typename _BBt1, typename _BBt2, typename Field>
@@ -345,10 +343,8 @@ namespace LinBox
 			_z2(_A_data.coldim()) ,
 			VD(F)
 		{
-			typename SumOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
+			typename SumOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,M);
 		}
-
-
 
 
 		/** Retreive row dimensions of BlackBox matrix.
@@ -357,24 +353,44 @@ namespace LinBox
 		 * @return integer number of rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-		{ return _A_data.rowdim (); }
+		{
+			return _A_data.rowdim ();
+		}
 
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
 		size_t coldim (void) const
-		{ return _A_data.coldim (); }
+		{
+			return _A_data.coldim ();
+		}
 
 
-		const Field& field() const { return _A_data . field(); }
+		const Field& field() const
+		{
+			return _A_data . field();
+		}
 
 		// accessors to the blackboxes without ownership
-		const Blackbox1& getLeftData() const {return  _A_data;}
-		Blackbox1& getLeftData() {return  _A_data;}
+		const Blackbox1& getLeftData() const
+		{
+			return  _A_data;
+		}
+		Blackbox1& getLeftData()
+		{
+			return  _A_data;
+		}
 
-		const Blackbox2& getRightData() const {return  _B_data;}
-		Blackbox2& getRightData() {return  _B_data;}
+		const Blackbox2& getRightData() const
+		{
+			return  _B_data;
+		}
+
+		Blackbox2& getRightData()
+		{
+			return  _B_data;
+		}
 
 	protected:
 
@@ -392,4 +408,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_sum_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

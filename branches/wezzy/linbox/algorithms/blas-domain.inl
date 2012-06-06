@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/blas-domain.inl
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
@@ -72,7 +70,7 @@ namespace LinBox
 			linbox_check( A.rowdim() == Ainv.rowdim());
 			linbox_check( A.coldim() == Ainv.coldim());
 			int nullity;
-			FFPACK::Invert(F,A.rowdim(),A.getPointer(),A.getStride(),
+			FFPACK::Invert((typename Field::Father_t)F,A.rowdim(),A.getPointer(),A.getStride(),
 				       Ainv.getPointer(),Ainv.getStride(),nullity);
 			return nullity;
 		}
@@ -98,7 +96,7 @@ namespace LinBox
 						BlasMatrix<Field>        &A) const
 		{
 
-			return FFPACK::Rank(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+			return FFPACK::Rank((typename Field::Father_t)F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 		}
 	};
 
@@ -118,7 +116,7 @@ namespace LinBox
 							   BlasMatrix<Field>        &A) const
 		{
 
-			return FFPACK::Det(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+			return FFPACK::Det((typename Field::Father_t)F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 		}
 	};
 #endif
@@ -158,7 +156,7 @@ namespace LinBox
 			linbox_check( A.rowdim() == Ainv.rowdim());
 			linbox_check( A.coldim() == Ainv.coldim());
 			int nullity;
-			FFPACK::Invert (F, A.rowdim(), A.getPointer(), A.getStride(),
+			FFPACK::Invert ((typename Field::Father_t)F, A.rowdim(), A.getPointer(), A.getStride(),
 					Ainv.getPointer(),Ainv.getStride(),nullity);
 			return nullity;
 		}
@@ -182,7 +180,8 @@ namespace LinBox
 			    BlasMatrix<Field>   &A) const
 		{
 
-			return (unsigned int) FFPACK::Rank(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+			return (unsigned int) FFPACK::Rank((typename Field::Father_t)F,
+					A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 		}
 	};
 
@@ -202,7 +201,7 @@ namespace LinBox
 							   BlasMatrix<Field>     &A) const
 		{
 
-			return FFPACK::Det(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+			return FFPACK::Det((typename Field::Father_t)F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 		}
 	};
 
@@ -223,7 +222,7 @@ namespace LinBox
 			linbox_check( C.rowdim() == A.rowdim());
 			linbox_check( A.coldim() == B.coldim());
 			linbox_check( C.coldim() == A.coldim());
-			FFLAS::fadd (F, C.rowdim(), C.coldim(),
+			FFLAS::fadd ((typename Field::Father_t)F, C.rowdim(), C.coldim(),
 				     A.getPointer(), A.getStride(),
 				     B.getPointer(), B.getStride(),
 				     C.getPointer(), C.getStride());
@@ -241,7 +240,7 @@ namespace LinBox
 			linbox_check( A.rowdim() == B.rowdim());
 			linbox_check( A.coldim() == B.coldim());
 			for (size_t i=0; i<A.rowdim(); i++)
-				FFLAS::fcopy (F, A.coldim(),
+				FFLAS::fcopy ((typename Field::Father_t)F, A.coldim(),
 					      B.getPointer() + i*B.getStride(), 1,
 					      A.getPointer() + i*A.getStride(), 1);
 			return B;
@@ -260,7 +259,7 @@ namespace LinBox
 			linbox_check( C.rowdim() == A.rowdim());
 			linbox_check( A.coldim() == B.coldim());
 			linbox_check( C.coldim() == A.coldim());
-			FFLAS::fsub (F, C.rowdim(), C.coldim(),
+			FFLAS::fsub ((typename Field::Father_t)F, C.rowdim(), C.coldim(),
 				     A.getPointer(), A.getStride(),
 				     B.getPointer(), B.getStride(),
 				     C.getPointer(), C.getStride());
@@ -277,7 +276,7 @@ namespace LinBox
 		{
 			linbox_check( C.rowdim() == B.rowdim());
 			linbox_check( C.coldim() == B.coldim());
-			FFLAS::fsubin (F, C.rowdim(), C.coldim(),
+			FFLAS::fsubin ((typename Field::Father_t)F, C.rowdim(), C.coldim(),
 				     B.getPointer(), B.getStride(),
 				     C.getPointer(), C.getStride());
 			return C;
@@ -293,7 +292,7 @@ namespace LinBox
 		{
 			linbox_check( C.rowdim() == B.rowdim());
 			linbox_check( C.coldim() == B.coldim());
-			FFLAS::faddin (F, C.rowdim(), C.coldim(),
+			FFLAS::faddin ((typename Field::Father_t)F, C.rowdim(), C.coldim(),
 				     B.getPointer(), B.getStride(),
 				     C.getPointer(), C.getStride());
 			return C;
@@ -328,7 +327,7 @@ namespace LinBox
 			// D.write(std::cout << "Dfgem :=" ) <<','<< std::endl;
 			// A.write(std::cout << "Afgem :=" ) <<','<< std::endl;
 			// B.write(std::cout << "Bfgem :=" ) <<','<< std::endl;
-			FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), A.coldim(),
 				      alpha,
 				      A.getPointer(), A.getStride(),
@@ -355,7 +354,7 @@ namespace LinBox
 			linbox_check( C.rowdim() == A.rowdim());
 			linbox_check( C.coldim() == B.coldim());
 
-			FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), A.coldim(),
 				      alpha,
 				      A.getPointer(), A.getStride(),
@@ -390,7 +389,7 @@ namespace LinBox
 
 			D=C;
 
-			FFLAS::fgemm( F, FFLAS::FflasTrans, FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), B.rowdim(),
 				      alpha,
 				      A.getMatrix().getPointer(), A.getMatrix().getStride(),
@@ -414,7 +413,7 @@ namespace LinBox
 			linbox_check( C.rowdim() == A.getMatrix().coldim());
 			linbox_check( C.coldim() == B.coldim());
 
-			FFLAS::fgemm( F, FFLAS::FflasTrans, FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), B.rowdim(),
 				      alpha,
 				      A.getMatrix().getPointer(), A.getMatrix().getStride(),
@@ -449,7 +448,7 @@ namespace LinBox
 			D=C;
 			// linbox_check(D.getPointer() != C.getPointer());
 
-			FFLAS::fgemm( F, FFLAS::FflasTrans, FFLAS::FflasTrans,
+			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasTrans, FFLAS::FflasTrans,
 				      C.rowdim(), C.coldim(), A.getMatrix().rowdim(),
 				      alpha,
 				      A.getMatrix().getPointer(), A.getMatrix().getStride(),
@@ -472,7 +471,7 @@ namespace LinBox
 			linbox_check( C.rowdim() == A.getMatrix().coldim());
 			linbox_check( C.coldim() == B.getMatrix().rowdim());
 
-			FFLAS::fgemm( F, FFLAS::FflasTrans, FFLAS::FflasTrans,
+			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasTrans, FFLAS::FflasTrans,
 				      C.rowdim(), C.coldim(), A.getMatrix().rowdim(),
 				      alpha,
 				      A.getMatrix().getPointer(), A.getMatrix().getStride(),
@@ -505,7 +504,7 @@ namespace LinBox
 			linbox_check( D.coldim() == C.coldim());
 
 			D=C;
-			FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasTrans,
+			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasTrans,
 				      C.rowdim(), C.coldim(), A.coldim(),
 				      alpha,
 				      A.getPointer(), A.getStride(),
@@ -528,7 +527,7 @@ namespace LinBox
 			linbox_check( C.rowdim() == A.rowdim());
 			linbox_check( C.coldim() == B.getMatrix().rowdim());
 
-			FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasTrans,
+			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasTrans,
 				      C.rowdim(), C.coldim(), A.coldim(),
 				      alpha,
 				      A.getPointer(), A.getStride(),
@@ -562,7 +561,7 @@ namespace LinBox
 			linbox_check( d.size()   == c.size());
 			d=c;
 
-			FFLAS::fgemv( F, FFLAS::FflasNoTrans,
+			FFLAS::fgemv((typename Field::Father_t) F, FFLAS::FflasNoTrans,
 				      A.rowdim(), A.coldim(),
 				      alpha,
 				      A.getPointer(), A.getStride(),
@@ -583,7 +582,7 @@ namespace LinBox
 			linbox_check( A.coldim() == b.size());
 			linbox_check( A.rowdim() == c.size()); //fixed: dpritcha
 
-			FFLAS::fgemv( F, FFLAS::FflasNoTrans,
+			FFLAS::fgemv((typename Field::Father_t) F, FFLAS::FflasNoTrans,
 				      A.rowdim(), A.coldim(),
 				      alpha,
 				      A.getPointer(), A.getStride(),
@@ -612,7 +611,7 @@ namespace LinBox
 			linbox_check( d.size()   == c.size());
 			d=c;
 
-			FFLAS::fgemv( F, FFLAS::FflasTrans,
+			FFLAS::fgemv((typename Field::Father_t) F, FFLAS::FflasTrans,
 				      B.rowdim(), B.coldim(),
 				      alpha,
 				      B.getPointer(), B.getStride(),
@@ -633,7 +632,7 @@ namespace LinBox
 			linbox_check( B.rowdim() == a.size());
 			linbox_check( B.coldim() == c.size());
 
-			FFLAS::fgemv( F, FFLAS::FflasTrans,
+			FFLAS::fgemv((typename Field::Father_t) F, FFLAS::FflasTrans,
 				      B.rowdim(), B.coldim(),
 				      alpha,
 				      B.getPointer(), B.getStride(),
@@ -723,7 +722,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
 			linbox_check( A.coldim() >= B.getSize() );
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 					A.rowdim(), 0,(int) B.getOrder(),
 					A.getPointer(), A.getStride(), B.getPointer() );
 			return A;
@@ -735,7 +734,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
 			linbox_check( A.rowdim() >= B.getSize() );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 					A.coldim(), 0,(int) B.getOrder(), A.getPointer(), A.getStride(), B.getPointer() );
 			return A;
 		}
@@ -751,7 +750,7 @@ namespace LinBox
 		{
 			if (B.getMatrix().isIdentity()) return A ;
 			linbox_check( A.coldim() >= B.getMatrix().getSize() );
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans,
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasRight, FFLAS::FflasTrans,
 					A.rowdim(), 0,(int) B.getMatrix().getOrder(),
 					A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
 			return A;
@@ -762,7 +761,7 @@ namespace LinBox
 		{
 			if (B.getMatrix().isIdentity()) return A ;
 			linbox_check( A.rowdim() >= B.getMatrix().getSize() );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans,
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasLeft, FFLAS::FflasTrans,
 					A.coldim(), 0,(int) B.getMatrix().getOrder(), A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
 			return A;
 		}
@@ -846,7 +845,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
 			linbox_check( A.size() == B.getSize() );
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 					1, 0,(int) B.getOrder(), &A[0], 1, B.getPointer() );
 			return A;
 		}
@@ -857,7 +856,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
 			linbox_check( A.size() >= B.getSize() );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 					1, 0,(int) B.getOrder(), &A[0], 1, B.getPointer() );
 			return A;
 		}
@@ -873,7 +872,7 @@ namespace LinBox
 		{
 			if (B.getMatrix().isIdentity()) return A ;
 			linbox_check( A.size() >= B.getMatrix().getSize() );
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans,
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasRight, FFLAS::FflasTrans,
 					1, 0,(int) B.getMatrix().getOrder(),
 					&A[0], 1, B.getMatrix().getPointer() );
 			return A;
@@ -884,7 +883,7 @@ namespace LinBox
 		{
 			if (B.getMatrix().isIdentity()) return A ;
 			linbox_check( A.size() >= B.getMatrix().getSize() );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans,
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasLeft, FFLAS::FflasTrans,
 					1, 0,(int) B.getMatrix().getOrder(), &A[0], 1, B.getMatrix().getPointer() );
 			return A;
 		}
@@ -939,7 +938,7 @@ namespace LinBox
 			F.init(one, 1UL);
 			linbox_check( A.coldim() == B.rowdim() );
 
-			FFLAS::ftrmm( F, FFLAS::FflasRight, (FFLAS::FFLAS_UPLO) (B.getUpLo()),
+			FFLAS::ftrmm((typename Field::Father_t) F, FFLAS::FflasRight, (FFLAS::FFLAS_UPLO) (B.getUpLo()),
 				      FFLAS::FflasNoTrans,(FFLAS::FFLAS_DIAG) (B.getDiag()),
 				      A.rowdim(), A.coldim(), one,
 				      B.getPointer(), B.getStride(), A.getPointer(), A.getStride() );
@@ -953,7 +952,7 @@ namespace LinBox
 			linbox_check( B.coldim() == A.rowdim() );
 			typename Field::Element one;
 			F.init(one, 1UL);
-			FFLAS::ftrmm( F, FFLAS::FflasLeft, (FFLAS::FFLAS_UPLO)(B.getUpLo()),
+			FFLAS::ftrmm((typename Field::Father_t) F, FFLAS::FflasLeft, (FFLAS::FFLAS_UPLO)(B.getUpLo()),
 				      FFLAS::FflasNoTrans, (FFLAS::FFLAS_DIAG) (B.getDiag()),
 				      A.rowdim(), A.coldim(), one,
 				      B.getPointer(), B.getStride(),
@@ -977,7 +976,7 @@ namespace LinBox
 			F.init(one, 1UL);
 			linbox_check( B.getMatrix().coldim() == A.coldim() );
 
-			FFLAS::ftrmm( F, FFLAS::FflasRight,
+			FFLAS::ftrmm((typename Field::Father_t) F, FFLAS::FflasRight,
 				      (FFLAS::FFLAS_UPLO)(B.getMatrix().getUpLo()),
 				      FFLAS::FflasTrans,
 				      (FFLAS::FFLAS_DIAG) (B.getMatrix().getDiag()),
@@ -995,7 +994,7 @@ namespace LinBox
 			linbox_check( B.getMatrix().coldim() == A.rowdim() );
 			typename Field::Element one;
 			F.init(one, 1UL);
-			FFLAS::ftrmm( F, FFLAS::FflasLeft,
+			FFLAS::ftrmm((typename Field::Father_t) F, FFLAS::FflasLeft,
 				      (FFLAS::FFLAS_UPLO) (B.getMatrix().getUpLo()),
 				      FFLAS::FflasTrans,
 				      (FFLAS::FFLAS_DIAG) (B.getMatrix().getDiag()),
@@ -1187,7 +1186,7 @@ namespace LinBox
 			typename Field::Element _One;
 			F.init(_One,1UL);
 
-			FFLAS::ftrsm( F,
+			FFLAS::ftrsm((typename Field::Father_t) F,
 				      FFLAS::FflasLeft, (FFLAS::FFLAS_UPLO) A.getUpLo(),
 				      FFLAS::FflasNoTrans,(FFLAS::FFLAS_DIAG) A.getDiag(),
 				      A.rowdim(), B.coldim(),
@@ -1229,7 +1228,7 @@ namespace LinBox
 			typename Field::Element _One;
 			F.init(_One,1UL);
 
-			FFLAS::ftrsm( F,
+			FFLAS::ftrsm((typename Field::Father_t) F,
 				      FFLAS::FflasRight,(FFLAS::FFLAS_UPLO) A.getUpLo(),
 				      FFLAS::FflasNoTrans,(FFLAS::FFLAS_DIAG) A.getDiag() ,
 				      B.rowdim(), A.coldim(),
@@ -1275,12 +1274,12 @@ namespace LinBox
 			case LinBoxTag::Upper:
 				switch(A.getDiag()) {
 				case LinBoxTag::Unit:
-					FFLAS::ftrsv( F,
+					FFLAS::ftrsv((typename Field::Father_t) F,
 						      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
 				case LinBoxTag::NonUnit:
-					FFLAS::ftrsv( F,
+					FFLAS::ftrsv((typename Field::Father_t) F,
 						      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
@@ -1291,12 +1290,12 @@ namespace LinBox
 			case LinBoxTag::Lower:
 				switch(A.getDiag()) {
 				case LinBoxTag::Unit:
-					FFLAS::ftrsv( F,
+					FFLAS::ftrsv((typename Field::Father_t) F,
 						      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
 				case LinBoxTag::NonUnit:
-					FFLAS::ftrsv( F,
+					FFLAS::ftrsv((typename Field::Father_t) F,
 						      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
@@ -1343,12 +1342,12 @@ namespace LinBox
 			case LinBoxTag::Upper:
 				switch(A.getDiag()) {
 				case LinBoxTag::Unit:
-					FFLAS::ftrsv( F,
-						      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit,
+					FFLAS::ftrsv( (typename Field::Father_t)F,
+						      FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
 				case LinBoxTag::NonUnit:
-					FFLAS::ftrsv( F,
+					FFLAS::ftrsv((typename Field::Father_t) F,
 						      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
@@ -1359,12 +1358,12 @@ namespace LinBox
 			case LinBoxTag::Lower:
 				switch(A.getDiag()) {
 				case LinBoxTag::Unit:
-					FFLAS::ftrsv( F,
+					FFLAS::ftrsv((typename Field::Father_t) F,
 						      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
 				case LinBoxTag::NonUnit:
-					FFLAS::ftrsv( F,
+					FFLAS::ftrsv( (typename Field::Father_t)F,
 						      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
@@ -1385,7 +1384,7 @@ namespace LinBox
 	public:
 		Polynomial& operator() (const Field &F, Polynomial& P, const BlasMatrix<Field>& A) const
 		{
-			commentator.start ("Modular Dense Minpoly ", "MDMinpoly");
+			commentator().start ("Modular Dense Minpoly ", "MDMinpoly");
 
 			size_t n = A.coldim();
 			linbox_check( n == A.rowdim());
@@ -1394,18 +1393,18 @@ namespace LinBox
 			for ( size_t i=0; i<n; ++i)
 				Perm[i] = 0;
 			FFPACK::MinPoly<Field,Polynomial>( F, P, n, A.getPointer(), A.getStride(), X, n, Perm);
-			commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
+			commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
 
 			delete[] Perm;
 			delete[] X;
-			commentator.stop ("done",NULL,"MDMinpoly");
+			commentator().stop ("done",NULL,"MDMinpoly");
 			return P;
 		}
 	};
 
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
-	template <>
-#endif
+// #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
+	// template <>
+// #endif
 	template< class Field,  class ContPol >
 	class BlasMatrixDomainCharpoly< Field,  ContPol, BlasMatrix<Field> > {
 	public:
@@ -1425,4 +1424,13 @@ namespace LinBox
 } //end of namespace LinBox
 
 #endif // __LINBOX_blas_matrix_domain_INL
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

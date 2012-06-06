@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-randiter-nonzero.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
@@ -70,7 +68,7 @@ static bool testNonzeroRandom (Field &F, int iterations)
 {
 	int i;
 
-	commentator.start ("Testing nonzero random elements", "testNonzeroRandom", iterations);
+	commentator().start ("Testing nonzero random elements", "testNonzeroRandom", iterations);
 
 	bool ret = true;
 
@@ -81,26 +79,26 @@ static bool testNonzeroRandom (Field &F, int iterations)
 	NonzeroRandIter <Field> rp (F, r);
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		rp.random (x);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Element: ";
 		F.write (report, x);
 		report << endl;
 
 		if (F.isZero (x)) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Element is zero" << endl;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNonzeroRandom");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNonzeroRandom");
 
 	return ret;
 }
@@ -123,13 +121,22 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator.start("Nonzero random iterator test suite", "NonzeroRandIter");
+	commentator().start("Nonzero random iterator test suite", "NonzeroRandIter");
 
-	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator().setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	if (!testNonzeroRandom (F, iterations)) pass = false;
 
-	commentator.stop("Nonzero random iterator test suite");
+	commentator().stop("Nonzero random iterator test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

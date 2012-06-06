@@ -1,12 +1,10 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/cra-domain-omp.h
  * Copyright (C) 1999-2010 The LinBox group
  *
  * Naive parallel chinese remaindering
  * Launch NN iterations in parallel, where NN=omp_get_max_threads()
  * Then synchronization and termintation test.
- * Time-stamp: <16 Jul 10 16:59:17 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Mar 12 13:49:58 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -62,7 +60,7 @@ namespace LinBox
 		{
 			size_t NN = omp_get_max_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
-			// commentator.start ("Parallel OMP Modular iteration", "mmcrait");
+			// commentator().start ("Parallel OMP Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
 			int coprime =0;
@@ -103,12 +101,11 @@ namespace LinBox
 					++this->IterCounter;
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
-				// commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 			}
 
 			while( ! this->Builder_.terminated() ) {
 				//std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
-				size_t NN = omp_get_max_threads();
 				std::set<Integer> coprimeset;
 				while(coprimeset.size() < NN) {
 					++primeiter;
@@ -142,7 +139,7 @@ namespace LinBox
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
 			}
-			// commentator.stop ("done", NULL, "mmcrait");
+			// commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res);
 		}
@@ -153,7 +150,7 @@ namespace LinBox
 			typedef typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t ElementContainer;
 			size_t NN = omp_get_max_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
-			// commentator.start ("Parallel OMP Modular iteration", "mmcrait");
+			// commentator().start ("Parallel OMP Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
 			int coprime =0;
@@ -196,12 +193,11 @@ namespace LinBox
 					++this->IterCounter;
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
-				// commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 			}
 
 			while( ! this->Builder_.terminated() ) {
 				//std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
-				size_t NN = omp_get_max_threads();
 				std::set<Integer> coprimeset;
 				while(coprimeset.size() < NN) {
 					++primeiter;
@@ -237,7 +233,7 @@ namespace LinBox
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
 			}
-			// commentator.stop ("done", NULL, "mmcrait");
+			// commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res);
 		}
@@ -248,3 +244,12 @@ namespace LinBox
 }
 
 #endif //__LINBOX_omp_cra_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

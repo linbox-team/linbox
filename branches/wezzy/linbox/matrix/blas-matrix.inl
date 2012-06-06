@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/matrix/blas-matrix.h
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
@@ -386,7 +384,7 @@ namespace LinBox
 		_field(F),_MD(_field ),_VD(_field )
 	{
 		_use_fflas = Protected::checkBlasApply(_field, _col);
-		typename _Matrix::template rebind<_Field>()(*this,A,F);
+		typename _Matrix::template rebind<_Field>()(*this,A);
 	}
 
 	template <class _Field>
@@ -478,12 +476,10 @@ namespace LinBox
 				//file.ignore(1);
 				_field.read (file, *p);
 			}
-
 		}
 		else { // sparse file format - needs fixing
 			int i, j;
-			while (true)
-			{
+			while (true) {
 				file >> i >> j;
 				//file.ignore(1);
 				//if (! file) break;
@@ -639,7 +635,7 @@ namespace LinBox
 		return *this;
 	}
 
-#if 0
+#if 0 /*  loop rebind */
 	template <class _Field>
 	template<typename _Tp1>
 	struct BlasMatrix< _Field>::rebind {
@@ -665,15 +661,14 @@ namespace LinBox
 	struct BlasMatrix< _Field>::rebind {
 		typedef BlasMatrix<_Tp1> other;
 
-		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+		void operator() (other & Ap, const Self_t& A) {
 			typedef typename BlasMatrix<_Field>::ConstIterator ConstSelfIterator ;
 			typedef typename other::Iterator OtherIterator ;
-			OtherIterator    Ap_p;
-			ConstSelfIterator A_p;
-			Hom<Field, _Tp1> hom(A. field(), F);
-			for (A_p = A. Begin(), Ap_p = Ap.Begin();
-			     A_p != A. End(); ++ A_p, ++ Ap_p)
-				hom.image (*Ap_p, *A_p);
+			OtherIterator    Ap_i = Ap.Begin();
+			ConstSelfIterator A_i = A.Begin();
+			Hom<Field, _Tp1> hom(A. field(), Ap. field()) ;
+			for ( ; A_i != A. End(); ++ A_i, ++ Ap_i)
+				hom.image (*Ap_i, *A_i);
 		}
 	};
 #endif
@@ -1675,7 +1670,7 @@ namespace LinBox
 		//_stride ?
 		if (_use_fflas){
 			//!@bug this supposes &x[0]++ == &x[1]
-			FFLAS::fgemv( _field, FFLAS::FflasNoTrans,
+			FFLAS::fgemv((typename Field::Father_t) _field, FFLAS::FflasNoTrans,
 				      _row, _col,
 				      _field.one,
 				      _ptr, getStride(),
@@ -1703,7 +1698,7 @@ namespace LinBox
 
 		//_stride ?
 		if (_use_fflas) {
-			FFLAS::fgemv( _field, FFLAS::FflasTrans,
+			FFLAS::fgemv((typename Field::Father_t) _field, FFLAS::FflasTrans,
 				      _row, _col,
 				      _field.one,
 				      _ptr, getStride(),
@@ -1736,3 +1731,12 @@ namespace LinBox
 
 
 #endif // __LINBOX_blas_matrix_INL
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

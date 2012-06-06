@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/solutions/solve.h
  * Copyright(C) LinBox
  *  Evolved from an earlier one by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -151,13 +149,22 @@ namespace LinBox
 
 	//! @internal inplace Sparse Elimination.
 	template <class Vector, class Field>
-	Vector& solvein(Vector& x, SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>& A,
-			const Vector& b, const Method::SparseElimination& m)
+	Vector& solvein(Vector& x, SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>& A, const Vector& b, const Method::SparseElimination& m)
 	{
-		commentator.start ("Sparse Elimination Solve In Place", "sesolvein");
+		commentator().start ("Sparse Elimination Solve In Place", "sesolvein");
 		GaussDomain<Field> GD ( A.field() );
-		GD.solvein(x, A, b, true);
-		commentator.stop ("done", NULL, "sesolvein");
+		GD.solvein(x, A, b);
+		commentator().stop ("done", NULL, "sesolvein");
+		return x;
+	}
+
+	template <class Vector, class Field, class Random>
+	Vector& solvein(Vector& x, SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>& A, const Vector& b, const Method::SparseElimination& m, Random& generator)
+	{
+		commentator().start ("Sparse Elimination Solve In Place with random solution", "sesolvein");
+		GaussDomain<Field> GD ( A.field() );
+		GD.solvein(x, A, b, generator);
+		commentator().stop ("done", NULL, "sesolvein");
 		return x;
 	}
 
@@ -174,6 +181,17 @@ namespace LinBox
 		return solvein(x, SpA, b, m);
 	}
 
+	template <class Vector, class Blackbox, class Random>
+	Vector& solve(Vector& x, const Blackbox& A, const Vector& b,
+		      const Method::SparseElimination& m, Random& generator)
+	{
+		typedef typename Blackbox::Field Field;
+		typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
+		SparseBB SpA(A.field(), A.rowdim(), A.coldim());
+		MatrixHom::map(SpA, A, A.field());
+		return solvein(x, SpA, b, generator);
+	}
+
 	//! @internal specialisation for inplace SparseElimination on GF2
 	template <class Vector>
 	Vector& solvein(Vector& x,
@@ -181,10 +199,23 @@ namespace LinBox
 			const Vector& b,
 			const Method::SparseElimination& m)
 	{
-		commentator.start ("Sparse Elimination Solve In Place over GF2", "GF2sesolvein");
+		commentator().start ("Sparse Elimination Solve In Place over GF2", "GF2sesolvein");
 		GaussDomain<GF2> GD ( A.field() );
 		GD.solvein(x, A, b);
-		commentator.stop ("done", NULL, "GF2sesolvein");
+		commentator().stop ("done", NULL, "GF2sesolvein");
+		return x;
+	}
+	template <class Vector, class Random>
+	Vector& solvein(Vector& x,
+			GaussDomain<GF2>::Matrix    &A,
+			const Vector& b,
+			const Method::SparseElimination& m, 
+            Random& generator)
+	{
+		commentator().start ("Sparse Elimination Solve In Place over GF2", "GF2sesolvein");
+		GaussDomain<GF2> GD ( A.field() );
+		GD.solvein(x, A, b, generator);
+		commentator().stop ("done", NULL, "GF2sesolvein");
 		return x;
 	}
 
@@ -197,8 +228,20 @@ namespace LinBox
 	{
 		// We make a copy
 		GaussDomain<GF2>::Matrix SpA(A.field(), A.rowdim(), A.coldim());
-		MatrixHom::map(SpA, A, A.field());
+		MatrixHom::map(SpA, A );
 		return solvein(x, SpA, b, m);
+	}
+	template <class Vector, class Random>
+	Vector& solve(Vector& x,
+		      GaussDomain<GF2>::Matrix    &A,
+		      const Vector& b,
+		      const Method::SparseElimination& m,
+              Random& generator)
+	{
+		// We make a copy
+		GaussDomain<GF2>::Matrix SpA(A.field(), A.rowdim(), A.coldim());
+		MatrixHom::map(SpA, A );
+		return solvein(x, SpA, b, m, generator);
 	}
 
 	//! @internal Generic Elimination for SparseMatrix
@@ -243,7 +286,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
+		commentator().start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
 		//bool consistent = false;
 		LQUPMatrix<Field> LQUP(A);
 		//FactorizedMatrix<Field> LQUP(A);
@@ -259,7 +302,7 @@ namespace LinBox
 				*i = zero;
 		}
 #endif
-		commentator.stop ("done", NULL, "LQUP::left_solve");
+		commentator().stop ("done", NULL, "LQUP::left_solve");
 		return x;
 	}
 
@@ -302,7 +345,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Rational CRA Solve", "Rsolve");
+		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
 		RandomPrimeIterator genprime( bits);
 
@@ -321,7 +364,7 @@ namespace LinBox
 			*it_x = typename RatVector::value_type(*it_num/g, den/g);
 		}
 
-		commentator.stop ("done", NULL, "Rsolve");
+		commentator().stop ("done", NULL, "Rsolve");
 		return x;
 	}
 #endif
@@ -493,7 +536,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Padic Integer Blas-based Solving", "solving");
+		commentator().start ("Padic Integer Blas-based Solving", "solving");
 
 		typedef Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
@@ -568,7 +611,7 @@ namespace LinBox
 			break;
 		}
 
-		commentator.stop("done", NULL, "solving");
+		commentator().stop("done", NULL, "solving");
 
 		if ( status == SS_INCONSISTENT ) {
 			throw LinboxMathInconsistentSystem("Linear system is inconsistent");
@@ -590,7 +633,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Padic Integer Sparse Elimination Solving", "solving");
+		commentator().start ("Padic Integer Sparse Elimination Solving", "solving");
 
 		typedef Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
@@ -669,7 +712,7 @@ namespace LinBox
 			break;
 		}
 
-		commentator.stop("done", NULL, "solving");
+		commentator().stop("done", NULL, "solving");
 
 		if ( status == SS_INCONSISTENT ) {
 			throw LinboxMathInconsistentSystem("Linear system is inconsistent");
@@ -775,7 +818,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Integer CRA Solve", "Isolve");
+		commentator().start ("Integer CRA Solve", "Isolve");
 
 		RandomPrimeIterator genprime( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
 		//         RationalRemainder< Modular<double> > rra((double)
@@ -798,7 +841,7 @@ namespace LinBox
 			A.field().init(*it_x, *it_num);
 		A.field().init(d, den);
 
-		commentator.stop ("done", NULL, "Isolve");
+		commentator().stop ("done", NULL, "Isolve");
 		return x;
 	}
 
@@ -937,7 +980,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator.start ("Rational CRA Solve", "Rsolve");
+		commentator().start ("Rational CRA Solve", "Rsolve");
 		typename BB::Field::Element den;
 		std::vector<typename BB::Field::Element > num(A.coldim());
 		solve (num, den, A, b, tag, M);
@@ -949,7 +992,7 @@ namespace LinBox
 			A.field().convert(n, *it_num);
 			*it_x = typename RatVector::value_type(n, d);
 		}
-		commentator.stop ("done", NULL, "Rsolve");
+		commentator().stop ("done", NULL, "Rsolve");
 		return x;
 	}
 
@@ -960,7 +1003,7 @@ namespace LinBox
 	{
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-		commentator.start ("Rational CRA Solve", "Rsolve");
+		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
 		RandomPrimeIterator genprime( (unsigned) bits);
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
@@ -974,7 +1017,7 @@ namespace LinBox
 			integer g = gcd( *it_num, den);
 			*it_x = typename RatVector::value_type(*it_num/g, den/g);
 		}
-		commentator.stop ("done", NULL, "Rsolve");
+		commentator().stop ("done", NULL, "Rsolve");
 		return x;
 	}
 
@@ -985,7 +1028,7 @@ namespace LinBox
 	{
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-		commentator.start ("Rational CRA Solve", "Rsolve");
+		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
 		RandomPrimeIterator genprime((unsigned) bits);
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
@@ -999,15 +1042,69 @@ namespace LinBox
 			integer g = gcd( *it_num, den);
 			*it_x = typename RatVector::value_type(*it_num/g, den/g);
 		}
-		commentator.stop ("done", NULL, "Rsolve");
+		commentator().stop ("done", NULL, "Rsolve");
 		return x;
 	}
 
 } // LinBox
 
+#include "linbox/config-blas.h"
+#ifdef __LINBOX_HAVE_LAPACK
+#include "linbox/algorithms/numeric-solver-lapack.h"
+#include "linbox/algorithms/rational-solver-sn.h"
+namespace LinBox {
+	std::vector<PID_integer::Element>&
+	solveNum(std::vector<PID_integer::Element>& x, PID_integer::Element & d,
+		 const BlasMatrix<PID_integer>& B, const std::vector<PID_integer::Element>& b,
+		 const Method::Numerical & m)
+	{
+		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
 
+		typedef ParamFuzzy Field ;
+		typedef BlasMatrix<Field> FMatrix;
 
+		typedef LPS<FMatrix > NumSolver;
+		NumSolver numSolver;
+		bool e = false ;
+		RationalSolverSN<PID_integer, NumSolver > rsolver(PID_integer(), numSolver, e);
+
+		int status = rsolver.solve(x, d, B, b);
+		if (status)
+			throw LinBoxError("fail") ;
+		return x;
+	}
+}
+#endif
+
+namespace LinBox {
+	std::vector<PID_integer::Element>&
+	solveNum(std::vector<PID_integer::Element>& x, PID_integer::Element & d,
+		 const BlasMatrix<PID_integer>& B, const std::vector<PID_integer::Element>& b,
+		 const Method::NumericalWan & m)
+	{
+		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
+
+		typedef Modular<int32_t> ZField;
+		// typedef Modular<double> ZField;
+		PID_integer ZZ ;
+		RationalSolver<PID_integer, ZField, RandomPrimeIterator, WanTraits> rsolver(ZZ);
+
+		int status = rsolver.solve(x, d, B, b);
+		if (status)
+			throw "fail" ;
+		return x;
+	}
+}
 
 #endif // __LINBOX_solve_H
 
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

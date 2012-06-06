@@ -1,24 +1,22 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/bbchapoly.h
  * Copyright(C) LinBox
  * Written
  *  by Clement Pernet <clement.pernet@imag.fr>
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -53,6 +51,13 @@
 
 namespace LinBox
 {
+
+	/*! @internal
+	 * @ingroup charpoly
+	 * @brief  BlackBox Characteristic Polynomial
+	 * @details NO DOC
+	 * @warning rebind comes from Givaro !
+	 */
 	class BBcharpoly {
 		template<class FieldPoly, class IntPoly=FieldPoly>
 		class FactorMult ;
@@ -142,7 +147,7 @@ namespace LinBox
 				  const RingCategories::IntegerTag & tag,
 				  const Method::Blackbox           & M)
 		{
-			commentator.start ("Integer BlackBox Charpoly ", "IbbCharpoly");
+			commentator().start ("Integer BlackBox Charpoly ", "IbbCharpoly");
 
 			typename BlackBox::Field intRing = A.field();
 			typedef Modular<uint32_t> Field;
@@ -165,7 +170,7 @@ namespace LinBox
 			IntPoly intMinPoly;
 			minpoly (intMinPoly, A, M);
 			if (intMinPoly.size() == n+1){
-				commentator.stop ("done", NULL, "IbbCharpoly");
+				commentator().stop ("done", NULL, "IbbCharpoly");
 				return P = intMinPoly;
 			}
 			/* Factorization over the integers */
@@ -232,7 +237,7 @@ namespace LinBox
 				delete it_f->second->fieldP;
 				delete it_f->second;
 			}
-			commentator.stop ("done", NULL, "IbbCharpoly");
+			commentator().stop ("done", NULL, "IbbCharpoly");
 
 			return P = intCharPoly;
 		}
@@ -247,7 +252,7 @@ namespace LinBox
 				  const RingCategories::ModularTag                              & tag,
 				  const Method::Blackbox                                        & M)
 		{
-			commentator.start ("Modular BlackBox Charpoly ", "MbbCharpoly");
+			commentator().start ("Modular BlackBox Charpoly ", "MbbCharpoly");
 			typedef typename BlackBox::Field Field;
 			typedef GivPolynomialRing<Field, Givaro::Dense> PolyDom;
 			typedef typename PolyDom::Element Polynomial;
@@ -267,7 +272,7 @@ namespace LinBox
 			minpoly (minPoly, A, M);
 			//std::cerr<<"Minpoly = "<<minPoly;
 			if (minPoly.size() == n+1){
-				commentator.stop ("done", NULL, "MbbCharpoly");
+				commentator().stop ("done", NULL, "MbbCharpoly");
 				return P = minPoly;
 			}
 
@@ -331,7 +336,7 @@ namespace LinBox
 				}
 			}
 
-			commentator.stop ("done", NULL, "MbbCharpoly");
+			commentator().stop ("done", NULL, "MbbCharpoly");
 
 			return P = charPoly;
 		}
@@ -533,4 +538,13 @@ namespace LinBox
 
 #undef _LB_MAXITER
 #endif // __BBCHARPOLY_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

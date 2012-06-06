@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /*
  * examples/rank.C
  *
@@ -42,36 +40,41 @@
 #include "linbox/field/givaro.h"
 
 using namespace LinBox;
-using namespace std;
 
 /// rank or rank mod p
 int main (int argc, char **argv)
 {
-	commentator.setMaxDetailLevel (-1);
-	commentator.setMaxDepth (-1);
-	commentator.setReportStream (std::cerr);
+	commentator().setMaxDetailLevel (-1);
+	commentator().setMaxDepth (-1);
+	commentator().setReportStream (std::cerr);
 
-	if (argc < 2 || argc > 3)
-	{	cerr << "Usage: rank <matrix-file-in-supported-format> [<p>]" << endl; return -1; }
+	if (argc < 2 || argc > 3) {
+		std::cerr << "Usage: rank <matrix-file-in-supported-format> [<p>]" << std::endl;
+		return -1;
+	}
 
-	ifstream input (argv[1]);
-	if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
+	std::ifstream input (argv[1]);
+	if (!input) {
+		std::cerr << "Error opening matrix file: " << argv[1] << std::endl;
+		return -1;
+	}
 
 	long unsigned int r;
 
 	if (argc == 2) { // rank over the rational numbers.
 
-		/* We could pick a random prime and work mod that prime, But the point here
-		   is that the rank function in solutions/ handles that issue.  Our matrix here
-		   is an integer or rational matrix and our concept is that we are getting the rank of that
-		   matrix by some blackbox magic inside linbox.
-		   */
+		/* We could pick a random prime and work mod that prime, But
+		 * the point here is that the rank function in solutions/
+		 * handles that issue.  Our matrix here is an integer or
+		 * rational matrix and our concept is that we are getting the
+		 * rank of that matrix by some blackbox magic inside linbox.
+		 */
 		LinBox::GivaroRational ZZ;
 		MatrixStream<GivaroRational> ms( ZZ, input );
 		SparseMatrix<GivaroRational> A ( ms );
-		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
+		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
 
-		rank (r, A);
+		LinBox::rank (r, A);
 	}
 	if (argc == 3) { // rank mod a prime
 		/*
@@ -93,31 +96,40 @@ int main (int argc, char **argv)
 		Field F(q);
 		MatrixStream<Field> ms( F, input );
 		SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
-		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+		std::cout << "B is " << B.rowdim() << " by " << B.coldim() << std::endl;
+		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
 
 		// Using the adaptive LinBox Solution
-		rank(r,B);
+		LinBox::rank(r,B);
 
 		// using BlackBoxes
-		/*
+#if 0 /*  too bad */
 		   Method::Blackbox MBB;
 		   MBB.certificate(true);
-		   rank(r, B, MBB);
-		   */
+		   Linbox::rank(r, B, MBB);
+#endif
 
 		// using in place Sparse Elimination with linear pivoting
 
-		/*
+#if 0 /*  too bad */
 		   Method::SparseElimination SE;
 		   SE.strategy(Specifier::PIVOT_LINEAR);
 		   rankin (r, B, SE);
-		   if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
-		   */
+		   if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
+#endif
 
 
 	}
 
-	cout << "Rank is " << r << endl;
+	std::cout << "Rank is " << r << std::endl;
 	return 0;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

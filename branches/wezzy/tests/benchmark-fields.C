@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-fields.C
  * Written by Dan Roche
@@ -75,7 +73,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 {
 
 	long vectorSize = 10000;
-	float sparsity = .01;
+	float sparsity = .01f;
 	long sparsity_inv = 100;
 	int i;
 
@@ -234,7 +232,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 	// Convert timings to mops (million operations per second)
 	for( i = 0; i < 9; i++ ) {
 		double t = array[i];
-		array[i] = iter / (t > 0 ? (t * 1000000) : 0) ;
+		array[i] = (double)iter / (t > 0 ? (t * 1000000) : 0) ;
 	}
 	// use s (just in case compiler cares)
 	if (f.isZero(s)) std::cout << "zero sum" << std::endl;
@@ -383,3 +381,12 @@ int main(int argc, char** argv)
 
 	return 0;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

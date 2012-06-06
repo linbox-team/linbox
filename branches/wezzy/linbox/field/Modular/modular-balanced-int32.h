@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) 2009 LinBox
  * Written by C Pernet
  * updated to compilable condition by <brice.boyer@imag.fr>
@@ -26,7 +24,7 @@
  */
 
 
-/*! @file field/Modular/modular-balanced-int32_t.h
+/*! @file field/Modular/modular-balanced-int32.h
  * @ingroup field
  * @brief Balanced representation of <code>Z/mZ</code> over \c int32_t .
  */
@@ -79,14 +77,9 @@ namespace LinBox
 	template <>
 	class ModularBalanced<int32_t> : public FieldInterface,
 	      public FFPACK::ModularBalanced<int32_t>	{
-		      typedef FFPACK::ModularBalanced<int32_t> Father_t ;
-	protected:
-		// int32_t modulus;
-		// int32_t half_mod;
-		// int32_t mhalf_mod;
-		// double modulusinv;
 
 	public:
+		typedef FFPACK::ModularBalanced<int32_t> Father_t ;
 
 		friend class FieldAXPY<ModularBalanced<int32_t> >;
 		friend class DotProductDomain<ModularBalanced<int32_t> >;
@@ -95,31 +88,22 @@ namespace LinBox
 		typedef ModularBalancedRandIter<int32_t> RandIter;
 
 		ModularBalanced(int32_t p, int32_t e=1) :
-			FFPACK::ModularBalanced<int32_t>(p,e)
+			Father_t(p,e)
 		{}
 
+		using Father_t::cardinality ;
 		integer &cardinality (integer &c) const
 		{
 			return c = modulus;
 		}
 
+		using Father_t::characteristic ;
 		integer &characteristic (integer &c) const
 		{
 		       	return c = modulus;
 		}
 
-		unsigned long characteristic()const{return FFPACK::ModularBalanced<int32_t>::characteristic();}
-#if (__LINBOX_FFLAS_FFPACK_VERSION>10400)
-		unsigned long &characteristic(unsigned long&p)const{return FFPACK::ModularBalanced<int32_t>::characteristic(p);}
-
-		// using Father_t::characteristic(unsigned long &) ;
-		//
-		//
-#endif
-		unsigned long cardinality ()const{return FFPACK::ModularBalanced<int32_t>::cardinality();}
-		double&convert(double&x,const Element&y)const{return FFPACK::ModularBalanced<int32_t>::convert(x,y);}
-		float&convert(float&x,const Element&y)const{return FFPACK::ModularBalanced<int32_t>::convert(x,y);}
-
+		using Father_t::convert;
 		// this function converts an int to a natural number ?
 		integer &convert (integer &x, const Element &y) const
 		{
@@ -129,6 +113,7 @@ namespace LinBox
 				return x = y + modulus;
 		}
 
+		using Father_t::init ;
 		Element &init (Element &x, const integer &y) const
 		{
 			x = Element(y % (long)modulus);
@@ -339,4 +324,13 @@ namespace LinBox
 
 #include "linbox/randiter/modular-balanced.h"
 #endif //__LINBOX_modular_balanced_int32_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

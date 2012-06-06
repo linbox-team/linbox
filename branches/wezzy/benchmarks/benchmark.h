@@ -1,6 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-
 /* Copyright (C) 2011 LinBox
  * Written by BB <brice.boyer@imag.fr>
  *
@@ -72,12 +69,15 @@ namespace LinBox
 		//! What format the plot should be in?
 		struct Term
 		{
+			//! Term type
 			enum Type {
 				png  = 100, //!< png. Portable Network Graphics file.
 				pdf  = 101, //!< pdf. Portable Document Format actually, this is eps converted to pdf.
 				eps  = 102, //!< eps. Encapsulated PostScript. Cool for inclusion in LaTex files. This is the default.
 				svg  = 103, //!< sgv. Scalable Vector Graphics.
-				other= 104 //!< don't know yet...
+				tex  = 104, //!< tex. Simple tabular.
+				html = 105, //!< html. HTML table.
+				other= 106 //!< don't know yet...
 			} ;
 		};
 
@@ -85,6 +85,7 @@ namespace LinBox
 		//! What style of graphic : histogram ? graph ?
 		struct Plot
 		{
+			//! Plot type
 			enum Type {
 				histo = 200, //! histogram plot. This is the default. x ticks are evenly spaced, whatever there value and are labelled with their value.
 				graph = 201, //! standard plot. Plots y_i=f(x) with x in the first colum and y_i in ith column. x-ticks are well spaced.
@@ -165,7 +166,6 @@ namespace LinBox
 
 		/*! @brief get the title string.
 		 * @param index can be (0,1,2)
-		 * @param out the corresponding string ( title , x title , y title)
 		 */
 		std::string getRawTitle(int index=0)
 		{
@@ -296,7 +296,8 @@ namespace LinBox
 		}
 
 		/*! @brief sets the  position of the labels on the X absciss.
-		 * @param ticslegend the arguments to xtics
+		 * @param opt
+		 * @param more more stuff
 		 */
 		void setXtics ( enum Options::Type opt, std::string more="")
 		{
@@ -348,7 +349,7 @@ namespace LinBox
 
 		/*! @brief Sets the way dots are linked.
 		 * @sa LineType
-		 * @param linetype type
+		 * @param type type
 		 */
 		void setLineType( enum Line::Type type)
 		{
@@ -404,6 +405,7 @@ namespace LinBox
 
 		/*! @brief tells which columns to use.
 		 * @param col a column to use.
+		 * @param moreargs more stuff
 		 */
 		void setUsingSeries(index_t col, std::string moreargs= "")
 		{
@@ -421,6 +423,7 @@ namespace LinBox
 
 		/*! @brief adds a column to use
 		 * @param col a  column to use.
+		 * @param moreargs more stuff
 		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has already been called.
 		 */
 		void addUsingSeries(index_t col, std::string moreargs= "")
@@ -437,6 +440,7 @@ namespace LinBox
 
 		/*! @brief tells which columns to use.
 		 * @param cols a list of column to use.
+		 * @param moreargs more stuff
 		 */
 		void setUsingSeries(std::list<index_t> cols, std::string moreargs= "")
 		{
@@ -466,6 +470,7 @@ namespace LinBox
 
 		/*! @brief adds a set of columns to use.
 		 * @param cols a list of column to use.
+		 * @param moreargs more stuff
 		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has already been called.
 		 */
 		void addUsingSeries(std::list<index_t> cols, std::string moreargs= "")
@@ -494,6 +499,7 @@ namespace LinBox
 		/*! @brief tells which columns to use.
 		 * @param cols all colums between \c cols.first and \c cols.second
 		 * will be used.
+		 * @param moreargs more stuff
 		 *
 		 */
 		void setUsingSeries(std::pair<index_t,index_t> cols, std::string moreargs= "")
@@ -517,6 +523,7 @@ namespace LinBox
 		/*! @brief adds contiguous columns to use.
 		 * @param cols all colums between \c cols.first and \c
 		 * cols.second will be used.
+		 * @param moreargs more stuff
 		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has
 		 * already been called.
 		 *
@@ -641,7 +648,7 @@ namespace LinBox
 		}
 
 		/*! @brief Sets the name of a point.
-		 * @param i index for the the point
+		 * @param j index for the the point
 		 * @param nom name of the point
 		 */
 		void setAbsciName(index_t j, NAM nom)
@@ -1025,3 +1032,12 @@ namespace LinBox
 
 }
 #endif // __LINBOX_benchmark_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

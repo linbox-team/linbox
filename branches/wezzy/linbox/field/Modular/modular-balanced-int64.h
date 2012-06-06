@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) 2010 LinBox
  * Adapted by B Boyer <brice.boyer@imag.fr>
  * (from other modular-balanced* files)
@@ -78,30 +76,30 @@ namespace LinBox
 	template <>
 	class ModularBalanced<int64_t> : public FieldInterface
 	      public FFPACK::ModularBalanced<int64_t>	{
-	protected:
-		// int64_t modulus;
-		// int64_t half_mod;
-		// int64_t mhalf_mod;
-		// double modulusinv;
 
 	public:
 
 		friend class FieldAXPY<ModularBalanced<int64_t> >;
 		friend class DotProductDomain<ModularBalanced<int64_t> >;
 
+		typedef FFPACK::ModularBalanced<int64_t> Father_t ;
+
 		typedef int64_t Element;
 		typedef ModularBalancedRandIter<int64_t> RandIter;
 
+		using Father_t:: cardinality;
 		integer &cardinality (integer &c) const
 		{
 			return c = modulus;
 		}
 
+		using Father_t:: characteristic;
 		integer &characteristic (integer &c) const
 		{
 		       	return c = modulus;
 		}
 
+		using Father_t:: convert;
 		// this function converts an int to a natural number ?
 		integer &convert (integer &x, const Element &y) const
 		{
@@ -111,6 +109,7 @@ namespace LinBox
 				return x = y + modulus;
 		}
 
+		using Father_t:: init;
 		Element &init (Element &x, const integer &y) const
 		{
 			x = y % (long) (modulus);
@@ -334,4 +333,13 @@ namespace LinBox
 
 
 #endif //__LINBOX_modular_balanced_int64_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

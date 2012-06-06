@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/rational-reconstruction-base.h
  * Copyright (C) 2009 Anna Marszalek
  *
@@ -87,7 +85,7 @@ namespace LinBox
 				RecCounter = (size_t)sqrt((double)rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
 			}
 			else if (_meth == GEOMETRIC) {
-				RecCounter = (size_t)((double)log((double)rbound_)/log(2));//2^RecCounter < rbound_ <=2^(RecCounter+1)
+				RecCounter = (size_t)((double)log((double)rbound_)/log(2.));//2^RecCounter < rbound_ <=2^(RecCounter+1)
 			}
 
 		}
@@ -358,4 +356,13 @@ namespace LinBox
 #undef DEF_RR_THRESH
 #endif
 
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

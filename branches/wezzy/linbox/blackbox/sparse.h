@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/sparse.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2001-2002 Bradford Hovinen
@@ -30,20 +28,20 @@
  *	24.06.2005 : Removed using declarations
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -214,18 +212,19 @@ namespace LinBox
 		struct rebind {
 			typedef SparseMatrix<_Tp1, _Rw1> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-				// 			Ap = new other(F, A.rowdim(), A.coldim());
+			void operator() (other & Ap, const Self_t& A) {
+				// Ap = new other(F, A.rowdim(), A.coldim());
 
 				typename _Tp1::Element e;
-				Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+
+				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 				for( typename Self_t::ConstIndexedIterator
 				     indices = A.IndexedBegin();
 				     (indices != A.IndexedEnd()) ;
 				     ++indices ) {
-					//                             hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
+					// hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
 					hom. image (e, indices.value() );
-					if (!F.isZero(e))
+					if (!Ap.field().isZero(e))
 						Ap.setEntry (indices.rowIndex(),
 							     indices.colIndex(), e);
 				}
@@ -236,7 +235,7 @@ namespace LinBox
 		SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &Mat, const Field& F) :
 			SparseMatrixBase<Element, _Row> (Mat.rowdim(),Mat.coldim()),
 			_field (F), _VD (F), _MD (F), _AT (*this) {
-				typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,_Row>()(*this, Mat, F);
+				typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,_Row>()(*this, Mat);
 			}
 
 
@@ -410,9 +409,9 @@ namespace LinBox
 		}
 	};
 
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
-	template <>
-	#endif
+// #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
+	// template <>
+// #endif
 	template <class Field, class _Row>
 	struct MatrixTraits< SparseMatrix<Field, _Row> >
 	{
@@ -432,4 +431,13 @@ namespace LinBox
 #include "linbox/blackbox/sparse.inl"
 
 #endif // __LINBOX_blackbox_sparse_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

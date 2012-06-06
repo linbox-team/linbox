@@ -1,6 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* -*- mode: C++; style: linux -*- */
 /*
  * examples/dot-product.C
  *
@@ -60,8 +57,8 @@ int main (int argc, char **argv)
 	const int    q = 32749;
 
 
-	commentator.setMaxDepth (1);
-	commentator.setReportStream (std::cout);
+	commentator().setMaxDepth (1);
+	commentator().setReportStream (std::cout);
 
 	Field F (q);
 
@@ -80,20 +77,29 @@ int main (int argc, char **argv)
 	VectorDomain<Field> VD (F);
 	Field::Element res;
 
-	commentator.start ("dense/dense dot product (1)");
+	commentator().start ("dense/dense dot product (1)");
 	for (int i = 0; i < 1; i++)
 		VD.dot (res, v1, v2);
-	commentator.stop ("done");
+	commentator().stop ("done");
 
-	commentator.start ("dense/sparse sequence dot product (1000)");
+	commentator().start ("dense/sparse sequence dot product (1000)");
 	for (int i = 0; i < 1000; i++)
 		VD.dot (res, v1, v3);
-	commentator.stop ("done");
+	commentator().stop ("done");
 
-	commentator.start ("dense/sparse parallel dot product (1000)");
+	commentator().start ("dense/sparse parallel dot product (1000)");
 	for (int i = 0; i < 1000; i++)
 		VD.dot (res, v1, v4);
-	commentator.stop ("done");
+	commentator().stop ("done");
 
 	return 0;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

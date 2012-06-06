@@ -1,6 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* -*- mode: c; style: linux -*- */
 
 /* tests/test-ntl-ZZ_p.C
  * Copyright (C) 2002 William J. Turner
@@ -63,7 +60,7 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	commentator.start("NTL_ZZ_p field test suite", "NTL_ZZ_p");
+	commentator().start("NTL_ZZ_p field test suite", "NTL_ZZ_p");
 	bool pass = true;
 
 	NTL::ZZ_p::init(NTL::to_ZZ(q));
@@ -76,7 +73,7 @@ int main (int argc, char **argv)
 
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	if (!runFieldTests (F, "NTL_ZZ_p", iterations, n, false)) pass = false;
 
@@ -89,7 +86,7 @@ int main (int argc, char **argv)
 
 	// Testing big ints
 	//
-        commentator.start ("\t--Testing init/convert match");
+        commentator().start ("\t--Testing init/convert match");
         bool part_pass = true;
 	// UnparametricField<NTL::ZZ_p> G;
 	// NTL_ZZ_p G(q);
@@ -102,11 +99,20 @@ int main (int argc, char **argv)
 	G.convert(b, a);
 	if ( c != b ) {
 		part_pass = false;
-                commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "Error : " << b << " != " << c << std::endl;
+                commentator().report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "Error : " << b << " != " << c << std::endl;
 	}
-        commentator.stop(MSG_STATUS (part_pass));
+        commentator().stop(MSG_STATUS (part_pass));
         pass &= part_pass;
 
-	commentator.stop("NTL_ZZ_p field test suite");
+	commentator().stop("NTL_ZZ_p field test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

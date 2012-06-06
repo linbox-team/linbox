@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* linbox/blackbox/transpose.h
  * Copyright (C) 2001 Bradford Hovinen
@@ -78,7 +76,7 @@ namespace LinBox
 		}
 
 		/** Copy constructor.
-		 * @param M constant reference to compose black box matrix
+		 * @param Mat constant reference to compose black box matrix
 		 */
 		Transpose (const Transpose<Blackbox> &Mat) :
 			_A_ptr(Mat._A_ptr)
@@ -96,9 +94,9 @@ namespace LinBox
 		template<typename _Tp1>
 		struct rebind {
 			typedef TransposeOwner<typename Blackbox_t::template rebind<_Tp1>::other> other;
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			void operator() (other & Ap, const Self_t& A)
 			{
-				typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), *(A.getPtr()), F);
+				typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), *(A.getPtr()));
 			}
 		};
 
@@ -208,7 +206,7 @@ namespace LinBox
 		{ }
 
 		/** Copy constructor.
-		 * @param M constant reference to compose black box matrix
+		 * @param Mat constant reference to compose black box matrix
 		 */
 		TransposeOwner (const TransposeOwner<Blackbox> &Mat) :
 			_A_data(Mat.getData())
@@ -228,9 +226,9 @@ namespace LinBox
 		template<typename _Tp1>
 		struct rebind {
 			typedef TransposeOwner<typename Blackbox::template rebind<_Tp1>::other> other;
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			void operator() (other & Ap, const Self_t& A)
 			{
-				typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), A.getData(), F);
+				typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), A.getData());
 			}
 		};
 
@@ -238,13 +236,13 @@ namespace LinBox
 		TransposeOwner (const Transpose<_BB>& T, const Field& F) :
 			_A_data(*(T.getPtr()), F)
 		{
-			typename Transpose<_BB>::template rebind<Field>()(*this,T, F);
+			typename Transpose<_BB>::template rebind<Field>()(*this,T);
 		}
 		template<typename _BB, class Field>
 		TransposeOwner (const TransposeOwner<_BB>& T, const Field& F) :
 			_A_data(T.getData(), F)
 		{
-			typename TransposeOwner<_BB>::template rebind<Field>()(*this,T, F);
+			typename TransposeOwner<_BB>::template rebind<Field>()(*this,T);
 		}
 
 
@@ -316,3 +314,12 @@ namespace LinBox
 
 
 #endif // __LINBOX_transpose_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

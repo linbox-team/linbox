@@ -21,7 +21,7 @@
  */
 
 /*! \ingroup linbox
- * \defgroup benchmarks
+ * \defgroup benchmarks Benchmarks
  * @brief This directory is used to perform benchmarks on LinBox.
  * The benchmarks are meant for :
  * - the \e user to guide her through the various choices of
@@ -31,7 +31,7 @@
  * the performance of LinBox :) (regression testing purpose).
  * .
  *
- * Bencharmks can be grouped in :
+ * Benchmarks can be grouped in :
  * - basic routines (fflas/ffpack, integer operations,...) ;
  * - algorithms ;
  * - solutions.

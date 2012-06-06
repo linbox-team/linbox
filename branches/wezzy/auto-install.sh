@@ -10,11 +10,12 @@
 # TODO : manage icc/gcc
 # TODO : add gmp in givaro and use auto-install in givaro
 # TODO : use an optionnal message in die function.
+# TODO : rpath instead of LD_LIBRARY_PATH ?
 
-STABLE_FFLAS=1.4.3
-STABLE_GIVARO=3.5.0
-GIV_TAR=133
-GIV_MD5=134
+STABLE_FFLAS=1.5.0
+STABLE_GIVARO=3.6.0
+GIV_TAR=202
+GIV_MD5=203
 
 #switches
 STABLE_VAR="true"
@@ -82,7 +83,9 @@ help() {
 	echo " --prefix=MY/PATH      : install all libraries under MY/PATH."
 	echo "                         Default : /tmp/"
 	echo
-	echo " >> Libraries to seach for <<" 
+	echo " >> Libraries to search for <<" 
+	echo 
+	echo " If some library cannot be linked, don't forget to export LD_LIBRARY_PATH ! "
 	echo 
 	echo " --with-gmp=GMP/PATH   : tell where gmp is."
 	echo "                         Default : /usr, /usr/local. No argument is Default"
@@ -219,8 +222,6 @@ for i in "$@" ; do
 				if [[ "$OK" = "2" ]] ; then 
 					echo "stable=[yes/no] !" ; help ; exit -1 ; 
 				fi
-				if	[ "x$STABLE_VAR" = "xfalse" -a "$OK" = "1" ] ; then  echo "stable or not ?";          help ; exit -1; fi
-				if	[ "x$STABLE_VAR" = "xtrue" -a "$OK" = "0" ] ; then  echo "stable or not ?";          help ; exit -1; fi
 				[[ "OK" = "1" ]] && STABLE_VAR="true" || STABLE_VAR="false"
 
 				;;
@@ -337,7 +338,8 @@ MAKEPROG="make ${MAKEOPT}"
 #  create build dir  #
 ######################
 
-echo -en "${BEG}Preparing build directory..."
+#first tee creates a new log.
+echo -en "${BEG}Preparing build directory..."| tee  auto-install.log
 if [ -e build ] ; then
 	if [ ! -d build ] ; then
 		rm -rf build ;
@@ -360,10 +362,10 @@ cd build ;
 
 ### Givaro ###
 
-echo -en "${BEG}fecthing Givaro..."
+echo -en "${BEG}fetching Givaro..."| tee -a ../auto-install.log
 if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f givaro-$STABLE_GIVARO.tar.gz ] ; then
-		echo "already there"
+		echo -ne " already there!\n"
 		echo -ne "${BEG}fetching md5sum" ; 
 		[ -f givaro-$STABLE_GIVARO.tar.gz.md5sum ] && rm givaro-${STABLE_GIVARO}.tar.gz.md5sum ;
 		wget --no-check-certificate https://forge.imag.fr/frs/download.php/$GIV_MD5/givaro-$STABLE_GIVARO.tar.gz.md5sum >/dev/null 2>&1 || die
@@ -388,10 +390,10 @@ fi
 
 ### Fflas-ffpack ###
 
-echo -en "${BEG}fecthing Fflas-Ffpack..."
+echo -en "${BEG}fetching Fflas-Ffpack..."| tee -a ../auto-install.log
 if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] ; then
-		echo "already there"
+		echo -ne " already there!\n"
 		echo -ne "${BEG}fetching md5sum" ; 
 		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
 		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
@@ -423,7 +425,7 @@ fi
 
 OK=0
 if [ "$STABLE_VAR" = "true" ]; then
-	echo -en "${BEG}extracting Givaro..."
+	echo -en "${BEG}extracting Givaro..."| tee -a ../auto-install.log
 	tar xzf givaro-$STABLE_GIVARO.tar.gz  && OK=1
 	[ "$OK" = "1" ] &&  cool   || die 
 fi
@@ -432,7 +434,7 @@ fi
 
 OK=0
 if [ "$STABLE_VAR" = "true" ]; then
-	echo -en "${BEG}extracting Fflas-Ffpack..."
+	echo -en "${BEG}extracting Fflas-Ffpack..."| tee -a ../auto-install.log
 	tar xzf fflas-ffpack-$STABLE_FFLAS.tar.gz  && OK=1
 	[ "$OK" = "1" ] &&  cool   || die
 fi
@@ -450,9 +452,9 @@ else
 fi
 
 if [ -f Makefile ] ; then
-	echo -e "${BEG}cleaning Givaro..."
-	${MAKEPROG} clean || die
-	${MAKEPROG} distclean || die 
+	echo -e "${BEG}cleaning Givaro..."| tee -a ../../auto-install.log
+	${MAKEPROG} clean | tee -a ../../auto-install.log|| die
+	${MAKEPROG} distclean | tee -a ../../auto-install.log|| die 
 	# ${MAKEPROG} unistall || die
 	cool
 fi
@@ -460,42 +462,45 @@ fi
 echo -e "${BEG}configuring Givaro..."
 
 if [ "$STABLE_VAR" = "true" ]; then
-	echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"
-	echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS" > configure.givaro.exe
+	echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS "
+	echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS " > configure.givaro.exe
 	chmod +x configure.givaro.exe
-	./configure.givaro.exe
-	rm rf configure.givaro.exe
+	./configure.givaro.exe | tee -a ../../auto-install.log
+	rm -rf configure.givaro.exe
 	#./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
 else
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS" > autogen.givaro.exe
 	chmod +x autogen.givaro.exe
-	./autogen.givaro.exe
-	rm rf autogen.givaro.exe
+	./autogen.givaro.exe| tee -a ../../auto-install.log
+	rm -rf autogen.givaro.exe
 	#./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
 fi
 
-echo -e "${BEG}building Givaro..."
-echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
+echo -e "${BEG}building Givaro..."| tee -a ../../auto-install.log
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../auto-install.log
 
 if [ -n "$EXTRA" ] ; then
-	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" || die
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../auto-install.log|| die
 else
-	${MAKEPROG} || die
+	${MAKEPROG} | tee -a ../../auto-install.log|| die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
-	echo -e "${BEG}checking Fflas-Ffpack..."
-	${MAKEPROG} check || die
+	echo -e "${BEG}checking Fflas-Ffpack..."| tee -a ../../auto-install.log
+	${MAKEPROG} check | tee -a ../../auto-install.log|| die
 fi
 
-echo -e "${BEG}installing Givaro..."
-${MAKEPROG} install || die
+echo -e "${BEG}installing Givaro..."| tee -a ../../auto-install.log
+${MAKEPROG} install | tee -a ../../auto-install.log|| die
 
 #return in build
 cd ..
 
-cool
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${PREFIX_LOC}/lib
+
+
+cool| tee -a ../auto-install.log
 
 ##########################
 #  install fflas-ffpack  #
@@ -509,49 +514,49 @@ fi
 
 
 if [ -f Makefile ] ; then
-	echo -e "${BEG}cleaning Fflas-Ffpack..."
-	${MAKEPROG} clean || die
-	${MAKEPROG} distclean || die 
+	echo -e "${BEG}cleaning Fflas-Ffpack..."| tee -a ../../auto-install.log
+	${MAKEPROG} clean | tee -a ../../auto-install.log|| die
+	${MAKEPROG} distclean | tee -a ../../auto-install.log|| die 
 	# ${MAKEPROG} unistall || die
-	cool
+	cool| tee -a ../../auto-install.log
 fi
 
-echo -e "${BEG}configuring Fflas-Ffpack..."
+echo -e "${BEG}configuring Fflas-Ffpack..."| tee -a ../../auto-install.log
 
 if [ "$STABLE_VAR" = "true" ]; then
-	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
+	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"| tee -a ../../auto-install.log
 	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS" > configure.fflas.exe
 	chmod +x configure.fflas.exe
-	./configure.fflas.exe
-	rm rf configure.fflas.exe
+	./configure.fflas.exe| tee -a ../../auto-install.log
+	rm -rf configure.fflas.exe
 	#./configure  "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
 else
-	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
+	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"| tee -a ../../auto-install.log
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS" > configure.fflas.exe
 	chmod +x configure.fflas.exe
-	./configure.fflas.exe
-	rm rf configure.fflas.exe
+	./configure.fflas.exe| tee -a ../../auto-install.log
+	rm -rf configure.fflas.exe
 	#./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
 fi
 
-echo -e "${BEG}building Fflas-Ffpack..."
+echo -e "${BEG}building Fflas-Ffpack..."| tee -a ../../auto-install.log
 echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
 if [ -n "$EXTRA" ] ; then
-	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" || die
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" | tee -a ../../auto-install.log|| die
 else
-	${MAKEPROG} || die
+	${MAKEPROG} | tee -a ../../auto-install.log|| die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
-	echo -e "${BEG}checking Fflas-Ffpack..."
-	${MAKEPROG} check || die
+	echo -e "${BEG}checking Fflas-Ffpack..."| tee -a ../../auto-install.log
+	${MAKEPROG} check | tee -a ../../auto-install.log|| die
 fi
 
 
 echo -e "${BEG}installing Fflas-Ffpack..."
-${MAKEPROG} install || die
+${MAKEPROG} install | tee -a ../../auto-install.log|| die
 
-cool
+cool| tee -a ../../auto-install.log
 #return in build
 cd ..
 
@@ -563,52 +568,58 @@ cd ..
 #####################
 
 if [ -f Makefile ] ; then
-	echo -e "${BEG}cleaning LinBox..."
-	${MAKEPROG} clean || die
-	${MAKEPROG} distclean || die 
+	echo -e "${BEG}cleaning LinBox..."| tee -a ./auto-install.log
+	${MAKEPROG} clean | tee -a ./auto-install.log|| die
+	${MAKEPROG} distclean | tee -a ./auto-install.log|| die 
 	# ${MAKEPROG} unistall || die
-	cool
+	cool| tee -a ./auto-install.log
 fi
 
-echo -e "${BEG}configuring LinBox..."
+echo -e "${BEG}configuring LinBox..."| tee -a ./auto-install.log
+
+echo ""| tee -a ./auto-install.log
+echo -e "${BEG}Don't forget to run something like"| tee -a ./auto-install.log
+echo -e " *   'export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$PREFIX_LOC/lib'"| tee -a ./auto-install.log
+echo -e " * to ensure you don't get undefined symbols !"| tee -a ./auto-install.log
+echo  ""| tee -a ./auto-install.log
 
 
 GIVARO="--with-givaro=$PREFIX_LOC"
 FFLAFLAS="--with-fflas-ffpack=$PREFIX_LOC"
 
 if [ -x autogen.sh ] ;  then 
-	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"
-	./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$GIVARO" "$FFLAFLAS" "$WARNINGS" "$IML" "$SAGE" "$DRIV" || die
+	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"| tee -a ./auto-install.log
+	./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$GIVARO" "$FFLAFLAS" "$WARNINGS" "$IML" "$SAGE" "$DRIV" | tee -a ./auto-install.log|| die
 else
-	echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"
+	echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"| tee -a ./auto-install.log
 	# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS  $IML $SAGE $DRIV || die
-	./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$GIVARO" "$FFLAFLAS" "$WARNINGS" "$IML" "$SAGE" "$DRIV" || die
+	./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$GIVARO" "$FFLAFLAS" "$WARNINGS" "$IML" "$SAGE" "$DRIV" | tee -a ./auto-install.log|| die
 fi
 
-echo -e "${BEG}building LinBox..."
-echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
+echo -e "${BEG}building LinBox..."| tee -a ./auto-install.log
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ./auto-install.log
 
 if [ -n "$EXTRA" ] ; then
-	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" || die
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ./auto-install.log|| die
 else
-	${MAKEPROG} || die
+	${MAKEPROG} "LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ./auto-install.log|| die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
-	echo -e "${BEG}checking LinBox..."
-	${MAKEPROG} check || die
+	echo -e "${BEG}checking LinBox..."| tee -a auto-install.log
+	${MAKEPROG} check | tee -a auto-install.log|| die
 fi
 
-echo -e "${BEG}installing LinBox..."
-${MAKEPROG} install || die
+echo -e "${BEG}installing LinBox..."| tee -a auto-install.log
+${MAKEPROG} install | tee -a auto-install.log|| die
 
-cool
+cool| tee -a auto-install.log
 
-echo
-echo -e "${BEG}Don't forget to run something like"
-echo -e " *   'export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$PREFIX_LOC/lib'"
-echo -e " * to ensure you don't get undefined symbols !"
-echo 
-echo -e " * Happy LinBoxing ! (installed in $PREFIX_LOC)"
-echo
-cool
+echo    " " | tee -a auto-install.log
+echo -e "${BEG}Don't forget to run something like"| tee -a auto-install.log
+echo -e " *   'export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$PREFIX_LOC/lib'"| tee -a auto-install.log
+echo -e " * to ensure you don't get undefined symbols !"| tee -a auto-install.log
+echo  "" | tee -a auto-install.log
+echo -e " * Happy LinBoxing ! (installed in $PREFIX_LOC)"| tee -a auto-install.log
+echo " "| tee -a auto-install.log
+cool| tee -a auto-install.log

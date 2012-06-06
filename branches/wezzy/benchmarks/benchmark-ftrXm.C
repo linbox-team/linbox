@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* Copyright (C) 2011 LinBox
  * Written by BB <brice.boyer@imag.fr>
@@ -489,7 +487,6 @@ void bench_square( index_t min, index_t max, int step, int charac )
  * @param min min size
  * @param max max size
  * @param step step of the size between 2 benchmarks
- * @param charac characteristic of the field.
  */
 void bench_fields( index_t min, index_t max, int step )
 {
@@ -549,7 +546,6 @@ void bench_fields( index_t min, index_t max, int step )
  * @param min min size
  * @param max max size
  * @param step step of the size between 2 benchmarks
- * @param charac characteristic of the field.
  */
 void bench_blas( index_t min, index_t max, int step )
 {
@@ -603,7 +599,6 @@ void bench_blas( index_t min, index_t max, int step )
  *   .
  * @param k parameter.
  * @param charac characteristic of the field.
- * @param l small parameter (ie close to 1)
  */
 void bench_rectangular( index_t k, int charac )
 {
@@ -817,3 +812,12 @@ int main( int ac, char ** av)
 #undef _LB_DIAG
 #undef _LB_TRANS
 #undef _LB_NOTRS
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

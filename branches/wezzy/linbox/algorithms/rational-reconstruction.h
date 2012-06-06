@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /*
  * Copyright (C) 2004 Zhendong Wan, Pascal Giorgi
  *
@@ -782,7 +780,7 @@ namespace LinBox
 #endif
 #ifdef LIFTING_PROGRESS
 			Commentator lifting_commentator;
-			lifting_commentator.start("Padic Lifting","LinBox::LiftingContainer",_lcontainer.length());
+			lifting_commentator().start("Padic Lifting","LinBox::LiftingContainer",_lcontainer.length());
 #endif
 #if 0
 			Timer eval_horner,eval_horn;
@@ -793,7 +791,7 @@ namespace LinBox
 			for (size_t i=0 ; iter != _lcontainer.end() && iter.next(digit_approximation[i]);++i) {
 
 #ifdef LIFTING_PROGRESS
-				lifting_commentator.progress(i);
+				lifting_commentator().progress(i);
 #endif
 #if 0
 				eval_horn.start();
@@ -806,7 +804,7 @@ namespace LinBox
 			}
 
 #ifdef LIFTING_PROGRESS
-			lifting_commentator.stop ("Done", "Done", "LinBox::LinBox::LiftingContainer");
+			lifting_commentator().stop ("Done", "Done", "LinBox::LinBox::LiftingContainer");
 #endif
 
 			// problem occured during lifting
@@ -1736,7 +1734,7 @@ namespace LinBox
 				for (size_t i=1;i< k+1;++i){
 					Lattice.setEntry(i,i, mod );
 					_r.convert(tmp, real_approximation[bad_num_index+i-1]);
-					Lattice.setEntry(0,i,Z_NR<mpz_t>(tmp.get_mpz()));
+					Lattice.setEntry(0,i,FPLLL::Z_NR<mpz_t>(tmp.get_mpz()));
 				}
 
 
@@ -2221,4 +2219,13 @@ namespace LinBox
 
 #undef DEF_THRESH
 #endif //__LINBOX_reconstruction_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

@@ -1,25 +1,23 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/field/givaro-gfq.h
  * Copyright (C) 2005 JGD
  *
  * Time-stamp: <22 Jun 10 10:02:34 Jean-Guillaume.Dumas@imag.fr>
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -74,17 +72,17 @@ namespace LinBox
 	template< class BaseField>
 	class GivaroExtension;
 
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
-	template<>
-#endif
+// #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
+	// template<>
+// #endif
 	template< class BaseField>
 	struct ClassifyRing<GivaroExtension<BaseField> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
-	template<>
-#endif
+// #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
+	// template<>
+// #endif
 	template< class BaseField>
 	struct FieldTraits< GivaroExtension<BaseField> > {
 		typedef RingCategories::ModularTag categoryTag;
@@ -128,6 +126,8 @@ namespace LinBox
 		 *  This type is inherited from the Givaro class Extension
 		 */
 		typedef typename Givaro::Extension<GivaroField<BaseField> >::Element Element;
+
+		typedef Givaro::             Extension<GivaroField<BaseField> > Father_t;
 
 		using Extension_t::zero;
 		using Extension_t::one;
@@ -191,9 +191,9 @@ namespace LinBox
 	 *  of Givaro.
 	 *  these class allow to construct only extension field with a prime characteristic.
 	 */
-#ifndef __INTEL_COMPILER
+// #ifndef __INTEL_COMPILER
 	template<>
-#endif
+// #endif
 	class GivaroExtension<LinBox::GivaroGfq> : public Givaro::Extension< Givaro::GFqDom<int32_t> >, public FieldInterface {
 
 		typedef GivaroExtension<GivaroGfq> Self_t;
@@ -204,6 +204,7 @@ namespace LinBox
 		 *  This type is inherited from the Givaro class Extension
 		 */
 		typedef Givaro::Extension< Givaro::GFqDom<int32_t> >::Element Element;
+		typedef Givaro::Extension< Givaro::GFqDom<int32_t> > Father_t;
 
 		using Extension_t::zero;
 		using Extension_t::one;
@@ -310,4 +311,13 @@ namespace LinBox
 	}; // end Hom
 }
 #endif // __LINBOX_field_givaro_extension_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

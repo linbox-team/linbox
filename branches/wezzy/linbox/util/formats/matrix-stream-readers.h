@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *
@@ -35,7 +33,7 @@
  * a line of this macro should read: addReader( new MyReaderType() );
  *
  * Second, so those statements actually compile, the file containing each format
- * reader should be included with a line of the form: #include "my-reader.h"
+ * reader should be included with a line of the form: \verbatim #include "my-reader.h" \endverbatim
  */
 
 
@@ -53,3 +51,12 @@
 	addReader( new DenseReader<Field>() );
 
 #endif //__LINBOX_matrix_stream_readers_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

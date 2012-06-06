@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *
@@ -66,7 +64,7 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator.start("Scalar black box test suite", "Scalar");
+	commentator().start("Scalar black box test suite", "Scalar");
 
 	typedef Modular<uint32_t> Field;
 
@@ -85,6 +83,15 @@ int main (int argc, char **argv)
 	//Blackbox C (F, 100000, d); // Test a large one.
 	//pass = pass && testBlackbox(C);
 
-	commentator.stop(MSG_STATUS(pass));
+	commentator().stop(MSG_STATUS(pass));
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

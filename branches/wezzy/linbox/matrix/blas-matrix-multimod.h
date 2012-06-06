@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
 /* linbox/matrix/blas-matrix-multimod.h
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
@@ -33,7 +31,7 @@
  *
  */
 
-/*! @file matrix/blas-matrix-multimod.H
+/*! @file matrix/blas-matrix-multimod.h
  * @brief specialisation for mutlimod field.
  */
 
@@ -208,4 +206,13 @@ namespace LinBox
 } // LinBox
 
 #endif // __LINBOX_blas_matrix_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

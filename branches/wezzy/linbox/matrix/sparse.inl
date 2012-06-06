@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/matrix/sparse.inl
  * Copyright (C) 2001-2002 Bradford Hovinen
  *               1999-2001 William J Turner,
@@ -18,20 +16,20 @@
  *   - Named template argument _Row rather than Row; add a typedef to Row
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -299,7 +297,7 @@ namespace LinBox
 
 		// Avoid massive unneeded overhead in the case that this
 		// printing is disabled
-		if (commentator.isNullStream (os))
+		if (commentator().isNullStream (os))
 			return os;
 
 		switch (format) {
@@ -460,7 +458,7 @@ namespace LinBox
 
 		// Avoid massive unneeded overhead in the case that this
 		// printing is disabled
-		if (commentator.isNullStream (os))
+		if (commentator().isNullStream (os))
 			return os;
 
 		switch (format) {
@@ -973,4 +971,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_matrix_sparse_INL
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

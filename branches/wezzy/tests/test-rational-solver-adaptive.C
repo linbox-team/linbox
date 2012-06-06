@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  * Author: Zhendong Wan
@@ -56,7 +54,7 @@ bool testRandomSolve (const Ring& R,
 
 
 
-	commentator.start ("Testing Nonsingular Random Diagonal solve ", "testNonsingularRandomDiagonalSolve");
+	commentator().start ("Testing Nonsingular Random Diagonal solve ", "testNonsingularRandomDiagonalSolve");
 
 	bool ret = true;
 
@@ -75,9 +73,9 @@ bool testRandomSolve (const Ring& R,
 
 	while (stream1 && stream2) {
 
-		commentator.startIteration ((unsigned)stream1.j ());
+		commentator().startIteration ((unsigned)stream1.j ());
 
-                //ActivityState state = commentator.saveActivityState ();
+                //ActivityState state = commentator().saveActivityState ();
 
                 iter_passed = true;
 
@@ -91,7 +89,7 @@ bool testRandomSolve (const Ring& R,
 
                 stream2.next (b);
 
-                std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+                std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
                 report << "Diagonal entries: ";
                 VD.write (report, d);
                 report << endl;
@@ -115,7 +113,7 @@ bool testRandomSolve (const Ring& R,
 
 		SolverReturnStatus solveResult = rsolver.solveNonsingular(num, den, D, b); //often 5 primes are not enough
 
-		/*
+#if 0
 		typename Ring::Element lden;
 
 		R. init (lden, 1);
@@ -126,10 +124,10 @@ bool testRandomSolve (const Ring& R,
 			R. lcm (lden, lden, p->second);
 		typename Vector::iterator p_x;
 		//typename Vector::iterator p_y;
-		*/
+#endif
 
 		if (solveResult == SS_OK) {
-		/*
+#if 0
 		  for (p = answer.begin(), p_x = x. begin();
 		       p != answer.end();
 		       ++ p, ++ p_x) {
@@ -141,25 +139,25 @@ bool testRandomSolve (const Ring& R,
 		  }
 
 		  D. apply (y, x);
-		  */
+#endif
 		  D. apply (y, num);
 
 		  VD. mulin(b, den);
 
 		  if (!VD.areEqual (y, b)) {
 		    ret = iter_passed = false;
-		    commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		    commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 		      << "ERROR: Computed solution is incorrect" << endl;
 		  }
 		}
 		else {
 		    ret = iter_passed = false;
-		    commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		    commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 		      << "ERROR: Did not return OK solving status" << endl;
 		}
 
-		commentator.stop ("done");
-                commentator.progress ();
+		commentator().stop ("done");
+                commentator().progress ();
 
 	}
 
@@ -167,7 +165,7 @@ bool testRandomSolve (const Ring& R,
 	stream1.reset ();
         stream2.reset ();
 
-        commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNonsingularRandomDiagonalSolve");
+        commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNonsingularRandomDiagonalSolve");
 
 	return ret;
 }
@@ -208,4 +206,13 @@ int main(int argc, char** argv)
 	return pass ? 0 : -1;
 
 }
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

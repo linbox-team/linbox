@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/field/givaro-gfq.h
  * Copyright (C) 2002 Pascal Giorgi
  *
@@ -154,68 +152,11 @@ namespace LinBox
 
 		}
 
-		// Dan Roche 6-15-04
 		// This constructor takes a vector of ints that represent the polynomial
 		// to use (for modular arithmetic on the extension field).
-		// Mostly copied from givaro/givgfq.inl
 		GivaroGfq(const integer& p, const integer& k, const std::vector<integer>& modPoly) :
-		 Givaro::GFqDom<int32_t>(static_cast<UTT>(int32_t(p)), static_cast<UTT>(int32_t(k)))
+		 Givaro::GFqDom<int32_t>(static_cast<UTT>(int32_t(p)), static_cast<UTT>(int32_t(k)), modPoly)
 		{
-			// Givaro::GFqDom<int32_t>::init(one,1L);
-			// Givaro::GFqDom<int32_t>::init(mOne,-1L);
-			// Givaro::GFqDom<int32_t>::init(zero,0L);
-
-
-
-			//enforce that the cardinality must be <2^16, for givaro-gfq
-			int32_t pl=p;
-			for(int32_t i=1;i<k;++i) pl*=(int32_t)p;
-			if(!FieldTraits<GivaroGfq>::goodModulus(p)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus be between 2 and 2^15 and prime");
-			else if(pl>=(1<<16)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"cardinality must be < 2^16");
-
-			if( k < 2 ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be >1 if polynomial is specified");
-
-			if(modPoly.size() != (size_t)(k+1)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"Polynomial must be of order k+1");
-
-		 Givaro::GFqDom<int32_t> Zp(p,1);
-			typedef Givaro::Poly1FactorDom< Givaro::GFqDom<int32_t>, Givaro::Dense > PolDom;
-			PolDom Pdom( Zp );
-			PolDom::Element Ft, F, G, H;
-
-		 Givaro::Poly1Dom< Givaro::GFqDom<int32_t>, Givaro::Dense >::Rep tempVector(k+1);
-			for( int i = 0; i < k+1; i++ )
-				tempVector[(size_t)i] = modPoly[(size_t)i] % p;
-			Pdom.assign( F, tempVector );
-
-			Pdom.give_prim_root(G,F);
-			Pdom.assign(H,G);
-
-			typedef Givaro::Poly1PadicDom< Givaro::GFqDom<int32_t>, Givaro::Dense > PadicDom;
-			PadicDom PAD(Pdom);
-
-			PAD.eval(_log2pol[1],H);
-			for (UTT i = 2; i < _qm1; ++i) {
-				Pdom.mulin(H, G);
-				Pdom.modin(H, F);
-				PAD.eval(_log2pol[i], H);
-			}
-
-			for (UTT i = 0; i < _q; ++i)
-				_pol2log[ _log2pol[i] ] = 1;
-
-			UTT a,b,r,P=p;
-			for (UTT i = 1; i < _q; ++i) {
-				a = _log2pol[i];
-				r = a & P;
-				if (r == (P - 1))
-					b = a - r;
-				else
-					b = a + 1;
-				_plus1[i] = (int) (_pol2log[b] - _qm1);
-			}
-
-			_plus1[_qm1o2] = 0;
-
 		}
 
 		/** Characteristic.
@@ -330,4 +271,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_field_givaro_gfq_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

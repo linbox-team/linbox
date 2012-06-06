@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-givaro-zpz.C
  * Copyright (C) 2002 Pascal Giorgi
@@ -43,7 +41,7 @@
 #include "linbox/field/givaro.h"
 
 #include "test-common.h"
-#include "test-generic.h"
+#include "test-field.h"
 
 #ifndef TEST_ARCHETYPES
 #define TEST_ARCHETYPES 1
@@ -57,9 +55,9 @@ int main (int argc, char **argv)
 	static size_t n = 10000;
 	static int iterations = 10;
 	static int e;
-	static int trials = 1000;
-	static int categories = 100;
-	static int hist_level = 1;
+	static int trials = 10000;
+	static int categories = 1000;
+	static int hist_level = 10;
 
 
         static Argument args[] = {
@@ -85,10 +83,10 @@ int main (int argc, char **argv)
 	GivaroZpz< Givaro::Unsigned32> F4 (32749);
 	GivaroZpz< Givaro::Unsigned32> F5 (65521);
 
-	LinBox::commentator.start("Givaro-zpzuns test suite", "GivZpzu");
+	LinBox::commentator().start("Givaro-zpzuns test suite", "GivZpzu");
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!runFieldTests (F1, "2",     iterations, n, false)) pass = false;
 	if (!runFieldTests (F2, "10733", iterations, n, false)) pass = false;
@@ -138,6 +136,15 @@ int main (int argc, char **argv)
 #endif
 
 
-	LinBox::commentator.stop(MSG_STATUS (pass), "GivaroZpzuns test suite");
+	LinBox::commentator().stop(MSG_STATUS (pass), "GivaroZpzuns test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

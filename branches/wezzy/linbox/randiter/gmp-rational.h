@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/randiter/gmp-rational.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
@@ -76,23 +74,6 @@ namespace LinBox
 		GMPRationalRandIter (const GMPRationalRandIter& R) :
 			_field (R._field), _size (R._size), _seed (R._seed)
 		{}
-
-
-#ifdef __LINBOX_XMLENABLED
-		GMPRationalRandIter(LinBox::Reader &R) :
-			_field(R.Down(1))
-		{
-			R.Up(1);
-			if(!R.expectTagName("randiter")) return;
-			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
-
-			if(_seed == 0) _seed = time( NULL);
-
-			return;
-
-		}
-#endif
-
 
 		/// Destructor.
 		~GMPRationalRandIter()
@@ -187,4 +168,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_randiter_gmp_random_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

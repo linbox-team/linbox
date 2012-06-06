@@ -1,24 +1,22 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/doubledet.h
  * Copyright (C) LinBox
  *
  *  Written by Clement Pernet <clement.pernet@gmail.com>
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -62,7 +60,7 @@ namespace LinBox
 		size_t* P = new size_t[N];
 		size_t* Qt = new size_t[N-1];
 
-		FFPACK::LUdivine (F, FFLAS::FflasUnit, FFLAS::FflasNoTrans, N-1, N,
+		FFPACK::LUdivine ((typename Field::Father_t)F, FFLAS::FflasUnit, FFLAS::FflasNoTrans, N-1, N,
 				  A, lda, P, Qt);
 		typename Field::Element d;
 
@@ -78,14 +76,14 @@ namespace LinBox
 			F.negin(d);
 
 		// Trick: instead of Right-Trans, do Left-NoTrans in order to use inc*
-		FFPACK::applyP (F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+		FFPACK::applyP ((typename Field::Father_t)F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 				1, 0,(int) N-1, b, incb, P);
-		FFPACK::applyP (F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+		FFPACK::applyP ((typename Field::Father_t)F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 				1, 0,(int) N-1, c, incc, P);
-		FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasTrans,
+		FFLAS::ftrsv ((typename Field::Father_t)F, FFLAS::FflasUpper, FFLAS::FflasTrans,
 			      FFLAS::FflasUnit,
 			      N, A, lda, b, (int)incb);
-		FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasTrans,
+		FFLAS::ftrsv ((typename Field::Father_t)F, FFLAS::FflasUpper, FFLAS::FflasTrans,
 			      FFLAS::FflasUnit,
 			      N, A, lda, c, (int)incc);
 
@@ -331,4 +329,13 @@ namespace LinBox
 
 
 #endif // __LINBOX_doubledet_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

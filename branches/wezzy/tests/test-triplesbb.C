@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  * using generic testBlackbox  -bds
@@ -86,7 +84,7 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator.start("triplesbb black box test suite", "triplesbb");
+	commentator().start("triplesbb black box test suite", "triplesbb");
 
 	typedef Modular<uint32_t> Field;
 	typedef Field::Element Element;
@@ -131,6 +129,15 @@ int main (int argc, char **argv)
 	for(size_t i = 0; i < rowP.size(); ++i) C.addEntry(values[i], rowP[i], colP[i]);
 	pass = pass && testBlackbox(C);
 
-	commentator.stop("triplesbb black box test suite");
+	commentator().stop("triplesbb black box test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

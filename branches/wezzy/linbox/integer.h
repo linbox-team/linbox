@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright(c)'94-97 by Givaro Team
  * Copyright(c)'2000-2002 by LinBox Team
  *  ========LICENCE========
@@ -47,12 +45,15 @@
 
 //#include <cstdint>
 #include "linbox/linbox-config.h"
-
+#include "givaro/givconfig.h"
 #include "gmp++/gmp++.h"
 
 #include <cfloat> // BB : needed on some rare platforms...
 #ifdef __LINBOX_HAVE_STDINT_H
+#ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS
+// else ??
+#endif
 #include <stdint.h>
 #ifndef INT32_MAX
 #error "INT32_MAX is not defined. It should at least be defined in Givaro..."
@@ -135,6 +136,9 @@ namespace LinBox
 	    static mpz_ptr get_mpz(const integer& i) {
 	        return const_cast<InHeritsInteger&>(static_cast<const InHeritsInteger&>(i)).get_mpz();
 	    }
+	    static mpz_srcptr get_mpz_const(const integer& i) {
+	        return static_cast<const InHeritsInteger&>(i).get_mpz_const();
+	    }
         };
 
 
@@ -212,4 +216,13 @@ namespace LinBox { /*  signedness of integers */
 }
 
 #endif // __LINBOX_integer_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

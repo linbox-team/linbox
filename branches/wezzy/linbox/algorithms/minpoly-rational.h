@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/rational-reconstruction-base.h
  * Copyright (C) 2009 Anna Marszalek
  *
@@ -85,7 +83,8 @@ namespace LinBox
 			A(b), M(n), mul(p)
 		{}
 		MyRationalModularMinpoly(MyRationalModularMinpoly& C) :
-			MyRationalModularMinpoly(C.A,C.M,C.mul)
+			// MyRationalModularMinpoly(C.A,C.M,C.mul) //-std=c++11
+			A(C.A), M(C.M), mul(C.mul)
 		{}
 
 		template<typename Polynomial, typename Field>
@@ -122,7 +121,8 @@ namespace LinBox
 			A(b), M(n), vD(ve), mul(p) {}
 
 		MyIntegerModularMinpoly(MyIntegerModularMinpoly& C) :
-			MyIntegerModularMinpoly(C.A,C.M,C.vD,C.mul)
+			// MyIntegerModularMinpoly(C.A,C.M,C.vD,C.mul) //-std=c++11
+			A(C.A), M(C.M),vD(C.vD),mul(C.mul)
 		{}
 
 		template<typename Polynomial, typename Field>
@@ -168,7 +168,7 @@ namespace LinBox
 		typedef Modular<double> myModular;
 		typedef typename Rationals::Element Quotient;
 
-		commentator.start ("Rational Minpoly", "Rminpoly");
+		commentator().start ("Rational Minpoly", "Rminpoly");
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 
@@ -319,7 +319,7 @@ namespace LinBox
 			if (resi > max_res) {max_res = resi; max_i=i;}
 		}
 
-		commentator.stop ("done", NULL, "Iminpoly");
+		commentator().stop ("done", NULL, "Iminpoly");
 
 		return p;
 
@@ -328,4 +328,13 @@ namespace LinBox
 }
 
 #endif //__LINBOX_rat_minpoly_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

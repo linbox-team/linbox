@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-gf2.C
  * Copyright (C) 2003 Bradford Hovinen,
@@ -69,7 +67,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,
 			       VectorStream<Vector<GF2>::Dense> &stream2)
 {
-	LinBox::commentator.start ("Testing GF2 dot product (dense/dense)", "testDotProduct", stream1.size ());
+	LinBox::commentator().start ("Testing GF2 dot product (dense/dense)", "testDotProduct", stream1.size ());
 
 	bool ret = true;
 
@@ -96,7 +94,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration ((unsigned int)stream1.j ());
+		LinBox::commentator().startIteration ((unsigned int)stream1.j ());
 
 		stream1.next (v1);
 		stream2.next (v2);
@@ -116,7 +114,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 				*j2 = 0;
 		}
 
-		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
 		VD.write (report, v1) << std::endl;
 
@@ -139,18 +137,18 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 		if ((sigma && !rho) || (rho && !sigma)) {
 			ret = false;
-			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Dot products are not equal" << std::endl;
 		}
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		LinBox::commentator().stop ("done");
+		LinBox::commentator().progress ();
 	}
 
-	LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+	LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
 		<< "Average time for dot product: " << totaltime / (double)stream1.m () << std::endl;
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
+	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
 	stream1.reset ();
 	stream2.reset ();
@@ -162,7 +160,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,
 			       VectorStream<Vector<GF2>::Sparse> &stream2)
 {
-	LinBox::commentator.start ("Testing GF2 dot product (dense/sparse)", "testDotProduct", stream1.size ());
+	LinBox::commentator().start ("Testing GF2 dot product (dense/sparse)", "testDotProduct", stream1.size ());
 
 	bool ret = true;
 
@@ -190,7 +188,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration ((unsigned int)stream1.j ());
+		LinBox::commentator().startIteration ((unsigned int)stream1.j ());
 
 		stream1.next (v1);
 		stream2.next (v2);
@@ -208,7 +206,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 		for (i2 = v2.begin (); i2 != v2.end (); ++i2)
 			w2.push_back (std::pair<size_t, uint16_t> (*i2, 1));
 
-		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
 		VD.write (report, v1) << std::endl;
 
@@ -231,18 +229,18 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 		if ((sigma && !rho) || (rho && !sigma)) {
 			ret = false;
-			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Dot products are not equal" << std::endl;
 		}
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		LinBox::commentator().stop ("done");
+		LinBox::commentator().progress ();
 	}
 
-	LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+	LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
 		<< "Average time for dot product: " << totaltime / (double)stream1.m () << std::endl;
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
+	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
 	stream1.reset ();
 	stream2.reset ();
@@ -270,7 +268,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("GF2 field test suite", "GF2");
+	commentator().start("GF2 field test suite", "GF2");
 	bool pass = true;
 
 	GF2 F;
@@ -283,20 +281,20 @@ int main (int argc, char **argv)
 		stream4 (F, seed + 3, 0.1, n, iterations);
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	commentator.start ("Testing GF2", "main", 10);
+	commentator().start ("Testing GF2", "main", 10);
 
 
 	if ( not testField (F, "GF2"))
 		pass = false;
-	commentator.progress ();
+	commentator().progress ();
 
 /*
 	if ( not testDotProductGF2 (F, "Testing dot prod", stream1, stream3))
 		pass = false;
-	commentator.progress ();
+	commentator().progress ();
 */
 #if 0
 	FieldArchetype K(new LargeModular(101));
@@ -304,6 +302,15 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 
-	commentator.stop("GF2 field test suite");
+	commentator().stop("GF2 field test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

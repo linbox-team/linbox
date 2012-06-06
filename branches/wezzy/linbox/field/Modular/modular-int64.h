@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) 2010 LinBox
  * Adapted by B Boyer <brice.boyer@imag.fr>
  * (from other modular-balanced* files)
@@ -24,7 +22,7 @@
  * ========LICENCE========
  */
 
-/*! @file field/Modular/modular-int64_t.h
+/*! @file field/Modular/modular-int64.h
  * @ingroup field
  * @brief  representation of <code>Z/mZ</code> over \c int64_t .
  */
@@ -98,17 +96,20 @@ namespace LinBox
 	public:
 		typedef int64_t Element;
 
+		typedef FFPACK::Modular<int64_t> Father_t
 		friend class FieldAXPY<Modular<int64_t> >;
 		friend class DotProductDomain<Modular<int64_t> >;
 		friend class MVProductDomain<Modular<int64_t> >;
 
 		typedef ModularRandIter<int64_t> RandIter;
 
+		using Father_t ::cardinality;
 		inline integer &cardinality (integer &c) const
 		{
 			return c = modulus;
 		}
 
+		using Father_t ::characteristic;
 		inline integer &characteristic (integer &c) const
 		{
 			return c = modulus;
@@ -119,14 +120,16 @@ namespace LinBox
 			return modulus;
 		}
 
+		using Father_t ::convert;
 		inline integer &convert (integer &x, const Element &y) const
 		{
 			return x = y;
 		}
 
+		using Father_t ::init;
 		inline Element &init (Element &x, const integer &y) const
 		{
-			x = Element (y % modulus);
+			x = Element (y % lmodulus);
 			if (x < 0) x += modulus;
 			return x;
 		}
@@ -490,4 +493,13 @@ namespace LinBox
 #include "linbox/randiter/modular.h"
 
 #endif //__LINBOX_modular_int64_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

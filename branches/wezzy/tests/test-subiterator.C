@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *
@@ -45,18 +43,18 @@ int main(int argc, char** argv)
 	   END_OF_ARGUMENTS
    };
    parseArguments (argc, argv, args);
-	commentator.start("Subiterator test suite", "Subiterator");
+	commentator().start("Subiterator test suite", "Subiterator");
 
    bool pass = test();
-	commentator.stop("Subiterator test suite");
+	commentator().stop("Subiterator test suite");
    return pass? 0 : -1;
 }
 
 bool test()
 {
 	const char* title = "Subiterator test";
-	commentator.start(title, title, 1);
-	ostream &report = commentator.report
+	commentator().start(title, title, 1);
+	ostream &report = commentator().report
 		(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	std::vector<int> v;
 	for (int i = 1; i <= 10; ++i) v.push_back(i);
@@ -94,7 +92,16 @@ bool test()
 	if (s > t) {report << 21 << endl; res=false;}
 
 
-	commentator.stop (MSG_STATUS (res), (const char *) 0, title);
+	commentator().stop (MSG_STATUS (res), (const char *) 0, title);
 	return res;
 }
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/solutions/charpoly.h
  * Copyright (C) 2005 Clement Pernet
  *
@@ -197,12 +195,12 @@ namespace LinBox
 			      const RingCategories::IntegerTag & tag,
 			      const Method::Hybrid	       & M)
 	{
-		commentator.start ("Integer Charpoly", "Icharpoly");
+		commentator().start ("Integer Charpoly", "Icharpoly");
 		if ( (A.rowdim() < 1000) && (A.coldim() <1000) )
 			charpoly(P, A, tag, Method::BlasElimination(M) );
 		else
 			charpoly(P, A, tag, Method::Blackbox(M) );
-		commentator.stop ("done", NULL, "Icharpoly");
+		commentator().stop ("done", NULL, "Icharpoly");
 		return P;
 	}
 
@@ -233,9 +231,9 @@ namespace LinBox
 			      const RingCategories::IntegerTag & tag,
 			      const Method::Hybrid             & M)
 	{
-		commentator.start ("BlasMatrix Integer Charpoly", "Icharpoly");
+		commentator().start ("BlasMatrix Integer Charpoly", "Icharpoly");
 		charpoly(P, A, tag, Method::BlasElimination(M) );
-		commentator.stop ("done", NULL, "Icharpoly");
+		commentator().stop ("done", NULL, "Icharpoly");
 		return P;
 	}
 
@@ -247,9 +245,9 @@ namespace LinBox
 			      const RingCategories::IntegerTag & tag,
 			      const Method::Hybrid             & M)
 	{
-		commentator.start ("BlasMatrix Integer Charpoly", "Icharpoly");
+		commentator().start ("BlasMatrix Integer Charpoly", "Icharpoly");
 		charpoly(P, A, tag, Method::BlasElimination(M) );
-		commentator.stop ("done", NULL, "Icharpoly");
+		commentator().stop ("done", NULL, "Icharpoly");
 		return P;
 	}
 #endif
@@ -351,7 +349,7 @@ namespace LinBox
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
-		commentator.start ("Integer BlackBox Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
+		commentator().start ("Integer BlackBox Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 #if 0
@@ -377,7 +375,7 @@ namespace LinBox
 
 		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
 		cra.operator() (P, iteration, genprime);
-		commentator.stop ("done", NULL, "IbbCharpoly");
+		commentator().stop ("done", NULL, "IbbCharpoly");
 		return P;
 	}
 
@@ -391,7 +389,7 @@ namespace LinBox
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
-		commentator.start ("Integer Dense Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
+		commentator().start ("Integer Dense Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 #if 0
@@ -417,7 +415,7 @@ namespace LinBox
 		ChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(3UL);
 		IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
 		cra(P, iteration, genprime);
-		commentator.stop ("done", NULL, "IbbCharpoly");
+		commentator().stop ("done", NULL, "IbbCharpoly");
 		return P;
 	}
 
@@ -455,7 +453,7 @@ namespace LinBox
 	Polynomial &charpoly (Polynomial& P, const Blackbox& A,
 			      const RingCategories::RationalTag& tag, const MyMethod& M)
 	{
-		commentator.start ("Rational Charpoly", "Rcharpoly");
+		commentator().start ("Rational Charpoly", "Rcharpoly");
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 		RationalRemainder2< VarPrecEarlyMultipCRA<Modular<double> > > rra(3UL);
@@ -469,11 +467,20 @@ namespace LinBox
 		for (typename Polynomial::iterator it= P.begin(); it != P.end(); ++it, ++i)
 			A.field().init(*it, PP[i],den);
 
-		commentator.stop ("done", NULL, "Rcharpoly");
+		commentator().stop ("done", NULL, "Rcharpoly");
 
 		return P;
 	}
 
 }  // end of LinBox namespace
 #endif // __LINBOX_charpoly_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

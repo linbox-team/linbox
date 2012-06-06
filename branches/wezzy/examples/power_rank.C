@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /*
  * examples/power_rank.C
@@ -44,9 +42,9 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
-	commentator.setMaxDetailLevel (-1);
-	commentator.setMaxDepth (-1);
-	commentator.setReportStream (std::cerr);
+	commentator().setMaxDetailLevel (-1);
+	commentator().setMaxDepth (-1);
+	commentator().setReportStream (std::cerr);
 
 	if (argc < 4 || argc > 4)
 	{	cerr << "Usage: rank <matrix-file-in-supported-format> <prime> <prime-power>]" << endl; return -1; }
@@ -87,3 +85,12 @@ int main (int argc, char **argv)
 
 	return 0;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

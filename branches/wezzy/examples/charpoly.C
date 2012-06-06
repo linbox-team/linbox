@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /*
  * examples/charpoly.C
  *
@@ -94,9 +92,9 @@ std::ostream& printFactorization (std::ostream& out, const Field &F, const Facto
 
 int main (int argc, char **argv)
 {
-	commentator.setMaxDetailLevel (2);
-	commentator.setMaxDepth (2);
-	commentator.setReportStream (std::cerr);
+	commentator().setMaxDetailLevel (2);
+	commentator().setMaxDepth (2);
+	commentator().setReportStream (std::cerr);
 
 	cout<<setprecision(8);
 	cerr<<setprecision(8);
@@ -129,14 +127,14 @@ int main (int argc, char **argv)
 		char tmp;
 		cin >> tmp;
 		if (tmp == 'y' || tmp == 'Y') {
-			commentator.start("Integer Polynomial factorization by NTL", "NTLfac");
+			commentator().start("Integer Polynomial factorization by NTL", "NTLfac");
 			vector<IntPolRing::Element*> intFactors;
 			vector<unsigned long> exp;
 			IntPolRing IPD(ZZ);
 			tim.start();
 			IPD.factor (intFactors, exp, c_A);
 			tim.stop();
-			commentator.stop("done", NULL, "NTLfac");
+			commentator().stop("done", NULL, "NTLfac");
 			printFactorization(cout << intFactors.size() << " integer polynomial factors:" << endl, ZZ, intFactors, exp) << endl;
 			vector<IntPolRing::Element*>::const_iterator itf = intFactors.begin();
 			for ( ; itf != intFactors.end(); ++itf)
@@ -167,3 +165,12 @@ int main (int argc, char **argv)
 
 	return 0;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

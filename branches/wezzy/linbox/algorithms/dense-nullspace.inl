@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) 2010 LinBox
  * Written by <brice.boyer@imag.fr>
  *
@@ -126,7 +124,7 @@ namespace LinBox
 	{
 		size_t *P = new size_t[N];
 		size_t *Qt = new size_t[M];
-		size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
+		size_t R = FFPACK::LUdivine ((typename Field::Father_t)F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
 					     M, N, A, lda, P, Qt, FFPACK::FfpackLQUP);
 		delete[] Qt;
 
@@ -144,10 +142,10 @@ namespace LinBox
 		}
 
 		for (size_t i = 0 ; i < R ; ++i)					// V <- U2
-			FFLAS::fcopy (F, ker_dim, V + i * ldV, 1, A + R + i*lda, 1);
+			FFLAS::fcopy ((typename Field::Father_t)F, ker_dim, V + i * ldV, 1, A + R + i*lda, 1);
 		typename Field::Element one ;
 		F.init(one,1UL);
-		FFLAS::ftrsm(F, FFLAS::FflasLeft, FFLAS::FflasUpper,
+		FFLAS::ftrsm((typename Field::Father_t)F, FFLAS::FflasLeft, FFLAS::FflasUpper,
 			     FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
 			     R, ker_dim, one,  A, lda , V, ldV) ;			// (V = U2, A = U1) : U2 <- inv(U1)*U2 ;
 
@@ -169,7 +167,7 @@ namespace LinBox
 			 */
 
 		}
-		FFPACK::applyP(F, FFLAS::FflasLeft, FFLAS::FflasTrans,
+		FFPACK::applyP((typename Field::Father_t)F, FFLAS::FflasLeft, FFLAS::FflasTrans,
 			       ker_dim, 0, (int)R, V, ldV , P);				//  X = P^{-1}V
 		delete[] P;
 		return V;
@@ -188,7 +186,7 @@ namespace LinBox
 	{
 		size_t *P = new size_t[M];
 		size_t *Qt = new size_t[N];
-		size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasTrans,
+		size_t R = FFPACK::LUdivine ((typename Field::Father_t)F, FFLAS::FflasNonUnit, FFLAS::FflasTrans,
 					     M, N, A, lda, P, Qt, FFPACK::FfpackLQUP);
 
 
@@ -217,7 +215,7 @@ namespace LinBox
 		Zero    (F,V,ldV,0,0,R,ker_dim);
 		Identity(F,V,ldV,R,0,N,ker_dim);
 		// write_field (F, std::cout<<"V init   ="<<std::endl, V, N, ker_dim, ker_dim,true);
-		FFPACK::applyP(F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+		FFPACK::applyP((typename Field::Father_t)F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 			       ker_dim, 0, (int)R, V, ldV, Qt);			//  V = Q V
 
 		// write_field (F, std::cout<<"V reordered   ="<<std::endl, V, N,ker_dim, ker_dim,true);
@@ -239,14 +237,14 @@ namespace LinBox
 					*(A+i*N+j) = zero;
 			}
 
-			//FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, M,0,M, A, N, Q );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+			//FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasRight, FFLAS::FflasNoTrans, M,0,M, A, N, Q );
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 					N,0,(int)N, A, N, Qt );
 			for ( size_t i=0; i< N; ++i )
 				*(A+N*i+i) = one ;
 
 			//write_field (F, std::cout<<"A avant trsm   ="<<std::endl, A, M, N, N,true);
-			FFLAS::ftrsm(F, FFLAS::FflasLeft, FFLAS::FflasUpper,
+			FFLAS::ftrsm((typename Field::Father_t)F, FFLAS::FflasLeft, FFLAS::FflasUpper,
 				     FFLAS::FflasNoTrans, FFLAS::FflasUnit,
 				     N, ker_dim, one,  A, lda , V, ldV) ; // V = inv(Lower) V ;
 			//write_field (F, std::cout<<"V if after trsm  ="<<std::endl, V, N,ker_dim, ker_dim,true);
@@ -270,13 +268,13 @@ namespace LinBox
 				for (size_t j = 0 ; j<N; ++j )
 					*(L+i*N+j) = zero ;
 
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 					N,0,(int)R, L, N, Qt );
 			for ( size_t ii=0; ii< N; ++ii )
 				*(L+N*ii+ii) = one ;
 			// fin de L.
 			//write_field (F, std::cout<<"U_1="<<std::endl, L, M, M, M,true);
-			FFLAS::ftrsm(F, FFLAS::FflasLeft, FFLAS::FflasUpper,
+			FFLAS::ftrsm((typename Field::Father_t)F, FFLAS::FflasLeft, FFLAS::FflasUpper,
 				     FFLAS::FflasNoTrans, FFLAS::FflasUnit,
 				     N, ker_dim, one,  L, N , V, ldV); 	// V = inv(Lower) V ;
 
@@ -302,7 +300,7 @@ namespace LinBox
 	{
 		size_t *P = new size_t[M];
 		size_t *Qt = new size_t[N];
-		size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasTrans,
+		size_t R = FFPACK::LUdivine ((typename Field::Father_t)F, FFLAS::FflasNonUnit, FFLAS::FflasTrans,
 					     M, N, A, lda, P, Qt, FFPACK::FfpackLQUP);
 		delete[] Qt;
 
@@ -320,11 +318,11 @@ namespace LinBox
 		}
 
 		for (size_t i = 0 ; i < coker_dim ; ++i)	// copy U2 to result V before updating with U1
-			FFLAS::fcopy (F, R, V + i * ldV, 1, A + (R + i)*lda, 1);
+			FFLAS::fcopy ((typename Field::Father_t)F, R, V + i * ldV, 1, A + (R + i)*lda, 1);
 		typename Field::Element one, minus_one ;
 		F.init(one,1UL);
 		F.neg(minus_one, one);
-		FFLAS::ftrsm(F, FFLAS::FflasRight, FFLAS::FflasLower,
+		FFLAS::ftrsm((typename Field::Father_t)F, FFLAS::FflasRight, FFLAS::FflasLower,
 			     FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
 			     coker_dim, R, minus_one,  A, lda , V, ldV) ;	// V = U2  ; A = U1 ; U2 <- inv(U1)*U2 ;
 
@@ -347,7 +345,7 @@ namespace LinBox
 		}
 #endif
 
-		FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+		FFPACK::applyP((typename Field::Father_t)F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 			       coker_dim, 0,(int) R, V, ldV , P);		// X = P^{-1}V
 		delete[] P;
 		return V;
@@ -369,7 +367,7 @@ namespace LinBox
 		size_t *Q = new size_t[M];
 
 		//write_field (F, std::cout<<"A avant LU   ="<<std::endl, A, M, N, N, true);
-		size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
+		size_t R = FFPACK::LUdivine ((typename Field::Father_t)F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
 					     M, N, A, lda, P, Q, FFPACK::FfpackLQUP);
 		assert(R<=std::min(M,N));
 
@@ -401,7 +399,7 @@ namespace LinBox
 		Zero    (F,V,ldV,0,0,coker_dim,R);
 		Identity(F,V,ldV,0,R,coker_dim,M);
 		// write_field (F, std::cout<<"V init   ="<<std::endl, V, coker_dim, M, M,true);
-		FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+		FFPACK::applyP((typename Field::Father_t)F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 			       coker_dim, 0, (int)R, V, ldV, Q); // V = V  tQ
 
 		//write_field (F, std::cout<<"V reordered   ="<<std::endl, V, coker_dim, M, M,true);
@@ -413,13 +411,13 @@ namespace LinBox
 				for (size_t j = i ; j<N; ++j )
 					*(A+i*N+j) = zero;
 
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 					M,0,(int)M, A, N, Q );
 			for ( size_t i=0; i< M; ++i )
 				*(A+N*i+i) = one ;
 
 			//write_field (F, std::cout<<"A avant trsm   ="<<std::endl, A, M, N, N,true);
-			FFLAS::ftrsm(F, FFLAS::FflasRight, FFLAS::FflasLower,
+			FFLAS::ftrsm((typename Field::Father_t)F, FFLAS::FflasRight, FFLAS::FflasLower,
 				     FFLAS::FflasNoTrans, FFLAS::FflasUnit,
 				     coker_dim , M , one,  A, lda , V, ldV) ; // V = V inv(Lower) ;
 		}
@@ -433,13 +431,13 @@ namespace LinBox
 				for (; j<M; ++j )
 					*(L+i*M+j) = zero;
 			}
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 					M,0,(int)R, L, M, Q );
 			for ( size_t i=0; i< M; ++i )
 				*(L+M*i+i) = one ;
 
 			//write_field (F, std::cout<<"U_1="<<std::endl, L, M, M, M,true);
-			FFLAS::ftrsm(F, FFLAS::FflasRight, FFLAS::FflasLower,
+			FFLAS::ftrsm((typename Field::Father_t)F, FFLAS::FflasRight, FFLAS::FflasLower,
 				     FFLAS::FflasNoTrans, FFLAS::FflasUnit,
 				     coker_dim , M , one,  L, M , V, ldV) ; // V = V inv(Lower) ;
 
@@ -504,3 +502,12 @@ namespace LinBox
 } // LinBox
 
 #endif // __LINBOX_dense_nullspace_INL
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

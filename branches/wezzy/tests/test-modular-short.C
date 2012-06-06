@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-modular-short.C
  * Copyright (C) 2001, 2002 Bradford Hovinen,
@@ -67,9 +65,9 @@ int main (int argc, char **argv)
 	static int q4 = 101;
 	static size_t n = 10000;
 	static int iterations = 1;
-	static int trials = 100000;
-	static int categories = 100;
-	static int hist_level = 1;
+	static int trials = 10000;
+	static int categories = 1000;
+	static int hist_level = 10;
 
 	static Argument args[] = {
 		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q1 },
@@ -86,7 +84,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Modular<short> field test suite", "Modular<short>");
+	commentator().start("Modular<short> field test suite", "Modular<short>");
 	bool pass = true;
 
 	Modular<short> F_int (32749);
@@ -96,8 +94,8 @@ int main (int argc, char **argv)
 	Modular<short> G_int(k);
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!runFieldTests (F_int,  "Modular<short>",  iterations, n, false)) pass = false;
 	if (!testRandomIterator (F_int,  "Modular<short>", trials, categories, hist_level)) pass = false;
@@ -107,6 +105,15 @@ int main (int argc, char **argv)
 
 
 
-	commentator.stop("Modular<short> field test suite");
+	commentator().stop("Modular<short> field test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

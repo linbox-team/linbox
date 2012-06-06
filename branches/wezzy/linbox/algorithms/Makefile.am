@@ -104,22 +104,23 @@ pkgincludesub_HEADERS =                     \
     smith-form-adaptive.h                   \
     smith-form-adaptive.inl                 \
     smith-form-sparseelim-local.h           \
-    rational-reconstruction2.h              \
-    rational-solver-adaptive.h              \
-    varprec-cra-early-single.h              \
-    varprec-cra-early-multip.h              \
-    vector-fraction.h                       \
-    whisart_trace.h                         \
-    cia.h                                   \
-    lattice.h lattice.inl                   \
-    bbcharpoly.h                            \
-    charpoly-rational.h                     \
-    minpoly-integer.h                       \
-    minpoly-rational.h                      \
-    sigma-basis.h                           \
-    matpoly-mult.h                          \
-    echelon-form.h                          \
-    toeplitz-det.h                          \
+    smith-form-sparseelim-poweroftwo.h      \
+    rational-reconstruction2.h  \
+    rational-solver-adaptive.h  \
+    varprec-cra-early-single.h  \
+    varprec-cra-early-multip.h  \
+    vector-fraction.h           \
+    whisart_trace.h             \
+    cia.h                       \
+    lattice.h lattice.inl      \
+    bbcharpoly.h                \
+    charpoly-rational.h         \
+    minpoly-integer.h           \
+    minpoly-rational.h          \
+    sigma-basis.h               \
+    matpoly-mult.h              \
+    echelon-form.h              \
+    toeplitz-det.h              \
     dense-nullspace.h dense-nullspace.inl   \
     linbox-tags.h                           \
     bm-seq.h                                \

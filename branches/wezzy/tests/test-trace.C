@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-trace.C
  * Copyright (C) -bds
@@ -65,8 +63,8 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Trace test suite", "Trace");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().start("Trace test suite", "Trace");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
 	typedef Modular<int> Field;
 	typedef Field::Element Element;
@@ -97,6 +95,15 @@ int main (int argc, char **argv)
 	if (! F.areEqual(t1, t) pass = false;
 */
 
-	commentator.stop("Trace solution test suite");
+	commentator().stop("Trace solution test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

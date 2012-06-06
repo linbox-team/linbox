@@ -1,6 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* -*- mode: c; style: linux -*- */
 
 /* tests/test-ntl-lzz_p.cpp
  * Copyright (C) 2002 William J. Turner
@@ -61,7 +58,7 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	commentator.start("NTL_zz_p field test suite", "NTL_zz_p");
+	commentator().start("NTL_zz_p field test suite", "NTL_zz_p");
 	bool pass = true;
 
 	//NTL::zz_p::init(q);
@@ -73,7 +70,7 @@ int main (int argc, char **argv)
 		return false ;
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	if (!runFieldTests (F, "NTL_zz_p", iterations, n, false)) pass = false;
 
@@ -84,6 +81,15 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 
-	commentator.stop("NTL_zz_p field test suite");
+	commentator().stop("NTL_zz_p field test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

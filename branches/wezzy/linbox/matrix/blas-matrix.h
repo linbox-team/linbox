@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/matrix/blas-matrix.h
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
@@ -210,6 +208,7 @@ namespace LinBox
 		BlasMatrix () ;
 
 		/*! Allocates a new \f$ m \times n\f$ matrix.
+		 * @param F
 		 * @param m rows
 		 * @param n cols
 		 */
@@ -291,13 +290,19 @@ namespace LinBox
 		// BlasMatrix (const BlasSubmatrix<_Field>& A) ;
 
 		/*! Create a BlasMatrix from a vector of elements
-		 * @param A matrix to be copied.
+		 * @param F
+		 * @param v
+		 * @param m
+		 * @param n
 		 */
 		BlasMatrix (const _Field &F, const std::vector<Element>& v,
 			    size_t m, size_t n) ;
 
 		/*! Create a BlasMatrix from an array of elements
-		 * @param A matrix to be copied.
+		 * @param F
+		 * @param v
+		 * @param m
+		 * @param n
 		 */
 		BlasMatrix (const _Field &F, const Element * v,
 			    size_t m, size_t n) ;
@@ -455,7 +460,7 @@ namespace LinBox
 
 		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
-		 * @param format write in some format (@ref LinBoxTag::Format). Default is Maple's.
+		 * @param f write in some format (@ref LinBoxTag::Format). Default is Maple's.
 		 */
 		std::ostream &write (std::ostream &os,
 				     enum LinBoxTag::Format f = LinBoxTag::FormatMaple) const;
@@ -660,9 +665,9 @@ namespace LinBox
 	};
 
 	/*! Write a matrix to a stream.
-	 * The C++ way using <code>operator<<</code>
+	 * The \c C++ way using <code>operator<<</code>
 	 * @param o output stream
-	 * @param M matrix to write.
+	 * @param Mat matrix to write.
 	 */
 	template<class T>
 	std::ostream& operator<< (std::ostream & o, const BlasMatrix<T> & Mat)
@@ -720,7 +725,7 @@ namespace LinBox
 		/** Constructor from an existing @ref BlasMatrix and dimensions.
 		 * \param M Pointer to @ref BlasMatrix of which to construct submatrix
 		 * \param rowbeg Starting row
-		 * \param colgeb Starting column
+		 * \param colbeg Starting column
 		 * \param Rowdim Row dimension
 		 * \param Coldim Column dimension
 		 */
@@ -730,8 +735,8 @@ namespace LinBox
 				size_t Rowdim,
 				size_t Coldim);
 
-		/** Constructor from an existing @ref DenseMatrixBase
-		 * \param M Pointer to @ref DenseMatrixBase of which to construct submatrix
+		/** Constructor from an existing @ref BlasMatrix
+		 * \param M Pointer to @ref BlasMatrix of which to construct submatrix
 		 */
 		BlasSubmatrix (const BlasMatrix<_Field> &M);
 
@@ -768,9 +773,7 @@ namespace LinBox
 		BlasSubmatrix &operator = (const BlasSubmatrix<_Field> &SM);
 
 		template<typename _Tp1>
-		struct rebind {
-			typedef BlasSubmatrix<typename _Tp1::Element> other;
-		};
+		struct rebind ;
 
 		//////////////////
 		//  DIMENSIONS  //
@@ -798,7 +801,7 @@ namespace LinBox
 
 		/** Read the matrix from an input stream.
 		 * @param file Input stream from which to read
-		 * @param field
+		 * @bug reading a submatrix should not be allowed !!
 		 */
 		// template<class Field>
 		std::istream& read (std::istream &file/*, const Field& field*/);
@@ -806,7 +809,7 @@ namespace LinBox
 
 		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
-		 * @param format write in some format (@ref LinBoxTag::Format). Default is Maple's.
+		 * @param f write in some format (@ref LinBoxTag::Format). Default is Maple's.
 		 */
 		std::ostream &write (std::ostream &os,
 				     enum LinBoxTag::Format f = LinBoxTag::FormatMaple) const;
@@ -941,7 +944,7 @@ namespace LinBox
 			//_stride ?
 			if (_Mat->_use_fflas){
 				//!@bug this supposes &x[0]++ == &x[1]
-				FFLAS::fgemv( _Mat->_field, FFLAS::FflasNoTrans,
+				FFLAS::fgemv((typename Field::Father_t) _Mat->_field, FFLAS::FflasNoTrans,
 					      _row, _col,
 					      _Mat->_field.one,
 					      _Mat->_ptr, getStride(),
@@ -968,7 +971,7 @@ namespace LinBox
 
 			//_stride ?
 			if (_Mat->_use_fflas) {
-				FFLAS::fgemv( _Mat->_field, FFLAS::FflasTrans,
+				FFLAS::fgemv((typename Field::Father_t) _Mat->_field, FFLAS::FflasTrans,
 					      _row, _col,
 					      _Mat->_field.one,
 					      _Mat->_ptr, getStride(),
@@ -986,6 +989,8 @@ namespace LinBox
 			return y;
 		}
 
+		const _Field& field() const { return _Mat->field() ;}
+		_Field & field() { return _Mat->field(); }
 	};
 
 	template <class _Field>
@@ -1003,7 +1008,7 @@ namespace LinBox
 	/*! Write a matrix to a stream.
 	 * The C++ way using <code>operator<<</code>
 	 * @param o output stream
-	 * @param M matrix to write.
+	 * @param Mat matrix to write.
 	 */
 	template<class T>
 	std::ostream& operator<< (std::ostream & o, const BlasSubmatrix<T> & Mat)
@@ -1032,6 +1037,7 @@ namespace LinBox
 
 
 		/*! Constructor for a new \c TriangularBlasMatrix.
+		 * @param F
 		 * @param m rows
 		 * @param n cols
 		 * @param y (non)unit diagonal
@@ -1098,6 +1104,7 @@ namespace LinBox
 	public:
 		typedef size_t Element;
 	public:
+		typedef indexDomain Father_t;
 		indexDomain() {};
 		template <class ANY>
 		size_t init(size_t& dst, const ANY& src) const {
@@ -1122,7 +1129,7 @@ namespace LinBox
 	public:
 
 		/*! NO DOC
-		 * @param M
+		 * @param Mat
 		 */
 		TransposedBlasMatrix ( Matrix& Mat ) :
 			_Mat(Mat)
@@ -1174,4 +1181,13 @@ namespace LinBox
 #include "blas-triangularmatrix.inl"
 
 #endif // __LINBOX_blas_matrix_H
+
+
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

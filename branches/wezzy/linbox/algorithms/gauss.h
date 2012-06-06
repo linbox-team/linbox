@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/gauss.h
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
@@ -185,16 +183,18 @@ namespace LinBox
 				      unsigned long Nj) const;
 
 		template <class Matrix, class Perm, class Vector1, class Vector2>
-		Vector1& solve(Vector1& x, unsigned long rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b, bool randomsol=false)  const;
-
-		template <class Matrix, class Perm, class Vector1, class Vector2>
 		Vector1& solve(Vector1& x, Vector1& w, unsigned long rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const;
 
 
 		template <class Matrix, class Vector1, class Vector2>
 		Vector1& solvein(Vector1	&x,
 				 Matrix         &A,
-				 const Vector2	&b, bool randomsol=false)  const;
+				 const Vector2	&b)  const;
+
+		template <class Matrix, class Vector1, class Vector2, class Random>
+		Vector1& solvein(Vector1	&x,
+				 Matrix         &A,
+				 const Vector2	&b, Random& generator)  const;
 
 
 		template <class Matrix, class Perm, class Block>
@@ -361,3 +361,12 @@ Using : FindPivot and LU
 #include "linbox/algorithms/gauss/gauss-det.inl"
 
 #endif // __LINBOX_gauss_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

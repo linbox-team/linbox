@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/butterfly.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -24,20 +22,20 @@
  *
  * -----------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -148,11 +146,10 @@ namespace LinBox
 		OutVector& applyTranspose (OutVector& y, const InVector& x) const;
 
 		template<typename _Tp1, typename _Sw1 = typename Switch::template rebind<_Tp1>::other>
-		struct rebind
-		{
+		struct rebind {
 			typedef Butterfly<_Tp1, _Sw1> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A) {
 				//             other LAp(F,A._n);
 				Ap.n_vec() = A.n_vec();
 				Ap.l_vec() = A.l_vec();
@@ -162,7 +159,7 @@ namespace LinBox
 
 				for( ; sit != A.switchesEnd(); ++sit) {
 					_Sw1 newsw;
-					typename Switch::template rebind<_Tp1>() (newsw, *sit, F, A._field);
+					typename Switch::template rebind<_Tp1>() (newsw, *sit, Ap.field(), A._field);
 					Ap.switches().push_back( newsw );
 				}
 				//             Ap = new other(LAp);
@@ -173,7 +170,7 @@ namespace LinBox
 		Butterfly (const Butterfly<_Tp1,_Sw1>& B, const Field &F) :
 			_field (F), _VD (F), _n (B.rowdim())
 		{
-			typename Butterfly<_Tp1,_Sw1>::template rebind<Field>() (*this, B, F);
+			typename Butterfly<_Tp1,_Sw1>::template rebind<Field>() (*this, B);
 		}
 
 
@@ -391,9 +388,9 @@ namespace LinBox
 	{
 		size_t n = x.size ();
 
-		commentator.start ("Setting butterfly switches", "setButterfly");
+		commentator().start ("Setting butterfly switches", "setButterfly");
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 		report << "Called set switches with vector of size " << n
 		<< " and offset " << j << std::endl;
@@ -401,14 +398,14 @@ namespace LinBox
 		// return empty vector if zero or one elements in x because
 		// no switching will be done.
 		if (x.size () <= 1) {
-			commentator.indent (report);
+			commentator().indent (report);
 			report << "No switches needed. Returning with empty vector." << std::endl;
 
-			commentator.stop ("done");
+			commentator().stop ("done");
 			return std::vector<bool> ();
 		}
 
-		commentator.indent (report);
+		commentator().indent (report);
 		report << "Counting the number of switches that exist." << std::endl;
 
 		// break inputs into groups of size powers of 2.
@@ -420,7 +417,7 @@ namespace LinBox
 		     n_p != 0;
 		     value >>= 1, l_p++, n_p <<= 1)
 		{
-			commentator.indent (report);
+			commentator().indent (report);
 			report << "  looping at value = " << value
 			<< ", l_p = " << l_p
 			<< ", n_p = " << n_p << std::endl;
@@ -429,7 +426,7 @@ namespace LinBox
 				l_vec.push_back (l_p);
 				n_vec.push_back (n_p);
 
-				commentator.indent (report);
+				commentator().indent (report);
 				report << "    inserted value = " << value
 				<< ", l_p = " << l_p
 				<< ", n_p = " << n_p << std::endl;
@@ -446,18 +443,18 @@ namespace LinBox
 			for (size_t jj = 0; jj <= ii; jj++)
 				s += n_vec[jj];
 
-		commentator.indent (report);
+		commentator().indent (report);
 		report << "There are a total of " << s << " switches" << std::endl;
 
 		// Set largest power of 2 in decomposition of n = x.size ()
 		size_t n_p (*n_vec.rbegin ());
 
-		commentator.indent (report);
+		commentator().indent (report);
 		report << "Found largest power of 2 in decomposition of " << n
 		<< " as n_p = " << n_p << std::endl;
 
 		if ( (n != n_p) && (j != 0) ) {
-			commentator.indent (report);
+			commentator().indent (report);
 			report << "Non-zero offset " << j
 			<< " used with non-power size."
 			<< "Offset reset to zero." << std::endl;
@@ -470,7 +467,7 @@ namespace LinBox
 		if (n == n_p) {
 			n_p /= 2;	  // >> is not portable!
 
-			commentator.indent (report);
+			commentator().indent (report);
 			report << "n = " << n << " is a power of two.  "
 			<< "Resetting n_p to be half of n: n_p = " << n_p << std::endl;
 		}
@@ -491,7 +488,7 @@ namespace LinBox
 		     iter++)
 			if (*iter) r++;
 
-		commentator.indent (report);
+		commentator().indent (report);
 		report << "The vector x will be broken into two sub-vectors,"
 		<< "x_1 = x[0,...," << n - n_p - 1 << "] and x_2 = x["
 		<< n - n_p << ",...," << n - 1 << "]."
@@ -503,19 +500,19 @@ namespace LinBox
 		<< ") = [" << j << "," << j + r - 1<< "]." << std::endl;
 
 		if (r == 0) {
-			commentator.indent (report);
+			commentator().indent (report);
 			report << "There are no true Elements in x, so the recursion is"
 			<< "being broken and a vector of false flags returned." << std::endl;
 
-			commentator.stop ("done");
+			commentator().stop ("done");
 			return std::vector<bool> (s, false);
 		}
 		else if (r == n) {
-			commentator.indent (report);
+			commentator().indent (report);
 			report << "There are no false Elements in x, so the recursion is"
 			<< "being broken and a vector of false flags returned." << std::endl;
 
-			commentator.stop ("done");
+			commentator().stop ("done");
 			return std::vector<bool> (s, false);
 		}
 
@@ -543,7 +540,7 @@ namespace LinBox
 
 		size_t s_2 = 0;
 
-		if (commentator.isPrinted (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) {
+		if (commentator().isPrinted (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) {
 			if (j + r < n - n_p)
 				s_2 = 0;
 			else {
@@ -561,7 +558,7 @@ namespace LinBox
 
 		size_t s_3 = ((j + r) > n) ? j + r - n : 0;
 
-		commentator.indent (report);
+		commentator().indent (report);
 		report << "The number of Elements in each of the three blocks of "
 		<< "true Elements in the end result are"
 		<< "s_1 = " << s_1
@@ -573,12 +570,12 @@ namespace LinBox
 		std::vector<bool> y_1, y_2, y_3 = std::vector<bool> (n - n_p, false);
 
 		if ((s_1 + s_3) == r_1) {
-			commentator.indent (report);
+			commentator().indent (report);
 			report << "Case I: s_1 + s_3 == r_1 and s_2 == r - r_1."
 			<< "No Elements are moved between the two sub-vectors." << std::endl;
 
 			if (j < (n - n_p)) {
-				commentator.indent (report);
+				commentator().indent (report);
 				report << "  A: j < (n - n_p).  j_1 = j = " << j << ", j_2 = 0";
 
 				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (n - n_p)), j);
@@ -586,7 +583,7 @@ namespace LinBox
 
 			}
 			else {
-				commentator.indent (report);
+				commentator().indent (report);
 				report << "  A: j >= (n - n_p).  j_1 = 0, j_2 = j - (n - n_p) = "
 				<< j - (n - n_p) << std::endl;
 
@@ -597,14 +594,14 @@ namespace LinBox
 			}
 		}
 		else if ((s_1 + s_3) > r_1) {
-			commentator.indent (report);
+			commentator().indent (report);
 			report << "Case II: s_1 + s_3 > r_1 and s_2 < r - r_1."
 			<< "Elements are moved from the right sub-vector to the left." << std::endl;
 
 			// This means that s_2 < n_p, so either s_1 = 0 or s_3 = 0 (or both).
 
 			if (j < (n - n_p)) {
-				commentator.indent (report);
+				commentator().indent (report);
 				report << "  A: j < (n - n_p).  j_1 = j, j_2 = 2*n_p + j + r_1 - n = "
 				<< 2*n_p + j + r_1 - n << std::endl;
 
@@ -619,7 +616,7 @@ namespace LinBox
 					*iter = true;
 			}
 			else {
-				commentator.indent (report);
+				commentator().indent (report);
 				report << "  A: j >= (n - n_p).  j_1 = j + r - n - r_1 = "
 				<< j + r - n - r_1 << ", j_2 = j - (n - n_p) = "
 				<< j - (n - n_p) << std::endl;
@@ -637,7 +634,7 @@ namespace LinBox
 			}
 		}
 		else if ((s_1 + s_3) < r_1) {
-			commentator.indent (report);
+			commentator().indent (report);
 			report << "Case III: s_1 + s_3 < r_1 and s_2 > r - r_1."
 			<< "Elements are moved from the left sub-vector to the right." << std::endl;
 
@@ -646,7 +643,7 @@ namespace LinBox
 			// reason, this case is not considered when n != 2*n_p (when j = 0).
 
 			if (j < (n - n_p)) {
-				commentator.indent (report);
+				commentator().indent (report);
 				report << "  A: j < (n - n_p).  j_1 = j = " << j
 				<< ", j_2 = j + r_1 - n + n_p = " << j + r_1 - n + n_p << std::endl;
 				// In this case, s_1 > 0, so s_3 = 0, and wrap-around cannot occur.
@@ -660,7 +657,7 @@ namespace LinBox
 					*iter = true;
 			}
 			else {
-				commentator.indent (report);
+				commentator().indent (report);
 				report << "  A: j >= (n - n_p).  j_1 = j + r - n_p - r_1 = "
 				<< j + r - n_p - r_1 << ", j_2 = j - (n - n_p) = "
 				<< j - (n - n_p) << std::endl;
@@ -683,7 +680,7 @@ namespace LinBox
 		y.insert (y.end (), y_2.begin (), y_2.end ());
 		y.insert (y.end (), y_3.begin (), y_3.end ());
 
-		commentator.indent (report);
+		commentator().indent (report);
 		report << "The output vector for n = " << n << " has " << y.size ()
 		<< " entries."
 		<< "  " << y_1.size () << " from the first sub-vector"
@@ -693,14 +690,14 @@ namespace LinBox
 		<< "-------------------------- " << std::endl;
 
 		for (size_t i = 0; i < y.size (); i++) {
-			commentator.indent (report);
+			commentator().indent (report);
 			report << "  " << i << ": " << y[i] << std::endl;
 		}
 
-		commentator.indent (report);
+		commentator().indent (report);
 		report << "-------------------------- " << std::endl;
 
-		commentator.stop ("done");
+		commentator().stop ("done");
 
 		return y;
 
@@ -710,4 +707,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_butterfly_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

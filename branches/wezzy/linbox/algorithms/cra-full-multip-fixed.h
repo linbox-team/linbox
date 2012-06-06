@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) 2010 LinBox
  * Written by <Jean-Guillaume.Dumas@imag.fr>
  *
@@ -88,7 +86,8 @@ namespace LinBox
 		/*! Constructor.
 		 * @param p is a pair such that
 		 * - \c p.first is the size of a residue (ie. it would be 1 for \"FullSingle\")
-		 * - \c p.second is the theoretical upperbound (natural logarithm) on the size of the integers to reconstruct.
+		 * - \c p.second is the theoretical upperbound (natural
+		 *   logarithm) on the size of the integers to reconstruct.
 		 * .
 		 */
 		FullMultipFixedCRA(const std::pair<size_t,double>& p ) :
@@ -336,7 +335,8 @@ namespace LinBox
 		/*! Constructor.
 		 * @param p is a pair such that
 		 * - \c p.first is the size of a residue, it would be 1 for \"FullSingle\"
-		 * - \c p.second is the theoretical upperbound (natural logarithm) on the size of the integers to reconstruct.
+		 * - \c p.second is the theoretical upperbound (natural
+		 *   logarithm) on the size of the integers to reconstruct.
 		 * .
 		 */
 		FullMultipBlasMatCRA(const std::pair<size_t,double>& p ) :
@@ -545,4 +545,13 @@ namespace LinBox
 }
 
 #endif //__LINBOX_cra_full_multip_fixed_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/rational-reconstruction-base.h
  * Copyright (C) 2009 Anna Marszalek
  *
@@ -89,8 +87,10 @@ namespace LinBox
 				     const Integer & p1, const Integer & p2) :
 			A(b), M(n), mul(p1), div(p2)
 		{}
+
 		MyRationalModularDet(MyRationalModularDet& C) :
-			MyRationalModularDet(C.A,C.M,C.mul)
+			// MyRationalModularDet(C.A,C.M,C.mul)
+			A(C.A),M(C.M),mul(C.mul),div(C.div)
 		{}
 
 		void setDiv (const Integer& d) {div = d;}
@@ -123,7 +123,8 @@ namespace LinBox
 		{}
 
 		MyIntegerModularDet(MyIntegerModularDet& C) :
-			MyIntegerModularDet(C.A,C.M)
+			// MyIntegerModularDet(C.A,C.M)
+			A(C.A), M(C.M)
 		{}
 
 		template<typename Int, typename Field>
@@ -166,7 +167,7 @@ namespace LinBox
 		typedef Modular<double> myModular;
 		typedef typename Rationals::Element Quotient;
 
-		commentator.start ("Rational Det", "Rdeterminant");
+		commentator().start ("Rational Det", "Rdeterminant");
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 
@@ -321,7 +322,7 @@ namespace LinBox
 		//err = M/t;
 		//cout << "terminated by ET at step "<< (int)(log(k)/log(2)) << "in " << std::flush;
 
-		commentator.stop ("done", NULL, "Iminpoly");
+		commentator().stop ("done", NULL, "Iminpoly");
 
 		t0.stop();
 		return d;
@@ -331,4 +332,13 @@ namespace LinBox
 }
 
 #endif //__LINBOX_det_rational_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

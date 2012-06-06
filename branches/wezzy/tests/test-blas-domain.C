@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-blas-domain.C
  * Copyright (C) 2004 Pascal Giorgi
@@ -95,9 +93,9 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 	typedef BlasMatrix<Field>          Matrix;
 
 	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing muladd"),"testMulAdd",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing muladd"),"testMulAdd",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -107,7 +105,7 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 
 	for (int k=0;k<iterations; ++k) {
 
-		mycommentator.progress(k);
+		mycommentator().progress(k);
 		Matrix A(F, n,n),B(F, n,n),C(F, n,n),D(F, n,n),T(F, n,n),R(F, n,n);
 		std::vector<Element> x(n),y(n),z(n),t(n);
 
@@ -160,7 +158,7 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 			ret=false;
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAdd");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testMulAdd");
 
 	return ret;
 }
@@ -233,14 +231,14 @@ bool CheckMulAdd( const Integer & alpha ,
 		std::cout << "evalm(E-alpha*A.B-beta*C);" << std::endl;
 		std::cout << "#########################################" << std::endl;
 #endif
-		mycommentator.report() << " *** BMD ERROR (" << alpha << ',' << beta << ") *** " << std::endl;
+		mycommentator().report() << " *** BMD ERROR (" << alpha << ',' << beta << ") *** " << std::endl;
 	}
 
 	// Ep = bp Cp + ap Ap Bp mod p
 	MD.muladd(Ep,bp,Cp,ap,Ap,Bp);
 	bool all = MD.areEqual(Ep,Dp);
 	if (!all) {
-		mycommentator.report() << " *** MD ERROR *** " << std::endl;
+		mycommentator().report() << " *** MD ERROR *** " << std::endl;
 	}
 
 	return pass&all ;
@@ -256,9 +254,9 @@ static bool testMulAddAgain (const Field& , size_t n, int iterations)
 	typedef BlasMatrix<PID_integer>         IMatrix;
 
 	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing muladd again"),"testMulAddAgain",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing muladd again"),"testMulAddAgain",iterations);
 
 	bool ret = true;
 
@@ -285,7 +283,7 @@ static bool testMulAddAgain (const Field& , size_t n, int iterations)
 
 	for (int k=0;k<iterations; ++k) {
 
-		mycommentator.progress(k);
+		mycommentator().progress(k);
 		IMatrix A(ZZ, n,n),B(ZZ, n,n),C(ZZ, n,n),D(ZZ, n,n),E(ZZ, n,n);
 
 		Integer a , b;
@@ -335,7 +333,7 @@ static bool testMulAddAgain (const Field& , size_t n, int iterations)
 	}
 
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAddAgain");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testMulAddAgain");
 
 	return ret;
 }
@@ -345,9 +343,9 @@ template <class Field>
 static bool testMulAddShapeTrans (const Field &F, size_t m, size_t n, size_t k, int iterations)
 {
 	bool ret = true ;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing muladd for shapes and transposition"),"testMulAddShapeTrans",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing muladd for shapes and transposition"),"testMulAddShapeTrans",iterations);
 
 
 	typedef typename Field::Element Element;
@@ -395,29 +393,29 @@ static bool testMulAddShapeTrans (const Field &F, size_t m, size_t n, size_t k, 
 	BMD.muladd(E,beta,C,alpha,A,B);
 	if (!MD.areEqual(E,D)) {
 		ret = false ;
-		mycommentator.report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (noTrans, noTrans) *** " << std::endl;
+		mycommentator().report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (noTrans, noTrans) *** " << std::endl;
 	}
 
 	BMD.muladd(E,beta,C,alpha,A,tB);
 	if (!MD.areEqual(E,D))  {
 		ret = false ;
-		mycommentator.report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (noTrans, Trans) *** " << std::endl;
+		mycommentator().report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (noTrans, Trans) *** " << std::endl;
 	}
 
 	BMD.muladd(E,beta,C,alpha,tA,B);
 	if (!MD.areEqual(E,D)) {
 		ret = false ;
-		mycommentator.report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (Trans, noTrans) *** " << std::endl;
+		mycommentator().report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (Trans, noTrans) *** " << std::endl;
 	}
 
 	BMD.muladd(E,beta,C,alpha,tA,tB);
 	if (!MD.areEqual(E,D)) {
 		ret = false ;
-		mycommentator.report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (Trans, Trans) *** " << std::endl;
+		mycommentator().report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (Trans, Trans) *** " << std::endl;
 	}
 
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAddShapeTrans");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testMulAddShapeTrans");
 	return ret ;
 }
 
@@ -426,9 +424,9 @@ template<class Field, bool LeftSide, bool UnitDiag>
 static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int iterations)
 {
 	bool ret = true ;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing triangular matmul for shapes and transposition"),"testTriangMulShapeTrans",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing triangular matmul for shapes and transposition"),"testTriangMulShapeTrans",iterations);
 
 
 	typedef typename Field::Element                               Element;
@@ -498,10 +496,10 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 		/*  check equality */
 		if (!MD.areEqual(E,D)) {
 			ret = false ;
-			mycommentator.report() << " *** BMD ERROR (" << (LeftSide?"left":"right") << ',' << (UnitDiag?" L":" U") << " is unit) *** " << std::endl;
+			mycommentator().report() << " *** BMD ERROR (" << (LeftSide?"left":"right") << ',' << (UnitDiag?" L":" U") << " is unit) *** " << std::endl;
 		}
 		else {
-			mycommentator.report() << " direct triangular multiplication ok." << std::endl;
+			mycommentator().report() << " direct triangular multiplication ok." << std::endl;
 		}
 	}
 	/****  Transpose ****/
@@ -534,14 +532,14 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 		/*  check equality */
 		if (!MD.areEqual(E,D)) {
 			ret = false ;
-			mycommentator.report() << " *** BMD ERROR Transpose (" << (LeftSide?"left":"right") << ',' << (UnitDiag?" L":" U") << " is unit) *** " << std::endl;
+			mycommentator().report() << " *** BMD ERROR Transpose (" << (LeftSide?"left":"right") << ',' << (UnitDiag?" L":" U") << " is unit) *** " << std::endl;
 		}
 		else {
-			mycommentator.report() << " transposed triangular multiplication ok." << std::endl;
+			mycommentator().report() << " transposed triangular multiplication ok." << std::endl;
 		}
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAddShapeTrans");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testMulAddShapeTrans");
 	return ret ;
 }
 
@@ -558,9 +556,9 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	typedef typename Field::RandIter RandIter;
 
 	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing rank"),"testRank",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing rank"),"testRank",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -571,7 +569,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 
 	for (int k=0;k<iterations; ++k) {
 
-		mycommentator.progress(k);
+		mycommentator().progress(k);
 		BlasMatrix<Field> A(F,n,n),S(F,n,n), L(F,n,n);
 
 		r = (unsigned int)(random() % n);
@@ -581,7 +579,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 			for (size_t j=i+1;j<n;++j)
 				S.setEntry(i,j,G.random(tmp));
 		}
-                BMD.write(commentator.report(), S) << std::endl;
+                BMD.write(commentator().report(), S) << std::endl;
 
 
 		// create L as a lower triangular matrix with nonzero elements on the diagonal
@@ -590,21 +588,21 @@ static bool testRank (const Field& F,size_t n, int iterations)
 				L.setEntry(i,j,G.random(tmp));
 			L.setEntry(i,i,Gn.random(tmp));
 		}
-                BMD.write(commentator.report(), L) << std::endl;
+                BMD.write(commentator().report(), L) << std::endl;
 
 		//  compute A=LS
 		BMD.mul(A,L,S);
-                BMD.write(commentator.report(), A) << std::endl;
+                BMD.write(commentator().report(), A) << std::endl;
 
 		// compute the rank of A
 		unsigned int rank= BMD.rankin(A);
-		commentator.report() << "Rank " << rank << " should be " << r << std::endl;
+		commentator().report() << "Rank " << rank << " should be " << r << std::endl;
 
 		if (rank!=r)
 			ret=false;
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testRank");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testRank");
 
 	return ret;
 }
@@ -622,9 +620,9 @@ static bool testDet (const Field& F,size_t n, int iterations)
 	typedef typename Field::RandIter RandIter;
 
 	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing determinant"),"testDet",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing determinant"),"testDet",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -636,7 +634,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		mycommentator.progress(k);
+		mycommentator().progress(k);
 
 		G.random(d);
 
@@ -669,7 +667,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 			ret=false;
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testDet");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testDet");
 
 	return ret;
 }
@@ -687,9 +685,9 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	typedef  BlasMatrix<Field> Matrix;
 
 	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing inverse"),"testInv",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing inverse"),"testInv",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -706,7 +704,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		mycommentator.progress(k);
+		mycommentator().progress(k);
 
 
 		Matrix A(F, n,n),S(F, n,n), L(F, n,n), invA(F, n,n);
@@ -741,7 +739,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 			ret=false;
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testInv");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testInv");
 
 	return ret;
 }
@@ -760,9 +758,9 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing triangular solver"),"testTriangularSolve",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing triangular solver"),"testTriangularSolve",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -776,7 +774,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 
 	for (int k=0;k<iterations;++k) {
 
-		mycommentator.progress(k);
+		mycommentator().progress(k);
 
 		Matrix Al(F, m,m),Au(F, m,m);
 		Matrix X(F, m,n), B(F, m,n), C(F, m,n);
@@ -856,7 +854,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testTriangularSolve");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testTriangularSolve");
 
 	return ret;
 }
@@ -873,9 +871,9 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing solver"),"testTriangularSolve",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing solver"),"testTriangularSolve",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -889,7 +887,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		mycommentator.progress(k);
+		mycommentator().progress(k);
 
 		Matrix A(F, m,m),L(F, m,m),S(F, m,m);
 		Matrix X(F, m,n), B(F, m,n), C(F, m,n);
@@ -973,7 +971,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testTriangularSolve");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testTriangularSolve");
 
 	return ret;
 }
@@ -990,9 +988,9 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing permutations"),"testPermutation",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing permutations"),"testPermutation",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -1007,7 +1005,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		mycommentator.progress(k);
+		mycommentator().progress(k);
 
 		std::vector<size_t> P(m);
 
@@ -1280,7 +1278,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 		if (!MD.areEqual(D,B))
 			ret=false;
 	}
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
 
 	return ret;
 }
@@ -1297,9 +1295,9 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -1313,7 +1311,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		mycommentator.progress(k);
+		mycommentator().progress(k);
 
 		Matrix A(F, m,n), Abis(F, m,n), B(F, m,m), C(F, m,n);
 
@@ -1388,7 +1386,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 			ret=false;
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
 
 	return ret;
 }
@@ -1401,9 +1399,9 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
 	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing minpoly"),"testMinPoly",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing minpoly"),"testMinPoly",iterations);
 	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -1416,7 +1414,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		mycommentator.progress(k);
+		mycommentator().progress(k);
 
 		Matrix A(F,n,n);
 		Polynomial P;
@@ -1469,7 +1467,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
 
 	return ret;
 }
@@ -1482,9 +1480,9 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
 	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing charpoly"),"testCharPoly",iterations);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator().start (pretty("Testing charpoly"),"testCharPoly",iterations);
 	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -1497,7 +1495,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 
 	for (int k=0;k<iterations;++k) {
 
-		mycommentator.progress(k);
+		mycommentator().progress(k);
 
 		Matrix A(F,n,n);
 		list<Polynomial> P;
@@ -1544,7 +1542,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 		}
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
 
 	return ret;
 }
@@ -1628,10 +1626,10 @@ int main(int argc, char **argv)
 	srand ((unsigned)time (NULL));
 
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
-	commentator.start("BlasMatrixDomain test suite", "BlasMatrixDomain");
+	commentator().start("BlasMatrixDomain test suite", "BlasMatrixDomain");
 
 	pass &= launch_tests(F1,(int)n,iterations);
 	pass &= launch_tests(F2,(int)n,iterations);
@@ -1646,8 +1644,17 @@ int main(int argc, char **argv)
 	// pass &= launch_tests(F7,(int)n,iterations);
 #endif
 
-	commentator.stop(MSG_STATUS (pass), (const char *) 0,"BlasMatrixDomain test suite");
+	commentator().stop(MSG_STATUS (pass), (const char *) 0,"BlasMatrixDomain test suite");
 	return pass ? 0 : -1;
 }
 
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

@@ -75,6 +75,7 @@ FULLCHECK_TESTS =                 \
         test-diagonal                 \
         test-dif                      \
         test-direct-sum               \
+        test-echelon-form             \
         test-ffpack                   \
         test-getentry                 \
         test-gf2                      \
@@ -175,8 +176,7 @@ BENCHMARKS =                    \
 #        Compose is tested in test-butterfly
 
 GIVARO_TESTS =                        \
-        test-givaro-zpz               \
-        test-givaro-zpzuns
+        test-givaro-fields
 
 NTL_TESTS =                           \
         test-smith-form               \
@@ -427,6 +427,10 @@ test_direct_sum_SOURCES =                \
         test-generic.h                   \
         test-common.h
 
+test_echelon_form_SOURCES =                \
+        test-echelon-form.C                \
+        test-common.h
+
 test_frobenius_SOURCES =                \
         test-frobenius.C                \
         test-generic.h                  \
@@ -460,14 +464,9 @@ test_ntl_lzz_p_SOURCES =                \
         test-generic.h                  \
         test-common.h
 
-test_givaro_zpz_SOURCES =                \
-        test-givaro-zpz.C                \
+test_givaro_fields_SOURCES =                \
+        test-givaro-fields.C                \
         test-generic.h                   \
-        test-common.h
-
-test_givaro_zpzuns_SOURCES =                \
-        test-givaro-zpzuns.C                \
-        test-generic.h                      \
         test-common.h
 
 test_lidia_gfq_SOURCES =                \

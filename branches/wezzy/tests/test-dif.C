@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* tests/test-dif.C
  * Copyright (C) LinBox
  * +- modified from tests/test-sum.C
@@ -74,7 +72,7 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 {
 	typedef Diagonal <Field> Blackbox;
 
-	commentator.start ("Testing zero apply", "testZeroApply", stream1.m ());
+	commentator().start ("Testing zero apply", "testZeroApply", stream1.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -90,7 +88,7 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 	//F.init (neg_one, -1);
 
 	while (stream1) {
-		commentator.startIteration ((unsigned)stream1.j ());
+		commentator().startIteration ((unsigned)stream1.j ());
 		iter_passed = true;
 
 		stream1.next (d1);
@@ -99,7 +97,7 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 		Blackbox D1 (F, d1); // , D2 (F, d2);
 		Dif <Blackbox, Blackbox> A (D1, D1);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal matrix:  ";
 		VD.write (report, d1);
 		report << endl;
@@ -128,14 +126,14 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 		}
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vector is not zero" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testZeroApply");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testZeroApply");
 
 	return ret;
 }
@@ -160,7 +158,7 @@ static bool testRandomTranspose (Field &F, size_t n, int iterations)
 	typedef vector <typename Field::Element> Vector;
 	typedef Diagonal <Field> Blackbox;
 
-	commentator.start ("Testing random transpose", "testRandomTranspose", iterations);
+	commentator().start ("Testing random transpose", "testRandomTranspose", iterations);
 
 	Vector d(n);
 	typename Field::RandIter r (F);
@@ -170,14 +168,14 @@ static bool testRandomTranspose (Field &F, size_t n, int iterations)
 
 	Blackbox D (F, d);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "Diagonal vector: ";
 	printVector<Field> (F, report, d);
 
 	bool ret = testTranspose<Field> (F, D, iterations);
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
 	return ret;
 }
@@ -206,15 +204,24 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (101);
 
-	commentator.start("Matrix dif black box test suite", "dif");
+	commentator().start("Matrix dif black box test suite", "dif");
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	RandomDenseStream<Field> stream1 (F, n, iterations1), stream2 (F, n, iterations2);
 
 	if (!testZeroApply (F, stream1, stream2)) pass = false;
 
-	commentator.stop("Matrix dif black box test suite");
+	commentator().stop("Matrix dif black box test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

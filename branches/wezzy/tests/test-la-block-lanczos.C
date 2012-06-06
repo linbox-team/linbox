@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-la-block-lanczos.C
  * Copyright (C) 2004 Bradford Hovinen
@@ -66,10 +64,10 @@ static bool testRandomSolve (const Field           &F,
 {
 	typedef LABlockLanczosSolver<Field, BlasMatrix<Field> > LABLSolver;
 
-	commentator.start ("Testing random solve (Block Lanczos)", "testRandomSolve", y_stream.size ());
+	commentator().start ("Testing random solve (Block Lanczos)", "testRandomSolve", y_stream.size ());
 
-	std::ostream &report1 = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report1 = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
 
@@ -101,29 +99,29 @@ static bool testRandomSolve (const Field           &F,
 	LABLSolver lablsolver (F, traits, ri);
 
 	while (y_stream) {
-		commentator.startIteration ( (unsigned int) y_stream.pos ());
+		commentator().startIteration ( (unsigned int) y_stream.pos ());
 
 		y_stream >> y;
 		A.apply (b, y);
 
-		std::ostream &raport = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &raport = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		raport << "Right-hand side b:";
 		VD.write (raport, b) << endl;
 
 		if (!lablsolver.solve (A, x2, b)) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve failed to solve system" << endl;
 			ret = false;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	A_stream.reset ();
 	y_stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomSolve");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomSolve");
 
 	return ret;
 }
@@ -140,10 +138,10 @@ static bool testSampleNullspace (const Field           &F,
 	typedef BlasMatrix<Field> Matrix;
 	typedef LABlockLanczosSolver<Field, Matrix> LABLSolver;
 
-	commentator.start ("Testing sampling from nullspace (Block Lanczos)", "testSampleNullspace", num_iter);
+	commentator().start ("Testing sampling from nullspace (Block Lanczos)", "testSampleNullspace", num_iter);
 
-	std::ostream &report1 = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report1 = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
 	unsigned int number;
@@ -170,20 +168,20 @@ static bool testSampleNullspace (const Field           &F,
 	LABLSolver lablsolver (F, traits, ri);
 
 	for (unsigned int i = 0; i < num_iter; ++i) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		number = lablsolver.sampleNullspace (A, x);
 
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Number of nullspace vectors found: " << number << std::endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	A_stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSampleNullspace");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testSampleNullspace");
 
 	return ret;
 }
@@ -200,10 +198,10 @@ static bool testRank (const Field           &F,
 	typedef BlasMatrix<Field> Matrix;
 	typedef LABlockLanczosSolver<Field, Matrix> LABLSolver;
 
-	commentator.start ("Testing rank (Block Lanczos)", "testRank", num_iter);
+	commentator().start ("Testing rank (Block Lanczos)", "testRank", num_iter);
 
-	std::ostream &report1 = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report1 = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
 	unsigned int rank;
@@ -228,20 +226,20 @@ static bool testRank (const Field           &F,
 	LABLSolver lablsolver (F, traits, ri);
 
 	for (unsigned int i = 0; i < num_iter; ++i) {
-		commentator.startIteration (i);
+		commentator().startIteration (i);
 
 		rank = lablsolver.rank (A);
 
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Rank: " << rank << std::endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
 	A_stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "rank");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "rank");
 
 	return ret;
 }
@@ -272,11 +270,11 @@ int main (int argc, char **argv)
 
 	std::cout << "Lookahead-based block Lanczos test suite" << std::endl << std::endl;
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.getMessageClass (PROGRESS_REPORT).setMaxDepth (0);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator().getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().getMessageClass (PROGRESS_REPORT).setMaxDepth (0);
 
 	RandomSparseStream<Field> A_stream (F, (double) k / (double) n, n, n);
 	RandomDenseStream<Field> y_stream (F, n, i);
@@ -287,3 +285,12 @@ int main (int argc, char **argv)
 
 	return fail;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

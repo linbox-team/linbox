@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /*
  * examples/graph-charpoly.C
@@ -72,8 +70,8 @@ typedef GivPolynomialRing<PID_integer, Givaro::Dense> IntPolRing;
 
 int main (int argc, char **argv)
 {
-	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
-	commentator.getMessageClass (BRIEF_REPORT).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (BRIEF_REPORT).setMaxDepth (2);
+	commentator().getMessageClass (BRIEF_REPORT).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 
 	if (argc != 2) {
@@ -91,7 +89,7 @@ int main (int argc, char **argv)
 	PID_integer ZZ;
 	Matrix A(ZZ);
 	A.read (input);
-	commentator.report(1, BRIEF_REPORT)<< "A is " << A.rowdim() << " by " << A.coldim() << endl;
+	commentator().report(1, BRIEF_REPORT)<< "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 	IntPolRing::Element c_A;
 
@@ -102,3 +100,12 @@ int main (int argc, char **argv)
 
 	return 0;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

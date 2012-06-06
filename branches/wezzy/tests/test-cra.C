@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *  Written by Brice Boyer <brice.boyer@imag.fr>
@@ -487,7 +485,7 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 bool test_CRA_algos(size_t PrimeSize, size_t Size, size_t Taille, size_t iters)
 {
 	bool pass = true ;
-	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT,
+	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
 
 
@@ -568,10 +566,19 @@ int main(int ac, char ** av)
 	size_t Taille      =  2*Size ; // nb of vectors of residues
 
 
-	commentator.start("CRA-Algos test suite", "CRA-Algos");
+	commentator().start("CRA-Algos test suite", "CRA-Algos");
 
 	pass = test_CRA_algos(PrimeSize,Size,Taille,iters) ;
 
-	commentator.stop(MSG_STATUS (pass), (const char *) 0,"CRA-Algos test suite");
+	commentator().stop(MSG_STATUS (pass), (const char *) 0,"CRA-Algos test suite");
 	return !pass ;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

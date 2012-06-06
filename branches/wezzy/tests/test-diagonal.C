@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-diagonal.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
@@ -77,7 +75,7 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 {
         typedef LinBox::Diagonal<Field> Blackbox;
 
-	commentator.start ("Testing identity apply", "testIdentityApply", stream.m ());
+	commentator().start ("Testing identity apply", "testIdentityApply", stream.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -100,13 +98,13 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 	VectorWrapper::ensureDim (w, stream.n ());
 
 	while (stream) {
-		commentator.startIteration ((unsigned)i);
+		commentator().startIteration ((unsigned)i);
 
 		iter_passed = true;
 
 		stream.next (v);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
 		VD.write (report, v);
 		report << endl;
@@ -121,16 +119,16 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 
-		commentator.stop (MSG_STATUS (ret));
-		commentator.progress ();
+		commentator().stop (MSG_STATUS (ret));
+		commentator().progress ();
 	}
 
 	stream.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
 
 	return ret;
 }
@@ -154,7 +152,7 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 	typedef vector <typename Field::Element> Polynomial;
 	typedef LinBox::Diagonal <Field> Blackbox;
 
-	commentator.start ("Testing random minpoly", "testRandomMinpoly", stream.m ());
+	commentator().start ("Testing random minpoly", "testRandomMinpoly", stream.m ());
 
 	bool ret = true;
 
@@ -168,13 +166,13 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 	VectorWrapper::ensureDim (d, stream.n ());
 
 	while (stream) {
-		commentator.startIteration ((unsigned)stream.j ());
+		commentator().startIteration ((unsigned)stream.j ());
 
 		F.init (pi, 1);
 
 		stream.next (d);
 
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal vector: ";
 		VD.write (report, d);
 		report << endl;
@@ -193,13 +191,13 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 		printPolynomial (F, report, m_D);
 
 		if (!F.areEqual (m_D[0], pi)) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: m_D(0) != det(D)" << endl;
 			ret = false;
 		}
 
-		commentator.stop (MSG_STATUS(ret));
-		commentator.progress ();
+		commentator().stop (MSG_STATUS(ret));
+		commentator().progress ();
 	}
 
 	stream.reset ();
@@ -209,11 +207,11 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 	unsigned long r;
 	LinBox::rank(r, D, Method::Wiedemann());
 	if (r != 10)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: zeroes in random diagonal" << endl;
 	ret = ret && r == 10;
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly");
 
 	return ret;
 }
@@ -239,7 +237,7 @@ static bool testRandomLinearity (Field &F,
 {
 	typedef LinBox::Diagonal <Field> Blackbox;
 
-	commentator.start ("Testing random transpose", "testRandomLinearity", stream1.m ());
+	commentator().start ("Testing random transpose", "testRandomLinearity", stream1.m ());
 
 	VectorDomain<Field> VD (F);
 
@@ -249,14 +247,14 @@ static bool testRandomLinearity (Field &F,
 	d_stream.next (d);
 	Blackbox D (F, d);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "Diagonal vector: ";
 	VD.write (report, d) << endl;
 
 	bool ret = testLinearity (F, D, stream1, stream2);
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
 
 	return ret;
 }
@@ -281,7 +279,7 @@ static bool testRandomTranspose (Field &F,
 {
 	typedef LinBox::Diagonal <Field> Blackbox;
 
-	commentator.start ("Testing random transpose", "testRandomTranspose", stream1.m ());
+	commentator().start ("Testing random transpose", "testRandomTranspose", stream1.m ());
 
 	VectorDomain<Field> VD (F);
 
@@ -291,14 +289,14 @@ static bool testRandomTranspose (Field &F,
 	d_stream.next (d);
 	Blackbox D (F, d);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "Diagonal vector: ";
 	VD.write (report, d) << endl;
 
 	bool ret = testTranspose (F, D, stream1, stream2);
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
 	return ret;
 }
@@ -326,11 +324,11 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator.start("Diagonal matrix black box test suite", "diagonal");
+	commentator().start("Diagonal matrix black box test suite", "diagonal");
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	RandomDenseStream<Field, Vector> stream1 (F, n, iterations), stream2 (F, n, iterations), d_stream (F, n, 1);
 	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> >
@@ -345,7 +343,16 @@ int main (int argc, char **argv)
 	LinBox::Diagonal<Field> D(F, 10, iter);
 	pass = pass && testBlackbox(D);
 
-	commentator.stop (MSG_STATUS (pass));
+	commentator().stop (MSG_STATUS (pass));
 
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

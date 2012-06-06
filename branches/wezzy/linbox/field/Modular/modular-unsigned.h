@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/field/modular.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -18,20 +16,20 @@
  * Renamed from large-modular.h to modular.h
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -100,6 +98,22 @@ namespace LinBox
 			double z = fmod(y, (double)_modulus);
 			if (z < 0) z += (double) _modulus;
 			return x = (Element) (z);
+		}
+
+		Element &init (Element &x, const long int &y ) const
+		{
+			x = (Element)(abs (y) % (long int) (ModularBase<Element>::_modulus));
+			if (y < 0L)
+				x = Element(ModularBase<Element>::_modulus - x);
+			return x;
+		}
+
+		Element &init (Element &x, const int &y ) const
+		{
+			x = (Element)(abs (y) % (int) (ModularBase<Element>::_modulus));
+			if (y < 0)
+				x = Element(ModularBase<Element>::_modulus - x);
+			return x;
 		}
 
 		/*! add elements
@@ -437,6 +451,22 @@ namespace LinBox
 			return x = (Element) (z);
 		}
 
+		Element &init (Element &x, const long int &y ) const
+		{
+			x = Element(abs (y) % (long int) (ModularBase<Element>::_modulus));
+			if (y < 0)
+				x = Element(ModularBase<Element>::_modulus - x);
+			return x;
+		}
+
+		Element &init (Element &x, const int &y ) const
+		{
+			x = Element(abs (y) % (int) (ModularBase<Element>::_modulus));
+			if (y < 0)
+				x = Element(ModularBase<Element>::_modulus - x);
+			return x;
+		}
+
 		Element &init(Element &x) const
 		{
 			return x = 0 ;
@@ -714,7 +744,8 @@ namespace LinBox
 
 		typedef uint32_t Element;
 		typedef Modular<Element>     Self_t;
-		typedef ModularBase<Element> Father_t;
+		// typedef ModularBase<Element> Father_t;
+		typedef Modular<uint32_t> Father_t;
 		typedef ModularBase<Element>::RandIter RandIter;
 
 		const Element zero,one,mOne ;
@@ -724,10 +755,14 @@ namespace LinBox
 		{}
 		Modular (uint32_t modulus)  :
 			ModularBase<uint32_t> (modulus),zero(0),one(1),mOne(modulus-1)
-		{ init_two_64 (); }
+		{
+			init_two_64 ();
+		}
 		Modular (const integer &modulus) :
 			ModularBase<uint32_t> (modulus),zero(0),one(1),mOne(modulus-1)
-		{ init_two_64 (); }
+		{
+			init_two_64 ();
+		}
 
 		const Modular &operator=(const Modular &F)
 		{
@@ -1056,3 +1091,12 @@ namespace LinBox
 
 #include "linbox/field/Modular/modular.inl"
 #endif // __LINBOX_field_modular_unsigned_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

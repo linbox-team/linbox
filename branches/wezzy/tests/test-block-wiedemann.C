@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-solve.C
  * evolved by -bds from test-solve.C
@@ -86,8 +84,8 @@ int main (int argc, char **argv)
 	Field F (q);
 	VectorDomain<Field> VD (F);
 
-	commentator.start("block wiedemann test suite", "block-wiedemann");
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	commentator().start("block wiedemann test suite", "block-wiedemann");
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	RandomDenseStream<Field> stream1 (F, n, 1), stream2 (F, n, 1);
 	Vector d(n), b(n), x(n), y(n);
@@ -131,8 +129,17 @@ int main (int argc, char **argv)
 
 #endif
 
-	commentator.stop("block wiedemann test suite");
+	commentator().stop("block wiedemann test suite");
     //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
 
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

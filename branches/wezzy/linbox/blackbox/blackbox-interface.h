@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/blackbox-interface.h
  * Copyright (C) 2002 LinBox
  * Written by David Saunders
@@ -35,21 +33,34 @@ namespace LinBox
 	 * The LinBox @link BlackboxInterface@endlink common object @link Interfaces interface@endlink.
 	 * The blackbox interface includes the public members defined in the archetype.
 	 */
-	/**
-	 * \brief This blackbox base class exists solely to aid documentation organization.
-
-	 *  For the general blackbox member function documentation consult the @link blackbox Archetype@endlink. For specific properties of individual representations consult the specific blackbox classes.
+	/** @internal
+	 * \brief This blackbox base class exists solely to aid documentation
+	 * organization.
+	 * @details
+	 *  For the general blackbox member function documentation consult the
+	 *  @link blackbox Archetype@endlink. For specific properties of
+	 *  individual representations consult the specific blackbox classes.
+	 *  @bug if it is for doc purposes, there are other ways !
 	 */
 	class BlackboxInterface {
-		/*
+#if 0
 		   public:
 		// this just demo's that some declarations could be here.
 		typedef ElementArchetype Element;
 		virtual Element& mul(Element& c, const Element& a, const Element& b) const = 0;
-		*/
+#endif
 	};// empty class so doc++ makes a nice hierarchy.
 
 } // namespace LinBox
 
 #endif //  __LINBOX_blackbox_interface_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

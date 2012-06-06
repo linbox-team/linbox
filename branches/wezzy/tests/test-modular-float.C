@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-modular-float.C
  * Brazenly stolen by bds from
@@ -74,7 +72,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Modular<float> field test suite", "Modular<float>");
+	commentator().start("Modular<float> field test suite", "Modular<float>");
 	bool pass = true;
 
 	//Modular<float> F2 (2);
@@ -91,9 +89,9 @@ int main (int argc, char **argv)
 
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	std::ostream& report = commentator.report();
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	std::ostream& report = commentator().report();
 	// report << "Field F2" << std::endl;
 	//if (!runFieldTests (F2,  "Modular<float>",  iterations, n, false)) pass = false;
 	report << "Field F3" << std::endl;
@@ -110,9 +108,16 @@ int main (int argc, char **argv)
 	// if (!runFieldTests (G,   "Modular<float>",  iterations, n, false)) pass = false;
 
 	if (!runFieldTests (I_int,  "Modular<float>",  iterations, n, false)) pass = false;
-	// if (!testRandomIterator (I_int,  "Modular<float>", trials, categories, hist_level)) pass = false;
 
-
-	commentator.stop("Modular<float> field test suite");
+	commentator().stop("Modular<float> field test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

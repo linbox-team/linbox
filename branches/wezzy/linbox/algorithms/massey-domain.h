@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/massey-domain.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas, Bradford Hovinen
  *
@@ -210,7 +208,7 @@ namespace LinBox
 
 			integer card;
 
-			commentator.start ("Massey", "masseyd", END);
+			commentator().start ("Massey", "masseyd", END);
 
 			// ====================================================
 			// Sequence and iterator initialization
@@ -235,7 +233,7 @@ namespace LinBox
 			for (long NN = 0; NN < END && x < (long) EARLY_TERM_THRESHOLD; ++NN, ++_iter) {
 
 				if (!(NN % COMMOD))
-					commentator.progress (NN);
+					commentator().progress (NN);
 
 				// ====================================================
 				// Next coefficient in the sequence
@@ -344,8 +342,8 @@ namespace LinBox
 #endif // INCLUDE_TIMING
 			}
 
-			commentator.stop ("done", NULL, "masseyd");
-			//		commentator.stop ("Done", "Done", "LinBox::MasseyDomain::massey");
+			commentator().stop ("done", NULL, "masseyd");
+			//		commentator().stop ("Done", "Done", "LinBox::MasseyDomain::massey");
 
 			return L;
 		}
@@ -363,14 +361,14 @@ namespace LinBox
 
 		void valence (Element &Valence, unsigned long &rank)
 		{
-			commentator.start ("Valence", "LinBox::MasseyDomain::valence");
+			commentator().start ("Valence", "LinBox::MasseyDomain::valence");
 
 			std::vector<Element> phi;
 			massey (phi, 1);
 			rank = v_degree (phi) - v_val (phi);
 			Valence = phi[v_degree (phi)];
 
-			commentator.stop ("Done", "Done", "LinBox::MasseyDomain::valence");
+			commentator().stop ("Done", "Done", "LinBox::MasseyDomain::valence");
 		}
 
 		template<class Polynomial>
@@ -411,4 +409,13 @@ namespace LinBox
 }
 
 #endif // __LINBOX_massey_domain_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

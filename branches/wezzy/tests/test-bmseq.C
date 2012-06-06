@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-dense.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
@@ -67,8 +66,8 @@ static bool testIdentity (Field &F, long n, int iterations)
 	typedef typename Vector<Field>::Dense Vector;
 	typedef BlasMatrix <Field> Blackbox;
 
-	commentator.start ("Testing identity apply", "testIdentity", iterations);
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	commentator().start ("Testing identity apply", "testIdentity", iterations);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -89,7 +88,7 @@ static bool testIdentity (Field &F, long n, int iterations)
 	for (i = 0; i < iterations; i++) {
 		char buf[80];
 		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator().start (buf);
 
 		iter_passed = true;
 
@@ -109,14 +108,14 @@ static bool testIdentity (Field &F, long n, int iterations)
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentity");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentity");
 
 	return ret;
 }
@@ -143,11 +142,11 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator.start("Dense matrix black box test suite", "BlasMatrix");
+	commentator().start("Dense matrix black box test suite", "BlasMatrix");
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 
 
@@ -220,6 +219,15 @@ int main (int argc, char **argv)
 	for(int j = 0; j <= d; j++)
 					gen[j].write(report);
 
-	commentator.stop("dense matrix black box test suite");
+	commentator().stop("dense matrix black box test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

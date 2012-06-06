@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *  Author: Zhendong Wan
  *  Modified by Pascal Giorgi
@@ -106,7 +104,7 @@ namespace LinBox
 
 			if (( _prime > 0) && ( _prime <  67108863)) {
 
-				FFLAS::fgemv( _domain, FFLAS::FflasNoTrans,
+				FFLAS::fgemv((typename Domain::Father_t) _domain, FFLAS::FflasNoTrans,
 					      A.rowdim(), A.coldim(),
 					      _one,
 					      A.getPointer(), A.getStride(),
@@ -127,7 +125,7 @@ namespace LinBox
 
 			if (( _prime > 0) && ( _prime <  67108863)) {
 
-				FFLAS::fgemv( _domain, FFLAS::FflasTrans,
+				FFLAS::fgemv((typename Domain::Father_t) _domain, FFLAS::FflasTrans,
 					      A.rowdim(), A.coldim(),
 					      _one,
 					      A.getPointer(), A.getStride(),
@@ -1044,9 +1042,9 @@ namespace LinBox
 
 	};
 
-#if !defined (__INTEL_COMPILER) && !defined(__clang__)
-template<>
-#endif
+// #if !defined (__INTEL_COMPILER) && !defined(__clang__)
+// template<>
+// #endif
 	template <class Domain>
 	class MatrixApplyDomain<Domain, BlasMatrix<Domain> > : public BlasMatrixApplyDomain<Domain, BlasMatrix<Domain> > {
 
@@ -1058,9 +1056,9 @@ template<>
 	};
 
 #if 0
-#ifndef __INTEL_COMPILER
-	template<>
-	#endif
+// #ifndef __INTEL_COMPILER
+	// template<>
+// #endif
 	template <class Domain>
 	class MatrixApplyDomain<Domain, BlasMatrix<Domain> > :
 	public BlasMatrixApplyDomain<Domain, BlasMatrix<Domain> > {
@@ -1504,4 +1502,13 @@ template<>
 } // end of namespace LinBox
 
 #endif // __LINBOX_apply_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

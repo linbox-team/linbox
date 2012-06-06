@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/matrix/blas-matrix.h
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
@@ -843,7 +841,6 @@ namespace LinBox
 namespace LinBox
 {
 
-	//!@bug reading a submatrix should not be allowed !!
 	template <class _Field>
 	std::istream& BlasSubmatrix< _Field>::read (std::istream &file)
 	{
@@ -1028,7 +1025,22 @@ namespace LinBox
 		return os;
 	}
 
+	template <class _Field>
+	template<typename _Tp1>
+	struct BlasSubmatrix< _Field>::rebind {
+		typedef BlasMatrix<_Tp1> other;
 
+		void operator() (other & Ap, const Self_t& A) {
+			typedef typename BlasSubmatrix<_Field>::ConstIterator ConstSelfIterator ;
+			typedef typename other::Iterator OtherIterator ;
+			OtherIterator    Ap_i;
+			ConstSelfIterator A_i;
+			Hom<Field, _Tp1> hom(A. field(), Ap. field());
+			for (A_i = A. Begin(), Ap_i = Ap.Begin();
+			     A_i != A. End(); ++ A_i, ++ Ap_i)
+				hom.image (*Ap_i, *A_i);
+		}
+	};
 
 } // LinBox
 
@@ -1040,3 +1052,12 @@ namespace LinBox
 {
 } // LinBox
 #endif // __LINBOX_blas_submatrix_INL
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  * Copyright (C) 2002 Austin Lobo, B. David Saunders
@@ -52,8 +50,8 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
-	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	LinBox::commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool pass = true;
 
@@ -68,7 +66,7 @@ int main(int argc, char* argv[])
 		END_OF_ARGUMENTS
 	};
 
-	parseArguments (argc, argv, args);
+	LinBox::parseArguments (argc, argv, args);
 
 
 	//------ Read q and construct F(q)
@@ -82,7 +80,7 @@ int main(int argc, char* argv[])
 	report <<  "The modulus is " << q << std::endl;
 	//NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
 
-	LinBox::commentator.start("Toeplitz black box test suite", "Toeplitz");
+	LinBox::commentator().start("Toeplitz black box test suite", "Toeplitz");
 	report  <<"     \tDimension= " << n << "\t modulus= " << q << endl;
 
 	typedef LinBox::NTL_ZZ_p Field;
@@ -143,7 +141,16 @@ int main(int argc, char* argv[])
 	//TT.print();
 
 	pass = testBlackbox(TT);
-	LinBox::commentator.stop("Toeplitz black box test suite");
+	LinBox::commentator().stop("Toeplitz black box test suite");
 	return pass ? 0 : -1;
 }
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

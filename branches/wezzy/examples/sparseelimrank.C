@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /*
  * examples/sparseelimrank.C
  *
@@ -47,9 +45,9 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
-	commentator.setMaxDetailLevel (-1);
-	commentator.setMaxDepth (-1);
-	commentator.setReportStream (std::cerr);
+	commentator().setMaxDetailLevel (-1);
+	commentator().setMaxDepth (-1);
+	commentator().setReportStream (std::cerr);
 
 	if (argc < 2 || argc > 3)
 	{	cerr << "Usage: rank <matrix-file-in-supported-format> [<p>]" << endl; return -1; }
@@ -71,7 +69,7 @@ int main (int argc, char **argv)
 		SparseMatrix<GivaroRational> A ( ms );
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		rank (r, A, Method::SparseElimination() );
+		LinBox::rank (r, A, Method::SparseElimination() );
 
 		cout << "Rank is " << r << endl;
 	}
@@ -88,13 +86,13 @@ int main (int argc, char **argv)
 		Method::SparseElimination SE;
 		SE.strategy(Specifier::PIVOT_NONE);
 		// using Sparse Elimination
-		rank (r, B, SE);
+		LinBox::rank (r, B, SE);
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 		cout << "Rank is " << r << endl;
 
 		SE.strategy(Specifier::PIVOT_LINEAR);
 		// using Sparse Elimination
-		rank (r, B, SE);
+		LinBox::rank (r, B, SE);
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 		cout << "Rank is " << r << endl;
 
@@ -103,3 +101,12 @@ int main (int argc, char **argv)
 
 	return 0;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

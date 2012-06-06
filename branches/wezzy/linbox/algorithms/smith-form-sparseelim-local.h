@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) Givaro Team 1999
  * Copyright (C) LinBox
  * Written by JG Dumas
@@ -33,19 +31,34 @@
 #include <givaro/givconfig.h> // for Signed_Trait
 #include "linbox/algorithms/gauss.h"
 
+
+// LINBOX_pp_gauss_steps_OUT outputs elimination steps
+#ifdef LINBOX_pp_gauss_steps_OUT
+
+// LINBOX_PRANK_OUT outputs intermediate ranks
+#ifndef LINBOX_PRANK_OUT
+#define LINBOX_PRANK_OUT
+#endif
+
+#endif
+
+
 namespace LinBox
 {
 
-#if 0
-	template<class T, template <class X> class Container>
-	std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-		for(typename Container<T>::const_iterator refs =  C.begin();
-		    refs != C.end() ;
-		    ++refs )
-			o << (*refs) << " " ;
-		return o << std::endl;
-	}
-#endif
+    template <bool Boolean> struct Boolean_Trait;
+    template <> struct Boolean_Trait<true> {
+        typedef int BooleanType; // int does not matter, only that it differs from float
+    };
+    template <> struct Boolean_Trait<false> {
+        typedef float BooleanType;// float does not matter, only that it differs from int
+    };
+    
+    enum {
+        PRIVILEGIATE_NO_COLUMN_PIVOTING	= 1,
+        PRIVILEGIATE_REDUCING_FILLIN	= 2,
+        PRESERVE_UPPER_MATRIX		= 4
+    };
 
 	/** \brief Repository of functions for rank modulo a prime power by elimination
 	  on sparse matrices.
@@ -75,64 +88,47 @@ namespace LinBox
 		// --------------------------------------------
 		// Modulo operators
 		template<class Modulu>
-		bool isNZero(const Modulu& a ) { return (bool)a ;}
-
-#ifdef GIVARO_PRANK_OUT
-#ifndef GIVARO_JRANK_OUT
-#define GIVARO_JRANK_OUT
-#endif
-#endif
-
-
-		template<class Ring>
-		Ring MY_Zpz_bezout(Ring a, Ring b, Ring& u)
-		{
-			Ring u1,u3 ;
-			Ring v1,v3 ;
-			u1 = 1 ; u3 = a ;
-			v1 = 0 ; v3 = b ;
-			while (v3 != 0)
-			{
-				Ring q , t1 ,t3 ;
-				q = u3 / v3 ;
-				t1 = u1 - q * v1 ; t3 = u3 - q * v3 ;
-				u1 = v1 ; u3 = v3 ; v1 = t1 ; v3 = t3 ;
-			}
-			u = u1 ;
-			return u3 ;
-		}
+		bool isNZero(const Modulu& a ) const { return (bool)a ;}
+		template<class Modulu>
+		bool isZero(const Modulu& a ) const { return a == 0UL;}
 
 		template<class Modulo, class Modulo2>
-		Modulo MY_Zpz_inv (const Modulo a, const Modulo2 pp)
+		Modulo& MY_Zpz_inv (Modulo& u1, const Modulo2 a, const Modulo2 _p) const
 		{
-			typedef Modulo Ring;
-			if (a == 1) return a;
-			if (a == -1) return a;
-			Ring u, d;
-			d = MY_Zpz_bezout(Ring(a),Ring(pp),u) ;
-
-			if (d == -1) { u = -u; }
-			if (u <0) u += pp ;
-			return u ;
-		}
-
-
-		template<class Ring, class Ring2>
-		Ring MY_gcd(Ring a, Ring2 b)
+                    u1 = Modulo(1UL);
+                    Modulo r0(_p), r1(a);
+                    Modulo q(r0/r1);
+                    
+                    r0 -= q * r1;
+                    if ( isZero(r0) ) return u1;
+                    Modulo u0 = q;
+                    
+                    q = r1/r0;
+                    r1 -= q * r0;
+                    
+                    while ( isNZero(r1) ) {
+                        u1 += q * u0;
+                        
+                        q = r0/r1;
+                        r0 -= q * r1;
+                        if ( isZero(r0) ) return u1;
+                        u0 += q * u1;
+                        
+                        q = r1/r0;
+                        r1 -= q * r0;
+                        
+                    }
+                    
+                    return u1=_p-u0;
+                }
+		template<class Modulo, class Modulo2>
+		Modulo MY_Zpz_inv (const Modulo a, const Modulo2 _p) const
 		{
-			Ring q,r,d;
-			Ring ma=a, mb=b;
-			while (mb != 0) {
-				q = ma / mb;
-				r = ma - q * mb;
-				ma = mb;
-				mb = r;
-			}
-			return ma;
+			Modulo u1; return MY_Zpz_inv(u1,a,_p);
 		}
 
 		template<class Ring1, class Ring2>
-		bool MY_divides(Ring1 a, Ring2 b)
+		bool MY_divides(Ring1 a, Ring2 b) const
 		{
 			return (!(b%a));
 		}
@@ -140,6 +136,41 @@ namespace LinBox
 		// ------------------------------------------------
 		// Pivot Searchers and column strategy
 		// ------------------------------------------------
+        template<class Modulo, class Vecteur>
+        void SameColumnPivoting(Modulo PRIME,  const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, Boolean_Trait<false>::BooleanType ) {}
+
+
+        template<class Modulo, class Vecteur>
+        void SameColumnPivoting(Modulo PRIME,  const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, Boolean_Trait<true>::BooleanType ) {
+                // Try first in the same column
+			unsigned long nj =  lignepivot.size() ;
+			if (nj && (indcol == lignepivot[0].first) && (! this->MY_divides(PRIME,lignepivot[0].second) ) ) {
+                indpermut = indcol;
+                ++indcol;
+            }
+        }
+
+        template<class Modulo, class BB, class Mmap>
+        bool SameColumnPivotingTrait(Modulo PRIME, unsigned long& p, const BB& LigneA, const Mmap& psizes, unsigned long& indcol, long& indpermut, Boolean_Trait<false>::BooleanType ) {
+                // Do not try first in the same column
+            return false;
+        }
+
+        template<class Modulo, class BB, class Mmap>
+        bool SameColumnPivotingTrait(Modulo PRIME, unsigned long& p, const BB& LigneA, const Mmap& psizes, unsigned long& indcol, long& c, Boolean_Trait<true>::BooleanType truetrait) {
+            c=-2;
+            for( typename Mmap::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
+                p = (*iter).second;
+                SameColumnPivoting(PRIME, LigneA[p], indcol, c, truetrait ) ;
+                if (c > -2 ) break;
+            }
+            if (c > -2)
+                return true;
+            else
+                return false;
+
+        }
+
 		template<class Vecteur>
 		void CherchePivot( Vecteur& lignepivot, unsigned long& indcol , long& indpermut )
 		{
@@ -148,7 +179,7 @@ namespace LinBox
 				indpermut= lignepivot[0].first;
 				if (indpermut != indcol)
 					lignepivot[0].first = (indcol);
-				indcol++ ;
+				++indcol;
 			}
 			else
 				indpermut = -1;
@@ -205,6 +236,14 @@ namespace LinBox
 		}
 
 
+
+        template<class Vecteur>
+        void PreserveUpperMatrixRow(Vecteur& ligne, Boolean_Trait<true>::BooleanType ) {}
+
+        template<class Vecteur>
+        void PreserveUpperMatrixRow(Vecteur& ligne, Boolean_Trait<false>::BooleanType ) {
+            ligne = Vecteur(0);
+        }
 
 
 		template<class Modulo, class Vecteur, class De>
@@ -263,12 +302,16 @@ namespace LinBox
 					unsigned long m=1;
 					unsigned long l(0);
 					// A[i,k] <-- A[i,k] / A[k,k]
-					lignecourante[0].second = (  ((UModulo)( ( MOD-(lignecourante[0].second) ) * ( MY_Zpz_inv( lignepivot[0].second, MOD) ) ) ) % (UModulo)MOD ) ;
-					F headcoeff = lignecourante[0].second ;
+					// lignecourante[0].second = (  ((UModulo)( ( MOD-(lignecourante[0].second) ) * ( MY_Zpz_inv( lignepivot[0].second, MOD) ) ) ) % (UModulo)MOD ) ;
+					// F headcoeff = lignecourante[0].second;
+					F headcoeff = MOD-(lignecourante[0].second);
+					UModulo invpiv; MY_Zpz_inv(invpiv, lignepivot[0].second, MOD);
+					headcoeff *= invpiv;
+					headcoeff %= (UModulo)MOD ;
+					lignecourante[0].second = headcoeff;
 					--columns[ lignecourante[0].first ];
 
 					unsigned long j_piv;
-					F tmp;
 					for(;l<npiv;++l)
 						if (lignepivot[l].first > k) break;
 					// for all j such that (j>k) and A[k,j]!=0
@@ -279,16 +322,23 @@ namespace LinBox
 							*ci++ = lignecourante[m++];
 						// if A[i,j]!=0, then A[i,j] <-- A[i,j] - A[i,k]*A[k,j]
 						if ((m<nj) && (lignecourante[m].first == j_piv)) {
-							lignecourante[m].second = ( ((UModulo)( headcoeff  *  lignepivot[l].second  + lignecourante[m].second ) ) % (UModulo)MOD );
+							//lignecourante[m].second = ( ((UModulo)( headcoeff  *  lignepivot[l].second  + lignecourante[m].second ) ) % (UModulo)MOD );
+							lignecourante[m].second += ( headcoeff  *  lignepivot[l].second );
+						        lignecourante[m].second %= (UModulo)MOD;
 							if (isNZero(lignecourante[m].second))
 								*ci++ = lignecourante[m++];
 							else
 								--columns[ lignecourante[m++].first ];
 							//                         m++;
 						}
-						else if (isNZero(tmp = ((UModulo)(headcoeff * lignepivot[l].second)) %(UModulo)MOD)) {
-							++columns[j_piv];
-							*ci++ =  E(j_piv, tmp );
+						else {
+							F tmp(headcoeff);
+							tmp *= lignepivot[l].second;
+							tmp %= (UModulo)MOD;
+							if (isNZero(tmp)) {
+								++columns[j_piv];
+								*ci++ =  E(j_piv, tmp );
+							}
 						}
 					}
 					// if A[k,j]=0, then A[i,j] <-- A[i,j]
@@ -324,10 +374,10 @@ namespace LinBox
 		// Rank calculators, defining row strategy
 		// ------------------------------------------------------
 
-		template<class Modulo, class BB, class D, class Container>
+		template<class Modulo, class BB, class D, class Container, bool PrivilegiateNoColumnPivoting, bool PreserveUpperMatrix>
 		void gauss_rankin(Modulo FMOD, Modulo PRIME, Container& ranks, BB& LigneA, const size_t Ni, const size_t Nj, const D& density_trait)
 		{
-			commentator.start ("Gaussian elimination with reordering modulo a prime power",
+			commentator().start ("Gaussian elimination with reordering modulo a prime power",
 					   "PRGE", Ni);
 
 			ranks.resize(0);
@@ -335,7 +385,7 @@ namespace LinBox
 			typedef typename BB::Row Vecteur;
 
 			Modulo MOD = FMOD;
-#ifdef GIVARO_PRANK_OUT
+#ifdef LINBOX_PRANK_OUT
 			std::cerr << "Elimination mod " << MOD << std::endl;
 #endif
 
@@ -349,8 +399,8 @@ namespace LinBox
 				unsigned long k=0,rs=0;
 				for(; k<tmp.size(); ++k) {
 					Modulo r = tmp[k].second;
-					if ((r <0) || (r >= MOD)) r = r % MOD ;
-					if (r <0) r = r + MOD ;
+					if ((r <0) || (r >= MOD)) r %= MOD ;
+					if (r <0) r += MOD ;
 					if (isNZero(r)) {
 						++col_density[ tmp[k].first ];
 						toto[rs] =tmp[k];
@@ -363,7 +413,6 @@ namespace LinBox
 				//                 LigneA[jj].reactualsize(Nj);
 
 			}
-			Vecteur Vzer(0);
 
 			unsigned long last = Ni-1;
 			long c(0);
@@ -374,7 +423,7 @@ namespace LinBox
 
 
 			for (unsigned long k=0; k<last;++k) {
-				if ( ! (k % maxout) ) commentator.progress (k);
+				if ( ! (k % maxout) ) commentator().progress (k);
 
 
 				unsigned long p=k;
@@ -385,20 +434,23 @@ namespace LinBox
 					for(p=k; p<Ni; ++p)
 						psizes.insert( psizes.end(), std::pair<long,long>( LigneA[p].size(), p) );
 
-#if 0
-#ifdef  GIVARO_PRANK_OUT
-					std::cerr << "------------  ordered rows -----------" << std::endl;
+#ifdef  LINBOX_pp_gauss_steps_OUT
+					std::cerr << "------------ ordered rows " << k << " -----------" << std::endl;
 					for( std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter)
 					{
-						std::cerr << (*iter).first << " : " <<  (*iter).second << std::endl;
+						std::cerr << (*iter).second << " : #" << (*iter).first << std::endl;
 					}
-					std::cerr << "--------------------------------------" << std::endl;
-#endif
+					std::cerr << "---------------------------------------" << std::endl;
 #endif
 
+
+
+                    if ( SameColumnPivotingTrait(PRIME, p, LigneA, psizes, indcol, c, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() ) )
+                        break;
 
 					for( typename std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
 						p = (*iter).second;
+
 						CherchePivot( PRIME, LigneA[p], indcol, c , col_density) ;
 						if (c > -2 ) break;
 					}
@@ -406,37 +458,47 @@ namespace LinBox
 					if (c > -2) break;
 					for(unsigned long ii=k;ii<Ni;++ii)
 						for(unsigned long jjj=LigneA[ii].size();jjj--;)
-							LigneA[ii][jjj].second = ( LigneA[ii][jjj].second / PRIME);
-					MOD = MOD / PRIME;
+							LigneA[ii][jjj].second /= PRIME;
+					MOD /= PRIME;
 					ranks.push_back( indcol );
 					++ind_pow;
-#ifdef GIVARO_PRANK_OUT
+#ifdef LINBOX_PRANK_OUT
 					std::cerr << "Rank mod " << (unsigned long)PRIME << "^" << ind_pow << " : " << indcol << std::endl;
 					if (MOD == 1) std::cerr << "wattadayada inhere ?" << std::endl;
 #endif
 
 				}
 				if (p != k) {
+#ifdef  LINBOX_pp_gauss_steps_OUT
+					std::cerr << "------------ permuting rows " << p << " and " << k << " ---" << std::endl;
+#endif
 					Vecteur vtm = LigneA[k];
 					LigneA[k] = LigneA[p];
 					LigneA[p] = vtm;
 				}
+#ifdef  LINBOX_pp_gauss_steps_OUT
+                if (c != (long(indcol)-1L))
+					std::cerr << "------------ permuting cols " << (indcol-1) << " and " << c << " ---" << std::endl;
+#endif
 				if (c != -1)
 					for(unsigned long l=k + 1; l < Ni; ++l)
 						FaireElimination(MOD, LigneA[l], LigneA[k], indcol, c, col_density);
 
 
-				//                 LigneA.write(cout << "step[" << k << "], pivot: " << c << std::endl) << endl;
-
-#ifndef GIVARO_PRANK_OUT
-				LigneA[k] = Vzer;
+#ifdef  LINBOX_pp_gauss_steps_OUT
+				LigneA.write(cerr << "step[" << k << "], pivot: " << c << std::endl) << endl;
 #endif
+
+                PreserveUpperMatrixRow(LigneA[k], typename Boolean_Trait<PreserveUpperMatrix>::BooleanType());
 			}
-			CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
+
+            c = -2;
+            SameColumnPivoting(PRIME, LigneA[last], indcol, c, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() );
+            if (c == -2) CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
 			while( c == -2) {
 				ranks.push_back( indcol );
 				for(long jjj=LigneA[last].size();jjj--;)
-					LigneA[last][jjj].second = ( LigneA[last][jjj].second / PRIME);
+					LigneA[last][jjj].second /= PRIME;
 				MOD /= PRIME;
 				CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
 			}
@@ -446,25 +508,40 @@ namespace LinBox
 			}
 
 			//             ranks.push_back(indcol);
-#ifdef GIVARO_JRANK_OUT
+#ifdef LINBOX_pp_gauss_steps_OUT
+            LigneA.write(cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl) << endl;
+#endif
+#ifdef LINBOX_PRANK_OUT
 			std::cerr << "Rank mod " << (unsigned long)FMOD << " : " << indcol << std::endl;
 #endif
-			commentator.stop ("done", 0, "PRGE");
+			commentator().stop ("done", 0, "PRGE");
 
 		}
 
 		template<class Modulo, class BB, class D, class Container>
-		void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container& ranks, BB& SLA, const size_t Ni, const size_t Nj, const D& density_trait)
+		void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container& ranks, BB& SLA, const size_t Ni, const size_t Nj, const D& density_trait, int StaticParameters=0)
 		{
-			gauss_rankin(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
+            if (PRIVILEGIATE_NO_COLUMN_PIVOTING & StaticParameters) {
+                if (PRESERVE_UPPER_MATRIX & StaticParameters) {
+                    gauss_rankin<Modulo,BB,D,Container,true,true>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
+                } else {
+                    gauss_rankin<Modulo,BB,D,Container,true,false>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
+                }
+            } else {
+                if (PRESERVE_UPPER_MATRIX & StaticParameters) {
+                    gauss_rankin<Modulo,BB,D,Container,false,true>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
+                } else {
+                    gauss_rankin<Modulo,BB,D,Container,false,false>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
+                }
+            }
 		}
 
 
 		template<class Modulo, class Matrix, template<class, class> class Container, template<class> class Alloc>
-		Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& operator()(Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& L, Matrix& A, Modulo FMOD, Modulo PRIME)
+		Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& operator()(Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& L, Matrix& A, Modulo FMOD, Modulo PRIME, int StaticParameters=0)
 		{
 			Container<size_t, Alloc<size_t> > ranks;
-			prime_power_rankin( FMOD, PRIME, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
+			prime_power_rankin( FMOD, PRIME, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>(),StaticParameters);
 			L.resize( 0 ) ;
 			size_t MOD = 1;
 			size_t num = 0, diff;
@@ -485,3 +562,12 @@ namespace LinBox
 } // end of LinBox namespace
 
 #endif  //__LINBOX_pp_gauss_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *
@@ -64,7 +62,7 @@ bool testRandom(const Ring& R,
 
 	str << "Testing Smith Form binary(EGV++):";
 
-        commentator.start (str.str ().c_str (), "testSmithform");//, stream1.m ());
+        commentator().start (str.str ().c_str (), "testSmithform");//, stream1.m ());
 
         bool ret = true;
         bool iter_passed = true;
@@ -82,9 +80,9 @@ bool testRandom(const Ring& R,
 
 	 while (stream1) {
 
-                commentator.startIteration ((unsigned)stream1.j ());
+                commentator().startIteration ((unsigned)stream1.j ());
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
                 iter_passed = true;
 
@@ -181,20 +179,20 @@ bool testRandom(const Ring& R,
 
                 if (!iter_passed)
 
-                        commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+                        commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed Smith form is incorrect" << endl;
 
 
 
-                commentator.stop ("done");
+                commentator().stop ("done");
 
-                commentator.progress ();
+                commentator().progress ();
 
 	 }
 
 	 //stream1.reset ();
 
-	  commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSmithform");
+	  commentator().stop (MSG_STATUS (ret), (const char *) 0, "testSmithform");
 
 	  return ret;
 
@@ -217,8 +215,8 @@ int main(int argc, char** argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("SmithFormBinary test suite", "SmithFormBinary");
-	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	commentator().start("SmithFormBinary test suite", "SmithFormBinary");
+	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	{
 		typedef PID_integer Ring;
@@ -227,7 +225,7 @@ int main(int argc, char** argv)
 
 		report << std::endl << "EGV++ algorithm test suite with LinBox/Givaro PID:\n";
 
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
 		RandomDenseStream<Ring> s1 (R, n, iterations);
 
@@ -253,7 +251,7 @@ int main(int argc, char** argv)
 		Ring R;
 
 		report << std::endl << "EGV++ algorithm test suite with NTL_ZZ :\n";
-		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
 		RandomDenseStream<Ring> s1 (R, n, iterations);
 
@@ -271,6 +269,15 @@ int main(int argc, char** argv)
 	}
 #endif
 
-	commentator.stop("SmithFormBinary test suite");
+	commentator().stop("SmithFormBinary test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

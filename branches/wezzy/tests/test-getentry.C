@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-getentry.C
  * Copyright (C) 2002 Bradford Hovinen
@@ -64,7 +62,7 @@ bool testGenericBBgetEntry (const Field &F, size_t n)
 {
 	bool ret = true;
     typename Field::Element s, x, z;
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	F.init(x, 0);
 	F.init(s, 2);
 	F.init(z, 0);
@@ -82,8 +80,8 @@ template <class Field>
 bool testScalarMatrixgetEntry (const Field &F, size_t n)
 {
 	bool ret = true;
-	commentator.start ("Testing scalar matrix getEntry", "", 1);
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	commentator().start ("Testing scalar matrix getEntry", "", 1);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "scalarmatrix getEntry test (using specialization)" << endl;
     typename Field::Element s, t, r, th;
 	F.init(r, 0);
@@ -103,7 +101,7 @@ bool testScalarMatrixgetEntry (const Field &F, size_t n)
 		ret= false;
 	}
 	else ret= true;
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testScalarMatrixgetEntry");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testScalarMatrixgetEntry");
 	return ret;
 }
 
@@ -111,9 +109,9 @@ bool testScalarMatrixgetEntry (const Field &F, size_t n)
 template <class Field>
 bool testSparseMatrixgetEntry (const Field &F, size_t n)
 {
-	commentator.start ("Building sparse matrix", "", 1);
+	commentator().start ("Building sparse matrix", "", 1);
 	bool ret = true;
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
     	typename Field::Element s, t, th;
 	F.init(s, 2);
 	size_t m = (n > 10 ? 10 : n);
@@ -122,8 +120,8 @@ bool testSparseMatrixgetEntry (const Field &F, size_t n)
 	for (size_t i = 0; i <  m; ++i)
 		for (size_t j = 0; j < m; ++j)
 			B.setEntry(i,j,s);
-	commentator.stop ("", "done");
-	commentator.start ("Testing sparse matrix getEntry", "", 1);
+	commentator().stop ("", "done");
+	commentator().start ("Testing sparse matrix getEntry", "", 1);
 	report << "sparse matrix getEntry test (using specialization)" << endl;
         ret = true;
 	getEntry(t, B, 0, 0);
@@ -150,7 +148,7 @@ bool testSparseMatrixgetEntry (const Field &F, size_t n)
 
 		ret = false;
 	}
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSparseMatrixgetEntry");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testSparseMatrixgetEntry");
 	return ret;
 }
 
@@ -167,8 +165,8 @@ static bool testDenseMatrixgetEntry (const Field &F, size_t n)
 	for (size_t i = 0; i <  m; ++i)
 		for (size_t j = 0; j < n; ++j)
 			B.setEntry(i, j, s);
-	commentator.start ("Testing dense matrix getEntry", "", 1);
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	commentator().start ("Testing dense matrix getEntry", "", 1);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "dense matrix getEntry test (using specialization)" << endl;
         ret = true;
         getEntry(t, B, 0, 0);
@@ -195,7 +193,7 @@ static bool testDenseMatrixgetEntry (const Field &F, size_t n)
 
 		ret = false;
 	}
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDenseMatrixgetEntry");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testDenseMatrixgetEntry");
 	return ret;
 }
 
@@ -206,8 +204,8 @@ static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename F
 	typedef vector <typename Field::Element> Vector;
 	typedef Diagonal <Field> Blackbox;
 
-	commentator.start ("Testing diagonal getEntry", "testDiagonalgetEntry", stream.m ());
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	commentator().start ("Testing diagonal getEntry", "testDiagonalgetEntry", stream.m ());
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	VectorDomain<Field> VD (F);
 
@@ -220,7 +218,7 @@ static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename F
 	VectorWrapper::ensureDim (d, stream.dim ());
 
 	while (stream) {
-		commentator.startIteration ((unsigned)stream.j ());
+		commentator().startIteration ((unsigned)stream.j ());
 
 		stream.next (d);
 
@@ -255,11 +253,11 @@ static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename F
 			report << "ERROR: Computed getEntry is incorrect" << endl;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		commentator().stop ("done");
+		commentator().progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalgetEntry");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalgetEntry");
 
 	return ret;
 }
@@ -273,7 +271,7 @@ bool testSpecialCDgetEntry (const Field &F, size_t n)
 	typedef ScalarMatrix<Field> BB;
 	typedef Diagonal<Field> DD;
     Elt s, x, t, u;
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	F.init(x, 0);
 	F.init(s, 2);
 	F.init(t, 0);
@@ -322,8 +320,8 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.start("getEntry solution test suite", "getEntry");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().start("getEntry solution test suite", "getEntry");
 
 	RandomDenseStream<Field, Vector> stream (F, n, iterations);
 
@@ -334,6 +332,15 @@ int main (int argc, char **argv)
 	if (!testDiagonalgetEntry (F, stream)) pass = false;
 	if (!testSpecialCDgetEntry (F, n)) pass = false;
 
-	commentator.stop("getEntry solution test suite");
+	commentator().stop("getEntry solution test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

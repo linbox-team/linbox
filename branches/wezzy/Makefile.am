@@ -46,7 +46,7 @@ doc/linbox-dev-html/pages.html:
 	(cd doc; ${MAKE} docs_dev)
 
 examples:
-	(cd examples; ${MAKE} examples)
+	(  ${MAKE} ; cd examples; ${MAKE} examples)
 
 benchmarks:
 	(cd benchmarks; ${MAKE} benchmarks)
@@ -59,10 +59,11 @@ bundled:
 	sh auto-install.sh
 
 uninstall-hook:
-	(test -d "$(includedir)/linbox" && rmdir "$(bindir)" \
+	(test -d "$(includedir)/linbox" && rmdir  "$(bindir)" \
 		"$(libdir)" \
 		"$(mandir)/man1" \
 		"$(mandir)" \
+		"$(includedir)/linbox/algorithms/gauss" \
 		"$(includedir)/linbox/algorithms" \
 		"$(includedir)/linbox/blackbox" \
 		"$(includedir)/linbox/element" \
@@ -79,9 +80,11 @@ uninstall-hook:
 		"$(includedir)/linbox/util/formats" \
 		"$(includedir)/linbox/util" \
 		"$(includedir)/linbox/vector" \
-		"$(includedir)/linbox" ) || true
+		"$(includedir)/linbox" \
+		"$(datarootdir)/" \
+		"$(includedir)" ) || true
 
-VERSION=1.3.0
+VERSION=1.3.1
 
 EXTRA_DIST=auto-install.sh
 #incremente-versions

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/randiter/mersenne-twister.h
  * Copyright (C) 2002 Bradford Hovinen
  *
@@ -53,19 +51,23 @@ namespace LinBox
 	public:
 		MersenneTwister (uint32_t seed = 0);
 
-		uint32_t reload ();
+		uint32_t reload (); // public?
+		// random in [0..2^32) ?
 		uint32_t randomInt ();
 		uint32_t randomInt () const
 		{ return const_cast<MersenneTwister&>(*this).randomInt();}
 
+		// random in [start..end).
 		uint32_t randomIntRange (uint32_t start, uint32_t end);
 		uint32_t randomIntRange (uint32_t start, uint32_t end) const
 		{ return const_cast<MersenneTwister&>(*this).randomIntRange(start,end); }
 
+		// random in [0..1] in some sense ?
 		double randomDouble ();
 		double randomDouble ()  const
 		{ return const_cast<MersenneTwister&>(*this).randomDouble(); }
 
+		// random in [start..end] in some sense ?
 		double randomDoubleRange (double start, double end)
 		{ return randomDouble () * (end - start) + start; }
 		double randomDoubleRange (double start, double end) const
@@ -85,4 +87,13 @@ namespace LinBox
 #include "linbox/randiter/mersenne-twister.C"
 #endif
 #endif // __LINBOX_mersenne_twister_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

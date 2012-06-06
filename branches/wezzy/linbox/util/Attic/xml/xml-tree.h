@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Rich Seagraves - xml-tree.h.  A DOM like XML parsing class that wraps
  * around the expat XML parser.  This file contains the declarations and
  * definitions of many helper classes and types.  The type of interest is
@@ -1117,4 +1115,13 @@ void finish(void* dataforme, const char *tagname)
 #endif
 
 #endif //__LINBOX_xml_tree_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

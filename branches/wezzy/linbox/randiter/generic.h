@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/randiter/generic.h
  * 2004 june, bds and Dan Roche starting from:
  * Copyright (C) 1999-2001 William J Turner,
@@ -48,6 +46,7 @@
  * @ingroup randiter
  * @brief Genric random iterator.
  */
+#error "deprecated and not tested"
 
 #ifndef __LINBOX_generic_randiter_H
 #define __LINBOX_generic_randiter_H
@@ -107,7 +106,7 @@ namespace LinBox
 
 			linbox_check(cardinality>0); // could be -1
 
-			commentator.report (10, INTERNAL_DESCRIPTION)
+			commentator().report (10, INTERNAL_DESCRIPTION)
 			<< "Created random generator with size " << _size
 			<< " and seed " << _seed << std::endl;
 
@@ -168,4 +167,13 @@ namespace LinBox
 	}; // class GenericRandIter
 }
 #endif //__LINBOX_generic_randiter_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

@@ -1,6 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-
 /* linbox/util/commentator.C
  * Copyright (C) 1999 B. David Saunders,
  *                    Jean-Guillaume Dumas
@@ -89,10 +86,10 @@ namespace LinBox
 		return 0;
 	}
 
-#ifndef DISABLE_COMMENTATOR
 	Commentator::Commentator () :
 		// cnull (new nullstreambuf)
-		cnull ("/dev/null")
+// 		cnull ("/dev/null")
+		cnull (0)
 		, _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		_show_timing (true), _show_progress (true), _show_est_time (true)
 	{
@@ -108,7 +105,8 @@ namespace LinBox
 	}
 	Commentator::Commentator (std::ostream& out) :
 		// cnull (new nullstreambuf)
-		cnull ("/dev/null")
+// 		cnull ("/dev/null")
+		cnull (0)
 		, _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		_show_timing (true), _show_progress (true), _show_est_time (true)
 	{
@@ -752,8 +750,16 @@ namespace LinBox
 		return int(n);
 	}
 
-#endif
-	// Default global commentator
-	Commentator commentator ;
+// 	// Default global commentator
+// 	Commentator commentator ;
 }
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

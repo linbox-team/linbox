@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /*
  * examples/omp_block_rank.C
  *
@@ -211,63 +209,15 @@ void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::BlasMatrixDomain
 #include "linbox/algorithms/whisart_trace.h"
 
 
-#if 0 // now in LinBox
-template<class Field, class BB>
-void WhisartTrace(
-		  typename Field::Element& trace,
-		  const Field& F,
-		  const LinBox::Diagonal<Field>& ExtD,
-		  const BB& A,
-		  const LinBox::Diagonal<Field>& InD) {
-	// Trace of ExtD B InD B^T ExtD
-	// is sum ExtD_i^2 B_{i,j} InD_j
-	F.init(trace, 0);
-	for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
-	    it != A.IndexedEnd(); ++it) {
-		typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
-		F.mul(tmp,it.value(),it.value());
-		ExtD.getEntry(e, it.rowIndex(),it.rowIndex());
-		InD.getEntry(i, it.colIndex(),it.colIndex());
-		F.mulin(tmp,e);
-		F.mulin(tmp,e);
-		F.mulin(tmp,i);
-		F.addin(trace, tmp);
-	}
-}
-
-template<class Field, class BB>
-void WhisartTraceTranspose(
-			   typename Field::Element& trace,
-			   const Field& F,
-			   const LinBox::Diagonal<Field>& ExtD,
-			   const BB& A,
-			   const LinBox::Diagonal<Field>& InD) {
-	// Trace of ExtD B^T  InD B ExtD
-	// is sum ExtD_j^2 B_{i,j} InD_i
-	F.init(trace, 0);
-	for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
-	    it != A.IndexedEnd(); ++it) {
-		typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
-		F.mul(tmp,it.value(),it.value());
-		ExtD.getEntry(e, it.colIndex(),it.colIndex());
-		InD.getEntry(i, it.rowIndex(),it.rowIndex());
-		F.mulin(tmp,e);
-		F.mulin(tmp,e);
-		F.mulin(tmp,i);
-		F.addin(trace, tmp);
-	}
-}
-#endif
-
 using namespace Givaro;
 
 
 template<class Field>
 int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 {
-	LinBox::commentator.setMaxDetailLevel (-1);
-	LinBox::commentator.setMaxDepth (-1);
-	LinBox::commentator.setReportStream (std::cerr);
+	LinBox::commentator().setMaxDetailLevel (-1);
+	LinBox::commentator().setMaxDepth (-1);
+	LinBox::commentator().setReportStream (std::cerr);
 
 	OMPTimer chrono1,chrono2,chrono3,chrono4; chrono1.clear(); chrono2.clear(); chrono3.clear(); chrono4.clear();
 
@@ -596,4 +546,13 @@ int main (int argc, char **argv)
 	//     }
 
 }
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

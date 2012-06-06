@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) 2010 LinBox
  * Written by JG Dumas
  *
@@ -91,10 +89,10 @@ namespace LinBox
 
 		//public:
 
-		template<class FMatrix, class IMatrix, class Field>
-		void map (FMatrix & Ap, const IMatrix& A, const Field& F)
+		template<class FMatrix, class IMatrix>
+		void map (FMatrix & Ap, const IMatrix& A)
 		{
-			typename IMatrix::template rebind<Field>()( Ap, A, F);
+			typename IMatrix::template rebind<typename FMatrix::Field>()( Ap, A);
 		}
 
 		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
@@ -103,9 +101,9 @@ namespace LinBox
 
 		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Vect1, class Field, class Vect2>
-		void map (SparseMatrix<Field, Vect2>& Ap, const SparseMatrix<Ring, Vect1>& A, const Field& F)
+		void map (SparseMatrix<Field, Vect2>& Ap, const SparseMatrix<Ring, Vect1>& A)
 		{
-			typename SparseMatrix<Ring,Vect1>::template rebind<Field,Vect2>()( Ap, A, F);
+			typename SparseMatrix<Ring,Vect1>::template rebind<Field,Vect2>()( Ap, A);
 		}
 
 
@@ -120,9 +118,9 @@ namespace LinBox
 		// construct a BlasMatrix over finite fiel, such that Ap - A mod p, where F = Ring / <p>
 
 		template<class Ring, class Field>
-		void map (BlasMatrix<Field> &Ap, const BlasMatrix<Ring>& A, const Field &F)
+		void map (BlasMatrix<Field> &Ap, const BlasMatrix<Ring>& A )
 		{
-			typename BlasMatrix<Ring>::template rebind<Field>()( Ap, A, F);
+			typename BlasMatrix<Ring>::template rebind<Field>()( Ap, A);
 		}
 
 
@@ -133,7 +131,8 @@ namespace LinBox
 		}
 
 		template <class Field, class IPoly, class IMatrix>
-		void map (PolynomialBB< typename IMatrix::template rebind<Field>::other, typename IPoly::template rebind<Field>::other> &Ap,
+		void map (PolynomialBB< typename IMatrix::template rebind<Field>::other,
+			 typename IPoly::template rebind<Field>::other> &Ap,
 			  const PolynomialBB<IMatrix, IPoly> &A, const Field & F)
 		{
 			typename PolynomialBB<IMatrix,IPoly>::template rebind<Field>() (Ap, A, F);
@@ -141,10 +140,9 @@ namespace LinBox
 
 		template <class Field, class Ring>
 		void map (ScalarMatrix<Field> &Ap,
-			  const ScalarMatrix<Ring> &A,
-			  const Field & F)
+			  const ScalarMatrix<Ring> &A)
 		{
-			typename ScalarMatrix<Ring>::template rebind<Field>() (Ap, A, F);
+			typename ScalarMatrix<Ring>::template rebind<Field>() (Ap, A);
 		}
 
 	}
@@ -330,3 +328,12 @@ namespace LinBox
 }
 
 #endif //__LINBOX_matrix_hom_H
+
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+

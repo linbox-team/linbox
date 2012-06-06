@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* ===================================================================
  * Copyright(C) LinBox 2008
  * Written by Jean-Guillaume Dumas
@@ -45,7 +43,7 @@ namespace LinBox
 		typedef GF2 Field;
 		const GF2 F2;
 
-		commentator.start ("Sparse Elimination Upper Triangular Solve over GF(2)", "utrsmGF2");
+		commentator().start ("Sparse Elimination Upper Triangular Solve over GF(2)", "utrsmGF2");
 
 		typename Vector2::const_iterator vec=b.begin();
 		typename Vector1::iterator res=x.begin();
@@ -104,7 +102,7 @@ namespace LinBox
 		//         if (! consistant) throw LinboxError ("upperTriangularSolveBinary returned INCONSISTENT");
 		linbox_check( consistant );
 
-		commentator.stop ("done", NULL, "utrsmGF2");
+		commentator().stop ("done", NULL, "utrsmGF2");
 		return x;
 	}
 
@@ -117,7 +115,7 @@ namespace LinBox
 		typedef _Matrix Matrix;
 		const GF2 F2;
 
-		commentator.start ("Sparse Elimination Lower Triangular Unitary Solve over GF2", "ltrsmGF2");
+		commentator().start ("Sparse Elimination Lower Triangular Unitary Solve over GF2", "ltrsmGF2");
 
 		typename Vector2::const_iterator vec=b.begin();
 		typename Vector1::iterator res=x.begin();
@@ -135,10 +133,19 @@ namespace LinBox
 			F2.assign(*res,tmp);
 		}
 
-		commentator.stop ("done", NULL, "ltrsmGF2");
+		commentator().stop ("done", NULL, "ltrsmGF2");
 		return x;
 	}
 
 }
 #endif //__LINBOX_tri_solve_gf2_INL
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

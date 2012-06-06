@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *  Author: Zhendong Wan
@@ -67,7 +65,7 @@ bool testRandom(const Ring& R,
 
 	str << "Testing Iloipoulos elimination:";
 
-        commentator.start (str.str ().c_str (), "testRandom", stream1.m ());
+        commentator().start (str.str ().c_str (), "testRandom", stream1.m ());
 
         bool ret = true;
 
@@ -85,9 +83,9 @@ bool testRandom(const Ring& R,
 
 	 while (stream1) {
 
-                commentator.startIteration ((unsigned)stream1.j ());
+                commentator().startIteration ((unsigned)stream1.j ());
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
                 iter_passed = true;
 
@@ -256,20 +254,20 @@ bool testRandom(const Ring& R,
 
                 if (!iter_passed)
 
-                        commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+                        commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed Smith form is incorrect" << endl;
 
 
 
-                commentator.stop ("done");
+                commentator().stop ("done");
 
-                commentator.progress ();
+                commentator().progress ();
 
 	 }
 
 	 //stream1.reset ();
 
-	  commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
+	  commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
 
 	  return ret;
 
@@ -299,16 +297,25 @@ int main(int argc, char** argv)
 
         Ring R;
 
-	commentator.start("Ilioloulos Smith Form test suite", "Ilioloulos");
+	commentator().start("Ilioloulos Smith Form test suite", "Ilioloulos");
 
-        commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+        commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
         RandomDenseStream<Ring> s1 (R, n, iterations);
 
         if (!testRandom(R, s1)) pass = false;
 
-	commentator.stop("Ilioloulos Smith Form test suite");
+	commentator().stop("Ilioloulos Smith Form test suite");
         return pass ? 0 : -1;
 
 }
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

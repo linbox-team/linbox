@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *    test-ntl-sylvester.C
  *    Copyright (C) 2003 Austin Lobo, B. David Saunders
@@ -53,8 +51,8 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
-	ostream &report = LinBox::commentator.report(
+	LinBox::commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	ostream &report = LinBox::commentator().report(
 						     LinBox::Commentator::LEVEL_IMPORTANT,
 						     INTERNAL_DESCRIPTION );
 	bool pass = true;
@@ -73,7 +71,7 @@ int main(int argc, char* argv[])
 		END_OF_ARGUMENTS
 	};
 
-	parseArguments (argc, argv, args);
+	LinBox::parseArguments (argc, argv, args);
 
 
 
@@ -88,7 +86,7 @@ int main(int argc, char* argv[])
 	report <<  "Dimension (m+n) is " << m+n << std::endl;
 	NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
 
-	LinBox::commentator.start("Sylvester black box test suite", "Sylvester");
+	LinBox::commentator().start("Sylvester black box test suite", "Sylvester");
 	report <<"Dimension(m+n)= " << m+n << "\t modulus= " << q << endl;
 
 	// typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
@@ -171,8 +169,17 @@ int main(int argc, char* argv[])
 	report <<"<====\tDone Sylvester matrix black box test suite" << endl;
 
 
-	LinBox::commentator.stop("Sylvester black box test suite");
+	LinBox::commentator().stop("Sylvester black box test suite");
 	return pass ? 0 : -1;
 
 }
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

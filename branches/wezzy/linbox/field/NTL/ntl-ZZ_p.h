@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/field/ntl.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
@@ -8,20 +6,20 @@
  * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -54,22 +52,21 @@
 #include "linbox/field/field-traits.h"
 
 
-// Namespace in which all LinBox library code resides
-namespace LinBox
+#include <givaro/givcaster.h>
+namespace Givaro
 {
 
-	//@{
 
-	/** Conversion of field element to an integer.
+	/** Conversion of field element to an Integer.
 	 * This function assumes the output field element x has already been
 	 * constructed, but that it is not already initialized.
 	 * This done by converting to a std::string : inefficient but correct.
-	 * @return reference to integer.
-	 * @param x reference to integer to contain output (reference returned).
+	 * @return reference to Integer.
+	 * @param x reference to Integer to contain output (reference returned).
 	 * @param y constant reference to field element.
 	 */
 	template <>
-	integer& Caster(integer& x, const NTL::ZZ_p& y)
+	Integer& Caster(Integer& x, const NTL::ZZ_p& y)
 	{
 		NTL::ZZ iy = y._ZZ_p__rep;
 
@@ -82,7 +79,7 @@ namespace LinBox
 
 		x = 0;
 		for (long i = 0; i < nb; i++) {
-			x += LinBox::integer( (unsigned long)txt[i] )<<(8*i) ;
+			x += Integer( (unsigned long)txt[i] )<<(8*i) ;
 		}
 		delete [] txt;
 		return x;
@@ -96,18 +93,18 @@ namespace LinBox
 		return x;
 	}
 
-	/**\brief Initialization of field element from an integer.
+	/**\brief Initialization of field element from an Integer.
 	 * Behaves like C++ allocator construct.
 	 * This function assumes the output field element x has already been
 	 * constructed, but that it is not already initialized.
 	 * This done by converting to a std::string : inefficient but correct.
 	 * @return reference to field element.
 	 * @param x field element to contain output (reference returned).
-	 * @param y integer.
+	 * @param y Integer.
 	 \ingroup field
 	 */
 	template <>
-	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const integer& y)
+	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const Integer& y)
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ( (static_cast<const std::string>(y)).c_str() ) );
 	}
@@ -131,8 +128,12 @@ namespace LinBox
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
+} // namespace Givaro
 
-	//@} doc of NTL_ZZ_p
+
+// Namespace in which all LinBox library code resides
+namespace LinBox
+{
 
 
 	class NTL_ZZ_p_Initialiser {
@@ -181,6 +182,8 @@ namespace LinBox
 		 * These specializations allow the \ref UnparametricField template class to be
 		 * used to wrap NTL's <code>ZZ_p</code> class as a LinBox field.
 		 */
+		//@{
+		//! @param q,e
 		NTL_ZZ_p(integer q, size_t e = 1) :
 			NTL_ZZ_p_Initialiser(q,e),Father_t ()
 			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mOne(-one)
@@ -188,16 +191,20 @@ namespace LinBox
 			// no default - allow initialization of ZZ_p directly by user.
 		}
 
+		//! @param d,e
 		NTL_ZZ_p( NTL::ZZ d, size_t e = 1) :
 			NTL_ZZ_p_Initialiser(d),Father_t()
 			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mOne(-one)
 		{
 			linbox_check(e == 1);
 		}
+
+		//! NULL constructor
 		NTL_ZZ_p() :
 			NTL_ZZ_p_Initialiser(), Father_t()
 			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mOne(-one)
 		{}
+		//@}
 
 		Element& init(Element& x, const integer& y) const
 		{
@@ -404,7 +411,15 @@ namespace LinBox
 			<< Element::modulus();
 		}
 
-		std::ostream &write (std::ostream &os, const Element &x) const { return FFPACK::UnparametricOperations<Element>::write(os,x); }
+		/** Print field.
+		 * @return output stream to which field is written.
+		 * @param os  output stream to which field is written.
+		 * @param x
+		 */
+		std::ostream &write (std::ostream &os, const Element &x) const
+		{
+		   	return FFPACK::UnparametricOperations<Element>::write(os,x);
+		}
 	};
 
 	template <class Ring>
@@ -471,4 +486,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_field_ntl_zz_p_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  * author: Zhendong Wan
@@ -176,7 +174,7 @@ namespace LinBox
 			FBlackbox fbb(M, F);
 			minpoly (fp, fbb);
 			if ((int)fp.size() - 1 != degree) {
-				commentator.report (Commentator::LEVEL_IMPORTANT,
+				commentator().report (Commentator::LEVEL_IMPORTANT,
 						    INTERNAL_DESCRIPTION) << "Bad prime.\n";
 				continue;
 			}
@@ -184,7 +182,7 @@ namespace LinBox
 		}
 
 		cra. result (y);
-		// commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) <<  "Number of primes needed: " << cra. steps() << std::endl;
+		// commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) <<  "Number of primes needed: " << cra. steps() << std::endl;
 		return y;
 	}
 
@@ -221,7 +219,7 @@ namespace LinBox
 			FBlackbox fbb(M,F);
 			minpolySymmetric (fp, fbb);
 			if ((int)fp.size() - 1 != degree) {
-				commentator.report (Commentator::LEVEL_IMPORTANT,
+				commentator().report (Commentator::LEVEL_IMPORTANT,
 						    INTERNAL_DESCRIPTION) << "Bad prime.\n";
 				continue;
 			}
@@ -309,7 +307,7 @@ namespace LinBox
 			FFPACK::MinPoly( F, poly, n, FA, n, X, n, Perm);
 
 			if(poly. size() != degree + 1) {
-				commentator.report (Commentator::LEVEL_IMPORTANT,
+				commentator().report (Commentator::LEVEL_IMPORTANT,
 						    INTERNAL_DESCRIPTION) << "Bad prime.\n";
 				continue;
 			}
@@ -361,3 +359,12 @@ namespace LinBox
 } // LinBox
 
 #endif //__LINBOX_minpoly_integer_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

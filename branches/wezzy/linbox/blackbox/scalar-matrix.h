@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/scalar.h
  * Copyright (C) 2002 by -bds
  * evolved from diagonal.h written by William J Turner and Bradford Hovinen
@@ -61,14 +59,14 @@ namespace LinBox
 		typedef ScalarMatrix<_Field> Self_t;
 
 		/*  In each specialization, I must define suitable constructor(s) and
-		    BlackboxArchetype<Vector> * clone() const;
-		    Vector& apply(Vector& y, Vector& x) const;
-		    Vector& applyTranspose(Vector& y, Vector& x) const;
-		    size_t rowdim(void) const;
-		    size_t coldim(void) const;
-		    Field& field() const;
-		    ...rebind...
-		    */
+		 *  BlackboxArchetype<Vector> * clone() const;
+		 *  Vector& apply(Vector& y, Vector& x) const;
+		 *  Vector& applyTranspose(Vector& y, Vector& x) const;
+		 *  size_t rowdim(void) const;
+		 *  size_t coldim(void) const;
+		 *  Field& field() const;
+		 *  ...rebind...
+		 */
 
 		/// Constructs an initially 0 by 0 matrix.
 		ScalarMatrix ()	:
@@ -126,11 +124,11 @@ namespace LinBox
 		struct rebind {
 			typedef ScalarMatrix<_Tp1> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			void operator() (other & Ap, const Self_t& A)
 			{
-				Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 				typename _Tp1::Element e;
-				F.init(e,0UL);
+				Ap.field().init(e,0UL);
 				hom.image (e, A._v);
 				Ap.setScalar(e);
 			}
@@ -140,7 +138,7 @@ namespace LinBox
 		ScalarMatrix (const ScalarMatrix<_Tp1>& S, const Field &F) :
 			_field(F), _n(S.rowdim())
 		{
-			typename ScalarMatrix<_Tp1>::template rebind<Field>() (*this, S, F);
+			typename ScalarMatrix<_Tp1>::template rebind<Field>() (*this, S);
 		}
 
 
@@ -265,4 +263,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_scalar_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

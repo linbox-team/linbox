@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* sn-rational-solver.h */
 
 /* Copyright (C) 2011 LinBox
@@ -249,7 +247,7 @@ namespace LinBox {
 			writeVec(numx, "numx", 0, 10);
 			std::cerr << denx << std::endl;
 			writeVec(num, "num");
-			std::cerr << "den: (large)" << std::endl;// << den << endl;
+			std::cerr << "den: " /*(large)" << std::endl;*/ << den << std::endl;
 #endif
 
 			if (recon_success) {
@@ -332,3 +330,12 @@ namespace LinBox {
 } // namespace LinBox
 
 #endif // __LINBOX_rational_solver_sn_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

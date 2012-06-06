@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/field/modular-balanced-double.h
  * Copyright (C) 2003 Pascal Giorgi
  *               2005,2008 Clement Pernet
@@ -8,20 +6,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -90,9 +88,8 @@ namespace LinBox
 	class ModularBalanced<double> : public FieldInterface,
 	      public FFPACK::ModularBalanced<double> {
 
-	      protected:
-
 	      public:
+		      typedef FFPACK::ModularBalanced<double> Father_t ;
 		      friend class FieldAXPY<ModularBalanced<double> >;
 		      friend class DotProductDomain<ModularBalanced<double> >;
 		      friend class MultiModDouble;
@@ -105,8 +102,8 @@ namespace LinBox
 			      return ClassifyRing<ModularBalanced<double> >::categoryTag();
 		      }
 
-		      ModularBalanced (const integer& p) :
-			      FFPACK::ModularBalanced<double>((unsigned long)p)
+		      ModularBalanced (const integer& p, int e = 1) :
+			      Father_t((unsigned long)p)
 		      {
 #ifdef DEBUG
 			      if (p > (integer) ULONG_MAX)
@@ -119,27 +116,25 @@ namespace LinBox
 
 		      }
 
+		      using Father_t::cardinality ;
 		      integer &cardinality (integer &c) const
 		      {
 			      return c = integer(modulus);
 		      }
 
+		      using Father_t::characteristic ;
 		      integer &characteristic (integer &c) const
 		      {
 			      return c = integer(modulus);
 		      }
 
-		      long unsigned characteristic(long unsigned int&p) const { return FFPACK::ModularBalanced<double>::characteristic(p) ; }
-		      double & convert(double &x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
-		      float & convert(float&x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
-		      unsigned long characteristic()const{return FFPACK::ModularBalanced<double>::characteristic();}
-		      unsigned long cardinality()const{return FFPACK::ModularBalanced<double>::cardinality();}
-
+		      using Father_t::convert ;
 		      integer &convert (integer &x, const Element &y) const
 		      {
 			      return x = integer (y);
 		      }
 
+		      using Father_t::init ;
 		      Element &init (Element &x, const integer &y) const
 		      {
 			      x = (Element)(y%lmodulus);
@@ -335,4 +330,13 @@ namespace LinBox
 }
 
 #endif //__LINBOX_modular_balanced_double_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

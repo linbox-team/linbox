@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-det.C
  * Copyright (C) 2002 Bradford Hovinen
@@ -69,7 +67,7 @@ using namespace LinBox;
 
 static bool testDiagonalMatrix (size_t n)
 {
-	commentator.start ("Testing rational matrix factory for dense matrix", "testRationalMatrixFactory");
+	commentator().start ("Testing rational matrix factory for dense matrix", "testRationalMatrixFactory");
 
 	bool ret = true;
 	size_t j;
@@ -91,7 +89,7 @@ static bool testDiagonalMatrix (size_t n)
 	integer ratnorm,aprimnorm,atildenorm;
 	FA.getNorms(ratnorm,aprimnorm,atildenorm);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "True rational norm: " << n << endl;
 	report << "Computed rational norm: " << ratnorm << endl;
@@ -104,7 +102,7 @@ static bool testDiagonalMatrix (size_t n)
 
 	if ( (ratnorm != (Integer)n) || ( aprimnorm != lcm_n) || (atildenorm != 1) ) {
 		ret = false;
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Norms are incorrect" << endl;
 	}
 
@@ -119,7 +117,7 @@ static bool testDiagonalMatrix (size_t n)
 
 	if ( (omega != n) || (rat_omega != n-1) ) {
 		ret = false;
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			 << "ERROR: Number of rational/non-zero elements is incorrect" << endl;
 	}
 
@@ -131,7 +129,7 @@ static bool testDiagonalMatrix (size_t n)
 
 	if (d != lcm_n) {
 		ret = false;
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Common denominator is incorrect" << endl;
 	}
 
@@ -141,7 +139,7 @@ static bool testDiagonalMatrix (size_t n)
 		report << "Computed common denominator for " << j+1 <<  "th row: " << d << endl;
 		if (d != (integer)(j+1)) {
 			ret  = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Common denominator for " << j+1 <<  "th row is incorrect" << endl;
 		}
 	}
@@ -159,17 +157,17 @@ static bool testDiagonalMatrix (size_t n)
 	for (j=0; j <n; ++j) {
 		if (Aprim.getEntry(j,j) != lcm_n/(j+1)) {
 			ret  = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Aprim is bad at " << j+1 <<  "diagonal entry" << endl;
 		}
 		if (Atilde.getEntry(j,j) != 1) {
 			ret  = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Atilde is bad at " << j+1 <<  "diagonal entry" << endl;
 		}
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRationalMatrixFactory");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRationalMatrixFactory");
 
 	return ret;
 }
@@ -191,14 +189,23 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Rational Matrix Factory test suite", "rmf");
+	commentator().start("Rational Matrix Factory test suite", "rmf");
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!testDiagonalMatrix( n )) pass = false;
 
-	commentator.stop("Rational Matrix Factory test suite");
+	commentator().stop("Rational Matrix Factory test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

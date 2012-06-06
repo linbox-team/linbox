@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/randiter/gf2.h
  * Copyright (C) 2003 Bradford Hovinen
  *
@@ -7,20 +5,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -43,16 +41,6 @@
 #include "linbox/util/commentator.h"
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/vector/bit-vector.h"
-
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <string>
-
-#endif
 
 namespace LinBox
 {
@@ -106,7 +94,9 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		bool &random (bool &a)  const
-		{ return a = MT.randomIntRange (0, 2); }
+		{
+			return a = MT.randomIntRange (0, 2);
+		}
 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
@@ -162,7 +152,7 @@ namespace LinBox
 	template<size_t bitsize>
 	struct MTrandomInt {
 		template<typename M32Twister>
-		unsigned __LINBOX_INT32 operator() (M32Twister& MT) const
+		uint32_t operator() (M32Twister& MT) const
 		{
 			return MT.randomInt();
 		}
@@ -171,9 +161,9 @@ namespace LinBox
 	template<>
 	struct MTrandomInt<64> {
 		template<typename M32Twister>
-		unsigned __LINBOX_INT64 operator() (M32Twister& MT) const
+		uint64_t operator() (M32Twister& MT) const
 		{
-			unsigned __LINBOX_INT64 tmp = MT.randomInt();
+			uint64_t tmp = MT.randomInt();
 			tmp <<=32;
 			return tmp += MT.randomInt();
 		}
@@ -182,4 +172,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_randiter_gf2_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

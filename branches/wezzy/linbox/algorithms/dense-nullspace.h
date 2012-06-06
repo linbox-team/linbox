@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) 2010 LinBox
  * Written by <brice.boyer@imag.fr>
  *
@@ -24,7 +22,7 @@
  * ========LICENCE========
  */
 
-/** \file linbox/algorithm/dense-nullspace.h
+/** \file algorithms/dense-nullspace.h
  * @ingroup algorithm
  *
  * @brief We provide the right or left nullspace (kernel or cokernel) of a dense matrix.
@@ -113,4 +111,13 @@ namespace LinBox
 #include "dense-nullspace.inl"
 
 #endif // __LINBOX_dense_nullspace_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

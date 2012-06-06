@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* config-blas.h
  * Copyright (C) 2005  Pascal Giorgi
  *               2007  Clement Pernet
@@ -29,21 +27,31 @@
 #define __LINBOX_config_blas_H
 
 #include <fflas-ffpack/config-blas.h>
+#include <fflas-ffpack/fflas-ffpack-config.h>
 
-#ifdef __FFLAFLAS_HAVE_BLAS
+#ifdef __FFLASFFPACK_HAVE_BLAS
 #define __LINBOX_HAVE_BLAS 1
 #endif
 
-#ifdef __FFLAFLAS_HAVE_CBLAS
+#ifdef __FFLASFFPACK_HAVE_CBLAS
 #define __LINBOX_HAVE_CBLAS 1
 #endif
 
-#ifdef __FFLAFLAS_HAVE_LAPACK
+#ifdef __FFLASFFPACK_HAVE_LAPACK
 #define __LINBOX_HAVE_LAPACK 1
 #endif
 
-#ifdef __FFLAFLAS_HAVE_CLAPACK
+#ifdef __FFLASFFPACK_HAVE_CLAPACK
 #define __LINBOX_HAVE_CLAPACK 1
 #endif
 
 #endif //__LINBOX_config_blas_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

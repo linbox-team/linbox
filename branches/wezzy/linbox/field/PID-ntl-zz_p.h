@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) 2010 LinBox
  * written by bds
  *
@@ -28,7 +26,7 @@
 #ifndef __LINBOX_ntl_pid_zz_p_H
 #define __LINBOX_ntl_pid_zz_p_H
 
-#include "linbox/field/ntl-lzz_p.h"
+#include "linbox/field/NTL/ntl-lzz_p.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include <NTL/ZZ.h>
@@ -83,4 +81,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_ntl_pid_zz_p_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

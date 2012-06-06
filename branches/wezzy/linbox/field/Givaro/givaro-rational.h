@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/field/givaro-rational.h
  * Copyright (C) 2004 Gilles Villard
  *
@@ -81,6 +79,12 @@ namespace LinBox
 			return x=Element(y);
 		}
 
+        std::istream &read(std::istream & s, Element &a) const
+		{
+            s >> a;
+            return s;
+		}
+
 		integer& convert(integer& i, const Element& r) const
 		{
 			return i=r.nume();
@@ -128,7 +132,7 @@ namespace LinBox
 		Hom(const Source& S, const Target& T) :
 			_source (S), _target(T)
 		{
-}
+		}
 		Elt& image(Elt& t, const SrcElt& s)
 		{
 			_source. get_num (num, s);
@@ -145,24 +149,26 @@ namespace LinBox
 				_target. init (t, num);
 				return _target. divin (t, tmp);
 
-}
+			}
 			// 			_target. init (t, den);
 			// 			return _target. invin (t);
 
-}
+		}
 		SrcElt& preimage(SrcElt& s, const Elt& t)
 		{
 			_target. convert (num, t);
 			_source. init (s, num);
 			return s;
 
-}
-		const Source& source() {
-return _source;
-}
-		const Target& target() {
-return _target;
-}
+		}
+		const Source& source()
+		{
+			return _source;
+		}
+		const Target& target()
+		{
+			return _target;
+		}
 
 	protected:
 		integer num, den;
@@ -211,4 +217,13 @@ return _target;
 }
 
 #endif // __LINBOX_givaro_rational_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

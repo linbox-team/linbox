@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *
@@ -60,11 +58,11 @@ int main(int argc, char* argv[])
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Toeplitz determinant test suite", "Toeplitz det");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().start("Toeplitz determinant test suite", "Toeplitz det");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	ostream& report = commentator.report();
+	ostream& report = commentator().report();
 	bool pass = true;
 #ifdef __LINBOX_HAVE_NTL
 	srand((unsigned)time(0));
@@ -110,7 +108,7 @@ int main(int argc, char* argv[])
 	report << endl;
 	if( pass ) report << "<====== Passed!" << endl;
 	else report << "<====== Failed!" << endl;
-	commentator.stop("toeplitz determinant test suite");
+	commentator().stop("toeplitz determinant test suite");
 	return (pass ? 0 : 1);
 
 #if 0
@@ -143,6 +141,15 @@ int main(int argc, char* argv[])
 	toeplitz_determinant( F, res, T, 4 );
 	*/
 	//cout << res << endl;
-	commentator.stop("toeplitz determinant test suite");
+	commentator().stop("toeplitz determinant test suite");
 #endif
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

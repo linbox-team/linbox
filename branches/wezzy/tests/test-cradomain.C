@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* Copyright (C) 2010 LinBox
  *
@@ -212,7 +210,9 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 	cra( Res.getWritePointer(), iteration, genprime);
 	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getWritePointer() );
 
-	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+	if (locpass) {
+		report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+	}
 	else {
 		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
 	}
@@ -223,7 +223,7 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 bool TestCra(int N, int S, size_t seed)
 {
 
-	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT,
+	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
 	// std::ostream &report = std::cout;
 
@@ -328,12 +328,21 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	LinBox::commentator.start("CRA-Domain test suite", "CRADom");
+	LinBox::commentator().start("CRA-Domain test suite", "CRADom");
 	bool pass = true;
 
 	for(int i=0; pass && i<iterations; ++i)
 		pass &= TestCra((int)n,(int)s,seed);
 
-	LinBox::commentator.stop(MSG_STATUS (pass), "CRA-Domain test suite");
+	LinBox::commentator().stop(MSG_STATUS (pass), "CRA-Domain test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

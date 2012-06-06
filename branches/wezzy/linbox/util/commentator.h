@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/util/commentator.h
  * Copyright (C) 1999 B. David Saunders,
  *                    Jean-Guillaume Dumas
@@ -115,28 +113,28 @@ namespace LinBox
 	 \code
 	 void myFunction ()
 	 {
-	     commentator.start ("Doing important work", "myFunction", 100);
+	     commentator().start ("Doing important work", "myFunction", 100);
 	     for (int i = 0; i < 100; i++) {
 	         ...
-	         commentator.progress ();
+	         commentator().progress ();
 	     }
-	     commentator.stop (MSG_DONE, "Task completed successfully");
+	     commentator().stop (MSG_DONE, "Task completed successfully");
 	 }
 	 \endcode
 	 *
-	 * In the above example, the call to commentator.start () informs the
+	 * In the above example, the call to commentator().start () informs the
 	 * commentator that some new activity has begun. This may be invoked
 	 * recursively, an the commentator keeps track of nested activities. The
 	 * user may elect to disable the reporting of any activities below a
-	 * certain depth of nesting. The call to commentator.stop () informs the
+	 * certain depth of nesting. The call to commentator().stop () informs the
 	 * commentator that the activity started above is finished.
 	 *
-	 * The call to commentator.progress () indicates that one step of the
+	 * The call to commentator().progress () indicates that one step of the
 	 * activity is complete. The commentator may then output data to the
 	 * console to that effect. This allows the easy implementation of
 	 * progress bars and other reporting tools.
 	 *
-	 * In addition, commentator.report () allows reporting general messages,
+	 * In addition, commentator().report () allows reporting general messages,
 	 * such as warnings, errors, and descriptions of internal progress.
 	 *
 	 * By default, there are two reports: a brief report that outputs to
@@ -791,16 +789,24 @@ namespace LinBox
 		void dumpConfig () const;   // Dump the contents of configuration to stderr
 	};
 
-	// Default global commentator
-	extern Commentator commentator;
+	// Default static commentator is now common to enabled or disabled
+// 	extern Commentator commentator;
 }
 
-#ifdef LinBoxSrcOnly
-#include "linbox/util/commentator.C"
-#endif
+// #ifdef LinBoxSrcOnly
+// #include "linbox/util/commentator.C"
+// #endif
+#include "linbox/util/commentator.inl"
+
+#define aside commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTON)
+// Usage: "aside << stuff" or "ostream& report = aside; report << stuff"
 
 #else //DISABLE_COMMENTATOR
 
+#define aside NoStream()
+struct NoStream {};
+template<typename T>
+NoStream & operator<< (NoStream& o, const T & x) { return o; }
 #if 0
 #  define Commentator CommentatorDisabled
 #  define MessageClass MessageClassDisabled
@@ -843,9 +849,12 @@ namespace LinBox
 		inline Commentator () :
 			cnull (new nullstreambuf)
 		{}
-#endif
 		inline Commentator () :
 			cnull ("/dev/null")
+		{}
+#endif
+		inline Commentator (std::ostream& out = std::cerr) :
+			cnull (0)
 		{}
 		inline  ~Commentator ()
 	       	{}
@@ -977,11 +986,62 @@ namespace LinBox
 		MessageClass _msgcls;
 	};
 
-	// Default global commentator
-	extern Commentator commentator;
-	//static Commentator commentator;
+// 	// Default global commentator
+// 	extern Commentator commentator;
+// 	//static Commentator commentator;
 }
 
 #endif // DISABLE_COMMENTATOR
 
+namespace LinBox 
+{
+	// Default static commentator
+    Commentator& commentator() {
+        static Commentator internal_static_commentator;
+        return internal_static_commentator;
+    }   
+    Commentator& commentator(std::ostream& stream) {
+        static Commentator internal_static_commentator(stream);
+        return internal_static_commentator;
+    }   
+}
+
+
+
+
+#include "fflas-ffpack/utils/args-parser.h"
+namespace LinBox 
+{
+    void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = true) {
+        for (int i = 1; i < argc; ++i) {
+            if (argv[i][0] == '-') {
+                if (argv[i][1] == 0) {
+                    LinBox::commentator().setReportStream (std::cout);
+                    LinBox::commentator().setBriefReportStream (std::cout);
+                } else {
+                        // Skip the argument next to "-xxx"
+                        // except if next argument is a switch
+                    if ( ((i+1) < argc) && 
+                         (argv[i+1][0] != '-') ) { 
+                        ++i;
+                    }
+                }
+            } else {
+                LinBox::commentator().setDefaultReportFile (argv[i]);
+                LinBox::commentator().setBriefReportStream(std::cout);
+            }
+        }
+        FFLAS::parseArguments(argc,argv,args,printDefaults);
+    }
+}
+
 #endif // __LINBOX_commentator_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

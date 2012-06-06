@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *  Author: Zhendong Wan
@@ -56,7 +54,7 @@ bool testRandom(const Ring& R,
 
 	str << "Testing the adaptive algorithm for Smith form computation:\n";
 
-	commentator.start (str.str ().c_str (), "testRandom");//, stream1.m ());
+	commentator().start (str.str ().c_str (), "testRandom");//, stream1.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -74,9 +72,9 @@ bool testRandom(const Ring& R,
 
 	while (stream1) {
 
-		commentator.startIteration ((unsigned)stream1.j ());
+		commentator().startIteration ((unsigned)stream1.j ());
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 		iter_passed = true;
 
@@ -178,20 +176,20 @@ bool testRandom(const Ring& R,
 
 			if (!iter_passed)
 
-				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed Smith form is incorrect" << endl;
 
 
 
-			commentator.stop ("done");
+			commentator().stop ("done");
 
-			commentator.progress ();
+			commentator().progress ();
 
 	}
 
 	//stream1.reset ();
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
 
 	return ret;
 
@@ -212,8 +210,8 @@ int main(int argc, char** argv)
 	parseArguments (argc, argv, args);
 	SmithFormAdaptive sf;
 
-	commentator.start("Smith form adaptive algorithm test suite", "EGV++");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator().start("Smith form adaptive algorithm test suite", "EGV++");
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
 	//typedef NTL_ZZ Ring; Ring R;
 	typedef PID_integer Ring; Ring R;
@@ -224,7 +222,16 @@ int main(int argc, char** argv)
 	RandomDenseStream<Ring2> s2 (S, n, iterations);
 	pass = pass && testRandom(S, sf, s2);
 
-	commentator.stop(MSG_STATUS(pass));
+	commentator().stop(MSG_STATUS(pass));
 	return pass ? 0 : -1;
 
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

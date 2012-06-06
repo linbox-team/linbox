@@ -106,7 +106,7 @@
  * \section contrib Contributing to LinBox, getting assistance.
  * We warmly welcome contributors ! Contributing can rhyme with providing
  * documentation, pointing out bugs, requesting more features, giving
- * test-cases, making comments about the code,...\br
+ * test-cases, making comments about the code,...<br>
  * You can contact the LinBox team at \f$\mathtt{linbox}\!-\!\mathtt{use}
  * \mathtt{@} \mathtt{googlegroups}\!\cdot\!\mathtt{com}\f$ (user oriented
  * discussions) or \f$\mathtt{linbox}\!-\!\mathtt{use} \mathtt{@}
@@ -132,8 +132,8 @@
 /*!  \page inst Installing LinBox
  * To install from a distribution, the usual <em> configure, make</em> sequence
  * applies.  See \subpage dist "configuring and installing" for more details.
- * To install a development version from the SVN repository see the \subpage
- * dev "developer info".  The generic Free Software Foundation \subpage INSTALL
+ * To install a development version from the SVN repository see the \subpage  dev
+ * "developer info".  The generic Free Software Foundation \subpage INSTALL
  * "INSTALL" may also be of use.
  */
 

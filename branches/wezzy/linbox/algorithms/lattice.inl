@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/lattice.inl
  * Copyright (C) 2011 The LinBox group
  * Written by Brice Boyer <bboyer@imag.fr>
@@ -337,31 +335,31 @@ namespace LinBox
 		if (withU)
 			throw NotImplementedYet("not U");
 		// Convert H
-		ZZ_mat<ZT> B(H.rowdim(),H.coldim()) ;
+		FPLLL::ZZ_mat<ZT> B(H.rowdim(),H.coldim()) ;
 		for (size_t i = 0 ; i < H.rowdim() ; ++i) {
 			for (size_t j = 0 ; j < H.coldim() ; ++j) {
-				B.Set(i,j,Z_NR<ZT>(H.getEntry(i,j)) );
+				B.Set(i,j,FPLLL::Z_NR<ZT>(H.getEntry(i,j)) );
 			}
 		}
 		// LLL()
 		switch (meth.getMeth()) {
 		case (latticeMethod::latticeFPLLL::P) :
 			{
-				::proved<ZT,double> lllMethod(&B,meth.getPrecision(),
+				FPLLL::proved<ZT,double> lllMethod(&B,meth.getPrecision(),
 							      meth.getEta(),meth.getDelta());
 				lllMethod.LLL();
 			}
 			break;
 		case (latticeMethod::latticeFPLLL::W) :
 			{
-				::wrapper lllMethod(&B,meth.getPrecision(),
+				FPLLL::wrapper lllMethod(&B,meth.getPrecision(),
 						    meth.getEta(),meth.getDelta());
 				lllMethod.LLL();
 			}
 			break;
 		case (latticeMethod::latticeFPLLL::H) :
 			{
-				::heuristic<ZT,double> lllMethod(&B,meth.getPrecision(),
+				FPLLL::heuristic<ZT,double> lllMethod(&B,meth.getPrecision(),
 								 meth.getEta(),meth.getDelta(),
 								 meth.getSiegel());
 				lllMethod.LLL();
@@ -385,3 +383,12 @@ namespace LinBox
 }
 
 #endif // __LINBOX_algorithms_lattice_INL
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* tests/test-modular.C
  * Copyright (C) 2001, 2002 Bradford Hovinen,
  * Copyright (C) 2002 Dave Saunders
@@ -69,9 +67,9 @@ int main (int argc, char **argv)
 	static int q4 = 101;
 	static size_t n = 500;
 	static int iterations = 1;
-	static int trials = 100000;
-	static int categories = 100;
-	static int hist_level = 1;
+	static int trials = 10000;
+	static int categories = 1000;
+	static int hist_level = 10;
 
 	static Argument args[] = {
 		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q1 },
@@ -88,7 +86,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Modular test suite", "Modular ");
+	commentator().start("Modular test suite", "Modular ");
 	bool pass = true;
 
 	Modular<integer> F_integer (q1);
@@ -99,8 +97,8 @@ int main (int argc, char **argv)
 
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!runFieldTests (F_integer,"Modular<integer>", iterations, n, false)) pass = false;
 	if (!runFieldTests (F_uint32_t, "Modular<uint32_t>",  iterations, n, false)) pass = false;
@@ -113,6 +111,15 @@ int main (int argc, char **argv)
 	if (!testRandomIterator (F_uint16_t,  "Modular<uint16_t>",  trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F_uint8_t,    "Modular<uint8_t>",  trials, categories, hist_level)) pass = false;
 
-	commentator.stop(MSG_STATUS (pass), "Modular test suite");
+	commentator().stop(MSG_STATUS (pass), "Modular test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

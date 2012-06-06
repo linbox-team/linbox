@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *  Author: Zhendong Wan
@@ -58,7 +56,7 @@ bool testRandom (std::ostream& report, size_t s)
 
 	using namespace std;
 
-	commentator.start ("test bitonic sort", "test bitonic sort");
+	commentator().start ("test bitonic sort", "test bitonic sort");
 
 	bool ret = true;
 
@@ -100,10 +98,10 @@ bool testRandom (std::ostream& report, size_t s)
 		}
 
 	if (!ret)
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 		<< "ERROR: Computed Smith form is incorrect" << endl;
 
-	commentator.stop (MSG_STATUS (ret), NULL, "testRandom");
+	commentator().stop (MSG_STATUS (ret), NULL, "testRandom");
 
 	return ret;
 }
@@ -122,13 +120,22 @@ int main(int argc, char** argv)
 	};
 	parseArguments (argc, argv, args);
 
-	commentator.start("Sort network test suite", "bitonic sort");
-	std::ostream& report = commentator.report();
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().start("Sort network test suite", "bitonic sort");
+	std::ostream& report = commentator().report();
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!testRandom(report, n)) pass = false;
-	commentator.stop("sort network test suite");
+	commentator().stop("sort network test suite");
 
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

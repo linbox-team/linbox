@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/field/gf2.h
  * Copyright (C) 2003-2007 The LinBox group
  *
@@ -756,9 +754,9 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		Element& mulin (stdBitReference& x, Element y) const
+		stdBitReference mulin (stdBitReference x, Element y) const
 		{
-			return mulin((bool&)x,y);
+			return x = (bool)x & y;
 		}
 
 		/** Inplace Division.
@@ -996,4 +994,13 @@ namespace std
 #include "linbox/field/gf2.inl"
 
 #endif // __LINBOX_field_gf2_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

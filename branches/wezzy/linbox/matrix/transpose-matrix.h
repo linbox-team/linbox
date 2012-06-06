@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/matrix/transpose.h
  * Copyright (C) 2002 Bradford Hovinen,
  *
@@ -13,20 +11,20 @@
  * Move from blackbox/transpose-matrix.h to matrix/transpose.h
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -49,9 +47,9 @@
 namespace LinBox
 {
 
-	/** @brief Matrix transpose
+	/** @brief Matrix transpose.
 	 *
-	 * This class takes a matrix meeting the @ref DenseMatrixBase archetype
+	 * This class takes a matrix meeting the @ref BlasMatrix archetype
 	 * and switches the row and column iterators, giving the transpose of
 	 * the original matrix. It is generic with respect to the matrix given.
 	 *
@@ -132,7 +130,6 @@ namespace LinBox
 
 		/** Write a matrix to an output stream
 		 * @param stream Stream to which to write the matrix
-		 * @param F
 		 * @return Reference to stream
 		 */
 		inline std::ostream &write (std::ostream &stream) const
@@ -691,4 +688,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_matrix_transpose_INL
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

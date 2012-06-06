@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/lanczos.inl
  * Copyright (C) 2002 Bradford Hovinen
  *
@@ -79,7 +77,7 @@ namespace LinBox
 		linbox_check ((x.size () == A.coldim ()) &&
 			      (b.size () == A.rowdim ()));
 
-		commentator.start ("Solving linear system (Lanczos)", "LanczosSolver::solve");
+		commentator().start ("Solving linear system (Lanczos)", "LanczosSolver::solve");
 
 		bool success = false;
 		LVector d1, d2, b1, b2, bp, y, Ax, ATAx, ATb;
@@ -92,7 +90,7 @@ namespace LinBox
 		RandomDenseStream<Field, LVector, NonzeroRandIter<Field> > stream (_field, real_ri, A.coldim ());
 
 		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
-			std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 			switch (_traits.preconditioner ()) {
 			case LanczosTraits::NO_PRECONDITIONER:
@@ -219,28 +217,28 @@ namespace LinBox
 					VectorWrapper::ensureDim (ATAx, A.coldim ());
 					VectorWrapper::ensureDim (ATb, A.coldim ());
 
-					commentator.start ("Checking whether A^T Ax = A^T b");
+					commentator().start ("Checking whether A^T Ax = A^T b");
 
 					A.apply (Ax, x);
 					A.applyTranspose (ATAx, Ax);
 					A.applyTranspose (ATb, b);
 
 					if (_VD.areEqual (ATAx, ATb))
-						commentator.stop ("passed");
+						commentator().stop ("passed");
 					else {
-						commentator.stop ("FAILED");
+						commentator().stop ("FAILED");
 						success = false;
 					}
 				}
 				else if (_traits.checkResult ()) {
-					commentator.start ("Checking whether Ax=b");
+					commentator().start ("Checking whether Ax=b");
 
 					A.apply (Ax, x);
 
 					if (_VD.areEqual (Ax, b))
-						commentator.stop ("passed");
+						commentator().stop ("passed");
 					else {
-						commentator.stop ("FAILED");
+						commentator().stop ("FAILED");
 						success = false;
 					}
 				}
@@ -248,11 +246,11 @@ namespace LinBox
 		}
 
 		if (success) {
-			commentator.stop ("done", "Solve successful", "BlockLanczosSolver::solve");
+			commentator().stop ("done", "Solve successful", "BlockLanczosSolver::solve");
 			return x;
 		}
 		else {
-			commentator.stop ("done", "Solve failed", "BlockLanczosSolver::solve");
+			commentator().stop ("done", "Solve failed", "BlockLanczosSolver::solve");
 			throw SolveFailed ();
 		}
 	}
@@ -261,7 +259,7 @@ namespace LinBox
 	template<class Blackbox>
 	bool LanczosSolver<Field, LVector>::iterate (const Blackbox &A, LVector &x, const LVector &b)
 	{
-		commentator.start ("Lanczos iteration", "LanczosSolver::iterate", A.coldim ());
+		commentator().start ("Lanczos iteration", "LanczosSolver::iterate", A.coldim ());
 
 		// j is really a flip-flop: 0 means "even" and 1 means "odd". So "j" and
 		// "j-2" are accessed with [j], while "j-1" and "j+1" are accessed via
@@ -283,7 +281,7 @@ namespace LinBox
 		RandomDenseStream<Field, LVector> stream (_field, _randiter, A.coldim ());
 		stream >> _w[1];
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		traceReport (report, _VD, "w", 1, _w[1]);
 
@@ -291,7 +289,7 @@ namespace LinBox
 		_VD.dot (delta[j], _w[j], _Aw);      // delta_j <- <w_j, Aw_j>
 
 		if (_field.isZero (delta[j])) {
-			commentator.stop ("FAILED", "<w_1, Aw_1> = 0", "LanczosSolver::iterate");
+			commentator().stop ("FAILED", "<w_1, Aw_1> = 0", "LanczosSolver::iterate");
 			return false;
 		}
 
@@ -306,7 +304,7 @@ namespace LinBox
 		_VD.mul (x, _w[j], wb);
 
 		while (!_field.isZero (delta[j])) {
-			commentator.progress ();
+			commentator().progress ();
 
 			report << "Total matrix-vector products so far: " << prods << std::endl;
 
@@ -348,13 +346,22 @@ namespace LinBox
 			++iter;
 		}
 
-		commentator.indent (report);
+		commentator().indent (report);
 		report << "Total matrix-vector products: " << prods << std::endl;
 
-		commentator.stop ("done", "delta_j = 0", "LanczosSolver::iterate");
+		commentator().stop ("done", "delta_j = 0", "LanczosSolver::iterate");
 		return true;
 	}
 
 }  // namespace LinBox
 
 #endif // __LINBOX_lanczos_INL
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

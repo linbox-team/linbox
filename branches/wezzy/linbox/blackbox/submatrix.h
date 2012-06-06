@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/submatrix.h
  * Copyright (C) 2001 Bradford Hovinen
  *
@@ -18,20 +16,20 @@
  *
  * -------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -76,7 +74,6 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter
 	 *               and partial template specialization.
 	 */
-	//@{
 	// Basic declaration.
 	template <class Blackbox, class Trait = typename VectorTraits<typename LinBox::Vector<typename Blackbox::Field>::Dense >::VectorCategory>
 	class Submatrix : public BlackboxInterface {
@@ -176,10 +173,11 @@ namespace LinBox
 
 		template<typename _Tp1>
 		struct rebind {
-			typedef SubmatrixOwner<typename Blackbox_t::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other;
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-				typename Blackbox_t::template rebind<_Tp1> Rebinder;
-				Rebinder( Ap.getData(), *(A.getPtr()), F);
+			typedef typename Blackbox_t::template rebind<_Tp1> Rebinder;
+			typedef SubmatrixOwner<typename Rebinder::other, VectorCategories::DenseVectorTag> other;
+			void operator() (other & Ap, const Self_t& A)
+			{
+				Rebinder () ( Ap.getData(), *(A.getPtr()));
 			}
 		};
 
@@ -265,6 +263,7 @@ namespace LinBox
 	};
 
 
+	/** Specialization for BlasMatrix */
 	template<class _Field>
 	class Submatrix<BlasMatrix<_Field>, VectorCategories::DenseVectorTag> : public BlasSubmatrix<_Field> {
 	public:
@@ -284,7 +283,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 		/** Constructor from an existing \ref BlasMatrix  and dimensions
-		 * @param M Pointer to \ref BlasMatrix  of which to construct submatrix
+		 * @param Mat Pointer to \ref BlasMatrix  of which to construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
 		 * @param Rowdim Row dimension
@@ -300,7 +299,7 @@ namespace LinBox
 		{ }
 
 		/** Constructor from an existing \ref BlasMatrix  and dimensions
-		 * @param M reference to \ref BlasMatrix  of which to construct submatrix
+		 * @param Mat reference to \ref BlasMatrix  of which to construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
 		 * @param Rowdim Row dimension
@@ -350,12 +349,14 @@ namespace LinBox
 			f (SM. field()), vd(SM. field())
 		{ }
 
+		//! get the field
 		const Field& field() const
 		{
 
 			return f;
 		}
 
+		//! read
 		std::istream& read (std::istream& is)
 		{
 
@@ -364,6 +365,7 @@ namespace LinBox
 			return is;
 		}
 
+		//! write
 		std::ostream& write (std::ostream& os) const
 		{
 
@@ -419,10 +421,10 @@ namespace LinBox
 		struct rebind {
 			typedef SubmatrixOwner<BlasMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A) {
 
 				typename other::Father_t A1;
-				typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A), F);
+				typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A) );
 				Ap = other(A1, A.rowfirst(), A.colfirst(), A.rowdim(), A.coldim());
 			}
 
@@ -430,7 +432,6 @@ namespace LinBox
 	};
 
 
-	//@}
 } // namespace LinBox
 
 
@@ -518,11 +519,12 @@ namespace LinBox
 
 		template<typename _Tp1>
 		struct rebind {
-			typedef SubmatrixOwner< typename Blackbox::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other;
+			typedef typename Blackbox_t::template rebind<_Tp1> Rebinder ;
+			typedef SubmatrixOwner<typename Rebinder::other, VectorCategories::DenseVectorTag> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-				typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), A.getData(), F);
-
+			void operator() (other & Ap, const Self_t& A)
+			{
+				Rebinder () ( Ap.getData(), A.getData());
 			}
 
 		};
@@ -534,7 +536,7 @@ namespace LinBox
 			_rowdim(T.rowdim()), _coldim(T.coldim()),
 			_z (_BB_data.coldim ()), _y (_BB_data.rowdim ())
 		{
-			typename Submatrix<_BB,_Vc>::template rebind<Field>()(*this,T, F);
+			typename Submatrix<_BB,_Vc>::template rebind<Field>()(*this,T );
 		}
 		template<typename _BB, typename _Vc, class Field>
 		SubmatrixOwner (const SubmatrixOwner<_BB,_Vc>& T, const Field& F) :
@@ -543,7 +545,7 @@ namespace LinBox
 			_rowdim(T.rowdim()), _coldim(T.coldim()),
 			_z (_BB_data.coldim ()), _y (_BB_data.rowdim ())
 		{
-			typename SubmatrixOwner<_BB,_Vc>::template rebind<Field>()(*this,T, F);
+			typename SubmatrixOwner<_BB,_Vc>::template rebind<Field>()(*this,T);
 		}
 
 		/** Retreive _row dimensions of BlackBox matrix.
@@ -604,9 +606,17 @@ namespace LinBox
 	}; // template <Vector> class SubmatrixOwner
 
 
-	//@}
 } // namespace LinBox
 
 
 #endif // __LINBOX_bb_submatrix_H
+
+
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

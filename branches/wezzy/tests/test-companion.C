@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  * using generic testBlackbox  -bds
@@ -67,7 +65,7 @@ int main (int argc, char **argv)
 
 	srand ((unsigned int) time (NULL));
 
-	commentator.start("Companion matrix black box test suite", "companion");
+	commentator().start("Companion matrix black box test suite", "companion");
 
 	typedef Modular<uint32_t> Field;
 	typedef vector <Field::Element> Vector;
@@ -88,7 +86,16 @@ int main (int argc, char **argv)
 
 	pass = pass && testBlackbox(B);
 
-	commentator.stop("companion matrix black box test suite");
+	commentator().stop("companion matrix black box test suite");
 
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

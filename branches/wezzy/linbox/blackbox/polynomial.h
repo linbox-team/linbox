@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/polynomial.h
  * Copyright (C) 2005 Cl'ement Pernet
  *
@@ -69,7 +67,7 @@ namespace LinBox
 
 		/** Copy constructor.
 		 * Creates new black box objects in dynamic memory.
-		 * @param M constant reference to compose black box matrix
+		 * @param Mat constant reference to compose black box matrix
 		 */
 		PolynomialBB (const PolynomialBB<Blackbox, Polynomial> &Mat) :
 			_A_ptr(Mat._A_ptr), _P_ptr(Mat._P_ptr), _VD(Mat._VD)
@@ -214,7 +212,7 @@ namespace LinBox
 
 		/** Copy constructor.
 		 * Creates new black box objects in dynamic memory.
-		 * @param M constant reference to compose black box matrix
+		 * @param Mat constant reference to compose black box matrix
 		 */
 		PolynomialBBOwner (const PolynomialBBOwner<Blackbox, Polynomial> &Mat) :
 			_A_data(Mat._A_data), _P_data(Mat._P_data), _VD(Mat._VD)
@@ -292,7 +290,7 @@ namespace LinBox
 			_A_data(*(Mat.getBlackbox()), F),
 			_P_data(*(Mat.getPolynomial()), F)
 		{
-			typename _BBt::template rebind<Field>()(_A_data, *(Mat.getBlackbox()), F);
+			typename _BBt::template rebind<Field>()(_A_data, *(Mat.getBlackbox()));
 			typename _Polt::template rebind<Field>()(_P_data, *(Mat.getPolynomial()), F);
 		}
 
@@ -342,4 +340,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_bb_polynomial_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/field/modular-double.h
  * Copyright (C) 2003 Pascal Giorgi
  *
@@ -7,20 +5,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -91,6 +89,7 @@ namespace LinBox
 	      protected:
 
 	      public:
+		      typedef FFPACK::Modular<double> Father_t;
 		      friend class FieldAXPY<Modular<Element> >;
 		      friend class DotProductDomain<Modular<Element> >;
 		      friend class MultiModDouble;
@@ -99,10 +98,13 @@ namespace LinBox
 
 		      typedef ModularRandIter<Element> RandIter;
 
-		      static ClassifyRing<Modular<Element> >::categoryTag getCategory() {return ClassifyRing<Modular<Element> >::categoryTag();}
+		      static ClassifyRing<Modular<Element> >::categoryTag getCategory()
+		      {
+			      return ClassifyRing<Modular<Element> >::categoryTag();
+		      }
 
 		      Modular (const integer& p, int e=1) :
-			      FFPACK::Modular<double>((unsigned long) p)
+			      Father_t((unsigned long) p)
 		      {
 			      linbox_check(e==1);
 #ifdef DEBUG
@@ -113,27 +115,27 @@ namespace LinBox
 #endif
 		      }
 
-		      Modular () : FFPACK::Modular<double>() {};
+		      Modular () : Father_t() {};
 
+		      using Father_t ::cardinality ;
 		      integer &cardinality (integer &c) const
 		      {
 			      return c = integer(modulus);
 		      }
 
+		      using Father_t ::characteristic;
 		      integer &characteristic (integer &c) const
 		      {
 			      return c = integer(modulus);
 		      }
 
+		      using Father_t ::convert;
 		      integer &convert (integer &x, const Element &y) const
 		      {
 			      return x = integer(y);
 		      }
 
-		      template<class T>T&convert(T&x,const Element&y)const{return x=T(y);}
-		      template<class T>T&characteristic(T&x)const{return x=T(lmodulus);}
-		      unsigned long characteristic()const{return FFPACK::Modular<double>::characteristic();}
-		      unsigned long cardinality()const{return FFPACK::Modular<double>::cardinality();}
+
 
 		      //!@bug use FFPACK operator
 		      const Modular<double> &operator=(const Modular<double> &F)
@@ -150,11 +152,11 @@ namespace LinBox
 		      }
 
 
+		      using Father_t ::init;
 		      Element &init (Element &x, const integer &y) const
 		      {
 			      x = (Element)(y%lmodulus);
-			      if (x<0)
-				      x+= (double)lmodulus ;
+			      if (x<0) x+= modulus ;
 			      linbox_check(x < lmodulus);
 			      linbox_check(!(x < 0));
 			      return x  ;
@@ -367,4 +369,13 @@ namespace LinBox
 
 
 #endif //__LINBOX_modular_double_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

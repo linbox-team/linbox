@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* linbox/algorithms/block-massey-domain.h
  * Copyright (C) 2002 Pascal Giorgi
@@ -401,7 +399,7 @@ namespace LinBox
 
 
 #ifdef __CHECK_DISCREPANCY
-				std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+				std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 				report<<"Discrepancy"<<NN<<":=Matrix(";
 				Discrepancy.write(report,_field,true)<<");"<<std::endl;
 #endif
@@ -614,7 +612,7 @@ namespace LinBox
 #endif
 
 			}
-			std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 			if ( early_stop == EARLY_TERM_THRESHOLD)
 				report<<"Early termination is used: stop at "<<NN<<" from "<<length<<" iterations\n\n";
@@ -713,7 +711,7 @@ namespace LinBox
 		std::vector<size_t> masseyblock_left_rec (std::vector<Coefficient> &P)
 		{
 #ifdef __CHECK_RESULT
-			std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 #endif
 			// Get information of the Sequence (U.A^i.V)
 			size_t length = _container->size();
@@ -840,3 +838,12 @@ namespace LinBox
 } // end of namespace LinBox
 
 #endif // __LINBOX_massey_block_domain_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

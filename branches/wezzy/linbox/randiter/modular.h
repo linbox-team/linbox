@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/randiter/modular.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2002 Bradford Hovinen
@@ -26,20 +24,20 @@
  * Removed using declarations.
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -52,6 +50,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 
 #include "time.h"
 #include "linbox/integer.h"
@@ -108,12 +107,13 @@ namespace LinBox
 			if ((_size == 0) || (_size > cardinality))
 				_size = cardinality;
 
-			commentator.report (10, INTERNAL_DESCRIPTION)
+			/*commentator().report (10, INTERNAL_DESCRIPTION)
 			<< "Created random generator with size " << _size
 			<< " and seed " << _seed << std::endl;
+			*/
 
 			// Seed random number generator
-			srand ((unsigned)_seed);
+			srandom ((unsigned)_seed);
 		}
 
 		/** Copy constructor.
@@ -153,7 +153,9 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		Element &random (Element &a) const
-		{ return _field.init(a,rand()); }
+		{
+			return _field.init(a, ::random()); // need init from long int
+		}
 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
@@ -163,7 +165,7 @@ namespace LinBox
 		 */
 		Element &nonzerorandom (Element &a) const
 		{
-			//return a = rand() % (_field.modulus -1) + 1;
+			//return a = random() % (_field.modulus -1) + 1;
 
 			// CPernet: stupidly slow, but now way to get _field.modulus without changing the interface
 			while (_field.isZero (random(a))) ;
@@ -211,11 +213,18 @@ namespace LinBox
 
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
-		{ _r = r._r; return *this; }
+		{
+			_r = r._r;
+			return *this;
+		}
 		Element &random (Element &a) const
-		{ return _r.random (a); }
+		{
+			return _r.random (a);
+		}
 		ElementAbstract &random (ElementAbstract &a) const
-		{ return _r.random (a); }
+		{
+			return _r.random (a);
+		}
 
 	};
 
@@ -372,4 +381,13 @@ namespace LinBox
 }// namespace LinBox
 
 #endif // __LINBOX_randiter_modular_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/gauss-gf2.inl
  * Copyright (C) 2009 The LinBox group
  *
@@ -61,9 +59,9 @@ namespace LinBox
 		// In place (LigneA is modified)
 		// With reordering (D is a density type. Density is allocated here)
 		//    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
-		commentator.start ("Gaussian elimination with reordering over GF2",
+		commentator().start ("Gaussian elimination with reordering over GF2",
 				   "IPLRGF2", Ni);
-		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "Gaussian QLUP elimination on " << Ni << " x " << Nj << " matrix" << std::endl;
 
 #ifdef __LINBOX_COUNT__
@@ -102,13 +100,13 @@ namespace LinBox
 				if ( ! (k % sstep) )
 #endif
 				{
-					commentator.progress (k);
+					commentator().progress (k);
 #ifdef __LINBOX_FILLIN__
 					long sl(0);
 					for (size_t l = 0; l < Ni; ++l)
 						sl += LigneA[l].size ();
 
-					commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+					commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 					<< "Fillin (" << Rank << "/" << Ni << ") = "
 					<< sl
 					<< " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
@@ -175,7 +173,7 @@ namespace LinBox
 
 #ifdef __LINBOX_COUNT__
 		nbelem += LigneA[last].size ();
-		commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
+		commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 		<< "Left elements : " << nbelem << std::endl;
 #endif
 
@@ -184,7 +182,7 @@ namespace LinBox
 		for (size_t l=0; l < Ni; ++l)
 			sl += LigneA[l].size ();
 
-		commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 		<< "Fillin (" << Rank << "/" << Ni << ") = " << sl
 		<< std::endl;
 #endif
@@ -193,16 +191,16 @@ namespace LinBox
 			determinant = false;
 
 		integer card;
-		commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 		<< "Determinant : " << determinant
 		<< " over GF (2)" << std::endl;
 
 		// LigneA.write(rep << "U:= ", FORMAT_MAPLE) << ':' << std::endl;
 
-		commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 		<< "Rank : " << Rank
 		<< " over GF (2)" << std::endl;
-		commentator.stop ("done", 0, "IPLRGF2");
+		commentator().stop ("done", 0, "IPLRGF2");
 
 
 
@@ -231,9 +229,9 @@ namespace LinBox
 		// In place (LigneA is modified)
 		// With reordering (D is a density type. Density is allocated here)
 		//    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
-		commentator.start ("Gaussian elimination with reordering over GF2",
+		commentator().start ("Gaussian elimination with reordering over GF2",
 				   "IPLRGF2", Ni);
-		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "Gaussian QLUP elimination on " << Ni << " x " << Nj << " matrix" << std::endl;
 
 #ifdef __LINBOX_COUNT__
@@ -278,13 +276,13 @@ namespace LinBox
 				if ( ! (k % sstep) )
 #endif
 				{
-					commentator.progress (k);
+					commentator().progress (k);
 #ifdef __LINBOX_FILLIN__
 					long sl(0);
 					for (size_t l = 0; l < Ni; ++l)
 						sl += LigneA[l].size ();
 
-					commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+					commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 					<< "Fillin (" << Rank << "/" << Ni << ") = "
 					<< sl
 					<< " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
@@ -358,7 +356,7 @@ namespace LinBox
 
 #ifdef __LINBOX_COUNT__
 		nbelem += LigneA[last].size ();
-		commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
+		commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 		<< "Left elements : " << nbelem << std::endl;
 #endif
 
@@ -367,7 +365,7 @@ namespace LinBox
 		for (size_t l=0; l < Ni; ++l)
 			sl += LigneA[l].size ();
 
-		commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 		<< "Fillin (" << Rank << "/" << Ni << ") = " << sl
 		<< std::endl;
 #endif
@@ -376,7 +374,7 @@ namespace LinBox
 			determinant = false;
 
 		integer card;
-		commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 		<< "Determinant : " << determinant
 		<< " over GF (2)" << std::endl;
 
@@ -389,10 +387,10 @@ namespace LinBox
 		LigneA.write(rep << "U:= ", FORMAT_MAPLE) << ':' << std::endl;
 		P.write(rep << "P:= ", FORMAT_MAPLE) << ':' << std::endl;
 #endif
-		commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 		<< "Rank : " << Rank
 		<< " over GF (2)" << std::endl;
-		commentator.stop ("done", 0, "IPLRGF2");
+		commentator().stop ("done", 0, "IPLRGF2");
 
 
 
@@ -403,3 +401,12 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __LINBOX_gauss_gf2_INL
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

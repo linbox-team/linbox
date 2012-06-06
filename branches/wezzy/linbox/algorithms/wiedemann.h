@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/wiedemann.h
  * Copyright (C) 2002 Zhendong Wan
  * Copyright (C) 2002 Bradford Hovinen
@@ -96,10 +94,10 @@ namespace LinBox
 		typename Field::RandIter i (A.field());
 		unsigned long            deg;
 
-		commentator.start ("Wiedemann Minimal polynomial", "minpoly");
+		commentator().start ("Wiedemann Minimal polynomial", "minpoly");
 
 		if (A.coldim() != A.rowdim()) {
-			commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Virtually squarize matrix" << std::endl;
+			commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Virtually squarize matrix" << std::endl;
 
 			Squarize<Blackbox> B(&A);
 			BlackboxContainer<Field, Squarize<Blackbox> > TF (&B, A.field(), i);
@@ -121,20 +119,20 @@ namespace LinBox
 
 			WD.minpoly (P, deg);
 #ifdef INCLUDE_TIMING
-			commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			commentator().report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
 			<< "Time required for applies:      " << TF.applyTime () << std::endl;
-			commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			commentator().report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
 			<< "Time required for dot products: " << TF.dotTime () << std::endl;
-			commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			commentator().report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
 			<< "Time required for discrepency:  " << WD.discrepencyTime () << std::endl;
-			commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			commentator().report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
 			<< "Time required for LSR fix:      " << WD.fixTime () << std::endl;
 #endif // INCLUDE_TIMING
 		}
 
 
 
-		commentator.stop ("done", NULL, "minpoly");
+		commentator().stop ("done", NULL, "minpoly");
 
 		return P;
 	}
@@ -167,7 +165,7 @@ namespace LinBox
 		if (a != c) {
 			unsigned long extend = (unsigned long)FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 			if (extend > 1) {
-				commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
+				commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
 				GivaroExtension<Field> EF( F, extend);
 
 				typedef typename Blackbox::template rebind< GivaroExtension<Field>  >::other FBlackbox;
@@ -186,7 +184,7 @@ namespace LinBox
 		else {
 			unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 			if (extend > 1) {
-				commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
+				commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
 				GivaroGfq EF( (unsigned long)c, extend);
 				typedef typename Blackbox::template rebind< GivaroGfq >::other FBlackbox;
 				FBlackbox Ap(A, EF);
@@ -211,7 +209,7 @@ namespace LinBox
 			     const RingCategories::ModularTag          &tag,
 			     const Method::ExtensionWiedemann& M)
 	{
-		commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << " WARNING, no extension available, returning only a factor of the minpoly\n";
+		commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << " WARNING, no extension available, returning only a factor of the minpoly\n";
 		return minpoly(P, A, tag, Method::Wiedemann (M));
 	}
 }
@@ -373,4 +371,13 @@ namespace LinBox
 #include "linbox/algorithms/wiedemann.inl"
 
 #endif //  __LINBOX_wiedemann_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

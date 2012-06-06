@@ -104,6 +104,7 @@ namespace LinBox
 
 		/*! provide a matrix with prescribed rank.
 		 * Default method.
+		 * @param A
 		 * @param rank expected rank
 		 * @warning No certificate yet.
 		 */
@@ -112,6 +113,7 @@ namespace LinBox
 
 
 		/*! provide a matrix with prescribed rank.
+		 * @param A
 		 * @param rank expected rank
 		 * @param meth how is the matrix generated ? see \ref RankBuilder.
 		 * @warning No certificate yet.
@@ -146,5 +148,12 @@ namespace LinBox
 
 #include "linbox/matrix/random-matrix.inl"
 
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

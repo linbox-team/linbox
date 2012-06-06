@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/lattice.h
  * Copyright (C) 2011 The LinBox group
  * Written by Brice Boyer <bboyer@imag.fr>
@@ -51,6 +49,7 @@
 
 #ifdef __LINBOX_HAVE_FPLLL
 // this is a damn FPLLL bug !!!
+namespace FPLLL {
 #define round
 #define trunc
 #include <fplll/fplll.h>
@@ -59,6 +58,7 @@
 #include <fplll/wrapper.h>
 #undef round
 #undef trunc
+}
 
 #endif
 
@@ -328,3 +328,12 @@ namespace LinBox
 #undef defaultLllMeth
 
 #endif // __LINBOX_algorithms_lattice_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

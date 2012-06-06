@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-modular.C
  * Copyright (C) 2001, 2002 Bradford Hovinen,
@@ -66,9 +64,9 @@ int main (int argc, char **argv)
 	static int q4 = 101;
 	static size_t n = 10000;
 	static int iterations = 1;
-	static int trials = 100000;
-	static int categories = 100;
-	static int hist_level = 1;
+	static int trials = 10000;
+	static int categories = 1000;
+	static int hist_level = 10;
 
 	static Argument args[] = {
 		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q1 },
@@ -85,7 +83,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Modular<int32_t> field test suite", "Modular<int32_t>");
+	commentator().start("Modular<int32_t> field test suite", "Modular<int32_t>");
 	bool pass = true;
 
 	Modular<int32_t> F_int (1073741789);//(2147483629);//(2147483647);
@@ -95,8 +93,8 @@ int main (int argc, char **argv)
 
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!runFieldTests (F_int,  "Modular<int32_t>",  iterations, n, false)) pass = false;
 	if (!testRandomIterator (F_int,  "Modular<int32_t>", trials, categories, hist_level)) pass = false;
@@ -105,6 +103,15 @@ int main (int argc, char **argv)
 	if (!testRandomIterator (I_int,  "Modular<int32_t>", trials, categories, hist_level)) pass = false;
 
 
-	commentator.stop("Modular<int32_t> field test suite");
+	commentator().stop("Modular<int32_t> field test suite");
 	return pass ? 0 : -1;
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* ===================================================================
  * Copyright(C) 2008 LinBox
  * Triangular Solve
@@ -43,7 +41,7 @@ namespace LinBox
 		typedef typename Matrix::Field Field;
 		const Field& F = U.field();
 
-		commentator.start ("Sparse Elimination Upper Triangular Solve", "utrsm");
+		commentator().start ("Sparse Elimination Upper Triangular Solve", "utrsm");
 
 		typename Vector2::const_iterator vec=b.begin();
 		typename Vector1::iterator res=x.begin();
@@ -102,7 +100,7 @@ namespace LinBox
 		}
 		if (! consistant) throw LinboxError ("upperTriangularSolve returned INCONSISTENT");
 
-		commentator.stop ("done", NULL, "utrsm");
+		commentator().stop ("done", NULL, "utrsm");
 		return x;
 	}
 
@@ -114,7 +112,7 @@ namespace LinBox
 				    const _Matrix  &U,
 				    const Vector2& b)
 	{
-		commentator.start ("SparseElim UpperTriang Sparse Solve", "uSPt");
+		commentator().start ("SparseElim UpperTriang Sparse Solve", "uSPt");
 
 		x.resize(0);
 
@@ -165,7 +163,7 @@ namespace LinBox
 		}
 		//         if (! consistant) throw LinboxError ("upperTriangularSparseSolve returned INCONSISTENT");
 
-		commentator.stop ("done", NULL, "uSPt");
+		commentator().stop ("done", NULL, "uSPt");
 
 		return x;
 	}
@@ -181,7 +179,7 @@ namespace LinBox
 		typedef typename Matrix::Field Field;
 		const Field& F = L.field();
 
-		commentator.start ("Sparse Elimination Lower Triangular Unitary Solve", "ltrsm");
+		commentator().start ("Sparse Elimination Lower Triangular Unitary Solve", "ltrsm");
 
 		typename Vector2::const_iterator vec=b.begin();
 		typename Vector1::iterator res=x.begin();
@@ -197,9 +195,18 @@ namespace LinBox
 			F.assign(*res,tmp);
 		}
 
-		commentator.stop ("done", NULL, "ltrsm");
+		commentator().stop ("done", NULL, "ltrsm");
 		return x;
 	}
 }
 #endif //__LINBOX_triangular_solve_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C)  LinBox
  *
  * authors: bds and zw
@@ -63,7 +61,7 @@ namespace LinBox
 	template <class Matrix>
 	void SmithFormAdaptive::compute_local_long (std::vector <integer>& s, const Matrix& A, long p, long e)
 	{
-		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check ((s. size() >= (unsigned long)order) && (p > 0) && ( e >= 0));
@@ -154,7 +152,7 @@ namespace LinBox
 	void SmithFormAdaptive::compute_local_big (std::vector<integer>& s, const Matrix& A, long p, long e)
 	{
 
-		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check ((s. size() >= (unsigned long) order) && (p > 0) && ( e >= 0));
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
@@ -216,7 +214,7 @@ namespace LinBox
 	void SmithFormAdaptive::smithFormSmooth (std::vector<integer>& s, const Matrix& A, long r, const std::vector<long>& sev)
 	{
 		//....
-		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the k-smooth part of the invariant factors starts(via local and rank):" << std::endl;
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
@@ -261,7 +259,7 @@ namespace LinBox
 	void SmithFormAdaptive::smithFormRough  (std::vector<integer>& s, const Matrix& A, integer m)
 	{
 
-		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Compuation of the k-rough part f the invariant factors starts(via EGV+ or Iliopolous):\n";
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
@@ -328,7 +326,7 @@ namespace LinBox
 	void SmithFormAdaptive::smithFormVal (std::vector<integer>&s, const Matrix& A, long r, const std::vector<long>& sev)
 	{
 		//....
-		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the local smith form at each possible prime:\n";
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
@@ -378,9 +376,9 @@ namespace LinBox
 	template <class Matrix>
 	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const Matrix& A)
 	{
-		//commentator.start ("Smith Form starts", "Smithform");
+		//commentator().start ("Smith Form starts", "Smithform");
 
-		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
@@ -484,7 +482,7 @@ namespace LinBox
 			*s_p = *smooth_p * *rough_p;
 
 		report << "Computation of the invariant factors ends." << std::endl;
-		//commentator. stop ("done", NULL, "Smithform");
+		//commentator().stop ("done", NULL, "Smithform");
 	}
 
 	/* Compute the Smith form of a dense matrix
@@ -496,9 +494,9 @@ namespace LinBox
 	template <class IRing>
 	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const BlasMatrix<IRing>& A)
 	{
-		//commentator.start ("Smith Form starts", "Smithform");
+		//commentator().start ("Smith Form starts", "Smithform");
 
-		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
@@ -598,10 +596,19 @@ namespace LinBox
 			*s_p = *smooth_p * *rough_p;
 
 		report << "Computation of the invariant factors ends." << std::endl;
-		//commentator. stop ("done", NULL, "Smithform");
+		//commentator().stop ("done", NULL, "Smithform");
 	}
 
 }
 
 #endif //__LINBOX_smith_form_adaptive_INL
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

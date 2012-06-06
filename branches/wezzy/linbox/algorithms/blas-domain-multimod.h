@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:
 /* linbox/algorithms/blas-domain.inl
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
@@ -42,9 +40,9 @@ namespace LinBox
 
 	/*! specialisation for MultiModDouble.
 	*/
-#ifndef __INTEL_COMPILER
-	template <>
-#endif
+// #ifndef __INTEL_COMPILER
+	// template <>
+// #endif
 	class BlasMatrixDomainInv<MultiModDouble,BlasMatrix<MultiModDouble> > {
 	public:
 		int operator() (const MultiModDouble                   &F,
@@ -83,4 +81,13 @@ namespace LinBox
 
 
 #endif // __LINBOX_blas_matrix_domain_multimod_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

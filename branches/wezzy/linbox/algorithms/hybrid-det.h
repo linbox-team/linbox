@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/hybrid-det.h
  * Copyright (C) 2005 Anna Urbanska
  *
@@ -156,12 +154,12 @@ namespace LinBox
 							 const RingCategories::IntegerTag          &tag,
 							 const MyMethod                            &M)
 	{
-		//commentator.setReportStream(std::cout);
+		//commentator().setReportStream(std::cout);
 		typedef Modular<double> myModular;
 		typedef typename Blackbox::Field Integers;
 		typedef typename Integers::Element Integer_t;
 
-		commentator.start ("Integer Determinant - hybrid version ", "det");
+		commentator().start ("Integer Determinant - hybrid version ", "det");
 		size_t myfactor=5;
 		size_t early_counter=0;
 
@@ -182,8 +180,8 @@ namespace LinBox
 #if 0
 		if (A.rowdim() < 200 ) {
 			cra(d,iteration,genprime);
-			commentator.stop ( "first step", NULL, "det");
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			commentator().stop ( "first step", NULL, "det");
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations() << "\n";
 		}
 		else {}
@@ -226,13 +224,13 @@ namespace LinBox
 
 		if (early_counter < myfactor) {
 			/* determinant found */
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << myfactor << "\n";
-			commentator.stop ( "first step", NULL, "det");
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << myfactor << "\n";
+			commentator().stop ( "first step", NULL, "det");
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations()<< "\n";
 			return d=res;
 		}
-		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "no very early termination \n";
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "no very early termination \n";
 		/* turn to LU when matrix size small - not to be used at the moment */
 #if 0
 		if (A.rowdim() < 50 ) {
@@ -246,8 +244,8 @@ namespace LinBox
 				cra.progress( D, iteration(r, D));
 				++early_counter;
 			}
-			commentator.stop ( "zero step", NULL, "det");
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			commentator().stop ( "zero step", NULL, "det");
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations() << "\n";
 			return d;
 		}
@@ -267,7 +265,7 @@ namespace LinBox
 		if (LIF.lastInvariantFactor1(lif, r_num1, A)==0) {
 			//if (lif==0)
 			d = 0;
-			commentator.stop ("is 0", NULL, "det");
+			commentator().stop ("is 0", NULL, "det");
 			return d;
 		}
 #ifdef _LB_H_DET_TIMING
@@ -276,21 +274,21 @@ namespace LinBox
 		if (time2 < 0) time2 =0;
 #endif
 
-		//commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		//commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		//            << "5 LU time: " << time1 << " LIF time: " << time2 << ")\n";
-		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "lif calculated\n";
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "lif calculated\n";
 #if 0
 		LIF.lastInvariantFactor_Bonus(lif, bonus, A);
 
 		if (lif==0) {
 			d = 0;
-			commentator.stop ("done", NULL, "det");
+			commentator().stop ("done", NULL, "det");
 			return d;
 		}
 
 		if (bonus == 1) {
 			d = lif;
-			commentator.stop ("done", NULL, "det");
+			commentator().stop ("done", NULL, "det");
 			return d;
 		}
 #endif
@@ -314,8 +312,8 @@ namespace LinBox
 		if (early_counter < myfactor) {
 			/* determinant found */
 			k = cra2.result(res);
-			commentator.stop ("second step ", NULL, "det");
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			commentator().stop ("second step ", NULL, "det");
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 
 		}
@@ -351,8 +349,8 @@ namespace LinBox
 				if (early_counter < myfactor) {
 					/* determinant found based on the initial LU */
 					cra3.result(k);
-					commentator.stop ("third step - recalc", NULL, "det");
-					commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+					commentator().stop ("third step - recalc", NULL, "det");
+					commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 					<< "Iterations done " << iteration.iterations()<<"(" << iteration.iterations2() << ")\n";
 					//<< "bonus size " << log2(bonus) << "\n";
 
@@ -369,8 +367,8 @@ namespace LinBox
 						cra3.progress( D, iteration(r, D));
 					}
 					cra3.result(k);
-					commentator.stop ("third step, bonus > 1", NULL, "det");
-					commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+					commentator().stop ("third step, bonus > 1", NULL, "det");
+					commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 					<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 					//<< "bonus size " << log2(bonus) << "\n";
 				}
@@ -386,8 +384,8 @@ namespace LinBox
 					cra2.progress( D, iteration(r, D));
 				}
 				cra2.result(k);
-				commentator.stop ("third step, bonus = 1", NULL, "det");
-				commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+				commentator().stop ("third step, bonus = 1", NULL, "det");
+				commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 				<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 			}
 		}
@@ -401,16 +399,16 @@ namespace LinBox
 				cra2.progress( D, iteration(r, D));
 			}
 			cra2.result(k);
-			commentator.stop ("second step+", NULL, "det");
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			commentator().stop ("second step+", NULL, "det");
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 
 			/* enter the cra loop */
 			//cra2(k,iteration, genprime);
 		}
 
-		//commentator.stop ("second step", NULL, "det");
-		//commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		//commentator().stop ("second step", NULL, "det");
+		//commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		//        << "Iterations done " << iteration.iterations() << "("
 		//        << iteration.iterations2() << " )\n";
 		d = k*beta;
@@ -418,12 +416,12 @@ namespace LinBox
 		Integer_t tmp;
 
 #ifdef _LB_H_DET_TIMING
-		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "1 LU time: " << time1 << " LIF time: " << time2 << ")\n";
 #endif
-		commentator.report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		commentator().report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "det/lif " << k<< "\n";
-		//commentator.report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		//commentator().report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		//	<< "determinant size " << Integers::log2(tmp,abs(d))<< " lif size "<< Integers::log2(tmp,beta) << "\n";
 
 		return d ;
@@ -438,12 +436,12 @@ namespace LinBox
 						  const MyMethod                            &M)
 	{
 
-		//commentator.setReportStream(std::cout);
+		//commentator().setReportStream(std::cout);
 		typedef Modular<double> myModular;
 		//typedef PID_integer Integers;
 		typedef typename Integers::Element Integer;
 
-		commentator.start ("Integer Determinant - hybrid version for sparse matrices", "det");
+		commentator().start ("Integer Determinant - hybrid version for sparse matrices", "det");
 		size_t myfactor=5;
 		size_t early_counter=0;
 
@@ -457,14 +455,14 @@ namespace LinBox
 		double p_size = 26-(int)ceil(log((double)A.rowdim())*0.7213475205);
 
 		RandomPrime genprime( (Integer)p_size );
-		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "prime size: " << p_size << "\n";
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "prime size: " << p_size << "\n";
 		ChineseRemainder< myModular > cra(3UL);
 		IntegerModularDetReduced<SparseMatrix<Integers >,MyMethod> iteration(A, M, beta,myfactor);
 #if 0
 		if (A.rowdim() < 200 ) {
 			cra(d,iteration,genprime);
-			commentator.stop ( "first step", NULL, "det");
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			commentator().stop ( "first step", NULL, "det");
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations() << "\n";
 		}
 		else
@@ -503,8 +501,8 @@ namespace LinBox
 
 		if (early_counter < myfactor) {
 			//determinant found
-			commentator.stop ( "first step", NULL, "det");
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			commentator().stop ( "first step", NULL, "det");
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations()<< "\n";
 			return d=res;
 		}
@@ -522,8 +520,8 @@ namespace LinBox
 				cra.progress( D, iteration(r, D));
 				++early_counter;
 			}
-			commentator.stop ( "zero step", NULL, "det");
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			commentator().stop ( "zero step", NULL, "det");
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations() << "\n";
 			return d;
 		}
@@ -542,27 +540,27 @@ namespace LinBox
 		if (LIF.lastInvariantFactor1(lif, r_num1, A)==0) {
 			//if (lif==0)
 			d = 0;
-			commentator.stop ("is 0", NULL, "det");
+			commentator().stop ("is 0", NULL, "det");
 			return d;
 		}
 		BT.stop();
 		time2 = BT.usertime();
 		if (time2 < 0) time2 =0;
 #if 0
-		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "5 LU time: " << time1 << " LIF time: " << time2 << ")\n";
 		cout << "lif calculated\n";
 		LIF.lastInvariantFactor_Bonus(lif, bonus, A);
 
 		if (lif==0) {
 			d = 0;
-			commentator.stop ("done", NULL, "det");
+			commentator().stop ("done", NULL, "det");
 			return d;
 		}
 
 		if (bonus == 1) {
 			d = lif;
-			commentator.stop ("done", NULL, "det");
+			commentator().stop ("done", NULL, "det");
 			return d;
 		}
 #endif
@@ -585,8 +583,8 @@ namespace LinBox
 		if (early_counter < myfactor) {
 			// determinant found
 			k = cra2.result(res);
-			commentator.stop ("second step ", NULL, "det");
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			commentator().stop ("second step ", NULL, "det");
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 
 		}
@@ -622,8 +620,8 @@ namespace LinBox
 				if (early_counter < myfactor) {
 					// determinant found based on the initial LU
 					cra3.result(k);
-					commentator.stop ("third step - recalc", NULL, "det");
-					commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+					commentator().stop ("third step - recalc", NULL, "det");
+					commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 					<< "Iterations done " << iteration.iterations()<<"(" << iteration.iterations2() << ")\n";
 					//<< "bonus size " << log2(bonus) << "\n";
 
@@ -640,8 +638,8 @@ namespace LinBox
 						cra3.progress( D, iteration(r, D));
 					}
 					cra3.result(k);
-					commentator.stop ("third step, bonus > 1", NULL, "det");
-					commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+					commentator().stop ("third step, bonus > 1", NULL, "det");
+					commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 					<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 					//<< "bonus size " << log2(bonus) << "\n";
 				}
@@ -657,8 +655,8 @@ namespace LinBox
 					cra2.progress( D, iteration(r, D));
 				}
 				cra2.result(k);
-				commentator.stop ("third step, bonus = 1", NULL, "det");
-				commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+				commentator().stop ("third step, bonus = 1", NULL, "det");
+				commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 				<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 			}
 		}
@@ -672,27 +670,27 @@ namespace LinBox
 				cra2.progress( D, iteration(r, D));
 			}
 			cra2.result(k);
-			commentator.stop ("second step+", NULL, "det");
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			commentator().stop ("second step+", NULL, "det");
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 
 			// enter the cra loop
 			//cra2(k,iteration, genprime);
 		}
 
-		//commentator.stop ("second step", NULL, "det");
-		//commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		//commentator().stop ("second step", NULL, "det");
+		//commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		//        << "Iterations done " << iteration.iterations() << "("
 		//        << iteration.iterations2() << " )\n";
 		d = k*beta;
 
 		Integer tmp;
 
-		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "1 LU time: " << time1 << " LIF time: " << time2 << ")\n";
-		commentator.report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		commentator().report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "det/lif " << k<< "\n";
-		//commentator.report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		//commentator().report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		//        << "determinant size " << Integers::log2(tmp,abs(d))<< " lif size "<< Integers::log2(tmp,beta) << "\n";
 
 		return d ;
@@ -709,4 +707,13 @@ namespace LinBox
 
 
 
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 

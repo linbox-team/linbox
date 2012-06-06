@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *
@@ -61,11 +59,12 @@
 
 
 
-namespace LinBox
+#include <givaro/givcaster.h>
+namespace Givaro
 {
 
 	template<>
-	NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const integer &y)
+	NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const Integer &y)
 	{
 		x=NTL::to_ZZ_pE(static_cast<long>(y));
 		return x;
@@ -83,11 +82,11 @@ namespace LinBox
 	// a0 + a1*p + a2*p^2 + ...
 	//
 
-	integer& Caster(integer& c, const NTL::ZZ_pE& e)
+	Integer& Caster(Integer& c, const NTL::ZZ_pE& e)
 	{
 		NTL::ZZ_pX poly = rep(e);
 		//Integer base = _p;
-		Integer base = static_cast<integer>(to_long(NTL::ZZ_p::modulus()));
+		Integer base = static_cast<Integer>(to_long(NTL::ZZ_p::modulus()));
 		long i;
 
 		c = 0;
@@ -98,6 +97,12 @@ namespace LinBox
 
 		return c;
 	}
+} // namespace Givaro
+
+// Namespace in which all LinBox library code resides
+namespace LinBox
+{
+
 	class NTL_ZZ_pE_Initialiser {
 	public :
 		NTL_ZZ_pE_Initialiser( const Integer & p, size_t k ) {
@@ -402,3 +407,12 @@ namespace LinBox
 	};
 }
 #endif //__LINBOX_field_ntl_zz_pe_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+

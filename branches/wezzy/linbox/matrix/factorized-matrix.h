@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/matrix/factorized-matrix.h
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
@@ -53,8 +51,8 @@ namespace LinBox
 
 
 	/*! LQUP factorisation.
-	 * This is a class to ease the use LU factorisation (see \ref LUdivine
-	 * in \ref FFPACK)
+	 * This is a class to ease the use LU factorisation (see FFPACK::LUdivine
+	 * (bug link here.))
 	 *
 	 * The factorisation is \f$ A = L Q U P \f$ with \c L lower unit
 	 * triangular, \c U upper non-unit triangular, \c P and \c Q
@@ -97,7 +95,7 @@ namespace LinBox
 		{
 			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
 
-			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
+			_rank= FFPACK::LUdivine((typename Field::Father_t) _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
 						 _factLU.getPointer(),_factLU.getStride(),
 						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
 			_permP.setOrder(_rank);
@@ -119,7 +117,7 @@ namespace LinBox
 			}
 			else {
 				//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
-				_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
+				_rank= FFPACK::LUdivine((typename Field::Father_t) _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
 							 _factLU.getPointer(),_factLU.getStride(),
 							 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
 			}
@@ -142,7 +140,7 @@ namespace LinBox
 
 			linbox_check(_permQ.getOrder()==A.rowdim());
 			linbox_check(_permP.getOrder()==A.coldim());
-			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
+			_rank= FFPACK::LUdivine((typename Field::Father_t) _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
 						 _factLU.getPointer(),_factLU.getStride(),
 						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
 			_permP.setOrder(_rank);
@@ -168,7 +166,7 @@ namespace LinBox
 			if (_permP.getOrder() == 0)
 				_permP.resize(A.coldim());
 
-			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
+			_rank= FFPACK::LUdivine((typename Field::Father_t) _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
 						 _factLU.getPointer(),_factLU.getStride(),
 						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
 			_permP.setOrder(_rank);
@@ -329,4 +327,13 @@ namespace LinBox
 #include "linbox/matrix/factorized-matrix.inl"
 
 #endif //__LINBOX_factorized_matrix_H
+
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 
