@@ -86,6 +86,7 @@ namespace Givaro
 namespace LinBox
 {
 
+	//! use ZZ_pEBak mechanism too ?
 	class NTL_zz_pE_Initialiser {
 	public :
 		NTL_zz_pE_Initialiser( const Integer & p, const Integer & k) {

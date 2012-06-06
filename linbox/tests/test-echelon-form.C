@@ -1,24 +1,24 @@
-
-/* tests/test-echelon-form.C
+/* Copyright (C) 2012 bds
+ * tests/test-echelon-form.C
  *
  * adapted by bds from test-blas-domain Written by Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
  *
  * ---------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -97,7 +97,7 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 	for (int k=0;k<iterations; ++k) {
 
 		mycommentator().progress(k);
-		BlasMatrix<Field> A(F,m,n),S(F,m,n), L(F,m,m); 
+		BlasMatrix<Field> A(F,m,n),S(F,m,n), L(F,m,m);
 
 		int mn = (m < n) ? m : n;
 		r = (unsigned int)(random() % mn);
@@ -123,7 +123,7 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
                 BMD.write(commentator().report(), A) << " = A" << std::endl;
 
 		// compute the rank of A
-		BlasMatrix<Field> E1(F,m,n), E2(F,m,n), E3(F,m,n), E4(F,m,n); 
+		BlasMatrix<Field> E1(F,m,n), E2(F,m,n), E3(F,m,n), E4(F,m,n);
 		unsigned int rank1= EFD.rowEchelon(E1, A);
                 BMD.write(commentator().report(), E1) << " = rowEchelon(E1, A)" << std::endl;
 
