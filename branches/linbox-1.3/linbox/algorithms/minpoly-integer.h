@@ -291,7 +291,7 @@ namespace LinBox
 
 				F. init (*p, *raw_p);
 
-			FFPACK::MinPoly( F, poly, n, FA, n, X, n, Perm);
+			FFPACK::MinPoly((typename _Field::Father_t) F, poly, n, FA, n, X, n, Perm);
 
 			cra.initialize(F, poly);
 		} while( poly. size() != degree + 1) ; // Test for Bad primes
@@ -304,7 +304,7 @@ namespace LinBox
 
 				F. init (*p, *raw_p);
 
-			FFPACK::MinPoly( F, poly, n, FA, n, X, n, Perm);
+			FFPACK::MinPoly((typename _Field::Father_t) F, poly, n, FA, n, X, n, Perm);
 
 			if(poly. size() != degree + 1) {
 				commentator().report (Commentator::LEVEL_IMPORTANT,
@@ -347,7 +347,7 @@ namespace LinBox
 			     p!= FA + (n*n); ++ p, ++ raw_p)
 				F. init (*p, *raw_p);
 
-			FFPACK::MinPoly( F, Poly, n, FA, n, X, n, Perm);
+			FFPACK::MinPoly((typename _Field::Father_t) F, Poly, n, FA, n, X, n, Perm);
 
 			if (degree < Poly. size() - 1)
 				degree = Poly. size() -1;

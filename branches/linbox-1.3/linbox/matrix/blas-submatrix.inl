@@ -179,14 +179,14 @@ namespace LinBox
 	typename BlasSubmatrix< _Field>::pointer
 	BlasSubmatrix< _Field>::getPointer() const
 	{
-		return _Mat->getPointer();
+		return _Mat->getPointer()+_off;
 	}
 
 	template <class _Field>
 	typename BlasSubmatrix< _Field>::const_pointer &
 	BlasSubmatrix< _Field>::getConstPointer() const
 	{
-		return _Mat->getConstPointer();
+		return _Mat->getConstPointer()+_off;
 	}
 
 
@@ -194,7 +194,7 @@ namespace LinBox
 	typename BlasSubmatrix< _Field>::pointer&
 	BlasSubmatrix< _Field>::getWritePointer()
 	{
-		return _Mat->getWritePointer();
+		return _Mat->getWritePointer()+_off;
 	}
 
 	template <class _Field>

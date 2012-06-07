@@ -963,7 +963,7 @@ namespace LinBox
 				Atp_minor_inv = new BlasMatrix<Field>(F, rank, rank);
 
 
-				FFPACK::LQUPtoInverseOfFullRankMinor(F, rank, TAS_factors->getPointer(), A.rowdim(),
+				FFPACK::LQUPtoInverseOfFullRankMinor((typename Field::Father_t)F, rank, TAS_factors->getPointer(), A.rowdim(),
 								     TAS_Qt.getPointer(),
 								     Atp_minor_inv->getPointer(), rank);
 #ifdef RSTIMING

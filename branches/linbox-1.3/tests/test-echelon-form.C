@@ -99,7 +99,7 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 		mycommentator().progress(k);
 		BlasMatrix<Field> A(F,m,n),S(F,m,n), L(F,m,m);
 
-		int mn = (m < n) ? m : n;
+		int mn = (m < n) ? (int)m :(int) n;
 		r = (unsigned int)(random() % mn);
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){

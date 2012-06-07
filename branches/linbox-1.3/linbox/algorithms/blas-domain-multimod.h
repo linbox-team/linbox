@@ -68,6 +68,7 @@ namespace LinBox
 			int nullity, defrank=0;
 
 			for (size_t i=0;i<F.size();++i){
+				// get parent fflas field...
 				FFPACK::Invert(F.getBase(i),A.rowdim(), A.getMatrix(i)->getPointer(),A.getMatrix(i)->getStride(),
 					       Ainv.getMatrix(i)->getPointer(),Ainv.getMatrix(i)->getStride(),nullity);
 				defrank+=nullity;
