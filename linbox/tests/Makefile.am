@@ -193,6 +193,9 @@ LIDIA_TESTS =                         \
 ATLAS_TESTS =                         \
         test-optimization
 
+BLAS3_UNIT_TESTS = \
+		   test-toom-cook
+
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
 endif
@@ -632,6 +635,8 @@ test_ispossemidef_SOURCES=            \
 
 test_ftrmm_SOURCES =                  \
 		test-ftrmm.C
+
+test_toom_cook_SOURCES = test-toom-cook.C
 
 #  test_integer_tools_SOURCES =          \
 #  test-integer-tools.C
