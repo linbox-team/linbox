@@ -526,7 +526,7 @@ namespace LinBox
 
 				return b;
 
-				/* BB: unreachable  !
+#if 0 /* BB: unreachable  ! */
 				   size_t n = b.size(); // bds: b not B
 				   linbox_check( A.rowdim() == n );
 				   size_t r = A.getRank();
@@ -540,7 +540,8 @@ namespace LinBox
 				FFPACK::solveLB2((typename Field::Father_t) F, FFLAS::FflasLeft, n, 1, r, A.getPointer(), A.getStride(),
 				A.getQ().getPointer(), b.getPointer(), b.getStride() );
 				return b;
-				*/
+
+#endif
 			}
 		}; // end of class FactorizedMatrixLeftLSolve
 
