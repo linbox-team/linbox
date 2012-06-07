@@ -32,7 +32,7 @@
 
 #include <string>
 #include <algorithm>
-#include <givaro/givcaster.h>
+
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"

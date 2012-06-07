@@ -59,7 +59,8 @@
 
 
 
-#include <givaro/givcaster.h>
+#include "linbox/integer.h"
+
 namespace Givaro
 {
 

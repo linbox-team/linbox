@@ -222,6 +222,8 @@ namespace Givaro {
 		return t = static_cast<Target>(s);
 	}
 }
+#else
+#include <givaro/givcaster.h>
 #endif
 
 
