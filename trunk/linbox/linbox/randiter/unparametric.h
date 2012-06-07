@@ -28,7 +28,6 @@
 #include <ctime>
 #include <vector>
 #include "linbox/field/unparametric.h"
-#include <givaro/givcaster.h>
 
 // #include <fflas-ffpack/field/unparametric.h>
 

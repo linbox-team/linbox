@@ -54,7 +54,8 @@
 #include "linbox/randiter/unparametric.h"
 #include "linbox/field/field-traits.h"
 
-#include <givaro/givcaster.h>
+#include "linbox/integer.h"
+
 namespace Givaro
 {
 	/** Initialization of field element from an integer.
@@ -296,7 +297,8 @@ namespace LinBox
 				elt = static_cast<double>((double(rand())/RAND_MAX)*double(_size));
 
 #ifdef TRACE
-			double temp = (double) elt;
+			double temp ;
+			NTL::conv(temp, elt);
 			std::cout << "random double = " << temp << "    random Element = " << elt << std::endl;
 #endif // TRACE
 
