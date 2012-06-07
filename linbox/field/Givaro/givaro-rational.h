@@ -79,6 +79,12 @@ namespace LinBox
 			return x=Element(y);
 		}
 
+        std::istream &read(std::istream & s, Element &a) const
+		{
+            s >> a;
+            return s;
+		}
+
 		integer& convert(integer& i, const Element& r) const
 		{
 			return i=r.nume();

@@ -12,10 +12,10 @@
 # TODO : use an optionnal message in die function.
 # TODO : rpath instead of LD_LIBRARY_PATH ?
 
-STABLE_FFLAS=1.5.0
-STABLE_GIVARO=3.6.0
-GIV_TAR=202
-GIV_MD5=203
+STABLE_FFLAS=1.6.0
+STABLE_GIVARO=3.7.0
+GIV_TAR=207
+GIV_MD5=208
 
 #switches
 STABLE_VAR="true"

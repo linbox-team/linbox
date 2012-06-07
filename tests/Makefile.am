@@ -75,6 +75,7 @@ FULLCHECK_TESTS =                 \
         test-diagonal                 \
         test-dif                      \
         test-direct-sum               \
+        test-echelon-form             \
         test-ffpack                   \
         test-getentry                 \
         test-gf2                      \
@@ -191,6 +192,9 @@ LIDIA_TESTS =                         \
 
 ATLAS_TESTS =                         \
         test-optimization
+
+BLAS3_UNIT_TESTS = \
+		   test-toom-cook
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
@@ -425,6 +429,10 @@ test_direct_sum_SOURCES =                \
         test-generic.h                   \
         test-common.h
 
+test_echelon_form_SOURCES =                \
+        test-echelon-form.C                \
+        test-common.h
+
 test_frobenius_SOURCES =                \
         test-frobenius.C                \
         test-generic.h                  \
@@ -627,6 +635,8 @@ test_ispossemidef_SOURCES=            \
 
 test_ftrmm_SOURCES =                  \
 		test-ftrmm.C
+
+test_toom_cook_SOURCES = test-toom-cook.C
 
 #  test_integer_tools_SOURCES =          \
 #  test-integer-tools.C

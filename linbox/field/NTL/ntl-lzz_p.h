@@ -6,20 +6,20 @@
  * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -52,20 +52,20 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/integer.h"
 
-// Namespace in which all LinBox library code resides
-namespace LinBox
-{
+#include "linbox/integer.h"
 
+namespace Givaro
+{
 
 	/** Initialization of field element from an integer.
 	 * This Uses NTL's <code>to_zz_p</code> function.
 	 *
 	 * @return reference to field element.
 	 * @param x field element to contain output (reference returned).
-	 * @param y integer.
+	 * @param y Integer.
 	 */
 	template <>
-	NTL::zz_p& Caster(NTL::zz_p& x, const integer& y)
+	NTL::zz_p& Caster(NTL::zz_p& x, const Integer& y)
 	{
 		return x = NTL::to_zz_p( y%NTL::zz_p::modulus() );
 	}
@@ -75,24 +75,28 @@ namespace LinBox
 		return x = NTL::to_zz_p((long)(y)%NTL::zz_p::modulus());
 	}
 
-	/** Conversion of field element to an integer.
+	/** Conversion of field element to an Integer.
 	 * This function assumes the output field element x has already been
 	 * constructed, but that it is not already initialized.
 	 * For now, this is done by converting the element type to a C++
-	 * long and then to the integer type through the use of static cast and
+	 * long and then to the Integer type through the use of static cast and
 	 * NTL's to_long function.
 	 * This, of course, assumes such static casts are possible.
 	 * This function should be changed in the future to avoid using long.
-	 * @return reference to integer.
-	 * @param x reference to integer to contain output (reference returned).
+	 * @return reference to Integer.
+	 * @param x reference to Integer to contain output (reference returned).
 	 * @param y constant reference to field element.
 	 */
  	template <>
-	integer& Caster(integer& x, const NTL::zz_p& y)
+	Integer& Caster(Integer& x, const NTL::zz_p& y)
 	{
-		return x = static_cast<integer>(rep(y));
+		return x = static_cast<Integer>(rep(y));
 	}
+} // namespace Givaro
 
+// Namespace in which all LinBox library code resides
+namespace LinBox
+{
 
 	class NTL_zz_p_Initialiser {
 	public :
