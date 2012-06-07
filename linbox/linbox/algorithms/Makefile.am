@@ -124,6 +124,7 @@ pkgincludesub_HEADERS =         \
     dense-nullspace.h dense-nullspace.inl   \
     linbox-tags.h               \
     bm-seq.h                    \
+    short-vector.h              \
     rns.h rns.inl
 
 EXTRA_DIST =                    \
