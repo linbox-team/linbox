@@ -8,20 +8,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -54,6 +54,66 @@
 #include "linbox/randiter/unparametric.h"
 #include "linbox/field/field-traits.h"
 
+#include "linbox/integer.h"
+
+namespace Givaro
+{
+	/** Initialization of field element from an integer.
+	 * Behaves like C++ allocator construct.
+	 * This function assumes the output field element x has already been
+	 * constructed, but that it is not already initialized.
+	 * For now, this is done by converting the integer type to a C++
+	 * long and then to the element type through the use of static cast and
+	 * NTL's to_RR function.
+	 * This, of course, assumes such static casts are possible.
+	 * This function should be changed in the future to avoid using long.
+	 * @return reference to field element.
+	 * @param x field element to contain output (reference returned).
+	 * @param y integer.
+	 */
+	template <>
+	NTL::RR& Caster(NTL::RR& x, const Integer& y)
+	{
+		return x = NTL::to_RR(static_cast<const long&>(y));
+	}
+	template <>
+	NTL::RR& Caster(NTL::RR& x, const double& y)
+	{
+		return x = NTL::to_RR((long)(y));
+	}
+	template <>
+	NTL::RR& Caster(NTL::RR& x, const int& y)
+	{
+		return x = NTL::to_RR((long)(y));
+	}
+
+	template <>
+	NTL::RR& Caster(NTL::RR& x, const long int& y)
+	{
+		return x = NTL::to_RR((long)(y));
+	}
+
+	/** Conversion of field element to an integer.
+	 * This function assumes the output field element x has already been
+	 * constructed, but that it is not already initialized.
+	 * For now, this is done by converting the element type to a C++
+	 * long and then to the integer type through the use of static cast and
+	 * NTL's to_long function.
+	 * This, of course, assumes such static casts are possible.
+	 * This function should be changed in the future to avoid using long.
+	 * @return reference to integer.
+	 * @param x reference to integer to contain output (reference returned).
+	 * @param y constant reference to field element.
+	 */
+	template <>
+	Integer& Caster(Integer& x, const NTL::RR& y)
+	{
+		return x = static_cast<Integer>(to_long(y));
+	}
+} // namespace Givaro
+
+
+
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -78,61 +138,6 @@ namespace LinBox
 	 */
 	//@{
 
-
-	/** Initialization of field element from an integer.
-	 * Behaves like C++ allocator construct.
-	 * This function assumes the output field element x has already been
-	 * constructed, but that it is not already initialized.
-	 * For now, this is done by converting the integer type to a C++
-	 * long and then to the element type through the use of static cast and
-	 * NTL's to_RR function.
-	 * This, of course, assumes such static casts are possible.
-	 * This function should be changed in the future to avoid using long.
-	 * @return reference to field element.
-	 * @param x field element to contain output (reference returned).
-	 * @param y integer.
-	 */
-	template <>
-	NTL::RR& Caster(NTL::RR& x, const integer& y)
-	{
-		return x = NTL::to_RR(static_cast<const long&>(y));
-	}
-	template <>
-	NTL::RR& Caster(NTL::RR& x, const double& y)
-	{
-		return x = NTL::to_RR((long)(y));
-	}
-	template <>
-	NTL::RR& Caster(NTL::RR& x, const int& y)
-	{
-		return x = NTL::to_RR((long)(y));
-	}
-
-	template <>
-	NTL::RR& Caster(NTL::RR& x, const long int& y)
-	{
-		return x = NTL::to_RR((long)(y));
-	}
-
-
-
-	/** Conversion of field element to an integer.
-	 * This function assumes the output field element x has already been
-	 * constructed, but that it is not already initialized.
-	 * For now, this is done by converting the element type to a C++
-	 * long and then to the integer type through the use of static cast and
-	 * NTL's to_long function.
-	 * This, of course, assumes such static casts are possible.
-	 * This function should be changed in the future to avoid using long.
-	 * @return reference to integer.
-	 * @param x reference to integer to contain output (reference returned).
-	 * @param y constant reference to field element.
-	 */
-	template <>
-	integer& Caster(integer& x, const NTL::RR& y)
-	{
-		return x = static_cast<integer>(to_long(y));
-	}
 
 	struct NTL_RR: public NTL_RR_Initialiser, public FFPACK::UnparametricOperations<NTL::RR> {
 		typedef NTL::RR Element ;
@@ -223,6 +228,11 @@ namespace LinBox
 			return FFPACK::UnparametricOperations<Element>::write(os,x);
 		}
 
+		Element& init (Element& x) const
+		{
+			return x;
+		}
+
 		template <typename Src>
 		Element& init (Element& x, const Src& s) const
 		{
@@ -279,6 +289,7 @@ namespace LinBox
 		 */
 		Element& random(Element &elt) const
 		{
+			// NTL::random(elt);
 			// Create new random elements
 			if (_size == 0)
 				elt = rand();
@@ -286,7 +297,8 @@ namespace LinBox
 				elt = static_cast<double>((double(rand())/RAND_MAX)*double(_size));
 
 #ifdef TRACE
-			double temp = elt;
+			double temp ;
+			NTL::conv(temp, elt);
 			std::cout << "random double = " << temp << "    random Element = " << elt << std::endl;
 #endif // TRACE
 

@@ -72,7 +72,9 @@ using namespace LinBox;
    most don't build.  This combination below does though.
    */
 
-void linbox_modn_dense_delete_array_double(double * f) {delete[] f;
+void linbox_modn_dense_delete_array_double(double * f)
+{
+	delete[] f;
 }
 void linbox_modn_dense_delete_array_float(float * f) {delete[] f;
 }
@@ -363,13 +365,13 @@ void printPolynomial (const Field &F, const Polynomial &v)
 	std::cout << std::endl;
 }
 
-IntegerRing ZZ;
+IntegerRing staticZZ;
 SpyInteger spy;
 typedef GivPolynomialRing<IntegerRing, Givaro::Dense> IntPolRing;
 
 BlasMatrix<IntegerRing> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
 {
-	BlasMatrix<IntegerRing> A ( ZZ, nrows, ncols);
+	BlasMatrix<IntegerRing> A ( staticZZ, nrows, ncols);
 
 	size_t i, j;
 	for (i=0; i < nrows; ++i) {
@@ -422,7 +424,7 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
 		m = n;
 	}
 
-	BlasMatrix<IntegerRing> A( ZZ, m, m);
+	BlasMatrix<IntegerRing> A( staticZZ, m, m);
 
 	size_t i, j;
 	IntegerRing::Element t;

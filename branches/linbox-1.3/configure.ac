@@ -317,6 +317,7 @@ doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
 linbox/algorithms/gauss/Makefile
+linbox/algorithms/matrix-blas3/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
