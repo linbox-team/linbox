@@ -1462,7 +1462,8 @@ namespace LinBox
 			size_t *Perm = new size_t[n];
 			for ( size_t i=0; i<n; ++i)
 				Perm[i] = 0;
-			FFPACK::MinPoly<Field,Polynomial>( (typename Field::Father_t) F, P, n, A.getPointer(), A.getStride(), X, n, Perm);
+			// (typename Field::Father_t)
+			FFPACK::MinPoly<Field,Polynomial>(  F, P, n, A.getPointer(), A.getStride(), X, n, Perm);
 			commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
 
 			delete[] Perm;
