@@ -595,7 +595,7 @@ namespace LinBox
 				// Compute the inverse of L
 				TriangularBlasMatrix<Field> invL(_field, m, m,
 								 LinBoxTag::Lower, LinBoxTag::Unit);
-				FFPACK::trinv_left(_field,m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
+				FFPACK::trinv_left((typename Field::Father_t)_field,m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
 
 #ifdef  _BM_TIMING
 				chrono.stop();
@@ -853,7 +853,7 @@ namespace LinBox
 				// compute the inverse of L
 				TriangularBlasMatrix<Field> invL (_field,m+n,m+n,
 								  LinBoxTag::Lower,LinBoxTag::Unit);
-				FFPACK::trinv_left(_field,m+n, L.getPointer(), L.getStride(),
+				FFPACK::trinv_left((typename Field::Father_t)_field,m+n, L.getPointer(), L.getStride(),
 						   invL.getWritePointer(), invL.getStride());
 
 
@@ -1076,7 +1076,7 @@ namespace LinBox
 				// compute the inverse of L
 				TriangularBlasMatrix<Field> invL (_field,m+n,m+n,
 								  LinBoxTag::Lower,LinBoxTag::Unit);
-				FFPACK::trinv_left(_field,m+n,L.getPointer(),L.getStride(),
+				FFPACK::trinv_left((typename Field::Father_t)_field,m+n,L.getPointer(),L.getStride(),
 						   invL.getWritePointer(),invL.getStride());
 
 

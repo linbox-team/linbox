@@ -88,15 +88,15 @@ namespace LinBox
 		TriangularBlasMatrix<_Field>::TriangularBlasMatrix (const Matrix& A,
 				LinBoxTag::Shape x,
 				LinBoxTag::Diag y) :
-			BlasMatrix<_Field>(A.rowdim(),A.coldim()), _uplo(x), _diag(y)
+			BlasMatrix<_Field>(A.field(),A.rowdim(),A.coldim()), _uplo(x), _diag(y)
 		{
 			switch (x) {
 			case LinBoxTag::Upper:
 				{
 					for (size_t i=0;i<A.rowdim();++i){
 						for (size_t j=i;j<A.coldim();++j) {
-							Element tmp;
-							this->setEntry(i,j,getEntry(tmp, A,i,j));
+							Element tmp = A.getEntry(i,j) ;
+							this->setEntry(i,j,tmp);
 						}
 					}
 					break;
@@ -105,8 +105,8 @@ namespace LinBox
 				{
 					for (size_t i=0;i<A.rowdim();++i) {
 						for (size_t j=0;j<=i;++j) {
-							Element tmp;
-							this->setEntry(i,j,getEntry(tmp, A,i,j));
+							Element tmp = A.getEntry(i,j);
+							this->setEntry(i,j,tmp);
 						}
 					}
 

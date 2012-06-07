@@ -42,6 +42,11 @@
 #define __LINBOX_integer_H
 
 //#include <cstdint>
+#include "linbox/linbox-config.h"
+#include "givaro/givconfig.h"
+#include "gmp++/gmp++.h"
+#include <cfloat> // BB : needed on some rare platforms...
+
 
 #ifdef __LINBOX_HAVE_STDINT_H
 #ifndef __STDC_LIMIT_MACROS
@@ -53,11 +58,6 @@
 #error "INT32_MAX is not defined. It should at least be defined in Givaro..."
 #endif
 #endif
-
-#include "linbox/linbox-config.h"
-#include "givaro/givconfig.h"
-#include "gmp++/gmp++.h"
-#include <cfloat> // BB : needed on some rare platforms...
 
 
 #ifndef FFLAFLAS_VERSION

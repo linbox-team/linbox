@@ -33,6 +33,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/algorithms/echelon-form.h"
+#include <fflas-ffpack/ffpack/ffpack.h>
 
 using namespace LinBox;
 using namespace std;
@@ -54,13 +55,25 @@ int main (int argc, char **argv)
 	BlasMatrix<Field> A(ms);
 	BlasMatrix<Field> E(F,A.rowdim(),A.coldim());
 	cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
+	cout << A << std::endl;
 
 	EchelonFormDomain<Modular<double> > EFD (F);
 
 	EFD.rowReducedEchelon(E,A);
 
+#ifdef COMPARE_FFPACK
+	BlasMatrix<Field> G(A);
+	size_t * P = new size_t[G.coldim()];
+	size_t * Q = new size_t[G.rowdim()];
+	size_t r = (size_t)FFPACK::ReducedRowEchelonForm (F, G.rowdim(), G.coldim(), G.getWritePointer(), G.coldim(), P, Q,false);
+
+	if (G.coldim() <20)
+		G.write(cerr<<"FFPACK::Echelon = "<<endl)<<endl;
+
+#endif
+
 	if (E.coldim() <20)
-		E.write(cerr<<"Echelon = "<<endl)<<endl;
+		E.write(cerr<<"LinBox::Echelon = "<<endl)<<endl;
 
 	return 0;
 }
