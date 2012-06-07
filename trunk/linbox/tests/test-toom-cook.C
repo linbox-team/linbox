@@ -68,53 +68,53 @@ int main(int ac, char ** av) {
 
 	// std::cout << "A[0,0] = " << A.getEntry(0,0) << std::endl;
 	{
-	std::cout << "ToomCook low mem" << std::endl;
-	LinBox::BlasMatrix<GFpe> D(GF,m,n);
-	Tim.clear(); Tim.start();
-	LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::ToomCook<GFpe>(GF,false));
-	Tim.stop();
-	std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
-	if (m*n < 100) {
-		for (size_t i = 0 ; i < m ; ++i)
-			for (size_t j = 0 ; j < n ; ++j)
-				if (!(GF.areEqual(D.getEntry(0,0),C.getEntry(0,0))))
-					return 1;
-	}
-	else {
-		int r =100 ;
-		while (--r)  {
-			size_t i = rand()%m;
-			size_t j = rand()%n;
-			if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j))))
-					return 1;
+		std::cout << "ToomCook low mem" << std::endl;
+		LinBox::BlasMatrix<GFpe> D(GF,m,n);
+		Tim.clear(); Tim.start();
+		LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::ToomCook<GFpe>(GF,false));
+		Tim.stop();
+		std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
+		if (m*n < 100) {
+			for (size_t i = 0 ; i < m ; ++i)
+				for (size_t j = 0 ; j < n ; ++j)
+					if (!(GF.areEqual(D.getEntry(0,0),C.getEntry(0,0))))
+						return 1;
 		}
-		// TODO check with apply !
-	}
+		else {
+			int r =100 ;
+			while (--r)  {
+				size_t i = rand()%m;
+				size_t j = rand()%n;
+				if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j))))
+					return 1;
+			}
+			// TODO check with apply !
+		}
 	}
 
 	{
-	std::cout << "ToomCook high mem" << std::endl;
-	LinBox::BlasMatrix<GFpe> D(GF,m,n);
-	Tim.clear(); Tim.start();
-	LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::ToomCook<GFpe>(GF,true));
-	Tim.stop();
-	std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
-	if (m*n < 100) {
-		for (size_t i = 0 ; i < m ; ++i)
-			for (size_t j = 0 ; j < n ; ++j)
-				if (!(GF.areEqual(D.getEntry(0,0),C.getEntry(0,0))))
-					return 1;
-	}
-	else {
-		int r =100 ;
-		while (--r)  {
-			size_t i = rand()%m;
-			size_t j = rand()%n;
-			if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j))))
-					return 1;
+		std::cout << "ToomCook high mem" << std::endl;
+		LinBox::BlasMatrix<GFpe> D(GF,m,n);
+		Tim.clear(); Tim.start();
+		LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::ToomCook<GFpe>(GF,true));
+		Tim.stop();
+		std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
+		if (m*n < 100) {
+			for (size_t i = 0 ; i < m ; ++i)
+				for (size_t j = 0 ; j < n ; ++j)
+					if (!(GF.areEqual(D.getEntry(0,0),C.getEntry(0,0))))
+						return 1;
 		}
-		// TODO check with apply !
-	}
+		else {
+			int r =100 ;
+			while (--r)  {
+				size_t i = rand()%m;
+				size_t j = rand()%n;
+				if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j))))
+					return 1;
+			}
+			// TODO check with apply !
+		}
 	}
 	return 0;
 }
