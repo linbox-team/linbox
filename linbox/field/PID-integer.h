@@ -50,7 +50,7 @@ namespace LinBox
 	/*! \ingroup integers
 	 * @brief Domain for integer operations.
 	 */
-	class PID_integer : public UnparametricField<integer>
+	class PID_integer : public LinBox::UnparametricField<integer>
 	{
 
 	public:
