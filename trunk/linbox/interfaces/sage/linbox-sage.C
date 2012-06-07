@@ -363,152 +363,126 @@ void printPolynomial (const Field &F, const Polynomial &v)
 	std::cout << std::endl;
 }
 
-IntegerRing staticZZ;
 SpyInteger spy;
 typedef GivPolynomialRing<IntegerRing, Givaro::Dense> IntPolRing;
 
-BlasMatrix<IntegerRing> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
+void get_matrix(BlasMatrix<IntegerRing> &A, mpz_t** matrix)
 {
-	BlasMatrix<IntegerRing> A ( staticZZ, nrows, ncols);
 
 	size_t i, j;
-	for (i=0; i < nrows; ++i) {
-		for (j=0; j < ncols; ++j) {
+	for (i=0; i < A.rowdim(); ++i) {
+		for (j=0; j < A.coldim(); ++j) {
 			IntegerRing::Element t;
 			mpz_set(spy.get_mpz(t), matrix[i][j]);
 			A.setEntry(i, j, t);
 		}
 	}
-	return A;
-}
-
-BlasMatrix<IntegerRing> new_matrix_integers(mpz_t** matrix, size_t nrows, size_t ncols)
-{
-	IntegerRing Z;
-	BlasMatrix<IntegerRing> A ( Z,nrows, ncols);
-
-	size_t i, j;
-	for (i=0; i < nrows; ++i) {
-		for (j=0; j < ncols; ++j) {
-			IntegerRing::Element t;
-			mpz_set(spy.get_mpz(t), matrix[i][j]);
-			A.setEntry(i, j, t);
-		}
-	}
-	return A;
 }
 
 template<class Field>
-void set_matrix(mpz_t** matrix, BlasMatrix<Field>& A, size_t nrows, size_t ncols)
+void set_matrix(mpz_t** matrix, BlasMatrix<Field>& A)
 {
 	size_t i, j;
-	for (i=0; i < nrows; ++i) {
-		for (j=0; j < ncols; ++j) {
+	for (i=0; i < A.rowdim(); ++i) {
+		for (j=0; j < A.coldim(); ++j) {
 			mpz_set(matrix[i][j], spy.get_mpz(A.getEntry(i,j)));
 		}
 	}
 }
 
-void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, mpz_t** matrix, int do_minpoly)
+// void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, mpz_t** matrix, int do_minpoly)
+// {
+// 	/* We program around a bizarre bug in linbox, where minpoly doesn't work
+// 	   on matrices that are n x n with n divisible by 4!
+// 	   */
+// 	size_t m;
+// 	if (n % 4 == 0 || !do_minpoly) {
+// 		m = n + 1;
+// 	}
+// 	else {
+// 		m = n;
+// 	}
+//         IntegerRing ZZ;
+
+// 	BlasMatrix<IntegerRing> A(ZZ, m, m);
+
+//         get_matrix<IntegerRing>(A, matrix);
+
+// 	//    vector<IntegerRing::Element> m_A;
+// 	IntPolRing::Element m_A;
+
+// 	if (do_minpoly)
+// 		minpoly(m_A, A);
+// 	else
+// 		charpoly(m_A, A);
+
+// 	if (n%4 == 0 || !do_minpoly) {
+// 		/* Program around the bug.
+// 		   It is OK that this code is crappy and redundant, since it will get replaced
+// 		   when linbox gets fixed. */
+// 		int divide_by_x;
+
+// 		if (!do_minpoly)
+// 			divide_by_x = 1;
+// 		else {
+// 			long unsigned int r;
+// 			rank(r, A);
+// 			divide_by_x = (r==n);
+// 		}
+// 		if (divide_by_x) {
+// 			/* x was not a factor of the charpoly after all. */
+// 			(*mp) = new mpz_t[m_A.size()-1];
+// 			*degree = m_A.size() - 2;
+// 			for (size_t k=0; k <= *degree; ++k) {
+// 				mpz_init((*mp)[k]);
+// 				mpz_set((*mp)[k], spy.get_mpz(m_A[k+1]));
+// 			}
+// 			return;
+// 		}
+// 	}
+
+// 	(*mp) = new mpz_t[m_A.size()];
+// 	*degree = m_A.size() - 1;
+// 	for (size_t k=0; k <= *degree; ++k) {
+// 		mpz_init((*mp)[k]);
+// 		mpz_set((*mp)[k], spy.get_mpz(m_A[k]));
+// 	}
+
+// }
+
+void linbox_integer_dense_charpoly(mpz_t* &mp, size_t& degree, size_t n, mpz_t** matrix)
 {
-	/* We program around a bizarre bug in linbox, where minpoly doesn't work
-	   on matrices that are n x n with n divisible by 4!
-	   */
-	size_t m;
-	if (n % 4 == 0 || !do_minpoly) {
-		m = n + 1;
-	}
-	else {
-		m = n;
-	}
+        IntegerRing ZZ;
+	BlasMatrix<IntegerRing> A(ZZ, n, n);
+        get_matrix(A, matrix);
 
-	BlasMatrix<IntegerRing> A( staticZZ, m, m);
-
-	size_t i, j;
-	IntegerRing::Element t;
-	for (i=0; i < n; ++i) {
-		for (j=0; j < n; ++j) {
-			mpz_set(spy.get_mpz(t), matrix[i][j]);
-			A.setEntry(i, j, t);
-		}
-	}
-
-	//    vector<IntegerRing::Element> m_A;
-	IntPolRing::Element m_A;
-
-	if (do_minpoly)
-		minpoly(m_A, A);
-	else
-		charpoly(m_A, A);
-
-	if (n%4 == 0 || !do_minpoly) {
-		/* Program around the bug.
-		   It is OK that this code is crappy and redundant, since it will get replaced
-		   when linbox gets fixed. */
-		int divide_by_x;
-
-		if (!do_minpoly)
-			divide_by_x = 1;
-		else {
-			long unsigned int r;
-			rank(r, A);
-			divide_by_x = (r==n);
-		}
-		if (divide_by_x) {
-			/* x was not a factor of the charpoly after all. */
-			(*mp) = new mpz_t[m_A.size()-1];
-			*degree = m_A.size() - 2;
-			for (size_t k=0; k <= *degree; ++k) {
-				mpz_init((*mp)[k]);
-				mpz_set((*mp)[k], spy.get_mpz(m_A[k+1]));
-			}
-			return;
-		}
-	}
-
-	(*mp) = new mpz_t[m_A.size()];
-	*degree = m_A.size() - 1;
-	for (size_t k=0; k <= *degree; ++k) {
-		mpz_init((*mp)[k]);
-		mpz_set((*mp)[k], spy.get_mpz(m_A[k]));
-	}
-
-}
-
-void linbox_integer_dense_charpoly(mpz_t* *mp, size_t* degree, size_t n, mpz_t** matrix)
-{
-	/* THIS IS Broken when n % 4 == 0!!!!  Use above function instead. */
-	/*    linbox_integer_dense_minpoly(mp, degree, n, matrix, 0); */
-
-	BlasMatrix<IntegerRing> A(new_matrix(matrix, n, n));
 	IntPolRing::Element m_A;
 	charpoly(m_A, A);
 
-	(*mp) = new mpz_t[m_A.size()];
-	*degree = m_A.size() - 1;
-	for (size_t i=0; i <= *degree; ++i) {
-		mpz_init((*mp)[i]);
-		mpz_set((*mp)[i], spy.get_mpz(m_A[i]));
+	mp = new mpz_t[m_A.size()];
+	degree = m_A.size() - 1;
+	for (size_t i=0; i <= degree; ++i) {
+		mpz_init(mp[i]);
+		mpz_set(mp[i], spy.get_mpz(m_A[i]));
 	}
 
 }
 
-void linbox_integer_dense_minpoly(mpz_t* *mp, size_t* degree, size_t n, mpz_t** matrix)
+void linbox_integer_dense_minpoly(mpz_t* &mp, size_t& degree, size_t n, mpz_t** matrix)
 {
-	/* THIS IS Broken when n % 4 == 0!!!!  Use above function instead. */
-	/*    linbox_integer_dense_minpoly(mp, degree, n, matrix, 0); */
+        IntegerRing ZZ;
+	BlasMatrix<IntegerRing> A(ZZ, n, n);
+        get_matrix(A, matrix);
 
-	BlasMatrix<IntegerRing> A(new_matrix(matrix, n, n));
 	IntPolRing::Element m_A;
 	minpoly(m_A, A);
 
-	(*mp) = new mpz_t[m_A.size()];
-	*degree = m_A.size() - 1;
-	for (size_t i=0; i <= *degree; ++i) {
-		mpz_init((*mp)[i]);
-		mpz_set((*mp)[i], spy.get_mpz(m_A[i]));
+	mp = new mpz_t[m_A.size()];
+	degree = m_A.size() - 1;
+	for (size_t i=0; i <= degree; ++i) {
+		mpz_init(mp[i]);
+		mpz_set(mp[i], spy.get_mpz(m_A[i]));
 	}
-
 }
 
 void linbox_integer_dense_delete_array(mpz_t* f)
@@ -517,30 +491,30 @@ void linbox_integer_dense_delete_array(mpz_t* f)
 }
 
 int linbox_integer_dense_matrix_matrix_multiply(mpz_t** ans, mpz_t **A, mpz_t **B,
-						size_t A_nr, size_t A_nc, size_t B_nr, size_t B_nc)
+						size_t A_nr, size_t A_nc,size_t B_nc)
 {
-	typedef PID_integer Integerz;
-	Integerz Z;
+        IntegerRing ZZ;
+	BlasMatrix<IntegerRing> AA(ZZ, A_nr, A_nc);
+	BlasMatrix<IntegerRing> BB(ZZ, A_nc, B_nc);
+	BlasMatrix<IntegerRing> CC(ZZ, A_nr, B_nc);
 
-	BlasMatrix<Integerz> AA(new_matrix_integers(A, A_nr, A_nc));
-	BlasMatrix<Integerz> BB(new_matrix_integers(B, B_nr, B_nc));
-	if (A_nc != B_nr)
-		return -1;   // error
-	BlasMatrix<Integerz> CC(Z, A_nr, B_nc);
+        get_matrix(AA, A);
+        get_matrix(BB, B);
 
-	MatrixDomain<Integerz> MD(Z);
+	MatrixDomain<IntegerRing> MD(ZZ);
 
 	MD.mul(CC, AA, BB);
 
-	set_matrix(ans, CC, A_nr, B_nc);
-
+        set_matrix(ans, CC);
 	return 0;
 }
 
 unsigned long linbox_integer_dense_rank(mpz_t** matrix, size_t nrows,
 					size_t ncols)
 {
-	BlasMatrix<IntegerRing> A(new_matrix(matrix, nrows, ncols));
+        IntegerRing ZZ;
+	BlasMatrix<IntegerRing> A(ZZ, nrows, ncols);
+        get_matrix(A, matrix);
 	unsigned long r;
 	rank(r, A);
 	return r;
@@ -552,8 +526,11 @@ void linbox_integer_dense_det(mpz_t ans, mpz_t** matrix, size_t nrows,
 	commentator().setMaxDetailLevel(0);
 	commentator().setMaxDepth (0);
 
-	BlasMatrix<IntegerRing> A(new_matrix_integers(matrix, nrows, ncols));
+        IntegerRing ZZ;
+	BlasMatrix<IntegerRing> A ( ZZ, nrows, ncols);
+        get_matrix(A, matrix);
 	IntegerRing::Element d;
+
 	det(d, A);
 	mpz_set(ans, spy.get_mpz(d));
 }
@@ -581,12 +558,12 @@ void linbox_integer_dense_double_det (mpz_t  ans1, mpz_t ans2, mpz_t **a, mpz_t 
 				      size_t n, int proof)
 {
 
-	PID_integer Z;
-	BlasMatrix <PID_integer> A (Z, n+1, n);
+	IntegerRing ZZ;
+	BlasMatrix<IntegerRing> A(ZZ, n+1, n);
 	size_t i, j;
 	for (i=0; i < n-1; ++i) {
 		for (j=0; j < n; ++j) {
-			PID_integer::Element t;
+			IntegerRing::Element t;
 			mpz_set(spy.get_mpz(t), a[i][j]);
 			A.setEntry(i, j, t);
 		}
