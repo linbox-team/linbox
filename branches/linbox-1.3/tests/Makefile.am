@@ -235,7 +235,8 @@ EXTRA_PROGRAMS = \
         $(NONCOMPLIANT_TESTS)         \
         $(DUBIOUS_TESTS)              \
         $(FULLCHECK_TESTS)              \
-        $(FAILING_TESTS)
+        $(FAILING_TESTS) \
+	$(BLAS3_UNIT_TESTS)
 
 
 test_commentator_SOURCES =                \
