@@ -19,7 +19,7 @@
 # ========LICENCE========
 AC_PREREQ(2.61)
 
-AC_INIT([LinBox], [1.3.2],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.3.3],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
