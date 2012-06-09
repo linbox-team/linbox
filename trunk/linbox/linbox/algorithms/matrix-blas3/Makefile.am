@@ -25,6 +25,7 @@ pkgincludesubdir=$(pkgincludedir)/algorithms/matrix-blas3
 
 pkgincludesub_HEADERS = mul.h \
 	mul-naive.inl \
+	mul-flint.inl \
 	mul-toomcook.inl
 
 EXTRA_DIST =                    \

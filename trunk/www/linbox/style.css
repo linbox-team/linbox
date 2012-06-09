@@ -135,7 +135,7 @@ footer {
 	-webkit-box-pack: end;
 	box-pack: end;
 	background-color: rgba(90,102,130,0.75);
-	min-height: 200px;
+	min-height: 100px;
 }
 
 footer div {
