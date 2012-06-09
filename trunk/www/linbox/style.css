@@ -29,6 +29,10 @@ header, article {
 	box-sizing: border-box;
 }
 
+article {
+	margin 10px;
+}
+
 .container {
 	background-color: rgba(90,102,130,0.75);
 	margin: 0 auto;
@@ -113,6 +117,13 @@ header p {
 article, section {
 	background-color: #DDD;
 	padding: 10px;
+	/* margin-right: 10px; */
+	margin-left: 5px;;
+	/* width:99%; */
+	/* float:center; */
+	width: 840px;
+	/* float: center; */
+	/* XXX CENTER */ 
 }
 
 section {
@@ -134,7 +145,7 @@ footer {
 	-moz-box-pack: end;
 	-webkit-box-pack: end;
 	box-pack: end;
-	background-color: rgba(90,102,130,0.75);
+	/* background-color: rgba(90,102,130,0.75); */
 	min-height: 100px;
 }
 
