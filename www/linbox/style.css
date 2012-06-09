@@ -1,0 +1,138 @@
+/* Based on code by Peter Gasston, 2010. Modified by dedide, 2011 and distributed by http://freehtml5templates.com */
+
+/* General styles */
+
+article, section, header, footer { display: block; }
+
+html, body, .container { height: 100%; }
+
+body {
+	/* background-image: url(images/xxx.jpg); */
+	color: #222;
+	font: 10px/1 Georgia, 'Times New Roman', Times, serif;
+	margin: 0;
+	padding: 0;
+}
+
+header, article, footer {
+	display: -moz-box;
+	display: -webkit-box;
+	width: 100%;
+}
+
+header, article {
+	border: 10px solid #ddd;
+	border-width: 0 10px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.container {
+	background-color: rgba(90,102,130,0.75);
+	margin: 0 auto;
+	width: 850px;
+}
+
+section {
+	background-color: rgba(90,102,130,0.75);
+}
+
+/* Typography */
+
+h1, h2, p {
+	margin: 0;
+	padding: 0;
+}
+
+h1, h2 { font-family: 'Tenor Sans', Helvetica, Arial, sans-serif; }
+
+h1 {
+	color: #111;
+	font-size: 240%;
+	line-height: 1;
+	text-shadow: 1px 1px white;
+}
+
+h2 {
+	font-size: 180%;
+	line-height: 1.166;
+	margin-bottom: 4px;
+}
+
+h2 a {
+	color: #222;
+	text-decoration: none;
+}
+
+h2 a:hover { color: rgba(90,102,130,0.75); }
+
+p {
+	font-size: 130%;
+	line-height: 1.54;
+}
+
+/* Header */
+
+header {
+	-moz-box-align: center;
+	-webkit-box-align: center;
+	-moz-box-pack: center;
+	-webkit-box-pack: center;
+	/* background: url('images/xxx.jpg') no-repeat 50% 50%; */
+	min-height: 220px;
+}
+
+header div {
+	-moz-box-flex: 0;
+	-webkit-box-flex: 0;
+	background-color: rgba(255,255,255,0.75);
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	padding: 10px;
+	width: 480px;
+}
+
+header p {
+	color: black;
+	font-size: 160%;
+	line-height: 1.5;
+	text-shadow: 1px 1px white;
+}
+
+/* Main Content */
+
+article, section {
+	background-color: #DDD;
+	padding: 10px;
+}
+
+section {
+	-moz-box-flex: 1;
+	-webkit-box-flex: 1;
+	background-color: #f3f8fb;
+	border: 10px solid #DDD;
+	padding: 10px;
+	width: 180px;
+}
+
+/* Footer */
+
+footer {
+	-moz-box-align: center;
+	-webkit-box-align: center;
+	-moz-box-pack: end;
+	-webkit-box-pack: end;
+	background-color: rgba(90,102,130,0.75);
+	min-height: 200px;
+}
+
+footer div {
+	-moz-box-flex: 0;
+	-webkit-box-flex: 0;
+	-moz-border-radius: 6px 0 0 6px;
+	border-radius: 6px 0 0 6px;
+	/* background-image: url(images/xxx.jpg); */
+	font-style: italic;
+	padding: 10px;
+	width: 400px;
+}
