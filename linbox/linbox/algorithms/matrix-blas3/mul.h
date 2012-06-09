@@ -36,6 +36,7 @@
 #include <linbox/matrix/blas-matrix.h>
 
 
+
 // Methods
 namespace LinBox {
 	namespace BLAS3 {
@@ -54,6 +55,8 @@ namespace LinBox {
 			} ; //! Toom-Cook method.
 
 			struct naive {};
+
+			struct FLINT {};
 		}
 	}
 }
@@ -141,6 +144,35 @@ namespace LinBox {
 	}
 }
 #include "linbox/algorithms/matrix-blas3/mul-naive.inl"
+
+// flint
+
+#ifdef __LINBOX_HAVE_FLINT
+namespace FLINT {
+	extern "C" {
+		// #include "longlong.h"
+#define __GMP_BITS_PER_MP_LIMB GMP_LIMB_BITS
+#include "flint.h"
+#include "fmpz_mat.h"
+	}
+}
+namespace LinBox {
+	namespace BLAS3 {
+
+		//! Wrapper to FLINT mat-mul
+		template<class DenseIntMat>
+		DenseIntMat &
+		mul (DenseIntMat& C,
+			 const DenseIntMat& A,
+			 const DenseIntMat& B,
+			 const mulMethod::FLINT & );
+
+	}
+}
+#endif // __LINBOX_HAVE_FLINT
+//#include "linbox/algorithms/matrix-blas3/mul-flint.inl"
+
+
 
 // <+other algo+>
 namespace LinBox {

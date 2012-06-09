@@ -4,7 +4,7 @@
 
 article, section, header, footer { display: block; }
 
-html, body, .container { height: 100%; }
+/* html, body, .container { height: 100%; } */
 
 body {
 	/* background-image: url(images/xxx.jpg); */
@@ -17,13 +17,15 @@ body {
 header, article, footer {
 	display: -moz-box;
 	display: -webkit-box;
+	display: box;
 	width: 100%;
 }
 
 header, article {
-	border: 10px solid #ddd;
+	/* border: 10px solid #ddd; */
 	border-width: 0 10px;
 	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
@@ -31,6 +33,9 @@ header, article {
 	background-color: rgba(90,102,130,0.75);
 	margin: 0 auto;
 	width: 850px;
+	-webkit-box-shadow: 3px 3px 7px #777; 
+	-moz-box-shadow: 3px 3px 7px #777; 
+	box-shadow: 3px 3px 7px #777; 
 }
 
 section {
@@ -66,7 +71,7 @@ h2 a {
 
 h2 a:hover { color: rgba(90,102,130,0.75); }
 
-p {
+p, ul {
 	font-size: 130%;
 	line-height: 1.54;
 }
@@ -76,8 +81,10 @@ p {
 header {
 	-moz-box-align: center;
 	-webkit-box-align: center;
+	box-align:center;
 	-moz-box-pack: center;
 	-webkit-box-pack: center;
+	box-pack: center;
 	/* background: url('images/xxx.jpg') no-repeat 50% 50%; */
 	min-height: 220px;
 }
@@ -85,8 +92,10 @@ header {
 header div {
 	-moz-box-flex: 0;
 	-webkit-box-flex: 0;
+	box-flex: 0;
 	background-color: rgba(255,255,255,0.75);
 	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
 	border-radius: 6px;
 	padding: 10px;
 	width: 480px;
@@ -109,6 +118,7 @@ article, section {
 section {
 	-moz-box-flex: 1;
 	-webkit-box-flex: 1;
+	box-flex: 1;
 	background-color: #f3f8fb;
 	border: 10px solid #DDD;
 	padding: 10px;
@@ -120,8 +130,10 @@ section {
 footer {
 	-moz-box-align: center;
 	-webkit-box-align: center;
+	box-align: center,
 	-moz-box-pack: end;
 	-webkit-box-pack: end;
+	box-pack: end;
 	background-color: rgba(90,102,130,0.75);
 	min-height: 200px;
 }
@@ -129,7 +141,9 @@ footer {
 footer div {
 	-moz-box-flex: 0;
 	-webkit-box-flex: 0;
+	box-flex: 0;
 	-moz-border-radius: 6px 0 0 6px;
+	-webkit-border-radius:  6px 0 0 6px;
 	border-radius: 6px 0 0 6px;
 	/* background-image: url(images/xxx.jpg); */
 	font-style: italic;
@@ -196,3 +210,80 @@ footer div {
 #linbox:hover {
 	background: url("http://www.linalg.org/linbox/images/givaro.png");
 }                                                                                   */
+
+nav {  
+	position: absolute;  
+	left: 0;  
+	width: 100%;  
+	/* background: url("nav"); */
+	/* -moz-border-radius: 6px; */
+	/* -webkit-border-radius: 6px; */
+	/* border-radius: 6px; */
+	/* background-color: rgba(255,255,255,0.75); */
+	/* background-color: rgba(90,102,130,0.75); */
+
+
+}  
+
+nav ul {  
+	margin: 0 auto;  
+	width: 850px;  
+	list-style: none;  
+}
+
+nav ul li {  
+	float: left;  
+}  
+
+nav ul li a {  
+	background-color: rgba(90,102,130,0.75);
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+
+	display: block;  
+	margin-right: 20px;  
+	width: 140px;  
+	font-size: 100%;
+	line-height: auto;  
+	text-align: center;  
+	text-decoration: none;  
+	color: #111;
+}  
+
+nav ul li a:hover {  
+	color: #fff;
+}  
+
+nav ul li.selected a {  
+	color: #fff;  
+}  
+
+nav ul li.subscribe a {  
+	margin-left: 22px;  
+	padding-left: 33px;  
+	text-align: left;  
+	background: url("rss.png") left center no-repeat;  
+}  
+
+#relat
+{
+	/* color: rgba(90,102,130,0.75); */
+	column-count: 2;  
+	column-gap: 22px;
+}
+
+#relat a
+{
+	/* color: rgba(90,102,130,0.75); */
+	color: rgba(90,102,130,1);
+	font-style: normal;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+#relat a:hover
+{
+	color: #444;
+	/* color: #111; */
+}
