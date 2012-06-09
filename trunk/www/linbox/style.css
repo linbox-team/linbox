@@ -136,3 +136,63 @@ footer div {
 	padding: 10px;
 	width: 400px;
 }
+
+
+#linbox
+{
+	background-image: url('images/linbox_gray.png');
+
+	height: 150px;
+	width: 223px;
+	display: block;
+}
+
+#linbox:hover
+{
+	background: url('images/linbox.png');
+
+}
+
+#givaro
+{
+	background-image: url('images/givaro_gray.png');
+
+	height: 150px;
+	width: 223px;
+	display: block;
+}
+
+#givaro:hover
+{
+	background: url('images/givaro.png');
+
+}
+
+#fflas
+{
+	background-image: url('images/fflas_gray.png');
+
+	height: 150px;
+	width: 223px;
+	display: block;
+}
+
+#fflas:hover
+{
+	background: url('images/fflas.png');
+
+}
+
+
+
+/* #linbox 
+{
+	background-image: url("http://www.linalg.org/linbox/");
+	width: "223";
+	height:"150";
+	display:block;
+}
+
+#linbox:hover {
+	background: url("http://www.linalg.org/linbox/images/givaro.png");
+}                                                                                   */
