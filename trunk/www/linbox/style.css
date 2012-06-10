@@ -53,12 +53,12 @@ section {
 
 /* Typography */
 
-h1, h2, p {
+h1, h2, h3, h4, p {
 	margin: 0;
 	padding: 0;
 }
 
-h1, h2 { font-family: 'Open Sans', Helvetica, Arial, sans-serif; }
+h1, h2, h3, h4 { font-family: 'Open Sans', Helvetica, Arial, sans-serif; }
 
 h1 {
 	color: #111;
@@ -71,7 +71,23 @@ h2 {
 	font-size: 180%;
 	line-height: 1.166;
 	margin-bottom: 4px;
+	margin-top: 4px;
 }
+
+h3 {
+	font-size: 150%;
+	line-height: 1.166;
+	margin-bottom: 4px;
+	margin-top: 4px;
+}
+
+h4 {
+	font-size: 120%;
+	line-height: 1.166;
+	margin-bottom: 4px;
+	margin-top: 4px;
+}
+
 
 h2 a {
 	color: #222;
@@ -80,8 +96,28 @@ h2 a {
 
 h2 a:hover { color: rgba(90,102,130,0.75); }
 
-p, ul {
-	font-size: 130%;
+ul ul {
+	font-size: 110%;
+	line-height: 1.54;
+	/* font-family: 'Droid Serif', Times, serif;  */
+	font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+}
+ul ul {
+	font-size: 100%;
+	line-height: 1.54;
+	/* font-family: 'Droid Serif', Times, serif;  */
+	font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+}
+
+ul {
+	font-size: 120%;
+	line-height: 1.54;
+	/* font-family: 'Droid Serif', Times, serif;  */
+	font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+}
+
+p {
+	font-size: 120%;
 	line-height: 1.54;
 	/* font-family: 'Droid Serif', Times, serif;  */
 	font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
