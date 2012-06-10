@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" dir="ltr">
+	<head>
+		<!-- <meta http-equiv="content-type" content="application/xhtml+xml" /> -->
+		<meta charset="UTF-8"/>
+		<meta name="keywords" content="Finite Field Linear Algebra Subroutines/Package"/>
+		<title>FFPACK</title>
+		<link href="http://www.linalg.org/linbox/style.css" rel="stylesheet"/>
+		<!-- <link href="mainpage.css" rel="stylesheet"/> -->
+		<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+		<link rel="shortcut icon" href="http://www.linalg.org/linbox/images/favicon.png" type="image/x-icon" />
+		<link rel="icon" href="http://www.linalg.org/linbox/images/favicon.png" type="image/x-icon"/>
+
+
+		<link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'/>
+		<link href='http://fonts.googleapis.com/css?family=Droid+Serif' rel='stylesheet' type='text/css'/>
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+	</head>
+	<body>
+
+		<div class="container">
+			<!-- <iframe seamless="seamless" src="header.shtml"></iframe> -->
+			<nav>
+			<ul>
+				<li><a href="index.xhtml">Up</a></li>
+				<!-- <li><a href="#tri">Triangularisation</a></li> -->
+				<li><a href="index.xhtml#about">About</a></li>
+				<li><a href="index.xhtml#desc">Description</a></li>
+				<li><a href="index.xhtml#doc">Documentation</a></li>
+				<li><a href="index.xhtml#bench">Benchmark</a></li>
+				<li><a href="index.xhtml#bib">Bibliography</a></li>
+				<li><a href="index.xhtml#contact">Contact, bugs</a></li>
+				<li><a href="index.xhtml#download">Download</a></li>
+
+			</ul>
+			</nav>
+
+			<header>
+			<div>
+				<h1>FFLAS-FFPACK</h1>
+				<p>Fast Dense Linear Algebra over Z/pZ.</p>
+			</div>
+			</header>
+			<div class="main">
+				<article>
+				<section id='fflas'>
+				<h1>FFLAS Matrix multiplication</h1>
+				<p>The core of the FFLAS library is the matrix matrix multiplication
+				routine. It's main characteristics are</p>
+				<ul>
+					<li>
+					Uses a generic field representation ( using the
+					C++ template mechanism). For our tests, we used the implementation of
+					finite fields provided by <a
+						href="http://www-id.imag.fr/Logiciels/givaro/">Givaro</a>, a package
+					for fast arithmetic over finite fields. The field archetype is the one
+					specified by the <a href="www.linalg.org">LinBox</a> library.<br>
+					</li>
+					<li>Uses a generic BLAS to oper computations, after conversion from
+					finite fields to double, on submatrices. We only tested A.T.L.A.S., (a
+					portable BLAS using the Automated Empirical Optimisation of Software),
+					but we highly recommend it, for its performances and genericity.</li>
+					<li>Is based on a Fast Matrix Multiplication Algorithm (Winograd's
+					variant
+					of Strassen's divide and conquer).</li>
+					<li>Its genericity also permits to use it over <code>double</code> in order to benefit
+					from
+					the BLAS performances improved by the Winograd's algorithm.</li>
+				</ul>
+				<p>
+				The following left figure shows the improvement provided by the BLAS
+				(curve
+				3 and 4) despite the cost of the conversions to double with comparison
+				to a matrix multiplication without conversion (curve 2). It also
+				shows that the performances over finite fields tends asymptotically to
+				the performances
+				over <code>double</code> (curve 1).
+				</p>
+				<p>The right figure emphasize the gain of Winograd's fast
+				matrix
+				multiplication algorithm compared to the O(n&sup3;) classic algorithm:
+				</p>
+
+				<table align=center style="text-align: center;" border="0">
+					<tbody>
+						<tr>
+							<td align="center" valign="middle"><img
+								src="conversion_gain.jpg" width="509" height="362"
+								align="middle" alt="Conversion Gain"></td>
+						</tr>
+						<tr>
+							<td align="center" valign="middle"><img
+								src="gain_classic_wino.jpg" width="509" height="362"
+								alt="">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p>The combination of these two tunings leads to
+				pretty good performances: for example the speed of<b> 4251.08 Mfops</b>
+				is attained, on a <b>P4-2.4 Ghz </b>for the multiplication of two
+				dense matrices of size 4000*4000
+				over the finite field with 101 elements (this speed correspond to the
+				number
+				of millions of operations per second that would require a classic
+				matrix-multiplication
+				to compute the same result in the same time).
+				</p>
+				</article>
+				</section>
+			</div>
+			<footer>
+			<div>
+				<p><strong>&#169; the LinBox group 2012. </strong> </p>
+				<!-- this is &copy; -->
+				<p> contacts .</p>
+				<p> <a href="http://validator.w3.org/check?uri=http%3A%2F%2Fwww.linalg.org%2Flinbox%2Findex.xhtml" target="_blank">
+					<img style="border:0;width:88px;height:31px"
+					src="http://www.linalg.org/linbox/images/valid-html5-blue.jpg"
+					alt="CSS Valide !" />
+				</a>
+				<a href="http://jigsaw.w3.org/css-validator/check/referer" target="_blank">
+					<img style="border:0;width:88px;height:31px"
+					src="http://jigsaw.w3.org/css-validator/images/vcss-blue"
+					alt="CSS Valide !" />
+				</a>
+				</p>
+			</div>
+			</footer>
+		</div>
+	</body>
+</html>
