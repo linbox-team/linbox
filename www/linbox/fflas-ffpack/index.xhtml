@@ -5,7 +5,6 @@
 <!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd"> -->
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" dir="ltr">
-<!-- <html> -->
 	<head>
 		<!-- <meta http-equiv="content-type" content="application/xhtml+xml" /> -->
 		<meta charset="UTF-8"/>
@@ -24,95 +23,156 @@
 	<body>
 
 		<div class="container">
-			<nav>
-		<ul>
-			<li><a href="aaa">LinBox</a></li>
-			<li><a href="bbb">Givaro</a></li>
-			<li><a href="ccc">FFLAS-FFPACK</a></li>
-			<li><a href="#relat">Related software</a></li>
-			<li><a href="#about">About</a></li>
-			<!-- <li class="subscribe"><a href="#">Subscribe via. RSS</a></li>   -->
-		</ul>
-		</nav>
+			<!-- <iframe srcdoc="header.shtml" seamless="seamless"></iframe> -->
+			<!-- <embed src="header.shtml"/> -->
+			 <!--#include file="header.shtml" -->
+			<!-- <nav>
+			<ul>
+				<li><a href="../index.xhtml">Up</a></li>
+				<li><a href="#desc">Description</a></li>
+				<li><a href="#doc">Documentation &amp; tutorial</a></li>
+				<li><a href="#bench">Benchmark</a></li>
+				<li><a href="ccc">Bugs &amp; wishes</a></li>
+				<li><a href="ccc">News &amp; Download</a></li>
+				<li><a href="#about">About</a></li>
+				|+ <li class="subscribe"><a href="#">Subscribe via. RSS</a></li>   +|
+			</ul>
+			</nav>
 
-		<header>
-		<div>
-			<h1>Computational Exact Linear Algebra</h1>
-				<p>LinBox &#8212; Givaro  &#8212; FFLAS-FFPACK home pages.</p>
-				<!-- this is &mdash; no dtd yet-->
+			<header>
+			<div>
+				<h1>FFLAS-FFPACK</h1>
+				<p>Fast Dense Linear Algebra over Z/pZ.</p>
 			</div>
-			</header>
+			</header>                                                                             -->
 
 			<div class="main">
-			<article>
-			<section id="about">
-			<h2><a href="xxx">About linalg.org</a></h2>
-			<p> We develop several free tools for fast exact arithmetic and linear algebra. </p>
-			</section>
+				<article>
+				<section id="about">
+				<h2><a href="xxx">About FFLAS-FFPACK</a></h2>
+				<p> FFLAS-FFPACK is a C++ linear algebra library. The
+				FFLAS component contains BLAS-like routines for Z/pZ
+				fields, while FFPACK, like LAPACK, implements
+				algorithms for dense Z/pZ matrices and vectors.</p>
+				</section>
 
-			<section id="section-22">
-			<h2><a href="xxx">News</a></h2>
-			<p>latest releases :</p>
-			<ul>
-				<li> linbox-1.3.2 </li>
-				<li> givaro-3.7.0 </li>
-				<li> fflas-ffpack-1.6.0 </li>
-			</ul>
-			</section>
-			</article>
+				<section id="section-22">
+				<h2><a href="xxx">News</a></h2>
+				<p>latest release :</p>
+				<ul>
+					<li> fflas-ffpack-1.6.0 </li>
+				</ul>
+				</section>
+				</article>
 
 
-			<article>
-			<section id="linbox">
-			<h2><a href="linbox/index.xhtml">LinBox</a></h2>
-			<p>
-			<a id='img-linbox' href="linbox/index.xhtml"></a>
-			</p>
-			<p> LinBox is a C++ template library for exact linear algebra.</p>
-			</section>
+				<article>
+				<section id='desc'>
+				<h2>Description</h2>
+				<p>
+				This project consists in the creation of a set of
+				routines, giving the same tools as a set of classical
+				<b>Basic Linear Algebra Subroutines</b>, but working
+				over <b>finite fields</b>. In the same way, some other
+				routines of higher level (such as the one in LAPACK)
+				are also produced.
+				</p>
+				<p>
+				The goal is to reach performances as close as possible
+				to those of classical BLAS over <code>double</code> or
+				<code>float</code>.
+				</p>
+				<p>At this date, the work is split into two groups:</p>
+				<ul>
+					<li><a href="report-LinuxPIII.html">FFLAS</a> (a BLAS interface for finite fields) </li>
+					<li><a href="report-LinuxP4.html">FFPACK</a> (a higher level set of
+					routines based on triangularizations)</li>
+				</ul>
 
-			<section id='givaro'>
-			<h2><a href="givaro/index.xhtml">Givaro</a></h2>
-			<p>
-			<a id='img-givaro' href="givaro/index.xhtml"></a>
-			</p>
-			<p> Givaro is a C++ library for exact arithmetic on integer, rationals, finite fields and polynomials.</p>
-			</section>
+				<p> Here are two examples of the performances attained
+				by our package (speed is in Mffops = Millions of
+				Finite Field operations per second):</p>
 
-			<section id="fflas-ffpack">
-			<h2><a href="fflas-ffpack/index.xhtml">FFLAS-FFPACK</a></h2>
-			<p>
-			<a id='img-fflas-ffpack' href="fflas-ffpack/index.xhtml"></a>
-			</p>
-			<p>FFLAS-FFPACK is a C++ library for fast dense linear algebra on word size prime fields</p>
-			</section>
-			</article>
+				<table border="1" rules="rows" width="80%" align="center" padding="10px">
+					<thead>
+						<tr>
+							<th>Package
+							</th>
+							<th>Exemple
+							</th>
+							<th>Matrices <br />Size
+							</th>
+							<th>Field
+							</th>
+							<th>Time
+							</th>
+							<th>Speed
+							</th>
+							<th>Processor
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>FFLAS</td>
+							<td>Multiplication of two <br />
+								dense matrices </td>
+							<td>4000*4000</td>
+							<td>Z<sub>101</sub></td>
+							<td><b>30.11 seconds</b> </td>
+							<td><b>4251.08 Mffops</b></td>
+							<td>Pentium4-2.4 GHz</td>
+						</tr>
+						<tr>
+							<td >FFPACK</td>
+							<td >LQUP factorization</td>
+							<td >7500*7500</td>
+							<td >Z<sub>101</sub></td>
+							<td ><b>103.00 seconds</b></td>
+							<td ><b>2733.00 Mffops</b></td>
+							<td >Pentium4-2.4 GHz</td>
+						</tr>
+					</tbody>
+				</table>
 
-			<article>
-			<section id='relat'>
-			<h2>Related free software</h2>
-			<div>
-					<p> <a href="www.sagemath.org/">SAGE</a> : desc</p>
-					<p> <a href="http://www.cs.uwaterloo.ca/~astorjoh/iml.html">IML</a> : desc </p>
-					<p> FLINT </p>
-					<p> GMP/MPIR </p>
-					<p> NTL </p>
-					<p> FPLLL </p>
-					<p> ...</p>
+				</section>
+				</article>
+
+				<article>
+				<section id='doc'>
+				<h2>Documentation</h2>
+				<ul>
+					<li> <a href="http://linalg.org/fflas-ffpack-html/index.html">User manual</a> </li>
+					<li> <a href="http://linalg.org/fflas-ffpack-dev-html/index.html">Developer manual</a> </li>
+				</ul>
+
+				</section>
+				</article>
+
+
+				<article>
+				<section id='bench'>
+				<h2>Benchmarks</h2>
+				<p>We give more detailed timing comparisons of the library
+				on several architectures.   (in construction)
+				</p>
+				<ul>
+					<li> <a href="report-LinuxPIII.html">Linux PIII 735MHz</a> </li>
+					<li> <a href="report-LinuxP4.html">Linux P4 2.4Ghz</a> </li>
+					<li> <a href="report-LinuxOpteron64.html">Linux Opteron64 2.4Ghz</a> </li>
+				</ul>
+
+				</section>
+				</article>
+
+
+				<article>
+				<section id="section-41">
+				<h2><a href="xxx">Contacts, Bugs, Wishes, Documentation, etc...</a></h2>
+				<p> please go first to the particular project webpage where you'll find the corresponding information.</p>
+				</section>
+				</article>
 			</div>
-			</section>
-			</article>
-
-
-			<article>
-			<section id="section-41">
-			<h2><a href="xxx">Contacts, Bugs, Wishes, Documentation, etc...</a></h2>
-			<p> please go first to the particular project webpage where you'll find the corresponding information.</p>
-			</section>
-
-
-			</article>
-		</div>
 
 			<footer>
 			<div>
@@ -132,11 +192,6 @@
 				</p>
 			</div>
 			</footer>
-			<div class='preload'>
-				<img src='givaro_gray.png' />
-				<img src='linbox_gray.png' />
-				<img src='fflas_gray.png' />
-			</div>
 		</div>
 	</body>
 </html>
