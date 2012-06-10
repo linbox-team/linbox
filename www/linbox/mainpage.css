@@ -1,0 +1,104 @@
+#relat h2+div
+{
+	/* color: rgba(90,102,130,0.75); */
+	column-count: 2;  
+	column-gap: 22px;
+	-moz-column-count: 2;
+	-webkit-column-count: 2;
+}
+
+#relat a
+{
+	/* color: rgba(90,102,130,0.75); */
+	color: rgba(90,102,130,1);
+	font-style: normal;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+#relat a:hover
+{
+	color: #444;
+	/* color: #111; */
+}
+
+.preload {
+	display: none;
+}
+
+#linbox #img-linbox
+{
+	background-image: url('images/linbox_gray.png');
+
+	height: 150px;
+	width: 223px;
+	display: block;
+	margin: 5px;
+	margin-bottom: 10px;
+	padding-bottom: 20px;
+}
+
+#linbox:hover #img-linbox
+{
+	background: url('images/linbox.png');
+
+}
+
+/* #linbox:hover p { color: rgba(90,102,130,0.99); } */
+
+#linbox:hover h2 a {
+color: rgba(90,102,130,0.8);
+}
+
+
+
+#givaro #img-givaro
+{
+	background-image: url('images/givaro_gray.png');
+
+	height: 150px;
+	width: 223px;
+	display: block;
+	margin: 5px;
+	margin-bottom: 10px;
+	padding-bottom: 20px;
+}
+
+#givaro:hover #img-givaro
+{
+	background: url('images/givaro.png');
+
+}
+
+/* #givaro:hover p { color: rgba(90,102,130,0.99); } */
+
+#givaro:hover h2 a {
+color: rgba(90,102,130,0.8);
+}
+
+
+#fflas-ffpack #img-fflas-ffpack
+{
+	background-image: url('images/fflas_gray.png');
+
+	height: 150px;
+	width: 223px;
+	display: block;
+	margin: 5px;
+	margin-bottom: 10px;
+	padding-bottom: 20px;
+}
+
+#fflas-ffpack:hover #img-fflas-ffpack
+{
+	background: url('images/fflas.png');
+
+}
+
+/* #fflas-ffpack:hover p { color: rgba(90,102,130,0.99); } */
+
+#fflas-ffpack:hover h2 a {
+color: rgba(90,102,130,0.8);
+}
+
+
