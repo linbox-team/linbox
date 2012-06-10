@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" dir="ltr">
+	<head>
+		<!-- <meta http-equiv="content-type" content="application/xhtml+xml" /> -->
+		<meta charset="UTF-8"/>
+		<meta name="keywords" content="Finite Field Linear Algebra Subroutines/Package"/>
+		<title>FFLAS-FFPACK benchmark suite</title>
+		<link href="http://www.linalg.org/linbox/style.css" rel="stylesheet"/>
+		<link href="fflas.css" rel="stylesheet"/>
+		<!-- <link href="mainpage.css" rel="stylesheet"/> -->
+		<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+		<link rel="shortcut icon" href="http://www.linalg.org/linbox/images/favicon.png" type="image/x-icon" />
+		<link rel="icon" href="http://www.linalg.org/linbox/images/favicon.png" type="image/x-icon"/>
+
+
+		<link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'/>
+		<link href='http://fonts.googleapis.com/css?family=Droid+Serif' rel='stylesheet' type='text/css'/>
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+	</head>
+	<body>
+
+		<div class="container">
+			<!-- <iframe seamless="seamless" src="header.shtml"></iframe> -->
+			<nav>
+			<ul>
+				<li><a href="index.xhtml">Up</a></li>
+				<!-- <li><a href="#tri">Triangularisation</a></li> -->
+				<li><a href="index.xhtml#about">About</a></li>
+				<li><a href="index.xhtml#desc">Description</a></li>
+				<li><a href="index.xhtml#doc">Documentation</a></li>
+				<li><a href="index.xhtml#bench">Benchmark</a></li>
+				<li><a href="index.xhtml#bib">Bibliography</a></li>
+				<li><a href="index.xhtml#contact">Contact, bugs</a></li>
+				<li><a href="index.xhtml#download">Download</a></li>
+
+			</ul>
+			</nav>
+
+			<header>
+			<div>
+				<h1>FFLAS-FFPACK</h1>
+				<p>Fast Dense Linear Algebra over Z/pZ.</p>
+			</div>
+			</header>
+			<div class="main">
+				<article>
+				<section id='ffbench'>
+
+<h1 align="center">FFLAS-FFPACK Benchmark suite</h1>
+<h2 align="center">Testing  AMD Opteron64, 2.4Ghz, 4Gb, 1Mb cache L2 </h2>
+<p align="center">FFLAS-FFPACK computation is done over GF(  65521 )</p>
+<hr>
+<p class="report"><h3>Matrix Multiplication report</h3><table border="1">
+<tr>
+<td class="headdimension"> Dimension </td>
+<td class="dimension">300</td>
+<td class="dimension">500</td>
+<td class="dimension">1000</td>
+<td class="dimension">2000</td>
+<td class="dimension">5000</td>
+<td class="dimension">10000</td>
+</tr>
+<tr>
+<td class="headtime">dgemm  with GOTO</td>
+<td class="time">.01<i>s</i>
+</td>
+<td class="time">.06<i>s</i>
+</td>
+<td class="time">.46<i>s</i>
+</td>
+<td class="time">3.64<i>s</i>
+</td>
+<td class="time">56.12<i>s</i>
+</td>
+<td class="time">448.23<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">fgemm  with GOTO</td>
+<td class="time">.03<i>s</i>
+</td>
+<td class="time">.11<i>s</i>
+</td>
+<td class="time">.65<i>s</i>
+</td>
+<td class="time">4.14<i>s</i>
+</td>
+<td class="time">50.90<i>s</i>
+</td>
+<td class="time">384.46<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">dgemm  with ATLAS</td>
+<td class="time">.01<i>s</i>
+</td>
+<td class="time">.07<i>s</i>
+</td>
+<td class="time">.51<i>s</i>
+</td>
+<td class="time">4.16<i>s</i>
+</td>
+<td class="time">64.22<i>s</i>
+</td>
+<td class="time">509.72<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">fgemm  with ATLAS</td>
+<td class="time">.03<i>s</i>
+</td>
+<td class="time">.11<i>s</i>
+</td>
+<td class="time">.70<i>s</i>
+</td>
+<td class="time">4.48<i>s</i>
+</td>
+<td class="time">53.92<i>s</i>
+</td>
+<td class="time">400.82<i>s</i>
+</td>
+</tr>
+</table></p>
+<hr>
+<p class="report"><h3>Matrix Triangularization report</h3><table border="1">
+<tr>
+<td class="headdimension"> Dimension </td>
+<td class="dimension">300</td>
+<td class="dimension">500</td>
+<td class="dimension">1000</td>
+<td class="dimension">2000</td>
+<td class="dimension">5000</td>
+<td class="dimension">10000</td>
+</tr>
+<tr>
+<td class="headtime">dgetrf  with GOTO</td>
+<td class="time">.01<i>s</i>
+</td>
+<td class="time">.02<i>s</i>
+</td>
+<td class="time">.18<i>s</i>
+</td>
+<td class="time">1.36<i>s</i>
+</td>
+<td class="time">19.93<i>s</i>
+</td>
+<td class="time">153.97<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">lqup  with GOTO</td>
+<td class="time">.05<i>s</i>
+</td>
+<td class="time">.15<i>s</i>
+</td>
+<td class="time">.74<i>s</i>
+</td>
+<td class="time">3.82<i>s</i>
+</td>
+<td class="time">36.47<i>s</i>
+</td>
+<td class="time">216.76<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">dgetrf  with ATLAS</td>
+<td class="time">.01<i>s</i>
+</td>
+<td class="time">.02<i>s</i>
+</td>
+<td class="time">.20<i>s</i>
+</td>
+<td class="time">1.55<i>s</i>
+</td>
+<td class="time">22.75<i>s</i>
+</td>
+<td class="time">177.61<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">lqup  with ATLAS</td>
+<td class="time">.05<i>s</i>
+</td>
+<td class="time">.16<i>s</i>
+</td>
+<td class="time">.77<i>s</i>
+</td>
+<td class="time">3.96<i>s</i>
+</td>
+<td class="time">37.87<i>s</i>
+</td>
+<td class="time">225.43<i>s</i>
+</td>
+</tr>
+</table></p>
+<hr>
+<p class="report"><h3>Multiple Triangular System Solving report</h3><table border="1">
+<tr>
+<td class="headdimension"> Dimension </td>
+<td class="dimension">300</td>
+<td class="dimension">500</td>
+<td class="dimension">1000</td>
+<td class="dimension">2000</td>
+<td class="dimension">5000</td>
+<td class="dimension">10000</td>
+</tr>
+<tr>
+<td class="headtime">dtrsm  with GOTO</td>
+<td class="time">.01<i>s</i>
+</td>
+<td class="time">.04<i>s</i>
+</td>
+<td class="time">.24<i>s</i>
+</td>
+<td class="time">1.86<i>s</i>
+</td>
+<td class="time">28.38<i>s</i>
+</td>
+<td class="time">224.78<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">ftrsm  with GOTO</td>
+<td class="time">.02<i>s</i>
+</td>
+<td class="time">.05<i>s</i>
+</td>
+<td class="time">.35<i>s</i>
+</td>
+<td class="time">2.34<i>s</i>
+</td>
+<td class="time">29.25<i>s</i>
+</td>
+<td class="time">205.68<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">dtrsm  with ATLAS</td>
+<td class="time">.01<i>s</i>
+</td>
+<td class="time">.04<i>s</i>
+</td>
+<td class="time">.28<i>s</i>
+</td>
+<td class="time">2.16<i>s</i>
+</td>
+<td class="time">32.79<i>s</i>
+</td>
+<td class="time">258.98<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">ftrsm  with ATLAS</td>
+<td class="time">.02<i>s</i>
+</td>
+<td class="time">.06<i>s</i>
+</td>
+<td class="time">.37<i>s</i>
+</td>
+<td class="time">2.54<i>s</i>
+</td>
+<td class="time">31.57<i>s</i>
+</td>
+<td class="time">220.57<i>s</i>
+</td>
+</tr>
+</table></p>
+<hr>
+<p class="report"><h3>Matrix Inversion report</h3><table border="1">
+<tr>
+<td class="headdimension"> Dimension </td>
+<td class="dimension">300</td>
+<td class="dimension">500</td>
+<td class="dimension">1000</td>
+<td class="dimension">2000</td>
+<td class="dimension">5000</td>
+<td class="dimension">10000</td>
+</tr>
+<tr>
+<td class="headtime">dgetri  with GOTO</td>
+<td class="time">.02<i>s</i>
+</td>
+<td class="time">.07<i>s</i>
+</td>
+<td class="time">.53<i>s</i>
+</td>
+<td class="time">3.93<i>s</i>
+</td>
+<td class="time">58.09<i>s</i>
+</td>
+<td class="time">457.54<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">inverse  with GOTO</td>
+<td class="time">.11<i>s</i>
+</td>
+<td class="time">.34<i>s</i>
+</td>
+<td class="time">1.67<i>s</i>
+</td>
+<td class="time">8.75<i>s</i>
+</td>
+<td class="time">89.37<i>s</i>
+</td>
+<td class="time">569.52<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">dgetri  with ATLAS</td>
+<td class="time">.02<i>s</i>
+</td>
+<td class="time">.08<i>s</i>
+</td>
+<td class="time">.62<i>s</i>
+</td>
+<td class="time">5.15<i>s</i>
+</td>
+<td class="time">80.39<i>s</i>
+</td>
+<td class="time">703.06<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">inverse  with ATLAS</td>
+<td class="time">.12<i>s</i>
+</td>
+<td class="time">.35<i>s</i>
+</td>
+<td class="time">1.73<i>s</i>
+</td>
+<td class="time">9.26<i>s</i>
+</td>
+<td class="time">95.89<i>s</i>
+</td>
+<td class="time">617.12<i>s</i>
+</td>
+</tr>
+</table></p>
+<hr>
+<p class="report"><h3>Triangular Matrix Inversion report</h3><table border="1">
+<tr>
+<td class="headdimension"> Dimension </td>
+<td class="dimension">300</td>
+<td class="dimension">500</td>
+<td class="dimension">1000</td>
+<td class="dimension">2000</td>
+<td class="dimension">5000</td>
+<td class="dimension">10000</td>
+</tr>
+<tr>
+<td class="headtime">dtrtri  with GOTO</td>
+<td class="time">.00<i>s</i>
+</td>
+<td class="time">.01<i>s</i>
+</td>
+<td class="time">.09<i>s</i>
+</td>
+<td class="time">.66<i>s</i>
+</td>
+<td class="time">9.68<i>s</i>
+</td>
+<td class="time">76.32<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">ftrtri  with GOTO</td>
+<td class="time">.02<i>s</i>
+</td>
+<td class="time">.05<i>s</i>
+</td>
+<td class="time">.26<i>s</i>
+</td>
+<td class="time">1.34<i>s</i>
+</td>
+<td class="time">14.12<i>s</i>
+</td>
+<td class="time">93.62<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">dtrtri  with ATLAS</td>
+<td class="time">.00<i>s</i>
+</td>
+<td class="time">.01<i>s</i>
+</td>
+<td class="time">.11<i>s</i>
+</td>
+<td class="time">.78<i>s</i>
+</td>
+<td class="time">11.45<i>s</i>
+</td>
+<td class="time">89.43<i>s</i>
+</td>
+</tr>
+<tr>
+<td class="headtime">ftrtri  with ATLAS</td>
+<td class="time">.02<i>s</i>
+</td>
+<td class="time">.06<i>s</i>
+</td>
+<td class="time">.27<i>s</i>
+</td>
+<td class="time">1.44<i>s</i>
+</td>
+<td class="time">15.63<i>s</i>
+</td>
+<td class="time">105.69<i>s</i>
+</td>
+</tr>
+</table></p>
+<hr>
+				</article>
+				</section>
+			</div>
+			<footer>
+			<div>
+				<p class="footnote"> page automatically generated - Pascal Giorgi @2007</p>
+				<p><strong>&#169; the LinBox group 2012. </strong> </p>
+				<!-- this is &copy; -->
+				<p> contacts .</p>
+				<p> <a href="http://validator.w3.org/check?uri=http%3A%2F%2Fwww.linalg.org%2Flinbox%2Findex.xhtml" target="_blank">
+					<img style="border:0;width:88px;height:31px"
+					src="http://www.linalg.org/linbox/images/valid-html5-blue.jpg"
+					alt="CSS Valide !" />
+				</a>
+				<a href="http://jigsaw.w3.org/css-validator/check/referer" target="_blank">
+					<img style="border:0;width:88px;height:31px"
+					src="http://jigsaw.w3.org/css-validator/images/vcss-blue"
+					alt="CSS Valide !" />
+				</a>
+				</p>
+			</div>
+			</footer>
+		</div>
+	</body>
+</html>
