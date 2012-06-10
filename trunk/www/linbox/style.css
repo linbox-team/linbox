@@ -41,9 +41,9 @@ article {
 	background-color: rgba(90,102,130,0.75);
 	margin: 0 auto;
 	width: 850px;
-	-webkit-box-shadow: 3px 3px 7px #777; 
-	-moz-box-shadow: 3px 3px 7px #777; 
-	box-shadow: 3px 3px 7px #777; 
+	-webkit-box-shadow: 3px 3px 7px #777;
+	-moz-box-shadow: 3px 3px 7px #777;
+	box-shadow: 3px 3px 7px #777;
 }
 
 
@@ -130,7 +130,7 @@ header p {
 	width: 830px;
 	margin-left: 5px;;
 	/* float: center; */
-	/* XXX CENTER */ 
+	/* XXX CENTER */
 	border-radius: 6px;
 
 }
@@ -145,7 +145,7 @@ article, section {
 	/* float:center; */
 	/* width: 840px; */
 	/* float: center; */
-	/* XXX CENTER */ 
+	/* XXX CENTER */
 }
 
 section {
@@ -186,8 +186,9 @@ footer div {
 }
 
 
-nav {  
+nav {
 	width: 100%;
+	/* width: 840px; */
 	/* display: block; */
 	/* position: relative; */
 
@@ -207,7 +208,7 @@ nav ul {
 	padding-right: 10px;
 	/* position: absolute; */
 	/* display: box; */
-	/* width: 840px; */
+	width: 840px;
 
 	display: -webkit-box;
 	-webkit-box-orient: horizontal;
@@ -227,7 +228,7 @@ nav ul {
 
 }
 
-nav ul li {  
+nav ul li {
 	/* float: left; */
 	/* display: inline-block; */
 	width: auto;
@@ -240,30 +241,30 @@ nav ul li {
 	margin-left: 10px;
 	padding-left: 10px;
 	padding-right: 10px;
-	line-height: auto;  
+	line-height: auto;
 
-}  
+}
 
-nav ul li a {  
+nav ul li a {
 	font-size: 100%;
-	text-align: center;  
-	text-decoration: none;  
+	text-align: center;
+	text-decoration: none;
 	color: #111;
 }
 
-nav ul li a:hover {  
+nav ul li a:hover {
 	color: #fff;
-}  
+}
 
-nav p.selected a {  
-	color: #fff;  
-}  
+nav p.selected a {
+	color: #fff;
+}
 
-/* nav ul li.subscribe a {  
-	margin-left: 22px;  
-	padding-left: 33px;  
-	text-align: left;  
-	background: url("rss.png") left center no-repeat;  
+/* nav ul li.subscribe a {
+	margin-left: 22px;
+	padding-left: 33px;
+	text-align: left;
+	background: url("rss.png") left center no-repeat;
 }                                                              */
 
 
