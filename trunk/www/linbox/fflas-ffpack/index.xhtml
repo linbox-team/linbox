@@ -23,19 +23,17 @@
 	<body>
 
 		<div class="container">
-			<!-- <iframe srcdoc="header.shtml" seamless="seamless"></iframe> -->
-			<!-- <embed src="header.shtml"/> -->
-			 <!--#include file="./header.html" -->
-			<!-- <nav>
+			<!-- <iframe seamless="seamless" src="header.shtml"></iframe> -->
+			<nav>
 			<ul>
 				<li><a href="../index.xhtml">Up</a></li>
-				<li><a href="#desc">Description</a></li>
-				<li><a href="#doc">Documentation &amp; tutorial</a></li>
-				<li><a href="#bench">Benchmark</a></li>
-				<li><a href="ccc">Bugs &amp; wishes</a></li>
-				<li><a href="ccc">News &amp; Download</a></li>
 				<li><a href="#about">About</a></li>
-				|+ <li class="subscribe"><a href="#">Subscribe via. RSS</a></li>   +|
+				<li><a href="#desc">Description</a></li>
+				<li><a href="#doc">Documentation</a></li>
+				<li><a href="#bench">Benchmark</a></li>
+				<li><a href="#bib">Bibliography</a></li>
+				<li><a href="#contact">Contact, bugs</a></li>
+				<li><a href="#download">Download</a></li>
 			</ul>
 			</nav>
 
@@ -44,7 +42,7 @@
 				<h1>FFLAS-FFPACK</h1>
 				<p>Fast Dense Linear Algebra over Z/pZ.</p>
 			</div>
-			</header>                                                                             -->
+			</header>
 
 			<div class="main">
 				<article>
@@ -70,12 +68,18 @@
 				<section id='desc'>
 				<h2>Description</h2>
 				<p>
-				This project consists in the creation of a set of
-				routines, giving the same tools as a set of classical
-				<b>Basic Linear Algebra Subroutines</b>, but working
-				over <b>finite fields</b>. In the same way, some other
-				routines of higher level (such as the one in LAPACK)
-				are also produced.
+				This project consists in the creation of a set
+				of routines, giving similar tools as the set of
+				classical <b>Basic Linear Algebra
+					Subroutines</b>(matrix multiplication,
+				triangular system solve...), but working over
+				<b>finite fields</b>. In the same way, some
+				other routines of higher level (such as the one
+				in LAPACK) are also produced (LQUP
+				factorization, Rank Det computation,
+				Characteristic and minimal polynomial
+				computation...).
+
 				</p>
 				<p>
 				The goal is to reach performances as close as possible
@@ -165,11 +169,91 @@
 				</section>
 				</article>
 
+				<article>
+				<section id='bib'>
+				<h2>Bibliography</h2>
+				<p> For further informations about this work, have may a
+				look at:</p>
+				<ul>
+					<li>Nov. 2008:Jean-Guillaume Dumas, Pascal Giorgi and Clément Pernet. <a
+						href="http://hal.archives-ouvertes.fr/hal-00018223">Dense Linear
+						Algebra over Finite Fields</a>.  ACM Transactions on Mathematical
+					Software. Volume 35, n° 3, 34 pp.
+					</li>
+					<li>Sept. 2006: Clément Pernet's PhD thesis: <a href="http://ljk.imag.fr/membres/Clement.Pernet/Publications/these_pernet.pdf">
+						Algèbre linéaire exacte efficace: le calcul du polynome caractéristique</a>
+					</li>
+					<li>Dec. 2004: Pascal Giorgi's PhD thesis: <a href="http://www.lirmm.fr/~giorgi/these.pdf">Arithmetic and algorithmic in exact linear algebra for the LinBox library (in french)</a>
+					</li>
+					<li>July 2004: Our second preprint:<a
+						href="http://ljk.imag.fr/membres/Clement.Pernet/Publications/ffpack04.pdf">
+						FFPACK: Finite Field Linear Algebra
+						Package.</a> Jean-Guillaume Dumas,
+					Pascal Giorgi and Clément Pernet.
+					<i>ISSAC'2004 : International Symposium on
+						Symbolic and Algebraic Computations,
+						Santander, España.</i>
+					</li>
+					<li>July 2004:<a
+						href="http://ljk.imag.fr/membres/Jean-Guillaume.Dumas/Publications/dotprod.pdf">
+						Efficient dot product over finite fields.</a>
+					Jean-Guillaume Dumas <i>CASC'2004 : Computer Algebra in
+						Scientific Computing, Saint Petersburg,
+						Russia.</i>
+					</li>
+					<li>April 2003: <a
+						href="http://ljk.imag.fr/membres/Jean-Guillaume.Dumas/FFLAS/FFLAS_Download/ludivine_poster_eccad2003.ps.gz">LUdivine:
+						A Symbolic block LU factorisation for matrices
+						over finite fields using BLAS</a>.  Morgan
+					Brassel, Pascal Giorgi and Clément Pernet
+					<i>ECCAD'2003: East Coast Computer Algebra Day, </i>,
+					Clemson, South Carolina, USA.</li>
+					<li>July 2002: Our main preprint: <a
+						href="http://ljk.imag.fr/membres/Jean-Guillaume.Dumas/Publications/Field_blas.ps.gz">Finite
+						Field Linear Algebra Subroutines</a>, (<a
+						href="http://ljk.imag.fr/membres/Jean-Guillaume.Dumas/Publications/FiniteFields">PPT</a>).
+					Jean-Guillaume Dumas, Thierry Gautier
+					and Clément Pernet
+					<i>ISSAC'2002: International Symposium
+						on Symbolic and Algebraic Computations</i>, Lille,
+					France.</li>
+					<li>June 2002: Morgan Brassel and Clément Pernet 's
+					technical report: <a
+						href="FFLAS_Download/rapport_LU.ps.gz">LUdivine:
+						une divine factorisation LU</a>, ( PPT <a
+						href="FFLAS_Download/LUdivine_english.ppt.gz">in
+						english</a>, <a
+						href="FFLAS_Download/LUdivine_french.ppt.gz">in
+						french</a> )</li>
+					<li>June 2001: Clément Pernet's technical report: <a
+						href="FFLAS_Download/FFLAS_technical_report.ps.gz">Implementation of
+						Winograd's Algorithm over Finite Fields using ATLAS level3 BLAS</a></li>
+				</ul>
+
+				</section>
+				</article>
 
 				<article>
-				<section id="section-41">
-				<h2><a href="xxx">Contacts, Bugs, Wishes, Documentation, etc...</a></h2>
-				<p> please go first to the particular project webpage where you'll find the corresponding information.</p>
+				<section id='download'>
+				<h2>Download</h2>
+				<p>You can download the source code and use it under terms of the the <a href="http://www.gnu.org/licenses/lgpl.html">GNU-LGPL2.1+ license</a>:
+				</p>
+				<ul>
+					<li><a href="http://linalg.org/projects/fflas-ffpack">http://linalg.org/projects/fflas-ffpack</a>.
+					</li>
+				</ul>
+
+				</section>
+				</article>
+
+				<article>
+				<section id="contact">
+				<h2><a href="xxx">Contacts, Bugs, Wishes</a></h2>
+				<p> please use our trac and mailing lists : </p>
+					<ul>
+					<li><a href="http://linalg.org/projects/fflas-ffpack">http://linalg.org/projects/fflas-ffpack</a>.
+					</li>
+				</ul>
 				</section>
 				</article>
 			</div>
