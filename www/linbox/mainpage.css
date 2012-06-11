@@ -24,17 +24,18 @@
 
 #preloader {
 	/* Images you want to preload*/
-	background-image: url(images/linbox.png) ;
-	background-image: url(images/givaro.png) ;
-	background-image: url(images/fflas-ffpack.png) ;
+	background: url('http://www.linalg.org/linbox/images/linbox.png') no-repeat -9999px -9999px;
+	background: url('http://www.linalg.org/linbox/images/givaro.png')  no-repeat -9999px -9999px;
+	background: url('http://www.linalg.org/linbox/images/fflas-ffpack.png')  no-repeat -9999px -9999px;
 	width: 1px;
 	height: 1px;
 	display: inline-block;
 }
 
+
 #linbox #img-linbox
 {
-	background-image: url('images/linbox_gray.png');
+	background: url('http://www.linalg.org/linbox/images/linbox_gray.png') no-repeat;
 
 	height: 150px;
 	width: 223px;
@@ -46,7 +47,7 @@
 
 #linbox:hover #img-linbox
 {
-	background: url('images/linbox.png');
+	background: url('http://www.linalg.org/linbox/images/linbox.png') no-repeat;
 
 }
 
@@ -60,7 +61,7 @@ color: rgba(90,102,130,0.8);
 
 #givaro #img-givaro
 {
-	background-image: url('images/givaro_gray.png');
+	background: url('http://www.linalg.org/linbox/images/givaro_gray.png') no-repeat;
 
 	height: 150px;
 	width: 223px;
@@ -72,7 +73,7 @@ color: rgba(90,102,130,0.8);
 
 #givaro:hover #img-givaro
 {
-	background: url('images/givaro.png');
+	background: url('http://www.linalg.org/linbox/images/givaro.png') no-repeat;
 
 }
 
@@ -85,7 +86,7 @@ color: rgba(90,102,130,0.8);
 
 #fflas-ffpack #img-fflas-ffpack
 {
-	background-image: url('images/fflas_gray.png');
+	background: url('http://www.linalg.org/linbox/images/fflas-ffpack_gray.png') no-repeat; 
 
 	height: 150px;
 	width: 223px;
@@ -97,7 +98,7 @@ color: rgba(90,102,130,0.8);
 
 #fflas-ffpack:hover #img-fflas-ffpack
 {
-	background: url('images/fflas.png');
+	background: url('http://www.linalg.org/linbox/images/fflas-ffpack.png') no-repeat ;
 
 }
 
