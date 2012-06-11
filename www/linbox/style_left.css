@@ -1,0 +1,353 @@
+/* Based on code by Peter Gasston, 2010. Modified by dedide, 2011. Modified by Brice. */
+
+/* General styles */
+
+article, section, header, footer { display: block; }
+
+/* html, body, .container { height: 100%; } */
+
+body {
+	/* background-image: url(images/xxx.jpg); */
+	color: #222;
+	/* font: 10px/1 Georgia, 'Times New Roman', Times, serif; */
+	font-family: 'Droid Serif', Times, serif;
+	font-size: 10px;
+	margin: 0 auto;
+	/* margin: 100px; */
+	/* margin: 10%; */
+	/* margin-top:0; */
+	/* margin-left:100; */
+	/* margin-right:100; */
+	/* margin-botton:0; */
+	/* margin 100 100 100 100 ; */
+	padding: 0;
+	-moz-box-align: center;
+	-webkit-box-align: center;
+	box-align:center;
+	-moz-box-pack: center;
+	-webkit-box-pack: center;
+	box-pack: center;
+
+
+}
+
+header, article, footer {
+	display: -moz-box;
+	display: -webkit-box;
+	display: box;
+	width: 100%;
+}
+
+header, article {
+	/* border: 10px solid #ddd; */
+	border-width: 0 10px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+article {
+	/* margin 10px; */
+	/* box-shadow: 3px 3px 7px #777;  */
+	/* border-radius: 6px; */
+}
+
+.container {
+	background-color: rgba(90,102,130,0.75);
+	/* margin: 0 100; */
+	/* width: 850px; */
+	width: 80%;
+	min-width: 850px;
+	-webkit-box-shadow: 3px 3px 7px #777;
+	-moz-box-shadow: 3px 3px 7px #777;
+	box-shadow: 3px 3px 7px #777;
+	/* left-margin: 10%; */
+	/* right-margin: 10%; */
+	margin-left:150px;
+	margin-right:150px;
+
+}
+
+
+section {
+	background-color: rgba(90,102,130,0.75);
+}
+
+/* Typography */
+
+h1, h2, h3, h4, p {
+	margin: 0;
+	padding: 0;
+}
+
+h1, h2, h3, h4 { font-family: 'Open Sans', Helvetica, Arial, sans-serif; }
+
+h1 {
+	color: #111;
+	font-size: 240%;
+	line-height: 1;
+	text-shadow: 1px 1px white;
+}
+
+h2 {
+	font-size: 180%;
+	line-height: 1.166;
+	margin-bottom: 4px;
+	margin-top: 4px;
+}
+
+h3 {
+	font-size: 150%;
+	line-height: 1.166;
+	margin-bottom: 4px;
+	margin-top: 4px;
+}
+
+h4 {
+	font-size: 120%;
+	line-height: 1.166;
+	margin-bottom: 4px;
+	margin-top: 4px;
+}
+
+
+h2 a {
+	color: #222;
+	text-decoration: none;
+}
+
+h2 a:hover { color: rgba(90,102,130,0.75); }
+
+ul ul {
+	font-size: 110%;
+	line-height: 1.54;
+	/* font-family: 'Droid Serif', Times, serif;  */
+	font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+}
+ul ul {
+	font-size: 100%;
+	line-height: 1.54;
+	/* font-family: 'Droid Serif', Times, serif;  */
+	font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+}
+
+ul {
+	font-size: 120%;
+	line-height: 1.54;
+	/* font-family: 'Droid Serif', Times, serif;  */
+	font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+}
+
+p {
+	font-size: 120%;
+	line-height: 1.54;
+	/* font-family: 'Droid Serif', Times, serif;  */
+	font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+}
+
+/* Header */
+
+header {
+	-moz-box-align: center;
+	-webkit-box-align: center;
+	box-align:center;
+	-moz-box-pack: center;
+	-webkit-box-pack: center;
+	box-pack: center;
+	/* background: url('images/xxx.jpg') no-repeat 50% 50%; */
+	min-height: 200px;
+}
+
+header div {
+	-moz-box-flex: 0;
+	-webkit-box-flex: 0;
+	box-flex: 0;
+	background-color: rgba(255,255,255,0.75);
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	padding: 10px;
+	min-width: 480px;
+	width: 50%;
+}
+
+header p {
+	color: black;
+	font-size: 160%;
+	line-height: 1.5;
+	text-shadow: 1px 1px white;
+}
+
+/* Main Content */
+.main{
+	-moz-box-align: center;
+	-webkit-box-align: center;
+	box-align:center;
+	-moz-box-pack: center;
+	-webkit-box-pack: center;
+	box-pack: center;
+
+	/* align:center; */
+
+	background-color: #DDD;
+	padding: 5px;
+	/* margin-right: 10px; */
+	/* margin-left: 5px; */
+	/* width:99%; */
+	/* float:center; */
+	/* min-width: 830px; */
+	/* width: 79%; */
+	margin-left: 1%;;
+	margin-right: 1%;;
+
+	border-radius: 6px;
+
+}
+
+
+article, section {
+	background-color: #DDD;
+	padding: 5px;
+	/* margin-right: 10px; */
+	/* margin-left: 5px;; */
+	/* width:99%; */
+	/* float:center; */
+	/* width: 840px; */
+	/* float: center; */
+	/* XXX CENTER */
+}
+
+section {
+	-moz-box-flex: 1;
+	-webkit-box-flex: 1;
+	box-flex: 1;
+	background-color: #f3f8fb;
+	border: 10px solid #DDD;
+	padding: 10px;
+	width: 180px;
+}
+
+/* Footer */
+
+footer {
+	-moz-box-align: center;
+	-webkit-box-align: center;
+	box-align: center,
+	-moz-box-pack: end;
+	-webkit-box-pack: end;
+	box-pack: end;
+	/* background-color: rgba(90,102,130,0.75); */
+	min-height: 100px;
+}
+
+footer div {
+	/* -moz-box-flex: 0; */
+	/* -webkit-box-flex: 0; */
+	/* box-flex: 0; */
+	/* -moz-border-radius: 6px 0 0 6px; */
+	/* -webkit-border-radius:  6px 0 0 6px; */
+	/* border-radius: 6px 0 0 6px; */
+	/* background-image: url(images/xxx.jpg); */
+	margin-top:20px;
+	font-style: italic;
+	padding: 10px;
+	min-width: 400px;
+}
+
+
+nav {
+	/* width: 100%; */
+	/* width: 840px; */
+	/* display: block; */
+	/* position: relative; */
+	/* position:static; */
+	position:fixed;
+
+	/* display: box;
+	box-flex: 1;
+	box-align: stretch;
+	box-pack: justify;
+	box-orient: horizontal;    */
+	top: 0;
+	/* left:75%; */
+	/* right:-840; */
+	/* right: 0; */
+	/* left: -100; */
+	/* min-left:840; */
+	left:0;
+
+
+}
+
+nav ul {
+	/* margin: 0 auto; */
+	list-style: none;
+	padding-left: 10px;
+	padding-right: 10px;
+	/* position: absolute; */
+	/* display: box; */
+	/* width: 100px; */
+	width: auto;
+
+	/* display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-box-pack: right;
+	-webkit-box-align: right;
+
+	display: -moz-box;
+	-moz-box-orient: vertical;
+	-moz-box-pack: right;
+	-moz-box-align: right;
+
+	display: box;
+	box-orient: vertical;
+	box-pack: right;                 */
+	/* box-align: right; */
+
+
+}
+
+nav ul li {
+	/* float: right; */
+	/* display: inline-block; */
+	width: auto;
+	background-color: rgba(90,102,130,0.5);
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+
+	/* margin-right: 10px; */
+	/* margin-left: 10px; */
+	margin-top: 10px;
+	margin-bottom: 10 px;
+
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	line-height: auto;
+	text-align: center;
+	font-size: 100%;
+}
+
+nav ul li a {
+	text-decoration: none;
+	color: #111;
+}
+
+nav ul li a:hover {
+	color: #fff;
+}
+
+nav p.selected a {
+	color: #fff;
+}
+
+/* nav ul li.subscribe a {
+	margin-left: 22px;
+	padding-left: 33px;
+	text-align: left;
+	background: url("rss.png") left center no-repeat;
+}                                                              */
+
+
