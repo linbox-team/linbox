@@ -31,8 +31,8 @@
 	background-image: url(images/linbox.png);
 	background-image: url(images/givaro.png);
 	background-image: url(images/fflas-ffpack.png);
-	width: 0px;
-	height: 0px;
+	width: 1px;
+	height: 1px;
 	display: inline-block;
 }
 
