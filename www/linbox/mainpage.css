@@ -22,15 +22,11 @@
 	/* color: #111; */
 }
 
-.preload {
-	display: none;
-}
-
 #preloader {
 	/* Images you want to preload*/
-	background-image: url(images/linbox.png);
-	background-image: url(images/givaro.png);
-	background-image: url(images/fflas-ffpack.png);
+	background-image: url(images/linbox.png) -9999 -9999;
+	background-image: url(images/givaro.png) -9999 -9999;
+	background-image: url(images/fflas-ffpack.png) -9999 -9999;
 	width: 1px;
 	height: 1px;
 	display: inline-block;
