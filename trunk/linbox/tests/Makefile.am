@@ -22,7 +22,8 @@
 
 AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 # AM_LDFLAGS = -llapack -lcblas -latlas
-AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
+#  AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
+AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la
 #  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
 #AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxSrcOnly
