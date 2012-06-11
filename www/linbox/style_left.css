@@ -22,9 +22,11 @@ body {
 	/* margin 100 100 100 100 ; */
 	padding: 0;
 	-moz-box-align: center;
+	-o-box-align: center;
 	-webkit-box-align: center;
 	box-align:center;
 	-moz-box-pack: center;
+	-o-box-pack: center;
 	-webkit-box-pack: center;
 	box-pack: center;
 
@@ -33,6 +35,7 @@ body {
 
 header, article, footer {
 	display: -moz-box;
+	display: -o-box;
 	display: -webkit-box;
 	display: box;
 	width: 100%;
@@ -42,6 +45,7 @@ header, article {
 	/* border: 10px solid #ddd; */
 	border-width: 0 10px;
 	-moz-box-sizing: border-box;
+	-o-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 }
@@ -58,8 +62,9 @@ article {
 	/* width: 850px; */
 	width: 80%;
 	min-width: 850px;
-	-webkit-box-shadow: 3px 3px 7px #777;
 	-moz-box-shadow: 3px 3px 7px #777;
+	-o-box-shadow: 3px 3px 7px #777;
+	-webkit-box-shadow: 3px 3px 7px #777;
 	box-shadow: 3px 3px 7px #777;
 	/* left-margin: 10%; */
 	/* right-margin: 10%; */
@@ -149,9 +154,11 @@ p {
 
 header {
 	-moz-box-align: center;
+	-o-box-align: center;
 	-webkit-box-align: center;
 	box-align:center;
 	-moz-box-pack: center;
+	-o-box-pack: center;
 	-webkit-box-pack: center;
 	box-pack: center;
 	/* background: url('images/xxx.jpg') no-repeat 50% 50%; */
@@ -160,10 +167,12 @@ header {
 
 header div {
 	-moz-box-flex: 0;
+	-o-box-flex: 0;
 	-webkit-box-flex: 0;
 	box-flex: 0;
 	background-color: rgba(255,255,255,0.75);
 	-moz-border-radius: 6px;
+	-o-border-radius: 6px;
 	-webkit-border-radius: 6px;
 	border-radius: 6px;
 	padding: 10px;
@@ -181,9 +190,11 @@ header p {
 /* Main Content */
 .main{
 	-moz-box-align: center;
+	-o-box-align: center;
 	-webkit-box-align: center;
 	box-align:center;
 	-moz-box-pack: center;
+	-o-box-pack: center;
 	-webkit-box-pack: center;
 	box-pack: center;
 
@@ -219,21 +230,27 @@ article, section {
 
 section {
 	-moz-box-flex: 1;
+	-o-box-flex: 1;
 	-webkit-box-flex: 1;
 	box-flex: 1;
 	background-color: #f3f8fb;
 	border: 10px solid #DDD;
 	padding: 10px;
-	width: 180px;
+	/* width: 180px; */
+	width:90%;
+	/* margin-left:1%; */
+	/* margin-right:1%; */
 }
 
 /* Footer */
 
 footer {
 	-moz-box-align: center;
+	-o-box-align: center;
 	-webkit-box-align: center;
 	box-align: center,
 	-moz-box-pack: end;
+	-o-box-pack: end;
 	-webkit-box-pack: end;
 	box-pack: end;
 	/* background-color: rgba(90,102,130,0.75); */
@@ -313,6 +330,7 @@ nav ul li {
 	width: auto;
 	background-color: rgba(90,102,130,0.5);
 	-moz-border-radius: 6px;
+	-o-border-radius: 6px;
 	-webkit-border-radius: 6px;
 	border-radius: 6px;
 
