@@ -26,6 +26,16 @@
 	display: none;
 }
 
+#preloader {
+	/* Images you want to preload*/
+	background-image: url(images/linbox.png);
+	background-image: url(images/givaro.png);
+	background-image: url(images/fflas-ffpack.png);
+	width: 0px;
+	height: 0px;
+	display: inline-block;
+}
+
 #linbox #img-linbox
 {
 	background-image: url('images/linbox_gray.png');
