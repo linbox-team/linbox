@@ -63,13 +63,9 @@
 
 }
 
-/* #linbox:hover p { color: rgba(90,102,130,0.99); } */
-
 #linbox:hover h2 a {
 color: rgba(90,102,130,0.8);
 }
-
-
 
 #givaro #img-givaro
 {
@@ -88,8 +84,6 @@ color: rgba(90,102,130,0.8);
 	background: url('http://www.linalg.org/linbox/images/givaro.png') no-repeat;
 
 }
-
-/* #givaro:hover p { color: rgba(90,102,130,0.99); } */
 
 #givaro:hover h2 a {
 color: rgba(90,102,130,0.8);
@@ -114,10 +108,14 @@ color: rgba(90,102,130,0.8);
 
 }
 
-/* #fflas-ffpack:hover p { color: rgba(90,102,130,0.99); } */
 
 #fflas-ffpack:hover h2 a {
 color: rgba(90,102,130,0.8);
 }
 
-
+#othernav {
+	display: block;
+	background-color:#ddd;
+	top: 0;
+	text-align:center;
+}
