@@ -6,7 +6,7 @@
 /* html, body, .container { height: 100%; } */
 
 body {
-	color: #222;
+	color: #000;
 	font-family: 'Droid Serif', Times, serif;
 	font-size: 10px;
 	margin: 0 auto;
@@ -35,7 +35,7 @@ section {
 }
 
 .container {
-	background-color: rgba(90,102,130,0.75);
+	background-color: rgba(90,102,130,0.25);
 	width: 80%;
 	min-width: 850px;
 	-moz-box-shadow: 3px 3px 7px #777;
