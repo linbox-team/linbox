@@ -33,61 +33,133 @@
 		<div class="container">
 			<nav>
 			<ul>
-				<li><a href="linbox/index.xhtml">LinBox</a></li>
-				<li><a href="givaro/index.xhtml">Givaro</a></li>
-				<li><a href="fflas-ffpack//index.xhtml">FFLAS-FFPACK</a></li>
+Within this page
+				<li><a href="index.xhtml">Home</a></li>
+				<li><a href="#linbox">LinBox</a></li>
+				<li><a href="#fflas-ffpack">FFLAS-FFPACK</a></li>
+				<li><a href="#givaro">Givaro</a></li>
 				<li><a href="#relat">Related software</a></li>
-				<li><a href="#about">About</a></li>
-				<!-- <li class="subscribe"><a href="#">Subscribe via. RSS</a></li>   -->
+				<!-- <li><a href="#about">About</a></li>
+				<li class="subscribe"><a href="#">Subscribe via. RSS</a></li>   -->
+Other linalg.org pages
+<li>
+<a href="linbox/index.xhtml">
+LinBox
+<p>
+<img 
+ style="width: 75px; height: 75px;"
+ alt="Vonal KSZ Vasarely"
+ src="http://ljk.imag.fr/membres/Jean-Guillaume.Dumas/Images/Vonal_KSZ-s.gif"
+ align="middle">
+</img>
+</p>
+</a>
+</li>
+<li>
+<a href="fflas-ffpack/index.xhtml">
+FFLAS-FFPACK
+<p> <!-- fflas-ffpack could use an icon.  wobbly is a placeholder for that. -->
+<img 
+ style="width: 75px; height: 75px;"
+ alt="wobbly.gif"
+ src="wobbly.gif" 
+ align="middle">
+<!--name="img2" style="border:0;height:90px;width:90px"> -->
+</img>
+</p>
+</a>
+</li>
+<li>
+<a href="givaro/index.xhtml">
+Givaro
+<p>
+<img 
+ style="width: 75px; height: 75px;"
+ alt="logo_givaro.gif"
+ src="givaro/logo_givaro.gif" 
+ align="middle">
+</img>
+</p>
+</a>
+</li>
 			</ul>
 			</nav>
 
 			<div id='othernav'>
 				<p>
-				We also support <a href="fflas-ffpack/index.xhtml">FFLAS-FFPACK</a> and <a href="givaro/index.xhtml">Givaro</a>.
+				<a href="http://linalg.org">Old homepage</a>
+<!--
+				linalg.org supports <a href="linbox/index.xhtml">LinBox</a>, <a href="fflas-ffpack/index.xhtml">FFLAS-FFPACK</a>, and <a href="givaro/index.xhtml">Givaro</a>.
+</p><p>
+Latest releases: linbox-1.3.2, givaro-3.7.0, and fflas-ffpack-1.6.0 
+Install all: <a href="...">auto-install.sh</a> - -help
+-->
 				</p>
 			</div>
 
 			<header>
-			<div align='center'>
-				<h1>Computational Exact Linear Algebra</h1>
-				<p>LinBox &#8212; Givaro  &#8212; FFLAS-FFPACK home pages.</p>
+			<div>
+				<h1>Computational Exact Linear Algebra and Related Tools</h1>
+				<p>LinBox &#8212; FFLAS-FFPACK &#8212; Givaro  </p>
 				<!-- this is &mdash; no dtd yet-->
 			</div>
 			</header>
 
 			<div class="main">
 				<article>
-				<section id="about">
-				<h2><a href="xxx">About linalg.org</a></h2>
-				<p> We develop several free tools for fast exact arithmetic and linear algebra. </p>
-				</section>
-
 				<section id="section-22">
-				<h2><a href="xxx">News</a></h2>
-				<p>latest releases :</p>
+				<h2>latest releases:</h2>
 				<ul>
-					<li> linbox-1.3.2 </li>
-					<li> givaro-3.7.0 </li>
-					<li> fflas-ffpack-1.6.0 </li>
+					<li> linbox-1.3.2 <a href="http://linalg.org/linbox-html">linbox documentation</a></li>
+					<li> fflas-ffpack-1.6.0 <a href="http://linalg.org/fflas-ffpack-html">fflas-ffpack documentation</a></li>
+					<li> givaro-3.7.0 <a href="http://givaro.forge.imag.fr/givaro-html">givaro documentation</a></li>
 				</ul>
 				</section>
+
+				<section id="about">
+				<h2>to install, download and run:</h2>
+				<h2> <a href="...">auto-install-1.3.2.sh</a> </h2>
+<ul>
+<li> Get install options --- "auto-install.sh --help"</li>
+<li> Latest developer versions --- "auto-install.sh --stable=no"</li>
+<li> Use existing Givaro --- "auto-install.sh --with-givaro=..." </li>
+<li> etc. </li>
+</ul>
+				</section>
+
 				</article>
 
 
 				<article id="linbox_art">
 				<section id="linbox">
-				<h2><a href="linbox/index.xhtml">LinBox</a></h2>
-				<p align="center">
+				<h1> <a href="linbox/index.xhtml">LinBox</a></h1>
+				<p>
 				<a id='img-linbox' href="linbox/index.xhtml"></a>
 				</p>
-				<p align="center">
-				LinBox is a C++ template library for exact linear algebra.</p>
 				</section>
 				<div id='preloader_linbox'>
 				</div>
+				<section>
+<p>
+LinBox is a C++ template library for exact,
+high-performance linear algebra computation with dense,
+sparse, and structured matrices over the integers and over finite fields.  
+</p>
+<tt> </tt>
+<p>
+It can solve linear systems, and compute matrix invariants such
+as minimal and characteristic polynomials, rank, determinant, Frobenius normal form, Smith normal form.  Dense and sparse LU type factorizations are available.
+</p>
+
+<p>
+Miscellaneous features include least-norm, least-squares solutions to singular and inconsistent linear systems and   
+capability for positive definiteness determination
+and signature (inertia) of symmetric integer matrices.
+</p>
+				</section>
 				</article>
 
+<!--
 				<article>
 				<section>
 				<h2>Description</h2>
@@ -95,32 +167,45 @@
 				</p>
 				</section>
 				</article>
+-->
 
 
 				<article>
-				<section id='givaro'>
-				<h2><a href="givaro/index.xhtml">Givaro</a></h2>
-				<p align="center">
-				<a id='img-givaro' href="givaro/index.xhtml"></a>
-				</p>
-				<p align="center">
-				Givaro is a C++ library for exact arithmetic on integer, rationals, finite fields and polynomials.</p>
+				<section> 
+				<p>
+				FFLAS-FFPACK is a C++ library for fast dense linear algebra on word size prime fields</p>
+<p>
+FFLAS contains BLAS-like routines for dense matrix and vector arithmetic over Z/pZ fields, 
+while FFPACK, LAPACK-like, implements higher level algorithms for dense matricesover Z/pZ.
+</p>
 				</section>
-				<div id='preloader_givaro'>
-				</div>
-
 
 				<section id="fflas-ffpack">
-				<h2><a href="fflas-ffpack/index.xhtml">FFLAS-FFPACK</a></h2>
-				<p align="center">
+				<h2>
+<a href="fflas-ffpack/index.xhtml">FFLAS-FFPACK</a></h2>
+				<p>
 				<a id='img-fflas-ffpack' href="fflas-ffpack/index.xhtml"></a>
 				</p>
-				<p align="center">
-				FFLAS-FFPACK is a C++ library for fast dense linear algebra on word size prime fields</p>
 				</section>
 				<div id='preloader_fflas-ffpack'>
 				</div>
 
+				</article>
+
+				<article>
+
+				<section id='givaro'>
+				<h2><a href="givaro/index.xhtml">Givaro</a></h2>
+				<p>
+				<a id='img-givaro' href="givaro/index.xhtml"></a>
+				</p>
+				</section>
+				<div id='preloader_givaro'>
+				</div>
+				<section> 
+				<p>
+				Givaro is a C++ library for exact arithmetic on integer, rationals, finite fields and polynomials.</p>
+				</section>
 
 
 
@@ -130,33 +215,38 @@
 				<section id='relat'>
 				<h2>Related free software</h2>
 				<div>
-					<p> <a href="www.sagemath.org/">SAGE</a> : desc</p>
-					<p> <a href="http://www.cs.uwaterloo.ca/~astorjoh/iml.html">IML</a> : desc </p>
-					<p> FLINT </p>
-					<p> GMP/MPIR </p>
-					<p> NTL </p>
-					<p> FPLLL </p>
-					<p> ...</p>
+					<p> <a href="www.sagemath.org/">SAGE</a> : Computer algebra system, uses LinBox and fflas-ffpack</p>
+					<p> <a href="http://www.cs.uwaterloo.ca/~astorjoh/iml.html">IML</a> : Rational system solving, nullspace, used by and copied by LinBox </p>
+					<p> <a href="http://www.flintlib.org/">FLINT</a> : Number theory </p>
+					<p> <a href="gmp.org">GMP</a>/<a href="http://mpir.org/">MPIR</a> : Large integers </p>
+					<p> <a href="http://www.shoup.net/ntl">NTL</a> : Number theory </p>
+					<p> <a href="http://perso.ens-lyon.fr/xavier.pujol/fplll/">FPLLL</a> : Lattice reduction </p>
 				</div>
 				</section>
 				</article>
 
 
+<!--
 				<article>
 				<section id="section-41">
-				<h2><a href="xxx">Contacts, Bugs, Wishes, Documentation, etc...</a></h2>
-				<p> please go first to the particular project webpage where you'll find the corresponding information.</p>
+				<h2>Contacts, Bugs, Wishes, Documentation, etc...</h2>
+				<p> Please go to the particular project webpage where you'll find the corresponding information.</p>
 				</section>
 
 
 				</article>
+-->
 			</div>
 
 			<footer>
 			<div>
+				<h2>Contacts, Bugs, Wishes, Documentation, etc...</h2>
+				<p> Please go to the particular project webpage where you'll find the corresponding information.</p>
+			</div>
+			<div>
 				<p><strong>&#169; the LinBox group 2012. </strong> </p>
 				<!-- this is &copy; -->
-				<p> Last modified.</p>
+				<p> Last modified 2012 June.</p>
 				<p> <a href="http://validator.w3.org/check?uri=http%3A%2F%2Fwww.linalg.org%2Flinbox%2Findex.xhtml" target="_blank">
 					<img style="border:0;width:88px;height:31px"
 					src="http://www.linalg.org/linbox/images/valid-html5-blue.jpg"
