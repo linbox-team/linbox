@@ -88,6 +88,13 @@ h4 {
 }
 
 
+h1 a {
+	color: #222;
+	text-decoration: none;
+}
+
+h1 a:hover { color: rgba(90,102,130,0.7); }
+
 h2 a {
 	color: #222;
 	text-decoration: none;
@@ -113,6 +120,7 @@ ul {
 }
 
 p {
+	margin : 1em 0em;
 	font-size: 120%;
 	line-height: 1.54;
 	font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
@@ -142,7 +150,7 @@ header div {
 	-o-box-flex: 0;
 	-webkit-box-flex: 0;
 	box-flex: 0;
-	background-color: rgba(255,255,255,0.75);
+	background-color: rgba(255,255,255,1.0);
 	-moz-border-radius: 6px;
 	-o-border-radius: 6px;
 	-webkit-border-radius: 6px;
