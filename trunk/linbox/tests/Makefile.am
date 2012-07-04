@@ -47,6 +47,11 @@ EXTRA_DIST=            \
 
 #  test-generic-for-quad.h
 
+
+tutorial-1: tutorial-1.C
+
+test-tutorial$(EXEEXT): test-tutorial.C tutorial-1
+
 # Put an entry for your test-mycomponent.C here (or in one of the other test groups).
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 #
@@ -112,6 +117,7 @@ FULLCHECK_TESTS =                 \
         test-sum                      \
         test-trace                    \
         test-triplesbb                \
+        test-tutorial                \
         test-vector-domain            \
         test-qlup                     \
         test-zero-one                 \
@@ -377,6 +383,9 @@ test_triplesbb_SOURCES =                \
         test-triplesbb.C                \
         test-generic.h                  \
         test-common.h
+
+test_tutorial_SOURCES =                \
+        test-tutorial.C
 
 test_hilbert_SOURCES =                        \
         test-hilbert.C        test-generic.h        \

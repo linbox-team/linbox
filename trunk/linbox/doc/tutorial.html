@@ -128,7 +128,7 @@ instantiate your specific field.
 <pre>
 #include &lt;linbox/field/modular.h>
 
-typedef Modular&lt;short> Field;
+typedef Modular&lt;uint_16> Field;
 Field F(101);
 </pre>
 It is a good idea to use a typedef, making it easy to change representations later.
@@ -169,7 +169,7 @@ functions. <tt>A.apply(y, x)</tt> performs y leftarrow Ax.
 Then there is the question of initializing matrix
 entries.  Two basic approaches are illustrated here.
 <pre>
-TriplesBB A;
+TriplesBB A(F);
 A.read("triples-file"); // initialize A from data in file (including shape).
 </pre>
 Or a program can add entries to a sparse or dense matrix one by one using the <tt>setEntry</tt>
@@ -186,19 +186,45 @@ for ( ... )
 
 Putting it all together, we may have a program looking like this.
 <pre>
+#include <iostream>
 #include <linbox/field/modular.h>
-#include <linbox/blackbox/dense.h>
-#include <linbox/solutions/determinant.h>
+#include <linbox/matrix/blas-matrix.h>
+#include <linbox/solutions/det.h>
+
 using namespace LinBox;
 
-main(){
-typedef Modular<double> Field;
-typedef DenseMatrix<Field> Matrix;
-Field F(65521);
-Matrix A; A.read("datafile");
-Field::Element det;
-determinant(det, A, blasElimination);
-F.write(cout << "the determinant is ", det) << endl;
+// Usage: a.out < file-in-one-of-several-std-formats
+main()
+{
+    typedef Modular<double> Field;
+    typedef BlasMatrix<Field> Matrix;
+    Field F(65521);
+    Matrix A(F); A.read(std::cin);
+    Field::Element d;
+	Method::BlasElimination M;
+    det(d, A, M);
+    F.write(std::cout << "the determinant is ", d) << std::endl;
+}
+</pre>
+
+... or this.
+<pre>
+#include <iostream>
+#include <linbox/field/givaro.h>
+#include <linbox/blackbox/triplesbb.h>
+#include <linbox/solutions/rank.h>
+
+using namespace LinBox;
+
+// Usage: a.out < file-in-one-of-several-std-formats
+main()
+{
+    typedef GivaroZpz<float> Field;
+    Field F(3);
+	TriplesBB<Field> A(F); A.read(std::cin);
+	size_t r;
+    rank(r, A);
+    F.write(std::cout << "the rank is ", r) << std::endl;
 }
 </pre>
 
