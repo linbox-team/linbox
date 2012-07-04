@@ -199,7 +199,7 @@ int main (int argc, char **argv)
 		SparseMatrix<PID_integer> A (ms);
 		PID_integer::Element d;
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
-
+               
 		std::vector<PID_integer::Element> X( A.coldim()),B(A.rowdim());
 
 		if (createB) {

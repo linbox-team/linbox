@@ -246,9 +246,9 @@ namespace LinBox
 				   const Polynomial3 &B, size_t shiftB, size_t degB){
 
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroC(C[0].rowdim(), C[0].coldim());
-			const Coefficient ZeroA(A[0].rowdim(), A[0].coldim());
-			const Coefficient ZeroB(B[0].rowdim(), B[0].coldim());
+			const Coefficient ZeroC(_field, C[0].rowdim(), C[0].coldim());
+			const Coefficient ZeroA(_field, A[0].rowdim(), A[0].coldim());
+			const Coefficient ZeroB(_field, B[0].rowdim(), B[0].coldim());
 
 			if ((degA == 1) || (degB == 1)) {
 
@@ -331,9 +331,9 @@ namespace LinBox
 				size_t k1= A.size()-k0;
 
 				typedef  typename Polynomial1::value_type Coefficient;
-				const Coefficient ZeroC(C[0].rowdim(), C[0].coldim());
-				const Coefficient ZeroA(A[0].rowdim(), A[0].coldim());
-				const Coefficient ZeroB(B[0].rowdim(), B[0].coldim());
+				const Coefficient ZeroC(_field, C[0].rowdim(), C[0].coldim());
+				const Coefficient ZeroA(_field, A[0].rowdim(), A[0].coldim());
+				const Coefficient ZeroB(_field, B[0].rowdim(), B[0].coldim());
 
 				std::vector<Coefficient> alpha(k1,ZeroC), beta(k1,ZeroC), gamma(k0,ZeroC);
 				std::vector<Coefficient> A_low(k0, ZeroA), A_high(k1,ZeroA);
@@ -396,9 +396,9 @@ namespace LinBox
 				std::cout<<C.size()<<" "<<A.size()<<" "<<B.size()<<"("<<Bk0<<","<<Bk1<<")\n";
 
 				typedef  typename Polynomial1::value_type Coefficient;
-				const Coefficient ZeroC(C[0].rowdim(), C[0].coldim());
-				const Coefficient ZeroA(A[0].rowdim(), A[0].coldim());
-				const Coefficient ZeroB(B[0].rowdim(), B[0].coldim());
+				const Coefficient ZeroC(_field, C[0].rowdim(), C[0].coldim());
+				const Coefficient ZeroA(_field, A[0].rowdim(), A[0].coldim());
+				const Coefficient ZeroB(_field, B[0].rowdim(), B[0].coldim());
 
 				std::vector<Coefficient> A_low(Ak0,ZeroA), A_high(Ak1,ZeroA);
 				std::vector<Coefficient> alpha(Bk1,ZeroC), beta(Bk1,ZeroC), gamma(Bk0,ZeroC);
@@ -492,9 +492,9 @@ namespace LinBox
 			size_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
 
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroC(c[0].rowdim(), c[0].coldim());
-			const Coefficient ZeroA(a[0].rowdim(), a[0].coldim());
-			const Coefficient ZeroB(b[0].rowdim(), b[0].coldim());
+			const Coefficient ZeroC(_field, c[0].rowdim(), c[0].coldim());
+			const Coefficient ZeroA(_field, a[0].rowdim(), a[0].coldim());
+			const Coefficient ZeroB(_field, b[0].rowdim(), b[0].coldim());
 
 			// check if fft prime and good enough
 			if (lpts < _fftsize){
@@ -600,7 +600,7 @@ namespace LinBox
 			size_t nn = c[0].coldim();
 
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroA(mm,nn), ZeroB(mm,kk), ZeroC(kk,nn);
+			const Coefficient ZeroA(_field, mm,nn), ZeroB(_field, mm,kk), ZeroC(_field, kk,nn);
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0;
@@ -747,9 +747,9 @@ namespace LinBox
 			size_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
 
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroC(c[0].rowdim(), c[0].coldim());
-			const Coefficient ZeroA(a[0].rowdim(), a[0].coldim());
-			const Coefficient ZeroB(b[0].rowdim(), b[0].coldim());
+			const Coefficient ZeroC(_field, c[0].rowdim(), c[0].coldim());
+			const Coefficient ZeroA(_field, a[0].rowdim(), a[0].coldim());
+			const Coefficient ZeroB(_field, b[0].rowdim(), b[0].coldim());
 
 
 			// computation done using CRT with few fft primes
@@ -856,7 +856,7 @@ namespace LinBox
 			size_t n = c[0].coldim();
 
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
+			const Coefficient ZeroA(_field, m,n), ZeroB(_field, m,k), ZeroC(_field, k,n);
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0;
@@ -1026,7 +1026,7 @@ namespace LinBox
 			size_t k = b[0].coldim();
 			size_t n = c[0].coldim();
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
+			const Coefficient ZeroA(_field, m,n), ZeroB(_field, m,k), ZeroC(_field, k,n);
 
 			size_t deg     = b.size()+c.size()-1;
 			size_t lpts = 0;
@@ -1247,7 +1247,7 @@ namespace LinBox
 			size_t k = b[0].coldim();
 			size_t n = c[0].coldim();
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
+			const Coefficient ZeroA(_field, m,n), ZeroB(_field, m,k), ZeroC(_field, k,n);
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0;
@@ -1405,7 +1405,7 @@ namespace LinBox
 			size_t k = b[0].coldim();
 			size_t n = c[0].coldim();
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
+			const Coefficient ZeroA(_field, m,n), ZeroB(_field, m,k), ZeroC(_field, k,n);
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0;
@@ -1695,7 +1695,7 @@ namespace LinBox
 		void iterative_FFT (Polynomial &fft, size_t n, size_t ln, const std::vector<Element> &pow_w){
 
 			typedef  typename Polynomial::value_type Coefficient;
-			Coefficient tmp(fft[0].rowdim(), fft[0].coldim());
+			Coefficient tmp(_field, fft[0].rowdim(), fft[0].coldim());
 
 			if (ln == 0)
 				return;

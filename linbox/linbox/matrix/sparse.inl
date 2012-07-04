@@ -601,7 +601,7 @@ namespace LinBox
 					os << ' ';
 				}
 
-				os << ']';
+				os << ']'<<std::endl;
 			}
 
 			break;

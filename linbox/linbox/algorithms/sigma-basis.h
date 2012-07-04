@@ -48,6 +48,7 @@
 /*! @file algorithms/sigma-basis.h
  * @brief \f$\sigma\f$-basis (minimal basis).
  */
+#define MBASIS_THRESHOLD 16
 
 namespace LinBox
 {
@@ -151,7 +152,7 @@ namespace LinBox
 			size_t m = _Serie[0].rowdim();
 			size_t n = _Serie[0].coldim();
 
-			const Coefficient TransposedZero(n,m);
+			const Coefficient TransposedZero(_field,n,m);
 
 			// take the transposed of the Serie and use PM_Basis
 			std::vector<Coefficient> TransposedSerie (length, TransposedZero);
@@ -161,7 +162,7 @@ namespace LinBox
 					for (size_t j=0;j<n;++j)
 						TransposedSerie[k].setEntry(j,i, _Serie[k].getEntry(i,j));
 
-			const Coefficient Zero(n, n);
+			const Coefficient Zero(_field,n, n);
 
 			// Prepare SigmaBase
 			SigmaBase.resize(degree+1, Zero);
@@ -176,7 +177,7 @@ namespace LinBox
 		{
 
 			const size_t m = _Serie[0].rowdim();
-			const Coefficient Zero(m, m);
+			const Coefficient Zero(_field, m, m);
 
 			// Prepare SigmaBase
 			SigmaBase.resize(degree+1, Zero);
@@ -198,8 +199,8 @@ namespace LinBox
 
 			const size_t m = _Serie[0].rowdim();
 			const size_t n = _Serie[0].coldim();
-			const Coefficient Zero(m, m);
-			const Coefficient ZeroSerie(m,n);
+			const Coefficient Zero(_field,m, m);
+			const Coefficient ZeroSerie(_field,m,n);
 
 
 			// Prepare SigmaBases
@@ -238,8 +239,8 @@ namespace LinBox
 			size_t length=_Serie.size();
 			size_t m = _Serie[0].rowdim();
 			size_t n = _Serie[0].coldim();
-			const Coefficient TransposedZero(n,m);
-			const Coefficient Zero(n, n);
+			const Coefficient TransposedZero(_field,n,m);
+			const Coefficient Zero(_field,n, n);
 
 			// take the transposed of the Serie and use PM_Basis
 			std::vector<Coefficient> TransposedSerie (length, TransposedZero);
@@ -295,7 +296,7 @@ namespace LinBox
 
 
 			// transpose the PowerSerie
-			const Coefficient Zero(m,n);
+			const Coefficient Zero(_field,m,n);
 			std::vector<Coefficient> TransPowerSerie(deg,Zero);
 			for (size_t i=0;i<deg;++i){
 				for (size_t j=0;j<m;++j)
@@ -344,7 +345,7 @@ namespace LinBox
 
 
 			// transpose the PowerSerie
-			const Coefficient Zero(m,n);
+			const Coefficient Zero(_field,m,n);
 			std::vector<Coefficient> TransPowerSerie(deg,Zero);
 			for (size_t i=0;i<deg;++i){
 				for (size_t j=0;j<m;++j)
@@ -379,23 +380,22 @@ namespace LinBox
 		//
 		// SigmaBase must be already allocated with degree+1 elements
 		// PowerSerie must have at least degree+1 element
-#define MBASIS_THRESHOLD 16
 
 		template <class Polynomial1, class Polynomial2>
-		void PM_Basis(Polynomial1      &SigmaBase,
+		void PM_Basis(Polynomial1            &SigmaBase,
 			      const Polynomial2     &PowerSerie,
-			      size_t               degree,
-			      std::vector<size_t> &defect)
+			      size_t                     degree,
+			      std::vector<size_t>       &defect)
 		{
 
 			size_t m,n;
 			m = PowerSerie[0].rowdim();
 			n = PowerSerie[0].coldim();
-			const Coefficient ZeroSigma(m,m);
-			const Coefficient ZeroSerie(m,n);
+			const Coefficient ZeroSigma(_field,m,m);
+			const Coefficient ZeroSerie(_field,m,n);
 
 			if (degree == 0) {
-				Coefficient Identity(m,m);
+				Coefficient Identity(_field,m,m);
 				for (size_t i=0;i< m;++i)
 					Identity.setEntry(i,i,_field.one);
 				SigmaBase[0]=Identity;
@@ -477,7 +477,7 @@ namespace LinBox
 		// algorithm is from Giorgi, Jeannerod and Villard  ISSAC'03
 		template <class Polynomial1, class Polynomial2>
 		void M_Basis(Polynomial1        &SigmaBase,
-			     Polynomial2        PowerSerie,
+			     Polynomial2       &PowerSerie,
 			     size_t                 length,
 			     std::vector<size_t>   &defect)
 		{
@@ -489,12 +489,12 @@ namespace LinBox
 			n = PowerSerie[0].coldim();
 
 			// Set some useful constants
-			const Coefficient Zero(m,m);
+			const Coefficient Zero(_field,m,m);
 
 			// Reserve memory for the Sigma Base and set SigmaBase[0] to Identity
 			SigmaBase.reserve(length+1);
 			SigmaBase.resize(1);
-			Coefficient Identity(m,m);
+			Coefficient Identity(_field,m,m);
 			for (size_t i=0;i< m;++i)
 				Identity.setEntry(i,i,_field.one);
 			SigmaBase[0]=Identity;
@@ -514,7 +514,7 @@ namespace LinBox
 
 
 			// Discrepancy
-			Coefficient Discrepancy(m,n);
+			Coefficient Discrepancy(_field,m,n);
 			Timer chrono;
 #ifdef  _BM_TIMING
 			int cptr=0;
@@ -562,10 +562,11 @@ namespace LinBox
 				chrono.start();
 #endif
 				// Compute Discrepancy
-				_BMD.mul(Discrepancy,SigmaBase[0],PowerSerie[k]);
+                                _BMD.mul(Discrepancy,SigmaBase[0],PowerSerie[k]);
 				for (size_t i=1;i<SigmaBase.size();++i){
 					_BMD.axpyin(Discrepancy,SigmaBase[i],PowerSerie[k-i]);
 				}
+                                
 #ifdef  _BM_TIMING
 				cptr+=SigmaBase.size();
 				chrono.stop();
@@ -670,7 +671,7 @@ namespace LinBox
 			// degree1 >= degree2
 			//size_t size = 2*degree1 + 1;
 
-			const Coefficient ZeroSerie (OldSerie[0].rowdim(), OldSerie[0].coldim());
+			const Coefficient ZeroSerie (_field,OldSerie[0].rowdim(), OldSerie[0].coldim());
 			//const Coefficient ZeroBase  (SigmaBase[0].rowdim(), SigmaBase[0].coldim());
 
 			// Work on a copy of the old  Serie (increase size by one for computation of middle product)
@@ -731,14 +732,14 @@ namespace LinBox
 			// Initialization of the Serie iterator
 			typename std::vector<Coefficient>::const_iterator _iter (PowerSerie.begin ());
 
-			Coefficient Unit(m+n,m);
-			const Coefficient Zero(m+n,m);
+			Coefficient Unit(_field,m+n,m);
+			const Coefficient Zero(_field,m+n,m);
 			for (size_t i=0;i<m;i++)
 				Unit.setEntry(i,i,_field.one);
 			size_t min_mn=(m <n)? m :n;
 
 			// initialization of discrepancy
-			Coefficient Discrepancy(m+n,n);
+			Coefficient Discrepancy(_field,m+n,n);
 			for (size_t i=0;i<n;i++)
 				Discrepancy.setEntry(i+m,i,_field.one);
 
@@ -903,7 +904,7 @@ namespace LinBox
 
 
 				// Discrepancy= BPerm2.U.P from LQUP
-				Coefficient U(m+n,n);
+				Coefficient U(_field,m+n,n);
 				TriangularBlasMatrix<Field> trU( U,
 								LinBoxTag::Upper,LinBoxTag::NonUnit);
 				LQUP.getU(trU);
@@ -924,7 +925,7 @@ namespace LinBox
 					max=degree[i];
 			}
 
-			const Coefficient AZero(m,m);
+			const Coefficient AZero(_field,m,m);
 			Approx.resize(max+1, AZero);
 
 			for (size_t i=0;i<m;i++)
@@ -954,14 +955,14 @@ namespace LinBox
 			// Initialization of the Serie iterator
 			typename std::vector<Coefficient>::const_iterator _iter (PowerSerie.begin ());
 
-			Coefficient Unit(m+n,m);
-			const Coefficient Zero(m+n,m);
+			Coefficient Unit(_field,m+n,m);
+			const Coefficient Zero(_field,m+n,m);
 			for (size_t i=0;i<m;i++)
 				Unit.setEntry(i,i,_field.one);
 			size_t min_mn=(m <n)? m :n;
 
 			// initialization of discrepancy
-			Coefficient Discrepancy(m+n,n);
+			Coefficient Discrepancy(_field,m+n,n);
 			for (size_t i=0;i<n;i++)
 				Discrepancy.setEntry(i+m,i,_field.one);
 
@@ -1126,7 +1127,7 @@ namespace LinBox
 
 
 				// Discrepancy= BPerm2.U.P from LQUP
-				Coefficient U(m+n,n);
+				Coefficient U(_field,m+n,n);
 				TriangularBlasMatrix<Field> trU(U,LinBoxTag::Upper,LinBoxTag::NonUnit);
 				LQUP.getU(trU);
 				Discrepancy=U;
@@ -1143,7 +1144,7 @@ namespace LinBox
 							max=order[i];
 					}
 
-					const Coefficient AZero(m,m);
+					const Coefficient AZero(_field,m,m);
 					Approx1.resize(max+1, AZero);
 
 					for (size_t i=0;i<m;i++)
@@ -1165,7 +1166,7 @@ namespace LinBox
 					max=degree[i];
 			}
 
-			const Coefficient AZero(m,m);
+			const Coefficient AZero(_field,m,m);
 			Approx2.resize(max+1, AZero);
 
 			for (size_t i=0;i<m;i++)
@@ -1190,15 +1191,15 @@ namespace LinBox
 			n = PowerSerie[0].coldim();
 
 			// Set some useful constants
-			const Coefficient Zeromm(m,m);
-			const Coefficient Zeromn(m,n);
+			const Coefficient Zeromm(_field,m,m);
+			const Coefficient Zeromn(_field,m,n);
 
 			// Reserve memory for the Sigma Base
 			SigmaBase.reserve(length+1);
 			SigmaBase.resize(1);
 
 			// set SigmaBase[0] to Identity
-			Coefficient Identity(m,m);
+			Coefficient Identity(_field,m,m);
 			for (size_t i=0;i< m;++i)
 				Identity.setEntry(i,i,_field.one);
 			SigmaBase[0]=Identity;
@@ -1211,7 +1212,7 @@ namespace LinBox
 				Residual[k] = PowerSerie[k];
 
 			// Define Discrepancy
-			Coefficient Discrepancy(m,n);
+			Coefficient Discrepancy(_field,m,n);
 
 			// Row degree of SigmaBase
 			// Keep track on Sigma Base's row degree
@@ -1835,12 +1836,12 @@ namespace LinBox
 			size_t m,n;
 			m = PowerSerie[0].rowdim();
 			n = PowerSerie[0].coldim();
-			const Coefficient ZeroSigma(m,m);
-			const Coefficient ZeroSerie(m,n);
+			const Coefficient ZeroSigma(_field,m,m);
+			const Coefficient ZeroSerie(_field,m,n);
 			PowerSerie.resize(degree, ZeroSerie);
 
 			if (degree == 0) {
-				Coefficient Identity(m,m);
+				Coefficient Identity(_field,m,m);
 				for (size_t i=0;i< m;++i)
 					Identity.setEntry(i,i,_field.one);
 				SigmaBase[0]=Identity;
@@ -1979,8 +1980,8 @@ namespace LinBox
 			size_t m,n;
 			m = OldSerie[0].rowdim();
 			n = OldSerie[0].coldim();
-			const Coefficient ZeroSigma(m,m);
-			const Coefficient ZeroSerie(m,n);
+			const Coefficient ZeroSigma(_field,m,m);
+			const Coefficient ZeroSerie(_field,m,n);
 			size_t Ssize = SigmaBase.size();
 
 			if (SigmaBase.size() < 5){
