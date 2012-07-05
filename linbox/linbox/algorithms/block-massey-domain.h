@@ -784,10 +784,8 @@ namespace LinBox
 				if (defect[i] > max)
 					max=defect[i];
 
-			P = std::vector<Coefficient> (max+1);
-			Coefficient tmp(_field,m,m);
-			for (size_t i=0;i< max+1;++i)
-				P[i]=tmp;
+                        const Coefficient tmp(_field,m,m);
+			P = std::vector<Coefficient> (max+1,tmp);
 			for (size_t i=0;i<m;i++)
 				for (size_t j=0;j<=defect[i];j++)
 					for (size_t k=0;k<m;k++)
