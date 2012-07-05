@@ -99,8 +99,9 @@ namespace LinBox
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
 		void midproduct (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c)
 		{
-			linbox_check( 2*a.size() == c.size()+1);
-			linbox_check( 2*b.size() == c.size()+1);
+			// Need to be check somewhere else (SigmaBasis)
+                        //linbox_check( 2*a.size() == c.size()+1);
+			//linbox_check( 2*b.size() == c.size()+1);
 
 			size_t d = b.size()+c.size();
 			//std::cout<<"midp "<<a.size()<<" = "<<b.size()<<" x "<<c.size()<<"...\n";

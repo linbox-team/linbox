@@ -690,7 +690,7 @@ namespace LinBox
 			}
 #endif
 
-
+                        
 			PM_domain.midproduct(NewSerie, SigmaBase, Serie);
 		}
 
