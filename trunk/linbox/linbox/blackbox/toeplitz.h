@@ -129,7 +129,7 @@ namespace LinBox
 	  \ingroup blackbox
 	 * It stores the 2n-1 values of the first row and column.
 	 * The apply is a call to polynomial multiplication and for large n
-	 * will be FFT based, running in O(lg(n)) time.
+	 * will be FFT based, running in O(n lg(n)) time.
 	 * The _PField template parameter should be a polynomial field;
 	 * computations on the matrix will be performed using this polynomial.
 	 */
@@ -224,6 +224,8 @@ namespace LinBox
 
 		// Get the determinant of the matrix
 		Element& det( Element& res ) const;
+
+		Element& trace( Element& res ) const;
 	protected:
 		// initialization via a vector. Usually called by a constructor
 		// Moved in a separate protected function to enable easier

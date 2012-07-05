@@ -312,6 +312,19 @@ namespace LinBox
 		return toeplitz_determinant( this->P, res, this->pdata, this->sysDim );
 	}
 
+	/*-----------------------------------------------------------------
+	 *     Compute the trace of the matrix
+	 *-----------------------------------------------------------------*/
+	template<class _PField>
+	typename Toeplitz<typename _PField::CoeffField,_PField>::Element&
+	Toeplitz<typename _PField::CoeffField,_PField>::trace
+	( Element& res ) const
+	{
+		Element x; this->K.init(x, min(rowdim(), coldim()));
+		this->P.getCoeff(res, pdata, rowdim()-1);
+		return K.mulin(res, x);
+	}
+
 
 
 	/*-----------------------------------------------------------------
