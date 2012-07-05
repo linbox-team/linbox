@@ -723,14 +723,13 @@ namespace LinBox
 			Element one;
 			_field.init(one,1UL);
 			const Coefficient Zero(_field,2*m,2*m);
+                        const Coefficient Zeromn(_field,2*m,n);
 
 			// Make the Power Serie from  Sequence (U.A^i.V) and Identity
 			//_container->recompute(); // make sure sequence is already computed
-			std::vector<Coefficient> PowerSerie(length);
+			std::vector<Coefficient> PowerSerie(length,Zeromn);
 			typename Sequence::const_iterator _iter (_container->begin ());
 			for (size_t i=0;i< length; ++i, ++_iter){
-				Coefficient value(_field,2*m,n);
-				PowerSerie[i] = value;
 				for (size_t j=0;j<m;++j)
 					for (size_t k=0;k<n;++k)
 						PowerSerie[i].setEntry(j,k, (*_iter).getEntry(j,k));
