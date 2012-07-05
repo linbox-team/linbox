@@ -65,6 +65,7 @@ int main (int argc, char **argv)
 
 	commentator().start("Trace test suite", "Trace");
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	ostream& report = commentator().report();
 
 	typedef Modular<int> Field;
 	typedef Field::Element Element;
@@ -73,27 +74,57 @@ int main (int argc, char **argv)
 	Element t, t1, t2, t3;
 	F.init(t, 0); F.init(t1, 0); F.init(t2, 0); F.init(t3, 0);
 
+// scalar matrix
 	Element s; F.init(s, 3);
 	ScalarMatrix<Field> A(F, n, s);
 	F.init(t, n*3);
+
 	trace(t1, A);
 	if (! F.areEqual(t1, t) ) pass = false;
-	trace(t2, A, TraceTags::Local() );
-	if (! F.areEqual(t1, t) ) pass = false;
-	trace(t3, A, TraceTags::Generic() );
-	if (! F.areEqual(t1, t) ) pass = false;
 
-/*
-	Vector v(2*n-1, s);
-	for (int i = 0; i < 2*n-1; ++i) if (i != n-1) F.init(v[i], i);
-	Toeplitz<Field> B(F, n, v);
-	trace(t1, B);
-	if (! F.areEqual(t1, t) pass = false;
-	trace(t2, B, TraceTags::Local() );
-	if (! F.areEqual(t1, t) pass = false;
-	trace(t3, B, TraceTags::Generic() );
-	if (! F.areEqual(t1, t) pass = false;
-*/
+	TraceTags::Local L;
+	trace(t2, A, L );
+	if (! F.areEqual(t2, t) ) pass = false;
+
+	TraceTags::Generic G; 
+	trace(t3, A, G );
+	if (! F.areEqual(t3, t) ) pass = false;
+
+// Toeplitz matrix
+
+	NTL_zz_p CF( q );
+	NTL_zz_p::Element u, u1, u2, u3;
+	CF.init(u, 0); CF.init(u1, 0); CF.init(u2, 0); CF.init(u3, 0);
+    NTL_zz_pX PF(CF);
+
+    NTL_zz_p::Element temp;
+    NTL_zz_pX::Element poly;
+    PF.init(poly,0);
+
+    for( int diff = 1 - ((int)n); diff <= ((int)n) - 1; ++diff ) {
+		PF.setCoeff(poly,(size_t)(diff + n - 1), CF.init(temp,diff) );
+	}
+
+	Toeplitz<NTL_zz_p,NTL_zz_pX> B( PF, poly, n );
+
+	CF.init(u, 0); 
+	trace(u1, B);
+	if (! CF.areEqual(u1, u)) {
+		pass = false;
+		report << "u and u1: " << u << " " << u1 << endl;
+	}
+
+	trace(u2, B, TraceTags::Local() );
+	if (! CF.areEqual(u2, u)) {
+		pass = false;
+		report << "u and u2: " << u << " " << u2 << endl;
+	}
+
+	trace(u3, B, TraceTags::Generic() );
+	if (! CF.areEqual(u3, u)) {
+		pass = false;
+		report << "u and u3: " << u << " " << u3 << endl;
+	}
 
 	commentator().stop("Trace solution test suite");
 	return pass ? 0 : -1;
