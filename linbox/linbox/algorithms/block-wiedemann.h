@@ -115,7 +115,7 @@ namespace LinBox
 
 			std::vector<Block> minpoly;
 			std::vector<size_t> degree;
-			MBD.left_minpoly_rec(minpoly,degree); 
+			MBD.left_minpoly(minpoly,degree); 
 			//MBD.printTimer();
 
                         //cout<<"minpoly is: \n";
@@ -126,9 +126,9 @@ namespace LinBox
 			if ( _field.isZero(minpoly[0].getEntry(0,0))) {
 
 				size_t i=1;
-				while ( _field.isZero(minpoly[0].getEntry(i,0)))
+				while (i<p && _field.isZero(minpoly[0].getEntry(i,0)))
 					++i;
-				if (i == m)
+				if (i == p)
 					throw LinboxError(" block minpoly: matrix seems to be singular - abort");
 				else
 					idx=i	;
