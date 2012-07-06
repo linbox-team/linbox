@@ -39,6 +39,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/field/hom.h"
 #include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/solutions/solution-tags.h"
 
 namespace LinBox
 {
@@ -50,13 +51,13 @@ namespace LinBox
 	 * The matrix itself is not stored in memory, just the scalar and the dimensions.
 	 * \ingroup blackbox
 	 */
-	template <class _Field>
+	template <class Field_>
 	class ScalarMatrix : public  BlackboxInterface {
 	public:
 
-		typedef _Field Field;
+		typedef Field_ Field;
 		typedef typename Field::Element        Element;
-		typedef ScalarMatrix<_Field> Self_t;
+		typedef ScalarMatrix<Field> Self_t;
 
 		/*  In each specialization, I must define suitable constructor(s) and
 		 *  BlackboxArchetype<Vector> * clone() const;
@@ -70,7 +71,7 @@ namespace LinBox
 
 		/// Constructs an initially 0 by 0 matrix.
 		ScalarMatrix ()	:
-			_n(0)
+			n_(0)
 		{}
 
 		/** Scalar matrix Constructor from an element.
@@ -79,7 +80,7 @@ namespace LinBox
 		 * @param s	scalar, a field element, to be used as the diagonal of the matrix.
 		 */
 		ScalarMatrix (const Field &F, const size_t n, const Element &s) :
-			_field(F), _n(n), _v(s)
+			field_(F), n_(n), v_(s)
 		{}
 
 		/** Constructor from a random element.
@@ -88,14 +89,14 @@ namespace LinBox
 		 * @param iter Random iterator from which to get the diagonal scalar element.
 		 */
 		ScalarMatrix (const Field &F, const size_t n, const typename Field::RandIter& iter) :
-			_field(F), _n(n)
-		{ iter.random(_v); }
+			field_(F), n_(n)
+		{ iter.random(v_); }
 
 		ScalarMatrix(const ScalarMatrix<Field> &Mat) :
-			_field(Mat._field)
+			field_(Mat.field_)
 		{
-			_n = Mat._n;
-			_v = Mat._v;
+			n_ = Mat.n_;
+			v_ = Mat.v_;
 		}
 
 
@@ -129,47 +130,57 @@ namespace LinBox
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 				typename _Tp1::Element e;
 				Ap.field().init(e,0UL);
-				hom.image (e, A._v);
+				hom.image (e, A.v_);
 				Ap.setScalar(e);
 			}
 		};
 
 		template<typename _Tp1>
 		ScalarMatrix (const ScalarMatrix<_Tp1>& S, const Field &F) :
-			_field(F), _n(S.rowdim())
+			field_(F), n_(S.rowdim())
 		{
 			typename ScalarMatrix<_Tp1>::template rebind<Field>() (*this, S);
 		}
 
 
-		size_t rowdim(void) const { return _n; }
+		size_t rowdim(void) const { return n_; }
 
-		size_t coldim(void) const { return _n; }
+		size_t coldim(void) const { return n_; }
 
-		const Field& field() const {return _field;}
+		const Field& field() const {return field_;}
 
-		// for a specialization in solutions
+		// for specialized solutions
+
 		Element& trace(Element& t) const
-		{	Element n; _field.init(n, _n);
-			return _field.mul(t, _v, n);
+		{	Element n; field_.init(n, n_);
+			return field_.mul(t, v_, n);
 		}
 
 		Element& getEntry(Element& x, const size_t i, const size_t j) const
 		{
-			return (i==j?_field.assign(x,_v):_field.init(x,0));
+			return (i==j ? field_.assign(x,v_) : field_.init(x,0));
 		}
 
+		Element& det(Element& d) const
+		{
+			return pow(field_, d, v_, n_); 
+		}
 
-		Element& getScalar(Element& x) const { return this->_field.assign(x,this->_v); }
-		Element& setScalar(const Element& x) { return this->_field.assign(this->_v,x); }
+		long int& rank(long int& r) const
+		{
+			return r = (field_.isZero(v_) ? 0 : n_); 
+		}
+
+		Element& getScalar(Element& x) const { return this->field_.assign(x,this->v_); }
+		Element& setScalar(const Element& x) { return this->field_.assign(this->v_,x); }
 
 	protected:
 
-		Field _field;   // Field for arithmetic
+		Field field_;   // Field for arithmetic
 
-		size_t _n;  // Number of rows and columns of square matrix.
+		size_t n_;  // Number of rows and columns of square matrix.
 
-		Element _v; // the scalar used in applying matrix.
+		Element v_; // the scalar used in applying matrix.
 
 		// dense vector _app for apply
 		template<class OutVector, class InVector>
@@ -186,6 +197,13 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::SparseAssociativeVectorTag) const;
 
+		// p <- a^e.  Really should be a field op
+		Element& pow(Field& F, Element& p, const Element& a, const size_t e) {
+			Element x; F.init(x);
+			if (e == 0) return F.init(p, 1);
+			if (e%2 == 0) return pow(F, p, F.mul(x, a, a), e/2);
+			else /* (e%2 == 1)*/ return F.mul(p, a, pow(F, p, a, e-1));
+		}
 	}; // template <Field> class ScalarMatrix
 
 	// dense vector _app
@@ -194,18 +212,18 @@ namespace LinBox
 	inline OutVector &ScalarMatrix<Field>::
 	_app(OutVector& y, const InVector& x, VectorCategories::DenseVectorTag t) const
 	{
-		linbox_check (x.size() >= _n);
-		linbox_check (y.size() >= _n);
+		linbox_check (x.size() >= n_);
+		linbox_check (y.size() >= n_);
 		typename OutVector::iterator y_iter = y.begin ();
 
-		if (_field.isZero(_v)) // just write zeroes
-			for ( ; y_iter != y.end ();  ++y_iter) *y_iter = _v;
-		else if (_field.isOne(_v) ) // just copy
+		if (field_.isZero(v_)) // just write zeroes
+			for ( ; y_iter != y.end ();  ++y_iter) *y_iter = v_;
+		else if (field_.isOne(v_) ) // just copy
 			copy(x.begin(), x.end(), y.begin());
 		else // use actual muls
 		{   typename InVector::const_iterator x_iter = x.begin ();
 			for (  ; y_iter != y.end () ; ++y_iter, ++x_iter )
-				_field.mul (*y_iter, _v, *x_iter);
+				field_.mul (*y_iter, v_, *x_iter);
 		}
 		return y;
 
@@ -218,20 +236,20 @@ namespace LinBox
 	inline OutVector &ScalarMatrix<Field>::
 	_app(OutVector& y, const InVector& x, VectorCategories::SparseSequenceVectorTag t) const
 	{
-		//linbox_check ((!x.empty ()) && (_n < x.back ().first));
+		//linbox_check ((!x.empty ()) && (n_ < x.back ().first));
 		// neither is required of x ?
 
 		y.clear (); // we'll overwrite using push_backs.
 
 		// field element to be used in calculations
 		Element entry;
-		_field.init (entry, 0); // needed?
+		field_.init (entry, 0); // needed?
 
 		// For each element, multiply input element with corresponding element
 		// of stored scalar and insert non-zero elements into output vector
 		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter)
-		{	_field.mul (entry, _v, x_iter->second);
-			if (!_field.isZero (entry)) y.push_back (make_pair (x_iter->first, entry));
+		{	field_.mul (entry, v_, x_iter->second);
+			if (!field_.isZero (entry)) y.push_back (make_pair (x_iter->first, entry));
 		}
 
 		return y;
@@ -247,18 +265,35 @@ namespace LinBox
 
 		// create field elements and size_t to be used in calculations
 		Element entry;
-		_field.init (entry, 0);
+		field_.init (entry, 0);
 
 		// Iterator over indices of input vector.
 		// For each element, multiply input element with
 		// stored scalar and insert non-zero elements into output vector
 		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter)
-		{	_field.mul (entry, _v, x_iter->second);
-			if (!_field.isZero (entry)) y.insert (y.end (), make_pair (x_iter->first, entry));
+		{	field_.mul (entry, v_, x_iter->second);
+			if (!field_.isZero (entry)) y.insert (y.end (), make_pair (x_iter->first, entry));
 		}
 
 		return y;
 	} // sparse associative vector _app
+
+	// let solutions know we have getEntry() and trace().
+	template<> template<class Field> 
+	struct GetEntryCategory<ScalarMatrix<Field> >
+	{ typedef SolutionTags::Local Tag; }; 
+
+	template<> template<class Field> 
+	struct TraceCategory<ScalarMatrix<Field> >
+	{ typedef SolutionTags::Local Tag; }; 
+
+	template<> template<class Field> 
+	struct DetCategory<ScalarMatrix<Field> >
+	{ typedef SolutionTags::Local Tag; }; 
+
+	template<> template<class Field> 
+	struct RankCategory<ScalarMatrix<Field> >
+	{ typedef SolutionTags::Local Tag; }; 
 
 } // namespace LinBox
 

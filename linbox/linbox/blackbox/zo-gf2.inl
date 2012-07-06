@@ -398,10 +398,10 @@ namespace LinBox
 
 
 // Specialization of getentry
-#include "linbox/solutions/getentry.h"
+#include "linbox/solutions/solution-tags.h"
 namespace LinBox
 {
-	template<> struct GetEntryCategory<ZeroOne<GF2> > { typedef GetEntryTags::Local Tag; };
+	template<> struct GetEntryCategory<ZeroOne<GF2> > { typedef SolutionTags::Local Tag; };
 	} // end of namespace LinBox
 
 #endif //__LINBOX_zo_gf2_INL

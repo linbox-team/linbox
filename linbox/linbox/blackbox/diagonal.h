@@ -48,6 +48,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include "linbox/field/hom.h"
+#include "linbox/solutions/solution-tags.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -539,6 +540,10 @@ namespace LinBox
 
 		return y;
 	} // Vector& Diagonal<SparseAssociativeVectorTag>::apply(...) const
+
+	template<>
+	template<class Field, class Trait> struct GetEntryCategory<Diagonal<Field, Trait> > 
+	{ typedef SolutionTags::Local Tag; };
 
 } // namespace LinBox
 

@@ -26,6 +26,7 @@
 
 #ifndef __LINBOX_trace_H
 #define __LINBOX_trace_H
+#include "linbox/solutions/solution-tags.h"
 
 namespace LinBox
 {
@@ -37,12 +38,30 @@ namespace LinBox
 	  Runtime on n by n matrix is n times the cost of getEntry().
 	  This is linear in n for those classes where getEntry is constant time
 	  (eg DenseMatrix and SparseMatrix).
-	  Trace is constant time when the diagonal is necessarily constant, eg. for ScalarMatrix and Toeplitz.
-	  Worst case time is cost of n blackbox applies (matrix vector products), and apply cost typically ranges between O(n) and O(n^2).
-
-*/
+	  Trace is constant time when the diagonal is necessarily constant, 
+	  eg. for ScalarMatrix and Toeplitz.
+	  Worst case time is cost of n blackbox applies (matrix vector products), 
+	  and apply cost typically ranges between O(n) and O(n^2).
+	*/
 	template <class BB>
 	typename BB::Field::Element & trace(typename BB::Field::Element & t, const BB& A);
+
+
+/************* internal forms *******************/
+
+	template <class BB>
+	typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, SolutionTags::Generic tt);
+	/* Specialization for BB's with local trace function.
+	   Allows constant time trace for, eg., ScalarMatrix, Toeplitz.
+	*/
+	template <class BB>
+	typename BB::Field::Element & trace(typename BB::Field::Element & t, const BB& A, SolutionTags::Local tt);
+
+	/** Trait to show whether or not the BB class has a local trace function.
+
+	 ScalarMatrix<Field> and Toeplitz<Field,PD> have local trace.
+	 */
+	template<class BB> struct TraceCategory;
 
 } // namespace LinBox
 

@@ -32,27 +32,13 @@
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/toeplitz.h"
 #include "linbox/solutions/getentry.h"
+#include "linbox/solutions/solution-tags.h"
 
 namespace LinBox
 {
 
-	// Trait to show whether or not the BB class has a local trace function.
-	template<class BB> struct TraceCategory;
-
-	/// undocumented
-	namespace TraceTags
-	{
-		struct Generic{};
-		struct Local{};
-	}
-
-	template<class BB> struct TraceCategory		{ typedef TraceTags::Generic Tag; };
-
-	template<class Field>
-	struct TraceCategory<ScalarMatrix<Field> > 	{ typedef TraceTags::Local Tag; };
-
-	template<class Field, class PD>
-	struct TraceCategory<Toeplitz<Field,PD> >	{ typedef typename TraceTags::Local Tag; };
+	// the unspecialized trace category
+	template<class BB> struct TraceCategory { typedef SolutionTags::Generic Tag; };
 
 	template <class BB>
 	typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A)
@@ -65,7 +51,7 @@ namespace LinBox
 	   If getEntry is constant time on n by n BB's, trace will be in O(n).
 	   */
 	template <class BB>
-	typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, TraceTags::Generic tt)
+	typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, SolutionTags::Generic tt)
 	{
 		typename BB::Field::Element x;
 		A.field().init(x, 0);
@@ -79,7 +65,7 @@ namespace LinBox
 	   Allows constant time trace for, eg., ScalarMatrix, Toeplitz.
 	   */
 	template <class BB>
-	typename BB::Field::Element & trace(typename BB::Field::Element & t, const BB& A, TraceTags::Local tt)
+	typename BB::Field::Element & trace(typename BB::Field::Element & t, const BB& A, SolutionTags::Local tt)
 	{ return A.trace(t); }
 
 } // namespace LinBox

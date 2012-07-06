@@ -31,6 +31,7 @@
 #include <vector>
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/methods.h"  // for shape
+#include "linbox/solutions/solution-tags.h"  // to offer trace, det
 #include "linbox/linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
 
@@ -232,6 +233,11 @@ namespace LinBox
 		// inherited constructor calls. JGD 30.09.2003
 		void init_vector( const std::vector<Element>& v );
 	}; //  Toeplitz specialization
+
+	template<>
+	template<class Field, class PD>
+	struct TraceCategory<Toeplitz<Field,PD> >	{ typedef typename SolutionTags::Local Tag; };
+
 
 } // namespace LinBox
 
