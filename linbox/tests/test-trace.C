@@ -90,6 +90,7 @@ int main (int argc, char **argv)
 	trace(t3, A, G );
 	if (! F.areEqual(t3, t) ) pass = false;
 
+#ifdef __LINBOX_HAVE_NTL
 // Toeplitz matrix
 
 	NTL_zz_p CF( q );
@@ -125,6 +126,7 @@ int main (int argc, char **argv)
 		pass = false;
 		report << "u and u3: " << u << " " << u3 << endl;
 	}
+#endif // __LINBOX_HAVE_NTL
 
 	commentator().stop("Trace solution test suite");
 	return pass ? 0 : -1;
