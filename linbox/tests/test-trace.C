@@ -82,11 +82,11 @@ int main (int argc, char **argv)
 	trace(t1, A);
 	if (! F.areEqual(t1, t) ) pass = false;
 
-	TraceTags::Local L;
+	SolutionTags::Local L;
 	trace(t2, A, L );
 	if (! F.areEqual(t2, t) ) pass = false;
 
-	TraceTags::Generic G; 
+	SolutionTags::Generic G; 
 	trace(t3, A, G );
 	if (! F.areEqual(t3, t) ) pass = false;
 
@@ -115,13 +115,13 @@ int main (int argc, char **argv)
 		report << "u and u1: " << u << " " << u1 << endl;
 	}
 
-	trace(u2, B, TraceTags::Local() );
+	trace(u2, B, SolutionTags::Local() );
 	if (! CF.areEqual(u2, u)) {
 		pass = false;
 		report << "u and u2: " << u << " " << u2 << endl;
 	}
 
-	trace(u3, B, TraceTags::Generic() );
+	trace(u3, B, SolutionTags::Generic() );
 	if (! CF.areEqual(u3, u)) {
 		pass = false;
 		report << "u and u3: " << u << " " << u3 << endl;
