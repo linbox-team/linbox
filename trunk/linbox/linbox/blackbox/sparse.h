@@ -427,7 +427,6 @@ namespace LinBox
 		typedef MatrixCategories::RowMatrixTag MatrixCategory;
 	};
 
-	template<>
 	template<class A, class B> struct GetEntryCategory<SparseMatrix<A,B> > 
 	{ typedef SolutionTags::Local Tag; };
 

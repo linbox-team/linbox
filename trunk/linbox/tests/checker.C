@@ -160,7 +160,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-blackbox-block-container",     counter , flag);
 	build_n_run("test-blas-domain",                  counter , flag);
 	build_n_run("test-block-ring",                   counter , flag);
-	no_build_n_run("test-block-wiedemann",              counter , flag, "bds tracking down BlasMatrix bug");
+	build_n_run("test-block-wiedemann",              counter , flag, "test could be stronger");
 	no_build_n_run("test-bmseq",                     counter , flag, "under development by George Yuhasz");
 	build_n_run("test-butterfly",                    counter , flag);
 	build_n_run("test-charpoly",                     counter , flag);//, "intermittent inf loop, bb or cp responsible?");
