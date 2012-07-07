@@ -279,19 +279,19 @@ namespace LinBox
 	} // sparse associative vector _app
 
 	// let solutions know we have getEntry() and trace().
-	template<> template<class Field> 
+	template <class Field>
 	struct GetEntryCategory<ScalarMatrix<Field> >
 	{ typedef SolutionTags::Local Tag; }; 
 
-	template<> template<class Field> 
+	template <class Field>
 	struct TraceCategory<ScalarMatrix<Field> >
 	{ typedef SolutionTags::Local Tag; }; 
 
-	template<> template<class Field> 
+	template <class Field>
 	struct DetCategory<ScalarMatrix<Field> >
 	{ typedef SolutionTags::Local Tag; }; 
 
-	template<> template<class Field> 
+	template <class Field>
 	struct RankCategory<ScalarMatrix<Field> >
 	{ typedef SolutionTags::Local Tag; }; 
 

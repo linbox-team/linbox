@@ -234,7 +234,6 @@ namespace LinBox
 		void init_vector( const std::vector<Element>& v );
 	}; //  Toeplitz specialization
 
-	template<>
 	template<class Field, class PD>
 	struct TraceCategory<Toeplitz<Field,PD> >	{ typedef typename SolutionTags::Local Tag; };
 

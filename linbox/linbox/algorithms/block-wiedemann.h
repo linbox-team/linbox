@@ -87,8 +87,8 @@ namespace LinBox
 			tmp = n;
 			q = tmp.bitsize()-1;
 			//q=sqrt(tmp);
-			std::cout<<"row block: "<<p<<std::endl;
-			std::cout<<"col block: "<<q<<std::endl;
+			//std::cout<<"row block: "<<p<<std::endl;
+			//std::cout<<"col block: "<<q<<std::endl;
 
 
 			Block U(_field,p,m), UA(_field,p-1,m), V(_field,n,q);

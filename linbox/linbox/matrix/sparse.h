@@ -1708,7 +1708,6 @@ struct MatrixTraits< const SparseMatrixBase<Element, Row, Trait> >
 	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 };
 
-template<>
 template<class A, class B, class C> struct GetEntryCategory<SparseMatrixBase<A,B,C> > 
 { typedef SolutionTags::Local Tag; };
 
