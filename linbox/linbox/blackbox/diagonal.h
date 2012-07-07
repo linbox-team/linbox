@@ -541,7 +541,6 @@ namespace LinBox
 		return y;
 	} // Vector& Diagonal<SparseAssociativeVectorTag>::apply(...) const
 
-	template<>
 	template<class Field, class Trait> struct GetEntryCategory<Diagonal<Field, Trait> > 
 	{ typedef SolutionTags::Local Tag; };
 
