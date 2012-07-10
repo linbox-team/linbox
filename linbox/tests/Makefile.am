@@ -116,6 +116,7 @@ FULLCHECK_TESTS =                 \
         test-subvector                \
         test-sum                      \
         test-trace                    \
+        test-transpose              \
         test-triplesbb                \
         test-tutorial                \
         test-vector-domain            \
@@ -623,6 +624,10 @@ test_cradomain_SOURCES =                \
 test_smith_form_adaptive_SOURCES=      \
         test-common.h                  \
         test-smith-form-adaptive.C
+
+test_transpose_SOURCES =                \
+        test-transpose.C                \
+        test-common.h
 
 benchmark_fields_SOURCES=              \
         test-common.h                  \
