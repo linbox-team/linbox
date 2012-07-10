@@ -64,7 +64,7 @@ namespace LinBox
 	public:
 		//  if these are ints, SuperLU can use the data directly
 		//  otherwise they need converted from size_t (8byte v. 4byte)
-		typedef int Index;//size_t Index;
+		typedef size_t Index;//int64_t Index;
 		typedef CSF<_Field> Self_t;
 		typedef _Field Field;
 		typedef typename _Field::Element Element;
@@ -187,6 +187,39 @@ namespace LinBox
 			}
 
 			return y;
+		}
+
+		template<class OutVector, class InVector>
+		OutVector & applyTranspose(OutVector & y, const InVector & x) const {
+			linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
+			
+			for(size_t i = 0; i < y.size(); ++i) y[i] = _field.zero;
+			
+			for(Index i = _ptrs[0]; (size_t)i < _ptrs.size()-1; ++i) {
+				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j) {
+				// process row i:  yj += xi Aij , yindsj += xi valsj
+					_field.axpyin(y[i], x[_inds[j]], _vals[j]);
+				}
+			}
+
+			return y;
+		}
+
+		Element & getEntry(Element& x, Index i, Index j) {
+			size_t k;
+			for (k = _ptrs[i], k < _ptrs[i+1], ++k) 
+				if (_inds[k] == j) break;
+			if (k == _ptrs[i+1]) return _field.init(x, _field.zero);
+			else return _field.copy(x, _vals[k]);
+		}		
+
+		Element & setEntry(Index i, Index j, Element& x) {
+			// data must exist.
+			data.push_back(i, j, x);
+		}		
+
+		void finalize() { // from data to csf
+			init(_data);
 		}
 
 		double &d00norm(double &norm){
@@ -338,6 +371,8 @@ namespace LinBox
 		PtrVector _ptrs; // the pointers to beginning of each (row/col)
 		size_t _rowdim, _coldim;
 
+		// if data is empty, matrix is ready to use. 
+		Data _data;
 		bool sorted, isCSR;
 
 		class sort_data_by_col{

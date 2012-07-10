@@ -222,6 +222,51 @@ testLinearity (Field                             &F,
 	return ret;
 }
 
+/** Generic Blackbox test 3: black box read/write.
+ *
+ * write the black box A, read it back and check equality.
+ *
+ * F - Field over which to perform computations
+ * A - Black box 
+ *
+ * Return true on success and false on failure
+ */
+
+template <class BB>
+static bool
+testReadWrite(BB &A)
+{ //perhaps read/write to a stringstream?
+	typedef typename BB::Field Field;
+	bool pass = true;
+	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Blackbox Read/Write test: write then read back" << std::endl;
+
+	ofstream out("temp");
+	if (not out) {
+		pass = false; 
+		report << "failure to open file for writing" << std::endl;
+	}
+	A.write(out) << std::endl;
+	BB B(A.field());
+	ifstream in("temp");
+	if (not in) {
+		pass = false; 
+		report << "failure to open file for reading" << std::endl;
+	}
+	B.read(in);
+	std::vector<typename Field::Element> x(A.coldim()), y(A.rowdim()), z(B.rowdim());
+	LinBox::VectorDomain<Field> VD(A.field());
+	VD.random(x);
+	A.apply(y, x);
+	B.apply(z, x);
+	if (not VD.areEqual(y, z)) {
+		pass = false;
+		report << "failure to get same matrix back from write/read" << std::endl;
+		B.write(report << "B is ") << std::endl;
+	}
+	if (pass) report << "PASS: successful write/read" << std::endl;
+	return pass;
+}
 /** Generic blackbox test 3: combination of tests
  *
  * If large, time apply and applyTranspose.
@@ -229,7 +274,7 @@ testLinearity (Field                             &F,
  */
 template <class BB>
 static bool
-testBlackbox(BB &A)
+testBlackbox(BB &A /*, bool testRW = false*/) 
 {
 	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
 	typedef typename BB::Field Field;
@@ -288,6 +333,13 @@ testBlackbox(BB &A)
 	LinBox::commentator().stop (MSG_STATUS (ret),
 				  (const char *) 0, "testTranspose");
 
+/*
+	if (testRW) {
+	LinBox::commentator().start ("\t--Testing write then read back", "testReadWrite", 1);
+	ret = ret && testReadWrite(A);
+	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testReadWrite");
+	}
+*/
 
 	return ret;
 }
