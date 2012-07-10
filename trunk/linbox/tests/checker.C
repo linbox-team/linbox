@@ -178,6 +178,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-frobenius",                    counter , flag);
 	build_n_run("test-getentry",                     counter , flag);
 	build_n_run("test-gf2",                          counter , flag);
+	build_n_run("test-givaro-fields",    counter , flag, "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
 	build_n_run("test-gmp-rational",                 counter , flag);
 	build_n_run("test-hilbert",                      counter , flag);
 	build_n_run("test-hom",                          counter , flag);
@@ -207,6 +208,8 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-rational-matrix-factory ",     counter , flag);
 	build_n_run("test-rational-reconstruction-base", counter , flag);
 	build_n_run("test-rat-charpoly",                 counter , flag);//, "infinite loop, cp responsible?");
+	build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures");
+	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
 	build_n_run("test-scalar-matrix",                counter , flag);
 	build_n_run("test-smith-form-binary",            counter , flag);
 	build_n_run("test-solve",                        counter , flag);
@@ -221,19 +224,22 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-unparametric-field",           counter , flag); //has been useful in num/sym.
 	build_n_run("test-vector-domain",                counter , flag);
 	build_n_run("test-zero-one",                     counter , flag);
+	build_n_run("test-zo", counter, flag); //, half baked, BY responsible");
 
+/*  section eliminated because Givaro now is required
 #if __LINBOX_HAVE_GIVARO
 //	if (flag > 0) cout << "	Givaro tests" << endl;
 	build_n_run("test-givaro-fields",    counter , flag, "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
 	//build_n_run("test-givaro-zpz", counter , flag, "superceded by test-givaro-fields");
 	//build_n_run("test-givaro-zpzuns", counter , flag, "superceded by test-givaro-fields");
-	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
 	build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures");
+	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
 #else
 	if (flag > 0) cout << "	not doing Givaro dependent tests" << endl;
 	cout << "Configuration problem?  __LINBOX_HAVE_GIVARO is not set, but LinBox requires Givaro" << endl;
 	counter.skipped += 4;
 #endif
+*/
 
 #if __FFLASFFPACK_HAVE_LAPACK
 	if (flag > 0) cout << "	Lapack dependent tests" << endl;
@@ -299,7 +305,8 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-ftrmm", counter, flag, "bb/cp");
 
 	if (flag > 0) cout << "	Immature tests" << endl;
-	no_build_n_run("test-quad-matrix", counter, flag, "half baked, bds responsible"); no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible"); build_n_run("test-zo", counter, flag, "half baked, BY responsible");
+	no_build_n_run("test-quad-matrix", counter, flag, "half baked, bds responsible"); 
+	no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible"); 
 	// test-integer-tools -- there is no test-integer-tools.C file
 	// no one has taken these on.
 	no_build_n_run("test-la-block-lanczos",counter,flag,"segfaults");

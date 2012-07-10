@@ -172,12 +172,12 @@ namespace LinBox
 		{ return _A_ptr->getEntry(x, j, i); }
 
 		void setEntry(size_t i, size_t j, const Element& x) 
-		{ _A_ptr->setEntry( j, i, x); } 
+		{ const_cast<Blackbox_t*>(_A_ptr)->setEntry( j, i, x); } 
 
 	protected:
 
 		// Pointers to the matrix
-		Blackbox *_A_ptr;
+		const Blackbox *_A_ptr;
 
 
 	}; // template <Vector> class Transpose

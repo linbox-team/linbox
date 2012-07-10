@@ -207,6 +207,9 @@ namespace LinBox
 		*/
 		BlasMatrix () ;
 
+		/// (Re)allocates a new \f$ m \times n\f$ matrix.
+		void init(const _Field & F, size_t r = 0, size_t c = 0);
+
 		/*! Allocates a new \f$ m \times n\f$ matrix.
 		 * @param F
 		 * @param m rows

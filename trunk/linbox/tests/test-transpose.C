@@ -185,22 +185,27 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
+	commentator().start("test on ScalarMatrix");
 	Field::Element s; F.init(s, 5);
 	ScalarMatrix<Field> A(F, n, s);
 	pass = pass and testTransposeBlackbox(A);
+	commentator().stop("test on ScalarMatrix");
+
+	commentator().start("test on BlasMatrix");
 	BlasMatrix<Field> B(F, m, n);
 	for (size_t i = 0; i < m; ++i) 
 		for (size_t j = 0; j < n; ++j)
 			B.setEntry(i, j, F.init(s, i*j));
 	pass = pass and testTransposeBlackbox(B);
 	pass = pass and testTransposeMatrix(B);
+	commentator().stop("test on BlasMatrix");
 
-/* Awaits TriplesBB revision
+	commentator().start("test on TriplesBB");
 	TriplesBB<Field> C(F, m, n);
-	for (size_t i = 0; i < min(m, n); ++i) C.setEntry(i, i, F.init(s, i+1);
+	for (size_t i = 0; i < min(m, n); ++i) C.setEntry(i, i, F.init(s, i+1));
 	pass = pass and testTransposeBlackbox(C);
 	pass = pass and testTransposeMatrix(C);
-*/
+	commentator().stop("test on TriplesBB");
 
 	commentator().stop("transpose black box test suite");
 	return pass ? 0 : -1;
