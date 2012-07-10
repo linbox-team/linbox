@@ -66,9 +66,13 @@ namespace LinBox
 		 * matrix A
 		 * @param A pointer to black box matrix.
 		 */
+		Transpose (Blackbox& A) :
+			_A_ptr(&A)
+		{} 
+
 		Transpose (const Blackbox& A) :
 			_A_ptr(&A)
-		{}
+		{} 
 
 		Transpose (const Blackbox *A_ptr) :
 			_A_ptr(A_ptr)
@@ -163,10 +167,17 @@ namespace LinBox
 
 		// accessors to the blackboxes
 		const Blackbox* getPtr() const {return  _A_ptr;}
-	private:
+
+		Element& getEntry(Element& x, size_t i, size_t j) const
+		{ return _A_ptr->getEntry(x, j, i); }
+
+		void setEntry(size_t i, size_t j, const Element& x) 
+		{ _A_ptr->setEntry( j, i, x); } 
+
+	protected:
 
 		// Pointers to the matrix
-		const Blackbox *_A_ptr;
+		Blackbox *_A_ptr;
 
 
 	}; // template <Vector> class Transpose
