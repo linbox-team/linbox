@@ -80,13 +80,10 @@ int main (int argc, char **argv)
 
 	Blackbox A (F, p);
 
-std::cerr << "got to here" << std::endl; 
 	pass = pass && testBlackbox(A);
 
-std::cerr << "got to here 2" << std::endl; 
 	Blackbox B (F, n);
 
-std::cerr << "got to here 3" << std::endl; 
 	pass = pass && testBlackbox(B);
 
 	commentator().stop("companion matrix black box test suite");
