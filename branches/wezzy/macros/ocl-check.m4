@@ -1,0 +1,75 @@
+dnl Check for OpenCL
+dnl Copyright (c) the LinBox group
+dnl This file is part of LinBox
+
+ dnl ========LICENCE========
+ dnl This file is part of the library LinBox.
+ dnl
+ dnl LinBox is free software: you can redistribute it and/or modify
+ dnl it under the terms of the  GNU Lesser General Public
+ dnl License as published by the Free Software Foundation; either
+ dnl version 2.1 of the License, or (at your option) any later version.
+ dnl
+ dnl This library is distributed in the hope that it will be useful,
+ dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+ dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ dnl Lesser General Public License for more details.
+ dnl
+ dnl You should have received a copy of the GNU Lesser General Public
+ dnl License along with this library; if not, write to the Free Software
+ dnl Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ dnl ========LICENCE========
+ dnl
+
+dnl LB_CHECK_OCL([MINIMUM-VERSION [, ACTION_IF_FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl
+dnl Test for an OpenCL
+
+AC_DEFUN([LB_CHECK_OCL],[
+	AC_ARG_WITH(ocl,
+	[AC_HELP_STRING([--with-ocl=<path>|yes],
+	[Use OpenCL. This library is optional for LinBox compilation.
+	 If argument is yes or <empty> that means the library is reachable
+	 with the standard search path "/usr" or "/usr/local" (set as default).
+	 Otherwise you give the <path> to the directory which contains the library.])],
+
+	[if test "$withval" = yes; then
+		OCL_HOME_PATH="${DEFAULT_CHECKING_PATH}"
+	elif test "$withval" != no; then
+		OCL_HOME_PATH="$withval ${DEFAULT_CHECKING_PATH}"
+	fi],
+
+	[OCL_HOME_PATH="$DEFAULT_CHECKING_PATH}"])
+)
+
+BACKUP_CXXFLAGS=${CXX_FLAGS}
+BACKUP_LIBS=${LIBS}
+
+for OCL_HOME in ${OCL_HOME_PATH}; do
+	if test -r "$OCL_HOME/include/CL/cl.h"; then
+		if test "x$OCL_HOME" != "x/usr" -a "x$OCL_HOME" != "x/usr/local"; then
+			OCL_CFLAGS="-I${OCL_HOME}/include"
+			OCL_LIBS="-L${OCL_HOME}/lib -lOpenCL"
+		else
+			OCL_CFLAGS=
+			OCL_LIBS="-lOpenCL"
+		fi
+
+		CXXFLAGS="${GXXFLAGS} ${OCL_CFLAGS}"
+		LIBS="${LIBS} ${OCL_LIBS}"
+
+		AC_SUBST(OCL_CFLAGS)
+		AC_SUBST(OCL_LIBS)
+		AC_DEFINE(HAVE_OCL,1,[Define if OpenCL is installed])
+
+		ocl_found="yes"
+		break
+
+	else
+		ocl_found="no"
+	fi
+done
+
+CXXFLAGS=${BACKUP_CXXFLAGS}
+LIBS=${BACKUP_LIBS}
+])

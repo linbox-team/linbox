@@ -19,7 +19,7 @@
 # ========LICENCE========
 AC_PREREQ(2.61)
 
-AC_INIT([LinBox], [1.3.1],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.3.3],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -236,6 +236,7 @@ LB_CHECK_M4RIE
 LB_CHECK_MPFR
 # we nedd mpfr next :
 LB_CHECK_FPLLL
+LB_CHECK_FLINT
 
 LB_CHECK_NTL
 LB_CHECK_GIVARO(,,[
@@ -292,6 +293,17 @@ LB_CHECK_EXPAT
 LB_BENCH
 LB_OPT
 LB_DOC
+
+LB_CHECK_OCL(,,[
+echo '*******************************************************************************'
+echo ' ERROR: OpenCL not found!'
+echo
+echo ' Please make sure an OpenCL implementation is installed and specify its'
+echo ' location with the option'
+echo ' --with-ocl=<prefix> when running configure.'
+echo '*******************************************************************************'
+exit 1
+])
 
 if test ! -d ./benchmarks/data  ; then
 	echo "Creating data dir in benchmark" ;
