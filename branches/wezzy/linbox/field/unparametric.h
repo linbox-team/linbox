@@ -32,14 +32,14 @@
 
 #include <string>
 #include <algorithm>
-#include <givaro/givcaster.h>
+
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/randiter/unparametric.h"
 #include "linbox/field/field-traits.h"
-#include <fflas-ffpack/field/unparametric.h>
+#include "fflas-ffpack/field/unparametric.h"
 #include "linbox/randiter/nonzero.h"
 //#if __LINBOX_HAVE_NTL
 //#include "linbox/field/ntl-RR.h"

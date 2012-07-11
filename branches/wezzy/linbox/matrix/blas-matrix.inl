@@ -230,6 +230,10 @@ namespace LinBox
 			_field(Field()),_MD(_field ),_VD(_field )
 		{}
 
+	template <class _Field>
+	void BlasMatrix< _Field>::init(const _Field &F, size_t r, size_t c) {
+		const_cast<_Field&>(_field) = F; _row = r; _col = c; _rep.resize(r*c); _ptr = &_rep[0];
+	}
 
 	template <class _Field>
 	template<class T>

@@ -21,7 +21,7 @@
 
 pkgincludesubdir=$(pkgincludedir)/algorithms
 
-SUBDIRS=gauss
+SUBDIRS=gauss matrix-blas3
 
 noinst_LTLIBRARIES=libalgorithms.la
 
@@ -124,6 +124,7 @@ pkgincludesub_HEADERS =                     \
     dense-nullspace.h dense-nullspace.inl   \
     linbox-tags.h                           \
     bm-seq.h                                \
+    short-vector.h                          \
     rns.h rns.inl                           \
     opencl-domain.h                         \
     opencl-domain.inl                       \

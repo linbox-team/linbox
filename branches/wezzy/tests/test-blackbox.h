@@ -47,11 +47,18 @@
 #include "test-common.h"
 
 using namespace std;
+/*
+Generic tests for black boxes
 
-// Generic tests for black boxes
-/// testBlackbox combines testTranspose and testLinearity
+For field F, BB A, vector streams s, t:
+testTranspose (F, A, s, t)
+testLinearity (F, A, s, t)
+testBlackbox(A) // calls the previous 2
 
-/** Random check that (u^T A) v = u^T (A v).
+testBB(F) has been deleted. It assumed a BB could be built from a single size param (this is never true?!).
+*/
+
+/** Generic Blackbox test 1: Random check that (u^T A) v = u^T (A v).
  *
  * Take the given black box and compute u^T A v via <A^T u, v> and <u, Av> for
  * randomly chosen u and v. Check whether the results are equal. In theory, this
@@ -215,15 +222,59 @@ testLinearity (Field                             &F,
 	return ret;
 }
 
-/** Generic blackbox test 4: combination of tests
+/** Generic Blackbox test 3: black box read/write.
  *
- * Call testTranspose and testLinearity.
+ * write the black box A, read it back and check equality.
+ *
+ * F - Field over which to perform computations
+ * A - Black box 
+ *
+ * Return true on success and false on failure
+ */
+
+template <class BB>
+static bool
+testReadWrite(BB &A)
+{ //perhaps read/write to a stringstream?
+	typedef typename BB::Field Field;
+	bool pass = true;
+	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Blackbox Read/Write test: write then read back" << std::endl;
+
+	ofstream out("temp");
+	if (not out) {
+		pass = false; 
+		report << "failure to open file for writing" << std::endl;
+	}
+	A.write(out) << std::endl;
+	BB B(A.field());
+	ifstream in("temp");
+	if (not in) {
+		pass = false; 
+		report << "failure to open file for reading" << std::endl;
+	}
+	B.read(in);
+	std::vector<typename Field::Element> x(A.coldim()), y(A.rowdim()), z(B.rowdim());
+	LinBox::VectorDomain<Field> VD(A.field());
+	VD.random(x);
+	A.apply(y, x);
+	B.apply(z, x);
+	if (not VD.areEqual(y, z)) {
+		pass = false;
+		report << "failure to get same matrix back from write/read" << std::endl;
+		B.write(report << "B is ") << std::endl;
+	}
+	if (pass) report << "PASS: successful write/read" << std::endl;
+	return pass;
+}
+/** Generic blackbox test 3: combination of tests
+ *
  * If large, time apply and applyTranspose.
- * if small, call testSmallBlackbox.
+ * Call testTranspose and testLinearity.
  */
 template <class BB>
 static bool
-testBlackbox(BB &A)
+testBlackbox(BB &A /*, bool testRW = false*/) 
 {
 	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
 	typedef typename BB::Field Field;
@@ -235,7 +286,7 @@ testBlackbox(BB &A)
 	bool ret = true;
 	Field F = A.field();
 
-	/* timing tests */   // I changed the order of all tests. Timing now is the first set of tests and then linearity and transpose
+	/* timing tests */   
 	{
 		DenseVector x(A.coldim()), y(A.rowdim());
 		for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], i);
@@ -259,7 +310,6 @@ testBlackbox(BB &A)
 
 	} // timing test block
 
-#if 1
 	size_t iterations = 1;
 	typename Field::RandIter r(F);
 	LinBox::RandomDenseStream<Field, DenseVector> stream1 (F, r, A.rowdim(), iterations);
@@ -283,32 +333,15 @@ testBlackbox(BB &A)
 	LinBox::commentator().stop (MSG_STATUS (ret),
 				  (const char *) 0, "testTranspose");
 
-#endif
+/*
+	if (testRW) {
+	LinBox::commentator().start ("\t--Testing write then read back", "testReadWrite", 1);
+	ret = ret && testReadWrite(A);
+	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testReadWrite");
+	}
+*/
 
 	return ret;
-}
-
-/** Generic blackbox test 5: test several sizes
- *
- * Call testTranspose and testLinearity.
- * If large, time apply and applyTranspose.
- * if small, call test
- SmallBlackbox.
- */
-template <class Field, class Blackbox>
-static bool
-testBB(Field& F)
-{
-	bool pass = true;
-
-	Blackbox A(10);
-	if (!testBlackbox<Field, vector<typename Field::Element> >(F, A, 1))
-		pass = false;
-	Blackbox B(10000);
-	if (!testBlackbox<Field, vector<typename Field::Element> >(F, B, 1))
-		pass = false;
-
-	return pass;
 }
 
 #endif // __LINBOX_test_blackbox_H

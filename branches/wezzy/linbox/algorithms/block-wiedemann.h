@@ -27,6 +27,9 @@
 #define __LINBOX_block_wiedemann_H
 
 #include <vector>
+#include <iostream>
+using namespace std;
+
 
 #include "linbox/integer.h"
 #include "linbox/matrix/blas-matrix.h"
@@ -49,8 +52,8 @@ namespace LinBox
 		typedef _Field                          Field;
 		typedef typename Field::Element       Element;
 		typedef typename Field::RandIter     RandIter;
-		typedef std::vector<Element>         Vector;
-		typedef BlasMatrix<Element>           Block;
+		typedef std::vector<Element>           Vector;
+		typedef BlasMatrix<Field>               Block;
 
 	protected:
 		Field                         _field;
@@ -84,11 +87,11 @@ namespace LinBox
 			tmp = n;
 			q = tmp.bitsize()-1;
 			//q=sqrt(tmp);
-			std::cout<<"row block: "<<p<<std::endl;
-			std::cout<<"col block: "<<q<<std::endl;
+			//std::cout<<"row block: "<<p<<std::endl;
+			//std::cout<<"col block: "<<q<<std::endl;
 
 
-			Block U(p,m), UA(p-1,m), V(n,q);
+			Block U(_field,p,m), UA(_field,p-1,m), V(_field,n,q);
 
 			for (size_t i=0;i<n;++i)
 				for (size_t j=0;j<q;++j)
@@ -112,16 +115,20 @@ namespace LinBox
 
 			std::vector<Block> minpoly;
 			std::vector<size_t> degree;
-			MBD.left_minpoly_rec(minpoly,degree);
-			MBD.printTimer();
+			MBD.left_minpoly(minpoly,degree); 
+			//MBD.printTimer();
+
+                        //cout<<"minpoly is: \n";
+                        //write_maple(_field,minpoly);
+                        //cout<<endl;
 
 			size_t idx=0;
 			if ( _field.isZero(minpoly[0].getEntry(0,0))) {
 
 				size_t i=1;
-				while ( _field.isZero(minpoly[0].getEntry(i,0)))
+				while (i<p && _field.isZero(minpoly[0].getEntry(i,0)))
 					++i;
-				if (i == m)
+				if (i == p)
 					throw LinboxError(" block minpoly: matrix seems to be singular - abort");
 				else
 					idx=i	;
@@ -179,12 +186,12 @@ namespace LinBox
 				 * this should decrease the number of sparse apply but increase memory requirement.
 				 */
 				size_t deg = degree[idx];
-				Block idx_poly(deg+1,p-1);
+				Block idx_poly(_field,deg+1,p-1);
 				for (size_t i=0;i<deg+1;++i)
 					for (size_t j=0;j<p-1;++j)
 						idx_poly.setEntry(i,j,minpoly[i].getEntry(idx,j+1));
 
-				Block Combi(deg+1,m);
+				Block Combi(_field,deg+1,m);
 				_BMD.mul(Combi,idx_poly,UA);
 
 				Vector lhs(n),row(m);

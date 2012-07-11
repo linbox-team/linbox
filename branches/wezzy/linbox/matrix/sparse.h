@@ -74,6 +74,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/util/matrix-stream.h"
+#include "linbox/solutions/solution-tags.h"
 
 namespace LinBox
 {
@@ -1706,6 +1707,9 @@ struct MatrixTraits< const SparseMatrixBase<Element, Row, Trait> >
 	typedef const SparseMatrixBase<Element, Row, Trait> MatrixType;
 	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 };
+
+template<class A, class B, class C> struct GetEntryCategory<SparseMatrixBase<A,B,C> > 
+{ typedef SolutionTags::Local Tag; };
 
 } // namespace LinBox
 

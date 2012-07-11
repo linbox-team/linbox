@@ -67,7 +67,7 @@ bool testGenericBBgetEntry (const Field &F, size_t n)
 	F.init(s, 2);
 	F.init(z, 0);
 	ScalarMatrix<Field> B(F, n, s);
-	typename GetEntryTags::GenericBB t;
+	SolutionTags::Generic t;
 	//getEntry(x, B, 0, n-1, t);
 	if (n > 1 && !F.isZero(x)) ret = false;
 	getEntry(x, B, 0, 0, t);

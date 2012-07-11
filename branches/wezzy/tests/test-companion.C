@@ -51,12 +51,12 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 2147483647U;
+	static size_t q = 2147483647U;
 	static int iterations = 1; // was 10
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.",        TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.",          TYPE_INT,     &iterations },
 		END_OF_ARGUMENTS
 	};

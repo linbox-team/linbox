@@ -22,7 +22,10 @@
  * ========LICENCE========
  */
 
-
+/** @file algorithms/echelon-form.h
+ * @ingroup algorithms
+ * @brief NO DOC
+ */
 
 #ifndef __LINBOX_echelon_form_H
 #define __LINBOX_echelon_form_H
@@ -36,6 +39,7 @@
 namespace LinBox
 {
 
+	//! Echelon form domain
 	template<class Field>
 	class EchelonFormDomain{
 
@@ -54,8 +58,9 @@ namespace LinBox
 		{}
 
 
-		//  row echelon form
-		// E is supposed to be the zero matrix
+		/*!  row echelon form
+		 * @warning E is supposed to be the zero matrix
+		 */
 		template<class Matrix>
 		int rowEchelon(Matrix &E, const Matrix& A)
 		{
@@ -84,7 +89,7 @@ namespace LinBox
 
 
 
-		// row reduced echelon form (using copy)
+		//! row reduced echelon form (using copy)
 		template<class Matrix>
 		int rowReducedEchelon(Matrix &E, const Matrix& A)
 		{
@@ -109,7 +114,7 @@ namespace LinBox
 		}
 
 
-		//  column echelon form (using copy)
+		//!  column echelon form (using copy)
 		template<class Matrix>
 		int columnEchelon(Matrix &E, const Matrix& A)
 		{
@@ -127,7 +132,7 @@ namespace LinBox
 		}
 
 
-		// column reduced echelon form (using copy)
+		//! column reduced echelon form (using copy)
 		template<class Matrix>
 		int columnReducedEchelon(Matrix &E, const Matrix& A)
 		{
@@ -145,7 +150,7 @@ namespace LinBox
 			return columnReducedEchelon(E);
 		}
 
-		// column echelon form (IN-PLACE VERSION)
+		//! column echelon form (IN-PLACE VERSION)
 		template<class Matrix>
 		int columnEchelon(Matrix &E)
 		{
@@ -153,9 +158,9 @@ namespace LinBox
 			size_t m,n, rank;
 			m = E.rowdim();
 			n = E.coldim();
-			Element zero, one;
-			_field.init(zero,0);
-			_field.init(one,1);
+			// Element zero, one;
+			// _field.init(zero,0);
+			// _field.init(one,1);
 
 			BlasPermutation<size_t> P(E.coldim());
 			BlasPermutation<size_t> Qt(E.rowdim());
@@ -171,17 +176,17 @@ namespace LinBox
 			// Zero out upper triangular part of E
 			for (size_t i=0;i<m;++i)
 				for (size_t j=i;j<n;++j)
-					E.setEntry(i,j,zero);
+					E.setEntry(i,j,_field.zero);
 
 			// put one inplace of pivot
 			for (size_t i=0;i<rank;++i){
-				E.setEntry(*(Qt.getPointer()+i),i,one);
+				E.setEntry(*(Qt.getPointer()+i),i,_field.one);
 			}
 
 			return (int)rank;
 		}
 
-		// column reduced echelon form (IN-PLACE VERSION)
+		//! column reduced echelon form (IN-PLACE VERSION)
 		template<class Matrix>
 		int columnReducedEchelon(Matrix &E)
 		{
@@ -189,9 +194,9 @@ namespace LinBox
 
 			m = E.rowdim();
 			n = E.coldim();
-			Element zero, one;
-			_field.init(zero,0);
-			_field.init(one,1);
+			// Element zero, one;
+			// _field.init(zero,0);
+			// _field.init(one,1);
 
 			// compute the LQUP of E
 			BlasPermutation<size_t> P(E.coldim());
@@ -208,25 +213,26 @@ namespace LinBox
 			// Zero out upper triangular part of E
 			for (size_t i=0;i<m;++i)
 				for (size_t j=i;j<n;++j)
-					E.setEntry(i,j,zero);
+					E.setEntry(i,j,_field.zero);
 
 			// permute E with Qt
 			_BMD.mulin_right(Qt,E);
 
 			// put one inplace of pivot
 			for (size_t i=0;i<rank;++i)
-				E.setEntry(i,i, one);//*(Qt.getPointer()+i),one);
+				E.setEntry(i,i, _field.one);//*(Qt.getPointer()+i),one);
 
 			// Update the first r columns of E by Err^(-1)
+			// BlasSubmatrix<Field> Er(E,0,0,rank,rank);
 			BlasMatrix<Field> Er(E,0,0,rank,rank);
 			TriangularBlasMatrix<Field> Err(Er, LinBoxTag::Lower, LinBoxTag::Unit);
-			BlasMatrix<Field> En(E,rank,0,m-rank,rank);
+			BlasSubmatrix<Field> En(E,rank,0,m-rank,rank);
 
 			_BMD.right_solve(Err, En);
 
 			for (size_t i=0;i<rank;++i){
 				for (size_t j=0;j<i;++j)
-					E.setEntry(i,j,zero);
+					E.setEntry(i,j,_field.zero);
 			}
 
 			// permute L such that L<-Q.E
@@ -235,6 +241,7 @@ namespace LinBox
 			return (int)rank;
 		}
 
+		//! writer/helper to maple format
 		template<class Matrix>
 		void write_maple(const char* name, const Matrix& A)
 		{
@@ -262,11 +269,11 @@ namespace LinBox
 
 #endif
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

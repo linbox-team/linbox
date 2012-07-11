@@ -61,6 +61,7 @@
 #include "linbox/util/field-axpy.h"
 #include "linbox/field/hom.h"
 #include "linbox/field/rebind.h"
+#include "linbox/solutions/solution-tags.h"
 
 namespace LinBox
 {
@@ -425,6 +426,9 @@ namespace LinBox
 		typedef const SparseMatrix<Field, _Row> MatrixType;
 		typedef MatrixCategories::RowMatrixTag MatrixCategory;
 	};
+
+	template<class A, class B> struct GetEntryCategory<SparseMatrix<A,B> > 
+	{ typedef SolutionTags::Local Tag; };
 
 } // namespace LinBox
 

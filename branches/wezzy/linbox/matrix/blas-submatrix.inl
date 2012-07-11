@@ -71,7 +71,7 @@ namespace LinBox
 	{
 		linbox_check ( _r0  <= Mat.rowdim() ); // allow for NULL matrix
 		linbox_check ( _c0  <= Mat.coldim() );
-		linbox_check ( _row <= Mat.rowdim() );
+		// linbox_check ( _row <= Mat.rowdim() );
 		linbox_check ( _off <= Mat.rowdim()*Mat.coldim() );
 		linbox_check ( _col <= Mat.coldim() );
 	}
@@ -174,6 +174,28 @@ namespace LinBox
 namespace LinBox
 {
 
+
+	template <class _Field>
+	typename BlasSubmatrix< _Field>::pointer
+	BlasSubmatrix< _Field>::getPointer() const
+	{
+		return _Mat->getPointer()+_off;
+	}
+
+	template <class _Field>
+	typename BlasSubmatrix< _Field>::const_pointer &
+	BlasSubmatrix< _Field>::getConstPointer() const
+	{
+		return _Mat->getConstPointer()+_off;
+	}
+
+
+	template <class _Field>
+	typename BlasSubmatrix< _Field>::pointer&
+	BlasSubmatrix< _Field>::getWritePointer()
+	{
+		return _Mat->getWritePointer()+_off;
+	}
 
 	template <class _Field>
 	void BlasSubmatrix< _Field>::setEntry (size_t i, size_t j, const Element &a_ij)
@@ -290,13 +312,13 @@ namespace LinBox
 		}
 
 		//! @internal operator *.
-		_Field& operator * ()
+		typename _Field::Element& operator * ()
 		{
 			return *_cur;
 		}
 
 		//! @internal operator *.
-		const _Field& operator * () const
+		const typename _Field::Element& operator * () const
 		{
 			return *_cur;
 		}
@@ -381,7 +403,7 @@ namespace LinBox
 		}
 
 		//! @internal operator *.
-		const _Field& operator * () const
+		const typename _Field::Element& operator * () const
 		{
 			return *_cur;
 		}
@@ -446,7 +468,7 @@ namespace LinBox
 			return (_cur != r._cur) || (_beg != r._beg) || (_cont_len != r._cont_len) || (_gap_len != r._gap_len);
 		}
 
-		const _Field& operator*()
+		const typename _Field::Element& operator*()
 		{ return *_cur; }
 
 	 _Field& operator*()
@@ -590,13 +612,13 @@ namespace LinBox
 
 		const _Field& operator*() const {return *_cur;}
 
-		_Field& operator*() {return *_cur;}
+		typename _Field::Element& operator*() {return *_cur;}
 
 		size_t rowIndex () const { return _r_idx; }
 
 		size_t colIndex () const { return _c_idx; }
 
-		const _Field& value () const {return *_cur;}
+		const typename _Field::Element& value () const {return *_cur;}
 
 	protected:
 		typename BlasMatrix<_Field>::Iterator _cur;
@@ -719,7 +741,7 @@ namespace LinBox
 			return ((_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
 		}
 
-		const _Field& operator*() const
+		const typename _Field::Element& operator*() const
 		{
 			return *_cur;
 		}
@@ -734,7 +756,7 @@ namespace LinBox
 			<< m._c_idx;
 		}
 
-		const _Field & value() const
+		const typename _Field::Element & value() const
 		{
 			return this->operator*();
 

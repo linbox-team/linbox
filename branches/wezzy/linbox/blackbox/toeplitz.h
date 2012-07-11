@@ -31,6 +31,7 @@
 #include <vector>
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/methods.h"  // for shape
+#include "linbox/solutions/solution-tags.h"  // to offer trace, det
 #include "linbox/linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
 
@@ -129,7 +130,7 @@ namespace LinBox
 	  \ingroup blackbox
 	 * It stores the 2n-1 values of the first row and column.
 	 * The apply is a call to polynomial multiplication and for large n
-	 * will be FFT based, running in O(lg(n)) time.
+	 * will be FFT based, running in O(n lg(n)) time.
 	 * The _PField template parameter should be a polynomial field;
 	 * computations on the matrix will be performed using this polynomial.
 	 */
@@ -224,12 +225,18 @@ namespace LinBox
 
 		// Get the determinant of the matrix
 		Element& det( Element& res ) const;
+
+		Element& trace( Element& res ) const;
 	protected:
 		// initialization via a vector. Usually called by a constructor
 		// Moved in a separate protected function to enable easier
 		// inherited constructor calls. JGD 30.09.2003
 		void init_vector( const std::vector<Element>& v );
 	}; //  Toeplitz specialization
+
+	template<class Field, class PD>
+	struct TraceCategory<Toeplitz<Field,PD> >	{ typedef typename SolutionTags::Local Tag; };
+
 
 } // namespace LinBox
 

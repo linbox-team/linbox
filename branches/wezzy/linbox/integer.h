@@ -47,8 +47,9 @@
 #include "linbox/linbox-config.h"
 #include "givaro/givconfig.h"
 #include "gmp++/gmp++.h"
-
 #include <cfloat> // BB : needed on some rare platforms...
+
+
 #ifdef __LINBOX_HAVE_STDINT_H
 #ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS
@@ -59,6 +60,7 @@
 #error "INT32_MAX is not defined. It should at least be defined in Givaro..."
 #endif
 #endif
+
 
 #ifndef FFLAFLAS_VERSION
 #define FFLAFLAS_VERSION __LINBOX_FFLAFFLAS_VERSION
@@ -214,6 +216,18 @@ namespace LinBox { /*  signedness of integers */
 	}
 	//@}
 }
+
+#if (GIVARO_VERSION < 30601)
+namespace Givaro {
+	template <typename Target, typename Source>
+	Target& Caster (Target& t, const Source& s) {
+		return t = static_cast<Target>(s);
+	}
+}
+#else
+#include <givaro/givcaster.h>
+#endif
+
 
 #endif // __LINBOX_integer_H
 

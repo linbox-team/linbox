@@ -105,7 +105,7 @@ namespace LinBox
 				std::cout << *(A_local + i) << '\t';
 			std::cout << "\nbegin to call ffpack:\n";
 
-			unsigned int rank = FFPACK::Rank (F, n, m, A_local, m);
+			unsigned int rank = FPACK::Rank ((Modular<double>::Father_t)(F, n, m, A_local, m);
 			std::cout << "Call of ffpack is done\n";
 			delete[] A_local;
 #endif

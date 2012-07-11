@@ -77,6 +77,7 @@ TestField ff;
 
 template <class BB>
 bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) ;
+
 bool testMatrixStream(const string& matfile)
 {
 
