@@ -785,8 +785,8 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 		// adapt to earlier signature of wiedemann solver
-		CoppersmithSolver<typename BB::Field> CS(A.field());
-		CS.solveNonsingular(x, A, b);
+		CoppersmithSolver<typename BB::Field> cs(A.field());
+		cs.solveNonsingular(x, A, b);
 		return x;
 	}
 
