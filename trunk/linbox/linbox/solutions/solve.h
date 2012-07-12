@@ -50,6 +50,8 @@
 
 #include "linbox/algorithms/rational-cra2.h"
 #include "linbox/algorithms/varprec-cra-early-multip.h"
+#include "linbox/algorithms/block-wiedemann.h"
+#include "linbox/algorithms/coppersmith.h"
 
 #ifdef __LINBOX_HAVE_IML
 #include "linbox/util/iml_wrapper.h"
@@ -767,8 +769,8 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 		// adapt to earlier signature of wiedemann solver
-		BlockWiedemannSolver<Field> BWS(F);
-		BWS.solveNonsingular(x, A, y);
+		BlockWiedemannSolver<typename BB::Field> BWS(A.field());
+		BWS.solveNonSingular(x, A, b);
 		return x;
 	}
 
@@ -783,8 +785,8 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 		// adapt to earlier signature of wiedemann solver
-		CoppersmithSolver<Field> CS(F);
-		CS.solveNonsingular(x, A, y);
+		CoppersmithSolver<typename BB::Field> CS(A.field());
+		CS.solveNonsingular(x, A, b);
 		return x;
 	}
 
