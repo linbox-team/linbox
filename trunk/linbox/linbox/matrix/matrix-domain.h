@@ -37,12 +37,16 @@
 #define __LINBOX_matrix_domain_H
 
 #include <iostream>
+#include <vector>
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-domain.h"
+//#include "linbox/matrix/blas-matrix.h"
 
 namespace LinBox
 {
+	template<class Field> class BlasMatrix;
+	template<class Field> class BlasSubmatrix;
 
 	/** \brief For specializing matrix arithmetic
 	 *
@@ -110,6 +114,13 @@ namespace LinBox
 	template <class Field>
 	class MatrixDomain : public MVProductDomain<Field> {
 	public:
+		typedef size_t Index;
+		typedef typename Field::Element Element;
+		typedef Element Scalar;
+		typedef std::vector<Element> Vector;
+		// subvector
+		typedef BlasMatrix<Field> Matrix;
+		typedef BlasSubmatrix<Field> Submatrix;
 
 		/// Constructor.
 		//! @param F field for MatrixDomain operations.
@@ -146,8 +157,8 @@ namespace LinBox
 		 * @param  A   Matrix.
 		 * @returns reference to os.
 		 */
-		template <class Matrix>
-		inline std::ostream &write (std::ostream &os, const Matrix &A) const
+		template <class Matrix_>
+		inline std::ostream &write (std::ostream &os, const Matrix_ &A) const
 		{
 			return A.write (os);
 		}
@@ -157,8 +168,8 @@ namespace LinBox
 		 * @param  A   Matrix.
 		 * @returns reference to is.
 		 */
-		template <class Matrix>
-		inline std::istream &read (std::istream &is, Matrix &A) const
+		template <class Matrix_>
+		inline std::istream &read (std::istream &is, Matrix_ &A) const
 		{
 			return A.read (is, _field);
 		}
@@ -199,10 +210,10 @@ namespace LinBox
 		 * @param A Input matrix
 		 * @returns true if and only if the matrix A is zero
 		 */
-		template <class Matrix>
-		inline bool isZero (const Matrix &A) const
+		template <class Matrix_>
+		inline bool isZero (const Matrix_ &A) const
 		{
-			return isZeroSpecialized (A, typename MatrixTraits<Matrix>::MatrixCategory ());
+			return isZeroSpecialized (A, typename MatrixTraits<Matrix_>::MatrixCategory ());
 		}
 
 		/** Matrix-matrix addition
@@ -300,10 +311,10 @@ namespace LinBox
 		 * A <- -A.
 		 * @param A Input matrix A; result is stored here
 		 */
-		template <class Matrix>
-		inline Matrix &negin (Matrix &A) const
+		template <class Matrix_>
+		inline Matrix_ &negin (Matrix_ &A) const
 		{
-			return neginSpecialized (A, typename MatrixTraits<Matrix>::MatrixCategory ());
+			return neginSpecialized (A, typename MatrixTraits<Matrix_>::MatrixCategory ());
 		}
 
 		/** Matrix-matrix multiply
@@ -401,10 +412,10 @@ namespace LinBox
 		 * @param a Input scalar a
 		 * @returns Reference to B
 		 */
-		template <class Matrix>
-		inline Matrix &mulin (Matrix &B, const typename Field::Element &a) const
+		template <class Matrix_>
+		inline Matrix_ &mulin (Matrix_ &B, const typename Field::Element &a) const
 		{
-			return mulinSpecialized (B, a, typename MatrixTraits<Matrix>::MatrixCategory ());
+			return mulinSpecialized (B, a, typename MatrixTraits<Matrix_>::MatrixCategory ());
 		}
 
 		/** Matrix-matrix in-place axpy
@@ -491,10 +502,10 @@ namespace LinBox
 		 * @param v Input vector v
 		 * @returns Reference to w
 		 */
-		template <class Vector1, class Matrix, class Vector2>
-		inline Vector1 &vectorMul (Vector1 &w, const Matrix &A, const Vector2 &v) const
+		template <class Vector1, class Matrix_, class Vector2>
+		inline Vector1 &vectorMul (Vector1 &w, const Matrix_ &A, const Vector2 &v) const
 		{
-			return mulSpecialized (w, A, v, typename MatrixTraits<Matrix>::MatrixCategory ());
+			return mulSpecialized (w, A, v, typename MatrixTraits<Matrix_>::MatrixCategory ());
 		}
 
 		/** Matrix-vector in-place axpy
@@ -515,10 +526,10 @@ namespace LinBox
 		 * @param A Input matrix A
 		 * @param x Input vector x
 		 */
-		template <class Vector1, class Matrix, class Vector2>
-		inline Vector1 &vectorAxpyin (Vector1 &y, const Matrix &A, const Vector2 &x) const
+		template <class Vector1, class Matrix_, class Vector2>
+		inline Vector1 &vectorAxpyin (Vector1 &y, const Matrix_ &A, const Vector2 &x) const
 		{
-			return axpyinSpecialized (y, A, x, typename MatrixTraits<Matrix>::MatrixCategory ());
+			return axpyinSpecialized (y, A, x, typename MatrixTraits<Matrix_>::MatrixCategory ());
 		}
 		//@}
 
@@ -576,13 +587,13 @@ namespace LinBox
 		 * @param P_end End of permutation
 		 * @returns Reference to A
 		 */
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteRows (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteRows (Matrix_   &A,
 					    Iterator  P_start,
 					    Iterator  P_end) const
 		{
 			return permuteRowsSpecialized (A, P_start, P_end,
-						       typename MatrixTraits<Matrix>::MatrixCategory ());
+						       typename MatrixTraits<Matrix_>::MatrixCategory ());
 		}
 
 		/** Permute the columns of the given matrix.
@@ -592,13 +603,13 @@ namespace LinBox
 		 * @param P_end End of permutation
 		 * @returns Reference to A
 		 */
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteColumns (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteColumns (Matrix_   &A,
 					       Iterator  P_start,
 					       Iterator  P_end) const
 		{
 			return permuteColsSpecialized (A, P_start, P_end,
-						       typename MatrixTraits<Matrix>::MatrixCategory ());
+						       typename MatrixTraits<Matrix_>::MatrixCategory ());
 		}
 		//@}
 
@@ -655,21 +666,21 @@ namespace LinBox
 			return areEqualRow (A, B);
 		}
 
-		template <class Matrix> bool isZeroRow (const Matrix &v) const;
-		template <class Matrix> bool isZeroCol (const Matrix &v) const;
+		template <class Matrix_> bool isZeroRow (const Matrix_ &v) const;
+		template <class Matrix_> bool isZeroCol (const Matrix_ &v) const;
 
-		template <class Matrix>
-		bool isZeroSpecialized (const Matrix &A, MatrixCategories::RowMatrixTag) const
+		template <class Matrix_>
+		bool isZeroSpecialized (const Matrix_ &A, MatrixCategories::RowMatrixTag) const
 		{
 			return isZeroRow (A);
 		}
-		template <class Matrix>
-		bool isZeroSpecialized (const Matrix &A, MatrixCategories::ColMatrixTag) const
+		template <class Matrix_>
+		bool isZeroSpecialized (const Matrix_ &A, MatrixCategories::ColMatrixTag) const
 		{
 			return isZeroCol (A);
 		}
-		template <class Matrix>
-		bool isZeroSpecialized (const Matrix &A, MatrixCategories::RowColMatrixTag) const
+		template <class Matrix_>
+		bool isZeroSpecialized (const Matrix_ &A, MatrixCategories::RowColMatrixTag) const
 		{
 			return isZeroRow (A);
 		}
@@ -809,21 +820,21 @@ namespace LinBox
 			return negRow (A, B);
 		}
 
-		template <class Matrix> Matrix &neginRow (Matrix &A) const;
-		template <class Matrix> Matrix &neginCol (Matrix &A) const;
+		template <class Matrix_> Matrix_ &neginRow (Matrix_ &A) const;
+		template <class Matrix_> Matrix_ &neginCol (Matrix_ &A) const;
 
-		template <class Matrix>
-		Matrix &neginSpecialized (Matrix &A, MatrixCategories::RowMatrixTag) const
+		template <class Matrix_>
+		Matrix_ &neginSpecialized (Matrix_ &A, MatrixCategories::RowMatrixTag) const
 		{
 			return neginRow (A);
 		}
-		template <class Matrix>
-		Matrix &neginSpecialized (Matrix &A, MatrixCategories::ColMatrixTag) const
+		template <class Matrix_>
+		Matrix_ &neginSpecialized (Matrix_ &A, MatrixCategories::ColMatrixTag) const
 		{
 			return neginCol (A);
 		}
-		template <class Matrix>
-		Matrix &neginSpecialized (Matrix &A, MatrixCategories::RowColMatrixTag) const
+		template <class Matrix_>
+		Matrix_ &neginSpecialized (Matrix_ &A, MatrixCategories::RowColMatrixTag) const
 		{
 			return neginRow (A);
 		}
@@ -913,23 +924,23 @@ namespace LinBox
 			return mulRow (C, B, a);
 		}
 
-		template <class Matrix> Matrix &mulinRow (Matrix &B, const typename Field::Element &a) const;
-		template <class Matrix> Matrix &mulinCol (Matrix &B, const typename Field::Element &a) const;
+		template <class Matrix_> Matrix_ &mulinRow (Matrix_ &B, const typename Field::Element &a) const;
+		template <class Matrix_> Matrix_ &mulinCol (Matrix_ &B, const typename Field::Element &a) const;
 
-		template <class Matrix>
-		Matrix &mulinSpecialized (Matrix &B, const typename Field::Element &a,
+		template <class Matrix_>
+		Matrix_ &mulinSpecialized (Matrix_ &B, const typename Field::Element &a,
 					  MatrixCategories::RowMatrixTag) const
 		{
 			return mulinRow (B, a);
 		}
-		template <class Matrix>
-		Matrix &mulinSpecialized (Matrix &B, const typename Field::Element &a,
+		template <class Matrix_>
+		Matrix_ &mulinSpecialized (Matrix_ &B, const typename Field::Element &a,
 					  MatrixCategories::ColMatrixTag) const
 		{
 			return mulinCol (B, a);
 		}
-		template <class Matrix>
-		Matrix &mulinSpecialized (Matrix &B, const typename Field::Element &a,
+		template <class Matrix_>
+		Matrix_ &mulinSpecialized (Matrix_ &B, const typename Field::Element &a,
 					  MatrixCategories::RowColMatrixTag) const
 		{
 			return mulinRow (B, a);
@@ -995,41 +1006,41 @@ namespace LinBox
 			return axpyinRowRowCol (Y, A, X);
 		}
 
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 					    VectorCategories::DenseVectorTag) const;
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 					    VectorCategories::SparseSequenceVectorTag) const;
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 					    VectorCategories::SparseAssociativeVectorTag) const;
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 					    VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &mulColSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 					    VectorCategories::DenseVectorTag,
 					    VectorCategories::DenseVectorTag) const
 		{
 			return this->mulColDense (_VD, w, A, v);
 		}
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &mulColSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 					    VectorCategories::DenseVectorTag,
 					    VectorCategories::SparseSequenceVectorTag) const;
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &mulColSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 					    VectorCategories::DenseVectorTag,
 					    VectorCategories::SparseAssociativeVectorTag) const;
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &mulColSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 					    VectorCategories::DenseVectorTag,
 					    VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Matrix, class Vector2>
-		inline Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		inline Vector1 &mulColSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 						   VectorCategories::GenericVectorTag,
 						   VectorCategories::GenericVectorTag) const
 		{
@@ -1045,84 +1056,84 @@ namespace LinBox
 			return w;
 		}
 
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &mulSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 					 MatrixCategories::RowMatrixTag) const
 		{
 			return mulRowSpecialized (w, A, v, typename VectorTraits<Vector1>::VectorCategory ());
 		}
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &mulSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 					 MatrixCategories::ColMatrixTag) const
 		{
 			return mulColSpecialized (w, A, v,
 						  typename VectorTraits<Vector1>::VectorCategory (),
 						  typename VectorTraits<Vector2>::VectorCategory ());
 		}
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &mulSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 					 MatrixCategories::RowColMatrixTag) const
 		{
 			return mulRowSpecialized (w, A, v, typename VectorTraits<Vector1>::VectorCategory ());
 		}
 
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 					       VectorCategories::DenseVectorTag) const;
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 					       VectorCategories::SparseSequenceVectorTag) const;
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 					       VectorCategories::SparseAssociativeVectorTag) const;
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 					       VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 					       VectorCategories::DenseVectorTag) const;
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 					       VectorCategories::SparseSequenceVectorTag) const;
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 					       VectorCategories::SparseAssociativeVectorTag) const;
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 					       VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &axpyinSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &axpyinSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 					    MatrixCategories::RowMatrixTag) const
 		{
 			return axpyinRowSpecialized (y, A, x, typename VectorTraits<Vector1>::VectorCategory ());
 		}
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &axpyinSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &axpyinSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 					    MatrixCategories::ColMatrixTag) const
 		{
 			return axpyinColSpecialized (y, A, x, typename VectorTraits<Vector1>::VectorCategory ());
 		}
-		template <class Vector1, class Matrix, class Vector2>
-		Vector1 &axpyinSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+		template <class Vector1, class Matrix_, class Vector2>
+		Vector1 &axpyinSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 					    MatrixCategories::RowColMatrixTag) const
 		{
 			return axpyinRowSpecialized (y, A, x, typename VectorTraits<Vector1>::VectorCategory ());
 		}
 
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteRowsByRow (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteRowsByRow (Matrix_   &A,
 						 Iterator  P_start,
 						 Iterator  P_end) const;
 
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteRowsByCol (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteRowsByCol (Matrix_   &A,
 						 Iterator  P_start,
 						 Iterator  P_end) const;
 
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteRowsSpecialized (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteRowsSpecialized (Matrix_   &A,
 						       Iterator  P_start,
 						       Iterator  P_end,
 						       MatrixCategories::RowColMatrixTag) const
@@ -1130,8 +1141,8 @@ namespace LinBox
 			return permuteRowsByCol (A, P_start, P_end);
 		}
 
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteRowsSpecialized (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteRowsSpecialized (Matrix_   &A,
 						       Iterator  P_start,
 						       Iterator  P_end,
 						       MatrixCategories::RowMatrixTag) const
@@ -1139,8 +1150,8 @@ namespace LinBox
 			return permuteRowsByRow (A, P_start, P_end);
 		}
 
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteRowsSpecialized (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteRowsSpecialized (Matrix_   &A,
 						       Iterator  P_start,
 						       Iterator  P_end,
 						       MatrixCategories::ColMatrixTag) const
@@ -1148,18 +1159,18 @@ namespace LinBox
 			return permuteRowsByCol (A, P_start, P_end);
 		}
 
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteColsByRow (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteColsByRow (Matrix_   &A,
 						 Iterator  P_start,
 						 Iterator  P_end) const;
 
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteColsByCol (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteColsByCol (Matrix_   &A,
 						 Iterator  P_start,
 						 Iterator  P_end) const;
 
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteColsSpecialized (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteColsSpecialized (Matrix_   &A,
 						       Iterator  P_start,
 						       Iterator  P_end,
 						       MatrixCategories::RowColMatrixTag) const
@@ -1167,8 +1178,8 @@ namespace LinBox
 			return permuteColsByRow (A, P_start, P_end);
 		}
 
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteColsSpecialized (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteColsSpecialized (Matrix_   &A,
 						       Iterator  P_start,
 						       Iterator  P_end,
 						       MatrixCategories::RowMatrixTag) const
@@ -1176,8 +1187,8 @@ namespace LinBox
 			return permuteColsByRow (A, P_start, P_end);
 		}
 
-		template <class Matrix, class Iterator>
-		inline Matrix &permuteColsSpecialized (Matrix   &A,
+		template <class Matrix_, class Iterator>
+		inline Matrix_ &permuteColsSpecialized (Matrix_   &A,
 						       Iterator  P_start,
 						       Iterator  P_end,
 						       MatrixCategories::ColMatrixTag) const

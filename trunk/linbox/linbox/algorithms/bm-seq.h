@@ -44,13 +44,14 @@
 
 
 namespace LinBox {
+
 	template<class _Field>
 	class BM_Seq {
 
 	public:
 
 		typedef _Field Field;
-		typedef BlasMatrix<Field> value_type;
+		typedef typename MatrixDomain<Field>::Matrix value_type;
 		typedef typename std::list<value_type>::const_iterator const_iterator;
 		typedef int size_type;
 

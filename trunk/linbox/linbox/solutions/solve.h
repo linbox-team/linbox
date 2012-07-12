@@ -756,6 +756,37 @@ namespace LinBox
 		return x;
 	}
 
+	// Only for nonsingular system for now.
+	// may throw SolverFailed or InconsistentSystem
+	template <class Vector, class BB>
+	Vector& solve(Vector& x, const BB& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::BlockWiedemann& m)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
+		// adapt to earlier signature of wiedemann solver
+		BlockWiedemannSolver<Field> BWS(F);
+		BWS.solveNonsingular(x, A, y);
+		return x;
+	}
+
+	// Only for nonsingular system for now.
+	// may throw SolverFailed or InconsistentSystem
+	template <class Vector, class BB>
+	Vector& solve(Vector& x, const BB& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::Coppersmith& m)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
+		// adapt to earlier signature of wiedemann solver
+		CoppersmithSolver<Field> CS(F);
+		CS.solveNonsingular(x, A, y);
+		return x;
+	}
 
 	/* remark 1.  I used copy constructors when switching method types.
 	   But if the method types are (empty) child classes of a common  parent class containing
