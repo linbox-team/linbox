@@ -1,5 +1,5 @@
 
-/* tests/test-solve.C
+/* tests/test-block-wiedemann.C
  * evolved by -bds from test-solve.C
  *
  * --------------------------------------------------------

@@ -133,6 +133,13 @@ namespace LinBox
 			return (i==j?_field.assign(x,_v[i]):_field.init(x,0));
 		}
 
+		/** (i,i) entry is set to x.
+		 *
+		 * could throw error if j != i, but now j is ignored.
+		 */
+		void setEntry (size_t i, size_t j, Element &x) const {
+			_v[i] = x;
+		}
 
 		template<typename _Tp1>
 		struct rebind {
@@ -171,7 +178,7 @@ namespace LinBox
 		const std::vector<Element>& getData() const { return _v; }
 		std::vector<Element>& getData() { return _v; }
 
-	private:
+	protected:
 
 		// Field for arithmetic
 		Field _field;

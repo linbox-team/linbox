@@ -433,6 +433,15 @@ namespace LinBox
 		// free(_ptr);
 	}
 
+	template <class _Field>
+	void BlasMatrix< _Field>::random()
+	{
+		typename _Field::Element x; field().init(x);
+		typename _Field::RandIter r;
+		for (size_t i = 0; i < rowdim(); ++i)
+			for (size_t j = 0; j < coldim(); ++j)
+				setEntry(i, j, r.random(x));
+	}
 } // LinBox
 
 ///////////////////
@@ -443,7 +452,6 @@ namespace LinBox
 {
 
 	template <class _Field>
-	// template <class Field>
 	std::istream &BlasMatrix< _Field>::read (std::istream &file)
 	{
 #if 0
@@ -551,7 +559,7 @@ namespace LinBox
 			break;
 		case (LinBoxTag::FormatMaple) : /*  maple format */
 			{
-				os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+				os << "Matrix( " << rowdim() << ',' << coldim() << ",[" << std::endl;
 				for (p = rowBegin (); p != rowEnd (); ) {
 					typename ConstRow::const_iterator pe;
 
