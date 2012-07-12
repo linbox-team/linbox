@@ -965,16 +965,21 @@ namespace LinBox
 		{
 			//_stride ?
 			if (_Mat->_use_fflas){
-				//!@bug this supposes &x[0]++ == &x[1]
+				//!@bug this supposes &x[0]++ == &x[1]    
+                                // PG: try to discover stride of x and y (not use it works on every platform)
+                                size_t ldx,ldy;
+                                ldx=&x[1] - &x[0]; 
+                                ldy=&y[1] - &y[0]; 
 				FFLAS::fgemv((typename Field::Father_t) _Mat->_field, FFLAS::FflasNoTrans,
 					      _row, _col,
 					      _Mat->_field.one,
 					      _Mat->_ptr, getStride(),
-					      &x[0],1,
+					      &x[0],ldx,
 					      _Mat->_field.zero,
-					      &y[0],1);
+					      &y[0],ldy);
 			}
 			else {
+                                std::cout<<"USING MD "<<std::endl;
 				_Mat->_MD. vectorMul (y, *this, x);
 #if 0
 				typename BlasMatrix<_Field>::ConstRowIterator i = this->rowBegin ();
@@ -993,13 +998,17 @@ namespace LinBox
 
 			//_stride ?
 			if (_Mat->_use_fflas) {
-				FFLAS::fgemv((typename Field::Father_t) _Mat->_field, FFLAS::FflasTrans,
+                                // PG: try to discover stride of x and y (not use it works on every platform)
+                                size_t ldx,ldy;
+                                ldx=&x[1] - &x[0]; 
+                                ldy=&y[1] - &y[0]; 
+                                FFLAS::fgemv((typename Field::Father_t) _Mat->_field, FFLAS::FflasTrans,
 					      _row, _col,
 					      _Mat->_field.one,
 					      _Mat->_ptr, getStride(),
-					      &x[0],1,
+					      &x[0],ldx,
 					      _Mat->_field.zero,
-					      &y[0],1);
+					      &y[0],ldy);
 			}
 			else {
 				typename BlasMatrix<_Field>::ConstColIterator i = this->colBegin ();
