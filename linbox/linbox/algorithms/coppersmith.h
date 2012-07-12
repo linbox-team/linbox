@@ -30,7 +30,7 @@ using namespace std;
 
 
 #include "linbox/integer.h"
-#include "linbox/algorithms/matrix-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/bm-seq.h"
 #include "linbox/vector/vector-domain.h"
@@ -49,7 +49,7 @@ namespace LinBox
 		typedef typename Field::Element       Element;
 		typedef typename Field::RandIter     RandIter;
 		typedef std::vector<Element>           Vector;
-		typedef MatrixDomain<Field>::Matrix 	Block;
+		typedef typename MatrixDomain<_Field>::Matrix 	Block;
 
 	protected:
 		Field                         _field;
