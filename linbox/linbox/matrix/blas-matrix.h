@@ -451,6 +451,8 @@ namespace LinBox
 		 */
 		void reverse() ;
 
+		// init to random field elements
+		void random() ;
 		///////////////////
 		//      I/O      //
 		///////////////////
