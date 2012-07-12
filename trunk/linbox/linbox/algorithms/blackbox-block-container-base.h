@@ -41,6 +41,7 @@
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 
 namespace LinBox
 {
@@ -167,13 +168,19 @@ namespace LinBox
 			linbox_check( M1.rowdim() == M2.rowdim());
 			linbox_check( M2.coldim() == M3.rowdim());
 			linbox_check( M1.coldim() == M3.coldim());
-
+                        
+                        MatrixDomain<Field> MD(_field);
 			typename Block::ColIterator        p1 = M1.colBegin();
 			typename Block::ConstColIterator   p3 = M3.colBegin();
 
 			for (; p3 != M3.colEnd(); ++p1,++p3) {
 				M2.apply(*p1,*p3);
+                                //MD.vectorMul(*p1,M2,*p3);
 			}
+                        
+                        
+                        //MD.mul(M1,M2,M3);
+
 		}
 
 
