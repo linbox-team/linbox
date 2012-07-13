@@ -1,5 +1,5 @@
 
-/* tests/test-dense.C
+/* tests/test-bmseq.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by George Yuhasz <yuhasz@gmail.com>
@@ -40,6 +40,8 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/bm-seq.h"
+#include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/matrix/sparse.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -47,86 +49,14 @@
 using namespace LinBox;
 using namespace std;
 
-/* Test 1: Identity matrix in dense representation
- *
- * Construct a dense representation of an n x n identity matrix and check
- * whether the output of its application to a series of random vectors is equal
- * to the input.
- *
- * F - Field over which to perform computations
- * n - Dimension to which to make matrix
- * iterations - Number of random vectors to which to apply identity inverse
- *
- * Return true on success and false on failure
- */
-
-template <class Field>
-static bool testIdentity (Field &F, long n, int iterations)
-{
-	typedef typename Vector<Field>::Dense Vector;
-	typedef BlasMatrix <Field> Blackbox;
-
-	commentator().start ("Testing identity apply", "testIdentity", iterations);
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-
-	bool ret = true;
-	bool iter_passed = true;
-
-	int i, j;
-
-	Blackbox I (F, n, n);
-	typename Field::Element one;
-
-	F.init (one, 1);
-
-	for (i = 0; i < n; i++)
-		I.setEntry (i, i, one);
-
-	Vector v(n), w(n);
-	typename Field::RandIter r (F);
-
-	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator().start (buf);
-
-		iter_passed = true;
-
-		for (j = 0; j < n; j++)
-			r.random (v[j]);
-
-		report << "Input vector: ";
-		printVector<Field> (F, report, v);
-
-		I.apply (w, v);
-
-		report << "Output vector: ";
-		printVector<Field> (F, report, w);
-
-		for (j = 0; j < n; j++)
-			if (!F.areEqual (w[j], v[j]))
-				ret = iter_passed = false;
-
-		if (!iter_passed)
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Vectors are not equal" << endl;
-
-		commentator().stop ("done");
-		commentator().progress ();
-	}
-
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentity");
-
-	return ret;
-}
-
 
 int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 10;
+	static integer n = 5;
 	static integer q = 101;
+	//static integer q = 5;
 	static int iterations = 2; // was 100
 	//static int N = 1;
 
@@ -142,7 +72,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator().start("Dense matrix black box test suite", "BlasMatrix");
+	commentator().start("bmseq test suite", "BlasMatrix");
 
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
@@ -153,6 +83,8 @@ int main (int argc, char **argv)
 	Field::Element one, zero;
 	F.init(one,1);
 	F.init(zero,0);
+	MatrixDomain<Field> MD(F);
+#if 0
 	BlasMatrix<Field> D(F,2,2);
 	BlasMatrix<Field> zero24(F,2,4);
 	for(size_t i=0; i<2; i++)
@@ -160,7 +92,6 @@ int main (int argc, char **argv)
 	D.setEntry(1,0,one);
 	BM_Seq<Field> seq(2,D);
 	BlasMatrix<Field> S2(F,2,2);
-	MatrixDomain<Field> MD(F);
 	BM_Seq<Field>::BM_iterator bmit(seq, 0), bmit2(seq.BM_begin());
 	bmit.setDelta(4);
 	BM_Seq<Field>::BM_iterator::TerminationState check = bmit.state();
@@ -217,9 +148,132 @@ int main (int argc, char **argv)
 	vector<BlasMatrix<Field> >gen(bmit.GetGenerator());
 	int d = bmit.get_mu();
 	for(int j = 0; j <= d; j++)
-					gen[j].write(report);
 
-	commentator().stop("dense matrix black box test suite");
+					gen[j].write(report);
+#endif
+#if 1
+	size_t r,d,c;
+	d=10;
+	r=2;
+	c=2;
+	SparseMatrix<Field> A(F,d,d);
+	BlasMatrix<Field> U(F,r,d);
+	BlasMatrix<Field> W(F,d,c-1);
+	BlasMatrix<Field> V(F,d,c);
+	MatrixDomain<Field>::Submatrix V2(V,0,1,d,c-1);
+	std::vector<Field::Element> b(d);
+	Field::RandIter rand(F);
+	for(size_t i=0; i<d;i++)
+			A.setEntry(i,d-i-1,one);
+	/*
+	for(size_t i=0; i<d;i++)
+		for(size_t j=0; j<d; j++)
+			rand.random(A.refEntry(i,j));
+	*/
+	for(size_t i=0; i<r;i++)
+		for(size_t j=0; j<d; j++)
+			rand.random(U.refEntry(i,j));
+	for(size_t i=0; i<d;i++)
+		for(size_t j=0; j<c-1; j++){
+			rand.random(W.refEntry(i,j));
+	}
+	MD.mul(V2,A,W);
+	for(size_t i=0; i<d; i++){
+		rand.random(b[i]);
+		V.setEntry(i,0,b[i]);
+}
+	report << endl << "W" << endl;
+	W.write(report);
+	report << endl << "U" << endl;
+	U.write(report);
+	report << endl << "V" << endl;
+	V.write(report);
+	BlackboxBlockContainer<Field, SparseMatrix<Field> > blockseq(&A,F,U,V);
+	BlackboxBlockContainer<Field, SparseMatrix<Field> >::const_iterator contiter(blockseq.begin());
+	BM_Seq<Field> seq(F,r,c);
+	seq.push_back(*contiter);
+	BM_Seq<Field>::BM_iterator bmit(seq.BM_begin());
+	bmit.setDelta(d);
+	BM_Seq<Field>::BM_iterator::TerminationState check = bmit.state();
+	while(!check.IsGeneratorFound() ){
+		bmit++;
+		check = bmit.state();
+		if(check.IsSequenceExceeded()){
+			++contiter;
+			seq.push_back(*contiter);
+		}
+	}
+	if(check.IsGeneratorFound())
+		report << "Generator Found" << endl;
+	report << "mu = " << bmit.get_mu() << endl;
+	report << "sigma = " << bmit.get_sigma() << endl;
+	report << "beta = " << bmit.get_beta() << endl;
+	vector<BlasMatrix<Field> >gen(bmit.GetGenerator());
+	int mu = bmit.get_mu();
+	report << "The generator is " << endl;
+	for(size_t i=0; i<mu+1; i++){
+		report << "Degree " << i << endl;
+		gen[i].write(report);
+		report << endl;
+}
+	size_t idx = 0;
+	if(F.isZero(gen[0].getEntry(0,0))){
+		size_t i = 1;
+		while(i<c && F.isZero(gen[0].getEntry(0,i)))
+			i++;
+		if(i==c)
+			throw LinboxError(" block minpoly: matrix seems to be singular - abort");
+		else
+			idx=i;
+	}
+	report << "The nonzero index is " << idx << endl;
+	
+	BlasMatrix<Field> AV(V);
+	BlasMatrix<Field> xm(F,d,1);
+	for(size_t i = 1; i < mu+1; i++){
+		MatrixDomain<Field>::Submatrix gencol(gen[i],0,idx,d,1);
+		BlasMatrix<Field> AVgencol(F,d,1);
+		MD.mul(AVgencol,AV,gencol);
+		report << endl << "AVgencol at degree " << i << endl;
+		AVgencol.write(report);
+		MD.addin(xm, AVgencol);
+		report << endl << "xm" << endl;
+		xm.write(report);
+		MD.leftMulin(A,AV);	
+		report << endl << "AV" << endl;
+		AV.write(report);
+		report << endl;
+	}
+
+	for(size_t i = 1; i < c; i++){
+		MatrixDomain<Field>::Submatrix Wcol(W,0,i-1,d,1);
+		BlasMatrix<Field> Wcolgen0(F,d,1);
+		MD.mul(Wcolgen0, Wcol, gen[0].getEntry(i,idx));
+		MD.addin(xm,Wcolgen0);
+		
+	}
+	MD.negin(xm);
+	Field::Element gen0inv;
+	MD.mulin(xm, F.inv(gen0inv, gen[0].getEntry(0,idx)));
+	
+	report << "The computed solution is" << endl;
+	xm.write(report);		
+	BlasMatrix<Field> Axm(F,r,1);
+	BlasMatrix<Field> UAxm(F,r,1);
+	MD.mul(Axm, A,xm);
+	MD.mul(UAxm, U,Axm);
+	report << "UA times solution is" << endl;
+	UAxm.write(report);
+	BlasMatrix<Field> Uym(F,r,1);
+	MatrixDomain<Field>::Submatrix ym(V,0,0,d,1);
+	MD.mul(Uym, U, ym);
+	report << "U times rhs is" << endl;
+	Uym.write(report);
+	
+
+
+#endif
+	commentator().stop("bm-seq test suite");
 	return pass ? 0 : -1;
 }
 
