@@ -35,9 +35,7 @@
 #include <algorithm>
 #include "linbox/field/hom.h"
 #include "linbox/vector/vector-traits.h"
-#include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
-#include "linbox/field/hom.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/solutions/solution-tags.h"
 
@@ -80,7 +78,7 @@ namespace LinBox
 		 * @param s	scalar, a field element, to be used as the diagonal of the matrix.
 		 */
 		ScalarMatrix (const Field &F, const size_t n, const Element &s) :
-			field_(F), n_(n), v_(s)
+			field_(&F), n_(n), v_(s)
 		{}
 
 		/** Constructor from a random element.
@@ -89,7 +87,7 @@ namespace LinBox
 		 * @param iter Random iterator from which to get the diagonal scalar element.
 		 */
 		ScalarMatrix (const Field &F, const size_t n, const typename Field::RandIter& iter) :
-			field_(F), n_(n)
+			field_(&F), n_(n)
 		{ iter.random(v_); }
 
 		ScalarMatrix(const ScalarMatrix<Field> &Mat) :
@@ -137,7 +135,7 @@ namespace LinBox
 
 		template<typename _Tp1>
 		ScalarMatrix (const ScalarMatrix<_Tp1>& S, const Field &F) :
-			field_(F), n_(S.rowdim())
+			field_(&F), n_(S.rowdim())
 		{
 			typename ScalarMatrix<_Tp1>::template rebind<Field>() (*this, S);
 		}
@@ -147,36 +145,36 @@ namespace LinBox
 
 		size_t coldim(void) const { return n_; }
 
-		const Field& field() const {return field_;}
+		const Field& field() const {return *field_;}
 
 		// for specialized solutions
 
 		Element& trace(Element& t) const
-		{	Element n; field_.init(n, n_);
-			return field_.mul(t, v_, n);
+		{	Element n; field().init(n, n_);
+			return field().mul(t, v_, n);
 		}
 
 		Element& getEntry(Element& x, const size_t i, const size_t j) const
 		{
-			return (i==j ? field_.assign(x,v_) : field_.init(x,0));
+			return (i==j ? field().assign(x,v_) : field().init(x,0));
 		}
 
 		Element& det(Element& d) const
 		{
-			return pow(field_, d, v_, n_); 
+			return pow(field(), d, v_, n_); 
 		}
 
 		long int& rank(long int& r) const
 		{
-			return r = (field_.isZero(v_) ? 0 : n_); 
+			return r = (field().isZero(v_) ? 0 : n_); 
 		}
 
-		Element& getScalar(Element& x) const { return this->field_.assign(x,this->v_); }
-		Element& setScalar(const Element& x) { return this->field_.assign(this->v_,x); }
+		Element& getScalar(Element& x) const { return this->field().assign(x,this->v_); }
+		Element& setScalar(const Element& x) { return this->field().assign(this->v_,x); }
 
 	protected:
 
-		Field field_;   // Field for arithmetic
+		const Field *field_;   // Field for arithmetic
 
 		size_t n_;  // Number of rows and columns of square matrix.
 
@@ -216,14 +214,14 @@ namespace LinBox
 		linbox_check (y.size() >= n_);
 		typename OutVector::iterator y_iter = y.begin ();
 
-		if (field_.isZero(v_)) // just write zeroes
+		if (field().isZero(v_)) // just write zeroes
 			for ( ; y_iter != y.end ();  ++y_iter) *y_iter = v_;
-		else if (field_.isOne(v_) ) // just copy
+		else if (field().isOne(v_) ) // just copy
 			copy(x.begin(), x.end(), y.begin());
 		else // use actual muls
 		{   typename InVector::const_iterator x_iter = x.begin ();
 			for (  ; y_iter != y.end () ; ++y_iter, ++x_iter )
-				field_.mul (*y_iter, v_, *x_iter);
+				field().mul (*y_iter, v_, *x_iter);
 		}
 		return y;
 
@@ -243,13 +241,13 @@ namespace LinBox
 
 		// field element to be used in calculations
 		Element entry;
-		field_.init (entry, 0); // needed?
+		field().init (entry, 0); // needed?
 
 		// For each element, multiply input element with corresponding element
 		// of stored scalar and insert non-zero elements into output vector
 		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter)
-		{	field_.mul (entry, v_, x_iter->second);
-			if (!field_.isZero (entry)) y.push_back (make_pair (x_iter->first, entry));
+		{	field().mul (entry, v_, x_iter->second);
+			if (!field().isZero (entry)) y.push_back (make_pair (x_iter->first, entry));
 		}
 
 		return y;
@@ -265,14 +263,14 @@ namespace LinBox
 
 		// create field elements and size_t to be used in calculations
 		Element entry;
-		field_.init (entry, 0);
+		field().init (entry, 0);
 
 		// Iterator over indices of input vector.
 		// For each element, multiply input element with
 		// stored scalar and insert non-zero elements into output vector
 		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter)
-		{	field_.mul (entry, v_, x_iter->second);
-			if (!field_.isZero (entry)) y.insert (y.end (), make_pair (x_iter->first, entry));
+		{	field().mul (entry, v_, x_iter->second);
+			if (!field().isZero (entry)) y.insert (y.end (), make_pair (x_iter->first, entry));
 		}
 
 		return y;

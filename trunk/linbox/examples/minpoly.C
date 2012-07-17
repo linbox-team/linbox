@@ -83,6 +83,18 @@ int main (int argc, char **argv)
 			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		vector<PID_integer::Element> m_A;
+
+		VectorDomain<PID_integer> VD(ZZ);
+		SparseMatrix<P>::Col b = *(A.colBegin()+i);
+		SparseMatrix<P>::Col b = A.colBegin()[i];
+		SparseMatrix<P>::ColIterator p = A.colBegin();
+		for ( ; p < A.colEnd(); ++p) use *p
+		p[i]
+		*(p + i)
+		b = *p;
+
+		VD.axpyin(m_a, alpha, b);
+
 		minpoly (m_A, A, M);
 
 		if(process == 0){

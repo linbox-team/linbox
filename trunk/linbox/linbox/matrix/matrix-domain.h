@@ -68,7 +68,7 @@ namespace LinBox
 	template <class Matrix>
 	struct MatrixTraits {
 		typedef Matrix MatrixType;
-		typedef typename Matrix::MatrixCategory MatrixCategory;
+		typedef typename MatrixCategories::BlackboxTag MatrixCategory;
 	};
 
 	/** \brief Helper class to allow specializations of certain matrix-vector products
@@ -848,6 +848,22 @@ namespace LinBox
 		template <class Matrix1, class Matrix2, class Matrix3>
 		Matrix1 &mulColColCol (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const;
 
+		template <class Matrix1, class Matrix2, class Matrix3>
+		Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
+					 MatrixCategories::RowMatrixTag,
+					 MatrixCategories::RowMatrixTag,
+					 MatrixCategories::BlackboxTag) const
+		{
+			return blackboxMulRight(C, A, B);
+		}
+		template <class Matrix1, class Matrix2, class Matrix3>
+		Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
+					 MatrixCategories::ColMatrixTag,
+					 MatrixCategories::BlackboxTag,
+					 MatrixCategories::ColMatrixTag) const
+		{
+			return blackboxMulLeft(C, A, B);
+		}
 		template <class Matrix1, class Matrix2, class Matrix3>
 		Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
 					 MatrixCategories::RowMatrixTag,
