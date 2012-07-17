@@ -76,7 +76,8 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Modular<uint32_t> Field;
+	typedef Modular<double> Field;
+	//typedef Modular<uint32_t> Field;
 	typedef vector<Field::Element> Vector;
 	typedef Diagonal <Field> Blackbox;
 
@@ -98,9 +99,9 @@ int main (int argc, char **argv)
 	Blackbox D (F, d);
 
 #if 0
-	// Yuhasz Matrix Berlekamp Massey being used
-	RightBlockWiedemannSolver<Field> RBWS(F);
-	RBWS.solveNonSingular(x, D, b);
+	// Yuhasz' Matrix Berlekamp Massey being used
+	CoppersmithSolver<Field> RCS(F);
+	RCS.solveNonSingular(x, D, b);
 
 	VD.write (report << "Matrix Berlekamp Massey solution:  ", x) << endl;
 	D.apply (y, x);
@@ -113,9 +114,10 @@ int main (int argc, char **argv)
 #endif
 
 #if 1
-	// Giorgi SigmaBasis Berlekamp Massey being used
+	// Giorgi's SigmaBasis Berlekamp Massey being used
 	Vector z(n);
 	BlockWiedemannSolver<Field> LBWS(F);
+	report << "calling solver" << endl;
 	LBWS.solveNonSingular(z, D, b);
 
 	VD.write (report << "SigmaBasis solution:  ", z) << endl;

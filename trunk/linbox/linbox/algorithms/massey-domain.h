@@ -123,7 +123,11 @@ namespace LinBox
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
-		//-- Principal method
+		/*-- Principal method
+		 * C is set to the minpoly when full_poly = true.
+		 * full_poly = false saves 2 iterations. Then C is sometimes not the minpoly, 
+		 * but is a poly sufficient for rank deduction.
+	     */
 		template<class Polynomial>
 		long operator () (Polynomial &C, bool full_poly = false)
 		{
