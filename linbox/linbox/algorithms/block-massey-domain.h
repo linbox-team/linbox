@@ -56,7 +56,7 @@
 // #define __PRINT_SIGMABASE
 
 //#define _BM_TIMING
-#define DEFAULT_EARLY_TERM_THRESHOLD 10
+#define DEFAULT_BLOCK_EARLY_TERM_THRESHOLD 10
 
 namespace LinBox
 {
@@ -92,7 +92,7 @@ namespace LinBox
 	 * This class encapsulates the functionality required for computing
 	 * the block minimal polynomial of a matrix.
 	 * @bib
-	 * Giorgi, Jeannerod Villard algorithm from ISSAC'03
+	 * Giorgi, Jeannerod, Villard algorithm from ISSAC'03
 	 */
 	template<class _Field, class _Sequence>
 	class BlockMasseyDomain {
@@ -190,16 +190,17 @@ namespace LinBox
 #endif
 
 
-		BlockMasseyDomain (const BlockMasseyDomain<Field, Sequence> &Mat, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+		BlockMasseyDomain (const BlockMasseyDomain<Field, Sequence> &Mat, unsigned long ett_default = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 			_container(Mat._container), _field(Mat._field), _BMD(Mat._field),
 			_MD(Mat._field),  EARLY_TERM_THRESHOLD (ett_default)
 		{
 #ifdef _BM_TIMING
 			clearTimer();
 #endif
+ 
 		}
 
-		BlockMasseyDomain (Sequence *D, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+		BlockMasseyDomain (Sequence *D, unsigned long ett_default = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 			_container(D), _field(D->getField ()), _BMD(D->getField ()), _MD(D->getField ()), EARLY_TERM_THRESHOLD (ett_default)
 		{
 #ifdef _BM_TIMING
@@ -413,6 +414,7 @@ namespace LinBox
 
 				// Apply BPerm2 and Qt to the vector of order and increase by 1 the last n rows
 				UnparametricField<long> UF(0);
+				// What?  
 				BlasMatrixDomain<UnparametricField<long> > BMDUF(UF);
 				BMDUF.mulin_right(Qt,order);
 				BMDUF.mulin_right(BPerm2,order);

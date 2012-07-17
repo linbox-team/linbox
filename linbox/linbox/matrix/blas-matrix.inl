@@ -437,7 +437,7 @@ namespace LinBox
 	void BlasMatrix< _Field>::random()
 	{
 		typename _Field::Element x; field().init(x);
-		typename _Field::RandIter r;
+		typename _Field::RandIter r(field());
 		for (size_t i = 0; i < rowdim(); ++i)
 			for (size_t j = 0; j < coldim(); ++j)
 				setEntry(i, j, r.random(x));
