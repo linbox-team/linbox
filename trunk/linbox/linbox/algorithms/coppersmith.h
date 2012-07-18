@@ -30,9 +30,11 @@ using namespace std;
 
 
 #include "linbox/integer.h"
+#include "linbox/matrix/matrix-category.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"
-#include "linbox/algorithms/bm-seq.h"
+#include "linbox/algorithms/block-coppersmith-domain.h"
+//#include "linbox/algorithms/bm-seq.h"
 #include "linbox/vector/vector-domain.h"
 
 #include "linbox/util/error.h"
@@ -68,170 +70,118 @@ namespace LinBox
 
 		template <class Blackbox>
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
-		{ 
-			// stub to be replaced by real code
-			return y = x;
-		}
-
-#if 0 //  Pascal's left side code to be used as a template
-		template <class Blackbox>
-		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
-			Transpose<Blackbox> A(B);
+			//Set up the projection matrices and their dimensions
+			size_t d = B.coldim();
+			size_t r,c;
+			integer tmp = d;
+			
+			//Set the blocking size, Using Pascal Giorgi's convention
+			r=tmp.bitsize()-1;
+			c=tmp.bitsize()-1;
 
-			size_t m,n;
-			m = A.rowdim();
-			n = A.coldim();
+			//Create the blocks
+			Block U(_field,r,d);
+			Block W(_field,d,c-1);
+			Block V(_field,d,c);
 
-			size_t p,q;
-			integer tmp;
-			tmp = m;
-			p = tmp.bitsize()-1;
-			//p=sqrt(tmp);
-			tmp = n;
-			q = tmp.bitsize()-1;
-			//q=sqrt(tmp);
-			//std::cout<<"row block: "<<p<<std::endl;
-			//std::cout<<"col block: "<<q<<std::endl;
+			//Pick random entries for U and W. W will become the last c-1 columns of V
+			for(size_t i=0; i<r;i++)
+				for(size_t j=0; j<d; j++)
+					_rand.random(U.refEntry(i,j));
+			for(size_t i=0; i<d;i++)
+				for(size_t j=0; j<c-1; j++){
+					_rand.random(W.refEntry(i,j));
+			}
 
+			//Multiply W by B on the left and place it in the last c-1 columns of V
+			typename MatrixDomain<Field>::Submatrix V2(V,0,1,d,c-1);
+			_MD.mul(V2,B,W);
 
-			Block U(_field,p,m), UA(_field,p-1,m), V(_field,n,q);
+			//Make the first column of V a copy of the right side of the system, y
+			for(size_t i=0; i<d; i++)
+				V.setEntry(i,0,y[i]);
 
-			for (size_t i=0;i<n;++i)
-				for (size_t j=0;j<q;++j)
-					_rand.random(V.refEntry(i,j));
+			//Create the sequence container and its iterator that will compute the projection
+			BlackboxBlockContainer<Field, Blackbox > blockseq(&B,_field,U,V);
 
-			for (size_t i=0;i<p-1;++i)
-				for (size_t j=0;j<m;++j)
-					_rand.random(UA.refEntry(i,j));
+			//Get the generator of the projection using the Coppersmith algorithm (slightly modified by Yuhasz)
+			BlockCoppersmithDomain<Field, BlackboxBlockContainer<Field, Blackbox> > BCD(&blockseq,d);
+			std::vector<Block> gen;
+			std::vector<size_t> deg;
+			deg = BCD.right_minpoly(gen);
 
-			typename Block::RowIterator        iter_U  = U.rowBegin();
-			typename Block::ConstRowIterator   iter_UA = UA.rowBegin();
-			++iter_U;
-			for (; iter_UA != UA.rowEnd(); ++iter_UA, ++iter_U)
-				A.applyTranspose( *iter_U , *iter_UA );
-
-			for (size_t i=0;i<m;++i)
-				U.setEntry(0,i,y[i]);
-
-			BlackboxBlockContainer<Field,Transpose<Blackbox> > Sequence (&A,_field,U,V);
-			BlockMasseyDomain <Field,BlackboxBlockContainer<Field,Transpose<Blackbox> > > MBD(&Sequence);
-
-			std::vector<Block> minpoly;
-			std::vector<size_t> degree;
-			MBD.left_minpoly(minpoly,degree); 
-			//MBD.printTimer();
-
-                        //cout<<"minpoly is: \n";
-                        //write_maple(_field,minpoly);
-                        //cout<<endl;
-
-			size_t idx=0;
-			if ( _field.isZero(minpoly[0].getEntry(0,0))) {
-
-				size_t i=1;
-				while (i<p && _field.isZero(minpoly[0].getEntry(i,0)))
-					++i;
-				if (i == p)
+			//Reconstruct the solution
+			//Pick a column of the generator with a nonzero element in the first row of the constant coefficient
+			size_t idx = 0;
+			if(_field.isZero(gen[0].getEntry(0,0))){
+				size_t i = 1;
+				while(i<c && _field.isZero(gen[0].getEntry(0,i)))
+					i++;
+				if(i==c)
 					throw LinboxError(" block minpoly: matrix seems to be singular - abort");
 				else
-					idx=i	;
+					idx=i;
 			}
 
-
-			bool classic = true;
-			if ( classic) {
-				/*
-				 * Compute the solution according to the polynomial combination
-				 * given by each column of the idx-th row of MinPoly such that the constant term of
-				 * the first element in this row is non zero.
-				 * we use y and UA as projection (UA= U.A)
-				 */
-				size_t deg = degree[idx];
-				std::vector<Vector> combi(p,Vector(deg+1));
-				for (size_t i=0;i<p;++i)
-					for (size_t k=0;k<deg+1;++k)
-						combi[i][k]=minpoly[k].getEntry(idx,i);
-
-				Vector lhs(n);
-				A.applyTranspose(lhs,y);
-				_VDF.mulin(lhs,combi[0][deg]);
-				Vector lhsbis(lhs);
-				for (int i = deg-1 ; i > 0;--i) {
-					_VDF.axpy (lhs, combi[0][i], y, lhsbis);
-					A.applyTranspose (lhsbis, lhs);
+			//from 1 to the degree of the index column, multiply A^(i-1)V times the idx column of the generator coefficient x^i
+			//Accumulate these results in xm
+			size_t mu = deg[idx];
+			Block BVo(V);
+			Block BVe(_field,d,c);
+			Block xm(_field,d,1);
+			bool odd = true;
+			for(size_t i = 1; i < mu+1; i++){
+				typename MatrixDomain<Field>::Submatrix gencol(gen[i],0,idx,d,1);
+				Block BVgencol(_field,d,1);
+				if(odd){
+					_MD.mul(BVgencol,BVo,gencol);
+					_MD.addin(xm, BVgencol);
+					_MD.mul(BVe,B,BVo);
+					odd=false;
 				}
-
-				Vector accu (lhs);
-				for (size_t k=1;k<p;++k){
-					Vector row(m);
-					for (size_t j=0;j<m;++j)
-						row[j]=UA.getEntry(k-1,j);
-					A.applyTranspose(lhs,row);
-					_VDF.mulin(lhs,combi[k][deg]);
-					Vector lhsbis(lhs);
-					for (int i = deg-1 ; i >= 0;--i) {
-						_VDF.axpy (lhs, combi[k][i], row, lhsbis);
-						A.applyTranspose (lhsbis, lhs);
-					}
-					_VDF.addin(accu,lhs);
+				else{
+					_MD.mul(BVgencol,BVe,gencol);
+					_MD.addin(xm, BVgencol);
+					_MD.mul(BVo,B,BVe);
+					odd=true;
 				}
-				Element scaling;
-				_field.init(scaling);
-				_field.neg(scaling,combi[0][0]);
-				_field.invin(scaling);
-				_VDF.mul(x,accu,scaling);
-
-			}
-			else {
-				/*
-				 * Compute the solution according to the polynomial combination
-				 * given by the product of the idx-th row of MinPoly and UA.
-				 * this should decrease the number of sparse apply but increase memory requirement.
-				 */
-				size_t deg = degree[idx];
-				Block idx_poly(_field,deg+1,p-1);
-				for (size_t i=0;i<deg+1;++i)
-					for (size_t j=0;j<p-1;++j)
-						idx_poly.setEntry(i,j,minpoly[i].getEntry(idx,j+1));
-
-				Block Combi(_field,deg+1,m);
-				_BMD.mul(Combi,idx_poly,UA);
-
-				Vector lhs(n),row(m);
-				for (size_t i=0;i<m;++i)
-					row[i]= Combi.getEntry(deg,i);
-
-				A.applyTranspose(lhs,row);
-				Vector lhsbis(lhs);
-				for (int i = deg-1 ; i >= 0;--i) {
-					for (size_t j=0;j<m;++j)
-						row[j]= Combi.getEntry(i,j);
-					_VDF.add (lhs,row,lhsbis);
-					A.applyTranspose (lhsbis, lhs);
-				}
-
-				Vector accu (lhs);
-
-				A.applyTranspose(lhs,y);
-				_VDF.mulin(lhs,minpoly[deg].getEntry(idx,0));
-				lhsbis=lhs;
-				for (size_t i = deg-1 ; i > 0;--i) {
-					_VDF.axpy (lhs,minpoly[i].getEntry(idx,0) , y, lhsbis);
-					A.applyTranspose (lhsbis, lhs);
-				}
-
-				_VDF.addin(accu,lhs);
-				Element scaling;
-				_field.init(scaling);
-				_field.neg(scaling,minpoly[0].getEntry(idx,0));
-				_field.invin(scaling);
-				_VDF.mul(x,accu,scaling);
+						
 			}
 
+			//For the constant coefficient, loop over the elements in the idx column except the first row
+			//Multiply the corresponding column of W (the last c-1 columns of V before application of B) by the generator element
+			//Accumulate the results in xm
+			for(size_t i = 1; i < c; i++){
+				typename MatrixDomain<Field>::Submatrix Wcol(W,0,i-1,d,1);
+				Block Wcolgen0(_field,d,1);
+				_MD.mul(Wcolgen0, Wcol, gen[0].getEntry(i,idx));
+				_MD.addin(xm,Wcolgen0);
+			}
+
+			//Multiply xm by -1(move to the correct side of the equation) and divide the the 0,idx entry of the generator constant
+			_MD.negin(xm);
+			typename Field::Element gen0inv;
+			_MD.mulin(xm, _field.inv(gen0inv, gen[0].getEntry(0,idx)));
+
+			//Test to see if the answer works with U
+			Block Bxm(_field,d,1), UBxm(_field,r,1), Uycol(_field, r,1);
+			typename MatrixDomain<Field>::Submatrix ycol(V,0,0,d,1);
+			_MD.mul(Uycol, U, ycol);
+			_MD.mul(Bxm, B, xm);
+			_MD.mul(UBxm, U, Bxm);
+
+			if(_MD.areEqual(UBxm, Uycol))
+				std::cout << "The solution matches when projected by U" << endl;
+			else
+				std::cout << "The solution does not match when projected by U" << endl;
+
+			//Copy xm into x (Change type from 1 column matrix to Vector)
+			for(size_t i =0; i<d; i++)
+				x[i]=xm.getEntry(i,1);
 			return x;
 		}
-#endif
+
 
 
 
