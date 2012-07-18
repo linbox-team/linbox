@@ -32,13 +32,13 @@ pkgincludesub_HEADERS=          \
     minpoly.h                   \
     nullspace.h                 \
     rank.h                      \
-    smith-form.h
+    smith-form.h                \
     solve.h                     \
     trace.h                     \
     valence.h
 
-#    rankin.h			\
-#    wiedemann-rank.h		\
+#    rankin.h
+#    wiedemann-rank.h
 
 EXTRA_DIST =                \
     charpoly.doxy           \
