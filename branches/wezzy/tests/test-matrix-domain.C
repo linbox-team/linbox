@@ -1204,10 +1204,18 @@ static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
 	for (i = I.rowBegin (); i != I.rowEnd (); ++i)
 		Istream >> *i;
 
-	MD.blackboxMulRight (IA, I, A);
-
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << "Output matrix IA:" << endl;
+
+	MD.blackboxMulRight (IA, I, A);
+	report << "blackboxMulRight Output matrix IA:" << endl;
+	MD.write (report, IA);
+
+	MD.mul (IA, I, A);
+	report << "mul Output matrix IA:" << endl;
+	MD.write (report, IA);
+
+	MD.mul (IA, A, I);
+	report << "mul Output matrix AI:" << endl;
 	MD.write (report, IA);
 
 	typename LinBox::Vector<Field>::Dense v (A.coldim ()), w1 (A.rowdim ()), w2 (A.rowdim ());
@@ -1468,6 +1476,28 @@ bool testMatrixDomain (const Field &F, const char *text,
 	return pass;
 }
 
+template <class Field, class Blackbox, class Matrix>
+bool testMatrixDomain (const Field &F, const char *text,
+		       Matrix &M1, Matrix &M2, Matrix &M3,
+		       const Blackbox &A,
+		       unsigned int iterations,
+		       MatrixCategories::BlackboxTag)
+{
+	ostringstream str;
+	str << "Testing MatrixDomain with " << text << " matrices" << ends;
+	commentator().start (str.str ().c_str ());
+
+	bool pass = true;
+
+	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, A.coldim (), iterations);
+
+	if (!testRightBlackboxMul (F, text, A, stream)) pass = false;
+
+	commentator().stop (MSG_STATUS (pass));
+
+	return pass;
+}
+
 template <class Field>
 bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, int iterations)
 {
@@ -1497,6 +1527,10 @@ bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, int it
 
 	if (!testMatrixDomain (F, "dense", M1, M2, M3, A1, iterations,
 			       typename MatrixTraits<BlasMatrix<Field> >::MatrixCategory ()))
+		pass = false;
+	Diagonal<Field> A1b (F, n, true); // random, nonsingular
+	if (!testMatrixDomain (F, "blackbox", M1, M2, M3, A1b, iterations,
+			       typename MatrixTraits<Diagonal<Field> >::MatrixCategory ()))
 		pass = false;
 
 	SparseMatrixBase<Element> M4 (n, m);

@@ -75,6 +75,7 @@ FULLCHECK_TESTS =                 \
         test-bitonic-sort             \
         test-blackbox-block-container \
         test-blas-domain              \
+		test-block-wiedemann		  \
         test-butterfly                \
         test-companion                \
         test-dense                    \
@@ -602,6 +603,9 @@ test_la_block_lanczos_SOURCES =         \
 
 test_mg_block_lanczos_SOURCES =         \
         test-mg-block-lanczos.C
+
+test_block_wiedemann_SOURCES =         \
+        test-block-wiedemann.C
 
 test_rational_solver_adaptive_SOURCES = \
         test-rational-solver-adaptive.C \

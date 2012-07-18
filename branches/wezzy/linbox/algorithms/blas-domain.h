@@ -318,7 +318,7 @@ namespace LinBox
 
 	protected:
 
-		const Field  & _field;
+		const Field  * _field;
 		Element _One;
 		Element _Zero;
 		Element _MOne;
@@ -328,7 +328,7 @@ namespace LinBox
 		//! Constructor of BlasDomain.
 
 		BlasMatrixDomain (const Field& F ) :
-			_field(F)
+			_field(&F)
 		{
 			F.init(_One,1UL);
 			F.init(_Zero,0UL);
@@ -336,7 +336,8 @@ namespace LinBox
 #ifndef NDEBUG
 			if (!Givaro::probab_prime(F.characteristic())) {
 				std::cout << " *** WARNING *** "                                           << std::endl;
-				std::cout << " You are using a BLAS Domain where your field is not prime " << std::endl;
+				std::cout << " You are using a BLAS Domain where your field is not prime " << 
+				F.characteristic() << std::endl;
 			}
 #endif
 		}
@@ -346,7 +347,7 @@ namespace LinBox
 			_field(BMD._field), _One(BMD._One), _Zero(BMD._Zero), _MOne(BMD._MOne)
 		{
 #ifndef NDEBUG
-			if (!Givaro::probab_prime(_field.characteristic())) {
+			if (!Givaro::probab_prime(field().characteristic())) {
 				std::cout << " *** WARNING *** "                                           << std::endl;
 				std::cout << " You are using a BLAS Domain where your field is not prime " << std::endl;
 			}
@@ -358,7 +359,7 @@ namespace LinBox
 		//! Field accessor
 		const Field& field() const
 		{
-			return _field;
+			return *_field;
 		}
 
 
@@ -371,7 +372,7 @@ namespace LinBox
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const
 		{
-			return BlasMatrixDomainMul<Field,Operand1,Operand2,Operand3>()(_field,C,A,B);
+			return BlasMatrixDomainMul<Field,Operand1,Operand2,Operand3>()(field(),C,A,B);
 		}
 
 		//! addition.
@@ -379,7 +380,7 @@ namespace LinBox
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& add(Operand1& C, const Operand2& A, const Operand3& B) const
 		{
-			return BlasMatrixDomainAdd<Field,Operand1,Operand2,Operand3>()(_field,C,A,B);
+			return BlasMatrixDomainAdd<Field,Operand1,Operand2,Operand3>()(field(),C,A,B);
 		}
 
 		//! copy.
@@ -387,7 +388,7 @@ namespace LinBox
 		template <class Operand1, class Operand2>
 		Operand1& copy(Operand1& B, const Operand2& A) const
 		{
-			return BlasMatrixDomainCopy<Field,Operand1,Operand2>()(_field,B,A);
+			return BlasMatrixDomainCopy<Field,Operand1,Operand2>()(field(),B,A);
 		}
 
 		//! substraction
@@ -395,7 +396,7 @@ namespace LinBox
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& sub(Operand1& C, const Operand2& A, const Operand3& B) const
 		{
-			return BlasMatrixDomainSub<Field,Operand1,Operand2,Operand3>()(_field,C,A,B);
+			return BlasMatrixDomainSub<Field,Operand1,Operand2,Operand3>()(field(),C,A,B);
 		}
 
 		//! substraction (in place)
@@ -403,7 +404,7 @@ namespace LinBox
 		template <class Operand1, class Operand3>
 		Operand1& subin(Operand1& C, const Operand3& B) const
 		{
-			return BlasMatrixDomainSubin<Field,Operand1,Operand3>()(_field,C,B);
+			return BlasMatrixDomainSubin<Field,Operand1,Operand3>()(field(),C,B);
 		}
 
 		//! addition (in place)
@@ -411,7 +412,7 @@ namespace LinBox
 		template <class Operand1, class Operand3>
 		Operand1& addin(Operand1& C, const Operand3& B) const
 		{
-			return BlasMatrixDomainAddin<Field,Operand1,Operand3>()(_field,C,B);
+			return BlasMatrixDomainAddin<Field,Operand1,Operand3>()(field(),C,B);
 		}
 
 
@@ -429,7 +430,7 @@ namespace LinBox
 		template <class Operand1, class Operand2>
 		Operand1& mulin_left(Operand1& A, const Operand2& B ) const
 		{
-			return BlasMatrixDomainMulin<Field,Operand1,Operand2>()(_field,A,B);
+			return BlasMatrixDomainMulin<Field,Operand1,Operand2>()(field(),A,B);
 		}
 
 		//! In place multiplication.
@@ -437,7 +438,7 @@ namespace LinBox
 		template <class Operand1, class Operand2>
 		Operand2& mulin_right(const Operand1& A, Operand2& B ) const
 		{
-			return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(_field,A,B);
+			return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(field(),A,B);
 		}
 
 		//! axpy.
@@ -494,7 +495,7 @@ namespace LinBox
 		Operand1& muladd(Operand1& D, const Element& beta, const Operand1& C,
 				 const Element& alpha, const Operand2& A, const Operand3& B) const
 		{
-			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(_field,D,beta,C,alpha,A,B);
+			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(field(),D,beta,C,alpha,A,B);
 		}
 
 		//! muladdin.
@@ -503,7 +504,7 @@ namespace LinBox
 		Operand1& muladdin(const Element& beta, Operand1& C,
 				   const Element& alpha, const Operand2& A, const Operand3& B) const
 		{
-			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(_field,beta,C,alpha,A,B);
+			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(field(),beta,C,alpha,A,B);
 		}
 
 
@@ -516,7 +517,7 @@ namespace LinBox
 		template <class Matrix>
 		Matrix& inv( Matrix &Ainv, const Matrix &A) const
 		{
-			BlasMatrixDomainInv<Field,Matrix>()(_field,Ainv,A);
+			BlasMatrixDomainInv<Field,Matrix>()(field(),Ainv,A);
 			return Ainv;
 		}
 
@@ -524,7 +525,7 @@ namespace LinBox
 		template <class Matrix>
 		Matrix& invin( Matrix &Ainv, Matrix &A) const
 		{
-			BlasMatrixDomainInv<Field,Matrix>()(_field,Ainv,A);
+			BlasMatrixDomainInv<Field,Matrix>()(field(),Ainv,A);
 			return Ainv;
 		}
 
@@ -534,7 +535,7 @@ namespace LinBox
 		{
 			Matrix tmp(A.rowdim(), A.coldim());
 			tmp = A;
-			BlasMatrixDomainInv<Field,Matrix>()(_field,A,tmp);
+			BlasMatrixDomainInv<Field,Matrix>()(field(),A,tmp);
 			return A;
 		}
 
@@ -553,7 +554,7 @@ namespace LinBox
 		template <class Matrix>
 		Matrix& inv( Matrix &Ainv, const Matrix &A, int& nullity) const
 		{
-			nullity = BlasMatrixDomainInv<Field,Matrix>()(_field,Ainv,A);
+			nullity = BlasMatrixDomainInv<Field,Matrix>()(field(),Ainv,A);
 			return Ainv;
 		}
 
@@ -561,7 +562,7 @@ namespace LinBox
 		template <class Matrix>
 		Matrix& invin( Matrix &Ainv, Matrix &A, int& nullity) const
 		{
-			nullity = BlasMatrixDomainInv<Field,Matrix>()(_field,Ainv,A);
+			nullity = BlasMatrixDomainInv<Field,Matrix>()(field(),Ainv,A);
 			return Ainv;
 		}
 
@@ -569,28 +570,28 @@ namespace LinBox
 		template <class Matrix>
 		unsigned int rank(const Matrix &A) const
 		{
-			return BlasMatrixDomainRank<Field,Matrix>()(_field,A);
+			return BlasMatrixDomainRank<Field,Matrix>()(field(),A);
 		}
 
 		//! in-place Rank (the matrix is modified)
 		template <class Matrix>
 		unsigned int rankin(Matrix &A) const
 		{
-			return BlasMatrixDomainRank<Field, Matrix>()(_field,A);
+			return BlasMatrixDomainRank<Field, Matrix>()(field(),A);
 		}
 
 		//! determinant
 		template <class Matrix>
 		Element det(const Matrix &A) const
 		{
-			return BlasMatrixDomainDet<Field, Matrix>()(_field,A);
+			return BlasMatrixDomainDet<Field, Matrix>()(field(),A);
 		}
 
 		//! in-place Determinant (the matrix is modified)
 		template <class Matrix>
 		Element detin(Matrix &A) const
 		{
-			return BlasMatrixDomainDet<Field, Matrix>()(_field,A);
+			return BlasMatrixDomainDet<Field, Matrix>()(field(),A);
 		}
 		//@}
 
@@ -604,7 +605,7 @@ namespace LinBox
 		template <class Operand, class Matrix>
 		Operand& left_solve (Operand& X, const Matrix& A, const Operand& B) const
 		{
-			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(_field,X,A,B);
+			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(field(),X,A,B);
 		}
 
 		//! linear solve with matrix right hand side, the result is stored in-place in B.
@@ -613,7 +614,7 @@ namespace LinBox
 		template <class Operand,class Matrix>
 		Operand& left_solve (const Matrix& A, Operand& B) const
 		{
-			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(_field,A,B);
+			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(field(),A,B);
 		}
 
 		//! linear solve with matrix right hand side.
@@ -621,7 +622,7 @@ namespace LinBox
 		template <class Operand, class Matrix>
 		Operand& right_solve (Operand& X, const Matrix& A, const Operand& B) const
 		{
-			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(_field,X,A,B);
+			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(field(),X,A,B);
 		}
 
 		//! linear solve with matrix right hand side, the result is stored in-place in B.
@@ -630,14 +631,14 @@ namespace LinBox
 		template <class Operand, class Matrix>
 		Operand& right_solve (const Matrix& A, Operand& B) const
 		{
-			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(_field,A,B);
+			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(field(),A,B);
 		}
 
 		//! minimal polynomial computation.
 		template <class Polynomial, class Matrix>
 		Polynomial& minpoly( Polynomial& P, const Matrix& A ) const
 		{
-			return BlasMatrixDomainMinpoly<Field, Polynomial, Matrix>()(_field,P,A);
+			return BlasMatrixDomainMinpoly<Field, Polynomial, Matrix>()(field(),P,A);
 		}
 
 		//! characteristic polynomial computation.
@@ -648,7 +649,7 @@ namespace LinBox
 			commentator().start ("Modular Dense Charpoly ", "MDCharpoly");
 			std::list<Polynomial> P_list;
 			P_list.clear();
-			BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(_field,P_list,A);
+			BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(field(),P_list,A);
 
 
 			Polynomial tmp(A.rowdim()+1);
@@ -670,7 +671,7 @@ namespace LinBox
 		template <class Polynomial, class Matrix >
 		std::list<Polynomial>& charpoly( std::list<Polynomial>& P, const Matrix& A ) const
 		{
-			return BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(_field,P,A);
+			return BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(field(),P,A);
 		}
 
 
@@ -683,10 +684,10 @@ namespace LinBox
 			size_t i,j;
 			res.resize(P1.size()+P2.size()-1);
 			for (i=0;i<res.size();i++)
-				_field.assign(res[i],_Zero);
+				field().assign(res[i],_Zero);
 			for ( i=0;i<P1.size();i++)
 				for ( j=0;j<P2.size();j++)
-					_field.axpyin(res[i+j],P1[i],P2[j]);
+					field().axpyin(res[i+j],P1[i],P2[j]);
 			return res;
 
 		}
@@ -699,7 +700,7 @@ namespace LinBox
 				return false ;
 			for (size_t i = 0 ; i < A.rowdim() ; ++i)
 				for (size_t j = 0 ; j < A.coldim() ; ++j)
-					if (!_field.areEqual(A.getEntry(i,j),B.getEntry(i,j))) //!@bug use refs
+					if (!field().areEqual(A.getEntry(i,j),B.getEntry(i,j))) //!@bug use refs
 						return false ;
 			return true ;
 		}
@@ -733,7 +734,7 @@ namespace LinBox
 		{
 			for (size_t i = 0 ; i < A.rowdim() ; ++i)
 				for (size_t j = 0 ; j < A.coldim() ; ++j)
-					if (!_field.isZero(A.getEntry(i,j))) //!@bug use refs
+					if (!field().isZero(A.getEntry(i,j))) //!@bug use refs
 						return false ;
 			return true ;
 		}
@@ -744,16 +745,16 @@ namespace LinBox
 			if (A.rowdim() != A.coldim())
 				return false ;
 			for (size_t i = 0 ; i < A.rowdim() ; ++i)
-				if (!_field.isOne(A.getEntry(i,i)))
+				if (!field().isOne(A.getEntry(i,i)))
 					return false;
 
 			for (size_t i = 0 ; i < A.rowdim() ; ++i)
 				for (size_t j = 0 ; j < i ; ++j)
-					if (!_field.isZero(A.getEntry(i,j))) //!@bug use refs
+					if (!field().isZero(A.getEntry(i,j))) //!@bug use refs
 						return false ;
 			for (size_t i = 0 ; i < A.rowdim() ; ++i)
 				for (size_t j = i+1 ; j < A.coldim() ; ++j)
-					if (!_field.isZero(A.getEntry(i,j))) //!@bug use refs
+					if (!field().isZero(A.getEntry(i,j))) //!@bug use refs
 						return false ;
 			return true ;
 		}
@@ -763,16 +764,16 @@ namespace LinBox
 		{
 			size_t mn = std::min(A.rowdim(),A.coldim());
 			for (size_t i = 0 ; i < mn ; ++i)
-				if (!_field.isOne(A.getEntry(i,i)))
+				if (!field().isOne(A.getEntry(i,i)))
 					return false;
 
 			for (size_t i = 0 ; i < A.rowdim() ; ++i)
 				for (size_t j = 0 ; j < std::min(i,mn) ; ++j)
-					if (!_field.isZero(A.getEntry(i,j))) //!@bug use refs
+					if (!field().isZero(A.getEntry(i,j))) //!@bug use refs
 						return false ;
 			for (size_t i = 0 ; i < A.rowdim() ; ++i)
 				for (size_t j = i+1 ; j < A.coldim() ; ++j)
-					if (!_field.isZero(A.getEntry(i,j))) //!@bug use refs
+					if (!field().isZero(A.getEntry(i,j))) //!@bug use refs
 						return false ;
 			return true ;
 		}
@@ -793,7 +794,7 @@ namespace LinBox
 		template <class Matrix>
 		inline std::ostream &write (std::ostream &os, const Matrix &A, bool maple_format) const
 		{
-			return A.write (os, _field, maple_format);
+			return A.write (os, field(), maple_format);
 		}
 
 		/** Read matrix
@@ -804,7 +805,7 @@ namespace LinBox
 		template <class Matrix>
 		inline std::istream &read (std::istream &is, Matrix &A) const
 		{
-			return A.read (is, _field);
+			return A.read (is, field());
 		}
 
 	}; /* end of class BlasMatrixDomain */

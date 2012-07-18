@@ -433,6 +433,15 @@ namespace LinBox
 		// free(_ptr);
 	}
 
+	template <class _Field>
+	void BlasMatrix< _Field>::random()
+	{
+		typename _Field::Element x; field().init(x);
+		typename _Field::RandIter r(field());
+		for (size_t i = 0; i < rowdim(); ++i)
+			for (size_t j = 0; j < coldim(); ++j)
+				setEntry(i, j, r.random(x));
+	}
 } // LinBox
 
 ///////////////////
@@ -443,7 +452,6 @@ namespace LinBox
 {
 
 	template <class _Field>
-	// template <class Field>
 	std::istream &BlasMatrix< _Field>::read (std::istream &file)
 	{
 #if 0
@@ -551,7 +559,7 @@ namespace LinBox
 			break;
 		case (LinBoxTag::FormatMaple) : /*  maple format */
 			{
-				os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+				os << "Matrix( " << rowdim() << ',' << coldim() << ",[" << std::endl;
 				for (p = rowBegin (); p != rowEnd (); ) {
 					typename ConstRow::const_iterator pe;
 
@@ -1674,13 +1682,18 @@ namespace LinBox
 		//_stride ?
 		if (_use_fflas){
 			//!@bug this supposes &x[0]++ == &x[1]
+                        // PG: try to discover stride of x and y (not use it works on every platform)
+                        size_t ldx,ldy;
+                        ldx=&x[1] - &x[0]; 
+                        ldy=&y[1] - &y[0]; 
+                                
 			FFLAS::fgemv((typename Field::Father_t) _field, FFLAS::FflasNoTrans,
 				      _row, _col,
 				      _field.one,
 				      _ptr, getStride(),
-				      &x[0],1,
+				      &x[0],ldx,
 				      _field.zero,
-				      &y[0],1);
+				      &y[0],ldy);
 		}
 		else {
 			_MD. vectorMul (y, *this, x);
@@ -1702,13 +1715,18 @@ namespace LinBox
 
 		//_stride ?
 		if (_use_fflas) {
+                        // PG: try to discover stride of x and y (not use it works on every platform)
+                        size_t ldx,ldy;
+                        ldx=&x[1] - &x[0]; 
+                        ldy=&y[1] - &y[0]; 
+                        
 			FFLAS::fgemv((typename Field::Father_t) _field, FFLAS::FflasTrans,
 				      _row, _col,
 				      _field.one,
 				      _ptr, getStride(),
-				      &x[0],1,
+				      &x[0],ldx,
 				      _field.zero,
-				      &y[0],1);
+				      &y[0],ldy);
 		}
 		else {
 			typename BlasMatrix<_Field>::ConstColIterator i = this->colBegin ();

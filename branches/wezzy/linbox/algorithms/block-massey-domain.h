@@ -92,7 +92,7 @@ namespace LinBox
 	 * This class encapsulates the functionality required for computing
 	 * the block minimal polynomial of a matrix.
 	 * @bib
-	 * Giorgi, Jeannerod Villard algorithm from ISSAC'03
+	 * Giorgi, Jeannerod, Villard algorithm from ISSAC'03
 	 */
 	template<class _Field, class _Sequence>
 	class BlockMasseyDomain {
@@ -197,6 +197,7 @@ namespace LinBox
 #ifdef _BM_TIMING
 			clearTimer();
 #endif
+ 
 		}
 
 		BlockMasseyDomain (Sequence *D, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
@@ -413,6 +414,7 @@ namespace LinBox
 
 				// Apply BPerm2 and Qt to the vector of order and increase by 1 the last n rows
 				UnparametricField<long> UF(0);
+				// What?  
 				BlasMatrixDomain<UnparametricField<long> > BMDUF(UF);
 				BMDUF.mulin_right(Qt,order);
 				BMDUF.mulin_right(BPerm2,order);

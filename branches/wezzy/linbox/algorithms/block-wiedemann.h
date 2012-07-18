@@ -115,7 +115,7 @@ namespace LinBox
 
 			std::vector<Block> minpoly;
 			std::vector<size_t> degree;
-			MBD.left_minpoly(minpoly,degree); 
+			MBD.left_minpoly_rec(minpoly,degree); 
 			//MBD.printTimer();
 
                         //cout<<"minpoly is: \n";
