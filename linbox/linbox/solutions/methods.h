@@ -467,7 +467,7 @@ namespace LinBox
 		{}
 	};
 
-	/// To select algorithms that use Yuhasz' algorithms/bm-seq.h
+	/// To select algorithms that use Yuhasz' algorithms/coppersmith.h
 	struct CoppersmithTraits : public Specifier {
 		CoppersmithTraits ( Preconditioner Precond= NO_PRECONDITIONER,
 				       size_t         Rank   = RANK_UNKNOWN)
