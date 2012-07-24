@@ -1,26 +1,30 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/opencl-domain.h
- * Copyright (C) 2011 Matthew Wezowicz
+ * Copyright (C) 2012 Matthew Wezowicz
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
+ * Written by Matthew Wezowicz <mwezz@udel.edu>
+ *
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+ *.
  */
 
  /*###---    Generated On     ---###*/
- /*###--- 01/27/2012 22:15:30 ---###*/
+ /*###--- 07/24/2012 11:29:38 ---###*/
 
 #ifndef __LINBOX_opencl_matrix_domain_kernels_INL
 #define __LINBOX_opencl_matrix_domain_kernels_INL
@@ -2259,6 +2263,14 @@ namespace LinBox{
 		"}\n"
 	};
 
-} /* end of namespace LinBox */
+} // end of namespace LinBox
 
-#endif /* __LINBOX_opencl_matrix_domain_kernels_INL */
+#endif // __LINBOX_opencl_matrix_domain_kernels_INL
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:

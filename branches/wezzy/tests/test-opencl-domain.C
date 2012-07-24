@@ -1,16 +1,26 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-
 /* tests/test-blas-domain.C
  * Copyright (C) 2011 Matthew Wezowicz
  *
  * Written by Matthew Wezowicz <mwezz@udel.edu>
  *
- * ---------------------------------------------------------
- *
- * See COPYING for license information.
- *
- *
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ * 
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+ *.
  */
 
 /*! @file  tests/test-blas-domain.C
@@ -19,17 +29,15 @@
  * @test NO DOC
  */
 
-//#include <new>
 #include <string>
 #include <iostream>
-//#include <pthread.h>
 
 #include "linbox/field/modular.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/algorithms/opencl-domain.h"
 #include "linbox/randiter/nonzero.h"
-#include "linbox/util/commentator.h"
+#include "linbox/util/commentator().h"
 
 #include "test-common.h"
 
@@ -67,7 +75,8 @@ public:
 		then = timerStack.top();
 		timerStack.pop();
 
-		returnValue = ((double)(now.tv_sec - then.tv_sec) + ((double)(now.tv_usec - then.tv_usec) * 1e-6));
+		returnValue = ((double)(now.tv_sec - then.tv_sec) + 
+		              ((double)(now.tv_usec - then.tv_usec) * 1e-6));
 
 		return returnValue;
 	}
@@ -97,9 +106,9 @@ static bool testMul(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing mul"),"testMul",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing mul"),"testMul",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -107,7 +116,7 @@ static bool testMul(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A(F,n,n);
 		Matrix B(F,n,n);
 		Matrix C_b(F,n,n);
@@ -125,17 +134,19 @@ static bool testMul(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.mul(C_b,A,B);
-		commentator.report() << "Blas mul() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas mul() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.mul(C_o,A,B);
-		commentator.report() << "OpenCL mul() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL mul() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
 		}
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testMul");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testMul");
 
 	return ret;
 }
@@ -146,9 +157,9 @@ static bool testMulinLeft(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing mulin_left"),"testMulinLeft",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing mulin_left"),"testMulinLeft",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -156,7 +167,7 @@ static bool testMulinLeft(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A_b(F,n,n);
 		Matrix A_o(F,n,n);
 		Matrix B(F,n,n);
@@ -175,17 +186,19 @@ static bool testMulinLeft(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.mulin_left(A_b,B);
-		commentator.report() << "Blas mulin_left() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas mulin_left() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.mulin_left(A_o,B);
-		commentator.report() << "OpenCL mulin_left() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL mulin_left() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(A_b,A_o)){
 			ret = false;
 		}
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testMulinLeft");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testMulinLeft");
 
 	return ret;
 }
@@ -196,9 +209,9 @@ static bool testMulinRight(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing mulin_right"),"testMulinRight",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing mulin_right"),"testMulinRight",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -206,7 +219,7 @@ static bool testMulinRight(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A(F,n,n);
 		Matrix B_b(F,n,n);
 		Matrix B_o(F,n,n);
@@ -225,17 +238,19 @@ static bool testMulinRight(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.mulin_right(A,B_b);
-		commentator.report() << "Blas mulin_right() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas mulin_right() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.mulin_right(A,B_o);
-		commentator.report() << "OpenCL mulin_right() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL mulin_right() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(B_b,B_o)){
 			ret = false;
 		}
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testMulinRight");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testMulinRight");
 
 	return ret;
 }
@@ -246,9 +261,9 @@ static bool testAxpy(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing axpy"),"testAxpy",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing axpy"),"testAxpy",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -256,7 +271,7 @@ static bool testAxpy(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A(F,n,n);
 		Matrix B(F,n,n);
 		Matrix C(F,n,n);
@@ -276,17 +291,19 @@ static bool testAxpy(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.axpy(D_b,A,B,C);
-		commentator.report() << "Blas axpy() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas axpy() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.axpy(D_o,A,B,C);
-		commentator.report() << "OpenCL axpy() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL axpy() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
 			ret = false;
 		}
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testAxpy");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testAxpy");
 
 	return ret;
 }
@@ -297,9 +314,9 @@ static bool testAxpyin(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing axpyin"),"testAxpyin",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing axpyin"),"testAxpyin",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -307,7 +324,7 @@ static bool testAxpyin(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A(F,n,n);
 		Matrix B(F,n,n);
 		Matrix C_b(F,n,n);
@@ -328,17 +345,19 @@ static bool testAxpyin(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.axpyin(C_b,A,B);
-		commentator.report() << "Blas axpyin() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas axpyin() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.axpyin(C_o,A,B);
-		commentator.report() << "OpenCL axpyin() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL axpyin() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
 		}
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testAxpyin");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testAxpyin");
 
 	return ret;
 }
@@ -349,9 +368,9 @@ static bool testMaxpy(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing maxpy"),"testMaxpy",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing maxpy"),"testMaxpy",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -359,7 +378,7 @@ static bool testMaxpy(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A(F,n,n);
 		Matrix B(F,n,n);
 		Matrix C(F,n,n);
@@ -379,17 +398,19 @@ static bool testMaxpy(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.maxpy(D_b,A,B,C);
-		commentator.report() << "Blas maxpy() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas maxpy() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.maxpy(D_o,A,B,C);
-		commentator.report() << "OpenCL maxpy() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL maxpy() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
 			ret = false;
 		}
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testMaxpy");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testMaxpy");
 
 	return ret;
 }
@@ -400,9 +421,9 @@ static bool testMaxpyin(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing maxpyin"),"testMaxpyin",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing maxpyin"),"testMaxpyin",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -410,7 +431,7 @@ static bool testMaxpyin(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A(F,n,n);
 		Matrix B(F,n,n);
 		Matrix C_b(F,n,n);
@@ -431,17 +452,19 @@ static bool testMaxpyin(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.maxpyin(C_b,A,B);
-		commentator.report() << "Blas maxpyin() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas maxpyin() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.maxpyin(C_o,A,B);
-		commentator.report() << "OpenCL maxpyin() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL maxpyin() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
 		}
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testMaxpyin");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testMaxpyin");
 
 	return ret;
 }
@@ -452,9 +475,9 @@ static bool testAxmy(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing axmy"),"testAxmy",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing axmy"),"testAxmy",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -462,7 +485,7 @@ static bool testAxmy(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A(F,n,n);
 		Matrix B(F,n,n);
 		Matrix C(F,n,n);
@@ -482,17 +505,19 @@ static bool testAxmy(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.axmy(D_b,A,B,C);
-		commentator.report() << "Blas axmy() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas axmy() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.axmy(D_o,A,B,C);
-		commentator.report() << "OpenCL axmy() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL axmy() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
 			ret = false;
 		}
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testAxmy");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testAxmy");
 
 	return ret;
 }
@@ -503,9 +528,9 @@ static bool testAxmyin(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing axmyin"),"testAxmyin",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing axmyin"),"testAxmyin",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -513,7 +538,7 @@ static bool testAxmyin(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A(F,n,n);
 		Matrix B(F,n,n);
 		Matrix C_b(F,n,n);
@@ -534,17 +559,19 @@ static bool testAxmyin(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.axmyin(C_b,A,B);
-		commentator.report() << "Blas axmyin() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas axmyin() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.axmyin(C_o,A,B);
-		commentator.report() << "OpenCL axmyin() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL axmyin() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
 		}
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testAxmyin");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testAxmyin");
 
 	return ret;
 }
@@ -555,9 +582,9 @@ static bool testMuladd(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing muladd"),"testMuladd",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing muladd"),"testMuladd",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -565,7 +592,7 @@ static bool testMuladd(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A(F,n,n);
 		Matrix B(F,n,n);
 		Matrix C(F,n,n);
@@ -585,10 +612,12 @@ static bool testMuladd(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.muladd(D_b,1.0,C,2.0,A,B);
-		commentator.report() << "Blas muladd() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas muladd() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.muladd(D_o,1.0,C,2.0,A,B);
-		commentator.report() << "OpenCL muladd() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL muladd() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
 			ret = false;
@@ -618,7 +647,7 @@ static bool testMuladd(const Field& F, size_t n, int iterations){
 		*/
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testMuladd");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testMuladd");
 
 	return ret;
 }
@@ -629,9 +658,9 @@ static bool testMuladdin(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing muladdin"),"testMuladdin",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing muladdin"),"testMuladdin",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -639,7 +668,7 @@ static bool testMuladdin(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A(F,n,n);
 		Matrix B(F,n,n);
 		Matrix C_b(F,n,n);
@@ -660,17 +689,19 @@ static bool testMuladdin(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.muladdin(1.0,C_b,2.0,A,B);
-		commentator.report() << "Blas muladdin() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas muladdin() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.muladdin(1.0,C_o,2.0,A,B);
-		commentator.report() << "OpenCL muladdin() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL muladdin() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
 		}
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testMuladdin");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testMuladdin");
 
 	return ret;
 }
@@ -681,9 +712,9 @@ static bool testMulscale(const Field& F, size_t n, int iterations){
 	typedef typename Field::RandIter RandIter;
 	typedef BlasMatrix<Field> Matrix;
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing mulscale"),"testMulscale",iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().start(pretty("Testing mulscale"),"testMulscale",iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -691,7 +722,7 @@ static bool testMulscale(const Field& F, size_t n, int iterations){
 	OpenCLMatrixDomain<Field> OMD(F);
 
 	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
+		commentator().progress(i);
 		Matrix A(F,n,n);
 		Matrix B(F,n,n);
 		Matrix C_b(F,n,n);
@@ -709,17 +740,19 @@ static bool testMulscale(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.mul(C_b,2.0,A,B);
-		commentator.report() << "Blas mulscale() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "Blas mulscale() execution time: " 
+		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.mul(C_o,2.0,A,B);
-		commentator.report() << "OpenCL mulscale() execution time: " << timer.toc() << std::endl;
+		commentator().report() << "OpenCL mulscale() execution time: " 
+		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
 			ret = false;
 		}
 	}
 
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testMulscale");
+	commentator().stop(MSG_STATUS(ret), (const char*)0, "testMulscale");
 
 	return ret;
 }
@@ -827,22 +860,33 @@ int main(int argc, char** argv){
 
 	srand((unsigned)time(NULL));
 
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
 
-	commentator.start("OpenCLMatrixDomain test suite", "OpenCLMatrixDomain");
+	commentator().start("OpenCLMatrixDomain test suite", "OpenCLMatrixDomain");
 
 	//For warmup of OpenCLMatrixDomainFactory
 	OpenCLMatrixDomain<Modular<double> > OMD(F);
 	
-	std::cout << "Number of OpenCL Devices: " <<  OpenCLMatrixDomainFactory::oclGetNumberOfDevices() << std::endl;
-	commentator.report() << "Number of OpenCL Devices: " << OpenCLMatrixDomainFactory::oclGetNumberOfDevices() << std::endl;
+	std::cout << "Number of OpenCL Devices: " 
+	          <<  OpenCLMatrixDomainFactory::oclGetNumberOfDevices() << std::endl;
+	commentator().report() << "Number of OpenCL Devices: " 
+	                       << OpenCLMatrixDomainFactory::oclGetNumberOfDevices() 
+	                       << std::endl;
 	
 	//testThreadSafe(iterations * 5);
 
 	pass &= launch_tests(F, (int)n, iterations);
 	pass &= launch_tests(H, (int)n, iterations);
 
-	commentator.stop(MSG_STATUS(pass), (const char*)0, "OpenCLMatrixDomain test suite");
+	commentator().stop(MSG_STATUS(pass), (const char*)0, "OpenCLMatrixDomain test suite");
 	return (pass ? 0 : -1);
 }
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:

@@ -1,23 +1,27 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/opencl-domain.h
  * Copyright (C) 2011      David Saunders
  *               2011-2012 Matthew Wezowicz
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
+ * Written by Matthew Wezowicz <mwezz@udel.edu>
+ *
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+ *.
  */
 
 /*! @file algorithms/opencl-domain.h
@@ -37,49 +41,6 @@
 #include "linbox/util/debug.h"
 
 #include "CL/cl.h"
-
-#ifndef _OPENCL_TIMER_
-#define _OPENCL_TIMER_
-
-#include <stack>
-#include <vector>
-#include <sys/time.h>
-
-class OpenCLTimer{
-
-private:
-	std::stack<struct timeval, std::vector<struct timeval> > timerStack;
-
-public:
-	OpenCLTimer(){}
-
-	~OpenCLTimer(){}
-
-	void tic(){
-		struct timeval tempTimeVal;
-		gettimeofday(&tempTimeVal, NULL);
-
-		timerStack.push(tempTimeVal);
-	}
-
-	double toc(){
-		double returnValue;
-		struct timeval now;
-		struct timeval then;
-
-		gettimeofday(&now, NULL);
-
-		then = timerStack.top();
-		timerStack.pop();
-
-		returnValue = ((double)(now.tv_sec - then.tv_sec) + ((double)(now.tv_usec - then.tv_usec) * 1e-6));
-
-		return returnValue;
-	}
-
-};
-
-#endif
 
 namespace LinBox{
 
@@ -105,32 +66,54 @@ namespace LinBox{
 
 	public:
 		/** NULL constructor.  */
-		SubmatrixAdapter() : _Mat(NULL), _row(0), _col(0), _r0(0), _c0(0), _stride(0), _off(0){}
+		SubmatrixAdapter() : _Mat(NULL),
+		                     _row(0),
+		                     _col(0),
+		                     _r0(0),
+		                     _c0(0),
+		                     _stride(0),
+		                     _off(0){}
 
 		/** Constructor from an existing @refMatrix
 		 * \param M Pointer to @ref Matrix of which to construct submatrix
 		 */
-		SubmatrixAdapter(const _Matrix& M) :
-			_Mat(&(const_cast<_Matrix&>(M))), _row(M.rowdim()), _col(M.coldim()),
-			_r0(0), _c0(0), _stride(M.coldim()), _off(0) {}
+		SubmatrixAdapter(const _Matrix& M) : _Mat(&(const_cast<_Matrix&>(M))),
+		                                     _row(M.rowdim()),
+		                                     _col(M.coldim()),
+		                                     _r0(0),
+		                                     _c0(0),
+		                                     _stride(M.coldim()),
+		                                     _off(0){}
 
 		/** Constructor from an existing @ref Matrix and dimensions.
 		 * \param M Pointer to @ref Matrix of which to construct submatrix
-		 * \param rowbeg Starting row
-		 * \param colgeb Starting column
+		 * \param row Starting row
+		 * \param col Starting column
 		 * \param Rowdim Row dimension
 		 * \param Coldim Column dimension
 		 */
-		SubmatrixAdapter(const _Matrix& M, size_t row, size_t col, size_t Rowdim, size_t Coldim) :
-			_Mat(&(const_cast<_Matrix&>(M))), _row(Rowdim), _col(Coldim),
-			_r0(row), _c0(col), _stride(M.coldim()), _off(row * _stride + col) {}
+		SubmatrixAdapter(const _Matrix& M,
+		                 size_t row,
+		                 size_t col,
+		                 size_t Rowdim,
+		                 size_t Coldim) : _Mat(&(const_cast<_Matrix&>(M))),
+		                                  _row(Rowdim),
+		                                  _col(Coldim),
+		                                  _r0(row),
+		                                  _c0(col),
+		                                  _stride(M.coldim()),
+		                                  _off(row * _stride + col){}
 
 		/** Constructor from an existing @ref SubmatrixAdapter
 		 * \param SM Pointer to @ref SubmatrixAdapter of which to construct submatrix
 		 */
-		SubmatrixAdapter(const SubmatrixAdapter<_Matrix>& SM) :
-			_Mat(SM._Mat) , _row(SM._row), _col(SM._col),
-			_r0(SM._r0), _c0(SM._c0), _stride(SM._stride), _off(SM._off) {}
+		SubmatrixAdapter(const SubmatrixAdapter<_Matrix>& SM) : _Mat(SM._Mat),
+		                                                        _row(SM._row),
+		                                                        _col(SM._col),
+		                                                        _r0(SM._r0),
+		                                                        _c0(SM._c0),
+		                                                        _stride(SM._stride),
+		                                                        _off(SM._off){}
 
 		/** Constructor from an existing submatrix and dimensions
 		 * @param SM Constant reference to SubmatrixAdapter from which to
@@ -140,9 +123,17 @@ namespace LinBox{
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
-		SubmatrixAdapter(const SubmatrixAdapter<_Matrix>& SM, size_t row, size_t col, size_t Rowdim, size_t Coldim) :
-			_Mat(SM._Mat), _row(Rowdim), _col(Coldim),
-			_r0(SM._r0 + row), _c0(SM._c0 + col), _stride(SM._stride), _off(SM._off + (row * _stride + col)) {}
+		SubmatrixAdapter(const SubmatrixAdapter<_Matrix>& SM,
+		                 size_t row,
+		                 size_t col,
+		                 size_t Rowdim,
+		                 size_t Coldim) : _Mat(SM._Mat),
+		                                  _row(Rowdim),
+		                                  _col(Coldim),
+		                                  _r0(SM._r0 + row),
+		                                  _c0(SM._c0 + col),
+		                                  _stride(SM._stride),
+		                                  _off(SM._off + (row * _stride + col)){}
 
 		/** Get the number of rows in the matrix
 		 * @return Number of rows in matrix
@@ -166,8 +157,8 @@ namespace LinBox{
 		}
 
 		/** Set the entry at (i, j).
-		 * @param i Row index of entry, 0...rowdim () - 1
-		 * @param j Column index of entry, 0...coldim () - 1
+		 * @param i Row index of entry, 0...rowdim() - 1
+		 * @param j Column index of entry, 0...coldim() - 1
 		 * @param a_ij Element to set
 		 */
 		void setEntry(size_t i, size_t j, const Element& a_ij){
@@ -175,8 +166,8 @@ namespace LinBox{
 		}
 
 		/** Get a writeable reference to an entry in the matrix.
-		 * @param i Row index of entry,  0...rowdim () - 1
-		 * @param j Column index of entry, 0...coldim () - 1
+		 * @param i Row index of entry,  0...rowdim() - 1
+		 * @param j Column index of entry, 0...coldim() - 1
 		 * @return Reference to matrix entry
 		 */
 		Element& refEntry(size_t i, size_t j){
@@ -184,8 +175,8 @@ namespace LinBox{
 		}
 
 		/** Get a read-only individual entry from the matrix.
-		 * @param i Row index of entry,  0...rowdim () - 1
-		 * @param j Column index of entry, 0...coldim () - 1
+		 * @param i Row index of entry,  0...rowdim() - 1
+		 * @param j Column index of entry, 0...coldim() - 1
 		 * @return Const reference to matrix entry
 		 */
 		const Element& getEntry(size_t i, size_t j) const{
@@ -196,8 +187,8 @@ namespace LinBox{
 		 * This form is more in the Linbox style and is provided for interface
 		 * compatibility with other parts of the library
 		 * @param x Element in which to store result
-		 * @param i Row index of entry,  0...rowdim () - 1
-		 * @param j Column index of entry, 0...coldim () - 1
+		 * @param i Row index of entry,  0...rowdim() - 1
+		 * @param j Column index of entry, 0...coldim() - 1
 		 * @return Reference to x
 		 */
 		Element& getEntry(Element& x, size_t i, size_t j){
@@ -279,10 +270,16 @@ namespace LinBox{
 		 * Checks to see if the memory levels required are possible
 		 */
 		template <class Operand1, class Operand2, class Operand3>
-		bool oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const;
+		bool oclMemCheck(Operand1& D,
+		                 const Operand2& A,
+		                 const Operand3& B,
+		                 const Operand1& C) const;
 
 		template <class Operand1>
-		bool oclMemCheck(Operand1& D, Operand1& A, Operand1& B, Operand1& C) const;
+		bool oclMemCheck(Operand1& D,
+		                 Operand1& A,
+		                 Operand1& B,
+		                 Operand1& C) const;
 
 		/**
 		 * @internal
@@ -298,66 +295,95 @@ namespace LinBox{
 		Operand2& oclReadMatrixBuffer(cl_mem buffer, Operand2 &matrix) const;
 
 		template <typename T, class Operand1>
-		cl_mem oclPadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
-			int newDimX, const Operand1 &matrix) const;
+		cl_mem oclPadMatrix(cl_mem matrixBuffer,
+		                    int matrixBufferSize,
+		                    int newDimX,
+		                    const Operand1 &matrix) const;
 
 		template <typename T, class Operand1>
-		Operand1& oclDepadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
-			int outputSize, int newDimX, Operand1& matrix) const;
-
-		/**
-		 * @internal
-		 * Update the class error code
-		 */
-		void updateErrcode(const cl_int err) const{
-			errcode = const_cast<cl_int>(err);
-		}
+		Operand1& oclDepadMatrix(cl_mem matrixBuffer,
+		                         int matrixBufferSize,
+		                         int outputSize,
+		                         int newDimX,
+		                         Operand1& matrix) const;
 
 		/**
 		 * @internal
 		 * Functions to call the passed kernel on the passed buffers
 		 */
 		template <typename T, typename U>
-		void oclCallKernel(cl_mem bufferC, cl_mem bufferA, cl_mem bufferB, int widthA, int heightA ,int widthB,
-			T p, cl_kernel selectedKernel) const;
+		void oclCallKernel(cl_mem bufferC,
+		                   cl_mem bufferA,
+		                   cl_mem bufferB,
+		                   int widthA,
+		                   int heightA,
+		                   int widthB,
+		                   T p,
+		                   cl_kernel selectedKernel) const;
 
 		template <typename T, typename U>
-		void oclCallKernel(cl_mem bufferD, cl_mem bufferA, cl_mem bufferB, cl_mem bufferC, int widthA, int heightA,
-			int widthB, T p, cl_kernel selectedKernel) const;
+		void oclCallKernel(cl_mem bufferD,
+		                   cl_mem bufferA,
+		                   cl_mem bufferB,
+		                   cl_mem bufferC,
+		                   int widthA,
+		                   int heightA,
+		                   int widthB,
+		                   T p,
+		                   cl_kernel selectedKernel) const;
 
 		template <typename T, typename U>
-		void oclCallKernel(cl_mem bufferD, cl_mem bufferA, cl_mem bufferB, cl_mem bufferC, T alpha, T beta,
-			int widthA, int heightA, int widthB, T p, cl_kernel selectedKernel) const;
+		void oclCallKernel(cl_mem bufferD,
+		                   cl_mem bufferA,
+		                   cl_mem bufferB,
+		                   cl_mem bufferC,
+		                   T alpha,
+		                   T beta,
+		                   int widthA,
+		                   int heightA,
+		                   int widthB,
+		                   T p,
+		                   cl_kernel selectedKernel) const;
 
 		/**
 		 * @internal
 		 * Functions to partition the matrices into submatrix views
 		 */
 		template <class Operand1, class Operand2, class Operand3>
-		std::vector<int> oclPartition(Operand1& C, const Operand2& A, const Operand3& B,
-			std::vector<SubmatrixAdapter<Operand1> >& VC, std::vector<SubmatrixAdapter<Operand2> >& VA,
-			std::vector<SubmatrixAdapter<Operand3> >& VB) const;
+		std::vector<int> oclPartition(Operand1& C,
+		                              const Operand2& A,
+		                              const Operand3& B,
+		                              std::vector<SubmatrixAdapter<Operand1> >& VC,
+		                              std::vector<SubmatrixAdapter<Operand2> >& VA,
+		                        std::vector<SubmatrixAdapter<Operand3> >& VB) const;
 
 		template <class Operand1, class Operand2, class Operand3>
-		std::vector<int> oclPartition(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C,
-			std::vector<SubmatrixAdapter<Operand1> >& VD, std::vector<SubmatrixAdapter<Operand2> >& VA,
-			std::vector<SubmatrixAdapter<Operand3> >& VB, std::vector<SubmatrixAdapter<Operand1> >& VC) const;
+		std::vector<int> oclPartition(Operand1& D,
+		                              const Operand2& A,
+		                              const Operand3& B,
+		                              const Operand1& C,
+		                              std::vector<SubmatrixAdapter<Operand1> >& VD,
+		                              std::vector<SubmatrixAdapter<Operand2> >& VA,
+		                              std::vector<SubmatrixAdapter<Operand3> >& VB,
+		                        std::vector<SubmatrixAdapter<Operand1> >& VC) const;
 
 		void printClErrstring(cl_int err) const;
 
 	public:
 
 		//! Constructor of OpenCLDomain.
-		OpenCLMatrixDomain (const Field& F ) : _F(F) {
+		OpenCLMatrixDomain(const Field& F ) : _F(F){
 
 			F.init(_One,1UL);
 			F.init(_Zero,0UL);
 			F.init(_MOne,-1);
 
 #ifndef NDEBUG
-			if (!Givaro::probab_prime(F.characteristic())) {
-				std::cout << " *** WARNING *** "                                           << std::endl;
-				std::cout << " You are using a BLAS Domain where your field is not prime " << std::endl;
+			if(!Givaro::probab_prime(F.characteristic())){
+				std::cout << " *** WARNING *** " << std::endl;
+				std::cout << " You are using a OpenCL Matrix Domain"
+				          << " where your field is not prime "
+				          << std::endl;
 			}
 #endif
 
@@ -366,13 +392,17 @@ namespace LinBox{
 		}
 
 		//! Copy constructor
-		OpenCLMatrixDomain (const OpenCLMatrixDomain<Field> & BMD) :
-			_F(BMD._F), _One(BMD._One), _Zero(BMD._Zero), _MOne(BMD._MOne) {
+		OpenCLMatrixDomain(const OpenCLMatrixDomain<Field> & OMD) : _F(OMD._F),
+		                                                             _One(OMD._One),
+		                                                           _Zero(OMD._Zero),
+		                                                           _MOne(OMD._MOne){
 
 #ifndef NDEBUG
-			if (!Givaro::probab_prime(_F.characteristic())) {
-				std::cout << " *** WARNING *** "                                           << std::endl;
-				std::cout << " You are using a BLAS Domain where your field is not prime " << std::endl;
+			if(!Givaro::probab_prime(_F.characteristic())){
+				std::cout << " *** WARNING *** " << std::endl;
+				std::cout << " You are using a OpenCL Matrix Domain"
+				          << " where your field is not prime "
+				          << std::endl;
 			}
 #endif
 
@@ -386,7 +416,7 @@ namespace LinBox{
 		}
 
 		//! Field accessor
-		const Field& field() const {
+		const Field& field() const{
 			return _F;
 		}
 
@@ -397,124 +427,158 @@ namespace LinBox{
 		//! multiplication.
 		//! C = A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const {
+		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const{
 			return BlasMatrixDomainMul<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
 		}
 
 		//! addition.
 		//! C = A+B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& add(Operand1& C, const Operand2& A, const Operand3& B) const {
+		Operand1& add(Operand1& C, const Operand2& A, const Operand3& B) const{
 			return BlasMatrixDomainAdd<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
 		}
 
 		//! copy.
 		//! B = A
 		template <class Operand1, class Operand2>
-		Operand1& copy(Operand1& B, const Operand2& A) const {
+		Operand1& copy(Operand1& B, const Operand2& A) const{
 			return BlasMatrixDomainCopy<Field,Operand1,Operand2>()(_F,B,A);
 		}
 
 		//! substraction
 		//! C = A-B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& sub(Operand1& C, const Operand2& A, const Operand3& B) const {
+		Operand1& sub(Operand1& C, const Operand2& A, const Operand3& B) const{
 			return BlasMatrixDomainSub<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
 		}
 
 		//! substraction (in place)
 		//! C -= B
 		template <class Operand1, class Operand3>
-		Operand1& subin(Operand1& C, const Operand3& B) const {
+		Operand1& subin(Operand1& C, const Operand3& B) const{
 			return BlasMatrixDomainSubin<Field,Operand1,Operand3>()(_F,C,B);
 		}
 
 		//! addition (in place)
 		//! C += B
 		template <class Operand1, class Operand3>
-		Operand1& addin(Operand1& C, const Operand3& B) const {
+		Operand1& addin(Operand1& C, const Operand3& B) const{
 			return BlasMatrixDomainAddin<Field,Operand1,Operand3>()(_F,C,B);
 		}
 
 		//! multiplication with scaling.
 		//! C = alpha.A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& mul(Operand1& C, const Element& alpha, const Operand2& A, const Operand3& B) const {
+		Operand1& mul(Operand1& C,
+		              const Element& alpha,
+		              const Operand2& A,
+		              const Operand3& B) const{
+
 			return muladdin(_Zero,C,alpha,A,B);
 		}
 
 		//! In place multiplication.
 		//! A = A*B
 		template <class Operand1, class Operand2>
-		Operand1& mulin_left(Operand1& A, const Operand2& B ) const {
+		Operand1& mulin_left(Operand1& A, const Operand2& B) const{
 			return BlasMatrixDomainMulin<Field,Operand1,Operand2>()(_F,A,B);
 		}
 
 		//! In place multiplication.
 		//! B = A*B
 		template <class Operand1, class Operand2>
-		Operand2& mulin_right(const Operand1& A, Operand2& B ) const {
+		Operand2& mulin_right(const Operand1& A, Operand2& B) const{
 			return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(_F,A,B);
 		}
 
 		//! axpy.
 		//! D = A*B + C
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const {
+		Operand1& axpy(Operand1& D,
+		               const Operand2& A,
+		               const Operand3& B,
+		               const Operand1& C) const{
+
 			return muladd(D,_One,C,_One,A,B);
 		}
 
 		//! axpyin.
 		//! C += A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axpyin(Operand1& C, const Operand2& A, const Operand3& B) const {
+		Operand1& axpyin(Operand1& C, const Operand2& A, const Operand3& B) const{
 			return muladdin(_One,C,_One,A,B);
 		}
 
 		//! maxpy.
 		//! D = C - A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& maxpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C)const {
+		Operand1& maxpy(Operand1& D,
+		                const Operand2& A,
+		                const Operand3& B,
+		                const Operand1& C) const{
+
 			return muladd(D,_One,C,_MOne,A,B);
 		}
 
 		//! maxpyin.
 		//! C -= A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& maxpyin(Operand1& C, const Operand2& A, const Operand3& B) const {
+		Operand1& maxpyin(Operand1& C, const Operand2& A, const Operand3& B) const{
 			return muladdin(_One,C,_MOne,A,B);
 		}
 
 		//! axmy.
 		//! D= A*B - C
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axmy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const {
+		Operand1& axmy(Operand1& D,
+		               const Operand2& A,
+		               const Operand3& B,
+		               const Operand1& C) const{
+
 			return muladd(D,_MOne,C,_One,A,B);
 		}
 
 		//! axmyin.
 		//! C = A*B - C
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axmyin(Operand1& C, const Operand2& A, const Operand3& B) const {
+		Operand1& axmyin(Operand1& C, const Operand2& A, const Operand3& B) const{
 			return muladdin(_MOne,C,_One,A,B);
 		}
 
 		//!  general matrix-matrix multiplication and addition with scaling.
 		//! D= beta.C + alpha.A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& muladd(Operand1& D, const Element& beta, const Operand1& C,
-			const Element& alpha, const Operand2& A, const Operand3& B) const {
+		Operand1& muladd(Operand1& D,
+		                 const Element& beta,
+		                 const Operand1& C,
+		                 const Element& alpha,
+		                 const Operand2& A,
+		                 const Operand3& B) const{
 
-			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(_F,D,beta,C,alpha,A,B);
+			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(_F,
+			                                                                  D,
+			                                                                  beta,
+			                                                                  C,
+			                                                                  alpha,
+			                                                                  A,
+			                                                                  B);
 		}
 
 		//! muladdin.
 		//! C= beta.C + alpha.A*B.
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& muladdin(const Element& beta, Operand1& C,
-			const Element& alpha, const Operand2& A, const Operand3& B) const {
+		Operand1& muladdin(const Element& beta,
+		                   Operand1& C,
+		                   const Element& alpha,
+		                   const Operand2& A,
+		                   const Operand3& B) const{
 
-			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(_F,beta,C,alpha,A,B);
+			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(_F,
+			                                                                  beta,
+			                                                                  C,
+			                                                                  alpha,
+			                                                                  A,
+			                                                                  B);
 		}
 
 		/*!
@@ -524,21 +588,21 @@ namespace LinBox{
 
 		//! Inversion
 		template <class Matrix>
-		Matrix& inv( Matrix &Ainv, const Matrix &A) const {
+		Matrix& inv( Matrix &Ainv, const Matrix &A) const{
 			BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
 		//! Inversion (in place)
 		template <class Matrix>
-		Matrix& invin( Matrix &Ainv, Matrix &A) const {
+		Matrix& invin( Matrix &Ainv, Matrix &A) const{
 			BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
 		//! Inversion (the matrix A is modified)
 		template <class Matrix>
-		Matrix& invin(Matrix &A) const {
+		Matrix& invin(Matrix &A) const{
 			Matrix tmp(A.rowdim(), A.coldim());
 			tmp = A;
 			BlasMatrixDomainInv<Field,Matrix>()(_F,A,tmp);
@@ -549,46 +613,46 @@ namespace LinBox{
 		 * C = A B^{-1}  ==>  C . B = A
 		 */
 		template <class Matrix>
-		Matrix& div( Matrix &C, const Matrix &A, const Matrix &B) const {
+		Matrix& div(Matrix &C, const Matrix &A, const Matrix &B) const{
 			return this->right_solve(C,B,A);
 		}
 
 
 		//! Inversion w singular check
 		template <class Matrix>
-		Matrix& inv( Matrix &Ainv, const Matrix &A, int& nullity) const {
+		Matrix& inv(Matrix &Ainv, const Matrix &A, int& nullity) const{
 			nullity = BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
 		//! Inversion (the matrix A is modified) w singular check
 		template <class Matrix>
-		Matrix& invin( Matrix &Ainv, Matrix &A, int& nullity) const {
+		Matrix& invin(Matrix &Ainv, Matrix &A, int& nullity) const{
 			nullity = BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
 		//! Rank
 		template <class Matrix>
-		unsigned int rank(const Matrix &A) const {
+		unsigned int rank(const Matrix &A) const{
 			return BlasMatrixDomainRank<Field,Matrix>()(_F,A);
 		}
 
 		//! in-place Rank (the matrix is modified)
 		template <class Matrix>
-		unsigned int rankin(Matrix &A) const {
+		unsigned int rankin(Matrix &A) const{
 			return BlasMatrixDomainRank<Field, Matrix>()(_F,A);
 		}
 
 		//! determinant
 		template <class Matrix>
-		Element det(const Matrix &A) const {
+		Element det(const Matrix &A) const{
 			return BlasMatrixDomainDet<Field, Matrix>()(_F,A);
 		}
 
 		//! in-place Determinant (the matrix is modified)
 		template <class Matrix>
-		Element detin(Matrix &A) const {
+		Element detin(Matrix &A) const{
 			return BlasMatrixDomainDet<Field, Matrix>()(_F,A);
 		}
 		//@}
@@ -601,7 +665,7 @@ namespace LinBox{
 		//! linear solve with matrix right hand side.
 		//! AX=B
 		template <class Operand, class Matrix>
-		Operand& left_solve (Operand& X, const Matrix& A, const Operand& B) const {
+		Operand& left_solve (Operand& X, const Matrix& A, const Operand& B) const{
 			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(_F,X,A,B);
 		}
 
@@ -609,14 +673,14 @@ namespace LinBox{
 		//! @pre A must be square
 		//! AX=B , (B<-X)
 		template <class Operand,class Matrix>
-		Operand& left_solve (const Matrix& A, Operand& B) const {
+		Operand& left_solve (const Matrix& A, Operand& B) const{
 			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(_F,A,B);
 		}
 
 		//! linear solve with matrix right hand side.
 		//! XA=B
 		template <class Operand, class Matrix>
-		Operand& right_solve (Operand& X, const Matrix& A, const Operand& B) const {
+		Operand& right_solve (Operand& X, const Matrix& A, const Operand& B) const{
 			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(_F,X,A,B);
 		}
 
@@ -624,62 +688,69 @@ namespace LinBox{
 		//! @pre A must be square
 		//! XA=B , (B<-X)
 		template <class Operand, class Matrix>
-		Operand& right_solve (const Matrix& A, Operand& B) const {
+		Operand& right_solve (const Matrix& A, Operand& B) const{
 			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(_F,A,B);
 		}
 
 		//! minimal polynomial computation.
 		template <class Polynomial, class Matrix>
-		Polynomial& minpoly( Polynomial& P, const Matrix& A ) const {
+		Polynomial& minpoly( Polynomial& P, const Matrix& A ) const{
 			return BlasMatrixDomainMinpoly<Field, Polynomial, Matrix>()(_F,P,A);
 		}
 
 		//! characteristic polynomial computation.
 		template <class Polynomial,  class Matrix >
-		Polynomial& charpoly( Polynomial& P, const Matrix& A ) const {
+		Polynomial& charpoly( Polynomial& P, const Matrix& A ) const{
 
-			commentator.start ("Modular Dense Charpoly ", "MDCharpoly");
+			commentator().start ("Modular Dense Charpoly ", "MDCharpoly");
 			std::list<Polynomial> P_list;
 			P_list.clear();
-			BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(_F,P_list,A);
+			BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(_F,
+			                                                                  P_list,
+			                                                                  A);
 
-			Polynomial tmp(A.rowdim()+1);
+			Polynomial tmp(A.rowdim() + 1);
 			typename std::list<Polynomial>::iterator it = P_list.begin();
 			P = *(it++);
-			while( it!=P_list.end() ){
+			while(it != P_list.end()){
 				// Waiting for an implementation of a domain of polynomials
-				mulpoly( tmp, P, *it);
+				mulpoly(tmp, P, *it);
 				P = tmp;
-				//	delete &(*it);
+				//delete &(*it);
 				++it;
 			}
-			commentator.stop ("done", NULL, "MDCharpoly");
+			commentator().stop ("done", NULL, "MDCharpoly");
 
 			return P;
 		}
 
 		//! characteristic polynomial computation.
 		template <class Polynomial, class Matrix >
-		std::list<Polynomial>& charpoly( std::list<Polynomial>& P, const Matrix& A ) const {
-			return BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(_F,P,A);
+		std::list<Polynomial>& charpoly(std::list<Polynomial>& P,
+		                                const Matrix& A ) const{
+
+			return BlasMatrixDomainCharpoly<Field,
+			                                std::list<Polynomial>,
+			                                Matrix >()(_F,P,A);
 		}
 
 
 		//private:
 		//! @todo Temporary: waiting for an implementation of a domain of polynomial
 		template<class Polynomial>
-		Polynomial& mulpoly(Polynomial &res, const Polynomial & P1, const Polynomial & P2) const {
-			size_t i,j;
+		Polynomial& mulpoly(Polynomial &res,
+		                    const Polynomial & P1,
+		                    const Polynomial & P2) const{
 
-			res.resize(P1.size()+P2.size()-1);
+			res.resize(P1.size() + P2.size() - 1);
 
-			for (i=0;i<res.size();i++){
+			for(int i = 0; i < res.size(); i++){
 				_F.assign(res[i],_Zero);
 			}
 
-			for ( i=0;i<P1.size();i++){
-				for ( j=0;j<P2.size();j++){
-					_F.axpyin(res[i+j],P1[i],P2[j]);
+			for(int i = 0; i < P1.size(); i++){
+				for(int j = 0; j < P2.size(); j++){
+					_F.axpyin(res[i + j],P1[i],P2[j]);
 				}
 			}
 
@@ -688,14 +759,14 @@ namespace LinBox{
 		//@}
 
 		template<class Matrix1, class Matrix2>
-		bool areEqual(const Matrix1 & A, const Matrix2 & B) {
-			if ( (A.rowdim() != B.rowdim()) || (A.coldim() != B.coldim()) ){
+		bool areEqual(const Matrix1 & A, const Matrix2 & B){
+			if((A.rowdim() != B.rowdim()) || (A.coldim() != B.coldim())){
 				return false ;
 			}
 
-			for (size_t i = 0 ; i < A.rowdim() ; ++i){
-				for (size_t j = 0 ; j < A.coldim() ; ++j){
-					if (!_F.areEqual(A.getEntry(i,j),B.getEntry(i,j))){ //!@bug use refs
+			for(size_t i = 0 ; i < A.rowdim() ; ++i){
+				for(size_t j = 0 ; j < A.coldim() ; ++j){
+					if(!_F.areEqual(A.getEntry(i,j),B.getEntry(i,j))){ //!@bug use refs
 						return false ;
 					}
 				}
@@ -705,10 +776,10 @@ namespace LinBox{
 		}
 
 		template<class Matrix>
-		void setIdentity(Matrix & I) {
-			for (size_t i = 0 ; i< I.rowdim() ; ++i){
-				for (size_t j = 0 ; j < I.coldim() ; ++j) {
-					if (i == j){
+		void setIdentity(Matrix & I){
+			for(size_t i = 0 ; i < I.rowdim() ; ++i){
+				for(size_t j = 0 ; j < I.coldim() ; ++j){
+					if(i == j){
 						I.setEntry(i,j,_One);
 					}
 					else{
@@ -719,20 +790,20 @@ namespace LinBox{
 		}
 
 		template<class Matrix>
-		void setZero(Matrix & I) {
+		void setZero(Matrix & I){
 			// use Iterator
-			for (size_t i = 0 ; i< I.rowdim() ; ++i){
-				for (size_t j = 0 ; j < I.coldim() ; ++j){
+			for(size_t i = 0 ; i < I.rowdim() ; ++i){
+				for(size_t j = 0 ; j < I.coldim() ; ++j){
 					I.setEntry(i,j,_Zero);
 				}
 			}
 		}
 
 		template<class Matrix1>
-		bool isZero(const Matrix1 & A) {
-			for (size_t i = 0 ; i < A.rowdim() ; ++i){
-				for (size_t j = 0 ; j < A.coldim() ; ++j){
-					if (!_F.isZero(A.getEntry(i,j))){ //!@bug use refs
+		bool isZero(const Matrix1 & A){
+			for(size_t i = 0 ; i < A.rowdim() ; ++i){
+				for(size_t j = 0 ; j < A.coldim() ; ++j){
+					if(!_F.isZero(A.getEntry(i,j))){ //!@bug use refs
 						return false;
 					}
 				}
@@ -742,28 +813,28 @@ namespace LinBox{
 		}
 
 		template<class Matrix1>
-		bool isIdentity(const Matrix1 & A) {
-			if (A.rowdim() != A.coldim()){
+		bool isIdentity(const Matrix1 & A){
+			if(A.rowdim() != A.coldim()){
 				return false;
 			}
 
-			for (size_t i = 0 ; i < A.rowdim() ; ++i){
-				if (!_F.isOne(A.getEntry(i,i))){
+			for(size_t i = 0 ; i < A.rowdim() ; ++i){
+				if(!_F.isOne(A.getEntry(i,i))){
 					return false;
 				}
 			}
 
-			for (size_t i = 0 ; i < A.rowdim() ; ++i){
-				for (size_t j = 0 ; j < i ; ++j){
-					if (!_F.isZero(A.getEntry(i,j))){ //!@bug use refs
+			for(size_t i = 0 ; i < A.rowdim() ; ++i){
+				for(size_t j = 0 ; j < i ; ++j){
+					if(!_F.isZero(A.getEntry(i,j))){ //!@bug use refs
 						return false;
 					}
 				}
 			}
 
-			for (size_t i = 0 ; i < A.rowdim() ; ++i){
-				for (size_t j = i+1 ; j < A.coldim() ; ++j){
-					if (!_F.isZero(A.getEntry(i,j))){ //!@bug use refs
+			for(size_t i = 0 ; i < A.rowdim() ; ++i){
+				for(size_t j = i + 1 ; j < A.coldim() ; ++j){
+					if(!_F.isZero(A.getEntry(i,j))){ //!@bug use refs
 						return false;
 					}
 				}
@@ -773,25 +844,25 @@ namespace LinBox{
 		}
 
 		template<class Matrix1>
-		bool isIdentityGeneralized(const Matrix1 & A) {
+		bool isIdentityGeneralized(const Matrix1 & A){
 			size_t mn = std::min(A.rowdim(),A.coldim());
-			for (size_t i = 0 ; i < mn ; ++i){
-				if (!_F.isOne(A.getEntry(i,i))){
+			for(size_t i = 0 ; i < mn ; ++i){
+				if(!_F.isOne(A.getEntry(i,i))){
 					return false;
 				}
 			}
 
-			for (size_t i = 0 ; i < A.rowdim() ; ++i){
-				for (size_t j = 0 ; j < std::min(i,mn) ; ++j){
-					if (!_F.isZero(A.getEntry(i,j))){ //!@bug use refs
+			for(size_t i = 0 ; i < A.rowdim() ; ++i){
+				for(size_t j = 0 ; j < std::min(i,mn) ; ++j){
+					if(!_F.isZero(A.getEntry(i,j))){ //!@bug use refs
 						return false;
 					}
 				}
 			}
 
-			for (size_t i = 0 ; i < A.rowdim() ; ++i){
-				for (size_t j = i+1 ; j < A.coldim() ; ++j){
-					if (!_F.isZero(A.getEntry(i,j))){ //!@bug use refs
+			for(size_t i = 0 ; i < A.rowdim() ; ++i){
+				for(size_t j = i+1 ; j < A.coldim() ; ++j){
+					if(!_F.isZero(A.getEntry(i,j))){ //!@bug use refs
 						return false;
 					}
 				}
@@ -808,13 +879,16 @@ namespace LinBox{
 		 * @returns reference to os.
 		 */
 		template <class Matrix>
-		inline std::ostream &write (std::ostream &os, const Matrix &A) const {
-			return A.write (os, _F);
+		inline std::ostream &write(std::ostream &os, const Matrix &A) const{
+			return A.write(os, _F);
 		}
 
 		template <class Matrix>
-		inline std::ostream &write (std::ostream &os, const Matrix &A, bool maple_format) const {
-			return A.write (os, _F, maple_format);
+		inline std::ostream &write(std::ostream &os,
+		                           const Matrix &A,
+		                           bool maple_format) const{
+
+			return A.write(os, _F, maple_format);
 		}
 
 		/** Read matrix
@@ -823,7 +897,7 @@ namespace LinBox{
 		 * @returns reference to is.
 		 */
 		template <class Matrix>
-		inline std::istream &read (std::istream &is, Matrix &A) const {
+		inline std::istream &read(std::istream &is, Matrix &A) const{
 			return A.read (is, _F);
 		}
 
@@ -831,9 +905,21 @@ namespace LinBox{
 
 } /* end of namespace LinBox */
 
-#include "linbox/algorithms/opencl-domain-util.inl"
-#include "linbox/algorithms/opencl-domain-memory.inl"
-#include "linbox/algorithms/opencl-domain.inl"
+#define USE_OPENCL
 
-#endif /* __LINBOX_opencl_matrix_domain_H */
+#ifdef USE_OPENCL
+	#include "linbox/algorithms/opencl-domain-util.inl"
+	#include "linbox/algorithms/opencl-domain-memory.inl"
+	#include "linbox/algorithms/opencl-domain.inl"
+#endif
+
+#endif // __LINBOX_opencl_matrix_domain_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
 
