@@ -252,7 +252,7 @@ static bool testRandomLinearity (Field &F,
 	report << "Diagonal vector: ";
 	VD.write (report, d) << endl;
 
-	bool ret = testLinearity (F, D, stream1, stream2);
+	bool ret = testLinearity (D, stream1, stream2);
 
 	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
 

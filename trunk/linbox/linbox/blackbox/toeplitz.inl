@@ -27,9 +27,6 @@
  *    partial template  specialization for toeplitz matrices that
  *    are manipulated in fields and rings according to the arithmetic
  *    in the ntl package from V. Shoup
- *
- *    Everything is in the Linbox namespace by virtue of the #include
- *    in ntl-Toeplitz.h
  *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 
 #ifndef __LINBOX_bb_toeplitz_INL
@@ -45,11 +42,11 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    Destructor
 	 *----------------------------------------------------------------*/
-	template <class _CField, class _PField>
-	inline ToeplitzBase<_CField,_PField>::~ToeplitzBase()
+	template <class _CField, class _PRing>
+	inline ToeplitzBase<_CField,_PRing>::~ToeplitzBase()
 	{
 #ifdef DBGMSGS
-		std::cout << "Toeplitz::~Toeplitz():\tDestroyed a " << rowDim << "x"<< this->colDim<<
+		std::cout << "Toeplitz::~Toeplitz():\tDestroyed a " << rowdim() << "x"<< this->coldim()<<
 						     " Toeplitz matrix "<< std::endl;
 #endif
 	}//---- Destructor ---- [Tested 6/14/02 -- Works]
@@ -59,9 +56,9 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    Field-only Constructor
 	 *----------------------------------------------------------------*/
-	template <class _CField, class _PField>
-	ToeplitzBase<_CField, _PField>::ToeplitzBase(const Field& F) :
-		P(F), K(F)
+	template <class _CField, class _PRing>
+	ToeplitzBase<_CField, _PRing>::ToeplitzBase(const Field& F) :
+		P(F), field_(&F)
 	{
 		sysDim =               // Default dimension is 0
 		rowDim =               // Default row dim is 0
@@ -78,9 +75,9 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    Zero Parameter Constructor
 	 *----------------------------------------------------------------*/
-	template <class _CField, class _PField>
-	ToeplitzBase<_CField, _PField>::ToeplitzBase() :
-		P(0), K(0)
+	template <class _CField, class _PRing>
+	ToeplitzBase<_CField, _PRing>::ToeplitzBase() :
+		P(0), field_(0)
 	{
 		sysDim =               // Default dimension is 0
 		rowDim =               // Default row dim is 0
@@ -93,12 +90,9 @@ namespace LinBox
 
 	}//----- Zero Param Constructor ---- [Tested 6/14/02 -- Works]
 
-	/*-----------------------------------------------------------------
-	 *------ Polynomial Field constructor
-	 *-----------------------------------------------------------------*/
-	template< class _CField, class _PField >
-	ToeplitzBase<_CField,_PField>::ToeplitzBase( const PField& PF ) :
-		P(PF), K(PF.getCoeffField())
+	template <class _CField, class _PRing>
+	ToeplitzBase<_CField, _PRing>::ToeplitzBase(const _PRing& PF) :
+	 	P(PF), field_(&(PF.getCoeffField()))
 	{
 		sysDim = rowDim = this->colDim = 0;
 		shape.shape(BlackboxSpecifier::TOEPLITZ);
@@ -108,10 +102,10 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *------ Polynomial constructor
 	 *-----------------------------------------------------------------*/
-	template< class _CField, class _PField >
-	ToeplitzBase<_CField,_PField>::ToeplitzBase
-	( const PField& PF, const Poly& p, size_t m, size_t n ) :
-		P(PF), K(PF.getCoeffField()), rowDim(m), colDim(n), pdata(p)
+	template< class _CField, class _PRing >
+	ToeplitzBase<_CField,_PRing>::ToeplitzBase
+	( const PRing& PF, const Poly& p, size_t m, size_t n ) :
+		P(PF), field_(&(PF.getCoeffField())), rowDim(m), colDim(n), pdata(p)
 	{
 		shape.shape(BlackboxSpecifier::TOEPLITZ);
 		if( n == 0 ) this->colDim = rowDim;
@@ -127,7 +121,7 @@ namespace LinBox
 			Poly x;
 			P.init(x,0);
 			Element one;
-			K.init(one,1);
+			field().init(one,1);
 			P.setCoeff(x, (rowDim + this->colDim - 2 - P.deg(pdata)), one);
 			P.mulin( rpdata, x );
 		}
@@ -138,8 +132,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----- Constructor With User-Supplied First Row And Column
 	 *----------------------------------------------------------------*/
-	template <class _PField>
-	void Toeplitz<typename _PField::CoeffField, _PField>::init_vector( const std::vector<Element>&v)
+	template <class _PRing>
+	void Toeplitz<typename _PRing::CoeffField, _PRing>::init_vector( const std::vector<Element>&v)
 	{
 		if ( (1 & v.size()) == 0)
 		{
@@ -156,7 +150,7 @@ namespace LinBox
 			Poly x;
 			this->P.init(x,0);
 			Element one;
-			this->K.init(one,1);
+			this->field().init(one,1);
 			this->P.setCoeff(x, (v.size() - 1 - this->P.deg(this->pdata)), one);
 			this->P.mulin( this->rpdata, x );
 		}
@@ -177,38 +171,38 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *-----    Print The Matrix To Screen
 	 *----------------------------------------------------------------*/
-	template <class _PField>
-	void Toeplitz<typename _PField::CoeffField,_PField>::print(std::ostream& os) const
+	template <class _PRing>
+	void Toeplitz<typename _PRing::CoeffField,_PRing>::write(std::ostream& os) const
 	{
 
 		register int i, N;
 		register unsigned int j;
 		Element temp;
 
-		os<< this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl;
-		N = (int) (this->rowDim + this->colDim) -1;
+		os<< this->rowdim() << " " << this->coldim() << " " << this->shape.shape() << std::endl;
+		N = (int) (this->rowdim() + this->coldim()) -1;
 
 		if ( N < 20 )             // Print small matrices in dense format
 		{
-			for (i = (int)this->colDim-1; i < N; i++)
+			for (i = (int)this->coldim()-1; i < N; i++)
 			{
-				for ( j = 0; j < this->colDim ; j++)
+				for ( j = 0; j < this->coldim() ; j++)
 					os << " " ;
-				this->K.write(os,this->P.getCoeff(temp,this->pdata,static_cast<size_t>(i-j))) ;
+				this->field().write(os,this->P.getCoeff(temp,this->pdata,static_cast<size_t>(i-j))) ;
 				os << std::endl;
 			}
 		}
 		else
 		{                    // Print large matrices' first row and col
 			os << "[";
-			for (size_t ii = this->rowDim + this->colDim - 2; ii> 0;ii--)
-				this->K.write(os, this->P.getCoeff(temp,this->pdata,ii) ) << " ";
-			this->K.write(os,this->P.getCoeff(temp,this->pdata,0)) << "]\n";
+			for (size_t ii = this->rowdim() + this->coldim() - 2; ii> 0;ii--)
+				this->field().write(os, this->P.getCoeff(temp,this->pdata,ii) ) << " ";
+			this->field().write(os,this->P.getCoeff(temp,this->pdata,0)) << "]\n";
 			this->P.write(os, this->pdata) << std::endl;
 		} //[v(2n-2),....,v(0)]; where v(0) is the top right entry of the matrix
 
 		return;
-	} //---- print()----- [Tested 6/14/02 -- Works]
+	} //---- write()----- [Tested 6/14/02 -- Works]
 
 
 	// 	/*-----------------------------------------------------------------
@@ -225,43 +219,44 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    Save To File, Given Destination Filename
 	 *----------------------------------------------------------------*/
-	template <class _PField>
-	void Toeplitz<typename _PField::CoeffField, _PField>::print( char *outFileName) const
+	template <class _PRing>
+	void Toeplitz<typename _PRing::CoeffField, _PRing>::write( char *outFileName) const
 	{
 		Element temp;
 
 		std::cout << "Printing toeplitz matrix to " << outFileName << std::endl;
 
 		if ( outFileName == NULL )
-			print();    // Print to stdout if no file is specified
+			write();    // Print to stdout if no file is specified
 		else
 		{
 			std::ofstream o_fp(outFileName, std::ios::out);
-			o_fp << this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl ;
+			o_fp << this->rowdim() << " " << this->coldim() << " " << this->shape.shape() << std::endl ;
 			o_fp << "[";
-			for (size_t i = this->rowDim + this->colDim - 1 ; i-- ; )
-				this->K.write(o_fp,this->P.getCoeff(temp,this->pdata,i))
+			for (size_t i = this->rowdim() + this->coldim() - 1 ; i-- ; )
+				this->field().write(o_fp,this->P.getCoeff(temp,this->pdata,i))
 				<< " ";
 			o_fp << "]\n";
 
 			o_fp.close();
 		}
 		return;
-	} // print(char *) [Tested 6/14/02 -- Works]
+	} // write(char *) [Tested 6/14/02 -- Works]
 
 
+#if 0 //dated material with no known use -bds 2012Jul
 	/*-----------------------------------------------------------------
 	 *    Make the matrix upper triangular with determinant 1.
 	 *    i.e. clear the last N-1 elements in the data vector
 	 *----------------------------------------------------------------*/
-	template <class _CField, class _PField>
-	void ToeplitzBase<_CField, _PField>::setToUniModUT()
+	template <class _CField, class _PRing>
+	void ToeplitzBase<_CField, _PRing>::setToUniModUT()
 	{
-		typename PField::Coeff zero, one;
+		typename PRing::Coeff zero, one;
 		P.getCoeffField().init(zero,0);
 		P.getCoeffField().init(one,1);
 
-		for( size_t i = sysDim; i <= P.deg(pdata); ++i )
+		for( size_t i = sysdim(); i <= P.deg(pdata); ++i )
 			P.setCoeff(pdata,i,zero);
 
 		for( size_t i = 0; i < sysDim - 1; ++i )
@@ -280,10 +275,10 @@ namespace LinBox
 	 *    Make matrix a unimodular Lower Triangular with det 1
 	 *    i.e. clear the first N-1 elements in the data vector
 	 *----------------------------------------------------------------*/
-	template <class _CField, class _PField>
-	void ToeplitzBase<_CField, _PField>::setToUniModLT()
+	template <class _CField, class _PRing>
+	void ToeplitzBase<_CField, _PRing>::setToUniModLT()
 	{
-		typename PField::Coeff zero, one;
+		typename PRing::Coeff zero, one;
 		P.getCoeffField().init(zero,0);
 		P.getCoeffField().init(one,1);
 
@@ -300,13 +295,14 @@ namespace LinBox
 		return;
 	}// [UNCOMMENTED PART Tested 6/14/02 -- Works]
 
+#endif
 
 	/*-----------------------------------------------------------------
 	 *     Compute the determinant of the matrix
 	 *-----------------------------------------------------------------*/
-	template<class _PField>
-	typename Toeplitz<typename _PField::CoeffField,_PField>::Element&
-	Toeplitz<typename _PField::CoeffField,_PField>::det
+	template<class _PRing>
+	typename Toeplitz<typename _PRing::CoeffField,_PRing>::Element&
+	Toeplitz<typename _PRing::CoeffField,_PRing>::det
 	( Element& res ) const
 	{
 		return toeplitz_determinant( this->P, res, this->pdata, this->sysDim );
@@ -315,14 +311,20 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *     Compute the trace of the matrix
 	 *-----------------------------------------------------------------*/
-	template<class _PField>
-	typename Toeplitz<typename _PField::CoeffField,_PField>::Element&
-	Toeplitz<typename _PField::CoeffField,_PField>::trace
+	/*-----------------------------------------------------------------
+	 *     Compute the trace of the matrix
+	 *-----------------------------------------------------------------*/
+	/*-----------------------------------------------------------------
+	 *     Compute the trace of the matrix
+	 *-----------------------------------------------------------------*/
+	template<class _PRing>
+	typename Toeplitz<typename _PRing::CoeffField,_PRing>::Element&
+	Toeplitz<typename _PRing::CoeffField,_PRing>::trace
 	( Element& res ) const
 	{
-		Element x; this->K.init(x, min(rowdim(), coldim()));
+		Element x; this->field().init(x, min(rowdim(), coldim()));
 		this->P.getCoeff(res, pdata, rowdim()-1);
-		return K.mulin(res, x);
+		return this->field().mulin(res, x);
 	}
 
 
@@ -330,18 +332,12 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *    Apply the matrix to a vector
 	 *----------------------------------------------------------------*/
-	template <class _PField>
+	template <class _PRing>
 	template <class OutVector, class InVector>
-	OutVector& Toeplitz<typename _PField::CoeffField,_PField>::apply( OutVector &v_out,
+	OutVector& Toeplitz<typename _PRing::CoeffField,_PRing>::apply( OutVector &v_out,
 									  const InVector& v_in) const
 	{
 
-		if (v_out.size() != this->rowdim())
-			std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
-			<< v_out.size() << ". System rowdim is" <<  this->rowdim() << std::endl;
-		if ( v_in.size() != this->coldim() )
-			std::cout << "\tToeplitz::apply()\t input vector not correct size at "
-			<< v_in.size() << ". System colDim is" <<  this->coldim() << std::endl;
 		assert((v_out.size() == this->rowdim()) &&
 		       (v_in.size() == this->coldim()))  ;
 
@@ -373,9 +369,9 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *    Apply the transposed matrix to a vector
 	 *----------------------------------------------------------------*/
-	template <class _PField>
+	template <class _PRing>
 	template<class OutVector, class InVector>
-	OutVector& Toeplitz<typename _PField::CoeffField,_PField>::applyTranspose( OutVector &v_out,
+	OutVector& Toeplitz<typename _PRing::CoeffField,_PRing>::applyTranspose( OutVector &v_out,
 										   const InVector& v_in) const
 	{
 

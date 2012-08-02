@@ -22,17 +22,17 @@
 
 /** \ingroup linbox
   \defgroup blackbox blackbox
-  \brief These matrix classes adhere to the simple blackbox interface.
+  \brief These matrix classes meet the simple interface needed for blackbox algorithms.
 
   Blackbox matrix algorithms require of the matrix only it's
-  property of being a linear operator.  That is, such algorithms exploit only the
-  capacity to apply the matrix to a vector (column vector on right or row vector on left).
+  property of being a linear operator.  Such algorithms exploit only the
+  capacity to multiply the matrix with a vector or suitably shaped matrix (on right or left).
   The advantage is efficient generic methods particularly applicable to sparse and
-  structured matrix classes in which matrix vector product is fast.  Importantly,
+  structured matrix classes in which matrix-vector product is fast.  Importantly,
   these methods are also space efficient, typically, for an n by n matrix using only O(n) space
   beyond the matrix representation itself.
 
-  These classes all implement the very simple black box
+  These classes all implement the simple black box
   interface as it is defined in the
   LinBox::BlackboxArchetype  base class.  Thus blackbox matrix algorithms may be used on
   objects of any of these classes.  In contrast, classes representing matrices in such
@@ -57,6 +57,17 @@
 \link LinBox::BlackboxArchetype BlackboxArchetype \endlink, so that they may be used as parameters to
 functions compiled with the blackbox archetype.
 
+Blackboxes exist in 3 states: bare, shaped, and ready.
+A bare blackbox results from default construction.  Only shaping function may be used on bare blackboxes.
+Shaping functions establish the field of the elements and the row and column dimensions.
+Functions field(), rowdim(), coldim(), and initializing functions may be used on shaped matrices.
+initializing functions include read() and, in some cases, setEntry().
+The ready() function converts to the ready state.  For many blackbox classes it is optional, for others it is essential.  Mathematical operations are valid on ready blackboxes (apply(), applyTranspose(), matrixHom()).
+
+The mother model is used for the member field of a blackbox.  The lifetime of the field must enclose the lifetime of a blackbox based on the field.  
+The public field() function of a blackbox returns a "const Field &" and thus may only be called on a shaped blackbox.
+The protected field member is a "const Field *".  
+This convention (1) allows bare blackboxes and (2) avoids proliferation of field copies.  While most fields are tiny objects, a few have a large amount of data.  
  */
 
 // vim:syn=doxygen

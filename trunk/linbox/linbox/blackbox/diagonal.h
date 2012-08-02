@@ -260,7 +260,7 @@ namespace LinBox
 		std::vector<Element>& getData() { return _v; }
 
 
-	private:
+	protected:
 
 		// Field for arithmetic
 		const Field *_field;

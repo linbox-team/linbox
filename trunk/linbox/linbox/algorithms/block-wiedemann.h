@@ -56,18 +56,20 @@ namespace LinBox
 		typedef BlasMatrix<Field>               Block;
 
 	protected:
-		Field                         _field;
+		const Field              *_field;
 		BlasMatrixDomain<Field>     _BMD;
 		VectorDomain<Field>         _VDF;
 		RandIter                   _rand;
 
 	public:
+		const Field & field() const { return *_field; }
+
 		BlockWiedemannSolver (const Field &F) :
-			_field(F), _BMD(F), _VDF(F), _rand(F)
+			_field(&F), _BMD(F), _VDF(F), _rand(F)
 		{}
 
 		BlockWiedemannSolver (const Field &F, const RandIter &rand) :
-			_field(F), _BMD(F), _VDF(F), _rand(rand)
+			_field(&F), _BMD(F), _VDF(F), _rand(rand)
 		{}
 
 		template <class Blackbox>
@@ -91,7 +93,7 @@ namespace LinBox
 			//std::cout<<"col block: "<<q<<std::endl;
 
 
-			Block U(_field,p,m), UA(_field,p-1,m), V(_field,n,q);
+			Block U(field(),p,m), UA(field(),p-1,m), V(field(),n,q);
 
 			for (size_t i=0;i<n;++i)
 				for (size_t j=0;j<q;++j)
@@ -110,7 +112,7 @@ namespace LinBox
 			for (size_t i=0;i<m;++i)
 				U.setEntry(0,i,y[i]);
 
-			BlackboxBlockContainer<Field,Transpose<Blackbox> > Sequence (&A,_field,U,V);
+			BlackboxBlockContainer<Field,Transpose<Blackbox> > Sequence (&A,field(),U,V);
 			BlockMasseyDomain <Field,BlackboxBlockContainer<Field,Transpose<Blackbox> > > MBD(&Sequence);
 
 			std::vector<Block> minpoly;
@@ -119,14 +121,14 @@ namespace LinBox
 			//MBD.printTimer();
 
                         //cout<<"minpoly is: \n";
-                        //write_maple(_field,minpoly);
+                        //write_maple(field(),minpoly);
                         //cout<<endl;
 
 			size_t idx=0;
-			if ( _field.isZero(minpoly[0].getEntry(0,0))) {
+			if ( field().isZero(minpoly[0].getEntry(0,0))) {
 
 				size_t i=1;
-				while (i<p && _field.isZero(minpoly[0].getEntry(i,0)))
+				while (i<p && field().isZero(minpoly[0].getEntry(i,0)))
 					++i;
 				if (i == p)
 					throw LinboxError(" block minpoly: matrix seems to be singular - abort");
@@ -173,9 +175,9 @@ namespace LinBox
 					_VDF.addin(accu,lhs);
 				}
 				Element scaling;
-				_field.init(scaling);
-				_field.neg(scaling,combi[0][0]);
-				_field.invin(scaling);
+				field().init(scaling);
+				field().neg(scaling,combi[0][0]);
+				field().invin(scaling);
 				_VDF.mul(x,accu,scaling);
 
 			}
@@ -186,12 +188,12 @@ namespace LinBox
 				 * this should decrease the number of sparse apply but increase memory requirement.
 				 */
 				size_t deg = degree[idx];
-				Block idx_poly(_field,deg+1,p-1);
+				Block idx_poly(field(),deg+1,p-1);
 				for (size_t i=0;i<deg+1;++i)
 					for (size_t j=0;j<p-1;++j)
 						idx_poly.setEntry(i,j,minpoly[i].getEntry(idx,j+1));
 
-				Block Combi(_field,deg+1,m);
+				Block Combi(field(),deg+1,m);
 				_BMD.mul(Combi,idx_poly,UA);
 
 				Vector lhs(n),row(m);
@@ -219,9 +221,9 @@ namespace LinBox
 
 				_VDF.addin(accu,lhs);
 				Element scaling;
-				_field.init(scaling);
-				_field.neg(scaling,minpoly[0].getEntry(idx,0));
-				_field.invin(scaling);
+				field().init(scaling);
+				field().neg(scaling,minpoly[0].getEntry(idx,0));
+				field().invin(scaling);
 				_VDF.mul(x,accu,scaling);
 			}
 

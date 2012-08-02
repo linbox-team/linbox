@@ -622,7 +622,7 @@ namespace LinBox
 	protected:
 
 		const FMatrix&                  _Ap;
-		Field                            _field;
+		const Field                 *_field;
 		const VectorDomain<Field>      _VDF;
 		mutable FVector              _res_p;
 		mutable FVector            _digit_p;
@@ -640,14 +640,14 @@ namespace LinBox
 				       const FMatrix&   Ap,
 				       const VectorIn&   b,
 				       const Prime_Type& p) :
-			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _field(F), _VDF(F),
+			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _field(&F), _VDF(F),
 			_res_p(b.size()), _digit_p(A.coldim()), _BA(F)
 		{
 
 			for (size_t i=0; i< _res_p.size(); ++i)
-				_field.init(_res_p[i]);
+				field().init(_res_p[i]);
 			for (size_t i=0; i< _digit_p.size(); ++i)
-				_field.init(_digit_p[i]);
+				field().init(_digit_p[i]);
 
 			//
 #ifdef RSTIMING
@@ -656,7 +656,7 @@ namespace LinBox
 #endif
 #ifdef DEBUG_LC
 			std::cout<<"Primes: ";
-			_field.write(std::cout);
+			field().write(std::cout);
 			std::cout<<"\n Matrix: \n";
 			A.write(std::cout);
 			std::cout<<"\n Matrix mod p: \n";
@@ -673,7 +673,7 @@ namespace LinBox
 		// return the field
 		const Field& field() const
 		{
-			return _field;
+			return *_field;
 		}
 
 	protected:
@@ -685,14 +685,14 @@ namespace LinBox
 #endif
 			LinBox::integer tmp;
 
-			Hom<Ring, Field> hom(this->_intRing, _field);
+			Hom<Ring, Field> hom(this->_intRing, field());
 			// res_p =  residu mod p
-			//VectorHom::map (_res_p, residu, _field, this->_intRing);
+			//VectorHom::map (_res_p, residu, field(), this->_intRing);
 			{
 				typename FVector::iterator iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
-					//_field. init (*iter_p, this->_intRing.convert(tmp,*iter));
+					//field(). init (*iter_p, this->_intRing.convert(tmp,*iter));
 					hom.image(*iter_p, *iter);//std::cout<<*iter_p<<"= "<< *iter<<" mod "<<this->_p<<"\n";
 			}
 #ifdef RSTIMING
@@ -710,13 +710,13 @@ namespace LinBox
 			tGetDigitConvert.start();
 #endif
 			// digit = digit_p
-			//VectorHom::map(digit, _digit_p, this->_intRing, _field);
+			//VectorHom::map(digit, _digit_p, this->_intRing, field());
 			{
 				typename FVector::const_iterator iter_p = _digit_p.begin();
 				typename IVector::iterator iter = digit.begin();
 
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
-					//this->_intRing.init(*iter, _field.convert(tmp,*iter_p));
+					//this->_intRing.init(*iter, field().convert(tmp,*iter_p));
 					hom.preimage(*iter, *iter_p);
 			}
 
@@ -749,7 +749,7 @@ namespace LinBox
 
 		const FMatrix                  &_Ap;
 		mutable FPolynomial        _MinPoly;
-		Field                            _field;
+		const Field                 *_field;
 		const VectorDomain<Field>      _VDF;
 		mutable FVector              _res_p;
 		mutable FVector            _digit_p;
@@ -768,14 +768,14 @@ namespace LinBox
 					   const FPolynomial& MinPoly,
 					   const VectorIn& b,
 					   const Prime_Type& p) :
-			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _MinPoly(MinPoly), _field(F), _VDF(F), _res_p(b.size()), _digit_p(A.coldim()), _rand(F)
+			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _MinPoly(MinPoly), _field(&F), _VDF(F), _res_p(b.size()), _digit_p(A.coldim()), _rand(F)
 		{
 
 			// Normalize the minimal polynomial as f(x)=1- a1/a0 x - a2/a0 x^2 - ...
 			FPolyIterator iter=_MinPoly.begin();
 			while(++iter != _MinPoly.end ()){
-				_field.divin (*iter, _MinPoly.front ());
-				_field.negin (*iter);
+				field().divin (*iter, _MinPoly.front ());
+				field().negin (*iter);
 			}
 #ifdef RSTIMING
 			ttGetDigit.clear();
@@ -788,7 +788,7 @@ namespace LinBox
 		// return the field
 		const Field& field() const
 		{
-			return _field;
+			return *_field;
 		}
 
 	protected:
@@ -805,7 +805,7 @@ namespace LinBox
 				typename FVector::iterator iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
-					_field. init (*iter_p, this->_intRing.convert(tmp,*iter));
+					field(). init (*iter_p, this->_intRing.convert(tmp,*iter));
 			}
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
@@ -837,10 +837,10 @@ namespace LinBox
 				FPolynomial Poly;
 				unsigned long deg;
 				unsigned long size= (_Ap.rowdim() - _MinPoly.size())<<1 ;
-				BlackboxContainer<Field, FMatrix > Sequence(&_Ap,_field,error,size);
+				BlackboxContainer<Field, FMatrix > Sequence(&_Ap,field(),error,size);
 				MasseyDomain<Field,BlackboxContainer<Field, FMatrix > > MD(&Sequence);
 				MD.minpoly(Poly,deg);
-				if (_field.isZero(Poly.front())) {
+				if (field().isZero(Poly.front())) {
 					// here we should stop the execution but not yet implemented
 					std::cout<<" the prime was not good \n, result will be wrong";
 					break;
@@ -849,17 +849,17 @@ namespace LinBox
 				// denormalize the minimal polynomial
 				FPolyIterator iter=_MinPoly.begin();
 				while (++iter != _MinPoly.end()) {
-					_field.mulin (*iter, _MinPoly.front());
-					_field.negin (*iter);
+					field().mulin (*iter, _MinPoly.front());
+					field().negin (*iter);
 				}
 
 				// update the minimal polynomial
 				Element zero;
-				_field.init(zero,0);
+				field().init(zero,0);
 				FPolynomial newMinPoly(_MinPoly.size()+Poly.size()-1,zero);
 				for (size_t i=0; i < _MinPoly.size(); i++)
 					for (size_t j=0 ; j < Poly.size(); j++)
-						_field.axpyin(newMinPoly[i+j],_MinPoly[i],Poly[j]);
+						field().axpyin(newMinPoly[i+j],_MinPoly[i],Poly[j]);
 				_MinPoly.clear();
 				Poly.clear();
 				_MinPoly=newMinPoly;
@@ -867,8 +867,8 @@ namespace LinBox
 				// normalize the new minimal polynomial
 				iter=_MinPoly.begin ();
 				while (++iter != _MinPoly.end ()) {
-					_field.divin (*iter, _MinPoly.front ());
-					_field.negin (*iter);
+					field().divin (*iter, _MinPoly.front ());
+					field().negin (*iter);
 				}
 
 				_VDF.mul (_digit_p, _res_p, _MinPoly.back ());
@@ -901,7 +901,7 @@ namespace LinBox
 				typename FVector::const_iterator iter_p = _digit_p.begin();
 				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
-					this->_intRing.init(*iter, _field.convert(tmp,*iter_p));
+					this->_intRing.init(*iter, field().convert(tmp,*iter_p));
 			}
 
 #ifdef RSTIMING
@@ -937,7 +937,7 @@ namespace LinBox
 	protected:
 
 		const FMatrix                       &_Ap;
-		Field                                 _field;
+		const Field                     * _field;
 		const VectorDomain<Field>           _VDF;
 		mutable FVector                   _res_p;
 		mutable FVector                 _digit_p;
@@ -966,7 +966,7 @@ namespace LinBox
 						const size_t                        m,
 						const size_t                        n) :
 			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap),
-			_field(F),
+			_field(&F),
 			_VDF(F),
 			_res_p(b.size()),
 			_digit_p(A.coldim()),
@@ -993,10 +993,10 @@ namespace LinBox
 
 
 			std::cout<<"U:\n";
-			UU.write(std::cout, _field);
+			UU.write(std::cout, field());
 
 			std::cout<<"V:\n";
-			V.write(std::cout, _field);
+			V.write(std::cout, field());
 
 			Block UAp(_m, _row);
 
@@ -1010,10 +1010,10 @@ namespace LinBox
 				_rand.random(UAp.refEntry(0,i));
 
 
-			_Seq = new Sequence (&Ap, _field, UAp,V);
+			_Seq = new Sequence (&Ap, field(), UAp,V);
 			std::cout<<"Sequence:\n";
 			for (size_t i=0;i<_Seq->getRep().size();++i)
-				_Seq->getRep()[i].write(std::cout,_field)<<"\n";
+				_Seq->getRep()[i].write(std::cout,field())<<"\n";
 			std::cout<<"\n";
 
 
@@ -1040,7 +1040,7 @@ namespace LinBox
 		}
 
 		// return the field
-		const Field& field() const { return _field; }
+		const Field& field() const { return *_field; }
 
 	protected:
 
@@ -1056,7 +1056,7 @@ namespace LinBox
 				typename FVector::iterator iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
-					_field. init (*iter_p, this->_intRing.convert(tmp,*iter));
+					field(). init (*iter_p, this->_intRing.convert(tmp,*iter));
 			}
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
@@ -1066,7 +1066,7 @@ namespace LinBox
 
 			std::cout<<"residue:\n";
 			for (size_t i=0;i<_res_p.size();++i)
-				_field.write(std::cout,_res_p[i])<<",";
+				field().write(std::cout,_res_p[i])<<",";
 			std::cout<<"\n";
 
 
@@ -1076,7 +1076,7 @@ namespace LinBox
 			_Seq->recompute();
 			std::cout<<"Modified Sequence:\n";
 			for (size_t i=0;i<_Seq->getRep().size();++i)
-				_Seq->getRep()[i].write(std::cout,_field)<<"\n";
+				_Seq->getRep()[i].write(std::cout,field())<<"\n";
 			std::cout<<"\n";
 
 			FBlockPolynomial minpoly;
@@ -1092,13 +1092,13 @@ namespace LinBox
 #endif
 			std::cout<<"Block Minpoly:\n";
 			for (size_t i=0;i<minpoly.size();++i)
-				minpoly[i].write(std::cout,_field)<<"\n";
+				minpoly[i].write(std::cout,field())<<"\n";
 			std::cout<<"\n";
 
 			size_t idx=0;
-			if ( _field.isZero(minpoly[0].getEntry(0,0))) {
+			if ( field().isZero(minpoly[0].getEntry(0,0))) {
 				size_t i=1;
-				while ( _field.isZero(minpoly[0].getEntry(i,0)))
+				while ( field().isZero(minpoly[0].getEntry(i,0)))
 					++i;
 				if (i == _m)
 					throw LinboxError(" block minpoly: matrix seems to be singular - abort");
@@ -1107,12 +1107,12 @@ namespace LinBox
 			}
 
 			size_t deg = degree[idx];
-			BlasMatrix<Field> idx_poly(_field,deg+1,_m-1);
+			BlasMatrix<Field> idx_poly(field(),deg+1,_m-1);
 			for (size_t i=0;i<deg+1;++i)
 				for (size_t j=0;j<_m-1;++j)
 					idx_poly.setEntry(i,j,minpoly[i].getEntry(idx,j+1));
 
-			BlasMatrix<Field> Combi(_field,deg+1,_row);
+			BlasMatrix<Field> Combi(field(),deg+1,_row);
 			_BMD.mul(Combi,idx_poly,UU);
 
 
@@ -1140,9 +1140,9 @@ namespace LinBox
 
 			_VDF.addin(accu,lhs);
 			Element scaling;
-			_field.init(scaling);
-			_field.neg(scaling,minpoly[0].getEntry(idx,0));
-			_field.invin(scaling);
+			field().init(scaling);
+			field().neg(scaling,minpoly[0].getEntry(idx,0));
+			field().invin(scaling);
 			_VDF.mul(_digit_p,accu,scaling);
 
 
@@ -1165,7 +1165,7 @@ namespace LinBox
 				typename FVector::const_iterator iter_p = _digit_p.begin();
 				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
-					this->_intRing.init(*iter, _field.convert(tmp,*iter_p));
+					this->_intRing.init(*iter, field().convert(tmp,*iter_p));
 			}
 
 #ifdef RSTIMING
@@ -1197,9 +1197,9 @@ namespace LinBox
 	protected:
 
 		const FMatrix&                      _Ap;
-		const Diagonal<Field>               &_diagMat;
+		const Diagonal<Field>         &_diagMat;
 		const BlockHankelInverse<Field>  &_Hinv;
-		Field                                _field;
+		const Field                     *_field;
 		mutable FVector                  _res_p;
 		mutable FVector                _digit_p;
 		std::vector<std::vector<Element> >   _u;
@@ -1228,16 +1228,16 @@ namespace LinBox
 					     const Block&      V,
 					     const VectorIn&   b,
 					     const Prime_Type& p) :
-			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _Hinv(Hinv), _field(F),
+			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _Hinv(Hinv), _field(&F),
 			_res_p(b.size()), _digit_p(A.coldim()),  _block(U.rowdim()), _numblock(A.coldim()/_block) , _VD(F), _BMD(F), _diagMat(D)
 		{
 			tApplyU.clear();
 			tApplyH.clear();
 			tApplyV.clear();
 			for (size_t i=0; i< _res_p.size(); ++i)
-				_field.init(_res_p[i]);
+				field().init(_res_p[i]);
 			for (size_t i=0; i< _digit_p.size(); ++i)
-				_field.init(_digit_p[i]);
+				field().init(_digit_p[i]);
 
 			// size_t block= U.rowdim();
 
@@ -1246,10 +1246,10 @@ namespace LinBox
 
 			for (size_t i=0;i<_block;++i)
 				for (size_t j=0;j<_numblock;++j){
-					_field.assign(_u[i][j], U.getEntry(0, i*_numblock+j));
-					_field.assign(_v[i][j], V.getEntry(i*_numblock+j, i));
+					field().assign(_u[i][j], U.getEntry(0, i*_numblock+j));
+					field().assign(_v[i][j], V.getEntry(i*_numblock+j, i));
 				}
-			_field.init(_zero,0);
+			field().init(_zero,0);
 
 			//Ap.write(std::cout,F);
 #ifdef RSTIMING
@@ -1258,7 +1258,7 @@ namespace LinBox
 #endif
 #ifdef DEBUG_LC
 			std::cout<<"Primes: ";
-			_field.write(std::cout);
+			field().write(std::cout);
 #endif
 
 		}
@@ -1276,7 +1276,7 @@ namespace LinBox
 		// return the field
 		const Field& field() const
 		{
-			return _field;
+			return *_field;
 		}
 
 	protected:
@@ -1288,14 +1288,14 @@ namespace LinBox
 #endif
 			//LinBox::integer tmp;
 
-			Hom<Ring, Field> hom(this->_intRing, _field);
+			Hom<Ring, Field> hom(this->_intRing, field());
 			// res_p =  residu mod p
-			//VectorHom::map (_res_p, residu, _field, this->_intRing);
+			//VectorHom::map (_res_p, residu, field(), this->_intRing);
 			{
 				typename FVector::iterator iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
-					//_field. init (*iter_p, this->_intRing.convert(tmp,*iter));
+					//field(). init (*iter_p, this->_intRing.convert(tmp,*iter));
 					hom.image(*iter_p, *iter);
 			}
 #ifdef RSTIMING
@@ -1317,8 +1317,8 @@ namespace LinBox
 #if 0
 			std::cout<<"b:=<";
 			for (size_t i=0;i<_res_p.size()-1;++i)
-				_field.write(std::cout,_res_p[i])<<",";
-			_field.write(std::cout,_res_p[_res_p.size()-1])<<">;\n";
+				field().write(std::cout,_res_p[i])<<",";
+			field().write(std::cout,_res_p[_res_p.size()-1])<<">;\n";
 #endif
 
 			size_t n = _Ap.coldim();
@@ -1326,9 +1326,9 @@ namespace LinBox
 			FVector z0(n), b0(n), b1(n);
 			_diagMat.apply(b0, _res_p);
 			_res_p=b0;
-			BlasMatrix<Field> Apib(_field,n, _numblock);
+			BlasMatrix<Field> Apib(field(),n, _numblock);
 			for (size_t i=0;i<n;++i){
-				_field.assign(Apib.refEntry(i,0), _res_p[i]);
+				field().assign(Apib.refEntry(i,0), _res_p[i]);
 			}
 
 			int swi=1;
@@ -1336,22 +1336,22 @@ namespace LinBox
 				if (swi){
 					_Ap.apply(b1, b0);
 					for (size_t i=0;i<n;++i)
-						_field.assign(Apib.refEntry(i,j), b1[i]);
+						field().assign(Apib.refEntry(i,j), b1[i]);
 					swi=0;
 				}
 				else{
 					_Ap.apply(b0, b1);
 					for (size_t i=0;i<n;++i)
-						_field.assign(Apib.refEntry(i,j), b0[i]);
+						field().assign(Apib.refEntry(i,j), b0[i]);
 					swi=1;
 				}
 
 			FVector tmp(_numblock);
 			for (size_t i=0; i<_block; ++i){
-				BlasMatrix<Field> T(_field,Apib, i*_numblock, 0, _numblock, _numblock);
+				BlasMatrix<Field> T(field(),Apib, i*_numblock, 0, _numblock, _numblock);
 				_BMD.mul(tmp, _u[i], T);
 				for (size_t j=0;j<_numblock;++j){
-					this->_field.assign(z0[j*_block+i], tmp[j]);
+					this->field().assign(z0[j*_block+i], tmp[j]);
 				}
 			}
 #ifdef RSTIMING
@@ -1374,14 +1374,14 @@ namespace LinBox
 			   std::cout<<" Hinv U b mod p done\n";
 			   std::cout<<"\n y:=<";
 			   for (size_t i=0;i<_digit_p.size()-1;++i)
-			   _field.write(std::cout,z1[i])<<",";
-			   _field.write(std::cout,z1[_digit_p.size()-1])<<">;\n";
+			   field().write(std::cout,z1[i])<<",";
+			   field().write(std::cout,z1[_digit_p.size()-1])<<">;\n";
 #endif
 
 			// compute digit_p  = [V^T AV^T ... A^k]^T.z1
 			FVector b_bar(n), b_hat(_numblock);
 			for (size_t i=0;i<n;++i)
-				_field.assign(_digit_p[i], _zero);
+				field().assign(_digit_p[i], _zero);
 
 			for (int i= _numblock-1;i>=0; --i){
 				_Ap.apply(b1, _digit_p);
@@ -1389,7 +1389,7 @@ namespace LinBox
 				for (size_t j=0;j<_block;++j){
 					_VD.mul(b_hat, _v[j], z1[i*_block+j]);
 					for (size_t k=0;k<_numblock;++k)
-						_field.assign(b_bar[j*_numblock+k], b_hat[k]);
+						field().assign(b_bar[j*_numblock+k], b_hat[k]);
 				}
 				_VD.addin(_digit_p, b_bar);
 			}
@@ -1402,8 +1402,8 @@ namespace LinBox
 			   std::cout<<" V Hinv U b mod p done\n";
 			   std::cout<<"\n x:=<";
 			   for (size_t i=0;i<_digit_p.size()-1;++i)
-			   _field.write(std::cout,_digit_p[i])<<",";
-			   _field.write(std::cout,_digit_p[_digit_p.size()-1])<<">;\n";
+			   field().write(std::cout,_digit_p[i])<<",";
+			   field().write(std::cout,_digit_p[_digit_p.size()-1])<<">;\n";
 #endif
 
 #ifdef RSTIMING
@@ -1412,12 +1412,12 @@ namespace LinBox
 			tGetDigitConvert.start();
 #endif
 			// digit = digit_p
-			//VectorHom::map(digit, _digit_p, this->_intRing, _field);
+			//VectorHom::map(digit, _digit_p, this->_intRing, field());
 			{
 				typename FVector::const_iterator iter_p = _digit_p.begin();
 				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
-					//this->_intRing.init(*iter, _field.convert(tmp,*iter_p));
+					//this->_intRing.init(*iter, field().convert(tmp,*iter_p));
 					hom.preimage(*iter, *iter_p);
 			}
 
@@ -1452,7 +1452,7 @@ namespace LinBox
 		const Permutation<_Field>&           QQ;
 		const Permutation<_Field>&           PP;
 		unsigned long                     _rank;
-		Field                                _field;
+		const Field                     *_field;
 		mutable FVector                  _res_p;
 		mutable FVector                _digit_p;
 		GaussDomain<Field>                  _GD;
@@ -1473,19 +1473,19 @@ namespace LinBox
 					  const VectorIn&    b,
 					  const Prime_Type&  p) :
 			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), LL(L),QQ(Q),UU(U), PP(P), _rank(rank),
-			_field(F), _res_p(b.size()), _digit_p(A.coldim()), _GD(F)
+			_field(&F), _res_p(b.size()), _digit_p(A.coldim()), _GD(F)
 		{
 			for (size_t i=0; i< _res_p.size(); ++i)
-				_field.init(_res_p[i]);
+				field().init(_res_p[i]);
 			for (size_t i=0; i< _digit_p.size(); ++i)
-				_field.init(_digit_p[i]);
+				field().init(_digit_p[i]);
 		}
 
 
 		virtual ~SparseLULiftingContainer() {}
 
 		// return the field
-		const Field& field() const { return _field; }
+		const Field& field() const { return *_field; }
 
 	protected:
 
@@ -1493,7 +1493,7 @@ namespace LinBox
 		{
 
 			// compute residu mod p
-			Hom<Ring, Field> hom(this->_intRing, _field);
+			Hom<Ring, Field> hom(this->_intRing, field());
 			{
 				typename FVector::iterator iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
@@ -1510,7 +1510,7 @@ namespace LinBox
 				typename FVector::const_iterator iter_p = _digit_p.begin();
 				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
-					//this->_intRing.init(*iter, _field.convert(tmp,*iter_p));
+					//this->_intRing.init(*iter, field().convert(tmp,*iter_p));
 					hom.preimage(*iter, *iter_p);
 			}
 

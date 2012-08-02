@@ -76,7 +76,7 @@ namespace LinBox {
 	protected:
 		Ring _ring;
 		VectorDomain<Ring> _VDR;
-		Field _field;
+		const Field *_field;
 		VectorDomain<Field> _VDF;
 		NumericSolver _numsolver;
 		//inline static int check (int n, const double* M, integer* numx, integer& denx, double* b) ;
@@ -94,7 +94,7 @@ namespace LinBox {
 
 		RationalSolverSN(const Ring& R = Ring(), const NumericSolver& S = NumericSolver(),
 				 bool ea=false) :
-		       	_ring(R), _VDR(R), _field(Field()), _VDF(Field()), _numsolver(S), exact_apply(ea)
+		       	_ring(R), _VDR(R), _field(&(Field())), _VDF(Field()), _numsolver(S), exact_apply(ea)
 		{}
 
 		/**
@@ -116,10 +116,10 @@ namespace LinBox {
 			linbox_check((b.size() == M.rowdim()) && (num. size() == M.coldim()));
 
 			// DM is M as matrix of doubles
-			FMatrix DM(_field, n, n);
+			FMatrix DM(field(), n, n);
 			//  Fix MatrixHom?
 			//FMatrix* DMp = &DM;
-			//MatrixHom::map<FMatrix, IMatrix, Field>(DMp, M, _field);
+			//MatrixHom::map<FMatrix, IMatrix, Field>(DMp, M, field());
 
 			if(n != M. rowdim() || n != M. coldim() || n != num.size()) {
 				// std::cerr << "solve fail 1 - dimension mismatch" << std::endl;
@@ -134,7 +134,7 @@ namespace LinBox {
 			typename FMatrix::Iterator dm_p = DM.Begin();
 			for (typename IMatrix::ConstIterator raw_p = M.Begin();
 			     raw_p != M. End(); ++ raw_p, ++dm_p) {
-				_field.init(*dm_p, *raw_p);
+				field().init(*dm_p, *raw_p);
 			}
 
 			// build a numeric solver from new double matrix
@@ -148,7 +148,7 @@ namespace LinBox {
 			typename FVector::iterator r_p = r.begin();
 			for (  ; b_p != b. begin() + n; ++b_p, ++r_p, ++bi_p) {
 				*bi_p = *b_p;  //  copy original RHS
-				_field.init(*r_p, *b_p);
+				field().init(*r_p, *b_p);
 			}
 
 			//  denBound is the Hadamard bound, loopBound is roughly twice as much

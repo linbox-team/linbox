@@ -215,7 +215,7 @@ namespace LinBox
 			_VD.write (report, m_A) << std::endl;
 		}
 
-		if (_field.isZero (m_A.front ())) {
+		if (field().isZero (m_A.front ())) {
 			commentator().stop ("singular", "System found to be singular",
 					  "WiedemannSolver::solveNonsingular");
 			return SINGULAR;
@@ -227,8 +227,8 @@ namespace LinBox
 			PolyIterator iter = m_A.begin ();
 
 			while (++iter != m_A.end ()) {
-				_field.divin (*iter, m_A.front ());
-				_field.negin (*iter);
+				field().divin (*iter, m_A.front ());
+				field().negin (*iter);
 			}
 
 			commentator().stop ("done");
@@ -301,8 +301,8 @@ namespace LinBox
 
 				CekstvSwitchFactory<Field> factory (_randiter);
 				typedef Butterfly<Field, CekstvSwitch<Field> > ButterflyP;
-				ButterflyP P(_field, A.rowdim (), factory);
-				ButterflyP Q(_field, A.coldim (), factory);
+				ButterflyP P(field(), A.rowdim (), factory);
+				ButterflyP Q(field(), A.coldim (), factory);
 				Compose< Blackbox, ButterflyP > AQ(&A, &Q);
 				Compose< ButterflyP, Compose< Blackbox, ButterflyP > > PAQ(&P, &AQ);
 
@@ -432,7 +432,7 @@ namespace LinBox
 
 		Vector v, Avpb, PAvpb, bp, xp, Qinvx;
 
-		RandomDenseStream<Field, Vector> stream (_field, _randiter, A.coldim ());
+		RandomDenseStream<Field, Vector> stream (field(), _randiter, A.coldim ());
 
 		VectorWrapper::ensureDim (v, A.coldim ());
 		VectorWrapper::ensureDim (Avpb, A.rowdim ());
@@ -500,7 +500,7 @@ namespace LinBox
 
 		Vector v, Av, PAv, vp, xp, Qinvx;
 
-		RandomDenseStream<Field, Vector> stream (_field, _randiter, A.coldim ());
+		RandomDenseStream<Field, Vector> stream (field(), _randiter, A.coldim ());
 
 		unsigned long r = (A.coldim () < A.rowdim ()) ? A.coldim () : A.rowdim ();
 
@@ -572,14 +572,14 @@ namespace LinBox
 		cert_traits.singular (WiedemannTraits::SINGULAR);
 		cert_traits.maxTries (1);
 
-		WiedemannSolver solver (_field, cert_traits, _randiter);
+		WiedemannSolver solver (field(), cert_traits, _randiter);
 
 		Transpose<Blackbox> AT (&A);
 
 		solver.findNullspaceElement (u, AT);
 		_VD.dot (uTb, u, b);
 
-		if (!_field.isZero (uTb))
+		if (!field().isZero (uTb))
 			ret = true;
 
 		commentator().stop (MSG_STATUS (ret), NULL, "WiedemannSolver::certifyInconsistency");
@@ -594,15 +594,15 @@ namespace LinBox
 		const double             LAMBDA = 3;
 		integer                  card;
 
-		_field.cardinality (card);
+		field().cardinality (card);
 
 		double                   init_p = 1.0 - 1.0 / (double) card;
 		double                   log_m = LAMBDA * log ((double) m) / M_LN2;
 		double                   new_p;
 
-		SparseMatrix<Field>    *P = new SparseMatrix<Field> (_field, m, m);
+		SparseMatrix<Field>    *P = new SparseMatrix<Field> (field(), m, m);
 
-		RandomSparseStream<Field> stream (_field, _randiter, init_p, m, m);
+		RandomSparseStream<Field> stream (field(), _randiter, init_p, m, m);
 
 		for (unsigned int i = 0; i < m; ++i) {
 			new_p = log_m / double(m - i + 1);

@@ -103,14 +103,14 @@ namespace LinBox
 		typedef bool Element;
 
 		VectorDomain (const VectorDomain &VD) :
-			VectorDomainBase<GF2> (VD._field), DotProductDomain<GF2> (VD._field)
+			VectorDomainBase<GF2> (VD.field()), DotProductDomain<GF2> (VD.field())
 		{}
 
 		VectorDomain &operator = (const VectorDomain &) { return *this; }
 
 		const GF2 &field () const
 		{
-			return _field;
+			return *_field;
 		}
 
 		template <class Vector>

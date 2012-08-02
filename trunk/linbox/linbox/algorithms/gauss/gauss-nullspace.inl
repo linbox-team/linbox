@@ -46,13 +46,13 @@ namespace LinBox
 	{
 		if (Rank == 0) {
 			for(size_t i=0; i<U.coldim(); ++i)
-				x.setEntry(i,i,_field.one);
+				x.setEntry(i,i,field().one);
 		}
 		else {
 			unsigned long nullity = U.coldim()-Rank;
 			if (nullity != 0) {
 				// compute U2T s.t. U = [ U1 | -U2T^T ]
-				Matrix U2T(_field,nullity,Rank);
+				Matrix U2T(field(),nullity,Rank);
 
 				for(typename Matrix::ConstIndexedIterator uit=U.IndexedBegin();
 				    uit != U.IndexedEnd(); ++uit) {
@@ -61,7 +61,7 @@ namespace LinBox
 				}
 				for(typename Matrix::Iterator u2it=U2T.Begin();
 				    u2it != U2T.End(); ++u2it)
-					_field.negin(*u2it);
+					field().negin(*u2it);
 
 
 				// Compute the basis vector by vector
@@ -71,7 +71,7 @@ namespace LinBox
 					// Solve for upper part of basis
 					upperTriangularSparseSolve(W1Ti, Rank, U, U2T[i]);
 					// Add identity for lower part
-					W1Ti.push_back( typename SparseVect::Element((unsigned)(Rank+i), _field.one ) );
+					W1Ti.push_back( typename SparseVect::Element((unsigned)(Rank+i), field().one ) );
 
 					for(size_t j=0; j<W1Ti.size(); ++j) {
 						// P.applyTranspose(x[i],W1T[i]);
@@ -102,7 +102,7 @@ namespace LinBox
 		unsigned long Rank;
 		size_t Ni(A.rowdim()),Nj(A.coldim());
 
-		Permutation<Field> P((int)Nj,_field);
+		Permutation<Field> P((int)Nj,field());
 
 		// A.write( std::cerr << "A:=", FORMAT_MAPLE ) << ';' << std::endl;
 		this->InPlaceLinearPivoting(Rank, Det, A, P, Ni, Nj );

@@ -357,11 +357,7 @@ namespace LinBox
 
 
 		//! Field accessor
-		const Field& field() const
-		{
-			return *_field;
-		}
-
+		const Field& field() const { return *_field; }
 
 		/*
 		 * Basics operation available matrix respecting BlasMatrix interface

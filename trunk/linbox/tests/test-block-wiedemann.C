@@ -42,8 +42,9 @@
 #include "linbox/field/modular.h"
 //#include "linbox/algorithms/right-block-wiedemann.h"
 #include "linbox/algorithms/block-wiedemann.h"
-#include "linbox/algorithms/block-coppersmith-domain.h"
-#include "linbox/blackbox/diagonal.h"
+#include "linbox/algorithms/coppersmith.h"
+#include "linbox/blackbox/sparse.h"
+//#include "linbox/blackbox/diagonal.h"
 //#include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/vector/stream.h"
 
@@ -89,21 +90,33 @@ int main (int argc, char **argv)
 	commentator().start("block wiedemann test suite", "block-wiedemann");
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	RandomDenseStream<Field> stream1 (F, n, 1), stream2 (F, n, 1);
+	RandomDenseStream<Field> stream1 (F, n, 3);// stream2 (F, n, 1);
 	Vector d(n), b(n), x(n), y(n);
 	stream1.next (d);
-	stream2.next (b);
+	stream1.next (b);
 
 	VD.write (report << "Right-hand side: b =  ", b) << endl;
 
-	typedef Diagonal <Field> Blackbox;
-	Blackbox D (F, d);
-	VD.write (report << "Diagonal entries: ", d) << endl;
+// sparse
+	typedef SparseMatrix <Field> Blackbox;
+	Blackbox D (F, n, n);
+	for (size_t i = 0; i < n; ++i) D.setEntry(i, i, d[i]);
+	stream1.next (d);
+	//for (size_t i = 0; i < n-1; ++i) D.setEntry(i, i+1, d[i]);
+	//D.setEntry(0, n-1, d[n-1]);
+	//... setup entries
+
+// diagonal
+	//typedef Diagonal <Field> Blackbox;
+	//Blackbox D (F, d);
+	//VD.write (report << "Diagonal entries: ", d) << endl;
+
+// scalar
 	//typedef ScalarMatrix<Field> Blackbox;
 	//Blackbox D (F, n, F.one);
 	//report << "Scalar matrix: D = " << F.one << endl;
 
-#if 0
+#if 1
 	// Yuhasz' Matrix Berlekamp Massey being used
 	CoppersmithSolver<Field> RCS(F);
 	RCS.solveNonSingular(x, D, b);
@@ -118,7 +131,7 @@ int main (int argc, char **argv)
 	}
 #endif
 
-#if 1
+#if 0
 	// Giorgi's block method, SigmaBasis based, being used
 	Vector z(n);
 	BlockWiedemannSolver<Field> LBWS(F);

@@ -74,10 +74,10 @@ namespace LinBox
 		 *               options for the solver
 		 */
 		BlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits) :
-			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (F), _block (traits.blockingFactor ())
+			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (F), _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			_field.init (_one, 1);
+			field().init (_one, 1);
 		}
 
 		/** Constructor with a random iterator.
@@ -87,10 +87,10 @@ namespace LinBox
 		 * @param r Random iterator to use for randomization
 		 */
 		BlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits, typename Field::RandIter r) :
-			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (r), _block (traits.blockingFactor ())
+			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (r), _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			_field.init (_one, 1);
+			field().init (_one, 1);
 		}
 
 		/** Solve the linear system Ax = b.
@@ -113,6 +113,7 @@ namespace LinBox
 		template <class Blackbox, class Vector>
 		Vector &solve (const Blackbox &A, Vector &x, const Vector &b);
 
+		inline const Field & field() const { return *_field; }
 	private:
 
 		// S_i is represented here as a vector of booleans, where the entry at
@@ -212,7 +213,7 @@ namespace LinBox
 		// Private variables
 
 		const BlockLanczosTraits _traits;
-		const Field              &_field;
+		const Field              *_field;
 		VectorDomain<Field>       _VD;
 		MatrixDomain<Field>       _MD;
 		typename Field::RandIter  _randiter;

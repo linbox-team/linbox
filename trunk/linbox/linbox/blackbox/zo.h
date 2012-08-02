@@ -86,13 +86,13 @@ namespace LinBox
 
 		// basic constructor, can be used with subsequent read.
 		ZeroOne(const Field& F) :
-		       	_field(F), sorted(true)
+		       	_field(&F), sorted(true)
 		{}
 
 		// constructor for use by ZOQuad.  Needs work.
 		ZeroOne (const Field& F, IndexVector& index, PointerVector& indexP,
 			 Index Rowdim, Index Coldim, bool sortedBy) :
-			_field(F), _index(index), _indexP(indexP),
+			_field(&F), _index(index), _indexP(indexP),
 			_rowdim(Rowdim), _coldim(Coldim), sorted(sortedBy)
 		{
 			std::ptrdiff_t diff = _index.begin() - index.begin();
@@ -115,7 +115,7 @@ namespace LinBox
 		  */
 		ZeroOne
 		(Field& F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz) :
-			_field(F), _rowdim(rows), _coldim(cols), sorted(true)
+			_field(&F), _rowdim(rows), _coldim(cols), sorted(true)
 		{
 			std::vector<std::pair<Index, Index> > indexPairs;
 			for (Index i = 0; i < NNz; ++i, ++rowP, ++colP)
@@ -301,7 +301,7 @@ namespace LinBox
 			std::vector<std::pair<Index, Index> > indexPairs;
 			Index r, c;
 			Element v;
-			MatrixStream<Field> S(_field, is);
+			MatrixStream<Field> S(field(), is);
 			long count = 0;
 
 			// /*
@@ -339,7 +339,7 @@ namespace LinBox
 		}
 
 		const Field& field() const
-		{ return _field; }
+		{ return *_field; }
 
 		/* Non blackbox function.  Tells the number of nonzero entries
 		*/
@@ -351,7 +351,7 @@ namespace LinBox
 
 	protected:
 
-		Field _field; // The field used by this class
+		const Field *_field; // The field used by this class
 
 		/* _indexP is a pointer to an array of row indexes.  _colP is a pointer
 		 * to an array of column indexes. These two are the other arrays of a

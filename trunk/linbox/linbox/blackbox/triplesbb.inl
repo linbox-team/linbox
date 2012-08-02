@@ -49,7 +49,7 @@ namespace LinBox
 template<class Field> TriplesBB<Field>::TriplesBB() {}
 template<class Field> TriplesBB<Field>::~TriplesBB() {};
 
-template<class Field> TriplesBB<Field>::TriplesBB(const Field& F, istream& in) : field_(F) {
+template<class Field> TriplesBB<Field>::TriplesBB(const Field& F, istream& in) : field_(&F) {
 	read(in);
 }
 
@@ -79,10 +79,10 @@ ostream& TriplesBB<Field>::write(ostream& out){
 
 template<class Field> 
 TriplesBB<Field>& TriplesBB<Field>::shape(const Field& F, Index r, Index c) 
-{ field_ = F; data_.clear(); rows_ = r; cols_ = c; rowMajor_ = 0; }
+{ field_ = &F; data_.clear(); rows_ = r; cols_ = c; rowMajor_ = 0; }
 
 template<class Field> TriplesBB<Field>::TriplesBB(const Field& F, Index r, Index c) 
-: field_(F), data_(), rows_(r), cols_(c), rowMajor_(0) {} 
+: field_(&F), data_(), rows_(r), cols_(c), rowMajor_(0) {} 
 
 template<class Field>
 TriplesBB<Field>::TriplesBB(const TriplesBB<Field> & B) 
@@ -136,10 +136,7 @@ template<class Field>
 size_t TriplesBB<Field>::coldim() const { return cols_; }
 
 template<class Field>
-const Field & TriplesBB<Field>::field() const { return field_; }
-
-template<class Field>
-Field & TriplesBB<Field>::field() { return field_; }
+const Field & TriplesBB<Field>::field() const { return *field_; }
 
 template<class Field>
 size_t TriplesBB<Field>::size() const { return data_.size(); }

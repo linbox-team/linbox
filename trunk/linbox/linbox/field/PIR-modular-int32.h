@@ -372,7 +372,7 @@ namespace LinBox
 		typedef PIRModular<int32_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F),_y(0)
+			_field (&F),_y(0)
 		{}
 
 
@@ -390,7 +390,7 @@ namespace LinBox
 			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
 			if (_y < t)
-				return _y += _field._two64;
+				return _y += field()._two64;
 			else
 				return _y;
 		}
@@ -398,13 +398,13 @@ namespace LinBox
 		inline uint64_t& accumulate (const Element &t) {
 			_y += t;
 			if (_y < (uint64_t)t)
-				return _y += _field._two64;
+				return _y += field()._two64;
 			else
 				return _y;
 		}
 
 		inline Element& get (Element &y) {
-			y = Element(_y % (uint64_t) _field.modulus);
+			y = Element(_y % (uint64_t) field().modulus);
 			return y;
 		}
 
@@ -417,9 +417,10 @@ namespace LinBox
 			_y = 0;
 		}
 
+		inline const Field & field() { return *_field; }
 
 	protected:
-		Field _field;
+		const Field *_field;
 		uint64_t _y;
 	};
 
@@ -450,10 +451,10 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += _field._two64;
+					y += field()._two64;
 			}
 
-			y %= (uint64_t) _field.modulus;
+			y %= (uint64_t) field().modulus;
 			return res = Element(y);
 
 		}
@@ -472,11 +473,11 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += _field._two64;
+					y += field()._two64;
 			}
 
 
-			y %= (uint64_t) _field.modulus;
+			y %= (uint64_t) field().modulus;
 
 			return res = (Element)y;
 		}
