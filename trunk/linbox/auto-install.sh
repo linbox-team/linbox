@@ -355,7 +355,7 @@ fi
 cool
 
 ####################
-#  fectch sources  #
+#  fetch sources  #
 ####################
 
 cd build ;

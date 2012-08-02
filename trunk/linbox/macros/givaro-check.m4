@@ -85,7 +85,7 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 	[
 	AC_TRY_RUN(
 	[#include <givaro/givconfig.h>
-	 int main () { if (GIVARO_VERSION < $version_min || GIVARO_VERSION >= $version_max || GIVARO_VERSION>0x030000) return -1; else return 0; /* old version of Givaro are defined as hexa 0x03yyzz*/ }
+	 int main () { if (GIVARO_VERSION >= $version_min && GIVARO_VERSION < $version_max) return 0; else return -1; /* old version of Givaro are defined as hexa 0x03yyzz*/ }
 	],[
 	givaro_found="yes"
 	break
@@ -101,14 +101,14 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 	])
 	],
 	[
-	givaro_found="no"
+	givaro_found="yes"
 	givaro_checked="$checked $GIVARO_HOME"
 	unset GIVARO_CFLAGS
 	unset GIVARO_LIBS
 
 	])
 else
-	givaro_found="no"
+	givaro_found="yes"
 fi
 done
 

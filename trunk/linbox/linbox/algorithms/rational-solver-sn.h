@@ -76,7 +76,7 @@ namespace LinBox {
 	protected:
 		Ring _ring;
 		VectorDomain<Ring> _VDR;
-		const Field *_field;
+		const Field _field; // we own it, user not expected to provide this handle on floating pt.
 		VectorDomain<Field> _VDF;
 		NumericSolver _numsolver;
 		//inline static int check (int n, const double* M, integer* numx, integer& denx, double* b) ;
@@ -92,9 +92,11 @@ namespace LinBox {
 		bool exact_apply;
 	public:
 
+		inline const Field & field() const { return _field; }
+
 		RationalSolverSN(const Ring& R = Ring(), const NumericSolver& S = NumericSolver(),
 				 bool ea=false) :
-		       	_ring(R), _VDR(R), _field(&(Field())), _VDF(Field()), _numsolver(S), exact_apply(ea)
+		       	_ring(R), _VDR(R), _field(), _VDF(field()), _numsolver(S), exact_apply(ea)
 		{}
 
 		/**

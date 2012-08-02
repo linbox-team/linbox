@@ -499,6 +499,7 @@ namespace LinBox
 		template <class Field>
 		std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const
 		{
+
 			return SparseMatrixReadWriteHelper<Element, Row>::write
 			(*this, os, F, format);
 		}
@@ -1334,7 +1335,7 @@ public:
 	template <class Field>
 	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const
 	{
-		return SparseMatrixReadWriteHelper<Element, Row>::write
+		return SparseMatrixWriteHelper<Element, Row>::write
 		(*this, os, F, format);
 	}
 
