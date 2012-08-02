@@ -109,7 +109,6 @@ namespace LinBox
 			_field(Mat._field),_indices (Mat._indices)
 		{}
 
-
 		// Destructor
 		~Permutation (void) {}
 

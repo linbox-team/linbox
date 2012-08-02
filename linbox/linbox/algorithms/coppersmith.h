@@ -74,6 +74,7 @@ namespace LinBox
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
 			commentator().start ("Coppersmith solveNonSingular", "solveNonSingular");
+			std::ostream report = commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 			//Set up the projection matrices and their dimensions
 			size_t d = B.coldim();
@@ -176,11 +177,9 @@ namespace LinBox
 			_MD.mul(UBxm, U, Bxm);
 
 			if(_MD.areEqual(UBxm, Uycol))
-				commentator().report() 
-				<< "The solution matches when projected by U" << endl;
+				report << "The solution matches when projected by U" << endl;
 			else
-				commentator().report() 
-				<< "The solution does not match when projected by U" << endl;
+				report << "The solution does not match when projected by U" << endl;
 
 			//Copy xm into x (Change type from 1 column matrix to Vector)
 			for(size_t i =0; i<d; i++)
