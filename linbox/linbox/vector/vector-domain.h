@@ -189,7 +189,8 @@ namespace LinBox
 		 * @return reference to field
 		 */
 
-		using DotProductDomain<Field>::field;
+		//using DotProductDomain<Field>::field;
+		using VectorDomainBase<Field>::field;
 
 		/** Vector input/output operations
 		 * These routines are useful for reading and writing vectors to
