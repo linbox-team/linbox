@@ -525,7 +525,7 @@ namespace LinBox
 	};
 
 	template <>
-	class DotProductDomain<ModularCrooked<double> > : private virtual VectorDomainBase<ModularCrooked<double> > {
+	class DotProductDomain<ModularCrooked<double> > : public virtual VectorDomainBase<ModularCrooked<double> > {
 	private:
 		double _bound;
 		size_t _nmax;
@@ -538,6 +538,7 @@ namespace LinBox
 			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (SQR(std::max(_field.up_mod,-_field.lo_mod))));
 		}
 
+		using VectorDomainBase<ModularCrooked<double> >::field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const

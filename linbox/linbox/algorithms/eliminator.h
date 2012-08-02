@@ -220,7 +220,7 @@ namespace LinBox
 
 		// Private variables
 
-		const Field                      &_field;
+		const Field                      *_field;
 		VectorDomain<Field>               _VD;
 		MatrixDomain<Field>               _MD;
 		unsigned int                      _number;

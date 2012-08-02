@@ -263,7 +263,7 @@ static bool testRandomLinearity (const Field                                 &F,
 	typename CekstvSwitch<Field>::Factory factory (r);
 	Butterfly<Field, CekstvSwitch<Field> > A (F, v1_stream.dim (), factory);
 
-	bool ret = testLinearity (F, A, v1_stream, v2_stream);
+	bool ret = testLinearity (A, v1_stream, v2_stream);
 
 	v1_stream.reset ();
 	v2_stream.reset ();

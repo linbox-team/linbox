@@ -81,7 +81,7 @@ namespace LinBox
 	class MasseyDomain {
 	private:
 		Sequence            *_container;
-		Field                _field;
+		const Field                *_field;
 		VectorDomain<Field>  _VD;
 		unsigned long         EARLY_TERM_THRESHOLD;
 
@@ -98,27 +98,27 @@ namespace LinBox
 		MasseyDomain (unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
 			_container           (),
 			_field                   (),
-			_VD                  (_field),
+			_VD                  (),
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
 		MasseyDomain (const MasseyDomain<Field, Sequence> &Mat, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
 			_container           (Mat._container),
 			_field                   (Mat._field),
-			_VD                  (Mat._field),
+			_VD                  (Mat.field()),
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
 		MasseyDomain (Sequence *D, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
 			_container           (D),
-			_field                   (D->getField ()),
-			_VD                  (D->getField ()),
+			_field                   (&(D->field ())),
+			_VD                  (D->field ()),
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
 		MasseyDomain (Sequence *MD, const Field &F, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
 			_container           (MD),
-			_field                   (F),
+			_field                   (&F),
 			_VD                  (F),
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
@@ -135,7 +135,8 @@ namespace LinBox
 		}
 
 		//-- Domains access
-		const Field &getField    () const { return _field; }
+		const Field &field    () const { return *_field; }
+		const Field &getField    () const { return *_field; } // deprecated
 		Sequence    *getSequence () const { return _container; }
 
 #ifdef INCLUDE_TIMING
@@ -159,12 +160,12 @@ namespace LinBox
 			if (i == _DEGINFTY_)
 				return _DEGINFTY_;
 
-			else if (!_field.isZero (v[i]))
+			else if (!field().isZero (v[i]))
 				return i;
 
 			// We must re-compute the degree :
 			for (long j = i - 1; j >= 0; j--) {
-				if (!_field.isZero (v[j])) {
+				if (!field().isZero (v[j])) {
 					v.resize (j + 1);
 					return j;
 				}
@@ -182,12 +183,12 @@ namespace LinBox
 			if (i == _DEGINFTY_)
 				return _DEGINFTY_;
 
-			else if (!_field.isZero (v[0]))
+			else if (!field().isZero (v[0]))
 				return 0;
 
 			// We must compute the valuation :
 			for (long j = 1; j <= i; j++)
-				if (!_field.isZero ((v)[j])) return j ;
+				if (!field().isZero ((v)[j])) return j ;
 
 			return _DEGINFTY_ ;
 		}
@@ -223,15 +224,15 @@ namespace LinBox
 			// -----------------------------------------------
 			// Preallocation. No further allocation.
 			//
-			C.reserve    (n + 1); C.resize (1); _field.assign (C[0], _field.one);
-			Polynomial B (n + 1); B.resize (1); _field.assign (B[0], _field.one);
+			C.reserve    (n + 1); C.resize (1); field().assign (C[0], field().one);
+			Polynomial B (n + 1); B.resize (1); field().assign (B[0], field().one);
 
 			long L = 0;
 			Element b, d, Ds;
 			long x = 1, b_deg = 0, c_deg = 0, l_deg;
 			long COMMOD = (END > 40) ? (END / 20) : 2;
 
-			_field.assign (b, _field.one);
+			field().assign (b, field().one);
 
 
 			for (long NN = 0; NN < END && x < (long) EARLY_TERM_THRESHOLD; ++NN, ++_iter) {
@@ -256,7 +257,7 @@ namespace LinBox
 				ReverseVector<Subvector<typename Polynomial::iterator> > Spp (Sp);
 				_VD.dot (d, Cp, Spp);
 
-				_field.addin (d, S[NN]);
+				field().addin (d, S[NN]);
 
 #ifdef INCLUDE_TIMING
 				timer.stop ();
@@ -266,68 +267,62 @@ namespace LinBox
 				timer.start ();
 #endif // INCLUDE_TIMING
 
-				if (_field.isZero (d)) {
+				if (field().isZero (d)) {
 					++x;
-				}
-				else {
+				} else {
 					if (L > (NN >> 1)) {
 						// -----------------------------------------------
 						// C = C + (Polynome(X,x,-d/b) * B);
 						//
-						_field.divin (_field.neg (Ds, d), b);
+						field().divin (field().neg (Ds, d), b);
 						long i = l_deg = (x + b_deg);
 						if (l_deg > c_deg) {
 							C.resize (l_deg + 1);
 							if (x > c_deg) {
 								for (; i >= x; --i)
-									_field.mul (C[i], Ds, B[i-x]);
+									field().mul (C[i], Ds, B[i-x]);
 								for (; i > c_deg; --i)
-									_field.assign (C[i], _field.zero);
-							}
-							else {
+									field().assign (C[i], field().zero);
+							} else {
 								for (; i > c_deg; --i)
-									_field.mul (C[i], Ds, B[i-x]);
+									field().mul (C[i], Ds, B[i-x]);
 								for (; i >= x; --i)
-									_field.axpyin (C[i], Ds, B[i-x]);
+									field().axpyin (C[i], Ds, B[i-x]);
 							}
-						}
-						else {
+						} else {
 							for (; i >= x; --i)
-								_field.axpyin (C[i], Ds, B[i-x]);
+								field().axpyin (C[i], Ds, B[i-x]);
 						}
 						// -----------------------------------------------
 						c_deg = v_degree(C);
 						++x;
-					}
-					else {
+					} else {
 						// -----------------------------------------------
 						// C = C + (Polynome(X,x,-d/b) * B); 					//
-						_field.divin (_field.neg (Ds, d), b);
+						field().divin (field().neg (Ds, d), b);
 						long i = l_deg = x + b_deg;
 						B.resize (C.size ());
 						if (l_deg > c_deg) {
 							C.resize (l_deg+1);
 							if (x > c_deg) {
 								for (; i >= x; --i)
-									_field.mul (C[i], Ds, B[i-x]);
+									field().mul (C[i], Ds, B[i-x]);
 								for (; i > c_deg; --i)
-									_field.assign (C[i], _field.zero);
-							}
-							else {
+									field().assign (C[i], field().zero);
+							} else {
 								for (; i > c_deg; --i)
-									_field.mul (C[i], Ds, B[i-x]);
+									field().mul (C[i], Ds, B[i-x]);
 								for (; i >= x; --i)
-									_field.axpy (C[i], Ds, B[i-x], _field.assign(B[i],C[i]) );
+									field().axpy (C[i], Ds, B[i-x], field().assign(B[i],C[i]) );
 							}
-						}
-						else {
+						} else {
 							for (i = c_deg; i > l_deg; --i)
-								_field.assign(B[i],C[i]);
+								field().assign(B[i],C[i]);
 							for (; i >= x; --i)
-								_field.axpy (C[i], Ds, B[i-x], _field.assign(B[i],C[i]) );
+								field().axpy (C[i], Ds, B[i-x], field().assign(B[i],C[i]) );
 						}
 
-						for (; i >= 0; --i) _field.assign(B[i],C[i]);
+						for (; i >= 0; --i) field().assign(B[i],C[i]);
 
 						// -----------------------------------------------
 						L = NN+1-L;
@@ -388,8 +383,8 @@ namespace LinBox
 					phi[dp-i] = phi[0];
 				}
 				phi[0] = phi[dp];
-// 				_field.init (phi[dp], 1UL);
-				_field.assign (phi[dp], _field.one);
+// 				field().init (phi[dp], 1UL);
+				field().assign (phi[dp], field().one);
 			}
 			return L;
 		}
@@ -404,8 +399,8 @@ namespace LinBox
 				for (long i = dp >> 1; i > 0; --i)
 					std::swap (phi[i], phi[dp-i]);
 				phi[0] = phi[dp];
-// 				_field.init (phi[dp], 1UL);
-				_field.assign(phi[dp], _field.one);
+// 				field().init (phi[dp], 1UL);
+				field().assign(phi[dp], field().one);
 			}
 		}
 	};

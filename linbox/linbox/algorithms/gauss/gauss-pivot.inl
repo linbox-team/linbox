@@ -81,7 +81,7 @@ namespace LinBox
 				}
 			}
 
-			_field.mulin(determinant, lignepivot[0].second);
+			field().mulin(determinant, lignepivot[0].second);
 			if (indpermut != static_cast<long>(indcol)) {
 				// std::cerr << "Permuting col: " << indpermut << " <--> " << indcol << std::endl;
 				// no need to decrement/increment, already done during the search
@@ -89,7 +89,7 @@ namespace LinBox
 				pivoting = true;
 			}
 
-			if (pivoting) _field.negin(determinant);
+			if (pivoting) field().negin(determinant);
 			++indcol;
 		}
 		else
@@ -115,11 +115,11 @@ namespace LinBox
 
 		if (nj > 0) {
 			indpermut = lignepivot[0].first;
-			_field.mulin(determinant, lignepivot[0].second);
+			field().mulin(determinant, lignepivot[0].second);
 			if (indpermut != static_cast<long>(indcol)){
 				// std::cerr << "Permuting col: " << lignepivot[0].first << " <--> " << indcol << std::endl;
 				lignepivot[0].first = (unsigned)indcol;
-				_field.negin(determinant);
+				field().negin(determinant);
 			}
 			++indcol;
 		}
@@ -138,7 +138,7 @@ namespace LinBox
 		long j = (long)k;
 
 		for (; j < n ; ++j )
-			if (!_field.isZero (lignepivot[j])) break ;
+			if (!field().isZero (lignepivot[j])) break ;
 
 		if (j == n )
 			indpermut = -1 ;

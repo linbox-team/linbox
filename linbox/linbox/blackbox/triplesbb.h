@@ -113,7 +113,6 @@ namespace LinBox
 	size_t coldim() const;
 
 	const Field & field() const;
-	Field & field();
 
 	/* Returns number of non-zero entries */
 	size_t size() const;
@@ -140,7 +139,7 @@ namespace LinBox
 	}; 
 
 	protected:
-	Field field_; // The field used by this class
+	const Field *field_; // The field used by this class
 
 	struct Triple { Index row; Index col; Element elt; 
 		Triple(Index& r, Index& c, const Element& e) 

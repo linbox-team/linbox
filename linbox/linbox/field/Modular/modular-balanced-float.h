@@ -179,8 +179,8 @@ namespace LinBox
 		typedef ModularBalanced<Element> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F),
-			_y(0.) , _bound( (Element) (((1ULL << 24) - (int) (_field.modulus*_field.modulus))))
+			_field (&F),
+			_y(0.) , _bound( (Element) (((1ULL << 24) - (int) (field().modulus*field().modulus))))
 		{}
 
 		FieldAXPY (const FieldAXPY &faxpy) :
@@ -204,20 +204,20 @@ namespace LinBox
 		inline Element& accumulate (const Element &tmp) {
 			_y += tmp;
 			if (_y > _bound)
-				return _y = fmodf (_y, _field.modulus);
+				return _y = fmodf (_y, field().modulus);
 			else
 				return _y;
 		}
 		inline Element& subumulate (const Element &tmp) {
 			_y -= tmp;
 			if (_y < 0)
-				return _y += _field.modulus;
+				return _y += field().modulus;
 			else
 				return _y;
 		}
 
 		inline Element& get (Element &y) {
-			_y =  fmodf (_y, _field.modulus);
+			_y =  fmodf (_y, field().modulus);
 			return y=_y ;
 		}
 
@@ -233,28 +233,31 @@ namespace LinBox
 		inline Element& set (const Element &tmp) {
 			_y = tmp;
 			if (_y > _bound)
-				return _y =  fmodf (_y, _field.modulus);
+				return _y =  fmodf (_y, field().modulus);
 			else
 				return _y;
 		}
 
+		inline const Field & field() { return *_field; }
+
 	private:
-		Field _field;
+		const Field *_field;
 		Element _y;
 		Element _bound;
 	};
 
 
 	template <>
-	class DotProductDomain<ModularBalanced<float> > : private virtual VectorDomainBase<ModularBalanced<float> > {
+	class DotProductDomain<ModularBalanced<float> > : public virtual VectorDomainBase<ModularBalanced<float> > {
 	public:
 		typedef float Element;
 		DotProductDomain (const ModularBalanced<Element> &F) :
-			VectorDomainBase<ModularBalanced<Element> > (F), _bound( (Element) ( (1ULL<<24) - (int) (_field.modulus*_field.modulus)))
+			VectorDomainBase<ModularBalanced<Element> > (F), _bound( (Element) ( (1ULL<<24) - (int) (field().modulus*field().modulus)))
 		{
-			_nmax= (size_t)floor((Element(1<<11)* Element(1<<11)*2.)/ (_field.modulus * _field.modulus));
+			_nmax= (size_t)floor((Element(1<<11)* Element(1<<11)*2.)/ (field().modulus * field().modulus));
 		}
 
+		using VectorDomainBase<ModularBalanced<Element> >::field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
@@ -265,20 +268,20 @@ namespace LinBox
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				y =  fmodf(y, _field.modulus);
+				y =  fmodf(y, field().modulus);
 			}
 			else{
 				size_t i=0;
 				for (;i< v1.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
-					t+= fmodf(y, _field.modulus);
+					t+= fmodf(y, field().modulus);
 					y=0.;
 				}
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
-				t+= fmodf(y, _field.modulus);
-				y = fmodf(t, _field.modulus);
+				t+= fmodf(y, field().modulus);
+				y = fmodf(t, field().modulus);
 			}
 			return res = y;
 		}
@@ -294,20 +297,20 @@ namespace LinBox
 			if (v1.first.size() < _nmax) {
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				y = fmodf(y, _field.modulus);
+				y = fmodf(y, field().modulus);
 			}
 			else {
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=fmodf(y, _field.modulus);
+					t+=fmodf(y, field().modulus);
 					y=0.;
 				}
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
-				t+= fmodf(y, _field.modulus);
-				y = fmodf(t, _field.modulus);
+				t+= fmodf(y, field().modulus);
+				y = fmodf(t, field().modulus);
 			}
 			return res = y;
 		}

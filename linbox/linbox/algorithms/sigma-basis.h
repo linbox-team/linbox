@@ -68,8 +68,9 @@ namespace LinBox
 		typedef typename Field::Element        Element;
 		typedef BlasMatrix<Field>          Coefficient;
 
+		inline const Field & field() const { return *_field; }
 	private:
-		Field                             _field;
+		const Field                    * _field;
 		BlasMatrixDomain<Field>         _BMD;
 		MatrixDomain<Field>              _MD;
 		std::vector<Coefficient>     &_Serie;
@@ -135,7 +136,7 @@ namespace LinBox
 	public:
 
 		SigmaBasis(const Field &F, std::vector<Coefficient> &PowerSerie) :
-			_field(F), _BMD(F), _MD(F), _Serie(PowerSerie), PM_domain(F)
+			_field(&F), _BMD(F), _MD(F), _Serie(PowerSerie), PM_domain(F)
 		{
 #ifdef  _BM_TIMING
 			clearTimer();
@@ -152,7 +153,7 @@ namespace LinBox
 			size_t m = _Serie[0].rowdim();
 			size_t n = _Serie[0].coldim();
 
-			const Coefficient TransposedZero(_field,n,m);
+			const Coefficient TransposedZero(field(),n,m);
 
 			// take the transposed of the Serie and use PM_Basis
 			std::vector<Coefficient> TransposedSerie (length, TransposedZero);
@@ -162,7 +163,7 @@ namespace LinBox
 					for (size_t j=0;j<n;++j)
 						TransposedSerie[k].setEntry(j,i, _Serie[k].getEntry(i,j));
 
-			const Coefficient Zero(_field,n, n);
+			const Coefficient Zero(field(),n, n);
 
 			// Prepare SigmaBase
 			SigmaBase.resize(degree+1, Zero);
@@ -177,7 +178,7 @@ namespace LinBox
 		{
 
 			const size_t m = _Serie[0].rowdim();
-			const Coefficient Zero(_field, m, m);
+			const Coefficient Zero(field(), m, m);
 
 			// Prepare SigmaBase
 			SigmaBase.resize(degree+1, Zero);
@@ -199,8 +200,8 @@ namespace LinBox
 
 			const size_t m = _Serie[0].rowdim();
 			const size_t n = _Serie[0].coldim();
-			const Coefficient Zero(_field,m, m);
-			const Coefficient ZeroSerie(_field,m,n);
+			const Coefficient Zero(field(),m, m);
+			const Coefficient ZeroSerie(field(),m,n);
 
 
 			// Prepare SigmaBases
@@ -239,8 +240,8 @@ namespace LinBox
 			size_t length=_Serie.size();
 			size_t m = _Serie[0].rowdim();
 			size_t n = _Serie[0].coldim();
-			const Coefficient TransposedZero(_field,n,m);
-			const Coefficient Zero(_field,n, n);
+			const Coefficient TransposedZero(field(),n,m);
+			const Coefficient Zero(field(),n, n);
 
 			// take the transposed of the Serie and use PM_Basis
 			std::vector<Coefficient> TransposedSerie (length, TransposedZero);
@@ -296,7 +297,7 @@ namespace LinBox
 
 
 			// transpose the PowerSerie
-			const Coefficient Zero(_field,m,n);
+			const Coefficient Zero(field(),m,n);
 			std::vector<Coefficient> TransPowerSerie(deg,Zero);
 			for (size_t i=0;i<deg;++i){
 				for (size_t j=0;j<m;++j)
@@ -345,7 +346,7 @@ namespace LinBox
 
 
 			// transpose the PowerSerie
-			const Coefficient Zero(_field,m,n);
+			const Coefficient Zero(field(),m,n);
 			std::vector<Coefficient> TransPowerSerie(deg,Zero);
 			for (size_t i=0;i<deg;++i){
 				for (size_t j=0;j<m;++j)
@@ -391,13 +392,13 @@ namespace LinBox
 			size_t m,n;
 			m = PowerSerie[0].rowdim();
 			n = PowerSerie[0].coldim();
-			const Coefficient ZeroSigma(_field,m,m);
-			const Coefficient ZeroSerie(_field,m,n);
+			const Coefficient ZeroSigma(field(),m,m);
+			const Coefficient ZeroSerie(field(),m,n);
 
 			if (degree == 0) {
-				Coefficient Identity(_field,m,m);
+				Coefficient Identity(field(),m,m);
 				for (size_t i=0;i< m;++i)
-					Identity.setEntry(i,i,_field.one);
+					Identity.setEntry(i,i,field().one);
 				SigmaBase[0]=Identity;
 			}
 
@@ -489,14 +490,14 @@ namespace LinBox
 			n = PowerSerie[0].coldim();
 
 			// Set some useful constants
-			const Coefficient Zero(_field,m,m);
+			const Coefficient Zero(field(),m,m);
 
 			// Reserve memory for the Sigma Base and set SigmaBase[0] to Identity
 			SigmaBase.reserve(length+1);
 			SigmaBase.resize(1);
-			Coefficient Identity(_field,m,m);
+			Coefficient Identity(field(),m,m);
 			for (size_t i=0;i< m;++i)
-				Identity.setEntry(i,i,_field.one);
+				Identity.setEntry(i,i,field().one);
 			SigmaBase[0]=Identity;
 
 			// Keep track on Sigma Base's row degree
@@ -514,7 +515,7 @@ namespace LinBox
 
 
 			// Discrepancy
-			Coefficient Discrepancy(_field,m,n);
+			Coefficient Discrepancy(field(),m,n);
 			Timer chrono;
 #ifdef  _BM_TIMING
 			int cptr=0;
@@ -576,7 +577,7 @@ namespace LinBox
 #endif
 
 				//std::cout<<"MBasis: Discrepancy\n";
-				//Discrepancy.write(std::cout,_field);
+				//Discrepancy.write(std::cout,field());
 
 
 				// Compute LQUP of Discrepancy
@@ -585,7 +586,7 @@ namespace LinBox
 				LQUPMatrix<Field> LQUP(Discrepancy,P,Qt);
 
 				// Get L from LQUP
-				TriangularBlasMatrix<Field> L(_field, m, m,
+				TriangularBlasMatrix<Field> L(field(), m, m,
 							      LinBoxTag::Lower, LinBoxTag::Unit);
 				LQUP.getL(L);
 
@@ -594,9 +595,9 @@ namespace LinBox
 
 
 				// Compute the inverse of L
-				TriangularBlasMatrix<Field> invL(_field, m, m,
+				TriangularBlasMatrix<Field> invL(field(), m, m,
 								 LinBoxTag::Lower, LinBoxTag::Unit);
-				FFPACK::trinv_left((typename Field::Father_t)_field,m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
+				FFPACK::trinv_left((const typename Field::Father_t &)field(),m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
 
 #ifdef  _BM_TIMING
 				chrono.stop();
@@ -641,11 +642,11 @@ namespace LinBox
 					for (int j= (int) size-2;j>=0; --j){
 						for (size_t l=0;l<m;++l)
 							//BB: #warning Q[i] pour i>r ne veut rien dire...
-							_field.assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l),
+							field().assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l),
 								  SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));
 					}
 					for (size_t l=0;l<m;++l)
-						_field.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),_field.zero);
+						field().assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),field().zero);
 				}
 #ifdef  _BM_TIMING
 				chrono.stop();
@@ -671,7 +672,7 @@ namespace LinBox
 			// degree1 >= degree2
 			//size_t size = 2*degree1 + 1;
 
-			const Coefficient ZeroSerie (_field,OldSerie[0].rowdim(), OldSerie[0].coldim());
+			const Coefficient ZeroSerie (field(),OldSerie[0].rowdim(), OldSerie[0].coldim());
 			//const Coefficient ZeroBase  (SigmaBase[0].rowdim(), SigmaBase[0].coldim());
 
 			// Work on a copy of the old  Serie (increase size by one for computation of middle product)
@@ -732,16 +733,16 @@ namespace LinBox
 			// Initialization of the Serie iterator
 			typename std::vector<Coefficient>::const_iterator _iter (PowerSerie.begin ());
 
-			Coefficient Unit(_field,m+n,m);
-			const Coefficient Zero(_field,m+n,m);
+			Coefficient Unit(field(),m+n,m);
+			const Coefficient Zero(field(),m+n,m);
 			for (size_t i=0;i<m;i++)
-				Unit.setEntry(i,i,_field.one);
+				Unit.setEntry(i,i,field().one);
 			size_t min_mn=(m <n)? m :n;
 
 			// initialization of discrepancy
-			Coefficient Discrepancy(_field,m+n,n);
+			Coefficient Discrepancy(field(),m+n,n);
 			for (size_t i=0;i<n;i++)
-				Discrepancy.setEntry(i+m,i,_field.one);
+				Discrepancy.setEntry(i+m,i,field().one);
 
 
 			// initialization of sigma base
@@ -792,7 +793,7 @@ namespace LinBox
 
 				typename Coefficient::Iterator _iter_Discr = Discr.Begin();
 
-				while ((_field.isZero(*_iter_Discr) && _iter_Discr != Discr.End()))
+				while ((field().isZero(*_iter_Discr) && _iter_Discr != Discr.End()))
 					++_iter_Discr;
 
 				// maybe there is something to do here
@@ -836,7 +837,7 @@ namespace LinBox
 				LQUPMatrix<Field> LQUP(CopyDiscr,P,Qt);
 
 				// Get the matrix L of LQUP decomposition
-				TriangularBlasMatrix<Field> L(_field,m+n,m+n,
+				TriangularBlasMatrix<Field> L(field(),m+n,m+n,
 							      LinBoxTag::Lower, LinBoxTag::Unit );
 				LQUP.getL(L);
 
@@ -852,9 +853,9 @@ namespace LinBox
 				BlasPermutation<size_t> BPerm2(Perm2);
 
 				// compute the inverse of L
-				TriangularBlasMatrix<Field> invL (_field,m+n,m+n,
+				TriangularBlasMatrix<Field> invL (field(),m+n,m+n,
 								  LinBoxTag::Lower,LinBoxTag::Unit);
-				FFPACK::trinv_left((typename Field::Father_t)_field,m+n, L.getPointer(), L.getStride(),
+				FFPACK::trinv_left((const typename Field::Father_t &)field(),m+n, L.getPointer(), L.getStride(),
 						   invL.getWritePointer(), invL.getStride());
 
 
@@ -896,15 +897,15 @@ namespace LinBox
 				for (int i= (int)size-2;i>=0;i--)
 					for (size_t j=0;j<n;j++)
 						for (size_t k=0;k<n;++k)
-							_field.assign(SigmaBase[i+1].refEntry(m+j,k), SigmaBase[i].getEntry(m+j,k));
+							field().assign(SigmaBase[i+1].refEntry(m+j,k), SigmaBase[i].getEntry(m+j,k));
 
 				for (size_t j=0;j<n;j++)
 					for (size_t k=0;k<n;++k)
-						_field.assign(SigmaBase[0].refEntry(m+j,k),_field.zero);
+						field().assign(SigmaBase[0].refEntry(m+j,k),field().zero);
 
 
 				// Discrepancy= BPerm2.U.P from LQUP
-				Coefficient U(_field,m+n,n);
+				Coefficient U(field(),m+n,n);
 				TriangularBlasMatrix<Field> trU( U,
 								LinBoxTag::Upper,LinBoxTag::NonUnit);
 				LQUP.getU(trU);
@@ -925,13 +926,13 @@ namespace LinBox
 					max=degree[i];
 			}
 
-			const Coefficient AZero(_field,m,m);
+			const Coefficient AZero(field(),m,m);
 			Approx.resize(max+1, AZero);
 
 			for (size_t i=0;i<m;i++)
 				for (long j=0;j<=degree[i];j++)
 					for (size_t k=0;k<m;k++)
-						_field.assign(Approx[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
+						field().assign(Approx[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
 
 
 		}
@@ -955,16 +956,16 @@ namespace LinBox
 			// Initialization of the Serie iterator
 			typename std::vector<Coefficient>::const_iterator _iter (PowerSerie.begin ());
 
-			Coefficient Unit(_field,m+n,m);
-			const Coefficient Zero(_field,m+n,m);
+			Coefficient Unit(field(),m+n,m);
+			const Coefficient Zero(field(),m+n,m);
 			for (size_t i=0;i<m;i++)
-				Unit.setEntry(i,i,_field.one);
+				Unit.setEntry(i,i,field().one);
 			size_t min_mn=(m <n)? m :n;
 
 			// initialization of discrepancy
-			Coefficient Discrepancy(_field,m+n,n);
+			Coefficient Discrepancy(field(),m+n,n);
 			for (size_t i=0;i<n;i++)
-				Discrepancy.setEntry(i+m,i,_field.one);
+				Discrepancy.setEntry(i+m,i,field().one);
 
 
 			// initialization of sigma base
@@ -1015,7 +1016,7 @@ namespace LinBox
 
 				typename Coefficient::Iterator _iter_Discr = Discr.Begin();
 
-				while ((_field.isZero(*_iter_Discr) && _iter_Discr != Discr.End()))
+				while ((field().isZero(*_iter_Discr) && _iter_Discr != Discr.End()))
 					++_iter_Discr;
 
 				// maybe there is something to do here
@@ -1059,7 +1060,7 @@ namespace LinBox
 				LQUPMatrix<Field> LQUP(CopyDiscr,P,Qt);
 
 				// Get the matrix L of LQUP decomposition
-				TriangularBlasMatrix<Field> L(_field, m+n,m+n,
+				TriangularBlasMatrix<Field> L(field(), m+n,m+n,
 							      LinBoxTag::Lower, LinBoxTag::Unit );
 				LQUP.getL(L);
 
@@ -1075,9 +1076,9 @@ namespace LinBox
 				BlasPermutation<size_t> BPerm2(Perm2);
 
 				// compute the inverse of L
-				TriangularBlasMatrix<Field> invL (_field,m+n,m+n,
+				TriangularBlasMatrix<Field> invL (field(),m+n,m+n,
 								  LinBoxTag::Lower,LinBoxTag::Unit);
-				FFPACK::trinv_left((typename Field::Father_t)_field,m+n,L.getPointer(),L.getStride(),
+				FFPACK::trinv_left((typename Field::Father_t)field(),m+n,L.getPointer(),L.getStride(),
 						   invL.getWritePointer(),invL.getStride());
 
 
@@ -1119,15 +1120,15 @@ namespace LinBox
 				for (int i= (int)size-2;i>=0;i--)
 					for (size_t j=0;j<n;j++)
 						for (size_t k=0;k<n;++k)
-							_field.assign(SigmaBase[i+1].refEntry(m+j,k), SigmaBase[i].getEntry(m+j,k));
+							field().assign(SigmaBase[i+1].refEntry(m+j,k), SigmaBase[i].getEntry(m+j,k));
 
 				for (size_t j=0;j<n;j++)
 					for (size_t k=0;k<n;++k)
-						_field.assign(SigmaBase[0].refEntry(m+j,k),_field.zero);
+						field().assign(SigmaBase[0].refEntry(m+j,k),field().zero);
 
 
 				// Discrepancy= BPerm2.U.P from LQUP
-				Coefficient U(_field,m+n,n);
+				Coefficient U(field(),m+n,n);
 				TriangularBlasMatrix<Field> trU(U,LinBoxTag::Upper,LinBoxTag::NonUnit);
 				LQUP.getU(trU);
 				Discrepancy=U;
@@ -1144,13 +1145,13 @@ namespace LinBox
 							max=order[i];
 					}
 
-					const Coefficient AZero(_field,m,m);
+					const Coefficient AZero(field(),m,m);
 					Approx1.resize(max+1, AZero);
 
 					for (size_t i=0;i<m;i++)
 						for (long j=0;j<=order[i];j++)
 							for (size_t k=0;k<m;k++)
-								_field.assign(Approx1[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
+								field().assign(Approx1[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
 				}
 
 			}
@@ -1166,13 +1167,13 @@ namespace LinBox
 					max=degree[i];
 			}
 
-			const Coefficient AZero(_field,m,m);
+			const Coefficient AZero(field(),m,m);
 			Approx2.resize(max+1, AZero);
 
 			for (size_t i=0;i<m;i++)
 				for (long j=0;j<=degree[i];j++)
 					for (size_t k=0;k<m;k++)
-						_field.assign(Approx2[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
+						field().assign(Approx2[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
 		}
 
 
@@ -1191,17 +1192,17 @@ namespace LinBox
 			n = PowerSerie[0].coldim();
 
 			// Set some useful constants
-			const Coefficient Zeromm(_field,m,m);
-			const Coefficient Zeromn(_field,m,n);
+			const Coefficient Zeromm(field(),m,m);
+			const Coefficient Zeromn(field(),m,n);
 
 			// Reserve memory for the Sigma Base
 			SigmaBase.reserve(length+1);
 			SigmaBase.resize(1);
 
 			// set SigmaBase[0] to Identity
-			Coefficient Identity(_field,m,m);
+			Coefficient Identity(field(),m,m);
 			for (size_t i=0;i< m;++i)
-				Identity.setEntry(i,i,_field.one);
+				Identity.setEntry(i,i,field().one);
 			SigmaBase[0]=Identity;
 
 			// Define Truncated Residual
@@ -1212,7 +1213,7 @@ namespace LinBox
 				Residual[k] = PowerSerie[k];
 
 			// Define Discrepancy
-			Coefficient Discrepancy(_field,m,n);
+			Coefficient Discrepancy(field(),m,n);
 
 			// Row degree of SigmaBase
 			// Keep track on Sigma Base's row degree
@@ -1429,7 +1430,7 @@ namespace LinBox
 #endif
 
 				/* new version : use of columnReducedEchelon */
-				EchelonFormDomain<Field>  EFD(_field);
+				EchelonFormDomain<Field>  EFD(field());
 				size_t rank = EFD.columnReducedEchelon(Discrepancy);
 
 
@@ -1439,7 +1440,7 @@ namespace LinBox
 					perm[i]=i;
 				size_t idx=0;
 				for (size_t i=0;i<rank;++i){
-					while(_field.isZero(Discrepancy.getEntry(idx,i))) idx++;
+					while(field().isZero(Discrepancy.getEntry(idx,i))) idx++;
 					perm[i]=idx;
 					idx++;
 				}
@@ -1486,7 +1487,7 @@ namespace LinBox
 					maxs=std::max(maxs, degree[*(Qt.getPointer()+d)]);
 				maxs=std::min(maxs, SigmaBase.size()-1);
 
-				//Discrepancy.write(std::cout,_field);
+				//Discrepancy.write(std::cout,field());
 
 
 #ifndef OPTMIZED_SIGMA_UPDATE
@@ -1550,7 +1551,7 @@ namespace LinBox
 				std::cout<<"\n";
 
 				write_maple("Sigma",SigmaBase);
-				//Discrepancy.write(std::cout,_field);
+				//Discrepancy.write(std::cout,field());
 
 
 
@@ -1559,13 +1560,13 @@ namespace LinBox
 					std::cout<<triv_column[i]<<", ";
 				std::cout<<"\n";
 
-				SigmaBase[0].write(std::cout,_field);
+				SigmaBase[0].write(std::cout,field());
 				_BMD.mulin_right(BPerm1, SigmaBase[0]);
-				SigmaBase[0].write(std::cout,_field);
+				SigmaBase[0].write(std::cout,field());
 				_BMD.mulin_left(SigmaBase[0],PPiv);
-				SigmaBase[0].write(std::cout,_field);
+				SigmaBase[0].write(std::cout,field());
 				_BMD.mulin_left(SigmaBase[0], PTr);
-				SigmaBase[0].write(std::cout,_field);
+				SigmaBase[0].write(std::cout,field());
 				_BMD.mulin_left(SigmaBase[0], PTrT);
 				_BMD.mulin_left(SigmaBase[0],PPivT);
 				TransposedBlasMatrix<BlasPermutation<size_t> > BPerm1T(BPerm1);
@@ -1574,7 +1575,7 @@ namespace LinBox
 
 				// Update SigmaBase
 				for (size_t i=0;i<maxs+1;++i) {
-					//SigmaBase[0].write(std::cout,_field);
+					//SigmaBase[0].write(std::cout,field());
 					// permute SigmaBase
 					_BMD.mulin_right(BPerm1, SigmaBase[i]);
 
@@ -1599,14 +1600,14 @@ namespace LinBox
 					BlasMatrix<Field> S_bottom_left (SigmaBase[i], rank,0,m-rank,lsize);
 #if 0
 					if (i==0){
-						S_bottom_left.write(std::cout,_field);
+						S_bottom_left.write(std::cout,field());
 					}
 #endif
 					// deal with the left part of S_bottom
 					_BMD.axmyin(S_bottom_left, G, S_top_left);
 #if 0
 					if (i==0){
-						S_bottom_left.write(std::cout,_field);
+						S_bottom_left.write(std::cout,field());
 					}
 #endif
 
@@ -1626,7 +1627,7 @@ namespace LinBox
 						_BMD.mulin_right(Q, SigmaBase[i]);
 #if 0
 					if (i==0){
-						S_bottom_left.write(std::cout,_field);
+						S_bottom_left.write(std::cout,field());
 					}
 #endif
 				}
@@ -1781,10 +1782,10 @@ namespace LinBox
 				for (size_t i=0;i<rank;++i){
 					for (int j= (int) size-2;j>=0; --j){
 						for (size_t l=0;l<m;++l)
-							_field.assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l), SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));
+							field().assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l), SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));
 					}
 					for (size_t l=0;l<m;++l)
-						_field.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),_field.zero);
+						field().assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),field().zero);
 				}
 #ifdef _BM_TIMING
 				chrono.stop();
@@ -1797,7 +1798,7 @@ namespace LinBox
 				for (size_t i=0;i<rank;++i){
 				for (int j= (int) length-2;j>= (int) k; j--){
 				for (size_t l=0;l<n;++l)
-				_field.assign(Residual[j+1].refEntry(*(Qt.getPointer()+i),l), Residual[j].getEntry(*(Qt.getPointer()+i),l));
+				field().assign(Residual[j+1].refEntry(*(Qt.getPointer()+i),l), Residual[j].getEntry(*(Qt.getPointer()+i),l));
 				}
 				}
 				*/
@@ -1836,14 +1837,14 @@ namespace LinBox
 			size_t m,n;
 			m = PowerSerie[0].rowdim();
 			n = PowerSerie[0].coldim();
-			const Coefficient ZeroSigma(_field,m,m);
-			const Coefficient ZeroSerie(_field,m,n);
+			const Coefficient ZeroSigma(field(),m,m);
+			const Coefficient ZeroSerie(field(),m,n);
 			PowerSerie.resize(degree, ZeroSerie);
 
 			if (degree == 0) {
-				Coefficient Identity(_field,m,m);
+				Coefficient Identity(field(),m,m);
 				for (size_t i=0;i< m;++i)
-					Identity.setEntry(i,i,_field.one);
+					Identity.setEntry(i,i,field().one);
 				SigmaBase[0]=Identity;
 			}
 			else {
@@ -1901,7 +1902,7 @@ namespace LinBox
 					Serie[i] = PowerSerie[i];
 
 					PM_domain.midproduct(Serie2, Sigma1, Serie);
-					//ClassicMulDomain<Field, std::vector<Coefficient> > CM_domain(_field);
+					//ClassicMulDomain<Field, std::vector<Coefficient> > CM_domain(field());
 					//CM_domain.midproduct(Serie2, Sigma1, Serie);
 					Serie2.resize(degree2, ZeroSerie);
 					*/
@@ -1980,8 +1981,8 @@ namespace LinBox
 			size_t m,n;
 			m = OldSerie[0].rowdim();
 			n = OldSerie[0].coldim();
-			const Coefficient ZeroSigma(_field,m,m);
-			const Coefficient ZeroSerie(_field,m,n);
+			const Coefficient ZeroSigma(field(),m,m);
+			const Coefficient ZeroSerie(field(),m,n);
 			size_t Ssize = SigmaBase.size();
 
 			if (SigmaBase.size() < 5){
@@ -2024,13 +2025,13 @@ namespace LinBox
 			for (size_t i=0;i<m-1;++i){
 				std::cout<<"[";
 				for (size_t j=0;j<n-1;++j)
-					_field.write(std::cout,C.getEntry(i,j))<<",";
-				_field.write(std::cout,C.getEntry(i,n-1))<<"] , ";
+					field().write(std::cout,C.getEntry(i,j))<<",";
+				field().write(std::cout,C.getEntry(i,n-1))<<"] , ";
 			}
 			std::cout<<"[";
 			for (size_t j=0;j<n-1;++j)
-				_field.write(std::cout,C.getEntry(m-1,j))<<",";
-			_field.write(std::cout, C.getEntry(m-1,n-1))<<"]])]); ";
+				field().write(std::cout,C.getEntry(m-1,j))<<",";
+			field().write(std::cout, C.getEntry(m-1,n-1))<<"]])]); ";
 
 		}
 
@@ -2047,26 +2048,26 @@ namespace LinBox
 				for (size_t i=0;i<m-1;++i){
 					std::cout<<"[";
 					for (size_t j=0;j<n-1;++j)
-						_field.write(std::cout,P[k].getEntry(i,j))<<",";
-					_field.write(std::cout, P[k].getEntry(i,n-1))<<"] , ";
+						field().write(std::cout,P[k].getEntry(i,j))<<",";
+					field().write(std::cout, P[k].getEntry(i,n-1))<<"] , ";
 				}
 				std::cout<<"[";
 				for (size_t j=0;j<n-1;++j)
-					_field.write(std::cout,P[k].getEntry(m-1,j))<<",";
-				_field.write(std::cout, P[k].getEntry(m-1,n-1))<<"]]) , ";
+					field().write(std::cout,P[k].getEntry(m-1,j))<<",";
+				field().write(std::cout, P[k].getEntry(m-1,n-1))<<"]]) , ";
 			}
 
 			std::cout<<"Matrix([";
 			for (size_t i=0;i<m-1;++i){
 				std::cout<<"[";
 				for (size_t j=0;j<n-1;++j)
-					_field.write(std::cout,P[P.size()-1].getEntry(i,j))<<",";
-				_field.write(std::cout, P[P.size()-1].getEntry(i,n-1))<<"] , ";
+					field().write(std::cout,P[P.size()-1].getEntry(i,j))<<",";
+				field().write(std::cout, P[P.size()-1].getEntry(i,n-1))<<"] , ";
 			}
 			std::cout<<"[";
 			for (size_t j=0;j<n-1;++j)
-				_field.write(std::cout,P[P.size()-1].getEntry(m-1,j))<<",";
-			_field.write(std::cout, P[P.size()-1].getEntry(m-1,n-1))<<"]])]); \n\n";
+				field().write(std::cout,P[P.size()-1].getEntry(m-1,j))<<",";
+			field().write(std::cout, P[P.size()-1].getEntry(m-1,n-1))<<"]])]); \n\n";
 		}
 
 

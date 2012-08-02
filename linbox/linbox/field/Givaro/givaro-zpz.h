@@ -462,6 +462,7 @@ namespace LinBox
 			Max(uint64_t(-1))
 		{}
 
+		using VectorDomainBase<GivaroZpz< Givaro::Std32> >::field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
@@ -489,6 +490,7 @@ namespace LinBox
 			Max(uint32_t(-1))
 		{}
 
+		using VectorDomainBase<GivaroZpz< Givaro::Std16> >::field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;

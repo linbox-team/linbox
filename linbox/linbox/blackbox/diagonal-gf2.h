@@ -57,14 +57,14 @@ namespace LinBox
 		typedef BlackboxArchetype         Blackbox;
 		typedef bool                      Element;
 
-		Diagonal (const Field &, const BitVector &y) :
-			_v (y)
+		Diagonal (const Field & F, const BitVector &y) :
+			_field(&F), _v (y)
 		{}
 
 		/// The field.
 		const Field& field() const
 		{
-			return *(new GF2());
+			return *_field;
 		}
 
 		Blackbox *clone() const
@@ -127,7 +127,9 @@ namespace LinBox
 			return (i==j?x=this->_v[i]:x=false);
 		}
 
-	private:
+	protected:
+
+		const Field *_field;
 
 		// Bit vector of elements
 		BitVector _v;

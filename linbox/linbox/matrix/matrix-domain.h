@@ -122,11 +122,13 @@ namespace LinBox
 		typedef BlasMatrix<Field> Matrix;
 		typedef BlasSubmatrix<Field> Submatrix;
 
+		MatrixDomain () {/*std::cerr << "MD def cstor" << std::endl;*/ } 
+
 		/// Constructor.
 		//! @param F field for MatrixDomain operations.
 		MatrixDomain (const Field &F) :
-			_field (F), _VD (F)
-		{}
+			_field (&F), _VD (F)
+		{ /*std::cerr << "MD cstor " << this << std::endl;*/ }
 
 		/// Copy operator.
 		MatrixDomain& operator= (const MatrixDomain& MD)
@@ -144,12 +146,9 @@ namespace LinBox
 		//@{
 		const Field &field () const
 		{
-			return _field;
+			return *_field;
 		}
-		Field &field ()
-		{
-			return _field;
-		}
+
 		//@}
 
 		/** Print matrix.
@@ -613,7 +612,7 @@ namespace LinBox
 		}
 		//@}
 
-	private:
+	protected:
 
 		// Specialized function implementations
 		template <class Matrix1, class Matrix2> Matrix1 &copyRow (Matrix1 &B, const Matrix2 &A) const;
@@ -1212,9 +1211,9 @@ namespace LinBox
 			return permuteColsByCol (A, P_start, P_end);
 		}
 
-		Field         _field;
-		VectorDomain<Field>  _VD;
-	};
+		const Field         *_field;
+		const VectorDomain<Field>  _VD;
+	}; //MatrixDomain
 
 }
 

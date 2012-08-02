@@ -52,7 +52,7 @@ Generic tests for black boxes
 
 For field F, BB A, vector streams s, t:
 testTranspose (F, A, s, t)
-testLinearity (F, A, s, t)
+testLinearity (A, s, t)
 testBlackbox(A) // calls the previous 2
 
 testBB(F) has been deleted. It assumed a BB could be built from a single size param (this is never true?!).
@@ -75,7 +75,7 @@ testBB(F) has been deleted. It assumed a BB could be built from a single size pa
 
 template <class Field, class Blackbox, class Vector>
 static bool
-testTranspose (Field                             &F,
+testTranspose (const Field                             &F,
 	       Blackbox							 &A,
 	       LinBox::VectorStream<Vector>      &stream1,
 	       LinBox::VectorStream<Vector>      &stream2)
@@ -146,9 +146,9 @@ testTranspose (Field                             &F,
  * Return true on success and false on failure
  */
 
-template <class Field, class BB, class Vector>
+template <class BB, class Vector>
 static bool
-testLinearity (Field                             &F,
+testLinearity (//const Field                             &F,
 	       BB 				 &A,
 	       LinBox::VectorStream<Vector>      &stream1,
 	       LinBox::VectorStream<Vector>      &stream2)
@@ -158,9 +158,11 @@ testLinearity (Field                             &F,
 	size_t n = A.rowdim ();
 	size_t m = A.coldim ();
 
+	typedef typename BB::Field Field;
 	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
-	LinBox::VectorDomain <Field> VD (F);
-	typename Field::RandIter r (F);
+	//LinBox::VectorDomain <Field> VD (const_cast<Field&>(A.field()));
+	LinBox::VectorDomain <Field> VD (A.field());
+	typename Field::RandIter r (A.field());
 	typename Field::Element alpha;
 
 	LinBox::VectorWrapper::ensureDim (x, m);
@@ -189,7 +191,7 @@ testLinearity (Field                             &F,
 
 		VD.write( report << "Input vector y: ", y) << endl;
 
-		F.write( report << "Input alpha: ", alpha) << endl;
+		A.field().write( report << "Input alpha: ", alpha) << endl;
 
 		VD.axpy ( xpay, alpha, y, x);
 		A.apply ( Axpay, xpay);
@@ -284,7 +286,7 @@ testBlackbox(BB &A /*, bool testRW = false*/)
 
 	LinBox::commentator().setMaxDepth(-1);
 	bool ret = true;
-	Field F = A.field();
+	const Field& F = A.field();
 
 	/* timing tests */   
 	{
@@ -318,7 +320,7 @@ testBlackbox(BB &A /*, bool testRW = false*/)
 	LinBox::RandomDenseStream<Field, DenseVector> stream2 (F, r, A.coldim(), iterations);
 
 	LinBox::commentator().start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
-	ret = ret && testLinearity (F, A, stream1, stream2);
+	ret = ret && testLinearity (A, stream1, stream2);
 
 	LinBox::commentator().stop (MSG_STATUS (ret),
 				  (const char *) 0, "testLinearity");

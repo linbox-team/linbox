@@ -1189,6 +1189,7 @@ static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
 
 	str << "Testing " << text << " matrix-black box right mul" << ends;
 	commentator().start (str.str ().c_str (), "testRightBlackboxMul");
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
 
@@ -1203,8 +1204,6 @@ static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
 
 	for (i = I.rowBegin (); i != I.rowEnd (); ++i)
 		Istream >> *i;
-
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	MD.blackboxMulRight (IA, I, A);
 	report << "blackboxMulRight Output matrix IA:" << endl;
@@ -1573,9 +1572,9 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 50;
-	static size_t m = 50;
-	static size_t k = 10;
+	static size_t n = 5;
+	static size_t m = n;
+	static size_t k = 2;
 	static integer q = 2147483647U;
 	static int iterations = 1;
 

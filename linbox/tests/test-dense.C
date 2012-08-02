@@ -260,7 +260,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations, int N)
  */
 
 template <class Field>
-static bool testRandomLinearity (const Field                                 &F,
+static bool testRandomLinearity ( const Field & F,
 				 VectorStream<typename Vector<Field>::Dense> &A_stream,
 				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
 				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
@@ -269,7 +269,7 @@ static bool testRandomLinearity (const Field                                 &F,
 
 	BlasMatrix<Field> A (F, A_stream);
 
-	bool ret = testLinearity (F, A, v1_stream, v2_stream);
+	bool ret = testLinearity (A, v1_stream, v2_stream);
 
 	A_stream.reset ();
 	v1_stream.reset ();

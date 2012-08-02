@@ -467,7 +467,7 @@ static bool testRandomLinearity (Field                 &F,
 	report << "Input matrix:" << endl;
 	A.write (report, FORMAT_PRETTY);
 
-	bool ret = testLinearity (F, A, stream1, stream2);
+	bool ret = testLinearity (A, stream1, stream2);
 
 	stream1.reset ();
 	stream2.reset ();

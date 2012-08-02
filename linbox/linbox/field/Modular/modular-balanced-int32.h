@@ -141,7 +141,7 @@ namespace LinBox
 		typedef ModularBalanced<int32_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F),_y(0),_times(0)
+			_field (&F),_y(0),_times(0)
 		{ }
 
 
@@ -193,10 +193,10 @@ namespace LinBox
 
 			y = Element(_y);
 
-			if (y > _field.half_mod)
-				y -= _field.modulus;
-			else if (y < _field.mhalf_mod)
-				y += _field.modulus;
+			if (y > field().half_mod)
+				y -= field().modulus;
+			else if (y < field().mhalf_mod)
+				y += field().modulus;
 
 			return y;
 		}
@@ -212,22 +212,24 @@ namespace LinBox
 			_y = 0;
 		}
 
+		inline const Field & field() { return *_field; }
+
 	private:
 
-		Field _field;
+		const Field *_field;
 		int64_t _y;
 		int32_t _times;
 		static const int32_t blocksize = 32;
 
 		inline void normalize() {
-			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * _field.modulusinv) * (int32_t)_field.modulus;
+			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * field().modulusinv) * (int32_t)field().modulus;
 		}
 
 	};
 
 
 	template <>
-	class DotProductDomain<ModularBalanced<int32_t> > : private virtual VectorDomainBase<ModularBalanced<int32_t> > {
+	class DotProductDomain<ModularBalanced<int32_t> > : public virtual VectorDomainBase<ModularBalanced<int32_t> > {
 
 	private:
 		const int32_t blocksize;
@@ -238,6 +240,7 @@ namespace LinBox
 			VectorDomainBase<ModularBalanced<int32_t> > (F) ,blocksize(32)
 		{ }
 
+		using VectorDomainBase<ModularBalanced<int32_t> >::field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
@@ -270,8 +273,8 @@ namespace LinBox
 			normalize(y);
 			res = (Element) y;
 
-			if (res > _field.half_mod) res -= _field.modulus;
-			else if(res < _field.mhalf_mod) res += _field.modulus;
+			if (res > field().half_mod) res -= field().modulus;
+			else if(res < field().mhalf_mod) res += field().modulus;
 
 			return res;
 
@@ -308,15 +311,15 @@ namespace LinBox
 			normalize(y);
 
 			res = (Element) y;
-			if (res > _field.half_mod) res -= _field.modulus;
-			else if(res < _field.mhalf_mod) res += _field.modulus;
+			if (res > field().half_mod) res -= field().modulus;
+			else if(res < field().mhalf_mod) res += field().modulus;
 
 			return res;
 		}
 
 		inline void normalize(int64_t& _y) const
 		{
-			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * _field.modulusinv) * (int32_t)_field.modulus;
+			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * field().modulusinv) * (int32_t)field().modulus;
 		}
 
 	};

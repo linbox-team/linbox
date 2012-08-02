@@ -74,10 +74,10 @@ namespace LinBox
 		 *               options for the solver
 		 */
 		MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits) :
-			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (F), _block (traits.blockingFactor ())
+			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (F), _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			_field.init (_one, 1);
+			field().init (_one, 1);
 		}
 
 		/** Constructor with a random iterator
@@ -87,10 +87,10 @@ namespace LinBox
 		 * @param r Random iterator to use for randomization
 		 */
 		MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits, typename Field::RandIter r) :
-			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (r), _block (traits.blockingFactor ())
+			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (r), _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			_field.init (_one, 1);
+			field().init (_one, 1);
 		}
 
 		/** Solve the linear system Ax = b.
@@ -218,10 +218,13 @@ namespace LinBox
 		// Initialize the temporaries used in computation
 		void init_temps ();
 
+		// are we public?
+		inline const Field & field() const { return *_field; }
+
 		// Private variables
 
 		const BlockLanczosTraits _traits;
-		const Field              &_field;
+		const Field              *_field;
 		VectorDomain<Field>       _VD;
 		MatrixDomain<Field>       _MD;
 		typename Field::RandIter  _randiter;
