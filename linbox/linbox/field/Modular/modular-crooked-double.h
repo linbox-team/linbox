@@ -532,6 +532,7 @@ namespace LinBox
 
 	public:
 		typedef double Element;
+		DotProductDomain(){}
 		DotProductDomain (const ModularCrooked<double> &F) :
 			VectorDomainBase<ModularCrooked<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (SQR(std::max(_field.up_mod,-_field.lo_mod)))))
 		{

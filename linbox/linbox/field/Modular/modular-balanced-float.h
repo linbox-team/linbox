@@ -251,6 +251,7 @@ namespace LinBox
 	class DotProductDomain<ModularBalanced<float> > : public virtual VectorDomainBase<ModularBalanced<float> > {
 	public:
 		typedef float Element;
+		DotProductDomain(){}
 		DotProductDomain (const ModularBalanced<Element> &F) :
 			VectorDomainBase<ModularBalanced<Element> > (F), _bound( (Element) ( (1ULL<<24) - (int) (field().modulus*field().modulus)))
 		{

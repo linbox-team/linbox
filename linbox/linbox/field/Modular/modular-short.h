@@ -537,6 +537,7 @@ namespace LinBox
 
 	public:
 		typedef int16_t Element;
+		DotProductDomain(){}
 		DotProductDomain (const Modular<int16_t> &F) :
 			VectorDomainBase<Modular<int16_t> > (F)
 		{ }
