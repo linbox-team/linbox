@@ -156,10 +156,13 @@ namespace LinBox
 	// bds 2004Apr25 : well, g++ 3.4.3 wants explicit base domains on everything - eases that.
 	template <class Field>
 	class VectorDomain : public virtual DotProductDomain<Field> {//, public virtual VectorDomainBase<Field> {
-		VectorDomain(){ /*std::cerr << "VD def cstor" << std::endl;*/ } // no def cstor allowed
 	public:
 
+	
 		typedef typename Field::Element         Element;
+
+		VectorDomain(){ /*std::cerr << "VD def cstor" << std::endl;*/ } 
+		void init(const Field& F) { this->_field = &F; }
 
 		/** Copy constructor.
 		 * Constructs VectorDomain object by copying the domain.
@@ -189,8 +192,8 @@ namespace LinBox
 		 * @return reference to field
 		 */
 
-		//using DotProductDomain<Field>::field;
 		using VectorDomainBase<Field>::field;
+		using VectorDomainBase<Field>::_field;
 
 		/** Vector input/output operations
 		 * These routines are useful for reading and writing vectors to

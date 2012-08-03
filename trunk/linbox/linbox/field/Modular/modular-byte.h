@@ -516,6 +516,7 @@ namespace LinBox
 
 	public:
 		typedef int8_t Element;
+		DotProductDomain(){}
 		DotProductDomain (const Modular<int8_t> &F) :
 			VectorDomainBase<Modular<int8_t> > (F)
 		{ }

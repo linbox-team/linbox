@@ -247,6 +247,7 @@ namespace LinBox
 
 	public:
 		typedef float Element;
+		DotProductDomain(){}
 		DotProductDomain (const Modular<float> &F) :
 			VectorDomainBase<Modular<float> > (F)
 			, _bound( (float) ( (1<<23) - (int) (field().modulus*field().modulus)))

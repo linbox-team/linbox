@@ -232,10 +232,11 @@ namespace LinBox
 	class DotProductDomain<ModularBalanced<int32_t> > : public virtual VectorDomainBase<ModularBalanced<int32_t> > {
 
 	private:
-		const int32_t blocksize;
+		int32_t blocksize;
 
 	public:
 		typedef int32_t Element;
+		DotProductDomain(){}
 		DotProductDomain (const ModularBalanced<int32_t> &F) :
 			VectorDomainBase<ModularBalanced<int32_t> > (F) ,blocksize(32)
 		{ }

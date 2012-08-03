@@ -124,6 +124,8 @@ namespace LinBox
 
 		MatrixDomain () {/*std::cerr << "MD def cstor" << std::endl;*/ } 
 
+		void init(const Field & F) { _field = &F; _VD.init(F); }
+
 		/// Constructor.
 		//! @param F field for MatrixDomain operations.
 		MatrixDomain (const Field &F) :
@@ -1212,7 +1214,7 @@ namespace LinBox
 		}
 
 		const Field         *_field;
-		const VectorDomain<Field>  _VD;
+		VectorDomain<Field>  _VD;
 	}; //MatrixDomain
 
 }

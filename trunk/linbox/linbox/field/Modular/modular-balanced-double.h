@@ -265,6 +265,7 @@ namespace LinBox
 
 	public:
 		typedef double Element;
+		DotProductDomain(){}
 		DotProductDomain (const ModularBalanced<double> &F) :
 			VectorDomainBase<ModularBalanced<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (field().modulus*field().modulus)))
 		{
