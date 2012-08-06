@@ -5,17 +5,17 @@
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -34,12 +34,16 @@ namespace LinBox{
 
 	/**
 	 * @internal
-	 * Pads a BlasMatrix into a form appropriate for OpenCL use and returns the OpenCL buffer
+	 * Pads a BlasMatrix into a form appropriate for OpenCL use
+	 * and returns the OpenCL buffer
 	 */
 	template <class Field>
 	template <typename T, class Operand1>
-	cl_mem OpenCLMatrixDomain<Field>::oclPadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
-		int newDimX, const Operand1 &matrix) const{
+	cl_mem OpenCLMatrixDomain<Field>::oclPadMatrix(
+		cl_mem matrixBuffer,
+		int matrixBufferSize,
+		int newDimX,
+		const Operand1 &matrix) const{
 
 		//Set starting positions
 		int matrixBufferPosition = 0;
@@ -62,13 +66,16 @@ namespace LinBox{
 			while(paddingBufferPosition < paddingBufferSize){
 				int count = 0;
 
-				//Puts one row of data into the buffer while there is space in the buffer and data left
-				while(count < (int)matrix.coldim() && paddingBufferPosition < paddingBufferSize
-					&& dataOffset < (int)(matrix.coldim() * matrix.rowdim())){
+				//Puts one row of data into the buffer while there is space
+				//in the buffer and data left
+				while(count < (int)matrix.coldim() &&
+				      paddingBufferPosition < paddingBufferSize &&
+				      dataOffset < (int)(matrix.coldim() * matrix.rowdim())){
 
 					//Put entry of matrix into the padding buffer
-					paddingBuffer[paddingBufferPosition] = matrix.getEntry(
-						(dataOffset / matrix.coldim()),(dataOffset % matrix.coldim()));
+					int row = dataOffset / matrix.coldim();
+					int col = dataOffset % matrix.coldim();
+					paddingBuffer[paddingBufferPosition] = matrix.getEntry(row, col);
 
 					//Increment the count for the row, paddingBuffer, and matrix
 					count++;
@@ -106,9 +113,16 @@ namespace LinBox{
 			}
 
 			cl_int tempErrcode;
-			tempErrcode = clEnqueueWriteBuffer(commandQue, matrixBuffer, CL_TRUE,
-				(matrixBufferPosition * sizeof(T)), transferSize, paddingBuffer, 0, NULL, NULL);
-			////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+			tempErrcode = clEnqueueWriteBuffer(
+				commandQue,
+				matrixBuffer,
+				CL_TRUE,
+				(matrixBufferPosition * sizeof(T)),
+				transferSize,
+				paddingBuffer,
+				0,
+				NULL,
+				NULL);
 
 			//Increment position in matrixBuffer by the size of the paddingBuffer
 			matrixBufferPosition += paddingBufferSize;
@@ -126,8 +140,12 @@ namespace LinBox{
 	 */
 	template <class Field>
 	template <typename T, class Operand1>
-	Operand1& OpenCLMatrixDomain<Field>::oclDepadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
-		int outputSize, int newDimX, Operand1& matrix) const{
+	Operand1& OpenCLMatrixDomain<Field>::oclDepadMatrix(
+		cl_mem matrixBuffer,
+		int matrixBufferSize,
+		int outputSize,
+		int newDimX,
+		Operand1& matrix) const{
 
 		//Set starting positions
 		int matrixBufferPosition = 0;
@@ -153,10 +171,16 @@ namespace LinBox{
 			}
 
 			cl_int tempErrcode;
-			tempErrcode = clEnqueueReadBuffer(commandQue, matrixBuffer, CL_TRUE,
-				(matrixBufferPosition * sizeof(T)), transferSize, depaddingBuffer,
-				0, NULL, NULL);
-			////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+			tempErrcode = clEnqueueReadBuffer(
+				commandQue,
+				matrixBuffer,
+				CL_TRUE,
+				(matrixBufferPosition * sizeof(T)),
+				transferSize,
+				depaddingBuffer,
+				0,
+				NULL,
+				NULL);
 
 			//Set depaddiingBuffer start position
 			int depaddingBufferPosition = 0;
@@ -166,12 +190,14 @@ namespace LinBox{
 				int count = 0;
 
 				//Puts one row of data into the matrix while there are elements in the depaddingBuffer
-				while(count < (int)matrix.coldim() && depaddingBufferPosition < depaddingBufferSize
-					&& dataOffset < outputSize){
+				while(count < (int)matrix.coldim() &&
+				      depaddingBufferPosition < depaddingBufferSize &&
+				      dataOffset < outputSize){
 
 					//Put entry of depadding buffer into the matrix
-					matrix.setEntry((dataOffset / matrix.coldim()),(dataOffset % matrix.coldim()),
-						depaddingBuffer[depaddingBufferPosition]);
+					int row = dataOffset / matrix.coldim();
+					int col = dataOffset % matrix.coldim();
+					matrix.setEntry(row, col, depaddingBuffer[depaddingBufferPosition]);
 
 					//Increment the count for the row, depadding buffer, and matrix
 					count++;
@@ -195,11 +221,13 @@ namespace LinBox{
 
 	/**
 	 * @internal
-	 * Creates an empty matrix buffer on the OpenCL device from the dimensions of the matrix
+	 * Creates an empty matrix buffer on the OpenCL device from
+	 * the dimensions of the matrix
 	 */
 	template <class Field>
 	template <typename T, class Operand1>
-	cl_mem OpenCLMatrixDomain<Field>::oclCreateMatrixBuffer(Operand1& matrix) const{
+	cl_mem OpenCLMatrixDomain<Field>::oclCreateMatrixBuffer(
+		Operand1& matrix) const{
 
 		//Calculate dimensions after padding of matrix
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -208,21 +236,26 @@ namespace LinBox{
 
 		//Allocate buffer
 		cl_int tempErrcode;
-		cl_mem matrixBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE,
-			(newDimX * newDimY * sizeof(T)), 0, &tempErrcode);
-		////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+		cl_mem matrixBuffer = clCreateBuffer(
+			context,
+			CL_MEM_READ_WRITE,
+			(newDimX * newDimY * sizeof(T)),
+			0,
+			&tempErrcode);
 
 		return matrixBuffer;
 	}
 
 	/**
 	 * @internal
-	 * Creates a matrix buffer on the OpenCL device from the dimensions of the passed in matrix
-	 * and load the contents of the matrix into the matrix buffer
+	 * Creates a matrix buffer on the OpenCL device from the dimensions
+	 * of the passed in matrix and load the contents of the matrix into
+	 * the matrix buffer
 	 */
 	template<class Field>
 	template<typename T, class Operand1>
-	cl_mem OpenCLMatrixDomain<Field>::oclCreateAndLoadMatrixBuffer(const Operand1 &matrix) const{
+	cl_mem OpenCLMatrixDomain<Field>::oclCreateAndLoadMatrixBuffer(
+		const Operand1 &matrix) const{
 
 		//Calculate dimensions after padding of matrix
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -231,23 +264,33 @@ namespace LinBox{
 
 		//Allocate buffer
 		cl_int tempErrcode;
-		cl_mem matrixBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE,
-			(newDimX * newDimY * sizeof(T)), 0, &tempErrcode);
-		////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+		cl_mem matrixBuffer = clCreateBuffer(
+			context,
+			CL_MEM_READ_WRITE,
+			(newDimX * newDimY * sizeof(T)),
+			0,
+			&tempErrcode);
 
 		//Calculate number of elements in the matrixBuffer
 		int matrixBufferSize = newDimX * newDimY;
 
-		return oclPadMatrix<T, Operand1>(matrixBuffer, matrixBufferSize, newDimX, matrix);
+		return oclPadMatrix<T, Operand1>(
+			matrixBuffer,
+			matrixBufferSize,
+			newDimX,
+			matrix);
 	}
 
 	/**
 	 * @internal
-	 * Read back the contents of the matrix buffer into the matrix and return a refence to the matrix
+	 * Read back the contents of the matrix buffer into the matrix and
+	 * return a refence to the matrix
 	 */
 	template <class Field>
 	template <typename T, class Operand2>
-	Operand2& OpenCLMatrixDomain<Field>::oclReadMatrixBuffer(cl_mem matrixBuffer, Operand2 &matrix) const{
+	Operand2& OpenCLMatrixDomain<Field>::oclReadMatrixBuffer(
+		cl_mem matrixBuffer,
+		Operand2 &matrix) const{
 
 		//Calculate dimensions after padding of matrix
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -260,8 +303,12 @@ namespace LinBox{
 		//Calculate number of elements in the matrix
 		int outputSize = matrix.coldim() * matrix.rowdim();
 
-		return oclDepadMatrix<T, Operand2>(matrixBuffer, matrixBufferSize, outputSize,
-			newDimX, matrix);
+		return oclDepadMatrix<T, Operand2>(
+			matrixBuffer,
+			matrixBufferSize,
+			outputSize,
+			newDimX,
+			matrix);
 	}
 
 } //end of namespace LinBox

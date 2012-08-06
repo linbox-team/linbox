@@ -5,17 +5,17 @@
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -58,7 +58,10 @@ namespace LinBox{
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	bool OpenCLMatrixDomain<Modular<double> >::oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B,
+	bool OpenCLMatrixDomain<Modular<double> >::oclMemCheck(
+		Operand1& D,
+		const Operand2& A,
+		const Operand3& B,
 		const Operand1& C) const{
 
 		//Calculate dimensions after padding of matrices
@@ -80,14 +83,17 @@ namespace LinBox{
 
 		//Determine if all three buffers will fit at the same time
 		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
-			(newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_double));
+			      (newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_double));
 
 		return temp;
 	}
 
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	bool OpenCLMatrixDomain<Modular<float> >::oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B,
+	bool OpenCLMatrixDomain<Modular<float> >::oclMemCheck(
+		Operand1& D,
+		const Operand2& A,
+		const Operand3& B,
 		const Operand1& C) const{
 
 		//Calculate dimensions after padding of matrices
@@ -109,15 +115,18 @@ namespace LinBox{
 
 		//Determine if all three buffers will fit at the same time
 		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
-			(newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_float));
+			      (newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_float));
 
 		return temp;
 	}
 
 	template <>
 	template <>
-	bool OpenCLMatrixDomain<Modular<double> >::oclMemCheck<std::pair<int,int> >(std::pair<int,int>& D,
-		std::pair<int,int>& A, std::pair<int,int>& B, std::pair<int,int>& C) const{
+	bool OpenCLMatrixDomain<Modular<double> >::oclMemCheck<std::pair<int,int> >(
+		std::pair<int,int>& D,
+		std::pair<int,int>& A,
+		std::pair<int,int>& B,
+		std::pair<int,int>& C) const{
 
 		//Calculate dimensions after padding of matrices
 		//((A.second / 16) + (A.second % 16 == 0 ? 0 : 1)) * 16
@@ -138,15 +147,18 @@ namespace LinBox{
 
 		//Determine if all three buffers will fit at the same time
 		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
-			(newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_double));
+			      (newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_double));
 
 		return temp;
 	}
 
 	template <>
 	template <>
-	bool OpenCLMatrixDomain<Modular<float> >::oclMemCheck<std::pair<int,int> >(std::pair<int,int>& D,
-		std::pair<int,int>& A, std::pair<int,int>& B, std::pair<int,int>& C) const{
+	bool OpenCLMatrixDomain<Modular<float> >::oclMemCheck<std::pair<int,int> >(
+		std::pair<int,int>& D,
+		std::pair<int,int>& A,
+		std::pair<int,int>& B,
+		std::pair<int,int>& C) const{
 
 		//Calculate dimensions after padding of matrices
 		//((A.second / 16) + (A.second % 16 == 0 ? 0 : 1)) * 16
@@ -167,7 +179,7 @@ namespace LinBox{
 
 		//Determine if all three buffers will fit at the same time
 		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
-			(newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_float));
+			      (newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_float));
 
 		return temp;
 	}
@@ -178,18 +190,44 @@ namespace LinBox{
 	 */
 	template <class Field>
 	template <typename T, typename U>
-	void OpenCLMatrixDomain<Field>::oclCallKernel(cl_mem bufferC, cl_mem bufferA, cl_mem bufferB,
-		int widthA, int heightA ,int widthB, T p, cl_kernel selectedKernel) const{
+	void OpenCLMatrixDomain<Field>::oclCallKernel(
+		cl_mem bufferC,
+		cl_mem bufferA,
+		cl_mem bufferB,
+		int widthA,
+		int heightA,
+		int widthB,
+		T p,
+		cl_kernel selectedKernel) const{
 
 		//Pass kernel arguments
 		cl_int tempErrcode;
-		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferC);
-		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
-		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_int), (void*)&widthA);
-		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			0,
+			sizeof(cl_mem),
+			(void*)&bufferC);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			1,
+			sizeof(cl_mem),
+			(void*)&bufferA);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			2,
+			sizeof(cl_mem),
+			(void*)&bufferB);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			3,
+			sizeof(cl_int),
+			(void*)&widthA);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			4,
+			sizeof(cl_int),
+			(void*)&widthB);
 		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(U), (void*)&p);
-		////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Set NDRange
 		size_t localWorkSize[2];
@@ -200,26 +238,64 @@ namespace LinBox{
 		globalWorkSize[1] = heightA;
 
 		//Launch kernel
-		tempErrcode = clEnqueueNDRangeKernel(commandQue, selectedKernel, 2, NULL, globalWorkSize,
-			localWorkSize, 0, NULL, NULL);
-		////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+		tempErrcode = clEnqueueNDRangeKernel(
+			commandQue,
+			selectedKernel,
+			2,
+			NULL,
+			globalWorkSize,
+			localWorkSize,
+			0,
+			NULL,
+			NULL);
 	}
 
 	template <class Field>
 	template <typename T, typename U>
-	void OpenCLMatrixDomain<Field>::oclCallKernel(cl_mem bufferD, cl_mem bufferA, cl_mem bufferB,
-		cl_mem bufferC, int widthA, int heightA, int widthB, T p, cl_kernel selectedKernel) const{
+	void OpenCLMatrixDomain<Field>::oclCallKernel(
+		cl_mem bufferD,
+		cl_mem bufferA,
+		cl_mem bufferB,
+		cl_mem bufferC,
+		int widthA,
+		int heightA,
+		int widthB,
+		T p,
+		cl_kernel selectedKernel) const{
 
 		//Pass kernel arguments
 		cl_int tempErrcode;
-		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferD);
-		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
-		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_mem), (void*)&bufferC);
-		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_int), (void*)&widthA);
-		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			0,
+			sizeof(cl_mem),
+			(void*)&bufferD);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			1,
+			sizeof(cl_mem),
+			(void*)&bufferA);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			2,
+			sizeof(cl_mem),
+			(void*)&bufferB);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			3,
+			sizeof(cl_mem),
+			(void*)&bufferC);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			4,
+			sizeof(cl_int),
+			(void*)&widthA);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			5,
+			sizeof(cl_int),
+			(void*)&widthB);
 		tempErrcode = clSetKernelArg(selectedKernel, 6, sizeof(U), (void*)&p);
-		////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Set NDRange
 		size_t localWorkSize[2];
@@ -230,28 +306,76 @@ namespace LinBox{
 		globalWorkSize[1] = heightA;
 
 		//Launch kernel
-		tempErrcode = clEnqueueNDRangeKernel(commandQue, selectedKernel, 2, NULL, globalWorkSize,
-				localWorkSize, 0, NULL, NULL);
-		////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+		tempErrcode = clEnqueueNDRangeKernel(
+			commandQue,
+			selectedKernel,
+			2,
+			NULL,
+			globalWorkSize,
+			localWorkSize,
+			0,
+			NULL,
+			NULL);
 	}
 
 	template <class Field>
 	template <typename T, typename U>
-	void OpenCLMatrixDomain<Field>::oclCallKernel(cl_mem bufferD, cl_mem bufferA, cl_mem bufferB,
-		cl_mem bufferC, T alpha, T beta, int widthA, int heightA, int widthB, T p, cl_kernel selectedKernel) const{
+	void OpenCLMatrixDomain<Field>::oclCallKernel(
+		cl_mem bufferD,
+		cl_mem bufferA,
+		cl_mem bufferB,
+		cl_mem bufferC,
+		T alpha,
+		T beta,
+		int widthA,
+		int heightA,
+		int widthB,
+		T p,
+		cl_kernel selectedKernel) const{
 
 		//Pass kernel arguments
 		cl_int tempErrcode;
-		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferD);
-		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(U), (void*)&alpha);
-		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferA);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(U), (void*)&beta);
-		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_mem), (void*)&bufferC);
-		tempErrcode = clSetKernelArg(selectedKernel, 6, sizeof(cl_int), (void*)&widthA);
-		tempErrcode = clSetKernelArg(selectedKernel, 7, sizeof(cl_int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			0,
+			sizeof(cl_mem),
+			(void*)&bufferD);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			1,
+			sizeof(U),
+			(void*)&alpha);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			2,
+			sizeof(cl_mem),
+			(void*)&bufferA);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			3,
+			sizeof(cl_mem),
+			(void*)&bufferB);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			4,
+			sizeof(U),
+			(void*)&beta);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			5,
+			sizeof(cl_mem),
+			(void*)&bufferC);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			6,
+			sizeof(cl_int),
+			(void*)&widthA);
+		tempErrcode = clSetKernelArg(
+			selectedKernel,
+			7,
+			sizeof(cl_int),
+			(void*)&widthB);
 		tempErrcode = clSetKernelArg(selectedKernel, 8, sizeof(U), (void*)&p);
-		//updateErrcode(tempErrcode); //does not work because of const being used pointlessly
 
 		//Set NDRange
 		size_t localWorkSize[2];
@@ -262,9 +386,16 @@ namespace LinBox{
 		globalWorkSize[1] = heightA;
 
 		//Launch kernel
-		tempErrcode = clEnqueueNDRangeKernel(commandQue, selectedKernel, 2, NULL, globalWorkSize,
-				localWorkSize, 0, NULL, NULL);
-		////updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+		tempErrcode = clEnqueueNDRangeKernel(
+			commandQue,
+			selectedKernel,
+			2,
+			NULL,
+			globalWorkSize,
+			localWorkSize,
+			0,
+			NULL,
+			NULL);
 	}
 
 
@@ -274,8 +405,12 @@ namespace LinBox{
 	 */
 	template <class Field>
 	template <class Operand1, class Operand2, class Operand3>
-	std::vector<int> OpenCLMatrixDomain<Field>::oclPartition(Operand1& C, const Operand2& A, const Operand3& B,
-		std::vector<SubmatrixAdapter<Operand1> >& VC, std::vector<SubmatrixAdapter<Operand2> >& VA,
+	std::vector<int> OpenCLMatrixDomain<Field>::oclPartition(
+		Operand1& C,
+		const Operand2& A,
+		const Operand3& B,
+		std::vector<SubmatrixAdapter<Operand1> >& VC,
+		std::vector<SubmatrixAdapter<Operand2> >& VA,
 		std::vector<SubmatrixAdapter<Operand3> >& VB) const{
 
 		std::vector<SubmatrixAdapter<Operand1> > VT;
@@ -284,9 +419,15 @@ namespace LinBox{
 
 	template <class Field>
 	template <class Operand1, class Operand2, class Operand3>
-	std::vector<int> OpenCLMatrixDomain<Field>::oclPartition(Operand1& D, const Operand2& A, const Operand3& B,
-		const Operand1& C, std::vector<SubmatrixAdapter<Operand1> >& VD, std::vector<SubmatrixAdapter<Operand2> >& VA,
-		std::vector<SubmatrixAdapter<Operand3> >& VB, std::vector<SubmatrixAdapter<Operand1> >& VC) const{
+	std::vector<int> OpenCLMatrixDomain<Field>::oclPartition(
+		Operand1& D,
+		const Operand2& A,
+		const Operand3& B,
+		const Operand1& C,
+		std::vector<SubmatrixAdapter<Operand1> >& VD,
+		std::vector<SubmatrixAdapter<Operand2> >& VA,
+		std::vector<SubmatrixAdapter<Operand3> >& VB,
+		std::vector<SubmatrixAdapter<Operand1> >& VC) const{
 
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<Operand1,Operand2,Operand3>(D,A,B,C);
@@ -356,14 +497,19 @@ namespace LinBox{
 				//Determine of the largest subsections will fit on the device together
 				int largestSubRows = (addToSubRows ? subRows : (subRows + 1));
 				int largestSubCols = (addToSubCols ? subCols : (subCols + 1));
-				int largestSubSharedDim = (addToSubSharedDim ? subSharedDim : (subSharedDim + 1));
+				int largestSubSharedDim = (addToSubSharedDim ? subSharedDim :
+				                                               (subSharedDim + 1));
 
-				std::pair<int,int> largestSubD(largestSubRows,largestSubCols);
-				std::pair<int,int> largestSubA(largestSubRows,largestSubSharedDim);
-				std::pair<int,int> largestSubB(largestSubSharedDim,largestSubCols);
-				std::pair<int,int> largestSubC(largestSubRows,largestSubCols);
+				std::pair<int,int> largestSubD(largestSubRows, largestSubCols);
+				std::pair<int,int> largestSubA(largestSubRows, largestSubSharedDim);
+				std::pair<int,int> largestSubB(largestSubSharedDim, largestSubCols);
+				std::pair<int,int> largestSubC(largestSubRows, largestSubCols);
 
-				memLevelsAllowed = oclMemCheck<std::pair<int,int> >(largestSubD,largestSubA,largestSubB,largestSubC);
+				memLevelsAllowed = oclMemCheck<std::pair<int,int> >(
+					largestSubD,
+					largestSubA,
+					largestSubB,
+					largestSubC);
 
 				//If the largest subsections can fit on the device together
 				//Begin partitioning the input matrices
@@ -388,10 +534,30 @@ namespace LinBox{
 							int AColsOffset = blockX * subSharedDim;
 							int BColsOffset = blockX * subCols;
 
-							SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,subRows,subCols);
-							SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,subSharedDim);
-							SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,subCols);
-							SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,subRows,subCols);
+							SubmatrixAdapter<Operand1> SD(
+								D,
+								DRowsOffset,
+								DColsOffset,
+								subRows,
+								subCols);
+							SubmatrixAdapter<Operand2> SA(
+								A,
+								ARowsOffset,
+								AColsOffset,
+								subRows,
+								subSharedDim);
+							SubmatrixAdapter<Operand3> SB(
+								B,
+								BRowsOffset,
+								BColsOffset,
+								subSharedDim,
+								subCols);
+							SubmatrixAdapter<Operand1> SC(
+								C,
+								DRowsOffset,
+								DColsOffset,
+								subRows,
+								subCols);
 
 							VD.push_back(SD);
 							VA.push_back(SA);
@@ -403,10 +569,30 @@ namespace LinBox{
 						int AColsOffset = (divisionFactor - 1) * subSharedDim;
 						int BColsOffset = (divisionFactor - 1) * subCols;
 
-						SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,subRows,(DCols - DColsOffset));
-						SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,subRows,(ACols - AColsOffset));
-						SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,subSharedDim,(BCols - BColsOffset));
-						SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,subRows,(DCols - DColsOffset));
+						SubmatrixAdapter<Operand1> SD(
+							D,
+							DRowsOffset,
+							DColsOffset,
+							subRows,
+							(DCols - DColsOffset));
+						SubmatrixAdapter<Operand2> SA(
+							A,
+							ARowsOffset,
+							AColsOffset,
+							subRows,
+							(ACols - AColsOffset));
+						SubmatrixAdapter<Operand3> SB(
+							B,
+							BRowsOffset,
+							BColsOffset,
+							subSharedDim,
+							(BCols - BColsOffset));
+						SubmatrixAdapter<Operand1> SC(
+							C,
+							DRowsOffset,
+							DColsOffset,
+							subRows,
+							(DCols - DColsOffset));
 
 						VD.push_back(SD);
 						VA.push_back(SA);
@@ -424,10 +610,30 @@ namespace LinBox{
 						int AColsOffset = blockX * subSharedDim;
 						int BColsOffset = blockX * subCols;
 
-						SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,(DRows - DRowsOffset),subCols);
-						SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),subSharedDim);
-						SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),subCols);
-						SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,(DRows - DRowsOffset),subCols);
+						SubmatrixAdapter<Operand1> SD(
+							D,
+							DRowsOffset,
+							DColsOffset,
+							(DRows - DRowsOffset),
+							subCols);
+						SubmatrixAdapter<Operand2> SA(
+							A,
+							ARowsOffset,
+							AColsOffset,
+							(ARows - ARowsOffset),
+							subSharedDim);
+						SubmatrixAdapter<Operand3> SB(
+							B,
+							BRowsOffset,
+							BColsOffset,
+							(BRows - BRowsOffset),
+							subCols);
+						SubmatrixAdapter<Operand1> SC(
+							C,
+							DRowsOffset,
+							DColsOffset,
+							(DRows - DRowsOffset),
+							subCols);
 
 						VD.push_back(SD);
 						VA.push_back(SA);
@@ -439,10 +645,30 @@ namespace LinBox{
 					int AColsOffset = (divisionFactor - 1) * subSharedDim;
 					int BColsOffset = (divisionFactor - 1) * subCols;
 
-					SubmatrixAdapter<Operand1> SD(D,DRowsOffset,DColsOffset,(DRows - DRowsOffset),(DCols - DColsOffset));
-					SubmatrixAdapter<Operand2> SA(A,ARowsOffset,AColsOffset,(ARows - ARowsOffset),(ACols - AColsOffset));
-					SubmatrixAdapter<Operand3> SB(B,BRowsOffset,BColsOffset,(BRows - BRowsOffset),(BCols - BColsOffset));
-					SubmatrixAdapter<Operand1> SC(C,DRowsOffset,DColsOffset,(DRows - DRowsOffset),(DCols - DColsOffset));
+					SubmatrixAdapter<Operand1> SD(
+						D,
+						DRowsOffset,
+						DColsOffset,
+						(DRows - DRowsOffset),
+						(DCols - DColsOffset));
+					SubmatrixAdapter<Operand2> SA(
+						A,
+						ARowsOffset,
+						AColsOffset,
+						(ARows - ARowsOffset),
+						(ACols - AColsOffset));
+					SubmatrixAdapter<Operand3> SB(
+						B,
+						BRowsOffset,
+						BColsOffset,
+						(BRows - BRowsOffset),
+						(BCols - BColsOffset));
+					SubmatrixAdapter<Operand1> SC(
+						C,
+						DRowsOffset,
+						DColsOffset,
+						(DRows - DRowsOffset),
+						(DCols - DColsOffset));
 
 					VD.push_back(SD);
 					VA.push_back(SA);

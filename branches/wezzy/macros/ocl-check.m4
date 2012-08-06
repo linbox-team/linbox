@@ -34,28 +34,34 @@ AC_DEFUN([LB_CHECK_OCL],[
 	 Otherwise you give the <path> to the directory which contains the library.])],
 
 	[if test "$withval" = yes; then
-		OCL_HOME_PATH="${DEFAULT_CHECKING_PATH}"
+		OCL_HOME_PATH="/opt/AMDAPP ${DEFAULT_CHECKING_PATH}"
 	elif test "$withval" != no; then
-		OCL_HOME_PATH="$withval ${DEFAULT_CHECKING_PATH}"
+		OCL_HOME_PATH="$withval /opt/AMDAPP ${DEFAULT_CHECKING_PATH}"
 	fi],
 
-	[OCL_HOME_PATH="$DEFAULT_CHECKING_PATH}"])
-)
+	[OCL_HOME_PATH="/opt/AMDAPP $DEFAULT_CHECKING_PATH}"])
 
-BACKUP_CXXFLAGS=${CXX_FLAGS}
-BACKUP_LIBS=${LIBS}
+	BACKUP_CXXFLAGS=${CXX_FLAGS}
+	BACKUP_LIBS=${LIBS}
+	
+	AC_MSG_CHECKING(for OpenCL >= 1.0)
 
-for OCL_HOME in ${OCL_HOME_PATH}; do
+for OCL_HOME in ${OCL_HOME_PATH} 
+do
 	if test -r "$OCL_HOME/include/CL/cl.h"; then
 		if test "x$OCL_HOME" != "x/usr" -a "x$OCL_HOME" != "x/usr/local"; then
 			OCL_CFLAGS="-I${OCL_HOME}/include"
-			OCL_LIBS="-L${OCL_HOME}/lib -lOpenCL"
+			if test "x$OCL_HOME" != "x/opt/AMDAPP"; then
+				OCL_LIBS="-L${OCL_HOME}/lib -lOpenCL"
+			else
+				OCL_LIBS="-L${OCL_HOME}/lib/x86_64 -L${OCL_HOME}/lib/x86 -lOpenCL"
+			fi
 		else
 			OCL_CFLAGS=
 			OCL_LIBS="-lOpenCL"
 		fi
 
-		CXXFLAGS="${GXXFLAGS} ${OCL_CFLAGS}"
+		CXXFLAGS="${CXXFLAGS} ${OCL_CFLAGS}"
 		LIBS="${LIBS} ${OCL_LIBS}"
 
 		AC_SUBST(OCL_CFLAGS)
@@ -70,6 +76,8 @@ for OCL_HOME in ${OCL_HOME_PATH}; do
 	fi
 done
 
-CXXFLAGS=${BACKUP_CXXFLAGS}
-LIBS=${BACKUP_LIBS}
+	AC_MSG_RESULT(found)
+
+	CXXFLAGS=${BACKUP_CXXFLAGS}
+	LIBS=${BACKUP_LIBS}
 ])

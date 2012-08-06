@@ -5,17 +5,17 @@
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -92,10 +92,14 @@ namespace LinBox{
 
 	protected:
 		/*--- This class is a Singleton ---*/
-		OpenCLMatrixDomainFactory(); //No one can construct the class
-		OpenCLMatrixDomainFactory(const OpenCLMatrixDomainFactory&); //No one can copy the class
-		OpenCLMatrixDomainFactory& operator=(const OpenCLMatrixDomainFactory&); //No one can assign the class
-		~OpenCLMatrixDomainFactory(); //No one can destroy the class
+		//No one can construct the class
+		OpenCLMatrixDomainFactory();
+		//No one can copy the class
+		OpenCLMatrixDomainFactory(const OpenCLMatrixDomainFactory&);
+		//No one can assign the class
+		OpenCLMatrixDomainFactory& operator=(const OpenCLMatrixDomainFactory&);
+		//No one can destroy the class
+		~OpenCLMatrixDomainFactory();
 
 		struct oclEnviron{
 			//OpenCL specific variables
@@ -168,9 +172,15 @@ namespace LinBox{
 			platforms = (cl_platform_id*)malloc(numPlatforms * sizeof(cl_platform_id));
 			errcode = clGetPlatformIDs(numPlatforms, platforms, NULL);
 
-			//Search through the platforms looking for a prefered one specified by a string
+			//Search through the platforms looking for a prefered one specified by a
+			//string
 			for(int i = 0; i < (int)numPlatforms; i++){
-				errcode = clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, 256, (void*)chBuffer, NULL);
+				errcode = clGetPlatformInfo(
+					platforms[i],
+					CL_PLATFORM_NAME,
+					256,
+					(void*)chBuffer,
+					NULL);
 
 				if(errcode == CL_SUCCESS && !(strcmp(chBuffer,"NVIDIA CUDA"))){
 					selectedPlatform = platforms[i];
@@ -193,7 +203,8 @@ namespace LinBox{
 		 * @internal
 		 * Computes a score for all devices
 		 */
-		static std::vector<long> oclComputeDeviceScores(cl_device_id* devices,
+		static std::vector<long> oclComputeDeviceScores(
+			cl_device_id* devices,
 			cl_uint numDevices){
 
 			std::vector<long> ret;
@@ -202,26 +213,46 @@ namespace LinBox{
 			for(int i = 0; i < (int)numDevices; i++){
 
 				cl_device_type type;
-				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_TYPE, sizeof(cl_device_type),
-					&type, NULL);
+				errcode = clGetDeviceInfo(
+					devices[i],
+					CL_DEVICE_TYPE,
+					sizeof(cl_device_type),
+					&type,
+					NULL);
 
 				bool GPU = (type == CL_DEVICE_TYPE_GPU);
 
 				cl_uint computeUnits;
-				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint),
-					&computeUnits, NULL);
+				errcode = clGetDeviceInfo(
+					devices[i],
+					CL_DEVICE_MAX_COMPUTE_UNITS,
+					sizeof(cl_uint),
+					&computeUnits,
+					NULL);
 
 				cl_uint clockFrequency;
-				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(cl_uint),
-					&clockFrequency, NULL);
+				errcode = clGetDeviceInfo(
+					devices[i],
+					CL_DEVICE_MAX_CLOCK_FREQUENCY,
+					sizeof(cl_uint),
+					&clockFrequency,
+					NULL);
 
 				cl_ulong maxGlobalMemoryAllocSize;
-				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(cl_ulong),
-					&maxGlobalMemoryAllocSize, NULL);
+				errcode = clGetDeviceInfo(
+					devices[i],
+					CL_DEVICE_MAX_MEM_ALLOC_SIZE,
+					sizeof(cl_ulong),
+					&maxGlobalMemoryAllocSize,
+					NULL);
 
 				cl_ulong globalMemory;
-				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong),
-					&globalMemory, NULL);
+				errcode = clGetDeviceInfo(
+					devices[i],
+					CL_DEVICE_GLOBAL_MEM_SIZE,
+					sizeof(cl_ulong),
+					&globalMemory,
+					NULL);
 
 				long score = (computeUnits * clockFrequency);
 				score *= (GPU ? 8 : 1);
@@ -239,18 +270,26 @@ namespace LinBox{
 		 * Creates a kernel given a file name and kernel name
 		 * Returns the kernel
 		 */
-		static cl_kernel oclCreateKernel(const char* kernel, const char* kernelName, cl_context& context){
+		static cl_kernel oclCreateKernel(
+			const char* kernel,
+			const char* kernelName,
+			cl_context& context){
 
 			//find length of the kernel
 			size_t kernelLength = strlen(kernel);
 
 			//Create program from file
-			cl_program program = clCreateProgramWithSource(context, 1,
-				(const char**)&kernel, &kernelLength, &errcode);
+			cl_program program = clCreateProgramWithSource(
+				context,
+				1,
+				(const char**)&kernel,
+				&kernelLength,
+				&errcode);
 
 			//Build the program into executable
 			if(errcode == CL_SUCCESS){
-				const char* options = {"-cl-mad-enable -cl-no-signed-zeros -cl-finite-math-only\0"};
+				const char* options = {"-cl-mad-enable -cl-no-signed-zeros "
+				                       "-cl-finite-math-only\0"};
 				errcode = clBuildProgram(program, 0, NULL, options, NULL, NULL);
 			}
 
@@ -271,45 +310,81 @@ namespace LinBox{
 		 * @internal
 		 * Builds a single oclEnviron
 		 */
-		static oclEnviron& oclBuildEnviron(oclEnviron& environ, cl_platform_id& platform,
+		static oclEnviron& oclBuildEnviron(
+			oclEnviron& environ,
+			cl_platform_id& platform,
 			cl_device_id& device){
 
 			//Create OpenCL context
-			cl_context_properties properties[3] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform, 0};
-			environ.context = clCreateContext(properties, 1, &device, NULL, NULL, &errcode);
+			cl_context_properties properties[3] = {CL_CONTEXT_PLATFORM,
+			                                       (cl_context_properties)platform,
+			                                       0};
+			environ.context = clCreateContext(
+				properties,
+				1,
+				&device,
+				NULL,
+				NULL,
+				&errcode);
 
 			//Assign device to environ
 			environ.device = device;
 
 			//Create OpenCL command queue
-			environ.commandQue = clCreateCommandQueue(environ.context, device, 0, &errcode);
+			environ.commandQue = clCreateCommandQueue(
+				environ.context,
+				device,
+				0,
+				&errcode);
 
 			//Get amount of memory that the device has
-			errcode = clGetDeviceInfo(device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong),
-				&(environ.memCapacity), NULL);
-			errcode = clGetDeviceInfo(device, CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(cl_ulong),
-				&(environ.maxBufferSize), NULL);
+			errcode = clGetDeviceInfo(
+				device,
+				CL_DEVICE_GLOBAL_MEM_SIZE,
+				sizeof(cl_ulong),
+				&(environ.memCapacity),
+				NULL);
+			errcode = clGetDeviceInfo(
+				device,
+				CL_DEVICE_MAX_MEM_ALLOC_SIZE,
+				sizeof(cl_ulong),
+				&(environ.maxBufferSize),
+				NULL);
 
 			//Get the device type for the selected device
 			cl_device_type type;
-			errcode = clGetDeviceInfo(device, CL_DEVICE_TYPE, sizeof(cl_device_type),
-				&type, NULL);
+			errcode = clGetDeviceInfo(
+				device,
+				CL_DEVICE_TYPE,
+				sizeof(cl_device_type),
+				&type,
+				NULL);
 
 			//Set container type
 			environ.GPUcontainer = (type == CL_DEVICE_TYPE_GPU);
 			environ.CPUcontainer = (type == CL_DEVICE_TYPE_CPU);
 
 
-			//Determine double precision support for device by getting a listing of all
-			//OpenCL device extensions supported by the device and searching through them for
-			//the string "cl_khr_fp64"
+			//Determine double precision support for device by getting a
+			//listing of all OpenCL device extensions supported by the device
+			//and searching through them for the string "cl_khr_fp64"
 			environ.doubleSupported = false;
 
 			size_t sizeReturn;
 
-			errcode = clGetDeviceInfo(device, CL_DEVICE_EXTENSIONS, 0, NULL, &sizeReturn);
+			errcode = clGetDeviceInfo(
+				device,
+				CL_DEVICE_EXTENSIONS,
+				0,
+				NULL,
+				&sizeReturn);
 			char* deviceExtensions = (char*)malloc(sizeReturn);
-			errcode = clGetDeviceInfo(device, CL_DEVICE_EXTENSIONS, sizeReturn, deviceExtensions, NULL);
+			errcode = clGetDeviceInfo(
+				device,
+				CL_DEVICE_EXTENSIONS,
+				sizeReturn,
+				deviceExtensions,
+				NULL);
 
 			char* exten[200];
 
@@ -359,12 +434,18 @@ namespace LinBox{
 			//Compile all of the kernels
 			if(errcode == CL_SUCCESS){
 				for(int i = 0; i < NUM_KERNELS; i++){
-					environ.dpKernels[i] = oclCreateKernel(dpKernelSources[i], dpKernelNames[i], environ.context);
+					environ.dpKernels[i] = oclCreateKernel(
+						dpKernelSources[i],
+						dpKernelNames[i],
+						environ.context);
 					if(errcode == CL_SUCCESS){environ.dpKernelsAvailable[i] = true;}
 				}
 
 				for(int i = 0; i < NUM_KERNELS; i++){
-					environ.spKernels[i] = oclCreateKernel(spKernelSources[i], spKernelNames[i], environ.context);
+					environ.spKernels[i] = oclCreateKernel(
+						spKernelSources[i],
+						spKernelNames[i],
+						environ.context);
 					if(errcode == CL_SUCCESS){environ.spKernelsAvailable[i] = true;}
 				}
 			}
@@ -380,8 +461,11 @@ namespace LinBox{
 		 * @internal
 		 * Builds the vector of oclEnvirons
 		 */
-		static std::vector<oclEnviron>* oclGetEnvirons(std::vector<oclEnviron>* environs,
-			cl_platform_id& platform, cl_device_id* devices, cl_uint numDevices){
+		static std::vector<oclEnviron>* oclGetEnvirons(
+			std::vector<oclEnviron>* environs,
+			cl_platform_id& platform,
+			cl_device_id* devices,
+			cl_uint numDevices){
 
 			//Compute a score for all devices
 			std::vector<long> rankings = oclComputeDeviceScores(devices, numDevices);
@@ -390,9 +474,10 @@ namespace LinBox{
 			long maxScore = *(std::max_element(rankings.begin(), rankings.end()));
 			long lowerBound = (long)(maxScore * 0.90);
 
-			//Build OpenCL compute environments only for devices within 10% of the top device.
-			//This should keep run times for identical computations relatively similar across different
-			//intstances of OpenCLMatrixDomain and eliminate the primary graphics adapter if there is one.
+			//Build OpenCL compute environments only for devices within 10% of
+			//the top device. This should keep run times for identical computations
+			//relatively similar across different intstances of OpenCLMatrixDomain
+			//and eliminate the primary graphics adapter if there is one.
 			for(int i = 0; i < (int)numDevices; i++){
 				if(rankings.at(i) < lowerBound){
 					continue;
@@ -424,7 +509,12 @@ namespace LinBox{
 			//Proceed only if successful with previous phase
 			if(errcode == CL_SUCCESS){
 				//Get number of GPU's in the platform
-				errcode = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, NULL, &numDevices);
+				errcode = clGetDeviceIDs(
+					platform,
+					CL_DEVICE_TYPE_GPU,
+					0,
+					NULL,
+					&numDevices);
 			}
 
 			//Allocate the oclEnviron and instance count arrays
@@ -435,7 +525,12 @@ namespace LinBox{
 			if(errcode == CL_SUCCESS && numDevices != 0){
 				//Allocate memory for device array and read the devices into it
 				devices = (cl_device_id*)malloc(numDevices * sizeof(cl_device_id));
-				errcode = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, numDevices, devices, NULL);
+				errcode = clGetDeviceIDs(
+					platform,
+					CL_DEVICE_TYPE_GPU,
+					numDevices,
+					devices,
+					NULL);
 
 				//Build environs from devices
 				environs = oclGetEnvirons(environs, platform, devices, numDevices);
@@ -447,8 +542,9 @@ namespace LinBox{
 
 				free(devices);
 			}
-			//If there are no devices or if an error occured make a default oclEnviron that
-			//disables the OpenCLMatrixDomain and defaults it to BlasMatrixDomain methods.
+			//If there are no devices or if an error occured make a default
+			//oclEnviron that disables the OpenCLMatrixDomain and defaults it
+			//to BlasMatrixDomain methods.
 			else{
 				oclEnviron temp;
 
@@ -530,8 +626,8 @@ namespace LinBox{
 		static void oclMatrixDomainInstance(OpenCLMatrixDomain<Field>* target){
 
 			//Check if the OpenCL environment has been initialized
-			//It will only need to be initialized when the first OpenCLMatrixDomain instance is created
-			//Double check locking ensures Singleton
+			//It will only need to be initialized when the first OpenCLMatrixDomain
+			//instance is created. Double check locking ensures Singleton
 			if(!initialized){
 				pthread_mutex_lock(&factoryLock);
 
@@ -557,7 +653,8 @@ namespace LinBox{
 			//Increment use count
 			(instances->at(leastUsedIndex))++;
 
-			//Copy all of the data required for the OpenCLMatrixDomain instance to function
+			//Copy all of the data required for the OpenCLMatrixDomain instance to
+			//function
 			target->context = environs->at(leastUsedIndex).context;
 			target->device = environs->at(leastUsedIndex).device;
 			target->commandQue = environs->at(leastUsedIndex).commandQue;
@@ -573,13 +670,16 @@ namespace LinBox{
 
 			for(int i = 0; i < 20; i++){
 				target->dpKernels[i] = environs->at(leastUsedIndex).dpKernels[i];
-				target->dpKernelsAvailable[i] = environs->at(leastUsedIndex).dpKernelsAvailable[i];
 				target->spKernels[i] = environs->at(leastUsedIndex).spKernels[i];
-				target->spKernelsAvailable[i] = environs->at(leastUsedIndex).spKernelsAvailable[i];
+
+				target->dpKernelsAvailable[i] =
+					environs->at(leastUsedIndex).dpKernelsAvailable[i];
+				target->spKernelsAvailable[i] =
+					environs->at(leastUsedIndex).spKernelsAvailable[i];
 			}
 
-			//Assign an ID number the OpenCLMatrixDomain instance to be used for locking and
-			//releasing the OpenCL resources
+			//Assign an ID number the OpenCLMatrixDomain instance to be used for
+			//locking and releasing the OpenCL resources
 			target->IDnum = leastUsedIndex;
 
 			//Point OpenCLMatrixDomain to the mutex
@@ -599,8 +699,8 @@ namespace LinBox{
 		static int oclGetNumberOfDevices(){
 
 			//Check if the OpenCL environment has been initialized
-			//It will only need to be initialized when the first OpenCLMatrixDomain instance is created
-			//Double check locking ensures Singleton
+			//It will only need to be initialized when the first OpenCLMatrixDomain
+			//instance is created. Double check locking ensures Singleton
 			if(!initialized){
 				pthread_mutex_lock(&factoryLock);
 
