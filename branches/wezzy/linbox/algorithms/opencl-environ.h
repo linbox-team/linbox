@@ -23,7 +23,6 @@
  *.
  */
 
-#include <cstdlib>
 #include <pthread.h>
 
 #include <algorithm>
@@ -35,7 +34,7 @@
 
 #include <CL/cl.h>
 
-#include "named-mutex.h"
+//#include "named-mutex.h"
 
 #ifndef __LINBOX_opencl_environ_H
 #define __LINBOX_opencl_environ_H
@@ -167,7 +166,7 @@ namespace LinBox{
 				NULL,
 				&sizeRet);
 
-			char* devExt = (char*)malloc(sizeRet);
+			char* devExt = new char[sizeRet];
 
 			errcode = clGetDeviceInfo(
 				device,
@@ -187,7 +186,7 @@ namespace LinBox{
 			}
 
 			//Deallocate memory
-			free(devExt);
+			delete[] devExt;
 		}
 
 		~OpenCLEnviron(){}

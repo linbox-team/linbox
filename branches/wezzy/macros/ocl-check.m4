@@ -52,7 +52,7 @@ do
 		if test "x$OCL_HOME" != "x/usr" -a "x$OCL_HOME" != "x/usr/local"; then
 			OCL_CFLAGS="-I${OCL_HOME}/include"
 			if test "x$OCL_HOME" != "x/opt/AMDAPP"; then
-				OCL_LIBS="-L${OCL_HOME}/lib -lOpenCL -lpthread"
+				OCL_LIBS="-L${OCL_HOME}/lib64 -L${OCL_HOME}/lib -lOpenCL -lpthread"
 			else
 				OCL_LIBS="-L${OCL_HOME}/lib/x86_64 -L${OCL_HOME}/lib/x86 -lOpenCL -lpthread"
 			fi

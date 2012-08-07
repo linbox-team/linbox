@@ -1517,7 +1517,6 @@ namespace LinBox
 		cl_kernel selectedKernel;
 		if(p <= (1 << 21)){
 			selectedKernel = dpKernels[15];
-			selectedAxpyKernel = dpKernels[11];
 		}
 		else if(p <= (1 << 24)){
 			selectedKernel = dpKernels[14];

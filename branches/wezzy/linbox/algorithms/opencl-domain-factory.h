@@ -27,10 +27,12 @@
 #define __LINBOX_opencl_matrix_domain_factory_H
 
 #include <cstdio>
-#include <vector>
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 #include <pthread.h>
+
+#include <vector>
+
 #include "linbox/algorithms/opencl-domain.h"
 #include "linbox/algorithms/opencl-environ.h"
 #include "linbox/algorithms/opencl-resource-controller.h"

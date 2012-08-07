@@ -23,7 +23,6 @@
  *.
  */
 
-#include <cstdlib>
 #include <pthread.h>
 
 #include <algorithm>
@@ -36,7 +35,7 @@
 
 #include <CL/cl.h>
 
-#include "named-mutex.h"
+//#include "named-mutex.h"
 #include "opencl-environ.h"
 
 #ifndef __LINBOX_opencl_resource_controller_H
@@ -63,7 +62,7 @@ namespace LinBox{
 		}
 
 		//Allocate memory for platforms IDs
-		platforms = (cl_platform_id*)malloc(numPlatforms * sizeof(cl_platform_id));
+		platforms = new cl_platform_id[numPlatforms];
 
 		//Read in platform IDs
 		errcode = clGetPlatformIDs(numPlatforms, platforms, NULL);
@@ -77,7 +76,7 @@ namespace LinBox{
 		}
 
 		//Deallocate memory
-		free(platforms);
+		delete[] platforms;
 
 		return ret;
 	}
@@ -95,7 +94,7 @@ namespace LinBox{
 		errcode = clGetPlatformInfo(platform, CL_PLATFORM_NAME, 0, NULL, &sizeRet);
 
 		//Allocate memory for platform name
-		tempBuffer = (char*)malloc(sizeRet);
+		tempBuffer = new char[sizeRet];
 
 		//Read in platform name
 		errcode = clGetPlatformInfo(
@@ -109,7 +108,7 @@ namespace LinBox{
 		std::string ret(tempBuffer);
 
 		//Deallocate memory
-		free(tempBuffer);
+		delete[] tempBuffer;
 
 		return ret;
 	}
@@ -135,7 +134,7 @@ namespace LinBox{
 			&sizeRet);
 
 		//Allocate memory for platform version string
-		tempBuffer = (char*)malloc(sizeRet);
+		tempBuffer = new char[sizeRet];
 
 		//Read in platform name string
 		errcode = clGetPlatformInfo(
@@ -156,7 +155,7 @@ namespace LinBox{
 		strstream >> ret;
 
 		//Deallocate memory
-		free(tempBuffer);
+		delete[] tempBuffer;
 
 		return ret;
 	}
@@ -179,7 +178,7 @@ namespace LinBox{
 			&sizeRet);
 
 		//Allocate memory for platform extensions string
-		tempBuffer = (char*)malloc(sizeRet);
+		tempBuffer = new char[sizeRet];
 
 		//Read in platform extensions string
 		errcode = clGetPlatformInfo(
@@ -202,7 +201,7 @@ namespace LinBox{
 		}
 
 		//Deallocate memory
-		free(tempBuffer);
+		delete[] tempBuffer;
 
 		return ret;
 	}
@@ -231,7 +230,7 @@ namespace LinBox{
 		}
 
 		//Allocate memory for device IDs
-		devices = (cl_device_id*)malloc(numDevices * sizeof(cl_device_id));
+		devices = new cl_device_id[numDevices];
 
 		//Read in device IDs
 		errcode = clGetDeviceIDs(
@@ -250,7 +249,7 @@ namespace LinBox{
 		}
 
 		//Deallocate memory
-		free(devices);
+		delete[] devices;
 
 		return ret;
 	}
@@ -319,8 +318,7 @@ namespace LinBox{
 
 #ifndef __MPI_SHARED
 					//Allocate and initialize device lock
-					pthread_mutex_t* tempMutex = (pthread_mutex_t*)malloc(
-						sizeof(pthread_mutex_t));
+					pthread_mutex_t* tempMutex = new pthread_mutex_t;
 
 					pthread_mutex_init(tempMutex, NULL);
 
@@ -405,7 +403,8 @@ namespace LinBox{
 #ifndef __MPI_SHARED
 			for(int i = 0; i < environs->size(); i++){
 				pthread_mutex_destroy(environs->at(i)->getDeviceLock());
-				delete environs->at(i)
+				delete environs->at(i)->getDeviceLock();
+				delete environs->at(i);
 			}
 #else
 			for(int i = 0; i < mutexs->size(); i++){
@@ -447,7 +446,7 @@ namespace LinBox{
 
 		unsigned int getInstanceCount(unsigned int ID){
 #ifndef __MPI_SHARED
-			return (*IDsToInstances)[ID]
+			return (*IDsToInstances)[ID];
 #else
 			return (*namesToInstances)[(*IDsToNames)[ID]];
 #endif

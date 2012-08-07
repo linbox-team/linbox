@@ -37,7 +37,7 @@
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/algorithms/opencl-domain.h"
 #include "linbox/randiter/nonzero.h"
-#include "linbox/util/commentator().h"
+#include "linbox/util/commentator.h"
 
 #include "test-common.h"
 
@@ -867,13 +867,10 @@ int main(int argc, char** argv){
 
 	//For warmup of OpenCLMatrixDomainFactory
 	OpenCLMatrixDomain<Modular<double> > OMD(F);
-	
-	std::cout << "Number of OpenCL Devices: " 
-	          <<  OpenCLMatrixDomainFactory::oclGetNumberOfDevices() << std::endl;
 	commentator().report() << "Number of OpenCL Devices: " 
 	                       << OpenCLMatrixDomainFactory::oclGetNumberOfDevices() 
 	                       << std::endl;
-	
+
 	//testThreadSafe(iterations * 5);
 
 	pass &= launch_tests(F, (int)n, iterations);
