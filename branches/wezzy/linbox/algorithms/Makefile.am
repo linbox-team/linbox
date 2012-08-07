@@ -21,7 +21,7 @@
 
 pkgincludesubdir=$(pkgincludedir)/algorithms
 
-SUBDIRS=gauss matrix-blas3
+SUBDIRS=gauss matrix-blas3 opencl-kernels
 
 noinst_LTLIBRARIES=libalgorithms.la
 
@@ -29,7 +29,20 @@ libalgorithms_la_SOURCES= diophantine-solver.C
 
 #  AM_CPPFLAGS= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 
-AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(CBLAS_FLAG) $(FFLAS_FFPACK_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(FPLLL_CFLAGS)
+AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(CBLAS_FLAG) $(FFLAS_FFPACK_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(FPLLL_CFLAGS) $(OCL_CFLAGS)
+
+OCL_HDRS =                                  \
+    opencl-domain.h                         \
+    opencl-domain.inl                       \
+    opencl-domain-util.inl                  \
+    opencl-domain-memory.inl                \
+    opencl-domain-factory.h                 \
+    opencl-resource-controller.h            \
+    opencl-environ.h
+
+if LINBOX_HAVE_OCL
+USE_OCL_HDRS = $(OCL_HEADERS)
+endif
 
 pkgincludesub_HEADERS =                     \
     blackbox-container.h                    \
@@ -126,11 +139,7 @@ pkgincludesub_HEADERS =                     \
     bm-seq.h                                \
     short-vector.h                          \
     rns.h rns.inl                           \
-    opencl-domain.h                         \
-    opencl-domain.inl                       \
-    opencl-domain-util.inl                  \
-    opencl-domain-memory.inl                \
-    opencl-domain-factory.h
+    $(USE_OCL_HDRS)
 
 EXTRA_DIST =                    \
     algorithms.doxy    \

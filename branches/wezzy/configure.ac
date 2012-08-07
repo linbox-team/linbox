@@ -140,7 +140,7 @@ AC_CHECK_SIZEOF(__int64, 64)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([float.h limits.h stddef.h stdlib.h string.h sys/time.h stdint.h])
+AC_CHECK_HEADERS([float.h limits.h stddef.h stdlib.h string.h sys/time.h stdint.h pthread.h])
 
 
 # check endianness of the architecture
@@ -330,6 +330,7 @@ linbox/Makefile
 linbox/algorithms/Makefile
 linbox/algorithms/gauss/Makefile
 linbox/algorithms/matrix-blas3/Makefile
+linbox/algorithms/opencl-kernels/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile

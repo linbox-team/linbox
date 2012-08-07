@@ -32,6 +32,8 @@
 #include <cstdlib>
 #include <pthread.h>
 #include "linbox/algorithms/opencl-domain.h"
+#include "linbox/algorithms/opencl-environ.h"
+#include "linbox/algorithms/opencl-resource-controller.h"
 #include "linbox/algorithms/opencl-kernels/opencl-domain-kernels.inl"
 
 #include "CL/cl.h"

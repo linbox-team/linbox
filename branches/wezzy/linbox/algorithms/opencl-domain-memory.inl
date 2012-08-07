@@ -84,7 +84,8 @@ namespace LinBox{
 					elementsPadded++;
 				}
 
-				//Padds 0's until end of padded row while there is still space in the buffer
+				//Padds 0's until end of padded row while there is still space in the 
+				//buffer
 				while(count < newDimX && paddingBufferPosition < paddingBufferSize){
 
 					//Place a zero into the paddingBuffer
@@ -189,7 +190,8 @@ namespace LinBox{
 			while(depaddingBufferPosition < depaddingBufferSize){
 				int count = 0;
 
-				//Puts one row of data into the matrix while there are elements in the depaddingBuffer
+				//Puts one row of data into the matrix while there are elements in the 
+				//depaddingBuffer
 				while(count < (int)matrix.coldim() &&
 				      depaddingBufferPosition < depaddingBufferSize &&
 				      dataOffset < outputSize){

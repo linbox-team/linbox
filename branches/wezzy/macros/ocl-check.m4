@@ -43,30 +43,26 @@ AC_DEFUN([LB_CHECK_OCL],[
 
 	BACKUP_CXXFLAGS=${CXX_FLAGS}
 	BACKUP_LIBS=${LIBS}
-	
+
 	AC_MSG_CHECKING(for OpenCL >= 1.0)
 
-for OCL_HOME in ${OCL_HOME_PATH} 
+for OCL_HOME in ${OCL_HOME_PATH}
 do
 	if test -r "$OCL_HOME/include/CL/cl.h"; then
 		if test "x$OCL_HOME" != "x/usr" -a "x$OCL_HOME" != "x/usr/local"; then
 			OCL_CFLAGS="-I${OCL_HOME}/include"
 			if test "x$OCL_HOME" != "x/opt/AMDAPP"; then
-				OCL_LIBS="-L${OCL_HOME}/lib -lOpenCL"
+				OCL_LIBS="-L${OCL_HOME}/lib -lOpenCL -lpthread"
 			else
-				OCL_LIBS="-L${OCL_HOME}/lib/x86_64 -L${OCL_HOME}/lib/x86 -lOpenCL"
+				OCL_LIBS="-L${OCL_HOME}/lib/x86_64 -L${OCL_HOME}/lib/x86 -lOpenCL -lpthread"
 			fi
 		else
 			OCL_CFLAGS=
-			OCL_LIBS="-lOpenCL"
+			OCL_LIBS="-lOpenCL -lpthread"
 		fi
 
 		CXXFLAGS="${CXXFLAGS} ${OCL_CFLAGS}"
 		LIBS="${LIBS} ${OCL_LIBS}"
-
-		AC_SUBST(OCL_CFLAGS)
-		AC_SUBST(OCL_LIBS)
-		AC_DEFINE(HAVE_OCL,1,[Define if OpenCL is installed])
 
 		ocl_found="yes"
 		break
@@ -76,8 +72,19 @@ do
 	fi
 done
 
-	AC_MSG_RESULT(found)
+if test "x$ocl_found" = "xyes"; then
+	AC_SUBST(OCL_CFLAGS)
+	AC_SUBST(OCL_LIBS)
+	AC_DEFINE(HAVE_OCL,1,[Define if OpenCL is installed])
+	HAVE_OCL=yes
 
-	CXXFLAGS=${BACKUP_CXXFLAGS}
-	LIBS=${BACKUP_LIBS}
+	AC_MSG_RESULT(found)
+else
+	AC_MSG_RESULT(not found)
+fi
+
+AM_CONDITIONAL(LINBOX_HAVE_OCL, test "x$HAVE_OCL" = "xyes")
+
+CXXFLAGS=${BACKUP_CXXFLAGS}
+LIBS=${BACKUP_LIBS}
 ])
