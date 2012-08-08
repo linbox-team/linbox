@@ -41,7 +41,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #ifdef __LINBOX_HAVE_OCL
-  #include "linbox/algorithms/ocl-domain.h"
+  #include "linbox/algorithms/opencl-domain.h"
 #else
   #include "linbox/algorithms/blas-domain.h"
 #endif
