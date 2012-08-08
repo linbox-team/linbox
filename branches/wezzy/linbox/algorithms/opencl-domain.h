@@ -37,6 +37,7 @@
 #include <vector>
 #include <iostream>
 #include <pthread.h>
+
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
@@ -223,19 +224,18 @@ namespace LinBox{
 	 * defined below.  Otherwise, by default the single processor
  	 * BlasMatrixDomain funcions are invoked.
 	 */
-	template <class Field>
+	template <class Field_>
 	class OpenCLMatrixDomain {
 
 	public:
+		typedef Field_                          Field;
 		typedef typename Field::Element         Element;
+		typedef BlasMatrix<Field>               Matrix;
 		friend class OpenCLMatrixDomainFactory;
 
 	protected:
 
-		const Field  & _F;
-		Element _One;
-		Element _Zero;
-		Element _MOne;
+		const Field& _F;
 
 #ifdef __LINBOX_HAVE_OCL
 		//OpenCL specific variables
@@ -398,9 +398,9 @@ namespace LinBox{
 		//! Constructor of OpenCLDomain.
 		OpenCLMatrixDomain(const Field& F ) : _F(F), setupCorrect(false){
 
-			F.init(_One,1UL);
-			F.init(_Zero,0UL);
-			F.init(_MOne,-1);
+			F.init(F.one,1UL);
+			F.init(F.zero,0UL);
+			F.init(F.mOne,-1);
 
 #ifndef NDEBUG
 			if(!Givaro::probab_prime(F.characteristic())){
@@ -420,9 +420,6 @@ namespace LinBox{
 		//! Copy constructor
 		OpenCLMatrixDomain(const OpenCLMatrixDomain<Field> & OMD) :
 			_F(OMD._F),
-			_One(OMD._One),
-			_Zero(OMD._Zero),
-			_MOne(OMD._MOne),
 			setupCorrect(false){
 
 #ifndef NDEBUG
@@ -507,7 +504,7 @@ namespace LinBox{
 			const Operand2& A,
 			const Operand3& B) const{
 
-			return muladdin(_Zero,C,alpha,A,B);
+			return muladdin(F.zero,C,alpha,A,B);
 		}
 
 		//! In place multiplication.
@@ -533,14 +530,14 @@ namespace LinBox{
 			const Operand3& B,
 			const Operand1& C) const{
 
-			return muladd(D,_One,C,_One,A,B);
+			return muladd(D,F.one,C,F.one,A,B);
 		}
 
 		//! axpyin.
 		//! C += A*B
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& axpyin(Operand1& C, const Operand2& A, const Operand3& B) const{
-			return muladdin(_One,C,_One,A,B);
+			return muladdin(F.one,C,F.one,A,B);
 		}
 
 		//! maxpy.
@@ -552,14 +549,14 @@ namespace LinBox{
 			const Operand3& B,
 			const Operand1& C) const{
 
-			return muladd(D,_One,C,_MOne,A,B);
+			return muladd(D,F.one,C,F.mOne,A,B);
 		}
 
 		//! maxpyin.
 		//! C -= A*B
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& maxpyin(Operand1& C, const Operand2& A, const Operand3& B) const{
-			return muladdin(_One,C,_MOne,A,B);
+			return muladdin(F.one,C,F.mOne,A,B);
 		}
 
 		//! axmy.
@@ -571,14 +568,14 @@ namespace LinBox{
 			const Operand3& B,
 			const Operand1& C) const{
 
-			return muladd(D,_MOne,C,_One,A,B);
+			return muladd(D,F.mOne,C,F.one,A,B);
 		}
 
 		//! axmyin.
 		//! C = A*B - C
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& axmyin(Operand1& C, const Operand2& A, const Operand3& B) const{
-			return muladdin(_MOne,C,_One,A,B);
+			return muladdin(F.mOne,C,F.one,A,B);
 		}
 
 		//!  general matrix-matrix multiplication and addition with scaling.
@@ -789,7 +786,7 @@ namespace LinBox{
 			res.resize(P1.size() + P2.size() - 1);
 
 			for(int i = 0; i < res.size(); i++){
-				_F.assign(res[i],_Zero);
+				_F.assign(res[i],F.zero);
 			}
 
 			for(int i = 0; i < P1.size(); i++){
@@ -824,10 +821,10 @@ namespace LinBox{
 			for(size_t i = 0 ; i < I.rowdim() ; ++i){
 				for(size_t j = 0 ; j < I.coldim() ; ++j){
 					if(i == j){
-						I.setEntry(i,j,_One);
+						I.setEntry(i,j,F.one);
 					}
 					else{
-						I.setEntry(i,j,_Zero);
+						I.setEntry(i,j,F.zero);
 					}
 				}
 			}
@@ -838,7 +835,7 @@ namespace LinBox{
 			// use Iterator
 			for(size_t i = 0 ; i < I.rowdim() ; ++i){
 				for(size_t j = 0 ; j < I.coldim() ; ++j){
-					I.setEntry(i,j,_Zero);
+					I.setEntry(i,j,F.zero);
 				}
 			}
 		}
@@ -950,6 +947,7 @@ namespace LinBox{
 } /* end of namespace LinBox */
 
 #ifdef __LINBOX_HAVE_OCL
+	#include "linbox/algorithms/opencl-domain-factory.h"
 	#include "linbox/algorithms/opencl-domain-util.inl"
 	#include "linbox/algorithms/opencl-domain-memory.inl"
 	#include "linbox/algorithms/opencl-domain.inl"

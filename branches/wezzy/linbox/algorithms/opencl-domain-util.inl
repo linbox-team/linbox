@@ -27,7 +27,9 @@
 #define __LINBOX_opencl_matrix_domain_util_INL
 
 #include <cstdio>
+
 #include <utility>
+
 #include "linbox/algorithms/opencl-domain-factory.h"
 
 namespace LinBox{
