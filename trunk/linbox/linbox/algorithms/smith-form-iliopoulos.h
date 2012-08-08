@@ -412,10 +412,6 @@ namespace LinBox
 
 			sub_mat_t sub(A,
 				      (unsigned int)1, (unsigned int)1,
-			    A.rowdim() - 1, A.coldim() - 1);
-
-			sub_mat_t sub(A,
-				      (unsigned int)1, (unsigned int)1,
 				      A.rowdim() - 1, A.coldim() - 1);
 
 			diagonalizationIn(sub, r);
