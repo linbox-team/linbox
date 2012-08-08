@@ -400,10 +400,6 @@ namespace LinBox{
 		//! Constructor of OpenCLDomain.
 		OpenCLMatrixDomain(const Field& F ) : _F(F), setupCorrect(false){
 
-			_F.init(_F.one,1UL);
-			_F.init(_F.zero,0UL);
-			_F.init(_F.mOne,-1);
-
 #ifndef NDEBUG
 			if(!Givaro::probab_prime(_F.characteristic())){
 				std::cout << " *** WARNING *** " << std::endl;
