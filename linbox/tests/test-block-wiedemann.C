@@ -40,7 +40,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#ifdef LINBOX_HAS_OPENCL
+#ifdef __LINBOX_HAVE_OCL
   #include "linbox/algorithms/ocl-domain.h"
 #else
   #include "linbox/algorithms/blas-domain.h"
@@ -138,7 +138,7 @@ int main (int argc, char **argv)
 #if 1
 	// Giorgi's block method, SigmaBasis based, being used
 
-#ifdef LINBOX_HAS_OPENCL
+#ifdef __LINBOX_HAVE_OCL
 // using this as a test of the opencl matrix domain
 	typedef OpenCLMatrixDomain<Field> Context;
 // but note, shouldn't need the ifdef.  OpenCLMatrixDomain defaults to BlasMatrixDomain calls.
