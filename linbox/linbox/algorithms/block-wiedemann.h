@@ -45,31 +45,30 @@ using namespace std;
 namespace LinBox
 {
 
-	template <class _Field>
+	template <class Context_>
 	class BlockWiedemannSolver{
 
 	public:
-		typedef _Field                          Field;
+		typedef typename Context_::Field                 Field;
 		typedef typename Field::Element       Element;
 		typedef typename Field::RandIter     RandIter;
 		typedef std::vector<Element>           Vector;
 		typedef BlasMatrix<Field>               Block;
 
 	protected:
-		const Field              *_field;
-		BlasMatrixDomain<Field>     _BMD;
+		Context_     _BMD;
 		VectorDomain<Field>         _VDF;
 		RandIter                   _rand;
 
 	public:
-		const Field & field() const { return *_field; }
+		const Field & field() const { return _BMD.field(); }
 
-		BlockWiedemannSolver (const Field &F) :
-			_field(&F), _BMD(F), _VDF(F), _rand(F)
+		BlockWiedemannSolver (const Context_ &C) :
+			_BMD(C.field()), _VDF(C.field()), _rand(C.field())
 		{}
 
 		BlockWiedemannSolver (const Field &F, const RandIter &rand) :
-			_field(&F), _BMD(F), _VDF(F), _rand(rand)
+			_BMD(F), _VDF(F), _rand(rand)
 		{}
 
 		template <class Blackbox>

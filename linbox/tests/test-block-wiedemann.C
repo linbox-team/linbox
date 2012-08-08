@@ -40,7 +40,11 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-//#include "linbox/algorithms/right-block-wiedemann.h"
+#ifdef LINBOX_HAS_OPENCL
+  #include "linbox/algorithms/ocl-domain.h"
+#else
+  #include "linbox/algorithms/blas-domain.h"
+#endif
 #include "linbox/algorithms/block-wiedemann.h"
 #include "linbox/algorithms/coppersmith.h"
 #include "linbox/blackbox/sparse.h"
@@ -116,7 +120,7 @@ int main (int argc, char **argv)
 	//Blackbox D (F, n, F.one);
 	//report << "Scalar matrix: D = " << F.one << endl;
 
-#if 1
+#if 0
 	// Yuhasz' Matrix Berlekamp Massey being used
 	CoppersmithSolver<Field> RCS(F);
 	RCS.solveNonSingular(x, D, b);
@@ -131,10 +135,19 @@ int main (int argc, char **argv)
 	}
 #endif
 
-#if 0
+#if 1
 	// Giorgi's block method, SigmaBasis based, being used
+
+#ifdef LINBOX_HAS_OPENCL
+// using this as a test of the opencl matrix domain
+	typedef OpenCLMatrixDomain<Field> Context;
+// but note, shouldn't need the ifdef.  OpenCLMatrixDomain defaults to BlasMatrixDomain calls.
+#else
+	typedef BlasMatrixDomain<Field> Context;
+#endif
+	Context MD(F);
 	Vector z(n);
-	BlockWiedemannSolver<Field> LBWS(F);
+	BlockWiedemannSolver<Context> LBWS(MD);
 	report << "calling solver" << endl;
 	LBWS.solveNonSingular(z, D, b);
 
