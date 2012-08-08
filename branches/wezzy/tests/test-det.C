@@ -613,9 +613,9 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 10;
+	static size_t n = 4;
 	static integer q = 4093U;
-	static int iterations = 2;
+	static int iterations = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
@@ -637,8 +637,10 @@ int main (int argc, char **argv)
 	if (!testDiagonalDet2        (F, n, iterations)) pass = false;
 	if (!testSingularDiagonalDet (F, n, iterations)) pass = false;
 	if (!testIntegerDet          (n, iterations)) pass = false;
+/*
 	if (!testIntegerDetGen          (n, iterations)) pass = false;
 	if (!testRationalDetGen          (n, iterations)) pass = false;
+*/
 
 	commentator().stop("determinant test suite");
 	return pass ? 0 : -1;

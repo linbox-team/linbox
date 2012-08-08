@@ -36,17 +36,17 @@ namespace LinBox
 	// Dot product structure enabling std::transform call
 	template<class Blackbox, class InVector>
 	struct dotp {
-		const typename Blackbox::Field& _field;
+		const typename Blackbox::Field* _field;
 		const InVector& _x;
 		dotp(const typename Blackbox::Field& F, const InVector& x) :
-			_field(F), _x(x)
+			_field(&F), _x(x)
 		{}
 
 		bool operator()(const typename Blackbox::Row_t& row) const
 		{
 			bool tmp(false);
 			for(typename Blackbox::Row_t::const_iterator loc = row.begin(); loc != row.end(); ++loc) {
-				_field.addin(tmp,_x[*loc]);
+				_field->addin(tmp,_x[*loc]);
 			}
 			return tmp;
 		}
@@ -56,7 +56,7 @@ namespace LinBox
 	template<class OutVector, class InVector>
 	inline OutVector & ZeroOne<GF2>::apply(OutVector & y, const InVector & x) const
 	{
-		dotp<Self_t,InVector> mydp(this->_field, x);
+		dotp<Self_t,InVector> mydp(this->field(), x);
 		std::transform(this->begin(), this->end(), y.begin(), mydp );
 		return y;
 	}
@@ -70,7 +70,7 @@ namespace LinBox
 		for( ; row != this->end(); ++yit, ++row) {
 			bool tmp(false);
 			for(Row_t::const_iterator loc = row->begin();loc != row->end(); ++loc)
-				_field.addin(tmp,x[*loc]);
+				field().addin(tmp,x[*loc]);
 			*yit = tmp;
 		}
 		return y;
@@ -85,7 +85,7 @@ namespace LinBox
 		Self_t::const_iterator row = this->begin();
 		for( ; row != this->end(); ++row, ++xit) {
 			for(typename Self_t::Row_t::const_iterator loc = row->begin(); loc != row->end(); ++loc) {
-				_field.addin(y[*loc],*xit);
+				field().addin(y[*loc],*xit);
 			}
 		}
 		return y;
@@ -95,7 +95,7 @@ namespace LinBox
 	inline void ZeroOne<GF2>::setEntry(size_t i, size_t j, const Element& v) {
 		Row_t& rowi = this->operator[](i);
 		Row_t::iterator there = std::lower_bound(rowi.begin(), rowi.end(), j);
-		if (! _field.isZero(v) ) {
+		if (! field().isZero(v) ) {
 			if ( (there == rowi.end() ) || (*there != j) ) {
 				rowi.insert(there, j);
 				++_nnz;
@@ -116,7 +116,7 @@ namespace LinBox
 		if (there != rowi.end() )
 			return r=*there;
 		else
-			return r=_field.zero;
+			return r=field().zero;
 	}
 
 	inline const ZeroOne<GF2>::Element& ZeroOne<GF2>::getEntry(size_t i, size_t j) const
@@ -126,7 +126,7 @@ namespace LinBox
 		if (there != rowi.end() )
 			return reinterpret_cast<const ZeroOne<GF2>::Element&>(*there);
 		else
-			return _field.zero;
+			return field().zero;
 	}
 
 	inline std::istream &ZeroOne<GF2>::read (std::istream &is) {
@@ -255,22 +255,22 @@ namespace LinBox
 	 */
 	inline ZeroOne<GF2>::Iterator ZeroOne<GF2>::Begin()
 	{
-		return Iterator( 0, _field.one );
+		return Iterator( 0, field().one );
 	}
 
 	inline ZeroOne<GF2>::Iterator ZeroOne<GF2>::End()
 	{
-		return Iterator( _nnz, _field.one );
+		return Iterator( _nnz, field().one );
 	}
 
 	inline const ZeroOne<GF2>::Iterator ZeroOne<GF2>::Begin() const
 	{
-		return Iterator(0, _field.one );
+		return Iterator(0, field().one );
 	}
 
 	inline const ZeroOne<GF2>::Iterator ZeroOne<GF2>::End() const
 	{
-		return Iterator(_nnz, _field.one );
+		return Iterator(_nnz, field().one );
 	}
 
 	/*! IndexIterator.

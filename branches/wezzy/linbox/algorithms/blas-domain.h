@@ -310,11 +310,13 @@ namespace LinBox
 	 *  Done through specialization of all
 	 *  classes defined above.
 	 */
-	template <class Field>
+	template <class Field_>
 	class BlasMatrixDomain {
 
 	public:
+		typedef Field_ Field;
 		typedef typename Field::Element         Element;
+		typedef BlasSubmatrix<Field> Matrix;
 
 	protected:
 
@@ -357,11 +359,7 @@ namespace LinBox
 
 
 		//! Field accessor
-		const Field& field() const
-		{
-			return *_field;
-		}
-
+		const Field& field() const { return *_field; }
 
 		/*
 		 * Basics operation available matrix respecting BlasMatrix interface

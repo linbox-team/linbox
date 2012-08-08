@@ -58,7 +58,6 @@ int main(int argc, char* argv[])
 	static size_t n = 1000;
 	static long q = 2147483647;
 
-
 	static int iterations = 1;
 
 	static Argument args[] = {
@@ -131,18 +130,21 @@ int main(int argc, char* argv[])
 
 
 	TT.apply(odata, idata);
-	report << "\n\nTesting  apply :--------------------- \nResult is[";
+	report << "\n\nTesting apply :--------------------- \nResult is[";
 	for (unsigned int i = 0; i < odata.size(); i++)
 		report << odata[i] << " ";
 	report << "]\n";
 
+/*
 	report << "Setting the matrix to UniModular Lower Triangular";
 	TT.setToUniModLT();
 	TT.print(report);
 	report << "\nSetting the matrix to UniModular Upper Triangular";
 	TT.setToUniModUT();
 	TT.print(report);
+*/
 
+	report << "\n\nCalling testBlackbox:--------------------- \n";
 	pass = testBlackbox(TT);
 
 	LinBox::commentator().stop("Hankel black box test test suite");

@@ -213,8 +213,8 @@ namespace LinBox
 		typedef Modular<double> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F) , //_invmod(1./_field.modulus),
-			_y(0.) , _bound( (double) ((1ULL << 53) - (unsigned long int) (_field.modulus*_field.modulus)))
+			_field (&F) , //_invmod(1./field().modulus),
+			_y(0.) , _bound( (double) ((1ULL << 53) - (unsigned long int) (field().modulus*field().modulus)))
 		{}
 
 		FieldAXPY (const FieldAXPY &faxpy) :
@@ -244,7 +244,7 @@ namespace LinBox
 		{
 			_y += tmp;
 			if (_y > _bound)
-				return _y = fmod (_y, _field.modulus);
+				return _y = fmod (_y, field().modulus);
 			else
 				return _y;
 		}
@@ -253,14 +253,14 @@ namespace LinBox
 		{
 			_y -= tmp;
 			if (_y < 0)
-				return _y += _field.modulus;
+				return _y += field().modulus;
 			else
 				return _y;
 		}
 
 		 Element& get (Element &y)
 		{
-			_y = fmod (_y, _field.modulus);
+			_y = fmod (_y, field().modulus);
 			return y=_y ;
 		}
 
@@ -279,34 +279,39 @@ namespace LinBox
 		{
 			_y = tmp;
 			if (_y > _bound)
-				return _y = fmod (_y, _field.modulus);
+				return _y = fmod (_y, field().modulus);
 			else
 				return _y;
 		}
 
-	private:
+		inline const Field & field() const { return *_field; }
 
-		Field _field;
+	protected:
+
+		const Field *_field;
 		//double _invmod;
 		double _y;
 		double _bound;
 	};
 
 	template <>
-	class DotProductDomain<Modular<double> > : private virtual VectorDomainBase<Modular<double> > {
+	class DotProductDomain<Modular<double> > : public virtual VectorDomainBase<Modular<double> > {
 	private:
 		double _bound;
 		size_t _nmax;
 		//double _invmod;
 
 	public:
+		DotProductDomain () { /*std::cerr << "DPD-Md def cstor" << std::endl;*/ }
 		typedef double Element;
 		DotProductDomain (const Modular<double> &F) :
-			VectorDomainBase<Modular<double> > (F), _bound( (double) ( (1ULL<<53) - (unsigned long int) (F.modulus*F.modulus)))//, _invmod(1./_field.modulus)
+			VectorDomainBase<Modular<double> > (F), _bound( (double) ( (1ULL<<53) - (unsigned long int) (F.modulus*F.modulus))), _nmax(0)//, _invmod(1./field().modulus)
 		{
 			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (F.modulus * F.modulus));
 			_nmax = (_nmax>0?_nmax:1);
 		}
+
+		using VectorDomainBase<Modular<double> >::field;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -318,49 +323,48 @@ namespace LinBox
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				y = fmod(y, _field.modulus);
+				y = fmod(y, field().modulus);
 			}
 			else{
 				size_t i=0;
 				for (;i< v1.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
-					t+=fmod(y, _field.modulus);
+					t+=fmod(y, field().modulus);
 					y=0.;
 				}
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
-				t+=fmod(y, _field.modulus);
-				y = fmod(t, _field.modulus);
+				t+=fmod(y, field().modulus);
+				y = fmod(t, field().modulus);
 			}
 			return res = y;
 		}
+
 
 		template <class Vector1, class Vector2>
 		 Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const
 		{
 
 			double y = 0.;
-			double t =0.;
-
+			double t = 0.;
 
 			if (v1.first.size() < _nmax) {
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				y = fmod(y, _field.modulus);
-			}
-			else {
+				y = fmod(y, field().modulus);
+			} else {
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=fmod(y, this->_field.modulus);
+					t+=fmod(y, field().modulus);
 					y=0.;
 				}
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
-				t+= fmod(y, _field.modulus);
-				y = fmod(t, _field.modulus);
+				t+= fmod(y, field().modulus);
+				y = fmod(t, field().modulus);
 			}
 			return res = y;
 		}

@@ -55,7 +55,7 @@ namespace LinBox
 		else {
 
 			uint64_t size      = v1.size();
-			uint64_t min       = Max / (Corr+ (uint64_t)(_field.characteristic()-1)*(uint64_t)(_field.characteristic()-1));
+			uint64_t min       = Max / (Corr+ (uint64_t)(field().characteristic()-1)*(uint64_t)(field().characteristic()-1));
 			uint64_t min_size  =  (size < min ? size : min);
 			uint64_t good1     = (size > min_size ?  size - min_size: 0);
 			uint64_t good2     = (long)(size / min_size)* min_size ;
@@ -80,7 +80,7 @@ namespace LinBox
 			if (inter > best) best+=Corr;
 
 
-			return res =  Elem(best % (uint64_t)_field.characteristic());
+			return res =  Elem(best % (uint64_t)field().characteristic());
 		}
 	}
 
@@ -94,7 +94,7 @@ namespace LinBox
 			return res=GivaroZpz< Givaro::Std32>::Element(0);
 		else {
 			uint64_t size      = (v1.first).size();
-			uint64_t min       = Max / (Corr+ (uint64_t)(_field.characteristic()-1)*(uint64_t)(_field.characteristic()-1));
+			uint64_t min       = Max / (Corr+ (uint64_t)(field().characteristic()-1)*(uint64_t)(field().characteristic()-1));
 			uint64_t min_size  =  (size < min ? size : min);
 			uint64_t good1     = (size > min_size ?  size - min_size: 0);
 			uint64_t good2     = (long)(size / min_size)* min_size ;
@@ -118,7 +118,7 @@ namespace LinBox
 				best+= (uint64_t)*i_elt * (uint64_t)v2[*i_idx];
 			if (inter > best) best+=Corr;
 
-			return res =  best % _field.characteristic();
+			return res =  best % field().characteristic();
 		}
 	}
 
@@ -134,7 +134,7 @@ namespace LinBox
 			return  res=GivaroZpz< Givaro::Std16>::Element(0);
 		else {
 			uint32_t size      = v1.size();
-			uint32_t min       = Max / (Corr+ ((uint32_t)_field.characteristic()-1)*(uint32_t)(_field.characteristic()-1));
+			uint32_t min       = Max / (Corr+ ((uint32_t)field().characteristic()-1)*(uint32_t)(field().characteristic()-1));
 			uint32_t min_size  =  (size < min ? size : min);
 			uint32_t good1     = (size > min_size ?  size - min_size: 0);
 			uint32_t good2     = (long)(size / min_size)* min_size ;
@@ -159,7 +159,7 @@ namespace LinBox
 				best+= (uint32_t)*i * (uint32_t)*j;
 			if (inter > best) best+=Corr;
 
-			return res = best % (uint32_t)_field.characteristic();
+			return res = best % (uint32_t)field().characteristic();
 		}
 	}
 
@@ -173,7 +173,7 @@ namespace LinBox
 			return  res=GivaroZpz< Givaro::Std16>::Element(0);
 		else {
 			uint32_t size      = (v1.first).size();
-			uint32_t min       = Max / (Corr+ (uint32_t)(_field.characteristic()-1)*(uint32_t)(_field.characteristic()-1));
+			uint32_t min       = Max / (Corr+ (uint32_t)(field().characteristic()-1)*(uint32_t)(field().characteristic()-1));
 			uint32_t min_size  =  (size < min ? size : min);
 			uint32_t good1     = (size > min_size ?  size - min_size: 0);
 			uint32_t good2     = (long)(size / min_size)* min_size ;
@@ -196,7 +196,7 @@ namespace LinBox
 				best+= (uint32_t)*i_elt * (uint32_t)v2[*i_idx];
 			if (inter > best) best+=Corr;
 
-			return res =  best % (uint32_t)_field.characteristic();
+			return res =  best % (uint32_t)field().characteristic();
 		}
 	}
 

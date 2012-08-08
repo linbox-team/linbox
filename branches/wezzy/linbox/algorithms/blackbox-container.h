@@ -43,7 +43,7 @@ namespace LinBox
 	public:
 		typedef _Blackbox Blackbox;
 
-		BlackboxContainer () {}
+		BlackboxContainer () { /*std::cerr << "BC def cstor" << std::endl;*/ }
 
 		template<class Vector>
 

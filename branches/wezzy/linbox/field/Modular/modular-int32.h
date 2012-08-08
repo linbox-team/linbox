@@ -181,7 +181,7 @@ namespace LinBox
 		typedef Modular<int32_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F),_y(0)
+			_field (&F),_y(0)
 		{ }
 
 
@@ -201,7 +201,7 @@ namespace LinBox
 			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
 			if (_y < t) {
-				 _y += (uint64_t)_field._two64;
+				 _y += (uint64_t)field()._two64;
 				 return _y ;
 			}
 			else
@@ -212,14 +212,14 @@ namespace LinBox
 		{
 			_y += (uint64_t) t;
 			if (_y < (uint64_t)t)
-				return _y += (uint64_t) _field._two64;
+				return _y += (uint64_t) field()._two64;
 			else
 				return _y;
 		}
 
 		 Element& get (Element &y)
 		{
-			y = Element (_y % (uint64_t) _field.modulus);
+			y = Element (_y % (uint64_t) field().modulus);
 			return y;
 		}
 
@@ -234,21 +234,25 @@ namespace LinBox
 			_y = 0;
 		}
 
+		inline const Field & field() { return *_field; }
+
 	protected:
-		Field _field;
+		const Field * _field;
 		uint64_t _y;
 	};
 
 
 	template <>
-	class DotProductDomain<Modular<int32_t> > : private virtual VectorDomainBase<Modular<int32_t> > {
+	class DotProductDomain<Modular<int32_t> > : public virtual VectorDomainBase<Modular<int32_t> > {
 
 	public:
 		typedef int32_t Element;
+		DotProductDomain(){}
 		DotProductDomain (const Modular<int32_t> &F) :
 			VectorDomainBase<Modular<int32_t> > (F)
 		{}
 
+		using VectorDomainBase<Modular<int32_t> >::field;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -267,10 +271,10 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += (uint64_t) _field._two64;
+					y += (uint64_t) field()._two64;
 			}
 
-			y %= (uint64_t) _field.modulus;
+			y %= (uint64_t) field().modulus;
 			return res = Element(y);
 
 		}
@@ -290,11 +294,11 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += (uint64_t) _field._two64;
+					y += (uint64_t) field()._two64;
 			}
 
 
-			y %= (uint64_t) _field.modulus;
+			y %= (uint64_t) field().modulus;
 
 			return res = (Element) y;
 		}

@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
 
 	LinBox::Toeplitz<Field> TT(F,tdata);
 	report << "The matrix is: " << std::endl;
-	TT.print(report);
+	TT.write(report);
 
 	// Create an interesting input vector called idata
 	Vector idata((TSIZE+2)/2), odata((TSIZE+2)/2);
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
 	//  report << "Setting the matrix to UniModular Upper Triangular";
 	//  TT.setToUniModUT();
 	//  report << "The Upper Triangular matrix is: " << std::endl;
-	//TT.print();
+	//TT.write();
 
 	pass = testBlackbox(TT);
 	LinBox::commentator().stop("Toeplitz black box test suite");

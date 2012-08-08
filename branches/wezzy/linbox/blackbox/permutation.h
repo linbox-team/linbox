@@ -26,6 +26,7 @@
 #define __LINBOX_bb_permutation_H
 
 #include <utility>
+#include <algorithm>
 #ifndef __LINBOX_PERMUTATION_STORAGE
 // #include "linbox/vector/light_container.h"
 // #define __LINBOX_PERMUTATION_STORAGE LightContainer< long >
@@ -49,7 +50,7 @@ namespace LinBox
 	 */
 	template<class _Field, class _Storage = __LINBOX_PERMUTATION_STORAGE >
 	class Permutation : public  BlackboxInterface {
-		const _Field& _field;
+		const _Field* _field;
 	public:
 		typedef Permutation<_Field, _Storage>	Self_t;
 		typedef _Storage 			Storage;
@@ -71,13 +72,13 @@ namespace LinBox
 		 * @param F
 		 */
 		Permutation (int n, const Field& F = Field()) :
-			_field(F)
+			_field(&F)
 		{
 			identity(n);
 		}
 
-		Permutation (const Field& F = Field(), size_t n=0) :
-			_field(F)
+		Permutation (const Field& F = Field(), size_t n=0, size_t m = 0) :
+			_field(&F)
 		{
 			identity(n);
 		}
@@ -96,7 +97,7 @@ namespace LinBox
 			// Knuth construction
 			for (size_t i = 0; i < n-1; ++i) {
 				size_t j = i + r.randomInt()%(n-i);
-				swap(_indices[i], _indices[j]);
+				std::swap(_indices[i], _indices[j]);
 			}
 		}
 
@@ -108,7 +109,6 @@ namespace LinBox
 		Permutation (const Permutation &Mat) :
 			_field(Mat._field),_indices (Mat._indices)
 		{}
-
 
 		// Destructor
 		~Permutation (void) {}
@@ -133,7 +133,7 @@ namespace LinBox
 			linbox_check (y.size () == _indices.size ());
 
 			for (i = 0; i < x.size(); ++i)
-				_field.assign(y[i], x[_indices[i]]);
+				field().assign(y[i], x[_indices[i]]);
 
 			return y;
 		}
@@ -159,7 +159,7 @@ namespace LinBox
 			linbox_check (y.size () == _indices.size ());
 
 			for (i = 0; i < _indices.size (); ++i)
-				_field.assign(y[_indices[i]], x[i]);
+				field().assign(y[_indices[i]], x[i]);
 
 			return y;
 		}
@@ -208,13 +208,13 @@ namespace LinBox
 
 		}
 
-		const Field& field() { return _field; }
+		const Field& field() const { return *_field; } 
 
 		std::ostream &write(std::ostream &os) const //, FileFormatTag format = FORMAT_MAPLE) const
 		{
 			// 		for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it)
 			//                     std::cerr << *it << ' ';
-			typename Field::Element one, zero; _field.init(one,1UL);_field.init(zero,0UL);
+			typename Field::Element one, zero; field().init(one,1UL);field().init(zero,0UL);
 			os << "[";
 			bool firstrow=true;
 			long nmu = _indices.size()-1;
@@ -228,13 +228,13 @@ namespace LinBox
 
 				long i=0;
 				for( ; i< *it ; ++i) {
-					_field.write(os, zero);
+					field().write(os, zero);
 					if (i < nmu) os << ',';
 				}
-				_field.write(os, one);
+				field().write(os, one);
 				if (i < nmu) os << ',';
 				for(++i ; i< static_cast<long>(_indices.size()) ; ++i) {
-					_field.write(os, zero);
+					field().write(os, zero);
 					if (i < nmu) os << ',';
 				}
 				os << " ]";
@@ -246,6 +246,17 @@ namespace LinBox
 		Storage& setStorage(const Storage& s) { return _indices=s; }
 		const Storage& getStorage() const { return _indices; }
 
+		/// Generate next permutation in lex order.
+		void next() {
+			int n = _indices.size();
+			if (n == 1) return;
+			int i, j;
+			for (i = n-2; i >= 0 and _indices[i] >= _indices[i+1]; --i); 
+			if (i < 0) {identity(n); return; }
+			for (j = i+2; j < n and _indices[i] <= _indices[j]; ++j);
+			std::swap(_indices[i], _indices[j-1]);
+			reverse(_indices.begin() + i + 1, _indices.end());
+		}
 	private:
 		// Vector of indices
 		Storage _indices;

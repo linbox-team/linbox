@@ -83,7 +83,7 @@ namespace LinBox
 		 * by seed, and it returns any one element with probability no more
 		 * than <code>1/min (size, F.characteristic(c))</code>.
 		 * A sampling size of zero means to sample from the entire prime subfield.
-		 * A seed of zero means to use some arbitrary seed for the generator.
+		 * A seed of zero means to use some arbitrary seed for the generator which will vary from run to run.
 		 * @param F LinBox field in which to do arithmetic
 		 * @param size constant integer reference of sample size from which to
 		 *             sample (default = modulus of field)

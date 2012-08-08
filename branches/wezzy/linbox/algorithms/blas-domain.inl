@@ -248,6 +248,23 @@ namespace LinBox
 	};
 
 	template<class Field>
+	class 	BlasMatrixDomainCopy<Field,BlasSubmatrix<Field>, BlasSubmatrix<Field> > {
+	public:
+		BlasSubmatrix<Field>& operator()(const Field& F,
+								BlasSubmatrix<Field>& B,
+								const BlasSubmatrix<Field>& A) const
+		{
+			linbox_check( A.rowdim() == B.rowdim());
+			linbox_check( A.coldim() == B.coldim());
+			for (size_t i=0; i<A.rowdim(); i++)
+				FFLAS::fcopy ((typename Field::Father_t)F, A.coldim(),
+					      B.getPointer() + i*B.getStride(), 1,
+					      A.getPointer() + i*A.getStride(), 1);
+			return B;
+		}
+	};
+
+	template<class Field>
 	class 	BlasMatrixDomainSub<Field,BlasMatrix<Field>,BlasMatrix<Field>, BlasMatrix<Field> > {
 	public:
 		BlasMatrix<Field>& operator()(const Field& F,

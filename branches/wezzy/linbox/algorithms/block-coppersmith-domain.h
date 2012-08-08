@@ -65,7 +65,7 @@ namespace LinBox
 
     protected:
         Sequence                          *_container;
-        Field                                  _field;
+        const Field                           *_field;
         MatrixDomain<Field>                       _MD;
         unsigned long            EARLY_TERM_THRESHOLD;
 
@@ -76,18 +76,18 @@ namespace LinBox
 Sequence> &Mat, unsigned long ett_default =
 DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
             _container(Mat._container), _field(Mat._field),
-            _MD(Mat._field),  EARLY_TERM_THRESHOLD (ett_default)
+            _MD(Mat.field()),  EARLY_TERM_THRESHOLD (ett_default)
         {}
         BlockCoppersmithDomain (Sequence *D, unsigned long ett_default
 = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
-            _container(D), _field(D->getField ()), _MD(D->getField
-()), EARLY_TERM_THRESHOLD (ett_default)
+            _container(D), _field(&(D->field ())), _MD(D->field ()), 
+EARLY_TERM_THRESHOLD (ett_default)
         {}
 
 
         // field of the domain
-        const Field &getField    () const
-        { return _field; }
+        const Field &field    () const { return *_field; }
+        const Field &getField    () const { return *_field; } // deprecated
 
         // sequence of the domain
         Sequence *getSequence () const
@@ -121,26 +121,26 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 
 	private:
 
-		Field& _field;
+		const Field* _field;
 		Domain  _MD;
 		std::list<value_type > _seq;
 		size_type _size;
 		size_t _row, _col;
 
 	public:
-		BM_Seq(Field& F, size_t r, size_t c) : _field(F), _MD(F)
+		BM_Seq(const Field& F, size_t r, size_t c) : _field(&F), _MD(F)
 		{
 			_row = r;
 			_col = c;
 			_size = 0;
 		}
-		BM_Seq(Field& F, size_t r) : _field(F), _MD(F)
+		BM_Seq(const Field& F, size_t r) : _field(&F), _MD(F)
 		{
 			_row = r;
 			_col = r;
 			_size = 0;
 		}
-		BM_Seq(int n, value_type& M) : _field(M.field()),  _MD(_field), _seq(n, M), _size(n)
+		BM_Seq(int n, value_type& M) : _field(&(M.field())),  _MD(M.field()), _seq(n, M), _size(n)
 		{
 			_row = M.rowdim();
 			_col = M.coldim();
@@ -167,9 +167,9 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 			return *this;
 		}
 
-		Field& field()
+		const Field& field()
 		{
-			return _field;
+			return *_field;
 		}
 
 		Domain& domain()
@@ -243,7 +243,7 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 
 		private:
 			typedef typename BM_Seq::value_type matrix_type;
-			Field& _field;
+			const Field* _field;
 			BM_Seq& _seq;
 			typename BM_Seq::size_type _size;
 			typename BM_Seq::size_type _t;
@@ -294,7 +294,7 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 				{
 					return _state==DeltaExceeded;
 				}
-			};
+			}; // TerminationState
 
 		private:
 			TerminationState _state;
@@ -321,7 +321,7 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 			}
 			//Constructor
 			explicit BM_iterator(BM_Seq& s, typename BM_Seq::size_type elinit=0) :
-				_field(s.field()), _seq(s)
+				_field(&(s.field())), _seq(s)
 			{
 				_row = s.rowdim();
 				_col = s.coldim();
@@ -333,8 +333,8 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 				for(size_t i = _col; i < _row+_col; i++)
 					_deg[i] = 1;
 				typename Field::Element one;
-				_field.init(one,1);
-				matrix_type gen1(_field,_col,_row+_col);
+				field().init(one,1);
+				matrix_type gen1(field(),_col,_row+_col);
 				for(size_t i = 0; i<_col; i++)
 					gen1.setEntry(i,i,one);
 				_gen.push_back(gen1);
@@ -353,6 +353,8 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 				_delta(it._delta), _mu(it._mu), _beta(it._beta),
 				_sigma(it._sigma), _gensize(it._gensize),
 				_row(it._row), _col(it._col), _state(it._state) {}
+
+			inline const Field & field() const { return *_field; }
 
 			//Assignment operator not overloaded since BlasMatrix class has overloaded assignment error
 			//Overloaded assignment operator
@@ -551,7 +553,7 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 					return *this;
 				}
 				//Initialize the discrepancy
-				matrix_type disc(_field,_row, _row+_col);
+				matrix_type disc(field(),_row, _row+_col);
 				//Create two iterators, one for seq, and one for gen
 				typename BM_Seq::const_iterator cseqit;
 				typename std::list<matrix_type>::iterator genit;
@@ -581,7 +583,7 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 					if(tmax < _deg[j])
 						tmax = _deg[j];
 				if(tmax+1 > _gensize){
-					_gen.push_back(matrix_type(_field,_col,_row+_col));
+					_gen.push_back(matrix_type(field(),_col,_row+_col));
 					_gensize++;
 				}
 				//Mimic multiplication be z in the auxiliary columns
@@ -597,7 +599,7 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 					g2++;
 				}
 				genit = _gen.begin();
-				matrix_type z1(_field,_col,_row+_col);
+				matrix_type z1(field(),_col,_row+_col);
 				for(size_t k = _col; k < _row+_col; k++)
 					ColumnCopy(*genit, z1,k);
 				//Increment the t and seqel to the next element
@@ -643,7 +645,7 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 					return *this;
 				}
 				//Initialize the discrepancy
-				matrix_type disc(_field,_row, _row+_col);
+				matrix_type disc(field(),_row, _row+_col);
 				//Create two iterators, one for seq, and one for gen
 				typename BM_Seq::const_iterator cseqit;
 				typename std::list<matrix_type>::iterator genit;
@@ -674,7 +676,7 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 					if(tmax < _deg[j])
 						tmax = _deg[j];
 				if(tmax+1 > _gensize){
-					_gen.push_back(matrix_type(_field,_col,_row+_col));
+					_gen.push_back(matrix_type(field(),_col,_row+_col));
 					_gensize++;
 				}
 				//Mimic multiplication by z in the auxiliary columns
@@ -690,7 +692,7 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 					g2++;
 				}
 				genit = _gen.begin();
-				matrix_type z1(_field,_col,_row+_col);
+				matrix_type z1(field(),_col,_row+_col);
 				for(size_t k = _col; k < _row+_col; k++)
 					ColumnCopy(*genit, z1,k);
 				//Increment the t and seqel to the next element
@@ -729,7 +731,7 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 			//Return a vector representing the reversal, by nominal degree, of the current generator
 			std::vector<matrix_type> GetGenerator()
 			{
-				std::vector<matrix_type> revgen(_mu+1, matrix_type(_field,_col,_col));
+				std::vector<matrix_type> revgen(_mu+1, matrix_type(field(),_col,_col));
 				for(size_t i = 0; i<_col; i++){
 					typename std::list<matrix_type>::iterator genit = _gen.begin();
 					for(int j = 0; j < _deg[i]+1; j++){
@@ -767,7 +769,8 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 				std::vector<size_t> gendegree(&_deg[0], &_deg[_col-1]);
 				return gendegree;
 			}
-		};
+		}; //End of BM_iterator
+
 		//return an initialized BM_iterator
 		typename BM_Seq::BM_iterator BM_begin()
 		{
@@ -794,7 +797,7 @@ _Sequence>::right_minpoly (std::vector<Coefficient> &P)
 
 	    typename Sequence::const_iterator contiter(_container->begin());
 	    //Create the BM_Seq, that will use the Coppersmith Block Berlekamp Massey Algorithm to compute the minimal generator.
-	    BM_Seq seq(_field,r,c);
+	    BM_Seq seq(field(),r,c);
 
 	    //Push the first projection onto the BM_Seq
 

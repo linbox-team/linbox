@@ -65,7 +65,7 @@ namespace LinBox
 		 */
 		LABlockLanczosSolver (const Field &F,
 				      const BlockLanczosTraits &traits) :
-			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (F),
+			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (F),
 			_uAv (this), _eliminator (F, _traits.blockingFactor ())
 		{ init_temps (); }
 
@@ -78,7 +78,7 @@ namespace LinBox
 		LABlockLanczosSolver (const Field &F,
 				      const BlockLanczosTraits &traits,
 				      typename Field::RandIter r) :
-			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (r),
+			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (r),
 			_uAv (this),
 			_eliminator (F, (unsigned int)  _traits.blockingFactor ())
 		{ init_temps (); }
@@ -313,10 +313,12 @@ namespace LinBox
 			return (a < b) ? a : b;
 		}
 
+		public inline const Field & field() const { return *_field; }
+
 		// Private variables
 
 		const BlockLanczosTraits  _traits;
-		const Field               &_field;
+		const Field               *_field;
 		VectorDomain<Field>        _VD;
 		MatrixDomain<Field>        _MD;
 		typename Field::RandIter   _randiter;

@@ -190,7 +190,7 @@ namespace LinBox
 
 					// A[i,k] <-- - A[i,k] / A[k,k]
 					Element headcoeff;
-					_field.divin (_field.neg (headcoeff, lignecourante[j_head].second),
+					field().divin (field().neg (headcoeff, lignecourante[j_head].second),
 						  lignepivot[0].second);
 
 					--columns[lignecourante[j_head].first];
@@ -220,11 +220,11 @@ namespace LinBox
 						if ((m < nj) && (lignecourante[m].first == j_piv)) {
 							Element tmp;
 
-							_field.axpy (tmp, headcoeff, lignepivot[l].second,
+							field().axpy (tmp, headcoeff, lignepivot[l].second,
 								 lignecourante[m].second);
 
-							if (! _field.isZero (tmp)) {
-								_field.assign (lignecourante[m].second, tmp);
+							if (! field().isZero (tmp)) {
+								field().assign (lignecourante[m].second, tmp);
 								construit[j++] = lignecourante[m++];
 							}
 							else
@@ -233,9 +233,9 @@ namespace LinBox
 						else {
 							Element tmp;
 
-							_field.mul (tmp, headcoeff, lignepivot[l].second);
+							field().mul (tmp, headcoeff, lignepivot[l].second);
 
-							// if (! _field.isZero (tmp)) {
+							// if (! field().isZero (tmp)) {
 							++columns[j_piv];
 							construit[j++] = E ((unsigned)j_piv, tmp);
 							// }
@@ -420,10 +420,10 @@ namespace LinBox
 
 					// A[i,k] <-- - A[i,k] / A[k,k]
 					Element headcoeff;
-					_field.div( headpivot, lignecourante[j_head].second,
+					field().div( headpivot, lignecourante[j_head].second,
 						lignepivot[0].second);
-					_field.neg(headcoeff, headpivot);
-					//                     _field.divin (_field.neg (headcoeff, lignecourante[j_head].second),
+					field().neg(headcoeff, headpivot);
+					//                     field().divin (field().neg (headcoeff, lignecourante[j_head].second),
 					//                               lignepivot[0].second);
 
 					--columns[lignecourante[j_head].first];
@@ -453,11 +453,11 @@ namespace LinBox
 						if ((m < nj) && (lignecourante[m].first == j_piv)) {
 							Element tmp;
 
-							_field.axpy (tmp, headcoeff, lignepivot[l].second,
+							field().axpy (tmp, headcoeff, lignepivot[l].second,
 								 lignecourante[m].second);
 
-							if (! _field.isZero (tmp)) {
-								_field.assign (lignecourante[m].second, tmp);
+							if (! field().isZero (tmp)) {
+								field().assign (lignecourante[m].second, tmp);
 								construit[j++] = lignecourante[m++];
 							}
 							else
@@ -466,9 +466,9 @@ namespace LinBox
 						else {
 							Element tmp;
 
-							_field.mul (tmp, headcoeff, lignepivot[l].second);
+							field().mul (tmp, headcoeff, lignepivot[l].second);
 
-							// if (! _field.isZero (tmp)) {
+							// if (! field().isZero (tmp)) {
 							++columns[j_piv];
 							construit[j++] = E ((unsigned)j_piv, tmp);
 							// }
@@ -630,7 +630,7 @@ namespace LinBox
 					// A[i,k] <-- - A[i,k] / A[k,k]
 
 					Element headcoeff;
-					_field.divin (_field.neg (headcoeff, lignecourante[j_head].second),
+					field().divin (field().neg (headcoeff, lignecourante[j_head].second),
 						  lignepivot[0].second);
 
 					// if A[k,j]=0, then A[i,j] <-- A[i,j]
@@ -656,11 +656,11 @@ namespace LinBox
 						// if A[i,j]!=0, then A[i,j] <-- A[i,j] - A[i,k]*A[k,j]
 						if ((m < nj) && (lignecourante[m].first == j_piv)) {
 							Element tmp;
-							_field.axpy (tmp, headcoeff, lignepivot[l].second,
+							field().axpy (tmp, headcoeff, lignepivot[l].second,
 								 lignecourante[m].second);
 
-							if (! _field.isZero (tmp)) {
-								_field.assign (lignecourante[m].second, tmp);
+							if (! field().isZero (tmp)) {
+								field().assign (lignecourante[m].second, tmp);
 								construit[j++] = lignecourante[m++];
 							}
 							else
@@ -669,8 +669,8 @@ namespace LinBox
 						}
 						else {
 							Element tmp;
-							_field.mul (tmp, headcoeff, lignepivot[l].second);
-							// if (! _field.isZero (tmp))
+							field().mul (tmp, headcoeff, lignepivot[l].second);
+							// if (! field().isZero (tmp))
 							construit[j++] = E (j_piv, tmp);
 							// else
 							// std::cerr << "NEVER HAPPENED" << std::endl;
@@ -772,7 +772,7 @@ void GaussDomain<_Field>::permute (Vector              &lignecourante,
 	// precondition indpermut != k
 	unsigned long nj = lignecourante.size () ;
 	if (nj > 0) {
-		Element tmp; _field.init(tmp);
+		Element tmp; field().init(tmp);
 		unsigned long kin = 0;
 		for (; kin < nj; ++kin)
 			if (static_cast<long>(lignecourante[kin].first) >= k) break;

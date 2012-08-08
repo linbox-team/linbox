@@ -45,7 +45,7 @@ namespace LinBox
 
 	private:
 
-		Field                      _field;
+		const Field                      *_field;
 		BlasMatrixDomain<Field>  _BMD;
 		MatrixDomain<Field>       _MD;
 
@@ -54,7 +54,7 @@ namespace LinBox
 
 		// constructor
 		EchelonFormDomain(const Field &F) :
-			_field(F), _BMD(F), _MD(F)
+			_field(&F), _BMD(F), _MD(F)
 		{}
 
 
@@ -70,7 +70,7 @@ namespace LinBox
 			n = A.coldim();
 
 			// get the transposed of A
-			BlasMatrix<Field> At(_field,n, m);
+			BlasMatrix<Field> At(field(),n, m);
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
 					At.setEntry(j,i,A.getEntry(i,j));
@@ -99,7 +99,7 @@ namespace LinBox
 			n = A.coldim();
 
 			// get the transposed of A
-			BlasMatrix<Field> At(_field,n, m);
+			BlasMatrix<Field> At(field(),n, m);
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
 					At.setEntry(j,i,A.getEntry(i,j));
@@ -159,8 +159,8 @@ namespace LinBox
 			m = E.rowdim();
 			n = E.coldim();
 			// Element zero, one;
-			// _field.init(zero,0);
-			// _field.init(one,1);
+			// field().init(zero,0);
+			// field().init(one,1);
 
 			BlasPermutation<size_t> P(E.coldim());
 			BlasPermutation<size_t> Qt(E.rowdim());
@@ -176,11 +176,11 @@ namespace LinBox
 			// Zero out upper triangular part of E
 			for (size_t i=0;i<m;++i)
 				for (size_t j=i;j<n;++j)
-					E.setEntry(i,j,_field.zero);
+					E.setEntry(i,j,field().zero);
 
 			// put one inplace of pivot
 			for (size_t i=0;i<rank;++i){
-				E.setEntry(*(Qt.getPointer()+i),i,_field.one);
+				E.setEntry(*(Qt.getPointer()+i),i,field().one);
 			}
 
 			return (int)rank;
@@ -195,8 +195,8 @@ namespace LinBox
 			m = E.rowdim();
 			n = E.coldim();
 			// Element zero, one;
-			// _field.init(zero,0);
-			// _field.init(one,1);
+			// field().init(zero,0);
+			// field().init(one,1);
 
 			// compute the LQUP of E
 			BlasPermutation<size_t> P(E.coldim());
@@ -213,14 +213,14 @@ namespace LinBox
 			// Zero out upper triangular part of E
 			for (size_t i=0;i<m;++i)
 				for (size_t j=i;j<n;++j)
-					E.setEntry(i,j,_field.zero);
+					E.setEntry(i,j,field().zero);
 
 			// permute E with Qt
 			_BMD.mulin_right(Qt,E);
 
 			// put one inplace of pivot
 			for (size_t i=0;i<rank;++i)
-				E.setEntry(i,i, _field.one);//*(Qt.getPointer()+i),one);
+				E.setEntry(i,i, field().one);//*(Qt.getPointer()+i),one);
 
 			// Update the first r columns of E by Err^(-1)
 			// BlasSubmatrix<Field> Er(E,0,0,rank,rank);
@@ -232,7 +232,7 @@ namespace LinBox
 
 			for (size_t i=0;i<rank;++i){
 				for (size_t j=0;j<i;++j)
-					E.setEntry(i,j,_field.zero);
+					E.setEntry(i,j,field().zero);
 			}
 
 			// permute L such that L<-Q.E
@@ -254,15 +254,16 @@ namespace LinBox
 			for (size_t i=0;i<m-1;++i){
 				std::cout<<"[";
 				for (size_t j=0;j<n-1;++j)
-					_field.write(std::cout,A.getEntry(i,j))<<",";
-				_field.write(std::cout, A.getEntry(i,n-1))<<"] , ";
+					field().write(std::cout,A.getEntry(i,j))<<",";
+				field().write(std::cout, A.getEntry(i,n-1))<<"] , ";
 			}
 			std::cout<<"[";
 			for (size_t j=0;j<n-1;++j)
-				_field.write(std::cout,A.getEntry(m-1,j))<<",";
-			_field.write(std::cout, A.getEntry(m-1,n-1))<<"]]);\n ";
+				field().write(std::cout,A.getEntry(m-1,j))<<",";
+			field().write(std::cout, A.getEntry(m-1,n-1))<<"]]);\n ";
 		}
 
+		const Field & field() { return *_field; }
 	};
 
 }

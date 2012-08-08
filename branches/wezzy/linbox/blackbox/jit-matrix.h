@@ -78,7 +78,7 @@ namespace LinBox
 
 		JIT_Matrix (_Field& F, const size_t m, const size_t n,
 			    const JIT_EntryGenerator& JIT) :
-			_field(F), _m(m), _n(n), _gen(JIT)
+			_field(&F), _m(m), _n(n), _gen(JIT)
 		{};
 
 		template<class OutVector, class InVector>
@@ -91,12 +91,12 @@ namespace LinBox
 		//OutVector& applyTranspose (OutVector& y, const InVector& x) const;
 		size_t rowdim (void) const { return _m; }
 		size_t coldim (void) const { return _n; }
-		const Field& field() const { return _field; }
+		const Field& field() const { return *_field; }
 
 	protected:
 
 		// Field for arithmetic
-		Field _field;
+		const Field *_field;
 
 		// Number of rows and columns of matrix.
 		size_t _m;
@@ -115,13 +115,13 @@ namespace LinBox
 	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::apply (OutVector& y, const InVector& x)
 	{
 		Element entry;
-		_field.init(entry,0);
+		field().init(entry,0);
 		for (size_t i = 0; i < _m; ++i) {
-			_field.init(y[i], 0);
+			field().init(y[i], 0);
 			for (size_t j = 0; j < _n; ++j) {
 				_gen(entry, i, j);
 
-				_field.axpyin (y[i], entry, x[j]);
+				field().axpyin (y[i], entry, x[j]);
 			}
 		}
 		return y;
@@ -133,11 +133,11 @@ namespace LinBox
 	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::applyTranspose (OutVector& y, const InVector& x)
 	{
 		Element entry;
-		_field.init(entry,0);
+		field().init(entry,0);
 		for (size_t i = 0; i < _m; ++i) {
-			_field.init(y[i], 0);
+			field().init(y[i], 0);
 			for (size_t j = 0; j < _n; ++j) {
-				_field.axpyin ( y[i], x[j], _gen(entry, j, i) );
+				field().axpyin ( y[i], x[j], _gen(entry, j, i) );
 			}
 		}
 		return y;

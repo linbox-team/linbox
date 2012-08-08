@@ -139,7 +139,7 @@ namespace LinBox
 			for (; iter != this->End(); ++iter)
 				if (*iter > max) max=*iter;
 
-			this->_field.convert(norm,max);
+			this->field().convert(norm,max);
 			return norm;
 		}
 

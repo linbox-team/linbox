@@ -323,7 +323,7 @@ namespace LinBox
 		typedef GivaroZpz< Givaro::Std32> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F) , Corr(uint64_t(-1) % (uint64_t)F.characteristic() +1)
+			_field (&F) , Corr(uint64_t(-1) % (uint64_t)F.characteristic() +1)
 		{ _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) :
 			_field (faxpy._field), _y (0) , Corr(faxpy.Corr)
@@ -352,8 +352,8 @@ namespace LinBox
 		}
 
 		inline Element &get (Element &y) {
-			_y %= (uint64_t) _field.characteristic();
-			if ((int64_t) _y < 0) _y += _field.characteristic();
+			_y %= (uint64_t) field().characteristic();
+			if ((int64_t) _y < 0) _y += field().characteristic();
 			y = (uint32_t) _y;
 			return y;
 		}
@@ -365,9 +365,11 @@ namespace LinBox
 			_y = 0;
 		}
 
+		inline const Field & field() const { return *_field; }
+
 	private:
 
-		Field _field;
+		const Field *_field;
 		uint64_t _y;
 		uint64_t Corr;
 	};
@@ -383,7 +385,7 @@ namespace LinBox
 		typedef GivaroZpz< Givaro::Std16> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F) , Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1)
+			_field (&F) , Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1)
 		{
 			_y = 0;
 		}
@@ -422,9 +424,9 @@ namespace LinBox
 
 		inline Element &get (Element &y)
 		{
-			_y %= (uint32_t) _field.characteristic();
+			_y %= (uint32_t) field().characteristic();
 			if ((int32_t) _y < 0)
-				_y += (Element) _field.characteristic();
+				_y += (Element) field().characteristic();
 			y = (uint16_t) _y;
 			return y;
 		}
@@ -440,9 +442,10 @@ namespace LinBox
 			_y = 0;
 		}
 
+		inline const Field & field() const { return *_field; }
 	private:
 
-		Field _field;
+		const Field * _field;
 		uint32_t _y;
 		uint32_t Corr;
 	};
@@ -455,13 +458,15 @@ namespace LinBox
 	public:
 
 		typedef GivaroZpz< Givaro::Std32>::Element Element;
-
+		DotProductDomain(){}
 		DotProductDomain (const GivaroZpz< Givaro::Std32> &F) :
 			VectorDomainBase<GivaroZpz< Givaro::Std32> > (F) ,
 			Corr(uint64_t(-1) % (uint64_t)F.characteristic() +1),
 			Max(uint64_t(-1))
 		{}
 
+		using VectorDomainBase<GivaroZpz< Givaro::Std32> >::field;
+		using VectorDomainBase<GivaroZpz< Givaro::Std32> >::_field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
@@ -483,12 +488,16 @@ namespace LinBox
 
 		typedef GivaroZpz< Givaro::Std16>::Element Element;
 
+		DotProductDomain(){}
+
 		DotProductDomain (const GivaroZpz< Givaro::Std16> &F) :
 			VectorDomainBase<GivaroZpz< Givaro::Std16> > (F) ,
 			Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1),
 			Max(uint32_t(-1))
 		{}
 
+		using VectorDomainBase<GivaroZpz< Givaro::Std16> >::field;
+		using VectorDomainBase<GivaroZpz< Givaro::Std16> >::_field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;

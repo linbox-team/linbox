@@ -31,8 +31,12 @@
  * Added methods add, addin, sub, subin, areEqual, isZero, and copy.
  *
  * ------------------------------------
+ * 2012Aug -bds
+ * VectorDomain<F> inherits from DotProductDomain<F>, which inherits from VectorDomainBase<F>.
+ * DotProductDomain<> has a generic definition here and 
+ * has specializations in field/Modular/ and field/Givaro/.
+ * ------------------------------------
  *
- * 
  * ========LICENCE========
  * This file is part of the library LinBox.
  * 
@@ -75,19 +79,21 @@ namespace LinBox
 	template <class Field>
 	class VectorDomainBase {
 	public:
+		VectorDomainBase () :_field(0) { /*std::cerr <<"VDB def cstor" << std::endl;*/ }
 		VectorDomainBase (const Field &F) :
-			_field (F), accu(F)
-		{}
+			_field (&F)//, accu(F)
+		{ /* std::cerr <<"VDB cstor " << this << std::endl;*/ }
 
 		VectorDomainBase& operator= (const VectorDomainBase& VD)
 		{	_field = VD._field;
-			accu = VD.accu;
+			//accu = VD.accu;
 			return *this;
 		}
 
-	protected:
-		Field _field;
-		mutable FieldAXPY<Field> accu;
+		inline const Field & field() const { return *_field; }
+	//protected:
+		const Field * _field;
+		/*mutable*/ //FieldAXPY<Field> accu;
 	};
 }
 
@@ -104,15 +110,19 @@ namespace LinBox
 	 * critical for performance, so their implementations are in the derived
 	 * class VectorDomain.
 	 */
-	template <class Field>
-	class DotProductDomain : public virtual VectorDomainBase<Field> {
+	template <class Field_>
+	class DotProductDomain : public virtual VectorDomainBase<Field_> {
 	public:
+		DotProductDomain () { /*std::cerr << "DPD def cstor" << std::endl;*/ }// no def cstor allowed
 
+		typedef Field_ Field;
 		typedef typename Field::Element Element;
 
 		DotProductDomain (const Field &F) :
 			VectorDomainBase<Field> (F)
-		{}
+		{ /* std::cerr << "DPD cstor " << this << std::endl;*/ }
+
+		using VectorDomainBase<Field>::field;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -145,10 +155,14 @@ namespace LinBox
 	// JGD 01.10.2003 : Why inherit twice from VectorDomainBase<Field> ???
 	// bds 2004Apr25 : well, g++ 3.4.3 wants explicit base domains on everything - eases that.
 	template <class Field>
-	class VectorDomain : public virtual DotProductDomain<Field>, public virtual VectorDomainBase<Field> {
+	class VectorDomain : public virtual DotProductDomain<Field> {//, public virtual VectorDomainBase<Field> {
 	public:
 
+	
 		typedef typename Field::Element         Element;
+
+		VectorDomain(){ /*std::cerr << "VD def cstor" << std::endl;*/ } 
+		void init(const Field& F) { this->_field = &F; }
 
 		/** Copy constructor.
 		 * Constructs VectorDomain object by copying the domain.
@@ -156,8 +170,9 @@ namespace LinBox
 		 * by value into functions.
 		 * @param  VD VectorDomain object.
 		 */
-		VectorDomain (const VectorDomain &VD) :
-			VectorDomainBase<Field> (VD._field), DotProductDomain<Field> (VD._field)
+		VectorDomain (const VectorDomain &VD) : 
+		VectorDomainBase<Field> (VD.field()),
+		DotProductDomain<Field> (VD.field())
 		{}
 
 		/** Assignment operator.
@@ -166,8 +181,8 @@ namespace LinBox
 		 */
 		VectorDomain &operator = (const VectorDomain &VD)
 		{
-			VectorDomainBase<Field>:: _field = VD._field;
-			VectorDomainBase<Field>:: accu = VD.accu;
+			this->_field = VD._field;
+			//VectorDomainBase<Field>:: accu = VD.accu;
 			return *this;
 		}
 
@@ -177,10 +192,8 @@ namespace LinBox
 		 * @return reference to field
 		 */
 
-		const Field &field () const
-		{
-			return VectorDomainBase<Field>:: _field;
-		}
+		using VectorDomainBase<Field>::field;
+		using VectorDomainBase<Field>::_field;
 
 		/** Vector input/output operations
 		 * These routines are useful for reading and writing vectors to
@@ -482,20 +495,13 @@ namespace LinBox
 
 		//@}
 
-		/** @name Implementation-Specific Methods.
-		 * These methods are not required of all \ref LinBox\ Fields
-		 * and are included only for this implementation of the archetype.
-		 */
-		//@{
-
 		/** Construct from a field.
-		 * @param F Field from which to construct
+		 * @param F Field or ring
 		 */
 		VectorDomain (const Field &F) :
-			VectorDomainBase<Field> (F),DotProductDomain<Field> (F)
-		{}
+			VectorDomainBase<Field> (F), DotProductDomain<Field> (F)
+		{ /*std::cerr << "VD cstor " << this << std::endl;*/ }
 
-		//@} Implementation-Specific Methods
 
 		/*! Random vector.
 		 * @param v vector to be randomized.
@@ -757,7 +763,7 @@ namespace LinBox
 						VectorCategories::SparseParallelVectorTag,
 						VectorCategories::DenseVectorTag) const
 		{
-			return DotProductDomain<Field>::dotSpecializedDSP (res, v1, v2);
+			return /*DotProductDomain<Field>::*/dotSpecializedDSP (res, v1, v2);
 		}
 
 		template <class Vector1, class Vector2>
@@ -1300,4 +1306,3 @@ namespace LinBox
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-

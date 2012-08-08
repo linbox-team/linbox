@@ -206,14 +206,16 @@ namespace LinBox
 
 
 	template <>
-	class DotProductDomain<Modular<int64_t> > : private virtual VectorDomainBase<Modular<int64_t> > {
+	class DotProductDomain<Modular<int64_t> > : public virtual VectorDomainBase<Modular<int64_t> > {
 
 	public:
 		typedef int64_t Element;
+		DotProductDomain(){}
 		DotProductDomain (const Modular<int64_t> &F) :
 			VectorDomainBase<Modular<int64_t> > (F)
 		{}
 
+		using VectorDomainBase<Modular<int64_t> >::field;
 
 	protected:
 		template <class Vector1, class Vector2>

@@ -86,7 +86,7 @@ namespace LinBox
 
 		// basic constructor, can be used with subsequent read.
 		CSF(const Field& F) :
-			_field(F), sorted(true)
+			_field(&F), sorted(true)
 		{}
 
 		/* The real constructor /TODO give docs here
@@ -96,7 +96,7 @@ namespace LinBox
 		  */
 		CSF
 		(Field& F, Index* rowP, Index* colP, Element* valP, Index rows, Index cols, Index nnz) :
-			_field(F), _rowdim(rows), _coldim(cols), sorted(true), isCSR(true)
+			_field(&F), _rowdim(rows), _coldim(cols), sorted(true), isCSR(true)
 		{
 			Data data;
 			for (Index i = 0; i < nnz; ++i, ++rowP, ++colP, ++valP)
@@ -105,7 +105,7 @@ namespace LinBox
 		}
 
 		/* constructor from a MatrixStream */
-		CSF( MatrixStream<Field>& ms ) : _field(ms.getField()){
+		CSF( MatrixStream<Field>& ms ) : _field(&(ms.getField())){
 			read(ms);
 		}
 
@@ -163,7 +163,7 @@ namespace LinBox
 		OutVector & apply(OutVector & y, const InVector & x) const {
 			linbox_check((y.size()==rowdim())&&(x.size()==coldim()));
 
-			FieldAXPY<Field> accum (_field);
+			FieldAXPY<Field> accum (field());
 
 			typename OutVector::iterator yp;
 			typename InVector::const_iterator xp;
@@ -193,12 +193,12 @@ namespace LinBox
 		OutVector & applyTranspose(OutVector & y, const InVector & x) const {
 			linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
 			
-			for(size_t i = 0; i < y.size(); ++i) y[i] = _field.zero;
+			for(size_t i = 0; i < y.size(); ++i) y[i] = field().zero;
 			
 			for(Index i = _ptrs[0]; (size_t)i < _ptrs.size()-1; ++i) {
 				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j) {
 				// process row i:  yj += xi Aij , yindsj += xi valsj
-					_field.axpyin(y[i], x[_inds[j]], _vals[j]);
+					field().axpyin(y[i], x[_inds[j]], _vals[j]);
 				}
 			}
 
@@ -209,8 +209,8 @@ namespace LinBox
 			size_t k;
 			for (k = _ptrs[i], k < _ptrs[i+1], ++k) 
 				if (_inds[k] == j) break;
-			if (k == _ptrs[i+1]) return _field.init(x, _field.zero);
-			else return _field.copy(x, _vals[k]);
+			if (k == _ptrs[i+1]) return field().init(x, field().zero);
+			else return field().copy(x, _vals[k]);
 		}		
 
 		Element & setEntry(Index i, Index j, Element& x) {
@@ -229,7 +229,7 @@ namespace LinBox
 			for(Index i = _ptrs[0]; (size_t)i < _ptrs.size()-1; ++i) {
 				old = norm;
 				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j) {
-					_field.convert(t, _vals[j]);
+					field().convert(t, _vals[j]);
 					norm += abs(t);
 				}
 				if (norm < old) norm = old;
@@ -311,7 +311,7 @@ namespace LinBox
 			integer val;
 			for(Index i = 0; i < _ptrs.size() - 1; ++i, ++row)
 				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j){
-					_field.convert(val, _vals[j]);
+					field().convert(val, _vals[j]);
 					out << row << " " << _inds[j] << " " << val << std::endl;
 				}
 
@@ -329,7 +329,7 @@ namespace LinBox
 				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j){
 					//  print zeros up to data
 					for(; k<_inds[j]; ++k) out << " 0";
-					_field.convert(val, _vals[j]);
+					field().convert(val, _vals[j]);
 					//  print data
 					out << " " <<  val;
 					++k;  //  adjust zero printing counter by one
@@ -342,7 +342,7 @@ namespace LinBox
 		}
 
 		const Field& field() const
-		{ return _field; }
+		{ return *_field; }
 
 		/* Non blackbox function.  Tells the number of nonzero entries */
 		size_t nnz() const
@@ -365,7 +365,7 @@ namespace LinBox
 #endif
 
 	protected:
-		Field _field; // The field used by this class
+		const Field *_field; // The field used by this class
 		IndexVector _inds; // The nnz indices sorted by row or by col
 		ElementVector _vals; // The values corresonding to nnz indices
 		PtrVector _ptrs; // the pointers to beginning of each (row/col)

@@ -419,7 +419,7 @@ namespace LinBox
 					BlasMatrix<Field> T(_blockW, i*numblock, 0, numblock, block);
 					_BMD.mul(tmp, _Special_U[i], T);
 					for (size_t j=0;j<block;++j){
-						this->_field.assign(this->_value.refEntry(i,j), tmp[j]);
+						this->getField()->assign(this->_value.refEntry(i,j), tmp[j]);
 					}
 				}
 
@@ -433,7 +433,7 @@ namespace LinBox
 					BlasMatrix<Field> T(this->_blockV, i*numblock, 0, numblock, block);
 					_BMD.mul(tmp, _Special_U[i], T);
 					for (size_t j=0;j<block;++j)
-						this->_field.assign(this->_value.refEntry(i,j), tmp[j]);
+						this->getField().assign(this->_value.refEntry(i,j), tmp[j]);
 				}
 
 				this->casenumber = 1;

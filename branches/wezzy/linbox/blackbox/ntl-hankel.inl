@@ -179,6 +179,7 @@ namespace LinBox
 	 *    Make the matrix LOWER triangular with determinant 1.
 	 *    i.e. clear the last this->coldim-1 elements in the this->data vector
 	 *----------------------------------------------------------------*/
+#if 0
 	template <class Field>
 	void Hankel<Field>::setToUniModLT()
 	{
@@ -186,8 +187,8 @@ namespace LinBox
 		this->shape.shape(BlackboxSpecifier::UNIMOD_LT);
 
 		Element one,zero;
-		this->K.init(one,1);
-		this->K.init(zero,0);
+		this->field().init(one,1);
+		this->field().init(zero,0);
 		for (int i= int(this->rowDim)-1; i <= L; i++ ) {
 			// zero out the below-diagonal entries
 			this->P.setCoeff(this->pdata,i,zero);
@@ -211,8 +212,8 @@ namespace LinBox
 		this->shape.shape(BlackboxSpecifier::UNIMOD_UT);
 
 		Element one,zero;
-		this->K.init(one,1);
-		this->K.init(zero,0);
+		this->field().init(one,1);
+		this->field().init(zero,0);
 
 		for (size_t i=0; i < this->rowDim-1; i++ ) {
 			// zero out the below-antidiagonal entries
@@ -226,7 +227,7 @@ namespace LinBox
 		return;
 	}//
 
-
+#endif
 
 	/*-----------------------------------------------------------------
 	 *    Apply the matrix to a vector Here the input and output

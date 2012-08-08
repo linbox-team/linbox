@@ -93,9 +93,9 @@ namespace LinBox
 		size_t			    _col;
 		Rep			    _rep;
 		pointer			    _ptr;
-		const Field		    & _field;
-		const MatrixDomain<Field>    _MD;
-		const VectorDomain<Field>    _VD;
+		const Field		    * _field;
+		MatrixDomain<Field>    _MD;
+		VectorDomain<Field>    _VD;
 		bool		     _use_fflas ;
 
 
@@ -199,18 +199,18 @@ namespace LinBox
 		//////////////////
 
 
-		/*! Allocates a new \f$ 0 \times 0\f$ matrix.
+		/*! Allocates a new \f$ 0 \times 0\f$ matrix (shaped and ready).
 		*/
 		BlasMatrix (const _Field &F) ;
 
-		/*! Allocates a new \f$ 0 \times 0\f$ matrix.
+		/*! Allocates a new bare \f$ 0 \times 0\f$ matrix (unshaped, unready).
 		*/
 		BlasMatrix () ;
 
-		/// (Re)allocates a new \f$ m \times n\f$ matrix.
+		/// (Re)allocates a new \f$ m \times n\f$ zero matrix (shaped and ready).
 		void init(const _Field & F, size_t r = 0, size_t c = 0);
 
-		/*! Allocates a new \f$ m \times n\f$ matrix.
+		/*! Allocates a new \f$ m \times n\f$ zero matrix (shaped and ready).
 		 * @param F
 		 * @param m rows
 		 * @param n cols
@@ -618,7 +618,7 @@ namespace LinBox
 		Vector1&  applyTranspose (Vector1& y, const Vector2& x) const ;
 
 		const _Field& field() const;
-		_Field& field() ;
+		//_Field& field() ;
 		// void setField(const _Field & F) { _field = F ; };
 
 		template<class uselessTag>
@@ -970,12 +970,12 @@ namespace LinBox
                                 size_t ldx,ldy;
                                 ldx=&x[1] - &x[0]; 
                                 ldy=&y[1] - &y[0]; 
-				FFLAS::fgemv((typename Field::Father_t) _Mat->_field, FFLAS::FflasNoTrans,
+				FFLAS::fgemv((typename Field::Father_t) _Mat->field(), FFLAS::FflasNoTrans,
 					      _row, _col,
-					      _Mat->_field.one,
+					      _Mat->field().one,
 					      _Mat->_ptr, getStride(),
 					      &x[0],ldx,
-					      _Mat->_field.zero,
+					      _Mat->field().zero,
 					      &y[0],ldy);
 			}
 			else {
@@ -1002,12 +1002,12 @@ namespace LinBox
                                 size_t ldx,ldy;
                                 ldx=&x[1] - &x[0]; 
                                 ldy=&y[1] - &y[0]; 
-                                FFLAS::fgemv((typename Field::Father_t) _Mat->_field, FFLAS::FflasTrans,
+                                FFLAS::fgemv((typename Field::Father_t) _Mat->field(), FFLAS::FflasTrans,
 					      _row, _col,
-					      _Mat->_field.one,
+					      _Mat->field().one,
 					      _Mat->_ptr, getStride(),
 					      &x[0],ldx,
-					      _Mat->_field.zero,
+					      _Mat->field().zero,
 					      &y[0],ldy);
 			}
 			else {

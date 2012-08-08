@@ -104,10 +104,12 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 	MatrixDomain<Field>      MD(F);
 	VectorDomain<Field>      VD(F);
 
+	Matrix A;
 	for (int k=0;k<iterations; ++k) {
 
 		mycommentator().progress(k);
-		Matrix A(F, n,n),B(F, n,n),C(F, n,n),D(F, n,n),T(F, n,n),R(F, n,n);
+		A.init(F, n, n);
+		Matrix /*A(F, n,n),*/B(F, n,n),C(F, n,n),D(F, n,n),T(F, n,n),R(F, n,n);
 		std::vector<Element> x(n),y(n),z(n),t(n);
 
 		Element alpha, beta,malpha,tmp;

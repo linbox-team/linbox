@@ -55,6 +55,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/matrix/sparse.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/stream.h"
@@ -96,30 +97,20 @@ namespace LinBox
 		typedef typename SparseMatrixBase<typename Field::Element, _Row>::ConstIterator ConstIterator;
 		typedef typename SparseMatrixBase<typename Field::Element, _Row>::ConstIndexedIterator ConstIndexedIterator;
 
+
+		SparseMatrix () { /*std::cerr << "SpMat def cstor" << std::endl;*/ }
+
 		/** Constructor.
-		 * Builds a zero m x n matrix
+		 * Builds a zero m x n matrix.
 		 * Note: the copy constructor and operator= will work as intended
-		 *       because of STL's container design
-		 * @param  F  Field over which entries exist
+		 *       because of STL's container design.
+		 * @param  F  Field of entries
 		 * @param  m  Row dimension
 		 * @param  n  Column dimension
 		 */
-#if 0
-		SparseMatrix (const Field &F) :
-			SparseMatrixBase<Element, _Row> (0,0), _field (F), _VD (F), _MD (F), _AT (*this)
-		{
-			std::cerr << "default cstor" << std::endl;
-		}
-
-		SparseMatrix (const Field &F, size_t m, size_t n) :
-			SparseMatrixBase<Element, _Row> (m, n), _field (F), _VD (F), _MD (F), _AT (*this)
-		{
-			std::cerr << "default cstor : " <<  m << "x" << n << std::endl;
-		}
-#endif
 		SparseMatrix (const Field &F, size_t m=0, size_t n=0) :
-			SparseMatrixBase<Element, _Row> (m, n), _field (F), _VD (F), _MD (F), _AT (*this)
-		{ }
+			SparseMatrixBase<Element, _Row> (m, n), _field (&F), _MD (F), _AT (*this)
+		{ /*std::cerr << "SpMat cstor " << this << std::endl;*/ }
 
 		/** Constructor from a vector stream
 		 * @param  F  Field over which entries exist
@@ -128,7 +119,7 @@ namespace LinBox
 		template<class VectStream>
 		SparseMatrix (const Field &F, VectStream &stream) :
 			SparseMatrixBase<Element, _Row> (stream.size (), stream.dim ()),
-			_field (F), _VD (F), _MD (F), _AT (*this)
+			_field (&F), _MD (F), _AT (*this)
 		{
 			typename SparseMatrixBase<Element, _Row>::RowIterator i;
 
@@ -141,20 +132,20 @@ namespace LinBox
 		 * @param ms A matrix stream properly initialized
 		 */
 		SparseMatrix( MatrixStream<Field>& ms ) :
-			SparseMatrixBase<Element,_Row>(ms), _field(ms.getField()), _VD(ms.getField()), _MD(ms.getField()), _AT(*this)
+			SparseMatrixBase<Element,_Row>(ms), _field(&(ms.getField())), _MD(ms.getField()), _AT(*this)
 		{ }
 
 		/** Copy constructor
 		*/
 		SparseMatrix (const SparseMatrix<Field, Row> &B) :
-			SparseMatrixBase<Element, _Row> (B), _field (B._field), _VD (B._field), _MD (B._field), _AT (*this)
+			SparseMatrixBase<Element, _Row> (B), _field (B._field), _MD (B.field()), _AT (*this)
 		{ }
 
 		/** Row type Converter constructor
 		*/
 		template<class VectorType>
 		SparseMatrix (const SparseMatrix<Field, VectorType> &B) :
-			SparseMatrixBase<Element, _Row> (B), _field (B._field), _VD (B._field), _MD (B._field), _AT (*this)
+			SparseMatrixBase<Element, _Row> (B), _field (B._field), _MD (B.field()), _AT (*this)
 		{ }
 
 		/** Destructor. */
@@ -235,7 +226,7 @@ namespace LinBox
 		template<typename _Tp1, typename _Rw1>
 		SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &Mat, const Field& F) :
 			SparseMatrixBase<Element, _Row> (Mat.rowdim(),Mat.coldim()),
-			_field (F), _VD (F), _MD (F), _AT (*this) {
+			_field (&F), _MD (F), _AT (*this) {
 				typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,_Row>()(*this, Mat);
 			}
 
@@ -260,7 +251,7 @@ namespace LinBox
 		 * @return Reference to input stream
 		 */
 		std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
-		{ return SparseMatrixBase<Element, _Row>::read (is, _field, format); }
+		{ return SparseMatrixBase<Element, _Row>::read (is, field(), format); }
 
 		/** Write the matrix to a stream in the given format
 		 * @param os Output stream to which to write the matrix
@@ -268,19 +259,19 @@ namespace LinBox
 		 * @return Reference to output stream
 		 */
 		std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
-		{ return SparseMatrixBase<Element, _Row>::write (os, _field, format); }
+		{ return SparseMatrixBase<Element, _Row>::write (os, field(), format); }
 
 		// JGD 28.08.2002
 		/** Access to the base field
 		*/
 		const Field& field () const
-		{ return _field;}
+		{ return *_field;}
 
 	protected:
 
-		const Field                             _field;      // Field used for all arithmetic
-		VectorDomain<Field>                     _VD;     // Vector domain for matrix operations
-		MatrixDomain<Field>                     _MD;     // Matrix domain for matrix operations
+		const Field           *_field; // Field used for all arithmetic
+		//VectorDomain<Field>       _VD; // not needed.  There is a VD in _MD.
+		MatrixDomain<Field>       _MD; // Matrix domain for matrix operations
 
 		TransposeMatrix<SparseMatrix<_Field, _Row> > _AT;
 
