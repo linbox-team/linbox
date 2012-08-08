@@ -693,7 +693,7 @@ namespace LinBox
 						bufferB,
 						bufferC,
 						tempAlpha,
-						F.one,
+						_F.one,
 						widthA,
 						heightA,
 						widthB,
@@ -884,7 +884,7 @@ namespace LinBox
 						bufferB,
 						bufferC,
 						tempAlpha,
-						F.one,
+						_F.one,
 						widthA,
 						heightA,
 						widthB,
@@ -1046,7 +1046,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<Modular<double>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,F.one,C,F.one,A,B);
+				Operand3>()(_F,D,_F.one,C,_F.one,A,B);
 		}
 
 		//Check dimensions
@@ -1230,7 +1230,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<Modular<float>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,F.one,C,F.one,A,B);
+				Operand3>()(_F,D,_F.one,C,_F.one,A,B);
 		}
 
 		//Check dimensions
@@ -1411,7 +1411,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return muladdin<Operand1,Operand2,Operand3>(F.one,C,F.one,A,B);
+			return muladdin<Operand1,Operand2,Operand3>(_F.one,C,_F.one,A,B);
 		}
 
 		Operand1 T(C);
@@ -1441,7 +1441,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return muladdin<Operand1,Operand2,Operand3>(F.one,C,F.one,A,B);
+			return muladdin<Operand1,Operand2,Operand3>(_F.one,C,_F.one,A,B);
 		}
 
 		Operand1 T(C);
@@ -1474,7 +1474,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<Modular<double>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,F.one,C,F.mOne,A,B);
+				Operand3>()(_F,D,_F.one,C,_F.mOne,A,B);
 		}
 
 		//Check dimensions
@@ -1658,7 +1658,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<Modular<float>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,F.one,C,F.mOne,A,B);
+				Operand3>()(_F,D,_F.one,C,_F.mOne,A,B);
 		}
 
 		//Check dimensions
@@ -1839,7 +1839,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return muladdin<Operand1,Operand2,Operand3>(F.one,C,F.mOne,A,B);
+			return muladdin<Operand1,Operand2,Operand3>(_F.one,C,_F.mOne,A,B);
 		}
 
 		Operand1 T(C);
@@ -1869,7 +1869,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return muladdin<Operand1,Operand2,Operand3>(F.one,C,F.mOne,A,B);
+			return muladdin<Operand1,Operand2,Operand3>(_F.one,C,_F.mOne,A,B);
 		}
 
 		Operand1 T(C);
@@ -1906,7 +1906,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<Modular<double>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,F.mOne,C,F.one,A,B);
+				Operand3>()(_F,D,_F.mOne,C,_F.one,A,B);
 		}
 
 		//Check dimensions
@@ -2099,7 +2099,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<Modular<float>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,F.mOne,C,F.one,A,B);
+				Operand3>()(_F,D,_F.mOne,C,_F.one,A,B);
 		}
 
 		//Check dimensions
@@ -2289,7 +2289,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return muladdin<Operand1,Operand2,Operand3>(F.mOne,C,F.one,A,B);
+			return muladdin<Operand1,Operand2,Operand3>(_F.mOne,C,_F.one,A,B);
 		}
 
 		Operand1 T(C);
@@ -2323,7 +2323,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return muladdin<Operand1,Operand2,Operand3>(F.mOne,C,F.one,A,B);
+			return muladdin<Operand1,Operand2,Operand3>(_F.mOne,C,_F.one,A,B);
 		}
 
 		Operand1 T(C);

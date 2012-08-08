@@ -48,6 +48,8 @@
 
 namespace LinBox{
 
+	class OpenCLMatrixDomainFactory;
+
 	/**
 	 * Generic submatrix view adapter used internally in the OpenCLMatrixDomain
 	 */
@@ -398,12 +400,12 @@ namespace LinBox{
 		//! Constructor of OpenCLDomain.
 		OpenCLMatrixDomain(const Field& F ) : _F(F), setupCorrect(false){
 
-			F.init(F.one,1UL);
-			F.init(F.zero,0UL);
-			F.init(F.mOne,-1);
+			_F.init(_F.one,1UL);
+			_F.init(_F.zero,0UL);
+			_F.init(_F.mOne,-1);
 
 #ifndef NDEBUG
-			if(!Givaro::probab_prime(F.characteristic())){
+			if(!Givaro::probab_prime(_F.characteristic())){
 				std::cout << " *** WARNING *** " << std::endl;
 				std::cout << " You are using a OpenCL Matrix Domain"
 				          << " where your field is not prime "
@@ -504,7 +506,7 @@ namespace LinBox{
 			const Operand2& A,
 			const Operand3& B) const{
 
-			return muladdin(F.zero,C,alpha,A,B);
+			return muladdin(_F.zero,C,alpha,A,B);
 		}
 
 		//! In place multiplication.
@@ -530,14 +532,14 @@ namespace LinBox{
 			const Operand3& B,
 			const Operand1& C) const{
 
-			return muladd(D,F.one,C,F.one,A,B);
+			return muladd(D,_F.one,C,_F.one,A,B);
 		}
 
 		//! axpyin.
 		//! C += A*B
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& axpyin(Operand1& C, const Operand2& A, const Operand3& B) const{
-			return muladdin(F.one,C,F.one,A,B);
+			return muladdin(_F.one,C,_F.one,A,B);
 		}
 
 		//! maxpy.
@@ -549,14 +551,14 @@ namespace LinBox{
 			const Operand3& B,
 			const Operand1& C) const{
 
-			return muladd(D,F.one,C,F.mOne,A,B);
+			return muladd(D,_F.one,C,_F.mOne,A,B);
 		}
 
 		//! maxpyin.
 		//! C -= A*B
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& maxpyin(Operand1& C, const Operand2& A, const Operand3& B) const{
-			return muladdin(F.one,C,F.mOne,A,B);
+			return muladdin(_F.one,C,_F.mOne,A,B);
 		}
 
 		//! axmy.
@@ -568,14 +570,14 @@ namespace LinBox{
 			const Operand3& B,
 			const Operand1& C) const{
 
-			return muladd(D,F.mOne,C,F.one,A,B);
+			return muladd(D,_F.mOne,C,_F.one,A,B);
 		}
 
 		//! axmyin.
 		//! C = A*B - C
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& axmyin(Operand1& C, const Operand2& A, const Operand3& B) const{
-			return muladdin(F.mOne,C,F.one,A,B);
+			return muladdin(_F.mOne,C,_F.one,A,B);
 		}
 
 		//!  general matrix-matrix multiplication and addition with scaling.
@@ -786,7 +788,7 @@ namespace LinBox{
 			res.resize(P1.size() + P2.size() - 1);
 
 			for(int i = 0; i < res.size(); i++){
-				_F.assign(res[i],F.zero);
+				_F.assign(res[i],_F.zero);
 			}
 
 			for(int i = 0; i < P1.size(); i++){
@@ -821,10 +823,10 @@ namespace LinBox{
 			for(size_t i = 0 ; i < I.rowdim() ; ++i){
 				for(size_t j = 0 ; j < I.coldim() ; ++j){
 					if(i == j){
-						I.setEntry(i,j,F.one);
+						I.setEntry(i,j,_F.one);
 					}
 					else{
-						I.setEntry(i,j,F.zero);
+						I.setEntry(i,j,_F.zero);
 					}
 				}
 			}
@@ -835,7 +837,7 @@ namespace LinBox{
 			// use Iterator
 			for(size_t i = 0 ; i < I.rowdim() ; ++i){
 				for(size_t j = 0 ; j < I.coldim() ; ++j){
-					I.setEntry(i,j,F.zero);
+					I.setEntry(i,j,_F.zero);
 				}
 			}
 		}
