@@ -27,7 +27,7 @@ dnl Test for an OpenCL
 
 AC_DEFUN([LB_CHECK_OCL],[
 	AC_ARG_WITH(ocl,
-	[AC_HELP_STRING([--with-ocl=<path>|yes],
+	[AC_HELP_STRING([--with-ocl=<path>|yes|no],
 	[Use OpenCL. This library is optional for LinBox compilation.
 	 If argument is yes or <empty> that means the library is reachable
 	 with the standard search path "/usr" or "/usr/local" (set as default).
@@ -44,47 +44,51 @@ AC_DEFUN([LB_CHECK_OCL],[
 	BACKUP_CXXFLAGS=${CXX_FLAGS}
 	BACKUP_LIBS=${LIBS}
 
-	AC_MSG_CHECKING(for OpenCL >= 1.0)
-
-for OCL_HOME in ${OCL_HOME_PATH}
-do
-	if test -r "$OCL_HOME/include/CL/cl.h"; then
-		if test "x$OCL_HOME" != "x/usr" -a "x$OCL_HOME" != "x/usr/local"; then
-			OCL_CFLAGS="-I${OCL_HOME}/include"
-			if test "x$OCL_HOME" != "x/opt/AMDAPP"; then
-				OCL_LIBS="-L${OCL_HOME}/lib64 -L${OCL_HOME}/lib -lOpenCL -lpthread"
-			else
-				OCL_LIBS="-L${OCL_HOME}/lib/x86_64 -L${OCL_HOME}/lib/x86 -lOpenCL -lpthread"
-			fi
-		else
-			OCL_CFLAGS=
-			OCL_LIBS="-lOpenCL -lpthread"
-		fi
-
-		CXXFLAGS="${CXXFLAGS} ${OCL_CFLAGS}"
-		LIBS="${LIBS} ${OCL_LIBS}"
-
-		ocl_found="yes"
-		break
-
-	else
-		ocl_found="no"
+	if test -n "$OCL_HOME_PATH"; then
+		AC_MSG_CHECKING(for OpenCL >= 1.0)
 	fi
-done
 
-if test "x$ocl_found" = "xyes"; then
-	AC_SUBST(OCL_CFLAGS)
-	AC_SUBST(OCL_LIBS)
-	AC_DEFINE(HAVE_OCL,1,[Define if OpenCL is installed])
-	HAVE_OCL=yes
+	for OCL_HOME in ${OCL_HOME_PATH}
+	do
+		if test -r "$OCL_HOME/include/CL/cl.h"; then
+			if test "x$OCL_HOME" != "x/usr" -a "x$OCL_HOME" != "x/usr/local"; then
+				OCL_CFLAGS="-I${OCL_HOME}/include"
+				if test "x$OCL_HOME" != "x/opt/AMDAPP"; then
+					OCL_LIBS="-L${OCL_HOME}/lib64 -L${OCL_HOME}/lib -lOpenCL -lpthread"
+				else
+					OCL_LIBS="-L${OCL_HOME}/lib/x86_64 -L${OCL_HOME}/lib/x86 -lOpenCL -lpthread"
+				fi
+			else
+				OCL_CFLAGS=
+				OCL_LIBS="-lOpenCL -lpthread"
+			fi
 
-	AC_MSG_RESULT(found)
-else
-	AC_MSG_RESULT(not found)
-fi
+			CXXFLAGS="${CXXFLAGS} ${OCL_CFLAGS}"
+			LIBS="${LIBS} ${OCL_LIBS}"
 
-AM_CONDITIONAL(LINBOX_HAVE_OCL, test "x$HAVE_OCL" = "xyes")
+			ocl_found="yes"
+			break
 
-CXXFLAGS=${BACKUP_CXXFLAGS}
-LIBS=${BACKUP_LIBS}
+		else
+			ocl_found="no"
+		fi
+	done
+
+	if test "x$ocl_found" = "xyes"; then
+		AC_SUBST(OCL_CFLAGS)
+		AC_SUBST(OCL_LIBS)
+		AC_DEFINE(HAVE_OCL,1,[Define if OpenCL is installed])
+		HAVE_OCL=yes
+
+		AC_MSG_RESULT(found)
+	else
+		unset OCL_CFLAGS
+		unset OCL_LIBS
+		AC_MSG_RESULT(not found)
+	fi
+
+	AM_CONDITIONAL(LINBOX_HAVE_OCL, test "x$HAVE_OCL" = "xyes")
+
+	CXXFLAGS=${BACKUP_CXXFLAGS}
+	LIBS=${BACKUP_LIBS}
 ])

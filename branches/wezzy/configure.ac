@@ -294,16 +294,7 @@ LB_BENCH
 LB_OPT
 LB_DOC
 
-LB_CHECK_OCL(,,[
-echo '*******************************************************************************'
-echo ' ERROR: OpenCL not found!'
-echo
-echo ' Please make sure an OpenCL implementation is installed and specify its'
-echo ' location with the option'
-echo ' --with-ocl=<prefix> when running configure.'
-echo '*******************************************************************************'
-exit 1
-])
+LB_CHECK_OCL
 
 if test ! -d ./benchmarks/data  ; then
 	echo "Creating data dir in benchmark" ;
