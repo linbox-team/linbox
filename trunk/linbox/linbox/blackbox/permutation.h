@@ -26,6 +26,7 @@
 #define __LINBOX_bb_permutation_H
 
 #include <utility>
+#include <algorithm>
 #ifndef __LINBOX_PERMUTATION_STORAGE
 // #include "linbox/vector/light_container.h"
 // #define __LINBOX_PERMUTATION_STORAGE LightContainer< long >
@@ -76,7 +77,7 @@ namespace LinBox
 			identity(n);
 		}
 
-		Permutation (const Field& F = Field(), size_t n=0) :
+		Permutation (const Field& F = Field(), size_t n=0, size_t m = 0) :
 			_field(&F)
 		{
 			identity(n);
@@ -96,7 +97,7 @@ namespace LinBox
 			// Knuth construction
 			for (size_t i = 0; i < n-1; ++i) {
 				size_t j = i + r.randomInt()%(n-i);
-				swap(_indices[i], _indices[j]);
+				std::swap(_indices[i], _indices[j]);
 			}
 		}
 
@@ -245,6 +246,17 @@ namespace LinBox
 		Storage& setStorage(const Storage& s) { return _indices=s; }
 		const Storage& getStorage() const { return _indices; }
 
+		/// Generate next permutation in lex order.
+		void next() {
+			int n = _indices.size();
+			if (n == 1) return;
+			int i, j;
+			for (i = n-2; i >= 0 and _indices[i] >= _indices[i+1]; --i); 
+			if (i < 0) {identity(n); return; }
+			for (j = i+2; j < n and _indices[i] <= _indices[j]; ++j);
+			std::swap(_indices[i], _indices[j-1]);
+			reverse(_indices.begin() + i + 1, _indices.end());
+		}
 	private:
 		// Vector of indices
 		Storage _indices;

@@ -74,7 +74,7 @@ namespace LinBox
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
 			commentator().start ("Coppersmith solveNonSingular", "solveNonSingular");
-			std::ostream report = commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			std::ostream& report = commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 			//Set up the projection matrices and their dimensions
 			size_t d = B.coldim();

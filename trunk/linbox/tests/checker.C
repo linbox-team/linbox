@@ -160,7 +160,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-blackbox-block-container",     counter , flag);
 	build_n_run("test-blas-domain",                  counter , flag);
 	build_n_run("test-block-ring",                   counter , flag);
-	no_build_n_run("test-block-wiedemann",              counter , flag, "PG(inf loop), GY(wrong ans)");
+	build_n_run("test-block-wiedemann",              counter , flag, "GY(wrong ans)");
 //test could be stronger");
 	build_n_run("test-butterfly",                    counter , flag);
 	build_n_run("test-charpoly",                     counter , flag);//, "intermittent inf loop, bb or cp responsible?");

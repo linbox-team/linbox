@@ -310,11 +310,13 @@ namespace LinBox
 	 *  Done through specialization of all
 	 *  classes defined above.
 	 */
-	template <class Field>
+	template <class Field_>
 	class BlasMatrixDomain {
 
 	public:
+		typedef Field_ Field;
 		typedef typename Field::Element         Element;
+		typedef BlasSubmatrix<Field> Matrix;
 
 	protected:
 

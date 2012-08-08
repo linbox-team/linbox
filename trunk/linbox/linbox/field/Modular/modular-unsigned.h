@@ -689,6 +689,7 @@ namespace LinBox
 
 		typedef uint16_t Element;
 
+		DotProductDomain () {}
 		DotProductDomain (const Modular<uint16_t> &F) :
 			VectorDomainBase<Modular<uint16_t> > (F)
 		{}
@@ -1047,6 +1048,7 @@ namespace LinBox
 
 		typedef uint32_t Element;
 
+		DotProductDomain () {}
 		DotProductDomain (const Modular<uint32_t> &F) :
 			VectorDomainBase<Modular<uint32_t> > (F)
 		{}
