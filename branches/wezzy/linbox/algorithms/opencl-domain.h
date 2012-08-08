@@ -48,8 +48,6 @@
 
 namespace LinBox{
 
-	class OpenCLMatrixDomainFactory;
-
 	/**
 	 * Generic submatrix view adapter used internally in the OpenCLMatrixDomain
 	 */
@@ -233,7 +231,9 @@ namespace LinBox{
 		typedef Field_                          Field;
 		typedef typename Field::Element         Element;
 		typedef BlasMatrix<Field>               Matrix;
+#ifdef __LINBOX_HAVE_OCL
 		friend class OpenCLMatrixDomainFactory;
+#endif
 
 	protected:
 

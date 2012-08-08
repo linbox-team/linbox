@@ -5,17 +5,17 @@
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -75,7 +75,7 @@ public:
 		then = timerStack.top();
 		timerStack.pop();
 
-		returnValue = ((double)(now.tv_sec - then.tv_sec) + 
+		returnValue = ((double)(now.tv_sec - then.tv_sec) +
 		              ((double)(now.tv_usec - then.tv_usec) * 1e-6));
 
 		return returnValue;
@@ -134,11 +134,11 @@ static bool testMul(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.mul(C_b,A,B);
-		commentator().report() << "Blas mul() execution time: " 
+		commentator().report() << "Blas mul() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.mul(C_o,A,B);
-		commentator().report() << "OpenCL mul() execution time: " 
+		commentator().report() << "OpenCL mul() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
@@ -186,11 +186,11 @@ static bool testMulinLeft(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.mulin_left(A_b,B);
-		commentator().report() << "Blas mulin_left() execution time: " 
+		commentator().report() << "Blas mulin_left() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.mulin_left(A_o,B);
-		commentator().report() << "OpenCL mulin_left() execution time: " 
+		commentator().report() << "OpenCL mulin_left() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(A_b,A_o)){
@@ -238,11 +238,11 @@ static bool testMulinRight(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.mulin_right(A,B_b);
-		commentator().report() << "Blas mulin_right() execution time: " 
+		commentator().report() << "Blas mulin_right() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.mulin_right(A,B_o);
-		commentator().report() << "OpenCL mulin_right() execution time: " 
+		commentator().report() << "OpenCL mulin_right() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(B_b,B_o)){
@@ -291,11 +291,11 @@ static bool testAxpy(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.axpy(D_b,A,B,C);
-		commentator().report() << "Blas axpy() execution time: " 
+		commentator().report() << "Blas axpy() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.axpy(D_o,A,B,C);
-		commentator().report() << "OpenCL axpy() execution time: " 
+		commentator().report() << "OpenCL axpy() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
@@ -345,11 +345,11 @@ static bool testAxpyin(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.axpyin(C_b,A,B);
-		commentator().report() << "Blas axpyin() execution time: " 
+		commentator().report() << "Blas axpyin() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.axpyin(C_o,A,B);
-		commentator().report() << "OpenCL axpyin() execution time: " 
+		commentator().report() << "OpenCL axpyin() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
@@ -398,11 +398,11 @@ static bool testMaxpy(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.maxpy(D_b,A,B,C);
-		commentator().report() << "Blas maxpy() execution time: " 
+		commentator().report() << "Blas maxpy() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.maxpy(D_o,A,B,C);
-		commentator().report() << "OpenCL maxpy() execution time: " 
+		commentator().report() << "OpenCL maxpy() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
@@ -452,11 +452,11 @@ static bool testMaxpyin(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.maxpyin(C_b,A,B);
-		commentator().report() << "Blas maxpyin() execution time: " 
+		commentator().report() << "Blas maxpyin() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.maxpyin(C_o,A,B);
-		commentator().report() << "OpenCL maxpyin() execution time: " 
+		commentator().report() << "OpenCL maxpyin() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
@@ -505,11 +505,11 @@ static bool testAxmy(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.axmy(D_b,A,B,C);
-		commentator().report() << "Blas axmy() execution time: " 
+		commentator().report() << "Blas axmy() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.axmy(D_o,A,B,C);
-		commentator().report() << "OpenCL axmy() execution time: " 
+		commentator().report() << "OpenCL axmy() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
@@ -559,11 +559,11 @@ static bool testAxmyin(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.axmyin(C_b,A,B);
-		commentator().report() << "Blas axmyin() execution time: " 
+		commentator().report() << "Blas axmyin() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.axmyin(C_o,A,B);
-		commentator().report() << "OpenCL axmyin() execution time: " 
+		commentator().report() << "OpenCL axmyin() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
@@ -612,11 +612,11 @@ static bool testMuladd(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.muladd(D_b,1.0,C,2.0,A,B);
-		commentator().report() << "Blas muladd() execution time: " 
+		commentator().report() << "Blas muladd() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.muladd(D_o,1.0,C,2.0,A,B);
-		commentator().report() << "OpenCL muladd() execution time: " 
+		commentator().report() << "OpenCL muladd() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(D_b,D_o)){
@@ -689,11 +689,11 @@ static bool testMuladdin(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.muladdin(1.0,C_b,2.0,A,B);
-		commentator().report() << "Blas muladdin() execution time: " 
+		commentator().report() << "Blas muladdin() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.muladdin(1.0,C_o,2.0,A,B);
-		commentator().report() << "OpenCL muladdin() execution time: " 
+		commentator().report() << "OpenCL muladdin() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
@@ -740,11 +740,11 @@ static bool testMulscale(const Field& F, size_t n, int iterations){
 		OpenCLTimer timer;
 		timer.tic();
 		BMD.mul(C_b,2.0,A,B);
-		commentator().report() << "Blas mulscale() execution time: " 
+		commentator().report() << "Blas mulscale() execution time: "
 		                       << timer.toc() << std::endl;
 		timer.tic();
 		OMD.mul(C_o,2.0,A,B);
-		commentator().report() << "OpenCL mulscale() execution time: " 
+		commentator().report() << "OpenCL mulscale() execution time: "
 		                       << timer.toc() << std::endl;
 
 		if(!OMD.areEqual(C_b,C_o)){
@@ -867,8 +867,12 @@ int main(int argc, char** argv){
 
 	//For warmup of OpenCLMatrixDomainFactory
 	OpenCLMatrixDomain<Modular<double> > OMD(F);
-	commentator().report() << "Number of OpenCL Devices: " 
-	                       << OpenCLMatrixDomainFactory::oclGetNumberOfDevices() 
+	commentator().report() << "Number of OpenCL Devices: "
+#ifdef __LINBOX_HAVE_OCL
+	                       << OpenCLMatrixDomainFactory::oclGetNumberOfDevices()
+#else
+	                       << 0
+#endif
 	                       << std::endl;
 
 	//testThreadSafe(iterations * 5);
