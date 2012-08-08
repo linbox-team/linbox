@@ -180,7 +180,7 @@ namespace LinBox
 			// if (x._elem_ptr != 0) delete x._elem_ptr;
 			// x._elem_ptr = _elem_ptr->clone ();
 			if (x._elem_ptr == 0)
-				x._elem_ptr = _elem_ptr->clone ();
+			x._elem_ptr = _elem_ptr->clone ();
 			_field_ptr->init (*x._elem_ptr, n);
 			return x;
 		}

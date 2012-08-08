@@ -72,7 +72,7 @@ template <class Field>
 static bool testIdentity (Field &F, size_t n, int iterations)
 {
 	typedef typename Vector<Field>::Dense Vector;
-	typedef BlasMatrix<Field>               Base;
+	typedef BlasMatrix<Field> Base;
 	typedef BlasMatrix<Field>           Blackbox;
 
 	commentator().start ("Testing identity apply", "testIdentity", iterations);

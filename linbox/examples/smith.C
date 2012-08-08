@@ -331,7 +331,7 @@ void scramble(BlasMatrix<Ring>& M)
 
 			//K.axpy(c, M.getEntry(l, i), x, M.getEntry(l, j));
 			//M.setEntry(l, i, c);
-		}
+				}
 
 		//a = rand()%2;
 
@@ -361,7 +361,7 @@ void scramble(BlasMatrix<Ring>& M)
 
 		out << "\n";
 
-	}
+		}
 
 	//}
 }

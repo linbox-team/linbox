@@ -91,7 +91,7 @@ namespace LinBox
 
 	// The charpoly with Hybrid Method
 	template<class Polynomial, class Blackbox>
-	Polynomial &charpoly (Polynomial                       &P,
+	Polynomial &charpoly (Polynomial            &P,
 			      const Blackbox                   & A,
 			      const RingCategories::ModularTag & tag,
 			      const Method::Hybrid             & M)
@@ -103,7 +103,7 @@ namespace LinBox
 
 	// The charpoly with Hybrid Method
 	template<class Polynomial, class Domain>
-	Polynomial &charpoly (Polynomial                       &P,
+	Polynomial &charpoly (Polynomial            &P,
 			      const SparseMatrix<Domain>       & A,
 			      const RingCategories::ModularTag & tag,
 			      const Method::Hybrid             & M)
@@ -114,7 +114,7 @@ namespace LinBox
 
 	// The charpoly with Hybrid Method
 	template<class Polynomial, class Domain>
-	Polynomial &charpoly (Polynomial                       &P,
+	Polynomial &charpoly (Polynomial            &P,
 			      const BlasMatrix<Domain>         & A,
 			      const RingCategories::ModularTag & tag,
 			      const Method::Hybrid             & M)

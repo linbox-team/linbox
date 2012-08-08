@@ -151,7 +151,7 @@ namespace LinBox
 	struct SparseSequenceVectorPairLessThan :
 		public std::binary_function<const std::pair<size_t, Element>&, const std::pair<size_t, Element>&, bool > {
 		bool operator() (const std::pair<size_t, Element>& p1, const std::pair<size_t, Element>& p2)
-		{
+	{
 			return p1.first < p2.first;
 		}
 	};
@@ -177,6 +177,7 @@ namespace LinBox
 	template <class Element>
 	struct VectorTraits< std::vector<Element> > {
 		typedef typename VectorCategories::DenseVectorTag VectorCategory;
+		typedef std::vector<Element> VectorType;
 		typedef std::vector<Element>                          VectorType;
 	};
 
@@ -184,6 +185,7 @@ namespace LinBox
 	template <class Element>
 	struct VectorTraits< std::vector< std::pair<size_t, Element> > > {
 		typedef typename VectorCategories::SparseSequenceVectorTag VectorCategory;
+		typedef std::vector< std::pair<size_t, Element> > VectorType;
 		typedef std::vector< std::pair<size_t, Element> >              VectorType;
 
 		static void sort (VectorType& v) { std::stable_sort(v.begin(), v.end(), SparseSequenceVectorPairLessThan<Element>()); }
@@ -193,6 +195,7 @@ namespace LinBox
 	template <class Element>
 	struct VectorTraits< std::list< std::pair<size_t, Element> > > {
 		typedef typename VectorCategories::SparseSequenceVectorTag VectorCategory;
+		typedef std::list< std::pair<size_t, Element> > VectorType;
 		typedef std::list< std::pair<size_t, Element> >                VectorType;
 
 		static void sort (VectorType& v) { v.sort(SparseSequenceVectorPairLessThan<Element>()); }
@@ -203,6 +206,7 @@ namespace LinBox
 	struct VectorTraits< std::deque< std::pair<size_t, Element> > >
 	{
 		typedef typename VectorCategories::SparseSequenceVectorTag VectorCategory;
+		typedef std::deque< std::pair<size_t, Element> > VectorType;
 		typedef std::deque< std::pair<size_t, Element> >               VectorType;
 
 		static void sort (VectorType& v) { std::stable_sort(v.begin, v.end(), SparseSequenceVectorPairLessThan<Element>()); }
@@ -213,6 +217,7 @@ namespace LinBox
 	struct VectorTraits< std::map<size_t, Element> >
 	{
 		typedef typename VectorCategories::SparseAssociativeVectorTag VectorCategory;
+		typedef std::map<size_t, Element> VectorType;
 		typedef std::map<size_t, Element>                                 VectorType;
 	};
 
@@ -221,6 +226,7 @@ namespace LinBox
 	struct VectorTraits< std::pair<std::vector<size_t>, std::vector<Element> > >
 	{
 		typedef typename VectorCategories::SparseParallelVectorTag VectorCategory;
+		typedef std::pair<std::vector<size_t>, std::vector<Element> > VectorType;
 		typedef std::pair<std::vector<size_t>, std::vector<Element> >  VectorType;
 	};
 
@@ -426,10 +432,10 @@ namespace LinBox
 
 	template <class Element>
 	struct RawVector {
-		typedef std::vector<Element>                                      Dense;
-		typedef std::pair<std::vector<size_t>, std::vector<Element> >    Sparse;
-		typedef std::vector<std::pair<size_t, Element> >              SparseSeq;
-		typedef std::map<size_t, Element>                             SparseMap;
+		typedef std::vector<Element> Dense;
+		typedef std::pair<std::vector<size_t>, std::vector<Element> > Sparse;
+		typedef std::vector<std::pair<size_t, Element> > SparseSeq;
+		typedef std::map<size_t, Element> SparseMap;
 		typedef std::pair<std::vector<size_t>, std::vector<Element> > SparsePar;
 
 		template<class VType> static size_t size(const VType& d)

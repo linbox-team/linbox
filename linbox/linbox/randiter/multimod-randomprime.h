@@ -73,7 +73,7 @@ namespace LinBox
 					integer::random(tmp[i],_bits-1);
 					tmp[i]= _shift-tmp[i];
 					nextprime(tmp[i],tmp[i]);
-				}
+			}
 				while (std::find(tmp.begin(), tmp.begin()+(long)i, tmp[i]) != (tmp.begin()+(long)i ));
 			}
 			return tmp;
@@ -89,7 +89,7 @@ namespace LinBox
 					integer::random(p[i],_bits-1);
 					p[i]= _shift-p[i];
 					nextprime(p[i],p[i]);
-				}
+			}
 				while (std::find(p.begin(), p.begin()+(long)(i-1), p[i]) != (p.begin()+(long)(i-1) ));
 			}
 			return p;
