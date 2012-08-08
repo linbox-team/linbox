@@ -73,7 +73,7 @@ BASIC_TESTS =  \
 
 FULLCHECK_TESTS =                 \
         test-bitonic-sort             \
-	test-blackbox-block-container \
+        test-blackbox-block-container \
         test-blas-domain              \
 		test-block-wiedemann		  \
         test-butterfly                \
@@ -110,7 +110,7 @@ FULLCHECK_TESTS =                 \
         test-randiter-nonzero         \
         test-rational-matrix-factory  \
         test-scalar-matrix            \
-	test-solve-nonsingular        \
+        test-solve-nonsingular        \
         test-sparse                   \
         test-subiterator              \
         test-submatrix                \
@@ -125,7 +125,7 @@ FULLCHECK_TESTS =                 \
         test-zero-one                 \
         test-last-invariant-factor    \
         test-cradomain                \
-		test-rational-reconstruction-base
+        test-rational-reconstruction-base
 
 #  test-integer-tools
 
@@ -205,6 +205,9 @@ ATLAS_TESTS =                         \
 BLAS3_UNIT_TESTS = \
 		   test-toom-cook
 
+OCL_TESTS =                           \
+        test-opencl-domain
+
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
 endif
@@ -217,6 +220,11 @@ if LINBOX_HAVE_LIDIA
 USE_LIDIA_TESTS = $(LIDIA_TESTS)
 endif
 
+if LINBOX_HAVE_OCL
+USE_OCL_TESTS = $(OCL_TESTS)
+AM_CPPFLAGS += $(OCL_CFLAGS)
+LDADD += $(OCL_LIBS)
+endif
 
 USE_ATLAS_TESTS = $(ATLAS_TESTS)
 
@@ -228,11 +236,12 @@ TESTS =                               \
         $(USE_LIDIA_TESTS)            \
         $(USE_NONCOMPILING_TESTS)     \
         $(USE_FAILING_TESTS)          \
-        $(USE_ATLAS_TESTS)
+        $(USE_ATLAS_TESTS)            \
+        $(USE_OCL_TESTS)
 
 
 
-EXTRA_PROGRAMS = \
+EXTRA_PROGRAMS =                      \
         $(BASIC_TESTS)                \
         $(GIVARO_TESTS)               \
         $(NTL_TESTS)                  \
@@ -243,9 +252,10 @@ EXTRA_PROGRAMS = \
         $(NONCOMPILING_TESTS)         \
         $(NONCOMPLIANT_TESTS)         \
         $(DUBIOUS_TESTS)              \
-        $(FULLCHECK_TESTS)              \
-        $(FAILING_TESTS) \
-	$(BLAS3_UNIT_TESTS)
+        $(FULLCHECK_TESTS)            \
+        $(FAILING_TESTS)              \
+        $(BLAS3_UNIT_TESTS)           \
+        $(USE_OCL_TESTS)
 
 
 test_commentator_SOURCES =                \
@@ -622,7 +632,6 @@ test_cradomain_SOURCES =                \
         test-cradomain.C                \
         test-common.h
 
-
 # NTL test
 
 test_smith_form_adaptive_SOURCES=      \
@@ -654,7 +663,13 @@ test_ispossemidef_SOURCES=            \
         test-ispossemidef.C
 
 test_ftrmm_SOURCES =                  \
-		test-ftrmm.C
+        test-ftrmm.C
+
+# OCL Test
+
+test_opencl_domain_SOURCES=           \
+        test-common.h                 \
+        test-opencl-domain.C
 
 test_toom_cook_SOURCES = test-toom-cook.C
 

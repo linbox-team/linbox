@@ -763,7 +763,7 @@ namespace LinBox
 						VectorCategories::SparseParallelVectorTag,
 						VectorCategories::DenseVectorTag) const
 		{
-			return /*DotProductDomain<Field>::*/dotSpecializedDSP (res, v1, v2);
+			return DotProductDomain<Field>::dotSpecializedDSP (res, v1, v2);
 		}
 
 		template <class Vector1, class Vector2>

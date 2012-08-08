@@ -52,12 +52,12 @@ namespace LinBox
 		commentator().start ("Integer Givaro::Dense Charpoly ", "CIA");
 
 		typename Blackbox::Field intRing = A.field();
-		typedef Modular<double>                                                 Field;
-		typedef typename Blackbox::template rebind<Field>::other            FBlackbox;
+		typedef Modular<double> Field;
+		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 		typedef GivPolynomialRing<typename Blackbox::Field, Givaro::Dense> IntPolyDom;
 		typedef GivPolynomialRing<Field, Givaro::Dense>                  FieldPolyDom;
-		typedef typename IntPolyDom::Element                                  IntPoly;
-		typedef typename FieldPolyDom::Element                              FieldPoly;
+		typedef typename IntPolyDom::Element IntPoly;
+		typedef typename FieldPolyDom::Element FieldPoly;
 
 		IntPolyDom IPD(intRing);
 

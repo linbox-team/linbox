@@ -54,9 +54,9 @@ namespace LinBox
 	public:
 		typedef _Field                         Field;
 		typedef typename Field::Element      Element;
-		typedef typename Field::RandIter    RandIter;
-		typedef BlasMatrix<Field>              Block;
-		typedef BlasMatrix<Field>              Value;
+		typedef typename Field::RandIter   RandIter;
+		typedef BlasMatrix<Field>           Block;
+		typedef BlasMatrix<Field>           Value;
 
 		// Default constructor
 		BlackboxBlockContainer () {}
@@ -167,8 +167,8 @@ namespace LinBox
 		typedef _Field                        Field;
 		typedef typename Field::Element     Element;
 		typedef typename Field::RandIter   RandIter;
-		typedef BlasMatrix<Field>             Block;
-		typedef BlasMatrix<Field>             Value;
+		typedef BlasMatrix<Field>           Block;
+		typedef BlasMatrix<Field>           Value;
 
 		enum Launcher {RowUpdate=0, ColUpdate=1, Nothing=2};
 
