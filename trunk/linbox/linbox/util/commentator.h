@@ -838,10 +838,10 @@ namespace LinBox
 		inline void setPrintParameters (unsigned long, unsigned long , const char *)
 	       	{}
 		inline bool isPrinted (unsigned long , unsigned long , const char * = (const char *) 0)
-		{
-		       	return false;
-		}
+		{ return false; }
 	};
+
+	class ActivityState {};
 
 	class Commentator {
 	public:
@@ -874,7 +874,7 @@ namespace LinBox
 			LEVEL_UNIMPORTANT  =  3
 		};
 
-		inline std::ostream &report (long , const char *)
+		inline std::ostream &report (long level = LEVEL_IMPORTANT, const char *msg_class = INTERNAL_DESCRIPTION)
 		{
 		       	return cnull;
 		}
@@ -903,37 +903,23 @@ namespace LinBox
 		inline void setMaxDetailLevel (long )
 		{}
 		inline MessageClass &registerMessageClass (const char *, std::ostream &, unsigned long = 1, unsigned long = 2)
-		{
-		       	return _msgcls;
-		}
+		{ return _msgcls; }
 		inline MessageClass &cloneMessageClass (const char *, const char *)
-		{
-		       	return _msgcls;
-	       	}
+		{ return _msgcls; }
 		inline MessageClass &cloneMessageClass (const char *, const char *, std::ostream &)
-		{
-		       	return _msgcls;
-	       	}
+		{ return _msgcls; }
 		inline MessageClass &getMessageClass (const char *)
-		{
-		       	return _msgcls;
-	       	}
+		{ return _msgcls; }
 		inline void setPrintParameters (unsigned long , unsigned long , const char * = (const char *) 0)
 	       	{}
 		inline void setBriefReportParameters (OutputFormat , bool , bool , bool )
 	       	{}
 		inline bool isPrinted (unsigned long , unsigned long , const char *, const char * = (const char *) 0)
-		{
-		       	return false;
-	       	}
+		{ return false; }
 		inline bool isPrinted (unsigned long , const char *, const char * = (const char *) 0)
-		{
-		       	return false;
-		}
+		{ return false; }
 		inline bool isNullStream (const std::ostream &)
-		{
-		       	return true;
-		}
+		{ return true; }
 		inline void setBriefReportStream (std::ostream &)
 		{}
 		inline void setReportStream (std::ostream &)
@@ -951,9 +937,12 @@ namespace LinBox
 		inline void report (const char *, long , const char *)
 	       	{}
 		inline bool printed (long , const char *)
-		{
-		       	return false;
-		}
+		{ return false; }
+
+		ActivityState saveActivityState () const 
+		{}
+		void restoreActivityState (ActivityState state) 
+		{}
 
 		std::ofstream cnull;
 
@@ -984,7 +973,7 @@ namespace LinBox
 #endif
 
 		MessageClass _msgcls;
-	};
+	}; // class (disabled) Commentator
 
 // 	// Default global commentator
 // 	extern Commentator commentator;
