@@ -137,7 +137,7 @@ int main (int argc, char **argv)
 	typedef Modular<uint32_t> Field;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F ((uint32_t)q);
 
 	commentator().start("bmseq test suite", "BlasMatrix");
 

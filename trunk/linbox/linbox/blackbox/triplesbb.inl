@@ -47,7 +47,7 @@ namespace LinBox
 {
 
 template<class Field> TriplesBB<Field>::TriplesBB() {}
-template<class Field> TriplesBB<Field>::~TriplesBB() {};
+template<class Field> TriplesBB<Field>::~TriplesBB() {}
 
 template<class Field> TriplesBB<Field>::TriplesBB(const Field& F, istream& in) : field_(&F) {
 	read(in);

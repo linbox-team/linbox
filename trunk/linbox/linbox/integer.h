@@ -41,7 +41,9 @@
 #ifndef __LINBOX_integer_H
 #define __LINBOX_integer_H
 
+#ifndef INT32_MAX
 #define INT32_MAX (2147483647L)
+#endif
 
 //#include <cstdint>
 #include "linbox/linbox-config.h"

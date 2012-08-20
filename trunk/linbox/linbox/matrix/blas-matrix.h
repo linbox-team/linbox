@@ -87,16 +87,19 @@ namespace LinBox
 		typedef typename Rep::pointer               pointer;    //!< pointer type to elements
 		typedef const pointer                 const_pointer;    //!< const pointer type
 		typedef BlasMatrix<_Field>                   Self_t;    //!< Self type
+                typedef BlasSubmatrix<_Field>         subMatrixType;    //!< Submatrix type
+                typedef BlasMatrix<_Field>               matrixType;    //!< matrix type
 
 	protected:
 		size_t			    _row;
 		size_t			    _col;
 		Rep			    _rep;
-		pointer			    _ptr;
 		const Field		    * _field;
-		MatrixDomain<Field>    _MD;
 		VectorDomain<Field>    _VD;
+public:
 		bool		     _use_fflas ;
+		pointer			    _ptr;
+		MatrixDomain<Field>    _MD;
 
 
 	private:
@@ -707,6 +710,8 @@ namespace LinBox
 		typedef typename RawVector<Element>::Dense      Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
 		typedef typename Rep::pointer        pointer;    //!< pointer type to elements
 		typedef const pointer                const_pointer;    //!< const pointer type
+                typedef Self_t                       subMatrixType;    //!< Submatrix type
+                typedef BlasMatrix<_Field>               matrixType;    //!< matrix type
 
 
 	protected:
@@ -1221,4 +1226,5 @@ namespace LinBox
 // c-basic-offset: 8
 // End:
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+
 

@@ -189,8 +189,8 @@ namespace LinBox
 			_nnz = rowP.size();
 			_rowP = new size_t[_nnz];
 			_colP = new size_t[_nnz];
-			copy(rowP.begin(), rowP.end(), _rowP);
-			copy(colP.begin(), colP.end(), _colP);
+			std::copy(rowP.begin(), rowP.end(), _rowP);
+			std::copy(colP.begin(), colP.end(), _colP);
 			return is;
 		}
 

@@ -154,7 +154,7 @@ namespace LinBox
 				A.applyTranspose(lhs,y);
 				_VDF.mulin(lhs,combi[0][deg]);
 				Vector lhsbis(lhs);
-				for (int i = deg-1 ; i > 0;--i) {
+				for (int i = (int)deg-1 ; i > 0;--i) {
 					_VDF.axpy (lhs, combi[0][i], y, lhsbis);
 					A.applyTranspose (lhsbis, lhs);
 				}
@@ -166,10 +166,10 @@ namespace LinBox
 						row[j]=UA.getEntry(k-1,j);
 					A.applyTranspose(lhs,row);
 					_VDF.mulin(lhs,combi[k][deg]);
-					Vector lhsbis(lhs);
-					for (int i = deg-1 ; i >= 0;--i) {
-						_VDF.axpy (lhs, combi[k][i], row, lhsbis);
-						A.applyTranspose (lhsbis, lhs);
+					Vector lhsbis_loc(lhs);
+					for (int i = (int)deg-1 ; i >= 0;--i) {
+						_VDF.axpy (lhs, combi[k][i], row, lhsbis_loc);
+						A.applyTranspose (lhsbis_loc, lhs);
 					}
 					_VDF.addin(accu,lhs);
 				}
@@ -201,7 +201,7 @@ namespace LinBox
 
 				A.applyTranspose(lhs,row);
 				Vector lhsbis(lhs);
-				for (int i = deg-1 ; i >= 0;--i) {
+				for (int i = (int)deg-1 ; i >= 0;--i) {
 					for (size_t j=0;j<m;++j)
 						row[j]= Combi.getEntry(i,j);
 					_VDF.add (lhs,row,lhsbis);
