@@ -72,7 +72,7 @@ int main (int argc, char **argv)
 	typedef vector <Field::Element> Polynomial;
 	typedef Companion<Field> Blackbox;
 
-	Field F (q);
+	Field F ((uint32_t)q);
 	Field::Element d;
 	F.init (d, -1);
 	Polynomial p(n+1, d);

@@ -84,7 +84,7 @@ int main (int argc, char **argv)
 	Blackbox A(F, m, n);
 	Element d;
 
-	for(int i = 0; i < m; ++i) 
+	for(int i = 0; i < (int)m; ++i) 
 	{ 	
 		F.init(d, i);
 		A.setEntry(i, (2*i)%n, d);
