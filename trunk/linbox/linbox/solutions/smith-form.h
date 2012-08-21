@@ -27,6 +27,7 @@
 
 #include <list>
 #include <vector>
+#include <iterator>
 #include "linbox/util/error.h"
 #include "linbox/algorithms/matrix-hom.h"
 #ifdef __LINBOX_HAVE_NTL
@@ -38,9 +39,11 @@
 
 namespace LinBox
 {
+	//! no doc.
 	template<class I1, class Lp>
 	void distinct (I1 a, I1 b, Lp& c)
-	{	typename I1::value_type e;
+	{
+		typename iterator_traits<I1>::value_type e;
 		size_t count = 0;
 		if (a != b) {e = *a; ++a; count = 1;}
 		else return;
@@ -181,11 +184,11 @@ namespace LinBox
 #endif // __LINBOX_smith_form_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

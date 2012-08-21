@@ -35,96 +35,12 @@
 namespace LinBox
 {
 
-	/*
-	 * **********************************************
-	 * *** Specialization for BlasMatrix<Field> ***
-	 * **********************************************
-	 */
-
-
-#if 0
-	// Inversion
-	// dpritcha: now returns nullity. (2004-07-19)
-	// previously returned Ainv but this is passed back anyway.
-	template <class Field>
-	class BlasMatrixDomainInv<Field,BlasMatrix<Field> > {
-	public:
-		int operator() (const Field                   &F,
-				BlasMatrix<Field>        &Ainv,
-				const BlasMatrix<Field>     &A) const
-		{
-
-			linbox_check( A.rowdim() == A.coldim());
-			linbox_check( A.rowdim() == Ainv.rowdim());
-			linbox_check( A.coldim() == Ainv.coldim());
-			BlasMatrix<Field> tmp(A);
-			return (*this)(F,Ainv,tmp);
-		}
-
-		int operator() (const Field                &F,
-				BlasMatrix<Field>     &Ainv,
-				BlasMatrix<Field>        &A) const
-		{
-
-			linbox_check( A.rowdim() == A.coldim());
-			linbox_check( A.rowdim() == Ainv.rowdim());
-			linbox_check( A.coldim() == Ainv.coldim());
-			int nullity;
-			FFPACK::Invert((typename Field::Father_t)F,A.rowdim(),A.getPointer(),A.getStride(),
-				       Ainv.getPointer(),Ainv.getStride(),nullity);
-			return nullity;
-		}
-
-	};
-#endif
-
-
-#if 0
-	// Rank
-	template <class Field>
-	class 	BlasMatrixDomainRank<Field,BlasMatrix<Field> > {
-	public:
-		inline unsigned int operator() (const Field                &F,
-						const BlasMatrix<Field>  &A) const
-		{
-
-			BlasMatrix<Field> tmp(A);
-			return (*this)(F,tmp);
-		}
-
-		inline unsigned int operator() (const Field                &F,
-						BlasMatrix<Field>        &A) const
-		{
-
-			return FFPACK::Rank((typename Field::Father_t)F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
-		}
-	};
-
-	// determinant
-	template <class Field>
-	class BlasMatrixDomainDet<Field,BlasMatrix<Field> > {
-	public:
-		inline typename Field::Element operator()(const Field                 &F,
-							  const BlasMatrix<Field>   &A) const
-		{
-
-			BlasMatrix<Field> tmp(A);
-			return  (*this)(F,tmp);
-		}
-
-		inline typename Field::Element operator() (const Field                &F,
-							   BlasMatrix<Field>        &A) const
-		{
-
-			return FFPACK::Det((typename Field::Father_t)F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
-		}
-	};
-#endif
-
 
 	/*
 	 * **********************************************
-	 * *** Specialization for BlasMatrix<Field> ***
+	 * *** Specialization for BlasSubmatrix<Field> ***
+	 * the BlasMatrixDomain have template Matrix parameters
+	 * and the specialized one are only for views.
 	 * **********************************************
 	 */
 
@@ -134,196 +50,249 @@ namespace LinBox
 		// dpritcha: now returns nullity. (2004-07-19)
 		// previously returned Ainv but this is passed back anyway.
 		template <class Field>
-			class BlasMatrixDomainInv<Field,BlasSubmatrix<Field> > {
-				public:
-#if 0 /* not needed */
-					int operator() (const Field                                   &F,
-							BlasSubmatrix<Field>        &Ainv,
-							const BlasSubmatrix<Field>     &A) const
-					{
+		class BlasMatrixDomainInv<Field,BlasSubmatrix<Field> > {
+		public:
 
-						linbox_check( A.rowdim() == A.coldim());
-						linbox_check( A.rowdim() == Ainv.rowdim());
-						linbox_check( A.coldim() == Ainv.coldim());
-						BlasMatrix<Field> tmp(A); // we do a copy
-						BlasSubmatrix<Field> Acopy(tmp);
-						return (*this)(F,Ainv,Acopy);
-					}
-#endif
+			int operator() (const Field                                  &F,
+					BlasSubmatrix<Field>       &Ainv,
+					BlasSubmatrix<Field>          &A) const
+			{
 
-					int operator() (const Field                                  &F,
-							BlasSubmatrix<Field>       &Ainv,
-							BlasSubmatrix<Field>          &A) const
-					{
+				linbox_check( A.rowdim() == A.coldim());
+				linbox_check( A.rowdim() == Ainv.rowdim());
+				linbox_check( A.coldim() == Ainv.coldim());
+				int nullity;
+				FFPACK::Invert ((typename Field::Father_t)F, A.rowdim(), A.getPointer(), A.getStride(),
+						Ainv.getPointer(),Ainv.getStride(),nullity);
+				return nullity;
+			}
 
-						linbox_check( A.rowdim() == A.coldim());
-						linbox_check( A.rowdim() == Ainv.rowdim());
-						linbox_check( A.coldim() == Ainv.coldim());
-						int nullity;
-						FFPACK::Invert ((typename Field::Father_t)F, A.rowdim(), A.getPointer(), A.getStride(),
-								Ainv.getPointer(),Ainv.getStride(),nullity);
-						return nullity;
-					}
-
-			};
+		};
 
 		// determinant
 		template <class Field>
-			class BlasMatrixDomainDet<Field,BlasSubmatrix<Field> > {
-				public:
-#if 0
-					inline typename Field::Element operator()(const Field                                &F,
-							const BlasMatrix<Field>  &A) const
-					{
+		class BlasMatrixDomainDet<Field,BlasSubmatrix<Field> > {
+		public:
 
-						BlasMatrix<Field> tmp(A);
-						return  (*this)(F,tmp);
-					}
-#endif
+			inline typename Field::Element operator() (const Field                             &F,
+								   BlasSubmatrix<Field>     &A) const
+			{
 
-					inline typename Field::Element operator() (const Field                             &F,
-							BlasSubmatrix<Field>     &A) const
-					{
+				return FFPACK::Det((typename Field::Father_t)F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+			}
+		};
 
-						return FFPACK::Det((typename Field::Father_t)F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
-					}
-			};
+
+		// rank
+		template <class Field>
+		class 	BlasMatrixDomainRank<Field,BlasSubmatrix<Field> > {
+		public:
+			inline unsigned int operator() (const Field                                &F,
+							BlasSubmatrix<Field>  &A) const
+			{
+
+				return (unsigned int) FFPACK::Rank((typename Field::Father_t)F,
+								   A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+			}
+		};
 
 	}
 
+
+	// Det
+	template< class Field, class Matrix>
+	typename Field::Element
+	BlasMatrixDomainDet<Field, Matrix>::operator() (const Field &F, const Matrix& A) const
+	{
+		typedef typename Matrix::subMatrixType subMatrixType ;
+		typedef typename Matrix::matrixType       matrixType ;
+		matrixType A_c(A); // do copy
+		subMatrixType A_v(A_c);
+		return Protected::BlasMatrixDomainDet<Field, subMatrixType>()(F,A_v);
+	}
+
+	template< class Field, class Matrix>
+	typename Field::Element
+	BlasMatrixDomainDet<Field, Matrix>::operator() (const Field &F, Matrix& A) const
+	{
+		typedef typename Matrix::subMatrixType subMatrixType ;
+		subMatrixType A_v(A);
+		return Protected::BlasMatrixDomainDet<Field, subMatrixType>()(F,A_v);
+	}
+
+	template< class Field>
+	class BlasMatrixDomainDet<Field, TriangularBlasMatrix<Field> > {
+		typename Field::Element operator() (const Field &F, const TriangularBlasMatrix<Field> & A) const
+		{
+			typename Field::Element d ;
+			F.init(d);
+			// is A unit ? return 1
+			// while not 0, mulin
+			return d;
+		}
+	};
+
+	// what about transpose ?
+
 	// Rank
-	template <class Field>
-	class 	BlasMatrixDomainRank<Field,BlasMatrix<Field> > {
-	public:
-		inline unsigned int operator() (const Field                                &F,
-						const BlasMatrix<Field>  &A) const
-		{
+	template<class Field, class Matrix>
+	inline unsigned int
+	BlasMatrixDomainRank<Field, Matrix>::operator() (const Field   &F,
+							 const  Matrix  &A) const
+	{
 
-			BlasMatrix<Field> tmp(A);
-			return (*this)(F,tmp);
-		}
+		typedef typename Matrix::subMatrixType subMatrixType ;
+		typedef typename Matrix::matrixType       matrixType ;
+		matrixType A_c(A); // do copy
+		subMatrixType A_v(A_c);
 
-		inline unsigned int
-		operator() (const Field         &F,
-			    BlasMatrix<Field>   &A) const
-		{
+		return Protected::BlasMatrixDomainRank<Field, subMatrixType>()(F,A_v);
 
-			return (unsigned int) FFPACK::Rank((typename Field::Father_t)F,
-					A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
-		}
-	};
+	}
+
+	template<class Field, class Matrix>
+	inline unsigned int
+	BlasMatrixDomainRank<Field, Matrix>::operator() (const Field   &F,
+							 Matrix        &A) const
+	{
+		typedef typename Matrix::subMatrixType subMatrixType ;
+		subMatrixType A_v(A);
+
+		return Protected::BlasMatrixDomainRank<Field, subMatrixType>()(F,A_v);
+	}
 
 
+	// Inverse
+	template<class Field, class Matrix1, class Matrix2>
+	int BlasMatrixDomainInv<Field, Matrix1, Matrix2>::operator() (const Field &F, Matrix1 &Ainv, const Matrix2 &A) const
+	{
+		typedef typename Matrix1::subMatrixType subMatrixType ;
+		typedef typename Matrix1::matrixType       matrixType ;
+		subMatrixType Ai_v(Ainv);
+		//! @todo check equal submatrix types
+		matrixType A_c(A); // do copy
+		subMatrixType A_v(A_c);
+		return Protected::BlasMatrixDomainInv<Field, subMatrixType>()(F,Ai_v,A_v);
+	}
 
-	/*
-	 * specialization for Operand1, Operand2 and Operand3  of type BlasMatrix<Field>
-	 */
+	template<class Field, class Matrix1, class Matrix2>
+	int BlasMatrixDomainInv<Field, Matrix1, Matrix2>::operator() (const Field &F, Matrix1 &Ainv, Matrix2 &A) const
+	{
+		typedef typename Matrix1::subMatrixType subMatrixType ;
+		subMatrixType Ai_v(Ainv);
+		subMatrixType A_v(A);
+		return Protected::BlasMatrixDomainInv<Field, subMatrixType>()(F,Ai_v,A_v);
+	}
 
-	template<class Field>
-	class 	BlasMatrixDomainAdd<Field,BlasMatrix<Field>,BlasMatrix<Field>, BlasMatrix<Field> > {
-	public:
-		BlasMatrix<Field>& operator()(const Field& F,
-								BlasMatrix<Field>& C,
-								const BlasMatrix<Field>& A,
-								const BlasMatrix<Field>& B) const
-		{
-			linbox_check( A.rowdim() == B.rowdim());
-			linbox_check( C.rowdim() == A.rowdim());
-			linbox_check( A.coldim() == B.coldim());
-			linbox_check( C.coldim() == A.coldim());
-			FFLAS::fadd ((typename Field::Father_t)F, C.rowdim(), C.coldim(),
-				     A.getPointer(), A.getStride(),
-				     B.getPointer(), B.getStride(),
-				     C.getPointer(), C.getStride());
-			return C;
-		}
-	};
 
-	template<class Field>
-	class 	BlasMatrixDomainCopy<Field,BlasMatrix<Field>, BlasMatrix<Field> > {
-	public:
-		BlasMatrix<Field>& operator()(const Field& F,
-								BlasMatrix<Field>& B,
-								const BlasMatrix<Field>& A) const
-		{
-			linbox_check( A.rowdim() == B.rowdim());
-			linbox_check( A.coldim() == B.coldim());
-			for (size_t i=0; i<A.rowdim(); i++)
-				FFLAS::fcopy ((typename Field::Father_t)F, A.coldim(),
-					      B.getPointer() + i*B.getStride(), 1,
-					      A.getPointer() + i*A.getStride(), 1);
-			return B;
-		}
-	};
+	// Add
+	template<class Field, class Matrix1, class Matrix2, class Matrix3>
+	Matrix1&
+	BlasMatrixDomainAdd<Field,Matrix1, Matrix2, Matrix3 >::operator()(const Field& F,
+									  Matrix1& C,
+									  const Matrix2& A,
+									  const Matrix3& B) const
+	{
+		linbox_check( A.rowdim() == B.rowdim());
+		linbox_check( C.rowdim() == A.rowdim());
+		linbox_check( A.coldim() == B.coldim());
+		linbox_check( C.coldim() == A.coldim());
+		typedef typename Matrix1::subMatrixType subMatrixType ;
+		subMatrixType A_v(A);
+		subMatrixType B_v(B);
+		subMatrixType C_v(C);
 
-	template<class Field>
-	class 	BlasMatrixDomainCopy<Field,BlasSubmatrix<Field>, BlasSubmatrix<Field> > {
-	public:
-		BlasSubmatrix<Field>& operator()(const Field& F,
-								BlasSubmatrix<Field>& B,
-								const BlasSubmatrix<Field>& A) const
-		{
-			linbox_check( A.rowdim() == B.rowdim());
-			linbox_check( A.coldim() == B.coldim());
-			for (size_t i=0; i<A.rowdim(); i++)
-				FFLAS::fcopy ((typename Field::Father_t)F, A.coldim(),
-					      B.getPointer() + i*B.getStride(), 1,
-					      A.getPointer() + i*A.getStride(), 1);
-			return B;
-		}
-	};
+		FFLAS::fadd ((typename Field::Father_t)F, C_v.rowdim(), C_v.coldim(),
+			     A_v.getPointer(), A_v.getStride(),
+			     B_v.getPointer(), B_v.getStride(),
+			     C_v.getPointer(), C_v.getStride());
+		return C;
+	}
 
-	template<class Field>
-	class 	BlasMatrixDomainSub<Field,BlasMatrix<Field>,BlasMatrix<Field>, BlasMatrix<Field> > {
-	public:
-		BlasMatrix<Field>& operator()(const Field& F,
-								BlasMatrix<Field>& C,
-								const BlasMatrix<Field>& A,
-								const BlasMatrix<Field>& B) const
-		{
-			linbox_check( A.rowdim() == B.rowdim());
-			linbox_check( C.rowdim() == A.rowdim());
-			linbox_check( A.coldim() == B.coldim());
-			linbox_check( C.coldim() == A.coldim());
-			FFLAS::fsub ((typename Field::Father_t)F, C.rowdim(), C.coldim(),
-				     A.getPointer(), A.getStride(),
-				     B.getPointer(), B.getStride(),
-				     C.getPointer(), C.getStride());
-			return C;
-		}
-	};
+	// AddIn
+	template<class Field, class Matrix1, class Matrix3>
+	Matrix1&
+	BlasMatrixDomainAddin<Field,Matrix1, Matrix3 >::operator()(const Field& F,
+									  Matrix1& C,
+									  const Matrix3& B) const
+	{
+		linbox_check( C.rowdim() == B.rowdim());
+		linbox_check( C.coldim() == B.coldim());
+		typedef typename Matrix1::subMatrixType subMatrixType ;
+		subMatrixType B_v(B);
+		subMatrixType C_v(C);
 
-	template<class Field>
-	class 	BlasMatrixDomainSubin<Field,BlasMatrix<Field>,BlasMatrix<Field> > {
-	public:
-		BlasMatrix<Field>& operator()(const Field& F,
-								BlasMatrix<Field>& C,
-								const BlasMatrix<Field>& B) const
-		{
-			linbox_check( C.rowdim() == B.rowdim());
-			linbox_check( C.coldim() == B.coldim());
-			FFLAS::fsubin ((typename Field::Father_t)F, C.rowdim(), C.coldim(),
-				     B.getPointer(), B.getStride(),
-				     C.getPointer(), C.getStride());
-			return C;
-		}
-	};
+		FFLAS::faddin ((typename Field::Father_t)F, C_v.rowdim(), C_v.coldim(),
+			     B_v.getPointer(), B_v.getStride(),
+			     C_v.getPointer(), C_v.getStride());
+		return C;
+	}
 
-	template<class Field>
-	class 	BlasMatrixDomainAddin<Field,BlasMatrix<Field>,BlasMatrix<Field> > {
-	public:
-		BlasMatrix<Field>& operator()(const Field& F,
-								BlasMatrix<Field>& C,
-								const BlasMatrix<Field>& B) const
-		{
-			linbox_check( C.rowdim() == B.rowdim());
-			linbox_check( C.coldim() == B.coldim());
-			FFLAS::faddin ((typename Field::Father_t)F, C.rowdim(), C.coldim(),
-				     B.getPointer(), B.getStride(),
-				     C.getPointer(), C.getStride());
-			return C;
-		}
-	};
+
+	// Sub
+	template<class Field, class Matrix1, class Matrix2, class Matrix3>
+	Matrix1&
+	BlasMatrixDomainSub<Field,Matrix1, Matrix2, Matrix3 >::operator()(const Field& F,
+									  Matrix1& C,
+									  const Matrix2& A,
+									  const Matrix3& B) const
+	{
+		linbox_check( A.rowdim() == B.rowdim());
+		linbox_check( C.rowdim() == A.rowdim());
+		linbox_check( A.coldim() == B.coldim());
+		linbox_check( C.coldim() == A.coldim());
+		typedef typename Matrix1::subMatrixType subMatrixType ;
+		subMatrixType A_v(A);
+		subMatrixType B_v(B);
+		subMatrixType C_v(C);
+
+		FFLAS::fsub ((typename Field::Father_t)F, C_v.rowdim(), C_v.coldim(),
+			     A_v.getPointer(), A_v.getStride(),
+			     B_v.getPointer(), B_v.getStride(),
+			     C_v.getPointer(), C_v.getStride());
+		return C;
+	}
+
+	// SubIn
+	template<class Field, class Matrix1, class Matrix3>
+	Matrix1&
+	BlasMatrixDomainSubin<Field,Matrix1, Matrix3 >::operator()(const Field& F,
+									  Matrix1& C,
+									  const Matrix3& B) const
+	{
+		linbox_check( C.rowdim() == B.rowdim());
+		linbox_check( C.coldim() == B.coldim());
+		typedef typename Matrix1::subMatrixType subMatrixType ;
+		subMatrixType B_v(B);
+		subMatrixType C_v(C);
+
+		FFLAS::fsubin ((typename Field::Father_t)F, C_v.rowdim(), C_v.coldim(),
+			     B_v.getPointer(), B_v.getStride(),
+			     C_v.getPointer(), C_v.getStride());
+		return C;
+	}
+
+	//Copy
+	template<class Field, class Matrix1, class Matrix2>
+	Matrix1&
+	BlasMatrixDomainCopy<Field,Matrix1, Matrix2 >::operator()(const Field& F,
+								  Matrix1& B,
+								  const Matrix2& A) const
+	{
+		linbox_check( A.rowdim() == B.rowdim());
+		linbox_check( A.coldim() == B.coldim());
+		typedef typename Matrix1::subMatrixType subMatrixType ;
+		subMatrixType A_v(A);
+		subMatrixType B_v(B);
+
+		for (size_t i=0; i<A.rowdim(); i++)
+			FFLAS::fcopy ((typename Field::Father_t)F, A_v.coldim(),
+				      B_v.getPointer() + i*B_v.getStride(), 1,
+				      A_v.getPointer() + i*A_v.getStride(), 1);
+		return B;
+	}
+
+
 
 	//  general matrix-matrix multiplication and addition with scaling
 	// D= beta.C + alpha.A*B
@@ -412,7 +381,7 @@ namespace LinBox
 				      D.getPointer(), D.getStride());
 			return D;
 		}
- 
+
 
 		BlasSubmatrix<Field>&
 		operator() (const Field                              & F,
@@ -1114,54 +1083,55 @@ namespace LinBox
 	 * Specialization for Operand of type BlasMatrix<Field>
 	 */
 
-	template <class Field>
-	class BlasMatrixDomainLeftSolve<Field,BlasMatrix<Field>,BlasMatrix<Field> > {
-	public:
-		BlasMatrix<Field>& operator() (const Field& F,
-								 BlasMatrix<Field>& X,
-								 const BlasMatrix<Field>& A,
-								 const BlasMatrix<Field>& B) const
+	template <class Field, class Operand1, class Matrix, class Operand2>
+		Operand1&
+		BlasMatrixDomainLeftSolve<Field,Operand1, Matrix, Operand2 >::operator() (const Field& F,
+					       Operand1& X,
+					       const Matrix& A,
+					       const Operand2& B) const
 		{
 			LQUPMatrix<Field> LQUP(A);
 			LQUP.left_solve(X,B);
 			return X;
 		}
 
-
-		BlasMatrix<Field>& operator() (const Field& F,
-								 const BlasMatrix<Field>& A,
-								 BlasMatrix<Field>& B) const
+	template <class Field, class Operand1, class Matrix, class Operand2>
+		Operand1&
+		BlasMatrixDomainLeftSolve<Field,Operand1, Matrix, Operand2 >::operator() (const Field& F,
+								 const Matrix& A,
+								 Operand1& B) const
 		{
 			LQUPMatrix<Field> LQUP(A);
 			LQUP.left_solve(B);
 			return B;
 		}
-	};
+	// };
 
-	template <class Field>
-	class BlasMatrixDomainRightSolve<Field,BlasMatrix<Field>,BlasMatrix<Field> > {
-	public:
-		BlasMatrix<Field>& operator() (const Field& F,
-								 BlasMatrix<Field>& X,
-								 const BlasMatrix<Field>& A,
-								 const BlasMatrix<Field>& B) const
-		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.right_solve(X,B);
-			return X;
-		}
+	template <class Field, class Operand1, class Matrix, class Operand2>
+	Operand1&
+	BlasMatrixDomainRightSolve<Field,Operand1, Matrix, Operand2 >::operator() (const Field& F,
+										   Operand1& X,
+										   const Matrix& A,
+										   const Operand2& B) const
+	{
+		// typename Matrix::subMatrixType subMatrixType ;
+		LQUPMatrix<Field> LQUP(A);
+		LQUP.right_solve(X,B);
+		return X;
+	}
 
+	template <class Field, class Operand1, class Matrix, class Operand2>
+	Operand1&
+	BlasMatrixDomainRightSolve<Field,Operand1, Matrix, Operand2 >::operator() (const Field& F,
+										   const Matrix& A,
+										   Operand1& B) const
+	{
+		LQUPMatrix<Field> LQUP(A);
+		LQUP.right_solve(B);
+		return B;
+	}
 
-		BlasMatrix<Field>& operator() (const Field& F,
-								 const BlasMatrix<Field>& A,
-								 BlasMatrix<Field>& B) const
-		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.right_solve(B);
-			return B;
-		}
-
-	};
+	// };
 
 	template <class Field>
 	class BlasMatrixDomainRightSolve<Field,BlasSubmatrix<Field>,BlasSubmatrix<Field> > {
@@ -1264,6 +1234,7 @@ namespace LinBox
 			linbox_check( X.rowdim() == B.rowdim());
 			linbox_check( X.coldim() == B.coldim());
 
+			//! @bug use copy
 			typename BlasMatrix<Field>::ConstIterator  Biter =   B.Begin();
 			typename BlasMatrix<Field>::Iterator       Xiter =   X.Begin();
 
@@ -1490,8 +1461,8 @@ namespace LinBox
 					break;
 				case LinBoxTag::NonUnit:
 					FFLAS::ftrsv((typename Field::Father_t) F,
-						      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
-						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+						     FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
+						     b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
 				default:
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
@@ -1501,8 +1472,8 @@ namespace LinBox
 				switch(A.getDiag()) {
 				case LinBoxTag::Unit:
 					FFLAS::ftrsv((typename Field::Father_t) F,
-						      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit,
-						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+						     FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit,
+						     b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
 				case LinBoxTag::NonUnit:
 					FFLAS::ftrsv( (typename Field::Father_t)F,
@@ -1521,48 +1492,47 @@ namespace LinBox
 		}
 	};
 
-	template< class Field, class Polynomial>
-	class BlasMatrixDomainMinpoly< Field, Polynomial, BlasMatrix<Field> > {
-	public:
-		Polynomial& operator() (const Field &F, Polynomial& P, const BlasMatrix<Field>& A) const
-		{
-			commentator().start ("Modular Dense Minpoly ", "MDMinpoly");
+	template< class Field, class Polynomial, class Matrix>
+	Polynomial&
+	BlasMatrixDomainMinpoly< Field, Polynomial, Matrix >::operator() (const Field &F, Polynomial& P, const Matrix& A) const
+	{
+		commentator().start ("Modular Dense Minpoly ", "MDMinpoly");
 
-			size_t n = A.coldim();
-			linbox_check( n == A.rowdim());
-			typename Field::Element * X = new typename Field::Element[n*(n+1)];
-			size_t *Perm = new size_t[n];
-			for ( size_t i=0; i<n; ++i)
-				Perm[i] = 0;
-			// (typename Field::Father_t)
-			FFPACK::MinPoly<Field,Polynomial>(  F, P, n, A.getPointer(), A.getStride(), X, n, Perm);
-			commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
+		size_t n = A.coldim();
+		linbox_check( n == A.rowdim());
+		typename Field::Element * X = new typename Field::Element[n*(n+1)];
+		size_t *Perm = new size_t[n];
+		for ( size_t i=0; i<n; ++i)
+			Perm[i] = 0;
+		// (typename Field::Father_t)
+		typedef typename Matrix::subMatrixType subMatrixType ;
+		subMatrixType A_v(A);
 
-			delete[] Perm;
-			delete[] X;
-			commentator().stop ("done",NULL,"MDMinpoly");
-			return P;
-		}
-	};
+		FFPACK::MinPoly<Field,Polynomial>(  F, P, n, A_v.getPointer(), A.getStride(), X, n, Perm);
+		commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
 
-// #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
-	// template <>
-// #endif
-	template< class Field,  class ContPol >
-	class BlasMatrixDomainCharpoly< Field,  ContPol, BlasMatrix<Field> > {
-	public:
-		ContPol& operator() ( const Field                                	&F,
-				      ContPol                     			&P,
-				      const BlasMatrix<Field> 	&A) const
-		{
+		delete[] Perm;
+		delete[] X;
+		commentator().stop ("done",NULL,"MDMinpoly");
+		return P;
+	}
 
-			size_t n = A.coldim();
-			P.clear();
-			linbox_check( n == A.rowdim());
-			FFPACK::CharPoly((typename Field::Father_t) F, P, n, A.getPointer(), A.getStride());
-			return P;
-		}
-	};
+	template< class Field,  class ContPol, class Matrix >
+	ContPol&
+	BlasMatrixDomainCharpoly<Field,ContPol,Matrix>::operator() ( const Field                                	&F,
+								     ContPol                     			&P,
+								     const Matrix 	&A) const
+	{
+
+		size_t n = A.coldim();
+		P.clear();
+		linbox_check( n == A.rowdim());
+		typedef typename Matrix::subMatrixType subMatrixType ;
+		subMatrixType A_v(A);
+
+		FFPACK::CharPoly((typename Field::Father_t) F, P, n, A_v.getPointer(), A_v.getStride());
+		return P;
+	}
 
 } //end of namespace LinBox
 

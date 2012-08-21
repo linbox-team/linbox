@@ -32,27 +32,38 @@ namespace LinBox
 	namespace Protected
 	{
 		/// @internal
-		template <class Field, class Operand>
+		template <class Field, class Operand1, class Operand2=Operand1>
 		class FactorizedMatrixLeftSolve {
 		public:
-			Operand& operator() ( const Field& F,
-					      const LQUPMatrix<Field>& A,
-					      Operand& X, const Operand& B ) const;
-			Operand& operator() ( const Field& F,
-					      const LQUPMatrix<Field>& A,
-					      Operand& B ) const;
+			Operand1& operator() ( const Field& F,
+					       const LQUPMatrix<Field>& A,
+					       Operand1& X,
+					       const Operand2& B ) const;
+		}; // end of class FactorizedMatrixLeftSolve
+		template <class Field, class Operand1>
+		class FactorizedMatrixLeftSolveIP {
+		public:
+			Operand1& operator() ( const Field& F,
+					       const LQUPMatrix<Field>& A,
+					       Operand1& B ) const;
 		}; // end of class FactorizedMatrixLeftSolve
 
 		/// @internal
-		template <class Field, class Operand>
+		template <class Field, class Operand1, class Operand2=Operand1>
 		class FactorizedMatrixRightSolve {
 		public:
-			Operand& operator() ( const Field& F,
-					      const LQUPMatrix<Field>& A,
-					      Operand& X, const Operand& B ) const;
-			Operand& operator() ( const Field& F,
-					      const LQUPMatrix<Field>& A,
-					      Operand& B ) const;
+			Operand1& operator() ( const Field& F,
+					       const LQUPMatrix<Field>& A,
+					       Operand1& X,
+					       const Operand2& B ) const;
+		};
+		template <class Field, class Operand1>
+		class FactorizedMatrixRightSolveIP {
+		public:
+
+			Operand1& operator() ( const Field& F,
+					       const LQUPMatrix<Field>& A,
+					       Operand1& B ) const;
 		}; // end of class FactorizedMatrixRightSolve
 
 		/// @internal
@@ -107,95 +118,109 @@ namespace LinBox
 		 * Solvers with Matrices: Operand=BlasMatrix<Field>
 		 */
 
-		template <class Field>
-		class FactorizedMatrixLeftSolve<Field, BlasMatrix<Field> > {
-		public:
-
-			BlasMatrix<Field>& operator() (const Field& F,
+		template <class Field, class Matrix1, class Matrix2>
+		Matrix1&
+		FactorizedMatrixLeftSolve<Field,Matrix1,Matrix2>::operator() ( const Field& F,
 						       const LQUPMatrix<Field>& A,
-						       BlasMatrix<Field>& X,
-						       const BlasMatrix<Field>& B) const
-			{
-				linbox_check (A.coldim() == X.rowdim());
-				linbox_check (A.rowdim() == B.rowdim());
-				linbox_check (B.coldim() == X.coldim());
-				int info;
+						       Matrix1& X,
+						       const Matrix2& B) const
+		{
+			linbox_check (A.coldim() == X.rowdim());
+			linbox_check (A.rowdim() == B.rowdim());
+			linbox_check (B.coldim() == X.coldim());
+			int info;
+			// we don't really need that...
+			typedef typename Matrix1::subMatrixType subMatrixType ;
+			subMatrixType X_v(X);
+			subMatrixType B_v(B);
 
-				FFPACK::fgetrs ((typename Field::Father_t)F, FFLAS::FflasLeft, A.rowdim(), A.coldim(), B.coldim(), A.getRank(),
-						A.getPointer(), A.getStride(), A.getP().getPointer(), A.getQ().getPointer(),
-						X.getPointer(), X.getStride(),
-						B.getPointer(), B.getStride(), &info);
-				if (info > 0)
-					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
 
-				return X;
-			}
+			FFPACK::fgetrs ((typename Field::Father_t)F, FFLAS::FflasLeft, A.rowdim(), A.coldim(), B_v.coldim(), A.getRank(),
+					A.getPointer(), A.getStride(), A.getP().getPointer(), A.getQ().getPointer(),
+					X_v.getPointer(), X_v.getStride(),
+					B_v.getPointer(), B_v.getStride(), &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
 
-			BlasMatrix<Field>& operator() (const Field& F,
-						       const LQUPMatrix<Field>& A,
-						       BlasMatrix<Field>& B) const
-			{
+			return X;
+		}
 
-				int info;
-				linbox_check (A.coldim() == A.rowdim());
-				linbox_check (A.coldim() == B.rowdim());
+		template <class Field, class Matrix1>
+		Matrix1&
+		FactorizedMatrixLeftSolveIP<Field,Matrix1>::operator() ( const Field& F,
+									 const LQUPMatrix<Field>& A,
+									 Matrix1& B ) const
+		{
 
-				FFPACK::fgetrs ((typename Field::Father_t)F, FFLAS::FflasLeft, B.rowdim(), B.coldim(), A.getRank(),
-						A.getPointer(), A.getStride(),
-						A.getP().getPointer(), A.getQ().getPointer(),
-						B.getPointer(), B.getStride(), &info);
-				if (info > 0)
-					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
+			int info;
+			linbox_check (A.coldim() == A.rowdim());
+			linbox_check (A.coldim() == B.rowdim());
 
-				return B;
-			}
-		}; // end of class FactorizedMatrixLeftSolve
+			typedef typename Matrix1::subMatrixType subMatrixType ;
+			subMatrixType B_v(B);
 
-		template <class Field>
-		class FactorizedMatrixRightSolve<Field, BlasMatrix<Field> > {
-		public:
 
-			BlasMatrix<Field>& operator() ( const Field& F,
-							const LQUPMatrix<Field>& A,
-							BlasMatrix<Field>& X,
-							const BlasMatrix<Field>& B ) const
-			{
-				linbox_check (A.rowdim() == X.coldim());
-				linbox_check (A.coldim() == B.coldim());
-				linbox_check (B.rowdim() == X.rowdim());
-				int info;
+			FFPACK::fgetrs ((typename Field::Father_t)F, FFLAS::FflasLeft, B_v.rowdim(), B_v.coldim(), A.getRank(),
+					A.getPointer(), A.getStride(),
+					A.getP().getPointer(), A.getQ().getPointer(),
+					B_v.getPointer(), B_v.getStride(), &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
 
-				FFPACK::fgetrs ((typename Field::Father_t)F, FFLAS::FflasRight, A.rowdim(), A.coldim(), B.rowdim(), A.getRank(),
-						A.getPointer(), A.getStride(),
-						A.getP().getPointer(), A.getQ().getPointer(),
-						X.getPointer(), X.getStride(),
-						B.getPointer(), B.getStride(), &info);
-				if (info > 0)
-					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
+			return B;
+		}
+		// end of class FactorizedMatrixLeftSolve
 
-				return X;
-			}
+		template <class Field, class Matrix1, class Matrix2>
+		Matrix1&
+		FactorizedMatrixRightSolve<Field,Matrix1,Matrix2>::operator() ( const Field& F,
+										const LQUPMatrix<Field>& A,
+										Matrix1& X,
+										const Matrix2& B ) const
+		{
+			linbox_check (A.rowdim() == X.coldim());
+			linbox_check (A.coldim() == B.coldim());
+			linbox_check (B.rowdim() == X.rowdim());
+			int info;
+			typedef typename Matrix1::subMatrixType subMatrixType ;
+			subMatrixType X_v(X);
+			subMatrixType B_v(B);
 
-			BlasMatrix<Field>& operator() ( const Field& F,
-							const LQUPMatrix<Field>& A,
-							BlasMatrix<Field>& B ) const
-			{
+			FFPACK::fgetrs ((typename Field::Father_t)F, FFLAS::FflasRight, A.rowdim(), A.coldim(), B_v.rowdim(), A.getRank(),
+					A.getPointer(), A.getStride(),
+					A.getP().getPointer(), A.getQ().getPointer(),
+					X_v.getPointer(), X_v.getStride(),
+					B_v.getPointer(), B_v.getStride(), &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
 
-				int info;
-				linbox_check (A.coldim() == A.rowdim());
-				linbox_check (A.rowdim() == B.coldim());
+			return X;
+		}
 
-				FFPACK::fgetrs ((typename Field::Father_t)F, FFLAS::FflasRight, B.rowdim(), B.coldim(), A.getRank(),
-						A.getPointer(), A.getStride(),
-						A.getP().getPointer(), A.getQ().getPointer(),
-						B.getPointer(), B.getStride(), &info);
-				if (info > 0)
-					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
+		template <class Field, class Matrix1>
+		Matrix1&
+		FactorizedMatrixRightSolveIP<Field,Matrix1>::operator() ( const Field& F,
+										const LQUPMatrix<Field>& A,
+										Matrix1& B ) const
+		{
 
-				return B;
-			}
+			int info;
+			linbox_check (A.coldim() == A.rowdim());
+			linbox_check (A.rowdim() == B.coldim());
+			typedef typename Matrix1::subMatrixType subMatrixType ;
+			subMatrixType B_v(B);
 
-		}; // end of class FactorizedMatrixRightSolve
+			FFPACK::fgetrs ((typename Field::Father_t)F, FFLAS::FflasRight, B_v.rowdim(), B_v.coldim(), A.getRank(),
+					A.getPointer(), A.getStride(),
+					A.getP().getPointer(), A.getQ().getPointer(),
+					B_v.getPointer(), B_v.getStride(), &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
+			return B;
+		}
+
+		 // end of class FactorizedMatrixRightSolve
 
 		template <class Field>
 		class FactorizedMatrixLeftLSolve<Field, BlasMatrix<Field> > {
@@ -1018,7 +1043,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::left_solve(Operand& B) const
 	{
-		return Protected::FactorizedMatrixLeftSolve<Field,Operand>()( _field, *this, B );
+		return Protected::FactorizedMatrixLeftSolveIP<Field,Operand>()( _field, *this, B );
 	}
 
 	// solve XA=B
@@ -1034,7 +1059,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::right_solve(Operand& B) const
 	{
-		return Protected::FactorizedMatrixRightSolve<Field,Operand>()( _field, *this, B );
+		return Protected::FactorizedMatrixRightSolveIP<Field,Operand>()( _field, *this, B );
 	}
 
 	// solve LX=B (L from LQUP)
@@ -1108,11 +1133,11 @@ namespace LinBox
 #endif // __LINBOX_factorized_matrix_INL
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

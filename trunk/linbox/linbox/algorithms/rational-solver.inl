@@ -1157,7 +1157,7 @@ namespace LinBox
 					ttMakeConditioner += tMakeConditioner;
 					tInvertBP.start();
 #endif
-					BMDF.inv(*Ap_minor_inv, Ap_minor, nullity);
+					BMDF.inv((BlasMatrix<Field>&)*Ap_minor_inv, (BlasMatrix<Field>&)Ap_minor, nullity);
 #ifdef RSTIMING
 					tInvertBP.stop();
 					ttInvertBP += tInvertBP;

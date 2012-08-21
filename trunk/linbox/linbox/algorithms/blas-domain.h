@@ -202,36 +202,17 @@ namespace LinBox
 		}
 	};
 
+
 	namespace Protected {
+		template <class Field, class MatrixView>
+		class BlasMatrixDomainInv;
+		template <class Field, class MatrixView>
+		class BlasMatrixDomainDet;
+		template <class Field, class MatrixView>
+		class BlasMatrixDomainRank;
 
-		/*! @internal
-		 * Class handling inversion of a Matrix.
-		 *
-		 *  only  function:  operator () are defined :
-		 *    -   Ainv = A^(-1)
-		 *
-		 *  Returns nullity of matrix (0 iff inversion was ok)
-		 *
-		 * @warning Beware, if A is not const this allows an inplace computation
-		 *  and so A will be modified
-		 *
-		 */
-		template< class Field, class MatrixView>
-			class BlasMatrixDomainInv {
-				public:
-					//int &operator() (const Field &F, MatrixView &Ainv, const MatrixView &A) const;
-					int operator() (const Field &F, MatrixView &Ainv, MatrixView &A) const;
-			};
-
-		template< class Field, class Matrix>
-			class BlasMatrixDomainDet {
-				public:
-					//typename Field::Element operator() (const Field &F, const Matrix& A) const;
-					typename Field::Element operator() (const Field &F, Matrix& A) const;
-			};
 
 	}
-
 
 	/*! @internal
 	 * Class handling inversion of a Matrix.
@@ -246,25 +227,12 @@ namespace LinBox
 	 *
 	 */
 	template< class Field, class Matrix1, class Matrix2>
-		class BlasMatrixDomainInv {
-			public:
-				int operator() (const Field &F, Matrix1 &Ainv, const Matrix2 &A) const {
-					typedef typename Matrix1::subMatrixType subMatrixType ;
-					typedef typename Matrix1::matrixType       matrixType ;
-					subMatrixType Ai_v(Ainv);
-					//! @todo check equal submatrix types 
-					matrixType A_c(A); // do copy
-					subMatrixType A_v(A_c);
-					return Protected::BlasMatrixDomainInv<Field, subMatrixType>()(F,Ai_v,A_v);
-				}
-				int operator() (const Field &F, Matrix1 &Ainv, Matrix2 &A) const {
-					typedef typename Matrix1::subMatrixType subMatrixType ;
-					subMatrixType Ai_v(Ainv);
-					subMatrixType A_v(A);
-					return Protected::BlasMatrixDomainInv<Field, subMatrixType>()(F,Ai_v,A_v);
-				}
+	class BlasMatrixDomainInv {
+	public:
+		int operator() (const Field &F, Matrix1 &Ainv, const Matrix2 &A) const ;
+		int operator() (const Field &F, Matrix1 &Ainv, Matrix2 &A) const  ;
 
-		};
+	};
 
 	/*! @internal
 	 * Class handling rank computation of a Matrix.
@@ -278,8 +246,8 @@ namespace LinBox
 	template< class Field, class Matrix>
 	class BlasMatrixDomainRank {
 	public:
-		unsigned int &operator() (const Field &F, const Matrix& A) const;
-		unsigned int &operator() (const Field &F, Matrix& A) const;
+		unsigned int operator() (const Field &F, const Matrix& A) const;
+		unsigned int operator() (const Field &F, Matrix& A) const;
 	};
 
 	/*! @internal
@@ -292,20 +260,10 @@ namespace LinBox
 	 *  and so A will be modified
 	 */
 	template< class Field, class Matrix>
-		class BlasMatrixDomainDet {
+	class BlasMatrixDomainDet {
 			public:
-				typename Field::Element operator() (const Field &F, const Matrix& A) const{
-					typedef typename Matrix::subMatrixType subMatrixType ;
-					typedef typename Matrix::matrixType       matrixType ;
-					matrixType A_c(A); // do copy
-					subMatrixType A_v(A_c);
-					return Protected::BlasMatrixDomainDet<Field, subMatrixType>()(F,A_v);
-				}
-				typename Field::Element operator() (const Field &F, Matrix& A) const{
-					typedef typename Matrix::subMatrixType subMatrixType ;
-					subMatrixType A_v(A);
-					return Protected::BlasMatrixDomainDet<Field, subMatrixType>()(F,A_v);
-				}
+				typename Field::Element operator() (const Field &F, const Matrix& A) const;
+				typename Field::Element operator() (const Field &F, Matrix& A) const;
 		};
 
 	/*! @internal
@@ -316,11 +274,11 @@ namespace LinBox
 	 *    -  X = A^(-1).B
 	 *    -  B = A^(-1).B
 	 */
-	template< class Field, class Operand, class Matrix>
+	template< class Field, class Operand1, class Matrix, class Operand2=Operand1>
 	class BlasMatrixDomainLeftSolve {
 	public:
-		Operand &operator() (const Field &F, Operand &X, const Matrix &A, const Operand &B) const;
-		Operand &operator() (const Field &F, const Matrix &A, Operand &B) const;
+		Operand1 &operator() (const Field &F, Operand1 &X, const Matrix &A, const Operand2 &B) const;
+		Operand1 &operator() (const Field &F, const Matrix &A, Operand1 &B) const;
 	};
 
 	/*! @internal
@@ -331,11 +289,11 @@ namespace LinBox
 	 *   -   X = B.A^(-1)
 	 *   -   B = B.A^(-1)
 	 */
-	template< class Field, class Operand, class Matrix>
+	template< class Field, class Operand1, class Matrix, class Operand2=Operand1>
 	class BlasMatrixDomainRightSolve {
 	public:
-		Operand &operator() (const Field &F, Operand &X, const Matrix &A, const Operand &B) const;
-		Operand &operator() (const Field &F, const Matrix &A, Operand &B) const;
+		Operand1 &operator() (const Field &F, Operand1 &X, const Matrix &A, const Operand2 &B) const;
+		Operand1 &operator() (const Field &F, const Matrix &A, Operand1 &B) const;
 	};
 
 	/*! @internal
@@ -393,7 +351,7 @@ namespace LinBox
 #ifndef NDEBUG
 			if (!Givaro::probab_prime(F.characteristic())) {
 				std::cout << " *** WARNING *** "                                           << std::endl;
-				std::cout << " You are using a BLAS Domain where your field is not prime " << 
+				std::cout << " You are using a BLAS Domain where your field is not prime " <<
 				F.characteristic() << std::endl;
 			}
 #endif
@@ -567,10 +525,10 @@ namespace LinBox
 		//@{
 
 		//! Inversion
-		template <class Matrix>
-		Matrix& inv( Matrix &Ainv, const Matrix &A) const
+		template <class Matrix1, class Matrix2>
+		Matrix1& inv( Matrix1 &Ainv, const Matrix2 &A) const
 		{
-			BlasMatrixDomainInv<Field,Matrix,Matrix>()(field(),Ainv,A);
+			BlasMatrixDomainInv<Field,Matrix1,Matrix2>()(field(),Ainv,A);
 			return Ainv;
 		}
 
@@ -603,15 +561,17 @@ namespace LinBox
 		}
 
 
+		//- Inversion w singular check
+		// template <class Matrix>
+		// Matrix& inv( Matrix &Ainv, const Matrix &A, int& nullity) const
+		// {
+			// nullity = BlasMatrixDomainInv<Field,Matrix,Matrix>()(field(),Ainv,A);
+			// return Ainv;
+		// }
+
 		//! Inversion w singular check
-		template <class Matrix>
-		Matrix& inv( Matrix &Ainv, const Matrix &A, int& nullity) const
-		{
-			nullity = BlasMatrixDomainInv<Field,Matrix,Matrix>()(field(),Ainv,A);
-			return Ainv;
-		}
-	template <class Matrix1, class Matrix2>
-		Matrix& inv( Matrix1 &Ainv, const Matrix2 &A, int& nullity) const
+		template <class Matrix1, class Matrix2>
+		Matrix1& inv( Matrix1 &Ainv, const Matrix2 &A, int& nullity) const
 		{
 			nullity = BlasMatrixDomainInv<Field,Matrix1,Matrix2>()(field(),Ainv,A);
 			return Ainv;
@@ -680,10 +640,10 @@ namespace LinBox
 
 		//! linear solve with matrix right hand side.
 		//! XA=B
-		template <class Operand, class Matrix>
-		Operand& right_solve (Operand& X, const Matrix& A, const Operand& B) const
+		template <class Operand1, class Matrix, class Operand2>
+		Operand1& right_solve (Operand1& X, const Matrix& A, const Operand2& B) const
 		{
-			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(field(),X,A,B);
+			return BlasMatrixDomainRightSolve<Field,Operand1,Matrix,Operand2>()(field(),X,A,B);
 		}
 
 		//! linear solve with matrix right hand side, the result is stored in-place in B.
