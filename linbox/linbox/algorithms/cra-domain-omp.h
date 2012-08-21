@@ -34,8 +34,9 @@
 #define __LINBOX_omp_cra_H
 // commentator is not thread safe
 #define DISABLE_COMMENTATOR
-#include "linbox/algorithms/cra-domain-seq.h"
+#include <omp.h>
 #include <set>
+#include "linbox/algorithms/cra-domain-seq.h"
 
 namespace LinBox
 {
@@ -58,6 +59,11 @@ namespace LinBox
 		template<class Function, class PrimeIterator>
 		Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter)
 		{
+			//! @bug why why why ???
+			/** erreur: ‘omp_get_max_threads’ has not been declared
+			 * ../linbox/algorithms/cra-domain-omp.h:152:16: note: suggested alternative:
+			 * /usr/lib/gcc/x86_64-linux-gnu/4.6/include/omp.h:64:12: note:   ‘Givaro::omp_get_max_threads’
+			 */
 			size_t NN = omp_get_max_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Modular iteration", "mmcrait");
