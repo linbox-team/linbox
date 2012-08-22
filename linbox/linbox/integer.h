@@ -230,15 +230,52 @@ namespace Givaro {
 #include <givaro/givcaster.h>
 #endif
 
+#ifdef GIVARO_USES_OPENMP // _OPENMP or others are present
+#define LINBOX_USES_OPENMP 1
+#endif
+
+namespace LinBox {
+
+	template<class U>
+	inline bool IsNegative(const U & p)
+	{
+		return (p<0);
+	}
+
+	// or use integer_traits<T>::is_unsigned ??
+	template<>
+	inline bool IsNegative(const uint8_t & p)
+	{
+		return false;
+	}
+
+	template<>
+	inline bool IsNegative(const uint16_t & p)
+	{
+		return false;
+	}
+
+	template<>
+	inline bool IsNegative(const uint32_t & p)
+	{
+		return false;
+	}
+
+	template<>
+	inline bool IsNegative(const uint64_t & p)
+	{
+		return false;
+	}
+
+}
 
 #endif // __LINBOX_integer_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

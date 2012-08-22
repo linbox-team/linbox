@@ -447,7 +447,7 @@ void build_n_run(string s, counts& cnt, int flag, string r)
 		system(cmd.c_str());
 	}
 	if (flag >= 1) {
-#ifndef _OPENMP
+#ifndef LINBOX_USES_OPENMP
 		cout.width(35);
 		cout << left << s;
 		cout << "build"; cout.flush();
@@ -460,7 +460,7 @@ void build_n_run(string s, counts& cnt, int flag, string r)
 	if (status == 2) goto abort; // valid on at least one platform.
 	if (status != 0) { // build failure
 		if (flag >= 1) {
-#ifndef _OPENMP
+#ifndef LINBOX_USES_OPENMP
 			cout << " FAILS" << endl;
 #else
 		cout << " * FAIL : " << left << s << flush << endl;
@@ -473,7 +473,7 @@ void build_n_run(string s, counts& cnt, int flag, string r)
 	}
 	else { // build success
 		if (flag >= 1) {
-#ifndef _OPENMP
+#ifndef LINBOX_USES_OPENMP
 			cout << "\b\b\b\b\b  run"; cout.flush();
 #else
 		cout << " * RUN  : " << left << s << flush << endl;
@@ -486,7 +486,7 @@ void build_n_run(string s, counts& cnt, int flag, string r)
 		if (status == 2) goto abort; // valid on at least one platform.
 		if (status != 0) {
 			if (flag >= 1) {
-#ifndef _OPENMP
+#ifndef LINBOX_USES_OPENMP
 				cout << " FAILS" << endl;
 #else
 		cout << " * FAIL : " << left << s << flush << endl;
@@ -500,7 +500,7 @@ void build_n_run(string s, counts& cnt, int flag, string r)
 		}
 		else {
 			if (flag >= 1) {
-#ifndef _OPENMP
+#ifndef LINBOX_USES_OPENMP
 				cout << "\b\b\b\bOK  " << endl;
 #else
 		cout << " * OK   : " << left << s << flush << endl;

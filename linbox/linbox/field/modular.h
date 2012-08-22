@@ -67,7 +67,8 @@
 
 // Namespace in which all LinBox code resides
 namespace LinBox
-{
+{ /* Modular Base */
+
 	template <class Element>
 	class Modular;
 
@@ -335,6 +336,10 @@ namespace LinBox
 		Element _modulus;
 
 	}; // class ModularBase
+}
+
+namespace LinBox
+{ /* Modular */
 
 	/* .. such comments as here should be on specialization...
 	 * @param element Element type, e.g. long or integer
@@ -413,6 +418,7 @@ namespace LinBox
 		}
 	public:
 
+		//! @warning danger ! (Element = Integer or NTL stuff !):
 		static inline Element getMaxModulus()
 		{
 			return Element((1ULL<<(sizeof(Element)*8-1))-1);
@@ -432,28 +438,32 @@ namespace LinBox
 		Element &init (Element &x, const integer &y ) const
 		{
 			x = y % ModularBase<Element>::_modulus;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+				x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
 		Element &init (Element &x, const size_t &y ) const
 		{
 			x = (Element) y % ModularBase<Element>::_modulus;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+				x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
 		Element &init (Element &x, const int y ) const
 		{
 			x = y % ModularBase<Element>::_modulus;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+				x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
 		Element &init (Element &x, const long int y) const
 		{
 			x = y % ModularBase<Element>::_modulus;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+			       	x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
@@ -470,14 +480,16 @@ namespace LinBox
 		Element &init (Element &x, const double &y) const
 		{
 			double z = fmod(y, (double)ModularBase<Element>::_modulus);
-			if (z < 0) z += (double) ModularBase<Element>::_modulus;
+			if ( z < 0 )
+				z += (double) ModularBase<Element>::_modulus;
 			return x = (Element) (z+.5);
 		}
 
 		Element &init (Element &x, const float &y) const
 		{
 			float z = fmod(y, (float)ModularBase<Element>::_modulus);
-			if (z < 0) z += (float) ModularBase<Element>::_modulus;
+			if ( z < 0 )
+			       	z += (float) ModularBase<Element>::_modulus;
 			return x = (Element) (z+.5);
 		}
 
@@ -524,7 +536,8 @@ namespace LinBox
 		Element &sub (Element &x, const Element &y, const Element &z) const
 		{
 			x = y - z;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+			       	x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
@@ -602,7 +615,8 @@ namespace LinBox
 
 			// now x_int = gcd (modulus,residue)
 			x = tx;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+			       	x += ModularBase<Element>::_modulus;
 
 			return x;
 		}
@@ -623,7 +637,8 @@ namespace LinBox
 			       const Element &y) const
 		{
 			r = (a * x + y) % ModularBase<Element>::_modulus;
-			if (r < 0) r += ModularBase<Element>::_modulus;
+			if ( IsNegative(r) )
+			       	r += ModularBase<Element>::_modulus;
 			return r;
 		}
 
@@ -661,7 +676,8 @@ namespace LinBox
 		Element &subin (Element &x, const Element &y) const
 		{
 			x -= y;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+				x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
@@ -735,7 +751,8 @@ namespace LinBox
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{
 			r = (r + a * x) % ModularBase<Element>::_modulus;
-			if (r < 0) r += ModularBase<Element>::_modulus;
+			if ( IsNegative(r) )
+			       	r += ModularBase<Element>::_modulus;
 			return r;
 		}
 
@@ -815,6 +832,13 @@ namespace LinBox
 		return x = tmp;
 	}
 
+	template<>
+	integer Modular<integer>::getMaxModulus()
+	{
+		return -1 ;
+	}
+
+
 
 } // namespace LinBox
 
@@ -832,11 +856,11 @@ namespace LinBox
 #endif // __LINBOX_field_modular_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
