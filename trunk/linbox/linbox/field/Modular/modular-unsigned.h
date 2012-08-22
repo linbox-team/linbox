@@ -239,6 +239,11 @@ namespace LinBox
 			return r;
 		}
 
+		static Element getMaxModulus()
+		{
+			return 64;// 2^6 (ou plus ?)
+		}
+
 	private:
 
 		friend class FieldAXPY<Modular<Element> >;
@@ -592,6 +597,12 @@ namespace LinBox
 			return r;
 		}
 
+		static Element getMaxModulus()
+		{
+			return 16384;// 2^14 (ou plus ?)
+		}
+
+
 	private:
 
 		friend class FieldAXPY<Modular<Element> >;
@@ -944,6 +955,12 @@ namespace LinBox
 			r = Element( ((uint64_t) r + (uint64_t) a * (uint64_t) x) % (uint64_t) ModularBase<Element>::_modulus );
 			if ((int32_t) r < 0) r += ModularBase<Element>::_modulus;
 			return r;
+		}
+
+
+		static Element getMaxModulus()
+		{
+			return 1073741824;// 2^30 (ou plus ?)
 		}
 
 	private:
