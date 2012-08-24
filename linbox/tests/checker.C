@@ -244,7 +244,7 @@ build |wc" should yield the same number of lines.
 #pragma omp section
 		  Build_n_run("test-modular-float",                counter , flag);
 #pragma omp section
-		  No_build_n_run("test-modular-int",                  counter , flag, "fails badly !!!!!!");
+		  No_build_n_run("test-modular-int",                  counter , flag, "fails badly for (u)int64_t !!!!!!");
 #pragma omp section
 		  Build_n_run("test-modular-short",                counter , flag);
 #pragma omp section
