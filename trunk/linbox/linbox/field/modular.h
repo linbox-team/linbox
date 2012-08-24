@@ -399,7 +399,9 @@ namespace LinBox
 		 */
 		Modular (const integer &modulus) :
 			ModularBase<_Element> (modulus),zero(0),one(1),mOne(modulus-1)
-		{}
+		{
+			linbox_check( !IsNegative(modulus) );
+		}
 
 		/* Assignment operator
 		 * Required by the archetype

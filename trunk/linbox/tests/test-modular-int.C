@@ -92,9 +92,9 @@ int main (int argc, char **argv)
 		commentator().start("Modular<integer> field test suite", "Modular<integer>");
 
 		Modular<integer> F_int (q1);
-		integer k = FieldTraits<Modular<integer> >::maxModulus() ;
-		prevprime(k,k);
-		Modular<integer> I_int(k);
+		// integer k = FieldTraits<Modular<integer> >::maxModulus() ;
+		// prevprime(k,k);
+		Modular<integer> I_int(q5);
 
 
 		// Make sure some more detailed messages get printed
