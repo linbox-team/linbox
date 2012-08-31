@@ -393,11 +393,12 @@ namespace LinBox
 
 		/** @brief
 		 *  read x from istream in
-		 */
 		static std::istream& read(std::istream& in, Element& x) {
 
 			return in >> x;
 		}
+		 */
+		using Father_t::read;
 
 
 		/** some PIR function
