@@ -60,21 +60,25 @@ namespace LinBox {
 	 */
 	template <class Field>
 	struct FieldTraits {
+		using Givaro::Caster;
+
 		typedef typename ClassifyRing<Field>::categoryTag categoryTag;
 
 		static integer& maxModulus( integer& i )
 		{
-			return i = static_cast<integer>(Field::getMaxModulus());
+            		return Caster(i, Field::getMaxModulus());
 		}
 
 		static uint64_t & maxModulus( uint64_t& i )
 		{
-			return i = static_cast<uint64_t>(Field::getMaxModulus());
+            		return Caster(i, Field::getMaxModulus());
+// 			return i = static_cast<uint64_t>(Field::getMaxModulus());
 		}
 
 		static uint32_t & maxModulus( uint32_t& i )
 		{
-			return i = static_cast<uint32_t>(Field::getMaxModulus());
+            		return Caster(i, Field::getMaxModulus());
+// 			return i = static_cast<uint32_t>(Field::getMaxModulus());
 		}
 
 		template<class T>
@@ -85,7 +89,9 @@ namespace LinBox {
 
 		static integer maxModulus()
 		{
-			return static_cast<integer>(Field::getMaxModulus());
+            		integer maxm;
+            		return Caster(maxm, Field::getMaxModulus());
+// 			return static_cast<integer>(Field::getMaxModulus());
 		}
 
 		static bool goodModulus( const integer& i )
