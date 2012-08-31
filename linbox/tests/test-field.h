@@ -299,7 +299,6 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	}
 
 	F.write( report << "using sum, 1 + 2 + .. + 2^100: ", c) << endl;
-	std::cout  << a << ',' << c << std::endl;
 
 	if (!F.areEqual (a, c))
 		part_pass = reportError( "2^101 - 1 != 1 + 2 + .. + 2^100", pass);
