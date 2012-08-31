@@ -940,7 +940,7 @@ namespace LinBox
 		{ return false; }
 
 		ActivityState saveActivityState () const 
-		{}
+		{ return ActivityState(); }
 		void restoreActivityState (ActivityState state) 
 		{}
 
