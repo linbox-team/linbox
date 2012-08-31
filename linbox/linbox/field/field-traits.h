@@ -23,6 +23,7 @@
 #define __LINBOX_field_traits_H
 
 #include "linbox/integer.h"
+#include <givaro/givcaster.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox {
@@ -56,11 +57,12 @@ namespace LinBox {
 		typedef	RingCategories::GenericTag categoryTag;
 	};
 
+	using Givaro::Caster;
+
 	/*! FieldTrait.
 	 */
 	template <class Field>
 	struct FieldTraits {
-		using Givaro::Caster;
 
 		typedef typename ClassifyRing<Field>::categoryTag categoryTag;
 
