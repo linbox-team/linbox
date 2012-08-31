@@ -69,6 +69,8 @@
 namespace LinBox
 { /* Modular Base */
 
+	using Givaro::Caster;
+
 	template <class Element>
 	class Modular;
 
@@ -196,12 +198,14 @@ namespace LinBox
 		 */
 		integer &cardinality (integer &c) const
 		{
-			return c = _modulus;
+			return Caster(c, _modulus);
 		}
 
 		integer cardinality () const
 		{
-			return  _modulus;
+            integer card;
+            return Caster(card, _modulus);
+// 			return  _modulus;
 		}
 
 		/*- Characteristic.
@@ -212,18 +216,22 @@ namespace LinBox
 		 */
 		integer &characteristic (integer &c) const
 		{
-			return c = _modulus;
+			return Caster(c, _modulus);
+// 			return c = _modulus;
 		}
 
 		unsigned long &characteristic (unsigned long &c) const
 		{
-			return c = _modulus;
+			return Caster(c, _modulus);
+// 			return c = _modulus;
 		}
 
 
 		integer characteristic () const
 		{
-			return  _modulus;
+            integer charac;
+            return Caster(charac, _modulus);
+//             return  _modulus;
 		}
 
 		//@} Object Management
@@ -423,7 +431,9 @@ namespace LinBox
 		//! @warning danger ! (Element = Integer or NTL stuff !):
 		static inline Element getMaxModulus()
 		{
-			return Element((1ULL<<(sizeof(Element)*8-1))-1);
+            Element tmp(1);
+            return (tmp <<= (sizeof(Element)*8-1)) -= 1;
+// 			return Element(( Element(1)<<=(sizeof(Element)*8-1))-1);
 		}
 
 
@@ -439,7 +449,7 @@ namespace LinBox
 		 */
 		Element &init (Element &x, const integer &y ) const
 		{
-			x = y % ModularBase<Element>::_modulus;
+			x = (Element) y % ModularBase<Element>::_modulus;
 			if ( IsNegative(x) )
 				x += ModularBase<Element>::_modulus;
 			return x;
@@ -455,7 +465,7 @@ namespace LinBox
 
 		Element &init (Element &x, const int y ) const
 		{
-			x = y % ModularBase<Element>::_modulus;
+			x = (Element) y % ModularBase<Element>::_modulus;
 			if ( IsNegative(x) )
 				x += ModularBase<Element>::_modulus;
 			return x;
@@ -463,7 +473,7 @@ namespace LinBox
 
 		Element &init (Element &x, const long int y) const
 		{
-			x = y % ModularBase<Element>::_modulus;
+			x = (Element) y % ModularBase<Element>::_modulus;
 			if ( IsNegative(x) )
 			       	x += ModularBase<Element>::_modulus;
 			return x;
@@ -606,7 +616,7 @@ namespace LinBox
 			tx = 0;
 			ty = 1;
 
-			while (y_int != 0) {
+			while (y_int != zero) {
 				// always: gcd (modulus,residue) = gcd (x_int,y_int)
 				//         sx*modulus + tx*residue = x_int
 				//         sy*modulus + ty*residue = y_int
