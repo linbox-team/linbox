@@ -78,7 +78,7 @@ while test $# -gt 0; do
 	;;
 
     --libs)
-	echo -n " -L${libdir} -llinbox @LIDIA_LIBS@  @NTL_LIBS@ @GIVARO_LIBS@ @SACLIB_LIBS@ @GMP_LIBS@ @BLAS_LIBS@"
+	echo -n " -L${libdir} -llinbox @LIDIA_LIBS@  @NTL_LIBS@ @GIVARO_LIBS@ @SACLIB_LIBS@ @GMP_LIBS@ @IML_LIBS@ @MPFR_LIBS@ @FPLLL_LIBS@ @FPLLL_LIBS@ @BLAS_LIBS@ " 
 	;;
 
     *)
