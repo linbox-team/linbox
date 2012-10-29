@@ -456,54 +456,11 @@ namespace LinBox
 	template <class _Field>
 	std::istream &BlasMatrix< _Field>::read (std::istream &file)
 	{
-#if 0
-		Iterator p;
-		int m,n;
-		char c;
-		file>>m>>n>>c;
-
-		if (m*n < _row*_col)
-			cerr<<"NOT ENOUGH ELEMENT TO READ\n";
-		else {
-			for (p = Begin (); p != End (); ++p) {
-				integer tmp;
-				file>>tmp;cout<<tmp<<endl;
-				//file.ignore(1);
-				F.read (file, *p);
-			}
-		}
-#endif
-
-
-		Iterator p;
-		int m,n;
-		char c;
-		file>>m>>n>>c;
-		// std::cout << m << 'x' << n << ':' << c << std::endl;
-		_row = m; _col = n;
-
-		// _ptr.resize(_row * _col, zero);
-		resize(_row,_col);
-
-		if ((c != 'M') && (c != 'm')) {
-			for (p = Begin (); p != End (); ++p) {
-				//file.ignore(1);
-				field().read (file, *p);
-			}
-		}
-		else { // sparse file format - needs fixing
-			int i, j;
-			while (true) {
-				file >> i >> j;
-				//file.ignore(1);
-				//if (! file) break;
-				if (i+j <= 0) break;
-				// std::cout << i << ',' << j << ':' ;
-				field().read (file, _ptr[_col*(i-1) + j-1]);
-				// std::cout << _ptr[_col*(i-1) + j-1] << std::endl;
-			}
-		}
-
+		MatrixStream<Field> ms(field(), file);
+		if( !ms.getArray(_rep) || !ms.getRows(_row) || !ms.getColumns(_col) )
+			throw ms.reportError(__FUNCTION__,__LINE__);
+		_ptr = &_rep[0];
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 		return file;
 	}
 
