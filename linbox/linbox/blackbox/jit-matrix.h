@@ -76,19 +76,16 @@ namespace LinBox
 		 * and must be valid for 0 <= i < m, 0 <= j < n.
 		 **/
 
-		JIT_Matrix (_Field& F, const size_t m, const size_t n,
+		JIT_Matrix (const _Field& F, const size_t m, const size_t n,
 			    const JIT_EntryGenerator& JIT) :
 			_field(&F), _m(m), _n(n), _gen(JIT)
 		{};
 
 		template<class OutVector, class InVector>
-		OutVector& apply (OutVector& y, const InVector& x) ;
-		//OutVector& apply (OutVector& y, const InVector& x) const;
-
+		OutVector& apply (OutVector& y, const InVector& x) const;
 
 		template<class OutVector, class InVector>
-		OutVector& applyTranspose (OutVector& y, const InVector& x);
-		//OutVector& applyTranspose (OutVector& y, const InVector& x) const;
+		OutVector& applyTranspose (OutVector& y, const InVector& x) const;
 		size_t rowdim (void) const { return _m; }
 		size_t coldim (void) const { return _n; }
 		const Field& field() const { return *_field; }
@@ -112,7 +109,7 @@ namespace LinBox
 
 	template <class Field, class JIT_EntryGenerator>
 	template <class OutVector, class InVector>
-	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::apply (OutVector& y, const InVector& x)
+	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::apply (OutVector& y, const InVector& x) const
 	{
 		Element entry;
 		field().init(entry,0);
@@ -130,7 +127,7 @@ namespace LinBox
 
 	template <class Field, class JIT_EntryGenerator>
 	template <class OutVector, class InVector>
-	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::applyTranspose (OutVector& y, const InVector& x)
+	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::applyTranspose (OutVector& y, const InVector& x) const
 	{
 		Element entry;
 		field().init(entry,0);

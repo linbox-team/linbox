@@ -890,6 +890,8 @@ namespace LinBox
 		char c;
 		file>>m>>n>>c;
 		// std::cout << m << 'x' << n << ':' << c << std::endl;
+
+// this is bogus!! -bds
 		_row = m; _col = n;
 
 		_Field zero;
@@ -919,6 +921,18 @@ namespace LinBox
 		return file;
 	}
 
+	template <class _Field>
+	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os) const 
+	{
+		os << "%%MatrixMarket matrix array integer general" << std::endl;
+		field().write(os << "% ") << std::endl; 
+		os << rowdim() << " " << coldim() << std::endl;
+		typename _Field::Element x; field().init(x, 0);
+		for (size_t j = 0; j < rowdim(); ++j)
+			for (size_t i = 0; i < rowdim(); ++i)
+				os << getEntry(x, i, j) << std::endl;
+		return os;
+	}
 	template <class _Field>
 	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os,
 						     enum LinBoxTag::Format f) const

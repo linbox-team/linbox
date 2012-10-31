@@ -325,7 +325,6 @@ namespace LinBox
 			   */
 			std::cout << " -- read: " << count << std::endl;
 
-			//S.getRows(_rowdim); S.getColumns(_coldim);
 			init(indexPairs);
 			return is;
 		}

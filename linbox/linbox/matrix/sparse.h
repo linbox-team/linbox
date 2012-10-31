@@ -79,6 +79,7 @@
 namespace LinBox
 {
 
+// IO stuff should be more generic than this
 
 	/** Exception class for invalid matrix input
 	*/
@@ -106,7 +107,7 @@ namespace LinBox
 	// made global to avoid duplicate code.
 	/// tags for SparseMatrixBase::read() and write()
 	enum FileFormatTag {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_MAPLE, FORMAT_PRETTY, FORMAT_MAGMACPT, FORMAT_ONE_BASED
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_MAPLE, FORMAT_PRETTY, FORMAT_MAGMACPT, FORMAT_ONE_BASED, FORMAT_MATRIXMARKET
 	};
 
 	// Forward declaration
@@ -270,6 +271,7 @@ public:
 			s+= LinBox::RawVector<_Element>::size(*it);
 		return s;
 	}
+
 	/** Read a matrix from the given input stream using field read/write
 	 * @param is Input stream from which to read the matrix
 	 * @param F Field with which to read
@@ -280,9 +282,9 @@ public:
 	/** Read a matrix from the given input stream using standard operators
 	 * @param is Input stream from which to read the matrix
 	 * @param format Format of input matrix
+	 * @deprecated Can't read field elements without a Field::read().
 	 */
 	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT);
-
 
 	/** Write a matrix to the given output stream using field read/write
 	 * @param os Output stream to which to write the matrix
@@ -290,11 +292,22 @@ public:
 	 * @param format Format with which to write
 	 */
 	template <class Field>
-	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const;
+	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_MATRIXMARKET) const
+	{
+		if (format != FORMAT_MATRIXMARKET)
+			return SparseMatrixReadWriteHelper<Element, Row>::write (*this, os, F, format);
+		os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
+		F.write(os << "% ") << std::endl; 
+		os << rowdim() << " " << coldim() << " " << size() << std::endl;
+		for (ConstIndexedIterator it = IndexedBegin(); it != IndexedEnd(); ++it)
+			F.write(os << 1+it.rowIndex() << " " << 1+it.colIndex() << " ", *it) << std::endl;
+		return os;
+	}
 
 	/** Write a matrix to the given output stream using standard operators
 	 * @param os Output stream to which to write the matrix
 	 * @param format Format with which to write
+	 * @deprecated Can't write elements without a field.
 	 */
 	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const;
 
@@ -313,6 +326,7 @@ public:
 	 * @param i Row index of entry
 	 * @param j Column index of entry
 	 * @return Reference to matrix entry
+	 * @deprecated Not efficient for packed representations
 	 */
 	Element &refEntry (size_t i, size_t j);
 
@@ -517,10 +531,16 @@ public:
 	}
 
 	template <class Field>
-	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const
+	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_MATRIXMARKET) const
 	{
-		return SparseMatrixReadWriteHelper<Element, Row>::write
-		(*this, os, F, format);
+		if (format != FORMAT_MATRIXMARKET)
+			return SparseMatrixReadWriteHelper<Element, Row>::write (*this, os, F, format);
+		os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
+		F.write(os << "% ") << std::endl; 
+		os << rowdim() << " " << coldim() << " " << size() << std::endl;
+		for (ConstIndexedIterator it = IndexedBegin(); it != IndexedEnd(); ++it)
+			F.write(os << 1+it.rowIndex() << " " << 1+it.colIndex() << " ", *it) << std::endl;
+		return os;
 	}
 
 	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
@@ -528,8 +548,6 @@ public:
 		return SparseMatrixReadWriteHelper<Element, Row>::write
 		(*this, os, SparseMatrixReadWriteHelper<Element, Row>::NoField (), format);
 	}
-
-	std::ostream &write(std::ostream &) const;
 
 	void           setEntry (size_t i, size_t j, const Element &value);
 
@@ -803,7 +821,8 @@ public:
 
 		value_type &operator * ()
 		{
-			return _j->second;
+			return *const_cast<value_type*> (&(_j->second));
+			// Ugh.  This hack is because ConstIndexedIterator is not right. -bds
 		}
 		const value_type &operator * () const
 		{

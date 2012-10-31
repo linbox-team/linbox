@@ -461,27 +461,34 @@ public:
 		///////////////////
 
 		/** Read the matrix from an input stream.
-		 * The stream is in SMS or DENSE format and is autodetected.
+		 * The stream is in SMS, DENSE, or MatrixMarket format and is autodetected.
 		 * @param file Input stream from which to read
 		 */
 		std::istream &read (std::istream &file);
 
+		/// Write the matrix in MatrixMarket format.
+		std::ostream &write (std::ostream &os) const {
+			subMatrixType B(*this, 0, 0, rowdim(), coldim());
+			return B.write(os);
+		}
+	
 		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
 		 * @param f write in some format (@ref LinBoxTag::Format). Default is Maple's.
 		 */
 		std::ostream &write (std::ostream &os,
-				     enum LinBoxTag::Format f = LinBoxTag::FormatMaple) const;
+				     enum LinBoxTag::Format f/* = LinBoxTag::FormatMaple*/) const {
+			subMatrixType B(*this, 0, 0, rowdim(), coldim());
+			return B.write(os, f);
+		}
 
 		/*! @deprecated Only for compatiblity.
 		 */
 		std::ostream &write (std::ostream &os,
 				     bool mapleFormat) const
 		{
-			if (mapleFormat)
-				return write(os,LinBoxTag::FormatMaple);
-			else
-				return write(os);
+			subMatrixType B(*this, 0, 0, rowdim(), coldim());
+			return B.write(os, mapleFormat);
 		}
 
 
@@ -820,12 +827,15 @@ namespace LinBox
 		std::istream& read (std::istream &file/*, const Field& field*/);
 
 
+		/// Write the matrix in MatrixMarket format.
+		std::ostream &write (std::ostream &os) const;
+
 		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
 		 * @param f write in some format (@ref LinBoxTag::Format). Default is Maple's.
 		 */
 		std::ostream &write (std::ostream &os,
-				     enum LinBoxTag::Format f = LinBoxTag::FormatMaple) const;
+				     enum LinBoxTag::Format f/* = LinBoxTag::FormatMaple*/)const;
 
 		/*! @deprecated Only for compatiblity.
 		 */

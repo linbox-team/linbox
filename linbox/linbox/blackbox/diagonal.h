@@ -49,6 +49,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/field/hom.h"
 #include "linbox/solutions/solution-tags.h"
+#include "linbox/util/matrix-stream.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -97,6 +98,9 @@ namespace LinBox
 		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
+		/// \brief cstor ready for a read.
+		Diagonal(const Field &F) : _field(&F) {}
+
 		/// \brief cstor from vector of elements.
 		Diagonal(const Field &F, const std::vector<typename Field::Element>& v);
 
@@ -137,7 +141,7 @@ namespace LinBox
 		 *
 		 * could throw error if j != i, but now j is ignored.
 		 */
-		void setEntry (size_t i, size_t j, Element &x) const {
+		void setEntry (size_t i, size_t j, Element &x) {
 			_v[i] = x;
 		}
 
@@ -165,14 +169,36 @@ namespace LinBox
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D);
 		}
 
-
-
-
+#if 0
 		std::ostream& write(std::ostream& out) {
 			out << "diag(";
 			for (typename std::vector<Element>::iterator p = _v.begin(); p != _v.end(); ++p)
 				field().write(out, *p) << ", ";
 			return out << "\b\b)";
+		}
+#endif
+
+		std::ostream& write(std::ostream& os) {
+			os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
+			field().write(os << "% Diagonal ") << std::endl;
+			os << rowdim() << " " << coldim() << " " << rowdim() << std::endl;
+			for (size_t i = 0; i < rowdim(); ++i)
+				field().write(os << i + 1 << " " << i + 1 << " ", _v[i]) << std::endl;
+			return os;
+		}
+
+		std::istream& read(std::istream& is) {
+			MatrixStream<Field> ms(field(), is);
+			size_t c, i, j;
+			if( !ms.getDimensions(_n, c) || c != _n )
+				throw ms.reportError(__FUNCTION__,__LINE__);
+			typename Field::Element x; field().init(x, 0);
+			_v.resize(_n);
+			for (size_t k = 0; k < _n; ++ k) {	
+				ms.nextTriple(i, j, x);
+				if (i != j) throw ms.reportError(__FUNCTION__,__LINE__);
+				setEntry(i, j, x);
+			}
 		}
 
 		const std::vector<Element>& getData() const { return _v; }

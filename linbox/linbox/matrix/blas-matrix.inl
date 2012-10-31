@@ -332,7 +332,7 @@ namespace LinBox
 		_row(0),_col(0),_rep(0),
 		_field(&(ms.getField())),_MD(field() ),_VD(field() )
 	{
-		if( !ms.getArray(_rep) || !ms.getRows(_row) || !ms.getColumns(_col) )
+		if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) )
 			throw ms.reportError(__FUNCTION__,__LINE__);
 		_ptr = &_rep[0];
 		_use_fflas = Protected::checkBlasApply(field(), _col);
@@ -457,11 +457,20 @@ namespace LinBox
 	std::istream &BlasMatrix< _Field>::read (std::istream &file)
 	{
 		MatrixStream<Field> ms(field(), file);
-		if( !ms.getArray(_rep) || !ms.getRows(_row) || !ms.getColumns(_col) )
+		if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) )
 			throw ms.reportError(__FUNCTION__,__LINE__);
 		_ptr = &_rep[0];
 		_use_fflas = Protected::checkBlasApply(field(), _col);
 		return file;
+	}
+
+#if 0
+// now writing is done in BlasSubmatrix.
+
+	template <class _Field>
+	std::ostream& BlasMatrix< _Field>::write (std::ostream &os) {
+		// ....
+		return os;
 	}
 
 	template <class _Field>
@@ -588,6 +597,7 @@ namespace LinBox
 		}
 		return os;
 	}
+#endif
 
 	template <class _Field>
 	BlasMatrix< _Field>& BlasMatrix< _Field>::operator= (const BlasMatrix< _Field>& A)

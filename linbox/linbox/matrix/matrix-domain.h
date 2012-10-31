@@ -642,9 +642,17 @@ namespace LinBox
 			return copyRow (B, A);
 		}
 
+		template <class Matrix1, class Matrix2> bool areEqualBB (const Matrix1 &A, const Matrix2 &B) const;
 		template <class Matrix1, class Matrix2> bool areEqualRow (const Matrix1 &A, const Matrix2 &B) const;
 		template <class Matrix1, class Matrix2> bool areEqualCol (const Matrix1 &A, const Matrix2 &B) const;
 
+		template <class Matrix1, class Matrix2>
+		inline bool areEqualSpecialized (const Matrix1 &A, const Matrix2 &B,
+						 MatrixCategories::BlackboxTag,
+						 MatrixCategories::BlackboxTag) const
+		{
+			return areEqualBB(A, B);
+		}
 		template <class Matrix1, class Matrix2>
 		inline bool areEqualSpecialized (const Matrix1 &A, const Matrix2 &B,
 						 MatrixCategories::RowMatrixTag,
@@ -667,9 +675,15 @@ namespace LinBox
 			return areEqualRow (A, B);
 		}
 
+		template <class Matrix_> bool isZeroBB (const Matrix_ &v) const;
 		template <class Matrix_> bool isZeroRow (const Matrix_ &v) const;
 		template <class Matrix_> bool isZeroCol (const Matrix_ &v) const;
 
+		template <class Matrix_>
+		bool isZeroSpecialized (const Matrix_ &A, MatrixCategories::BlackboxTag) const
+		{
+			return isZeroBB (A);
+		}
 		template <class Matrix_>
 		bool isZeroSpecialized (const Matrix_ &A, MatrixCategories::RowMatrixTag) const
 		{

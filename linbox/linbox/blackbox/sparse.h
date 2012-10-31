@@ -245,20 +245,29 @@ namespace LinBox
 		size_t coldim () const
 		{ return SparseMatrixBase<Element, _Row>::_n; }
 
+		// Read from matrix market format
+		std::istream &read (std::istream &is)
+		{ return SparseMatrixBase<Element, _Row>::read (is, *_field); }
+
 		/** Read the matrix from a stream in the given format
 		 * @param is Input stream from which to read the matrix
 		 * @param format Format of input matrix
 		 * @return Reference to input stream
 		 */
-		std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
+
+		std::istream &read (std::istream &is, FileFormatTag format/* = FORMAT_DETECT*/)
 		{ return SparseMatrixBase<Element, _Row>::read (is, field(), format); }
+
+		/// Write in matrix market format
+		std::ostream &write (std::ostream &os) const
+		{ return SparseMatrixBase<Element, _Row>::write (os, field()); }
 
 		/** Write the matrix to a stream in the given format
 		 * @param os Output stream to which to write the matrix
 		 * @param format Format of output
 		 * @return Reference to output stream
 		 */
-		std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
+		std::ostream &write (std::ostream &os, FileFormatTag format/* = FORMAT_PRETTY*/) const
 		{ return SparseMatrixBase<Element, _Row>::write (os, field(), format); }
 
 		// JGD 28.08.2002
