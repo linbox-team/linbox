@@ -49,13 +49,13 @@
 int main(int argc, char **argv)
 {
   bool pass = true;
-  uint32_t prime = 31337;
-  static size_t n = 100000;
+  uint32_t p = 31337;
+  static size_t n = 1000;
 
   static Argument args[] =
   {
 	  { 'n', "-n N", "Set dimension of test matrix to NxN.", TYPE_INT, &n },
-	  { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &prime },
+	  { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &p },
 	  END_OF_ARGUMENTS
   };
 
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
   //typedef LinBox::Modular<uint32_t> Field;
   typedef LinBox::ZeroOne<Field> Matrix;
 
-  Field afield(prime);
+  Field F(p);
 
   /*
   // "arrow" matrix
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
   for(i = 0; i < n; i++) { rows[i] = 0; cols[i] = i; } // first row
   for(i = 0; i < n - 1; i++)
     { rows[n+2*i] = i + 1; cols[n+2*i] = 0; rows[n+2*i+1] = i + 1; cols[n+2*i+1] = i + 1; } // first col and the diag
-  Matrix testMatrix(afield, rows, cols, n, n, 3 * n - 2);
+  Matrix testMatrix(F, rows, cols, n, n, 3 * n - 2);
   */
 
 // random 3 per row matrix
@@ -95,14 +95,14 @@ int main(int argc, char **argv)
                 {
                     rows[npr*i+j] = i;
                     cols[npr*i+j] = *iter;
-                    //std::cout << rows[npr*i+j] << ", ";
                 }
-            //std::cout << std::endl;
         }
-    Matrix testMatrix(afield, rows, cols, n, n, npr * n );
+    Matrix testMatrix(F, rows, cols, n, n, npr * n );
+vector<Field::Element> y(n), x(n);
+testMatrix.apply(y, x);
 
   /*
-  Matrix testMatrix(afield);
+  Matrix testMatrix(F);
   //ifstream mat_in("data/m133.b3.200200x200200.sms");
   ifstream mat_in("data/n4c6.b9.186558x198895.sms");
   //ifstream mat_in("data/small21x21.sms");
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 
   //std::cout << std::endl << "ZeroOne matrix blackbox test suite" << std::endl;
 
-  pass = pass && testBlackbox(testMatrix);
+  pass = pass && testBlackboxNoRW(testMatrix);
   //bool pass2 = testBlackbox(testMat);
 
   //delete [] rows;

@@ -69,7 +69,7 @@ using namespace LinBox;
 
 // using long on purpose
 template <class Field>
-static bool testIdentity (Field &F, size_t n, int iterations)
+static bool testIdentity (Field &F, size_t n, int iterations = 1)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef BlasMatrix<Field> Base;
@@ -154,7 +154,7 @@ static bool testIdentity (Field &F, size_t n, int iterations)
  */
 
 template <class Field>
-static bool testVandermonde (Field &F, size_t n, int iterations, int N)
+static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -345,8 +345,10 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field> v1_stream (F, n, iterations);
 	RandomDenseStream<Field> v2_stream (F, n, iterations);
 
-	if (!testIdentity    (F, n, iterations)) pass = false;
-	//if (!testVandermonde (F, n, iterations, N)) pass = false;
+	if (!testIdentity    (F, n)) pass = false;
+	if (!testVandermonde (F, n)) pass = false;
+	BlasMatrix<Field> A(F, A_stream);
+	if (!testBlackbox(A)) pass = false;
 	//if (!testRandomLinearity (F, A_stream, v1_stream, v2_stream)) pass = false;
 	//if (!testRandomTranspose (F, A_stream, v1_stream, v2_stream)) pass = false;
 

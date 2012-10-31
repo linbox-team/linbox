@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 	//  report << "The Upper Triangular matrix is: " << std::endl;
 	//TT.write();
 
-	pass = testBlackbox(TT);
+	pass = testBlackboxNoRW(TT);
 	LinBox::commentator().stop("Toeplitz black box test suite");
 	return pass ? 0 : -1;
 }

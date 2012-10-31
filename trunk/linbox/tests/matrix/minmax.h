@@ -58,13 +58,15 @@ Matrix& maxmat(const Ring& R, Matrix& Mat, size_t n){
 template<class Ring, class Matrix>
 Matrix& qlehmer(const Ring& R, Matrix& Mat, size_t n){
 	size_t val;
-	typename Ring::Element tmp;
+	typename Ring::Element tmp, tmp2;
 
 	for(size_t i = 0; i < n; ++i){
 		for(size_t j = 0; j < n; ++j){
 			val = i > j ? i : j;
 			val++;
-			R.init(tmp, val*val);
+			R.init(tmp, val);
+			R.init(tmp2, val);
+			R.mulin(tmp, tmp2);
 			Mat.setEntry(i, j, tmp);
 		}
 	}

@@ -298,7 +298,7 @@ build |wc" should yield the same number of lines.
 #pragma omp section
 		  Build_n_run("test-zero-one",                     counter , flag);
 #pragma omp section
-		  Build_n_run("test-zo", counter, flag); //, half baked, BY responsible")
+		  No_build_n_run("test-zo", counter, flag, "constructor problem");
 	  }
 
 /*  section eliminated because Givaro now is required
