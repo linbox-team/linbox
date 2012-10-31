@@ -38,7 +38,6 @@
 #include "linbox/blackbox/zero-one.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/solutions/det.h"
-#include "linbox/util/matrix-stream.h"
 
 using namespace LinBox;
 using namespace std;
@@ -61,8 +60,8 @@ int main (int argc, char **argv)
 
 		PID_integer ZZ;
 		PID_integer::Element d;
-		MatrixStream<PID_integer> ms( ZZ, input );
-		SparseMatrix<PID_integer, Vector<PID_integer>::SparseSeq > A ( ms );
+		SparseMatrix<PID_integer, Vector<PID_integer>::SparseSeq > A ( ZZ );
+		A.read(input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		SE.strategy(Specifier::PIVOT_LINEAR);
@@ -75,8 +74,8 @@ int main (int argc, char **argv)
 		typedef Modular<double> Field;
 		Field::Element d;
 		Field F(q);
-		MatrixStream<Field> ms( F, input );
-		SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
+		SparseMatrix<Field, Vector<Field>::SparseSeq > B (F);
+		B.read(input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 

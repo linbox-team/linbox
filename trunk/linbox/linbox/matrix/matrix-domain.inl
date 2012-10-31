@@ -31,6 +31,7 @@
 #define __LINBOX_matrix_domain_INL
 
 #include "linbox/matrix/transpose-matrix.h"
+#include "linbox/blackbox/dif.h"
 
 namespace LinBox
 {
@@ -75,6 +76,11 @@ namespace LinBox
 
 	template <class Field>
 	template <class Matrix1, class Matrix2>
+	bool MatrixDomain<Field>::areEqualBB (const Matrix1 &A, const Matrix2 &B) const
+	{ Dif<Matrix1, Matrix2> C(A, B); return isZero(C); }
+
+	template <class Field>
+	template <class Matrix1, class Matrix2>
 	bool MatrixDomain<Field>::areEqualRow (const Matrix1 &A, const Matrix2 &B) const
 	{
 		linbox_check (A.rowdim () == B.rowdim ());
@@ -111,6 +117,17 @@ namespace LinBox
 				return false;
 
 		return true;
+	}
+
+	template <class Field>
+	template <class Matrix_>
+	bool MatrixDomain<Field>::isZeroBB (const Matrix_ &A) const
+	{
+		VectorDomain<Field> VD(A.field());
+		std::vector<typename Field::Element> x(A.coldim()), y(A.rowdim());
+		VD.random(x);
+		A.apply(y, x);
+		return VD.isZero(y);
 	}
 
 	template <class Field>

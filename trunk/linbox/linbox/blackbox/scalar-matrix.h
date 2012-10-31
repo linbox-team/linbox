@@ -33,11 +33,13 @@
 #define __LINBOX_scalar_H
 
 #include <algorithm>
+#include <iostream>
 #include "linbox/field/hom.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/solutions/solution-tags.h"
+#include "linbox/util/matrix-stream.h"
 
 namespace LinBox
 {
@@ -71,6 +73,11 @@ namespace LinBox
 		ScalarMatrix ()	:
 			n_(0)
 		{}
+
+		/** Constructor of readable scalar matrix.
+		 * @param F	field in which to do arithmetic.
+		 */
+		ScalarMatrix (const Field &F) : field_(&F) {}
 
 		/** Scalar matrix Constructor from an element.
 		 * @param F	field in which to do arithmetic.
@@ -171,6 +178,20 @@ namespace LinBox
 
 		Element& getScalar(Element& x) const { return this->field().assign(x,this->v_); }
 		Element& setScalar(const Element& x) { return this->field().assign(this->v_,x); }
+		std::ostream& write(std::ostream& os) {
+			os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
+			field().write(os << "% ScalarMatrix ") << std::endl;
+			os << rowdim() << " " << coldim() << " " << "1" << std::endl;
+			field().write(os << "1 1 ", v_) << std::endl;
+		}
+		std::istream& read(std::istream& is) {
+			MatrixStream<Field> ms(field(), is);
+			size_t c, i, j;
+			if( !ms.getDimensions(n_, c) || c != n_ )
+				throw ms.reportError(__FUNCTION__,__LINE__);
+			ms.nextTriple(i, j, v_);
+			if (i != j) throw ms.reportError(__FUNCTION__,__LINE__);
+		}
 
 	protected:
 
