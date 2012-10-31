@@ -40,6 +40,7 @@
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/solutions/solution-tags.h"
 #include "linbox/util/matrix-stream.h"
+#include "linbox/util/write-mm.h"
 
 namespace LinBox
 {
@@ -179,10 +180,9 @@ namespace LinBox
 		Element& getScalar(Element& x) const { return this->field().assign(x,this->v_); }
 		Element& setScalar(const Element& x) { return this->field().assign(this->v_,x); }
 		std::ostream& write(std::ostream& os) {
-			os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
-			field().write(os << "% ScalarMatrix ") << std::endl;
-			os << rowdim() << " " << coldim() << " " << "1" << std::endl;
+			writeMMCoordHeader(os, *this, 1, "ScalarMatrix");
 			field().write(os << "1 1 ", v_) << std::endl;
+			return os;
 		}
 		std::istream& read(std::istream& is) {
 			MatrixStream<Field> ms(field(), is);
@@ -191,6 +191,7 @@ namespace LinBox
 				throw ms.reportError(__FUNCTION__,__LINE__);
 			ms.nextTriple(i, j, v_);
 			if (i != j) throw ms.reportError(__FUNCTION__,__LINE__);
+			return is;
 		}
 
 	protected:
