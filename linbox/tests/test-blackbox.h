@@ -42,7 +42,8 @@
 #include "linbox/util/commentator.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/vector/stream.h"
-#include "linbox/vector/vector-domain.h"
+//#include "linbox/vector/vector-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 
 #include "test-common.h"
 
@@ -53,7 +54,8 @@ Generic tests for black boxes
 For field F, BB A, vector streams s, t:
 testTranspose (F, A, s, t)
 testLinearity (A, s, t)
-testBlackbox(A) // calls the previous 2
+testReadWrite(A)
+testBlackbox(A, b) // calls the first 2 and, if b, calls testReadWrite.
 
 testBB(F) has been deleted. It assumed a BB could be built from a single size param (this is never true?!).
 */
@@ -160,7 +162,6 @@ testLinearity (//const Field                             &F,
 
 	typedef typename BB::Field Field;
 	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
-	//LinBox::VectorDomain <Field> VD (const_cast<Field&>(A.field()));
 	LinBox::VectorDomain <Field> VD (A.field());
 	typename Field::RandIter r (A.field());
 	typename Field::Element alpha;
@@ -186,7 +187,6 @@ testLinearity (//const Field                             &F,
 
 		r.random (alpha);
 
-		//ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		VD.write( report << "Input vector x: ", x) << endl;
 
 		VD.write( report << "Input vector y: ", y) << endl;
@@ -217,8 +217,8 @@ testLinearity (//const Field                             &F,
 			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Vectors are not equal" << endl;
 
-		LinBox::commentator().stop ("done");
-		LinBox::commentator().progress ();
+	//	LinBox::commentator().stop ("done");
+	//	LinBox::commentator().progress ();
 	}
 
 	return ret;
@@ -257,11 +257,8 @@ testReadWrite(BB &A)
 	}
 	B.read(in);
 	std::vector<typename Field::Element> x(A.coldim()), y(A.rowdim()), z(B.rowdim());
-	LinBox::VectorDomain<Field> VD(A.field());
-	VD.random(x);
-	A.apply(y, x);
-	B.apply(z, x);
-	if (not VD.areEqual(y, z)) {
+	LinBox::MatrixDomain<Field> MD(A.field());
+	if (not MD.areEqual(A, B)) {
 		pass = false;
 		report << "failure to get same matrix back from write/read" << std::endl;
 		B.write(report << "B is ") << std::endl;
@@ -276,7 +273,7 @@ testReadWrite(BB &A)
  */
 template <class BB>
 static bool
-testBlackbox(BB &A /*, bool testRW = false*/) 
+testBlackboxNoRW(BB &A)
 {
 	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
 	typedef typename BB::Field Field;
@@ -315,37 +312,24 @@ testBlackbox(BB &A /*, bool testRW = false*/)
 	size_t iterations = 1;
 	typename Field::RandIter r(F);
 	LinBox::RandomDenseStream<Field, DenseVector> stream1 (F, r, A.rowdim(), iterations);
-	typename Field::Element x;
-	r.random(x);
+	//typename Field::Element x;
+	//r.random(x);
 	LinBox::RandomDenseStream<Field, DenseVector> stream2 (F, r, A.coldim(), iterations);
-
-	LinBox::commentator().start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
 	ret = ret && testLinearity (A, stream1, stream2);
-
-	LinBox::commentator().stop (MSG_STATUS (ret),
-				  (const char *) 0, "testLinearity");
-
-	LinBox::commentator().start ("\t--Testing u^T(Av) = (u^T A)v",
-				   "testTranspose", 1);
 
 	LinBox::RandomDenseStream<Field, DenseVector> stream3 (F, r, A.rowdim(), iterations);
 	LinBox::RandomDenseStream<Field, DenseVector> stream4 (F, r, A.coldim(), iterations);
-
 	ret = ret && testTranspose (F, A, stream3, stream4);
-	LinBox::commentator().stop (MSG_STATUS (ret),
-				  (const char *) 0, "testTranspose");
-
-/*
-	if (testRW) {
-	LinBox::commentator().start ("\t--Testing write then read back", "testReadWrite", 1);
-	ret = ret && testReadWrite(A);
-	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testReadWrite");
-	}
-*/
 
 	return ret;
 }
 
+template <class BB>
+static bool
+testBlackbox(BB &A)
+{
+	return testBlackboxNoRW(A) and testReadWrite(A);
+}
 #endif // __LINBOX_test_blackbox_H
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

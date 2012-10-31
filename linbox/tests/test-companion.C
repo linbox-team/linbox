@@ -80,11 +80,11 @@ int main (int argc, char **argv)
 
 	Blackbox A (F, p);
 
-	pass = pass && testBlackbox(A);
+	pass = pass && testBlackboxNoRW(A); // no RW yet
 
 	Blackbox B (F, n);
 
-	pass = pass && testBlackbox(B);
+	pass = pass && testBlackboxNoRW(B); // no RW yet
 
 	commentator().stop("companion matrix black box test suite");
 

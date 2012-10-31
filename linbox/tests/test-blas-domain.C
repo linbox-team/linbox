@@ -116,14 +116,11 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 
 
 		// Create 3 random n*n matrices
-		for (size_t i=0;i<n;++i)
-			for (size_t j=0;j<n;++j){
-				A.setEntry(i,j,G.random(tmp));
-				B.setEntry(i,j,G.random(tmp));
-				C.setEntry(i,j,G.random(tmp));
-			}
-
-		// Create 2 random vectors
+		A.random();
+		B.random();
+		C.random();
+		
+		// Create 2 random vectors 
 		for (size_t i=0;i<n;++i) {
 			G.random(x[i]);
 			G.random(y[i]);

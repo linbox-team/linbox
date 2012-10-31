@@ -87,7 +87,7 @@ int main (int argc, char **argv)
 	commentator().start("Frobenius form black box test suite", "frobenius");
 	Frobenius<Field>  A(F, plist.begin(), plist.end());
 
-	pass = pass && testBlackbox(A);
+	pass = pass && testBlackboxNoRW(A);
 
 	commentator().stop("Frobenius form black box test suite");
 	return pass ? 0 : -1;
