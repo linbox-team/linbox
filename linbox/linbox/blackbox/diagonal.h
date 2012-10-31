@@ -50,6 +50,7 @@
 #include "linbox/field/hom.h"
 #include "linbox/solutions/solution-tags.h"
 #include "linbox/util/matrix-stream.h"
+#include "linbox/util/write-mm.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -179,9 +180,10 @@ namespace LinBox
 #endif
 
 		std::ostream& write(std::ostream& os) {
-			os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
-			field().write(os << "% Diagonal ") << std::endl;
-			os << rowdim() << " " << coldim() << " " << rowdim() << std::endl;
+			writeMMCoordHeader(os, *this, rowdim(), "Diagonal");
+			//os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
+			//field().write(os << "% Diagonal ") << std::endl;
+			//os << rowdim() << " " << coldim() << " " << rowdim() << std::endl;
 			for (size_t i = 0; i < rowdim(); ++i)
 				field().write(os << i + 1 << " " << i + 1 << " ", _v[i]) << std::endl;
 			return os;

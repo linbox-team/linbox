@@ -40,6 +40,7 @@
 #include <vector>
 #include "linbox/blackbox/jit-matrix.h"
 #include "linbox/util/matrix-stream.h"
+#include "linbox/util/write-mm.h"
 
 
 namespace LinBox
@@ -117,17 +118,13 @@ namespace LinBox
 		{};
 
 		std::ostream& write(std::ostream& os) const {
-			os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
-			field().write(os << "% Hilbert Matrix, ") << std::endl;
-			os << rowdim() << " " << coldim() << " 1" << std::endl;
-			os << "1 1 1" << std::endl; //hack for problem in reader
-			return os;
+			return writeMMPatternHeader(os, *this, 0, "Hilbert");
 		}
 
 		std::istream& read(std::istream& is) {
 			MatrixStream<Field> ms(field(), is);
-			if (!ms.getDimensions(_m, _n)) 
-				throw ms.reportError(__FUNCTION__,__LINE__);
+			ms.getDimensions(_m, _n); 
+std::cout << _m << " " << _n << std::endl;
 			_gen.init(field(), _m, _n);
 			return is;
 		}

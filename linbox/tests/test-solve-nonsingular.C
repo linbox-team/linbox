@@ -338,7 +338,7 @@ int main(int argc, char** argv) {
 	generateProblem(R, A, b, s1, s2, mt, (int) k);
 
 	if(run & 1){
-	  if (false/*sizeof(int) < 8*/) {
+	  if (sizeof(int) < 8) {
 	  	
 		report << "numsym: not done.  Requires 64 bit architecture." << std::endl << std::endl;
 	  } else {
