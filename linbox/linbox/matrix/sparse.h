@@ -79,7 +79,6 @@
 namespace LinBox
 {
 
-// IO stuff should be more generic than this
 
 	/** Exception class for invalid matrix input
 	*/
@@ -107,7 +106,7 @@ namespace LinBox
 	// made global to avoid duplicate code.
 	/// tags for SparseMatrixBase::read() and write()
 	enum FileFormatTag {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_MAPLE, FORMAT_PRETTY, FORMAT_MAGMACPT, FORMAT_ONE_BASED, FORMAT_MATRIXMARKET
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_MAPLE, FORMAT_PRETTY, FORMAT_MAGMACPT, FORMAT_ONE_BASED
 	};
 
 	// Forward declaration
@@ -192,477 +191,442 @@ namespace LinBox
 		static std::ostream &write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, FileFormatTag format);
 	};
 
-/** Sparse matrix container
- * This class acts as a generic row-wise container for sparse
- * matrices. It is designed to provide various methods to access the
- * entries of the matrix. In particular, it does not meet the black box
- * archetype; see \ref SparseMatrix for an appropriate sparse matrix
- * black box.
- *
- * @param Element Element type
- * @param Row     LinBox sparse vector type to use for rows of matrix
- \ingroup matrix
- */
-template <class _Element, class _Row, class Trait>
-class SparseMatrixBase {
-public:
-
-	typedef _Element Element;
-	typedef _Row Row;
-	typedef const Row ConstRow;
-	typedef typename _SP_BB_VECTOR_<Row> Rep;
-
-	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
-	struct rebind {
-		typedef SparseMatrixBase<typename _Tp1::Element, _R1, Trait> other;
-	};
-
-	/** Constructor.
-	 * Note: the copy constructor and operator= will work as intended
-	 *       because of STL's container design
-	 * @param  m  row dimension
-	 * @param  n  column dimension
+	/** Sparse matrix container
+	 * This class acts as a generic row-wise container for sparse
+	 * matrices. It is designed to provide various methods to access the
+	 * entries of the matrix. In particular, it does not meet the black box
+	 * archetype; see \ref SparseMatrix for an appropriate sparse matrix
+	 * black box.
+	 *
+	 * @param Element Element type
+	 * @param Row     LinBox sparse vector type to use for rows of matrix
+	 \ingroup matrix
 	 */
-	SparseMatrixBase (size_t m, size_t n) :
-		_matA(m), _m(m), _n(n)
-	{};
-
-
-	/** Constructor from a MatrixStream
-	*/
-	template <class Field>
-	SparseMatrixBase ( MatrixStream<Field>& ms );
-
-
-	/** Copy constructor.
-	*/
-	SparseMatrixBase (const SparseMatrixBase<Element, Row, Trait> &A);
-
-	/** Convert constructor.
-	*/
-	template<class VectorType>
-	SparseMatrixBase (const SparseMatrixBase<Element, VectorType, Trait> &A);
-	/** Destructor. */
-	~SparseMatrixBase () {}
-
-	/** Retreive row dimension of the matrix.
-	 * @return integer number of rows of SparseMatrixBase matrix.
-	 */
-	size_t rowdim () const
-	{
-		return _m;
-	}
-
-	/** Retreive column dimension of matrix.
-	 * @return integer number of columns of SparseMatrixBase matrix.
-	 */
-	size_t coldim () const
-	{
-		return _n;
-	}
-
-	/** Retreive number of elements in the matrix.
-	 * @return integer number of elements of SparseMatrixBase matrix.
-	 */
-	size_t size () const
-	{
-		size_t s(0);
-		for(typename Rep::const_iterator it = _matA.begin(); it != _matA.end(); ++it)
-			s+= LinBox::RawVector<_Element>::size(*it);
-		return s;
-	}
-
-	/** Read a matrix from the given input stream using field read/write
-	 * @param is Input stream from which to read the matrix
-	 * @param F Field with which to read
-	 * @param format Format of input matrix
-	 */
-	template <class Field>
-	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT);
-	/** Read a matrix from the given input stream using standard operators
-	 * @param is Input stream from which to read the matrix
-	 * @param format Format of input matrix
-	 * @deprecated Can't read field elements without a Field::read().
-	 */
-	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT);
-
-	/** Write a matrix to the given output stream using field read/write
-	 * @param os Output stream to which to write the matrix
-	 * @param F Field with which to write
-	 * @param format Format with which to write
-	 */
-	template <class Field>
-	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_MATRIXMARKET) const
-	{
-		if (format != FORMAT_MATRIXMARKET)
-			return SparseMatrixReadWriteHelper<Element, Row>::write (*this, os, F, format);
-		os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
-		F.write(os << "% ") << std::endl; 
-		os << rowdim() << " " << coldim() << " " << size() << std::endl;
-		for (ConstIndexedIterator it = IndexedBegin(); it != IndexedEnd(); ++it)
-			F.write(os << 1+it.rowIndex() << " " << 1+it.colIndex() << " ", *it) << std::endl;
-		return os;
-	}
-
-	/** Write a matrix to the given output stream using standard operators
-	 * @param os Output stream to which to write the matrix
-	 * @param format Format with which to write
-	 * @deprecated Can't write elements without a field.
-	 */
-	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const;
-
-	/** Set an individual entry
-	 * Setting the entry to 0 will remove it from the matrix
-	 * @param i Row index of entry
-	 * @param j Column index of entry
-	 * @param value Value of the new entry
-	 */
-	void setEntry (size_t i, size_t j, const Element &value);
-
-	/** Get a writeable reference to an entry in the matrix
-	 * If there is no entry at the position (i, j), then a new entry
-	 * with a value of zero is inserted and a reference  to it is
-	 * returned.
-	 * @param i Row index of entry
-	 * @param j Column index of entry
-	 * @return Reference to matrix entry
-	 * @deprecated Not efficient for packed representations
-	 */
-	Element &refEntry (size_t i, size_t j);
-
-	/** Get a read-only individual entry from the matrix
-	 * @param i Row index
-	 * @param j Column index
-	 * @return Const reference to matrix entry
-	 */
-	const Element &getEntry (size_t i, size_t j) const;
-
-	/** Get an entry and store it in the given value
-	 * This form is more in the Linbox style and is provided for interface
-	 * compatibility with other parts of the library
-	 * @param x Element in which to store result
-	 * @param i Row index
-	 * @param j Column index
-	 * @return Reference to x
-	 */
-	Element &getEntry (Element &x, size_t i, size_t j) const;
-
-	/** @name Columns of rows iterator
-	 * The columns of row iterator gives each of the rows of the
-	 * matrix in ascending order. Dereferencing the iterator yields
-	 * a row vector in sparse sequence format
-	 */
-
-	typedef typename Rep::iterator RowIterator;
-	typedef typename Rep::const_iterator ConstRowIterator;
-
-	RowIterator rowBegin ();
-	RowIterator rowEnd ();
-	ConstRowIterator rowBegin () const;
-	ConstRowIterator rowEnd () const;
-
-	/** @name Raw iterator
-	 * The raw iterator is a method for accessing all nonzero
-	 * entries in the matrix in some unspecified order. This can be
-	 * used, e.g. to reduce all matrix entries modulo a prime before
-	 * passing the matrix into an algorithm.
-	 */
-
-	class Iterator;
-	class ConstIterator;
-
-	/// Begin.
-	Iterator Begin ();
-	/// End.
-	Iterator End ();
-	/// const Begin.
-	ConstIterator Begin () const;
-	/// const End
-	ConstIterator End () const;
-
-	/** @name Index iterator
-	 * The index iterator gives the row, column indices of all matrix
-	 * elements in the same order as the raw iterator above. Its value type
-	 * is an STL pair with the row and column indices, starting at 0, in the
-	 * first and second positions, respectively.
-	 */
-
-	class IndexedIterator;
-	class ConstIndexedIterator;
-
-	/// IndexedBegin
-	IndexedIterator IndexedBegin ();
-	/// IndexedEnd
-	IndexedIterator IndexedEnd ();
-	/// const IndexedBegin
-	ConstIndexedIterator IndexedBegin () const;
-	/// const IndexedEnd
-	ConstIndexedIterator IndexedEnd () const;
-
-	/** Retrieve a row as a writeable reference
-	 * @param i Row index
-	 */
-	Row &getRow (size_t i);
-
-	/** Retrieve a row as a writeable reference.
-	 * @param i Row index
-	 */
-	Row &operator [] (size_t i);
-
-	/** Retrieve a row as a read-only reference.
-	 * @param i Row index
-	 */
-	ConstRow &operator [] (size_t i) const;
-
-	/** Compute the column density, i.e the number of entries per column.
-	 * @param v Vector in which to store column density
-	 */
-	template <class Vector>
-	Vector &columnDensity (Vector &v) const;
-
-	/** Construct the transpose of this matrix and place it in the
-	 * matrix given.
-	 * @param AT
-	 */
-	SparseMatrixBase &transpose (SparseMatrixBase &AT) const;
-
-protected:
-
-	friend class SparseMatrixWriteHelper<Element, Row>;
-	friend class SparseMatrixReadWriteHelper<Element, Row>;
-
-	Rep               _matA;
-	size_t            _m;
-	size_t            _n;
-
-	template<class F, class R, class T> friend class SparseMatrixBase;
-};
-
-/* Specialization for sparse sequence vectors */
-
-template <class _Element, class _Row>
-class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag > {
-public:
-
-	typedef _Element Element;
-	typedef _Row Row;
-	typedef const Row ConstRow;
-	typedef _SP_BB_VECTOR_<Row> Rep;
-
-	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
-	struct rebind {
-		typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseSequenceVectorTag> other;
-	};
-
-	SparseMatrixBase (size_t m, size_t n) :
-		_matA (m), _m (m), _n (n)
-	{}
-
-	/** Constructor from a MatrixStream
-	*/
-	template <class Field>
-	SparseMatrixBase ( MatrixStream<Field>& ms );
-
-	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A) :
-		_matA (A._matA), _m (A._m), _n (A._n)
-	{}
-
-	template<class VectorType>
-	SparseMatrixBase (const SparseMatrixBase<Element, VectorType> &A) :
-		_matA(A._m), _m (A._m), _n (A._n)
-	{
-		typename Rep::iterator meit = this->_matA.begin();
-		typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._matA.begin();
-		for( ; meit != this->_matA.end(); ++meit, ++copit)
-			LinBox::RawVector<Element>::convert(*meit, *copit);
-	}
-
-	~SparseMatrixBase () {}
-
-	size_t rowdim () const
-	{
-		return _m;
-	}
-	size_t coldim () const
-	{
-		return _n;
-	}
-
-	size_t size () const
-	{
-		size_t s(0);
-		for(typename Rep::const_iterator it = _matA.begin(); it != _matA.end(); ++it)
-			s+= LinBox::RawVector<_Element>::size(*it);
-		return s;
-	}
-
-	template <class Field>
-	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT)
-	{
-		if (format == FORMAT_DETECT) {
-		    MatrixStream<Field> ms(F, is);
-		    Element val;
-		    size_t i, j;
-		    while( ms.nextTriple(i,j,val) ) {
-		    	if( i >= _m ) {
-		        	_m = i + 1;
-		        	_matA.resize( _m );
-		    	}
-		    	if( j >= _n ) _n = j + 1;
-		    	setEntry(i,j,val);
-		   	}
-		    if( ms.getError() > END_OF_MATRIX )
-		       	throw ms.reportError(__func__,__LINE__);
-		    if( !ms.getDimensions( i, _n ) )
-		       	throw ms.reportError(__func__,__LINE__);
-		    if( i > _m ) {
-		       	_m = i;
-		       	_matA.resize(_m);
-		    }
-		   	return is;
-		} else
-			return SparseMatrixReadWriteHelper<Element, Row>::read (*this, is, F, format);
-	}
-
-	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
-	{
-		return SparseMatrixReadWriteHelper<Element, Row>::read
-		(*this, is, SparseMatrixReadWriteHelper<Element, Row>::NoField (), format);
-	}
-
-	template <class Field>
-	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_MATRIXMARKET) const
-	{
-		if (format != FORMAT_MATRIXMARKET)
-			return SparseMatrixReadWriteHelper<Element, Row>::write (*this, os, F, format);
-		os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
-		F.write(os << "% ") << std::endl; 
-		os << rowdim() << " " << coldim() << " " << size() << std::endl;
-		for (ConstIndexedIterator it = IndexedBegin(); it != IndexedEnd(); ++it)
-			F.write(os << 1+it.rowIndex() << " " << 1+it.colIndex() << " ", *it) << std::endl;
-		return os;
-	}
-
-	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
-	{
-		return SparseMatrixReadWriteHelper<Element, Row>::write
-		(*this, os, SparseMatrixReadWriteHelper<Element, Row>::NoField (), format);
-	}
-
-	void           setEntry (size_t i, size_t j, const Element &value);
-
-	Element       &refEntry (size_t i, size_t j);
-
-	const Element &getEntry (size_t i, size_t j) const;
-
-	Element       &getEntry (Element &x, size_t i, size_t j) const
-	{
-		return x = getEntry (i, j);
-	}
-
-	typedef typename Rep::iterator RowIterator;
-	typedef typename Rep::const_iterator ConstRowIterator;
-
-	ConstRowIterator rowBegin () const
-	{
-		return _matA.begin ();
-	}
-
-	ConstRowIterator rowEnd () const
-	{
-		return _matA.end ();
-	}
-
-	RowIterator rowBegin ()
-	{
-		return _matA.begin ();
-	}
-
-	RowIterator rowEnd ()
-	{
-		return _matA.end ();
-	}
-
-	template <class RepIterator, class RowIterator, class _I_Element>
-	class _Iterator {
+	template <class _Element, class _Row, class Trait>
+	class SparseMatrixBase {
 	public:
-		typedef _I_Element value_type;
 
-		_Iterator (const RepIterator &i, const RowIterator &j, const RepIterator &A_end) :
-			_i (i), _j (j), _A_end (A_end)
+		typedef _Element Element;
+		typedef _Row Row;
+		typedef const Row ConstRow;
+		typedef typename _SP_BB_VECTOR_<Row> Rep;
+
+		template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
+		struct rebind {
+			typedef SparseMatrixBase<typename _Tp1::Element, _R1, Trait> other;
+		};
+
+		/** Constructor.
+		 * Note: the copy constructor and operator= will work as intended
+		 *       because of STL's container design
+		 * @param  m  row dimension
+		 * @param  n  column dimension
+		 */
+		SparseMatrixBase (size_t m, size_t n) :
+			_matA(m), _m(m), _n(n)
+		{};
+
+
+		/** Constructor from a MatrixStream
+		*/
+		template <class Field>
+		SparseMatrixBase ( MatrixStream<Field>& ms );
+
+
+		/** Copy constructor.
+		*/
+		SparseMatrixBase (const SparseMatrixBase<Element, Row, Trait> &A);
+
+		/** Convert constructor.
+		*/
+		template<class VectorType>
+		SparseMatrixBase (const SparseMatrixBase<Element, VectorType, Trait> &A);
+		/** Destructor. */
+		~SparseMatrixBase () {}
+
+		/** Retreive row dimension of the matrix.
+		 * @return integer number of rows of SparseMatrixBase matrix.
+		 */
+		size_t rowdim () const
 		{
-			if( _i == _A_end ) return;
-			while ( _j == _i->end () ) {
-				if (++_i == _A_end) return;
-				_j = _i->begin ();
-			}
+			return _m;
 		}
 
-		_Iterator (const _Iterator &iter) :
-			_i (iter._i), _j (iter._j), _A_end (iter._A_end)
+		/** Retreive column dimension of matrix.
+		 * @return integer number of columns of SparseMatrixBase matrix.
+		 */
+		size_t coldim () const
+		{
+			return _n;
+		}
+
+		/** Retreive number of elements in the matrix.
+		 * @return integer number of elements of SparseMatrixBase matrix.
+		 */
+		size_t size () const
+		{
+			size_t s(0);
+			for(typename Rep::const_iterator it = _matA.begin(); it != _matA.end(); ++it)
+				s+= LinBox::RawVector<_Element>::size(*it);
+			return s;
+		}
+		/** Read a matrix from the given input stream using field read/write
+		 * @param is Input stream from which to read the matrix
+		 * @param F Field with which to read
+		 * @param format Format of input matrix
+		 */
+		template <class Field>
+		std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT);
+		/** Read a matrix from the given input stream using standard operators
+		 * @param is Input stream from which to read the matrix
+		 * @param format Format of input matrix
+		 */
+		std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT);
+
+
+		/** Write a matrix to the given output stream using field read/write
+		 * @param os Output stream to which to write the matrix
+		 * @param F Field with which to write
+		 * @param format Format with which to write
+		 */
+		template <class Field>
+		std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const;
+
+		/** Write a matrix to the given output stream using standard operators
+		 * @param os Output stream to which to write the matrix
+		 * @param format Format with which to write
+		 */
+		std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const;
+
+		/** Set an individual entry
+		 * Setting the entry to 0 will remove it from the matrix
+		 * @param i Row index of entry
+		 * @param j Column index of entry
+		 * @param value Value of the new entry
+		 */
+		void setEntry (size_t i, size_t j, const Element &value);
+
+		/** Get a writeable reference to an entry in the matrix
+		 * If there is no entry at the position (i, j), then a new entry
+		 * with a value of zero is inserted and a reference  to it is
+		 * returned.
+		 * @param i Row index of entry
+		 * @param j Column index of entry
+		 * @return Reference to matrix entry
+		 */
+		Element &refEntry (size_t i, size_t j);
+
+		/** Get a read-only individual entry from the matrix
+		 * @param i Row index
+		 * @param j Column index
+		 * @return Const reference to matrix entry
+		 */
+		const Element &getEntry (size_t i, size_t j) const;
+
+		/** Get an entry and store it in the given value
+		 * This form is more in the Linbox style and is provided for interface
+		 * compatibility with other parts of the library
+		 * @param x Element in which to store result
+		 * @param i Row index
+		 * @param j Column index
+		 * @return Reference to x
+		 */
+		Element &getEntry (Element &x, size_t i, size_t j) const;
+
+		/** @name Columns of rows iterator
+		 * The columns of row iterator gives each of the rows of the
+		 * matrix in ascending order. Dereferencing the iterator yields
+		 * a row vector in sparse sequence format
+		 */
+
+		typedef typename Rep::iterator RowIterator;
+		typedef typename Rep::const_iterator ConstRowIterator;
+
+		RowIterator rowBegin ();
+		RowIterator rowEnd ();
+		ConstRowIterator rowBegin () const;
+		ConstRowIterator rowEnd () const;
+
+		/** @name Raw iterator
+		 * The raw iterator is a method for accessing all nonzero
+		 * entries in the matrix in some unspecified order. This can be
+		 * used, e.g. to reduce all matrix entries modulo a prime before
+		 * passing the matrix into an algorithm.
+		 */
+
+		class Iterator;
+		class ConstIterator;
+
+		/// Begin.
+		Iterator Begin ();
+		/// End.
+		Iterator End ();
+		/// const Begin.
+		ConstIterator Begin () const;
+		/// const End
+		ConstIterator End () const;
+
+		/** @name Index iterator
+		 * The index iterator gives the row, column indices of all matrix
+		 * elements in the same order as the raw iterator above. Its value type
+		 * is an STL pair with the row and column indices, starting at 0, in the
+		 * first and second positions, respectively.
+		 */
+
+		class IndexedIterator;
+		class ConstIndexedIterator;
+
+		/// IndexedBegin
+		IndexedIterator IndexedBegin ();
+		/// IndexedEnd
+		IndexedIterator IndexedEnd ();
+		/// const IndexedBegin
+		ConstIndexedIterator IndexedBegin () const;
+		/// const IndexedEnd
+		ConstIndexedIterator IndexedEnd () const;
+
+		/** Retrieve a row as a writeable reference
+		 * @param i Row index
+		 */
+		Row &getRow (size_t i);
+
+		/** Retrieve a row as a writeable reference.
+		 * @param i Row index
+		 */
+		Row &operator [] (size_t i);
+
+		/** Retrieve a row as a read-only reference.
+		 * @param i Row index
+		 */
+		ConstRow &operator [] (size_t i) const;
+
+		/** Compute the column density, i.e the number of entries per column.
+		 * @param v Vector in which to store column density
+		 */
+		template <class Vector>
+		Vector &columnDensity (Vector &v) const;
+
+		/** Construct the transpose of this matrix and place it in the
+		 * matrix given.
+		 * @param AT
+		 */
+		SparseMatrixBase &transpose (SparseMatrixBase &AT) const;
+
+	protected:
+
+		friend class SparseMatrixWriteHelper<Element, Row>;
+		friend class SparseMatrixReadWriteHelper<Element, Row>;
+
+		Rep               _matA;
+		size_t            _m;
+		size_t            _n;
+
+		template<class F, class R, class T> friend class SparseMatrixBase;
+	};
+
+	/* Specialization for sparse sequence vectors */
+
+	template <class _Element, class _Row>
+	class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag > {
+	public:
+
+		typedef _Element Element;
+		typedef _Row Row;
+		typedef const Row ConstRow;
+		typedef _SP_BB_VECTOR_<Row> Rep;
+
+		template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
+		struct rebind {
+			typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseSequenceVectorTag> other;
+		};
+
+		SparseMatrixBase (size_t m, size_t n) :
+			_matA (m), _m (m), _n (n)
 		{}
 
-		_Iterator () {}
+		/** Constructor from a MatrixStream
+		*/
+		template <class Field>
+		SparseMatrixBase ( MatrixStream<Field>& ms );
 
-		_Iterator &operator = (const _Iterator &iter)
+		SparseMatrixBase (const SparseMatrixBase<Element, Row> &A) :
+			_matA (A._matA), _m (A._m), _n (A._n)
+		{}
+
+		template<class VectorType>
+		SparseMatrixBase (const SparseMatrixBase<Element, VectorType> &A) :
+			_matA(A._m), _m (A._m), _n (A._n)
 		{
-			_i = iter._i;
-			_j = iter._j;
-			_A_end = iter._A_end;
-
-			return *this;
+			typename Rep::iterator meit = this->_matA.begin();
+			typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._matA.begin();
+			for( ; meit != this->_matA.end(); ++meit, ++copit)
+				LinBox::RawVector<Element>::convert(*meit, *copit);
 		}
 
-		bool operator == (const _Iterator &i) const
+		~SparseMatrixBase () {}
+
+		size_t rowdim () const
 		{
-			return (_i == i._i) && (_j == i._j);
+			return _m;
+		}
+		size_t coldim () const
+		{
+			return _n;
 		}
 
-		bool operator != (const _Iterator &i) const
+		size_t size () const
 		{
-			return (_i != i._i) || (_j != i._j);
+			size_t s(0);
+			for(typename Rep::const_iterator it = _matA.begin(); it != _matA.end(); ++it)
+				s+= LinBox::RawVector<_Element>::size(*it);
+			return s;
 		}
 
-		_Iterator &operator ++ ()
+		template <class Field>
+		std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT)
 		{
-			++_j;
-			while( _j == _i->end ()) {
-				if (++_i == _A_end) return *this;
-				_j = _i->begin ();
+			return SparseMatrixReadWriteHelper<Element, Row>::read
+			(*this, is, F, format);
+		}
+
+		std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
+		{
+			return SparseMatrixReadWriteHelper<Element, Row>::read
+			(*this, is, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
+			 format);
+		}
+
+		template <class Field>
+		std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const
+		{
+
+			return SparseMatrixReadWriteHelper<Element, Row>::write
+			(*this, os, F, format);
+		}
+
+		std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
+		{
+			return SparseMatrixReadWriteHelper<Element, Row>::write
+			(*this, os, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
+			 format);
+		}
+
+		std::ostream &write(std::ostream &) const;
+
+		void           setEntry (size_t i, size_t j, const Element &value);
+
+		Element       &refEntry (size_t i, size_t j);
+
+		const Element &getEntry (size_t i, size_t j) const;
+
+		Element       &getEntry (Element &x, size_t i, size_t j) const
+		{
+			return x = getEntry (i, j);
+		}
+
+		typedef typename Rep::iterator RowIterator;
+		typedef typename Rep::const_iterator ConstRowIterator;
+
+		ConstRowIterator rowBegin () const
+		{
+			return _matA.begin ();
+		}
+
+		ConstRowIterator rowEnd () const
+		{
+			return _matA.end ();
+		}
+
+		RowIterator rowBegin ()
+		{
+			return _matA.begin ();
+		}
+
+		RowIterator rowEnd ()
+		{
+			return _matA.end ();
+		}
+
+		template <class RepIterator, class RowIterator, class _I_Element>
+		class _Iterator {
+		public:
+			typedef _I_Element value_type;
+
+			_Iterator (const RepIterator &i, const RowIterator &j, const RepIterator &A_end) :
+				_i (i), _j (j), _A_end (A_end)
+			{
+				if( _i == _A_end ) return;
+				while ( _j == _i->end () ) {
+					if (++_i == _A_end) return;
+					_j = _i->begin ();
+				}
 			}
 
-			// if (++_j == _i->end ())
-			// 				if (++_i != _A_end)
-			// 					_j = _i->begin ();
-			return *this;
-		}
+			_Iterator (const _Iterator &iter) :
+				_i (iter._i), _j (iter._j), _A_end (iter._A_end)
+			{}
 
-		_Iterator operator ++ (int)
-		{
-			_Iterator tmp = *this;
-			++(*this);
-			return tmp;
-		}
+			_Iterator () {}
 
-		_Iterator &operator -- ()
-		{
-			while (_j == _i->begin ())
-				_j = (--_i)->end ();
-			--_j;
-			return *this;
-		}
+			_Iterator &operator = (const _Iterator &iter)
+			{
+				_i = iter._i;
+				_j = iter._j;
+				_A_end = iter._A_end;
 
-		_Iterator operator -- (int)
-		{
-			_Iterator tmp = *this;
-			--(*this);
-			return tmp;
-		}
+				return *this;
+			}
 
-		value_type &operator * ()
-		{
-			return _j->second;
-		}
+			bool operator == (const _Iterator &i) const
+			{
+				return (_i == i._i) && (_j == i._j);
+			}
+
+			bool operator != (const _Iterator &i) const
+			{
+				return (_i != i._i) || (_j != i._j);
+			}
+
+			_Iterator &operator ++ ()
+			{
+				++_j;
+				while( _j == _i->end ()) {
+					if (++_i == _A_end) return *this;
+					_j = _i->begin ();
+				}
+
+				// if (++_j == _i->end ())
+				// 				if (++_i != _A_end)
+				// 					_j = _i->begin ();
+				return *this;
+			}
+
+			_Iterator operator ++ (int)
+			{
+				_Iterator tmp = *this;
+				++(*this);
+				return tmp;
+			}
+
+			_Iterator &operator -- ()
+			{
+				while (_j == _i->begin ())
+					_j = (--_i)->end ();
+				--_j;
+				return *this;
+			}
+
+			_Iterator operator -- (int)
+			{
+				_Iterator tmp = *this;
+				--(*this);
+				return tmp;
+			}
+
+			value_type &operator * ()
+			{
+				return _j->second;
+			}
 		// Dan Roche 2005-7-7 I believe this was a memory leak.
 		value_type *operator -> ()
 		{
@@ -676,7 +640,7 @@ public:
 		{
 			return &(_j->second);
 		}
-	
+
 	private:
 		RepIterator _i;
 		RowIterator _j;
@@ -821,8 +785,7 @@ public:
 
 		value_type &operator * ()
 		{
-			return *const_cast<value_type*> (&(_j->second));
-			// Ugh.  This hack is because ConstIndexedIterator is not right. -bds
+			return _j->second;
 		}
 		const value_type &operator * () const
 		{
@@ -963,29 +926,8 @@ public:
 	template <class Field>
 	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT)
 	{
-		if (format == FORMAT_DETECT) {
-		    MatrixStream<Field> ms(F, is);
-		    Element val;
-		    size_t i, j;
-		    while( ms.nextTriple(i,j,val) ) {
-		    	if( i >= _m ) {
-		        	_m = i + 1;
-		        	_matA.resize( _m );
-		    	}
-		    	if( j >= _n ) _n = j + 1;
-		    	setEntry(i,j,val);
-		   	}
-		    if( ms.getError() > END_OF_MATRIX )
-		       	throw ms.reportError(__func__,__LINE__);
-		    if( !ms.getDimensions( i, _n ) )
-		       	throw ms.reportError(__func__,__LINE__);
-		    if( i > _m ) {
-		       	_m = i;
-		       	_matA.resize(_m);
-		    }
-		   	return is;
-		} else
-			return SparseMatrixReadWriteHelper<Element, Row>::read (*this, is, F, format);
+		return SparseMatrixReadWriteHelper<Element, Row>::read
+		(*this, is, F, format);
 	}
 	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
 	{
@@ -1379,29 +1321,8 @@ public:
 	template <class Field>
 	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT)
 	{
-		if (format == FORMAT_DETECT) {
-		    MatrixStream<Field> ms(F, is);
-		    Element val;
-		    size_t i, j;
-		    while( ms.nextTriple(i,j,val) ) {
-		    	if( i >= _m ) {
-		        	_m = i + 1;
-		        	_matA.resize( _m );
-		    	}
-		    	if( j >= _n ) _n = j + 1;
-		    	setEntry(i,j,val);
-		   	}
-		    if( ms.getError() > END_OF_MATRIX )
-		       	throw ms.reportError(__func__,__LINE__);
-		    if( !ms.getDimensions( i, _n ) )
-		       	throw ms.reportError(__func__,__LINE__);
-		    if( i > _m ) {
-		       	_m = i;
-		       	_matA.resize(_m);
-		    }
-		   	return is;
-		} else
-			return SparseMatrixReadWriteHelper<Element, Row>::read (*this, is, F, format);
+		return SparseMatrixReadWriteHelper<Element, Row>::read
+		(*this, is, F, format);
 	}
 
 	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)

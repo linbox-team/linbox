@@ -595,7 +595,8 @@ int main (int argc, char **argv)
 	};
 	parseArguments (argc, argv, args);
 
-	typedef	Modular<uint32_t> Field;
+	//typedef	Modular<uint32_t> Field;
+	typedef	Modular<double> Field;
 	typedef Field::Element  Element;
 
 	typedef std::vector <Element> DenseVector;
@@ -617,11 +618,13 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field, SparseParVector>
 		stream3 (F, (double) k / (double) n, n, m);
 	bool testRW = true;
-	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1, testRW)) 
+/*
+	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1, !testRW)) 
 		pass = false;
 	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2, !testRW)) 
 		pass = false;
-	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3, !testRW)) 
+*/
+	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3, testRW)) 
 		pass = false;
 
 	commentator().stop("Sparse matrix black box test suite");
