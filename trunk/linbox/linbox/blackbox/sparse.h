@@ -247,27 +247,46 @@ namespace LinBox
 
 		// Read from matrix market format
 		std::istream &read (std::istream &is)
-		{ return SparseMatrixBase<Element, _Row>::read (is, *_field); }
+		{ MatrixStream<Field> ms(field(), is);
+                  if( !ms.getDimensions( this->_m, this->_n ) )
+                        throw ms.reportError(__func__,__LINE__);
+                  this->_matA.resize( this->_m );
+                  Element val;
+                  size_t i, j;
+                  while( ms.nextTriple(i,j,val) ) {
+                        setEntry(i,j,val);
+                  }
+                  if( ms.getError() > END_OF_MATRIX )
+                        throw ms.reportError(__func__,__LINE__);
+        	}
+
+	//	  return SparseMatrixBase<Element, _Row>::read (is, *_field); }
 
 		/** Read the matrix from a stream in the given format
 		 * @param is Input stream from which to read the matrix
 		 * @param format Format of input matrix
 		 * @return Reference to input stream
 		 */
-
 		std::istream &read (std::istream &is, FileFormatTag format/* = FORMAT_DETECT*/)
 		{ return SparseMatrixBase<Element, _Row>::read (is, field(), format); }
 
 		/// Write in matrix market format
 		std::ostream &write (std::ostream &os) const
-		{ return SparseMatrixBase<Element, _Row>::write (os, field()); }
+		{ typedef SparseMatrixBase<Element, _Row> SMB;
+		  writeMMCoordHeader(os, *this, this->size(), "SparseMatrix");
+		  for (typename SMB::ConstIndexedIterator it = SMB::IndexedBegin(); it != SMB::IndexedEnd(); ++it) {
+		    os << 1+it.rowIndex() << " " << 1+it.colIndex() << " "; 
+		    field().write(os, *it) << std::endl;
+		  }
+		  return os;
+		}
 
 		/** Write the matrix to a stream in the given format
-		 * @param os Output stream to which to write the matrix
-		 * @param format Format of output
 		 * @return Reference to output stream
+		 * @param os Output stream to which to write the matrix
+		 * @param format Format of output. FORMAT_PRETTY is often used on small matrices in debugging.
 		 */
-		std::ostream &write (std::ostream &os, FileFormatTag format/* = FORMAT_PRETTY*/) const
+		std::ostream &write (std::ostream &os, FileFormatTag format) const
 		{ return SparseMatrixBase<Element, _Row>::write (os, field(), format); }
 
 		// JGD 28.08.2002

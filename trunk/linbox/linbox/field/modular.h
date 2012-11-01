@@ -60,6 +60,7 @@
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/util/field-axpy.h"
+#include "linbox/util/write-mm.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/linbox-config.h"
 #include "linbox/field/field-traits.h"
@@ -286,13 +287,26 @@ namespace LinBox
 		/*- @name Input/Output Operations */
 		//@{
 
-		/*- Print field.
+		/*- Print field as a constructor call.
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
+		 * @param  F  optional name to give the field in the description.  IF F is the null string, only the class typename is written.
+		 * Example: For element type double and modulus 101, 
+		 * write(os) produces      "Modular< double > ( 101 )"  on os, 
+ 		 * write(os, "F") produces "Modular< double > F( 101 )" on os, and
+ 		 * write(os, "") produces  "Modular< double >"          on os.
 		 */
 		std::ostream &write (std::ostream &os) const
-		{
-			return os << "Modular field, mod " << _modulus;
+		{ Element x;
+		  return os << "Modular<" << eltype(x) << " >( " << _modulus << " )"; 
+		}
+
+		std::ostream &write (std::ostream &os, std::string F) const
+		{ Element x;
+		  os << "Modular<" << eltype(x) << " > "; // class name
+		  if (F != "")
+		     os << F << "( " << _modulus << " )"; // show constuctor args
+		  return os;
 		}
 
 		/*- Read field.
@@ -313,7 +327,7 @@ namespace LinBox
 		 */
 		std::ostream &write (std::ostream &os, const Element &x) const
 		{
-			return os << (int) x;
+			return os << /*(int)*/ x;
 		}
 
 
@@ -830,11 +844,13 @@ namespace LinBox
 	};
 
 
+/*
 	template <>
 	inline std::ostream& ModularBase<Integer>::write (std::ostream &os) const
 	{
 		return os << "GMP integers mod " << _modulus;
 	}
+*/
 
 	template <>
 	inline integer& Modular<integer>::init (integer& x, const double& y) const

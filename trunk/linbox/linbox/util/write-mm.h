@@ -27,23 +27,31 @@
 #define __LINBOX_write_mm_h
 
 /* write-mm.h
- * Tools to help write BBs in matrix market formats.
+ * Tools to help write fields and matrices in matrix market formats.
  *
  */
 
 #include <iostream>
 #include <string>
+#include "linbox/integer.h"
 
 namespace LinBox
 {
+
+/// Write second line and comment part of matrix market header
+template <class Field>
+std::ostream& writeMMComment(std::ostream& os, Field& F, std::string name, std::string comment) {
+	F.write(os << "% written by LinBox::","F") << "; ";
+	F.write(os << name << "<", "") << " >(F)" << std::endl;
+	if (comment.size() > 0)
+		os << "%" << std::endl << "% " << comment << std::endl << "%" << std::endl;
+} 
 
 /// Write matrix market header (up to the i,j,val lines) for a sparse or structured matrix. 
 template <class BB> 
 std::ostream& writeMMCoordHeader(std::ostream& os, BB& A, size_t nnz, std::string name, std::string comment = "") {
 	os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
-	A.field().write(os << "% written by LinBox::" << name << "<") << ">" << std::endl;
-	if (comment.size() > 0)
-		os << "%" << std::endl << "% " << comment << std::endl << "%" << std::endl;
+	writeMMComment(os, A.field(), name, comment);
 	os << A.rowdim() << " " << A.coldim() << " " << nnz << std::endl;
 	return os;
 }
@@ -52,9 +60,7 @@ std::ostream& writeMMCoordHeader(std::ostream& os, BB& A, size_t nnz, std::strin
 template <class BB> 
 std::ostream& writeMMPatternHeader(std::ostream& os, BB& A, size_t nnz, std::string name, std::string comment = "") {
 	os << "%%MatrixMarket matrix coordinate pattern general" << std::endl;
-	A.field().write(os << "% written by LinBox::" << name << "<") << ">" << std::endl;
-	if (comment.size() > 0)
-		os << "%" << std::endl << "% " << comment << std::endl << "%" << std::endl;
+	writeMMComment(os, A.field(), name, comment);
 	os << A.rowdim() << " " << A.coldim() << " " << nnz << std::endl;
 	return os;
 }
@@ -63,9 +69,7 @@ std::ostream& writeMMPatternHeader(std::ostream& os, BB& A, size_t nnz, std::str
 template <class BB> 
 std::ostream& writeMMArrayHeader(std::ostream& os, BB& A, std::string name, std::string comment = "") {
 	os << "%%MatrixMarket matrix array integer general" << std::endl;
-	A.field().write(os << "% written by LinBox::" << name << "<") << ">" << std::endl;
-	if (comment.size() > 0)
-		os << "%" << std::endl << "% " << comment << std::endl << "%" << std::endl;
+	writeMMComment(os, A.field(), name, comment);
 	os << A.rowdim() << " " << A.coldim() << std::endl;
 	return os;
 }
@@ -81,9 +85,21 @@ std::ostream& writeMMArray(std::ostream& os, Mat& A, std::string name, std::stri
 	return os;
 }
 
+/// eltype(x) returns a string containing the name of the type of field or ring element x.
+std::string eltype(float x) { return "float"; }
+std::string eltype(double x) { return "double"; }
+std::string eltype(int8_t x) { return "int8_t"; }
+std::string eltype(int16_t x) { return "int16_t"; }
+std::string eltype(int32_t x) { return "int32"; }
+std::string eltype(int64_t x) { return "int64"; }
+std::string eltype(integer x) { return "integer"; }
+std::string eltype(uint8_t x) { return "uint8_t"; }
+std::string eltype(uint16_t x) { return "uint16_t"; }
+std::string eltype(uint32_t x) { return "uint32"; }
+std::string eltype(uint64_t x) { return "uint64"; }
+
 }  // end of namespace LinBox
 #endif // __write_mm_h
-
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
