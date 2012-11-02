@@ -124,7 +124,6 @@ namespace LinBox
 		std::istream& read(std::istream& is) {
 			MatrixStream<Field> ms(field(), is);
 			ms.getDimensions(_m, _n); 
-std::cout << _m << " " << _n << std::endl;
 			_gen.init(field(), _m, _n);
 			return is;
 		}
