@@ -41,8 +41,8 @@ namespace LinBox
 /// Write second line and comment part of matrix market header
 template <class Field>
 std::ostream& writeMMComment(std::ostream& os, Field& F, std::string name, std::string comment) {
-	F.write(os << "% written by LinBox::","F") << "; ";
-	F.write(os << name << "<", "") << " >(F)" << std::endl;
+	F.write(os << "% written by LinBox::",std::string("F")) << "; ";
+	F.write(os << name << "<", std::string("")) << " >(F)" << std::endl;
 	if (comment.size() > 0)
 		os << "%" << std::endl << "% " << comment << std::endl << "%" << std::endl;
 } 
