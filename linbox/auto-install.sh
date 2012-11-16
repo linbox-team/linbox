@@ -17,6 +17,14 @@ STABLE_GIVARO=3.7.0
 GIV_TAR=207
 GIV_MD5=208
 
+
+function decompress {
+#tar xf $1
+gunzip -c $1 | tar xf -
+}
+
+
+
 #switches
 STABLE_VAR="true"
 DEBUG=""
@@ -426,7 +434,7 @@ fi
 OK=0
 if [ "$STABLE_VAR" = "true" ]; then
 	echo -en "${BEG}extracting Givaro..."| tee -a ../auto-install.log
-	tar xzf givaro-$STABLE_GIVARO.tar.gz  && OK=1
+	decompress givaro-$STABLE_GIVARO.tar.gz  && OK=1
 	[ "$OK" = "1" ] &&  cool   || die 
 fi
 
@@ -435,7 +443,7 @@ fi
 OK=0
 if [ "$STABLE_VAR" = "true" ]; then
 	echo -en "${BEG}extracting Fflas-Ffpack..."| tee -a ../auto-install.log
-	tar xzf fflas-ffpack-$STABLE_FFLAS.tar.gz  && OK=1
+	decompress fflas-ffpack-$STABLE_FFLAS.tar.gz  && OK=1
 	[ "$OK" = "1" ] &&  cool   || die
 fi
 
