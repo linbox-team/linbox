@@ -42,17 +42,6 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/field/Givaro/givaro-gfq.h"
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <string>
-#include <vector>
-
-#endif //__LINBOX_XMLENABLED
-
 //---------------------------------------------
 // Files of Givaro library
 #include <givaro/givextension.h>

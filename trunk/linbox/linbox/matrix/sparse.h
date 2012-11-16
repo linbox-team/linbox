@@ -785,7 +785,9 @@ namespace LinBox
 
 		value_type &operator * ()
 		{
-			return _j->second;
+			return *const_cast<value_type*> (&(_j->second));
+			// Ugh.  This hack is because ConstIndexedIterator is not right. -bds
+
 		}
 		const value_type &operator * () const
 		{

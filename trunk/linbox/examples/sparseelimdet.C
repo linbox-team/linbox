@@ -59,37 +59,39 @@ int main (int argc, char **argv)
 	if (argc == 2) { // determinant over the integers.
 
 		PID_integer ZZ;
-		PID_integer::Element d;
-		SparseMatrix<PID_integer, Vector<PID_integer>::SparseSeq > A ( ZZ );
+		SparseMatrix<PID_integer> A ( ZZ );
 		A.read(input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		SE.strategy(Specifier::PIVOT_LINEAR);
+		PID_integer::Element d;
 		det (d, A, SE);
 
 		ZZ.write(cout << "Determinant is ", d) << endl;
 	}
-	if (argc == 3) {
-		double q = atof(argv[2]);
+	if (argc == 3) { // determinant over a finite field
 		typedef Modular<double> Field;
-		Field::Element d;
+		double q = atof(argv[2]);
 		Field F(q);
-		SparseMatrix<Field, Vector<Field>::SparseSeq > B (F);
+		SparseMatrix<Field> B (F);
 		B.read(input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 
-
-		SE.strategy(Specifier::PIVOT_NONE);
 		// using Sparse Elimination
+		SE.strategy(Specifier::PIVOT_NONE);
+		Field::Element d;
 		det (d, B, SE);
-		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+
+		if (B.rowdim() <= 20 && B.coldim() <= 20) 
+			B.write(cout) << endl;
 		F.write(cout << "Determinant is ", d) << endl;
 
-		SE.strategy(Specifier::PIVOT_LINEAR);
 		// using Sparse Elimination with reordering
+		SE.strategy(Specifier::PIVOT_LINEAR);
 		detin (d, B, SE);
-		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+		if (B.rowdim() <= 20 && B.coldim() <= 20) 
+			B.write(cout) << endl;
 		F.write(cout << "Determinant is ", d) << endl;
 
 
