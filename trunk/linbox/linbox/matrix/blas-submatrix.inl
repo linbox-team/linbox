@@ -948,7 +948,7 @@ namespace LinBox
 
 
 
-				_Mat->_field.cardinality (c);
+				_Mat->field().cardinality (c);
 
 				if (c >0)
 					wid = (int) ceil (log ((double) c) / M_LN10);
@@ -957,7 +957,7 @@ namespace LinBox
 					size_t max=0;
 					ConstIterator it = Begin();
 					for (; it != End(); ++it){
-						_Mat->_field.convert(tmp,*it);
+						_Mat->field().convert(tmp,*it);
 						if (tmp.bitsize() > max)
 							max= tmp.bitsize();
 					}
@@ -978,7 +978,7 @@ namespace LinBox
 						 * fixed by using extra field
 						 */
 
-						_Mat->_field.write (os, *pe);
+						_Mat->field().write (os, *pe);
 						os << " ";
 					}
 
@@ -996,7 +996,7 @@ namespace LinBox
 					os << " [ ";
 
 					for (pe = p->begin (); pe != p->end (); ) {
-						_Mat->_field.write (os, *pe);
+						_Mat->field().write (os, *pe);
 						++pe ;
 						if (pe != p->end())
 							os << ", ";
@@ -1021,7 +1021,7 @@ namespace LinBox
 					os << "<tr>";
 
 					for (pe = p->begin (); pe != p->end (); ) {
-						_Mat->_field.write (os<< "<td>", *pe)<<"</td>";
+						_Mat->field().write (os<< "<td>", *pe)<<"</td>";
 						++pe ;
 					}
 
@@ -1039,7 +1039,7 @@ namespace LinBox
 					typename ConstRow::const_iterator pe;
 
 					for (pe = p->begin (); pe != p->end (); ) {
-						_Mat->_field.write (os, *pe);
+						_Mat->field().write (os, *pe);
 						++pe ;
 						if (pe != p->end())
 							os << "& ";
