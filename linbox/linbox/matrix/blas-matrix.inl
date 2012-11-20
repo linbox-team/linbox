@@ -487,7 +487,6 @@ namespace LinBox
 				int wid;
 
 				field().cardinality (c);
-
 				if (c >0) {
 					wid = (int) ceil (log ((double) c) / M_LN10);
 				}
@@ -510,14 +509,7 @@ namespace LinBox
 
 					for (pe = p->begin (); pe != p->end (); ++pe) {
 						os.width (wid);
-						/*!  @warning
-						 * matrix base does not provide this field(), maybe should?
-						 * _Mat.field ().write (os, *pe);
-						 * os << *pe;
-						 * fixed by using extra field
-						 */
-
-						field().write (os, *pe);
+                                                field().write (os, *pe);
 						os << " ";
 					}
 
