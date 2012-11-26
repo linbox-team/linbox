@@ -1631,8 +1631,7 @@ public:
 	}
 	const value_type &value () const
 	{
-        return *(_i->second.begin () + _c_index);
-// 		return (const value_type&)(_i->second)[_value_index];
+		return (const value_type&)(_i->second)[_value_index];
 	}
 
 	private:
