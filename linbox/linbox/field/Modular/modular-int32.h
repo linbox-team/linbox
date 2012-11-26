@@ -37,6 +37,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
+#include "linbox/util/write-mm.h"
 
 #include <fflas-ffpack/field/modular-int32.h>
 
@@ -168,6 +169,36 @@ namespace LinBox
 				throw LinboxError("Bad input, expecting 0 or 1");
 			return 0;
 		}
+
+		/*- Print field as a constructor call.
+		 * @return output stream to which field is written.
+		 * @param  os  output stream to which field is written.
+		 * @param  F  optional name to give the field in the description.  IF F is the null string, only the class name is written.
+		 * Example: For element type double and modulus 101, 
+		 * write(os) produces      "Modular< double > ( 101 )"  on os, 
+ 		 * write(os, "F") produces "Modular< double > F( 101 )" on os, and
+ 		 * write(os, "") produces  "Modular< double >"          on os.
+		 */
+		std::ostream &write (std::ostream &os) const
+		{ 
+		  integer p = cardinality();
+		  return os << "Modular<" << eltype( Element() ) << " >( " << p << " )"; 
+		}
+
+		std::ostream &write (std::ostream &os, std::string F) const
+		{ 
+		  os << "Modular<" << eltype( Element() ) << " > "; // class name
+		  if (F != "") {
+		    integer p = cardinality();
+		    os << F << "( " << p << " )"; // show constuctor args
+		  }
+		  return os;
+		}
+
+        std::ostream &write (std::ostream & os, const Element & x) const {
+            return Father_t::write(os,x);
+        }
+                
 
 	private:
 
