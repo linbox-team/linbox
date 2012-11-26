@@ -207,14 +207,14 @@ namespace LinBox
  		 * write(os, "") produces  "Modular< double >"          on os.
 		 */
 		std::ostream &write (std::ostream &os) const
-		{ Element x;
+		{ 
 		  integer p = cardinality();
-		  return os << "Modular<" << eltype(x) << " >( " << p << " )"; 
+		  return os << "Modular<" << eltype( Element() ) << " >( " << p << " )"; 
 		}
 
 		std::ostream &write (std::ostream &os, std::string F) const
-		{ Element x;
-		  os << "Modular<" << eltype(x) << " > "; // class name
+		{ 
+		  os << "Modular<" << eltype( Element() ) << " > "; // class name
 		  if (F != "") {
 		    integer p = cardinality();
 		    os << F << "( " << p << " )"; // show constuctor args
