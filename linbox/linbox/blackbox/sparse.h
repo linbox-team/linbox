@@ -247,18 +247,20 @@ namespace LinBox
 
 		// Read from matrix market format
 		std::istream &read (std::istream &is)
-		{ MatrixStream<Field> ms(field(), is);
-                  if( !ms.getDimensions( this->_m, this->_n ) )
-                        throw ms.reportError(__func__,__LINE__);
-                  this->_matA.resize( this->_m );
-                  Element val;
-                  size_t i, j;
-                  while( ms.nextTriple(i,j,val) ) {
-                        setEntry(i,j,val);
-                  }
-                  if( ms.getError() > END_OF_MATRIX )
-                        throw ms.reportError(__func__,__LINE__);
-        	}
+		{ 
+            MatrixStream<Field> ms(field(), is);
+            if( !ms.getDimensions( this->_m, this->_n ) )
+                throw ms.reportError(__func__,__LINE__);
+            this->_matA.resize( this->_m );
+            Element val;
+            size_t i, j;
+            while( ms.nextTriple(i,j,val) ) {
+                setEntry(i,j,val);
+            }
+            if( ms.getError() > END_OF_MATRIX )
+                throw ms.reportError(__func__,__LINE__);
+            return is;
+        }
 
 	//	  return SparseMatrixBase<Element, _Row>::read (is, *_field); }
 
