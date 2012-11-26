@@ -78,8 +78,6 @@
 
 namespace LinBox
 {
-
-
 	/** Exception class for invalid matrix input
 	*/
 
@@ -1501,6 +1499,8 @@ public:
 		typedef typename IteratorValueType<RepIterator>::value_type PairValue ;
 		typedef typename PairValue::second_type::value_type value_type;
 
+        typedef _IndexedIterator<RepIterator,RowIdxIterator> Self_t;
+
 		// typedef typename IteratorValueType< RepIterator >::second_type::value_type value_type;
 
 		// Dan Roche 7-6-05 Fixed a seg fault this code was causing
@@ -1595,16 +1595,21 @@ public:
 			return tmp;
 		}
 
-#if 0
-		const value_type &operator * () const
-		{
-			return *(_i->second.begin () + _c_index);
-		}
-#endif
-	value_type &operator * ()
-	{
-		return (value_type&)(_i->second)[_value_index];
-	}
+
+		// JGD 26.11.2012
+        // Since siome compliers would not choose it even though they are
+        // called via a ConstIterator, const version is removed, 
+        // call to const is now only explicit 
+        // via call to "value()" below instead
+//         const value_type &operator * () const
+// 		{
+// 			return *(_i->second.begin () + _c_index);
+// 		}
+
+        value_type &operator * ()
+        {
+            return (_i->second)[_value_index];
+        }
 #if 0
 	value_type *operator -> ()
 	{
@@ -1626,7 +1631,8 @@ public:
 	}
 	const value_type &value () const
 	{
-		return (const value_type&)(_i->second)[_value_index];
+        return *(_i->second.begin () + _c_index);
+// 		return (const value_type&)(_i->second)[_value_index];
 	}
 
 	private:
