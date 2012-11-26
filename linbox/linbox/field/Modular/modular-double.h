@@ -45,6 +45,7 @@
 #include <math.h>
 #include "linbox/randiter/nonzero.h"
 #include "linbox/randiter/modular.h"
+#include "linbox/util/write-mm.h"
 
 #include <fflas-ffpack/field/modular-double.h>
 
@@ -221,9 +222,12 @@ namespace LinBox
 		  }
 		  return os;
 		}
-		std::ostream &write (std::ostream &os, const Element& x) const
-		{ return os << x; }
-	      };
+
+        std::ostream &write (std::ostream & os, const Element & x) const {
+            return Father_t::write(os,x);
+        }
+                
+    };
 
 } // LinBox
 
