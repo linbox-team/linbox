@@ -83,6 +83,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 		typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
 		typedef typename SparseMatrixBase<typename Field::Element, _Row>::Rep Rep;
+		typedef SparseMatrixBase<typename _Field::Element, _Row> Father_t;
 		typedef SparseMatrix<_Field, _Row> Self_t;
 
 
@@ -255,7 +256,7 @@ namespace LinBox
             Element val;
             size_t i, j;
             while( ms.nextTriple(i,j,val) ) {
-                setEntry(i,j,val);
+                Father_t::setEntry(i,j,val);
             }
             if( ms.getError() > END_OF_MATRIX )
                 throw ms.reportError(__func__,__LINE__);
@@ -276,11 +277,7 @@ namespace LinBox
 		std::ostream &write (std::ostream &os) const
 		{ typedef SparseMatrixBase<Element, _Row> SMB;
 		  writeMMCoordHeader(os, *this, this->size(), "SparseMatrix");
-		  for (typename SMB::ConstIndexedIterator it = SMB::IndexedBegin(); it != SMB::IndexedEnd(); ++it) {
-		    os << 1+it.rowIndex() << " " << 1+it.colIndex() << " "; 
-		    field().write(os, *it) << std::endl;
-		  }
-		  return os;
+          return write(os, FORMAT_ONE_BASED);
 		}
 
 		/** Write the matrix to a stream in the given format
