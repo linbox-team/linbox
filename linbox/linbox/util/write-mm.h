@@ -45,6 +45,7 @@ std::ostream& writeMMComment(std::ostream& os, Field& F, std::string name, std::
 	F.write(os << name << "<", std::string("")) << " >(F)" << std::endl;
 	if (comment.size() > 0)
 		os << "%" << std::endl << "% " << comment << std::endl << "%" << std::endl;
+    return os;
 } 
 
 /// Write matrix market header (up to the i,j,val lines) for a sparse or structured matrix. 
