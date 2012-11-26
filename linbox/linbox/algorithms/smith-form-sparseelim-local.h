@@ -92,8 +92,8 @@ namespace LinBox
 		template<class Modulu>
 		bool isZero(const Modulu& a ) const { return a == 0UL;}
 
-		template<class Modulo, class Modulo2>
-		Modulo& MY_Zpz_inv (Modulo& u1, const Modulo2 a, const Modulo2 _p) const
+		template<class Modulo, class Modulo2, class Modulo3>
+		Modulo& MY_Zpz_inv (Modulo& u1, const Modulo2 a, const Modulo3 _p) const
 		{
                     u1 = Modulo(1UL);
                     Modulo r0(_p), r1(a);
@@ -486,7 +486,7 @@ namespace LinBox
 
 
 #ifdef  LINBOX_pp_gauss_steps_OUT
-				LigneA.write(cerr << "step[" << k << "], pivot: " << c << std::endl) << endl;
+				LigneA.write(std::cerr << "step[" << k << "], pivot: " << c << std::endl) << std::endl;
 #endif
 
                 PreserveUpperMatrixRow(LigneA[k], typename Boolean_Trait<PreserveUpperMatrix>::BooleanType());
@@ -509,7 +509,7 @@ namespace LinBox
 
 			//             ranks.push_back(indcol);
 #ifdef LINBOX_pp_gauss_steps_OUT
-            LigneA.write(cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl) << endl;
+            LigneA.write(std::cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl) << std::endl;
 #endif
 #ifdef LINBOX_PRANK_OUT
 			std::cerr << "Rank mod " << (unsigned long)FMOD << " : " << indcol << std::endl;
