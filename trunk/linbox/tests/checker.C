@@ -327,6 +327,7 @@ build |wc" should yield the same number of lines.
 	// needs output cleanup.  Resolve whether a benchmark or a test.
 	no_build_n_run("test-solve-nonsingular", counter, flag, "BY responsible");
 #endif
+	build_n_run("test-opencl-domain",            counter , flag);
 
 #if __LINBOX_HAVE_NTL
 	if (flag > 0) cout << "	NTL dependent tests" << endl;

@@ -148,8 +148,8 @@ namespace LinBox
 				      Operand1 &C, const Operand2 &A, const Operand3 &B) const
 		{
 			typename Field::Element zero, one;
-			F.init( zero, 0UL );
-			F.init( one, 1UL );
+			F.init( zero, 0 );
+			F.init( one, 1 );
 			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()( F, zero, C, one, A, B );
 		}
 	};
@@ -345,8 +345,8 @@ namespace LinBox
 		BlasMatrixDomain (const Field& F ) :
 			_field(&F)
 		{
-			F.init(_One,1UL);
-			F.init(_Zero,0UL);
+			F.init(_One,1);
+			F.init(_Zero,0);
 			F.init(_MOne,-1);
 #ifndef NDEBUG
 			if (!Givaro::probab_prime(F.characteristic())) {
