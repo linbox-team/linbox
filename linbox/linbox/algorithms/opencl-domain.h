@@ -624,14 +624,14 @@ namespace LinBox{
 		//! Inversion
 		template <class Matrix>
 		Matrix& inv( Matrix &Ainv, const Matrix &A) const{
-			BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+			BlasMatrixDomainInv<Field,Matrix,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
 		//! Inversion (in place)
 		template <class Matrix>
 		Matrix& invin( Matrix &Ainv, Matrix &A) const{
-			BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+			BlasMatrixDomainInv<Field,Matrix,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
@@ -640,7 +640,7 @@ namespace LinBox{
 		Matrix& invin(Matrix &A) const{
 			Matrix tmp(A.rowdim(), A.coldim());
 			tmp = A;
-			BlasMatrixDomainInv<Field,Matrix>()(_F,A,tmp);
+			BlasMatrixDomainInv<Field,Matrix,Matrix>()(_F,A,tmp);
 			return A;
 		}
 
@@ -656,14 +656,14 @@ namespace LinBox{
 		//! Inversion w singular check
 		template <class Matrix>
 		Matrix& inv(Matrix &Ainv, const Matrix &A, int& nullity) const{
-			nullity = BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+			nullity = BlasMatrixDomainInv<Field,Matrix,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
 		//! Inversion (the matrix A is modified) w singular check
 		template <class Matrix>
 		Matrix& invin(Matrix &Ainv, Matrix &A, int& nullity) const{
-			nullity = BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+			nullity = BlasMatrixDomainInv<Field,Matrix,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
