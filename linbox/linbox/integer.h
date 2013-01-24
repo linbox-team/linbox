@@ -117,36 +117,23 @@ namespace LinBox
 	template< class T >
 	T abs( const T& a ) { return( a <= 0 ? a * -1 : a ); }
 
+} // LinBox namespace
 
 
-        /*! @internal
+// Dependency to GIVARO >= 3.7.2
+#include <givaro/givspyinteger.h>
+namespace LinBox
+{
+ 
+    /*! @internal
 	 * Spy structure to have access to protected members of Givaro::Integer.
 	 */
-	struct SpyInteger
-	{
+    using Givaro::SpyInteger;   
 
-	    struct InHeritsInteger : public integer {
-	    protected:
-	        friend struct SpyInteger;
-	    };
-
-	    static const InHeritsInteger::Rep* get_rep(const integer& i) {
-        	return static_cast<const InHeritsInteger&>(i).get_rep();
-	    }
-
-	    static mpz_ptr get_mpz(integer& i) {
-	        return static_cast<InHeritsInteger&>(i).get_mpz();
-	    }
-	    static mpz_ptr get_mpz(const integer& i) {
-	        return const_cast<InHeritsInteger&>(static_cast<const InHeritsInteger&>(i)).get_mpz();
-	    }
-	    static mpz_srcptr get_mpz_const(const integer& i) {
-	        return static_cast<const InHeritsInteger&>(i).get_mpz_const();
-	    }
-        };
+} // LinBox namespace
 
 
-}
+
 
 // Dependency to GIVARO >= 3.3.4
 /* givaro/givconfig.h so provides the fixed width integer types such as
