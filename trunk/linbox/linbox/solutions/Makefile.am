@@ -35,7 +35,8 @@ pkgincludesub_HEADERS=          \
     smith-form.h                \
     solve.h                     \
     trace.h                     \
-    valence.h
+    valence.h			\
+    solution-tags.h
 
 #    rankin.h
 #    wiedemann-rank.h
