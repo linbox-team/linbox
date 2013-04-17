@@ -92,23 +92,23 @@ namespace LinBox{
 
 	public:
 		OpenCLEnviron(
-			std::string platformName,
-			double platformVersion,
-			std::vector<std::string> platformExtensions,
-			cl_context context,
-			cl_device_id device,
+			std::string platformName_,
+			double platformVersion_,
+			std::vector<std::string> platformExtensions_,
+			cl_context context_,
+			cl_device_id device_,
 #ifndef __MPI_SHARED
-			pthread_mutex_t* deviceLock,
+			pthread_mutex_t* deviceLock_,
 #else
-			NamedMutex* deviceLock,
+			NamedMutex* deviceLock_,
 #endif
-			unsigned int IDnum) :
+			unsigned int IDnum_) :
 			//Init list starts here
-			platformName(platformName),
-			platformVersion(platformVersion),
-			platformExtensions(platformExtensions),
-			context(context),
-			device(device),
+			platformName(platformName_),
+			platformVersion(platformVersion_),
+			platformExtensions(platformExtensions_),
+			context(context_),
+			device(device_),
 			errcode(CL_SUCCESS),
 			memCapacity(0L),
 			maxBufferSize(0L),
@@ -117,8 +117,8 @@ namespace LinBox{
 			GPU(false),
 			ACCEL(false),
 			Other(true),
-			deviceLock(deviceLock),
-			IDnum(IDnum){
+			deviceLock(deviceLock_),
+			IDnum(IDnum_){
 
 			//Initialize command queue
 			clCreateCommandQueue(

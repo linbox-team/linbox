@@ -369,6 +369,12 @@ namespace LinBox
 			return os << "PID_integer extends unparam<integer>";
 		}
 
+		inline std::ostream &write (std::ostream & os, std::string F) const
+		{
+			return os << "PID_integer extends unparam<integer> F";
+		}
+
+
 		inline std::ostream &write (std::ostream &os, const Integer& I) const
 		{
 			return os << I;

@@ -41,15 +41,15 @@ namespace LinBox
 /// Write second line and comment part of matrix market header
 template <class Field>
 std::ostream& writeMMComment(std::ostream& os, Field& F, std::string name, std::string comment) {
-	F.write(os << "% written by LinBox::",std::string("F")) << "; ";
+	F.write(os << "% written by LinBox::"/*,std::string("F")*/) << "; ";
 	F.write(os << name << "<", std::string("")) << " >(F)" << std::endl;
 	if (comment.size() > 0)
 		os << "%" << std::endl << "% " << comment << std::endl << "%" << std::endl;
     return os;
-} 
+}
 
-/// Write matrix market header (up to the i,j,val lines) for a sparse or structured matrix. 
-template <class BB> 
+/// Write matrix market header (up to the i,j,val lines) for a sparse or structured matrix.
+template <class BB>
 std::ostream& writeMMCoordHeader(std::ostream& os, BB& A, size_t nnz, std::string name, std::string comment = "") {
 	os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
 	writeMMComment(os, A.field(), name, comment);
@@ -57,8 +57,8 @@ std::ostream& writeMMCoordHeader(std::ostream& os, BB& A, size_t nnz, std::strin
 	return os;
 }
 
-/// Write matrix market header (up to the i,j,val lines) for a sparse or structured matrix. 
-template <class BB> 
+/// Write matrix market header (up to the i,j,val lines) for a sparse or structured matrix.
+template <class BB>
 std::ostream& writeMMPatternHeader(std::ostream& os, BB& A, size_t nnz, std::string name, std::string comment = "") {
 	os << "%%MatrixMarket matrix coordinate pattern general" << std::endl;
 	writeMMComment(os, A.field(), name, comment);
@@ -66,8 +66,8 @@ std::ostream& writeMMPatternHeader(std::ostream& os, BB& A, size_t nnz, std::str
 	return os;
 }
 
-/// Write matrix market header (up to the entry lines) for a dense matrix. 
-template <class BB> 
+/// Write matrix market header (up to the entry lines) for a dense matrix.
+template <class BB>
 std::ostream& writeMMArrayHeader(std::ostream& os, BB& A, std::string name, std::string comment = "") {
 	os << "%%MatrixMarket matrix array integer general" << std::endl;
 	writeMMComment(os, A.field(), name, comment);
@@ -76,7 +76,7 @@ std::ostream& writeMMArrayHeader(std::ostream& os, BB& A, std::string name, std:
 }
 
 /// Generic dense matrix writer to matrix market array format.
-template <class Mat> 
+template <class Mat>
 std::ostream& writeMMArray(std::ostream& os, Mat& A, std::string name, std::string comment = "") {
 	writeMMArrayHeader(os, A, name, comment);
 	typename Mat::Field::Element x; A.field().init(x, 0);
