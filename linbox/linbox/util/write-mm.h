@@ -57,8 +57,8 @@ std::ostream& writeMMCoordHeader(std::ostream& os, BB& A, size_t nnz, std::strin
 	return os;
 }
 
-/// Write matrix market header (up to the i,j,val lines) for a sparse or structured matrix.
-template <class BB>
+/// Write matrix market header (up to the i,j lines) for a {0,1} sparse or structured matrix. 
+template <class BB> 
 std::ostream& writeMMPatternHeader(std::ostream& os, BB& A, size_t nnz, std::string name, std::string comment = "") {
 	os << "%%MatrixMarket matrix coordinate pattern general" << std::endl;
 	writeMMComment(os, A.field(), name, comment);
