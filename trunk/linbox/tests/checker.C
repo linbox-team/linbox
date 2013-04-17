@@ -149,7 +149,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-rank",                         counter , flag);
 	build_n_run("test-qlup",                         counter , flag);
 	build_n_run("test-solve",                        counter , flag);
-	build_n_run("test-nullspace",                    counter , flag);
+	no_build_n_run("test-nullspace",                    counter , flag);
 	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
 	build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures");
 	build_n_run("test-rational-solver",              counter , flag);
@@ -250,7 +250,7 @@ build |wc" should yield the same number of lines.
 #pragma omp section
 		  Build_n_run("test-moore-penrose",                counter , flag);
 #pragma omp section
-		  No_build_n_run("test-nullspace",                    counter , flag, "faux");
+		  Build_n_run("test-nullspace",                    counter , flag);
 #pragma omp section
 		  Build_n_run("test-opencl-domain",            counter , flag);
 #pragma omp section
