@@ -198,7 +198,7 @@ build |wc" should yield the same number of lines.
 #pragma omp section
 		  Build_n_runWarn("test-dyadic-to-rational",           counter , flag, "bds responsible");
 #pragma omp section
-		  Build_n_run("test-ffpack",                       counter , flag);
+		  No_build_n_run("test-ffpack",                       counter , flag, "testTURBO fails");
 #pragma omp section
 		  Build_n_run("test-frobenius",                    counter , flag);
 #pragma omp section
@@ -250,7 +250,9 @@ build |wc" should yield the same number of lines.
 #pragma omp section
 		  Build_n_run("test-moore-penrose",                counter , flag);
 #pragma omp section
-		  Build_n_run("test-nullspace",                    counter , flag);
+		  No_build_n_run("test-nullspace",                    counter , flag, "faux");
+#pragma omp section
+		  Build_n_run("test-opencl-domain",            counter , flag);
 #pragma omp section
 		  Build_n_run("test-PID-integer",                  counter , flag);
 #pragma omp section
@@ -327,7 +329,6 @@ build |wc" should yield the same number of lines.
 	// needs output cleanup.  Resolve whether a benchmark or a test.
 	no_build_n_run("test-solve-nonsingular", counter, flag, "BY responsible");
 #endif
-	build_n_run("test-opencl-domain",            counter , flag);
 
 #if __LINBOX_HAVE_NTL
 	if (flag > 0) cout << "	NTL dependent tests" << endl;

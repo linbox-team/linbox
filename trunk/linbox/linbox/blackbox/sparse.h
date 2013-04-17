@@ -277,7 +277,7 @@ namespace LinBox
 		std::ostream &write (std::ostream &os) const
 		{ typedef SparseMatrixBase<Element, _Row> SMB;
 		  writeMMCoordHeader(os, *this, this->size(), "SparseMatrix");
-          return write(os, FORMAT_ONE_BASED);
+          return this->write(os, FORMAT_ONE_BASED);
 		}
 
 		/** Write the matrix to a stream in the given format
