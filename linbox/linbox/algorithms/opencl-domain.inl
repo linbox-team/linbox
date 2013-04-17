@@ -103,7 +103,7 @@ namespace LinBox
 		int BBlocksX = partitionDims.at(4);
 		//nt BBlocksY = partitionDims.at(5);
 
-		double p = _F.characteristic();
+		double p = (double) _F.characteristic();
 
 		//Select OpenCL kernel based on the size of the modulus factor for
 		//maximum performance
@@ -143,9 +143,9 @@ namespace LinBox
 					SubmatrixAdapter<Operand3> >(SB);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-				int widthA = ((SA.coldim() + 15) / 16) * 16;
-				int heightA = ((SA.rowdim() + 15) / 16) * 16;
-				int widthB = ((SB.coldim() + 15) / 16) * 16;
+				int widthA  = (int) ((SA.coldim() + 15) / 16) * 16;
+				int heightA = (int) ((SA.rowdim() + 15) / 16) * 16;
+				int widthB  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
 				oclCallKernel<double, cl_double>(
@@ -181,18 +181,18 @@ namespace LinBox
 						SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-					int widthA = ((SA.coldim() + 15) / 16) * 16;
-					int heightA = ((SA.rowdim() + 15) / 16) * 16;
-					int widthB = ((SB.coldim() + 15) / 16) * 16;
+					int widthA_  = (int) ((SA.coldim() + 15) / 16) * 16;
+					int heightA_ = (int) ((SA.rowdim() + 15) / 16) * 16;
+					int widthB_  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
 					oclCallKernel<double,cl_double>(tempBuffer,
 						bufferA,
 						bufferB,
 						bufferC,
-						widthA,
-						heightA,
-						widthB,
+						widthA_,
+						heightA_,
+						widthB_,
 						p,
 						selectedAxpyKernel);
 
@@ -287,7 +287,7 @@ namespace LinBox
 		int BBlocksX = partitionDims.at(4);
 		//nt BBlocksY = partitionDims.at(5);
 
-		float p = _F.characteristic();
+		float p = (float) _F.characteristic();
 
 		//Select OpenCL kernel based on the size of the modulus factor for
 		//maximum performance
@@ -327,9 +327,9 @@ namespace LinBox
 					SubmatrixAdapter<Operand3> >(SB);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-				int widthA = ((SA.coldim() + 15) / 16) * 16;
-				int heightA = ((SA.rowdim() + 15) / 16) * 16;
-				int widthB = ((SB.coldim() + 15) / 16) * 16;
+				int widthA  = (int) ((SA.coldim() + 15) / 16) * 16;
+				int heightA = (int) ((SA.rowdim() + 15) / 16) * 16;
+				int widthB  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
 				oclCallKernel<float,cl_float>(bufferC,
@@ -363,9 +363,9 @@ namespace LinBox
 						SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-					int widthA = ((SA.coldim() + 15) / 16) * 16;
-					int heightA = ((SA.rowdim() + 15) / 16) * 16;
-					int widthB = ((SB.coldim() + 15) / 16) * 16;
+					int widthA_  = (int) ((SA.coldim() + 15) / 16) * 16;
+					int heightA_ = (int) ((SA.rowdim() + 15) / 16) * 16;
+					int widthB_  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
 					oclCallKernel<float, cl_float>(
@@ -373,9 +373,9 @@ namespace LinBox
 						bufferA,
 						bufferB,
 						bufferC,
-						widthA,
-						heightA,
-						widthB,
+						widthA_,
+						heightA_,
+						widthB_,
 						p,
 						selectedAxpyKernel);
 
@@ -602,7 +602,7 @@ namespace LinBox
 		int BBlocksX = partitionDims.at(4);
 		//nt BBlocksY = partitionDims.at(5);
 
-		double p = _F.characteristic();
+		double p = (double) _F.characteristic();
 		double tempAlpha = fmod(alpha, p);
 		double tempBeta = fmod(beta, p);
 
@@ -642,9 +642,9 @@ namespace LinBox
 					SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-				int widthA = ((SA.coldim() + 15) / 16) * 16;
-				int heightA = ((SA.rowdim() + 15) / 16) * 16;
-				int widthB = ((SB.coldim() + 15) / 16) * 16;
+				int widthA  = (int) ((SA.coldim() + 15) / 16) * 16;
+				int heightA = (int) ((SA.rowdim() + 15) / 16) * 16;
+				int widthB  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
 				oclCallKernel<double,cl_double>(
@@ -682,9 +682,9 @@ namespace LinBox
 						SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-					int widthA = ((SA.coldim() + 15) / 16) * 16;
-					int heightA = ((SA.rowdim() + 15) / 16) * 16;
-					int widthB = ((SB.coldim() + 15) / 16) * 16;
+					int widthA_  = (int) ((SA.coldim() + 15) / 16) * 16;
+					int heightA_ = (int) ((SA.rowdim() + 15) / 16) * 16;
+					int widthB_  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
 					oclCallKernel<double,cl_double>(
@@ -694,9 +694,9 @@ namespace LinBox
 						bufferC,
 						tempAlpha,
 						_F.one,
-						widthA,
-						heightA,
-						widthB,
+						widthA_,
+						heightA_,
+						widthB_,
 						p,
 						selectedKernel);
 
@@ -793,7 +793,7 @@ namespace LinBox
 		int BBlocksX = partitionDims.at(4);
 		//nt BBlocksY = partitionDims.at(5);
 
-		float p = _F.characteristic();
+		float p = (float) _F.characteristic();
 		float tempAlpha = fmod(alpha, p);
 		float tempBeta = fmod(beta, p);
 
@@ -833,9 +833,9 @@ namespace LinBox
 					SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-				int widthA = ((SA.coldim() + 15) / 16) * 16;
-				int heightA = ((SA.rowdim() + 15) / 16) * 16;
-				int widthB = ((SB.coldim() + 15) / 16) * 16;
+				int widthA  = (int) ((SA.coldim() + 15) / 16) * 16;
+				int heightA = (int) ((SA.rowdim() + 15) / 16) * 16;
+				int widthB  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
 				oclCallKernel<float,cl_float>(
@@ -873,9 +873,9 @@ namespace LinBox
 						SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-					int widthA = ((SA.coldim() + 15) / 16) * 16;
-					int heightA = ((SA.rowdim() + 15) / 16) * 16;
-					int widthB = ((SB.coldim() + 15) / 16) * 16;
+					int widthA_  = (int) ((SA.coldim() + 15) / 16) * 16;
+					int heightA_ = (int) ((SA.rowdim() + 15) / 16) * 16;
+					int widthB_  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
 					oclCallKernel<float,cl_float>(
@@ -885,9 +885,9 @@ namespace LinBox
 						bufferC,
 						tempAlpha,
 						_F.one,
-						widthA,
-						heightA,
-						widthB,
+						widthA_,
+						heightA_,
+						widthB_,
 						p,
 						selectedKernel);
 
@@ -1082,7 +1082,7 @@ namespace LinBox
 		int BBlocksX = partitionDims.at(4);
 		//nt BBlocksY = partitionDims.at(5);
 
-		double p = _F.characteristic();
+		double p = (double)_F.characteristic();
 
 		// Select OpenCL kernel based on the size of the modulus factor for
 		//maximum performance
@@ -1120,9 +1120,9 @@ namespace LinBox
 					SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-				int widthA = ((SA.coldim() + 15) / 16) * 16;
-				int heightA = ((SA.rowdim() + 15) / 16) * 16;
-				int widthB = ((SB.coldim() + 15) / 16) * 16;
+				int widthA  = (int) ((SA.coldim() + 15) / 16) * 16;
+				int heightA = (int) ((SA.rowdim() + 15) / 16) * 16;
+				int widthB  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
 				oclCallKernel<double,cl_double>(
@@ -1158,9 +1158,9 @@ namespace LinBox
 						SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-					int widthA = ((SA.coldim() + 15) / 16) * 16;
-					int heightA = ((SA.rowdim() + 15) / 16) * 16;
-					int widthB = ((SB.coldim() + 15) / 16) * 16;
+					int widthA_  = (int) ((SA.coldim() + 15) / 16) * 16;
+					int heightA_ = (int) ((SA.rowdim() + 15) / 16) * 16;
+					int widthB_  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
 					oclCallKernel<double,cl_double>(
@@ -1168,9 +1168,9 @@ namespace LinBox
 						bufferA,
 						bufferB,
 						bufferC,
-						widthA,
-						heightA,
-						widthB,
+						widthA_,
+						heightA_,
+						widthB_,
 						p,
 						selectedKernel);
 
@@ -1266,7 +1266,7 @@ namespace LinBox
 		int BBlocksX = partitionDims.at(4);
 		//nt BBlocksY = partitionDims.at(5);
 
-		float p = _F.characteristic();
+		float p = (float)_F.characteristic();
 
 		// Select OpenCL kernel based on the size of the modulus factor for
 		//maximum performance
@@ -1304,9 +1304,9 @@ namespace LinBox
 					SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-				int widthA = ((SA.coldim() + 15) / 16) * 16;
-				int heightA = ((SA.rowdim() + 15) / 16) * 16;
-				int widthB = ((SB.coldim() + 15) / 16) * 16;
+				int widthA  = (int) ((SA.coldim() + 15) / 16) * 16;
+				int heightA = (int) ((SA.rowdim() + 15) / 16) * 16;
+				int widthB  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
 				oclCallKernel<float,cl_float>(
@@ -1342,9 +1342,9 @@ namespace LinBox
 						SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-					int widthA = ((SA.coldim() + 15) / 16) * 16;
-					int heightA = ((SA.rowdim() + 15) / 16) * 16;
-					int widthB = ((SB.coldim() + 15) / 16) * 16;
+					int widthA_  = (int) ((SA.coldim() + 15) / 16) * 16;
+					int heightA_ = (int) ((SA.rowdim() + 15) / 16) * 16;
+					int widthB_  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
 					oclCallKernel<float,cl_float>(
@@ -1352,9 +1352,9 @@ namespace LinBox
 						bufferA,
 						bufferB,
 						bufferC,
-						widthA,
-						heightA,
-						widthB,
+						widthA_,
+						heightA_,
+						widthB_,
 						p,
 						selectedKernel);
 
@@ -1510,7 +1510,7 @@ namespace LinBox
 		int BBlocksX = partitionDims.at(4);
 		//nt BBlocksY = partitionDims.at(5);
 
-		double p = _F.characteristic();
+		double p = (double)_F.characteristic();
 
 		// Select OpenCL kernel based on the size of the modulus factor for
 		//maximum performance
@@ -1548,9 +1548,9 @@ namespace LinBox
 					SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-				int widthA = ((SA.coldim() + 15) / 16) * 16;
-				int heightA = ((SA.rowdim() + 15) / 16) * 16;
-				int widthB = ((SB.coldim() + 15) / 16) * 16;
+				int widthA  = (int) ((SA.coldim() + 15) / 16) * 16;
+				int heightA = (int) ((SA.rowdim() + 15) / 16) * 16;
+				int widthB  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
 				oclCallKernel<double,cl_double>(
@@ -1586,9 +1586,9 @@ namespace LinBox
 						SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-					int widthA = ((SA.coldim() + 15) / 16) * 16;
-					int heightA = ((SA.rowdim() + 15) / 16) * 16;
-					int widthB = ((SB.coldim() + 15) / 16) * 16;
+					int widthA_  = (int) ((SA.coldim() + 15) / 16) * 16;
+					int heightA_ = (int) ((SA.rowdim() + 15) / 16) * 16;
+					int widthB_  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
 					oclCallKernel<double,cl_double>(
@@ -1596,9 +1596,9 @@ namespace LinBox
 						bufferA,
 						bufferB,
 						bufferC,
-						widthA,
-						heightA,
-						widthB,
+						widthA_,
+						heightA_,
+						widthB_,
 						p,
 						selectedKernel);
 
@@ -1694,7 +1694,7 @@ namespace LinBox
 		int BBlocksX = partitionDims.at(4);
 		//nt BBlocksY = partitionDims.at(5);
 
-		float p = _F.characteristic();
+		float p = (float) _F.characteristic();
 
 		// Select OpenCL kernel based on the size of the modulus factor for
 		//maximum performance
@@ -1732,9 +1732,9 @@ namespace LinBox
 					SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-				int widthA = ((SA.coldim() + 15) / 16) * 16;
-				int heightA = ((SA.rowdim() + 15) / 16) * 16;
-				int widthB = ((SB.coldim() + 15) / 16) * 16;
+				int widthA  = (int) ((SA.coldim() + 15) / 16) * 16;
+				int heightA = (int) ((SA.rowdim() + 15) / 16) * 16;
+				int widthB  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
 				oclCallKernel<float,cl_float>(
@@ -1770,9 +1770,9 @@ namespace LinBox
 						SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-					int widthA = ((SA.coldim() + 15) / 16) * 16;
-					int heightA = ((SA.rowdim() + 15) / 16) * 16;
-					int widthB = ((SB.coldim() + 15) / 16) * 16;
+					int widthA_  = (int) ((SA.coldim() + 15) / 16) * 16;
+					int heightA_ = (int) ((SA.rowdim() + 15) / 16) * 16;
+					int widthB_  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
 					oclCallKernel<float,cl_float>(
@@ -1780,9 +1780,9 @@ namespace LinBox
 						bufferA,
 						bufferB,
 						bufferC,
-						widthA,
-						heightA,
-						widthB,
+						widthA_,
+						heightA_,
+						widthB_,
 						p,
 						selectedKernel);
 
@@ -1942,7 +1942,7 @@ namespace LinBox
 		int BBlocksX = partitionDims.at(4);
 		//nt BBlocksY = partitionDims.at(5);
 
-		double p = _F.characteristic();
+		double p = (double)_F.characteristic();
 
 		// Select OpenCL kernel based on the size of the modulus factor for
 		//maximum performance
@@ -1985,9 +1985,9 @@ namespace LinBox
 					SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-				int widthA = ((SA.coldim() + 15) / 16) * 16;
-				int heightA = ((SA.rowdim() + 15) / 16) * 16;
-				int widthB = ((SB.coldim() + 15) / 16) * 16;
+				int widthA  = (int) ((SA.coldim() + 15) / 16) * 16;
+				int heightA = (int) ((SA.rowdim() + 15) / 16) * 16;
+				int widthB  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
 				oclCallKernel<double,cl_double>(
@@ -2023,9 +2023,9 @@ namespace LinBox
 						SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-					int widthA = ((SA.coldim() + 15) / 16) * 16;
-					int heightA = ((SA.rowdim() + 15) / 16) * 16;
-					int widthB = ((SB.coldim() + 15) / 16) * 16;
+					int widthA_  = (int) ((SA.coldim() + 15) / 16) * 16;
+					int heightA_ = (int) ((SA.rowdim() + 15) / 16) * 16;
+					int widthB_  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
 					oclCallKernel<double,cl_double>(
@@ -2033,9 +2033,9 @@ namespace LinBox
 						bufferA,
 						bufferB,
 						bufferC,
-						widthA,
-						heightA,
-						widthB,
+						widthA_,
+						heightA_,
+						widthB_,
 						p,
 						selectedAxpyKernel);
 
@@ -2135,7 +2135,7 @@ namespace LinBox
 		int BBlocksX = partitionDims.at(4);
 		//nt BBlocksY = partitionDims.at(5);
 
-		float p = _F.characteristic();
+		float p = (float)_F.characteristic();
 
 		// Select OpenCL kernel based on the size of the modulus factor for
 		//maximum performance
@@ -2178,9 +2178,9 @@ namespace LinBox
 					SubmatrixAdapter<Operand1> >(SC);
 
 				//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-				int widthA = ((SA.coldim() + 15) / 16) * 16;
-				int heightA = ((SA.rowdim() + 15) / 16) * 16;
-				int widthB = ((SB.coldim() + 15) / 16) * 16;
+				int widthA  = (int) ((SA.coldim() + 15) / 16) * 16;
+				int heightA = (int) ((SA.rowdim() + 15) / 16) * 16;
+				int widthB  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 				//Call the kernel
 				oclCallKernel<float,cl_float>(
@@ -2216,9 +2216,9 @@ namespace LinBox
 						SubmatrixAdapter<Operand3> >(SB);
 
 					//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-					int widthA = ((SA.coldim() + 15) / 16) * 16;
-					int heightA = ((SA.rowdim() + 15) / 16) * 16;
-					int widthB = ((SB.coldim() + 15) / 16) * 16;
+					int widthA_  = (int) ((SA.coldim() + 15) / 16) * 16;
+					int heightA_ = (int) ((SA.rowdim() + 15) / 16) * 16;
+					int widthB_  = (int) ((SB.coldim() + 15) / 16) * 16;
 
 					//Call the kernel
 					oclCallKernel<float,cl_float>(
@@ -2226,9 +2226,9 @@ namespace LinBox
 						bufferA,
 						bufferB,
 						bufferC,
-						widthA,
-						heightA,
-						widthB,
+						widthA_,
+						heightA_,
+						widthB_,
 						p,
 						selectedAxpyKernel);
 

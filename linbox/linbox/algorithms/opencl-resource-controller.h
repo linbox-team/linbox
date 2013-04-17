@@ -71,7 +71,7 @@ namespace LinBox{
 		std::vector<cl_platform_id> ret;
 
 		//Copy platform IDs into vector
-		for(int i = 0; i < numPlatforms; i++){
+		for(int i = 0; i < (int)numPlatforms; i++){
 			ret.push_back(platforms[i]);
 		}
 
@@ -244,7 +244,7 @@ namespace LinBox{
 		std::vector<cl_device_id> ret;
 
 		//Copy device IDs into vector
-		for(int i = 0; i < numDevices; i++){
+		for(int i = 0; i < (int)numDevices; i++){
 			ret.push_back(devices[i]);
 		}
 
@@ -303,7 +303,7 @@ namespace LinBox{
 
 			std::vector<cl_platform_id> platforms = enumPlatforms();
 
-			for(int i = 0; i < platforms.size(); i++){
+			for(int i = 0; i < (int)platforms.size(); i++){
 				std::string platformName = getPlatformName(platforms[i]);
 
 				double platformVersion = getPlatformVersion(platforms[i]);
@@ -313,7 +313,7 @@ namespace LinBox{
 
 				std::vector<cl_device_id> devices = enumDevices(platforms[i]);
 
-				for(int j = 0; j < devices.size(); j++){
+				for(int j = 0; j < (int)devices.size(); j++){
 					cl_context context = createContext(platforms[i], devices[j]);
 
 #ifndef __MPI_SHARED
@@ -401,7 +401,7 @@ namespace LinBox{
 
 		~OpenCLResourceController(){
 #ifndef __MPI_SHARED
-			for(int i = 0; i < environs->size(); i++){
+			for(int i = 0; i < (int)environs->size(); i++){
 				pthread_mutex_destroy(environs->at(i)->getDeviceLock());
 				delete environs->at(i)->getDeviceLock();
 				delete environs->at(i);
@@ -465,7 +465,7 @@ namespace LinBox{
 		unsigned int deallocateInstance(unsigned int ID){
 #ifndef __MPI_SHARED
 			(*IDsToInstances)[ID] -= 1;
-			if((*IDsToInstances)[ID] < 0){
+			if((*IDsToInstances)[ID] < 0){ //BB Toujours faux
 				(*IDsToInstances)[ID] = 0;
 			}
 			return (*IDsToInstances)[ID];

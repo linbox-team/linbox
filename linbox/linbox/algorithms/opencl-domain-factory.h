@@ -476,7 +476,7 @@ namespace LinBox{
 
 			//Find the max score and calculate a lower bound for device selection
 			long maxScore = *(std::max_element(rankings.begin(), rankings.end()));
-			long lowerBound = (long)(maxScore * 0.90);
+			long lowerBound = (long)((double)maxScore * 0.90);
 
 			//Build OpenCL compute environments only for devices within 10% of
 			//the top device. This should keep run times for identical computations
@@ -717,7 +717,7 @@ namespace LinBox{
 				pthread_mutex_unlock(&factoryLock);
 			}
 
-			return environs->size();
+			return (int) environs->size();
 
 		}
 	};

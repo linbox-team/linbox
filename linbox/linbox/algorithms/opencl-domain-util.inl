@@ -49,9 +49,9 @@ namespace LinBox{
 	 * Releases OpenCL cumpute resources
 	 */
 	template <class Field>
-	void OpenCLMatrixDomain<Field>::oclMatrixDomainRelease(unsigned int IDnum){
+	void OpenCLMatrixDomain<Field>::oclMatrixDomainRelease(unsigned int IDnum_){
 
-		OpenCLMatrixDomainFactory::oclMatrixDomainDeallocate(IDnum);
+		OpenCLMatrixDomainFactory::oclMatrixDomainDeallocate(IDnum_);
 	}
 
 	/**
@@ -68,14 +68,14 @@ namespace LinBox{
 
 		//Calculate dimensions after padding of matrices
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-		int newDDimX = ((D.coldim() + 15) / 16) * 16;
-		int newDDimY = ((D.rowdim() + 15) / 16) * 16;
-		int newADimX = ((A.coldim() + 15) / 16) * 16;
-		int newADimY = ((A.rowdim() + 15) / 16) * 16;
-		int newBDimX = ((B.coldim() + 15) / 16) * 16;
-		int newBDimY = ((B.rowdim() + 15) / 16) * 16;
-		int newCDimX = ((C.coldim() + 15) / 16) * 16;
-		int newCDimY = ((C.rowdim() + 15) / 16) * 16;
+		int newDDimX = (int) ((D.coldim() + 15) / 16) * 16;
+		int newDDimY = (int) ((D.rowdim() + 15) / 16) * 16;
+		int newADimX = (int) ((A.coldim() + 15) / 16) * 16;
+		int newADimY = (int) ((A.rowdim() + 15) / 16) * 16;
+		int newBDimX = (int) ((B.coldim() + 15) / 16) * 16;
+		int newBDimY = (int) ((B.rowdim() + 15) / 16) * 16;
+		int newCDimX = (int) ((C.coldim() + 15) / 16) * 16;
+		int newCDimY = (int) ((C.rowdim() + 15) / 16) * 16;
 
 		//Determine if each individual matrix will fit in a buffer
 		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(cl_double)));
@@ -100,14 +100,14 @@ namespace LinBox{
 
 		//Calculate dimensions after padding of matrices
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-		int newDDimX = ((D.coldim() + 15) / 16) * 16;
-		int newDDimY = ((D.rowdim() + 15) / 16) * 16;
-		int newADimX = ((A.coldim() + 15) / 16) * 16;
-		int newADimY = ((A.rowdim() + 15) / 16) * 16;
-		int newBDimX = ((B.coldim() + 15) / 16) * 16;
-		int newBDimY = ((B.rowdim() + 15) / 16) * 16;
-		int newCDimX = ((C.coldim() + 15) / 16) * 16;
-		int newCDimY = ((C.rowdim() + 15) / 16) * 16;
+		int newDDimX = (int) ((D.coldim() + 15) / 16) * 16;
+		int newDDimY = (int) ((D.rowdim() + 15) / 16) * 16;
+		int newADimX = (int) ((A.coldim() + 15) / 16) * 16;
+		int newADimY = (int) ((A.rowdim() + 15) / 16) * 16;
+		int newBDimX = (int) ((B.coldim() + 15) / 16) * 16;
+		int newBDimY = (int) ((B.rowdim() + 15) / 16) * 16;
+		int newCDimX = (int) ((C.coldim() + 15) / 16) * 16;
+		int newCDimY = (int) ((C.rowdim() + 15) / 16) * 16;
 
 		//Determine if each individual matrix will fit in a buffer
 		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(cl_float)));
@@ -462,12 +462,12 @@ namespace LinBox{
 
 		//Begin search for Submatrices small enough to search on the device
 		int divisionFactor = 1;
-		int DRows = D.rowdim();
-		int DCols = D.coldim();
-		int ARows = A.rowdim();
-		int ACols = A.rowdim();
-		int BRows = B.rowdim();
-		int BCols = B.coldim();
+		int DRows = (int) D.rowdim();
+		int DCols = (int) D.coldim();
+		int ARows = (int) A.rowdim();
+		int ACols = (int) A.rowdim();
+		int BRows = (int) B.rowdim();
+		int BCols = (int) B.coldim();
 
 		if(true){ //Default partitioning scheme
 

@@ -88,7 +88,7 @@ int main (int argc, char **argv)
 	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F ( (uint32_t) q);
 	VectorDomain<Field> VD (F);
 
 	commentator().start("block wiedemann test suite", "block-wiedemann");
