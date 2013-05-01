@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2011 LinBox
  * Written by BB <brice.boyer@imag.fr>
  *
@@ -40,35 +39,10 @@
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 
-#include <iomanip> // setprecision
 
-/* ********************** */
-/*        Outils          */
-/* ********************** */
+using LinBox::keepon;
 
-using Givaro::Timer;
-
-/*! @brief Watches a timer and a number and repet and signals if over.
- *
- * We want at least 2 repetions but not more than maxtime spent on timing.
- *
- * @param repet number of previous repetitions. Should be 0 on the first time
- * \c whatchon is called.
- * @param tim timer to watch
- * @param maxtime maximum time (in seconds) until \c keepon tells stop.
- * @return \c true if we conditions are not met to stop, \c false otherwise.
- * @pre \c tim was clear at the beginning and never started.
- *
- */
-bool keepon(index_t & repet, const Timer & tim, double maxtime=0.2)
-{
-	if (repet<2 || tim.usertime() < maxtime) {
-		++repet ;
-		return true;
-	}
-	return false ;
-}
-
+#if 0
 bool keepon(index_t & repet, const double & tim, double maxtime=0.2)
 {
 	if (repet<2 || tim < maxtime) {
@@ -77,44 +51,10 @@ bool keepon(index_t & repet, const double & tim, double maxtime=0.2)
 	}
 	return false ;
 }
+#endif
 
 
-/*! @brief Watches a timer and a number and repet and signals if over.
- *
- * We want at least 2 repetions but not more than maxtime spent on timing.
- *
- * @param repet number of previous repetitions. Should be 0 on the first time \c whatchon is called.
- * @param tim timer to watch
- * @param maxtime maximum time (in seconds) until \c watchon tells stop.
- * @return \c true if we conditions are not met to stop, \c false otherwise.
- * @pre \c tim should have been started previously !
- *
- */
-bool whatchon(index_t & repet, /*  const */Timer & tim, double maxtime=0.5)
-{
-	if (repet<2 || tim.userElapsedTime() < maxtime) {
-		++repet ;
-		return true;
-	}
-	return false ;
-}
 
-void showAdvanceLinear(int curr, int min, int max)
-{
-	std::cout << std::setprecision(4) << "\033[2K" << "\033[30D" << min <<std::flush;
-	std::cout << '<' << curr << '<' << max << " (" << std::flush;
-	std::cout << double(curr-min)/double(max-min)*100 << "%)" << std::flush;
-}
-void showFinish(int curr, int all)
-{
-	std::cout <<  "\033[2K" << "\033[30D" << "finished : " << curr << std::flush;
-	std::cout << '/' << all-1 << std::flush << std::endl;
-}
-void showSkip(int curr, int all)
-{
-	std::cout <<  "\033[2K" << "\033[30D" << "skipped : " << curr << std::flush;
-	std::cout << '/' << all-1 << std::flush << std::endl;
-}
 
 
 double fgemm_mflops(int m, int n, int k)

@@ -55,7 +55,7 @@ TODO=
 
 EXTRA_PROGRAMS= $(BENCH_BASIC)
 
-EXTRA_DIST= benchmark.h benchmark.doxy
+EXTRA_DIST= benchmark.h benchmark.inl benchmark.doxy
 
 benchmarks: ${EXTRA_PROGRAMS}
 
