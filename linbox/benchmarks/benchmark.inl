@@ -6,7 +6,7 @@
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -56,6 +56,8 @@ typedef uint32_t index_t ;
 namespace LinBox
 {
 
+	typedef std::vector<double>    dvector_t;
+	typedef std::vector<dvector_t> dmatrix_t;
 
 	/*- @brief Represents a table of values to plot.
 	 * list of values are reprensented by vectors.  the table is a vector
@@ -63,7 +65,7 @@ namespace LinBox
 	 *
 	 * @warning NaN, inf are used as missing data. More genenally
 	 * we could store data in strings.
-         * @todo Allow for 'speed up against col X' style
+	 * @todo Allow for 'speed up against col X' style
 	 */
 	class PlotStyle {
 	public:
@@ -193,7 +195,7 @@ namespace LinBox
 
 #if 0
 		/*! Set additionnal term features
-		 */
+		*/
 		void setTermOption(std::string & opts)
 		{
 			_termopts_ = opts;
@@ -592,11 +594,12 @@ namespace LinBox
 	template<class NAM>
 	class PlotData {
 	private :
-		std::vector< std::vector< double > >  _tableau_   ;   //!< data. \c _tableau_[i][j] is the \e jth value of serie \e i.
+		dmatrix_t _tableau_   ;   //!< data. \c _tableau_[i][j] is the \e jth value of serie \e i.
 		index_t                              _nb_points_ ;   //!< number of points in each series. (size of \c _tableau_[0])
 		index_t                              _nb_series_ ;   //!< number of series. (size of \c _tableau_)
 		std::vector< std::string >           _serie_name_;   //!< name for each serie of points
 		std::vector< NAM >                   _absci_name_;   //!< values of the x axis.
+		dmatrix_t _times_     ;   //!< actual computation times
 	public :
 		/*! Inits a plot with series of data.
 		 * @param nb_pts number of points in each serie.
@@ -889,7 +892,7 @@ namespace LinBox
 		} ;
 
 		/*! @brief Prints data in a latex tabular.
-		 */
+		*/
 		void print_latex()
 		{
 			index_t nb_points = _data_.getPointsDim();
@@ -1032,6 +1035,266 @@ namespace LinBox
 	};
 
 }
+
+
+#ifdef __LINBOX_HAVE_LAPACK
+extern "C" {
+
+	void dgels_(char *trans, int *m, int *n, int *nrhs, double *a, int *lda,
+			double *b, int *ldb, double *work, int *lwork, int *info);
+
+	void dgelsy_(int *m, int *n, int *nrhs, double *a, int *lda,
+			double *b, int *ldb, int *JPVT, double *RCOND, int *RANK,
+			double *work, int *lwork, int *info);
+
+	void dgelss_(int *m, int *n, int *nrhs, double *a, int *lda,
+			double *b, int *ldb, double *s, double *RCOND, int *RANK,
+			double *work, int *lwork, int *info);
+}
+#endif // __LINBOX_HAVE_LAPACK
+
+// Helper
+namespace LinBox
+{
+
+	double fit2(const dvector_t & X, const dvector_t & Y, int n, double x) {
+		assert(n>0);
+		if ( n==1 ) {
+			if ( X[0]==X[1] )
+				return (Y[0]+Y[1])/2 ;
+		}
+		if (X[n]==X[n-1])
+			return fit2(X,Y,n-1,x);
+
+		double a = (Y[n-1]-Y[n])/(X[n-1]-X[n]) ;
+		double b = (X[n-1]*Y[n]-X[n]*Y[n-1])/(X[n-1]-X[n]) ;
+		return a*x+b ;
+	}
+
+#ifdef __LINBOX_HAVE_LAPACK
+
+	// this will destroy Y
+	double fit_lapack(dvector_t &X, dvector_t &Y, int n, double x) {
+		assert(n == Y.size());
+		int deg = std::min(4,n);
+		dvector_t V(deg*n);
+		std::cout << V.size() << std::endl;
+		int ldv = deg ;
+		for(int i = 0 ; i < n; ++i) {
+			for (int j = 0 ; j < ldv; ++j) {
+				V[i+j*n] = std::pow(X[i],j);
+			}
+		}
+
+		int info;
+		int ldun = 1 ;
+
+#if 1 /* basic least squares */
+		{
+			int lwork = 2*n*deg*4 ;
+			dvector_t work(lwork);
+			char N[] = "N";
+			dgels_(N, &n, &ldv, &ldun, &(V[0]) , &n, &(Y[0]), &n, &work[0], &lwork, &info);
+		}
+#endif
+
+#if 0 /* least squares using SVN and V not nec. full rank */
+		{
+			int lwork = 2*deg+std::max(2*deg,n)*4 ;
+			dvector_t work(lwork);
+			dvector_t s(deg);
+			double rcond = 1e-8 ;
+			int rank ;
+			dgelss_( &n, &ldv, &ldun, &(V[0]) , &n, &(Y[0]), &n, &s[0], &rcond, &rank, &work[0], &lwork, &info);
+		}
+#endif
+
+#if 0 /* weighted least squares */
+		//DGGGLM
+#endif
+		// horner eval the poly
+		double res = 0.0;
+
+		for(int i=n-1; i >= 0; i--) {
+			res = res * x + Y[i];
+		}
+		return res;
+	}
+#endif // __LINBOX_HAVE_LAPACK
+
+
+	double fit3(const dvector_t & X, const dvector_t & Y,int n, double x) {
+#ifndef __LINBOX_HAVE_LAPACK /* à la main */
+		assert(n>1);
+		if (n==2) {
+			if (X[1]==X[2])
+				return fit2(X,Y,1,x) ;
+			if (X[0]==X[2]) {
+				return fit2(X,Y,1,x) ;
+			}
+			if (X[0]==X[1]) {
+				dvector_t X1(2); X1[0]=X[1]; X1[2]=X[2];
+				dvector_t Y1(2); Y1[0]=Y[1]; Y1[2]=Y[2];
+				return fit2(X1,Y1,1,x) ;
+			}
+		}
+		if (X[n]==X[n-1]) { // discard last
+			dvector_t X1(X.begin(),X.begin()+(n-1));
+			dvector_t Y1(Y.begin(),Y.begin()+(n-1));
+
+			return fit3(X1,Y1,n-1,x) ;
+		}
+		if (X[n]==X[n-2]) { // discard last
+			dvector_t X1(X.begin(),X.begin()+(n-1));
+			dvector_t Y1(Y.begin(),Y.begin()+(n-1));
+
+			return fit3(X1,Y1,n-1,x) ;
+		}
+		if (X[n-1]==X[n-2]) { // discard last but one
+			dvector_t X1(X.begin(),X.begin()+(n-1));
+			dvector_t Y1(Y.begin(),Y.begin()+(n-1));
+			X1[n-1]=X[n];
+			Y1[n-1]=Y[n];
+
+			return fit3(X1,Y1,n-1,x) ;
+		}
+
+		// todo: use Lagrange ?
+		double d  = (-X[n]+X[n-1])*(-X[n]+X[n-2])*(X[n-2]-X[n-1]) ;
+		double a1 = -X[n]*Y[n-2]+X[n-2]*Y[n]+X[n-1]*Y[n-2]-X[n-1]*Y[n]+X[n]*Y[n-1]-X[n-2]*Y[n-1];
+		double a2 = -X[n-2]*X[n-2]*Y[n]+X[n-2]*X[n-2]*Y[n-1]+X[n-1]*X[n-1]*Y[n]-Y[n-2]*X[n-1]*X[n-1]+Y[n-2]*X[n]*X[n]-Y[n-1]*X[n]*X[n];
+		double a3 = X[n-2]*X[n-2]*X[n-1]*Y[n]-X[n-2]*X[n-2]*X[n]*Y[n-1]-X[n-1]*X[n-1]*X[n-2]*Y[n]+Y[n-1]*X[n-2]*X[n]*X[n]+X[n-1]*X[n-1]*X[n]*Y[n-2]-Y[n-2]*X[n-1]*X[n]*X[n];
+
+		return ((a*x+b)*x+c)/d ;
+#else // __LINBOX_HAVE_LAPACK
+		int m = min(n,5);
+		dvector_t X1(m) ;
+		dvector_t Y1(m) ;
+		for (int i = 0 ; i < m ; ++i) X1[i] = X[n-m+i] ;
+		for (int i = 0 ; i < m ; ++i) Y1[i] = Y[n-m+i] ;
+		return fit_lapack(X1,Y1,m,x);
+
+#endif // __LINBOX_HAVE_LAPACK
+	}
+
+	/*- Helper.
+	 * This helper has several functions :
+	 *   - Records the timings
+	 *   - predict the execution time for the next experiment
+	 *   - helps producing enough experiments (but not too much and not too time consuming) for producing a valid measure.
+	 *   .
+	 *   See member function help for more information.
+	 */
+	class TimeWatcher  {
+	private :
+		dmatrix_t    Data_; //!< Time data. 2xn table, first line is some parameter \e x and second line is \e time=f(x).
+		int         Line_ ; //!< current line in PlotData.
+		int       Current_; //!< Data_ has been filled from 0 to Current_ (excluded). It is assumed that \e f(0)=0.
+
+
+	public:
+		/** Constructor.
+		 * @param size number of experiments expected
+		 * @param Line current line in PlotData
+		 */
+		TimeWatcher (int size, int Line) :
+			Data_(2),Line_(Line),Current_(1)
+		{
+			// Data.resize(2);
+			Data_[0].resize(size+1);
+			Data_[1].resize(size+1);
+			Data_[0][0] = 0 ; // f(0)=0
+			Data_[1][0] = 0 ;
+		}
+
+		int getCurrent() { return Current_ ; }
+
+		dvector_t & getX() { return Data_[0] ; }
+		dvector_t & getY() { return Data_[1] ; }
+
+		/** accumulate some new data.
+		 * @param x some parameter. (for instance the size n of a matrix).
+		 * @param y time used for computing the benchmark at \c x.
+		 */
+		void newData(double x, double y)
+		{
+			getX()[Current_] = x;
+			getY()[Current_] = y;
+			++Current_ ;
+			if (getX().size()<(size_t)Current_) {
+				getX().resize(Current_+20);
+				getY().resize(Current_+20);
+			}
+		}
+
+		/** Prediction for the next experiment time.
+		 * It is assumed that \c predict(0)=0. If Curent_<3, a linear,
+		 * then quadratic fit is done. Other wise, a cubic fit is
+		 * performed.
+		 * @param x the next evaluation point.
+		 * @return f(x) where f tries to fit the points : \f$ f(\mathtt{Data_}[0][0..\mathtt{Current_}-1]) \approx  getY()[0..\mathtt{Current_}-1]\f$
+		 */
+		double predict(double x)
+		{
+			if (Current_ < 2)
+				return 0. ; // unknown.
+			if (Current_ ==2 ) {
+				return fit2(getX(),getY(),1,x);
+			}
+			return fit3(getX(),getY(),Current_-1,x);
+
+		}
+
+		/*! @brief Watches a timer and a number and repet and signals if over.
+		 *
+		 * We want at least 2 repetions but not more than maxtime spent on timing.
+		 *
+		 * @param repet number of previous repetitions. Should be 0 on the first time
+		 * \c whatchon is called.
+		 * @param tim timer to watch
+		 * @param maxtime maximum time (in seconds) until \c keepon tells stop.
+		 * @return \c true if we conditions are not met to stop, \c false otherwise.
+		 * @pre \c tim was clear at the beginning and never started.
+		 *
+		 */
+		bool keepon(index_t & repet, const Timer & tim, double maxtime=0.2)
+		{
+			if (repet<2 || tim.usertime() < maxtime) {
+				++repet ;
+				return true;
+			}
+			return false ;
+		}
+
+		/*! @brief Watches a timer and a number and repet and signals if over.
+		 *
+		 * We want at least 2 repetions but not more than maxtime spent on timing.
+		 *
+		 * @param repet number of previous repetitions. Should be 0 on the first time \c whatchon is called.
+		 * @param tim timer to watch
+		 * @param maxtime maximum time (in seconds) until \c watchon tells stop.
+		 * @return \c true if we conditions are not met to stop, \c false otherwise.
+		 * @pre \c tim should have been started previously !
+		 *
+		 */
+		bool whatchon(index_t & repet, /*  const */Timer & tim, double maxtime=0.5)
+		{
+			if (repet<2 || tim.userElapsedTime() < maxtime) {
+				++repet ;
+				return true;
+			}
+			return false ;
+		}
+
+		bool doNext(double t1, double next, double maxtime=60)
+		{
+			if (t1 == 0) return true;
+			return (predict(next)<maxtime);
+		}
+	};
+
+}
+
 #endif // __LINBOX_benchmarks_benchmark_INL
 
 // Local Variables:

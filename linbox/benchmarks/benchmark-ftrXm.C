@@ -57,7 +57,7 @@
 #define _LB_TSUP   true
 #define _LB_TLOW   false
 
-using LinBox::keepon;
+using LinBox::TimeWatcher;
 
 
 
@@ -88,6 +88,7 @@ void launch_bench_square(Field & F // const problem
 			, LinBox::PlotData<index_t> & Data
 			, index_t series_nb)
 {
+	TimeWatcher TW(10,series_nb);
 	index_t l = 0 ;
 	Timer fgemm_sq_tim ;
 	Timer chrono ;
@@ -109,7 +110,7 @@ void launch_bench_square(Field & F // const problem
 			Data.setAbsciName(l,i); // only write abscissa for serie 0
 		index_t j = 0 ; // number of repets.
 		fgemm_sq_tim.clear() ;
-		while( keepon(j,fgemm_sq_tim) ) {
+		while( TW.keepon(j,fgemm_sq_tim) ) {
 			RandMat.random(A);
 			for (size_t k=0 ; k<(size_t)ii ; ++k) Rn.random(A.refEntry(k,k)) ;
 			RandMat.random(B);
@@ -163,6 +164,7 @@ void launch_bench_blas(index_t min, index_t max, int step
 		       , index_t series_nb
 		       , index_t charact)
 {
+	TimeWatcher TW(10,series_nb);
 	typedef LinBox::Modular<T> Field ;
 	Field F((int)charact);
 	index_t l = 0 ;
@@ -187,7 +189,7 @@ void launch_bench_blas(index_t min, index_t max, int step
 		index_t mimi = (index_t) ii*ii ;
 		index_t j = 0 ;
 		ftrmm_blas_tim.clear() ;
-		while(keepon(j,ftrmm_blas_tim)) {
+		while(TW.keepon(j,ftrmm_blas_tim)) {
 			for (index_t jl = 0 ; jl < mimi ; ++jl) R.random(A[jl]);
 			for (index_t jl = 0 ; jl < mimi ; ++jl) R.random(B[jl]);
 			for (index_t jl = 0 ; jl < mimi ; ++jl) R.random(C[jl]);
@@ -232,6 +234,7 @@ void launch_bench_rectangular(Field & F // const problem
 			      , LinBox::PlotData<std::string> & Data
 			      , index_t point_nb)
 {
+	TimeWatcher TW(10,series_nb);
 	Timer ftrmm_rect_tim ;
 	Timer chrono ; chrono.clear();
 	double mflops ;
@@ -253,7 +256,7 @@ void launch_bench_rectangular(Field & F // const problem
 
 	index_t j = 0 ;
 	ftrmm_rect_tim.clear() ;
-	while (keepon(j,ftrmm_rect_tim)) {
+	while (TW.keepon(j,ftrmm_rect_tim)) {
 		RandMat.random(A);
 		RandMat.random(B);
 		chrono.clear() ; chrono.start() ;
@@ -309,6 +312,7 @@ void launch_bench_scalar(Field & F // const problem
 			 , LinBox::PlotData<std::string> & Data
 			 , index_t point_nb)
 {
+	TimeWatcher TW(10,series_nb);
 	Timer ftrmm_scal_tim ;
 	Timer chrono ;
 	ftrmm_scal_tim.clear();
@@ -333,7 +337,7 @@ void launch_bench_scalar(Field & F // const problem
 	Matrix B (F,m,n);
 
 	index_t j = 0 ;
-	while (keepon(j,ftrmm_scal_tim)) {
+	while (TW.keepon(j,ftrmm_scal_tim)) {
 		RandMat.random(A);
 		RandMat.random(B);
 
