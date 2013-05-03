@@ -26,8 +26,8 @@ AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 #  SAFER_FLAGS=-g -Wall -Wextra -Wno-unused-parameter
 
 AM_CXXFLAGS= @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
-AM_CPPFLAGS+= $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(FFLAS_FFPACK_CFLAGS)
-LDADD= $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)
+AM_CPPFLAGS+= $(IML_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(FFLAS_FFPACK_CFLAGS)
+LDADD= $(IML_LIBS) $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)
 AM_LDFLAGS=-static $(LDFLAGS)
 
 BENCH_BASIC=               \
@@ -62,11 +62,11 @@ benchmarks: ${EXTRA_PROGRAMS}
 ### BASE BENCHMARK ###
 
 benchmark_fgemm_SOURCES          = benchmark-fgemm.C
+
 benchmark_ftrXm_SOURCES          = benchmark-ftrXm.C
 
 benchmark_crafixed_SOURCES       = benchmark-crafixed.C
-benchmark_crafixed_CPPFLAGS      = $(IML_CFLAGS) $(AM_CPPFLAGS)
-benchmark_crafixed_LDADD         = $(IML_LIBS) $(LDADD)
+
 #  benchmark_matmul_SOURCES         = benchmark-matmul.C
 #  benchmark_spmv_SOURCES           = benchmark-spmv.C
 #  benchmark_fields_SOURCES         = benchmark-fields.C

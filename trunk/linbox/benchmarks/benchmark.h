@@ -56,11 +56,12 @@ typedef uint32_t index_t ;
 /* ********************** */
 /*    Plot structures     */
 /* ********************** */
+
 namespace LinBox
+// namespace benchmark ?
 {
 
-
-	/*! @brief Represents a table of values to plot.
+	/*! @brief Represents a table of values to plot (2D).
 	 * list of values are reprensented by vectors.  the table is a vector
 	 * of these vectors.
 	 *
@@ -70,7 +71,7 @@ namespace LinBox
 	 */
 	class PlotStyle ;
 
-	/*! @brief The raw data to plot.
+	/*! @brief The raw data to plot (2D).
 	 * Represents the series of points and the labels for the points (X)
 	 * axis and the series (Y) axis.  The internal representation is a
 	 * vector of vector, each series of point being a vector of double.
@@ -80,7 +81,7 @@ namespace LinBox
 	template<class NAM>
 	class PlotData ;
 
-	/*! @brief The graph.
+	/*! @brief The graph (2D).
 	 * This class joins a PlotStyle and a PlotData to build up a graph.  A
 	 * filename should be provided as well, indicating where the output
 	 * graph and scripts will be generated.
@@ -97,67 +98,37 @@ namespace LinBox
 /*        Outils          */
 /* ********************** */
 
-using Givaro::Timer; // template by timer
+using Givaro::Timer; // template by timer_t ?
 
 namespace LinBox {
-/*! @brief Watches a timer and a number and repet and signals if over.
- *
- * We want at least 2 repetions but not more than maxtime spent on timing.
- *
- * @param repet number of previous repetitions. Should be 0 on the first time
- * \c whatchon is called.
- * @param tim timer to watch
- * @param maxtime maximum time (in seconds) until \c keepon tells stop.
- * @return \c true if we conditions are not met to stop, \c false otherwise.
- * @pre \c tim was clear at the beginning and never started.
- *
- */
-bool keepon(index_t & repet, const Timer & tim, double maxtime=0.2)
-{
-	if (repet<2 || tim.usertime() < maxtime) {
-		++repet ;
-		return true;
-	}
-	return false ;
-}
 
-/*! @brief Watches a timer and a number and repet and signals if over.
- *
- * We want at least 2 repetions but not more than maxtime spent on timing.
- *
- * @param repet number of previous repetitions. Should be 0 on the first time \c whatchon is called.
- * @param tim timer to watch
- * @param maxtime maximum time (in seconds) until \c watchon tells stop.
- * @return \c true if we conditions are not met to stop, \c false otherwise.
- * @pre \c tim should have been started previously !
- *
- */
-bool whatchon(index_t & repet, /*  const */Timer & tim, double maxtime=0.5)
-{
-	if (repet<2 || tim.userElapsedTime() < maxtime) {
-		++repet ;
-		return true;
-	}
-	return false ;
-}
-}
+	/** Helper.
+	 * This helper has several functions :
+	 *   - Records the timings
+	 *   - predict the execution time for the next experiment
+	 *   - helps producing enough experiments (but not too much and not too time consuming) for producing a valid measure.
+	 *   .
+	 *   See member function help for more information.
+	 */
+	class TimeWatcher  ;
 
-void showAdvanceLinear(int curr, int min, int max)
-{
-	std::cout << std::setprecision(4) << "\033[2K" << "\033[30D" << min <<std::flush;
-	std::cout << '<' << curr << '<' << max << " (" << std::flush;
-	std::cout << double(curr-min)/double(max-min)*100 << "%)" << std::flush;
-}
-void showFinish(int curr, int all)
-{
-	std::cout <<  "\033[2K" << "\033[30D" << "finished : " << curr << std::flush;
-	std::cout << '/' << all-1 << std::flush << std::endl;
-}
-void showSkip(int curr, int all)
-{
-	std::cout <<  "\033[2K" << "\033[30D" << "skipped : " << curr << std::flush;
-	std::cout << '/' << all-1 << std::flush << std::endl;
-}
+}// LinBox
+	void showAdvanceLinear(int curr, int min, int max)
+	{
+		std::cout << std::setprecision(4) << "\033[2K" << "\033[30D" << min <<std::flush;
+		std::cout << '<' << curr << '<' << max << " (" << std::flush;
+		std::cout << double(curr-min)/double(max-min)*100 << "%)" << std::flush;
+	}
+	void showFinish(int curr, int all)
+	{
+		std::cout <<  "\033[2K" << "\033[30D" << "finished : " << curr << std::flush;
+		std::cout << '/' << all-1 << std::flush << std::endl;
+	}
+	void showSkip(int curr, int all)
+	{
+		std::cout <<  "\033[2K" << "\033[30D" << "skipped : " << curr << std::flush;
+		std::cout << '/' << all-1 << std::flush << std::endl;
+	}
 
 
 // double compute_mflops(const Timer & t, const double mflo, const int rpt = 1)

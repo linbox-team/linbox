@@ -40,7 +40,7 @@
 #include "linbox/algorithms/blas-domain.h"
 
 
-using LinBox::keepon;
+using LinBox::TimeWatcher;
 
 #if 0
 bool keepon(index_t & repet, const double & tim, double maxtime=0.2)
@@ -52,10 +52,6 @@ bool keepon(index_t & repet, const double & tim, double maxtime=0.2)
 	return false ;
 }
 #endif
-
-
-
-
 
 double fgemm_mflops(int m, int n, int k)
 {
@@ -89,6 +85,7 @@ void launch_bench_square(Field & F // const problem
 			 , LinBox::PlotData<index_t> & Data
 			 , index_t series_nb)
 {
+	TimeWatcher TW(10,series_nb);
 	index_t l = 0 ;
 	Timer fgemm_sq_tim ;
 	Timer chrono ;
@@ -113,7 +110,7 @@ void launch_bench_square(Field & F // const problem
 		RandMat.random(B);
 		RandMat.random(C);
 		fgemm_sq_tim.clear() ;
-		while( keepon(j, fgemm_sq_tim) ) {
+		while( TW.keepon(j, fgemm_sq_tim) ) {
 			chrono.clear() ; chrono.start() ;
 			BMD.mul(C,A,B) ; // C = AB
 			chrono.stop();
@@ -154,6 +151,7 @@ void launch_bench_blas(Field & F
 		       , index_t series_nb
 		       )
 {
+	TimeWatcher TW(10,series_nb);
 	// typedef LinBox::Modular<T> Field ;
 	// Field F((int)charact);
 	index_t l = 0 ;
@@ -188,7 +186,7 @@ void launch_bench_blas(Field & F
 		index_t j = 0 ;
 		fgemm_blas_tim.clear() ;
 		// double fgemm_blas_tim = 0 ;
-		while(keepon(j,fgemm_blas_tim)) {
+		while(TW.keepon(j,fgemm_blas_tim)) {
 			chrono.clear(); chrono.start() ;
 			FFLAS::fgemm((typename Field::Father_t)F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,
 					     ii,ii,ii,
@@ -237,6 +235,7 @@ void launch_bench_rectangular(Field & F // const problem
 			      , LinBox::PlotData<std::string> & Data
 			      , index_t point_nb)
 {
+	TimeWatcher TW(10,0);
 	Timer fgemm_rect_tim ;
 	Timer chrono ; chrono.clear();
 	double mflops ;
@@ -251,7 +250,7 @@ void launch_bench_rectangular(Field & F // const problem
 	LinBox::BlasMatrix<Field> C (F,m,n);
 	index_t j = 0 ;
 	fgemm_rect_tim.clear() ;
-	while (keepon(j,fgemm_rect_tim)) {
+	while (TW.keepon(j,fgemm_rect_tim)) {
 		RandMat.random(A);
 		RandMat.random(B);
 		RandMat.random(C);
@@ -306,6 +305,7 @@ void launch_bench_scalar(Field & F // const problem
 			 , index_t point_nb
 			 , bool inplace = false)
 {
+	TimeWatcher TW(10,0);
 	Timer fgemm_scal_tim ;
 	Timer chrono ;
 	fgemm_scal_tim.clear();
@@ -337,7 +337,7 @@ void launch_bench_scalar(Field & F // const problem
 	// LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Field > > Bt(B);
 
 	index_t j = 0 ;
-	while (keepon(j,fgemm_scal_tim)) {
+	while (TW.keepon(j,fgemm_scal_tim)) {
 		RandMat.random(A);
 		RandMat.random(B);
 		RandMat.random(C);

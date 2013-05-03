@@ -303,7 +303,7 @@ int bench_cra(index_t  n, index_t m, index_t l
 		// mpz_init(maxi); mpz_init(mp_maxInter);
 		// comment les trouver ?
 
-		IML::FiniteField ** RNS = IML::findRNS(primesize,product.get_mpz(),&basislen);
+		IML::FiniteField ** RNS = IML::findRNS(primesize, product.get_mpz(),&basislen);
 		IML::FiniteField * liftbasis = RNS[0] ; // findLiftbasisSmall(n, maxi, &basislen);
 		IML::FiniteField * cmbasis   = RNS[1] ; // combBasis(basislen,basis);
 		mpz_t mp_prod ;
