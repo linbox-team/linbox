@@ -1165,7 +1165,7 @@ namespace LinBox
 		double a2 = -X[n-2]*X[n-2]*Y[n]+X[n-2]*X[n-2]*Y[n-1]+X[n-1]*X[n-1]*Y[n]-Y[n-2]*X[n-1]*X[n-1]+Y[n-2]*X[n]*X[n]-Y[n-1]*X[n]*X[n];
 		double a3 = X[n-2]*X[n-2]*X[n-1]*Y[n]-X[n-2]*X[n-2]*X[n]*Y[n-1]-X[n-1]*X[n-1]*X[n-2]*Y[n]+Y[n-1]*X[n-2]*X[n]*X[n]+X[n-1]*X[n-1]*X[n]*Y[n-2]-Y[n-2]*X[n-1]*X[n]*X[n];
 
-		return ((a*x+b)*x+c)/d ;
+		return ((a1*x+a2)*x+a3)/d ;
 #else // __LINBOX_HAVE_LAPACK
 		int m = min(n,5);
 		dvector_t X1(m) ;
