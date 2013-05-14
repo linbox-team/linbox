@@ -78,8 +78,6 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 	fi
 	CXXFLAGS="${BACKUP_CXXFLAGS} ${GIVARO_CFLAGS} ${GMP_CFLAGS}"
 	LIBS="${BACKUP_LIBS} ${GIVARO_LIBS} ${GMP_LIBS}"
-echo "CXXFLAGS: ${CXXFLAGS}"
-echo "LIBS: ${LIBS}"
 
 	AC_TRY_LINK(
 	[#include <givaro/givinteger.h>],
