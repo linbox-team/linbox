@@ -13,9 +13,9 @@
 # TODO : rpath instead of LD_LIBRARY_PATH ?
 
 STABLE_FFLAS=1.6.0
-STABLE_GIVARO=3.7.0
-GIV_TAR=207
-GIV_MD5=208
+STABLE_GIVARO=3.7.2
+GIV_TAR=370
+GIV_MD5=371
 
 
 function decompress {
