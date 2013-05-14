@@ -39,7 +39,7 @@ AC_DEFUN([LB_CHECK_FPLLL],
 
 AC_ARG_WITH(fplll,
 [AC_HELP_STRING([--with-fplll=<path>|yes], [Use FPLLL library. This library is (not yet) mandatory for
-    LinBox compilation. If argument is yes or <empty> or <bad> :)
+    LinBox compilation. If argument is yes or <empty>
     that means the library is reachable with the standard
     search path (/usr or /usr/local). Otherwise you give
     the <path> to the directory which contains the
@@ -59,7 +59,9 @@ dnl Check for existence
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-AC_MSG_CHECKING(for FPLLL)
+version_min=4.0.1
+AC_MSG_CHECKING(for FPLLL >= $version_min)
+
 
 for FPLLL_HOME in ${FPLLL_HOME_PATH}
   do
@@ -79,9 +81,8 @@ for FPLLL_HOME in ${FPLLL_HOME_PATH}
        AC_TRY_LINK(
        [
 	   #include <fplll/fplll.h>
-	   #include <fplll/solver.h>
 	   ],
-       [enum EvaluatorType a ;],
+       [enum fplll::MatPrintMode a ;],
        [
 	   AC_TRY_RUN(
 	   [
