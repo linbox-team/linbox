@@ -273,7 +273,7 @@ namespace LinBox
 #endif
 #endif
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || (defined(__s390__) && !defined(__s390x__))
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix (const _Field &F, const unsigned long & m, const T& n) :

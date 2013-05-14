@@ -26,12 +26,12 @@ AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la
 #  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
-#AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxSrcOnly
-#  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly
-#AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2
-#  AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
-AM_CXXFLAGS = -DLinBoxSrcOnly  @TESTS_CFLAGS@ @DEBUG_CFLAGS@
-# AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
+#AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxTestOnly
+#  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly
+#AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly -O2
+#  AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -DDEBUG -O0
+AM_CXXFLAGS = -DLinBoxTestOnly @TESTS_CFLAGS@ @DEBUG_CFLAGS@
+# AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
 # AM_CFLAGS = -g -Wall
 
 SUBDIRS = data matrix
