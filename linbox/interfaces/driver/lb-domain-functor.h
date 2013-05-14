@@ -52,7 +52,7 @@ public:
  * Macro for automatic code generation *
  ***************************************/
 #define LB_DOMAIN_VISIT(D)				\
-void visit(const DomainEnvelope<D> &d){apply(d);}
+void visit(const DomainEnvelope<D> &d){this->apply(d);}
 
 
 /*******************************************************************************

@@ -231,7 +231,7 @@ public:
 		// Pascal Giorgi: fix a bug with MAC OSX
 		// MAC OSX defines in stdint.h the int64_t to be a long long which causes trouble here
 		// might be useful to add signed type either but need to resolve conflict with pathch version above for GCC-4.4.5
-#ifdef __APPLE__
+#if defined(__APPLE__) || (defined(__s390__) && !defined(__s390x__))
 
 		template<class T>
 		BlasMatrix (const _Field &F, const unsigned long &m, const T &n) ;
