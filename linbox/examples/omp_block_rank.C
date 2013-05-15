@@ -46,6 +46,7 @@
 #include <iostream>
 #include <fstream>
 #include <omp.h>
+#define GIVARO_USES_OMP
 #include <givaro/givtimer.h>
 #include <givaro/givpoly1crt.h>
 
@@ -111,7 +112,7 @@ void extractLeftSigma(const Field &F,
 			max=defect[i];
 
 	// prepare S to receive the sigma base
-	const LinBox::BlasMatrix<Field> Zero(Z,block,block);
+	const LinBox::BlasMatrix<Field> Zero(F,block,block);
 	S.resize(max+1, Zero);
 
 	// extract the sigma base
@@ -271,8 +272,8 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	typedef std::vector<Matrix>   Polynomial;
 
 
-	const Matrix SigmaZero(2*nb,2*nb);
-	const Matrix SerieZero(2*nb,nb);
+	const Matrix SigmaZero(F, 2*nb,2*nb);
+	const Matrix SerieZero(F, 2*nb,nb);
 
 	long d = 4+(R<<1)/nb;
 
@@ -524,8 +525,14 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	return 0;
 }
 
+
 int main (int argc, char **argv)
 {
+        // argv[1]: matrix file name
+        // argv[2]: [optional] field characteristic (default 65521)
+        // argv[3]: [optional] block size (default omp_max_threads)
+        // argv[4]: [optional] random generator seed
+
 	int c = (argc>2 ? atoi(argv[2]) : 65521);
 	unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(int)LINBOX_EXTENSION_DEGREE_MAX);
 	if (extend > 1) {
