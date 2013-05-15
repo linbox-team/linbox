@@ -95,6 +95,11 @@
  * - \subpage inst. Explains how to install from sources or from the latest svn
  * version.
  * - \subpage arch. Describes how %LinBox is organized
+ * \internal
+ * - \subpage upgr. Explains how to make new versions of %LinBox  \endinternal
+ * .
+ *
+ * \section docu Documentation
  * - <a href="../linbox-html/index.html"     style="color: blue  ; font-weight:
  * bold"> Documentation for Users</a>. If everything around is blue, then you
  * are reading the lighter, user-oriented, documentation.
