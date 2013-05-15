@@ -130,6 +130,9 @@ Date
 *  </li>
 * </ul>
 *  </li>
+*  <li> \b Documentation <br/>
+* If a minor revision change happens, there should be an automatic way to update the doxygen documentation.
+*  </li>
 * </ul>
 *.
 *
