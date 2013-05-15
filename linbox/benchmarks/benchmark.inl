@@ -1232,7 +1232,7 @@ namespace LinBox
 		 * then quadratic fit is done. Other wise, a cubic fit is
 		 * performed.
 		 * @param x the next evaluation point.
-		 * @return f(x) where f tries to fit the points : \f$ f(\mathtt{Data_}[0][0..\mathtt{Current_}-1]) \approx  getY()[0..\mathtt{Current_}-1]\f$
+		 * @return f(x) where f tries to fit the points : \f$ f(\mathtt{Data\_}[0][0..\mathtt{Current\_}-1]) \approx  getY()[0..\mathtt{Current\_}-1]\f$
 		 */
 		double predict(double x)
 		{
