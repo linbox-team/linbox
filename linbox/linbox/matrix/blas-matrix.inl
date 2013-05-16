@@ -231,8 +231,11 @@ namespace LinBox
 		{}
 
 	template <class _Field>
-	void BlasMatrix< _Field>::init(const _Field &F, size_t r, size_t c) {
-		_field = &F; _row = r; _col = c; _rep.resize(0); _rep.resize(r*c, F.zero); _ptr = &_rep[0];
+	void BlasMatrix< _Field>::init(const _Field &F, size_t r, size_t c)
+	{
+		_field = &F; _row = r; _col = c;
+		 _rep.resize(r*c, F.zero);
+		_ptr = &_rep[0];
 		_VD.init(F); _MD.init(F);
 	}
 
@@ -464,8 +467,7 @@ namespace LinBox
 		return file;
 	}
 
-#if 0
-// now writing is done in BlasSubmatrix.
+#if 0 /* now writing is done in BlasSubmatrix. */
 
 	template <class _Field>
 	std::ostream& BlasMatrix< _Field>::write (std::ostream &os) {
@@ -1645,9 +1647,9 @@ namespace LinBox
 			//!@bug this supposes &x[0]++ == &x[1]
                         // PG: try to discover stride of x and y (not use it works on every platform)
                         size_t ldx,ldy;
-                        ldx=&x[1] - &x[0]; 
-                        ldy=&y[1] - &y[0]; 
-                                
+                        ldx=&x[1] - &x[0];
+                        ldy=&y[1] - &y[0];
+
 			FFLAS::fgemv((typename Field::Father_t) field(), FFLAS::FflasNoTrans,
 				      _row, _col,
 				      field().one,
@@ -1678,9 +1680,9 @@ namespace LinBox
 		if (_use_fflas) {
                         // PG: try to discover stride of x and y (not use it works on every platform)
                         size_t ldx,ldy;
-                        ldx=&x[1] - &x[0]; 
-                        ldy=&y[1] - &y[0]; 
-                        
+                        ldx=&x[1] - &x[0];
+                        ldy=&y[1] - &y[0];
+
 			FFLAS::fgemv((typename Field::Father_t) field(), FFLAS::FflasTrans,
 				      _row, _col,
 				      field().one,
@@ -1705,13 +1707,13 @@ namespace LinBox
 		return *_field;
 	}
 
-/*
+#if 0 /* why not ? */
 	template <class _Field>
 	_Field& BlasMatrix< _Field>::field()
 	{
 		return const_cast<_Field&>(_field );
 	}
-*/
+#endif
 }
 
 

@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef __LINBOX_blas_matrix_H
-#define __LINBOX_blas_matrix_H
+#ifndef __LINBOX_matrix_blas_matrix_H
+#define __LINBOX_matrix_blas_matrix_H
 
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
@@ -89,6 +89,7 @@ namespace LinBox
 		typedef BlasMatrix<_Field>                   Self_t;    //!< Self type
                 typedef BlasSubmatrix<_Field>         subMatrixType;    //!< Submatrix type
                 typedef BlasMatrix<_Field>               matrixType;    //!< matrix type
+                typedef BlasMatrix<_Field>                 blasType;    //!< blas matrix type
 
 	protected:
 		size_t			    _row;
@@ -96,7 +97,7 @@ namespace LinBox
 		Rep			    _rep;
 		const Field		    * _field;
 		VectorDomain<Field>    _VD;
-public:
+	public://! @bug why public ?
 		bool		     _use_fflas ;
 		pointer			    _ptr;
 		MatrixDomain<Field>    _MD;
@@ -232,7 +233,6 @@ public:
 		// MAC OSX defines in stdint.h the int64_t to be a long long which causes trouble here
 		// might be useful to add signed type either but need to resolve conflict with pathch version above for GCC-4.4.5
 #if defined(__APPLE__) || (defined(__s390__) && !defined(__s390x__))
-
 		template<class T>
 		BlasMatrix (const _Field &F, const unsigned long &m, const T &n) ;
 #endif
@@ -350,6 +350,7 @@ public:
 		/*! Get the stride of the matrix.
 		 */
 		size_t getStride() const;
+		size_t stride() const { return getStride() ;}
 
 		/*!Get a reference to the stride of the matrix.
 		 * Modify stride this way.
@@ -376,6 +377,8 @@ public:
 		pointer getPointer() const ;
 
 		const_pointer &getConstPointer() const ;
+
+		Rep & refRep() { return _rep ;};
 
 
 		/*! @internal
@@ -467,17 +470,19 @@ public:
 		std::istream &read (std::istream &file);
 
 		/// Write the matrix in MatrixMarket format.
-		std::ostream &write (std::ostream &os) const {
+		std::ostream &write (std::ostream &os) const
+		{
 			subMatrixType B(*this, 0, 0, rowdim(), coldim());
 			return B.write(os);
 		}
-	
+
 		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
 		 * @param f write in some format (@ref LinBoxTag::Format). Default is Maple's.
 		 */
 		std::ostream &write (std::ostream &os,
-				     enum LinBoxTag::Format f/* = LinBoxTag::FormatMaple*/) const {
+				     enum LinBoxTag::Format f/* = LinBoxTag::FormatMaple*/) const
+		{
 			subMatrixType B(*this, 0, 0, rowdim(), coldim());
 			return B.write(os, f);
 		}
@@ -711,24 +716,25 @@ namespace LinBox
 	template <class _Field>
 	class BlasSubmatrix {
 	public :
-		typedef _Field                       Field;
-		typedef typename Field::Element      Element;      //!< Element type
-		typedef BlasSubmatrix<_Field>        Self_t;       //!< Self type
-		typedef typename RawVector<Element>::Dense      Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
-		typedef typename Rep::pointer        pointer;    //!< pointer type to elements
-		typedef const pointer                const_pointer;    //!< const pointer type
-                typedef Self_t                       subMatrixType;    //!< Submatrix type
-                typedef BlasMatrix<_Field>               matrixType;    //!< matrix type
+		typedef _Field                             Field;
+		typedef typename Field::Element          Element;    //!< Element type
+		typedef BlasSubmatrix<_Field>             Self_t;    //!< Self type
+		typedef typename RawVector<Element>::Dense   Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		typedef typename Rep::pointer            pointer;    //!< pointer type to elements
+		typedef const pointer              const_pointer;    //!< const pointer type
+                typedef Self_t                     subMatrixType;    //!< Submatrix type
+                typedef BlasMatrix<_Field>            matrixType;    //!< matrix type
+                typedef BlasMatrix<_Field>              blasType;    //!< blas matrix type
 
 
 	protected:
-		BlasMatrix<_Field> *_Mat;       //!< Parent BlasMatrix (ie raw vector)
+		BlasMatrix<_Field> *_Mat;       //!< Parent BlasMatrix (ie encapsulated raw std::vector)
 		size_t _row;                   //!< row dimension of Submatrix
 		size_t _col;                   //!< col dimension of Submatrix
 		size_t _r0;                    //!< upper left corner row of Submatrix in \p _Mat
 		size_t _c0;                    //!< upper left corner row of Submatrix in \p _Mat
 		size_t _stride ;               //!< number of columns in \p _Mat (or stride of \p _Mat)
-		size_t _off;
+		size_t _off;                   //!< offset in \p _Mat, precomputed \c (_row*_stride+_col)
 
 	public:
 
@@ -813,6 +819,8 @@ namespace LinBox
 		 * @return stride of submatrix (number of cols of dense base matrix)
 		 */
 		size_t getStride() const;
+		size_t stride() const { return getStride() ;}
+		size_t offset() const { return _off ; }
 
 
 		///////////////////
@@ -980,11 +988,11 @@ namespace LinBox
 		{
 			//_stride ?
 			if (_Mat->_use_fflas){
-				//!@bug this supposes &x[0]++ == &x[1]    
+				//!@bug this supposes &x[0]++ == &x[1]
                                 // PG: try to discover stride of x and y (not use it works on every platform)
                                 size_t ldx,ldy;
-                                ldx=&x[1] - &x[0]; 
-                                ldy=&y[1] - &y[0]; 
+                                ldx=&x[1] - &x[0];
+                                ldy=&y[1] - &y[0];
 				FFLAS::fgemv((typename Field::Father_t) _Mat->field(), FFLAS::FflasNoTrans,
 					      _row, _col,
 					      _Mat->field().one,
@@ -1015,8 +1023,8 @@ namespace LinBox
 			if (_Mat->_use_fflas) {
                                 // PG: try to discover stride of x and y (not use it works on every platform)
                                 size_t ldx,ldy;
-                                ldx=&x[1] - &x[0]; 
-                                ldy=&y[1] - &y[0]; 
+                                ldx=&x[1] - &x[0];
+                                ldy=&y[1] - &y[0];
                                 FFLAS::fgemv((typename Field::Father_t) _Mat->field(), FFLAS::FflasTrans,
 					      _row, _col,
 					      _Mat->field().one,
@@ -1236,5 +1244,3 @@ namespace LinBox
 // c-basic-offset: 8
 // End:
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-
-
