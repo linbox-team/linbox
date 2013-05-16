@@ -563,7 +563,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<Modular<double>,
+			return BlasMatrixDomainMulAdd<//Modular<double>,
 				Operand1,
 				Operand2,
 				Operand3>()(_F,D,beta,C,alpha,A,B);
@@ -754,7 +754,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<Modular<float>,
+			return BlasMatrixDomainMulAdd<//Modular<float>,
 				Operand1,
 				Operand2,
 				Operand3>()(_F,D,beta,C,alpha,A,B);
@@ -945,7 +945,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<Modular<double>,
+			return BlasMatrixDomainMulAdd<//Modular<double>,
 				Operand1,
 				Operand2,
 				Operand3>()(_F,beta,C,alpha,A,B);
@@ -978,7 +978,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<Modular<float>,
+			return BlasMatrixDomainMulAdd<//Modular<float>,
 				Operand1,
 				Operand2,
 				Operand3>()(_F,beta,C,alpha,A,B);
@@ -1043,7 +1043,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<Modular<double>,
+			return BlasMatrixDomainMulAdd<//Modular<double>,
 				Operand1,
 				Operand2,
 				Operand3>()(_F,D,_F.one,C,_F.one,A,B);
@@ -1227,7 +1227,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<Modular<float>,
+			return BlasMatrixDomainMulAdd<//Modular<float>,
 				Operand1,
 				Operand2,
 				Operand3>()(_F,D,_F.one,C,_F.one,A,B);
@@ -1471,7 +1471,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<Modular<double>,
+			return BlasMatrixDomainMulAdd<//Modular<double>,
 				Operand1,
 				Operand2,
 				Operand3>()(_F,D,_F.one,C,_F.mOne,A,B);
@@ -1655,7 +1655,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<Modular<float>,
+			return BlasMatrixDomainMulAdd<//Modular<float>,
 				Operand1,
 				Operand2,
 				Operand3>()(_F,D,_F.one,C,_F.mOne,A,B);
@@ -1903,7 +1903,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<Modular<double>,
+			return BlasMatrixDomainMulAdd<//Modular<double>,
 				Operand1,
 				Operand2,
 				Operand3>()(_F,D,_F.mOne,C,_F.one,A,B);
@@ -2096,7 +2096,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<Modular<float>,
+			return BlasMatrixDomainMulAdd<//Modular<float>,
 				Operand1,
 				Operand2,
 				Operand3>()(_F,D,_F.mOne,C,_F.one,A,B);

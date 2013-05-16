@@ -211,7 +211,7 @@ namespace LinBox
 	Vector& solvein(Vector& x,
 			GaussDomain<GF2>::Matrix    &A,
 			const Vector& b,
-			const Method::SparseElimination& m, 
+			const Method::SparseElimination& m,
             Random& generator)
 	{
 		commentator().start ("Sparse Elimination Solve In Place over GF2", "GF2sesolvein");
@@ -1115,7 +1115,7 @@ namespace LinBox {
 		 const BlasMatrix<PID_integer>& B, const std::vector<PID_integer::Element>& b,
 		 const Method::NumericalWan & m)
 	{
-		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
+		//THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
 
 		typedef Modular<int32_t> ZField;
 		// typedef Modular<double> ZField;
@@ -1124,7 +1124,8 @@ namespace LinBox {
 
 		int status = rsolver.solve(x, d, B, b);
 		if (status)
-			throw "fail" ;
+			// throw "fail" ;
+			std::cerr << "fail:" << status << std::endl;
 		return x;
 	}
 }
