@@ -23,6 +23,9 @@
  *.
  */
 
+/** @file algorithms/opencl-resource-controller.h
+ */
+
 #include <pthread.h>
 
 #include <algorithm>
@@ -465,7 +468,7 @@ namespace LinBox{
 		unsigned int deallocateInstance(unsigned int ID){
 #ifndef __MPI_SHARED
 			(*IDsToInstances)[ID] -= 1;
-			if((*IDsToInstances)[ID] < 0){ //BB Toujours faux
+			if((*IDsToInstances)[ID] < 0){ //! @bug BB Toujours faux
 				(*IDsToInstances)[ID] = 0;
 			}
 			return (*IDsToInstances)[ID];

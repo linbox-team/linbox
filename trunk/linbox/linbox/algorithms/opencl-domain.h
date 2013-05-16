@@ -587,7 +587,7 @@ namespace LinBox{
 			const Operand2& A,
 			const Operand3& B) const{
 
-			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3>()(
 				_F,
 				D,
 				beta,
@@ -607,7 +607,7 @@ namespace LinBox{
 			const Operand2& A,
 			const Operand3& B) const{
 
-			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3>()(
 				_F,
 				beta,
 				C,
