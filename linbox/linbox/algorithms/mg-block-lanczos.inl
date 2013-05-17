@@ -812,8 +812,8 @@ namespace LinBox
 			j = next_j;
 			++iter;
 
-			if (!(iter % progress_interval))
-				commentator().progress (total_dim);
+			if (!(iter % (int)progress_interval))
+				commentator().progress ((long)total_dim);
 
 			if (total_dim > A.rowdim ()) {
 				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -1298,7 +1298,7 @@ namespace LinBox
 		Matrix ATA (n, n);
 		Matrix W (n, n);
 		Matrix WA (n, n);
-		std::vector<bool> S (n);
+		std::vector<bool> S ((size_t)n);
 
 		bool ret = true;
 
@@ -1366,7 +1366,7 @@ namespace LinBox
 		Matrix ATA (n, n);
 		Matrix W (n, n);
 		Matrix WA (n, n);
-		std::vector<bool> S (n);
+		std::vector<bool> S ((size_t)n);
 
 		bool ret = true;
 

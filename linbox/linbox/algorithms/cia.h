@@ -76,7 +76,7 @@ namespace LinBox
 		RandomPrimeIterator primeg (22);
 		++primeg;
 		Field F(*primeg);
-		FBlackbox fbb(F, (int)A.rowdim(), (int)A.coldim());
+		FBlackbox fbb(F, A.rowdim(), A.coldim());
 		MatrixHom::map(fbb, A);
 		charpoly (fieldCharPoly, fbb, M);
 		/* Determination of the multiplicities */

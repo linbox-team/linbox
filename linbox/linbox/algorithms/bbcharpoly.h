@@ -92,7 +92,7 @@ namespace LinBox
 						--i;
 					}
 					tmp = tmp/k + (int)(multiplicity - dep->multiplicity) / d;
-					dep->multiplicity = tmp ;
+					dep->multiplicity =(size_t) tmp ;
 					//std::cerr<<"Updating "<<*dep->fieldP<<" --> mul = "<<tmp<<std::endl;
 
 					*goal -= tmp * ((int)dep->fieldP->size()-1);
@@ -102,7 +102,7 @@ namespace LinBox
 					int tmp =  (int)((n - 2 * dep->multiplicity + multiplicity) / (dep->fieldP->size()-1));
 					*goal -= tmp * ((int)dep->fieldP->size()-1);
 					//std::cerr<<"Updating (leaf)"<<*dep->fieldP<<" --> mul = "<<tmp<<std::endl;
-					dep->multiplicity = tmp;
+					dep->multiplicity = (size_t)tmp;
 					return 1;
 				}
 			}
@@ -231,7 +231,7 @@ namespace LinBox
 			IntPoly tmpP;
 			intRing.init (intCharPoly[0], 1);
 			for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
-				IPD.pow (tmpP, *it_f->second->intP, it_f->second->multiplicity);
+				IPD.pow (tmpP, *it_f->second->intP, (long) it_f->second->multiplicity);
 				IPD.mulin (intCharPoly, tmpP);
 				delete it_f->second->intP;
 				delete it_f->second->fieldP;
@@ -328,7 +328,7 @@ namespace LinBox
 				Polynomial tmpP;
 				F.init (charPoly[0], 1);
 				for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
-					PD.pow (tmpP, *it_f->second->fieldP, it_f->second->multiplicity);
+					PD.pow (tmpP, *it_f->second->fieldP,(long) it_f->second->multiplicity);
 					PD.mulin (charPoly, tmpP);
 					delete it_f->second->fieldP;
 					delete it_f->second;
@@ -352,7 +352,7 @@ namespace LinBox
 				sols.push_back( ufv);
 			}
 			else if ( goal > 0 ){
-				for (size_t i=i0; i<ufv.size(); ++i){
+				for (size_t i=(size_t)i0; i<ufv.size(); ++i){
 					ufv[i].multiplicity++;
 					trials( sols, goal - (int)ufv[i].fieldP->size()+1, ufv, (int)i );
 					ufv[i].multiplicity--;
@@ -393,7 +393,7 @@ namespace LinBox
 					PolynomialBB<BlackBox, FieldPoly > PA (A, *itf->second->fieldP);
 					rank (r, PA,  M) ;
 				}
-				itf->second->multiplicity = r;
+				itf->second->multiplicity =(size_t) r;
 
 				//std::cerr<<"Rank 1 : "<<*itf->second->fieldP<<" --> "<<r<<std::endl;
 				--factnum;
@@ -411,7 +411,7 @@ namespace LinBox
 				long unsigned int r;
 				rank (r, PA,  M);
 
-				itf->second->multiplicity =r;
+				itf->second->multiplicity =(size_t)r;
 				//std::cerr<<"Rank > 1 : "<<*itf->second->intP<<" --> "<<r<<std::endl;
 
 				--factnum;
@@ -441,9 +441,9 @@ namespace LinBox
 						//std::cerr<<"extra factor : "<<*currFFM->fieldP<<" --> "<<r<<std::endl;
 
 						int tmp = (int)currFFM->multiplicity;
-						currFFM->multiplicity = r;
+						currFFM->multiplicity =(size_t) r;
 						currFFM->update (n,&goal);
-						currFFM->multiplicity = tmp;
+						currFFM->multiplicity = (size_t)tmp;
 					}
 				}
 				else {
@@ -463,10 +463,10 @@ namespace LinBox
 						goal -= (lbm-1)*((int)lead_it->first->fieldP->size()-1);
 					}
 					else {
-						lbm = (int)((n-lead_it->first->multiplicity) / ((int)lead_it->first->fieldP->size()-1));
+						lbm = (int)((int)(n-lead_it->first->multiplicity) / ((int)(lead_it->first->fieldP->size())-1));
 						goal -=  (lbm-1)*((int)lead_it->first->fieldP->size()-1);
 					}
-					lead_it->first->multiplicity = lbm;
+					lead_it->first->multiplicity = (size_t)lbm;
 				}
 			}
 

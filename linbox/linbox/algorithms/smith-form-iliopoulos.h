@@ -183,7 +183,7 @@ namespace LinBox
 
 
 			// after finding the pivot
-			// column operation to make A[p][j] = 0, where k < j
+			// column operation to make A[p][(size_t)j] = 0, where k < j
 
 
 			Element g, tmp;
@@ -450,25 +450,25 @@ namespace LinBox
 
 				for ( j = i + 1; j < min; ++ j) {
 
-					if (r. isUnit(A[i][i]))  break;
+					if (r. isUnit(A[(size_t)i][(size_t)i]))  break;
 
-					else if (r. isZero (A[j][j])) continue;
+					else if (r. isZero (A[(size_t)j][(size_t)j])) continue;
 
-					else if (r. isZero (A[i][i])) {
-						std::swap (A[i][i], A[j][j]);
+					else if (r. isZero (A[(size_t)i][(size_t)i])) {
+						std::swap (A[(size_t)i][(size_t)i], A[(size_t)j][(size_t)j]);
 					}
 
 					else {
-						r. gcd (g, A[j][j], A[i][i]);
+						r. gcd (g, A[(size_t)j][(size_t)j], A[(size_t)i][(size_t)i]);
 
-						r. divin (A[j][j], g);
+						r. divin (A[(size_t)j][(size_t)j], g);
 
-						r. mulin (A[j][j], A[i][i]);
+						r. mulin (A[(size_t)j][(size_t)j], A[(size_t)i][(size_t)i]);
 
-						r. assign (A[i][i], g);
+						r. assign (A[(size_t)i][(size_t)i], g);
 					}
 				}
-				r. normalIn (A[i][i]);
+				r. normalIn (A[(size_t)i][(size_t)i]);
 			}
 
 			return A;

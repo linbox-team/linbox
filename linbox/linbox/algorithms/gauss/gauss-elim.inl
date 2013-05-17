@@ -3,20 +3,20 @@
  *
  * Time-stamp: <21 Jan 10 15:06:11 Jean-Guillaume.Dumas@imag.fr>
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -148,30 +148,30 @@ namespace LinBox
 			unsigned long j_head = 0;
 
 			for (; j_head < nj; ++j_head) {
-				if (static_cast<long>(lignecourante[j_head].first) >= indpermut) break;
+				if (static_cast<long>(lignecourante[(size_t)j_head].first) >= indpermut) break;
 #if 0
 				std::cerr << "ELIMINATE, j_head: " << j_head << std::endl;
 #endif
 				}
 
 			if (j_head < nj) {
-				if (static_cast<long>(lignecourante[j_head].first) == indpermut) {
+				if (static_cast<long>(lignecourante[(size_t)j_head].first) == indpermut) {
 					// -------------------------------------------
 					// Permutation
 					if ( indpermut != static_cast<long>(k)) {
 						if (lignecourante[0].first == k) {
 							// non zero  <--> non zero
-							std::swap( lignecourante[0].second, lignecourante[j_head].second);
+							std::swap( lignecourante[0].second, lignecourante[(size_t)j_head].second);
 						}
 						else {
 							// zero <--> non zero
-							E tmp = lignecourante[j_head];
-							--columns[tmp.first];
-							++columns[k];
+							E tmp = lignecourante[(size_t)j_head];
+							--columns[(size_t)tmp.first];
+							++columns[(size_t)k];
 							tmp.first = (unsigned)k;
 
 							for (long l = (long)j_head; l > 0; --l)
-								lignecourante[l] = lignecourante[l-1];
+								lignecourante[(size_t)l] = lignecourante[(size_t)l-1];
 
 							lignecourante[0] = tmp;
 						}
@@ -190,14 +190,14 @@ namespace LinBox
 
 					// A[i,k] <-- - A[i,k] / A[k,k]
 					Element headcoeff;
-					field().divin (field().neg (headcoeff, lignecourante[j_head].second),
+					field().divin (field().neg (headcoeff, lignecourante[(size_t)j_head].second),
 						  lignepivot[0].second);
 
-					--columns[lignecourante[j_head].first];
+					--columns[lignecourante[(size_t)j_head].first];
 
 					// if A[k,j]=0, then A[i,j] <-- A[i,j]
 					while (j < j_head) {
-						construit[j] = lignecourante[j];
+						construit[j] = lignecourante[(size_t)j];
 						j++;
 					}
 
@@ -272,18 +272,18 @@ namespace LinBox
 							unsigned long l = 0;
 
 							for (; l < nj; ++l)
-								if (lignecourante[l].first >= k) break;
+								if (lignecourante[(size_t)l].first >= k) break;
 
-							if ((l < nj) && (lignecourante[l].first == k))  {
+							if ((l < nj) && (lignecourante[(size_t)l].first == k))  {
 								// non zero <--> zero
-								E tmp = lignecourante[l];
+								E tmp = lignecourante[(size_t)l];
 								--columns[k];
-								++columns[indpermut];
-								tmp.first = (unsigned)indpermut;
+								++columns[(size_t)indpermut];
+								tmp.first = (unsigned long)indpermut;
 
 								unsigned long bjh = j_head-1;
 								for (; l < bjh; ++l)
-									lignecourante[l] = lignecourante[l + 1];
+									lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
 								lignecourante[bjh] = tmp;
 							} // else // zero <--> zero
@@ -307,18 +307,18 @@ namespace LinBox
 					unsigned long l = 0;
 
 					for (; l < nj; ++l)
-						if (lignecourante[l].first >= k) break;
+						if (lignecourante[(size_t)l].first >= k) break;
 
-					if ((l < nj) && (lignecourante[l].first == k))  {
+					if ((l < nj) && (lignecourante[(size_t)l].first == k))  {
 						// non zero <--> zero
-						E tmp = lignecourante[l];
+						E tmp = lignecourante[(size_t)l];
 						--columns[k];
-						++columns[indpermut];
-						tmp.first = (unsigned)indpermut;
+						++columns[(size_t)indpermut];
+						tmp.first = (unsigned long)indpermut;
 
 						unsigned long bjh = nj - 1;
 						for (; l < bjh; ++l)
-							lignecourante[l] = lignecourante[l + 1];
+							lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
 						lignecourante[bjh] = tmp;
 					} // else
@@ -379,30 +379,30 @@ namespace LinBox
 			unsigned long j_head = 0;
 
 			for (; j_head < nj; ++j_head) {
-				if (static_cast<long>(lignecourante[j_head].first) >= indpermut) break;
+				if (static_cast<long>(lignecourante[(size_t)j_head].first) >= indpermut) break;
 #if 0
 				std::cerr << "ELIMINATE, j_head: " << j_head << std::endl;
 #endif
 				}
 
 			if (j_head < nj) {
-				if (static_cast<long>(lignecourante[j_head].first) == indpermut) {
+				if (static_cast<long>(lignecourante[(size_t)j_head].first) == indpermut) {
 					// -------------------------------------------
 					// Permutation
 					if ( indpermut != static_cast<long>(k)) {
 						if (lignecourante[0].first == k) {
 							// non zero  <--> non zero
-							std::swap( lignecourante[0].second, lignecourante[j_head].second);
+							std::swap( lignecourante[0].second, lignecourante[(size_t)j_head].second);
 						}
 						else {
 							// zero <--> non zero
-							E tmp = lignecourante[j_head];
+							E tmp = lignecourante[(size_t)j_head];
 							--columns[tmp.first];
 							++columns[k];
 							tmp.first = (unsigned)k;
 
 							for (long l = (long)j_head; l > 0; --l)
-								lignecourante[l] = lignecourante[l-1];
+								lignecourante[(size_t)l] = lignecourante[(size_t)l-1];
 
 							lignecourante[0] = tmp;
 						}
@@ -420,17 +420,17 @@ namespace LinBox
 
 					// A[i,k] <-- - A[i,k] / A[k,k]
 					Element headcoeff;
-					field().div( headpivot, lignecourante[j_head].second,
+					field().div( headpivot, lignecourante[(size_t)j_head].second,
 						lignepivot[0].second);
 					field().neg(headcoeff, headpivot);
-					//                     field().divin (field().neg (headcoeff, lignecourante[j_head].second),
+					//                     field().divin (field().neg (headcoeff, lignecourante[(size_t)j_head].second),
 					//                               lignepivot[0].second);
 
-					--columns[lignecourante[j_head].first];
+					--columns[lignecourante[(size_t)j_head].first];
 
 					// if A[k,j]=0, then A[i,j] <-- A[i,j]
 					while (j < j_head) {
-						construit[j] = lignecourante[j];
+						construit[j] = lignecourante[(size_t)j];
 						j++;
 					}
 
@@ -505,18 +505,18 @@ namespace LinBox
 							unsigned long l = 0;
 
 							for (; l < nj; ++l)
-								if (lignecourante[l].first >= k) break;
+								if (lignecourante[(size_t)l].first >= k) break;
 
-							if ((l < nj) && (lignecourante[l].first == k))  {
+							if ((l < nj) && (lignecourante[(size_t)l].first == k))  {
 								// non zero <--> zero
-								E tmp = lignecourante[l];
+								E tmp = lignecourante[(size_t)l];
 								--columns[k];
-								++columns[indpermut];
-								tmp.first = (unsigned)indpermut;
+								++columns[(size_t)indpermut];
+								tmp.first = (unsigned long)indpermut;
 
 								unsigned long bjh = j_head-1;
 								for (; l < bjh; ++l)
-									lignecourante[l] = lignecourante[l + 1];
+									lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
 								lignecourante[bjh] = tmp;
 							} // else // zero <--> zero
@@ -540,18 +540,18 @@ namespace LinBox
 					unsigned long l = 0;
 
 					for (; l < nj; ++l)
-						if (lignecourante[l].first >= k) break;
+						if (lignecourante[(size_t)l].first >= k) break;
 
-					if ((l < nj) && (lignecourante[l].first == k))  {
+					if ((l < nj) && (lignecourante[(size_t)l].first == k))  {
 						// non zero <--> zero
-						E tmp = lignecourante[l];
+						E tmp = lignecourante[(size_t)l];
 						--columns[k];
-						++columns[indpermut];
-						tmp.first = (unsigned)indpermut;
+						++columns[(size_t)indpermut];
+						tmp.first = (unsigned long)indpermut;
 
 						unsigned long bjh = nj - 1;
 						for (; l < bjh; ++l)
-							lignecourante[l] = lignecourante[l + 1];
+							lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
 						lignecourante[bjh] = tmp;
 					} // else
@@ -595,23 +595,23 @@ namespace LinBox
 			unsigned long j_head = 0;
 
 			for (; j_head < nj; ++j_head)
-				if (static_cast<long>(lignecourante[j_head].first) >= indpermut) break;
+				if (static_cast<long>(lignecourante[(size_t)j_head].first) >= indpermut) break;
 
 			if (j_head < nj) {
-				if (static_cast<long>(lignecourante[j_head].first) == indpermut) {
+				if (static_cast<long>(lignecourante[(size_t)j_head].first) == indpermut) {
 					// -------------------------------------------
 					// Permutation
 					if (indpermut != static_cast<long>(k)) {
 						if (lignecourante[0].first == k) {
 							// non zero  <--> non zero
-							std::swap( lignecourante[0].second, lignecourante[j_head].second);
+							std::swap( lignecourante[0].second, lignecourante[(size_t)j_head].second);
 						}
 						else {
 							// zero <--> non zero
-							E tmp = lignecourante[j_head];
+							E tmp = lignecourante[(size_t)j_head];
 							tmp.first = k;
 							for (long l = (long)j_head; l > 0; --l)
-								lignecourante[l] = lignecourante[l-1];
+								lignecourante[(size_t)l] = lignecourante[(size_t)l-1];
 							lignecourante[0] = tmp;
 						}
 
@@ -630,12 +630,12 @@ namespace LinBox
 					// A[i,k] <-- - A[i,k] / A[k,k]
 
 					Element headcoeff;
-					field().divin (field().neg (headcoeff, lignecourante[j_head].second),
+					field().divin (field().neg (headcoeff, lignecourante[(size_t)j_head].second),
 						  lignepivot[0].second);
 
 					// if A[k,j]=0, then A[i,j] <-- A[i,j]
 					while (j < j_head) {
-						construit[j] = lignecourante[j];
+						construit[j] = lignecourante[(size_t)j];
 						j++;
 					}
 
@@ -694,16 +694,16 @@ namespace LinBox
 							unsigned long l = 0;
 
 							for (; l < nj; ++l)
-								if (lignecourante[l].first >= k) break;
+								if (lignecourante[(size_t)l].first >= k) break;
 
-							if ((l < nj) && (lignecourante[l].first == k))  {
+							if ((l < nj) && (lignecourante[(size_t)l].first == k))  {
 								// non zero <--> zero
-								E tmp = lignecourante[l];
-								tmp.first = indpermut;
+								E tmp = lignecourante[(size_t)l];
+								tmp.first = (unsigned long) indpermut;
 
 								unsigned long bjh = j_head -1;
 								for (; l < bjh; l++)
-									lignecourante[l] = lignecourante[l + 1];
+									lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
 								lignecourante[bjh] = tmp;
 							} // else // zero <--> zero
@@ -728,16 +728,16 @@ namespace LinBox
 					unsigned long l = 0;
 
 					for (; l < nj; ++l)
-						if (lignecourante[l].first >= k) break;
+						if (lignecourante[(size_t)l].first >= k) break;
 
-					if ((l < nj) && (lignecourante[l].first == k))  {
+					if ((l < nj) && (lignecourante[(size_t)l].first == k))  {
 						// non zero <--> zero
-						E tmp = lignecourante[l];
-						tmp.first = indpermut;
+						E tmp = lignecourante[(size_t)l];
+						tmp.first = (unsigned long) indpermut;
 
 						unsigned long bjh = nj - 1;
 						for (; l < bjh; l++)
-							lignecourante[l] = lignecourante[l + 1];
+							lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
 						lignecourante[bjh] = tmp;
 					} // else
@@ -779,12 +779,12 @@ void GaussDomain<_Field>::permute (Vector              &lignecourante,
 		if (kin < nj) {
 			unsigned long pin = kin;
 			for (; pin < nj; ++pin)
-				if (static_cast<long>(lignecourante[pin].first) >= indpermut) break;
+				if (static_cast<long>(lignecourante[(size_t)pin].first) >= indpermut) break;
 			if ( static_cast<long>(lignecourante[kin].first) == k) {
 				if (pin < nj) {
-					if ( static_cast<long>(lignecourante[pin].first) == indpermut) {
+					if ( static_cast<long>(lignecourante[(size_t)pin].first) == indpermut) {
 						// Both there
-						std::swap( lignecourante[kin].second, lignecourante[pin].second);
+						std::swap( lignecourante[kin].second, lignecourante[(size_t)pin].second);
 					}
 					else {
 						// Only k there
@@ -792,29 +792,29 @@ void GaussDomain<_Field>::permute (Vector              &lignecourante,
 						typename Vector::value_type etmp = lignecourante[kin];
 						--pin;
 						for(size_t i=kin; i<pin; ++i)
-							lignecourante[i] = lignecourante[i+1];
-						lignecourante[pin] = etmp;
+							lignecourante[(size_t)i] = lignecourante[(size_t)i+1];
+						lignecourante[(size_t)pin] = etmp;
 					}
 				}
 				else {
 					pin = nj-1;
 					// Only k there
-					lignecourante[kin].first = indpermut;
+					lignecourante[kin].irst = indpermut;
 					typename Vector::value_type etmp = lignecourante[kin];
 					for(size_t i=kin; i<pin; ++i)
-						lignecourante[i] = lignecourante[i+1];
-					lignecourante[pin] = etmp;
+						lignecourante[(size_t)i] = lignecourante[(size_t)i+1];
+					lignecourante[(size_t)pin] = etmp;
 
 				}
 			}
 			else {
 				if (pin < nj) {
-					if ( static_cast<long>(lignecourante[pin].first) == indpermut) {
+					if ( static_cast<long>(lignecourante[(size_t)pin].first) == indpermut) {
 						// Only indpermut there
-						lignecourante[pin].first = k;
-						typename Vector::value_type etmp = lignecourante[pin];
+						lignecourante[(size_t)pin].first = k;
+						typename Vector::value_type etmp = lignecourante[(size_t)pin];
 						for(size_t i = pin; i>kin; --i)
-							lignecourante[i] = lignecourante[i-1];
+							lignecourante[(size_t)i] = lignecourante[(size_t)i-1];
 						lignecourante[kin] = etmp;
 					} // else Nobody
 				} // else Nobody

@@ -395,7 +395,7 @@ namespace LinBox
 			D = sqrt(had_sqi) + 1;
 			N = sqrt(had_sqi * normb_sqi / short_sqi) + 1;
 			L = N * D * 2;
-			_length = logp(L,Prime) + 1;   // round up instead of down
+			_length = (size_t)logp(L,Prime) + 1;   // round up instead of down
 #ifdef DEBUG_LC
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
