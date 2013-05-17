@@ -329,6 +329,19 @@ namespace LinBox
 		//! operator = (copying data)
 		BlasMatrix<_Field>& operator= (const BlasMatrix<_Field>& A) ;
 
+		//! make sure we actually copy
+		template<class Matrix>
+		BlasMatrix &copy( const Matrix & B)
+		{
+			for (size_t i = 0 ; i < rowdim() ; ++i)
+				for (size_t j = 0 ; j < coldim() ; ++j) {
+					setEntry(i,j,B.getEntry(i,j));
+				}
+			return *this;
+
+		}
+
+
 		//! Rebind operator
 		template<typename _Tp1>
 		struct rebind ;
@@ -798,6 +811,17 @@ namespace LinBox
 		 */
 		BlasSubmatrix &operator = (const BlasSubmatrix<_Field> &SM);
 
+		template<class Matrix>
+		BlasSubmatrix &copy( const Matrix & B)
+		{
+			for (size_t i = 0 ; i < rowdim() ; ++i)
+			for (size_t j = 0 ; j < coldim() ; ++j) {
+				setEntry(i,j,B.getEntry(i,j));
+			}
+			return *this;
+
+		}
+
 		template<typename _Tp1>
 		struct rebind ;
 
@@ -872,7 +896,7 @@ namespace LinBox
 		 * Get write pointer to the matrix data.
 		 * Data may be changed this way.
 		 */
-		pointer& getWritePointer() ;
+		pointer/* & */ getWritePointer() ;
 
 
 		/** Set the entry at (i, j).

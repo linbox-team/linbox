@@ -566,7 +566,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<//Modular<double>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,beta,C,alpha,A,B);
+				Operand3>()(D,beta,C,alpha,A,B);
 		}
 
 		//Check dimensions
@@ -757,7 +757,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<//Modular<float>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,beta,C,alpha,A,B);
+				Operand3>()(D,beta,C,alpha,A,B);
 		}
 
 		//Check dimensions
@@ -948,7 +948,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<//Modular<double>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,beta,C,alpha,A,B);
+				Operand3>()(beta,C,alpha,A,B);
 		}
 
 		Operand1 T(C);
@@ -981,7 +981,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<//Modular<float>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,beta,C,alpha,A,B);
+				Operand3>()(beta,C,alpha,A,B);
 		}
 
 		Operand1 T(C);
@@ -1046,7 +1046,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<//Modular<double>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,_F.one,C,_F.one,A,B);
+				Operand3>()(D,_F.one,C,_F.one,A,B);
 		}
 
 		//Check dimensions
@@ -1230,7 +1230,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<//Modular<float>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,_F.one,C,_F.one,A,B);
+				Operand3>()(D,_F.one,C,_F.one,A,B);
 		}
 
 		//Check dimensions
@@ -1474,7 +1474,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<//Modular<double>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,_F.one,C,_F.mOne,A,B);
+				Operand3>()(D,_F.one,C,_F.mOne,A,B);
 		}
 
 		//Check dimensions
@@ -1658,7 +1658,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<//Modular<float>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,_F.one,C,_F.mOne,A,B);
+				Operand3>()(D,_F.one,C,_F.mOne,A,B);
 		}
 
 		//Check dimensions
@@ -1906,7 +1906,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<//Modular<double>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,_F.mOne,C,_F.one,A,B);
+				Operand3>()(D,_F.mOne,C,_F.one,A,B);
 		}
 
 		//Check dimensions
@@ -2099,7 +2099,7 @@ namespace LinBox
 			return BlasMatrixDomainMulAdd<//Modular<float>,
 				Operand1,
 				Operand2,
-				Operand3>()(_F,D,_F.mOne,C,_F.one,A,B);
+				Operand3>()(D,_F.mOne,C,_F.one,A,B);
 		}
 
 		//Check dimensions

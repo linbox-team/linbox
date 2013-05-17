@@ -65,15 +65,17 @@ namespace LinBox
 	 *     -  C = beta.C + alpha. A*B
 	 */
 	template<class Operand1, class Operand2, class Operand3/*, class MatrixVectorType*/>
-	class BlasMatrixDomainMulAdd {
+	class BlasMatrixDomainMulAdd
+#if 0
+	{
 	public:
 		typedef typename Operand1::Field Field;
-		Operand1 &operator() (const Field &F,
+		Operand1 &operator() (//const Field &F,
 				      Operand1 &D,
 				      const typename Field::Element &beta, const Operand1 &C,
 				      const typename Field::Element &alpha, const Operand2 &A, const Operand3 &B) const;
 
-		Operand1 &operator() (const Field &F,
+		Operand1 &operator() (//const Field &F,
 				      const typename Field::Element &beta, Operand1 &C,
 				      const typename Field::Element &alpha, const Operand2 &A, const Operand3 &B) const;
 
@@ -92,7 +94,9 @@ namespace LinBox
 
 
 
-	};
+	}
+#endif
+	;
 
 	/*!@internal
 	 * Adding two matrices
@@ -156,7 +160,7 @@ namespace LinBox
 			typename Field::Element zero, one;
 			F.init( zero, 0 );
 			F.init( one, 1 );
-			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType*/>()( F, zero, C, one, A, B );
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType*/>()(  zero, C, one, A, B );
 		}
 	};
 
@@ -188,7 +192,7 @@ namespace LinBox
 			Operand1* tmp = new Operand1(A);
 			// Effective copy of A
 			*tmp = A;
-			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()( F, zero, A, one, *tmp, B );
+			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()( zero, A, one, *tmp, B );
 			delete tmp;
 			return A;
 		}
@@ -202,7 +206,7 @@ namespace LinBox
 			Operand1* tmp = new Operand1(B);
 			// Effective copy of B
 			*tmp = B;
-			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()( F, zero, B, one, A, *tmp );
+			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()(  zero, B, one, A, *tmp );
 			delete tmp;
 			return B;
 		}
@@ -508,7 +512,7 @@ namespace LinBox
 		Operand1& muladd(Operand1& D, const Element& beta, const Operand1& C,
 				 const Element& alpha, const Operand2& A, const Operand3& B) const
 		{
-			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType()*/>()(field(),D,beta,C,alpha,A,B);
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType()*/>()(D,beta,C,alpha,A,B);
 		}
 
 		//! muladdin.
@@ -517,7 +521,7 @@ namespace LinBox
 		Operand1& muladdin(const Element& beta, Operand1& C,
 				   const Element& alpha, const Operand2& A, const Operand3& B) const
 		{
-			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType()*/>()(field(),beta,C,alpha,A,B);
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType()*/>()(beta,C,alpha,A,B);
 		}
 
 

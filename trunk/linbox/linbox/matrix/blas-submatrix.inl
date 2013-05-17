@@ -191,10 +191,10 @@ namespace LinBox
 
 
 	template <class _Field>
-	typename BlasSubmatrix< _Field>::pointer&
+	typename BlasSubmatrix< _Field>::pointer
 	BlasSubmatrix< _Field>::getWritePointer()
 	{
-		return _Mat->getWritePointer()+_off;
+		return (_Mat->getWritePointer())+_off;
 	}
 
 	template <class _Field>
@@ -922,10 +922,10 @@ namespace LinBox
 	}
 
 	template <class _Field>
-	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os) const 
+	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os) const
 	{
 		os << "%%MatrixMarket matrix array integer general" << std::endl;
-		field().write(os << "% ") << std::endl; 
+		field().write(os << "% ") << std::endl;
 		os << rowdim() << " " << coldim() << std::endl;
 		typename _Field::Element x; field().init(x, 0);
 		for (size_t j = 0; j < rowdim(); ++j)
