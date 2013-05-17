@@ -174,19 +174,19 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 * @param  F  optional name to give the field in the description.  IF F is the null string, only the class name is written.
-		 * Example: For element type double and modulus 101, 
-		 * write(os) produces      "Modular< double > ( 101 )"  on os, 
+		 * Example: For element type double and modulus 101,
+		 * write(os) produces      "Modular< double > ( 101 )"  on os,
  		 * write(os, "F") produces "Modular< double > F( 101 )" on os, and
  		 * write(os, "") produces  "Modular< double >"          on os.
 		 */
 		std::ostream &write (std::ostream &os) const
-		{ 
+		{
 		  integer p = cardinality();
-		  return os << "Modular<" << eltype( Element() ) << " >( " << p << " )"; 
+		  return os << "Modular<" << eltype( Element() ) << " >( " << p << " )";
 		}
 
 		std::ostream &write (std::ostream &os, std::string F) const
-		{ 
+		{
 		  os << "Modular<" << eltype( Element() ) << " > "; // class name
 		  if (F != "") {
 		    integer p = cardinality();
@@ -198,7 +198,7 @@ namespace LinBox
         std::ostream &write (std::ostream & os, const Element & x) const {
             return Father_t::write(os,x);
         }
-                
+
 
 	private:
 
@@ -392,7 +392,7 @@ namespace LinBox
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () +(ptrdiff_t) w.size (), 0);
 
 		for (j = v.begin (); j != v.end (); ++j, ++i)
 		{
@@ -434,7 +434,7 @@ namespace LinBox
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () +(ptrdiff_t) w.size (), 0);
 
 		for (j = v.begin (); j != v.end (); ++j, ++i) {
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
@@ -443,7 +443,7 @@ namespace LinBox
 				_tmp[k->first] += t;
 
 				if (_tmp[k->first] < t)
-					_tmp[k->first] += VD.field ()._two64;
+					_tmp[k->first] += (uint64_t)VD.field ()._two64;
 			}
 		}
 
@@ -451,7 +451,7 @@ namespace LinBox
 		typedef typename Vector1::value_type val_t;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = (val_t)( *l % VD.field ().modulus );
+			*w_j = (val_t)( (int32_t)(*l) % VD.field ().modulus );
 
 		return w;
 	}
@@ -475,7 +475,7 @@ namespace LinBox
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () +(ptrdiff_t) w.size (), 0);
 
 		for (j = v.begin (); j != v.end (); ++j, ++i)
 		{
@@ -518,7 +518,7 @@ namespace LinBox
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () +(ptrdiff_t) w.size (), 0);
 
 		for (j = v.begin (); j != v.end (); ++j, ++i)
 		{

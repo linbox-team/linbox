@@ -303,8 +303,8 @@ namespace LinBox
 			int offset_y = 0;
 			typename std::vector<const Blackbox* >::const_iterator bp;
 			for(bp = _VB.begin(); bp != _VB.end(); ++bp){
-				const Subvector<typename InVector::const_iterator> x1(x.begin() + offset_x, x.begin() + (offset_x + (*bp)->coldim()));
-				Subvector<typename OutVector::iterator> y1(y.begin() + offset_y, y.begin() + (offset_y + (*bp)->rowdim()));
+				const Subvector<typename InVector::const_iterator> x1(x.begin() + offset_x, x.begin() + (ptrdiff_t) ((unsigned long)offset_x + (*bp)->coldim()));
+				Subvector<typename OutVector::iterator> y1(y.begin() + offset_y, y.begin() + (ptrdiff_t) ((unsigned long)offset_y + (*bp)->rowdim()));
 				(*bp)->apply(y1,x1);
 				offset_x += (int) (*bp)->coldim();
 				offset_y += (int) (*bp)->rowdim();
@@ -323,8 +323,8 @@ namespace LinBox
 			int offset_y = 0;
 			typename std::vector<const Blackbox* >::const_iterator bp;
 			for(bp = _VB.begin(); bp != _VB.end(); ++bp){
-				const Subvector<typename InVector::const_iterator> x1(x.begin() + offset_x, x.begin() + (offset_x + (*bp)->rowdim()));
-				Subvector<typename OutVector::iterator> y1(y.begin() + offset_y, y.begin() + (offset_y + (*bp)->coldim()));
+				const Subvector<typename InVector::const_iterator> x1(x.begin() + offset_x, x.begin() +(ptrdiff_t) ((unsigned long)offset_x + (*bp)->rowdim()));
+				Subvector<typename OutVector::iterator> y1(y.begin() + offset_y, y.begin() + (ptrdiff_t) ((unsigned long)offset_y + (*bp)->coldim()));
 				(*bp)->applyTranspose(y1,x1);
 				offset_x += (int) (*bp)->rowdim();
 				offset_y += (int) (*bp)->coldim();
@@ -622,8 +622,8 @@ namespace LinBox
 			int offset_y = 0;
 			typename ListBB_t::const_iterator bp;
 			for(bp = _VB_data.begin(); bp != _VB_data.end(); ++bp){
-				const Subvector<typename InVector::const_iterator> x1(x.begin() + offset_x, x.begin() + (offset_x + bp->coldim()));
-				Subvector<typename OutVector::iterator> y1(y.begin() + offset_y, y.begin() + (offset_y + bp->rowdim()));
+				const Subvector<typename InVector::const_iterator> x1(x.begin() + (ptrdiff_t)offset_x, x.begin() + (offset_x + (int)bp->coldim()));
+				Subvector<typename OutVector::iterator> y1(y.begin() + (ptrdiff_t)offset_y, y.begin() + (offset_y + (int)bp->rowdim()));
 				bp->apply(y1,x1);
 				offset_x += (int) bp->coldim();
 				offset_y += (int) bp->rowdim();
@@ -642,8 +642,8 @@ namespace LinBox
 			int offset_y = 0;
 			typename ListBB_t::const_iterator bp;
 			for(bp = _VB_data.begin(); bp != _VB_data.end(); ++bp){
-				const Subvector<typename InVector::const_iterator> x1(x.begin() + offset_x, x.begin() + (offset_x + bp->rowdim()));
-				Subvector<typename OutVector::iterator> y1(y.begin() + offset_y, y.begin() + (offset_y + bp->coldim()));
+				const Subvector<typename InVector::const_iterator> x1(x.begin() +(ptrdiff_t) offset_x, x.begin() + (ptrdiff_t)(offset_x + (int)bp->rowdim()));
+				Subvector<typename OutVector::iterator> y1(y.begin() + (ptrdiff_t)offset_y, y.begin() + (ptrdiff_t)(offset_y + (int)bp->coldim()));
 				bp->applyTranspose(y1,x1);
 				offset_x += (int)bp->rowdim();
 				offset_y += (int)bp->coldim();

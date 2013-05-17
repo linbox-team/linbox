@@ -105,7 +105,7 @@ namespace LinBox
 				i = int(pastNum - cand);
 			}
 			else {
-				currentCol = i;
+				currentCol = (size_t)i;
 				return GOOD;
 			}
 
@@ -127,14 +127,14 @@ namespace LinBox
 				i = int(pastNum - cand);
 			}
 			else {
-				currentCol = i;
+				currentCol = (size_t)i;
 				return GOOD;
 			}
 
 			while( cand[i] && isspace(cand[i]) ) ++i;
 			if( !cand[i] ) return GOOD;
 			if( cand[i] != ',' ) return BAD_FORMAT;
-			currentCol = i;
+			currentCol = (size_t)i;
 			return GOOD;
 		}
 

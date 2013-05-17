@@ -585,8 +585,8 @@ namespace LinBox
 						 */
 						int rclen = (int)num_chunks*2 + 5;
 
-						unsigned char* combined = new unsigned char[rc*_n*rclen];
-						memset(combined, 0, rc*_n*rclen);
+						unsigned char* combined = new unsigned char[(size_t)rc*_n*(size_t)rclen];
+						memset(combined, 0, (size_t)rc*_n*(size_t)rclen);
 
 						//order from major index to minor: combining index, component of sol'n, byte
 						//compute a product (chunk times x) for each chunk
@@ -621,7 +621,7 @@ namespace LinBox
 							for (size_t j=0; j<_n; j++) {
 								// up to 53 bits will be ored-in, to be summed later
 								unsigned char* bitDest = combined;
-								bitDest += rclen*((i % rc)*_n+j);
+								bitDest += (size_t)rclen*((i % (size_t)rc)*_n+j);
 								long long mask = static_cast<long long>(ctd[j]);
 								bitDest += 2*i;
 								*(reinterpret_cast<long long*>(bitDest) ) |= mask;
@@ -640,7 +640,7 @@ namespace LinBox
 							result = 0;
 
 							for (int j=0; j<rc; j++) {
-								unsigned char* thispos = combined + rclen*(j*_n+i);
+								unsigned char* thispos = combined + (size_t)rclen*((size_t)j*_n+i);
 								importWords(tmp, (size_t)rclen, -1, 1, 0, 0, thispos);
 								result += tmp;
 							}
@@ -956,15 +956,15 @@ namespace LinBox
 
 					// cout << "rc= " << rc << ", rclen = " << rclen << endl;
 
-					unsigned char* combined = new unsigned char[rc*_m*_k*rclen];
-					memset(combined, 0, rc*_m*_k*rclen);
+					unsigned char* combined = new unsigned char[(size_t)rc*_m*_k*(size_t)rclen];
+					memset(combined, 0, (size_t)rc*_m*_k*(size_t)rclen);
 
 					//order from major index to minor: combining index, component of sol'n, byte
 
 					//compute a product (chunk times x) for each chunk
 					double* ctd = new double[_m*_k];
 
-					for (size_t i=0; i<num_chunks; i++) {
+					for (size_t i=0; i<num_chunks; i++) {//!@bug why not use FFLAS ?
 						cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
 							    (int) _m,(int) _k,(int) _n, 1,
 							    chunks+(_m*_n*i),(int) _n, dX, (int) _k, 0, ctd, (int) _k);
@@ -973,7 +973,7 @@ namespace LinBox
 							for (size_t j=0; j<_m*_k; j++) {
 								// up to 53 bits will be ored-in, to be summed later
 								unsigned char* bitDest = combined;
-								bitDest += rclen*((i % rc)*_m*_k+j);
+								bitDest += (unsigned char)rclen*((i % (size_t)rc)*_m*_k+j);
 								long long mask = static_cast<long long>(ctd[j]);
 								bitDest += 2*i;
 								*(reinterpret_cast<long long*>(bitDest) ) |= mask;
@@ -995,7 +995,7 @@ namespace LinBox
 							result = 0;
 
 						for (int j=0; j<rc; j++) {
-							unsigned char* thispos = combined + rclen*(j*_m*_k+i);
+							unsigned char* thispos = combined + (unsigned char) rclen*((size_t)j*_m*_k+i);
 							importWords(tmp, (size_t)rclen, -1, 1, 0, 0, thispos);
 							result += tmp;
 #ifdef DEBUG_CHUNK_APPLYM

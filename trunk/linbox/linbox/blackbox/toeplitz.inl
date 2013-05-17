@@ -188,7 +188,7 @@ namespace LinBox
 			{
 				for ( j = 0; j < this->coldim() ; j++)
 					os << " " ;
-				this->field().write(os,this->P.getCoeff(temp,this->pdata,static_cast<size_t>(i-j))) ;
+				this->field().write(os,this->P.getCoeff(temp,this->pdata,static_cast<size_t>((unsigned int)i-j))) ;
 				os << std::endl;
 			}
 		}
