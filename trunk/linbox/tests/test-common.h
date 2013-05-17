@@ -12,20 +12,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -62,7 +62,7 @@ void printVectorSpecialized(
 
 	output << '(';
 	for (i = 0; i < v.size (); i++) {
-		F.write (output, v[i]);
+		F.write (output, v[(size_t)i]);
 		if (i < v.size () - 1)
 			output << ", ";
 	}
@@ -144,7 +144,7 @@ bool areVectorsEqualSpecialized(
 	if (v.size() != w.size()) return false;
 
 	for (size_t i = 0; i < v.size(); i++)
-		if (!F.areEqual (w[i], v[i]))
+		if (!F.areEqual (w[(size_t)i], v[(size_t)i]))
 			return false;
 
 	return true;
@@ -206,7 +206,7 @@ bool allZeroSpecialized(
 		       )
 {
 	for (size_t i = 0; i < v.size(); i++)
-		if (!F.isZero (v[i]))
+		if (!F.isZero (v[(size_t)i]))
 			return false;
 
 	return true;
@@ -237,11 +237,11 @@ void printPolynomial (Field &F, ostream &output, const Polynomial &v)
 		output << "0";
 
 	for (i = (int)v.size () - 1; i >= 0; i--) {
-		if (F.isZero (v[i]))
+		if (F.isZero (v[(size_t)i]))
 			continue;
 
-		if (!F.isOne (v[i]) || i == 0)
-			F.write (output, v[i]);
+		if (!F.isOne (v[(size_t)i]) || i == 0)
+			F.write (output, v[(size_t)i]);
 
 		if (i > 0)
 			output << " x^" << i;
@@ -271,7 +271,7 @@ applyPoly (const Field                             &F,
 
 	for (i = (int)phi.size () - 2; i >= 0; i--) {
 		A.apply (z, w);
-		VD.axpy (w, phi[i], v, z);
+		VD.axpy (w, phi[(size_t)i], v, z);
 	}
 
 	return w;
@@ -299,7 +299,7 @@ multiEvalPoly (const Field                            &F,
 
 	for (i = (int)phi.size () - 2; i >= 0; i--) {
 		for (j = 0; j < v.size (); j++) {
-			F.axpy (tmp, w[j], v[j], phi[i]);
+			F.axpy (tmp, w[j], v[j], phi[(size_t)i]);
 			w[j] = tmp;
 		}
 	}
@@ -334,7 +334,7 @@ interpolatePoly (const Field                            &F,
 	f.resize (n);
 
 	for (i = 0; i < n; i++)
-		F.init (f[i], 0);
+		F.init (f[(size_t)i], 0);
 
 	for (j = 0; j < n; j++) {
 		F.init (g[0 + g_FUDGE], 1);
@@ -345,9 +345,9 @@ interpolatePoly (const Field                            &F,
 			if (i == j) i++;
 
 			// Compute coefficients of this factor.
-			F.sub (c1, x[j], x[i]);
+			F.sub (c1, x[j], x[(size_t)i]);
 			F.invin (c1);
-			F.mul (c2, c1, x[i]);
+			F.mul (c2, c1, x[(size_t)i]);
 			F.negin (c2);
 
 			// Initialize the next element of the Lagrange interpolant
@@ -362,7 +362,7 @@ interpolatePoly (const Field                            &F,
 		}
 
 		for (i = 0; i < n; i++)
-			F.axpyin (f[i], y[j], g[i + g_FUDGE]);
+			F.axpyin (f[(size_t)i], y[j], g[(size_t)i + g_FUDGE]);
 	}
 
 	return f;
