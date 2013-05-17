@@ -558,7 +558,7 @@ namespace LinBox
 
 			D=C;
 
-			FFLAS::fgemm((typename Field::Father_t) A.field(), FFLAS::FflasTrans, FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t) B.field(), FFLAS::FflasTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), B.rowdim(),
 				      alpha,
 				      A.getMatrix().getPointer(), A.getMatrix().getStride(),
@@ -582,7 +582,7 @@ namespace LinBox
 			linbox_check( C.rowdim() == A.getMatrix().coldim());
 			linbox_check( C.coldim() == B.coldim());
 
-			FFLAS::fgemm((typename Field::Father_t) A.field(), FFLAS::FflasTrans, FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t) B.field(), FFLAS::FflasTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), B.rowdim(),
 				      alpha,
 				      A.getMatrix().getPointer(), A.getMatrix().getStride(),
