@@ -231,7 +231,7 @@ namespace LinBox
 
 			LinBox::rank(result, A, A.field());
 
-			return result;
+			return (long)result;
 		}
 
 	};

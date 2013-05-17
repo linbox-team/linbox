@@ -210,7 +210,7 @@ namespace LinBox
 			int len = (int)_lcontainer. length();
 			Integer prime = _lcontainer.prime();//prime
 			LVector digits; //Store all p-adic digits
-			digits. resize (len); //reserve space for all digits
+			digits. resize ((size_t)len); //reserve space for all digits
 			Integer modulus; //store current modulus
 			Integer denbound; // store current bound for den
 			Integer numbound; //store current bound for num
@@ -259,7 +259,7 @@ namespace LinBox
 				IVector& dig = *digits_p;
 				++step; ++ digits_p;
 
-				dig. resize (n);
+				dig. resize ((size_t)n);
 
 				// get next p-adic digit
 				bool nextResult = iter.next(dig);
@@ -314,7 +314,7 @@ namespace LinBox
 					}
 				}
 			}
-			IVector res (n);
+			IVector res ((size_t)n);
 			typename LVector::const_iterator digit_begin = digits. begin();
 			PolEval (res, digit_begin, (size_t)step, prime);
 			if(step < len) _r. lcm (den, c1_den, c2_den);
@@ -698,7 +698,7 @@ namespace LinBox
 
 			if (deg == 1){
 				for (size_t i=0;i<y.size();++i)
-					_r.assign(y[i],(*Pol)[i]);
+					_r.assign(y[(size_t)i],(*Pol)[(size_t)i]);
 			}
 			else{
 				size_t deg_low, deg_high;
@@ -711,14 +711,14 @@ namespace LinBox
 
 				PolEval(y1, Pol, deg_low, x1);
 
-				ConstIterator Pol_high= Pol+deg_low;
+				ConstIterator Pol_high= Pol+(ptrdiff_t)deg_low;
 				PolEval(y2, Pol_high, deg_high, x2);
 
 
 				for (size_t i=0;i< y.size();++i){
-					_r.assign(y[i],y1[i]);
-					_r.axpyin(y[i],x1,y2[i]);
-					//_r.axpy(y[i],x1,y2[i],y1[i]);
+					_r.assign(y[(size_t)i],y1[(size_t)i]);
+					_r.axpyin(y[(size_t)i],x1,y2[(size_t)i]);
+					//_r.axpy(y[(size_t)i],x1,y2[(size_t)i],y1[(size_t)i]);
 				}
 
 				_r.mul(x,x1,x2);
@@ -788,7 +788,7 @@ namespace LinBox
 #endif
 			// Compute all the approximation using liftingcontainer
 			typename LiftingContainer::const_iterator iter = _lcontainer.begin();
-			for (size_t i=0 ; iter != _lcontainer.end() && iter.next(digit_approximation[i]);++i) {
+			for (size_t i=0 ; iter != _lcontainer.end() && iter.next(digit_approximation[(size_t)i]);++i) {
 
 #ifdef LIFTING_PROGRESS
 				lifting_commentator().progress(i);
@@ -796,7 +796,7 @@ namespace LinBox
 #if 0
 				eval_horn.start();
 				for (size_t j=0;j<size;++j)
-					_r.axpyin(real_approximation[j],modulus, digit_approximation[i][j]);
+					_r.axpyin(real_approximation[j],modulus, digit_approximation[(size_t)i][j]);
 				eval_horn.stop();
 				eval_horner+=eval_horn;
 #endif
@@ -845,7 +845,7 @@ namespace LinBox
 				for (int i= length -1; i>= skip+sqrt_length; --i)
 					for (size_t j=0;j<size;++j) {
 						_r.mulin(baby_approx[sqrt_length][j] , prime);
-						_r.addin(baby_approx[sqrt_length][j], digit_approximation[i][j]);
+						_r.addin(baby_approx[sqrt_length][j], digit_approximation[(size_t)i][j]);
 					}
 
 				LinBox::integer p_to_sqrt, p;
@@ -859,7 +859,7 @@ namespace LinBox
 				for (int i= sqrt_length; i>= 0; --i)
 					for (size_t j=0;j<size;j++) {
 						_r.mulin(real_approximation[j] , prime_to_sqrt );
-						_r.addin(real_approximation[j], baby_approx[i][j]);
+						_r.addin(real_approximation[j], baby_approx[(size_t)i][j]);
 					}
 			}
 			eval_bsgs.stop();
@@ -988,8 +988,8 @@ namespace LinBox
 
 			_r.init(tmp,1);
 			for (int i= idx_last_den ; i>=0;--i){
-				_r.mulin(num[i],tmp);
-				_r.mulin(tmp,denominator[i]);
+				_r.mulin(num[(size_t)i],tmp);
+				_r.mulin(tmp,denominator[(size_t)i]);
 			}
 
 
@@ -1327,7 +1327,7 @@ namespace LinBox
 				if (domoresteps){
 
 					// compute the padic digits
-					for (size_t i = startingsteps ;  (i< endingsteps) && (iter.next(digit_approximation[i]));++i) {
+					for (size_t i = startingsteps ;  (i< endingsteps) && (iter.next(digit_approximation[(size_t)i]));++i) {
 						_r.mulin(modulus,prime);
 					}
 
@@ -1343,7 +1343,7 @@ namespace LinBox
 
 					if (startingsteps != 0){
 						for (size_t i=0;i<size;++i){
-							_r.axpyin(last_real_approximation[i],real_approximation[i], last_modulus);
+							_r.axpyin(last_real_approximation[(size_t)i],real_approximation[(size_t)i], last_modulus);
 						}
 						real_approximation=last_real_approximation;
 					}
@@ -1371,16 +1371,16 @@ namespace LinBox
 				// NTL::clear(Lattice);
 				// Lattice[0][0]=1;
 				// for (size_t i= bad_num_index+1;i< bad_num_index+k+1;++i){
-					// Lattice[i][i]=m;//not working when bad index <> 0
-					// _r.convert(tmp_int, real_approximation[i-1]);
+					// Lattice[(size_t)i][(size_t)i]=m;//not working when bad index <> 0
+					// _r.convert(tmp_int, real_approximation[(size_t)i-1]);
 					// tmp=NTL::to_ZZ((std::string(tmp_int)).c_str());
-					// Lattice[0][i]=tmp;//not working when bad index <> 0
+					// Lattice[0][(size_t)i]=tmp;//not working when bad index <> 0
 				// }
 				BlasMatrix<Ring> Lattice(_r,k+1,k+1);
 				Lattice.setEntry(0,0,_r.one);
 				for (size_t i= bad_num_index+1;i< bad_num_index+k+1;++i){
 					Lattice.setEntry(i,i,mod);//not working when bad index <> 0
-					_r.convert(tmp_int, real_approximation[i-1]);
+					_r.convert(tmp_int, real_approximation[(size_t)i-1]);
 					Lattice.setEntry(0,i,tmp_int);//not working when bad index <> 0
 				}
 
@@ -1400,7 +1400,7 @@ namespace LinBox
 
 
 				// check if the 1st row is the short vector
-				// Lattice[i][j] should work. Using standard getEntry though
+				// Lattice[(size_t)i][j] should work. Using standard getEntry though
 				latticeOK=true;
 				tmp=abs(Lattice.getEntry(0,0))*ratio;
 				for (size_t i=1;i<k+1;++i){
@@ -1431,7 +1431,7 @@ namespace LinBox
 					// integer dd= integer(0);
 					// for(long i = b - 1; i >= 0; --i) {
 						// dd *= base;
-						// dd += integer(byteArray[i]);
+						// dd += integer(byteArray[(size_t)i]);
 					// }
 					// delete [] byteArray;
 					myInteger dd = Lattice.getEntry(0,0);
@@ -1451,15 +1451,15 @@ namespace LinBox
 					numeratorOK=true;
 					// compute the numerators and check their validity according to the numerator  bound
 					for (size_t i=0;i<size;++i){
-						_r.mulin(real_approximation[i], denom);
-						_r.remin(real_approximation[i], modulus);
-						_r. sub (neg_approx, real_approximation[i], modulus);
+						_r.mulin(real_approximation[(size_t)i], denom);
+						_r.remin(real_approximation[(size_t)i], modulus);
+						_r. sub (neg_approx, real_approximation[(size_t)i], modulus);
 						_r. abs (abs_approx, neg_approx);
 
-						if ( _r.compare(real_approximation[i], numbound) < 0)
-							_r.assign(num[i], real_approximation[i]);
+						if ( _r.compare(real_approximation[(size_t)i], numbound) < 0)
+							_r.assign(num[(size_t)i], real_approximation[(size_t)i]);
 						else if (_r.compare(abs_approx, numbound) <0)
-							_r.assign(num[i], neg_approx);
+							_r.assign(num[(size_t)i], neg_approx);
 						else {
 							bad_num_index= std::min(i, size-k);
 							numeratorOK=false;
@@ -1533,7 +1533,7 @@ namespace LinBox
 
 			if (neg_denom){
 				for (size_t i=0;i<size;++i)
-					_r.negin(num[i]);
+					_r.negin(num[(size_t)i]);
 			}
 #ifdef RSTIMING
 			tRecon.stop();
@@ -1672,7 +1672,7 @@ namespace LinBox
 					linbox_check(startingsteps != endingsteps);
 
 					// compute the padic digits
-					for (size_t i = startingsteps ;  (i< endingsteps) && (iter.next(digit_approximation[i]));++i) {
+					for (size_t i = startingsteps ;  (i< endingsteps) && (iter.next(digit_approximation[(size_t)i]));++i) {
 						_r.mulin(modulus,prime);
 					}
 
@@ -1688,7 +1688,7 @@ namespace LinBox
 
 					if (startingsteps != 0){
 						for (size_t i=0;i<size;++i){
-							_r.axpyin(last_real_approximation[i],real_approximation[i], last_modulus);
+							_r.axpyin(last_real_approximation[(size_t)i],real_approximation[(size_t)i], last_modulus);
 						}
 						real_approximation=last_real_approximation;
 					}
@@ -1711,9 +1711,9 @@ namespace LinBox
 				// ZZ_mat<mpz_t> Lattice(k+1,k+1) ;
 				// Lattice= new mpz_t*[k+2];
 				// for (size_t i=0;i<k+2;++i){
-					// Lattice[i]= new mpz_t[k+2];
+					// Lattice[(size_t)i]= new mpz_t[k+2];
 					// for (size_t j=0;j<k+2;++j)
-						// mpz_init(Lattice[i][j]);
+						// mpz_init(Lattice[(size_t)i][j]);
 				// }
 				BlasMatrix<Ring> Lattice(_r,k+1,k+1);
 
@@ -1724,11 +1724,11 @@ namespace LinBox
 
 				// Lattice.Set(0,0,Z_NR<mpz_t>(tmp.get_mpz()));
 				// for (size_t i=1;i< k+1;++i){
-					// mpz_set(Lattice[i][i],mod.get_mpz());
+					// mpz_set(Lattice[(size_t)i][(size_t)i],mod.get_mpz());
 					// Lattice.Set(i,i, Z_NR<mpz_t>(mod.get_mpz()) );
 					// _r.convert(tmp, real_approximation[bad_num_index+i-1]);
 					// Lattice.Set(0,i,Z_NR<mpz_t>(tmp.get_mpz()));
-					// mpz_set(Lattice[1][i],tmp.get_mpz());
+					// mpz_set(Lattice[1][(size_t)i],tmp.get_mpz());
 				// }
 				Lattice.setEntry(0,0,tmp);
 				for (size_t i=1;i< k+1;++i){
@@ -1773,8 +1773,8 @@ namespace LinBox
 				//delete the lattice
 				// for (size_t i=0;i<k+2;++i){
 					// for (size_t j=0;j<k+2;++j)
-						// mpz_clear(Lattice[i][j]);
-					// delete[] Lattice[i];
+						// mpz_clear(Lattice[(size_t)i][j]);
+					// delete[] Lattice[(size_t)i];
 				// }
 				// delete[] Lattice;
 
@@ -1801,15 +1801,15 @@ namespace LinBox
 					numeratorOK=true;
 					// compute the numerators and check their validity according to the numerator  bound
 					for (size_t i=0;i<size;++i){
-						_r.mulin(real_approximation[i], common_denom);
-						_r.remin(real_approximation[i], modulus);
-						_r. sub (neg_approx, real_approximation[i], modulus);
+						_r.mulin(real_approximation[(size_t)i], common_denom);
+						_r.remin(real_approximation[(size_t)i], modulus);
+						_r. sub (neg_approx, real_approximation[(size_t)i], modulus);
 						_r. abs (abs_approx, neg_approx);
 
-						if ( _r.compare(real_approximation[i], numbound) < 0)
-							_r.assign(num[i], real_approximation[i]);
+						if ( _r.compare(real_approximation[(size_t)i], numbound) < 0)
+							_r.assign(num[(size_t)i], real_approximation[(size_t)i]);
 						else if (_r.compare(abs_approx, numbound) <0)
-							_r.assign(num[i], neg_approx);
+							_r.assign(num[(size_t)i], neg_approx);
 						else {
 							bad_num_index= std::min(i, size-k);
 							numeratorOK=false;
@@ -1883,7 +1883,7 @@ namespace LinBox
 
 			if (neg_denom){
 				for (size_t i=0;i<size;++i)
-					_r.negin(num[i]);
+					_r.negin(num[(size_t)i]);
 			}
 #ifdef RSTIMING
 			tRecon.stop();
@@ -2014,7 +2014,7 @@ namespace LinBox
 					linbox_check(startingsteps != endingsteps);
 
 					// compute the padic digits
-					for (size_t i = startingsteps ;  (i< endingsteps) && (iter.next(digit_approximation[i]));++i) {
+					for (size_t i = startingsteps ;  (i< endingsteps) && (iter.next(digit_approximation[(size_t)i]));++i) {
 						_r.mulin(modulus,prime);
 					}
 
@@ -2030,7 +2030,7 @@ namespace LinBox
 
 					if (startingsteps != 0){
 						for (size_t i=0;i<size;++i){
-							_r.axpyin(last_real_approximation[i],real_approximation[i], last_modulus);
+							_r.axpyin(last_real_approximation[(size_t)i],real_approximation[(size_t)i], last_modulus);
 						}
 						real_approximation=last_real_approximation;
 					}
@@ -2056,9 +2056,9 @@ namespace LinBox
 
 				Lattice[0]=tmp;
 				for (size_t i=1;i< k+1;++i){
-					Lattice[i*(k+1)+i]=mod;
+					Lattice[(size_t)i*(k+1)+i]=mod;
 					_r.convert(tmp, real_approximation[bad_num_index+i-1]);
-					Lattice[i]=tmp;
+					Lattice[(size_t)i]=tmp;
 				}
 
 				// ratio to check the validity of the denominator compare to the entries in the reduced lattice
@@ -2079,7 +2079,7 @@ namespace LinBox
 				tmp = Givaro::abs(L3[0][0]*ratio);
 				for (size_t i=1;i<k+1;++i){
 					for (size_t j=0;j<k+1;++j)
-						if (tmp > Givaro::abs(L3[i][j])){
+						if (tmp > Givaro::abs(L3[(size_t)i][j])){
 							latticeOK=false;
 							break;
 						}
@@ -2112,15 +2112,15 @@ namespace LinBox
 					numeratorOK=true;
 					// compute the numerators and check their validity according to the numerator  bound
 					for (size_t i=0;i<size;++i){
-						_r.mulin(real_approximation[i], common_denom);
-						_r.remin(real_approximation[i], modulus);
-						_r. sub (neg_approx, real_approximation[i], modulus);
+						_r.mulin(real_approximation[(size_t)i], common_denom);
+						_r.remin(real_approximation[(size_t)i], modulus);
+						_r. sub (neg_approx, real_approximation[(size_t)i], modulus);
 						_r. abs (abs_approx, neg_approx);
 
-						if ( _r.compare(real_approximation[i], numbound) < 0)
-							_r.assign(num[i], real_approximation[i]);
+						if ( _r.compare(real_approximation[(size_t)i], numbound) < 0)
+							_r.assign(num[(size_t)i], real_approximation[(size_t)i]);
 						else if (_r.compare(abs_approx, numbound) <0)
-							_r.assign(num[i], neg_approx);
+							_r.assign(num[(size_t)i], neg_approx);
 						else {
 							bad_num_index= std::min(i, size-k);
 							numeratorOK=false;
@@ -2194,7 +2194,7 @@ namespace LinBox
 
 			if (neg_denom){
 				for (size_t i=0;i<size;++i)
-					_r.negin(num[i]);
+					_r.negin(num[(size_t)i]);
 			}
 #ifdef RSTIMING
 			tRecon.stop();

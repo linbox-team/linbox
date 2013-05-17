@@ -6,20 +6,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -83,11 +83,11 @@ namespace LinBox
 		{
 			this->casenumber = 1;
 			this->u.resize (this->_BB->coldim ());
-			for (long i = this->u.size (); i--;)
-				g.random (this->u[i]);
+			for (long i = (long)this->u.size (); i--;)
+				g.random (this->u[(size_t)i]);
 			this->w.resize (this->_BB->coldim ());
-			for (long i = this->w.size (); i--;)
-				g.random (this->w[i]);
+			for (long i = (long)this->w.size (); i--;)
+				g.random (this->w[(size_t)i]);
 			this->v.resize (this->_BB->rowdim ());
 			this->_VD.dot (this->_value, this->u, this->w);
 #ifdef INCLUDE_TIMING

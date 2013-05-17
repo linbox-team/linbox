@@ -136,7 +136,7 @@ namespace LinBox
 				Domain D(*genprime);
 				DomainElement r; D.init(r);
 				Builder_.progress( D, Iteration(r, D) );
-				if (RR_.scheduled(IterCounter-1)) {
+				if (RR_.scheduled((size_t)IterCounter-1)) {
 					Integer Mint ; Builder_.getModulus(Mint);
 					Integer rint ; Builder_.getResidue(rint);
 					if (RR_.reconstructRational(num,den,rint,Mint)) {

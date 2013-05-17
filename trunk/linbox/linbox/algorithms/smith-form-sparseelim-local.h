@@ -53,7 +53,7 @@ namespace LinBox
     template <> struct Boolean_Trait<false> {
         typedef float BooleanType;// float does not matter, only that it differs from int
     };
-    
+
     enum {
         PRIVILEGIATE_NO_COLUMN_PIVOTING	= 1,
         PRIVILEGIATE_REDUCING_FILLIN	= 2,
@@ -96,30 +96,30 @@ namespace LinBox
 		Modulo& MY_Zpz_inv (Modulo& u1, const Modulo2 a, const Modulo3 _p) const
 		{
                     u1 = Modulo(1UL);
-                    Modulo r0(_p), r1(a);
+                    Modulo r0(_p), r1(a); //! clang complains for examples/smith.C and examples/smithvalence.C
                     Modulo q(r0/r1);
-                    
+
                     r0 -= q * r1;
                     if ( isZero(r0) ) return u1;
                     Modulo u0 = q;
-                    
+
                     q = r1/r0;
                     r1 -= q * r0;
-                    
+
                     while ( isNZero(r1) ) {
                         u1 += q * u0;
-                        
+
                         q = r0/r1;
                         r0 -= q * r1;
                         if ( isZero(r0) ) return u1;
                         u0 += q * u1;
-                        
+
                         q = r1/r0;
                         r1 -= q * r0;
-                        
+
                     }
-                    
-                    return u1=_p-u0;
+
+                    return u1=(Modulo)_p-u0;
                 }
 		template<class Modulo, class Modulo2>
 		Modulo MY_Zpz_inv (const Modulo a, const Modulo2 _p) const
@@ -143,9 +143,9 @@ namespace LinBox
         template<class Modulo, class Vecteur>
         void SameColumnPivoting(Modulo PRIME,  const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, Boolean_Trait<true>::BooleanType ) {
                 // Try first in the same column
-			unsigned long nj =  lignepivot.size() ;
+			unsigned long nj = (unsigned long)  lignepivot.size() ;
 			if (nj && (indcol == lignepivot[0].first) && (! this->MY_divides(PRIME,lignepivot[0].second) ) ) {
-                indpermut = indcol;
+                indpermut = (long) indcol;
                 ++indcol;
             }
         }
@@ -160,8 +160,8 @@ namespace LinBox
         bool SameColumnPivotingTrait(Modulo PRIME, unsigned long& p, const BB& LigneA, const Mmap& psizes, unsigned long& indcol, long& c, Boolean_Trait<true>::BooleanType truetrait) {
             c=-2;
             for( typename Mmap::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
-                p = (*iter).second;
-                SameColumnPivoting(PRIME, LigneA[p], indcol, c, truetrait ) ;
+                p = (unsigned long)(*iter).second;
+                SameColumnPivoting(PRIME, LigneA[(size_t)p], indcol, c, truetrait ) ;
                 if (c > -2 ) break;
             }
             if (c > -2)
@@ -174,10 +174,10 @@ namespace LinBox
 		template<class Vecteur>
 		void CherchePivot( Vecteur& lignepivot, unsigned long& indcol , long& indpermut )
 		{
-			unsigned long nj =  lignepivot.size() ;
+			unsigned long nj =  (unsigned long)lignepivot.size() ;
 			if (nj) {
-				indpermut= lignepivot[0].first;
-				if (indpermut != indcol)
+				indpermut= (long)lignepivot[0].first;
+				if (indpermut != (long)indcol)
 					lignepivot[0].first = (indcol);
 				++indcol;
 			}
@@ -192,33 +192,33 @@ namespace LinBox
 		{
 			typedef typename Vecteur::value_type E;
 			typedef typename Field::Element F;
-			long nj =  lignepivot.size() ;
+			long nj =(long)  lignepivot.size() ;
 			if (nj) {
-				indpermut = lignepivot[0].first;
+				indpermut = (long)lignepivot[0].first;
 				long pp=0;
 				for(;pp<nj;++pp)
-					if (! this->MY_divides(PRIME,lignepivot[pp].second) ) break;
+					if (! this->MY_divides(PRIME,lignepivot[(size_t)pp].second) ) break;
 
 				if (pp < nj) {
 
-					long ds = columns[ lignepivot[pp].first ],dl,p=pp,j=pp;
+					long ds = (long)columns[ lignepivot[(size_t)pp].first ],dl,p=pp,j=pp;
 					for(++j;j<nj;++j)
-						if ( ( (dl=columns[lignepivot[j].first] ) < ds ) && (! MY_divides(PRIME,lignepivot[j].second) ) ) {
+						if ( ( (dl=(long)columns[(size_t)lignepivot[(size_t)j].first] ) < ds ) && (! MY_divides(PRIME,lignepivot[(size_t)j].second) ) ) {
 							ds = dl;
 							p = j;
 						}
 					if (p != 0) {
 						if (indpermut == (long)indcol) {
-							F ttm = lignepivot[p].second;
-							indpermut = lignepivot[p].first;
-							lignepivot[p].second = (lignepivot[0].second);
+							F ttm = (F)lignepivot[(size_t)p].second;
+							indpermut = (long)lignepivot[(size_t)p].first;
+							lignepivot[(size_t)p].second = (lignepivot[0].second);
 							lignepivot[0].second = (ttm);
 						}
 						else {
-							E ttm = lignepivot[p];
-							indpermut = ttm.first;
+							E ttm = (E) lignepivot[(size_t)p];
+							indpermut = (long)ttm.first;
 							for(long m=p;m;--m)
-								lignepivot[m] = lignepivot[m-1];
+								lignepivot[(size_t)m] = lignepivot[(size_t)m-1];
 							lignepivot[0] = ttm;
 						}
 					}
@@ -226,7 +226,7 @@ namespace LinBox
 						lignepivot[0].first = (indcol);
 					indcol++ ;
 					for(j=nj;j--;)
-						--columns[ lignepivot[j].first ];
+						--columns[ lignepivot[(size_t)j].first ];
 				}
 				else
 					indpermut = -2;
@@ -261,38 +261,38 @@ namespace LinBox
 
 			typedef typename Signed_Trait<Modulo>::unsigned_type UModulo;
 
-			unsigned long k = indcol - 1;
-			unsigned long nj =  lignecourante.size() ;
+			unsigned long k = (unsigned long)indcol - 1;
+			unsigned long nj = (unsigned long)  lignecourante.size() ;
 			if (nj) {
 				unsigned long j_head(0);
 				for(; j_head<nj; ++j_head)
-					if (long(lignecourante[j_head].first) >= indpermut) break;
+					if (long(lignecourante[(size_t)j_head].first) >= indpermut) break;
 				unsigned long bjh(j_head-1);
-				if ((j_head<nj) && (long(lignecourante[j_head].first) == indpermut)) {
+				if ((j_head<nj) && (long(lignecourante[(size_t)j_head].first) == indpermut)) {
 					// -------------------------------------------
 					// Permutation
 					if (indpermut != (long)k) {
 						if (lignecourante[0].first == k) {
 							// non zero  <--> non zero
-							F tmp = lignecourante[0].second ;
-							lignecourante[0].second = (lignecourante[j_head].second );
-							lignecourante[j_head].second = (tmp);
+							F tmp = (F) lignecourante[0].second ;
+							lignecourante[0].second = (lignecourante[(size_t)j_head].second );
+							lignecourante[(size_t)j_head].second = (tmp);
 						}
 						else {
 							// zero <--> non zero
-							E tmp = lignecourante[j_head];
+							E tmp = (E) lignecourante[(size_t)j_head];
 							--columns[ tmp.first ];
-							++columns[k];
+							++columns[(size_t)k];
 							tmp.first = (k);
-							for(long l=j_head; l>0; l--)
-								lignecourante[l] = lignecourante[l-1];
+							for(long l=(long)j_head; l>0; l--)
+								lignecourante[(size_t)l] = lignecourante[(size_t)l-1];
 							lignecourante[0] = tmp;
 						}
 						j_head = 0;
 					}
 					// -------------------------------------------
 					// Elimination
-					unsigned long npiv = lignepivot.size();
+					unsigned long npiv = (unsigned long) lignepivot.size();
 					Vecteur construit(nj + npiv);
 					// construit : <-- ci
 					// courante  : <-- m
@@ -301,7 +301,7 @@ namespace LinBox
 					Viter ci = construit.begin();
 					unsigned long m=1;
 					unsigned long l(0);
-					// A[i,k] <-- A[i,k] / A[k,k]
+					// A[(size_t)i,k] <-- A[(size_t)i,k] / A[(size_t)k,k]
 					// lignecourante[0].second = (  ((UModulo)( ( MOD-(lignecourante[0].second) ) * ( MY_Zpz_inv( lignepivot[0].second, MOD) ) ) ) % (UModulo)MOD ) ;
 					// F headcoeff = lignecourante[0].second;
 					F headcoeff = MOD-(lignecourante[0].second);
@@ -313,37 +313,37 @@ namespace LinBox
 
 					unsigned long j_piv;
 					for(;l<npiv;++l)
-						if (lignepivot[l].first > k) break;
-					// for all j such that (j>k) and A[k,j]!=0
+						if (lignepivot[(size_t)l].first > k) break;
+					// for all j such that (j>k) and A[(size_t)k,j]!=0
 					for(;l<npiv;++l) {
-						j_piv = lignepivot[l].first;
-						// if A[k,j]=0, then A[i,j] <-- A[i,j]
-						for (;(m<nj) && (lignecourante[m].first < j_piv);)
-							*ci++ = lignecourante[m++];
-						// if A[i,j]!=0, then A[i,j] <-- A[i,j] - A[i,k]*A[k,j]
-						if ((m<nj) && (lignecourante[m].first == j_piv)) {
-							//lignecourante[m].second = ( ((UModulo)( headcoeff  *  lignepivot[l].second  + lignecourante[m].second ) ) % (UModulo)MOD );
-							lignecourante[m].second += ( headcoeff  *  lignepivot[l].second );
-						        lignecourante[m].second %= (UModulo)MOD;
-							if (isNZero(lignecourante[m].second))
-								*ci++ = lignecourante[m++];
+						j_piv = (unsigned long) lignepivot[(size_t)l].first;
+						// if A[(size_t)k,j]=0, then A[(size_t)i,j] <-- A[(size_t)i,j]
+						for (;(m<nj) && (lignecourante[(size_t)m].first < j_piv);)
+							*ci++ = lignecourante[(size_t)m++];
+						// if A[(size_t)i,j]!=0, then A[(size_t)i,j] <-- A[(size_t)i,j] - A[(size_t)i,k]*A[(size_t)k,j]
+						if ((m<nj) && (lignecourante[(size_t)m].first == j_piv)) {
+							//lignecourante[(size_t)m].second = ( ((UModulo)( headcoeff  *  lignepivot[(size_t)l].second  + lignecourante[(size_t)m].second ) ) % (UModulo)MOD );
+							lignecourante[(size_t)m].second += ( headcoeff  *  lignepivot[(size_t)l].second );
+						        lignecourante[(size_t)m].second %= (UModulo)MOD;
+							if (isNZero(lignecourante[(size_t)m].second))
+								*ci++ = lignecourante[(size_t)m++];
 							else
-								--columns[ lignecourante[m++].first ];
+								--columns[ lignecourante[(size_t)m++].first ];
 							//                         m++;
 						}
 						else {
 							F tmp(headcoeff);
-							tmp *= lignepivot[l].second;
+							tmp *= lignepivot[(size_t)l].second;
 							tmp %= (UModulo)MOD;
 							if (isNZero(tmp)) {
-								++columns[j_piv];
+								++columns[(size_t)j_piv];
 								*ci++ =  E(j_piv, tmp );
 							}
 						}
 					}
-					// if A[k,j]=0, then A[i,j] <-- A[i,j]
+					// if A[(size_t)k,j]=0, then A[(size_t)i,j] <-- A[(size_t)i,j]
 					for (;m<nj;)
-						*ci++ = lignecourante[m++];
+						*ci++ = lignecourante[(size_t)m++];
 
 					construit.erase(ci,construit.end());
 					lignecourante = construit;
@@ -354,15 +354,15 @@ namespace LinBox
 					if (indpermut != (long)k) {
 						unsigned long l(0);
 						for(; l<nj; ++l)
-							if (lignecourante[l].first >= k) break;
-						if ((l<nj) && (lignecourante[l].first == k))  {
+							if (lignecourante[(size_t)l].first >= k) break;
+						if ((l<nj) && (lignecourante[(size_t)l].first == k))  {
 							// non zero <--> zero
-							E tmp = lignecourante[l];
+							E tmp = (E) lignecourante[(size_t)l];
 							--columns[tmp.first ];
-							++columns[indpermut];
-							tmp.first = (indpermut);
+							++columns[(size_t)indpermut];
+							tmp.first = (unsigned long) (indpermut);
 							for(;l<bjh;l++)
-								lignecourante[l] = lignecourante[l+1];
+								lignecourante[(size_t)l] = lignecourante[(size_t)l+1];
 							lignecourante[bjh] = tmp;
 						} // else
 						// zero <--> zero
@@ -394,23 +394,23 @@ namespace LinBox
 			// assignment of LigneA with the domain object
 			size_t jj;
 			for(jj=0; jj<Ni; ++jj) {
-				Vecteur tmp = LigneA[jj];
+				Vecteur tmp = LigneA[(size_t)jj];
 				Vecteur toto(tmp.size());
 				unsigned long k=0,rs=0;
 				for(; k<tmp.size(); ++k) {
-					Modulo r = tmp[k].second;
+					Modulo r = tmp[(size_t)k].second;
 					if ((r <0) || (r >= MOD)) r %= MOD ;
 					if (r <0) r += MOD ;
 					if (isNZero(r)) {
-						++col_density[ tmp[k].first ];
-						toto[rs] =tmp[k];
+						++col_density[ tmp[(size_t)k].first ];
+						toto[rs] =tmp[(size_t)k];
 						toto[rs].second = ( r );
 						++rs;
 					}
 				}
 				toto.resize(rs);
-				LigneA[jj] = toto;
-				//                 LigneA[jj].reactualsize(Nj);
+				LigneA[(size_t)jj] = toto;
+				//                 LigneA[(size_t)jj].reactualsize(Nj);
 
 			}
 
@@ -423,7 +423,7 @@ namespace LinBox
 
 
 			for (unsigned long k=0; k<last;++k) {
-				if ( ! (k % maxout) ) commentator().progress (k);
+				if ( ! (k % maxout) ) commentator().progress ((long)k);
 
 
 				unsigned long p=k;
@@ -432,7 +432,7 @@ namespace LinBox
 
 					std::multimap< long, long > psizes;
 					for(p=k; p<Ni; ++p)
-						psizes.insert( psizes.end(), std::pair<long,long>( LigneA[p].size(), p) );
+						psizes.insert( psizes.end(), std::pair<long,long>( (long) LigneA[(size_t)p].size(), (long) p) );
 
 #ifdef  LINBOX_pp_gauss_steps_OUT
 					std::cerr << "------------ ordered rows " << k << " -----------" << std::endl;
@@ -449,16 +449,16 @@ namespace LinBox
                         break;
 
 					for( typename std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
-						p = (*iter).second;
+						p = (unsigned long)(*iter).second;
 
-						CherchePivot( PRIME, LigneA[p], indcol, c , col_density) ;
+						CherchePivot( PRIME, LigneA[(size_t)p], indcol, c , col_density) ;
 						if (c > -2 ) break;
 					}
 
 					if (c > -2) break;
 					for(unsigned long ii=k;ii<Ni;++ii)
-						for(unsigned long jjj=LigneA[ii].size();jjj--;)
-							LigneA[ii][jjj].second /= PRIME;
+						for(unsigned long jjj=LigneA[(size_t)ii].size();jjj--;)
+							LigneA[(size_t)ii][(size_t)jjj].second /= PRIME;
 					MOD /= PRIME;
 					ranks.push_back( indcol );
 					++ind_pow;
@@ -472,9 +472,9 @@ namespace LinBox
 #ifdef  LINBOX_pp_gauss_steps_OUT
 					std::cerr << "------------ permuting rows " << p << " and " << k << " ---" << std::endl;
 #endif
-					Vecteur vtm = LigneA[k];
-					LigneA[k] = LigneA[p];
-					LigneA[p] = vtm;
+					Vecteur vtm = LigneA[(size_t)k];
+					LigneA[(size_t)k] = LigneA[(size_t)p];
+					LigneA[(size_t)p] = vtm;
 				}
 #ifdef  LINBOX_pp_gauss_steps_OUT
                 if (c != (long(indcol)-1L))
@@ -482,25 +482,25 @@ namespace LinBox
 #endif
 				if (c != -1)
 					for(unsigned long l=k + 1; l < Ni; ++l)
-						FaireElimination(MOD, LigneA[l], LigneA[k], indcol, c, col_density);
+						FaireElimination(MOD, LigneA[(size_t)l], LigneA[(size_t)k], (long)indcol, c, col_density);
 
 
 #ifdef  LINBOX_pp_gauss_steps_OUT
 				LigneA.write(std::cerr << "step[" << k << "], pivot: " << c << std::endl) << std::endl;
 #endif
 
-                PreserveUpperMatrixRow(LigneA[k], typename Boolean_Trait<PreserveUpperMatrix>::BooleanType());
+                PreserveUpperMatrixRow(LigneA[(size_t)k], typename Boolean_Trait<PreserveUpperMatrix>::BooleanType());
 			}
 
             c = -2;
-            SameColumnPivoting(PRIME, LigneA[last], indcol, c, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() );
-            if (c == -2) CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
+            SameColumnPivoting(PRIME, LigneA[(size_t)last], indcol, c, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() );
+            if (c == -2) CherchePivot( PRIME, LigneA[(size_t)last], indcol, c, col_density );
 			while( c == -2) {
 				ranks.push_back( indcol );
-				for(long jjj=LigneA[last].size();jjj--;)
-					LigneA[last][jjj].second /= PRIME;
+				for(long jjj=(long)LigneA[(size_t)last].size();jjj--;)
+					LigneA[(size_t)last][(size_t)jjj].second /= PRIME;
 				MOD /= PRIME;
-				CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
+				CherchePivot( PRIME, LigneA[(size_t)last], indcol, c, col_density );
 			}
 			while( MOD > 1) {
 				MOD /= PRIME;
@@ -549,7 +549,7 @@ namespace LinBox
 				diff = *it-num;
 				if (diff > 0)
 					L.push_back( std::pair<size_t,size_t>(*it-num,MOD) );
-				MOD *= PRIME;
+				MOD *= (size_t)PRIME;
 				num = *it;
 			}
 			return L;

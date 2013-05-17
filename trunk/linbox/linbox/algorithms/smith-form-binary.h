@@ -172,11 +172,11 @@ namespace LinBox
 			}
 
 
-			oif.oneInvariantFactor(sf[Ar - 1], A, (int)Ar, PrimeL);
+			oif.oneInvariantFactor(sf[(size_t)Ar - 1], A, (int)Ar, PrimeL);
 
 			report << "Biggest invariant factor = ";
 
-			r. write (report, sf[Ar - 1]);
+			r. write (report, sf[(size_t)Ar - 1]);
 
 			report << '\n' << std::flush;
 
@@ -263,7 +263,7 @@ namespace LinBox
 
 
 		/** \brief Binary search invariant factors between i and j, missing those factors in PrimeL
-		 *  suppose sf[i - 1], sf [j - 1] are ith and jth invariant factor of A
+		 *  suppose sf[(size_t)i - 1], sf [j - 1] are ith and jth invariant factor of A
 		 *  i <= j
 		 */
 
@@ -282,9 +282,9 @@ namespace LinBox
 			if (j <= i + 1) return sf;
 
 			// if i-th invariant factor == j-th invariant factor
-			if (r.areEqual(sf[i - 1], sf[j - 1])) {
+			if (r.areEqual(sf[(size_t)i - 1], sf[(size_t)j - 1])) {
 				for (p = sf.begin() + i; p != sf.begin() + (j -1); ++ p)
-					r.assign (*p, sf[i-1]);
+					r.assign (*p, sf[(size_t)i-1]);
 				return sf;
 			}
 
@@ -293,11 +293,11 @@ namespace LinBox
 			report << "Start to compute " << mid << "-th invariant factor:\n" << std::flush;
 
 
-			oif.oneInvariantFactor (sf[mid - 1], A, mid, PrimeL);
+			oif.oneInvariantFactor (sf[(size_t)mid - 1], A, mid, PrimeL);
 
 
 			report << mid <<"-th invairant factor of A = " ;
-			r.write (report, sf[mid -1]);
+			r.write (report, sf[(size_t)mid -1]);
 			report << "\n" << std::flush;
 
 
@@ -387,11 +387,11 @@ namespace LinBox
 			}
 
 
-			oif.oneInvariantFactor(sf[Ar - 1], A, Ar, PrimeL);
+			oif.oneInvariantFactor(sf[(size_t)Ar - 1], A, Ar, PrimeL);
 
 			report << "Biggest invariant factor = ";
 
-			r. write (report, sf[Ar - 1]);
+			r. write (report, sf[(size_t)Ar - 1]);
 
 			report << '\n' << std::flush;
 
@@ -431,7 +431,7 @@ namespace LinBox
 	protected:
 
 		/** \brief Binary search invariant factors between i and j, missing those factors in PrimeL
-		 *  suppose sf[i - 1], sf [j - 1] are ith and jth invariant factor of A
+		 *  suppose sf[(size_t)i - 1], sf [j - 1] are ith and jth invariant factor of A
 		 *  i <= j
 		 */
 
@@ -450,9 +450,9 @@ namespace LinBox
 			if (j <= i + 1) return sf;
 
 			// if i-th invariant factor == j-th invariant factor
-			if (r.areEqual(sf[i - 1], sf[j - 1])) {
+			if (r.areEqual(sf[(size_t)i - 1], sf[(size_t)j - 1])) {
 				for (p = sf.begin() + i; p != sf.begin() + (j -1); ++ p)
-					r.assign (*p, sf[i-1]);
+					r.assign (*p, sf[(size_t)i-1]);
 				return sf;
 			}
 
@@ -461,17 +461,17 @@ namespace LinBox
 			report << "Start to compute " << mid << "-th invariant factor:\n" << std::flush;
 
 
-			oif.oneInvariantFactor (sf[mid - 1], A, mid, PrimeL);
+			oif.oneInvariantFactor (sf[(size_t)mid - 1], A, mid, PrimeL);
 
 
 			report << mid <<"-th invairant factor of A = " ;
-			r.write (report, sf[mid -1]);
+			r.write (report, sf[(size_t)mid -1]);
 			report << "\n" << std::flush;
 
 
 			// recursively binary search all k-invariant factors, where i <= k <= mid
 
-			if (r. areEqual (sf[mid-1], sf[j-1]))
+			if (r. areEqual (sf[(size_t)mid-1], sf[(size_t)j-1]))
 				smithFormBinarySearchBackward (sf, A, i, mid, 2 * depth, PrimeL);
 			else
 				smithFormBinarySearchBackward (sf, A, i, mid, depth, PrimeL);
