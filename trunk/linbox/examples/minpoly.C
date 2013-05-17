@@ -28,11 +28,12 @@
   \ingroup examples
   */
 #include <iostream>
+//! @bug this should be elsewhere
 template <class Field, class Polynomial>
 void printPolynomial (const Field &F, const Polynomial &v)
 {
 	for (int i = (int)v.size () ; i-- ; ) {
-		F.write (std::cout, v[i]);
+		F.write (std::cout, v[(size_t)i]);
 		if (i > 0)
 			std::cout << " x^" << i << " + ";
 	}
