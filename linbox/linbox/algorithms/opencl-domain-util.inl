@@ -78,14 +78,14 @@ namespace LinBox{
 		int newCDimY = (int) ((C.rowdim() + 15) / 16) * 16;
 
 		//Determine if each individual matrix will fit in a buffer
-		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(cl_double)));
-		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(cl_double));
-		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(cl_double));
-		temp &= (maxBufferSize >= (newCDimX * newCDimY) * sizeof(cl_double));
+		bool temp = (maxBufferSize >= ((size_t)(newDDimX * newDDimY) * sizeof(cl_double)));
+		temp &= (maxBufferSize >= (size_t)(newADimX * newADimY) * sizeof(cl_double));
+		temp &= (maxBufferSize >= (size_t)(newBDimX * newBDimY) * sizeof(cl_double));
+		temp &= (maxBufferSize >= (size_t)(newCDimX * newCDimY) * sizeof(cl_double));
 
 		//Determine if all three buffers will fit at the same time
-		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
-			      (newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_double));
+		temp &= (memCapacity >= ((size_t)(newDDimX * newDDimY) + (size_t)(newADimX * newADimY) +
+			      (size_t)(newBDimX * newBDimY) + (size_t)(newCDimX * newCDimY)) * sizeof(cl_double));
 
 		return temp;
 	}
@@ -110,14 +110,14 @@ namespace LinBox{
 		int newCDimY = (int) ((C.rowdim() + 15) / 16) * 16;
 
 		//Determine if each individual matrix will fit in a buffer
-		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(cl_float)));
-		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(cl_float));
-		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(cl_float));
-		temp &= (maxBufferSize >= (newCDimX * newCDimY) * sizeof(cl_float));
+		bool temp = (maxBufferSize >= ((size_t)(newDDimX * newDDimY) * sizeof(cl_float)));
+		temp &= (maxBufferSize >= (size_t)(newADimX * newADimY) * sizeof(cl_float));
+		temp &= (maxBufferSize >= (size_t)(newBDimX * newBDimY) * sizeof(cl_float));
+		temp &= (maxBufferSize >= (size_t)(newCDimX * newCDimY) * sizeof(cl_float));
 
 		//Determine if all three buffers will fit at the same time
-		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
-			      (newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_float));
+		temp &= (memCapacity >= ((size_t)(newDDimX * newDDimY) + (size_t)(newADimX * newADimY) +
+			      (size_t)(newBDimX * newBDimY) + (size_t)(newCDimX * newCDimY)) * sizeof(cl_float));
 
 		return temp;
 	}
@@ -142,14 +142,14 @@ namespace LinBox{
 		int newCDimY = ((C.first + 15) / 16) * 16;
 
 		//Determine if each individual matrix will fit in a buffer
-		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(cl_double)));
-		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(cl_double));
-		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(cl_double));
-		temp &= (maxBufferSize >= (newCDimX * newCDimY) * sizeof(cl_double));
+		bool temp = (maxBufferSize >= (size_t)(newDDimX * newDDimY) * sizeof(cl_double));
+		temp &= (maxBufferSize >= (size_t)(newADimX * newADimY) * sizeof(cl_double));
+		temp &= (maxBufferSize >= (size_t)(newBDimX * newBDimY) * sizeof(cl_double));
+		temp &= (maxBufferSize >= (size_t)(newCDimX * newCDimY) * sizeof(cl_double));
 
 		//Determine if all three buffers will fit at the same time
-		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
-			      (newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_double));
+		temp &= (memCapacity >= ((size_t)(newDDimX * newDDimY) + (size_t)(newADimX * newADimY) +
+			      (size_t)(newBDimX * newBDimY) + (size_t)(newCDimX * newCDimY)) * sizeof(cl_double));
 
 		return temp;
 	}
@@ -174,14 +174,14 @@ namespace LinBox{
 		int newCDimY = ((C.first + 15) / 16) * 16;
 
 		//Determine if each individual matrix will fit in a buffer
-		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(cl_float)));
-		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(cl_float));
-		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(cl_float));
-		temp &= (maxBufferSize >= (newCDimX * newCDimY) * sizeof(cl_float));
+		bool temp = (maxBufferSize >= (size_t)(newDDimX * newDDimY) * sizeof(cl_float));
+		temp &= (maxBufferSize >= (size_t)(newADimX * newADimY) * sizeof(cl_float));
+		temp &= (maxBufferSize >= (size_t)(newBDimX * newBDimY) * sizeof(cl_float));
+		temp &= (maxBufferSize >= (size_t) (newCDimX * newCDimY) * sizeof(cl_float));
 
 		//Determine if all three buffers will fit at the same time
-		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
-			      (newBDimX * newBDimY) + (newCDimX * newCDimY)) * sizeof(cl_float));
+		temp &= (memCapacity >= ((size_t)(newDDimX * newDDimY) + (size_t)(newADimX * newADimY) +
+			      (size_t)(newBDimX * newBDimY) + (size_t)(newCDimX * newCDimY)) * sizeof(cl_float));
 
 		return temp;
 	}
@@ -236,8 +236,8 @@ namespace LinBox{
 		size_t globalWorkSize[2];
 		localWorkSize[0] = 16;
 		localWorkSize[1] = 16;
-		globalWorkSize[0] = widthB;
-		globalWorkSize[1] = heightA;
+		globalWorkSize[0] = (size_t)widthB;
+		globalWorkSize[1] = (size_t)heightA;
 
 		//Launch kernel
 		tempErrcode = clEnqueueNDRangeKernel(
@@ -304,8 +304,8 @@ namespace LinBox{
 		size_t globalWorkSize[2];
 		localWorkSize[0] = 16;
 		localWorkSize[1] = 16;
-		globalWorkSize[0] = widthB;
-		globalWorkSize[1] = heightA;
+		globalWorkSize[0] = (size_t)widthB;
+		globalWorkSize[1] = (size_t)heightA;
 
 		//Launch kernel
 		tempErrcode = clEnqueueNDRangeKernel(
@@ -384,8 +384,8 @@ namespace LinBox{
 		size_t globalWorkSize[2];
 		localWorkSize[0] = 16;
 		localWorkSize[1] = 16;
-		globalWorkSize[0] = widthB;
-		globalWorkSize[1] = heightA;
+		globalWorkSize[0] = (size_t)widthB;
+		globalWorkSize[1] = (size_t)heightA;
 
 		//Launch kernel
 		tempErrcode = clEnqueueNDRangeKernel(
@@ -538,28 +538,28 @@ namespace LinBox{
 
 							SubmatrixAdapter<Operand1> SD(
 								D,
-								DRowsOffset,
-								DColsOffset,
-								subRows,
-								subCols);
+								(size_t)DRowsOffset,
+								(size_t)DColsOffset,
+								(size_t)subRows,
+								(size_t)subCols);
 							SubmatrixAdapter<Operand2> SA(
 								A,
-								ARowsOffset,
-								AColsOffset,
-								subRows,
-								subSharedDim);
+								(size_t)ARowsOffset,
+								(size_t)AColsOffset,
+								(size_t)subRows,
+								(size_t)subSharedDim);
 							SubmatrixAdapter<Operand3> SB(
 								B,
-								BRowsOffset,
-								BColsOffset,
-								subSharedDim,
-								subCols);
+								(size_t)BRowsOffset,
+								(size_t)BColsOffset,
+								(size_t)subSharedDim,
+								(size_t)subCols);
 							SubmatrixAdapter<Operand1> SC(
 								C,
-								DRowsOffset,
-								DColsOffset,
-								subRows,
-								subCols);
+								(size_t)DRowsOffset,
+								(size_t)DColsOffset,
+								(size_t)subRows,
+								(size_t)subCols);
 
 							VD.push_back(SD);
 							VA.push_back(SA);
@@ -573,28 +573,28 @@ namespace LinBox{
 
 						SubmatrixAdapter<Operand1> SD(
 							D,
-							DRowsOffset,
-							DColsOffset,
-							subRows,
-							(DCols - DColsOffset));
+							(size_t)DRowsOffset,
+							(size_t)DColsOffset,
+							(size_t)subRows,
+							(size_t)(DCols - DColsOffset));
 						SubmatrixAdapter<Operand2> SA(
 							A,
-							ARowsOffset,
-							AColsOffset,
-							subRows,
-							(ACols - AColsOffset));
+							(size_t)ARowsOffset,
+							(size_t)AColsOffset,
+							(size_t)subRows,
+							(size_t)(ACols - AColsOffset));
 						SubmatrixAdapter<Operand3> SB(
 							B,
-							BRowsOffset,
-							BColsOffset,
-							subSharedDim,
-							(BCols - BColsOffset));
+							(size_t)BRowsOffset,
+							(size_t)BColsOffset,
+							(size_t)subSharedDim,
+							(size_t)(BCols - BColsOffset));
 						SubmatrixAdapter<Operand1> SC(
 							C,
-							DRowsOffset,
-							DColsOffset,
-							subRows,
-							(DCols - DColsOffset));
+							(size_t)DRowsOffset,
+							(size_t)DColsOffset,
+							(size_t)subRows,
+							(size_t)(DCols - DColsOffset));
 
 						VD.push_back(SD);
 						VA.push_back(SA);
@@ -614,28 +614,28 @@ namespace LinBox{
 
 						SubmatrixAdapter<Operand1> SD(
 							D,
-							DRowsOffset,
-							DColsOffset,
-							(DRows - DRowsOffset),
-							subCols);
+							(size_t)DRowsOffset,
+							(size_t)DColsOffset,
+							(size_t)(DRows - DRowsOffset),
+							(size_t)subCols);
 						SubmatrixAdapter<Operand2> SA(
 							A,
-							ARowsOffset,
-							AColsOffset,
-							(ARows - ARowsOffset),
-							subSharedDim);
+							(size_t)ARowsOffset,
+							(size_t)AColsOffset,
+							(size_t)(ARows - ARowsOffset),
+							(size_t)subSharedDim);
 						SubmatrixAdapter<Operand3> SB(
 							B,
-							BRowsOffset,
-							BColsOffset,
-							(BRows - BRowsOffset),
-							subCols);
+							(size_t)BRowsOffset,
+							(size_t)BColsOffset,
+							(size_t)(BRows - BRowsOffset),
+							(size_t)subCols);
 						SubmatrixAdapter<Operand1> SC(
 							C,
-							DRowsOffset,
-							DColsOffset,
-							(DRows - DRowsOffset),
-							subCols);
+							(size_t)DRowsOffset,
+							(size_t)DColsOffset,
+							(size_t)(DRows - DRowsOffset),
+							(size_t)subCols);
 
 						VD.push_back(SD);
 						VA.push_back(SA);
@@ -649,28 +649,28 @@ namespace LinBox{
 
 					SubmatrixAdapter<Operand1> SD(
 						D,
-						DRowsOffset,
-						DColsOffset,
-						(DRows - DRowsOffset),
-						(DCols - DColsOffset));
+						(size_t)DRowsOffset,
+						(size_t)DColsOffset,
+						(size_t)(DRows - DRowsOffset),
+						(size_t)(DCols - DColsOffset));
 					SubmatrixAdapter<Operand2> SA(
 						A,
-						ARowsOffset,
-						AColsOffset,
-						(ARows - ARowsOffset),
-						(ACols - AColsOffset));
+						(size_t)ARowsOffset,
+						(size_t)AColsOffset,
+						(size_t)(ARows - ARowsOffset),
+						(size_t)(ACols - AColsOffset));
 					SubmatrixAdapter<Operand3> SB(
 						B,
-						BRowsOffset,
-						BColsOffset,
-						(BRows - BRowsOffset),
-						(BCols - BColsOffset));
+						(size_t)BRowsOffset,
+						(size_t)BColsOffset,
+						(size_t)(BRows - BRowsOffset),
+						(size_t)(BCols - BColsOffset));
 					SubmatrixAdapter<Operand1> SC(
 						C,
-						DRowsOffset,
-						DColsOffset,
-						(DRows - DRowsOffset),
-						(DCols - DColsOffset));
+						(size_t)DRowsOffset,
+						(size_t)DColsOffset,
+						(size_t)(DRows - DRowsOffset),
+						(size_t)(DCols - DColsOffset));
 
 					VD.push_back(SD);
 					VA.push_back(SA);

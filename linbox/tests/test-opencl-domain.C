@@ -108,7 +108,7 @@ static bool testMul(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing mul"),"testMul",iterations);
+	commentator().start(pretty("Testing mul"),"testMul",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -159,7 +159,7 @@ static bool testMulinLeft(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing mulin_left"),"testMulinLeft",iterations);
+	commentator().start(pretty("Testing mulin_left"),"testMulinLeft",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -211,7 +211,7 @@ static bool testMulinRight(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing mulin_right"),"testMulinRight",iterations);
+	commentator().start(pretty("Testing mulin_right"),"testMulinRight",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -263,7 +263,7 @@ static bool testAxpy(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing axpy"),"testAxpy",iterations);
+	commentator().start(pretty("Testing axpy"),"testAxpy",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -316,7 +316,7 @@ static bool testAxpyin(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing axpyin"),"testAxpyin",iterations);
+	commentator().start(pretty("Testing axpyin"),"testAxpyin",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -370,7 +370,7 @@ static bool testMaxpy(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing maxpy"),"testMaxpy",iterations);
+	commentator().start(pretty("Testing maxpy"),"testMaxpy",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -423,7 +423,7 @@ static bool testMaxpyin(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing maxpyin"),"testMaxpyin",iterations);
+	commentator().start(pretty("Testing maxpyin"),"testMaxpyin",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -477,7 +477,7 @@ static bool testAxmy(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing axmy"),"testAxmy",iterations);
+	commentator().start(pretty("Testing axmy"),"testAxmy",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -530,7 +530,7 @@ static bool testAxmyin(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing axmyin"),"testAxmyin",iterations);
+	commentator().start(pretty("Testing axmyin"),"testAxmyin",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -584,7 +584,7 @@ static bool testMuladd(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing muladd"),"testMuladd",iterations);
+	commentator().start(pretty("Testing muladd"),"testMuladd",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -660,7 +660,7 @@ static bool testMuladdin(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing muladdin"),"testMuladdin",iterations);
+	commentator().start(pretty("Testing muladdin"),"testMuladdin",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -714,7 +714,7 @@ static bool testMulscale(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing mulscale"),"testMulscale",iterations);
+	commentator().start(pretty("Testing mulscale"),"testMulscale",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -761,7 +761,7 @@ template <class Field>
 int launch_tests(Field& F, int n, int iterations){
 	bool pass = true;
 
-	if(!testMul(F, n, iterations)){
+	if(!testMul(F, (size_t)n, iterations)){
 		pass = false;
 	}
 	// if(!testMulinLeft(F, n, iterations)){
@@ -770,25 +770,25 @@ int launch_tests(Field& F, int n, int iterations){
 	// if(!testMulinRight(F, n, iterations)){
 		// pass = false;
 	// }
-	if(!testAxpy(F, n, iterations)){
+	if(!testAxpy(F, (size_t)n, iterations)){
 		pass = false;
 	}
 	// if(!testAxpyin(F, n, iterations)){
 		// pass = false;
 	// }
-	if(!testMaxpy(F, n, iterations)){
+	if(!testMaxpy(F, (size_t)n, iterations)){
 		pass = false;
 	}
 	// if(!testMaxpyin(F, n, iterations)){
 		// pass = false;
 	// }
-	if(!testAxmy(F, n, iterations)){
+	if(!testAxmy(F, (size_t)n, iterations)){
 		pass = false;
 	}
 	// if(!testAxmyin(F, n, iterations)){
 		// pass = false;
 	// }
-	if(!testMuladd(F, n, iterations)){
+	if(!testMuladd(F, (size_t)n, iterations)){
 		pass = false;
 	}
 	// if(!testMuladdin(F, n, iterations)){

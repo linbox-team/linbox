@@ -236,10 +236,10 @@ namespace LinBox
 		if (k == -1)
 			act->_progress++;
 		else
-			act->_progress = k;
+			act->_progress = (unsigned long)k;
 
 		if (len != -1)
-			act->_len = len;
+			act->_len = (unsigned long) len;
 
 		if (act->_progress > act->_len)
 			act->_len = act->_progress;
@@ -457,7 +457,7 @@ namespace LinBox
 					str.width (3);
 					str << floor (percent + 0.5) << '%' << std::ends;
 					old_len = _last_line_len;
-					_last_line_len = (int)strlen (str.str ().c_str ());
+					_last_line_len = (unsigned int)strlen (str.str ().c_str ());
 					messageClass._stream << str.str ();
 					for (int ii = 0; ii < (int) (old_len - _last_line_len); ii++)
 						messageClass._stream << ' ';
