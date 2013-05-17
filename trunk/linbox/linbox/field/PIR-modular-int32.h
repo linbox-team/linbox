@@ -390,15 +390,15 @@ namespace LinBox
 			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
 			if (_y < t)
-				return _y += field()._two64;
+				return _y += (uint64_t)field()._two64;
 			else
 				return _y;
 		}
 
 		inline uint64_t& accumulate (const Element &t) {
-			_y += t;
+			_y += (uint64_t)t;
 			if (_y < (uint64_t)t)
-				return _y += field()._two64;
+				return _y += (uint64_t)field()._two64;
 			else
 				return _y;
 		}
@@ -409,7 +409,7 @@ namespace LinBox
 		}
 
 		inline FieldAXPY &assign (const Element y) {
-			_y = y;
+			_y = (uint64_t)y;
 			return *this;
 		}
 
@@ -451,7 +451,7 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += field()._two64;
+					y += (uint64_t)field()._two64;
 			}
 
 			y %= (uint64_t) field().modulus;
@@ -473,7 +473,7 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += field()._two64;
+					y += (uint64_t)field()._two64;
 			}
 
 
@@ -549,7 +549,7 @@ namespace LinBox
 				*l += t;
 
 				if (*l < t)
-					*l += VD.field ()._two64;
+					*l += (uint64_t)VD.field ()._two64;
 			}
 		}
 
