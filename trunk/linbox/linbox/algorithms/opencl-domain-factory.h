@@ -466,7 +466,7 @@ namespace LinBox{
 		 * Builds the vector of oclEnvirons
 		 */
 		static std::vector<oclEnviron>* oclGetEnvirons(
-			std::vector<oclEnviron>* environs,
+			std::vector<oclEnviron>* myenvirons,
 			cl_platform_id& platform,
 			cl_device_id* devices,
 			cl_uint numDevices){
@@ -483,7 +483,7 @@ namespace LinBox{
 			//relatively similar across different intstances of OpenCLMatrixDomain
 			//and eliminate the primary graphics adapter if there is one.
 			for(int i = 0; i < (int)numDevices; i++){
-				if(rankings.at(i) < lowerBound){
+				if(rankings.at((size_t)i) < lowerBound){
 					continue;
 				}
 
@@ -491,10 +491,10 @@ namespace LinBox{
 
 				temp = oclBuildEnviron(temp, platform, devices[i]);
 
-				environs->push_back(temp);
+				myenvirons->push_back(temp);
 			}
 
-			return environs;
+			return myenvirons;
 		}
 
 		/**
@@ -590,7 +590,7 @@ namespace LinBox{
 		static void oclResourceCleanUp(){
 			//Release all reources held in each oclEnviron
 			for(int i = 0; i < (int)environs->size(); i++){
-				oclEnviron current = environs->at(i);
+				oclEnviron current = environs->at((size_t)i);
 
 				//Release the kernels
 				for(int j = 0; j < NUM_KERNELS; j++){
@@ -649,45 +649,45 @@ namespace LinBox{
 			//Selected least used oclEnviron
 			int leastUsedIndex = 0;
 			for(int i = 0; i < (int)instances->size(); i++){
-				if(instances->at(i) < instances->at(leastUsedIndex)){
+				if(instances->at((size_t)i) < instances->at((size_t)leastUsedIndex)){
 					leastUsedIndex = i;
 				}
 			}
 
 			//Increment use count
-			(instances->at(leastUsedIndex))++;
+			(instances->at((size_t)leastUsedIndex))++;
 
 			//Copy all of the data required for the OpenCLMatrixDomain instance to
 			//function
-			target->context = environs->at(leastUsedIndex).context;
-			target->device = environs->at(leastUsedIndex).device;
-			target->commandQue = environs->at(leastUsedIndex).commandQue;
-			target->errcode = environs->at(leastUsedIndex).errcode;
+			target->context = environs->at((size_t)leastUsedIndex).context;
+			target->device = environs->at((size_t)leastUsedIndex).device;
+			target->commandQue = environs->at((size_t)leastUsedIndex).commandQue;
+			target->errcode = environs->at((size_t)leastUsedIndex).errcode;
 
-			target->memCapacity = environs->at(leastUsedIndex).memCapacity;
-			target->maxBufferSize = environs->at(leastUsedIndex).maxBufferSize;
+			target->memCapacity = environs->at((size_t)leastUsedIndex).memCapacity;
+			target->maxBufferSize = environs->at((size_t)leastUsedIndex).maxBufferSize;
 
-			target->GPUcontainer = environs->at(leastUsedIndex).GPUcontainer;
-			target->CPUcontainer = environs->at(leastUsedIndex).CPUcontainer;
-			target->setupCorrect = environs->at(leastUsedIndex).setupCorrect;
-			target->doubleSupported = environs->at(leastUsedIndex).doubleSupported;
+			target->GPUcontainer = environs->at((size_t)leastUsedIndex).GPUcontainer;
+			target->CPUcontainer = environs->at((size_t)leastUsedIndex).CPUcontainer;
+			target->setupCorrect = environs->at((size_t)leastUsedIndex).setupCorrect;
+			target->doubleSupported = environs->at((size_t)leastUsedIndex).doubleSupported;
 
 			for(int i = 0; i < 20; i++){
-				target->dpKernels[i] = environs->at(leastUsedIndex).dpKernels[i];
-				target->spKernels[i] = environs->at(leastUsedIndex).spKernels[i];
+				target->dpKernels[i] = environs->at((size_t)leastUsedIndex).dpKernels[i];
+				target->spKernels[i] = environs->at((size_t)leastUsedIndex).spKernels[i];
 
 				target->dpKernelsAvailable[i] =
-					environs->at(leastUsedIndex).dpKernelsAvailable[i];
+					environs->at((size_t)leastUsedIndex).dpKernelsAvailable[i];
 				target->spKernelsAvailable[i] =
-					environs->at(leastUsedIndex).spKernelsAvailable[i];
+					environs->at((size_t)leastUsedIndex).spKernelsAvailable[i];
 			}
 
 			//Assign an ID number the OpenCLMatrixDomain instance to be used for
 			//locking and releasing the OpenCL resources
-			target->IDnum = leastUsedIndex;
+			target->IDnum = (unsigned int)leastUsedIndex;
 
 			//Point OpenCLMatrixDomain to the mutex
-			target->deviceLock = environs->at(leastUsedIndex).deviceLock;
+			target->deviceLock = environs->at((size_t)leastUsedIndex).deviceLock;
 
 			pthread_mutex_unlock(&factoryLock);
 		}

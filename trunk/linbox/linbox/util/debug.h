@@ -164,7 +164,7 @@ namespace LinBox
 		NotImplementedYet(const char * function,
 				  const char* file,
 				  int line,
-				  const char * why='\0')
+				  const char * why="\0")
 		{
 			if (_errorStream == (std::ostream *) 0)
 				_errorStream = &std::cerr;
@@ -196,7 +196,7 @@ namespace LinBox
 		LinBoxFailure(const char * function,
 			      const char* file,
 			      int line,
-			      const char * what='\0')
+			      const char * what="\0")
 		{
 			if (_errorStream == (std::ostream *) 0)
 				_errorStream = &std::cerr;
@@ -226,8 +226,8 @@ namespace LinBox
 		 * @param what     what happened ? should not be NULL...
 		 */
 		LinBoxError(const char * what,
-			    const char * function='\0',
-			    const char* file='\0',
+			    const char * function="\0",
+			    const char* file="\0",
 			    int line=-1)
 		{
 			if (_errorStream == (std::ostream *) 0)
