@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 	report << "\tUsing random primes and square matrices of size 2 to " << N_BOUND << endl;
 	//for( int i = 0; pass && i < 2; ++i ) {
 	size_t n;
-	do { n = rand() % N_BOUND; } while( n < 2 );
+	do { n = (size_t)rand() % N_BOUND; } while( n < 2 );
 
 	NTL_zz_p CF( *rp );
 	NTL_zz_pX PF(CF);
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 
 	for( int diff = 1 - ((int)n); diff <= ((int)n) - 1; ++diff ) {
 		randit.random(temp);
-		PF.setCoeff(poly,(size_t)(diff + n - 1), temp );
+		PF.setCoeff(poly,(size_t)(diff + (int)n - 1), temp );
 		r = c = 0;
 		if( diff < 0 ) c = (size_t)(diff*-1);
 		else r = (size_t)diff;

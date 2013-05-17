@@ -72,7 +72,7 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	if (!runFieldTests (F, "NTL_zz_p", iterations, n, false)) pass = false;
+	if (!runFieldTests (F, "NTL_zz_p", (unsigned int)iterations, n, false)) pass = false;
 
 #if 0
 	FieldArchetype K(new NTL_zz_p(101));

@@ -84,7 +84,7 @@ bool testRandomSolve (const Ring& R,
 		  stream1.next (d);
 		  zeroEntry = false;
 		  for (size_t i=0; i<stream1.n(); i++)
-		    zeroEntry |= R.isZero(d[i]);
+		    zeroEntry |= R.isZero(d[(size_t)i]);
 		} while (zeroEntry);
 
                 stream2.next (b);
@@ -102,13 +102,13 @@ bool testRandomSolve (const Ring& R,
 
 		BlasMatrix<Ring> D(R, n, n);
 
-		for(int i = 0; i < n; ++i) R.init (D[i][i],  d[i]);
+		for(int i = 0; i < n; ++i) R.init (D[(size_t)i][(size_t)i],  d[(size_t)i]);
 
 		typedef RationalSolverAdaptive RSolver;
 		RSolver rsolver;
 
 		//std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
-		std::vector<typename Ring::Element> num(n);
+		std::vector<typename Ring::Element> num((size_t)n);
 		typename Ring::Element den;
 
 		SolverReturnStatus solveResult = rsolver.solveNonsingular(num, den, D, b); //often 5 primes are not enough
@@ -197,7 +197,7 @@ int main(int argc, char** argv)
 
 	Field F(101);
 
-	RandomDenseStream<Ring> s1 (R, n, iterations), s2 (R, n, iterations);
+	RandomDenseStream<Ring> s1 (R, n, (unsigned int)iterations), s2 (R, n, (unsigned int)iterations);
 
 
 

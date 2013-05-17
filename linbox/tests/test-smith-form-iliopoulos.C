@@ -99,30 +99,30 @@ bool testRandom(const Ring& R,
 
 		int i, j;
 
-		for(i = 0; i < n; ++i) { R. assign (D[i][i], d[i]); R. init (L[i][i], 1); R. init (U[i][i], 1);}
+		for(i = 0; i < n; ++i) { R. assign (D[(size_t)i][(size_t)i], d[(size_t)i]); R. init (L[(size_t)i][(size_t)i], 1); R. init (U[(size_t)i][(size_t)i], 1);}
 
 		for (i = 0; i < n; ++ i)
 
 			for (j = 0; j < i; ++ j) {
 
-				R.init(L[i][j], rand() % 10);
+				R.init(L[(size_t)i][(size_t)j], rand() % 10);
 
-				R.init(U[j][i], rand() % 10);
+				R.init(U[(size_t)j][(size_t)i], rand() % 10);
 			}
 
 
-		std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
+		std::vector<typename Ring::Element> tmp1((size_t)n), tmp2((size_t)n), e((size_t)n);
 
 		typename BlasMatrix<Ring>::ColIterator col_p;
 
 		i = 0;
 		for (col_p = A.colBegin(); col_p != A.colEnd(); ++ col_p, ++ i) {
 
-			R.init(e[i],1);
+			R.init(e[(size_t)i],1);
 			U.apply(tmp1, e);
 			D.apply(tmp2, tmp1);
 			L.apply(*col_p, tmp2);
-			R.init(e[i],0);
+			R.init(e[(size_t)i],0);
 		}
 
 
@@ -159,7 +159,7 @@ bool testRandom(const Ring& R,
 			report << "Computed Smith form: \n";
 
 			for ( unsigned int ii = 0; ii < A. rowdim(); ++ ii)
-				report << Ap[ii][ii] << " ";
+				report << Ap[(size_t)ii][(size_t)ii] << " ";
 
 			report << '\n';
 
@@ -170,13 +170,13 @@ bool testRandom(const Ring& R,
 
 			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ ii) {
 
-				if (PIR.isZero(Ap[ii][ii]))
+				if (PIR.isZero(Ap[(size_t)ii][(size_t)ii]))
 
 					R.assign (*p1, s);
 
 				else
 
-					R.assign (*p1, NTL::rep(Ap[ii][ii]));
+					R.assign (*p1, NTL::rep(Ap[(size_t)ii][(size_t)ii]));
 			}
 		}
 
@@ -196,7 +196,7 @@ bool testRandom(const Ring& R,
 			report << "Computed Smith form: \n";
 
 			for ( unsigned int ii = 0; ii < A. rowdim(); ++ ii)
-				report << Ap[ii][ii] << " ";
+				report << Ap[(size_t)ii][(size_t)ii] << " ";
 
 			report << '\n';
 
@@ -205,10 +205,10 @@ bool testRandom(const Ring& R,
 			int ii = 0;
 
 			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ ii) {
-				if (PIR.isZero(Ap[ii][ii]))
+				if (PIR.isZero(Ap[(size_t)ii][(size_t)ii]))
 					R.assign (*p1, s);
 				else
-					R.init (*p1, Ap[ii][ii]);
+					R.init (*p1, Ap[(size_t)ii][(size_t)ii]);
 			}
 		}
 
@@ -301,7 +301,7 @@ int main(int argc, char** argv)
 
         commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-        RandomDenseStream<Ring> s1 (R, n, iterations);
+        RandomDenseStream<Ring> s1 (R, n, (unsigned int)iterations);
 
         if (!testRandom(R, s1)) pass = false;
 
@@ -311,11 +311,10 @@ int main(int argc, char** argv)
 }
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
