@@ -476,14 +476,14 @@ namespace LinBox
 		size_t r_1(0);
 
 		for (std::vector<bool>::const_iterator iter = x.begin ();
-		     iter != x.begin () + (n - n_p);
+		     iter != x.begin () + (ptrdiff_t)(n - n_p);
 		     iter++)
 			if (*iter) r_1++;
 
 		// count total number of true elements in x.
 		size_t r (r_1);
 
-		for (std::vector<bool>::const_iterator iter = x.begin () + (n - n_p);
+		for (std::vector<bool>::const_iterator iter = x.begin () + (ptrdiff_t)(n - n_p);
 		     iter != x.end ();
 		     iter++)
 			if (*iter) r++;
@@ -578,8 +578,8 @@ namespace LinBox
 				commentator().indent (report);
 				report << "  A: j < (n - n_p).  j_1 = j = " << j << ", j_2 = 0";
 
-				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (n - n_p)), j);
-				y_2 = setButterfly (std::vector<bool>(x.begin () + (n - n_p), x.end ()), 0);
+				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (ptrdiff_t)(n - n_p)), j);
+				y_2 = setButterfly (std::vector<bool>(x.begin () + (ptrdiff_t)(n - n_p), x.end ()), 0);
 
 			}
 			else {
@@ -589,8 +589,8 @@ namespace LinBox
 
 				// This case cannot occur for n != 2*n_p because j != 0
 
-				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (n - n_p)), 0);
-				y_2 = setButterfly (std::vector<bool>(x.begin () + (n - n_p), x.end ()), j - (n - n_p));
+				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (ptrdiff_t)(n - n_p)), 0);
+				y_2 = setButterfly (std::vector<bool>(x.begin () + (ptrdiff_t)(n - n_p), x.end ()), j - (n - n_p));
 			}
 		}
 		else if ((s_1 + s_3) > r_1) {
@@ -607,11 +607,11 @@ namespace LinBox
 
 				// In this case, s_1 > 0, so s_3 = 0, and wrap-around cannot occur.
 
-				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (n - n_p)), j);
-				y_2 = setButterfly (std::vector<bool>(x.begin () + (n - n_p), x.end ()), 2*n_p + j + r_1 - n);
+				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (ptrdiff_t)(n - n_p)), j);
+				y_2 = setButterfly (std::vector<bool>(x.begin () + (ptrdiff_t)(n - n_p), x.end ()), 2*n_p + j + r_1 - n);
 
-				for (std::vector<bool>::iterator iter = (y_3.begin () + (j + r_1));
-				     iter != (y_3.begin () + (n - n_p));
+				for (std::vector<bool>::iterator iter = (y_3.begin () + (ptrdiff_t)(j + r_1));
+				     iter != (y_3.begin () + (ptrdiff_t)(n - n_p));
 				     iter++)
 					*iter = true;
 			}
@@ -624,11 +624,11 @@ namespace LinBox
 				// In this case, s_1 = 0, so s_3 >= 0, and wrap-around may occur.
 				// This case cannot occur for n != 2*n_p because j != 0.
 
-				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (n - n_p)), j + r - n - r_1);
-				y_2 = setButterfly (std::vector<bool>(x.begin () + (n - n_p), x.end ()), j - (n - n_p));
+				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (ptrdiff_t)(n - n_p)), j + r - n - r_1);
+				y_2 = setButterfly (std::vector<bool>(x.begin () + (ptrdiff_t)(n - n_p), x.end ()), j - (n - n_p));
 
 				for (std::vector<bool>::iterator iter = y_3.begin ();
-				     iter != (y_3.begin () + (j + r - n - r_1));
+				     iter != (y_3.begin () + (ptrdiff_t)(j + r - n - r_1));
 				     iter++)
 					*iter = true;
 			}
@@ -648,11 +648,11 @@ namespace LinBox
 				<< ", j_2 = j + r_1 - n + n_p = " << j + r_1 - n + n_p << std::endl;
 				// In this case, s_1 > 0, so s_3 = 0, and wrap-around cannot occur.
 
-				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (n - n_p)), j);
-				y_2 = setButterfly (std::vector<bool>(x.begin () + (n - n_p), x.end ()), j + r_1 - n + n_p);
+				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () +(ptrdiff_t) (n - n_p)), j);
+				y_2 = setButterfly (std::vector<bool>(x.begin () +(ptrdiff_t) (n - n_p), x.end ()), j + r_1 - n + n_p);
 
-				for (std::vector<bool>::iterator iter = (y_3.begin () + s_3);
-				     iter != (y_3.begin () + (j + r_1 - n + n_p));
+				for (std::vector<bool>::iterator iter = (y_3.begin () +(ptrdiff_t) s_3);
+				     iter != (y_3.begin () + (ptrdiff_t)(j + r_1 - n + n_p));
 				     iter++)
 					*iter = true;
 			}
@@ -665,11 +665,11 @@ namespace LinBox
 				// In this case, s_1 = 0, so s_3 >= 0, and wrap-around may occur.
 				// This case cannot occur for n != 2*n_p because j != 0.
 
-				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (n - n_p)), j + r - n_p - r_1);
-				y_2 = setButterfly (std::vector<bool>(x.begin () + (n - n_p), x.end ()), j - (n - n_p));
+				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (ptrdiff_t)(n - n_p)), j + r - n_p - r_1);
+				y_2 = setButterfly (std::vector<bool>(x.begin () + (ptrdiff_t)(n - n_p), x.end ()), j - (n - n_p));
 
-				for (std::vector<bool>::iterator iter (y_3.begin () + (j + r - n_p - r_1));
-				     iter != (y_3.begin () + (n - n_p));
+				for (std::vector<bool>::iterator iter (y_3.begin () + (ptrdiff_t)(j + r - n_p - r_1));
+				     iter != (y_3.begin () + (ptrdiff_t)(n - n_p));
 				     iter++)
 					*iter = true;
 			}

@@ -112,8 +112,8 @@ namespace LinBox
 
 			if( m == 0 && n == 0 ) return END_OF_MATRIX;
 
-			m -= _base;
-			n -= _base;
+			m -= (size_t)_base;
+			n -= (size_t) _base;
 
 			if( m >= this->_m ||
 			    n >= this->_n ) return BAD_FORMAT;

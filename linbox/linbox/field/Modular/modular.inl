@@ -9,20 +9,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -49,7 +49,7 @@ namespace LinBox {
 		typename Vector1::const_iterator i = v1.begin ();
 		typename Vector2::const_iterator j = v2.begin ();
 
-		typename Vector1::const_iterator iterend = v1.begin () + v1.size() % field()._k;
+		typename Vector1::const_iterator iterend = v1.begin () + (ptrdiff_t)(v1.size() % field()._k);
 
 		uint64_t y = 0;
 
@@ -89,7 +89,7 @@ namespace LinBox {
 			return res = uint8_t (y % (uint64_t) field()._modulus);
 		}
 		else {
-			typename Vector1::first_type::const_iterator iterend = v1.first.begin () + v1.first.size() % field()._k;
+			typename Vector1::first_type::const_iterator iterend = v1.first.begin () +(ptrdiff_t)( v1.first.size() % field()._k);
 
 			for (; i_idx != iterend; ++i_idx, ++i_elt)
 				y += (uint64_t) *i_elt * (uint64_t) v2[*i_idx];
@@ -120,7 +120,7 @@ namespace LinBox {
 		typename Vector1::const_iterator i = v1.begin ();
 		typename Vector2::const_iterator j = v2.begin ();
 
-		typename Vector1::const_iterator iterend = v1.begin () + v1.size() % field()._k;
+		typename Vector1::const_iterator iterend = v1.begin () + (ptrdiff_t)(v1.size() % field()._k);
 
 		uint64_t y = 0;
 
@@ -160,7 +160,7 @@ namespace LinBox {
 			return res = (uint16_t) (y % (uint64_t) field()._modulus);
 		}
 		else {
-			typename Vector1::first_type::const_iterator iterend = v1.first.begin () + v1.first.size() % field()._k;
+			typename Vector1::first_type::const_iterator iterend = v1.first.begin () +(ptrdiff_t)( v1.first.size() % field()._k );
 
 			for (; i_idx != iterend; ++i_idx, ++i_elt)
 				y += (uint64_t) *i_elt * (uint64_t) v2[*i_idx];
@@ -245,9 +245,9 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () + (ptrdiff_t)w.size (), 0);
 
-		l_end = _tmp.begin () + w.size ();
+		l_end = _tmp.begin () +(ptrdiff_t) w.size ();
 
 		do {
 			j = v.begin ();
@@ -288,9 +288,9 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () + (ptrdiff_t)w.size (), 0);
 
-		l_end = _tmp.begin () + w.size ();
+		l_end = _tmp.begin () + (ptrdiff_t)w.size ();
 
 
 		do {
@@ -332,9 +332,9 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () + (ptrdiff_t)w.size (), 0);
 
-		l_end = _tmp.begin () + w.size ();
+		l_end = _tmp.begin () +(ptrdiff_t) w.size ();
 
 		do {
 			j = v.begin ();
@@ -376,9 +376,9 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () + (ptrdiff_t)w.size (), 0);
 
-		l_end = _tmp.begin () + w.size ();
+		l_end = _tmp.begin () + (ptrdiff_t)w.size ();
 
 		do {
 			j = v.begin ();
@@ -424,9 +424,9 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () +(ptrdiff_t) w.size (), 0);
 
-		l_end = _tmp.begin () + w.size ();
+		l_end = _tmp.begin () +(ptrdiff_t) w.size ();
 
 		do {
 			j = v.begin ();
@@ -469,9 +469,9 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () +(ptrdiff_t) w.size (), 0);
 
-		l_end = _tmp.begin () + w.size ();
+		l_end = _tmp.begin () +(ptrdiff_t) w.size ();
 
 		do {
 			j = v.begin ();
@@ -514,9 +514,9 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () +(ptrdiff_t) w.size (), 0);
 
-		l_end = _tmp.begin () + w.size ();
+		l_end = _tmp.begin () +(ptrdiff_t) w.size ();
 
 		do {
 			j = v.begin ();
@@ -560,9 +560,9 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () +(ptrdiff_t) w.size (), 0);
 
-		l_end = _tmp.begin () + w.size ();
+		l_end = _tmp.begin () +(ptrdiff_t) w.size ();
 
 		do {
 			j = v.begin ();
@@ -610,7 +610,7 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () +(ptrdiff_t) w.size (), 0);
 
 		for (j = v.begin (); j != v.end (); ++j, ++i) {
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
@@ -650,7 +650,7 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () + (ptrdiff_t) w.size (), 0);
 
 		for (j = v.begin (); j != v.end (); ++j, ++i) {
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
@@ -690,7 +690,7 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () +(ptrdiff_t) w.size (), 0);
 
 		for (j = v.begin (); j != v.end (); ++j, ++i) {
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
@@ -730,7 +730,7 @@ namespace LinBox {
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
 
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+		std::fill (_tmp.begin (), _tmp.begin () +(ptrdiff_t) w.size (), 0);
 
 		for (j = v.begin (); j != v.end (); ++j, ++i) {
 			for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();

@@ -85,9 +85,9 @@ namespace LinBox
 
 		void identity(int n)
 		{
-			this->_indices.resize (n);
+			this->_indices.resize ((size_t)n);
 			for (typename Storage::value_type i=0; i < n; ++i)
-				_indices[i] = i;
+				_indices[(size_t)i] = i;
 		}
 
 		void random(size_t n)
@@ -97,7 +97,7 @@ namespace LinBox
 			// Knuth construction
 			for (size_t i = 0; i < n-1; ++i) {
 				size_t j = i + r.randomInt()%(n-i);
-				std::swap(_indices[i], _indices[j]);
+				std::swap(_indices[(size_t)i], _indices[(size_t)j]);
 			}
 		}
 
@@ -133,7 +133,7 @@ namespace LinBox
 			linbox_check (y.size () == _indices.size ());
 
 			for (i = 0; i < x.size(); ++i)
-				field().assign(y[i], x[_indices[i]]);
+				field().assign(y[(size_t)i], x[(size_t)_indices[(size_t)i]]);
 
 			return y;
 		}
@@ -159,7 +159,7 @@ namespace LinBox
 			linbox_check (y.size () == _indices.size ());
 
 			for (i = 0; i < _indices.size (); ++i)
-				field().assign(y[_indices[i]], x[i]);
+				field().assign(y[(size_t)_indices[(size_t)i]], x[(size_t)i]);
 
 			return y;
 		}
@@ -208,7 +208,7 @@ namespace LinBox
 
 		}
 
-		const Field& field() const { return *_field; } 
+		const Field& field() const { return *_field; }
 
 		std::ostream &write(std::ostream &os) const //, FileFormatTag format = FORMAT_MAPLE) const
 		{
@@ -251,10 +251,10 @@ namespace LinBox
 			int n = _indices.size();
 			if (n == 1) return;
 			int i, j;
-			for (i = n-2; i >= 0 and _indices[i] >= _indices[i+1]; --i); 
+			for (i = n-2; i >= 0 and _indices[(size_t)i] >= _indices[(size_t)i+1]; --i);
 			if (i < 0) {identity(n); return; }
-			for (j = i+2; j < n and _indices[i] <= _indices[j]; ++j);
-			std::swap(_indices[i], _indices[j-1]);
+			for (j = i+2; j < n and _indices[(size_t)i] <= _indices[(size_t)j]; ++j);
+			std::swap(_indices[(size_t)i], _indices[(size_t)j-1]);
 			reverse(_indices.begin() + i + 1, _indices.end());
 		}
 	private:

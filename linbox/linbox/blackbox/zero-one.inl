@@ -6,20 +6,20 @@
  * Modified by Zhendong Wan, -bds
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -258,8 +258,8 @@ namespace LinBox
 		else
 		{
 			i = 1 + (int)_part(p, e, mode);
-			_qsort(p, i, mode);
-			_qsort(i, e, mode);
+			_qsort(p, (size_t)i, mode);
+			_qsort((size_t)i, e, mode);
 		}
 	}
 
@@ -267,7 +267,7 @@ namespace LinBox
 	size_t ZeroOne<Field>::_part(size_t p, size_t e, int &mode) const
 	{
 		size_t rtemp, ctemp, rowval, colval;
-		int i = int(p +(int) rand() % (e - p)), j =(int) e;
+		int i = int(p +(size_t) rand() % (e - p)), j =(int) e;
 		rtemp = _rowP[p];
 		ctemp = _colP[p];
 		_rowP[p] = _rowP[i];
@@ -293,7 +293,7 @@ namespace LinBox
 					_rowP[i] = rtemp;
 					_colP[i] = ctemp;
 				}
-				else return j;
+				else return (size_t)j;
 			}
 		}
 		else
@@ -310,7 +310,7 @@ namespace LinBox
 					_rowP[i] = rtemp;
 					_colP[i] = ctemp;
 				}
-				else return j;
+				else return (size_t)j;
 			}
 		}
 	}
@@ -340,16 +340,16 @@ namespace LinBox
 		for(; ip <_rowP+nnz(); ++ip,++jp)
 		{
 			if( *ip == rowI)
-				field().addin(*yp,*(xp + *jp));
+				field().addin(*yp,*(xp +(ptrdiff_t) *jp));
 			else
 			{
 				if((*ip-rowI)==1)
 					++yp;
 				else
-					yp=y.begin()+*ip;
+					yp=y.begin()+(ptrdiff_t)*ip;
 
 				rowI=*ip;
-				field().addin(*yp,*(xp + *jp));
+				field().addin(*yp,*(xp +(ptrdiff_t) *jp));
 			}
 		}
 		return y;
@@ -389,17 +389,17 @@ namespace LinBox
 		for(; ip <_rowP+nnz(); ++ip,++jp)
 		{
 			if( *ip == rowI)
-				accum=accum+*(xp + *jp);
+				accum=accum+*(xp +(ptrdiff_t) *jp);
 			else
 			{
 				*yp= (val_t)(accum % prime);
 				if((*ip-rowI)==1)
 					++yp;
 				else
-					yp=y.begin()+*ip;
+					yp=y.begin()+(ptrdiff_t)*ip;
 
 				rowI=*ip;
-				accum=*(xp+*jp);
+				accum=*(xp+(ptrdiff_t)*jp);
 			}
 		}
 		if(rowI)
@@ -434,16 +434,16 @@ namespace LinBox
 		for(; ip <_rowP+nnz(); ++ip,++jp)
 		{
 			if( *ip == rowI)
-				field().addin(*(yp+*jp),*xp);
+				field().addin(*(yp+(ptrdiff_t)*jp),*xp);
 			else
 			{
 				if((*ip-rowI)==1)
 					++xp;
 				else
-					xp=x.begin()+*ip;
+					xp=x.begin()+(ptrdiff_t)*ip;
 
 				rowI=*ip;
-				field().addin(*(yp+*jp),*xp);
+				field().addin(*(yp+(ptrdiff_t)*jp),*xp);
 			}
 		}
 
@@ -477,16 +477,16 @@ namespace LinBox
 		for(; ip <_rowP+nnz(); ++ip,++jp)
 		{
 			if( *ip == rowI) {
-				*(y_cp+*jp) += *xp;
+				*(y_cp+(ptrdiff_t)*jp) += *xp;
 			}
 			else {
 				if((*ip-rowI)==1)
 					++xp;
 				else
-					xp=x.begin()+*ip;
+					xp=x.begin()+(ptrdiff_t)*ip;
 
 				rowI=*ip;
-				*(y_cp+*jp) += *xp;
+				*(y_cp+(ptrdiff_t)*jp) += *xp;
 			}
 		}
 

@@ -324,7 +324,7 @@ namespace LinBox
 
 		inline uint64_t& accumulate (const Element &t)
 		{
-			_y += t;
+			_y += (uint64_t) t;
 			if (_y < (uint64_t)t)
 				return _y += Corr;
 			else
@@ -333,15 +333,19 @@ namespace LinBox
 
 		inline Element &get (Element &y) {
 			_y %= (uint64_t) field().characteristic();
-			if ((int64_t) _y < 0) _y += field().characteristic();
-			y = (uint32_t) _y;
+			if ((int64_t) _y < 0) _y += (uint64_t) field().characteristic();
+			y = (Element) (uint32_t) _y; //! @bug or feature
 			return y;
 		}
 
 		inline FieldAXPY &assign (const Element y)
-		{ _y = y; return *this; }
+		{
+		       	_y = (uint64_t)y;
+		       	return *this;
+	       	}
 
-		inline void reset() {
+		inline void reset()
+		{
 			_y = 0;
 		}
 
@@ -394,7 +398,7 @@ namespace LinBox
 
 		inline uint32_t& accumulate (const Element &t)
 		{
-			_y += t;
+			_y += (uint32_t) t;
 
 			if (_y < (uint32_t)t)
 				return _y += Corr;
@@ -406,14 +410,14 @@ namespace LinBox
 		{
 			_y %= (uint32_t) field().characteristic();
 			if ((int32_t) _y < 0)
-				_y += (Element) field().characteristic();
-			y = (uint16_t) _y;
+				_y += (uint32_t) field().characteristic();
+			y = (Element) (uint16_t) _y; //! @bug or feature ?
 			return y;
 		}
 
 		inline FieldAXPY &assign (const Element y)
 		{
-			_y = y;
+			_y = (uint32_t)y;
 			return *this;
 		}
 

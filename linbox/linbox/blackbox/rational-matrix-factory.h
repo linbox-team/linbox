@@ -130,18 +130,18 @@ namespace LinBox
 		}
 
 		/*
-		 * returns common denominator _denAi[i] of i-th row
+		 * returns common denominator _denAi[(size_t)i] of i-th row
 		 */
 		Integer& denominator(Integer& di, const int i) const {
-			if (_denAi[i]==1) {
+			if (_denAi[(size_t)i]==1) {
 				typedef typename QMatrix::ConstRow::const_iterator EltIterator;
 				for (size_t j=0; j < _matA->coldim(); ++j) {
 					Integer d;
-					_ratField.get_den(d,_matA->getEntry(i,j));
-					lcm(_denAi[i],_denAi[i],d);
+					_ratField.get_den(d,_matA->getEntry((size_t)i,(size_t)j));
+					lcm(_denAi[(size_t)i],_denAi[(size_t)i],d);
 				}
 			}
-			return di=_denAi[i];
+			return di=_denAi[(size_t)i];
 		}
 
 		//returns max of abs(numerators) and denominators of _matA
@@ -173,7 +173,7 @@ namespace LinBox
 			return res;
 		}
 
-		//returns norm of tilde{A} = diag(_denAi[i])_matA
+		//returns norm of tilde{A} = diag(_denAi[(size_t)i])_matA
 		Integer& normAtilde(Integer& res) const {
 			res = 0L;
 			double dres = 0;
@@ -208,15 +208,15 @@ namespace LinBox
 			std::vector<integer> di(_matA->rowdim(),1L);
 
 			for (size_t i=0; i < _matA->rowdim(); ++i)  {
-				if (_denAi[i]==1) {
+				if (_denAi[(size_t)i]==1) {
 					for (size_t j=0; j < _matA->coldim(); ++j ) {
 						Integer d ;
 						_ratField.get_den(d,_matA->getEntry(i,j));
-						lcm(_denAi[i],_denAi[i],d);
+						lcm(_denAi[(size_t)i],_denAi[(size_t)i],d);
 					}
 				}
-				di[i] = _denAi[i];
-				lcm(_denA,_denA,di[i]);
+				di[(size_t)i] = _denAi[(size_t)i];
+				lcm(_denA,_denA,di[(size_t)i]);
 			}
 			da = _denA;
 
@@ -231,7 +231,7 @@ namespace LinBox
 					if (tmp > ratnorm) ratnorm = tmp;
 					if (d > ratnorm) ratnorm = d;
 
-					Integer tmp2 = (di[i]) / d;
+					Integer tmp2 = (di[(size_t)i]) / d;
 					tmp2 *=tmp;
 					if (tmp2 > normatilde) normatilde = tmp2;
 
@@ -271,7 +271,7 @@ namespace LinBox
 		}
 
 		/*
-		 * Creates Atilde = diag(_denAi[i]) * _matA
+		 * Creates Atilde = diag(_denAi[(size_t)i]) * _matA
 		 */
 		template <class Matrix>
 		Matrix& makeAtilde(Matrix& Atilde) const {
@@ -279,7 +279,7 @@ namespace LinBox
 			Atilde.resize(_matA->rowdim(),_matA->coldim());
 			std::vector<integer> di(_matA->rowdim());
 			for (size_t i=0; i < (size_t)_matA->rowdim(); ++i)
-				denominator(di[(int)i],(int)i);
+				denominator(di[(size_t)i],(int)i);
 
 			for( size_t i=0; i < _matA->rowdim(); ++i) {
 				for (size_t j=0; j < _matA->coldim(); ++j) {
@@ -288,7 +288,7 @@ namespace LinBox
 					_ratField.get_num(n,Aij);
 					Integer d ;
 					_ratField.get_den(d,Aij);
-					Integer tmp = di[i]/d;
+					Integer tmp = di[(size_t)i]/d;
 					tmp *=n;
 					typename Matrix::Field F=Atilde.field();
 					typename Matrix::Field::Element ftmp; F.init(ftmp,tmp);

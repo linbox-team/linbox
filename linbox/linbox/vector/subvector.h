@@ -115,8 +115,8 @@ namespace LinBox
 
 		// Element access
 
-		reference       operator[] (size_type n)       { return _begin[n]; }
-		const_reference operator[] (size_type n) const { return _begin[n]; }
+		reference       operator[] (size_type n)       { return _begin[(ptrdiff_t)n]; }
+		const_reference operator[] (size_type n) const { return _begin[(ptrdiff_t)n]; }
 
 		// the method "at" does appear to be implemented
 		// in the gnu implementation of the STL
@@ -184,10 +184,10 @@ namespace LinBox
 		Subvector& operator=(const Subvector& sub)
 		{ _begin = sub._begin; _end = sub._end; return *this; }
 
-		size_type size      (void) const { return _end - _begin; }
-		bool      empty     (void) const { return _end == _begin; }
-		size_type max_size  (void) const { return _end - _begin; }
-		//size_type capacity(void) const { return _end - _begin; }
+		size_type size      (void) const { return (size_t)(_end -  _begin); }
+		bool      empty     (void) const { return (size_t)(_end == _begin); }
+		size_type max_size  (void) const { return (size_t)(_end -  _begin); }
+		//size_type capacity(void) const { return (size_t)(_end -  _begin); }
 
 		// Swap
 		void swap (Subvector& x)

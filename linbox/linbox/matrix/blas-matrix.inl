@@ -171,7 +171,7 @@ namespace LinBox
 			i=(int)iter_index.rowIndex()-(int)i0;
 			j=(int)iter_index.colIndex()-(int)j0;
 			if ( (i>=0) && (j>=0) && (i< (int)m) && (j < (int)n))
-				setEntry(i, j, *iter_value);
+				setEntry((size_t)i, (size_t)j, *iter_value);
 		}
 	}
 
@@ -192,14 +192,14 @@ namespace LinBox
 		typename std::vector<Element>::iterator e_p, tmp_p;
 
 
-		for (col_p = colBegin(), e_p = e.begin()+j0;
-		     e_p != e.begin()+j0+n; ++ col_p, ++ e_p) {
+		for (col_p = colBegin(), e_p = e.begin()+(ptrdiff_t)j0;
+		     e_p != e.begin()+(ptrdiff_t)(j0+n); ++ col_p, ++ e_p) {
 
 			field().assign(*e_p, field().one);
 
 			A.apply (tmp, e);
 
-			for (tmp_p = tmp.begin()+i0, elt_p = col_p -> begin();
+			for (tmp_p = tmp.begin()+(ptrdiff_t)i0, elt_p = col_p -> begin();
 			     elt_p != col_p.end(); ++ tmp_p, ++ elt_p) {
 				field().assign(*elt_p, *tmp_p);
 			}
@@ -928,7 +928,7 @@ namespace LinBox
 	class BlasMatrix< _Field>::ConstRowIterator {
 	public:
 		ConstRowIterator (const typename Rep::const_iterator& p, size_t len, size_t d) :
-			_row (p, p + len), _dis (d)
+			_row (p, p + (ptrdiff_t)len), _dis (d)
 		{}
 
 		ConstRowIterator () {}
@@ -946,7 +946,7 @@ namespace LinBox
 
 		ConstRowIterator& operator --()
 		{
-			_row = ConstRow (_row.begin () - _dis, _row.end () - _dis);
+			_row = ConstRow (_row.begin () - (ptrdiff_t)_dis, _row.end () - (ptrdiff_t)_dis);
 			return *this;
 		}
 
@@ -960,7 +960,7 @@ namespace LinBox
 
 		ConstRowIterator& operator++ ()
 		{
-			_row = ConstRow (_row.begin () + _dis, _row.end () + _dis);
+			_row = ConstRow (_row.begin () + (ptrdiff_t)_dis, _row.end () + (ptrdiff_t) _dis);
 			return *this;
 		}
 
@@ -973,18 +973,18 @@ namespace LinBox
 
 		ConstRowIterator operator+ (int i)
 		{
-			return ConstRowIterator (_row.begin () + _dis * i, _row.size (), _dis);
+			return ConstRowIterator (_row.begin () + (ptrdiff_t)((int)_dis * i), _row.size (), _dis);
 		}
 
 		ConstRowIterator& operator += (int i)
 		{
-			_row = ConstRow (_row.begin () + _dis * i, _row.end () + _dis * i);
+			_row = ConstRow (_row.begin () + (ptrdiff_t)((int)_dis * i), _row.end () + (ptrdiff_t)((int)_dis * i));
 			return *this;
 		}
 
 		ConstRow operator[] (int i) const
 		{
-			return ConstRow (_row.begin () + _dis * i, _row.end () + _dis * i);
+			return ConstRow (_row.begin () + (ptrdiff_t)((int)_dis * i), _row.end () + (ptrdiff_t)((int)_dis * i));
 		}
 
 		ConstRow* operator-> ()
@@ -1011,7 +1011,7 @@ namespace LinBox
 	class BlasMatrix< _Field>::RowIterator {
 	public:
 		RowIterator (const typename Rep::iterator& p, size_t len, size_t d) :
-			_row (p, p + len), _dis (d)
+			_row (p, p + (ptrdiff_t)len), _dis (d)
 		{}
 
 		RowIterator () {}
@@ -1029,7 +1029,7 @@ namespace LinBox
 
 		RowIterator& operator ++ ()
 		{
-			_row = Row (_row.begin () + _dis, _row.end () + _dis);
+			_row = Row (_row.begin () + (ptrdiff_t)_dis, _row.end () + (ptrdiff_t)_dis);
 			return *this;
 		}
 
@@ -1042,7 +1042,7 @@ namespace LinBox
 
 		RowIterator& operator -- ()
 		{
-			_row = Row (_row.begin () - _dis, _row.end () - _dis);
+			_row = Row (_row.begin () - (ptrdiff_t)_dis, _row.end () - (ptrdiff_t)_dis);
 			return *this;
 		}
 
@@ -1055,19 +1055,19 @@ namespace LinBox
 
 		RowIterator operator + (int i)
 		{
-			return RowIterator (_row.begin () + _dis * i, _row.size (), _dis);
+			return RowIterator (_row.begin () + (ptrdiff_t)((int)_dis * i), _row.size (), _dis);
 		}
 
 		RowIterator& operator += (int i)
 		{
-			_row = Row (_row.begin () + _dis * i, _row.end () + _dis * i);
+			_row = Row (_row.begin () + (ptrdiff_t)((int)_dis * i), _row.end () + (ptrdiff_t)((int)_dis * i));
 			return *this;
 		}
 
 		Row operator[] (int i) const
 		{
-			return Row (const_cast<Row&> (_row).begin () + _dis * i,
-				    const_cast<Row&> (_row).end () + _dis * i);
+			return Row (const_cast<Row&> (_row).begin () + (ptrdiff_t)((int)_dis * i),
+				    const_cast<Row&> (_row).end () + (ptrdiff_t)((int)_dis * i));
 		}
 
 		Row* operator-> ()
@@ -1099,8 +1099,8 @@ namespace LinBox
 	class BlasMatrix< _Field>::ConstColIterator {
 	public:
 		ConstColIterator (typename Rep::const_iterator p, size_t stride, size_t len) :
-			_col (Subiterator<typename Rep::const_iterator> (p, stride),
-			      Subiterator<typename Rep::const_iterator> (p + len * stride, stride)),
+			_col (Subiterator<typename Rep::const_iterator> (p, (ptrdiff_t)stride),
+			      Subiterator<typename Rep::const_iterator> (p + (ptrdiff_t)(len * stride), (ptrdiff_t)stride)),
 			_stride (stride)
 		{}
 
@@ -1124,8 +1124,8 @@ namespace LinBox
 
 		ConstColIterator& operator++ ()
 		{
-			_col = ConstCol (Subiterator<typename Rep::const_iterator> (_col.begin ().operator-> () + 1, _stride),
-					 Subiterator<typename Rep::const_iterator> (_col.end ().operator-> () + 1, _stride));
+			_col = ConstCol (Subiterator<typename Rep::const_iterator> (_col.begin ().operator-> () + 1, (ptrdiff_t)_stride),
+					 Subiterator<typename Rep::const_iterator> (_col.end ().operator-> () + 1, (ptrdiff_t)_stride));
 			return *this;
 		}
 
@@ -1178,8 +1178,8 @@ namespace LinBox
 	class BlasMatrix< _Field>::ColIterator {
 	public:
 		ColIterator (typename Rep::iterator p, size_t stride, size_t len) :
-			_col (Subiterator<typename Rep::iterator> (p, stride),
-			      Subiterator<typename Rep::iterator> (p + len * stride, stride)), _stride (stride)
+			_col (Subiterator<typename Rep::iterator> (p, (long)stride),
+			      Subiterator<typename Rep::iterator> (p + (ptrdiff_t)(len * stride),(long) stride)), _stride (stride)
 		{}
 
 		ColIterator () {}
@@ -1203,8 +1203,8 @@ namespace LinBox
 
 		ColIterator& operator++ ()
 		{
-			_col = Col (Subiterator<typename Rep::iterator> (_col.begin ().operator-> () + 1, _stride),
-				    Subiterator<typename Rep::iterator> (_col.end ().operator-> () + 1, _stride));
+			_col = Col (Subiterator<typename Rep::iterator> (_col.begin ().operator-> () + 1, (const long)_stride),
+				    Subiterator<typename Rep::iterator> (_col.end ().operator-> () + 1,(const long) _stride));
 			return *this;
 		}
 
@@ -1354,13 +1354,13 @@ namespace LinBox
 
 		value_type &operator * () const
 		{
-			return *(_begin + (_r_index * _dim + _c_index));
+			return *(_begin +(ptrdiff_t) (_r_index * _dim + _c_index));
 		}
 
 
 		value_type * operator -> () const
 		{
-			return _begin + (_r_index * _dim + _c_index);
+			return _begin + (ptrdiff_t)(_r_index * _dim + _c_index);
 		}
 
 
@@ -1376,7 +1376,7 @@ namespace LinBox
 
 		const value_type &value () const
 		{
-			return *(_begin + (_r_index * _dim + _c_index));
+			return *(_begin + (ptrdiff_t)(_r_index * _dim + _c_index));
 		}
 
 
@@ -1472,12 +1472,12 @@ namespace LinBox
 
 		const value_type &operator * () const
 		{
-			return *(_begin + (_r_index * _dim + _c_index));
+			return *(_begin + (ptrdiff_t)(_r_index * _dim + _c_index));
 		}
 
 		const value_type *operator -> () const
 		{
-			return _begin + (_r_index * _dim + _c_index);
+			return _begin + (ptrdiff_t)(_r_index * _dim + _c_index);
 		}
 
 		size_t rowIndex () const
@@ -1492,7 +1492,7 @@ namespace LinBox
 
 		const value_type &value() const
 		{
-			return *(_begin + (_r_index * _dim + _c_index));
+			return *(_begin + (ptrdiff_t)(_r_index * _dim + _c_index));
 		}
 	};
 
@@ -1586,7 +1586,7 @@ namespace LinBox
 	template <class _Field>
 	typename BlasMatrix< _Field>::ColIterator BlasMatrix< _Field>::colEnd ()
 	{
-		return  typename BlasMatrix< _Field>::ColIterator (_rep.begin ()+_col, _col, _row);
+		return  typename BlasMatrix< _Field>::ColIterator (_rep.begin ()+(ptrdiff_t)_col, _col, _row);
 	}
 
 	template <class _Field>
@@ -1598,20 +1598,20 @@ namespace LinBox
 	template <class _Field>
 	typename BlasMatrix< _Field>::ConstColIterator BlasMatrix< _Field>::colEnd () const
 	{
-		return  typename BlasMatrix< _Field>::ConstColIterator (_rep.begin ()+_col, _col, _row);
+		return  typename BlasMatrix< _Field>::ConstColIterator (_rep.begin ()+(ptrdiff_t)_col, _col, _row);
 	}
 
 	/*  operators */
 	template <class _Field>
 	typename BlasMatrix< _Field>::Row BlasMatrix< _Field>::operator[] (size_t i)
 	{
-		return Row (_rep.begin () + i * _col, _rep.begin () + (i * _col +_col));
+		return Row (_rep.begin () +(ptrdiff_t)( i * _col), _rep.begin () + (ptrdiff_t)(i * _col +_col));
 	}
 
 	template <class _Field>
 	typename BlasMatrix< _Field>::ConstRow BlasMatrix< _Field>::operator[] (size_t i) const
 	{
-		return Row (_rep.begin () + i * _col, _rep.begin () + ( i * _col + _col));
+		return Row (_rep.begin () +(ptrdiff_t) (i * _col), _rep.begin () + (ptrdiff_t)( i * _col + _col));
 	}
 
 } // LinBox
@@ -1647,8 +1647,8 @@ namespace LinBox
 			//!@bug this supposes &x[0]++ == &x[1]
                         // PG: try to discover stride of x and y (not use it works on every platform)
                         size_t ldx,ldy;
-                        ldx=&x[1] - &x[0];
-                        ldy=&y[1] - &y[0];
+                        ldx=(size_t)(&x[1] - &x[0]);
+                        ldy=(size_t)(&y[1] - &y[0]);
 
 			FFLAS::fgemv((typename Field::Father_t) field(), FFLAS::FflasNoTrans,
 				      _row, _col,
@@ -1680,8 +1680,8 @@ namespace LinBox
 		if (_use_fflas) {
                         // PG: try to discover stride of x and y (not use it works on every platform)
                         size_t ldx,ldy;
-                        ldx=&x[1] - &x[0];
-                        ldy=&y[1] - &y[0];
+                        ldx=(size_t)(&x[1] - &x[0]);
+                        ldy=(size_t)(&y[1] - &y[0]);
 
 			FFLAS::fgemv((typename Field::Father_t) field(), FFLAS::FflasTrans,
 				      _row, _col,

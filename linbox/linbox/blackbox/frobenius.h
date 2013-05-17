@@ -62,7 +62,7 @@ namespace LinBox
 		template <class PolyIterator>
 		Frobenius( const _Field &F, PolyIterator pbegin, PolyIterator pend)
 		{
-			this->_VB.resize(pend - pbegin);
+			this->_VB.resize((size_t)(pend - pbegin));
 			PolyIterator pp = pbegin;
 			typename std::vector<const Companion<_Field>* >::iterator vp;
 			this->m = 0;
