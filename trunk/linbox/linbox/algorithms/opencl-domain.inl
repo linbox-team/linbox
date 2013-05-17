@@ -130,9 +130,9 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < CBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < CBlocksY; blockRow++){
 
-				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * CBlocksX + blockCol);
-				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
-				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at((size_t)(blockRow * CBlocksX + blockCol));
+				SubmatrixAdapter<Operand2> SA = VA.at((size_t)(blockRow * ABlocksX));
+				SubmatrixAdapter<Operand3> SB = VB.at((size_t)blockCol);
 
 				//Allocate buffers
 				cl_mem bufferC = oclCreateMatrixBuffer<cl_double,
@@ -172,8 +172,8 @@ namespace LinBox
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
-					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					SB = VB.at(blockCol + BBlocksX * sharedDim);
+					SA = VA.at((size_t)(blockRow * ABlocksX + sharedDim));
+					SB = VB.at((size_t)(blockCol + BBlocksX * sharedDim));
 
 					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,
 						SubmatrixAdapter<Operand2> >(SA);
@@ -314,9 +314,9 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < CBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < CBlocksY; blockRow++){
 
-				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * CBlocksX + blockCol);
-				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
-				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
+				SubmatrixAdapter<Operand1> SC = VC.at((size_t)(blockRow * CBlocksX + blockCol));
+				SubmatrixAdapter<Operand2> SA = VA.at((size_t)(blockRow * ABlocksX));
+				SubmatrixAdapter<Operand3> SB = VB.at((size_t)blockCol);
 
 				//Allocate buffers
 				cl_mem bufferC = oclCreateMatrixBuffer<cl_float,
@@ -355,8 +355,8 @@ namespace LinBox
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
-					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					SB = VB.at(blockCol + BBlocksX * sharedDim);
+					SA = VA.at((size_t)(blockRow * ABlocksX + sharedDim));
+					SB = VB.at((size_t)(blockCol + BBlocksX * sharedDim));
 					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,
 						SubmatrixAdapter<Operand2> >(SA);
 					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,
@@ -626,10 +626,10 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
-				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
-				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
-				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at((size_t)(blockRow * DBlocksX + blockCol));
+				SubmatrixAdapter<Operand2> SA = VA.at((size_t)(blockRow * ABlocksX));
+				SubmatrixAdapter<Operand3> SB = VB.at((size_t)(blockCol));
+				SubmatrixAdapter<Operand1> SC = VC.at((size_t)(blockRow * DBlocksX + blockCol));
 
 				//Allocate buffers
 				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,
@@ -674,8 +674,8 @@ namespace LinBox
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
-					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					SB = VB.at(blockCol + BBlocksX * sharedDim);
+					SA = VA.at((size_t)(blockRow * ABlocksX + sharedDim));
+					SB = VB.at((size_t)(blockCol + BBlocksX * sharedDim));
 					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,
 						SubmatrixAdapter<Operand2> >(SA);
 					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,
@@ -817,10 +817,10 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
-				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
-				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
-				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at((size_t)(blockRow * DBlocksX + blockCol));
+				SubmatrixAdapter<Operand2> SA = VA.at((size_t)(blockRow * ABlocksX));
+				SubmatrixAdapter<Operand3> SB = VB.at((size_t)(blockCol));
+				SubmatrixAdapter<Operand1> SC = VC.at((size_t)(blockRow * DBlocksX + blockCol));
 
 				//Allocate buffers
 				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,
@@ -865,8 +865,8 @@ namespace LinBox
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
-					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					SB = VB.at(blockCol + BBlocksX * sharedDim);
+					SA = VA.at((size_t)(blockRow * ABlocksX + sharedDim));
+					SB = VB.at((size_t)(blockCol + BBlocksX *sharedDim));
 					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,
 						SubmatrixAdapter<Operand2> >(SA);
 					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,
@@ -1104,10 +1104,10 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
-				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
-				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
-				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at((size_t)(blockRow * DBlocksX + blockCol));
+				SubmatrixAdapter<Operand2> SA = VA.at((size_t)(blockRow * ABlocksX));
+				SubmatrixAdapter<Operand3> SB = VB.at((size_t)(blockCol));
+				SubmatrixAdapter<Operand1> SC = VC.at((size_t)(blockRow * DBlocksX + blockCol));
 
 				//Allocate buffers
 				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,
@@ -1150,8 +1150,8 @@ namespace LinBox
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
-					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					SB = VB.at(blockCol + BBlocksX * sharedDim);
+					SA = VA.at((size_t)(blockRow * ABlocksX + sharedDim));
+					SB = VB.at((size_t)(blockCol + BBlocksX * sharedDim));
 					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,
 						SubmatrixAdapter<Operand2> >(SA);
 					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,
@@ -1288,10 +1288,10 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
-				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
-				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
-				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at((size_t)(blockRow * DBlocksX + blockCol));
+				SubmatrixAdapter<Operand2> SA = VA.at((size_t)(blockRow * ABlocksX));
+				SubmatrixAdapter<Operand3> SB = VB.at((size_t)(blockCol));
+				SubmatrixAdapter<Operand1> SC = VC.at((size_t)(blockRow * DBlocksX + blockCol));
 
 				//Allocate buffers
 				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,
@@ -1334,8 +1334,8 @@ namespace LinBox
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
-					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					SB = VB.at(blockCol + BBlocksX * sharedDim);
+					SA = VA.at((size_t)(blockRow * ABlocksX + sharedDim));
+					SB = VB.at((size_t)(blockCol + BBlocksX * sharedDim));
 					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,
 						SubmatrixAdapter<Operand2> >(SA);
 					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,
@@ -1532,10 +1532,10 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
-				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
-				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
-				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at((size_t)(blockRow * DBlocksX + blockCol));
+				SubmatrixAdapter<Operand2> SA = VA.at((size_t)(blockRow * ABlocksX));
+				SubmatrixAdapter<Operand3> SB = VB.at((size_t)(blockCol));
+				SubmatrixAdapter<Operand1> SC = VC.at((size_t)(blockRow * DBlocksX + blockCol));
 
 				//Allocate buffers
 				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,
@@ -1578,8 +1578,8 @@ namespace LinBox
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
-					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					SB = VB.at(blockCol + BBlocksX * sharedDim);
+					SA = VA.at((size_t)(blockRow * ABlocksX + sharedDim));
+					SB = VB.at((size_t)(blockCol + BBlocksX * sharedDim));
 					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,
 						SubmatrixAdapter<Operand2> >(SA);
 					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,
@@ -1716,10 +1716,10 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
-				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
-				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
-				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at((size_t)(blockRow * DBlocksX + blockCol));
+				SubmatrixAdapter<Operand2> SA = VA.at((size_t)(blockRow * ABlocksX));
+				SubmatrixAdapter<Operand3> SB = VB.at((size_t)(blockCol));
+				SubmatrixAdapter<Operand1> SC = VC.at((size_t)(blockRow * DBlocksX + blockCol));
 
 				//Allocate buffers
 				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,
@@ -1762,8 +1762,8 @@ namespace LinBox
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
-					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					SB = VB.at(blockCol + BBlocksX * sharedDim);
+					SA = VA.at((size_t)(blockRow * ABlocksX + sharedDim));
+					SB = VB.at((size_t)(blockCol + BBlocksX * sharedDim));
 					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,
 						SubmatrixAdapter<Operand2> >(SA);
 					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,
@@ -1969,10 +1969,10 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
-				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
-				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
-				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at((size_t)(blockRow * DBlocksX + blockCol));
+				SubmatrixAdapter<Operand2> SA = VA.at((size_t)(blockRow * ABlocksX));
+				SubmatrixAdapter<Operand3> SB = VB.at((size_t)(blockCol));
+				SubmatrixAdapter<Operand1> SC = VC.at((size_t)(blockRow * DBlocksX + blockCol));
 
 				//Allocate buffers
 				cl_mem bufferD = oclCreateMatrixBuffer<cl_double,
@@ -2015,8 +2015,8 @@ namespace LinBox
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
-					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					SB = VB.at(blockCol + BBlocksX * sharedDim);
+					SA = VA.at((size_t)(blockRow * ABlocksX + sharedDim));
+					SB = VB.at((size_t)(blockCol + BBlocksX * sharedDim));
 					bufferA = oclCreateAndLoadMatrixBuffer<cl_double,
 						SubmatrixAdapter<Operand2> >(SA);
 					bufferB = oclCreateAndLoadMatrixBuffer<cl_double,
@@ -2162,10 +2162,10 @@ namespace LinBox
 		for(int blockCol = 0; blockCol < DBlocksX; blockCol++){
 			for(int blockRow = 0; blockRow < DBlocksY; blockRow++){
 
-				SubmatrixAdapter<Operand1> SD = VD.at(blockRow * DBlocksX + blockCol);
-				SubmatrixAdapter<Operand2> SA = VA.at(blockRow * ABlocksX);
-				SubmatrixAdapter<Operand3> SB = VB.at(blockCol);
-				SubmatrixAdapter<Operand1> SC = VC.at(blockRow * DBlocksX + blockCol);
+				SubmatrixAdapter<Operand1> SD = VD.at((size_t)(blockRow * DBlocksX + blockCol));
+				SubmatrixAdapter<Operand2> SA = VA.at((size_t)(blockRow * ABlocksX));
+				SubmatrixAdapter<Operand3> SB = VB.at((size_t)(blockCol));
+				SubmatrixAdapter<Operand1> SC = VC.at((size_t)(blockRow * DBlocksX + blockCol));
 
 				//Allocate buffers
 				cl_mem bufferD = oclCreateMatrixBuffer<cl_float,
@@ -2208,8 +2208,8 @@ namespace LinBox
 
 				for(int sharedDim = 1; sharedDim < ABlocksX; sharedDim++){
 					//Load next blocks onto the device
-					SA = VA.at(blockRow * ABlocksX + sharedDim);
-					SB = VB.at(blockCol + BBlocksX * sharedDim);
+					SA = VA.at((size_t)(blockRow * ABlocksX + sharedDim));
+					SB = VB.at((size_t)(blockCol + BBlocksX * sharedDim));
 					bufferA = oclCreateAndLoadMatrixBuffer<cl_float,
 						SubmatrixAdapter<Operand2> >(SA);
 					bufferB = oclCreateAndLoadMatrixBuffer<cl_float,
