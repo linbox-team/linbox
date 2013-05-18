@@ -508,7 +508,7 @@ namespace LinBox
 		typedef Modular<double> Field;
 		integer mmodulus;
 		FieldTraits<Field>::maxModulus(mmodulus);
-		RandomPrimeIterator genprime( (long) floor (log((double)mmodulus) ) );
+		RandomPrimeIterator genprime( (unsigned int) floor (log((double)mmodulus) ) );
 		++genprime;
 		typedef typename Blackbox::template rebind< Field >::other FBlackbox;
 		Field Fp(*genprime);

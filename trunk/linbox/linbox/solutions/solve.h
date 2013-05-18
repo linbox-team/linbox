@@ -1037,7 +1037,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 		commentator().start ("Rational CRA Solve", "Rsolve");
-		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
+		size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
 		RandomPrimeIterator genprime( (unsigned) bits);
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
@@ -1062,7 +1062,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 		commentator().start ("Rational CRA Solve", "Rsolve");
-		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
+		size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
 		RandomPrimeIterator genprime((unsigned) bits);
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,RatVector,MethodTraits > iteration(A, b, m);
