@@ -118,7 +118,7 @@ namespace LinBox
 				best+= (uint64_t)*i_elt * (uint64_t)v2[*i_idx];
 			if (inter > best) best+=Corr;
 
-			return res =  best % (uint64_t)field().characteristic();
+			return res =  (GivaroZpz< Givaro::Std32>::Element) (best % (uint64_t)field().characteristic());
 		}
 	}
 
@@ -137,7 +137,7 @@ namespace LinBox
 			uint32_t min       = Max / (Corr+ ((uint32_t)field().characteristic()-1)*(uint32_t)(field().characteristic()-1));
 			uint32_t min_size  =  (size < min ? size : min);
 			uint32_t good1     = (size > min_size ?  size - min_size: 0);
-			uint32_t good2     = (long)(size / min_size)* min_size ;
+			uint32_t good2     = (uint32_t)(size / min_size)* min_size ;
 			uint32_t good_size = (good1 > good2 ? good1 : good2 );
 
 
@@ -176,7 +176,7 @@ namespace LinBox
 			uint32_t min       = Max / (Corr+ (uint32_t)(field().characteristic()-1)*(uint32_t)(field().characteristic()-1));
 			uint32_t min_size  =  (size < min ? size : min);
 			uint32_t good1     = (size > min_size ?  size - min_size: 0);
-			uint32_t good2     = (long)(size / min_size)* min_size ;
+			uint32_t good2     = (uint32_t)(size / min_size)* min_size ;
 			uint32_t good_size = (good1 > good2 ? good1 : good2 );
 
 			typename Vector1::first_type::const_iterator i_idx  =  v1.first.begin ();
