@@ -173,7 +173,7 @@ namespace LinBox
 			typedef _Element Element;
 
 			template<class T>
-			Element & init(Element & a, const T & b = 0) const { return a = b ; }
+			Element & init(Element & a, const T & b = 0) const { return a = (Element)b ; }
 
 			std::istream &read (std::istream &stream, Element &elt) const
 			{
