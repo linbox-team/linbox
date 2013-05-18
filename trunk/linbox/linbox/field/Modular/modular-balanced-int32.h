@@ -257,7 +257,7 @@ namespace LinBox
 			pv1 = pv1e = v1.begin();
 			pv2 = v2.begin();
 
-			for(size_t i = 0; i < v1.size() / blocksize ;++i) {
+			for(size_t i = 0; i < v1.size() / (size_t)blocksize ;++i) {
 				pv1e = pv1e + blocksize;
 				for(;pv1 != pv1e;++pv1,++pv2) {
 					t = (((int64_t) *pv1 ) * ((int64_t) *pv2 ));
@@ -294,7 +294,7 @@ namespace LinBox
 			i_idx = i_idxe = v1.first.begin();
 			i_elt = v1.second.begin();
 
-			for(size_t i = 0; i < v1.first.size() / blocksize ; ++i) {
+			for(size_t i = 0; i < v1.first.size() / (size_t)blocksize ; ++i) {
 				i_idxe = i_idxe + blocksize;
 				for(;i_idx!= i_idxe;++i_idx, ++i_elt) {
 					t = ( (int64_t) *i_elt ) * ( (int64_t) v2[*i_idx] );

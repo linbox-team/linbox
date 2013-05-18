@@ -76,7 +76,7 @@ namespace LinBox
 					At.setEntry(j,i,A.getEntry(i,j));
 
 
-			rank = columnEchelon(At);
+			rank = (size_t)columnEchelon(At);
 
 			// read the transpose of the echelon form from the rank 1st column of L
 			for (size_t i=0; i<rank;++i)
