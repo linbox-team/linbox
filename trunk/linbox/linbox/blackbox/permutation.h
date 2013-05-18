@@ -80,9 +80,10 @@ namespace LinBox
 		Permutation (const Field& F = Field(), size_t n=0, size_t m = 0) :
 			_field(&F)
 		{
-			identity(n);
+			identity((int)n);
 		}
 
+		//!@bug should be size_t
 		void identity(int n)
 		{
 			this->_indices.resize ((size_t)n);
@@ -92,8 +93,8 @@ namespace LinBox
 
 		void random(size_t n)
 		{
-			identity(n);
-			MersenneTwister r(time(NULL));
+			identity((int)n);
+			MersenneTwister r((unsigned int)time(NULL));
 			// Knuth construction
 			for (size_t i = 0; i < n-1; ++i) {
 				size_t j = i + r.randomInt()%(n-i);
@@ -217,7 +218,7 @@ namespace LinBox
 			typename Field::Element one, zero; field().init(one,1UL);field().init(zero,0UL);
 			os << "[";
 			bool firstrow=true;
-			long nmu = _indices.size()-1;
+			long nmu = (long)_indices.size()-1;
 			for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) {
 				if (firstrow) {
 					os << "[";
@@ -242,6 +243,8 @@ namespace LinBox
 
 			return os << "]";
 		}
+
+		//!@bug there is no read here. (needed by test-blackbox.h)
 
 		Storage& setStorage(const Storage& s) { return _indices=s; }
 		const Storage& getStorage() const { return _indices; }

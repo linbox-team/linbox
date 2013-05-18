@@ -214,7 +214,7 @@ namespace LinBox
 	}
 
 	template<class Field>
-	ZeroOne<Field>::ZeroOne(Field F, Index* rowP, Index* colP,
+	ZeroOne<Field>::ZeroOne(Field& F, Index* rowP, Index* colP,
 				Index rows, Index cols, Index NNz, bool RowSort, bool ColSort):
 		_field(&F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(RowSort), _colSort(ColSort) , dynamic(false)
 	{
