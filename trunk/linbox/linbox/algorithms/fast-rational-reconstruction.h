@@ -424,12 +424,12 @@ namespace LinBox
 
 					int k = (int)a1.bitsize()-1 ;
 					int _k;
-					if (h-k > 2)
-						_k = (int)(h-k-2);
+					if ((int)h-k > 2)
+						_k = ((int)h-k-2);
 					else _k = 0;
 					if (n2 >0) {
 						if (a1 < powh) {
-							if (!fastEEA(a2,b2,c2,d2,m2,log_m,n2, powtwo(sqrth,_k), _k)) return false;
+							if (!fastEEA(a2,b2,c2,d2,m2,log_m,n2, powtwo(sqrth,(size_t)_k), (size_t)_k)) return false;
 						}
 						else {
 							ai = a1; bi = b1; ci=c1; di = d1;
@@ -795,13 +795,13 @@ namespace LinBox
 			d = maxQ.a;
 
 			//Element T = m.bitsize();int c = 5;
-			if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+			if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 			else return false;
 		}
 
 		bool classicQMaxEEA(Element& ai, Element& bi, Element& ci, Element& di, const Element& r0, const Element& r1,const Element& powh, myQueue<Ring >&  queueMax, QMatrix<Ring>& maxQ) const
 		{
-			if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+			if (maxQ.q.bitsize() > T.bitsize() + (size_t) c) return true;
 			Element ri, rinext;
 			ri = r0; rinext = r1;
 			ai =di = 1;
@@ -820,7 +820,7 @@ namespace LinBox
 				if (queueMax.pushpop(top, newQ)) {
 					if (maxQ.q < top.q) {
 						maxQ = top;
-						if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+						if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 					}
 				}
 
@@ -865,7 +865,7 @@ namespace LinBox
 				 const Element& m, const size_t d, const Element& n,
 				 const Element& powh, const size_t& h, myQueue<Ring >&  queueMax, QMatrix<Ring>& maxQ) const
 		{
-			if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+			if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 			ai=Element(1);
 			di=Element(1);
 			bi=Element(0);
@@ -882,7 +882,7 @@ namespace LinBox
 				if (queueMax.pushpop(top, newQ)) {
 					if (maxQ.q < top.q) {
 						maxQ = top;
-						if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+						if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 					}
 				}
 				return true;
@@ -911,7 +911,7 @@ namespace LinBox
 					if (queueMax.pushpop(top, newQ)) {
 						if (maxQ.q < top.q) {
 							maxQ = top;
-							if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+							if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 						}
 					}
 
@@ -934,7 +934,7 @@ namespace LinBox
 					if (queueMax.pushpop(top, newQ)) {
 						if (maxQ.q < top.q) {
 							maxQ = top;
-							if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+							if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 						}
 					}
 				}
@@ -967,7 +967,7 @@ namespace LinBox
 
 				queueMax._maxSize +=2;
 				if (nstar > 0) if (!fastQMaxEEA(aistar, bistar, cistar, distar, mstar, log_mstar,nstar, powh, h, queueMax, maxQ)) return false;
-				if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+				if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 				if (queueMax._size > 1) {
 					queueMax.pop_back();
 					QMatrix<Ring> Q_i_2 (queueMax.back());
@@ -1016,7 +1016,7 @@ namespace LinBox
 				this->powtwo(sqrth, logsqrth);
 
 				if (!fastQMaxEEA(a1,b1,c1,d1,m,d,n,sqrth, logsqrth, queueMax, maxQ)) return false;
-				if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+				if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 
 				ai = a1; bi = b1; ci=c1; di = d1;
 
@@ -1034,7 +1034,7 @@ namespace LinBox
 					if (queueMax.pushpop(top, newQ)) {
 						if (maxQ.q < top.q) {
 							maxQ = top;
-							if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+							if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 						}
 					}
 
@@ -1062,7 +1062,7 @@ namespace LinBox
 					if (n2 >0) {
 						if (a1 < powh) {
 							if (!fastQMaxEEA(a2,b2,c2,d2,m2,log_m,n2,
-									 this->powtwo(sqrth,_k), _k, queueTmp,maxQTmp))
+									 this->powtwo(sqrth,(size_t)_k), (size_t)_k, queueTmp,maxQTmp))
 								return false;
 						}
 						else {
@@ -1137,7 +1137,7 @@ namespace LinBox
 				if (maxQ.q < maxQTmp.q) {
 					maxQTmp.leftmultiply(Q_i);
 					maxQ = maxQTmp;
-					if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+					if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 				}
 				int K=0;
 				QMatrix<Ring > Q(_intRing);
@@ -1171,7 +1171,7 @@ namespace LinBox
 						if (queueMax.pushpop(top, Q)) {
 							if (maxQ.q < top.q) {
 								maxQ = top;
-								if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+								if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 							}
 						}
 					}
@@ -1234,7 +1234,7 @@ namespace LinBox
 					if (queueMax.pushpop(top, Q)) {
 						if (maxQ.q < top.q) {
 							maxQ = top;
-							if (maxQ.q.bitsize() > T.bitsize() + c) return true;
+							if (maxQ.q.bitsize() > T.bitsize() + (size_t)c) return true;
 						}
 					}
 

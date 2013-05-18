@@ -224,7 +224,7 @@ namespace LinBox {
 					bound <<= 2;
 					int rPos = rand()%(int)n;
 					//std::cerr << "At iteration " << iterations << ", ";
-					if(dyadicToRational(Z, ay, be, numx[rPos], denx, denBound) /*== 2*/){
+					if(dyadicToRational(Z, ay, be, numx[(size_t)rPos], denx, denBound) /*== 2*/){
 						//std::cerr << "Random single worked!  ";
 					}
 					else{

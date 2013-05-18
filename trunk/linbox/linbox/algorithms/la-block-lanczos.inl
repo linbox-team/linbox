@@ -153,7 +153,7 @@ namespace LinBox
 		_VD.copy (*(_v0.colBegin ()), b);
 
 		// Fill the remaining columns of _v0 with random data
-		RandomDenseStream<Field, typename Matrix::Col> stream (_field, _randiter, A.coldim ());
+		RandomDenseStream<Field, typename Matrix::Col> stream (field(), _randiter, A.coldim ());
 		typename Matrix::ColIterator iter = _v0.colBegin ();
 
 		for (++iter; iter != _v0.colEnd (); ++iter)
@@ -230,7 +230,7 @@ namespace LinBox
 		_Av.resize (A.coldim (), _traits.blockingFactor ());
 
 		// Fill y with random data
-		RandomDenseStream<Field, typename Matrix::Col> stream (_field, _randiter, A.coldim ());
+		RandomDenseStream<Field, typename Matrix::Col> stream (field(), _randiter, A.coldim ());
 		typename Matrix::ColIterator iter;
 
 		for (iter = _y.colBegin (); iter != _y.colEnd (); ++iter)
@@ -301,7 +301,7 @@ namespace LinBox
 		_Av.resize (A.coldim (), _traits.blockingFactor ());
 
 		// Fill v0 with random data
-		RandomDenseStream<Field, typename Matrix::Col> stream (_field, _randiter, A.coldim ());
+		RandomDenseStream<Field, typename Matrix::Col> stream (field(), _randiter, A.coldim ());
 		typename Matrix::ColIterator iter;
 
 		for (iter = _y.colBegin (); iter != _y.colEnd (); ++iter)
@@ -352,7 +352,7 @@ namespace LinBox
 
 		unsigned int dead_iters = 0;
 		Integer c;
-		_field.characteristic (c);
+		field().characteristic (c);
 		double logc = log (double (c));
 		unsigned int max_dead_iters = (unsigned int) ceil (3 * log (double (A.rowdim ())) / (N * logc)) + 2;
 
@@ -390,7 +390,7 @@ namespace LinBox
 		next_iterate = getNextIterate (0);
 
 		// Get a random fat vectors _blockV[0] and _blockU[0]
-		RandomDenseStream<Field, typename Matrix::Col> stream (_field, _randiter, A.coldim ());
+		RandomDenseStream<Field, typename Matrix::Col> stream (field(), _randiter, A.coldim ());
 		typename Matrix::ColIterator u_iter;
 
 		for (u_iter = next_iterate->_u.colBegin (); u_iter != next_iterate->_u.colEnd (); ++u_iter)
@@ -442,21 +442,21 @@ namespace LinBox
 			TIMER_STOP(AV);
 
 			TIMER_START(innerProducts);
-			_MD.mul (*_uAv.get (_iter, _iter), transpose (iterate_here->_u), _Av);
-			_MD.mul (*_uAv.get (_iter + 1, _iter), uTA, _Av);
+			_MD.mul (*_uAv.get ((int)_iter, (int)_iter), transpose (iterate_here->_u), _Av);
+			_MD.mul (*_uAv.get ((int)_iter + 1, (int)_iter), uTA, _Av);
 			TIMER_STOP(innerProducts);
 
-			if (_MD.isZero (*_uAv.get (_iter, _iter)) && _MD.isZero (*_uAv.get (_iter + 1, _iter)))
+			if (_MD.isZero (*_uAv.get ((int)_iter, (int)_iter)) && _MD.isZero (*_uAv.get ((int)_iter + 1, (int)_iter)))
 				++dead_iters;
 			else
 				dead_iters = 0;
 
 			TIMER_START(updateInnerProducts);
-			_MD.copy (*_uAv.get (_iter, _iter + 1), *_uAv.get (_iter + 1, _iter));
+			_MD.copy (*_uAv.get ((int)_iter, (int)_iter + 1), *_uAv.get ((int)_iter + 1, (int)_iter));
 
 			for (j = _history.begin (); j != _history.end () && *j != iterate_here; ++j) {
-				_MD.copy (*_uAv.get (_iter + 1, (*j)->_iter), *_uAv.get (_iter, (*j)->_iter + 1));
-				_MD.copy (*_uAv.get ((*j)->_iter, _iter + 1), *_uAv.get ((*j)->_iter + 1, _iter));
+				_MD.copy (*_uAv.get ((int)_iter + 1, (int)(*j)->_iter), *_uAv.get ((int)_iter, (int)(*j)->_iter + 1));
+				_MD.copy (*_uAv.get ((int)(*j)->_iter, (int)_iter + 1), *_uAv.get ((int)(*j)->_iter + 1, (int)_iter));
 				compute_alphaAvip1 (j, _iter);
 				compute_uip1Abeta (j, _iter);
 			}
@@ -484,7 +484,7 @@ namespace LinBox
 				BlasMatrix<Field> udot ((*j)->_udot, 0, 0, A.rowdim (), (*j)->_rho_v);
 				BlasMatrix<Field> vdot ((*j)->_vdot, 0, 0, A.rowdim (), (*j)->_rho_u);
 
-				_MD.copy (_T1, *_uAv.get (_iter + 1, (*j)->_iter));
+				_MD.copy (_T1, *_uAv.get ((int)_iter + 1, (*j)->_iter));
 				(*j)->_sigma_v.apply (_T1, false);
 
 				BlasMatrix<Field> uip1Avbarj (_T1, 0, 0, N, (*j)->_rho_v);
@@ -500,7 +500,7 @@ namespace LinBox
 				_MD.write (reportN, udotAvbarinv);
 #endif
 
-				_MD.copy (_T1, *_uAv.get ((*j)->_iter, _iter + 1));
+				_MD.copy (_T1, *_uAv.get ((*j)->_iter, (int)_iter + 1));
 				(*j)->_sigma_u.apply (_T1, true);
 
 				BlasMatrix<Field> ubarjAvip1 (_T1, 0, 0, (*j)->_rho_u, N);
@@ -606,8 +606,8 @@ namespace LinBox
 
 		BlasMatrix<Field> udotAv ((*l)->_udotAv, 0, 0, Cu.coldim (), N);
 		BlasMatrix<Field> uAvdot ((*l)->_uAvdot, 0, 0, N, Cv.rowdim ());
-		_MD.axpyin (*_uAv.get (iter + 1, (*l)->_iter), Cu, udotAv);
-		_MD.axpyin (*_uAv.get ((*l)->_iter, iter + 1), uAvdot, Cv);
+		_MD.axpyin (*_uAv.get ((int)iter + 1, (*l)->_iter), Cu, udotAv);
+		_MD.axpyin (*_uAv.get ((*l)->_iter, (int)iter + 1), uAvdot, Cv);
 
 #ifdef LABL_DETAILED_TRACE
 		std::ostream &reportN = commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
@@ -720,7 +720,7 @@ namespace LinBox
 				_MD.negin (ujAvietamu);
 				_MD.axpyin (*_uAv.get ((*j)->_iter, i->_iter), ujAvietamu, ultildeAvi);
 
-				adjust_alphaAvip1 (j, (*j)->_steps.back (), i->_iter);
+				adjust_alphaAvip1 (j, (*j)->_steps.back (), (unsigned int)i->_iter);
 			}
 
 			if (*l != i) {
@@ -844,7 +844,7 @@ namespace LinBox
 				_MD.negin (nuTuizetaAvj);
 				_MD.axpyin (*_uAv.get (i->_iter, (*j)->_iter), uiAvltilde, nuTuizetaAvj);
 
-				adjust_uip1Abeta (j, (*j)->_steps.back (), i->_iter);
+				adjust_uip1Abeta (j, (*j)->_steps.back (), (unsigned int)i->_iter);
 			}
 
 			if (*l != i) {
@@ -1024,12 +1024,12 @@ namespace LinBox
 
 		BlasMatrix<Field> nuukAvj (*step._nuukAvj, 0, 0, step._rhop, N);
 
-		_MD.copy (_T1, *_uAv.get (iter + 1, step._l->_iter));
+		_MD.copy (_T1, *_uAv.get ((int)iter + 1, step._l->_iter));
 		step._l->_sigma_v.apply (_T1, false);
 
 		BlasMatrix<Field> uip1Avltilde (_T1, 0, step._rho, N, step._rhop);
 
-		_MD.axpyin (*_uAv.get (iter + 1, (*j)->_iter), uip1Avltilde, nuukAvj);
+		_MD.axpyin (*_uAv.get ((int)iter + 1, (*j)->_iter), uip1Avltilde, nuukAvj);
 	}
 
 	template <class Field, class Matrix>
@@ -1071,12 +1071,12 @@ namespace LinBox
 
 		BlasMatrix<Field> ujAvkmu (*step._ujAvkmu, 0, 0, N, step._rhop);
 
-		_MD.copy (_T1, *_uAv.get (step._l->_iter, iter + 1));
+		_MD.copy (_T1, *_uAv.get (step._l->_iter, (int)iter + 1));
 		step._l->_sigma_u.apply (_T1, true);
 
 		BlasMatrix<Field> ultildeAvip1 (_T1, step._rho, 0, step._rhop, N);
 
-		_MD.axpyin (*_uAv.get ((*j)->_iter, iter + 1), ujAvkmu, ultildeAvip1);
+		_MD.axpyin (*_uAv.get ((*j)->_iter, (int)iter + 1), ujAvkmu, ultildeAvip1);
 	}
 
 	template <class Field, class Matrix>
@@ -1401,10 +1401,10 @@ namespace LinBox
 		linbox_check ((unsigned int) i < _base + _blocks.size ());
 		linbox_check ((unsigned int) j < _base + _blocks.front ().size ());
 
-		Matrix *ret = _blocks[i - _base][j - _base];
+		Matrix *ret = _blocks[(size_t)i - _base][(size_t)j - _base];
 
 		if (ret == NULL)
-			ret = _blocks[i - _base][j - _base] = _solver->newBlock ();
+			ret = _blocks[(size_t)i - _base][(size_t)j - _base] = _solver->newBlock ();
 
 		linbox_check (ret != NULL);
 
@@ -1419,7 +1419,7 @@ namespace LinBox
 		Matrix *ret;
 
 		if (_ip_trashcan.empty ())
-			ret = new Matrix (_traits.blockingFactor (), _traits.blockingFactor ());
+			ret = new Matrix (field(),_traits.blockingFactor (), _traits.blockingFactor ());
 		else {
 			ret = _ip_trashcan.top ();
 			_ip_trashcan.pop ();
@@ -1547,7 +1547,7 @@ namespace LinBox
 		_matW.resize (_traits.blockingFactor (), _traits.blockingFactor ());
 		_Cu.resize (_traits.blockingFactor (), _traits.blockingFactor ());
 		_Cv.resize (_traits.blockingFactor (), _traits.blockingFactor ());
-		_field.init (_one, 1);
+		field().init (_one, 1);
 	}
 
 } // namespace LinBox

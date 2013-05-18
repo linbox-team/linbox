@@ -163,7 +163,7 @@ namespace LinBox
 			else {//if (inc == -1)
 				int i = (int)x.size()-1;
 				for (; i >=0; --i ) {
-					Element x_in(x[i]);
+					Element x_in(x[(size_t)i]);
 					x_in *=old_den;
 					if (x_in <0) {
 						if ((-(x_in)) > m) x_in %= m;
@@ -172,7 +172,7 @@ namespace LinBox
 					else {
 						if (x_in > m) x_in %= m;
 					}
-					if (x_in > 0) res = res && _RR.reconstructRational(a[i], new_den,x_in,m);
+					if (x_in > 0) res = res && _RR.reconstructRational(a[(size_t)i], new_den,x_in,m);
 					else {
 						res = true;
 						*it_a = 0;
@@ -180,10 +180,10 @@ namespace LinBox
 					}
 					if (!res) return res;
 					else {
-						//std::cout << a[i] << "/" << b*new_den << "\n";
+						//std::cout << a[(size_t)i] << "/" << b*new_den << "\n";
 						if (new_den > 1) {
 							for (int j = (int)a.size()-1; j > i ; --j) {
-								a[j] *=new_den;
+								a[(size_t)j] *=new_den;
 							}
 							b *= new_den;
 							old_den *= new_den;
