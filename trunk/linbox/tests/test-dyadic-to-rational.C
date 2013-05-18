@@ -120,7 +120,7 @@ bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 	typedef PID_integer Ring; Ring Z;
 	typedef Ring::Element Int;
 	bool pass = true;
-	bool claim = false;
+	int claim = 1 ; /* a bool produces warnings and looks weird when compared to 2 */
 	size_t pow2 = 1; // upperbound for k.
 	for (size_t i = k; i > 0; i >>= 1) pow2 *= 2;
 
@@ -224,7 +224,7 @@ bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 	claim = dyadicToRational(Z, n, d, nx, dxs, denB);
 //std::cout << "d " << d << " dxs " << dxs << " denB " << denB << std::endl;
 
-    pass = pass && (claim < 2);
+    pass = pass  && (claim < 2)   ;
 	if (claim == 2) commentator().report() << "third ratrecon in test falsely claims success" << std::endl;
 	if (claim == 1) commentator().report() << "third ratrecon in test (designed to fail) claims speculative success" << std::endl;
 #endif

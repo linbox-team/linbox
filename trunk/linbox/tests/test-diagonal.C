@@ -7,20 +7,20 @@
  * Time-stamp: <22 Jun 10 15:59:39 Jean-Guillaume.Dumas@imag.fr>
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -330,9 +330,9 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	RandomDenseStream<Field, Vector> stream1 (F, n, iterations), stream2 (F, n, iterations), d_stream (F, n, 1);
+	RandomDenseStream<Field, Vector> stream1 (F, n, (unsigned int)iterations), stream2 (F, n, (unsigned int)iterations), d_stream (F, n, 1);
 	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> >
-		stream3 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, iterations);
+		stream3 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, (unsigned int)iterations);
 
 	if (!testIdentityApply    (F, stream1)) pass = false;
 	if (!testRandomMinpoly    (F, stream3)) pass = false;

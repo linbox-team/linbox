@@ -295,12 +295,12 @@ multiEvalPoly (const Field                            &F,
 	w.resize (v.size ());
 
 	for (j = 0; j < v.size (); j++)
-		w[j] = phi[phi.size () - 1];
+		w[(size_t)j] = phi[phi.size () - 1];
 
 	for (i = (int)phi.size () - 2; i >= 0; i--) {
 		for (j = 0; j < v.size (); j++) {
-			F.axpy (tmp, w[j], v[j], phi[(size_t)i]);
-			w[j] = tmp;
+			F.axpy (tmp, w[(size_t)j], v[(size_t)j], phi[(size_t)i]);
+			w[(size_t)j] = tmp;
 		}
 	}
 
@@ -319,19 +319,19 @@ interpolatePoly (const Field                            &F,
 {
 	typedef vector <typename Field::Element> Vector;
 
-	int n = x.size ();
+	int n = (int)x.size ();
 
 	// NB I leave one element in g always initialized to 0 as the ficticious
 	// negative-first coefficient. This streamlines some of the code.
 	static const int g_FUDGE = 1;
-	Vector g(n + g_FUDGE);
+	Vector g((size_t)(n + g_FUDGE));
 	F.init (g[0], 0);
 
 	typename Field::Element gk, c1, c2;
 
 	int i, j, k, d;
 
-	f.resize (n);
+	f.resize ((size_t)n);
 
 	for (i = 0; i < n; i++)
 		F.init (f[(size_t)i], 0);
@@ -345,24 +345,24 @@ interpolatePoly (const Field                            &F,
 			if (i == j) i++;
 
 			// Compute coefficients of this factor.
-			F.sub (c1, x[j], x[(size_t)i]);
+			F.sub (c1, x[(size_t)j], x[(size_t)i]);
 			F.invin (c1);
 			F.mul (c2, c1, x[(size_t)i]);
 			F.negin (c2);
 
 			// Initialize the next element of the Lagrange interpolant
-			F.init (g[d + 1 + g_FUDGE], 0);
+			F.init (g[(size_t)(d + 1 + g_FUDGE)], 0);
 
 			// Multiply this factor by the existing partial product
 			for (k = d + 1 + g_FUDGE; k >= g_FUDGE; k--) {
-				F.mul (gk, g[k - 1], c1);
-				F.axpyin (gk, g[k], c2);
-				g[k] = gk;
+				F.mul (gk, g[(size_t)k - 1], c1);
+				F.axpyin (gk, g[(size_t)k], c2);
+				g[(size_t)k] = gk;
 			}
 		}
 
 		for (i = 0; i < n; i++)
-			F.axpyin (f[(size_t)i], y[j], g[(size_t)i + g_FUDGE]);
+			F.axpyin (f[(size_t)i], y[(size_t)j], g[(size_t)i + g_FUDGE]);
 	}
 
 	return f;

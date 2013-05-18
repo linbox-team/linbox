@@ -72,7 +72,7 @@ template< class Field >
 void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltest = false )
 {
 
-	long vectorSize = 10000;
+	size_t vectorSize = 10000;
 	float sparsity = .01f;
 	long sparsity_inv = 100;
 	int i;
@@ -86,9 +86,9 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 	typename Field::RandIter r(f);
 	r.random( a ); r.random( b ); r.random( c );
 	std::vector<Element> dv1( vectorSize ), dv2( vectorSize );
-	for (i = 0; i < vectorSize; ++i ) {
-		r.random( dv1[i] );
-		r.random( dv2[i] );
+	for (i = 0; i <(int) vectorSize; ++i ) {
+		r.random( dv1[(size_t)i] );
+		r.random( dv2[(size_t)i] );
 	}
 	RandomSparseStream<Field> sparse( f, sparsity, vectorSize );
 	typename RandomSparseStream<Field>::Vector sv; sparse.get( sv );
@@ -99,8 +99,8 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 	typename Field::Element *elements;
 	elements = new typename Field::Element[ iter * 3 ];
 	for( int i = 0; i < iter*3; i++ ) {
-		do { r.random( elements[i] ); }
-		while( f.isZero( elements[i] ) );
+		do { r.random( elements[(size_t)i] ); }
+		while( f.isZero( elements[(size_t)i] ) );
 	}
 
 	// initialize random vector streams
@@ -206,7 +206,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 
 	// DotProduct1 ( dense * dense )
 	timer.clear(); timer.start();
-	for( i = 0; i < iter/vectorSize; i++ ) {
+	for( i = 0; i < iter/(int)vectorSize; i++ ) {
 		f.init(dv1.back(), i);
 		VD.dot( returnValue, dv1, dv2 );
 		f.addin(s, returnValue);
@@ -217,7 +217,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 	if (fulltest) {
 		// DotProduct2 ( dense * sparse )
 		timer.clear(); timer.start();
-		for( i = 0; i < iter/vectorSize; i++ ) {
+		for( i = 0; i < iter/(int)vectorSize; i++ ) {
 			f.init(dv1.back(), i);
 			for ( int j = 0; j < sparsity_inv; ++ j ) {
 				f.init(dv1.front(), j);
@@ -231,8 +231,8 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 
 	// Convert timings to mops (million operations per second)
 	for( i = 0; i < 9; i++ ) {
-		double t = array[i];
-		array[i] = (double)iter / (t > 0 ? (t * 1000000) : 0) ;
+		double t = array[(size_t)i];
+		array[(size_t)i] = (double)iter / (t > 0 ? (t * 1000000) : 0) ;
 	}
 	// use s (just in case compiler cares)
 	if (f.isZero(s)) std::cout << "zero sum" << std::endl;
