@@ -990,6 +990,7 @@ namespace LinBox
 		ConstIterator End ()   const;
 
 
+
 		IndexedIterator      IndexedBegin();
 		IndexedIterator      IndexedEnd();
 		ConstIndexedIterator IndexedBegin() const;
