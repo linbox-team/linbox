@@ -321,7 +321,7 @@ namespace LinBox
 
 
 
-#ifdef LinBoxSrcOnly
+#if defined(LinBoxSrcOnly) or defined(LinBoxTestOnly)
 // for all-source compilation
 #include "linbox/util/debug.C"
 #endif

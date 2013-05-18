@@ -52,7 +52,7 @@ namespace LinBox
 	 * mutual orthogonality properties. This algorithm was proposed by
 	 * Bradford Hovinen.
 	 */
-	template <class Field, class Matrix = BlasMatrix<typename Field::Element> >
+	template <class Field, class Matrix = BlasMatrix<Field> >
 	class LABlockLanczosSolver {
 	public:
 
@@ -78,7 +78,7 @@ namespace LinBox
 		LABlockLanczosSolver (const Field &F,
 				      const BlockLanczosTraits &traits,
 				      typename Field::RandIter r) :
-			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (r),
+			_traits (traits), _field (const_cast<Field*>(&F)), _VD (F), _MD (F), _randiter (r),
 			_uAv (this),
 			_eliminator (F, (unsigned int)  _traits.blockingFactor ())
 		{ init_temps (); }
@@ -178,8 +178,7 @@ namespace LinBox
 		};
 
 		// Structure representing an iterate
-		struct Iterate
-		{
+		struct Iterate {
 			// Record of the pseudoinverse
 			Matrix _udotAvbarinv;       // N x N
 			Matrix _ubarAvdotinv;       // N x N
@@ -208,16 +207,21 @@ namespace LinBox
 			bool _done;
 
 			Iterate (LABlockLanczosSolver &solver, size_t n, size_t N, unsigned int iter) :
-				_udotAvbarinv (N, N), _ubarAvdotinv (N, N),
-				_u (n, N), _v (n, N), _udot (n, N), _vdot (n, N),
+				_udotAvbarinv (solver.field(),N, (uint32_t)N),
+				_ubarAvdotinv (solver.field(),N, (uint32_t)N),
+				_u (solver.field(),n, (uint32_t)N),
+			       	_v (solver.field(),n, (uint32_t)N),
+				_udot (solver.field(),n, (uint32_t)N),
+				_vdot (solver.field(),n, (uint32_t)N),
 				_sigma_u (solver,  (unsigned int) N),
 			       	_sigma_v (solver,  (unsigned int) N),
-				_udotAv (N, N), _uAvdot (N, N)
+				_udotAv (solver.field(),N, (uint32_t)N),
+			       	_uAvdot (solver.field(),N, (uint32_t)N)
 			{ init (iter); }
 
 			void init (unsigned int iter)
 			{
-				_iter = iter;
+				_iter = (int)iter;
 				_rho_u = _rho_v = 0;
 				_done = false;
 				_sigma_u.reset ();
@@ -313,12 +317,13 @@ namespace LinBox
 			return (a < b) ? a : b;
 		}
 
-		public inline const Field & field() const { return *_field; }
+		inline Field & field() { return *_field; }
+	private:
 
 		// Private variables
 
 		const BlockLanczosTraits  _traits;
-		const Field               *_field;
+		/*const*/ Field               *_field;
 		VectorDomain<Field>        _VD;
 		MatrixDomain<Field>        _MD;
 		typename Field::RandIter   _randiter;

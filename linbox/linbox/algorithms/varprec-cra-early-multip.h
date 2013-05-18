@@ -74,7 +74,7 @@ namespace LinBox
 			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(b), vfactor_(vf), vmultip_(vm)
 		{
 			for (int i=0; i < (int)vfactor_.size(); ++i) {
-				if (vfactor_[i]==0) vfactor_[i]=1;
+				if (vfactor_[(size_t)i]==0) vfactor_[(size_t)i]=1;
 			}
 		}
 
@@ -82,11 +82,11 @@ namespace LinBox
 			EarlySingleCRA<Domain>(other.EARLY_TERM_THRESHOLD), FullMultipCRA<Domain>(other.LOGARITHMIC_UPPER_BOUND), vfactor_(other.vfactor_), vmultip_(other.vmultip_)
 		{
 			for (int i=0; i < vfactor_.size(); ++i) {
-				if (vfactor_[i]==0) vfactor_[i]=1;
+				if (vfactor_[(size_t)i]==0) vfactor_[(size_t)i]=1;
 			}
 		}
 
-		int getThreshold(int& t) {return t = EarlySingleCRA<Domain>::EARLY_TERM_THRESHOLD;}
+		int getThreshold(int& t) {return t = (int)EarlySingleCRA<Domain>::EARLY_TERM_THRESHOLD;}
 
 		Integer& getModulus(Integer& m) {EarlySingleCRA<Domain>::getModulus(m);return m;}
 		Integer& getResidue(Integer& r) {EarlySingleCRA<Domain>::getResidue(r);return r;}
@@ -382,7 +382,7 @@ namespace LinBox
 
 			vfactor_ = vf;
 			for (int i=0; i < (int)vfactor_.size(); ++i) {
-				if (vfactor_[i]==0) vfactor_[i]=1;	//if factor ==0 set no factor
+				if (vfactor_[(size_t)i]==0) vfactor_[(size_t)i]=1;	//if factor ==0 set no factor
 			}
 			vmultip_ = vm;
 
@@ -423,7 +423,7 @@ namespace LinBox
 					EarlySingleCRA<Domain>::progress(D,z);
 
 					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ ) {
-						EarlySingleCRA<Domain>::occurency_ = EarlySingleCRA<Domain>::occurency_ +  (shelf - prev_shelf);
+						EarlySingleCRA<Domain>::occurency_ = EarlySingleCRA<Domain>::occurency_ + (unsigned int) (shelf - prev_shelf);
 					}
 					if ( EarlySingleCRA<Domain>::terminated() ) {
 						return true;

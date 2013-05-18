@@ -565,7 +565,7 @@ namespace LinBox
 		TIMER_STOP(innerProducts);
 
 		TIMER_START(Winv);
-		Ni = compute_Winv_S (_Winv[0], _vecS, _VTAV);
+		Ni = (size_t)compute_Winv_S (_Winv[0], _vecS, _VTAV);
 		TIMER_STOP(Winv);
 
 		// Check for catastrophic breakdown
@@ -646,7 +646,7 @@ namespace LinBox
 		TIMER_STOP(innerProducts);
 
 		TIMER_START(Winv);
-		Ni = compute_Winv_S (_Winv[1], _vecS, _VTAV);
+		Ni = (size_t)compute_Winv_S (_Winv[1], _vecS, _VTAV);
 		TIMER_STOP(Winv);
 
 		// Check for catastrophic breakdown
@@ -734,7 +734,7 @@ namespace LinBox
 			TIMER_STOP(innerProducts);
 
 			TIMER_START(Winv);
-			Ni = compute_Winv_S (_Winv[i], _vecS, _VTAV);
+			Ni = (size_t)compute_Winv_S (_Winv[i], _vecS, _VTAV);
 			TIMER_STOP(Winv);
 
 			// Check for catastrophic breakdown
@@ -751,10 +751,10 @@ namespace LinBox
 #endif
 
 			//		MGBLTraceReport (report, _MD, "AV", iter, _AV);
-			MGBLTraceReport (report, _MD, "F", iter + 1, _DEF);
-			MGBLTraceReport (report, _MD, "V^T AV", iter, _VTAV);
-			MGBLTraceReport (report, _MD, "Winv", iter, _Winv[i]);
-			reportS (report, _vecS, iter);
+			MGBLTraceReport (report, _MD, "F", (size_t)iter + 1, _DEF);
+			MGBLTraceReport (report, _MD, "V^T AV", (size_t)iter, _VTAV);
+			MGBLTraceReport (report, _MD, "Winv", (size_t)iter, _Winv[i]);
+			reportS (report, _vecS, (size_t)iter);
 
 			// Now that we have S_i, finish off with F_i+1
 			TIMER_START(orthogonalization);
@@ -776,7 +776,7 @@ namespace LinBox
 			mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _vecS);
 			TIMER_STOP(innerProducts);
 
-			MGBLTraceReport (report, _MD, "V^T A^2 V", iter, _AVTAVSST_VTAV);
+			MGBLTraceReport (report, _MD, "V^T A^2 V", (size_t)iter, _AVTAVSST_VTAV);
 
 			TIMER_START(orthogonalization);
 			_MD.addin (_AVTAVSST_VTAV, _VTAV);
@@ -786,14 +786,14 @@ namespace LinBox
 			addIN (_DEF);
 			_MD.axpyin (_matV[next_j], _matV[j], _DEF);
 
-			MGBLTraceReport (report, _MD, "D", iter + 1, _DEF);
+			MGBLTraceReport (report, _MD, "D", (size_t)iter + 1, _DEF);
 
 			// Compute E and update V_i+1
 			mul (_DEF, _Winv[1 - i], _VTAV, _vecS);
 			_MD.axpyin (_matV[next_j], _matV[prev_j], _DEF);
 			TIMER_STOP(orthogonalization);
 
-			MGBLTraceReport (report, _MD, "E", iter + 1, _DEF);
+			MGBLTraceReport (report, _MD, "E", (size_t)iter + 1, _DEF);
 
 			// Add AV_i S_i S_i^T
 			TIMER_START(Vnext);
@@ -801,10 +801,10 @@ namespace LinBox
 			TIMER_STOP(Vnext);
 
 			//		MGBLTraceReport (report, _MD, "V", iter + 1, _matV[next_j]);
-			checkAConjugacy (_MD, _AV, _matV[next_j], _DEF, iter, iter + 1);
+			checkAConjugacy (_MD, _AV, _matV[next_j], _DEF, (size_t)iter, (size_t)iter + 1);
 
 #ifdef MGBL_DETAILED_TRACE
-			checkAConjugacy (_MD, AV1_backup, _matV[next_j], _DEF, 1, iter + 1);
+			checkAConjugacy (_MD, AV1_backup, _matV[next_j], _DEF, 1, (size_t)iter + 1);
 #endif
 
 			i = 1 - i;
@@ -1181,7 +1181,7 @@ namespace LinBox
 		row_vec = *(_matM.rowBegin () + (int)indices[row]);
 
 		for (idx = row; idx < A.rowdim (); ++idx) {
-			if (!field().isZero (A.getEntry (indices[idx], indices[row] + col_offset))) {
+			if (!field().isZero (A.getEntry (indices[idx], indices[row] + (size_t)col_offset))) {
 				if (idx != row) {
 					typename Matrix::Row row1 = *(A.rowBegin () + (int)indices[idx]);
 					std::swap_ranges (row_vec.begin (), row_vec.end (), row1.begin ());
@@ -1211,14 +1211,14 @@ namespace LinBox
 		pivot_row = *(A.rowBegin () + (int)indices[pivot]);
 
 		for (row = 0; row < pivot; ++row) {
-			const typename Field::Element &Aij = A.getEntry (indices[row], indices[pivot] + col_offset);
+			const typename Field::Element &Aij = A.getEntry (indices[row], indices[pivot] + (size_t)col_offset);
 
 			if (!field().isZero (Aij))
 				_VD.axpyin (*(A.rowBegin () +(int) indices[row]), field().neg (p, Aij), pivot_row);
 		}
 
 		for (++row; row < A.rowdim (); ++row) {
-			const typename Field::Element &Aij = A.getEntry (indices[row], indices[pivot] + col_offset);
+			const typename Field::Element &Aij = A.getEntry (indices[row], indices[pivot] + (size_t)col_offset);
 
 			if (!field().isZero (Aij))
 				_VD.axpyin (*(A.rowBegin () + (int) indices[row]), field().neg (p, Aij), pivot_row);

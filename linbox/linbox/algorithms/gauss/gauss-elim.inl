@@ -127,6 +127,7 @@ namespace LinBox
 	{
 
 		typedef typename Vector::value_type E;
+		typedef typename E::first_type E1;
 
 		unsigned long k = indcol - 1;
 		unsigned long nj = lignecourante.size () ;
@@ -168,7 +169,7 @@ namespace LinBox
 							E tmp = lignecourante[(size_t)j_head];
 							--columns[(size_t)tmp.first];
 							++columns[(size_t)k];
-							tmp.first = (unsigned)k;
+							tmp.first = (E1)k;
 
 							for (long l = (long)j_head; l > 0; --l)
 								lignecourante[(size_t)l] = lignecourante[(size_t)l-1];
@@ -279,7 +280,7 @@ namespace LinBox
 								E tmp = lignecourante[(size_t)l];
 								--columns[k];
 								++columns[(size_t)indpermut];
-								tmp.first = (unsigned long)indpermut;
+								tmp.first = (E1)indpermut;
 
 								unsigned long bjh = j_head-1;
 								for (; l < bjh; ++l)
@@ -314,7 +315,7 @@ namespace LinBox
 						E tmp = lignecourante[(size_t)l];
 						--columns[k];
 						++columns[(size_t)indpermut];
-						tmp.first = (unsigned long)indpermut;
+						tmp.first = (E1)indpermut;
 
 						unsigned long bjh = nj - 1;
 						for (; l < bjh; ++l)
@@ -358,6 +359,7 @@ namespace LinBox
 	{
 
 		typedef typename Vector::value_type E;
+		typedef typename E::first_type E1;
 
 		unsigned long k = indcol - 1;
 		unsigned long nj = lignecourante.size () ;
@@ -399,7 +401,7 @@ namespace LinBox
 							E tmp = lignecourante[(size_t)j_head];
 							--columns[tmp.first];
 							++columns[k];
-							tmp.first = (unsigned)k;
+							tmp.first = (E1)k;
 
 							for (long l = (long)j_head; l > 0; --l)
 								lignecourante[(size_t)l] = lignecourante[(size_t)l-1];
@@ -512,7 +514,7 @@ namespace LinBox
 								E tmp = lignecourante[(size_t)l];
 								--columns[k];
 								++columns[(size_t)indpermut];
-								tmp.first = (unsigned long)indpermut;
+								tmp.first = (E1)indpermut;
 
 								unsigned long bjh = j_head-1;
 								for (; l < bjh; ++l)
@@ -547,7 +549,7 @@ namespace LinBox
 						E tmp = lignecourante[(size_t)l];
 						--columns[k];
 						++columns[(size_t)indpermut];
-						tmp.first = (unsigned long)indpermut;
+						tmp.first = (E1)indpermut;
 
 						unsigned long bjh = nj - 1;
 						for (; l < bjh; ++l)
@@ -587,6 +589,7 @@ namespace LinBox
 					const long &indpermut) const
 	{
 		typedef typename Vector::value_type E;
+		typedef typename E::first_type E1;
 
 		unsigned long k = indcol - 1;
 		unsigned long nj = lignecourante.size () ;
@@ -609,7 +612,7 @@ namespace LinBox
 						else {
 							// zero <--> non zero
 							E tmp = lignecourante[(size_t)j_head];
-							tmp.first = k;
+							tmp.first = (E1)k;
 							for (long l = (long)j_head; l > 0; --l)
 								lignecourante[(size_t)l] = lignecourante[(size_t)l-1];
 							lignecourante[0] = tmp;
@@ -699,7 +702,7 @@ namespace LinBox
 							if ((l < nj) && (lignecourante[(size_t)l].first == k))  {
 								// non zero <--> zero
 								E tmp = lignecourante[(size_t)l];
-								tmp.first = (unsigned long) indpermut;
+								tmp.first = (E1) indpermut;
 
 								unsigned long bjh = j_head -1;
 								for (; l < bjh; l++)
@@ -733,7 +736,7 @@ namespace LinBox
 					if ((l < nj) && (lignecourante[(size_t)l].first == k))  {
 						// non zero <--> zero
 						E tmp = lignecourante[(size_t)l];
-						tmp.first = (unsigned long) indpermut;
+						tmp.first = (E1) indpermut;
 
 						unsigned long bjh = nj - 1;
 						for (; l < bjh; l++)
@@ -788,7 +791,7 @@ void GaussDomain<_Field>::permute (Vector              &lignecourante,
 					}
 					else {
 						// Only k there
-						lignecourante[kin].first = indpermut;
+						lignecourante[kin].first = (E1)indpermut;
 						typename Vector::value_type etmp = lignecourante[kin];
 						--pin;
 						for(size_t i=kin; i<pin; ++i)
@@ -811,7 +814,7 @@ void GaussDomain<_Field>::permute (Vector              &lignecourante,
 				if (pin < nj) {
 					if ( static_cast<long>(lignecourante[(size_t)pin].first) == indpermut) {
 						// Only indpermut there
-						lignecourante[(size_t)pin].first = k;
+						lignecourante[(size_t)pin].first = (E1)k;
 						typename Vector::value_type etmp = lignecourante[(size_t)pin];
 						for(size_t i = pin; i>kin; --i)
 							lignecourante[(size_t)i] = lignecourante[(size_t)i-1];
