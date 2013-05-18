@@ -82,8 +82,8 @@ namespace LinBox
 
 		template<class Vector>
 		Subvector (Vector& v, size_type start, size_type stride, size_type length) :
-			_begin (iterator (v.begin() + start, stride)),
-			_end   (iterator (v.begin() + start + (stride * length), stride))
+			_begin (iterator (v.begin() + (ptrdiff_t)start, (ptrdiff_t)stride)),
+			_end   (iterator (v.begin() + (ptrdiff_t)start + (ptrdiff_t)(stride * length), (ptrdiff_t)stride))
 		{}
 
 		Subvector(iterator Begin, iterator End) :

@@ -670,7 +670,7 @@ namespace LinBox
 
 		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++) {
 			if (!field().isZero (*i)) {
-				res.first.push_back (idx);
+				res.first.push_back ((size_t)idx);
 				res.second.push_back (*i);
 			}
 		}
