@@ -89,21 +89,21 @@ bool testRandom(const Ring& R,
 		int i, j;
 
 		for(i = 0; i < n; ++i) {
-			R. assign (D[i][i], d[i]);
-			R. init (L[i][i], 1);
-			R. init (U[i][i], 1);}
+			R. assign (D[(size_t)i][(size_t)i], d[(size_t)i]);
+			R. init (L[(size_t)i][(size_t)i], 1);
+			R. init (U[(size_t)i][(size_t)i], 1);}
 
 			for (i = 0; i < n; ++ i)
 
 				for (j = 0; j < i; ++ j) {
 
-					R.init(L[i][j], rand() % 10);
+					R.init(L[(size_t)i][(size_t)j], rand() % 10);
 
-					R.init(U[j][i], rand() % 10);
+					R.init(U[(size_t)j][(size_t)i], rand() % 10);
 				}
 
 
-			std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
+			std::vector<typename Ring::Element> tmp1((size_t)n), tmp2((size_t)n), e((size_t)n);
 
 			typename BlasMatrix<Ring>::ColIterator col_p;
 
@@ -111,11 +111,11 @@ bool testRandom(const Ring& R,
 			for (col_p = A.colBegin();
 			     col_p != A.colEnd(); ++ col_p, ++ i) {
 
-				R.init(e[i],1);
+				R.init(e[(size_t)i],1);
 				U.apply(tmp1, e);
 				D.apply(tmp2, tmp1);
 				L.apply(*col_p, tmp2);
-				R.init(e[i],0);
+				R.init(e[(size_t)i],0);
 			}
 
 
@@ -200,7 +200,7 @@ int main(int argc, char** argv)
 
 	bool pass = true;
 	static size_t n = 35;
-	static int iterations = 1;
+	static unsigned int iterations = 1;
 	static Argument args[] = {
 		{ 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,  &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations },

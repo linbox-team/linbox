@@ -3,20 +3,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -70,17 +70,17 @@ static bool testBBrebind (const Field2 &F2, const Blackbox& B)
 }
 */
 
-/* Test Transpose: 
+/* Test Transpose:
  * Check that Transpose<Blackbox> meets blackbox interface and behaves
  * as transpose.
- * 
+ *
  * Return true on success and false on failure
  */
 template <class Blackbox>
 static bool testTransposeBlackbox(Blackbox & A)
 {
 	typedef typename Blackbox::Field::Element Element;
-	commentator().start ("Testing Transpose", "testTranspose", 1); 
+	commentator().start ("Testing Transpose", "testTranspose", 1);
 
 	Transpose<Blackbox> B(A);
 
@@ -114,12 +114,12 @@ static bool testTransposeBlackbox(Blackbox & A)
 }
 
 
-/* Test getEntry and setEntry of a Transpose<BB>. 
+/* Test getEntry and setEntry of a Transpose<BB>.
  *
- * this test template can be instantiated only if the underlying class BB 
+ * this test template can be instantiated only if the underlying class BB
  * has getEntry and setEntry (as dense and sparse matrix types should).
  *
- * For such matrices, A and A^T should share memory, so that results of 
+ * For such matrices, A and A^T should share memory, so that results of
  * setEntry on one are reflected by getEntry on the other.
  */
 template <class Matrix>
@@ -131,19 +131,19 @@ bool testTransposeMatrix(Matrix& A) {
 	Transpose<Matrix> B(A);
 	size_t m = A.rowdim(), n = A.coldim();
 
-	size_t i = rand()%m, j = rand()%n;
+	size_t i = (size_t)rand()%m, j = (size_t)rand()%n;
 	A.getEntry(x, i, j);
 	B.getEntry(y, j, i);
 	ret = ret and (ret1 = A.field().areEqual(x, y));
 	if (not ret1) commentator().report() << "A, A^T same getentry FAIL" << std::endl;
 
-	i = rand()%m, j = rand()%n;
+	i = (size_t)rand()%m, j = (size_t)rand()%n;
 	A.setEntry(i, j, x);
 	B.getEntry(y, j, i);
 	ret = ret and (ret1 = A.field().areEqual(x, y));
 	if (not ret1) commentator().report() << "A set, A^T getEntry FAIL" << std::endl;
 
-	i = rand()%m, j = rand()%n;
+	i = (size_t)rand()%m, j = (size_t)rand()%n;
 	B.setEntry(i, j, x);
 	A.getEntry(y, j, i);
 	ret = ret and (ret1 = A.field().areEqual(x, y));
@@ -173,7 +173,7 @@ int main (int argc, char **argv)
 #else
 	typedef Modular<int32_t> Field ;
 #endif
-    //typedef GivaroZpz< Givaro::Std32> Field2; 
+    //typedef GivaroZpz< Givaro::Std32> Field2;
 	Field F(q);
 
 	typedef vector<Field::Element> Vector;
@@ -193,7 +193,7 @@ int main (int argc, char **argv)
 
 	commentator().start("test on BlasMatrix");
 	BlasMatrix<Field> B(F, m, n);
-	for (size_t i = 0; i < m; ++i) 
+	for (size_t i = 0; i < m; ++i)
 		for (size_t j = 0; j < n; ++j)
 			B.setEntry(i, j, F.init(s, i*j));
 	pass = pass and testTransposeBlackbox(B);

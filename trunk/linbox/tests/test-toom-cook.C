@@ -80,7 +80,7 @@ int main(int ac, char ** av) {
 	LinBox::BlasMatrix<GFpe> B(GF,k,n);
 	LinBox::BlasMatrix<GFpe> C(GF,m,n);
 
-	typedef typename GFpe::RandIter Randiter;
+	typedef GFpe::RandIter Randiter;
 	Randiter R(GF);
 	LinBox::RandomDenseMatrix<Randiter,GFpe> randomizer(GF,R) ;
 	randomizer.random(A);
@@ -115,8 +115,8 @@ int main(int ac, char ** av) {
 		else {
 			int r =100 ;
 			while (--r)  {
-				size_t i = rand()%m;
-				size_t j = rand()%n;
+				size_t i = (size_t)rand()%m;
+				size_t j = (size_t)rand()%n;
 				if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j))))
 					return 1;
 			}
@@ -140,8 +140,8 @@ int main(int ac, char ** av) {
 		else {
 			int r =100 ;
 			while (--r)  {
-				size_t i = rand()%m;
-				size_t j = rand()%n;
+				size_t i = (size_t)rand()%m;
+				size_t j = (size_t)rand()%n;
 				if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j))))
 					return 1;
 			}

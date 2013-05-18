@@ -6,20 +6,20 @@
  *
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -208,7 +208,7 @@ int main (int argc, char **argv)
 	typedef Modular<uint8_t> Field;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F ((uint32_t)q);
 
 	commentator().start("Montgomery block Lanczos test suite");
 
@@ -218,10 +218,10 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().getMessageClass (PROGRESS_REPORT).setMaxDepth (0);
 
-	RandomSparseStream<Field> A_stream (F, (double) k / (double) n, n, n);
-	RandomDenseStream<Field> y_stream (F, n, i);
+	RandomSparseStream<Field> A_stream (F, (double) k / (double) n, (size_t)n, (size_t)n);
+	RandomDenseStream<Field> y_stream (F, (size_t)n, (size_t)i);
 
-	if (!testRandomSolve (F, A_stream, y_stream, N)) pass=false;;
+	if (!testRandomSolve (F, A_stream, y_stream, (size_t)N)) pass=false;;
 	commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 		<< "	Skipping Sample Nullspace test (which has mem problems)" << std::endl;
 	//if (!testSampleNullspace (F, A_stream, N, i)) pass=false;;

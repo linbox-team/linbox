@@ -337,8 +337,8 @@ int main (int argc, char **argv)
 	static size_t m = 100;
 	static size_t r = 10;
 	static integer q = 2147483647U;
-	static int iterations = 100;
-	static int k = 1;
+	static unsigned int iterations = 100;
+	static unsigned int k = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set row dimension of test matrices to N.", TYPE_INT,     &n },
