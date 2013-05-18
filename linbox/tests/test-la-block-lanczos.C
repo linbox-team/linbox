@@ -6,20 +6,20 @@
  *
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -148,7 +148,7 @@ static bool testSampleNullspace (const Field           &F,
 
 	MatrixDomain<Field> MD (F);
 
-	Matrix x (A_stream.dim (), N);
+	Matrix x (F,A_stream.dim (), N);
 
 	SparseMatrix<Field> A (F, A_stream);
 
@@ -246,11 +246,11 @@ static bool testRank (const Field           &F,
 
 int main (int argc, char **argv)
 {
-	static int i = 5;
-	static int n = 10; // because it shows the problem
+	static unsigned int i = 5;
+	static unsigned int n = 10; // because it shows the problem
 	static int k = 5;
-	static int q = 2;
-	static int N = 16;
+	static unsigned int q = 2;
+	static unsigned int N = 16;
 
 	static Argument args[] = {
 		{ 'i', "-i I", "Number of iterations.", TYPE_INT, &i },

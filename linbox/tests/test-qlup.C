@@ -338,9 +338,9 @@ int main (int argc, char **argv)
 	static integer q = 65519U;
         static integer bigQ("1234567890123456789012345678901234568123");
 	//static integer q = 1000003U;
-	static int iterations = 2;
+	static unsigned int iterations = 2;
         static double sparsity = 0.05;
-        static int rseed = (unsigned)time(NULL);
+        static int rseed = (int)time(NULL);
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
@@ -352,7 +352,7 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	srand (rseed);
+	srand ((unsigned int)rseed);
 
 	commentator().start("QLUP  test suite", "qlup");
         commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)

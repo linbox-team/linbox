@@ -114,7 +114,7 @@ int main (int argc, char **argv)
 	static size_t n = 80;
 	static integer q = 65519U;
 	//static integer q = 1000003U;
-	static int iterations = 2;
+	static unsigned int iterations = 2;
         static double sparsity = 0.05;
 
 	static Argument args[] = {

@@ -104,14 +104,14 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 
 	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	int n =(int) d.size();
+	size_t n = d.size();
 
 	bool zeroEntry;
 	do {
 		stream1.next (d);
 		zeroEntry = false;
 		for (size_t i=0; i<stream1.n(); i++)
-			zeroEntry |= R.isZero(d[i]);
+			zeroEntry |= R.isZero(d[(size_t)i]);
 	} while (zeroEntry);
 
 	//  set up RHS
@@ -124,8 +124,8 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		case I:
 		case diag: stream2.next (b);
 			//  special case?
-			if (n == 4) for (size_t i = 0; i < b.size(); ++i) b[i] = 2*(i+1);
-			for (size_t i = 0; i < b.size(); ++i) b[i] %= randLim;
+			if (n == 4) for (size_t i = 0; i < b.size(); ++i) b[(size_t)i] = 2*(i+1);
+			for (size_t i = 0; i < b.size(); ++i) b[(size_t)i] %= randLim;
 			break;
 		//  RHS with just first element 1
 		//case zo:
@@ -148,7 +148,7 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 	typename Ring::Element tmp;
  	switch (mt) {
 		case rand_near_sing: randomAns(R, D, n, n); break;
-		case hilb: invhilb(R, D, n); break;
+		case hilb: invhilb(R, D, (int)n); break;
 		case Hadamard: hadamard(R, D, n); break;
 		case minIJ: minmat(R, D, n); break;
 		case maxIJ: maxmat(R, D, n); break;
@@ -156,7 +156,7 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		case je1:
 		case je2: jordanform(R, D, n); break;
 		case rand_sp:
-			randomMat(R, D, n, k); break;
+			randomMat(R, D, n, (size_t)k); break;
 			//  modified for steffy's random model
 			/*
 			randomMat(R, D, n, n);
@@ -170,40 +170,40 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		  //typename Ring::Element product;
 		  //R.init(product, 1);
 		  randLim = 100000;
-		  for(int i = 0; i < n; ++i) {
-		    int xx = d[i]%randLim;
+		  for(int i = 0; i < (int)n; ++i) {
+		    int xx = d[(size_t)i]%randLim;
 			if (xx == 0) xx = 1;
 			R.init (tmp,  xx);
 			//R.mulin(product, tmp);
 			//if (n == 4) tmp = i+1;
 			//if (tmp == 4) tmp = -4;
-			D.setEntry(i, i, tmp);
+			D.setEntry((size_t)i, (size_t)i, tmp);
 		  }
 		  }
 		  break;
 		case tref: //trefethen(R, D, n); break;
 		case I:
 			R.init(tmp, 1);
-			for(int i = 0; i < n; ++i)
-				D.setEntry(i, i, tmp);
+			for(int i = 0; i < (int)n; ++i)
+				D.setEntry((size_t)i, (size_t)i, tmp);
 			break;
 		case jordan2:
 			//randomMat(R, D, n, n);
-			for(int i = 0; i < n; ++i){
+			for(int i = 0; i < (int)n; ++i){
 				R.init(tmp, 1);
-				D.setEntry(i, i, tmp);
+				D.setEntry((size_t)i, (size_t)i, tmp);
 				R.init(tmp, 0);
-				for(int j = i+1; j < n; ++j)
-					D.setEntry(i, j, tmp);
+				for(int j = i+1; j < (int)n; ++j)
+					D.setEntry((size_t)i,(size_t) j, tmp);
 				R.init(tmp, 2);
-				if (i > 0) D.setEntry(i, i-1, tmp);
+				if (i > 0) D.setEntry((size_t)i, (size_t)i-1, tmp);
 			}
 			break;
 		case zo:
-			for(int i = 0; i < n; ++i)
-				for(int j = 0; j < n; ++j){
+			for(int i = 0; i < (int)n; ++i)
+				for(int j = 0; j < (int)n; ++j){
 					R.init(tmp, rand()%2);
-					D.setEntry(i, j, tmp);
+					D.setEntry((size_t)i, (size_t)j, tmp);
 				}
 			break;
 	}
@@ -217,7 +217,7 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 template <class Ring, class RSolver, class Matrix, class Vector>
 bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 
-	int n = (int) b.size();
+	size_t n = (size_t) b.size();
 	Vector d, tmpb, x, y;
 	VectorWrapper::ensureDim (d, n);
 	VectorWrapper::ensureDim (x, n);
@@ -225,7 +225,7 @@ bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 	VectorWrapper::ensureDim (tmpb, n);
 	VectorDomain<Ring> VD (R);
 
-	for(int i=0; i<n; ++i) tmpb[i] = b[i];
+	for(int i=0; i<(int)n; ++i) tmpb[(size_t)i] = b[(size_t)i];
 
 	//std::ostringstream str;
 	//std::ostream &report = cerr;
@@ -339,7 +339,7 @@ int main(int argc, char** argv) {
 
 	if(run & 1){
 	  if (sizeof(int) < 8) {
-	  	
+
 		report << "numsym: not done.  Requires 64 bit architecture." << std::endl << std::endl;
 	  } else {
 		/*  choose your numerical solver */
@@ -387,7 +387,7 @@ int main(int argc, char** argv) {
 	}
 	pass = pass && part_pass;
 	if(run & 4){
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)n)*0.7213475205) );
+		RandomPrimeIterator genprime((unsigned int)( 26-(int)ceil(log((double)n)*0.7213475205) ));
 		RationalSolver<Ring, DField, RandomPrimeIterator, DixonTraits> rsolver(R, genprime);
 		part_pass = testRandomSolve(R, rsolver, A, b);
 		report << "dixon: " << (part_pass ? "pass" : "fail") << std::endl << std::endl;

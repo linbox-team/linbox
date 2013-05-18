@@ -6,20 +6,20 @@
  *
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -60,7 +60,7 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
-static bool testDiagRatCharpoly (size_t n, int iterations)
+static bool testDiagRatCharpoly (size_t n, unsigned int iterations)
 {
 	commentator().start ("Testing rational charpoly of diagonal matrix ", "testNonsingularRatIntSolve", iterations);
 
@@ -73,12 +73,12 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 	BlasMatrix <GMPRationalField > B(Q,n,n);
 	std::vector<GMPRationalField::Element> c;
 
-	for (i=0; i < iterations; i++) {
+	for (i=0; i < (int)iterations; i++) {
         	GMPRationalField::Element c0,cn;
 	        Q.init(c0,1,1);
 	        Q.init(cn,0,1);
 
-		commentator().startIteration (i);
+		commentator().startIteration ((unsigned int)i);
 
 		size_t k = (size_t)ceil((double)n/2);
 		for (j=0; j < k; ++j) {
@@ -135,7 +135,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static int iterations = 2;
+	static unsigned int iterations = 2;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set column dimension of test matrices to N.", TYPE_INT,     &n },

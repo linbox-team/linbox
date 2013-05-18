@@ -117,12 +117,12 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static long n = 100;
+	static unsigned int n = 100;
 	static integer q1("18446744073709551557");
 	static integer q2 = 2147483647U;
 	static integer q3 = 65521U;
 	static int q4 = 101;
-	static int iterations = 2;
+	static unsigned int iterations = 2;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test vectors to N.", TYPE_INT,     &n },

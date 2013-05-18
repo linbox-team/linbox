@@ -11,20 +11,20 @@
  *
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -245,7 +245,7 @@ bool testRandomMinpoly (Field                 &F,
 	typedef SparseMatrix <Field> Blackbox;
         typedef typename VectStream::Vector Vector;
 
-        commentator().start ("Testing sparse random minpoly", "testRandomMinpoly", iterations);
+        commentator().start ("Testing sparse random minpoly", "testRandomMinpoly", (unsigned int)iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -258,7 +258,7 @@ bool testRandomMinpoly (Field                 &F,
 	VectorWrapper::ensureDim (w, v_stream.n ());
 
 	for (int i = 0; i < iterations; i++) {
-		commentator().startIteration (i);
+		commentator().startIteration ((unsigned int)i);
 
 		iter_passed = true;
 
@@ -339,8 +339,8 @@ static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& 
 	Polynomial phi;
 	typename Field::Element one, zero, neg1; F.init(one, 1); F.init(zero, 0); F.init(neg1); F.neg(neg1, one);
 	BlasMatrix<Field> A(F, n, n);
-	for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) A.setEntry(i, j, one);
-	for (int i = 0; i < n; ++i) A.setEntry(i, i, zero);
+	for (size_t i = 0; i < n; ++i) for (size_t j = 0; j < n; ++j) A.setEntry(i, j, one);
+	for (size_t i = 0; i < n; ++i) A.setEntry(i, i, zero);
 	minpoly(phi, A, M);
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);

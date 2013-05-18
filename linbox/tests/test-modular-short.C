@@ -13,20 +13,20 @@
  * accordance with changes to Modular interace.
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -64,10 +64,10 @@ int main (int argc, char **argv)
 	static integer q3 = 65521U;
 	static int q4 = 101;
 	static size_t n = 10000;
-	static int iterations = 1;
-	static int trials = 10000;
-	static int categories = 1000;
-	static int hist_level = 10;
+	static unsigned int iterations = 1;
+	static unsigned int trials = 10000;
+	static unsigned int categories = 1000;
+	static unsigned int hist_level = 10;
 
 	static Argument args[] = {
 		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q1 },

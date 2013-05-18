@@ -6,20 +6,20 @@
  *
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -86,7 +86,7 @@ int main (int argc, char **argv)
 	trace(t2, A, L );
 	if (! F.areEqual(t2, t) ) pass = false;
 
-	SolutionTags::Generic G; 
+	SolutionTags::Generic G;
 	trace(t3, A, G );
 	if (! F.areEqual(t3, t) ) pass = false;
 
@@ -103,12 +103,12 @@ int main (int argc, char **argv)
     PF.init(poly,0);
 
     for( int diff = 1 - ((int)n); diff <= ((int)n) - 1; ++diff ) {
-		PF.setCoeff(poly,(size_t)(diff + n - 1), CF.init(temp,diff) );
+		PF.setCoeff(poly,(size_t)((size_t)diff + n - 1), CF.init(temp,diff) );
 	}
 
 	Toeplitz<NTL_zz_p,NTL_zz_pX> B( PF, poly, n );
 
-	CF.init(u, 0); 
+	CF.init(u, 0);
 	trace(u1, B);
 	if (! CF.areEqual(u1, u)) {
 		pass = false;

@@ -52,7 +52,7 @@ int main (int argc, char **argv)
 {
 
 	static size_t n = 10000;
-	static int iterations = 1;
+	static unsigned int iterations = 1;
 
         static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },

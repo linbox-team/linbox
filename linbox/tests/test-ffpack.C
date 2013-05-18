@@ -78,7 +78,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().start (pretty("Testing rank"),"testRank",iterations);
+	commentator().start (pretty("Testing rank"),"testRank",(unsigned int)iterations);
 
 	Element one, zero;
 	F.init( one, 1UL);
@@ -96,7 +96,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 		Element * S = new Element[n*n];
 		Element * L = new Element[n*n];
 
-		r = (unsigned)( rand() % n );
+		r = (unsigned)( (size_t)rand() % n );
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
 			for (size_t j=0;j<i;++j)
@@ -151,7 +151,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().start (pretty("Testing TURBO"),"testTURBO",iterations);
+	commentator().start (pretty("Testing TURBO"),"testTURBO",(unsigned int)iterations);
 
 	Element one, zero;
 	F.init( one, 1UL);
@@ -169,7 +169,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 		Element * S = new Element[n*n];
 		Element * L = new Element[n*n];
 
-		r = (unsigned)(rand() % n);
+		r = (unsigned)((size_t)rand() % n);
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
 			for (size_t j=0;j<i;++j)
@@ -233,7 +233,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().start (pretty("Testing determinant"),"testDet",iterations);
+	commentator().start (pretty("Testing determinant"),"testDet",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -310,7 +310,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
+	commentator().start (pretty("Testing LQUP factorization"),"testLQUP",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -445,7 +445,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().start (pretty("Testing minpoly"),"testMinPoly",iterations);
+	commentator().start (pretty("Testing minpoly"),"testMinPoly",(unsigned int)iterations);
 	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -551,7 +551,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().start (pretty("Testing charpoly"),"testCharPoly",iterations);
+	commentator().start (pretty("Testing charpoly"),"testCharPoly",(unsigned int)iterations);
 	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -634,7 +634,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().start (pretty("Testing inverse"),"testInv",iterations);
+	commentator().start (pretty("Testing inverse"),"testInv",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -734,7 +734,7 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().start (pretty("Testing applyP"),"testapplyP",iterations);
+	commentator().start (pretty("Testing applyP"),"testapplyP",(unsigned int)iterations);
 
 	RandIter G(F);
 	Element zero,one,tmp,tmp2;
@@ -840,8 +840,8 @@ int main(int argc, char** argv)
 		if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
-		if (!testMinPoly (F,n,iterations))      locpass = false;
-		if (!testCharPoly (F,n,iterations))     locpass = false;
+		if (!testMinPoly (F,n, iterations))      locpass = false;
+		if (!testCharPoly (F,n, iterations))     locpass = false;
 
 		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
 
@@ -866,8 +866,8 @@ int main(int argc, char** argv)
 		if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
-		if (!testMinPoly (F,n,iterations))      locpass = false;
-		if (!testCharPoly (F,n,iterations))     locpass = false;
+		if (!testMinPoly (F,n, iterations))      locpass = false;
+		if (!testCharPoly (F,n, iterations))     locpass = false;
 
 		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
 		pass &= locpass ;
@@ -890,8 +890,8 @@ int main(int argc, char** argv)
 		if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
-		if (!testMinPoly (F,n,iterations))      locpass = false;
-		if (!testCharPoly (F,n,iterations))     locpass = false;
+		if (!testMinPoly (F,n, iterations))      locpass = false;
+		if (!testCharPoly (F,n, iterations))     locpass = false;
 
 		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
 		pass &= locpass ;
@@ -914,8 +914,8 @@ int main(int argc, char** argv)
 		if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
-		if (!testMinPoly (F,n,iterations))      locpass = false;
-		if (!testCharPoly (F,n,iterations))     locpass = false;
+		if (!testMinPoly (F,n, iterations))      locpass = false;
+		if (!testCharPoly (F,n, iterations))     locpass = false;
 
 		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
 		pass &= locpass ;
@@ -938,8 +938,8 @@ int main(int argc, char** argv)
 		if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
-		if (!testMinPoly (F,n,iterations))      locpass = false;
-		if (!testCharPoly (F,n,iterations))     locpass = false;
+		if (!testMinPoly (F,n, iterations))      locpass = false;
+		if (!testCharPoly (F,n, iterations))     locpass = false;
 
 		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
 		pass &= locpass ;
@@ -964,8 +964,8 @@ int main(int argc, char** argv)
 		if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
-		if (!testMinPoly (F,n,iterations))      locpass = false;
-		if (!testCharPoly (F,n,iterations))     locpass = false;
+		if (!testMinPoly (F,n, iterations))      locpass = false;
+		if (!testCharPoly (F,n, iterations))     locpass = false;
 		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
 		pass &= locpass ;
 	}
@@ -988,8 +988,8 @@ int main(int argc, char** argv)
 		if (!testTURBO (F, n, iterations))   locpass    = false;
 		if (!testapplyP  (F, n, iterations)) locpass    = false;
 		if (!testInv  (F, n, iterations)) locpass       = false;
-		if (!testMinPoly (F,n,iterations)) locpass      = false;
-		if (!testCharPoly (F,n,iterations)) locpass     = false;
+		if (!testMinPoly (F,n, iterations)) locpass      = false;
+		if (!testCharPoly (F,n, iterations)) locpass     = false;
 		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
 		pass &= locpass ;
 	}
@@ -1011,8 +1011,8 @@ int main(int argc, char** argv)
 		if (!testTURBO (F, n, iterations))   locpass    = false;
 		if (!testapplyP  (F, n, iterations)) locpass    = false;
 		if (!testInv  (F, n, iterations)) locpass       = false;
-		if (!testMinPoly (F,n,iterations)) locpass      = false;
-		if (!testCharPoly (F,n,iterations)) locpass     = false;
+		if (!testMinPoly (F,n, iterations)) locpass      = false;
+		if (!testCharPoly (F,n, iterations)) locpass     = false;
 		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
 		pass &= locpass ;
 	}
