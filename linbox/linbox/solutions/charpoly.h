@@ -455,7 +455,7 @@ namespace LinBox
 	{
 		commentator().start ("Rational Charpoly", "Rcharpoly");
 
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RandomPrimeIterator genprime( 26-(unsigned int)ceil(log((double)A.rowdim())*0.7213475205));
 		RationalRemainder2< VarPrecEarlyMultipCRA<Modular<double> > > rra(3UL);
 		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
 
