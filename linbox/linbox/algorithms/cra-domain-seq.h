@@ -61,7 +61,7 @@ namespace LinBox
 
 		template<class Param>
 		ChineseRemainderSeq(const Param& b) :
-			Builder_(b)
+			Builder_(b) //! @bug test-cra-domain/clang++ emits a warning
 		{
 			IterCounter=0;
 		}

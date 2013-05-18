@@ -196,11 +196,12 @@ namespace LinBox
 				throw ms.reportError(__FUNCTION__,__LINE__);
 			typename Field::Element x; field().init(x, 0);
 			_v.resize(_n);
-			for (size_t k = 0; k < _n; ++ k) {	
+			for (size_t k = 0; k < _n; ++ k) {
 				ms.nextTriple(i, j, x);
 				if (i != j) throw ms.reportError(__FUNCTION__,__LINE__);
 				setEntry(i, j, x);
 			}
+			return is;
 		}
 
 		const std::vector<Element>& getData() const { return _v; }
@@ -576,7 +577,7 @@ namespace LinBox
 		return y;
 	} // Vector& Diagonal<SparseAssociativeVectorTag>::apply(...) const
 
-	template<class Field, class Trait> struct GetEntryCategory<Diagonal<Field, Trait> > 
+	template<class Field, class Trait> struct GetEntryCategory<Diagonal<Field, Trait> >
 	{ typedef SolutionTags::Local Tag; };
 
 } // namespace LinBox

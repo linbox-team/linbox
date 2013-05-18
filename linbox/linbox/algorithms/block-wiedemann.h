@@ -109,14 +109,14 @@ namespace LinBox
 				A.applyTranspose( *iter_U , *iter_UA );
 
 			for (size_t i=0;i<m;++i)
-				U.setEntry(0,i,y[i]);
+				U.setEntry(0,i,y[(size_t)i]);
 
 			BlackboxBlockContainer<Field,Transpose<Blackbox> > Sequence (&A,field(),U,V);
 			BlockMasseyDomain <Field,BlackboxBlockContainer<Field,Transpose<Blackbox> > > MBD(&Sequence);
 
 			std::vector<Block> minpoly;
 			std::vector<size_t> degree;
-			MBD.left_minpoly_rec(minpoly,degree); 
+			MBD.left_minpoly_rec(minpoly,degree);
 			//MBD.printTimer();
 
                         //cout<<"minpoly is: \n";
@@ -144,18 +144,18 @@ namespace LinBox
 				 * the first element in this row is non zero.
 				 * we use y and UA as projection (UA= U.A)
 				 */
-				size_t deg = degree[idx];
+				size_t deg = degree[(size_t)idx];
 				std::vector<Vector> combi(p,Vector(deg+1));
 				for (size_t i=0;i<p;++i)
 					for (size_t k=0;k<deg+1;++k)
-						combi[i][k]=minpoly[k].getEntry(idx,i);
+						combi[(size_t)i][k]=minpoly[k].getEntry(idx,i);
 
 				Vector lhs(n);
 				A.applyTranspose(lhs,y);
 				_VDF.mulin(lhs,combi[0][deg]);
 				Vector lhsbis(lhs);
 				for (int i = (int)deg-1 ; i > 0;--i) {
-					_VDF.axpy (lhs, combi[0][i], y, lhsbis);
+					_VDF.axpy (lhs, combi[0][(size_t)i], y, lhsbis);
 					A.applyTranspose (lhsbis, lhs);
 				}
 
@@ -168,7 +168,7 @@ namespace LinBox
 					_VDF.mulin(lhs,combi[k][deg]);
 					Vector lhsbis_loc(lhs);
 					for (int i = (int)deg-1 ; i >= 0;--i) {
-						_VDF.axpy (lhs, combi[k][i], row, lhsbis_loc);
+						_VDF.axpy (lhs, combi[k][(size_t)i], row, lhsbis_loc);
 						A.applyTranspose (lhsbis_loc, lhs);
 					}
 					_VDF.addin(accu,lhs);
@@ -186,24 +186,24 @@ namespace LinBox
 				 * given by the product of the idx-th row of MinPoly and UA.
 				 * this should decrease the number of sparse apply but increase memory requirement.
 				 */
-				size_t deg = degree[idx];
+				size_t deg = degree[(size_t)idx];
 				Block idx_poly(field(),deg+1,p-1);
 				for (size_t i=0;i<deg+1;++i)
 					for (size_t j=0;j<p-1;++j)
-						idx_poly.setEntry(i,j,minpoly[i].getEntry(idx,j+1));
+						idx_poly.setEntry(i,j,minpoly[(size_t)i].getEntry(idx,j+1));
 
 				Block Combi(field(),deg+1,m);
 				_BMD.mul(Combi,idx_poly,UA);
 
 				Vector lhs(n),row(m);
 				for (size_t i=0;i<m;++i)
-					row[i]= Combi.getEntry(deg,i);
+					row[(size_t)i]= Combi.getEntry(deg,i);
 
 				A.applyTranspose(lhs,row);
 				Vector lhsbis(lhs);
 				for (int i = (int)deg-1 ; i >= 0;--i) {
 					for (size_t j=0;j<m;++j)
-						row[j]= Combi.getEntry(i,j);
+						row[j]= Combi.getEntry((size_t)i,j);
 					_VDF.add (lhs,row,lhsbis);
 					A.applyTranspose (lhsbis, lhs);
 				}
@@ -214,7 +214,7 @@ namespace LinBox
 				_VDF.mulin(lhs,minpoly[deg].getEntry(idx,0));
 				lhsbis=lhs;
 				for (size_t i = deg-1 ; i > 0;--i) {
-					_VDF.axpy (lhs,minpoly[i].getEntry(idx,0) , y, lhsbis);
+					_VDF.axpy (lhs,minpoly[(size_t)i].getEntry(idx,0) , y, lhsbis);
 					A.applyTranspose (lhsbis, lhs);
 				}
 

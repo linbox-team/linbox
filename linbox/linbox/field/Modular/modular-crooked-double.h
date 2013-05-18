@@ -104,7 +104,7 @@ namespace LinBox
 		{}
 
 		ModularCrooked (int32_t p, float f = 0.5, int exp = 1) :
-			modulus((Element)p), up_mod( std::ceil((p-1.)*f) ), lo_mod( up_mod-modulus+1 ),lmodulus (p)
+			modulus((Element)p), up_mod( std::ceil((p-1.)*f) ), lo_mod( up_mod-modulus+1 ),lmodulus ((unsigned long)p)
 			,zero(0),one(1),mOne(-1)
 		{
 #ifdef DEBUG
@@ -458,7 +458,7 @@ namespace LinBox
 		typedef ModularCrooked<double> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F), _y(0.) , _bound( (double) ((1ULL << 53) - (int) (SQR(std::max(_field.up_mod,-_field.lo_mod)))))
+			_field (F), _y(0.) , _bound( (double) ((1UL << 53) - (unsigned long) (SQR(std::max(_field.up_mod,-_field.lo_mod)))))
 		{}
 
 		FieldAXPY (const FieldAXPY &faxpy) :
@@ -534,9 +534,9 @@ namespace LinBox
 		typedef double Element;
 		DotProductDomain(){}
 		DotProductDomain (const ModularCrooked<double> &F) :
-			VectorDomainBase<ModularCrooked<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (SQR(std::max(_field.up_mod,-_field.lo_mod)))))
+			VectorDomainBase<ModularCrooked<double> > (F), _bound( (double) ( (1UL<<53) - (unsigned long) (SQR(std::max(_field->up_mod,-_field->lo_mod)))))
 		{
-			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (SQR(std::max(_field.up_mod,-_field.lo_mod))));
+			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (SQR(std::max(_field->up_mod,-_field->lo_mod))));
 		}
 
 		using VectorDomainBase<ModularCrooked<double> >::field;
@@ -550,20 +550,20 @@ namespace LinBox
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				y = drem(y, _field.modulus);
+				y = drem(y, _field->modulus);
 			}
 			else{
 				size_t i=0;
 				for (;i< v1.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
-					t+=drem(y, _field.modulus);
+					t+=drem(y, _field->modulus);
 					y=0.;
 				}
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
-				t+=drem(y, _field.modulus);
-				y = drem(t, _field.modulus);
+				t+=drem(y, _field->modulus);
+				y = drem(t, _field->modulus);
 			}
 			return res = y;
 		}
@@ -579,20 +579,20 @@ namespace LinBox
 			if (v1.first.size() < _nmax) {
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				y = drem(y, _field.modulus);
+				y = drem(y, _field->modulus);
 			}
 			else {
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=drem(y, _field.modulus);
+					t+=drem(y, _field->modulus);
 					y=0.;
 				}
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
-				t+= drem(y, _field.modulus);
-				y = drem(t, _field.modulus);
+				t+= drem(y, _field->modulus);
+				y = drem(t, _field->modulus);
 			}
 			return res = y;
 		}
