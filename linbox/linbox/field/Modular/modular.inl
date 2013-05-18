@@ -58,11 +58,11 @@ namespace LinBox {
 
 		y %= (uint64_t) field()._modulus;
 
-		for (; iterend != v1.end (); j += field()._k) {
+		for (; iterend != v1.end (); j += (ptrdiff_t)field()._k) {
 			typename Vector1::const_iterator iter_i = iterend;
 			typename Vector2::const_iterator iter_j;
 
-			iterend += field()._k;
+			iterend += (ptrdiff_t)field()._k;
 
 			for (iter_j = j; iter_i != iterend; ++iter_i, ++iter_j)
 				y += (uint64_t) *iter_i * (uint64_t) *j;
@@ -100,8 +100,8 @@ namespace LinBox {
 				typename Vector1::first_type::const_iterator iter_i_idx = iterend;
 				typename Vector1::second_type::const_iterator iter_i_elt = i_elt;
 
-				iterend += field()._k;
-				i_elt += field()._k;
+				iterend += (ptrdiff_t)field()._k;
+				i_elt += (ptrdiff_t)field()._k;
 
 				for (; iter_i_idx != iterend; ++iter_i_idx, ++iter_i_elt)
 					y += (uint64_t) *iter_i_elt * (uint64_t) v2[*iter_i_idx];
@@ -382,7 +382,7 @@ namespace LinBox {
 
 		do {
 			j = v.begin ();
-			j_end = j + __LINBOX_MIN (uint64_t (A.coldim ()), VD.field ()._k);
+			j_end = j + (ptrdiff_t)__LINBOX_MIN (uint64_t (A.coldim ()), VD.field ()._k);
 
 			for (; j != j_end; ++j, ++i)
 				for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();
@@ -390,7 +390,7 @@ namespace LinBox {
 				     ++k_idx, ++k_elt, ++l)
 					_tmp[*k_idx] += *k_elt * *j;
 
-			j_end += __LINBOX_MIN (uint64_t (A.coldim () - (j_end - v.begin ())), VD.field ()._k);
+			j_end += (ptrdiff_t) __LINBOX_MIN (uint64_t (A.coldim () - (size_t)(j_end - v.begin ())), VD.field ()._k);
 
 			for (l =_tmp.begin (); l != l_end; ++l)
 				*l %= VD.field ()._modulus;
