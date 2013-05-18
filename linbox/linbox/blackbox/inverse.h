@@ -113,16 +113,16 @@ namespace LinBox
 				field().negin (a0);
 
 				for (i = 1; i < (int) _mp1.size (); i++)
-					field().mul (_minpoly[i-1], _mp1[i], a0);
+					field().mul (_minpoly[(size_t)i-1], _mp1[(size_t)i], a0);
 			}
 
 			int n = (int) _minpoly.size () - 1;
 
-			_VD.mul (y, x, _minpoly[n]);
+			_VD.mul (y, x, _minpoly[(size_t)n]);
 
 			for (i = n - 1; i >= 0; i--) {
 				_BB->apply (_z, y);
-				_VD.axpy (y, _minpoly[i], x, _z);
+				_VD.axpy (y, _minpoly[(size_t)i], x, _z);
 			}
 
 			return y;
@@ -156,16 +156,16 @@ namespace LinBox
 				field().negin (a0);
 
 				for (i = 1; i < (int) _mp1.size (); i++)
-					field().mul (_transposeMinpoly[i-1], _mp1[i], a0);
+					field().mul (_transposeMinpoly[(size_t)i-1], _mp1[(size_t)i], a0);
 			}
 
 			int n = (int) _transposeMinpoly.size () - 1;
 
-			_VD.mul (y, x, _transposeMinpoly[n]);
+			_VD.mul (y, x, _transposeMinpoly[(size_t)n]);
 
 			for (i = n - 1; i >= 0; i--) {
 				_BB->applyTranspose (_z, y);
-				_VD.axpy (y, _transposeMinpoly[i], x, _z);
+				_VD.axpy (y, _transposeMinpoly[(size_t)i], x, _z);
 			}
 
 			return y;
