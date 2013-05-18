@@ -6,20 +6,20 @@
  *
  * ---------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -96,7 +96,7 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing muladd"),"testMulAdd",iterations);
+	mycommentator().start (pretty("Testing muladd"),"testMulAdd",(unsigned int)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -119,8 +119,8 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 		A.random();
 		B.random();
 		C.random();
-		
-		// Create 2 random vectors 
+
+		// Create 2 random vectors
 		for (size_t i=0;i<n;++i) {
 			G.random(x[i]);
 			G.random(y[i]);
@@ -256,7 +256,7 @@ static bool testMulAddAgain (const Field& , size_t n, int iterations)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing muladd again"),"testMulAddAgain",iterations);
+	mycommentator().start (pretty("Testing muladd again"),"testMulAddAgain",(unsigned int)iterations);
 
 	bool ret = true;
 
@@ -345,7 +345,7 @@ static bool testMulAddShapeTrans (const Field &F, size_t m, size_t n, size_t k, 
 	bool ret = true ;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing muladd for shapes and transposition"),"testMulAddShapeTrans",iterations);
+	mycommentator().start (pretty("Testing muladd for shapes and transposition"),"testMulAddShapeTrans",(unsigned long)iterations);
 
 
 	typedef typename Field::Element Element;
@@ -426,7 +426,7 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 	bool ret = true ;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing triangular matmul for shapes and transposition"),"testTriangMulShapeTrans",iterations);
+	mycommentator().start (pretty("Testing triangular matmul for shapes and transposition"),"testTriangMulShapeTrans",(unsigned int)iterations);
 
 
 	typedef typename Field::Element                               Element;
@@ -558,7 +558,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing rank"),"testRank",iterations);
+	mycommentator().start (pretty("Testing rank"),"testRank",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -572,7 +572,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 		mycommentator().progress(k);
 		BlasMatrix<Field> A(F,n,n),S(F,n,n), L(F,n,n);
 
-		r = (unsigned int)(random() % n);
+		r = (unsigned int)((size_t)random() % n);
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
 			S.setEntry(i,i,Gn.random(tmp));
@@ -622,7 +622,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing determinant"),"testDet",iterations);
+	mycommentator().start (pretty("Testing determinant"),"testDet",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -687,7 +687,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing inverse"),"testInv",iterations);
+	mycommentator().start (pretty("Testing inverse"),"testInv",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -760,7 +760,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing triangular solver"),"testTriangularSolve",iterations);
+	mycommentator().start (pretty("Testing triangular solver"),"testTriangularSolve",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -873,7 +873,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing solver"),"testTriangularSolve",iterations);
+	mycommentator().start (pretty("Testing solver"),"testTriangularSolve",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -990,7 +990,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing permutations"),"testPermutation",iterations);
+	mycommentator().start (pretty("Testing permutations"),"testPermutation",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -1297,7 +1297,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
+	mycommentator().start (pretty("Testing LQUP factorization"),"testLQUP",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -1401,7 +1401,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing minpoly"),"testMinPoly",iterations);
+	mycommentator().start (pretty("Testing minpoly"),"testMinPoly",(unsigned int)iterations);
 	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -1482,7 +1482,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing charpoly"),"testCharPoly",iterations);
+	mycommentator().start (pretty("Testing charpoly"),"testCharPoly",(unsigned int)iterations);
 	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -1563,9 +1563,9 @@ static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n) {
 	pass = pass and MD.areEqual(B, C);
 
 //	MatrixStream<Field> ms; ...
-//	BlasMatrix<Field> D(ms); 
+//	BlasMatrix<Field> D(ms);
 //	pass = pass and MD.areEqual(B, D);
-	
+
 	ScalarMatrix<Field> Eo(Fld, n, Fld.zero);
 	BlasMatrix<Field> E(Eo); // copy a bb
 	pass = pass and MD.areEqual(B, E);
@@ -1595,7 +1595,7 @@ static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n) {
 
 // returns true if ok, false if not.
 template<class Field>
-int launch_tests(Field & F, int n, int iterations)
+int launch_tests(Field & F, size_t n, int iterations)
 {
 	bool pass = true ;
 	//std::cout << "no blas tests for now" << std::endl;
@@ -1603,7 +1603,7 @@ int launch_tests(Field & F, int n, int iterations)
 	if (!testBlasMatrixConstructors(F, n, n))             pass=false;
 	if (!testMulAdd (F,n,iterations))                     pass=false;
 	if (!testMulAddAgain (F,n,iterations))                pass=false;
-	int m = n+n/2 ; int k = 2*n+1 ;
+	size_t m = n+n/2 ; size_t k = 2*n+1 ;
 	if (!testMulAddShapeTrans (F,n,m,k,iterations))       pass=false;
 	if (!testMulAddShapeTrans (F,n,k,m,iterations))       pass=false;
 	if (!testMulAddShapeTrans (F,m,n,k,iterations))       pass=false;
@@ -1676,17 +1676,17 @@ int main(int argc, char **argv)
 
 	commentator().start("BlasMatrixDomain test suite", "BlasMatrixDomain");
 
-	pass &= launch_tests(F1,(int)n,iterations);
-	pass &= launch_tests(F2,(int)n,iterations);
-	pass &= launch_tests(F3,(int)n,iterations);
+	pass &= launch_tests(F1,n,iterations);
+	pass &= launch_tests(F2,n,iterations);
+	pass &= launch_tests(F3,n,iterations);
 #pragma message "#warning GF2 is not working at all -> working on m4ri"
-	// pass &= launch_tests(F4,(int)n,iterations);
-	// pass &= launch_tests(F6,(int)n,iterations);
+	// pass &= launch_tests(F4,n,iterations);
+	// pass &= launch_tests(F6,n,iterations);
 #pragma message "#warning GivaroZpz is not working at all"
-	// pass &= launch_tests(F5,(int)n,iterations);
+	// pass &= launch_tests(F5,n,iterations);
 #ifdef __LINBOX_HAVE_NTL
 #pragma message "#warning NTL_ZZp is not working at all"
-	// pass &= launch_tests(F7,(int)n,iterations);
+	// pass &= launch_tests(F7,n,iterations);
 #endif
 
 	commentator().stop(MSG_STATUS (pass), (const char *) 0,"BlasMatrixDomain test suite");

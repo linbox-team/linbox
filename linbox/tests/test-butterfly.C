@@ -6,20 +6,20 @@
  *
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -337,12 +337,12 @@ int main (int argc, char **argv)
 
 	RandomSparseStream<Field, Vector<Field>::Sparse, NonzeroRandIter<Field> >
 		stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)),
-			(double) k / (double) n, n, iterations);
-	RandomDenseStream<Field> v1_stream (F, n, iterations);
-	RandomDenseStream<Field> v2_stream (F, n, iterations);
+			(double) k / (double) n, n, (unsigned int)iterations);
+	RandomDenseStream<Field> v1_stream (F, n, (unsigned int)iterations);
+	RandomDenseStream<Field> v2_stream (F, n, (unsigned int)iterations);
 
-	if (!testSetButterfly  (F, stream, k)) pass = false;
-	if (!testCekstvSwitch  (F, iterations, n, k)) pass = false;
+	if (!testSetButterfly  (F, stream, (unsigned int)k)) pass = false;
+	if (!testCekstvSwitch  (F, (unsigned int)iterations, n, (unsigned int)k)) pass = false;
 	if (!testRandomLinearity (F, v1_stream, v2_stream)) pass = false;
 	if (!testRandomTranspose (F, v1_stream, v2_stream)) pass = false;
 

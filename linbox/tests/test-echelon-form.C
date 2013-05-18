@@ -84,7 +84,7 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing rank"),"testRank",iterations);
+	mycommentator().start (pretty("Testing rank"),"testRank",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -124,22 +124,22 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 
 		// compute the rank of A
 		BlasMatrix<Field> E1(F,m,n), E2(F,m,n), E3(F,m,n), E4(F,m,n);
-		unsigned int rank1= EFD.rowEchelon(E1, A);
+		unsigned int rank1= (unsigned int)EFD.rowEchelon(E1, A);
                 BMD.write(commentator().report(), E1) << " = rowEchelon(E1, A)" << std::endl;
 
-		unsigned int rank2= EFD.rowReducedEchelon(E2, A);
+		unsigned int rank2=(unsigned int) EFD.rowReducedEchelon(E2, A);
                 BMD.write(commentator().report(), E2) << " = rowReducedEchelon(E2, A)" << std::endl;
 
-		unsigned int rank3= EFD.columnEchelon(E3, A);
+		unsigned int rank3=(unsigned int) EFD.columnEchelon(E3, A);
                 BMD.write(commentator().report(), E3) << " = columnEchelon(E3, A)" << std::endl;
 
-		unsigned int rank4= EFD.columnReducedEchelon(E4, A);
+		unsigned int rank4=(unsigned int) EFD.columnReducedEchelon(E4, A);
                 BMD.write(commentator().report(), E4) << " = columnReducedEchelon(E4, A)" << std::endl;
 
-		unsigned int rank5= EFD.columnEchelon(A);
+		unsigned int rank5=(unsigned int) EFD.columnEchelon(A);
                 BMD.write(commentator().report(), A) << " = columnEchelon(A)" << std::endl;
 
-		unsigned int rank6= EFD.columnReducedEchelon(E1);
+		unsigned int rank6=(unsigned int) EFD.columnReducedEchelon(E1);
                 BMD.write(commentator().report(), E1) << " = columnReducedEchelon(E1)" << std::endl;
 
 		commentator().report() << "Ranks " << rank1 << " " << rank2 << " " << rank3 << " " << rank4 << " " << rank5 << " " << rank6 << " should be " << r << std::endl;
@@ -167,7 +167,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
+	mycommentator().start (pretty("Testing LQUP factorization"),"testLQUP",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
@@ -263,10 +263,10 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 
 // returns true if ok, false if not.
 template<class Field>
-int launch_tests(Field & F, int m, int n, int iterations = 1)
+int launch_tests(Field & F, size_t m, size_t n, int iterations = 1)
 {
 	bool pass = true ;
-	int mn = (m < n) ? n : m;
+	size_t mn = (m < n) ? n : m;
  	if (!testRank (F, mn, mn, iterations))     pass=false;
 	if (m != n) {
  		if (!testRank (F, n, m, iterations))   pass=false;
@@ -310,7 +310,7 @@ int main(int argc, char **argv)
 
 	commentator().start("BlasMatrixDomain test suite", "BlasMatrixDomain");
 
-	pass &= launch_tests(F1,(int)m, (int)n,iterations);
+	pass &= launch_tests(F1,m, n, iterations);
 	commentator().stop(MSG_STATUS (pass), (const char *) 0,"BlasMatrixDomain test suite");
 	return pass ? 0 : -1;
 }
