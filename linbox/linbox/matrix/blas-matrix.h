@@ -1008,6 +1008,7 @@ namespace LinBox
 		///////////////////
 
 
+		//!@bug every vector we use here should have a stride/be blas vectors so it's not really templated by Vector1 Vector2 in general
 		template <class Vector1, class Vector2>
 		Vector1&  apply (Vector1& y, const Vector2& x) const
 		{

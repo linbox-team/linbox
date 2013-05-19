@@ -69,7 +69,7 @@ namespace LinBox
 		{}
 
 
-#if  __LINBOX_HAVE_LAPACK
+#ifdef  __LINBOX_HAVE_LAPACK
 		template <class IMatrix, class OutVector, class InVector>
 		SolverReturnStatus solve(OutVector& num, Integer& den,
 					 const IMatrix& M, const InVector& b) const
@@ -122,6 +122,7 @@ namespace LinBox
 				integer* numx = new integer[n];
 				integer denx;
 				int ret;
+				//!@bug don't use cblas_, we should use only fflas-ffpack (if not interfaced in LinBox::)
 				ret = cblas_rsol (n, DM, numx, denx, Db);
 				delete[] DM; delete[] Db;
 
