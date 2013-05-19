@@ -26,6 +26,7 @@
  * @ingroup tests
  * @brief no doc.
  * @test no doc.
+	//!@bug should work for NTL integers too
  */
 
 
@@ -113,7 +114,7 @@ bool testRandom(const Ring& R,
 			R.init(e[(size_t)i],1);
 			U.apply(tmp1, e);
 			D.apply(tmp2, tmp1);
-			L.apply(*col_p, tmp2);
+			L.apply(*col_p, tmp2); //! @internal @bug  should use Triangular apply ? We are doing this many times, factor somewhere in test-utils.h ? why not some ftrtr routine for that ?
 			R.init(e[(size_t)i],0);
 		}
 
@@ -189,11 +190,9 @@ int main(int argc, char** argv)
 	};
 
 	parseArguments (argc, argv, args);
-//#ifdef __LINBOX_HAVE_NTL
-//	typedef LinBox::NTL_ZZ      Ring;
-//#else
+	//!@bug should be tried on NTZ_LL too
 	typedef LinBox::PID_integer      Ring;
-//#endif
+
 	Ring R;
 
 	commentator().start("Smith form test suite", "Smith");
@@ -202,16 +201,27 @@ int main(int argc, char** argv)
 	LinBox::RandomDenseStream<Ring> s1 (R, n, (unsigned int)iterations);
 	if (!testRandom(R, s1)) pass = false;
 
+#if 0
+#ifdef __LINBOX_HAVE_NTL
+	typedef LinBox::NTL_ZZ      Ring2;
+	Ring2 R2;
+
+	LinBox::RandomDenseStream<Ring2> s2 (R2, n, (unsigned int)iterations);
+	if (!testRandom(R2, s2)) pass = false;
+
+#endif
+#endif
+
 	commentator().stop("Smith form test suite");
 	return pass ? 0 : -1;
 
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
