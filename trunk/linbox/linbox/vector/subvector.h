@@ -32,7 +32,7 @@
 #ifndef __LINBOX_subvector_H
 #define __LINBOX_subvector_H
 
-#include "linbox/vector/subiterator.h"
+//#include "linbox/vector/subiterator.h" BB:not used here
 #include <iterator>
 #include "linbox/vector/vector-traits.h"
 #include <stdexcept>
@@ -84,7 +84,16 @@ namespace LinBox
 		Subvector (Vector& v, size_type start, size_type stride, size_type length) :
 			_begin (iterator (v.begin() + (ptrdiff_t)start, (ptrdiff_t)stride)),
 			_end   (iterator (v.begin() + (ptrdiff_t)start + (ptrdiff_t)(stride * length), (ptrdiff_t)stride))
+		{
+		}
+
+#if 0
+		template<lass otherIterator>
+		Subvector (otheriterator Begin, size_type start, size_type stride, size_type length) :
+			_begin (iterator (Begin + (ptrdiff_t)start, (ptrdiff_t)stride)),
+			_end   (iterator (Begin + (ptrdiff_t)start + (ptrdiff_t)(stride * length), (ptrdiff_t)stride))
 		{}
+#endif
 
 		Subvector(iterator Begin, iterator End) :
 			_begin(Begin), _end(End)
@@ -263,11 +272,10 @@ namespace std
 #endif //__LINBOX_subvector_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
