@@ -71,7 +71,8 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 	GMPRationalField Q;
 	SparseMatrix<GMPRationalField > A(Q,n,n);
 	BlasMatrix <GMPRationalField > B(Q,n,n);
-	std::vector<GMPRationalField::Element> c;
+	// std::vector<GMPRationalField::Element> c;
+	BlasVector<GMPRationalField> c(Q);
 
 	for (i=0; i < iterations; i++) {
         	GMPRationalField::Element c0,cn;
