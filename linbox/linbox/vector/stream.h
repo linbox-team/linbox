@@ -172,7 +172,15 @@ namespace LinBox
 		 * @param v Vector to use
 		 */
 		Vector &get (Vector &v)
-		{ if (_m == 0 || _j < _m) copy (_v.begin (), _v.end (), v.begin ()); return v; }
+		{
+			if (_m == 0 || _j < _m)
+				std::copy (_v.begin (), _v.end (), v.begin ());
+#ifdef _LB_DEBUG
+			else {
+				std::cerr << "Vector stream: nothing to get" << std::endl;
+			}
+#endif
+			return v; }
 
 		/** Extraction operator form
 		*/

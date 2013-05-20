@@ -39,8 +39,8 @@
 #include <vector>
 #include <fstream>
 
-#include "linbox/vector/subiterator.h"
-#include "linbox/vector/subvector.h"
+// #include "linbox/vector/subiterator.h" // BB: not used
+// #include "linbox/vector/subvector.h"
 #include "linbox/vector/stream.h"
 #include "linbox/matrix/matrix-domain.h"
 

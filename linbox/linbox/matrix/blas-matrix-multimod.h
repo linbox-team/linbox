@@ -40,8 +40,8 @@
 
 #include "linbox/util/debug.h"
 
-#include "linbox/vector/subiterator.h"
-#include "linbox/vector/subvector.h"
+// #include "linbox/vector/subiterator.h"
+// #include "linbox/vector/subvector.h"
 
 #include "linbox/matrix/matrix-category.h"
 #include "linbox/algorithms/linbox-tags.h"
