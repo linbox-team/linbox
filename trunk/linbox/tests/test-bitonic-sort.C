@@ -36,6 +36,8 @@
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
 #include "test-common.h"
+#include "linbox/vector/blas-vector.h"
+#include "linbox/field/unparametric.h"
 
 using namespace LinBox;
 
@@ -62,8 +64,11 @@ bool testRandom (std::ostream& report, size_t s)
 
 	Comparator comp;
 
-	std::vector<int> v(s), d(s);
-	std::vector<int>::iterator p1, p2;
+	typedef UnparametricField<int> Ints ;
+	Ints	I ;
+
+	BlasVector<Ints> v(I,s), d(I,s);
+	BlasVector<Ints>::iterator p1, p2;
 
 	for (p1 = v. begin(), p2 = d.begin(); p1 != v.end(); ++ p1, ++p2)
 		*p1 = *p2 = rand();
