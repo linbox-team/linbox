@@ -38,6 +38,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
+#include "linbox/vector/blas-vector.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/vector/stream.h"
 
@@ -49,10 +50,10 @@ using namespace LinBox;
 template <class Field>
 bool testVectorDomain (const Field &F, const char *text, size_t n, unsigned int iterations)
 {
-	typedef std::vector<typename Field::Element> DenseVector;
-	typedef std::vector<typename Field::Element> SparseSeqVector;
-	typedef std::vector<typename Field::Element> SparseMapVector;
-	typedef std::vector<typename Field::Element> SparseParVector;
+	typedef BlasVector<Field> DenseVector;
+	typedef BlasVector<Field> SparseSeqVector;
+	typedef BlasVector<Field> SparseMapVector;
+	typedef BlasVector<Field> SparseParVector;
 
 	ostringstream str;
 	str << "Testing VectorDomain <" << text << ">" << ends;
@@ -157,11 +158,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
