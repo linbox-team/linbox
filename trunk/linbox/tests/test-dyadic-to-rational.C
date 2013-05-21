@@ -31,7 +31,7 @@
 
 using namespace LinBox;
 
-#include <vector>
+
 #include <cmath>
 #include "linbox/field/PID-integer.h"
 #include "linbox/util/timer.h"

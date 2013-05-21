@@ -69,14 +69,13 @@ bool testRandom(const Ring& R,
 
         LinBox::VectorDomain<Ring> VD (R);
 
-	Vector d, x;
+	int n = (int) stream1.n();
+	Vector d(R,n), x(R,n);
 
-	VectorWrapper::ensureDim (d, stream1.n ());
+	// VectorWrapper::ensureDim (d, stream1.n ());
+	// VectorWrapper::ensureDim (x, stream1.n ());
 
-	VectorWrapper::ensureDim (x, stream1.n ());
 
-
-	int n = (int)d. size();
 
 	 while (stream1) {
 
@@ -111,7 +110,7 @@ bool testRandom(const Ring& R,
 			}
 
 
-		std::vector<typename Ring::Element> tmp1((size_t)n), tmp2((size_t)n), e((size_t)n);
+		BlasVector<Ring> tmp1(R,(size_t)n), tmp2(R,(size_t)n), e(R,(size_t)n);
 
 		typename BlasMatrix<Ring>::ColIterator col_p;
 
@@ -138,7 +137,7 @@ bool testRandom(const Ring& R,
 		report << '\n';
 
 
-		typename std::vector<typename Ring::Element>::iterator p1, p2;
+		typename BlasVector<Ring>::iterator p1, p2;
 		typename Ring::Element g;
 
 
@@ -273,11 +272,10 @@ int main(int argc, char** argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

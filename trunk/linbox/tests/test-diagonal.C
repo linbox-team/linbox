@@ -41,7 +41,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
+
 #include <cstdio>
 
 #include "linbox/blackbox/diagonal.h"

@@ -35,7 +35,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
+
 #include "test-common.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/util/matrix-stream.h"

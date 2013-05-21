@@ -37,7 +37,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <vector>
+
 #include <queue>
 
 #include "test-common.h"

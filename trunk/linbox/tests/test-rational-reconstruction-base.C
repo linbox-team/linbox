@@ -39,7 +39,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
+
 #include <cstdio>
 
 #include "linbox/linbox-config.h"

@@ -38,7 +38,7 @@
 
 #include "linbox/linbox-config.h"
 
-#include <vector>
+
 #include <cstdio>
 
 #include "linbox/blackbox/permutation.h"

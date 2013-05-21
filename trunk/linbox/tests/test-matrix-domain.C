@@ -51,7 +51,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <vector>
+
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"

@@ -45,7 +45,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
+
 #include <cstdio>
 
 #include "linbox/field/modular.h"
