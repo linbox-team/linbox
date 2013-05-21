@@ -198,7 +198,7 @@ namespace LinBox
 		commentator().start ("Solving nonsingular system (Wiedemann)", "WiedemannSolver::solveNonsingular");
 
 		Polynomial m_A;
-		Vector     z;
+		Vector     z(A.field());
 		bool       ret = true;
 
 		{
@@ -290,7 +290,7 @@ namespace LinBox
 	{
 		commentator().start ("Solving singular system (Wiedemann)", "WiedemannSolver::solveSingular");
 
-		Vector Ax;
+		Vector Ax(A.field());
 		ReturnStatus status = OK, sfrs = OK;
 
 
@@ -430,7 +430,7 @@ namespace LinBox
 		commentator().start ("Solving singular system with generic rank profile (Wiedemann)",
 				   "WiedemannSolver::findRandomSolution");
 
-		Vector v, Avpb, PAvpb, bp, xp, Qinvx;
+		Vector v(A.field()), Avpb(A.field()), PAvpb(A.field()), bp(A.field()), xp(A.field()), Qinvx(A.field());
 
 		RandomDenseStream<Field, Vector> stream (field(), _randiter, A.coldim ());
 
@@ -498,7 +498,7 @@ namespace LinBox
 	{
 		commentator().start ("Finding a nullspace element (Wiedemann)", "WiedemannSolver::findNullspaceElement");
 
-		Vector v, Av, PAv, vp, xp, Qinvx;
+		Vector v(A.field()), Av(A.field()), PAv(A.field()), vp(A.field()), xp(A.field()), Qinvx(A.field());
 
 		RandomDenseStream<Field, Vector> stream (field(), _randiter, A.coldim ());
 
@@ -560,7 +560,7 @@ namespace LinBox
 		commentator().start ("Obtaining certificate of inconsistency (Wiedemann)",
 				   "WiedemannSolver::certifyInconsistency");
 
-		Vector PTinvu;
+		Vector PTinvu(A.field());
 		typename Field::Element uTb;
 
 		WiedemannTraits cert_traits;
@@ -623,11 +623,10 @@ namespace LinBox
 #endif // __LINBOX_wiedemann_INL
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

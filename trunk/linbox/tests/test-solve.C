@@ -38,7 +38,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
@@ -93,10 +92,11 @@ static bool testIdentitySolve (const Field          &F,
 	F.init (s, 1);
 	Blackbox I (F, stream.n (), s);
 
-	Vector v, w;
+	size_t n = stream.n();
+	Vector v(F,n), w(F,n);
 
-	VectorWrapper::ensureDim (v, stream.n ());
-	VectorWrapper::ensureDim (w, stream.n ());
+	// VectorWrapper::ensureDim (v, stream.n ());
+	// VectorWrapper::ensureDim (w, stream.n ());
 
 	MethodTraits traits (method);
 
@@ -184,12 +184,13 @@ static bool testNonsingularSolve (const Field          &F,
 	bool ret = true;
 	bool iter_passed;
 
-	Vector d, b, x, y;
+	size_t n= stream1.n ();
+	Vector d(F,n), b(F,n), x(F,n), y(F,n);
 
-	VectorWrapper::ensureDim (d, stream1.n ());
-	VectorWrapper::ensureDim (b, stream1.n ());
-	VectorWrapper::ensureDim (x, stream1.n ());
-	VectorWrapper::ensureDim (y, stream1.n ());
+	// VectorWrapper::ensureDim (d, stream1.n ());
+	// VectorWrapper::ensureDim (b, stream1.n ());
+	// VectorWrapper::ensureDim (x, stream1.n ());
+	// VectorWrapper::ensureDim (y, stream1.n ());
 
 	MethodTraits traits (method);
 
@@ -212,7 +213,7 @@ static bool testNonsingularSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		Blackbox D (F, d);
+		Blackbox D (d);
 
 		try {
 			solve (x, D, b, method);
@@ -731,11 +732,10 @@ static bool testBasicMethodsSolve (const Field &F, size_t n)
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	typedef typename Field::Element Elt;
-	Elt one, zero; F.init(one, 1); F.init(zero, 0);
-	vector<Elt> xd(n), xh(n), xb(n), xe(n), b(n, zero);
-	for(size_t i = 0; i < n/2; ++i) b[i] = one;
-	//ScalarMatrix<Field> I(F, n/2, one), Z(F, n/2, zero);
-	ScalarMatrix<Field> I(F, n, one), Z(F, 0, zero);
+	BlasVector<Field> xd(F,n), xh(F,n), xb(F,n), xe(F,n), b(F,n, F.zero);
+	for(size_t i = 0; i < n/2; ++i) b[i] = F.one;
+	//ScalarMatrix<Field> I(F, n/2, F.one), Z(F, n/2, F.zero);
+	ScalarMatrix<Field> I(F, n, F.one), Z(F, 0, F.zero);
 	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > A(I, Z);
 
 	VectorDomain<Field> VD(F);
@@ -853,11 +853,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

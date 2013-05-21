@@ -159,8 +159,8 @@ namespace LinBox
 
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 
-				typename std::vector<typename _Tp1::Element>::iterator nit = Ap.getData().begin();
-				typename std::vector<Element>::const_iterator oit = A.getData().begin();
+				typename BlasVector<_Tp1>::iterator nit = Ap.getData().begin();
+				typename BlasVector<Field>::const_iterator oit = A.getData().begin();
 				for( ; oit != A.getData().end() ; ++nit, ++oit)
 					hom.image (*nit, *oit);
 			}
@@ -169,7 +169,7 @@ namespace LinBox
 
 		template<typename _Tp1, typename _Vc1>
 		Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F) :
-			_field(&F), _n(D.rowdim()), _v(D.rowdim())
+			_field(&F), _n(D.rowdim()), _v(F,D.rowdim())
 		{
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D);
 		}
