@@ -49,19 +49,21 @@ namespace LinBox
 	struct IntegerModularDetReduced {
 	private:
 
-		const Blackbox &A;
-		const MyMethod &M;
+		const                        Blackbox &A;
+		const                        MyMethod &M;
 		/* contains the factor by which to divide det */
-		integer beta;
+		integer                             beta;
 
-		size_t factor;
-		size_t iter_count;
-		size_t iter_count2;
-		typename Vector<PID_integer>::Dense moduli;
+		size_t                            factor;
+		PID_integer                           ZZ; //! @todo is it \c A.field()?
+		size_t                        iter_count;
+		size_t                       iter_count2;
+		typedef  BlasVector<PID_integer>  IVect ;
+		IVect                            moduli ;
 
 	public:
 
-		typename Vector<PID_integer>::Dense primes;
+		IVect                            primes ;
 
 		size_t iterations()
 		{
@@ -74,18 +76,15 @@ namespace LinBox
 		}
 
 
-#if 0
-		int iter_count;
-		int iter_count2;
-		Vector <PID_integer>:: Dense moduli;
-		Vector <PID_integer>:: Dense primes;
-#endif
-
-		IntegerModularDetReduced(const Blackbox& b, const MyMethod& n, const integer& divisor, const size_t& f) :
-			A(b), M(n), beta(divisor), factor(f)
+		IntegerModularDetReduced(const Blackbox& b, const MyMethod& n, const integer& divisor, const size_t& fs) :
+			A(b), M(n)
+			, beta(divisor)
+			, factor(fs)
+			,ZZ(PID_integer())
+			,moduli(ZZ,fs),primes(ZZ,fs)
 		{
-			moduli.resize(factor);
-			primes.resize(factor);
+			// moduli.resize(factor);
+			// primes.resize(factor);
 			iter_count = 0;
 			iter_count2 = 0;
 
@@ -256,7 +255,7 @@ namespace LinBox
 #endif
 		RationalSolver < Integers , myModular, RandomPrimeIterator, DixonTraits > RSolver;
 
-		typename Vector<Integers>:: Dense r_num1 (A. coldim());
+		BlasVector<Integers> r_num1 (A.field(),A. coldim());
 
 		LastInvariantFactor < Integers ,RationalSolver < Integers, myModular, RandomPrimeIterator, DixonTraits > >  LIF(RSolver);
 #ifdef _LB_H_DET_TIMING
@@ -318,7 +317,7 @@ namespace LinBox
 
 		}
 		else  if (0/* time2 < a*log2(lif)*time1/p_size*/) {
-			typename Vector<Integers>:: Dense r_num2 (A. coldim());
+			BlasVector<Integers> r_num2 (A.field(),A. coldim());
 			Integer_t lif2=1;
 			LIF.lastInvariantFactor1(lif2,r_num2,A);
 			LIF.bonus(bonus,lif, lif2, r_num1,r_num2);

@@ -45,6 +45,7 @@
 
 #include <vector>
 #include "linbox/vector/vector-traits.h"
+#include "linbox/vector/blas-vector.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include "linbox/field/hom.h"
@@ -86,7 +87,8 @@ namespace LinBox
 	LinBox::Vector<Field>::Dense>::VectorCategory > class Diagonal {
 	private:
 		/// empty constructor
-		Diagonal () {} };
+		Diagonal () {}
+	};
 
 	/**
 	  \brief Specialization of Diagonal for application to dense vectors
@@ -103,7 +105,9 @@ namespace LinBox
 		Diagonal(const Field &F) : _field(&F) {}
 
 		/// \brief cstor from vector of elements.
-		Diagonal(const Field &F, const std::vector<typename Field::Element>& v);
+		// Diagonal(const Field &F, const std::vector<typename Field::Element>& v);
+
+		Diagonal(const BlasVector<Field>& v);
 
 		// construct random nonsingular n by n diagonal matrix.
 		Diagonal(const Field &F, const size_t n, bool nonsing=true);
@@ -204,8 +208,8 @@ namespace LinBox
 			return is;
 		}
 
-		const std::vector<Element>& getData() const { return _v; }
-		std::vector<Element>& getData() { return _v; }
+		const BlasVector<Field>& getData() const { return _v; }
+		BlasVector<Field>& getData() { return _v; }
 
 	protected:
 
@@ -216,7 +220,7 @@ namespace LinBox
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		std::vector<Element> _v;
+		BlasVector<Field> _v;
 
 	}; // template <Field, Vector> class Diagonal<DenseVectorTag>
 
@@ -232,7 +236,9 @@ namespace LinBox
 		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
-		Diagonal(const Field &F, const std::vector<typename Field::Element>& v);
+		// Diagonal(const Field &F, const std::vector<typename Field::Element>& v);
+
+		Diagonal(const BlasVector<Field>& v);
 
 		Diagonal(const Field &F, const size_t n, typename Field::RandIter& iter);
 
@@ -285,8 +291,8 @@ namespace LinBox
 
 
 
-		const std::vector<Element>& getData() const { return _v; }
-		std::vector<Element>& getData() { return _v; }
+		const BlasVector<Field>& getData() const { return _v; }
+		BlasVector<Field>& getData() { return _v; }
 
 
 	protected:
@@ -298,7 +304,7 @@ namespace LinBox
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		std::vector<Element> _v;
+		BlasVector<Field> _v;
 
 	}; // template <Field, Vector> class Diagonal<SparseSequenceVectorTag>
 
@@ -315,7 +321,7 @@ namespace LinBox
 		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
-		Diagonal(const Field &F, const std::vector<typename Field::Element>& v);
+		Diagonal(const BlasVector<Field>& v);
 
 		Diagonal(const Field &F, const size_t n, typename Field::RandIter& iter);
 
@@ -367,8 +373,8 @@ namespace LinBox
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
 		}
 
-		const std::vector<Element>& getData() const { return _v; }
-		std::vector<Element>& getData() { return _v; }
+		const BlasVector<Field>& getData() const { return _v; }
+		BlasVector<Field>& getData() { return _v; }
 
 
 
@@ -381,16 +387,15 @@ namespace LinBox
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		std::vector<Element> _v;
+		BlasVector<Field> _v;
 
 	}; // template <Field, Vector> class Diagonal<SparseAssociativeVectorTag>
 
 	// Method implementations for dense vectors
 	/// constructor from vector
 	template <class Field>
-	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal(const Field &F,
-									    const std::vector<typename Field::Element>& v) :
-		_field(&F), _n(v.size()), _v(v)
+	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal( const BlasVector<Field>& v) :
+		_field(&v.field()), _n(v.size()), _v(v)
 	{}
 
 
@@ -407,7 +412,7 @@ namespace LinBox
 		_field(&F), _n(n), _v(n)
 	{
 		typename Field::RandIter r(F);
-		typedef typename std::vector<typename Field::Element>::iterator iter;
+		typedef typename BlasVector<Field>::iterator iter;
 		if (nonsing)
 			randomNonsingular();
 		else
@@ -434,7 +439,7 @@ namespace LinBox
 	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>::random()
 	{
 		typename Field::RandIter r(field());
-		typedef typename std::vector<typename Field::Element>::iterator iter;
+		typedef typename BlasVector<Field>::iterator iter;
 		for (iter i = _v.begin(); i < _v.end(); ++i)
 			r.random(*i);
 	}
@@ -444,7 +449,7 @@ namespace LinBox
 	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>::randomNonsingular()
 	{
 		typename Field::RandIter r(field());
-		typedef typename std::vector<typename Field::Element>::iterator iter;
+		typedef typename BlasVector<Field>::iterator iter;
 		for (iter i = _v.begin(); i < _v.end(); ++i)
 			while (field().isZero(r.random(*i))) ;
 	}
@@ -461,7 +466,7 @@ namespace LinBox
 		linbox_check (_n == x.size ());
 
 		// Create iterators for input, output, and stored vectors
-		typename std::vector<Element>::const_iterator v_iter;
+		typename BlasVector<Field>::const_iterator v_iter;
 		typename InVector::const_iterator x_iter;
 		typename OutVector::iterator y_iter;
 
@@ -486,9 +491,8 @@ namespace LinBox
 	 * @param v  vector
 	 */
 	template <class Field>
-	inline Diagonal<Field, VectorCategories::SparseSequenceVectorTag >::Diagonal(const Field& F,
-										     const std::vector<typename Field::Element>& v) :
-		_field(&F), _n(v.size()), _v(v)
+	inline Diagonal<Field, VectorCategories::SparseSequenceVectorTag >::Diagonal( const BlasVector<Field>& v) :
+		_field(&v.field()), _n(v.size()), _v(v)
 	{}
 
 	/** apply for sparse sequence vectors.
@@ -510,7 +514,7 @@ namespace LinBox
 		field().init (entry, 0);
 
 		// Create iterators for input and stored vectors
-		typename std::vector<Element>::const_iterator v_iter;
+		typename BlasVector<Field>::const_iterator v_iter;
 		typename InVector::const_iterator x_iter;
 
 		// Start at beginning of _v vector
@@ -535,8 +539,8 @@ namespace LinBox
 	 * @param v  vector
 	 */
 	template <class Field>
-	inline Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >::Diagonal(const Field &F, const std::vector<typename Field::Element>& v) :
-		_field(&F), _n(v.size()), _v(v)
+	inline Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >::Diagonal(const BlasVector<Field>& v) :
+		_field(&v.field()), _n(v.size()), _v(v)
 	{}
 
 	/** apply for sparse associative vectors.
@@ -558,7 +562,7 @@ namespace LinBox
 		field().init (entry, 0);
 
 		// Create iterators for input and stored vectors
-		typename std::vector<Element>::const_iterator v_iter;
+		typename BlasVector<Field>::const_iterator v_iter;
 		typename InVector::const_iterator x_iter;
 
 		// Start at beginning of _v vector
@@ -585,11 +589,10 @@ namespace LinBox
 #endif // __LINBOX_diagonal_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

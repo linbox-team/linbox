@@ -137,6 +137,7 @@ namespace LinBox
 		/** copy constructor */
 		VectorFraction(const VectorFraction<Domain>& VF) :
 			_domain(VF._domain)
+			,numer(VF._domain)
 		{
 			copy(VF);
 		}

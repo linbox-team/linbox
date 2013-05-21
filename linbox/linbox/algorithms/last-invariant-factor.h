@@ -28,6 +28,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/algorithms/default.h"
 #include "linbox/algorithms/rational-solver.h"
+#include "linbox/vector/blas-vector.h"
 #include <utility>
 
 namespace LinBox
@@ -50,6 +51,7 @@ namespace LinBox
 
 	protected:
 
+		typedef BlasVector<Ring>         DVect;
 		Ring        r;
 		Solver solver;
 		int threshold;
@@ -103,7 +105,8 @@ namespace LinBox
 			int count = 0;
 			SolverReturnStatus tmp;
 			// Storage of rational solution
-			std::vector<Integer> r_num (A. coldim()); Integer r_den;
+			DVect r_num (r,A. coldim());
+			Integer r_den;
 			//std::vector<std::pair<Integer, Integer> > result (A.coldim());
 			//typename std::vector<std::pair<Integer, Integer> >::iterator result_p;
 			// vector b, RHS, 32-bit int is good enough
@@ -162,7 +165,8 @@ namespace LinBox
 			int count = 0;
 			SolverReturnStatus tmp1, tmp2;
 			// Storage of rational solution
-			std::vector<Integer> r1_num (A. coldim()), r2_num (A. coldim()); Integer r1_den, r2_den;
+			DVect r1_num (r,A. coldim()), r2_num (r,A. coldim());
+			Integer r1_den, r2_den;
 			//std::vector<std::pair<Integer, Integer> > result (A.coldim());
 			//typename std::vector<std::pair<Integer, Integer> >::iterator result_p;
 			// vector b, RHS, 32-bit int is good enough
@@ -193,10 +197,10 @@ namespace LinBox
 
 				// compute the Bonus
 				Integer g, d, a11, a12, a21, a22, l, c_bonus, c_l;
-				typename std::vector<Integer>::iterator num1_p, num2_p;
-				std::vector<Integer> r1 (A. rowdim());
-				std::vector<Integer> r2 (A. rowdim());
-				typename std::vector<Integer>::iterator r1_p, r2_p;
+				typename DVect::iterator num1_p, num2_p;
+				DVect r1 (r,A. rowdim());
+				DVect r2 (r,A. rowdim());
+				typename DVect::iterator r1_p, r2_p;
 				r. init (l, 0);
 				int i;
 				for (i = 0; i < 20; ++ i) {
@@ -263,8 +267,8 @@ namespace LinBox
 
 			if (r_num.size()!=A. coldim()) return lif=0;
 			Integer r_den;
-			std::vector<Integer> b(A.rowdim());
-			typename std::vector<Integer>::iterator b_p;
+			DVect b(r,A.rowdim());
+			typename DVect::iterator b_p;
 			//typename Vector::const_iterator Prime_p;
 
 			Integer pri, quo, rem;
@@ -291,7 +295,7 @@ namespace LinBox
 				Integer den,t;
 				r. lcm(den,r_den,lif);
 				r. div(t, den, r_den);
-				typename std::vector<Integer>::iterator num_p = r_num.begin();
+				typename DVect::iterator num_p = r_num.begin();
 				for (; num_p != r_num. end(); ++num_p) {
 					r. mulin(*num_p, t);
 				}
@@ -305,10 +309,10 @@ namespace LinBox
 			if (Bonus==0) Bonus=1;
 			if (r1_num.size() != r2_num.size()) return Bonus=0;
 			Integer g, d, a11, a12, a21, a22, c_bonus, l, c_l;
-			typename std::vector<Integer>::iterator num1_p, num2_p;
-			std::vector<Integer> r1 (r1_num. size());
-			std::vector<Integer> r2 (r2_num. size());
-			typename std::vector<Integer>::iterator r1_p, r2_p;
+			typename DVect::iterator num1_p, num2_p;
+			DVect r1 (r,r1_num. size());
+			DVect r2 (r,r2_num. size());
+			typename DVect::iterator r1_p, r2_p;
 			r. init (l, 0);
 			int i;
 			for (i = 0; i < 20; ++ i) {
@@ -349,7 +353,7 @@ namespace LinBox
 		Integer& lastInvariantFactor(Integer& lif, const IMatrix& A)  const
 		{
 
-			std::vector<Integer> empty_v;
+			DVect empty_v(r);
 			lastInvariantFactor (lif, A, empty_v);
 			return lif;
 		}
@@ -360,7 +364,7 @@ namespace LinBox
 		Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& Bonus, const IMatrix& A)  const
 		{
 
-			std::vector<Integer> empty_v;
+			DVect empty_v(r);
 			lastInvariantFactor_Bonus (lif, Bonus, A, empty_v);
 			return lif;
 		}
@@ -372,11 +376,10 @@ namespace LinBox
 #endif //__LINBOX_last_invariant_factor_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

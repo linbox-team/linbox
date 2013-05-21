@@ -66,10 +66,12 @@ namespace LinBox { /* BlasVector */
 		typedef BlasSubvector<_Field>         subVectorType;    //!< Submatrix type
 		typedef BlasVector<_Field,_blasRep>      vectorType;    //!< matrix type
 		typedef BlasVector<_Field,_blasRep>        blasType;    //!< blas type
-		typedef Subvector<Subiterator<typename _blasRep::iterator > > Father_t;
-		typedef typename Father_t::iterator iterator;
 
 	public: /* iterators */
+		typedef Subvector<Subiterator<typename _blasRep::iterator > > Father_t;
+		typedef typename Father_t::iterator iterator;
+		// typedef typename Father_t::size_type size_type;
+
 
 
 	protected:
