@@ -383,7 +383,7 @@ namespace LinBox { /* BlasVector */
 
 		}
 		// should use this->insert(this->end(),e)
-		void push_back(Element & e) {
+		void push_back(const Element & e) {
 			if (_size != 0)
 				_rep.push_back(e);
 			else
@@ -467,7 +467,7 @@ namespace LinBox { /* BlasVector */
 		void setIterators()
 		{
 			Father_t::_begin = iterator (_rep.begin() , 1);
-			Father_t::_end = iterator (_rep.begin()+_size , 1);
+			Father_t::_end = iterator (_rep.begin()+(ptrdiff_t)_size , 1);
 		}
 
 

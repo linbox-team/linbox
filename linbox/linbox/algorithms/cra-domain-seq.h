@@ -42,8 +42,8 @@
 namespace LinBox
 {
 
-	template<class Function, class Element> struct CRATemporaryVectorTrait {
-		typedef std::vector<Element> Type_t;
+	template<class Function, class Field> struct CRATemporaryVectorTrait {
+		typedef BlasVector<Field> Type_t;
 	};
 
 
@@ -187,7 +187,7 @@ namespace LinBox
 				Domain D(*primeiter);
 				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 				++primeiter;
-				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
+				typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
 				Builder_.initialize( D, Iteration(r, D) );
 			}
 
@@ -208,7 +208,7 @@ namespace LinBox
                                 Domain D(*primeiter);
 				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
                                 ++primeiter;
-				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
+				typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
 				Builder_.progress( D, Iteration(r, D) );
 			}
 			commentator().stop ("done", NULL, "mmcravit");
@@ -230,7 +230,7 @@ namespace LinBox
 				Domain D(*primeiter);
 				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 				++primeiter;
-				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
+				typename CRATemporaryVectorTrait<Function, Domain>::Type_t r;
 				Builder_.initialize( D, Iteration(r, D) );
 			}
 
@@ -255,7 +255,7 @@ namespace LinBox
 				Domain D(*primeiter);
 				++primeiter;
 
-				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
+				typename CRATemporaryVectorTrait<Function, Domain>::Type_t r;
 				Builder_.progress( D, Iteration(r, D) );
 			}
 			Builder_.result(res);
@@ -337,11 +337,11 @@ namespace LinBox
 
 #endif //__LINBOX_sequential_cra_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

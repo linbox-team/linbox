@@ -264,6 +264,26 @@ namespace LinBox
 			//             commentator().report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) << "z: " << z << std::endl;
 			return z;
 		}
+
+		template <class Vect2>
+		DomainElement& dot (DomainElement& z, const Domain& D,
+				    const BlasVector<Domain>& v1,
+				    const Vect2& v2)
+		{
+
+			D.init(z,0); DomainElement tmp;
+			typename BlasVector<Domain>::const_iterator v1_p;
+			typename Vect2::const_iterator v2_p;
+			for (v1_p  = v1. begin(), v2_p = v2. begin();
+			     v1_p != v1. end();
+			     ++ v1_p, ++ v2_p)
+				D.axpyin(z, (*v1_p), D.init(tmp, (*v2_p)));
+
+			//             commentator().report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) << "v: " << v2 << std::endl;
+			//             commentator().report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) << "z: " << z << std::endl;
+			return z;
+		}
+
 	};
 }
 #endif //__LINBOX_cra_early_multip_H
