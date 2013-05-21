@@ -209,8 +209,9 @@ namespace LinBox
 			int n   = (int)num. size();
 			int len = (int)_lcontainer. length();
 			Integer prime = _lcontainer.prime();//prime
-			LVector digits; //Store all p-adic digits
-			digits. resize ((size_t)len); //reserve space for all digits
+			const BlasVector<Ring> zero(_r,(size_t)n);
+			LVector digits(len,zero); //Store all p-adic digits
+			// digits. resize ((size_t)len); //reserve space for all digits
 			Integer modulus; //store current modulus
 			Integer denbound; // store current bound for den
 			Integer numbound; //store current bound for num
@@ -219,7 +220,7 @@ namespace LinBox
 			_r. init (denbound, 1);
 			_r. init (numbound, 1);
 			Integer c1, c2, c1_den, c1_num, c2_den, c2_num;
-			IVector r1(num.size()), r2(num.size());
+			IVector r1(_r,num.size()), r2(_r,num.size());
 			_r. init (c1, 0); _r. init(c1_den, 1); _r. init (c1_num, 0);
 			_r. init (c2, 0); _r. init(c2_den, 1); _r. init (c2_num, 0);
 
@@ -259,7 +260,7 @@ namespace LinBox
 				IVector& dig = *digits_p;
 				++step; ++ digits_p;
 
-				dig. resize ((size_t)n);
+				// dig. resize ((size_t)n);
 
 				// get next p-adic digit
 				bool nextResult = iter.next(dig);
@@ -314,7 +315,7 @@ namespace LinBox
 					}
 				}
 			}
-			IVector res ((size_t)n);
+			IVector res (_r,(size_t)n);
 			typename LVector::const_iterator digit_begin = digits. begin();
 			PolEval (res, digit_begin, (size_t)step, prime);
 			if(step < len) _r. lcm (den, c1_den, c2_den);
@@ -706,7 +707,7 @@ namespace LinBox
 				deg_low  = deg - deg_high;
 				Integer zero;
 				_r.init(zero,0);
-				Vector y1(y.size(),zero), y2(y.size(),zero);
+				Vector y1(_r,y.size(),zero), y2(_r,y.size(),zero);
 				Integer x1=x, x2=x;
 
 				PolEval(y1, Pol, deg_low, x1);
@@ -753,13 +754,13 @@ namespace LinBox
 
 			Integer zero;
 			_r.init(zero,0);
-			Vector zero_digit(_lcontainer.size(),zero);
+			Vector zero_digit(_r,_lcontainer.size(),zero);
 
 			// store approximation as a polynomial and evaluate by baby step giant step
 			std::vector<Vector>  digit_approximation(length,zero_digit);
 
 			// store real approximation
-			Vector real_approximation(size,zero);
+			Vector real_approximation(_r,size,zero);
 
 
 			// store modulus (intially set to 1)
@@ -918,7 +919,7 @@ namespace LinBox
 			_r.init(common_den_mod_prod,1);
 			_r.init(two,2);
 
-			Vector denominator(num.size());
+			Vector denominator(_r,num.size());
 
 			int counter=0;
 			typename Vector::iterator   iter_approx = real_approximation.begin();
