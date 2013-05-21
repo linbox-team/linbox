@@ -40,7 +40,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
+
 #include <cstdio>
 
 #include "test-common.h"

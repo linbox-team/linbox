@@ -39,7 +39,7 @@
 
 #include "linbox/blackbox/dense-zero-one.h"
 
-#include <vector>
+
 #include "linbox/util/timer.h"
 #include "test-common.h"
 

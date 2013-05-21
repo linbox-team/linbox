@@ -38,7 +38,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <vector>
+
 #include <cstdio>
 
 #include "linbox/blackbox/sparse.h"

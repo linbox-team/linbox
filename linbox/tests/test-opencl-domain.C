@@ -45,7 +45,7 @@
 #define _OPENCL_TIMER_
 
 #include <stack>
-#include <vector>
+
 #include <sys/time.h>
 
 class OpenCLTimer{

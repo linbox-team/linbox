@@ -36,7 +36,7 @@
 
 #include "linbox/linbox-config.h"
 
-#include <vector>
+
 #include <functional>
 
 #include "test-common.h"

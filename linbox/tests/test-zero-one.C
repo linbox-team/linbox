@@ -30,7 +30,6 @@
 
 
 #include <iostream>
-#include <vector>
 #include <utility>
 
 #include "linbox/blackbox/zero-one.h"

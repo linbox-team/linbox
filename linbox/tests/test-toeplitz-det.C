@@ -32,7 +32,7 @@
 
 
 #include <iostream>
-#include <vector>
+
 #include "linbox/blackbox/toeplitz.h"
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/ntl.h"

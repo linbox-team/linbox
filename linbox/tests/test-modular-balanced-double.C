@@ -35,7 +35,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <vector>
+
 #include <queue>
 
 #include "linbox/field/modular-balanced.h"

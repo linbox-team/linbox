@@ -35,7 +35,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
+
 
 #include "linbox/field/givaro.h"
 
