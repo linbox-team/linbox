@@ -61,7 +61,7 @@ namespace LinBox
 		typedef std::vector<double>::iterator        DoubleVect_Iterator ;
 		typedef std::vector< bool >::iterator          BoolVect_Iterator ;
 		typedef std::vector< LazyProduct >::iterator   LazyVect_Iterator ;
-		typedef std::vector< Integer >                           IntVect ;
+		typedef BlasVector< PID_integer >                        IntVect ;
 		typedef IntVect::iterator                       IntVect_Iterator ;
 		typedef std::vector< IntVect >::iterator    IntVectVect_Iterator ;
 		typedef IntVect::const_iterator            IntVect_ConstIterator ;
@@ -77,7 +77,8 @@ namespace LinBox
 		{
 			this->RadixSizes_.resize(1);
 			this->RadixPrimeProd_.resize(1);
-			this->RadixResidues_.resize(1);
+			PID_integer ZZ ;
+			this->RadixResidues_.resize(1,BlasVector<PID_integer>(ZZ));
 			this->RadixOccupancy_.resize(1);
 			this->RadixOccupancy_.front() = false;
 		}
@@ -122,7 +123,8 @@ namespace LinBox
 			IntVectVect_Iterator _tab_it = this->RadixResidues_.begin();
 			BoolVect_Iterator    _occ_it = this->RadixOccupancy_.begin();
 
-			IntVect ri(this->size);
+			PID_integer ZZ;
+			IntVect ri(ZZ,this->size);
 			LazyProduct mi;
 			double di;
 			if (*_occ_it) {
@@ -310,7 +312,7 @@ namespace LinBox
 		typedef std::vector<double>::iterator        DoubleVect_Iterator ;
 		typedef std::vector< bool >::iterator          BoolVect_Iterator ;
 		typedef std::vector< LazyProduct >::iterator   LazyVect_Iterator ;
-		typedef std::vector< Integer >                           IntVect ;
+		typedef BlasVector< PID_integer >                        IntVect ;
 		typedef IntVect::iterator                       IntVect_Iterator ;
 		typedef std::vector< IntVect >::iterator    IntVectVect_Iterator ;
 		typedef IntVect::const_iterator            IntVect_ConstIterator ;
@@ -326,7 +328,8 @@ namespace LinBox
 		{
 			this->RadixSizes_.resize(1);
 			this->RadixPrimeProd_.resize(1);
-			this->RadixResidues_.resize(1);
+			PID_integer ZZ ;
+			this->RadixResidues_.resize(1,BlasVector<PID_integer>(ZZ));
 			this->RadixOccupancy_.resize(1);
 			this->RadixOccupancy_.front() = false;
 		}
@@ -368,7 +371,8 @@ namespace LinBox
 			IntVectVect_Iterator _tab_it = this->RadixResidues_.begin();
 			BoolVect_Iterator    _occ_it = this->RadixOccupancy_.begin();
 
-			IntVect ri(this->size);
+			PID_integer ZZ;
+			IntVect ri(ZZ,this->size);
 			LazyProduct mi;
 			double di;
 			if (*_occ_it) {

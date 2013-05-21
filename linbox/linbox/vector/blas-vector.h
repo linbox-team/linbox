@@ -343,6 +343,24 @@ namespace LinBox { /* BlasVector */
 			return *this;
 		}
 
+		//! this should not exist.
+		BlasVector<_Field>& operator= (const std::vector<Element>& V)
+		{
+			_size = V.size();
+			_1stride = 1;
+			_rep = Rep(_size);
+			_ptr = &_rep[0] ;
+			createBlasVector(V);
+			linbox_check(_ptr != NULL);
+
+			// Father_t is garbage until then:
+			setIterators();
+
+
+
+			return *this;
+		}
+
 		template<typename _Tp1>
 		struct rebind {
 			typedef BlasVector<_Tp1> other;

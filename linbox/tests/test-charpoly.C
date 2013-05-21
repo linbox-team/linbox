@@ -81,7 +81,7 @@ template <class Dom>
 static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 {
 	typedef typename Dom::Element Element;
-	typedef vector<Element> Vector;
+	typedef BlasVector<Dom> Vector;
 	typedef ScalarMatrix<Dom> Blackbox;
 	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
 	typedef typename PolDom::Element Polynomial;
@@ -142,11 +142,11 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 template <class Field>
 static bool testNilpotentCharpoly (Field &F, size_t n)
 {
-	typedef vector <typename Field::Element> Vector;
+	typedef BlasVector <Field> Vector;
 // 	typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
 // 	typedef typename PolDom::Element Polynomial;
 	typedef Vector Polynomial;
-	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
+	typedef pair <vector <size_t>, std::vector <typename Field::Element> > Row;
 	typedef SparseMatrix <Field> Blackbox;
 
 	LinBox::commentator().start ("Testing nilpotent charpoly", "testNilpotentCharpoly");
@@ -167,7 +167,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 
 
 
-	Polynomial phi;
+	Polynomial phi(A.field());
 
 	charpoly (phi, A);
 
@@ -213,7 +213,7 @@ bool testRandomCharpoly (Field                 &F,
 {
 	//typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
 	//typedef typename PolDom::Element Polynomial;
-	typedef std::vector<typename Field::Element> Polynomial;
+	typedef BlasVector<Field> Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
 
 	LinBox::commentator().start ("Testing sparse random charpoly", "testRandomCharpoly", 1);
@@ -221,7 +221,7 @@ bool testRandomCharpoly (Field                 &F,
 	bool ret = true;
 
 	VectorDomain<Field> VD (F);
-	Vector w, v;
+	Vector w(F), v(F);
 	VectorWrapper::ensureDim (v, v_stream.n ());
 	VectorWrapper::ensureDim (w, v_stream.n ());
 
@@ -232,7 +232,7 @@ bool testRandomCharpoly (Field                 &F,
 	report << "Matrix:" << endl;
 	A.write (report, FORMAT_PRETTY);
 
-	Polynomial phi;
+	Polynomial phi(F);
 
 	charpoly (phi, A);
 
@@ -289,9 +289,10 @@ int main (int argc, char **argv)
 
 	// Temporarily, only Modular<double> is enabled for the givaro/ntl factorization based charpoly
 	typedef Modular<double> Field;
-	typedef vector<Field::Element> DenseVector;
+	typedef BlasVector<Field> DenseVector;
 	typedef SparseMatrix<Field>::Row SparseVector;
-	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
+	typedef SparseMatrix<PID_integer>::Row ZSparseVector;
+	// typedef pair<vector<size_t>, BlasVector<Field> > SparseVector;
 	Field F (q);
 	srand ((unsigned)time (NULL));
 
@@ -314,10 +315,9 @@ int main (int argc, char **argv)
 	if (!testIdentityCharpoly  (F, n, true)) pass = false;
 	//need other tests...
 
-	typedef vector<PID_integer::Element> ZDenseVector;
-	typedef SparseMatrix<PID_integer>::Row ZSparseVector;
-	typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
-	PID_integer  Z;
+	PID_integer Z ;
+	typedef BlasVector<PID_integer> ZDenseVector;
+
 	srand ((unsigned)time (NULL));
 
 	LinBox::commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
@@ -345,11 +345,11 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

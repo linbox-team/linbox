@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
-#include <vector>
+#include "linbox/vector/blas-vector.h"
 #include <utility>
 #include "linbox/util/commentator.h"
 

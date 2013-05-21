@@ -118,7 +118,8 @@ namespace LinBox
 		{
 			RadixSizes_.resize(1);
 			RadixPrimeProd_.resize(1);
-			RadixResidues_.resize(1);
+			PID_integer ZZ;
+			RadixResidues_.resize(1,BlasVector<PID_integer>(ZZ));
 			RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
 			progress(D, e);
 		}
@@ -269,7 +270,8 @@ namespace LinBox
 			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
 			std::vector< BlasVector<PID_integer> >::iterator _tab_it = RadixResidues_.begin();
 			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-			BlasVector<PID_integer> ri(e.field(),e.size());
+			PID_integer ZZ;
+			BlasVector<PID_integer> ri(ZZ,e.size());
 			LazyProduct mi; double di;
 			if (*_occ_it) {
 				// If lower shelf is occupied
