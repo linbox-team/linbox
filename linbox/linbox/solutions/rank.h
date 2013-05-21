@@ -227,7 +227,7 @@ namespace LinBox
 
 			BlackboxContainerSymmetric<Field, BlackBox1> TF (&B, F, iter);
 			MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());
-			std::vector<typename Field::Element> phi;
+			BlasVector<Field> phi(F);
 			WD.pseudo_minpoly (phi, res);
 			commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Pseudo Minpoly degree: " << res << std::endl;
 
@@ -368,7 +368,7 @@ namespace LinBox
 			BlackboxContainerSymmetric<Field, Blackbox0> TF_i (&B_i, F, iter);
 			MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox0> > WD (&TF_i, M.earlyTermThreshold ());
 
-			std::vector<typename Field::Element> phi;
+			BlasVector<Field> phi(F);
 			WD.pseudo_minpoly (phi, res);
 			commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Pseudo Minpoly degree: " << res << std::endl;
 			commentator().start ("Monte Carlo certification (4)", "trace");
@@ -713,11 +713,10 @@ namespace LinBox
 #endif // __LINBOX_rank_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
