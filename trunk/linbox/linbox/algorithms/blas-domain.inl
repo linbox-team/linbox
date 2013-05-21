@@ -763,6 +763,7 @@ namespace LinBox
 		}
 	};
 
+
 	//  general matrix-vector multiplication and addition with scaling
 	// d = beta.c + alpha.A*b
 	template<class Field>
@@ -1021,6 +1022,32 @@ namespace LinBox
 			return BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>,BlasPermutation<size_t> >()( F, B, C);
 		}
 	};
+	template<class Field>
+	class BlasMatrixDomainMul<Field,BlasVector<Field >,BlasVector<Field >, BlasPermutation<size_t> > {
+	public:
+		BlasVector<Field >& operator()(const Field& F,
+								  BlasVector<Field >& C,
+								  const BlasVector<Field >& A,
+								  const BlasPermutation<size_t>& B) const
+		{
+			C = A;
+			return BlasMatrixDomainMulin<Field,BlasVector<Field >,BlasPermutation<size_t> >()( F, C, B);
+		}
+	};
+
+	template<class Field>
+	class BlasMatrixDomainMul<Field,BlasVector<Field >, BlasPermutation<size_t>,BlasVector<Field > > {
+	public:
+		BlasVector<Field >& operator()(const Field& F,
+								  BlasVector<Field >& C,
+								  const BlasPermutation<size_t>& B,
+								  const BlasVector<Field >& A) const
+		{
+			C = A;
+			return BlasMatrixDomainMulin<Field,BlasVector<Field >,BlasPermutation<size_t> >()( F, B, C);
+		}
+	};
+
 
 	/*
 	 * specialization for Operand1, Operand2  of type std::vector<Element> and Operand3 of type TransposedBlasMatrix<BlasPermutation<size_t> >
@@ -1085,7 +1112,32 @@ namespace LinBox
 
 	};
 
+	template<class Field>
+	class BlasMatrixDomainMulin<Field,BlasVector<Field>, BlasPermutation<size_t> > {
+	public:
+		BlasVector< Field >& operator()( const Field& F,
+								   BlasVector< Field>& A,
+								   const BlasPermutation<size_t>& B) const
+		{
+			if (B.isIdentity()) return A ;
+			linbox_check( A.size() == B.getSize() );
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+					1, 0,(int) B.getOrder(), A.getPointer(), 1, B.getPointer() );
+			return A;
+		}
 
+		BlasVector< Field >& operator()( const Field& F,
+								   const BlasPermutation<size_t>& B,
+								   BlasVector< Field>& A) const
+		{
+			if (B.isIdentity()) return A ;
+			linbox_check( A.size() >= B.getSize() );
+			FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+					1, 0,(int) B.getOrder(), A.getPointer(), 1, B.getPointer() );
+			return A;
+		}
+
+	};
 	template<class Field>
 	class BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>, TransposedBlasMatrix<BlasPermutation<size_t> > > {
 	public:

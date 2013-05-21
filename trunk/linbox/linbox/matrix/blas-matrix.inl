@@ -1670,6 +1670,30 @@ namespace LinBox
 		}
 		return y;
 	}
+	template <class _Field>
+	BlasVector<_Field>&  BlasMatrix< _Field>::apply (BlasVector<_Field>& y, const BlasVector<_Field>& x) const
+	{
+		//_stride ?
+		if (_use_fflas){
+			//!@bug this supposes &x[0]++ == &x[1]
+                        // PG: try to discover stride of x and y (not use it works on every platform)
+                        size_t ldx,ldy;
+                        ldx=(size_t)x.getStride();
+                        ldy=(size_t)y.getStride();
+
+			FFLAS::fgemv((typename Field::Father_t) field(), FFLAS::FflasNoTrans,
+				      _row, _col,
+				      field().one,
+				      _ptr, getStride(),
+				      x.getPointer(),x.getStride(),
+				      field().zero,
+				      y.getWritePointer(),y.getStride());
+		}
+		else {
+			_MD. vectorMul (y, *this, x);
+		}
+		return y;
+	}
 
 	template <class _Field>
 	template <class Vector1, class Vector2>

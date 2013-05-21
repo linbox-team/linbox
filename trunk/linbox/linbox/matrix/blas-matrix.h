@@ -642,6 +642,8 @@ namespace LinBox
 		template <class Vector1, class Vector2>
 		Vector1&  apply (Vector1& y, const Vector2& x) const ;
 
+		BlasVector<_Field>&  apply (BlasVector<_Field>& y, const BlasVector<_Field>& x) const ;
+
 		template <class Vector1, class Vector2>
 		Vector1&  applyTranspose (Vector1& y, const Vector2& x) const ;
 

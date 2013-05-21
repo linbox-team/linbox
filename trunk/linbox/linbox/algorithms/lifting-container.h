@@ -310,21 +310,21 @@ namespace LinBox
 		typedef _IMatrix                  IMatrix;
 		typedef _Ring                        Ring;
 		typedef typename _Ring::Element   Integer_t;
-		typedef std::vector<Integer_t>      IVector;
+		typedef BlasVector<_Ring>      IVector;
 #ifdef RSTIMING
 		mutable Timer ttSetup, tRingApply, tRingOther, ttRingOther, ttRingApply;
 #endif
 
 	protected:
 
-		const IMatrix&            _matA;
-		Ring                      _intRing;
-		Integer_t                   _p;
-		IVector                   _b;
-		VectorDomain<Ring>      _VDR;
-		size_t               _length;
-		Integer_t            _numbound;
-		Integer_t            _denbound;
+		const IMatrix&                    _matA;
+		Ring                           _intRing;
+		Integer_t                            _p;
+		IVector                              _b;
+		VectorDomain<Ring>                 _VDR;
+		size_t                          _length;
+		Integer_t                     _numbound;
+		Integer_t                     _denbound;
 		MatrixApplyDomain<Ring,IMatrix>    _MAD;
 		//BlasApply<Ring>          _BA;
 
@@ -350,7 +350,7 @@ namespace LinBox
 
 		template <class Prime_Type, class Vector1>
 		LiftingContainerBase (const Ring& R, const IMatrix& A, const Vector1& b, const Prime_Type& p):
-			_matA(A), _intRing(R), _VDR(R), _MAD(R,A)
+			_matA(A), _intRing(R), _b(R,b.size()),_VDR(R), _MAD(R,A)
 		{
 
 #ifdef RSTIMING
@@ -372,16 +372,16 @@ namespace LinBox
 
 
 			// initialize res = b
-			_b.resize(b.size());
-			typename Vector1::const_iterator         b_iter    = b.begin();
-			typename std::vector<Integer_t>::iterator  res_iter  = _b.begin() ;
+			// _b.resize(b.size());
+			typename Vector1::const_iterator     b_iter    = b.begin();
+			typename BlasVector<Ring>::iterator  res_iter  = _b.begin() ;
 			for (; b_iter != b.end(); ++res_iter, ++b_iter)
 				this->_intRing.init(*res_iter, *b_iter);
 
 			Integer_t had_sq, short_sq;
 			BoundBlackbox(this->_intRing, had_sq, short_sq, A);
 
-			typename std::vector<Integer_t>::const_iterator iterb = _b.begin();
+			typename BlasVector<Ring>::const_iterator iterb = _b.begin();
 			Integer_t normb_sq;
 			this->_intRing.init(normb_sq, 0);
 			for (;iterb!=_b.end();++iterb)
@@ -424,7 +424,7 @@ namespace LinBox
 
 		class const_iterator {
 		private:
-			std::vector<Integer_t>          _res;
+			BlasVector<Ring>              _res;
 			const LiftingContainerBase    &_lc;
 			size_t                   _position;
 		public:
@@ -458,7 +458,7 @@ namespace LinBox
 				/*  prepare for updating residu */
 
 				// compute v2 = _matA * digit
-				IVector v2 (_lc._matA.coldim());
+				IVector v2 (_lc.ring(),_lc._matA.coldim());
 				_lc._MAD.applyV(v2,digit, _res);
 
 #ifdef DEBUG_LC
@@ -477,7 +477,7 @@ namespace LinBox
 
 				// update _res -= v2
 				_lc._VDR.subin (_res, v2);
-				typename std::vector<Integer_t>::iterator p0;
+				typename BlasVector<Ring>::iterator p0;
 				// update _res = _res / p
 				int index=0;
 				for ( p0 = _res.begin(); p0 != _res.end(); ++ p0, ++index){
@@ -615,9 +615,9 @@ namespace LinBox
 		typedef _IMatrix                           IMatrix;
 		typedef _FMatrix                           FMatrix;
 		typedef typename Field::Element            Element;
-		typedef typename IMatrix::Element          Integer_t;
-		typedef std::vector<Integer_t>               IVector;
-		typedef std::vector<Element>               FVector;
+		typedef typename IMatrix::Element        Integer_t;
+		typedef BlasVector<Ring>                   IVector;
+		typedef BlasVector<Field>                  FVector;
 
 	protected:
 
@@ -680,6 +680,7 @@ namespace LinBox
 
 		virtual IVector& nextdigit(IVector& digit, const IVector& residu) const
 		{
+			linbox_check(digit.size()==residu.size());
 #ifdef RSTIMING
 			tGetDigitConvert.start();
 #endif
@@ -689,11 +690,14 @@ namespace LinBox
 			// res_p =  residu mod p
 			//VectorHom::map (_res_p, residu, field(), this->_intRing);
 			{
-				typename FVector::iterator iter_p = _res_p.begin();
+				std::cout << digit.size() << std::endl;
+				typename FVector::iterator     iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
-				for ( ;iter != residu. end(); ++iter, ++iter_p)
+				for ( ;iter != residu. end(); ++iter, ++iter_p) {
 					//field(). init (*iter_p, this->_intRing.convert(tmp,*iter));
-					hom.image(*iter_p, *iter);//std::cout<<*iter_p<<"= "<< *iter<<" mod "<<this->_p<<"\n";
+					hom.image(*iter_p, *iter);
+					std::cout<<*iter_p<<"= "<< *iter<<" mod "<<this->_p<<"\n";
+				}
 			}
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
