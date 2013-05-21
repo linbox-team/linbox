@@ -219,13 +219,18 @@ namespace LinBox
 			// Sequence and iterator initialization
 			//
 			typename Sequence::const_iterator _iter (_container->begin ());
-			Polynomial S ((size_t)END + 1);
+			Polynomial S (field(),(size_t)END + 1);
 
 			// -----------------------------------------------
 			// Preallocation. No further allocation.
 			//
-			C.reserve    ((size_t)n + 1); C.resize (1); field().assign (C[0], field().one);
-			Polynomial B ((size_t)n + 1); B.resize (1); field().assign (B[0], field().one);
+			C.reserve    ((size_t)n + 1);
+			C.resize (1);
+			field().assign (C[0], field().one);
+
+			Polynomial B (field(),(size_t)n + 1);
+			B.resize (1);
+			field().assign (B[0], field().one);
 
 			long L = 0;
 			Element b, d, Ds;
@@ -353,7 +358,7 @@ namespace LinBox
 		//
 		void pseudo_rank (unsigned long &rank)
 		{
-			std::vector<Element> phi;
+			BlasVector<Field> phi(field());
 			massey (phi, 0);
 			rank = v_degree (phi) - v_val (phi);
 		}
@@ -362,7 +367,7 @@ namespace LinBox
 		{
 			commentator().start ("Valence", "LinBox::MasseyDomain::valence");
 
-			std::vector<Element> phi;
+			BlasVector<Field> phi(field());
 			massey (phi, 1);
 			rank = v_degree (phi) - v_val (phi);
 			Valence = phi[v_degree (phi)];
@@ -410,11 +415,10 @@ namespace LinBox
 #endif // __LINBOX_massey_domain_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -208,13 +208,13 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
 
 		typedef typename Blackbox::Field Field;
-		typedef std::vector<typename Field::Element> Polynomial;
 		Field F = A.field();
+		typedef BlasVector<Field> Polynomial;
 
 		if(Meth.symmetric()) {
 			commentator().start ("Symmetric Wiedemann Determinant", "sdet");
 			linbox_check (A.coldim () == A.rowdim ());
-			Polynomial               phi;
+			Polynomial               phi(F);
 			unsigned long            deg;
 			typename Field::RandIter iter (F);
 
@@ -273,7 +273,7 @@ namespace LinBox
 			commentator().start ("Wiedemann Determinant", "wdet");
 			linbox_check (A.coldim () == A.rowdim ());
 
-			Polynomial               phi;
+			Polynomial               phi(F);
 			unsigned long            deg;
 			typename Field::RandIter iter (F);
 
