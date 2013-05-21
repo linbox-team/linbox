@@ -200,7 +200,7 @@ namespace LinBox
 				    const Blackbox                    &A,
 				    const RingCategories::ModularTag  &tag,
 				    const Method::Wiedemann           &M)
-	// This is too much for solutions.  It belongs in algorithms
+	//! @bug This is too much for solutions.  It belongs in algorithms
 	{
 
 		typedef typename Blackbox::Field Field;
@@ -211,7 +211,7 @@ namespace LinBox
 			commentator().start ("Symmetric Rank", "srank");
 
 
-			std::vector<typename Field::Element> d1;
+			BlasVector<Field> d1(F);
 			size_t i;
 
 			VectorWrapper::ensureDim (d1, A.coldim ());
@@ -221,7 +221,7 @@ namespace LinBox
 
 
 			typedef Compose<Compose<Diagonal<Field>,Blackbox >, Diagonal<Field> > BlackBox1;
-			Diagonal<Field> D0 (F, d1);
+			Diagonal<Field> D0 (d1);
 			Compose<Diagonal<Field>,Blackbox > B0 (&D0, &A);
 			BlackBox1 B (&B0, &D0);
 
@@ -265,7 +265,7 @@ namespace LinBox
 
 				for (i = 0; i < A.coldim (); i++)
 					do iter.random (d1[i]); while (F.isZero (d1[i]));
-				Diagonal<Field> D1 (F, d1);
+				Diagonal<Field> D1 (d1);
 				Compose<Diagonal<Field>,Blackbox > B1 (&D1, &A);
 				BlackBox1 B2 (&B1, &D1);
 
@@ -298,7 +298,7 @@ namespace LinBox
 				ButterflyP P (F, A.rowdim(), factory);
 				for (i = 0; i < A.coldim (); i++)
 					do iter.random (d1[i]); while (F.isZero (d1[i]));
-				Diagonal<Field> D1 (F, d1);
+				Diagonal<Field> D1 (d1);
 				typedef Compose< ButterflyP, Diagonal<Field> > ButD;
 				ButD PD(&P, &D1);
 
@@ -341,7 +341,7 @@ namespace LinBox
 
 			commentator().start ("Rank", "wrank");
 
-			std::vector<typename Field::Element> d1, d2;
+			BlasVector<Field> d1(F), d2(F);
 			size_t i;
 
 			VectorWrapper::ensureDim (d1, A.coldim ());
@@ -353,7 +353,7 @@ namespace LinBox
 			for (i = 0; i < A.rowdim (); i++)
 				do iter.random (d2[i]); while (F.isZero (d2[i]));
 
-			Diagonal<Field> D1_i (F, d1), D2_i (F, d2);
+			Diagonal<Field> D1_i (d1), D2_i (d2);
 			Transpose<Blackbox> AT_i (&A);
 
 			Compose<Diagonal<Field>,Transpose<Blackbox> > B1_i (&D1_i, &AT_i);
@@ -398,7 +398,7 @@ namespace LinBox
 				for (i = 0; i < A.rowdim (); i++)
 					do iter.random (d2[i]); while (F.isZero (d2[i]));
 
-				Diagonal<Field> D1 (F, d1), D2 (F, d2);
+				Diagonal<Field> D1 (d1), D2 (d2);
 				Transpose<BlackboxP> AT (&BP);
 
 				Compose<Diagonal<Field>,Transpose<BlackboxP> > B1 (&D1, &AT);
@@ -442,7 +442,7 @@ namespace LinBox
 				for (i = 0; i < A.rowdim (); i++)
 					do iter.random (d2[i]); while (F.isZero (d2[i]));
 
-				Diagonal<Field> D1 (F, d1), D2 (F, d2);
+				Diagonal<Field> D1 (d1), D2 (d2);
 				Transpose<BlackboxP> AT (&BP);
 
 				Compose<Diagonal<Field>,Transpose<BlackboxP> > B1 (&D1, &AT);
