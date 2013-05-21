@@ -29,7 +29,6 @@
 #ifndef __LINBOX_valence_H
 #define __LINBOX_valence_H
 
-#include <vector>
 #include "linbox/blackbox/transpose.h"
 
 #include "linbox/solutions/minpoly.h"
@@ -82,10 +81,11 @@ namespace LinBox
 						    const RingCategories::ModularTag          &tag,
 						    const MyMethod& M)
 	{
-		typedef typename Blackbox::Field::Element Elt_t;
-		std::vector<Elt_t> minp;
+		typedef typename Blackbox::Field Field;
+		typedef typename Field::Element Elt_t;
+		BlasVector<Field> minp(A.field());
 		minpoly(minp, A, tag, M);
-		typename std::vector<Elt_t>::const_iterator it = minp.begin();
+		typename BlasVector<Field>::const_iterator it = minp.begin();
 		for( ; it != minp.end(); ++it)
 			if (! A.field().isZero(*it)) break;
 		if (it != minp.end())
@@ -178,8 +178,9 @@ namespace LinBox
 			typedef typename Blackbox::Field Ring;
 			_aat_diag = 0; _aat_radius = 0, _aat_radius1 = 0;
 
-			std::vector< integer > d(A. rowdim()),w(A. coldim());
-			std::vector<integer>::iterator di, wi;
+			PID_integer ZZ;
+			BlasVector< PID_integer > d(ZZ, A. rowdim()),w(ZZ, A. coldim());
+			BlasVector<PID_integer>::iterator di, wi;
 			for(wi = w.begin();wi!= w.end();++wi)
 				*wi = 0;
 			for(di = d.begin();di!= d.end();++di)
@@ -234,7 +235,8 @@ namespace LinBox
 		static void one_valence(typename Blackbox::Element& v, unsigned long& r, const Blackbox& A)
 		{
 			//commentator().start ("One valence", "one valence");
-			typedef std::vector<typename Blackbox::Element> Poly; Poly poly;
+			typedef BlasVector<typename Blackbox::Field> Poly;
+			Poly poly(A.field());
 			typename Blackbox::Field F(A. field());
 			Transpose<Blackbox> AT (&A);
 			Compose<Blackbox, Transpose<Blackbox> > AAT(&A, &AT);
@@ -295,7 +297,8 @@ namespace LinBox
 			double log_max_mod = log((double)FieldTraits<Field>::maxModulus()) ;
 			int n_bit = (int)(log_max_mod / M_LN2 - 2);
 			RandomPrimeIterator rg((unsigned int)n_bit);
-			std::vector<integer> Lv, Lm;
+			PID_integer Z;
+			BlasVector<PID_integer> Lv(Z), Lm(Z);
 			unsigned long d1; Field::Element v; integer im = 1;
 			//compute an upper bound for val.
 			integer bound; cassini (bound, A); bound = pow (bound, d); bound *= 2;
@@ -314,7 +317,7 @@ namespace LinBox
 			} while (im < bound);
 
 			val = 0;
-			std::vector<integer>::iterator Lv_p, Lm_p; integer tmp, a, b, g;
+			BlasVector<PID_integer>::iterator Lv_p, Lm_p; integer tmp, a, b, g;
 			for (Lv_p = Lv. begin(), Lm_p = Lm. begin(); Lv_p != Lv. end(); ++ Lv_p, ++ Lm_p) {
 				tmp = im / *Lm_p;
 				gcd (g, *Lm_p, tmp, a, b);
@@ -335,11 +338,10 @@ namespace LinBox
 #endif //__LINBOX_valence_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

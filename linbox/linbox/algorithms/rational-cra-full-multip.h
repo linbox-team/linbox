@@ -134,7 +134,7 @@ namespace LinBox
 		{
 			num.resize( (Father_t::RadixResidues_.front()).size() );
 			std::vector< LazyProduct >::iterator            _mod_it = Father_t::RadixPrimeProd_.begin();
-			std::vector< std::vector< Integer > >::iterator _tab_it = Father_t::RadixResidues_.begin();
+			std::vector< BlasVector<PID_integer> >::iterator _tab_it = Father_t::RadixResidues_.begin();
 			std::vector< bool >::iterator                   _occ_it = Father_t::RadixOccupancy_.begin();
 			LazyProduct Product;
 			for( ; _occ_it != Father_t::RadixOccupancy_.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {

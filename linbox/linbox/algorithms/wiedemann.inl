@@ -192,12 +192,12 @@ namespace LinBox
 						  const Vector        &b,
 						  bool       useRandIter)
 	{
-		typedef std::vector<typename Field::Element> Polynomial;
+		typedef BlasVector<Field> Polynomial;
 		typedef typename Polynomial::iterator        PolyIterator;
 
 		commentator().start ("Solving nonsingular system (Wiedemann)", "WiedemannSolver::solveNonsingular");
 
-		Polynomial m_A;
+		Polynomial m_A(A.field());
 		Vector     z(A.field());
 		bool       ret = true;
 

@@ -83,7 +83,7 @@ int main (int argc, char **argv)
 		if(process == 0)
 			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		vector<PID_integer::Element> m_A;
+		BlasVector<PID_integer> m_A(ZZ);
 		minpoly (m_A, A, M);
 
 		if(process == 0){
@@ -107,7 +107,7 @@ int main (int argc, char **argv)
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
-		vector<Field::Element> m_B;
+		BlasVector<Field> m_B(F);
 		minpoly (m_B, B);
 
 		cout << "Minimal Polynomial is ";
@@ -122,11 +122,10 @@ int main (int argc, char **argv)
 	return 0;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
