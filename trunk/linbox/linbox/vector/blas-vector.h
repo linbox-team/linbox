@@ -160,7 +160,7 @@ namespace LinBox { /* BlasVector */
 
 
 	public:
-		BlasVector (const _Field &F, const Element=0)  :
+		BlasVector (const _Field &F)  :
 			_size(0),_1stride(1),_rep(1),_ptr(&_rep[0]), _field(&F)
 		{
 			// Father_t is garbage until then:
