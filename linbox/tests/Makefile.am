@@ -68,9 +68,9 @@ BASIC_TESTS =  \
         test-smith-form-binary        \
         test-rational-solver          \
         test-rational-solver-adaptive \
-        test-cra
+        test-cra                      \
+	test-charpoly
 
-#  test-charpoly
 
 FULLCHECK_TESTS =                 \
         test-bitonic-sort             \
@@ -374,9 +374,9 @@ test_butterfly_SOURCES =                \
         test-generic.h                  \
         test-common.h
 
-#  test_charpoly_SOURCES =                 \
-	#  test-charpoly.C                 \
-	#  test-common.h
+test_charpoly_SOURCES =                 \
+	test-charpoly.C                 \
+	test-common.h
 
 test_diagonal_SOURCES =                 \
         test-diagonal.C                 \
