@@ -343,8 +343,11 @@ namespace LinBox { /* BlasVector */
 			return *this;
 		}
 
-		// template<typename _Tp1>
-		// struct rebind ;
+		template<typename _Tp1>
+		struct rebind {
+			typedef BlasVector<_Tp1> other;
+		};
+
 
 		// write
 

@@ -66,11 +66,11 @@ namespace LinBox {
 
 	public:
 		typedef typename Ring::Element Int;
-		typedef std::vector<Int> IVector;
+		typedef BlasVector<Ring> IVector;
 		// note: the type integer is also used.  For instance, we assume shift operator<< works on integer.
 		typedef ParamFuzzy Field;
 		typedef typename Field::Element Float;
-		typedef std::vector<Float> FVector;
+		typedef BlasVector<Field> FVector;
 		typedef BlasMatrix<Field> FMatrix;
 
 	protected:
@@ -143,8 +143,8 @@ namespace LinBox {
 			_numsolver.init(DM);
 
 			// r is b as vector of doubles.  (r is initial residual)
-			FVector r(n);
-			IVector bi(n);
+			FVector r(field(),n);
+			IVector bi(_ring,n);
 			typename IVector::const_iterator b_p = b.begin();
 			typename IVector::iterator bi_p = bi.begin();
 			typename FVector::iterator r_p = r.begin();
@@ -169,12 +169,12 @@ namespace LinBox {
 
 			loopBound *= (2*mnorm + zw_dmax((int)n, &*(r.begin()), 1));
 
-			std::vector<integer> numx(n), tnum(n); // numerator of binary expansion
+			BlasVector<PID_integer> numx(PID_integer(),n), tnum(PID_integer(),n); // numerator of binary expansion
 			integer denx = 1, tden; // denominator of binary expansion (denx is a power of 2).
 
-			FVector x(n), xs_int(n), xs_frac(n);
-			FVector lastr(n);
-			IVector lastb(n);
+			FVector x(field(),n), xs_int(field(),n), xs_frac(field(),n);
+			FVector lastr(field(),n);
+			IVector lastb(_ring,n);
 
 			//set initial shift small.
 			shift = 2;
@@ -276,7 +276,7 @@ namespace LinBox {
 
 #if 0
 			//  Answer checking
-			IVector y(n), z(n);
+			IVector y(_ring,n), z(_ring,n);
 			M.apply(y, num);
 			_VDR.mul(z, b, den);
 			if ( !_VDR.areEqual(y, z)) {
@@ -333,11 +333,10 @@ namespace LinBox {
 
 #endif // __LINBOX_rational_solver_sn_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -42,7 +42,7 @@ int zw_shift(NumericSolver & NS_S, size_t n, FVector &r, FVector &x)
 {
 	//  ZW method for calculating shift
 	// compute ax
-	FVector ax(n);
+	FVector ax(field(),n);
 	NS_S.apply(ax, x);
 	// compute ax = ax -r, the negative of residual
 	for(size_t i=0; i<n; i++)
@@ -81,7 +81,7 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 	// xs_int: integer part of scaled x.
 	// xs_frac: fractional part of scaled x.
 	// x * 2^shift = xs_int + xs_frac.
-	FVector nextx(n), quo(n);
+	FVector nextx(field(),n), quo(field(),n);
 
 	integer denx_i;
 	typename Field::Element one; field().init(one, 1);
@@ -270,7 +270,7 @@ inline void update_r(FVector& r, FVector& xs_int)
 	size_t n = r.size();
 	int64_t shifted = ((int64_t)1 << shift);
 	field().init(scalar, (double)shifted);
-	FVector y(n);
+	FVector y(field(),n);
 
 	//update r = r * 2^shift - Mat*xs_int
 	_VDF.mulin(r, scalar);
@@ -284,7 +284,7 @@ template <class IMatrix>
 inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatrix &IM){
 	size_t n = r.size();
 
-	IVector x_i(n), y_i(n);
+	IVector x_i(_ring,n), y_i(_ring,n);
 
 	typename Ring::Element scalar = ((int64_t)1 << shift);
 
@@ -304,7 +304,7 @@ inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatri
 	//  r -= Mat * xs_int
 	if(field().mulin(vnorm, mnorm) < thresh){
 		debugneol("Numeric ");
-		FVector y(n);
+		FVector y(field(),n);
 		_numsolver.apply(y, xs_int);
 		for(size_t i = 0; i < n; ++i)
 			_ring.init(y_i[i], y[i]);
@@ -350,7 +350,7 @@ inline int HadamardBound(integer& B, FMatrix& DM)
 inline IVector& update_num (IVector& num, const FVector& d)
 {
 	size_t n = d.size();
-	IVector d_i(n);
+	IVector d_i(_ring,n);
 	for (size_t i = 0; i < n; ++i) {
 		_ring.init(d_i[i], d[i]);
 	}
@@ -490,11 +490,10 @@ void dumpData(const Matrix &M, const IVector &b, IVector &numx, integer &denx, i
 #endif
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

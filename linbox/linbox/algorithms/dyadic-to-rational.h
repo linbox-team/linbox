@@ -1,5 +1,6 @@
-#ifndef __DYADICTORATIONAL_H
-#define __DYADICTORATIONAL_H
+#ifndef __LINBOX_algorithms_dyadic_to_rational_H
+#define __LINBOX_algorithms_dyadic_to_rational_H
+
 /* dyadic-to-rational.h
  *
  * dyadicToRational reconstructs a rational a/b from dyadic approximation n/2^k.
@@ -34,7 +35,6 @@
 
 #include <stack>
 #include <assert.h>
-#include <vector>
 
 //#include "linbox/integer.h"
 
@@ -157,8 +157,8 @@ bool partial_hegcd(Ring& Z, typename Ring::Element& e, typename Ring::Element& b
 template<class Ring>
 int dyadicToRational(
 	const Ring& Z,
-	std::vector<typename Ring::Element>& num, typename Ring::Element& den,
-	std::vector<typename Ring::Element>& numx, typename Ring::Element& denx,
+	BlasVector<Ring>& num, typename Ring::Element& den,
+	BlasVector<Ring>& numx, typename Ring::Element& denx,
 	typename Ring::Element& denBound)
 {
 	typedef typename Ring::Element Int;
@@ -231,7 +231,7 @@ int dyadicToRational(
 #if 0
 // vector rational reconstruction building num, den from numx, denx
 // This one -- very inefficient -- just reconstructs each one, then goes thru to fix for lcm.
-void rational_reconstruction(std::vector<integer>& num, integer& den, std::vector<integer>& numx, integer& denx, integer& denBound) {
+void rational_reconstruction(BlasVector<PID_integer>& num, integer& den, BlasVector<PID_integer>& numx, integer& denx, integer& denBound) {
 	integer den_tmp, missing_factor;
 	den = 1;
 	for (size_t i = 0; i < numx.size(); ++i) {
@@ -249,15 +249,14 @@ void rational_reconstruction(std::vector<integer>& num, integer& den, std::vecto
 #endif
 
 }// LinBox
-#endif // __DYADICTORATIONAL_H
+#endif // __LINBOX_algorithms_dyadic_to_rational_H
 
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

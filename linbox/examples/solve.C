@@ -91,16 +91,17 @@ int main (int argc, char **argv)
 
 		typedef Modular<double> Field;
 		double q = atof(argv[ModComp]);
+		typedef BlasVector<Field> DenseVector ;
 		Field F(q);
 		MatrixStream< Field > ms ( F, input );
 		SparseMatrix<Field> A (ms);  // A.write(std::cout);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		std::vector<Field::Element> X( A.coldim()),B(A.rowdim());
+		DenseVector X(F, A.coldim()),B(F, A.rowdim());
 		if (createB) {
 			cerr << "Creating a random {-1,1} vector U, B is AU (to have a consistent system)" << endl;
-			std::vector<Field::Element> U( A.coldim() );
-			for(std::vector<Field::Element>::iterator it=U.begin();
+			DenseVector U(F, A.coldim() );
+			for(DenseVector::iterator it=U.begin();
 			    it != U.end(); ++it)
 				if (drand48() <0.5)
 					F.init(*it,-1);
@@ -109,7 +110,7 @@ int main (int argc, char **argv)
 			A.apply(B,U);
 		}
 		else {
-			for(std::vector<Field::Element>::iterator it=B.begin();
+			for(DenseVector::iterator it=B.begin();
 			    it != B.end(); ++it)
 				invect >> *it;
 		}
@@ -117,7 +118,7 @@ int main (int argc, char **argv)
 		//         A.write(std::cout << "A: ") << std::endl;
 
 		std::cout << "B is [";
-		for(std::vector<Field::Element>::const_iterator it=B.begin();it != B.end(); ++it)
+		for(DenseVector::const_iterator it=B.begin();it != B.end(); ++it)
 			F.write(cout, *it) << " ";
 		std::cout << "]" << std::endl;
 
@@ -131,7 +132,7 @@ int main (int argc, char **argv)
 		chrono.stop();
 
 		std::cout << "(Sparse Gauss) Solution is [";
-		for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
 			F.write(cout, *it) << " ";
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
@@ -143,7 +144,7 @@ int main (int argc, char **argv)
 		chrono.stop();
 
 		std::cout << "(BlasElimination) Solution is [";
-		for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
 			F.write(cout, *it) << " ";
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
@@ -156,7 +157,7 @@ int main (int argc, char **argv)
 		chrono.stop();
 
 		std::cout << "(Wiedemann) Solution is [";
-		for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
 			F.write(cout, *it) << " ";
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
@@ -169,7 +170,7 @@ int main (int argc, char **argv)
 		chrono.stop();
 
 		std::cout << "(Lanczos) Solution is [";
-		for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
 			F.write(cout, *it) << " ";
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
@@ -185,7 +186,7 @@ int main (int argc, char **argv)
 		chrono.stop();
 
 		std::cout << "(Block Lanczos) Solution is [";
-		for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
 			F.write(cout, *it) << " ";
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
@@ -195,17 +196,18 @@ int main (int argc, char **argv)
 	else {
 
 		PID_integer ZZ;
+		typedef BlasVector<PID_integer> DenseVector ;
 		MatrixStream< PID_integer > ms( ZZ, input );
 		SparseMatrix<PID_integer> A (ms);
 		PID_integer::Element d;
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
-               
-		std::vector<PID_integer::Element> X( A.coldim()),B(A.rowdim());
+
+		DenseVector X(ZZ, A.coldim()),B(ZZ, A.rowdim());
 
 		if (createB) {
 			cerr << "Creating a random {-1,1} vector U, B is AU" << endl;
-			std::vector<PID_integer::Element> U( A.coldim() );
-			for(std::vector<PID_integer::Element>::iterator it=B.begin();
+			DenseVector U(ZZ, A.coldim() );
+			for(DenseVector::iterator it=B.begin();
 			    it != U.end(); ++it)
 				if (drand48() <0.5)
 					*it = -1;
@@ -214,14 +216,14 @@ int main (int argc, char **argv)
 			A.apply(B,U);
 		}
 		else {
-			for(std::vector<PID_integer::Element>::iterator it=B.begin();
+			for(DenseVector::iterator it=B.begin();
 			    it != B.end(); ++it)
 				invect >> *it;
 		}
 
 
 		std::cout << "B is [";
-		for(std::vector<PID_integer::Element>::const_iterator it=B.begin();
+		for(DenseVector::const_iterator it=B.begin();
 		    it != B.end(); ++it)
 			ZZ.write(cout, *it) << " ";
 		std::cout << "]" << std::endl;
@@ -236,7 +238,7 @@ int main (int argc, char **argv)
 		chrono.stop();
 
 		std::cout << "(Wiedemann) Solution is [";
-		for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
 			ZZ.write(cout, *it) << " ";
 		std::cout << "] / ";
 		ZZ.write(std::cout, d) << std::endl;
@@ -249,7 +251,7 @@ int main (int argc, char **argv)
 		chrono.stop();
 
 		std::cout << "(BlasElimination) Solution is [";
-		for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
 			ZZ.write(cout, *it) << " ";
 		std::cout << "] / ";
 		ZZ.write(std::cout, d)<< std::endl;
@@ -262,7 +264,7 @@ int main (int argc, char **argv)
 		chrono.stop();
 
 		std::cout << "(SparseElimination) Solution is [";
-		for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
 			ZZ.write(cout, *it) << " ";
 		std::cout << "] / ";
 		ZZ.write(std::cout, d)<< std::endl;
@@ -276,7 +278,7 @@ int main (int argc, char **argv)
 		chrono.stop();
 
 		std::cout << "(Lanczos) Solution is [";
-		for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
 			ZZ.write(cout, *it) << " ";
 		std::cout << "] / ";
 		ZZ.write(std::cout, d) << std::endl;
@@ -291,7 +293,7 @@ int main (int argc, char **argv)
 		chrono.stop();
 
 		std::cout << "(Block Lanczos) Solution is [";
-		for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
 			ZZ.write(cout, *it) << " ";
 		std::cout << "] / ";
 		ZZ.write(std::cout, d) << std::endl;
@@ -302,11 +304,10 @@ int main (int argc, char **argv)
 	return 0;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
