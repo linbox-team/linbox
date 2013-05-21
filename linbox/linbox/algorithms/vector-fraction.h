@@ -28,6 +28,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include <stdio.h>
+#include "linbox/vector/blas-vector.h"
 #include "linbox/vector/vector-traits.h"
 
 namespace LinBox
@@ -80,10 +81,10 @@ namespace LinBox
 	template<class Domain>
 	class VectorFraction{
 	public:
-		typedef typename Domain::Element Element;
+		typedef typename Domain::Element              Element;
 		typedef typename std::pair<Element, Element> Fraction;
-		typedef typename std::vector<Fraction> FVector;
-		typedef typename Vector<Domain>::Dense Vector;
+		typedef typename std::vector<Fraction>        FVector;
+		typedef BlasVector<Domain>   Vector;
 
 		Vector numer;
 		Element denom;
@@ -125,14 +126,12 @@ namespace LinBox
 		/** allocating constructor, returns [0, 0, ... 0]/1 */
 		VectorFraction(const Domain& D, size_t n) :
 			_domain(D)
+			,numer(D,n)
 		{
-			D.init(zero, 0);
-			D.init(denom, 1);
-			numer = Vector(n);
 			typename Vector::iterator j;
 
 			for (j=numer.begin(); j!=numer.end(); j++)
-				D.assign(*j, zero);
+				D.assign(*j, D.zero);
 		}
 
 		/** copy constructor */

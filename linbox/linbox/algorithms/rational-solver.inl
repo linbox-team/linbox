@@ -49,7 +49,7 @@
 #include "linbox/solutions/methods.h"
 #include "linbox/blackbox/block-hankel-inverse.h"
 
-
+#include "linbox/vector/blas-vector.h"
 
 // #ifdef __LINBOX_BLAS_AVAILABLE
 #include "linbox/config-blas.h"
@@ -517,10 +517,10 @@ namespace LinBox
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
 	RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::solveNonsingular (Vector1& num,
-												      Integer& den,
-												      const IMatrix& A,
-												      const Vector2& b,
-												      int maxPrimes) const
+										       Integer& den,
+										       const IMatrix& A,
+										       const Vector2& b,
+										       int maxPrimes) const
 	{
 		// checking if matrix is square
 		linbox_check(A.rowdim() == A.coldim());
@@ -626,11 +626,11 @@ namespace LinBox
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
 	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular(Vector1& num,
-												     Integer& den,
-												     const IMatrix& A,
-												     const Vector2& b,
-												     bool oldMatrix,
-												     int maxPrimes) const
+									     Integer& den,
+									     const IMatrix& A,
+									     const Vector2& b,
+									     bool oldMatrix,
+									     int maxPrimes) const
 	{
 
 		// std::cout<<"DIXON\n\n\n\n";
@@ -835,7 +835,7 @@ namespace LinBox
 			linbox_check(A.rowdim() == b.size());
 
 			LinBox::integer tmp;
-			Integer_t _rone,_rzero;
+			Integer_t _rone,_rzero; //!@bug remove those
 			_ring.init(_rone,1);
 			_ring.init(_rzero,0);
 
@@ -1004,7 +1004,7 @@ namespace LinBox
 
 				RationalReconstruction<LiftingContainer > re(lc);
 
-				Vector1 short_num(rank); Integer short_den;
+				Vector1 short_num(A.field(),rank); Integer short_den;
 
 				if (!re.getRational(short_num, short_den,0))
 					return SS_FAILED;    // dirty, but should not be called
@@ -1025,9 +1025,9 @@ namespace LinBox
 #endif
 
 				bool certifies = true; //check certificate
-				std::vector<Integer> certnumer_A(A.coldim());
+				BlasVector<Ring> certnumer_A(_ring,A.coldim());
 				BAR.applyVTrans(certnumer_A, A_check, cert.numer);
-				typename std::vector<Integer>::iterator cai = certnumer_A.begin();
+				typename BlasVector<Ring>::iterator cai = certnumer_A.begin();
 				for (size_t i=0; certifies && i<A.coldim(); i++, cai++)
 					certifies &= _ring.isZero(*cai);
 #ifdef RSTIMING
@@ -1165,7 +1165,7 @@ namespace LinBox
 				} while (nullity > 0);
 			}
 			// Compute newb = (TAS_P.b)[0..(rank-1)]
-			std::vector<Integer> newb(b);
+			BlasVector<Ring> newb(b);
 			BMDI.mulin_right(TAS_P, newb);
 			newb.resize(rank);
 
@@ -1183,7 +1183,7 @@ namespace LinBox
 #endif
 			RationalReconstruction<LiftingContainer > re(lc);
 
-			Vector1 short_num(rank); Integer short_den;
+			Vector1 short_num(_ring,rank); Integer short_den;
 
 			if (!re.getRational(short_num, short_den,0))
 				return SS_FAILED;    // dirty, but should not be called
@@ -1204,7 +1204,7 @@ namespace LinBox
 			}
 			else {
 				// short_answer = P * short_answer
-				typename Vector<Ring>::Dense newNumer(A.coldim());
+				BlasVector<Ring> newNumer(_ring,A.coldim());
 				BAR.applyV(newNumer, *P, answer_to_vf.numer);
 				//BAR.applyVspecial(newNumer, *P, answer_to_vf.numer);
 
@@ -1213,14 +1213,14 @@ namespace LinBox
 
 			if (level >= SL_LASVEGAS) { //check consistency
 
-				std::vector<Integer> A_times_xnumer(b.size());
+				BlasVector<Ring> A_times_xnumer(_ring,b.size());
 
 				BAR.applyV(A_times_xnumer, A_check, answer_to_vf.numer);
 
 				Integer tmpi;
 
 				typename Vector2::const_iterator ib = b.begin();
-				typename std::vector<Integer>::iterator iAx = A_times_xnumer.begin();
+				typename BlasVector<Ring>::iterator iAx = A_times_xnumer.begin();
 				int thisrow = 0;
 				bool needNewPrime = false;
 
@@ -1312,7 +1312,7 @@ namespace LinBox
 				LiftingContainer lc2(_ring, F, A_minor, *Ap_minor_inv, q, _prime);
 
 				RationalReconstruction<LiftingContainer> rere(lc2);
-				Vector1 u_num(rank); Integer u_den;
+				Vector1 u_num(_ring,rank); Integer u_den;
 				if (!rere.getRational(u_num, u_den,0)) return SS_FAILED;
 
 #ifdef RSTIMING
@@ -1323,7 +1323,7 @@ namespace LinBox
 				VectorFraction<Ring> u_to_vf(_ring, u_num.size());
 				u_to_vf. numer = u_num;
 				u_to_vf. denom = u_den;
-				std::vector<Integer> uB(A.coldim());
+				BlasVector<Ring> uB(_ring,A.coldim());
 				BAR.applyVTrans(uB, *B, u_to_vf.numer);
 
 #if 0
@@ -1556,11 +1556,11 @@ namespace LinBox
 #endif //__LINBOX_rational_solver_INL
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

@@ -34,6 +34,7 @@
 
 #include "linbox/field/PID-integer.h"
 #include "linbox/blackbox/diagonal.h"
+#include "linbox/vector/blas-vector.h"
 #include "linbox/algorithms/rational-solver-adaptive.h"
 #include <iostream>
 #include "test-common.h"
@@ -62,14 +63,14 @@ bool testRandomSolve (const Ring& R,
 
 	VectorDomain<Ring> VD (R);
 
-	Vector d, b, x, y;
+	int n = (int)stream1.n();
+	Vector d(R,n), b(R,n), x(R,n), y(R,n);
 
-	VectorWrapper::ensureDim (d, stream1.n ());
-        VectorWrapper::ensureDim (b, stream1.n ());
-        VectorWrapper::ensureDim (x, stream1.n ());
-        VectorWrapper::ensureDim (y, stream1.n ());
+	// VectorWrapper::ensureDim (d, stream1.n ());
+	// VectorWrapper::ensureDim (b, stream1.n ());
+	// VectorWrapper::ensureDim (x, stream1.n ());
+	// VectorWrapper::ensureDim (y, stream1.n ());
 
-	int n = (int)d. size();
 
 	while (stream1 && stream2) {
 
@@ -107,8 +108,7 @@ bool testRandomSolve (const Ring& R,
 		typedef RationalSolverAdaptive RSolver;
 		RSolver rsolver;
 
-		//std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
-		std::vector<typename Ring::Element> num((size_t)n);
+		BlasVector<Ring> num(R,(size_t)n);
 		typename Ring::Element den;
 
 		SolverReturnStatus solveResult = rsolver.solveNonsingular(num, den, D, b); //often 5 primes are not enough
@@ -197,7 +197,7 @@ int main(int argc, char** argv)
 
 	Field F(101);
 
-	RandomDenseStream<Ring> s1 (R, n, (unsigned int)iterations), s2 (R, n, (unsigned int)iterations);
+	RandomDenseStream<Ring,BlasVector<Ring> > s1 (R, n, (unsigned int)iterations), s2 (R, n, (unsigned int)iterations);
 
 
 

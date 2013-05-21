@@ -44,6 +44,7 @@
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/lifting-container.h"
 #include <vector>
+#include "linbox/vector/blas-vector.h"
 
 
 #include "linbox/util/timer.h"
@@ -84,8 +85,8 @@ namespace LinBox
 	class BlasApply {
 
 	public:
-		typedef typename Domain::Element    Element;
-		typedef std::vector<Element>         Vector;
+		typedef typename Domain::Element   Element;
+		typedef BlasVector<Domain>         Vector;
 
 		BlasApply(const Domain& D) :
 			_domain(D), _MD(D)
@@ -259,10 +260,10 @@ namespace LinBox
 
 
 	private:
-		Domain         _domain;
-		integer    _prime;
-		Element _one,_zero;
-		MatrixDomain<Domain> _MD;
+		Domain            _domain;
+		integer            _prime;
+		Element        _one,_zero;
+		MatrixDomain<Domain>  _MD;
 
 
 	};
@@ -272,8 +273,8 @@ namespace LinBox
 	class MatrixApplyDomain {
 
 	public:
-		typedef typename Domain::Element    Element;
-		typedef std::vector<Element>         Vector;
+		typedef typename Domain::Element   Element;
+		typedef BlasVector<Domain>         Vector;
 
 		MatrixApplyDomain(const Domain& D, const IMatrix &Mat) :
 			_domain(D), _matM(Mat)
@@ -322,9 +323,9 @@ namespace LinBox
 		enum ApplyChoice {Classic, MatrixQadic, VectorQadic, CRT};
 
 	public:
-		typedef typename Domain::Element    Element;
-		typedef std::vector<Element>         Vector;
-		typedef IMatrix                       Matrix;
+		typedef typename Domain::Element   Element;
+		typedef BlasVector<Domain>         Vector;
+		typedef IMatrix                      Matrix;
 
 
 		BlasMatrixApplyDomain(const Domain& D, const IMatrix &Mat) :
