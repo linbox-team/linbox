@@ -52,7 +52,7 @@ namespace LinBox
 
 			if (ret != SS_OK) {
 				RationalSolver<IRing, Field, RandomPrimeIterator> solver;
-				std::vector<typename IRing::Element> Ib; Ib.reserve(b.size());
+				BlasVector<IRing> Ib(M.field()); Ib.reserve(b.size());
 				typename IRing::Element tmp;
 				for(typename InVector::const_iterator biter = b.begin();
 				    biter != b.end();
