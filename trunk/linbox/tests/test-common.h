@@ -262,7 +262,7 @@ applyPoly (const Field                             &F,
 	   const Vector                            &v)
 {
 	LinBox::VectorDomain <Field> VD (F);
-	Vector z;
+	Vector z(F);
 	int i;
 
 	LinBox::VectorWrapper::ensureDim (z, A.rowdim ());
