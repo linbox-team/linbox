@@ -73,7 +73,7 @@ bool testRandom(const Ring& R,
 
         VectorDomain<Ring> VD (R);
 
-	Vector d, x;
+	Vector d(R), x(R);
 
 	VectorWrapper::ensureDim (d, stream1.n ());
 
@@ -111,7 +111,7 @@ bool testRandom(const Ring& R,
 			}
 
 
-		std::vector<typename Ring::Element> tmp1((size_t)n), tmp2((size_t)n), e((size_t)n);
+		BlasVector<Ring> tmp1(R,(size_t)n), tmp2(R,(size_t)n), e(R,(size_t)n);
 
 		typename BlasMatrix<Ring>::ColIterator col_p;
 
@@ -165,7 +165,7 @@ bool testRandom(const Ring& R,
 
 			int ii = 0;
 
-			typename std::vector<typename Ring::Element>::iterator p1;
+			typename BlasVector<Ring>::iterator p1;
 
 
 			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ ii) {
@@ -201,7 +201,7 @@ bool testRandom(const Ring& R,
 			report << '\n';
 
 
-			typename std::vector<typename Ring::Element>::iterator p1;
+			typename BlasVector<Ring>::iterator p1;
 			int ii = 0;
 
 			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ ii) {
@@ -212,7 +212,7 @@ bool testRandom(const Ring& R,
 			}
 		}
 
-		typename std::vector<typename Ring::Element>::iterator p1, p2;
+		typename BlasVector<Ring>::iterator p1, p2;
 
 		typename Ring::Element g;
 
