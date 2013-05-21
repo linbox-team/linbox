@@ -47,6 +47,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/gmp-rational.h"
+#include "linbox/vector/blas-vector.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/solutions/det.h"
@@ -71,8 +72,8 @@ using namespace LinBox;
 template <class Field>
 static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <typename Field::Element> Polynomial;
+	typedef BlasVector<Field> Vector;
+	typedef BlasVector<Field> Polynomial;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
@@ -85,7 +86,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 
 	VectorDomain<Field> VD (F);
 
-	Vector d(n);
+	Vector d(F,n);
 	typename Field::Element pi, phi_wiedemann, phi_symm_wied, phi_blas_elimination, phi_sparseelim;
 	typename Field::RandIter r (F);
 
@@ -119,7 +120,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 		F.write (report, pi);
 		report << endl;
 
-		Blackbox D (F, d);
+		Blackbox D (d);
 
                 Method::Wiedemann WiedemannChoice;
 		det (phi_wiedemann, D,  WiedemannChoice);
@@ -165,8 +166,8 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 template <class Field>
 static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <typename Field::Element> Polynomial;
+	typedef BlasVector<Field> Vector;
+	typedef BlasVector<Field> Polynomial;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
@@ -176,7 +177,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 	int i, k;
 	size_t j;
 
-	Vector d(n);
+	Vector d(F,n);
 	typename Field::Element pi, phi_wiedemann, phi_symm_wied, phi_blas_elimination, phi_sparseelim;
 	typename Field::RandIter r (F);
 
@@ -205,7 +206,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 		F.write (report, pi);
 		report << endl;
 
-		Blackbox D (F, d);
+		Blackbox D (d);
 		Method::Wiedemann WiedemannChoice;
 		det (phi_wiedemann, D,  WiedemannChoice);
                 WiedemannChoice.symmetric(Specifier::SYMMETRIC);
@@ -257,8 +258,8 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 template <class Field>
 static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <typename Field::Element> Polynomial;
+	typedef BlasVector <Field> Vector;
+	typedef BlasVector <Field> Polynomial;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
@@ -268,7 +269,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 	int i;
 	size_t j;
 
-	Vector d(n);
+	Vector d(F,n);
 	typename Field::Element phi_wiedemann, phi_symm_wied, phi_blas_elimination, phi_sparseelim;
 	typename Field::RandIter r (F);
 
@@ -286,7 +287,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 		report << "Diagonal entries: ";
 		printVector<Field> (F, report, d);
 
-		Blackbox D (F, d);
+		Blackbox D (d);
 
                  Method::Wiedemann WiedemannChoice;
 		det (phi_wiedemann, D,  WiedemannChoice);
@@ -646,11 +647,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

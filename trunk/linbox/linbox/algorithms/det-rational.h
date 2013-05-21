@@ -164,8 +164,9 @@ namespace LinBox
 						   const MyMethod                 &Met=  Method::Hybrid())
 	{
 
-		typedef Modular<double> myModular;
+		typedef Modular<double>            myModular;
 		typedef typename Rationals::Element Quotient;
+		typedef BlasVector<PID_integer>       IVect ;
 
 		commentator().start ("Rational Det", "Rdeterminant");
 
@@ -225,7 +226,7 @@ namespace LinBox
 		}
 
 		//switch: LIF
-		std::vector<typename PID_integer::Element> v(A.rowdim()), r(A.rowdim());
+		IVect v(Z,A.rowdim()), r(Z,A.rowdim());
 		++genprime;
 		for(size_t i=0; i < v.size(); ++i) {
 			v[i] = rand() % (*genprime) ;
@@ -242,7 +243,7 @@ namespace LinBox
 			//cout << "lif " << std::flush;
 			RationalSolver < PID_integer , Modular<double>, RandomPrimeIterator, DixonTraits > RSolver;
 			LastInvariantFactor < PID_integer ,RationalSolver < PID_integer, Modular<double>, RandomPrimeIterator, DixonTraits > >  LIF(RSolver);
-			std::vector<Integer> r_num2 (Atilde. coldim());
+			IVect r_num2 (Z,Atilde. coldim());
 			t1.clear();
 			t1.start();
 			if (LIF.lastInvariantFactor1(lif, r_num2, Atilde)==0) {
@@ -334,11 +335,11 @@ namespace LinBox
 #endif //__LINBOX_det_rational_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

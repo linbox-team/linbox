@@ -40,6 +40,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/matrix/matrix-category.h"
 #include "linbox/algorithms/linbox-tags.h"
+#include "linbox/vector/blas-vector.h"
 
 namespace LinBox
 { /*  not generic wrt Field (eg NTL_ZZ_p) */

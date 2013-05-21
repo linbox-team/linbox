@@ -641,7 +641,7 @@ namespace LinBox
 				       const VectorIn&   b,
 				       const Prime_Type& p) :
 			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _field(&F), _VDF(F),
-			_res_p(b.size()), _digit_p(A.coldim()), _BA(F)
+			_res_p(F,b.size()), _digit_p(F,A.coldim()), _BA(F)
 		{
 
 			for (size_t i=0; i< _res_p.size(); ++i)
@@ -1529,11 +1529,11 @@ namespace LinBox
 
 #endif //__LINBOX_lifting_container_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

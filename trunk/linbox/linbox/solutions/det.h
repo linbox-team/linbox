@@ -34,6 +34,7 @@
 #include "linbox/blackbox/compose.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/solutions/getentry.h"
+#include "linbox/vector/blas-vector.h"
 
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blackbox-container.h"
@@ -222,7 +223,7 @@ namespace LinBox
 			// Here there is an extra diagonal computation
 			// The probability of success is also divided by two, as
 			// diag^2 contains only squares and squares are half the total elements
-			std::vector<typename Field::Element> diag (A.coldim ());
+			BlasVector<Field> diag (A.field(),A.coldim ());
 
 			typename Field::Element pi;
 			size_t i;
@@ -234,7 +235,7 @@ namespace LinBox
 					F.mulin (pi, diag[i]);
 				}
 
-				Diagonal<Field> D (F, diag);
+				Diagonal<Field> D (diag);
 				Compose<Blackbox,Diagonal<Field> > B0 (&A, &D);
 				typedef Compose<Diagonal<Field>,Compose<Blackbox,Diagonal<Field> > > Blackbox1;
 				Blackbox1 B(&D, &B0);
@@ -278,7 +279,7 @@ namespace LinBox
 
 			// Precondition here to separate the eigenvalues, so that
 			// minpoly (B) = charpoly (B) with high probability
-			std::vector<typename Field::Element> diag (A.coldim ());
+			BlasVector<Field> diag (F,A.coldim ());
 
 			typename Field::Element pi;
 			size_t i;
@@ -290,7 +291,7 @@ namespace LinBox
 					F.mulin (pi, diag[i]);
 				}
 
-				Diagonal<Field> D (F, diag);
+				Diagonal<Field> D (diag);
 
 				Compose<Blackbox,Diagonal<Field> > B (&A, &D);
 
