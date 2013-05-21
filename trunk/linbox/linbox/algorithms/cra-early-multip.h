@@ -75,6 +75,7 @@ namespace LinBox
 			EarlySingleCRA<Domain>::getResidue(m);
 			return m;
 		}
+
 		template<template<class T> class Vect>
 		Vect<Integer>& getResidue(Vect<Integer>& m)
 		{
@@ -82,6 +83,7 @@ namespace LinBox
 			return m;
 		}
 
+		//! Init
 		template<template<class T> class Vect>
 		void initialize (const Integer& D, const Vect<Integer>& e)
 		{
@@ -114,6 +116,25 @@ namespace LinBox
 			FullMultipCRA<Domain>::initialize(D, e);
 		}
 
+		void initialize (const Domain& D, const BlasVector<Domain>& e)
+		{
+			// Random coefficients for a linear combination
+			// of the elements to be reconstructed
+			srand48(BaseTimer::seed());
+			randv. resize ( e.size() );
+			for ( std::vector<unsigned long>::iterator int_p = randv. begin();
+			      int_p != randv. end(); ++ int_p)
+				*int_p = ((unsigned long)lrand48()) % 20000;
+			DomainElement z;
+			// Could be much faster
+			// - do not compute twice the product of moduli
+			// - reconstruct one element of e until Early Termination,
+			//   then only, try a random linear combination.
+			EarlySingleCRA<Domain>::initialize(D,dot(z, D, e, randv) );
+			FullMultipCRA<Domain>::initialize(D, e);
+		}
+
+		//! Progress
 		template<template<class T> class Vect>
 		void progress (const Integer& D, const Vect<Integer>& e)
 		{
@@ -135,12 +156,30 @@ namespace LinBox
 			FullMultipCRA<Domain>::progress(D, e);
 		}
 
+		void progress (const Domain& D, const BlasVector<Domain>& e)
+		{
+			DomainElement z;
+			// Could be much faster
+			// - do not compute twice the product of moduli
+			// - reconstruct one element of e until Early Termination,
+			//   then only, try a random linear combination.
+			EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv));
+			FullMultipCRA<Domain>::progress(D, e);
+		}
+
+		//! Result
 		template<template <class> class Alloc, template<class, class> class Vect>
 		Vect<Integer, Alloc<Integer> >& result(Vect<Integer, Alloc<Integer> >& d)
 		{
 			return FullMultipCRA<Domain>::result(d);
 		}
 
+		BlasVector<PID_integer>& result(BlasVector<PID_integer>& d)
+		{
+			return FullMultipCRA<Domain>::result(d);
+		}
+
+		//! terminate
 		bool terminated()
 		{
 			return EarlySingleCRA<Domain>::terminated();
@@ -230,11 +269,10 @@ namespace LinBox
 #endif //__LINBOX_cra_early_multip_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

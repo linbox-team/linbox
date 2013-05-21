@@ -98,6 +98,7 @@ namespace LinBox
 			return Builder_.result(num, den);
 		}
 
+#if 0 /*  marche pas si on remplace le premier Interger par PID_integer :-( spécialise pour BlasVector*/
 		template<template <class, class> class Vect, template <class> class Alloc,  class Function, class RandPrimeIterator>
 		Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
 		{
@@ -115,16 +116,35 @@ namespace LinBox
 			}
 			return Builder_.result(num, den);
 		}
+#endif
+
+		template<class Function, class RandPrimeIterator>
+		BlasVector<PID_integer> & operator() ( BlasVector<PID_integer>& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		{
+			++genprime;
+			{
+				Domain D(*genprime);
+				BlasVector<Domain > r(D);
+				Builder_.initialize( D, Iteration(r, D) );
+			}
+			while( ! Builder_.terminated() ) {
+				++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
+				Domain D(*genprime);
+				BlasVector<Domain > r(D);
+				Builder_.progress( D, Iteration(r, D) );
+			}
+			return Builder_.result(num, den);
+		}
+
 	};
 }
 
 #endif //__LINBOX_rational_cra_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

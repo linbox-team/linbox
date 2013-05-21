@@ -76,7 +76,7 @@ namespace LinBox
 	}
 
 	template<>
-	inline bool checkBlasPrime(const std::vector<integer> p)
+	inline bool checkBlasPrime(const BlasVector<PID_integer> p)
 	{
 		bool tmp=true;
 		for (size_t i=0;i<p.size();++i)
@@ -229,8 +229,8 @@ namespace LinBox
 	{
 		std::cerr<<"in singular solver\n";
 
-		typedef std::vector<typename Field::Element> FVector;
-		typedef std::vector<typename Ring::Element>  IVector;
+		typedef BlasVector<Field> FVector;
+		typedef BlasVector<Ring>  IVector;
 		typedef SparseMatrix<Field>                  FMatrix;
 
 		// checking size of system
@@ -982,7 +982,7 @@ namespace LinBox
 #ifdef RSTIMING
 				tCheckConsistency.start();
 #endif
-				std::vector<Integer> zt(rank);
+				BlasVector<PID_integer> zt(PID_integer(),rank);
 				for (size_t i=0; i<rank; i++)
 					_ring.assign(zt[i], A.getEntry(srcRow[rank], srcCol[i]));
 
@@ -1004,7 +1004,8 @@ namespace LinBox
 
 				RationalReconstruction<LiftingContainer > re(lc);
 
-				Vector1 short_num(A.field(),rank); Integer short_den;
+				Vector1 short_num(A.field(),rank);
+				Integer short_den;
 
 				if (!re.getRational(short_num, short_den,0))
 					return SS_FAILED;    // dirty, but should not be called
@@ -1289,8 +1290,8 @@ namespace LinBox
 				// so it corresponds to b instead of newb
 
 				//q in {0, 1}^rank
-				std::vector<Integer> q(rank);
-				typename std::vector<Integer>::iterator q_iter;
+				BlasVector<PID_integer> q(PID_integer(),rank);
+				typename BlasVector<PID_integer>::iterator q_iter;
 
 				bool allzero;
 				do {
@@ -1386,11 +1387,11 @@ namespace LinBox
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
 	RationalSolver<Ring,Field,RandomPrime,BlockHankelTraits>::solveNonsingular(Vector1& num,
-												     Integer& den,
-												     const IMatrix& A,
-												     const Vector2& b,
-												     size_t blocksize,
-												     int maxPrimes) const
+										   Integer& den,
+										   const IMatrix& A,
+										   const Vector2& b,
+										   size_t blocksize,
+										   int maxPrimes) const
 	{
 
 		linbox_check(A.rowdim() == A.coldim());
@@ -1408,7 +1409,7 @@ namespace LinBox
 
 		// precondition Ap  with a random diagonal Matrix
 		typename Field::RandIter G(F,0,123456);
-		std::vector<Element_t> diag(Ap.rowdim());
+		BlasVector<Field> diag(F,Ap.rowdim());
 
 		for(size_t i=0;i<Ap.rowdim();++i){
 			do {
@@ -1418,7 +1419,7 @@ namespace LinBox
 
 
 
-		Diagonal<Field> D(F, diag);
+		Diagonal<Field> D(diag);
 
 		Compose<Diagonal<Field>, FMatrix> DAp(D,Ap);
 
@@ -1453,7 +1454,7 @@ namespace LinBox
 
 		// compute the inverse of the Hankel matrix associated with the Krylov Sequence
 		BlockHankelInverse<Field> Hinv(F, Seq.getRep());
-		std::vector<Element_t> y(n), x(n, 1);
+		BlasVector<Field> y(F,n), x(F,n, F.one);
 
 #ifdef RSTIMING
 		chrono.stop();

@@ -353,12 +353,12 @@ namespace LinBox
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
 		integer den;
-		std::vector< integer > num(A.coldim());
+		BlasVector<PID_integer> num(A.field(),A.coldim());
 
 		rra(num, den, iteration, genprime);
 
 		typename RatVector::iterator it_x= x.begin();
-		typename std::vector<integer>::const_iterator it_num= num.begin();
+		typename BlasVector<PID_integer>::const_iterator it_num= num.begin();
 
 		for (; it_x != x.end(); ++it_x, ++it_num){
 			integer g = gcd( *it_num, den);
@@ -449,11 +449,11 @@ namespace LinBox
 
 		Method::Dixon mDixon(m);
 		typename Ring::Element d;
-		std::vector< typename Ring::Element> num(A.coldim());
+		BlasVector<Ring> num(A.field(),A.coldim());
 		solve (num, d, A, b, tag, mDixon);
 
 		typename RatVector::iterator it_x= x.begin();
-		typename std::vector< typename Ring::Element>::const_iterator it_num= num.begin();
+		typename BlasVector<Ring>::const_iterator it_num= num.begin();
 		integer n,den;
 		A.field().convert(den,d);
 		for (; it_x != x.end(); ++it_x, ++it_num){
@@ -829,7 +829,7 @@ namespace LinBox
 
 			typedef typename Rebind<Vector, Field>::other FVector;
 			Hom<typename Blackbox::Field, Field> hom(A.field(), F);
-			FVector Bp(B.size());
+			FVector Bp(F,B.size());
 			typename Vector::const_iterator Bit = B.begin();
 			typename FVector::iterator      Bpit = Bp.begin();
 			for( ; Bit != B.end(); ++Bit, ++Bpit)
@@ -861,12 +861,12 @@ namespace LinBox
 
 		// use of integer due to non genericity of rra (PG 2005-09-01)
 		Integer den;
-		std::vector< Integer > num(A.coldim());
+		BlasVector<PID_integer> num(A.field(),A.coldim());
 		rra(num, den, iteration, genprime);
 		//rra(x, d, iteration, genprime);
 
 		typename Vector::iterator it_x= x.begin();
-		typename std::vector<Integer>::const_iterator it_num= num.begin();
+		typename BlasVector<PID_integer>::const_iterator it_num= num.begin();
 
 		// convert the result
 		for (; it_x != x.end(); ++it_x, ++it_num)
@@ -909,9 +909,9 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_IML
 	//! IML wrapper.
 	//! @bug not recognised as template spec...
-	std::vector<PID_integer::Element>&
-	solveIML(std::vector<PID_integer::Element>& x, PID_integer::Element & d,
-			 const BlasMatrix<PID_integer>& B, const std::vector<PID_integer::Element>& b,
+	BlasVector<PID_integer>&
+	solveIML(BlasVector<PID_integer>& x, PID_integer::Element & d,
+			 const BlasMatrix<PID_integer>& B, const BlasVector<PID_integer>& b,
 			 const Method::IML& m)
 	{
 		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
@@ -1014,10 +1014,10 @@ namespace LinBox
 
 		commentator().start ("Rational CRA Solve", "Rsolve");
 		typename BB::Field::Element den;
-		std::vector<typename BB::Field::Element > num(A.coldim());
+		BlasVector<typename BB::Field> num(A.field(),A.coldim());
 		solve (num, den, A, b, tag, M);
 		typename RatVector::iterator it_x= x.begin();
-		typename std::vector<typename BB::Field::Element>::const_iterator it_num= num.begin();
+		typename BlasVector<typename BB::Field>::const_iterator it_num= num.begin();
 		integer n,d;
 		A.field().convert(d,den);
 		for (; it_x != x.end(); ++it_x, ++it_num){
@@ -1041,10 +1041,10 @@ namespace LinBox
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
 		integer den;
-		std::vector< integer > num(A.coldim());
+		BlasVector<PID_integer> num(A.field(),A.coldim());
 		rra(num, den, iteration, genprime);
 		typename RatVector::iterator it_x= x.begin();
-		typename std::vector<integer>::const_iterator it_num= num.begin();
+		typename BlasVector<PID_integer>::const_iterator it_num= num.begin();
 		for (; it_x != x.end(); ++it_x, ++it_num){
 			integer g = gcd( *it_num, den);
 			*it_x = typename RatVector::value_type(*it_num/g, den/g);
@@ -1066,10 +1066,10 @@ namespace LinBox
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,RatVector,MethodTraits > iteration(A, b, m);
 		integer den;
-		std::vector< integer > num(A.coldim());
+		BlasVector<PID_integer> num(A.field(),A.coldim());
 		rra(num, den, iteration, genprime);
 		typename RatVector::iterator it_x= x.begin();
-		typename std::vector<integer>::const_iterator it_num= num.begin();
+		typename BlasVector<PID_integer>::const_iterator it_num= num.begin();
 		for (; it_x != x.end(); ++it_x, ++it_num){
 			integer g = gcd( *it_num, den);
 			*it_x = typename RatVector::value_type(*it_num/g, den/g);
@@ -1085,9 +1085,9 @@ namespace LinBox
 #include "linbox/algorithms/numeric-solver-lapack.h"
 #include "linbox/algorithms/rational-solver-sn.h"
 namespace LinBox {
-	std::vector<PID_integer::Element>&
-	solveNum(std::vector<PID_integer::Element>& x, PID_integer::Element & d,
-		 const BlasMatrix<PID_integer>& B, const std::vector<PID_integer::Element>& b,
+	BlasVector<PID_integer>&
+	solveNum(BlasVector<PID_integer>& x, PID_integer::Element & d,
+		 const BlasMatrix<PID_integer>& B, const BlasVector<PID_integer>& b,
 		 const Method::Numerical & m)
 	{
 		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
@@ -1109,9 +1109,9 @@ namespace LinBox {
 #endif
 
 namespace LinBox {
-	std::vector<PID_integer::Element>&
-	solveNum(std::vector<PID_integer::Element>& x, PID_integer::Element & d,
-		 const BlasMatrix<PID_integer>& B, const std::vector<PID_integer::Element>& b,
+	BlasVector<PID_integer>&
+	solveNum(BlasVector<PID_integer>& x, PID_integer::Element & d,
+		 const BlasMatrix<PID_integer>& B, const BlasVector<PID_integer>& b,
 		 const Method::NumericalWan & m)
 	{
 		//THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH

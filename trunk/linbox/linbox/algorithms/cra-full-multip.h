@@ -34,9 +34,10 @@
 #include <stdlib.h>
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
-#include <vector>
+#include "linbox/vector/blas-vector.h"
 #include <utility>
 
+#include "linbox/field/PID-integer.h"
 #include "linbox/algorithms/lazy-product.h"
 
 namespace LinBox
@@ -83,6 +84,7 @@ namespace LinBox
 			return r;
 		}
 
+		//! init
 		template<class Vect>
 		void initialize (const Integer& D, const Vect& e)
 		{
@@ -119,6 +121,16 @@ namespace LinBox
 			progress(D, e);
 		}
 
+		void initialize (const Domain& D, const BlasVector<Domain>& e)
+		{
+			RadixSizes_.resize(1);
+			RadixPrimeProd_.resize(1);
+			RadixResidues_.resize(1);
+			RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
+			progress(D, e);
+		}
+
+		//! progress
 		/* Used in the case where D is a big Integer and Domain cannot be constructed */
 		// template<template<class T> class Vect>
 		template< template<class, class> class Vect, template <class> class Alloc>
@@ -149,6 +161,67 @@ namespace LinBox
 				_mod_it->initialize(tmp);
 				*_dsz_it = Givaro::naturallog(tmp);
 				typename Vect<Integer, Alloc<Integer> >::const_iterator e_it = e.begin();
+				_tab_it->resize(e.size());
+				std::vector<Integer>::iterator t0_it= _tab_it->begin();
+				for( ; e_it != e.end(); ++e_it, ++ t0_it)
+					*t0_it = *e_it;
+				*_occ_it = true;
+				return;
+			}
+			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
+				if (*_occ_it) {
+					std::vector<Integer>::iterator      ri_it = ri.begin();
+					std::vector<Integer>::const_iterator t_it= _tab_it->begin();
+					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
+					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
+						smallbigreconstruct(*ri_it, *t_it, invprod);
+					mi.mulin(*_mod_it);
+					di += *_dsz_it;
+					*_occ_it = false;
+				}
+				else {
+					*_dsz_it = di;
+					*_mod_it = mi;
+					*_tab_it = ri;
+					*_occ_it = true;
+					return;
+				}
+			}
+
+			RadixSizes_.push_back( di );
+			RadixResidues_.push_back( ri );
+			RadixPrimeProd_.push_back( mi );
+			RadixOccupancy_.push_back ( true );
+		}
+
+		// spec for BlasVector
+		void progress (const Integer& D, const BlasVector<PID_integer >& e)
+		{
+			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
+			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
+			std::vector< std::vector<Integer> >::iterator _tab_it = RadixResidues_.begin();
+			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
+			std::vector<Integer> ri(e.size()); LazyProduct mi; double di;
+			if (*_occ_it) {
+				typename BlasVector<PID_integer >::const_iterator  e_it = e.begin();
+				std::vector<Integer>::iterator       ri_it = ri.begin();
+				std::vector<Integer>::const_iterator t0_it = _tab_it->begin();
+				Integer invprod; precomputeInvProd(invprod, D, _mod_it->operator()());
+				for( ; e_it != e.end(); ++e_it, ++ri_it, ++ t0_it) {
+					*ri_it =* e_it;
+					smallbigreconstruct(*ri_it,  *t0_it, invprod );
+				}
+				Integer tmp = D;
+				di = *_dsz_it + Givaro::naturallog(tmp);
+				mi.mulin(tmp);
+				mi.mulin(*_mod_it);
+				*_occ_it = false;
+			}
+			else {
+				Integer tmp = D;
+				_mod_it->initialize(tmp);
+				*_dsz_it = Givaro::naturallog(tmp);
+				typename BlasVector<PID_integer >::const_iterator e_it = e.begin();
 				_tab_it->resize(e.size());
 				std::vector<Integer>::iterator t0_it= _tab_it->begin();
 				for( ; e_it != e.end(); ++e_it, ++ t0_it)
@@ -269,6 +342,95 @@ namespace LinBox
 			RadixOccupancy_.push_back ( true );
 		}
 
+		// spec for BlasVector
+		void progress (const Domain& D, const BlasVector<Domain >& e)
+		{
+			// Radix shelves
+			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
+			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
+			std::vector< std::vector<Integer> >::iterator _tab_it = RadixResidues_.begin();
+			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
+			std::vector<Integer> ri(e.size()); LazyProduct mi; double di;
+			if (*_occ_it) {
+				// If lower shelf is occupied
+				// Combine it with the new residue
+				// The for loop will try to put the resulting combination on the upper shelf
+				typename BlasVector<Domain>::const_iterator  e_it = e.begin();
+				std::vector<Integer>::iterator       ri_it = ri.begin();
+				std::vector<Integer>::const_iterator t0_it = _tab_it->begin();
+				DomainElement invP0; precomputeInvP0(invP0, D, _mod_it->operator()() );
+				for( ; ri_it != ri.end(); ++e_it, ++ri_it, ++ t0_it)
+					fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0, (*_mod_it).operator()() );
+				Integer tmp; D.characteristic(tmp);
+				double ltp = Givaro::naturallog(tmp);
+				di = *_dsz_it + ltp;
+				totalsize += ltp;
+				mi.mulin(tmp);
+				mi.mulin(*_mod_it);
+				*_occ_it = false;
+			}
+			else {
+				// Lower shelf is free
+				// Put the new residue here and exit
+				Integer tmp; D.characteristic(tmp);
+				double ltp =  Givaro::naturallog(tmp);
+				_mod_it->initialize(tmp);
+				*_dsz_it = ltp;
+				totalsize += ltp;
+				typename BlasVector<Domain>::const_iterator e_it = e.begin();
+				_tab_it->resize(e.size());
+				std::vector<Integer>::iterator t0_it= _tab_it->begin();
+				for( ; e_it != e.end(); ++e_it, ++ t0_it)
+					D.convert(*t0_it, *e_it);
+				*_occ_it = true;
+				return;
+			}
+
+			// We have a combination to put in the upper shelf
+			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
+				if (*_occ_it) {
+					// This shelf is occupied
+					// Combine it with the new combination
+					// The loop will try to put it on the upper shelf
+					std::vector<Integer>::iterator      ri_it = ri.begin();
+					std::vector<Integer>::const_iterator t_it= _tab_it->begin();
+
+					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
+					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
+						smallbigreconstruct(*ri_it, *t_it, invprod);
+
+					// Product (lazy) computation
+					mi.mulin(*_mod_it);
+
+					// Moding out
+					for(ri_it = ri.begin() ; ri_it != ri.end(); ++ri_it) {
+						*ri_it %= mi();
+					}
+
+					di += *_dsz_it;
+					*_occ_it = false;
+				}
+				else {
+					// This shelf is free
+					// Put the new combination here and exit
+					*_dsz_it = di;
+					*_mod_it = mi;
+					*_tab_it = ri;
+					*_occ_it = true;
+					return;
+				}
+			}
+			// All the shelfves were occupied
+			// We create a new top shelf
+			// And put the new combination there
+			RadixSizes_.push_back( di );
+			RadixResidues_.push_back( ri );
+			RadixPrimeProd_.push_back( mi );
+			RadixOccupancy_.push_back ( true );
+		}
+
+
+		//! result
 		template<template<class, class> class Vect, template <class> class Alloc>
 		Vect<Integer, Alloc<Integer> >& result (Vect<Integer, Alloc<Integer> > &d)
 		{
@@ -344,6 +506,83 @@ namespace LinBox
 
 			return d;
 		}
+
+		// spec for BlasVector
+		BlasVector<PID_integer>& result (BlasVector<PID_integer> &d)
+		{
+			d.resize( (RadixResidues_.front()).size() );
+			std::vector< LazyProduct >::iterator          _mod_it = RadixPrimeProd_.begin();
+			std::vector< std::vector< Integer > >::iterator _tab_it = RadixResidues_.begin();
+			std::vector< bool >::iterator                _occ_it = RadixOccupancy_.begin();
+			LazyProduct Product;
+			// We have to find to lowest occupied shelf
+			for( ; _occ_it != RadixOccupancy_.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
+				if (*_occ_it) {
+					// Found the lowest occupied shelf
+					Product = *_mod_it;
+					BlasVector<PID_integer>::iterator t0_it = d.begin();
+					std::vector<Integer>::iterator t_it = _tab_it->begin();
+					if (++_occ_it == RadixOccupancy_.end()) {
+						// It is the only shelf of the radix
+						// We normalize the result and output it
+						for( ; t0_it != d.end(); ++t0_it, ++t_it)
+							normalize(*t0_it = *t_it, *t_it, _mod_it->operator()());
+						//RadixPrimeProd_.resize(1);
+						return d;
+					}
+					else {
+						// There are other shelves
+						// The result is initialized with this shelf
+						// The for loop will combine the other shelves m with the actual one
+						for( ; t0_it != d.end(); ++t0_it, ++t_it)
+							*t0_it  = *t_it;
+						++_mod_it; ++_tab_it;
+						break;
+					}
+				}
+			}
+			for( ; _occ_it != RadixOccupancy_.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
+				if (*_occ_it) {
+					// This shelf is occupied
+					// We need to combine it with the actual value of the result
+					BlasVector<PID_integer>::iterator t0_it = d.begin();
+					std::vector<Integer>::const_iterator t_it = _tab_it->begin();
+					Integer invprod;
+					precomputeInvProd(invprod, Product(), _mod_it->operator()() );
+
+					for( ; t0_it != d.end(); ++t0_it, ++t_it)
+						smallbigreconstruct(*t0_it, *t_it, invprod);
+
+					// Overall product computation
+					Product.mulin(*_mod_it);
+
+					// Moding out and normalization
+					for(t0_it = d.begin();t0_it != d.end(); ++t0_it) {
+						*t0_it %= Product();
+						Integer tmp(*t0_it);
+						normalize(*t0_it, tmp, Product());
+					}
+
+				}
+			}
+
+			// We put it also the final prime product in the first shelf of products
+			// JGD : should we also put the result
+			//       in the first shelf of residues and resize it to 1
+			//       and set to true the first occupancy and resize it to 1
+			//       in case result is not the last call (more progress to go) ?
+			RadixPrimeProd_.resize(1);
+			RadixPrimeProd_.front() = Product;
+			RadixSizes_.resize(1);
+			RadixSizes_.front() =  Givaro::naturallog(Product());
+			RadixResidues_.resize(1);
+			RadixResidues_.front() = d;
+			RadixOccupancy_.resize(1);
+			RadixOccupancy_.front() = true;
+
+			return d;
+		}
+
 
 		bool terminated()
 		{
@@ -421,11 +660,10 @@ namespace LinBox
 
 #endif //__LINBOX_cra_full_multip_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

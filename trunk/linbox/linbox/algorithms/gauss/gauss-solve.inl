@@ -41,7 +41,7 @@ namespace LinBox
 	GaussDomain<_Field>::solve(Vector1& x, Vector1& w, unsigned long Rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const
 	{
 
-		Vector2 y(U.rowdim()), v(U.rowdim());
+		Vector2 y(U.field(),U.rowdim()), v(U.field(),U.rowdim());
 
 		Q.applyTranspose(y, b);
 
@@ -82,7 +82,7 @@ namespace LinBox
 			}
 		}
 
-		Vector1 w(A.coldim());
+		Vector1 w(A.field(),A.coldim());
 
 		for(typename Vector1::iterator it=w.begin()+(ptrdiff_t)Rank;it!=w.end();++it)
 			field().init(*it,0);
