@@ -60,7 +60,7 @@ bool testRandomSolve (const Ring& R,
 
 	VectorDomain<Ring> VD (R);
 
-	Vector d, b, x, y;
+	Vector d(R), b(R), x(R), y(R);
 
 	VectorWrapper::ensureDim (d, stream1.n ());
         VectorWrapper::ensureDim (b, stream1.n ());
@@ -106,7 +106,7 @@ bool testRandomSolve (const Ring& R,
 		RSolver rsolver;
 
 		//std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
-		std::vector<typename Ring::Element> num((size_t)n);
+		BlasVector<Ring> num(R,(size_t)n);
 		typename Ring::Element den;
 
 		SolverReturnStatus solveResult = rsolver.solve(num, den, D, b, 30); //often 5 primes are not enough
