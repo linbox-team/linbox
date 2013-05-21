@@ -35,7 +35,6 @@
 #include "linbox/randiter/random-prime.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/methods.h"
-#include <vector>
 
 namespace LinBox
 {
@@ -109,8 +108,8 @@ namespace LinBox
 		{}
 
 		template<class Field>
-		std::vector<typename Field::Element>&
-		operator () (std::vector<typename Field::Element>& dd,
+		BlasVector<Field>&
+		operator () (BlasVector<Field>& dd,
 			     const Field& F) const
 		{
 
@@ -243,7 +242,7 @@ namespace LinBox
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrimeIterator genprime( (unsigned int)(25-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 
-		std::vector<typename BlackBox::Field::Element> dd;
+		BlasVector<typename BlackBox::Field> dd(A.field());
 		if (proof) {
 			integer bound;
 			double logbound;
@@ -295,7 +294,7 @@ namespace LinBox
 		const size_t N = A.coldim();
 		BlasMatrix<typename BlackBox::Field> B (A.field(),N,N);
 		typename BlackBox::Field::Element den1, den2;
-		std::vector<typename BlackBox::Field::Element> x1(N);
+		BlasVector<typename BlackBox::Field> x1(A.field(),N);
 		for (size_t i=0; i<N; ++i){
 			x1[i] = 0;
 			for (size_t j=0; j<N; ++j)
@@ -304,7 +303,7 @@ namespace LinBox
 		// 		for (size_t i=0; i<N; ++i)
 		// 			B.setEntry (i, N-1, b[i]);
 
-		std::vector<typename BlackBox::Field::Element> c(N);
+		BlasVector<typename BlackBox::Field> c(A.field(),N);
 		for (size_t i=0; i<N; ++i)
 			c[i] = A.getEntry (N, i);
 		//Timer tim;
@@ -331,11 +330,10 @@ namespace LinBox
 #endif // __LINBOX_doubledet_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

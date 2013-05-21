@@ -31,7 +31,6 @@
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/gmp-rational.h"
 #include "linbox/solutions/methods.h"
-#include <vector>
 #include <utility>
 #include "linbox/algorithms/cra-early-single.h"
 #include "linbox/algorithms/cra-full-multip.h"
@@ -114,7 +113,8 @@ namespace LinBox
 			z%=D;
 
 			EarlySingleCRA<Domain>::initialize(D, z);
-			std::vector<Integer> v;
+			PID_integer ZZ ;
+			BlasVector<PID_integer> v(ZZ);
 			v.push_back(e);
 			FullMultipCRA<Domain>::initialize(D, v);
 		}
@@ -129,7 +129,7 @@ namespace LinBox
 			D.mulin(z,m);
 
 			EarlySingleCRA<Domain>::initialize(D, z);
-			std::vector<DomainElement> v;
+			BlasVector<Domain> v(D);
 			v.push_back(e);
 			FullMultipCRA<Domain>::initialize(D, v);
 		}
@@ -150,7 +150,8 @@ namespace LinBox
 			//z = e / factor mod D;
 			EarlySingleCRA<Domain>::progress(D, z);
 
-			std::vector<Integer> v;
+			PID_integer ZZ ;
+			BlasVector<PID_integer> v(ZZ);
 			v.push_back(e);
 			FullMultipCRA<Domain>::progress(D, v);
 		}
@@ -173,7 +174,7 @@ namespace LinBox
 
 			EarlySingleCRA<Domain>::progress(D, z);
 
-			std::vector<DomainElement> v;
+			BlasVector<Domain> v(D);
 			v.push_back(e);
 
 			FullMultipCRA<Domain>::progress(D, v);
@@ -218,7 +219,8 @@ namespace LinBox
 		Integer& result(Integer& r)
 		{
 			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
-				std::vector<Integer> v;
+				PID_integer ZZ ;
+				BlasVector<PID_integer> v(ZZ);
 				FullMultipCRA<Domain>::result(v);
 				return r = v.front();
 			}
@@ -232,7 +234,8 @@ namespace LinBox
 		Quotient& result(Quotient& q)
 		{
 			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
-				std::vector<Integer> v;
+				PID_integer ZZ ;
+				BlasVector<PID_integer> v(ZZ);
 				FullMultipCRA<Domain>::result(v);
 				return q = v.front();
 			}
@@ -248,7 +251,8 @@ namespace LinBox
 		{
 			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
 				den =1;
-				std::vector<Integer> v;
+				PID_integer ZZ ;
+				BlasVector<PID_integer> v(ZZ);
 				FullMultipCRA<Domain>::result(v);
 				return num = v.front();
 			}
@@ -284,10 +288,10 @@ namespace LinBox
 
 			//std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();//nie wiem
 			std::vector< LazyProduct >::iterator          _mod_it = FullMultipCRA<Domain>::RadixPrimeProd_.end(); // list of prime products
-			std::vector< std::vector<Integer> >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.end();  // list of residues as vectors of size 1
+			std::vector< BlasVector<PID_integer> >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.end();  // list of residues as vectors of size 1
 			std::vector< bool >::iterator                 _occ_it = FullMultipCRA<Domain>::RadixOccupancy_.end(); //flags of occupied fields
 			int n= (int) FullMultipCRA<Domain>::RadixOccupancy_.size();
-			//std::vector<Integer> ri(1); LazyProduct mi; double di;//nie wiem
+			//BlasVector<PID_integer> ri(1); LazyProduct mi; double di;//nie wiem
 			// could be much faster if max occupandy is stored
 			--_mod_it; --_tab_it; --_occ_it;
 			int prev_shelf=0, shelf = 0; Integer prev_residue_ =0;
