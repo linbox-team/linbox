@@ -690,13 +690,13 @@ namespace LinBox
 			// res_p =  residu mod p
 			//VectorHom::map (_res_p, residu, field(), this->_intRing);
 			{
-				std::cout << digit.size() << std::endl;
+				// std::cout << digit.size() << std::endl;
 				typename FVector::iterator     iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p) {
 					//field(). init (*iter_p, this->_intRing.convert(tmp,*iter));
 					hom.image(*iter_p, *iter);
-					std::cout<<*iter_p<<"= "<< *iter<<" mod "<<this->_p<<"\n";
+					// std::cout<<*iter_p<<"= "<< *iter<<" mod "<<this->_p<<"\n";
 				}
 			}
 #ifdef RSTIMING

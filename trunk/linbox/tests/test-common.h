@@ -38,7 +38,8 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
+// #include <vector>
+#include <linbox/vector/blas-vector.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/field/archetype.h"
@@ -254,7 +255,7 @@ void printPolynomial (Field &F, ostream &output, const Polynomial &v)
 }
 
 template <class Field, class Blackbox, class Polynomial, class Vector>
-vector <typename Field::Element> &
+LinBox::BlasVector <Field> &
 applyPoly (const Field                             &F,
 	   Vector                                  &w,
 	   const Blackbox			   &A,

@@ -134,7 +134,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 	return ret;
 }
 
-#if 0
+#if 1
 bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
 	typedef ZeroOne<GF2> Blackbox;
@@ -328,7 +328,7 @@ int main (int argc, char **argv)
 	if (!testRankMethods (Gq, n, (unsigned int)iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (Gq, n, 1)) pass = false;
 
-#if 0 // XXXXXXXXXXXXXXXXXXXXXXXXX
+#if 1
 	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over GF2" << endl;
         GF2 F2;

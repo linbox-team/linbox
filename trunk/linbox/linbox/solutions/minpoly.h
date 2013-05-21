@@ -172,7 +172,7 @@ namespace LinBox
 			// when field size is too small
 			//return minpoly(P, A, tag, Method::ExtensionWiedemann (M));
 			minpoly(P, A, tag, Method::ExtensionWiedemann (M));
-return P;
+			return P;
 		}
 		else
 			return minpoly(P, A, tag, Method::Wiedemann (M));
@@ -304,11 +304,10 @@ namespace LinBox
 #endif // __LINBOX_minpoly_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
