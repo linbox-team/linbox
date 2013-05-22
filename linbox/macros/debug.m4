@@ -99,7 +99,7 @@ dnl CLANG > 3.1 ?
 		AS_IF([ test -z "${CCNAM}"], [
 			AC_TRY_RUN( [
 				#ifdef __clang__
-				   int main() { return !(CLANG_VERSION_MAJOR  >=3 && CLANG_VERSION_MINOR >=1) ; }
+				   int main() { return !(__clang_major__  >=3 && __clang_minor__ >=1) ; }
 			   #else
 				   pas clang non plus.
 				#endif], [
@@ -112,7 +112,7 @@ dnl CLANG > 3 ?
 		AS_IF([ test -z "${CCNAM}"], [
 			AC_TRY_RUN( [
 				#ifdef __clang__
-				   int main() { return !(CLANG_VERSION_MAJOR  >=3) ; }
+				   int main() { return !(__clang_major__  >=3) ; }
 			   #else
 				   pas clang non plus.
 				#endif], [
