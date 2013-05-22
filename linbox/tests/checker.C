@@ -146,7 +146,7 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-cra",                          counter , flag, "vector (bb) responsible");
 	build_n_run("test-det",                          counter , flag);
 	build_n_run("test-frobenius",                    counter , flag);
-	build_n_run("test-rank",                         counter , flag/*, "vector (bb) responsible*/");
+	build_n_run("test-rank",                         counter , flag/*, "vector (bb) responsible"*/);
 	no_build_n_run("test-qlup",                         counter , flag, "vector (bb) responsible");
 	build_n_run("test-solve",                        counter , flag);
 	no_build_n_run("test-nullspace",                    counter , flag, "bb or ff responsible");
