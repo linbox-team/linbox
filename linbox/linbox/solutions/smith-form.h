@@ -158,7 +158,8 @@ namespace LinBox
 		  const RingCategories::IntegerTag      &tag,
 		  const Method::Hybrid			& M)
 	{
-		std::vector<integer> v (A.rowdim() < A.coldim() ? A.rowdim() : A.coldim());
+		PID_integer Z;
+		BlasVector<PID_integer> v (Z,A.rowdim() < A.coldim() ? A.rowdim() : A.coldim());
 		SmithFormAdaptive::smithForm(v, A);
 		distinct(v.begin(), v.end(), S);
 
