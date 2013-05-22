@@ -95,7 +95,6 @@ namespace LinBox
 {
 	template<class Field>
 	struct CRATemporaryVectorTrait<InteratorIt , Field> {
-		//! double ???
 		typedef typename BlasVector<Field>::iterator Type_t;
 	};
 }
