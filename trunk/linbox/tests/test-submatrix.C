@@ -64,7 +64,7 @@ template <class Field>
 static bool testRandomApply (Field                                       &F,
 			     unsigned int                                 iterations,
 			     size_t                                       n,
-			     VectorStream<typename Vector<Field>::Dense> &stream)
+			     VectorStream<BlasVector<Field> > &stream)
 {
 	typedef BlasMatrix <Field> Blackbox;
 
@@ -73,7 +73,7 @@ static bool testRandomApply (Field                                       &F,
 	bool ret = true;
 	bool iter_passed;
 
-	typename Vector<Field>::Dense v, w1(n), w2(n);
+	BlasVector<Field>  v, w1(n), w2(n);
 
 	size_t i, j, k, l;
 
@@ -161,9 +161,9 @@ static bool testRandomApply (Field                                       &F,
 
 template <class Field>
 static bool testRandomLinearity (const Field                                 &F,
-				 VectorStream<typename Vector<Field>::Dense> &A_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
+				 VectorStream<BlasVector<Field> > &A_stream,
+				 VectorStream<BlasVector<Field> > &v1_stream,
+				 VectorStream<BlasVector<Field> > &v2_stream)
 {
 	commentator().start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
@@ -196,9 +196,9 @@ static bool testRandomLinearity (const Field                                 &F,
 
 template <class Field>
 static bool testRandomTranspose (const Field                                 &F,
-				 VectorStream<typename Vector<Field>::Dense> &A_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
+				 VectorStream<BlasVector<Field> > &A_stream,
+				 VectorStream<BlasVector<Field> > &v1_stream,
+				 VectorStream<BlasVector<Field> > &v2_stream)
 {
 	commentator().start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 
