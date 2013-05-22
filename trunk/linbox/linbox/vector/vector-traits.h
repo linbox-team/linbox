@@ -180,6 +180,8 @@ namespace LinBox
 		typedef std::vector<Element>                          VectorType;
 	};
 
+
+
 	// Specialization for STL vectors of pairs of size_t and elements
 	template <class Element>
 	struct VectorTraits< std::vector< std::pair<size_t, Element> > > {

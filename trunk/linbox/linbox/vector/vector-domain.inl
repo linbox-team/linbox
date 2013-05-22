@@ -814,6 +814,7 @@ namespace LinBox
 						       VectorCategories::DenseVectorTag,
 						       VectorCategories::SparseParallelVectorTag) const
 	{
+		linbox_check(res.size()==v.first.size()*v.second.size()); // could be weaker
 		typename Vector1::iterator i = res.begin ();
 		typename Vector2::first_type::const_iterator j_idx = v.first.begin ();
 		typename Vector2::second_type::const_iterator j_elt = v.second.begin ();
@@ -2394,11 +2395,10 @@ namespace LinBox
 
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
