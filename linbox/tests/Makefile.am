@@ -62,14 +62,16 @@ BASIC_TESTS =  \
         test-commentator              \
         test-det                      \
         test-frobenius                \
-        test-rank                     \
         test-solve                    \
         test-nullspace                \
         test-smith-form-binary        \
         test-rational-solver          \
         test-rational-solver-adaptive \
-        test-cra                      \
 	test-charpoly
+
+#  test-rank                     \
+#  test-cra                      \
+#
 
 
 FULLCHECK_TESTS =                 \

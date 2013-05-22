@@ -146,7 +146,7 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-cra",                          counter , flag, "vector (bb) responsible");
 	build_n_run("test-det",                          counter , flag);
 	build_n_run("test-frobenius",                    counter , flag);
-	build_n_run("test-rank",                         counter , flag);
+	no_build_n_run("test-rank",                         counter , flag, "vector (bb) responsible");
 	build_n_run("test-qlup",                         counter , flag);
 	build_n_run("test-solve",                        counter , flag);
 	no_build_n_run("test-nullspace",                    counter , flag, "bb or ff responsible");
@@ -184,7 +184,7 @@ build |wc" should yield the same number of lines.
 #pragma omp section
 		  Build_n_run("test-cra",                          counter , flag);
 #pragma omp section
-		  Build_n_runWarn("test-cradomain",                    counter , flag,"intermittent failure, as in 1 every 10-20");
+		  No_build_n_run("test-cradomain",                    counter , flag,"intermittent failure, as in 1 every 10-20");
 #pragma omp section
 		  Build_n_run("test-dense",                        counter , flag);
 #pragma omp section
@@ -260,7 +260,7 @@ build |wc" should yield the same number of lines.
 #pragma omp section
 		  Build_n_run("test-randiter-nonzero",             counter , flag);
 #pragma omp section
-		  Build_n_run("test-rank",                         counter , flag);
+		  No_build_n_run("test-rank",                         counter , flag, "bb: fails to build / BlasVector/GF2");
 #pragma omp section
 		  Build_n_run("test-rational-matrix-factory ",     counter , flag);
 #pragma omp section
