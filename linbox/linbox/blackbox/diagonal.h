@@ -413,7 +413,7 @@ namespace LinBox
 	inline Diagonal<_Field, VectorCategories::DenseVectorTag>::Diagonal(const Field &F,
 									    const size_t n,
 									    bool nonsing) :
-		_field(&F), _n(n), _v(n)
+		_field(&F), _n(n), _v(F,n)
 	{
 		typename Field::RandIter r(F);
 		typedef typename BlasVector<Field>::iterator iter;
