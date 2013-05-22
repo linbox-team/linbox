@@ -459,7 +459,8 @@ namespace LinBox
 		RationalRemainder2< VarPrecEarlyMultipCRA<Modular<double> > > rra(3UL);
 		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
 
-		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
+		PID_integer Z;
+		BlasVector<PID_integer> PP(Z); // use of integer due to non genericity of cra. PG 2005-08-04
 		Integer den;
 		rra(PP,den, iteration, genprime);
 		size_t i =0;

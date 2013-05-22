@@ -56,7 +56,7 @@ namespace LinBox
 	 * Either by Early Termination see [Dumas, Saunder, Villard, JSC 32 (1/2), pp 71-99, 2001],
 	 * Or via a bound on the size of the Integers.
 	 */
-	//typedef PID_Integer Integers;
+	//typedef PID_integer Integers;
 	//typedef Integers::Element Integer;
 
 	template<class RatCRABase, class RatRecon = RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > >
@@ -322,6 +322,100 @@ namespace LinBox
 			return num;
 		}
 
+		template<class Function, class RandPrimeIterator>
+		BlasVector<PID_integer> & operator() (BlasVector<PID_integer >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		{
+			{
+				++IterCounter;
+				++genprime;
+				Domain D(*genprime);
+				BlasVector<Domain> r(D);
+				Builder_.initialize( D, Iteration(r, D) );
+			}
+
+			int coprime =0;
+			int maxnoncoprime = 1000;
+
+			PID_integer Z;
+			BlasVector<PID_integer> f_in(Z),m_in(Z);
+			Builder_.getPreconditioner(f_in,m_in);
+
+			//while( ! Builder_.terminated() )
+			while (1) { // in case of terminated() - checks for RR of the whole vector
+				//++IterCounter;
+				++genprime;
+				while(Builder_.noncoprime(*genprime) ) {
+					++genprime;
+					++coprime;
+					if (coprime > maxnoncoprime) {
+						std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+						return num;
+					}
+				}
+				coprime = 0;
+
+
+				Domain D(*genprime);
+				BlasVector<Domain > r(D);
+				Builder_.progress( D, Iteration(r, D) );
+
+				if (RR_.scheduled((size_t)IterCounter-1) || Builder_.terminated()) {
+					Integer Mint ; Builder_.getModulus(Mint);
+					if ( Builder_.terminated() ) {//early or full termination occurred, check reconstruction of the whole vector
+						//early or full termination
+						BlasVector<PID_integer> r_v(Z) ;
+						Builder_.getResidue(r_v);
+						if (RR_.reconstructRational(num,den,r_v,Mint) ) {
+							BlasVector<PID_integer > vnum(num),vden(Z,m_in.size(),den);
+							for (int i=0; i < (int)vnum.size(); ++ i) {
+								if (vnum[(size_t)i]==0) vnum[(size_t)i] = 1; // no prec
+							}
+							Builder_.productin(vnum, f_in);
+							Builder_.productin(vden,m_in);
+							Builder_.changePreconditioner(vnum,vden) ;
+							int k ;
+							Builder_.getThreshold(k);
+							if (this->operator()(k,num,den,Iteration,genprime)) {
+								break;
+							}
+							else {	// back to original preconditioners
+								Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
+								Builder_.changeVector();
+							}
+						}
+						else {  //back to original preconditioners
+							Builder_.changePreconditioner(f_in,m_in);
+							Builder_.changeVector();
+						}
+					}
+					else {
+						//heuristics: reconstruction of vector
+						Integer rint ;
+						Builder_.getResidue(rint);
+						Integer n,d;
+						if (RR_.reconstructRational(n,d,rint,Mint)) {
+							BlasVector<PID_integer> vden(Z,m_in.size(),d);
+							Builder_.productin(vden,m_in);
+							Builder_.changePreconditioner(f_in,vden);
+							int k; Builder_.getThreshold(k);
+							if (this->operator()(k,num,den,Iteration,genprime)) { //prob. certify result of RR
+								m_in = vden;
+							}
+							else {	//false result of RR
+								Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
+							}
+
+						}
+					}
+				}
+				++IterCounter;
+			}
+			Builder_.result(num,den);
+
+			return num;
+		}
+
+
 		/*
 		 * progress for k>=0 iterations
 		 * run until terminated if k <0
@@ -408,6 +502,93 @@ namespace LinBox
 			else return false;
 		}
 
+
+		// temp. spec. for BlasVector
+		template<class Function, class RandPrimeIterator>
+		bool operator() (const int k, BlasVector<PID_integer  >& num
+				 , Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		{
+			if ((IterCounter==0) && (k != 0)) {
+				++IterCounter;
+				++genprime;
+				Domain D(*genprime);
+				BlasVector<Domain> r(D);
+				Builder_.initialize( D, Iteration(r, D) );
+			}
+			int coprime =0;
+			int maxnoncoprime = 1000;
+			PID_integer Z;
+
+			BlasVector<PID_integer > f_in(Z),m_in(Z);
+			Builder_.getPreconditioner(f_in,m_in);
+			for (int i=0; ((k<0) && Builder_.terminated()) || (i <k); ++i ) {
+				//++IterCounter;
+				++genprime;
+				while(Builder_.noncoprime(*genprime) ) {
+					++genprime;
+					++coprime;
+					if (coprime > maxnoncoprime) {
+						std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+						return false;
+						//return Builder_.result(res);
+					}
+				}
+				coprime = 0;
+				Domain D(*genprime);
+				BlasVector<Domain > r(D);
+				Builder_.progress( D, Iteration(r, D) );
+				//if (RR_.scheduled(IterCounter-1))
+				++IterCounter;
+
+#if 0
+				Integer M ; Builder_.getModulus(M);
+				if ( Builder_.terminated() ) {
+					BlasVector<PID_integer> r ; Builder_.getResidue(r);
+					if (RR_.reconstructRational(num,den,r,M) ) {
+						BlasVector<PID_integer> vnum(num),vden(m_in.size(),den);
+						Builder_.productin(vnum, f_in); Builder_.productin(vden,m_in);
+						if (Builder_.changePreconditioner(vnum,vden)) break;
+						else Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
+					}
+				}
+				else {
+					Integer r ; Builder_.getResidue(r);
+					Integer n,d;
+					if (RR_.reconstructRational(n,d,r,M)) {
+						BlasVector<PID_integer > vden(m_in.size(),d);
+						Builder_.productin(vden,m_in);
+						if (Builder_.changePreconditioner(f_in,vden)) break;
+						else Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
+					}
+				}
+#endif
+			}
+			if (Builder_.terminated()) {
+				//BlasVector<PID_integer> p_mul, p_div,res, g;
+				//Builder_.getPreconditioner(p_div,p_mul);
+				Builder_.result(num,den);
+#if 0
+				num = Builder_productin(res,p_div);
+				typename BlasVector<PID_integer>::iterator itnum,itden,ittmp;
+				den = 1; Integer denold = 1;
+				for (itnum = num.begin(), itden=p_mul.begin(); itnum != num.end(); ++itnum,++itden) {
+					lcm(den,den,*itden);
+					if (denold != den) {
+						Integer h = den/denold;
+						ittmp = num.begin();
+						for (;itnum != itnum; ++ittmp)  *ittmp *= h;
+					}
+					denold = den;
+				}
+				den = p_mul;
+#endif
+
+				return true;
+			}
+			else return false;
+		}
+
+
 #ifdef CRATIMING
 		std::ostream& reportTimes(std::ostream& os)
 		{
@@ -453,11 +634,10 @@ namespace LinBox
 
 #endif // __LINBOX_rational2_cra_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

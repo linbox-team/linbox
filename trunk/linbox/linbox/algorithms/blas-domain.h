@@ -673,25 +673,27 @@ namespace LinBox
 		Polynomial& charpoly( Polynomial& P, const Matrix& A ) const
 		{
 
+			typedef typename Polynomial::Rep PolyRep ;
 			commentator().start ("Modular Dense Charpoly ", "MDCharpoly");
-			std::list<Polynomial> P_list;
+			std::list<PolyRep> P_list;
 			P_list.clear();
-			BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(field(),P_list,A);
+			BlasMatrixDomainCharpoly<Field, std::list<PolyRep>, Matrix >()(field(),P_list,A);
 
 
-			Polynomial tmp(A.rowdim()+1);
-			typename std::list<Polynomial>::iterator it = P_list.begin();
-			P = *(it++);
+			PolyRep tmp(A.rowdim()+1);
+			PolyRep Pt ;
+			typename std::list<PolyRep>::iterator it = P_list.begin();
+			Pt = *(it++);
 			while( it!=P_list.end() ){
 				// Waiting for an implementation of a domain of polynomials
-				mulpoly( tmp, P, *it);
-				P = tmp;
+				mulpoly( tmp, Pt, *it);
+				Pt = tmp;
 				//	delete &(*it);
 				++it;
 			}
 			commentator().stop ("done", NULL, "MDCharpoly");
 
-			return P;
+			return P=Pt;
 		}
 
 		//! characteristic polynomial computation.

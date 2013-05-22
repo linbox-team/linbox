@@ -479,7 +479,7 @@ namespace LinBox { /* BlasVector */
 
 
 		const _Field& field() const { return const_cast<Field&>( *_field );}
-		_Field & field() { return _field; }
+		// _Field & field() { return const_cast<Field&>(*_field;) }
 
 	private:
 		void setIterators()
