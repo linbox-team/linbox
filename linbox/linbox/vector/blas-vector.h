@@ -169,12 +169,12 @@ namespace LinBox { /* BlasVector */
 
 	public:
 		BlasVector (const _Field &F)  :
-			_size(0),_1stride(1),_rep(1),_ptr(&_rep[0]), _field(&F)
+			_size(0),_1stride(1),_rep(0),_ptr(&_rep[0]), _field(&F)
 		{
 			// Father_t is garbage until then:
 			setIterators();
 
-			linbox_check(_ptr != NULL);
+			// linbox_check(_ptr != NULL);
 		}
 
 #if 0
@@ -197,7 +197,7 @@ namespace LinBox { /* BlasVector */
 			// Father_t is garbage until then:
 			setIterators();
 
-			linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 		}
 #endif
 #endif
@@ -210,7 +210,7 @@ namespace LinBox { /* BlasVector */
 			// Father_t is garbage until then:
 			setIterators();
 
-			linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 			linbox_check(_size >= this->begin()->_stride);
 		}
 
@@ -232,7 +232,7 @@ namespace LinBox { /* BlasVector */
 			setIterators();
 
 
-			linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 		}
 
 
@@ -243,7 +243,7 @@ namespace LinBox { /* BlasVector */
 			setIterators();
 
 
-			linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 		}
 
 		BlasVector (const _Field &F, const int32_t &m, const Element e=Element())  :
@@ -253,7 +253,7 @@ namespace LinBox { /* BlasVector */
 			setIterators();
 
 
-			linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 		}
 
 		BlasVector (const _Field &F, const Integer & m, const Element e=Element())  :
@@ -263,7 +263,7 @@ namespace LinBox { /* BlasVector */
 			setIterators();
 
 
-			linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 		}
 
 		BlasVector (const BlasVector<_Field> &V)  :
@@ -275,7 +275,7 @@ namespace LinBox { /* BlasVector */
 
 
 			createBlasVector(V);
-			linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 		}
 
 		BlasVector (const BlasSubvector<_Field> &V)  :
@@ -286,7 +286,7 @@ namespace LinBox { /* BlasVector */
 
 
 			createBlasVector(V);
-			linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 		}
 
 		BlasVector (const BlasMatrix<_Field> &A, size_t k, enum LinBoxTag::Direction f )  :
@@ -300,7 +300,7 @@ namespace LinBox { /* BlasVector */
 					createBlasVector(A,k,0,1);
 				else // LinBoxTag::Col
 					createBlasVector(A,0,k,A.coldim());
-				linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 
 			}
 
@@ -315,7 +315,7 @@ namespace LinBox { /* BlasVector */
 					createBlasVector(A,k,0,1);
 				else // LinBoxTag::Col
 					createBlasVector(A,0,k,A.stride());
-				linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 			}
 
 		BlasVector (const BlasMatrix<_Field> &A, size_t n, size_t i0, size_t j0, size_t str )  :
@@ -326,7 +326,7 @@ namespace LinBox { /* BlasVector */
 
 
 			createBlasVector(A,i0,j0,str);
-			linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 		}
 
 		// ~BlasVector () ;
@@ -341,7 +341,7 @@ namespace LinBox { /* BlasVector */
 			_rep = Rep(_size);
 			_ptr = &_rep[0] ;
 			createBlasVector(V);
-			linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 
 			// Father_t is garbage until then:
 			setIterators();
@@ -359,7 +359,7 @@ namespace LinBox { /* BlasVector */
 			_rep = Rep(_size);
 			_ptr = &_rep[0] ;
 			createBlasVector(V);
-			linbox_check(_ptr != NULL);
+			linbox_check(_size==0 || _ptr != NULL);
 
 			// Father_t is garbage until then:
 			setIterators();
@@ -410,10 +410,7 @@ namespace LinBox { /* BlasVector */
 		}
 		// should use this->insert(this->end(),e)
 		void push_back(const Element & e) {
-			if (_size != 0)
-				_rep.push_back(e);
-			else
-				_rep[0] = e;
+			_rep.push_back(e);
 
 			_size = _rep.size() ; // back to normal :-)
 			_ptr=&_rep[0];
