@@ -52,7 +52,7 @@ namespace LinBox
 		typedef typename Context_::Field                 Field;
 		typedef typename Field::Element       Element;
 		typedef typename Field::RandIter     RandIter;
-		typedef std::vector<Element>           Vector;
+		typedef BlasVector<Field>           Vector;
 		typedef BlasMatrix<Field>               Block;
 
 	protected:
@@ -135,6 +135,7 @@ namespace LinBox
 					idx=i	;
 			}
 
+			typename Blackbox::Field F = A.field();
 
 			bool classic = true;
 			if ( classic) {
@@ -145,12 +146,12 @@ namespace LinBox
 				 * we use y and UA as projection (UA= U.A)
 				 */
 				size_t deg = degree[(size_t)idx];
-				std::vector<Vector> combi(p,Vector(deg+1));
+				std::vector<Vector> combi(p,Vector(F,deg+1));
 				for (size_t i=0;i<p;++i)
 					for (size_t k=0;k<deg+1;++k)
 						combi[(size_t)i][k]=minpoly[k].getEntry(idx,i);
 
-				Vector lhs(n);
+				Vector lhs(F,n);
 				A.applyTranspose(lhs,y);
 				_VDF.mulin(lhs,combi[0][deg]);
 				Vector lhsbis(lhs);
@@ -161,7 +162,7 @@ namespace LinBox
 
 				Vector accu (lhs);
 				for (size_t k=1;k<p;++k){
-					Vector row(m);
+					Vector row(F,m);
 					for (size_t j=0;j<m;++j)
 						row[j]=UA.getEntry(k-1,j);
 					A.applyTranspose(lhs,row);
@@ -195,7 +196,7 @@ namespace LinBox
 				Block Combi(field(),deg+1,m);
 				_BMD.mul(Combi,idx_poly,UA);
 
-				Vector lhs(n),row(m);
+				Vector lhs(F,n),row(F,m);
 				for (size_t i=0;i<m;++i)
 					row[(size_t)i]= Combi.getEntry(deg,i);
 
@@ -239,11 +240,10 @@ namespace LinBox
 
 #endif //__LINBOX_block_wiedemann_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

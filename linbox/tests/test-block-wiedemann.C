@@ -85,7 +85,7 @@ int main (int argc, char **argv)
 
 	//typedef Modular<double> Field;
 	typedef Modular<uint32_t> Field;
-	typedef vector<Field::Element> Vector;
+	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);
 	Field F ( (uint32_t) q);
@@ -95,7 +95,7 @@ int main (int argc, char **argv)
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	RandomDenseStream<Field> stream1 (F, n, 3);// stream2 (F, n, 1);
-	Vector d(n), b(n), x(n), y(n);
+	Vector d(F,n), b(F,n), x(F,n), y(F,n);
 	stream1.next (d);
 	stream1.next (b);
 
@@ -146,7 +146,7 @@ int main (int argc, char **argv)
 	typedef BlasMatrixDomain<Field> Context;
 #endif
 	Context MD(F);
-	Vector z(n);
+	Vector z(F,n);
 	BlockWiedemannSolver<Context> LBWS(MD);
 	report << "calling solver" << endl;
 	LBWS.solveNonSingular(z, D, b);
@@ -168,11 +168,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
