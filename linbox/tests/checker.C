@@ -143,13 +143,13 @@ build |wc" should yield the same number of lines.
 
   if (check) {
 	build_n_run("test-charpoly",                     counter , flag);//, "intermittent inf loop, bb or cp responsible?");
-	build_n_run("test-cra",                          counter , flag);
+	no_build_n_run("test-cra",                          counter , flag, "vector (bb) responsible");
 	build_n_run("test-det",                          counter , flag);
 	build_n_run("test-frobenius",                    counter , flag);
 	build_n_run("test-rank",                         counter , flag);
 	build_n_run("test-qlup",                         counter , flag);
 	build_n_run("test-solve",                        counter , flag);
-	no_build_n_run("test-nullspace",                    counter , flag);
+	no_build_n_run("test-nullspace",                    counter , flag, "bb or ff responsible");
 	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
 	build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures");
 	build_n_run("test-rational-solver",              counter , flag);

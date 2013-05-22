@@ -274,6 +274,7 @@ namespace LinBox { /* BlasVector */
 			linbox_check(_size==0 || _ptr != NULL);
 		}
 
+		//! @bug be careful with copy constructor. We should ban them and provide copy.
 		BlasVector (const BlasVector<_Field,_blasRep> &V)  :
 			_size(V.size()),_1stride(1),_rep(V.size(), V.field().zero),_ptr(&_rep[0]),_field(&(V.field()))
 			,Father_t() // will be created afterwards...

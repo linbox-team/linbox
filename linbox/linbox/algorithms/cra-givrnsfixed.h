@@ -51,7 +51,7 @@ namespace LinBox
 		const size_t				nbloops;
 		size_t					iterationnumber;
 
-		std::vector< std::vector< integer > > 	residues;
+		std::vector< BlasVector< PID_integer > > 	residues;
 		integer _product;
 		integer _midprod;
 
@@ -59,8 +59,9 @@ namespace LinBox
 		GivaroRnsFixedCRA(const std::vector<integer>& primes)
 				: Father_t(primes),
 				  nbloops(primes.size()),
-				  iterationnumber(0),
-				  _product(1)
+				  iterationnumber(0)
+				  , residues(0,BlasVector<PID_integer>(PID_integer()))
+				  , _product(1)
 		{
 			for(size_t i=0; i<primes.size(); ++i)
 				_product *= primes[i];
@@ -85,6 +86,15 @@ namespace LinBox
 			this->progress(D,e);
 		}
 
+		void initialize (const Domain& D, const BlasVector<Domain >& e)
+		{
+			PID_integer ZZ;
+			BlasVector<PID_integer> Z(ZZ);
+			residues.resize(e.size(),Z);
+			this->progress(D,e);
+		}
+
+
 		template< template<class, class> class Vect, template <class> class Alloc>
 		void progress (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e)
 		{
@@ -100,11 +110,43 @@ namespace LinBox
 
 		}
 
+		void progress (const Domain& D, const BlasVector<Domain>& e)
+		{
+			++iterationnumber;
+			typename BlasVector<Domain >::const_iterator eit=e.begin();
+			std::vector<BlasVector< PID_integer > >::iterator rit = residues.begin();
+
+			for( ; eit != e.end(); ++eit, ++rit) {
+				Integer tmp;
+				D.convert(tmp, *eit);
+				rit->push_back(tmp);
+			}
+
+		}
+
+
 		template<template<class, class> class Vect, template <class> class Alloc>
 		Vect<Integer, Alloc<Integer> >& result (Vect<Integer, Alloc<Integer> > &d)
 		{
 			d.resize(0);
 			for(std::vector<std::vector< Integer > >::const_iterator rit = residues.begin(); rit != residues.end(); ++rit) {
+				Integer tmp;
+				RnsToRing(tmp, *rit);
+				linbox_check(tmp>=0);
+				linbox_check(tmp<_product);
+				if (tmp>_midprod)
+					tmp -= _product ;
+				linbox_check(tmp<=_midprod);
+				d.push_back(tmp);
+			}
+			return d;
+		}
+
+
+		BlasVector<PID_integer>& result (BlasVector<PID_integer > &d)
+		{
+			d.resize(0);
+			for(std::vector<BlasVector< PID_integer > >::const_iterator rit = residues.begin(); rit != residues.end(); ++rit) {
 				Integer tmp;
 				RnsToRing(tmp, *rit);
 				linbox_check(tmp>=0);
