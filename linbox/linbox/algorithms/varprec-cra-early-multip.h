@@ -580,7 +580,7 @@ namespace LinBox
 
 	public:
 		template<class Vect1, class Vect2>
-		Vect1& productin(Vect1& vz, const Vect2 vm, const Domain D) {
+		Vect1& productin(Vect1& vz, const Vect2 &vm, const Domain D) {
 			typename Vect1::iterator v1_p;
 			typename Vect2::const_iterator v2_p;
 
