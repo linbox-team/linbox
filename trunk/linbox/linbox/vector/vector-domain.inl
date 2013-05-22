@@ -814,7 +814,7 @@ namespace LinBox
 						       VectorCategories::DenseVectorTag,
 						       VectorCategories::SparseParallelVectorTag) const
 	{
-		linbox_check(res.size()==v.first.size()*v.second.size()); // could be weaker
+		//! @bug check sizes ??
 		typename Vector1::iterator i = res.begin ();
 		typename Vector2::first_type::const_iterator j_idx = v.first.begin ();
 		typename Vector2::second_type::const_iterator j_elt = v.second.begin ();
