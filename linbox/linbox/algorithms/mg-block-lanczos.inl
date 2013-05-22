@@ -136,7 +136,8 @@ namespace LinBox
 		commentator().start ("Solving linear system (Montgomery's block Lanczos)", "MGBlockLanczosSolver::solve");
 
 		bool success = false;
-		Vector d1, d2, b1, b2, bp, y, Ax, ATAx, ATb;
+		Field F = A.field();
+		Vector d1(F), d2(F), b1(F), b2(F), bp(F), y(F), Ax(F), ATAx(F), ATb(F);
 
 		// Get the temporaries into the right sizes
 		_b.resize (b.size (), 1);
@@ -188,7 +189,7 @@ namespace LinBox
 					VectorWrapper::ensureDim (y, A.coldim ());
 
 					stream >> d1;
-					Diagonal<Field> D (field(), d1);
+					Diagonal<Field> D (d1);
 					Compose<Blackbox, Diagonal<Field> > B (&A, &D);
 
 					report << "Random D: ";
@@ -215,7 +216,7 @@ namespace LinBox
 					typedef Compose<PC2, CO1> CO2;
 
 					stream >> d1;
-					PC1 D (field(), d1);
+					PC1 D (d1);
 					PC2 AT (&A);
 					CO1 B1 (&D, &A);
 					CO2 B (&AT, &B1);
@@ -250,8 +251,8 @@ namespace LinBox
 					typedef Compose<PC1, CO3> CO4;
 
 					stream >> d1 >> d2;
-					PC1 D1 (field(), d1);
-					PC1 D2 (field(), d2);
+					PC1 D1 (d1);
+					PC1 D2 (d2);
 					PC2 AT (&A);
 					CO1 B1 (&A, &D1);
 					CO2 B2 (&D2, &B1);

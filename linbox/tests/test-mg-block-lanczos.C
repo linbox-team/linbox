@@ -74,7 +74,7 @@ static bool testRandomSolve (const Field           &F,
 	VectorDomain<Field> VD (F);
 	MatrixDomain<Field> MD (F);
 
-	Vector2 y, b, x1, x2;
+	Vector2 y(F), b(F), x1(F), x2(F);
 
 	VectorWrapper::ensureDim (b, y_stream.dim ());
 	VectorWrapper::ensureDim (y, y_stream.dim ());
@@ -230,11 +230,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

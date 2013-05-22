@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 		Ints Z;
 		BlasMatrix<Ints> M(Z);
 		Mat(M, Z, n, src, file, format);
-		vector<integer> v((size_t)n);
+		BlasVector<PID_integer> v(Z,(size_t)n);
 		T.start();
 		SmithFormAdaptive::smithForm(v, M);
 		T.stop();
