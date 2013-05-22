@@ -89,14 +89,14 @@ namespace LinBox { /* BlasVector */
 		pointer			        _ptr;
 		const Field		    * _field;
 	private:
-		void createBlasVector(const BlasVector<_Field> & V)
+		void createBlasVector(const BlasVector<_Field,_blasRep> & V)
 		{
 			//! use std::copy somehow ?
 			for (size_t i = 0 ; i < _size ; ++i)
 				setEntry(i,V.getEntry(i));
 		}
 
-		void createBlasVector(const BlasVector<_Field> & V
+		void createBlasVector(const BlasVector<_Field,_blasRep> & V
 				      , const size_t i0, const size_t str)
 		{
 			for (size_t i = 0 ; i < _size ; ++i)
@@ -124,10 +124,18 @@ namespace LinBox { /* BlasVector */
 				setEntry(i,V[i0+i*str]);
 		}
 
-
 		void createBlasVector ( const std::vector<Element> & V)
 		{
 			createBlasVector(&V[0]);
+		}
+
+		template<class OtherVector>
+		void createBlasVector( const OtherVector &V){
+			iterator it = _rep.begin();
+			typename OtherVector::const_iterator jt = V.begin();
+			for ( ; it != _rep.end(); ++it, ++jt)
+				*it = *jt ;
+
 		}
 
 		void createBlasVector ( const std::vector<Element> & V
@@ -266,7 +274,7 @@ namespace LinBox { /* BlasVector */
 			linbox_check(_size==0 || _ptr != NULL);
 		}
 
-		BlasVector (const BlasVector<_Field> &V)  :
+		BlasVector (const BlasVector<_Field,_blasRep> &V)  :
 			_size(V.size()),_1stride(1),_rep(V.size(), V.field().zero),_ptr(&_rep[0]),_field(&(V.field()))
 			,Father_t() // will be created afterwards...
 		{
@@ -277,6 +285,20 @@ namespace LinBox { /* BlasVector */
 			createBlasVector(V);
 			linbox_check(_size==0 || _ptr != NULL);
 		}
+
+		template<class VectorBase>
+		BlasVector (const _Field & F, const VectorBase & V)  :
+			_size(V.size()),_1stride(1),_rep(V.size(), F.zero),_ptr(&_rep[0]),_field(&F)
+			,Father_t() // will be created afterwards...
+		{
+			// Father_t is garbage until then:
+			setIterators();
+
+			createBlasVector(V);
+
+			linbox_check(_size==0 || _ptr != NULL);
+		}
+
 
 		BlasVector (const BlasSubvector<_Field> &V)  :
 			_size(V.size()),_1stride(1),_rep(V.size(), V.field().zero),_ptr(&_rep[0]),_field(&(V.field()))
@@ -331,7 +353,7 @@ namespace LinBox { /* BlasVector */
 
 		// ~BlasVector () ;
 
-		BlasVector<_Field>& operator= (const BlasVector<_Field>& V)
+		BlasVector<_Field,_blasRep>& operator= (const BlasVector<_Field,_blasRep>& V)
 		{
 			if ( &V == this)
 				return *this;
@@ -352,7 +374,7 @@ namespace LinBox { /* BlasVector */
 		}
 
 		//! this should not exist.
-		BlasVector<_Field>& operator= (const std::vector<Element>& V)
+		BlasVector<_Field,_blasRep>& operator= (const std::vector<Element>& V)
 		{
 			_size = V.size();
 			_1stride = 1;
@@ -365,6 +387,22 @@ namespace LinBox { /* BlasVector */
 			setIterators();
 
 
+
+			return *this;
+		}
+
+		template<class OtherBase>
+		BlasVector<_Field,_blasRep>& operator= (const OtherBase & V)
+		{
+			_size = V.size();
+			_1stride = 1;
+			_rep = Rep(_size);
+			_ptr = &_rep[0] ;
+			createBlasVector(V);
+			linbox_check(_size==0 || _ptr != NULL);
+
+			// Father_t is garbage until then:
+			setIterators();
 
 			return *this;
 		}

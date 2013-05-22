@@ -45,7 +45,7 @@
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/solutions/charpoly.h"
 #include "linbox/util/commentator.h"
-//#include "linbox/ring/givaro-polynomial.h"
+#include "linbox/ring/givaro-polynomial.h"
 #include "linbox/vector/stream.h"
 
 #include "test-common.h"
@@ -84,6 +84,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	typedef BlasVector<Dom> Vector;
 	typedef ScalarMatrix<Dom> Blackbox;
 	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
+	// typedef BlasVector<Dom,GivPolynomialRing<Dom, Givaro::Dense> > PolDom;
 	typedef typename PolDom::Element Polynomial;
 	//typedef Vector Polynomial;
 

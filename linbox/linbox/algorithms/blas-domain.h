@@ -693,7 +693,9 @@ namespace LinBox
 			}
 			commentator().stop ("done", NULL, "MDCharpoly");
 
-			return P=Pt;
+			P=Pt;
+
+			return P;
 		}
 
 		//! characteristic polynomial computation.
