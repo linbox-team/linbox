@@ -161,7 +161,7 @@ testLinearity (//const Field                             &F,
 	size_t m = A.coldim ();
 
 	typedef typename BB::Field Field;
-	Field F = A.field();
+	Field F( A.field() );
 	Vector x(F), y(F), xpay(F), Axpay(F), Ax(F), Ay(F), AxpaAy(F);
 	LinBox::VectorDomain <Field> VD (A.field());
 	typename Field::RandIter r (A.field());

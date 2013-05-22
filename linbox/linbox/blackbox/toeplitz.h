@@ -64,7 +64,7 @@ namespace LinBox
 		//------- CONSTRUCTORS AND DESTRUCTORS
 
 		virtual ~ToeplitzBase();                // Destructor
-		ToeplitzBase();                 // Zero Param Constructor
+		// ToeplitzBase();                 // Zero Param Constructor
 		ToeplitzBase( const Field& F);// Field only cstr. JGD 30.09.2003
 		ToeplitzBase( const PRing& PF );
 		// Constructor using a polynomial field, a polynomial in that
@@ -139,10 +139,11 @@ namespace LinBox
 	#else
 	template< class _CField, class _PRing >
 	#endif
-	class Toeplitz :public ToeplitzBase<_CField,_PRing> {
+	class Toeplitz : public ToeplitzBase<_CField,_PRing> {
 	protected:
 		typedef ToeplitzBase<_CField,_PRing> TBase;
 	public:
+		typedef TBase Father_t;
 		typedef typename TBase::PRing PRing;
 		typedef typename TBase::Poly Poly;
 
@@ -150,9 +151,9 @@ namespace LinBox
 
 		typedef typename TBase::Element Element;
 
-		Toeplitz() :
-			TBase()
-		{}
+		// Toeplitz() :
+			// TBase()
+		// {}
 		Toeplitz(const Field& F) :
 			TBase(F)
 		{}
@@ -175,6 +176,7 @@ namespace LinBox
 	class Toeplitz< typename _PRing::CoeffField, _PRing > : public ToeplitzBase< typename _PRing::CoeffField, _PRing > {
 	protected:
 		typedef ToeplitzBase< typename _PRing::CoeffField, _PRing > TBase;
+		typedef TBase Father_t;
 		using TBase::P;
 		using TBase::rowDim;
 		using TBase::colDim;
@@ -194,9 +196,9 @@ namespace LinBox
 		typedef typename TBase::Element Element;
 
 		//------- CONSTRUCTORS AND DESTRUCTORS
-		Toeplitz() :
-			TBase()
-		{}
+		// Toeplitz() :
+			// TBase()
+		// {}
 		Toeplitz(const Field& F) :
 			TBase(F)
 		{}

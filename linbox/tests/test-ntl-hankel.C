@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 	F.init(zero, 0);
 
 	// Use the default constructor to create a matrix
-	LinBox::Hankel<Field> T;
+	// LinBox::Hankel<Field> T(F);
 
 	// Use a special constructor to construct a matrix of dim TSIZE
 	size_t TSIZE = 2*(n)-1;
@@ -153,11 +153,10 @@ int main(int argc, char* argv[])
 }
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

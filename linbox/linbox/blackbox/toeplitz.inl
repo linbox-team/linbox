@@ -72,6 +72,7 @@ namespace LinBox
 	}//----- Field-only Constructor
 
 
+#if 0
 	/*-----------------------------------------------------------------
 	 *----    Zero Parameter Constructor
 	 *----------------------------------------------------------------*/
@@ -89,6 +90,7 @@ namespace LinBox
 #endif
 
 	}//----- Zero Param Constructor ---- [Tested 6/14/02 -- Works]
+#endif
 
 	template <class _CField, class _PRing>
 	ToeplitzBase<_CField, _PRing>::ToeplitzBase(const _PRing& PF) :
