@@ -11,20 +11,20 @@
  * ------------------------------------
  * fix testLinearity for rectangular matrices.  2006-02-17 Hui Wang
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -84,7 +84,7 @@ testTranspose (const Field                             &F,
 {
 	bool ret = true;
 
-	Vector u, v, uA, Av;
+	Vector u(F), v(F), uA(F), Av(F);
 
 	LinBox::VectorWrapper::ensureDim (u, A.rowdim ());
 	LinBox::VectorWrapper::ensureDim (uA, A.coldim ());
@@ -161,7 +161,8 @@ testLinearity (//const Field                             &F,
 	size_t m = A.coldim ();
 
 	typedef typename BB::Field Field;
-	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
+	Field F = A.field();
+	Vector x(F), y(F), xpay(F), Axpay(F), Ax(F), Ay(F), AxpaAy(F);
 	LinBox::VectorDomain <Field> VD (A.field());
 	typename Field::RandIter r (A.field());
 	typename Field::Element alpha;
@@ -229,7 +230,7 @@ testLinearity (//const Field                             &F,
  * write the black box A, read it back and check equality.
  *
  * F - Field over which to perform computations
- * A - Black box 
+ * A - Black box
  *
  * Return true on success and false on failure
  */
@@ -245,14 +246,14 @@ testReadWrite(BB &A)
 
 	ofstream out("temp");
 	if (not out) {
-		pass = false; 
+		pass = false;
 		report << "failure to open file for writing" << std::endl;
 	}
 	A.write(out) << std::endl;
 	BB B(A.field());
 	ifstream in("temp");
 	if (not in) {
-		pass = false; 
+		pass = false;
 		report << "failure to open file for reading" << std::endl;
 	}
 	B.read(in);
@@ -285,7 +286,7 @@ testBlackboxNoRW(BB &A)
 	bool ret = true;
 	const Field& F = A.field();
 
-	/* timing tests */   
+	/* timing tests */
 	{
 		DenseVector x(A.coldim()), y(A.rowdim());
 		for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], i);

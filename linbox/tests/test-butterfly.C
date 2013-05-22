@@ -77,14 +77,14 @@ static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size
 	unsigned long real_k;
 
 	Vector v_p;
-	typename LinBox::Vector<Field>::Dense w (stream.dim ()), v1 (stream.dim ());
+	BlasVector<Field> w (F,stream.dim ()), v1 (F,stream.dim ());
 	VectorDomain<Field> VD (F);
 
 	while (stream) {
 		commentator().startIteration ((unsigned int)stream.j ());
 
 		stream >> v_p;
-		typename LinBox::Vector<Field>::Dense v (stream.n ());
+		BlasVector<Field> v (F,stream.n ());
 		VD.copy (v, v_p);
 
 		real_k = v_p.first.size ();
@@ -181,7 +181,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 
 		stream >> d1;
 
-		typename Vector<Field>::Dense d (n);
+		BlasVector<Field> d (n);
 		VD.copy (d, d1);
 
 		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -198,14 +198,14 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 		Butterfly<Field, CekstvSwitch<Field> > Q (F, n, factory);
 		typedef Butterfly<Field, CekstvSwitch<Field> > Blackbox1;
 
-		Diagonal<Field> D (F, d);
+		Diagonal<Field> D (d);
 		typedef Diagonal<Field> Blackbox2;
 
 		Compose<Blackbox1>  DQ (&P, &Q);
 		typedef Compose<Blackbox1, Blackbox1> Blackbox3;
 		Compose<Blackbox1, Blackbox3> A (P, DQ);
 		typedef Compose<Blackbox1, Blackbox3> Blackbox4;
-		//Compose<typename Vector<Field>::Dense> A (&P, &DQ);
+		//Compose<BlasVector<Field> > A (&P, &DQ);
 
 		Submatrix<Blackbox4> Ap (&A, 0, 0, real_r, real_r);
 
@@ -254,8 +254,8 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 
 template <class Field>
 static bool testRandomLinearity (const Field                                 &F,
-				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
+				 VectorStream<BlasVector<Field> > &v1_stream,
+				 VectorStream<BlasVector<Field> > &v2_stream)
 {
 	commentator().start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
@@ -288,8 +288,8 @@ static bool testRandomLinearity (const Field                                 &F,
 
 template <class Field>
 static bool testRandomTranspose (const Field                                 &F,
-				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
+				 VectorStream<BlasVector<Field> > &v1_stream,
+				 VectorStream<BlasVector<Field> > &v2_stream)
 {
 	commentator().start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 
