@@ -42,10 +42,10 @@
 #include "linbox/algorithms/rational-solver.h"
 #include <time.h>
 
-
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
 #include "test-common.h"
+
 using namespace LinBox;
 
 template <class Ring, class LIF, class Vector>
@@ -65,7 +65,7 @@ bool testRandom(const Ring& R,
 
         VectorDomain<Ring> VD (R);
 
-	Vector d;
+	Vector d(R);
 
 	typename Ring::Element x;
 
@@ -106,7 +106,7 @@ bool testRandom(const Ring& R,
 			}
 
 
-		std::vector<typename Ring::Element> tmp1((size_t)n), tmp2((size_t)n), e((size_t)n);
+		BlasVector<Ring> tmp1(R,(size_t)n), tmp2(R,(size_t)n), e(R,(size_t)n);
 
 		typename BlasMatrix<Ring>::ColIterator col_p;
 
@@ -133,7 +133,7 @@ bool testRandom(const Ring& R,
 		report << '\n';
 
 
-		typename std::vector<typename Ring::Element>::iterator p1;
+		typename BlasVector<Ring>::iterator p1;
 
 		typename Ring::Element l;
 
@@ -220,11 +220,10 @@ int main(int argc, char** argv)
         return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
