@@ -6,20 +6,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -93,18 +93,24 @@ static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1
 	bool ret = true;
 	bool iter_passed = true;
 
-	Vector d1, d2, v, w, zero;
+	Vector d1(F1), d2(F1), v(F1), w(F1)
+		// , zero
+		;
 	VectorDomain<Field1> VD (F1);
-	typename Field1::Element neg_one;
+	//! @bug !
+	typename Field1::Element neg_one
+		// = F1.mone
+		;
+	F1.init (neg_one, -1);
 
-	VectorWrapper::ensureDim (zero, stream1.dim ());
+	// VectorWrapper::ensureDim (zero, stream1.dim ());
 	VectorWrapper::ensureDim (d1, stream1.dim ());
 	VectorWrapper::ensureDim (d2, stream1.dim ());
 	VectorWrapper::ensureDim (v, stream1.dim ());
 	VectorWrapper::ensureDim (w, stream2.dim ());
 // 	F.init (neg_one, 1);
 // 	F.negin (neg_one);
-	F1.init (neg_one, -1);
+
 
 	while (stream1) {
 		commentator().startIteration ((unsigned)stream1.j ());
@@ -113,7 +119,7 @@ static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1
 		stream1.next (d1);
 		VD.mul (d2, d1, neg_one);
 
-		Diagonal <Field1> D1 (F1, d1), D2 (F1, d2);
+		Diagonal <Field1> D1 (d1), D2 (d2);
 
 		Sum <Diagonal<Field1>,Diagonal <Field1> > A (&D1, &D2);
 
@@ -234,7 +240,7 @@ int main (int argc, char **argv)
 
         GivaroZpz< Givaro::Std32> F2(q2);
 
-	typedef vector<Field::Element> Vector;
+	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);
 
@@ -250,9 +256,9 @@ int main (int argc, char **argv)
 	n = 10;
 	RandomDenseStream<Field> stream3 (F1, n, iterations1), stream4 (F1, n, iterations2);
 
-	Vector d1(n), d2(n);
-	stream3.next (d1);
-	stream4.next (d2);
+	// Vector d1(n), d2(n);
+	// stream3.next (d1);
+	// stream4.next (d2);
 
 //	Diagonal <Field, Vector> D1 (F, d1), D2 (F, d2);
 
@@ -271,11 +277,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
