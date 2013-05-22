@@ -63,14 +63,14 @@ namespace LinBox
 		typedef VarPrecEarlyMultipCRA<Domain> Self_t;
 
 	protected:
-		std::vector< Integer > vfactor_;
-		std::vector< Integer > vmultip_;
+		BlasVector< PID_integer > vfactor_;
+		BlasVector< PID_integer > vmultip_;
 
 		std::vector< unsigned long > randv;
 	public:
 		VarPrecEarlyMultipCRA(const unsigned long EARLY = DEFAULT_EARLY_TERM_THRESHOLD, const double b=0.0,
-				      const std::vector<Integer>& vf = std::vector<Integer>(0),
-				      const std::vector<Integer>& vm = std::vector<Integer>(0)) :
+				      const BlasVector<PID_integer>& vf = BlasVector<PID_integer>(PID_integer()),
+				      const BlasVector<PID_integer>& vm = BlasVector<PID_integer>(PID_integer())) :
 			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(b), vfactor_(vf), vmultip_(vm)
 		{
 			for (int i=0; i < (int)vfactor_.size(); ++i) {
@@ -93,7 +93,7 @@ namespace LinBox
 
 		template<class Vect>
 		Vect& getResidue(Vect& r) {
-			Vect z,vf, vm;
+			Vect z(r.field()),vf(r.field()), vm(r.field());
 			FullMultipCRA<Domain>::result(z);
 
 			typename Vect::const_iterator it,itf,itm;
@@ -297,7 +297,8 @@ namespace LinBox
 		}
 
 		template<template<class,class> class Vect, template<class> class Alloc>
-		Vect<Integer, Alloc<Integer> >& result(Vect<Integer, Alloc<Integer> >& num, Integer& den) {
+		Vect<Integer, Alloc<Integer> >& result(Vect<Integer, Alloc<Integer> >& num, Integer& den)
+		{
 			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
 				FullMultipCRA<Domain>::result(num);
 				den = 1;
@@ -337,8 +338,51 @@ namespace LinBox
 			}
 		}
 
+		BlasVector<PID_integer >& result(BlasVector<PID_integer >& num, Integer& den)
+		{
+			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
+				FullMultipCRA<Domain>::result(num);
+				den = 1;
+				return num;
+			}
+			else {
+				PID_integer Z;
+				BlasVector<PID_integer > z(Z),vf(Z), vm(Z);
+				FullMultipCRA<Domain>::result(z);//vector of non prec results
+
+				typename BlasVector<PID_integer >::const_iterator it,itf,itm;
+				typename BlasVector<PID_integer >::iterator itt;
+
+				Integer M; getModulus(M);
+				getPreconditioner(vf,vm);
+
+				BlasVector<PID_integer > residue(Z);//vector of residues
+				getResidue(residue);
+
+				num.clear();
+
+				//getPreconditioner(vf,vm);
+				itf = vf.begin(); itm = vm.begin();it = residue.begin();
+				den = 1; Integer old_den =1;
+				for (; it!= residue.end(); ++it, ++itf,++itm ) {
+					lcm(den,den,*itm);Integer d = den/old_den;
+
+					num.push_back((*itf) * (*it));
+					if (den != old_den) {
+						for (itt=num.begin(); itt !=num.end()-1 ;++itt) {
+							*itt *= d;
+						}
+						*itt = *itt * (den/ (*itm));
+					}
+					old_den = den;
+				}
+				return num;
+			}
+		}
+
 		template<template<class, class> class Vect, template<class> class Alloc>
-		Vect<Quotient, Alloc<Quotient> >& result(Vect<Quotient, Alloc<Quotient> >& q) {
+		Vect<Quotient, Alloc<Quotient> >& result(Vect<Quotient, Alloc<Quotient> >& q)
+		{
 			q.clear();
 			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
 				std::vector<Integer> vz;
@@ -386,7 +430,8 @@ namespace LinBox
 			}
 			vmultip_ = vm;
 
-			Vect e(vfactor_.size());
+			PID_integer Z;
+			Vect e(Z,vfactor_.size());
 
 			//clear CRAEarlySingle;
 			EarlySingleCRA<Domain>::occurency_ = 0;
@@ -398,7 +443,7 @@ namespace LinBox
 
 			//std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
 			std::vector< LazyProduct >::iterator _mod_it = FullMultipCRA<Domain>::RadixPrimeProd_.end();// list of prime products
-			std::vector< std::vector<Integer> >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.end();// list of residues as vectors of size 1
+			std::vector< BlasVector<PID_integer> >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.end();// list of residues as vectors of size 1
 			std::vector< bool >::iterator    _occ_it = FullMultipCRA<Domain>::RadixOccupancy_.end();//flags of occupied fields
 			int n = (int)FullMultipCRA<Domain>::RadixOccupancy_.size();
 			//std::vector<Integer> ri(1); LazyProduct mi; double di;
@@ -410,7 +455,7 @@ namespace LinBox
 				++shelf;
 				if (*_occ_it) {
 					Integer D = _mod_it->operator()();
-					Vect e_v(vfactor_.size());
+					Vect e_v(Z,vfactor_.size());
 					inverse(e_v,vfactor_,D);
 					productin(e_v,*_tab_it,D);
 					productin(e_v,vmultip_,D);
@@ -451,7 +496,8 @@ namespace LinBox
 		template <template<class> class Alloc, template<class, class> class Vect1, class Vect2>
 		DomainElement& dot (DomainElement& z, const Domain& D,
 				    const Vect1<DomainElement, Alloc<DomainElement> >& v1,
-				    const Vect2& v2) {
+				    const Vect2& v2)
+		{
 			D.init(z,0); DomainElement tmp;
 			typename Vect1<DomainElement, Alloc<DomainElement> >::const_iterator v1_p;
 			typename Vect2::const_iterator v2_p;
@@ -461,8 +507,24 @@ namespace LinBox
 			return z;
 		}
 
+		template<class Vect2>
+		DomainElement& dot (DomainElement& z, const Domain& D,
+				    const BlasVector<Domain>& v1,
+				    const Vect2& v2)
+		{
+			D.init(z,0); DomainElement tmp;
+			typename BlasVector<Domain>::const_iterator v1_p;
+			typename Vect2::const_iterator v2_p;
+
+			for (v1_p  = v1. begin(), v2_p = v2. begin();v1_p != v1. end();++ v1_p, ++ v2_p)
+				D.axpyin(z, (*v1_p), D.init(tmp, (*v2_p)));
+			return z;
+		}
+
+
 		template <template<class> class Alloc, template<class, class> class Vect1, class Vect2>
-		Integer& dot (Integer& z, const Integer& D, const Vect1<Integer, Alloc<Integer> >& v1, const Vect2& v2) {
+		Integer& dot (Integer& z, const Integer& D, const Vect1<Integer, Alloc<Integer> >& v1, const Vect2& v2)
+		{
 			z = 0;
 			typename Vect1<Integer, Alloc<Integer> >::const_iterator v1_p;
 			typename Vect2::const_iterator v2_p;
@@ -472,8 +534,22 @@ namespace LinBox
 			return z;
 		}
 
+		template<class Vect2>
+		Integer& dot (Integer& z, const Integer& D, const BlasVector<PID_integer >& v1, const Vect2& v2)
+		{
+			z = 0;
+			typename BlasVector<PID_integer >::const_iterator v1_p;
+			typename Vect2::const_iterator v2_p;
+			for (v1_p  = v1. begin(), v2_p = v2. begin(); v1_p != v1. end(); ++ v1_p, ++ v2_p) {
+				z = (z + (*v1_p)*(*v2_p))%D;
+			}
+			return z;
+		}
+
+
 		template<class Vect1, class Vect2>
-		Vect1& inverse(Vect1& vz,const Vect2 vf, const Domain D) {
+		Vect1& inverse(Vect1& vz,const Vect2 vf, const Domain D)
+		{
 			vz.clear();
 			typename Vect2::const_iterator it = vf.begin();
 
@@ -489,7 +565,8 @@ namespace LinBox
 		}
 
 		template<class Vect1, class Vect2>
-		Vect1& inverse(Vect1& vz,const Vect2& vf, const Integer& D) {
+		Vect1& inverse(Vect1& vz,const Vect2& vf, const Integer& D)
+		{
 			vz.clear();
 			typename Vect2::const_iterator it = vf.begin();
 
@@ -500,6 +577,7 @@ namespace LinBox
 			}
 			return vz;
 		}
+
 	public:
 		template<class Vect1, class Vect2>
 		Vect1& productin(Vect1& vz, const Vect2 vm, const Domain D) {
@@ -559,11 +637,10 @@ namespace LinBox
 #endif //__LINBOX_varprec_cra_multip_single_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

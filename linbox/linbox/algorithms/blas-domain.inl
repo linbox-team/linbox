@@ -1340,7 +1340,6 @@ namespace LinBox
 			LQUP.left_solve(B);
 			return B;
 		}
-	// };
 
 	template <class Field, class Operand1, class Matrix, class Operand2>
 	Operand1&
@@ -1366,7 +1365,6 @@ namespace LinBox
 		return B;
 	}
 
-	// };
 
 	template <class Field>
 	class BlasMatrixDomainRightSolve<Field,BlasSubmatrix<Field>,BlasSubmatrix<Field> > {
@@ -1758,9 +1756,9 @@ namespace LinBox
 
 	template< class Field,  class ContPol, class Matrix >
 	ContPol&
-	BlasMatrixDomainCharpoly<Field,ContPol,Matrix>::operator() ( const Field                                	&F,
-								     ContPol                     			&P,
-								     const Matrix 	&A) const
+	BlasMatrixDomainCharpoly<Field,ContPol,Matrix>::operator() ( const Field    &F,
+								     ContPol        &P,
+								     const Matrix   &A) const
 	{
 
 		size_t n = A.coldim();
@@ -1785,4 +1783,3 @@ namespace LinBox
 // c-basic-offset: 8
 // End:
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-

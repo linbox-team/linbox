@@ -57,7 +57,7 @@ namespace LinBox
 	public:
 
 		//	using Givaro::Poly1FactorDom<Domain,StorageTag>::eval;
-        typedef typename Givaro::Poly1FactorDom<GivaroField<Domain>,StorageTag> Father_t;
+		typedef typename Givaro::Poly1FactorDom<GivaroField<Domain>,StorageTag> Father_t;
 		typedef typename Father_t::Element Element;
 		typedef Element Polynomial;
 

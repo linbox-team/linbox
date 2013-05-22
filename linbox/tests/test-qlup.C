@@ -88,8 +88,8 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		F.write( report ) << endl;
 		A.write( report,FORMAT_MAPLE ) << endl;
 
-		std::vector<typename Field::Element> u(Nj), v(Ni), w1(Nj), w2(Ni), w3(Ni), w(Ni);
-		for(typename std::vector<typename Field::Element>::iterator it=u.begin();it!=u.end();++it)
+		BlasVector<Field> u(F,Nj), v(F,Ni), w1(F,Nj), w2(F,Ni), w3(F,Ni), w(F,Ni);
+		for(typename BlasVector<Field>::iterator it=u.begin();it!=u.end();++it)
 			generator.random (*it);
 
 		A.apply(v,u);
@@ -112,8 +112,8 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		Q.apply(w, L.apply(w3, A.apply(w2, P.apply(w1,u) ) ) );
 
 		bool error = false;
-		typename std::vector<typename Field::Element>::const_iterator itv=v.begin();
-		typename std::vector<typename Field::Element>::const_iterator itw=w.begin();
+		typename BlasVector<Field>::const_iterator itv=v.begin();
+		typename BlasVector<Field>::const_iterator itw=w.begin();
 		for( ; itw!=w.end();++itw,++itv) {
 			if (! F.areEqual(*itw,*itv) ) {
 				error = true;
@@ -124,27 +124,27 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 			res = false;
 
 			report << "ERROR : matrix(" << u.size() << ",1,[";
-			for(typename std::vector<typename Field::Element>::const_iterator itu=u.begin(); itu!=u.end();++itu)
+			for(typename BlasVector<Field>::const_iterator itu=u.begin(); itu!=u.end();++itu)
 				report << *itu << ',';
 			report << "]);\n[";
-			for(typename std::vector<typename Field::Element>::const_iterator itv2=v.begin(); itv2!=v.end();++itv2)
+			for(typename BlasVector<Field>::const_iterator itv2=v.begin(); itv2!=v.end();++itv2)
 				report << *itv2 << ' ';
 			report << "]  !=  [";
-			for(typename std::vector<typename Field::Element>::const_iterator itw2=w.begin(); itw2!=w.end();++itw2)
+			for(typename BlasVector<Field>::const_iterator itw2=w.begin(); itw2!=w.end();++itw2)
 				report << *itw2 << ' ';
 			report << "]" << std::endl;
 
 
 			report << "w1: [";
-			for(typename std::vector<typename Field::Element>::const_iterator itw2=w1.begin(); itw2!=w1.end();++itw2)
+			for(typename BlasVector<Field>::const_iterator itw2=w1.begin(); itw2!=w1.end();++itw2)
 				report << *itw2 << ' ';
 			report << "]" << std::endl;
 			report << "w2: [";
-			for(typename std::vector<typename Field::Element>::const_iterator itw2=w2.begin(); itw2!=w2.end();++itw2)
+			for(typename BlasVector<Field>::const_iterator itw2=w2.begin(); itw2!=w2.end();++itw2)
 				report << *itw2 << ' ';
 			report << "]" << std::endl;
 			report << "w3: [";
-			for(typename std::vector<typename Field::Element>::const_iterator itw2=w3.begin(); itw2!=w3.end();++itw2)
+			for(typename BlasVector<Field>::const_iterator itw2=w3.begin(); itw2!=w3.end();++itw2)
 				report << *itw2 << ' ';
 			report << "]" << std::endl;
 		}
@@ -192,8 +192,8 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 		F.write( report ) << endl;
 		A.write( report, FORMAT_MAPLE ) << endl;
 
-		std::vector<typename Field::Element> u(Nj), v(Ni), x(Nj), y(Ni);
-		for(typename std::vector<typename Field::Element>::iterator it=u.begin();it!=u.end();++it)
+		BlasVector<Field> u(F,Nj), v(F,Ni), x(F,Nj), y(F,Ni);
+		for(typename BlasVector<Field>::iterator it=u.begin();it!=u.end();++it)
 			generator.random (*it);
 
 		A.apply(v,u);
@@ -218,17 +218,17 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
                         A.write( report, FORMAT_MAPLE ) << endl;
 
 			report << "ERROR v: matrix(" << v.size() << ",1,[";
-			for(typename std::vector<typename Field::Element>::const_iterator itu=v.begin(); itu!=v.end();++itu)
+			for(typename BlasVector<Field>::const_iterator itu=v.begin(); itu!=v.end();++itu)
 				report << *itu << ',';
 			report << "]);\n[";
 			report << "ERROR y: matrix(" << y.size() << ",1,[";
-			for(typename std::vector<typename Field::Element>::const_iterator itu=y.begin(); itu!=y.end();++itu)
+			for(typename BlasVector<Field>::const_iterator itu=y.begin(); itu!=y.end();++itu)
 				report << *itu << ',';
 			report << "]);\n[";
-			for(typename std::vector<typename Field::Element>::const_iterator itv=x.begin(); itv!=x.end();++itv)
+			for(typename BlasVector<Field>::const_iterator itv=x.begin(); itv!=x.end();++itv)
 				report << *itv << ' ';
 			report << "]  !=  [";
-			for(typename std::vector<typename Field::Element>::const_iterator itw=y.begin(); itw!=y.end();++itw)
+			for(typename BlasVector<Field>::const_iterator itw=y.begin(); itw!=y.end();++itw)
 				report << *itw << ' ';
 			report << "]" << std::endl;
 
@@ -285,14 +285,14 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
                 unsigned long nullity = X.coldim();
 
-                std::vector<typename Field::Element> u(nullity);
-                for(typename std::vector<typename Field::Element>::iterator it=u.begin();it!=u.end();++it)
+                BlasVector<Field> u(F,nullity);
+                for(typename BlasVector<Field>::iterator it=u.begin();it!=u.end();++it)
 			generator.random (*it);
-                std::vector<typename Field::Element> v(Nj);
+                BlasVector<Field> v(F,Nj);
                 X.apply(v,u);
                 report << "Random combination of the rows of the NullSpace basis" << std::endl;
 
-		std::vector<typename Field::Element> w(Ni);
+		BlasVector<Field> w(F,Ni);
                 A.apply(w, v);
 
 		VectorDomain<Field> VD(F);
@@ -302,14 +302,14 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
                         A.write( report, FORMAT_MAPLE ) << endl;
 
 			report << "ERROR u: matrix(" << u.size() << ",1,[";
-			for(typename std::vector<typename Field::Element>::const_iterator itu=u.begin(); itu!=u.end();++itu)
+			for(typename BlasVector<Field>::const_iterator itu=u.begin(); itu!=u.end();++itu)
 				report << *itu << ',';
 			report << "]);\n[";
 			report << "ERROR v: matrix(" << v.size() << ",1,[";
-			for(typename std::vector<typename Field::Element>::const_iterator itu=v.begin(); itu!=v.end();++itu)
+			for(typename BlasVector<Field>::const_iterator itu=v.begin(); itu!=v.end();++itu)
 				report << *itu << ',';
 			report << "]);\n[";
-			for(typename std::vector<typename Field::Element>::const_iterator itv=w.begin(); itv!=w.end();++itv)
+			for(typename BlasVector<Field>::const_iterator itv=w.begin(); itv!=w.end();++itv)
 				report << *itv << ' ';
 			report << "]  !=  0" << std::endl;
 
@@ -421,11 +421,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
