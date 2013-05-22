@@ -59,7 +59,7 @@ namespace LinBox
 	/* Compute the local smith form at prime p, when modular (p^e) fits in long
 	*/
 	template <class Matrix>
-	void SmithFormAdaptive::compute_local_long (std::vector <integer>& s, const Matrix& A, long p, long e)
+	void SmithFormAdaptive::compute_local_long (BlasVector<PID_integer>& s, const Matrix& A, long p, long e)
 	{
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 
@@ -76,7 +76,7 @@ namespace LinBox
 			MatrixHom::map (A_local, A, R);
 			SF (l, A_local, R);
 			std::list <Local2_32::Element>::iterator l_p;
-			std::vector <integer>::iterator s_p;
+			BlasVector<PID_integer>::iterator s_p;
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p)
 				*s_p = *l_p;
 			report << "     Done\n";
@@ -116,7 +116,7 @@ namespace LinBox
 			FMatrix A_local(A, F);
 			long rank = MR. rankIn (A_local);
 
-			std::vector <integer>::iterator s_p;
+			BlasVector<PID_integer>::iterator s_p;
 			for (s_p = s. begin(); s_p != s. begin() + (long) rank; ++ s_p)
 				*s_p = 1;
 			for (; s_p != s. begin() +(ptrdiff_t) order; ++ s_p)
@@ -137,7 +137,7 @@ namespace LinBox
 			MatrixHom::map (A_local, A, R);
 			SF (l, A_local, R);
 			std::list <PIR::Element>::iterator l_p;
-			std::vector <integer>::iterator s_p;
+			BlasVector<PID_integer>::iterator s_p;
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p)
 				*s_p = *l_p;
 			report <<  "      Done\n";
@@ -149,7 +149,7 @@ namespace LinBox
 	/* Compute the local smith form at prime p, when modular (p^e) doesnot fit in long
 	*/
 	template <class Matrix>
-	void SmithFormAdaptive::compute_local_big (std::vector<integer>& s, const Matrix& A, long p, long e)
+	void SmithFormAdaptive::compute_local_big (BlasVector<PID_integer>& s, const Matrix& A, long p, long e)
 	{
 
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
@@ -167,7 +167,7 @@ namespace LinBox
 			MatrixHom::map (A_local, A, R);
 			SF (l, A_local, R);
 			std::list <PIR_ntl_ZZ_p::Element>::iterator l_p;
-			std::vector <integer>::iterator s_p;
+			BlasVector<PID_integer>::iterator s_p;
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p)
 				R. convert(*s_p, *l_p);
 			report << "      Done \n";
@@ -180,7 +180,7 @@ namespace LinBox
 	}
 #else
 	template <class Matrix>
-	void SmithFormAdaptive::compute_local_big (std::vector<integer>& s, const Matrix& A, long p, long e)
+	void SmithFormAdaptive::compute_local_big (BlasVector<PID_integer>& s, const Matrix& A, long p, long e)
 	{
 		throw(LinBoxError("you need NTL to use SmithFormAdaptive",__func__,__FILE__,__LINE__));
 	}
@@ -190,7 +190,7 @@ namespace LinBox
 	/* Compute the local smith form at prime p
 	*/
 	template <class Matrix>
-	void SmithFormAdaptive::compute_local (std::vector<integer>& s, const Matrix& A, long p, long e)
+	void SmithFormAdaptive::compute_local (BlasVector<PID_integer>& s, const Matrix& A, long p, long e)
 	{
 
 		linbox_check ((p > 0) && ( e >= 0));
@@ -201,7 +201,7 @@ namespace LinBox
 			compute_local_big (s, A, p, e);
 
 		// normalize the answer
-		for (std::vector<integer>::iterator p_it = s. begin(); p_it != s. end(); ++ p_it)
+		for (BlasVector<PID_integer>::iterator p_it = s. begin(); p_it != s. end(); ++ p_it)
 			*p_it = gcd (*p_it, m);
 	}
 
@@ -211,15 +211,17 @@ namespace LinBox
 	 * r >= 2;
 	 */
 	template <class Matrix>
-	void SmithFormAdaptive::smithFormSmooth (std::vector<integer>& s, const Matrix& A, long r, const std::vector<long>& sev)
+	void SmithFormAdaptive::smithFormSmooth (BlasVector<PID_integer>& s, const Matrix& A, long r, const std::vector<long>& sev)
 	{
+		PID_integer Z;
 		//....
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the k-smooth part of the invariant factors starts(via local and rank):" << std::endl;
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
-		std::vector<long>::const_iterator sev_p; const long* prime_p; std::vector<integer>::iterator s_p;
-		std::vector<integer> local((size_t)order); std::vector<integer>::iterator local_p;
+		std::vector<long>::const_iterator sev_p; const long* prime_p; BlasVector<PID_integer>::iterator s_p;
+		BlasVector<PID_integer> local(Z,(size_t)order);
+		BlasVector<PID_integer>::iterator local_p;
 
 		for (s_p = s. begin(); s_p != s. begin() +(ptrdiff_t) r; ++ s_p)
 			*s_p = 1;
@@ -256,7 +258,7 @@ namespace LinBox
 	 * By EGV+ algorithm or Iliopoulos' algorithm for Smith form.
 	 */
 	template <class Matrix>
-	void SmithFormAdaptive::smithFormRough  (std::vector<integer>& s, const Matrix& A, integer m)
+	void SmithFormAdaptive::smithFormRough  (BlasVector<PID_integer>& s, const Matrix& A, integer m)
 	{
 
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
@@ -272,7 +274,7 @@ namespace LinBox
 			BlasMatrix<PIRModular<int32_t> > A_ilio(R, A.rowdim(), A.coldim());
 			MatrixHom::map (A_ilio, A, R);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
-			int i; std::vector<integer>::iterator s_p;
+			int i; BlasVector<PID_integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ i, ++ s_p)
 				R. convert(*s_p, A_ilio[(size_t)i][(size_t)i]);
 			report << "    Elimination ends.\n";
@@ -292,7 +294,7 @@ namespace LinBox
 			std::vector<typename Ring::Element> out ((size_t)order);
 			sf. smithForm (out, A, primeL);
 			typename std::vector<typename Ring::Element>::iterator out_p;
-			std::vector<integer>::iterator s_p;
+			BlasVector<PID_integer>::iterator s_p;
 			for (s_p = s. begin(), out_p = out. begin(); out_p != out. end(); ++ out_p, ++ s_p)
 				A. field(). convert (*s_p, *out_p);
 			report << "   Big rough part, bisection ends.\n";
@@ -303,7 +305,7 @@ namespace LinBox
 			BlasMatrix<PIR_ntl_ZZ_p> A_ilio(R, A.rowdim(), A.coldim());
 			MatrixHom::map (A_ilio, A, R);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
-			int i; std::vector<integer>::iterator s_p;
+			int i; BlasVector<PID_integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ i, ++ s_p)
 				R. convert(*s_p, A_ilio[(size_t)i][(size_t)i]);
 			report << "    Elimination ends.\n";
@@ -312,7 +314,7 @@ namespace LinBox
 	}
 #else
 	template <class Matrix>
-	void SmithFormAdaptive::smithFormRough  (std::vector<integer>& s, const Matrix& A, integer m)
+	void SmithFormAdaptive::smithFormRough  (BlasVector<PID_integer>& s, const Matrix& A, integer m)
 	{
 		throw(LinBoxError("you need NTL to use SmithFormAdaptive",__func__,__FILE__,__LINE__));
 	}
@@ -323,15 +325,22 @@ namespace LinBox
 	 * r >= 2;
 	 */
 	template <class Matrix>
-	void SmithFormAdaptive::smithFormVal (std::vector<integer>&s, const Matrix& A, long r, const std::vector<long>& sev)
+	void SmithFormAdaptive::smithFormVal (BlasVector<PID_integer>&s, const Matrix& A, long r, const std::vector<long>& sev)
 	{
 		//....
+		PID_integer Z;
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the local smith form at each possible prime:\n";
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
-		std::vector<long>::const_iterator sev_p; const long* prime_p; std::vector<integer>::iterator s_p;
-		std::vector<integer> local((size_t)order); std::vector<integer>::iterator local_p;
+
+		std::vector<long>::const_iterator sev_p;
+		const long* prime_p;
+
+		BlasVector<PID_integer>::iterator s_p;
+		BlasVector<PID_integer> local(Z,(size_t)order);
+
+		BlasVector<PID_integer>::iterator local_p;
 
 		for (s_p = s. begin(); s_p != s. begin() +(ptrdiff_t) r; ++ s_p)
 			*s_p = 1;
@@ -374,7 +383,7 @@ namespace LinBox
 	 * then based on that, compute the rough and smooth part, seperately.
 	 */
 	template <class Matrix>
-	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const Matrix& A)
+	void SmithFormAdaptive::smithForm (BlasVector<PID_integer>& s, const Matrix& A)
 	{
 		//commentator().start ("Smith Form starts", "Smithform");
 
@@ -456,13 +465,13 @@ namespace LinBox
 		}
 		// bonus assigns to its rough part
 		bonus = gcd (bonus, r_mod);
-		std::vector<integer> smooth ((size_t)order), rough ((size_t)order);
+		BlasVector<PID_integer> smooth ((size_t)order), rough ((size_t)order);
 		smithFormRough (rough, DA, bonus);
 		smithFormSmooth (smooth, A, r, e);
 		//fixed the rough largest invariant factor
 		if (r > 0) rough[r-1] = r_mod;
 
-		std::vector<integer>::iterator s_p, rough_p, smooth_p;
+		BlasVector<PID_integer>::iterator s_p, rough_p, smooth_p;
 
 		/*
 		   report << "Smooth part\n";
@@ -492,9 +501,10 @@ namespace LinBox
 	 * then based on that, compute the rough and smooth part, seperately.
 	 */
 	template <class IRing>
-	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const BlasMatrix<IRing>& A)
+	void SmithFormAdaptive::smithForm (BlasVector<PID_integer>& s, const BlasMatrix<IRing>& A)
 	{
 		//commentator().start ("Smith Form starts", "Smithform");
+		PID_integer Z;
 
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
@@ -570,13 +580,13 @@ namespace LinBox
 		}
 		// bonus assigns to its rough part
 		bonus = gcd (bonus, r_mod);
-		std::vector<integer> smooth ((size_t)order), rough ((size_t)order);
+		BlasVector<PID_integer> smooth (Z,(size_t)order), rough (Z,(size_t)order);
 		smithFormSmooth (smooth, A, (long)r, e);
 		smithFormRough (rough, A, bonus);
 		// fixed the rough largest invariant factor
 		if (r > 0) rough[r-1] = r_mod;
 
-		std::vector<integer>::iterator s_p, rough_p, smooth_p;
+		BlasVector<PID_integer>::iterator s_p, rough_p, smooth_p;
 
 		/*
 		   report << "Smooth part\n";
@@ -604,11 +614,10 @@ namespace LinBox
 #endif //__LINBOX_smith_form_adaptive_INL
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -61,7 +61,7 @@ bool testRandom(const Ring& R,
 
 	VectorDomain<Ring> VD (R);
 
-	Vector d, x;
+	Vector d(R), x(R);
 
 	VectorWrapper::ensureDim (d, stream1.n ());
 
@@ -103,7 +103,7 @@ bool testRandom(const Ring& R,
 				}
 
 
-			std::vector<typename Ring::Element> tmp1((size_t)n), tmp2((size_t)n), e((size_t)n);
+			BlasVector<Ring> tmp1(R,(size_t)n), tmp2(R,(size_t)n), e(R,(size_t)n);
 
 			typename BlasMatrix<Ring>::ColIterator col_p;
 
@@ -120,10 +120,12 @@ bool testRandom(const Ring& R,
 
 
 
-			std::vector<integer> xi(A. rowdim());
+			PID_integer Z; //! why switch from Ring ????
+			BlasVector<PID_integer> xi(Z,A. rowdim());
 
 			SF.smithForm (xi, A);
-			typename Vector::iterator x_p; std::vector<integer>::iterator xi_p;
+			typename Vector::iterator x_p;
+			BlasVector<PID_integer>::iterator xi_p;
 			for (x_p = x. begin(), xi_p = xi. begin(); x_p != x. end(); ++ x_p, ++ xi_p)
 				A. field (). init (*x_p, *xi_p);
 
@@ -135,7 +137,7 @@ bool testRandom(const Ring& R,
 			report << '\n';
 
 
-			typename std::vector<typename Ring::Element>::iterator p1, p2;
+			typename BlasVector<Ring>::iterator p1, p2;
 			typename Ring::Element g;
 
 
@@ -227,11 +229,10 @@ int main(int argc, char** argv)
 
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
