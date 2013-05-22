@@ -81,7 +81,7 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 	bool iter_passed = true;
 
 	VectorDomain<Field> VD (F);
-	Vector d;
+	Vector d(F);
 
 	size_t i;
 
@@ -90,9 +90,9 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 	for (i = 0; i < stream.n (); i++)
 		F.init (VectorWrapper::ref<Field> (d, i), 1);
 
-	Blackbox D (F, d);
+	Blackbox D (d);
 
-	Vector v, w;
+	Vector v(F), w(F);
 
 	VectorWrapper::ensureDim (v, stream.n ());
 	VectorWrapper::ensureDim (w, stream.n ());
@@ -149,7 +149,7 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 template <class Field, class Vector>
 static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 {
-	typedef vector <typename Field::Element> Polynomial;
+	typedef BlasVector<Field> Polynomial;
 	typedef LinBox::Diagonal <Field> Blackbox;
 
 	commentator().start ("Testing random minpoly", "testRandomMinpoly", stream.m ());
@@ -158,10 +158,10 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 
 	size_t j;
 	typename Field::Element pi;
-	Polynomial m_D;
+	Polynomial m_D(F);
 	VectorDomain<Field> VD (F);
 
-	Vector d;
+	Vector d(F);
 
 	VectorWrapper::ensureDim (d, stream.n ());
 
@@ -184,7 +184,7 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 		F.write (report, pi);
 		report << endl;
 
-		Blackbox D (F, d);
+		Blackbox D (d);
 		minpoly (m_D, D);
 
 		report << "Minimal polynomial: ";
@@ -231,7 +231,7 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 
 template <class Field, class Vector>
 static bool testRandomLinearity (Field &F,
-				 VectorStream<std::vector<typename Field::Element> > &d_stream,
+				 VectorStream<BlasVector<Field> > &d_stream,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2)
 {
@@ -241,11 +241,11 @@ static bool testRandomLinearity (Field &F,
 
 	VectorDomain<Field> VD (F);
 
-	std::vector<typename Field::Element> d;
+	BlasVector<Field> d(F);
 	VectorWrapper::ensureDim (d, stream1.n ());
 
 	d_stream.next (d);
-	Blackbox D (F, d);
+	Blackbox D (d);
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
@@ -273,7 +273,7 @@ static bool testRandomLinearity (Field &F,
 
 template <class Field, class Vector>
 static bool testRandomTranspose (Field &F,
-				 VectorStream<std::vector<typename Field::Element> > &d_stream,
+				 VectorStream<BlasVector<Field> > &d_stream,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2)
 {
@@ -283,11 +283,11 @@ static bool testRandomTranspose (Field &F,
 
 	VectorDomain<Field> VD (F);
 
-	std::vector<typename Field::Element> d;
+	BlasVector<Field> d(F);
 	VectorWrapper::ensureDim (d, stream1.n ());
 
 	d_stream.next (d);
-	Blackbox D (F, d);
+	Blackbox D (d);
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
@@ -317,7 +317,7 @@ int main (int argc, char **argv)
 	};
 
 	typedef Modular<uint32_t> Field; //C.Pernet: avoids confusion with givaro::uint32_t
-	typedef vector<Field::Element> Vector;
+	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -348,11 +348,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

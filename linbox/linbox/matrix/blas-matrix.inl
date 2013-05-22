@@ -347,7 +347,7 @@ namespace LinBox
 		_row(stream.size ()), _col(stream.dim ()), _rep(_row*_col), _ptr(&_rep[0]),
 		_field (&F), _MD (F), _VD(F)
 	{
-		StreamVector tmp;
+		StreamVector tmp(F);
 		typename BlasMatrix<Field>::RowIterator p;
 
 		VectorWrapper::ensureDim (tmp, stream.dim ());

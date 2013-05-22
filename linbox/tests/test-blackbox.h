@@ -278,7 +278,7 @@ testBlackboxNoRW(BB &A)
 {
 	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
 	typedef typename BB::Field Field;
-	typedef std::vector<typename Field::Element> DenseVector;
+	typedef LinBox::BlasVector<Field> DenseVector;
 	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "testBlackbox on " << A.rowdim() << " by " << A.coldim() << " matrix." << endl;
 
@@ -288,7 +288,7 @@ testBlackboxNoRW(BB &A)
 
 	/* timing tests */
 	{
-		DenseVector x(A.coldim()), y(A.rowdim());
+		DenseVector x(F,A.coldim()), y(F,A.rowdim());
 		for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], i);
 		for(size_t i = 0; i < A.rowdim(); ++i) F.init(y[i], i);
 		//A.apply(y, x);
