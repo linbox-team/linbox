@@ -198,10 +198,9 @@ static bool testDenseMatrixgetEntry (const Field &F, size_t n)
 }
 
 /* getEntry of diagonal matrix */
-template <class Field>
-static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename Field::Element> > &stream)
+template <class Field,class Vector>
+static bool testDiagonalgetEntry (const Field &F, VectorStream<Vector > &stream)
 {
-	typedef vector <typename Field::Element> Vector;
 	typedef Diagonal <Field> Blackbox;
 
 	commentator().start ("Testing diagonal getEntry", "testDiagonalgetEntry", stream.m ());
@@ -212,7 +211,7 @@ static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename F
 	bool ret = true;
 	size_t i;
 
-	Vector d;
+	Vector d(F);
 	typename Field::Element sigma, res, ge;
 
 	VectorWrapper::ensureDim (d, stream.dim ());
@@ -234,7 +233,7 @@ static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename F
 		F.write (report, sigma);
 		report << endl;
 
-		Blackbox D (F, d);
+		Blackbox D (d);
 
 
 		F.init (res, 0);
@@ -270,7 +269,7 @@ bool testSpecialCDgetEntry (const Field &F, size_t n)
 	typedef typename Field::Element Elt;
 	typedef ScalarMatrix<Field> BB;
 	typedef Diagonal<Field> DD;
-    Elt s, x, t, u;
+	Elt s, x, t, u;
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	F.init(x, 0);
 	F.init(s, 2);
@@ -278,8 +277,8 @@ bool testSpecialCDgetEntry (const Field &F, size_t n)
 	F.init(u, 0);
 	F.mul(u, s, t);
 	BB B(F, n, s);
-	vector<Elt> d(n, t);
-	DD D(F, d);
+	BlasVector<Field> d(F,n, t);
+	DD D(d);
 	Compose<DD, BB> CDB (D, B);
 	Compose<BB, DD> CBD (B, D);
 	Compose<DD, DD> CDD (D, D);
@@ -315,7 +314,7 @@ int main (int argc, char **argv)
 	};
 
 	typedef Modular<int32_t> Field;
-	typedef vector<Field::Element> Vector;
+	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -336,11 +335,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
