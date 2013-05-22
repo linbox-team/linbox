@@ -155,7 +155,9 @@ namespace LinBox
 
 		BlasMatrix< typename Blackbox::Field >     BBB (A);
 		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
-		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field> >(BBB));
+		BlasVector<typename Blackbox::Field,Polynomial> P2(A.field(),P);
+		BMD.charpoly (P2, static_cast<BlasMatrix<typename Blackbox::Field> >(BBB));
+		return P = P2.getRep() ;
 	}
 
 }

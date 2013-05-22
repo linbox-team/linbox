@@ -61,7 +61,9 @@ namespace LinBox
 		typedef typename Father_t::Element Element;
 		typedef Element Polynomial;
 
-		GivPolynomialRing () {}
+		typedef Father_t Rep;
+
+		// GivPolynomialRing () {}
 
 		GivPolynomialRing (const Domain& D) : Father_t( GivaroField<Domain>(D) )
 		{}
@@ -93,6 +95,7 @@ namespace LinBox
 
 #ifdef __LINBOX_HAVE_NTL
 }
+
 #include "linbox/field/ntl.h"
 #include "NTL/ZZXFactoring.h"
 namespace LinBox
