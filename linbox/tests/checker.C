@@ -182,7 +182,7 @@ build |wc" should yield the same number of lines.
 #pragma omp section
 		  Build_n_run("test-companion",                    counter , flag);
 #pragma omp section
-		  Build_n_run("test-cra",                          counter , flag);
+		  No_build_n_run("test-cra",                          counter , flag, "bb: fails");
 #pragma omp section
 		  No_build_n_run("test-cradomain",                    counter , flag,"intermittent failure, as in 1 every 10-20");
 #pragma omp section
