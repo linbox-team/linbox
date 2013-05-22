@@ -686,7 +686,7 @@ namespace LinBox
 	void BlasMatrix< _Field>::resize (size_t m, size_t n, const Element& val )
 	{
 #ifndef NDEBUG
-		if (_col != n)
+		if (_col > 0 && _col != n)
 			std::cerr << " ***Warning*** you are resizing a matrix, possibly loosing data. " << std::endl;
 #endif
 		_row = m;
