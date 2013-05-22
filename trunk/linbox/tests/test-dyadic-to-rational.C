@@ -45,7 +45,8 @@ by something over dxa and when the denominator bound (for k) is denBs.
 Values of numerator i from -k-2 to k+2 are checked.
 When dxa^2 <= denBs, 2 should be returned.
 */
-	typedef PID_integer Ring; Ring Z;
+	typedef PID_integer Ring;
+	Ring Z;
 	typedef Ring::Element Int;
 
 //std::cout << "test1(k " << k << ", dxa " << dxa << ", denBs " << denBs << ")" << std::endl;
@@ -54,11 +55,11 @@ When dxa^2 <= denBs, 2 should be returned.
 	// approximate(i*k^2)/k for i = 0..k-1
 	size_t kp = k+2;
 	size_t kp2 = 2*kp;
-	std::vector<Int> nx(kp2);
+	BlasVector<Ring> nx(Z,kp2);
 	for (size_t i = 0; i < kp2 ; ++i)
 		Z.init(nx[i],floor(((double(i)-double(kp))*(double)dxa)/(double)k + 0.5));
 	// |nx[i]/dxa - (i-kp)/k| <= 1/2dxa
-	std::vector<Int> n(kp2);
+	BlasVector<Ring> n(Z,kp2);
 	Int d;
 	bool pass = true;
 	bool claim;
@@ -117,7 +118,8 @@ When dxa^2 <= denBs, 2 should be returned.
 
 bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 {
-	typedef PID_integer Ring; Ring Z;
+	typedef PID_integer Ring;
+	Ring Z;
 	typedef Ring::Element Int;
 	bool pass = true;
 	int claim = 1 ; /* a bool produces warnings and looks weird when compared to 2 */
@@ -148,8 +150,8 @@ bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 	Int d;
 	Int dxs = denB*denB; // 2^64
 	size_t k2 = 10;
-	std::vector<Int> nx;
-	std::vector<Int> n;
+	BlasVector<Ring> nx(Z);
+	BlasVector<Ring> n(Z);
 	nx.resize(k2);
 	n.resize(k2);
 
@@ -170,7 +172,7 @@ bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 
 	pass = pass && claim;
 
-	std::vector<Int> ntrue(k2);
+	BlasVector<Ring> ntrue(Z,k2);
 	Int dentrue = 691617936;
     ntrue[0] = -5*B-372642434;
 	ntrue[1] =  8*B+965263534;
@@ -281,11 +283,10 @@ int main (int argc, char **argv)
 
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
