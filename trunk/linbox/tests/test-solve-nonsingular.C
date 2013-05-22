@@ -96,7 +96,7 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		int k = 10)
 {
 
-	Vector d, x, y;
+	Vector d(R), x(R), y(R);
 	VectorWrapper::ensureDim (d, stream1.n ());
 	VectorWrapper::ensureDim (b, stream1.n ());
 	VectorWrapper::ensureDim (x, stream1.n ());
@@ -218,7 +218,7 @@ template <class Ring, class RSolver, class Matrix, class Vector>
 bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 
 	size_t n = (size_t) b.size();
-	Vector d, tmpb, x, y;
+	Vector d(R), tmpb(R), x(R), y(R);
 	VectorWrapper::ensureDim (d, n);
 	VectorWrapper::ensureDim (x, n);
 	VectorWrapper::ensureDim (y, n);
@@ -237,7 +237,7 @@ bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 		VD.write (report << "Right-hand side:  ", b) << endl;
 	}
 
-	std::vector<typename Ring::Element> num(n);
+	BlasVector<Ring> num(R,n);
 	typename Ring::Element den;
 	Timer timer;
 
@@ -326,7 +326,7 @@ int main(int argc, char** argv) {
 
 	typedef BlasMatrix<Field> Matrix;
 	typedef BlasMatrix<Ring> CommonMatrix;
-	typedef vector<Ring::Element> Vector;
+	typedef BlasVector<Ring> Vector;
 
 	if(mt == Hadamard)
 		n = nextPower2(n);
@@ -334,7 +334,7 @@ int main(int argc, char** argv) {
 	RandomDenseStream<Ring> s1 (R, n, 1), s2 (R, n, 1);
 
 	CommonMatrix A(R, n, n);
-	Vector b(n);
+	Vector b(R,n);
 	generateProblem(R, A, b, s1, s2, mt, (int) k);
 
 	if(run & 1){
