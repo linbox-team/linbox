@@ -1100,7 +1100,8 @@ namespace LinBox {
 		typedef LPS<FMatrix > NumSolver;
 		NumSolver numSolver;
 		bool e = false ;
-		RationalSolverSN<PID_integer, NumSolver > rsolver(PID_integer(), numSolver, e);
+		PID_integer Z;
+		RationalSolverSN<PID_integer, NumSolver > rsolver(Z, numSolver, e);
 
 		int status = rsolver.solve(x, d, B, b);
 		if (status)

@@ -587,7 +587,8 @@ namespace LinBox
 			RadixPrimeProd_.front() = Product;
 			RadixSizes_.resize(1);
 			RadixSizes_.front() =  Givaro::naturallog(Product());
-			RadixResidues_.resize(1,BlasVector<PID_integer>(PID_integer()));
+			PID_integer Z;
+			RadixResidues_.resize(1,BlasVector<PID_integer>(Z));
 			RadixResidues_.front() = d;
 			RadixOccupancy_.resize(1);
 			RadixOccupancy_.front() = true;

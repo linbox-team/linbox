@@ -169,7 +169,8 @@ namespace LinBox {
 
 			loopBound *= (2*mnorm + zw_dmax((int)n, &*(r.begin()), 1));
 
-			BlasVector<PID_integer> numx(PID_integer(),n), tnum(PID_integer(),n); // numerator of binary expansion
+			PID_integer Z;
+			BlasVector<PID_integer> numx(Z,n), tnum(Z,n); // numerator of binary expansion
 			integer denx = 1, tden; // denominator of binary expansion (denx is a power of 2).
 
 			FVector x(field(),n), xs_int(field(),n), xs_frac(field(),n);
@@ -185,7 +186,6 @@ namespace LinBox {
 			HIT = 0; MISS = 0;
 			iterations = 0;
 			integer ay, be;
-			PID_integer Z;
 			int ret;
 
 			bool recon_success = false;
