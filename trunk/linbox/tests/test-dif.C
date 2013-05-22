@@ -77,7 +77,7 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 	bool ret = true;
 	bool iter_passed = true;
 
-	Vector d1, d2, v, w, zero;
+	Vector d1(F), d2(F), v(F), w(F), zero(F);
 	VectorDomain<Field> VD (F);
 
 	VectorWrapper::ensureDim (zero, stream1.dim ());
@@ -94,7 +94,7 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 		stream1.next (d1);
 		//VD.mul (d2, d1, neg_one);
 
-		Blackbox D1 (F, d1); // , D2 (F, d2);
+		Blackbox D1 (d1); // , D2 (d2);
 		Dif <Blackbox, Blackbox> A (D1, D1);
 
 		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -217,11 +217,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
