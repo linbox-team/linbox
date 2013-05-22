@@ -210,7 +210,7 @@ namespace LinBox
 			int len = (int)_lcontainer. length();
 			Integer prime = _lcontainer.prime();//prime
 			const BlasVector<Ring> zero(_r,(size_t)n);
-			LVector digits(len,zero); //Store all p-adic digits
+			LVector digits((size_t)len,zero); //Store all p-adic digits
 			// digits. resize ((size_t)len); //reserve space for all digits
 			Integer modulus; //store current modulus
 			Integer denbound; // store current bound for den

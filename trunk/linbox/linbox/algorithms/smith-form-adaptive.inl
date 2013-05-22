@@ -465,7 +465,8 @@ namespace LinBox
 		}
 		// bonus assigns to its rough part
 		bonus = gcd (bonus, r_mod);
-		BlasVector<PID_integer> smooth ((size_t)order), rough ((size_t)order);
+		PID_integer Z;
+		BlasVector<PID_integer> smooth (Z,(size_t)order), rough (Z,(size_t)order);
 		smithFormRough (rough, DA, bonus);
 		smithFormSmooth (smooth, A, r, e);
 		//fixed the rough largest invariant factor
