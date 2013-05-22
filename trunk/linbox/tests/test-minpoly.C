@@ -56,6 +56,8 @@
 #include "linbox/solutions/minpoly.h"
 #include "linbox/vector/stream.h"
 
+#include "linbox/vector/blas-vector.h"
+
 #include "test-common.h"
 
 using namespace LinBox;
@@ -66,8 +68,8 @@ template <class Field, class Meth>
 static bool testZeroMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& M)
 {
 	commentator().start ("Testing zero minpoly", "testZeroMinpoly");
-	typedef vector <typename Field::Element> Polynomial;
-	Polynomial phi;
+	typedef BlasVector<Field> Polynomial;
+	Polynomial phi(F);
 	SparseMatrix<Field> A(F, n, n);
 	minpoly(phi, A, M);
 
@@ -111,8 +113,8 @@ static bool testZeroMinpoly (Field &F, size_t n)
 template <class Field, class Meth>
 static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& M)
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <typename Field::Element> Polynomial;
+	typedef BlasVector<Field> Vector;
+	typedef BlasVector<Field> Polynomial;
 	typedef ScalarMatrix<Field> Blackbox;
 
 	commentator().start ("Testing identity minpoly", "testIdentityMinpoly");
@@ -122,7 +124,7 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Me
 	//StandardBasisStream<Field, Row> stream (F, n);
 	Blackbox A (F, n, F.one);
 
-	Polynomial phi;
+	Polynomial phi(F);
 
 	//if (symmetrizing) minpolySymmetric (phi, A);
 	//else minpoly (phi, A);
@@ -171,8 +173,8 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false)
 template <class Field, class Meth>
 static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <typename Field::Element> Polynomial;
+	typedef BlasVector<Field> Vector;
+	typedef BlasVector<Field> Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
 	typedef typename Blackbox::Row Row;
 
@@ -188,7 +190,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 	stream.next (v);
 	Blackbox A (F, stream); // first subdiagonal is 1's.
 
-	Polynomial phi(n+1);
+	Polynomial phi(F,n+1);
 
 	minpoly (phi, A, M);
 
@@ -241,7 +243,7 @@ bool testRandomMinpoly (Field                 &F,
 			VectStream &v_stream,
                         const Meth& M)
 {
-	typedef std::vector <typename Field::Element> Polynomial;
+	typedef BlasVector<Field> Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
         typedef typename VectStream::Vector Vector;
 
@@ -269,7 +271,7 @@ bool testRandomMinpoly (Field                 &F,
 		report << "Matrix:" << endl;
 		A.write (report, FORMAT_MAPLE);
 
-		Polynomial phi;
+		Polynomial phi(F);
 
 		minpoly (phi, A, M );
 
@@ -332,11 +334,11 @@ template <class Field, class Meth>
 static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& M)
 {
 	commentator().start ("Testing gram minpoly", "testGramMinpoly");
-	typedef vector <typename Field::Element> Polynomial;
+	typedef BlasVector<Field> Polynomial;
 	integer n;
 	F.characteristic(n); n += 1;
 	if (n > 30) n = 2;
-	Polynomial phi;
+	Polynomial phi(F);
 	typename Field::Element one, zero, neg1; F.init(one, 1); F.init(zero, 0); F.init(neg1); F.neg(neg1, one);
 	BlasMatrix<Field> A(F, n, n);
 	for (size_t i = 0; i < n; ++i) for (size_t j = 0; j < n; ++j) A.setEntry(i, j, one);
@@ -536,11 +538,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
