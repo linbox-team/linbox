@@ -90,6 +90,7 @@ namespace LinBox
 	}
 
 	// The charpoly with Hybrid Method
+	//! @bug not Hybrid at all
 	template<class Polynomial, class Blackbox>
 	Polynomial &charpoly (Polynomial            &P,
 			      const Blackbox                   & A,
@@ -102,6 +103,7 @@ namespace LinBox
 	}
 
 	// The charpoly with Hybrid Method
+	//! @bug not Hybrid at all
 	template<class Polynomial, class Domain>
 	Polynomial &charpoly (Polynomial            &P,
 			      const SparseMatrix<Domain>       & A,
@@ -113,6 +115,7 @@ namespace LinBox
 	}
 
 	// The charpoly with Hybrid Method
+	//! @bug not Hybrid at all
 	template<class Polynomial, class Domain>
 	Polynomial &charpoly (Polynomial            &P,
 			      const BlasMatrix<Domain>         & A,
@@ -145,11 +148,27 @@ namespace LinBox
 	 * @param M
 	 */
 	template < class Polynomial, class Blackbox >
+	BlasVector<typename Blackbox::Field,Polynomial >&
+	charpoly (BlasVector<typename Blackbox::Field,Polynomial > & P,
+		  const Blackbox                                   & A,
+		  const RingCategories::ModularTag                 & tag,
+		  const Method::BlasElimination                    & M)
+	{
+		if (A.coldim() != A.rowdim())
+			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
+
+		BlasMatrix< typename Blackbox::Field >     BBB (A);
+		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
+		BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field> >(BBB));
+		return P  ;
+	}
+	template < class Polynomial, class Blackbox >
 	Polynomial& charpoly (Polynomial                       & P,
 			      const Blackbox                   & A,
 			      const RingCategories::ModularTag & tag,
 			      const Method::BlasElimination    & M)
 	{
+
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
@@ -158,7 +177,10 @@ namespace LinBox
 		BlasVector<typename Blackbox::Field,Polynomial> P2(A.field(),P);
 		BMD.charpoly (P2, static_cast<BlasMatrix<typename Blackbox::Field> >(BBB));
 		return P = P2.getRep() ;
+
+
 	}
+
 
 }
 
