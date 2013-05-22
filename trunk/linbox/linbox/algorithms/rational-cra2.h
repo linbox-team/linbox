@@ -105,7 +105,8 @@ namespace LinBox
 		  \param[out] den  the rational denominator
 		  */
 		template<class Function, class RandPrimeIterator>
-		Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		Integer & operator() (Integer& num, Integer& den
+				      , Function& Iteration, RandPrimeIterator& genprime)
 		{
 			{
 				++genprime;
@@ -163,7 +164,8 @@ namespace LinBox
 		 */
 
 		template<class Function, class RandPrimeIterator>
-		bool operator() (const int k, Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		bool operator() (const int k, Integer& num, Integer& den
+				 , Function& Iteration, RandPrimeIterator& genprime)
 		{
 
 			if ((IterCounter==0) && (k != 0)) {
@@ -231,7 +233,8 @@ namespace LinBox
 		}
 
 		template<template <class, class> class Vect, template<class> class Alloc,  class Function, class RandPrimeIterator>
-		Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den
+							     , Function& Iteration, RandPrimeIterator& genprime)
 		{
 			{
 				++IterCounter;
@@ -323,7 +326,8 @@ namespace LinBox
 		}
 
 		template<class Function, class RandPrimeIterator>
-		BlasVector<PID_integer> & operator() (BlasVector<PID_integer >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		BlasVector<PID_integer> & operator() (BlasVector<PID_integer >& num, Integer& den
+						      , Function& Iteration, RandPrimeIterator& genprime)
 		{
 			{
 				++IterCounter;
@@ -421,7 +425,8 @@ namespace LinBox
 		 * run until terminated if k <0
 		 */
 		template<template <class, class> class Vect, template<class> class Alloc, class Function, class RandPrimeIterator>
-		bool operator() (const int k, Vect<Integer, Alloc<Integer>  >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		bool operator() (const int k, Vect<Integer, Alloc<Integer>  >& num, Integer& den
+				 , Function& Iteration, RandPrimeIterator& genprime)
 		{
 			if ((IterCounter==0) && (k != 0)) {
 				++IterCounter;

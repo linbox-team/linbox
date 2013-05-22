@@ -71,8 +71,8 @@ static bool testNonsingularRatIntSolve (size_t n, unsigned int iterations)
 	SparseMatrix<GMPRationalField > A(Q,n,n);
 
 	PID_integer Z;
-	std::vector<PID_integer::Element> b(n);
-	std::vector<GMPRationalField::Element> true_x(n),x(n);
+	BlasVector<PID_integer> b(Z,n);
+	BlasVector<GMPRationalField> true_x(Q,n),x(Q,n);
 
 	for (i=0; i < (int)iterations; i++) {
 		commentator().startIteration ((unsigned int)i);
@@ -128,8 +128,8 @@ static bool testNonsingularRatRatSolve (size_t n, unsigned int iterations)
 	SparseMatrix<GMPRationalField > A(Q,n,n);
 
 	PID_integer Z;
-	std::vector<GMPRationalField::Element> b(n);
-	std::vector<GMPRationalField::Element> true_x(n),x(n);
+	BlasVector<GMPRationalField> b(Q,n);
+	BlasVector<GMPRationalField> true_x(Q,n),x(Q,n);
 
 	for (i=0; i < (int)iterations; i++) {
 		commentator().startIteration ((unsigned int)i);
@@ -206,11 +206,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

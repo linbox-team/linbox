@@ -1041,7 +1041,8 @@ namespace LinBox
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
 		integer den;
-		BlasVector<PID_integer> num(A.field(),A.coldim());
+		PID_integer Z ;
+		BlasVector<PID_integer> num(Z,A.coldim());
 		rra(num, den, iteration, genprime);
 		typename RatVector::iterator it_x= x.begin();
 		typename BlasVector<PID_integer>::const_iterator it_num= num.begin();
@@ -1066,7 +1067,8 @@ namespace LinBox
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,RatVector,MethodTraits > iteration(A, b, m);
 		integer den;
-		BlasVector<PID_integer> num(A.field(),A.coldim());
+		PID_integer Z;
+		BlasVector<PID_integer> num(Z,A.coldim());
 		rra(num, den, iteration, genprime);
 		typename RatVector::iterator it_x= x.begin();
 		typename BlasVector<PID_integer>::const_iterator it_num= num.begin();
