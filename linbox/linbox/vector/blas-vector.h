@@ -433,6 +433,8 @@ namespace LinBox { /* BlasVector */
 
 		Rep & refRep() { return _rep ; }
 
+		Rep getRep() const { return _rep ; }
+
 		pointer getPointer() const
 		{
 			return _ptr;

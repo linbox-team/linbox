@@ -131,7 +131,7 @@ namespace LinBox
 	 * It stores the 2n-1 values of the first row and column.
 	 * The _PRing template parameter should be a polynomial ring.
 	 * Computations on the matrix will be performed using this polynomial ring.
-	 * The apply is a call to polynomial multiplication and if the poly ring is 
+	 * The apply is a call to polynomial multiplication and if the poly ring is
 	 * FFT based for large n, apply will run in O(n lg(n)) time.
 	 */
 #ifdef __LINBOX_HAVE_NTL
@@ -213,6 +213,10 @@ namespace LinBox
 			TBase(F)
 		{ init_vector(v); }
 
+		Toeplitz( const Field& F,    // Cnstr. with Field and STL vec. of elems
+			  const BlasVector<Field>& v) :
+			TBase(F)
+		{ init_vector(v.getRep()); }
 
 		void   write( std::ostream& os = std::cout) const;        // Print the contents to the screen
 
@@ -252,11 +256,10 @@ namespace LinBox
 #endif //__LINBOX_toeplitz_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

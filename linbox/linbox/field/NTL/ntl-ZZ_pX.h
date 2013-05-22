@@ -152,6 +152,13 @@ namespace LinBox
 			return p;
 		}
 
+		template<class T>
+		Element& init(Element& x, const BlasVector<T>& y) const
+		{
+			return init(x,y.getRep()) ;
+		}
+
+
 		/** Convert p to a vector of coefficients.
 		 * The vector will be ordered the same way NTL does it: the front
 		 * of the vector corresponds to the trailing coefficients, and the back

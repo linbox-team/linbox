@@ -38,6 +38,7 @@
 
 #include "linbox/field/ntl.h"
 #include "linbox/integer.h"
+#include "linbox/vector/blas-vector.h"
 //#include "linbox/blackbox/ntl-toeplitz.h"
 #include "linbox/blackbox/toeplitz.h"
 
@@ -85,7 +86,7 @@ int main(int argc, char* argv[])
 
 	typedef LinBox::NTL_ZZ_p Field;
 	typedef Field::Element element;
-	typedef std::vector<element> Vector;
+	typedef LinBox::BlasVector<Field> Vector;
 
 	// Now we are using the NTL wrapper as the field, call the instance F
 	Field F(q);
@@ -97,7 +98,7 @@ int main(int argc, char* argv[])
 
 	// Use a special constructor to construct a matrix of dim TSIZE
 	size_t TSIZE = 2*(n)-1;
-	Vector tdata(TSIZE);
+	Vector tdata(F,TSIZE);
 	report << "The random vector is:" << std::endl;
 	for (unsigned int i=0; i < tdata.size(); i++) {
 		tdata[i] = NTL::random_ZZ_p() ;
@@ -110,7 +111,7 @@ int main(int argc, char* argv[])
 	TT.write(report);
 
 	// Create an interesting input vector called idata
-	Vector idata((TSIZE+2)/2), odata((TSIZE+2)/2);
+	Vector idata(F,(TSIZE+2)/2), odata(F,(TSIZE+2)/2);
 	report << "A random col vector:\t" << std::endl;
 	for (unsigned int i=0; i < idata.size(); i++) {
 		idata[i] = NTL::random_ZZ_p() ;
@@ -146,11 +147,10 @@ int main(int argc, char* argv[])
 }
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
