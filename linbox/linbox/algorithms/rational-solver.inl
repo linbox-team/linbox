@@ -982,7 +982,8 @@ namespace LinBox
 #ifdef RSTIMING
 				tCheckConsistency.start();
 #endif
-				BlasVector<PID_integer> zt(PID_integer(),rank);
+				PID_integer Z;
+				BlasVector<PID_integer> zt(Z,rank);
 				for (size_t i=0; i<rank; i++)
 					_ring.assign(zt[i], A.getEntry(srcRow[rank], srcCol[i]));
 
@@ -1290,7 +1291,8 @@ namespace LinBox
 				// so it corresponds to b instead of newb
 
 				//q in {0, 1}^rank
-				BlasVector<PID_integer> q(PID_integer(),rank);
+				PID_integer Z;
+				BlasVector<PID_integer> q(Z,rank);
 				typename BlasVector<PID_integer>::iterator q_iter;
 
 				bool allzero;

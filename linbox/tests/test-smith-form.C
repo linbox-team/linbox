@@ -122,7 +122,8 @@ bool testRandom(const Ring& R,
 		}
 
 		typename Vector::iterator x_p;
-		BlasVector<PID_integer> xi(PID_integer(),A. rowdim());
+		PID_integer Z;
+		BlasVector<PID_integer> xi(Z,A. rowdim());
 		BlasVector<PID_integer>::iterator xi_p;
 		std::list<std::pair<integer, size_t> > cpt;
 		smithForm (cpt, A);
