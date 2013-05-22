@@ -181,7 +181,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 
 		stream >> d1;
 
-		BlasVector<Field> d (n);
+		BlasVector<Field> d (F,n);
 		VD.copy (d, d1);
 
 		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);

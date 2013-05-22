@@ -44,12 +44,20 @@ namespace LinBox { /* BlasVector */
 	template<class _Field>
 	class BlasSubvector ;
 
+	template<class _Field, class _Rep>
+	class BlasVector ;
+
 	template<class _Field>
 	class BlasMatrix ;
 
 	template<class _Field>
 	class BlasSubmatrix ;
 
+	template <class Field, class _Rep>
+	struct VectorTraits< BlasVector<Field,_Rep> > {
+		typedef typename VectorCategories::DenseVectorTag VectorCategory;
+		typedef BlasVector<Field,_Rep>                          VectorType;
+	};
 
 
 	template<class _Field, class _blasRep=typename RawVector<typename _Field::Element>::Dense>
@@ -493,6 +501,13 @@ namespace LinBox { /* BlasVector */
 
 	};// BlasVector
 
+} // LinBox
+
+namespace LinBox { /*  BlasSubvector */
+
+
+
+
 	template <class _Field>
 	class BlasSubvector {
 	public :
@@ -680,6 +695,8 @@ namespace LinBox { /* BlasVector */
 	};
 
 } // LinBox
+
+
 
 #include "blas-vector.inl"
 
