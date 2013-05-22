@@ -77,10 +77,10 @@ testBB(F) has been deleted. It assumed a BB could be built from a single size pa
 
 template <class Field, class Blackbox, class Vector>
 static bool
-testTranspose (const Field                             &F,
-	       Blackbox							 &A,
-	       LinBox::VectorStream<Vector>      &stream1,
-	       LinBox::VectorStream<Vector>      &stream2)
+testTranspose (const Field                      &F,
+	       Blackbox				&A,
+	       LinBox::VectorStream<Vector>     &stream1,
+	       LinBox::VectorStream<Vector>     &stream2)
 {
 	bool ret = true;
 
@@ -333,11 +333,10 @@ testBlackbox(BB &A)
 }
 #endif // __LINBOX_test_blackbox_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -60,13 +60,16 @@ namespace LinBox
 
 		typedef typename Blackbox::Field Field;
 		typedef typename Field::Element   Element;
-		typedef std::vector<Element>      Polynomial;
+		typedef BlasVector<Field>      Polynomial;
 
 		/** Constructor from field and dense vector of field elements.
 		 * @param BB   Black box of which to get the inverse
 		 */
 		Inverse (const Blackbox *BB) :
 			_VD (BB->field()), _BB (BB)
+			, _minpoly(BB->field())
+			, _z(BB->field())
+			, _transposeMinpoly(BB->field())
 		{
 			linbox_check ((BB->rowdim ()) == (BB->coldim ()));
 
@@ -81,7 +84,11 @@ namespace LinBox
 		 * another black box
 		 */
 		Inverse (const Inverse &BB) :
-			_VD (BB->field()), _BB (BB._BB), _minpoly (BB._minpoly)
+			_VD (BB->field()), _BB (BB._BB)
+			, _minpoly (BB._minpoly)
+			, _z(BB->field())
+			, _transposeMinpoly(BB->field())
+
 		{
 			_z.resize (_BB->coldim ());
 		}
@@ -102,7 +109,7 @@ namespace LinBox
 			int i;
 
 			if (_minpoly.empty ()) {
-				Polynomial _mp1;
+				Polynomial _mp1(field());
 				Element a0;
 
 				minpoly (_mp1, *_BB);
@@ -143,7 +150,7 @@ namespace LinBox
 			int i;
 
 			if (_transposeMinpoly.empty ()) {
-				Polynomial _mp1;
+				Polynomial _mp1(field());
 				Element a0;
 
 				Transpose<Blackbox> BBT (_BB);
@@ -215,11 +222,10 @@ namespace LinBox
 #endif // __LINBOX_inverse_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

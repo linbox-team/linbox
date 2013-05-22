@@ -280,14 +280,13 @@ applyPoly (const Field                             &F,
 
 /* Evaluate polynomial at a whole vector of points */
 
-template <class Field, class Polynomial>
-vector <typename Field::Element> &
-multiEvalPoly (const Field                            &F,
-	       vector <typename Field::Element>       &w,
-	       const Polynomial                       &phi,
-	       const vector <typename Field::Element> &v)
+template <class Field, class Polynomial, class Vector>
+Vector &
+multiEvalPoly (const Field        &F,
+	       Vector             &w,
+	       const Polynomial   &phi,
+	       const Vector       &v)
 {
-	typedef vector <typename Field::Element> Vector;
 
 	typename Field::Element tmp;
 	int i;
@@ -387,11 +386,10 @@ double chiSquaredCDF (double chi_sqr, double df);
 #endif
 #endif // __LINBOX_test_common_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

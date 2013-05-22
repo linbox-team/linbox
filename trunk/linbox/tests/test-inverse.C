@@ -77,7 +77,7 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 	bool ret = true;
 	bool iter_passed = true;
 
-	Vector d;
+	Vector d(F);
 	VectorDomain<Field> VD (F);
 
 	size_t i;
@@ -87,10 +87,10 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 	for (i = 0; i < stream.n (); i++)
 		F.init (VectorWrapper::ref<Field> (d, i), 1);
 
-	Blackbox D (F, d);
+	Blackbox D (d);
 	Inverse<Blackbox> DT (&D);
 
-	Vector v, w;
+	Vector v(F), w(F);
 
 	VectorWrapper::ensureDim (v, stream.n ());
 	VectorWrapper::ensureDim (w, stream.n ());
@@ -158,7 +158,7 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 	Blackbox H (F, stream.n ());
 	Inverse<Blackbox> HT (&H);
 
-	Vector v, w, z;
+	Vector v(F), w(F), z(F);
 
 	VectorWrapper::ensureDim (v, stream.n ());
 	VectorWrapper::ensureDim (w, stream.n ());
@@ -235,7 +235,7 @@ static bool testVandermondeInverse (const Field           &F,
 
 	Blackbox V (F, x_stream.n (), x_stream.n ());
 
-	Vector x, v, w, z;
+	Vector x(F), v(F), w(F), z(F);
 	typename Field::Element t;
 
 	VectorWrapper::ensureDim (x, x_stream.n ());
@@ -339,7 +339,7 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 
 	size_t j;
 
-	Vector d, di, dt, e, DTe;
+	Vector d(F), di(F), dt(F), e(F), DTe(F);
 
 	VectorWrapper::ensureDim (d, stream.n ());
 	VectorWrapper::ensureDim (di, stream.n ());
@@ -366,7 +366,7 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 		VD.write (report, di);
 		report << endl;
 
-		Blackbox D (F, d);
+		Blackbox D (d);
 		Inverse <Blackbox> DT (&D);
 
 		for (j = 0; j < stream.n (); j++) {
@@ -459,7 +459,7 @@ int main (int argc, char **argv)
 	};
 
 	typedef Modular<uint32_t> Field; //C.Pernet: avoids confusion with givaro::uint32_t
-	typedef vector<Field::Element> Vector;
+	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -482,11 +482,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
