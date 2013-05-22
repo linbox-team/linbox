@@ -46,6 +46,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 		typedef Toeplitz<_Field> TBase;
+		typedef TBase Father_t;
                 using TBase::P;
                 using TBase::rowDim;
                 using TBase::colDim;
@@ -63,12 +64,12 @@ namespace LinBox
 
 		//------- CONSTRUCTORS AND DESTRUCTORS
 
-		~Hankel();                
-		Hankel();// : Toeplitz<_Field>(){}                 
+		~Hankel();
+		// Hankel();// : Toeplitz<_Field>(){}
 
 		// Cnstr. with Field and STL vec. of elems
 		Hankel( const Field F,    const std::vector<Element>&v);// : Toeplitz<_Field>(F, v){}
-	
+
 		Hankel( const Field F,    size_t n);// : Toeplitz<_Field>(F, n) {}
 		//	  Hankel(char *dataFileName ); // read from a file
 		//void init( const Field F,    size_t n) { Toeplitz<_Field>::init(F, n) }
@@ -98,11 +99,10 @@ namespace LinBox
 #endif //__LINBOX_ntl_hankel_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

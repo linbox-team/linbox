@@ -56,6 +56,7 @@ namespace LinBox
 
 
 
+#if 0
 	/*-----------------------------------------------------------------
 	 *----    Default Constructor
 	 *----------------------------------------------------------------*/
@@ -69,6 +70,7 @@ namespace LinBox
 #endif
 
 	}//----- Zero Param Constructor ---- [Tested 6/14/02 -- Works]
+#endif
 
 
 
@@ -78,7 +80,7 @@ namespace LinBox
 	 *----------------------------------------------------------------*/
 	template <class Field>
 	Hankel<Field>::Hankel( const Field F,
-			       const std::vector<typename Field::Element>&v)
+			       const std::vector<typename Field::Element>&v) : Father_t(F)
 	{
 		// Assumes that the input is a vector of ZZ_p else things will FAIL
 		if ( (1 & v.size()) == 0)
