@@ -400,7 +400,9 @@ namespace LinBox
 	template <class Field>
 	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal( const BlasVector<Field>& v) :
 		_field(&v.field()), _n(v.size()), _v(v)
-	{}
+	{
+		// std::cout << _v.size() << ',' << _v.getPointer() << std::endl;
+	}
 
 
 	/*!
@@ -412,7 +414,7 @@ namespace LinBox
 	template <class _Field>
 	inline Diagonal<_Field, VectorCategories::DenseVectorTag>::Diagonal(const Field &F,
 									    const size_t n,
-									    bool nonsing) :
+									    bool nonsing) : //!@bug this should not be bool but enum
 		_field(&F), _n(n), _v(F,n)
 	{
 		typename Field::RandIter r(F);
@@ -428,7 +430,7 @@ namespace LinBox
 	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal(const Field &F,
 									    const size_t n,
 									    typename Field::RandIter& iter) :
-		_field(&F), _n(n), _v(n)
+		_field(&F), _n(n), _v(F,n)
 	{
 #if 0
 		for (typename std::vector<typename Field::Element>::iterator

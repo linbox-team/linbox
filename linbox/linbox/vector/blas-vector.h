@@ -281,8 +281,8 @@ namespace LinBox { /* BlasVector */
 			// Father_t is garbage until then:
 			setIterators();
 
-
 			createBlasVector(V);
+
 			linbox_check(_size==0 || _ptr != NULL);
 		}
 
