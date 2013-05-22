@@ -34,7 +34,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <cassert> // JGD 26.09.2003
+// #include <clinbox_check> // JGD 26.09.2003
 #include "linbox/algorithms/toeplitz-det.h"
 
 namespace LinBox
@@ -47,7 +47,7 @@ namespace LinBox
 	{
 #ifdef DBGMSGS
 		std::cout << "Toeplitz::~Toeplitz():\tDestroyed a " << rowdim() << "x"<< this->coldim()<<
-						     " Toeplitz matrix "<< std::endl;
+		" Toeplitz matrix "<< std::endl;
 #endif
 	}//---- Destructor ---- [Tested 6/14/02 -- Works]
 
@@ -66,7 +66,7 @@ namespace LinBox
 		shape.shape(BlackboxSpecifier::TOEPLITZ);
 #ifdef DBGMSGS
 		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< this->colDim<<
-						    " Toeplitz matrix "<< std::endl;
+		" Toeplitz matrix "<< std::endl;
 #endif
 
 	}//----- Field-only Constructor
@@ -85,14 +85,14 @@ namespace LinBox
 		shape.shape(BlackboxSpecifier::TOEPLITZ);
 #ifdef DBGMSGS
 		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< this->colDim<<
-						    " Toeplitz matrix "<< std::endl;
+		" Toeplitz matrix "<< std::endl;
 #endif
 
 	}//----- Zero Param Constructor ---- [Tested 6/14/02 -- Works]
 
 	template <class _CField, class _PRing>
 	ToeplitzBase<_CField, _PRing>::ToeplitzBase(const _PRing& PF) :
-	 	P(PF), field_(&(PF.getCoeffField()))
+		P(PF), field_(&(PF.getCoeffField()))
 	{
 		sysDim = rowDim = this->colDim = 0;
 		shape.shape(BlackboxSpecifier::TOEPLITZ);
@@ -103,8 +103,10 @@ namespace LinBox
 	 *------ Polynomial constructor
 	 *-----------------------------------------------------------------*/
 	template< class _CField, class _PRing >
-	ToeplitzBase<_CField,_PRing>::ToeplitzBase
-	( const PRing& PF, const Poly& p, size_t m, size_t n ) :
+	ToeplitzBase<_CField,_PRing>::ToeplitzBase ( const PRing& PF
+						     , const Poly& p
+						     , size_t m
+						     , size_t n ) :
 		P(PF), field_(&(PF.getCoeffField())), rowDim(m), colDim(n), pdata(p)
 	{
 		shape.shape(BlackboxSpecifier::TOEPLITZ);
@@ -112,7 +114,7 @@ namespace LinBox
 		if( rowDim >= this->colDim ) sysDim = rowDim;
 		else sysDim = this->colDim;
 
-		assert( P.deg(p) <= rowDim + this->colDim - 2 );
+		linbox_check( P.deg(p) <= rowDim + this->colDim - 2 );
 
 		P.rev(rpdata, pdata);
 
@@ -120,9 +122,9 @@ namespace LinBox
 		if( P.deg(pdata) < rowDim + this->colDim - 2 ) {
 			Poly x;
 			P.init(x,0);
-			Element one;
-			field().init(one,1);
-			P.setCoeff(x, (rowDim + this->colDim - 2 - P.deg(pdata)), one);
+			// Element one;
+			// field().init(one,1);
+			P.setCoeff(x, (rowDim + this->colDim - 2 - P.deg(pdata)), field().one);
 			P.mulin( rpdata, x );
 		}
 
@@ -140,7 +142,7 @@ namespace LinBox
 			std::cout << "There must be an ODD number of entries in the input vector " <<
 			"The length given is " << v.size();
 		}
-		assert( (1 & v.size()) == 1);
+		linbox_check( (1 & v.size()) == 1);
 
 		this->P.init(this->pdata, v);
 		this->P.rev(this->rpdata, this->pdata);
@@ -149,9 +151,9 @@ namespace LinBox
 		if( this->P.deg(this->pdata) < v.size() - 1 ) {
 			Poly x;
 			this->P.init(x,0);
-			Element one;
-			this->field().init(one,1);
-			this->P.setCoeff(x, (v.size() - 1 - this->P.deg(this->pdata)), one);
+			// Element one;
+			// this->field().init(one,1);
+			this->P.setCoeff(x, (v.size() - 1 - this->P.deg(this->pdata)), this->field().one);
 			this->P.mulin( this->rpdata, x );
 		}
 
@@ -161,7 +163,7 @@ namespace LinBox
 
 #ifdef DBGMSGS
 		std::cout << "Toeplitz::Toeplitz(F,V):\tCreated a " << rowDim << "x"<< this->colDim<<
-						       " Toeplitz matrix "<< std::endl;
+		" Toeplitz matrix "<< std::endl;
 #endif
 
 	}//----- Constructor given a vector---- [Tested 6/14/02 -- Works]
@@ -335,11 +337,11 @@ namespace LinBox
 	template <class _PRing>
 	template <class OutVector, class InVector>
 	OutVector& Toeplitz<typename _PRing::CoeffField,_PRing>::apply( OutVector &v_out,
-									  const InVector& v_in) const
+									const InVector& v_in) const
 	{
 
-		assert((v_out.size() == this->rowdim()) &&
-		       (v_in.size() == this->coldim()))  ;
+		linbox_check((v_out.size() == this->rowdim()) &&
+			     (v_in.size() == this->coldim()))  ;
 
 		Poly pOut, pIn;
 		this->P.init( pIn, v_in );
@@ -372,7 +374,7 @@ namespace LinBox
 	template <class _PRing>
 	template<class OutVector, class InVector>
 	OutVector& Toeplitz<typename _PRing::CoeffField,_PRing>::applyTranspose( OutVector &v_out,
-										   const InVector& v_in) const
+										 const InVector& v_in) const
 	{
 
 		if (v_out.size() != this->coldim())
@@ -381,8 +383,8 @@ namespace LinBox
 		if ( v_in.size() != this->rowdim() )
 			std::cout << "\tToeplitz::apply()\t input vector not correct size at "
 			<< v_in.size() << ". System colDim is" <<  this->rowdim() << std::endl;
-		assert((v_out.size() == this->coldim()) &&
-		       (v_in.size() == this->rowdim()))  ;
+		linbox_check((v_out.size() == this->coldim()) &&
+			     (v_in.size() == this->rowdim()))  ;
 
 		Poly pOut, pIn;
 		this->P.init( pIn, v_in );
@@ -410,11 +412,10 @@ namespace LinBox
 
 #endif //__LINBOX_bb_toeplitz_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
