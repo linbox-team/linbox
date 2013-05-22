@@ -102,7 +102,11 @@ namespace LinBox
 		typedef typename Field::Element    Element;
 
 		/// \brief cstor ready for a read.
-		Diagonal(const Field &F) : _field(&F) {}
+		Diagonal(const Field &F) :
+			_field(&F)
+			, _v(F)
+			, _n(0)
+		{}
 
 		/// \brief cstor from vector of elements.
 		// Diagonal(const Field &F, const std::vector<typename Field::Element>& v);

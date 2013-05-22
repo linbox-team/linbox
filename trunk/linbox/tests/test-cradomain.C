@@ -42,13 +42,13 @@
 using namespace LinBox;
 
 struct Interator {
-	std::vector<integer> _v;
+	BlasVector<PID_integer> _v;
 	double maxsize;
 
-	Interator(const std::vector<integer>& v) :
+	Interator(const BlasVector<PID_integer>& v) :
 		_v(v), maxsize(0.0)
 	{
-		for(std::vector<integer>::const_iterator it=_v.begin();
+		for(BlasVector<PID_integer> ::const_iterator it=_v.begin();
 		    it != _v.end(); ++it) {
 			double ds = Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
@@ -56,9 +56,9 @@ struct Interator {
 	}
 
 	Interator(int n, int s) :
-		_v((size_t)n), maxsize(0.0)
+		_v(PID_integer(),(size_t)n), maxsize(0.0)
 	{
-		for(std::vector<integer>::iterator it=_v.begin();
+		for(BlasVector<PID_integer>::iterator it=_v.begin();
 		    it != _v.end(); ++it) {
 			Integer::random<false>(*it, s);
 			double ds = Givaro::naturallog(*it);
@@ -66,7 +66,7 @@ struct Interator {
 		}
 	}
 
-	const std::vector<integer>& getVector()
+	const BlasVector<PID_integer>& getVector()
 	{
 	       	return _v;
        	}
@@ -76,12 +76,12 @@ struct Interator {
 	}
 
 	template<typename Field>
-	std::vector<typename Field::Element>& operator()(std::vector<typename Field::Element>& v,
-							 const Field& F) const
+	BlasVector<Field>& operator()(BlasVector<Field>& v,
+				      const Field& F) const
 	{
 		v.resize(_v.size());
-		std::vector<integer>::const_iterator vit=_v.begin();
-		typename std::vector<typename Field::Element>::iterator eit=v.begin();
+		BlasVector<PID_integer>::const_iterator vit=_v.begin();
+		typename BlasVector<Field>::iterator eit=v.begin();
 		for( ; vit != _v.end(); ++vit, ++eit){
 			F.init(*eit, *vit);
 		}
@@ -93,8 +93,10 @@ struct Interator {
 struct InteratorIt;
 namespace LinBox
 {
-	template<class Element> struct CRATemporaryVectorTrait<InteratorIt , Element> {
-		typedef typename std::vector<double>::iterator Type_t;
+	template<class Field>
+	struct CRATemporaryVectorTrait<InteratorIt , Field> {
+		//! double ???
+		typedef typename BlasVector<Field>::iterator Type_t;
 	};
 }
 
@@ -102,7 +104,7 @@ struct InteratorIt : public Interator {
 
 	mutable std::vector<double> _vectC;
 
-	InteratorIt(const std::vector<integer>& v) :
+	InteratorIt(const BlasVector<PID_integer>& v) :
 		Interator(v), _vectC(v.size())
 	{}
 	InteratorIt(int n, int s) :
@@ -112,7 +114,7 @@ struct InteratorIt : public Interator {
 	template<typename Iterator, typename Field>
 	Iterator& operator()(Iterator& res, const Field& F) const
 	{
-		std::vector<integer>::const_iterator vit=this->_v.begin();
+		BlasVector<PID_integer>::const_iterator vit=this->_v.begin();
 		std::vector<double>::iterator eit=_vectC.begin();
 		for( ; vit != _v.end(); ++vit, ++eit) {
 			F.init(*eit, *vit);
@@ -124,9 +126,11 @@ struct InteratorIt : public Interator {
 };
 
 template<typename Field> struct InteratorBlas;
+
 namespace LinBox
 {
-	template<class Element,class Field> struct CRATemporaryVectorTrait<InteratorBlas<Field> , Element> {
+	template<class Field>
+	struct CRATemporaryVectorTrait<InteratorBlas<Field>, Field > {
 		typedef typename LinBox::BlasMatrix<Field>::pointer Type_t;
 	};
 }
@@ -139,12 +143,20 @@ struct InteratorBlas : public Interator {
 	typename LinBox::UnparametricField<Element> _field;
 	mutable Matrix _vectC;
 
-	InteratorBlas(const std::vector<integer>& v) : Interator(v),_field(), _vectC(_field,(int)v.size(), (int)1) {}
-	InteratorBlas(int n, int s) : Interator(n,s), _field(),_vectC(_field,n,1) {}
+	InteratorBlas(const BlasVector<PID_integer>& v) :
+		Interator(v),
+		_field(),
+		_vectC(_field,(int)v.size(), (int)1)
+	{}
+
+	InteratorBlas(int n, int s) :
+		Interator(n,s),
+		_field(),
+		_vectC(_field,n,1) {}
 
 	Pointer& operator()(Pointer& res, const Field& F) const
 	{
-		std::vector<integer>::const_iterator vit=this->_v.begin();
+		BlasVector<PID_integer>::const_iterator vit=this->_v.begin();
 		res = _vectC.getWritePointer();
 		for( ; vit != _v.end(); ++vit, ++res)
 			F.init(*res, *vit);
@@ -162,14 +174,15 @@ bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-	std::vector<integer> Res(N);
+	PID_integer Z;
+	BlasVector<PID_integer> Res(Z,N);
 	cra( Res, iteration, genprime);
 	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
 	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	else {
 		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
-		std::vector<integer>::const_iterator Rit=Res.begin();
-		std::vector<integer>::const_iterator Oit=iteration.getVector().begin();
+		BlasVector<PID_integer>::const_iterator Rit=Res.begin();
+		BlasVector<PID_integer>::const_iterator Oit=iteration.getVector().begin();
 		for( ; Rit!=Res.end(); ++Rit, ++Oit)
 			if (*Rit != *Oit)
 				report << *Rit <<  " != " << * Oit << std::endl;
@@ -181,17 +194,18 @@ bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t
 template<typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRAbegin(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
 {
+	PID_integer Z;
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-	std::vector<integer> Res(N);
-	std::vector<integer>::iterator ResIT= Res.begin();
+	BlasVector<PID_integer> Res(Z,N);
+	BlasVector<PID_integer>::iterator ResIT= Res.begin();
 	cra( ResIT, iteration, genprime);
 	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
 	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	else {
 		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
-		std::vector<integer>::const_iterator Rit=Res.begin();
-		std::vector<integer>::const_iterator Oit=iteration.getVector().begin();
+		BlasVector<PID_integer>::const_iterator Rit=Res.begin();
+		BlasVector<PID_integer>::const_iterator Oit=iteration.getVector().begin();
 		for( ; Rit!=Res.end(); ++Rit, ++Oit)
 			if (*Rit != *Oit)
 				report << *Rit <<  " != " << * Oit << std::endl;
@@ -226,6 +240,7 @@ bool TestCra(size_t N, int S, size_t seed)
 	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
 	// std::ostream &report = std::cout;
+	PID_integer Z;
 
 	size_t new_seed = (seed?(seed):((size_t)BaseTimer::seed())) ;
 	report << "TestCra(" << N << ',' << S << ',' << new_seed << ')' << std::endl;
@@ -282,7 +297,7 @@ bool TestCra(size_t N, int S, size_t seed)
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
 
 
-        std::vector<integer> PrimeSet;
+        BlasVector<PID_integer>  PrimeSet(Z);
         double PrimeSize = 0.0;
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
             if (std::find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
@@ -291,13 +306,13 @@ bool TestCra(size_t N, int S, size_t seed)
             }
         }
 
-        std::vector<integer>::iterator psit = PrimeSet.begin();
+        BlasVector<PID_integer> ::iterator psit = PrimeSet.begin();
 
 	pass &= TestOneCRA<
             LinBox::GivaroRnsFixedCRA< LinBox::Modular<double> >,
             Interator,
-            std::vector<integer>::iterator,
-            std::vector<integer> >(
+            BlasVector<PID_integer> ::iterator,
+            BlasVector<PID_integer>  >(
                  report, iteration, psit, N, PrimeSet);
 
 
@@ -338,11 +353,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

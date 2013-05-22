@@ -39,7 +39,7 @@
 #include <iostream>
 #include <fstream>
 // #include <vector>
-#include <linbox/vector/blas-vector.h>
+#include "linbox/vector/blas-vector.h"
 
 #include "linbox/linbox-config.h"
 #include "linbox/field/archetype.h"
@@ -313,19 +313,19 @@ multiEvalPoly (const Field                            &F,
 
 template <class Field, class Polynomial>
 Polynomial &
-interpolatePoly (const Field                            &F,
-		 Polynomial                             &f,
-		 const vector <typename Field::Element> &x,
-		 const vector <typename Field::Element> &y)
+interpolatePoly (const Field             &F,
+		 Polynomial              &f,
+		 const LinBox::BlasVector<Field> &x,
+		 const LinBox::BlasVector<Field> &y)
 {
-	typedef vector <typename Field::Element> Vector;
+	typedef LinBox::BlasVector<Field> Vector;
 
 	int n = (int)x.size ();
 
 	// NB I leave one element in g always initialized to 0 as the ficticious
 	// negative-first coefficient. This streamlines some of the code.
 	static const int g_FUDGE = 1;
-	Vector g((size_t)(n + g_FUDGE));
+	Vector g(F,(size_t)(n + g_FUDGE));
 	F.init (g[0], 0);
 
 	typename Field::Element gk, c1, c2;

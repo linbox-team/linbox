@@ -71,7 +71,7 @@ using namespace LinBox;
 template <class Field>
 static bool testIdentity (Field &F, size_t n, int iterations = 1)
 {
-	typedef typename Vector<Field>::Dense Vector;
+	typedef BlasVector<Field> Vector;
 	typedef BlasMatrix<Field> Base;
 	typedef BlasMatrix<Field>           Blackbox;
 
@@ -92,7 +92,7 @@ static bool testIdentity (Field &F, size_t n, int iterations = 1)
 	for (size_t i = 0; i < n; i++)
 		I.setEntry (i, i, one);
 
-	Vector v(n), w(n);
+	Vector v(F,n), w(F,n);
 	typename Field::RandIter r (F);
 
 	for (int i = 0; i < iterations; i++) {
@@ -156,8 +156,8 @@ static bool testIdentity (Field &F, size_t n, int iterations = 1)
 template <class Field>
 static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 {
-	typedef typename Vector<Field>::Dense Vector;
-	typedef vector <typename Field::Element> Polynomial;
+	typedef BlasVector<Field> Vector;
+	typedef BlasVector <Field> Polynomial;
 	typedef BlasMatrix <Field> Blackbox;
 
 	commentator().start ("Testing Vandermonde apply", "testVandermonde", (unsigned int)iterations);
@@ -169,7 +169,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 
 	Blackbox V (F, n, n);
 
-	Vector x(n), v(n), y(n), f(n);
+	Vector x(F,n), v(F,n), y(F,n), f(F,n);
 	typename Field::RandIter r (F);
 	typename Field::Element t;
 
@@ -261,9 +261,9 @@ static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 
 template <class Field>
 static bool testRandomLinearity ( const Field & F,
-				 VectorStream<typename Vector<Field>::Dense> &A_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
+				 VectorStream<BlasVector<Field> > &A_stream,
+				 VectorStream<BlasVector<Field> > &v1_stream,
+				 VectorStream<BlasVector<Field> > &v2_stream)
 {
 	commentator().start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
@@ -295,9 +295,9 @@ static bool testRandomLinearity ( const Field & F,
 
 template <class Field>
 static bool testRandomTranspose (const Field                                 &F,
-				 VectorStream<typename Vector<Field>::Dense> &A_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
+				 VectorStream<BlasVector<Field> > &A_stream,
+				 VectorStream<BlasVector<Field> > &v1_stream,
+				 VectorStream<BlasVector<Field> > &v2_stream)
 {
 	commentator().start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 
@@ -356,11 +356,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
