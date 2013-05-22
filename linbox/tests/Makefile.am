@@ -67,9 +67,9 @@ BASIC_TESTS =  \
         test-smith-form-binary        \
         test-rational-solver          \
         test-rational-solver-adaptive \
+	test-rank                     \
 	test-charpoly
 
-#  test-rank                     \
 #  test-cra                      \
 #
 
