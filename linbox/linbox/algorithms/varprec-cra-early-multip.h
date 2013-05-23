@@ -548,7 +548,7 @@ namespace LinBox
 
 
 		template<class Vect1, class Vect2>
-		Vect1& inverse(Vect1& vz,const Vect2 vf, const Domain D)
+		Vect1& inverse(Vect1& vz,const Vect2& vf, const Domain D)
 		{
 			vz.clear();
 			typename Vect2::const_iterator it = vf.begin();
