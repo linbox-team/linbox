@@ -163,6 +163,7 @@ bool testIMLinverse(const Field &F, size_t m, int iterations)
 	typename Field::RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 
+	BlasMatrixDomain<Field> BMD(F);
 
 	for (int k=0; k<iterations; ++k) {
 
@@ -172,22 +173,47 @@ bool testIMLinverse(const Field &F, size_t m, int iterations)
 	       	Gn.random(det);
 		RandomMatrixWithDet(F,A.getWritePointer(),m,m,det);
 		assert(CheckDet(F,A.getWritePointer(),m,m,det));
-#ifdef __LINBOX_HAVE_IML
-		BlasMatrix<Field> B(F,m,m);
-		B.copy(A);
-		long jdet = IML::mDeterminant(F.characteristic(),B.getWritePointer(),A.rowdim());
-		if (jdet != (long)det){
-			std::cout << jdet <<"!=" <<det << std::endl;
-			ret = false;
-			break;
-		}
-#endif
-		Element idet = iml::mDeterminant(A);
+
+		BlasMatrix<Field> Ac(F,m,m);
+		BlasMatrix<Field> Ad(F,m,m);
+		Ac.copy(A);
+		Ad.copy(A);
+
+		Element idet = iml::mDeterminant(Ac);
 		if (idet != det) {
 			std::cout << idet <<"!=" <<det << std::endl;
 			ret = false;
 			break;
 		}
+
+		iml::mInverseIn(Ad);
+		BlasMatrix<Field> Id(F,m,m);
+		BMD.mul(Id,A,Ad);
+		if (!BMD.isIdentity(Id)) {
+			// A.write(std::cout<<"A:=",true)<<";" <<std::endl;
+			// Ad.write(std::cout<<"B:=",true)<<";" <<std::endl;
+			// Id.write(std::cout<<"Id:=",true)<<";" <<std::endl;
+			ret = false ;
+			break;
+		}
+
+#ifdef __LINBOX_HAVE_IML
+		BlasMatrix<Field> Bc(F,m,m);
+		Bc.copy(A);
+		long jdet = IML::mDeterminant(F.characteristic(),Bc.getWritePointer(),A.rowdim());
+		if (jdet != (long)det){
+			// std::cout << jdet <<"!=" <<det << std::endl;
+			ret = false;
+			break;
+		}
+		BlasMatrix<Field> Bd(F,m,m);
+		Bd.copy(A);
+		IML::mInverse(F.characteristic(),Bd.getWritePointer(),Bd.rowdim());
+		if (! BMD.areEqual(Bd,Ad)) {
+			ret = false;
+		}
+#endif
+
 	}
 
 	commentator().stop (MSG_STATUS(ret),"testIMLinverse");

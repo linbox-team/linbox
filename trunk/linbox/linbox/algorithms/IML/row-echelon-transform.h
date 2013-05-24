@@ -606,24 +606,24 @@ namespace LinBox{ namespace iml{
 	mInverseIn (BlasMatrix<Field> & A)
 	{
 		typedef typename Field::Element Element;
-		Field & F = A.field();
+		Field F = A.field();
 		long i;
 		// long *P, *rp;
-		int n = A.rowdim(),m=A.coldim();
+		size_t n = A.rowdim(),m=A.coldim();
 		std::vector<size_t> P(n+1),rp(n+1);
 		Element d=F.one;
 
 		// P = XMALLOC(long, n+1);
-		for (i = 0; i < n+1; i++) { P[i] = i; }
+		for (i = 0; i < (long)n+1; i++) { P[i] = (size_t)i; }
 		// rp = XCALLOC(long, n+1);
-		// d[0] = 1;
 		RowEchelonTransform<Field> RET(A);
-		RET.reduce(A, 1, 1, 1, 0, P, rp, d);
+		RET.reduce(1, 1, 1, 0, P, rp, d);
+		A.copy(RET.refRed()); //!@bug this interface is buggy.
 		if (rp[0] == n) {
-			for (i = n; i > 0; i--)
-				if (P[i] != i){
-					FFLAS::fswap(n,A.getPointer()+(i-1),n,A.getPointer()+(P[i]-1),n);
-					cblas_dswap(n, A+i-1, n, A+P[i]-1, n);
+			for (i = (long)n; i > 0; i--)
+				if (P[i] != (size_t)i){
+					FFLAS::fswap(F,n,A.getWritePointer()+(i-1),n,A.getWritePointer()+(P[i]-1),n);
+					// cblas_dswap(n, A+i-1, n, A+P[i]-1, n);
 				}
 			// { XFREE(P); XFREE(rp); }
 			return 1;
