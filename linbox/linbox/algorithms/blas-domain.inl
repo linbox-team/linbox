@@ -430,7 +430,7 @@ namespace LinBox
 	class 	BlasMatrixDomainMulAdd<BlasSubmatrix<Field>,BlasSubmatrix<Field>, BlasMatrix<Field> > {
 	public:
 		BlasSubmatrix<Field>&
-		operator()(const Field                              & F,
+		operator()(//const Field                              & F,
 			   BlasSubmatrix<Field>      & D,
 			   const typename Field::Element            & beta,
 			   const BlasSubmatrix<Field>& C,
@@ -446,7 +446,7 @@ namespace LinBox
 
 			D.copy(C);
 
-			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t) C.field(), FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), A.coldim(),
 				      alpha,
 				      A.getPointer(), A.getStride(),
@@ -458,7 +458,7 @@ namespace LinBox
 
 
 		BlasSubmatrix<Field>&
-		operator() (const Field                              & F,
+		operator() (//const Field                              & F,
 			    const typename Field::Element            & beta,
 			    BlasSubmatrix<Field>      & C,
 			    const typename Field::Element            & alpha,
@@ -469,7 +469,7 @@ namespace LinBox
 			linbox_check( C.rowdim() == A.rowdim());
 			linbox_check( C.coldim() == B.coldim());
 
-			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t) C.field(), FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), A.coldim(),
 				      alpha,
 				      A.getPointer(), A.getStride(),
@@ -484,7 +484,7 @@ namespace LinBox
 	class 	BlasMatrixDomainMulAdd<BlasSubmatrix<Field>,BlasSubmatrix<Field>, BlasSubmatrix<Field> > {
 	public:
 		BlasSubmatrix<Field>&
-		operator()(const Field                              & F,
+		operator()(//const Field                              & F,
 			   BlasSubmatrix<Field>      & D,
 			   const typename Field::Element            & beta,
 			   const BlasSubmatrix<Field>& C,
@@ -500,7 +500,7 @@ namespace LinBox
 
 			D.copy(C);
 
-			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t) C.field(), FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), A.coldim(),
 				      alpha,
 				      A.getPointer(), A.getStride(),
@@ -512,7 +512,7 @@ namespace LinBox
 
 
 		BlasSubmatrix<Field>&
-		operator() (const Field                              & F,
+		operator() (//const Field                              & F,
 			    const typename Field::Element            & beta,
 			    BlasSubmatrix<Field>      & C,
 			    const typename Field::Element            & alpha,
@@ -523,7 +523,7 @@ namespace LinBox
 			linbox_check( C.rowdim() == A.rowdim());
 			linbox_check( C.coldim() == B.coldim());
 
-			FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+			FFLAS::fgemm((typename Field::Father_t) C.field(), FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), A.coldim(),
 				      alpha,
 				      A.getPointer(), A.getStride(),

@@ -42,142 +42,10 @@
 #include "fflas-ffpack/utils/Matio.h"
 #include "linbox/algorithms/linbox-tags.h"
 
+#include "test-matrix-utils.h"
+
 using namespace LinBox;
 
-
-/** @brief gives a random number such that \f$0 \leq RIII < s\f$.
- * @details basic..
- * @param [in]  s sup
- * \param [in]  seed seed. If \p 0 (default) we create a new one.
- * @param [out] RIII random integer in the interval  \f$[[0, s-1]]\f$.
- * @return a reference to \p RIII
- */
-size_t & RandIntInInt ( const size_t & s, size_t & RIII, const int & seed = 0 )
-{
-	/*
-	 * if (seed == 0)
-	 *	srandom( (unsigned) time(NULL) );
-	 *else
-	 *	srandom ( seed );
-	 */
-	double alea = rand();
-	RIII          = (size_t) ((double)s * (alea/(RAND_MAX+1.0)));
-	assert(RIII<s);
-	return RIII ;
-}
-
-/*!
- * Creates a random Lapack style Permutation \p P of size \p len.
- */
-void RandomPermutation ( size_t * P, const size_t & len)
-{
-	size_t alea = 0 ;
-	for (size_t i = 0 ; i < len ; ++i) {
-		RandIntInInt(len-i, alea);
-		*(P+i) = i + alea ;
-	}
-	return;
-}
-
-/**
- * @brief Checks we got the right rank.
- *
- * @param F field
- * @param A matrix
- * @param m rows
- * @param n cols
- * @param lda leadin dimmension
- * @param alledged_rank supposedly correct rank.
- *
- * @return \c alledged_rank==rank(A)
- */
-template <class Field>
-bool CheckRank( const Field & F,
-		const typename Field::Element * A,
-		const size_t & m,
-		const size_t & n,
-		const size_t & lda,
-		const size_t & alledged_rank)
-{
-	//                std::cout << " is rank truely " << alledged_rank << " ?" << std::endl;
-	typename Field::Element * Acopy = new typename Field::Element[m*n] ;
-	FFLAS::fcopy(F,m*n,Acopy,1,A,1);
-	size_t true_rank = FFPACK::Rank(F,m,n,Acopy,lda);
-	delete[] Acopy ;
-	//                std::cout << "It is " << true_rank << "." << std::endl;
-	return (alledged_rank == true_rank);
-}
-
-
-/*!
- * Builds a \p m x \p n random matrix of rank \p rank over field \p F.
- */
-template <class Field >
-void RandomMatrixWithRank(const Field & F,
-			  typename Field::Element * A,
-			  const size_t & m,
-			  const size_t & n,
-			  const size_t & rank)
-{
-	assert(rank <= m);
-	assert(rank <= n);
-
-	//                srandom( (unsigned) time(NULL)  ) ; // on met une nouvelle graine.
-	typename Field::RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
-	// typename Field::Element one,zero;
-	// F.init(one,1UL);
-	// F.init(zero,0UL);
-
-	typename Field::Element * B = new typename Field::Element[m*m];
-	typename Field::Element * C = new typename Field::Element[m*n];
-	// Create B a random invertible matrix (m x m format)
-	for (size_t j=0 ; j<m ; ++j){
-		for (size_t i = 0 ; i<j ; ++i)
-			F.assign (*(B+i*m+j),F.zero); // triangulaire
-		F.assign(*(B+j*m+j),F.one  );
-		for (size_t i=j+1; i<m;++i)
-			Gn.random (*(B+i*m+j)); // random mais pas nul.. euh... et sur Z/2 ?? :/
-	}
-	// Create C a random matrix of rank \p ( m x n format)
-	// for (size_t i = 0; i < std::min(rank,m); ++i)
-	for (size_t i = 0; i < rank; ++i){
-		size_t j = 0;
-		for ( ; j < std::min(i,n) ; ++j)
-			F.assign (*(C+i*n+j),F.zero);
-		for ( ; j < n ; ++j)
-			Gn.random (*(C+i*n+j));
-	}
-	for (size_t i = n*rank; i < n*m; ++i){
-		F.assign (*(C+i),F.zero);
-	}
-	assert(CheckRank(F,C,m,n,n,rank));
-	// create P a random permutation of size \p n
-	size_t *P = new size_t[n];
-	//srandom( (unsigned) time(NULL) ) ; // on met une nouvelle graine.
-	RandomPermutation(P,n);
-	// create Q a random permutation of size \p m
-	size_t *Q = new size_t[m];
-	RandomPermutation(Q,m);
-	FFPACK::applyP(F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
-		       n, 0, (int)m, C, n, Q );
-	//PrintLapackPermutation(P,n,std::cout << "P == ");
-	//write_field (F, std::cout<<"C_perm1="<<std::endl, C, m, n, n);
-	FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
-		       m, 0, (int)n, C, n, P );
-	//PrintLapackPermutation(Q,m,std::cout << "Q == ");
-	//write_field (F, std::cout<<"C_perm2="<<std::endl, C, m, n, n);
-	// A = B*C (m x n format), of rank \p rank
-	FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
-		      F.one, B, m, C, n, F.zero, A, n );
-	delete[] B;
-	delete[] C;
-	delete[] P;
-	delete[] Q;
-	assert(CheckRank(F,A,m,n,n,rank));
-	return;
-
-}
 
 
 
@@ -296,7 +164,6 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 	return ret;
 }
 
-
 int main(int argc, char** argv)
 {
 	//-----------------------------------------------------------------------
@@ -336,31 +203,29 @@ int main(int argc, char** argv)
 
 	std::ostream& report = commentator().report();
 
-	report << "\t \033[1;35m>>>\033[0;m \t testing left kernel" << endl ;
+
+	TESTE("left kernel");
 	if (!testNullSpaceBasis (F, m,n,r, iterations, false))
 		pass=false;
-	if (pass) report << "\t \033[1;36m<<<\033[0;m \t left kernel passed :)" << endl; else {report << "\t \033[1;31m!!!\033[0;m \t left kernel failed :(" << endl ; exit(-1);}
-	report << "\t \033[1;35m>>>\033[0;m \t testing right kernel" << endl ;
+	RAPPORT("left kernel");
 
+	TESTE("right kernel");
 	if (!testNullSpaceBasis (F, m,n,r, iterations, true))
 		pass=false;
-	if (pass) report << "\t \033[1;36m<<<\033[0;m \t right kernel passed :)" << endl; else {report << "\t \033[1;31m!!!\033[0;m \t right kernel failed :(" << endl ; exit(-1);}
+	RAPPORT("right kernel");
 
+	// if we are here, no RAPPORT exited
 	report << "\033[1;32m +++ ALL MY TESTS PASSED +++\033[0;m" << endl;
 
 
-	commentator().stop("NullSpace test suite");
+	commentator().stop(MSG_STATUS (pass),"NullSpace test suite");
 	return (pass ? 0 : -1);
 }
 
-
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
