@@ -42,6 +42,7 @@ LDADD = $(GIVARO_LIBS) $(BLAS_LIBS) $(NTL_LIBS)  $(GMP_LIBS) $(LIDIA_LIBS) $(MPF
 
 EXTRA_DIST=            \
 		test-common.C  \
+		test-matrix-utils.h \
 		tests.doxy     \
 		checker.C
 
@@ -68,6 +69,7 @@ BASIC_TESTS =  \
         test-rational-solver          \
         test-rational-solver-adaptive \
 	test-rank                     \
+	test-iml                      \
 	test-charpoly
 
 #  test-cra                      \
@@ -78,7 +80,7 @@ FULLCHECK_TESTS =                 \
         test-bitonic-sort             \
         test-blackbox-block-container \
         test-blas-domain              \
-		test-block-wiedemann		  \
+	test-block-wiedemann		  \
         test-butterfly                \
         test-companion                \
         test-dense                    \
@@ -667,6 +669,10 @@ test_ispossemidef_SOURCES=            \
 
 test_ftrmm_SOURCES =                  \
         test-ftrmm.C
+
+test_iml_SOURCES =                    \
+        test-iml.C
+
 
 # OCL Test
 

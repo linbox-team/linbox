@@ -341,6 +341,7 @@ doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
 linbox/algorithms/gauss/Makefile
+linbox/algorithms/IML/Makefile
 linbox/algorithms/matrix-blas3/Makefile
 linbox/algorithms/opencl-kernels/Makefile
 linbox/blackbox/Makefile
