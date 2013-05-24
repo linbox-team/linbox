@@ -23,9 +23,10 @@ pkgincludesubdir=$(pkgincludedir)/algorithms/IML
 
 
 pkgincludesub_HEADERS =         \
-	iml.h                   \
-	nullspace.inl
+	row-echelon-transform.h \
+	row-echelon-transform.inl
 
+#  nullspace.inl
 
 #  EXTRA_DIST =           \
        #  iml.doxy

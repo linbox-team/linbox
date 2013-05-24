@@ -529,7 +529,7 @@ namespace LinBox
 				      A.getPointer(), A.getStride(),
 				      B.getPointer(), B.getStride(),
 				      beta,
-				      C.getPointer(), C.getStride());
+				      C.getWritePointer(), C.getStride());
 			return C;
 		}
 	};

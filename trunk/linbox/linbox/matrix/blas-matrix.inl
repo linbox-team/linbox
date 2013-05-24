@@ -57,9 +57,10 @@ namespace LinBox
 	template<class _Field>
 	void BlasMatrix<_Field>::createBlasMatrix (const Element * v)
 	{
-		const_pointer iter_v = v ;
-		const_pointer v_end = v+(_col*_row) ;
-		Iterator  iter_addr = this->Begin();
+		Element * iter_v = const_cast<Element*>(v) ;
+		Element * v_end = const_cast<Element*>(v+(_col*_row)) ;
+		// Iterator  iter_addr = this->Begin();
+		Element * iter_addr = _ptr ;
 		for (; v != v_end ; ++v, ++iter_addr)
 			field().init(*iter_addr,*v);
 	}
@@ -254,7 +255,7 @@ namespace LinBox
 		_row((size_t)m),_col((size_t)n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
 		_field(&F),_MD(F),_VD(F)
 	{
-		linbox_check(n>=0);
+		linbox_check(n>=0);// check sgn of T
 		linbox_check(m>=0);
 		_use_fflas = Protected::checkBlasApply(field(),_col);
 	}
@@ -428,7 +429,7 @@ namespace LinBox
 	{
 		// makePointer();
 		_use_fflas = Protected::checkBlasApply(field(), _col);
-		createBlasMatrix(field(),v);
+		createBlasMatrix(v);
 	}
 
 	template <class _Field>
@@ -692,6 +693,7 @@ namespace LinBox
 		_row = m;
 		_col = n;
 		_rep.resize (m * n, val);
+		_ptr = &_rep[0];
 #if 0
 		if (_ptr) {
 			if (m && n)

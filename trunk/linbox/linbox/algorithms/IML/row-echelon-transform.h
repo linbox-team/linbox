@@ -9,6 +9,7 @@
 
 namespace LinBox{ namespace iml{
 
+	//! @bug use BlasPermutation instead of std::vectors
 	template<class FField>
 	class RowEchelonTransform {
 	public:
@@ -150,6 +151,9 @@ namespace LinBox{ namespace iml{
 		std::vector<size_t>  getProf() { return _rowPf ; }
 
 
+
+	}; // RowEchelonTransform
+
 		/*!
 		 * Calling Sequence:
 		 *   Adj <-- mAdjoint(p, A, n)
@@ -177,14 +181,12 @@ namespace LinBox{ namespace iml{
 		 *   n*(p-1)^2 <= 2^53-1 = 9007199254740991
 		 *
 		 */
-
-	}; // RowEchelonTransform
-
+	//! tested
 	template<class Field>
 	BlasMatrix<Field> &
 	mAdjoint (BlasMatrix<Field> & B, const BlasMatrix<Field> &A)
 	{
-		Field & F = A.field();
+		Field F = A.field();
 		linbox_check(A.coldim()==A.rowdim());
 		long i, j, k, r, count=0;
 		typedef typename Field::Element Element;
@@ -217,9 +219,9 @@ namespace LinBox{ namespace iml{
 		}
 		if (r == n) {
 			for (i = r; i > 0; i--) {
-				if (P[i] != i) {
+				if (P[i] != (size_t)i) {
 					++count;
-					FFLAS::fswap(F,n,*B.refEntry(0,i-1),n,*B.refentry(0,P[i]-1),n);
+					FFLAS::fswap(F,n,B.getWritePointer()+(i-1),n,B.getWritePointer()+(P[i]-1),n);
 					// cblas_dswap(n, B+i-1, n, B+P[i]-1, n);
 				}
 			}
@@ -236,28 +238,31 @@ namespace LinBox{ namespace iml{
 		}
 		else {
 			if (n == 1) {
-				B[0] = 1;
+				B.setEntry(0,0,F.one);
+				// B[0]=1;
 				// { XFREE(P); XFREE(rp); }
 				return B;
 			}
 			for (i = 0; i < n; i++) {
-				B.setentry(i,n-1,F.zero());
+				B.setEntry(i,n-1,F.zero);
 				// B[i*n+n-1] = 0;
 			}
-			B[(n-1)*n+(n-1)] = 1;
+			// B[(n-1)*n+(n-1)] = 1;
+			B.setEntry((n-1),(n-1),F.one);
 			for (i = r; i > 0; i--) {
-				if (P[i] != i) {
+				if (P[i] != (size_t)i) {
 					++count;
-					FFLAS::fswap(F,n,*B.refEntry(0,i-1),n,*B.refentry(0,P[i]-1),n);
+					FFLAS::fswap(F,n,B.getWritePointer()+(i-1),n,
+						     B.getWritePointer()+(P[i]-1),n);
 					// cblas_dswap(n, B+i-1, n, B+P[i]-1, n);
 				}
 			}
-			for (j = 1; j < r+1; j++) { if (j != rp[j]) { break; } }
+			for (j = 1; j < r+1; j++) { if ((size_t)j != rp[j]) { break; } }
 			std::vector<Element> C(n);
 			// C = XMALLOC(Double, n);
 			//!@bug I want to apply to the vector column j-1 of A
 			std::vector<Element> Aj(n) ;
-			FFLAS::fcopy(F,n,*Aj[0],1,A.getPointer()+(j-1),n);
+			FFLAS::fcopy(F,n,&(Aj[0]),1,A.getPointer()+(j-1),n);
 			B.apply(C,Aj);
 			// cblas_dgemv(CblasRowMajor, CblasNoTrans, n, n, 1.0, B, n, \
 			A+j-1, n, 0.0, C, 1);
@@ -270,12 +275,12 @@ namespace LinBox{ namespace iml{
 					// B[i*n+k] = 0;
 				}
 			}
-			FFLAS::fger(n-1,n,F.one,B.getPointer(),n,&C[0],1,B.getPointer()+(n-1)*n,1);
+			FFLAS::fger(F,n-1,n,F.one,B.getWritePointer(),n,&C[0],1,B.getWritePointer()+(n-1)*n,1);
 			// cblas_dger(CblasRowMajor, n-1, n, 1.0, C, 1, B+(n-1)*n, 1, B, n);
 			// Dmod(p, B, n-1, n, n);
 			for (i = n-2; i > j-2; i--) {
 				++count;
-				FFLAS::fswap(F,n,*B.refEntry(i,0),n,*B.refentry(i+1,0),n);
+				FFLAS::fswap(F,n,B.getWritePointer()+(i*n),n,B.getWritePointer()+(i+1)*n,n);
 				// cblas_dswap(n, B+i*n, 1, B+(i+1)*n, 1);
 			}
 			if (count % 2 == 0){
@@ -358,16 +363,18 @@ namespace LinBox{ namespace iml{
 	 *
 	 */
 
+	// XXX not tested
 	template<class Field>
 	long
 	mBasis ( const BlasMatrix<Field> & A, const long basis, const long nullsp
 		 , BlasMatrix<Field> &B, BlasMatrix<Field> & N)
 	{
 		typedef typename Field::Element Element;
-		Field & F = A.field();
+		Field F = A.field();
 		BlasMatrixDomain<Field> BMD(F);
-		int n = A.rowdim();
-		int m = A.coldim();
+		int n = (int)A.rowdim();
+		int m = (int)A.coldim();
+		// linbox_check(m == n);
 		long i, r;
 		// long *P, *rp;
 		Element d;
@@ -384,22 +391,23 @@ namespace LinBox{ namespace iml{
 			// A1 = XMALLOC(Double, n*m);
 			// DCopy(n, m, A, m, A1, m);
 			RowEchelonTransform<Field> RET(A1);
-			RET.reduce(A1, 1, 1, 1, 0, P, rp, d);
+			RET.reduce(1, 1, 1, 0, P, rp, d);
 			r = rp[0];
 			// U = XCALLOC(Double, n*n);
 			BlasMatrix<Field> U(F,n,n);
 			//!@bug define diagonal matrix
 			for (i = 0; i < n; i++) {
 				U.setEntry(i,i,F.one);
-				U[i*n+i] = 1;
+				// U[i*n+i] = 1;
 			}
 			if (r != 0) {
 				FFLAS::fcopy(F,n,r,U.getPointer(),n,A1.getPointer(),m);
 				// DCopy(n, r, A1, m, U, n);
 			}
 			for (i = r; i > 0; i--) {
-				if (P[i] != i) {
-					FFLAS::fswap(F,n,U.getPointer()+(i-1),U.getPointer()+(P[i]-1),n);
+				if (P[i] != (size_t)i) {
+					FFLAS::fswap(F,n,U.getWritePointer()+(i-1),n,
+						     U.getWritePointer()+(P[i]-1),n);
 					// cblas_dswap(n, U+i-1, n, U+P[i]-1, n);
 				}
 			}
@@ -410,7 +418,10 @@ namespace LinBox{ namespace iml{
 			else {
 				// *B = XMALLOC(Double, r*m);
 				B.resize(r,m);
-				BMD.mul(B,U,A);
+				BlasSubmatrix<Field> U2(U,0,0,r,n);
+				BlasSubmatrix<Field> A2(A,0,0,n,m);
+				BlasSubmatrix<Field> B2(B,0,0,r,m);
+				BMD.mul(B2,U2,A2);
 				// cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, r, m, n, \
 				1.0, U, n, A, m, 0.0, *B, m);
 				// Dmod(p, *B, r, m, m);
@@ -422,7 +433,7 @@ namespace LinBox{ namespace iml{
 			else {
 				N.resize(n-r,n);
 				// *N = XMALLOC(Double, (n-r)*n);
-				FFLAS::fcopy(F,n-r,n,N,n,U.getPointer()+r*n,n);
+				FFLAS::fcopy(F,n-r,n,N.getWritePointer(),n,U.getPointer()+r*n,n);
 				// DCopy(n-r, n, U+r*n, n, *N, n);;
 			}
 			// { XFREE(A1); XFREE(U); XFREE(P); XFREE(rp); }
@@ -433,7 +444,7 @@ namespace LinBox{ namespace iml{
 			// A1 = XMALLOC(Double, n*m);
 			// DCopy(n, m, A, m, A1, m);
 			RowEchelonTransform<Field> RET(A1);
-			RET.reduce(A1, 1, 0, 1, 0, P, rp, d);
+			RET.reduce( 1, 0, 1, 0, P, rp, d);
 			r = rp[0];
 			if (r == 0) {
 				B.resize(0,0);
@@ -447,14 +458,18 @@ namespace LinBox{ namespace iml{
 			FFLAS::fcopy(F,r,r,U.getPointer(),n,A1.getPointer(),m);
 			// DCopy(r, r, A1, m, U, n);
 			for (i = r; i > 0; i--) {
-				if (P[i] != i) {
+				if (P[i] != (size_t)i) {
 					FFLAS::fswap(F,r,U.getPointer()+(i-1),n,U.getPointer()+(P[i]-1),n);
 					// cblas_dswap(r, U+i-1, n, U+P[i]-1, n);
 				}
 			}
 			// *B = XMALLOC(Double, r*m);
 			B.resize(r,m);
-			BMD.mul(B,U,A);
+			BlasSubmatrix<Field> U2(U,0,0,r,n);
+			BlasSubmatrix<Field> A2(A,0,0,n,m);
+			// BlasSubmatrix<Field> B2(B,0,0,r,m);
+			BMD.mul(B,U2,A2);
+
 			// cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, r, m, n, \
 			1.0, U, n, A, m, 0.0, *B, m);
 			// Dmod(p, *B, r, m, m);
@@ -464,8 +479,8 @@ namespace LinBox{ namespace iml{
 		else if ((basis == 0) && (nullsp == 1))
 		{
 			RowEchelonTransform<Field> RET(A);
-			RET.reduce(A, 0, 1, 1, 0, P, rp, d);
-			r = rp[0];
+			RET.reduce( 0, 1, 1, 0, P, rp, d);
+			r = (long)rp[0];
 			if (r == n) {
 				N.resize(0,0);
 				// *N = NULL;
@@ -475,7 +490,7 @@ namespace LinBox{ namespace iml{
 			N.resize(n-r,n);
 			// *N = XCALLOC(Double, (n-r)*n);
 			if (r != 0) {
-				FFLAS::fcopy(n-r,r,N.getPointer(),n,A.getPointer()+(r*m),m);
+				FFLAS::fcopy(F,n-r,r,N.getWritePointer(),n,A.getPointer()+(r*m),m);
 				// DCopy(n-r, r, A+r*m, m, *N, n);
 			}
 			for (i = 0; i < n-r; i++) {
@@ -484,7 +499,7 @@ namespace LinBox{ namespace iml{
 			}
 			//!@bug use applyP !
 			for (i = r; i > 0; i--) {
-				if (P[i] != i) {
+				if (P[i] != (size_t)i) {
 					FFLAS::fswap(F,n-r,N.getPointer()+(i-1),n,N.getPointer()+(P[i]-1),n);
 					// cblas_dswap(n-r, *N+i-1, n, *N+P[i]-1, n);
 				}
@@ -525,6 +540,7 @@ namespace LinBox{ namespace iml{
 	 *   A is destroyed inplace
 	 *
 	 */
+	//!tested
 	template<class Field>
 	typename Field::Element
 	mDeterminant (BlasMatrix<Field> & A)
@@ -601,6 +617,7 @@ namespace LinBox{ namespace iml{
 	 *
 	 */
 
+	//!tested
 	template<class Field>
 	long
 	mInverseIn (BlasMatrix<Field> & A)
@@ -660,6 +677,7 @@ namespace LinBox{ namespace iml{
 	 *
 	 */
 
+	//!tested
 	template<class Field>
 	long
 	mRank (BlasMatrix<Field> &A)
@@ -717,6 +735,7 @@ namespace LinBox{ namespace iml{
 	 *
 	 */
 
+	// XXX not tested
 	template<class Field>
 	std::vector<size_t>
 	mRankProfile (BlasMatrix<Field>&A)
