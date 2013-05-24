@@ -26,6 +26,7 @@
  * \brief Utilities for tests on matrices
  * @ingroup tests
  * @warning this should better written and shared among the tests
+ * @bug put in \c matrix/random-matrix.h
  */
 
 
@@ -33,6 +34,7 @@
 #define __LINBOX_tests_test_matrix_utils_H
 
 
+#include "fflas-ffpack/utils/Matio.h"
 
 #define RAPPORT(a) \
 	if (pass) {   \
@@ -47,7 +49,8 @@
 	report << "\t \033[1;35m>>>\033[0;m \t testing " << (a) << " :" << endl ;
 
 
-
+#define element_t(Field) \
+typename Field ::Element
 
 
 namespace LinBox { // namespace tests
@@ -85,6 +88,13 @@ void RandomPermutation ( size_t * P, const size_t & len)
 	return;
 }
 
+int permutationDet(size_t *P, const size_t len) {
+	int d = 1 ;
+	for(size_t i = 0 ; i < len ; ++i)
+		if (P[i] != i) d = -d;
+	return d;
+}
+
 /**
  * @brief Checks we got the right rank.
  *
@@ -99,14 +109,14 @@ void RandomPermutation ( size_t * P, const size_t & len)
  */
 template <class Field>
 bool CheckRank( const Field & F,
-		const typename Field::Element * A,
+		const element_t(Field) * A,
 		const size_t & m,
 		const size_t & n,
-		const size_t & lda,
+		const size_t & lda, //!@bug not used
 		const size_t & alledged_rank)
 {
 	//  std::cout << " is rank truely " << alledged_rank << " ?" << std::endl;
-	typename Field::Element * Acopy = new typename Field::Element[m*n] ;
+	element_t(Field) * Acopy = new element_t(Field)[m*n] ;
 	FFLAS::fcopy(F,m*n,Acopy,1,A,1);
 	size_t true_rank = FFPACK::Rank(F,m,n,Acopy,lda);
 	delete[] Acopy ;
@@ -114,13 +124,28 @@ bool CheckRank( const Field & F,
 	return (alledged_rank == true_rank);
 }
 
+template <class Field>
+bool CheckDet( const Field & F,
+	       const element_t(Field) * A,
+	       const size_t & m,
+	       const size_t & lda,
+	       const element_t(Field) & alledged_det)
+{
+	 // std::cout << " is det truely " << alledged_det << " ?" << std::endl;
+	element_t(Field) * Acopy = new element_t(Field)[m*m] ;
+	FFLAS::fcopy(F,m*m,Acopy,1,A,1);
+	element_t(Field) true_det = FFPACK::Det(F,m,m,Acopy,lda);
+	delete[] Acopy ;
+	// std::cout << "It is " << true_det << "." << std::endl;
+	return (alledged_det == true_det);
+}
 
 /*!
  * Builds a \p m x \p n random matrix of rank \p rank over field \p F.
  */
 template <class Field >
 void RandomMatrixWithRank(const Field & F,
-			  typename Field::Element * A,
+			  element_t(Field) * A,
 			  const size_t & m,
 			  const size_t & n,
 			  const size_t & rank)
@@ -131,19 +156,22 @@ void RandomMatrixWithRank(const Field & F,
 	//                srandom( (unsigned) time(NULL)  ) ; // on met une nouvelle graine.
 	typename Field::RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
-	// typename Field::Element one,zero;
+	typedef element_t(Field) Element;
+	// element_t(Field) one,zero;
 	// F.init(one,1UL);
 	// F.init(zero,0UL);
 
-	typename Field::Element * B = new typename Field::Element[m*m];
-	typename Field::Element * C = new typename Field::Element[m*n];
+	Element * B = new Element[m*m];
+	Element * C = new Element[m*n];
 	// Create B a random invertible matrix (m x m format)
 	for (size_t j=0 ; j<m ; ++j){
-		for (size_t i = 0 ; i<j ; ++i)
+		size_t i= 0;
+		for ( ; i<j ; ++i)
 			F.assign (*(B+i*m+j),F.zero); // triangulaire
-		F.assign(*(B+j*m+j),F.one  );
-		for (size_t i=j+1; i<m;++i)
-			Gn.random (*(B+i*m+j)); // random mais pas nul.. euh... et sur Z/2 ?? :/
+		assert(i==j);
+		Gn.random(*(B+j*m+j));
+		for (++i; i<m;++i)
+			G.random (*(B+i*m+j));
 	}
 	// Create C a random matrix of rank \p ( m x n format)
 	// for (size_t i = 0; i < std::min(rank,m); ++i)
@@ -184,6 +212,95 @@ void RandomMatrixWithRank(const Field & F,
 	return;
 
 }
+
+/*!
+ * Builds a \p m x \p m random matrix of determinant \p det over field \p F.
+ */
+template <class Field >
+void RandomMatrixWithDet(const Field & F,
+			 element_t(Field) * A,
+			 const size_t & m,
+			 const size_t & lda, //!@bug not used
+			 const element_t(Field) & det)
+{
+	typename Field::RandIter G(F);
+	NonzeroRandIter<Field> Gn(F,G);
+	typedef element_t(Field) Element;
+
+	Element * B = new Element[m*m];
+	Element * C = new Element[m*m];
+
+	size_t *P = new size_t[m];
+	//srandom( (unsigned) time(NULL) ) ; // on met une nouvelle graine.
+	RandomPermutation(P,m);
+	// create Q a random permutation of size \p m
+	size_t *Q = new size_t[m];
+	RandomPermutation(Q,m);
+
+	int sgn = permutationDet(P,m);
+	sgn *= permutationDet(Q,m);
+
+
+	// Create B a random invertible matrix (m x m format) of determinant \p det
+	for (size_t j=0 ; j<m ; ++j){
+		for (size_t i = 0 ; i<j ; ++i)
+			F.assign (*(B+i*m+j),F.zero); // triangulaire
+		Gn.random(*(B+j*m+j) );
+		for (size_t i=j+1; i<m;++i)
+			G.random (*(B+i*m+j));
+	}
+	{
+		Element dx = F.one;
+		size_t j=0;
+		for ( ; j<m-1 ; ++j){
+			F.mulin(dx,B[j*m+j]);
+		}
+		F.invin(dx);
+		F.mulin(dx,det);
+		if (sgn < 0)
+			F.negin(dx);
+		B[j*m+j]=dx;
+	}
+	// write_field(F,std::cout << "L:=",B,m,m,m,true) << ';'<<std::endl;
+	Element mdet ; F.neg(mdet,det);
+	assert(CheckDet(F,B,m,m,(sgn<0)?mdet:det));
+
+	// Create C a random matrix of rank \p ( m x m format)
+	// for (size_t i = 0; i < std::min(rank,m); ++i)
+	for (size_t i = 0; i < m; ++i){
+		size_t j = 0;
+		for ( ; j < i ; ++j)
+			F.assign (*(C+i*m+j),F.zero);
+		assert(i==j);
+		F.assign (*(C+i*m+j),F.one);
+		for ( ++j ; j < m ; ++j)
+			G.random (*(C+i*m+j));
+	}
+	assert(CheckDet(F,C,m,m,F.one));
+	// write_field(F,std::cout << "U:=",C,m,m,m,true) << ';'<<std::endl;
+	// create P a random permutation of size \p m
+	FFPACK::applyP(F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+		       m, 0, (int)m, C, m, Q );
+	//PrintLapackPermutation(P,m,std::cout << "P == ");
+	// write_field (F, std::cout<<"C_perm1="<<std::endl, C, m, m, m);
+	FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+		       m, 0, (int)m, C, m, P );
+	//PrintLapackPermutation(Q,m,std::cout << "Q == ");
+	//write_field (F, std::cout<<"C_perm2="<<std::endl, C, m, m, m);
+	// A = B*C (m x m format), of rank \p rank
+	FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, m, m,
+		      F.one, B, m, C, m, F.zero, A, m );
+	delete[] B;
+	delete[] C;
+	delete[] Q;
+	delete[] P;
+
+	// write_field(F,std::cout << "A:=",A,m,m,m,true) << ';'<<std::endl;
+	assert(CheckDet(F,A,m,m,det));
+	return;
+
+}
+
 } // LinBox
 
 

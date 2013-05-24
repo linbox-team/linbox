@@ -526,11 +526,11 @@ namespace LinBox{ namespace iml{
 	 *
 	 */
 	template<class Field>
-	long
+	typename Field::Element
 	mDeterminant (BlasMatrix<Field> & A)
 	{
 		typedef typename Field::Element Element;
-		Field  & F = A.field();
+		Field  F = A.field();
 		long i, count=0;
 		size_t n = A.rowdim();
 		linbox_check(n==A.coldim());
@@ -538,7 +538,7 @@ namespace LinBox{ namespace iml{
 		Element det, d;
 
 		// P = XMALLOC(long, n+1);
-		for (i = 0; i < n+1; i++) { P[i] = i; }
+		for (i = 0; i < (long) n+1; i++) { P[i] = i; }
 		// rp = XCALLOC(long, n+1);
 		// d[0] = 1;
 		F.init(d,F.one);
@@ -547,8 +547,8 @@ namespace LinBox{ namespace iml{
 		det = d;
 		if (!F.isZero(det))
 		{
-			for (i = 1; i < n+1; i++) {
-				if (P[i] != i)
+			for (i = 1; i < (long)n+1; i++) {
+				if (P[i] != (size_t)i)
 					++count;
 			}
 			if (count % 2 == 0) {
