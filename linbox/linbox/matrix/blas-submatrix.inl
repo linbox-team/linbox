@@ -194,7 +194,7 @@ namespace LinBox
 	typename BlasSubmatrix< _Field>::pointer
 	BlasSubmatrix< _Field>::getWritePointer()
 	{
-		return (_Mat->getWritePointer())+_off;
+		return (_Mat->getWritePointer()+_off);
 	}
 
 	template <class _Field>
