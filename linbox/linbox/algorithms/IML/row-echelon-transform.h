@@ -363,7 +363,7 @@ namespace LinBox{ namespace iml{
 	 *
 	 */
 
-	// XXX not tested
+	//! tested
 	template<class Field>
 	long
 	mBasis ( const BlasMatrix<Field> & A, const long basis, const long nullsp
@@ -384,7 +384,7 @@ namespace LinBox{ namespace iml{
 		std::vector<size_t> P(n+1),rp(n+1);
 		for (i = 0; i < n+1; i++) { P[i] = i; }
 		// rp = XCALLOC(long, n+1);
-		d = 1;
+		d = F.one;
 		if ((basis == 1) && (nullsp == 1))
 		{
 			BlasMatrix<Field> A1(A);
@@ -401,7 +401,7 @@ namespace LinBox{ namespace iml{
 				// U[i*n+i] = 1;
 			}
 			if (r != 0) {
-				FFLAS::fcopy(F,n,r,U.getPointer(),n,A1.getPointer(),m);
+				FFLAS::fcopy(F,n,r,U.getPointer(),n,RET.refRed().getPointer(),m);
 				// DCopy(n, r, A1, m, U, n);
 			}
 			for (i = r; i > 0; i--) {
@@ -455,7 +455,7 @@ namespace LinBox{ namespace iml{
 			BlasMatrix<Field> U(F,r,n);
 			// U = XCALLOC(Double, r*n);
 			//! @bug A1=rref(A1) ??
-			FFLAS::fcopy(F,r,r,U.getPointer(),n,A1.getPointer(),m);
+			FFLAS::fcopy(F,r,r,U.getPointer(),n,RET.refRed().getPointer(),m);
 			// DCopy(r, r, A1, m, U, n);
 			for (i = r; i > 0; i--) {
 				if (P[i] != (size_t)i) {
@@ -467,8 +467,8 @@ namespace LinBox{ namespace iml{
 			B.resize(r,m);
 			BlasSubmatrix<Field> U2(U,0,0,r,n);
 			BlasSubmatrix<Field> A2(A,0,0,n,m);
-			// BlasSubmatrix<Field> B2(B,0,0,r,m);
-			BMD.mul(B,U2,A2);
+			BlasSubmatrix<Field> B2(B,0,0,r,m);
+			BMD.mul(B2,U2,A2);
 
 			// cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, r, m, n, \
 			1.0, U, n, A, m, 0.0, *B, m);

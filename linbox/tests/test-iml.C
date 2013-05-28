@@ -62,6 +62,9 @@ bool testIMLrank(const Field &F, size_t m, size_t n, size_t rank, int iterations
 
 	typedef typename Field::Element			Element;
 	commentator().start ("Testing Rank from IML","testIMLrank",(unsigned int)iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+
 	bool ret = true;
 	{
 		size_t min = std::min(m,n);
@@ -74,7 +77,7 @@ bool testIMLrank(const Field &F, size_t m, size_t n, size_t rank, int iterations
 
 	for (int k=0; k<iterations; ++k) {
 
-		commentator().progress(k);
+		commentator().startIteration(k);
 		BlasMatrix<Field> A(F,m,n);
 		RandomMatrixWithRank(F,A.getWritePointer(),m,n,rank);
 		assert(CheckRank(F,A.getWritePointer(),m,n,n,rank));
@@ -95,6 +98,8 @@ bool testIMLrank(const Field &F, size_t m, size_t n, size_t rank, int iterations
 			ret = false;
 			break;
 		}
+		commentator().stop("done");
+		commentator().progress();
 		}
 
 	commentator().stop (MSG_STATUS(ret),"testIMLrank");
@@ -102,16 +107,21 @@ bool testIMLrank(const Field &F, size_t m, size_t n, size_t rank, int iterations
 	return ret;
 }
 
-#if 0
+
+#ifdef __LINBOX_HAVE_IML
+// WARNING this test checks equality with IML, not that IML results are correct
 template <class Field>
-bool testIMLnullspace(const Field &F, size_t m, size_t n, size_t rank, int iterations)
+bool testIMLstuff(const Field &F, size_t m, size_t n, size_t rank, int iterations)
 {
 	n += (size_t)Integer::random_lessthan(Integer(10)) ;
 	m += (size_t)Integer::random_lessthan(Integer(10)) ;
 	rank += (size_t)Integer::random_lessthan(Integer(7)) ;
 
 	typedef typename Field::Element			Element;
-	commentator().start ("Testing Rank from IML","testNullSpace",(unsigned int)iterations);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+
+	commentator().start ("Testing RET from IML","testIMLrowechl",(unsigned int)iterations);
 	bool ret = true;
 	{
 		size_t min = std::min(m,n);
@@ -122,41 +132,150 @@ bool testIMLnullspace(const Field &F, size_t m, size_t n, size_t rank, int itera
 			--min;
 	}
 
+	BlasMatrixDomain<Field> BMD(F);
+
 	for (int k=0; k<iterations; ++k) {
 
-		commentator().progress(k);
-		BlasMatrix<Field> A(F,m,n);
-		RandomMatrixWithRank(F,A.getWritePointer(),m,n,rank);
-		assert(CheckRank(F,A.getWritePointer(),m,n,n,rank));
+		commentator().startIteration(k);
+		{ // mAdjoint
+			commentator().report()<< "mAdjoint" << std::endl;
+			BlasMatrix<Field> A(F,m,m);
+			RandomMatrixWithRank(F,A.getWritePointer(),m,m,rank);
+			assert(CheckRank(F,A.getWritePointer(),m,m,m,rank));
 
-#ifdef __LINBOX_HAVE_IML
-		BlasMatrix<Field> B(F,m,n);
-		B.copy(A);
-		long jrank = IML::mRank(F.characteristic(),B.getWritePointer(),A.rowdim(),A.coldim());
-		if (jrank != (long)rank){
-			// std::cout << jrank <<"!=" <<rank << std::endl;
-			ret = false;
-			break;
+			BlasMatrix<Field> B(F,m,m);
+			BlasMatrix<Field> C(F,m,m);
+			B.copy(A);
+			C.copy(A);
+			BlasMatrix<Field> C1(F,m,m);
+			double * B1 = IML::mAdjoint(F.characteristic(),B.getWritePointer(),A.rowdim());
+			iml::mAdjoint(C1,C);
+			BlasMatrix<Field> B2(F,B1,m,m);
+			if (! BMD.areEqual(B2,C1)){
+				ret = false;
+				IML_XFREE(B1);
+				break;
+			}
+			IML_XFREE(B1);
+		}
+
+#if 1
+		{ // mBasis 1,1
+			commentator().report()<< "mBasis 11" << std::endl;
+			BlasMatrix<Field> A(F,m,n);
+			RandomMatrixWithRank(F,A.getWritePointer(),m,n,rank);
+			assert(CheckRank(F,A.getWritePointer(),m,n,n,rank));
+
+			BlasMatrix<Field> B(F,m,n);
+			B.copy(A);
+			double ** B1 = new double*[1], ** B2=new double*[1] ;
+			long r = IML::mBasis(F.characteristic(),B.getWritePointer(),B.rowdim(),B.coldim(),
+					     1,1,B1,B2);
+			BlasMatrix<Field> C1(F,B1[0],r,B.coldim());
+			BlasMatrix<Field> C2(F,B2[0],B.rowdim()-r,B.rowdim());
+			BlasMatrix<Field> A1(F),A2(F);
+			BlasMatrix<Field> C(F,m,n);
+			C.copy(A);
+			iml::mBasis(C,1,1,A1,A2);
+			if (!BMD.areEqual(A1,C1)||!BMD.areEqual(A2,C2)){
+				ret = false;
+				IML_XFREE(*B1);
+			       	IML_XFREE(*B2);
+				IML_XFREE(B1);
+				IML_XFREE(B2);
+				commentator().report()<< ((ret==true)?"ok":"ko") << std::endl;
+				break;
+			}
+			else {
+			IML_XFREE(*B1);
+			IML_XFREE(*B2);
+			IML_XFREE(B1);
+			IML_XFREE(B2);
+			}
+		}
+
+		{ // mBasis 1,0
+			commentator().report()<< "mBasis 10" << std::endl;
+			BlasMatrix<Field> A(F,m,n);
+			RandomMatrixWithRank(F,A.getWritePointer(),m,n,rank);
+			assert(CheckRank(F,A.getWritePointer(),m,n,n,rank));
+
+			BlasMatrix<Field> B(F,m,n);
+			B.copy(A);
+			double ** B1 = new double*[1], ** B2=new double*[1] ;
+			long r = IML::mBasis(F.characteristic(),B.getWritePointer(),B.rowdim(),B.coldim(),
+					     1,0,B1,B2);
+			BlasMatrix<Field> C1(F,B1[0],r,B.coldim());
+			BlasMatrix<Field> A1(F),A2(F);
+			BlasMatrix<Field> C(F,m,n);
+			C.copy(A);
+			iml::mBasis(C,1,0,A1,A2);
+			if (!BMD.areEqual(A1,C1)){
+				ret = false;
+				IML_XFREE(*B1);
+				IML_XFREE(B1);
+				IML_XFREE(B2);
+				commentator().report()<< ((ret==true)?("ok"):("ko")) << std::endl;
+				break;
+			}
+			else {
+			IML_XFREE(*B1);
+			IML_XFREE(B1);
+			IML_XFREE(B2);
+			}
+		}
+
+		{ // mBasis 0,1
+			commentator().report()<< "mBasis 01" << std::endl;
+			BlasMatrix<Field> A(F,m,n);
+			RandomMatrixWithRank(F,A.getWritePointer(),m,n,rank);
+			assert(CheckRank(F,A.getWritePointer(),m,n,n,rank));
+
+			BlasMatrix<Field> B(F,m,n);
+			B.copy(A);
+			double ** B1 = new double*[1], ** B2=new double*[1] ;
+			long r = IML::mBasis(F.characteristic(),B.getWritePointer(),B.rowdim(),B.coldim(),
+					     0,1,B1,B2);
+			BlasMatrix<Field> C2(F,B2[0],B.rowdim()-r,B.rowdim());
+			BlasMatrix<Field> A1(F),A2(F);
+			BlasMatrix<Field> C(F,m,n);
+			C.copy(A);
+			iml::mBasis(C,1,1,A1,A2);
+			if (!BMD.areEqual(A2,C2)){
+				ret = false;
+				IML_XFREE(*B2);
+				IML_XFREE(B1);
+				IML_XFREE(B2);
+				commentator().report()<< ((ret==true)?("ok"):("ko")) << std::endl;
+				break;
+			}
+			else {
+			IML_XFREE(*B2);
+				IML_XFREE(B1);
+			       	IML_XFREE(B2);
+			}
 		}
 #endif
-		size_t irank = iml::mRank(A);
-		if (irank != rank) {
-			// std::cout << irank <<"!=" <<rank << std::endl;
-			ret = false;
-			break;
-		}
+		commentator().stop("done");
+		commentator().progress();
+
 		}
 
+	commentator().stop (MSG_STATUS(ret),"testIMLrank");
 
 	return ret;
 }
 #endif
+
 
 template <class Field>
 bool testIMLinverse(const Field &F, size_t m, int iterations)
 {
 	m += (size_t)Integer::random_lessthan(Integer(10)) ;
 	typedef typename Field::Element			Element;
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
+
 	commentator().start ("Testing det/inv from IML","testIMLinverse",(unsigned int)iterations);
 	bool ret = true;
 
@@ -167,7 +286,7 @@ bool testIMLinverse(const Field &F, size_t m, int iterations)
 
 	for (int k=0; k<iterations; ++k) {
 
-		commentator().progress(k);
+		commentator().startIteration(k);
 		BlasMatrix<Field> A(F,m,m);
 		Element det ;
 	       	Gn.random(det);
@@ -214,6 +333,9 @@ bool testIMLinverse(const Field &F, size_t m, int iterations)
 		}
 #endif
 
+	commentator().stop("done");
+		commentator().progress();
+
 	}
 
 	commentator().stop (MSG_STATUS(ret),"testIMLinverse");
@@ -249,8 +371,9 @@ int main(int argc, char ** argv)
 	};
 
 	parseArguments (argc, argv, args);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
+	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
 	commentator().start("IML/iml test suite", "iml");
-	std::ostream& report = commentator().report();
 
 	Field F (q);
 
@@ -264,6 +387,11 @@ int main(int argc, char ** argv)
 	if (!testIMLinverse (F, m, iterations))
 		pass=false;
 	RAPPORT("IML det");
+
+	TESTE("IML stuff");
+	if (!testIMLstuff(F, m,n,r, iterations))
+		pass=false;
+	RAPPORT("IML stuff");
 
 
 	commentator().stop(MSG_STATUS (pass),"IML/iml test suite");
