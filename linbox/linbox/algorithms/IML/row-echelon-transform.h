@@ -741,38 +741,25 @@ namespace LinBox{ namespace iml{
 	mRankProfile (BlasMatrix<Field>&A)
 	{
 		typedef typename Field::Element Element;
-		Field & F = A.field();
+		Field F = A.field();
 
 		long i;
 		// long *P, *rp;
 		// FiniteField d[1];
-		int n = A.rowdim(),m=A.coldim();
+		int n = (int)A.rowdim(),m=(int)A.coldim();
 		std::vector<size_t> P(n+1),rp(n+1);
 		Element d=F.one;
 
 		// P = XMALLOC(long, n+1);
 		for (i = 0; i < n+1; i++) { P[i] = i; }
 		// rp = XCALLOC(long, n+1);
-		d[0] = 1;
+		d = F.one;
 		RowEchelonTransform<Field> RET(A);
-		RET.reduce( A, 0, 0, 0, 0, P, rp, d);
+		RET.reduce(0, 0, 0, 0, P, rp, d);
 		// r = rp[0];
 		// { XFREE(P); XFREE(rp); }
 		return rp;
 
-#if 0
-		long i;
-		long *P, *rp;
-		FiniteField d[1];
-
-		P = XMALLOC(long, n+1);
-		for (i = 0; i < n+1; i++) { P[i] = i; }
-		rp = XCALLOC(long, n+1);
-		d[0] = 1;
-		RowEchelonTransform(p, A, n, m, 0, 0, 0, 0, P, rp, d);
-		XFREE(P);
-		return rp;
-#endif
 	}
 
 

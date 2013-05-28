@@ -159,7 +159,6 @@ bool testIMLstuff(const Field &F, size_t m, size_t n, size_t rank, int iteration
 			IML_XFREE(B1);
 		}
 
-#if 1
 		{ // mBasis 1,1
 			commentator().report()<< "mBasis 11" << std::endl;
 			BlasMatrix<Field> A(F,m,n);
@@ -255,7 +254,31 @@ bool testIMLstuff(const Field &F, size_t m, size_t n, size_t rank, int iteration
 			       	IML_XFREE(B2);
 			}
 		}
-#endif
+
+		{ // mRankProfile
+			commentator().report()<< "mRankProfile" << std::endl;
+			BlasMatrix<Field> A(F,m,n);
+			RandomMatrixWithRank(F,A.getWritePointer(),m,n,rank);
+			assert(CheckRank(F,A.getWritePointer(),m,n,n,rank));
+
+			BlasMatrix<Field> B(F,m,n);
+			B.copy(A);
+			long * rp = IML::mRankProfile(F.characteristic(),B.getWritePointer(),B.rowdim(),B.coldim());
+			BlasMatrix<Field> C(F,m,n);
+			C.copy(A);
+			std::vector<size_t> Rp = iml::mRankProfile(C);
+			for (size_t i = 0 ; i < n+1 ; ++i){
+				if (rp[i] != (long)Rp[i]) {
+					ret = false;
+					break;
+				}
+			}
+			commentator().report()<< ((ret==true)?("ok"):("ko")) << std::endl;
+			IML_XFREE(rp);
+			if (ret == false)
+				break;
+		}
+
 		commentator().stop("done");
 		commentator().progress();
 
