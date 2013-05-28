@@ -38,15 +38,15 @@
 
 #define RAPPORT(a) \
 	if (pass) {   \
-		report << "\t \033[1;36m<<<\033[0;m \t" << (a) << " passed :)" << endl;  \
+		commentator().report() << "\t \033[1;36m<<<\033[0;m \t" << (a) << " passed :)" << endl;  \
 	} \
         else { \
-		report << "\t \033[1;    31m!!!\033[0;m \t " << (a) << " failed :(" << endl ;  \
+		commentator().report() << "\t \033[1;    31m!!!\033[0;m \t " << (a) << " failed :(" << endl ;  \
 		exit(-1); \
 	}
 
 #define TESTE(a) \
-	report << "\t \033[1;35m>>>\033[0;m \t testing " << (a) << " :" << endl ;
+	commentator().report() << "\t \033[1;35m>>>\033[0;m \t testing " << (a) << " :" << endl ;
 
 
 #define element_t(Field) \
