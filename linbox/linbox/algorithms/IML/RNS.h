@@ -1,7 +1,9 @@
 #ifndef __LINBOX_algorithm_iml_rns_H
 #define __LINBOX_algorithm_iml_rns_H
 
-namespace LinBox { namespace IML {
+#include "linbox/field/unparametric.h"
+
+namespace LinBox { namespace iml {
 
 
 
@@ -45,23 +47,116 @@ namespace LinBox { namespace IML {
 	 *
 	 */
 
-	template<class Container>
+	template<class Container, class FiniteField>
 	class RNS {
 	public:
-		typedef typename Container::Field Field;
-		typedef typename Field::Element Element;
-		typedef typename BlasVector<Field> Vect;
-		Field & F;
-		size_t len ;
-		BlasVector<Field> basis ;
-		BlasVector<Field> cmbasis ;
-		Element cumprod;
-		BlasVector<Field> bdcoeff;
+		typedef typename FiniteField::Element          ModElement;
+		typedef          UnparametricField<ModElement> NoField;
+		typedef typename Container::Field              Field;
+		typedef typename Field::Element                Element;
+		typedef          BlasVector<NoField>           ModVect;
+		typedef typename Field::Element                ModField;
+
+
+	private :
+		size_t RNS_bound ;
+		Integer          mp_maxInter ;
+		size_t              basislen ;
+		NoField                  unF ;
+
+		ModVect     RNSbasis ;
+		ModVect     RNScombi ;
+		ModElement   cumprod ;
+		ModVect      bdcoeff ;
+		Integer      mp_prod ;
+
+		public:
+
+		RNS():
+			RNS_bound(0)
+			, mp_maxInter(-1)
+			, unF()
+			, RNSbasis(unF)
+			, RNScombi(unF)
+			, bdcoeff(unF)
+			, mp_prod(1) //!@bug computed in findRNS
+		{
+		}
+
+		void combBasis();
+
+		void findRNS();
+
+		void setRNSbound(size_t b)
+		{
+			RNS_bound = b ;
+		}
+
+		void setMaxInter(const Integer& m)
+		{
+			mp_maxInter = m;
+		}
+
+		void
+		basisExt ( FiniteField                  & F
+			   , std::vector<Container>     & R
+			   , Container                  & RE
+			   , bool                         pos=false);
+
+		void
+		ChineseRemainder ( BlasVector<Field> &Ac, Integer & mp_Ac
+				  , bool pos = false);
+		void
+		cumProd (ModVect &cumprod,
+			 const ModVect &extbasis);
+
+		void
+		maxInter (const Integer& mp_prod, const Integer& mp_alpha, const long n, Integer& mp_b);
+
+		void
+		maxExtInter (const Integer & mp_alpha, const long n, Integer & mp_b);
+
+		void repBound ();
+
+		void RNSbound (const long n);
+	};
+
+
+	/*
+	 *
+	 * Calling Sequence:
+	 *   basisProd(len, basis, mp_prod)
+	 *
+	 * Summary:
+	 *   Compute the product of elements of a RNS basis
+	 *
+	 * Description:
+	 *   Let a RNS basis be 'basis'. The function computes the product of its
+	 *   elements basis[0]*basis[1]*...*basis[len-1].
+	 *
+	 * Input:
+	 *     len: long, dimension of RNS basis
+	 *   basis: 1-dim typename _Field::Element array length len, RNS basis
+	 *
+	 * Output:
+	 *   mp_prod: mpz_t, product of elements in 'basis'
+	 *
+	 */
+
+	template<class Field>
+	void
+	basisProd (BlasVector<Field> & basis, Integer &  mp_prod)
+	{
+		long i;
+
+		// mpz_set_ui(mp_prod, basis[0]);
+		mp_prod = (Integer)basis[0];
+		for (i = 1; i < basis.size() ; i++) {
+			Integer::mulin(mp_prod,(long int)basis[i]);
+		}
 	}
 
 
-
-// }; // RNS
 
 } // IML
 

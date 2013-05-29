@@ -26,9 +26,9 @@ namespace LinBox{ namespace iml{
 		bool                 _red;
 
 
-		long reduce_rec( BlasMatrix<FField> & A, long m1, long m2, long k,
-				 const long ks, long frows, long lrows, long redflag,
-				 long eterm,
+		size_t reduce_rec( BlasMatrix<FField> & A, size_t m1, size_t m2, size_t k,
+				 const size_t ks, size_t frows, size_t lrows, size_t redflag,
+				 size_t eterm,
 				 std::vector<size_t> & P, std::vector<size_t>&rp,
 				 Element & d);
 
@@ -129,8 +129,8 @@ namespace LinBox{ namespace iml{
 		*
 		*/
 
-		void reduce ( const long frows, const long lrows
-			      , const long redflag, const long eterm, std::vector<size_t>&Q,
+		void reduce ( const size_t frows, const size_t lrows
+			      , const size_t redflag, const size_t eterm, std::vector<size_t>&Q,
 			      std::vector<size_t> &rp, Element &d)
 		{
 
@@ -187,11 +187,11 @@ namespace LinBox{ namespace iml{
 	{
 		Field F = A.field();
 		linbox_check(A.coldim()==A.rowdim());
-		long i, j, k, r, count=0;
+		size_t i, j, k, r, count=0;
 		typedef typename Field::Element Element;
 
 
-		int n = (int) A.rowdim();
+		size_t n =  A.rowdim();
 		std::vector<size_t> P(n+1), rp(n+1);
 		Element det, d;
 
@@ -208,7 +208,7 @@ namespace LinBox{ namespace iml{
 		}
 		if (r == n) {
 			for (i = r; i > 0; i--) {
-				if (P[i] != (size_t)i) {
+				if (P[i] != i) {
 					++count;
 					FFLAS::fswap(F,n,B.getWritePointer()+(i-1),n,B.getWritePointer()+(P[i]-1),n);
 				}
@@ -231,13 +231,13 @@ namespace LinBox{ namespace iml{
 			}
 			B.setEntry((n-1),(n-1),F.one);
 			for (i = r; i > 0; i--) {
-				if (P[i] != (size_t)i) {
+				if (P[i] != i) {
 					++count;
 					FFLAS::fswap(F,n,B.getWritePointer()+(i-1),n,
 						     B.getWritePointer()+(P[i]-1),n);
 				}
 			}
-			for (j = 1; j < r+1; j++) { if ((size_t)j != rp[j]) { break; } }
+			for (j = 1; j < r+1; j++) { if (j != rp[j]) { break; } }
 			std::vector<Element> C(n);
 			//!@bug I want to apply to the vector column j-1 of A
 			std::vector<Element> Aj(n) ;
@@ -332,16 +332,16 @@ namespace LinBox{ namespace iml{
 	 */
 
 	template<class Field>
-	long
-	mBasis ( const BlasMatrix<Field> & A, const long basis, const long nullsp
+size_t
+	mBasis ( const BlasMatrix<Field> & A, const size_t basis, const size_t nullsp
 		 , BlasMatrix<Field> &B, BlasMatrix<Field> & N)
 	{
 		typedef typename Field::Element Element;
 		Field F = A.field();
 		BlasMatrixDomain<Field> BMD(F);
-		int n = (int)A.rowdim();
-		int m = (int)A.coldim();
-		long i, r;
+		size_t n = A.rowdim();
+		size_t m = A.coldim();
+		size_t i, r;
 		Element d;
 
 		std::vector<size_t> P(n+1),rp(n+1);
@@ -362,7 +362,7 @@ namespace LinBox{ namespace iml{
 				FFLAS::fcopy(F,n,r,U.getPointer(),n,RET.refRed().getPointer(),m);
 			}
 			for (i = r; i > 0; i--) {
-				if (P[i] != (size_t)i) {
+				if (P[i] != i) {
 					FFLAS::fswap(F,n,U.getWritePointer()+(i-1),n,
 						     U.getWritePointer()+(P[i]-1),n);
 				}
@@ -399,7 +399,7 @@ namespace LinBox{ namespace iml{
 			//! @bug A1=rref(A1) ??
 			FFLAS::fcopy(F,r,r,U.getPointer(),n,RET.refRed().getPointer(),m);
 			for (i = r; i > 0; i--) {
-				if (P[i] != (size_t)i) {
+				if (P[i] != i) {
 					FFLAS::fswap(F,r,U.getPointer()+(i-1),n,U.getPointer()+(P[i]-1),n);
 				}
 			}
@@ -415,7 +415,7 @@ namespace LinBox{ namespace iml{
 		{
 			RowEchelonTransform<Field> RET(A);
 			RET.reduce( 0, 1, 1, 0, P, rp, d);
-			r = (long)rp[0];
+			r = rp[0];
 			if (r == n) {
 				N.resize(0,0);
 				return r;
@@ -429,7 +429,7 @@ namespace LinBox{ namespace iml{
 			}
 			//!@bug use applyP !
 			for (i = r; i > 0; i--) {
-				if (P[i] != (size_t)i) {
+				if (P[i] != i) {
 					FFLAS::fswap(F,n-r,N.getPointer()+(i-1),n,N.getPointer()+(P[i]-1),n);
 				}
 			}
@@ -437,7 +437,7 @@ namespace LinBox{ namespace iml{
 		}
 		else {
 			throw("In mBasis, both basis and nullsp are zero.");
-			return -1;
+			return 0;
 		}
 	}
 
@@ -474,21 +474,21 @@ namespace LinBox{ namespace iml{
 	{
 		typedef typename Field::Element Element;
 		Field  F = A.field();
-		long i, count=0;
+		size_t i, count=0;
 		size_t n = A.rowdim();
 		linbox_check(n==A.coldim());
 		std::vector<size_t> P(n+1), rp(n+1);
 		Element det, d;
 
-		for (i = 0; i < (long) n+1; i++) { P[i] = i; }
+		for (i = 0; i <  n+1; i++) { P[i] = i; }
 		F.init(d,F.one);
 		RowEchelonTransform<Field> RET(A);
 		RET.reduce(0, 0, 0, 1, P, rp, d);
 		det = d;
 		if (!F.isZero(det))
 		{
-			for (i = 1; i < (long)n+1; i++) {
-				if (P[i] != (size_t)i)
+			for (i = 1; i < n+1; i++) {
+				if (P[i] != i)
 					++count;
 			}
 			if (count % 2 == 0) {
@@ -539,23 +539,23 @@ namespace LinBox{ namespace iml{
 	 */
 
 	template<class Field>
-	long
+size_t
 	mInverseIn (BlasMatrix<Field> & A)
 	{
 		typedef typename Field::Element Element;
 		Field F = A.field();
-		long i;
+		size_t i;
 		size_t n = A.rowdim(),m=A.coldim();
 		std::vector<size_t> P(n+1),rp(n+1);
 		Element d=F.one;
 
-		for (i = 0; i < (long)n+1; i++) { P[i] = (size_t)i; }
+		for (i = 0; i < n+1; i++) { P[i] = i; }
 		RowEchelonTransform<Field> RET(A);
 		RET.reduce(1, 1, 1, 0, P, rp, d);
 		A.copy(RET.refRed()); //!@bug this interface is buggy.
 		if (rp[0] == n) {
-			for (i = (long)n; i > 0; i--)
-				if (P[i] != (size_t)i){
+			for (i = n; i > 0; i--)
+				if (P[i] != i){
 					FFLAS::fswap(F,n,A.getWritePointer()+(i-1),n,A.getWritePointer()+(P[i]-1),n);
 				}
 			return 1;
@@ -592,18 +592,18 @@ namespace LinBox{ namespace iml{
 	 */
 
 	template<class Field>
-	long
+size_t
 	mRank (BlasMatrix<Field> &A)
 	{
 		typedef typename Field::Element Element;
 		Field F = A.field();
 
-		long i, r;
+		size_t i, r;
 		size_t n = A.rowdim(),m=A.coldim();
 		std::vector<size_t> P(n+1),rp(n+1);
 		Element d=F.one;
 
-		for (i = 0; i < (long)n+1; i++) { P[i] = i; }
+		for (i = 0; i < n+1; i++) { P[i] = i; }
 		d = 1;
 		RowEchelonTransform<Field> RET(A);
 		RET.reduce( 0, 0, 0, 0, P, rp, d);
@@ -650,8 +650,8 @@ namespace LinBox{ namespace iml{
 		typedef typename Field::Element Element;
 		Field F = A.field();
 
-		long i;
-		int n = (int)A.rowdim(),m=(int)A.coldim();
+		size_t i;
+		size_t n = A.rowdim(),m=A.coldim();
 		std::vector<size_t> P(n+1),rp(n+1);
 		Element d=F.one;
 

@@ -1,28 +1,29 @@
 #ifndef __LINBOX_algorithm_iml_rns_INL
 #define __LINBOX_algorithm_iml_rns_INL
 
+namespace LinBox { namespace iml {
 
 /*
  *
  * Calling Sequence:
- *   basisExt(len, n, p, basis, cmbasis, cumprod, bdcoeff, R, RE)
+ *   basisExt(len, n, p, RNSbasis, RNScombi, cumprod, bdcoeff, R, RE)
  *
  * Summary:
  *   Given a representation of a matrix/vector in some RNS, extend to compute
  *   the representation in another positive integer
  *
  * Description:
- *   Let R be the representation of a matrix/vector M in a residue basis
- *   'basis', i.e., R[i] = mod(M, basis[i]) (i = 0..len-1). The function
+ *   Let R be the representation of a matrix/vector M in a residue RNSbasis
+ *   'basis', i.e., R[i] = mod(M, RNSbasis[i]) (i = 0..len-1). The function
  *   computes the representation of M in another positive integer p,
  *   RE = mod(M, p) using Garner's algorithm. 'mod' represents positive modular
  *   operation.
  *
- *   Let q be product of all elements in the RNS basis. Every entry m in M
+ *   Let q be product of all elements in the RNS RNSbasis. Every entry m in M
  *   satisfies -(q-1)/2 <= m <= (q-1)/2. That is, M has both positive entries
  *   and negative entries.
  *
- *   if Pos : Let q be product of all elements in the RNS basis. Every entry m in M
+ *   if Pos : Let q be product of all elements in the RNS RNSbasis. Every entry m in M
  *   satisfies 0 <= m <= q-1. That is, M only contains non-negative entries.
 
  *
@@ -30,17 +31,17 @@
  *   informations as input, which are listed below.
  *
  * Input:
- *       len: long, dimension of RNS basis
+ *       RNSbasislen: long, dimension of RNS RNSbasis
  *         n: long, length of array RE
  *         p: typename _Field::Element, modulus
- *     basis: 1-dim typename _Field::Element array length len, RNS basis
- *   cmbasis: 1-dim typename _Field::Element array length len, computed by function
- *            combBasis, inverses of special combination of RNS basis
+ *     RNSbasis: 1-dim typename _Field::Element array length basislen, RNS RNSbasis
+ *   RNScombi: 1-dim typename _Field::Element array length basislen, computed by function
+ *            combBasis, inverses of special combination of RNS RNSbasis
  *   cumprod: (only in non Pos) double, computed by function cumProd,
- *            (-basis[0]*basis[1]*...*basis[len-1]) mod p
- *   bdcoeff: 1-dim typename _Field::Element array length len, computed by function repBound
- *         R: 1-dim Double array length n*len, representation of a len x n
- *            matrix, R[i]=mod(M, basis[i]) (i=0..len-1)
+ *            (-RNSbasis[0]*RNSbasis[1]*...*RNSbasis[basislen-1]) mod p
+ *   bdcoeff: 1-dim typename _Field::Element array length basislen, computed by function repBound
+ *         R: 1-dim Double array length n*basislen, representation of a basislen x n
+ *            matrix, R[i]=mod(M, RNSbasis[i]) (i=0..basislen-1)
  *
  * Output:
  *   RE: 1-dim Double array length n, RE = mod(M, p), the space of RE
@@ -49,106 +50,98 @@
  * Precondition:
  *   t <= 2^53-1, where t is the maximal intermidiate value arised in this
  *   function,
- *   t = max(2*(basis[len-1]-1)^2, (p-1)^2+basis[len-1]-1)
+ *   t = max(2*(RNSbasis[basislen-1]-1)^2, (p-1)^2+RNSbasis[basislen-1]-1)
 
  * Precondition if Positive:
  *   t <= 2^53-1, where t is the maximal intermidiate value arised in this
- *   function, t = max(2*(basis[len-1]-1)^2, (p-1)^2+basis[len-1]-1)
+ *   function, t = max(2*(RNSbasis[basislen-1]-1)^2, (p-1)^2+RNSbasis[basislen-1]-1)
 
  *
  */
 
 
-template<class Container, class _Field>
+template<class Container, class FiniteField>
 void
-basisExtPos (//const long                                    &len
-	  // , const long  &n
-	  // , const typename _Container::Field::Element   &p
-	    _Field & Fp
-	  // , const BlasVector<Container::Field>          &basis
-	  // , const BlasVector<Container::Field>          &cmbasis
-	  // , const typename _Container::Field::Element   &cumprod
-	  // , const BlasVector<Container::Field>          &bdcoeff
-	  , std::vector<Container>                      &R
-	  , Container                                   &RE)
+RNS<Container,FiniteField>::basisExt ( FiniteField & Fp
+				       , std::vector<Container>                      &R
+				       , Container                                   &RE
+				       , bool                                         pos )
 {
-	bool pos = FieldTraits<_Field>::Rep == Positive;
-	typedef typename Container::Field   Field;
-	typedef typename Field::Element   Element;
-	typedef typename BlasVector<Field>  Vect;
+	// bool pos = FieldTraits<_Field>::Rep == Positive;
 
 	long i, j;
+	long n = RE.size();
 	Element temp;
 	Element p = Fp.characteristic();
-	UnparametricField<Element> UF ;
 	// Element q, qinv;
 	// Double **U;
 	// const typename _Field::Element *q, *qinv;
 
-	const Vect & q    = basis; //!@bug no copy ?
-	const Vect & qinv = cmbbasis;
-	// q = basis;
-	// qinv = cmbasis;
+	const ModVect & q    = RNSbasis; //!@bug no copy ?
+	const ModVect & qinv = RNScombi;
+	// q = RNSbasis;
+	// qinv = RNScombi;
 
 	/* if p = q[i] then just copy the corresponding column to RE */
-	//! @todo order basis ?
-	for (i = 0; i < len; i++) {
+	//! @todo order RNSbasis ?
+	for (i = 0; i < basislen ; i++) {
 		if (p == q[i]) {
-			Re = R[i] ;
+		RE = R[i] ;
 			// cblas_dcopy(n, R[i], 1, RE, 1);
 			return;
 		}
 	}
+	Field F = RE.field();
 
 	const Container Z(F);
-	std::vector<Container> U(len,Z);
-	// U = XMALLOC(Double *, len);
-	// for (i = 0; i < len; i++) { U[i] = XMALLOC(Double, n); }
+	std::vector<Container> U(basislen,Z);
+	// U = XMALLOC(Double *, basislen);
+	// for (i = 0; i < basislen; i++) { U[i] = XMALLOC(Double, n); }
 
 	/* compute the coefficients of mix radix in positive representation by
 	   inplacing modular matrix U */
 	//!@bug copy method for blas things (vector/blas and sub)
 	U[0].resize(R[0]);
-	FFLAS::fcopy(UF,
+	FFLAS::fcopy(unF,
 		     U[0].getWritePointer(),1,
 		     R[0].getPointer(),1);
 	// cblas_dcopy(n, R[0], 1, U[0], 1);
 
-	for (i = 1; i < len; i++) {
-		Field F(q[i]);
-		FFLAS::fcopy(UF,
+	for (i = 1; i < basislen; i++) {
+		FiniteField Fq(q[i]);
+		FFLAS::fcopy(unF,
 			     U[i].getWritePointer(),1,
 			     U[i-1].getPointer(),1);
 		U[i].resize(R[0]);
 		// cblas_dcopy(n, U[i-1], 1, U[i], 1);
 		for (j = i-2; j >= 0; j--)
 		{
-			FFLAS::fscal(UF,n,(Element)(q[j] % q[i]),
+			FFLAS::fscal(unF,n,(Element)(q[j] % q[i]),
 				     U[i].getWritePointer(),1);
 			// cblas_dscal(n, (double)(q[j] % q[i]), U[i], 1);
-			FFLAS::faxpy(F,n,F.one,
+			FFLAS::faxpy(Fq,n,Fq.one,
 				     U[j].getPointer(),1,U[i].getWritePointer(),1);
 			// cblas_daxpy(n, 1.0, U[j], 1, U[i], 1);
 			// Dmod((double)q[i], U[i], 1, n, n);
 		}
-		F.init(temp,(Element)qinv[i]*(Element)(q[i]-1));
+		Fq.init(temp,(Element)qinv[i]*(Element)(q[i]-1));
 		// temp = (Element)qinv[i]*(Element)(q[i]-1);
 		// temp = fmod(temp, (Element)q[i]);
-		FFLAS::fscal(UF,n,temp,U[i].getWritePointer(),1);
+		FFLAS::fscal(unF,n,temp,U[i].getWritePointer(),1);
 		// cblas_dscal(n, temp, U[i], 1);
-		FFLAS::faxpy(F,n,qinv[i],R[i].getPointer(),1,
+		FFLAS::faxpy(Fq,n,qinv[i],R[i].getPointer(),1,
 			     U[i].getWritePointer(),1);
 		// cblas_daxpy(n, (double)qinv[i], R[i], 1, U[i], 1);
 		// Dmod((double)q[i], U[i], 1, n, n);
 	}
 
 	/* compute mod(r, p) in positive representation and store into RE */
-	FFLAS::fcopy(Fp,n,U[len-1].getPointer(),1,
+	FFLAS::fcopy(Fp,n,U[basislen-1].getPointer(),1,
 		     RE.getWritePointer(),1);
-	// cblas_dcopy(n, U[len-1], 1, RE, 1);
+	// cblas_dcopy(n, U[basislen-1], 1, RE, 1);
 	// Dmod((double)p, RE, 1, n, n);
-	for (i = len-2; i >= 0; i--) {
-		FFLAS::fscal(UF,n,(Element)(q[i] % p),RE.getWritePointer(),1);
+	for (i = basislen-2; i >= 0; i--) {
+		FFLAS::fscal(unF,n,(Element)(q[i] % p),RE.getWritePointer(),1);
 		// cblas_dscal(n, (double)(q[i] % p), RE, 1);
 		FFLAS::faxpy(Fp,n,1,U[i].getPointer(),1,
 			     RE.getWritePointer(),1);
@@ -160,7 +153,7 @@ basisExtPos (//const long                                    &len
 	/* convert to symmetric representation */
 	//! @todo use iterators here for i
 	for (i = 0; i < n; i++)
-		for (j = len-1; j >= 0; j--) {
+		for (j = basislen-1; j >= 0; j--) {
 			//!@bug does not work for every field (already balanced ?)
 			if (U[j].getPointer()[i] > bdcoeff[j]) {
 				RE.getPointer()[i] = fmod(RE[i]+cumprod, p);
@@ -171,7 +164,7 @@ basisExtPos (//const long                                    &len
 			}
 		}
 	}
-	// for (i = 0; i < len; i++) { XFREE(U[i]); } { XFREE(U); }
+	// for (i = 0; i < basislen; i++) { XFREE(U[i]); } { XFREE(U); }
 
 	return;
 }
@@ -180,40 +173,7 @@ basisExtPos (//const long                                    &len
 /*
  *
  * Calling Sequence:
- *   basisProd(len, basis, mp_prod)
- *
- * Summary:
- *   Compute the product of elements of a RNS basis
- *
- * Description:
- *   Let a RNS basis be 'basis'. The function computes the product of its
- *   elements basis[0]*basis[1]*...*basis[len-1].
- *
- * Input:
- *     len: long, dimension of RNS basis
- *   basis: 1-dim typename _Field::Element array length len, RNS basis
- *
- * Output:
- *   mp_prod: mpz_t, product of elements in 'basis'
- *
- */
-
-void
-basisProd (Integer &  mp_prod)
-{
-  long i;
-
-  // mpz_set_ui(mp_prod, basis[0]);
-  mp_prod = basis[0];
-  for (i = 1; i < len; i++) { Integer::mulin(mp_prod,basis[i]); }
-}
-
-
-
-/*
- *
- * Calling Sequence:
- *   ChineseRemainder(len, mp_prod, basis, cmbasis, bdcoeff, Ac, mp_Ac)
+ *   ChineseRemainder(basislen, mp_prod, RNSbasis, RNScombi, bdcoeff, Ac, mp_Ac)
  *
  * Summary:
  *   Given a representation of an integer in some RNS, use Chinese Remainder
@@ -221,34 +181,34 @@ basisProd (Integer &  mp_prod)
  *
  * Description:
  *   Let A be an integer, and Ac contains the representation of A in a RNS
- *   basis 'basis', i.e. Ac[i] = mod(A, basis[i]), (i = 0..len). Here 'mod'
+ *   RNSbasis 'basis', i.e. Ac[i] = mod(A, RNSbasis[i]), (i = 0..basislen). Here 'mod'
  *   is in positive representation. The function reconstructs the integer A
- *   given the RNS basis 'basis' and Ac.
+ *   given the RNS RNSbasis 'basis' and Ac.
  *
  *   To avoid repeat computations, the function takes some precomputed
  *   informations as input, which are listed below.
  *
  * Input:
- *       len: long, dimension of RNS basis
- *   mp_prod: mpz_t, computed by function basisProd, product of RNS basis
- *     basis: 1-dim typename _Field::Element array length len, RNS basis
- *   cmbasis: 1-dim typename _Field::Element array length len, computed by function
- *            combBasis, inverses of special combination of RNS basis
- *   bdcoeff: 1-dim typename _Field::Element array length len, computed by function repBound
+ *       basislen: long, dimension of RNS RNSbasis
+ *   mp_prod: mpz_t, computed by function basisProd, product of RNS RNSbasis
+ *     RNSbasis: 1-dim typename _Field::Element array length basislen, RNS RNSbasis
+ *   RNScombi: 1-dim typename _Field::Element array length basislen, computed by function
+ *            combBasis, inverses of special combination of RNS RNSbasis
+ *   bdcoeff: 1-dim typename _Field::Element array length basilen, computed by function repBound
  *        Ac: 1-dim Double array length n, representation of A in RNS
  *
  * Output:
  *   mp_Ac: mpz_t, reconstructed integer A
  *
  * Precondition:
- *   Let q be product of all elements in the RNS basis. Then A must satisfy
+ *   Let q be product of all elements in the RNS RNSbasis. Then A must satisfy
  *   -(q-1)/2 <= A <= (q-1)/2.
  *
  *
  *
  *
  * Calling Sequence:
- *   ChineseRemainderPos(len, basis, cmbasis, Ac, mp_Ac)
+ *   ChineseRemainderPos(basislen, RNSbasis, RNScombi, Ac, mp_Ac)
  *
  * Summary:
  *   Given a representation of a non-negative integer in some RNS, use Chinese
@@ -256,73 +216,75 @@ basisProd (Integer &  mp_prod)
  *
  * Description:
  *   Let A be a non-negative integer, and Ac contains the representation of A
- *   in a RNS basis 'basis', i.e. Ac[i] = mod(A, basis[i]), (i = 0..len).
+ *   in a RNS RNSbasis 'basis', i.e. Ac[i] = mod(A, RNSbasis[i]), (i = 0..basislen).
  *   Here 'mod' is in positive representation. The function reconstructs the
- *   integer A given the RNS basis 'basis' and Ac.
+ *   integer A given the RNS RNSbasis 'basis' and Ac.
  *
  *   To avoid repeat computations, the function takes some precomputed
  *   informations as input, which are listed below.
  *
  * Input:
- *       len: long, dimension of RNS basis
- *     basis: 1-dim typename _Field::Element array length len, RNS basis
- *   cmbasis: 1-dim typename _Field::Element array length len, computed by function
- *            combBasis, inverses of special combination of RNS basis
+ *       basislen: long, dimension of RNS RNSbasis
+ *     RNSbasis: 1-dim typename _Field::Element array length basislen, RNS RNSbasis
+ *   RNScombi: 1-dim typename _Field::Element array length basislen, computed by function
+ *            combBasis, inverses of special combination of RNS RNSbasis
  *        Ac: 1-dim Double array length n, representation of A in RNS
  *
  * Output:
  *   mp_Ac: mpz_t, reconstructed integer A
  *
  * Precondition:
- *   Let q be product of all elements in the RNS basis. Then A must satisfy
+ *   Let q be product of all elements in the RNS RNSbasis. Then A must satisfy
  *   0 <= A <= q-1.
  *
  */
 
+template<class Container, class FiniteField>
 void
-ChineseRemainder (const Integer mp_prod,
-		  BlasVector<Field> &Ac, Integer  mp_Ac)
+RNS<Container,FiniteField>::
+ChineseRemainder ( BlasVector<Field> &Ac, Integer & mp_Ac
+		  , bool pos )
 {
 	long i, j;
 	Element temp, tempq, tempqinv;
-	bool pos = FieldTraits<_Field>::Rep == Positive;
+	// bool pos = FieldTraits<_Field>::Rep == Positive;
 
-	BlasVector<Field> U(Ac.field(),len);
+	BlasVector<Field> U(Ac.field(),basislen);
 	// Double *U;
-	// U = XMALLOC(Double, len);
+	// U = XMALLOC(Double, basislen);
 
 	/* compute the coefficients of mix radix in positive representation by
 	   inplacing modular matrix U */
 	U[0] = Ac[0];
-	for (i = 1; i < len; i++) {
+	for (i = 1; i < basislen; i++) {
 		U[i] = U[i-1];
-		tempq = (Element)basis[i];
+		tempq = (Element)RNSbasis[i];
 		Field Fq(tempq);
-		tempqinv = (Element)cmbasis[i];
+		tempqinv = (Element)RNScombi[i];
 		for (j = i-2; j >= 0; j--) {
-			Fq.mulin(U[i],basis[j]);
+			Fq.mulin(U[i],RNSbasis[j]);
 			Fq.addin(U[i],U[j]);
-			// U[i] = U[j] + U[i]*fmod((Element)basis[j], tempq);
+			// U[i] = U[j] + U[i]*fmod((Element)RNSbasis[j], tempq);
 			// U[i] = fmod(U[i], tempq);
 		}
-		F.init(temp,tempqinv*(Element)(basis[i]-1));
-		// temp = fmod(tempqinv*(Element)(basis[i]-1), tempq);
-		F.init(U[i],tempqinv*Ac[i]+temp*U[i]);
+		Fq.init(temp,tempqinv*(Element)(RNSbasis[i]-1));
+		// temp = fmod(tempqinv*(Element)(RNSbasis[i]-1), tempq);
+		Fq.init(U[i],tempqinv*Ac[i]+temp*U[i]);
 		// U[i] = fmod(tempqinv*Ac[i]+temp*U[i], tempq);
 	}
 	/* compute Ac in positive representation */
-	mp_Ac = U[len-1];
-	// mpz_set_d(mp_Ac, U[len-1]);
-	for (j = len-2; j >= 0; j--)
+	mp_Ac = U[basislen-1];
+	// mpz_set_d(mp_Ac, U[basislen-1]);
+	for (j = basislen-2; j >= 0; j--)
 	{
-		Integer::mulin(mp_Ac,basis[j]);
+		Integer::mulin(mp_Ac,RNSbasis[j]);
 		Integer::addin(mp_Ac, (Element)U[j]);
-		// mpz_mul_ui(mp_Ac, mp_Ac, basis[j]);
+		// mpz_mul_ui(mp_Ac, mp_Ac, RNSbasis[j]);
 		// mpz_add_ui(mp_Ac, mp_Ac, (Element)U[j]);
 	}
 	/* transfer from positive representation to symmetric representation */
 	if (pos == false) {
-		for (j = len-1; j >= 0; j--)
+		for (j = basislen-1; j >= 0; j--)
 		{
 			if (U[j] > bdcoeff[j])
 			{
@@ -338,67 +300,65 @@ ChineseRemainder (const Integer mp_prod,
 	return;
 }
 
-
-
-
-
 /*
  *
  * Calling Sequence:
- *   cmbasis <-- combBasis(basislen, basis)
+ *   RNScombi <-- combBasis(basislen, RNSbasis)
  *
  * Summary:
- *   Compute the special combination of a RNS basis
+ *   Compute the special combination of a RNS RNSbasis
  *
  * Description:
- *   Let 'basis' be RNS basis. The function computes an array cmbasis
+ *   Let 'basis' be RNS RNSbasis. The function computes an array RNScombi
  *   satisfying
- *   cmbasis[0] = 0, cmbasis[i] = mod(1/(basis[0]*...*basis[i-1]), basis[i])
+ *   RNScombi[0] = 0, RNScombi[i] = mod(1/(RNSbasis[0]*...*RNSbasis[i-1]), RNSbasis[i])
  *                   (i = 1..basislen-1)
  *
  * Input:
- *   basislen: long, dimension of RNS basis
- *      basis: 1-dim typename _Field::Element array length basislen, RNS basis
+ *   basislen: long, dimension of RNS RNSbasis
+ *      RNSbasis: 1-dim typename _Field::Element array length basislen, RNS RNSbasis
  *
  * Return:
- *   cmbasis: 1-dim typename _Field::Element array length basislen, shown as above
+ *   RNScombi: 1-dim typename _Field::Element array length basislen, shown as above
  *
  */
 
-typename _Field::Element *
+template<class Container, class FiniteField>
+void
+RNS<Container,FiniteField>::
 combBasis ()
 {
-  long i, j;
-  Element dtemp;
-  // mpz_t mp_prod, mp_q;
-  // typename _Field::Element *cmbasis;
+	long i, j;
+	Element prod;
+	// mpz_t mp_prod, mp_q;
+	// typename _Field::Element *RNScombi;
 
-  // cmbasis = XMALLOC(typename _Field::Element, basislen);
-  cmbasis.resize(basislen);
-  cmbasis[0] = 0;
-  // mpz_init(mp_prod);
-  // mpz_init(mp_q);
-  for (i = 1; i < basislen; i++)
-    {
-	    Field Fi(basis[i]);
-	    F.init(dtemp,basis[0]);
-      // dtemp = fmod((double)basis[0], (double)basis[i]);
-      for (j = 1; j <= i-1; j++){
-	dtemp = fmod(dtemp*(double)basis[j], (double)basis[i]);
-	F.mulin(dtemp,basis[j]);
-      }
-      // Integer mp_q = basis[i];
-      // mpz_set_ui(mp_q, basis[i]);
-      // Integer mp_prod = dtemp ;
-      // mpz_set_d(mp_prod, dtemp);
-      // mpz_invert(mp_prod, mp_prod, mp_q);
-      // cmbasis[i] = mpz_get_ui(mp_prod);
-      F.inv(cmbasis[i],dtemp,basis[i]);
-    }
-  // mpz_clear(mp_prod);
-  // mpz_clear(mp_q);
+	// RNScombi = XMALLOC(typename _Field::Element, basislen);
+	RNScombi.resize(basislen);
+	RNScombi[0] = 0;
+	// mpz_init(mp_prod);
+	// mpz_init(mp_q);
+	for (i = 1; i < basislen; i++)
+	{
+		FiniteField Fi(RNSbasis[i]);
+		Fi.init(prod,RNSbasis[0]);
+		// prod = fmod((double)RNSbasis[0], (double)RNSbasis[i]);
+		for (j = 1; j <= i-1; j++){
+			prod = fmod(prod*(double)RNSbasis[j], (double)RNSbasis[i]);
+			Fi.mulin(prod,RNSbasis[j]);
+		}
+		// Integer mp_q = RNSbasis[i];
+		// mpz_set_ui(mp_q, RNSbasis[i]);
+		// Integer mp_prod = prod ;
+		// mpz_set_d(mp_prod, prod);
+		// mpz_invert(mp_prod, mp_prod, mp_q);
+		// RNScombi[i] = mpz_get_ui(mp_prod);
+		Fi.inv(RNScombi[i],prod);
+	}
+	// mpz_clear(mp_prod);
+	// mpz_clear(mp_q);
+	return;
 
-  return cmbasis;
 }
 
 
@@ -406,53 +366,56 @@ combBasis ()
 /*
  *
  * Calling Sequence:
- *   cumprod <-- cumProd(basislen, basis, extbasislen, extbasis)
+ *   cumprod <-- cumProd(basislen, RNSbasis, extbasislen, extbasis)
  *
  * Summary:
- *   Compute the representation of the combination of elements of one RNS basis
- *   in another RNS basis
+ *   Compute the representation of the combination of elements of one RNS RNSbasis
+ *   in another RNS RNSbasis
  *
  * Description:
- *   Let 'basis' be one RNS basis with dimension basislen, and 'extbasis' be
- *   another RNS basis with dimension extbasislen. The function computes an
+ *   Let 'basis' be one RNS RNSbasis with dimension basislen, and 'extbasis' be
+ *   another RNS RNSbasis with dimension extbasislen. The function computes an
  *   array cumprod length extbasislen satisfying
- *   cumprod[i] = modp(-basis[0]*...*basis[basislen-1], extbasis[i]),
+ *   cumprod[i] = modp(-RNSbasis[0]*...*RNSbasis[basislen-1], extbasis[i]),
  *   i = 0..extbasislen-1
  *
  * Input:
- *      basislen: long, dimension of RNS basis 'basis'
- *         basis: 1-dim typename _Field::Element array length basislen, one RNS basis
- *   extbasislen: long, dimension of RNS basis 'extbasis'
- *      extbasis: 1-dim typename _Field::Element array length basislen, another RNS basis
+ *      basislen: long, dimension of RNS RNSbasis 'basis'
+ *         RNSbasis: 1-dim typename _Field::Element array length basislen, one RNS RNSbasis
+ *   extbasislen: long, dimension of RNS RNSbasis 'extbasis'
+ *      extbasis: 1-dim typename _Field::Element array length basislen, another RNS RNSbasis
  *
  * Return:
  *   cumprod: 1-dim double array length extbasislen, shown above
  *
  */
 
-cumProd (BlasVector<Field> &cumprod,
-	 const BlasVector<Field> &extbasis)
+template<class Container, class FiniteField>
+void
+RNS<Container,FiniteField>::
+cumProd (ModVect &cumprod_v,
+	 const ModVect &extbasis)
 {
   long i, j;
   Element dtemp, dextbasis;
-  // double *cumprod;
+  // double *cumprod_v;
 
-  // cumprod = XMALLOC(double, extbasislen);
+  // cumprod_v = XMALLOC(double, extbasislen);
   size_t extbasislen = extbasis.size();
-  cumprod.resize(extbasislen);
-  for (i = 0; i < extbasislen; i++) {
-      Field F(extbasis[i]);
+  cumprod_v.resize(extbasislen);
+  for (i = 0; i < (long)extbasislen; i++) {
+      FiniteField Fq(extbasis[i]);
       // dextbasis = (Element)extbasis[i];
-      F.init(cumprod[i],basis[0]);
-      // cumprod[i] = fmod((double)basis[0], dextbasis);
-      for (j = 1; j < basis.size(); j++) {
-	      F.init(dtemp,basis[j]);
-	  // dtemp = fmod((double)basis[j], dextbasis);
-	  F.mulin(cumprod[i],dtemp); //!@bug 2 in one ?
-	  // cumprod[i] = fmod(cumprod[i]*dtemp, dextbasis);
+      Fq.init(cumprod_v[i],RNSbasis[0]);
+      // cumprod_v[i] = fmod((double)RNSbasis[0], dextbasis);
+      for (j = 1; j < RNSbasis.size(); j++) {
+	      Fq.init(dtemp,RNSbasis[j]);
+	  // dtemp = fmod((double)RNSbasis[j], dextbasis);
+	  Fq.mulin(cumprod_v[i],dtemp); //!@bug 2 in one ?
+	  // cumprod_v[i] = fmod(cumprod_v[i]*dtemp, dextbasis);
 	}
-      // cumprod[i] = dextbasis-cumprod[i];
-      F.negin(cumprod[i]);
+      // cumprod_v[i] = dextbasis-cumprod_v[i];
+      Fq.negin(cumprod_v[i]);
     }
 
   return ;
@@ -465,48 +428,50 @@ cumProd (BlasVector<Field> &cumprod,
  *   basiscmb <-- findRNS(RNS_bound, mp_maxInter, len)
  *
  * Summary:
- *   Find a RNS basis and its special combination
+ *   Find a RNS RNSbasis and its special combination
  *
  * Description:
- *   Given RNS_bound, the upper bound of the RNS basis, and mp_maxInter, the
- *   function finds a best RNS basis and a combination of that basis.
+ *   Given RNS_bound, the upper bound of the RNS RNSbasis, and mp_maxInter, the
+ *   function finds a best RNS RNSbasis and a combination of that RNSbasis.
  *
- *   The RNS basis 'basis' has the property:
+ *   The RNS RNSbasis 'basis' has the property:
  *   - its elements are all primes
- *   - basis[0] is the largest prime among all the primes at most RNS_bound
- *   - basis[i+1] is the next prime smaller than basis[i] (i = 0..len-2)
- *   - basis[0]*basis[1]*...*basis[len-1] >= mp_maxInter
+ *   - RNSbasis[0] is the largest prime among all the primes at most RNS_bound
+ *   - RNSbasis[i+1] is the next prime smaller than RNSbasis[i] (i = 0..len-2)
+ *   - RNSbasis[0]*basis[1]*...*basis[len-1] >= mp_maxInter
  *
  *   After finding 'basis', the functions also computes the combination of
  *   'basis' as the operations in function combBasis.
  *
  * Input:
- *     RNS_bound: typename _Field::Element, the upper bound of the RNS basis
- *   mp_maxInter: mpz_t, the lower bound for the product of elements of basis
+ *     RNS_bound: typename _Field::Element, the upper bound of the RNS RNSbasis
+ *   mp_maxInter: mpz_t, the lower bound for the product of elements of RNSbasis
  *
  * Return:
- *   basiscmb: 2-dim typename _Field::Element array, dimension 2 x len, where
- *           - basiscmb[0] represents the RNS basis
- *           - basiscmb[1] represents the special combination of basis
+ *   basiscmb: 2-dim typename _Field::Element array, dimension 2 x basislen, where
+ *           - basiscmb[0] represents the RNS RNSbasis
+ *           - basiscmb[1] represents the special combination of RNSbasis
  *
  * Output:
  *   len: pointer to a long int, storing the dimension of the computed
- *        RNS basis
+ *        RNS RNSbasis
  *
  */
 
+template<class Container, class FiniteField>
 void
-findRNS ( const Element RNS_bound, const Integer mp_maxInter,
-	  long &length, BlasVector<Field> & RNSbasis, BlasVector<Field> & RNScomb)
+RNS<Container,FiniteField>::
+findRNS ()
 {
   long i, j, len=0;
   double prod;
   // mpz_t mp_l, mp_prod, mp_q;
   // typename _Field::Element **qqinv;
 
-  Integer mp_prod = 1;
+  // Integer mp_prod = 1;
   // mpz_init_set_ui(mp_prod, 1);
-  Integer mp_l = RNS_bound ;
+  linbox_check(this->RNS_bound != 0);
+  Integer mp_l = this->RNS_bound ;
   // mpz_init_set_ui(mp_l, RNS_bound);
   // qqinv = XMALLOC(typename _Field::Element *, 2);
   // RNSbasis = NULL;
@@ -514,42 +479,28 @@ findRNS ( const Element RNS_bound, const Integer mp_maxInter,
   // while (mpz_cmp(mp_maxInter, mp_prod) > 0)
     {
       ++len;
-      RNSbasis.resize(len);
+      this->RNSbasis.resize(len);
       // RNSbasis = XREALLOC(typename _Field::Element, RNSbasis, len);
-      while (Integer::probab_prime_p(mp_l, 10) == 0) {
-	      Integer::subin(mp_l,1); //! @bug why remove 1 ?
+      // while (Integer::probab_prime_p(mp_l, 10) == 0) {
+	      // Integer::subin(mp_l,1); //! @bug why remove 1 ?
 	      // mpz_sub_ui(mp_l, mp_l, 1);
-      }
-      RNSbasis[len-1] = (mp_l);
-      Integer::subin(mp_l,1);
+      // }
+      Givaro::prevprime(mp_l,mp_l);
+      this->RNSbasis[len-1] = (mp_l);
+      Integer::subin(mp_l,1L);
       // mpz_sub_ui(mp_l, mp_l, 1);
-      Integer::mulin(mp_prod,RNSbasis[len-1]);
+      Integer::mulin(mp_prod,this->RNSbasis[len-1]);
       // mpz_mul_ui(mp_prod, mp_prod, RNSbasis[len-1]);
     }
   // mpz_clear(mp_prod);
   // mpz_clear(mp_l);
-  // RNScomb = XMALLOC(typename _Field::Element, len);
-  RNScomb.resize(len);
-  RNScomb[0] = 0;
-  // mpz_init(mp_prod);
-  // mpz_init(mp_q);
-  for (i = 1; i < len; i++) {
-      Element prod = (double)(RNSbasis[0] % RNSbasis[i]);
-      for (j = 1; j <= i-1; j++) {
-	// prod = fmod(prod*(double)RNSbasis[j], (double)RNSbasis[i]);
-	F.mulin(prod,RNSbasis[j]);
-      }
-      // mpz_set_ui(mp_q, RNSbasis[i]);
-      // mpz_set_d(mp_prod, prod);
-      // mpz_invert(mp_prod, mp_prod, mp_q);
-      // RNScomb[i] = mpz_get_ui(mp_prod);
-      F.invert(RNScomb[i],prod;)
-    }
-  // mpz_clear(mp_prod);
-  // mpz_clear(mp_q);
-  length = len;
+  // RNScombi = XMALLOC(typename _Field::Element, len);
+  //
+  this->basislen = len;
+  this->combBasis();
+  return;
 
-  // return qqinv;
+
 }
 
 
@@ -557,21 +508,21 @@ findRNS ( const Element RNS_bound, const Integer mp_maxInter,
 /*
  *
  * Calling Sequence:
- *   maxInter(mp_prod, mp_alpha, n, mp_b)
+ *   maxInter(mp_mag, mp_alpha, n, mp_b)
  *
  * Summary:
  *   Compute the maximum interval of positive and negative results of a
  *   matrix-matrix or matrix-vector product
  *
  * Description:
- *   Let mp_alpha be the maximum magnitude of a m x n matrix A, mp_prod-1 be
+ *   Let mp_alpha be the maximum magnitude of a m x n matrix A, mp_mag-1 be
  *   the maximum magnitude of a n x k matrix C. The function computes the
  *   maximum interval of positive and negative entries of A.C. That is, the
  *   function computes mp_b satisfying
- *   (mp_b-1)/2 = n*mp_alpha*(mp_prod-1)
+ *   (mp_b-1)/2 = n*mp_alpha*(mp_mag-1)
  *
  * Input:
- *    mp_prod: mpz_t, mp_prod-1 be the maximum magnitude of matrix C
+ *    mp_mag: mpz_t, mp_mag-1 be the maximum magnitude of matrix C
  *   mp_alpha: mpz_t, maximum magnitude of matrix A
  *          n: long, column dimension of A
  *
@@ -580,24 +531,26 @@ findRNS ( const Element RNS_bound, const Integer mp_maxInter,
  *
  */
 
+template<class Container, class FiniteField>
 void
-maxInter (const mpz_t mp_prod, const mpz_t mp_alpha, const long n, mpz_t mp_b)
+RNS<Container,FiniteField>::
+maxInter (const Integer& mp_mag, const Integer& mp_alpha, const long n, Integer& mp_b)
 {
   Integer mp_temp;
   // mpz_t mp_temp;
 
   // mpz_init(mp_temp);
-  Integer::sub(mp_temp,mp_prod,1);
-  // mpz_sub_ui(mp_temp, mp_prod, 1);
-  Integer mp_b = mp_alpha ;
+  Integer::sub(mp_temp,mp_mag,1L);
+  // mpz_sub_ui(mp_temp, mp_mag, 1);
+  mp_b = mp_alpha ;
   // mpz_set(mp_b, mp_alpha);
   Integer::mulin(mp_b,n); //! @bug 2n here ?
   // mpz_mul_ui(mp_b, mp_b, n);
   Integer::mulin(mp_b,mp_temp);
   // mpz_mul(mp_b, mp_b, mp_temp);
-  Integer::mulin(mp_b,2);
+  Integer::mulin(mp_b,2L);
   // mpz_mul_ui(mp_b, mp_b, 2);
-  Integer::addin(mp_b,1);
+  Integer::addin(mp_b,1L);
   // mpz_add_ui(mp_b, mp_b, 1);
   // mpz_clear(mp_temp);
 }
@@ -627,16 +580,18 @@ maxInter (const mpz_t mp_prod, const mpz_t mp_alpha, const long n, mpz_t mp_b)
  *
  */
 
+template<class Container, class FiniteField>
 void
+RNS<Container,FiniteField>::
 maxExtInter (const Integer & mp_alpha, const long n, Integer & mp_b)
 {
-	Integer mp_b = 1;
+	mp_b = 1L;
   // mpz_set_ui(mp_b, 1);
-	Integer::axpyin(mp_b,mp_alpha,n);
+	Integer::axpyin(mp_b,mp_alpha,(long)n);
   // mpz_addmul_ui(mp_b, mp_alpha, n);
-	Integer::mulin(mp_b,2);
+	Integer::mulin(mp_b,2L);
   // mpz_mul_ui(mp_b, mp_b, 2);
-  Integer::addin(mp_b,1);
+  Integer::addin(mp_b,1L);
   // mpz_add_ui(mp_b, mp_b, 1);
 }
 
@@ -645,36 +600,37 @@ maxExtInter (const Integer & mp_alpha, const long n, Integer & mp_b)
 /*
  *
  * Calling Sequence:
- *   bdcoeff <-- repBound(len, basis, cmbasis)
+ *   bdcoeff <-- repBound(len, RNSbasis, RNScombi)
  *
  * Summary:
- *   Compute the mix radix coefficients of a special integer in a RNS basis
+ *   Compute the mix radix coefficients of a special integer in a RNS RNSbasis
  *
  * Description:
- *   Given a RNS basis, suppose the product of elements in the basis be q,
- *   then this RNS basis is able to represent integers lying in
+ *   Given a RNS RNSbasis, suppose the product of elements in the RNSbasis be q,
+ *   then this RNS RNSbasis is able to represent integers lying in
  *   [-(q-1)/2, (q-1)/2] and [0, q-1] respectively with symmetric
  *   representation and positive representation. To transfer the result from
  *   positive representation to symmetric representation, the function
  *   computes the mix radix coefficients of the boundary value (q-1)/2 in the
  *   positive representation.
  *
- *   Let RNS basis be P. The function computes coefficient array U, such that
+ *   Let RNS RNSbasis be P. The function computes coefficient array U, such that
  * (q-1)/2 = U[0] + U[1]*P[0] + U[2]*P[0]*P[1] +...+ U[len-1]*P[0]*...*P[len-2]
  *
  * Input:
- *       len: long, dimension of RNS basis
- *     basis: 1-dim typename _Field::Element array length len, RNS basis
- *   cmbasis: 1-dim typename _Field::Element array length len, computed by function
- *            combBasis, inverses of special combination of RNS basis
+ *       len: long, dimension of RNS RNSbasis
+ *     RNSbasis: 1-dim typename _Field::Element array length basislen, RNS RNSbasis
+ *   RNScombi: 1-dim typename _Field::Element array length basislen, computed by function
+ *            combBasis, inverses of special combination of RNS RNSbasis
  *
  * Output:
- *   bdcoeff: 1-dim typename _Field::Element array length len, the coefficient array U above
+ *   bdcoeff: 1-dim typename _Field::Element array length basislen, the coefficient array U above
  *
  */
 
-// typename _Field::Element *
+template<class Container, class FiniteField>
 void
+RNS<Container,FiniteField>::
 repBound ()
 {
   long i, j;
@@ -682,8 +638,8 @@ repBound ()
   Integer mp_bd, mp_prod;
   // typename _Field::Element *bdcoeff;
 
-  const Vect & q    = basis;
-  const Vect & qinv = cmbasis;
+  const Vect & q    = RNSbasis;
+  const Vect & qinv = RNScombi;
 
   /* set the bound of transformation from positive to negative */
   // mpz_init(mp_prod);
@@ -730,7 +686,7 @@ repBound ()
  *   bd <-- RNSbound(n)
  *
  * Summary:
- *   Compute the upper bound of a RNS basis
+ *   Compute the upper bound of a RNS RNSbasis
  *
  * Description:
  *   Given a m x n mod p matrix A, and a n x k mod p matrix B, the maximum
@@ -748,6 +704,8 @@ repBound ()
  *
  */
 
+template<class Container, class FiniteField>
+RNS<Container,FiniteField>::
 Element
 RNSbound (const long n)
 {
@@ -773,6 +731,9 @@ RNSbound (const long n)
 
   return bd;
 }
+
+} // iml
+} // LinBox
 
 #endif // __LINBOX_algorithm_iml_rns_INL
 

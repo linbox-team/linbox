@@ -8,9 +8,9 @@
 
 
 
-// #include "IML/nullspace.h"
 #include "IML/row-echelon-transform.h"
 // #include "IML/RNS.h"
+// #include "IML/nullspace.h"
 
 #endif // __LINBOX_algorithm_iml_iml_H
 

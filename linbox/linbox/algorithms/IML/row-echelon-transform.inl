@@ -31,15 +31,15 @@ RowEchelonTransform<FField>::RowEchelonTransform(BlasMatrix<FField> & A)  :
 
 
 template<class FField>
-long RowEchelonTransform<FField>::reduce_rec( BlasMatrix<FField> & A, long m1, long m2, long k,
-		const long ks, long frows, long lrows, long redflag,
-		long eterm,
+size_t RowEchelonTransform<FField>::reduce_rec( BlasMatrix<FField> & A, size_t m1, size_t m2, size_t k,
+		const size_t ks, size_t frows, size_t lrows, size_t redflag,
+		size_t eterm,
 		std::vector<size_t> & P, std::vector<size_t>&rp,
 		Element & d)
 		{
-			long m = A.coldim();
-			long n = A.rowdim();
-			long i, j, r1, r2, r, ri, mm, inv;
+			size_t m = A.coldim();
+			size_t n = A.rowdim();
+			size_t i, j, r1, r2, r, ri, mm, inv;
 			Element a;
 			double t, b;
 			BlasMatrixDomain<FField> BMD(_field);
@@ -99,12 +99,12 @@ long RowEchelonTransform<FField>::reduce_rec( BlasMatrix<FField> & A, long m1, l
 				}
 				++rp[0];
 				_field.init(d,d*b);
-				ri = rp[0];
+				ri =  rp[0];
 				rp[ri] = m1;
 				return 1;
 			}
 			/* Recursively solve the first subproblem */
-			mm = m1+(long)((m2-m1)/2);
+			mm = m1+((m2-m1)/2);
 			r1 = reduce_rec(A,m1, mm, k, ks, frows, 1, redflag,\
 						     eterm, P, rp, d);
 			if ((eterm == 1) && (r1 < mm-m1+1)) {
@@ -115,7 +115,6 @@ long RowEchelonTransform<FField>::reduce_rec( BlasMatrix<FField> & A, long m1, l
 			if (r1 > 0) {
 				/* Compute U1.A2 by submatrix multiply */
 				if (k+r1 < n) {
-					linbox_check(k-ks>=0);
 					BlasSubmatrix<FField> U1(A,k+r1,k-ks,n-k-r1,r1);
 					BlasSubmatrix<FField> A1(A,k,mm,r1,m2-mm);
 					BlasSubmatrix<FField> A2(A,k+r1,mm,n-k-r1,m2-mm);
@@ -124,8 +123,6 @@ long RowEchelonTransform<FField>::reduce_rec( BlasMatrix<FField> & A, long m1, l
 				}
 				if ((frows == 1) && (redflag == 1)) {
 					if (k > 0) {
-						linbox_check(k-ks>=0);
-						linbox_check(m2-mm>=0);
 						BlasSubmatrix<FField> U1(A,0,k-ks,k,r1);
 						BlasSubmatrix<FField> A1(A,k,mm,r1,m2-mm);
 						BlasSubmatrix<FField> A2(A,0,mm,k,m2-mm);
