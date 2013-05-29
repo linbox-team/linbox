@@ -53,20 +53,20 @@ template<class Field> TriplesBB<Field>::TriplesBB(const Field& F, istream& in) :
 	read(in);
 }
 
-template<class Field> 
+template<class Field>
 istream& TriplesBB<Field>::read(istream& in){
-	Index r, c; 
+	Index r, c;
 	typename Field::Element v; field().init(v);
 	MatrixStream<Field> ms(field(), in);
-	ms.getDimensions(r, c); 
+	ms.getDimensions(r, c);
 	shape(field(), r, c);
 	while (ms.nextTriple(r, c, v)) setEntry(r, c, v);
 	return in;
 }
 
-template<class Field> 
+template<class Field>
 ostream& TriplesBB<Field>::write(ostream& out){
-	Index r, c; 
+	Index r, c;
 	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
 	out << "% written from a LinBox TriplesBB" << std::endl;
 	out << rowdim() <<" " << coldim() << " " << size() << std::endl;
@@ -77,16 +77,16 @@ ostream& TriplesBB<Field>::write(ostream& out){
 	return out;
 }
 
-template<class Field> 
-TriplesBB<Field>& TriplesBB<Field>::shape(const Field& F, Index r, Index c) 
-{ field_ = &F; data_.clear(); rows_ = r; cols_ = c; rowMajor_ = 0; }
+template<class Field>
+TriplesBB<Field>& TriplesBB<Field>::shape(const Field& F, Index r, Index c)
+{ field_ = &F; data_.clear(); rows_ = r; cols_ = c; rowMajor_ = 0; return *this; }
 
-template<class Field> TriplesBB<Field>::TriplesBB(const Field& F, Index r, Index c) 
-: field_(&F), data_(), rows_(r), cols_(c), rowMajor_(0) {} 
+template<class Field> TriplesBB<Field>::TriplesBB(const Field& F, Index r, Index c)
+: field_(&F), data_(), rows_(r), cols_(c), rowMajor_(0) {}
 
 template<class Field>
-TriplesBB<Field>::TriplesBB(const TriplesBB<Field> & B) 
-: field_ ( B.field_ ), data_ ( B.data_ ), rows_ ( B.rows_ ), cols_ ( B.cols_ ), 
+TriplesBB<Field>::TriplesBB(const TriplesBB<Field> & B)
+: field_ ( B.field_ ), data_ ( B.data_ ), rows_ ( B.rows_ ), cols_ ( B.cols_ ),
    rowMajor_ ( B.rowMajor_ )
 {}
 
@@ -95,7 +95,7 @@ const TriplesBB<Field> & TriplesBB<Field>::operator=(const TriplesBB<Field> & rh
 {
 	field_ = rhs.field_;
 	data_ = rhs.data_;
-	rows_ = rhs.rows_; 
+	rows_ = rhs.rows_;
 	cols_ = rhs.cols_;
 	rowMajor_ = rhs.rowMajor_;
 	return *this;
@@ -151,8 +151,8 @@ void TriplesBB<Field>::setEntry(Index i, Index j, const typename Field::Element 
 template<class Field>
 typename Field::Element& TriplesBB<Field>::getEntry(typename Field::Element& e, Index i, Index j) const
 {
-	for (Index k = 0; k < data_.size(); ++k) 
-		if (data_[k].row == i and data_[k].col == j) 
+	for (Index k = 0; k < data_.size(); ++k)
+		if (data_[k].row == i and data_[k].col == j)
 			return e = data_[k].elt;
 	return e = field().zero;
 }

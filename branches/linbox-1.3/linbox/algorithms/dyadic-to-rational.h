@@ -220,7 +220,7 @@ int dyadicToRational(
 		S.pop();
 		int j = (int)S.top().first;
 		for (int i = k-1; i >= j; --i) {
-			Z.mulin(num[i], t);
+			Z.mulin(num[(size_t)i], t);
 		}
 	}
 	S.pop();

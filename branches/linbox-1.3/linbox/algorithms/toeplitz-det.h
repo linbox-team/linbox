@@ -50,7 +50,7 @@ namespace LinBox
 			F.rem( fi, f1, f2 );
 			CField.mulin
 			( res, CField.powin( F.leadCoeff( temp, f2 ),
-					     F.deg(f1) - F.deg(fi) ) );
+					     (long)(F.deg(f1) - F.deg(fi)) ) );
 			if( !((F.deg(f2)-F.deg(f1))%2) && !((F.deg(f1)-n)%2) )
 				sign = (short)-sign;
 			f1 = f2;
@@ -60,7 +60,7 @@ namespace LinBox
 		if( F.deg(f2) == (n-1) ) {
 			CField.mulin
 			( res, CField.powin( F.leadCoeff( temp, f2 ),
-					     F.deg(f1) - F.deg(f2) ) );
+					     (long)(F.deg(f1) - F.deg(f2)) ) );
 			if( sign == -1 ) {
 				typename PField::Coeff negOne;
 				CField.init( negOne, -1 );

@@ -3,20 +3,20 @@
  *
  * Time-stamp: <21 Jan 10 15:08:59 Jean-Guillaume.Dumas@imag.fr>
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -60,7 +60,7 @@ namespace LinBox
 						if ( static_cast<long>(*pin_it) != indpermut) {
 							--pin_it;
 							// Only k there
-							*kin_it = indpermut;
+							*kin_it = (size_t)indpermut;
 							typename Vector::value_type etmp = *kin_it;
 							typename Vector::iterator current = kin_it;
 							typename Vector::iterator next = kin_it; ++next;
@@ -72,7 +72,7 @@ namespace LinBox
 					else {
 						--pin_it;
 						// Only k there
-						*kin_it = indpermut;
+						*kin_it = (size_t)indpermut;
 						typename Vector::value_type etmp = *kin_it;
 						typename Vector::iterator current = kin_it;
 						typename Vector::iterator next = kin_it; ++next;
@@ -142,26 +142,26 @@ namespace LinBox
 			unsigned long j_head = 0;
 
 			for (; j_head < nj; ++j_head) {
-				if (static_cast<long>(lignecourante[j_head]) >= indpermut) break;
+				if (static_cast<long>(lignecourante[(size_t)j_head]) >= indpermut) break;
 #if 0
 				std::cerr << "ELIMINATE, j_head: " << j_head << std::endl;
 #endif
 			}
 
 			if (j_head < nj) {
-				if (static_cast<long>(lignecourante[j_head]) == indpermut) {
+				if (static_cast<long>(lignecourante[(size_t)j_head]) == indpermut) {
 					// -------------------------------------------
 					// Permutation
 					if ( indpermut != static_cast<long>(k)) {
 						if (lignecourante[0] != k) {
 							// zero <--> non zero
-							E tmp = lignecourante[j_head];
+							E tmp = lignecourante[(size_t)j_head];
 							--columns[tmp];
 							++columns[k];
 							tmp = k;
 
-							for (long l = j_head; l > 0; l--)
-								lignecourante[l] = lignecourante[l-1];
+							for (long l = (long)j_head; l > 0; l--)
+								lignecourante[(size_t)l] = lignecourante[(size_t)l-1];
 
 							lignecourante[0] = tmp;
 						}
@@ -179,11 +179,11 @@ namespace LinBox
 
 					// A[i,k] <-- - A[i,k] / A[k,k]
 					headpivot = true;
-					--columns[lignecourante[j_head] ];
+					--columns[lignecourante[(size_t)j_head] ];
 
 					// if A[k,j]=0, then A[i,j] <-- A[i,j]
 					while (j < j_head) {
-						construit[j] = lignecourante[j];
+						construit[j] = lignecourante[(size_t)j];
 						++j;
 					}
 
@@ -199,12 +199,12 @@ namespace LinBox
 						j_piv = lignepivot[l];
 
 						// if A[k,j]=0, then A[i,j] <-- A[i,j]
-						while ((m < nj) && (lignecourante[m] < j_piv))
-							construit[j++] = lignecourante[m++];
+						while ((m < nj) && (lignecourante[(size_t)m] < j_piv))
+							construit[j++] = lignecourante[(size_t)m++];
 
 						// if A[i,j]!=0, then A[i,j] <-- A[i,j] - A[i,k]*A[k,j]
-						if ((m < nj) && (lignecourante[m] == j_piv)) {
-							--columns[lignecourante[m++]];
+						if ((m < nj) && (lignecourante[(size_t)m] == j_piv)) {
+							--columns[lignecourante[(size_t)m++]];
 						}
 						else {
 							++columns[j_piv];
@@ -216,7 +216,7 @@ namespace LinBox
 
 					// if A[k,j]=0, then A[i,j] <-- A[i,j]
 					while (m<nj)
-						construit[j++] = lignecourante[m++];
+						construit[j++] = lignecourante[(size_t)m++];
 
 					construit.resize (j);
 					lignecourante = construit;
@@ -239,18 +239,18 @@ namespace LinBox
 							unsigned long l = 0;
 
 							for (; l < nj; ++l)
-								if (lignecourante[l] >= k) break;
+								if (lignecourante[(size_t)l] >= k) break;
 
-							if ((l < nj) && (lignecourante[l] == k))  {
+							if ((l < nj) && (lignecourante[(size_t)l] == k))  {
 								// non zero <--> zero
-								E tmp = lignecourante[l];
+								E tmp = (E)lignecourante[(size_t)l];
 								--columns[k];
-								++columns[indpermut];
-								tmp = indpermut;
+								++columns[(size_t)indpermut];
+								tmp = (E)indpermut;
 
 								unsigned long bjh = j_head-1;
 								for (; l < bjh; ++l)
-									lignecourante[l] = lignecourante[l + 1];
+									lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
 								lignecourante[bjh] = tmp;
 							} // else // zero <--> zero
@@ -274,18 +274,18 @@ namespace LinBox
 					unsigned long l = 0;
 
 					for (; l < nj; ++l)
-						if (lignecourante[l] >= k) break;
+						if (lignecourante[(size_t)l] >= k) break;
 
-					if ((l < nj) && (lignecourante[l] == k))  {
+					if ((l < nj) && (lignecourante[(size_t)l] == k))  {
 						// non zero <--> zero
-						E tmp = lignecourante[l];
+						E tmp = (E) lignecourante[(size_t)l];
 						--columns[k];
-						++columns[indpermut];
-						tmp = indpermut;
+						++columns[(size_t)indpermut];
+						tmp = (E) indpermut;
 
 						unsigned long bjh = nj - 1;
 						for (; l < bjh; ++l)
-							lignecourante[l] = lignecourante[l + 1];
+							lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
 						lignecourante[bjh] = tmp;
 					} // else

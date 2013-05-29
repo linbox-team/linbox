@@ -6,20 +6,20 @@
  *
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -793,9 +793,9 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (PROGRESS_REPORT).setMaxDepth (5);
 	//commentator().getMessageClass (BRIEF_REPORT).setMaxDepth (4);
 
-	RandomDenseStream<Field> stream1 (F, n, iterations), stream2 (F, n, iterations);
-	RandomDenseStream<Field> stream3 (F, r, iterations), stream4 (F, r, iterations);
-	RandomSparseStream<Field> stream6 (F, (double) r / (double) n, n, iterations);
+	RandomDenseStream<Field> stream1 (F, n, (unsigned int)iterations), stream2 (F, n, (unsigned int)iterations);
+	RandomDenseStream<Field> stream3 (F, r, (unsigned int)iterations), stream4 (F, r, (unsigned int)iterations);
+	RandomSparseStream<Field> stream6 (F, (double) r / (double) n, n, (unsigned int)iterations);
 	RandomSparseStream<Field> A_stream (F, (double) r / (double) n, n, m);
 
 	Method::Wiedemann WM;

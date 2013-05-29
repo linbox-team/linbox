@@ -87,7 +87,7 @@ namespace LinBox
 
 		int getThreshold(int& t)
 		{
-			return t = EarlySingleCRA<Domain>::EARLY_TERM_THRESHOLD;
+			return t = (int)EarlySingleCRA<Domain>::EARLY_TERM_THRESHOLD;
 		}
 
 		Integer& getModulus(Integer& m)
@@ -308,7 +308,7 @@ namespace LinBox
 					EarlySingleCRA<Domain>::progress(D,e_i);
 
 					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ ) {
-						EarlySingleCRA<Domain>::occurency_ = EarlySingleCRA<Domain>::occurency_ +  (shelf - prev_shelf);
+						EarlySingleCRA<Domain>::occurency_ = EarlySingleCRA<Domain>::occurency_ + (unsigned int)  (shelf - prev_shelf);
 					}
 
 

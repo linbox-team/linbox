@@ -3,20 +3,20 @@
  *
  * Time-stamp: <15 Jun 10 16:20:16 Jean-Guillaume.Dumas@imag.fr>
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -76,9 +76,9 @@ namespace LinBox
 		// assignment of LigneA with the domain object
 		for (unsigned long jj = 0; jj < Ni; ++jj)
 			for (unsigned long k = 0; k < LigneA[jj].size (); k++)
-				++col_density[LigneA[jj][k]];
+				++col_density[LigneA[jj][(size_t)k]];
 
-		long last = Ni - 1;
+		long last = (long)Ni - 1;
 		long c;
 		Rank = 0;
 
@@ -104,7 +104,7 @@ namespace LinBox
 #ifdef __LINBOX_FILLIN__
 					long sl(0);
 					for (size_t l = 0; l < Ni; ++l)
-						sl += LigneA[l].size ();
+						sl += LigneA[(size_t)l].size ();
 
 					commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 					<< "Fillin (" << Rank << "/" << Ni << ") = "
@@ -117,7 +117,7 @@ namespace LinBox
 
 			long l;
 			for(l = k; l < static_cast<long>(Ni); ++l) {
-				if ( (s = LigneA[l].size()) != 0 ) {
+				if ( (s = (long)LigneA[(size_t)l].size()) != 0 ) {
 					p = l;
 					break;
 				}
@@ -127,14 +127,14 @@ namespace LinBox
 				long sl;
 				// Row permutation for the sparsest row
 				for (; l < static_cast<long>(Ni); ++l)
-					if (((sl = LigneA[l].size ()) < s) && (sl)) {
+					if (((sl = (long)LigneA[(size_t)l].size ()) < s) && (sl)) {
 						s = sl;
 						p = l;
 					}
 
 				if (p != k) {
 					//                         std::cerr << "Permuting rows: " << k << " <--> " << p << std::endl;
-					std::swap( *LigneA_k, LigneA[p]);
+					std::swap( *LigneA_k, LigneA[(size_t)p]);
 				}
 
 
@@ -143,14 +143,14 @@ namespace LinBox
 				if (c != -1) {
 					long ll;
 					if ( c != (static_cast<long>(Rank)-1) ) {
-						P.permute(Rank-1,c);
+						P.permute(Rank-1,(size_t)c);
 						for (ll=0      ; ll < k ; ++ll)
-							permuteBinary( LigneA[ll], Rank, c);
+							permuteBinary( LigneA[(size_t)ll], Rank, c);
 					}
-					long npiv=LigneA_k->size();
+					long npiv=(long)LigneA_k->size();
 					for (ll = k+1; ll < static_cast<long>(Ni); ++ll) {
 						bool elim=false;
-						eliminateBinary (elim, LigneA[ll], *LigneA_k, Rank, c, npiv, col_density);
+						eliminateBinary (elim, LigneA[(size_t)ll], *LigneA_k, Rank, c, (size_t)npiv, col_density);
 					}
 				}
 
@@ -162,17 +162,17 @@ namespace LinBox
 			// LigneA.write(rep << "U:= ", FORMAT_MAPLE) << std::endl;
 		}//for k
 
-		SparseFindPivotBinary ( LigneA[last], Rank, c, determinant);
+		SparseFindPivotBinary ( LigneA[(size_t)last], Rank, c, determinant);
 		if (c != -1) {
 			if ( c != (static_cast<long>(Rank)-1) ) {
-				P.permute(Rank-1,c);
+				P.permute(Rank-1,(size_t)c);
 				for (long ll=0      ; ll < last ; ++ll)
-					permuteBinary( LigneA[ll], Rank, c);
+					permuteBinary( LigneA[(size_t)ll], Rank, c);
 			}
 		}
 
 #ifdef __LINBOX_COUNT__
-		nbelem += LigneA[last].size ();
+		nbelem += LigneA[(size_t)last].size ();
 		commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 		<< "Left elements : " << nbelem << std::endl;
 #endif
@@ -180,7 +180,7 @@ namespace LinBox
 #ifdef __LINBOX_FILLIN__
 		long sl(0);
 		for (size_t l=0; l < Ni; ++l)
-			sl += LigneA[l].size ();
+			sl += LigneA[(size_t)l].size ();
 
 		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 		<< "Fillin (" << Rank << "/" << Ni << ") = " << sl
@@ -252,9 +252,9 @@ namespace LinBox
 		// assignment of LigneA with the domain object
 		for (unsigned long jj = 0; jj < Ni; ++jj)
 			for (unsigned long k = 0; k < LigneA[jj].size (); k++)
-				++col_density[LigneA[jj][k]];
+				++col_density[LigneA[jj][(size_t)k]];
 
-		long last = Ni - 1;
+		long last = (long)Ni - 1;
 		long c;
 		Rank = 0;
 
@@ -280,7 +280,7 @@ namespace LinBox
 #ifdef __LINBOX_FILLIN__
 					long sl(0);
 					for (size_t l = 0; l < Ni; ++l)
-						sl += LigneA[l].size ();
+						sl += LigneA[(size_t)l].size ();
 
 					commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 					<< "Fillin (" << Rank << "/" << Ni << ") = "
@@ -293,7 +293,7 @@ namespace LinBox
 
 			long l;
 			for(l = k; l < static_cast<long>(Ni); ++l) {
-				if ( (s = LigneA[l].size()) ) {
+				if ( (s = (long)LigneA[(size_t)l].size()) ) {
 					p = l;
 					break;
 				}
@@ -303,16 +303,16 @@ namespace LinBox
 				long sl;
 				// Row permutation for the sparsest row
 				for (; l < static_cast<long>(Ni); ++l)
-					if (((sl = LigneA[l].size ()) < s) && (sl)) {
+					if (((sl = (long) LigneA[(size_t)l].size ()) < s) && (sl)) {
 						s = sl;
 						p = l;
 					}
 
 				if (p != k) {
 					//                         std::cerr << "Permuting rows: " << k << " <--> " << p << std::endl;
-					invQ.push_front( std::pair<size_t,size_t>(k,p) );
-					std::swap( *LigneA_k, LigneA[p]);
-					std::swap( LigneL[k], LigneL[p]);
+					invQ.push_front( std::pair<size_t,size_t>((size_t)k,(size_t)p) );
+					std::swap( *LigneA_k, LigneA[(size_t)p]);
+					std::swap( LigneL[(size_t)k], LigneL[(size_t)p]);
 				}
 
 
@@ -321,15 +321,15 @@ namespace LinBox
 				if (c != -1) {
 					long ll;
 					if ( c != (static_cast<long>(Rank)-1) ) {
-						P.permute(Rank-1,c);
+						P.permute(Rank-1,(size_t)c);
 						for (ll=0      ; ll < k ; ++ll)
-							permuteBinary( LigneA[ll], Rank, c);
+							permuteBinary( LigneA[(size_t)ll], Rank, c);
 					}
-					long npiv=LigneA_k->size();
+					long npiv=(long)LigneA_k->size();
 					for (ll = k+1; ll < static_cast<long>(Ni); ++ll) {
 						E hc; hc=Rank-1; bool elim=false;
-						eliminateBinary (elim, LigneA[ll], *LigneA_k, Rank, c, npiv, col_density);
-						if(elim) LigneL[ll].push_back(hc);
+						eliminateBinary (elim, LigneA[(size_t)ll], *LigneA_k, Rank, c, (size_t)npiv, col_density);
+						if(elim) LigneL[(size_t)ll].push_back(hc);
 					}
 				}
 
@@ -338,24 +338,24 @@ namespace LinBox
 				nbelem += LigneA_k->size ();
 #endif
 			}
-			LigneL[k].push_back(k);
+			LigneL[(size_t)k].push_back((size_t)k);
 			//  LigneL.write(rep << "L:= ", FORMAT_MAPLE) << std::endl;
 			//  LigneA.write(rep << "U:= ", FORMAT_MAPLE) << std::endl;
 		}//for k
 
-		SparseFindPivotBinary ( LigneA[last], Rank, c, determinant);
+		SparseFindPivotBinary ( LigneA[(size_t)last], Rank, c, determinant);
 		if (c != -1) {
 			if ( c != (static_cast<long>(Rank)-1) ) {
-				P.permute(Rank-1,c);
+				P.permute(Rank-1,(size_t)c);
 				for (long ll=0      ; ll < last ; ++ll)
-					permuteBinary( LigneA[ll], Rank, c);
+					permuteBinary( LigneA[(size_t)ll], Rank, c);
 			}
 		}
 
-		LigneL[last].push_back(last);
+		LigneL[(size_t)last].push_back((size_t)last);
 
 #ifdef __LINBOX_COUNT__
-		nbelem += LigneA[last].size ();
+		nbelem += LigneA[(size_t)last].size ();
 		commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 		<< "Left elements : " << nbelem << std::endl;
 #endif
@@ -363,7 +363,7 @@ namespace LinBox
 #ifdef __LINBOX_FILLIN__
 		long sl(0);
 		for (size_t l=0; l < Ni; ++l)
-			sl += LigneA[l].size ();
+			sl += LigneA[(size_t)l].size ();
 
 		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 		<< "Fillin (" << Rank << "/" << Ni << ") = " << sl

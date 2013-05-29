@@ -23,20 +23,20 @@
  * dot product, tag1 and tag2) that allows specialization by vector type.
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -670,7 +670,7 @@ namespace LinBox
 
 		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++) {
 			if (!field().isZero (*i)) {
-				res.first.push_back (idx);
+				res.first.push_back ((size_t)idx);
 				res.second.push_back (*i);
 			}
 		}
@@ -893,7 +893,7 @@ namespace LinBox
 
 			copy (res_part, v);
 
-			std::copy (res_part.begin (), (len == 0) ? res_part.end () : res_part.begin () + len, res.begin () + i);
+			std::copy (res_part.begin (), (len == 0) ? res_part.end () : res_part.begin () + (ptrdiff_t)len, res.begin () + (ptrdiff_t)i);
 		}
 
 		return res;
@@ -975,16 +975,16 @@ namespace LinBox
 		}
 		else {
 			part_idx_end = std::lower_bound (res_part.first.begin (), res_part.first.end (), len);
-			part_elt_end = res_part.second.begin () + (part_idx_end - res_part.first.begin ());
+			part_elt_end = res_part.second.begin () +(ptrdiff_t) (part_idx_end - res_part.first.begin ());
 		}
 
 		for (iter = res_part.first.begin (); iter != part_idx_end; iter++)
 			*iter += i;
 
 		r_idx_begin = std::lower_bound (res.first.begin (), res.first.end (), i);
-		r_elt_begin = res.second.begin () + (r_idx_begin - res.first.begin ());
+		r_elt_begin = res.second.begin () +(ptrdiff_t) (r_idx_begin - res.first.begin ());
 		r_idx_end = (len == 0) ? res.first.end () : std::lower_bound (r_idx_begin, res.first.end (), i + len);
-		r_idx_end = res.second.begin () + (r_idx_end - res.first.begin ());
+		r_idx_end = res.second.begin () +(ptrdiff_t) (r_idx_end - res.first.begin ());
 
 		r_idx_begin = res.first.erase (r_idx_begin, r_idx_end);
 		r_elt_begin = res.second.erase (r_elt_begin, r_elt_end);
@@ -999,7 +999,7 @@ namespace LinBox
 	Vector &VectorDomain<Field>::copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
 						      VectorCategories::DenseVectorTag) const
 	{
-		std::copy (v.begin (), (len == 0) ? v.end () : v.begin () + len, res.begin () + i);
+		std::copy (v.begin (), (len == 0) ? v.end () : v.begin () + (ptrdiff_t)len, res.begin () +(ptrdiff_t) i);
 		return res;
 	}
 
@@ -1024,8 +1024,8 @@ namespace LinBox
 		r_begin = res.erase (r_begin, r_end);
 		offset = r_begin - res.begin ();
 		res.insert (r_begin, v.begin (), v_end);
-		r_begin = res.begin () + offset;
-		r_end = r_begin + (v_end - v.begin ());
+		r_begin = res.begin () +(ptrdiff_t) offset;
+		r_end = r_begin +(ptrdiff_t) (v_end - v.begin ());
 
 		for (iter = r_begin; iter != r_end; iter++)
 			iter->first += i;
@@ -1070,13 +1070,13 @@ namespace LinBox
 		}
 		else {
 			v_idx_end = std::lower_bound (v.first.begin (), v.first.end (), len);
-			v_elt_end = v.second.begin () + (v_idx_end - v.first.begin ());
+			v_elt_end = v.second.begin () +(ptrdiff_t) (v_idx_end - v.first.begin ());
 		}
 
 		r_idx_begin = std::lower_bound (res.first.begin (), res.first.end (), i);
-		r_elt_begin = res.second.begin () + (r_idx_begin - res.first.begin ());
+		r_elt_begin = res.second.begin () +(ptrdiff_t) (r_idx_begin - res.first.begin ());
 		r_idx_end = (len == 0) ? res.first.end () : std::lower_bound (r_idx_begin, res.first.end (), i + len);
-		r_elt_end = res.second.begin () + (r_idx_end - res.first.begin ());
+		r_elt_end = res.second.begin () +(ptrdiff_t) (r_idx_end - res.first.begin ());
 
 		r_idx_begin = res.first.erase (r_idx_begin, r_idx_end);
 		r_elt_begin = res.second.erase (r_elt_begin, r_elt_end);
@@ -1085,8 +1085,8 @@ namespace LinBox
 		res.first.insert (r_idx_begin, v.first.begin (), v_idx_end);
 		res.second.insert (r_elt_begin, v.second.begin (), v_elt_end);
 
-		r_idx_begin = res.first.begin () + offset;
-		r_idx_end = r_idx_begin + (v_idx_end - v.first.begin ());
+		r_idx_begin = res.first.begin () +(ptrdiff_t) offset;
+		r_idx_end = r_idx_begin +(ptrdiff_t) (v_idx_end - v.first.begin ());
 
 		for (iter = r_idx_begin; iter != r_idx_end; iter++)
 			*iter += i;

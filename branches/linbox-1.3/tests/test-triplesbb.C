@@ -84,12 +84,12 @@ int main (int argc, char **argv)
 	Blackbox A(F, m, n);
 	Element d;
 
-	for(int i = 0; i < (int)m; ++i) 
-	{ 	
+	for(int i = 0; i < (int)m; ++i)
+	{
 		F.init(d, i);
-		A.setEntry(i, (2*i)%n, d);
+		A.setEntry((size_t)i,(size_t) (2*i)%n, d);
 		F.init(d, 1);
-		A.setEntry(i, (2*i+1)%n, d);
+		A.setEntry((size_t)i, (size_t)(2*i+1)%n, d);
 	}
 
 	pass = pass && testReadWrite(A);
@@ -98,12 +98,12 @@ int main (int argc, char **argv)
 /*
 	Transpose<Blackbox> B(&A);
 
-	pass = pass && testBlackbox(B); 
+	pass = pass && testBlackbox(B);
 
 	Vector x(n), y(n), z(n);
 	int k = (n > 5 ? 5 : n);
 	for(int i = 0; i < k; ++i) F.init(x[i], i);
-	
+
 	VectorDomain<Field> VD(F);
 	A.apply(y, x);
 	B.applyTranspose(z, x);

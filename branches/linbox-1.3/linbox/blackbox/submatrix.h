@@ -140,12 +140,12 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& apply (OutVector &y, const InVector& x) const
 		{
-			std::fill (_z.begin (), _z.begin () + _col, _BB->field().zero);
-			std::fill (_z.begin () + _col + _coldim, _z.end (), _BB->field().zero);
+			std::fill (_z.begin (), _z.begin () + (ptrdiff_t)_col, _BB->field().zero);
+			std::fill (_z.begin () + (ptrdiff_t)(_col + _coldim), _z.end (), _BB->field().zero);
 
-			copy (x.begin (), x.end (), _z.begin () + _col);  // Copying. Yuck.
+			copy (x.begin (), x.end (), _z.begin () + (ptrdiff_t)_col);  // Copying. Yuck.
 			_BB->apply (_y, _z);
-			copy (_y.begin () + _row, _y.begin () + _row + _rowdim, y.begin ());
+			copy (_y.begin () + (ptrdiff_t)_row, _y.begin () + (ptrdiff_t)(_row + _rowdim), y.begin ());
 			return y;
 		}
 
@@ -161,12 +161,12 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector &y, const InVector& x) const
 		{
-			std::fill (_y.begin (), _y.begin () + _row, _BB->field().zero);
-			std::fill (_y.begin () + _row + _rowdim, _y.end (), _BB->field().zero);
+			std::fill (_y.begin (), _y.begin () + (ptrdiff_t)_row, _BB->field().zero);
+			std::fill (_y.begin () + (ptrdiff_t)(_row + _rowdim), _y.end (), _BB->field().zero);
 
-			copy (x.begin (), x.end (), _y.begin () + _row);  // Copying. Yuck.
+			copy (x.begin (), x.end (), _y.begin () + (ptrdiff_t)_row);  // Copying. Yuck.
 			_BB->applyTranspose (_z, _y);
-			copy (_z.begin () + _col, _z.begin () + _col + _coldim, y.begin ());
+			copy (_z.begin () + (ptrdiff_t)_col, _z.begin () + (ptrdiff_t)(_col + _coldim), y.begin ());
 			return y;
 		}
 
@@ -486,12 +486,12 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& apply (OutVector &y, const InVector& x) const
 		{
-			std::fill (_z.begin (), _z.begin () + _col, _BB_data.field().zero);
-			std::fill (_z.begin () + _col + _coldim, _z.end (), _BB_data.field().zero);
+			std::fill (_z.begin (), _z.begin () + (ptrdiff_t)_col, _BB_data.field().zero);
+			std::fill (_z.begin () + (ptrdiff_t)(_col + _coldim), _z.end (), _BB_data.field().zero);
 
-			copy (x.begin (), x.end (), _z.begin () + _col);  // Copying. Yuck.
+			copy (x.begin (), x.end (), _z.begin () +(ptrdiff_t) _col);  // Copying. Yuck.
 			_BB_data.apply (_y, _z);
-			copy (_y.begin () + _row, _y.begin () + _row + _rowdim, y.begin ());
+			copy (_y.begin () +(ptrdiff_t) _row, _y.begin () +(ptrdiff_t) (_row + _rowdim), y.begin ());
 			return y;
 		}
 
@@ -507,12 +507,12 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector &y, const InVector& x) const
 		{
-			std::fill (_y.begin (), _y.begin () + _row, _BB_data.field().zero);
-			std::fill (_y.begin () + _row + _rowdim, _y.end (), _BB_data.field().zero);
+			std::fill (_y.begin (), _y.begin () +(ptrdiff_t) _row, _BB_data.field().zero);
+			std::fill (_y.begin () +(ptrdiff_t)( _row + _rowdim), _y.end (), _BB_data.field().zero);
 
-			copy (x.begin (), x.end (), _y.begin () + _row);  // Copying. Yuck.
+			copy (x.begin (), x.end (), _y.begin () + (ptrdiff_t)_row);  // Copying. Yuck.
 			_BB_data.applyTranspose (_z, _y);
-			copy (_z.begin () + _col, _z.begin () + _col + _coldim, y.begin ());
+			copy (_z.begin () + (ptrdiff_t)_col, _z.begin () + (ptrdiff_t)(_col + _coldim), y.begin ());
 			return y;
 		}
 

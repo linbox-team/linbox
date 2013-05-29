@@ -327,6 +327,8 @@ namespace LinBox {
 				// std::cout << Cbloc.getEntry(l,0) << ';';
 			// }
 			// std::cout << std::endl;
+			//
+			return C ;
 
 		}
 

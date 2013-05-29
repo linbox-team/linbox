@@ -109,7 +109,7 @@ namespace LinBox
 			if( this->sin->eof() ) return END_OF_FILE;
 			if( !this->sin->good() ) return BAD_FORMAT;
 
-			n -= _base;
+			n -= (size_t)_base;
 			m = currentRow;
 			--colsLeft;
 

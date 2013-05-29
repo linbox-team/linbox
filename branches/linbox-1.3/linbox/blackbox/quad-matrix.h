@@ -64,11 +64,13 @@ namespace LinBox
 
 	  \ingroup blackbox
 
+	  @bug needs read for test-blackbox.h
 */
 	template <typename _Field>
 	class ZOQuad {
 	public:
 		typedef _Field Field;
+		typedef typename Field::Element Element;
 		typedef size_t Index;
 		typedef std::vector<Index> IndexVector;
 		typedef std::vector<IndexVector::iterator> PointerVector;
@@ -167,8 +169,8 @@ namespace LinBox
 				   PointerVector firstHalfP;
 				   std::back_insert_iterator< IndexVector > first(firstHalf);
 				   std::back_insert_iterator< PointerVector > firstP(firstHalfP);
-				   copy( A._index.begin(), *(A._indexP.begin() + A._indexP.size()/2), first);
-				   copy( A._indexP.begin(), A._indexP.begin() + A._indexP.size()/2 + 1, firstP);
+				   copy( A._index.begin(), *(A._indexP.begin() +(ptrdiff_t) A._indexP.size()/2), first);
+				   copy( A._indexP.begin(), A._indexP.begin() +(ptrdiff_t) A._indexP.size()/2 + 1, firstP);
 				   ZeroOne<Field> L(F, firstHalf, firstHalfP, A._rowdim, firstHalfP.size()-1, A.sorted);
 				   ZOQuad<Field> *LL = new ZOQuad<Field>(L);
 
@@ -176,8 +178,8 @@ namespace LinBox
 				   PointerVector secondHalfP;
 				   std::back_insert_iterator< IndexVector > second(secondHalf);
 				   std::back_insert_iterator< PointerVector > secondP(secondHalfP);
-				   copy( *(A._indexP.begin() + A._indexP.size()/2), A._index.end(), second);
-				   copy( A._indexP.begin() + A._indexP.size()/2, A._indexP.end(), secondP);
+				   copy( *(A._indexP.begin() +(ptrdiff_t) A._indexP.size()/2), A._index.end(), second);
+				   copy( A._indexP.begin() +(ptrdiff_t) A._indexP.size()/2, A._indexP.end(), secondP);
 				   ZeroOne<Field> R(F, secondHalf, secondHalfP, A._rowdim, secondHalfP.size()-1, A.sorted);
 				   ZOQuad<Field> *RR = new ZOQuad<Field>(R);
 
@@ -445,8 +447,8 @@ namespace LinBox
 			VectorDomain<Field> VD(field());
 			//std::vector<typename Field::Element> x_1( x.begin(), x.begin() + _quadLeft->coldim() );
 			//std::vector<typename Field::Element> x_2( x.begin() + _quadLeft->coldim(), x.end() );
-			Subvector<typename InVector::const_iterator> x_1(x.begin(), x.begin()+_quadLeft->coldim());
-			Subvector<typename InVector::const_iterator> x_2(x.begin()+_quadLeft->coldim(), x.end());
+			Subvector<typename InVector::const_iterator> x_1(x.begin(), x.begin()+(ptrdiff_t)_quadLeft->coldim());
+			Subvector<typename InVector::const_iterator> x_2(x.begin()+(ptrdiff_t)_quadLeft->coldim(), x.end());
 			//std::cout << " side-by-side apply size of x: " << x.size() << " " << " size of y: " << y.size() << endl;
 			//std::cout << " side-by-side apply size of x_1: " << x_1.size() << " " << " size of x_2: " << x_2.size() << endl;
 			_quadLeft->apply (y, x_1);
@@ -462,12 +464,12 @@ namespace LinBox
 		{
 			//std::vector<typename Field::Element> y_1( y.begin(), y.begin() + _quadLeft->coldim() );
 			//std::vector<typename Field::Element> y_2( y.begin() + _quadLeft->coldim(), y.end() );
-			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_1(y.begin(), y.begin()+_quadLeft->coldim());
-			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_2(y.begin()+_quadLeft->coldim(), y.end());
+			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_1(y.begin(), y.begin()+(ptrdiff_t)_quadLeft->coldim());
+			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_2(y.begin()+(ptrdiff_t)_quadLeft->coldim(), y.end());
 			_quadLeft->applyTranspose (y_1, x);
 			_quadRight->applyTranspose (y_2, x);
 			copy(y_1.begin(), y_1.end(), y.begin());
-			copy(y_2.begin(), y_2.end(), y.begin() + y_1.size());
+			copy(y_2.begin(), y_2.end(), y.begin() +(ptrdiff_t) y_1.size());
 			return y;
 		}
 
@@ -493,15 +495,15 @@ namespace LinBox
 		{
 			//std::vector<typename Field::Element> y_1( y.begin(), y.begin() + _quadUp->rowdim() );
 			//std::vector<typename Field::Element> y_2( y.begin() + _quadUp->rowdim(), y.end() );
-			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_1(y.begin(), y.begin()+_quadUp->rowdim());
-			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_2(y.begin()+_quadUp->rowdim(), y.end());
+			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_1(y.begin(), y.begin()+(ptrdiff_t)_quadUp->rowdim());
+			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_2(y.begin()+(ptrdiff_t)_quadUp->rowdim(), y.end());
 			//if ((_A_ptr == 0) || (_B_ptr == 0)) { throw error }
 			//std::cout << " over-under apply size of x: " << x.size() << " " << " size of y: " << y.size() << endl;
 			//std::cout << " over-under apply size of y_1: " << y_1.size() << " " << " size of y_2: " << y_2.size() << endl;
 			_quadUp->apply (y_1, x);
 			_quadDown->apply (y_2, x);
 			//copy(y_1.begin(), y_1.end(), y.begin());
-			//copy(y_2.begin(), y_2.end(), y.begin() + y_1.size());
+			//copy(y_2.begin(), y_2.end(), y.begin() +(ptrdiff_t) y_1.size());
 
 			return y;
 		}
@@ -512,8 +514,8 @@ namespace LinBox
 		{
 			std::vector<typename Field::Element> z(y.size());
 			VectorDomain<Field> VD(field());
-			std::vector<typename Field::Element> x_1( x.begin(), x.begin() + _quadUp->rowdim() );
-			std::vector<typename Field::Element> x_2( x.begin() + _quadUp->rowdim(), x.end() );
+			std::vector<typename Field::Element> x_1( x.begin(), x.begin() + (ptrdiff_t)_quadUp->rowdim() );
+			std::vector<typename Field::Element> x_2( x.begin() + (ptrdiff_t)_quadUp->rowdim(), x.end() );
 			//Subvector<typename InVector::iterator, typename InVector::const_iterator> x_1(x.begin(), x.begin()+_quadUp->rowdim());
 			//Subvector<typename InVector::iterator, typename InVector::const_iterator> x_2(x.begin()+_quadUp->rowdim(), x.end());
 			_quadUp->applyTranspose (y, x_1);

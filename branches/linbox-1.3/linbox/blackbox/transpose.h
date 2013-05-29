@@ -50,6 +50,7 @@ namespace LinBox
 	  \ingroup blackbox
 
 	 * @param Vector \ref LinBox dense or sparse vector of field elements
+	 * @bug no write here. test-blackbox.h requires it
 	 */
 	template <class Blackbox>
 	class Transpose : public BlackboxInterface {
@@ -68,11 +69,11 @@ namespace LinBox
 		 */
 		Transpose (Blackbox& A) :
 			_A_ptr(&A)
-		{} 
+		{}
 
 		Transpose (const Blackbox& A) :
 			_A_ptr(&A)
-		{} 
+		{}
 
 		Transpose (const Blackbox *A_ptr) :
 			_A_ptr(A_ptr)
@@ -171,8 +172,8 @@ namespace LinBox
 		Element& getEntry(Element& x, size_t i, size_t j) const
 		{ return _A_ptr->getEntry(x, j, i); }
 
-		void setEntry(size_t i, size_t j, const Element& x) 
-		{ const_cast<Blackbox_t*>(_A_ptr)->setEntry( j, i, x); } 
+		void setEntry(size_t i, size_t j, const Element& x)
+		{ const_cast<Blackbox_t*>(_A_ptr)->setEntry( j, i, x); }
 
 	protected:
 

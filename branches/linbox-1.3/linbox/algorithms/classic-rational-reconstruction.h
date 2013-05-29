@@ -263,7 +263,7 @@ namespace LinBox
 				Element T = m.bitsize();
 				int c = 5;	//should be changed here to enhance probability of correctness
 
-				while((a>0) && (r0.bitsize() > T.bitsize() + c))
+				while((a>0) && (r0.bitsize() > T.bitsize() + (unsigned long)c))
 				{
 					q = r0;
 					_intRing.divin(q,a);        // r0/num
@@ -272,7 +272,7 @@ namespace LinBox
 						amax = a;
 						bmax = b;
 						qmax = q;
-						if (qmax.bitsize() > T.bitsize() + c) break;
+						if (qmax.bitsize() > T.bitsize() + (unsigned long)c) break;
 					}
 
 					u = a;
@@ -307,7 +307,7 @@ namespace LinBox
 				//Element T = m.bitsize();
 				//int c = 20;
 				//T=0;c=0;
-				if (qmax.bitsize() > T.bitsize() + c) {
+				if (qmax.bitsize() > T.bitsize() + (unsigned long)c) {
 					return true;
 				}
 				else return false;

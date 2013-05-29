@@ -45,7 +45,7 @@ void printPolynomial(const Field& F, const Polynomial& P)
 {
 	int n= (int) P.size()-1;
 	for (int i=0;i<n;++i)
-		cout<<P[i]<<" ";
+		cout<<P[(size_t)i]<<" ";
 	cout<<endl;
 	if (n==1){
 		cout<<"X";
@@ -55,8 +55,8 @@ void printPolynomial(const Field& F, const Polynomial& P)
 	else{
 		cout<<"X^"<<n;
 		for ( int i=n-1; i>1; --i)
-			if (!F.isZero(P[i]))
-				F.write(cout<<((P[i]>0)?"+":""),P[i])<<"*X^"<<i;
+			if (!F.isZero(P[(size_t)i]))
+				F.write(cout<<((P[(size_t)i]>0)?"+":""),P[(size_t)i])<<"*X^"<<i;
 		if ( P[1] != 0)
 			F.write(cout<<((P[1]>0)?"+":""),P[1])<<"*X";
 		if ( P[0] != 0)

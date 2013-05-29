@@ -96,7 +96,7 @@ namespace LinBox
 			for (size_t i = 0; i < (size_t) rank; ++i)
 				Rnz.random( U.refEntry( i,i ) ); // non zero diagonal on rank first lines
 #if 1
-			for (size_t i = rank ; i < m ; ++i)
+			for (size_t i = (size_t)rank ; i < m ; ++i)
 				for (size_t j = i ; j < n ; ++j)
 					U.setEntry( i,j,zero ) ; //  zero on remaining 'triangular' lines
 #endif
@@ -189,7 +189,7 @@ namespace LinBox
 			for (size_t i = 0; i < (size_t) rank; ++i)
 				U_.random( U.refEntry( i,i ) ); // non zero diagonal on rank first lines
 #if 1
-			for (size_t i = rank ; i < m ; ++i)
+			for (size_t i = (size_t)rank ; i < m ; ++i)
 				for (size_t j = i ; j < n ; ++j)
 					U.setEntry( i,j,zero ) ; //  zero on remaining 'triangular' lines
 #endif

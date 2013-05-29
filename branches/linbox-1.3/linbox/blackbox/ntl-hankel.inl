@@ -92,7 +92,7 @@ namespace LinBox
 		this->colDim = (1+v.size())/2;
 		this->sysDim = (1+v.size())/2;
 
-		this->pdata.SetMaxLength( v.size());
+		this->pdata.SetMaxLength( (long) v.size());
 		//		rpdata.SetMaxLength( v.size());
 		for (unsigned int i=0; i< v.size(); i++)
 		{
@@ -249,7 +249,7 @@ namespace LinBox
 		       (v_in.size() == this->coldim()))  ;
 
 		NTL::ZZ_pX pxOut, pxIn;
-		pxIn.SetMaxLength( v_in.size()-1);
+		pxIn.SetMaxLength( (long) v_in.size()-1);
 		for (unsigned int i=0; i< v_in.size(); i++)
 			this->P.setCoeff( pxIn, i, v_in[i]);
 
@@ -264,7 +264,7 @@ namespace LinBox
 #endif
 		int N = (int)this->rowdim();
 		for ( int i= 0; i < N; i++)
-			this->P.getCoeff(v_out[N-1-i], pxOut, N-1+i);
+			this->P.getCoeff(v_out[(size_t)(N-1-i)], pxOut, (size_t)(N-1+i));
 
 		return v_out;
 

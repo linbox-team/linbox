@@ -113,6 +113,22 @@ namespace LinBox{
 			_stride(M.coldim()),
 			_off(row * _stride + col){}
 
+		//! BB constructor to reduce warnings in clang
+		SubmatrixAdapter(
+			const _Matrix& M,
+			int row,
+			int col,
+			int Rowdim,
+			int Coldim) :
+			//Init list starts here
+			_Mat(&(const_cast<_Matrix&>(M))),
+			_row((size_t) Rowdim),
+			_col((size_t) Coldim),
+			_r0((size_t) row),
+			_c0((size_t) col),
+			_stride( M.coldim()),
+			_off((size_t) row * _stride + (size_t)col){}
+
 		/** Constructor from an existing @ref SubmatrixAdapter
 		 * \param SM Pointer to @ref SubmatrixAdapter of which to construct submatrix
 		 */
@@ -147,6 +163,23 @@ namespace LinBox{
 			_c0(SM._c0 + col),
 			_stride(SM._stride),
 			_off(SM._off + (row * _stride + col)){}
+
+		//! BB constructor to reduce warnings in clang
+		SubmatrixAdapter(
+			const SubmatrixAdapter<_Matrix>& SM,
+			int row,
+			int col,
+			int Rowdim,
+			int Coldim) :
+			//Init list starts here
+			_Mat(SM._Mat),
+			_row((size_t)Rowdim),
+			_col((size_t)Coldim),
+			_r0(SM._r0 + (size_t)row),
+			_c0(SM._c0 + (size_t)col),
+			_stride(SM._stride),
+			_off(SM._off + ((size_t)row * _stride + (size_t)col)){}
+
 
 		/** Get the number of rows in the matrix
 		 * @return Number of rows in matrix
@@ -587,8 +620,7 @@ namespace LinBox{
 			const Operand2& A,
 			const Operand3& B) const{
 
-			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(
-				_F,
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3>()(
 				D,
 				beta,
 				C,
@@ -607,7 +639,7 @@ namespace LinBox{
 			const Operand2& A,
 			const Operand3& B) const{
 
-			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3>()(
 				_F,
 				beta,
 				C,

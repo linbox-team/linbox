@@ -163,7 +163,7 @@ namespace LinBox
 		{
 			v.clear();
 			ANY temp;
-			for( long i = 0; i <= this->deg(p); ++i ) {
+			for( long i = 0; i <= (long)this->deg(p); ++i ) {
 				_CField.convert( temp, NTL::coeff( p, i ) );
 				v.push_back( temp );
 			}

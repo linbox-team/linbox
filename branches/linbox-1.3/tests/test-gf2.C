@@ -11,20 +11,20 @@
  * accordance with changes to Modular interace.
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -275,10 +275,10 @@ int main (int argc, char **argv)
 
 	uint32_t seed = (unsigned)time (NULL);
 
-	RandomDenseStreamGF2 stream1 (F, seed, n, iterations), stream2 (F, seed ^ 0xdeadbeef, n, iterations);
+	RandomDenseStreamGF2 stream1 (F, seed, n, (size_t)iterations), stream2 (F, seed ^ 0xdeadbeef, n, (size_t)iterations);
 	RandomSparseStreamGF2<Vector<GF2>::Sparse>
-		stream3 (F, seed + 2, 0.1, n, iterations),
-		stream4 (F, seed + 3, 0.1, n, iterations);
+		stream3 (F, seed + 2, 0.1, n, (size_t)iterations),
+		stream4 (F, seed + 3, 0.1, n, (size_t)iterations);
 
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);

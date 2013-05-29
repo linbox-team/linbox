@@ -79,8 +79,8 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 
-	if (!runBasicRingTests(R1, "BlockRing of Modular<int>", iterations)) pass = false;
-	if (!runBasicRingTests(R2, "BlockRing of Modular<double>", iterations)) pass = false;
+	if (!runBasicRingTests(R1, "BlockRing of Modular<int>", (unsigned int)iterations)) pass = false;
+	if (!runBasicRingTests(R2, "BlockRing of Modular<double>", (unsigned int)iterations)) pass = false;
 
 	commentator().stop("block-ring test suite");
 	return pass ? 0 : -1;

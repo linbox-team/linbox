@@ -79,6 +79,11 @@ namespace LinBox
 			FormatHTML  = 2,
 			FormatLaTeX = 3
 		} ;
+
+		enum Direction {
+			Row = 10 ,
+			Col = 11
+		};
 	} ;
 
 }

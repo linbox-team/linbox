@@ -49,7 +49,7 @@ namespace LinBox
 		template <class Matrix>
 		static bool isPosDef (const Matrix& M, const BLAS_LPM_Method& meth)
 		{
-			RandomPrimeIterator::setSeed(time(0));
+			RandomPrimeIterator::setSeed((size_t)time(0));
 			size_t n = M. rowdim();
 			std::vector<int> P;
 			symmetricLU (P, M);
@@ -62,7 +62,7 @@ namespace LinBox
 
 			//std::cout << "All principal minors are: [";
 			//for (int i = 0; i < n; ++ i)
-			//	std::cout << D[i] << ", ";
+			//	std::cout << D[(size_t)i] << ", ";
 			//std::cout << "]\n";
 
 			if (allPos(D)) return true;
@@ -95,10 +95,10 @@ namespace LinBox
 		template <class Matrix>
 		static bool isPosSemiDef (const Matrix& M, const BLAS_LPM_Method& meth)
 		{
-			RandomPrimeIterator::setSeed(time(0));
+			RandomPrimeIterator::setSeed((size_t)time(0));
 			size_t n = M. rowdim();
 			std::vector<int> P;
-			size_t r = rank_random (M);
+			size_t r = (size_t)rank_random (M);
 			//std::clog << "Rank:= " << r << std::endl;
 			if (r == 0)
 				return true;
@@ -118,10 +118,10 @@ namespace LinBox
 				Matrix PM (R, P.size(), P.size());
 				typename Matrix::RowIterator cur_r; int j = 0;
 				for (cur_r = PM. rowBegin(); cur_r != PM. rowEnd(); ++ cur_r, ++j) {
-					typename Matrix::ConstRowIterator m_r = M. rowBegin() + P[j];
+					typename Matrix::ConstRowIterator m_r = M. rowBegin() + P[(size_t)j];
 					for (size_t k = 0; k < P.size(); ++ k)
 						R. assign (cur_r -> operator[] (k),
-							   m_r -> operator[] (P[k]));
+							   m_r -> operator[] ((size_t)P[(size_t)k]));
 				}
 				semiD (D, PM);
 			}
@@ -320,10 +320,10 @@ namespace LinBox
 			//the index is 0-based.
 			int i = 0;
 			int n = (int) M. rowdim();
-			std::vector<int> P(n);
+			std::vector<int> P((size_t)n);
 
 			for (i = 0; i < n; ++ i)
-				P[i] = i;
+				P[(size_t)i] = i;
 
 			//M. write(std::cout);
 			for (i = 0; i < n; ++ i) {
@@ -331,7 +331,7 @@ namespace LinBox
 				int j;
 				//find a pivot
 				for (j = i; j < n; ++ j) {
-					if (!F. isZero(M[j][j])) break;
+					if (!F. isZero(M[(size_t)j][(size_t)j])) break;
 				}
 
 				//no piviot
@@ -345,15 +345,15 @@ namespace LinBox
 				//std::cout << "Pivot= " << j << '\n';
 				//M. write(std::cout);
 
-				P[i] = j;
+				P[(size_t)i] = j;
 				Element tmp;
-				F. inv (tmp, M[i][i]);
+				F. inv (tmp, M[(size_t)i][(size_t)i]);
 				F. negin(tmp);
 				VD. mulin(*(M. rowBegin() + i), tmp);
 				//M. write(std::cout);
 
 				for (j = i + 1; j < n; ++ j) {
-					F. assign (tmp,  M[j][i]);
+					F. assign (tmp,  M[(size_t)j][(size_t)i]);
 					VD. axpyin (*(M. rowBegin() + j), tmp,
 						    *(M. rowBegin() + i));
 				}
@@ -361,20 +361,20 @@ namespace LinBox
 				//not necessary
 				//M. write(std::cout);
 				for (j = i + 1; j < n; ++ j)
-					F. assign (M[i][j], zero);
+					F. assign (M[(size_t)i][(size_t)j], zero);
 			}
 
-			v. resize (n);
+			v. resize ((size_t)n);
 			std::vector<int>::iterator i_p; int j;
 			for (i_p = v. begin(), j = 0; i_p != v. end(); ++ i_p, ++ j)
 				*i_p = j;
 
 			for (j = 0; j < i; ++ j) {
-				if (j != P[j])
-					std::swap (v[j], v[P[j]]);
+				if (j != P[(size_t)j])
+					std::swap (v[(size_t)j], v[(size_t)P[(size_t)j]]);
 			}
 
-			v. resize (i);
+			v. resize ((size_t)i);
 
 			//std::cout << "Pseud-rank: " << i << "\n[";
 			//for (i_p = v. begin(); i_p != v. end(); ++ i_p)
@@ -413,7 +413,7 @@ namespace LinBox
 			for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
 				K. init (*p, *raw_p);
 
-			long r = FFPACK::Rank((typename Field::Father_t) K, n, n, FA, n);
+			long r = (long)FFPACK::Rank((typename Field::Father_t) K, (size_t)n, (size_t)n, FA, (size_t)n);
 
 			delete[] FA;
 			return r;

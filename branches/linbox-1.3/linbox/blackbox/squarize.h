@@ -112,7 +112,7 @@ namespace LinBox
 		{
 			if (_A_ptr != 0) _A_ptr->apply (y, x);
 			if (_A_ptr->rowdim () < y.size()) {
-				for(typename Vector1::iterator yit=y.begin()+_A_ptr->rowdim ();
+				for(typename Vector1::iterator yit=y.begin()+(ptrdiff_t)_A_ptr->rowdim ();
 				    yit != y.end(); ++yit)
 					*yit = _Zero;
 			}
@@ -134,7 +134,7 @@ namespace LinBox
 		{
 			if (_A_ptr != 0) _A_ptr->applyTranspose (y, x);
 			if (_A_ptr->coldim () < y.size()) {
-				for(typename Vector1::iterator yit=y.begin()+_A_ptr->rcoldim ();
+				for(typename Vector1::iterator yit=y.begin()+(ptrdiff_t)_A_ptr->rcoldim ();
 				    yit != y.end(); ++yit)
 					*yit = _Zero;
 			}			return y;

@@ -6,20 +6,20 @@
  *
  * ---------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -124,8 +124,8 @@ Matrix1 &inv (MatrixDomain<Field> &MD, Matrix1 &res, const Matrix2 &A)
 			typename BlasMatrix<typename Matrix1::Field>::Col::iterator i;
 			unsigned int c_idx = idx + 1;
 
-			col = M.colBegin () + idx;
-			i = col->begin () + idx + 1;
+			col = M.colBegin () + (int)idx;
+			i = col->begin () + (int)(idx + 1);
 
 			while (MD.field ().isZero (*i) && i != col->end ()) ++i, ++c_idx;
 
@@ -134,8 +134,8 @@ Matrix1 &inv (MatrixDomain<Field> &MD, Matrix1 &res, const Matrix2 &A)
 			else {
 				typename BlasMatrix<typename Matrix1::Field>::RowIterator row1, row2;
 
-				row1 = M.rowBegin () + idx;
-				row2 = M.rowBegin () + c_idx;
+				row1 = M.rowBegin () + (int)idx;
+				row2 = M.rowBegin () + (int)c_idx;
 
 				std::swap_ranges (row1->begin () + idx, row1->end (), row2->begin () + idx);
 			}
@@ -1498,7 +1498,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 }
 
 template <class Field>
-bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, int iterations)
+bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, unsigned int iterations)
 {
 
 	bool pass = true ;
@@ -1576,7 +1576,7 @@ int main (int argc, char **argv)
 	static size_t m = n;
 	static size_t k = 2;
 	static integer q = 2147483647U;
-	static int iterations = 1;
+	static unsigned int iterations = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set row of test matrices to N.", TYPE_INT,     &n },

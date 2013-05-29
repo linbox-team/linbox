@@ -26,6 +26,7 @@
  * @ingroup tests
  * @brief no doc.
  * @test no doc.
+	//!@bug should work for NTL integers too
  */
 
 
@@ -88,21 +89,21 @@ bool testRandom(const Ring& R,
 		int i, j;
 
 		for(i = 0; i < n; ++i) {
-			R. assign (D[i][i], d[i]);
-			R. init (L[i][i], 1);
-			R. init (U[i][i], 1);}
+			R. assign (D[(size_t)i][(size_t)i], d[(size_t)i]);
+			R. init (L[(size_t)i][(size_t)i], 1);
+			R. init (U[(size_t)i][(size_t)i], 1);}
 
 		for (i = 0; i < n; ++ i)
 
 			for (j = 0; j < i; ++ j) {
 
-				R.init(L[i][j], rand() % 10);
+				R.init(L[(size_t)i][(size_t)j], rand() % 10);
 
-				R.init(U[j][i], rand() % 10);
+				R.init(U[(size_t)j][(size_t)i], rand() % 10);
 			}
 
 
-		std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
+		std::vector<typename Ring::Element> tmp1((size_t)n), tmp2((size_t)n), e((size_t)n);
 
 		typename BlasMatrix<Ring>::ColIterator col_p;
 
@@ -110,11 +111,11 @@ bool testRandom(const Ring& R,
 		for (col_p = A.colBegin();
 		     col_p != A.colEnd(); ++ col_p, ++ i) {
 
-			R.init(e[i],1);
+			R.init(e[(size_t)i],1);
 			U.apply(tmp1, e);
 			D.apply(tmp2, tmp1);
-			L.apply(*col_p, tmp2);
-			R.init(e[i],0);
+			L.apply(*col_p, tmp2); //! @internal @bug  should use Triangular apply ? We are doing this many times, factor somewhere in test-utils.h ? why not some ftrtr routine for that ?
+			R.init(e[(size_t)i],0);
 		}
 
 		typename Vector::iterator x_p;
@@ -189,29 +190,38 @@ int main(int argc, char** argv)
 	};
 
 	parseArguments (argc, argv, args);
-//#ifdef __LINBOX_HAVE_NTL
-//	typedef LinBox::NTL_ZZ      Ring;
-//#else
+	//!@bug should be tried on NTZ_LL too
 	typedef LinBox::PID_integer      Ring;
-//#endif
+
 	Ring R;
 
 	commentator().start("Smith form test suite", "Smith");
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-	LinBox::RandomDenseStream<Ring> s1 (R, n, iterations);
+	LinBox::RandomDenseStream<Ring> s1 (R, n, (unsigned int)iterations);
 	if (!testRandom(R, s1)) pass = false;
+
+#if 0
+#ifdef __LINBOX_HAVE_NTL
+	typedef LinBox::NTL_ZZ      Ring2;
+	Ring2 R2;
+
+	LinBox::RandomDenseStream<Ring2> s2 (R2, n, (unsigned int)iterations);
+	if (!testRandom(R2, s2)) pass = false;
+
+#endif
+#endif
 
 	commentator().stop("Smith form test suite");
 	return pass ? 0 : -1;
 
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

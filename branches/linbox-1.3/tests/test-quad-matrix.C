@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	srand (time (NULL));
+	srand ((unsigned int)time (NULL));
 
 	typedef Modular<uint32_t> Field;
 	typedef ZOQuad <Field> BlackBox;
@@ -94,7 +94,7 @@ int main (int argc, char **argv)
 		{
 			set<size_t> a;
 			while( a.size() < npr )
-				a.insert(rand()%n);
+				a.insert((size_t)rand()%n);
 			size_t j = 0;
 			for(set<size_t>::iterator iter = a.begin(); j < npr; ++j, ++iter)
 				{

@@ -69,7 +69,7 @@ namespace LinBox
 		{}
 
 
-#if  __LINBOX_HAVE_LAPACK
+#ifdef  __LINBOX_HAVE_LAPACK
 		template <class IMatrix, class OutVector, class InVector>
 		SolverReturnStatus solve(OutVector& num, Integer& den,
 					 const IMatrix& M, const InVector& b) const
@@ -122,6 +122,7 @@ namespace LinBox
 				integer* numx = new integer[n];
 				integer denx;
 				int ret;
+				//!@bug don't use cblas_, we should use only fflas-ffpack (if not interfaced in LinBox::)
 				ret = cblas_rsol (n, DM, numx, denx, Db);
 				delete[] DM; delete[] Db;
 
@@ -207,7 +208,7 @@ namespace LinBox
 	{
 		if (n < 1) return 0;
 		double* IM = new double[n * n];
-		memcpy ((void*)IM, (const void*)M, sizeof(double)*n*n);
+		memcpy ((void*)IM, (const void*)M, sizeof(double)*(size_t)(n*n));
 		int ret;
 		//compute the inverse by flops
 		ret = cblas_dgeinv (IM, n);
@@ -242,7 +243,7 @@ namespace LinBox
 		//double log2 = log (2.0);
 		double log2 = M_LN2;
 		// r = b
-		memcpy ((void*) r, (const void*) b, sizeof(double)*n);
+		memcpy ((void*) r, (const void*) b, sizeof(double)*(size_t)n);
 
 		do  {
 			cblas_dapply (n, n, IM, r, x);

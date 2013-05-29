@@ -151,8 +151,8 @@ namespace LinBox
 		{
 			casenumber = 1;
 			u.resize (_BB->coldim ());
-			for (long i = u.size (); i--;)
-				g.random (u[i]);
+			for (long i = (long)u.size (); i--;)
+				g.random (u[(size_t)i]);
 			v.resize (_BB->rowdim ());
 			return _VD.dot (_value, u, u);
 		}

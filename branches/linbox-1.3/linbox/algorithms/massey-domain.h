@@ -12,20 +12,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -125,7 +125,7 @@ namespace LinBox
 
 		/*-- Principal method
 		 * C is set to the minpoly when full_poly = true.
-		 * full_poly = false saves 2 iterations. Then C is sometimes not the minpoly, 
+		 * full_poly = false saves 2 iterations. Then C is sometimes not the minpoly,
 		 * but is a poly sufficient for rank deduction.
 	     */
 		template<class Polynomial>
@@ -155,18 +155,18 @@ namespace LinBox
 		template <class V>
 		long v_degree (V& v)
 		{
-			long i = v.size()-1;
+			long i = (long)v.size()-1;
 
 			if (i == _DEGINFTY_)
 				return _DEGINFTY_;
 
-			else if (!field().isZero (v[i]))
+			else if (!field().isZero (v[(size_t)i]))
 				return i;
 
 			// We must re-compute the degree :
 			for (long j = i - 1; j >= 0; j--) {
-				if (!field().isZero (v[j])) {
-					v.resize (j + 1);
+				if (!field().isZero (v[(size_t)j])) {
+					v.resize ((size_t)j + 1);
 					return j;
 				}
 			}
@@ -178,7 +178,7 @@ namespace LinBox
 		template <class V>
 		long v_val(V& v)
 		{
-			long i = v.size() - 1;
+			long i = (long)v.size() - 1;
 
 			if (i == _DEGINFTY_)
 				return _DEGINFTY_;
@@ -188,7 +188,7 @@ namespace LinBox
 
 			// We must compute the valuation :
 			for (long j = 1; j <= i; j++)
-				if (!field().isZero ((v)[j])) return j ;
+				if (!field().isZero ((v)[(size_t)j])) return j ;
 
 			return _DEGINFTY_ ;
 		}
@@ -213,19 +213,19 @@ namespace LinBox
 
 			integer card;
 
-			commentator().start ("Massey", "masseyd", END);
+			commentator().start ("Massey", "masseyd", (unsigned int)END);
 
 			// ====================================================
 			// Sequence and iterator initialization
 			//
 			typename Sequence::const_iterator _iter (_container->begin ());
-			Polynomial S (END + 1);
+			Polynomial S ((size_t)END + 1);
 
 			// -----------------------------------------------
 			// Preallocation. No further allocation.
 			//
-			C.reserve    (n + 1); C.resize (1); field().assign (C[0], field().one);
-			Polynomial B (n + 1); B.resize (1); field().assign (B[0], field().one);
+			C.reserve    ((size_t)n + 1); C.resize (1); field().assign (C[0], field().one);
+			Polynomial B ((size_t)n + 1); B.resize (1); field().assign (B[0], field().one);
 
 			long L = 0;
 			Element b, d, Ds;
@@ -244,7 +244,7 @@ namespace LinBox
 				// Next coefficient in the sequence
 				// Discrepancy computation
 				//
-				S[NN] = *_iter;
+				S[(size_t)NN] = *_iter;
 
 				//
 #ifdef INCLUDE_TIMING
@@ -257,7 +257,7 @@ namespace LinBox
 				ReverseVector<Subvector<typename Polynomial::iterator> > Spp (Sp);
 				_VD.dot (d, Cp, Spp);
 
-				field().addin (d, S[NN]);
+				field().addin (d, S[(size_t)NN]);
 
 #ifdef INCLUDE_TIMING
 				timer.stop ();
@@ -277,21 +277,21 @@ namespace LinBox
 						field().divin (field().neg (Ds, d), b);
 						long i = l_deg = (x + b_deg);
 						if (l_deg > c_deg) {
-							C.resize (l_deg + 1);
+							C.resize ((size_t)l_deg + 1);
 							if (x > c_deg) {
 								for (; i >= x; --i)
-									field().mul (C[i], Ds, B[i-x]);
+									field().mul (C[(size_t)i], Ds, B[(size_t)(i-x)]);
 								for (; i > c_deg; --i)
-									field().assign (C[i], field().zero);
+									field().assign (C[(size_t)i], field().zero);
 							} else {
 								for (; i > c_deg; --i)
-									field().mul (C[i], Ds, B[i-x]);
+									field().mul (C[(size_t)i], Ds, B[(size_t)(i-x)]);
 								for (; i >= x; --i)
-									field().axpyin (C[i], Ds, B[i-x]);
+									field().axpyin (C[(size_t)i], Ds, B[(size_t)(i-x)]);
 							}
 						} else {
 							for (; i >= x; --i)
-								field().axpyin (C[i], Ds, B[i-x]);
+								field().axpyin (C[(size_t)i], Ds, B[(size_t)(i-x)]);
 						}
 						// -----------------------------------------------
 						c_deg = v_degree(C);
@@ -303,26 +303,26 @@ namespace LinBox
 						long i = l_deg = x + b_deg;
 						B.resize (C.size ());
 						if (l_deg > c_deg) {
-							C.resize (l_deg+1);
+							C.resize ((size_t)l_deg+1);
 							if (x > c_deg) {
 								for (; i >= x; --i)
-									field().mul (C[i], Ds, B[i-x]);
+									field().mul (C[(size_t)i], Ds, B[(size_t)(i-x)]);
 								for (; i > c_deg; --i)
-									field().assign (C[i], field().zero);
+									field().assign (C[(size_t)i], field().zero);
 							} else {
 								for (; i > c_deg; --i)
-									field().mul (C[i], Ds, B[i-x]);
+									field().mul (C[(size_t)i], Ds, B[(size_t)(i-x)]);
 								for (; i >= x; --i)
-									field().axpy (C[i], Ds, B[i-x], field().assign(B[i],C[i]) );
+									field().axpy (C[(size_t)i], Ds, B[(size_t)(i-x)], field().assign(B[(size_t)i],C[(size_t)i]) );
 							}
 						} else {
 							for (i = c_deg; i > l_deg; --i)
-								field().assign(B[i],C[i]);
+								field().assign(B[(size_t)i],C[(size_t)i]);
 							for (; i >= x; --i)
-								field().axpy (C[i], Ds, B[i-x], field().assign(B[i],C[i]) );
+								field().axpy (C[(size_t)i], Ds, B[(size_t)(i-x)], field().assign(B[(size_t)i],C[(size_t)i]) );
 						}
 
-						for (; i >= 0; --i) field().assign(B[i],C[i]);
+						for (; i >= 0; --i) field().assign(B[(size_t)i],C[(size_t)i]);
 
 						// -----------------------------------------------
 						L = NN+1-L;
@@ -373,18 +373,18 @@ namespace LinBox
 		template<class Polynomial>
 		unsigned long pseudo_minpoly (Polynomial &phi, unsigned long &rank, bool full_poly = true)
 		{
-			unsigned long L = massey (phi, full_poly);
+			unsigned long L = (unsigned long)massey (phi, full_poly);
 			long dp = v_degree(phi);
-			rank = dp - v_val (phi);
+			rank = (unsigned long) (dp - v_val (phi));
 			if (phi.size()) {
 				for(long i = dp >> 1;i > 0; --i) {
-					phi[0] = phi[i];
-					phi[i] = phi[dp-i];
-					phi[dp-i] = phi[0];
+					phi[0] = phi[(size_t)i];
+					phi[(size_t)i] = phi[(size_t)(dp-i)];
+					phi[(size_t)(dp-i)] = phi[0];
 				}
-				phi[0] = phi[dp];
-// 				field().init (phi[dp], 1UL);
-				field().assign (phi[dp], field().one);
+				phi[0] = phi[(size_t)dp];
+// 				field().init (phi[(size_t)dp], 1UL);
+				field().assign (phi[(size_t)dp], field().one);
 			}
 			return L;
 		}
@@ -393,14 +393,14 @@ namespace LinBox
 		void minpoly (Polynomial &phi, unsigned long &rank, bool full_poly = true)
 		{
 			long dp = massey (phi, full_poly);
-			rank = v_degree(phi) - v_val (phi);
+			rank = (unsigned long) (v_degree(phi) - v_val (phi));
 			if (phi.size () > 0) {
-				phi.resize (dp+1);
+				phi.resize ((size_t)dp+1);
 				for (long i = dp >> 1; i > 0; --i)
-					std::swap (phi[i], phi[dp-i]);
-				phi[0] = phi[dp];
-// 				field().init (phi[dp], 1UL);
-				field().assign(phi[dp], field().one);
+					std::swap (phi[(size_t)i], phi[(size_t)(dp-i)]);
+				phi[0] = phi[(size_t)dp];
+// 				field().init (phi[(size_t)dp], 1UL);
+				field().assign(phi[(size_t)dp], field().one);
 			}
 		}
 	};

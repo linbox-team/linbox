@@ -185,7 +185,7 @@ static bool testSubvector(Field &F, size_t n)
 	report << "Random access through vector: (";
 	for (unsigned long i = 0; i < w.size(); i++)
 	{
-		report << j[i];
+		report << j[(int)i];
 		if ( i < (w.size() - 1) ) report << ", ";
 	}
 	report << ')' << endl;
@@ -243,7 +243,7 @@ static bool testSubvector(Field &F, size_t n)
 	report << "Random access through vector: (";
 	for (unsigned long i = 0; i < w.size(); i++)
 	{
-		report << jr[i];
+		report << jr[(int)i];
 		if ( i < (w.size() - 1) ) report << ", ";
 	}
 	report << ')' << endl;
@@ -272,7 +272,7 @@ static bool testSubvector(Field &F, size_t n)
 	report << "Printing using operator[]: (";
 	for (unsigned long i = 0; i < w.size(); i++)
 	{
-		report << w[i];
+		report << w[(size_t)i];
 		if ( i < (w.size() - 1) ) report << ", ";
 	}
 	report << ')' << endl;

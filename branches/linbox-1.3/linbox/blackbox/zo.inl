@@ -6,20 +6,20 @@
  * Modified by Zhendong Wan, -bds
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -106,7 +106,7 @@ namespace LinBox
 			for(jp = *ip; jp !=*(ip + 1); ++jp)
 			{
 				//std::cout << jp - _index.begin() << endl;
-				accum.accumulate_special( *(xp + *jp) );
+				accum.accumulate_special( *(xp + (ptrdiff_t)*jp) );
 			}
 			//std::cout << " accumulate is done for one iteration " << endl;
 			//std::cout << " before accum.get " << yp - y.begin() << endl;
@@ -190,7 +190,7 @@ namespace LinBox
 		for(ip = _indexP.begin(); ip < _indexP.end()-1; ++ip, ++yp)
 		{
 			for(jp = *ip; jp <*(ip + 1); ++jp)
-				accum.accumulate_special( *(xp + *jp) );
+				accum.accumulate_special( *(xp +(ptrdiff_t) *jp) );
 			accum.get(*yp);
 			accum.reset();
 		}

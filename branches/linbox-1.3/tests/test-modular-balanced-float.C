@@ -50,7 +50,7 @@ using namespace LinBox;
 int main (int argc, char **argv)
 {
 	static size_t n = 1000;
-	static int iterations = 1;
+	static unsigned int iterations = 1;
 	static int trials = 10000;
 	static int categories = 1000;
 	static int hist_level = 10;

@@ -241,7 +241,7 @@ namespace LinBox
 		commentator().start ("Integer Minpoly", "Iminpoly");
 #endif
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RandomPrimeIterator genprime((uint32_t) (26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 		std::vector<integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
 #ifdef __LINBOX_HAVE_MPI
@@ -271,7 +271,7 @@ namespace LinBox
 	{
 		commentator().start ("Rational Minpoly", "Rminpoly");
 
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RandomPrimeIterator genprime((uint32_t)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		RationalRemainder2< VarPrecEarlyMultipCRA<Modular<double> > > rra(3UL);
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 

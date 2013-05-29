@@ -73,9 +73,9 @@ namespace LinBox{
 				      dataOffset < (int)(matrix.coldim() * matrix.rowdim())){
 
 					//Put entry of matrix into the padding buffer
-					int row = (int) (dataOffset / matrix.coldim());
-					int col = (int) (dataOffset % matrix.coldim());
-					paddingBuffer[paddingBufferPosition] = matrix.getEntry(row, col);
+					int row = (int) ((size_t)dataOffset / matrix.coldim());
+					int col = (int) ((size_t)dataOffset % matrix.coldim());
+					paddingBuffer[paddingBufferPosition] = matrix.getEntry((size_t)row, (size_t)col);
 
 					//Increment the count for the row, paddingBuffer, and matrix
 					count++;
@@ -110,7 +110,7 @@ namespace LinBox{
 			}
 			//Transfer the partial paddingBuffer to the matrixBuffer
 			else{
-				transferSize = (int) ((matrixBufferSize - matrixBufferPosition) * sizeof(T));
+				transferSize = (int) ((size_t)(matrixBufferSize - matrixBufferPosition) * sizeof(T));
 			}
 
 			cl_int tempErrcode;
@@ -118,8 +118,8 @@ namespace LinBox{
 				commandQue,
 				matrixBuffer,
 				CL_TRUE,
-				(matrixBufferPosition * sizeof(T)),
-				transferSize,
+				((size_t)matrixBufferPosition * sizeof(T)),
+				(size_t)transferSize,
 				paddingBuffer,
 				0,
 				NULL,
@@ -168,7 +168,7 @@ namespace LinBox{
 			}
 			//Transfer a partial depaddingBuffer worth of elements back to the host
 			else{
-				transferSize = (int) ( (matrixBufferSize - matrixBufferPosition) * sizeof(T) );
+				transferSize = (int) ( (size_t)(matrixBufferSize - matrixBufferPosition) * sizeof(T) );
 			}
 
 			cl_int tempErrcode;
@@ -176,8 +176,8 @@ namespace LinBox{
 				commandQue,
 				matrixBuffer,
 				CL_TRUE,
-				(matrixBufferPosition * sizeof(T)),
-				transferSize,
+				((size_t)matrixBufferPosition * sizeof(T)),
+				(size_t)transferSize,
 				depaddingBuffer,
 				0,
 				NULL,
@@ -197,9 +197,9 @@ namespace LinBox{
 				      dataOffset < outputSize){
 
 					//Put entry of depadding buffer into the matrix
-					int row = (int) (dataOffset / matrix.coldim());
-					int col = (int) (dataOffset % matrix.coldim());
-					matrix.setEntry(row, col, depaddingBuffer[depaddingBufferPosition]);
+					int row = (int) ((size_t)dataOffset / matrix.coldim());
+					int col = (int) ((size_t)dataOffset % matrix.coldim());
+					matrix.setEntry((size_t)row, (size_t)col, depaddingBuffer[depaddingBufferPosition]);
 
 					//Increment the count for the row, depadding buffer, and matrix
 					count++;
@@ -241,7 +241,7 @@ namespace LinBox{
 		cl_mem matrixBuffer = clCreateBuffer(
 			context,
 			CL_MEM_READ_WRITE,
-			(newDimX * newDimY * sizeof(T)),
+			((size_t)newDimX * (size_t)newDimY * sizeof(T)),
 			0,
 			&tempErrcode);
 
@@ -269,7 +269,7 @@ namespace LinBox{
 		cl_mem matrixBuffer = clCreateBuffer(
 			context,
 			CL_MEM_READ_WRITE,
-			(newDimX * newDimY * sizeof(T)),
+			((size_t)newDimX * (size_t)newDimY * sizeof(T)),
 			0,
 			&tempErrcode);
 

@@ -43,7 +43,7 @@ template <class Field, class Polynomial>
 std::ostream& printPolynomial (std::ostream& out, const Field &F, const Polynomial &v)
 {
 	for (int i = v.size () - 1; i >= 0; i--) {
-		F.write (out, v[i]);
+		F.write (out, v[(size_t)i]);
 		if (i > 0)
 			out << " X^" << i << " + ";
 	}
@@ -62,9 +62,9 @@ std::ostream& prettyprintIntegerPolynomial (std::ostream& out, const Field &F, c
 			out << 'X';
 			if (n > 1) out << '^' << n;
 			for (int i = (int)n - 1; i > 0; i--) {
-				if (v[i] != 0) {
-					if (v[i] >0) out << " + ";
-					if (v[i] != 1) F.write (out, v[i]) << '*';
+				if (v[(size_t)i] != 0) {
+					if (v[(size_t)i] >0) out << " + ";
+					if (v[(size_t)i] != 1) F.write (out, v[(size_t)i]) << '*';
 					out << 'X';
 					if (i > 1) out << '^' << i;
 				}

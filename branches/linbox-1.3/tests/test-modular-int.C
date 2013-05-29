@@ -64,10 +64,10 @@ int main (int argc, char **argv)
 	static int q4 = 101;
 	static integer q5 = 144115188075855881;
 	static size_t n = 10000;
-	static int iterations = 1;
-	static int trials = 10000;
-	static int categories = 1000;
-	static int hist_level = 10;
+	static unsigned int iterations = 1;
+	static unsigned int trials = 10000;
+	static unsigned int categories = 1000;
+	static unsigned int hist_level = 10;
 
 	static Argument args[] = {
 		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q1 },
@@ -264,7 +264,7 @@ int main (int argc, char **argv)
 		bool part_pass = true ;
 		commentator().start("Modular<uint8_t> field test suite", "Modular<uint8_t>");
 
-		Modular<uint8_t> F_int (q4);
+		Modular<uint8_t> F_int ((uint32_t)q4);
 		integer k = FieldTraits<Modular<uint8_t> >::maxModulus() ;
 		prevprime(k,k);
 		Modular<uint8_t> I_int(k);

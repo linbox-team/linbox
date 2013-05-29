@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 		Ints Z;
 		BlasMatrix<Ints> M(Z);
 		Mat(M, Z, n, src, file, format);
-		vector<integer> v(n);
+		vector<integer> v((size_t)n);
 		T.start();
 		SmithFormAdaptive::smithForm(v, M);
 		T.stop();
@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
 		List L;
 
 		for (size_t i = 0; i < M.rowdim(); ++i)
-			L.push_back(M[(int)i][i]);
+			L.push_back(M[(size_t)i][(size_t)i]);
 
 		list<pair<PIR::Element, size_t> > p;
 
@@ -323,11 +323,11 @@ void scramble(BlasMatrix<Ring>& M)
 
 			if (a)
 
-				R.subin(M[(int)l][i], M[(int)l][j]);
+				R.subin(M[(size_t)l][(size_t)i], M[(size_t)l][(size_t)j]);
 
 			else
 
-				R.addin(M[(int)l][i], M[(int)l][j]);
+				R.addin(M[(size_t)l][(size_t)i], M[(size_t)l][(size_t)j]);
 
 			//K.axpy(c, M.getEntry(l, i), x, M.getEntry(l, j));
 			//M.setEntry(l, i, c);
@@ -339,10 +339,10 @@ void scramble(BlasMatrix<Ring>& M)
 
 			if (a)
 
-				R.subin(M[i][l], M[j][l]);
+				R.subin(M[(size_t)i][l], M[(size_t)j][l]);
 			else
 
-				R.addin(M[i][l], M[j][l]);
+				R.addin(M[(size_t)i][l], M[(size_t)j][l]);
 		}
 	}
 
@@ -354,7 +354,7 @@ void scramble(BlasMatrix<Ring>& M)
 
 		for ( int j = 0; j < n; ++ j) {
 
-			R. write(out, M[i][j]);
+			R. write(out, M[(size_t)i][(size_t)j]);
 
 			out << " ";
 		}
@@ -372,7 +372,7 @@ void scramble(BlasMatrix<Ring>& M)
 template <class PIR>
 void RandomRoughMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
+	M.resize((size_t)n, (size_t)n, zero);
 	if (n > 10000) {cerr << "n too big" << endl; exit(-1);}
 	int jth_factor[130] =
 	{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
@@ -389,8 +389,8 @@ void RandomRoughMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 	{
 		typename PIR::Element v; R.init(v, jth_factor[25+j]);
 		for (int k = j ; k > 0 && i < n ; --k)
-		{   M[i][i] = v; ++i;
-			if (i < n) {M[i][i] = v; ++i;}
+		{   M[(size_t)i][(size_t)i] = v; ++i;
+			if (i < n) {M[(size_t)i][(size_t)i] = v; ++i;}
 		}
 	}
 	scramble(M);
@@ -401,11 +401,11 @@ void RandomRoughMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 template <class PIR>
 void RandomFromDiagMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
+	M.resize((size_t)n,(size_t) n, zero);
 
 	for (int i= 0 ; i < n; ++i)
 
-		R.init(M[i][i], i % 1000 + 1);
+		R.init(M[(size_t)i][(size_t)i], i % 1000 + 1);
 	scramble(M);
 
 }
@@ -419,11 +419,11 @@ void RandomFromDiagMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 template <class PIR>
 void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
+	M.resize((size_t)n,(size_t) n, zero);
 
 	typename PIR::Element one; R.init(one, 1);
 
-	for (int i= 0 ; i < n; ++i) M[i][i] = one;
+	for (int i= 0 ; i < n; ++i) M[(size_t)i][(size_t)i] = one;
 
 	int j = 1, k = 0;
 
@@ -431,18 +431,18 @@ void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 
 		if ( i == k) {
 
-			M[i][i+1] = zero;
+			M[(size_t)i][(size_t)i+1] = zero;
 
 			k += ++j;
 		}
 
 		else {
 
-			M[i][i+1] = one;
+			M[(size_t)i][(size_t)i+1] = one;
 
 			R.negin(one);
 		}
-		R.neg(M[i+1][i], M[i][i+1]);
+		R.neg(M[(size_t)i+1][(size_t)i], M[(size_t)i][(size_t)i+1]);
 	}
 	scramble(M);
 }
@@ -455,7 +455,7 @@ void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 template <class PIR>
 void TrefMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
+	M.resize((size_t)n, (size_t)n, zero);
 
 	std::vector<int> power2;
 
@@ -472,17 +472,17 @@ void TrefMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 
 	for ( i = 0; i < n; ++ i)
 
-		in >> M[i][i];
+		in >> M[(size_t)i][(size_t)i];
 
 	std::vector<int>::iterator p;
 
 	for ( i = 0; i < n; ++ i) {
 
 		for ( p = power2. begin(); (p != power2. end()) && (*p <= i); ++ p)
-			M[i][i - *p] = 1;
+			M[(size_t)i][(size_t)(i - *p)] = 1;
 
 		for ( p = power2. begin(); (p != power2. end()) && (*p < n - i); ++ p)
-			M[i][i + *p] = 1;
+			M[(size_t)i][(size_t)(i + *p)] = 1;
 	}
 
 }
@@ -496,8 +496,8 @@ struct pwrlist
 	}
 	integer operator[](int e)
 	{
-		for (int i = (int)m.size(); i <= e; ++i) m.push_back(m[1]*m[i-1]);
-		return m[e];
+		for (int i = (int)m.size(); i <= e; ++i) m.push_back(m[1]*m[(size_t)i-1]);
+		return m[(size_t)e];
 	}
 };
 
@@ -528,7 +528,7 @@ void KratMat(BlasMatrix<PIR>& M, PIR& R, int q, istream& in)
 		for ( unsigned int j = 0; j < M.coldim(); ++ j) {
 			int Val;
 			qread(Val, pwrs, in);
-			R. init (M[i][j], Val);
+			R. init (M[(size_t)i][(size_t)j], Val);
 		}
 }
 
@@ -601,7 +601,7 @@ void Mat(BlasMatrix<PIR>& M, PIR& R, int n,
 
 		in >> rdim >> cdim;
 
-		M. resize (rdim, cdim);
+		M. resize ((size_t)rdim, (size_t)cdim);
 
 		integer Val;
 
@@ -613,7 +613,7 @@ void Mat(BlasMatrix<PIR>& M, PIR& R, int n,
 
 					in >> Val;
 
-					R. init (M[i][j], Val);
+					R. init (M[(size_t)i][(size_t)j], Val);
 
 				}
 		}
@@ -636,7 +636,7 @@ void Mat(BlasMatrix<PIR>& M, PIR& R, int n,
 
 				if ( i == 0) break;
 
-				R. init (M[i-1][j-1], val);
+				R. init (M[(size_t)i-1][(size_t)j-1], val);
 
 			} while (true);
 

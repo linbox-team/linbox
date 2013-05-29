@@ -51,6 +51,8 @@
 #include "gmp++/gmp++.h"
 #include <cfloat> // BB : needed on some rare platforms...
 
+using std::ptrdiff_t;
+
 
 #ifdef __LINBOX_HAVE_STDINT_H
 #ifndef __STDC_LIMIT_MACROS
@@ -124,11 +126,11 @@ namespace LinBox
 #include <givaro/givspyinteger.h>
 namespace LinBox
 {
- 
+
     /*! @internal
 	 * Spy structure to have access to protected members of Givaro::Integer.
 	 */
-    using Givaro::SpyInteger;   
+    using Givaro::SpyInteger;
 
 } // LinBox namespace
 
