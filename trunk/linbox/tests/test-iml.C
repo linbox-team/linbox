@@ -411,10 +411,12 @@ int main(int argc, char ** argv)
 		pass=false;
 	RAPPORT("IML det");
 
+#ifdef __LINBOX_HAVE_IML
 	TESTE("IML stuff");
 	if (!testIMLstuff(F, m,n,r, iterations))
 		pass=false;
 	RAPPORT("IML stuff");
+#endif
 
 
 	commentator().stop(MSG_STATUS (pass),"IML/iml test suite");
