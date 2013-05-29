@@ -6,20 +6,20 @@
  *
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -493,20 +493,21 @@ bool runSparseMatrixTestsByVector (const Field           &F,
 	str << "Testing " << desc << " sparse matrix" << ends;
 	commentator().start (str.str ().c_str (), "runSparseMatrixTestsByVector", 6);
 
-	if (!testIdentityApply<Row>   (F, desc, v_stream1))           	pass = false; 
+	if (!testIdentityApply<Row>   (F, desc, v_stream1))           	pass = false;
 	commentator().progress ();
-	if (!testNilpotentApply<Row>  (F, desc, v_stream1))           	pass = false; 
+	if (!testNilpotentApply<Row>  (F, desc, v_stream1))           	pass = false;
 	commentator().progress ();
-	if (!testRandomApply1<Vector> (F, desc, iterations, A_stream))	pass = false; 
+	if (!testRandomApply1<Vector> (F, desc, iterations, A_stream))	pass = false;
 	commentator().progress ();
-	if (!testRandomApply2<Vector> (F, desc, iterations, A_stream))	pass = false; 
+	if (!testRandomApply2<Vector> (F, desc, iterations, A_stream))	pass = false;
 	commentator().progress ();
 	SparseMatrix<Field, Row> A(F, A_stream);
 	A_stream.reset ();
-	if (testRW)
+	if (testRW){
 		if (!testBlackbox(A)) 					pass = false;
-	else
-		if (!testBlackboxNoRW(A)) 				pass = false;
+		else
+			if (!testBlackboxNoRW(A)) 				pass = false;
+	}
 	commentator().progress ();
 
 	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runSparseMatrixTests");
@@ -538,8 +539,8 @@ bool runSparseMatrixTests (const Field       &F,
 	str4 << desc << "/sparse associative" << ends;
 	str5 << desc << "/sparse parallel" << ends;
 
-	RandomDenseStream<Field, DenseVector>     dense_stream1 (F, A_stream.n (), iterations);
-	RandomDenseStream<Field, DenseVector>     dense_stream2 (F, A_stream.m (), iterations);
+	RandomDenseStream<Field, DenseVector>     dense_stream1 (F, A_stream.n (), (size_t)iterations);
+	RandomDenseStream<Field, DenseVector>     dense_stream2 (F, A_stream.m (), (size_t)iterations);
 #if 0
 	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream1 (F, 0.1, A_stream.n (), iterations);
 	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream2 (F, 0.1, A_stream.m (), iterations);
@@ -549,7 +550,7 @@ bool runSparseMatrixTests (const Field       &F,
 	RandomSparseStream<Field, SparseParVector> sparse_par_stream2 (F, 0.1, A_stream.m (), iterations);
 #endif
 
-	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
+	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), (unsigned int)iterations,
 					   dense_stream1, dense_stream2, A_stream, testRW))
 		pass = false;
 #if 0
@@ -619,12 +620,12 @@ int main (int argc, char **argv)
 		stream3 (F, (double) k / (double) n, n, m);
 	bool testRW = true;
 /*
-	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1, !testRW)) 
+	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1, !testRW))
 		pass = false;
-	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2, !testRW)) 
+	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2, !testRW))
 		pass = false;
 */
-	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3, testRW)) 
+	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3, testRW))
 		pass = false;
 
 	commentator().stop("Sparse matrix black box test suite");

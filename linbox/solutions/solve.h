@@ -211,7 +211,7 @@ namespace LinBox
 	Vector& solvein(Vector& x,
 			GaussDomain<GF2>::Matrix    &A,
 			const Vector& b,
-			const Method::SparseElimination& m, 
+			const Method::SparseElimination& m,
             Random& generator)
 	{
 		commentator().start ("Sparse Elimination Solve In Place over GF2", "GF2sesolvein");
@@ -542,7 +542,7 @@ namespace LinBox
 
 		typedef Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RandomPrimeIterator genprime((unsigned int)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		RationalSolver<Ring, Field, RandomPrimeIterator, DixonTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
 
@@ -639,7 +639,7 @@ namespace LinBox
 
 		typedef Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RandomPrimeIterator genprime((unsigned int) (26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		RationalSolver<Ring, Field, RandomPrimeIterator, SparseEliminationTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
 
@@ -853,7 +853,7 @@ namespace LinBox
 
 		commentator().start ("Integer CRA Solve", "Isolve");
 
-		RandomPrimeIterator genprime( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		//         RationalRemainder< Modular<double> > rra((double)
 		//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
 
@@ -927,11 +927,11 @@ namespace LinBox
 					  mpz_t mp_D ;
 					  mpz_init(mp_D);
 				  if (!m.computeRNS()) {
-					  IML::nonsingSolvLlhsMM(IML::RightSolu,B.rowdim(),1,
+					  IML::nonsingSolvLlhsMM(IML::RightSolu,(long)B.rowdim(),1,
 								 mp_A, mp_B, mp_N, mp_D);
 				  }
 				  else {
-					  long n = B.coldim();
+					  long n = (long)B.coldim();
 					  long basislen = 1;
 					  mpz_t mp_alpha, mp_maxInter;
 					  IML::FiniteField qh;
@@ -947,10 +947,10 @@ namespace LinBox
 					  mpz_clear(mp_maxInter);
 					  mpz_clear(mp_alpha);
 					  /*  CRNS[i] = [A_11, A_12] mod basis[i] */
-					  ARNS = IML_XMALLOC(IML::Double *, basislen);
+					  ARNS = IML_XMALLOC(IML::Double *, (size_t)basislen);
 					  for (long i = 0; i < basislen; ++i)
 					  {
-						  ARNS[i] = IML_XMALLOC(IML::Double, n*n);
+						  ARNS[i] = IML_XMALLOC(IML::Double,(size_t)(n*n));
 						  for (long j = 0; j < n; ++j)
 							  for (long l = 0; l < n; l++)
 								  ARNS[i][j*n+l] = (IML::Double) mpz_fdiv_ui(mp_A[j * n + l], basis[i]);
@@ -982,14 +982,14 @@ namespace LinBox
 				   }
 				   if ( !m.reduced() ) {
 					   IML::certSolveMP(m.certificate(),
-							    B.rowdim(),B.coldim(),
+							   (long) B.rowdim(),(long)B.coldim(),
 							    mp_A, mp_b, mp_N, mp_D,
 							    mp_NZ, mp_DZ);
 				   }
 				   else {
 					   IML::certSolveRedMP(m.certificate(),
 							       m.nullcol() //NULLSPACE_COLUMN
-							       ,B.rowdim(),B.coldim(),
+							       ,(long)B.rowdim(),(long)B.coldim(),
 							       mp_A, mp_b, mp_N, mp_D,
 							       mp_NZ, mp_DZ);
 
@@ -1037,7 +1037,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 		commentator().start ("Rational CRA Solve", "Rsolve");
-		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
+		size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
 		RandomPrimeIterator genprime( (unsigned) bits);
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
@@ -1062,7 +1062,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 		commentator().start ("Rational CRA Solve", "Rsolve");
-		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
+		size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
 		RandomPrimeIterator genprime((unsigned) bits);
 		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,RatVector,MethodTraits > iteration(A, b, m);
@@ -1115,7 +1115,7 @@ namespace LinBox {
 		 const BlasMatrix<PID_integer>& B, const std::vector<PID_integer::Element>& b,
 		 const Method::NumericalWan & m)
 	{
-		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
+		//THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
 
 		typedef Modular<int32_t> ZField;
 		// typedef Modular<double> ZField;
@@ -1124,7 +1124,8 @@ namespace LinBox {
 
 		int status = rsolver.solve(x, d, B, b);
 		if (status)
-			throw "fail" ;
+			// throw "fail" ;
+			std::cerr << "fail:" << status << std::endl;
 		return x;
 	}
 }

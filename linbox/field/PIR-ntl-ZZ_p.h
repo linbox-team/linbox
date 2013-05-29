@@ -79,7 +79,7 @@ namespace LinBox
 		}
 
 		PIR_ntl_ZZ_p (const integer& d, int e = 1 )  :
-			Father_t(d,e)
+			Father_t(d,(size_t)e)
 		{
 
 			// if(e != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");

@@ -75,7 +75,7 @@ static bool testIdentity (Field &F, size_t n, int iterations = 1)
 	typedef BlasMatrix<Field> Base;
 	typedef BlasMatrix<Field>           Blackbox;
 
-	commentator().start ("Testing identity apply", "testIdentity", iterations);
+	commentator().start ("Testing identity apply", "testIdentity", (unsigned int)iterations);
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -103,7 +103,7 @@ static bool testIdentity (Field &F, size_t n, int iterations = 1)
 		iter_passed = true;
 
 		for (size_t j = 0; j < n; j++)
-			r.random (v[j]);
+			r.random (v[(size_t)j]);
 
 		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector: ";
@@ -119,7 +119,7 @@ static bool testIdentity (Field &F, size_t n, int iterations = 1)
 		printVector<Field> (F, report, w);
 
 		for (size_t j = 0; j < (size_t)n; j++)
-			if (!F.areEqual (w[j], v[j]))
+			if (!F.areEqual (w[(size_t)j], v[(size_t)j]))
 				ret = iter_passed = false;
 
 		if (!iter_passed)
@@ -160,7 +160,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 	typedef vector <typename Field::Element> Polynomial;
 	typedef BlasMatrix <Field> Blackbox;
 
-	commentator().start ("Testing Vandermonde apply", "testVandermonde", iterations);
+	commentator().start ("Testing Vandermonde apply", "testVandermonde", (unsigned int)iterations);
 
 	bool ret = true;
 	bool inner_iter_passed;
@@ -184,10 +184,10 @@ static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 
 			// Make sure points are all distinct
 			while (flag) {
-				r.random (x[j]);
+				r.random (x[(size_t)j]);
 				flag = false;
 				for (k = 0; k < j; k++)
-					if (F.areEqual (x[j], x[k]))
+					if (F.areEqual (x[(size_t)j], x[(size_t)k]))
 						flag = true;
 			}
 		}
@@ -201,8 +201,8 @@ static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 			F.init (t, 1);
 
 			for (k = 0; k < (int) n; k++) {
-				V.setEntry (j, k, t);
-				F.mulin (t, x[j]);
+				V.setEntry ((size_t)j,(size_t) k, t);
+				F.mulin (t, x[(size_t)j]);
 			}
 		}
 
@@ -210,8 +210,8 @@ static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 			inner_iter_passed = true;
 
 			/* Random vector of evaluation results */
-			for (k = 0; k < n; k++)
-				r.random (v[k]);
+			for (k = 0; k < (int)n; k++)
+				r.random (v[(size_t)k]);
 
 			report << "Input vector: ";
 			printVector<Field> (F, report, v);
@@ -229,7 +229,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 			printVector<Field> (F, report, f);
 
 			for (k = 0; k < (int) n; k++)
-				if (!F.areEqual (f[k], v[k]))
+				if (!F.areEqual (f[(size_t)k], v[(size_t)k]))
 					ret = inner_iter_passed = false;
 
 			if (!inner_iter_passed)
@@ -342,8 +342,8 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	RandomDenseStream<Field> A_stream (F, n, n);
-	RandomDenseStream<Field> v1_stream (F, n, iterations);
-	RandomDenseStream<Field> v2_stream (F, n, iterations);
+	RandomDenseStream<Field> v1_stream (F, n, (unsigned int)iterations);
+	RandomDenseStream<Field> v2_stream (F, n, (unsigned int)iterations);
 
 	if (!testIdentity    (F, n)) pass = false;
 	if (!testVandermonde (F, n)) pass = false;

@@ -92,7 +92,7 @@ public:
 				d >>= 1;
 				r <<= 1;
 			}
-			d = r;
+			d = (LocalPIR::Element)r;
 		}
 	}
 };

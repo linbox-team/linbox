@@ -6,20 +6,20 @@
  *
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -76,7 +76,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
-	commentator().start ("Testing nonsingular diagonal determinant (1)", "testDiagonalDet1", iterations);
+	commentator().start ("Testing nonsingular diagonal determinant (1)", "testDiagonalDet1", (unsigned int) iterations);
 
 	bool ret = true;
 	bool done;
@@ -90,7 +90,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		commentator().startIteration (i);
+		commentator().startIteration ((unsigned int) i);
 
 		F.init (pi, 1);
 
@@ -170,7 +170,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
-	commentator().start ("Testing nonsingular diagonal determinant (2)", "testDiagonalDet2", iterations);
+	commentator().start ("Testing nonsingular diagonal determinant (2)", "testDiagonalDet2", (unsigned int) iterations);
 
 	bool ret = true;
 	int i, k;
@@ -181,7 +181,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		commentator().startIteration (i);
+		commentator().startIteration ((unsigned int)i);
 
 		F.init (pi, 1);
 
@@ -191,9 +191,9 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 		}
 
 		for (j = n / 2; j < n; j++) {
-			k =int( rand () % (n / 2) );
-			d[j] = d[k];
-			F.mulin (pi, d[j]);
+			k =int( (size_t)rand () % (n / 2) );
+			d[j] = d[(size_t)k];
+			F.mulin (pi, d[(size_t)j]);
 		}
 
 		//ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -262,7 +262,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
-	commentator().start ("Testing singular diagonal determinant", "testSingularDiagonalDet", iterations);
+	commentator().start ("Testing singular diagonal determinant", "testSingularDiagonalDet",(size_t) iterations);
 
 	bool ret = true;
 	int i;
@@ -273,13 +273,13 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		commentator().startIteration (i);
+		commentator().startIteration ((unsigned int)i);
 
 		for (j = 0; j < n; j++)
 			r.random (d[j]);
 
 		// until bug about the upper left entry being zero is fixed:
-		F.init (d[1+ rand () % (n-1)], 0);
+		F.init (d[1+ (size_t)rand () % (n-1)], 0);
 		//F.init (d[rand () % n], 0);
 
 		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -338,12 +338,12 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 
 bool testIntegerDet (size_t n, int iterations)
 {
- 	commentator().start ("Testing integer determinant", "testIntegerDet", iterations);
+ 	commentator().start ("Testing integer determinant", "testIntegerDet", (unsigned int)iterations);
 
 	bool ret = true;
 
 	for (int i = 0; i < iterations; ++i) {
-		commentator().startIteration (i);
+		commentator().startIteration ((unsigned int)i);
 		PID_integer R;
 		SparseMatrix<PID_integer> A (R, n, n);
 
@@ -416,12 +416,12 @@ bool testIntegerDet (size_t n, int iterations)
 
 bool testIntegerDetGen (size_t n, int iterations)
 {
- 	commentator().start ("Testing integer determinant, generic methods", "testIntegerDeterminantGeneric", iterations);
+ 	commentator().start ("Testing integer determinant, generic methods", "testIntegerDeterminantGeneric", (unsigned int) iterations);
 
 	bool ret = true;
 
 	for (int i = 0; i < iterations; ++i) {
-		commentator().startIteration (i);
+		commentator().startIteration ((unsigned int)i);
 		PID_integer R;
 		SparseMatrix<PID_integer> A (R, n, n);
 
@@ -499,12 +499,12 @@ bool testIntegerDetGen (size_t n, int iterations)
 
 bool testRationalDetGen (size_t n, int iterations)
 {
- 	commentator().start ("Testing rational determinant, generic methods", "testRationalDeterminantGeneric", iterations);
+ 	commentator().start ("Testing rational determinant, generic methods", "testRationalDeterminantGeneric", (unsigned int) iterations);
 
 	bool ret = true;
 
 	for (int i = 0; i < iterations; ++i) {
-		commentator().startIteration (i);
+		commentator().startIteration ((unsigned int)i);
 		GMPRationalField Q;
 		SparseMatrix<GMPRationalField > A (Q, n, n);
 		BlasMatrix <GMPRationalField > BB(Q, n, n);

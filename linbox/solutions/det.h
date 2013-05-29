@@ -633,7 +633,7 @@ namespace LinBox
 		Integer num,den;
 
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RandomPrimeIterator genprime( (unsigned int)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> > > rra(4UL);
 
 		rra(num,den, iteration, genprime);

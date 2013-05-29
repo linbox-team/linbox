@@ -2,20 +2,20 @@
  * Copyright(C) LinBox 2008
  * Written by Jean-Guillaume Dumas
  * Triangular Solve
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -53,9 +53,9 @@ namespace LinBox
 		//         for( ; (res != x.end()) && (row != U.rowEnd()); ++res, ++row, ++vec) { }
 		size_t last = x.size();
 		if( b.size() < last ) last = b.size();
-		res += last;
-		row += last;
-		vec += last;
+		res += (ptrdiff_t)last;
+		row += (ptrdiff_t)last;
+		vec += (ptrdiff_t) last;
 
 		VectorCategories::DenseZeroOneVectorTag  DZOtag;
 		VectorCategories::SparseZeroOneVectorTag SZOtag;

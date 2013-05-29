@@ -88,14 +88,14 @@ namespace LinBox
 		sysDim = vp.size() + vq.size()-2;  // square system with dimension deg(px)+deg(qx)
 
 		// Copy the vector to a polynomial representation, for px
-		pxdata.SetMaxLength( vp.size() );
+		pxdata.SetMaxLength((long) vp.size() );
 		for (size_t ip=0; ip< vp.size(); ip++ )
-			SetCoeff( pxdata, ip, vp[ip]);
+			SetCoeff( pxdata, (long)ip, vp[ip]);
 
 		// Copy the vector to a polynomial representation, for qx
-		qxdata.SetMaxLength( vq.size() );
+		qxdata.SetMaxLength((long) vq.size() );
 		for ( size_t iq=0; iq< vq.size(); iq++ )
-			SetCoeff( qxdata, iq, vq[iq] );
+			SetCoeff( qxdata, (long)iq, vq[iq] );
 
 
 #ifdef DBGMSGS
@@ -279,9 +279,9 @@ namespace LinBox
 		NTL::ZZ_pX txOut, txIn;
 
 		/*--------------- Convert input vector to a polynomial ---------*/
-		txIn.SetMaxLength( v_in.size() -1 );
+		txIn.SetMaxLength( (long)v_in.size() -1 );
 		for ( size_t i=0; i < v_in.size(); i++ )
-			SetCoeff( txIn, i, v_in[i] );
+			SetCoeff( txIn, (long)i, v_in[i] );
 
 		/*--------------  Poly multiply the upper Sylvester poly by input ------*/
 		mul( txOut, txIn, pxdata);
@@ -289,7 +289,7 @@ namespace LinBox
 		const size_t m  = pxdeg();
 		/*--------------  vout[0..deg(q)-1] <--- txout[deg(qx)...2deg(qx)-1] --- */
 		for ( size_t i=0; i < Nq; ++i )
-			GetCoeff(v_out[i], txOut, m+i);
+			GetCoeff(v_out[i], txOut, (long)(m+i));
 
 		/*--------------  Poly multiply the lower Sylvester poly by input -----*/
 		mul( txOut, txIn, qxdata);
@@ -300,7 +300,7 @@ namespace LinBox
 		/*--------------  vout[deg(qx)..deg(qx)+deg(px)-1] <---
 		 *                              txout[deg(qx)...deg(qx)+deg(px)-1] --- */
 		for ( size_t i=0; i < Np; ++i )
-			GetCoeff(v_out[Nq+i], txOut, n+i );
+			GetCoeff(v_out[Nq+i], txOut, (long)(n+i) );
 
 
 		return v_out;
@@ -338,22 +338,22 @@ namespace LinBox
 
 		/*--------- We need to reverse the input vector           -----------*/
 		/*--------- txIn[0...m-1] <--- vin[m-1...0]               ----------*/
-		txIn.SetMaxLength( qxdeg()-1 );
+		txIn.SetMaxLength((long) qxdeg()-1 );
 		for ( size_t i=0; i < qxdeg(); i++ )
-			SetCoeff( txIn, qxdeg()-1-i, v_in[i] );
+			SetCoeff( txIn, (long)(qxdeg()-1-i), v_in[i] );
 
 		mul( txOut, txIn, pxdata);     // Do the poly multiply
 
 		/*--------- We need to reverse the output vector           -----------*/
 		/*-------  v_out[0..N-1] <--- txOut[N-1...0]                  --------*/
 		for (size_t i=0; i < v_out.size(); i++)
-			GetCoeff(v_out[i], txOut, sysdim()-1-i); // Extract the coeffs
+			GetCoeff(v_out[i], txOut, (long)(sysdim()-1-i)); // Extract the coeffs
 
 		/*--------- We need to reverse the input vector           -----------*/
 		/*--------- txIn[m ... m+n-1] <--- vin[m+n-1 ... m]       -----------*/
-		txIn.SetMaxLength( pxdeg()-1 );
+		txIn.SetMaxLength((long) pxdeg()-1 );
 		for ( size_t i=0; i < pxdeg(); i++ )
-			SetCoeff( txIn,pxdeg()-1-i, v_in[qxdeg()+i] );
+			SetCoeff( txIn, (long)(pxdeg()-1-i), v_in[qxdeg()+i] );
 
 		mul( txOut, txIn, qxdata);    // do the poly multiply
 
@@ -361,7 +361,7 @@ namespace LinBox
 		/*-------  v_out[0..N-1] <--- txOut[N-1...0]                  --------*/
 
 		for (size_t i=0; i < v_out.size(); i++) {
-			GetCoeff(tval, txOut, sysdim()-1-i);
+			GetCoeff(tval, txOut, (long)(sysdim()-1-i));
 			add( v_out[i], v_out[i], tval ); // add to the accumulated output
 		}
 

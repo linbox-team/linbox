@@ -126,15 +126,15 @@ bool testAssociativity(Blackbox& A)
 	Dom MD = A.domain();
 	size_t m = A.rowdim(), n = A.coldim() - 100;
 	size_t k = (m + n)/2;
-	typename Dom::Block B(k,m), C(m,n);
+	typename Dom::Block B(A.field(),k,m), C(A.field(),m,n);
 	MD.random(B); MD.random(C);
 
-	typename Dom::Block D(m,n), E(k,n);
+	typename Dom::Block D(A.field(),m,n), E(A.field(),k,n);
 
 	A.apply(D, C); // D = AC
 	MD.mul(E,B,D); // E = B(AC)
 
-	typename Dom::Block F(k,m), G(k,n);
+	typename Dom::Block F(A.field(),k,m), G(A.field(),k,n);
 
 	A.unpackingApplyTranspose(F,B); // F = BA
 	MD.mul(G,F,C); // G = (BA)C

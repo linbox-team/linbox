@@ -65,7 +65,7 @@
      std::cout << "*** Warning *** " << std::endl << __func__ << " in " << __FILE__ << ':' << __LINE__ << " is not tested" << std::endl;
 
 #define THIS_CODE_MAY_NOT_COMPILE_AND_IS_NOT_TESTED \
-" *** Warning ***  this piece of code is not compiled by default and may not work"
+	throw(" *** Warning ***  this piece of code is not compiled by default and may not work")
 
 namespace LinBox
 { /*  Preconditions,Error,Failure,NotImplementedYet */
@@ -164,7 +164,7 @@ namespace LinBox
 		NotImplementedYet(const char * function,
 				  const char* file,
 				  int line,
-				  const char * why='\0')
+				  const char * why="\0")
 		{
 			if (_errorStream == (std::ostream *) 0)
 				_errorStream = &std::cerr;
@@ -194,9 +194,9 @@ namespace LinBox
 		 * @param what     what happened ? should not be NULL...
 		 */
 		LinBoxFailure(const char * function,
-			      const char* file,
-			      int line,
-			      const char * what='\0')
+			      const char* file="\0",
+			      int line=-1,
+			      const char * what="\0")
 		{
 			if (_errorStream == (std::ostream *) 0)
 				_errorStream = &std::cerr;
@@ -226,8 +226,8 @@ namespace LinBox
 		 * @param what     what happened ? should not be NULL...
 		 */
 		LinBoxError(const char * what,
-			    const char * function='\0',
-			    const char* file='\0',
+			    const char * function="\0",
+			    const char* file="\0",
 			    int line=-1)
 		{
 			if (_errorStream == (std::ostream *) 0)
@@ -321,7 +321,7 @@ namespace LinBox
 
 
 
-#ifdef LinBoxSrcOnly
+#if defined(LinBoxSrcOnly) or defined(LinBoxTestOnly)
 // for all-source compilation
 #include "linbox/util/debug.C"
 #endif

@@ -23,6 +23,9 @@
  *.
  */
 
+/** @file algorithms/opencl-resource-controller.h
+ */
+
 #include <pthread.h>
 
 #include <algorithm>
@@ -72,7 +75,7 @@ namespace LinBox{
 
 		//Copy platform IDs into vector
 		for(int i = 0; i < (int)numPlatforms; i++){
-			ret.push_back(platforms[i]);
+			ret.push_back(platforms[(size_t)i]);
 		}
 
 		//Deallocate memory
@@ -245,7 +248,7 @@ namespace LinBox{
 
 		//Copy device IDs into vector
 		for(int i = 0; i < (int)numDevices; i++){
-			ret.push_back(devices[i]);
+			ret.push_back(devices[(size_t)i]);
 		}
 
 		//Deallocate memory
@@ -304,17 +307,17 @@ namespace LinBox{
 			std::vector<cl_platform_id> platforms = enumPlatforms();
 
 			for(int i = 0; i < (int)platforms.size(); i++){
-				std::string platformName = getPlatformName(platforms[i]);
+				std::string platformName = getPlatformName(platforms[(size_t)i]);
 
-				double platformVersion = getPlatformVersion(platforms[i]);
+				double platformVersion = getPlatformVersion(platforms[(size_t)i]);
 
 				std::vector<std::string> platformExtensions =
-					getPlatformExtensions(platforms[i]);
+					getPlatformExtensions(platforms[(size_t)i]);
 
-				std::vector<cl_device_id> devices = enumDevices(platforms[i]);
+				std::vector<cl_device_id> devices = enumDevices(platforms[(size_t)i]);
 
 				for(int j = 0; j < (int)devices.size(); j++){
-					cl_context context = createContext(platforms[i], devices[j]);
+					cl_context context = createContext(platforms[(size_t)i], devices[(size_t)j]);
 
 #ifndef __MPI_SHARED
 					//Allocate and initialize device lock
@@ -328,7 +331,7 @@ namespace LinBox{
 						platformVersion,
 						platformExtensions,
 						context,
-						devices[j],
+						devices[(size_t)j],
 						tempMutex,
 						ID);
 
@@ -352,7 +355,7 @@ namespace LinBox{
 						platformVersion,
 						platformExtensions,
 						context,
-						devices[j],
+						devices[(size_t)j],
 						tempMutex,
 						ID);
 
@@ -402,16 +405,16 @@ namespace LinBox{
 		~OpenCLResourceController(){
 #ifndef __MPI_SHARED
 			for(int i = 0; i < (int)environs->size(); i++){
-				pthread_mutex_destroy(environs->at(i)->getDeviceLock());
-				delete environs->at(i)->getDeviceLock();
-				delete environs->at(i);
+				pthread_mutex_destroy(environs->at((size_t)i)->getDeviceLock());
+				delete environs->at((size_t)i)->getDeviceLock();
+				delete environs->at((size_t)i);
 			}
 #else
 			for(int i = 0; i < mutexs->size(); i++){
-				delete mutexs->at(i);
+				delete mutexs->at((size_t)i);
 			}
 			for(int i = 0; i < environs->size(); i++){
-				delete environs->at(i);
+				delete environs->at((size_t)i);
 			}
 #endif
 		}
@@ -465,7 +468,7 @@ namespace LinBox{
 		unsigned int deallocateInstance(unsigned int ID){
 #ifndef __MPI_SHARED
 			(*IDsToInstances)[ID] -= 1;
-			if((*IDsToInstances)[ID] < 0){ //BB Toujours faux
+			if((*IDsToInstances)[ID] < 0){ //! @bug BB Toujours faux
 				(*IDsToInstances)[ID] = 0;
 			}
 			return (*IDsToInstances)[ID];

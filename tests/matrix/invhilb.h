@@ -41,12 +41,12 @@ Matrix& invhilb(const Ring& R, Matrix& Mat, int n){
 		if(i>1) p = ((n-i+1)*p*(n+i-1))/((i-1)*(i-1));
 		r = p*p;
 		R.init(val, (r/(2*i-1)));
-		Mat.setEntry(i_ind, i_ind, val);
+		Mat.setEntry((size_t)i_ind,(size_t) i_ind, val);
 		for(j_ind=i, j = i+1; j <= n; j++, j_ind++){
 			r = -1*((n-j+1)*r*(n+j-1))/((j-1)*(j-1));
 			R.init(val, (r/(i+j-1)));
-			Mat.setEntry(i_ind, j_ind, val);
-			Mat.setEntry(j_ind, i_ind, val);
+			Mat.setEntry((size_t)i_ind, (size_t)j_ind, val);
+			Mat.setEntry((size_t)j_ind, (size_t)i_ind, val);
 		}
 	}
 

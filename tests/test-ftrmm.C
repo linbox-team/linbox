@@ -3,20 +3,20 @@
  *
  * Written by Brice Boyer <Brice.Boyer@imag.fr>
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -438,19 +438,19 @@ int test_applyP(std::ostream & report, const Field & F)
 	report << "# testing row applyP" << std::endl;
 	size_t * P = new size_t[M] ;
 
-	size_t r = random()%M ;
+	size_t r = (size_t)random()%M ;
 	for (size_t i = 0 ; i < r ; ++i){
-		P[i] = i + (size_t)(M-i)*( (std::max(0.,drand48()-1e-6)) ); // histoire de pas tomber sur 1...
+		P[i] = i + (size_t)((double)(M-i)*( (std::max(0.,drand48()-1e-6)))); // histoire de pas tomber sur 1...
 		//                if (P[i] == M) P[i]-- ;
 		assert(P[i] < M);
 	}
 
 	FFPACK::applyP(F,FFLAS::FflasLeft,FFLAS::FflasNoTrans,
-		       N, 0,r,
+		       N, 0,(int)r,
 		       A,lda,P);
 
 	FFPACK::applyP(F,FFLAS::FflasLeft,FFLAS::FflasTrans,
-		       N, 0,r,
+		       N, 0,(int)r,
 		       A,lda,P);
 	delete[] P ;
 	int err = 0 ;
@@ -466,19 +466,19 @@ int test_applyP(std::ostream & report, const Field & F)
 	report << "# testing col applyP" << std::endl;
 	size_t * Q = new size_t[N] ;
 
-	r = random()%N ;
+	r = (size_t)random()%N ;
 	for (size_t i = 0 ; i < r ; ++i){
-		Q[i] = i + (size_t)(N-i)*( std::max(0.,drand48()-1e-6)) ;
+		Q[i] = i + (size_t)((double)(N-i)*( std::max(0.,drand48()-1e-6)) );
 		//                if (Q[i] == N) P[i]-- ;
 		assert(Q[i] < N);
 	}
 
 	FFPACK::applyP(F,FFLAS::FflasRight,FFLAS::FflasNoTrans,
-		       M, 0,r,
+		       M, 0,(int)r,
 		       A,lda,Q);
 
 	FFPACK::applyP(F,FFLAS::FflasRight,FFLAS::FflasTrans,
-		       M, 0,r,
+		       M, 0,(int)r,
 		       A,lda,Q);
 	delete[] Q ;
 
@@ -536,7 +536,7 @@ int test_fgemm(std::ostream & report, const Field & F)
 	Element alpha, beta ;
 	// G.random(alpha);
 	// G.random(beta);
-	alpha = Integer::random<false>(2);
+	alpha = (Element)Integer::random<false>(2);
 	if (abs(alpha) > 1.5 ) G.random(alpha);
 	//!@bug needs p prime.
 	beta  = Integer::random<false>(2);
@@ -644,7 +644,7 @@ int main(int ac, char ** av)
 
 	parseArguments (ac, av, as);
 
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	bool fail = false ;
 
 	LinBox::commentator().start("ftrmm and consorts full test suite", "ftrmm et al");

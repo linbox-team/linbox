@@ -180,7 +180,7 @@ namespace LinBox
 			for (iter=tmp.begin(),j=0; iter != tmp.end(); ++iter,j++) {
 				hom. image (val, *iter);
 				if (!F.isZero(val))
-					Ap.setEntry (j,i, val);
+					Ap.setEntry ((size_t)j,(size_t)i, val);
 
 			}
 			r.assign(*e_p, zero);

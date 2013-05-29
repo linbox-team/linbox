@@ -184,11 +184,11 @@ namespace LinBox
 			//c[m]=1, c[0]=det(A);
 			FA.denominator(di,i);
 			D *=di;
-			Di[i]=di;
-			M[i] = M[i+1]*da;
+			Di[(size_t)i]=di;
+			M[(size_t)i] = M[(size_t)i+1]*da;
 		}
 		for (int i=0; i < M.size() ; ++i ) {
-			gcd(M[i],M[i],D);
+			gcd(M[(size_t)i],M[(size_t)i],D);
 		}
 
 		PID_integer Z;
@@ -231,25 +231,25 @@ namespace LinBox
 			cra.result(PP);//need to divide
 			for (int i=0; i < PP.size(); ++i) {
 				Integer D_1;
-				inv(D_1,M[i],m);
-				PP[i] = (PP[i]*D_1) % m;
+				inv(D_1,M[(size_t)i],m);
+				PP[(size_t)i] = (PP[(size_t)i]*D_1) % m;
 			}
 			Integer den,den1;
 			std::vector<Integer> num(A.rowdim()+1);
 			std::vector<Integer> num1(A.rowdim()+1);
-			if (RR.reconstructRational(num,den,PP,m,-1)) {//performs reconstruction strating form c[m], use c[i] as prec for c[i-1]
+			if (RR.reconstructRational(num,den,PP,m,-1)) {//performs reconstruction strating form c[m], use c[(size_t)i] as prec for c[(size_t)i-1]
 				cra(1,PP,iteration,genprime);
 				cra.getModulus(m);
 				for (int i=0; i < PP.size(); ++i) {
 					Integer D_1;
-					inv(D_1,M[i],m);
-					PP[i] = (PP[i]*D_1) % m;
+					inv(D_1,M[(size_t)i],m);
+					PP[(size_t)i] = (PP[(size_t)i]*D_1) % m;
 				}
 				bool terminated = true;
 				if (RR.reconstructRational(num1,den1,PP,m,-1)) {
 					if (den==den1) {
 						for (int i=0; i < num.size(); ++i) {
-							if (num[i] != num1[i]) {
+							if (num[(size_t)i] != num1[(size_t)i]) {
 								terminated =false;
 								break;
 							}
@@ -269,7 +269,7 @@ namespace LinBox
 						typename Vector <typename Rationals::Element>::iterator it;
 						Rationals Q;
 						for (it= p.begin(); it != p.end(); ++it, ++i) {
-							A.field().init(*it, num[i],den);
+							A.field().init(*it, num[(size_t)i],den);
 							Q.get_den(t,*it);
 							if (it != p.begin()) Q.get_den(tt,*(it-1));
 							else tt = 1;
@@ -299,10 +299,10 @@ namespace LinBox
 
 		Rationals Q;
 		for (it= p.begin(); it != p.end(); ++it, ++i) {
-			A.field().init(*it, PP[i],M[i]);
+			A.field().init(*it, PP[(size_t)i],M[(size_t)i]);
 			Q.get_den(t, *it);
 			Q.get_num(tt,*it);
-			err = M[i]/t;
+			err = M[(size_t)i]/t;
 			size_t resi = err.bitsize() + tt.bitsize() -1;
 			size_t resu = t.bitsize() + tt.bitsize() -1;
 			if (resi > max_res) {max_res = resi; max_i=i;}

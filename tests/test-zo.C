@@ -89,7 +89,7 @@ int main(int argc, char **argv)
         {
             set<size_t> a;
             while( a.size() < npr )
-                a.insert(rand()%n);
+                a.insert((size_t)rand()%n);
             size_t j = 0;
             for(set<size_t>::iterator iter = a.begin(); j < npr; ++j, ++iter)
                 {

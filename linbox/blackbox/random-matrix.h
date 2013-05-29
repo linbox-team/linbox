@@ -64,18 +64,18 @@ namespace LinBox
 
 			if (rowdim < coldim)
 				for (int i = 0; i < rowdim; ++ i) {
-					Ap -> setEntry (i, i, one);
+					Ap -> setEntry ((size_t)i,(size_t) i, one);
 					for (int j = rowdim; j < coldim; ++ j){
 						f. init (elt, rand()%10);
-						Ap -> setEntry (i, j, elt);
+						Ap -> setEntry ((size_t)i, (size_t)j, elt);
 					}
 				}
 			else
 				for (int i = 0; i < coldim; ++ i) {
-					Ap -> setEntry (i, i, one);
+					Ap -> setEntry ((size_t)i,(size_t) i, one);
 					for (int j = coldim; j < rowdim; ++ j) {
 						f. init (elt, rand()%10);
-						Ap -> setEntry (j, i, elt);
+						Ap -> setEntry ((size_t)j,(size_t) i, elt);
 					}
 				}
 
@@ -104,7 +104,7 @@ namespace LinBox
 
 			for ( i = 0; i < m; ++ i)
 
-				Ap -> setEntry (i, i, elt);
+				Ap -> setEntry ((size_t)i, (size_t)i, elt);
 
 
 			if ( m < rowdim ) {
@@ -119,7 +119,7 @@ namespace LinBox
 
 						f.init(elt, rand() % 10 + 1);
 
-						Ap -> setEntry (i, j, elt);
+						Ap -> setEntry ((size_t)i, (size_t)j, elt);
 					}
 				}
 			}
@@ -138,7 +138,7 @@ namespace LinBox
 
 						f.init(elt, rand() % 10 + 1);
 
-						Ap -> setEntry (i, j, elt);
+						Ap -> setEntry ((size_t)i, (size_t)j, elt);
 					}
 				}
 			}

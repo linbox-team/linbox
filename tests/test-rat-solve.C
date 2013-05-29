@@ -6,20 +6,20 @@
  *
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -59,7 +59,7 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
-static bool testNonsingularRatIntSolve (size_t n, int iterations)
+static bool testNonsingularRatIntSolve (size_t n, unsigned int iterations)
 {
 	commentator().start ("Testing nonsingular solve with integer vector", "testNonsingularRatIntSolve", iterations);
 
@@ -74,8 +74,8 @@ static bool testNonsingularRatIntSolve (size_t n, int iterations)
 	std::vector<PID_integer::Element> b(n);
 	std::vector<GMPRationalField::Element> true_x(n),x(n);
 
-	for (i=0; i < iterations; i++) {
-		commentator().startIteration (i);
+	for (i=0; i < (int)iterations; i++) {
+		commentator().startIteration ((unsigned int)i);
 
 		for (j=0; j < n; ++j) {
 			integer tmp_n, tmp_d, tmp_b;
@@ -116,7 +116,7 @@ static bool testNonsingularRatIntSolve (size_t n, int iterations)
  * Return true on success and false on failure
  */
 
-static bool testNonsingularRatRatSolve (size_t n, int iterations)
+static bool testNonsingularRatRatSolve (size_t n, unsigned int iterations)
 {
 	commentator().start ("Testing nonsingular solve with rational vector", "testNonsingularRatRatSolve", iterations);
 
@@ -131,8 +131,8 @@ static bool testNonsingularRatRatSolve (size_t n, int iterations)
 	std::vector<GMPRationalField::Element> b(n);
 	std::vector<GMPRationalField::Element> true_x(n),x(n);
 
-	for (i=0; i < iterations; i++) {
-		commentator().startIteration (i);
+	for (i=0; i < (int)iterations; i++) {
+		commentator().startIteration ((unsigned int)i);
 
 		for (j=0; j < n; ++j) {
 			integer tmp_n, tmp_d, tmp_bn, tmp_bd;
@@ -179,7 +179,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static int iterations = 1;
+	static unsigned int iterations = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set column dimension of test matrices to N.", TYPE_INT,     &n },

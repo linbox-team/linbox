@@ -534,7 +534,7 @@ namespace LinBox
 				for (size_t i=0;i<m;++i) {
 					size_t idx_min=i;
 					for (size_t j=i+1;j<m;++j)
-						if (defect[j]< defect[idx_min])
+						if (defect[(size_t)j]< defect[idx_min])
 							idx_min=j;
 					std::swap(defect[i], defect[idx_min]);
 					Perm1[i]=idx_min;
@@ -567,7 +567,7 @@ namespace LinBox
 				for (size_t i=1;i<SigmaBase.size();++i){
 					_BMD.axpyin(Discrepancy,SigmaBase[i],PowerSerie[k-i]);
 				}
-                                
+
 #ifdef  _BM_TIMING
 				cptr+=SigmaBase.size();
 				chrono.stop();
@@ -642,8 +642,8 @@ namespace LinBox
 					for (int j= (int) size-2;j>=0; --j){
 						for (size_t l=0;l<m;++l)
 							//BB: #warning Q[i] pour i>r ne veut rien dire...
-							field().assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l),
-								  SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));
+							field().assign(SigmaBase[(size_t)j+1].refEntry(*(Qt.getPointer()+i),l),
+								  SigmaBase[(size_t)j].getEntry(*(Qt.getPointer()+i),l));
 					}
 					for (size_t l=0;l<m;++l)
 						field().assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),field().zero);
@@ -691,7 +691,7 @@ namespace LinBox
 			}
 #endif
 
-                        
+
 			PM_domain.midproduct(NewSerie, SigmaBase, Serie);
 		}
 
@@ -705,7 +705,7 @@ namespace LinBox
 
 			for (size_t i=0;i<degree2+1;++i)
 				for (size_t j=0;j<degree1+1;++j)
-					_BMD.axpyin(NewSerie[i],SigmaBase[j],OldSerie[degree1+i-j]);
+					_BMD.axpyin(NewSerie[i],SigmaBase[(size_t)j],OldSerie[degree1+i-j]);
 		}
 
 
@@ -815,7 +815,7 @@ namespace LinBox
 					for (size_t i=0;i<m+n;++i) {
 						size_t idx_min=i;
 						for (size_t j=i+1;j<m+n;++j)
-							if (order[j]< order[idx_min])
+							if (order[(size_t)j]< order[idx_min])
 								idx_min=j;
 						std::swap(order[i],order[idx_min]);
 						Perm1[i]=idx_min;
@@ -932,7 +932,7 @@ namespace LinBox
 			for (size_t i=0;i<m;i++)
 				for (long j=0;j<=degree[i];j++)
 					for (size_t k=0;k<m;k++)
-						field().assign(Approx[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
+						field().assign(Approx[(size_t)j].refEntry(i,k), SigmaBase[(size_t)j].getEntry(i,k));
 
 
 		}
@@ -1038,7 +1038,7 @@ namespace LinBox
 					for (size_t i=0;i<m+n;++i) {
 						size_t idx_min=i;
 						for (size_t j=i+1;j<m+n;++j)
-							if (order[j]< order[idx_min])
+							if (order[(size_t)j]< order[idx_min])
 								idx_min=j;
 						std::swap(order[i],order[idx_min]);
 						Perm1[i]=idx_min;
@@ -1151,7 +1151,7 @@ namespace LinBox
 					for (size_t i=0;i<m;i++)
 						for (long j=0;j<=order[i];j++)
 							for (size_t k=0;k<m;k++)
-								field().assign(Approx1[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
+								field().assign(Approx1[(size_t)j].refEntry(i,k), SigmaBase[(size_t)j].getEntry(i,k));
 				}
 
 			}
@@ -1173,7 +1173,7 @@ namespace LinBox
 			for (size_t i=0;i<m;i++)
 				for (long j=0;j<=degree[i];j++)
 					for (size_t k=0;k<m;k++)
-						field().assign(Approx2[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
+						field().assign(Approx2[(size_t)j].refEntry(i,k), SigmaBase[(size_t)j].getEntry(i,k));
 		}
 
 
@@ -1398,7 +1398,7 @@ namespace LinBox
 				for (size_t i=0;i<m;++i) {
 					size_t idx_min=i;
 					for (size_t j=i+1;j<m;++j)
-						if (defect[j]< defect[idx_min])
+						if (defect[(size_t)j]< defect[idx_min])
 							idx_min=j;
 					std::swap(defect[i], defect[idx_min]);
 					Perm1[i]=idx_min;
@@ -1782,7 +1782,7 @@ namespace LinBox
 				for (size_t i=0;i<rank;++i){
 					for (int j= (int) size-2;j>=0; --j){
 						for (size_t l=0;l<m;++l)
-							field().assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l), SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));
+							field().assign(SigmaBase[(size_t)j+1].refEntry(*(Qt.getPointer()+i),l), SigmaBase[(size_t)j].getEntry(*(Qt.getPointer()+i),l));
 					}
 					for (size_t l=0;l<m;++l)
 						field().assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),field().zero);
@@ -1798,7 +1798,7 @@ namespace LinBox
 				for (size_t i=0;i<rank;++i){
 				for (int j= (int) length-2;j>= (int) k; j--){
 				for (size_t l=0;l<n;++l)
-				field().assign(Residual[j+1].refEntry(*(Qt.getPointer()+i),l), Residual[j].getEntry(*(Qt.getPointer()+i),l));
+				field().assign(Residual[(size_t)j+1].refEntry(*(Qt.getPointer()+i),l), Residual[(size_t)j].getEntry(*(Qt.getPointer()+i),l));
 				}
 				}
 				*/
@@ -1989,9 +1989,9 @@ namespace LinBox
 
 				// do the calculation by hand
 				for (size_t j=degree1;j<degree1+degree2;++j){
-					_BMD.mul(NewSerie[j-degree1], SigmaBase[0], OldSerie[j]);
+					_BMD.mul(NewSerie[(size_t)j-degree1], SigmaBase[0], OldSerie[(size_t)j]);
 					for (size_t i=1;i<Ssize; ++i)
-						_BMD.axpyin(NewSerie[j-degree1], SigmaBase[i], OldSerie[j-i]);
+						_BMD.axpyin(NewSerie[(size_t)j-degree1], SigmaBase[i], OldSerie[(size_t)j-i]);
 				}
 			}
 			else{

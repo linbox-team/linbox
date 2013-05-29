@@ -2,20 +2,20 @@
  * Copyright (C) LinBox
  * Written by bds (starting from test-charpoly.C)
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -72,7 +72,7 @@ typename Dom::Element eval (const Dom& D,
 	typename Dom::Element tmp = P[P.size()-1];
 	for (int i = (int)P.size()-2; i >= 0; --i){
 		D.mulin (tmp, x);
-		D.addin (tmp, P[i]);
+		D.addin (tmp, P[(size_t)i]);
 	}
 	return value = tmp;
 }
@@ -177,7 +177,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 
 	linbox_check(n);
 	for (i = 0; i < n - 1; i++)
-		if (!F.isZero (phi[i]))
+		if (!F.isZero (phi[(size_t)i]))
 			lowerTermsCorrect = false;
 
 	if (phi.size () != n + 1 || !F.isOne (phi[n]) || !lowerTermsCorrect) {
@@ -303,7 +303,7 @@ int main (int argc, char **argv)
 	report << endl << "Black box characteristic polynomial of a matrix over a prime field test suite" << endl;
 
 	RandomDenseStream<Field, DenseVector, NonzeroRandIter<Field> >
-		v_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, numVectors);
+		v_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, (size_t)numVectors);
 	RandomSparseStream<Field, SparseVector, NonzeroRandIter<Field> >
 		A_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), (double) k / (double) n, n, n);
 
@@ -327,7 +327,7 @@ int main (int argc, char **argv)
 	report << endl << "Black box characteristic polynomial of an integer matrix test suite" << endl;
 
 	RandomDenseStream<PID_integer, ZDenseVector, NonzeroRandIter<PID_integer> >
-		zv_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), n, numVectors);
+		zv_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), n, (size_t)numVectors);
 	RandomSparseStream<PID_integer, SparseVector, NonzeroRandIter<PID_integer> >
 		zA_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), (double) k / (double) n, n, n);
 

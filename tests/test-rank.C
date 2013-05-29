@@ -72,7 +72,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 {
 	typedef SparseMatrix<Field,typename Vector<Field>::SparseSeq> Blackbox;
 
-	commentator().start ("Testing elimination-based and blackbox rank", "testRankMethods", iterations);
+	commentator().start ("Testing elimination-based and blackbox rank", "testRankMethods", (unsigned int)iterations);
 
 	bool ret = true;
 	unsigned int i;
@@ -144,7 +144,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 	MdF2.init(mdone,1UL);
 
 
-	commentator().start ("Testing elimination-based and blackbox rank over GF2", "testRankMethodsGF2", iterations);
+	commentator().start ("Testing elimination-based and blackbox rank over GF2", "testRankMethodsGF2", (unsigned int)iterations);
 
 	bool ret = true;
 	unsigned int i;
@@ -217,7 +217,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 {
 	typedef ScalarMatrix<Field> Blackbox;
 
-	commentator().start ("Testing rank of zero and Identity and half/half matrices", "testZeroAndIdentRank", iterations);
+	commentator().start ("Testing rank of zero and Identity and half/half matrices", "testZeroAndIdentRank", (unsigned int)iterations);
 
 	bool ret = true;
 	unsigned int i;
@@ -305,30 +305,30 @@ int main (int argc, char **argv)
 	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over Modular<uint32_t>" << endl;
 	Modular<uint32_t> F (q);
-	if (!testRankMethods (F, n, iterations, sparsity)) pass = false;
+	if (!testRankMethods (F, n, (unsigned int)iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
 
 	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over Modular<int>" << endl;
 	Modular<double> G (q);
-    	if (!testRankMethods (G, n, iterations, sparsity)) pass = false;
+    	if (!testRankMethods (G, n, (unsigned int)iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (G, n, 1)) pass = false;
 
 	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over PID_integer" << endl;
 	PID_integer R;
-	if (!testRankMethods (R, n, iterations, sparsity)) pass = false;
+	if (!testRankMethods (R, n, (unsigned int)iterations, sparsity)) pass = false;
 
 	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over GivaroZpz<Integer>" << endl;
         GivaroZpz<Integer> Gq(bigQ);
-	if (!testRankMethods (Gq, n, iterations, sparsity)) pass = false;
+	if (!testRankMethods (Gq, n, (unsigned int)iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (Gq, n, 1)) pass = false;
 
 	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over GF2" << endl;
         GF2 F2;
-	if (!testRankMethodsGF2 (F2, n, iterations, sparsity)) pass = false;
+	if (!testRankMethodsGF2 (F2, n, (unsigned int)iterations, sparsity)) pass = false;
 
 
 	commentator().stop("rank solution test suite");

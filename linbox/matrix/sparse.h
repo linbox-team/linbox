@@ -173,7 +173,7 @@ namespace LinBox
 			typedef _Element Element;
 
 			template<class T>
-			Element & init(Element & a, const T & b = 0) const { return a = b ; }
+			Element & init(Element & a, const T & b = 0) const { return a = (Element)b ; }
 
 			std::istream &read (std::istream &stream, Element &elt) const
 			{
@@ -1516,7 +1516,7 @@ public:
 			}
 
 			_c_index = *_j;
-			_value_index = _j-_i->first.begin();
+			_value_index = (size_t)( _j-_i->first.begin());
 		}
 
 		_IndexedIterator (const _IndexedIterator &iter) :
@@ -1598,8 +1598,8 @@ public:
 
 		// JGD 26.11.2012
         // Since siome compliers would not choose it even though they are
-        // called via a ConstIterator, const version is removed, 
-        // call to const is now only explicit 
+        // called via a ConstIterator, const version is removed,
+        // call to const is now only explicit
         // via call to "value()" below instead
 //         const value_type &operator * () const
 // 		{
@@ -1716,7 +1716,7 @@ struct MatrixTraits< const SparseMatrixBase<Element, Row, Trait> >
 	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 };
 
-template<class A, class B, class C> struct GetEntryCategory<SparseMatrixBase<A,B,C> > 
+template<class A, class B, class C> struct GetEntryCategory<SparseMatrixBase<A,B,C> >
 { typedef SolutionTags::Local Tag; };
 
 } // namespace LinBox

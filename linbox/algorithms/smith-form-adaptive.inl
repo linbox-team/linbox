@@ -77,7 +77,7 @@ namespace LinBox
 			SF (l, A_local, R);
 			std::list <Local2_32::Element>::iterator l_p;
 			std::vector <integer>::iterator s_p;
-			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
+			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p)
 				*s_p = *l_p;
 			report << "     Done\n";
 		}
@@ -119,7 +119,7 @@ namespace LinBox
 			std::vector <integer>::iterator s_p;
 			for (s_p = s. begin(); s_p != s. begin() + (long) rank; ++ s_p)
 				*s_p = 1;
-			for (; s_p != s. begin() + order; ++ s_p)
+			for (; s_p != s. begin() +(ptrdiff_t) order; ++ s_p)
 				*s_p = 0;
 			report << "      Done\n";
 		}
@@ -130,7 +130,7 @@ namespace LinBox
 			for (i = 0; i < e; ++ i)
 				m *= p;
 			typedef PIRModular<int32_t> PIR;
-			PIR R((unsigned int)m);
+			PIR R((int32_t)m);
 			BlasMatrix <PIR> A_local(R, A.rowdim(), A.coldim());
 			SmithFormLocal <PIR> SF;
 			std::list <PIR::Element> l;
@@ -138,7 +138,7 @@ namespace LinBox
 			SF (l, A_local, R);
 			std::list <PIR::Element>::iterator l_p;
 			std::vector <integer>::iterator s_p;
-			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
+			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p)
 				*s_p = *l_p;
 			report <<  "      Done\n";
 		}
@@ -168,7 +168,7 @@ namespace LinBox
 			SF (l, A_local, R);
 			std::list <PIR_ntl_ZZ_p::Element>::iterator l_p;
 			std::vector <integer>::iterator s_p;
-			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
+			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p)
 				R. convert(*s_p, *l_p);
 			report << "      Done \n";
 		}
@@ -219,15 +219,15 @@ namespace LinBox
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
 		std::vector<long>::const_iterator sev_p; const long* prime_p; std::vector<integer>::iterator s_p;
-		std::vector<integer> local(order); std::vector<integer>::iterator local_p;
+		std::vector<integer> local((size_t)order); std::vector<integer>::iterator local_p;
 
-		for (s_p = s. begin(); s_p != s. begin() + r; ++ s_p)
+		for (s_p = s. begin(); s_p != s. begin() +(ptrdiff_t) r; ++ s_p)
 			*s_p = 1;
 		for (; s_p != s. end(); ++ s_p)
 			*s_p = 0;
 		if (r == 0) return;
 
-		for (sev_p = sev. begin(), prime_p = prime; sev_p != sev. begin() + NPrime; ++ sev_p, ++ prime_p) {
+		for (sev_p = sev. begin(), prime_p = prime; sev_p != sev. begin() +(ptrdiff_t) NPrime; ++ sev_p, ++ prime_p) {
 			int extra = 1;
 			do {
 
@@ -239,11 +239,11 @@ namespace LinBox
 				compute_local (local, A, *prime_p, *sev_p + extra);
 				//check
 				report << "   Check if it agrees with the rank: ";
-				if ((local[r-1] % m != 0 ) && ((r == order) ||(local[r] % m == 0))) {report << "yes.\n"; break;}
+				if ((local[(size_t)r-1] % m != 0 ) && ((r == order) ||(local[(size_t)r] % m == 0))) {report << "yes.\n"; break;}
 				report << "no. \n";
 				extra *= 2;
 			} while (true);
-			for (s_p = s. begin(), local_p = local. begin(); s_p != s. begin() + order; ++ s_p, ++ local_p)
+			for (s_p = s. begin(), local_p = local. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ local_p)
 				*s_p *= *local_p;
 		}
 		report << "Computation of the smooth part is done.\n";
@@ -273,8 +273,8 @@ namespace LinBox
 			MatrixHom::map (A_ilio, A, R);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; std::vector<integer>::iterator s_p;
-			for (i = 0, s_p = s. begin(); s_p != s. begin() + order; ++ i, ++ s_p)
-				R. convert(*s_p, A_ilio[i][i]);
+			for (i = 0, s_p = s. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ i, ++ s_p)
+				R. convert(*s_p, A_ilio[(size_t)i][(size_t)i]);
 			report << "    Elimination ends.\n";
 		}
 		// else if bisection possible
@@ -289,7 +289,7 @@ namespace LinBox
 			sf. setOIFThreshold (2);
 			sf. setLIFThreshold (2);
 			std::vector<long> primeL (prime, prime + NPrime);
-			std::vector<typename Ring::Element> out (order);
+			std::vector<typename Ring::Element> out ((size_t)order);
 			sf. smithForm (out, A, primeL);
 			typename std::vector<typename Ring::Element>::iterator out_p;
 			std::vector<integer>::iterator s_p;
@@ -304,8 +304,8 @@ namespace LinBox
 			MatrixHom::map (A_ilio, A, R);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; std::vector<integer>::iterator s_p;
-			for (i = 0, s_p = s. begin(); s_p != s. begin() + order; ++ i, ++ s_p)
-				R. convert(*s_p, A_ilio[i][i]);
+			for (i = 0, s_p = s. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ i, ++ s_p)
+				R. convert(*s_p, A_ilio[(size_t)i][(size_t)i]);
 			report << "    Elimination ends.\n";
 		}
 		report << "Compuation of the k-rough part of the invariant factors finishes.\n";
@@ -331,15 +331,15 @@ namespace LinBox
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
 		std::vector<long>::const_iterator sev_p; const long* prime_p; std::vector<integer>::iterator s_p;
-		std::vector<integer> local(order); std::vector<integer>::iterator local_p;
+		std::vector<integer> local((size_t)order); std::vector<integer>::iterator local_p;
 
-		for (s_p = s. begin(); s_p != s. begin() + r; ++ s_p)
+		for (s_p = s. begin(); s_p != s. begin() +(ptrdiff_t) r; ++ s_p)
 			*s_p = 1;
 		for (; s_p != s. end(); ++ s_p)
 			*s_p = 0;
 		if (r == 0) return;
 
-		for (sev_p = sev. begin(), prime_p = prime; sev_p != sev. begin() + NPrime; ++ sev_p, ++ prime_p) {
+		for (sev_p = sev. begin(), prime_p = prime; sev_p != sev. begin() +(ptrdiff_t) NPrime; ++ sev_p, ++ prime_p) {
 			if (*sev_p <= 0) continue;
 			//only compute the local Smith form at each possible prime
 			int extra = 2;
@@ -356,11 +356,11 @@ namespace LinBox
 				compute_local (local, A, *prime_p, extra);
 				//check
 				report << "   Check if it agrees with the rank: ";
-				if ((local[r-1] % m != 0 ) && ((r == order) ||(local[r] % m == 0))) {report << "yes.\n"; break;}
+				if ((local[(size_t)r-1] % m != 0 ) && ((r == order) ||(local[(size_t)r] % m == 0))) {report << "yes.\n"; break;}
 				report << "no. \n";
 				extra *= 2;
 			} while (true);
-			for (s_p = s. begin(), local_p = local. begin(); s_p != s. begin() + order; ++ s_p, ++ local_p)
+			for (s_p = s. begin(), local_p = local. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ local_p)
 				*s_p *= *local_p;
 		}
 		report << "Computation of the smith form done.\n";
@@ -396,7 +396,7 @@ namespace LinBox
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg ((int)(log( (double)(FieldTraits<Field>::maxModulus()) ) /  M_LN2 - 2));
+		RandomPrimeIterator rg ((unsigned int)(log( (double)(FieldTraits<Field>::maxModulus()) ) /  M_LN2 - 2));
 		Field F ((unsigned long)*rg);
 		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
 		MatrixHom::map (Ap, A, F);
@@ -456,7 +456,7 @@ namespace LinBox
 		}
 		// bonus assigns to its rough part
 		bonus = gcd (bonus, r_mod);
-		std::vector<integer> smooth (order), rough (order);
+		std::vector<integer> smooth ((size_t)order), rough ((size_t)order);
 		smithFormRough (rough, DA, bonus);
 		smithFormSmooth (smooth, A, r, e);
 		//fixed the rough largest invariant factor
@@ -470,15 +470,15 @@ namespace LinBox
 		   report<< *smooth_p << ' ';
 		   report<< '\n';
 		   report<<"Rough part\n";
-		   for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p)
+		   for (rough_p = rough. begin(); rough_p != rough. begin() +(ptrdiff_t) r; ++ rough_p)
 		   report<< *rough_p << ' ';
 		   report<< '\n';
 		   */
 
-		for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p)
+		for (rough_p = rough. begin(); rough_p != rough. begin() +(ptrdiff_t) r; ++ rough_p)
 			if (* rough_p == 0) *rough_p = bonus;
 
-		for (s_p = s. begin(), smooth_p = smooth. begin (), rough_p = rough. begin(); s_p != s. begin() + order; ++s_p, ++ smooth_p, ++ rough_p)
+		for (s_p = s. begin(), smooth_p = smooth. begin (), rough_p = rough. begin(); s_p != s. begin() +(ptrdiff_t) order; ++s_p, ++ smooth_p, ++ rough_p)
 			*s_p = *smooth_p * *rough_p;
 
 		report << "Computation of the invariant factors ends." << std::endl;
@@ -505,7 +505,7 @@ namespace LinBox
 		typedef typename BlasMatrix<IRing>::Field Ring;
 		unsigned long r;
 		MatrixRank<Ring, Modular<int32_t> > MR;
-		r = MR. rank (A);
+		r = (unsigned long)MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << '\n';
 		report << "Computation of the rank finished.\n";
 		const long* prime_p;
@@ -514,7 +514,7 @@ namespace LinBox
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg ((int)(log( (double)(FieldTraits<Field>::maxModulus()) ) / M_LN2 - 2));
+		RandomPrimeIterator rg ((unsigned int)(log( (double)(FieldTraits<Field>::maxModulus()) ) / M_LN2 - 2));
 		Field F ((unsigned long)*rg);
 		typename MatrixHomTrait<BlasMatrix <IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A, F);
@@ -536,7 +536,7 @@ namespace LinBox
 				}
 			}
 			if (Val == 1) {
-				smithFormVal (s, A, r, e);
+				smithFormVal (s, A, (long)r, e);
 				report << "Computation of the invariant factors ends." << std::endl;
 				return;
 			}
@@ -570,8 +570,8 @@ namespace LinBox
 		}
 		// bonus assigns to its rough part
 		bonus = gcd (bonus, r_mod);
-		std::vector<integer> smooth (order), rough (order);
-		smithFormSmooth (smooth, A, r, e);
+		std::vector<integer> smooth ((size_t)order), rough ((size_t)order);
+		smithFormSmooth (smooth, A, (long)r, e);
 		smithFormRough (rough, A, bonus);
 		// fixed the rough largest invariant factor
 		if (r > 0) rough[r-1] = r_mod;
@@ -584,15 +584,15 @@ namespace LinBox
 		   report<< *smooth_p << ' ';
 		   report<< '\n';
 		   report<<"Rough part\n";
-		   for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p)
+		   for (rough_p = rough. begin(); rough_p != rough. begin() +(ptrdiff_t) r; ++ rough_p)
 		   report<< *rough_p << ' ';
 		   report<< '\n';
 		   */
 
-		for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p)
+		for (rough_p = rough. begin(); rough_p != rough. begin() + (ptrdiff_t)r; ++ rough_p)
 			if (* rough_p == 0) *rough_p = bonus;
 
-		for (s_p = s. begin(), smooth_p = smooth. begin (), rough_p = rough. begin(); s_p != s. begin() + order; ++s_p, ++ smooth_p, ++ rough_p)
+		for (s_p = s. begin(), smooth_p = smooth. begin (), rough_p = rough. begin(); s_p != s. begin() + (ptrdiff_t)order; ++s_p, ++ smooth_p, ++ rough_p)
 			*s_p = *smooth_p * *rough_p;
 
 		report << "Computation of the invariant factors ends." << std::endl;

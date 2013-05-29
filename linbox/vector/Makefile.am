@@ -37,6 +37,8 @@ pkgincludesub_HEADERS=		\
 	stream-gf2.h		\
 	bit-vector.h		\
 	bit-vector.inl		\
+	blas-vector.h		\
+	blas-vector.inl		\
 	vector-domain.h		\
 	vector-domain-gf2.h	\
 	vector-domain.inl       \

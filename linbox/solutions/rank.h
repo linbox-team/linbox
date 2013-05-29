@@ -1,20 +1,20 @@
 /* linbox/solutions/rank.h
  * Copyright(C) LinBox
  * ------------------------------------
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -385,9 +385,9 @@ namespace LinBox
 				commentator().stop ("fail", NULL, "trace");
 				Permutation<Field> P((int)A.rowdim(), F);
 				for (i = 0; i < A.rowdim (); ++i)
-					P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
+					P.permute( (size_t)rand() % A.rowdim() , (size_t)rand() % A.rowdim() );
 				for (i = 0; i < A.rowdim (); ++i)
-					P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
+					P.permute( (size_t)rand() % A.rowdim() , (size_t)rand() % A.rowdim() );
 
 				typedef Compose< Permutation<Field>, Blackbox > BlackboxP;
 				BlackboxP BP(&P, &A);
@@ -508,7 +508,7 @@ namespace LinBox
 		typedef Modular<double> Field;
 		integer mmodulus;
 		FieldTraits<Field>::maxModulus(mmodulus);
-		RandomPrimeIterator genprime( (long) floor (log((double)mmodulus) ) );
+		RandomPrimeIterator genprime( (unsigned int) floor (log((double)mmodulus) ) );
 		++genprime;
 		typedef typename Blackbox::template rebind< Field >::other FBlackbox;
 		Field Fp(*genprime);

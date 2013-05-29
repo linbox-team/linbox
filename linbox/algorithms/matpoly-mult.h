@@ -174,7 +174,7 @@ namespace LinBox
 			linbox_check(a.size() >= (b.size()+c.size()-1));
 			for (size_t i=0;i<b.size();++i){
 				for (size_t j=0;j<c.size();++j)
-					_BMD.axpyin(a[i+j],b[i],c[j]);
+					_BMD.axpyin(a[(size_t)i+j],b[(size_t)i],c[j]);
 			}
 		}
 
@@ -186,7 +186,7 @@ namespace LinBox
 			for (size_t i=0;i<b.size();++i){
 				for (size_t j=0;j<c.size();++j){
 					if ((i+j<2*a.size()-1) && (i+j>=a.size()-1)){
-						_BMD.axpyin(a[i+j - a.size()+1],b[i],c[j]);
+						_BMD.axpyin(a[(size_t)i+j - a.size()+1],b[(size_t)i],c[j]);
 					}
 				}
 			}
@@ -199,7 +199,7 @@ namespace LinBox
 			for (size_t i=0;i<b.size();++i){
 				for (size_t j=0;j<c.size();++j){
 					if ((i+j>=a.size()-1) && (i+j<=c.size()-1)){
-						_BMD.axpyin(a[i+j - a.size()+1],b[i],c[j]);
+						_BMD.axpyin(a[(size_t)i+j - a.size()+1],b[(size_t)i],c[j]);
 					}
 				}
 			}
@@ -295,34 +295,34 @@ namespace LinBox
 
 				// add low and high degrees of A
 				for (size_t i=0;i<degA_low;++i)
-					A_tmp[i]=A[shiftA+i];
+					A_tmp[(size_t)i]=A[shiftA+i];
 				if ( degA_high != 0)
 					for (size_t i=0;i<degA_high;++i)
-						_MD.addin(A_tmp[i],A[shiftA+degSplit+i]);
+						_MD.addin(A_tmp[(size_t)i],A[shiftA+degSplit+i]);
 
 				// add low and high degrees of B
 				for (size_t i=0;i<degB_low;++i)
-					B_tmp[i]=B[shiftA+i];
+					B_tmp[(size_t)i]=B[shiftA+i];
 				if ( degB_high != 0)
 					for (size_t i=0;i<degB_high;++i)
-						_MD.addin(B_tmp[i],B[shiftB+degSplit+i]);
+						_MD.addin(B_tmp[(size_t)i],B[shiftB+degSplit+i]);
 
 				//  multiply the sums
 				Karatsuba_mul(C_tmp, 0, A_tmp, 0, degA_low, B_tmp, 0, degB_low);
 
 				// subtract the low product from the product of sums
 				for (size_t i=0;i< C_tmp.size();++i)
-					_MD.subin(C_tmp[i], C[shiftC+i]);
+					_MD.subin(C_tmp[(size_t)i], C[shiftC+i]);
 
 				// subtract the high product from the product of sums
 				if ((degA_high !=0) && (degB_high != 0))
 					for (size_t i=0;i< degA_high+degB_high-1; ++i)
-						_MD.subin(C_tmp[i], C[shiftC+(degSplit << 1)+i]);
+						_MD.subin(C_tmp[(size_t)i], C[shiftC+(degSplit << 1)+i]);
 
 				// add the middle term of the product
 				size_t mid= (degA_low+degB_high > degB_low+degA_high)? degA_low+degB_high :degB_low+degA_high;
 				for (size_t i=0;i< mid-1; ++i)
-					_MD.addin(C[shiftC+degSplit+i], C_tmp[i]);
+					_MD.addin(C[shiftC+degSplit+i], C_tmp[(size_t)i]);
 			}
 		}
 
@@ -347,41 +347,41 @@ namespace LinBox
 				std::vector<Coefficient> B1(2*k1-1,ZeroB), B2(2*k1-1,ZeroB);
 
 				for (size_t i=0;i<k0;++i)
-					A_low[i] = A[i];
+					A_low[(size_t)i] = A[(size_t)i];
 
 				for (size_t i=k0;i<A.size();++i)
-					A_high[i-k0] = A[i];
+					A_high[(size_t)i-k0] = A[(size_t)i];
 
 				for (size_t i=0;i<2*k1-1;++i){
-					B1[i] = B[i];
-					B2[i] = B[i+k1];
-					_MD.addin(B1[i],B2[i]);
+					B1[(size_t)i] = B[(size_t)i];
+					B2[(size_t)i] = B[(size_t)i+k1];
+					_MD.addin(B1[(size_t)i],B2[(size_t)i]);
 				}
 				midproduct_Karatsuba(alpha, A_high, B1);
 
 				if (k0 == k1) {
 					for (size_t i=0;i<k1;++i)
-						_MD.subin(A_high[i],A_low[i]);
+						_MD.subin(A_high[(size_t)i],A_low[(size_t)i]);
 					midproduct_Karatsuba(beta, A_high, B2);
 				}
 				else {
 					for (size_t i=1;i<k1;++i)
-						_MD.subin(A_high[i],A_low[i-1]);
+						_MD.subin(A_high[(size_t)i],A_low[(size_t)i-1]);
 					midproduct_Karatsuba(beta, A_high, B2);
 				}
 
 				std::vector<Coefficient> B3(2*k0-1,ZeroB);
 				for (size_t i=0;i<2*k0-1;++i)
-					_MD.add(B3[i],B[i+2*k1],B[i+k1]);
+					_MD.add(B3[(size_t)i],B[(size_t)i+2*k1],B[(size_t)i+k1]);
 
 				midproduct_Karatsuba(gamma, A_low, B3);
 
 				for (size_t i=0;i<k1;++i)
-					_MD.sub(C[i],alpha[i],beta[i]);
+					_MD.sub(C[(size_t)i],alpha[(size_t)i],beta[(size_t)i]);
 
 				for (size_t i=0;i<k0;++i){
-					C[k1+i]=gamma[i];
-					_MD.addin(C[k1+i],beta[i]);
+					C[k1+i]=gamma[(size_t)i];
+					_MD.addin(C[k1+i],beta[(size_t)i]);
 				}
 			}
 		}
@@ -391,7 +391,7 @@ namespace LinBox
 
 			if (A.size() == 1){
 				for (size_t i=0;i<B.size();i++)
-					_BMD.mul(C[i],A[0],B[i]);
+					_BMD.mul(C[(size_t)i],A[0],B[(size_t)i]);
 			}
 			else {
 				size_t dA=A.size();
@@ -413,43 +413,43 @@ namespace LinBox
 
 
 				for (size_t i=0;i<Ak0;++i)
-					A_low[i] = A[i];
+					A_low[(size_t)i] = A[(size_t)i];
 
 				for (size_t i=Ak0;i<dA;++i)
-					A_high[i-Ak0] = A[i];
+					A_high[(size_t)i-Ak0] = A[(size_t)i];
 
 				for (size_t i=0;i<Ak1+Bk1-1;++i){
-					B1[i] = B[i];
-					B2[i] = B[i+Ak1];
-					_MD.addin(B1[i],B2[i]);
+					B1[(size_t)i] = B[(size_t)i];
+					B2[(size_t)i] = B[(size_t)i+Ak1];
+					_MD.addin(B1[(size_t)i],B2[(size_t)i]);
 				}
 				midproduct_Karatsubagen(alpha, A_high, B1);
 
 				if (Ak0 == Ak1) {
 					for (size_t i=0;i<Ak1;++i)
-						_MD.subin(A_high[i],A_low[i]);
+						_MD.subin(A_high[(size_t)i],A_low[(size_t)i]);
 					midproduct_Karatsubagen(beta, A_high, B2);
 				}
 				else {
 					for (size_t i=1;i<Ak1;++i)
-						_MD.subin(A_high[i],A_low[i-1]);
+						_MD.subin(A_high[(size_t)i],A_low[(size_t)i-1]);
 					midproduct_Karatsubagen(beta, A_high, B2);
 				}
 
 
 				if (Bk0>0) {
 					for (size_t i=0;i<Ak0+Bk0-1;++i)
-						_MD.add(B3[i],B[i+Ak0+Bk1],B[i+Ak0]);
+						_MD.add(B3[(size_t)i],B[(size_t)i+Ak0+Bk1],B[(size_t)i+Ak0]);
 					midproduct_Karatsubagen(gamma, A_low, B3);
 				}
 
 
 				for (size_t i=0;i<Bk1;++i)
-					_MD.sub(C[i],alpha[i],beta[i]);
+					_MD.sub(C[(size_t)i],alpha[(size_t)i],beta[(size_t)i]);
 
 				for (size_t i=0;i<Bk0;++i){
-					C[Bk1+i]=gamma[i];
-					_MD.addin(C[Bk1+i],beta[i]);
+					C[Bk1+i]=gamma[(size_t)i];
+					_MD.addin(C[Bk1+i],beta[(size_t)i]);
 				}
 			}
 		}
@@ -545,11 +545,11 @@ namespace LinBox
 
 				// set fftprimes, fftdomains, polynomial matrix results
 				for (size_t i=0; i< nbrprimes; ++i){
-					f_i[i] = Field(lprimes[i]);
-					FFTDomainBase fftdomain(f_i[i]);
-					a_i[i] = std::vector<Coefficient>(a.size(), ZeroA);
+					f_i[(size_t)i] = Field(lprimes[(size_t)i]);
+					FFTDomainBase fftdomain(f_i[(size_t)i]);
+					a_i[(size_t)i] = std::vector<Coefficient>(a.size(), ZeroA);
 					// does not work if original field representation is not Fp seen as integers mod p
-					fftdomain.mul(a_i[i], b ,c);
+					fftdomain.mul(a_i[(size_t)i], b ,c);
 				}
 
 				Timer chrono;
@@ -567,9 +567,9 @@ namespace LinBox
 					Element * crt_inv = new Element[nbrprimes];
 					Element tmp;
 					for (size_t i=0;i<nbrprimes; ++i){
-						crt[i]=primesprod/lprimes[i];
-						f_i[i].init(tmp,crt[i]);
-						f_i[i].inv(crt_inv[i], tmp);
+						crt[(size_t)i]=primesprod/lprimes[(size_t)i];
+						f_i[(size_t)i].init(tmp,crt[(size_t)i]);
+						f_i[(size_t)i].inv(crt_inv[(size_t)i], tmp);
 					}
 
 					integer res,acc;
@@ -662,11 +662,11 @@ namespace LinBox
 
 				// set fftprimes, fftdomains, polynomial matrix results
 				for (size_t i=0; i< nbrprimes; ++i){
-					f_i[i] = Field(lprimes[i]);
-					FFTDomainBase fftdomain(f_i[i]);
-					a_i[i] = std::vector<Coefficient>(a.size(), ZeroA);
+					f_i[(size_t)i] = Field(lprimes[(size_t)i]);
+					FFTDomainBase fftdomain(f_i[(size_t)i]);
+					a_i[(size_t)i] = std::vector<Coefficient>(a.size(), ZeroA);
 					// does not work if original field representation is not Fp seen as integers mod p
-					fftdomain.midproduct(a_i[i], b ,c);
+					fftdomain.midproduct(a_i[(size_t)i], b ,c);
 				}
 
 				Timer chrono;
@@ -684,9 +684,9 @@ namespace LinBox
 					Element * crt_inv = new Element[nbrprimes];
 					Element tmp;
 					for (size_t i=0;i<nbrprimes; ++i){
-						crt[i]=primesprod/lprimes[i];
-						f_i[i].init(tmp,crt[i]);
-						f_i[i].inv(crt_inv[i], tmp);
+						crt[(size_t)i]=primesprod/lprimes[(size_t)i];
+						f_i[(size_t)i].init(tmp,crt[(size_t)i]);
+						f_i[(size_t)i].inv(crt_inv[(size_t)i], tmp);
 					}
 
 					integer res,acc;
@@ -800,14 +800,14 @@ namespace LinBox
 
 			// set fftprimes, fftdomains, polynomial matrices
 			for (size_t i=0; i< nbrprimes; ++i){
-				f_i[i] = Field(lprimes[i]);
-				FFTDomainBase fftdomain(f_i[i]);
-				a_i[i] = std::vector<Coefficient>(a.size(), ZeroA);
-				b_i[i] = std::vector<Coefficient>(b.size(), ZeroB);
-				c_i[i] = std::vector<Coefficient>(c.size(), ZeroC);
+				f_i[(size_t)i] = Field(lprimes[(size_t)i]);
+				FFTDomainBase fftdomain(f_i[(size_t)i]);
+				a_i[(size_t)i] = std::vector<Coefficient>(a.size(), ZeroA);
+				b_i[(size_t)i] = std::vector<Coefficient>(b.size(), ZeroB);
+				c_i[(size_t)i] = std::vector<Coefficient>(c.size(), ZeroC);
 
 				// does not work if original field representation is not Fp seen as integers mod p
-				fftdomain.mul(a_i[i], b ,c);
+				fftdomain.mul(a_i[(size_t)i], b ,c);
 			}
 
 			Timer chrono;
@@ -825,9 +825,9 @@ namespace LinBox
 				Element * crt_inv = new Element[nbrprimes];
 				Element tmp;
 				for (size_t i=0;i<nbrprimes; ++i){
-					crt[i]=primesprod/lprimes[i];
-					f_i[i].init(tmp,crt[i]);
-					f_i[i].inv(crt_inv[i], tmp);
+					crt[(size_t)i]=primesprod/lprimes[(size_t)i];
+					f_i[(size_t)i].init(tmp,crt[(size_t)i]);
+					f_i[(size_t)i].inv(crt_inv[(size_t)i], tmp);
 				}
 
 				integer res,acc;
@@ -916,11 +916,11 @@ namespace LinBox
 
 				// set fftprimes, fftdomains, polynomial matrix results
 				for (size_t i=0; i< nbrprimes; ++i){
-					f_i[i] = Field(lprimes[i]);
-					FFTDomainBase fftdomain(f_i[i]);
-					a_i[i] = std::vector<Coefficient>(a.size(), ZeroA);
+					f_i[(size_t)i] = Field(lprimes[(size_t)i]);
+					FFTDomainBase fftdomain(f_i[(size_t)i]);
+					a_i[(size_t)i] = std::vector<Coefficient>(a.size(), ZeroA);
 					// does not work if original field representation is not Fp seen as integers mod p
-					fftdomain.midproduct(a_i[i], b ,c);
+					fftdomain.midproduct(a_i[(size_t)i], b ,c);
 				}
 
 				Timer chrono;
@@ -938,9 +938,9 @@ namespace LinBox
 					Element * crt_inv = new Element[nbrprimes];
 					Element tmp;
 					for (size_t i=0;i<nbrprimes; ++i){
-						crt[i]=primesprod/lprimes[i];
-						f_i[i].init(tmp,crt[i]);
-						f_i[i].inv(crt_inv[i], tmp);
+						crt[(size_t)i]=primesprod/lprimes[(size_t)i];
+						f_i[(size_t)i].init(tmp,crt[(size_t)i]);
+						f_i[(size_t)i].inv(crt_inv[(size_t)i], tmp);
 					}
 
 					integer res,acc;
@@ -1117,26 +1117,26 @@ namespace LinBox
 			field().init(pow_w[0],1);
 			field().init(pow_inv_w[0],1);
 			for (size_t i=1;i<pts;++i){
-				field().mul(pow_w[i], pow_w[i-1], _w);
-				field().mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
+				field().mul(pow_w[(size_t)i], pow_w[(size_t)i-1], _w);
+				field().mul(pow_inv_w[(size_t)i], pow_inv_w[(size_t)i-1], _inv_w);
 			}
 
 			// compute reverse bit ordering
 			// size_t revbit[pts];
 			std::vector<size_t> revbit(pts);
-			for (long i = 0, j = 0; i < static_cast<long>(pts); i++, j = RevInc(j, lpts))
+			for (long i = 0, j = 0; i < static_cast<long>(pts); i++, j = RevInc(j, (long)lpts))
 				revbit[(size_t)i]=(size_t)j;
 
 			// set the data
 			std::vector<Coefficient> fft_a(pts, ZeroA), fft_b(pts, ZeroB), fft_c(pts,ZeroC);
 			for (size_t i=0;i<b.size();++i)
-				fft_b[i]=b[i];
+				fft_b[(size_t)i]=b[(size_t)i];
 			for (size_t i=b.size();i<pts;++i)
-				fft_b[i]=ZeroB;
+				fft_b[(size_t)i]=ZeroB;
 			for (size_t i=0;i<c.size();++i)
-				fft_c[i]=c[i];
+				fft_c[(size_t)i]=c[(size_t)i];
 			for (size_t i=c.size();i<pts;++i)
-				fft_c[i]=ZeroC;
+				fft_c[(size_t)i]=ZeroC;
 
 
 
@@ -1173,13 +1173,13 @@ namespace LinBox
 				// 				{chrono_mul[omp_get_thread_num()].start();
 				// #endif
 				// #endif
-				_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);
+				_BMD.mul(fft_a[(size_t)i], fft_b[(size_t)i], fft_c[(size_t)i]);
 #ifdef FFT_TIMING
 			chrono.stop();
 #ifdef __LINBOX_HAVE_OPENMP
 			//chrono_mul[omp_get_thread_num()].stop();chrono_mul_t[omp_get_thread_num()]+=chrono_mul[omp_get_thread_num()];}
 			//for (size_t i=0;i<omp_get_max_threads();i++)
-			//std::cout<<"FFT: componentwise mul thread["<<i<<"] -> "<<chrono_mul_t[i]<<std::endl;
+			//std::cout<<"FFT: componentwise mul thread["<<i<<"] -> "<<chrono_mul_t[(size_t)i]<<std::endl;
 #endif
 			std::cout<<"FFT: componentwise mul total      : "<<chrono<<"\n";
 			chrono.clear();
@@ -1194,10 +1194,10 @@ namespace LinBox
 			// #pragma omp parallel for shared(fft_a,revbit) private(Element) schedule(runtime)
 			// #endif
 			for (size_t i=0; i< pts; ++i){
-				if (revbit[i]>i){
-					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
-					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
-					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
+				if (revbit[(size_t)i]>i){
+					typename Coefficient::Iterator it_a1=fft_a[(size_t)i].Begin();
+					typename Coefficient::Iterator it_a2=fft_a[revbit[(size_t)i]].Begin();
+					for (; it_a1 != fft_a[(size_t)i].End(); ++it_a1, ++it_a2){
 						field().assign(swapping,*it_a1);
 						field().assign(*it_a1, *it_a2);
 						field().assign(*it_a2,swapping);
@@ -1236,9 +1236,9 @@ namespace LinBox
 			// #endif
 
 			for (long i=0; i< static_cast<long>(deg); ++i){
-				//a[i] = fft_a[revbit[i]];
-				//_MD.mulin(a[i], inv_pts);
-				_MD.mul(a[i],fft_a[revbit[i]],inv_pts);
+				//a[(size_t)i] = fft_a[revbit[(size_t)i]];
+				//_MD.mulin(a[(size_t)i], inv_pts);
+				_MD.mul(a[(size_t)i],fft_a[revbit[(size_t)i]],inv_pts);
 			}
 #ifdef FFT_TIMING
 			chrono.stop();
@@ -1335,27 +1335,27 @@ namespace LinBox
 			field().init(pow_w[0],1);
 			field().init(pow_inv_w[0],1);
 			for (size_t i=1;i<pts;++i){
-				field().mul(pow_w[i], pow_w[i-1], _w);
-				field().mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
+				field().mul(pow_w[(size_t)i], pow_w[(size_t)i-1], _w);
+				field().mul(pow_inv_w[(size_t)i], pow_inv_w[(size_t)i-1], _inv_w);
 			}
 
 			// compute reverse bit ordering
 			// XXX this is C99 extension
 			// size_t revbit[pts];
 			std::vector<size_t> revbit(pts);
-			for (long i = 0, j = 0; i < static_cast<long>(pts); i++, j = RevInc(j, lpts))
+			for (long i = 0, j = 0; i < static_cast<long>(pts); i++, j = RevInc(j, (long)lpts))
 				revbit[(size_t)i]=(size_t)j;
 
 			// set the data
 			std::vector<Coefficient> fft_a(pts, ZeroA), fft_b(pts, ZeroB), fft_c(pts, ZeroC);
 			for (size_t i=0;i<b.size();++i)
-				fft_b[i]=b[b.size()-i-1];// reverse b
+				fft_b[(size_t)i]=b[b.size()-i-1];// reverse b
 			for (size_t i=b.size();i<pts;++i)
-				fft_b[i]=ZeroB;;
+				fft_b[(size_t)i]=ZeroB;;
 			for (size_t i=0;i<c.size();++i)
-				fft_c[i]=c[i];
+				fft_c[(size_t)i]=c[(size_t)i];
 			for (size_t i=c.size();i<pts;++i)
-				fft_c[i]=ZeroC;
+				fft_c[(size_t)i]=ZeroC;
 
 
 			// compute the DFT of b and DFT^-1 of c (parallel if __LINBOX_HAVE_OPENMP)
@@ -1369,7 +1369,7 @@ namespace LinBox
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(dynamic)
 #endif
 			for (long i=0;i<static_cast<long>(pts);++i)
-				_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);
+				_BMD.mul(fft_a[(size_t)i], fft_b[(size_t)i], fft_c[(size_t)i]);
 
 			Element swapping;
 			// reorder the term in the FFT according to reverse bit ordering
@@ -1377,10 +1377,10 @@ namespace LinBox
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(runtime)
 			// #endif
 			for (size_t i=0; i< pts; ++i){
-				if (revbit[i]>i){
-					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
-					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
-					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
+				if (revbit[(size_t)i]>i){
+					typename Coefficient::Iterator it_a1=fft_a[(size_t)i].Begin();
+					typename Coefficient::Iterator it_a2=fft_a[revbit[(size_t)i]].Begin();
+					for (; it_a1 != fft_a[(size_t)i].End(); ++it_a1, ++it_a2){
 						field().assign(swapping,*it_a1);
 						field().assign(*it_a1, *it_a2);
 						field().assign(*it_a2,swapping);
@@ -1400,8 +1400,8 @@ namespace LinBox
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
 			// #endif
 			for (long i=0; i< static_cast<long>(a.size()); ++i){
-				a[i] = fft_a[revbit[i]];
-				_MD.mulin(a[i], inv_pts);
+				a[(size_t)i] = fft_a[revbit[(size_t)i]];
+				_MD.mulin(a[(size_t)i], inv_pts);
 			}
 		}
 
@@ -1493,8 +1493,8 @@ namespace LinBox
 			field().init(pow_w[0],1);
 			field().init(pow_inv_w[0],1);
 			for (size_t i=1;i<pts;++i){
-				field().mul(pow_w[i], pow_w[i-1], _w);
-				field().mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
+				field().mul(pow_w[(size_t)i], pow_w[(size_t)i-1], _w);
+				field().mul(pow_inv_w[(size_t)i], pow_inv_w[(size_t)i-1], _inv_w);
 			}
 
 			// compute reverse bit ordering
@@ -1506,13 +1506,13 @@ namespace LinBox
 			// set the data
 			std::vector<Coefficient> fft_a(pts, ZeroA), fft_b(pts, ZeroB), fft_c(pts, ZeroC);
 			for (size_t i=0;i<b.size();++i)
-				fft_b[i]=b[b.size()-i-1];// reverse b
+				fft_b[(size_t)i]=b[b.size()-i-1];// reverse b
 			for (size_t i=b.size();i<pts;++i)
-				fft_b[i]=ZeroB;;
+				fft_b[(size_t)i]=ZeroB;;
 			for (size_t i=0;i<c.size();++i)
-				fft_c[i]=c[i];
+				fft_c[(size_t)i]=c[(size_t)i];
 			for (size_t i=c.size();i<pts;++i)
-				fft_c[i]=ZeroC;
+				fft_c[(size_t)i]=ZeroC;
 
 
 			// compute the DFT of b and DFT^-1 of c (parallel if __LINBOX_HAVE_OPENMP)
@@ -1527,7 +1527,7 @@ namespace LinBox
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(dynamic)
 #endif
 			for (long i=0;i<(long)pts;++i)
-				_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);
+				_BMD.mul(fft_a[(size_t)i], fft_b[(size_t)i], fft_c[(size_t)i]);
 
 			Element swapping;
 			// reorder the term in the FFT according to reverse bit ordering
@@ -1535,10 +1535,10 @@ namespace LinBox
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(runtime)
 			// #endif
 			for (size_t i=0; i< pts; ++i){
-				if (revbit[i]>i){
-					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
-					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
-					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
+				if (revbit[(size_t)i]>i){
+					typename Coefficient::Iterator it_a1=fft_a[(size_t)i].Begin();
+					typename Coefficient::Iterator it_a2=fft_a[revbit[(size_t)i]].Begin();
+					for (; it_a1 != fft_a[(size_t)i].End(); ++it_a1, ++it_a2){
 						field().assign(swapping,*it_a1);
 						field().assign(*it_a1, *it_a2);
 						field().assign(*it_a2,swapping);
@@ -1558,8 +1558,8 @@ namespace LinBox
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
 			// #endif
 			for (long i=0; i< a.size(); ++i){
-				a[i] = fft_a[revbit[i]];
-				_MD.mulin(a[i], inv_pts);
+				a[(size_t)i] = fft_a[revbit[(size_t)i]];
+				_MD.mulin(a[(size_t)i], inv_pts);
 			}
 		}
 
@@ -1601,7 +1601,7 @@ namespace LinBox
 			Element       *aptr = A.getPointer();
 			const Element *bptr = B.getPointer();
 			for (size_t i=0;i<n2;++i){
-				aptr[i]+= bptr[i];
+				aptr[(size_t)i]+= bptr[(size_t)i];
 			}
 		}
 
@@ -1612,9 +1612,9 @@ namespace LinBox
 			Element *bptr = B.getPointer();
 			Element tmp;
 			for (size_t i=0;i<n2;++i){
-				tmp = aptr[i];
-				field().addin(aptr[i],bptr[i]);
-				field().sub(bptr[i], tmp, bptr[i]);
+				tmp = aptr[(size_t)i];
+				field().addin(aptr[(size_t)i],bptr[(size_t)i]);
+				field().sub(bptr[(size_t)i], tmp, bptr[(size_t)i]);
 			}
 		}
 
@@ -1687,15 +1687,15 @@ namespace LinBox
 				Butterfly(fft[shift],fft[shift+n2],one);
 
 				for (size_t i=1; i< n2; ++i){
-					Butterfly(fft[shift+i],fft[shift+i+n2],pow_w[idx_w*i]);
+					Butterfly(fft[shift+i],fft[shift+i+n2],pow_w[(size_t)idx_w*i]);
 
 					//_MD.copy(tmp, fft[shift+i]);
 					//_MD.addin(fft[shift+i],fft[shift+i+n2]);
 					//_MD.sub(fft[shift+i+n2], tmp, fft[shift+i+n2]);
 					//myAddSub(fft[shift+i],fft[shift+i+n2]);
 
-					//_MD.mulin(fft[shift+i+n2],  pow_w[idx_w*i]);
-					//FFLAS::fscal(field(), mn, pow_w[idx_w*i], fft[shift+i+n2].getPointer(), 1);
+					//_MD.mulin(fft[shift+i+n2],  pow_w[(size_t)idx_w*i]);
+					//FFLAS::fscal(field(), mn, pow_w[(size_t)idx_w*i], fft[shift+i+n2].getPointer(), 1);
 				}
 				FFT(fft, n2, pow_w, idx_w<<1, shift);
 				FFT(fft, n2, pow_w, idx_w<<1, shift+n2);
@@ -1720,9 +1720,9 @@ namespace LinBox
 
 			// bottom level s = 1
 			for (size_t i=0; i< n; i+=2) {
-				_MD.copy(tmp, fft[i]);
-				_MD.addin(fft[i], fft[i+1]);
-				_MD.sub(fft[i+1], tmp, fft[i+1]);
+				_MD.copy(tmp, fft[(size_t)i]);
+				_MD.addin(fft[(size_t)i], fft[(size_t)i+1]);
+				_MD.sub(fft[(size_t)i+1], tmp, fft[(size_t)i+1]);
 			}
 
 			// others levels s = 2..ln-1
@@ -1737,16 +1737,16 @@ namespace LinBox
 
 					Coefficient *t, *t1,  *tt, *tt1, *u, *u1, *uu, *uu1;
 
-					t  = &fft[i+m2];
-					u  = &fft[i];
-					t1 = &fft[i+1+m2]; _MD.mulin(*t1, pow_w[w]);
-					u1 = &fft[i+1];
+					t  = &fft[(size_t)i+m2];
+					u  = &fft[(size_t)i];
+					t1 = &fft[(size_t)i+1+m2]; _MD.mulin(*t1, pow_w[w]);
+					u1 = &fft[(size_t)i+1];
 
 					for (size_t j=0; j<m2-2; j+=2){
-						tt  = &fft[i+j+2+m2];_MD.mulin(*tt, pow_w[(j+2)*w]);
-						uu  = &fft[i+j+2];
-						tt1 = &fft[i+j+3+m2];_MD.mulin(*tt1, pow_w[(j+3)*w]);
-						uu1 = &fft[i+j+3];
+						tt  = &fft[(size_t)i+j+2+m2];_MD.mulin(*tt, pow_w[(j+2)*w]);
+						uu  = &fft[(size_t)i+j+2];
+						tt1 = &fft[(size_t)i+j+3+m2];_MD.mulin(*tt1, pow_w[(j+3)*w]);
+						uu1 = &fft[(size_t)i+j+3];
 
 						_MD.copy(tmp, *u);
 						_MD.addin(*u, *t);

@@ -57,14 +57,14 @@ Matrix& randomAns(const Ring& R, Matrix& Mat, size_t n, size_t epr){
 			val = neg*(rand()%CEILING);
 			//  choose random location for value
 			do{
-				pos = int(rand()%n);  // pos in [0, n)
+				pos = int((size_t)rand()%n);  // pos in [0, n)
 			}
 			while(used(usedV, pos));
 			usedV[k] = pos;  //  record location
 
 			//std::cerr << "\t set value " << val << " in pos " << pos << std::endl;
 			//  finally, set entry
-			Mat.setEntry(i, pos, R.init(tmp, val));
+			Mat.setEntry((size_t)i, (size_t)pos, R.init(tmp, val));
 		}
 	}
 
@@ -80,17 +80,17 @@ Matrix& randomAns(const Ring& R, Matrix& Mat, size_t n, size_t epr){
 		val = neg*(rand()%COMB_CEILING);
 		//  val is the multiplier for this row
 		for(size_t j = 0; j < n; ++j){
-			R.axpyin(tmps[j], val, Mat.getEntry(i, j));
+			R.axpyin(tmps[j], val, Mat.getEntry((size_t)i, (size_t)j));
 		}
 	}
 	for(size_t i=0; i<n; ++i)
-		Mat.setEntry(n-1, i, tmps[i]);
+		Mat.setEntry((size_t)n-1, (size_t)i, tmps[i]);
 
 	//  add one to random value
-	size_t wildcard = rand()%n;
-	R.init(tmp, Mat.getEntry(n-1, wildcard));
+	size_t wildcard = (size_t)rand()%n;
+	R.init(tmp, Mat.getEntry((size_t)n-1, (size_t)wildcard));
 	R.addin(tmp, 1);
-	Mat.setEntry(n-1, wildcard, tmp);
+	Mat.setEntry((size_t)n-1, (size_t)wildcard, tmp);
 
 	return Mat;
 }

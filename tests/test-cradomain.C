@@ -56,7 +56,7 @@ struct Interator {
 	}
 
 	Interator(int n, int s) :
-		_v(n), maxsize(0.0)
+		_v((size_t)n), maxsize(0.0)
 	{
 		for(std::vector<integer>::iterator it=_v.begin();
 		    it != _v.end(); ++it) {
@@ -106,7 +106,7 @@ struct InteratorIt : public Interator {
 		Interator(v), _vectC(v.size())
 	{}
 	InteratorIt(int n, int s) :
-		Interator(n,s), _vectC(n)
+		Interator(n,s), _vectC((size_t)n)
 	{}
 
 	template<typename Iterator, typename Field>
@@ -220,18 +220,18 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 }
 
 
-bool TestCra(int N, int S, size_t seed)
+bool TestCra(size_t N, int S, size_t seed)
 {
 
 	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
 	// std::ostream &report = std::cout;
 
-	size_t new_seed = (seed?(seed):(BaseTimer::seed())) ;
+	size_t new_seed = (seed?(seed):((size_t)BaseTimer::seed())) ;
 	report << "TestCra(" << N << ',' << S << ',' << new_seed << ')' << std::endl;
 	Integer::seeding(new_seed);
 
-	Interator iteration(N, S);
+	Interator iteration((int)N, S);
 	InteratorIt iterationIt(iteration.getVector());
 	InteratorBlas<LinBox::Modular<double> > iterationBlas(iteration.getVector());
 	LinBox::RandomPrimeIterator genprime( 24, new_seed );
@@ -332,7 +332,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	for(int i=0; pass && i<iterations; ++i)
-		pass &= TestCra((int)n,(int)s,seed);
+		pass &= TestCra((size_t)n,(int)s,seed);
 
 	LinBox::commentator().stop(MSG_STATUS (pass), "CRA-Domain test suite");
 	return pass ? 0 : -1;

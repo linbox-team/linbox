@@ -136,7 +136,7 @@ namespace LinBox
 				Domain D(*genprime);
 				DomainElement r; D.init(r);
 				Builder_.progress( D, Iteration(r, D) );
-				if (RR_.scheduled(IterCounter-1)) {
+				if (RR_.scheduled((size_t)IterCounter-1)) {
 					Integer Mint ; Builder_.getModulus(Mint);
 					Integer rint ; Builder_.getResidue(rint);
 					if (RR_.reconstructRational(num,den,rint,Mint)) {
@@ -266,7 +266,7 @@ namespace LinBox
 				Vect<DomainElement, Alloc<DomainElement> > r;
 				Builder_.progress( D, Iteration(r, D) );
 
-				if (RR_.scheduled(IterCounter-1) || Builder_.terminated()) {
+				if (RR_.scheduled((size_t)IterCounter-1) || Builder_.terminated()) {
 					Integer Mint ; Builder_.getModulus(Mint);
 					if ( Builder_.terminated() ) {//early or full termination occurred, check reconstruction of the whole vector
 						//early or full termination
@@ -275,7 +275,7 @@ namespace LinBox
 						if (RR_.reconstructRational(num,den,r_v,Mint) ) {
 							Vect<Integer, Alloc<Integer> > vnum(num),vden(m_in.size(),den);
 							for (int i=0; i < (int)vnum.size(); ++ i) {
-								if (vnum[i]==0) vnum[i] = 1; // no prec
+								if (vnum[(size_t)i]==0) vnum[(size_t)i] = 1; // no prec
 							}
 							Builder_.productin(vnum, f_in);
 							Builder_.productin(vden,m_in);

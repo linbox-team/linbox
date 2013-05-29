@@ -45,12 +45,15 @@
 #include <fflas-ffpack/ffpack/ffpack.h>
 #include <fflas-ffpack/fflas/fflas.h>
 #include "linbox/matrix/blas-matrix.h"
+#include "linbox/vector/blas-vector.h"
 #include "linbox/matrix/permutation-matrix.h"
+
 
 
 namespace LinBox
 {
 
+	//!@bug not used ?
 	const int BlasBound = 1 << 26;
 
 	/** @internal
@@ -61,19 +64,23 @@ namespace LinBox
 	 *     -  D = beta.C + alpha. A*B
 	 *     -  C = beta.C + alpha. A*B
 	 */
-	template< class Field, class Operand1, class Operand2, class Operand3>
-	class BlasMatrixDomainMulAdd {
+	template<class Operand1, class Operand2, class Operand3/*, class MatrixVectorType*/>
+	class BlasMatrixDomainMulAdd
+#if 0
+	{
 	public:
-		Operand1 &operator() (const Field &F,
+		typedef typename Operand1::Field Field;
+		Operand1 &operator() (//const Field &F,
 				      Operand1 &D,
 				      const typename Field::Element &beta, const Operand1 &C,
 				      const typename Field::Element &alpha, const Operand2 &A, const Operand3 &B) const;
 
-		Operand1 &operator() (const Field &F,
+		Operand1 &operator() (//const Field &F,
 				      const typename Field::Element &beta, Operand1 &C,
 				      const typename Field::Element &alpha, const Operand2 &A, const Operand3 &B) const;
 
 
+#if 0 /* compiles without... */
 		// allowing disymetry of Operand2 and Operand3 (only if different type)
 		Operand1 &operator() (const Field &F,
 				      Operand1 &D,
@@ -83,10 +90,13 @@ namespace LinBox
 		Operand1 &operator() (const Field &F,
 				      const typename Field::Element &beta, Operand1 &C,
 				      const typename Field::Element &alpha, const Operand3 &A, const Operand2 &B) const;
+#endif
 
 
 
-	};
+	}
+#endif
+	;
 
 	/*!@internal
 	 * Adding two matrices
@@ -150,7 +160,7 @@ namespace LinBox
 			typename Field::Element zero, one;
 			F.init( zero, 0 );
 			F.init( one, 1 );
-			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()( F, zero, C, one, A, B );
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType*/>()(  zero, C, one, A, B );
 		}
 	};
 
@@ -182,7 +192,7 @@ namespace LinBox
 			Operand1* tmp = new Operand1(A);
 			// Effective copy of A
 			*tmp = A;
-			BlasMatrixDomainMulAdd<Field,Operand1,Operand1,Operand2>()( F, zero, A, one, *tmp, B );
+			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()( zero, A, one, *tmp, B );
 			delete tmp;
 			return A;
 		}
@@ -196,12 +206,11 @@ namespace LinBox
 			Operand1* tmp = new Operand1(B);
 			// Effective copy of B
 			*tmp = B;
-			BlasMatrixDomainMulAdd<Field,Operand1,Operand1,Operand2>()( F, zero, B, one, A, *tmp );
+			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()(  zero, B, one, A, *tmp );
 			delete tmp;
 			return B;
 		}
 	};
-
 
 	namespace Protected {
 		template <class Field, class MatrixView>
@@ -370,7 +379,6 @@ namespace LinBox
 
 		}
 
-
 		//! Field accessor
 		const Field& field() const { return *_field; }
 
@@ -426,7 +434,6 @@ namespace LinBox
 			return BlasMatrixDomainAddin<Field,Operand1,Operand3>()(field(),C,B);
 		}
 
-
 		//! multiplication with scaling.
 		//! C = alpha.A*B
 		template <class Operand1, class Operand2, class Operand3>
@@ -434,7 +441,6 @@ namespace LinBox
 		{
 			return muladdin(_Zero,C,alpha,A,B);
 		}
-
 
 		//! In place multiplication.
 		//! A = A*B
@@ -506,7 +512,7 @@ namespace LinBox
 		Operand1& muladd(Operand1& D, const Element& beta, const Operand1& C,
 				 const Element& alpha, const Operand2& A, const Operand3& B) const
 		{
-			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(field(),D,beta,C,alpha,A,B);
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType()*/>()(D,beta,C,alpha,A,B);
 		}
 
 		//! muladdin.
@@ -515,7 +521,7 @@ namespace LinBox
 		Operand1& muladdin(const Element& beta, Operand1& C,
 				   const Element& alpha, const Operand2& A, const Operand3& B) const
 		{
-			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(field(),beta,C,alpha,A,B);
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType()*/>()(beta,C,alpha,A,B);
 		}
 
 
@@ -695,7 +701,6 @@ namespace LinBox
 			return BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(field(),P,A);
 		}
 
-
 		//private:
 		//! @todo Temporary: waiting for an implementation of a domain of polynomial
 		template<class Polynomial>
@@ -739,6 +744,7 @@ namespace LinBox
 
 		}
 
+		//!@bug use  fflas-ffpack
 		template<class Matrix>
 		void setZero(Matrix & I)
 		{
@@ -748,7 +754,6 @@ namespace LinBox
 						I.setEntry(i,j,_Zero);
 				}
 		}
-
 
 		template<class Matrix1>
 		bool isZero(const Matrix1 & A)
@@ -830,7 +835,6 @@ namespace LinBox
 		}
 
 	}; /* end of class BlasMatrixDomain */
-
 
 } /* end of namespace LinBox */
 

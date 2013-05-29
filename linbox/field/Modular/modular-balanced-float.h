@@ -180,7 +180,7 @@ namespace LinBox
 
 		FieldAXPY (const Field &F) :
 			_field (&F),
-			_y(0.) , _bound( (Element) (((1ULL << 24) - (int) (field().modulus*field().modulus))))
+			_y(0.) , _bound( (Element) (((1UL << 24) - (unsigned long) (field().modulus*field().modulus))))
 		{}
 
 		FieldAXPY (const FieldAXPY &faxpy) :
@@ -253,7 +253,7 @@ namespace LinBox
 		typedef float Element;
 		DotProductDomain(){}
 		DotProductDomain (const ModularBalanced<Element> &F) :
-			VectorDomainBase<ModularBalanced<Element> > (F), _bound( (Element) ( (1ULL<<24) - (int) (field().modulus*field().modulus)))
+			VectorDomainBase<ModularBalanced<Element> > (F), _bound( (Element) ( (1UL<<24) - (unsigned long) (field().modulus*field().modulus)))
 		{
 			_nmax= (size_t)floor((Element(1<<11)* Element(1<<11)*2.)/ (field().modulus * field().modulus));
 		}

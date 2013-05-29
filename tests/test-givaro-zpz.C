@@ -98,33 +98,33 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F1, "GivaroZpz< Givaro::Std16>", iterations, n, false)) pass = false;
-	if (!runFieldTests (F2, "GivaroZpz< Givaro::Std32>", iterations, n, false)) pass = false;
-	if (!runFieldTests (F3, "GivaroMontg", iterations, n, false)) pass = false;
-	if (!runFieldTests (F4, "GivaroGfq (prime)", iterations, n, false)) pass = false;
-	if (!runFieldTests (F5, "GivaroGfq (simple extension)", iterations, n, false)) pass = false;
-	if (!runFieldTests (F6, "GivaroExtension (small polynomial extension)", iterations, n, false)) pass = false;
-	if (!runFieldTests (F7, "GivaroExtension (large polynomial extension)", iterations, n, false)) pass = false;
-	if (!runFieldTests (F8, "GivaroLog13", iterations, n, false)) pass = false;
-	if (!runFieldTests (F1u, "Unsigned32-2",     iterations, n, false)) pass = false;
-	if (!runFieldTests (F2u, "Unsigned32-q", iterations, n, false)) pass = false;
-	if (!runFieldTests (F3u, "Unsigned32-3",     iterations, n, false)) pass = false;
-	if (!runFieldTests (F4u, "Unsigned32-32749", iterations, n, false)) pass = false;
-	if (!runFieldTests (F5u, "Unsigned32-65521", iterations, n, false)) pass = false;
+	if (!runFieldTests (F1, "GivaroZpz< Givaro::Std16>", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F2, "GivaroZpz< Givaro::Std32>", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F3, "GivaroMontg", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F4, "GivaroGfq (prime)", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F5, "GivaroGfq (simple extension)", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F6, "GivaroExtension (small polynomial extension)", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F7, "GivaroExtension (large polynomial extension)", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F8, "GivaroLog13", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F1u, "Unsigned32-2",     (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F2u, "Unsigned32-q", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F3u, "Unsigned32-3",     (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F4u, "Unsigned32-32749", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F5u, "Unsigned32-65521", (unsigned int)iterations, n, false)) pass = false;
 
 
-	if (!testRandomIterator (F1,  "GivaroZpz< Givaro::Std16>", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F2,  "GivaroZpz< Givaro::Std32>", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F3,  "GivaroMontgomery", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F4,  "GivaroGfq (prime)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F5,  "GivaroGfq (simple extension)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F6,  "GivaroExtension (small polynomial extension)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F7,  "GivaroExtension (large polynomial extension)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F1u,  "GivaroZpz< Givaro::Unsigned32>(2)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F2u,  "GivaroZpz< Givaro::Unsigned32>(q)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F3u,  "GivaroZpz< Givaro::Unsigned32>(3)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F4u,  "GivaroZpz< Givaro::Unsigned32>(32749)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F5u,  "GivaroZpz< Givaro::Unsigned32>(65521)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F1,  "GivaroZpz< Givaro::Std16>", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F2,  "GivaroZpz< Givaro::Std32>", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F3,  "GivaroMontgomery", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F4,  "GivaroGfq (prime)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F5,  "GivaroGfq (simple extension)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F6,  "GivaroExtension (small polynomial extension)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F7,  "GivaroExtension (large polynomial extension)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F1u,  "GivaroZpz< Givaro::Unsigned32>(2)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F2u,  "GivaroZpz< Givaro::Unsigned32>(q)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F3u,  "GivaroZpz< Givaro::Unsigned32>(3)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F4u,  "GivaroZpz< Givaro::Unsigned32>(32749)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F5u,  "GivaroZpz< Givaro::Unsigned32>(65521)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
 
 
 

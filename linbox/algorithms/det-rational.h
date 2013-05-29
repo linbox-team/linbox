@@ -169,7 +169,7 @@ namespace LinBox
 
 		commentator().start ("Rational Det", "Rdeterminant");
 
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RandomPrimeIterator genprime( (unsigned int)(26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 
 		Integer F = 1;
 		Integer M = 1;

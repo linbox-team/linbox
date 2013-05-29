@@ -65,7 +65,7 @@ namespace LinBox
 
 	template <class Field, class Matrix>
 	Eliminator<Field, Matrix>::Eliminator (const Field &F, unsigned int N) :
-		_field (&F), _VD (F), _MD (F), _number (N), _indepRows (N), _indepCols (N)
+		_field (const_cast<Field*>(&F)), _VD (F), _MD (F), _number (N), _indepRows (N), _indepCols (N)
 	{
 		field().init (_one, 1);
 	}
@@ -404,8 +404,8 @@ namespace LinBox
 			r = 1;
 			_matA.getEntry (d, _indices[i], s);
 
-			typename Matrix::ColIterator Uk = _matU.colBegin () + k;
-			typename Matrix::ColIterator A1 = _matA.colBegin () + s;
+			typename Matrix::ColIterator Uk = _matU.colBegin () + (int)k;
+			typename Matrix::ColIterator A1 = _matA.colBegin () + (int)s;
 
 			_VD.neg (*Uk, *A1);
 			field().assign ((*Uk)[_indices[i]], (*Uk)[k]);
@@ -573,7 +573,7 @@ namespace LinBox
 		unsigned int idx;
 
 		for (i = A.rowBegin (), idx = 0; i != A.rowEnd (); ++i, ++idx)
-			field().addin ((*i)[idx], d);
+			A.field().addin ((*i)[idx], d);
 
 		return A;
 	}
@@ -589,7 +589,7 @@ namespace LinBox
 
 		for (i = A.rowBegin (), i_idx = 0; i != A.rowEnd (); ++i, ++i_idx) {
 			_VD.subin (*i, *i);
-			field().assign ((*i)[i_idx], _one);
+			A.field().assign ((*i)[i_idx], _one);
 		}
 
 		return A;

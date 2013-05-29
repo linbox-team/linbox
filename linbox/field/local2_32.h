@@ -72,7 +72,7 @@ namespace LinBox
 		//Exponent& init(Exponent& a) { return a = 32; }
 
 		Local2_32 (int p=2, int exp=32) :
-			UnparametricField<uint32_t>(p,exp)
+			UnparametricField<uint32_t>(p,(size_t)exp)
 		{
 			if(p != 2) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 2");
 			if(exp != 32) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 32");

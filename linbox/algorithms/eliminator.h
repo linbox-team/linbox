@@ -179,7 +179,8 @@ namespace LinBox
 		*/
 		std::ostream &writePermutation (std::ostream &out, const Permutation &P) const;
 
-	private:
+		const Field & field() { return _MD.field() ; }
+
 		// Compute the kth indexed Gauss-Jordan transform of the input
 		Matrix &kthGaussJordan (unsigned int                  &r,
 					typename Field::Element       &d,
@@ -219,8 +220,9 @@ namespace LinBox
 								 unsigned int dim, const std::vector<unsigned int> &profile);
 
 		// Private variables
+	private:
 
-		const Field                      *_field;
+		/*const*/ Field                      *_field; //!@bug useless, using _MD.field() instead.
 		VectorDomain<Field>               _VD;
 		MatrixDomain<Field>               _MD;
 		unsigned int                      _number;

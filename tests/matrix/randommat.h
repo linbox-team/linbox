@@ -62,7 +62,7 @@ Matrix& randomMat(const Ring& R, Matrix& Mat, size_t n, size_t epr){
 			val = neg*(rand()%CEILING);
 			//  choose random location for value
 			do{
-				pos = int(rand()%n);  // pos in [0, n)
+				pos = int((size_t)rand()%n);  // pos in [0, n)
 			}
 			while(used(usedV, pos));
 			usedV[k] = pos;  //  record location
@@ -70,7 +70,7 @@ Matrix& randomMat(const Ring& R, Matrix& Mat, size_t n, size_t epr){
 			//std::cerr << "\t set value " << val << " in pos " << pos << std::endl;
 			//  finally, set entry
 			//Mat.setEntry(i, pos, R.init(tmp, 1));
-			Mat.setEntry(i, pos, R.init(tmp, val));
+			Mat.setEntry((size_t)i, (size_t)pos, R.init(tmp, val));
 		}
 	}
 

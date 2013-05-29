@@ -199,7 +199,7 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 	//Commentator commentator;
 	//commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	//commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().start ("Testing NullSpace Decomposition","testNullSpace",iterations);
+	commentator().start ("Testing NullSpace Decomposition","testNullSpace",(unsigned int)iterations);
 	// typename Field::Element one,zero;
 	// F.init(one,1UL);
 	// F.init(zero,0UL);

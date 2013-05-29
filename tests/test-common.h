@@ -12,20 +12,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -62,7 +62,7 @@ void printVectorSpecialized(
 
 	output << '(';
 	for (i = 0; i < v.size (); i++) {
-		F.write (output, v[i]);
+		F.write (output, v[(size_t)i]);
 		if (i < v.size () - 1)
 			output << ", ";
 	}
@@ -144,7 +144,7 @@ bool areVectorsEqualSpecialized(
 	if (v.size() != w.size()) return false;
 
 	for (size_t i = 0; i < v.size(); i++)
-		if (!F.areEqual (w[i], v[i]))
+		if (!F.areEqual (w[(size_t)i], v[(size_t)i]))
 			return false;
 
 	return true;
@@ -206,7 +206,7 @@ bool allZeroSpecialized(
 		       )
 {
 	for (size_t i = 0; i < v.size(); i++)
-		if (!F.isZero (v[i]))
+		if (!F.isZero (v[(size_t)i]))
 			return false;
 
 	return true;
@@ -237,11 +237,11 @@ void printPolynomial (Field &F, ostream &output, const Polynomial &v)
 		output << "0";
 
 	for (i = (int)v.size () - 1; i >= 0; i--) {
-		if (F.isZero (v[i]))
+		if (F.isZero (v[(size_t)i]))
 			continue;
 
-		if (!F.isOne (v[i]) || i == 0)
-			F.write (output, v[i]);
+		if (!F.isOne (v[(size_t)i]) || i == 0)
+			F.write (output, v[(size_t)i]);
 
 		if (i > 0)
 			output << " x^" << i;
@@ -271,7 +271,7 @@ applyPoly (const Field                             &F,
 
 	for (i = (int)phi.size () - 2; i >= 0; i--) {
 		A.apply (z, w);
-		VD.axpy (w, phi[i], v, z);
+		VD.axpy (w, phi[(size_t)i], v, z);
 	}
 
 	return w;
@@ -295,12 +295,12 @@ multiEvalPoly (const Field                            &F,
 	w.resize (v.size ());
 
 	for (j = 0; j < v.size (); j++)
-		w[j] = phi[phi.size () - 1];
+		w[(size_t)j] = phi[phi.size () - 1];
 
 	for (i = (int)phi.size () - 2; i >= 0; i--) {
 		for (j = 0; j < v.size (); j++) {
-			F.axpy (tmp, w[j], v[j], phi[i]);
-			w[j] = tmp;
+			F.axpy (tmp, w[(size_t)j], v[(size_t)j], phi[(size_t)i]);
+			w[(size_t)j] = tmp;
 		}
 	}
 
@@ -319,22 +319,22 @@ interpolatePoly (const Field                            &F,
 {
 	typedef vector <typename Field::Element> Vector;
 
-	int n = x.size ();
+	int n = (int)x.size ();
 
 	// NB I leave one element in g always initialized to 0 as the ficticious
 	// negative-first coefficient. This streamlines some of the code.
 	static const int g_FUDGE = 1;
-	Vector g(n + g_FUDGE);
+	Vector g((size_t)(n + g_FUDGE));
 	F.init (g[0], 0);
 
 	typename Field::Element gk, c1, c2;
 
 	int i, j, k, d;
 
-	f.resize (n);
+	f.resize ((size_t)n);
 
 	for (i = 0; i < n; i++)
-		F.init (f[i], 0);
+		F.init (f[(size_t)i], 0);
 
 	for (j = 0; j < n; j++) {
 		F.init (g[0 + g_FUDGE], 1);
@@ -345,24 +345,24 @@ interpolatePoly (const Field                            &F,
 			if (i == j) i++;
 
 			// Compute coefficients of this factor.
-			F.sub (c1, x[j], x[i]);
+			F.sub (c1, x[(size_t)j], x[(size_t)i]);
 			F.invin (c1);
-			F.mul (c2, c1, x[i]);
+			F.mul (c2, c1, x[(size_t)i]);
 			F.negin (c2);
 
 			// Initialize the next element of the Lagrange interpolant
-			F.init (g[d + 1 + g_FUDGE], 0);
+			F.init (g[(size_t)(d + 1 + g_FUDGE)], 0);
 
 			// Multiply this factor by the existing partial product
 			for (k = d + 1 + g_FUDGE; k >= g_FUDGE; k--) {
-				F.mul (gk, g[k - 1], c1);
-				F.axpyin (gk, g[k], c2);
-				g[k] = gk;
+				F.mul (gk, g[(size_t)k - 1], c1);
+				F.axpyin (gk, g[(size_t)k], c2);
+				g[(size_t)k] = gk;
 			}
 		}
 
 		for (i = 0; i < n; i++)
-			F.axpyin (f[i], y[j], g[i + g_FUDGE]);
+			F.axpyin (f[(size_t)i], y[(size_t)j], g[(size_t)i + g_FUDGE]);
 	}
 
 	return f;

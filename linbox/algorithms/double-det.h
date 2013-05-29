@@ -241,7 +241,7 @@ namespace LinBox
 		typename BlackBox::Field F = A.field();
 		IntegerDoubleDetIteration<BlackBox> iteration(A, s1, s2);
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrimeIterator genprime( 25-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RandomPrimeIterator genprime( (unsigned int)(25-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 
 		std::vector<typename BlackBox::Field::Element> dd;
 		if (proof) {

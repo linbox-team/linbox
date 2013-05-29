@@ -196,7 +196,7 @@ namespace LinBox
 					R. convert (tmp, tmp_e);
 					if (tmp != 0) {
 						*di += tmp * tmp;
-						w [(int) i] += abs (tmp);
+						w [(size_t) i] += abs (tmp);
 					}
 
 					_aat_diag = _aat_diag >= *di ? _aat_diag : *di;
@@ -209,7 +209,7 @@ namespace LinBox
 					R. assign (tmp_e, A. getEntry (j, i));
 					R. convert (tmp, tmp_e);
 					if (tmp != 0)
-						local_radius += abs (tmp) * w[(int)i];
+						local_radius += abs (tmp) * w[(size_t)i];
 				}
 				local_radius -= *di;
 				if ( local_radius > _aat_radius1) {
@@ -269,7 +269,7 @@ namespace LinBox
 			double log_max_mod = log((double)FieldTraits<Field>::maxModulus()) ;
 			int n_bit = (int)(log_max_mod / M_LN2 - 2);
 			unsigned long d;
-			RandomPrimeIterator g(n_bit); Field::Element v;
+			RandomPrimeIterator g((unsigned int)n_bit); Field::Element v;
 			++g;
 			Field F((int32_t)*g);
 			FBlackbox Ap(A, F);
@@ -294,7 +294,7 @@ namespace LinBox
 
 			double log_max_mod = log((double)FieldTraits<Field>::maxModulus()) ;
 			int n_bit = (int)(log_max_mod / M_LN2 - 2);
-			RandomPrimeIterator rg(n_bit);
+			RandomPrimeIterator rg((unsigned int)n_bit);
 			std::vector<integer> Lv, Lm;
 			unsigned long d1; Field::Element v; integer im = 1;
 			//compute an upper bound for val.

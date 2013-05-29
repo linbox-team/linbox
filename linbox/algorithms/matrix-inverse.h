@@ -147,14 +147,14 @@ namespace LinBox
 
 				//matrix is indexed by 0, instead of 1.
 
-				for (cur_cp = cur_c -> begin() + (A.rowdim() - 1),
+				for (cur_cp = cur_c -> begin() + (ptrdiff_t)(A.rowdim() - 1),
 				     tmp_r = tmp.rowBegin() + ( (int)A.rowdim() - 1);
 				     cur_cp != cur_c -> begin() - 1;
 				     -- cur_cp, -- tmp_r) {
 
 					F.assign (tmp_e, *cur_cp);
 
-					for(tmp_cp = cur_c -> begin() + (A.rowdim() - 1), tmp_rp = tmp_r -> begin() + ( A.rowdim() -1);
+					for(tmp_cp = cur_c -> begin() + (ptrdiff_t) (A.rowdim() - 1), tmp_rp = tmp_r -> begin() + (ptrdiff_t) ( A.rowdim() -1);
 					    tmp_cp != cur_cp; -- tmp_cp, -- tmp_rp)
 						F.axpyin(tmp_e, *tmp_cp, *tmp_rp);
 

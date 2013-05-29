@@ -343,7 +343,7 @@ namespace LinBox
 
 		size_t& characteristic(size_t & c) const
 		{
-			return c = to_long(Element::modulus());
+			return c = (size_t)to_long(Element::modulus());
 		}
 
 		integer characteristic() const

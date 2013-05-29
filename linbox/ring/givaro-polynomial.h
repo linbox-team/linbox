@@ -80,9 +80,9 @@ namespace LinBox
                     // at least without pointers ...
                 std::vector<Polynomial> Lf;
                 CZfactor(Lf, exp, P); // Cantor-Zassenhaus factorization
-                factors.resize(Lf.size());
+                factors.resize((size_t)Lf.size());
                 for(size_t i=0;  i<Lf.size(); ++i)
-                    factors[i] = new Polynomial(Lf[i]);
+                    factors[(size_t)i] = new Polynomial(Lf[(size_t)i]);
 
                 return factors;
             }
@@ -109,7 +109,7 @@ namespace LinBox
 		NTL::ZZXFac_InitNumPrimes = 1;
 		NTL::ZZX f;
 		for (size_t i = 0; i < P.size(); ++i){
-			NTL::SetCoeff (f, i, NTL::to_ZZ((std::string( P[i] )).c_str()) );
+			NTL::SetCoeff (f, (long)i, NTL::to_ZZ((std::string( P[(size_t)i] )).c_str()) );
 		}
 		NTL::vec_pair_ZZX_long ntlfactors;
 		NTL::ZZ c;
@@ -117,15 +117,15 @@ namespace LinBox
 
 		NTL::ZZ t;
 		NTL_ZZ NTLIntDom;
-		factors.resize(ntlfactors.length());
-		exp.resize(ntlfactors.length());
+		factors.resize((size_t)ntlfactors.length());
+		exp.resize((size_t)ntlfactors.length());
 		for (int i= 0; i<ntlfactors.length(); ++i) {
-			factors[i] = new GivPolIntDense::Element( deg(ntlfactors[i].a)+1 );
+			factors[(size_t)i] = new GivPolIntDense::Element( (size_t)( deg(ntlfactors[i].a)+1 ));
 			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
 				NTL::GetCoeff(t,ntlfactors[i].a,j);
-				NTLIntDom.convert( factors[i]->operator[](j), t );
+				NTLIntDom.convert( factors[(size_t)i]->operator[]((size_t)j), t );
 			}
-			exp[i] = ntlfactors[i].b;
+			exp[(size_t)i] =(unsigned long) ntlfactors[i].b;
 		}
 		return factors;
 	}
@@ -145,7 +145,7 @@ namespace LinBox
 		NTL::ZZXFac_InitNumPrimes = 1;
 		NTL::ZZX f;
 		for (size_t i = 0; i < P.size(); ++i){
-			NTL::SetCoeff (f, i, NTL::to_ZZ((std::string( P[i] )).c_str()) );
+			NTL::SetCoeff (f, (long)i, NTL::to_ZZ((std::string( P[(size_t)i] )).c_str()) );
 		}
 		NTL::vec_pair_ZZX_long ntlfactors;
 		NTL::ZZ c;
@@ -153,15 +153,15 @@ namespace LinBox
 
 		NTL::ZZ t;
 		NTL_ZZ NTLIntDom;
-		factors.resize(ntlfactors.length());
-		exp.resize(ntlfactors.length());
+		factors.resize((size_t)ntlfactors.length());
+		exp.resize((size_t)ntlfactors.length());
 		for (int i= 0; i<ntlfactors.length(); ++i) {
-			factors[i] = new GivPolPIDIntDense::Element( deg(ntlfactors[i].a)+1 );
+			factors[(size_t)i] = new GivPolPIDIntDense::Element( (size_t)deg(ntlfactors[i].a)+1 );
 			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
 				NTL::GetCoeff(t,ntlfactors[i].a,j);
-				NTLIntDom.convert( factors[i]->operator[](j), t );
+				NTLIntDom.convert( factors[(size_t)i]->operator[]((size_t)j), t );
 			}
-			exp[i] = ntlfactors[i].b;
+			exp[(size_t)i] = (unsigned long)ntlfactors[i].b;
 		}
 		return factors;
 	}
@@ -178,21 +178,21 @@ namespace LinBox
 		NTL::ZZXFac_InitNumPrimes = 1;
 		NTL::ZZX f;
 		for (size_t i = 0; i < P.size(); ++i){
-			NTL::SetCoeff (f, i, P[i]);
+			NTL::SetCoeff (f, (long)i, P[(size_t)i]);
 		}
 		NTL::vec_pair_ZZX_long ntlfactors;
 		NTL::ZZ c;
 		NTL::factor (c, ntlfactors, f);
 
 		NTL::ZZ t;
-		factors.resize(ntlfactors.length());
-		exp.resize(ntlfactors.length());
+		factors.resize((size_t)ntlfactors.length());
+		exp.resize((size_t)ntlfactors.length());
 		for (int i= 0; i<ntlfactors.length(); ++i) {
-			factors[i] = new GivPolZZDense::Element( deg(ntlfactors[i].a)+1 );
+			factors[(size_t)i] = new GivPolZZDense::Element((size_t) deg(ntlfactors[i].a)+1 );
 			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
-				NTL::GetCoeff( factors[i]->operator[](j),ntlfactors[i].a,j);
+				NTL::GetCoeff( factors[(size_t)i]->operator[]((size_t)j),ntlfactors[i].a,j);
 			}
-			exp[i] = ntlfactors[i].b;
+			exp[(size_t)i] = (unsigned long)ntlfactors[i].b;
 		}
 		return factors;
 	}
@@ -220,7 +220,7 @@ namespace LinBox
 		PFD.CZfactor ( factors2, exp, static_cast<PolysDouble::Element>(P),p);
 
 		//std::cerr<<"factorization done"<<std::endl;
-		factors.resize(factors2.size());
+		factors.resize((size_t)factors2.size());
 		std::vector<GivPolMdDense::Element* >::iterator itf = factors.begin();
 		std::vector<PolysDouble::Element >::const_iterator itf2 = factors2.begin();
 		for (; itf2 != factors2.end();++itf,++itf2){

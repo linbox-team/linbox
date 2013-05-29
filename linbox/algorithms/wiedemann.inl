@@ -29,20 +29,20 @@
  * which one to use in different circumstances
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -90,7 +90,7 @@ namespace LinBox
 		if (A.rowdim() != A.coldim() ) _traits.singular (singular = WiedemannTraits::SINGULAR);
 		ReturnStatus status = FAILED;
 
-		unsigned int tries = (int)_traits.maxTries ();
+		unsigned int tries = (unsigned int)_traits.maxTries ();
 
 		unsigned long r = (unsigned long) -1;
 
@@ -113,7 +113,7 @@ namespace LinBox
 					case SINGULAR:
 						commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 						<< "System found to be singular. Reverting to nonsingular solver." << std::endl;
-						tries = (int)_traits.maxTries ();
+						tries = (unsigned int)_traits.maxTries ();
 						singular = WiedemannTraits::SINGULAR;
 						break;
 					default:
@@ -242,11 +242,11 @@ namespace LinBox
 			VectorWrapper::ensureDim (z, A.rowdim ());
 
 			for (int i = (int) m_A.size () - 1; --i > 0;) {
-				if ((m_A.size () - i) & (0xff == 0))
-					commentator().progress (m_A.size () - i);
+				if (((long)m_A.size () - i) & (0xff == 0))
+					commentator().progress ((long)m_A.size () - i);
 
 				A.apply (z, x);
-				_VD.axpy (x, m_A[i], b, z);
+				_VD.axpy (x, m_A[(size_t)i], b, z);
 			}
 
 			commentator().stop ("done");

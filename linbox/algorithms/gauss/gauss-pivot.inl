@@ -2,20 +2,20 @@
  * Copyright (C) 2009,2010 The LinBox group
  * Written by JG Dumas <Jean-Guillaume.Dumas@imag.fr>
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -48,17 +48,17 @@ namespace LinBox
 		//         std::cerr << "]" << std::endl;
 		typedef typename Vector::value_type E;
 
-		long nj =  lignepivot.size ();
+		long nj = (long) lignepivot.size ();
 
 		bool pivoting = false;
 
 		if (nj > 0) {
-			indpermut = lignepivot[0].first;
+			indpermut = (long)lignepivot[0].first;
 
-			long ds = --columns[indpermut], dl, p = 0;
+			long ds = (long) --columns[(size_t)indpermut], dl, p = 0;
 
 			for (long j = 1; j < nj; ++j) {
-				if ((dl = --columns[lignepivot[j].first]) < ds) {
+				if ((dl =(long) --columns[lignepivot[(size_t)j].first]) < ds) {
 					ds = dl;
 					p = j;
 				}
@@ -67,15 +67,15 @@ namespace LinBox
 			if (p != 0) {
 				pivoting = true;
 				if (indpermut == static_cast<long>(indcol)) {
-					indpermut = lignepivot[p].first;
-					std::swap( lignepivot[p].second, lignepivot[0].second);
+					indpermut =(long) lignepivot[(size_t)p].first;
+					std::swap( lignepivot[(size_t)p].second, lignepivot[0].second);
 				}
 				else {
-					E ttm = lignepivot[p];
-					indpermut = ttm.first;
+					E ttm = lignepivot[(size_t)p];
+					indpermut = (long)ttm.first;
 
 					for (long m = p; m; --m)
-						lignepivot[m] = lignepivot[m-1];
+						lignepivot[(size_t)m] = lignepivot[(size_t)m-1];
 
 					lignepivot[0] = ttm;
 				}
@@ -111,10 +111,10 @@ namespace LinBox
 					      long &indpermut,
 					      Element& determinant) const
 	{
-		long nj = lignepivot.size ();
+		long nj = (long)lignepivot.size ();
 
 		if (nj > 0) {
-			indpermut = lignepivot[0].first;
+			indpermut = (long) lignepivot[0].first;
 			field().mulin(determinant, lignepivot[0].second);
 			if (indpermut != static_cast<long>(indcol)){
 				// std::cerr << "Permuting col: " << lignepivot[0].first << " <--> " << indcol << std::endl;
@@ -138,16 +138,16 @@ namespace LinBox
 		long j = (long)k;
 
 		for (; j < n ; ++j )
-			if (!field().isZero (lignepivot[j])) break ;
+			if (!field().isZero (lignepivot[(size_t)j])) break ;
 
 		if (j == n )
 			indpermut = -1 ;
 		else {
 			indpermut = j ;
 			if (indpermut != (long)k) {
-				typename Vector::value_type tmp = lignepivot[k] ;
-				lignepivot[k] = lignepivot[j] ;
-				lignepivot[j] = tmp ;
+				typename Vector::value_type tmp = lignepivot[(size_t)k] ;
+				lignepivot[(size_t)k] = lignepivot[(size_t)j] ;
+				lignepivot[(size_t)j] = tmp ;
 			}
 
 			++k;
