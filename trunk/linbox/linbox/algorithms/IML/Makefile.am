@@ -22,9 +22,11 @@
 pkgincludesubdir=$(pkgincludedir)/algorithms/IML
 
 
-pkgincludesub_HEADERS =         \
-	row-echelon-transform.h \
-	row-echelon-transform.inl
+pkgincludesub_HEADERS =           \
+	row-echelon-transform.h   \
+	row-echelon-transform.inl \
+	RNS.h                     \
+	RNS.inl
 
 #  nullspace.inl
 
