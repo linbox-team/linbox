@@ -285,21 +285,21 @@ namespace LinBox
 
 		/*--------------  Poly multiply the upper Sylvester poly by input ------*/
 		mul( txOut, txIn, pxdata);
-		int Nq = qxdeg();
-		int m  = pxdeg();
+		const size_t Nq = qxdeg();
+		const size_t m  = pxdeg();
 		/*--------------  vout[0..deg(q)-1] <--- txout[deg(qx)...2deg(qx)-1] --- */
-		for ( int i=0; i < Nq; ++i )
+		for ( size_t i=0; i < Nq; ++i )
 			GetCoeff(v_out[i], txOut, m+i);
 
 		/*--------------  Poly multiply the lower Sylvester poly by input -----*/
 		mul( txOut, txIn, qxdata);
 
-		int Np = pxdeg();
-		int n  = qxdeg();
+		const size_t Np = pxdeg();
+		const size_t n  = qxdeg();
 
 		/*--------------  vout[deg(qx)..deg(qx)+deg(px)-1] <---
 		 *                              txout[deg(qx)...deg(qx)+deg(px)-1] --- */
-		for ( int i=0; i < Np; ++i )
+		for ( size_t i=0; i < Np; ++i )
 			GetCoeff(v_out[Nq+i], txOut, n+i );
 
 

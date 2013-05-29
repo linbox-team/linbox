@@ -22,21 +22,22 @@
 
 AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 # AM_LDFLAGS = -llapack -lcblas -latlas
-AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
+#  AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
+AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la
 #  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
-#AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxSrcOnly
-#  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly
-#AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2
-#  AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
-AM_CXXFLAGS = -DLinBoxSrcOnly  @TESTS_CFLAGS@ @DEBUG_CFLAGS@
-# AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
+#AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxTestOnly
+#  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly
+#AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly -O2
+#  AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -DDEBUG -O0
+AM_CXXFLAGS = -DLinBoxTestOnly @TESTS_CFLAGS@ @DEBUG_CFLAGS@
+# AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
 # AM_CFLAGS = -g -Wall
 
 SUBDIRS = data matrix
 
-AM_CPPFLAGS+= $(CBLAS_FLAG) $(FFLAS_FFPACK_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS)
-LDADD = $(GIVARO_LIBS) $(BLAS_LIBS) $(NTL_LIBS)  $(GMP_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS)  $(IML_LIBS) $(LDFLAGS)
+AM_CPPFLAGS+= $(CBLAS_FLAG) $(FFLAS_FFPACK_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS)
+LDADD = $(GIVARO_LIBS) $(BLAS_LIBS) $(NTL_LIBS)  $(GMP_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS)  $(IML_LIBS) $(FLINT_LIBS) $(LDFLAGS)
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,$(GIVARO_LIBS)
 
 EXTRA_DIST=            \
@@ -45,6 +46,11 @@ EXTRA_DIST=            \
 		checker.C
 
 #  test-generic-for-quad.h
+
+
+tutorial-1: tutorial-1.C
+
+test-tutorial$(EXEEXT): test-tutorial.C tutorial-1
 
 # Put an entry for your test-mycomponent.C here (or in one of the other test groups).
 # Don't forget to add a test_mycomponent_SOURCES entry below.
@@ -67,8 +73,9 @@ BASIC_TESTS =  \
 
 FULLCHECK_TESTS =                 \
         test-bitonic-sort             \
-	test-blackbox-block-container \
+        test-blackbox-block-container \
         test-blas-domain              \
+		test-block-wiedemann		  \
         test-butterfly                \
         test-companion                \
         test-dense                    \
@@ -103,20 +110,22 @@ FULLCHECK_TESTS =                 \
         test-randiter-nonzero         \
         test-rational-matrix-factory  \
         test-scalar-matrix            \
-	test-solve-nonsingular        \
+        test-solve-nonsingular        \
         test-sparse                   \
         test-subiterator              \
         test-submatrix                \
         test-subvector                \
         test-sum                      \
         test-trace                    \
+        test-transpose              \
         test-triplesbb                \
+        test-tutorial                \
         test-vector-domain            \
         test-qlup                     \
         test-zero-one                 \
         test-last-invariant-factor    \
         test-cradomain                \
-		test-rational-reconstruction-base
+        test-rational-reconstruction-base
 
 #  test-integer-tools
 
@@ -196,6 +205,9 @@ ATLAS_TESTS =                         \
 BLAS3_UNIT_TESTS = \
 		   test-toom-cook
 
+OCL_TESTS =                           \
+        test-opencl-domain
+
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
 endif
@@ -208,6 +220,11 @@ if LINBOX_HAVE_LIDIA
 USE_LIDIA_TESTS = $(LIDIA_TESTS)
 endif
 
+if LINBOX_HAVE_OCL
+USE_OCL_TESTS = $(OCL_TESTS)
+AM_CPPFLAGS += $(OCL_CFLAGS)
+LDADD += $(OCL_LIBS)
+endif
 
 USE_ATLAS_TESTS = $(ATLAS_TESTS)
 
@@ -219,11 +236,12 @@ TESTS =                               \
         $(USE_LIDIA_TESTS)            \
         $(USE_NONCOMPILING_TESTS)     \
         $(USE_FAILING_TESTS)          \
-        $(USE_ATLAS_TESTS)
+        $(USE_ATLAS_TESTS)            \
+        $(USE_OCL_TESTS)
 
 
 
-EXTRA_PROGRAMS = \
+EXTRA_PROGRAMS =                      \
         $(BASIC_TESTS)                \
         $(GIVARO_TESTS)               \
         $(NTL_TESTS)                  \
@@ -234,9 +252,10 @@ EXTRA_PROGRAMS = \
         $(NONCOMPILING_TESTS)         \
         $(NONCOMPLIANT_TESTS)         \
         $(DUBIOUS_TESTS)              \
-        $(FULLCHECK_TESTS)              \
-        $(FAILING_TESTS) \
-	$(BLAS3_UNIT_TESTS)
+        $(FULLCHECK_TESTS)            \
+        $(FAILING_TESTS)              \
+        $(BLAS3_UNIT_TESTS)           \
+        $(USE_OCL_TESTS)
 
 
 test_commentator_SOURCES =                \
@@ -376,6 +395,9 @@ test_triplesbb_SOURCES =                \
         test-triplesbb.C                \
         test-generic.h                  \
         test-common.h
+
+test_tutorial_SOURCES =                \
+        test-tutorial.C
 
 test_hilbert_SOURCES =                        \
         test-hilbert.C        test-generic.h        \
@@ -591,6 +613,9 @@ test_la_block_lanczos_SOURCES =         \
 test_mg_block_lanczos_SOURCES =         \
         test-mg-block-lanczos.C
 
+test_block_wiedemann_SOURCES =         \
+        test-block-wiedemann.C
+
 test_rational_solver_adaptive_SOURCES = \
         test-rational-solver-adaptive.C \
         test-common.h
@@ -607,12 +632,15 @@ test_cradomain_SOURCES =                \
         test-cradomain.C                \
         test-common.h
 
-
 # NTL test
 
 test_smith_form_adaptive_SOURCES=      \
         test-common.h                  \
         test-smith-form-adaptive.C
+
+test_transpose_SOURCES =                \
+        test-transpose.C                \
+        test-common.h
 
 benchmark_fields_SOURCES=              \
         test-common.h                  \
@@ -635,7 +663,13 @@ test_ispossemidef_SOURCES=            \
         test-ispossemidef.C
 
 test_ftrmm_SOURCES =                  \
-		test-ftrmm.C
+        test-ftrmm.C
+
+# OCL Test
+
+test_opencl_domain_SOURCES=           \
+        test-common.h                 \
+        test-opencl-domain.C
 
 test_toom_cook_SOURCES = test-toom-cook.C
 

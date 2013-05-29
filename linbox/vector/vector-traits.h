@@ -151,7 +151,7 @@ namespace LinBox
 	struct SparseSequenceVectorPairLessThan :
 		public std::binary_function<const std::pair<size_t, Element>&, const std::pair<size_t, Element>&, bool > {
 		bool operator() (const std::pair<size_t, Element>& p1, const std::pair<size_t, Element>& p2)
-		{
+	{
 			return p1.first < p2.first;
 		}
 	};
@@ -426,10 +426,10 @@ namespace LinBox
 
 	template <class Element>
 	struct RawVector {
-		typedef std::vector<Element>                                      Dense;
-		typedef std::pair<std::vector<size_t>, std::vector<Element> >    Sparse;
-		typedef std::vector<std::pair<size_t, Element> >              SparseSeq;
-		typedef std::map<size_t, Element>                             SparseMap;
+		typedef std::vector<Element> Dense;
+		typedef std::pair<std::vector<size_t>, std::vector<Element> > Sparse;
+		typedef std::vector<std::pair<size_t, Element> > SparseSeq;
+		typedef std::map<size_t, Element> SparseMap;
 		typedef std::pair<std::vector<size_t>, std::vector<Element> > SparsePar;
 
 		template<class VType> static size_t size(const VType& d)

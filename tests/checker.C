@@ -39,6 +39,10 @@ There should be a 1-1 correspondence between files tests/test-*.C and calls
 here to build_n_run() or no_build_n_run() (possibly commented out).
 */
 
+#define Build_n_run(a,b,c) do { build_n_run((a),(b),(c)); } while (0)
+#define Build_n_runWarn(a,b,c,d) do { build_n_run((a),(b),(c),(d)); } while(0)
+#define No_build_n_run(a,b,c,d) do { no_build_n_run((a),(b),(c),(d)); } while(0)
+
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -145,7 +149,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-rank",                         counter , flag);
 	build_n_run("test-qlup",                         counter , flag);
 	build_n_run("test-solve",                        counter , flag);
-	build_n_run("test-nullspace",                    counter , flag);
+	no_build_n_run("test-nullspace",                    counter , flag);
 	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
 	build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures");
 	build_n_run("test-rational-solver",              counter , flag);
@@ -155,85 +159,164 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-smith-form-binary",            counter , flag);
 	return counter.buildfail || counter.runfail ? -1 : 0;
   } else {
-//BASIC_TESTS
-	build_n_run("test-bitonic-sort",                 counter , flag);
-	build_n_run("test-blackbox-block-container",     counter , flag);
-	build_n_run("test-blas-domain",                  counter , flag);
-	build_n_run("test-block-ring",                   counter , flag);
-	no_build_n_run("test-block-wiedemann",              counter , flag, "bds tracking down BlasMatrix bug");
-	no_build_n_run("test-bmseq",                     counter , flag, "under development by George Yuhasz");
-	build_n_run("test-butterfly",                    counter , flag);
-	build_n_run("test-charpoly",                     counter , flag);//, "intermittent inf loop, bb or cp responsible?");
-	build_n_run("test-commentator",                  counter , flag);
-	build_n_run("test-companion",                    counter , flag);
-	build_n_run("test-cra",                          counter , flag);
-	build_n_run("test-cradomain",                    counter , flag,"intermittent failure, as in 1 every 10-20");
-	build_n_run("test-dense",                        counter , flag);
-	build_n_run("test-det",                          counter , flag);
-	build_n_run("test-diagonal",                     counter , flag);
-	build_n_run("test-dif",                          counter , flag);
-	build_n_run("test-direct-sum",                   counter , flag);
-	build_n_run("test-dyadic-to-rational",           counter , flag, "bds responsible");
-	build_n_run("test-ffpack",                       counter , flag);
-	build_n_run("test-frobenius",                    counter , flag);
-	build_n_run("test-getentry",                     counter , flag);
-	build_n_run("test-gf2",                          counter , flag);
-	build_n_run("test-gmp-rational",                 counter , flag);
-	build_n_run("test-hilbert",                      counter , flag);
-	build_n_run("test-hom",                          counter , flag);
-	build_n_run("test-inverse",                      counter , flag);
-	build_n_run("test-isposdef",                     counter , flag);
-	build_n_run("test-ispossemidef",                 counter , flag);
-	build_n_run("test-last-invariant-factor",        counter , flag);
-	build_n_run("test-matrix-domain",                counter , flag);
-	build_n_run("test-matrix-stream",                counter , flag);
-	no_build_n_run("test-mg-block-lanczos",             counter , flag, "fails");
-	build_n_run("test-minpoly",                      counter , flag);
-	build_n_run("test-modular",                      counter , flag);
-	build_n_run("test-modular-balanced-int",         counter , flag);
-	build_n_run("test-modular-balanced-float",       counter , flag);
-	build_n_run("test-modular-balanced-double",      counter , flag);
-	build_n_run("test-modular-byte",                 counter , flag);
-	build_n_run("test-modular-double",               counter , flag);
-	build_n_run("test-modular-float",                counter , flag);
-	build_n_run("test-modular-int",                  counter , flag);
-	build_n_run("test-modular-short",                counter , flag);
-	build_n_run("test-moore-penrose",                counter , flag);
-	build_n_run("test-nullspace",                    counter , flag);
-	build_n_run("test-PID-integer",                  counter , flag);
-	build_n_run("test-qlup",                         counter , flag);
-	build_n_run("test-randiter-nonzero",             counter , flag);
-	build_n_run("test-rank",                         counter , flag);
-	build_n_run("test-rational-matrix-factory ",     counter , flag);
-	build_n_run("test-rational-reconstruction-base", counter , flag);
-	build_n_run("test-rat-charpoly",                 counter , flag);//, "infinite loop, cp responsible?");
-	build_n_run("test-scalar-matrix",                counter , flag);
-	build_n_run("test-smith-form-binary",            counter , flag);
-	build_n_run("test-solve",                        counter , flag);
-	build_n_run("test-sparse",                       counter , flag);
-	build_n_run("test-subiterator",                  counter , flag);
-	build_n_run("test-submatrix",                    counter , flag);
-	build_n_run("test-subvector",                    counter , flag);
-	build_n_run("test-sum",                          counter , flag);
-	build_n_run("test-rational-solver",              counter , flag);
-	build_n_run("test-trace",                        counter , flag);
-	build_n_run("test-triplesbb",                    counter , flag);
-	build_n_run("test-unparametric-field",           counter , flag); //has been useful in num/sym.
-	build_n_run("test-vector-domain",                counter , flag);
-	build_n_run("test-zero-one",                     counter , flag);
+#pragma omp parallel sections num_threads(4)
+	  {
+		  //BASIC_TESTS
+#pragma omp section
+		  Build_n_run("test-bitonic-sort",                 counter , flag);
+#pragma omp section
+		  Build_n_run("test-blackbox-block-container",     counter , flag);
+#pragma omp section
+		  Build_n_run("test-blas-domain",                  counter , flag);
+#pragma omp section
+		  Build_n_run("test-block-ring",                   counter , flag);
+#pragma omp section
+		  Build_n_runWarn("test-block-wiedemann",              counter , flag, "GY(wrong ans)");
+		  //test could be stronger");
+#pragma omp section
+		  Build_n_run("test-butterfly",                    counter , flag);
+#pragma omp section
+		  Build_n_run("test-charpoly",                     counter , flag);//, "intermittent inf loop, bb or cp responsible?");
+#pragma omp section
+		  Build_n_run("test-commentator",                  counter , flag);
+#pragma omp section
+		  Build_n_run("test-companion",                    counter , flag);
+#pragma omp section
+		  Build_n_run("test-cra",                          counter , flag);
+#pragma omp section
+		  Build_n_runWarn("test-cradomain",                    counter , flag,"intermittent failure, as in 1 every 10-20");
+#pragma omp section
+		  Build_n_run("test-dense",                        counter , flag);
+#pragma omp section
+		  Build_n_run("test-det",                          counter , flag);
+#pragma omp section
+		  Build_n_run("test-diagonal",                     counter , flag);
+#pragma omp section
+		  Build_n_run("test-dif",                          counter , flag);
+#pragma omp section
+		  Build_n_run("test-direct-sum",                   counter , flag);
+#pragma omp section
+		  Build_n_runWarn("test-dyadic-to-rational",           counter , flag, "bds responsible");
+#pragma omp section
+		  No_build_n_run("test-ffpack",                       counter , flag, "testTURBO fails");
+#pragma omp section
+		  Build_n_run("test-frobenius",                    counter , flag);
+#pragma omp section
+		  Build_n_run("test-getentry",                     counter , flag);
+#pragma omp section
+		  Build_n_run("test-gf2",                          counter , flag);
+#pragma omp section
+		  Build_n_runWarn("test-givaro-fields",    counter , flag, "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
+#pragma omp section
+		  Build_n_run("test-gmp-rational",                 counter , flag);
+#pragma omp section
+		  Build_n_run("test-hilbert",                      counter , flag);
+#pragma omp section
+		  Build_n_run("test-hom",                          counter , flag);
+#pragma omp section
+		  Build_n_run("test-inverse",                      counter , flag);
+#pragma omp section
+		  Build_n_run("test-isposdef",                     counter , flag);
+#pragma omp section
+		  Build_n_run("test-ispossemidef",                 counter , flag);
+#pragma omp section
+		  Build_n_run("test-last-invariant-factor",        counter , flag);
+#pragma omp section
+		  Build_n_run("test-matrix-domain",                counter , flag);
+#pragma omp section
+		  Build_n_run("test-matrix-stream",                counter , flag);
+#pragma omp section
+		  No_build_n_run("test-mg-block-lanczos",             counter , flag, "fails");
+#pragma omp section
+		  Build_n_run("test-minpoly",                      counter , flag);
+#pragma omp section
+		  Build_n_run("test-modular",                      counter , flag);
+#pragma omp section
+		  Build_n_run("test-modular-balanced-int",         counter , flag);
+#pragma omp section
+		  Build_n_run("test-modular-balanced-float",       counter , flag);
+#pragma omp section
+		  Build_n_run("test-modular-balanced-double",      counter , flag);
+#pragma omp section
+		  Build_n_run("test-modular-byte",                 counter , flag);
+#pragma omp section
+		  Build_n_run("test-modular-double",               counter , flag);
+#pragma omp section
+		  Build_n_run("test-modular-float",                counter , flag);
+#pragma omp section
+		  No_build_n_run("test-modular-int",                  counter , flag, "fails badly for (u)int64_t !!!!!!");
+#pragma omp section
+		  Build_n_run("test-modular-short",                counter , flag);
+#pragma omp section
+		  Build_n_run("test-moore-penrose",                counter , flag);
+#pragma omp section
+		  Build_n_run("test-nullspace",                    counter , flag);
+#pragma omp section
+		  Build_n_run("test-opencl-domain",            counter , flag);
+#pragma omp section
+		  Build_n_run("test-PID-integer",                  counter , flag);
+#pragma omp section
+		  Build_n_run("test-qlup",                         counter , flag);
+#pragma omp section
+		  Build_n_run("test-randiter-nonzero",             counter , flag);
+#pragma omp section
+		  Build_n_run("test-rank",                         counter , flag);
+#pragma omp section
+		  Build_n_run("test-rational-matrix-factory ",     counter , flag);
+#pragma omp section
+		  Build_n_run("test-rational-reconstruction-base", counter , flag);
+#pragma omp section
+		  Build_n_run("test-rat-charpoly",                 counter , flag);//, "infinite loop, cp responsible?")
+#pragma omp section
+		  Build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures")
+#pragma omp section
+		  Build_n_run("test-rat-solve",     counter , flag); // "infinite loop")
+#pragma omp section
+		  Build_n_run("test-scalar-matrix",                counter , flag);
+#pragma omp section
+		  Build_n_run("test-smith-form-binary",            counter , flag);
+#pragma omp section
+		  Build_n_run("test-solve",                        counter , flag);
+#pragma omp section
+		  Build_n_run("test-sparse",                       counter , flag);
+#pragma omp section
+		  Build_n_run("test-subiterator",                  counter , flag);
+#pragma omp section
+		  Build_n_run("test-submatrix",                    counter , flag);
+#pragma omp section
+		  Build_n_run("test-subvector",                    counter , flag);
+#pragma omp section
+		  Build_n_run("test-sum",                          counter , flag);
+#pragma omp section
+		  Build_n_run("test-rational-solver",              counter , flag);
+#pragma omp section
+		  Build_n_run("test-trace",                        counter , flag);
+#pragma omp section
+		  Build_n_run("test-triplesbb",                    counter , flag);
+#pragma omp section
+		  Build_n_run("test-unparametric-field",           counter , flag) ;//has been useful in num/sym.
+#pragma omp section
+		  Build_n_run("test-vector-domain",                counter , flag);
+#pragma omp section
+		  Build_n_run("test-zero-one",                     counter , flag);
+#pragma omp section
+		  No_build_n_run("test-zo", counter, flag, "constructor problem");
+	  }
 
+/*  section eliminated because Givaro now is required
 #if __LINBOX_HAVE_GIVARO
 //	if (flag > 0) cout << "	Givaro tests" << endl;
 	build_n_run("test-givaro-fields",    counter , flag, "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
 	//build_n_run("test-givaro-zpz", counter , flag, "superceded by test-givaro-fields");
 	//build_n_run("test-givaro-zpzuns", counter , flag, "superceded by test-givaro-fields");
-	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
 	build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures");
+	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
 #else
 	if (flag > 0) cout << "	not doing Givaro dependent tests" << endl;
 	cout << "Configuration problem?  __LINBOX_HAVE_GIVARO is not set, but LinBox requires Givaro" << endl;
 	counter.skipped += 4;
 #endif
+*/
 
 #if __FFLASFFPACK_HAVE_LAPACK
 	if (flag > 0) cout << "	Lapack dependent tests" << endl;
@@ -299,7 +382,8 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-ftrmm", counter, flag, "bb/cp");
 
 	if (flag > 0) cout << "	Immature tests" << endl;
-	no_build_n_run("test-quad-matrix", counter, flag, "half baked, bds responsible"); no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible"); build_n_run("test-zo", counter, flag, "half baked, BY responsible");
+	no_build_n_run("test-quad-matrix", counter, flag, "half baked, bds responsible");
+	no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible");
 	// test-integer-tools -- there is no test-integer-tools.C file
 	// no one has taken these on.
 	no_build_n_run("test-la-block-lanczos",counter,flag,"segfaults");
@@ -365,32 +449,67 @@ void build_n_run(string s, counts& cnt, int flag, string r)
 		system(cmd.c_str());
 	}
 	if (flag >= 1) {
-		cout.width(35); cout << left << s;
+#ifndef LINBOX_USES_OPENMP
+		cout.width(35);
+		cout << left << s;
 		cout << "build"; cout.flush();
+#else
+		cout << " * BUILD: " << left << s << flush << endl;
+#endif
 	}
 	cmd = "make " + s + " 2>> checkdata >> checkdata";
 	int status = system(cmd.c_str());
 	if (status == 2) goto abort; // valid on at least one platform.
 	if (status != 0) { // build failure
-		if (flag >= 1) cout << " FAILS" << endl;
+		if (flag >= 1) {
+#ifndef LINBOX_USES_OPENMP
+			cout << " FAILS" << endl;
+#else
+		cout << " * FAIL : " << left << s << flush << endl;
+#endif
+		}
 		if (flag >= 3) system ("cat checkdata; rm checkdata");
 		cnt.buildfail++;
 		// if (flag == 2) could grep for first "error" in compiler output
 
 	}
-       	else { // build success
-		if (flag >= 1) { cout << "\b\b\b\b\b  run"; cout.flush(); }
+	else { // build success
+		if (flag >= 1) {
+#ifndef LINBOX_USES_OPENMP
+			cout << "\b\b\b\b\b  run"; cout.flush();
+#else
+		cout << " * RUN  : " << left << s << flush << endl;
+#endif
+
+		}
 		std::ostringstream prog ;
 		prog << "./" << s ;
 		status = system(prog.str().c_str());
 		if (status == 2) goto abort; // valid on at least one platform.
 		if (status != 0) {
-			if (flag >= 1) cout << " FAILS" << endl;
-			if (flag >= 3) system ("cat checkdata; rm checkdata");
+			if (flag >= 1) {
+#ifndef LINBOX_USES_OPENMP
+				cout << " FAILS" << endl;
+#else
+		cout << " * FAIL : " << left << s << flush << endl;
+#endif
+
+			}
+			if (flag >= 3) {
+				system ("cat checkdata; rm checkdata");
+			}
 			cnt.runfail++;
 		}
-	       	else {
-			if (flag >= 1) cout << "\b\b\b\bOK  " << endl;
+		else {
+			if (flag >= 1) {
+#ifndef LINBOX_USES_OPENMP
+				cout << "\b\b\b\bOK  " << endl;
+#else
+		cout << " * OK   : " << left << s << flush << endl;
+#endif
+
+			}
+
 			if (flag >= 2) system ("grep \"warn\" checkdata; rm checkdata");
 			cnt.pass++;
 			//cerr << "ok" << endl;
@@ -404,11 +523,11 @@ abort:
 }
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

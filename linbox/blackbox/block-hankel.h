@@ -223,7 +223,7 @@ namespace LinBox
 		// order of element will depend on first column and/or  last row
 		// (plain->[column|row];  up -> [column]; low -> [row];)
 		BlockHankel (Field &F, const std::vector<BlasMatrix<Element> > &H, BlockHankelTag::shape s= BlockHankelTag::plain) :
-			_field(F), _BMD(F)
+			_field(&F), _BMD(F)
 		{
 			linbox_check( H.begin()->rowdim() != H.begin()->coldim());
 
@@ -239,7 +239,7 @@ namespace LinBox
 					_row = _rowblock*_block;
 					_col = _row;
 					_shape = s;
-					BlockHankelEvaluation( _field, _matpoly, H, _deg+_colblock-1);
+					BlockHankelEvaluation( field(), _matpoly, H, _deg+_colblock-1);
 				}
 				break;
 			case BlockHankelTag::up :
@@ -251,7 +251,7 @@ namespace LinBox
 					_row   = _rowblock*_block;
 					_col   = _row;
 					_shape = s;
-					BlockHankelEvaluation( _field, _matpoly, H, _deg+_colblock-1);
+					BlockHankelEvaluation( field(), _matpoly, H, _deg+_colblock-1);
 				}
 				break;
 			case BlockHankelTag::low :
@@ -263,7 +263,7 @@ namespace LinBox
 					_row   = _rowblock*_block;
 					_col   = _row;
 					_shape = s;
-					BlockHankelEvaluation( _field, _matpoly, H, _deg+_colblock-1);
+					BlockHankelEvaluation( field(), _matpoly, H, _deg+_colblock-1);
 				}
 				break;
 			}
@@ -277,7 +277,7 @@ namespace LinBox
 
 			_vecpoly.resize(_numpoints, std::vector<Element>(_block));
 			_veclagrange.resize(_numpoints);
-			BHVectorLagrangeCoeff(_field, _veclagrange, _numpoints);
+			BHVectorLagrangeCoeff(field(), _veclagrange, _numpoints);
 
 
 			_vander     = BlasMatrix<Element> (_numpoints,_numpoints);
@@ -329,6 +329,8 @@ namespace LinBox
 		// get the row dimension
 		size_t rowdim() const {return _row;}
 
+		const Field& field() const { return *_field;}
+
 		// get the block dimension
 		size_t blockdim() const {return _block;}
 
@@ -339,13 +341,13 @@ namespace LinBox
 		{
 			linbox_check(this->_coldim == y.size());
 			linbox_check(this->_rowdim == x.size());
-			BlasMatrixDomain<Field> BMD(_field);
+			BlasMatrixDomain<Field> BMD(field());
 #ifdef BHANKEL_TIMER
 			_chrono.clear();
 			_chrono.start();
 #endif
 			// evaluation of the vector seen as a vector polynomial in
-			//BHVectorEvaluation(_field, _vecpoly, y, _block);
+			//BHVectorEvaluation(field(), _vecpoly, y, _block);
 
 			for (size_t i=0;i<_colblock;++i)
 				for (size_t j=0;j<_block;++j)
@@ -355,7 +357,7 @@ namespace LinBox
 
 			for (size_t i=0;i<_numpoints;++i){
 				for (size_t j=0;j<_block; ++j)
-					_field.assign(_vecpoly[i][j], _x.getEntry(i,j));
+					field().assign(_vecpoly[i][j], _x.getEntry(i,j));
 			}
 #ifdef BHANKEL_TIMER
 			_chrono.stop();
@@ -381,7 +383,7 @@ namespace LinBox
 				shift=0;
 
 			// interpolation to get the result vector
-			BHVectorInterpolation(_field, x, x_vecpoly, _veclagrange, shift);
+			BHVectorInterpolation(field(), x, x_vecpoly, _veclagrange, shift);
 #endif
 			for (size_t i=0;i<_numpoints;++i)
 				for (size_t j=0;j<_block;++j)
@@ -391,7 +393,7 @@ namespace LinBox
 
 			for (size_t i=0;i<_colblock;++i)
 				for (size_t j=0;j<_block;++j)
-					_field.assign( x[x.size() - (i+1)*_block +j], _y.getEntry(i,j));
+					field().assign( x[x.size() - (i+1)*_block +j], _y.getEntry(i,j));
 
 #ifdef BHANKEL_TIMER
 			_chrono.stop();
@@ -412,7 +414,7 @@ namespace LinBox
 		}
 
 	private:
-		Field  _field;
+		const Field  *_field;
 		std::vector<BlasMatrix<Element> >                _matpoly;
 		mutable std::vector<std::vector<Element> >       _vecpoly;
 		std::vector<std::vector<Element> >           _veclagrange;

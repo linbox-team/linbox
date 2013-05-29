@@ -127,10 +127,10 @@ namespace LinBox
 
 	private:
 		mutable Reader _reader;
-		bool           _isField;
-		int            _fieldType;
-		std::string    _implDetail;
-		integer        _card;
+		bool _isField;
+		int _fieldType;
+		std::string _implDetail;
+		integer _card;
 	};
 
 }

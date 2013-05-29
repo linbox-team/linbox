@@ -31,7 +31,6 @@
 #include <iostream>
 
 #include "linbox/field/modular.h"
-#include "linbox/util/matrix-stream.h"
 #include "linbox/algorithms/echelon-form.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
 
@@ -51,8 +50,8 @@ int main (int argc, char **argv)
 	double q = atof(argv[2]);
 	Field F(q);
 
-	MatrixStream<Field> ms(F,input);
-	BlasMatrix<Field> A(ms);
+	BlasMatrix<Field> A(F);
+	A.read(input);
 	BlasMatrix<Field> E(F,A.rowdim(),A.coldim());
 	cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 	cout << A << std::endl;

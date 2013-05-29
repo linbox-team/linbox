@@ -45,17 +45,33 @@ namespace LinBox
 		typedef _Field Field;
 		typedef typename Field::Element Element;
 
+		typedef Toeplitz<_Field> TBase;
+                using TBase::P;
+                using TBase::rowDim;
+                using TBase::colDim;
+                using TBase::sysDim;
+                using TBase::shape;
+                using TBase::pdata;
+                using TBase::rpdata;
+                using TBase::field_;
+                using TBase::field;
+
+
 		template<typename _Tp1>
 		struct rebind
 		{ typedef Hankel<_Tp1> other; };
 
 		//------- CONSTRUCTORS AND DESTRUCTORS
 
-		~Hankel();                // Destructor
-		Hankel();                 // Zero Param Constructor
-		Hankel( const Field F,    // Cnstr. with Field and STL vec. of elems
-			const std::vector<Element>&v);
+		~Hankel();                
+		Hankel();// : Toeplitz<_Field>(){}                 
+
+		// Cnstr. with Field and STL vec. of elems
+		Hankel( const Field F,    const std::vector<Element>&v);// : Toeplitz<_Field>(F, v){}
+	
+		Hankel( const Field F,    size_t n);// : Toeplitz<_Field>(F, n) {}
 		//	  Hankel(char *dataFileName ); // read from a file
+		//void init( const Field F,    size_t n) { Toeplitz<_Field>::init(F, n) }
 
 		//------- INHERITED READ-ONLY ACCESSOR, and OBSERVER METHODS
 
@@ -65,11 +81,6 @@ namespace LinBox
 		 *      inline size_t this->coldim() const;// Number of Cols
 		 *      inline size_t sysdim() const;// Max of rows & columns;
 		 */
-
-		//------- MUTATOR METHODS
-
-		void setToUniModUT() ;      // Convert to UTriang matrix with det 1
-		void setToUniModLT() ;      // Convert to LTriang matrix with det 1
 
 		//------ SERVICE METHODS
 		template<class OutVector, class InVector>

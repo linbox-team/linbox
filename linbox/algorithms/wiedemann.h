@@ -130,8 +130,6 @@ namespace LinBox
 #endif // INCLUDE_TIMING
 		}
 
-
-
 		commentator().stop ("done", NULL, "minpoly");
 
 		return P;
@@ -179,7 +177,6 @@ namespace LinBox
 			}
 			else
 				return minpoly(P, A, tag, Method::Wiedemann(M));
-
 		}
 		else {
 			unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
@@ -240,7 +237,7 @@ namespace LinBox
 		 *               options for the solver
 		 */
 		WiedemannSolver (const Field &F, const WiedemannTraits &traits) :
-			_traits (traits), _field (F), _randiter (F), _VD (F)
+			_traits (traits), _field (&F), _randiter (F), _VD (F)
 		{}
 
 		/*! Constructor with a random iterator.
@@ -253,7 +250,7 @@ namespace LinBox
 		WiedemannSolver (const Field &F,
 				 const WiedemannTraits &traits,
 				 typename Field::RandIter r) :
-			_traits (traits), _field (F), _randiter (r), _VD (F)
+			_traits (traits), _field (&F), _randiter (r), _VD (F)
 		{}
 
 		/// \ingroup algorithms
@@ -354,6 +351,7 @@ namespace LinBox
 
 		//@}
 
+		inline const Field & field() const { return *_field; }
 
 	private:
 
@@ -361,7 +359,7 @@ namespace LinBox
 		SparseMatrix<Field> *makeLambdaSparseMatrix (size_t m);
 
 		WiedemannTraits                      _traits;
-		const Field                         &_field;
+		const Field                         *_field;
 		typename Field::RandIter             _randiter;
 		VectorDomain<Field>                  _VD;
 	};

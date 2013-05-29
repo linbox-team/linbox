@@ -23,26 +23,30 @@ AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
 pkgincludesubdir=$(pkgincludedir)/solutions
 
 pkgincludesub_HEADERS=          \
-    methods.h                   \
-    minpoly.h                   \
-    rank.h                      \
-    trace.h                     \
-    getentry.h                  \
+    charpoly.h                  \
     det.h                       \
-    solve.h                     \
+    getentry.h                  \
     is-positive-definite.h      \
     is-positive-semidefinite.h  \
-    charpoly.h                  \
-    valence.h                   \
+    methods.h                   \
+    minpoly.h                   \
     nullspace.h                 \
-    smith-form.h
+    rank.h                      \
+    smith-form.h                \
+    solve.h                     \
+    trace.h                     \
+    valence.h			\
+    solution-tags.h
+
+#    rankin.h
+#    wiedemann-rank.h
 
 EXTRA_DIST =                \
-    solutions.doxy          \
-    systemsolving.doxy      \
-    rank.doxy               \
+    charpoly.doxy           \
     determinant.doxy        \
     minpoly.doxy            \
-    charpoly.doxy           \
+    nullspace.doxy          \
+    rank.doxy               \
     reducedforms.doxy       \
-    nullspace.doxy
+    solutions.doxy          \
+    systemsolving.doxy

@@ -72,7 +72,7 @@ namespace LinBox
 		 * @param A, B:  black box matrices.
 		 */
 		Sum (const Blackbox1 &A, const Blackbox2 &B) :
-			_A_ptr(&A), _B_ptr(&B), VD( field() )
+			_A_ptr(&A), _B_ptr(&B), VD( A.field() )
 		{
 			linbox_check (A.coldim () == B.coldim ());
 			linbox_check (A.rowdim () == B.rowdim ());
@@ -87,7 +87,7 @@ namespace LinBox
 		 * @param A_ptr, B_ptr:  pointers to black box matrices.
 		 */
 		Sum (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr) :
-			_A_ptr(A_ptr), _B_ptr(B_ptr), VD( field() )
+			_A_ptr(A_ptr), _B_ptr(B_ptr), VD( A_ptr->field() )
 		{
 			// create new copies of matrices in dynamic memory
 			linbox_check (A_ptr != 0);
@@ -232,7 +232,7 @@ namespace LinBox
 		 * @param A, B:  black box matrices.
 		 */
 		SumOwner (const Blackbox1 &A, const Blackbox2 &B) :
-			_A_data(&A), _B_data(&B), VD( field() )
+			_A_data(&A), _B_data(&B), VD( A.field() )
 		{
 			linbox_check (A.coldim () == B.coldim ());
 			linbox_check (A.rowdim () == B.rowdim ());
@@ -247,7 +247,7 @@ namespace LinBox
 		 * @param A_data, B_data:  pointers to black box matrices.
 		 */
 		SumOwner (const Blackbox1 *A_data, const Blackbox2 *B_data) :
-			_A_data(A_data), _B_data(B_data), VD( field() )
+			_A_data(A_data), _B_data(B_data), VD( A_data->field() )
 		{
 			// create new copies of matrices in dynamic memory
 			linbox_check (A_data != 0);

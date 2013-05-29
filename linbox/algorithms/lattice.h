@@ -48,18 +48,7 @@
 
 
 #ifdef __LINBOX_HAVE_FPLLL
-// this is a damn FPLLL bug !!!
-namespace FPLLL {
-#define round
-#define trunc
 #include <fplll/fplll.h>
-#include <fplll/heuristic.h>
-#include <fplll/proved.h>
-#include <fplll/wrapper.h>
-#undef round
-#undef trunc
-}
-
 #endif
 
 

@@ -54,9 +54,9 @@ namespace LinBox
 	public:
 		typedef _Field                         Field;
 		typedef typename Field::Element      Element;
-		typedef typename Field::RandIter    RandIter;
-		typedef BlasMatrix<Field>              Block;
-		typedef BlasMatrix<Field>              Value;
+		typedef typename Field::RandIter   RandIter;
+		typedef BlasMatrix<Field>           Block;
+		typedef BlasMatrix<Field>           Value;
 
 		// Default constructor
 		BlackboxBlockContainer () {}
@@ -138,13 +138,14 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
+                        using namespace std;
 			if (this->casenumber) {
-				this->Mul(_blockW,*this->_BB,this->_blockV);
+                                this->Mul(_blockW,*this->_BB,this->_blockV);
 				_BMD.mul(this->_value, this->_blockU, _blockW);
 				this->casenumber = 0;
-			}
+                        }
 			else {
-				this->Mul(this->_blockV,*this->_BB,_blockW);
+                                this->Mul(this->_blockV,*this->_BB,_blockW);
 				_BMD.mul(this->_value, this->_blockU, this->_blockV);
 				this->casenumber = 1;
 			}
@@ -166,8 +167,8 @@ namespace LinBox
 		typedef _Field                        Field;
 		typedef typename Field::Element     Element;
 		typedef typename Field::RandIter   RandIter;
-		typedef BlasMatrix<Field>             Block;
-		typedef BlasMatrix<Field>             Value;
+		typedef BlasMatrix<Field>           Block;
+		typedef BlasMatrix<Field>           Value;
 
 		enum Launcher {RowUpdate=0, ColUpdate=1, Nothing=2};
 
@@ -418,7 +419,7 @@ namespace LinBox
 					BlasMatrix<Field> T(_blockW, i*numblock, 0, numblock, block);
 					_BMD.mul(tmp, _Special_U[i], T);
 					for (size_t j=0;j<block;++j){
-						this->_field.assign(this->_value.refEntry(i,j), tmp[j]);
+						this->getField()->assign(this->_value.refEntry(i,j), tmp[j]);
 					}
 				}
 
@@ -432,7 +433,7 @@ namespace LinBox
 					BlasMatrix<Field> T(this->_blockV, i*numblock, 0, numblock, block);
 					_BMD.mul(tmp, _Special_U[i], T);
 					for (size_t j=0;j<block;++j)
-						this->_field.assign(this->_value.refEntry(i,j), tmp[j]);
+						this->getField().assign(this->_value.refEntry(i,j), tmp[j]);
 				}
 
 				this->casenumber = 1;

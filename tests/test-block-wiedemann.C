@@ -1,5 +1,5 @@
 
-/* tests/test-solve.C
+/* tests/test-block-wiedemann.C
  * evolved by -bds from test-solve.C
  *
  * --------------------------------------------------------
@@ -40,9 +40,16 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-//#include "linbox/algorithms/right-block-wiedemann.h"
+#ifdef __LINBOX_HAVE_OCL
+  #include "linbox/algorithms/opencl-domain.h"
+#else
+  #include "linbox/algorithms/blas-domain.h"
+#endif
 #include "linbox/algorithms/block-wiedemann.h"
-#include "linbox/blackbox/diagonal.h"
+#include "linbox/algorithms/coppersmith.h"
+#include "linbox/blackbox/sparse.h"
+//#include "linbox/blackbox/diagonal.h"
+//#include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/vector/stream.h"
 
 #include "test-common.h"
@@ -67,40 +74,56 @@ int main (int argc, char **argv)
 
 	static size_t n = 9;
 	static size_t N = 16;
-	static integer q = 2147483647U;
+	static size_t q = 2147483647U;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to N.", TYPE_INT,     &n },
 		{ 'N', "-N N", "Set blocking factor to N.", TYPE_INT,     &N },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &q },
 		END_OF_ARGUMENTS
 	};
 
+	//typedef Modular<double> Field;
 	typedef Modular<uint32_t> Field;
 	typedef vector<Field::Element> Vector;
-	typedef Diagonal <Field> Blackbox;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F ( (uint32_t) q);
 	VectorDomain<Field> VD (F);
 
 	commentator().start("block wiedemann test suite", "block-wiedemann");
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	RandomDenseStream<Field> stream1 (F, n, 1), stream2 (F, n, 1);
+	RandomDenseStream<Field> stream1 (F, n, 3);// stream2 (F, n, 1);
 	Vector d(n), b(n), x(n), y(n);
 	stream1.next (d);
-	stream2.next (b);
+	stream1.next (b);
 
-	VD.write (report << "Diagonal entries: ", d) << endl;
-	VD.write (report << "Right-hand side:  ", b) << endl;
+	VD.write (report << "Right-hand side: b =  ", b) << endl;
 
-	Blackbox D (F, d);
+// sparse
+	typedef SparseMatrix <Field> Blackbox;
+	Blackbox D (F, n, n);
+	for (size_t i = 0; i < n; ++i) D.setEntry(i, i, d[i]);
+	stream1.next (d);
+	//for (size_t i = 0; i < n-1; ++i) D.setEntry(i, i+1, d[i]);
+	//D.setEntry(0, n-1, d[n-1]);
+	//... setup entries
+
+// diagonal
+	//typedef Diagonal <Field> Blackbox;
+	//Blackbox D (F, d);
+	//VD.write (report << "Diagonal entries: ", d) << endl;
+
+// scalar
+	//typedef ScalarMatrix<Field> Blackbox;
+	//Blackbox D (F, n, F.one);
+	//report << "Scalar matrix: D = " << F.one << endl;
 
 #if 0
-	// Yuhasz Matrix Berlekamp Massey being used
-	RightBlockWiedemannSolver<Field> RBWS(F);
-	RBWS.solveNonSingular(x, D, b);
+	// Yuhasz' Matrix Berlekamp Massey being used
+	CoppersmithSolver<Field> RCS(F);
+	RCS.solveNonSingular(x, D, b);
 
 	VD.write (report << "Matrix Berlekamp Massey solution:  ", x) << endl;
 	D.apply (y, x);
@@ -113,14 +136,24 @@ int main (int argc, char **argv)
 #endif
 
 #if 1
-	// Giorgi SigmaBasis Berlekamp Massey being used
+	// Giorgi's block method, SigmaBasis based, being used
+
+#ifdef __LINBOX_HAVE_OCL
+// using this as a test of the opencl matrix domain
+	typedef OpenCLMatrixDomain<Field> Context;
+// but note, shouldn't need the ifdef.  OpenCLMatrixDomain defaults to BlasMatrixDomain calls.
+#else
+	typedef BlasMatrixDomain<Field> Context;
+#endif
+	Context MD(F);
 	Vector z(n);
-	BlockWiedemannSolver<Field> LBWS(F);
+	BlockWiedemannSolver<Context> LBWS(MD);
+	report << "calling solver" << endl;
 	LBWS.solveNonSingular(z, D, b);
 
-	VD.write (report << "SigmaBasis solution:  ", z) << endl;
+	VD.write (report << "SigmaBasis solution: D^{_1}b = ", z) << endl;
 	D.apply (y, z);
-	VD.write ( report << "Output:           ", y) << endl;
+	VD.write ( report << "Output: D D^{-1}b = ", y) << endl;
 
 	if (!VD.areEqual (y, b)) {
 		pass = false;

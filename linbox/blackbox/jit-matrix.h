@@ -76,27 +76,24 @@ namespace LinBox
 		 * and must be valid for 0 <= i < m, 0 <= j < n.
 		 **/
 
-		JIT_Matrix (_Field& F, const size_t m, const size_t n,
+		JIT_Matrix (const _Field& F, const size_t m, const size_t n,
 			    const JIT_EntryGenerator& JIT) :
-			_field(F), _m(m), _n(n), _gen(JIT)
+			_field(&F), _m(m), _n(n), _gen(JIT)
 		{};
 
 		template<class OutVector, class InVector>
-		OutVector& apply (OutVector& y, const InVector& x) ;
-		//OutVector& apply (OutVector& y, const InVector& x) const;
-
+		OutVector& apply (OutVector& y, const InVector& x) const;
 
 		template<class OutVector, class InVector>
-		OutVector& applyTranspose (OutVector& y, const InVector& x);
-		//OutVector& applyTranspose (OutVector& y, const InVector& x) const;
+		OutVector& applyTranspose (OutVector& y, const InVector& x) const;
 		size_t rowdim (void) const { return _m; }
 		size_t coldim (void) const { return _n; }
-		const Field& field() const { return _field; }
+		const Field& field() const { return *_field; }
 
 	protected:
 
 		// Field for arithmetic
-		Field _field;
+		const Field *_field;
 
 		// Number of rows and columns of matrix.
 		size_t _m;
@@ -112,16 +109,16 @@ namespace LinBox
 
 	template <class Field, class JIT_EntryGenerator>
 	template <class OutVector, class InVector>
-	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::apply (OutVector& y, const InVector& x)
+	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::apply (OutVector& y, const InVector& x) const
 	{
 		Element entry;
-		_field.init(entry,0);
+		field().init(entry,0);
 		for (size_t i = 0; i < _m; ++i) {
-			_field.init(y[i], 0);
+			field().init(y[i], 0);
 			for (size_t j = 0; j < _n; ++j) {
 				_gen(entry, i, j);
 
-				_field.axpyin (y[i], entry, x[j]);
+				field().axpyin (y[i], entry, x[j]);
 			}
 		}
 		return y;
@@ -130,14 +127,14 @@ namespace LinBox
 
 	template <class Field, class JIT_EntryGenerator>
 	template <class OutVector, class InVector>
-	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::applyTranspose (OutVector& y, const InVector& x)
+	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::applyTranspose (OutVector& y, const InVector& x) const
 	{
 		Element entry;
-		_field.init(entry,0);
+		field().init(entry,0);
 		for (size_t i = 0; i < _m; ++i) {
-			_field.init(y[i], 0);
+			field().init(y[i], 0);
 			for (size_t j = 0; j < _n; ++j) {
-				_field.axpyin ( y[i], x[j], _gen(entry, j, i) );
+				field().axpyin ( y[i], x[j], _gen(entry, j, i) );
 			}
 		}
 		return y;

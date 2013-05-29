@@ -331,7 +331,7 @@ void scramble(BlasMatrix<Ring>& M)
 
 			//K.axpy(c, M.getEntry(l, i), x, M.getEntry(l, j));
 			//M.setEntry(l, i, c);
-		}
+				}
 
 		//a = rand()%2;
 
@@ -361,7 +361,7 @@ void scramble(BlasMatrix<Ring>& M)
 
 		out << "\n";
 
-	}
+		}
 
 	//}
 }
@@ -533,9 +533,11 @@ void KratMat(BlasMatrix<PIR>& M, PIR& R, int q, istream& in)
 }
 
 ///// end krat ////////////////////////////
+//! @bug this already exists elsewhere
 template<class I1, class Lp>
 void distinct (I1 a, I1 b, Lp& c)
-{ typename I1::value_type e;
+{
+	typename iterator_traits<I1>::value_type e;
 	size_t count = 0;
 	if (a != b) {e = *a; ++a; count = 1;}
 	else return;

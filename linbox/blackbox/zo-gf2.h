@@ -54,7 +54,7 @@ namespace LinBox
 		typedef ZeroOne<GF2> Self_t;
 		typedef GF2 Field;
 
-		const GF2 _field;
+		const GF2 *_field;
 
 		ZeroOne(const GF2& ) :
 			_nnz(0)
@@ -121,7 +121,7 @@ namespace LinBox
 		std::istream &read (std::istream &is) ;
 		std::ostream& write (std::ostream& out, FileFormatTag format=FORMAT_GUILLAUME) const ;
 
-		const Field& field() const { return _field; }
+		const Field& field() const { return *_field; }
 
 		template<typename _Tp1>
 		struct rebind {

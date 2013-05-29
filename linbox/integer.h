@@ -41,6 +41,10 @@
 #ifndef __LINBOX_integer_H
 #define __LINBOX_integer_H
 
+#ifndef INT32_MAX
+#define INT32_MAX (2147483647L)
+#endif
+
 //#include <cstdint>
 #include "linbox/linbox-config.h"
 #include "givaro/givconfig.h"
@@ -113,36 +117,23 @@ namespace LinBox
 	template< class T >
 	T abs( const T& a ) { return( a <= 0 ? a * -1 : a ); }
 
+} // LinBox namespace
 
 
-        /*! @internal
+// Dependency to GIVARO >= 3.7.2
+#include <givaro/givspyinteger.h>
+namespace LinBox
+{
+ 
+    /*! @internal
 	 * Spy structure to have access to protected members of Givaro::Integer.
 	 */
-	struct SpyInteger
-	{
+    using Givaro::SpyInteger;   
 
-	    struct InHeritsInteger : public integer {
-	    protected:
-	        friend struct SpyInteger;
-	    };
-
-	    static const InHeritsInteger::Rep* get_rep(const integer& i) {
-        	return static_cast<const InHeritsInteger&>(i).get_rep();
-	    }
-
-	    static mpz_ptr get_mpz(integer& i) {
-	        return static_cast<InHeritsInteger&>(i).get_mpz();
-	    }
-	    static mpz_ptr get_mpz(const integer& i) {
-	        return const_cast<InHeritsInteger&>(static_cast<const InHeritsInteger&>(i)).get_mpz();
-	    }
-	    static mpz_srcptr get_mpz_const(const integer& i) {
-	        return static_cast<const InHeritsInteger&>(i).get_mpz_const();
-	    }
-        };
+} // LinBox namespace
 
 
-}
+
 
 // Dependency to GIVARO >= 3.3.4
 /* givaro/givconfig.h so provides the fixed width integer types such as
@@ -226,15 +217,52 @@ namespace Givaro {
 #include <givaro/givcaster.h>
 #endif
 
+#ifdef GIVARO_USES_OPENMP // _OPENMP or others are present
+#define LINBOX_USES_OPENMP 1
+#endif
+
+namespace LinBox {
+
+	template<class U>
+	inline bool IsNegative(const U & p)
+	{
+		return (p<0);
+	}
+
+	// or use integer_traits<T>::is_unsigned ??
+	template<>
+	inline bool IsNegative(const uint8_t & p)
+	{
+		return false;
+	}
+
+	template<>
+	inline bool IsNegative(const uint16_t & p)
+	{
+		return false;
+	}
+
+	template<>
+	inline bool IsNegative(const uint32_t & p)
+	{
+		return false;
+	}
+
+	template<>
+	inline bool IsNegative(const uint64_t & p)
+	{
+		return false;
+	}
+
+}
 
 #endif // __LINBOX_integer_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

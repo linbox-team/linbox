@@ -31,6 +31,7 @@
 #define __LINBOX_matrix_domain_INL
 
 #include "linbox/matrix/transpose-matrix.h"
+#include "linbox/blackbox/dif.h"
 
 namespace LinBox
 {
@@ -75,6 +76,11 @@ namespace LinBox
 
 	template <class Field>
 	template <class Matrix1, class Matrix2>
+	bool MatrixDomain<Field>::areEqualBB (const Matrix1 &A, const Matrix2 &B) const
+	{ Dif<Matrix1, Matrix2> C(A, B); return isZero(C); }
+
+	template <class Field>
+	template <class Matrix1, class Matrix2>
 	bool MatrixDomain<Field>::areEqualRow (const Matrix1 &A, const Matrix2 &B) const
 	{
 		linbox_check (A.rowdim () == B.rowdim ());
@@ -114,10 +120,21 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Matrix>
-	bool MatrixDomain<Field>::isZeroRow (const Matrix &A) const
+	template <class Matrix_>
+	bool MatrixDomain<Field>::isZeroBB (const Matrix_ &A) const
 	{
-		typename Matrix::ConstRowIterator i;
+		VectorDomain<Field> VD(A.field());
+		std::vector<typename Field::Element> x(A.coldim()), y(A.rowdim());
+		VD.random(x);
+		A.apply(y, x);
+		return VD.isZero(y);
+	}
+
+	template <class Field>
+	template <class Matrix_>
+	bool MatrixDomain<Field>::isZeroRow (const Matrix_ &A) const
+	{
+		typename Matrix_::ConstRowIterator i;
 
 		i = A.rowBegin ();
 
@@ -129,8 +146,8 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Matrix>
-	bool MatrixDomain<Field>::isZeroCol (const Matrix &A) const
+	template <class Matrix_>
+	bool MatrixDomain<Field>::isZeroCol (const Matrix_ &A) const
 	{
 		typename Matrix::ConstColIterator i;
 
@@ -350,10 +367,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Matrix>
-	Matrix &MatrixDomain<Field>::neginRow (Matrix &A) const
+	template <class Matrix_>
+	Matrix_ &MatrixDomain<Field>::neginRow (Matrix_ &A) const
 	{
-		typename Matrix::RowIterator i;
+		typename Matrix_::RowIterator i;
 
 		for (i = A.rowBegin (); i != A.rowEnd (); ++i)
 			_VD.negin (*i);
@@ -362,10 +379,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Matrix>
-	Matrix &MatrixDomain<Field>::neginCol (Matrix &A) const
+	template <class Matrix_>
+	Matrix_ &MatrixDomain<Field>::neginCol (Matrix_ &A) const
 	{
-		typename Matrix::ColIterator i;
+		typename Matrix_::ColIterator i;
 
 		for (i = A.colBegin (); i != A.colEnd (); ++i)
 			_VD.negin (*i);
@@ -536,10 +553,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Matrix>
-	Matrix &MatrixDomain<Field>::mulinRow (Matrix &B, const typename Field::Element &a) const
+	template <class Matrix_>
+	Matrix_ &MatrixDomain<Field>::mulinRow (Matrix_ &B, const typename Field::Element &a) const
 	{
-		typename Matrix::RowIterator i;
+		typename Matrix_::RowIterator i;
 
 		for (i = B.rowBegin (); i != B.rowEnd (); ++i)
 			_VD.mulin (*i, a);
@@ -548,10 +565,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Matrix>
-	Matrix &MatrixDomain<Field>::mulinCol (Matrix &B, const typename Field::Element &a) const
+	template <class Matrix_>
+	Matrix_ &MatrixDomain<Field>::mulinCol (Matrix_ &B, const typename Field::Element &a) const
 	{
-		typename Matrix::ColIterator i;
+		typename Matrix_::ColIterator i;
 
 		for (i = B.colBegin (); i != B.colEnd (); ++i)
 			_VD.mulin (*i, a);
@@ -577,7 +594,7 @@ namespace LinBox
 		for (i = A.rowBegin (), l1 = Y.rowBegin (); i != A.rowEnd (); ++i, ++l1) {
 			for (j = X.colBegin (), l2 = l1->begin (); j != X.colEnd (); ++j, ++l2) {
 				_VD.dot (t, *i, *j);
-				_field.addin (*l2, t);
+				field().addin (*l2, t);
 			}
 		}
 
@@ -602,7 +619,7 @@ namespace LinBox
 		for (j = X.colBegin (), l1 = Y.colBegin (); j != X.colEnd (); ++j, ++l1) {
 			for (i = A.rowBegin (), l2 = l1->begin (); i != A.rowEnd (); ++i, ++l2) {
 				_VD.dot (t, *i, *j);
-				_field.addin (*l2, t);
+				field().addin (*l2, t);
 			}
 		}
 
@@ -654,14 +671,14 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::DenseVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
 		linbox_check (A.rowdim () == w.size ());
 
-		typename Matrix::ConstRowIterator i = A.rowBegin ();
+		typename Matrix_::ConstRowIterator i = A.rowBegin ();
 		typename Vector1::iterator j = w.begin ();
 
 		// JGD 02.09.2008 : when sizes differ
@@ -670,18 +687,18 @@ namespace LinBox
 		// 		_VD.dot (*j, v, *i);
 		for (; i != A.rowEnd (); ++j, ++i) {
 			linbox_check(j != w.end());
-			_VD.dot (*j, v, *i);
+			this->_VD.dot (*j, v, *i);
 		}
 
 		return w;
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::SparseSequenceVectorTag) const
 	{
-		typename Matrix::ConstRowIterator i = A.rowBegin ();
+		typename Matrix_::ConstRowIterator i = A.rowBegin ();
 		typename Field::Element t;
 		unsigned int idx = 0;
 
@@ -690,7 +707,7 @@ namespace LinBox
 		for (; i != A.rowEnd (); ++i, ++idx) {
 			_VD.dot (t, v, *i);
 
-			if (!_field.isZero (t))
+			if (!field().isZero (t))
 				w.push_back (std::pair<size_t, typename Field::Element> (idx, t));
 		}
 
@@ -698,11 +715,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::SparseAssociativeVectorTag) const
 	{
-		typename Matrix::ConstRowIterator i = A.rowBegin ();
+		typename Matrix_::ConstRowIterator i = A.rowBegin ();
 		typename Field::Element t;
 		unsigned int idx = 0;
 
@@ -711,7 +728,7 @@ namespace LinBox
 		for (; i != A.rowEnd (); ++i, ++idx) {
 			_VD.dot (t, v, *i);
 
-			if (!_field.isZero (t))
+			if (!field().isZero (t))
 				w[idx] = t;
 		}
 
@@ -719,11 +736,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::SparseParallelVectorTag) const
 	{
-		typename Matrix::ConstRowIterator i = A.rowBegin ();
+		typename Matrix_::ConstRowIterator i = A.rowBegin ();
 		typename Field::Element t;
 		unsigned int idx = 0;
 
@@ -733,7 +750,7 @@ namespace LinBox
 		for (; i != A.rowEnd (); ++i, ++idx) {
 			_VD.dot (t, v, *i);
 
-			if (!_field.isZero (t)) {
+			if (!field().isZero (t)) {
 				w.first.push_back (idx);
 				w.second.push_back (t);
 			}
@@ -743,14 +760,14 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
+	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MVProductDomain<Field>::mulColDense
-	(const VectorDomain<Field> &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+	(const VectorDomain<Field> &VD, Vector1 &w, const Matrix_ &A, const Vector2 &v) const
 	{
 		linbox_check (A.coldim () == v.size ());
 		linbox_check (A.rowdim () == w.size ());
 
-		typename Matrix::ConstColIterator i = A.colBegin ();
+		typename Matrix_::ConstColIterator i = A.colBegin ();
 		typename Vector2::const_iterator j = v.begin ();
 
 		VD.subin (w, w);
@@ -762,8 +779,8 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::DenseVectorTag,
 							 VectorCategories::SparseSequenceVectorTag) const
 	{
@@ -774,7 +791,7 @@ namespace LinBox
 		_VD.subin (w, w);
 
 		for (; j != v.end (); ++j) {
-			typename Matrix::ConstColIterator i = A.colBegin () + j->first;
+			typename Matrix_::ConstColIterator i = A.colBegin () + j->first;
 			_VD.axpyin (w, j->second, *i);
 		}
 
@@ -782,8 +799,8 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::DenseVectorTag,
 							 VectorCategories::SparseAssociativeVectorTag) const
 	{
@@ -794,7 +811,7 @@ namespace LinBox
 		_VD.subin (w, w);
 
 		for (; j != v.end (); ++j) {
-			typename Matrix::ConstColIterator i = A.colBegin () + j->first;
+			typename Matrix_::ConstColIterator i = A.colBegin () + j->first;
 			_VD.axpyin (w, j->second, *i);
 		}
 
@@ -802,8 +819,8 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::DenseVectorTag,
 							 VectorCategories::SparseParallelVectorTag) const
 	{
@@ -815,7 +832,7 @@ namespace LinBox
 		_VD.subin (w, w);
 
 		for (; j_idx != v.first.end (); ++j_idx, ++j_elt) {
-			typename Matrix::ConstColIterator i = A.colBegin () + *j_idx;
+			typename Matrix_::ConstColIterator i = A.colBegin () + *j_idx;
 			_VD.axpyin (w, *j_elt, *i);
 		}
 
@@ -823,29 +840,29 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::DenseVectorTag) const
 	{
 		linbox_check (A.coldim () == x.size ());
 		linbox_check (A.rowdim () == y.size ());
 
-		typename Matrix::ConstRowIterator i = A.rowBegin ();
+		typename Matrix_::ConstRowIterator i = A.rowBegin ();
 		typename Vector1::iterator j = y.begin ();
 
 		typename Field::Element t;
 
 		for (; j != y.end (); ++j, ++i) {
 			_VD.dot (t, x, *i);
-			_field.addin (*j, t);
+			field().addin (*j, t);
 		}
 
 		return y;
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseSequenceVectorTag) const
 	{
 		typename LinBox::Vector<Field>::Dense t1 (A.coldim ()), t2 (A.rowdim ());
@@ -859,8 +876,8 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseAssociativeVectorTag) const
 	{
 		typename LinBox::Vector<Field>::Dense t1 (A.coldim ()), t2 (A.rowdim ());
@@ -874,8 +891,8 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseParallelVectorTag) const
 	{
 		typename LinBox::Vector<Field>::Dense t1 (A.coldim ()), t2 (A.rowdim ());
@@ -889,14 +906,14 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::DenseVectorTag) const
 	{
 		linbox_check (A.coldim () == x.size ());
 		linbox_check (A.rowdim () == y.size ());
 
-		typename Matrix::ConstColIterator i = A.colBegin ();
+		typename Matrix_::ConstColIterator i = A.colBegin ();
 		typename Vector2::const_iterator j = x.begin ();
 
 		for (; j != x.end (); ++j, ++i)
@@ -906,11 +923,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseSequenceVectorTag) const
 	{
-		typename Matrix::ConstColIterator i = A.colBegin ();
+		typename Matrix_::ConstColIterator i = A.colBegin ();
 		typename Vector2::iterator j = x.begin ();
 
 		int diff;
@@ -932,11 +949,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseAssociativeVectorTag) const
 	{
-		typename Matrix::ConstColIterator i = A.colBegin ();
+		typename Matrix_::ConstColIterator i = A.colBegin ();
 		typename Vector2::iterator j = x.begin ();
 
 		int diff;
@@ -958,11 +975,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
+	template <class Vector1, class Matrix_, class Vector2>
+	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseParallelVectorTag) const
 	{
-		typename Matrix::ConstColIterator i = A.colBegin ();
+		typename Matrix_::ConstColIterator i = A.colBegin ();
 		typename Vector2::iterator j_idx = x.first.begin ();
 		typename Vector2::iterator j_elt = x.second.begin ();
 
@@ -1019,13 +1036,13 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Matrix, class Iterator>
-	Matrix &MatrixDomain<Field>::permuteRowsByRow (Matrix   &A,
+	template <class Matrix_, class Iterator>
+	Matrix_ &MatrixDomain<Field>::permuteRowsByRow (Matrix_   &A,
 						       Iterator  P_start,
 						       Iterator  P_end) const
 	{
 		Iterator i;
-		typename Matrix::RowIterator j, k;
+		typename Matrix_::RowIterator j, k;
 
 		for (i = P_start; i != P_end; ++i) {
 			j = A.rowBegin () + i->first;
@@ -1038,12 +1055,12 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Matrix, class Iterator>
-	Matrix &MatrixDomain<Field>::permuteRowsByCol (Matrix   &A,
+	template <class Matrix_, class Iterator>
+	Matrix_ &MatrixDomain<Field>::permuteRowsByCol (Matrix_   &A,
 						       Iterator  P_start,
 						       Iterator  P_end) const
 	{
-		typename Matrix::ColIterator j;
+		typename Matrix_::ColIterator j;
 
 		for (j = A.colBegin (); j != A.colEnd (); ++j)
 			_VD.permute (*j, P_start, P_end);
@@ -1052,12 +1069,12 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Matrix, class Iterator>
-	Matrix &MatrixDomain<Field>::permuteColsByRow (Matrix   &A,
+	template <class Matrix_, class Iterator>
+	Matrix_ &MatrixDomain<Field>::permuteColsByRow (Matrix_   &A,
 						       Iterator  P_start,
 						       Iterator  P_end) const
 	{
-		typename Matrix::RowIterator j;
+		typename Matrix_::RowIterator j;
 
 		for (j = A.rowBegin (); j != A.rowEnd (); ++j)
 			_VD.permute (*j, P_start, P_end);
@@ -1066,13 +1083,13 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Matrix, class Iterator>
-	Matrix &MatrixDomain<Field>::permuteColsByCol (Matrix   &A,
+	template <class Matrix_, class Iterator>
+	Matrix_ &MatrixDomain<Field>::permuteColsByCol (Matrix_   &A,
 						       Iterator  P_start,
 						       Iterator  P_end) const
 	{
 		Iterator i;
-		typename Matrix::ColIterator j, k;
+		typename Matrix_::ColIterator j, k;
 
 		for (i = P_start; i != P_end; ++i) {
 			j = A.colBegin () + i->first;

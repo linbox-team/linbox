@@ -1,0 +1,141 @@
+// Copyright (C) 2013 the LinBox Group
+// Written by BB <bbboyer@ncsu.edu>
+// This file is part of LinBox, see COPYING for licence information.
+/*
+ * Coypright (c) LinBox
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+ *
+ */
+
+/*!
+* \page upgr Updating/Versionning
+* <h3>Creating a new version number for LinBox/Givaro/fflas-ffpack:</h3>
+*
+* These software are versioned as \c projectname-x.y.z where \c x is a \b major revision
+* number, \c y a \b minor number and \c z a \b revision (or bug) number.
+* The script \c incremente-version — in the root directory of these project
+* sources — takes care of incrementing these numbers (along with the library
+* so-names if necessary).
+*
+*<ul>
+*  <li> \b Revision number. <br/>
+*    Minor changes are changes that do not change any API and do not provoke
+* any miscompilation in LinBox. As a consequence, for instance, any release
+* \c 1.3.z of LinBox should  compile with any givaro \c 3.7.z and any
+* fflas-ffpack \c 1.6.z. <br/>
+* This correspondance should be published on the website. It is however always put in
+* the \c auto-install.sh script.
+*  </li>
+*
+*  <li> \b Minor number. <br/>
+*    Any change in these numbers in givaro or fflas-ffpack produces a minor
+* version change in LinBox. A minor version number changed is required when there
+* is some API change in fflas-ffpack or givaro or linbox or anything leading to
+* a failure to compile properly due to newly added inconsistencies.
+*  </li>
+*
+*  <li> \b Major number. <br/>
+*  These number are incremented when big change happens. Only the minor number
+* of LinBox is needed to change when a major increment happens in
+* givaro/fflas-ffpack.
+*  </li>
+*</ul>
+*
+* <h3> Publishing </h3>
+* Before publishing a new version :
+* <ul>
+* <li> \b Testing
+* - The buildbots should be green and the script \c auto-install.sh should
+* succeed and the tests/example pass/compile. <small>(It would be cool if more
+* compilers were tested, namely clang and ekopath).</small>
+* - The number of warnings when compiled with \c --enable-warnings=full should
+* also be minimised.
+* - The number of warnings when compiling the doc should be minimised (and new
+* functionalities/concepts documented).
+* .
+* </li>
+*
+* <li> \b Incrementing
+*  - on an up-to-date svn source, run the script \c incremente-version, follow
+* its instruction and confirm.
+*  - commit these changes as in: \code svn commit -m "updated to projectname-x.y.z"\endcode
+* so that it is easier to spot the changes in the ChangeLog when publishing it.
+* </li>
+*
+* <li> \b Branching <br/>
+* Once the incrementing has been done, if the minor or major number
+* has been changed, then a new branch should be created in the svn repository
+* using \code svn copy /path/to/trunk /path/to/branch/project-x.y \endcode
+* This is done in order to allow maintainance and support, eg. new patches from
+* distributions and easy support of a \c x.y major.minor version (for sage for
+* instance).
+* </li>
+*
+* <li> \b Publishing <br/>
+* A release comes with a tar ball \c tar.gz, a \c md5sum of it and a summary \c ChangeLog.
+*
+* <ul>
+* <li>   LinBox and fflas-ffpack
+*   - a \c tar.gz and a \c md5sum is created in the \c www directory
+*   - the corresponding web pages are updated
+*   - The changes form the ChangeLog should be
+* put in \c NEWS-a.b.html (even for revision versions) for LinBox and \c fflas-ffpack-Changelog-x.y.z for
+* fflas-ffpack.
+*  </li>
+*
+*  <li> Givaro<br/>
+*    - a \c tar.gz and a \c md5sum is created and uploaded to the
+*   <a href="https://forge.imag.fr/frs/?group_id=187">forge</a> where
+*    one can also put the ChangeLog in a form.
+*  </li>
+*
+*  <li>\c auto-install.sh script<br/>
+*   - the auto-installation script (first 4 lines) should be updated
+* accordingly. They should correspond to the latest stable/desired version number for
+* givaro/fflas-ffpack.
+*  </li>
+* <li> ChangeLogs <br/>
+* It would be nice if the <code>ChangeLog</code>s looked something like (the
+* users cannot/won't view the <code>svn log</code>):
+*
+*  \verbatim
+Date
+- code update :
+        * item
+
+- bugs :
+        * item
+
+- new features :
+        * item
+
+  \endverbatim
+*
+*  </li>
+* </ul>
+*  </li>
+*  <li> \b Documentation <br/>
+* If a minor revision change happens, there should be an automatic way to update the doxygen documentation.
+*  </li>
+* </ul>
+*.
+*
+*/
+
+// vim:syntax=doxygen

@@ -60,6 +60,7 @@
 // #include "linbox/algorithms/matrix-hom.h"
 
 #include "linbox/matrix/random-matrix.h"
+#include "linbox/blackbox/scalar-matrix.h"
 
 #include <vector>
 
@@ -103,24 +104,23 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 	MatrixDomain<Field>      MD(F);
 	VectorDomain<Field>      VD(F);
 
+	Matrix A;
 	for (int k=0;k<iterations; ++k) {
 
 		mycommentator().progress(k);
-		Matrix A(F, n,n),B(F, n,n),C(F, n,n),D(F, n,n),T(F, n,n),R(F, n,n);
+		A.init(F, n, n);
+		Matrix /*A(F, n,n),*/B(F, n,n),C(F, n,n),D(F, n,n),T(F, n,n),R(F, n,n);
 		std::vector<Element> x(n),y(n),z(n),t(n);
 
 		Element alpha, beta,malpha,tmp;
 
 
 		// Create 3 random n*n matrices
-		for (size_t i=0;i<n;++i)
-			for (size_t j=0;j<n;++j){
-				A.setEntry(i,j,G.random(tmp));
-				B.setEntry(i,j,G.random(tmp));
-				C.setEntry(i,j,G.random(tmp));
-			}
-
-		// Create 2 random vectors
+		A.random();
+		B.random();
+		C.random();
+		
+		// Create 2 random vectors 
 		for (size_t i=0;i<n;++i) {
 			G.random(x[i]);
 			G.random(y[i]);
@@ -1547,7 +1547,51 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	return ret;
 }
 
+template<class Field>
+static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n) {
+	bool pass = true;
+	typedef typename Field::Element Element;
+	BlasMatrixDomain<Field> BMD(Fld);
+	MatrixDomain<Field>      MD (Fld);
+	//BlasMatrix<Field> A; // nowhere to go
 
+	BlasMatrix<Field> B(Fld);
+	B.resize(m, n, Fld.zero);
+	// don't understand the variations on integer types for the indices...
+
+	BlasMatrix<Field> C(Fld,m,n);
+	pass = pass and MD.areEqual(B, C);
+
+//	MatrixStream<Field> ms; ...
+//	BlasMatrix<Field> D(ms); 
+//	pass = pass and MD.areEqual(B, D);
+	
+	ScalarMatrix<Field> Eo(Fld, n, Fld.zero);
+	BlasMatrix<Field> E(Eo); // copy a bb
+	pass = pass and MD.areEqual(B, E);
+
+#if 0
+	ScalarMatrix<Field> Fo(Fld, 2*m, n, Fld.zero);
+        BlasMatrix F(Fo, m, 0, m, n) ; // copy subm of a bb
+	pass = pass and MD.areEqual(B, F);
+
+	BlasMatrix<Field> G(Eo, Fld); // other field?
+	pass = pass and MD.areEqual(B, G);
+
+	BlasMatrix<Field> H(B); // copy cstor
+	pass = pass and MD.areEqual(B, H);
+
+	std::vector<Element> v(m*n, Fld.zero);
+	BlasMatrix<Field> I(Fld,v,m,n);
+	pass = pass and MD.areEqual(B, I);
+
+	Element *p = &v[0];
+	BlasMatrix<Field> J(Fld,p,m,n);
+	pass = pass and MD.areEqual(B, J);
+#endif
+
+	return pass;
+}
 
 // returns true if ok, false if not.
 template<class Field>
@@ -1556,6 +1600,7 @@ int launch_tests(Field & F, int n, int iterations)
 	bool pass = true ;
 	//std::cout << "no blas tests for now" << std::endl;
 	// no slow test while I work on io
+	if (!testBlasMatrixConstructors(F, n, n))             pass=false;
 	if (!testMulAdd (F,n,iterations))                     pass=false;
 	if (!testMulAddAgain (F,n,iterations))                pass=false;
 	int m = n+n/2 ; int k = 2*n+1 ;

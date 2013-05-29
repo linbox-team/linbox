@@ -148,7 +148,8 @@ public:
 	{
 		Blackbox<DomainSource> *B_source= static_cast<Blackbox<DomainSource> * >  (ptr);
 		Blackbox<DomainTarget> *B_target = NULL; /*  was not init't */
-		typename Blackbox<DomainSource>::template rebind<DomainTarget>()(*B_target, *B_source, *D);
+//		typename Blackbox<DomainSource>::template rebind<DomainTarget>()(*B_target, *B_source, *D);
+		typename Blackbox<DomainSource>::template rebind<DomainTarget>()(*B_target, *B_source);
 		delete B_source;
 		ptr = B_target;
 	}

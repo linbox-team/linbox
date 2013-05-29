@@ -59,17 +59,16 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 		//-- Constructors
-		BlackboxContainerBase () {}
 
 		BlackboxContainerBase (const Blackbox *BB, const Field &F) :
-			_field (F), _VD (F), _BB (BB), _size ((long)MIN (BB->rowdim (), BB->coldim ()))
+			_field (&F), _VD (F), _BB (BB), _size ((long)MIN (BB->rowdim (), BB->coldim ()))
 		{
 			_size <<= 1;
 		}
 
 		// Pascal Giorgi 16.02.2004
 		BlackboxContainerBase (const Blackbox *BB, const Field &F, unsigned long Size) :
-			_field (F), _VD (F), _BB (BB), _size ((long)Size)
+			_field (&F), _VD (F), _BB (BB), _size ((long)Size)
 		{}
 
 		virtual ~BlackboxContainerBase ()
@@ -78,21 +77,22 @@ namespace LinBox
 		}
 
 		class const_iterator {
-			BlackboxContainerBase<Field, Blackbox> &_c;
+			BlackboxContainerBase<Field, Blackbox> *_c;
 		public:
-			//const_iterator () {} // BB ??
+			const_iterator () : _c(0){} // BB ??
 			const_iterator (BlackboxContainerBase<Field, Blackbox> &C) :
-				_c (C)
+				_c (&C)
 			{}
-			const_iterator &operator ++ () { _c._launch (); return *this; }
-			const Element  &operator *  () { _c._wait ();   return _c.getvalue (); }
+			const_iterator &operator ++ () { _c->_launch (); return *this; }
+			const Element  &operator *  () { _c->_wait ();   return _c->getvalue (); }
 		};
 
 		const_iterator begin () { return const_iterator (*this); }
 		const_iterator end   () { return const_iterator (); }
 
 		long         size     () const { return _size; }
-		const Field &getField () const { return _field; }
+		const Field &getField () const { return *_field; } // deprecated
+		const Field &field () const { return *_field; }
 		Blackbox    *getBB    () const { return _BB; }
 
 	protected:
@@ -113,7 +113,7 @@ namespace LinBox
 		/// Members
 		//--------------
 
-		Field                _field;
+		const Field           *_field;
 		VectorDomain<Field>  _VD;
 		const Blackbox            *_BB;
 

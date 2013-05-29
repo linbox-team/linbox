@@ -45,12 +45,12 @@ namespace LinBox
 	void BlasMatrix<_Field>::createBlasMatrix (const BlasMatrix<_Field>& A)
 	{
 #ifndef NDEBUG
-		if (!areFieldEqual(A.field(),_field)) {
+		if (!areFieldEqual(A.field(),field())) {
 			A.field().write(std::cout) << "!=" ;
-			_field.write(std::cout) << std::endl;
+			field().write(std::cout) << std::endl;
 		}
 #endif
-		linbox_check( areFieldEqual(A.field(),_field));
+		linbox_check( areFieldEqual(A.field(),field()));
 		createBlasMatrix(A,MatrixContainerCategory::BlasContainer());
 	}
 
@@ -61,7 +61,7 @@ namespace LinBox
 		const_pointer v_end = v+(_col*_row) ;
 		Iterator  iter_addr = this->Begin();
 		for (; v != v_end ; ++v, ++iter_addr)
-			_field.init(*iter_addr,*v);
+			field().init(*iter_addr,*v);
 	}
 
 	template<class _Field>
@@ -70,7 +70,7 @@ namespace LinBox
 		typename std::vector< Element>::const_iterator iter_value = v.begin();
 		Iterator  iter_addr = this->Begin();
 		for (;iter_value != v.end(); ++iter_value,++iter_addr)
-			_field.init(*iter_addr,*iter_value);
+			field().init(*iter_addr,*iter_value);
 	}
 
 
@@ -79,11 +79,11 @@ namespace LinBox
 	void BlasMatrix<_Field>::createBlasMatrix (const _Matrix& A,
 						   MatrixContainerCategory::BlasContainer)
 	{
-		linbox_check( areFieldEqual(A.field(),_field));
+		linbox_check( areFieldEqual(A.field(),field()));
 		typename _Matrix::ConstIterator         iter_value = A.Begin();
 		Iterator  iter_addr = this->Begin();
 		for (;iter_value != A.End(); ++iter_value,++iter_addr)
-			_field.init(*iter_addr, *iter_value);
+			field().init(*iter_addr, *iter_value);
 	}
 
 	template<class _Field>
@@ -91,7 +91,7 @@ namespace LinBox
 	void BlasMatrix<_Field>::createBlasMatrix (const Matrix& A,
 						   MatrixContainerCategory::Container)
 	{
-		linbox_check( areFieldEqual(A.field(),_field));
+		linbox_check( areFieldEqual(A.field(),field()));
 		// const Field & F = A.field();
 		//!@bug With both iterators, it is Segfaulting !!!!
 		typename Matrix::ConstIndexedIterator  iter_index = A.IndexedBegin();
@@ -107,9 +107,9 @@ namespace LinBox
 	void BlasMatrix<_Field>::createBlasMatrix (const Matrix& A,
 						   MatrixContainerCategory::Blackbox)
 	{
-		linbox_check( areFieldEqual(A.field(),_field) );
+		linbox_check( areFieldEqual(A.field(),field()) );
 
-		std::vector<Element> e(A.coldim(), _field.zero), tmp(A.rowdim());
+		std::vector<Element> e(A.coldim(), field().zero), tmp(A.rowdim());
 		ColIterator col_p;
 
 		typename BlasMatrix< _Field>::Col::iterator elt_p;
@@ -120,16 +120,16 @@ namespace LinBox
 		     e_p != e.end(); ++ col_p, ++ e_p)
 		{
 
-			_field.assign(*e_p, _field.one);
+			field().assign(*e_p, field().one);
 
 			A.apply (tmp, e);
 
 			for (tmp_p = tmp.begin(), elt_p = col_p -> begin();
 			     tmp_p != tmp.end(); ++ tmp_p, ++ elt_p)
 
-				_field.assign(*elt_p, *tmp_p);
+				field().assign(*elt_p, *tmp_p);
 
-			_field.assign(*e_p, _field.zero);
+			field().assign(*e_p, field().zero);
 		}
 	}
 
@@ -140,7 +140,7 @@ namespace LinBox
 						   const size_t m, const size_t n,
 						   MatrixContainerCategory::Container)
 	{
-		linbox_check( areFieldEqual(A.field(),_field ) );
+		linbox_check( areFieldEqual(A.field(),field() ) );
 
 		typename _Matrix::ConstIterator         iter_value = A.Begin();
 		typename _Matrix::ConstIndexedIterator  iter_index = A.IndexedBegin();
@@ -161,7 +161,7 @@ namespace LinBox
 						   const size_t m, const size_t n,
 						   MatrixContainerCategory::BlasContainer)
 	{
-		linbox_check( areFieldEqual(A.field(),_field ) );
+		linbox_check( areFieldEqual(A.field(),field() ) );
 
 		typename Matrix::ConstIterator         iter_value = A.Begin();
 		typename Matrix::ConstIndexedIterator  iter_index = A.IndexedBegin();
@@ -182,10 +182,10 @@ namespace LinBox
 						   const size_t m, const size_t n,
 						   MatrixContainerCategory::Blackbox)
 	{
-		linbox_check( areFieldEqual(A.field(),_field ) );
+		linbox_check( areFieldEqual(A.field(),field() ) );
 
 
-		std::vector<Element> e(A.coldim(), _field.zero), tmp(A.rowdim());
+		std::vector<Element> e(A.coldim(), field().zero), tmp(A.rowdim());
 		ColIterator col_p;
 
 		typename BlasMatrix< _Field>::Col::iterator elt_p;
@@ -195,16 +195,16 @@ namespace LinBox
 		for (col_p = colBegin(), e_p = e.begin()+j0;
 		     e_p != e.begin()+j0+n; ++ col_p, ++ e_p) {
 
-			_field.assign(*e_p, _field.one);
+			field().assign(*e_p, field().one);
 
 			A.apply (tmp, e);
 
 			for (tmp_p = tmp.begin()+i0, elt_p = col_p -> begin();
 			     elt_p != col_p.end(); ++ tmp_p, ++ elt_p) {
-				_field.assign(*elt_p, *tmp_p);
+				field().assign(*elt_p, *tmp_p);
 			}
 
-			_field.assign(*e_p, _field.zero);
+			field().assign(*e_p, field().zero);
 		}
 	}
 
@@ -221,34 +221,39 @@ namespace LinBox
 	template <class _Field>
 	BlasMatrix< _Field>::BlasMatrix (const _Field &F) :
 		_row(0),_col(0),_rep(0),_ptr(NULL),
-		_field(F),_MD(F),_VD(F),_use_fflas(false)
+		_field(&F),_MD(F),_VD(F),_use_fflas(false)
 	{ }
 
 	template <class _Field>
-	BlasMatrix< _Field>::BlasMatrix () :
-			_row(0),_col(0),_rep(0),_ptr(NULL),
-			_field(Field()),_MD(_field ),_VD(_field )
+	BlasMatrix< _Field>::BlasMatrix () //:
+			//_row(0),_col(0),_rep(0),_ptr(NULL),
+			//_field(Field()),_MD(_field ),_VD(_field )
 		{}
 
+	template <class _Field>
+	void BlasMatrix< _Field>::init(const _Field &F, size_t r, size_t c) {
+		_field = &F; _row = r; _col = c; _rep.resize(0); _rep.resize(r*c, F.zero); _ptr = &_rep[0];
+		_VD.init(F); _MD.init(F);
+	}
 
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix ( const _Field &F, const uint32_t& m, const T& n) :
-		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(F),_MD(F),_VD(F)
+		_row(m),_col(n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
+		_field(&F),_MD(F),_VD(F)
 	{
-		_use_fflas = Protected::checkBlasApply(_field,_col);
+		_use_fflas = Protected::checkBlasApply(field(),_col);
 	}
 
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix (const _Field &F, const int64_t& m, const T& n) :
-		_row((size_t)m),_col((size_t)n),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(F),_MD(F),_VD(F)
+		_row((size_t)m),_col((size_t)n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
+		_field(&F),_MD(F),_VD(F)
 	{
 		linbox_check(n>=0);
 		linbox_check(m>=0);
-		_use_fflas = Protected::checkBlasApply(_field,_col);
+		_use_fflas = Protected::checkBlasApply(field(),_col);
 	}
 
 #ifdef __GNUC__
@@ -257,27 +262,27 @@ namespace LinBox
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix (const _Field &F, const long & m, const T& n) :
-		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(F),_MD(F),_VD(F)
+		_row(m),_col(n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
+		_field(&F),_MD(F),_VD(F)
 	{
 		linbox_check(n>=0);
 		linbox_check(m>=0);
-		_use_fflas = Protected::checkBlasApply(_field,_col);
+		_use_fflas = Protected::checkBlasApply(field(),_col);
 	}
 #endif
 #endif
 #endif
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || (defined(__s390__) && !defined(__s390x__))
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix (const _Field &F, const unsigned long & m, const T& n) :
-		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(F),_MD(F),_VD(F)
+		_row(m),_col(n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
+		_field(&F),_MD(F),_VD(F)
 	{
 		linbox_check(n>=0);
 		linbox_check(m>=0);
-		_use_fflas = Protected::checkBlasApply(_field,_col);
+		_use_fflas = Protected::checkBlasApply(field(),_col);
 	}
 #endif
 
@@ -285,39 +290,39 @@ namespace LinBox
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix (const _Field &F, const uint64_t &m, const T & n) :
-		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(F),_MD(F),_VD(F)
+		_row(m),_col(n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
+		_field(&F),_MD(F),_VD(F)
 	{
 		//!@todo
 		// linbox_check_non_neg(n);
 		// linbox_check(n>=0);
 		// makePointer();
-		_use_fflas = Protected::checkBlasApply(_field, _col);
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 	}
 
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix (const _Field &F, const int32_t & m, const T &n) :
-		_row((size_t) m),_col((size_t)n),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(F),_MD(F),_VD(F)
+		_row((size_t) m),_col((size_t)n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
+		_field(&F),_MD(F),_VD(F)
 	{
 		linbox_check(isPositive<T>(n));
 		linbox_check(m>=0);
 		// makePointer();
-		_use_fflas = Protected::checkBlasApply(_field, _col);
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 	}
 
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix ( const _Field &F, const Integer & m, const T &n) :
-		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(F),_MD(F),_VD(F)
+		_row(m),_col(n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
+		_field(&F),_MD(F),_VD(F)
 	{
 		//!@todo check m,n not too big ?
 		linbox_check(n>=0);
 		linbox_check(m>=0);
 		// makePointer();
-		_use_fflas = Protected::checkBlasApply(_field, _col);
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 	}
 
 
@@ -325,19 +330,19 @@ namespace LinBox
 	template <class _Field>
 	BlasMatrix< _Field>::BlasMatrix(MatrixStream<_Field>& ms) :
 		_row(0),_col(0),_rep(0),
-		_field(ms.getField()),_MD(_field ),_VD(_field )
+		_field(&(ms.getField())),_MD(field() ),_VD(field() )
 	{
-		if( !ms.getArray(_rep) || !ms.getRows(_row) || !ms.getColumns(_col) )
+		if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) )
 			throw ms.reportError(__FUNCTION__,__LINE__);
 		_ptr = &_rep[0];
-		_use_fflas = Protected::checkBlasApply(_field, _col);
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 	}
 
 	template <class _Field>
 	template <class StreamVector>
 	BlasMatrix< _Field>::BlasMatrix (const Field &F, VectorStream<StreamVector> &stream) :
 		_row(stream.size ()), _col(stream.dim ()), _rep(_row*_col), _ptr(&_rep[0]),
-		_field (F), _MD (F), _VD(F)
+		_field (&F), _MD (F), _VD(F)
 	{
 		StreamVector tmp;
 		typename BlasMatrix<Field>::RowIterator p;
@@ -348,7 +353,7 @@ namespace LinBox
 			stream >> tmp;
 			_VD.copy (*p, tmp);
 		}
-		_use_fflas = Protected::checkBlasApply(_field, _col);
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 	}
 
 
@@ -356,10 +361,11 @@ namespace LinBox
 	template <class Matrix>
 	BlasMatrix< _Field>::BlasMatrix (const Matrix &A) :
 		_row(A.rowdim()),_col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(A.field()),_MD(_field ),_VD(_field )
+		_field(&(A.field())),_MD(field() ),_VD(field() )
+
 	{
 		// makePointer();
-		_use_fflas = Protected::checkBlasApply(_field, _col);
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 		createBlasMatrix(A, typename MatrixContainerTrait<Matrix>::Type());
 	}
 
@@ -369,9 +375,9 @@ namespace LinBox
 					 const size_t i0, const size_t j0,
 					 const size_t m, const size_t n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(A.field()),_MD(_field ),_VD(_field )
+		_field(&(A.field())),_MD(field() ),_VD(field() )
 	{
-		_use_fflas = Protected::checkBlasApply(_field, _col);
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 		// makePointer();
 		createBlasMatrix(A, i0, j0, m, n,
 				 typename MatrixContainerTrait<Matrix>::Type());
@@ -381,18 +387,18 @@ namespace LinBox
 	template<class _Matrix>
 	BlasMatrix< _Field>::BlasMatrix (const _Matrix &A,  const _Field &F) :
 		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(F),_MD(_field ),_VD(_field )
+		_field(&F),_MD(field() ),_VD(field() )
 	{
-		_use_fflas = Protected::checkBlasApply(_field, _col);
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 		typename _Matrix::template rebind<_Field>()(*this,A);
 	}
 
 	template <class _Field>
 	BlasMatrix< _Field>::BlasMatrix (const BlasMatrix< _Field>& A) :
 		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(A.field()),_MD(_field ),_VD(_field )
+		_field(&(A.field())),_MD(field() ),_VD(field() )
 	{
-		_use_fflas = Protected::checkBlasApply(_field, _col);
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 		// makePointer();
 		createBlasMatrix(A);
 	}
@@ -402,11 +408,11 @@ namespace LinBox
 					 const std::vector<typename _Field::Element>& v,
 					 size_t m, size_t n) :
 		_row(m), _col(n),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(F),_MD(_field ),_VD(_field )
+		_field(&F),_MD(field() ),_VD(field() )
 	{
 		linbox_check(v.size() == m*n);
 		// makePointer();
-		_use_fflas = Protected::checkBlasApply(_field, _col);
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 		createBlasMatrix(v);
 	}
 
@@ -415,11 +421,11 @@ namespace LinBox
 					 const typename _Field::Element * v,
 					 size_t m, size_t n) :
 		_row(m), _col(n),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(F), _MD(_field ),_VD(_field )
+		_field(&F), _MD(field() ),_VD(field() )
 	{
 		// makePointer();
-		_use_fflas = Protected::checkBlasApply(_field, _col);
-		createBlasMatrix(_field,v);
+		_use_fflas = Protected::checkBlasApply(field(), _col);
+		createBlasMatrix(field(),v);
 	}
 
 	template <class _Field>
@@ -429,6 +435,15 @@ namespace LinBox
 		// free(_ptr);
 	}
 
+	template <class _Field>
+	void BlasMatrix< _Field>::random()
+	{
+		typename _Field::Element x; field().init(x);
+		typename _Field::RandIter r(field());
+		for (size_t i = 0; i < rowdim(); ++i)
+			for (size_t j = 0; j < coldim(); ++j)
+				setEntry(i, j, r.random(x));
+	}
 } // LinBox
 
 ///////////////////
@@ -439,58 +454,23 @@ namespace LinBox
 {
 
 	template <class _Field>
-	// template <class Field>
 	std::istream &BlasMatrix< _Field>::read (std::istream &file)
 	{
-#if 0
-		Iterator p;
-		int m,n;
-		char c;
-		file>>m>>n>>c;
-
-		if (m*n < _row*_col)
-			cerr<<"NOT ENOUGH ELEMENT TO READ\n";
-		else {
-			for (p = Begin (); p != End (); ++p) {
-				integer tmp;
-				file>>tmp;cout<<tmp<<endl;
-				//file.ignore(1);
-				F.read (file, *p);
-			}
-		}
-#endif
-
-
-		Iterator p;
-		int m,n;
-		char c;
-		file>>m>>n>>c;
-		// std::cout << m << 'x' << n << ':' << c << std::endl;
-		_row = m; _col = n;
-
-		// _ptr.resize(_row * _col, zero);
-		resize(_row,_col);
-
-		if ((c != 'M') && (c != 'm')) {
-			for (p = Begin (); p != End (); ++p) {
-				//file.ignore(1);
-				_field.read (file, *p);
-			}
-		}
-		else { // sparse file format - needs fixing
-			int i, j;
-			while (true) {
-				file >> i >> j;
-				//file.ignore(1);
-				//if (! file) break;
-				if (i+j <= 0) break;
-				// std::cout << i << ',' << j << ':' ;
-				_field.read (file, _ptr[_col*(i-1) + j-1]);
-				// std::cout << _ptr[_col*(i-1) + j-1] << std::endl;
-			}
-		}
-
+		MatrixStream<Field> ms(field(), file);
+		if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) )
+			throw ms.reportError(__FUNCTION__,__LINE__);
+		_ptr = &_rep[0];
+		_use_fflas = Protected::checkBlasApply(field(), _col);
 		return file;
+	}
+
+#if 0
+// now writing is done in BlasSubmatrix.
+
+	template <class _Field>
+	std::ostream& BlasMatrix< _Field>::write (std::ostream &os) {
+		// ....
+		return os;
 	}
 
 	template <class _Field>
@@ -506,8 +486,7 @@ namespace LinBox
 				integer c;
 				int wid;
 
-				_field.cardinality (c);
-
+				field().cardinality (c);
 				if (c >0) {
 					wid = (int) ceil (log ((double) c) / M_LN10);
 				}
@@ -516,7 +495,7 @@ namespace LinBox
 					size_t max=0;
 					ConstIterator it = Begin();
 					for (; it != End(); ++it){
-						_field.convert(tmp,*it);
+						field().convert(tmp,*it);
 						if (tmp.bitsize() > max)
 							max= tmp.bitsize();
 					}
@@ -530,14 +509,7 @@ namespace LinBox
 
 					for (pe = p->begin (); pe != p->end (); ++pe) {
 						os.width (wid);
-						/*!  @warning
-						 * matrix base does not provide this field(), maybe should?
-						 * _Mat.field ().write (os, *pe);
-						 * os << *pe;
-						 * fixed by using extra field
-						 */
-
-						_field.write (os, *pe);
+                                                field().write (os, *pe);
 						os << " ";
 					}
 
@@ -547,14 +519,14 @@ namespace LinBox
 			break;
 		case (LinBoxTag::FormatMaple) : /*  maple format */
 			{
-				os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+				os << "Matrix( " << rowdim() << ',' << coldim() << ",[" << std::endl;
 				for (p = rowBegin (); p != rowEnd (); ) {
 					typename ConstRow::const_iterator pe;
 
 					os << " [ ";
 
 					for (pe = p->begin (); pe != p->end (); ) {
-						_field.write (os, *pe);
+						field().write (os, *pe);
 						++pe ;
 						if (pe != p->end())
 							os << ", ";
@@ -578,7 +550,7 @@ namespace LinBox
 					os << "<tr>";
 
 					for (pe = p->begin (); pe != p->end (); ) {
-						_field.write (os << "<td>", *pe)<<"</td>";
+						field().write (os << "<td>", *pe)<<"</td>";
 						++pe ;
 					}
 
@@ -597,7 +569,7 @@ namespace LinBox
 
 
 					for (pe = p->begin (); pe != p->end (); ) {
-						_field.write (os, *pe);
+						field().write (os, *pe);
 						++pe ;
 						if (pe != p->end())
 							os << "& ";
@@ -617,6 +589,7 @@ namespace LinBox
 		}
 		return os;
 	}
+#endif
 
 	template <class _Field>
 	BlasMatrix< _Field>& BlasMatrix< _Field>::operator= (const BlasMatrix< _Field>& A)
@@ -1670,13 +1643,18 @@ namespace LinBox
 		//_stride ?
 		if (_use_fflas){
 			//!@bug this supposes &x[0]++ == &x[1]
-			FFLAS::fgemv((typename Field::Father_t) _field, FFLAS::FflasNoTrans,
+                        // PG: try to discover stride of x and y (not use it works on every platform)
+                        size_t ldx,ldy;
+                        ldx=&x[1] - &x[0]; 
+                        ldy=&y[1] - &y[0]; 
+                                
+			FFLAS::fgemv((typename Field::Father_t) field(), FFLAS::FflasNoTrans,
 				      _row, _col,
-				      _field.one,
+				      field().one,
 				      _ptr, getStride(),
-				      &x[0],1,
-				      _field.zero,
-				      &y[0],1);
+				      &x[0],ldx,
+				      field().zero,
+				      &y[0],ldy);
 		}
 		else {
 			_MD. vectorMul (y, *this, x);
@@ -1698,13 +1676,18 @@ namespace LinBox
 
 		//_stride ?
 		if (_use_fflas) {
-			FFLAS::fgemv((typename Field::Father_t) _field, FFLAS::FflasTrans,
+                        // PG: try to discover stride of x and y (not use it works on every platform)
+                        size_t ldx,ldy;
+                        ldx=&x[1] - &x[0]; 
+                        ldy=&y[1] - &y[0]; 
+                        
+			FFLAS::fgemv((typename Field::Father_t) field(), FFLAS::FflasTrans,
 				      _row, _col,
-				      _field.one,
+				      field().one,
 				      _ptr, getStride(),
-				      &x[0],1,
-				      _field.zero,
-				      &y[0],1);
+				      &x[0],ldx,
+				      field().zero,
+				      &y[0],ldy);
 		}
 		else {
 			typename BlasMatrix<_Field>::ConstColIterator i = this->colBegin ();
@@ -1719,14 +1702,16 @@ namespace LinBox
 	template <class _Field>
 	const _Field& BlasMatrix< _Field>::field() const
 	{
-		return _field;
+		return *_field;
 	}
 
+/*
 	template <class _Field>
 	_Field& BlasMatrix< _Field>::field()
 	{
 		return const_cast<_Field&>(_field );
 	}
+*/
 }
 
 

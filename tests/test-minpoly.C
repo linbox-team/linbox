@@ -51,6 +51,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/field/givaro.h"
 #include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/util/commentator.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/vector/stream.h"
@@ -112,15 +113,14 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Me
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
-	typedef SparseMatrix<Field> Blackbox;
-	typedef typename Blackbox::Row Row;
+	typedef ScalarMatrix<Field> Blackbox;
 
 	commentator().start ("Testing identity minpoly", "testIdentityMinpoly");
 
 	typename Field::Element c0, c1;
 
-	StandardBasisStream<Field, Row> stream (F, n);
-	Blackbox A (F, stream);
+	//StandardBasisStream<Field, Row> stream (F, n);
+	Blackbox A (F, n, F.one);
 
 	Polynomial phi;
 
@@ -390,13 +390,15 @@ int main (int argc, char **argv)
 	static size_t n = 10;
 	//static integer q = 2147483647U;
 	static integer q = 1000003; // ok for both Modular<int> and Modular<double>
+	static int e = 1; // exponent for field characteristic
 	static int iterations = 1;
 	static int numVectors = 1;
 	static int k = 3;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q^E) [1].", TYPE_INTEGER, &q },
+		{ 'e', "-e E", "Operate over the \"field\" GF(Q^E) [1].", TYPE_INT, &e },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ 'v', "-v V", "Use V test vectors for the random minpoly tests.", TYPE_INT,     &numVectors },
 		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test.", TYPE_INT,     &k },
@@ -410,7 +412,7 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	// /////////////// finite field part //////////////////
-	if (q > 5 && q % 2 != 0 && q % 3 != 0 && q % 5 != 0 )
+	if (e == 1)
 	{
 		//typedef Modular<uint32_t> Field;
 		//typedef Modular<int> Field;
@@ -439,13 +441,8 @@ int main (int argc, char **argv)
 	}
 	else{
 
-		int p;
-		if (q % 2 == 0) p = 2;
-		if (q % 3 == 0) p = 3;
-		if (q % 5 == 0) p = 5;
-		int e = 0;  do {++e; q = q/p; } while (q > 1);
 		typedef GivaroGfq Field;
-		Field F (p, e);
+		Field F (q, e);
 		srand ((unsigned)time (NULL));
 
 		commentator().start("Blackbox non-prime field minpoly test suite", "Wminpoly");

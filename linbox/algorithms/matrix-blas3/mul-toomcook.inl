@@ -53,7 +53,7 @@ namespace LinBox {
 			// TC.write(std::cout << "TC ") << std::endl;
 			// BMD.invert(iTC, TC);
 			int null;
-			FFPACK::Invert((typename Field::Father_t)TC.field(),l,TC.getPointer(),l,iTC.getWritePointer(),l,null);
+			FFPACK::Invert((typename Zpz::Father_t)TC.field(),l,TC.getPointer(),l,iTC.getWritePointer(),l,null);
 			// iTC.write(std::cout << "TC^(-1) ") << std::endl;
 			// TC.write(std::cout << "TC ") << std::endl;
 			return TC;
@@ -98,7 +98,7 @@ namespace LinBox {
 
 
 					for (size_t i = 0 ; i < l ; ++i) {
-						FFLAS::fgemv((typename Field::Father_t)F, FFLAS::FflasTrans,
+						FFLAS::fgemv((typename Zpz::Father_t)F, FFLAS::FflasTrans,
 									 e, m*k,
 									 F.one,
 									 AMatBloc.getPointer(), m*k,
@@ -106,7 +106,7 @@ namespace LinBox {
 									 F.zero,
 									 AEval.getWritePointer(), 1);
 
-						FFLAS::fgemv((typename Field::Father_t)F, FFLAS::FflasTrans,
+						FFLAS::fgemv((typename Zpz::Father_t)F, FFLAS::FflasTrans,
 									 e, k*n,
 									 F.one,
 									 BMatBloc.getPointer(), k*n,
@@ -114,7 +114,7 @@ namespace LinBox {
 									 F.zero,
 									 BEval.getWritePointer(), 1);
 
-						FFLAS::fgemm((typename Field::Father_t)F,
+						FFLAS::fgemm((typename Zpz::Father_t)F,
 									 FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 									 // m, k , n,
 									 m,n,k,
@@ -130,7 +130,7 @@ namespace LinBox {
 					BlasMatrix<Zpz> BEval( F , l, k*n);
 
 
-					FFLAS::fgemm((typename Field::Father_t)F,
+					FFLAS::fgemm((typename Zpz::Father_t)F,
 								 FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 								 // m, k , n,
 								 l,m*k,e,
@@ -142,7 +142,7 @@ namespace LinBox {
 								 AEval.getWritePointer(), m*k);
 					// TMatBloc.getWritePointer()+i*m*n, n);
 
-					FFLAS::fgemm((typename Field::Father_t)F,
+					FFLAS::fgemm((typename Zpz::Father_t)F,
 								 FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 								 // m, k , n,
 								 l,n*k,e,
@@ -155,7 +155,7 @@ namespace LinBox {
 
 					for (size_t i = 0 ; i < l ; ++i) {
 
-						FFLAS::fgemm((typename Field::Father_t)F,
+						FFLAS::fgemm((typename Zpz::Father_t)F,
 									 FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 									 // m, k , n,
 									 m,n,k,
@@ -199,7 +199,7 @@ namespace LinBox {
 
 				// BCK = ~FWD
 				// XXX some stuff here
-				FFLAS::fgemm((typename Field::Father_t)F,
+				FFLAS::fgemm((typename Zpz::Father_t)F,
 							 FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 							 l, l, l, F.one,
 							 CompMat.getPointer(), l,
@@ -209,7 +209,7 @@ namespace LinBox {
 
 
 				// Y = [sum(BCK[i,j]*Y[j] for j in range(l)) for i in range(l)]
-				FFLAS::fgemm((typename Field::Father_t)F,
+				FFLAS::fgemm((typename Zpz::Father_t)F,
 							 FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 							 e,m*n,l,
 							 F.one,

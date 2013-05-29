@@ -59,7 +59,7 @@ namespace LinBox
 		template<class Vector>
 		BlackboxContainerSymmetric (const Blackbox *D, const Field &F, const Vector &u0) :
 			BlackboxContainerBase<Field, _Blackbox> (D, F)
-		{ init (u0, u0); }
+		{ this->init (u0, u0); }
 		BlackboxContainerSymmetric (const Blackbox *D, const Field &F, RandIter &g) :
 			BlackboxContainerBase<Field, _Blackbox> (D, F)
 		{ this->init (g); }

@@ -23,6 +23,7 @@
 #define __LINBOX_field_traits_H
 
 #include "linbox/integer.h"
+#include <givaro/givcaster.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox {
@@ -56,30 +57,43 @@ namespace LinBox {
 		typedef	RingCategories::GenericTag categoryTag;
 	};
 
+	using Givaro::Caster;
+
 	/*! FieldTrait.
 	 */
 	template <class Field>
 	struct FieldTraits {
+
 		typedef typename ClassifyRing<Field>::categoryTag categoryTag;
 
 		static integer& maxModulus( integer& i )
 		{
-			return i = static_cast<integer>(Field::getMaxModulus());
+            		return Caster(i, Field::getMaxModulus());
 		}
 
 		static uint64_t & maxModulus( uint64_t& i )
 		{
-			return i = static_cast<uint64_t>(Field::getMaxModulus());
+            		return Caster(i, Field::getMaxModulus());
+// 			return i = static_cast<uint64_t>(Field::getMaxModulus());
 		}
 
 		static uint32_t & maxModulus( uint32_t& i )
 		{
-			return i = static_cast<uint32_t>(Field::getMaxModulus());
+            		return Caster(i, Field::getMaxModulus());
+// 			return i = static_cast<uint32_t>(Field::getMaxModulus());
+		}
+
+		template<class T>
+		static T & maxModulus( T & i )
+		{
+			return i = static_cast<T>(Field::getMaxModulus());
 		}
 
 		static integer maxModulus()
 		{
-			return static_cast<integer>(Field::getMaxModulus());
+            		integer maxm;
+            		return Caster(maxm, Field::getMaxModulus());
+// 			return static_cast<integer>(Field::getMaxModulus());
 		}
 
 		static bool goodModulus( const integer& i )
@@ -147,11 +161,11 @@ namespace LinBox { /*  areFieldEqual  */
 
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

@@ -96,7 +96,7 @@ namespace LinBox
 	public:
 		typedef int64_t Element;
 
-		typedef FFPACK::Modular<int64_t> Father_t
+		typedef FFPACK::Modular<int64_t> Father_t;
 		friend class FieldAXPY<Modular<int64_t> >;
 		friend class DotProductDomain<Modular<int64_t> >;
 		friend class MVProductDomain<Modular<int64_t> >;
@@ -206,14 +206,16 @@ namespace LinBox
 
 
 	template <>
-	class DotProductDomain<Modular<int64_t> > : private virtual VectorDomainBase<Modular<int64_t> > {
+	class DotProductDomain<Modular<int64_t> > : public virtual VectorDomainBase<Modular<int64_t> > {
 
 	public:
 		typedef int64_t Element;
+		DotProductDomain(){}
 		DotProductDomain (const Modular<int64_t> &F) :
 			VectorDomainBase<Modular<int64_t> > (F)
 		{}
 
+		using VectorDomainBase<Modular<int64_t> >::field;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -495,11 +497,11 @@ namespace LinBox
 #endif //__LINBOX_modular_int64_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

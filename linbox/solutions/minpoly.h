@@ -170,7 +170,9 @@ namespace LinBox
 		if (M.certificate()) {
 			// Will make a word size extension
 			// when field size is too small
-			return minpoly(P, A, tag, Method::ExtensionWiedemann (M));
+			//return minpoly(P, A, tag, Method::ExtensionWiedemann (M));
+			minpoly(P, A, tag, Method::ExtensionWiedemann (M));
+return P;
 		}
 		else
 			return minpoly(P, A, tag, Method::Wiedemann (M));

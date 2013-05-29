@@ -307,7 +307,7 @@ namespace LinBox
 		public:
 			void operator() (BlasMatrix<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::Container type)
 			{
-				// Ap = new BlasMatrix<MultiModDouble>(F, A.rowdim(), A.coldim());
+				// 				Ap = new BlasMatrix<MultiModDouble>(F, A.rowdim(), A.coldim());
 				for (size_t i=0; i<F.size();++i)
 					MatrixHom::map(Ap.getMatrix(i), A, F.getBase(i));
 			}
@@ -318,7 +318,7 @@ namespace LinBox
 		public:
 			void operator() (BlasMatrix<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::Blackbox type)
 			{
-				// Ap = new BlasMatrix<MultiModDouble>(F, A.rowdim(), A.coldim());
+				// 				Ap = new BlasMatrix<MultiModDouble>(F, A.rowdim(), A.coldim());
 				for (size_t i=0; i<F.size();++i)
 					MatrixHom::map(Ap.getMatrix(i), A, F.getBase(i));
 			}

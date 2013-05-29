@@ -55,8 +55,7 @@ namespace LinBox
 
 	public:
 
-		//PID_integer(){}
-		//PID_integer& operator=(PID_integer& K) { return *this; }
+		// defaults are fine: PID_integer() and PID_integer& operator=(PID_integer& K) 
 
 		typedef integer Element;
 
@@ -364,9 +363,24 @@ namespace LinBox
 			return Q.convert(x,q);
 		}
 
+		/*- Print field as a constructor call.
+		 * @return output stream to which field is written.
+		 * @param  os  output stream to which field is written.
+		 * @param  F  optional name to give the field in the description.  
+		 *   IF F is the null string, only the class typename is written.
+		 * Example: For element type double and modulus 101, 
+		 * write(os) produces      "Modular< double > ( 101 )"  on os, 
+ 		 * write(os, "F") produces "Modular< double > F( 101 )" on os, and
+ 		 * write(os, "") produces  "Modular< double >"          on os.
+		 */
 		inline std::ostream &write (std::ostream &os) const
 		{
-			return os << "PID_integer extends unparam<integer>";
+			return os << "PID_integer";
+		}
+
+		std::ostream &write (std::ostream &os, std::string F) const
+		{ 
+			return this->write(os) << " " << F;
 		}
 
 		inline std::ostream &write (std::ostream &os, const Integer& I) const

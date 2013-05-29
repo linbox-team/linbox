@@ -330,7 +330,7 @@ namespace LinBox
 			BlasSubmatrix<Field> (const_cast<Submatrix<BlasMatrix<Field> >&>(*SM), row, col, Rowdim, Coldim),
 			f (SM ->  field()), vd(SM -> field())
 		{
-		}
+			}
 
 		/** Constructor from an existing submatrix and dimensions
 		 * @param SM reference to Submatrix from which to

@@ -41,6 +41,7 @@
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 
 namespace LinBox
 {
@@ -75,9 +76,9 @@ namespace LinBox
 		// Sequence constructor from a blackbox and a field
 		// cs set the size of the sequence
 		BlackboxBlockContainerBase (const Blackbox *BD, const Field &F, size_t m, size_t n, size_t seed=(size_t)time(NULL)) :
-			_field(F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2)
+			_field(&F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2)
 			, _nn(BD->rowdim()),  _m(m), _n(n),
-			_blockU(F,_m,_nn),_blockV(F,_nn,_n),_value(_field,m,n), _seed(seed)
+			_blockU(F,_m,_nn),_blockV(F,_nn,_n),_value(field(),m,n), _seed(seed)
 		{}
 
 
@@ -111,7 +112,8 @@ namespace LinBox
 		size_t size() const            { return _size; }
 
 		// field of the sequence
-		const Field &getField () const { return _field; }
+		const Field &field () const { return *_field; }
+		const Field &getField () const { return *_field; } // deprecated
 
 		// blackbox of the sequence
 		const Blackbox *getBB () const { return _BB; }
@@ -140,7 +142,7 @@ namespace LinBox
 		/// Members
 		//--------------
 
-		Field                        _field;
+		const Field                        *_field;
 		const Blackbox             *_BB;
 		size_t                    _size; // length of sequence
 		size_t			     _nn; // _BB order (square mat)
@@ -167,13 +169,19 @@ namespace LinBox
 			linbox_check( M1.rowdim() == M2.rowdim());
 			linbox_check( M2.coldim() == M3.rowdim());
 			linbox_check( M1.coldim() == M3.coldim());
-
+                        
+                        MatrixDomain<Field> MD(field());
 			typename Block::ColIterator        p1 = M1.colBegin();
 			typename Block::ConstColIterator   p3 = M3.colBegin();
 
 			for (; p3 != M3.colEnd(); ++p1,++p3) {
 				M2.apply(*p1,*p3);
+                                //MD.vectorMul(*p1,M2,*p3);
 			}
+                        
+                        
+                        //MD.mul(M1,M2,M3);
+
 		}
 
 
@@ -188,8 +196,8 @@ namespace LinBox
 			casenumber = 1;
 			_blockU = U;
 			_blockV = V;
-			_value = Value(_field,_m,_n);
-			BlasMatrixDomain<Field> BMD(_field);
+			_value = Value(*_field,_m,_n);
+			BlasMatrixDomain<Field> BMD(*_field);
 			BMD.mul(_value, _blockU, _blockV);
 		}
 
@@ -198,7 +206,7 @@ namespace LinBox
 		{
 			casenumber = 1;
 
-			typename Field::RandIter G(_field,0,_seed);
+			typename Field::RandIter G(*_field,0,_seed);
 			Block U (m, _BB->rowdim());
 			_blockU =U;
 			Block V(_BB->coldim(), n);
@@ -212,8 +220,8 @@ namespace LinBox
 			for (; iter_V != _blockV.End();++iter_V)
 				G.random(*iter_V);
 
-			_value = Value(_field,m,n);
-			BlasMatrixDomain<Field> BMD(_field);
+			_value = Value(*_field,m,n);
+			BlasMatrixDomain<Field> BMD(*_field);
 			BMD.mul(_value, _blockU, _blockV);
 		}
 	};

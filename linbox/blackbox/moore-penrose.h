@@ -86,7 +86,7 @@ namespace LinBox
 			_matGGT    = new Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > > (_matGG, _matGT);
 			_matFTFinv = new Inverse<Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > > ( _matFTF);
 			_matGGTinv = new Inverse<Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > > > ( _matGGT);
-			}
+		}
 
 		/** Copy constructor
 		*/

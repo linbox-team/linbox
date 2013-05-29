@@ -123,6 +123,7 @@ namespace LinBox
 
 	Commentator::~Commentator()
 	{
+	    _report << "That's all, Folks!" << std::endl;
 		std::map <const char *, MessageClass *, C_str_Less >::iterator i;
 		for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i)
 			delete i->second;
@@ -258,6 +259,8 @@ namespace LinBox
 	{
 		linbox_check (msg_class != (const char *) 0);
 
+	    _report << "$$(" << _activities.size () << ", " << level << ", " << msg_class << ")";
+		/*
 		if (!isPrinted (_activities.size (), level, msg_class,
 				(_activities.size () > 0) ? _activities.top ()->_fn : (const char *) 0))
 			return cnull;
@@ -265,6 +268,8 @@ namespace LinBox
 		MessageClass &messageClass = getMessageClass (msg_class);
 
 		return messageClass._stream;
+		*/
+		return _report;
 	}
 
 	void Commentator::indent (std::ostream &stream) const

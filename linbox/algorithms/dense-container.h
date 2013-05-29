@@ -121,7 +121,7 @@ namespace LinBox
 				i=0;
 				for (; it!=v.end(); it++, i++){
 					*(Up+i) = *it;
-					_field.convert(tmp,*it);
+					field().convert(tmp,*it);
 					cerr<<" copie of "<<tmp;
 				}
 				cerr<<endl;
@@ -145,7 +145,7 @@ namespace LinBox
 				it = w.begin();
 				i=0;
 				for (; it!=w.end(); it++, i++){
-					_field.convert(tmp,*it);
+					field().convert(tmp,*it);
 					cerr<<" copie of "<<tmp;
 					*(Up+i) = *it;
 				}

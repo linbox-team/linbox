@@ -7,20 +7,20 @@
  *
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -69,10 +69,10 @@ using namespace LinBox;
 
 // using long on purpose
 template <class Field>
-static bool testIdentity (Field &F, size_t n, int iterations)
+static bool testIdentity (Field &F, size_t n, int iterations = 1)
 {
 	typedef typename Vector<Field>::Dense Vector;
-	typedef BlasMatrix<Field>               Base;
+	typedef BlasMatrix<Field> Base;
 	typedef BlasMatrix<Field>           Blackbox;
 
 	commentator().start ("Testing identity apply", "testIdentity", iterations);
@@ -154,7 +154,7 @@ static bool testIdentity (Field &F, size_t n, int iterations)
  */
 
 template <class Field>
-static bool testVandermonde (Field &F, size_t n, int iterations, int N)
+static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -179,7 +179,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations, int N)
 		commentator().start (buf);
 
 		/* Evaluation points */
-		for (j = 0; j < n; j++) {
+		for (j = 0; j < (int) n; j++) {
 			bool flag = true;
 
 			// Make sure points are all distinct
@@ -197,16 +197,16 @@ static bool testVandermonde (Field &F, size_t n, int iterations, int N)
 		printVector<Field> (F, report, x);
 
 		/* Build the Vandermonde matrix */
-		for (j = 0; j < n; j++) {
+		for (j = 0; j < (int) n; j++) {
 			F.init (t, 1);
 
-			for (k = 0; k < n; k++) {
+			for (k = 0; k < (int) n; k++) {
 				V.setEntry (j, k, t);
 				F.mulin (t, x[j]);
 			}
 		}
 
-		for (j = 0; j < N; j++) {
+		for (j = 0; j < (int) N; j++) {
 			inner_iter_passed = true;
 
 			/* Random vector of evaluation results */
@@ -228,7 +228,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations, int N)
 			report << "Interpolation results: ";
 			printVector<Field> (F, report, f);
 
-			for (k = 0; k < n; k++)
+			for (k = 0; k < (int) n; k++)
 				if (!F.areEqual (f[k], v[k]))
 					ret = inner_iter_passed = false;
 
@@ -260,7 +260,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations, int N)
  */
 
 template <class Field>
-static bool testRandomLinearity (const Field                                 &F,
+static bool testRandomLinearity ( const Field & F,
 				 VectorStream<typename Vector<Field>::Dense> &A_stream,
 				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
 				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
@@ -269,7 +269,7 @@ static bool testRandomLinearity (const Field                                 &F,
 
 	BlasMatrix<Field> A (F, A_stream);
 
-	bool ret = testLinearity (F, A, v1_stream, v2_stream);
+	bool ret = testLinearity (A, v1_stream, v2_stream);
 
 	A_stream.reset ();
 	v1_stream.reset ();
@@ -345,8 +345,10 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field> v1_stream (F, n, iterations);
 	RandomDenseStream<Field> v2_stream (F, n, iterations);
 
-	if (!testIdentity    (F, n, iterations)) pass = false;
-	//if (!testVandermonde (F, n, iterations, N)) pass = false;
+	if (!testIdentity    (F, n)) pass = false;
+	if (!testVandermonde (F, n)) pass = false;
+	BlasMatrix<Field> A(F, A_stream);
+	if (!testBlackbox(A)) pass = false;
 	//if (!testRandomLinearity (F, A_stream, v1_stream, v2_stream)) pass = false;
 	//if (!testRandomTranspose (F, A_stream, v1_stream, v2_stream)) pass = false;
 

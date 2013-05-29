@@ -79,9 +79,9 @@ int main (int argc, char **argv)
 	ScalarMatrix<Field> C(F, 5, k);
 
 	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > A(&B, &C);
-	pass = pass && testBlackbox(A);
+	pass = pass && testBlackboxNoRW(A);
 	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > D(B, C);
-	pass = pass && testBlackbox(D);
+	pass = pass && testBlackboxNoRW(D);
 
 	commentator().stop("DirectSum black box test suite");
 	return pass ? 0 : -1;

@@ -59,9 +59,9 @@ namespace LinBox
 
 		typename Field::Element Det;
 		unsigned long Rank;
-		Matrix L(_field, A.rowdim(), A.rowdim());
-		Permutation<Field> Q((int)A.rowdim(),_field);
-		Permutation<Field> P((int)A.coldim(),_field);
+		Matrix L(field(), A.rowdim(), A.rowdim());
+		Permutation<Field> Q((int)A.rowdim(),field());
+		Permutation<Field> P((int)A.coldim(),field());
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
@@ -85,7 +85,7 @@ namespace LinBox
 		Vector1 w(A.coldim());
 
 		for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
-			_field.init(*it,0);
+			field().init(*it,0);
 
 		return this->solve(x, w, Rank, Q, L, A, P, b);
 	}
@@ -98,9 +98,9 @@ namespace LinBox
 
 		typename Field::Element Det;
 		unsigned long Rank;
-		Matrix L(_field, A.rowdim(), A.rowdim());
-		Permutation<Field> Q((int)A.rowdim(),_field);
-		Permutation<Field> P((int)A.coldim(),_field);
+		Matrix L(field(), A.rowdim(), A.rowdim());
+		Permutation<Field> Q((int)A.rowdim(),field());
+		Permutation<Field> P((int)A.coldim(),field());
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
