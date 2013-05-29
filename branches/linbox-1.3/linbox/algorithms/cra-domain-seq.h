@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-domain-seq.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <01 Apr 11 15:47:48 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <29 May 13 14:35:10 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -106,7 +106,7 @@ namespace LinBox
 				Builder_.initialize( D, Iteration(r, D) );
 			}
 
-			int coprime =0;
+			int coprime =0, nbprimes=0;
 			int maxnoncoprime = 1000;
 
 			while( ! Builder_.terminated() ) {
@@ -115,14 +115,16 @@ namespace LinBox
 					++primeiter;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+#ifdef NDEBUG /* this is an error */
+						std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+#endif
 						return Builder_.result(res);
 					}
 				}
 				coprime =0;
 				Domain D(*primeiter);
 				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                                ++primeiter;
+                                ++primeiter; ++nbprimes ;
 				DomainElement r; D.init(r);
 				Builder_.progress( D, Iteration(r, D) );
 			}
@@ -150,7 +152,7 @@ namespace LinBox
 				Builder_.initialize( D, Iteration(r, D) );
 			}
 
-			int coprime =0;
+			int coprime =0, nbprimes=0;
 			int maxnoncoprime = 1000;
 
 			while ((k <0) || (i < k)) {
@@ -160,7 +162,9 @@ namespace LinBox
 					++primeiter;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+#ifdef NDEBUG /* this is an error */
+						std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+#endif
 						return true ;//term
 					}
 				}
@@ -168,7 +172,7 @@ namespace LinBox
 
 				Domain D(*primeiter);
 				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-				++primeiter;
+				++primeiter; ++nbprimes;
 				DomainElement r; D.init(r);
 				Builder_.progress( D, Iteration(r, D) );
 			}
@@ -191,7 +195,7 @@ namespace LinBox
 				Builder_.initialize( D, Iteration(r, D) );
 			}
 
-			int coprime =0;
+			int coprime =0,nbprimes=0;
 			int maxnoncoprime = 1000;
 
 			while( ! Builder_.terminated() ) {
@@ -200,14 +204,17 @@ namespace LinBox
 					++primeiter;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+#ifdef NDEBUG /* this is an error */
+						 std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+#endif
 						return Builder_.result(res);
 					}
 				}
+				coprime = 0 ;
 
                                 Domain D(*primeiter);
 				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                                ++primeiter;
+                                ++primeiter; ++nbprimes;
 				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
 				Builder_.progress( D, Iteration(r, D) );
 			}
@@ -234,7 +241,7 @@ namespace LinBox
 				Builder_.initialize( D, Iteration(r, D) );
 			}
 
-			int coprime =0;
+			int coprime =0,nbprimes=0;
 			int maxnoncoprime = 1000;
 
 			while( (k <0 ) || (i < k)) {
@@ -246,14 +253,16 @@ namespace LinBox
 					++primeiter;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						std::cout << "you are runnig out of primes. " << maxnoncoprime << " coprime primes found";
+#ifdef NDEBUG /* this is an error */
+						std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+#endif
 						return true;//term
 					}
 				}
 
 				coprime =0;
 				Domain D(*primeiter);
-				++primeiter;
+				++primeiter; ++nbprimes;
 
 				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
 				Builder_.progress( D, Iteration(r, D) );
