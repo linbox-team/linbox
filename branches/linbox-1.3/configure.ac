@@ -19,12 +19,12 @@
 # ========LICENCE========
 AC_PREREQ(2.61)
 
-AC_INIT([LinBox], [1.3.2],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.3.3],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.8 gnu no-dependencies -Wall -Wno-portability])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
 AC_PATH_PROG(RM, rm, $FALSE)
 RM="$RM -f"
@@ -140,7 +140,7 @@ AC_CHECK_SIZEOF(__int64, 64)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([float.h limits.h stddef.h stdlib.h string.h sys/time.h stdint.h])
+AC_CHECK_HEADERS([float.h limits.h stddef.h stdlib.h string.h sys/time.h stdint.h pthread.h])
 
 
 # check endianness of the architecture
@@ -236,6 +236,7 @@ LB_CHECK_M4RIE
 LB_CHECK_MPFR
 # we nedd mpfr next :
 LB_CHECK_FPLLL
+LB_CHECK_FLINT
 
 LB_CHECK_NTL
 LB_CHECK_GIVARO(,,[
@@ -293,6 +294,8 @@ LB_BENCH
 LB_OPT
 LB_DOC
 
+LB_CHECK_OCL
+
 if test ! -d ./benchmarks/data  ; then
 	echo "Creating data dir in benchmark" ;
 	mkdir ./benchmarks/data  ;
@@ -318,6 +321,7 @@ linbox/Makefile
 linbox/algorithms/Makefile
 linbox/algorithms/gauss/Makefile
 linbox/algorithms/matrix-blas3/Makefile
+linbox/algorithms/opencl-kernels/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile

@@ -69,7 +69,7 @@ static bool testBBrebind (const Field2 &F2, const Blackbox& B)
 
     FBlackbox A(B, F2);
 
-    return testBlackbox(A);
+    return testBlackboxNoRW(A);
 }
 
 
@@ -261,11 +261,11 @@ int main (int argc, char **argv)
 	typedef ScalarMatrix<Field> Blackbox;
 
 	Sum <Blackbox, Blackbox> A (D1, D2);
-	pass = pass && testBlackbox(A) && testBBrebind(F2, A);
+	pass = pass && testBlackboxNoRW(A) && testBBrebind(F2, A);
 
 
         Sum <Blackbox, Blackbox> Aref (&D1, &D2);
-	pass = pass && testBlackbox(Aref) && testBBrebind(F2, A);
+	pass = pass && testBlackboxNoRW(Aref) && testBBrebind(F2, A);
 
 	commentator().stop("Sum black box test suite");
 	return pass ? 0 : -1;

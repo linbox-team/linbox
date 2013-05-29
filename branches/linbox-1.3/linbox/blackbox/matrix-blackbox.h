@@ -65,7 +65,7 @@ namespace LinBox
 		 * @param  rep  Matrix from which to construct the black box
 		 */
 		MatrixBlackbox (const Field &F, Matrix &Rep) :
-			_field (F), _MD (F), _matA (Rep)
+			_field (&F), _MD (F), _matA (Rep)
 		{}
 
 		/** Constructor with size
@@ -77,7 +77,7 @@ namespace LinBox
 		 * @param  n  Column dimension
 		 */
 		MatrixBlackbox (const Field &F, size_t m, size_t n) :
-			_field (F), _MD (F), _matA (F, m, n)
+			_field (&F), _MD (F), _matA (F, m, n)
 		{}
 
 		/** Constructor
@@ -90,13 +90,13 @@ namespace LinBox
 		 */
 		template <class Row>
 		MatrixBlackbox (const Field &F, VectorStream<Row> &stream) :
-			_field (F), _MD (F), _matA (stream)
+			_field (&F), _MD (F), _matA (stream)
 		{}
 
 		/** Copy constructor
 		*/
 		MatrixBlackbox (const MatrixBlackbox &B) :
-			_field (B._field), _MD (B._field), _matA (B._matA)
+			_field (B._field), _MD (*(B._field)), _matA (B._matA)
 		{}
 
 		/** Destructor. */
@@ -183,7 +183,7 @@ namespace LinBox
 
 		/** Return a reference to the base field
 		*/
-		inline const Field &field () const { return _field;}
+		inline const Field &field () const { return *_field;}
 
 		/** Return a reference to the underlying representation
 		*/
@@ -191,7 +191,7 @@ namespace LinBox
 
 	private:
 
-		const Field         &_field;      // Field used for all arithmetic
+		const Field         *_field;      // Field used for all arithmetic
 		MatrixDomain<Field>  _MD;     // Matrix domain for matrix-vector
 		// operations
 		Matrix               _matA;      // Underlying matrix representation

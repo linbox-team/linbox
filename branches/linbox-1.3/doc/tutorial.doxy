@@ -173,7 +173,7 @@ good representation choice if a blackbox algorithm is to be used.  For a
 space and time.  On the other hand, if elimination is to be used, those will
 not serve at all, but \c LinBox::SparseMatrix, which allows internal
 modification, will do the trick.  The ordinary matrix representation is
-\c LinBox::DenseMatrix.  If your matrix structure allows you to compute
+\c LinBox::BlasMatrix.  If your matrix structure allows you to compute
 matrix-vector products in a way faster than these classes provide, you can gain
 by defining your own matrix class adhering to the \ref blackbox interface.  The main
 components of the blackbox interface are member functions \c apply() and
@@ -203,21 +203,25 @@ for ( ... )
 Putting it all together, we may have a program looking like this.
 \code
 #include <linbox/field/modular.h>
-#include <linbox/blackbox/dense.h>
+#include <linbox/matrix/blas-matrix.h>
 #include <linbox/solutions/det.h>
+#include <linbox/util/matrix-stream.h>
 
 using namespace LinBox;
 
 main()
 {
     typedef Modular<double> Field;
-    typedef DenseMatrix<Field> Matrix;
+    typedef BlasMatrix<Field> Matrix;
     Field F(65521);
-    Matrix A; A.read("datafile");
+	MatrixStream<Field> ms(F, std::cin);
+    Matrix A(ms); 
     Field::Element d;
-    det(d, A, blasElimination);
-    F.write(cout << "the determinant is ", d) << endl;
+	Method::BlasElimination M;
+    det(d, A, M);
+    F.write(std::cout << "the determinant is ", d) << std::endl;
 }
+
 \endcode
 
 This tutorial should continue with a discussion of compilation issues, but it

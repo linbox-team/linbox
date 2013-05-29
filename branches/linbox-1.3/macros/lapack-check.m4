@@ -38,7 +38,7 @@ LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
 AC_TRY_RUN(dnl ICC ?
 [   #include "fflas-ffpack/fflas-ffpack-config.h"
-	#ifdef __FFLAS_FFPACK_HAVE_LAPACK
+	#ifdef __FFLASFFPACK_HAVE_LAPACK
 	   int main() { return 0 ; }
    #else
    a pas lapack

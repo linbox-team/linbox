@@ -137,6 +137,7 @@ namespace LinBox
 		while( !knowM ) {
 			if( atEnd ) return END_OF_MATRIX;
 			toRet = saveNext();
+			m = _m; // when no entries, it is good
 			if( toRet > GOOD ) return toRet;
 		}
 		m = _m;
@@ -150,6 +151,7 @@ namespace LinBox
 		while( !knowN ) {
 			if( atEnd ) return END_OF_MATRIX;
 			toRet = saveNext();
+			n = _n; // when no entries, it is good
 			if( toRet > GOOD ) return toRet;
 		}
 		n = _n;
@@ -290,7 +292,11 @@ namespace LinBox
 	template<class Field>
 	bool MatrixStream<Field>::getDimensions( size_t& m, size_t& n )
 	{
-		return( getRows(m) && getColumns(n) );
+		bool r = getRows(m);
+
+		bool c = getColumns(n); // need getColumns to be called
+
+		return( r && c ); 
 	}
 
 	template<class Field>

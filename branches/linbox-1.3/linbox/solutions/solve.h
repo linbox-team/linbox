@@ -50,6 +50,8 @@
 
 #include "linbox/algorithms/rational-cra2.h"
 #include "linbox/algorithms/varprec-cra-early-multip.h"
+#include "linbox/algorithms/block-wiedemann.h"
+#include "linbox/algorithms/coppersmith.h"
 
 #ifdef __LINBOX_HAVE_IML
 #include "linbox/util/iml_wrapper.h"
@@ -756,6 +758,37 @@ namespace LinBox
 		return x;
 	}
 
+	// Only for nonsingular system for now.
+	// may throw SolverFailed or InconsistentSystem
+	template <class Vector, class BB>
+	Vector& solve(Vector& x, const BB& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::BlockWiedemann& m)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
+		// adapt to earlier signature of wiedemann solver
+		BlockWiedemannSolver<typename BB::Field> BWS(A.field());
+		BWS.solveNonSingular(x, A, b);
+		return x;
+	}
+
+	// Only for nonsingular system for now.
+	// may throw SolverFailed or InconsistentSystem
+	template <class Vector, class BB>
+	Vector& solve(Vector& x, const BB& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::Coppersmith& m)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
+		// adapt to earlier signature of wiedemann solver
+		CoppersmithSolver<typename BB::Field> cs(A.field());
+		cs.solveNonsingular(x, A, b);
+		return x;
+	}
 
 	/* remark 1.  I used copy constructors when switching method types.
 	   But if the method types are (empty) child classes of a common  parent class containing

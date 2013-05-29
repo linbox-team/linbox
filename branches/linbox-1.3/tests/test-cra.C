@@ -240,7 +240,7 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 	Iterator  genprime =   primes.begin()  ; // prime iterator
 	MatIterator residu = residues.begin()  ; // residu iterator
 
-	double LogIntSize = (double)(PrimeSize+1)*std::log(2)+std::log((double)Size)+1 ;
+	double LogIntSize = (double)(PrimeSize+1)*std::log(2.)+std::log((double)Size)+1 ;
 
 	std::pair<size_t,double> my_pair(dims.first*dims.second,LogIntSize)  ;
 
@@ -335,7 +335,7 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 	Iterator   genprime =   primes.begin()  ; // prime iterator
 	VectIterator residu = residues.begin()  ; // residu iterator
 
-	double LogIntSize = (double)PrimeSize*std::log(2)+std::log((double)Size)+1 ;
+	double LogIntSize = (double)PrimeSize*std::log(2.)+std::log((double)Size)+1 ;
 
 	report << "FullMultipCRA (" <<  LogIntSize << ')' << std::endl;
 	FullMultipCRA<ModularField> cra( LogIntSize ) ;
@@ -424,7 +424,7 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 	Iterator   genprime =   primes.begin()  ; // prime iterator
 	VectIterator residu = residues.begin()  ; // residu iterator
 
-	double LogIntSize = (double)PrimeSize*std::log(2)+std::log((double)Size) ;
+	double LogIntSize = (double)PrimeSize*std::log(2.)+std::log((double)Size) ;
 
 	std::pair<size_t,double> my_pair(Taille,LogIntSize)  ;
 

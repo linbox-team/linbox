@@ -1,8 +1,5 @@
-
-/* linbox/algorithms/bm-seq.h
- * Copyright (C) 2008 George Yuhasz
- *
- * Written by George Yuhasz gyuhasz@math.ncsu.edu
+/* linbox/algorithms/block-coppersmith-domain.h
+ * Copyright (C) 2012 George Yuhasz
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -14,67 +11,136 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301  USA
  * ========LICENCE========
  */
 
 
 
-#ifndef __BM_SEQ_H
-#define __BM_SEQ_H
+#ifndef __LINBOX_coppersmith_block_domain_H
+#define __LINBOX_coppersmith_block_domain_H
 
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <iomanip>
+
+#include "linbox/util/commentator.h"
+#include "linbox/field/unparametric.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/matrix/blas-matrix.h"
+
+#define DEFAULT_BLOCK_EARLY_TERM_THRESHOLD 10
 //Preprocessor variables for the state of BM_iterators
 #define DeltaExceeded  4
 #define SequenceExceeded  3
 #define GeneratorFound  2
 #define GeneratorUnconfirmed  1
 
-#include <vector>
-#include <list>
-#include <set>
+namespace LinBox
+{
 
-#include "linbox/util/timer.h"
-#include "linbox/matrix/matrix-domain.h"
+    /** Compute the linear generator of a sequence of matrices.
+     *
+     * This class encapsulates the functionality required for computing
+     * the block minimal polynomial of a matrix.
+     * @bib
+     * Yuhasz thesis ...
+     */
+    template<class _Field, class _Sequence>
+    class BlockCoppersmithDomain {
+
+    public:
+        typedef _Field                           Field;
+        typedef typename Field::Element        Element;
+        typedef _Sequence                     Sequence;
+        typedef typename MatrixDomain<Field>::Matrix Coefficient;
 
 
+    protected:
+        Sequence                          *_container;
+        const Field                           *_field;
+        MatrixDomain<Field>                       _MD;
+        unsigned long            EARLY_TERM_THRESHOLD;
 
-namespace LinBox {
-	template<class _Field>
+
+    public:
+
+        BlockCoppersmithDomain (const BlockCoppersmithDomain<Field,
+Sequence> &Mat, unsigned long ett_default =
+DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
+            _container(Mat._container), _field(Mat._field),
+            _MD(Mat.field()),  EARLY_TERM_THRESHOLD (ett_default)
+        {}
+        BlockCoppersmithDomain (Sequence *D, unsigned long ett_default
+= DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
+            _container(D), _field(&(D->field ())), _MD(D->field ()), 
+EARLY_TERM_THRESHOLD (ett_default)
+        {}
+
+
+        // field of the domain
+        const Field &field    () const { return *_field; }
+        const Field &getField    () const { return *_field; } // deprecated
+
+        // sequence of the domain
+        Sequence *getSequence () const
+        { return _container; }
+
+        // the principal function
+        std::vector<size_t>  right_minpoly (std::vector<Coefficient> &P);
+
+        // left minimal generating polynomial of the sequence
+        // This _MAY_ get defined eventually.
+        std::vector<size_t> & left_minpoly (std::vector<Coefficient> &P);
+        // { /* transpose seq and transpose result*/ }
+
+        // For compatibility with massey-domain (element sequence case).
+        std::vector<size_t> & operator()(std::vector<Coefficient> &P)
+        { return right_minpoly(P); }
+
+
+    private:
+
+        // bm-seq.h stuff can go here.
 	class BM_Seq {
 
 	public:
 
 		typedef _Field Field;
-		typedef BlasMatrix<Field> value_type;
+		typedef MatrixDomain<Field> Domain;
+		typedef typename MatrixDomain<Field>::Matrix value_type;
 		typedef typename std::list<value_type>::const_iterator const_iterator;
 		typedef int size_type;
 
 	private:
 
-		Field& _field;
+		const Field* _field;
+		Domain  _MD;
 		std::list<value_type > _seq;
 		size_type _size;
 		size_t _row, _col;
 
 	public:
-		BM_Seq(Field& F, size_t r, size_t c) : _field(F)
+		BM_Seq(const Field& F, size_t r, size_t c) : _field(&F), _MD(F)
 		{
 			_row = r;
 			_col = c;
 			_size = 0;
 		}
-		BM_Seq(Field& F, size_t r) : _field(F)
+		BM_Seq(const Field& F, size_t r) : _field(&F), _MD(F)
 		{
 			_row = r;
 			_col = r;
 			_size = 0;
 		}
-		BM_Seq(int n, value_type& M) : _field(M.field()),  _seq(n, M), _size(n)
+		BM_Seq(int n, value_type& M) : _field(&(M.field())),  _MD(M.field()), _seq(n, M), _size(n)
 		{
 			_row = M.rowdim();
 			_col = M.coldim();
@@ -82,17 +148,18 @@ namespace LinBox {
 
 		BM_Seq() {}
 
-		BM_Seq(const BM_Seq<Field>& S) :
-			_field(S._field), _seq(S._seq), _size(S._size), _row(S._row), _col(S._col)
+		BM_Seq(const BM_Seq& S) :
+			_field(S._field), _MD(S._MD), _seq(S._seq), _size(S._size), _row(S._row), _col(S._col)
 		{}
 
-		BM_Seq & operator=(const BM_Seq<Field>& S)
+		BM_Seq & operator=(const BM_Seq& S)
 		{
 			if(this != &S){
 				(*this)._size = S._size;
 				(*this)._row = S._row;
 				(*this)._col = S._col;
 				(*this)._field = S._field;
+				(*this)._MD = S._MD;
 				_seq.clear();
 				for(typename std::list<value_type>::const_iterator it = S._seq.begin(); it != S._seq.end(); it++)
 					_seq.push_back(*it);
@@ -100,11 +167,16 @@ namespace LinBox {
 			return *this;
 		}
 
-		Field& field()
+		const Field& field()
 		{
-			return _field;
+			return *_field;
 		}
 
+		Domain& domain()
+		{
+			return _MD;
+		}
+		
 		size_t rowdim()
 		{
 			return _row;
@@ -133,13 +205,12 @@ namespace LinBox {
 			}
 		}
 
-		bool operator==(const BM_Seq<Field>& l)
+		bool operator==(const BM_Seq& l)
 		{
 			typename std::list<value_type>::const_iterator it, lit;
 			bool test = false;
 			if(_size==l._size && _row==l._row && _col==l._col){
 				test = true;
-				MatrixDomain<Field> MD(_field);
 				it = _seq.begin();
 				lit = l._seq.begin();
 				if(_size==0){
@@ -147,7 +218,7 @@ namespace LinBox {
 				}
 				else{
 					while(test && it!=_seq.end()){
-						test = MD.areEqual(*it,*lit);
+						test = _MD.areEqual(*it,*lit);
 						it++;
 						lit++;
 					}
@@ -156,7 +227,7 @@ namespace LinBox {
 			return test;
 		}
 
-		bool operator!=(const BM_Seq<Field>& l)
+		bool operator!=(const BM_Seq& l)
 		{
 			return !(*this == l);
 		}
@@ -168,22 +239,22 @@ namespace LinBox {
 
 		class BM_iterator {
 		public:
-			typedef std::list<typename BM_Seq<Field>::value_type> value_type;
+			typedef std::list<typename BM_Seq::value_type> value_type;
 
 		private:
-			typedef typename BM_Seq<Field>::value_type matrix_type;
-			Field& _field;
-			BM_Seq<Field>& _seq;
-			typename BM_Seq<Field>::size_type _size;
-			typename BM_Seq<Field>::size_type _t;
-			typename BM_Seq<Field>::const_iterator _seqel;
+			typedef typename BM_Seq::value_type matrix_type;
+			const Field* _field;
+			BM_Seq& _seq;
+			typename BM_Seq::size_type _size;
+			typename BM_Seq::size_type _t;
+			typename BM_Seq::const_iterator _seqel;
 			std::list<matrix_type> _gen;
-			std::vector<int> _deg;
-			int _delta;
-			int _mu;
-			int _beta;
-			int _sigma;
-			int _gensize;
+			std::vector<size_t> _deg;
+			size_t _delta;
+			size_t _mu;
+			size_t _beta;
+			size_t _sigma;
+			size_t _gensize;
 			size_t _row, _col;
 
 		public:
@@ -223,7 +294,7 @@ namespace LinBox {
 				{
 					return _state==DeltaExceeded;
 				}
-			};
+			}; // TerminationState
 
 		private:
 			TerminationState _state;
@@ -249,8 +320,8 @@ namespace LinBox {
 				}
 			}
 			//Constructor
-			explicit BM_iterator(BM_Seq<Field>& s, typename BM_Seq<Field>::size_type elinit=0) :
-				_field(s.field()), _seq(s)
+			explicit BM_iterator(BM_Seq& s, typename BM_Seq::size_type elinit=0) :
+				_field(&(s.field())), _seq(s)
 			{
 				_row = s.rowdim();
 				_col = s.coldim();
@@ -258,12 +329,12 @@ namespace LinBox {
 				_t = elinit;
 				_delta = -1;
 				_seqel = _seq.begin();
-				_deg = std::vector<int>(_row+_col);
+				_deg = std::vector<size_t>(_row+_col);
 				for(size_t i = _col; i < _row+_col; i++)
 					_deg[i] = 1;
 				typename Field::Element one;
-				_field.init(one,1);
-				matrix_type gen1(_field,_col,_row+_col);
+				field().init(one,1);
+				matrix_type gen1(field(),_col,_row+_col);
 				for(size_t i = 0; i<_col; i++)
 					gen1.setEntry(i,i,one);
 				_gen.push_back(gen1);
@@ -276,16 +347,18 @@ namespace LinBox {
 			}
 
 			//Copy constructor
-			BM_iterator(const BM_Seq<Field>::BM_iterator & it) :
+			BM_iterator(const BM_Seq::BM_iterator & it) :
 				_field(it._field), _seq(it._seq), _size(it._size), _t(it._t),
 				_seqel(it._seqel), _gen(it._gen), _deg(it._deg),
 				_delta(it._delta), _mu(it._mu), _beta(it._beta),
 				_sigma(it._sigma), _gensize(it._gensize),
 				_row(it._row), _col(it._col), _state(it._state) {}
 
+			inline const Field & field() const { return *_field; }
+
 			//Assignment operator not overloaded since BlasMatrix class has overloaded assignment error
 			//Overloaded assignment operator
-			BM_iterator& operator=(const typename BM_Seq<Field>::BM_iterator& it)
+			BM_iterator& operator=(const typename BM_Seq::BM_iterator& it)
 			{
 				if(this != &it){
 					(*this)._field       = it._field;
@@ -309,7 +382,7 @@ namespace LinBox {
 				return (*this);
 			}
 
-			bool operator==(const BM_Seq<Field>::BM_iterator& it)
+			bool operator==(const BM_Seq::BM_iterator& it)
 			{
 				TerminationState check = it.state();
 				bool test1 = (_seq==it._seq);
@@ -330,9 +403,10 @@ namespace LinBox {
 			void ColumnCopy(Matrix &M, const Matrix &A, size_t i)
 			{
 				size_t rowd = A.rowdim();
-				for(size_t j = 0; j<rowd; j++){
-					M.setEntry(j,i,A.getEntry(j,i));
-				}
+				typename Domain::Submatrix MC(M,0,i,rowd,1);
+				typename Domain::Submatrix AC(A,0,i,rowd,1);
+				Domain& MD = _seq.domain();
+				MD.copy(MC,AC);
 			}
 			// Column Swap
 			template <class Matrix>
@@ -363,7 +437,7 @@ namespace LinBox {
 				}
 			}
 			template <class Matrix>
-			Matrix  Algorithm3dot2(Matrix &D, std::vector<int> &d, int &mu, int &sigma, int &beta)
+			Matrix  Algorithm3dot2(Matrix &D, std::vector<size_t> &d, size_t &mu, size_t &sigma, size_t &beta)
 			{
 				typename Matrix::Field F = D.field();
 				typename Matrix::Element one, pivel;
@@ -449,7 +523,7 @@ namespace LinBox {
 							ColumnAdd(D,m+i,piv,one);
 							gen.erase(piv);
 						}
-						int tempdeg = d[piv];
+						size_t tempdeg = d[piv];
 						d[piv] = d[m+i];
 						d[m+i] = tempdeg;
 						if(tempdeg < beta)
@@ -479,14 +553,15 @@ namespace LinBox {
 					return *this;
 				}
 				//Initialize the discrepancy
-				matrix_type disc(_field,_row, _row+_col);
+				matrix_type disc(field(),_row, _row+_col);
 				//Create two iterators, one for seq, and one for gen
-				typename BM_Seq<Field>::const_iterator cseqit;
+				typename BM_Seq::const_iterator cseqit;
 				typename std::list<matrix_type>::iterator genit;
 				//get a iterator to the seq element to be processed
 				cseqit = _seqel;
 				//Create a matrix domain for addition and multiplication
-				MatrixDomain<Field> MD(_field);
+				
+				Domain& MD = _seq->domain();
 				//Compute the discrepancy
 				for(genit = _gen.begin(); genit!=_gen.end(); genit++){
 					MD.axpyin(disc,*cseqit,*genit);
@@ -508,7 +583,7 @@ namespace LinBox {
 					if(tmax < _deg[j])
 						tmax = _deg[j];
 				if(tmax+1 > _gensize){
-					_gen.push_back(matrix_type(_field,_col,_row+_col));
+					_gen.push_back(matrix_type(field(),_col,_row+_col));
 					_gensize++;
 				}
 				//Mimic multiplication be z in the auxiliary columns
@@ -524,7 +599,7 @@ namespace LinBox {
 					g2++;
 				}
 				genit = _gen.begin();
-				matrix_type z1(_field,_col,_row+_col);
+				matrix_type z1(field(),_col,_row+_col);
 				for(size_t k = _col; k < _row+_col; k++)
 					ColumnCopy(*genit, z1,k);
 				//Increment the t and seqel to the next element
@@ -570,14 +645,14 @@ namespace LinBox {
 					return *this;
 				}
 				//Initialize the discrepancy
-				matrix_type disc(_field,_row, _row+_col);
+				matrix_type disc(field(),_row, _row+_col);
 				//Create two iterators, one for seq, and one for gen
-				typename BM_Seq<Field>::const_iterator cseqit;
+				typename BM_Seq::const_iterator cseqit;
 				typename std::list<matrix_type>::iterator genit;
 				//get an iterator to the seq element to be processed
 				cseqit = _seqel;
 				//Create a matrix domain for addition and multiplication
-				MatrixDomain<Field> MD(_field);
+				Domain& MD = _seq.domain();
 				//Compute the discrepancy
 				for(genit = _gen.begin(); genit!=_gen.end(); genit++, cseqit--){
 					MD.axpyin(disc,*cseqit,*genit);
@@ -601,7 +676,7 @@ namespace LinBox {
 					if(tmax < _deg[j])
 						tmax = _deg[j];
 				if(tmax+1 > _gensize){
-					_gen.push_back(matrix_type(_field,_col,_row+_col));
+					_gen.push_back(matrix_type(field(),_col,_row+_col));
 					_gensize++;
 				}
 				//Mimic multiplication by z in the auxiliary columns
@@ -617,7 +692,7 @@ namespace LinBox {
 					g2++;
 				}
 				genit = _gen.begin();
-				matrix_type z1(_field,_col,_row+_col);
+				matrix_type z1(field(),_col,_row+_col);
 				for(size_t k = _col; k < _row+_col; k++)
 					ColumnCopy(*genit, z1,k);
 				//Increment the t and seqel to the next element
@@ -656,7 +731,7 @@ namespace LinBox {
 			//Return a vector representing the reversal, by nominal degree, of the current generator
 			std::vector<matrix_type> GetGenerator()
 			{
-				std::vector<matrix_type> revgen(_mu+1, matrix_type(_field,_col,_col));
+				std::vector<matrix_type> revgen(_mu+1, matrix_type(field(),_col,_col));
 				for(size_t i = 0; i<_col; i++){
 					typename std::list<matrix_type>::iterator genit = _gen.begin();
 					for(int j = 0; j < _deg[i]+1; j++){
@@ -667,7 +742,7 @@ namespace LinBox {
 				return revgen;
 			}
 
-			typename BM_Seq<Field>::size_type get_t()
+			typename BM_Seq::size_type get_t()
 			{
 				return _t;
 			}
@@ -689,22 +764,65 @@ namespace LinBox {
 			{
 				return _delta;
 			}
-		};
+			std::vector<size_t> get_deg()
+			{
+				std::vector<size_t> gendegree(&_deg[0], &_deg[_col-1]);
+				return gendegree;
+			}
+		}; //End of BM_iterator
+
 		//return an initialized BM_iterator
-		typename BM_Seq<Field>::BM_iterator BM_begin()
+		typename BM_Seq::BM_iterator BM_begin()
 		{
-			return typename BM_Seq<Field>::BM_iterator(*this);
+			return typename BM_Seq::BM_iterator(*this);
 		}
 		//return an initialized BM_iterator that points to one past the end of the sequence
-		typename BM_Seq<Field>::BM_iterator BM_end()
+		typename BM_Seq::BM_iterator BM_end()
 		{
-			return typename BM_Seq<Field>::BM_iterator(*this, _size);
+			return typename BM_Seq::BM_iterator(*this, _size);
 		}
 		/**/
-	};
-}
+	};//End of BM_Seq
 
-#endif
+    }; //end of class BlockCoppersmithDomain
+
+
+                       template<class _Field, class _Sequence>
+    std::vector<size_t>  BlockCoppersmithDomain<_Field,
+_Sequence>::right_minpoly (std::vector<Coefficient> &P)
+    {
+	    //Get the row and column dimensions
+	    const size_t r = _container->rowdim();
+	    const size_t c = _container->coldim();
+
+	    typename Sequence::const_iterator contiter(_container->begin());
+	    //Create the BM_Seq, that will use the Coppersmith Block Berlekamp Massey Algorithm to compute the minimal generator.
+	    BM_Seq seq(field(),r,c);
+
+	    //Push the first projection onto the BM_Seq
+
+	    seq.push_back(*contiter);
+
+	    //Create the BM_Seq iterator whose incrementation performs a step of the generator 
+	    typename BM_Seq::BM_iterator bmit(seq.BM_begin());
+	    bmit.setDelta(EARLY_TERM_THRESHOLD);
+	    typename BM_Seq::BM_iterator::TerminationState check = bmit.state();
+	    while(!check.IsGeneratorFound() ){
+		    bmit++;
+		    check = bmit.state();
+		    if(check.IsSequenceExceeded()){
+			    ++contiter;
+			    seq.push_back(*contiter);
+		    }
+	    }
+	    P = bmit.GetGenerator();
+	    std::vector<size_t> deg(bmit.get_deg());
+	    return deg;
+    }
+
+} // end of namespace LinBox
+
+#endif // __LINBOX_coppersmith_block_domain_H
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

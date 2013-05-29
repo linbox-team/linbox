@@ -60,6 +60,7 @@
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/util/field-axpy.h"
+#include "linbox/util/write-mm.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/linbox-config.h"
 #include "linbox/field/field-traits.h"
@@ -67,7 +68,10 @@
 
 // Namespace in which all LinBox code resides
 namespace LinBox
-{
+{ /* Modular Base */
+
+	using Givaro::Caster;
+
 	template <class Element>
 	class Modular;
 
@@ -195,12 +199,14 @@ namespace LinBox
 		 */
 		integer &cardinality (integer &c) const
 		{
-			return c = _modulus;
+			return Caster(c, _modulus);
 		}
 
 		integer cardinality () const
 		{
-			return  _modulus;
+            integer card;
+            return Caster(card, _modulus);
+// 			return  _modulus;
 		}
 
 		/*- Characteristic.
@@ -211,18 +217,22 @@ namespace LinBox
 		 */
 		integer &characteristic (integer &c) const
 		{
-			return c = _modulus;
+			return Caster(c, _modulus);
+// 			return c = _modulus;
 		}
 
 		unsigned long &characteristic (unsigned long &c) const
 		{
-			return c = _modulus;
+			return Caster(c, _modulus);
+// 			return c = _modulus;
 		}
 
 
 		integer characteristic () const
 		{
-			return  _modulus;
+            integer charac;
+            return Caster(charac, _modulus);
+//             return  _modulus;
 		}
 
 		//@} Object Management
@@ -277,13 +287,26 @@ namespace LinBox
 		/*- @name Input/Output Operations */
 		//@{
 
-		/*- Print field.
+		/*- Print field as a constructor call.
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
+		 * @param  F  optional name to give the field in the description.  IF F is the null string, only the class typename is written.
+		 * Example: For element type double and modulus 101, 
+		 * write(os) produces      "Modular< double > ( 101 )"  on os, 
+ 		 * write(os, "F") produces "Modular< double > F( 101 )" on os, and
+ 		 * write(os, "") produces  "Modular< double >"          on os.
 		 */
 		std::ostream &write (std::ostream &os) const
+		{ 
+		  return os << "Modular<" << eltype( Element() ) << " >( " << _modulus << " )"; 
+		}
+
+		std::ostream &write (std::ostream &os, std::string F) const
 		{
-			return os << "Modular field, mod " << _modulus;
+		  os << "Modular<" << eltype( Element() ) << " > "; // class name
+		  if (F != "")
+		     os << F << "( " << _modulus << " )"; // show constuctor args
+		  return os;
 		}
 
 		/*- Read field.
@@ -304,7 +327,7 @@ namespace LinBox
 		 */
 		std::ostream &write (std::ostream &os, const Element &x) const
 		{
-			return os << (int) x;
+			return os << /*(int)*/ x;
 		}
 
 
@@ -335,6 +358,10 @@ namespace LinBox
 		Element _modulus;
 
 	}; // class ModularBase
+}
+
+namespace LinBox
+{ /* Modular */
 
 	/* .. such comments as here should be on specialization...
 	 * @param element Element type, e.g. long or integer
@@ -394,7 +421,9 @@ namespace LinBox
 		 */
 		Modular (const integer &modulus) :
 			ModularBase<_Element> (modulus),zero(0),one(1),mOne(modulus-1)
-		{}
+		{
+			linbox_check( !IsNegative(modulus) );
+		}
 
 		/* Assignment operator
 		 * Required by the archetype
@@ -413,9 +442,12 @@ namespace LinBox
 		}
 	public:
 
+		//! @warning danger ! (Element = Integer or NTL stuff !):
 		static inline Element getMaxModulus()
 		{
-			return Element((1ULL<<(sizeof(Element)*8-1))-1);
+            Element tmp(1);
+            return (tmp <<= (sizeof(Element)*8-1)) -= 1;
+// 			return Element(( Element(1)<<=(sizeof(Element)*8-1))-1);
 		}
 
 
@@ -431,29 +463,33 @@ namespace LinBox
 		 */
 		Element &init (Element &x, const integer &y ) const
 		{
-			x = y % ModularBase<Element>::_modulus;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			x = (Element) y % ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+				x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
 		Element &init (Element &x, const size_t &y ) const
 		{
 			x = (Element) y % ModularBase<Element>::_modulus;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+				x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
 		Element &init (Element &x, const int y ) const
 		{
-			x = y % ModularBase<Element>::_modulus;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			x = (Element) y % ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+				x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
 		Element &init (Element &x, const long int y) const
 		{
-			x = y % ModularBase<Element>::_modulus;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			x = (Element) y % ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+			       	x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
@@ -470,14 +506,16 @@ namespace LinBox
 		Element &init (Element &x, const double &y) const
 		{
 			double z = fmod(y, (double)ModularBase<Element>::_modulus);
-			if (z < 0) z += (double) ModularBase<Element>::_modulus;
+			if ( z < 0 )
+				z += (double) ModularBase<Element>::_modulus;
 			return x = (Element) (z+.5);
 		}
 
 		Element &init (Element &x, const float &y) const
 		{
 			float z = fmod(y, (float)ModularBase<Element>::_modulus);
-			if (z < 0) z += (float) ModularBase<Element>::_modulus;
+			if ( z < 0 )
+			       	z += (float) ModularBase<Element>::_modulus;
 			return x = (Element) (z+.5);
 		}
 
@@ -524,7 +562,8 @@ namespace LinBox
 		Element &sub (Element &x, const Element &y, const Element &z) const
 		{
 			x = y - z;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+			       	x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
@@ -591,7 +630,7 @@ namespace LinBox
 			tx = 0;
 			ty = 1;
 
-			while (y_int != 0) {
+			while (y_int != zero) {
 				// always: gcd (modulus,residue) = gcd (x_int,y_int)
 				//         sx*modulus + tx*residue = x_int
 				//         sy*modulus + ty*residue = y_int
@@ -602,7 +641,8 @@ namespace LinBox
 
 			// now x_int = gcd (modulus,residue)
 			x = tx;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+			       	x += ModularBase<Element>::_modulus;
 
 			return x;
 		}
@@ -623,7 +663,8 @@ namespace LinBox
 			       const Element &y) const
 		{
 			r = (a * x + y) % ModularBase<Element>::_modulus;
-			if (r < 0) r += ModularBase<Element>::_modulus;
+			if ( IsNegative(r) )
+			       	r += ModularBase<Element>::_modulus;
 			return r;
 		}
 
@@ -661,7 +702,8 @@ namespace LinBox
 		Element &subin (Element &x, const Element &y) const
 		{
 			x -= y;
-			if (x < 0) x += ModularBase<Element>::_modulus;
+			if ( IsNegative(x) )
+				x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
@@ -735,7 +777,8 @@ namespace LinBox
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{
 			r = (r + a * x) % ModularBase<Element>::_modulus;
-			if (r < 0) r += ModularBase<Element>::_modulus;
+			if ( IsNegative(r) )
+			       	r += ModularBase<Element>::_modulus;
 			return r;
 		}
 
@@ -801,11 +844,13 @@ namespace LinBox
 	};
 
 
+/*
 	template <>
 	inline std::ostream& ModularBase<Integer>::write (std::ostream &os) const
 	{
 		return os << "GMP integers mod " << _modulus;
 	}
+*/
 
 	template <>
 	inline integer& Modular<integer>::init (integer& x, const double& y) const
@@ -814,6 +859,13 @@ namespace LinBox
 		if (tmp<0) tmp += _modulus;
 		return x = tmp;
 	}
+
+	template<>
+	integer Modular<integer>::getMaxModulus()
+	{
+		return -1 ;
+	}
+
 
 
 } // namespace LinBox
@@ -832,11 +884,11 @@ namespace LinBox
 #endif // __LINBOX_field_modular_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

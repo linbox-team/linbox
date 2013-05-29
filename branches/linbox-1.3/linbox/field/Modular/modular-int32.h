@@ -37,6 +37,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
+#include "linbox/util/write-mm.h"
 
 #include <fflas-ffpack/field/modular-int32.h>
 
@@ -169,6 +170,36 @@ namespace LinBox
 			return 0;
 		}
 
+		/*- Print field as a constructor call.
+		 * @return output stream to which field is written.
+		 * @param  os  output stream to which field is written.
+		 * @param  F  optional name to give the field in the description.  IF F is the null string, only the class name is written.
+		 * Example: For element type double and modulus 101, 
+		 * write(os) produces      "Modular< double > ( 101 )"  on os, 
+ 		 * write(os, "F") produces "Modular< double > F( 101 )" on os, and
+ 		 * write(os, "") produces  "Modular< double >"          on os.
+		 */
+		std::ostream &write (std::ostream &os) const
+		{ 
+		  integer p = cardinality();
+		  return os << "Modular<" << eltype( Element() ) << " >( " << p << " )"; 
+		}
+
+		std::ostream &write (std::ostream &os, std::string F) const
+		{ 
+		  os << "Modular<" << eltype( Element() ) << " > "; // class name
+		  if (F != "") {
+		    integer p = cardinality();
+		    os << F << "( " << p << " )"; // show constuctor args
+		  }
+		  return os;
+		}
+
+        std::ostream &write (std::ostream & os, const Element & x) const {
+            return Father_t::write(os,x);
+        }
+                
+
 	private:
 
 	};
@@ -181,7 +212,7 @@ namespace LinBox
 		typedef Modular<int32_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F),_y(0)
+			_field (&F),_y(0)
 		{ }
 
 
@@ -201,7 +232,7 @@ namespace LinBox
 			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
 			if (_y < t) {
-				 _y += (uint64_t)_field._two64;
+				 _y += (uint64_t)field()._two64;
 				 return _y ;
 			}
 			else
@@ -212,14 +243,14 @@ namespace LinBox
 		{
 			_y += (uint64_t) t;
 			if (_y < (uint64_t)t)
-				return _y += (uint64_t) _field._two64;
+				return _y += (uint64_t) field()._two64;
 			else
 				return _y;
 		}
 
 		 Element& get (Element &y)
 		{
-			y = Element (_y % (uint64_t) _field.modulus);
+			y = Element (_y % (uint64_t) field().modulus);
 			return y;
 		}
 
@@ -234,21 +265,25 @@ namespace LinBox
 			_y = 0;
 		}
 
+		inline const Field & field() { return *_field; }
+
 	protected:
-		Field _field;
+		const Field * _field;
 		uint64_t _y;
 	};
 
 
 	template <>
-	class DotProductDomain<Modular<int32_t> > : private virtual VectorDomainBase<Modular<int32_t> > {
+	class DotProductDomain<Modular<int32_t> > : public virtual VectorDomainBase<Modular<int32_t> > {
 
 	public:
 		typedef int32_t Element;
+		DotProductDomain(){}
 		DotProductDomain (const Modular<int32_t> &F) :
 			VectorDomainBase<Modular<int32_t> > (F)
 		{}
 
+		using VectorDomainBase<Modular<int32_t> >::field;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -267,10 +302,10 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += (uint64_t) _field._two64;
+					y += (uint64_t) field()._two64;
 			}
 
-			y %= (uint64_t) _field.modulus;
+			y %= (uint64_t) field().modulus;
 			return res = Element(y);
 
 		}
@@ -290,11 +325,11 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += (uint64_t) _field._two64;
+					y += (uint64_t) field()._two64;
 			}
 
 
-			y %= (uint64_t) _field.modulus;
+			y %= (uint64_t) field().modulus;
 
 			return res = (Element) y;
 		}

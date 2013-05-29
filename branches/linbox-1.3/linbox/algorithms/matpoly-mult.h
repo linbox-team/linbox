@@ -99,8 +99,9 @@ namespace LinBox
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
 		void midproduct (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c)
 		{
-			linbox_check( 2*a.size() == c.size()+1);
-			linbox_check( 2*b.size() == c.size()+1);
+			// Need to be check somewhere else (SigmaBasis)
+                        //linbox_check( 2*a.size() == c.size()+1);
+			//linbox_check( 2*b.size() == c.size()+1);
 
 			size_t d = b.size()+c.size();
 			//std::cout<<"midp "<<a.size()<<" = "<<b.size()<<" x "<<c.size()<<"...\n";
@@ -126,7 +127,8 @@ namespace LinBox
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
 		void midproductgen (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c)
 		{
-			linbox_check( a.size()+b.size() == c.size()+1);
+			// Need to be check somewhere else (SigmaBasis)
+                        //linbox_check( a.size()+b.size() == c.size()+1);
 
 			size_t d = b.size()+c.size();
 			//std::cout<<"midp "<<a.size()<<" = "<<b.size()<<" x "<<c.size()<<"...\n";
@@ -154,14 +156,16 @@ namespace LinBox
 	template <class Field>
 	class ClassicMulDomain {
 	private:
-		Field                       _field;
+		const Field            *_field;
 		BlasMatrixDomain<Field>   _BMD;
 		MatrixDomain<Field>        _MD;
 
 	public:
 
+		inline const Field & field() const { return *_field; }
+
 		ClassicMulDomain(const Field &F) :
-			_field(F), _BMD(F), _MD(F)
+			_field(&F), _BMD(F), _MD(F)
 		{}
 
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
@@ -209,14 +213,15 @@ namespace LinBox
 	public:
 		typedef _Field                         Field;
 	private:
-		Field                       _field;
+		const Field           *_field;
 		BlasMatrixDomain<Field>   _BMD;
 		MatrixDomain<Field>        _MD;
 		size_t                    _mul;
 	public:
+		inline const Field & field() const { return *_field; }
 
 		KaratsubaMulDomain(const Field &F) :
-			_field(F), _BMD(F), _MD(F)
+			_field(&F), _BMD(F), _MD(F)
 		{_mul=0;}
 
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
@@ -227,14 +232,16 @@ namespace LinBox
 
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
 		void midproduct(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
-			linbox_check( 2*a.size() == c.size()+1);
-			linbox_check( 2*b.size() == c.size()+1);
+			// problem with sigma basis need to be checked
+                        //linbox_check( 2*a.size() == c.size()+1);
+			//linbox_check( 2*b.size() == c.size()+1);
 			midproduct_Karatsuba(a, b, c);
 		}
 
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
 		void midproductgen(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
-			linbox_check(a.size()+b.size() == c.size()+1);
+			// problem with sigma basis need to be checked
+                        //linbox_check(a.size()+b.size() == c.size()+1);
 			midproduct_Karatsubagen(a, b, c);
 		}
 
@@ -246,9 +253,9 @@ namespace LinBox
 				   const Polynomial3 &B, size_t shiftB, size_t degB){
 
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroC(C[0].rowdim(), C[0].coldim());
-			const Coefficient ZeroA(A[0].rowdim(), A[0].coldim());
-			const Coefficient ZeroB(B[0].rowdim(), B[0].coldim());
+			const Coefficient ZeroC(field(), C[0].rowdim(), C[0].coldim());
+			const Coefficient ZeroA(field(), A[0].rowdim(), A[0].coldim());
+			const Coefficient ZeroB(field(), B[0].rowdim(), B[0].coldim());
 
 			if ((degA == 1) || (degB == 1)) {
 
@@ -331,9 +338,9 @@ namespace LinBox
 				size_t k1= A.size()-k0;
 
 				typedef  typename Polynomial1::value_type Coefficient;
-				const Coefficient ZeroC(C[0].rowdim(), C[0].coldim());
-				const Coefficient ZeroA(A[0].rowdim(), A[0].coldim());
-				const Coefficient ZeroB(B[0].rowdim(), B[0].coldim());
+				const Coefficient ZeroC(field(), C[0].rowdim(), C[0].coldim());
+				const Coefficient ZeroA(field(), A[0].rowdim(), A[0].coldim());
+				const Coefficient ZeroB(field(), B[0].rowdim(), B[0].coldim());
 
 				std::vector<Coefficient> alpha(k1,ZeroC), beta(k1,ZeroC), gamma(k0,ZeroC);
 				std::vector<Coefficient> A_low(k0, ZeroA), A_high(k1,ZeroA);
@@ -396,9 +403,9 @@ namespace LinBox
 				std::cout<<C.size()<<" "<<A.size()<<" "<<B.size()<<"("<<Bk0<<","<<Bk1<<")\n";
 
 				typedef  typename Polynomial1::value_type Coefficient;
-				const Coefficient ZeroC(C[0].rowdim(), C[0].coldim());
-				const Coefficient ZeroA(A[0].rowdim(), A[0].coldim());
-				const Coefficient ZeroB(B[0].rowdim(), B[0].coldim());
+				const Coefficient ZeroC(field(), C[0].rowdim(), C[0].coldim());
+				const Coefficient ZeroA(field(), A[0].rowdim(), A[0].coldim());
+				const Coefficient ZeroB(field(), B[0].rowdim(), B[0].coldim());
 
 				std::vector<Coefficient> A_low(Ak0,ZeroA), A_high(Ak1,ZeroA);
 				std::vector<Coefficient> alpha(Bk1,ZeroC), beta(Bk1,ZeroC), gamma(Bk0,ZeroC);
@@ -463,17 +470,18 @@ namespace LinBox
 		typedef SpecialFFTMulDomain<Field>  FFTDomainBase;
 
 	private:
-		Field                _field;
+		const Field                *_field;
 		integer              _p;
 		size_t         _fftsize;
 
 	public:
+		inline const Field & field() const { return *_field; }
 
 		FFTMulDomain (const Field &F) :
-			_field(F)
+			_field(&F)
 		{
 
-			_field.characteristic(_p);
+			field().characteristic(_p);
 
 			_fftsize=0;
 			//check if field is based on fft prime
@@ -492,13 +500,13 @@ namespace LinBox
 			size_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
 
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroC(c[0].rowdim(), c[0].coldim());
-			const Coefficient ZeroA(a[0].rowdim(), a[0].coldim());
-			const Coefficient ZeroB(b[0].rowdim(), b[0].coldim());
+			const Coefficient ZeroC(field(), c[0].rowdim(), c[0].coldim());
+			const Coefficient ZeroA(field(), a[0].rowdim(), a[0].coldim());
+			const Coefficient ZeroB(field(), b[0].rowdim(), b[0].coldim());
 
 			// check if fft prime and good enough
 			if (lpts < _fftsize){
-				FFTDomainBase fftdomain(_field);
+				FFTDomainBase fftdomain(field());
 				fftdomain.mul(a, b, c);
 			}
 			else {
@@ -551,7 +559,7 @@ namespace LinBox
 					for (size_t kk=0;kk<a.size();++kk)
 						for (size_t i=0;i<a[0].rowdim();++i)
 							for (size_t j=0;j<a[0].coldim();++j){
-								_field.init(a[kk].refEntry(i,j), a_i[0][kk].getEntry(i,j));
+								field().init(a[kk].refEntry(i,j), a_i[0][kk].getEntry(i,j));
 							}
 				}
 				else {
@@ -576,7 +584,7 @@ namespace LinBox
 									if (acc > primesprod)
 										acc-= primesprod;
 								}
-								_field.init(a[kk].refEntry(i,j), acc);
+								field().init(a[kk].refEntry(i,j), acc);
 							}
 #ifdef FFT_TIMING
 					chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
@@ -591,8 +599,9 @@ namespace LinBox
 
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
 		void midproduct(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
-			linbox_check(2*a.size() == c.size()+1 );
-			linbox_check(2*b.size() == c.size()+1 );
+			// need to be checked for sigmabasis
+                        //linbox_check(2*a.size() == c.size()+1 );
+			//linbox_check(2*b.size() == c.size()+1 );
 			linbox_check(b[0].coldim() == c[0].rowdim());
 
 			size_t mm = b[0].rowdim();
@@ -600,7 +609,7 @@ namespace LinBox
 			size_t nn = c[0].coldim();
 
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroA(mm,nn), ZeroB(mm,kk), ZeroC(kk,nn);
+			const Coefficient ZeroA(field(), mm,nn), ZeroB(field(), mm,kk), ZeroC(field(), kk,nn);
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0;
@@ -608,7 +617,7 @@ namespace LinBox
 
 			// check if fft prime and good enough
 			if (lpts < _fftsize){
-				FFTDomainBase fftdomain(_field);
+				FFTDomainBase fftdomain(field());
 				fftdomain.midproduct(a, b, c);
 			}
 			else {
@@ -667,7 +676,7 @@ namespace LinBox
 					for (size_t k=0;k<a.size();++k)
 						for (size_t i=0;i<a[0].rowdim();++i)
 							for (size_t j=0;j<a[0].coldim();++j){
-								_field.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
+								field().init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
 							}
 				}
 				else {
@@ -692,7 +701,7 @@ namespace LinBox
 									if (acc > primesprod)
 										acc-= primesprod;
 								}
-								_field.init(a[k].refEntry(i,j), acc);
+								field().init(a[k].refEntry(i,j), acc);
 							}
 					delete [] crt;
 					delete [] crt_inv;
@@ -720,15 +729,16 @@ namespace LinBox
 		typedef SpecialFFTMulDomain<ModularField>   FFTDomainBase;
 
 	private:
-		Field                _field;
+		const Field     *_field;
 		integer              _p;
 		size_t         _fftsize;
 
 	public:
+		inline const Field & field() const { return *_field; }
 
-		FFTMulDomain (const Field &F) :  _field(F){
+		FFTMulDomain (const Field &F) :  _field(&F){
 
-			_field.characteristic(_p);
+			field().characteristic(_p);
 
 			_fftsize=0;
 			//check if field is based on fft prime
@@ -747,9 +757,9 @@ namespace LinBox
 			size_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
 
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroC(c[0].rowdim(), c[0].coldim());
-			const Coefficient ZeroA(a[0].rowdim(), a[0].coldim());
-			const Coefficient ZeroB(b[0].rowdim(), b[0].coldim());
+			const Coefficient ZeroC(field(), c[0].rowdim(), c[0].coldim());
+			const Coefficient ZeroA(field(), a[0].rowdim(), a[0].coldim());
+			const Coefficient ZeroB(field(), b[0].rowdim(), b[0].coldim());
 
 
 			// computation done using CRT with few fft primes
@@ -807,7 +817,7 @@ namespace LinBox
 				for (size_t k=0;k<a.size();++k)
 					for (size_t i=0;i<a[0].rowdim();++i)
 						for (size_t j=0;j<a[0].coldim();++j){
-							_field.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
+							field().init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
 						}
 			}
 			else {
@@ -832,7 +842,7 @@ namespace LinBox
 								if (acc > primesprod)
 									acc-= primesprod;
 							}
-							_field.init(a[k].refEntry(i,j), acc);
+							field().init(a[k].refEntry(i,j), acc);
 						}
 #ifdef FFT_TIMING
 				chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
@@ -847,8 +857,9 @@ namespace LinBox
 
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
 		void midproduct(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
-			linbox_check(2*a.size() == c.size()+1 );
-			linbox_check(2*b.size() == c.size()+1 );
+			// need to be checked for sigmabasis
+                        //linbox_check(2*a.size() == c.size()+1 );
+			//linbox_check(2*b.size() == c.size()+1 );
 			linbox_check(b[0].coldim() == c[0].rowdim());
 
 			size_t m = b[0].rowdim();
@@ -856,7 +867,7 @@ namespace LinBox
 			size_t n = c[0].coldim();
 
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
+			const Coefficient ZeroA(field(), m,n), ZeroB(field(), m,k), ZeroC(field(), k,n);
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0;
@@ -864,7 +875,7 @@ namespace LinBox
 
 			// check if fft prime and good enough
 			if (lpts < _fftsize){
-				FFTDomainBase fftdomain(_field);
+				FFTDomainBase fftdomain(field());
 				fftdomain.midproduct(a, b, c);
 			}
 			else {
@@ -919,7 +930,7 @@ namespace LinBox
 					for (size_t k=0;k<a.size();++k)
 						for (size_t i=0;i<a[0].rowdim();++i)
 							for (size_t j=0;j<a[0].coldim();++j){
-								_field.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
+								field().init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
 							}
 				}
 				else {
@@ -944,7 +955,7 @@ namespace LinBox
 									if (acc > primesprod)
 										acc-= primesprod;
 								}
-								_field.init(a[k].refEntry(i,j), acc);
+								field().init(a[k].refEntry(i,j), acc);
 							}
 					delete [] crt;
 					delete [] crt_inv;
@@ -969,7 +980,7 @@ namespace LinBox
 		typedef typename Field::Element                 Element;
 
 	private:
-		Field                      _field;
+		const Field           *_field;
 		integer                    _p;
 		long                      _pl;
 		MatrixDomain<Field>       _MD;
@@ -977,9 +988,10 @@ namespace LinBox
 		double fftadd, fftmul, fftcopy;
 		mutable             long _gen;
 	public:
+		inline const Field & field() const { return *_field; }
 
 		SpecialFFTMulDomain(const Field &F) :
-			_field(F), _MD(F), _BMD(F)
+			_field(&F), _MD(F), _BMD(F)
 		{
 			F.characteristic(_p);
 			_pl = _p;
@@ -1026,7 +1038,7 @@ namespace LinBox
 			size_t k = b[0].coldim();
 			size_t n = c[0].coldim();
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
+			const Coefficient ZeroA(field(), m,n), ZeroB(field(), m,k), ZeroC(field(), k,n);
 
 			size_t deg     = b.size()+c.size()-1;
 			size_t lpts = 0;
@@ -1093,8 +1105,8 @@ namespace LinBox
 
 
 			Element _w, _inv_w;
-			_field.init(_w, w);
-			_field.init(_inv_w, inv_w);
+			field().init(_w, w);
+			field().init(_inv_w, inv_w);
 			std::vector<Element> pow_w(pts);
 			std::vector<Element> pow_inv_w(pts);
 
@@ -1102,11 +1114,11 @@ namespace LinBox
 			//std::cout<<"degree: "<<pts<<"\n";
 
 			// compute power of w and w^(-1)
-			_field.init(pow_w[0],1);
-			_field.init(pow_inv_w[0],1);
+			field().init(pow_w[0],1);
+			field().init(pow_inv_w[0],1);
 			for (size_t i=1;i<pts;++i){
-				_field.mul(pow_w[i], pow_w[i-1], _w);
-				_field.mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
+				field().mul(pow_w[i], pow_w[i-1], _w);
+				field().mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
 			}
 
 			// compute reverse bit ordering
@@ -1186,9 +1198,9 @@ namespace LinBox
 					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
 					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
 					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
-						_field.assign(swapping,*it_a1);
-						_field.assign(*it_a1, *it_a2);
-						_field.assign(*it_a2,swapping);
+						field().assign(swapping,*it_a1);
+						field().assign(*it_a1, *it_a2);
+						field().assign(*it_a2,swapping);
 					}
 				}
 			}
@@ -1216,8 +1228,8 @@ namespace LinBox
 
 			// set the result according to bitreverse ordering and multiply by 1/pts
 			Element inv_pts;
-			_field.init(inv_pts, pts);
-			_field.invin(inv_pts);
+			field().init(inv_pts, pts);
+			field().invin(inv_pts);
 
 			// #ifdef __LINBOX_HAVE_OPENMP
 			// #pragma omp parallel for shared(a,fft_a,revbit,inv_pts) schedule(stati
@@ -1238,16 +1250,16 @@ namespace LinBox
 		// middle product: a[0..n-1] = (b.c)[n..2n-1]
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
 		void midproduct (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
-
-			linbox_check(2*a.size() == c.size()+1 );
-			linbox_check(2*b.size() == c.size()+1 );
+                        // need to be checked for sigmabasis
+			//linbox_check(2*a.size() == c.size()+1 );
+			//linbox_check(2*b.size() == c.size()+1 );
 			linbox_check(b[0].coldim() == c[0].rowdim());
 
 			size_t m = b[0].rowdim();
 			size_t k = b[0].coldim();
 			size_t n = c[0].coldim();
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
+			const Coefficient ZeroA(field(), m,n), ZeroB(field(), m,k), ZeroC(field(), k,n);
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0;
@@ -1314,17 +1326,17 @@ namespace LinBox
 
 
 			Element _w, _inv_w;
-			_field.init(_w,w);
-			_field.init(_inv_w, inv_w);
+			field().init(_w,w);
+			field().init(_inv_w, inv_w);
 			std::vector<Element> pow_w(pts);
 			std::vector<Element> pow_inv_w(pts);
 
 			// compute power of w and w^(-1)
-			_field.init(pow_w[0],1);
-			_field.init(pow_inv_w[0],1);
+			field().init(pow_w[0],1);
+			field().init(pow_inv_w[0],1);
 			for (size_t i=1;i<pts;++i){
-				_field.mul(pow_w[i], pow_w[i-1], _w);
-				_field.mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
+				field().mul(pow_w[i], pow_w[i-1], _w);
+				field().mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
 			}
 
 			// compute reverse bit ordering
@@ -1369,9 +1381,9 @@ namespace LinBox
 					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
 					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
 					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
-						_field.assign(swapping,*it_a1);
-						_field.assign(*it_a1, *it_a2);
-						_field.assign(*it_a2,swapping);
+						field().assign(swapping,*it_a1);
+						field().assign(*it_a1, *it_a2);
+						field().assign(*it_a2,swapping);
 					}
 				}
 			}
@@ -1382,8 +1394,8 @@ namespace LinBox
 
 			// set the result according to bitreverse ordering and multiply by 1/pts
 			Element inv_pts;
-			_field.init(inv_pts, pts);
-			_field.invin(inv_pts);
+			field().init(inv_pts, pts);
+			field().invin(inv_pts);
 			// #ifdef __LINBOX_HAVE_OPENMP
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
 			// #endif
@@ -1405,7 +1417,7 @@ namespace LinBox
 			size_t k = b[0].coldim();
 			size_t n = c[0].coldim();
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
+			const Coefficient ZeroA(field(), m,n), ZeroB(field(), m,k), ZeroC(field(), k,n);
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0;
@@ -1472,17 +1484,17 @@ namespace LinBox
 
 
 			Element _w, _inv_w;
-			_field.init(_w,w);
-			_field.init(_inv_w, inv_w);
+			field().init(_w,w);
+			field().init(_inv_w, inv_w);
 			std::vector<Element> pow_w(pts);
 			std::vector<Element> pow_inv_w(pts);
 
 			// compute power of w and w^(-1)
-			_field.init(pow_w[0],1);
-			_field.init(pow_inv_w[0],1);
+			field().init(pow_w[0],1);
+			field().init(pow_inv_w[0],1);
 			for (size_t i=1;i<pts;++i){
-				_field.mul(pow_w[i], pow_w[i-1], _w);
-				_field.mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
+				field().mul(pow_w[i], pow_w[i-1], _w);
+				field().mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
 			}
 
 			// compute reverse bit ordering
@@ -1527,9 +1539,9 @@ namespace LinBox
 					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
 					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
 					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
-						_field.assign(swapping,*it_a1);
-						_field.assign(*it_a1, *it_a2);
-						_field.assign(*it_a2,swapping);
+						field().assign(swapping,*it_a1);
+						field().assign(*it_a1, *it_a2);
+						field().assign(*it_a2,swapping);
 					}
 				}
 			}
@@ -1540,8 +1552,8 @@ namespace LinBox
 
 			// set the result according to bitreverse ordering and multiply by 1/pts
 			Element inv_pts;
-			_field.init(inv_pts, pts);
-			_field.invin(inv_pts);
+			field().init(inv_pts, pts);
+			field().invin(inv_pts);
 			// #ifdef __LINBOX_HAVE_OPENMP
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
 			// #endif
@@ -1575,10 +1587,10 @@ namespace LinBox
 			typename Coeff::Iterator it_b= B.Begin();
 			Element tmp;
 			for (; it_a != A.End(); ++it_a, ++it_b){
-				_field.assign(tmp,*it_a);
-				_field.addin(*it_a, *it_b);
-				_field.sub(*it_b, tmp, *it_b);
-				_field.mulin(*it_b, alpha);
+				field().assign(tmp,*it_a);
+				field().addin(*it_a, *it_b);
+				field().sub(*it_b, tmp, *it_b);
+				field().mulin(*it_b, alpha);
 			}
 		}
 
@@ -1601,8 +1613,8 @@ namespace LinBox
 			Element tmp;
 			for (size_t i=0;i<n2;++i){
 				tmp = aptr[i];
-				_field.addin(aptr[i],bptr[i]);
-				_field.sub(bptr[i], tmp, bptr[i]);
+				field().addin(aptr[i],bptr[i]);
+				field().sub(bptr[i], tmp, bptr[i]);
 			}
 		}
 
@@ -1671,7 +1683,7 @@ namespace LinBox
 				//_MD.addin(fft[shift],fft[shift+n2]);
 				//_MD.sub(fft[shift+n2], tmp, fft[shift+n2]);
 				//myAddSub(fft[shift],fft[shift+n2]);
-				Element one;_field.init(one,integer(1));
+				Element one;field().init(one,integer(1));
 				Butterfly(fft[shift],fft[shift+n2],one);
 
 				for (size_t i=1; i< n2; ++i){
@@ -1683,7 +1695,7 @@ namespace LinBox
 					//myAddSub(fft[shift+i],fft[shift+i+n2]);
 
 					//_MD.mulin(fft[shift+i+n2],  pow_w[idx_w*i]);
-					//FFLAS::fscal(_field, mn, pow_w[idx_w*i], fft[shift+i+n2].getPointer(), 1);
+					//FFLAS::fscal(field(), mn, pow_w[idx_w*i], fft[shift+i+n2].getPointer(), 1);
 				}
 				FFT(fft, n2, pow_w, idx_w<<1, shift);
 				FFT(fft, n2, pow_w, idx_w<<1, shift+n2);
@@ -1695,7 +1707,7 @@ namespace LinBox
 		void iterative_FFT (Polynomial &fft, size_t n, size_t ln, const std::vector<Element> &pow_w){
 
 			typedef  typename Polynomial::value_type Coefficient;
-			Coefficient tmp(fft[0].rowdim(), fft[0].coldim());
+			Coefficient tmp(field(), fft[0].rowdim(), fft[0].coldim());
 
 			if (ln == 0)
 				return;

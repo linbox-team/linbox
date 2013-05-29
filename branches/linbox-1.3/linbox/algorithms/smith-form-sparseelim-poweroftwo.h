@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <06 Apr 12 11:50:12 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <29 Jun 12 10:07:49 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -79,20 +79,26 @@ namespace LinBox
         }
         
         UInt_t& MY_Zpz_inv (UInt_t& u1, const UInt_t& a, const size_t exponent, const UInt_t& TWOTOEXPMONE) const {
-            static const UInt_t ttep2(TWOTOEXPMONE+3);
+            static const UInt_t ttep2(TWOTOEXPMONE+3UL);
             if (this->isOne(a)) return u1=this->one;
-            REQUIRE( (one<<exponent) == (TWOTOEXPMONE+1) );
+            REQUIRE( (one<<exponent) == (TWOTOEXPMONE+1UL) );
             REQUIRE( a <= TWOTOEXPMONE );
-            REQUIRE( (a & 1) );
+            REQUIRE( (a & 1UL) );
             u1=ttep2-a; // 2-a
             UInt_t xmone(a-1);
             for(size_t i=2; i<exponent; i<<=1) {
-                xmone *= xmone;
+//                 xmone *= xmone;
+                UInt_t tmp(xmone); xmone *= tmp;
                 xmone &= TWOTOEXPMONE;
                 u1 *= ++xmone; --xmone;
                 u1 &= TWOTOEXPMONE;
             }
-            ENSURE( ((a * u1) & TWOTOEXPMONE) == 1 );
+// std::cerr << a << std::endl;
+// std::cerr << u1 << std::endl;
+// std::cerr << TWOTOEXPMONE << std::endl;
+            
+//  std::cerr << a << '*' << u1 << " mod 2^" << exponent << '-' << 1 << ';' << std::endl;
+            ENSURE( ((a * u1) & TWOTOEXPMONE) == 1UL );
             return u1;
         }
 
@@ -373,6 +379,8 @@ namespace LinBox
                 size_t EXPONENT = EXPONENTMAX;
                 UInt_t TWOK(1UL); TWOK <<= EXPONENT;
                 UInt_t TWOKMONE(TWOK); --TWOKMONE;
+ENSURE( TWOK == (UInt_t(1UL) << EXPONENT) );
+ENSURE( TWOKMONE == (TWOK - 1UL) );
                 
 #ifdef LINBOX_PRANK_OUT
                 std::cerr << "Elimination mod " << TWOK << std::endl;
@@ -390,7 +398,8 @@ namespace LinBox
                         UInt_t r = tmp[k].second;
 //                         if (r <0) r %= TWOK ;
 //                         if (r <0) r += TWOK ;
-                        if (r >= TWOK) r &= TWOKMONE;
+//                         if (r >= TWOK) r &= TWOKMONE;
+                        r &= TWOKMONE;
                         if (isNZero(r)) {
                             ++col_density[ tmp[k].first ];
                             toto[rs] =tmp[k];
@@ -452,6 +461,10 @@ namespace LinBox
                         --EXPONENT;
                         TWOK >>= 1;
                         TWOKMONE >>=1;
+
+ENSURE( TWOK == (UInt_t(1UL) << EXPONENT) );
+ENSURE( TWOKMONE == (TWOK - 1UL) );
+                        
                         ranks.push_back( indcol );
                         ++ind_pow;
 #ifdef LINBOX_PRANK_OUT
@@ -478,7 +491,7 @@ namespace LinBox
                     
                     
 #ifdef  LINBOX_pp_gauss_steps_OUT
-                    LigneA.write(cerr << "step[" << k << "], pivot: " << c << std::endl) << endl;
+                    LigneA.write(std::cerr << "step[" << k << "], pivot: " << c << std::endl) << std::endl;
 #endif
                     
                     PreserveUpperMatrixRow(LigneA[k], typename Boolean_Trait<PreserveUpperMatrix>::BooleanType());
@@ -501,10 +514,10 @@ namespace LinBox
                 
                     //             ranks.push_back(indcol);
 #ifdef LINBOX_pp_gauss_steps_OUT
-                LigneA.write(cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl) << endl;
+                LigneA.write(std::cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl) << std::endl;
 #endif
 #ifdef LINBOX_PRANK_OUT
-                std::cerr << "Rank mod 2^" << EXPONENT << " : " << indcol << std::endl;
+                std::cerr << "Rank mod 2^" << EXPONENTMAX << " : " << indcol << std::endl;
 #endif
                 commentator().stop ("done", 0, "PRGEPo2");
                 

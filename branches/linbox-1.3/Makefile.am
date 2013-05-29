@@ -84,7 +84,7 @@ uninstall-hook:
 		"$(datarootdir)/" \
 		"$(includedir)" ) || true
 
-VERSION=1.3.2
+VERSION=1.3.3
 
 EXTRA_DIST=auto-install.sh
 #incremente-versions

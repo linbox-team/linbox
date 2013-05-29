@@ -98,7 +98,7 @@ int main (int argc, char **argv)
 
 		std::vector<Field::Element> X( A.coldim()),B(A.rowdim());
 		if (createB) {
-			cerr << "Creating a random {-1,1} vector " << endl;
+			cerr << "Creating a random {-1,1} vector U, B is AU (to have a consistent system)" << endl;
 			std::vector<Field::Element> U( A.coldim() );
 			for(std::vector<Field::Element>::iterator it=U.begin();
 			    it != U.end(); ++it)
@@ -199,17 +199,19 @@ int main (int argc, char **argv)
 		SparseMatrix<PID_integer> A (ms);
 		PID_integer::Element d;
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
-
+               
 		std::vector<PID_integer::Element> X( A.coldim()),B(A.rowdim());
 
 		if (createB) {
-			cerr << "Creating a random {-1,1} vector " << endl;
+			cerr << "Creating a random {-1,1} vector U, B is AU" << endl;
+			std::vector<PID_integer::Element> U( A.coldim() );
 			for(std::vector<PID_integer::Element>::iterator it=B.begin();
-			    it != B.end(); ++it)
+			    it != U.end(); ++it)
 				if (drand48() <0.5)
 					*it = -1;
 				else
 					*it = 1;
+			A.apply(B,U);
 		}
 		else {
 			for(std::vector<PID_integer::Element>::iterator it=B.begin();

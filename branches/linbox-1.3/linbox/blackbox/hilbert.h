@@ -39,6 +39,8 @@
 
 #include <vector>
 #include "linbox/blackbox/jit-matrix.h"
+#include "linbox/util/matrix-stream.h"
+#include "linbox/util/write-mm.h"
 
 
 namespace LinBox
@@ -53,7 +55,9 @@ namespace LinBox
 		typedef typename _Field::Element Element;
 
 		/// set up vector of 1/(i+1)
-		Hilbert_JIT_Entry(Field& F, size_t m, size_t n);
+		void init(const Field& F, size_t m, size_t n);
+
+		Hilbert_JIT_Entry(const Field& F, size_t m, size_t n) {init(F, m, n);}
 
 		/// return 1/(i+j+2), zero based indexing.
 		Element& operator()(Element &entry, size_t i, size_t j) const
@@ -68,7 +72,7 @@ namespace LinBox
 
 	/// constructor
 	template<typename _Field>
-	Hilbert_JIT_Entry<_Field>::Hilbert_JIT_Entry(_Field& F, size_t m, size_t n) {
+	void Hilbert_JIT_Entry<_Field>::init(const _Field& F, size_t m, size_t n) {
 
 		Element temp, one;
 		F.init(one, 1);
@@ -96,24 +100,38 @@ namespace LinBox
 	 */
 	template<typename _Field>
 	class Hilbert : public JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> > {
+		using JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> >::_m;
+		using JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> >::_n;
+		using JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> >::_gen;
 
 	public:
+		typedef _Field Field;
+		using JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> >::field;
+		using JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> >::rowdim;
+		using JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> >::coldim;
 		/** Constructor from field and size.
 		 * @param F the field.
 		 * @param n the size : size_t integer number of rows and columns of matrix.
 		 */
-		Hilbert(_Field& F, size_t n) :
-			JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> >(F, n, n, Hilbert_JIT_Entry<_Field>(F, n, n))
+		Hilbert(const Field& F, size_t n = 0) :
+			JIT_Matrix<Field, Hilbert_JIT_Entry<Field> >(F, n, n, Hilbert_JIT_Entry<Field>(F, n, n))
 		{};
 
+		std::ostream& write(std::ostream& os) const {
+			return writeMMPatternHeader(os, *this, 0, "Hilbert");
+		}
+
+		std::istream& read(std::istream& is) {
+			MatrixStream<Field> ms(field(), is);
+			ms.getDimensions(_m, _n); 
+			_gen.init(field(), _m, _n);
+			return is;
+		}
 	};
-
-
 
 }//LinBox Namespace
 
 #endif //__LINBOX_hilbert_H
-
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

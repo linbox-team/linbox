@@ -66,7 +66,10 @@ int main (int argc, char **argv)
 		   */
 		LinBox::GivaroRational ZZ;
 		MatrixStream<GivaroRational> ms( ZZ, input );
-		SparseMatrix<GivaroRational> A ( ms );
+		SparseMatrix<GivaroRational, Vector<GivaroRational>::SparseSeq > A ( ms );
+        if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",FORMAT_MAPLE) << ';' << std::endl;
+        
+
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		LinBox::rank (r, A, Method::SparseElimination() );
@@ -84,15 +87,15 @@ int main (int argc, char **argv)
 
 
 		Method::SparseElimination SE;
-		SE.strategy(Specifier::PIVOT_NONE);
-		// using Sparse Elimination
-		LinBox::rank (r, B, SE);
-		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
-		cout << "Rank is " << r << endl;
+// 		SE.strategy(Specifier::PIVOT_NONE);
+// 		// using Sparse Elimination
+// 		LinBox::rank (r, B, SE);
+// 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+// 		cout << "Rank is " << r << endl;
 
 		SE.strategy(Specifier::PIVOT_LINEAR);
 		// using Sparse Elimination
-		LinBox::rank (r, B, SE);
+		LinBox::rankin (r, B, SE);
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 		cout << "Rank is " << r << endl;
 

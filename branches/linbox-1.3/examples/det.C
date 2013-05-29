@@ -33,7 +33,6 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/solutions/det.h"
-#include "linbox/util/matrix-stream.h"
 
 using namespace LinBox;
 using namespace std;
@@ -62,8 +61,7 @@ int main (int argc, char **argv)
 		{ cerr << "Error opening matrix file " << argv[1] << endl;
 			return -1;
 		}
-		MatrixStream< Integers> ms ( ZZ, input );
-		BlasMatrix<Integers> A(ms);
+		BlasMatrix<Integers> A(ZZ); A.read(input);
 		cout << "Matrix is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		Integers::Element det_A;
@@ -83,8 +81,7 @@ int main (int argc, char **argv)
 		{ cerr << "Error opening matrix file " << argv[1] << endl;
 			return -1;
 		}
-		MatrixStream< Field > ms ( F, input );
-		SparseMatrix<Field> B (ms);
+		SparseMatrix<Field> B (F); B.read(input);
 		cout << "Matrix is " << B.rowdim() << " by " << B.coldim() << endl;
 
 		Field::Element det_B;

@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
 	for (unsigned int i = 0; i < odata.size(); i++)
 		report << odata[i] << " ";
 
-	pass = testBlackbox(TT);
+	pass = testBlackboxNoRW(TT);
 	report <<"<====\tDone Sylvester matrix black box test suite" << endl;
 
 

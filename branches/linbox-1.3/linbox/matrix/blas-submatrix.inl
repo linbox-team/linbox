@@ -312,13 +312,13 @@ namespace LinBox
 		}
 
 		//! @internal operator *.
-		_Field& operator * ()
+		typename _Field::Element& operator * ()
 		{
 			return *_cur;
 		}
 
 		//! @internal operator *.
-		const _Field& operator * () const
+		const typename _Field::Element& operator * () const
 		{
 			return *_cur;
 		}
@@ -403,7 +403,7 @@ namespace LinBox
 		}
 
 		//! @internal operator *.
-		const _Field& operator * () const
+		const typename _Field::Element& operator * () const
 		{
 			return *_cur;
 		}
@@ -468,7 +468,7 @@ namespace LinBox
 			return (_cur != r._cur) || (_beg != r._beg) || (_cont_len != r._cont_len) || (_gap_len != r._gap_len);
 		}
 
-		const _Field& operator*()
+		const typename _Field::Element& operator*()
 		{ return *_cur; }
 
 	 _Field& operator*()
@@ -612,13 +612,13 @@ namespace LinBox
 
 		const _Field& operator*() const {return *_cur;}
 
-		_Field& operator*() {return *_cur;}
+		typename _Field::Element& operator*() {return *_cur;}
 
 		size_t rowIndex () const { return _r_idx; }
 
 		size_t colIndex () const { return _c_idx; }
 
-		const _Field& value () const {return *_cur;}
+		const typename _Field::Element& value () const {return *_cur;}
 
 	protected:
 		typename BlasMatrix<_Field>::Iterator _cur;
@@ -741,7 +741,7 @@ namespace LinBox
 			return ((_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
 		}
 
-		const _Field& operator*() const
+		const typename _Field::Element& operator*() const
 		{
 			return *_cur;
 		}
@@ -756,7 +756,7 @@ namespace LinBox
 			<< m._c_idx;
 		}
 
-		const _Field & value() const
+		const typename _Field::Element & value() const
 		{
 			return this->operator*();
 
@@ -890,6 +890,8 @@ namespace LinBox
 		char c;
 		file>>m>>n>>c;
 		// std::cout << m << 'x' << n << ':' << c << std::endl;
+
+// this is bogus!! -bds
 		_row = m; _col = n;
 
 		_Field zero;
@@ -920,6 +922,18 @@ namespace LinBox
 	}
 
 	template <class _Field>
+	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os) const 
+	{
+		os << "%%MatrixMarket matrix array integer general" << std::endl;
+		field().write(os << "% ") << std::endl; 
+		os << rowdim() << " " << coldim() << std::endl;
+		typename _Field::Element x; field().init(x, 0);
+		for (size_t j = 0; j < rowdim(); ++j)
+			for (size_t i = 0; i < rowdim(); ++i)
+				os << getEntry(x, i, j) << std::endl;
+		return os;
+	}
+	template <class _Field>
 	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os,
 						     enum LinBoxTag::Format f) const
 	{
@@ -934,7 +948,7 @@ namespace LinBox
 
 
 
-				_Mat->_field.cardinality (c);
+				_Mat->field().cardinality (c);
 
 				if (c >0)
 					wid = (int) ceil (log ((double) c) / M_LN10);
@@ -943,7 +957,7 @@ namespace LinBox
 					size_t max=0;
 					ConstIterator it = Begin();
 					for (; it != End(); ++it){
-						_Mat->_field.convert(tmp,*it);
+						_Mat->field().convert(tmp,*it);
 						if (tmp.bitsize() > max)
 							max= tmp.bitsize();
 					}
@@ -964,7 +978,7 @@ namespace LinBox
 						 * fixed by using extra field
 						 */
 
-						_Mat->_field.write (os, *pe);
+						_Mat->field().write (os, *pe);
 						os << " ";
 					}
 
@@ -982,7 +996,7 @@ namespace LinBox
 					os << " [ ";
 
 					for (pe = p->begin (); pe != p->end (); ) {
-						_Mat->_field.write (os, *pe);
+						_Mat->field().write (os, *pe);
 						++pe ;
 						if (pe != p->end())
 							os << ", ";
@@ -1007,7 +1021,7 @@ namespace LinBox
 					os << "<tr>";
 
 					for (pe = p->begin (); pe != p->end (); ) {
-						_Mat->_field.write (os<< "<td>", *pe)<<"</td>";
+						_Mat->field().write (os<< "<td>", *pe)<<"</td>";
 						++pe ;
 					}
 
@@ -1025,7 +1039,7 @@ namespace LinBox
 					typename ConstRow::const_iterator pe;
 
 					for (pe = p->begin (); pe != p->end (); ) {
-						_Mat->_field.write (os, *pe);
+						_Mat->field().write (os, *pe);
 						++pe ;
 						if (pe != p->end())
 							os << "& ";

@@ -55,7 +55,7 @@
 
 //#define _LB_TIME
 #define _LB_MAX_SZ 50
-#define _LB_ITERS 3
+#define _LB_ITERS 1
 //#define _LB_DEBUG
 
 

@@ -39,27 +39,10 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/triplesbb.h"
 #include "linbox/blackbox/transpose.h"
+#include "linbox/vector/vector-domain.h"
 
 #include "test-common.h"
 #include "test-generic.h"
-
-
-/*! Check vector equality.
- *
- * @param a a vector
- * @param b another one
- * @todo factorize somewhere!
- *
- */
-template<class Vec>
-bool eqVec(const Vec& a, const Vec& b)
-{
-	bool good = true;
-	if (a.size() != b.size())
-		return !good;
-	for (typename Vec::size_type i = 0; i < a.size(); ++i) good = good && (a[i] == b[i]);
-	return good;
-}
 
 using namespace LinBox;
 
@@ -69,11 +52,14 @@ int main (int argc, char **argv)
 
 	bool pass = true;
 
-	static size_t n = 200;
+	static size_t m = 4;
+	static size_t n = 20;
 	static integer q = 2147483647U;
-	static int iterations = 10;
+	q = 101;
+	static int iterations = 1;
 
 	static Argument args[] = {
+		{ 'm', "-m M", "Set dimension of test matrices to NxN.", TYPE_INT,     &m },
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
@@ -84,52 +70,51 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator().start("triplesbb black box test suite", "triplesbb");
+	commentator().start("TriplesBB black box test suite", "triplesbb");
 
-	typedef Modular<uint32_t> Field;
+	//typedef Modular<uint32_t> Field;
+	typedef Modular<double> Field;
 	typedef Field::Element Element;
 	typedef vector <Element> Vector;
 	typedef TriplesBB<Field> Blackbox;
 
 	Field F (q);
-	Element d;
-	F.init (d, -1);
 
 	// set up the matrix
-	std::vector<Element> values;
-	std::vector<size_t> rowP;
-	std::vector<size_t> colP;
-	for(int i = 1; i < 12; ++i)
-	{
-		values.push_back(i);
-		rowP.push_back(i%n + 1);
-		colP.push_back(i/n + 1);
+	Blackbox A(F, m, n);
+	Element d;
+
+	for(int i = 0; i < (int)m; ++i) 
+	{ 	
+		F.init(d, i);
+		A.setEntry(i, (2*i)%n, d);
+		F.init(d, 1);
+		A.setEntry(i, (2*i+1)%n, d);
 	}
 
-	Blackbox A(F, values, rowP, colP, n, n);
-
+	pass = pass && testReadWrite(A);
 	pass = pass && testBlackbox(A);
 
+/*
 	Transpose<Blackbox> B(&A);
 
-	pass = pass && testBlackbox(B);
+	pass = pass && testBlackbox(B); 
 
 	Vector x(n), y(n), z(n);
-	for(int i = 0; i < 5; ++i) x[i] = i;
-
+	int k = (n > 5 ? 5 : n);
+	for(int i = 0; i < k; ++i) F.init(x[i], i);
+	
+	VectorDomain<Field> VD(F);
 	A.apply(y, x);
 	B.applyTranspose(z, x);
-	pass = pass && eqVec(y, z);
+	pass = pass && VD.areEqual(y, z);
 
 	B.apply(y, x);
 	A.applyTranspose(z, x);
-	pass = pass && eqVec(y, z);
+	pass = pass && VD.areEqual(y, z);
+*/
 
-	Blackbox C(F, n, n);
-	for(size_t i = 0; i < rowP.size(); ++i) C.addEntry(values[i], rowP[i], colP[i]);
-	pass = pass && testBlackbox(C);
-
-	commentator().stop("triplesbb black box test suite");
+	commentator().stop("TriplesBB black box test suite");
 	return pass ? 0 : -1;
 }
 

@@ -44,7 +44,12 @@ namespace LinBox
 	 * This object is constructed from the field object \c F and a field
 	 * element a which it stores and thus can use several times.  The use of
 	 * an object instead of a static variable to store the element a makes
-	 * this method thread-safe.
+	 * this method thread-safe. (?? -bds)
+	 *
+	 * FieldAXPY<Fld> is an assignable type.  
+	 * The methods are mulacc(), accumulate(), assign(), reset(), get(), and field().
+	 * Of a const instance you can access get() and field().
+	 * [Note: get() may renormalize the value, but it remains constant as a field element.
 	 *
 	 * @param Field \ref LinBox @link Fields field@endlink
 	 */
@@ -61,8 +66,8 @@ namespace LinBox
 		 * @param F field F in which arithmetic is done
 		 */
 		FieldAXPY (const Field &F) :
-		       	_field (F)
-		{ _field.init (_y, 0); }
+		       	_field (&F)
+		{ field().init (_y, 0); }
 
 		/** Copy constructor.
 		 * @param faxpy
@@ -83,16 +88,16 @@ namespace LinBox
 		 * @param x constant reference to element x
 		 */
             inline Element& mulacc (const Element &a, const Element &x)
-                { return _field.axpyin (_y, a, x); }
+                { return field().axpyin (_y, a, x); }
 
             inline Element& accumulate (const Element &t)
-                { return _field.addin (_y, t); }
+                { return field().addin (_y, t); }
 
 		/** Retrieve y
 		 *
 		 * Performs the delayed modding out if necessary
 		 */
-		inline Element &get (Element &y) { y = _y; return y; }
+		inline Element &get (Element &y) const { return y = _y; }
 
 		/** Assign method.
 		 * Stores new field element for arithmetic.
@@ -106,14 +111,15 @@ namespace LinBox
 		}
 
 		inline void reset() {
-			_field.init(_y,0);
+			field().init(_y,0);
 		}
 
+		inline const Field& field() const { return *_field; }
 	    protected:
 
 		/// Field in which arithmetic is done
 		/// Not sure why it must be mutable, but the compiler complains otherwise
-		Field _field;
+		const Field *_field;
 
 		/// Field element for arithmetic
 		Element _y;

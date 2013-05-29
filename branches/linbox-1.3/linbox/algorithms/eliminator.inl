@@ -65,9 +65,9 @@ namespace LinBox
 
 	template <class Field, class Matrix>
 	Eliminator<Field, Matrix>::Eliminator (const Field &F, unsigned int N) :
-		_field (F), _VD (F), _MD (F), _number (N), _indepRows (N), _indepCols (N)
+		_field (&F), _VD (F), _MD (F), _number (N), _indepRows (N), _indepCols (N)
 	{
-		_field.init (_one, 1);
+		field().init (_one, 1);
 	}
 
 	template <class Field, class Matrix>
@@ -122,7 +122,7 @@ namespace LinBox
 
 		BlasMatrix<Field> Ainv1 (Ainv, 0, 0, rank, rank);
 		BlasMatrix<Field> U1 (_matU, 0, 0, rank, rank);
-		_field.inv (dinv, d);
+		field().inv (dinv, d);
 		_MD.mul (Ainv1, U1, dinv);
 
 		BlasMatrix<Field> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
@@ -231,7 +231,7 @@ namespace LinBox
 		_MD.permuteColumns (_matU, _perm.rbegin (), _perm.rend ());
 
 		/* Divide _matU by the determinant and copy to W */
-		_field.invin (d);
+		field().invin (d);
 		_MD.mulin (_matU, d);
 
 		_MD.subin (W, W);
@@ -309,7 +309,7 @@ namespace LinBox
 
 		BlasMatrix<Field> Ainv1 (U, 0, 0, rank, rank);
 		BlasMatrix<Field> U1 (_matU, 0, 0, rank, rank);
-		_field.inv (dinv, det);
+		field().inv (dinv, det);
 		_MD.mul (Ainv1, U1, dinv);
 
 		BlasMatrix<Field> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
@@ -387,12 +387,12 @@ namespace LinBox
 
 		if (_MD.isZero (Ap)) {
 			r = 0;
-			_field.assign (d, d0);
+			field().assign (d, d0);
 		}
 		else if (m == 1) {
 			// Find minimal index i > k with _matA[i, 1] != 0
 			for (i = 0; i < _matA.rowdim (); ++i)
-				if (_indices[i] >= k && !_field.isZero (_matA.getEntry (_indices[i], s)))
+				if (_indices[i] >= k && !field().isZero (_matA.getEntry (_indices[i], s)))
 					break;
 
 			linbox_check (i < _matA.rowdim ());
@@ -408,8 +408,8 @@ namespace LinBox
 			typename Matrix::ColIterator A1 = _matA.colBegin () + s;
 
 			_VD.neg (*Uk, *A1);
-			_field.assign ((*Uk)[_indices[i]], (*Uk)[k]);
-			_field.assign ((*Uk)[k], d0);
+			field().assign ((*Uk)[_indices[i]], (*Uk)[k]);
+			field().assign ((*Uk)[k], d0);
 
 			std::swap (_indices[i], _indices[k]);
 
@@ -447,7 +447,7 @@ namespace LinBox
 			BlasMatrix<Field> f (_matA,    k,      s + m1, r1, m2);
 			BlasMatrix<Field> g (_matA,    k + r1, s + m1, l1, m2);
 
-			_field.inv (d0inv, d0);
+			field().inv (d0inv, d0);
 
 			_MD.mul (et, a, f);
 			_MD.mulin (e, d1);
@@ -476,7 +476,7 @@ namespace LinBox
 
 			BlasMatrix<Field> U1 (_matU, 0, k, _matU.rowdim (), r1);
 
-			_field.neg (d1neg, d1);
+			field().neg (d1neg, d1);
 			adddIN (_matU, d1neg);
 			_MD.permuteRows (U1, _perm.begin () + P_end, _perm.end ());
 			adddIN (_matU, d1);
@@ -509,7 +509,7 @@ namespace LinBox
 			BlasMatrix<Field> u2    (_matU, k + r1, k + r1, r2, r2);
 			BlasMatrix<Field> c2    (_matU, k + r,  k + r1, l2, r2);
 
-			_field.inv (d1inv, d1);
+			field().inv (d1inv, d1);
 
 			_MD.mul (a11t, a2, c1);
 			_MD.mulin (a1, d);
@@ -539,8 +539,8 @@ namespace LinBox
 
 		typename Field::Element dinv, d0inv;
 
-		_field.inv (dinv, d);
-		_field.inv (d0inv, d0);
+		field().inv (dinv, d);
+		field().inv (d0inv, d0);
 
 		BlasMatrix<Field> R (_matA.rowdim () - k, _matA.coldim () - s);
 		BlasMatrix<Field> Atest (Acopy, k, s, _matA.rowdim () - k, _matA.coldim () - s);
@@ -573,7 +573,7 @@ namespace LinBox
 		unsigned int idx;
 
 		for (i = A.rowBegin (), idx = 0; i != A.rowEnd (); ++i, ++idx)
-			_field.addin ((*i)[idx], d);
+			field().addin ((*i)[idx], d);
 
 		return A;
 	}
@@ -589,7 +589,7 @@ namespace LinBox
 
 		for (i = A.rowBegin (), i_idx = 0; i != A.rowEnd (); ++i, ++i_idx) {
 			_VD.subin (*i, *i);
-			_field.assign ((*i)[i_idx], _one);
+			field().assign ((*i)[i_idx], _one);
 		}
 
 		return A;

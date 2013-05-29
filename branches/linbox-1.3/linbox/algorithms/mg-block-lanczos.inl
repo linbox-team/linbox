@@ -150,8 +150,8 @@ namespace LinBox
 		_matV[2].resize (A.coldim (), _block);
 		_AV.resize (A.coldim (), _block);
 
-		NonzeroRandIter<Field> real_ri (_field, _randiter);
-		RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (_field, real_ri, A.coldim ());
+		NonzeroRandIter<Field> real_ri (field(), _randiter);
+		RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (field(), real_ri, A.coldim ());
 
 		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
 			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -188,7 +188,7 @@ namespace LinBox
 					VectorWrapper::ensureDim (y, A.coldim ());
 
 					stream >> d1;
-					Diagonal<Field> D (_field, d1);
+					Diagonal<Field> D (field(), d1);
 					Compose<Blackbox, Diagonal<Field> > B (&A, &D);
 
 					report << "Random D: ";
@@ -215,7 +215,7 @@ namespace LinBox
 					typedef Compose<PC2, CO1> CO2;
 
 					stream >> d1;
-					PC1 D (_field, d1);
+					PC1 D (field(), d1);
 					PC2 AT (&A);
 					CO1 B1 (&D, &A);
 					CO2 B (&AT, &B1);
@@ -250,8 +250,8 @@ namespace LinBox
 					typedef Compose<PC1, CO3> CO4;
 
 					stream >> d1 >> d2;
-					PC1 D1 (_field, d1);
-					PC1 D2 (_field, d2);
+					PC1 D1 (field(), d1);
+					PC1 D2 (field(), d2);
 					PC2 AT (&A);
 					CO1 B1 (&A, &D1);
 					CO2 B2 (&D2, &B1);
@@ -358,8 +358,8 @@ namespace LinBox
 
 		typename Matrix::ColIterator xi = x.colBegin ();
 
-		NonzeroRandIter<Field> real_ri (_field, _randiter);
-		RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense, NonzeroRandIter<Field> > d_stream (_field, real_ri, A.coldim ());
+		NonzeroRandIter<Field> real_ri (field(), _randiter);
+		RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense, NonzeroRandIter<Field> > d_stream (field(), real_ri, A.coldim ());
 
 		TransposeMatrix<Matrix> bT (_b);
 		TransposeMatrix<Matrix> xT (_x);
@@ -369,7 +369,7 @@ namespace LinBox
 			report << "in try: " << i << std::endl;
 
 			// Fill y with random data
-			RandomDenseStream<Field, typename Matrix::Col> stream (_field, _randiter, A.coldim ());
+			RandomDenseStream<Field, typename Matrix::Col> stream (field(), _randiter, A.coldim ());
 			typename Matrix::ColIterator iter;
 
 			for (iter = _y.colBegin (); iter != _y.colEnd (); ++iter)
@@ -400,7 +400,7 @@ namespace LinBox
 					VectorWrapper::ensureDim (d1, A.coldim ());
 
 					d_stream >> d1;
-					Diagonal<Field> D (_field, d1);
+					Diagonal<Field> D (field(), d1);
 					Compose<Blackbox, Diagonal<Field> > B (&A, &D);
 
 					report << "Random D: ";
@@ -424,7 +424,7 @@ namespace LinBox
 					typedef Compose<PC2, CO1> CO2;
 
 					d_stream >> d1;
-					PC1 D (_field, d1);
+					PC1 D (field(), d1);
 					PC2 AT (&A);
 					CO1 B1 (&D, &A);
 					CO2 B (&AT, &B1);
@@ -453,8 +453,8 @@ namespace LinBox
 					typedef Compose<PC1, CO3> CO4;
 
 					d_stream >> d1 >> d2;
-					PC1 D1 (_field, d1);
-					PC1 D2 (_field, d2);
+					PC1 D1 (field(), d1);
+					PC1 D2 (field(), d2);
 					PC2 AT (&A);
 					CO1 B1 (&A, &D1);
 					CO2 B2 (&D2, &B1);
@@ -545,7 +545,7 @@ namespace LinBox
 		TIMER_DECLARE(terminationCheck);
 
 		// Get a random fat vector _matV[0]
-		RandomDenseStream<Field, typename Matrix::Col> stream (_field, _randiter, A.coldim ());
+		RandomDenseStream<Field, typename Matrix::Col> stream (field(), _randiter, A.coldim ());
 
 		for (k = _matV[0].colBegin (); k != _matV[0].colEnd (); ++k)
 			stream >> *k;
@@ -897,7 +897,7 @@ namespace LinBox
 				S[_indices[row]] = true;  // Use column j of V_i in W_i
 
 				// Give the (j, j) entry unity
-				_field.inv (Mjj_inv, _matM.getEntry (_indices[row], _indices[row]));
+				field().inv (Mjj_inv, _matM.getEntry (_indices[row], _indices[row]));
 				_VD.mulin (*(_matM.rowBegin () + (int)_indices[row]), Mjj_inv);
 
 				// Zero the rest of the column j
@@ -919,10 +919,10 @@ namespace LinBox
 
 				const typename Field::Element &Mjj = _matM.refEntry (_indices[row], _indices[row] + _block);
 
-				linbox_check (!_field.isZero (Mjj));
+				linbox_check (!field().isZero (Mjj));
 
 				// Zero the rest of the column j + N
-				eliminate_col (_matM, row, (int)_block, _indices, _field.inv (Mjj_inv, Mjj));
+				eliminate_col (_matM, row, (int)_block, _indices, field().inv (Mjj_inv, Mjj));
 
 				// Zero row j
 				_VD.subin (*(_matM.rowBegin () + (int)_indices[row]), *(_matM.rowBegin () + (int)_indices[row]));
@@ -1028,7 +1028,7 @@ namespace LinBox
 				if (*l)
 					_VD.dot (*k, *i, *j);
 				else
-					_field.subin (*k, *k);
+					field().subin (*k, *k);
 			}
 
 			_VD.copy (*i, tmp);
@@ -1093,7 +1093,7 @@ namespace LinBox
 		size_t idx = 0;
 
 		for (i = A.rowBegin (); i != A.rowEnd (); ++i, ++idx)
-			_field.addin ((*i)[idx], _one);
+			field().addin ((*i)[idx], _one);
 
 		return A;
 	}
@@ -1153,7 +1153,7 @@ namespace LinBox
 
 		for (i = A.rowBegin (), i_idx = 0; i != A.rowEnd (); ++i, ++i_idx) {
 			_VD.subin (*i, *i);
-			_field.assign ((*i)[i_idx], _one);
+			field().assign ((*i)[i_idx], _one);
 		}
 
 		return A;
@@ -1181,7 +1181,7 @@ namespace LinBox
 		row_vec = *(_matM.rowBegin () + (int)indices[row]);
 
 		for (idx = row; idx < A.rowdim (); ++idx) {
-			if (!_field.isZero (A.getEntry (indices[idx], indices[row] + col_offset))) {
+			if (!field().isZero (A.getEntry (indices[idx], indices[row] + col_offset))) {
 				if (idx != row) {
 					typename Matrix::Row row1 = *(A.rowBegin () + (int)indices[idx]);
 					std::swap_ranges (row_vec.begin (), row_vec.end (), row1.begin ());
@@ -1213,15 +1213,15 @@ namespace LinBox
 		for (row = 0; row < pivot; ++row) {
 			const typename Field::Element &Aij = A.getEntry (indices[row], indices[pivot] + col_offset);
 
-			if (!_field.isZero (Aij))
-				_VD.axpyin (*(A.rowBegin () +(int) indices[row]), _field.neg (p, Aij), pivot_row);
+			if (!field().isZero (Aij))
+				_VD.axpyin (*(A.rowBegin () +(int) indices[row]), field().neg (p, Aij), pivot_row);
 		}
 
 		for (++row; row < A.rowdim (); ++row) {
 			const typename Field::Element &Aij = A.getEntry (indices[row], indices[pivot] + col_offset);
 
-			if (!_field.isZero (Aij))
-				_VD.axpyin (*(A.rowBegin () + (int) indices[row]), _field.neg (p, Aij), pivot_row);
+			if (!field().isZero (Aij))
+				_VD.axpyin (*(A.rowBegin () + (int) indices[row]), field().neg (p, Aij), pivot_row);
 		}
 	}
 
@@ -1250,19 +1250,19 @@ namespace LinBox
 
 		typename Field::Element neg_one;
 
-		_field.init (neg_one, -1);
+		field().init (neg_one, -1);
 
 		size_t i, j;
 
 		for (i = 0; i < M.rowdim (); ++i) {
 			for (j = 0; j < M.coldim (); ++j) {
-				if (i != j && !_field.isZero (M.getEntry (i, j))) {
-					if (!_field.isZero (M.getEntry (i, i))) {
+				if (i != j && !field().isZero (M.getEntry (i, j))) {
+					if (!field().isZero (M.getEntry (i, i))) {
 						typename Matrix::ConstRowIterator row = M.rowBegin () + j;
 						if (!_VD.isZero (*row))
 							return false;
 					}
-					else if (!_field.isZero (M.getEntry (j, j))) {
+					else if (!field().isZero (M.getEntry (j, j))) {
 						typename Matrix::ConstColIterator col = M.colBegin () + i;
 						if (!_VD.isZero (*col))
 							return false;
@@ -1270,7 +1270,7 @@ namespace LinBox
 					else
 						return false;
 				}
-				else if (!_field.isZero (M.getEntry (i, j)) && !_field.areEqual (M.getEntry (i, j), neg_one))
+				else if (!field().isZero (M.getEntry (i, j)) && !field().areEqual (M.getEntry (i, j), neg_one))
 					return false;
 			}
 		}
@@ -1302,7 +1302,7 @@ namespace LinBox
 
 		bool ret = true;
 
-		RandomDenseStream<Field, typename Matrix::Row> stream (_field, _randiter, n);
+		RandomDenseStream<Field, typename Matrix::Row> stream (field(), _randiter, n);
 		typename Matrix::RowIterator i = A.rowBegin ();
 		typename Matrix::ColIterator j = AT.colBegin ();
 
@@ -1370,7 +1370,7 @@ namespace LinBox
 
 		bool ret = true;
 
-		RandomDenseStream<Field, typename Matrix::Row> stream (_field, _randiter, n);
+		RandomDenseStream<Field, typename Matrix::Row> stream (field(), _randiter, n);
 		typename Matrix::RowIterator i = A.rowBegin ();
 		typename Matrix::ColIterator j = AT.colBegin ();
 
@@ -1472,7 +1472,7 @@ namespace LinBox
 
 		bool ret = true;
 
-		RandomDenseStream<Field, typename Matrix::Row> stream (_field, _randiter, n);
+		RandomDenseStream<Field, typename Matrix::Row> stream (field(), _randiter, n);
 		typename Matrix::RowIterator i = A.rowBegin ();
 
 		for (; i != A.rowEnd (); ++i)
@@ -1482,10 +1482,10 @@ namespace LinBox
 		report << "Computed A:" << std::endl;
 		_MD.write (report, A);
 
-		RandomDenseStream<Field, Matrix> stream1 (_field, _randiter, m);
+		RandomDenseStream<Field, Matrix> stream1 (field(), _randiter, m);
 		stream1 >> x;
 
-		RandomDenseStream<Field, Matrix> stream2 (_field, _randiter, n);
+		RandomDenseStream<Field, Matrix> stream2 (field(), _randiter, n);
 		stream1 >> y;
 
 		report << "Computed     x: ";
@@ -1507,14 +1507,14 @@ namespace LinBox
 		_VD.dot (ATxy, ATx, y);
 
 		report << "Computed  ATxy: ";
-		_field.write (report, ATxy) << std::endl;
+		field().write (report, ATxy) << std::endl;
 
 		_VD.dot (xAy, x, Ay);
 
 		report << "Computed   xAy: ";
-		_field.write (report, xAy) << std::endl;
+		field().write (report, xAy) << std::endl;
 
-		if (!_field.areEqual (ATxy, xAy)) {
+		if (!field().areEqual (ATxy, xAy)) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: <A^T x, y> != <x, Ay>" << std::endl;
 			ret = false;

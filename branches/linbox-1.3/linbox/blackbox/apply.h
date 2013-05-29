@@ -97,9 +97,9 @@ namespace LinBox
 
 
 		//#ifdef __LINBOX_BLAS_AVAILABLE
-		inline Vector& applyV(Vector                       &y,
+		inline Vector& applyV(Vector                        &y,
 				      const BlasMatrix<Domain>     &A,
-				      const Vector                 &x) const
+				      const Vector                  &x) const
 		{
 
 			if (( _prime > 0) && ( _prime <  67108863)) {
@@ -118,9 +118,9 @@ namespace LinBox
 			return y;
 		}
 
-		inline Vector& applyVTrans(Vector                       &y,
+		inline Vector& applyVTrans(Vector                        &y,
 					   BlasMatrix<Domain>           &A,
-					   const Vector                 &x) const
+					   const Vector                  &x) const
 		{
 
 			if (( _prime > 0) && ( _prime <  67108863)) {

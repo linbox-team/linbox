@@ -454,7 +454,7 @@ namespace LinBox
 	};
 
 
-	///
+	/// To select algorithms that use Giorgi' algorithms/block-massey-domain.h
 	struct BlockWiedemannTraits : public Specifier {
 		BlockWiedemannTraits ( Preconditioner Precond= NO_PRECONDITIONER,
 				       size_t         Rank   = RANK_UNKNOWN)
@@ -463,6 +463,19 @@ namespace LinBox
 			Specifier::_rank           = Rank;
 		}
 		BlockWiedemannTraits( const Specifier& S) :
+		       	Specifier(S)
+		{}
+	};
+
+	/// To select algorithms that use Yuhasz' algorithms/coppersmith.h
+	struct CoppersmithTraits : public Specifier {
+		CoppersmithTraits ( Preconditioner Precond= NO_PRECONDITIONER,
+				       size_t         Rank   = RANK_UNKNOWN)
+		{
+			Specifier::_preconditioner = Precond;
+			Specifier::_rank           = Rank;
+		}
+		CoppersmithTraits( const Specifier& S) :
 		       	Specifier(S)
 		{}
 	};
@@ -615,6 +628,8 @@ namespace LinBox
 		typedef CRATraits                CRA ;                    //!< Use CRA for solving Integer systems.
 		typedef WiedemannTraits		 Wiedemann;               //!< Method::Wiedemann : no doc
 		typedef WiedemannExtensionTraits ExtensionWiedemann;      //!< Method::ExtensionWiedemann :  no doc
+		typedef BlockWiedemannTraits		 BlockWiedemann;  //!< Method::BlockWiedemann : no doc
+		typedef CoppersmithTraits		 Coppersmith;         //!< Method::Coppersmith : no doc
 		typedef LanczosTraits		 Lanczos;                 //!< Method::Lanczos : no doc.
 		typedef BlockLanczosTraits	 BlockLanczos;            //!< Method::BlockLanczos : no doc.
 		typedef SparseEliminationTraits	 SparseElimination;       //!< Method::SparseElimination : no doc

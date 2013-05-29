@@ -73,7 +73,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 	private:
-		const Field         &_field;
+		const Field         *_field;
 
 	public:
 
@@ -81,7 +81,7 @@ namespace LinBox
 		 * over which to perform computations
 		 */
 		GaussDomain (const Field &F) :
-			_field (F)
+			_field (&F)
 		{}
 
 		//Copy constructor
@@ -92,7 +92,7 @@ namespace LinBox
 
 		/** accessor for the field of computation
 		*/
-		const Field &field () const { return _field; }
+		const Field &field () const { return *_field; }
 
 		/** @name rank
 		  Callers of the different rank routines\\

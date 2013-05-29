@@ -170,7 +170,7 @@ static bool testRandomLinearity (const Field                                 &F,
 	BlasMatrix<Field> A (F, A_stream);
 	Submatrix<BlasMatrix<Field> > Ap (&A, 0, 0, v1_stream.dim (), v2_stream.dim ());
 
-	bool ret = testLinearity (F, Ap, v1_stream, v2_stream);
+	bool ret = testLinearity (Ap, v1_stream, v2_stream);
 
 	A_stream.reset ();
 	v1_stream.reset ();

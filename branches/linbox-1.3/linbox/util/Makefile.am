@@ -55,6 +55,7 @@ pkgincludesub_HEADERS=      \
 	matrix-stream.h			\
 	matrix-stream.inl		\
 	mpicpp.h			    \
-	mpicpp.inl
+	mpicpp.inl			\
+	write-mm.h
 
 EXTRA_DIST = util.doxy

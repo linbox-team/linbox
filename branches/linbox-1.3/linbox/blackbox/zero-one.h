@@ -86,7 +86,7 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& apply(OutVector& y, const InVector& x) const // y = Ax;
 		{
-			return applySpecialization(y,x,getType(_field));
+			return applySpecialization(y,x,getType(field()));
 		}
 
 		/** applyTranspose.
@@ -100,7 +100,7 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose(OutVector& y, const InVector& x) const // y = ATx
 		{
-			return applyTransposeSpecialization(y,x,getType(_field));
+			return applyTransposeSpecialization(y,x,getType(field()));
 		}
 
 		size_t rowdim() const
@@ -125,7 +125,7 @@ namespace LinBox
 
 		template<typename _Tp1>
 		ZeroOne(const ZeroOne<_Tp1>& Z, const Field& F) :
-			_field(F),
+			_field(&F),
 			_rows(Z.rowdim()), _cols(Z.coldim()), _nnz(Z.nnz()),
 			_rowP(new Index[Z.nnz()]), _colP(new Index[Z.nnz()]),
 			_rowSort(Z.isRowSorted()), _colSort(Z.isColSorted()),
@@ -189,8 +189,8 @@ namespace LinBox
 			_nnz = rowP.size();
 			_rowP = new size_t[_nnz];
 			_colP = new size_t[_nnz];
-			copy(rowP.begin(), rowP.end(), _rowP);
-			copy(colP.begin(), colP.end(), _colP);
+			std::copy(rowP.begin(), rowP.end(), _rowP);
+			std::copy(colP.begin(), colP.end(), _colP);
 			return is;
 		}
 
@@ -208,7 +208,7 @@ namespace LinBox
 
 		const Field& field() const
 		{
-			return _field;
+			return *_field;
 		}
 
 		bool isRowSorted() const
@@ -229,7 +229,7 @@ namespace LinBox
 	protected:
 
 
-		Field _field; //!< @internal The field used by this class
+		const Field *_field; //!< @internal The field used by this class
 
 		/*! @internal A temporary element used for initalization for the Begin() and
 		 * End() methods of the ZeroOne class.  Is used to initalize a 1

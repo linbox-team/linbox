@@ -54,7 +54,7 @@ public:
  * Macro for automatic code generation *
  ***************************************/
 #define LB_VECTOR_VISIT(B)				\
-	void visit(const B &d){apply(d);}
+	void visit(const B &d){this->apply(d);}
 
 
 /**********************************************************************************

@@ -88,7 +88,7 @@ namespace LinBox
 		/** No-Op Constructor
 		*/
 		Butterfly (const Field &F, size_t n) :
-			_field (F), _VD (F), _n (n)
+			_field (&F), _VD (F), _n (n)
 		{}
 
 
@@ -159,7 +159,7 @@ namespace LinBox
 
 				for( ; sit != A.switchesEnd(); ++sit) {
 					_Sw1 newsw;
-					typename Switch::template rebind<_Tp1>() (newsw, *sit, Ap.field(), A._field);
+					typename Switch::template rebind<_Tp1>() (newsw, *sit, Ap.field(), A.field());
 					Ap.switches().push_back( newsw );
 				}
 				//             Ap = new other(LAp);
@@ -168,7 +168,7 @@ namespace LinBox
 
 		template<typename _Tp1, typename _Sw1>
 		Butterfly (const Butterfly<_Tp1,_Sw1>& B, const Field &F) :
-			_field (F), _VD (F), _n (B.rowdim())
+			_field (&F), _VD (F), _n (B.rowdim())
 		{
 			typename Butterfly<_Tp1,_Sw1>::template rebind<Field>() (*this, B);
 		}
@@ -191,7 +191,7 @@ namespace LinBox
 		{ return _n; }
 
 		const Field& field() const
-		{return _field;}
+		{return *_field;}
 
 
 		// Required for rebind
@@ -216,7 +216,7 @@ namespace LinBox
 
 
 		// Field over which we are working
-		const Field _field;
+		const Field *_field;
 		VectorDomain<Field> _VD;
 
 		// Number of rows and columns of square matrix.
@@ -243,7 +243,7 @@ namespace LinBox
 
 	template <class Field, class Switch>
 	inline Butterfly<Field, Switch>::Butterfly (const Field &F, size_t n, typename Switch::Factory &factory) :
-		_field (F), _VD (F), _n (n)
+		_field (&F), _VD (F), _n (n)
 	{
 		buildIndices ();
 
@@ -261,7 +261,7 @@ namespace LinBox
 		_VD.copy (y, x);
 
 		for (; idx_iter != _indices.end (); ++idx_iter, ++switch_iter)
-			switch_iter->apply (_field, y[idx_iter->first], y[idx_iter->second]);
+			switch_iter->apply (field(), y[idx_iter->first], y[idx_iter->second]);
 
 		return y;
 	}
@@ -276,7 +276,7 @@ namespace LinBox
 		_VD.copy (y, x);
 
 		for (; idx_iter != _indices.rend (); ++idx_iter, ++switch_iter)
-			switch_iter->applyTranspose (_field, y[idx_iter->first], y[idx_iter->second]);
+			switch_iter->applyTranspose (field(), y[idx_iter->first], y[idx_iter->second]);
 
 		return y;
 	}

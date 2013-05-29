@@ -120,7 +120,7 @@ namespace LinBox
 				//for(ip = _indexP.begin(); ip !=_indexP.end()-1; ++ip, ++yp)
 			{
 
-				FieldAXPY<Field> accum (_field);
+				FieldAXPY<Field> accum (field());
 
 #ifdef _RUNOPENMP
 				//#pragma omp critical
@@ -169,7 +169,7 @@ namespace LinBox
 	   {
 	   linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
 
-	   FieldAXPY<Field> accum (_field);
+	   FieldAXPY<Field> accum (field());
 
 	   typename OutVector::iterator yp;
 	   typename InVector::const_iterator xp;
@@ -199,7 +199,7 @@ namespace LinBox
 	{
 		linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
 
-		FieldAXPY<Field> accum (_field);
+		FieldAXPY<Field> accum (field());
 
 		typename OutVector::iterator yp;
 		typename InVector::const_iterator xp;

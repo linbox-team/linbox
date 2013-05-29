@@ -61,6 +61,9 @@ int main (int argc, char **argv)
 
 	long unsigned int r;
 
+	LinBox::GivaroRational ZZ;
+	MatrixStream<GivaroRational> ms( ZZ, input );
+	SparseMatrix<GivaroRational> A ( ms );
 	if (argc == 2) { // rank over the rational numbers.
 
 		/* We could pick a random prime and work mod that prime, But
@@ -69,19 +72,16 @@ int main (int argc, char **argv)
 		 * rational matrix and our concept is that we are getting the
 		 * rank of that matrix by some blackbox magic inside linbox.
 		 */
-		LinBox::GivaroRational ZZ;
-		MatrixStream<GivaroRational> ms( ZZ, input );
-		SparseMatrix<GivaroRational> A ( ms );
-		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
+		std::cout << "matrix is " << A.rowdim() << " by " << A.coldim() << std::endl;
 
 		LinBox::rank (r, A);
 	}
 	if (argc == 3) { // rank mod a prime
-		/*
 		//for prime greater than wordsize:
-		stringstream qstr(argv[2]);
-		integer q;
-		qstr >> q;
+		//stringstream qstr(argv[2]);
+		//qstr >> q;
+		/*
+		integer q = atoi(argv[2]);
 		typedef Modular<integer> Field;
 		*/
 		/*
@@ -94,10 +94,13 @@ int main (int argc, char **argv)
 		typedef Modular<int32_t> Field;
 
 		Field F(q);
+/*
 		MatrixStream<Field> ms( F, input );
-		SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
-		std::cout << "B is " << B.rowdim() << " by " << B.coldim() << std::endl;
-		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
+*/
+		SparseMatrix<Field, Vector<Field>::SparseSeq > B (F, A.rowdim(), A.coldim());// modular image of A
+		MatrixHom::map(B, A);
+		std::cout << "matrix is " << B.rowdim() << " by " << B.coldim() << std::endl;
+		//if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
 
 		// Using the adaptive LinBox Solution
 		LinBox::rank(r,B);

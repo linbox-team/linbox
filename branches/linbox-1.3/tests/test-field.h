@@ -142,7 +142,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.init(a,0); F.init(b,0); F.init(c,0); F.init(d,0); F.init(e,0); F.init(f,0);
 
 
-	report << "Field self description: " << F.write (report) << endl;
+	report << " (Field self description: " << F.write (report) << ')' << endl;
 	//	report << "field Element 2: " << F.write (report, two) << endl;
 
 	LinBox::integer n, m;
@@ -290,20 +290,25 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 	n = 101;
 	expt(F, a, two, n);
-	F.subin (a, one); F.write( report << "using expt, 2^101 - 1: ", a) << endl;
+	F.subin (a, one);
+	F.write( report << "using expt, 2^101 - 1: ", a) << endl;
 
 	for (int i = 1; i <= 101; ++i) {
 		F.addin (c, b);
 		F.mulin (b, two);
 	}
 
+	F.write( report << "using sum, 1 + 2 + .. + 2^100: ", c) << endl;
+
 	if (!F.areEqual (a, c))
 		part_pass = reportError( "2^101 - 1 != 1 + 2 + .. + 2^100", pass);
 
 	// 1 + 2*(1 + 2*( ... (1) ... )), 100 times.
 	F.assign (d, one);
-	for (int i = 1; i < 101; ++i)
-	{	F.axpy (b, two, d, one); F.assign(d, b); }
+	for (int i = 1; i < 101; ++i) {
+		F.axpy (b, two, d, one);
+		F.assign(d, b);
+	}
 	F.write( report << "using axpy, 1 + 2(1 + ... + 2(1)...), with 100 '+'s: ", d) << endl;
 
 	if (!F.areEqual (a, d))
@@ -1190,50 +1195,50 @@ namespace subtests {
 	}
 } // namespace subtests
 
-	/* Convenience function to run all of the field tests on a given field */
-	template <class Field>
-	bool runBasicRingTests (const Field &F, const char *desc, unsigned int iterations, bool runCharacteristicTest = true)
-	{
-		bool pass = true;
-		ostringstream str;
+/* Convenience function to run all of the field tests on a given field */
+template <class Field>
+bool runBasicRingTests (const Field &F, const char *desc, unsigned int iterations, bool runCharacteristicTest = true)
+{
+	bool pass = true;
+	ostringstream str;
 
-		str << "\t--Testing " << desc << " ring" << ends;
-		char * st = new char[str.str().size()];
-		strcpy (st, str.str().c_str());
+	str << "\t--Testing " << desc << " ring" << ends;
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
 
-		commentator().start (st, "runBasicRingTests", runCharacteristicTest ? 11 : 10);
+	commentator().start (st, "runBasicRingTests", runCharacteristicTest ? 11 : 10);
 
-		if (!testField                     (F, string(str.str()).c_str()))           pass = false;
-		commentator().progress ();
-		if (!subtests::testFieldNegation             (F, desc, iterations))                    pass = false;
-		commentator().progress ();
-		if (!subtests::testFieldDistributivity       (F, desc, iterations))                    pass = false;
-		commentator().progress ();
-		if (!subtests::testFieldAssociativity        (F, desc, iterations))                    pass = false;
-		commentator().progress ();
+	if (!testField                     (F, string(str.str()).c_str()))           pass = false;
+	commentator().progress ();
+	if (!subtests::testFieldNegation             (F, desc, iterations))                    pass = false;
+	commentator().progress ();
+	if (!subtests::testFieldDistributivity       (F, desc, iterations))                    pass = false;
+	commentator().progress ();
+	if (!subtests::testFieldAssociativity        (F, desc, iterations))                    pass = false;
+	commentator().progress ();
 
-		if (runCharacteristicTest) {
-			if (!subtests::testFieldCharacteristic (F, desc, iterations))                  pass = false;
-			commentator().progress ();
-		}
-		LinBox::integer card;
-
-		if (F.cardinality(card) != 2) { // otherwise it is not very interesting to find a element not zero and not one !
-			if (!subtests::testGeometricSummation        (F, desc, iterations, 100))               pass = false;
-			commentator().progress ();
-		}
-
-		if (!subtests::testArithmeticConsistency (F, desc, iterations))                    pass = false;
+	if (runCharacteristicTest) {
+		if (!subtests::testFieldCharacteristic (F, desc, iterations))                  pass = false;
 		commentator().progress ();
-		if (!subtests::testAxpyConsistency           (F, desc, iterations))                    pass = false;
-		commentator().progress ();
-		if (!subtests::testRanditerBasic             (F, desc, iterations))                    pass = false;
-		commentator().progress ();
-
-		commentator().stop (MSG_STATUS (pass), (const char *) 0, "runBasicRingTests");
-		delete[] st;
-		return pass;
 	}
+	LinBox::integer card;
+
+	if (F.cardinality(card) != 2) { // otherwise it is not very interesting to find a element not zero and not one !
+		if (!subtests::testGeometricSummation        (F, desc, iterations, 100))               pass = false;
+		commentator().progress ();
+	}
+
+	if (!subtests::testArithmeticConsistency (F, desc, iterations))                    pass = false;
+	commentator().progress ();
+	if (!subtests::testAxpyConsistency           (F, desc, iterations))                    pass = false;
+	commentator().progress ();
+	if (!subtests::testRanditerBasic             (F, desc, iterations))                    pass = false;
+	commentator().progress ();
+
+	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runBasicRingTests");
+	delete[] st;
+	return pass;
+}
 
 namespace subtests {
 	/* Random number test
@@ -1425,11 +1430,11 @@ bool testRandomIterator (const Field &F, const char *text,
 //@}
 #endif // __LINBOX_test_field_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

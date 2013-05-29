@@ -467,7 +467,7 @@ static bool testRandomLinearity (Field                 &F,
 	report << "Input matrix:" << endl;
 	A.write (report, FORMAT_PRETTY);
 
-	bool ret = testLinearity (F, A, stream1, stream2);
+	bool ret = testLinearity (A, stream1, stream2);
 
 	stream1.reset ();
 	stream2.reset ();
@@ -483,7 +483,8 @@ bool runSparseMatrixTestsByVector (const Field           &F,
 				   unsigned int           iterations,
 				   VectorStream<Vector> &v_stream1,
 				   VectorStream<Vector> &v_stream2,
-				   VectorStream<Row>    &A_stream)
+				   VectorStream<Row>    &A_stream,
+					bool testRW)
 {
 	bool pass = true;
 
@@ -492,12 +493,21 @@ bool runSparseMatrixTestsByVector (const Field           &F,
 	str << "Testing " << desc << " sparse matrix" << ends;
 	commentator().start (str.str ().c_str (), "runSparseMatrixTestsByVector", 6);
 
-	if (!testIdentityApply<Row>   (F, desc, v_stream1))                        pass = false; commentator().progress ();
-	if (!testNilpotentApply<Row>  (F, desc, v_stream1))                        pass = false; commentator().progress ();
-	if (!testRandomApply1<Vector> (F, desc, iterations, A_stream))             pass = false; commentator().progress ();
-	if (!testRandomApply2<Vector> (F, desc, iterations, A_stream))             pass = false; commentator().progress ();
-	if (!testRandomTranspose      (F, desc, A_stream, v_stream1, v_stream2)) pass = false; commentator().progress ();
-	if (!testRandomLinearity      (F, desc, A_stream, v_stream1, v_stream2)) pass = false; commentator().progress ();
+	if (!testIdentityApply<Row>   (F, desc, v_stream1))           	pass = false; 
+	commentator().progress ();
+	if (!testNilpotentApply<Row>  (F, desc, v_stream1))           	pass = false; 
+	commentator().progress ();
+	if (!testRandomApply1<Vector> (F, desc, iterations, A_stream))	pass = false; 
+	commentator().progress ();
+	if (!testRandomApply2<Vector> (F, desc, iterations, A_stream))	pass = false; 
+	commentator().progress ();
+	SparseMatrix<Field, Row> A(F, A_stream);
+	A_stream.reset ();
+	if (testRW)
+		if (!testBlackbox(A)) 					pass = false;
+	else
+		if (!testBlackboxNoRW(A)) 				pass = false;
+	commentator().progress ();
 
 	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runSparseMatrixTests");
 
@@ -508,7 +518,8 @@ template <class Field, class Row>
 bool runSparseMatrixTests (const Field       &F,
 			   const char        *desc,
 			   int                iterations,
-			   VectorStream<Row> &A_stream)
+			   VectorStream<Row> &A_stream,
+				bool testRW)
 {
 	typedef std::vector <typename Field::Element> DenseVector;
 	typedef std::vector <pair <size_t, typename Field::Element> > SparseSeqVector;
@@ -539,7 +550,7 @@ bool runSparseMatrixTests (const Field       &F,
 #endif
 
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
-					   dense_stream1, dense_stream2, A_stream))
+					   dense_stream1, dense_stream2, A_stream, testRW))
 		pass = false;
 #if 0
 	commentator().progress ();
@@ -584,7 +595,8 @@ int main (int argc, char **argv)
 	};
 	parseArguments (argc, argv, args);
 
-	typedef	Modular<uint32_t> Field;
+	//typedef	Modular<uint32_t> Field;
+	typedef	Modular<double> Field;
 	typedef Field::Element  Element;
 
 	typedef std::vector <Element> DenseVector;
@@ -605,10 +617,15 @@ int main (int argc, char **argv)
 		stream2 (F, (double) k / (double) n, n, m);
 	RandomSparseStream<Field, SparseParVector>
 		stream3 (F, (double) k / (double) n, n, m);
-
-	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1)) pass = false;
-	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2)) pass = false;
-	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3)) pass = false;
+	bool testRW = true;
+/*
+	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1, !testRW)) 
+		pass = false;
+	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2, !testRW)) 
+		pass = false;
+*/
+	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3, testRW)) 
+		pass = false;
 
 	commentator().stop("Sparse matrix black box test suite");
 	return pass ? 0 : -1;

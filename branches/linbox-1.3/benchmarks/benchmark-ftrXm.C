@@ -41,6 +41,9 @@
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
+// parse arguments
+#include "fflas-ffpack/utils/args-parser.h"
+
 
 #define _LB_LEFT   true
 #define _LB_RITE  false
@@ -54,52 +57,9 @@
 #define _LB_TSUP   true
 #define _LB_TLOW   false
 
-using LinBox::Timer ;
+using LinBox::TimeWatcher;
 
-/* ********************** */
-/*        Outils          */
-/* ********************** */
 
-/*! @brief Watches a timer and a number and repet and signals if over.
- *
- * We want at least 2 repetions but not more than maxtime spent on timing.
- *
- * @param repet number of previous repetitions. Should be 0 on the first time
- * \c whatchon is called.
- * @param tim timer to watch
- * @param maxtime maximum time (in seconds) until \c watchon tells stop.
- * @return \c true if we conditions are not met to stop, \c false otherwise.
- * @pre \c tim was clear at the beginning and never started.
- *
- */
-bool keepon(index_t & repet, Timer & tim, double maxtime=0.5)
-{
-	if (repet<2 || tim.usertime() < maxtime) {
-		++repet ;
-		return true;
-	}
-	return false ;
-}
-
-/*! @brief Watches a timer and a number and repet and signals if over.
- *
- * We want at least 2 repetions but not more than maxtime spent on timing.
- *
- * @param repet number of previous repetitions. Should be 0 on the first time \c whatchon is called.
- * @param tim timer to watch
- * @param maxtime maximum time (in seconds) until \c watchon tells stop.
- * @return \c true if we conditions are not met to stop, \c false otherwise.
- * @pre \c tim should have been started previously !
- *
- */
-bool whatchon(index_t & repet, Timer & tim, double maxtime=0.5)
-{
-	if (repet<2 || tim.userElapsedTime() < maxtime) {
-		++repet ;
-		return true;
-	}
-	return false ;
-}
 
 
 double ftrmm_mflops(index_t m, index_t n, index_t k)
@@ -128,6 +88,7 @@ void launch_bench_square(Field & F // const problem
 			, LinBox::PlotData<index_t> & Data
 			, index_t series_nb)
 {
+	TimeWatcher TW(10,series_nb);
 	index_t l = 0 ;
 	Timer fgemm_sq_tim ;
 	Timer chrono ;
@@ -141,15 +102,15 @@ void launch_bench_square(Field & F // const problem
 	// index_t repet = 3 ;
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
-		LinBox::TriangularBlasMatrix<Element> A (ii,ii,
+		LinBox::TriangularBlasMatrix<Field> A (F,ii,ii,
 							 (TriSup?LinBox::LinBoxTag::Upper:LinBox::LinBoxTag::Lower),
 							 (UnitDiag?LinBox::LinBoxTag::Unit:LinBox::LinBoxTag::NonUnit));
-		LinBox::BlasMatrix<Element> B (ii,ii);
+		LinBox::BlasMatrix<Field> B (F,ii,ii);
 		if (!series_nb)
 			Data.setAbsciName(l,i); // only write abscissa for serie 0
 		index_t j = 0 ; // number of repets.
 		fgemm_sq_tim.clear() ;
-		while( keepon(j,fgemm_sq_tim) ) {
+		while( TW.keepon(j,fgemm_sq_tim) ) {
 			RandMat.random(A);
 			for (size_t k=0 ; k<(size_t)ii ; ++k) Rn.random(A.refEntry(k,k)) ;
 			RandMat.random(B);
@@ -203,6 +164,7 @@ void launch_bench_blas(index_t min, index_t max, int step
 		       , index_t series_nb
 		       , index_t charact)
 {
+	TimeWatcher TW(10,series_nb);
 	typedef LinBox::Modular<T> Field ;
 	Field F((int)charact);
 	index_t l = 0 ;
@@ -227,10 +189,10 @@ void launch_bench_blas(index_t min, index_t max, int step
 		index_t mimi = (index_t) ii*ii ;
 		index_t j = 0 ;
 		ftrmm_blas_tim.clear() ;
-		while(keepon(j,ftrmm_blas_tim)) {
-			for (index_t j = 0 ; j < mimi ; ++j) R.random(A[j]);
-			for (index_t j = 0 ; j < mimi ; ++j) R.random(B[j]);
-			for (index_t j = 0 ; j < mimi ; ++j) R.random(C[j]);
+		while(TW.keepon(j,ftrmm_blas_tim)) {
+			for (index_t jl = 0 ; jl < mimi ; ++jl) R.random(A[jl]);
+			for (index_t jl = 0 ; jl < mimi ; ++jl) R.random(B[jl]);
+			for (index_t jl = 0 ; jl < mimi ; ++jl) R.random(C[jl]);
 			chrono.clear(); chrono.start() ;
 			FFLAS::ftrmm(G,FFLAS::FflasLeft,FFLAS::FflasUpper,
 					     FFLAS::FflasNoTrans,
@@ -272,13 +234,14 @@ void launch_bench_rectangular(Field & F // const problem
 			      , LinBox::PlotData<std::string> & Data
 			      , index_t point_nb)
 {
+	TimeWatcher TW(10,series_nb);
 	Timer ftrmm_rect_tim ;
 	Timer chrono ; chrono.clear();
 	double mflops ;
 	typedef typename Field::Element  Element;
 	typedef typename Field::RandIter Randiter ;
-	typedef typename LinBox::TriangularBlasMatrix<Element> TriangularMatrix ;
-	typedef typename LinBox::BlasMatrix<Element >  Matrix ;
+	typedef typename LinBox::TriangularBlasMatrix<Field> TriangularMatrix ;
+	typedef typename LinBox::BlasMatrix<Field>  Matrix ;
 
 	Randiter R(F) ;
 	LinBox::BlasMatrixDomain<Field> BMD(F) ;
@@ -286,14 +249,14 @@ void launch_bench_rectangular(Field & F // const problem
 
 	index_t k = (LeftSide?m:n);
 
-	TriangularMatrix A (k,k,
+	TriangularMatrix A (F,k,k,
 			    (TriSup?LinBox::LinBoxTag::Upper:LinBox::LinBoxTag::Lower),
 			    (UnitDiag?LinBox::LinBoxTag::Unit:LinBox::LinBoxTag::NonUnit));
-	Matrix B ((int)m,(int)n);
+	Matrix B (F,(int)m,(int)n);
 
 	index_t j = 0 ;
 	ftrmm_rect_tim.clear() ;
-	while (keepon(j,ftrmm_rect_tim)) {
+	while (TW.keepon(j,ftrmm_rect_tim)) {
 		RandMat.random(A);
 		RandMat.random(B);
 		chrono.clear() ; chrono.start() ;
@@ -349,14 +312,15 @@ void launch_bench_scalar(Field & F // const problem
 			 , LinBox::PlotData<std::string> & Data
 			 , index_t point_nb)
 {
+	TimeWatcher TW(10,series_nb);
 	Timer ftrmm_scal_tim ;
 	Timer chrono ;
 	ftrmm_scal_tim.clear();
 	double mflops ;
 	typedef typename Field::Element  Element;
 	typedef typename Field::RandIter Randiter ;
-	typedef typename LinBox::BlasMatrix<Element >                    Matrix ;
-	typedef typename LinBox::TriangularBlasMatrix<Element>           TriangularMatrix ;
+	typedef typename LinBox::BlasMatrix<Field>                    Matrix ;
+	typedef typename LinBox::TriangularBlasMatrix<Field>           TriangularMatrix ;
 	typedef typename LinBox::TransposedBlasMatrix<TriangularMatrix > TransposedTriangular ;
 
 
@@ -366,14 +330,14 @@ void launch_bench_scalar(Field & F // const problem
 
 	index_t k = (LeftSide?m:n);
 
-	TriangularMatrix A (k,k,
+	TriangularMatrix A (F,k,k,
 			    (TriSup?LinBox::LinBoxTag::Upper:LinBox::LinBoxTag::Lower),
 			    (UnitDiag?LinBox::LinBoxTag::Unit:LinBox::LinBoxTag::NonUnit));
 	TransposedTriangular At(A);
-	Matrix B (m,n);
+	Matrix B (F,m,n);
 
 	index_t j = 0 ;
-	while (keepon(j,ftrmm_scal_tim)) {
+	while (TW.keepon(j,ftrmm_scal_tim)) {
 		RandMat.random(A);
 		RandMat.random(B);
 
@@ -731,7 +695,7 @@ int main( int ac, char ** av)
 		END_OF_ARGUMENTS
 	};
 
-	parseArguments (ac, av, as);
+	LinBox::parseArguments (ac, av, as);
 
 	if (min >= max) {
 		throw LinBox::LinBoxError("min value should be smaller than max...");

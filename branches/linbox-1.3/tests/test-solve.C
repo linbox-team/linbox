@@ -113,7 +113,8 @@ static bool testIdentitySolve (const Field          &F,
 		report << endl;
 
 		try {
-			solve (I, w, v, F, traits);
+			solve (w, I, v, method);
+			//solve (I, w, v, F, traits);
 		}
 		catch (SolveFailed) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -214,7 +215,7 @@ static bool testNonsingularSolve (const Field          &F,
 		Blackbox D (F, d);
 
 		try {
-			solve (D, x, b, F, traits);
+			solve (x, D, b, method);
 		}
 		catch (SolveFailed) {
 			commentator().restoreActivityState (state);
@@ -797,13 +798,18 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field> stream6 (F, (double) r / (double) n, n, iterations);
 	RandomSparseStream<Field> A_stream (F, (double) r / (double) n, n, m);
 
-	if (!testIdentitySolve               (F, stream1,
-// 					      "BlockLanczos", Method::BlockLanczos()))
-					      "Wiedemann", Method::Wiedemann ()))
+	Method::Wiedemann WM;
+	if (!testIdentitySolve               (F, stream1, "Wiedemann", WM))
 		pass = false;
-	if (!testNonsingularSolve            (F, stream1, stream2,
-					      "Wiedemann", Method::Wiedemann ()))
+	if (!testNonsingularSolve            (F, stream1, stream2, "Wiedemann", WM))
 		pass = false;
+/* the solve solution doesn't make the right call?
+	Method::BlockWiedemann BWM;
+	if (!testIdentitySolve               (F, stream1, "BlockWiedemann", BWM))
+		pass = false;
+	if (!testNonsingularSolve            (F, stream1, stream2, "BlockWiedemann", BWM))
+		pass = false;
+*/
 #if 0
 	if (!testSingularConsistentSolve     (F, n, stream3, stream4,
 					      "Wiedemann", Method::Wiedemann ()))

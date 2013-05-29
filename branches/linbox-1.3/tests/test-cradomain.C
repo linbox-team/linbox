@@ -285,7 +285,7 @@ bool TestCra(int N, int S, size_t seed)
         std::vector<integer> PrimeSet;
         double PrimeSize = 0.0;
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
-            if (find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
+            if (std::find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
                 PrimeSet.push_back( *genprime );
                 PrimeSize += Givaro::naturallog(*genprime);
             }

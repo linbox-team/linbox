@@ -457,7 +457,7 @@ namespace LinBox
 		typedef Modular<int8_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F),_y(0)
+			_field (&F),_y(0)
 		{
 		}
 
@@ -486,7 +486,7 @@ namespace LinBox
 
 		inline Element& get (Element &y)
 		{
-			y = Element(_y % (uint64_t) _field.modulus);
+			y = Element(_y % (uint64_t) field().modulus);
 			return y;
 		}
 
@@ -501,23 +501,27 @@ namespace LinBox
 			_y = 0;
 		}
 
+		inline const Field & field() { return *_field; }
+
 	private:
 
-		Field _field;
+		const Field *_field;
 		uint64_t _y;
 		uint8_t _two_64;
 	};
 
 
 	template <>
-	class DotProductDomain<Modular<int8_t> > : private virtual VectorDomainBase<Modular<int8_t> > {
+	class DotProductDomain<Modular<int8_t> > : public virtual VectorDomainBase<Modular<int8_t> > {
 
 	public:
 		typedef int8_t Element;
+		DotProductDomain(){}
 		DotProductDomain (const Modular<int8_t> &F) :
 			VectorDomainBase<Modular<int8_t> > (F)
 		{ }
 
+		using VectorDomainBase<Modular<int8_t> >::field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
@@ -534,7 +538,7 @@ namespace LinBox
 			}
 
 
-			y %= (uint64_t) _field.modulus;
+			y %= (uint64_t) field().modulus;
 
 			return res = (Element) y;
 
@@ -552,7 +556,7 @@ namespace LinBox
 				y += ( (uint16_t) *i_elt ) * ( (uint16_t) v2[*i_idx] );
 			}
 
-			y %= (uint64_t) _field.modulus;
+			y %= (uint64_t) field().modulus;
 
 			return res = (Element)y;
 

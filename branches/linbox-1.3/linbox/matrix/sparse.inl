@@ -53,7 +53,6 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/util/debug.h"
-#include "linbox/util/commentator.h"
 
 namespace LinBox
 {
@@ -297,7 +296,7 @@ namespace LinBox
 
 		// Avoid massive unneeded overhead in the case that this
 		// printing is disabled
-		if (commentator().isNullStream (os))
+		if (not os)
 			return os;
 
 		switch (format) {
@@ -458,7 +457,7 @@ namespace LinBox
 
 		// Avoid massive unneeded overhead in the case that this
 		// printing is disabled
-		if (commentator().isNullStream (os))
+		if (not os)
 			return os;
 
 		switch (format) {
@@ -602,7 +601,7 @@ namespace LinBox
 					os << ' ';
 				}
 
-				os << ']';
+				os << ']'<<std::endl;
 			}
 
 			break;

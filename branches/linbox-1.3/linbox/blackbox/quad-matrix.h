@@ -67,21 +67,21 @@ namespace LinBox
 */
 	template <typename _Field>
 	class ZOQuad {
+	public:
+		typedef _Field Field;
+		typedef size_t Index;
+		typedef std::vector<Index> IndexVector;
+		typedef std::vector<IndexVector::iterator> PointerVector;
 		//friend class ZeroOne<_Field>;
+	protected:
 		enum BBtype {zo, sbs, ou};
 		const void* _BBp;
 		BBtype _tag;
 		size_t _r, _c;
 		static const unsigned int smallThreshold = 60000;
 
-	protected:
-		_Field _field;
+		const Field *_field;
 	public:
-		typedef _Field Field;
-
-		typedef size_t Index;
-		typedef std::vector<Index> IndexVector;
-		typedef std::vector<IndexVector::iterator> PointerVector;
 
 		// constructors
 		ZOQuad() :
