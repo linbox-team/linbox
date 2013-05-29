@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-domain-seq.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <29 May 13 14:35:10 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <29 May 13 16:05:20 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -115,7 +115,7 @@ namespace LinBox
 					++primeiter;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+						commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
 						return Builder_.result(res);
 					}
 				}
@@ -160,7 +160,7 @@ namespace LinBox
 					++primeiter;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+						commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
 						return true ;//term
 					}
 				}
@@ -200,7 +200,7 @@ namespace LinBox
 					++primeiter;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+						commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
 						return Builder_.result(res);
 					}
 				}
@@ -246,7 +246,7 @@ namespace LinBox
 					++primeiter;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+						commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
 						return true;//term
 					}
 				}
