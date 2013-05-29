@@ -104,7 +104,7 @@ namespace LinBox
 		Vect<Integer, Alloc<Integer> >& result (Vect<Integer, Alloc<Integer> > &d)
 		{
 			d.resize(0);
-			for(typename Vect<Integer, Alloc<Integer> >::const_iterator rit = residues.begin(); rit != residues.end(); ++rit) {
+			for(std::vector<std::vector< Integer > >::const_iterator rit = residues.begin(); rit != residues.end(); ++rit) {
 				Integer tmp;
 				RnsToRing(tmp, *rit);
 				linbox_check(tmp>=0);
