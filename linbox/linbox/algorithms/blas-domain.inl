@@ -1745,7 +1745,8 @@ namespace LinBox
 		typedef typename Matrix::subMatrixType subMatrixType ;
 		subMatrixType A_v(A);
 
-		FFPACK::MinPoly<Field,Polynomial>(  F, P, n, A_v.getPointer(), A.getStride(), X, n, Perm);
+		FFPACK::MinPoly<Field,Polynomial>(  F, P, n, A_v.getPointer(), A_v.getStride(), X, n, Perm);
+
 		commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
 
 		delete[] Perm;
@@ -1768,6 +1769,7 @@ namespace LinBox
 		subMatrixType A_v(A);
 
 		FFPACK::CharPoly((typename Field::Father_t) F, P, n, A_v.getPointer(), A_v.getStride());
+
 		return P;
 	}
 
