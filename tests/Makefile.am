@@ -139,9 +139,10 @@ NONCOMPLIANT_TESTS =                   \
 
 DUBIOUS_TESTS =                 \
 	test-unparametric-field       \
-	test-bmseq		\
 		test-zo
 #  test-quad-matrix
+#  test-bmseq		\
+#
 
 NONCOMPILING_TESTS =           \
         test-dense-zero-one
@@ -362,9 +363,9 @@ test_scalar_matrix_SOURCES =            \
         test-generic.h                  \
         test-common.h
 
-test_bmseq_SOURCES =            \
-        test-bmseq.C            \
-        test-common.h
+#  test_bmseq_SOURCES =            \
+	#  test-bmseq.C            \
+	#  test-common.h
 
 test_butterfly_SOURCES =                \
         test-vector-domain.h            \

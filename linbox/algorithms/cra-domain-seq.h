@@ -116,7 +116,7 @@ namespace LinBox
 					++coprime;
 					if (coprime > maxnoncoprime) {
 #ifdef NDEBUG /* this is an error */
-						std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+						commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
 #endif
 						return Builder_.result(res);
 					}
@@ -163,7 +163,7 @@ namespace LinBox
 					++coprime;
 					if (coprime > maxnoncoprime) {
 #ifdef NDEBUG /* this is an error */
-						std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+						commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
 #endif
 						return true ;//term
 					}
@@ -205,7 +205,7 @@ namespace LinBox
 					++coprime;
 					if (coprime > maxnoncoprime) {
 #ifdef NDEBUG /* this is an error */
-						 std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+						 commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
 #endif
 						return Builder_.result(res);
 					}
@@ -254,7 +254,7 @@ namespace LinBox
 					++coprime;
 					if (coprime > maxnoncoprime) {
 #ifdef NDEBUG /* this is an error */
-						std::cout << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+						commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
 #endif
 						return true;//term
 					}
