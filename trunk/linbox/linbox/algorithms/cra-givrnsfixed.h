@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-full-multip.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <05 Apr 11 10:49:43 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <29 May 13 09:57:18 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -129,7 +129,7 @@ namespace LinBox
 		Vect<Integer, Alloc<Integer> >& result (Vect<Integer, Alloc<Integer> > &d)
 		{
 			d.resize(0);
-			for(std::vector<std::vector< Integer > >::const_iterator rit = residues.begin(); rit != residues.end(); ++rit) {
+			for(typename Vect<Integer, Alloc<Integer> >::const_iterator rit = residues.begin(); rit != residues.end(); ++rit) {
 				Integer tmp;
 				RnsToRing(tmp, *rit);
 				linbox_check(tmp>=0);
