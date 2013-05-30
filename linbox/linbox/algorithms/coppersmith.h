@@ -51,7 +51,6 @@ namespace LinBox
 		typedef _Field                          Field;
 		typedef typename Field::Element       Element;
 		typedef typename Field::RandIter     RandIter;
-		typedef std::vector<Element>           Vector;
 		typedef typename MatrixDomain<_Field>::Matrix 	Block;
 
 		inline const Field & field() const { return *_field; }
@@ -70,7 +69,7 @@ namespace LinBox
 			_field(&F), _MD(F), _VD(F), _rand(rand)
 		{}
 
-		template <class Blackbox>
+		template <class Vector, class Blackbox>
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
 			commentator().start ("Coppersmith solveNonSingular", "solveNonSingular");
@@ -183,7 +182,7 @@ namespace LinBox
 
 			//Copy xm into x (Change type from 1 column matrix to Vector)
 			for(size_t i =0; i<d; i++)
-				x[i]=xm.getEntry(i,1);
+				x[i]=xm.getEntry(i,0);
 
 			commentator().stop ("done", NULL, "solveNonSingular");
 			return x;
