@@ -130,7 +130,8 @@ namespace LinBox { /* BlasVector */
 		}
 
 		template<class OtherVector>
-		void createBlasVector( const OtherVector &V){
+		void createBlasVector( const OtherVector &V)
+		{
 			iterator it = _rep.begin();
 			typename OtherVector::const_iterator jt = V.begin();
 			for ( ; it != _rep.end(); ++it, ++jt)
@@ -349,6 +350,14 @@ namespace LinBox { /* BlasVector */
 
 
 			createBlasVector(A,i0,j0,str);
+			linbox_check(_size==0 || _ptr != NULL);
+		}
+
+		BlasVector(const _Field & F, const typename _Field::Element * v, const size_t l) :
+			_size(l),_1stride(1),_rep(l, F.zero),_ptr(&_rep[0]),_field(&F)
+		{
+			setIterators();
+			createBlasVector(v);
 			linbox_check(_size==0 || _ptr != NULL);
 		}
 

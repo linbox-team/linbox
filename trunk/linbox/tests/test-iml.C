@@ -379,61 +379,87 @@ bool testIMLcra(const Field &F, int iterations)
 {
 	bool ret = true ;
 	for(int i = 1 ; i < iterations ; ++i) {
-	Integer A = Integer::random_lessthan<false>(200); // <2^200
-	// std::cout << A << std::endl;
-	size_t p =F.characteristic();
-	size_t len;
+		Integer A = Integer::random_lessthan<false>(200); // <2^200
+		// std::cout << "goal : " <<  A << std::endl;
+		size_t p =F.characteristic();
+		size_t len;
 
-	// number to reconstuct
-	mpz_t B ; mpz_init_set(B,(mpz_srcptr)(Givaro::SpyInteger::get_rep(A)));
+		// number to reconstuct
+		mpz_t B ; mpz_init_set(B,(mpz_srcptr)(Givaro::SpyInteger::get_rep(A)));
 
-	long basislen =1;
+		long basislen =1;
 
-	//XXX compute stuff
-	IML::FiniteField qh = 2<<22;
-	mpz_t mp_maxInter ; mpz_init(mp_maxInter);
-	mpz_ui_pow_ui(mp_maxInter,2,200);
+		//XXX compute stuff
+		IML::FiniteField qh = 2<<22;
+		mpz_t mp_maxInter ; mpz_init(mp_maxInter);
+		mpz_ui_pow_ui(mp_maxInter,2,200);
 
-	IML::FiniteField ** basiscmb ;
-	basiscmb = IML::findRNS(qh, mp_maxInter, &basislen);
-	IML::FiniteField * basis = basiscmb[0];
-	IML::FiniteField * cmbasis = basiscmb[1];
+		IML::FiniteField ** basiscmb ;
+		basiscmb = IML::findRNS(qh, mp_maxInter, &basislen);
+		IML::FiniteField * basis = basiscmb[0];
+		IML::FiniteField * cmbasis = basiscmb[1];
 
-	// bdcoeff
-	IML::FiniteField * bdcoeff = IML::repBound(basislen, basis, cmbasis);
+		// bdcoeff
+		IML::FiniteField * bdcoeff = IML::repBound(basislen, basis, cmbasis);
 
-	// compute mp_basisprod
-	mpz_t mp_basisprod; mpz_init(mp_basisprod);
-	IML::basisProd(basislen, basis, mp_basisprod);
+		// compute mp_basisprod
+		mpz_t mp_basisprod; mpz_init(mp_basisprod);
+		IML::basisProd(basislen, basis, mp_basisprod);
 
-	// compute dtemp (rep of B in RNS basis)
-	IML::Double *dtemp;
-	dtemp = IML_XMALLOC(IML::Double, (size_t)basislen);
+		// compute dtemp (rep of B in RNS basis)
+		IML::Double *dtemp;
+		dtemp = IML_XMALLOC(IML::Double, (size_t)basislen);
 
-	mpz_t mymod;
-	mpz_init(mymod);
-	for (size_t l = 0 ; l< (size_t)basislen ; ++l) {
-		mpz_mod_ui(mymod,B,basis[l]);
-		dtemp[l] = (IML::Double)mpz_get_ui(mymod);
-	}
+		mpz_t mymod;
+		mpz_init(mymod);
+		for (size_t l = 0 ; l< (size_t)basislen ; ++l) {
+			mpz_mod_ui(mymod,B,basis[l]);
+			dtemp[l] = (IML::Double)mpz_get_ui(mymod);
+		}
+		// for (size_t z = 0 ; z < (size_t)basislen ; ++z) {
+			// std::cout << (long)dtemp[z] << " (mod " << (long)basis[z] << ") ," ;
+		// }
+		// std::cout << std::endl;
+		// std::cout << mp_basisprod << std::endl;
+		// for (size_t z = 0 ; z < (size_t)basislen ; ++z) {
+			// std::cout << (long)cmbasis[z] << " ( " << (long)bdcoeff[z] << ") ," ;
+		// }
+		// std::cout << std::endl;
 
-	IML::ChineseRemainder(basislen,mp_basisprod,basis,cmbasis,
-			      bdcoeff, dtemp,B);
-	// std::cout << B << std::endl;
-	mpz_clear(mymod);
-	mpz_clear(mp_basisprod);
-	mpz_clear(mp_maxInter);
-	IML_XFREE(basis);
-	IML_XFREE(cmbasis);
-	IML_XFREE(basiscmb);
-	IML_XFREE(bdcoeff);
-	if  (mpz_cmp((mpz_srcptr)(Givaro::SpyInteger::get_rep(A)),B)!=0){
-		std::cout << "false" << std::endl;
-		ret =false ;
-	mpz_clear(B);
-		break;
-	}
-	mpz_clear(B);
+
+		IML::ChineseRemainder(basislen,mp_basisprod,basis,cmbasis,
+				      bdcoeff, dtemp,B);
+		// std::cout << "got : " << B << std::endl;
+		mpz_clear(mymod);
+		mpz_clear(mp_basisprod);
+		mpz_clear(mp_maxInter);
+		IML_XFREE(basis);
+		IML_XFREE(cmbasis);
+		IML_XFREE(basiscmb);
+		IML_XFREE(bdcoeff);
+		if  (mpz_cmp((mpz_srcptr)(Givaro::SpyInteger::get_rep(A)),B)!=0){
+			// std::cout << "false" << std::endl;
+			ret =false ;
+			mpz_clear(B);
+			break;
+		}
+		mpz_clear(B);
+
+		iml::RNS<Modular<double> > rns ;
+		// rns.setRNSbound(qh);
+		Integer mi ; Givaro::pow(mi,2UL,200UL);
+		// rns.setMaxInter(mi);
+		rns.setUp(qh,mi);
+		Integer C;
+		typedef UnparametricField<double> NoField ;
+		NoField f;
+		BlasVector<NoField> Dt (f,(const double*) dtemp,rns.basisLength());
+		rns.ChineseRemainder(Dt,C);
+		// std::cout <<  "got : " << C << std::endl;
+		if (A != C) {
+			ret = false ;
+			break;
+		}
 	}
 
 	return ret;
@@ -477,6 +503,7 @@ int main(int argc, char ** argv)
 	Field F (q);
 
 
+#if 1
 	TESTE("IML rank");
 	if (!testIMLrank (F, m,n,r, iterations))
 		pass=false;
@@ -486,12 +513,15 @@ int main(int argc, char ** argv)
 	if (!testIMLinverse (F, m, iterations))
 		pass=false;
 	RAPPORT("IML det");
+#endif
 
 #ifdef __LINBOX_HAVE_IML
+#if 1
 	TESTE("IML stuff");
 	if (!testIMLstuff(F, m,n,r, iterations))
 		pass=false;
 	RAPPORT("IML stuff");
+#endif
 
 	TESTE("IML rns");
 	if (!testIMLcra(F, iterations))
