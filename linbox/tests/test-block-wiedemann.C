@@ -120,7 +120,7 @@ int main (int argc, char **argv)
 	//Blackbox D (F, n, F.one);
 	//report << "Scalar matrix: D = " << F.one << endl;
 
-#if 0
+#if 1
 	// Yuhasz' Matrix Berlekamp Massey being used
 	CoppersmithSolver<Field> RCS(F);
 	RCS.solveNonSingular(x, D, b);
@@ -135,7 +135,7 @@ int main (int argc, char **argv)
 	}
 #endif
 
-#if 1
+#if 0
 	// Giorgi's block method, SigmaBasis based, being used
 
 #ifdef __LINBOX_HAVE_OCL
