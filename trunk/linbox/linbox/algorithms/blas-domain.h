@@ -808,6 +808,61 @@ namespace LinBox
 			return true ;
 		}
 
+		// if there is some comparison on the elements, max abs of elements.
+		template<class myBlasMatrix>
+		Element& Magnitude(Element&r, const myBlasMatrix &A)
+		{
+			r = 0;
+			for (size_t i = 0 ; i < A.rowdim(); ++i)
+				for (size_t j = 0 ; j < A.coldim(); ++j) {
+					Element z = std::abs(A.refEntry(i,j));
+					if (r > z )
+						r = z;
+				}
+			return r;
+		}
+
+#if 0
+		template<class myBlasMatrix>
+		Integer & Magnitude(Integer &r, const myBlasMatrix1 &A)
+		{
+			r = 0;
+			Integer z;
+			for (size_t i = 0 ; i < A.rowdim(); ++i)
+			for (size_t j = 0 ; j < A.coldim(); ++j) {
+				z = Integer::abs((Integer)A.refEntry(i,j));
+				if (r > z)
+					r = z;
+			}
+			return r;
+		}
+
+		// all entries in A are smaller than a long
+		template<class myBlasMatrix>
+		size_t & Magnitude(size_t &r, const myBlasMatrix1 &A)
+		{
+			r = 0;
+			for (size_t i = 0 ; i < A.rowdim(); ++i)
+			for (size_t j = 0 ; j < A.coldim(); ++j) {
+				if (r > (size_t)std::abs(A.refEntry(i,j)))
+					r = z;
+			}
+			return r;
+		}
+
+		template<class myBlasMatrix>
+		double & Magnitude(double &r, const myBlasMatrix1 &A)
+		{
+			r = 0;
+			for (size_t i = 0 ; i < A.rowdim(); ++i)
+				for (size_t j = 0 ; j < A.coldim(); ++j) {
+					if (r > (double)std::abs(A.refEntry(i,j)))
+						r = z;
+				}
+			return r;
+		}
+#endif
+
 	public:
 
 		/** Print matrix.

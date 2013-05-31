@@ -26,7 +26,11 @@ pkgincludesub_HEADERS =           \
 	row-echelon-transform.h   \
 	row-echelon-transform.inl \
 	RNS.h                     \
-	RNS.inl
+	RNS.inl                   \
+	p-adic-lift.h             \
+	p-adic-lift.inl           \
+	nullspace.h               \
+	nullspace.inl
 
 #  nullspace.inl
 

@@ -539,7 +539,7 @@ size_t
 	 */
 
 	template<class Field>
-size_t
+	int
 	mInverseIn (BlasMatrix<Field> & A)
 	{
 		typedef typename Field::Element Element;
