@@ -159,147 +159,287 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-smith-form-binary",            counter , flag);
 	return counter.buildfail || counter.runfail ? -1 : 0;
   } else {
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp parallel sections num_threads(4)
+#endif
 	  {
 		  //BASIC_TESTS
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-bitonic-sort",                 counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-blackbox-block-container",     counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-blas-domain",                  counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-block-ring",                   counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_runWarn("test-block-wiedemann",              counter , flag, "GY(wrong ans)");
+#ifdef LINBOX_HAVE_OPENMP
 		  //test could be stronger");
 #pragma omp section
+#endif
 		  Build_n_run("test-butterfly",                    counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-charpoly",                     counter , flag);//, "intermittent inf loop, bb or cp responsible?");
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-commentator",                  counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-companion",                    counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  No_build_n_run("test-cra",                          counter , flag, "bb: fails");
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  No_build_n_run("test-cradomain",                    counter , flag,"intermittent failure, as in 1 every 10-20");
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-dense",                        counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-det",                          counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-diagonal",                     counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-dif",                          counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-direct-sum",                   counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_runWarn("test-dyadic-to-rational",           counter , flag, "bds responsible");
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  No_build_n_run("test-ffpack",                       counter , flag, "testTURBO fails");
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-frobenius",                    counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-getentry",                     counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-gf2",                          counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_runWarn("test-givaro-fields",    counter , flag, "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-gmp-rational",                 counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-hilbert",                      counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-hom",                          counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-inverse",                      counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-isposdef",                     counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-ispossemidef",                 counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-last-invariant-factor",        counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-matrix-domain",                counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-matrix-stream",                counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  No_build_n_run("test-mg-block-lanczos",             counter , flag, "fails");
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-minpoly",                      counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-modular",                      counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-modular-balanced-int",         counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-modular-balanced-float",       counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-modular-balanced-double",      counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-modular-byte",                 counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-modular-double",               counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-modular-float",                counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  No_build_n_run("test-modular-int",                  counter , flag, "fails badly for (u)int64_t !!!!!!");
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-modular-short",                counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-moore-penrose",                counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-nullspace",                    counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-opencl-domain",            counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-PID-integer",                  counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  No_build_n_run("test-qlup",                         counter , flag, "vector (bb) responsible");
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-randiter-nonzero",             counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-rank",                         counter , flag/*, "bb: fails to build / BlasVector/GF2"*/);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-rational-matrix-factory ",     counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-rational-reconstruction-base", counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-rat-charpoly",                 counter , flag);//, "infinite loop, cp responsible?")
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures")
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-rat-solve",     counter , flag); // "infinite loop")
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-scalar-matrix",                counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-smith-form-binary",            counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-solve",                        counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-sparse",                       counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-subiterator",                  counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-submatrix",                    counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-subvector",                    counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-sum",                          counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-rational-solver",              counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-trace",                        counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-triplesbb",                    counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-unparametric-field",           counter , flag) ;//has been useful in num/sym.
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-vector-domain",                counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  Build_n_run("test-zero-one",                     counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
+#endif
 		  No_build_n_run("test-zo", counter, flag, "constructor problem");
 	  }
 
