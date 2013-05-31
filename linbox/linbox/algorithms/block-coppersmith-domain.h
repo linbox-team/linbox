@@ -80,7 +80,7 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
         {}
         BlockCoppersmithDomain (Sequence *D, unsigned long ett_default
 = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
-            _container(D), _field(&(D->field ())), _MD(D->field ()), 
+            _container(D), _field(&(D->field ())), _MD(D->field ()),
 EARLY_TERM_THRESHOLD (ett_default)
         {}
 
@@ -176,7 +176,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 		{
 			return _MD;
 		}
-		
+
 		size_t rowdim()
 		{
 			return _row;
@@ -327,7 +327,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				_col = s.coldim();
 				_size = _seq.size();
 				_t = elinit;
-				_delta = -1;
+				_delta = (size_t)-1; // BB: is it meant ?
 				_seqel = _seq.begin();
 				_deg = std::vector<size_t>(_row+_col);
 				for(size_t i = _col; i < _row+_col; i++)
@@ -560,7 +560,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				//get a iterator to the seq element to be processed
 				cseqit = _seqel;
 				//Create a matrix domain for addition and multiplication
-				
+
 				Domain& MD = _seq->domain();
 				//Compute the discrepancy
 				for(genit = _gen.begin(); genit!=_gen.end(); genit++){
@@ -803,7 +803,7 @@ _Sequence>::right_minpoly (std::vector<Coefficient> &P)
 
 	    seq.push_back(*contiter);
 
-	    //Create the BM_Seq iterator whose incrementation performs a step of the generator 
+	    //Create the BM_Seq iterator whose incrementation performs a step of the generator
 	    typename BM_Seq::BM_iterator bmit(seq.BM_begin());
 	    bmit.setDelta(EARLY_TERM_THRESHOLD);
 	    typename BM_Seq::BM_iterator::TerminationState check = bmit.state();
