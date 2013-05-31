@@ -27,7 +27,7 @@ namespace LinBox { namespace iml {
 	 */
 	template<class Field>
 	void
-	basisProd (BlasVector<Field> & basis, Integer &  _mp_prod)
+	basisProd (const BlasVector<Field> & basis, Integer &  _mp_prod)
 	{
 		size_t i;
 
@@ -120,24 +120,28 @@ namespace LinBox { namespace iml {
 			_RNS_bound = b;
 			_mp_maxInter = m ;
 			findRNS();
-			Integer toto = 1;
-			basisProd<NoField>(_RNSbasis,toto);
-			linbox_check(toto == _mp_prod);
+			// Integer toto = 1;
+			// basisProd<NoField>(_RNSbasis,toto);
+			// linbox_check(toto == _mp_prod);
 			// std::cout << "prod :" << _mp_prod << std::endl;
 			repBound();
 			// std::cout << "bound:" << _mp_prod << std::endl;
 
 		}
 
-		void combBasis();
+		void
+		combBasis (ModVect& RNScombi, const ModVect &RNSbasis);
 
 		void findRNS();
 
 
+		size_t size() { return _basislen ; }
 		size_t basisLength()
 		{
 			return _basislen ;
 		}
+
+		Integer & basisProd() { return _mp_prod ; }
 
 
 		template<class Container>
@@ -161,8 +165,14 @@ namespace LinBox { namespace iml {
 		maxExtInter (const Integer & mp_alpha, const size_t n, Integer & mp_b);
 
 		void repBound ();
+		// void repBound (ModVect& bdcoeff, const ModVect &RNSbasis, const ModVect& RNScombi);
 
 		ModElement RNSbound (const size_t n);
+
+		ModVect & refRNSbasis() { return _RNSbasis ; }
+		ModVect & refRNScombi() { return _RNScombi ; }
+
+		ModElement & prime(size_t i) { return _RNSbasis[i] ;}
 	};
 
 

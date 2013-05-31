@@ -137,6 +137,12 @@ namespace LinBox
 		      }
 
 
+		      using Father_t ::inv;
+		      Element &inv (Element &x, const Integer&y) const
+		      {
+			      init(x,y);
+			      return invin(x);
+		      }
 
 		      //!@bug use FFPACK operator
 		      const Modular<double> &operator=(const Modular<double> &F)
@@ -202,19 +208,19 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 * @param  F  optional name to give the field in the description.  IF F is the null string, only the class name is written.
-		 * Example: For element type double and modulus 101, 
-		 * write(os) produces      "Modular< double > ( 101 )"  on os, 
+		 * Example: For element type double and modulus 101,
+		 * write(os) produces      "Modular< double > ( 101 )"  on os,
  		 * write(os, "F") produces "Modular< double > F( 101 )" on os, and
  		 * write(os, "") produces  "Modular< double >"          on os.
 		 */
 		std::ostream &write (std::ostream &os) const
-		{ 
+		{
 		  integer p = cardinality();
-		  return os << "Modular<" << eltype( Element() ) << " >( " << p << " )"; 
+		  return os << "Modular<" << eltype( Element() ) << " >( " << p << " )";
 		}
 
 		std::ostream &write (std::ostream &os, std::string F) const
-		{ 
+		{
 		  os << "Modular<" << eltype( Element() ) << " > "; // class name
 		  if (F != "") {
 		    integer p = cardinality();
@@ -223,10 +229,11 @@ namespace LinBox
 		  return os;
 		}
 
-        std::ostream &write (std::ostream & os, const Element & x) const {
+        std::ostream &write (std::ostream & os, const Element & x) const
+	{
             return Father_t::write(os,x);
         }
-                
+
     };
 
 } // LinBox

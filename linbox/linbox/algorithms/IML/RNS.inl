@@ -325,21 +325,22 @@ namespace LinBox { namespace iml {
 	template<class FiniteField>
 	void
 	RNS<FiniteField>::
-	combBasis ()
+	combBasis (BlasVector<NoField>& RNScombi, const BlasVector<NoField> &RNSbasis)
 	{
 		size_t i, j;
 		ModElement prod;
+		size_t basislen = RNSbasis.size();
 
-		_RNScombi.resize(_basislen);
-		_RNScombi[0] = 0;
-		for (i = 1; i < _basislen; i++)
+		RNScombi.resize(basislen);
+		RNScombi[0] = 0;
+		for (i = 1; i < basislen; i++)
 		{
-			FiniteField Fi(_RNSbasis[i]);
-			Fi.init(prod,_RNSbasis[0]);
+			FiniteField Fi(RNSbasis[i]);
+			Fi.init(prod,RNSbasis[0]);
 			for (j = 1; j <= i-1; j++){
-				Fi.mulin(prod,_RNSbasis[j]);
+				Fi.mulin(prod,RNSbasis[j]);
 			}
-			Fi.inv(_RNScombi[i],prod);
+			Fi.inv(RNScombi[i],prod);
 		}
 		return;
 	}
@@ -459,7 +460,7 @@ namespace LinBox { namespace iml {
 			Integer::mulin(_mp_prod,(long)_RNSbasis[len-1]);
 		}
 		_basislen = len;
-		combBasis();
+		combBasis(_RNScombi, _RNSbasis);
 		return;
 	}
 
