@@ -77,6 +77,8 @@ namespace LinBox
 		long rank(const IMatrix& A) const
 		{
 
+			rp.template setBitsField<Field>();
+
 			Field F ((unsigned long)*rp);
 
 			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim());
@@ -99,6 +101,8 @@ namespace LinBox
 		template<class IRing>
 		long rank(const BlasMatrix<IRing>& A) const
 		{
+
+			rp.template setBitsField<_Field>();
 
 			Field F ((unsigned long)*rp);
 			//! bug the following should work :
@@ -125,6 +129,7 @@ namespace LinBox
 		template <class Row>
 		long rank(const SparseMatrix<Ring, Row>& A) const
 		{
+			rp.template setBitsField<Field>();
 
 			Field F (*rp);
 			typename SparseMatrix<Ring, Row>::template rebind<Field>::other Ap(A, F);
