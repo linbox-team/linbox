@@ -77,8 +77,9 @@ int main (int argc, char **argv)
 	commentator().start("ModularBalanced<int32_t> field test suite", "ModularBalanced<int32_t>");
 	bool pass = true;
 
-	ModularBalanced<int32_t> F_int (1073741789);//(2147483629);//(2147483647);
-	ModularBalanced<int32_t> G_int (2147483647);
+	// ModularBalanced<int32_t> F_int (1073741789);//(2147483629);//(2147483647);
+	ModularBalanced<int32_t> F_int (91673);
+	ModularBalanced<int32_t> G_int (2557);
 	ModularBalanced<int32_t> H_int (3);
 	integer k = FieldTraits<ModularBalanced<int32_t> >::maxModulus() ;
 	prevprime(k,k);
