@@ -50,6 +50,7 @@ namespace LinBox
 	 */
 	//template<class Prime_Type = integer>
 	class RandomPrimeIterator {
+	private:
 
 		unsigned int 	_bits;  //!< common lenght of all primes
 		integer        _shift;  //!< @internal used to set proper bit size
@@ -115,8 +116,31 @@ namespace LinBox
 			integer::seeding(ul);
 		}
 
+		void setBits(unsigned int bits) {
+			_bits = bits;
+			_shift=(integer(1)<<_bits);
+
+			linbox_check(bits >1);
+
+			integer::random(_prime,_bits-1);
+			_prime = _shift - _prime;
+			nextprime( _prime, _prime);
+
+		}
+
+		template<class _ModField>
+		void setBitsField()
+		{
+			// std::cout << _bits << std::endl;
+			_ModField G(2) ;
+			unsigned long bits = (unsigned long)(log2(G.getMaxModulus())-1);
+			setBits(bits);
+			// std::cout << _bits << std::endl;
+		}
+
 
 	};
+
 
 	/*! @brief Random Prime Iterator.
 	 * @ingroup primes
@@ -253,11 +277,10 @@ namespace LinBox
 #endif //__LINBOX_random_prime_iterator_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

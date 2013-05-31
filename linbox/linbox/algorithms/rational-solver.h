@@ -272,6 +272,7 @@ namespace LinBox
 			_ring(r), _genprime(rp), _traits(traits)
 		{
 
+			_genprime.template setBitsField<Field>();
 			++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
 			clearTimers();
@@ -386,7 +387,10 @@ namespace LinBox
 		}
 #endif
 
-		void chooseNewPrime() const { ++_genprime; _prime = *_genprime; }
+		void chooseNewPrime() const {
+			_genprime.template setBitsField<Field>();
+			++_genprime; _prime = *_genprime;
+		}
 
 	}; // end of specialization for the class RationalSover with Wiedemann traits
 
@@ -476,6 +480,7 @@ namespace LinBox
 			_ring(r), _genprime(rp), _traits(traits)
 		{
 
+			_genprime.template setBitsField<Field>();
 			++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
 			clearTimers();
@@ -668,6 +673,7 @@ namespace LinBox
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
 			lastCertificate(r, 0), _genprime(rp), _ring(r)
 		{
+			_genprime.template setBitsField<Field>();
 			++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
 			clearTimers();
@@ -812,6 +818,7 @@ namespace LinBox
 
 		void chooseNewPrime() const
 		{
+			_genprime.template setBitsField<Field>();
 			++_genprime;
 			_prime = *_genprime;
 		}
@@ -953,6 +960,7 @@ namespace LinBox
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
 			_genprime(rp), _ring(r)
 		{
+			_genprime.template setBitsField<Field>();
 			_prime=_genprime.randomPrime();
 		}
 
@@ -1008,6 +1016,7 @@ namespace LinBox
 				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
 			_genprime(rp), _ring(r)
 		{
+			_genprime.template setBitsField<Field>();
 			_prime=_genprime.randomPrime();
 		}
 
