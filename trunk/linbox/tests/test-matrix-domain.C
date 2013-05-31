@@ -1576,6 +1576,8 @@ int main (int argc, char **argv)
 	static size_t m = n;
 	static size_t k = 2;
 	static integer q = 2147483647U;
+	static integer q2 =  FieldTraits<ModularBalanced<int32_t> >::maxModulus() ;
+	Givaro::prevprime(q2,q2);
 	static unsigned int iterations = 1;
 
 	static Argument args[] = {
@@ -1592,8 +1594,10 @@ int main (int argc, char **argv)
 
 
 	Modular<uint32_t>                F1 (q);
-	ModularBalanced<int32_t>         F2 (q);
+	ModularBalanced<int32_t>         F2 (q2);
 	GivaroZpz<Givaro::Unsigned32>    F3(q);
+	if (q2 < q/2)
+		std::cerr <<"étrange..." << std::endl;
 
 	commentator().start("Matrix domain test suite", "MatrixDomain");
 
