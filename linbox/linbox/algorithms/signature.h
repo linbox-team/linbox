@@ -220,6 +220,7 @@ namespace LinBox
 			do {
 				// get a prime.
 				// Compute mod that prime. Accumulate into v with CRA.
+				primeg.template setBitsField<Field>();
 				++primeg ; while(cra.noncoprime(*primeg)) ++primeg;
 				Field K1(*primeg);
 				K2 = K1;
@@ -250,6 +251,7 @@ namespace LinBox
 
 			while (! cra.terminated() ){
 				// get a prime.
+				primeg.template setBitsField<Field>();
 				++primeg; while(cra.noncoprime(*primeg)) ++primeg;
 				Field K3(*primeg);
 				//clog << "Computing blackbox matrix mod " << prime;
@@ -306,6 +308,7 @@ namespace LinBox
 			typedef Field::Element Element;
 			typedef BlasMatrix<Field> FMatrix;
 			RandomPrimeIterator primeg(20);
+			primeg.template setBitsField<Field>();
 			Field F ((unsigned long)*primeg);
 			FMatrix FM(F, IM.rowdim(), IM.coldim());
 			//std::cout << "Random prime " << p << "\n";
@@ -407,6 +410,7 @@ namespace LinBox
 
 			// get a prime.
 			// Compute the rank mod that prime. Accumulate into v with CRA.
+				primeg.template setBitsField<Field>();
 			Field K(*primeg);
 
 			typename Matrix::ConstIterator raw_p;
