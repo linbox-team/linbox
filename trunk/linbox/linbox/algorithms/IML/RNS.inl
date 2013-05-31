@@ -505,7 +505,7 @@ namespace LinBox { namespace iml {
 		// mpz_sub_ui(mp_temp, mp_mag, 1);
 		mp_b = mp_alpha ;
 		// mpz_set(mp_b, mp_alpha);
-		Integer::mulin(mp_b,n); //! @bug 2n here ?
+		Integer::mulin(mp_b,(long unsigned)n); //! @bug 2n here ?
 		// mpz_mul_ui(mp_b, mp_b, n);
 		Integer::mulin(mp_b,mp_temp);
 		// mpz_mul(mp_b, mp_b, mp_temp);
@@ -668,7 +668,7 @@ namespace LinBox { namespace iml {
 		// mpz_ui_pow_ui(mp_n, 2, 53);
 		// mpz_sub_ui(mp_n, mp_n, 1);
 		Integer::subin(mp_n,1L);
-		Integer::floor(mp_q,mp_n,n);
+		Integer::floor(mp_q,mp_n,(unsigned long)n);
 		// mpz_fdiv_q(mp_q, mp_n, mp_d);
 		Givaro::sqrt(mp_q,mp_q);
 		// mpz_sqrt(mp_q, mp_q);
