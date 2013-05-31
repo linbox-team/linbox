@@ -132,9 +132,15 @@ namespace LinBox
 		void setBitsField()
 		{
 			// std::cout << _bits << std::endl;
-			_ModField G(2) ;
-			unsigned long bits = (unsigned long)(log2(G.getMaxModulus())-1);
-			setBits(bits);
+			integer k = FieldTraits<_ModField >::maxModulus();
+			// std::cout << k << std::endl;
+			unsigned long bits = (unsigned long)(k.bitsize());
+			if (!bits)
+				throw("weird");
+			--bits;
+			// std::cout << bits << std::endl;
+			if (bits < _bits)
+				setBits(bits);
 			// std::cout << _bits << std::endl;
 		}
 
