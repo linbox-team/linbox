@@ -49,9 +49,9 @@ EXTRA_DIST=            \
 #  test-generic-for-quad.h
 
 
-tutorial-1: tutorial-1.C
+#  tutorial-1: tutorial-1.C
 
-test-tutorial$(EXEEXT): test-tutorial.C tutorial-1
+#  test-tutorial$(EXEEXT): test-tutorial.C tutorial-1
 
 # Put an entry for your test-mycomponent.C here (or in one of the other test groups).
 # Don't forget to add a test_mycomponent_SOURCES entry below.
@@ -70,9 +70,9 @@ BASIC_TESTS =  \
         test-rational-solver-adaptive \
 	test-rank                     \
 	test-iml                      \
+	test-cra                      \
 	test-charpoly
 
-#  test-cra                      \
 #
 
 

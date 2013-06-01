@@ -38,7 +38,7 @@
 #include "linbox/algorithms/linbox-tags.h"
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
-#include "linbox/field/hom.h"
+// #include "linbox/field/hom.h"
 
 namespace LinBox { /* BlasVector */
 
@@ -426,6 +426,7 @@ namespace LinBox { /* BlasVector */
 		struct rebind {
 			typedef BlasVector<_Tp1> other;
 
+#if 0 /* problem with hom.h */
 			void operator() (other & Ap, const Self_t& A) {
 				typedef typename Self_t::ConstIterator ConstSelfIterator ;
 				typedef typename other::Iterator OtherIterator ;
@@ -435,6 +436,7 @@ namespace LinBox { /* BlasVector */
 				for ( ; A_i != A. End(); ++ A_i, ++ Ap_i)
 					hom.image (*Ap_i, *A_i);
 			}
+#endif
 		};
 
 
