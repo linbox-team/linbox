@@ -57,7 +57,8 @@ namespace LinBox
 				return false;
 
 			typedef typename Matrix::Field::Element Int;
-			std::vector<Int> D(n);
+			// std::vector<Int> D(n);
+			BlasVector<typename Matrix::Field> D(M.field(),n);
 			semiD(D, M);
 
 			//std::cout << "All principal minors are: [";
