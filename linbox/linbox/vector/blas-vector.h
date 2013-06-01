@@ -277,7 +277,11 @@ namespace LinBox { /* BlasVector */
 
 		//! @bug be careful with copy constructor. We should ban them and provide copy.
 		BlasVector (const BlasVector<_Field,_blasRep> &V)  :
-			_size(V.size()),_1stride(1),_rep(V.size(), V.field().zero),_ptr(&_rep[0]),_field(&(V.field()))
+			_size(V.size())
+			,_1stride(1)
+			,_rep(V.size()/*, V.field().zero*/)
+			,_ptr(&_rep[0])
+			,_field(&(V.field()))
 			,Father_t() // will be created afterwards...
 		{
 			// Father_t is garbage until then:
@@ -420,6 +424,16 @@ namespace LinBox { /* BlasVector */
 		template<typename _Tp1>
 		struct rebind {
 			typedef BlasVector<_Tp1> other;
+
+			void operator() (other & Ap, const Self_t& A) {
+				typedef typename Self_t::ConstIterator ConstSelfIterator ;
+				typedef typename other::Iterator OtherIterator ;
+				OtherIterator    Ap_i = Ap.Begin();
+				ConstSelfIterator A_i = A.Begin();
+				Hom<Field, _Tp1> hom(A. field(), Ap. field()) ;
+				for ( ; A_i != A. End(); ++ A_i, ++ Ap_i)
+					hom.image (*Ap_i, *A_i);
+			}
 		};
 
 
