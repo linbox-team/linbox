@@ -203,15 +203,18 @@ namespace LinBox
 			long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
 			RandomPrimeIterator primeg(unsigned(bit1 < bit2 ? bit1 : bit2));
 
-			Field::Element* FA = new Field::Element[n*n];
+			Element* FA = new Element[n*n];
 			size_t* P= new size_t[n], *PQ = new size_t[n];
 			size_t* P_p, * PQ_p;
 
-			Field::Element* p; Field::Element tmp;
+			Element* p; Element tmp;
 			EarlyMultipCRA< Field > cra(3UL);
 
 			Integer_t m = 1;
-			std::vector<Field::Element> v(n);
+			// std::vector<Element> v(n);
+			typedef UnparametricField<Element> NoField;
+			NoField unF ;
+			BlasVector<NoField> v(unF,n);
 			size_t j = 0;
 			Field K2;
 			bool faithful = true;
@@ -242,12 +245,14 @@ namespace LinBox
 			} while(! faithful);
 			K2. init (tmp, 1UL);
 
-			typename std::vector<Field::Element>::iterator vp;
+			// typename std::vector<Element>::iterator vp;
+			typename BlasVector<NoField>::iterator vp;
 			for (j = 0, vp = v.begin(); vp != v.end(); ++j, ++vp) {
 				K2.mulin(tmp, *(FA + (j * n + j)));
 				K2.assign(*vp, tmp);
 			}
-			cra. initialize(K2, v);
+			// BlasVector<Field> v2(K2,v);//!@bug should not do it like that...
+			cra. initialize(K2, v );
 
 			while (! cra.terminated() ){
 				// get a prime.
@@ -285,6 +290,7 @@ namespace LinBox
 					std::cout << v[l] << ", ";
 				std::cout << "]\n";
 #endif
+				// BlasVector<Field> v3(K3,v); //!@bug should not be doing that...
 				cra. progress(K3, v);
 			}
 

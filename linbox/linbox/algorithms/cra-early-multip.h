@@ -116,7 +116,8 @@ namespace LinBox
 			FullMultipCRA<Domain>::initialize(D, e);
 		}
 
-		void initialize (const Domain& D, const BlasVector<Domain>& e)
+		template<class OKDomain>
+		void initialize (const Domain& D, const BlasVector<OKDomain>& e)
 		{
 			// Random coefficients for a linear combination
 			// of the elements to be reconstructed
@@ -144,25 +145,32 @@ namespace LinBox
 			FullMultipCRA<Domain>::progress(D, e);
 		}
 
+#if 1
 		template<template <class> class Alloc, template<class, class> class Vect>
 		void progress (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e)
 		{
-			DomainElement z;
-			// Could be much faster
-			// - do not compute twice the product of moduli
-			// - reconstruct one element of e until Early Termination,
-			//   then only, try a random linear combination.
-			EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv));
-			FullMultipCRA<Domain>::progress(D, e);
+			// DomainElement z;
+			/*!@todo Could be much faster
+			  - do not compute twice the product of moduli
+			  - reconstruct one element of e until Early Termination,
+			  then only, try a random linear combination.
+			*/
+			// EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv));
+			// FullMultipCRA<Domain>::progress(D, e);
+			BlasVector<Domain> d(D,e);
+			this->progress(D,d);
 		}
+#endif
 
-		void progress (const Domain& D, const BlasVector<Domain>& e)
+		template<class OKDomain>
+		void progress (const Domain& D, const BlasVector<OKDomain>& e)
 		{
 			DomainElement z;
-			// Could be much faster
-			// - do not compute twice the product of moduli
-			// - reconstruct one element of e until Early Termination,
-			//   then only, try a random linear combination.
+			/*!@todo Could be much faster
+			  - do not compute twice the product of moduli
+			  - reconstruct one element of e until Early Termination,
+			  then only, try a random linear combination.
+			*/
 			EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv));
 			FullMultipCRA<Domain>::progress(D, e);
 		}
@@ -265,9 +273,9 @@ namespace LinBox
 			return z;
 		}
 
-		template <class Vect2>
+		template <class Vect2, class OKDomain>
 		DomainElement& dot (DomainElement& z, const Domain& D,
-				    const BlasVector<Domain>& v1,
+				    const BlasVector<OKDomain>& v1,
 				    const Vect2& v2)
 		{
 

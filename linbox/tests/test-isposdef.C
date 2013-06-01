@@ -133,7 +133,7 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
-    PID_integer R;
+	PID_integer R;
 
 	if (!testIsPosDef(R, n, iterations, sparsity)) pass = false;
 
