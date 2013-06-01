@@ -279,7 +279,7 @@ namespace LinBox { /* BlasVector */
 		BlasVector (const BlasVector<_Field,_blasRep> &V)  :
 			_size(V.size())
 			,_1stride(1)
-			,_rep(V.size()/*, V.field().zero*/)
+			,_rep(V.size()/*, V.field().zero*/) //!@bug segfault in cra otherwise (test-rat-solve eg)
 			,_ptr(&_rep[0])
 			,_field(&(V.field()))
 			,Father_t() // will be created afterwards...
