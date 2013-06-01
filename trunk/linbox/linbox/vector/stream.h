@@ -75,10 +75,10 @@
 #include <cmath>
 
 #include "linbox/util/debug.h"
-#include "linbox/vector/vector-traits.h"
-#include "linbox/randiter/nonzero.h"
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/vector/blas-vector.h"
+#include "linbox/vector/vector-traits.h"
+#include "linbox/randiter/nonzero.h"
 
 
 // stream
@@ -220,7 +220,8 @@ namespace LinBox
 	/** @brief Random dense vector stream.
 	 * Generates a sequence of random dense vectors over a given field
 	 */
-	template <class Field, class _Vector = typename LinBox::BlasVector<Field>, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<_Vector>::VectorCategory>
+	template <class Field, class _Vector = typename LinBox::BlasVector<Field>
+		, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<_Vector>::VectorCategory>
 	class RandomDenseStream : public VectorStream<_Vector> {
 	public:
 		typedef _Vector Vector;

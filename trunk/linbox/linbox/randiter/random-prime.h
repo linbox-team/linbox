@@ -34,6 +34,7 @@
 #include "linbox/util/timer.h"
 #include "linbox/util/debug.h"
 #include <cstdlib> // drand48, temporary
+#include "linbox/field/field-traits.h"
 
 namespace LinBox
 {
@@ -134,7 +135,7 @@ namespace LinBox
 			// std::cout << _bits << std::endl;
 			integer k = FieldTraits<_ModField >::maxModulus();
 			// std::cout << k << std::endl;
-			unsigned long bits = (unsigned long)(k.bitsize());
+			unsigned int bits = (unsigned int)(k.bitsize());
 			if (!bits)
 				throw("weird");
 			--bits;
