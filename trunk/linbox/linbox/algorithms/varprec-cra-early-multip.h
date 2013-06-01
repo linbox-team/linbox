@@ -176,12 +176,31 @@ namespace LinBox
 		template<class Vect>
 		void progress (const Domain& D, const Vect& e) {
 			//z = (e/ factor mod D)
-			// Could be much faster
+			//!@todo Could be much faster
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
 			//   then only, try a random linear combination.
 
 			std::vector<DomainElement> vz(vfactor_.size());
+			inverse(vz,vfactor_,D);
+			productin(vz,vmultip_,D);
+			productin(vz,e,D);
+			DomainElement z;
+			dot(z,D,vz,randv);
+
+			EarlySingleCRA<Domain>::progress(D, z);
+			FullMultipCRA<Domain>::progress(D, e);
+		}
+
+		template<class OKDomain>
+		void progress (const Domain& D, const BlasVector<OKDomain>& e) {
+			//z = (e/ factor mod D)
+			//!@todo Could be much faster
+			// - do not compute twice the product of moduli
+			// - reconstruct one element of e until Early Termination,
+			//   then only, try a random linear combination.
+
+			BlasVector<Domain> vz(D,vfactor_.size());
 			inverse(vz,vfactor_,D);
 			productin(vz,vmultip_,D);
 			productin(vz,e,D);
