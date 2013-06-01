@@ -92,7 +92,7 @@ namespace LinBox
 			RadixSizes_.resize(1);
 			RadixPrimeProd_.resize(1);
 			PID_integer ZZ ;
-			const BlasVector<PID_integer>z(ZZ)
+			const BlasVector<PID_integer>z(ZZ);
 			RadixResidues_.resize(1,z);
 			RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
 			progress( D, e);
