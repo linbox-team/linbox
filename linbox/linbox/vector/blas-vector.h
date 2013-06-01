@@ -38,6 +38,7 @@
 #include "linbox/algorithms/linbox-tags.h"
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
+#include "linbox/field/hom.h"
 
 namespace LinBox { /* BlasVector */
 
