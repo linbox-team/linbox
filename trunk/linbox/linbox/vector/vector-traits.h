@@ -426,6 +426,7 @@ namespace LinBox
 	 * a sparse vector.
 	 */
 
+	//! @todo template by Field
 	template <class Element>
 	struct RawVector {
 		typedef std::vector<Element> Dense;

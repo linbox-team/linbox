@@ -124,7 +124,8 @@ namespace LinBox
 			progress(D, e);
 		}
 
-		void initialize (const Domain& D, const BlasVector<Domain>& e)
+		template<class OKDomain>
+		void initialize (const Domain& D, const BlasVector<OKDomain>& e)
 		{
 			RadixSizes_.resize(1);
 			RadixPrimeProd_.resize(1);
@@ -352,7 +353,8 @@ namespace LinBox
 		}
 
 		// spec for BlasVector
-		void progress (const Domain& D, const BlasVector<Domain >& e)
+		template<class OKDomain>
+		void progress (const Domain& D, const BlasVector<OKDomain >& e)
 		{
 			// Radix shelves
 			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();

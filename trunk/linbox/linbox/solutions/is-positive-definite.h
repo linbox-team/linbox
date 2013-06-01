@@ -80,11 +80,14 @@ namespace LinBox
 				 const RingCategories::IntegerTag          &tag,
 				 const Method::Hybrid& M)
 	{
-		// should try a modular minpoly and decide on the degree of that...
-		if (A.rowdim() != A.coldim()) return false;
-		// this crude size check can be refined
-		if (A.coldim() > 7000) return isPositiveDefinite(A, tag, Method::Blackbox(M));
-		else return isPositiveDefinite(A, tag, Method::Elimination(M));
+		//! @bug should try a modular minpoly and decide on the degree of that...
+		if (A.rowdim() != A.coldim())
+		       	return false;
+		//! @bug this crude size check can be refined
+		if (A.coldim() > 7000)
+		       	return isPositiveDefinite(A, tag, Method::Blackbox(M));
+		else
+		       	return isPositiveDefinite(A, tag, Method::Elimination(M));
 	}
 
 	// The isPositiveDefinite with Elimination Method
