@@ -119,6 +119,7 @@ namespace LinBox
 		linbox_check ( _off <= SM._Mat->rowdim()*(SM._Mat->coldim()+1) );
 	}
 
+	// shallow copy
 	template <class _Field>
 	BlasSubmatrix<_Field>& BlasSubmatrix<_Field>::operator=(const BlasSubmatrix<_Field> &SM)
 	{
@@ -133,6 +134,67 @@ namespace LinBox
 		_stride = SM._stride;
 		_off = SM._off ;
 
+		return *this;
+	}
+
+	// function for repurposing Submatrices.
+	template <class _Field>
+	BlasSubmatrix<_Field>& BlasSubmatrix<_Field>::submatrix(const BlasSubmatrix<_Field> &SM,
+			size_t row, size_t col, size_t Rowdim, size_t Coldim)
+	{
+		_Mat   = SM._Mat;
+		_row = Rowdim; _col = Coldim;
+		_r0  = SM._r0 + row; _c0 = SM._c0 + col;
+		_stride = SM._stride; _off = SM._off+(row*_stride+col);
+
+		return *this;
+	}
+
+	// deep copy
+	template <class _Field>
+	template<class Matrix>
+	BlasSubmatrix<_Field>& BlasSubmatrix<_Field>::copy( const Matrix & B)
+	{
+		for (size_t i = 0 ; i < rowdim() ; ++i)
+		for (size_t j = 0 ; j < coldim() ; ++j) {
+			setEntry(i,j,B.getEntry(i,j));
+		}
+		return *this;
+	}
+
+	template <class _Field>
+	BlasSubmatrix<_Field> &BlasSubmatrix<_Field>::swap( BlasSubmatrix<_Field> & B)
+	{
+		Element temp; _Mat->field().init(temp);
+		Element hold; _Mat->field().init(hold);
+		for (size_t i = 0 ; i < rowdim() ; ++i)
+		for (size_t j = 0 ; j < coldim() ; ++j) {
+			getEntry(hold,i,j);
+			setEntry(i,j,B.getEntry(temp,i,j));
+			B.setEntry(i,j,hold);
+		}
+		return *this;
+	}
+
+	template <class _Field>
+	BlasSubmatrix<_Field> &BlasSubmatrix<_Field>::zero()
+	{
+		for (size_t i = 0 ; i < rowdim() ; ++i)
+		for (size_t j = 0 ; j < coldim() ; ++j) {
+			setEntry(i,j,_Mat->field().zero);
+		}
+		return *this;
+	}
+
+	template <class _Field>
+	BlasSubmatrix<_Field> &BlasSubmatrix<_Field>::random()
+	{
+		typename _Field::RandIter r(*(_Mat->field()));
+		Element temp; _Mat->field()->init(temp);
+		for (size_t i = 0 ; i < rowdim() ; ++i)
+		for (size_t j = 0 ; j < coldim() ; ++j) {
+			setEntry(i,j,r.random(temp));
+		}
 		return *this;
 	}
 
@@ -879,7 +941,7 @@ namespace LinBox
 				integer tmp;
 				file>>tmp;cout<<tmp<<endl;
 				//file.ignore(1);
-				_Mat->_field.read (file, *p);
+				_Mat->field().read (file, *p);
 			}
 		}
 #endif
@@ -895,13 +957,13 @@ namespace LinBox
 		_row = m; _col = n;
 
 		_Field zero;
-		_Mat->_field.init(zero,0UL);
+		_Mat->field().init(zero,0UL);
 		// resize(_row,_col);
 
 		if ((c != 'M') && (c != 'm')) {
 		for (p = Begin (); p != End (); ++p) {
 				//file.ignore(1);
-				_Mat->_field.read (file, *p);
+				_Mat->field().read (file, *p);
 			}
 
 		}
@@ -914,7 +976,7 @@ namespace LinBox
 				//if (! file) break;
 				if (i+j <= 0) break;
 				// std::cout << i << ',' << j << ':' ;
-				_Mat->_field.read (file, _Mat->refEntry(i-1, j-1));
+				_Mat->field().read (file, _Mat->refEntry(i-1, j-1));
 			}
 		}
 

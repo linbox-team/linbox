@@ -814,16 +814,25 @@ namespace LinBox
 		 */
 		BlasSubmatrix &operator = (const BlasSubmatrix<_Field> &SM);
 
-		template<class Matrix>
-		BlasSubmatrix &copy( const Matrix & B)
-		{
-			for (size_t i = 0 ; i < rowdim() ; ++i)
-			for (size_t j = 0 ; j < coldim() ; ++j) {
-				setEntry(i,j,B.getEntry(i,j));
-			}
-			return *this;
+		// function for repurposing Submatrices.
+		BlasSubmatrix &submatrix(const BlasSubmatrix<_Field> &SM,
+				size_t rowbeg,
+				size_t colbeg,
+				size_t Rowdim,
+				size_t Coldim);
 
-		}
+		/// This is deep copy, operator= is shallow copy.
+		template<class Matrix>
+		BlasSubmatrix &copy( const Matrix & B);
+
+		/// Swap contents.  Shapes must be the same.
+		BlasSubmatrix &swap( BlasSubmatrix & B);
+
+		/// Overwrite with zeroes.  
+		BlasSubmatrix &zero();
+
+		/// Overwrite with random elements.  
+		BlasSubmatrix &random();
 
 		template<typename _Tp1>
 		struct rebind ;
