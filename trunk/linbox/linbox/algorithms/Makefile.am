@@ -41,7 +41,7 @@ OCL_HDRS =                                  \
     opencl-environ.h
 
 #  if LINBOX_HAVE_OCL // we include them anyway. (for make dist when OCL not available)
-USE_OCL_HDRS = $(OCL_HEADERS)
+USE_OCL_HDRS = $(OCL_HDRS)
 #  endif
 
 pkgincludesub_HEADERS =            \
