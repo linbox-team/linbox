@@ -956,8 +956,6 @@ namespace LinBox
 // this is bogus!! -bds
 		_row = m; _col = n;
 
-		_Field zero;
-		_Mat->field().init(zero,0UL);
 		// resize(_row,_col);
 
 		if ((c != 'M') && (c != 'm')) {
