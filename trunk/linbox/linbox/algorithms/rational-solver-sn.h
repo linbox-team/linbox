@@ -148,7 +148,7 @@ namespace LinBox {
 			typename IVector::const_iterator b_p = b.begin();
 			typename IVector::iterator bi_p = bi.begin();
 			typename FVector::iterator r_p = r.begin();
-			for (  ; b_p != b. begin() + n; ++b_p, ++r_p, ++bi_p) {
+			for (  ; b_p != b. begin() + (ptrdiff_t) n; ++b_p, ++r_p, ++bi_p) {
 				*bi_p = *b_p;  //  copy original RHS
 				field().init(*r_p, *b_p);
 			}
