@@ -86,12 +86,12 @@ namespace LinBox
 		};
 
 		enum Sign {
-			Positive    = 500 ; //! is  >0 (strictement positif)
-			Negative    = 501 ; //! is  <0 (strictement négatif)
-			NonNegative = 502 ; //! is >=0 (positif)
-			NonPositive = 503 ; //! is <=0 (négatif)
-			NonZero     = 504 ; //! is !=0 (non nul)
-			Zero        = 505 ; //! is ==0 (nul)
+			Positive    = 500 , //! is  >0 (strictement positif)
+			Negative    = 501 , //! is  <0 (strictement négatif)
+			NonNegative = 502 , //! is >=0 (positif)
+			NonPositive = 503 , //! is <=0 (négatif)
+			NonZero     = 504 , //! is !=0 (non nul)
+			Zero        = 505   //! is ==0 (nul)
 
 		};
 	} ;
