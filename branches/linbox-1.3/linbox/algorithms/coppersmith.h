@@ -51,7 +51,6 @@ namespace LinBox
 		typedef _Field                          Field;
 		typedef typename Field::Element       Element;
 		typedef typename Field::RandIter     RandIter;
-		typedef std::vector<Element>           Vector;
 		typedef typename MatrixDomain<_Field>::Matrix 	Block;
 
 		inline const Field & field() const { return *_field; }
@@ -70,7 +69,7 @@ namespace LinBox
 			_field(&F), _MD(F), _VD(F), _rand(rand)
 		{}
 
-		template <class Blackbox>
+		template <class Vector, class Blackbox>
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
 			commentator().start ("Coppersmith solveNonSingular", "solveNonSingular");
@@ -80,7 +79,7 @@ namespace LinBox
 			size_t d = B.coldim();
 			size_t r,c;
 			integer tmp = d;
-			
+
 			//Set the blocking size, Using Pascal Giorgi's convention
 			r=tmp.bitsize()-1;
 			c=tmp.bitsize()-1;
@@ -137,7 +136,7 @@ namespace LinBox
 			Block xm(field(),d,1);
 			bool odd = true;
 			for(size_t i = 1; i < mu+1; i++){
-				typename MatrixDomain<Field>::Submatrix gencol(gen[i],0,idx,d,1);
+				typename MatrixDomain<Field>::Submatrix gencol(gen[i],0,idx,c,1); // BB changed d,1 to c,1
 				Block BVgencol(field(),d,1);
 				if(odd){
 					_MD.mul(BVgencol,BVo,gencol);
@@ -151,7 +150,7 @@ namespace LinBox
 					_MD.mul(BVo,B,BVe);
 					odd=true;
 				}
-						
+
 			}
 
 			//For the constant coefficient, loop over the elements in the idx column except the first row
@@ -183,7 +182,7 @@ namespace LinBox
 
 			//Copy xm into x (Change type from 1 column matrix to Vector)
 			for(size_t i =0; i<d; i++)
-				x[i]=xm.getEntry(i,1);
+				x[i]=xm.getEntry(i,0);
 
 			commentator().stop ("done", NULL, "solveNonSingular");
 			return x;
