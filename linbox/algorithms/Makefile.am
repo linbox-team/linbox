@@ -41,7 +41,7 @@ OCL_HDRS =                                  \
     opencl-environ.h
 
 #  if LINBOX_HAVE_OCL
-USE_OCL_HDRS = $(OCL_HEADERS)
+USE_OCL_HDRS = $(OCL_HDRS)
 #  endif
 
 pkgincludesub_HEADERS =               \
