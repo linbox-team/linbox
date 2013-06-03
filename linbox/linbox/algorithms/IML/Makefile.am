@@ -30,7 +30,13 @@ pkgincludesub_HEADERS =           \
 	p-adic-lift.h             \
 	p-adic-lift.inl           \
 	nullspace.h               \
-	nullspace.inl
+	nullspace.inl             \
+	reconstruct-solution.h    \
+	reconstruct-solution.inl  \
+	certified-solve.h         \
+	certified-solve.inl       \
+	non-singular-solve.h      \
+	non-singular-solve.inl
 
 #  nullspace.inl
 
