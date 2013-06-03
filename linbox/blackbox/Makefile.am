@@ -37,6 +37,8 @@ BASIC_HDRS =			\
 	inverse.h                 \
 	transpose.h               \
 	sum.h                     \
+	csf.h                     \
+	csf.inl                   \
 	diagonal.h                \
 	diagonal-gf2.h            \
 	moore-penrose.h           \
@@ -48,10 +50,13 @@ BASIC_HDRS =			\
 	frobenius.h               \
 	zero-one.h                \
 	zero-one.inl              \
-	zo.h         zo.inl       \
-	zo-gf2.h     zo-gf2.inl   \
+	zo.h                      \
+	zo.inl                    \
+	zo-gf2.h                  \
+	zo-gf2.inl                \
 	quad-matrix.h             \
 	triplesbb.h               \
+	triplesbb.inl             \
 	apply.h                   \
 	submatrix-traits.h        \
 	random-matrix-traits.h    \
@@ -67,8 +72,12 @@ BASIC_HDRS =			\
 	rational-matrix-factory.h
 
 NTL_HDRS =			\
-	toeplitz.h ntl-hankel.h ntl-sylvester.h \
-	toeplitz.inl ntl-hankel.inl ntl-sylvester.inl
+	toeplitz.h              \
+	toeplitz.inl            \
+	ntl-hankel.h            \
+	ntl-hankel.inl          \
+	ntl-sylvester.h         \
+	ntl-sylvester.inl
 
 GIVARO_HDRS =
 

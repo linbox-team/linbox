@@ -26,6 +26,7 @@ pkgincludesub_HEADERS=          \
     charpoly.h                  \
     det.h                       \
     getentry.h                  \
+    getentry.inl                \
     is-positive-definite.h      \
     is-positive-semidefinite.h  \
     methods.h                   \
@@ -35,6 +36,7 @@ pkgincludesub_HEADERS=          \
     smith-form.h                \
     solve.h                     \
     trace.h                     \
+    trace.inl                   \
     valence.h			\
     solution-tags.h
 
