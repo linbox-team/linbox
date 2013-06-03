@@ -38,6 +38,9 @@ namespace LinBox { namespace iml {
 #include "IML/RNS.h"
 // #include "IML/p-adic-lift.h"
 // #include "IML/nullspace.h"
+// #include "IML/reconstruct-solution.h"
+// #include "IML/non-singular-solve.h"
+// #include "IML/certified-solve.h"
 
 #endif // __LINBOX_algorithm_iml_iml_H
 
