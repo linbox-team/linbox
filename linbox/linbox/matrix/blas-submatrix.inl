@@ -953,7 +953,7 @@ namespace LinBox
 		file>>m>>n>>c;
 		// std::cout << m << 'x' << n << ':' << c << std::endl;
 
-// this is bogus!! -bds
+		// this is bogus!! -bds
 		_row = m; _col = n;
 
 		// resize(_row,_col);
