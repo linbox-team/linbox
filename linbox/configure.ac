@@ -123,7 +123,6 @@ if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 			fi
 			;;
 
-
 		*)
 			echo
 			echo "*******************************************************"
