@@ -1009,8 +1009,8 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 
 		std::vector<size_t> P(m);
 
-		Field Z2(2);
-		RandIter G2(Z2);
+		// Field Z2(2);
+		// RandIter G2(Z2);
 
 		// for (size_t i=0; i<m; ++i){
 			// G.random(tmp);
