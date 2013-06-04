@@ -405,7 +405,7 @@ namespace LinBox
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg ((unsigned int)(log( (double)(FieldTraits<Field>::maxModulus()) ) /  M_LN2 - 2));
+		RandomPrimeIterator rg; rg.template setBitsField<Field>();
 		Field F ((unsigned long)*rg);
 		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
 		MatrixHom::map (Ap, A, F);
@@ -525,7 +525,7 @@ namespace LinBox
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg ((unsigned int)(log( (double)(FieldTraits<Field>::maxModulus()) ) / M_LN2 - 2));
+		RandomPrimeIterator rg; rg.template setBitsField<Field>();
 		Field F ((unsigned long)*rg);
 		typename MatrixHomTrait<BlasMatrix <IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A, F);

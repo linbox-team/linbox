@@ -59,12 +59,12 @@ namespace LinBox
 
 	public:
 		/*! Constructor.
-		 * @param bits size of primes (in bits). Default is 30 so it
+		 * @param bits size of primes (in bits). Default is 27 so it
 		 * can fit in a <code>Linbox::Modular<double></code>.
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
-		RandomPrimeIterator(unsigned int bits = 30, unsigned long seed = 0) :
+		RandomPrimeIterator(unsigned int bits = 27, unsigned long seed = 0) :
 			_bits(bits), _shift(integer(1)<<_bits)
 		{
 			linbox_check(bits >1);
@@ -143,6 +143,21 @@ namespace LinBox
 			if (bits < _bits)
 				setBits(bits);
 			// std::cout << _bits << std::endl;
+		}
+
+		template<class _ModField>
+		bool setBitsDelayedField(size_t n)
+		{
+			integer k = FieldTraits<_ModField >::maxModulus();
+			int bits = (int)(k.bitsize());
+	//std::cout << "maxmodbits: " << bits << std::endl;
+			if (!bits) throw("weird");
+			--bits;
+			bits -= (log(n)/2./M_LN2);
+	//std::cout << "delcorrect: " << bits << std::endl;
+			if (bits < 0) return false;
+			if (bits < _bits) setBits(bits);
+			return true;
 		}
 
 

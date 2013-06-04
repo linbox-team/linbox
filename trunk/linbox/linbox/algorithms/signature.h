@@ -197,12 +197,11 @@ namespace LinBox
 			typedef Field::Element Element;
 
 			size_t n = M. rowdim();
+	                RandomPrimeIterator primeg;
+                	if( ! primeg.template setBitsDelayedField<Field>(n) )
+                       		primeg.template setBitsField<Field>();
 
-			integer mmodulus;
-			FieldTraits<Field>::maxModulus(mmodulus);
-			long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
-			long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-			RandomPrimeIterator primeg(unsigned(bit1 < bit2 ? bit1 : bit2));
+
 
 			Element* FA = new Element[n*n];
 			size_t* P= new size_t[n], *PQ = new size_t[n];
@@ -224,7 +223,6 @@ namespace LinBox
 			do {
 				// get a prime.
 				// Compute mod that prime. Accumulate into v with CRA.
-				primeg.template setBitsField<Field>();
 				++primeg ; while(cra.noncoprime(*primeg)) ++primeg;
 				Field K1(*primeg);
 				K2 = K1;
@@ -257,7 +255,6 @@ namespace LinBox
 
 			while (! cra.terminated() ){
 				// get a prime.
-				primeg.template setBitsField<Field>();
 				++primeg; while(cra.noncoprime(*primeg)) ++primeg;
 				Field K3(*primeg);
 				//clog << "Computing blackbox matrix mod " << prime;
@@ -314,8 +311,7 @@ namespace LinBox
 			// typedef Modular<double> Field;
 			typedef Field::Element Element;
 			typedef BlasMatrix<Field> FMatrix;
-			RandomPrimeIterator primeg(20);
-			primeg.template setBitsField<Field>();
+			RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
 			Field F ((unsigned long)*primeg);
 			FMatrix FM(F, IM.rowdim(), IM.coldim());
 			//std::cout << "Random prime " << p << "\n";
@@ -407,17 +403,14 @@ namespace LinBox
 
 			int n = (int)M. rowdim();
 
-			integer mmodulus;
-			FieldTraits<Field>::maxModulus(mmodulus);
-			long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
-			long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-			RandomPrimeIterator primeg((unsigned)(bit1 < bit2 ? bit1 : bit2));
-
 			Field::Element* FA = new Field::Element[n*n], *p;
 
 			// get a prime.
 			// Compute the rank mod that prime. Accumulate into v with CRA.
-				primeg.template setBitsField<Field>();
+                        RandomPrimeIterator primeg;
+                        if( ! primeg.template setBitsDelayedField<Field>(n) )
+                                primeg.template setBitsField<Field>();
+
 			Field K(*primeg);
 
 			typename Matrix::ConstIterator raw_p;
