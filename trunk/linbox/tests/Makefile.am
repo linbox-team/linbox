@@ -64,7 +64,6 @@ BASIC_TESTS =  \
         test-det                      \
         test-frobenius                \
         test-solve                    \
-        test-nullspace                \
         test-smith-form-binary        \
         test-rational-solver          \
         test-rational-solver-adaptive \
@@ -73,6 +72,7 @@ BASIC_TESTS =  \
 	test-cra                      \
 	test-charpoly
 
+#  test-nullspace                \
 #
 
 

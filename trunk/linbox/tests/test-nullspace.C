@@ -121,8 +121,6 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		size_t ld_n = (a_droite)?ker_dim:ld_a;
 		size_t wd_n = (a_droite)?wd_a:ker_dim;
 		assert(CheckRank(F,Kern,wd_ker,ld_ker,ld_ker,ker_dim)); // ...il est bien de rang plein...
-#if 0
-// Shouldn't this be an fflas test?
 		Element * NullMat = new Element[ld_n*wd_n] ;// ...et on s'attend à ce que ça soit nul !
 
 		if ( a_droite){
@@ -134,17 +132,17 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 				     F.one,  Kern, ld_ker , Abis, ld_a, F.zero, NullMat, ld_n);
 		}
 
-	   	write_field (F, std::cout<<"final: NullMat"<<std::endl, NullMat, (int)wd_n, (int)ld_n, (int)ld_n, true);
+		// write_field (F, std::cout<<"final: NullMat"<<std::endl, NullMat, (int)wd_n, (int)ld_n, (int)ld_n, true);
 		//write_field (F, std::cout<<"A="<<endl, A, m, n, n,true);
 		//write_field (F, std::cout<<"Abis="<<endl, Abis, m, n, n, true);
 		delete[] Abis ;
 		delete[] A ;
 		delete[] Kern ;
+#if 1
 		for (size_t i = 0 ; i < wd_n ; ++i ){
 			for (size_t j = 0 ; j < ld_n ; ++j ) {
 				if (!F.isZero(*(NullMat + j+i*ld_n)) ){
 					    	write_field (F, std::cout<<"faux : (3) NullMat pas nulle. "<<std::endl, NullMat, (int)wd_n, (int)ld_n, (int)ld_n, true);
-					delete[] NullMat ;
 					ret = false;
 					break;
 				}
@@ -152,15 +150,14 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 			if (!ret)
 				break;
 		}
-		if (ret) delete[] NullMat ;
-		else break;
-
-		//delete[] Kern ;
 #endif
+		delete[] NullMat;
+		if (!ret)  break;
+
+
 	}
 
 	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testNullSpace");
-
 	return ret;
 }
 

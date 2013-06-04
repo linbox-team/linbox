@@ -71,9 +71,9 @@ namespace LinBox
 		 */
 
 		/// Constructs an initially 0 by 0 matrix.
-		ScalarMatrix ()	:
-			n_(0)
-		{}
+		// ScalarMatrix ()	:
+			// n_(0)
+		// {}
 
 		/** Constructor of readable scalar matrix.
 		 * @param F	field in which to do arithmetic.
@@ -84,10 +84,17 @@ namespace LinBox
 		 * @param F	field in which to do arithmetic.
 		 * @param n	size of the matrix.
 		 * @param s	scalar, a field element, to be used as the diagonal of the matrix.
+		 * @bug this is a wrong constructor, should be the following...
 		 */
 		ScalarMatrix (const Field &F, const size_t n, const Element &s) :
 			field_(&F), n_(n), v_(s)
 		{}
+
+		ScalarMatrix (const Field &F, const size_t n, const size_t m) :
+			field_(&F), n_(n), v_(0)
+		{
+			linbox_check(m==n);
+		}
 
 		/** Constructor from a random element.
 		 * @param F    field in which to do arithmetic.
@@ -169,12 +176,12 @@ namespace LinBox
 
 		Element& det(Element& d) const
 		{
-			return pow(field(), d, v_, n_); 
+			return pow(field(), d, v_, n_);
 		}
 
 		long int& rank(long int& r) const
 		{
-			return r = (field().isZero(v_) ? 0 : n_); 
+			return r = (field().isZero(v_) ? 0 : n_);
 		}
 
 		Element& getScalar(Element& x) const { return this->field().assign(x,this->v_); }
@@ -301,30 +308,29 @@ namespace LinBox
 	// let solutions know we have getEntry() and trace().
 	template <class Field>
 	struct GetEntryCategory<ScalarMatrix<Field> >
-	{ typedef SolutionTags::Local Tag; }; 
+	{ typedef SolutionTags::Local Tag; };
 
 	template <class Field>
 	struct TraceCategory<ScalarMatrix<Field> >
-	{ typedef SolutionTags::Local Tag; }; 
+	{ typedef SolutionTags::Local Tag; };
 
 	template <class Field>
 	struct DetCategory<ScalarMatrix<Field> >
-	{ typedef SolutionTags::Local Tag; }; 
+	{ typedef SolutionTags::Local Tag; };
 
 	template <class Field>
 	struct RankCategory<ScalarMatrix<Field> >
-	{ typedef SolutionTags::Local Tag; }; 
+	{ typedef SolutionTags::Local Tag; };
 
 } // namespace LinBox
 
 #endif // __LINBOX_scalar_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

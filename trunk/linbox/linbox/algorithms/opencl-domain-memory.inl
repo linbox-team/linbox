@@ -54,7 +54,7 @@ namespace LinBox{
 		T* paddingBuffer = (T*)malloc(32 * 1024 * 1024);
 
 		//Calculate the size of the padding buffer in number of elements
-		const int paddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
+		const int paddingBufferSize = (32 * 1024 * 1024 / (int)sizeof(T));
 
 		//Loops while there is still space in the matrixBuffer
 		while(matrixBufferPosition < matrixBufferSize){
@@ -156,7 +156,7 @@ namespace LinBox{
 		T* depaddingBuffer = (T*)malloc(32 * 1024 * 1024);
 
 		//Calculate the size of the depadding buffer in number of elements
-		const int depaddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
+		const int depaddingBufferSize = (32 * 1024 * 1024 / (int)sizeof(T));
 
 		//Loops while there are still elements in the matrixBuffer
 		while(dataOffset < outputSize){
