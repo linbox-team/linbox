@@ -152,6 +152,11 @@ namespace LinBox
 		new_act->_timer.start ();
 	}
 
+	void Commentator::start (std::string description, const char *fn, unsigned long len)
+	{
+		start(description.c_str(),fn,len);
+	}
+
 	void Commentator::startIteration (unsigned int iter, unsigned long len)
 	{
 		std::ostringstream str;
