@@ -671,10 +671,10 @@ EARLY_TERM_THRESHOLD (ett_default)
 					_deg[j]++;
 				_beta++;
 				//Add a zero matrix to the end of the generator if needed.
-				int tmax = _deg[0];
+				int tmax = (int)_deg[0];
 				for(size_t j = 1; j<_row+_col; j++)
 					if(tmax < _deg[j])
-						tmax = _deg[j];
+						tmax = (int)_deg[j];
 				if(tmax+1 > _gensize){
 					_gen.push_back(matrix_type(field(),_col,_row+_col));
 					_gensize++;
@@ -805,7 +805,7 @@ _Sequence>::right_minpoly (std::vector<Coefficient> &P)
 
 	    //Create the BM_Seq iterator whose incrementation performs a step of the generator
 	    typename BM_Seq::BM_iterator bmit(seq.BM_begin());
-	    bmit.setDelta(EARLY_TERM_THRESHOLD);
+	    bmit.setDelta((int)EARLY_TERM_THRESHOLD);
 	    typename BM_Seq::BM_iterator::TerminationState check = bmit.state();
 	    while(!check.IsGeneratorFound() ){
 		    bmit++;
