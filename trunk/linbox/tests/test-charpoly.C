@@ -96,7 +96,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 
 	//PolDom IPD(Z);
 
-	Blackbox A (Z, n, one);
+	Blackbox A (Z, n, n, one);
 
 	Polynomial phi;
 

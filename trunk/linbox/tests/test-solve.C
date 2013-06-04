@@ -90,7 +90,7 @@ static bool testIdentitySolve (const Field          &F,
 
 	typename Field::Element s;
 	F.init (s, 1);
-	Blackbox I (F, stream.n (), s);
+	Blackbox I (F, stream.n (), stream.n(), s);
 
 	size_t n = stream.n();
 	Vector v(F,n), w(F,n);
@@ -735,7 +735,7 @@ static bool testBasicMethodsSolve (const Field &F, size_t n)
 	BlasVector<Field> xd(F,n), xh(F,n), xb(F,n), xe(F,n), b(F,n, F.zero);
 	for(size_t i = 0; i < n/2; ++i) b[i] = F.one;
 	//ScalarMatrix<Field> I(F, n/2, F.one), Z(F, n/2, F.zero);
-	ScalarMatrix<Field> I(F, n, F.one), Z(F, 0, F.zero);
+	ScalarMatrix<Field> I(F, n, n, F.one), Z(F, 0, 0, F.zero);
 	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > A(I, Z);
 
 	VectorDomain<Field> VD(F);
