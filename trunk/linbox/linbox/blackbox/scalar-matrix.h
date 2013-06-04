@@ -99,13 +99,11 @@ namespace LinBox
 			linbox_check(n ==m);
 		}
 
-#if 1
 		ScalarMatrix (const Field &F, const size_t n, const size_t m) :
 			field_(&F), n_(n), v_(0)
 		{
 			linbox_check(m==n);
 		}
-#endif
 
 		/** Constructor from a random element.
 		 * @param F    field in which to do arithmetic.
@@ -121,6 +119,11 @@ namespace LinBox
 		{
 			n_ = Mat.n_;
 			v_ = Mat.v_;
+		}
+
+		void setScalar(Element & x)
+		{
+			field().assign(v_, x) ;
 		}
 
 
@@ -182,7 +185,8 @@ namespace LinBox
 
 		Element& getEntry(Element& x, const size_t i, const size_t j) const
 		{
-			return (i==j ? field().assign(x,v_) : field().init(x,0));
+			// return (i==j ? field().assign(x,v_) : field().init(x,0));
+			return (i==j ? field().assign(x,v_) : field().assign(x,field().zero));
 		}
 
 		Element& det(Element& d) const

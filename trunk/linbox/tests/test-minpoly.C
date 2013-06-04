@@ -122,7 +122,7 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Me
 	typename Field::Element c0, c1;
 
 	//StandardBasisStream<Field, Row> stream (F, n);
-	Blackbox A (F, n, F.one);
+	Blackbox A (F, n, n, F.one);
 
 	Polynomial phi(F);
 
