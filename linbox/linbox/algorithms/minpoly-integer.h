@@ -113,10 +113,7 @@ namespace LinBox
 		typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 		FPoly fp;
-		integer mmodulus;
-		FieldTraits<Field>::maxModulus(mmodulus);
-		long bits = (long) floor (log((double)mmodulus)/M_LN2);
-		RandomPrimeIterator primeg(bits);
+		RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
 		for (int i = 0; i < n_try; ++ i) {
 			++primeg;
 			Field F(*primeg);
@@ -150,11 +147,8 @@ namespace LinBox
 		typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 
-		integer mmodulus;
-		FieldTraits<Field>::maxModulus(mmodulus);
-		long bits = (long) floor (log((double)mmodulus)/M_LN2);
+		RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
 
-		RandomPrimeIterator primeg(bits);
 		FPoly fp (degree + 1);
 		typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
@@ -194,12 +188,8 @@ namespace LinBox
 		typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 
+		RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
 
-		integer mmodulus;
-		FieldTraits<Field>::maxModulus(mmodulus);
-		long bits = (long) floor (log((double)mmodulus)/M_LN2);
-
-		RandomPrimeIterator primeg(bits);
 		FPoly fp (degree + 1);
 		typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
@@ -269,11 +259,9 @@ namespace LinBox
 
 		y. resize (degree + 1);
 		size_t n = M. rowdim();
-		integer mmodulus;
-		FieldTraits<Field>::maxModulus(mmodulus);
-		long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
-		long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-		RandomPrimeIterator primeg(bit1 < bit2 ? bit1 : bit2);
+		RandomPrimeIterator primeg;
+		if( ! primeg.template setBitsDelayedField<Field>(n) )
+			primeg.template setBitsField<Field>();
 		Element* FA = new Element [n*n];
 		Element* X = new Element [n*(n+1)];
 		size_t* Perm = new size_t[n];
@@ -333,11 +321,9 @@ namespace LinBox
 		Element* p;
 		std::vector<Element> Poly;
 
-		integer mmodulus;
-		FieldTraits<Field>::maxModulus(mmodulus);
-		long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
-		long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-		RandomPrimeIterator primeg(bit1 < bit2 ? bit1 : bit2);
+                RandomPrimeIterator primeg;
+                if( ! primeg.template setBitsDelayedField<Field>(n) )
+                        primeg.template setBitsField<Field>();
 
 		typename BlasMatrix<Ring>::ConstIterator raw_p;
 		for (int i = 0; i < n_try; ++ i) {

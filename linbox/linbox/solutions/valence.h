@@ -268,10 +268,9 @@ namespace LinBox
 			commentator().start ("Valence (AAT)", "Valence");
 			typedef Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
-			double log_max_mod = log((double)FieldTraits<Field>::maxModulus()) ;
-			int n_bit = (int)(log_max_mod / M_LN2 - 2);
 			unsigned long d;
-			RandomPrimeIterator g((unsigned int)n_bit); Field::Element v;
+			RandomPrimeIterator g; g.template setBitsField<Field>();
+			Field::Element v;
 			++g;
 			Field F((int32_t)*g);
 			FBlackbox Ap(A, F);
@@ -294,9 +293,7 @@ namespace LinBox
 			typedef Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 
-			double log_max_mod = log((double)FieldTraits<Field>::maxModulus()) ;
-			int n_bit = (int)(log_max_mod / M_LN2 - 2);
-			RandomPrimeIterator rg((unsigned int)n_bit);
+			RandomPrimeIterator rg; rg.template setBitsField<Field>();
 			PID_integer Z;
 			BlasVector<PID_integer> Lv(Z), Lm(Z);
 			unsigned long d1; Field::Element v; integer im = 1;
