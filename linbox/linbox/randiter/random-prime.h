@@ -156,7 +156,7 @@ namespace LinBox
 			bits -= (log(n)/2./M_LN2);
 	//std::cout << "delcorrect: " << bits << std::endl;
 			if (bits < 0) return false;
-			if (bits < _bits) setBits(bits);
+			if (bits < (int)_bits) setBits((unsigned int)bits);
 			return true;
 		}
 
