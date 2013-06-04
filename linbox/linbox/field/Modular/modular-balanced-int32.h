@@ -91,13 +91,13 @@ namespace LinBox
 			Father_t(p,e)
 		{}
 
-		using Father_t::cardinality ;
+		using Father_t::cardinality;
 		integer &cardinality (integer &c) const
 		{
 			return c = modulus;
 		}
 
-		using Father_t::characteristic ;
+		using Father_t::characteristic;
 		integer &characteristic (integer &c) const
 		{
 		       	return c = modulus;
@@ -113,7 +113,7 @@ namespace LinBox
 				return x = y + modulus;
 		}
 
-		using Father_t::init ;
+		using Father_t:: init;
 		Element &init (Element &x, const integer &y) const
 		{
 			x = Element(y % (long)modulus);
@@ -142,7 +142,8 @@ namespace LinBox
 
 		FieldAXPY (const Field &F) :
 			_field (&F),_y(0),_times(0)
-		{ }
+		{
+		}
 
 
 		FieldAXPY (const FieldAXPY &faxpy) :
@@ -221,7 +222,8 @@ namespace LinBox
 		int32_t _times;
 		static const int32_t blocksize = 32;
 
-		inline void normalize() {
+		inline void normalize()
+		{
 			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * field().modulusinv) * (int32_t)field().modulus;
 		}
 
@@ -327,6 +329,7 @@ namespace LinBox
 }
 
 #include "linbox/randiter/modular-balanced.h"
+
 #endif //__LINBOX_modular_balanced_int32_H
 
 

@@ -107,7 +107,8 @@ namespace LinBox
 
 		Modular (integer &p) :
 			Father_t((unsigned long)p)
-		{}
+		{
+		}
 
 	       	Modular (int32_t value, int32_t exp=1) :
 			Father_t(value,exp)
@@ -134,14 +135,11 @@ namespace LinBox
 		       	return c = modulus;
 		}
 
-
-
 		 using Father_t ::convert;
 		 integer &convert (integer &x, const Element &y) const
 		{
 			return x = y;
 		}
-
 
 		 using Father_t ::init;
 		 Element &init (Element &x, const integer &y) const
@@ -195,7 +193,8 @@ namespace LinBox
 		  return os;
 		}
 
-        std::ostream &write (std::ostream & os, const Element & x) const {
+        std::ostream &write (std::ostream & os, const Element & x) const
+	{
             return Father_t::write(os,x);
         }
 

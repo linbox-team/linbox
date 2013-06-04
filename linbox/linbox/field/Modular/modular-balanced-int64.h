@@ -40,6 +40,7 @@
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
+#include "linbox/field/Modular/modular-int64.h"
 
 #include <fflas-ffpack/field/modular-balanced-int64.h>
 
@@ -60,6 +61,9 @@ namespace LinBox
 	class ModularBalanced;
 	template< class Element >
 	class ModularBalancedRandIter;
+	template< class Field, class RandIter >
+	class NonzeroRandIter;
+
 
 	template <class Ring>
 	struct ClassifyRing;
@@ -74,32 +78,36 @@ namespace LinBox
 
 	/// \ingroup field
 	template <>
-	class ModularBalanced<int64_t> : public FieldInterface
-	      public FFPACK::ModularBalanced<int64_t>	{
+	class ModularBalanced<int64_t> : public FieldInterface,
+	public FFPACK::ModularBalanced<int64_t>	{
 
 	public:
+		typedef FFPACK::ModularBalanced<int64_t> Father_t ;
 
 		friend class FieldAXPY<ModularBalanced<int64_t> >;
 		friend class DotProductDomain<ModularBalanced<int64_t> >;
 
-		typedef FFPACK::ModularBalanced<int64_t> Father_t ;
 
 		typedef int64_t Element;
 		typedef ModularBalancedRandIter<int64_t> RandIter;
 
-		using Father_t:: cardinality;
+		ModularBalanced(int64_t p, int e=1) :
+			Father_t(p,e)
+		{}
+
+		using Father_t::cardinality;
 		integer &cardinality (integer &c) const
 		{
 			return c = modulus;
 		}
 
-		using Father_t:: characteristic;
+		using Father_t::characteristic;
 		integer &characteristic (integer &c) const
 		{
 		       	return c = modulus;
 		}
 
-		using Father_t:: convert;
+		using Father_t::convert;
 		// this function converts an int to a natural number ?
 		integer &convert (integer &x, const Element &y) const
 		{
@@ -112,9 +120,13 @@ namespace LinBox
 		using Father_t:: init;
 		Element &init (Element &x, const integer &y) const
 		{
-			x = y % (long) (modulus);
-			if (x < mhalf_mod) x += modulus;
-			else if (x > half_mod) x -= modulus;
+			x = Element(y % (long)modulus);
+
+			if (x < mhalf_mod)
+				x += modulus;
+			else if (x > half_mod)
+				x -= modulus;
+
 			return x;
 		}
 
@@ -122,8 +134,6 @@ namespace LinBox
 		{
 			return x = 0 ;
 		}
-
-	private:
 
 	};
 
@@ -155,8 +165,7 @@ namespace LinBox
 		inline int64_t& mulacc (const Element &a, const Element &x)
 		{
 			int64_t t = (int64_t) a * (int64_t)   x;
-			if (_times < blocksize)
-			{
+			if (_times < blocksize) {
 				++_times;
 				return _y += t;
 			}
@@ -170,8 +179,7 @@ namespace LinBox
 
 		inline int64_t& accumulate (const Element &t)
 		{
-			if (_times < blocksize)
-			{
+			if (_times < blocksize) {
 				++_times;
 				return _y += t;
 			}
@@ -188,7 +196,7 @@ namespace LinBox
 
 			normalize();
 
-			y = _y;
+			y = Element(_y);
 
 			if (y > field().half_mod)
 				y -= field().modulus;
@@ -210,6 +218,7 @@ namespace LinBox
 		}
 
 		inline const Field & field() { return *_field; }
+
 	private:
 
 		const Field *_field;
@@ -250,30 +259,27 @@ namespace LinBox
 
 			int64_t y = 0;
 			int64_t t;
-			int64_t times = 0;
+			// int64_t times = 0;
 
 			pv1 = pv1e = v1.begin();
 			pv2 = v2.begin();
 
-			for(int i = 0; i < v1.size() / blocksize ;++i)
-			{
+			for(size_t i = 0; i < v1.size() / (size_t)blocksize ;++i) {
 				pv1e = pv1e + blocksize;
-				for(;pv1 != pv1e;++pv1,++pv2)
-				{
+				for(;pv1 != pv1e;++pv1,++pv2) {
 					t = (((int64_t) *pv1 ) * ((int64_t) *pv2 ));
 					y += t;
 				}
 				normalize(y);
 			}
 
-			for(;pv1 != v1.end(); ++pv1, ++pv2)
-			{
+			for(;pv1 != v1.end(); ++pv1, ++pv2) {
 				t = (((int64_t) *pv1 ) * ((int64_t) *pv2 ));
 				y += t;
 			}
 
 			normalize(y);
-			res = y;
+			res = (Element) y;
 
 			if (res > field().half_mod) res -= field().modulus;
 			else if(res < field().mhalf_mod) res += field().modulus;
@@ -295,11 +301,9 @@ namespace LinBox
 			i_idx = i_idxe = v1.first.begin();
 			i_elt = v1.second.begin();
 
-			for(int i = 0; i < v1.first.size() / blocksize ; ++i)
-			{
+			for(size_t i = 0; i < v1.first.size() / (size_t)blocksize ; ++i) {
 				i_idxe = i_idxe + blocksize;
-				for(;i_idx!= i_idxe;++i_idx, ++i_elt)
-				{
+				for(;i_idx!= i_idxe;++i_idx, ++i_elt) {
 					t = ( (int64_t) *i_elt ) * ( (int64_t) v2[*i_idx] );
 					y += t;
 				}
@@ -307,15 +311,14 @@ namespace LinBox
 			}
 
 
-			for(;i_idx!= v1.first.end();++i_idx, ++i_elt)
-			{
+			for(;i_idx!= v1.first.end();++i_idx, ++i_elt) {
 				t = ( (int64_t) *i_elt ) * ( (int64_t) v2[*i_idx] );
 				y += t;
 			}
 
 			normalize(y);
 
-			res = y;
+			res = (Element) y;
 			if (res > field().half_mod) res -= field().modulus;
 			else if(res < field().mhalf_mod) res += field().modulus;
 

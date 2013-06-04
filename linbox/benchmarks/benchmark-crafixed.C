@@ -52,6 +52,8 @@
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/integer.h"
 
+#include "linbox/vector/blas-vector.h"
+
 #ifdef __LINBOX_HAVE_IML
 #include "linbox/util/iml_wrapper.h"
 #endif
@@ -60,27 +62,30 @@
 
 using Givaro::Timer ;
 using LinBox::integer;
+using LinBox::BlasVector;
+using LinBox::PID_integer;
+using LinBox::Modular;
 
-// typedef std::vector<LinBox::integer> Ivect ;
-// typedef std::vector<double>          Fvect ;
+// typedef BlasVector<LinBox::integer> Ivect ;
+// typedef BlasVector<double>          Fvect ;
 
 struct ReductVect {
-	std::vector<integer>              & _v ;
+	BlasVector<PID_integer>              & _v ;
 
-	ReductVect(std::vector<integer> &v) :
+	ReductVect(BlasVector<PID_integer> &v) :
 		_v(v)
    	{ } ;
 
 	template<typename Field>
-	std::vector<typename Field::Element> &
-	operator()(std::vector<typename Field::Element> & r, const Field & F) const
+	BlasVector<Field> &
+	operator()(BlasVector<Field> & r, const Field & F) const
 	{
 		typedef typename Field::Element          Element;
-		typedef std::vector<Element>               Fvect;
+		typedef BlasVector<Field>               Fvect;
 		typedef typename Fvect::iterator            Iter;
 
 		//! @todo LinBox hom or magic here ?
-		std::vector<integer>::iterator j = _v.begin();
+		BlasVector<PID_integer>::iterator j = _v.begin();
 
 		for (Iter i =  r.begin() ; i !=  r.end() ; ++i,++j) {
 			F.init(*i,*j);
@@ -93,16 +98,17 @@ struct ReductVect {
 struct ReductVectIterator ;
 namespace LinBox
 {
-	template<class Element> struct CRATemporaryVectorTrait<ReductVectIterator ,Element> {
-		typedef typename std::vector<double>::iterator Type_t;
+	template<class Field>
+		struct CRATemporaryVectorTrait<ReductVectIterator, typename Field::Element> {
+		typedef typename BlasVector<Field>::iterator Type_t;
 	};
 }
 
 struct ReductVectIterator  {
-	std::vector<integer>              & _v ;
-	mutable std::vector<double>         _r ;
+	BlasVector<PID_integer>              & _v ;
+	mutable BlasVector<Modular<double> >         _r ;
 
-	ReductVectIterator(std::vector<integer> &v) :
+	ReductVectIterator(BlasVector<PID_integer> &v) :
 		_v(v)
    	{
 		_r.resize(v.size());
@@ -113,12 +119,12 @@ struct ReductVectIterator  {
 	operator()(Iterator & r, const Field & F) const
 	{
 		typedef typename Field::Element          Element;
-		typedef std::vector<Element>               Fvect;
+		typedef BlasVector<Field>               Fvect;
 		typedef typename Fvect::iterator            Iter;
 
 		//! @todo LinBox hom or magic here ?
-		std::vector<integer>::iterator j = _v.begin();
-		for (std::vector<double>::iterator i = _r.begin() ; i != _r.end() ; ++i,++j) {
+		BlasVector<PID_integer>::iterator j = _v.begin();
+		for (BlasVector<Modular<double > >::iterator i = _r.begin() ; i != _r.end() ; ++i,++j) {
 			F.init(*i,*j);
 		}
 		return r= _r.begin() ;
@@ -156,7 +162,7 @@ int bench_cra(index_t  n, index_t m, index_t l
 {
 
 	Timer tim, chrono ;
-	typedef std::vector<LinBox::integer> Ivect ;
+	typedef BlasVector<PID_integer> Ivect ;
 	{ /* LinBox CRA */
 		tim.clear();
 		typedef LinBox::Modular<double> ModularField ;
@@ -326,7 +332,7 @@ int bench_cra(index_t  n, index_t m, index_t l
 			}
 			ReductVect iteration(V);
 			for (size_t j = 0 ; j < (size_t)basislen ; ++j) {
-				std::vector<double> G ;
+				BlasVector<Modular<double> > G ;
 				iteration(G,ModularField((integer)liftbasis[j]));
 				for (size_t k = 0 ; k < (size_t)n ; ++k)
 					Vp[j+k*basislen] = G[k] ;
