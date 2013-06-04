@@ -261,7 +261,7 @@ namespace LinBox
 		if (field().isZero(v_)) // just write zeroes
 			for ( ; y_iter != y.end ();  ++y_iter) *y_iter = v_;
 		else if (field().isOne(v_) ) // just copy
-			copy(x.begin(), x.end(), y.begin());
+			std::copy(x.begin(), x.end(), y.begin());
 		else // use actual muls
 		{   typename InVector::const_iterator x_iter = x.begin ();
 			for (  ; y_iter != y.end () ; ++y_iter, ++x_iter )

@@ -71,6 +71,7 @@ bool testInvDivConsistency
 #include "linbox/randiter/nonzero.h"
 //#include "linbox/vector/stream.h"
 #include "linbox/integer.h"
+// #include "linbox/field/givaro.h"
 
 #include "test-common.h"
 
