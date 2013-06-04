@@ -873,9 +873,9 @@ namespace LinBox
 #include "linbox/field/Modular/modular-unsigned.h"
 #include "linbox/randiter/modular.h"
 #include "linbox/field/Modular/modular-int32.h"
-#ifdef __LINBOX_HAVE_INT64
+// #ifdef __LINBOX_HAVE_INT64
 #include "linbox/field/Modular/modular-int64.h"
-#endif
+// #endif
 #include "linbox/field/Modular/modular-short.h"
 #include "linbox/field/Modular/modular-byte.h"
 #include "linbox/field/Modular/modular-double.h"

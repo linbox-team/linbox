@@ -328,7 +328,7 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  No_build_n_run("test-modular-int",                  counter , flag, "fails badly for (u)int64_t !!!!!!");
+		  Build_n_run("test-modular-int",                  counter , flag/*, "fails badly for uint64_t "*/);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif

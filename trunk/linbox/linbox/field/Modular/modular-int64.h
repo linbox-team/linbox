@@ -91,7 +91,7 @@ namespace LinBox
 	 */
 	template <>
 	class Modular<int64_t> : public FieldInterface,
-	      public FFPACK::Modular<int64_t>	{
+	      public ::FFPACK::Modular<int64_t>	{
 
 	public:
 		typedef int64_t Element;
@@ -102,6 +102,15 @@ namespace LinBox
 		friend class MVProductDomain<Modular<int64_t> >;
 
 		typedef ModularRandIter<int64_t> RandIter;
+
+		Modular (integer &p) :
+			Father_t((unsigned long)p)
+		{
+		}
+
+	       	Modular (int64_t value, int64_t exp=1) :
+			Father_t(value,exp)
+		      {}
 
 		using Father_t ::cardinality;
 		inline integer &cardinality (integer &c) const
@@ -148,7 +157,7 @@ namespace LinBox
 		typedef Modular<int64_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F),_y(0)
+			_field (&F),_y(0)
 		{}
 
 
@@ -163,12 +172,14 @@ namespace LinBox
 			return *this;
 		}
 
+		inline const Field & field() { return *_field; }
+
 		inline uint64_t& mulacc (const Element &a, const Element &x)
 		{
 			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
 			if (_y < t)
-				return _y += _field._two64;
+				return _y += field()._two64;
 			else
 				return _y;
 		}
@@ -177,14 +188,14 @@ namespace LinBox
 		{
 			_y += t;
 			if (_y < (uint64_t)t)
-				return _y += _field._two64;
+				return _y += field()._two64;
 			else
 				return _y;
 		}
 
 		inline Element& get (Element &y)
 		{
-			y =_y % (uint64_t) _field.modulus;
+			y =_y % (uint64_t) field().modulus;
 			return y;
 		}
 
@@ -200,7 +211,7 @@ namespace LinBox
 		}
 
 	protected:
-		Field _field;
+		const Field *_field;
 		uint64_t _y;
 	};
 
@@ -234,10 +245,10 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += _field._two64;
+					y += field()._two64;
 			}
 
-			y %= (uint64_t) _field.modulus;
+			y %= (uint64_t) field().modulus;
 			return res = y;
 
 		}
@@ -257,11 +268,11 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += _field._two64;
+					y += field()._two64;
 			}
 
 
-			y %= (uint64_t) _field.modulus;
+			y %= (uint64_t) field().modulus;
 
 			return res = y;
 		}

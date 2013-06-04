@@ -91,7 +91,7 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 	else if (n == 1) {
 		F.assign (res, a);
 	}
-	else if (n[0] & 1) {
+	else if (isOdd(n)) {
 		n -= 1;
 		expt (F, res, a, n);
 		F.mulin (res, a);
@@ -182,14 +182,17 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 		part_pass = reportError( "isOne (1) is false", pass);
 	}
 
-	if ( !F.areEqual(F.mOne,mOne))
+	if ( !F.areEqual(F.mOne,mOne)) {
 		part_pass = reportError( "isMOne (-One) is false", pass);
+	}
 
 	typename Field::Element mOneFromCst;
     F.init(mOneFromCst, -1);
 
-    if ( !F.areEqual(F.mOne,mOneFromCst))
+    if ( !F.areEqual(F.mOne,mOneFromCst)) {
+		// std::cout << F.mOne << "," << mOneFromCst << std::endl;
 		part_pass = reportError( "isMOne (-1) is false", pass);
+    }
 
 
 	commentator().stop (MSG_STATUS (part_pass));

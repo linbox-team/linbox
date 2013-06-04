@@ -1075,7 +1075,7 @@ namespace LinBox
 
 	// this will destroy Y
 	double fit_lapack(dvector_t &X, dvector_t &Y, int n, double x) {
-		assert(n == Y.size());
+		assert(n == (int)Y.size());
 		int deg = std::min(4,n);
 		dvector_t V(deg*n);
 		std::cout << V.size() << std::endl;
