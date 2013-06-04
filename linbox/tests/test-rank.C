@@ -233,7 +233,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		typename Field::Element zero, one;
 
 		F.init(zero, 0);
-		Blackbox A (F, n, zero);
+		Blackbox A (F, n, n, zero);
 		LinBox::rank (r, A, Method::Wiedemann ());
 		if (r != 0) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -242,7 +242,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		}
 
 		F.init(one, 1);
-		Blackbox I (F, n, one);
+		Blackbox I (F, n, n, one);
 		LinBox::rank (r, I, Method::Wiedemann ());
 		if (r != n) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)

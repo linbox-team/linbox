@@ -91,7 +91,7 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 	else if (n == 1) {
 		F.assign (res, a);
 	}
-	else if (isOdd(n)) {
+	else if (Givaro::isOdd(n)) {
 		n -= 1;
 		expt (F, res, a, n);
 		F.mulin (res, a);

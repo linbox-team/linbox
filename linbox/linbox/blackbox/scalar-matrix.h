@@ -91,6 +91,13 @@ namespace LinBox
 			field_(&F), n_(n), v_(s)
 		{}
 
+		ScalarMatrix (const Field &F, const size_t n, const size_t m, const Element &s) :
+			field_(&F), n_(n), v_(s)
+		{
+			linbox_check(n ==m);
+		}
+
+
 		ScalarMatrix (const Field &F, const size_t n, const size_t m) :
 			field_(&F), n_(n), v_(0)
 		{
