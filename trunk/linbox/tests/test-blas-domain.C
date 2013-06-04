@@ -1566,12 +1566,12 @@ static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n) {
 //	BlasMatrix<Field> D(ms);
 //	pass = pass and MD.areEqual(B, D);
 
-	ScalarMatrix<Field> Eo(Fld, n, Fld.zero);
+	ScalarMatrix<Field> Eo(Fld, n, n, Fld.zero);
 	BlasMatrix<Field> E(Eo); // copy a bb
 	pass = pass and MD.areEqual(B, E);
 
 #if 0
-	ScalarMatrix<Field> Fo(Fld, 2*m, n, Fld.zero);
+	ScalarMatrix<Field> Fo(Fld, 2*m, 2*m, Fld.zero);
         BlasMatrix F(Fo, m, 0, m, n) ; // copy subm of a bb
 	pass = pass and MD.areEqual(B, F);
 

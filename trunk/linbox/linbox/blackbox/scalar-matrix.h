@@ -81,6 +81,7 @@ namespace LinBox
 		 */
 		ScalarMatrix (const Field &F) : field_(&F) {}
 
+#if 0
 		/** Scalar matrix Constructor from an element.
 		 * @param F	field in which to do arithmetic.
 		 * @param n	size of the matrix.
@@ -90,6 +91,7 @@ namespace LinBox
 		ScalarMatrix (const Field &F, const size_t n, const Element &s) :
 			field_(&F), n_(n), v_(s)
 		{}
+#endif
 
 		ScalarMatrix (const Field &F, const size_t n, const size_t m, const Element &s) :
 			field_(&F), n_(n), v_(s)
@@ -97,12 +99,13 @@ namespace LinBox
 			linbox_check(n ==m);
 		}
 
-
+#if 1
 		ScalarMatrix (const Field &F, const size_t n, const size_t m) :
 			field_(&F), n_(n), v_(0)
 		{
 			linbox_check(m==n);
 		}
+#endif
 
 		/** Constructor from a random element.
 		 * @param F    field in which to do arithmetic.

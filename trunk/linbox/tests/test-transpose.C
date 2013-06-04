@@ -187,7 +187,7 @@ int main (int argc, char **argv)
 
 	commentator().start("test on ScalarMatrix");
 	Field::Element s; F.init(s, 5);
-	ScalarMatrix<Field> A(F, n, s);
+	ScalarMatrix<Field> A(F, n, n, s);
 	pass = pass and testTransposeBlackbox(A);
 	commentator().stop("test on ScalarMatrix");
 

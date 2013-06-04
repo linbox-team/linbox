@@ -76,7 +76,7 @@ int main (int argc, char **argv)
 
 // scalar matrix
 	Element s; F.init(s, 3);
-	ScalarMatrix<Field> A(F, n, s);
+	ScalarMatrix<Field> A(F, n, n, s);
 	F.init(t, n*3);
 
 	trace(t1, A);

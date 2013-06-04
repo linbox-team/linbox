@@ -66,7 +66,7 @@ bool testGenericBBgetEntry (const Field &F, size_t n)
 	F.init(x, 0);
 	F.init(s, 2);
 	F.init(z, 0);
-	ScalarMatrix<Field> B(F, n, s);
+	ScalarMatrix<Field> B(F, n, n, s);
 	SolutionTags::Generic t;
 	//getEntry(x, B, 0, n-1, t);
 	if (n > 1 && !F.isZero(x)) ret = false;
@@ -87,7 +87,7 @@ bool testScalarMatrixgetEntry (const Field &F, size_t n)
 	F.init(r, 0);
 	F.init(s, 2);
 	F.init(th, 2);
-	ScalarMatrix<Field> B(F, n, s);
+	ScalarMatrix<Field> B(F, n, n, s);
 	getEntry(t, B, 0, n-1); F.assign(r,t);
 		report << "0xn-1" << t << endl;
   	getEntry(t, B, n-1, 0); F.addin(r,t);
@@ -276,7 +276,7 @@ bool testSpecialCDgetEntry (const Field &F, size_t n)
 	F.init(t, 0);
 	F.init(u, 0);
 	F.mul(u, s, t);
-	BB B(F, n, s);
+	BB B(F, n, n, s);
 	BlasVector<Field> d(F,n, t);
 	DD D(d);
 	Compose<DD, BB> CDB (D, B);
