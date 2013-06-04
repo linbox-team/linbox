@@ -71,9 +71,10 @@ namespace LinBox
 		 */
 
 		/// Constructs an initially 0 by 0 matrix.
-		// ScalarMatrix ()	:
-			// n_(0)
-		// {}
+		//! @bug this should not be allowed (unknown field)
+		ScalarMatrix ()	:
+			n_(0)
+		{}
 
 		/** Constructor of readable scalar matrix.
 		 * @param F	field in which to do arithmetic.
