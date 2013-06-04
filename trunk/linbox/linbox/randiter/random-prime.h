@@ -153,7 +153,7 @@ namespace LinBox
 	//std::cout << "maxmodbits: " << bits << std::endl;
 			if (!bits) throw("weird");
 			--bits;
-			bits -= (int)((log(n)/2./M_LN2));
+			bits -= (int)((log((double)n)/2./M_LN2));
 	//std::cout << "delcorrect: " << bits << std::endl;
 			if (bits < 0) return false;
 			if (bits < (int)_bits) setBits((unsigned int)bits);
