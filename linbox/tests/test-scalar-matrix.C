@@ -77,7 +77,7 @@ int main (int argc, char **argv)
 	// Blackbox A; // Test the default constructor
 	//pass = pass && testBlackbox(A);
 
-	Blackbox B (F, n, d); // Test a small one.
+	Blackbox B (F, n, n, d); // Test a small one.
 	pass = pass && testBlackbox(B);
 
 	//Blackbox C (F, 100000, d); // Test a large one.

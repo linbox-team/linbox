@@ -492,7 +492,7 @@ namespace LinBox
 
 					//Building the matrix A + gamma.Id mod p
 					F.neg( mgamma, gamma );
-					ScalarMatrix<Field> gammaId( F, n, gamma );
+					ScalarMatrix<Field> gammaId( F, n, n, gamma );
 					Sum<BlackBox,ScalarMatrix<Field> > Agamma(A, gammaId);
 
 					// Compute det (A+gamma.Id)

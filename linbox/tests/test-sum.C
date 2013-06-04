@@ -263,7 +263,7 @@ int main (int argc, char **argv)
 //	Diagonal <Field, Vector> D1 (F, d1), D2 (F, d2);
 
 	Field::Element d; F1.init(d, 5);
-	ScalarMatrix<Field> D1(F1, 10, d), D2(F1, 10, d);
+	ScalarMatrix<Field> D1(F1, 10, 10, d), D2(F1, 10, 10, d);
 	typedef ScalarMatrix<Field> Blackbox;
 
 	Sum <Blackbox, Blackbox> A (D1, D2);
