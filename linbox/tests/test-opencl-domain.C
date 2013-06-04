@@ -89,7 +89,7 @@ using namespace LinBox;
 
 const int maxpretty = 35;
 
-const char* pretty(std::string a) {
+std::string pretty(std::string a) {
 	std::string blank;
 	blank = a;
 	int msgsize= maxpretty - (int)blank.size();
@@ -97,7 +97,7 @@ const char* pretty(std::string a) {
 	for(int i=0;i<msgsize ;++i){
 		blank += dot;
 	}
-	return blank.c_str();
+	return blank;
 }
 
 template <class Field>
