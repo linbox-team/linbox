@@ -60,11 +60,14 @@
 
 #define _LB_LOG2 0.69314718055994530941
 
+#include "linbox/field/unparametric.h"
+
 using Givaro::Timer ;
 using LinBox::integer;
 using LinBox::BlasVector;
 using LinBox::PID_integer;
 using LinBox::Modular;
+using LinBox::UnparametricField;
 
 // typedef BlasVector<LinBox::integer> Ivect ;
 // typedef BlasVector<double>          Fvect ;
@@ -106,10 +109,10 @@ namespace LinBox
 
 struct ReductVectIterator  {
 	BlasVector<PID_integer>              & _v ;
-	mutable BlasVector<Modular<double> >         _r ;
+	mutable BlasVector<UnparametricField<double> >         _r ;
 
 	ReductVectIterator(BlasVector<PID_integer> &v) :
-		_v(v)
+		_v(v),_r(UnparametricField<double>())
    	{
 		_r.resize(v.size());
 	} ;
@@ -172,9 +175,10 @@ int bench_cra(index_t  n, index_t m, index_t l
 		if (!Unsigned) logV += _LB_LOG2 ;
 		std::cout << "size to reconstruct : " << logV << std::endl;
 		LinBox::RandomPrimeIterator genprime( PrimeSize );
+		PID_integer Z;
 		for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
 			// create the vector to reconstruct
-			Ivect V(n),R(n) ;
+			Ivect V(Z,n),R(Z,n) ;
 			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
 				integer::random_lessthan<Unsigned>(*it,l) ;
 			}
@@ -195,7 +199,7 @@ int bench_cra(index_t  n, index_t m, index_t l
 			tim += chrono ;
 			if (!std::equal(R.begin(),R.end(),V.begin())) {
 				std::cerr << "*** LinBox CRA failed " << (Unsigned?"positive":"general") << " ***" << std::endl;
-				std::cerr << R << std::endl << "expecting " << std::endl << V << std::endl;
+				// std::cerr << *R << std::endl << "expecting " << std::endl << *V << std::endl;
 			}
 			// else
 			// std::cerr << "ok" << std::endl;
@@ -209,9 +213,10 @@ int bench_cra(index_t  n, index_t m, index_t l
 		typedef LinBox::EarlyMultipCRA< ModularField > CRAbase ;
 		unsigned int PrimeSize = 22;
 		LinBox::RandomPrimeIterator genprime( PrimeSize );
+		PID_integer Z ;
 		for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
 			// create the vector to reconstruct
-			Ivect V(n),R(n) ;
+			Ivect V(Z,n),R(Z,n) ;
 			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
 				integer::random_lessthan<Unsigned>(*it,l) ;
 			}
@@ -225,7 +230,7 @@ int bench_cra(index_t  n, index_t m, index_t l
 			tim += chrono ;
 			if (!std::equal(R.begin(),R.end(),V.begin())) {
 				std::cerr << "*** LinBox early CRA failed " << (Unsigned?"positive":"general") << " ***" << std::endl;
-				std::cerr << R << std::endl << "expecting " << std::endl << V << std::endl;
+				// std::cerr << R << std::endl << "expecting " << std::endl << V << std::endl;
 			}
 			// else
 			// std::cerr << "ok" << std::endl;
@@ -242,8 +247,9 @@ int bench_cra(index_t  n, index_t m, index_t l
 		rns.initCRA();
 		chrono.stop();
 		tim += chrono;
+		PID_integer Z;
 		for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
-			Ivect V(n),R(n) ;
+			Ivect V(Z,n),R(Z,n) ;
 			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
 				integer::random_lessthan<Unsigned>(*it,l) ;
 			}
@@ -254,7 +260,7 @@ int bench_cra(index_t  n, index_t m, index_t l
 			tim += chrono ;
 			if (!std::equal(R.begin(),R.end(),V.begin())) {
 				std::cerr << "*** Givaro CRT failed " << (Unsigned?"positive":"general") << "***" << std::endl;
-				std::cerr << R << std::endl << "expecting " << std::endl << V << std::endl;
+				// std::cerr << R << std::endl << "expecting " << std::endl << V << std::endl;
 			}
 			// else
 			// std::cerr << "ok" << std::endl;
@@ -272,8 +278,9 @@ int bench_cra(index_t  n, index_t m, index_t l
 		rns.initCRA();
 		chrono.stop();
 		tim += chrono;
+		PID_integer Z;
 		for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
-			Ivect V(n),R(n) ;
+			Ivect V(Z,n),R(Z,n) ;
 			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
 				integer::random_lessthan<Unsigned>(*it,l) ;
 			}
@@ -284,7 +291,7 @@ int bench_cra(index_t  n, index_t m, index_t l
 			tim += chrono ;
 			if (!std::equal(R.begin(),R.end(),V.begin())) {
 				std::cerr << "*** givaro fixed failed " << (Unsigned?"positive":"general") << "***" << std::endl;
-				std::cerr << R << std::endl << "expecting " << std::endl << V << std::endl;
+				// std::cerr << R << std::endl << "expecting " << std::endl << V << std::endl;
 			}
 			// else
 			// std::cerr << "ok" << std::endl;
@@ -380,11 +387,10 @@ int main(int ac, char** av)
 	return EXIT_SUCCESS ;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
