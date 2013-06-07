@@ -144,8 +144,9 @@ NONCOMPLIANT_TESTS =                   \
 
 DUBIOUS_TESTS =                 \
 	test-unparametric-field       \
-	test-bmseq		\
 		test-zo
+
+#  test-bmseq		\
 #  test-quad-matrix
 
 NONCOMPILING_TESTS =           \
@@ -367,9 +368,9 @@ test_scalar_matrix_SOURCES =            \
         test-generic.h                  \
         test-common.h
 
-test_bmseq_SOURCES =            \
-        test-bmseq.C            \
-        test-common.h
+#  test_bmseq_SOURCES =            \
+	#  test-bmseq.C            \
+	#  test-common.h
 
 test_butterfly_SOURCES =                \
         test-vector-domain.h            \
@@ -589,9 +590,9 @@ test_optimization_SOURCES=    \
         test-common.h         \
         test-optimization.C
 
-test_nullspace_SOURCES=    \
-        test-common.h      \
-        test-nullspace.C
+#  test_nullspace_SOURCES=    \
+	#  test-common.h      \
+	#  test-nullspace.C
 
 test_bitonic_sort_SOURCES=              \
         test-common.h                   \

@@ -131,6 +131,17 @@ namespace LinBox
 			return x = 0 ;
 		}
 
+		using Father_t:: write;
+		std::ostream &write (std::ostream &os, std::string F) const
+		{
+			os << "ModularBalanced<" << eltype( Element() ) << " > "; // class name
+			if (F != "") {
+				integer p = cardinality();
+				os << F << "( " << p << " )"; // show constuctor args
+			}
+			return os;
+		}
+
 	};
 
 	template <>

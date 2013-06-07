@@ -204,6 +204,7 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
+		//!@bug using Father_t::init ?
 		Element &init (Element &x , const integer &y = 0) const
 		{
 			//
@@ -219,6 +220,7 @@ namespace LinBox
 			return Givaro::ZpzDom<TAG>::init (x, y ) ;
 
 		}
+
 		Element &init (Element &x , const int &y ) const
 		{
 			return Givaro::ZpzDom<TAG>::init (x, y ) ;
@@ -246,6 +248,19 @@ namespace LinBox
 		}
 
 		static uint64_t getMaxModulus();
+
+		using Father_t::write;
+		std::ostream &write (std::ostream &os, std::string F) const
+		{
+			os << "GivaroZpz<" << eltype( Element() ) << " > "; // class name
+			if (F != "") {
+				integer p = cardinality();
+				os << F << "( " << p << " )"; // show constuctor args
+			}
+			return os;
+		}
+
+
 
 	}; // class GivaroZpz<TAG>
 
