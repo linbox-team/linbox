@@ -20,7 +20,6 @@
 
 
 EXTRA_DIST = \
-	test.matrix			\
 	sms.matrix			\
 	matrix-market-array.matrix	\
 	maple-sparse1.matrix		\
@@ -28,3 +27,6 @@ EXTRA_DIST = \
 	generic-dense.matrix		\
 	sparse-row.matrix		\
 	matrix-market-coordinate.matrix
+
+#  test.matrix			\
+	#

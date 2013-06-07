@@ -174,29 +174,29 @@ namespace LinBox
 		 * @param  F  optional name to give the field in the description.  IF F is the null string, only the class name is written.
 		 * Example: For element type double and modulus 101,
 		 * write(os) produces      "Modular< double > ( 101 )"  on os,
- 		 * write(os, "F") produces "Modular< double > F( 101 )" on os, and
- 		 * write(os, "") produces  "Modular< double >"          on os.
+		 * write(os, "F") produces "Modular< double > F( 101 )" on os, and
+		 * write(os, "") produces  "Modular< double >"          on os.
 		 */
 		std::ostream &write (std::ostream &os) const
 		{
-		  integer p = cardinality();
-		  return os << "Modular<" << eltype( Element() ) << " >( " << p << " )";
+			integer p = cardinality();
+			return os << "Modular<" << eltype( Element() ) << " >( " << p << " )";
 		}
 
 		std::ostream &write (std::ostream &os, std::string F) const
 		{
-		  os << "Modular<" << eltype( Element() ) << " > "; // class name
-		  if (F != "") {
-		    integer p = cardinality();
-		    os << F << "( " << p << " )"; // show constuctor args
-		  }
-		  return os;
+			os << "Modular<" << eltype( Element() ) << " > "; // class name
+			if (F != "") {
+				integer p = cardinality();
+				os << F << "( " << p << " )"; // show constuctor args
+			}
+			return os;
 		}
 
-        std::ostream &write (std::ostream & os, const Element & x) const
-	{
-            return Father_t::write(os,x);
-        }
+		std::ostream &write (std::ostream & os, const Element & x) const
+		{
+			return Father_t::write(os,x);
+		}
 
 
 	private:
@@ -550,11 +550,10 @@ namespace LinBox
 #endif //__LINBOX_modular_int32_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
