@@ -45,7 +45,7 @@ AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
 #EX_LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS)
 #LDADD = $(LINBOX_LIBS) $(EX_LDADD)
 
-SUBDIRS=fields
+#  SUBDIRS=fields solver data blackbox
 
 EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence
 # EXAMPLES+=nulp yabla

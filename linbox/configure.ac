@@ -334,8 +334,6 @@ AC_CONFIG_FILES([
 Makefile
 linbox-config
 examples/Makefile
-examples/fields/Makefile
-examples/Readme-make
 doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
@@ -368,4 +366,11 @@ interfaces/sage/Makefile
 macros/Makefile
 benchmarks/Makefile
 ])
+
+# examples/Readme-make
+# examples/field
+# examples/solver
+# examples/blackbox
+# examples/data
+
 AC_OUTPUT
