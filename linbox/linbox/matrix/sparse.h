@@ -118,6 +118,9 @@ namespace LinBox
 		// Dummy class to avoid code duplication
 		class NoField {
 		public:
+			NoField() :
+				zero(0), one(1), mOne(-1)
+			{}
 			typedef _Element Element;
 
 			template<class T>
@@ -131,6 +134,7 @@ namespace LinBox
 			{
 				return stream << elt;
 			}
+			const Element zero, one, mOne;
 		};
 
 		template <class Field>
@@ -165,6 +169,10 @@ namespace LinBox
 		// Dummy class to avoid code duplication
 		class NoField {
 		public:
+			NoField() :
+				zero(0), one(1), mOne(-1)
+			{}
+
 			typedef _Element Element;
 
 			template<class T>
@@ -178,6 +186,8 @@ namespace LinBox
 			{
 				return stream << elt;
 			}
+
+			const Element zero, one, mOne;
 		};
 
 		template <class Field>
