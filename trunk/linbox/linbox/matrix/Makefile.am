@@ -24,8 +24,15 @@ pkgincludesubdir=$(pkgincludedir)/matrix
 BASIC_HDRS =              \
 	archetype.h               \
 	matrix-category.h         \
+	matrix-traits.h           \
 	sparse.h                  \
 	sparse.inl                \
+	sparse-associative-vector.h      \
+	sparse-associative-vector.inl    \
+        sparse-parallel-vector.h         \
+        sparse-parallel-vector.inl       \
+        sparse-sequence-vector.h         \
+        sparse-sequence-vector.inl       \
 	transpose-matrix.h        \
 	dense-rows-matrix.h       \
 	matrix-domain.h           \

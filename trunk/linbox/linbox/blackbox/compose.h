@@ -31,7 +31,6 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
-#include "linbox/matrix/blas-matrix.h"
 
 namespace LinBox
 {
@@ -411,6 +410,10 @@ namespace LinBox
 		typedef Compose<IMatrix, IMatrix> value_type;
 	};
 
+
+	template<class Field>
+		class BlasMatrix ;
+
 	/// used in smith-binary, for example
 	template<class Field>
 	class ComposeTraits<  BlasMatrix<Field> > {
@@ -420,7 +423,7 @@ namespace LinBox
 		typedef BlasMatrix<Field> value_type;
 	};
 
-}
+} // LinBox
 
 
 namespace LinBox
@@ -614,17 +617,16 @@ namespace LinBox
 		mutable std::vector<Element> _z;
 	};
 
-}
+} // LinBox
 
 
 #endif // __LINBOX_compose_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

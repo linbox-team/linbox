@@ -655,7 +655,7 @@ static bool testRandomSolve (const Field                  &F,
 	VectorWrapper::ensureDim (ATb, A_stream.dim ());
 
 	SparseMatrix<Field> A (F, A_stream);
-	SparseMatrixBase<typename Field::Element> AT (A.coldim (), A.rowdim ());
+	SparseMatrix<Field> AT (F,A.coldim (), A.rowdim ());
 	BlasMatrix<Field> ATA (A.coldim (), A.coldim ());
 
 	A.transpose (AT);

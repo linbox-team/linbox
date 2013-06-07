@@ -34,7 +34,9 @@
 #ifndef __LINBOX_matrix_hom_H
 #define __LINBOX_matrix_hom_H
 
+//! @bug it is dangerous to include matrices defs that include hom for their rebind...
 #include "linbox/integer.h"
+#include "linbox/matrix/blas-matrix.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/polynomial.h"
@@ -42,6 +44,13 @@
 #include "linbox/field/hom.h"
 #include "linbox/matrix/matrix-category.h"
 
+namespace LinBox {
+	template<class A, class B, class C>
+	class SparseMatrix ;
+
+	template<class A>
+	class BlasMatrix;
+}
 
 namespace LinBox
 {

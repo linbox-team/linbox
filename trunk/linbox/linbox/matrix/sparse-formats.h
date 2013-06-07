@@ -29,6 +29,13 @@
 
 namespace LinBox {
 
+	/** Exception class for invalid matrix input
+	*/
+	namespace Exceptions {
+		class InvalidMatrixInput {};
+	}
+
+
 	/// tags for SparseMatrixBase::read() and write()
 	enum FileFormatTag {
 		FORMAT_DETECT,

@@ -66,6 +66,7 @@
 
 namespace LinBox
 {
+#if 0
 
 	/** \brief vector of sparse rows.
 
@@ -247,19 +248,19 @@ namespace LinBox
 		// Read from matrix market format
 		std::istream &read (std::istream &is)
 		{
-            MatrixStream<Field> ms(field(), is);
-            if( !ms.getDimensions( this->_m, this->_n ) )
-                throw ms.reportError(__func__,__LINE__);
-            this->_matA.resize( this->_m );
-            Element val;
-            size_t i, j;
-            while( ms.nextTriple(i,j,val) ) {
-                Father_t::setEntry(i,j,val);
-            }
-            if( ms.getError() > END_OF_MATRIX )
-                throw ms.reportError(__func__,__LINE__);
-            return is;
-        }
+			MatrixStream<Field> ms(field(), is);
+			if( !ms.getDimensions( this->_m, this->_n ) )
+				throw ms.reportError(__func__,__LINE__);
+			this->_matA.resize( this->_m );
+			Element val;
+			size_t i, j;
+			while( ms.nextTriple(i,j,val) ) {
+				Father_t::setEntry(i,j,val);
+			}
+			if( ms.getError() > END_OF_MATRIX )
+				throw ms.reportError(__func__,__LINE__);
+			return is;
+		}
 
 	//	  return SparseMatrixBase<Element, _Row>::read (is, *_field); }
 
@@ -303,6 +304,7 @@ namespace LinBox
 		template<class F, class R> friend class SparseMatrix;
 		};
 
+#if 0 /*  not used */
 	/** Sparse matrix factory
 	 * This class inherits \ref BlackboxFactory and provides a method for using a
 	 * \ref SparseMatrixBase object with integer or rational data type as input to
@@ -313,12 +315,12 @@ namespace LinBox
 	class BElement = typename Field::Element,
 	class Row      = typename LinBox::Vector<Field>::Sparse,
 	class BRow     = typename LinBox::RawVector<BElement>::Sparse>
-	class SparseMatrixFactory : public BlackboxFactory<Field,SparseMatrix<Field,Row> > {//otot
-		const SparseMatrixBase<BElement, BRow> &_matA;
+	class SparseMatrixFactory : public BlackboxFactory<Field,SparseMatrix<Field,Row> > {
+		const SparseMatrix<Field, BRow> &_matA;
 
 	public:
 
-		SparseMatrixFactory (const SparseMatrixBase<BElement, BRow> &A) :
+		SparseMatrixFactory (const SparseMatrix<Field, BRow> &A) :
 			_matA (A)
 		{}
 
@@ -344,10 +346,14 @@ namespace LinBox
 			return res;
 		}
 
-		size_t rowdim ()
-		{ return _matA.rowdim (); }
-		size_t coldim ()
-		{ return _matA.coldim (); }
+		size_t rowdim () const
+		{
+			return _matA.rowdim ();
+		}
+		size_t coldim () const
+		{
+			return _matA.coldim ();
+		}
 
 		// A better bound for determinant of an integer sparse matrix, ZW
 		integer &hadamardBound (integer& res) const
@@ -425,30 +431,13 @@ namespace LinBox
 			return res;
 		}
 	};
+#endif
 
-// #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
-	// template <>
-// #endif
-	template <class Field, class _Row>
-	struct MatrixTraits< SparseMatrix<Field, _Row> >
-	{
-		typedef SparseMatrix<Field, _Row> MatrixType;
-		typedef MatrixCategories::RowMatrixTag MatrixCategory;
-	};
 
-	template <class Field, class _Row>
-	struct MatrixTraits< const SparseMatrix<Field, _Row> >
-	{
-		typedef const SparseMatrix<Field, _Row> MatrixType;
-		typedef MatrixCategories::RowMatrixTag MatrixCategory;
-	};
-
-	template<class A, class B> struct GetEntryCategory<SparseMatrix<A,B> >
-	{ typedef SolutionTags::Local Tag; };
-
-} // namespace LinBox
 
 #include "linbox/blackbox/sparse.inl"
+#endif
+} // namespace LinBox
 
 #endif // __LINBOX_blackbox_sparse_H
 

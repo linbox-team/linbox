@@ -26,10 +26,9 @@
 #ifndef __LINBOX_matrix_category_H
 #define __LINBOX_matrix_category_H
 
-#include "linbox/matrix/sparse.h"
+// #include "linbox/matrix/sparse.h"
 // #include "linbox/matrix/blas-matrix.h"
-
-#include "linbox/blackbox/sparse.h"
+// #include "linbox/blackbox/sparse.h"
 
 
 namespace LinBox
@@ -43,6 +42,9 @@ namespace LinBox
 
 	template<class _Field, class _Storage>
 	class SparseMatrix2 ;
+
+	template<class _Field, class _Row, class _Traits>
+	class SparseMatrix ;
 
 
 	struct MatrixContainerCategory {
@@ -83,14 +85,16 @@ namespace LinBox
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 
+#if 0
 	template <class Element>
 	class MatrixContainerTrait<SparseMatrixBase<Element> > {
 	public:
 		typedef MatrixContainerCategory::Container Type;
 	};
+#endif
 
-	template <class Field>
-	class MatrixContainerTrait<SparseMatrix<Field> > {
+	template <class Field, class _Row, class _Traits>
+	class MatrixContainerTrait<SparseMatrix<Field,_Row,_Traits> > {
 	public:
 		typedef MatrixContainerCategory::Container Type;
 	};
@@ -107,11 +111,10 @@ namespace LinBox
 #endif //__LINBOX_matrix_category_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -57,9 +57,10 @@
 namespace LinBox
 {
 
-	template <class Element, class Row, class Trait>
-	template <class Field>
-	std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait> ::readTurner (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
+	template <class Field, class Row, class Trait>
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readTurner (SparseMatrix<Field, Row> &A, std::istream &is
+										   // , const Field &F
+										   , char *buf)
 	{
 		size_t i, j;
 
@@ -73,7 +74,7 @@ namespace LinBox
 
 			if (i == (size_t) -1) break; // return also if row index is -1
 			str >> j;
-			F.read (str, A.refEntry (i, j));
+			A.field().read (str, A.refEntry (i, j));
 
 			is.getline (buf, 80);
 		} while (is);
@@ -81,9 +82,10 @@ namespace LinBox
 		return is;
 	}
 
-	template <class Element, class Row, class Trait>
-	template <class Field>
-	std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait> ::readGuillaume (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
+	template <class Field, class Row, class Trait>
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readGuillaume (SparseMatrix<Field, Row> &A, std::istream &is
+										      // , const Field &F
+										      , char *buf)
 	{
 		size_t i, j;
 
@@ -95,21 +97,22 @@ namespace LinBox
 
 		Element x;
 		while (is >> i) {
-			if (i == 0 || i == (size_t) -1) {is >> j; F.read(is, x); break;}
+			if (i == 0 || i == (size_t) -1) {is >> j; A.field().read(is, x); break;}
 			is >> j;
 			if (i > A._m || j > A._n)
-				throw InvalidMatrixInput ();
-			F.read (is, x);
-			if (! F.isZero(x)) A.setEntry (i - 1, j - 1, x);
+				throw Exceptions::InvalidMatrixInput ();
+			A.field().read (is, x);
+			if (! A.field().isZero(x)) A.setEntry (i - 1, j - 1, x);
 		}
 
 		return is;
 
 	}
 
-	template <class Element, class Row, class Trait>
-	template <class Field>
-	std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait> ::readMatlab (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
+	template <class Field, class Row, class Trait>
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readMatlab (SparseMatrix<Field, Row> &A, std::istream &is
+										   // , const Field &F
+										   , char *buf)
 	{
 		size_t i = 0, j = 0;
 		char c;
@@ -121,7 +124,7 @@ namespace LinBox
 
 			is.putback (c);
 
-			F.read (is, a_ij);
+			A.field().read (is, a_ij);
 			A.setEntry (i, j++, a_ij);
 
 			do is >> c; while (is && c != ',' && c != ';' && c != ']');
@@ -137,9 +140,10 @@ namespace LinBox
 		return is;
 	}
 
-	template <class Element, class Row, class Trait>
-	template <class Field>
-	std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait> ::readPretty (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
+	template <class Field, class Row, class Trait>
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readPretty (SparseMatrix<Field, Row> &A, std::istream &is
+										   // , const Field &F
+										   , char *buf)
 	{
 		size_t i, j;
 		Element a_ij;
@@ -156,22 +160,22 @@ namespace LinBox
 
 			std::istringstream str (buf);
 
-			do str >> c; while (isspace (c));
+			do {str >> c; std::cout << "x" << c << "x" << std::endl;} while (isspace (c));
 			if (c != '[')
-				throw InvalidMatrixInput ();
+				throw Exceptions::InvalidMatrixInput ();
 
 			j = 0;
 
 			while (str) {
 				do str >> c; while (isspace (c));
 				if (!str || c == ']') break;
-				F.read (str, a_ij);
+				A.field().read (str, a_ij);
 
 				j++;
 				if (j > A._n)
 					A._n++;
 
-				if (!F.isZero(a_ij))
+				if (!A.field().isZero(a_ij))
 					A.setEntry (i, j, a_ij);
 			}
 
@@ -184,9 +188,10 @@ namespace LinBox
 
 	}
 
-	template <class Element, class Row, class Trait>
-	template <class Field>
-	std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait> ::readMagmaCpt (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
+	template <class Field, class Row, class Trait>
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readMagmaCpt (SparseMatrix<Field, Row> &A, std::istream &is
+										     // , const Field &F
+										     , char *buf)
 	{
 		size_t i, j;
 		Element a_ij;
@@ -219,8 +224,8 @@ namespace LinBox
 						if (j > A._n) A._n = j;
 						do {is.get(c);} while (!std::isdigit(c) && c != '-' && c != '+');
 						is.unget();
-						F.read(is, a_ij);
-						if (!F.isZero(a_ij)) A.setEntry (i, j-1, a_ij);
+						A.field().read(is, a_ij);
+						if (!A.field().isZero(a_ij)) A.setEntry (i, j-1, a_ij);
 						do {is.get(c);} while (c != pairend);
 					}
 				}
@@ -230,10 +235,10 @@ namespace LinBox
 		//return is; //BB: unreachable
 	}
 
-	template <class Element, class Row, class Trait>
-	template <class Field>
-	std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait> ::read (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F,
-									       FileFormatTag format)
+	template <class Field, class Row, class Trait>
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::read (SparseMatrix<Field, Row> &A, std::istream &is
+									     // , const Field &F
+									     , FileFormatTag format)
 	{
 		char buf[80];
 		buf[0]=0;
@@ -247,46 +252,46 @@ namespace LinBox
 
 					    if (c == '[') {
 						    if (strchr (buf, ';') != NULL)
-							    readMatlab (A, is, F, buf);
+							    readMatlab (A, is, buf);
 						    else
-							    readPretty (A, is, F, buf);
+							    readPretty (A, is, buf);
 					    }
 					    else if (std::isdigit (c)) {
 						    do str >> c; while (str && (isspace (c) || std::isdigit (c)));
 
 						    if (c == 'M')
-							    return readGuillaume (A, is, F, buf);
+							    return readGuillaume (A, is, buf);
 						    else
-							    return readTurner (A, is, F, buf);
+							    return readTurner (A, is, buf);
 					    }
 					    else
-						    throw InvalidMatrixInput ();
+						    throw Exceptions::InvalidMatrixInput ();
 					    break;
 				    }
 
 		case FORMAT_TURNER:
-				    return readTurner (A, is, F, buf);
+				    return readTurner (A, is, buf);
 		case FORMAT_GUILLAUME:
-				    return readGuillaume (A, is, F, buf);
+				    return readGuillaume (A, is, buf);
 		case FORMAT_MATLAB:
-				    return readMatlab (A, is, F, buf);
+				    return readMatlab (A, is, buf);
 		case FORMAT_PRETTY:
-				    return readPretty (A, is, F, buf);
+				    return readPretty (A, is, buf);
 		case FORMAT_MAGMACPT:
-				    return readMagmaCpt (A, is, F, buf);
+				    return readMagmaCpt (A, is, buf);
 		default:
-				    throw InvalidMatrixInput();
+				    throw Exceptions::InvalidMatrixInput();
 		}
 
 		return is;
 	}
 
-	template <class Element, class Row, class Trait>
-	template <class Field>
-	std::ostream &SparseMatrixWriteHelper<Element, Row, Trait> ::write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F,
-									    FileFormatTag format)
+	template <class Field, class Row, class Trait>
+	std::ostream &SparseMatrixWriteHelper<Field, Row, Trait> ::write (const SparseMatrix<Field, Row> &A, std::ostream &os
+									  // , const Field &F
+									  , FileFormatTag format)
 	{
-		typename SparseMatrixBase<Element, Row>::Rep::const_iterator i;
+		typename SparseMatrix<Field, Row>::Rep::const_iterator i;
 		typename Row::const_iterator j;
 		size_t i_idx, j_idx;
 		//	int col_width;
@@ -308,7 +313,7 @@ namespace LinBox
 			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
 				for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++) {
 					os << i_idx << ' ' << j->first << ' ';
-					F.write (os, j->second);
+					A.field().write (os, j->second);
 					os << std::endl;
 				}
 			}
@@ -319,7 +324,7 @@ namespace LinBox
 			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
 				for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++) {
 					os << i_idx + 1 << ' ' << j->first + 1 << ' ';
-					F.write (os, j->second);
+					A.field().write (os, j->second);
 					os << std::endl;
 				}
 			}
@@ -333,7 +338,7 @@ namespace LinBox
 			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
 				for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++) {
 					os << i_idx + 1 << ' ' << j->first + 1 << ' ';
-					F.write (os, j->second);
+					A.field().write (os, j->second);
 					os << std::endl;
 				}
 			}
@@ -351,9 +356,9 @@ namespace LinBox
 
 				for (j_idx = 0; j_idx < A._n; j_idx++) {
 					if (j == i->end () || j_idx != j->first)
-						F.write (os, F.zero);
+						A.field().write (os, A.field().zero);
 					else {
-						F.write (os, j->second);
+						A.field().write (os, j->second);
 						j++;
 					}
 
@@ -385,9 +390,9 @@ namespace LinBox
 
 				for (j_idx = 0; j_idx < A._n; j_idx++) {
 					if (j == i->end () || j_idx != j->first)
-						F.write (os, F.zero);
+						A.field().write (os, A.field().zero);
 					else {
-						F.write (os, j->second);
+						A.field().write (os, j->second);
 						j++;
 					}
 
@@ -403,7 +408,7 @@ namespace LinBox
 			break;
 
 		case FORMAT_PRETTY:
-			//F.characteristic (c);
+			//A.field().characteristic (c);
 			//col_width = (int) ceil (log ((double) c) / M_LN10);
 
 			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
@@ -415,9 +420,9 @@ namespace LinBox
 					//os.width (col_width);
 
 					if (j == i->end () || j_idx != j->first)
-						F.write (os, F.zero);
+						A.field().write (os, A.field().zero);
 					else {
-						F.write (os, j->second);
+						A.field().write (os, j->second);
 						j++;
 					}
 
@@ -437,177 +442,9 @@ namespace LinBox
 		return os;
 	}
 
-	template <class Element, class Row>
-	template <class Field>
-	std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag > ::write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F,
-														 FileFormatTag format)
-	{
-		typename SparseMatrixBase<Element, Row>::Rep::const_iterator i;
-		typename Row::first_type::const_iterator j_idx;
-		typename Row::second_type::const_iterator j_elt;
-		size_t i_idx, j_idx_1, col_idx;
-		//int col_width;
-		integer c;
-		bool firstrow;
 
-		// Avoid massive unneeded overhead in the case that this
-		// printing is disabled
-		if (not os)
-			return os;
-
-		switch (format) {
-		case FORMAT_DETECT:
-			throw PreconditionFailed (__func__, __LINE__, "format != FORMAT_DETECT");
-			//break//BB: unreachable;
-
-		case FORMAT_TURNER:
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				for (j_idx = i->first.begin (), j_elt = i->second.begin ();
-				     j_idx != i->first.end ();
-				     ++j_idx, ++j_elt)
-				{
-					os << i_idx << ' ' << *j_idx << ' ';
-					F.write (os, *j_elt);
-					os << std::endl;
-				}
-			}
-
-			break;
-
-		case FORMAT_ONE_BASED:
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				for (j_idx = i->first.begin (), j_elt = i->second.begin ();
-				     j_idx != i->first.end ();
-				     ++j_idx, ++j_elt)
-				{
-					os << i_idx + 1 << ' ' << *j_idx + 1 << ' ';
-					F.write (os, *j_elt);
-					os << std::endl;
-				}
-			}
-
-			break;
-
-		case FORMAT_GUILLAUME:
-			os << A._m << ' ' << A._n << " M" << std::endl;
-
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				for (j_idx = i->first.begin (), j_elt = i->second.begin ();
-				     j_idx != i->first.end ();
-				     ++j_idx, ++j_elt)
-				{
-					os << i_idx + 1 << ' ' << *j_idx + 1 << ' ';
-					F.write (os, *j_elt);
-					os << std::endl;
-				}
-			}
-
-			os << "0 0 0" << std::endl;
-
-			break;
-
-		case FORMAT_MAPLE:
-			firstrow=true;
-
-			os << "[";
-
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				if (firstrow) {
-					os << "[";
-					firstrow =false;
-				}
-				else
-					os << ", [";
-
-				j_idx = i->first.begin ();
-				j_elt = i->second.begin ();
-
-				for (j_idx_1 = 0; j_idx_1 < A._n; j_idx_1++) {
-					if (j_idx == i->first.end () || j_idx_1 != *j_idx)
-						F.write (os, F.zero);
-					else {
-						F.write (os, *j_elt);
-						++j_idx;
-						++j_elt;
-					}
-
-					if (j_idx_1 < A._n - 1)
-						os << ", ";
-				}
-
-				os << "]";
-			}
-
-			os << "]";
-
-			break;
-
-		case FORMAT_MATLAB:
-
-			os << "[";
-
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				j_idx = i->first.begin ();
-				j_elt = i->second.begin ();
-
-				for (j_idx_1 = 0; j_idx_1 < A._n; j_idx_1++) {
-					if (j_idx == i->first.end () || j_idx_1 != *j_idx)
-						F.write (os, F.zero);
-					else {
-						F.write (os, *j_elt);
-						++j_idx;
-						++j_elt;
-					}
-
-					if (j_idx_1 < A._n - 1)
-						os << ", ";
-				}
-
-				os << "; ";
-			}
-
-			os << "]";
-
-			break;
-
-		case FORMAT_PRETTY:
-			//F.characteristic (c);
-			//col_width = (int) ceil (log ((double) c) / M_LN10);
-
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				os << "  [ ";
-
-				j_idx = i->first.begin ();
-				j_elt = i->second.begin ();
-
-				for (col_idx = 0; col_idx < A._n; col_idx++) {
-					//os.width (col_width);
-
-					if (j_idx == i->first.end () || col_idx != *j_idx)
-						F.write (os, F.zero);
-					else {
-						F.write (os, *j_elt);
-						++j_idx; ++j_elt;
-					}
-
-					os << ' ';
-				}
-
-				os << ']'<<std::endl;
-			}
-
-			break;
-		case FORMAT_MAGMACPT:
-			os << "sparse matrix written in MagmaCpt form is not implemented" << std::endl;
-			break;
-		}
-
-		return os;
-	}
-
-	template <class Element, class Row, class Tag>
-	template <class Field>
-	SparseMatrixBase<Element,Row,Tag> ::SparseMatrixBase( MatrixStream<Field>& ms ) :
+	template <class Field, class Row, class Tag>
+	SparseMatrix<Field,Row,Tag> ::SparseMatrix( MatrixStream<Field>& ms ) :
 		_matA(0), _m(0), _n(0)
 	{
 		Element val;
@@ -630,345 +467,33 @@ namespace LinBox
 		}
 	}
 
-	template <class Element, class Row>
-	template <class Field>
-	SparseMatrixBase<Element,Row,VectorCategories::SparseSequenceVectorTag> ::SparseMatrixBase( MatrixStream<Field>& ms ) :
-		_matA(0), _m(0), _n(0)
+
+
+#if 0 /*  weird */
+	template <class Field,  class _Row, class BRow>
+	SparseMatrix<Field,_Row> *SparseMatrixFactory<Field, _Row, BRow>::makeBlackbox (const Field &F)
 	{
-		Element val;
-		size_t i, j;
-		while( ms.nextTriple(i,j,val) ) {
-			if( i >= _m ) {
-				_m = i + 1;
-				_matA.resize( _m );
-			}
-			if( j >= _n ) _n = j + 1;
-			setEntry(i,j,val);
-		}
-		if( ms.getError() > END_OF_MATRIX )
-			throw ms.reportError(__func__,__LINE__);
-		if( !ms.getDimensions( i, _n ) )
-			throw ms.reportError(__func__,__LINE__);
-		if( i > _m ) {
-			_m = i;
-			_matA.resize(_m);
-		}
+		SparseMatrix<Field, _Row> *A = new SparseMatrix<Field, _Row> (F, rowdim (), coldim ());
+
+		typename SparseMatrix<Field, BRow>::ConstIterator i;
+		typename SparseMatrix<Field, BRow>::ConstIndexedIterator j;
+
+		for (i = _matA.Begin (), j = _matA.IndexedBegin (); i != _matA.End (); ++i, ++j)
+			A.field().init (A->refEntry (j.rowIndex (), j.colIndex ()), *i);
+
+		return A;
 	}
-
-	template <class Element, class Row>
-	template <class Field>
-	SparseMatrixBase<Element,Row,VectorCategories::SparseAssociativeVectorTag> ::SparseMatrixBase( MatrixStream<Field>& ms ) :
-		_matA(0), _m(0), _n(0)
-	{
-		Element val;
-		size_t i, j;
-		while( ms.nextTriple(i,j,val) ) {
-			if( i >= _m ) {
-				_m = i + 1;
-				_matA.resize( _m );
-			}
-			if( j >= _n ) _n = j + 1;
-			setEntry(i,j,val);
-		}
-		if( ms.getError() > END_OF_MATRIX )
-			throw ms.reportError(__func__,__LINE__);
-		if( !ms.getDimensions( i, _n ) )
-			throw ms.reportError(__func__,__LINE__);
-		if( i > _m ) {
-			_m = i;
-			_matA.resize(_m);
-		}
-	}
-
-	template <class Element, class Row>
-	template <class Field>
-	SparseMatrixBase<Element,Row,VectorCategories::SparseParallelVectorTag> ::SparseMatrixBase( MatrixStream<Field>& ms ) :
-		_matA(0), _m(0), _n(0)
-	{
-		Element val;
-		size_t i, j;
-		while( ms.nextTriple(i,j,val) ) {
-			if( i >= _m ) {
-				_m = i + 1;
-				_matA.resize( _m );
-			}
-			if( j >= _n ) _n = j + 1;
-			setEntry(i,j,val);
-		}
-		if( ms.getError() > END_OF_MATRIX )
-			throw ms.reportError(__func__,__LINE__);
-		if( !ms.getDimensions( i, _n ) )
-			throw ms.reportError(__func__,__LINE__);
-		if( i > _m ) {
-			_m = i;
-			_matA.resize(_m);
-		}
-	}
-
-	template <class Element, class Row>
-	void SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag > ::setEntry (size_t i, size_t j, const Element &value)
-	{
-		typedef typename Row::value_type value_type;
-		Row &v = _matA[i];
-		typename Row::iterator iter;
-
-		if (v.size () == 0) {
-			v.push_back ( value_type((unsigned)j, value));
-		}
-		else {
-			iter = std::lower_bound (v.begin (), v.end (), j, VectorWrapper::CompareSparseEntries<Element> ());
-
-			if (iter == v.end () || iter->first != j)
-				iter = v.insert (iter, value_type((unsigned)j, value));
-			else
-				iter->second = value;
-		}
-	}
-
-	template <class Element, class Row>
-	Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag > ::refEntry (size_t i, size_t j)
-	{
-		static Element zero = 0 ; // no wonder it should break, we have no field here...
-
-		Row &v = _matA[i];
-		typename Row::iterator iter;
-
-		if (v.size () == 0) {
-			v.push_back (std::pair <size_t, Element> (j, zero));
-			return v.front ().second;
-		}
-		else {
-			iter = std::lower_bound (v.begin (), v.end (), j, VectorWrapper::CompareSparseEntries<Element> ());
-
-			if (iter == v.end () || iter->first != j)
-				iter = v.insert (iter, std::pair <size_t, Element> (j, zero));
-
-			return iter->second;
-		}
-	}
-
-	template <class Element, class Row>
-	const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag > ::getEntry (size_t i, size_t j) const
-	{
-		static Element zero = 0 ; // no wonder it should break, we have no field here...
-
-		const Row &v = _matA[i];
-		typename Row::const_iterator iter;
-
-		if (v.size () == 0)
-			return zero;
-		else {
-			iter = std::lower_bound (v.begin (), v.end (), j, VectorWrapper::CompareSparseEntries<Element> ());
-
-			if (iter == v.end () || iter->first != j)
-				return zero;
-			else
-				return iter->second;
-		}
-	}
-
-	template <class Element, class Row>
-	const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag > ::getEntry (size_t i, size_t j) const
-	{
-		static Element zero = 0 ; // no wonder it should break, we have no field here...
-
-		const Row &v = _matA[i];
-		typename Row::const_iterator iter;
-
-		if (v.size () == 0)
-			return zero;
-		else {
-			iter = v.find (j);
-
-			if (iter == v.end () || iter->first != j)
-				return zero;
-			else
-				return iter->second;
-		}
-	}
-
-	template <class Element, class Row>
-	void SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag > ::setEntry (size_t i, size_t j, const Element &value)
-	{
-		while (_matA.size() < i + 1) _matA.push_back(Row());
-		_m = _matA.size();
-
-		Row &v = _matA[i];
-		typename Row::first_type::iterator iter;
-
-		if (v.first.size () == 0) {
-			v.first.push_back (j);
-			v.second.push_back (value);
-		}
-		else {
-			iter = std::lower_bound (v.first.begin (), v.first.end (), j);
-
-			if (iter == v.first.end () || *iter != j) {
-				iter = v.first.insert (iter, j);
-				v.second.insert (v.second.begin () + (iter - v.first.begin ()), value);
-			}
-			else
-				*(v.second.begin () + (iter - v.first.begin ())) = value;
-		}
-	}
-
-	template <class Element, class Row>
-	Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag > ::refEntry (size_t i, size_t j)
-	{
-		static Element zero = 0 ; // no wonder it should break, we have no field here...
-
-		Row &v = _matA[i];
-		typename Row::first_type::iterator iter;
-		typename Row::second_type::iterator iter_elt;
-
-		if (v.first.size () == 0) {
-			v.first.push_back (j);
-			v.second.push_back (zero);
-			return v.second.front ();
-		}
-		else {
-			iter = std::lower_bound (v.first.begin (), v.first.end (), j);
-
-			if (iter == v.first.end () || *iter != j) {
-				iter = v.first.insert (iter, j);
-				iter_elt = v.second.insert (v.second.begin () + (iter - v.first.begin ()), zero);
-			}
-			else
-				iter_elt = v.second.begin () + (iter - v.first.begin ());
-
-			return *iter_elt;
-		}
-	}
-
-	template <class Element, class Row>
-	const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag > ::getEntry (size_t i, size_t j) const
-	{
-		static Element zero = 0 ; // no wonder it should break, we have no field here...
-
-		const Row &v = _matA[i];
-		typename Row::first_type::const_iterator iter;
-
-		if (v.first.size () == 0)
-			return zero;
-		else {
-			iter = std::lower_bound (v.first.begin (), v.first.end (), j);
-
-			if (iter == v.first.end () || *iter != j)
-				return zero;
-			else
-				return *(v.second.begin () + (iter - v.first.begin ()));
-		}
-	}
-
-	template <class Element, class Row>
-	template <class Vector>
-	Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >::columnDensity (Vector &v) const
-	{
-		unsigned int row = 0;
-
-		for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
-			typename Row::const_iterator j = i.begin ();
-
-			for (; j != i->begin (); ++j)
-				++v[j->first];
-		}
-
-		return v;
-	}
-
-	template <class Element, class Row>
-	template <class Vector>
-	Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >::columnDensity (Vector &v) const
-	{
-		unsigned int row = 0;
-
-		for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
-			typename Row::first_type::const_iterator j_idx = i->first.begin ();
-
-			for (; j_idx != i->first.end (); ++j_idx)
-				++v[*j_idx];
-		}
-
-		return v;
-	}
-
-	template <class Element, class Row>
-	template <class Vector>
-	Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag >::columnDensity (Vector &v) const
-	{
-		unsigned int row = 0;
-
-		for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
-			typename Row::const_iterator j = i.begin ();
-
-			for (; j != i->begin (); ++j)
-				++v[j->first];
-		}
-
-		return v;
-	}
-
-	template <class Element, class Row>
-	SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >
-	&SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >::transpose (SparseMatrixBase &AT) const
-	{
-		unsigned int row = 0;
-
-		for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
-			typename Row::const_iterator j = i.begin ();
-
-			for (; j != i->begin (); ++j)
-				AT._matA[j->first].push_back (std::pair<size_t, Element> (row, j->second));
-		}
-
-		return AT;
-	}
-
-	template <class Element, class Row>
-	SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag >
-	&SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag >::transpose (SparseMatrixBase &AT) const
-	{
-		unsigned int row = 0;
-
-		for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
-			typename Row::const_iterator j = i.begin ();
-
-			for (; j != i->begin (); ++j)
-				AT._matA[j->first][row] = j->second;
-		}
-
-		return AT;
-	}
-
-	template <class Element, class Row>
-	SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >
-	&SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >::transpose (SparseMatrixBase &AT) const
-	{
-		unsigned int row = 0;
-
-		for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
-			typename Row::first_type::const_iterator j_idx = i->first.begin ();
-			typename Row::second_type::const_iterator j_elt = i->second.begin ();
-
-			for (; j_idx != i->first.end (); ++j_idx, ++j_elt) {
-				AT._matA[*j_idx].first.push_back (row);
-				AT._matA[*j_idx].second.push_back (*j_elt);
-			}
-		}
-
-		return AT;
-	}
+#endif
 
 } // namespace LinBox
 
 #endif // __LINBOX_matrix_sparse_INL
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

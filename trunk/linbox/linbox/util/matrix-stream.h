@@ -307,6 +307,7 @@ class MatrixStream {
 
     /** Get the Field that was passed to the constructor. */
 	const Field& getField() const { return f; }
+	const Field& field() const { return f; }
 
     /** Get a brief description of the format of the matrix being read. */
 	const char* getFormat() const { return reader->getName(); }
@@ -327,11 +328,10 @@ class MatrixStream {
 #endif // __LINBOX_matrix_stream_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

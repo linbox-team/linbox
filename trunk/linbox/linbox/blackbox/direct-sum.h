@@ -28,6 +28,7 @@
 
 #include "linbox/blackbox/null-matrix.h"
 #include "linbox/vector/vector-traits.h"
+#include "linbox/matrix/matrix-traits.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/vector/subvector.h"
 #include "linbox/matrix/matrix-domain.h"
@@ -360,7 +361,6 @@ namespace LinBox
 
 
 
-	template <class Matrix> struct MatrixTraits;
 
 // #if !defined __INTEL_COMPILER && !defined(__clang__)
 	// template<>
@@ -688,11 +688,10 @@ namespace LinBox
 #endif // __LINBOX_direct_sum_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
