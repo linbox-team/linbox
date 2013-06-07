@@ -39,8 +39,11 @@
 
 #include "linbox/util/debug.h"
 #include "linbox/matrix/matrix-category.h"
+#include "linbox/matrix/matrix-traits.h"
 #include "linbox/algorithms/linbox-tags.h"
 #include "linbox/vector/blas-vector.h"
+#include "linbox/util/matrix-stream.h"
+#include "linbox/field/hom.h"
 
 namespace LinBox
 { /*  not generic wrt Field (eg NTL_ZZ_p) */
@@ -828,10 +831,10 @@ namespace LinBox
 		/// Swap contents.  Shapes must be the same.
 		BlasSubmatrix &swap( BlasSubmatrix & B);
 
-		/// Overwrite with zeroes.  
+		/// Overwrite with zeroes.
 		BlasSubmatrix &zero();
 
-		/// Overwrite with random elements.  
+		/// Overwrite with random elements.
 		BlasSubmatrix &random();
 
 		template<typename _Tp1>

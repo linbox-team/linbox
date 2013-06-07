@@ -1532,14 +1532,14 @@ bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, unsign
 			       typename MatrixTraits<Diagonal<Field> >::MatrixCategory ()))
 		pass = false;
 
-	SparseMatrixBase<Element> M4 (n, m);
-	SparseMatrixBase<Element> M5 (n, m);
-	SparseMatrixBase<Element> M6 (m, m);
-	MatrixBlackbox<Field, SparseMatrixBase<Element> > A2 (F, n, m);
+	SparseMatrix<Field> M4 (F,n, m);
+	SparseMatrix<Field> M5 (F,n, m);
+	SparseMatrix<Field> M6 (F,m, m);
+	MatrixBlackbox<Field, SparseMatrix<Field> > A2 (F, n, m);
 
-	RandomSparseStream<Field, typename SparseMatrixBase<Element>::Row> stream2 (F, (double) k / (double) n, m);
+	RandomSparseStream<Field, typename SparseMatrix<Field>::Row> stream2 (F, (double) k / (double) n, m);
 
-	typename SparseMatrixBase<Element>::RowIterator i2;
+	typename SparseMatrix<Field>::RowIterator i2;
 
 	for (i2 = M4.rowBegin (); i2 != M4.rowEnd (); ++i2)
 		stream2 >> *i2;
@@ -1554,15 +1554,15 @@ bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, unsign
 		stream2 >> *i2;
 
 	if (!testMatrixDomain (F, "sparse row-wise", M4, M5, M6, A2, iterations,
-			       typename MatrixTraits<SparseMatrixBase<Element> >::MatrixCategory ()))
+			       typename MatrixTraits<SparseMatrix<Field> >::MatrixCategory ()))
 		pass = false;
 
-	TransposeMatrix<SparseMatrixBase<Element> > M7 (M4);
-	TransposeMatrix<SparseMatrixBase<Element> > M8 (M5);
-	TransposeMatrix<SparseMatrixBase<Element> > M9 (M6);
+	TransposeMatrix<SparseMatrix<Field> > M7 (M4);
+	TransposeMatrix<SparseMatrix<Field> > M8 (M5);
+	TransposeMatrix<SparseMatrix<Field> > M9 (M6);
 
 	if (!testMatrixDomain (F, "sparse column-wise", M7, M8, M9, A2, iterations,
-			       typename MatrixTraits<TransposeMatrix<SparseMatrixBase<Element> > >::MatrixCategory ()))
+			       typename MatrixTraits<TransposeMatrix<SparseMatrix<Field> > >::MatrixCategory ()))
 		pass = false;
 
 	return pass ;

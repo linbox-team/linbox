@@ -522,6 +522,7 @@ bool runSparseMatrixTests (const Field       &F,
 			   VectorStream<Row> &A_stream,
 				bool testRW)
 {
+	//! @bug seems like this is defined elsewhere... why ?
 	typedef std::vector <typename Field::Element> DenseVector;
 	typedef std::vector <pair <size_t, typename Field::Element> > SparseSeqVector;
 	typedef std::map <size_t, typename Field::Element> SparseMapVector;
@@ -600,6 +601,7 @@ int main (int argc, char **argv)
 	typedef	Modular<double> Field;
 	typedef Field::Element  Element;
 
+	//! @bug seems like this is defined elsewhere... why ?
 	typedef std::vector <Element> DenseVector;
 	typedef std::vector <pair <size_t, Element> > SparseSeqVector;
 	typedef std::map <size_t, Element> SparseMapVector;
@@ -619,12 +621,12 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field, SparseParVector>
 		stream3 (F, (double) k / (double) n, n, m);
 	bool testRW = true;
-/*
+#if 0
 	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1, !testRW))
 		pass = false;
 	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2, !testRW))
 		pass = false;
-*/
+#endif
 	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3, testRW))
 		pass = false;
 

@@ -31,7 +31,6 @@ BASIC_HDRS =			\
 	squarize.h                \
 	sparse1.h                 \
 	sparse.h                  \
-	sparse.inl                \
 	scalar-matrix.h           \
 	submatrix.h               \
 	inverse.h                 \

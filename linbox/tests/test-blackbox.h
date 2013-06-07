@@ -244,14 +244,14 @@ testReadWrite(BB &A)
 	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Blackbox Read/Write test: write then read back" << std::endl;
 
-	ofstream out("temp");
+	ofstream out("temp2");
 	if (not out) {
 		pass = false;
 		report << "failure to open file for writing" << std::endl;
 	}
 	A.write(out) << std::endl;
 	BB B(A.field());
-	ifstream in("temp");
+	ifstream in("temp2");
 	if (not in) {
 		pass = false;
 		report << "failure to open file for reading" << std::endl;
