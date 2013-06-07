@@ -794,8 +794,8 @@ namespace LinBox
 		//nt BBlocksY = partitionDims.at(5);
 
 		float p = (float) _F.characteristic();
-		float tempAlpha = fmod(alpha, p);
-		float tempBeta = fmod(beta, p);
+		float tempAlpha = fmodf(alpha, p);
+		float tempBeta = fmodf(beta, p);
 
 		// Select OpenCL kernel based on the size of the modulus factor for
 		//maximum performance

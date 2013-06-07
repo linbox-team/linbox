@@ -288,7 +288,6 @@ namespace LinBox
 	{
 		typename SparseMatrixBase<Element, Row>::Rep::const_iterator i;
 		typename Row::const_iterator j;
-		typename Field::Element zero;
 		size_t i_idx, j_idx;
 		//	int col_width;
 		integer c;
@@ -344,7 +343,6 @@ namespace LinBox
 			break;
 
 		case FORMAT_MATLAB:
-			F.init (zero, 0);
 
 			os << "[";
 
@@ -353,7 +351,7 @@ namespace LinBox
 
 				for (j_idx = 0; j_idx < A._n; j_idx++) {
 					if (j == i->end () || j_idx != j->first)
-						F.write (os, zero);
+						F.write (os, F.zero);
 					else {
 						F.write (os, j->second);
 						j++;
@@ -371,7 +369,6 @@ namespace LinBox
 			break;
 
 		case FORMAT_MAPLE:
-			F.init (zero, 0);
 
 			os << "[";
 			firstrow=true;
@@ -388,7 +385,7 @@ namespace LinBox
 
 				for (j_idx = 0; j_idx < A._n; j_idx++) {
 					if (j == i->end () || j_idx != j->first)
-						F.write (os, zero);
+						F.write (os, F.zero);
 					else {
 						F.write (os, j->second);
 						j++;
@@ -408,7 +405,6 @@ namespace LinBox
 		case FORMAT_PRETTY:
 			//F.characteristic (c);
 			//col_width = (int) ceil (log ((double) c) / M_LN10);
-			F.init (zero, 0);
 
 			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
 				os << "  [ ";
@@ -419,7 +415,7 @@ namespace LinBox
 					//os.width (col_width);
 
 					if (j == i->end () || j_idx != j->first)
-						F.write (os, zero);
+						F.write (os, F.zero);
 					else {
 						F.write (os, j->second);
 						j++;
@@ -449,7 +445,6 @@ namespace LinBox
 		typename SparseMatrixBase<Element, Row>::Rep::const_iterator i;
 		typename Row::first_type::const_iterator j_idx;
 		typename Row::second_type::const_iterator j_elt;
-		typename Field::Element zero;
 		size_t i_idx, j_idx_1, col_idx;
 		//int col_width;
 		integer c;
@@ -512,7 +507,6 @@ namespace LinBox
 			break;
 
 		case FORMAT_MAPLE:
-			F.init (zero, 0);
 			firstrow=true;
 
 			os << "[";
@@ -530,7 +524,7 @@ namespace LinBox
 
 				for (j_idx_1 = 0; j_idx_1 < A._n; j_idx_1++) {
 					if (j_idx == i->first.end () || j_idx_1 != *j_idx)
-						F.write (os, zero);
+						F.write (os, F.zero);
 					else {
 						F.write (os, *j_elt);
 						++j_idx;
@@ -549,7 +543,6 @@ namespace LinBox
 			break;
 
 		case FORMAT_MATLAB:
-			F.init (zero, 0);
 
 			os << "[";
 
@@ -559,7 +552,7 @@ namespace LinBox
 
 				for (j_idx_1 = 0; j_idx_1 < A._n; j_idx_1++) {
 					if (j_idx == i->first.end () || j_idx_1 != *j_idx)
-						F.write (os, zero);
+						F.write (os, F.zero);
 					else {
 						F.write (os, *j_elt);
 						++j_idx;
@@ -580,7 +573,6 @@ namespace LinBox
 		case FORMAT_PRETTY:
 			//F.characteristic (c);
 			//col_width = (int) ceil (log ((double) c) / M_LN10);
-			F.init (zero, 0);
 
 			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
 				os << "  [ ";
@@ -592,7 +584,7 @@ namespace LinBox
 					//os.width (col_width);
 
 					if (j_idx == i->first.end () || col_idx != *j_idx)
-						F.write (os, zero);
+						F.write (os, F.zero);
 					else {
 						F.write (os, *j_elt);
 						++j_idx; ++j_elt;
@@ -736,7 +728,7 @@ namespace LinBox
 	template <class Element, class Row>
 	Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag > ::refEntry (size_t i, size_t j)
 	{
-		static Element zero;
+		static Element zero = 0 ; // no wonder it should break, we have no field here...
 
 		Row &v = _matA[i];
 		typename Row::iterator iter;
@@ -758,7 +750,7 @@ namespace LinBox
 	template <class Element, class Row>
 	const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag > ::getEntry (size_t i, size_t j) const
 	{
-		static Element zero;
+		static Element zero = 0 ; // no wonder it should break, we have no field here...
 
 		const Row &v = _matA[i];
 		typename Row::const_iterator iter;
@@ -778,7 +770,7 @@ namespace LinBox
 	template <class Element, class Row>
 	const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag > ::getEntry (size_t i, size_t j) const
 	{
-		static Element zero;
+		static Element zero = 0 ; // no wonder it should break, we have no field here...
 
 		const Row &v = _matA[i];
 		typename Row::const_iterator iter;
@@ -823,7 +815,7 @@ namespace LinBox
 	template <class Element, class Row>
 	Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag > ::refEntry (size_t i, size_t j)
 	{
-		static Element zero;
+		static Element zero = 0 ; // no wonder it should break, we have no field here...
 
 		Row &v = _matA[i];
 		typename Row::first_type::iterator iter;
@@ -851,7 +843,7 @@ namespace LinBox
 	template <class Element, class Row>
 	const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag > ::getEntry (size_t i, size_t j) const
 	{
-		static Element zero;
+		static Element zero = 0 ; // no wonder it should break, we have no field here...
 
 		const Row &v = _matA[i];
 		typename Row::first_type::const_iterator iter;

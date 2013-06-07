@@ -92,7 +92,7 @@ if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 	case x${CCNAM} in
 		xicc)
 		WARN_CFLAGS="${WARN_CFLAGS} -Wcheck"
-		# DEBUG_CFLAGS="-fast"
+		# WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith  -Wwrite-strings -Wno-long-long"
 			;;
 		xeko)
 			WARN_CFLAGS="${WARN_CFLAGS} -Wno-unused-parameter"
