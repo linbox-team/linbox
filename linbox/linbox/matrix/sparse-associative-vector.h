@@ -87,7 +87,7 @@ public:
 
 	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
 	struct rebind {
-		typedef SparseMatrix<_Tp1, _R1, myTrait> other;
+		typedef SparseMatrix<_Tp1, _R1> other;
 
 		void operator() (other & Ap, const Self_t& A) {
 

@@ -45,7 +45,10 @@ namespace LinBox
 
 	template <class Field, class Row>
 	SparseMatrix<Field,Row,VectorCategories::SparseSequenceVectorTag> ::SparseMatrix( MatrixStream<Field>& ms ) :
-		_matA(0), _m(0), _n(0)
+		_matA(0), _m(0), _n(0),
+		_field(ms.field()),
+		_MD(ms.field()),_AT(*this)
+
 	{
 		Element val;
 		size_t i, j;

@@ -86,7 +86,7 @@ namespace LinBox
 
 		template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
 		struct rebind {
-			typedef SparseMatrix<_Tp1, _R1, myTrait> other;
+			typedef SparseMatrix<_Tp1, _R1> other;
 
 			void operator() (other & Ap, const Self_t& A) {
 
@@ -217,13 +217,13 @@ namespace LinBox
 		}
 
 		//x Write in matrix market format
-		// std::ostream &write (std::ostream &os) const
-		// {
-			// writeMMCoordHeader(os, *this, this->size(), "SparseMatrix");
-			// return this->write(os, FORMAT_ONE_BASED);
-		// }
+		std::ostream &write (std::ostream &os) const
+		{
+			writeMMCoordHeader(os, *this, this->size(), "SparseMatrix");
+			return this->write(os, FORMAT_ONE_BASED);
+		}
 
-		std::ostream &write(std::ostream &) const;
+		// std::ostream &write(std::ostream &) const;
 
 		void           setEntry (size_t i, size_t j, const Element &value);
 
