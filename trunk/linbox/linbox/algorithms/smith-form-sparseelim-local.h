@@ -96,7 +96,7 @@ namespace LinBox
 		Modulo& MY_Zpz_inv (Modulo& u1, const Modulo2 a, const Modulo3 _p) const
 		{
                     u1 = Modulo(1UL);
-                    Modulo r0(_p), r1(a); //! clang complains for examples/smith.C and examples/smithvalence.C
+                    Modulo r0((Modulo)_p), r1((Modulo)a); //! clang complains for examples/smith.C and examples/smithvalence.C
                     Modulo q(r0/r1);
 
                     r0 -= q * r1;
