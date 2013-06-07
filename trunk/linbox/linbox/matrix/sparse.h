@@ -69,13 +69,13 @@
 #include <algorithm>
 
 #include "linbox/linbox-config.h"
+#include "linbox/matrix/sparse-formats.h"
 #include "linbox/blackbox/factory.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/solutions/solution-tags.h"
-#include "linbox/matrix/sparse-formats.h"
 
 namespace LinBox
 {
