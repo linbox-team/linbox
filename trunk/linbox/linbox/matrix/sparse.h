@@ -75,6 +75,7 @@
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/solutions/solution-tags.h"
+#include "linbox/matrix/sparse-formats.h"
 
 namespace LinBox
 {
@@ -99,12 +100,6 @@ namespace LinBox
 		{
 			return stream << elt;
 		}
-	};
-
-	// made global to avoid duplicate code.
-	/// tags for SparseMatrixBase::read() and write()
-	enum FileFormatTag {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_MAPLE, FORMAT_PRETTY, FORMAT_MAGMACPT, FORMAT_ONE_BASED
 	};
 
 	// Forward declaration

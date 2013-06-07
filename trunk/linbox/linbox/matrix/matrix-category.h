@@ -41,6 +41,9 @@ namespace LinBox
 	template<class _Field>
 	class BlasSubmatrix ;
 
+	template<class _Field, class _Storage>
+	class SparseMatrix2 ;
+
 
 	struct MatrixContainerCategory {
 		struct BlasContainer{};
@@ -91,6 +94,13 @@ namespace LinBox
 	public:
 		typedef MatrixContainerCategory::Container Type;
 	};
+
+	template <class Field, class Storage>
+	class MatrixContainerTrait<SparseMatrix2<Field,Storage> > {
+	public:
+		typedef MatrixContainerCategory::Blackbox Type;
+	};
+
 
 }
 

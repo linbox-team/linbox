@@ -232,8 +232,6 @@ namespace LinBox
 			}
 
 
-
-
 		/** Retreive row dimensions of Sparsemat matrix.
 		 * @return integer number of rows of SparseMatrix0Base matrix.
 		 */
@@ -248,7 +246,7 @@ namespace LinBox
 
 		// Read from matrix market format
 		std::istream &read (std::istream &is)
-		{ 
+		{
             MatrixStream<Field> ms(field(), is);
             if( !ms.getDimensions( this->_m, this->_n ) )
                 throw ms.reportError(__func__,__LINE__);
@@ -445,7 +443,7 @@ namespace LinBox
 		typedef MatrixCategories::RowMatrixTag MatrixCategory;
 	};
 
-	template<class A, class B> struct GetEntryCategory<SparseMatrix<A,B> > 
+	template<class A, class B> struct GetEntryCategory<SparseMatrix<A,B> >
 	{ typedef SolutionTags::Local Tag; };
 
 } // namespace LinBox

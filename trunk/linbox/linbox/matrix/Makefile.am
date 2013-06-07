@@ -21,21 +21,32 @@
 
 pkgincludesubdir=$(pkgincludedir)/matrix
 
-BASIC_HDRS =                                     \
-    archetype.h                                  \
-    matrix-category.h                            \
-    sparse.h             sparse.inl              \
-    transpose-matrix.h                           \
-    dense-rows-matrix.h                          \
-    matrix-domain.h      matrix-domain.inl       \
-    matrix-domain-gf2.h                          \
-    blas-matrix.h                                \
-    blas-matrix.inl      blas-submatrix.inl      \
-    blas-matrix-multimod.h                       \
-    factorized-matrix.h  factorized-matrix.inl   \
-    blas-triangularmatrix.inl                    \
-    permutation-matrix.h permutation-matrix.inl  \
-    random-matrix.h      random-matrix.inl
+BASIC_HDRS =              \
+	archetype.h               \
+	matrix-category.h         \
+	sparse.h                  \
+	sparse.inl                \
+	transpose-matrix.h        \
+	dense-rows-matrix.h       \
+	matrix-domain.h           \
+	matrix-domain.inl         \
+	matrix-domain-gf2.h       \
+	blas-matrix.h             \
+	blas-matrix.inl           \
+	sparse-matrix.h           \
+	sparse-formats.h          \
+	sparse-coo-matrix.h       \
+	sparse-csr-matrix.h       \
+	sparse-ell-matrix.h       \
+	blas-submatrix.inl        \
+	blas-matrix-multimod.h    \
+	factorized-matrix.h       \
+	factorized-matrix.inl     \
+	blas-triangularmatrix.inl \
+	permutation-matrix.h      \
+	permutation-matrix.inl    \
+	random-matrix.h           \
+	random-matrix.inl
 
 NTL_HDRS =
 GIVARO_HDRS =

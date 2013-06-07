@@ -38,15 +38,15 @@
 
 #define RAPPORT(a) \
 	if (pass) {   \
-		commentator().report() << "\t \033[1;36m<<<\033[0;m \t" << (a) << " passed :)" << endl;  \
+		commentator().report() << "\t \033[1;36m<<<\033[0;m \t" << (a) << " passed :)" << std::endl;  \
 	} \
         else { \
-		commentator().report() << "\t \033[1;    31m!!!\033[0;m \t " << (a) << " failed :(" << endl ;  \
+		commentator().report() << "\t \033[1;    31m!!!\033[0;m \t " << (a) << " failed :(" << std::endl ;  \
 		exit(-1); \
 	}
 
 #define TESTE(a) \
-	commentator().report() << "\t \033[1;35m>>>\033[0;m \t testing " << (a) << " :" << endl ;
+	commentator().report() << "\t \033[1;35m>>>\033[0;m \t testing " << (a) << " :" << std::endl ;
 
 
 #define element_t(Field) \
