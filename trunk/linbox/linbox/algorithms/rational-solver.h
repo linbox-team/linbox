@@ -911,7 +911,7 @@ namespace LinBox
 		Keep it just for interface consistency.
 	 */
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, NumericalTraits>;
+	class RationalSolver<Ring, Field, RandomPrime, NumSymOverlapTraits>;
 
 	/** \brief solver using a hybrid Numeric/Symbolic computation.
 	 *
@@ -927,7 +927,7 @@ namespace LinBox
 	//template argument Field and RandomPrime are not used.
 	//Keep it just for interface consistency.
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, WanTraits> ;
+	class RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits> ;
 
 	/*--------------*/
 	/* BLOCK HANKEL */

@@ -1090,7 +1090,7 @@ namespace LinBox {
 	BlasVector<PID_integer>&
 	solveNum(BlasVector<PID_integer>& x, PID_integer::Element & d,
 		 const BlasMatrix<PID_integer>& B, const BlasVector<PID_integer>& b,
-		 const Method::Numerical & m)
+		 const Method::NumSymOverlap & m)
 	{
 		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
 
@@ -1115,14 +1115,14 @@ namespace LinBox {
 	BlasVector<PID_integer>&
 	solveNum(BlasVector<PID_integer>& x, PID_integer::Element & d,
 		 const BlasMatrix<PID_integer>& B, const BlasVector<PID_integer>& b,
-		 const Method::NumericalWan & m)
+		 const Method::NumSymNorm & m)
 	{
 		//THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
 
 		typedef Modular<int32_t> ZField;
 		// typedef Modular<double> ZField;
 		PID_integer ZZ ;
-		RationalSolver<PID_integer, ZField, RandomPrimeIterator, WanTraits> rsolver(ZZ);
+		RationalSolver<PID_integer, ZField, RandomPrimeIterator, NumSymNormTraits> rsolver(ZZ);
 
 		int status = rsolver.solve(x, d, B, b);
 		if (status)

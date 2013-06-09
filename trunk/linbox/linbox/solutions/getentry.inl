@@ -63,18 +63,16 @@ namespace LinBox
 	typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, SolutionTags::Generic t)
 	{
 		typedef typename BB::Field Field;
-		typedef typename Field::Element Elt;
-		typedef std::vector<Elt> Vector;
+		typedef std::vector<typename Field::Element> Vector;
 
 		const Field& F = A.field();
-		Elt zero; F.init(zero, 0UL);
-		Vector v(A.coldim(), zero), w(A.rowdim(), zero);
-		for (typename Vector::iterator it = v.begin (); it != v.end (); ++it)
-			F.assign (*it, zero);
+		Vector v(A.coldim(), F.zero), w(A.rowdim(), F.zero);
 		F.init(v[j],1UL);
 		A.apply (w, v);
+		/* This causes a warning "returning reference to temporary" and is not necessary, I believe. -bds  
 		F.assign (x, VectorWrapper::constRef<Field, Vector> (w, i));
-		return x;
+		*/
+		return x = w[i];
 	}
 
 	// some BBs have their own.

@@ -483,29 +483,45 @@ namespace LinBox
 
 	//Using Wan's numeric/symbolic method to solve linear systems.
 	//based on a preprinted article, submitted to JSC 2004
-	struct WanTraits : public Specifier
+	struct NumSymNormTraits : public Specifier
 	{
-		WanTraits ( Preconditioner Precond= NO_PRECONDITIONER,
+		NumSymNormTraits ( Preconditioner Precond= NO_PRECONDITIONER,
 			    size_t         Rank   = RANK_UNKNOWN)
 		{
 			Specifier::_preconditioner = (Precond);
 			Specifier::_rank           = (Rank) ;
 		}
-		WanTraits( const Specifier& S) :
+		NumSymNormTraits( const Specifier& S) :
 		       	Specifier(S)
 	       	{}
 	};
 
-	//Using numerical methods to symbolically solve linear systems.
-	struct NumericalTraits : public Specifier
+	//Using Youse et al numerical/symbolic method to symbolically solve linear systems.
+	// This is like Wan's but replaces a norm condition with an overlap test
+	// to confirm valid numeric iteration steps.
+	struct NumSymOverlapTraits : public Specifier
 	{
-		NumericalTraits ( Preconditioner Precond= NO_PRECONDITIONER,
+		NumSymOverlapTraits ( Preconditioner Precond= NO_PRECONDITIONER,
 				  size_t         Rank   = RANK_UNKNOWN)
 		{
 			Specifier::_preconditioner = (Precond);
 			Specifier::_rank           = (Rank) ;
 		}
-		NumericalTraits( const Specifier& S) :
+		NumSymOverlapTraits( const Specifier& S) :
+		       	Specifier(S)
+	       	{}
+	};
+
+	//Use a numerical/symbolic method if it works.  If it fails, go to a dixon style method.
+	struct AdaptiveSolverTraits : public Specifier
+	{
+		AdaptiveSolverTraits ( Preconditioner Precond= NO_PRECONDITIONER,
+				  size_t         Rank   = RANK_UNKNOWN)
+		{
+			Specifier::_preconditioner = (Precond);
+			Specifier::_rank           = (Rank) ;
+		}
+		AdaptiveSolverTraits ( const Specifier& S) :
 		       	Specifier(S)
 	       	{}
 	};
@@ -633,8 +649,9 @@ namespace LinBox
 		typedef LanczosTraits		 Lanczos;                 //!< Method::Lanczos : no doc.
 		typedef BlockLanczosTraits	 BlockLanczos;            //!< Method::BlockLanczos : no doc.
 		typedef SparseEliminationTraits	 SparseElimination;       //!< Method::SparseElimination : no doc
-		typedef NumericalTraits		 Numerical;               //!< Method::Numerical : no doc.
-		typedef WanTraits		 NumericalWan;            //!< Method::Numerical : no doc.
+		typedef NumSymOverlapTraits		 NumSymOverlap;               //!< Method::NumSymOverlap : Use Youse's overlap-based numeric/symbolic iteration for Rational solving of dense integer systems
+		typedef NumSymNormTraits		 NumSymNorm;            //!< Method::NumSymNorm : Use Wan's (older) norm-based numeric/symbolic iteration for Rational solving of dense integer systems
+		typedef AdaptiveSolverTraits		 Adaptive;            //!< Method::Adaptive: Use NumSymOverlap if it works.  If it fails, switch to IML probably.
 		typedef BlasEliminationTraits 	 BlasElimination;         //!< Method::BlasElimination : no doc
 		typedef BlasExtensionTraits      ExtensionBlasElimination;//!< Method::ExtensionBlasElimination : no doc
 		typedef NonBlasEliminationTraits NonBlasElimination;      //!< Method::NonBlasElimination : no doc.
