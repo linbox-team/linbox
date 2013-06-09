@@ -5,7 +5,7 @@ int main(){
 	bool pass = true;
 	int d;
 	FILE * infile = fopen("tutorial-1.in", "w");
-	fprintf(infile, "2 2 d\n");
+	fprintf(infile, "2 2\n");
 	fprintf(infile, "3 1\n");
 	fprintf(infile, "1 2\n");
 	fclose(infile);

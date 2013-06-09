@@ -56,7 +56,7 @@ namespace LinBox
 	//template argument Field and RandomPrime are not used.
 	//Keep it just for interface consistency.
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, WanTraits> {
+	class RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits> {
 
 	protected:
 		Ring r;
@@ -187,7 +187,7 @@ namespace LinBox
 	};
 #if __LINBOX_HAVE_LAPACK
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, WanTraits>::cblas_dgeinv(double* M, int n)
+	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::cblas_dgeinv(double* M, int n)
 	{
 		enum CBLAS_ORDER order = CblasRowMajor;
 		int lda = n;
@@ -204,7 +204,7 @@ namespace LinBox
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, WanTraits>::cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b)
+	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b)
 	{
 		if (n < 1) return 0;
 		double* IM = new double[n * n];
@@ -421,14 +421,14 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	/* apply  y <- Ax */
-	inline int RationalSolver<Ring, Field, RandomPrime, WanTraits>::cblas_dapply (int m, int n, const double* A, const double* x, double* y)
+	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::cblas_dapply (int m, int n, const double* A, const double* x, double* y)
 	{
 		cblas_dgemv (CblasRowMajor, CblasNoTrans, m, n, 1, A, n, x, 1, 0, y, 1);
 		return 0;
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, WanTraits>::cblas_mpzapply (int m, int n, const double* A, const integer* x, integer* y)
+	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::cblas_mpzapply (int m, int n, const double* A, const integer* x, integer* y)
 	{
 		const double* p_A;
 		const integer* p_x;
@@ -448,7 +448,7 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class Elt>
-	inline int RationalSolver<Ring, Field, RandomPrime, WanTraits>::printvec (const Elt* v, int n)
+	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::printvec (const Elt* v, int n)
 	{
 		const Elt* p;
 		std::cout << '[';
@@ -460,7 +460,7 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	//update num, *num <- *num * 2^shift + d
-	inline int RationalSolver<Ring, Field, RandomPrime, WanTraits>::update_num (integer* num, int n, const double* d, int shift)
+	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::update_num (integer* num, int n, const double* d, int shift)
 	{
 		integer* p_mpz;
 		integer tmp_mpz;
@@ -475,7 +475,7 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	//update r = r * shift - M d
-	inline int RationalSolver<Ring, Field, RandomPrime, WanTraits>::update_r_int (double* r, int n, const double* M, const double* d, int shift)
+	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::update_r_int (double* r, int n, const double* M, const double* d, int shift)
 	{
 		int tmp;
 		double* p1;
@@ -494,7 +494,7 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	//update r = r * shift - M d
-	inline int RationalSolver<Ring, Field, RandomPrime, WanTraits>::update_r_ll (double* r, int n, const double* M, const double* d, int shift)
+	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::update_r_ll (double* r, int n, const double* M, const double* d, int shift)
 	{
 		long long int tmp;
 		double* p1;
@@ -512,7 +512,7 @@ namespace LinBox
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline double RationalSolver<Ring, Field, RandomPrime, WanTraits>::cblas_dOOnorm(const double* M, int m, int n)
+	inline double RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::cblas_dOOnorm(const double* M, int m, int n)
 	{
 		double norm = 0;
 		double old = 0;
@@ -527,13 +527,13 @@ namespace LinBox
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline double RationalSolver<Ring, Field, RandomPrime, WanTraits>::cblas_dmax (const int N, const double* a, const int inc)
+	inline double RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::cblas_dmax (const int N, const double* a, const int inc)
 	{
 		return fabs(a[cblas_idamax (N, a, inc)]);
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, WanTraits>::cblas_hbound (integer& b, int m, int n, const double* M)
+	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::cblas_hbound (integer& b, int m, int n, const double* M)
 	{
 		double norm = 0;
 		const  double* p;

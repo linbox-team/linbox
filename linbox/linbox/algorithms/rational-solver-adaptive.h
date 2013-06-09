@@ -45,8 +45,8 @@ namespace LinBox
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
 			typedef Modular<int32_t> Field;
 			// typedef Modular<double> Field;
-			RationalSolver<IRing, Field, RandomPrimeIterator, WanTraits> numerical_solver;
-			//RationalSolver<IRing, Field, RandomPrimeIterator, NumericalTraits> numerical_solver;
+			RationalSolver<IRing, Field, RandomPrimeIterator, NumSymNormTraits> numerical_solver;
+			//RationalSolver<IRing, Field, RandomPrimeIterator, NumSymOverlapTraits> numerical_solver;
 			SolverReturnStatus ret;
 			ret = numerical_solver. solve(num, den, M, b);
 
@@ -74,7 +74,7 @@ namespace LinBox
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
 			typedef Modular<int32_t> Field;
 			// typedef Modular<double> Field;
-			RationalSolver<IRing, Field, RandomPrimeIterator, NumericalTraits> numerical_solver;
+			RationalSolver<IRing, Field, RandomPrimeIterator, NumSymOverlapTraits> numerical_solver;
 			SolverReturnStatus ret;
 			ret = numerical_solver. solve(num, den, M, b);
 

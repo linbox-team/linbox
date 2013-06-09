@@ -381,7 +381,7 @@ int main(int argc, char** argv) {
 	}
 	pass = pass && part_pass;
 	if(run & 2){
-		RationalSolver<Ring, ZField, RandomPrimeIterator, WanTraits> rsolver(R);
+		RationalSolver<Ring, ZField, RandomPrimeIterator, NumSymNormTraits> rsolver(R);
 		part_pass = testRandomSolve(R, rsolver, A, b);
 		report << "zw: " << (part_pass ? "pass" : "fail") << std::endl << std::endl;
 	}
