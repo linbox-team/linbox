@@ -58,7 +58,7 @@
 
 
 #ifndef LINBOX_USES_OPENMP
-#error "you have to compile this example with openmp enabled
+#error "you have to compile this example with openmp enabled"
 #endif
 
 
