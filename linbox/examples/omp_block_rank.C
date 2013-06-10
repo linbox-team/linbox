@@ -43,14 +43,24 @@
  * @brief Block Wiedemann Rank with OpenMP
  */
 
+#include "linbox-config.h"
+
+
 #include <iostream>
 #include <fstream>
 #include <omp.h>
+
 #define GIVARO_USES_OMP
+
 #include <givaro/givtimer.h>
 #include <givaro/givpoly1crt.h>
+#include "linbox/integer.h"
 
-#include "linbox-config.h"
+
+#ifndef LINBOX_USES_OPENMP
+#error "you have to compile this example with openmp enabled
+#endif
+
 
 // **********************************************************
 // Variable globale pour fixer le générateurs des FFT primes
@@ -195,7 +205,7 @@ void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::BlasMatrixDomain
 	for(int i=0; i<nump; ++i) {
 		const long degree = matminpol.size()-1;
 		Matrix mat=matminpol[degree];
-		for(int j=degree-1;j>=0;--j) {
+		for(int j=(int)degree-1;j>=0;--j) {
 			scalarmulin(mat, F, Points[i]);
 			contaddin(mat, F, matminpol[j]);
 		}
@@ -282,14 +292,14 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	Polynomial Sigma(d, SigmaZero);
 
 
-	std::vector<typename Field::Element> d1(S);
+	LinBox::BlasVector<Field> d1(F,S);
 	for (int i = 0; i < S; i++)
 		do generator.random (d1[i]); while (F.isZero (d1[i]));
-	LinBox::Diagonal<Field> D1 (F, d1);
-	std::vector<typename Field::Element> d2(R);
+	LinBox::Diagonal<Field> D1 (d1);
+	LinBox::BlasVector<Field> d2(F,R);
 	for (int i = 0; i < R; i++)
 		do generator.random (d2[i]); while (F.isZero (d2[i]));
-	LinBox::Diagonal<Field> D2 (F, d2);
+	LinBox::Diagonal<Field> D2 (d2);
 
 	std::cerr << "num procs: " << omp_get_num_procs() << std::endl;
 	std::cerr << "max threads: " << omp_get_max_threads() << std::endl;
@@ -387,7 +397,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 
 	if( ! ( F.isZero(d0) || F.isZero(de) ) )
 	{
-		int rank =  ((LS2.size()-2)*(LS2[0].rowdim())+rdeg);
+		int rank = (int) ((LS2.size()-2)*(LS2[0].rowdim())+rdeg);
 
 		chrono3.stop();
 		std::cerr<<"is " << rdeg << ", done.\n";
@@ -404,7 +414,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 		long def=0;
 		if (F.isZero(d0)) ++def;
 		if (F.isZero(de)) ++def;
-		int rank =  ((LS2.size()-2-def)*(LS2[0].rowdim())+rdeg);
+		int rank =  (int) ((LS2.size()-2-def)*(LS2[0].rowdim())+rdeg);
 		std::cerr<< "*** VERY ROUGH *** rank approximation  " << rank << std::endl;
 	}
 	std::cerr << "recursive PMBasis CPU time (s)  : " << chrono3.usertime() << std::endl<<std::endl;
@@ -555,11 +565,10 @@ int main (int argc, char **argv)
 }
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
