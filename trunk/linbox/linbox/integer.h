@@ -219,7 +219,7 @@ namespace Givaro {
 #include <givaro/givcaster.h>
 #endif
 
-#ifdef GIVARO_USES_OPENMP // _OPENMP or others are present
+#ifdef GIVARO_USES_OMP // _OPENMP or others are present
 #define LINBOX_USES_OPENMP 1
 #endif
 
