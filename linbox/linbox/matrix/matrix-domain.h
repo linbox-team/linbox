@@ -172,6 +172,17 @@ namespace LinBox
 						typename MatrixTraits<Matrix1>::MatrixCategory (),
 						typename MatrixTraits<Matrix2>::MatrixCategory ());
 		}
+		inline Submatrix &copy (Submatrix &B, const Submatrix &A) const {
+			return B.copy(A);
+		}
+
+		/** Matrix swap
+		 * B <--> A.
+		 * @returns Reference to B
+		 */
+		inline Submatrix &swap(Submatrix &B, const Submatrix &A) const {
+			return B.(A);
+		}
 
 		/** Matrix equality.
 		 * Test whether the matrices A and B are equal
