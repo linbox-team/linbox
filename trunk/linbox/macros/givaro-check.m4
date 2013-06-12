@@ -55,8 +55,8 @@ dnl -------------- dnl
 dnl GIVARO VERSION dnl
 dnl -------------- dnl
 
-version_min=30702
-version_max=30800
+version_min=30800
+/bin/bash: x : commande introuvable
 
 dnl Check for existence
 
