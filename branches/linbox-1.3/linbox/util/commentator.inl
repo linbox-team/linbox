@@ -88,8 +88,8 @@ namespace LinBox
 
 	Commentator::Commentator () :
 		// cnull (new nullstreambuf)
-// 		cnull ("/dev/null")
-		cnull (0)
+		cnull ("/dev/null")
+		// cnull (0) // this is not right (clang/valgrind complain)
 		, _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		_show_timing (true), _show_progress (true), _show_est_time (true)
 	{
@@ -150,6 +150,11 @@ namespace LinBox
 		_activities.push (new_act);
 
 		new_act->_timer.start ();
+	}
+
+	void Commentator::start (std::string description, const char *fn, unsigned long len)
+	{
+		start(description.c_str(),fn,len);
 	}
 
 	void Commentator::startIteration (unsigned int iter, unsigned long len)
@@ -260,7 +265,7 @@ namespace LinBox
 		linbox_check (msg_class != (const char *) 0);
 
 	    _report << "$$(" << _activities.size () << ", " << level << ", " << msg_class << ")";
-		/*
+#if 0
 		if (!isPrinted (_activities.size (), level, msg_class,
 				(_activities.size () > 0) ? _activities.top ()->_fn : (const char *) 0))
 			return cnull;
@@ -268,7 +273,7 @@ namespace LinBox
 		MessageClass &messageClass = getMessageClass (msg_class);
 
 		return messageClass._stream;
-		*/
+#endif
 		return _report;
 	}
 
@@ -760,11 +765,10 @@ namespace LinBox
 }
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
