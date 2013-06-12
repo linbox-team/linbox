@@ -186,6 +186,10 @@ namespace LinBox
 		void start (const char *description,
 			    const char *fn = (const char *) 0,
 			    unsigned long len = 0);
+		void start (std::string description,
+			    const char *fn = (const char *) 0,
+			    unsigned long len = 0);
+
 
 		/** @internal
 		 * Start a new iteration.
@@ -516,6 +520,11 @@ namespace LinBox
 		{
 			start (id);
 			report ((MessageLevel) msglevel, msgclass) << msg << std::endl;
+		}
+
+		void start (std::string id, const char *msg, long msglevel, const char *msgclass)
+		{
+			start(id.c_str(),msg,msglevel,msgclass);
 		}
 
 		/** @internal
@@ -939,9 +948,9 @@ namespace LinBox
 		inline bool printed (long , const char *)
 		{ return false; }
 
-		ActivityState saveActivityState () const 
+		ActivityState saveActivityState () const
 		{ return ActivityState(); }
-		void restoreActivityState (ActivityState state) 
+		void restoreActivityState (ActivityState state)
 		{}
 
 		std::ofstream cnull;
@@ -982,24 +991,24 @@ namespace LinBox
 
 #endif // DISABLE_COMMENTATOR
 
-namespace LinBox 
+namespace LinBox
 {
 	// Default static commentator
     Commentator& commentator() {
         static Commentator internal_static_commentator;
         return internal_static_commentator;
-    }   
+    }
     Commentator& commentator(std::ostream& stream) {
         static Commentator internal_static_commentator(stream);
         return internal_static_commentator;
-    }   
+    }
 }
 
 
 
 
 #include "fflas-ffpack/utils/args-parser.h"
-namespace LinBox 
+namespace LinBox
 {
     void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = true) {
         for (int i = 1; i < argc; ++i) {
@@ -1010,8 +1019,8 @@ namespace LinBox
                 } else {
                         // Skip the argument next to "-xxx"
                         // except if next argument is a switch
-                    if ( ((i+1) < argc) && 
-                         (argv[i+1][0] != '-') ) { 
+                    if ( ((i+1) < argc) &&
+                         (argv[i+1][0] != '-') ) {
                         ++i;
                     }
                 }
@@ -1026,11 +1035,10 @@ namespace LinBox
 
 #endif // __LINBOX_commentator_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

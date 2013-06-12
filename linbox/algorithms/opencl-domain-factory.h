@@ -605,8 +605,10 @@ namespace LinBox{
 				free(current.spKernelsAvailable);
 
 				//Destroy mutex and deallocate memory
+				if (current.deviceLock != NULL) {
 				pthread_mutex_destroy(current.deviceLock);
 				free(current.deviceLock);
+				}
 
 				//Release the command queue and context
 				errcode = clReleaseCommandQueue(current.commandQue);
