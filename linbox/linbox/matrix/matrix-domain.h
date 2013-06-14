@@ -91,10 +91,11 @@ namespace LinBox
 	 * There are other restrictions. See the method-specific documentation for more
 	 * details.
 	 */
-	template <class Field>
-	class MatrixDomain : public MVProductDomain<Field> {
+	template <class Field_>
+	class MatrixDomain : public MVProductDomain<Field_> {
 	public:
 		typedef size_t Index;
+		typedef Field_ Field;
 		typedef typename Field::Element Element;
 		typedef Element Scalar;
 		typedef std::vector<Element> Vector;

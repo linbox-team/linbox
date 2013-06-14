@@ -81,7 +81,7 @@ namespace LinBox
 	 * In the Mother model, a BlasMatrix is allocated by the user.
 	 */
 	template <class _Field>
-	class BlasMatrix {
+	class BlasMatrix { 
 		// private :
 
 	public:
@@ -829,7 +829,7 @@ namespace LinBox
 		BlasSubmatrix &copy( const Matrix & B);
 
 		/// Swap contents.  Shapes must be the same.
-		BlasSubmatrix &swap( BlasSubmatrix & B);
+		BlasSubmatrix &swap( BlasSubmatrix<_Field> & B);
 
 		/// Overwrite with zeroes.
 		BlasSubmatrix &zero();
