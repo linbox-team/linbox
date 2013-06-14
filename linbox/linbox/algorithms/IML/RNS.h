@@ -132,6 +132,13 @@ namespace LinBox { namespace iml {
 		void
 		combBasis (ModVect& RNScombi, const ModVect &RNSbasis);
 
+		void
+		combBasis ()
+		{
+			//!  resize ?
+			combBasis(_RNScombi,_RNSbasis);
+		}
+
 		void findRNS();
 
 

@@ -115,37 +115,45 @@ namespace LinBox
 			_field(S._field)
 		{}
 
-		// XXX
-		template<typename _Tp1, typename _Rw1 = typename Rebind<_Row, _Tp1>::other>
-		struct rebind {
-			typedef SparseMatrix<_Tp1, _Rw1> other;
+		// XXX only for COO
+		template<typename _Tp1, typename _Rw1 = SparseMatrix2Format::COO>
+		struct rebind ;
 
-			void operator() (other & Ap, const Self_t& A) {
+		template<typename _Tp1>
+		struct rebind<_Tp1/*  ,SparseMatrix2Format::COO */ > {
+			typedef SparseMatrix2<_Tp1, SparseMatrix2Format::COO> other;
+
+			void operator() (other & Ap, const Self_t& A)
+			{
 				// Ap = new other(F, A.rowdim(), A.coldim());
 
 				typename _Tp1::Element e;
 
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
-				for( typename Self_t::ConstIndexedIterator
-				     indices = A.IndexedBegin();
-				     (indices != A.IndexedEnd()) ;
-				     ++indices ) {
-					// hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
-					hom. image (e, indices.value() );
-					if (!Ap.field().isZero(e))
-						Ap.setEntry (indices.rowIndex(),
-							     indices.colIndex(), e);
+				size_t j = 0 ;
+				for (size_t i = 0 ; i < A.size() ; ++i) {
+					hom. image ( e, A.getData(i) );
+					if (!Ap.field().isZero(e)) {
+						Ap.setColid(j,A.getColid(i));
+						Ap.setRowid(j,A.getRowid(i));
+						Ap.setData(j,e);
+						++j;
+					}
 				}
+				if (j != Ap.size())
+					Ap.resize(j);
 			}
 		};
 
-		// XXX
 		template<typename _Tp1, typename _Rw1>
-		SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &Mat, const Field& F) :
-			SparseMatrixBase<Element, _Row> (Mat.rowdim(),Mat.coldim()),
-			_field (&F), _MD (F), _AT (*this) {
-				typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,_Row>()(*this, Mat);
-			}
+		SparseMatrix2 (const SparseMatrix2<_Tp1, _Rw1> &S, const Field& F) :
+			_rownb(S.rowdim()),_colnb(S.coldim()),
+			_nbnz(S.size()),
+			_rowid(S.size()),_colid(S.size()),_data(S.size()),
+			_field(F)
+		{
+			typename SparseMatrix2<_Tp1,_Rw1>::template rebind<Field,SparseMatrix2Format::COO>()(*this, S);
+		}
 
 
 
@@ -343,7 +351,7 @@ namespace LinBox
 		size_t size() const
 		{
 			// return _data.size();
-			return 3*_nbnz ;
+			return _nbnz ;
 		}
 
 		/** Get a read-only individual entry from the matrix.
@@ -356,23 +364,29 @@ namespace LinBox
 			assert(i<_rownb);
 			assert(j<_colnb);
 			// Could be improved by adding an initial guess j/rodim*size()
-			typedef typename std::vector<size_t>::iterator myIterator ;
+			// typedef typename std::vector<size_t>::iterator myIterator ;
+			typedef typename std::vector<size_t>::const_iterator myConstIterator ;
 
-			std::pair<myIterator,myIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
-			size_t ibeg = bounds.first-_rowid.begin();
-			size_t iend = (bounds.second-_rowid.begin())-ibeg;
+			std::pair<myConstIterator,myConstIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
+			size_t ibeg = (size_t)(bounds.first-_rowid.begin());
+			size_t iend = (size_t)(bounds.second-_rowid.begin())-ibeg;
 			if (!iend)
 				return _field.zero;
 
-			myIterator beg = _colid.begin()+ibeg ;
-			myIterator low = std::lower_bound (beg, beg+(ptrdiff_t)iend, j);
+			myConstIterator beg = _colid.begin()+(ptrdiff_t)ibeg ;
+			myConstIterator low = std::lower_bound (beg, beg+(ptrdiff_t)iend, j);
 			if (low == beg+(ptrdiff_t)iend)
 				return _field.zero;
 			else {
 				// not sure
-				size_t la = low-_colid.begin() ;
+				size_t la = (size_t)(low-_colid.begin()) ;
 				return _data[la] ;
 			}
+		}
+
+		Element      &getEntry (Element &x, size_t i, size_t j) const
+		{
+			return x = getEntry (i, j);
 		}
 
 		/** Set an individual entry.
@@ -523,7 +537,7 @@ namespace LinBox
 		}
 
 		template<class Vector>
-		Vector& apply(Vector &y, const Vector& x)
+		Vector& apply(Vector &y, const Vector& x) const
 		{
 			//! @bug why always zero-assign ?
 			for (size_t i = 0 ; i < y.size() ; ++i)
@@ -531,10 +545,12 @@ namespace LinBox
 
 			for (size_t i = 0 ; i < _nbnz ; ++i)
 				_field.axpyin( y[_rowid[i]], _data[i], x[_colid[i]] );
+
+			return y;
 		}
 
 		template<class Vector>
-		Vector& applyTranspose(Vector &y, const Vector& x)
+		Vector& applyTranspose(Vector &y, const Vector& x) const
 		{
 			//! @bug why always zero-assign ?
 			for (size_t i = 0 ; i < y.size() ; ++i)
@@ -542,6 +558,8 @@ namespace LinBox
 
 			for (size_t i = 0 ; i < _nbnz ; ++i)
 				_field.axpyin( y[_colid[i]], _data[i], x[_rowid[i]] );
+
+			return y;
 		}
 
 		const Field & field()  const
@@ -549,10 +567,6 @@ namespace LinBox
 			return _field ;
 		}
 
-		template<typename _Tp1, typename _R1 = SparseFileFormat::COO>
-		struct rebind {
-			typedef SparseMatrix2<_Tp1, _R1> other;
-		};
 
 	private :
 
@@ -830,6 +844,40 @@ namespace LinBox
 		}
 
 
+	public:
+		// pseudo iterators
+		size_t getRowid(const size_t i) const
+		{
+			return _rowid[i];
+		}
+
+		void setRowid(const size_t i, const size_t j)
+		{
+			if (i>=_nbnz) this->resize(i);
+			_rowid[i]=j;
+		}
+
+		size_t getColid(const size_t i) const
+		{
+			return _colid[i];
+		}
+
+		void setColid(const size_t i, const size_t j)
+		{
+			if (i>=_nbnz) this->resize(i);
+			_rowid[i]=j;
+		}
+
+		const Element & getData(const size_t i) const
+		{
+			return _data[i];
+		}
+
+		void setData(const size_t i, const Element & e)
+		{
+			if (i>=_nbnz) this->resize(i);
+			field().assign(_data[i],e);
+		}
 
 	protected :
 
@@ -843,6 +891,9 @@ namespace LinBox
 
 		const _Field            & _field ;
 	};
+
+
+
 
 
 } // namespace LinBox
