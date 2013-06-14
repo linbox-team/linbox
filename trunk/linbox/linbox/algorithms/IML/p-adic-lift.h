@@ -1,6 +1,8 @@
 #ifndef __LINBOX_algorithm_iml_p_adic_lift_H
 #define __LINBOX_algorithm_iml_p_adic_lift_H
 
+#include "linbox/field/unparametric.h"
+#include "linbox/algorithms/IML/RNS.h"
 
 namespace LinBox{ namespace iml{
 
@@ -22,8 +24,11 @@ namespace LinBox{ namespace iml{
  *
  */
 
-	template<class FiniteField>
+	template<class Field>
 	class pAdicLift {
+	public :
+		typedef typename Field::Element ModElement;
+		typedef UnparametricField<ModElement> NoField;
 	private :
 		RNS<Field> &               _liftbasis ;
 		RNS<Field>                  _extbasis ;
@@ -38,6 +43,7 @@ namespace LinBox{ namespace iml{
 		template<class Matrix>
 		int liftInit(const Matrix &A);
 
+		template<class Matrix>
 		int liftInitRNS(const Matrix &A);
 
 		void invBasis () ;
@@ -47,6 +53,11 @@ namespace LinBox{ namespace iml{
 			      const size_t k,
 			       BlasMatrix<PID_integer> & mp_r
 			     );
+
+		size_t size()
+		{
+			return _liftbasis.size() ;
+		}
 }; // pAdicLift
 
 

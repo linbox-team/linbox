@@ -59,10 +59,16 @@ namespace LinBox {
 		return A.read (is);
 	}
 
-	template <class _Field, class _Storage/*, class _Trait*/>
-	struct MatrixTraits< SparseMatrix2<_Field, _Storage/* , _Trait*/> > {
-		typedef SparseMatrix2<_Field, _Storage/*, _Trait*/>      MatrixType;
+	template <class _Field, class _Storage>
+	struct MatrixTraits< SparseMatrix2<_Field, _Storage> > {
+		typedef SparseMatrix2<_Field, _Storage>      MatrixType;
 		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	};
+
+
+	template <class _Field, class _Storage>
+	struct GetEntryCategory<SparseMatrix2<_Field,_Storage> > {
+		  typedef SolutionTags::Local Tag;
 	};
 
 } // LinBox
