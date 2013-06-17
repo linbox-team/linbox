@@ -152,7 +152,6 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	LinBox::commentator().start (str.str ().c_str (), "testAddMul", stream1.m ());
 
 	bool ret = true;
-	bool iter_passed;
 
 	Vector v1(F,stream1.n()), v2(F,stream2.n()), v3(F,stream1.n()), v4(F,stream1.n());
 	typename Field::Element a;
@@ -170,7 +169,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	while (stream1 && stream2) {
 		LinBox::commentator().startIteration ((unsigned)stream1.j ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream1.next (v1);
 		stream2.next (v2);
@@ -255,7 +254,6 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	LinBox::commentator().start (str.str ().c_str (), "testSubMul", stream1.m ());
 
 	bool ret = true;
-	bool iter_passed;
 
 	Vector v1(F,stream1.n()), v2(F,stream2.n()), v3(F,stream1.n()), v4(F,stream1.n());
 	typename Field::Element a;
@@ -273,7 +271,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	while (stream1 && stream2) {
 		LinBox::commentator().startIteration ((unsigned)stream1.j ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream1.next (v1);
 		stream2.next (v2);
@@ -356,7 +354,6 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 	LinBox::commentator().start (str.str ().c_str (), "testAXPY", stream1.m ());
 
 	bool ret = true;
-	bool iter_passed;
 
 	Vector v1(F,stream1.n()), v2(F,stream2.n()), v3(F,stream1.n()), v4(F,stream1.n());
 	typename Field::Element a;
@@ -374,7 +371,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 	while (stream1 && stream2) {
 		LinBox::commentator().startIteration ((unsigned)stream1.j ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream1.next (v1);
 		stream2.next (v2);
@@ -439,7 +436,6 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 	LinBox::commentator().start (str.str ().c_str (), "testCopyEqual", stream.m ());
 
 	bool ret = true;
-	bool iter_passed;
 
 	Vector1 v(F,stream.n());
 	Vector2 w(F,stream.n());
@@ -452,7 +448,7 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 	while (stream) {
 		LinBox::commentator().startIteration ((unsigned)stream.j ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream.next (v);
 		VD.copy (w, v);
@@ -485,11 +481,10 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 
 #endif // __LINBOX_test_vector_domain_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

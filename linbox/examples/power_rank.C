@@ -52,7 +52,7 @@ int main (int argc, char **argv)
 	ifstream input (argv[1]);
 	if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
 
-	long unsigned int r;
+	// long unsigned int r;
 
 	if (argc == 4) {
 		LinBox::int64_t p = atoi(argv[2]);
@@ -86,11 +86,10 @@ int main (int argc, char **argv)
 	return 0;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

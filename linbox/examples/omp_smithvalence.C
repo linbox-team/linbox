@@ -146,7 +146,7 @@ Givaro::Integer coprimeV=2;
 	   SmithDiagonal[i] *= *mit;
 	   }
 	   */
-        
+
 	eit=exponents.begin();
 	std::vector<PairIntRk>::const_iterator sit=smith.begin();
 	for( ++sit; sit != smith.end(); ++sit, ++eit) {
@@ -161,13 +161,13 @@ Givaro::Integer coprimeV=2;
                         PRank(ranks, effexp, argv[1], sit->first, *eit, coprimeR);
                 }
                 else {
-                    if (sit->first == 2)
-                        PRank(ranks, effexp, argv[1], sit->first, 2, coprimeR);
-                    else
-                        PRank(ranks, effexp, argv[1], sit->first, 2, coprimeR);
-                }
+			// if (sit->first == 2)
+			PRank(ranks, effexp, argv[1], sit->first, 2, coprimeR);
+			// else
+			// PRank(ranks, effexp, argv[1], sit->first, 2, coprimeR);
+		}
                 if (ranks.size() == 1) ranks.push_back(coprimeR);
-                
+
                 if (effexp < *eit) {
                     for(size_t expo = effexp<<1; ranks.back() < coprimeR; expo<<=1) {
                         if (sit->first == 2)
@@ -176,7 +176,7 @@ Givaro::Integer coprimeV=2;
                             PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
                     }
                 } else {
-                    
+
                     for(size_t expo = (*eit)<<1; ranks.back() < coprimeR; expo<<=1) {
                         if (sit->first == 2)
                             PRankPowerOfTwo(ranks, effexp, argv[1], expo, coprimeR);
@@ -192,7 +192,7 @@ Givaro::Integer coprimeV=2;
                         }
                     }
                 }
-                
+
                 std::vector<size_t>::const_iterator rit=ranks.begin();
 // 			unsigned long modrank = *rit;
                 for(++rit; rit!= ranks.end(); ++rit) {

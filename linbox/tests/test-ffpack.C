@@ -86,10 +86,10 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 
-	unsigned int r;
 	bool ret = true;
 
 	for (int k=0;k<iterations; ++k) {
+		unsigned int r;
 
 		commentator().progress(k);
 		Element * A = new Element[n*n];
@@ -159,11 +159,11 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 
-	unsigned int r;
 	bool ret = true;
 
 	for (int k=0;k<iterations; ++k) {
 
+	unsigned int r;
 		commentator().progress(k);
 		Element * A = new Element[n*n];
 		Element * S = new Element[n*n];
@@ -592,7 +592,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 				ret = false;
 			}
 
-			P_it++;
+			++P_it;
 		}
 
 		// Test CharPoly(a*In) = X-a
@@ -614,7 +614,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 				ret = false;
 			if ( !F.areEqual(P_it->operator[](1), one) )
 			ret = false;
-			P_it++;
+			++P_it;
 		}
 		delete[] A;
 	}

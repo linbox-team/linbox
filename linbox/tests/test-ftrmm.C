@@ -205,6 +205,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 				else // C = M * L^t
 					for (size_t i = 0 ; i < M ; ++i)
 						for (size_t j = 0 ; j < N ; ++j)
+							//! @bug same code as above ?
 							F.addin(*(C+i*N+j),*(B+i*ldb+j));
 			else
 				if (Trans == FFLAS::FflasNoTrans) // C = M * U
@@ -214,6 +215,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 				else // C = M * U^t
 					for (size_t i = 0 ; i < M ; ++i)
 						for (size_t j = 0 ; j < N ; ++j)
+							//! @bug same code as above ?
 							F.addin(*(C+i*N+j),*(B+i*ldb+j));
 		}
 		else // left
@@ -248,6 +250,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 				else // C = M * L^t
 					for (size_t i = 0 ; i < M ; ++i)
 						for (size_t j = 0 ; j < N ; ++j)
+							//! @bug same code as above ?
 							F.axpyin(*(C+i*N+j),*(B+i*ldb+j),*(A+j*lda+j));
 			else
 				if (Trans == FFLAS::FflasNoTrans) // C = M * U
@@ -257,6 +260,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 				else // C = M * U^t
 					for (size_t i = 0 ; i < M ; ++i)
 						for (size_t j = 0 ; j < N ; ++j)
+							//! @bug same code as above ?
 							F.axpyin(*(C+i*N+j),*(B+i*ldb+j),*(A+j*lda+j));
 		}
 		else // left
@@ -269,6 +273,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 				else // C = L^t * M
 					for (size_t i = 0 ; i < M ; ++i)
 						for (size_t j = 0 ; j < N ; ++j)
+							//! @bug same code as above ?
 							F.axpyin(*(C+i*N+j),*(A+i*lda+i),*(B+i*ldb+j));
 			else
 				if (Trans == FFLAS::FflasNoTrans) // C = U * M
@@ -278,6 +283,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 				else // C = M * U^t
 					for (size_t i = 0 ; i < M ; ++i)
 						for (size_t j = 0 ; j < N ; ++j)
+							//! @bug same code as above ?
 							F.axpyin(*(C+i*N+j),*(A+i*lda+i),*(B+i*ldb+j));
 		}
 
@@ -847,9 +853,11 @@ int main(int ac, char ** av)
 	if (fail)
 		report << "# \033[1;31m>\033[0m ftr(s/m)m failed" << std::endl;
 #endif
-	int our = tot = 6*_LB_ITERS*2 ;
+
 #ifdef __LINBOX_HAVE_INT64
-	our = tot = tot+2*_LB_ITERS*2 ;
+	int our = tot = tot+2*_LB_ITERS*2 ;
+#else
+	int our = tot = 6*_LB_ITERS*2 ;
 #endif
 
 	//-------//
@@ -872,16 +880,18 @@ int main(int ac, char ** av)
 #ifdef DEBUG
 	report << "# \033[1;33m>\033[0m applyP  passed " << our << "/" << tot << "tests" <<std::endl;
 #endif
-	if (our != tot) fail = true;
+	if (our != tot) {
+		fail = true;
 #ifdef DEBUG
-	if (our != tot)
 		report << "# \033[1;31m>\033[0m applyP failed" << std::endl;
 #endif
+	}
 
 
-	our = tot = 4*_LB_ITERS*6 ;
 #ifdef __LINBOX_HAVE_INT64
 	our = tot = tot+4*_LB_ITERS*2 ;
+#else
+	our = tot = 4*_LB_ITERS*6 ;
 #endif
 
 	//-------//

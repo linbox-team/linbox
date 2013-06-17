@@ -74,7 +74,6 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 
 	size_t vectorSize = 10000;
 	float sparsity = .01f;
-	long sparsity_inv = 100;
 	int i;
 
 	// initialize a few field elements,
@@ -219,7 +218,8 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 		timer.clear(); timer.start();
 		for( i = 0; i < iter/(int)vectorSize; i++ ) {
 			f.init(dv1.back(), i);
-			for ( int j = 0; j < sparsity_inv; ++ j ) {
+			long sparsity_inv = 100;
+			for ( int j = 0; j < (int)sparsity_inv; ++ j ) {
 				f.init(dv1.front(), j);
 				VD.dot( returnValue, dv1, sv );
 				f.addin(s, returnValue);
@@ -252,8 +252,8 @@ int64_t getOps(int unit)
 	double b = 1.3;
 	UserTimer opsClock;
 	opsClock.clear();
-	long double c;
 	while( opsClock.time() < unit ) {
+		// long double c;
 		ops *= 2;
 		i = 0;
 		opsClock.start();
@@ -267,7 +267,7 @@ int64_t getOps(int unit)
 			b=a;
 		else
 			b = 2*a;
-		c = a+b;
+		// c = a+b;
 
 	}
 	return ops;
@@ -294,9 +294,9 @@ void printTimings( double* timings, bool fulltest = false )
 template <class Field>
 void doTest(const char* name, integer& p, integer& exp, int64_t& iter, bool fulltest = false)
 {
-	static double mops[11];
 	if( FieldTraits<Field>::goodModulus( p ) &&
 	    FieldTraits<Field>::goodExponent( exp ) ) {
+		static double mops[11];
 		Field fld( p, exp );
 		fieldTest( fld, mops, iter, fulltest);
 		// print name

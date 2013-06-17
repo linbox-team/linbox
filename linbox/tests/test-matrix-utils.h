@@ -185,7 +185,7 @@ void RandomMatrixWithRank(const Field & F,
 	for (size_t i = n*rank; i < n*m; ++i){
 		F.assign (*(C+i),F.zero);
 	}
-	assert(CheckRank(F,C,m,n,n,rank));
+	linbox_check(CheckRank(F,C,m,n,n,rank));
 	// create P a random permutation of size \p n
 	size_t *P = new size_t[n];
 	//srandom( (unsigned) time(NULL) ) ; // on met une nouvelle graine.
@@ -208,7 +208,7 @@ void RandomMatrixWithRank(const Field & F,
 	delete[] C;
 	delete[] P;
 	delete[] Q;
-	assert(CheckRank(F,A,m,n,n,rank));
+	linbox_check(CheckRank(F,A,m,n,n,rank));
 	return;
 
 }

@@ -44,17 +44,17 @@ int main (int argc, char **argv) {
     commentator().setMaxDetailLevel (-1);
     commentator().setMaxDepth (-1);
     commentator().setReportStream (std::cerr);
-    
+
     if (argc < 3 || argc > 3)
     {	cerr << "Usage: rank <matrix-file-in-supported-format> <power of two exponent>]" << endl; return -1; }
-    
+
     ifstream input (argv[1]);
     if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
-    
-    long unsigned int r;
-    
+
+    // long unsigned int r;
+
     if (argc == 3) {
-        LinBox::Timer tim; 
+        LinBox::Timer tim;
         size_t exponent = atoi(argv[2]);
         if (exponent > 63) {
             typedef std::vector<std::pair<size_t,Integer> >  Smith_t;
@@ -68,7 +68,7 @@ int main (int argc, char **argv) {
             tim.clear(); tim.start();
             PGD(local, A, exponent);
             tim.stop();
-            
+
             std::cout << "Local Smith Form : (";
             for (Smith_t::const_iterator  p = local.begin(); p != local.end(); ++p)
                 std::cout << '[' << p->second << ',' << p->first << "] ";
@@ -82,7 +82,7 @@ int main (int argc, char **argv) {
             LinBox::SparseMatrix<Ring, LinBox::Vector<Ring>::SparseSeq > A (ms);
             input.close();
             LinBox::PowerGaussDomainPowerOfTwo< uint64_t > PGD;
-            
+
             tim.clear(); tim.start();
             PGD(local, A, exponent);
             tim.stop();
@@ -92,20 +92,19 @@ int main (int argc, char **argv) {
                 std::cout << '[' << p->second << ',' << p->first << "] ";
             cout << ')' << endl;
         }
-        
 
-        
+
+
         std::cerr << tim << std::endl;
     }
-    
+
     return 0;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

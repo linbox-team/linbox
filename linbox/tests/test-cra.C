@@ -558,7 +558,7 @@ int main(int ac, char ** av)
 
 	parseArguments (ac, av, as);
 
-	bool pass = true ;
+	bool pass ;
 
 	srand((unsigned)time(NULL));             // seeding
 	size_t PrimeSize   =  p;       // size of the residues/primes

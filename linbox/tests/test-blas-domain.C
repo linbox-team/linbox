@@ -563,11 +563,11 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 	Element tmp;
-	unsigned int r;
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 
 	for (int k=0;k<iterations; ++k) {
+	unsigned int r;
 
 		mycommentator().progress(k);
 		BlasMatrix<Field> A(F,n,n),S(F,n,n), L(F,n,n);
@@ -1007,7 +1007,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 
 		mycommentator().progress(k);
 
-		std::vector<size_t> P(m);
+		// std::vector<size_t> P(m);
 
 		// Field Z2(2);
 		// RandIter G2(Z2);
@@ -1519,7 +1519,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 			if ( !F.areEqual(P_it->operator[](1), one) )
 				ret = false;
 
-			P_it++;
+			++P_it;
 		}
 
 		// Test CharPoly(a*In) = X-a
@@ -1538,7 +1538,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 				ret = false;
 			if ( !F.areEqual(P_it->operator[](1), one) )
 			ret = false;
-			P_it++;
+			++P_it;
 		}
 	}
 

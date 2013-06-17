@@ -216,8 +216,9 @@ namespace LinBox{ namespace iml{
 	template<class Field>
 	void
 	pAdicLift<Field>::iml_lift (const LinBoxTag::Side solupos
-		  , std::vector<std::vector<BlasMatrix<Field> > > & C
-		  , const size_t k
+		  // , std::vector<std::vector<BlasMatrix<Field> > > & C
+				    , LiftStep<Field> & C
+		  // , const size_t k
 		  // , const size_t n
 		  // , const size_t m
 		  // , const size_t liftbasislen
@@ -244,14 +245,15 @@ namespace LinBox{ namespace iml{
 
 		/* initialize lifting coefficient matrix C[k][liftbasislen][n] */
 		// C = XMALLOC(Double **, k);
-		size_t n = 999 ;
-		size_t m = 999 ;
+		size_t n = C.rowdim() ;
+		size_t m = C.coldim() ;
+		size_t k = C.steps();
 		size_t liftbasislen = _liftbasis.size();
 		size_t extbasislen  = _extbasis. size();
 		Field F(7); // XXX
 		const BlasMatrix<Field> Z(F,n,m);
-		const std::vector<BlasMatrix<Field> > ZZ(liftbasislen,Z);
-		C.resize(k,ZZ);
+		// const std::vector<BlasMatrix<Field> > ZZ(liftbasislen,Z);
+		// C.resize(k,ZZ);
 		// for (i = 0; i < k; i++)
 		// {
 			// C[i] = XMALLOC(Double *, liftbasislen);
@@ -262,9 +264,14 @@ namespace LinBox{ namespace iml{
 		ModVect & qinv = _extbasis.refRNScombi() ;
 		// mpz_init(mp_r1);
 		std::vector<BlasMatrix<Field> > Ac(extbasislen,Z);
+		for (size_t fi = 0 ; fi < extbasislen ; ++fi) {
+			Field Fp(_extbasis[fi]);
+			Ac[fi].changeField(Fp);
+		}
 		// Ac = XCALLOC(Double *, extbasislen);
 		// for (i = 0; i < extbasislen; i++)
 			// Ac[i] = XCALLOC(Double, m*n);
+		NoField unF;
 		BlasMatrix<NoField> dtemp(unF,n,m);
 		BlasVector<NoField> dtemp1(unF,extbasislen);
 		// dtemp = XMALLOC(Double, m*n);
@@ -315,7 +322,9 @@ namespace LinBox{ namespace iml{
 			/* compute Ac mod extbasis[j] */
 			for (j = 0; j < extbasislen; j++)
 			{
-				_liftbasis.basisExtPos(liftbasislen, m*n, q[j], _liftbasis, cmbasis, C[i], dtemp);
+				Field Fq(q[j]);
+				_liftbasis.basisExtPos(Fq, C[i], dtemp);
+				// _liftbasis.basisExtPos(liftbasislen, m*n, q[j], _liftbasis, cmbasis, C[i], dtemp);
 
 				FFLAS::fgemm(Fq,(solupos==LinBoxTag::Left)?(LinBoxTag::Trans):(LinBoxTag::NoTrans)
 					     ,LinBoxTag::NoTrans,n,m,n
@@ -346,20 +355,20 @@ namespace LinBox{ namespace iml{
 			}
 
 			/* compute r_quo_p+(r mod p-Ac)/p */
-			for (j = 0; j < m*n; j++)
-			{
+			for (j = 0; j < m*n; j++) {
+				Integer mp_r1;
 				/* mp_r[j] := Quo(mp_r[j], p), mp_r1 := Mod(mp_r[j], p) */
-				Integer::divmod(mp_r[j],mp_r1,mp_r[j],p);
+				Integer::divmod(mp_r[j],mp_r1,mp_r[j],_liftbasis.basisProd());
 				// mpz_fdiv_qr(mp_r[j], mp_r1, mp_r[j], mp_basisprod);
 
 				/* compute ((r mod p) mod q[l] - Ac mod q[l])(1/p mod q[l]) */
-				for (l = 0; l < extbasislen; l++)
-				{
+				for (l = 0; l < extbasislen; l++) {
+					Field Fp(q[l]);
 					dtemp1[l]= Integer::frem(mp_r1,(long)q[l]);
 					// dtemp1[l] = (Double)mpz_fdiv_ui(mp_r1, q[l]);
 					Fp.addin(dtemp1[l],(q[l]-1)*Ac[l][j]);
 					// dtemp1[l] = fmod(dtemp1[l]+(q[l]-1)*Ac[l][j], q[l]);
-					Fp.mulin(dtemp1[l],liftbasisInv[l]);
+					Fp.mulin(dtemp1[l],_liftbasisInv[l]);
 					// dtemp1[l] = fmod(dtemp1[l]*liftbasisInv[l], q[l]);
 				}
 
@@ -368,7 +377,7 @@ namespace LinBox{ namespace iml{
 				// ChineseRemainder(extbasislen, mp_extbasisprod, q, qinv, extbdcoeff,
 				// dtemp1, mp_r1);
 				// mpz_add(mp_r[j], mp_r[j], mp_r1);
-				Integer::addin(mp_r[j],mp_r1);
+				Integer::addin(mp_r.getPointer()[j],mp_r1);
 			}
 		}
 
@@ -395,8 +404,8 @@ namespace LinBox{ namespace iml{
 		// inv = XMALLOC(Double, basislen);
 		_liftbasisInv .resize(basislen);
 		for (i = 0; i < basislen; i++) {
-			Field Fi(_extbasis.prime(i));
-			F.inv(_liftbasisInv[i],_extbasis.basisProd());
+			Field Fq(_extbasis.prime(i));
+			Fq.inv(_liftbasisInv[i],_extbasis.basisProd());
 			// mpz_set_ui(mp_basis, basis[i]);
 			// mpz_invert(mp_temp, mp_basisprod, mp_basis);
 			// inv[i] = mpz_get_d(mp_temp);

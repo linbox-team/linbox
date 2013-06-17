@@ -164,7 +164,7 @@ bool areVectorsEqualSpecialized(
 	typename Vector::const_iterator v_iter, w_iter;
 	w_iter = w.begin();
 
-	for ( v_iter = v.begin(); v_iter != v.end(); v_iter++, w_iter++)
+	for ( v_iter = v.begin(); v_iter != v.end(); ++v_iter, ++w_iter)
 		if ( (w_iter->first != v_iter->first)
 		     || (!F.areEqual (w_iter->second, v_iter->second)) )
 			return false;
@@ -185,7 +185,7 @@ bool areVectorsEqualSpecialized(
 	typename Vector::const_iterator v_iter, w_iter;
 	w_iter = w.begin();
 
-	for ( v_iter = v.begin(); v_iter != v.end(); v_iter++, w_iter++)
+	for ( v_iter = v.begin(); v_iter != v.end(); ++v_iter, ++w_iter)
 		if ( (w_iter->first != v_iter->first)
 		     || (!F.areEqual (w_iter->second, v_iter->second)) )
 			return false;

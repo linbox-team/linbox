@@ -20,6 +20,7 @@ namespace LinBox { namespace iml {
 		size_t rank ;
 		bool   komp ;
 		unsigned ver1 ;
+		typedef typename Field::Elemene Element ;
 
 	private :
 		void reconstruct();
@@ -27,11 +28,10 @@ namespace LinBox { namespace iml {
 		bool verify_compressed(unsigned verified);
 		void justTry();
 	public :
-		template<class Field>
 		Nullspace(Ring myR,BlasMatrix<Field> & myA) :
 			A(myA),
 			mp_N(R),
-			rp(A.rowdim()1,0),
+			rp(A.rowdim(),0),
 			R(myR),
 			mp_D(R.one),
 			size(0),

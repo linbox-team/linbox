@@ -144,7 +144,6 @@ static bool testSampleNullspace (const Field           &F,
 	std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
-	unsigned int number;
 
 	MatrixDomain<Field> MD (F);
 
@@ -170,6 +169,7 @@ static bool testSampleNullspace (const Field           &F,
 	for (unsigned int i = 0; i < num_iter; ++i) {
 		commentator().startIteration (i);
 
+		unsigned int number;
 		number = lablsolver.sampleNullspace (A, x);
 
 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
@@ -204,7 +204,6 @@ static bool testRank (const Field           &F,
 	std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
-	unsigned int rank;
 
 	MatrixDomain<Field> MD (F);
 
@@ -228,6 +227,7 @@ static bool testRank (const Field           &F,
 	for (unsigned int i = 0; i < num_iter; ++i) {
 		commentator().startIteration (i);
 
+		unsigned int rank;
 		rank = lablsolver.rank (A);
 
 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)

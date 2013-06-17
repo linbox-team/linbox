@@ -638,6 +638,11 @@ namespace LinBox
 		template <class Vector>
 		Vector &columnDensity (Vector &v) const ;
 
+		size_t size()
+		{
+			return _row * _col;
+		}
+
 		///////////////////
 		//   BLACK BOX   //
 		///////////////////

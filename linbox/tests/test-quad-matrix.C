@@ -47,7 +47,7 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-	ofstream report;
+	// ofstream report;
 
 	bool pass = true;
 

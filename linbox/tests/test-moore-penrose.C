@@ -81,13 +81,13 @@ static SparseMatrix<Field,  Row>
 	}
 
 	// Build top right part
-	for (typename vector<Row>::iterator i = top_right_data.begin (); i != top_right_data.end (); i++) {
+	for (typename vector<Row>::iterator i = top_right_data.begin (); i != top_right_data.end (); ++i) {
 		top_right_stream.next (*i);
 		VD.copy (A->getRow (top_right_stream.j () - 1), *i, r);
 	}
 
 	// Build bottom left part
-	for (typename vector<Row>::iterator i = bottom_left_data.begin (); i != bottom_left_data.end (); i++) {
+	for (typename vector<Row>::iterator i = bottom_left_data.begin (); i != bottom_left_data.end (); ++i) {
 		bottom_left_stream.next (*i);
 		VD.copy (A->getRow (r + bottom_left_stream.j () - 1), *i);
 	}
@@ -140,7 +140,6 @@ static bool testIdentityApply (Field                                           &
 	commentator().start ("Testing identity apply", "testIdentityApply", stream.m ());
 
 	bool ret = true;
-	bool iter_passed;
 
 	Vector v, w;
 
@@ -163,7 +162,7 @@ static bool testIdentityApply (Field                                           &
 	while (stream) {
 		commentator().startIteration ((unsigned)i);
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream.next (v);
 
@@ -231,7 +230,6 @@ static bool testRandomApply1 (Field                 &F,
 	commentator().start ("Testing random apply", "testRandomApply1", iterations);
 
 	bool ret = true;
-	bool iter_passed;
 
 	unsigned long rank_A;
 
@@ -251,7 +249,7 @@ static bool testRandomApply1 (Field                 &F,
 
 	for (i = 0; i < iterations; i++) {
 		commentator().startIteration ((unsigned)i);
-		iter_passed = true;
+		bool iter_passed = true;
 
 		commentator().start ("Building requisite random sparse matrix");
 		Blackbox *A = buildRandomSparseMatrix<Vector> (F, n, m, r, K, dinv, M_stream1, M_stream2);

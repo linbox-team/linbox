@@ -72,9 +72,9 @@ static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size
 {
 	commentator().start ("Testing setButterfly", "testSetButterfly", stream.size ());
 
-	bool ret = true, iter_passed;
+	bool ret = true;
 
-	unsigned long real_k;
+	// unsigned long real_k;
 
 	Vector v_p;
 	BlasVector<Field> w (F,stream.dim ()), v1 (F,stream.dim ());
@@ -87,7 +87,7 @@ static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size
 		BlasVector<Field> v (F,stream.n ());
 		VD.copy (v, v_p);
 
-		real_k = v_p.first.size ();
+		unsigned long real_k = v_p.first.size ();
 
 		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector: ";
@@ -113,7 +113,7 @@ static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size
 		report << "Result of applyTranspose: ";
 		VD.write (report, v1) << endl;
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		for (size_t i = 0; i < real_k; ++i)
 			if (F.isZero (w[i]))
@@ -169,7 +169,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 	RandomSparseStream<Field, typename Vector<Field>::SparsePar> stream (F, (double) r / (double) n, n, iterations);
 	VectorDomain<Field> VD (F);
 
-	unsigned long real_r;
+	// unsigned long real_r;
 	typename Field::Element det_Ap;
 
 	typename Field::Element one;
@@ -188,7 +188,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 		report << "Input vector: ";
 		VD.write (report, d) << endl;
 
-		real_r = d1.first.size ();
+		unsigned long real_r = d1.first.size ();
 
 		report << "Real rank: " << real_r << endl;
 

@@ -75,7 +75,7 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 	commentator().start ("Testing zero apply", "testZeroApply", stream1.m ());
 
 	bool ret = true;
-	bool iter_passed = true;
+	// bool iter_passed = true;
 
 	Vector d1(F), d2(F), v(F), w(F), zero(F);
 	VectorDomain<Field> VD (F);
@@ -89,7 +89,7 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 
 	while (stream1) {
 		commentator().startIteration ((unsigned)stream1.j ());
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream1.next (d1);
 		//VD.mul (d2, d1, neg_one);

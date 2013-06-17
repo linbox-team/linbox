@@ -77,7 +77,6 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 	commentator().start (str.str ().c_str (), "testIdentityApply", stream.m ());
 
 	bool ret = true;
-	bool iter_passed = true;
 
 	VectorDomain<Field> VD (F);
 	StandardBasisStream<Field, Row> f1 (F, stream.n ());
@@ -95,7 +94,7 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 	while (stream) {
 		commentator().startIteration ((unsigned)stream.j ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream.next (v);
 
@@ -151,7 +150,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 	commentator().start (str.str ().c_str (), "testNilpotentApply", stream.m ());
 
 	bool ret = true;
-	bool even, iter_passed;
+	bool even;
 
 	StandardBasisStream<Field, Row> f1 (F, stream.n ());
 	Row tmp;
@@ -174,7 +173,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 	while (stream) {
 		commentator().startIteration ((unsigned)stream.j ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 		even = false;
 
 		stream.next (v);
@@ -257,7 +256,6 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
 	commentator().start (str.str ().c_str (), "testRandomApply1", iterations);
 
 	bool ret = true;
-	bool iter_passed;
 
 	size_t i, k;
 
@@ -272,7 +270,7 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
 	for (i = 0; i < iterations; i++) {
 		commentator().startIteration ((unsigned)i);
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		Blackbox A (F, A_stream);
 		A_stream.reset ();
@@ -332,7 +330,6 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 	commentator().start (str.str ().c_str (), "testRandomApply2", iterations);
 
 	bool ret = true;
-	bool iter_passed;
 
 	size_t i, j, k;
 
@@ -357,7 +354,7 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 	for (i = 0; i < iterations; i++) {
 		commentator().startIteration ((unsigned)i);
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		Blackbox A (F, A_stream);
 		A_stream.reset ();

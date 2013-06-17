@@ -78,7 +78,7 @@ static bool testIdentity (Field &F, size_t n, int iterations = 1)
 	commentator().start ("Testing identity apply", "testIdentity", (unsigned int)iterations);
 
 	bool ret = true;
-	bool iter_passed = true;
+	// bool iter_passed = true;
 
 	Blackbox I(F, n, n);
 	// Matrix K(I);
@@ -100,7 +100,7 @@ static bool testIdentity (Field &F, size_t n, int iterations = 1)
 		snprintf (buf, 80, "Iteration %d", i);
 		commentator().start (buf);
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		for (size_t j = 0; j < n; j++)
 			r.random (v[(size_t)j]);

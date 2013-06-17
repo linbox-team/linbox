@@ -61,7 +61,7 @@ When dxa^2 <= denBs, 2 should be returned.
 	// |nx[i]/dxa - (i-kp)/k| <= 1/2dxa
 	BlasVector<Ring> n(Z,kp2);
 	Int d;
-	bool pass = true;
+	// bool pass = true;
 	bool claim;
 	int ret = 2;
 
@@ -70,18 +70,18 @@ When dxa^2 <= denBs, 2 should be returned.
 	int c;
 	// individual reconstructions
 	for (size_t i = 0; i < kp2 ; ++i) {
-	    bool loopclaim = true;
+	    // bool loopclaim = true;
 //std::cout << nx[i] << " " << dx << " " << denB << std::endl;
 		c = dyadicToRational(Z, n[i], d, nx[i], dx, denB);
 //std::cout << " c " << c << " n " << n[i] << " d " << d << " nx " << nx[i] << " dx " << dx << " denB " << denB << std::endl;
-		loopclaim = ((c > 0)  && (n[i]*k == ((int(i)-int(kp))*d)));
+		bool loopclaim = ((c > 0)  && (n[i]*k == ((int(i)-int(kp))*d)));
 		if ( c == 2 ) loopclaim = loopclaim && d*denB < dx;
 		if (c < ret) ret = c;
 		if (! loopclaim) ret = 0;
 //if (! claim) std::cout << "F " << pass << claim << ret << std::endl;
 		//if (! loopclaim)
 //std::cout << "F2 " << loopclaim << " i " << i << " nx/dx " << nx[i] << "/" << dx << ", n/d " << n[i] << "/" << d << std::endl;
-		pass = pass && loopclaim;
+		// pass = pass && loopclaim;
 	}
 //std::cout << "result, pass " << pass << " ret " << ret << std::endl;
 
@@ -93,7 +93,7 @@ When dxa^2 <= denBs, 2 should be returned.
 	if (claim) {
 		for (size_t i = 0; i < k ; ++i) claim = claim && (n[i] == (int(i)-int(kp)));
 	}
-	pass = pass && claim;
+	// pass = pass && claim;
 	if (!claim) {
 		commentator().report() << "first example fails" << std::endl;
 		commentator().report() << "data for first example" << std::endl;
@@ -108,7 +108,7 @@ When dxa^2 <= denBs, 2 should be returned.
 
 	if (c < ret) ret = c;
 	if (! claim) ret = 0;
-	pass = pass && claim;
+	// pass = pass && claim;
 //std::cout << "v " << pass << claim << ret << std::endl;
 #endif
 

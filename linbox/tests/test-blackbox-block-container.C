@@ -74,7 +74,7 @@ int main (int argc, char **argv)
 
 	commentator().start("block container test", "bbbc");
 	ostream& report = commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
-	report << "over Modular<double>" << endl;
+	report << "over Modular<double>" << std::endl;
 	typedef Modular<double> Field;
 	typedef BlasMatrix<Field> Block;
 	typedef BlasMatrix<Field> Blackbox;
@@ -112,7 +112,7 @@ int main (int argc, char **argv)
 #include "test-generic.h"
 
 using namespace LinBox;
-using namespace std;
+// using namespace std;
 
 template<class Blackbox>
 bool testContainer (const Blackbox& A, size_t r, size_t c);
@@ -143,7 +143,7 @@ int main (int argc, char **argv)
 
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	// ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	commentator().start("SparseMatrix test");
 	SparseMatrix<Field> A(F, n, n);
@@ -218,39 +218,39 @@ bool testContainer (const Blackbox& A, size_t r, size_t c) {
 			rand.random(V.refEntry(i,j));
 		}
 	MD.copy(AV, V);
-	report << endl << "A" << endl;
+	report << std::endl << "A" << std::endl;
 	A.write(report);
-	report << endl << "U" << endl;
+	report << std::endl << "U" << std::endl;
 	U.write(report);
-	report << endl << "V" << endl;
+	report << std::endl << "V" << std::endl;
 	V.write(report);
-	report << endl << "AV" << endl;
+	report << std::endl << "AV" << std::endl;
 	AV.write(report);
 	BlackboxBlockContainer<Field, Blackbox > blockseq(&A,A.field(),U,V);
 	MD.mul(UAV,U,AV);
 	typename BlackboxBlockContainer<Field, Blackbox >::const_iterator contiter(blockseq.begin());
-	report << endl << "container size is " << blockseq.size() << endl;
-	report << endl;
+	report << std::endl << "container size is " << blockseq.size() << std::endl;
+	report << std::endl;
 	bool pass1 = MD.areEqual(UAV, *contiter);
-	if (not pass1) report << "sequences differ at index 0" << endl;
-	else report << "sequences agree at index 0" << endl;
+	if (not pass1) report << "sequences differ at index 0" << std::endl;
+	else report << "sequences agree at index 0" << std::endl;
 	report << "My UA^0V";
-	UAV.write(report) << endl;
+	UAV.write(report) << std::endl;
 	report << "Container UA^0V";
-	(*contiter).write(report ) << endl << endl;
+	(*contiter).write(report ) << std::endl << std::endl;
 	for (size_t i=1; i<10; i++){
 		MD.leftMulin(A,AV);
 		MD.mul(UAV,U,AV);
 		++contiter;
 		pass1 = MD.areEqual(UAV, *contiter);
-		if (not pass1) report << "sequences differ at index " << i << endl;
-		else report << "sequences agree at index " << i << endl;
+		if (not pass1) report << "sequences differ at index " << i << std::endl;
+		else report << "sequences agree at index " << i << std::endl;
 		report << "My UA^" << i << "V ";
-		UAV.write(report) << endl;
-		report << "Container UA^" << i << "V "; 
-		(*contiter).write(report) << endl << endl; 
+		UAV.write(report) << std::endl;
+		report << "Container UA^" << i << "V ";
+		(*contiter).write(report) << std::endl << std::endl;
 		pass = pass and pass1;
-	} 
+	}
 	return pass;
 }
 
