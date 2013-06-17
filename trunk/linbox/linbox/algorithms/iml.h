@@ -36,8 +36,8 @@ namespace LinBox { namespace iml {
 
 #include "IML/row-echelon-transform.h"
 #include "IML/RNS.h"
-// #include "IML/p-adic-lift.h"
-// #include "IML/nullspace.h"
+#include "IML/p-adic-lift.h"
+#include "IML/nullspace.h"
 // #include "IML/reconstruct-solution.h"
 // #include "IML/non-singular-solve.h"
 // #include "IML/certified-solve.h"

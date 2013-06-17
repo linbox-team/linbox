@@ -89,13 +89,13 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 	Element tmp;
-	unsigned int r;
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 	EchelonFormDomain<Field> EFD(F);
 
 	for (int k=0;k<iterations; ++k) {
 
+	unsigned int r;
 		mycommentator().progress(k);
 		BlasMatrix<Field> A(F,m,n),S(F,m,n), L(F,m,m);
 

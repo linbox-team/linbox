@@ -61,7 +61,7 @@
 namespace LinBox { namespace iml {
 
 	template<class Ring, class Field>
-	bool
+	void
 	Nullspace<Ring,Field>::
 	justTry(  )
 	{
@@ -78,7 +78,7 @@ namespace LinBox { namespace iml {
 		// size_t r,s ;
 		{
 			RandomPrimeIter PrimeGen(19) ;
-			lement p = (Element) PrimeGen.random_between(15);
+			unsigned long p =  PrimeGen.random_between(15);
 			Field F(p);
 			typedef typename Field::Element Element;
 			// p = RandPrime(15, 19);
@@ -98,8 +98,8 @@ namespace LinBox { namespace iml {
 			// RowEchelonTransform(p, DA, n, m, 1, 1, 0, 0, P, rp, &d);
 			// XFREE(DA);
 			rank = rp[0];
-			size = m - r;
-			if ((size == 0) || (rank==0)) {
+			size_t s = m - rank;
+			if ((s == 0) || (rank==0)) {
 				mp_N.resize(0,0);
 			}
 #if 0
@@ -128,38 +128,41 @@ namespace LinBox { namespace iml {
 			else {		/* r>0 and s>0 */
 
 				// std::vector<size_t> Pt ;
-				revseq(Pt,r,P);
+				revseq(Pt,rank,P);
 				// Pt = revseq(r, n, P);
+				std::vector<size_t> rpt(m,0) ;
 				rp.resize(m); //! @bug why ?
-				revseq(rpt,r,rp);
+				revseq(rpt,rank,rp);
 				// rpt = revseq(r, m, rp);
 
-				BlasMatrix<Field> C(A.field(),r,r);
+				BlasMatrix<Field> C(A.field(),rank,rank);
 				// C = XCALLOC(long, r * r);
-				for (i = 0; i < r; i++)
-					for (j = 0; j < r; j++){
+				for (size_t i = 0; i < rank; i++)
+					for (size_t j = 0; j < rank; j++){
 						C.setEntry(i, j, A.getEntry(Pt[i], rpt[j]));
 						// C[i * r + j] = A[Pt[i] * m + rpt[j]];
 					}
 
 				// mp_B = XCALLOC(mpz_t, r * s);
 				//! @todo put in the previous loop ?
-				BlasMatrix<Ring> mp_B(R,r,s);
-				for (i = 0; i < r; i++)
-					for (j = 0; j < s; j++) {
-						mp_B.setEntry(i,j, A.getEntry(Pt[i], rpt[r+j]));
+				BlasMatrix<Ring> mp_B(R,rank,s);
+				for (size_t i = 0; i < rank; i++)
+					for (size_t j = 0; j < s; j++) {
+						mp_B.setEntry(i,j, A.getEntry(Pt[i], rpt[rank+j]));
 						// mpz_init_set_si(mp_B[i * s + j],
 						// A[Pt[i] * m + rpt[r + j]]);
 					}
 
 				// Integer mp_D;
 				// mpz_init(mp_D);
-				BlasMatrix<PID_integer> mp_N(R,s,s);
+				// BlasMatrix<PID_integer> mp_N(R,s,s);
+				// XXX not doing last m-s rows
+				mp_N.resize(s,s);
 				// mp_N = XCALLOC(mpz_t, m * s);
 				// for (i = 0; i < m * s; i++)
 				// mpz_init(mp_N[i]);
 
-				nonsingSolve(LinBox::Right, C, mp_B, mp_N, mp_D);
+				nonsingSolve(LinBoxTag::Right, C, mp_B, mp_N, mp_D);
 
 				Integer::negin(mp_D);
 
@@ -242,11 +245,11 @@ namespace LinBox { namespace iml {
 	getNullspace( int verified )
 	{
 		if (!komp)
-			getCompressed(verified);
+			getNullspaceCompressed(verified);
 		reconstruct();
 		bool ok = verify(verified);
 		while (!ok) {
-			getCompressed(verified);
+			getNullspaceCompressed(verified);
 			reconstruct();
 			ok = verify(verified);
 		}
@@ -275,7 +278,7 @@ namespace LinBox { namespace iml {
 		for (size_t i = rank; i >= 1; i--) {
 			//!@bug can skip some
 			FFLAS::fswap(R,size,mp_N.getWritePointer()+((i-1)*size),1,
-				     mp_N.getWritePointer()+((rp[i]-1)*size),1)
+				     mp_N.getWritePointer()+((rp[i]-1)*size),1);
 			// for (size_t j = 0; j < size; j++)
 			// mpz_swap(mp_N[(i - 1) * s + j],mp_N[(rp[i] - 1) * s + j]);
 		}

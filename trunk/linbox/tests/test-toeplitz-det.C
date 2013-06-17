@@ -81,9 +81,10 @@ int main(int argc, char* argv[])
 	NTL_zz_p::Element temp;
 	NTL_zz_pX::Element poly;
 	PF.init(poly,0);
-	size_t r,c;
 
 	for( int diff = 1 - ((int)n); diff <= ((int)n) - 1; ++diff ) {
+		size_t c;
+		size_t r ;
 		randit.random(temp);
 		PF.setCoeff(poly,(size_t)(diff + (int)n - 1), temp );
 		r = c = 0;

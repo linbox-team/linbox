@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 
     // start testing
 	commentator().start("Subvector test suite", "Subvector");
-    bool pass = true;
+    bool pass ;
 
     // call tests
     typedef LinBox::UnparametricField<int> Field;

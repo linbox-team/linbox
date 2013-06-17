@@ -25,6 +25,36 @@ namespace LinBox{ namespace iml{
  */
 
 	template<class Field>
+	class LiftStep {
+	private :
+		size_t _len ;
+		size_t _dim ; // # of lifting steps
+		size_t _row ;
+		size_t _col ;
+		std::vector<std::vector<Field> >  _dataC ;
+		std::vector<unsigned long> & _primes ;
+	public :
+		LiftStep(size_t l,size_t k, size_t m, size_t n, const std::vector<unsigned long> &primes) :
+			_len(l),_dim(k),_row(m),_col(n),_primes(primes)
+		{
+			typedef std::vector<BlasMatrix<Field > > MV ;
+			Field F(101);
+			const BlasMatrix<Field> MZ(F,m,n);
+			MV VMZ (_len,MZ);
+			for (size_t i = 0 ; i < _len ; ++i) {
+				Field Fi(_primes[i]);
+				VMZ[i].changeField(Fi);
+			}
+			_dataC.resize(_dim,(const MV) VMZ);
+		}
+		size_t rowdim() { return _row ;}
+		size_t coldim() { return _col ;}
+		size_t steps()  { return _dim ;}
+		size_t bdim()   { return _len ;}
+
+	} ;
+
+	template<class Field>
 	class pAdicLift {
 	public :
 		typedef typename Field::Element ModElement;
@@ -34,7 +64,7 @@ namespace LinBox{ namespace iml{
 		RNS<Field>                  _extbasis ;
 		BlasVector<NoField>      _liftbasisInv;
 		std::vector<BlasVector<Field> > _AInv ;
-		BlasVector<NoField>               ARNS;
+		std::vector<BlasVector<NoField> > ARNS;
 	public :
 		pAdicLift(RNS<Field> & liftbasis) :
 			_liftbasis(liftbasis)
@@ -49,8 +79,7 @@ namespace LinBox{ namespace iml{
 		void invBasis () ;
 
 		void iml_lift(LinBoxTag::Side s,
-			      std::vector<std::vector<BlasMatrix<Field> > > & C,
-			      const size_t k,
+			      LiftStep<Field> & C,
 			       BlasMatrix<PID_integer> & mp_r
 			     );
 

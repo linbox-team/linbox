@@ -251,9 +251,9 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 
 		M. resize (rdim, cdim);
 
-		int val;
 
 		if (format == "dense" ) {
+		int val;
 
 			for (int i = 0; i < rdim; ++ i)
 
@@ -539,7 +539,7 @@ void KratMat(DenseMatrix<PIR>& M, PIR& R, int q, istream& in)
 	for (int i = 0; i < M.rowdim(); ++ i)
 
 		for ( int j = 0; j < M.coldim(); ++ j) {
-			int e, val;
+			int /*  e,*/ val;
 			qread(val, pwrs, in);
 			R. init (M[i][j], val);
 		}

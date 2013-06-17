@@ -27,7 +27,9 @@ namespace LinBox { namespace iml {
 	 *
 	 */
 
+template<class FiniteField>
 	void
+	SolutionReconstruct<FiniteField>::
 	sumliftCoeff (const Integer             &mp_basisprod
 		      , const size_t             k
 		      , BlasVector<PID_integer> &C
@@ -46,7 +48,7 @@ namespace LinBox { namespace iml {
 		for (i = 1; i < t+1; i++)
 		{
 			// mpz_init(mp_pow[i]);
-			Integer::pow(mp_pow[i],mp_pow[i-1],2L);
+			Givaro::pow(mp_pow[i],mp_pow[i-1],2L);
 			// mpz_pow_ui(mp_pow[i], mp_pow[i-1], 2);
 		}
 		// mpz_init(mp_right);
@@ -117,14 +119,16 @@ namespace LinBox { namespace iml {
 	 *
 	 */
 
+template<class FiniteField>
 	void
+	SolutionReconstruct<FiniteField>::
 	sumCoeff_rec (size_t                      start
 		      , size_t                    len
 		      , BlasVector<PID_integer> & C
 		      , BlasVector<PID_integer> & mp_pow
 		      , size_t                    splflag
 		      , size_t                    savflag
-		      , size_t                  & idx,
+		      , size_t                  & idx
 		      , BlasVector<PID_integer> & mp_left
 		      , Integer                 & mp_right)
 	{
@@ -202,7 +206,9 @@ namespace LinBox { namespace iml {
 	 *
 	 */
 
+template<class FiniteField>
 	size_t
+	SolutionReconstruct<FiniteField>::
 	find2exp (const size_t len)
 	{
 		return std::floor(log2(len));
@@ -243,7 +249,9 @@ namespace LinBox { namespace iml {
 	 *
 	 */
 
+template<class FiniteField>
 	int
+	SolutionReconstruct<FiniteField>::
 	iratrecon (const Integer &mp_u
 		   , const Integer &mp_m
 		   , const Integer &mp_nb
@@ -265,10 +273,10 @@ namespace LinBox { namespace iml {
 		// mpz_init(mp_q);
 		// mpz_init(mp_t2);
 		// mpz_init(mp_t3);
-		while (Integer::absCompare(mp_v3, mp_nb) > 0)
+		while (absCompare(mp_v3, mp_nb) > 0)
 		{
-			Integer::divmod(mp_a,mp_t3,mp_u3,mp_v3);
-			linbox_check(a >=0 || r==0); // XXX otherwise divmod != mpz_tdiv_qr
+			Integer::divmod(mp_q,mp_t3,mp_u3,mp_v3);
+			// linbox_check(a >=0 || r==0); // XXX otherwise divmod != mpz_tdiv_qr
 			// mpz_tdiv_qr(mp_q, mp_t3, mp_u3, mp_v3);
 			Integer::mul(mp_t2,mp_q,mp_v2);
 			// mpz_mul(mp_t2, mp_q, mp_v2);
@@ -283,16 +291,16 @@ namespace LinBox { namespace iml {
 			mp_v3 = mp_t3;
 			// mpz_set(mp_v3, mp_t3);
 		}
-		if (Integer::absCompare(mp_v2, mp_db) > 0)
+		if (absCompare(mp_v2, mp_db) > 0)
 		{
 			// mpz_clear(mp_v2); mpz_clear(mp_v3); mpz_clear(mp_u2); mpz_clear(mp_q);
 			// mpz_clear(mp_t2); mpz_clear(mp_t3); mpz_clear(mp_u3);
 			return 0;
 		}
-		Integer::gcd(mp_u2,mp_v2,mp_v3);
+		gcd(mp_u2,mp_v2,mp_v3);
 		linbox_check(mp_u2>=0); // XXX otherwise, different
 		// mpz_gcd(mp_u2, mp_v2, mp_v3);
-		if (Integer::absCompare(mp_u2, 1UL) != 0)
+		if (absCompare(mp_u2, 1UL) != 0)
 		{
 			// mpz_clear(mp_v2); mpz_clear(mp_v3); mpz_clear(mp_u2); mpz_clear(mp_q);
 			// mpz_clear(mp_t2); mpz_clear(mp_t3); mpz_clear(mp_u3);
@@ -362,15 +370,13 @@ namespace LinBox { namespace iml {
 	 *
 	 */
 
+template<class FiniteField>
 	int
-	soluRecon (const enum SOLU_POS solupos
+	SolutionReconstruct<FiniteField>::
+	soluRecon (const LinBoxTag::Side solupos
 		   , const size_t              k
 		   , RNS<FiniteField>        & rns
-		   // , const size_t basislen,
-		   // const size_t n, const size_t m, const Integer mp_basisprod,
-		   // const FiniteField *basis, const FiniteField *cmbasis
-		   // , Double ***C
-		   , Lift<FiniteField>       & C
+		   , pAdicLift<FiniteField>  & C
 		   , Integer                 & mp_nb
 		   , Integer                 & mp_db
 		   , BlasVector<PID_integer> & mp_N
@@ -385,7 +391,7 @@ namespace LinBox { namespace iml {
 
 		// mpz_init(mp_sum);
 		// mpz_init(mp_m);
-		Integer::pow(mp_n,mp_basisprod,(unsigned long)k);
+		Givaro::pow(mp_m,rns.basisProd(),(unsigned long)k);
 		// mpz_pow_ui(mp_m, mp_basisprod, k);
 		BlasVector<PID_integer> mp_Dt(Z,len);
 		// mp_Dt = XMALLOC(Integer, len);
@@ -401,12 +407,12 @@ namespace LinBox { namespace iml {
 		BlasVector<PID_integer> C1(Z,rns.size());
 		// C1 = XMALLOC(Double, basislen);
 		for (i = 0; i < k; i++) {
-			for (j = 0; j < basislen; j++) {
+			for (j = 0; j < rns.size(); j++) {
 				C1[j] = C.getEntry(i,j,0);
 			}
-			ChineseRemainder(basislen, basis, cmbasis, C1, mp_C[i],LinBoxTag::Positive); //positive
+			rns.ChineseRemainder(C1, mp_C[i],LinBoxTag::Positive); //positive
 		}
-		sumliftCoeff(mp_basisprod, k, mp_C, mp_sum);
+		sumliftCoeff(rns.basisProd(), k, mp_C, mp_sum);
 		ri = iratrecon(mp_sum, mp_m, mp_nb, mp_db, mp_N[0], mp_Dt[0]);
 		if (ri == 0) {
 			// for (i = 0; i < len; i++) { mpz_clear(mp_Dt[i]); } { XFREE(mp_Dt); }
@@ -419,7 +425,9 @@ namespace LinBox { namespace iml {
 		// mpz_set(mp_D, mp_Dt[0]);
 
 		/* reconstruct mp_N[i], i = 1..n*m */
-		for (i = 1; i < n*m; i++) {
+		size_t n = C.rowdim();
+		size_t m = C.coldim();
+		for (i = 1; i < m * n ; i++) {
 			/* transform i to the corresponding index h in C when solupos==LeftSolu*/
 			{ s = (size_t)(i/n); t = i-s*n; h = t*m+s; }
 			for (j = 0; j < k; j++) {
@@ -518,7 +526,9 @@ namespace LinBox { namespace iml {
 	 *
 	 */
 
+template<class FiniteField>
 	size_t
+	SolutionReconstruct<FiniteField>::
 	findNumer (const Integer &mp_u
 		   , const Integer &mp_m
 		   , const Integer &mp_D
@@ -529,7 +539,7 @@ namespace LinBox { namespace iml {
 		// mpz_mul(mp_N, mp_u, mp_D);
 		Ingeger::modin(mp_N,mp_m);
 		// mpz_mod(mp_N, mp_N, mp_m);
-		if ( Integer::absCompare(mp_N,mp_nb)>0 ) {
+		if ( absCompare(mp_N,mp_nb)>0 ) {
 			return 0;
 		}
 		else {

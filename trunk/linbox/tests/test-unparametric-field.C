@@ -11,20 +11,20 @@
  * that we are using the same file naming conventions thoughout the library.
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -81,18 +81,17 @@ ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_D
 
 	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField field"))
 		pass = false;
-	// We're going to allow failed tests here. 
+	// We're going to allow failed tests here.
 	// UnparametricField is a tool for building fields and does not of itself produce a LinBox conforming field.
 	// However compilation serves some limited testing value and data is gleaned when the test is run with a report file argument.
 	//return pass ? 0 : -1;
-	return 0;
+	return !pass;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

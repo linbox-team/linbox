@@ -155,7 +155,7 @@ testLinearity (//const Field                             &F,
 	       LinBox::VectorStream<Vector>      &stream1,
 	       LinBox::VectorStream<Vector>      &stream2)
 {
-	bool ret = true, iter_passed;
+	bool ret = true;
 
 	size_t n = A.rowdim ();
 	size_t m = A.coldim ();
@@ -181,7 +181,7 @@ testLinearity (//const Field                             &F,
 	while (stream1 && stream2) {
 		LinBox::commentator().startIteration ((unsigned int) stream1.j ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream1.next (x);
 		stream2.next (y);
@@ -276,7 +276,6 @@ template <class BB>
 static bool
 testBlackboxNoRW(BB &A)
 {
-	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
 	typedef typename BB::Field Field;
 	typedef LinBox::BlasVector<Field> DenseVector;
 	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -288,6 +287,7 @@ testBlackboxNoRW(BB &A)
 
 	/* timing tests */
 	{
+		size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
 		DenseVector x(F,A.coldim()), y(F,A.rowdim());
 		for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], i);
 		for(size_t i = 0; i < A.rowdim(); ++i) F.init(y[i], i);

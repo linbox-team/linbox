@@ -402,6 +402,7 @@ void generate_precRatMat(string& filename, RMatrix& M, DVector& den, Integer& de
 		Integer ten=1;
 		if (strchr(xstr, '/') != NULL) {
 			//cout << "xstr " << xstr << "\n";
+			//! @bug non reentrant strtok
 			strcpy(numstr, strtok(xstr, "/"));
 			char tenstr[500];
 			strcpy(tenstr, strtok(NULL, "/"));

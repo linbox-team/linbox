@@ -84,7 +84,6 @@ static bool testIdentitySolve (const Field          &F,
 	commentator().start (str.str ().c_str (), "testIdentitySolve", stream.m ());
 
 	bool ret = true;
-	bool iter_passed = true;
 
 	VectorDomain<Field> VD (F);
 
@@ -103,7 +102,7 @@ static bool testIdentitySolve (const Field          &F,
 	while (stream) {
 		commentator().startIteration ((unsigned)stream.j ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream.next (v);
 
@@ -182,7 +181,6 @@ static bool testNonsingularSolve (const Field          &F,
 	VectorDomain<Field> VD (F);
 
 	bool ret = true;
-	bool iter_passed;
 
 	size_t n= stream1.n ();
 	Vector d(F,n), b(F,n), x(F,n), y(F,n);
@@ -199,7 +197,7 @@ static bool testNonsingularSolve (const Field          &F,
 
 		ActivityState state = commentator().saveActivityState ();
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream1.next (d);
 		stream2.next (b);
@@ -296,7 +294,6 @@ static bool testSingularConsistentSolve (const Field          &F,
 	VectorDomain<Field> VD (F);
 
 	bool ret = true;
-	bool iter_passed;
 
 	Vector d1, b1, d, b, x, y;
 
@@ -315,7 +312,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 
 		ActivityState state = commentator().saveActivityState ();
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream1.next (d1);
 		stream2.next (b1);
@@ -642,7 +639,6 @@ static bool testRandomSolve (const Field                  &F,
 	commentator().start (str.str ().c_str (), "testRandomSolve", b_stream.size ());
 
 	bool ret = true;
-	bool iter_passed = true;
 
 	VectorDomain<Field> VD (F);
 	MatrixDomain<Field> MD (F);
@@ -674,7 +670,7 @@ static bool testRandomSolve (const Field                  &F,
 	while (b_stream) {
 		commentator().startIteration ((unsigned)b_stream.pos ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		b_stream >> b;
 

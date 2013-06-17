@@ -250,7 +250,6 @@ bool testRandomMinpoly (Field                 &F,
         commentator().start ("Testing sparse random minpoly", "testRandomMinpoly", (unsigned int)iterations);
 
 	bool ret = true;
-	bool iter_passed;
 
 	VectorDomain<Field> VD (F);
 
@@ -262,7 +261,7 @@ bool testRandomMinpoly (Field                 &F,
 	for (int i = 0; i < iterations; i++) {
 		commentator().startIteration ((unsigned int)i);
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		A_stream.reset ();
 		Blackbox A (F, A_stream);

@@ -57,7 +57,6 @@ bool testRandom(const Ring& R,
 	commentator().start (str.str ().c_str (), "testRandom");//, stream1.m ());
 
 	bool ret = true;
-	bool iter_passed = true;
 
 	VectorDomain<Ring> VD (R);
 
@@ -76,7 +75,7 @@ bool testRandom(const Ring& R,
 
 		std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream1.next (d);
 

@@ -72,7 +72,7 @@ struct  cra_det_task {
 		try {
 			cra_det(det_A, sparseMatrix, RingCategories::IntegerTag(), Method::Hybrid() );
 		}
-		catch ( LinBox::LinboxError err ) {
+		catch ( LinBox::LinboxError & err ) {
 			std::cerr << err << std::endl;
 		}
 		cout << "Determinant is ";

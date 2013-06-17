@@ -20,30 +20,63 @@
  *
  */
 
-class reconsolu {
-
-void sumliftCoeff(const mpz_t mp_basisprod, const long k, mpz_t* C, \
-		  mpz_t mp_sum);
-
-void sumCoeff_rec(long start, long len, mpz_t *C, mpz_t *mp_pow, long splflag,\
-		  long savflag, long *idx, mpz_t *mp_left, mpz_t mp_right);
-
-long find2exp(const long len);
-
-long iratrecon(const mpz_t mp_u, const mpz_t mp_m, const mpz_t mp_nb, \
-	       const mpz_t mp_db, mpz_t mp_N, mpz_t mp_D);
-
-long soluRecon(const enum SOLU_POS solupos, const long k, const long basislen,\
-	       const long n, const long m, const mpz_t mp_basisprod, \
-	       const FiniteField *basis, const FiniteField *cmbasis, \
-	       Double ***C, mpz_t mp_nb, mpz_t mp_db, mpz_t *mp_N, mpz_t mp_D);
-
-long findNumer(const mpz_t mp_u, const mpz_t mp_m, const mpz_t mp_D, \
-	       const mpz_t mp_nb, mpz_t mp_N);
+namespace LinBox { namespace iml {
+template<class FiniteField>
+class SolutionReconstruct {
 
 
+public:
+	void
+	sumliftCoeff (const Integer             &mp_basisprod
+		      , const size_t             k
+		      , BlasVector<PID_integer> &C
+		      , Integer                 &mp_sum);
+
+	void
+	sumCoeff_rec (size_t                      start
+		      , size_t                    len
+		      , BlasVector<PID_integer> & C
+		      , BlasVector<PID_integer> & mp_pow
+		      , size_t                    splflag
+		      , size_t                    savflag
+		      , size_t                  & idx
+		      , BlasVector<PID_integer> & mp_left
+		      , Integer                 & mp_right);
+
+	size_t
+	find2exp (const size_t len);
+
+	int
+	iratrecon (const Integer &mp_u
+		   , const Integer &mp_m
+		   , const Integer &mp_nb
+		   , const Integer &mp_db
+		   , Integer &mp_N
+		   , Integer &mp_D);
+
+	int
+	soluRecon (const LinBoxTag::Side solupos
+		   , const size_t              k
+		   , RNS<FiniteField>        & rns
+		   , pAdicLift<FiniteField>  & C
+		   , Integer                 & mp_nb
+		   , Integer                 & mp_db
+		   , BlasVector<PID_integer> & mp_N
+		   , Integer                 & mp_D);
+
+	size_t
+	findNumer (const Integer &mp_u
+		   , const Integer &mp_m
+		   , const Integer &mp_D
+		   , const Integer &mp_nb
+		   , Integer &mp_N);
 
 }; // reconsolu
+
+} // iml
+} // LinBox
+
+#include "reconstruct-solution.inl"
 
 #endif // __LINBOX_algorithm_iml_reconstruct_solution_H
 

@@ -98,20 +98,20 @@ namespace LinBox
 		Field _field;
 		size_t _n;
 		size_t _m;
-		vector<int> rowOcc;
-		//vector<Element> rowGcd;
-		vector<int> colOcc;
-		//vector<Element> colGcd;
+		std::vector<int> rowOcc;
+		//std::vector<Element> rowGcd;
+		std::vector<int> colOcc;
+		//std::vector<Element> colGcd;
 
-		queue<size_t> Q; //change to priority queue?
-		vector<GridElement<Element>*> A; 	//vector of row heads
-		vector<GridElement<Element>*> AT;	//vector of column heads
+		std::queue<size_t> Q; //change to priority queue?
+		std::vector<GridElement<Element>*> A; 	//std::vector of row heads
+		std::vector<GridElement<Element>*> AT;	//std::vector of column heads
 
 		/*
 		 * Creates Grid from file using read procedure
 		 * file is sorted in sms format
 		 */
-		Grid (Field F, istream& in, vector<int>& mR, vector<int>& mC) :
+		Grid (Field F, std::istream& in, std::vector<int>& mR, std::vector<int>& mC) :
 			_field(F)
 		{
 			read(F, in, mR, mC);
@@ -124,7 +124,7 @@ namespace LinBox
 		 * sets row/col Occ and Gcd
 		 * file is sorted in sms format
 		 */
-		void read(Field F, istream& in, vector<int>& mR, vector<int>& mC)
+		void read(Field F, std::istream& in, std::vector<int>& mR, std::vector<int>& mC)
 		{
 			in >> _m >> _n;
 			/* !!! */
@@ -143,7 +143,7 @@ namespace LinBox
 			char c;
 			do in >> c; while (isspace (c));
 
-			vector<GridElement<Element>*> ends(_n, NULL);
+			std::vector<GridElement<Element>*> ends(_n, NULL);
 
 			if (c == 'M') {
 				size_t i, i_prev, j, j_prev;
@@ -282,7 +282,7 @@ namespace LinBox
 		 * returns precomputed rank
 		 */
 
-		int reduce(int& rank, int S, vector<int>& mR, vector<int>& mC, ostream& os)
+		int reduce(int& rank, int S, std::vector<int>& mR, std::vector<int>& mC, std::ostream& os)
 		{
 			std::cout << "rank at begin reduce " << rank << "\n" << std::flush;
 			while (!Q.empty()) {
@@ -432,29 +432,29 @@ namespace LinBox
 						//std::cout << "RowGcd=" << rowGcd[i] << "\n" << std::flush;
 						GridElement<Element>* r_p = A[i];
 						int min_col = _m+1;
-						Element x1;
+						Element xx1;
 						int j=-1;
-						vector<pair< size_t, GridElement<Element>*> > j_pts ;
-						vector<pair< Element, GridElement<Element>*> > jnext_pts ;
+						std::vector<std::pair< size_t, GridElement<Element>*> > j_pts ;
+						std::vector<std::pair< Element, GridElement<Element>*> > jnext_pts ;
 						while (r_p != NULL) {
 							if ((colOcc[r_p->getJ()] < _m+1) && (colOcc[r_p->getJ()] < min_col)) {
 								if ((abs(r_p->getX()) == 1/*rowGcd[i]*/) && (abs(r_p->getX())==1/*colGcd[r_p->getJ()]*/)) {
 									if (j != -1) {
-										j_pts.push_back(pair<size_t, GridElement<Element>*>  (j, NULL) );
-										jnext_pts.push_back(pair<Element, GridElement<Element>*>  (x1, AT[j]));
+										j_pts.push_back(std::pair<size_t, GridElement<Element>*>  (j, NULL) );
+										jnext_pts.push_back(std::pair<Element, GridElement<Element>*>  (xx1, AT[j]));
 									}
 									min_col = colOcc[r_p->getJ()];
-									_field.init(x1, r_p->getX());
+									_field.init(xx1, r_p->getX());
 									j = r_p->getJ();
 								}
 								else {
-									j_pts.push_back( pair<size_t, GridElement<Element>*>  (r_p->getJ(), NULL));
-									jnext_pts.push_back( pair<Element, GridElement<Element>*>  (r_p->getX(), AT[r_p->getJ()]));
+									j_pts.push_back( std::pair<size_t, GridElement<Element>*>  (r_p->getJ(), NULL));
+									jnext_pts.push_back( std::pair<Element, GridElement<Element>*>  (r_p->getX(), AT[r_p->getJ()]));
 								}
 							}
 							else {
-								j_pts.push_back(pair<size_t, GridElement<Element>*>  (r_p->getJ(), NULL));
-								jnext_pts.push_back(pair<Element, GridElement<Element>*>  (r_p->getX(), AT[r_p->getJ()]));
+								j_pts.push_back(std::pair<size_t, GridElement<Element>*>  (r_p->getJ(), NULL));
+								jnext_pts.push_back(std::pair<Element, GridElement<Element>*>  (r_p->getX(), AT[r_p->getJ()]));
 							}
 
 							r_p = r_p->next;
@@ -466,8 +466,8 @@ namespace LinBox
 							++i; continue;
 						}
 
-						if ((abs(x1) == 1/*rowGcd[i]*/) && (abs(x1)==1/*colGcd[j]*/)) {
-							if (abs(x1) > 1) std::cout << "adds " << x1 << "to the diagonal\n"<<std::flush;
+						if ((abs(xx1) == 1/*rowGcd[i]*/) && (abs(xx1)==1/*colGcd[j]*/)) {
+							if (abs(xx1) > 1) std::cout << "adds " << xx1 << "to the diagonal\n"<<std::flush;
 							//std::cout << "Eliminating row "<< i+1 << " by column "<< j+1 << "\n";
 							//std::cout << "Element x" << x << "\n" << std::flush;
 
@@ -478,11 +478,11 @@ namespace LinBox
 							GridElement<Element>* p1=AT[j];
 
 							while (p1 != NULL) {
-								typename vector<pair< size_t, GridElement<Element>*> >::iterator p2 = j_pts.begin();
-								typename vector<pair< Element, GridElement<Element>*> >::iterator p2next = jnext_pts.begin();
+								typename std::vector<std::pair< size_t, GridElement<Element>*> >::iterator p2 = j_pts.begin();
+								typename std::vector<std::pair< Element, GridElement<Element>*> >::iterator p2next = jnext_pts.begin();
 								for (; p2 != j_pts.end(); ++p2, ++p2next) {
 									//std::cout << "eliminating column " << p2->first << "\n" << std::flush;
-									Element x; _field.init(x, -(p2next->first)/x1);
+									Element x; _field.init(x, -(p2next->first)/xx1);
 
 									while (p2next->second != NULL) {
 										if (p2next->second->getI() >= p1->getI()) break;
@@ -540,11 +540,11 @@ namespace LinBox
 			return rank;
 		}
 
-		void write (ostream& out)
+		void write (std::ostream& out)
 		{
 			size_t Omega =0;
 			out << _n << " " << _m << " M\n";
-			vector<int>::iterator occ_iter = colOcc.begin();
+			std::vector<int>::iterator occ_iter = colOcc.begin();
 			int j =0;
 			for (;occ_iter != colOcc.end(); ++occ_iter,++j) {
 				if (*occ_iter > 0) {
@@ -574,7 +574,7 @@ namespace LinBox
 		~Grid()
 		{
 
-			vector<int>::iterator occ_iter = colOcc.begin();
+			std::vector<int>::iterator occ_iter = colOcc.begin();
 			int j =0;
 			for (;occ_iter != colOcc.end(); ++occ_iter,++j) {
 				if (*occ_iter > 0) {

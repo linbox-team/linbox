@@ -78,7 +78,7 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 	commentator().start ("Testing identity apply", "testIdentityApply", stream.m ());
 
 	bool ret = true;
-	bool iter_passed = true;
+	// bool iter_passed = true;
 
 	VectorDomain<Field> VD (F);
 	Vector d(F);
@@ -100,7 +100,7 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 	while (stream) {
 		commentator().startIteration ((unsigned)i);
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream.next (v);
 

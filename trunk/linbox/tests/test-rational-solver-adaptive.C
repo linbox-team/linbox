@@ -51,7 +51,7 @@ bool testRandomSolve (const Ring& R,
 {
 
 
-	std::ostringstream str;
+	// std::ostringstream str;
 
 
 
@@ -59,7 +59,6 @@ bool testRandomSolve (const Ring& R,
 
 	bool ret = true;
 
-        bool iter_passed = true;
 
 	VectorDomain<Ring> VD (R);
 
@@ -78,7 +77,7 @@ bool testRandomSolve (const Ring& R,
 
                 //ActivityState state = commentator().saveActivityState ();
 
-                iter_passed = true;
+                bool iter_passed = true;
 
 		bool zeroEntry;
 		do {

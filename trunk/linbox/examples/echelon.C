@@ -64,24 +64,28 @@ int main (int argc, char **argv)
 	BlasMatrix<Field> G(A);
 	size_t * P = new size_t[G.coldim()];
 	size_t * Q = new size_t[G.rowdim()];
-	size_t r = (size_t)FFPACK::ReducedRowEchelonForm (F, G.rowdim(), G.coldim(), G.getWritePointer(), G.coldim(), P, Q,false);
+	/*  size_t r = (size_t)*/
+	FFPACK::ReducedRowEchelonForm (F, G.rowdim(), G.coldim(), G.getWritePointer(), G.coldim(), P, Q,false);
 
 	if (G.coldim() <20)
 		G.write(cerr<<"FFPACK::Echelon = "<<endl)<<endl;
+
+	delete[] P ;
+	delete[] Q ;
 
 #endif
 
 	if (E.coldim() <20)
 		E.write(cerr<<"LinBox::Echelon = "<<endl)<<endl;
 
+
 	return 0;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

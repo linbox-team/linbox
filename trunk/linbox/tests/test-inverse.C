@@ -75,7 +75,6 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 	commentator().start ("Testing identity inverse", "testIdentityInverse", stream.m ());
 
 	bool ret = true;
-	bool iter_passed = true;
 
 	Vector d(F);
 	VectorDomain<Field> VD (F);
@@ -98,7 +97,7 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 	while (stream) {
 		commentator().startIteration ((unsigned)stream.j ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream.next (v);
 
@@ -151,7 +150,6 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 	commentator().start ("Testing Hilbert inverse", "testHilbertInverse", stream.m ());
 
 	bool ret = true;
-	bool iter_passed;
 
 	VectorDomain<Field> VD (F);
 
@@ -167,7 +165,7 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 	while (stream) {
 		commentator().startIteration (stream.j ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream.next (v);
 
@@ -228,7 +226,6 @@ static bool testVandermondeInverse (const Field           &F,
 	commentator().start ("Testing Vandermonde inverse", "testVandermondeInverse", x_stream.m ());
 
 	bool ret = true;
-	bool inner_iter_passed;
 
 	VectorDomain<Field> VD (F);
 	size_t j, k;
@@ -268,6 +265,8 @@ static bool testVandermondeInverse (const Field           &F,
 		Inverse<Blackbox> VT (&V);
 
 		v_stream.reset ();
+
+		bool inner_iter_passed;
 
 		while (v_stream) {
 			inner_iter_passed = true;

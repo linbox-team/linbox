@@ -71,7 +71,6 @@ static bool testRandomApply (Field                                       &F,
 	commentator().start ("Testing random apply", "testRandomApply", iterations);
 
 	bool ret = true;
-	bool iter_passed;
 
 	BlasVector<Field>  v, w1(n), w2(n);
 
@@ -89,7 +88,7 @@ static bool testRandomApply (Field                                       &F,
 	for (i = 0; i < iterations; i++) {
 		commentator().startIteration (i);
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		for (j = 0; j < 9; j++) {
 			for (k = 0; k < n; k++) {
