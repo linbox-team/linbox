@@ -526,7 +526,7 @@ namespace LinBox
 	template<class _UnsignedInt>
 	void MatrixPermutation<_UnsignedInt>::Invert()
 	{
-		Transpose() ;
+		this->Transpose() ;
 	}
 
 	template<class _UnsignedInt>

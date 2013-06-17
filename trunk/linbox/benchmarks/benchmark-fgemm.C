@@ -89,7 +89,6 @@ void launch_bench_square(Field & F // const problem
 	index_t l = 0 ;
 	Timer fgemm_sq_tim ;
 	Timer chrono ;
-	double mflops ;
 	typedef typename Field::Element  Element;
 	typedef typename Field::RandIter Randiter ;
 	Randiter R(F) ;
@@ -97,6 +96,7 @@ void launch_bench_square(Field & F // const problem
 	LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
 	// index_t repet = 3 ;
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
+	double mflops ;
 		showAdvanceLinear(i,min,max);
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
 		LinBox::BlasMatrix<Field> A (F,ii,ii);
@@ -157,7 +157,6 @@ void launch_bench_blas(Field & F
 	index_t l = 0 ;
 	Timer fgemm_blas_tim ;
 	Timer chrono ;
-	double mflops ;
 	typedef typename Field::Element  Element ;
 	typedef typename Field::RandIter Randiter;
 	Randiter R(F) ;
@@ -172,6 +171,7 @@ void launch_bench_blas(Field & F
 	// FloatingDomain G ;
 
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
+	double mflops ;
 		showAdvanceLinear(i,min,max);
 
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...

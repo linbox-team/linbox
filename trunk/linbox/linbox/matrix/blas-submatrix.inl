@@ -948,8 +948,8 @@ namespace LinBox
 
 
 		Iterator p;
-		int m,n;
-		char c;
+		int m=0,n=0;
+		char c='\0';
 		file>>m>>n>>c;
 		// std::cout << m << 'x' << n << ':' << c << std::endl;
 
@@ -966,7 +966,7 @@ namespace LinBox
 
 		}
 		else { // sparse file format - needs fixing
-			int i, j;
+			int i=0, j=0;
 			while (true)
 			{
 				file >> i >> j;

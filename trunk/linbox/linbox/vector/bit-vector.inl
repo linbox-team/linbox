@@ -144,7 +144,7 @@ namespace LinBox
 
 	inline std::istream &operator >> (std::istream &is, BitVector::reference &a)
 	{
-		bool v;
+		bool v = true;
 		is >> v;
 		a = v;
 		return is;

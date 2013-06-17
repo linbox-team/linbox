@@ -177,7 +177,7 @@ namespace LinBox
 
 		inline std::istream &read (std::istream &is)
 		{
-			int prime;
+			int prime = 0;
 			is >> prime;
 #ifdef DEBUG
 			if(prime <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");

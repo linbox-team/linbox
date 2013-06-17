@@ -312,7 +312,6 @@ static bool testSingularConsistentSolve (const Field          &F,
 
 		ActivityState state = commentator().saveActivityState ();
 
-		bool iter_passed = true;
 
 		stream1.next (d1);
 		stream2.next (b1);
@@ -332,6 +331,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 		Blackbox D (F, d);
 
 		try {
+			bool iter_passed = true;
 			solve (D, x, b, F, traits);
 
 			report << "System solution:  ";

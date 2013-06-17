@@ -87,7 +87,7 @@ namespace LinBox
 										      // , const Field &F
 										      , char *buf)
 	{
-		size_t i, j;
+		size_t i = 0, j = 0 ;
 
 		std::istringstream str (buf);
 		str >> A._m >> A._n;

@@ -1074,7 +1074,7 @@ namespace LinBox
 
 		Row* operator-> ()
 		{
-			return &_row;
+			return &(this->_row);
 		}
 
 		Row& operator* ()
@@ -1237,7 +1237,7 @@ namespace LinBox
 
 		Col* operator-> ()
 		{
-			return &_col;
+			return &(this->_col);
 		}
 
 		Col& operator* ()

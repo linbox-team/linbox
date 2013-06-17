@@ -172,7 +172,7 @@ namespace LinBox
 
 		inline std::istream &read (std::istream &is)
 		{
-			int prime;
+			int prime = 0;
 			is >> prime;
 			modulus = (Element) prime;
 			modulusinv = 1 /((double) modulus );
