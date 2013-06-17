@@ -266,9 +266,9 @@ static bool testVandermondeInverse (const Field           &F,
 
 		v_stream.reset ();
 
-		bool inner_iter_passed;
 
 		while (v_stream) {
+			bool inner_iter_passed;
 			inner_iter_passed = true;
 
 			/* Random vector of evaluation results */
@@ -334,7 +334,6 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 	VectorDomain<Field> VD (F);
 
 	bool ret = true;
-	bool iter_passed;
 
 	size_t j;
 
@@ -349,7 +348,7 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 	while (stream) {
 		commentator().startIteration ((unsigned)stream.j ());
 
-		iter_passed = true;
+		bool iter_passed = true;
 
 		stream.next (d);
 

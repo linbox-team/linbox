@@ -193,7 +193,7 @@ namespace LinBox
 
 	std::istream& read(std::istream& is, Element& x) const
 	{
-		long tmp;
+		long tmp = 0;
 		is>>tmp;
 		x=NTL::to_ZZ_pE(tmp);
 		return is;

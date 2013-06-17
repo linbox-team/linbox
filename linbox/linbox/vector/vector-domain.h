@@ -1076,7 +1076,7 @@ namespace LinBox
 			add (u, w, v);
 			copy (res, u);
 
-			return u;
+			return res;
 		}
 
 		template <class Vector1, class Vector2>
@@ -1166,7 +1166,7 @@ namespace LinBox
 			sub (u, w, v);
 			copy (res, u);
 
-			return u;
+			return res;
 		}
 
 		template <class Vector1, class Vector2>

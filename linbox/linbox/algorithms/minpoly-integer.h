@@ -303,7 +303,7 @@ namespace LinBox
 		}
 		cra. result(y);
 		//std::cout << "Number of primes needed: " << cra. steps() << std::endl;
-		delete FA; delete X; delete Perm;
+		delete[] FA; delete[] X; delete[] Perm;
 
 		return y;
 	}
@@ -338,7 +338,7 @@ namespace LinBox
 			if (degree < Poly. size() - 1)
 				degree = Poly. size() -1;
 		}
-		delete FA; delete X; delete Perm;
+		delete[] FA; delete[] X; delete[] Perm;
 
 		return degree;
 	}

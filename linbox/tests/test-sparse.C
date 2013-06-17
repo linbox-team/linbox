@@ -150,7 +150,6 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 	commentator().start (str.str ().c_str (), "testNilpotentApply", stream.m ());
 
 	bool ret = true;
-	bool even;
 
 	StandardBasisStream<Field, Row> f1 (F, stream.n ());
 	Row tmp;
@@ -174,7 +173,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 		commentator().startIteration ((unsigned)stream.j ());
 
 		bool iter_passed = true;
-		even = false;
+		bool even = false;
 
 		stream.next (v);
 

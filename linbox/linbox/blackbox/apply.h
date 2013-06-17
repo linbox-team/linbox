@@ -207,8 +207,8 @@ namespace LinBox
 				    (int) maxword,(int) m,(int) n, 1,
 				    xdbl,(int) n, At_dbl, (int) m, 0, ydbl, (int) m);
 
-			delete At_dbl;
-			delete xdbl;
+			delete[] At_dbl;
+			delete[] xdbl;
 
 			size_t rclen=maxword*4+5;
 			unsigned char* combined1 = new unsigned char[m*rclen];

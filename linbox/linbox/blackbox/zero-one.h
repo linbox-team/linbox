@@ -168,7 +168,7 @@ namespace LinBox
 		 */
 		std::istream &read (std::istream &is)
 		{
-			size_t i, j, k, m, n;
+			size_t i=0, j=0, k=0, m=0, n=0;
 
 			char buf[80];
 			buf[0]=0;
@@ -178,7 +178,7 @@ namespace LinBox
 			_rows = m;
 			_cols = n;
 			std::vector<size_t> rowP, colP;
-			size_t x;
+			size_t x=0;
 			while (is >> i >> j >> x) {
 				if (i == 0 || i == (size_t) -1) break;
 				if (x == 1UL) {

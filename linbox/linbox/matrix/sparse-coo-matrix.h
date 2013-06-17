@@ -665,7 +665,7 @@ namespace LinBox
 		std::istream & readSpecialized(std::istream &is,
 					       SparseFileFormat::CSR)
 		{
-			size_t nnz;
+			size_t nnz = 0 ;
 			bool sms = true ;
 			std::string firstLine ;
 			std::string x ;
@@ -728,7 +728,7 @@ namespace LinBox
 			else { /*  SMF */
 				size_t lig = 0 ;
 				int n ;
-				size_t loc ;
+				size_t loc = 0;
 				while (is>>n) {
 					if (n == 0)
 						break;
