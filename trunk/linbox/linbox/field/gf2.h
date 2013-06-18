@@ -119,7 +119,7 @@ namespace LinBox
 		 * @param F constant reference to Modular object
 		 * @return reference to Modular object for self
 		 */
-		const GF2 &operator = (const GF2 &F)
+		GF2 &operator = (const GF2 &F)
 		{
 			return *this;
 		}
