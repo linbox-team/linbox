@@ -117,14 +117,16 @@ namespace LinBox
 	template <class Field>
 	void Hankel<Field>::print(std::ostream& os) const
 	{
-		register size_t i, N, j;
+		register size_t N;
 
 		os<< this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl;
 		N = (this->rowDim-1)<<1;
 
 		if ( N < 20 ) {            // Print small matrices in dense format
 			Element tmp;
+			size_t i;
 			for (i = N ; i >= this->colDim-1; i--) {
+				size_t j;
 				for ( j = 0; j < this->colDim ; j++)
 					os << " " << this->P.getCoeff(tmp, this->pdata,i-j) ;
 				os << std::endl;
@@ -294,11 +296,10 @@ namespace LinBox
 
 #endif //__LINBOX_bb_ntl_hankel_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

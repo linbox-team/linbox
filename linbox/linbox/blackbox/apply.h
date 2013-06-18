@@ -330,7 +330,7 @@ namespace LinBox
 
 		BlasMatrixApplyDomain(const Domain& D, const IMatrix &Mat) :
 			_domain(D), _matM(Mat), _MD(D), _m(Mat.rowdim()), _n(Mat.coldim())
-			,use_chunks(false),use_neg(false),chunk_size(0),chunks(NULL),vchunks(NULL)
+			,use_chunks(false),use_neg(false),chunk_size(0),chunks(NULL),vchunks(NULL),num_chunks(0)
 		{
 			_switcher= Classic;_rns=NULL;
 		}
@@ -488,7 +488,7 @@ namespace LinBox
 			case CRT:
 				if (use_neg){
 					maxValue= maxValue<<1;
-					maxBitSize+=1;
+					// maxBitSize+=1;
 				}
 				integer a_bound= maxValue*_n+1;
 				integer b_bound= sqrt(integer("9007199254740992")/_n);	std::cout<<"max prime: "<<b_bound<<" max rns: "<<a_bound<<std::endl;

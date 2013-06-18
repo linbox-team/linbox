@@ -88,7 +88,7 @@ namespace LinBox
 			for (typename std::vector<typename Field::Element>::iterator i = p.begin(); i != p.end(); ++i)
 				r.random(*i); // we'll pretend p[n] == 1, ok?
 
-			const size_t indexbase = 1;
+			// const size_t indexbase = 1;
 			for (size_t i = 1; i < n; ++i)
 				this->setEntry(i, i-1, F.one);
 			for (size_t i = 0; i < n; ++i)
@@ -118,11 +118,10 @@ namespace LinBox
 
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

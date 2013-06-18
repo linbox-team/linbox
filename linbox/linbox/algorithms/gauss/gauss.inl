@@ -315,13 +315,14 @@ namespace LinBox
 
 			if (s) {
 				unsigned long l;
-				long sl;
 				// Row permutation for the sparsest row
-				for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l)
+				for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l) {
+				long sl;
 					if (((sl = (long)LigneA[(size_t)l].size ()) < s) && (sl)) {
 						s = sl;
 						p = (long)l;
 					}
+				}
 
 				if (p != k) {
 					field().negin(determinant);
@@ -457,12 +458,13 @@ namespace LinBox
 
 			if (s) {
 				unsigned long l;
-				long sl;
 				// Row permutation for the sparsest row
-				for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l)
+				for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l) {
+				long sl;
 					if (((sl =(long) LigneA[(size_t)l].size ()) < s) && (sl)) {
 						s = sl;
 						p = (long)l;
+					}
 					}
 
 				if (p != k) {

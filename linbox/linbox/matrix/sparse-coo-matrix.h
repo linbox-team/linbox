@@ -789,7 +789,7 @@ namespace LinBox
 			}
 			Element z ;
 			if (sms) { /*  SMS */
-				size_t lig = 0 ;
+				// size_t lig = 0 ;
 				nnz = 0 ;
 				int m,n ;
 				while (is>>m >> n) {

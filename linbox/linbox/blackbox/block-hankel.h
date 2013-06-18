@@ -143,7 +143,7 @@ namespace LinBox
 		for (size_t i=1;i<k;++i){
 			F.subin(a, one);
 			L.push_front(zero);
-			typename std::list<typename Field::Element>::iterator it_next = L.begin();it_next++;
+			typename std::list<typename Field::Element>::iterator it_next = L.begin();++it_next;
 			typename std::list<typename Field::Element>::iterator it = L.begin();
 			for (;it_next != L.end();++it, ++it_next)
 				F.axpyin(*it, a, *it_next);

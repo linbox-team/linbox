@@ -50,7 +50,7 @@ namespace LinBox
 		// Assume U has form (U1, X | 0, 0), where U1 is invertible.
 		// Discover the rank of U so as to use the bottom of x to seed the solution.
 		for(row = U.rowEnd()-1; row >= U.rowBegin() && row->size() == 0; --row);
-		row++; // now points to first zero row of U.
+		++row; // now points to first zero row of U.
 		res += row - U.rowBegin();
 		vec += row - U.rowBegin();
 

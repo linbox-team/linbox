@@ -74,12 +74,16 @@ namespace LinBox
 		//! @bug this should not be allowed (unknown field)
 		ScalarMatrix ()	:
 			n_(0)
+			,field_(NULL)
 		{}
 
 		/** Constructor of readable scalar matrix.
 		 * @param F	field in which to do arithmetic.
 		 */
-		ScalarMatrix (const Field &F) : field_(&F) {}
+		ScalarMatrix (const Field &F) :
+			n_(0),
+			field_(&F)
+		{}
 
 #if 0
 		/** Scalar matrix Constructor from an element.

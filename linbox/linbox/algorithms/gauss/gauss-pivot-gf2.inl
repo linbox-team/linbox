@@ -53,9 +53,10 @@ namespace LinBox
 		if (nj > 0) {
 			indpermut = (long)lignepivot.front();
 
-			long ds = (long) --columns[(size_t)indpermut], dl, p = 0;
+			long ds = (long) --columns[(size_t)indpermut], p = 0;
 
 			for (long j = 1; j < nj; ++j) {
+				long dl;
 				if ((dl = (long) --columns[lignepivot[(size_t)j]]) < ds) {
 					ds = dl;
 					p = j;
@@ -122,11 +123,10 @@ namespace LinBox
 #endif // __LINBOX_gauss_pivot_gf2_INL
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

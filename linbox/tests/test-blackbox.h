@@ -272,6 +272,7 @@ testReadWrite(BB &A)
  * If large, time apply and applyTranspose.
  * Call testTranspose and testLinearity.
  */
+
 template <class BB>
 static bool
 testBlackboxNoRW(BB &A)

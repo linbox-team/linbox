@@ -89,6 +89,7 @@ namespace LinBox
 		}
 
 		/** Copy constructor
+		 * @bug Value of pointer '_matB1', which points to allocated memory, is copied in copy constructor instead of allocating new memory.
 		*/
 		MoorePenrose (const MoorePenrose &A) :
 			_matA      ( A._matA),
@@ -211,11 +212,10 @@ namespace LinBox
 #endif // __LINBOX_moore_penrose_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -560,7 +560,7 @@ namespace LinBox
 		commentator().start ("Obtaining certificate of inconsistency (Wiedemann)",
 				   "WiedemannSolver::certifyInconsistency");
 
-		Vector PTinvu(A.field());
+		// Vector PTinvu(A.field());
 		typename Field::Element uTb;
 
 		WiedemannTraits cert_traits;
@@ -598,13 +598,13 @@ namespace LinBox
 
 		double                   init_p = 1.0 - 1.0 / (double) card;
 		double                   log_m = LAMBDA * log ((double) m) / M_LN2;
-		double                   new_p;
 
 		SparseMatrix<Field>    *P = new SparseMatrix<Field> (field(), m, m);
 
 		RandomSparseStream<Field> stream (field(), _randiter, init_p, m, m);
 
 		for (unsigned int i = 0; i < m; ++i) {
+		double                   new_p;
 			new_p = log_m / double(m - i + 1);
 
 			if (init_p < new_p)
