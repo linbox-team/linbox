@@ -104,14 +104,13 @@ namespace LinBox
 				unsigned int s;
 				s = _seed;
 
+				//(rand_r is obsolete)
 				 srand (s);
 				 value= rand();
 
 				mpz_set_si (mpq_numref (a.rep), value);
 
 				do {
-					//!@bug this is weird... (rand_r is obsolete)
-					srand (s);
 					value = rand();
 				} while (value == 0);
 
