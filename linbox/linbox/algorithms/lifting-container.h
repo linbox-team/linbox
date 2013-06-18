@@ -834,9 +834,9 @@ namespace LinBox
 			bool nosolution = false;
 			int nosolution_threshold=5;
 			int nst=0;
-			size_t minpoly_degree;
 			// until the digit is incorrect update the minpoly and recompute the digit
 			while (!_VDF.areEqual(error,_res_p) && !nosolution ){
+				size_t minpoly_degree;
 				minpoly_degree=_MinPoly.size();
 				FPolynomial Poly;
 				unsigned long deg;

@@ -79,6 +79,7 @@ namespace LinBox
 			_field(&F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2)
 			, _nn(BD->rowdim()),  _m(m), _n(n),
 			_blockU(F,_m,_nn),_blockV(F,_nn,_n),_value(field(),m,n), _seed(seed)
+			,casenumber(0)
 		{}
 
 
@@ -169,7 +170,7 @@ namespace LinBox
 			linbox_check( M1.rowdim() == M2.rowdim());
 			linbox_check( M2.coldim() == M3.rowdim());
 			linbox_check( M1.coldim() == M3.coldim());
-                        
+
                         MatrixDomain<Field> MD(field());
 			typename Block::ColIterator        p1 = M1.colBegin();
 			typename Block::ConstColIterator   p3 = M3.colBegin();
@@ -178,8 +179,8 @@ namespace LinBox
 				M2.apply(*p1,*p3);
                                 //MD.vectorMul(*p1,M2,*p3);
 			}
-                        
-                        
+
+
                         //MD.mul(M1,M2,M3);
 
 		}
@@ -231,11 +232,10 @@ namespace LinBox
 #endif // __LINBOX_blackbox_block_container_base_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

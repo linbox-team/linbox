@@ -92,6 +92,7 @@ namespace LinBox
 		// cnull (0) // this is not right (clang/valgrind complain)
 		, _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		_show_timing (true), _show_progress (true), _show_est_time (true)
+		,_last_line_len(0)
 	{
 		//registerMessageClass (BRIEF_REPORT,         std::clog, 1, LEVEL_IMPORTANT);
 		registerMessageClass (BRIEF_REPORT,         _report, 1, LEVEL_IMPORTANT);
@@ -109,6 +110,7 @@ namespace LinBox
 		cnull (0)
 		, _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		_show_timing (true), _show_progress (true), _show_est_time (true)
+		,_last_line_len(0)
 	{
 		//registerMessageClass (BRIEF_REPORT,         out, 1, LEVEL_IMPORTANT);
 		registerMessageClass (BRIEF_REPORT,         out, 1, LEVEL_IMPORTANT);
@@ -450,17 +452,17 @@ namespace LinBox
 	void Commentator::updateActivityReport (Activity &activity)
 	{
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
-		unsigned int i,  old_len;
 		std::ostringstream str;
 		double percent = (double) activity._progress / (double) activity._len * 100.0;
 
 		if (_format == OUTPUT_CONSOLE) {
 			if (!messageClass.isPrinted (_activities.size (), LEVEL_IMPORTANT, activity._fn)) {
 				if (_show_progress) {
+			unsigned int i,  old_len;
 					for (i = 0; i < _last_line_len; i++)
 						messageClass._stream << '\b';
 					str.width (3);
-					str << floor (percent + 0.5) << '%' << std::ends;
+					str << floor (percent + 0.5) << "%" << std::ends;
 					old_len = _last_line_len;
 					_last_line_len = (unsigned int)strlen (str.str ().c_str ());
 					messageClass._stream << str.str ();

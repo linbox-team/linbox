@@ -50,14 +50,15 @@ namespace LinBox
 
 		long nj = (long) lignepivot.size ();
 
-		bool pivoting = false;
 
 		if (nj > 0) {
+			bool pivoting = false;
 			indpermut = (long)lignepivot[0].first;
 
-			long ds = (long) --columns[(size_t)indpermut], dl, p = 0;
+			long ds = (long) --columns[(size_t)indpermut], p = 0;
 
 			for (long j = 1; j < nj; ++j) {
+				long dl;
 				if ((dl =(long) --columns[lignepivot[(size_t)j].first]) < ds) {
 					ds = dl;
 					p = j;

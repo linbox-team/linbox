@@ -62,6 +62,7 @@ namespace LinBox
 
 		BlackboxContainerBase (const Blackbox *BB, const Field &F) :
 			_field (&F), _VD (F), _BB (BB), _size ((long)MIN (BB->rowdim (), BB->coldim ()))
+			,casenumber(0)
 		{
 			_size <<= 1;
 		}
@@ -69,6 +70,7 @@ namespace LinBox
 		// Pascal Giorgi 16.02.2004
 		BlackboxContainerBase (const Blackbox *BB, const Field &F, unsigned long Size) :
 			_field (&F), _VD (F), _BB (BB), _size ((long)Size)
+			,casenumber(0)
 		{}
 
 		virtual ~BlackboxContainerBase ()
@@ -119,7 +121,7 @@ namespace LinBox
 
 		long                 _size;
 
-		// BDS 22.03.03
+		// BDS 22.03.03 // bb : what is casenumber ?
 		long                 casenumber;
 		std::vector<Element>    u, v;
 		Element              _value;
@@ -173,11 +175,10 @@ namespace LinBox
 #endif // __LINBOX_blackbox_container_base_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

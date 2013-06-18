@@ -188,7 +188,8 @@ namespace LinBox
 		BlasMatrix<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
-		UserTimer t0, t1,t2;bool term = false;
+		UserTimer t0, t1,t2;
+		bool term = false;
 		t0.clear();
 		t0.start();
 
@@ -207,10 +208,11 @@ namespace LinBox
 		t1.clear();
 		t2.clear();
 		t1.start();
-		term =  cra((int)k,dd,iteration1,genprime);
+		//BB added |= because term was not used.
+		term |=  cra((int)k,dd,iteration1,genprime);
 		t1.stop();
 		t2.start();
-		term =  cra((int)k,dd,iteration2,genprime);
+		term |=  cra((int)k,dd,iteration2,genprime);
 		t2.stop();
 
 		double s1 = t1.time(), s2 = t2.time();
@@ -342,4 +344,3 @@ namespace LinBox
 // c-basic-offset: 8
 // End:
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-

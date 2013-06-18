@@ -61,11 +61,11 @@ namespace LinBox
 			typename Field::RandIter _randiter(F);
 			double                   init_p = 1.0 - 1.0 / (double) card;
 			double                   log_m = LAMBDA * log ((double) m) / M_LN2;
-			double                   new_p;
 
 			RandomSparseStream<Field,typename Vector<Field>::SparseSeq> stream (F, _randiter, init_p, n, m );
 
 			for (unsigned int i = 0; i < m; ++i) {
+			double                   new_p;
 				new_p = log_m / double(m - i);
 
 				if (init_p < new_p)
@@ -86,11 +86,11 @@ namespace LinBox
 			typename Field::RandIter _randiter(F,size,0);
 			double init_p = 1.0 - 1.0 / (double) size;
 			double log_m = LAMBDA * log ((double) m) / M_LN2;
-			double new_p;
 
 			RandomSparseStream<Field,typename Vector<Field>::SparseSeq> stream (F, _randiter, init_p, n, m );
 
 			for (unsigned int i = 0; i < m; ++i) {
+			double new_p;
 				new_p = log_m / double(m - i);
 
 				if (init_p < new_p)
@@ -154,11 +154,10 @@ namespace LinBox
 
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

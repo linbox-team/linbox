@@ -5,20 +5,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -129,7 +129,7 @@ namespace LinBox
 			_crt_constant(F._crt_constant), _crt_inverse(F._crt_inverse),
 			_crt_modulo(F._crt_modulo) {}
 
-		const MultiModDouble &operator=(const MultiModDouble &F)
+		MultiModDouble &operator=(const MultiModDouble &F)
 		{
 			_fields       = F._fields;
 			_size         = F._size;
@@ -401,7 +401,7 @@ namespace LinBox
 
 		~MultiModRandIter() {for  (size_t i=0;i< _randiter.size();++i) delete _randiter[i]; }
 
-		const MultiModRandIter& operator= (const MultiModRandIter &R)
+		MultiModRandIter& operator= (const MultiModRandIter &R)
 		{
 			_seed  = R._seed;
 			_size  = R._size;
@@ -514,11 +514,10 @@ namespace LinBox
 #endif // __LINBOX_multimod_field_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

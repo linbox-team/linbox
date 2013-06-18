@@ -77,9 +77,9 @@ namespace LinBox
 		double maxNorm(double& res) const {
 			typename QMatrix::ConstIterator i;
 			res = 0.0;
-			double tmp;
 
 			for( i = _matA->Begin(); i != _matA->End(); ++i ) {
+				double tmp;
 				Integer d,n;
 				_ratField.get_den(d,*i);
 				_ratField.get_num(n,*i);
@@ -94,9 +94,9 @@ namespace LinBox
 			typename QMatrix::ConstRow::const_iterator c;
 
 			res = 1.0;
-			double temp;
 
 			for( r = _matA->rowBegin(); r != _matA->rowEnd(); ++r ) {
+			double temp;
 				temp = 0.0;
 				for( c = r->begin(); c != r->end(); ++c ) {
 					Integer d,n;

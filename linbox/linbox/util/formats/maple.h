@@ -377,11 +377,11 @@ namespace LinBox
 				candidate = strpbrk(candidate+1,"mM");
 			}
 
-			bool lineend = false;
+			// bool lineend = false;
 			int i = 0;
 
 			if( candidate ) {
-				lineend = currentCol <= 5;
+				bool lineend = (currentCol <= 5);
 				i = int(currentCol);
 				if( !lineend ) currentCol = 5;
 				while( !lineend && currentCol < 7 ) {
@@ -444,7 +444,9 @@ namespace LinBox
 		}
 
 	public:
-		MapleReader() {
+		MapleReader() :
+			array(false),openParen(false)
+		{
 			currentCol = currentRow = 0;
 			stin = NULL;
 		}
@@ -468,11 +470,10 @@ namespace LinBox
 #endif // __LINBOX_format_maple_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

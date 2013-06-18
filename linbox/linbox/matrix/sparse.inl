@@ -145,9 +145,8 @@ namespace LinBox
 										   // , const Field &F
 										   , char *buf)
 	{
-		size_t i, j;
+		size_t i;
 		Element a_ij;
-		char c;
 
 		A._m = 0;
 		A._matA.clear ();
@@ -155,6 +154,8 @@ namespace LinBox
 		i = 0;
 
 		do {
+			char c;
+			size_t j;
 			A._m++;
 			A._matA.push_back (Row ());
 
@@ -242,10 +243,10 @@ namespace LinBox
 	{
 		char buf[80];
 		buf[0]=0;
-		char c;
 
 		switch (format) {
 		case FORMAT_DETECT: {
+					    char c;
 					    is.getline (buf, 80);
 					    std::istringstream str (buf);
 					    do str >> c; while (isspace (c));

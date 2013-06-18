@@ -1209,8 +1209,10 @@ namespace LinBox
 			std::vector<Coefficient>  Residual(length+1, Zeromn);
 
 			// Set Truncated Residual to PowerSerie mod X^length
+#if 0
 			for (size_t k=0;k<length; ++k)
 				Residual[k] = PowerSerie[k];
+#endif
 
 			// Define Discrepancy
 			Coefficient Discrepancy(field(),m,n);
@@ -1493,11 +1495,11 @@ namespace LinBox
 #ifndef OPTMIZED_SIGMA_UPDATE
 				// Compute a Permutation to put all trivial columns of SigmaBase to right part of it
 				std::vector<size_t> PermTrivial(m);
-				bool PTrivial=true;
 				for(size_t i=0;i<m;++i)
 					if (PermPivots[i]>i)
 						std::swap(triv_column[i], triv_column[PermPivots[i]]);
 
+				bool PTrivial=true;
 				if (nbr_triv > (int)rank) {
 					size_t idx_triv, idx_nontriv;
 					idx_nontriv = 0;
@@ -2080,11 +2082,10 @@ namespace LinBox
 #endif //__LINBOX_sigma_basis_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
