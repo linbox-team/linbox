@@ -66,16 +66,16 @@ namespace LinBox
 
 			unsigned long k=0;
 
-			for (;k<min_size;i++,j++,k++)
+			for (;k<min_size;++i,++j,++k)
 				best+=(uint64_t)*i * (uint64_t)*j;
 
 			for (inter=best;k<good_size;inter=best) {
-				for (unsigned long l=0;l<min_size;i++,j++,k++,l++)
+				for (unsigned long l=0;l<min_size;++i,++j,++k,++l)
 					best+= (uint64_t)*i * (uint64_t)*j;
 				if (inter > best) best+=Corr;
 			}
 
-			for (;k<size;i++,j++,k++)
+			for (;k<size;++i,++j,++k)
 				best+= (uint64_t)*i * (uint64_t)*j;
 			if (inter > best) best+=Corr;
 
@@ -105,16 +105,16 @@ namespace LinBox
 
 			unsigned long k=0;
 
-			for (;k<min_size;i_idx++,i_elt++,k++)
+			for (;k<min_size;++i_idx,++i_elt,++k)
 				best+=(uint64_t)*i_elt * (uint64_t)v2[*i_idx];
 
 			for (inter=best;k<good_size;inter=best) {
-				for (unsigned long l=0;l<min_size;i_idx++,i_elt++,k++,l++)
+				for (unsigned long l=0;l<min_size;++i_idx,++i_elt,++k,++l)
 					best+= (uint64_t)*i_elt * (uint64_t)v2[*i_idx];
 				if (inter > best) best+=Corr;
 			}
 
-			for (;k<size;i_idx++,i_elt++,k++)
+			for (;k<size;++i_idx,++i_elt,++k)
 				best+= (uint64_t)*i_elt * (uint64_t)v2[*i_idx];
 			if (inter > best) best+=Corr;
 
@@ -146,16 +146,16 @@ namespace LinBox
 
 			uint32_t k=0;
 
-			for (;k<min_size;i++,j++,k++)
+			for (;k<min_size;++i,++j,++k)
 				best+=(uint32_t)*i * (uint32_t)*j;
 
 			for (inter=best;k<good_size;inter=best) {
-				for (unsigned long l=0;l<min_size;i++,j++,k++,l++)
+				for (unsigned long l=0;l<min_size;++i,++j,++k,++l)
 					best+= (uint32_t)*i * (uint32_t)*j;
 				if (inter > best) best+=Corr;
 			}
 
-			for (;k<size;i++,j++,k++)
+			for (;k<size;++i,++j,++k)
 				best+= (uint32_t)*i * (uint32_t)*j;
 			if (inter > best) best+=Corr;
 
@@ -183,16 +183,16 @@ namespace LinBox
 			typename Vector1::second_type::const_iterator i_elt =  v1.second.begin ();
 			uint32_t k=0;
 
-			for (;k<min_size;i_idx++,i_elt++,k++)
+			for (;k<min_size;++i_idx,++i_elt,++k)
 				best+=(uint32_t)*i_elt * (uint32_t)v2[*i_idx];
 
 			for (inter=best;k<good_size;inter=best) {
-				for (unsigned long l=0;l<min_size;i_idx++,i_elt++,k++,l++)
+				for (unsigned long l=0;l<min_size;++i_idx,++i_elt,++k,++l)
 					best+= (uint32_t)*i_elt * (uint32_t)v2[*i_idx];
 				if (inter > best) best+=Corr;
 			}
 
-			for (;k<size;i_idx++,i_elt++,k++)
+			for (;k<size;++i_idx,++i_elt,++k)
 				best+= (uint32_t)*i_elt * (uint32_t)v2[*i_idx];
 			if (inter > best) best+=Corr;
 

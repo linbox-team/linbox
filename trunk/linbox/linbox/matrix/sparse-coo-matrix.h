@@ -761,7 +761,7 @@ namespace LinBox
 		std::istream & readSpecialized(std::istream &is,
 					       SparseFileFormat::COO)
 		{
-			size_t nnz;
+			size_t nnz = 0;
 			bool sms = true ;
 			std::string firstLine ;
 			getline(is, firstLine);

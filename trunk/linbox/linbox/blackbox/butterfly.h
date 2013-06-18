@@ -286,7 +286,7 @@ namespace LinBox
 	{
 		for (size_t value (_n), l_p (0), n_p (1);
 		     n_p != 0;
-		     value >>= 1, l_p++, n_p <<= 1)
+		     value >>= 1, ++l_p, n_p <<= 1)
 		{
 			if (value & 1) {
 				_l_vec.push_back (l_p);
@@ -308,19 +308,19 @@ namespace LinBox
 		// Loop over sub-groups of powers of two
 		for (size_t p (0), start_index (0);
 		     p < _n_vec.size ();
-		     p++, start_index += n_p)
+		     ++p, start_index += n_p)
 		{
 			// update size
 			n_p = _n_vec[p];
 			l_p = _l_vec[p];
 
 			// loop over levels of sub-group network
-			for ( ; level < l_p; level++, difference <<= 1) {
+			for ( ; level < l_p; ++level, difference <<= 1) {
 				// Create
 				temp_ind = p_ind;
 
 				// the second sub group is a shift of the first
-				for (iter = temp_ind.begin (); iter != temp_ind.end (); iter++) {
+				for (iter = temp_ind.begin (); iter != temp_ind.end (); ++iter) {
 					iter->first += difference;
 					iter->second += difference;
 				}
@@ -333,7 +333,7 @@ namespace LinBox
 				(difference, std::pair<size_t, size_t> (0, 0));
 
 				size_t i = 0;
-				for (iter = temp_ind.begin (); iter != temp_ind.end (); i++, iter++) {
+				for (iter = temp_ind.begin (); iter != temp_ind.end (); ++i, ++iter) {
 					iter->first += i;
 					iter->second += i + difference;
 				}
@@ -345,7 +345,7 @@ namespace LinBox
 			// Add this level to total list of indices and correct starting point
 			temp_ind = p_ind;
 
-			for (iter = temp_ind.begin (); iter != temp_ind.end (); iter++) {
+			for (iter = temp_ind.begin (); iter != temp_ind.end (); ++iter) {
 				iter->first += start_index;
 				iter->second += start_index;
 			}
@@ -356,7 +356,7 @@ namespace LinBox
 			temp_ind = std::vector< std::pair<size_t, size_t> > (start_index, std::pair<size_t, size_t> (0, 0));
 
 			iter = temp_ind.begin ();
-			for (size_t index = 0; index < start_index; index++, iter++) {
+			for (size_t index = 0; index < start_index; ++index, ++iter) {
 				iter->first = index;
 				iter->second += index + n_p;
 			}
@@ -415,7 +415,7 @@ namespace LinBox
 
 		for (size_t value (n), l_p (0), n_p (1);
 		     n_p != 0;
-		     value >>= 1, l_p++, n_p <<= 1)
+		     value >>= 1, ++l_p, n_p <<= 1)
 		{
 			commentator().indent (report);
 			report << "  looping at value = " << value
@@ -436,11 +436,11 @@ namespace LinBox
 		// Calculate total number of switches required
 		size_t s (0);
 
-		for (size_t ii = 0; ii < n_vec.size (); ii++)
+		for (size_t ii = 0; ii < n_vec.size (); ++ii)
 			s += n_vec[ii] * l_vec[ii] / 2;
 
-		for (size_t ii = 0; ii < n_vec.size () - 1; ii++)
-			for (size_t jj = 0; jj <= ii; jj++)
+		for (size_t ii = 0; ii < n_vec.size () - 1; ++ii)
+			for (size_t jj = 0; jj <= ii; ++jj)
 				s += n_vec[jj];
 
 		commentator().indent (report);
@@ -477,16 +477,16 @@ namespace LinBox
 
 		for (std::vector<bool>::const_iterator iter = x.begin ();
 		     iter != x.begin () + (ptrdiff_t)(n - n_p);
-		     iter++)
-			if (*iter) r_1++;
+		     ++iter)
+			if (*iter) ++r_1;
 
 		// count total number of true elements in x.
 		size_t r (r_1);
 
 		for (std::vector<bool>::const_iterator iter = x.begin () + (ptrdiff_t)(n - n_p);
 		     iter != x.end ();
-		     iter++)
-			if (*iter) r++;
+		     ++iter)
+			if (*iter) ++r;
 
 		commentator().indent (report);
 		report << "The vector x will be broken into two sub-vectors,"
@@ -612,7 +612,7 @@ namespace LinBox
 
 				for (std::vector<bool>::iterator iter = (y_3.begin () + (ptrdiff_t)(j + r_1));
 				     iter != (y_3.begin () + (ptrdiff_t)(n - n_p));
-				     iter++)
+				     ++iter)
 					*iter = true;
 			}
 			else {
@@ -629,7 +629,7 @@ namespace LinBox
 
 				for (std::vector<bool>::iterator iter = y_3.begin ();
 				     iter != (y_3.begin () + (ptrdiff_t)(j + r - n - r_1));
-				     iter++)
+				     ++iter)
 					*iter = true;
 			}
 		}
@@ -653,7 +653,7 @@ namespace LinBox
 
 				for (std::vector<bool>::iterator iter = (y_3.begin () +(ptrdiff_t) s_3);
 				     iter != (y_3.begin () + (ptrdiff_t)(j + r_1 - n + n_p));
-				     iter++)
+				     ++iter)
 					*iter = true;
 			}
 			else {
@@ -670,7 +670,7 @@ namespace LinBox
 
 				for (std::vector<bool>::iterator iter (y_3.begin () + (ptrdiff_t)(j + r - n_p - r_1));
 				     iter != (y_3.begin () + (ptrdiff_t)(n - n_p));
-				     iter++)
+				     ++iter)
 					*iter = true;
 			}
 		}
@@ -689,7 +689,7 @@ namespace LinBox
 		<< "And the output vector y is:"
 		<< "-------------------------- " << std::endl;
 
-		for (size_t i = 0; i < y.size (); i++) {
+		for (size_t i = 0; i < y.size (); ++i) {
 			commentator().indent (report);
 			report << "  " << i << ": " << y[i] << std::endl;
 		}

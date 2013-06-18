@@ -161,7 +161,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				(*this)._field = S._field;
 				(*this)._MD = S._MD;
 				_seq.clear();
-				for(typename std::list<value_type>::const_iterator it = S._seq.begin(); it != S._seq.end(); it++)
+				for(typename std::list<value_type>::const_iterator it = S._seq.begin(); it != S._seq.end(); ++it)
 					_seq.push_back(*it);
 			}
 			return *this;
@@ -201,7 +201,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 		{
 			if(_row==M.rowdim() && _col==M.coldim()){
 				_seq.push_back(M);
-				_size++;
+				++_size;
 			}
 		}
 
@@ -219,8 +219,8 @@ EARLY_TERM_THRESHOLD (ett_default)
 				else{
 					while(test && it!=_seq.end()){
 						test = _MD.areEqual(*it,*lit);
-						it++;
-						lit++;
+						++it;
+						++lit;
 					}
 				}
 			}
@@ -330,12 +330,12 @@ EARLY_TERM_THRESHOLD (ett_default)
 				_delta = (size_t)-1; // BB: is it meant ?
 				_seqel = _seq.begin();
 				_deg = std::vector<size_t>(_row+_col);
-				for(size_t i = _col; i < _row+_col; i++)
+				for(size_t i = _col; i < _row+_col; ++i)
 					_deg[i] = 1;
 				typename Field::Element one;
 				field().init(one,1);
 				matrix_type gen1(field(),_col,_row+_col);
-				for(size_t i = 0; i<_col; i++)
+				for(size_t i = 0; i<_col; ++i)
 					gen1.setEntry(i,i,one);
 				_gen.push_back(gen1);
 				_gensize = 1;
@@ -376,7 +376,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 					(*this)._beta    = it._beta;
 					(*this)._state   = it._state;
 					_gen.clear();
-					for(typename std::list<matrix_type>::const_iterator git = it._gen.begin(); git != it._gen.end(); git++)
+					for(typename std::list<matrix_type>::const_iterator git = it._gen.begin(); git != it._gen.end(); ++git)
 						_seq.push_back(*git);
 				}
 				return (*this);
@@ -416,7 +416,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				typename Matrix::Element t;
 				F.init(t,0);
 				size_t rowd = M.rowdim();
-				for(size_t k = 0; k < rowd; k++){
+				for(size_t k = 0; k < rowd; ++k){
 					F.assign(t,M.getEntry(k,i));
 					M.setEntry(k,i,M.getEntry(k,j));
 					M.setEntry(k,j,t);
@@ -430,7 +430,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				typename Matrix::Element t;
 				F.init(t,0);
 				size_t rowd = M.rowdim();
-				for (size_t k=0; k<rowd; k++){
+				for (size_t k=0; k<rowd; ++k){
 					F.mul(t, M.getEntry(k,j), el);
 					F.addin(t,M.getEntry(k,i));
 					M.setEntry(k,i,t);
@@ -449,25 +449,25 @@ EARLY_TERM_THRESHOLD (ett_default)
 				size_t m = nm-n;
 				//Initialize tau to the identity matrix
 				Matrix tau(F,nm,nm);
-				for(size_t i = 0; i<nm; i++)
+				for(size_t i = 0; i<nm; ++i)
 					tau.setEntry(i,i,one);
 				//Create the set of generator columns
 				std::set<size_t> gen;
 				typedef std::set<size_t>::key_type index_type;
-				for(index_type i=0; i<m; i++)
+				for(index_type i=0; i<m; ++i)
 					gen.insert(i);
-				for(index_type i = 0; i<n; i++){
+				for(index_type i = 0; i<n; ++i){
 					//Compute pi, the columns of D with nonzero entries in row i
 					std::set<size_t> pi;
 					pi.insert(m+i);
-					for(typename std::set<size_t>::iterator genit = gen.begin(); genit != gen.end(); genit++){
+					for(typename std::set<size_t>::iterator genit = gen.begin(); genit != gen.end(); ++genit){
 						if(!F.isZero(D.getEntry(i,*genit)))
 							pi.insert(*genit);
 					}
 
 					//Choose the pivot row with the smallest nominal degree
 					index_type piv = m+i;
-					for(std::set<size_t>::iterator itpi = pi.begin(); itpi != pi.end(); itpi++){
+					for(std::set<size_t>::iterator itpi = pi.begin(); itpi != pi.end(); ++itpi){
 						size_t j = *itpi;
 						if(d[j] <= d[piv]){
 							if(d[j]==d[piv]){
@@ -484,7 +484,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 					F.assign(pivel,D.getEntry(i,piv));
 					//Handle the case when piv=m+i, so no swap is done
 					if(piv==m+i){
-						for(std::set<size_t>::iterator itpi = pi.begin(); itpi != pi.end(); itpi++){
+						for(std::set<size_t>::iterator itpi = pi.begin(); itpi != pi.end(); ++itpi){
 							typename Matrix::Element temp;
 							F.init(temp,D.getEntry(i, *itpi));
 							F.negin(temp);
@@ -497,7 +497,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 						//Remove column index m+i and handle it separately
 						pi.erase(m+i);
 						//Eliminate nonzero discrepancies in generator columns
-						for(typename std::set<size_t>::iterator itpi = pi.begin(); itpi != pi.end(); itpi++){
+						for(typename std::set<size_t>::iterator itpi = pi.begin(); itpi != pi.end(); ++itpi){
 							typename Matrix::Element temp;
 							F.init(temp,D.getEntry(i, *itpi));
 							F.negin(temp);
@@ -544,8 +544,8 @@ EARLY_TERM_THRESHOLD (ett_default)
 				//Also reset the size to the correct size of the sequence
 				if(_size < _seq.size()){
 					_seqel = _seq.begin();
-					for(int i = 0; i<_t; i++)
-						_seqel++;
+					for(int i = 0; i<_t; ++i)
+						++_seqel;
 					_size = _seq.size();
 				}
 				//if the iterator points past the seq elements, do nothing
@@ -563,48 +563,48 @@ EARLY_TERM_THRESHOLD (ett_default)
 
 				Domain& MD = _seq->domain();
 				//Compute the discrepancy
-				for(genit = _gen.begin(); genit!=_gen.end(); genit++){
+				for(genit = _gen.begin(); genit!=_gen.end(); ++genit){
 					MD.axpyin(disc,*cseqit,*genit);
 					cseqit--;
 				}
 				//Compute tau with Algorith3.2
 				matrix_type tau(Algorithm3dot2(disc, _deg, _mu, _sigma, _beta));
 				//Multiply tau into each matrix in the generator
-				for(genit = _gen.begin(); genit!=_gen.end(); genit++){
+				for(genit = _gen.begin(); genit!=_gen.end(); ++genit){
 					MD.mulin(*genit,tau);
 				}
 				//Increment the auxiliary degrees and beta
-				for(size_t j = _col; j <_row+_col; j++)
+				for(size_t j = _col; j <_row+_col; ++j)
 					_deg[j]++;
-				_beta++;
+				++_beta;
 				//Add a zero matrix to the end of the generator if needed.
 				int tmax = _deg[0];
-				for(size_t j = 1; j<_row+_col; j++)
+				for(size_t j = 1; j<_row+_col; ++j)
 					if(tmax < _deg[j])
 						tmax = _deg[j];
 				if(tmax+1 > _gensize){
 					_gen.push_back(matrix_type(field(),_col,_row+_col));
-					_gensize++;
+					++_gensize;
 				}
 				//Mimic multiplication be z in the auxiliary columns
 				typename std::list<matrix_type>::reverse_iterator g1,g2;
 				g1 = _gen.rbegin();
 				g2 = _gen.rbegin();
-				g1++;
+				++g1;
 				while(g1!=_gen.rend()){
-					for(size_t k = _col; k < _row+_col; k++){
+					for(size_t k = _col; k < _row+_col; ++k){
 						ColumnCopy(*g2,*g1,k);
 					}
-					g1++;
-					g2++;
+					++g1;
+					++g2;
 				}
 				genit = _gen.begin();
 				matrix_type z1(field(),_col,_row+_col);
-				for(size_t k = _col; k < _row+_col; k++)
+				for(size_t k = _col; k < _row+_col; ++k)
 					ColumnCopy(*genit, z1,k);
 				//Increment the t and seqel to the next element
-				_t++;
-				_seqel++;
+				++_t;
+				++_seqel;
 				//Update the state
 				if(_delta < 0 || _beta < _delta - _sigma + _mu +1){
 					if(_t == _size)
@@ -636,8 +636,8 @@ EARLY_TERM_THRESHOLD (ett_default)
 				//Also reset the size to the correct size of the sequence
 				if(_size < _seq.size()){
 					_seqel = _seq.begin();
-					for(int i = 0; i<_t; i++)
-						_seqel++;
+					for(int i = 0; i<_t; ++i)
+						++_seqel;
 					_size = _seq.size();
 				}
 				//if the iterator points past the seq elements, do nothing
@@ -654,7 +654,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				//Create a matrix domain for addition and multiplication
 				Domain& MD = _seq.domain();
 				//Compute the discrepancy
-				for(genit = _gen.begin(); genit!=_gen.end(); genit++, cseqit--){
+				for(genit = _gen.begin(); genit!=_gen.end(); ++genit, cseqit--){
 					MD.axpyin(disc,*cseqit,*genit);
 				} // cost: k*n^3 (nxn matrix muladds where k is current generator length)
 				  // is a reductive addition over independent muls.
@@ -662,42 +662,42 @@ EARLY_TERM_THRESHOLD (ett_default)
 				matrix_type tau(Algorithm3dot2(disc, _deg, _mu, _sigma, _beta));
 				  // cost: n^3 for elim on n x about 2n
 				//Multiply tau into each matrix in the generator
-				for(genit = _gen.begin(); genit!=_gen.end(); genit++){
+				for(genit = _gen.begin(); genit!=_gen.end(); ++genit){
 					MD.mulin(*genit,tau);
 				} // cost: k*n^3 (nxn matrix muls where k is current generator length)
 				  // is k independent muls with a shared mat tau.
 				//Increment the auxiliary degrees and beta
-				for(size_t j = _col; j <_row+_col; j++)
+				for(size_t j = _col; j <_row+_col; ++j)
 					_deg[j]++;
-				_beta++;
+				++_beta;
 				//Add a zero matrix to the end of the generator if needed.
 				int tmax = (int)_deg[0];
-				for(size_t j = 1; j<_row+_col; j++)
+				for(size_t j = 1; j<_row+_col; ++j)
 					if(tmax < _deg[j])
 						tmax = (int)_deg[j];
 				if(tmax+1 > _gensize){
 					_gen.push_back(matrix_type(field(),_col,_row+_col));
-					_gensize++;
+					++_gensize;
 				}
 				//Mimic multiplication by z in the auxiliary columns
 				typename std::list<matrix_type>::reverse_iterator g1,g2;
 				g1 = _gen.rbegin();
 				g2 = _gen.rbegin();
-				g1++;
+				++g1;
 				while(g1!=_gen.rend()){
-					for(size_t k = _col; k < _row+_col; k++){
+					for(size_t k = _col; k < _row+_col; ++k){
 						ColumnCopy(*g2,*g1,k);
 					}
-					g1++;
-					g2++;
+					++g1;
+					++g2;
 				}
 				genit = _gen.begin();
 				matrix_type z1(field(),_col,_row+_col);
-				for(size_t k = _col; k < _row+_col; k++)
+				for(size_t k = _col; k < _row+_col; ++k)
 					ColumnCopy(*genit, z1,k);
 				//Increment the t and seqel to the next element
-				_t++;
-				_seqel++;
+				++_t;
+				++_seqel;
 				//Update the state
 				if(_delta < 0 || _beta < _delta - _sigma + _mu +1){
 					if(_t == _size)
@@ -732,11 +732,11 @@ EARLY_TERM_THRESHOLD (ett_default)
 			std::vector<matrix_type> GetGenerator()
 			{
 				std::vector<matrix_type> revgen(_mu+1, matrix_type(field(),_col,_col));
-				for(size_t i = 0; i<_col; i++){
+				for(size_t i = 0; i<_col; ++i){
 					typename std::list<matrix_type>::iterator genit = _gen.begin();
-					for(int j = 0; j < _deg[i]+1; j++){
+					for(int j = 0; j < _deg[i]+1; ++j){
 						ColumnCopy(revgen[_deg[i]-j], *genit,i);
-						genit++;
+						++genit;
 					}
 				}
 				return revgen;
@@ -808,7 +808,7 @@ _Sequence>::right_minpoly (std::vector<Coefficient> &P)
 	    bmit.setDelta((int)EARLY_TERM_THRESHOLD);
 	    typename BM_Seq::BM_iterator::TerminationState check = bmit.state();
 	    while(!check.IsGeneratorFound() ){
-		    bmit++;
+		    ++bmit;
 		    check = bmit.state();
 		    if(check.IsSequenceExceeded()){
 			    ++contiter;

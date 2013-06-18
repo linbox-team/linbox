@@ -85,7 +85,7 @@ namespace LinBox
 		os << '[';
 
 		for (i = x.begin (), idx = 0; i != x.end ();) {
-			while (idx++ < i->first)
+			while (++idx < i->first)
 				os << "0, ";
 
 			field().write (os, i->second);
@@ -110,7 +110,7 @@ namespace LinBox
 		os << '[';
 
 		for (i = x.begin (), idx = 0; i != x.end ();) {
-			while (idx++ < i->first)
+			while (++idx < i->first)
 				os << "0, ";
 
 			field().write (os, i->second);
@@ -136,7 +136,7 @@ namespace LinBox
 		os << '[';
 
 		for (i = x.first.begin (), j = x.second.begin (), idx = 0; i != x.first.end ();) {
-			while (idx++ < *i)
+			while (++idx < *i)
 				os << "0, ";
 
 			field().write (os, *j);
@@ -169,7 +169,7 @@ namespace LinBox
 		while (i != x.end() && is) {
 			do is >> c; while (!isdigit(c) && c != '-');
 			is.unget ();
-			field().read (is, *i++);
+			field().read (is, *++i);
 		}
 		if (seekrightbracket) do is >> c; while (is && c != ']');
 
@@ -199,7 +199,7 @@ namespace LinBox
 			if (!field().isZero (tmp))
 				x.push_back (std::pair <size_t, typename Field::Element> (idx, tmp));
 			is >> c;
-			idx++;
+			++idx;
 		}
 
 		return is;
@@ -228,7 +228,7 @@ namespace LinBox
 			if (!field().isZero (tmp))
 				x[idx] = tmp;
 			is >> c;
-			idx++;
+			++idx;
 		}
 
 		return is;
@@ -261,7 +261,7 @@ namespace LinBox
 			}
 
 			is >> c;
-			idx++;
+			++idx;
 		}
 
 		return is;
@@ -278,7 +278,7 @@ namespace LinBox
 
 		if (v1.size () != v2.size ()) return false;
 
-		for (i = v1.begin (), j = v2.begin (); i != v1.end (); i++, j++)
+		for (i = v1.begin (), j = v2.begin (); i != v1.end (); ++i, ++j)
 			if (!field().areEqual (*i, *j))
 				return false;
 
@@ -295,11 +295,11 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		size_t idx;
 
-		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); j++, idx++) {
+		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); ++j, ++idx) {
 			if (i->first == idx) {
 				if (!field().areEqual (i->second, *j))
 					return false;
-				i++;
+				++i;
 			}
 			else if (!field().isZero (*j))
 				return false;
@@ -318,11 +318,11 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		size_t idx;
 
-		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); j++, idx++) {
+		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); ++j, ++idx) {
 			if (i->first == idx) {
 				if (!field().areEqual (i->second, *j))
 					return false;
-				i++;
+				++i;
 			}
 			else if (!field().isZero (*j))
 				return false;
@@ -344,7 +344,7 @@ namespace LinBox
 
 		for (i_idx = v1.first.begin (), i_elt = v1.second.begin (), j = v2.begin (), idx = 0;
 		     i_idx != v1.first.end () && j != v2.end ();
-		     j++, idx++)
+		     ++j, ++idx)
 		{
 			if (*i_idx == idx) {
 				if (!field().areEqual (*i_elt, *j))
@@ -373,20 +373,20 @@ namespace LinBox
 			while (i != v1.end () && (j == v2.end () || i->first < j->first)) {
 				if (!field().isZero (i->second))
 					return false;
-				i++;
+				++i;
 			}
 
 			while (j != v2.end () && (i == v1.end () || j->first < i->first)) {
 				if (!field().isZero (j->second))
 					return false;
-				j++;
+				++j;
 			}
 
 			if (i != v1.end () && j != v2.end () && i->first == j->first) {
 				if (!field().areEqual (i->second, j->second))
 					return false;
 
-				i++; j++;
+				++i; ++j;
 			}
 		}
 
@@ -406,20 +406,20 @@ namespace LinBox
 			while (i != v1.end () && (j == v2.end () || i->first < j->first)) {
 				if (!field().isZero (i->second))
 					return false;
-				i++;
+				++i;
 			}
 
 			while (j != v2.end () && (i == v1.end () || j->first < i->first)) {
 				if (!field().isZero (j->second))
 					return false;
-				j++;
+				++j;
 			}
 
 			if (i != v1.end () && j != v2.end () && i->first == j->first) {
 				if (!field().areEqual (i->second, j->second))
 					return false;
 
-				i++; j++;
+				++i; ++j;
 			}
 		}
 
@@ -442,21 +442,21 @@ namespace LinBox
 			while (i_idx != v1.first.end () && (j == v2.end () || *i_idx < j->first)) {
 				if (!field().isZero (*i_elt))
 					return false;
-				i_idx++;
-				i_elt++;
+				++i_idx;
+				++i_elt;
 			}
 
 			while (j != v2.end () && (i_idx == v1.first.end () || j->first < *i_idx)) {
 				if (!field().isZero (j->second))
 					return false;
-				j++;
+				++j;
 			}
 
 			if (i_idx != v1.first.end () && j != v2.end () && *i_idx == j->first) {
 				if (!field().areEqual (*i_elt, j->second))
 					return false;
 
-				i_idx++; i_elt++; j++;
+				++i_idx; ++i_elt; ++j;
 			}
 		}
 
@@ -476,20 +476,20 @@ namespace LinBox
 			while (i != v1.end () && (j == v2.end () || i->first < j->first)) {
 				if (!field().isZero (i->second))
 					return false;
-				i++;
+				++i;
 			}
 
 			while (j != v2.end () && (i == v1.end () || j->first < i->first)) {
 				if (!field().isZero (j->second))
 					return false;
-				j++;
+				++j;
 			}
 
 			if (i != v1.end () && j != v2.end () && i->first == j->first) {
 				if (!field().areEqual (i->second, j->second))
 					return false;
 
-				i++; j++;
+				++i; ++j;
 			}
 		}
 
@@ -510,21 +510,21 @@ namespace LinBox
 			while (i_idx != v1.first.end () && (j == v2.end () || *i_idx < j->first)) {
 				if (!field().isZero (*i_elt))
 					return false;
-				i_idx++;
-				i_elt++;
+				++i_idx;
+				++i_elt;
 			}
 
 			while (j != v2.end () && (i_idx == v1.first.end () || j->first < *i_idx)) {
 				if (!field().isZero (j->second))
 					return false;
-				j++;
+				++j;
 			}
 
 			if (i_idx != v1.first.end () && j != v2.end () && *i_idx == j->first) {
 				if (!field().areEqual (*i_elt, j->second))
 					return false;
 
-				i_idx++; i_elt++; j++;
+				++i_idx; ++i_elt; ++j;
 			}
 		}
 
@@ -546,22 +546,22 @@ namespace LinBox
 			while (i_idx != v1.first.end () && (j_idx == v2.first.end () || *i_idx < *j_idx)) {
 				if (!field().isZero (*i_elt))
 					return false;
-				i_idx++;
-				i_elt++;
+				++i_idx;
+				++i_elt;
 			}
 
 			while (j_idx != v2.first.end () && (i_idx == v1.first.end () || *j_idx < *i_idx)) {
 				if (!field().isZero (*j_elt))
 					return false;
-				j_idx++;
-				j_elt++;
+				++j_idx;
+				++j_elt;
 			}
 
 			if (i_idx != v1.first.end () && j_idx != v2.first.end () && *i_idx == *j_idx) {
 				if (!field().areEqual (*i_elt, *j_elt))
 					return false;
 
-				i_idx++; i_elt++; j_idx++; j_elt++;
+				++i_idx; ++i_elt; ++j_idx; ++j_elt;
 			}
 		}
 
@@ -574,7 +574,7 @@ namespace LinBox
 	{
 		typename Vector::const_iterator i;
 
-		for (i = v.begin (); i != v.end (); i++)
+		for (i = v.begin (); i != v.end (); ++i)
 			if (!field().isZero (*i))
 				return false;
 
@@ -587,7 +587,7 @@ namespace LinBox
 	{
 		typename Vector::const_iterator i;
 
-		for (i = v.begin (); i != v.end (); i++)
+		for (i = v.begin (); i != v.end (); ++i)
 			if (!field().isZero (i->second))
 				return false;
 
@@ -600,7 +600,7 @@ namespace LinBox
 	{
 		typename Vector::const_iterator i;
 
-		for (i = v.begin (); i != v.end (); i++)
+		for (i = v.begin (); i != v.end (); ++i)
 			if (!field().isZero (i->second))
 				return false;
 
@@ -613,7 +613,7 @@ namespace LinBox
 	{
 		typename Vector::second_type::const_iterator i;
 
-		for (i = v.second.begin (); i != v.second.end (); i++)
+		for (i = v.second.begin (); i != v.second.end (); ++i)
 			if (!field().isZero (*i))
 				return false;
 
@@ -631,7 +631,7 @@ namespace LinBox
 
 		res.clear ();
 
-		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++)
+		for (i = v.begin (), idx = 0; i != v.end (); ++i, ++idx)
 			if (!field().isZero (*i))
 				res.push_back (std::pair <size_t, typename Field::Element> (idx, *i));
 
@@ -649,7 +649,7 @@ namespace LinBox
 
 		res.clear ();
 
-		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++)
+		for (i = v.begin (), idx = 0; i != v.end (); ++i, ++idx)
 			if (!field().isZero (*i))
 				res[idx] = *i;
 
@@ -668,7 +668,7 @@ namespace LinBox
 		res.first.clear ();
 		res.second.clear ();
 
-		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++) {
+		for (i = v.begin (), idx = 0; i != v.end (); ++i, ++idx) {
 			if (!field().isZero (*i)) {
 				res.first.push_back ((size_t)idx);
 				res.second.push_back (*i);
@@ -688,10 +688,10 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		size_t idx;
 
-		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); i++, j++, idx++) {
+		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); ++i, ++j, ++idx) {
 			while (idx < j->first) {
 				field().init (*i, 0);
-				i++; idx++;
+				++i; ++idx;
 			}
 
 			*i = j->second;
@@ -710,7 +710,7 @@ namespace LinBox
 
 		res.clear ();
 
-		for (i = v.begin (); i != v.end (); i++)
+		for (i = v.begin (); i != v.end (); ++i)
 			res[i->first] = i->second;
 
 		return res;
@@ -727,7 +727,7 @@ namespace LinBox
 		res.first.clear ();
 		res.second.clear ();
 
-		for (i = v.begin (); i != v.end (); i++) {
+		for (i = v.begin (); i != v.end (); ++i) {
 			res.first.push_back (i->first);
 			res.second.push_back (i->second);
 		}
@@ -745,10 +745,10 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		size_t idx;
 
-		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); i++, j++, idx++) {
+		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); ++i, ++j, ++idx) {
 			while (idx < j->first) {
 				field().init (*i, 0);
-				i++; idx++;
+				++i; ++idx;
 			}
 
 			*i = j->second;
@@ -767,7 +767,7 @@ namespace LinBox
 
 		res.clear ();
 
-		for (i = v.begin (); i != v.end (); i++)
+		for (i = v.begin (); i != v.end (); ++i)
 			res.push_back (*i);
 
 		return res;
@@ -783,7 +783,7 @@ namespace LinBox
 
 		res.clear ();
 
-		for (i = v.begin (); i != v.end (); i++)
+		for (i = v.begin (); i != v.end (); ++i)
 			res[i->first] = i->second;
 
 		return res;
@@ -800,7 +800,7 @@ namespace LinBox
 		res.first.clear ();
 		res.second.clear ();
 
-		for (i = v.begin (); i != v.end (); i++) {
+		for (i = v.begin (); i != v.end (); ++i) {
 			res.first.push_back (i->first);
 			res.second.push_back (i->second);
 		}
@@ -862,7 +862,7 @@ namespace LinBox
 
 		res.clear ();
 
-		for (; i_idx != v.first.end (); i_idx++, i_elt++)
+		for (; i_idx != v.first.end (); ++i_idx, ++i_elt)
 			res[*i_idx] = *i_elt;
 
 		return res;
@@ -919,7 +919,7 @@ namespace LinBox
 			part_end = std::lower_bound (res_part.begin (), res_part.end (), len,
 						     VectorWrapper::CompareSparseEntries<Element> ());
 
-		for (iter = res_part.begin (); iter != part_end; iter++)
+		for (iter = res_part.begin (); iter != part_end; ++iter)
 			iter->first += i;
 
 		r_begin = std::lower_bound (res.begin (), res.end (), i, VectorWrapper::CompareSparseEntries<Element> ());
@@ -950,7 +950,7 @@ namespace LinBox
 		r_end = (len == 0) ? res.end () : res.find (i + len);
 		res.erase (r_begin, r_end);
 
-		for (iter = res_part.begin (); iter != part_end; iter++)
+		for (iter = res_part.begin (); iter != part_end; ++iter)
 			res[iter->first + i] = iter->second;
 
 		return res;
@@ -979,7 +979,7 @@ namespace LinBox
 			part_elt_end = res_part.second.begin () +(ptrdiff_t) (part_idx_end - res_part.first.begin ());
 		}
 
-		for (iter = res_part.first.begin (); iter != part_idx_end; iter++)
+		for (iter = res_part.first.begin (); iter != part_idx_end; ++iter)
 			*iter += i;
 
 		r_idx_begin = std::lower_bound (res.first.begin (), res.first.end (), i);
@@ -1028,7 +1028,7 @@ namespace LinBox
 		r_begin = res.begin () +(ptrdiff_t) offset;
 		r_end = r_begin +(ptrdiff_t) (v_end - v.begin ());
 
-		for (iter = r_begin; iter != r_end; iter++)
+		for (iter = r_begin; iter != r_end; ++iter)
 			iter->first += i;
 
 		return res;
@@ -1048,7 +1048,7 @@ namespace LinBox
 		r_end = (len == 0) ? res.end () : res.find (i + len);
 		res.erase (r_begin, r_end);
 
-		for (iter = v.begin (); iter != v_end; iter++)
+		for (iter = v.begin (); iter != v_end; ++iter)
 			res[iter->first + i] = iter->second;
 
 		return res;
@@ -1089,7 +1089,7 @@ namespace LinBox
 		r_idx_begin = res.first.begin () +(ptrdiff_t) offset;
 		r_idx_end = r_idx_begin +(ptrdiff_t) (v_idx_end - v.first.begin ());
 
-		for (iter = r_idx_begin; iter != r_idx_end; iter++)
+		for (iter = r_idx_begin; iter != r_idx_end; ++iter)
 			*iter += i;
 
 		return res;
@@ -1109,7 +1109,7 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
+		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); ++i, ++j, ++k)
 			field().add (*k, *i, *j);
 
 		return res;
@@ -1128,17 +1128,17 @@ namespace LinBox
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
 			while (i != y.end () && i->first < j->first) {
 				res.push_back (*i);
-				i++;
+				++i;
 			}
 
 			if (i != y.end () && i->first == j->first) {
 				field().add (tmp, i->second, j->second);
 				if (!field().isZero (tmp))
 					res.push_back (std::pair <size_t, Element> (j->first, tmp));
-				i++;
+				++i;
 			}
 			else {
 				res.push_back (*j);
@@ -1147,7 +1147,7 @@ namespace LinBox
 
 		while (i != y.end ()) {
 			res.push_back (*i);
-			i++;
+			++i;
 		}
 
 		return res;
@@ -1166,15 +1166,15 @@ namespace LinBox
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
 			while (i != y.end () && i->first < j->first) {
 				res[i->first] = i->second;
-				i++;
+				++i;
 			}
 
 			if (i != y.end () && i->first == j->first) {
 				res[j->first] = field().add (tmp, i->second, j->second);
-				i++;
+				++i;
 			}
 			else {
 				res[j->first] = j->second;
@@ -1183,7 +1183,7 @@ namespace LinBox
 
 		while (i != y.end ()) {
 			res[i->first] = i->second;
-			i++;
+			++i;
 		}
 
 		return res;
@@ -1246,7 +1246,7 @@ namespace LinBox
 
 		linbox_check (y.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (); i != y.end (); i++, j++)
+		for (i = y.begin (), j = x.begin (); i != y.end (); ++i, ++j)
 			field().addin (*i, *j);
 
 		return y;
@@ -1274,8 +1274,8 @@ namespace LinBox
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
 
-		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
-			while (i != y.end () && i->first < j->first) i++;
+		for (i = y.begin (), j = x.begin (); j != x.end (); ++j) {
+			while (i != y.end () && i->first < j->first) ++i;
 
 			if (i != y.end () && i->first == j->first)
 				field().addin (i->second, j->second);
@@ -1313,7 +1313,7 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
+		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); ++i, ++j, ++k)
 			field().sub (*k, *i, *j);
 
 		return res;
@@ -1332,17 +1332,17 @@ namespace LinBox
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
 			while (i != y.end () && i->first < j->first) {
 				res.push_back (*i);
-				i++;
+				++i;
 			}
 
 			if (i != y.end () && i->first == j->first) {
 				field().sub (tmp, i->second, j->second);
 				if (!field().isZero (tmp))
 					res.push_back (std::pair <size_t, Element> (j->first, tmp));
-				i++;
+				++i;
 			}
 			else {
 				res.push_back (std::pair <size_t, Element> (j->first, field().neg (tmp, j->second)));
@@ -1351,7 +1351,7 @@ namespace LinBox
 
 		while (i != y.end ()) {
 			res.push_back (*i);
-			i++;
+			++i;
 		}
 
 		return res;
@@ -1370,15 +1370,15 @@ namespace LinBox
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
 			while (i != y.end () && i->first < j->first) {
 				res[i->first] = i->second;
-				i++;
+				++i;
 			}
 
 			if (i != y.end () && i->first == j->first) {
 				res[j->first] = field().sub (tmp, i->second, j->second);
-				i++;
+				++i;
 			}
 			else {
 				res[j->first] = field().neg (tmp, j->second);
@@ -1387,7 +1387,7 @@ namespace LinBox
 
 		while (i != y.end ()) {
 			res[i->first] = i->second;
-			i++;
+			++i;
 		}
 
 		return res;
@@ -1450,7 +1450,7 @@ namespace LinBox
 
 		linbox_check (y.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (); i != y.end (); i++, j++)
+		for (i = y.begin (), j = x.begin (); i != y.end (); ++i, ++j)
 			field().subin (*i, *j);
 
 		return y;
@@ -1479,8 +1479,8 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		Element tmp;
 
-		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
-			while (i != y.end () && i->first < j->first) i++;
+		for (i = y.begin (), j = x.begin (); j != x.end (); ++j) {
+			while (i != y.end () && i->first < j->first) ++i;
 
 			if (i != y.end () && i->first == j->first)
 				field().subin (i->second, j->second);
@@ -1662,7 +1662,7 @@ namespace LinBox
 		if (field().isZero (a))
 			return res;
 
-		for (i = x.begin (); i != x.end (); i++)
+		for (i = x.begin (); i != x.end (); ++i)
 			res.push_back (std::pair <size_t, Element> (i->first, field().mul (tmp, i->second, a)));
 
 		return res;
@@ -1684,7 +1684,7 @@ namespace LinBox
 		if (field().isZero (a))
 			return res;
 
-		for (i = x.begin (); i != x.end (); i++)
+		for (i = x.begin (); i != x.end (); ++i)
 			res[i->first] = field().mul (tmp, i->second, a);
 
 		return res;
@@ -1726,7 +1726,7 @@ namespace LinBox
 	{
 		typename Vector::iterator i;
 
-		for (i = x.begin (); i != x.end (); i++)
+		for (i = x.begin (); i != x.end (); ++i)
 			field().mulin (*i, a);
 
 		return x;
@@ -1746,7 +1746,7 @@ namespace LinBox
 			return x;
 		}
 
-		for (i = x.begin (); i != x.end (); i++)
+		for (i = x.begin (); i != x.end (); ++i)
 			field().mulin (i->second, a);
 
 		return x;
@@ -1766,7 +1766,7 @@ namespace LinBox
 			return x;
 		}
 
-		for (i = x.begin (); i != x.end (); i++)
+		for (i = x.begin (); i != x.end (); ++i)
 			field().mulin (i->second, a);
 
 		return x;
@@ -1787,7 +1787,7 @@ namespace LinBox
 			return x;
 		}
 
-		for (i = x.second.begin (); i != x.second.end (); i++)
+		for (i = x.second.begin (); i != x.second.end (); ++i)
 			field().mulin (*i, a);
 
 		return x;
@@ -1809,7 +1809,7 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
+		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); ++i, ++j, ++k)
 			field().axpy (*k, a, *j, *i);
 
 		return res;
@@ -1830,15 +1830,15 @@ namespace LinBox
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
 			while (i != y.end () && i->first < j->first) {
 				res.push_back (*i);
-				i++;
+				++i;
 			}
 
 			if (i != y.end () && i->first == j->first) {
 				field().axpy (tmp, a, j->second, i->second);
-				i++;
+				++i;
 			}
 			else
 				field().mul (tmp, a, j->second);
@@ -1849,7 +1849,7 @@ namespace LinBox
 
 		while (i != y.end ()) {
 			res.push_back (*i);
-			i++;
+			++i;
 		}
 
 		return res;
@@ -1869,15 +1869,15 @@ namespace LinBox
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
 			while (i != y.end () && i->first < j->first) {
 				res[i->first] = i->second;
-				i++;
+				++i;
 			}
 
 			if (i != y.end () && i->first == j->first) {
 				field().axpy (res[j->first], a, j->second, i->second);
-				i++;
+				++i;
 			}
 			else
 				field().mul (res[j->first], a, j->second);
@@ -1885,7 +1885,7 @@ namespace LinBox
 
 		while (i != y.end ()) {
 			res[i->first] = i->second;
-			i++;
+			++i;
 		}
 
 		return res;
@@ -2045,8 +2045,8 @@ namespace LinBox
 			return y;
 		}
 
-		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
-			while (i != y.end () && i->first != j->first) i++;
+		for (i = y.begin (), j = x.begin (); j != x.end (); ++j) {
+			while (i != y.end () && i->first != j->first) ++i;
 
 			if (i != y.end () && i->first == j->first)
 				field().axpyin (i->second, a, j->second);
@@ -2087,7 +2087,7 @@ namespace LinBox
 
 		linbox_check (v1.size () == v2.size ());
 
-		for (i = v1.begin (), j = v2.begin (); i != v1.end (); i++, j++)
+		for (i = v1.begin (), j = v2.begin (); i != v1.end (); ++i, ++j)
 			/*VectorDomainBase<Field>::*/accu.mulacc (*i, *j);
 
 		return /*VectorDomainBase<Field>::*/accu.get (res);
@@ -2107,7 +2107,7 @@ namespace LinBox
 		FieldAXPY<Field> accu(field());
 		//VectorDomainBase<Field>::accu.reset();
 
-		for (i = v1.begin (); i != v1.end (); i++)
+		for (i = v1.begin (); i != v1.end (); ++i)
 			/*VectorDomainBase<Field>::*/accu.mulacc (i->second, v2[i->first]);
 
 		return /*VectorDomainBase<Field>::*/accu.get (res);
@@ -2126,7 +2126,7 @@ namespace LinBox
 		FieldAXPY<Field> accu(field());
 		//VectorDomainBase<Field>::accu.reset();
 
-		for (i = v1.begin (); i != v1.end (); i++)
+		for (i = v1.begin (); i != v1.end (); ++i)
 			/*VectorDomainBase<Field>::*/accu.mulacc (i->second, v2[i->first]);
 
 		return /*VectorDomainBase<Field>::*/accu.get (res);
@@ -2164,8 +2164,8 @@ namespace LinBox
 		FieldAXPY<Field> accu(field());
 		//VectorDomainBase<Field>::accu.reset();
 
-		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
-			while (j != v2.end () && j->first < i->first) j++;
+		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); ++i) {
+			while (j != v2.end () && j->first < i->first) ++j;
 
 			if (j != v2.end () && j->first == i->first)
 				/*VectorDomainBase<Field>::*/accu.mulacc (i->second, j->second);
@@ -2188,8 +2188,8 @@ namespace LinBox
 		FieldAXPY<Field> accu(field());
 		//VectorDomainBase<Field>::accu.reset();
 
-		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
-			while (j != v2.end () && j->first < i->first) j++;
+		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); ++i) {
+			while (j != v2.end () && j->first < i->first) ++j;
 
 			if (j != v2.end () && j->first == i->first)
 				/*VectorDomainBase<Field>::*/accu.mulacc (i->second, j->second);
@@ -2214,7 +2214,7 @@ namespace LinBox
 		//VectorDomainBase<Field>::accu.reset();
 
 		for (; i_idx != v1.first.end () && j != v2.end (); ++i_idx, ++i_elt) {
-			while (j != v2.end () && j->first < *i_idx) j++;
+			while (j != v2.end () && j->first < *i_idx) ++j;
 
 			if (j != v2.end () && j->first == *i_idx)
 				/*VectorDomainBase<Field>::*/accu.mulacc (*i_elt, j->second);
@@ -2237,8 +2237,8 @@ namespace LinBox
 		FieldAXPY<Field> accu(field());
 		//VectorDomainBase<Field>::accu.reset();
 
-		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
-			while (j != v2.end () && j->first < i->first) j++;
+		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); ++i) {
+			while (j != v2.end () && j->first < i->first) ++j;
 
 			if (j != v2.end () && j->first == i->first)
 				/*VectorDomainBase<Field>::*/accu.mulacc (i->second, j->second);
@@ -2263,7 +2263,7 @@ namespace LinBox
 		//VectorDomainBase<Field>::accu.reset();
 
 		for (; i_idx != v1.first.end () && j != v2.end (); ++i_idx, ++i_elt) {
-			while (j != v2.end () && j->first < *i_idx) j++;
+			while (j != v2.end () && j->first < *i_idx) ++j;
 
 			if (j != v2.end () && j->first == *i_idx)
 				/*VectorDomainBase<Field>::*/accu.mulacc (*i_elt, j->second);
@@ -2291,7 +2291,7 @@ namespace LinBox
 
 		for (; i_idx != v1.first.end () && j_idx != v2.first.end (); ++i_idx, ++i_elt) {
 			while (j_idx != v2.first.end () && *j_idx < *i_idx) {
-				j_idx++; j_elt++;
+				++j_idx; ++j_elt;
 			}
 
 			if (j_idx != v2.first.end () && *j_idx == *i_idx)

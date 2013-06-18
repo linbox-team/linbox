@@ -55,7 +55,7 @@ namespace LinBox
 	//this could be replaced by a fancier version that combines elements linearly at random
 	template<class Domain, class Vector>
 	void vectorGcdIn(typename Domain::Element& result, Domain& D, Vector& v) {
-		for (typename Vector::iterator i = v.begin(); i != v.end(); i++)
+		for (typename Vector::iterator i = v.begin(); i != v.end(); ++i)
 			D.gcdin(result, *i);
 	}
 
@@ -106,10 +106,10 @@ namespace LinBox
 			D.init(zero, 0);
 			D.init(denom, 1);
 			if (!alreadyReduced)
-				for (i=frac.begin(); i!=frac.end(); i++)
+				for (i=frac.begin(); i!=frac.end(); ++i)
 					reduceIn(D, *i);
 
-			for (i=frac.begin(); i!=frac.end(); i++) {
+			for (i=frac.begin(); i!=frac.end(); ++i) {
 				linbox_check(!D.isZero(i->second));
 				D.lcmin(denom, i->second);
 			}
@@ -117,7 +117,7 @@ namespace LinBox
 			numer = Vector(frac.size());
 			typename Vector::iterator j;
 
-			for (i=frac.begin(), j=numer.begin(); i!=frac.end(); i++, j++){
+			for (i=frac.begin(), j=numer.begin(); i!=frac.end(); ++i, ++j){
 				D.mul(*j, denom, i->first);
 				D.divin(*j, i->second);
 			}
@@ -130,7 +130,7 @@ namespace LinBox
 		{
 			typename Vector::iterator j;
 
-			for (j=numer.begin(); j!=numer.end(); j++)
+			for (j=numer.begin(); j!=numer.end(); ++j)
 				D.assign(*j, D.zero);
 		}
 
@@ -151,7 +151,7 @@ namespace LinBox
 			typename Vector::iterator i;
 			typename Vector::const_iterator j;
 
-			for (i=numer.begin(), j=VF.numer.begin(); i!=numer.end(); i++, j++)
+			for (i=numer.begin(), j=VF.numer.begin(); i!=numer.end(); ++i, ++j)
 				_domain.assign(*i, *j);
 		}
 
@@ -161,7 +161,7 @@ namespace LinBox
 			_domain.init(denom, 1);
 			typename Vector::iterator i;
 			numer.resize(size);
-			for (i=numer.begin(); i!=numer.end(); i++)
+			for (i=numer.begin(); i!=numer.end(); ++i)
 				_domain.init(*i, 0);
 		}
 
@@ -186,7 +186,7 @@ namespace LinBox
 				denom = g;
 				typename Vector::iterator it=numer.begin();
 				typename Vector::const_iterator io=other.numer.begin();
-				for (; it != numer.end(); it++, io++) {
+				for (; it != numer.end(); ++it, ++io) {
 					_domain.mulin(*it, s);
 					_domain.axpyin(*it, t, *io);
 				}
@@ -237,7 +237,7 @@ namespace LinBox
 			_domain.assign(denom, lincomb);
 			typename Vector::iterator it=numer.begin();
 			typename Vector::const_iterator io=other.numer.begin();
-			for (; it != numer.end(); it++, io++)
+			for (; it != numer.end(); ++it, ++io)
 				_domain.axpyin(*it, A, *io);
 			return true;
 		}
@@ -318,7 +318,7 @@ namespace LinBox
 
 			typename Vector::iterator i = this->numer.begin();
 			typename Vector::const_iterator j = x.numer.begin();
-			for (; i != this->numer.end(); i++, j++) {
+			for (; i != this->numer.end(); ++i, ++j) {
 				_domain.mulin(*i, xdenom_prime);
 				_domain.axpyin(*i, a_prime, *j);
 			}
@@ -333,7 +333,7 @@ namespace LinBox
 		std::ostream& write(std::ostream& os) const
 		{
 			os << "[";
-			for (typename Vector::const_iterator it=numer.begin(); it != numer.end(); it++) {
+			for (typename Vector::const_iterator it=numer.begin(); it != numer.end(); ++it) {
 				if (it != numer.begin()) os << " ";
 				os << *it;
 			}
@@ -346,7 +346,7 @@ namespace LinBox
 			linbox_check(numer.size()==result.size());
 			typename Vector::const_iterator it=numer.begin();
 			typename FVector::iterator ir=result.begin();
-			for (; it != numer.end(); it++, ir++) {
+			for (; it != numer.end(); ++it, ++ir) {
 				_domain.assign(ir->first, *it);
 				_domain.assign(ir->second, denom);
 			}
@@ -362,7 +362,7 @@ namespace LinBox
 			vectorGcdIn(gcd, _domain, numer);
 
 			_domain.divin(denom, gcd);
-			for (i=numer.begin(); i!=numer.end(); i++)
+			for (i=numer.begin(); i!=numer.end(); ++i)
 				_domain.divin(*i, gcd);
 			return (*this);
 		}

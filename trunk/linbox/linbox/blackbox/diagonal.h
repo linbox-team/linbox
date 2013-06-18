@@ -484,7 +484,7 @@ namespace LinBox
 		// vector elements to create output vector element.
 		for (y_iter = y.begin ();
 		     y_iter != y.end ();
-		     y_iter++, v_iter++, x_iter++)
+		     ++y_iter, ++v_iter, ++x_iter)
 			field().mul (*y_iter, *v_iter, *x_iter);
 
 		return y;
@@ -529,7 +529,7 @@ namespace LinBox
 		// Iterator over indices of input vector.
 		// For each element, multiply input element with corresponding element
 		// of stored vector and insert non-zero elements into output vector
-		for (x_iter = x.begin (); x_iter != x.end (); x_iter++) {
+		for (x_iter = x.begin (); x_iter != x.end (); ++x_iter) {
 			i = (*x_iter).first;
 			field().mul (entry, *(v_iter + i), (*x_iter).second);
 			if (!field().isZero (entry)) y.push_back ( std::pair<size_t, Element>(i, entry));
@@ -577,7 +577,7 @@ namespace LinBox
 		// Iterator over indices of input vector.
 		// For each element, multiply input element with corresponding element
 		// of stored vector and insert non-zero elements into output vector
-		for (x_iter = x.begin (); x_iter != x.end (); x_iter++)
+		for (x_iter = x.begin (); x_iter != x.end (); ++x_iter)
 		{
 			i = x_iter->first;
 			field().mul (entry, *(v_iter + i), (*x_iter).second);

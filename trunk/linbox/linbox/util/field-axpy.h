@@ -46,7 +46,7 @@ namespace LinBox
 	 * an object instead of a static variable to store the element a makes
 	 * this method thread-safe. (?? -bds)
 	 *
-	 * FieldAXPY<Fld> is an assignable type.  
+	 * FieldAXPY<Fld> is an assignable type.
 	 * The methods are mulacc(), accumulate(), assign(), reset(), get(), and field().
 	 * Of a const instance you can access get() and field().
 	 * [Note: get() may renormalize the value, but it remains constant as a field element.
@@ -80,7 +80,11 @@ namespace LinBox
 		 * @param faxpy
 		 */
 		FieldAXPY<Field> &operator = (const FieldAXPY &faxpy)
-			{ _y = faxpy._y; return *this; }
+			{
+				_field = faxpy.field();
+				_y = faxpy._y;
+				return *this;
+			}
 
 		/** Add a*x to y
 		 * y += a*x.

@@ -717,8 +717,10 @@ namespace LinBox
 					ttNonsingularSetup += tNonsingularSetup;
 					tNonsingularInv.start();
 #endif
+					assert(FMP != NULL);
 					BMDF.invin(*invA, *FMP, notfr); //notfr <- nullity
-					if (FMP != NULL) delete FMP;
+					// if (FMP != NULL)  // useless
+					delete FMP;
 					FMP = invA;
 #if 0
 					std::cout << "notfr = " << notfr << std::endl;
