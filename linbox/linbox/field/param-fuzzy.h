@@ -86,7 +86,7 @@ namespace LinBox
 		 * @param  F ParamFuzzy object.
 		 */
 		ParamFuzzy (const ParamFuzzy &F) :
-			_fuzz (F._fuzz)
+			_fuzz (F.fuzz())
 			,one(F.one),zero(F.zero),mOne(F.mOne)
 		{}
 
@@ -95,7 +95,13 @@ namespace LinBox
 		 * @param F constant reference to ParamFuzzy object
 		 */
 		ParamFuzzy &operator= (const ParamFuzzy &F)
-		{ return *this; }
+		{
+			if (&F == this)
+				return *this ;
+			this->_fuzz = F.fuzz() ;
+
+			return *this;
+		}
 
 		/** Initialization of field base element from an integer.
 		 * Behaves like C++ allocator construct.
@@ -406,6 +412,10 @@ namespace LinBox
 
 		//@}
 
+		double fuzz() const
+		{
+			return _fuzz ;
+		}
 	private:
 
 		/// Private static double for fuzz value
@@ -424,11 +434,10 @@ namespace LinBox
 #endif // __LINBOX_param_fuzzy_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

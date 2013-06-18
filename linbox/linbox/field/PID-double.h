@@ -87,7 +87,7 @@ namespace LinBox
 		inline static Element& gcd (Element& g, const Element& a, const Element& b)
 		{
 
-			double  u, v, q, r;
+			double  u, v;
 			u = a; v = b;
 
 			if (u < 0) {
@@ -99,6 +99,7 @@ namespace LinBox
 			}
 
 			while (v != 0) {
+				double q, r;
 				q = floor(u/v);
 				r = u -q*v;
 				u = v;
@@ -129,7 +130,7 @@ namespace LinBox
 		 */
 		inline static Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b)
 		{
-			double  u, v, u0, v0, u1, v1, u2, v2, q, r;
+			double  u, v,  u1, v1, u2, v2;
 
 			int aneg = 0, bneg = 0;
 			u = a; v = b;
@@ -148,6 +149,7 @@ namespace LinBox
 
 
 			while (v != 0) {
+				double u0,v0,q,r;
 				q = floor(u / v);
 				r = u -q*v;
 				u = v;
@@ -224,13 +226,14 @@ namespace LinBox
 							const Element& a_bound, const Element& b_bound)
 		{
 
-			double  u, v, u0, u1, u2, q, r;
+			double  u, v, u1, u2;
 
 			u1 = 0;
 			u2 = 1;
 			u = m; v = x;
 
 			while ((v != 0) && ( v > a_bound)) {
+				double  u0, q, r;
 				q = floor(u / v);
 				r = u -q*v;
 				u = v;
@@ -337,11 +340,10 @@ namespace LinBox
 
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

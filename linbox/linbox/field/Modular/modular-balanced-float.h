@@ -265,13 +265,13 @@ namespace LinBox
 		{
 
 			Element y = 0.;
-			Element t = 0.;
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
 				y =  fmodf(y, field().modulus);
 			}
 			else{
+			Element t = 0.;
 				size_t i=0;
 				for (;i< v1.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
@@ -292,7 +292,6 @@ namespace LinBox
 		{
 
 			Element y = 0.;
-			Element t =0.;
 
 
 			if (v1.first.size() < _nmax) {
@@ -301,6 +300,7 @@ namespace LinBox
 				y = fmodf(y, field().modulus);
 			}
 			else {
+			Element t =0.;
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)

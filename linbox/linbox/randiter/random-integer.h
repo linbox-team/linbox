@@ -64,9 +64,9 @@ namespace LinBox
 		{
 			linbox_check(bits>1);
 			if (! seed)
-				RandomIntegerIterator::setSeed( BaseTimer::seed() );
+				setSeed( BaseTimer::seed() );
 			else
-				RandomIntegerIterator::setSeed( seed );
+				setSeed( seed );
 
 			integer::random_exact<_Unsigned>(_integer,_bits);
 		}
@@ -195,11 +195,10 @@ namespace LinBox
 #endif //__LINBOX_random_integer_iterator_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -294,7 +294,7 @@ namespace LinBox
 		{
 			typename Vector::iterator i;
 
-			if ( (_m > 0) && (++_j >= _m) )
+			if ( (_m > 0) && (_j++ >= _m) )
 				return v;
 
 			for (i = v.begin (); i != v.end (); ++i)
@@ -417,7 +417,7 @@ namespace LinBox
 		Vector &get (Vector &v)
 		{
 
-			if (_m > 0 && ++_j >= _m)
+			if (_m > 0 && _j++ >= _m)
 				return v;
 
 			for (typename Vector::iterator i = v.begin (); i != v.end (); ++i) {
@@ -479,7 +479,7 @@ namespace LinBox
 			typename Field::Element x;
 			size_t i = (size_t) -1;
 
-			if (_m > 0 && ++_j >= _m)
+			if (_m > 0 && _j++ >= _m)
 				return v;
 
 			v.clear ();
@@ -559,7 +559,7 @@ namespace LinBox
 			typename Field::Element x;
 			int i;
 
-			if (_m > 0 && ++_j >= _m)
+			if (_m > 0 && _j++ >= _m)
 				return v;
 
 			v.clear ();
@@ -618,7 +618,7 @@ namespace LinBox
 			typename Field::Element x;
 			size_t i = (size_t) -1;
 
-			if (_m > 0 && ++_j >= _m)
+			if (_m > 0 && _j++ >= _m)
 				return v;
 
 			v.first.clear ();
@@ -768,11 +768,19 @@ namespace LinBox
 		/** Extraction operator form
 		*/
 		Self_t &operator >> (Vector &v)
-		{ get (v); return *this; }
+		{
+			get (v);
+			return *this;
+		}
+
 		size_t size () const { return _n; }
+
 		size_t pos () const { return _j; }
+
 		size_t dim () const { return _n; }
+
 		operator bool () const { return _j < _n; }
+
 		void reset () { _j = 0; }
 
 	private:
@@ -797,7 +805,7 @@ namespace LinBox
 			v.clear ();
 
 			if (_j < _n)
-				v.push_back (std::pair <size_t, typename Field::Element> (++_j, _one));
+				v.push_back (std::pair <size_t, typename Field::Element> (_j++, _one));
 
 			return v;
 		}
@@ -835,7 +843,7 @@ namespace LinBox
 			v.clear ();
 
 			if (_j < _n)
-				v.insert (std::pair <size_t, typename Field::Element> (++_j, _one));
+				v.insert (std::pair <size_t, typename Field::Element> (_j++, _one));
 
 			return v;
 		}
@@ -874,7 +882,7 @@ namespace LinBox
 			v.second.clear ();
 
 			if (_j < _n) {
-				v.first.push_back (++_j);
+				v.first.push_back (_j++);
 				v.second.push_back (_one);
 			}
 
@@ -906,11 +914,10 @@ namespace LinBox
 
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
