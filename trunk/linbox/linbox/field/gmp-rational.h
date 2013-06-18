@@ -793,7 +793,7 @@ namespace LinBox
 		 * @param q
 		 * @return \c bs
 		 */
-		integer& bitsize(integer& bs, const Element q) const
+		integer& bitsize(integer& bs, const Element & q) const
 		{
 			integer y; get_den(y,q);
 			integer x; get_num(x,q);

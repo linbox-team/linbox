@@ -398,6 +398,7 @@ namespace LinBox
 
 		_MD.copy (next_iterate->_v, _v0);
 
+		//! @bug what is this ?
 #ifdef LABL_DETAILED_TRACE
 		Matrix    u0 (A.rowdim (), _traits.blockingFactor ());
 		Matrix    v0 (A.rowdim (), _traits.blockingFactor ());

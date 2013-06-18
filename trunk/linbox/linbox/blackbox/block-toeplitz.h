@@ -32,6 +32,8 @@
 #include "linbox/util/debug.h"
 #include "linbox/blackbox/block-hankel.h"
 
+THIS_CODE_MAY_NOT_COMPILE_AND_IS_NOT_TESTED
+
 namespace LinBox
 {
 

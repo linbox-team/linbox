@@ -545,7 +545,7 @@ namespace LinBox
 				}
 
 				Element ainext, binext, cinext,dinext;
-				ainext=dinext=1;
+				dinext=1;
 				binext=cinext=0;
 				ainext = cur_ainext;
 				int K=-1;

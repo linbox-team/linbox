@@ -39,6 +39,7 @@
 //#define PADEMATRIX
 
 
+
 namespace LinBox
 {
 
@@ -48,7 +49,7 @@ namespace LinBox
 	public:
 		typedef _Field                    Field;
 		typedef typename Field::Element Element;
-		typedef BlasMatrix<Element> Coefficient;
+		typedef BlasMatrix<Field> Coefficient;
 	private:
 		const Field           *_field;
 		VectorDomain<Field>    _VD;
@@ -65,7 +66,7 @@ namespace LinBox
 		// Constructor from a stl vector of BlasMatrix reprenting
 		// all different elements in the Hankel representation
 		// vector is of odd size and represent the 1st column and last row append together
-		BlockHankelInverse(const Field &F, const std::vector<BlasMatrix<Element> > &P) :
+		BlockHankelInverse(const Field &F, const std::vector<BlasMatrix<Field> > &P) :
 			_field(&F), _VD(F), _BMD(F)
 		{
 			//write_maple("UAV",P);
@@ -75,8 +76,7 @@ namespace LinBox
 			size_t rowblock = (deg+1)>>1;
 			size_t colblock = rowblock;
 			_row = _col = colblock*block;
-			Element one;
-			field().init(one, 1UL);
+			Element one=field().one;
 			_numblock=rowblock;
 			_block= block;
 
@@ -86,21 +86,34 @@ namespace LinBox
 
 #ifndef PADEMATRIX
 			// construct the matrix polynomial serie  [ P(x)^T  I ]^T and [ P^T(x) I ]
-			std::vector<Coefficient> RightPowerSerie(deg+2), LeftPowerSerie(deg+2), LPS(deg+2), RPS(deg+2);
+			Coefficient Zero1(F,2*block,block);
+			Coefficient ZeroT(F,block,2*block);
+
+			std::vector<Coefficient> RightPowerSerie(deg+2,Zero1), LeftPowerSerie(deg+2,ZeroT);
+			std::vector<Coefficient> LPS(deg+2,Zero1), RPS(deg+2,ZeroT);
+
+			//free memory
+			Zero1.resize(0,0);
+			ZeroT.resize(0,0);
+
 			for (size_t i=0;i< deg+2; ++i){
-				LeftPowerSerie[i]  = Coefficient(2*block, block); LPS[i]= Coefficient(2*block, block);
-				RightPowerSerie[i] = Coefficient(block, 2*block); RPS[i]= Coefficient(block, 2*block);
+				// LeftPowerSerie[i]  = Coefficient(2*block, block); LPS[i]= Coefficient(2*block, block);
+				// RightPowerSerie[i] = Coefficient(block, 2*block); RPS[i]= Coefficient(block, 2*block);
 				if (i <deg) {
 					for (size_t j=0;j<block;++j)
 						for (size_t k=0;k<block;++k){
-							LeftPowerSerie[i].setEntry(j,k,  P[i].getEntry(j,k));LPS[i].setEntry(j,k,  P[i].getEntry(j,k));
-							RightPowerSerie[i].setEntry(j,k, P[i].getEntry(j,k));RPS[i].setEntry(j,k,  P[i].getEntry(j,k));
+							LeftPowerSerie[i]. setEntry(j,k, P[i].getEntry(j,k));
+							LPS[i].            setEntry(j,k, P[i].getEntry(j,k));
+							RightPowerSerie[i].setEntry(j,k, P[i].getEntry(j,k));
+							RPS[i].            setEntry(j,k, P[i].getEntry(j,k));
 						}
 				}
 			}
 			for (size_t j=0;j<block;++j){
-				LeftPowerSerie[0].setEntry(block+j, j , one);	LPS[0].setEntry(block+j, j , one);
-				RightPowerSerie[0].setEntry(j, block+j, one);   RPS[0].setEntry(j, j+block , one);
+				LeftPowerSerie[0]. setEntry(block+j, j , one);
+				LPS[0].            setEntry(block+j, j , one);
+				RightPowerSerie[0].setEntry(j, block+j , one);
+				RPS[0].            setEntry(j, block+j , one);
 			}
 
 			//write_maple("Sx",LeftPowerSerie);
@@ -134,7 +147,7 @@ namespace LinBox
 			//SBL.left_basis  (LP2, deg+1, dlp2);
 			//SBR.right_basis (RP2, deg+1, drp2);
 
-			std::vector<BlasMatrix<Element> > SLP1, SLP2, SRP1, SRP2;
+			std::vector<BlasMatrix<Field> > SLP1, SLP2, SRP1, SRP2;
 
 			extractLeftSigma  (SLP1, LP1, dlp1, block);
 			extractLeftSigma  (SLP2, LP2, dlp2, block);
@@ -150,7 +163,7 @@ namespace LinBox
 				drp[i]=1;
 			}
 
-			Coefficient ZeroSerie(block, block);
+			Coefficient ZeroSerie(field(),block, block);
 			std::vector<Coefficient> Serie(deg+2, ZeroSerie);
 			for (size_t i=0;i<deg;++i)
 				for (size_t j=0;j<block;++j)
@@ -160,14 +173,14 @@ namespace LinBox
 			SigmaBasis<Field> SBL(F, Serie);
 			SigmaBasis<Field> SBR(F, Serie);
 
-			std::vector<BlasMatrix<Element> > SLP1, SLP2, SRP1, SRP2;
+			std::vector<BlasMatrix<Field> > SLP1, SLP2, SRP1, SRP2;
 			SBL.multi_left_PadeMatrix  (SLP1, deg-1, SLP2, deg+1, dlp);
 			SBR.multi_right_PadeMatrix (SRP1, deg-1, SRP2, deg+1, drp);
 
 #endif
 
 
-			BlasMatrix<Element> Res(block,block), Inv(block, block);
+			BlasMatrix<Field> Res(field(),block,block), Inv(field(),block, block);
 
 			int singular;
 			// Normalization of SLP2 (V*)
@@ -229,7 +242,8 @@ namespace LinBox
 			   write_maple("V",SRP2);
 			   */
 
-			std::vector<Coefficient> rev_poly(SRP2.size());
+			Coefficient Zero2(field());
+			std::vector<Coefficient> rev_poly(SRP2.size(),Zero2);
 			for (size_t i=0;i<SRP2.size();++i)
 				rev_poly[i]= SRP2[SRP2.size()-1-i];
 
@@ -239,7 +253,7 @@ namespace LinBox
 			_H1 = new BlockHankel<Field>  (field(), rev_poly, BlockHankelTag::up); // V
 
 			rev_poly.resize(SRP2.size());
-			const BlasMatrix<Element> Zero(block,block);
+			const BlasMatrix<Field> Zero(field(),block,block);
 			for (size_t i=0;i<SRP1.size();++i)
 				rev_poly[i]= SRP1[SRP1.size()-1-i];
 			rev_poly[SRP1.size()]= Zero;
@@ -256,6 +270,7 @@ namespace LinBox
 
 		}
 
+		//!@bug copy constructor ??
 
 		~BlockHankelInverse()
 		{
@@ -303,8 +318,8 @@ namespace LinBox
 
 	protected:
 
-		void extractLeftSigma(std::vector<BlasMatrix<Element> >              &S,
-				      std::vector<BlasMatrix<Element> >      &SigmaBase,
+		void extractLeftSigma(std::vector<BlasMatrix<Field> >              &S,
+				      std::vector<BlasMatrix<Field> >      &SigmaBase,
 				      std::vector<size_t>                       &defect,
 				      size_t                                      block) const
 		{
@@ -356,7 +371,7 @@ namespace LinBox
 					max=defect[i];
 
 			// prepare S to receive the sigma base
-			const BlasMatrix<Element> Zero(block,block);
+			const BlasMatrix<Field> Zero(field(),block,block);
 			S.resize(max+1, Zero);
 
 			// extract the sigma base
@@ -369,8 +384,8 @@ namespace LinBox
 		}
 
 
-		void extractRightSigma(std::vector<BlasMatrix<Element> >            &S,
-				       std::vector<BlasMatrix<Element> >    &SigmaBase,
+		void extractRightSigma(std::vector<BlasMatrix<Field> >            &S,
+				       std::vector<BlasMatrix<Field> >    &SigmaBase,
 				       std::vector<size_t>                     &defect,
 				       size_t                                    block) const
 		{
@@ -423,7 +438,7 @@ namespace LinBox
 					max=defect[i];
 
 			// prepare S to receive the sigma base
-			const BlasMatrix<Element> Zero(block,block);
+			const BlasMatrix<Field> Zero(field(),block,block);
 			S.resize(max+1, Zero);
 
 			// extract the sigma base
