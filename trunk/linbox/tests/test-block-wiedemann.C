@@ -45,6 +45,7 @@
 #else
   #include "linbox/algorithms/blas-domain.h"
 #endif
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/block-wiedemann.h"
 #include "linbox/algorithms/coppersmith.h"
 #include "linbox/blackbox/sparse.h"
@@ -85,10 +86,12 @@ int main (int argc, char **argv)
 
 	//typedef Modular<double> Field;
 	typedef Modular<uint32_t> Field;
+	typedef MatrixDomain<Field> MyDomain;
 	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);
 	Field F ( (uint32_t) q);
+	MyDomain MD(F);
 	VectorDomain<Field> VD (F);
 
 	commentator().start("block wiedemann test suite", "block-wiedemann");
@@ -122,7 +125,7 @@ int main (int argc, char **argv)
 
 #if 1
 	// Yuhasz' Matrix Berlekamp Massey being used
-	CoppersmithSolver<Field> RCS(F);
+	CoppersmithSolver<MyDomain> RCS(MD);
 	RCS.solveNonSingular(x, D, b);
 
 	VD.write (report << "Matrix Berlekamp Massey solution:  ", x) << endl;
