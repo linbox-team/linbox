@@ -930,13 +930,13 @@ namespace LinBox
 		typename Matrix_::ConstColIterator i = A.colBegin ();
 		typename Vector2::iterator j = x.begin ();
 
-		int diff;
 
 		typename LinBox::Vector<Field>::Dense t (A.rowdim ());
 
 		_VD.copy (t, y);
 
 		while (j != x.end ()) {
+			int diff;
 			_VD.axpyin (t, j->second, *i);
 			diff = j->first; ++j;
 			diff -= j->first;
@@ -956,13 +956,13 @@ namespace LinBox
 		typename Matrix_::ConstColIterator i = A.colBegin ();
 		typename Vector2::iterator j = x.begin ();
 
-		int diff;
 
 		typename LinBox::Vector<Field>::Dense t (A.rowdim ());
 
 		_VD.copy (t, y);
 
 		while (j != x.end ()) {
+			int diff;
 			_VD.axpyin (t, j->second, *i);
 			diff = j->first; ++j;
 			diff -= j->first;
@@ -983,13 +983,13 @@ namespace LinBox
 		typename Vector2::iterator j_idx = x.first.begin ();
 		typename Vector2::iterator j_elt = x.second.begin ();
 
-		int diff;
 
 		typename LinBox::Vector<Field>::Dense t (A.rowdim ());
 
 		_VD.copy (t, y);
 
 		for (; j_idx != x.first.end (); ++j_elt) {
+			int diff;
 			_VD.axpyin (t, *j_elt, *i);
 			diff = *j_idx; ++j_idx;
 			diff -= *j_idx;
@@ -1190,11 +1190,10 @@ namespace LinBox
 #endif // __LINBOX_matrix_domain_INL
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

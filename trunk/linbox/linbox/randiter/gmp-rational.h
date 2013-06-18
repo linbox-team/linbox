@@ -98,7 +98,6 @@ namespace LinBox
 		 */
 		Element &random (Element &a)  const
 		{
-			int value = 0;
 
 			if (_size == 0) {
 				unsigned int s;
@@ -106,7 +105,7 @@ namespace LinBox
 
 				//(rand_r is obsolete)
 				 srand (s);
-				 value= rand();
+				 int value = rand();
 
 				mpz_set_si (mpq_numref (a.rep), value);
 
@@ -174,11 +173,10 @@ namespace LinBox
 #endif // __LINBOX_randiter_gmp_random_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

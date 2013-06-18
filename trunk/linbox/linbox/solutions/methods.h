@@ -599,6 +599,7 @@ namespace LinBox
 			    bool withRNS = false) :
 			_computeRNS(withRNS),
 			_imlroutine(1)
+			,_reduce(false),_nullcol(10)
 		{
 			singular(NONSINGULAR);
 		}
@@ -618,6 +619,7 @@ namespace LinBox
 			_reduce(reduce),
 			_nullcol(nullcolred),
 			_imlroutine(2)
+			,_computeRNS(false)
 		{
 			certificate(certify);
 		}
@@ -741,11 +743,10 @@ namespace LinBox
 #endif // __LINBOX_method_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

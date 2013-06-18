@@ -608,7 +608,7 @@ namespace LinBox
 				linbox_check (A.rowdim() == b.size());
 
 				bool consistent = true;
-				typename Field::Element * bp = &b[0];           ;
+				// typename Field::Element * bp = &b[0];           ;
 				typename Field::Element * xp = &x[0];
 
 				for (size_t i = A.getRank(); i < b.size(); ++i)
@@ -664,7 +664,7 @@ namespace LinBox
 			{
 				linbox_check (x.size() == A.rowdim());
 				linbox_check (A.coldim() == b.size());
-				typename Field::Element * bp = b.getPointer();
+				// typename Field::Element * bp = b.getPointer();
 				typename Field::Element * xp = x.getPointer();
 				size_t R = A.getRank();
 
@@ -906,7 +906,7 @@ namespace LinBox
 				linbox_check (A.rowdim() == b.size());
 
 				bool consistent = true;
-				typename Field::Element * bp = &b[0];           ;
+				// typename Field::Element * bp = &b[0];           ;
 				typename Field::Element * xp = &x[0];
 
 				for (size_t i = A.getRank(); i < b.size(); ++i)

@@ -57,7 +57,7 @@ namespace LinBox
 	template<class _Field>
 	void BlasMatrix<_Field>::createBlasMatrix (const Element * v)
 	{
-		Element * iter_v = const_cast<Element*>(v) ;
+		// Element * iter_v = const_cast<Element*>(v) ;
 		Element * v_end = const_cast<Element*>(v+(_col*_row)) ;
 		// Iterator  iter_addr = this->Begin();
 		Element * iter_addr = _ptr ;
@@ -802,10 +802,11 @@ namespace LinBox
 		template<class T>
 		void transposeIP(T *m, size_t h, size_t w)
 		{
-			size_t start, next, i;
+			size_t start;
 			T tmp;
 
 			for (start = 0; start <= w * h - 1; ++start) {
+				size_t next, i ;
 				next = start;
 				i = 0;
 				do {
@@ -1679,9 +1680,9 @@ namespace LinBox
 		if (_use_fflas){
 			//!@bug this supposes &x[0]++ == &x[1]
                         // PG: try to discover stride of x and y (not use it works on every platform)
-                        size_t ldx,ldy;
-                        ldx=(size_t)x.getStride();
-                        ldy=(size_t)y.getStride();
+			// size_t ldx,ldy;
+			// ldx=(size_t)x.getStride();
+			// ldy=(size_t)y.getStride();
 
 			FFLAS::fgemv((typename Field::Father_t) field(), FFLAS::FflasNoTrans,
 				      _row, _col,

@@ -202,7 +202,6 @@ namespace LinBox
 						j++;
 					}
 
-					unsigned long j_piv;
 
 					unsigned long l = 0;
 
@@ -211,6 +210,7 @@ namespace LinBox
 
 					// for all j such that (j>k) and A[k,j]!=0
 					while (l < npiv) {
+					unsigned long j_piv;
 						j_piv = lignepivot[l].first;
 
 						// if A[k,j]=0, then A[i,j] <-- A[i,j]
@@ -436,7 +436,6 @@ namespace LinBox
 						j++;
 					}
 
-					unsigned long j_piv;
 
 					unsigned long l = 0;
 
@@ -445,6 +444,7 @@ namespace LinBox
 
 					// for all j such that (j>k) and A[k,j]!=0
 					while (l < npiv) {
+						unsigned long j_piv;
 						j_piv = lignepivot[l].first;
 
 						// if A[k,j]=0, then A[i,j] <-- A[i,j]
@@ -642,7 +642,6 @@ namespace LinBox
 						j++;
 					}
 
-					unsigned long j_piv;
 					unsigned long l = 0;
 
 					for (; l < npiv; l++)
@@ -650,6 +649,7 @@ namespace LinBox
 
 					// for all j such that (j>k) and A[k,j]!=0
 					while (l < npiv) {
+					unsigned long j_piv;
 						j_piv = lignepivot[l].first;
 
 						// if A[k,j]=0, then A[i,j] <-- A[i,j]

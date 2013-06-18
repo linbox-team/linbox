@@ -1755,7 +1755,7 @@ namespace LinBox
 
 
 				// check if the 1st row is the short vector
-				latticeOK=true;
+				bool latticeOK=true;
 				_r.mul(tmp, Lattice.getEntry(0,0),ratio);
 				// mpz_mul(tmp.get_mpz(), Lattice(0,0).GetData(),ratio.get_mpz());
 				for (size_t i=1;i<k+1;++i){
@@ -1984,7 +1984,7 @@ namespace LinBox
 			size_t endingsteps  =minsteps;
 
 			// switchers
-			bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true;
+			bool numeratorOK=false, domoresteps=true, domorelattice=true;
 
 			// common denominator
 			Integer common_denom;

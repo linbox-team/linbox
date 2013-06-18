@@ -330,6 +330,7 @@ namespace LinBox
 
 		BlasMatrixApplyDomain(const Domain& D, const IMatrix &Mat) :
 			_domain(D), _matM(Mat), _MD(D), _m(Mat.rowdim()), _n(Mat.coldim())
+			,use_chunks(false),use_neg(false),chunk_size(0),chunks(NULL),vchunks(NULL)
 		{
 			_switcher= Classic;_rns=NULL;
 		}
@@ -1092,14 +1093,14 @@ namespace LinBox
 		n  = Mat.coldim();
 		mn = m*n;
 
-		size_t tmpsize, tmpbitsize, j;
 
 
 		if (num_chunks ==1)
 			for (size_t i=0; i<mn; ++i, ++it)
 				D.convert(*(chunks+i), *it);
-		else
+		else {
 			for (size_t i=0; i<mn; ++i, ++it) {
+				size_t tmpsize, tmpbitsize, j;
 				integer tmp;
 				double* pdbl = chunks + i;
 				D.convert(tmp, *it);
@@ -1219,6 +1220,7 @@ namespace LinBox
 #endif
 					}
 			}
+		}
 	}
 
 	/** \brief split an integer vector into a padic chunk representation
@@ -1237,13 +1239,13 @@ namespace LinBox
 		size_t mn;
 		mn = V.size();
 
-		size_t tmpsize, tmpbitsize, j;
 
 		if (num_chunks ==1)
 			for (size_t i=0; i<mn; ++i, ++it)
 				D.convert(*(chunks+i), *it);
-		else
+		else {
 			for (size_t i=0; i<mn; ++i, ++it) {
+				size_t tmpsize, tmpbitsize, j;
 				integer tmp;
 				double* pdbl = chunks + i*num_chunks;
 				D.convert(tmp, *it);
@@ -1357,6 +1359,7 @@ namespace LinBox
 #endif
 					}
 			}
+	}
 
 	}
 
@@ -1376,13 +1379,13 @@ namespace LinBox
 		size_t mn;
 		mn = V.size();
 
-		size_t tmpsize, tmpbitsize, j;
 
 		if (num_chunks ==1)
 			for (size_t i=0; i<mn; ++i, ++it)
 				D.convert(*(chunks+i), *it);
-		else
+		else {
 			for (size_t i=0; i<mn; ++i, ++it) {
+		size_t tmpsize, tmpbitsize, j;
 				integer tmp;
 				double* pdbl = chunks + i*num_chunks;
 				D.convert(tmp, *it);
@@ -1455,6 +1458,7 @@ namespace LinBox
 
 					}
 			}
+	}
 
 	}
 
@@ -1505,11 +1509,10 @@ namespace LinBox
 #endif // __LINBOX_apply_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

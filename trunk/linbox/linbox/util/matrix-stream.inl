@@ -93,7 +93,7 @@ namespace LinBox
 	(std::vector<Element> &array)
 	{
 		MatrixStreamError mse = GOOD;
-		size_t c = 0,loc,i,j;
+		size_t c = 0,i,j;
 		Element v;
 
 		while( true ) {
@@ -103,7 +103,7 @@ namespace LinBox
 				mse = getColumns(c);
 				if( mse > GOOD ) break;
 			}
-			loc = i*c+j;
+			size_t loc = i*c+j;
 			if( loc >= array.size() )
 				array.resize(c ? (i+1)*c : loc+1);
 			array[loc] = v;
@@ -296,7 +296,7 @@ namespace LinBox
 
 		bool c = getColumns(n); // need getColumns to be called
 
-		return( r && c ); 
+		return( r && c );
 	}
 
 	template<class Field>
@@ -337,11 +337,10 @@ namespace LinBox
 
 #endif // __LINBOX_matrix_stream_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

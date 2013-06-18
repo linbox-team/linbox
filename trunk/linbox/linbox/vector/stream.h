@@ -416,12 +416,12 @@ namespace LinBox
 
 		Vector &get (Vector &v)
 		{
-			double val;
 
 			if (_m > 0 && _j++ >= _m)
 				return v;
 
 			for (typename Vector::iterator i = v.begin (); i != v.end (); ++i) {
+				double val;
 				val = MT.randomDouble ();
 
 				if (val < _p)
@@ -478,8 +478,6 @@ namespace LinBox
 		{
 			typename Field::Element x;
 			size_t i = (size_t) -1;
-			double val;
-			int skip;
 
 			if (_m > 0 && _j++ >= _m)
 				return v;
@@ -487,6 +485,10 @@ namespace LinBox
 			v.clear ();
 
 			while (1) {
+
+				double val;
+				int skip;
+
 				val = MT.randomDouble ();
 				skip = (int) (ceil (log (val) * _1_log_1mp));
 
@@ -556,7 +558,6 @@ namespace LinBox
 		{
 			typename Field::Element x;
 			int i;
-			size_t idx;
 
 			if (_m > 0 && _j++ >= _m)
 				return v;
@@ -564,6 +565,7 @@ namespace LinBox
 			v.clear ();
 
 			for (i = 0; i < _k; i++) {
+				size_t idx;
 				_r.random (x);
 				while (!_field.isZero (v[idx = MT.randomIntRange (0, (uint32_t)_n)])) ;
 				v[idx] = x;
@@ -615,8 +617,6 @@ namespace LinBox
 		{
 			typename Field::Element x;
 			size_t i = (size_t) -1;
-			double val;
-			int skip;
 
 			if (_m > 0 && _j++ >= _m)
 				return v;
@@ -625,6 +625,10 @@ namespace LinBox
 			v.second.clear ();
 
 			while (1) {
+
+				double val;
+			int skip;
+
 				val = MT.randomDouble ();
 				skip = (int) (ceil (log (val) * _1_log_1mp));
 
@@ -747,8 +751,8 @@ namespace LinBox
 		{
 			static typename Field::Element zero;
 			typename Vector::iterator i;
-			size_t idx;
 
+			size_t idx;
 			for (i = v.begin (), idx = 0; i != v.end (); i++, idx++) {
 				if (idx == _j)
 					_field.init (*i, 1);

@@ -514,9 +514,8 @@ namespace LinBox
 		y.clear (); // we'll overwrite using push_backs.
 
 		// create field elements and size_t to be used in calculations
-		size_t i;
 		Element zero, entry;
-		field().init (zero, 0);
+		// field().init (zero, 0);
 		field().init (entry, 0);
 
 		// Create iterators for input and stored vectors
@@ -530,6 +529,7 @@ namespace LinBox
 		// For each element, multiply input element with corresponding element
 		// of stored vector and insert non-zero elements into output vector
 		for (x_iter = x.begin (); x_iter != x.end (); ++x_iter) {
+			size_t i;
 			i = (*x_iter).first;
 			field().mul (entry, *(v_iter + i), (*x_iter).second);
 			if (!field().isZero (entry)) y.push_back ( std::pair<size_t, Element>(i, entry));
@@ -562,9 +562,8 @@ namespace LinBox
 		y.clear (); // we'll overwrite using inserts
 
 		// create field elements and size_t to be used in calculations
-		size_t i;
 		Element zero, entry;
-		field().init (zero, 0);
+		// field().init (zero, 0);
 		field().init (entry, 0);
 
 		// Create iterators for input and stored vectors
@@ -579,6 +578,7 @@ namespace LinBox
 		// of stored vector and insert non-zero elements into output vector
 		for (x_iter = x.begin (); x_iter != x.end (); ++x_iter)
 		{
+		size_t i;
 			i = x_iter->first;
 			field().mul (entry, *(v_iter + i), (*x_iter).second);
 			if (!field().isZero (entry)) y.insert (y.end (), std::pair<size_t, Element>(i, entry));

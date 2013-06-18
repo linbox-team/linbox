@@ -1091,11 +1091,12 @@ namespace LinBox
 			long inv_w;
 
 			// compute w^(-1) mod p using extended euclidean algorithm
-			long x_int, y_int, q, tx, ty, temp;
+			long x_int, y_int, tx, ty;
 			x_int = (long) _p;
 			y_int = (long) w;
 			tx = 0; ty = 1;
 			while (y_int != 0) {
+				long q,temp;
 				q = x_int / y_int; // integer quotient
 				temp = y_int; y_int = x_int - q * y_int;
 				x_int = temp;
@@ -1312,11 +1313,12 @@ namespace LinBox
 			long inv_w;
 
 			// compute w^(-1) mod p using extended euclidean algorithm
-			long x_int, y_int, q, tx, ty, temp;
+			long x_int, y_int, tx, ty;
 			x_int = (long) _p;
 			y_int = (long) w;
 			tx = 0; ty = 1;
 			while (y_int != 0) {
+				long q,temp;
 				q = x_int / y_int; // integer quotient
 				temp = y_int; y_int = x_int - q * y_int;
 				x_int = temp;
@@ -1470,11 +1472,12 @@ namespace LinBox
 			long inv_w;
 
 			// compute w^(-1) mod p using extended euclidean algorithm
-			long x_int, y_int, q, tx, ty, temp;
+			long x_int, y_int, tx, ty;
 			x_int = (long) _p;
 			y_int = (long) w;
 			tx = 0; ty = 1;
 			while (y_int != 0) {
+				long q,temp;
 				q = x_int / y_int; // integer quotient
 				temp = y_int; y_int = x_int - q * y_int;
 				x_int = temp;

@@ -267,8 +267,8 @@ namespace LinBox
 				std::vector<size_t> done_col(_colnb,0);
 				for (size_t nextlig = 1 ; nextlig <= _rownb ; ++nextlig) {
 					// treating line before nextlig
-					size_t cur_place ;
 					while (i < Temp._start[nextlig]){
+						size_t cur_place ;
 						cur_place = start[Temp._colid[i]] + done_col[Temp._colid[i]] ;
 						_data[ cur_place ]  = Temp._data[i] ;
 						_colid[ cur_place ] = nextlig-1 ;
@@ -311,8 +311,8 @@ namespace LinBox
 				std::vector<size_t> done_col(_colnb,0);
 				for (size_t nextlig = 1 ; nextlig <= _rownb ; ++nextlig) {
 					// treating line before nextlig
-					size_t cur_place ;
 					while (i < _start[nextlig]){
+					size_t cur_place ;
 						cur_place = start[_colid[i]] + done_col[_colid[i]] ;
 						S._data[ cur_place ]  = _data[i] ;
 						S._colid[ cur_place ] = nextlig-1 ;

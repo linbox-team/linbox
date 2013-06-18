@@ -263,7 +263,6 @@ namespace LinBox
 		{
 
 			float y = 0.;
-			float t = 0.;
 			if (v1.size() < _nmax)
 			{
 				for (size_t i = 0; i< v1.size();++i)
@@ -272,6 +271,7 @@ namespace LinBox
 			}
 			else
 			{
+				float t = 0.;
 				size_t i=0;
 				for (;i< v1.size()- _nmax ;i=i+_nmax)
 				{
@@ -293,7 +293,6 @@ namespace LinBox
 		{
 
 			float y = 0.;
-			float t =0.;
 
 
 			if (v1.first.size() < _nmax)
@@ -304,6 +303,7 @@ namespace LinBox
 			}
 			else
 			{
+				float t =0.;
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax)
 				{
@@ -329,11 +329,10 @@ namespace LinBox
 #endif //__LINBOX_modular_float_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

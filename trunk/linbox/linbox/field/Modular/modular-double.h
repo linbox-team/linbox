@@ -356,13 +356,13 @@ namespace LinBox
 		{
 
 			double y = 0.;
-			double t = 0.;
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
 				y = fmod(y, field().modulus);
 			}
 			else{
+				double t = 0.;
 				size_t i=0;
 				for (;i< v1.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
@@ -384,13 +384,13 @@ namespace LinBox
 		{
 
 			double y = 0.;
-			double t = 0.;
 
 			if (v1.first.size() < _nmax) {
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
 				y = fmod(y, field().modulus);
 			} else {
+				double t = 0.;
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
@@ -412,11 +412,10 @@ namespace LinBox
 #endif //__LINBOX_modular_double_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -431,7 +431,7 @@ namespace LinBox
 		 * @param F constant reference to Modular object
 		 * @return reference to Modular object for self
 		 */
-		const Modular &operator=(const Modular &F)
+		Modular &operator=(const Modular &F)
 		{
 			ModularBase<Element>::_modulus = F._modulus;
 			F.assign(const_cast<Element&>(one),F.one);

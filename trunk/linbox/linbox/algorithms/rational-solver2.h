@@ -252,7 +252,7 @@ namespace LinBox
 			// compute ax = ax -r, the negative of residual
 			cblas_daxpy (n, -1, r, 1, ax, 1);
 			// compute possible shift
-			double normr1, normr2, normr3, shift1, shift2;
+			double normr1, normr2, normr3, shift2;
 			normr1 = cblas_dmax(n, r, 1);
 			normr2 = cblas_dmax(n, ax, 1);
 			normr3 = cblas_dmax(n, x, 1);
@@ -261,7 +261,7 @@ namespace LinBox
 			if (normr2 <.0000000001)
 				shift = 30;
 			else {
-				shift1 = floor(log (normr1 / normr2) / log2) - 2;
+				double shift1 = floor(log (normr1 / normr2) / log2) - 2;
 				shift = (int)(30 < shift1 ? 30 : shift1);
 			}
 
@@ -325,8 +325,8 @@ namespace LinBox
 		++ p_mpz;
 		++ p_x;
 
-		int sgn;
 		for (; p_mpz != num + n; ++ p_mpz, ++ p_x)  {
+		int sgn;
 			sgn = sign (*p_mpz);
 			tmp_mpz = denx * (*p_mpz);
 			tmp_mpz = abs (tmp_mpz);
@@ -477,11 +477,11 @@ namespace LinBox
 	//update r = r * shift - M d
 	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::update_r_int (double* r, int n, const double* M, const double* d, int shift)
 	{
-		int tmp;
 		double* p1;
 		const double* p2;
 		const double* pd;
 		for (p1 = r, p2 = M; p1 != r + n; ++ p1) {
+		int tmp;
 			tmp = (int)(long long int) *p1;
 			tmp <<= shift;
 			for (pd = d; pd != d + n; ++ pd, ++ p2) {
@@ -496,11 +496,11 @@ namespace LinBox
 	//update r = r * shift - M d
 	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::update_r_ll (double* r, int n, const double* M, const double* d, int shift)
 	{
-		long long int tmp;
 		double* p1;
 		const double* p2;
 		const double* pd;
 		for (p1 = r, p2 = M; p1 != r + n; ++ p1) {
+		long long int tmp;
 			tmp = (long long int) *p1;
 			tmp <<= shift;
 			for (pd = d; pd != d + n; ++ pd, ++ p2) {
@@ -515,9 +515,9 @@ namespace LinBox
 	inline double RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::cblas_dOOnorm(const double* M, int m, int n)
 	{
 		double norm = 0;
-		double old = 0;
 		const double* p;
 		for (p = M; p != M + (m * n); ) {
+		double old = 0;
 			old = norm;
 			norm = cblas_dasum (n, p ,1);
 			if (norm < old) norm = old;
@@ -535,11 +535,11 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::cblas_hbound (integer& b, int m, int n, const double* M)
 	{
-		double norm = 0;
 		const  double* p;
 		integer tmp;
 		b = 1;
 		for (p = M; p != M + (m * n); ) {
+			double norm = 0;
 			norm = cblas_dnrm2 (n, p ,1);
 			tmp =  norm;
 			integer::mulin (b, tmp);
@@ -554,11 +554,10 @@ namespace LinBox
 
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
