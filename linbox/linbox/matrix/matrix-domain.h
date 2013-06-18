@@ -181,7 +181,7 @@ namespace LinBox
 		 * B <--> A.
 		 * @returns Reference to B
 		 */
-		inline Submatrix &swap(Submatrix &B, const Submatrix &A) const {
+		inline Submatrix &swap(Submatrix &B, Submatrix &A) const {
 			return B.swap(A);
 		}
 

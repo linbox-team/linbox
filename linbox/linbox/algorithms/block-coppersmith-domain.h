@@ -32,9 +32,6 @@
 #include <iomanip>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/unparametric.h"
-#include "linbox/matrix/matrix-domain.h"
-#include "linbox/matrix/blas-matrix.h"
 
 #define DEFAULT_BLOCK_EARLY_TERM_THRESHOLD 10
 //Preprocessor variables for the state of BM_iterators
@@ -53,20 +50,21 @@ namespace LinBox
      * @bib
      * Yuhasz thesis ...
      */
-    template<class _Field, class _Sequence>
+    template<class _Domain, class _Sequence>
     class BlockCoppersmithDomain {
 
     public:
-        typedef _Field                           Field;
-        typedef typename Field::Element        Element;
+	typedef _Domain				Domain;
+        typedef typename Domain::Field           Field;
+        typedef typename Domain::Element       Element;
         typedef _Sequence                     Sequence;
-        typedef typename MatrixDomain<Field>::Matrix Coefficient;
+        typedef typename Domain::Matrix    Coefficient;
+        typedef typename Domain::Submatrix         Sub;
 
 
     protected:
         Sequence                          *_container;
-        const Field                           *_field;
-        MatrixDomain<Field>                       _MD;
+        const Domain                      *_MD;
         unsigned long            EARLY_TERM_THRESHOLD;
 
 
@@ -75,19 +73,21 @@ namespace LinBox
         BlockCoppersmithDomain (const BlockCoppersmithDomain<Field,
 Sequence> &Mat, unsigned long ett_default =
 DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
-            _container(Mat._container), _field(Mat._field),
-            _MD(Mat.field()),  EARLY_TERM_THRESHOLD (ett_default)
+            _container(Mat._container), _MD(Mat._MD),
+            EARLY_TERM_THRESHOLD (ett_default)
         {}
-        BlockCoppersmithDomain (Sequence *D, unsigned long ett_default
+        BlockCoppersmithDomain (const Domain& MD, Sequence *D, unsigned long ett_default
 = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
-            _container(D), _field(&(D->field ())), _MD(D->field ()),
+            _container(D), _MD(&MD), 
 EARLY_TERM_THRESHOLD (ett_default)
         {}
 
-
+	//matrix domain
+        const Domain &domain    () const { return *_MD; }
+	
         // field of the domain
-        const Field &field    () const { return *_field; }
-        const Field &getField    () const { return *_field; } // deprecated
+        const Field &field    () const { return domain().field(); }
+        const Field &getField    () const { return domain().field(); } // deprecated
 
         // sequence of the domain
         Sequence *getSequence () const
@@ -113,34 +113,32 @@ EARLY_TERM_THRESHOLD (ett_default)
 
 	public:
 
-		typedef _Field Field;
-		typedef MatrixDomain<Field> Domain;
-		typedef typename MatrixDomain<Field>::Matrix value_type;
-		typedef typename std::list<value_type>::const_iterator const_iterator;
+		typedef typename std::list<Coefficient>::const_iterator const_iterator;
 		typedef int size_type;
+		
+		inline const Domain &domain() const { return *_MD;}
+		inline const Field &field() const {return domain().field();}
 
 	private:
-
-		const Field* _field;
-		Domain  _MD;
-		std::list<value_type > _seq;
+		const Domain *_MD;
+		std::list<Coefficient> _seq;
 		size_type _size;
 		size_t _row, _col;
 
 	public:
-		BM_Seq(const Field& F, size_t r, size_t c) : _field(&F), _MD(F)
+		BM_Seq(const Domain & MD, size_t r, size_t c) : _MD(&MD) 
 		{
 			_row = r;
 			_col = c;
 			_size = 0;
 		}
-		BM_Seq(const Field& F, size_t r) : _field(&F), _MD(F)
+		BM_Seq(const Domain & MD, size_t r) : _MD(&MD) 
 		{
 			_row = r;
 			_col = r;
 			_size = 0;
 		}
-		BM_Seq(int n, value_type& M) : _field(&(M.field())),  _MD(M.field()), _seq(n, M), _size(n)
+		BM_Seq(const Domain &MD, int n, Coefficient& M) : _MD(&MD),  _seq(n, M), _size(n)
 		{
 			_row = M.rowdim();
 			_col = M.coldim();
@@ -149,7 +147,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 		BM_Seq() {}
 
 		BM_Seq(const BM_Seq& S) :
-			_field(S._field), _MD(S._MD), _seq(S._seq), _size(S._size), _row(S._row), _col(S._col)
+			 _MD(S._MD), _seq(S._seq), _size(S._size), _row(S._row), _col(S._col)
 		{}
 
 		BM_Seq & operator=(const BM_Seq& S)
@@ -158,24 +156,14 @@ EARLY_TERM_THRESHOLD (ett_default)
 				(*this)._size = S._size;
 				(*this)._row = S._row;
 				(*this)._col = S._col;
-				(*this)._field = S._field;
 				(*this)._MD = S._MD;
 				_seq.clear();
-				for(typename std::list<value_type>::const_iterator it = S._seq.begin(); it != S._seq.end(); ++it)
+				for(typename std::list<Coefficient>::const_iterator it = S._seq.begin(); it != S._seq.end(); it++)
 					_seq.push_back(*it);
 			}
 			return *this;
 		}
 
-		const Field& field()
-		{
-			return *_field;
-		}
-
-		Domain& domain()
-		{
-			return _MD;
-		}
 
 		size_t rowdim()
 		{
@@ -197,7 +185,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 			return _seq.end();
 		}
 
-		void push_back(const value_type &M)
+		void push_back(const Coefficient &M)
 		{
 			if(_row==M.rowdim() && _col==M.coldim()){
 				_seq.push_back(M);
@@ -207,7 +195,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 
 		bool operator==(const BM_Seq& l)
 		{
-			typename std::list<value_type>::const_iterator it, lit;
+			typename std::list<Coefficient>::const_iterator it, lit;
 			bool test = false;
 			if(_size==l._size && _row==l._row && _col==l._col){
 				test = true;
@@ -218,7 +206,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				}
 				else{
 					while(test && it!=_seq.end()){
-						test = _MD.areEqual(*it,*lit);
+						test = domain().areEqual(*it,*lit);
 						++it;
 						++lit;
 					}
@@ -239,16 +227,15 @@ EARLY_TERM_THRESHOLD (ett_default)
 
 		class BM_iterator {
 		public:
-			typedef std::list<typename BM_Seq::value_type> value_type;
+			typedef std::list<Coefficient> value_type;
 
 		private:
-			typedef typename BM_Seq::value_type matrix_type;
-			const Field* _field;
+			const Domain *_MD;
 			BM_Seq& _seq;
 			typename BM_Seq::size_type _size;
 			typename BM_Seq::size_type _t;
 			typename BM_Seq::const_iterator _seqel;
-			std::list<matrix_type> _gen;
+			std::list<Coefficient> _gen;
 			std::vector<size_t> _deg;
 			size_t _delta;
 			size_t _mu;
@@ -319,9 +306,12 @@ EARLY_TERM_THRESHOLD (ett_default)
 						_state._state = GeneratorFound;
 				}
 			}
+			//field and matrix domain functions
+			inline const Domain &domain() const { return *_MD;}
+			inline const Field &field() const { return domain().field();}
 			//Constructor
 			explicit BM_iterator(BM_Seq& s, typename BM_Seq::size_type elinit=0) :
-				_field(&(s.field())), _seq(s)
+				 _MD(&s.domain()),  _seq(s)
 			{
 				_row = s.rowdim();
 				_col = s.coldim();
@@ -332,11 +322,9 @@ EARLY_TERM_THRESHOLD (ett_default)
 				_deg = std::vector<size_t>(_row+_col);
 				for(size_t i = _col; i < _row+_col; ++i)
 					_deg[i] = 1;
-				typename Field::Element one;
-				field().init(one,1);
-				matrix_type gen1(field(),_col,_row+_col);
+				Coefficient gen1(field(),_col,_row+_col);
 				for(size_t i = 0; i<_col; ++i)
-					gen1.setEntry(i,i,one);
+					gen1.setEntry(i,i,field().one);
 				_gen.push_back(gen1);
 				_gensize = 1;
 				if(_size==0 || _t==_size)
@@ -348,20 +336,19 @@ EARLY_TERM_THRESHOLD (ett_default)
 
 			//Copy constructor
 			BM_iterator(const BM_Seq::BM_iterator & it) :
-				_field(it._field), _seq(it._seq), _size(it._size), _t(it._t),
+				_MD(&it.domain()), _seq(it._seq), _size(it._size), _t(it._t),
 				_seqel(it._seqel), _gen(it._gen), _deg(it._deg),
 				_delta(it._delta), _mu(it._mu), _beta(it._beta),
 				_sigma(it._sigma), _gensize(it._gensize),
 				_row(it._row), _col(it._col), _state(it._state) {}
 
-			inline const Field & field() const { return *_field; }
 
 			//Assignment operator not overloaded since BlasMatrix class has overloaded assignment error
 			//Overloaded assignment operator
 			BM_iterator& operator=(const typename BM_Seq::BM_iterator& it)
 			{
 				if(this != &it){
-					(*this)._field       = it._field;
+					(*this)._MD     = it._MD;
 					(*this)._row     = it._row;
 					(*this)._col     = it._col;
 					(*this)._seq     = it._seq;
@@ -376,7 +363,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 					(*this)._beta    = it._beta;
 					(*this)._state   = it._state;
 					_gen.clear();
-					for(typename std::list<matrix_type>::const_iterator git = it._gen.begin(); git != it._gen.end(); ++git)
+					for(typename std::list<Coefficient>::const_iterator git = it._gen.begin(); git != it._gen.end(); git++)
 						_seq.push_back(*git);
 				}
 				return (*this);
@@ -399,58 +386,43 @@ EARLY_TERM_THRESHOLD (ett_default)
 		private:
 
 			// Column Copy
-			template <class Matrix>
-			void ColumnCopy(Matrix &M, const Matrix &A, size_t i)
+			void ColumnCopy(Coefficient &M, Coefficient &A, size_t i)
 			{
 				size_t rowd = A.rowdim();
-				typename Domain::Submatrix MC(M,0,i,rowd,1);
-				typename Domain::Submatrix AC(A,0,i,rowd,1);
-				Domain& MD = _seq.domain();
-				MD.copy(MC,AC);
+				Sub MC(M,0,i,rowd,1);
+				Sub AC(A,0,i,rowd,1);
+				domain().copy(MC,AC);
 			}
 			// Column Swap
-			template <class Matrix>
-			void ColumnSwap(Matrix &M, size_t i, size_t j)
+			void ColumnSwap(Coefficient &M, size_t i, size_t j)
 			{
-				typename Matrix::Field F = M.field();
-				typename Matrix::Element t;
-				F.init(t,0);
 				size_t rowd = M.rowdim();
-				for(size_t k = 0; k < rowd; ++k){
-					F.assign(t,M.getEntry(k,i));
-					M.setEntry(k,i,M.getEntry(k,j));
-					M.setEntry(k,j,t);
-				}
+				Sub Ci(M,0,i,rowd,1);
+				Sub Cj(M,0,j,rowd,1);
+				domain().swap(Ci,Cj);
 			}
 			// Column Operation
-			template <class Matrix>
-			void ColumnAdd(Matrix &M, size_t i, size_t j, typename Matrix::Element el)
+			void ColumnAdd(Coefficient &M, size_t i, size_t j, Element el)
 			{
-				typename Matrix::Field F = M.field();
-				typename Matrix::Element t;
-				F.init(t,0);
 				size_t rowd = M.rowdim();
-				for (size_t k=0; k<rowd; ++k){
-					F.mul(t, M.getEntry(k,j), el);
-					F.addin(t,M.getEntry(k,i));
-					M.setEntry(k,i,t);
-				}
+				Coefficient temp(field(),rowd,1);
+				Sub Ci(M,0,i,rowd,1);
+				Sub Cj(M,0,j,rowd,1);
+				domain().mul(temp,Cj,el);
+				domain().addin(Ci,temp);
+
 			}
-			template <class Matrix>
-			Matrix  Algorithm3dot2(Matrix &D, std::vector<size_t> &d, size_t &mu, size_t &sigma, size_t &beta)
+			void  Algorithm3dot2(Coefficient &tau, Coefficient &D, std::vector<size_t> &d, size_t &mu, size_t &sigma, size_t &beta)
 			{
-				typename Matrix::Field F = D.field();
-				typename Matrix::Element one, pivel;
-				F.init(one, 1);
-				F.init(pivel,0);
+				Element pivel;
+				field().init(pivel,0);
 				// Retrieve the row and column dimensions of the sequence and the dimension of the discrepancy
 				size_t n = D.rowdim();
 				size_t nm  = D.coldim();
 				size_t m = nm-n;
 				//Initialize tau to the identity matrix
-				Matrix tau(F,nm,nm);
 				for(size_t i = 0; i<nm; ++i)
-					tau.setEntry(i,i,one);
+					tau.setEntry(i,i,field().one);
 				//Create the set of generator columns
 				std::set<size_t> gen;
 				typedef std::set<size_t>::key_type index_type;
@@ -461,7 +433,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 					std::set<size_t> pi;
 					pi.insert(m+i);
 					for(typename std::set<size_t>::iterator genit = gen.begin(); genit != gen.end(); ++genit){
-						if(!F.isZero(D.getEntry(i,*genit)))
+						if(!field().isZero(D.getEntry(i,*genit)))
 							pi.insert(*genit);
 					}
 
@@ -481,14 +453,14 @@ EARLY_TERM_THRESHOLD (ett_default)
 						}
 					}
 					pi.erase(piv);
-					F.assign(pivel,D.getEntry(i,piv));
+					field().assign(pivel,D.getEntry(i,piv));
 					//Handle the case when piv=m+i, so no swap is done
 					if(piv==m+i){
 						for(std::set<size_t>::iterator itpi = pi.begin(); itpi != pi.end(); ++itpi){
-							typename Matrix::Element temp;
-							F.init(temp,D.getEntry(i, *itpi));
-							F.negin(temp);
-							F.divin(temp,pivel);
+							Element temp;
+							field().init(temp,D.getEntry(i, *itpi));
+							field().negin(temp);
+							field().divin(temp,pivel);
 							ColumnAdd(tau, *itpi, piv, temp);
 							ColumnAdd(D, *itpi, piv, temp);
 						}
@@ -498,29 +470,29 @@ EARLY_TERM_THRESHOLD (ett_default)
 						pi.erase(m+i);
 						//Eliminate nonzero discrepancies in generator columns
 						for(typename std::set<size_t>::iterator itpi = pi.begin(); itpi != pi.end(); ++itpi){
-							typename Matrix::Element temp;
-							F.init(temp,D.getEntry(i, *itpi));
-							F.negin(temp);
-							F.divin(temp,pivel);
+							Element temp;
+							field().init(temp,D.getEntry(i, *itpi));
+							field().negin(temp);
+							field().divin(temp,pivel);
 							ColumnAdd(tau, *itpi, piv, temp);
 							ColumnAdd(D, *itpi, piv, temp);
 						}
-						typename Matrix::Element auxel;
-						F.init(auxel,D.getEntry(i,m+i));
+						Element auxel;
+						field().init(auxel,D.getEntry(i,m+i));
 						//Perform a major change and update an initialized auxiliary column
-						if(!F.isZero(auxel)){
-							typename Matrix::Element temp;
-							F.init(temp,D.getEntry(i, m+i));
-							F.negin(temp);
-							F.divin(temp,pivel);
+						if(!field().isZero(auxel)){
+							Element temp;
+							field().init(temp,D.getEntry(i, m+i));
+							field().negin(temp);
+							field().divin(temp,pivel);
 							ColumnAdd(tau, m+i, piv, temp);
 							ColumnAdd(D, m+i, piv, temp);
 							ColumnSwap(tau,piv, m+i);
 							ColumnSwap(D, piv, m+i);
 						}
 						else{
-							ColumnAdd(tau,m+i,piv,one);
-							ColumnAdd(D,m+i,piv,one);
+							ColumnAdd(tau,m+i,piv,field().one);
+							ColumnAdd(D,m+i,piv,field().one);
 							gen.erase(piv);
 						}
 						size_t tempdeg = d[piv];
@@ -533,7 +505,6 @@ EARLY_TERM_THRESHOLD (ett_default)
 						sigma = sigma - tempdeg + d[piv];
 					}
 				}
-				return tau;
 			}
 		public:
 			BM_iterator& operator++()
@@ -553,25 +524,24 @@ EARLY_TERM_THRESHOLD (ett_default)
 					return *this;
 				}
 				//Initialize the discrepancy
-				matrix_type disc(field(),_row, _row+_col);
+				Coefficient disc(field(),_row, _row+_col);
 				//Create two iterators, one for seq, and one for gen
 				typename BM_Seq::const_iterator cseqit;
-				typename std::list<matrix_type>::iterator genit;
+				typename std::list<Coefficient>::iterator genit;
 				//get a iterator to the seq element to be processed
 				cseqit = _seqel;
-				//Create a matrix domain for addition and multiplication
 
-				Domain& MD = _seq.domain();
 				//Compute the discrepancy
 				for(genit = _gen.begin(); genit!=_gen.end(); ++genit){
-					MD.axpyin(disc,*cseqit,*genit);
+					domain().axpyin(disc,*cseqit,*genit);
 					cseqit--;
 				}
 				//Compute tau with Algorith3.2
-				matrix_type tau(Algorithm3dot2(disc, _deg, _mu, _sigma, _beta));
+				Coefficient tau(field(), _row+_col, _row+_col);
+				Algorithm3dot2(tau, disc, _deg, _mu, _sigma, _beta);
 				//Multiply tau into each matrix in the generator
 				for(genit = _gen.begin(); genit!=_gen.end(); ++genit){
-					MD.mulin(*genit,tau);
+					domain().mulin(*genit,tau);
 				}
 				//Increment the auxiliary degrees and beta
 				for(size_t j = _col; j <_row+_col; ++j)
@@ -583,11 +553,11 @@ EARLY_TERM_THRESHOLD (ett_default)
 					if(tmax < (int)_deg[j])
 						tmax = (int)_deg[j];
 				if(tmax+1 > (int)_gensize){
-					_gen.push_back(matrix_type(field(),_col,_row+_col));
+					_gen.push_back(Coefficient(field(),_col,_row+_col));
 					++_gensize;
 				}
 				//Mimic multiplication be z in the auxiliary columns
-				typename std::list<matrix_type>::reverse_iterator g1,g2;
+				typename std::list<Coefficient>::reverse_iterator g1,g2;
 				g1 = _gen.rbegin();
 				g2 = _gen.rbegin();
 				++g1;
@@ -599,7 +569,8 @@ EARLY_TERM_THRESHOLD (ett_default)
 					++g2;
 				}
 				genit = _gen.begin();
-				matrix_type z1(field(),_col,_row+_col);
+				Coefficient z1(field(),_col,_row+_col);
+				//z1.zero();
 				for(size_t k = _col; k < _row+_col; ++k)
 					ColumnCopy(*genit, z1,k);
 				//Increment the t and seqel to the next element
@@ -645,25 +616,24 @@ EARLY_TERM_THRESHOLD (ett_default)
 					return *this;
 				}
 				//Initialize the discrepancy
-				matrix_type disc(field(),_row, _row+_col);
+				Coefficient disc(field(),_row, _row+_col);
 				//Create two iterators, one for seq, and one for gen
 				typename BM_Seq::const_iterator cseqit;
-				typename std::list<matrix_type>::iterator genit;
+				typename std::list<Coefficient>::iterator genit;
 				//get an iterator to the seq element to be processed
 				cseqit = _seqel;
-				//Create a matrix domain for addition and multiplication
-				Domain& MD = _seq.domain();
 				//Compute the discrepancy
 				for(genit = _gen.begin(); genit!=_gen.end(); ++genit, cseqit--){
-					MD.axpyin(disc,*cseqit,*genit);
+					domain().axpyin(disc,*cseqit,*genit);
 				} // cost: k*n^3 (nxn matrix muladds where k is current generator length)
 				  // is a reductive addition over independent muls.
 				//Compute tau with Algorith3.2
-				matrix_type tau(Algorithm3dot2(disc, _deg, _mu, _sigma, _beta));
+				Coefficient tau(field(), _row+_col, _row+_col);
+				Algorithm3dot2(tau, disc, _deg, _mu, _sigma, _beta);
 				  // cost: n^3 for elim on n x about 2n
 				//Multiply tau into each matrix in the generator
 				for(genit = _gen.begin(); genit!=_gen.end(); ++genit){
-					MD.mulin(*genit,tau);
+					domain().mulin(*genit,tau);
 				} // cost: k*n^3 (nxn matrix muls where k is current generator length)
 				  // is k independent muls with a shared mat tau.
 				//Increment the auxiliary degrees and beta
@@ -676,11 +646,11 @@ EARLY_TERM_THRESHOLD (ett_default)
 					if(tmax < _deg[j])
 						tmax = (int)_deg[j];
 				if(tmax+1 > _gensize){
-					_gen.push_back(matrix_type(field(),_col,_row+_col));
+					_gen.push_back(Coefficient(field(),_col,_row+_col));
 					++_gensize;
 				}
 				//Mimic multiplication by z in the auxiliary columns
-				typename std::list<matrix_type>::reverse_iterator g1,g2;
+				typename std::list<Coefficient>::reverse_iterator g1,g2;
 				g1 = _gen.rbegin();
 				g2 = _gen.rbegin();
 				++g1;
@@ -692,7 +662,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 					++g2;
 				}
 				genit = _gen.begin();
-				matrix_type z1(field(),_col,_row+_col);
+				Coefficient z1(field(),_col,_row+_col);
 				for(size_t k = _col; k < _row+_col; ++k)
 					ColumnCopy(*genit, z1,k);
 				//Increment the t and seqel to the next element
@@ -729,11 +699,11 @@ EARLY_TERM_THRESHOLD (ett_default)
 				return &_gen;
 			}
 			//Return a vector representing the reversal, by nominal degree, of the current generator
-			std::vector<matrix_type> GetGenerator()
+			std::vector<Coefficient> GetGenerator()
 			{
-				std::vector<matrix_type> revgen(_mu+1, matrix_type(field(),_col,_col));
+				std::vector<Coefficient> revgen(_mu+1, Coefficient(field(),_col,_col));
 				for(size_t i = 0; i<_col; ++i){
-					typename std::list<matrix_type>::iterator genit = _gen.begin();
+					typename std::list<Coefficient>::iterator genit = _gen.begin();
 					for(int j = 0; j < (int)_deg[i]+1; ++j){
 						ColumnCopy(revgen[_deg[i]-j], *genit,i);
 						++genit;
@@ -787,8 +757,8 @@ EARLY_TERM_THRESHOLD (ett_default)
     }; //end of class BlockCoppersmithDomain
 
 
-                       template<class _Field, class _Sequence>
-    std::vector<size_t>  BlockCoppersmithDomain<_Field,
+                       template<class _Domain, class _Sequence>
+    std::vector<size_t>  BlockCoppersmithDomain<_Domain,
 _Sequence>::right_minpoly (std::vector<Coefficient> &P)
     {
 	    //Get the row and column dimensions
@@ -797,7 +767,7 @@ _Sequence>::right_minpoly (std::vector<Coefficient> &P)
 
 	    typename Sequence::const_iterator contiter(_container->begin());
 	    //Create the BM_Seq, that will use the Coppersmith Block Berlekamp Massey Algorithm to compute the minimal generator.
-	    BM_Seq seq(field(),r,c);
+	    BM_Seq seq(domain(),r,c);
 
 	    //Push the first projection onto the BM_Seq
 
