@@ -79,7 +79,7 @@ namespace LinBox
 		/** Assignment operator
 		 * @param faxpy
 		 */
-		FieldAXPY<Field> &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<Field> &operator = (const FieldAXPY<Field> &faxpy)
 			{
 				_field = faxpy.field();
 				_y = faxpy._y;
