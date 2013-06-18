@@ -31,12 +31,8 @@ using namespace std;
 
 #include "linbox/integer.h"
 #include "linbox/util/commentator.h"
-#include "linbox/matrix/matrix-category.h"
-#include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/block-coppersmith-domain.h"
-//#include "linbox/algorithms/bm-seq.h"
-#include "linbox/vector/vector-domain.h"
 
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
@@ -44,29 +40,30 @@ using namespace std;
 namespace LinBox
 {
 
-	template <class _Field>
+	template <class _Domain>
 	class CoppersmithSolver{
 
 	public:
-		typedef _Field                          Field;
-		typedef typename Field::Element       Element;
+		typedef _Domain 			Domain;
+		typedef typename Domain::Field                    Field;
+		typedef typename Domain::Element       Element;
 		typedef typename Field::RandIter     RandIter;
-		typedef typename MatrixDomain<_Field>::Matrix 	Block;
+		typedef typename Domain::Matrix 	Block;
+		typedef typename Domain::Submatrix 	Sub;
 
-		inline const Field & field() const { return *_field; }
+		inline const Domain & domain() const { return *_MD; }
+		inline const Field & field() const { return domain().field(); }
 	protected:
-		const Field                         *_field;
-		MatrixDomain<Field>     _MD;
-		VectorDomain<Field>         _VD;
+		const Domain     *_MD;
 		RandIter                   _rand;
 
 	public:
-		CoppersmithSolver(const Field &F) :
-			_field(&F), _MD(F), _VD(F), _rand(F)
+		CoppersmithSolver(const Domain &MD) :
+			 _MD(&MD), _rand(MD.field())
 		{}
 
-		CoppersmithSolver (const Field &F, const RandIter &rand) :
-			_field(&F), _MD(F), _VD(F), _rand(rand)
+		CoppersmithSolver (const Domain &MD, const RandIter &rand) :
+			_MD(&MD),  _rand(rand)
 		{}
 
 		template <class Vector, class Blackbox>
@@ -90,17 +87,13 @@ namespace LinBox
 			Block V(field(),d,c);
 
 			//Pick random entries for U and W. W will become the last c-1 columns of V
-			for(size_t i=0; i<r;i++)
-				for(size_t j=0; j<d; j++)
-					_rand.random(U.refEntry(i,j));
-			for(size_t i=0; i<d;i++)
-				for(size_t j=0; j<c-1; j++){
-					_rand.random(W.refEntry(i,j));
-			}
 
+			U.random();
+			W.random();
+			
 			//Multiply W by B on the left and place it in the last c-1 columns of V
-			typename MatrixDomain<Field>::Submatrix V2(V,0,1,d,c-1);
-			_MD.mul(V2,B,W);
+			Sub V2(V,0,1,d,c-1);
+			domain().mul(V2,B,W);
 
 			//Make the first column of V a copy of the right side of the system, y
 			for(size_t i=0; i<d; i++)
@@ -110,7 +103,7 @@ namespace LinBox
 			BlackboxBlockContainer<Field, Blackbox > blockseq(&B,field(),U,V);
 
 			//Get the generator of the projection using the Coppersmith algorithm (slightly modified by Yuhasz)
-			BlockCoppersmithDomain<Field, BlackboxBlockContainer<Field, Blackbox> > BCD(&blockseq,d);
+			BlockCoppersmithDomain<Domain, BlackboxBlockContainer<Field, Blackbox> > BCD(domain(), &blockseq,d);
 			std::vector<Block> gen;
 			std::vector<size_t> deg;
 			deg = BCD.right_minpoly(gen);
@@ -136,18 +129,18 @@ namespace LinBox
 			Block xm(field(),d,1);
 			bool odd = true;
 			for(size_t i = 1; i < mu+1; i++){
-				typename MatrixDomain<Field>::Submatrix gencol(gen[i],0,idx,c,1); // BB changed d,1 to c,1
+				Sub gencol(gen[i],0,idx,c,1); // BB changed d,1 to c,1
 				Block BVgencol(field(),d,1);
 				if(odd){
-					_MD.mul(BVgencol,BVo,gencol);
-					_MD.addin(xm, BVgencol);
-					_MD.mul(BVe,B,BVo);
+					domain().mul(BVgencol,BVo,gencol);
+					domain().addin(xm, BVgencol);
+					domain().mul(BVe,B,BVo);
 					odd=false;
 				}
 				else{
-					_MD.mul(BVgencol,BVe,gencol);
-					_MD.addin(xm, BVgencol);
-					_MD.mul(BVo,B,BVe);
+					domain().mul(BVgencol,BVe,gencol);
+					domain().addin(xm, BVgencol);
+					domain().mul(BVo,B,BVe);
 					odd=true;
 				}
 
@@ -157,28 +150,32 @@ namespace LinBox
 			//Multiply the corresponding column of W (the last c-1 columns of V before application of B) by the generator element
 			//Accumulate the results in xm
 			for(size_t i = 1; i < c; i++){
-				typename MatrixDomain<Field>::Submatrix Wcol(W,0,i-1,d,1);
+				Sub Wcol(W,0,i-1,d,1);
 				Block Wcolgen0(field(),d,1);
-				_MD.mul(Wcolgen0, Wcol, gen[0].getEntry(i,idx));
-				_MD.addin(xm,Wcolgen0);
+				domain().mul(Wcolgen0, Wcol, gen[0].getEntry(i,idx));
+				domain().addin(xm,Wcolgen0);
 			}
 
 			//Multiply xm by -1(move to the correct side of the equation) and divide the the 0,idx entry of the generator constant
-			_MD.negin(xm);
-			typename Field::Element gen0inv;
-			_MD.mulin(xm, field().inv(gen0inv, gen[0].getEntry(0,idx)));
+			Element gen0inv;
+			field().inv(gen0inv,gen[0].getEntry(0,idx));
+			field().negin(gen0inv);
+			domain().mulin(xm, gen0inv);
 
+#if 0
 			//Test to see if the answer works with U
 			Block Bxm(field(),d,1), UBxm(field(),r,1), Uycol(field(), r,1);
-			typename MatrixDomain<Field>::Submatrix ycol(V,0,0,d,1);
-			_MD.mul(Uycol, U, ycol);
-			_MD.mul(Bxm, B, xm);
-			_MD.mul(UBxm, U, Bxm);
+			Sub ycol(V,0,0,d,1);
+			domain().mul(Uycol, U, ycol);
+			domain().mul(Bxm, B, xm);
+			domain().mul(UBxm, U, Bxm);
 
-			if(_MD.areEqual(UBxm, Uycol))
+			if(domain().areEqual(UBxm, Uycol))
 				report << "The solution matches when projected by U" << endl;
 			else
 				report << "The solution does not match when projected by U" << endl;
+#endif
+
 
 			//Copy xm into x (Change type from 1 column matrix to Vector)
 			for(size_t i =0; i<d; i++)
