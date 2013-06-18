@@ -1499,7 +1499,7 @@ namespace LinBox
 					if (PermPivots[i]>i)
 						std::swap(triv_column[i], triv_column[PermPivots[i]]);
 
-				bool PTrivial=true;
+				// bool PTrivial=true; // no need for that here
 				if (nbr_triv > (int)rank) {
 					size_t idx_triv, idx_nontriv;
 					idx_nontriv = 0;
@@ -1508,12 +1508,12 @@ namespace LinBox
 					for (size_t i=0;i<m;++i){
 						if (triv_column[i]!=0){
 							PermTrivial[i]=idx_nontriv;
-							if (i!=idx_nontriv) PTrivial=false;
+							// if (i!=idx_nontriv) PTrivial=false;
 							idx_nontriv++;
 						}
 						else {
 							PermTrivial[i]=idx_triv;
-							if (i!=idx_triv) PTrivial=false;
+							// if (i!=idx_triv) PTrivial=false;
 							idx_triv++;
 						}
 					}

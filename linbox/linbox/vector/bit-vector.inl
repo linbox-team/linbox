@@ -129,10 +129,13 @@ namespace LinBox
 		friend class const_iterator;
 		friend class const_reference;
 
+#if 0 /*  unused */
 		unsigned long neg_mask_word (void)
 		{
 			return *_word & ~(1UL << _pos);
 		}
+#endif
+
 		unsigned long get_bit ()
 		{
 			return *_word & (1UL << _pos);

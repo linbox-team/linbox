@@ -33,6 +33,7 @@
 
 //#define BHANKEL_TIMER
 
+
 namespace LinBox
 {
 
@@ -45,14 +46,14 @@ namespace LinBox
 	// note that P is done as a mirror
 	// here we compute a^d.P(1/a^d) where d is the degree of P
 	template<class Field>
-	void MatPolyHornerEval (const Field                                               &F,
-				BlasMatrix<typename Field::Element>                       &R,
-				const std::vector<BlasMatrix<typename Field::Element> >   &P,
-				const typename Field::Element                             &a)
+	void MatPolyHornerEval (const Field                             &F,
+				BlasMatrix<Field>                       &R,
+				const std::vector<BlasMatrix<Field> >   &P,
+				const typename Field::Element           &a)
 	{
 		R= P[0];
-		typename BlasMatrix<typename Field::Element>::Iterator it_R;
-		typename BlasMatrix<typename Field::Element>::ConstIterator it_P;
+		typename BlasMatrix<Field>::Iterator it_R;
+		typename BlasMatrix<Field>::ConstIterator it_P;
 		for (size_t k=1; k<P.size(); ++k){
 			it_R = R.Begin();
 			it_P = P[k].Begin();
@@ -88,10 +89,10 @@ namespace LinBox
 	}
 
 	template<class Field>
-	void BlockHankelEvaluation(const Field                                              &F,
-				   std::vector<BlasMatrix<typename Field::Element> >        &E,
-				   const std::vector<BlasMatrix<typename Field::Element> >  &P,
-				   size_t                                                    k)
+	void BlockHankelEvaluation(const Field                            &F,
+				   std::vector<BlasMatrix<Field> >        &E,
+				   const std::vector<BlasMatrix<Field> >  &P,
+				   size_t                                 k)
 	{
 		// do the evaluation of the Block Hankel Matrix using Horner Rules
 		// at k differents points (0,1,2,..,k-1)
@@ -216,13 +217,14 @@ namespace LinBox
 		typedef _Field Field;
 		typedef typename Field::Element Element;
 
+		//! is this used ?
 		BlockHankel() {}
 
 		// Constructor from a stl vector of BlasMatrix reprenting
 		// all different elements in the Hankel representation
 		// order of element will depend on first column and/or  last row
 		// (plain->[column|row];  up -> [column]; low -> [row];)
-		BlockHankel (Field &F, const std::vector<BlasMatrix<Element> > &H, BlockHankelTag::shape s= BlockHankelTag::plain) :
+		BlockHankel (Field &F, const std::vector<BlasMatrix<Field> > &H, BlockHankelTag::shape s= BlockHankelTag::plain) :
 			_field(&F), _BMD(F)
 		{
 			linbox_check( H.begin()->rowdim() != H.begin()->coldim());
@@ -280,8 +282,8 @@ namespace LinBox
 			BHVectorLagrangeCoeff(field(), _veclagrange, _numpoints);
 
 
-			_vander     = BlasMatrix<Element> (_numpoints,_numpoints);
-			_inv_vander = BlasMatrix<Element> (_numpoints,_numpoints);
+			_vander     = BlasMatrix<Field> (_field,_numpoints,_numpoints);
+			_inv_vander = BlasMatrix<Field> (_field,_numpoints,_numpoints);
 
 			std::vector<Element> points(_numpoints);
 			Element one;
@@ -301,15 +303,16 @@ namespace LinBox
 
 			_BMD.inv(_inv_vander, _vander);
 
-			_partial_vander= BlasMatrix<Element> (_vander, 0, 0, _numpoints, _colblock);
+			//! @warning memory wasted
+			_partial_vander= BlasMatrix<Field> (_vander, 0, 0, _numpoints, _colblock);
 			size_t shift=_colblock-1;
 			if ( _shape == BlockHankelTag::up)
 				shift=0;
 
-			_partial_inv_vander= BlasMatrix<Element> (_inv_vander, shift, 0, _colblock, _numpoints);
+			_partial_inv_vander= BlasMatrix<Field> (_inv_vander, shift, 0, _colblock, _numpoints);
 
-			_x = BlasMatrix<Element> (_numpoints, _block);
-			_y = BlasMatrix<Element> (_colblock, _block);
+			_x = BlasMatrix<Field> (_field,_numpoints, _block);
+			_y = BlasMatrix<Field> (_field,_colblock, _block);
 
 
 			_Tapply.clear();
@@ -321,6 +324,14 @@ namespace LinBox
 		BlockHankel (const BlockHankel<Field> &H) :
 			_field(H._field()), _matpoly (H._matpoly), _deg(H._deg),
 			_row(H._row), _col(H._col), _rowblock(H._rowblock), _colblock(H._colblock), _block(H._block), _shape(H._shape)
+			// dummy defaults
+			,_vander(BlasMatrix<Field>(*_field))
+			,_partial_vander(BlasMatrix<Field>(*_field))
+			,_inv_vander(BlasMatrix<Field>(*_field))
+			,_partial_inv_vander(BlasMatrix<Field>(*_field))
+			,_y(BlasMatrix<Field>(*_field))
+			,_x(BlasMatrix<Field>(*_field))
+			,_numpoints(0)
 		{}
 
 		// get the column dimension
@@ -415,15 +426,15 @@ namespace LinBox
 
 	private:
 		const Field  *_field;
-		std::vector<BlasMatrix<Element> >                _matpoly;
+		std::vector<BlasMatrix<Field> >                _matpoly;
 		mutable std::vector<std::vector<Element> >       _vecpoly;
 		std::vector<std::vector<Element> >           _veclagrange;
-		BlasMatrix<Element>                               _vander;
-		BlasMatrix<Element>                       _partial_vander;
-		BlasMatrix<Element>                           _inv_vander;
-		BlasMatrix<Element>                   _partial_inv_vander;
-		mutable BlasMatrix<Element>                            _y;
-		mutable BlasMatrix<Element>                            _x;
+		BlasMatrix<Field>                               _vander;
+		BlasMatrix<Field>                       _partial_vander;
+		BlasMatrix<Field>                           _inv_vander;
+		BlasMatrix<Field>                   _partial_inv_vander;
+		mutable BlasMatrix<Field>                            _y;
+		mutable BlasMatrix<Field>                            _x;
 		BlasMatrixDomain<Field>                              _BMD;
 		size_t _deg;
 		size_t _row;
