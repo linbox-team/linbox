@@ -247,8 +247,8 @@ namespace LinBox
 					inv(D_1,M[(size_t)i],m);
 					PP[(size_t)i] = (PP[(size_t)i]*D_1) % m;
 				}
-				bool terminated = true;
 				if (RR.reconstructRational(num1,den1,PP,m,-1)) {
+					bool terminated = true;
 					if (den==den1) {
 						for (int i=0; i < num.size(); ++i) {
 							if (num[(size_t)i] != num1[(size_t)i]) {
@@ -279,7 +279,7 @@ namespace LinBox
 
 						}
 						return p;
-						break;
+						// break;
 					}
 				}
 			}
@@ -290,9 +290,9 @@ namespace LinBox
 		size_t i =0;
 		integer t,tt;
 		integer err;
-		size_t max_res=0;int max_i;
+		// size_t max_res=0;int max_i;
 		// double rel;
-		size_t max_resu=0; int max_iu;
+		// size_t max_resu=0; int max_iu;
 		// size_t max_err = 0;
 		Quotient qerr;
 		p.resize(PP.size());
@@ -305,23 +305,23 @@ namespace LinBox
 			Q.get_den(t, *it);
 			Q.get_num(tt,*it);
 			err = M[(size_t)i]/t;
-			size_t resi = err.bitsize() + tt.bitsize() -1;
-			size_t resu = t.bitsize() + tt.bitsize() -1;
-			if (resi > max_res) {max_res = resi; max_i=i;}
-			if (resu > max_resu) {max_resu = resu; max_iu =i;}
+			// size_t resi = err.bitsize() + tt.bitsize() -1;
+			// size_t resu = t.bitsize() + tt.bitsize() -1;
+			// if (resi > max_res) {max_res = resi; max_i=i;}
+			// if (resu > max_resu) {max_resu = resu; max_iu =i;}
 			//size_t resu = t.bitsize() + tt.bitsize() -1;
 			//if (err.bitsize() > max_err) max_err = err.bitsize();
 		}
 
-		max_res=0;
+		// max_res=0;
 		for (it= p.begin()+1; it != p.end(); ++it) {
 			//A.field().init(*it, PP[(size_t)i],M[(size_t)i]);
 			Q.get_den(t, *it);
 			Q.get_den(tt, *(it-1));
 			Q.init(qerr,t,tt);
 			Q.get_num(tt, *it);
-			size_t resi = Q.bitsize(t,qerr) + tt.bitsize() -2;
-			if (resi > max_res) {max_res = resi; max_i=i;}
+			// size_t resi = Q.bitsize(t,qerr) + tt.bitsize() -2;
+			// if (resi > max_res) {max_res = resi; max_i=i;}
 			//if (err.bitsize() > max_err) max_err = err.bitsize();
 		}
 

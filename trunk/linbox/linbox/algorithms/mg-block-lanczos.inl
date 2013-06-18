@@ -340,7 +340,6 @@ namespace LinBox
 
 		unsigned int number = 0;
 
-		bool success;
 
 		typename LinBox::Vector<Field>::Dense d1, d2;
 
@@ -366,6 +365,7 @@ namespace LinBox
 		TransposeMatrix<Matrix> xT (_x);
 
 		for ( unsigned int i = 0; number < x.coldim () && i < _traits.maxTries (); ++i) {
+			// bool success;
 			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "in try: " << i << std::endl;
 
@@ -381,7 +381,8 @@ namespace LinBox
 
 			switch (_traits.preconditioner ()) {
 			case BlockLanczosTraits::NO_PRECONDITIONER:
-				success = iterate (A);
+				// success =
+					iterate (A);
 				break;
 
 			case BlockLanczosTraits::SYMMETRIZE:
@@ -392,7 +393,8 @@ namespace LinBox
 					_MD.blackboxMulRight (xT, transpose (_b), A);
 					_MD.copy (_b, _x);
 
-					success = iterate (B);
+					// success =
+						iterate (B);
 					break;
 				}
 
@@ -407,7 +409,8 @@ namespace LinBox
 					report << "Random D: ";
 					_VD.write (report, d1) << std::endl;
 
-					success = iterate (B);
+					// success =
+						iterate (B);
 
 					_MD.blackboxMulLeft (_b, D, _x);
 					_MD.copy (_x, _b);
@@ -436,7 +439,8 @@ namespace LinBox
 					_MD.blackboxMulLeft (_x, D, _b);
 					_MD.blackboxMulRight (bT, transpose (_x), A);
 
-					success = iterate (B);
+					// success =
+						iterate (B);
 
 					break;
 				}
@@ -473,7 +477,8 @@ namespace LinBox
 					_MD.blackboxMulLeft (_x, D1, _b);
 					_MD.copy (_b, _x);
 
-					success = iterate (B);
+					// success =
+					iterate (B);
 
 					_MD.blackboxMulLeft (_b, D1, _x);
 					_MD.copy (_x, _b);
@@ -534,7 +539,7 @@ namespace LinBox
 
 		// i is the index for temporaries where we need to go back to i - 1
 		// j is the index for temporaries where we need to go back to j - 2
-		int i = 0, j = 2, next_j, prev_j = 1, iter = 2;
+		int i = 0, j = 2, prev_j = 1, iter = 2;
 		typename Matrix::ColIterator k;
 
 		TIMER_DECLARE(AV);
@@ -710,7 +715,7 @@ namespace LinBox
 
 			if (done) break;
 
-			next_j = j + 1;
+			int next_j = j + 1;
 			if (next_j > 2) next_j = 0;
 
 			TIMER_START(AV);

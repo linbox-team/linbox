@@ -57,6 +57,7 @@ namespace LinBox{
 
 		//Get number of platforms on system
 		errcode = clGetPlatformIDs(0, NULL, &numPlatforms);
+		linbox_check(errcode == CL_SUCCESS);
 
 		//Return empty vector if error
 		if(errcode != CL_SUCCESS || numPlatforms <= 0){
@@ -69,6 +70,7 @@ namespace LinBox{
 
 		//Read in platform IDs
 		errcode = clGetPlatformIDs(numPlatforms, platforms, NULL);
+		linbox_check(errcode == CL_SUCCESS);
 
 		//Allocate vector for platform IDs
 		std::vector<cl_platform_id> ret;
@@ -95,6 +97,7 @@ namespace LinBox{
 
 		//Get size of platform name
 		errcode = clGetPlatformInfo(platform, CL_PLATFORM_NAME, 0, NULL, &sizeRet);
+		linbox_check(errcode == CL_SUCCESS);
 
 		//Allocate memory for platform name
 		tempBuffer = new char[sizeRet];
@@ -106,6 +109,7 @@ namespace LinBox{
 			sizeRet,
 			tempBuffer,
 			NULL);
+		linbox_check(errcode == CL_SUCCESS);
 
 		//Convert platform name to std::string
 		std::string ret(tempBuffer);
@@ -123,7 +127,7 @@ namespace LinBox{
 		//Variables
 		char* tempBuffer;
 		cl_int errcode;
-		double ret;
+		double ret = 0;
 		size_t first;
 		size_t second;
 		size_t sizeRet;
@@ -135,6 +139,7 @@ namespace LinBox{
 			0,
 			NULL,
 			&sizeRet);
+		linbox_check(errcode == CL_SUCCESS);
 
 		//Allocate memory for platform version string
 		tempBuffer = new char[sizeRet];
@@ -146,6 +151,7 @@ namespace LinBox{
 			sizeRet,
 			tempBuffer,
 			NULL);
+		linbox_check(errcode == CL_SUCCESS);
 
 		//Convert platform version string to std::string
 		std::string versionString(tempBuffer);
@@ -179,6 +185,7 @@ namespace LinBox{
 			0,
 			NULL,
 			&sizeRet);
+		linbox_check(errcode == CL_SUCCESS);
 
 		//Allocate memory for platform extensions string
 		tempBuffer = new char[sizeRet];
@@ -190,6 +197,7 @@ namespace LinBox{
 			sizeRet,
 			tempBuffer,
 			NULL);
+		linbox_check(errcode == CL_SUCCESS);
 
 		//Convert platfrom extensions string to std::string
 		std::string tempString(tempBuffer);
@@ -225,6 +233,7 @@ namespace LinBox{
 			0,
 			NULL,
 			&numDevices);
+		linbox_check(errcode == CL_SUCCESS);
 
 		//Return empty vector if error
 		if(errcode != CL_SUCCESS || numDevices <= 0){
@@ -242,6 +251,7 @@ namespace LinBox{
 			numDevices,
 			devices,
 			NULL);
+		linbox_check(errcode == CL_SUCCESS);
 
 		//Allocate vector for device IDs
 		std::vector<cl_device_id> ret;
@@ -271,6 +281,7 @@ namespace LinBox{
 
 		//Create context
 		ret = clCreateContext(props, 1, &device, NULL, NULL, &errcode);
+		linbox_check(errcode == CL_SUCCESS);
 
 		return ret;
 	}

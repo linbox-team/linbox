@@ -280,7 +280,7 @@ namespace LinBox
 		}
 		while(((F->isZero(tmp) || MinPoly.size() <=2) && --badprecondition ));
 		std::cerr<<"minpoly found with size: "<<MinPoly.size()<<std::endl;
-		for (size_t i=0;i<MinPoly.size();i++)
+		for (size_t i=0;i<MinPoly.size();++i)
 			std::cerr<<MinPoly[i]<<"*x^"<<i<<"+";
 		std::cerr<<std::endl;
 
@@ -651,7 +651,7 @@ namespace LinBox
 #if 0
 			if (trials == maxPrimes) return SS_SINGULAR;
 			if (trials != 0) chooseNewPrime();
-			trials++;
+			++trials;
 #endif
 #ifdef DEBUG_DIXON
 			//std::cout << "_prime: "<<_prime<<"\n";
@@ -677,7 +677,7 @@ namespace LinBox
 			if (!oldMatrix) {
 				if (trials == maxPrimes) return SS_SINGULAR;
 				if (trials != 0) chooseNewPrime();
-				trials++;
+				++trials;
 
 				// Could delete a non allocated matrix -> segfault
 				if (FMP != NULL) delete FMP;
@@ -821,7 +821,7 @@ namespace LinBox
 		int trials = 0;
 		while (trials < maxPrimes){
 			if (trials != 0) chooseNewPrime();
-			trials++;
+			++trials;
 #ifdef DEBUG_DIXON
 			std::cout << "_prime: "<<_prime<<"\n";
 #endif
@@ -890,8 +890,8 @@ namespace LinBox
 			// BlasPermutation<size_t>  TAS_Qt = TAS_LQUP->getQ();
 			std::vector<size_t> srcRow(A.rowdim()), srcCol(A.coldim()+1);
 			std::vector<size_t>::iterator sri = srcRow.begin(), sci = srcCol.begin();
-			for (size_t i=0; i<A.rowdim(); i++, sri++) *sri = i;
-			for (size_t i=0; i<A.coldim()+1; i++, sci++) *sci = i;
+			for (size_t i=0; i<A.rowdim(); ++i, ++sri) *sri = i;
+			for (size_t i=0; i<A.coldim()+1; ++i, ++sci) *sci = i;
 			indexDomain iDom;
 			BlasMatrixDomain<indexDomain> BMDs(iDom);
 			BMDs.mulin_right(TAS_Qt, srcCol);
@@ -899,9 +899,9 @@ namespace LinBox
 
 #ifdef DEBUG_INC
 			std::cout << "P takes (0 1 ...) to (";
-			for (size_t i=0; i<A.rowdim(); i++) std::cout << srcRow[i] << ' '; std::cout << ')' << std::endl;
+			for (size_t i=0; i<A.rowdim(); ++i) std::cout << srcRow[i] << ' '; std::cout << ')' << std::endl;
 			std::cout << "Q takes (0 1 ...) to (";
-			for (size_t i=0; i<A.coldim()+1; i++) std::cout << srcCol[i] << ' '; std::cout << ')' << std::endl;
+			for (size_t i=0; i<A.coldim()+1; ++i) std::cout << srcCol[i] << ' '; std::cout << ')' << std::endl;
 #endif
 
 			bool appearsInconsistent = (srcCol[TAS_rank-1] == A.coldim());
@@ -924,7 +924,7 @@ namespace LinBox
 						aEmpty &= _ring.isZero(*iter);
 				}
 				if (aEmpty) {
-					for (size_t i=0; i<b.size(); i++)
+					for (size_t i=0; i<b.size(); ++i)
 						if (!_ring.areEqual(b[i], _rzero)) {
 							if (level >= SL_CERTIFIED) {
 								lastCertificate.clearAndResize(b.size());
@@ -934,7 +934,7 @@ namespace LinBox
 						}
 #if 0
 					// both A and b are all zero.
-					for (size_t i=0; i<answer.size(); i++) {
+					for (size_t i=0; i<answer.size(); ++i) {
 						answer[i].first = _rzero;
 						answer[i].second = _rone;
 					}
@@ -987,17 +987,17 @@ namespace LinBox
 #endif
 				PID_integer Z;
 				BlasVector<PID_integer> zt(Z,rank);
-				for (size_t i=0; i<rank; i++)
+				for (size_t i=0; i<rank; ++i)
 					_ring.assign(zt[i], A.getEntry(srcRow[rank], srcCol[i]));
 
 				BlasMatrix<Ring> At_minor(_ring, rank, rank);
-				for (size_t i=0; i<rank; i++)
-					for (size_t j=0; j<rank; j++)
+				for (size_t i=0; i<rank; ++i)
+					for (size_t j=0; j<rank; ++j)
 						_ring.assign(At_minor.refEntry(j, i), A.getEntry(srcRow[i], srcCol[j]));
 #ifdef DEBUG_INC
 				At_minor.write(std::cout << "At_minor:" << std::endl);//, _ring);
 				Atp_minor_inv->write(std::cout << "Atp_minor_inv:" << std::endl);//, F);
-				std::cout << "zt: "; for (size_t i=0; i<rank; i++) std::cout << zt[i] <<' '; std::cout << std::endl;
+				std::cout << "zt: "; for (size_t i=0; i<rank; ++i) std::cout << zt[i] <<' '; std::cout << std::endl;
 #endif
 #ifdef RSTIMING
 				tCheckConsistency.stop();
@@ -1033,7 +1033,7 @@ namespace LinBox
 				BlasVector<Ring> certnumer_A(_ring,A.coldim());
 				BAR.applyVTrans(certnumer_A, A_check, cert.numer);
 				typename BlasVector<Ring>::iterator cai = certnumer_A.begin();
-				for (size_t i=0; certifies && i<A.coldim(); i++, cai++)
+				for (size_t i=0; certifies && i<A.coldim(); ++i, ++cai)
 					certifies &= _ring.isZero(*cai);
 #ifdef RSTIMING
 				tCheckConsistency.stop();
@@ -1059,16 +1059,16 @@ namespace LinBox
 				// use shortcut - transpose Atp_minor_inv to get Ap_minor_inv
 				Element _rtmp;
 				Ap_minor_inv = Atp_minor_inv;
-				for (size_t i=0; i<rank; i++)
-					for (size_t j=0; j<i; j++) {
+				for (size_t i=0; i<rank; ++i)
+					for (size_t j=0; j<i; ++j) {
 						Ap_minor_inv->getEntry(_rtmp, i, j);
 						Ap_minor_inv->setEntry(i, j, Ap_minor_inv->refEntry(j, i));
 						Ap_minor_inv->setEntry(j, i, _rtmp);
 					}
 
 				// permute original entries into A_minor
-				for (size_t i=0; i<rank; i++)
-					for (size_t j=0; j<rank; j++)
+				for (size_t i=0; i<rank; ++i)
+					for (size_t j=0; j<rank; ++j)
 						_ring.assign(A_minor.refEntry(i, j), A_check.getEntry(srcRow[i], srcCol[j]));
 #ifdef RSTIMING
 				tMakeConditioner.stop();
@@ -1077,8 +1077,8 @@ namespace LinBox
 
 				if (makeMinDenomCert && level >= SL_LASVEGAS){
 					B = new BlasMatrix<Ring>(_ring, rank, A.coldim());
-					for (size_t i=0; i<rank; i++)
-						for (size_t j=0; j<A.coldim(); j++)
+					for (size_t i=0; i<rank; ++i)
+						for (size_t j=0; j<A.coldim(); ++j)
 							_ring.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i],j));
 				}
 			}
@@ -1091,8 +1091,8 @@ namespace LinBox
 
 				LinBox::integer tmp2=0;
 				size_t maxBitSize = 0;
-				for (size_t i=0; i<rank; i++)
-					for (size_t j=0; j<A.coldim(); j++){
+				for (size_t i=0; i<rank; ++i)
+					for (size_t j=0; j<A.coldim(); ++j){
 						_ring.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i], j));
 						_ring.convert(tmp2, A_check.getEntry(srcRow[i], j));
 						maxBitSize = std::max(maxBitSize, tmp2.bitsize());
@@ -1129,7 +1129,7 @@ namespace LinBox
 						double *P_dbl= new double[A.coldim()*rank];
 						double *A_minor_dbl = new double[rank*rank];
 						for (size_t i=0;i<rank;++i)
-							for (size_t j=0;j<A.coldim(); j++){
+							for (size_t j=0;j<A.coldim(); ++j){
 								_ring.convert(B_dbl[j+i*A.coldim()], B->getEntry(i,j));
 								_ring.convert(P_dbl[i+j*rank], P->getEntry(j,i));
 							}
@@ -1229,7 +1229,7 @@ namespace LinBox
 				int thisrow = 0;
 				bool needNewPrime = false;
 
-				for (; !needNewPrime && ib != b.end(); iAx++, ib++, thisrow++)
+				for (; !needNewPrime && ib != b.end(); ++iAx, ++ib, ++thisrow)
 					if (!_ring.areEqual(_ring.mul(tmpi, *ib, answer_to_vf.denom), *iAx)) {
 						// should attempt to certify inconsistency now
 						// as in "if [A31 | A32]y != b3" of step (4)
@@ -1263,15 +1263,15 @@ namespace LinBox
 #endif
 				Integer _rtmp;
 				Element _ftmp;
-				for (size_t i=0; i<rank; i++)
-					for (size_t j=0; j<i; j++) {
+				for (size_t i=0; i<rank; ++i)
+					for (size_t j=0; j<i; ++j) {
 						Ap_minor_inv->getEntry(_ftmp, i, j);
 						Ap_minor_inv->setEntry(i, j, Ap_minor_inv->refEntry(j, i));
 						Ap_minor_inv->setEntry(j, i, _ftmp);
 					}
 
-				for (size_t i=0; i<rank; i++)
-					for (size_t j=0; j<i; j++) {
+				for (size_t i=0; i<rank; ++i)
+					for (size_t j=0; j<i; ++j) {
 						A_minor.getEntry(_rtmp, i, j);
 						A_minor.setEntry(i, j, A_minor.refEntry(j, i));
 						A_minor.setEntry(j, i, _rtmp);
@@ -1336,7 +1336,7 @@ namespace LinBox
 				std::cout << "BP: ";
 				A_minor.write(std::cout, _ring) << std::endl;
 				std::cout << "q: ";
-				for (size_t i=0; i<rank; i++) std::cout << q[i]; std::cout << std::endl;
+				for (size_t i=0; i<rank; ++i) std::cout << q[i]; std::cout << std::endl;
 				u_to_vf.write(std::cout  << "u: ") << std::endl;
 #endif
 

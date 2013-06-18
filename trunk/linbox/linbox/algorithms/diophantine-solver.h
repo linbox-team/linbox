@@ -68,6 +68,7 @@ namespace LinBox
 		 */
 		DiophantineSolver (QSolver& rs) :
 			_rationalSolver(rs), _ring(rs.getRing()), lastCertificate(_ring, 0)
+			,numSolutionsNeeded(0),numFailedCallsToSolver(0),numRevelantSolutions (0)
 		{ }
 
 		/** Solve a linear system \c Ax=b over quotient field of a ring.

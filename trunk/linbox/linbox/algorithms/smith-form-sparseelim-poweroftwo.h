@@ -199,12 +199,14 @@ namespace LinBox
                     if (this->isOdd((UInt_t)lignepivot[(size_t)pp].second) ) break;
 
                 if (pp < nj) {
-                    long ds = (long)columns[ lignepivot[(size_t)pp].first ],dl,p=pp,j=pp;
-                    for(++j;j<nj;++j)
+                    long ds = (long)columns[ lignepivot[(size_t)pp].first ],p=pp,j=pp;
+                    for(++j;j<nj;++j){
+			    long dl;
                         if ( ( (dl=(long)columns[(size_t)lignepivot[(size_t)j].first] ) < ds ) && (this->isOdd((UInt_t)lignepivot[(size_t)j].second) ) ) {
                             ds = dl;
                             p = j;
                         }
+		    }
                     if (p != 0) {
                         if (indpermut == (long)indcol) {
                             UInt_t ttm = (UInt_t)lignepivot[(size_t)p].second;
@@ -305,11 +307,11 @@ namespace LinBox
 //                     UInt_t headcoeff = lignecourante[0].second ;
                     --columns[ lignecourante[0].first ];
 
-                    unsigned long j_piv;
                     for(;l<npiv;++l)
                         if (lignepivot[(size_t)l].first > k) break;
                         // for all j such that (j>k) and A[(size_t)k,j]!=0
                     for(;l<npiv;++l) {
+                    unsigned long j_piv;
                         j_piv = (unsigned long) lignepivot[(size_t)l].first;
                             // if A[(size_t)k,j]=0, then A[(size_t)i,j] <-- A[(size_t)i,j]
                         for (;(m<nj) && (lignecourante[(size_t)m].first < j_piv);)
@@ -548,9 +550,9 @@ ENSURE( TWOKMONE == (TWOK - 1UL) );
             prime_power_rankin( EXPONENT, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>(),StaticParameters);
             L.resize( 0 ) ;
             UInt_t MOD(1);
-            size_t num = 0, diff;
+            size_t num = 0;
             for( typename Container<size_t, Alloc<size_t> >::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
-                diff = *it-num;
+                size_t diff = *it-num;
                 if (diff > 0)
                     L.push_back( std::pair<size_t,UInt_t>(*it-num,MOD) );
                 MOD <<= 1;

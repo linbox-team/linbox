@@ -102,8 +102,10 @@ EARLY_TERM_THRESHOLD (ett_default)
         // { /* transpose seq and transpose result*/ }
 
         // For compatibility with massey-domain (element sequence case).
-        std::vector<size_t> & operator()(std::vector<Coefficient> &P)
-        { return right_minpoly(P); }
+        std::vector<size_t> /* & */ operator()(std::vector<Coefficient> &P)
+        {
+		return right_minpoly(P);
+	}
 
 
     private:
@@ -534,7 +536,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				//Compute the discrepancy
 				for(genit = _gen.begin(); genit!=_gen.end(); ++genit){
 					domain().axpyin(disc,*cseqit,*genit);
-					cseqit--;
+					--cseqit;
 				}
 				//Compute tau with Algorith3.2
 				Coefficient tau(field(), _row+_col, _row+_col);

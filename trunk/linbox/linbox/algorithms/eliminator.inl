@@ -368,7 +368,6 @@ namespace LinBox
 	 unsigned int                   m,
 	 const typename Field::Element &d0)
 	{
-		unsigned int i;
 
 #ifdef ELIM_DETAILED_TRACE
 		commentator().start ("kth indexed Gauss-Jordan transform", "Eliminator::kthGaussJordan");
@@ -390,6 +389,7 @@ namespace LinBox
 			field().assign (d, d0);
 		}
 		else if (m == 1) {
+			unsigned int i;
 			// Find minimal index i > k with _matA[i, 1] != 0
 			for (i = 0; i < _matA.rowdim (); ++i)
 				if (_indices[i] >= k && !field().isZero (_matA.getEntry (_indices[i], s)))
@@ -693,7 +693,7 @@ namespace LinBox
 		idx2 = dim - 1;
 
 		while (idx < rank && idx2 >= rank) {
-			while (_indepRows[idx] && idx < rank) ++idx;
+			while (idx < rank && _indepRows[idx]) ++idx;
 			while (!_indepRows[idx2] && idx2 >= rank) --idx2;
 
 			if (idx < rank && idx2 >= rank)

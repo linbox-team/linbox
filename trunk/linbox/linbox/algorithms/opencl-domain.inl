@@ -161,10 +161,14 @@ namespace LinBox
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Create temporary accumulation buffer
 				cl_mem tempBuffer = oclCreateMatrixBuffer<cl_double,
@@ -198,10 +202,14 @@ namespace LinBox
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Delete OpenCL buffers
 					tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 					tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Shuffle buffer variables
 					cl_mem placeHolder = bufferC;
@@ -216,7 +224,10 @@ namespace LinBox
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(tempBuffer);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 			}
 		}
@@ -344,10 +355,14 @@ namespace LinBox
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Create temporary accumulation buffer
 				cl_mem tempBuffer = oclCreateMatrixBuffer<cl_float,
@@ -381,10 +396,14 @@ namespace LinBox
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Delete OpenCL buffers
 					tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 					tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Shuffle buffer variables
 					cl_mem placeHolder = bufferC;
@@ -399,7 +418,10 @@ namespace LinBox
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(tempBuffer);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 			}
 		}
@@ -663,10 +685,14 @@ namespace LinBox
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Create temporary accumulation buffer
 				cl_mem tempBuffer = bufferC;
@@ -702,10 +728,14 @@ namespace LinBox
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Delete OpenCL buffers
 					tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 					tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Shuffle buffer variables
 					cl_mem placeHolder = bufferC;
@@ -720,7 +750,10 @@ namespace LinBox
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(tempBuffer);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 			}
 		}
@@ -854,10 +887,14 @@ namespace LinBox
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Create temporary accumulation buffer
 				cl_mem tempBuffer = bufferC;
@@ -893,10 +930,14 @@ namespace LinBox
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Delete OpenCL buffers
 					tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 					tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Shuffle buffer variables
 					cl_mem placeHolder = bufferC;
@@ -911,7 +952,10 @@ namespace LinBox
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(tempBuffer);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 			}
 		}
@@ -1139,10 +1183,14 @@ namespace LinBox
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Create temporary accumulation buffer
 				cl_mem tempBuffer = bufferC;
@@ -1176,10 +1224,14 @@ namespace LinBox
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Delete OpenCL buffers
 					tempErrcode = clReleaseMemObject(bufferA);
+					linbox_check(tempErrcode == CL_SUCCESS);
+
 					tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Shuffle buffer variables
 					cl_mem placeHolder = bufferC;
@@ -1194,7 +1246,10 @@ namespace LinBox
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(tempBuffer);
+				linbox_check(tempErrcode == CL_SUCCESS);
 			}
 		}
 
@@ -1323,10 +1378,15 @@ namespace LinBox
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 
 				//Create temporary accumulation buffer
 				cl_mem tempBuffer = bufferC;
@@ -1360,10 +1420,14 @@ namespace LinBox
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Delete OpenCL buffers
 					tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 					tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Shuffle buffer variables
 					cl_mem placeHolder = bufferC;
@@ -1378,7 +1442,10 @@ namespace LinBox
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(tempBuffer);
+				linbox_check(tempErrcode == CL_SUCCESS);
 			}
 		}
 
@@ -1567,10 +1634,14 @@ namespace LinBox
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Create temporary accumulation buffer
 				cl_mem tempBuffer = bufferC;
@@ -1604,10 +1675,14 @@ namespace LinBox
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Delete OpenCL buffers
 					tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 					tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Shuffle buffer variables
 					cl_mem placeHolder = bufferC;
@@ -1622,7 +1697,10 @@ namespace LinBox
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(tempBuffer);
+				linbox_check(tempErrcode == CL_SUCCESS);
 			}
 		}
 
@@ -1751,10 +1829,14 @@ namespace LinBox
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Create temporary accumulation buffer
 				cl_mem tempBuffer = bufferC;
@@ -1788,10 +1870,14 @@ namespace LinBox
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Delete OpenCL buffers
 					tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 					tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Shuffle buffer variables
 					cl_mem placeHolder = bufferC;
@@ -1806,7 +1892,10 @@ namespace LinBox
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(tempBuffer);
+				linbox_check(tempErrcode == CL_SUCCESS);
 			}
 		}
 
@@ -2004,10 +2093,14 @@ namespace LinBox
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Create temporary accumulation buffer
 				cl_mem tempBuffer = bufferC;
@@ -2041,10 +2134,14 @@ namespace LinBox
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Delete OpenCL buffers
 					tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 					tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Shuffle buffer variables
 					cl_mem placeHolder = bufferC;
@@ -2059,7 +2156,10 @@ namespace LinBox
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(tempBuffer);
+				linbox_check(tempErrcode == CL_SUCCESS);
 			}
 		}
 
@@ -2197,10 +2297,14 @@ namespace LinBox
 				//Block until kernel finishes
 				cl_int tempErrcode;
 				tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 				//Create temporary accumulation buffer
 				cl_mem tempBuffer = bufferC;
@@ -2234,10 +2338,14 @@ namespace LinBox
 
 					//Block until kernel finishes
 					tempErrcode = clFinish(commandQue);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Delete OpenCL buffers
 					tempErrcode = clReleaseMemObject(bufferA);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 					tempErrcode = clReleaseMemObject(bufferB);
+				linbox_check(tempErrcode == CL_SUCCESS);
 
 					//Shuffle buffer variables
 					cl_mem placeHolder = bufferC;
@@ -2252,7 +2360,10 @@ namespace LinBox
 
 				//Delete OpenCL buffers
 				tempErrcode = clReleaseMemObject(bufferC);
+				linbox_check(tempErrcode == CL_SUCCESS);
+
 				tempErrcode = clReleaseMemObject(tempBuffer);
+				linbox_check(tempErrcode == CL_SUCCESS);
 			}
 		}
 

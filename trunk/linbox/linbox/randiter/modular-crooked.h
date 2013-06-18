@@ -122,6 +122,7 @@ namespace LinBox
 			if (this != &R) { // guard against self-assignment
 				_size = R._size;
 				_seed = R._seed;
+				_field = R._field;
 			}
 
 			return *this;

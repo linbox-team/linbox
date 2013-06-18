@@ -1299,7 +1299,7 @@ namespace LinBox
 			size_t endingsteps  =minsteps;
 
 			// switchers
-			bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true;
+			bool numeratorOK=false, domoresteps=true, domorelattice=true;
 
 			// common denominator
 			Integer common_denom;
@@ -1402,7 +1402,7 @@ namespace LinBox
 
 				// check if the 1st row is the short vector
 				// Lattice[(size_t)i][j] should work. Using standard getEntry though
-				latticeOK=true;
+				bool latticeOK=true;
 				tmp=abs(Lattice.getEntry(0,0))*ratio;
 				for (size_t i=1;i<k+1;++i){
 					for (size_t j=0;j<k+1;++j)
@@ -1642,7 +1642,7 @@ namespace LinBox
 			size_t endingsteps  =minsteps;
 
 			// switchers
-			bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true;
+			bool numeratorOK=false, domoresteps=true, domorelattice=true;
 
 			// common denominator
 			Integer common_denom;

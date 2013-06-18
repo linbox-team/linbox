@@ -209,27 +209,39 @@ namespace LinBox{
 			0,
 			sizeof(cl_mem),
 			(void*)&bufferC);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			1,
 			sizeof(cl_mem),
 			(void*)&bufferA);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			2,
 			sizeof(cl_mem),
 			(void*)&bufferB);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			3,
 			sizeof(cl_int),
 			(void*)&widthA);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			4,
 			sizeof(cl_int),
 			(void*)&widthB);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(U), (void*)&p);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 
 		//Set NDRange
 		size_t localWorkSize[2];
@@ -250,6 +262,7 @@ namespace LinBox{
 			0,
 			NULL,
 			NULL);
+		linbox_check(tempErrcode == CL_SUCCESS);
 	}
 
 	template <class Field>
@@ -272,32 +285,45 @@ namespace LinBox{
 			0,
 			sizeof(cl_mem),
 			(void*)&bufferD);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			1,
 			sizeof(cl_mem),
 			(void*)&bufferA);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			2,
 			sizeof(cl_mem),
 			(void*)&bufferB);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			3,
 			sizeof(cl_mem),
 			(void*)&bufferC);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			4,
 			sizeof(cl_int),
 			(void*)&widthA);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			5,
 			sizeof(cl_int),
 			(void*)&widthB);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(selectedKernel, 6, sizeof(U), (void*)&p);
+		linbox_check(tempErrcode == CL_SUCCESS);
 
 		//Set NDRange
 		size_t localWorkSize[2];
@@ -318,6 +344,7 @@ namespace LinBox{
 			0,
 			NULL,
 			NULL);
+		linbox_check(tempErrcode == CL_SUCCESS);
 	}
 
 	template <class Field>
@@ -342,42 +369,60 @@ namespace LinBox{
 			0,
 			sizeof(cl_mem),
 			(void*)&bufferD);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			1,
 			sizeof(U),
 			(void*)&alpha);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			2,
 			sizeof(cl_mem),
 			(void*)&bufferA);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			3,
 			sizeof(cl_mem),
 			(void*)&bufferB);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			4,
 			sizeof(U),
 			(void*)&beta);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			5,
 			sizeof(cl_mem),
 			(void*)&bufferC);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			6,
 			sizeof(cl_int),
 			(void*)&widthA);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(
 			selectedKernel,
 			7,
 			sizeof(cl_int),
 			(void*)&widthB);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 		tempErrcode = clSetKernelArg(selectedKernel, 8, sizeof(U), (void*)&p);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 
 		//Set NDRange
 		size_t localWorkSize[2];
@@ -398,6 +443,8 @@ namespace LinBox{
 			0,
 			NULL,
 			NULL);
+		linbox_check(tempErrcode == CL_SUCCESS);
+
 	}
 
 
@@ -461,7 +508,6 @@ namespace LinBox{
 		}
 
 		//Begin search for Submatrices small enough to search on the device
-		int divisionFactor = 1;
 		int DRows = (int) D.rowdim();
 		int DCols = (int) D.coldim();
 		int ARows = (int) A.rowdim();
@@ -473,6 +519,7 @@ namespace LinBox{
 
 			//Loop until Submatrices that fit on the device have been found
 			while(!memLevelsAllowed){
+				int divisionFactor = 1;
 				//Increase the number of subsections
 				divisionFactor++;
 

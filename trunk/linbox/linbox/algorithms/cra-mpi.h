@@ -94,11 +94,11 @@ namespace LinBox
 					primes[i - 1] = *primeg;
 					_commPtr->send(primes[i - 1], i);
 				}
-				int idle_process = 0;
 				bool first_time = true;
 				int poison_pills_left = procs - 1;
 				//  loop until all execution is complete
 				while( poison_pills_left > 0 ){
+					int idle_process = 0;
 					//  receive sub-answers from child procs
 					_commPtr->recv(r, MPI_ANY_SOURCE);
 					idle_process = (_commPtr->get_stat()).MPI_SOURCE;
@@ -177,9 +177,9 @@ namespace LinBox
 					_commPtr->send(primes[i - 1], i);
 				}
 				Builder_.initialize( D, Iteration(r, D) );
-				int idle_process = 0;
 				int poison_pills_left = procs - 1;
 				while(poison_pills_left > 0 ){
+					int idle_process = 0;
 					//  receive the beginnin and end of a vector in heapspace
 					_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
 					//  determine which process sent answer
