@@ -244,8 +244,8 @@ namespace LinBox
 			}
 
 			bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const{
-				bool res= false;
-				return res = ClassicRationalReconstruction<Ring>::reconstructRational(a,b,x,m,a_bound);
+				// bool res= false;
+				return /*  res =*/ ClassicRationalReconstruction<Ring>::reconstructRational(a,b,x,m,a_bound);
 			}
 
 		protected:
@@ -320,11 +320,10 @@ namespace LinBox
 	}
 #endif //__LINBOX_classic_reconstruction_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

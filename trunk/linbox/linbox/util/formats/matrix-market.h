@@ -50,7 +50,7 @@ namespace LinBox
 #endif
 
 #if 1 /* Unused */
-	bool equalCaseInsensitive(const std::string s1, const char* s2)
+	bool equalCaseInsensitive(const std::string &s1, const char* s2)
 	{
 		int len = int(s1.size());
 		int counter = 0;
@@ -166,8 +166,13 @@ namespace LinBox
 			std::string st(firstLine);
 			std::stringstream stin(st);
 
-			if( stin.get() != '%' /*  || stin.get() != '%' */)
+			//bb: cppcheck complained.
+			// if( stin.get() != '%' || stin.get() != '%' ) return NO_FORMAT;
+			if( stin.get() != '%')
 				return NO_FORMAT;
+			else if (stin.get() != '%' )
+				return NO_FORMAT;
+
 			if( !stin.good() ) return NO_FORMAT;
 
 			std::string s;

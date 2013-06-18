@@ -88,6 +88,7 @@ namespace LinBox
 		// constructors
 		ZOQuad() :
 			_BBp(0), _r(0), _c(0)
+			,_tag(zo),_field(NULL)
 		{}
 #if 0
 		ZOQuad(const ScalarMatrix<Field>&  A) :
@@ -96,9 +97,11 @@ namespace LinBox
 #endif
 		ZOQuad(const SideBySide<Field>& A) :
 			_BBp(&A), _tag(sbs), _r(A.rowdim()), _c(A.coldim())
+			,_field(&A.field())
 		{}
 		ZOQuad(const OverUnder<Field>& A) :
 			_BBp(&A), _tag(ou), _r(A.rowdim()), _c(A.coldim())
+			,_field(&A.field())
 		{}
 		ZOQuad(const ZeroOne<Field>& A) //:
 		// _BBp(&A), _tag(zo), _r(A.rowdim()), _c(A.coldim())
@@ -536,11 +539,10 @@ namespace LinBox
 #endif // __LINBOX_quad_matrix_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

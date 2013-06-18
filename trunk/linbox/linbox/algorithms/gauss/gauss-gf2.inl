@@ -124,12 +124,13 @@ namespace LinBox
 			}
 
 			if (s) {
-				long sl;
 				// Row permutation for the sparsest row
-				for (; l < static_cast<long>(Ni); ++l)
+				for (; l < static_cast<long>(Ni); ++l) {
+				long sl;
 					if (((sl = (long)LigneA[(size_t)l].size ()) < s) && (sl)) {
 						s = sl;
 						p = l;
+					}
 					}
 
 				if (p != k) {
@@ -300,12 +301,13 @@ namespace LinBox
 			}
 
 			if (s) {
-				long sl;
 				// Row permutation for the sparsest row
-				for (; l < static_cast<long>(Ni); ++l)
+				for (; l < static_cast<long>(Ni); ++l){
+				long sl;
 					if (((sl = (long) LigneA[(size_t)l].size ()) < s) && (sl)) {
 						s = sl;
 						p = l;
+					}
 					}
 
 				if (p != k) {
@@ -402,11 +404,10 @@ namespace LinBox
 
 #endif // __LINBOX_gauss_gf2_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

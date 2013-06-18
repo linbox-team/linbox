@@ -25,7 +25,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
  *
- * This file implements the C++ interface to commentators (for
+ * This file implements the ++C interface to commentators (for
  * providing runtime commentary to the user)
  */
 
@@ -237,11 +237,11 @@ namespace LinBox
 		linbox_check (_activities.top () != (Activity *) 0);
 
 		Activity *act = _activities.top ();
-	 Givaro::Timer tmp = act->_timer;
+		Givaro::Timer tmp = act->_timer;
 		act->_timer.stop ();
 
 		if (k == -1)
-			act->_progress++;
+			++(act->_progress);
 		else
 			act->_progress = (unsigned long)k;
 
@@ -283,7 +283,7 @@ namespace LinBox
 	{
 		unsigned int i;
 
-		for (i = 0; i < _activities.size (); i++)
+		for (i = 0; i < _activities.size (); ++i)
 			stream << "  ";
 	}
 
@@ -459,14 +459,14 @@ namespace LinBox
 			if (!messageClass.isPrinted (_activities.size (), LEVEL_IMPORTANT, activity._fn)) {
 				if (_show_progress) {
 			unsigned int i,  old_len;
-					for (i = 0; i < _last_line_len; i++)
+					for (i = 0; i < _last_line_len; ++i)
 						messageClass._stream << '\b';
 					str.width (3);
 					str << floor (percent + 0.5) << "%" << std::ends;
 					old_len = _last_line_len;
 					_last_line_len = (unsigned int)strlen (str.str ().c_str ());
 					messageClass._stream << str.str ();
-					for (int ii = 0; ii < (int) (old_len - _last_line_len); ii++)
+					for (int ii = 0; ii < (int) (old_len - _last_line_len); ++ii)
 						messageClass._stream << ' ';
 				}
 			}
@@ -506,7 +506,7 @@ namespace LinBox
 		if (_format == OUTPUT_CONSOLE) {
 			if (!messageClass.isPrinted (_activities.size () + 1, LEVEL_UNIMPORTANT, activity._fn)) {
 				if (_show_progress)
-					for (i = 0; i < _last_line_len; i++)
+					for (i = 0; i < _last_line_len; ++i)
 						messageClass._stream << '\b';
 
 				messageClass._stream << msg;
@@ -517,7 +517,7 @@ namespace LinBox
 					messageClass._stream << std::endl;
 			}
 			else if (messageClass.isPrinted (_activities.size (), LEVEL_UNIMPORTANT, activity._fn)) {
-				for (i = 0; i < _activities.size (); i++)
+				for (i = 0; i < _activities.size (); ++i)
 					messageClass._stream << "  ";
 
 				messageClass._stream << msg;
@@ -532,7 +532,7 @@ namespace LinBox
 			messageClass._smart_streambuf.stream ().flush ();
 		}
 		else if (_format == OUTPUT_PIPE) {
-			for (i = 0; i < _activities.size (); i++)
+			for (i = 0; i < _activities.size (); ++i)
 				messageClass._stream << "  ";
 
 			if (((_show_progress || _show_est_time) && activity._len > 0) ||
@@ -691,10 +691,10 @@ namespace LinBox
 		Configuration::const_iterator i;
 		std::list <std::pair <unsigned long, unsigned long> >::const_iterator j;
 
-		for (i = _configuration.begin (); i != _configuration.end (); i++) {
+		for (i = _configuration.begin (); i != _configuration.end (); ++i) {
 			std::cerr << "Configuration (" << (*i).first << "):" << std::endl;
 
-			for (j = (*i).second.begin (); j != (*i).second.end (); j++)
+			for (j = (*i).second.begin (); j != (*i).second.end (); ++j)
 				std::cerr << "  Depth: " << (*j).first << ", Level: " << (*j).second << std::endl;
 
 			std::cerr << std::endl;

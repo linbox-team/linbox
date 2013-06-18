@@ -179,8 +179,7 @@ namespace LinBox
 	void Toeplitz<typename _PRing::CoeffField,_PRing>::write(std::ostream& os) const
 	{
 
-		register int i, N;
-		register unsigned int j;
+		int N;
 		Element temp;
 
 		os<< this->rowdim() << " " << this->coldim() << " " << this->shape.shape() << std::endl;
@@ -188,6 +187,8 @@ namespace LinBox
 
 		if ( N < 20 )             // Print small matrices in dense format
 		{
+			int i;
+			unsigned int j;
 			for (i = (int)this->coldim()-1; i < N; i++)
 			{
 				for ( j = 0; j < this->coldim() ; j++)

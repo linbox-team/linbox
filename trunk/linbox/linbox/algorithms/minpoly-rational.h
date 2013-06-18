@@ -203,7 +203,7 @@ namespace LinBox
 
 		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR;
 
-		std::vector<Integer> PP,PP2; // use of integer due to non genericity of cra. PG 2005-08-04
+		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
 		UserTimer t1,t2;
 		t1.clear();
 		t2.clear();
@@ -245,8 +245,8 @@ namespace LinBox
 					inv(D_1,M[(size_t)i],m);
 					PP[(size_t)i] = (PP[(size_t)i]*D_1) % m;
 				}
-				bool terminated = true;
 				if (RR.reconstructRational(num1,den1,PP,m,-1)) {
+					bool terminated = true;
 					if (den==den1) {
 						for (int i=0; i < num.size(); ++i) {
 							if (num[(size_t)i] != num1[(size_t)i]) {
@@ -290,7 +290,7 @@ namespace LinBox
 		integer err;
 		size_t max_res=0;int max_i;
 		// double rel;
-		size_t max_resu=0; int max_iu;
+		// size_t max_resu=0; int max_iu;
 		// size_t max_err = 0;
 		Quotient qerr;
 		p.resize(PP.size());
@@ -306,7 +306,7 @@ namespace LinBox
 			size_t resi = err.bitsize() + tt.bitsize() -1;
 			size_t resu = t.bitsize() + tt.bitsize() -1;
 			if (resi > max_res) {max_res = resi; max_i=i;}
-			if (resu > max_resu) {max_resu = resu; max_iu =i;}
+			// if (resu > max_resu) {max_resu = resu; max_iu =i;}
 		}
 
 		max_res=0;

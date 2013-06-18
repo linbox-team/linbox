@@ -295,7 +295,7 @@ namespace LinBox
 		}
 
 		// Create vector of indices to switch
-		size_t n_p, l_p;   	// size of group and number of levels in group
+		size_t n_p ;   	// size of group and number of levels in group
 		size_t level (0), difference (1);	// track levels done for powers of 2
 
 		// Vector containing indices for last level of last power of 2.
@@ -312,7 +312,7 @@ namespace LinBox
 		{
 			// update size
 			n_p = _n_vec[p];
-			l_p = _l_vec[p];
+			size_t l_p = _l_vec[p];
 
 			// loop over levels of sub-group network
 			for ( ; level < l_p; ++level, difference <<= 1) {

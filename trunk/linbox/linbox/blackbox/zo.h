@@ -2,20 +2,20 @@
  * Copyright (c) LinBox
  * by Hui Wang, assisted by bds
  * ------------------------------------
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -50,7 +50,7 @@
 
 namespace LinBox
 {
-	bool revLexLess(const std::pair<size_t,size_t>& a, const std::pair<size_t,size_t> b)
+	bool revLexLess(const std::pair<size_t,size_t>& a, const std::pair<size_t,size_t> & b)
 	{ return a.second < b.second || (b.second == a.second && a.first < b.first); }
 
 	/** \brief Time and space efficient representation of sparse {0,1}-matrices.
@@ -87,6 +87,7 @@ namespace LinBox
 		// basic constructor, can be used with subsequent read.
 		ZeroOne(const Field& F) :
 		       	_field(&F), sorted(true)
+			,_rowdim(0),_coldim(0)
 		{}
 
 		// constructor for use by ZOQuad.  Needs work.
@@ -205,13 +206,13 @@ namespace LinBox
 
 			std::vector<std::pair<Index, Index> >::iterator q = ip.begin();
 			Index i = q->first;
-			p++;q++; //start from the second place
+			++p;++q; //start from the second place
 
 			for (; q != ip.end(); ++q, ++p)
 				if (i != q->first)
 				{
-					//for (Index j = i; j < (q+1)->first; j++)//difference may be more than 1
-					for (Index j = i; j < q->first; j++)//difference may be more than 1
+					//for (Index j = i; j < (q+1)->first; ++j)//difference may be more than 1
+					for (Index j = i; j < q->first; ++j)//difference may be more than 1
 						_indexP.push_back(p);
 					i = q->first; //we should change i after the for loop, otherwise the
 					//for loop will not run at all
@@ -232,12 +233,12 @@ namespace LinBox
 
 			q =ip.begin();
 			i = q->second;
-			p++;q++;
+			++p;++q;
 
 			for ( ; q != ip.end(); ++q, ++p)
 			if (i != q->second)
 			{
-			for (Index j = i; j < (q+1)->second; j++)
+			for (Index j = i; j < (q+1)->second; ++j)
 			_colP.push_back(p);
 			i = q->second;
 			}
@@ -398,11 +399,10 @@ namespace LinBox
 #endif // __LINBOX_zero_one_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

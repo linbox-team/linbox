@@ -962,7 +962,7 @@ namespace LinBox
 			{
 				linbox_check (x.size() == A.rowdim());
 				linbox_check (A.coldim() == b.size());
-				typename Field::Element * bp = b.getPointer();
+				// typename Field::Element * bp = b.getPointer();
 				typename Field::Element * xp = x.getPointer();
 				size_t R = A.getRank();
 
@@ -1437,4 +1437,3 @@ namespace LinBox
 // c-basic-offset: 8
 // End:
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-

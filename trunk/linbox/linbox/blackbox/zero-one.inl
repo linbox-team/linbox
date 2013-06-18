@@ -233,9 +233,11 @@ namespace LinBox
 	template<class Field>
 	void ZeroOne<Field>::rowSort() const
 	{
-		int mode = 0;
 		if( _rowSort) return;  // Already sorted, we're done
-		else _qsort( (size_t) 0, _nnz, mode);
+		else {
+			int mode = 0;
+			_qsort( (size_t) 0, _nnz, mode);
+		}
 		_rowSort = true;
 		return;
 	}
@@ -243,9 +245,11 @@ namespace LinBox
 	template<class Field>
 	void ZeroOne<Field>::colSort() const
 	{
-		int mode = 1;
 		if( _colSort) return; // Already sorted, good to go
-		else _qsort( (size_t) 0, _nnz, mode);
+		else {
+			int mode = 1;
+			_qsort( (size_t) 0, _nnz, mode);
+		}
 		_colSort = true; _rowSort = false;
 		return;
 	}
@@ -253,10 +257,10 @@ namespace LinBox
 	template<class Field>
 	void ZeroOne<Field>::_qsort(size_t p, size_t e, int &mode) const
 	{
-		int i;
 		if( (e - p) <= 1) ;
 		else
 		{
+			int i;
 			i = 1 + (int)_part(p, e, mode);
 			_qsort(p, (size_t)i, mode);
 			_qsort((size_t)i, e, mode);

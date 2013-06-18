@@ -78,9 +78,9 @@ namespace LinBox
 
 		typename ItMatrix::ConstRowIterator row= A.rowBegin();
 		std::vector<Integer_t> tmp(A.coldim(), zero);
-		for (; row != A.rowEnd(); row++){
+		for (; row != A.rowEnd(); ++row){
 			typename ItMatrix::ConstRow::const_iterator elm= row->begin();
-			for (size_t i=0; elm != row->end(); elm++, ++i)
+			for (size_t i=0; elm != row->end(); ++elm, ++i)
 				R.axpyin(tmp[i], *elm, *elm);
 		}
 
@@ -92,10 +92,10 @@ namespace LinBox
 		   typename ItMatrix::ConstColIterator colIter;
 		   colIter = A.colBegin();
 
-		   for (; colIter != A.colEnd(); colIter++, col++) {
+		   for (; colIter != A.colEnd(); ++colIter, ++col) {
 		   typename ItMatrix::ConstCol::const_iterator elm;
 		   R.init(sqsum, 0);
-		   for (elm = colIter->begin(); elm != colIter->end(); elm++)
+		   for (elm = colIter->begin(); elm != colIter->end(); ++elm)
 		   R.axpyin(sqsum, *elm, *elm);
 		   R.mulin(H_col_sqr, sqsum);
 		   if (col == 0 || sqsum < short_col_sqr)
@@ -140,7 +140,7 @@ namespace LinBox
 		typename std::vector<Integer_t>::const_iterator iter;
 		std::vector<Integer_t> e(n,zero),tmp(m);
 
-		for (size_t i=0;i<n;i++){
+		for (size_t i=0;i<n;++i){
 			e[i]=one;
 			A.apply(tmp,e);
 			sqsum=zero;
@@ -169,7 +169,7 @@ namespace LinBox
 		R.init(H_col_sqr, 1);
 		typename std::vector<Integer_t>::const_iterator iter;
 		std::vector<Integer_t> e(n,zero),tmp(m);
-		for (size_t i=0;i<n;i++){
+		for (size_t i=0;i<n;++i){
 			e[i]=one;
 			A.apply(tmp,e);
 			sqsum=zero;
@@ -197,7 +197,7 @@ namespace LinBox
 		R.init(H_col_sqr, 1);
 		typename std::vector<Integer_t>::const_iterator iter;
 		std::vector<Integer_t> e(n,zero),tmp(m);
-		for (size_t i=0;i<n;i++){
+		for (size_t i=0;i<n;++i){
 			e[i]=one;
 			A.applyTranspose(tmp,e);
 			sqsum=zero;
@@ -232,7 +232,7 @@ namespace LinBox
 		   R.init(H_col_sqr, 1);
 		   typename std::vector<Integer_t>::const_iterator iter;
 		   std::vector<Integer_t> e(n,zero),tmp(m);
-		   for (size_t i=0;i<n;i++){
+		   for (size_t i=0;i<n;++i){
 			   e[i]=one;
 			   A.apply(tmp,e);
 			   sqsum=zero;
@@ -264,11 +264,11 @@ namespace LinBox
 		typename ItMatrix::ConstRowIterator rowIter;
 		rowIter = A.rowBegin();
 
-		for (; rowIter != A.rowEnd(); rowIter++) {
+		for (; rowIter != A.rowEnd(); ++rowIter) {
 			typename ItMatrix::ConstRow::const_iterator elm;
 			R.init(possum, 0);
 			R.init(negsum, 0);
-			for (elm = rowIter->begin(); elm != rowIter->end(); elm++)
+			for (elm = rowIter->begin(); elm != rowIter->end(); ++elm)
 				if (*elm > zero)
 					R.addin(possum, *elm);
 				else
@@ -492,7 +492,7 @@ namespace LinBox
 				}
 
 				// increase position of the iterator
-				_position++;
+				++_position;
 #ifdef RSTIMING
 				_lc.tRingOther.stop();
 				_lc.ttRingOther += _lc.tRingOther;
@@ -861,8 +861,8 @@ namespace LinBox
 				Element zero;
 				field().init(zero,0);
 				FPolynomial newMinPoly(_MinPoly.size()+Poly.size()-1,zero);
-				for (size_t i=0; i < _MinPoly.size(); i++)
-					for (size_t j=0 ; j < Poly.size(); j++)
+				for (size_t i=0; i < _MinPoly.size(); ++i)
+					for (size_t j=0 ; j < Poly.size(); ++j)
 						field().axpyin(newMinPoly[i+j],_MinPoly[i],Poly[j]);
 				_MinPoly.clear();
 				Poly.clear();
@@ -888,7 +888,7 @@ namespace LinBox
 					nst=0;std::cout<<"updating minpoly\n";
 				}
 				else {
-					if (nst < nosolution_threshold) nst++;
+					if (nst < nosolution_threshold) ++nst;
 					else{
 						nosolution=true;
 						throw PreconditionFailed (__func__, __LINE__, "system is inconsistent or the choosen prime leads to inconsistent resolution");

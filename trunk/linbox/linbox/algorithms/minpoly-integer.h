@@ -150,7 +150,7 @@ namespace LinBox
 		RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
 
 		FPoly fp (degree + 1);
-		typename FPoly::iterator fp_p;
+		// typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
 
 		EarlyMultipCRA< _Field > cra(3UL);
@@ -191,7 +191,7 @@ namespace LinBox
 		RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
 
 		FPoly fp (degree + 1);
-		typename FPoly::iterator fp_p;
+		// typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
 
 		EarlyMultipCRA< _Field > cra(3UL);
@@ -268,7 +268,7 @@ namespace LinBox
 		Element* p;
 		typename BlasMatrix<Ring>::ConstIterator raw_p;
 		std::vector<Element> poly (degree + 1);
-		typename std::vector<Element>::iterator poly_ptr;
+		// typename std::vector<Element>::iterator poly_ptr;
 
 		EarlyMultipCRA< _Field > cra(3UL);
 		do {
@@ -346,11 +346,10 @@ namespace LinBox
 
 #endif //__LINBOX_minpoly_integer_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -65,7 +65,7 @@ namespace LinBox
 
 	TriplesBB(const TriplesBB & B);
 
-	const TriplesBB & operator=(const TriplesBB & B);
+	TriplesBB & operator=(const TriplesBB & B);
 
 	TriplesBB(const Field& F, istream& in);
 
@@ -82,31 +82,31 @@ namespace LinBox
 
 	// need cstor from matrix stream, read, write
 
-	// Element e is added in the i,j position.  
+	// Element e is added in the i,j position.
 	void setEntry(Index i, Index j, const Element & e);
 
-	// Element e is set to the i,j entry.  
+	// Element e is set to the i,j entry.
 	Element& getEntry(Element& e, Index i, Index j) const;
 
 	/** y <- A x.
-	 * 
+	 *
 	 *  Performance will be better if A is in rowMajor or colMajor order.
 	 *
-	 *  If this were to be used extensively for sparse black box ops, 
+	 *  If this were to be used extensively for sparse black box ops,
 	 *  optimizations would be desirable.
 	 */
 	template<class OutVector, class InVector>
-	OutVector & apply(OutVector &, const InVector &) const; 
+	OutVector & apply(OutVector &, const InVector &) const;
 
 	/** y <- A^T x.
-	 * 
+	 *
 	 *  Performance will be better if A is in rowMajor or colMajor order.
 	 *
-	 *  If this were to be used extensively for sparse black box ops, 
+	 *  If this were to be used extensively for sparse black box ops,
 	 *  optimizations would be desirable.
 	 */
 	template<class OutVector, class InVector>
-	OutVector & applyTranspose(OutVector &, const InVector &) const; 
+	OutVector & applyTranspose(OutVector &, const InVector &) const;
 
 	size_t rowdim() const;
 
@@ -136,19 +136,19 @@ namespace LinBox
 			     v_p != A.data.end(); ++ v_p, ++ vp_p)
 				hom.image (vp_p->elt, v_p->elt);
 		}
-	}; 
+	};
 
 	protected:
 	const Field *field_; // The field used by this class
 
-	struct Triple { Index row; Index col; Element elt; 
-		Triple(Index& r, Index& c, const Element& e) 
-		{ init(r, c, e); } 
-		void init(Index& r, Index& c, const Element& e) 
+	struct Triple { Index row; Index col; Element elt;
+		Triple(Index& r, Index& c, const Element& e)
+		{ init(r, c, e); }
+		void init(Index& r, Index& c, const Element& e)
 		{ row = r; col = c; elt = e; }
 	};
 
-	// the data 
+	// the data
 	std::vector<Triple> data_;
 
 	/// The number of rows, columns
@@ -165,11 +165,10 @@ namespace LinBox
 #endif // __LINBOX_triplesbb_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

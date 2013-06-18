@@ -87,6 +87,7 @@ namespace LinBox
 		// basic constructor, can be used with subsequent read.
 		CSF(const Field& F) :
 			_field(&F), sorted(true)
+			,_rowdim(0),_coldim(0),isCSR(false)
 		{}
 
 		/* The real constructor /TODO give docs here
@@ -105,7 +106,10 @@ namespace LinBox
 		}
 
 		/* constructor from a MatrixStream */
-		CSF( MatrixStream<Field>& ms ) : _field(&(ms.getField())){
+		CSF( MatrixStream<Field>& ms ) :
+			_field(&(ms.getField()))
+			,isCSR(false),sorted(false)
+		{
 			read(ms);
 		}
 
@@ -167,7 +171,7 @@ namespace LinBox
 
 			typename OutVector::iterator yp;
 			typename InVector::const_iterator xp;
-			PtrVector::const_iterator ip;
+			// PtrVector::const_iterator ip;
 
 			/*
 			   if( !sorted )
@@ -192,9 +196,9 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector & applyTranspose(OutVector & y, const InVector & x) const {
 			linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
-			
+
 			for(size_t i = 0; i < y.size(); ++i) y[i] = field().zero;
-			
+
 			for(Index i = _ptrs[0]; (size_t)i < _ptrs.size()-1; ++i) {
 				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j) {
 				// process row i:  yj += xi Aij , yindsj += xi valsj
@@ -207,16 +211,16 @@ namespace LinBox
 
 		Element & getEntry(Element& x, Index i, Index j) {
 			size_t k;
-			for (k = _ptrs[i], k < _ptrs[i+1], ++k) 
+			for (k = _ptrs[i], k < _ptrs[i+1], ++k)
 				if (_inds[k] == j) break;
 			if (k == _ptrs[i+1]) return field().init(x, field().zero);
 			else return field().copy(x, _vals[k]);
-		}		
+		}
 
 		Element & setEntry(Index i, Index j, Element& x) {
 			// data must exist.
 			data.push_back(i, j, x);
-		}		
+		}
 
 		void finalize() { // from data to csf
 			init(_data);
@@ -224,9 +228,10 @@ namespace LinBox
 
 		double &d00norm(double &norm){
 			norm = 0;
-			double old = 0, t;
+			double  t;
 			//  maximal row inf (OO) norm
 			for(Index i = _ptrs[0]; (size_t)i < _ptrs.size()-1; ++i) {
+				double old;
 				old = norm;
 				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j) {
 					field().convert(t, _vals[j]);
@@ -258,7 +263,8 @@ namespace LinBox
 		/** Read the matrix from a matrix stream
 		 *  @param ms Stream from which to read the matrix
 		 */
-		void read(MatrixStream<Field> &ms) {
+		void read(MatrixStream<Field> &ms)
+		{
 			Data d;
 			size_t r, c;
 			Element v;
@@ -284,15 +290,18 @@ namespace LinBox
 		{ return _coldim; }
 
 		// TODO generecize for csc
-		IndexVector &getRows(){
+		IndexVector &getRows()
+		{
 			return _ptrs;
 		}
 
-		IndexVector &getCols(){
+		IndexVector &getCols()
+		{
 			return _inds;
 		}
 
-		ElementVector &getVals(){
+		ElementVector &getVals()
+		{
 			return _vals;
 		}
 
@@ -342,11 +351,15 @@ namespace LinBox
 		}
 
 		const Field& field() const
-		{ return *_field; }
+		{
+			return *_field;
+		}
 
 		/* Non blackbox function.  Tells the number of nonzero entries */
 		size_t nnz() const
-		{ return _inds.size(); };
+		{
+			return _inds.size();
+		};
 
 		typedef MatrixCategories::BlackboxTag MatrixCategory;
 
@@ -371,7 +384,7 @@ namespace LinBox
 		PtrVector _ptrs; // the pointers to beginning of each (row/col)
 		size_t _rowdim, _coldim;
 
-		// if data is empty, matrix is ready to use. 
+		// if data is empty, matrix is ready to use.
 		Data _data;
 		bool sorted, isCSR;
 
@@ -469,11 +482,10 @@ namespace LinBox
 #endif // __LINBOX_CSF
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

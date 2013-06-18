@@ -182,11 +182,11 @@ namespace LinBox
 
 		Hom<Ring, Field> hom(A. field(), F);
 
-		for (e_p=e.begin();e_p != e.end(); ++e_p,i++){
+		for (e_p=e.begin();e_p != e.end(); ++e_p,++i){
 			r.assign(*e_p, one);
 			A.apply(tmp,e);
 			int j;
-			for (iter=tmp.begin(),j=0; iter != tmp.end(); ++iter,j++) {
+			for (iter=tmp.begin(),j=0; iter != tmp.end(); ++iter,++j) {
 				hom. image (val, *iter);
 				if (!F.isZero(val))
 					Ap.setEntry ((size_t)j,(size_t)i, val);
@@ -277,7 +277,7 @@ namespace LinBox
 				typename IMatrix::ConstIterator        iterA  = A.Begin();
 				typename BlasMatrix<Field>::Iterator iterAp = Ap.Begin();
 
-				for(; iterA != A.End(); iterA++, iterAp++)
+				for(; iterA != A.End(); ++iterA, ++iterAp)
 					hom. image (*iterAp, *iterA);
 			}
 		};
@@ -294,7 +294,7 @@ namespace LinBox
 				typename BlasMatrix<PID_integer>::ConstIterator        iterA  = A.Begin();
 				typename BlasMatrix<Field>::Iterator iterAp = Ap.Begin();
 
-				for(; iterA != A.End(); iterA++, iterAp++)
+				for(; iterA != A.End(); ++iterA, ++iterAp)
 					hom. image (*iterAp, *iterA);
 			}
 		};

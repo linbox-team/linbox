@@ -156,7 +156,7 @@ namespace LinBox
 		do {
 			char c;
 			size_t j;
-			A._m++;
+			++(A._m);
 			A._matA.push_back (Row ());
 
 			std::istringstream str (buf);
@@ -172,9 +172,9 @@ namespace LinBox
 				if (!str || c == ']') break;
 				A.field().read (str, a_ij);
 
-				j++;
+				++j;
 				if (j > A._n)
-					A._n++;
+					++(A._n);
 
 				if (!A.field().isZero(a_ij))
 					A.setEntry (i, j, a_ij);
@@ -182,7 +182,7 @@ namespace LinBox
 
 			is.getline (buf, 80);
 
-			i++;
+			++i;
 		} while (is);
 
 			return is;
@@ -212,7 +212,7 @@ namespace LinBox
 			if (c == matrixend) return is;
 			else
 			{
-				A._m++;
+				++(A._m);
 				A._matA.push_back (Row ());
 				//processrow(i)
 				while (true)
@@ -311,8 +311,8 @@ namespace LinBox
 
 		case FORMAT_TURNER:
 			// The i j v triples, with zero based indices.
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++) {
+			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
+				for (j = i->begin (), j_idx = 0; j != i->end (); ++j, ++j_idx) {
 					os << i_idx << ' ' << j->first << ' ';
 					A.field().write (os, j->second);
 					os << std::endl;
@@ -322,8 +322,8 @@ namespace LinBox
 
 		case FORMAT_ONE_BASED:
 			// The i j v triples, with zero based indices.
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++) {
+			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
+				for (j = i->begin (), j_idx = 0; j != i->end (); ++j, ++j_idx) {
 					os << i_idx + 1 << ' ' << j->first + 1 << ' ';
 					A.field().write (os, j->second);
 					os << std::endl;
@@ -336,8 +336,8 @@ namespace LinBox
 			// followed by 0 0 0.
 			os << A._m << ' ' << A._n << " M" << std::endl;
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++) {
+			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
+				for (j = i->begin (), j_idx = 0; j != i->end (); ++j, ++j_idx) {
 					os << i_idx + 1 << ' ' << j->first + 1 << ' ';
 					A.field().write (os, j->second);
 					os << std::endl;
@@ -352,15 +352,15 @@ namespace LinBox
 
 			os << "[";
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
 				j = i->begin ();
 
-				for (j_idx = 0; j_idx < A._n; j_idx++) {
+				for (j_idx = 0; j_idx < A._n; ++j_idx) {
 					if (j == i->end () || j_idx != j->first)
 						A.field().write (os, A.field().zero);
 					else {
 						A.field().write (os, j->second);
-						j++;
+						++j;
 					}
 
 					if (j_idx < A._n - 1)
@@ -389,12 +389,12 @@ namespace LinBox
 
 				j = i->begin ();
 
-				for (j_idx = 0; j_idx < A._n; j_idx++) {
+				for (j_idx = 0; j_idx < A._n; ++j_idx) {
 					if (j == i->end () || j_idx != j->first)
 						A.field().write (os, A.field().zero);
 					else {
 						A.field().write (os, j->second);
-						j++;
+						++j;
 					}
 
 					if (j_idx < A._n - 1)
@@ -412,19 +412,19 @@ namespace LinBox
 			//A.field().characteristic (c);
 			//col_width = (int) ceil (log ((double) c) / M_LN10);
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
 				os << "  [ ";
 
 				j = i->begin ();
 
-				for (j_idx = 0; j_idx < A._n; j_idx++) {
+				for (j_idx = 0; j_idx < A._n; ++j_idx) {
 					//os.width (col_width);
 
 					if (j == i->end () || j_idx != j->first)
 						A.field().write (os, A.field().zero);
 					else {
 						A.field().write (os, j->second);
-						j++;
+						++j;
 					}
 
 					os << ' ';

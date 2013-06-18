@@ -294,10 +294,10 @@ namespace LinBox
 		{
 			typename Vector::iterator i;
 
-			if ( (_m > 0) && (_j++ >= _m) )
+			if ( (_m > 0) && (++_j >= _m) )
 				return v;
 
-			for (i = v.begin (); i != v.end (); i++)
+			for (i = v.begin (); i != v.end (); ++i)
 				_r.random (*i);
 
 			return v;
@@ -417,7 +417,7 @@ namespace LinBox
 		Vector &get (Vector &v)
 		{
 
-			if (_m > 0 && _j++ >= _m)
+			if (_m > 0 && ++_j >= _m)
 				return v;
 
 			for (typename Vector::iterator i = v.begin (); i != v.end (); ++i) {
@@ -479,7 +479,7 @@ namespace LinBox
 			typename Field::Element x;
 			size_t i = (size_t) -1;
 
-			if (_m > 0 && _j++ >= _m)
+			if (_m > 0 && ++_j >= _m)
 				return v;
 
 			v.clear ();
@@ -559,12 +559,12 @@ namespace LinBox
 			typename Field::Element x;
 			int i;
 
-			if (_m > 0 && _j++ >= _m)
+			if (_m > 0 && ++_j >= _m)
 				return v;
 
 			v.clear ();
 
-			for (i = 0; i < _k; i++) {
+			for (i = 0; i < _k; ++i) {
 				size_t idx;
 				_r.random (x);
 				while (!_field.isZero (v[idx = MT.randomIntRange (0, (uint32_t)_n)])) ;
@@ -618,7 +618,7 @@ namespace LinBox
 			typename Field::Element x;
 			size_t i = (size_t) -1;
 
-			if (_m > 0 && _j++ >= _m)
+			if (_m > 0 && ++_j >= _m)
 				return v;
 
 			v.first.clear ();
@@ -633,7 +633,7 @@ namespace LinBox
 				skip = (int) (ceil (log (val) * _1_log_1mp));
 
 				if (skip <= 0)
-					i++;
+					++i;
 				else
 					i += (size_t) skip;
 
@@ -753,14 +753,14 @@ namespace LinBox
 			typename Vector::iterator i;
 
 			size_t idx;
-			for (i = v.begin (), idx = 0; i != v.end (); i++, idx++) {
+			for (i = v.begin (), idx = 0; i != v.end (); ++i, ++idx) {
 				if (idx == _j)
 					_field.init (*i, 1);
 				else
 					_field.assign (*i, zero);
 			}
 
-			_j++;
+			++_j;
 
 			return v;
 		}
@@ -797,7 +797,7 @@ namespace LinBox
 			v.clear ();
 
 			if (_j < _n)
-				v.push_back (std::pair <size_t, typename Field::Element> (_j++, _one));
+				v.push_back (std::pair <size_t, typename Field::Element> (++_j, _one));
 
 			return v;
 		}
@@ -835,7 +835,7 @@ namespace LinBox
 			v.clear ();
 
 			if (_j < _n)
-				v.insert (std::pair <size_t, typename Field::Element> (_j++, _one));
+				v.insert (std::pair <size_t, typename Field::Element> (++_j, _one));
 
 			return v;
 		}
@@ -874,7 +874,7 @@ namespace LinBox
 			v.second.clear ();
 
 			if (_j < _n) {
-				v.first.push_back (_j++);
+				v.first.push_back (++_j);
 				v.second.push_back (_one);
 			}
 
