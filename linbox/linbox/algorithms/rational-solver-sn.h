@@ -97,6 +97,8 @@ namespace LinBox {
 		RationalSolverSN(const Ring& R = Ring(), const NumericSolver& S = NumericSolver(),
 				 bool ea=false) :
 		       	_ring(R), _VDR(R), _field(), _VDF(field()), _numsolver(S), exact_apply(ea)
+			// randow default to 0
+			,shift(0),shift_prev(0),shift_max(0),SHIFT_BOUND(0), HIT(0), MISS(0), iterations(0),sstatus(SHIFT_GROW),searchPeak(false),mnorm(0)
 		{}
 
 		/**
@@ -186,7 +188,6 @@ namespace LinBox {
 			HIT = 0; MISS = 0;
 			iterations = 0;
 			integer ay, be;
-			int ret;
 
 			bool recon_success = false;
 			int recon_status = 0;
@@ -201,6 +202,7 @@ namespace LinBox {
 			//size_t rr_count = 0;
 			//solve_timer.clear(); rr_timer.clear();
 			do{
+			int ret;
 				//tt.clear(); tt.start();
 				ret = rat_sol(numx, denx, xs_int, xs_frac, bi, lastb, r, lastr, x, bound, M);
 				//tt.stop(); solve_timer += tt;

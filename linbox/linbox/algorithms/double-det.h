@@ -313,7 +313,7 @@ namespace LinBox
 		//tim.stop();
 		//std::cerr<<"Solve took "<<tim.usertime()<<std::endl;
 
-		den1 = den1;
+		// den1 = den1;
 		// Should work:
 		// den (y[n]) = den (-den1/x[n]) = x[n]
 		den2 = -x1[N-1];

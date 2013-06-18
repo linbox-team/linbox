@@ -288,7 +288,7 @@ namespace LinBox
 		size_t i =0;
 		integer t,tt;
 		integer err;
-		size_t max_res=0;int max_i;
+		// size_t max_res=0;int max_i;
 		// double rel;
 		// size_t max_resu=0; int max_iu;
 		// size_t max_err = 0;
@@ -303,20 +303,20 @@ namespace LinBox
 			Q.get_den(t, *it);
 			Q.get_num(tt,*it);
 			err = M[(size_t)i]/t;
-			size_t resi = err.bitsize() + tt.bitsize() -1;
-			size_t resu = t.bitsize() + tt.bitsize() -1;
-			if (resi > max_res) {max_res = resi; max_i=i;}
+			// size_t resi = err.bitsize() + tt.bitsize() -1;
+			// size_t resu = t.bitsize() + tt.bitsize() -1;
+			// if (resi > max_res) {max_res = resi; max_i=i;}
 			// if (resu > max_resu) {max_resu = resu; max_iu =i;}
 		}
 
-		max_res=0;
+		// max_res=0;
 		for (it= p.begin()+1; it != p.end(); ++it) {
 			Q.get_den(t, *it);
 			Q.get_den(tt, *(it-1));
 			Q.init(qerr,t,tt);
 			Q.get_num(tt, *it);
-			size_t resi = Q.bitsize(t,qerr) + tt.bitsize() -2;
-			if (resi > max_res) {max_res = resi; max_i=i;}
+			// size_t resi = Q.bitsize(t,qerr) + tt.bitsize() -2;
+			// if (resi > max_res) {max_res = resi; max_i=i;}
 		}
 
 		commentator().stop ("done", NULL, "Iminpoly");

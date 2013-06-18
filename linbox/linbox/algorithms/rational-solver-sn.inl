@@ -49,7 +49,7 @@ int zw_shift(NumericSolver & NS_S, size_t n, FVector &r, FVector &x)
 		field().sub(ax[i], ax[i], r[i]);
 	// compute possible shift
 	int zw_shift_loc;
-	double normr1, normr2, normr3, shift1, shift2;
+	double normr1, normr2, normr3,  shift2;
 	normr1 = zw_dmax(n, &*r.begin(), 1);
 	normr2 = zw_dmax(n, &*ax.begin(), 1);
 	normr3 = zw_dmax(n, &*x.begin(), 1);
@@ -59,7 +59,7 @@ int zw_shift(NumericSolver & NS_S, size_t n, FVector &r, FVector &x)
 	if (normr2 <.0000000001)
 		zw_shift_loc = 30;
 	else {
-		shift1 = floor(log_2 (normr1 / normr2)) - 2;
+		double shift1 = floor(log_2 (normr1 / normr2)) - 2;
 		zw_shift_loc = (int)(30 < shift1 ? 30 : shift1);
 	}
 
@@ -328,7 +328,7 @@ inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatri
 	return;
 } // update_r_exact
 
-// no longer called...
+#if 0 /* no longer called...*/
 inline int HadamardBound(integer& B, FMatrix& DM)
 {
 	size_t n = DM.rowdim();
@@ -336,15 +336,17 @@ inline int HadamardBound(integer& B, FMatrix& DM)
 	B = B * B;
 	double mnorm_loc = zw_dOOnorm(&*DM.Begin(), n, n);
 
+	//! @bug this is not good.
 	// [don't know what this comment is about] should be a check for 2 * mnorm + zw_dmax (n, b, 1);
 	// TODO what is "b"? from copied code it is the RHS array of doubles
 	// zw_max just seems to get abs(max value of b)
 	// next line false, just to compile
-	double *b;
+	double *b = NULL;
 	B *= 2 * mnorm_loc + zw_dmax (n, b, 1); // [don't know what this factor is about]
 	B <<= 1; // [extra factor of 2 for some reason... ]
 	return B;
 }
+#endif
 
 //update num, *num <- *num * 2^shift + d
 inline IVector& update_num (IVector& num, const FVector& d)
@@ -364,12 +366,12 @@ inline IVector& update_num (IVector& num, const FVector& d)
 //update r = r * shift - M d
 inline static int update_r_ll (double* r, int n, const double* M, const double* d, int shift)
 {
-	long long int tmp;
+	// long long int tmp;
 	double* p1;
 	const double* p2;
 	const double* pd;
 	for (p1 = r, p2 = M; p1 != r + n; ++ p1) {
-		tmp = (long long int) *p1;
+		long long int tmp = (long long int) *p1;
 		tmp <<= shift;
 		for (pd = d; pd != d + n; ++ pd, ++ p2) {
 			tmp -= (long long int)*pd * (long long int) *p2;
@@ -400,10 +402,10 @@ inline static double highAbs(FMatrix M)
 inline static double zw_dOOnorm(const double* M, int m, int n)
 {
 	double norm = 0;
-	double old = 0;
+	// double old = 0;
 	const double* p;
 	for (p = M; p != M + (m * n); ) {
-		old = norm;
+		double old = norm;
 		norm = cblas_dasum (n, p ,1);
 		if (norm < old) norm = old;
 		p += n;
@@ -418,12 +420,12 @@ inline static double zw_dmax (const int N, const double* a, const int inc)
 
 inline static int zw_hbound (integer& b, int m, int n, const double* M)
 {
-	double norm = 0;
+	// double norm = 0;
 	const  double* p;
 	integer tmp;
 	b = 1;
 	for (p = M; p != M + (m * n); ) {
-		norm = cblas_dnrm2 (n, p ,1);
+		double norm = cblas_dnrm2 (n, p ,1);
 		tmp =  norm;
 		integer::mulin (b, tmp);
 		p += n;

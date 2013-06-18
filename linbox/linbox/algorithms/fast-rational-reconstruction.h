@@ -125,7 +125,7 @@ namespace LinBox
 		Element& powtwo(Element& h, const size_t log_h) const
 		{
 			h = 1;
-			if (log_h <= 0) return h;
+			// if (log_h <= 0) return h;
 			h<<=log_h;
 			return h;
 		}
@@ -146,7 +146,6 @@ namespace LinBox
 
 			if (!fastEEA (ai,bi,ci,di,m,log_m,x,bound, log_bound)) return false;
 
-			int K=0;
 
 			Element init_ainext = cur_ainext;
 			Element init_qinext = cur_qinext;
@@ -154,6 +153,7 @@ namespace LinBox
 			Element init_ri = cur_ri;
 			/* correction if $K <> bound = 2^log_bound */
 			if (cur_rinext > 0) {
+				int K=0;
 				while (cur_ainext <= d_bound) {
 					++K;
 					Element tmp;
@@ -356,9 +356,9 @@ namespace LinBox
 				size_t log_mstar = 2*h+1;
 				if (nstar > 0) if (!fastEEA(aistar, bistar, cistar, distar, mstar, log_mstar,nstar, powh, h)) return false;
 
-				int K=2;//reatreat steps;
 
 				if ((aistar > 1) && (distar > 0)) { //we have to go back 2 steps
+					int K=2;//reatreat steps;
 					Element aprev,bprev,cprev,dprev;
 					for (int i=0; i < K; ++i) {
 						prevEEA(aprev,bprev,cprev,dprev,aistar,bistar,cistar,distar);
@@ -403,9 +403,9 @@ namespace LinBox
 				Element ri = cur_ri;
 				Element rinext = cur_rinext;
 
-				size_t log_m;
 
 				if ((rinext > 0) && (cur_ainext <= powh)){
+				size_t log_m;
 					log_m = rinext.bitsize()-1;
 					Element m2, n2;
 					m2 = rinext;
@@ -659,7 +659,7 @@ namespace LinBox
 			a = tmpa; b = tmpb; c = tmpc; d = tmpd;
 		}
 
-		QMatrix& max(const QMatrix& max1, const QMatrix max2) {
+		QMatrix /* & */ max(const QMatrix& max1, const QMatrix max2) {
 			if (max1.q >= max2.q) return QMatrix(max1);
 			else return QMatrix(max2);
 		}
@@ -695,7 +695,7 @@ namespace LinBox
 			if (_size+1 < _maxSize) {
 				this->push_back(bottom);
 				return false;
-				++_size;
+				// ++_size;
 			}
 			else {
 				if (!this->empty()) {
@@ -733,6 +733,7 @@ namespace LinBox
 
 		FastMaxQRationalReconstruction(const Ring& Z) :
 			FastRationalReconstruction<Ring>(Z), _intRing(Z)
+			,c(0)
 		{}
 
 		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
@@ -743,8 +744,8 @@ namespace LinBox
 
 		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const
 		{
-			bool res= false;
-			return res = FastRationalReconstruction<Ring>::reconstructRational(a,b,x,m,a_bound);
+			// bool res= false;
+			return /*  res = */ FastRationalReconstruction<Ring>::reconstructRational(a,b,x,m,a_bound);
 		}
 
 	protected:
@@ -1023,7 +1024,6 @@ namespace LinBox
 				Element ri = cur_ri;
 				Element rinext = cur_rinext;
 
-				size_t log_m;
 
 				myQueue<Ring> queueTmp (queueMax._maxSize);
 				QMatrix<Ring> maxQTmp(_intRing);
@@ -1038,6 +1038,7 @@ namespace LinBox
 						}
 					}
 
+				size_t log_m;
 					log_m = rinext.bitsize()-1;
 					Element m2, n2;
 					m2 = rinext;
@@ -1213,7 +1214,7 @@ namespace LinBox
 			}
 
 			Element ainext, binext, cinext,dinext;
-			ainext=dinext=1;
+			dinext=1;
 			binext=cinext=0;
 			ainext = cur_ainext;
 			int K=-1;

@@ -392,7 +392,7 @@ namespace LinBox
 
 		// i is the index for temporaries where we need to go back to i - 1
 		// j is the index for temporaries where we need to go back to j - 2
-		int i = 0, j = 2, next_j, prev_j = 1, iter = 2;
+		int i = 0, j = 2, prev_j = 1, iter = 2;
 		typename Matrix::ColIterator k;
 
 		TIMER_DECLARE(AV);
@@ -537,7 +537,7 @@ namespace LinBox
 
 		// Now we're ready to begin the real iteration
 		while (!_MD.isZero (_matV[j])) {
-			next_j = j + 1;
+			int next_j = j + 1;
 			if (next_j > 2) next_j = 0;
 
 			TIMER_START(AV);

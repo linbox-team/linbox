@@ -5,20 +5,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -66,7 +66,7 @@ namespace LinBox
 				return L;
 
 			LocalPIR::Exponent g = LocalPIR::Exponent(32); //R.init(g, 0); // must change to 2^31 maybe.
-			size_t i, j, k;
+			size_t i, j;
 			/* Arguably this search order should be reversed to increase the likelyhood of no col swap,
 			   assuming row swaps cheaper.  Not so, however on my example. -bds 11Nov */
 			for ( i = 0; i != m; ++i)
@@ -83,13 +83,13 @@ namespace LinBox
 				L.insert(L.end(), (m < n) ? m : n, 0);
 				return L;
 			}
-			if ( i != m ) // g is a unit and, because this is a local ring, 
+			if ( i != m ) // g is a unit and, because this is a local ring,
 			// value at which this first happened also is a unit.
 			{ // put pivot in 0,0 position
 				if ( i != 0 ) // swap rows
 					std::swap_ranges(Ap, Ap+n, Ap + i*stride);
 				if ( j != 0 ) // swap cols
-					for(k = 0; k != m; ++k)
+					for(size_t k = 0; k != m; ++k)
 						std::swap(Ap[k*stride + 0], Ap[k*stride + j]);
 
 				// elimination step - crude and for dense only - fix later
