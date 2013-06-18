@@ -70,7 +70,9 @@ namespace LinBox
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
 			commentator().start ("Coppersmith solveNonSingular", "solveNonSingular");
+#if 0
 			std::ostream& report = commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+#endif
 
 			//Set up the projection matrices and their dimensions
 			size_t d = B.coldim();
@@ -90,7 +92,7 @@ namespace LinBox
 
 			U.random();
 			W.random();
-			
+
 			//Multiply W by B on the left and place it in the last c-1 columns of V
 			Sub V2(V,0,1,d,c-1);
 			domain().mul(V2,B,W);

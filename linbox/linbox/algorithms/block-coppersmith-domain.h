@@ -78,13 +78,13 @@ DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
         {}
         BlockCoppersmithDomain (const Domain& MD, Sequence *D, unsigned long ett_default
 = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
-            _container(D), _MD(&MD), 
+            _container(D), _MD(&MD),
 EARLY_TERM_THRESHOLD (ett_default)
         {}
 
 	//matrix domain
         const Domain &domain    () const { return *_MD; }
-	
+
         // field of the domain
         const Field &field    () const { return domain().field(); }
         const Field &getField    () const { return domain().field(); } // deprecated
@@ -117,7 +117,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 
 		typedef typename std::list<Coefficient>::const_iterator const_iterator;
 		typedef int size_type;
-		
+
 		inline const Domain &domain() const { return *_MD;}
 		inline const Field &field() const {return domain().field();}
 
@@ -128,13 +128,13 @@ EARLY_TERM_THRESHOLD (ett_default)
 		size_t _row, _col;
 
 	public:
-		BM_Seq(const Domain & MD, size_t r, size_t c) : _MD(&MD) 
+		BM_Seq(const Domain & MD, size_t r, size_t c) : _MD(&MD)
 		{
 			_row = r;
 			_col = c;
 			_size = 0;
 		}
-		BM_Seq(const Domain & MD, size_t r) : _MD(&MD) 
+		BM_Seq(const Domain & MD, size_t r) : _MD(&MD)
 		{
 			_row = r;
 			_col = r;
@@ -160,7 +160,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				(*this)._col = S._col;
 				(*this)._MD = S._MD;
 				_seq.clear();
-				for(typename std::list<Coefficient>::const_iterator it = S._seq.begin(); it != S._seq.end(); it++)
+				for(typename std::list<Coefficient>::const_iterator it = S._seq.begin(); it != S._seq.end(); ++it)
 					_seq.push_back(*it);
 			}
 			return *this;
@@ -365,7 +365,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 					(*this)._beta    = it._beta;
 					(*this)._state   = it._state;
 					_gen.clear();
-					for(typename std::list<Coefficient>::const_iterator git = it._gen.begin(); git != it._gen.end(); git++)
+					for(typename std::list<Coefficient>::const_iterator git = it._gen.begin(); git != it._gen.end(); ++git)
 						_seq.push_back(*git);
 				}
 				return (*this);
@@ -671,11 +671,11 @@ EARLY_TERM_THRESHOLD (ett_default)
 				++_t;
 				++_seqel;
 				//Update the state
-				if(_delta < 0 || _beta < _delta - _sigma + _mu +1){
+				if(/*  _delta < 0 || */ _beta < _delta - _sigma + _mu +1){
 					if(_t == _size)
 						_state._state = SequenceExceeded;
 					else{
-						if(_sigma > _delta && _delta >= 0)
+						if(_sigma > _delta /* && _delta >= 0 */)
 							_state._state = DeltaExceeded;
 						else
 							_state._state = GeneratorUnconfirmed;
