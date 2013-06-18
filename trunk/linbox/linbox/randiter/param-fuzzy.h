@@ -50,7 +50,7 @@ namespace LinBox
 		ParamFuzzyRandIter (/*const ParamFuzzy &F, */
 				   const integer &size = 0,
 				   const integer &seed = 0) :
-		       	/*_field (F),*/ _size (size), _seed (seed)
+		       	_field (ParamFuzzy()), _size (size), _seed (seed)
 		{
 			/*if (_size == 0) F.cardinality (_size);*/
 			if (_seed == 0) _seed = time (NULL);
@@ -66,7 +66,7 @@ namespace LinBox
 		}
 
 		ParamFuzzyRandIter (const ParamFuzzyRandIter &R) :
-		       	/*_field (R._field),*/ _size (R._size), _seed (R._seed)
+		       	_field (R._field), _size (R._size), _seed (R._seed)
 		{}
 
 		~ParamFuzzyRandIter () {}
@@ -76,6 +76,7 @@ namespace LinBox
 			if (this != &R) { // guard against self-assignment
 				_size = R._size;
 				_seed = R._seed;
+				_field = R._field;
 			}
 
 			return *this;
@@ -116,11 +117,10 @@ namespace LinBox
 #endif // __LINBOX_randiter_param_fuzzy_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

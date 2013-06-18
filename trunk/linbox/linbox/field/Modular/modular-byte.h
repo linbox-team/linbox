@@ -126,8 +126,12 @@ namespace LinBox
 			,one(mf.one),zero(mf.zero),mOne(mf.mOne)
 		{}
 
+		//! @bug should we allow to change the modulus in copy ?
 		Modular &operator=(const Modular<Element> &F)
 		{
+			if (&F == this)
+				return *this;
+
 			modulus    = F.modulus;
 			lmodulus   = F.lmodulus;
 			modulusinv = F.modulusinv;

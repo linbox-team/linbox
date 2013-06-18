@@ -146,9 +146,10 @@ namespace LinBox
 			std::vector<GridElement<Element>*> ends(_n, NULL);
 
 			if (c == 'M') {
-				size_t i, i_prev, j, j_prev;
-				i_prev = 0;
-				j_prev = 0;
+				// size_t i, i_prev, j, j_prev;
+				size_t i = 0, j = 0 ;
+				// i_prev = 0;
+				// j_prev = 0;
 
 				Element x, x_prev; x_prev = 0; x=0;
 				while (in >> i) {
@@ -311,7 +312,6 @@ namespace LinBox
 			std::cout << "Rank at end reduce/begin elimination" << rank <<"\n" << std::flush;
 
 			size_t ini=0;
-			bool pivotFound;
 
 			size_t row2;
 			size_t j1,j2;
@@ -319,6 +319,7 @@ namespace LinBox
 			x1=1;x2=1;x=0;
 
 			while (1) {
+			bool pivotFound;
 				pivotFound =false;
 				if (ini>=mR.size()) ini=0;
 				for (size_t i=ini; i <  mR.size(); ++i) {
@@ -419,7 +420,7 @@ namespace LinBox
 					std::cout << "Elimination of " << S-1<< " rows at rank " <<rank << "\n" << std::flush;
 
 					size_t i =0;
-					bool tworow=false;
+					// bool tworow=false;
 					int init_rank = rank;
 					while  (1) {
 						while (i < _m) {
@@ -602,11 +603,10 @@ namespace LinBox
 
 #endif //__LINBOX_matrix_grid_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
