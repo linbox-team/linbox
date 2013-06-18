@@ -306,8 +306,8 @@ EARLY_TERM_THRESHOLD (ett_default)
 			void setDelta(int d)
 			{
 				_delta=d;
-				if((_delta < 0 || _beta < _delta - _sigma + _mu +1) && _state._state!=3){
-					if(_sigma <= _delta || _delta < 0)
+				if((/*  _delta < 0 ||*/ _beta < _delta - _sigma + _mu +1) && _state._state!=3){
+					if(_sigma <= _delta /*|| _delta < 0*/)
 						_state._state = GeneratorUnconfirmed;
 					else
 						_state._state = DeltaExceeded;
@@ -561,7 +561,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				cseqit = _seqel;
 				//Create a matrix domain for addition and multiplication
 
-				Domain& MD = _seq->domain();
+				Domain& MD = _seq.domain();
 				//Compute the discrepancy
 				for(genit = _gen.begin(); genit!=_gen.end(); ++genit){
 					MD.axpyin(disc,*cseqit,*genit);
@@ -578,11 +578,11 @@ EARLY_TERM_THRESHOLD (ett_default)
 					_deg[j]++;
 				++_beta;
 				//Add a zero matrix to the end of the generator if needed.
-				int tmax = _deg[0];
+				int tmax = (int)_deg[0];
 				for(size_t j = 1; j<_row+_col; ++j)
-					if(tmax < _deg[j])
-						tmax = _deg[j];
-				if(tmax+1 > _gensize){
+					if(tmax < (int)_deg[j])
+						tmax = (int)_deg[j];
+				if(tmax+1 > (int)_gensize){
 					_gen.push_back(matrix_type(field(),_col,_row+_col));
 					++_gensize;
 				}
@@ -606,11 +606,11 @@ EARLY_TERM_THRESHOLD (ett_default)
 				++_t;
 				++_seqel;
 				//Update the state
-				if(_delta < 0 || _beta < _delta - _sigma + _mu +1){
+				if(/*  _delta < 0 || */_beta < _delta - _sigma + _mu +1){
 					if(_t == _size)
 						_state._state = SequenceExceeded;
 					else{
-						if(_sigma > _delta && _delta >= 0)
+						if(_sigma > _delta /*  && _delta >= 0*/)
 							_state._state = DeltaExceeded;
 						else
 							_state._state = GeneratorUnconfirmed;
@@ -734,7 +734,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				std::vector<matrix_type> revgen(_mu+1, matrix_type(field(),_col,_col));
 				for(size_t i = 0; i<_col; ++i){
 					typename std::list<matrix_type>::iterator genit = _gen.begin();
-					for(int j = 0; j < _deg[i]+1; ++j){
+					for(int j = 0; j < (int)_deg[i]+1; ++j){
 						ColumnCopy(revgen[_deg[i]-j], *genit,i);
 						++genit;
 					}
