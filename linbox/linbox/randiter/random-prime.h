@@ -69,9 +69,9 @@ namespace LinBox
 		{
 			linbox_check(bits >1);
 			if (! seed)
-				RandomPrimeIterator::setSeed( (unsigned long) BaseTimer::seed() );
+				setSeed( (unsigned long) BaseTimer::seed() );
 			else
-				RandomPrimeIterator::setSeed( seed );
+				setSeed( seed );
 
 			integer::random(_prime,_bits-1);
 			_prime = _shift - _prime;

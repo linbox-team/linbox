@@ -101,15 +101,18 @@ namespace LinBox
 			int value = 0;
 
 			if (_size == 0) {
-			unsigned int s;
+				unsigned int s;
 				s = _seed;
 
-				value = rand_r (&s);
+				 srand (s);
+				 value= rand();
 
 				mpz_set_si (mpq_numref (a.rep), value);
 
 				do {
-					value = rand_r (&s);
+					//!@bug this is weird... (rand_r is obsolete)
+					srand (s);
+					value = rand();
 				} while (value == 0);
 
 				const_cast<integer&>(_seed) = s;
@@ -120,7 +123,8 @@ namespace LinBox
 				int num, den;
 
 				s = _seed;
-				num = rand_r (&s);
+				srand (s);
+				num =  rand();
 
 				if (_size > 0) {
 					int tmp = (int)_size;
@@ -128,7 +132,8 @@ namespace LinBox
 					den = 1L;
 				}
 				else {
-					den = rand_r (&s);
+					srand (s);
+					den =  rand();
 				}
 
 				const_cast<integer&>(_seed) = s;
