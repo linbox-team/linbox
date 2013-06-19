@@ -17,7 +17,8 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 # ========LICENCE========
-AC_PREREQ(2.61)
+
+AC_PREREQ([2.61])
 
 AC_INIT([LinBox], [1.4.0],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
@@ -92,7 +93,8 @@ if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 	case x${CCNAM} in
 		xicc)
 		WARN_CFLAGS="${WARN_CFLAGS} -Wcheck"
-		# WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith  -Wwrite-strings -Wno-long-long"
+		WARN_CFLAGS="${WARN_CFLAGS} -Wall -Wno-unused-parameter -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith  -Wwrite-strings -Wno-long-long"
+		WARN_CFLAGS="${WARN_CFLAGS} -Wextra -ansi"
 			;;
 		xeko)
 			WARN_CFLAGS="${WARN_CFLAGS} -Wno-unused-parameter"
@@ -326,6 +328,7 @@ fi
 #AC_SUBST(CXXFLAGS)
 
 CXXFLAGS="${GMP_CFLAGS} ${CXXFLAGS}"
+
 AC_SUBST(CXXFLAGS)
 
 echo "-----------------------------------------------"

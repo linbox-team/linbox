@@ -94,9 +94,9 @@ namespace LinBox
 			return *this;
 		}
 
-		/*x Destructor.
+		/** Destructor.
 		*/
-		// ~ElementEnvelope () {}
+		~ElementEnvelope () {}
 
 	private:
 

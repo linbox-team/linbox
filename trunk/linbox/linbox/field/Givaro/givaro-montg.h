@@ -92,14 +92,14 @@ namespace LinBox
 		 *  this constructor use the ZpzDom<TAG> constructor
 		 */
 		GivaroMontg(const integer& p) :
-		 Givaro::Montgomery< Givaro::Std32>(static_cast<uint32_t>(long(p)))
+		 Givaro::Montgomery< Givaro::Std32>((uint32_t)((unsigned long)(p)))
 		{ }
 
 		/** Constructor from an integer (takes degree of extension as 2nd parameter, must be 1)
 		 *  this constructor use the ZpzDom<TAG> constructor
 		 */
 	  	GivaroMontg(const integer& p, const integer& k) :
-		 Givaro::Montgomery< Givaro::Std32>(static_cast<uint32_t>(long(p)))
+		 Givaro::Montgomery< Givaro::Std32>((uint32_t)((unsigned long)(p)))
 		{
 
 			if (k!=1)

@@ -133,6 +133,7 @@ namespace LinBox
 			if (_elem_ptr     != NULL) delete     _elem_ptr;
 			if (_randIter_ptr != NULL) delete _randIter_ptr;
 
+
 		}
 
 		/** \brief Assignment operator.
