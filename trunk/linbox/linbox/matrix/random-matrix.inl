@@ -59,11 +59,11 @@ namespace LinBox
 			//size_t  * P = new size_t [m]   ;
 			BlasPermutation<size_t> P(m);
 			//Element * L = new Element[m*m] ;
-			//TriangularBlasMatrix<Element> L(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
+			//TriangularBlasMatrix<Field> L(F,m,m,LinBoxTag::Lower,LinBoxTag::Unit);
 			//! @todo !!!
 			BlasMatrix<Field> L(F,m,m);
 			// Element * U = new Element[m*n] ;
-			// TriangularBlasMatrix<Element> U(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
+			// TriangularBlasMatrix<Field> U(F,m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
 			//
 			BlasMatrix<Field> U(F,m,n);
 			//size_t  * Q = new size_t [n]   ;
@@ -204,7 +204,6 @@ namespace LinBox
 			// L.write(std::cout << "U:=",true ) << ';' << std::endl;
 
 			typedef typename Ring::Element Element;
-			// BlasMatrix<Element> A_ptr(A) ;
 
 			MD.mul(A,L,U);
 			// A.write(std::cout << "pre A=",true) << std::endl;
@@ -221,10 +220,10 @@ namespace LinBox
 
 #if 0
 		template<class Randiter,class Field>
-		BlasMatrix<typename Field::Element> &
+		BlasMatrix<Field> &
 		random_lu_rank(const Field			   & F,
 			       const Randiter                      & R,
-			       BlasMatrix<typename Field::Element> & A,
+			       BlasMatrix<Field> & A,
 			       int                                 & rank,
 			       const RingCategories::IntegerTag    & tag)
 		{

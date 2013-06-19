@@ -252,8 +252,6 @@ namespace LinBox
 } // namespace LinBox
 
 #include "linbox/blackbox/toeplitz.inl"
-// Hide the implementation; include it here because
-// older compilers want everything in one template file
 
 #endif //__LINBOX_toeplitz_H
 

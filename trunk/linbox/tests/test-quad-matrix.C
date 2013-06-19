@@ -119,7 +119,7 @@ int main (int argc, char **argv)
 	//std::cout << " -- main: " << B.rowdim() << " " << B.coldim() << " " << B.nnz() << std::endl;
 	//std::cout << " -- main: ZOQuad matrix blackbox test suite" << std::endl;
 
-    BlackBox BB(B);
+	BlackBox BB(B);
 
 	//BB.write(cout) << endl; //just writes the sizes of the strips.
 
@@ -129,11 +129,10 @@ int main (int argc, char **argv)
 }
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

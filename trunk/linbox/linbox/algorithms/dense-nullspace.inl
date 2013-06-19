@@ -477,8 +477,8 @@ namespace LinBox
 	template<class Field>
 	size_t&
 	NullSpaceBasis (const Field& F, const LinBoxTag::Side Side,
-			BlasMatrix<typename Field::Element> & A,
-			BlasMatrix<typename Field::Element> & Ker,
+			BlasMatrix<Field> & A,
+			BlasMatrix<Field> & Ker,
 			size_t & kerdim)
 	{
 
@@ -486,13 +486,13 @@ namespace LinBox
 		size_t ldk;
 		NullSpaceBasis(F,Side,A.rowdim(),A.coldim(), A.getWritePointer(),A.getStride(), Ker_ptr,ldk,kerdim);
 		if (Side == LinBoxTag::Right){
-			Ker = BlasMatrix<typename Field::Element>(A.rowdim(),kerdim);
+			Ker = BlasMatrix<Field>(F,A.rowdim(),kerdim);
 		}
 		else {
-			Ker = BlasMatrix<typename Field::Element>(kerdim,A.coldim());
+			Ker = BlasMatrix<Field>(F,kerdim,A.coldim());
 		}
 		//! @todo this is slow : use a constructor from Ker ?
-		for(typename BlasMatrix<typename Field::Element>::Iterator it=Ker.Begin(); it!= Ker.End(); ++it,++Ker_ptr)
+		for(typename BlasMatrix<Field>::Iterator it=Ker.Begin(); it!= Ker.End(); ++it,++Ker_ptr)
 			*it=*Ker_ptr;
 		delete[] Ker_ptr ;
 		return kerdim;
@@ -503,11 +503,10 @@ namespace LinBox
 
 #endif // __LINBOX_dense_nullspace_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
