@@ -80,8 +80,8 @@ namespace LinBox
 	template<class Field>
 	size_t&
 	NullSpaceBasis (const Field& F, const LinBoxTag::Side Side,
-			BlasMatrix<typename Field::Element> & A,
-			BlasMatrix<typename Field::Element> & Ker,
+			BlasMatrix<Field> & A,
+			BlasMatrix<Field> & Ker,
 			size_t & kerdim) ;
 
 	/*! Nullspace of a dense matrix on a finite field.
@@ -96,11 +96,11 @@ namespace LinBox
 	template<class Field>
 	size_t&
 	NullSpaceBasis (const Field& F, const LinBoxTag::Side Side,
-			const BlasMatrix<typename Field::Element> & A,
-			BlasMatrix<typename Field::Element> & Ker,
+			const BlasMatrix<Field> & A,
+			BlasMatrix<Field> & Ker,
 			size_t & kerdim)
 	{
-		BlasMatrix<typename Field::Element> B (A);
+		BlasMatrix<Field> B (A);
 		return NullSpaceBasis<Field>(F,Side,B,Ker,kerdim);
 
 	}
@@ -113,11 +113,10 @@ namespace LinBox
 #endif // __LINBOX_dense_nullspace_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
