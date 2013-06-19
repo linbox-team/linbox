@@ -110,9 +110,10 @@ namespace LinBox
 		FieldArchetype (const FieldArchetype &F) :
 			one(F.one),zero(F.zero),mOne(F.mOne)
 		{
-			if (F._field_ptr != 0) _field_ptr = F._field_ptr->clone ();
-			if (F._elem_ptr != 0) _elem_ptr = F._elem_ptr->clone ();
+			if (F._field_ptr    != 0) _field_ptr    = F._field_ptr   ->clone ();
+			if (F._elem_ptr     != 0) _elem_ptr     = F._elem_ptr    ->clone ();
 			if (F._randIter_ptr != 0) _randIter_ptr = F._randIter_ptr->clone ();
+
 		}
 
 		/** \brief Destructor.
@@ -128,9 +129,10 @@ namespace LinBox
 		 */
 		~FieldArchetype (void)
 		{
-			if (_field_ptr != 0) delete _field_ptr;
-			if (_elem_ptr != 0) delete _elem_ptr;
-			if (_randIter_ptr != 0) delete _randIter_ptr;
+			if (_field_ptr    != NULL) delete    _field_ptr;
+			if (_elem_ptr     != NULL) delete     _elem_ptr;
+			if (_randIter_ptr != NULL) delete _randIter_ptr;
+
 		}
 
 		/** \brief Assignment operator.
@@ -145,13 +147,16 @@ namespace LinBox
 		FieldArchetype &operator=(const FieldArchetype &F)
 		{
 			if (this != &F) { // guard against self-assignment
-				if (_field_ptr != 0) delete _field_ptr;
-				if (_elem_ptr != 0) delete _elem_ptr;
-				if (_randIter_ptr != 0) delete _randIter_ptr;
-				if (F._field_ptr != 0) _field_ptr = F._field_ptr->clone ();
-				if (F._elem_ptr != 0) _elem_ptr = F._elem_ptr->clone ();
+
+				if (_field_ptr      != 0) delete _field_ptr;
+				if (_elem_ptr       != 0) delete _elem_ptr;
+				if (_randIter_ptr   != 0) delete _randIter_ptr;
+
+				if (F._field_ptr    != 0) _field_ptr    = F._field_ptr   ->clone ();
+				if (F._elem_ptr     != 0) _elem_ptr     = F._elem_ptr    ->clone ();
 				if (F._randIter_ptr != 0) _randIter_ptr = F._randIter_ptr->clone ();
-				one = F.one ;
+
+				one  = F.one ;
 				zero = F.zero ;
 				mOne = F.mOne ;
 			}
@@ -687,9 +692,15 @@ namespace LinBox
 			_field_ptr    = field_ptr->clone ();
 			_elem_ptr     = static_cast<ElementAbstract*>  (new typename Field_qcq::Element ());
 			_randIter_ptr = static_cast<RandIterAbstract*> (new typename Field_qcq::RandIter (*field_ptr));
-			one  = static_cast<ElementAbstract*>  (new typename Field_qcq::Element (field_ptr->one) );
-			zero = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->zero ) );
-			mOne = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->mOne ) );
+
+			//! @bug leaks here (new not deleted)
+			one  = field_ptr->one .clone();
+			zero = field_ptr->zero.clone();
+			mOne = field_ptr->mOne.clone();
+
+			// one  = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->one  ) );
+			// zero = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->zero ) );
+			// mOne = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->mOne ) );
 		}
 
 		/** Template method for constructing archetype from a class not derived
