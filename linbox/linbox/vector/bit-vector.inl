@@ -242,13 +242,7 @@ namespace LinBox
 		iterator operator + (difference_type i) const
 		{
 			std::vector<unsigned long>::iterator new_word = _ref._word + (i >> __LINBOX_LOGOF_SIZE);
-// #ifdef __INTEL_COMPILER
-// #pragma warning(disable:2259)
-// #endif
 			uint8_t new_pos = (uint8_t) ((int)_ref._pos + (i & __LINBOX_POS_ALL_ONES));
-// #ifdef __INTEL_COMPILER
-// #pragma warning(enable:2259)
-// #endif
 
 			new_word += new_pos >> __LINBOX_LOGOF_SIZE;
 			new_pos &= __LINBOX_POS_ALL_ONES;
@@ -387,13 +381,7 @@ namespace LinBox
 		const_iterator operator + (long i) const
 		{
 			std::vector<unsigned long>::const_iterator new_word = _ref._word + (i >> __LINBOX_LOGOF_SIZE);
-// #ifdef __INTEL_COMPILER
-// #pragma warning(disable:2259)
-// #endif
 			uint8_t new_pos = (uint8_t) ((int)_ref._pos +  (i & __LINBOX_POS_ALL_ONES));
-// #ifdef __INTEL_COMPILER
-// #pragma warning(enable:2259)
-// #endif
 			new_word += new_pos >> __LINBOX_LOGOF_SIZE;
 			new_pos &= __LINBOX_POS_ALL_ONES;
 
@@ -403,13 +391,7 @@ namespace LinBox
 		const_iterator &operator += (long i)
 		{
 			_ref._word += i >> __LINBOX_LOGOF_SIZE;
-// #ifdef __INTEL_COMPILER
-// #pragma warning(disable:2259)
-// #endif
 			_ref._pos  = (uint8_t) ((int) _ref._pos + (i & __LINBOX_POS_ALL_ONES));
-// #ifdef __INTEL_COMPILER
-// #pragma warning(enable:2259)
-// #endif
 			_ref._word += _ref._pos >> __LINBOX_LOGOF_SIZE;
 			_ref._pos  &= __LINBOX_POS_ALL_ONES;
 			return *this;
@@ -497,7 +479,7 @@ namespace LinBox
 		if ((_size & __LINBOX_POS_ALL_ONES) == 0UL)
 			return iterator (_v.end (), 0UL);
 		else
-			return iterator (_v.end () - 1UL, _size & __LINBOX_POS_ALL_ONES);
+			return iterator (_v.end () - 1UL, (uint8_t)(_size & __LINBOX_POS_ALL_ONES));
 	}
 
 	inline BitVector::const_iterator BitVector::end (void) const
@@ -505,7 +487,7 @@ namespace LinBox
 		if ((_size & __LINBOX_POS_ALL_ONES) == 0UL)
 			return const_iterator (_v.end (), 0UL);
 		else
-			return const_iterator (_v.end () - 1UL, _size & __LINBOX_POS_ALL_ONES);
+			return const_iterator (_v.end () - 1UL, (uint8_t)(_size & __LINBOX_POS_ALL_ONES));
 	}
 
 	inline BitVector::reverse_iterator BitVector::rbegin (void)
@@ -569,7 +551,7 @@ namespace LinBox
 		if ( (_size & __LINBOX_POS_ALL_ONES) == 0UL)
 			return reference (_v.end (), 0UL);
 		else
-			return reference (_v.end () - 1UL, _size & __LINBOX_POS_ALL_ONES);
+			return reference (_v.end () - 1UL, (uint8_t)(_size & __LINBOX_POS_ALL_ONES));
 	}
 
 	inline BitVector::const_reference BitVector::back (void) const
@@ -577,7 +559,7 @@ namespace LinBox
 		if ( (_size & __LINBOX_POS_ALL_ONES) == 0UL)
 			return const_reference (_v.end (), 0UL);
 		else
-			return const_reference (_v.end () - 1UL, _size & __LINBOX_POS_ALL_ONES);
+			return const_reference (_v.end () - 1UL, (uint8_t)(_size & __LINBOX_POS_ALL_ONES));
 	}
 
 	template<class Container>
