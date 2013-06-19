@@ -38,11 +38,8 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/triplesbb.h"
-#include "linbox/blackbox/transpose.h"
-#include "linbox/vector/vector-domain.h"
-
+#include "test-blackbox.h"
 #include "test-common.h"
-#include "test-generic.h"
 
 using namespace LinBox;
 
@@ -54,19 +51,21 @@ int main (int argc, char **argv)
 
 	static size_t m = 4;
 	static size_t n = 20;
+	static size_t nnz = 0;
 	static integer q = 2147483647U;
 	q = 101;
-	static int iterations = 1;
 
 	static Argument args[] = {
-		{ 'm', "-m M", "Set dimension of test matrices to NxN.", TYPE_INT,     &m },
-		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'm', "-m M", "Set row dimension of test matrix to M.", TYPE_INT,     &m },
+		{ 'n', "-n N", "Set col dimension of test matrix to N.", TYPE_INT,     &n },
+		{ 'z', "-n NNZ", "Set number of nonzero entries in test matrix.", TYPE_INT,     &nnz },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);
+	
+	if (nnz == 0) nnz = m*n/10;
 
 	srand ((unsigned)time (NULL));
 
@@ -75,7 +74,6 @@ int main (int argc, char **argv)
 	//typedef Modular<uint32_t> Field;
 	typedef Modular<double> Field;
 	typedef Field::Element Element;
-	typedef vector <Element> Vector;
 	typedef TriplesBB<Field> Blackbox;
 
 	Field F (q);
@@ -84,35 +82,15 @@ int main (int argc, char **argv)
 	Blackbox A(F, m, n);
 	Element d;
 
-	for(int i = 0; i < (int)m; ++i)
+	for(int i = 0; i < (int)nnz; ++i)
 	{
-		F.init(d, i);
-		A.setEntry((size_t)i,(size_t) (2*i)%n, d);
-		F.init(d, 1);
-		A.setEntry((size_t)i, (size_t)(2*i+1)%n, d);
+		F.init(d, rand());
+		size_t ii = rand()%m;
+		size_t jj = rand()%n;
+		A.setEntry(ii,jj, d);
 	}
 
-	pass = pass && testReadWrite(A);
 	pass = pass && testBlackbox(A);
-
-/*
-	Transpose<Blackbox> B(&A);
-
-	pass = pass && testBlackbox(B);
-
-	Vector x(n), y(n), z(n);
-	int k = (n > 5 ? 5 : n);
-	for(int i = 0; i < k; ++i) F.init(x[i], i);
-
-	VectorDomain<Field> VD(F);
-	A.apply(y, x);
-	B.applyTranspose(z, x);
-	pass = pass && VD.areEqual(y, z);
-
-	B.apply(y, x);
-	A.applyTranspose(z, x);
-	pass = pass && VD.areEqual(y, z);
-*/
 
 	commentator().stop("TriplesBB black box test suite");
 	return pass ? 0 : -1;

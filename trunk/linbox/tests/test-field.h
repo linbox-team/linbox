@@ -30,31 +30,29 @@
  */
 
 /*
-// top level test that doesn't use subtests.
+// top level test that doesn't use field_subtests.
 bool testField
 
 // top level test that uses subtest testRandomIteratorStep.
 bool testRandomIterator
 
-// top level runBasicRingTests calls these subtests.
+// top level runBasicRingTests calls these field_subtests.
 bool testFieldNegation
 bool testFieldDistributivity
 bool testFieldAssociativity
 bool testFieldCharacteristic
 bool testGeometricSummation
-bool testArithmeticConsistency
+bool testRingArithmeticConsistency
 bool testAxpyConsistency
 bool testRanditerBasic
 
-// top level runFieldTests calls these subtests after runBasicRingTests.
+// top level runFieldTests calls these field_subtests after runBasicRingTests.
 bool testFieldInversion
 bool testFieldCommutativity
+bool testInvDivConsistency
 bool testFreshmansDream
 bool testRingTrivia
 
-//called in subtest testArithmeticConsistency
-bool testRingArithmeticConsistency
-bool testInvDivConsistency
 */
 
 #ifndef __LINBOX_test_field_H
@@ -338,7 +336,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 /** Tests of algebraic properties of fields */
 
-namespace subtests {
+namespace field_subtests {
 	/* Generic test 6: Negation of elements
 	 *
 	 * Negates random elements and checks that they are true negatives
@@ -1032,17 +1030,18 @@ namespace subtests {
 		return ret;
 	}
 
-
+/*
 	template <class Field>
 	bool testArithmeticConsistency (const Field &F, const char *name, unsigned int iterations)
 	{
 		bool ret = true ;
 
-		ret &= subtests::testRingArithmeticConsistency(F, name, iterations) ;
-		ret &= subtests::testInvDivConsistency(F, name, iterations);
+		ret &= field_subtests::testRingArithmeticConsistency(F, name, iterations) ;
+		ret &= field_subtests::testInvDivConsistency(F, name, iterations);
 
 		return ret;
 	}
+	*/
 
 
 	template <class Field>
@@ -1197,7 +1196,7 @@ namespace subtests {
 		delete[] st;
 		return ret;
 	}
-} // namespace subtests
+} // namespace field_subtests
 
 /* Convenience function to run all of the field tests on a given field */
 template <class Field>
@@ -1214,29 +1213,29 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 
 	if (!testField                     (F, string(str.str()).c_str()))           pass = false;
 	commentator().progress ();
-	if (!subtests::testFieldNegation             (F, desc, iterations))                    pass = false;
+	if (!field_subtests::testFieldNegation             (F, desc, iterations))                    pass = false;
 	commentator().progress ();
-	if (!subtests::testFieldDistributivity       (F, desc, iterations))                    pass = false;
+	if (!field_subtests::testFieldDistributivity       (F, desc, iterations))                    pass = false;
 	commentator().progress ();
-	if (!subtests::testFieldAssociativity        (F, desc, iterations))                    pass = false;
+	if (!field_subtests::testFieldAssociativity        (F, desc, iterations))                    pass = false;
 	commentator().progress ();
 
 	if (runCharacteristicTest) {
-		if (!subtests::testFieldCharacteristic (F, desc, iterations))                  pass = false;
+		if (!field_subtests::testFieldCharacteristic (F, desc, iterations))                  pass = false;
 		commentator().progress ();
 	}
 	LinBox::integer card;
 
 	if (F.cardinality(card) != 2) { // otherwise it is not very interesting to find a element not zero and not one !
-		if (!subtests::testGeometricSummation        (F, desc, iterations, 100))               pass = false;
+		if (!field_subtests::testGeometricSummation        (F, desc, iterations, 100))               pass = false;
 		commentator().progress ();
 	}
 
-	if (!subtests::testArithmeticConsistency (F, desc, iterations))                    pass = false;
+	if (!field_subtests::testRingArithmeticConsistency (F, desc, iterations))                    pass = false;
 	commentator().progress ();
-	if (!subtests::testAxpyConsistency           (F, desc, iterations))                    pass = false;
+	if (!field_subtests::testAxpyConsistency           (F, desc, iterations))                    pass = false;
 	commentator().progress ();
-	if (!subtests::testRanditerBasic             (F, desc, iterations))                    pass = false;
+	if (!field_subtests::testRanditerBasic             (F, desc, iterations))                    pass = false;
 	commentator().progress ();
 
 	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runBasicRingTests");
@@ -1244,7 +1243,7 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 	return pass;
 }
 
-namespace subtests {
+namespace field_subtests {
 	/* Random number test
 	 *
 	 * Test that the random iterator over the given field works
@@ -1378,11 +1377,11 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 	strcpy (st, str.str().c_str());
 	commentator().start (st, "runFieldTests");
 	bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest) ;
-	//ret &= subtests::testInvDivConsistency(F, desc, iterations) ; // it's called in runBasicRingTests
-	ret &= subtests::testFieldInversion (F, desc, iterations) ;
-	ret &= subtests::testFieldCommutativity (F, desc, iterations) ;
-	ret &= subtests::testFreshmansDream(F, desc, iterations);
-	ret &= subtests::testRingTrivia(F,desc);
+	ret &= field_subtests::testInvDivConsistency(F, desc, iterations) ; 
+	ret &= field_subtests::testFieldInversion (F, desc, iterations) ;
+	ret &= field_subtests::testFieldCommutativity (F, desc, iterations) ;
+	ret &= field_subtests::testFreshmansDream(F, desc, iterations);
+	ret &= field_subtests::testRingTrivia(F,desc);
 
 	commentator().stop (MSG_STATUS (ret));
 	delete[] st;
@@ -1417,7 +1416,7 @@ bool testRandomIterator (const Field &F, const char *text,
 
 	/* This test either passes or runs a lot of times */
 	for (int i = 1;
-	     (!  subtests::testRandomIteratorStep (F, text, num_trials, num_categories, hist_len)) && (i <= 2) ;
+	     (!  field_subtests::testRandomIteratorStep (F, text, num_trials, num_categories, hist_len)) && (i <= 2) ;
 	     ++i ){
 		//if (0 == i % 5)
 			//std::ostream &report = commentator().report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "Warning! Probable failure of uniformity" << std::endl;

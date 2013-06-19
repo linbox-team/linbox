@@ -55,7 +55,9 @@ For field F, BB A, vector streams s, t:
 testTranspose (F, A, s, t)
 testLinearity (A, s, t)
 testReadWrite(A)
-testBlackbox(A, b) // calls the first 2 and, if b, calls testReadWrite.
+
+testBlackboxNoRW(A) // calls testTranspose and testLinearity.
+testBlackbox(A) // calls all three generic tests.
 
 testBB(F) has been deleted. It assumed a BB could be built from a single size param (this is never true?!).
 */
