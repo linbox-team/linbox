@@ -1364,7 +1364,7 @@ namespace field_subtests {
 		//commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomIteratorStep");
 		return ret;
 	}
-};// namespace field_subtests 
+}// namespace field_subtests
 
 template <class Field>
 bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true)
@@ -1377,7 +1377,7 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 	strcpy (st, str.str().c_str());
 	commentator().start (st, "runFieldTests");
 	bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest) ;
-	ret &= field_subtests::testInvDivConsistency(F, desc, iterations) ; 
+	ret &= field_subtests::testInvDivConsistency(F, desc, iterations) ;
 	ret &= field_subtests::testFieldInversion (F, desc, iterations) ;
 	ret &= field_subtests::testFieldCommutativity (F, desc, iterations) ;
 	ret &= field_subtests::testFreshmansDream(F, desc, iterations);
