@@ -22,8 +22,8 @@
  * ========LICENCE========
  */
 
-#ifndef __LINBOX_matrix_stream_H
-#define __LINBOX_matrix_stream_H
+#ifndef __LINBOX_util_matrix_stream_H
+#define __LINBOX_util_matrix_stream_H
 
 /* matrix-stream.h
  * Take a file or stream of a matrix, return (row, column, value) triples from
@@ -239,6 +239,7 @@ class MatrixStream {
     /** Adds the given MatrixStreamReader to the readers std::vector. */
 	void addReader( MatrixStreamReader<Field>* );
 
+
     public:
 
     /** Constructor from an input stream.
@@ -250,7 +251,11 @@ class MatrixStream {
     	MatrixStream( const Field& fld, std::istream& in );
 
     /** Destructor */
-	~MatrixStream() { delete reader; }
+	~MatrixStream()
+	{
+		if (reader != NULL)
+			delete reader;
+	}
 
     /** Re initiliaze after one matrix has been read. */
 	void newmatrix();
@@ -325,7 +330,7 @@ class MatrixStream {
 
 #include "matrix-stream.inl"
 
-#endif // __LINBOX_matrix_stream_H
+#endif // __LINBOX_util_matrix_stream_H
 
 
 // Local Variables:

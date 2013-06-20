@@ -21,8 +21,8 @@
  * ========LICENCE========
  */
 
-#ifndef __LINBOX_matrix_stream_INL
-#define __LINBOX_matrix_stream_INL
+#ifndef __LINBOX_util_matrix_stream_INL
+#define __LINBOX_util_matrix_stream_INL
 
 #include "linbox/util/formats/matrix-stream-readers.h"
 
@@ -186,7 +186,7 @@ namespace LinBox
 
 		//Initialize readers
 		currentError = NO_FORMAT;
-		__MATRIX_STREAM_READERDEFS
+		__MATRIX_STREAM_READERDEFS;
 		delete[] firstLine;
 
 		if( !reader ) return;
@@ -208,6 +208,8 @@ namespace LinBox
 			reader = r;
 			currentError = mse;
 		}
+		else delete r ;
+		return ;
 	}
 
 	template<class Field>
@@ -335,7 +337,7 @@ namespace LinBox
 
 } // end of namespace LinBox
 
-#endif // __LINBOX_matrix_stream_INL
+#endif // __LINBOX_util_matrix_stream_INL
 
 // Local Variables:
 // mode: C++
