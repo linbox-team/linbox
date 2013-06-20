@@ -43,20 +43,21 @@
 #include "matrix-market.h"
 #include "maple.h"
 
-#define __MATRIX_STREAM_READERDEFS \
-	addReader( new SMSReader<Field>() ); \
-	addReader( new SparseRowReader<Field>() ); \
+#define __MATRIX_STREAM_READERDEFS                    \
+do {                                                  \
+	addReader( new SMSReader<Field>()          ); \
+	addReader( new SparseRowReader<Field>()    ); \
 	addReader( new MatrixMarketReader<Field>() ); \
-	addReader( new MapleReader<Field>() ); \
-	addReader( new DenseReader<Field>() );
+	addReader( new MapleReader<Field>()        ); \
+	addReader( new DenseReader<Field>()        ); \
+} while (false)
 
 #endif //__LINBOX_matrix_stream_readers_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

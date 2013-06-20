@@ -30,8 +30,8 @@
  * last line: 0 0 0
  */
 
-#ifndef __LINBOX_sms_H
-#define __LINBOX_sms_H
+#ifndef __LINBOX_util_formats_sms_H
+#define __LINBOX_util_formats_sms_H
 
 #include <cstdlib>
 
@@ -135,14 +135,13 @@ namespace LinBox
 
 }
 
-#endif // __LINBOX_sms_H
+#endif // __LINBOX_util_formats_sms_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
