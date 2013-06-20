@@ -104,7 +104,8 @@ namespace LinBox
 	class UnparametricField : public FieldInterface,
 		public  FFPACK::UnparametricField<K> {
 	protected:
-		integer _p; integer _card;
+		integer _p_int; // if we never use them in actual computations, why bother ? (just copied along)
+		integer _card_int;
 	public:
 		typedef typename FFPACK::UnparametricField<K> Father_t ;
 
@@ -134,31 +135,33 @@ namespace LinBox
 		UnparametricField(integer q = 0, size_t e = 1) :
 			Father_t(q, e),
 			//Father_t((unsigned long)q,(unsigned long)e)
-			_p(q),
-			_card(q == 0 ?
+			_p_int(q),
+			_card_int(q == 0 ?
 			integer(-1) :
 			pow(q, e) )
 			{}  // assuming q is a prime or zero.
 
 		/// construct this field as copy of F.
 		UnparametricField (const UnparametricField &F) :
-			Father_t(F),_p(F._p), _card(F._card)
+			Father_t(F),_p_int(F._p_int), _card_int(F._card_int)
 		{}
 
 
 		// field/ntl-ZZ_p.h me les demande... //
 
 		using Father_t::inv ;
+
 		//using Father_t::read ;
 		std::istream &read(std::istream & is) { return Father_t::read(is); }
 
-        std::istream &read(std::istream & s, Element &a) const
+		std::istream &read(std::istream & s, Element &a) const
 		{
-            Integer tmp;
-            s >> tmp;
-            init(a, tmp);
-            return s;
+			Integer tmp;
+			s >> tmp;
+			init(a, tmp);
+			return s;
 		}
+
 		using Father_t::invin;
 		using Father_t::write;
 		using Father_t::isZero;
@@ -169,10 +172,12 @@ namespace LinBox
 		{
 			return Caster (x, s);
 		}
+
 		Element&init(Element&x)const
 		{
 			return Caster (x, 0);
 		}
+
 		template<typename T>
 		T&convert(T&x, const Element&y) const
 		{
@@ -185,14 +190,14 @@ namespace LinBox
 		using Father_t::cardinality ;
 		integer &cardinality (integer &c) const
 		{
-			return c = _card;
+			return c = _card_int;
 		}
 
 		/// c := characteristic of this field (zero or prime).
 		using Father_t::characteristic;
 		integer &characteristic (integer &c) const
 		{
-			return c = _p;
+			return c = _p_int;
 		}
 
 		//@} Data Object Management
