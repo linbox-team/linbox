@@ -104,8 +104,8 @@ namespace LinBox
 	class UnparametricField : public FieldInterface,
 		public  FFPACK::UnparametricField<K> {
 	protected:
-		integer _p_int; // if we never use them in actual computations, why bother ? (just copied along)
-		integer _card_int;
+		// integer _p_int; // if we never use them in actual computations, why bother ? (just copied along)
+		// integer _card_int;
 	public:
 		typedef typename FFPACK::UnparametricField<K> Father_t ;
 
@@ -133,18 +133,20 @@ namespace LinBox
 		 *  This constructor must be defined in a specialization.
 		 */
 		UnparametricField(integer q = 0, size_t e = 1) :
-			Father_t(q, e),
+			Father_t(q, e)//,
 			//Father_t((unsigned long)q,(unsigned long)e)
-			_p_int(q),
-			_card_int(q == 0 ?
-			integer(-1) :
-			pow(q, e) )
+			// _p_int(q),
+			// _card_int(q == 0 ?
+			// integer(-1) :
+			// pow(q, e) )
 			{}  // assuming q is a prime or zero.
 
 		/// construct this field as copy of F.
 		UnparametricField (const UnparametricField &F) :
-			Father_t(F),_p_int(F._p_int), _card_int(F._card_int)
-		{}
+			Father_t(F)//,_p_int(F._p_int), _card_int(F._card_int)
+		{
+			// using _p, _card leaks in test-unparametric-field : removing.
+		}
 
 
 		// field/ntl-ZZ_p.h me les demande... //
@@ -190,14 +192,16 @@ namespace LinBox
 		using Father_t::cardinality ;
 		integer &cardinality (integer &c) const
 		{
-			return c = _card_int;
+			// return c = _card_int;
+			return c = (integer)-1 ;
 		}
 
 		/// c := characteristic of this field (zero or prime).
 		using Father_t::characteristic;
 		integer &characteristic (integer &c) const
 		{
-			return c = _p_int;
+			// return c = _p_int;
+			return c = (integer)0 ;
 		}
 
 		//@} Data Object Management
