@@ -564,17 +564,16 @@ EARLY_TERM_THRESHOLD (ett_default)
 				g2 = _gen.rbegin();
 				++g1;
 				while(g1!=_gen.rend()){
-					for(size_t k = _col; k < _row+_col; ++k){
-						ColumnCopy(*g2,*g1,k);
-					}
+					Sub g1aux(*g1,0,_col,_col,_row);
+					Sub g2aux(*g2,0,_col,_col,_row);
+					domain().copy(g2aux,g1aux);
 					++g1;
 					++g2;
 				}
 				genit = _gen.begin();
-				Coefficient z1(field(),_col,_row+_col);
-				//z1.zero();
-				for(size_t k = _col; k < _row+_col; ++k)
-					ColumnCopy(*genit, z1,k);
+				Coefficient z1(field(),_col,_row);
+				Sub genitaux(*genit,0,_col,_col,_row);
+				domain().copy(genitaux,z1);
 				//Increment the t and seqel to the next element
 				++_t;
 				++_seqel;
@@ -657,16 +656,16 @@ EARLY_TERM_THRESHOLD (ett_default)
 				g2 = _gen.rbegin();
 				++g1;
 				while(g1!=_gen.rend()){
-					for(size_t k = _col; k < _row+_col; ++k){
-						ColumnCopy(*g2,*g1,k);
-					}
+					Sub g1aux(*g1,0,_col,_col,_row);
+					Sub g2aux(*g2,0,_col,_col,_row);
+					domain().copy(g2aux,g1aux);
 					++g1;
 					++g2;
 				}
 				genit = _gen.begin();
-				Coefficient z1(field(),_col,_row+_col);
-				for(size_t k = _col; k < _row+_col; ++k)
-					ColumnCopy(*genit, z1,k);
+				Coefficient z1(field(),_col,_row);
+				Sub genitaux(*genit,0,_col,_col,_row);
+				domain().copy(genitaux,z1);
 				//Increment the t and seqel to the next element
 				++_t;
 				++_seqel;
