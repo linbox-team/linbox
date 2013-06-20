@@ -47,7 +47,6 @@ namespace LinBox
 		typedef _Domain 			Domain;
 		typedef typename Domain::Field                    Field;
 		typedef typename Domain::Element       Element;
-		typedef typename Field::RandIter     RandIter;
 		typedef typename Domain::Matrix 	Block;
 		typedef typename Domain::Submatrix 	Sub;
 
@@ -55,16 +54,13 @@ namespace LinBox
 		inline const Field & field() const { return domain().field(); }
 	protected:
 		const Domain     *_MD;
-		RandIter                   _rand;
+		size_t		blocking;
 
 	public:
-		CoppersmithSolver(const Domain &MD) :
-			 _MD(&MD), _rand(MD.field())
+		CoppersmithSolver(const Domain &MD, size_t blocking_ = 0) :
+			 _MD(&MD), blocking(blocking_)
 		{}
 
-		CoppersmithSolver (const Domain &MD, const RandIter &rand) :
-			_MD(&MD),  _rand(rand)
-		{}
 
 		template <class Vector, class Blackbox>
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
@@ -80,10 +76,13 @@ namespace LinBox
 			integer tmp = d;
 
 			//Set the blocking size, Using Pascal Giorgi's convention
-			r=tmp.bitsize()-1;
-			c=tmp.bitsize()-1;
+			if(blocking==0){
+				r=tmp.bitsize()-1;
+				c=tmp.bitsize()-1;
+			}else
+				r=c=blocking;
 
-			//Create the blocks
+			//Create the block
 			Block U(field(),r,d);
 			Block W(field(),d,c-1);
 			Block V(field(),d,c);

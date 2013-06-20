@@ -76,11 +76,13 @@ int main (int argc, char **argv)
 	static size_t n = 9;
 	static size_t N = 16;
 	static size_t q = 2147483647U;
+	static size_t blocking = 0;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to N.", TYPE_INT,     &n },
 		{ 'N', "-N N", "Set blocking factor to N.", TYPE_INT,     &N },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &q },
+		{ 'b', "-b N", "Set the blocking size", TYPE_INT, &blocking },
 		END_OF_ARGUMENTS
 	};
 
@@ -101,6 +103,8 @@ int main (int argc, char **argv)
 	Vector d(F,n), b(F,n), x(F,n), y(F,n);
 	stream1.next (d);
 	stream1.next (b);
+	d[n-1] = F.zero;
+	b[n-1] = F.zero;
 
 	VD.write (report << "Right-hand side: b =  ", b) << endl;
 
@@ -125,7 +129,7 @@ int main (int argc, char **argv)
 
 #if 1
 	// Yuhasz' Matrix Berlekamp Massey being used
-	CoppersmithSolver<MyDomain> RCS(MD);
+	CoppersmithSolver<MyDomain> RCS(MD,blocking);
 	RCS.solveNonSingular(x, D, b);
 
 	VD.write (report << "Matrix Berlekamp Massey solution:  ", x) << endl;
