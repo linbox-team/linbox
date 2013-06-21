@@ -178,6 +178,8 @@ namespace LinBox { /* BlasVector */
 
 
 	public:
+		BlasVector () {} ;
+
 		BlasVector (const _Field &F)  :
 			_size(0),_1stride(1),_rep(0),_ptr(&_rep[0]), _field(&F)
 		{
@@ -551,7 +553,12 @@ namespace LinBox { /* BlasVector */
 
 
 		const _Field& field() const { return const_cast<Field&>( *_field );}
+		//
+		//
 		// _Field & field() { return const_cast<Field&>(*_field;) }
+		void changeField(const Field & G) {
+			_field = const_cast<Field*>(&G) ;
+		}
 
 	private:
 		void setIterators()

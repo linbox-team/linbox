@@ -81,7 +81,7 @@ namespace LinBox
 	 * In the Mother model, a BlasMatrix is allocated by the user.
 	 */
 	template <class _Field>
-	class BlasMatrix { 
+	class BlasMatrix {
 		// private :
 
 	public:
@@ -667,6 +667,7 @@ namespace LinBox
 					     const _Field & F,
 					     const uselessTag & m)
 		{
+			// don't do anything (?)
 			return;
 		}
 

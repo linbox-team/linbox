@@ -68,7 +68,8 @@ namespace LinBox{ namespace iml{
 	public :
 		pAdicLift(RNS<Field> & liftbasis) :
 			_liftbasis(liftbasis)
-		{}
+		{
+		}
 
 		template<class Matrix>
 		int liftInit(const Matrix &A);
@@ -80,7 +81,7 @@ namespace LinBox{ namespace iml{
 
 		void iml_lift(LinBoxTag::Side s,
 			      LiftStep<Field> & C,
-			       BlasMatrix<PID_integer> & mp_r
+			      BlasMatrix<PID_integer> & mp_r
 			     );
 
 		size_t size()
