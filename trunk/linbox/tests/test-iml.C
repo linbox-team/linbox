@@ -464,8 +464,19 @@ bool testIMLcra(const Field &F, int iterations)
 
 	return ret;
 }
-#endif
 
+template<class Field>
+bool testIMLpadic(const Field &F, int iterations)
+{
+	iml::RNS<Modular<double> > rns ;
+	Integer mi ; Givaro::pow(mi,2UL,200UL);
+	size_t qh = 1<<22 ;
+	rns.setUp(qh,mi);
+
+	iml::pAdicLift<Field> pAL (rns);
+	return 0 ;
+}
+#endif
 
 int main(int argc, char ** argv)
 {
@@ -527,6 +538,12 @@ int main(int argc, char ** argv)
 	if (!testIMLcra(F, iterations))
 		pass=false;
 	RAPPORT("IML rns");
+
+	TESTE("IML pAdicLift");
+	if (!testIMLpadic(F, iterations))
+		pass=false;
+	RAPPORT("IML rns");
+
 #endif
 
 
