@@ -77,7 +77,11 @@ ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_D
 
 	if (!runFieldTests (F, "UnparametricField<double>", 1, n, false)) pass = false;
 
-	FieldArchetype K(new UnparametricField<double>(F));
+	UnparametricField<double> * F1 = new UnparametricField<double>(F);
+	FieldArchetype K(F1);
+	delete F1;
+
+	// FieldArchetype K(new UnparametricField<double>(F);) // leaks !!!
 
 	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField field"))
 		pass = false;
