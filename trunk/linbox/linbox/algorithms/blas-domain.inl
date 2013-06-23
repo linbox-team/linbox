@@ -766,16 +766,17 @@ namespace LinBox
 
 	//  general matrix-vector multiplication and addition with scaling
 	// d = beta.c + alpha.A*b
+	//! what about subvector/submatrices ?
 	template<class Field>
 	class BlasMatrixDomainMulAdd<BlasVector<Field>,BlasMatrix<Field>,BlasVector<Field> > {
 	public:
-		std::vector<typename Field::Element>& operator() (//const Field& F,
-								  BlasVector<Field>& d,
-								  const typename Field::Element& beta,
-								  const BlasVector<Field>& c,
-								  const typename Field::Element& alpha,
-								  const BlasMatrix<Field>& A,
-								  const BlasVector<Field>& b) const
+		BlasVector<Field>& operator() (//const Field& F,
+					       BlasVector<Field>& d,
+					       const typename Field::Element& beta,
+					       const BlasVector<Field>& c,
+					       const typename Field::Element& alpha,
+					       const BlasMatrix<Field>& A,
+					       const BlasVector<Field>& b) const
 		{
 			linbox_check( A.coldim() == b.size());
 			linbox_check( c.size()   == b.size());
@@ -793,12 +794,12 @@ namespace LinBox
 		}
 
 
-		std::vector<typename Field::Element>& operator() (//const Field& F,
-								  const typename Field::Element& beta,
-								  BlasVector<Field>& c,
-								  const typename Field::Element& alpha,
-								  const BlasMatrix<Field>& A,
-								  const BlasVector<Field>& b) const
+		BlasVector<Field>& operator() (//const Field& F,
+					       const typename Field::Element& beta,
+					       BlasVector<Field>& c,
+					       const typename Field::Element& alpha,
+					       const BlasMatrix<Field>& A,
+					       const BlasVector<Field>& b) const
 		{
 			linbox_check( A.coldim() == b.size());
 			linbox_check( A.rowdim() == c.size()); //fixed: dpritcha

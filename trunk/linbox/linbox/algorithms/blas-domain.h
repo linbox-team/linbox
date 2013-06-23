@@ -157,10 +157,7 @@ namespace LinBox
 		Operand1 &operator() (const Field &F,
 				      Operand1 &C, const Operand2 &A, const Operand3 &B) const
 		{
-			typename Field::Element zero, one;
-			F.init( zero, 0 );
-			F.init( one, 1 );
-			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType*/>()(  zero, C, one, A, B );
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType*/>()(  F.zero, C, F.one, A, B );
 		}
 	};
 
@@ -186,13 +183,10 @@ namespace LinBox
 		Operand1 &operator() (const Field &F,
 				      Operand1 &A, const Operand2 &B) const
 		{
-			typename Field::Element zero, one;
-			F.init( zero, 0UL );
-			F.init( one, 1UL );
 			Operand1* tmp = new Operand1(A);
 			// Effective copy of A
 			*tmp = A;
-			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()( zero, A, one, *tmp, B );
+			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()( F.zero, A, F.one, *tmp, B );
 			delete tmp;
 			return A;
 		}
@@ -200,13 +194,10 @@ namespace LinBox
 		Operand1 &operator() (const Field &F,
 				      const Operand2 &A, Operand1 &B ) const
 		{
-			typename Field::Element zero, one;
-			F.init( zero, 0UL );
-			F.init( one, 1UL );
 			Operand1* tmp = new Operand1(B);
 			// Effective copy of B
 			*tmp = B;
-			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()(  zero, B, one, A, *tmp );
+			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()(  F.zero, B, F.one, A, *tmp );
 			delete tmp;
 			return B;
 		}
