@@ -32,7 +32,7 @@ namespace LinBox{ namespace iml{
 		size_t _row ;
 		size_t _col ;
 		std::vector<std::vector<Field> >  _dataC ;
-		std::vector<unsigned long> & _primes ;
+		const std::vector<unsigned long> & _primes ;
 	public :
 		LiftStep(size_t l,size_t k, size_t m, size_t n, const std::vector<unsigned long> &primes) :
 			_len(l),_dim(k),_row(m),_col(n),_primes(primes)

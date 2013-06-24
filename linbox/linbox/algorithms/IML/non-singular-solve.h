@@ -34,6 +34,31 @@ void liftbd(const mpz_t mp_basisprod, const long n, const mpz_t mp_alpha, const 
 
 };
 
+template<class Ring>
+int solve(LinBoxTag::Side s,
+	  BlasVector<Ring> & x,
+	  BlasMatrix<Ring> & A,
+	  BlasVector<Ring> & y,
+	  LinBoxTag::NonSingular) ;
+
+template<class T>
+int solve(LinBoxTag::Side s,
+	  BlasVector<Ring> & x,
+	  BlasMatrix<UnparametricField<T> > & A,
+	  BlasVector<Ring > & y,
+	  LinBoxTag::NonSingular) ;
+
+template<Ring>
+int solve(LinBoxTag::Side s,
+	  BlasVector<Ring> & x,
+	  RNS<Ring> & ARNS,
+	  BlasVector<Ring > & y,
+	  LinBoxTag::NonSingular) ;
+
+
+
+
+
 #endif // __LINBOX_algorithm_iml_non_singular_solve_H
 
 // Local Variables:

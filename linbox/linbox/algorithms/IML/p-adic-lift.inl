@@ -111,8 +111,8 @@ namespace LinBox{ namespace iml{
 		// basisProd(liftbasislen, liftbasis, mp_basisprod);
 
 		/* compute maximum intermediate result mp_maxInter */
-		BlasMatrixDomain<Ring> BMD(A.field());
-		BMD.Magnitude(alpha,A);
+		magnitude(alpha,A);
+
 		// alpha = maxMagnLong(A, n, n, n);
 
 		Integer mp_alpha = alpha;
@@ -122,6 +122,7 @@ namespace LinBox{ namespace iml{
 		// mpz_clear(mp_alpha);
 
 		_extbasis.setUp(_liftbasis[liftbasislen-1]-1, mp_maxInter);
+		_extbasis.findRNS();
 		// *extbasis = findRNS(liftbasis[liftbasislen-1]-1, mp_maxInter, &len);
 		// mpz_clear(mp_maxInter);
 		// *extbasislen = len;
@@ -148,6 +149,94 @@ namespace LinBox{ namespace iml{
 	}
 
 
+	template<class Field>
+	int
+	pAdicLift<Field>::liftInit(const RNSMatrix<Field> & AinRNS)
+	{
+		// long i, j, alpha, minv, len=0;
+		// double dtemp, *cumprodRNS;
+		// mpz_t mp_maxInter, mp_alpha;
+		// FiniteField *q, *qinv, *cmbasis, *bdcoeff;
+
+		RNS<Field> & AbaseRNS = AinRNS.basis ;
+		std::vector<BlasMatrix<Field> > & AmatRNS = AinRNS.matRNS ;
+
+		AbaseRNS.combBasis();
+		// cmbasis = combBasis(basislen, basis);
+		AbaseRNS.repBound();
+		// bdcoeff = repBound(basislen, basis, cmbasis);
+		AbaseRNS.cumProd(_liftbasis);
+		// cumprodRNS = cumProd(basislen, basis, liftbasislen, liftbasis);
+		for (i = 0; i < size() ; i++)
+		{
+			/* compute A mod liftbasis[i] from AbaseRNS */
+			Field Fi(_liftbasis[i])
+			AInv[i].changeField(Fi); // XXX needed ?
+			AbaseRNS.basisExt(Fi,AbaseRNS,AInv[i]);
+			// basisExt(basislen, n*n, liftbasis[i], basis, cmbasis, cumprodRNS[i],
+				 // bdcoeff, AbaseRNS, AInv[i]);
+
+			int minv = mInversein(AInv[i], n);
+			// minv = mInverse(liftbasis[i], AInv[i], n);
+
+			/* if fail to find inverse of A mod basis[i] */
+			if (minv == 0)
+			{
+				// XFREE(bdcoeff); XFREE(cmbasis); XFREE(cumprodRNS);
+				return i;
+			}
+		}
+
+		// XFREE(cumprodRNS);
+		_liftbasis.combBasis();
+		// *cmliftbasis = combBasis(liftbasislen, liftbasis);
+		_liftbasis.basisProd();
+		// basisProd(liftbasislen, liftbasis, mp_liftbasisprod);
+
+		/* compute maximum intermediate result mp_maxInter */
+		// mpz_init(mp_alpha);
+		//! @bug need to set it
+		magnitude(mp_alpha,AbaseRNS);
+		// basisProd(basislen, basis, mp_alpha);
+		// maxExtInter(mp_alpha, n, mp_maxInter);
+		// mpz_clear(mp_alpha);
+
+
+		// *extbasis = findRNS(liftbasis[liftbasislen-1]-1, mp_maxInter, &len);
+		_extbasis.setUp(liftbasis[liftbasislen-1]-1, mp_maxInter);
+		_extbasis = _liftbasis.findRNS();
+		// mpz_clear(mp_maxInter);
+		// *extbasislen = len;
+		typename RNS<Field>::ModVect & q    = _extbasis.refRNSbasis();
+		typename RNS<Field>::ModVect & qinv = _extbasis.refRNScombi();
+
+		// q = *(*extbasis);
+		// qinv = *((*extbasis)+1);
+		invBasis(_liftbasisInv, q, mp_basisprod);
+		// *liftbasisInv = invBasis(len, q, mp_liftbasisprod);
+		// basisProd(len, q, mp_extbasisprod);
+		// *extbdcoeff = repBound(len, q, qinv);
+
+		const BlasMatrix<typename RNS<Field>::NoField> Z(_extbasis.unF,n,n);
+		ARNS.resize(len,Z);
+
+		// *AExtRNS = XMALLOC(Double *, len);
+		// cumprodRNS = cumProd(basislen, basis, len, q);
+		for (i = 0; i < len; i++)
+		{
+			// (*AExtRNS)[i] = XMALLOC(Double, n*n);
+
+			Field Fq(q[i]);
+			/* compute A mod extbasis[i] from ARNS */
+			// basisExt(basislen, n*n, q[i], basis, cmbasis, cumprodRNS[i], \
+				 // bdcoeff, ARNS, (*AExtRNS)[i]);
+			AbaseRNS.basisExt(Fq,AinRNS,ARNS[i]);
+		}
+
+		// { XFREE(bdcoeff); XFREE(cmbasis); XFREE(cumprodRNS); }
+
+		return -1;
+	}
 
 
 
@@ -250,7 +339,7 @@ namespace LinBox{ namespace iml{
 		size_t k = C.steps();
 		size_t liftbasislen = _liftbasis.size();
 		size_t extbasislen  = _extbasis. size();
-		Field F(7); // XXX
+		Field F(); // XXX
 		const BlasMatrix<Field> Z(F,n,m);
 		// const std::vector<BlasMatrix<Field> > ZZ(liftbasislen,Z);
 		// C.resize(k,ZZ);
