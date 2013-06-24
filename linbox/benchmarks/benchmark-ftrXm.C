@@ -234,7 +234,7 @@ void launch_bench_rectangular(Field & F // const problem
 			      , LinBox::PlotData<std::string> & Data
 			      , index_t point_nb)
 {
-	TimeWatcher TW(10,series_nb);
+	TimeWatcher TW(10,point_nb);
 	Timer ftrmm_rect_tim ;
 	Timer chrono ; chrono.clear();
 	double mflops ;
@@ -312,7 +312,7 @@ void launch_bench_scalar(Field & F // const problem
 			 , LinBox::PlotData<std::string> & Data
 			 , index_t point_nb)
 {
-	TimeWatcher TW(10,series_nb);
+	TimeWatcher TW(10,point_nb);
 	Timer ftrmm_scal_tim ;
 	Timer chrono ;
 	ftrmm_scal_tim.clear();

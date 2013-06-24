@@ -1,0 +1,95 @@
+These notes stem from a discussion by Johnson, Harrison, Yuhasz, Youse, Stachnik
+, Saunders at UDel June 2013.
+
+It is proposed that experiment data files be csv files containing a metadata sec
+tion followed by a measurement section.  The idea is that (1) each experimental run will make such a file (or add to such a file) and (2) each plot and table generation can then be done from such files as input.
+
+The metadata is a series of key-value pairs ending in one whose key is "end"
+This is followed by a line containing a list of keys (column labels) and then some number of lines recording experiments.  These are lists of values corresponding to the column labels.
+The value "-" denotes "missing" or "undefined".
+When value v in a "k,v" pair is another keyword, it means that k's value is the same as the other keyword's. 
+Blank lines are ignored.
+C++ comment conventions are followed (use of "//" and "/* ... */").
+This is for "commented out" text and should not be confused with values of the keyword "comment".
+
+Metadata reveals key values that are held constant in the experiments.
+The column labels are the keys whose values will vary from experiment to experiment.i
+Experiment data lines record the key values for the column labels of a given experiment.
+
+For example:
+------------------
+comment, exploration of foo parallel and blocked variants
+problem, foo
+date, 2013June21
+author, joe linboxer\, bds
+rowdim, 10000
+//coldim, rowdim
+coldim, 20000
+blockcoldim, blockrowdim
+matrix class, randomMat
+field, Modular<double>(101)
+flops formula, (n+nnz)/time 
+comment, no parsing guidance is offered yet for mflops formula
+end, metadata
+time, nnz, blockrowdim, threads, algorithm, comment
+0.001, 10000, 26, 1, block-coppersmith, blockdim is about 2lg(dim) 
+1.1e-5, 10000, 100, 48, block-coppersmith-omp, blockdim is sqrt(dim)
+1.1e-5, 100000, -, 1, matrix-build, -
+...
+------------------
+
+For consistency and particularly for generating reports on data from multiple data files, the following key name conventions should be followed.  Other key names should be used only when one of these does not fit.
+
+-----
+// algorithm properties
+problem - the algorithmic task being measured (eg. solveNonsingular).
+algorithm - a specific implementation of a method to solve the problem
+(eg. solve(Method::Wiedemann) or solve-omp).
+time - the runtime for the experiment task
+flops - the nominal operation count for the task.  The flops formula should be made clear in the metadata.
+blockrowdim - row blocking used
+blockcoldim - col blocking used
+...
+
+// domain of computation properties
+field - arithmetic domain class used (when it is a field) (eg. Modular<int>).
+ring - arithmetic domain class used (eg. PID_integer).
+matrix domain - arithmetic domain used (ring or field extended by matrix ops) 
+(eg. BlasMatrixDomain).
+modulus - characteristic of the field or ring (eg. 200000000000003).
+exponent - exponent of the modulus.
+...
+
+// environment-of-computation properties
+date - the date of the experiment(s) (eg. 2013June22).
+author - name or list of names of the person(s) running the experiments.
+computer - computer description (cores, mem, cache, speeds, etc.).
+threads - number of threads used.
+...
+
+// matrix properties (when problem has a key matrix as data)
+matrix class - blackbox template or class (eg. SparseMatrix or BlasMatrix or MatrixDomain::Submatrix).
+matrix constructor - eg. randomMat.  
+// Properties of the constructed instance (depends on matrix class and constructor
+rowdim -
+coldim -
+nnz -
+rank - Pesumably one knows from context whether this is a parameter or computed result.
+det - Pesumably one knows from context whether this is a parameter or computed result.
+...
+-----
+
+Further remarks.
+
+Other shared keywords can be added...
+
+Some keywords, whose values are strings, should have a standardized list of possible values...
+
+For convenience we could have a file of some keyword constants.  
+For example, some keywords which are machine names 
+with corresponding value a description, 
+eg., "hmrg, Dell Poweredge 2650 2-Xeon (3.2GHz)".
+Then a data file's metadata can include "computer, hmrg" for short.
+@ can be the "value of" operator, as in "computer, @hmrg", wherein the value expands to the value of hmrg.
+
+The experiment lines (below metadata and column labels) should be readable by gnuplot (this is a constraint on number and string representations).
