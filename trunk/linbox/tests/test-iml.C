@@ -39,6 +39,7 @@
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/matrix/random-matrix.h"
+#include "linbox/solutions/det.h"
 #include "linbox/randiter/generic.h"
 // #include "linbox/algorithms/NullspaceZ.h"
 #include "linbox/util/timer.h"
@@ -465,6 +466,49 @@ bool testIMLcra(const Field &F, int iterations)
 	return ret;
 }
 
+#if 0
+template<class Field>
+bool testIMLnonSingularSolve(const Field &F, size_t m, size_t b, int iterations)
+{
+	PID_integer Z ;
+	BlasMatrix<PID_integer> A(Z,m,m);
+	bool pass = true ;
+	//! @warning randiter + random matrix on integers.
+	double d= 0 ;
+	do {
+		for (size_t i = 0 ; i < m ; ++i)
+			for (size_t j = 0 ; j < m ; ++j)
+				A.setEntry(i,j,Integer::random_lessthan<true>((unsigned long)b));
+
+		Modular<double> Fp(65537); // random large.
+		BlasMatrix<Modular<double> > Ap(A,Fp);
+		det(d,Ap);
+	} while (d== 0);
+
+	BlasVector<PID_integer> x(Z,m), y(Z,m);
+
+	for (size_t i = 0 ; i < m ; ++i)
+		x.setEntry(i,Integer::random_lessthan<true>((unsigned long)b));
+
+	// iml::solve(LinBox::Right,x,A,y,LinBox::nonSingular);
+
+	BlasVector<PID_integer> v(Z,m);
+	BlasMatrixDomain<PID_integer> BMD(Z);
+	VectorDomain<PID_integer> VD(Z);
+	BMD.mul(v,A,x);
+	if (!VD.areEqual(v,y))
+		pass = false ;
+
+
+	std::cout << d << std::endl;
+
+	return pass ;
+}
+#endif
+
+#endif
+
+#if 0
 template<class Field>
 bool testIMLpadic(const Field &F, int iterations)
 {
@@ -539,10 +583,18 @@ int main(int argc, char ** argv)
 		pass=false;
 	RAPPORT("IML rns");
 
-	TESTE("IML pAdicLift");
-	if (!testIMLpadic(F, iterations))
+	// TESTE("IML pAdicLift");
+	// if (!testIMLpadic(F, iterations))
+	// pass=false;
+	// RAPPORT("IML rns");
+
+#if 0
+	size_t b = 10 ;
+	TESTE("IML non singular solve");
+	if (!testIMLnonSingularSolve(F, m, b, iterations))
 		pass=false;
-	RAPPORT("IML rns");
+	RAPPORT("IML non singular solve");
+#endif
 
 #endif
 

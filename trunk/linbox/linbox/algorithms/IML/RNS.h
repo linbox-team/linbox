@@ -197,7 +197,7 @@ namespace LinBox { namespace iml {
 		std::vector<BlasMatrix<Field> > & matRNS;
 
 		RNSmatrix(RNS<Field>                    & myBasis,
-			  std::vector<BlasMatrix<Field> & myARNS):
+			  std::vector<BlasMatrix<Field> > & myARNS):
 			basis(myBasis), matRNS(myARNS)
 		{}
 	};
@@ -206,7 +206,7 @@ namespace LinBox { namespace iml {
 	template<class Matrix>
 	void magnitude(typename Matrix::Element alpha, const Matrix & A)
 	{
-		BlasMatrixDomain<Ring> BMD(A.field());
+		BlasMatrixDomain<typename Matrix::Ring> BMD(A.field());
 		BMD.Magnitude(alpha,A);
 	}
 
