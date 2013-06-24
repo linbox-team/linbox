@@ -151,6 +151,7 @@ namespace LinBox { namespace iml {
 		Integer & basisProd() { return _mp_prod ; }
 
 
+		// *   basisExt(len, n, p, _RNSbasis, _RNScombi, _cumprod, _bdcoeff, R, RE)
 		template<class Container>
 		void
 		basisExt ( FiniteField                  & F
@@ -165,6 +166,11 @@ namespace LinBox { namespace iml {
 		cumProd (ModVect &_cumprod,
 			 const ModVect &extbasis);
 
+		cumProd(const ModVect &extbasis)
+		{
+			cumProd(_cumprod,extbasis);
+		}
+
 		void
 		maxInter (const Integer& _mp_prod, const Integer& mp_alpha, const size_t n, Integer& mp_b);
 
@@ -174,7 +180,7 @@ namespace LinBox { namespace iml {
 		void repBound ();
 		// void repBound (ModVect& bdcoeff, const ModVect &RNSbasis, const ModVect& RNScombi);
 
-		ModElement RNSbound (const size_t n);
+		static ModElement RNSbound (const size_t n);
 
 		ModVect & refRNSbasis() { return _RNSbasis ; }
 		ModVect & refRNScombi() { return _RNScombi ; }
@@ -183,8 +189,31 @@ namespace LinBox { namespace iml {
 	};
 
 
+	template<class  Field>
+	class RNSmatrix {
+	public:
+		RNS<Field>                      & basis;
+		std::vector<BlasMatrix<Field> > & matRNS;
+
+		RNSmatrix(RNS<Field>                    & myBasis,
+			  std::vector<BlasMatrix<Field> & myARNS):
+			basis(myBasis), matRNS(myARNS)
+		{}
+	};
 
 
+	template<class Matrix>
+	void magnitude(typename Matrix::Element alpha, const Matrix & A)
+	{
+		BlasMatrixDomain<Ring> BMD(A.field());
+		BMD.Magnitude(alpha,A);
+	}
+
+	template<class Field>
+	void magnitude(Integer & alpha, const RNSmatrix<Field> & A)
+	{
+		basisProd(A.basis.refBasis(), alpha);
+	}
 
 
 } // IML
