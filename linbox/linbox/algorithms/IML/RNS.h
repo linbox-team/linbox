@@ -166,6 +166,7 @@ namespace LinBox { namespace iml {
 		cumProd (ModVect &_cumprod,
 			 const ModVect &extbasis);
 
+		void
 		cumProd(const ModVect &extbasis)
 		{
 			cumProd(_cumprod,extbasis);
