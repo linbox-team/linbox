@@ -48,7 +48,7 @@ namespace LinBox {
 	template<class A, class B, class C>
 	class SparseMatrix ;
 
-	template<class A>
+	template<class A, class R>
 	class BlasMatrix;
 }
 

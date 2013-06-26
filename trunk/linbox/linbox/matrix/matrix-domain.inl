@@ -36,7 +36,7 @@
 namespace LinBox
 {
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::copyRow (Matrix1 &A, const Matrix2 &B) const
 	{
@@ -55,7 +55,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::copyCol (Matrix1 &A, const Matrix2 &B) const
 	{
@@ -74,12 +74,12 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	bool MatrixDomain<Field>::areEqualBB (const Matrix1 &A, const Matrix2 &B) const
 	{ Dif<Matrix1, Matrix2> C(A, B); return isZero(C); }
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	bool MatrixDomain<Field>::areEqualRow (const Matrix1 &A, const Matrix2 &B) const
 	{
@@ -99,7 +99,7 @@ namespace LinBox
 		return true;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	bool MatrixDomain<Field>::areEqualCol (const Matrix1 &A, const Matrix2 &B) const
 	{
@@ -119,7 +119,7 @@ namespace LinBox
 		return true;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix_>
 	bool MatrixDomain<Field>::isZeroBB (const Matrix_ &A) const
 	{
@@ -130,7 +130,7 @@ namespace LinBox
 		return VD.isZero(y);
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix_>
 	bool MatrixDomain<Field>::isZeroRow (const Matrix_ &A) const
 	{
@@ -145,7 +145,7 @@ namespace LinBox
 		return true;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix_>
 	bool MatrixDomain<Field>::isZeroCol (const Matrix_ &A) const
 	{
@@ -160,7 +160,7 @@ namespace LinBox
 		return true;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::addRow (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const
 	{
@@ -183,7 +183,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::addCol (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const
 	{
@@ -206,7 +206,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::addinRow (Matrix1 &A, const Matrix2 &B) const
 	{
@@ -225,7 +225,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::addinCol (Matrix1 &A, const Matrix2 &B) const
 	{
@@ -244,7 +244,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::subRow (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const
 	{
@@ -267,7 +267,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::subCol (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const
 	{
@@ -290,7 +290,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::subinRow (Matrix1 &A, const Matrix2 &B) const
 	{
@@ -309,7 +309,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::subinCol (Matrix1 &A, const Matrix2 &B) const
 	{
@@ -328,7 +328,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::negRow (Matrix1 &A, const Matrix2 &B) const
 	{
@@ -347,7 +347,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::negCol (Matrix1 &A, const Matrix2 &B) const
 	{
@@ -366,7 +366,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix_>
 	Matrix_ &MatrixDomain<Field>::neginRow (Matrix_ &A) const
 	{
@@ -378,7 +378,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix_>
 	Matrix_ &MatrixDomain<Field>::neginCol (Matrix_ &A) const
 	{
@@ -390,7 +390,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::mulRowRowCol (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const
 	{
@@ -410,7 +410,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::mulColRowCol (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const
 	{
@@ -430,7 +430,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::mulRowRowRow (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const
 	{
@@ -449,7 +449,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::mulColColCol (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const
 	{
@@ -466,7 +466,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix2 &MatrixDomain<Field>::leftMulin (const Matrix1 &A, Matrix2 &B) const
 	{
@@ -490,7 +490,7 @@ namespace LinBox
 		return B;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::rightMulin (Matrix1 &A, const Matrix2 &B) const
 	{
@@ -514,7 +514,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::mulRow (Matrix1 &C, const Matrix2 &B, const typename Field::Element &a) const
 	{
@@ -533,7 +533,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::mulCol (Matrix1 &C, const Matrix2 &B, const typename Field::Element &a) const
 	{
@@ -552,7 +552,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix_>
 	Matrix_ &MatrixDomain<Field>::mulinRow (Matrix_ &B, const typename Field::Element &a) const
 	{
@@ -564,7 +564,7 @@ namespace LinBox
 		return B;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix_>
 	Matrix_ &MatrixDomain<Field>::mulinCol (Matrix_ &B, const typename Field::Element &a) const
 	{
@@ -576,7 +576,7 @@ namespace LinBox
 		return B;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::axpyinRowRowCol (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X) const
 	{
@@ -601,7 +601,7 @@ namespace LinBox
 		return Y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::axpyinColRowCol (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X) const
 	{
@@ -626,7 +626,7 @@ namespace LinBox
 		return Y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::axpyinRowRowRow (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X) const
 	{
@@ -649,7 +649,7 @@ namespace LinBox
 		return Y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &MatrixDomain<Field>::axpyinColColCol (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X) const
 	{
@@ -670,7 +670,7 @@ namespace LinBox
 		return Y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::DenseVectorTag) const
@@ -693,7 +693,7 @@ namespace LinBox
 		return w;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::SparseSequenceVectorTag) const
@@ -714,7 +714,7 @@ namespace LinBox
 		return w;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::SparseAssociativeVectorTag) const
@@ -735,7 +735,7 @@ namespace LinBox
 		return w;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::SparseParallelVectorTag) const
@@ -759,7 +759,7 @@ namespace LinBox
 		return w;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MVProductDomain<Field>::mulColDense
 	(const VectorDomain<Field> &VD, Vector1 &w, const Matrix_ &A, const Vector2 &v) const
@@ -778,7 +778,7 @@ namespace LinBox
 		return w;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::DenseVectorTag,
@@ -798,7 +798,7 @@ namespace LinBox
 		return w;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::DenseVectorTag,
@@ -818,7 +818,7 @@ namespace LinBox
 		return w;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix_ &A, const Vector2 &v,
 							 VectorCategories::DenseVectorTag,
@@ -839,7 +839,7 @@ namespace LinBox
 		return w;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::DenseVectorTag) const
@@ -860,7 +860,7 @@ namespace LinBox
 		return y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseSequenceVectorTag) const
@@ -875,7 +875,7 @@ namespace LinBox
 		return y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseAssociativeVectorTag) const
@@ -890,7 +890,7 @@ namespace LinBox
 		return y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseParallelVectorTag) const
@@ -905,7 +905,7 @@ namespace LinBox
 		return y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::DenseVectorTag) const
@@ -922,7 +922,7 @@ namespace LinBox
 		return y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseSequenceVectorTag) const
@@ -948,7 +948,7 @@ namespace LinBox
 		return y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseAssociativeVectorTag) const
@@ -974,7 +974,7 @@ namespace LinBox
 		return y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Vector1, class Matrix_, class Vector2>
 	Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseParallelVectorTag) const
@@ -1001,7 +1001,7 @@ namespace LinBox
 		return y;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Blackbox, class Matrix2>
 	Matrix1 &MatrixDomain<Field>::blackboxMulLeft (Matrix1 &C, const Blackbox &A, const Matrix2 &B) const
 	{
@@ -1018,7 +1018,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix1, class Matrix2, class Blackbox>
 	Matrix1 &MatrixDomain<Field>::blackboxMulRight (Matrix1 &C, const Matrix2 &A, const Blackbox &B) const
 	{
@@ -1035,7 +1035,7 @@ namespace LinBox
 		return C;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix_, class Iterator>
 	Matrix_ &MatrixDomain<Field>::permuteRowsByRow (Matrix_   &A,
 						       Iterator  P_start,
@@ -1054,7 +1054,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix_, class Iterator>
 	Matrix_ &MatrixDomain<Field>::permuteRowsByCol (Matrix_   &A,
 						       Iterator  P_start,
@@ -1068,7 +1068,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix_, class Iterator>
 	Matrix_ &MatrixDomain<Field>::permuteColsByRow (Matrix_   &A,
 						       Iterator  P_start,
@@ -1082,7 +1082,7 @@ namespace LinBox
 		return A;
 	}
 
-	template <class Field>
+	template<class Field>
 	template <class Matrix_, class Iterator>
 	Matrix_ &MatrixDomain<Field>::permuteColsByCol (Matrix_   &A,
 						       Iterator  P_start,

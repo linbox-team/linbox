@@ -46,8 +46,8 @@
 
 namespace LinBox
 {
-	template<class Field> class BlasMatrix;
-	template<class Field> class BlasSubmatrix;
+	template<class Field, class Rep> class BlasMatrix;
+	template<class Field, class Rep> class BlasSubmatrix;
 
 
 
@@ -91,7 +91,7 @@ namespace LinBox
 	 * There are other restrictions. See the method-specific documentation for more
 	 * details.
 	 */
-	template <class Field_>
+	template <class Field_ >
 	class MatrixDomain : public MVProductDomain<Field_> {
 	public:
 		typedef size_t Index;
@@ -100,8 +100,9 @@ namespace LinBox
 		typedef Element Scalar;
 		typedef std::vector<Element> Vector;
 		// subvector
-		typedef BlasMatrix<Field> Matrix;
-		typedef BlasSubmatrix<Field> Submatrix;
+		typedef typename RawVector<typename Field::Element >::Dense Rep_;
+		typedef BlasMatrix<Field,Rep_> Matrix;
+		typedef BlasSubmatrix<Field,Rep_> Submatrix;
 
 		MatrixDomain () {/*std::cerr << "MD def cstor" << std::endl;*/ }
 

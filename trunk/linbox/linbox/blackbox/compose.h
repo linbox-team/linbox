@@ -411,16 +411,16 @@ namespace LinBox
 	};
 
 
-	template<class Field>
-		class BlasMatrix ;
+	template<class Field, class Rep>
+	class BlasMatrix ;
 
 	/// used in smith-binary, for example
-	template<class Field>
-	class ComposeTraits<  BlasMatrix<Field> > {
+	template<class Field, class Rep>
+	class ComposeTraits<  BlasMatrix<Field, Rep> > {
 	public:
 
 		// define the return value type
-		typedef BlasMatrix<Field> value_type;
+		typedef BlasMatrix<Field, Rep> value_type;
 	};
 
 } // LinBox

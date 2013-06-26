@@ -34,10 +34,10 @@
 namespace LinBox
 {
 
-	template<class _Field>
+	template<class _Field, class _Rep>
 	class BlasMatrix ;
 
-	template<class _Field>
+	template<class _Field, class _Rep>
 	class BlasSubmatrix ;
 
 	template<class _Field, class _Storage>
@@ -59,28 +59,28 @@ namespace LinBox
 		typedef MatrixContainerCategory::Blackbox Type;
 	};
 
-	template <class Field>
-	class MatrixContainerTrait<BlasMatrix<Field> > {
+	template <class Field, class Rep>
+	class MatrixContainerTrait<BlasMatrix<Field,Rep> > {
 	public:
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 
-	template <class Field>
-	class MatrixContainerTrait<const BlasMatrix<Field> > {
+	template <class Field, class Rep>
+	class MatrixContainerTrait<const BlasMatrix<Field,Rep> > {
 	public:
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 
 #if 0
-	template <class Field>
-	class MatrixContainerTrait<BlasMatrix<Field> > {
+	template <class Field,class Rep>
+	class MatrixContainerTrait<BlasMatrix<Field,Rep> > {
 	public:
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 #endif
 
-	template <class Field>
-	class MatrixContainerTrait<const BlasSubmatrix<Field> > {
+	template <class Field,class Rep>
+	class MatrixContainerTrait<const BlasSubmatrix<Field,Rep> > {
 	public:
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};

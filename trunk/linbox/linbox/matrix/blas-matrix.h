@@ -71,7 +71,7 @@ namespace LinBox
 
 namespace LinBox
 { /*  Blas Matrix */
-	template<class _Field>
+	template<class _Field, class _Rep>
 	class BlasSubmatrix ;
 
 	/*! Dense matrix representation.
@@ -80,20 +80,20 @@ namespace LinBox
 	 * It is basically a vector of \p _Field::Element.
 	 * In the Mother model, a BlasMatrix is allocated by the user.
 	 */
-	template <class _Field>
+	template <class _Field, class _blasRep=typename RawVector<typename _Field::Element >::Dense >
 	class BlasMatrix {
 		// private :
 
 	public:
 		typedef _Field                                Field;
 		typedef typename Field::Element             Element;    //!< Element type
-		typedef typename RawVector<Element>::Dense      Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		typedef _blasRep                                Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
 		typedef typename Rep::pointer               pointer;    //!< pointer type to elements
 		typedef const pointer                 const_pointer;    //!< const pointer type
-		typedef BlasMatrix<_Field>                   Self_t;    //!< Self type
-                typedef BlasSubmatrix<_Field>         subMatrixType;    //!< Submatrix type
-                typedef BlasMatrix<_Field>               matrixType;    //!< matrix type
-                typedef BlasMatrix<_Field>                 blasType;    //!< blas matrix type
+		typedef BlasMatrix<Field,Rep>                   Self_t;    //!< Self typeype
+                typedef BlasSubmatrix<Field,Rep>         subMatrixType;    //!< Submatrix type
+                typedef BlasMatrix<Field,Rep>               matrixType;    //!< matrix type
+                typedef BlasMatrix<Field,Rep>                 blasType;    //!< blas matrix type
 
 	protected:
 		size_t			    _row;
@@ -133,7 +133,7 @@ namespace LinBox
 		 * Copy data according to blas container structure.
 		 * Specialisation for BlasContainer.
 		 */
-		void createBlasMatrix (const BlasMatrix<_Field> & A) ;
+		void createBlasMatrix (const BlasMatrix<Field,Rep> & A) ;
 
 		/*! @internal
 		 * Copy data according to blas container structure.
@@ -292,12 +292,12 @@ namespace LinBox
 		/*! Copy Constructor of a matrix (copying data).
 		 * @param A matrix to be copied.
 		 */
-		BlasMatrix (const BlasMatrix<_Field>& A) ;
+		BlasMatrix (const BlasMatrix<Field,Rep>& A) ;
 
 		/*- Copy Constructor of a matrix (copying data).
 		 * @param A matrix to be copied.
 		 */
-		// BlasMatrix (const BlasSubmatrix<_Field>& A) ;
+		// BlasMatrix (const BlasSubmatrix<Field,Rep>& A) ;
 
 		/*! Create a BlasMatrix from a vector of elements
 		 * @param F
@@ -331,7 +331,7 @@ namespace LinBox
 		~BlasMatrix () ;
 
 		//! operator = (copying data)
-		BlasMatrix<_Field>& operator= (const BlasMatrix<_Field>& A) ;
+		BlasMatrix<Field,Rep>& operator= (const BlasMatrix<Field,Rep>& A) ;
 
 		//! make sure we actually copy
 		template<class Matrix>
@@ -443,7 +443,7 @@ namespace LinBox
 		 * @param[in] tM
 		 * @return the transposed matrix of this.
 		 */
-		BlasMatrix<_Field> transpose(BlasMatrix<_Field> & tM) const ;
+		BlasMatrix<Field,Rep> transpose(BlasMatrix<Field,Rep> & tM) const ;
 
 
 		/*! Transpose (inplace).
@@ -697,15 +697,15 @@ namespace LinBox
 
 	}; // end of class BlasMatrix
 
-	template <class _Field>
-	struct MatrixTraits< BlasMatrix<_Field> > {
-		typedef BlasMatrix<_Field> MatrixType;
+	template <class _Field, class _Rep>
+	struct MatrixTraits< BlasMatrix<_Field,_Rep> > {
+		typedef BlasMatrix<_Field,_Rep> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 
-	template <class _Field>
-	struct MatrixTraits< const BlasMatrix<_Field> > {
-		typedef const BlasMatrix<_Field> MatrixType;
+	template <class _Field, class _Rep>
+	struct MatrixTraits< const BlasMatrix<_Field,_Rep> > {
+		typedef const BlasMatrix<_Field,_Rep> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 
@@ -738,22 +738,22 @@ namespace LinBox
 
 
 	 */
-	template <class _Field>
+	template <class _Field, class _blasRep=typename RawVector<typename _Field::Element >::Dense >
 	class BlasSubmatrix {
 	public :
 		typedef _Field                             Field;
 		typedef typename Field::Element          Element;    //!< Element type
-		typedef BlasSubmatrix<_Field>             Self_t;    //!< Self type
-		typedef typename RawVector<Element>::Dense   Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		typedef _blasRep                             Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		typedef BlasSubmatrix<Field,Rep>             Self_t;    //!< Self type
 		typedef typename Rep::pointer            pointer;    //!< pointer type to elements
 		typedef const pointer              const_pointer;    //!< const pointer type
                 typedef Self_t                     subMatrixType;    //!< Submatrix type
-                typedef BlasMatrix<_Field>            matrixType;    //!< matrix type
-                typedef BlasMatrix<_Field>              blasType;    //!< blas matrix type
+                typedef BlasMatrix<Field,Rep>            matrixType;    //!< matrix type
+                typedef BlasMatrix<Field,Rep>              blasType;    //!< blas matrix type
 
 
 	protected:
-		BlasMatrix<_Field> *_Mat;       //!< Parent BlasMatrix (ie encapsulated raw std::vector)
+		BlasMatrix<Field,Rep> *_Mat;       //!< Parent BlasMatrix (ie encapsulated raw std::vector)
 		size_t _row;                   //!< row dimension of Submatrix
 		size_t _col;                   //!< col dimension of Submatrix
 		size_t _r0;                    //!< upper left corner row of Submatrix in \p _Mat
@@ -780,7 +780,7 @@ namespace LinBox
 		 * \param Rowdim Row dimension
 		 * \param Coldim Column dimension
 		 */
-		BlasSubmatrix (const BlasMatrix<_Field> &M,
+		BlasSubmatrix (const BlasMatrix<Field,Rep> &M,
 			       size_t rowbeg,
 				size_t colbeg,
 				size_t Rowdim,
@@ -789,7 +789,7 @@ namespace LinBox
 		/** Constructor from an existing @ref BlasMatrix
 		 * \param M Pointer to @ref BlasMatrix of which to construct submatrix
 		 */
-		BlasSubmatrix (const BlasMatrix<_Field> &M);
+		BlasSubmatrix (const BlasMatrix<Field,Rep> &M);
 
 
 		/** Constructor from an existing submatrix and dimensions
@@ -800,7 +800,7 @@ namespace LinBox
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
-		BlasSubmatrix (const BlasSubmatrix<_Field> &SM,
+		BlasSubmatrix (const BlasSubmatrix<Field,Rep> &SM,
 				size_t rowbeg,
 				size_t colbeg,
 				size_t Rowdim,
@@ -809,7 +809,7 @@ namespace LinBox
 		/** Copy constructor.
 		 * @param SM Submatrix to copy
 		 */
-		BlasSubmatrix (const BlasSubmatrix<_Field> &SM);
+		BlasSubmatrix (const BlasSubmatrix<Field,Rep> &SM);
 
 
 		/*  Members  */
@@ -821,10 +821,10 @@ namespace LinBox
 		 * @param SM Submatrix to assign
 		 * @return Reference to this submatrix
 		 */
-		BlasSubmatrix &operator = (const BlasSubmatrix<_Field> &SM);
+		BlasSubmatrix &operator = (const BlasSubmatrix<Field,Rep> &SM);
 
 		// function for repurposing Submatrices.
-		BlasSubmatrix &submatrix(const BlasSubmatrix<_Field> &SM,
+		BlasSubmatrix &submatrix(const BlasSubmatrix<Field,Rep> &SM,
 				size_t rowbeg,
 				size_t colbeg,
 				size_t Rowdim,
@@ -835,7 +835,7 @@ namespace LinBox
 		BlasSubmatrix &copy( const Matrix & B);
 
 		/// Swap contents.  Shapes must be the same.
-		BlasSubmatrix &swap( BlasSubmatrix<_Field> & B);
+		BlasSubmatrix &swap( BlasSubmatrix<Field,Rep> & B);
 
 		/// Overwrite with zeroes.
 		BlasSubmatrix &zero();
@@ -973,10 +973,10 @@ namespace LinBox
 		 * a row vector in dense format
 		 * @{
 		 */
-		typedef typename BlasMatrix<_Field>::RowIterator            RowIterator;
-		typedef typename BlasMatrix<_Field>::ConstRowIterator       ConstRowIterator;
-		typedef typename BlasMatrix<_Field>::Row                    Row;
-		typedef typename BlasMatrix<_Field>::ConstRow               ConstRow;
+		typedef typename BlasMatrix<Field,Rep>::RowIterator            RowIterator;
+		typedef typename BlasMatrix<Field,Rep>::ConstRowIterator       ConstRowIterator;
+		typedef typename BlasMatrix<Field,Rep>::Row                    Row;
+		typedef typename BlasMatrix<Field,Rep>::ConstRow               ConstRow;
 		//@} Row Iterators
 
 		/** @name typedef'd Column Iterators.
@@ -986,11 +986,11 @@ namespace LinBox
 		 * a column vector in dense format
 		 * @{
 		 */
-		typedef typename BlasMatrix<_Field>::ColIterator            ColIterator;
-		typedef typename BlasMatrix<_Field>::ConstColIterator       ConstColIterator;
-		typedef typename BlasMatrix<_Field>::Col                    Col;
-		typedef typename BlasMatrix<_Field>::Column                 Column;
-		typedef typename BlasMatrix<_Field>::ConstCol               ConstCol;
+		typedef typename BlasMatrix<Field,Rep>::ColIterator            ColIterator;
+		typedef typename BlasMatrix<Field,Rep>::ConstColIterator       ConstColIterator;
+		typedef typename BlasMatrix<Field,Rep>::Col                    Col;
+		typedef typename BlasMatrix<Field,Rep>::Column                 Column;
+		typedef typename BlasMatrix<Field,Rep>::ConstCol               ConstCol;
 		//@} // Column Iterators
 
 
@@ -1052,7 +1052,7 @@ namespace LinBox
                                 std::cout<<"USING MD "<<std::endl;
 				_Mat->_MD. vectorMul (y, *this, x);
 #if 0
-				typename BlasMatrix<_Field>::ConstRowIterator i = this->rowBegin ();
+				typename BlasMatrix<Field,Rep>::ConstRowIterator i = this->rowBegin ();
 				typename Vector1::iterator j = y.begin ();
 
 				for (; j != y.end (); ++j, ++i)
@@ -1081,7 +1081,7 @@ namespace LinBox
 					      &y[0],ldy);
 			}
 			else {
-				typename BlasMatrix<_Field>::ConstColIterator i = this->colBegin ();
+				typename BlasMatrix<Field,Rep>::ConstColIterator i = this->colBegin ();
 				typename Vector1::iterator j = y.begin ();
 				for (; j != y.end (); ++j, ++i)
 					_Mat->_VD.dot (*j, x, *i);
@@ -1094,15 +1094,15 @@ namespace LinBox
 		// _Field & field() { return _Mat->field(); }
 	};
 
-	template <class _Field>
-	struct MatrixTraits< BlasSubmatrix<_Field> > {
-		typedef BlasSubmatrix<_Field> MatrixType;
+	template <class _Field, class _Rep>
+	struct MatrixTraits< BlasSubmatrix<_Field,_Rep> > {
+		typedef BlasSubmatrix<_Field,_Rep> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 
-	template <class _Field>
-	struct MatrixTraits< const BlasSubmatrix<_Field> > {
-		typedef const BlasSubmatrix<_Field> MatrixType;
+	template <class _Field, class _Rep>
+	struct MatrixTraits< const BlasSubmatrix<_Field,_Rep> > {
+		typedef const BlasSubmatrix<_Field,_Rep> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 
@@ -1122,8 +1122,8 @@ namespace LinBox
 namespace LinBox
 { /* Triangular, Transposed Matrix */
 	//! Triangular BLAS matrix.
-	template <class _Field>
-	class TriangularBlasMatrix: public BlasMatrix<_Field> {
+	template <class _Field, class _Rep=typename RawVector<typename _Field::Element >::Dense >
+	class TriangularBlasMatrix: public BlasMatrix<_Field,_Rep> {
 
 	protected:
 
@@ -1132,9 +1132,10 @@ namespace LinBox
 
 	public:
 		typedef _Field                       Field;
+		typedef _Rep                         Rep;
 		typedef typename Field::Element      Element;      //!< Element type
-		typedef BlasMatrix<_Field>           Father_t;
-		typedef TriangularBlasMatrix<_Field> Self_t;
+		typedef BlasMatrix<Field,Rep>           Father_t;
+		typedef TriangularBlasMatrix<Field,Rep> Self_t;
 
 
 		/*! Constructor for a new \c TriangularBlasMatrix.
@@ -1154,7 +1155,7 @@ namespace LinBox
 		 * @param y (non)unit diagonal
 		 * @param x (upp/low)er matrix
 		 */
-		TriangularBlasMatrix (const BlasMatrix<_Field>& A,
+		TriangularBlasMatrix (const BlasMatrix<Field,Rep>& A,
 				      LinBoxTag::Shape x=LinBoxTag::Upper,
 				      LinBoxTag::Diag y= LinBoxTag::NonUnit) ;
 
@@ -1163,14 +1164,14 @@ namespace LinBox
 		 * @param y (non)unit diagonal
 		 * @param x (upp/low)er matrix
 		 */
-		TriangularBlasMatrix (BlasMatrix<_Field>& A,
+		TriangularBlasMatrix (BlasMatrix<Field,Rep>& A,
 				      LinBoxTag::Shape x=LinBoxTag::Upper,
 				      LinBoxTag::Diag y= LinBoxTag::NonUnit) ;
 
 		/*! Constructor from a \c TriangularBlasMatrix (copy).
 		 * @param A matrix
 		 */
-		TriangularBlasMatrix (const TriangularBlasMatrix<_Field>& A) ;
+		TriangularBlasMatrix (const TriangularBlasMatrix<Field,Rep>& A) ;
 
 		/*! Generic constructor from a \c Matrix (no copy).
 		 * @param A matrix
