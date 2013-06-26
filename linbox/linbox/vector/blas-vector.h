@@ -42,16 +42,16 @@
 
 namespace LinBox { /* BlasVector */
 
-	template<class _Field>
+	template<class _Field, class _Rep>
 	class BlasSubvector ;
 
 	template<class _Field, class _Rep>
 	class BlasVector ;
 
-	template<class _Field>
+	template<class _Field, class _Rep>
 	class BlasMatrix ;
 
-	template<class _Field>
+	template<class _Field, class _Rep>
 	class BlasSubmatrix ;
 
 	template <class Field, class _Rep>
@@ -72,7 +72,7 @@ namespace LinBox { /* BlasVector */
 		typedef typename Rep::pointer               pointer;    //!< pointer type to elements
 		typedef const pointer                 const_pointer;    //!< const pointer type
 		typedef BlasVector<_Field,_blasRep>          Self_t;    //!< Self type
-		typedef BlasSubvector<_Field>         subVectorType;    //!< Submatrix type
+		typedef BlasSubvector<_Field,_blasRep> subVectorType;    //!< Submatrix type
 		typedef BlasVector<_Field,_blasRep>      vectorType;    //!< matrix type
 		typedef BlasVector<_Field,_blasRep>        blasType;    //!< blas type
 
@@ -104,7 +104,7 @@ namespace LinBox { /* BlasVector */
 				setEntry(i,V.getEntry(i0+i*str));
 		}
 
-		void createBlasVector(const BlasSubvector<_Field> & V)
+		void createBlasVector(const BlasSubvector<_Field,_blasRep> & V)
 		{
 			//! use std::copy somehow ?
 			for (size_t i = 0 ; i < _size ; ++i)
@@ -152,7 +152,7 @@ namespace LinBox { /* BlasVector */
 		 * It is possible to get vectors that extend over multiple rows/columns
 		 * and \p stride need not be equal to \c 1 or \c lda.
 		 */
-		void createBlasVector ( const BlasMatrix<Field> & A, size_t i0, size_t j0, size_t str)
+		void createBlasVector ( const BlasMatrix<Field,Rep> & A, size_t i0, size_t j0, size_t str)
 		{
 			if ((str == 1) && (i0+_size*str<A.coldim())){
 				for (size_t i = 0 ; i < _size ; ++i)
@@ -169,7 +169,7 @@ namespace LinBox { /* BlasVector */
 			}
 		}
 
-		void createBlasVector ( const BlasSubmatrix<Field> & A, size_t i0, size_t j0, size_t str)
+		void createBlasVector ( const BlasSubmatrix<Field,Rep> & A, size_t i0, size_t j0, size_t str)
 		{
 			Element * Aptr = A.getPointer(i0,j0);
 			for (size_t i = 0 ; i < _size ; ++i)
@@ -309,7 +309,7 @@ namespace LinBox { /* BlasVector */
 		}
 
 
-		BlasVector (const BlasSubvector<_Field> &V)  :
+		BlasVector (const BlasSubvector<Field,Rep> &V)  :
 			_size(V.size()),_1stride(1),_rep(V.size(), V.field().zero),_ptr(&_rep[0]),_field(&(V.field()))
 		{
 	// Father_t is garbage until then:
@@ -320,7 +320,7 @@ namespace LinBox { /* BlasVector */
 			linbox_check(_size==0 || _ptr != NULL);
 		}
 
-		BlasVector (const BlasMatrix<_Field> &A, size_t k, enum LinBoxTag::Direction f )  :
+		BlasVector (const BlasMatrix<Field,Rep> &A, size_t k, enum LinBoxTag::Direction f )  :
 			_size((f==LinBoxTag::Row)?(A.rowdim()):(A.coldim())),_1stride(1),_rep(_size, A.field().zero),_ptr(&_rep[0]),_field(&(A.field()))
 			{
 	// Father_t is garbage until then:
@@ -335,7 +335,7 @@ namespace LinBox { /* BlasVector */
 
 			}
 
-		BlasVector (const BlasSubmatrix<_Field> &A, size_t k, enum LinBoxTag::Direction f )  :
+		BlasVector (const BlasSubmatrix<Field,Rep> &A, size_t k, enum LinBoxTag::Direction f )  :
 			_size((f==LinBoxTag::Row)?(A.rowdim()):(A.coldim())),_1stride(1),_rep(_size, A.field().zero),_ptr(&_rep[0]),_field(&(A.field()))
 			{
 	// Father_t is garbage until then:
@@ -349,7 +349,7 @@ namespace LinBox { /* BlasVector */
 			linbox_check(_size==0 || _ptr != NULL);
 			}
 
-		BlasVector (const BlasMatrix<_Field> &A, size_t n, size_t i0, size_t j0, size_t str )  :
+		BlasVector (const BlasMatrix<Field,Rep> &A, size_t n, size_t i0, size_t j0, size_t str )  :
 			_size(n),_1stride(1),_rep(_size, A.field().zero),_ptr(&_rep[0]),_field(&(A.field()))
 		{
 	// Father_t is garbage until then:
@@ -577,18 +577,18 @@ namespace LinBox { /*  BlasSubvector */
 
 
 
-	template <class _Field>
+	template <class _Field, class _blasRep=typename RawVector<typename _Field::Element>::Dense > // inherit that from owner ?
 	class BlasSubvector {
 	public :
 		typedef _Field                                  Field;
 		typedef typename Field::Element                 Element;      //!< Element type
-		typedef BlasSubvector<_Field>                   Self_t;       //!< Self type
-		typedef typename RawVector<Element>::Dense      Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		typedef _blasRep                                Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		typedef BlasSubvector<Field,Rep>              Self_t;       //!< Self type
 		typedef typename Rep::pointer                   pointer;    //!< pointer type to elements
 		typedef const pointer                           const_pointer;    //!< const pointer type
 		typedef Self_t                                  subVectorType;    //!< Subvector type
-		typedef BlasVector<_Field>                      vectorType;    //!< vector type
-		typedef BlasVector<_Field>                      blasType;    //!< blas type
+		typedef BlasVector<Field,Rep>                      vectorType;    //!< vector type
+		typedef BlasVector<Field,Rep>                      blasType;    //!< blas type
 
 
 	protected:
@@ -610,7 +610,7 @@ namespace LinBox { /*  BlasSubvector */
 		/** NULL constructor.  */
 		// BlasSubvector () ;
 
-		BlasSubvector (const BlasVector<_Field> &V,
+		BlasSubvector (const BlasVector<Field,Rep> &V,
 			       size_t ibeg,
 			       size_t siz,
 			       size_t str
@@ -621,7 +621,7 @@ namespace LinBox { /*  BlasSubvector */
 		{}
 
 
-		BlasSubvector (const BlasVector<_Field> &V) :
+		BlasSubvector (const BlasVector<Field,Rep> &V) :
 			_Vec (const_cast<Rep&>(V.refRep())),
 			_size(V.size()),_i0 (0),_1stride(1)
 			,_field(V.field())
@@ -629,7 +629,7 @@ namespace LinBox { /*  BlasSubvector */
 
 
 
-		BlasSubvector (const BlasSubvector<_Field> &SV,
+		BlasSubvector (const BlasSubvector<Field,Rep> &SV,
 			       size_t ibeg,
 			       size_t siz
 			       // , size_t stride //!stride in new subvector as if SV were of stride 1
@@ -645,14 +645,14 @@ namespace LinBox { /*  BlasSubvector */
 		/** Copy constructor.
 		 * @param SM Subvector to copy
 		 */
-		BlasSubvector (const BlasSubvector<_Field> &SV) :
+		BlasSubvector (const BlasSubvector<Field,Rep> &SV) :
 			_Vec (SV._Vec),
 			_size(SV._size),_i0 (SV._i0)
 			,_1stride(SV._1stride)
 			,_field(SV.field())
 		{}
 
-		BlasSubvector (const BlasMatrix<_Field> &M
+		BlasSubvector (const BlasMatrix<Field,Rep> &M
 			       , size_t beg
 			       , enum LinBoxTag::Direction f ) :
 			_Vec (const_cast<Rep&>(M.refRep()))
@@ -662,7 +662,7 @@ namespace LinBox { /*  BlasSubvector */
 			,_field(M.field())
 			{}
 
-		BlasSubvector (const BlasSubmatrix<_Field> &M
+		BlasSubvector (const BlasSubmatrix<Field,Rep> &M
 			       , size_t beg
 			       , enum LinBoxTag::Direction f ) :
 			_Vec (const_cast<Rep&>(M.refRep()))
@@ -677,7 +677,7 @@ namespace LinBox { /*  BlasSubvector */
 
 		/*  Members  */
 
-		BlasSubvector &operator = (const BlasSubvector<_Field> &SV)
+		BlasSubvector &operator = (const BlasSubvector<Field,Rep> &SV)
 		{
 			if ( &SV == this)
 				return *this ;
