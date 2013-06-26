@@ -25,6 +25,9 @@
 #define __LINBOX_coppersmith_H
 
 #include <vector>
+#include <numeric>
+#include <algorithm>
+#include "givaro/givpoly1crt.h"
 #include <iostream>
 using namespace std;
 
@@ -33,6 +36,7 @@ using namespace std;
 #include "linbox/util/commentator.h"
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/block-coppersmith-domain.h"
+#include "linbox/solutions/det.h"
 
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
@@ -66,7 +70,7 @@ namespace LinBox
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
 			commentator().start ("Coppersmith solveNonSingular", "solveNonSingular");
-#if 0
+#if 1
 			std::ostream& report = commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 #endif
 
@@ -108,6 +112,9 @@ namespace LinBox
 			std::vector<Block> gen;
 			std::vector<size_t> deg;
 			deg = BCD.right_minpoly(gen);
+			report << "Size of gen " << gen.size() << endl;
+			for(size_t i = 0; i < gen[0].coldim(); i++)
+				report << "Column " << i << " has degree " << deg[i] << endl;
 
 			//Reconstruct the solution
 			//Pick a column of the generator with a nonzero element in the first row of the constant coefficient
@@ -191,6 +198,270 @@ namespace LinBox
 
 	}; // end of class CoppersmithSolver
 
+	template <class _Domain>
+	class CoppersmithRank{
+
+	public:
+		typedef _Domain 			Domain;
+		typedef typename Domain::Field                    Field;
+		typedef typename Domain::Element       Element;
+		typedef typename Domain::Matrix 	Block;
+		typedef typename Domain::Submatrix 	Sub;
+		typedef typename Field::RandIter	Random;
+
+		inline const Domain & domain() const { return *_MD; }
+		inline const Field & field() const { return domain().field(); }
+	protected:
+		const Domain     *_MD;
+		Random		iter;
+		size_t		blocking;
+
+		//Compute the determinant of a polynomial matrix at the given set of evaluation points
+		//Store the results in the vector dets.
+		void EvalPolyMat(std::vector<Element> &dets, std::vector<Element> &values, std::vector<Block> & mat) const {
+
+			size_t deg = mat.size() -1;
+			size_t numv = values.size();
+			//Compute the determinant of the evaluation at values[i] for each i
+			for(size_t i = 0; i<numv; i++){
+				//copy the highest matrix coefficient
+				Block evalmat(field(), mat[0].rowdim(), mat[0].coldim());
+				domain().copy(evalmat,mat[deg]);
+				//Evaluate using a horner style evaluation
+				typename std::vector<Block>::reverse_iterator addit =  mat.rbegin();
+				addit++;
+				for(addit; addit != mat.rend(); addit++){
+					domain().mulin(evalmat,values[i]);
+					domain().addin(evalmat,*addit);
+				}//end loop computing horner evaluation
+				//Compute the determinant of the evaluation and store it in dets[i]
+				dets[i] = det(dets[i],evalmat);
+			}//end loop over evaluation points
+		}//end evaluation of polynominal matrix determinant
+
+	public:
+		CoppersmithRank(const Domain &MD, size_t blocking_ = 0) :
+			 _MD(&MD), blocking(blocking_), iter(MD.field())
+		{}
+
+
+		template <class Blackbox>
+		size_t rank (const Blackbox &B) const
+		{
+			commentator().start ("Coppersmith rank", "rank");
+#if 1
+			std::ostream& report = commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+#endif
+
+			//Set up the projection matrices and their dimensions
+			size_t d = B.coldim();
+			size_t r,c;
+			integer tmp = d;
+
+			//Set the blocking size, Using Pascal Giorgi's convention
+			if(blocking==0){
+				r=tmp.bitsize()-1;
+				c=tmp.bitsize()-1;
+			}else
+				r=c=blocking;
+
+			//Create the block
+			Block U(field(),r,d);
+			Block V(field(),d,c);
+
+			//Pick random entries for U and W. W will become the last c-1 columns of V
+
+			U.random();
+			V.random();
+
+			
+			BlackboxBlockContainer<Field, Blackbox > blockseq(&B,field(),U,V);
+
+			//Get the generator of the projection using the Coppersmith algorithm (slightly modified by Yuhasz)
+			BlockCoppersmithDomain<Domain, BlackboxBlockContainer<Field, Blackbox> > BCD(domain(), &blockseq,d);
+			std::vector<Block> gen;
+			std::vector<size_t> deg;
+			deg = BCD.right_minpoly(gen);
+			for(size_t i = 0; i < gen[0].coldim(); i++)
+				report << "Column " << i << " has degree " << deg[i] << endl;
+
+			//Compute the rank via the determinant of the generator
+			//Get the sum of column degrees
+			//This is the degree of the determinant via Yuhasz thesis
+			//size_t detdeg = std::accumulate(deg.begin(), deg.end(), 0);
+			size_t detdeg= 0;
+			for(size_t i = 0; i < gen[0].coldim(); i++)
+				detdeg+=deg[i];
+			//Set up interpolation with one more evaluation point than degree
+			size_t numpoints = d+1;
+			std::vector<Element> evalpoints(numpoints), evaldets(numpoints);
+			for(typename std::vector<Element>::iterator evalit = evalpoints.begin(); evalit != evalpoints.end(); evalit++){
+				do{
+					//do iter.random(*evalit); while(field().isZero(*evalit));
+					iter.random(*evalit); 
+				}while ((std::find(evalpoints.begin(), evalit, *evalit) != evalit));
+			}//end evaluation point construction loop
+			
+			//Evaluate the generator determinant at the points
+			EvalPolyMat(evaldets, evalpoints, gen);
+			for(size_t k = 0; k <numpoints; k++)
+				report << evalpoints[k] << "  " << evaldets[k] <<endl;
+			//Construct the polynomial using Givare interpolation
+			//Stolen from Pascal Giorgi, linbox/examples/omp-block-rank.C
+			typedef Givaro::Poly1CRT< typename LinBox::GivaroField<Field> >  PolyCRT;
+			PolyCRT Interpolator(field(), evalpoints, "x");
+			typename PolyCRT::Element Determinant;
+			Interpolator.RnsToRing(Determinant,evaldets);
+			Givaro::Degree intdetdeg;
+			Interpolator.getpolydom().degree(intdetdeg,Determinant); 
+			Givaro::Degree intdetval;
+			Interpolator.getpolydom().val(intdetval,Determinant); 
+			if(detdeg != intdetdeg.value()){
+				report << "sum of column degrees " << detdeg << endl;
+				report << "interpolation degree " << intdetdeg.value() << endl;	
+			}	
+			report << "sum of column degrees " << detdeg << endl;
+			report << "interpolation degree " << intdetdeg.value() << endl;	
+			report << "valence (trailing degree) " << intdetval.value() << endl;
+			for(size_t k = 0; k<gen.size(); k++)
+				domain().write(report, gen[k]) << "x^" << k << endl;
+			Interpolator.write(report << "Interpolated determinant: ", Determinant) << endl;
+			size_t rank = intdetdeg.value() - intdetval.value();
+			return rank;
+		}
+
+
+
+
+	}; // end of class CoppersmithRank
+
+	//Use the coppersmith block wiedemann to compute the determinant
+	template <class _Domain>
+	class CoppersmithDeterminant{
+
+	public:
+		typedef _Domain 			Domain;
+		typedef typename Domain::Field                    Field;
+		typedef typename Domain::Element       Element;
+		typedef typename Domain::Matrix 	Block;
+		typedef typename Domain::Submatrix 	Sub;
+		typedef typename Field::RandIter	Random;
+
+		inline const Domain & domain() const { return *_MD; }
+		inline const Field & field() const { return domain().field(); }
+	protected:
+		const Domain     *_MD;
+		Random		iter;
+		size_t		blocking;
+
+		//Compute the determinant of a polynomial matrix at the given set of evaluation points
+		//Store the results in the vector dets.
+		void EvalPolyMat(std::vector<Element> &dets, std::vector<Element> &values, std::vector<Block> & mat) const {
+
+			size_t deg = mat.size() -1;
+			size_t numv = values.size();
+			//Compute the determinant of the evaluation at values[i] for each i
+			for(size_t i = 0; i<numv; i++){
+				//copy the highest matrix coefficient
+				Block evalmat(mat[deg]);
+				//Evaluate using a horner style evaluation
+				typename std::vector<Block>::reverse_iterator addit =  mat.rbegin();
+				addit++;
+				for(addit; addit != mat.rend(); addit++){
+					domain().mulin(evalmat,values[i]);
+					domain().addin(evalmat,*addit);
+				}//end loop computing horner evaluation
+				//Compute the determinant of the evaluation and store it in dets[i]
+				dets[i] = det(dets[i],evalmat);
+			}//end loop over evaluation points
+		}//end evaluation of polynominal matrix determinant
+
+	public:
+		CoppersmithDeterminant(const Domain &MD, size_t blocking_ = 0) :
+			 _MD(&MD), blocking(blocking_), iter(MD.field())
+		{}
+
+
+		template <class Blackbox>
+		Element det (const Blackbox &B) const
+		{
+			commentator().start ("Coppersmith rank", "rank");
+#if 1
+			std::ostream& report = commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+#endif
+
+			//Set up the projection matrices and their dimensions
+			size_t d = B.coldim();
+			size_t r,c;
+			integer tmp = d;
+
+			//Use given blocking size, if not given use Pascal Giorgi's convention
+			if(blocking==0){
+				r=tmp.bitsize()-1;
+				c=tmp.bitsize()-1;
+			}else
+				r=c=blocking;
+
+			//Create the block
+			Block U(field(),r,d);
+			Block V(field(),d,c);
+
+			//Pick random entries for U and W. W will become the last c-1 columns of V
+
+			U.random();
+			V.random();
+
+			//Multiply V by B on the left 
+			domain().leftMulin(B,V);
+
+			//Create the sequence container and its iterator that will compute the projection
+			BlackboxBlockContainer<Field, Blackbox > blockseq(&B,field(),U,V);
+
+			//Get the generator of the projection using the Coppersmith algorithm (slightly modified by Yuhasz)
+			BlockCoppersmithDomain<Domain, BlackboxBlockContainer<Field, Blackbox> > BCD(domain(), &blockseq,d);
+			std::vector<Block> gen;
+			std::vector<size_t> deg;
+			deg = BCD.right_minpoly(gen);
+
+			//Compute the determinant via the constant coefficient of the determinant of the generator
+			//Get the sum of column degrees
+			//This is the degree of the determinant via Yuhasz thesis
+			//size_t detdeg = std::accumulate(deg.begin(), deg.end(), 0);
+			size_t detdeg= 0;
+			for(size_t i = 0; i < gen[0].coldim(); i++)
+				detdeg+=deg[i];
+			//Set up interpolation with one more evaluation point than degree
+			size_t numpoints = 2*d;
+			std::vector<Element> evalpoints(numpoints), evaldets(numpoints);
+			for(typename std::vector<Element>::iterator evalit = evalpoints.begin(); evalit != evalpoints.end(); evalit++){
+				do{
+					do iter.random(*evalit); while(field().isZero(*evalit));
+				}while ((std::find(evalpoints.begin(), evalit, *evalit) != evalit));
+			}//end evaluation point construction loop
+			
+			//Evaluate the generator determinant at the points
+			EvalPolyMat(evaldets, evalpoints, gen);
+			//Construct the polynomial using Givare interpolation
+			//Stolen from Pascal Giorgi, linbox/examples/omp-block-rank.C
+			typedef Givaro::Poly1CRT< typename LinBox::GivaroField<Field> >  PolyCRT;
+			PolyCRT Interpolator(field(), evalpoints, "x");
+			typename PolyCRT::Element Determinant;
+			Interpolator.RnsToRing(Determinant,evaldets);
+			Givaro::Degree intdetdeg;
+			Interpolator.getpolydom().degree(intdetdeg,Determinant); 
+			Givaro::Degree intdetval(0);
+			Interpolator.getpolydom().val(intdetval,Determinant); 
+			if(d != intdetdeg.value()){
+				report << "The matrix is singular, determinant is zero" << endl;
+				return field(0).zero;
+			}	
+			Interpolator.write(report << "Interpolated determinant: ", Determinant) << endl;
+			Element intdeterminant(field().zero);
+			Interpolator.getpolydom().getEntry(intdeterminant,intdetval,Determinant);
+			return intdeterminant;
+		}
+
+	}; // end of class CoppersmithDeterminant
 
 
 }// end of namespace LinBox
