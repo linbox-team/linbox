@@ -114,10 +114,10 @@ namespace LinBox
 	}
 
 	// in other solvers we generally use BlasMatrix which inherits from BlasSubmatrix
-	template <class Ring>
-	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
-			   typename Ring::Element& short_col_sqr,
-			   const BlasSubmatrix<Ring>& A)
+	template <class Matrix>
+	void BoundBlackbox(const typename Matrix::Field& R, typename Matrix::Element& H_col_sqr,
+			   typename Matrix::Element& short_col_sqr,
+			   const BlasSubmatrix<Matrix>& A)
 	{
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}

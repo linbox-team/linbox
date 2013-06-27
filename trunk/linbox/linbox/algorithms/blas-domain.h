@@ -329,7 +329,9 @@ namespace LinBox
 	public:
 		typedef Field_ Field;
 		typedef typename Field::Element         Element;
-		typedef BlasSubmatrix<Field> Matrix;
+		typedef typename RawVector<Element >::Dense Rep;
+		typedef BlasMatrix<Field,Rep> OwnMatrix;
+		typedef BlasSubmatrix<OwnMatrix> Matrix;
 
 	protected:
 

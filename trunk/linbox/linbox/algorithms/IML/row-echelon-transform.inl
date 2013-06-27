@@ -37,6 +37,7 @@ size_t RowEchelonTransform<FField>::reduce_rec( BlasMatrix<FField> & A, size_t m
 		std::vector<size_t> & P, std::vector<size_t>&rp,
 		Element & d)
 		{
+	typedef BlasMatrix<FField> Matrix ;
 			size_t m = A.coldim();
 			size_t n = A.rowdim();
 			size_t i, j, r1, r2, r, ri, mm, inv;
@@ -115,23 +116,23 @@ size_t RowEchelonTransform<FField>::reduce_rec( BlasMatrix<FField> & A, size_t m
 			if (r1 > 0) {
 				/* Compute U1.A2 by submatrix multiply */
 				if (k+r1 < n) {
-					BlasSubmatrix<FField> U1(A,k+r1,k-ks,n-k-r1,r1);
-					BlasSubmatrix<FField> A1(A,k,mm,r1,m2-mm);
-					BlasSubmatrix<FField> A2(A,k+r1,mm,n-k-r1,m2-mm);
+					BlasSubmatrix<Matrix> U1(A,k+r1,k-ks,n-k-r1,r1);
+					BlasSubmatrix<Matrix> A1(A,k,mm,r1,m2-mm);
+					BlasSubmatrix<Matrix> A2(A,k+r1,mm,n-k-r1,m2-mm);
 					BMD.axpyin(A2,U1,A1);
 
 				}
 				if ((frows == 1) && (redflag == 1)) {
 					if (k > 0) {
-						BlasSubmatrix<FField> U1(A,0,k-ks,k,r1);
-						BlasSubmatrix<FField> A1(A,k,mm,r1,m2-mm);
-						BlasSubmatrix<FField> A2(A,0,mm,k,m2-mm);
+						BlasSubmatrix<Matrix> U1(A,0,k-ks,k,r1);
+						BlasSubmatrix<Matrix> A1(A,k,mm,r1,m2-mm);
+						BlasSubmatrix<Matrix> A2(A,0,mm,k,m2-mm);
 						BMD.axpyin(A2,U1,A1);
 
 					}
-					BlasSubmatrix<FField> U1(A,k,k-ks,r1,r1);
+					BlasSubmatrix<Matrix> U1(A,k,k-ks,r1,r1);
 					BlasMatrix<FField> A1(A,k,mm,r1,m2-mm);
-					BlasSubmatrix<FField> A2(A,k,mm,r1,m2-mm);
+					BlasSubmatrix<Matrix> A2(A,k,mm,r1,m2-mm);
 					BMD.mul(A2,U1,A1);
 
 				}
@@ -148,9 +149,9 @@ size_t RowEchelonTransform<FField>::reduce_rec( BlasMatrix<FField> & A, size_t m
 			if ((r2 > 0) && (r1 > 0)) {
 				if ((k+r+1 <= n) && (lrows == 1)) {
 					/* Bottom block of U */
-					BlasSubmatrix<FField> U1(A,k+r,k-ks+r1,n-k-r,r-r1);
-					BlasSubmatrix<FField> A1(A,k+r1,k-ks,r-r1,r1);
-					BlasSubmatrix<FField> A2(A,k+r,k-ks,n-k-r,r1);
+					BlasSubmatrix<Matrix> U1(A,k+r,k-ks+r1,n-k-r,r-r1);
+					BlasSubmatrix<Matrix> A1(A,k+r1,k-ks,r-r1,r1);
+					BlasSubmatrix<Matrix> A2(A,k+r,k-ks,n-k-r,r1);
 					BMD.axpyin(A2,U1,A1);
 
 				}
@@ -162,9 +163,9 @@ size_t RowEchelonTransform<FField>::reduce_rec( BlasMatrix<FField> & A, size_t m
 
 					/* Rows i..k of top block of U plus first r1 rows of middle block */
 					{
-						BlasSubmatrix<FField> U1(A,i-1,k-ks+r1,k+r1-i+1,r-r1);
-						BlasSubmatrix<FField> A1(A,k+r1,k-ks,r-r1,r1);
-						BlasSubmatrix<FField> A2(A,i-1,k-ks,k+r1-i+1,r1);
+						BlasSubmatrix<Matrix> U1(A,i-1,k-ks+r1,k+r1-i+1,r-r1);
+						BlasSubmatrix<Matrix> A1(A,k+r1,k-ks,r-r1,r1);
+						BlasSubmatrix<Matrix> A2(A,i-1,k-ks,k+r1-i+1,r1);
 						BMD.axpyin(A2,U1,A1);
 					}
 
@@ -172,9 +173,9 @@ size_t RowEchelonTransform<FField>::reduce_rec( BlasMatrix<FField> & A, size_t m
 
 					/* Last r2 rows of middle block */
 					{
-						BlasSubmatrix<FField> U1(A,k+r1,k-ks+r1,r-r1,r-r1);
+						BlasSubmatrix<Matrix> U1(A,k+r1,k-ks+r1,r-r1,r-r1);
 						BlasMatrix<FField>    A1(A,k+r1,k-ks,r-r1,r1);
-						BlasSubmatrix<FField> A2(A,k+r1,k-ks,r-r1,r1);
+						BlasSubmatrix<Matrix> A2(A,k+r1,k-ks,r-r1,r1);
 						BMD.mul(A2,U1,A1);
 					}
 

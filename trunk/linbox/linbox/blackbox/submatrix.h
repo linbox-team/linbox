@@ -265,12 +265,13 @@ namespace LinBox
 
 	/** Specialization for BlasMatrix */
 	template<class _Field>
-	class Submatrix<BlasMatrix<_Field>, VectorCategories::DenseVectorTag> : public BlasSubmatrix<_Field> {
+	class Submatrix<BlasMatrix<_Field>, VectorCategories::DenseVectorTag> : public BlasSubmatrix<BlasMatrix<_Field> > {
 	public:
 
 		typedef _Field Field;
-		typedef Submatrix<BlasMatrix<_Field>, VectorCategories::DenseVectorTag> Self_t;
-		typedef BlasSubmatrix<_Field> Father_t;
+		typedef BlasMatrix<_Field> Matrix ;
+		typedef Submatrix<Matrix, VectorCategories::DenseVectorTag> Self_t;
+		typedef BlasSubmatrix<Matrix> Father_t;
 
 	private:
 
@@ -294,7 +295,7 @@ namespace LinBox
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim) :
-			BlasSubmatrix<Field>(const_cast<BlasMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
+			BlasSubmatrix<Matrix>(const_cast<BlasMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
 			f(Mat -> field()), vd(Mat -> field())
 		{ }
 
@@ -310,7 +311,7 @@ namespace LinBox
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim) :
-			BlasSubmatrix<Field>(const_cast<BlasMatrix<Field>& >(Mat), row, col, Rowdim, Coldim),
+			BlasSubmatrix<Matrix>(const_cast<BlasMatrix<Field>& >(Mat), row, col, Rowdim, Coldim),
 			f(Mat.field()), vd(Mat.field())
 		{ }
 
@@ -327,7 +328,7 @@ namespace LinBox
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim ) :
-			BlasSubmatrix<Field> (const_cast<Submatrix<BlasMatrix<Field> >&>(*SM), row, col, Rowdim, Coldim),
+			BlasSubmatrix<Matrix> (const_cast<Submatrix<BlasMatrix<Field> >&>(*SM), row, col, Rowdim, Coldim),
 			f (SM ->  field()), vd(SM -> field())
 		{
 			}
@@ -345,7 +346,7 @@ namespace LinBox
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim ) :
-			BlasSubmatrix<Field> (const_cast<Submatrix<BlasMatrix<Field> >&>(SM), row, col, Rowdim, Coldim),
+			BlasSubmatrix<Matrix> (const_cast<Submatrix<BlasMatrix<Field> >&>(SM), row, col, Rowdim, Coldim),
 			f (SM. field()), vd(SM. field())
 		{ }
 
@@ -360,7 +361,7 @@ namespace LinBox
 		std::istream& read (std::istream& is)
 		{
 
-			BlasSubmatrix<Field>::read (is, f);
+			BlasSubmatrix<Matrix>::read (is, f);
 
 			return is;
 		}
@@ -369,7 +370,7 @@ namespace LinBox
 		std::ostream& write (std::ostream& os) const
 		{
 
-			BlasSubmatrix<Field>::write (os, f);
+			BlasSubmatrix<Matrix>::write (os, f);
 
 			return os;
 		}
@@ -385,7 +386,7 @@ namespace LinBox
 		Vect1 &apply (Vect1 &y, const Vect2 &x) const
 		{
 
-			typename BlasSubmatrix<Field>::ConstRowIterator p;
+			typename BlasSubmatrix<Matrix>::ConstRowIterator p;
 
 			typename Vect1::iterator p_y = y.begin ();
 
@@ -407,7 +408,7 @@ namespace LinBox
 		Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const
 		{
 
-			typename BlasSubmatrix<Field>::ConstColIterator colp;
+			typename BlasSubmatrix<Matrix>::ConstColIterator colp;
 
 			typename Vect1::iterator p_y = y.begin ();
 

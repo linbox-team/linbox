@@ -49,8 +49,8 @@ namespace LinBox
 
 namespace LinBox
 {
-	template < class _Field, class _Rep >
-	BlasSubmatrix<_Field,_Rep>::BlasSubmatrix () :
+	template < class _Matrix >
+	BlasSubmatrix<_Matrix>::BlasSubmatrix () :
 			_Mat(NULL),_row(0),_col(0),_r0(0),_c0(0),_stride(0),_off(0)
 		{
 #ifndef NDEBUG
@@ -58,8 +58,8 @@ namespace LinBox
 #endif
 		}
 
-	template < class _Field, class _Rep >
-	BlasSubmatrix<_Field,_Rep>::BlasSubmatrix (const BlasMatrix<_Field,_Rep> &Mat,
+	template < class _Matrix >
+	BlasSubmatrix<_Matrix>::BlasSubmatrix (const BlasMatrix<BlasSubmatrix<_Matrix>::Field,BlasSubmatrix<_Matrix>::Rep> &Mat,
 						size_t row,
 						size_t col,
 						size_t Rowdim,
@@ -77,8 +77,8 @@ namespace LinBox
 	}
 
 
-	template < class _Field, class _Rep >
-	BlasSubmatrix<_Field,_Rep>::BlasSubmatrix (const BlasMatrix<_Field,_Rep> &Mat) :
+	template < class _Matrix >
+	BlasSubmatrix<_Matrix>::BlasSubmatrix (const BlasMatrix<BlasSubmatrix<_Matrix>::Field,BlasSubmatrix<_Matrix>::Rep> &Mat) :
 		_Mat(&(const_cast<BlasMatrix<Field>& >(Mat))),
 		_row(Mat.rowdim()), _col(Mat.coldim()),
 		_r0(0), _c0(0),
@@ -87,8 +87,8 @@ namespace LinBox
 
 
 
-	template < class _Field, class _Rep >
-	BlasSubmatrix<_Field,_Rep>::BlasSubmatrix (const BlasSubmatrix<_Field,_Rep> &SM,
+	template < class _Matrix >
+	BlasSubmatrix<_Matrix>::BlasSubmatrix (const BlasSubmatrix<_Matrix> &SM,
 						size_t row,
 						size_t col,
 						size_t Rowdim,
@@ -105,8 +105,8 @@ namespace LinBox
 		linbox_check ( _off <= SM._Mat->rowdim()*(SM._Mat->coldim()+1) );
 	}
 
-	template < class _Field, class _Rep >
-	BlasSubmatrix<_Field,_Rep>::BlasSubmatrix (const BlasSubmatrix<_Field,_Rep> &SM) :
+	template < class _Matrix >
+	BlasSubmatrix<_Matrix>::BlasSubmatrix (const BlasSubmatrix<_Matrix> &SM) :
 		_Mat (SM._Mat),
 		_row ( SM._row ),  _col ( SM._col ) ,
 		_r0  ( SM._r0 ),    _c0 (SM._c0 ),
@@ -120,8 +120,8 @@ namespace LinBox
 	}
 
 	// shallow copy
-	template < class _Field, class _Rep >
-	BlasSubmatrix<_Field,_Rep>& BlasSubmatrix<_Field,_Rep>::operator=(const BlasSubmatrix<_Field,_Rep> &SM)
+	template < class _Matrix >
+	BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::operator=(const BlasSubmatrix<_Matrix> &SM)
 	{
 		if ( &SM == this)
 			return *this ;
@@ -138,8 +138,8 @@ namespace LinBox
 	}
 
 	// function for repurposing Submatrices.
-	template < class _Field, class _Rep >
-	BlasSubmatrix<_Field,_Rep>& BlasSubmatrix<_Field,_Rep>::submatrix(const BlasSubmatrix<_Field,_Rep> &SM,
+	template < class _Matrix >
+	BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::submatrix(const BlasSubmatrix<_Matrix> &SM,
 			size_t row, size_t col, size_t Rowdim, size_t Coldim)
 	{
 		_Mat   = SM._Mat;
@@ -151,9 +151,9 @@ namespace LinBox
 	}
 
 	// deep copy
-	template < class _Field, class _Rep >
+	template < class _Matrix >
 	template<class Matrix>
-	BlasSubmatrix<_Field,_Rep>& BlasSubmatrix<_Field,_Rep>::copy( const Matrix & B)
+	BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::copy( const Matrix & B)
 	{
 		for (size_t i = 0 ; i < rowdim() ; ++i)
 		for (size_t j = 0 ; j < coldim() ; ++j) {
@@ -162,8 +162,8 @@ namespace LinBox
 		return *this;
 	}
 
-	template < class _Field, class _Rep >
-	BlasSubmatrix<_Field,_Rep> &BlasSubmatrix<_Field,_Rep>::swap( BlasSubmatrix<_Field,_Rep> & B)
+	template < class _Matrix >
+	BlasSubmatrix<_Matrix> &BlasSubmatrix<_Matrix>::swap( BlasSubmatrix<_Matrix> & B)
 	{
 		Element temp; _Mat->field().init(temp);
 		Element hold; _Mat->field().init(hold);
@@ -176,8 +176,8 @@ namespace LinBox
 		return *this;
 	}
 
-	template < class _Field, class _Rep >
-	BlasSubmatrix<_Field,_Rep> &BlasSubmatrix<_Field,_Rep>::zero()
+	template < class _Matrix >
+	BlasSubmatrix<_Matrix> &BlasSubmatrix<_Matrix>::zero()
 	{
 		for (size_t i = 0 ; i < rowdim() ; ++i)
 		for (size_t j = 0 ; j < coldim() ; ++j) {
@@ -186,10 +186,10 @@ namespace LinBox
 		return *this;
 	}
 
-	template < class _Field, class _Rep >
-	BlasSubmatrix<_Field,_Rep> &BlasSubmatrix<_Field,_Rep>::random()
+	template < class _Matrix >
+	BlasSubmatrix<_Matrix> &BlasSubmatrix<_Matrix>::random()
 	{
-		typename _Field::RandIter r(*(_Mat->field()));
+		typename Field::RandIter r(*(_Mat->field()));
 		Element temp; _Mat->field()->init(temp);
 		for (size_t i = 0 ; i < rowdim() ; ++i)
 		for (size_t j = 0 ; j < coldim() ; ++j) {
@@ -208,20 +208,20 @@ namespace LinBox
 namespace LinBox
 {
 
-	template < class _Field, class _Rep >
-	size_t BlasSubmatrix<_Field,_Rep>::rowdim() const
+	template < class _Matrix >
+	size_t BlasSubmatrix<_Matrix>::rowdim() const
 	{
 		return _row ;
 	}
 
-	template < class _Field, class _Rep >
-	size_t BlasSubmatrix<_Field,_Rep>::coldim() const
+	template < class _Matrix >
+	size_t BlasSubmatrix<_Matrix>::coldim() const
 	{
 		return _col ;
 	}
 
-	template < class _Field, class _Rep >
-	size_t  BlasSubmatrix<_Field,_Rep>::getStride() const
+	template < class _Matrix >
+	size_t  BlasSubmatrix<_Matrix>::getStride() const
 	{
 		return _stride;
 	}
@@ -237,48 +237,48 @@ namespace LinBox
 {
 
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::pointer
-	BlasSubmatrix<_Field,_Rep>::getPointer() const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::pointer
+	BlasSubmatrix<_Matrix>::getPointer() const
 	{
 		return _Mat->getPointer()+_off;
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::const_pointer &
-	BlasSubmatrix<_Field,_Rep>::getConstPointer() const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::const_pointer &
+	BlasSubmatrix<_Matrix>::getConstPointer() const
 	{
 		return _Mat->getConstPointer()+_off;
 	}
 
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::pointer
-	BlasSubmatrix<_Field,_Rep>::getWritePointer()
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::pointer
+	BlasSubmatrix<_Matrix>::getWritePointer()
 	{
 		return (_Mat->getWritePointer()+_off);
 	}
 
-	template < class _Field, class _Rep >
-	void BlasSubmatrix<_Field,_Rep>::setEntry (size_t i, size_t j, const Element &a_ij)
+	template < class _Matrix >
+	void BlasSubmatrix<_Matrix>::setEntry (size_t i, size_t j, const Element &a_ij)
 	{
 		_Mat->setEntry (_r0 + i, _c0 + j, a_ij);
 	}
 
-	template < class _Field, class _Rep >
- typename _Field:: Element &BlasSubmatrix<_Field,_Rep>::refEntry (size_t i, size_t j)
+	template < class _Matrix >
+		typename  LinBox::BlasSubmatrix<_Matrix>::Element &BlasSubmatrix<_Matrix>::refEntry (size_t i, size_t j)
 	{
 		return _Mat->refEntry ( _r0+i, _c0+j );
 	}
 
-	template < class _Field, class _Rep >
-	const typename _Field:: Element &BlasSubmatrix<_Field,_Rep>::getEntry (size_t i, size_t j) const
+	template < class _Matrix >
+	const typename  LinBox::BlasSubmatrix<_Matrix>::Element &BlasSubmatrix<_Matrix>::getEntry (size_t i, size_t j) const
 	{
 		return _Mat->getEntry ( _r0+i , _c0+j );
 	}
 
-	template < class _Field, class _Rep >
-typename _Field:: Element &BlasSubmatrix<_Field,_Rep>::getEntry (Element &x, size_t i, size_t j) const
+	template < class _Matrix >
+typename  LinBox::BlasSubmatrix<_Matrix>::Element &BlasSubmatrix<_Matrix>::getEntry (Element &x, size_t i, size_t j) const
 	{
 		return _Mat->getEntry (x, _r0+i , _c0+j );
 	}
@@ -309,15 +309,15 @@ namespace LinBox
 	 * matrix entries modulo a prime before passing the matrix into an
 	 * algorithm.
 	 */
-	template < class _Field, class _Rep >
-	class BlasSubmatrix<_Field,_Rep>::Iterator {
+	template < class _Matrix >
+	class BlasSubmatrix<_Matrix>::Iterator {
 	public:
 		Iterator (){}
 
 		/*! @internal
 		 * @brief NO DOC
 		 */
-		Iterator (const typename BlasMatrix<_Field,_Rep>::Iterator& cur,
+		Iterator (const typename BlasMatrix<typename _Matrix::Field, typename _Matrix::Rep>::Iterator& cur,
 			     const size_t c_dim,
 			     const size_t stride,
 			     const size_t c_idx) :
@@ -374,19 +374,19 @@ namespace LinBox
 		}
 
 		//! @internal operator *.
-		typename _Field::Element& operator * ()
+		typename _Matrix::Element& operator * ()
 		{
 			return *_cur;
 		}
 
 		//! @internal operator *.
-		const typename _Field::Element& operator * () const
+		const typename _Matrix::Element& operator * () const
 		{
 			return *_cur;
 		}
 
 	protected:
-		typename BlasMatrix<_Field,_Rep>::Iterator _cur;
+		typename BlasMatrix<typename _Matrix::Field,typename _Matrix::Rep>::Iterator _cur;
 		size_t _c_dim;
 		size_t _stride;
 		size_t _c_idx;
@@ -399,8 +399,8 @@ namespace LinBox
 	 * matrix entries modulo a prime before passing the matrix into an
 	 * algorithm.
 	 */
-	template < class _Field, class _Rep >
-	class BlasSubmatrix<_Field,_Rep>::ConstIterator {
+	template < class _Matrix >
+	class BlasSubmatrix<_Matrix>::ConstIterator {
 	public:
 		//! @internal Null constructor
 		ConstIterator (){}
@@ -409,7 +409,7 @@ namespace LinBox
 		/*! @internal
 		 * @brief NO DOC
 		 */
-		ConstIterator (const typename BlasMatrix<_Field,_Rep>::ConstIterator& cur,
+		ConstIterator (const typename BlasMatrix<typename _Matrix::Field, typename _Matrix::Rep>::ConstIterator& cur,
 				  const size_t c_dim,
 				  const size_t stride,
 				  const size_t c_idx) :
@@ -465,21 +465,21 @@ namespace LinBox
 		}
 
 		//! @internal operator *.
-		const typename _Field::Element& operator * () const
+		const typename BlasSubmatrix<_Matrix>::Element& operator * () const
 		{
 			return *_cur;
 		}
 
 	protected:
-		typename BlasMatrix<_Field,_Rep>::ConstIterator _cur;
+		typename BlasMatrix<typename _Matrix::Field, typename _Matrix::Rep>::ConstIterator _cur;
 		size_t _c_dim;
 		size_t _stride;
 		size_t _c_idx;
 	};
 
 #if 0
-	template < class _Field, class _Rep >
-	class BlasSubmatrix<_Field,_Rep>::ConstIterator {
+	template < class _Matrix >
+	class BlasSubmatrix<_Matrix>::ConstIterator {
 	public:
 		ConstIterator (){}
 
@@ -547,45 +547,45 @@ namespace LinBox
 	};
 #endif
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::Iterator BlasSubmatrix<_Field,_Rep>::Begin ()
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::Iterator BlasSubmatrix<_Matrix>::Begin ()
 	{
 		return Iterator (_Mat->Begin () + (ptrdiff_t)( _off ),
 				    _col, _stride, 0);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::Iterator BlasSubmatrix<_Field,_Rep>::End ()
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::Iterator BlasSubmatrix<_Matrix>::End ()
 	{
 		return Iterator (_Mat->Begin () +(ptrdiff_t) ( (_row) * _stride + _off ),
 				    _col, _stride, 0);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ConstIterator BlasSubmatrix<_Field,_Rep>::Begin () const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ConstIterator BlasSubmatrix<_Matrix>::Begin () const
 	{
 		return ConstIterator (_Mat->Begin () +(ptrdiff_t) ( _off ),
 					 _col, _stride, 0);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ConstIterator BlasSubmatrix<_Field,_Rep>::End () const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ConstIterator BlasSubmatrix<_Matrix>::End () const
 	{
 		return ConstIterator (_Mat->Begin () +(ptrdiff_t) ( (_row) * _stride + _off ),
 					 _col, _stride, 0);
 	}
 
 #if 0
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ConstIterator BlasSubmatrix<_Field,_Rep>::Begin () const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ConstIterator BlasSubmatrix<_Matrix>::Begin () const
 	{
 		return ConstIterator (_Mat->Begin () +(ptrdiff_t) ( _off ),
 					 _Mat->Begin () +(ptrdiff_t) ( _off ),
 					 _col, _stride - _col);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ConstIterator BlasSubmatrix<_Field,_Rep>::End () const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ConstIterator BlasSubmatrix<_Matrix>::End () const
 	{
 		return ConstIterator (_Mat->Begin () +(ptrdiff_t) ( (_row) * _stride + _off ),
 					 _Mat->Begin () +(ptrdiff_t) ( (_row) * _stride + _off ),
@@ -602,12 +602,12 @@ namespace LinBox
 	 * the row and column indices of the currently referenced entry.
 	 * This is provided through it's \c rowIndex() and \c colIndex() functions.
 	 */
-	template < class _Field, class _Rep >
-	class BlasSubmatrix<_Field,_Rep>::IndexedIterator {
+	template < class _Matrix >
+	class BlasSubmatrix<_Matrix>::IndexedIterator {
 	public:
 		IndexedIterator (){}
 
-		IndexedIterator (const typename BlasMatrix<_Field,_Rep>::Iterator& cur,
+		IndexedIterator (const typename BlasMatrix<typename _Matrix::Field,typename _Matrix::Rep>::Iterator& cur,
 				    size_t c_dim,
 				    size_t stride,
 				    size_t r_idx,
@@ -672,33 +672,33 @@ namespace LinBox
 			return ((_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
 		}
 
-		const _Field& operator*() const {return *_cur;}
+		const typename _Matrix::Field& operator*() const {return *_cur;}
 
-		typename _Field::Element& operator*() {return *_cur;}
+		typename _Matrix::Element& operator*() {return *_cur;}
 
 		size_t rowIndex () const { return _r_idx; }
 
 		size_t colIndex () const { return _c_idx; }
 
-		const typename _Field::Element& value () const {return *_cur;}
+		const typename _Matrix::Element& value () const {return *_cur;}
 
 	protected:
-		typename BlasMatrix<_Field,_Rep>::Iterator _cur;
+		typename BlasMatrix<typename _Matrix::Field, typename _Matrix::Rep>::Iterator _cur;
 		size_t _stride;
 		size_t _c_dim;
 		size_t _r_idx;
 		size_t _c_idx;
 	};
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::IndexedIterator BlasSubmatrix<_Field,_Rep>::IndexedBegin ()
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::IndexedIterator BlasSubmatrix<_Matrix>::IndexedBegin ()
 	{
 		return IndexedIterator (_Mat->Begin () +(ptrdiff_t) ( (_off) ),
 					   _col , _stride, 0, 0);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::IndexedIterator BlasSubmatrix<_Field,_Rep>::IndexedEnd ()
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::IndexedIterator BlasSubmatrix<_Matrix>::IndexedEnd ()
 	{
 		return IndexedIterator (_Mat->Begin () +(ptrdiff_t) ( (_row) * _stride + (_col+_off) ),
 					   _col, _stride, _row-1, _col-1);
@@ -713,12 +713,12 @@ namespace LinBox
 	 * the row and column indices of the currently referenced entry.
 	 * This is provided through it's \c rowIndex() and \c colIndex() functions.
 	 */
-	template < class _Field, class _Rep >
-	class BlasSubmatrix<_Field,_Rep>::ConstIndexedIterator {
+	template < class _Matrix >
+	class BlasSubmatrix<_Matrix>::ConstIndexedIterator {
 	public:
 		ConstIndexedIterator (){}
 
-		ConstIndexedIterator (const typename BlasMatrix<_Field,_Rep>::ConstIterator& cur,
+		ConstIndexedIterator (const typename BlasMatrix<typename _Matrix::Field, typename _Matrix::Rep>::ConstIterator& cur,
 					 size_t c_dim,
 					 size_t stride,
 					 size_t r_idx,
@@ -803,7 +803,7 @@ namespace LinBox
 			return ((_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
 		}
 
-		const typename _Field::Element& operator*() const
+		const typename _Matrix::Element& operator*() const
 		{
 			return *_cur;
 		}
@@ -818,100 +818,100 @@ namespace LinBox
 			<< m._c_idx;
 		}
 
-		const typename _Field::Element & value() const
+		const typename _Matrix::Element & value() const
 		{
 			return this->operator*();
 
 		}
 
 	protected:
-		typename BlasMatrix<_Field,_Rep>::ConstIterator _cur;
+		typename BlasMatrix<typename _Matrix::Field, typename _Matrix::Rep>::ConstIterator _cur;
 		size_t _stride;
 		size_t _c_dim;
 		size_t _r_idx;
 		size_t _c_idx;
 	};
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ConstIndexedIterator BlasSubmatrix<_Field,_Rep>::IndexedBegin () const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ConstIndexedIterator BlasSubmatrix<_Matrix>::IndexedBegin () const
 	{
 		return ConstIndexedIterator (_Mat->Begin () +(ptrdiff_t) ( _off ),
 						_row, _stride, 0, 0);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ConstIndexedIterator BlasSubmatrix<_Field,_Rep>::IndexedEnd () const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ConstIndexedIterator BlasSubmatrix<_Matrix>::IndexedEnd () const
 	{
 		return ConstIndexedIterator (_Mat->Begin () +(ptrdiff_t) ( (_row) * _stride + (_off+_col) ),
 						_col, _stride, _row-1, _col-1);
 	}
 
 	////////
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::RowIterator BlasSubmatrix<_Field,_Rep>::rowBegin ()
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::RowIterator BlasSubmatrix<_Matrix>::rowBegin ()
 	{
 		return RowIterator (_Mat->Begin () +(ptrdiff_t) ( _off  ),
 				    _col, _stride);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::RowIterator BlasSubmatrix<_Field,_Rep>::rowEnd ()
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::RowIterator BlasSubmatrix<_Matrix>::rowEnd ()
 	{
 		return RowIterator (_Mat->Begin () +(ptrdiff_t) ( (_row) * _stride + _off ),
 				    _col, _stride);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ConstRowIterator BlasSubmatrix<_Field,_Rep>::rowBegin () const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ConstRowIterator BlasSubmatrix<_Matrix>::rowBegin () const
 	{
 		return ConstRowIterator (_Mat->Begin () + (ptrdiff_t)( _off ),
 					 _col, _stride);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ConstRowIterator BlasSubmatrix<_Field,_Rep>::rowEnd () const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ConstRowIterator BlasSubmatrix<_Matrix>::rowEnd () const
 	{
 		return ConstRowIterator (_Mat->Begin () + (ptrdiff_t)( (_row) * _stride + _off ),
 					 _col, _stride);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ColIterator BlasSubmatrix<_Field,_Rep>::colBegin ()
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ColIterator BlasSubmatrix<_Matrix>::colBegin ()
 	{
 		return ColIterator (_Mat->Begin () + (ptrdiff_t)( _off ),
 				    _stride, _row);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ColIterator BlasSubmatrix<_Field,_Rep>::colEnd ()
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ColIterator BlasSubmatrix<_Matrix>::colEnd ()
 	{
 		return ColIterator (_Mat->Begin () + (ptrdiff_t)( (_col) + _off ),
 				    _stride, _row);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ConstColIterator BlasSubmatrix<_Field,_Rep>::colBegin () const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ConstColIterator BlasSubmatrix<_Matrix>::colBegin () const
 	{
 		return ConstColIterator (_Mat->Begin () + (ptrdiff_t)( _off ),
 					 _stride, _row);
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ConstColIterator BlasSubmatrix<_Field,_Rep>::colEnd () const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ConstColIterator BlasSubmatrix<_Matrix>::colEnd () const
 	{
 		return ConstColIterator (_Mat->Begin () + (ptrdiff_t)( (_col) + _off ),
 					 _stride, _row);
 	}
 
 	/*  operators */
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::Row BlasSubmatrix<_Field,_Rep>::operator[] (size_t i)
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::Row BlasSubmatrix<_Matrix>::operator[] (size_t i)
 	{
 		return Row (_Mat->Begin () +(ptrdiff_t) (_r0+i) * _stride, _Mat->Begin () + (ptrdiff_t)((_r0+i) * _stride + _stride) );
 	}
 
-	template < class _Field, class _Rep >
-	typename BlasSubmatrix<_Field,_Rep>::ConstRow BlasSubmatrix<_Field,_Rep>::operator[] (size_t i) const
+	template < class _Matrix >
+	typename BlasSubmatrix<_Matrix>::ConstRow BlasSubmatrix<_Matrix>::operator[] (size_t i) const
 	{
 		return Row (_Mat->Begin () + (ptrdiff_t)(_r0+i) * _stride, _Mat->Begin () + (ptrdiff_t)((_r0+i) * _stride + _stride) );
 	}
@@ -925,8 +925,8 @@ namespace LinBox
 namespace LinBox
 {
 
-	template < class _Field, class _Rep >
-	std::istream& BlasSubmatrix<_Field,_Rep>::read (std::istream &file)
+	template < class _Matrix >
+	std::istream& BlasSubmatrix<_Matrix>::read (std::istream &file)
 	{
 #if 0
 		Iterator p;
@@ -981,20 +981,20 @@ namespace LinBox
 		return file;
 	}
 
-	template <class _Field, class _Rep>
-	std::ostream &BlasSubmatrix< _Field, _Rep>::write (std::ostream &os) const
+	template <class _Matrix>
+	std::ostream &BlasSubmatrix< _Matrix >::write (std::ostream &os) const
 	{
 		os << "%%MatrixMarket matrix array integer general" << std::endl;
 		field().write(os << "% ") << std::endl;
 		os << rowdim() << " " << coldim() << std::endl;
-		typename _Field::Element x; field().init(x, 0);
+		typename _Matrix::Element x; field().init(x, 0);
 		for (size_t j = 0; j < coldim(); ++j)
 			for (size_t i = 0; i < rowdim(); ++i)
 				os << getEntry(x, i, j) << std::endl;
 		return os;
 	}
-	template <class _Field, class _Rep>
-	std::ostream &BlasSubmatrix< _Field, _Rep>::write (std::ostream &os,
+	template <class _Matrix>
+	std::ostream &BlasSubmatrix< _Matrix >::write (std::ostream &os,
 						     LINBOX_enum (LinBoxTag::Format) f ) const
 	{
 
@@ -1121,13 +1121,13 @@ namespace LinBox
 		return os;
 	}
 
-	template <class _Field, class _Rep>
+	template <class _Matrix>
 	template<typename _Tp1>
-	struct BlasSubmatrix< _Field,_Rep>::rebind {
+	struct BlasSubmatrix< _Matrix>::rebind {
 		typedef BlasMatrix<_Tp1> other;
 
 		void operator() (other & Ap, const Self_t& A) {
-			typedef typename BlasSubmatrix<_Field,_Rep>::ConstIterator ConstSelfIterator ;
+			typedef typename BlasSubmatrix<_Matrix>::ConstIterator ConstSelfIterator ;
 			typedef typename other::Iterator OtherIterator ;
 			OtherIterator    Ap_i;
 			ConstSelfIterator A_i;

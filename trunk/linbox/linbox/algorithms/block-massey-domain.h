@@ -102,7 +102,7 @@ namespace LinBox
 		typedef typename Field::Element        Element;
 		typedef _Sequence                     Sequence;
 		typedef BlasMatrix<Field>          Coefficient;
-                typedef BlasSubmatrix<Field>         CoeffView;
+                typedef BlasSubmatrix<Coefficient>   CoeffView;
 
 
 	private:
