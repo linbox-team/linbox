@@ -27,6 +27,8 @@
 #ifndef __LINBOX_matrix_sparse_formats_H
 #define __LINBOX_matrix_sparse_formats_H
 
+#include "linbox/linbox-tags.h"
+
 namespace LinBox {
 
 	/** Exception class for invalid matrix input
@@ -53,6 +55,7 @@ namespace LinBox {
 	namespace SparseMatrix2Format {
 		class ANY {} ;
 		class COO : public ANY {} ; // Cordinate
+		// template<class Row = LinBoxTag::RowFirst>
 		class CSR : public ANY {} ; // compressed row
 		class ELL : public ANY {} ; // ellpack
 		class HYB : public ANY {} ; // hybrid
@@ -68,4 +71,10 @@ namespace LinBox {
 
 #endif
 
-
+// Local Variables:
+// mode: C++
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 8
+// End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

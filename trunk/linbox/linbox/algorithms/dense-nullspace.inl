@@ -456,7 +456,7 @@ namespace LinBox
 			typename Field::Element *& Ker, size_t& ldk,
 			size_t & kerdim)
 	{
-		if (Side == LinBoxTag::Right){
+		if (Side == LinBoxTag::Side::Right){
 			if (m < n)
 				Ker = RightNullspaceDirect(F,A,m,n,lda,kerdim) ;
 			else
@@ -485,7 +485,7 @@ namespace LinBox
 		typename Field::Element * Ker_ptr;
 		size_t ldk;
 		NullSpaceBasis(F,Side,A.rowdim(),A.coldim(), A.getWritePointer(),A.getStride(), Ker_ptr,ldk,kerdim);
-		if (Side == LinBoxTag::Right){
+		if (Side == LinBoxTag::Side::Right){
 			Ker = BlasMatrix<Field>(F,A.rowdim(),kerdim);
 		}
 		else {

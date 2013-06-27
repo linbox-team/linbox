@@ -40,7 +40,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/matrix/matrix-category.h"
 #include "linbox/matrix/matrix-traits.h"
-#include "linbox/algorithms/linbox-tags.h"
+#include "linbox/linbox-tags.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/field/hom.h"
@@ -495,10 +495,10 @@ namespace LinBox
 
 		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
-		 * @param f write in some format (@ref LinBoxTag::Format). Default is Maple's.
+		 * @param f write in some format (@ref LinBoxTag::Format::Format). Default is Maple's.
 		 */
 		std::ostream &write (std::ostream &os,
-				     enum LinBoxTag::Format f/* = LinBoxTag::FormatMaple*/) const
+				     LINBOX_enum (LinBoxTag::Format) f/* = LinBoxTag::Format::FormatMaple*/) const
 		{
 			subMatrixType B(*this, 0, 0, rowdim(), coldim());
 			return B.write(os, f);
@@ -885,10 +885,10 @@ namespace LinBox
 
 		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
-		 * @param f write in some format (@ref LinBoxTag::Format). Default is Maple's.
+		 * @param f write in some format (@ref LinBoxTag::Format::Format). Default is Maple's.
 		 */
 		std::ostream &write (std::ostream &os,
-				     enum LinBoxTag::Format f/* = LinBoxTag::FormatMaple*/)const;
+				     LINBOX_enum (LinBoxTag::Format) f/* = LinBoxTag::Format::FormatMaple*/)const;
 
 		/*! @deprecated Only for compatiblity.
 		 */
@@ -896,7 +896,7 @@ namespace LinBox
 				     bool mapleFormat) const
 		{
 			if (mapleFormat)
-				return write(os,LinBoxTag::FormatMaple);
+				return write(os,LinBoxTag::Format::FormatMaple);
 			else
 				return write(os);
 		}
@@ -1147,8 +1147,8 @@ namespace LinBox
 		 */
 		TriangularBlasMatrix (const Field & F,
 				      const size_t m, const size_t n,
-				      LinBoxTag::Shape x=LinBoxTag::Upper,
-				      LinBoxTag::Diag y= LinBoxTag::NonUnit) ;
+				      LinBoxTag::Shape x=LinBoxTag::Shape::Upper,
+				      LinBoxTag::Diag y= LinBoxTag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c BlasMatrix (copy).
 		 * @param A matrix
@@ -1156,8 +1156,8 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (const BlasMatrix<Field,Rep>& A,
-				      LinBoxTag::Shape x=LinBoxTag::Upper,
-				      LinBoxTag::Diag y= LinBoxTag::NonUnit) ;
+				      LinBoxTag::Shape x=LinBoxTag::Shape::Upper,
+				      LinBoxTag::Diag y= LinBoxTag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c BlasMatrix (no copy).
 		 * @param A matrix
@@ -1165,8 +1165,8 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (BlasMatrix<Field,Rep>& A,
-				      LinBoxTag::Shape x=LinBoxTag::Upper,
-				      LinBoxTag::Diag y= LinBoxTag::NonUnit) ;
+				      LinBoxTag::Shape x=LinBoxTag::Shape::Upper,
+				      LinBoxTag::Diag y= LinBoxTag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c TriangularBlasMatrix (copy).
 		 * @param A matrix
@@ -1180,8 +1180,8 @@ namespace LinBox
 		 */
 		template<class Matrix>
 		TriangularBlasMatrix (const Matrix& A,
-				      LinBoxTag::Shape x=LinBoxTag::Upper,
-				      LinBoxTag::Diag y= LinBoxTag::NonUnit) ;
+				      LinBoxTag::Shape x=LinBoxTag::Shape::Upper,
+				      LinBoxTag::Diag y= LinBoxTag::Diag::NonUnit) ;
 
 		/// get the shape of the matrix (upper or lower)
 		LinBoxTag::Shape getUpLo() const ;

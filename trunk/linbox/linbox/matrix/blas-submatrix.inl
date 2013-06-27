@@ -995,12 +995,12 @@ namespace LinBox
 	}
 	template <class _Field, class _Rep>
 	std::ostream &BlasSubmatrix< _Field, _Rep>::write (std::ostream &os,
-						     enum LinBoxTag::Format f) const
+						     LINBOX_enum (LinBoxTag::Format) f ) const
 	{
 
 		ConstRowIterator p;
 		switch(f) {
-		case (LinBoxTag::FormatPlain) : /*  raw output */
+		case (LinBoxTag::Format::FormatPlain) : /*  raw output */
 			{
 				integer c;
 				int wid;
@@ -1046,7 +1046,7 @@ namespace LinBox
 				}
 			}
 			break;
-		case (LinBoxTag::FormatMaple) : /*  maple format */
+		case (LinBoxTag::Format::FormatMaple) : /*  maple format */
 			{
 
 				os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
@@ -1071,7 +1071,7 @@ namespace LinBox
 				os << "])" ;
 			}
 			break;
-		case (LinBoxTag::FormatHTML) : /*  HTML format */
+		case (LinBoxTag::Format::FormatHTML) : /*  HTML format */
 			{
 
 				os << "<table border=\"1\">" ;
@@ -1092,7 +1092,7 @@ namespace LinBox
 				os << "</table>" ;
 			}
 			break;
-		case (LinBoxTag::FormatLaTeX) : /*  LaTex format */
+		case (LinBoxTag::Format::FormatLaTeX) : /*  LaTex format */
 			{
 				os << "\\begin{pmatrix} " << std::endl;
 				for (p = rowBegin (); p != rowEnd (); ) {

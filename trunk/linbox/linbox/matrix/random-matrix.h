@@ -31,6 +31,7 @@
  * and make it easier to write tests/ examples/.
  *
  * @todo à la vector/stream.h
+ * @bug this belongs to algorithms...
  */
 
 #include "linbox/matrix/blas-matrix.h"

@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 # ========LICENCE========
 
-AC_PREREQ([2.61])
+AC_PREREQ([2.64])
 
 AC_INIT([LinBox], [1.4.0],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
@@ -63,12 +63,18 @@ echo "-----------------------------------------------"
 
 #set CXX
 AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX_11([noext],[optional])
+
+STDFLAG=${CXXFLAGS}
+CXXFLAGS=""
+
 
 AC_COMPILER_NAME
 
 AC_SUBST([DEFAULT_CFLAGS])
 AC_SUBST([DEBUG_CFLAGS])
 AC_SUBST([TESTS_CFLAGS])
+
 
 TESTS_CFLAGS="-O0"
 DEBUG_CFLAGS="-g"
@@ -146,6 +152,7 @@ AC_PROG_LIBTOOL
 # newer libtool...
 LT_PREREQ([2.2])
 LT_INIT
+
 
 
 echo "-----------------------------------------------"
@@ -237,7 +244,6 @@ echo "-----------------------------------------------"
 LB_MISC
 LB_DRIVER
 
-AC_LANG_CPLUSPLUS
 
 echo "-----------------------------------------------"
 
@@ -313,10 +319,11 @@ LB_CHECK_LAPACK
 LB_CHECK_EXPAT
 
 LB_BENCH
-LB_OPT
+# LB_OPT
 LB_DOC
 
 LB_CHECK_OCL
+
 
 if test ! -d ./benchmarks/data  ; then
 	echo "Creating data dir in benchmark" ;
@@ -327,7 +334,7 @@ fi
 #CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
 #AC_SUBST(CXXFLAGS)
 
-CXXFLAGS="${GMP_CFLAGS} ${CXXFLAGS}"
+CXXFLAGS="${GMP_CFLAGS} ${CXXFLAGS} ${STDFLAG}"
 
 AC_SUBST(CXXFLAGS)
 
@@ -351,6 +358,7 @@ linbox/field/NTL/Makefile
 linbox/field/Givaro/Makefile
 linbox/field/Modular/Makefile
 linbox/matrix/Makefile
+linbox/matrix/SparseMatrix/Makefile
 linbox/randiter/Makefile
 linbox/ring/Makefile
 linbox/solutions/Makefile

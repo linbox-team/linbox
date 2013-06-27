@@ -274,7 +274,7 @@ namespace LinBox
 			U.random();
 			V.random();
 
-			
+
 			BlackboxBlockContainer<Field, Blackbox > blockseq(&B,field(),U,V);
 
 			//Get the generator of the projection using the Coppersmith algorithm (slightly modified by Yuhasz)
@@ -298,10 +298,10 @@ namespace LinBox
 			for(typename std::vector<Element>::iterator evalit = evalpoints.begin(); evalit != evalpoints.end(); evalit++){
 				do{
 					//do iter.random(*evalit); while(field().isZero(*evalit));
-					iter.random(*evalit); 
+					iter.random(*evalit);
 				}while ((std::find(evalpoints.begin(), evalit, *evalit) != evalit));
 			}//end evaluation point construction loop
-			
+
 			//Evaluate the generator determinant at the points
 			EvalPolyMat(evaldets, evalpoints, gen);
 			for(size_t k = 0; k <numpoints; k++)
@@ -313,21 +313,21 @@ namespace LinBox
 			typename PolyCRT::Element Determinant;
 			Interpolator.RnsToRing(Determinant,evaldets);
 			Givaro::Degree intdetdeg;
-			Interpolator.getpolydom().degree(intdetdeg,Determinant); 
+			Interpolator.getpolydom().degree(intdetdeg,Determinant);
 			Givaro::Degree intdetval;
-			Interpolator.getpolydom().val(intdetval,Determinant); 
+			Interpolator.getpolydom().val(intdetval,Determinant);
 			if(detdeg != intdetdeg.value()){
 				report << "sum of column degrees " << detdeg << endl;
-				report << "interpolation degree " << intdetdeg.value() << endl;	
-			}	
+				report << "interpolation degree " << intdetdeg.value() << endl;
+			}
 			report << "sum of column degrees " << detdeg << endl;
-			report << "interpolation degree " << intdetdeg.value() << endl;	
+			report << "interpolation degree " << intdetdeg.value() << endl;
 			report << "valence (trailing degree) " << intdetval.value() << endl;
 			for(size_t k = 0; k<gen.size(); k++)
 				domain().write(report, gen[k]) << "x^" << k << endl;
 			Interpolator.write(report << "Interpolated determinant: ", Determinant) << endl;
-			size_t rank = intdetdeg.value() - intdetval.value();
-			return rank;
+			size_t myrank = intdetdeg.value() - intdetval.value();
+			return myrank;
 		}
 
 
@@ -411,7 +411,7 @@ namespace LinBox
 			U.random();
 			V.random();
 
-			//Multiply V by B on the left 
+			//Multiply V by B on the left
 			domain().leftMulin(B,V);
 
 			//Create the sequence container and its iterator that will compute the projection
@@ -438,7 +438,7 @@ namespace LinBox
 					do iter.random(*evalit); while(field().isZero(*evalit));
 				}while ((std::find(evalpoints.begin(), evalit, *evalit) != evalit));
 			}//end evaluation point construction loop
-			
+
 			//Evaluate the generator determinant at the points
 			EvalPolyMat(evaldets, evalpoints, gen);
 			//Construct the polynomial using Givare interpolation
@@ -448,13 +448,13 @@ namespace LinBox
 			typename PolyCRT::Element Determinant;
 			Interpolator.RnsToRing(Determinant,evaldets);
 			Givaro::Degree intdetdeg;
-			Interpolator.getpolydom().degree(intdetdeg,Determinant); 
+			Interpolator.getpolydom().degree(intdetdeg,Determinant);
 			Givaro::Degree intdetval(0);
-			Interpolator.getpolydom().val(intdetval,Determinant); 
+			Interpolator.getpolydom().val(intdetval,Determinant);
 			if(d != intdetdeg.value()){
 				report << "The matrix is singular, determinant is zero" << endl;
 				return field(0).zero;
-			}	
+			}
 			Interpolator.write(report << "Interpolated determinant: ", Determinant) << endl;
 			Element intdeterminant(field().zero);
 			Interpolator.getpolydom().getEntry(intdeterminant,intdetval,Determinant);
@@ -468,11 +468,10 @@ namespace LinBox
 
 #endif //__LINBOX_coppersmith_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

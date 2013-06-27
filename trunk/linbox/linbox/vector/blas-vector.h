@@ -35,7 +35,7 @@
 #define __LINBOX_vector_blas_vector_H
 
 #include "linbox/util/debug.h"
-#include "linbox/algorithms/linbox-tags.h"
+#include "linbox/linbox-tags.h"
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
 // #include "linbox/field/hom.h"
@@ -320,14 +320,14 @@ namespace LinBox { /* BlasVector */
 			linbox_check(_size==0 || _ptr != NULL);
 		}
 
-		BlasVector (const BlasMatrix<Field,Rep> &A, size_t k, enum LinBoxTag::Direction f )  :
-			_size((f==LinBoxTag::Row)?(A.rowdim()):(A.coldim())),_1stride(1),_rep(_size, A.field().zero),_ptr(&_rep[0]),_field(&(A.field()))
+		BlasVector (const BlasMatrix<Field,Rep> &A, size_t k, LINBOX_enum (LinBoxTag::Direction) f )  :
+			_size((f == LinBoxTag::Direction::Row)?(A.rowdim()):(A.coldim())),_1stride(1),_rep(_size, A.field().zero),_ptr(&_rep[0]),_field(&(A.field()))
 			{
 	// Father_t is garbage until then:
 			setIterators();
 
 
-				if (f==LinBoxTag::Row)
+				if (f==LinBoxTag::Direction::Row)
 					createBlasVector(A,k,0,1);
 				else // LinBoxTag::Col
 					createBlasVector(A,0,k,A.coldim());
@@ -335,14 +335,14 @@ namespace LinBox { /* BlasVector */
 
 			}
 
-		BlasVector (const BlasSubmatrix<Field,Rep> &A, size_t k, enum LinBoxTag::Direction f )  :
-			_size((f==LinBoxTag::Row)?(A.rowdim()):(A.coldim())),_1stride(1),_rep(_size, A.field().zero),_ptr(&_rep[0]),_field(&(A.field()))
+		BlasVector (const BlasSubmatrix<Field,Rep> &A, size_t k, LINBOX_enum (LinBoxTag::Direction) f )  :
+			_size((f==LinBoxTag::Direction::Row)?(A.rowdim()):(A.coldim())),_1stride(1),_rep(_size, A.field().zero),_ptr(&_rep[0]),_field(&(A.field()))
 			{
 	// Father_t is garbage until then:
 			setIterators();
 
 
-				if (f==LinBoxTag::Row)
+				if (f==LinBoxTag::Direction::Row)
 					createBlasVector(A,k,0,1);
 				else // LinBoxTag::Col
 					createBlasVector(A,0,k,A.stride());
@@ -654,21 +654,21 @@ namespace LinBox { /*  BlasSubvector */
 
 		BlasSubvector (const BlasMatrix<Field,Rep> &M
 			       , size_t beg
-			       , enum LinBoxTag::Direction f ) :
+			       , LINBOX_enum (LinBoxTag::Direction) f ) :
 			_Vec (const_cast<Rep&>(M.refRep()))
-			,_size((f==LinBoxTag::Row)?(M.coldim()):(M.rowdim()))
-			,_i0 ((f==LinBoxTag::Row)?(beg*M.coldim()):(beg))
-			,_1stride((f==LinBoxTag::Row)?(1):(M.coldim()))
+			,_size((f==LinBoxTag::Direction::Row)?(M.coldim()):(M.rowdim()))
+			,_i0 ((f==LinBoxTag::Direction::Row)?(beg*M.coldim()):(beg))
+			,_1stride((f==LinBoxTag::Direction::Row)?(1):(M.coldim()))
 			,_field(M.field())
 			{}
 
 		BlasSubvector (const BlasSubmatrix<Field,Rep> &M
 			       , size_t beg
-			       , enum LinBoxTag::Direction f ) :
+			       , LINBOX_enum (LinBoxTag::Direction) f ) :
 			_Vec (const_cast<Rep&>(M.refRep()))
-			,_size((f==LinBoxTag::Row)?(M.coldim()):(M.rowdim()))
-			,_i0 ((f==LinBoxTag::Row)?(M.offset()+beg*M.stride()):(M.offset()+beg))
-			,_1stride((f==LinBoxTag::Row)?(1):(M.stride()))
+			,_size((f==LinBoxTag::Direction::Row)?(M.coldim()):(M.rowdim()))
+			,_i0 ((f==LinBoxTag::Direction::Row)?(M.offset()+beg*M.stride()):(M.offset()+beg))
+			,_1stride((f==LinBoxTag::Direction::Row)?(1):(M.stride()))
 			,_field(M.field())
 			{}
 

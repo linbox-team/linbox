@@ -197,7 +197,7 @@ namespace LinBox
 #ifdef _BM_TIMING
 			clearTimer();
 #endif
- 
+
 		}
 
 		BlockMasseyDomain (Sequence *D, unsigned long ett_default = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
@@ -247,8 +247,8 @@ namespace LinBox
 
 	private:
 
-	
- 
+
+
 		std::vector<size_t> masseyblock_left (std::vector<Coefficient> &P)
 		{
                         std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -271,7 +271,7 @@ namespace LinBox
 
 			Coefficient Unit(field(),m+n,m);
 			const Coefficient Zero(field(),m+n,m);
-                        
+
 			for (size_t i=0;i<m;i++)
 				Unit.setEntry(i,i,field().one);
 			size_t min_mn=(m <n)? m :n;
@@ -318,7 +318,7 @@ namespace LinBox
 				CoeffView Discr(Discrepancy,0,0,m,n);
 
 				_BMD.mul(Discr,Sigma,S[NN]);
-                                
+
 				for (size_t i=1;i<SigmaBase.size();i++){
 					CoeffView  Sigmaview(SigmaBase[i],0,0,m,m);
 					_BMD.axpyin(Discr,Sigmaview,S[NN-i]);
@@ -329,19 +329,19 @@ namespace LinBox
 					++_iter_Discr;
                                 if (_iter_Discr!=Discr.End())
                                         early_stop=0;
-                                else 
+                                else
                                         early_stop++;
-                               
+
 				// maybe there is something to do here
 				// increase the last n rows of orders
 				// multiply by X the last n rows of SigmaBase
 				//if (_iter_Discr != Discr.End())
-				
+
                                 /*
                                 Coefficient ZeroD(field(),m+n,n);
                                 if (_MD.areEqual(Discrepancy,ZeroD))
                                         early_stop=0;
-                                else 
+                                else
                                         early_stop++;
                                 */
 
@@ -380,7 +380,7 @@ namespace LinBox
 				LQUPMatrix<Field> LQUP(CopyDiscr,Pp,Qt);
 
 				// Get the matrix L of LQUP decomposition
-				TriangularBlasMatrix<Field> L(field(),m+n,m+n, LinBoxTag::Lower, LinBoxTag::Unit );
+				TriangularBlasMatrix<Field> L(field(),m+n,m+n, LinBoxTag::Shape::Lower, LinBoxTag::Diag::Unit );
 				LQUP.getL(L);
 
 				// Get the tranposed  permutation of Q from LQUP
@@ -396,7 +396,7 @@ namespace LinBox
 				BlasPermutation<size_t> BPerm2(Perm2);
 
 				// compute the inverse of L
-				TriangularBlasMatrix<Field> invL (field(),m+n,m+n, LinBoxTag::Lower,LinBoxTag::Unit);
+				TriangularBlasMatrix<Field> invL (field(),m+n,m+n, LinBoxTag::Shape::Lower,LinBoxTag::Diag::Unit);
 				FFPACK::trinv_left((typename Field::Father_t)field(),m+n,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
 
 #ifdef 	__CHECK_TRANSFORMATION
@@ -414,7 +414,7 @@ namespace LinBox
 
 				// Apply BPerm2 and Qt to the vector of order and increase by 1 the last n rows
 				UnparametricField<long> UF(0);
-				// What?  
+				// What?
 				BlasMatrixDomain<UnparametricField<long> > BMDUF(UF);
 				BMDUF.mulin_right(Qt,order);
 				BMDUF.mulin_right(BPerm2,order);
@@ -442,15 +442,15 @@ namespace LinBox
 				//report << "size going in" << size << std::endl;
 				for (int i= (int)size-2;i>=0;i--)
 					for (size_t j=0;j<n;j++)
-						for (size_t k=0;k<n;++k){						
+						for (size_t k=0;k<n;++k){
 							field().assign(SigmaBase[i+1].refEntry(m+j,k), SigmaBase[i].getEntry(m+j,k));
-                                                        
+
 						}
-                                
+
 				for (size_t j=0;j<n;j++)
 					for (size_t k=0;k<n;++k)
 						field().assign(SigmaBase[0].refEntry(m+j,k),field().zero);
-                                
+
 #ifdef __DEBUG_MAPLE
 				report<<"\n\nSigmaBase"<<NN<<":= ";
 				write_maple(field(),SigmaBase);
@@ -485,7 +485,7 @@ namespace LinBox
 
 				// Discrepancy= BPerm2.U.Pp from LQUP
 				Coefficient U(field(),m+n,n);
-				TriangularBlasMatrix<Field> trU(U,LinBoxTag::Upper,LinBoxTag::NonUnit);
+				TriangularBlasMatrix<Field> trU(U,LinBoxTag::Shape::Upper,LinBoxTag::Diag::NonUnit);
 				LQUP.getU(trU);
 				//Discrepancy=U;
 				// BlasPermutation<size_t> Pp= LQUP.getP();
@@ -553,7 +553,7 @@ namespace LinBox
 			std::vector<size_t> deg(m);
 			for (size_t i=0;i<m;++i)
 				deg[i]=(size_t)degree[i];
-			
+
 			return deg;
 		}
 

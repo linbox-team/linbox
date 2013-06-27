@@ -36,7 +36,7 @@
 #define __LINBOX_dense_nullspace_H
 
 
-#include "linbox/algorithms/linbox-tags.h"
+#include "linbox/linbox-tags.h"
 #include "linbox/matrix/blas-matrix.h"
 
 namespace LinBox

@@ -35,6 +35,11 @@
  */
 
 
+#ifdef HAVE_CXX11
+#include <stdexcept>
+#include <type_traits>
+#endif
+
 
 #include "linbox/linbox-config.h"
 

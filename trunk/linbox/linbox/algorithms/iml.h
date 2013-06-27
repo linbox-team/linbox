@@ -3,7 +3,7 @@
 
 // #include "linbox/matrix/blas-matrix.h"
 // #include "linbox/integer.h"
-// #include "linbox/algorithms/linbox-tags.h"
+// #include "linbox/linbox-tags.h"
 // #include "integer-matrix-tools.h"
 
 namespace LinBox { namespace iml {

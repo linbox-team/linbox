@@ -471,12 +471,12 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 	/****  DIRECT ****/
 	{
 		/*  L */
-		TriangularMatrix L (A, LinBoxTag::Lower,
-				    (UnitDiag?LinBoxTag::Unit:LinBoxTag::NonUnit));
+		TriangularMatrix L (A, LinBoxTag::Shape::Lower,
+				    (UnitDiag?LinBoxTag::Diag::Unit:LinBoxTag::Diag::NonUnit));
 
 		/*  U */
-		TriangularMatrix U (A, LinBoxTag::Upper,
-				    (!UnitDiag?LinBoxTag::Unit:LinBoxTag::NonUnit));
+		TriangularMatrix U (A, LinBoxTag::Shape::Upper,
+				    (!UnitDiag?LinBoxTag::Diag::Unit:LinBoxTag::Diag::NonUnit));
 
 		/*  make product */
 		E = B ;
@@ -505,12 +505,12 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 	/****  Transpose ****/
 	{
 		/*  L */
-		TriangularMatrix L1 (A1, LinBoxTag::Lower,
-				    (UnitDiag?LinBoxTag::Unit:LinBoxTag::NonUnit));
+		TriangularMatrix L1 (A1, LinBoxTag::Shape::Lower,
+				    (UnitDiag?LinBoxTag::Diag::Unit:LinBoxTag::Diag::NonUnit));
 
 		/*  U */
-		TriangularMatrix U1 (A1, LinBoxTag::Upper,
-				    (!UnitDiag?LinBoxTag::Unit:LinBoxTag::NonUnit));
+		TriangularMatrix U1 (A1, LinBoxTag::Shape::Upper,
+				    (!UnitDiag?LinBoxTag::Diag::Unit:LinBoxTag::Diag::NonUnit));
 
 		TransposedTriangular L(L1);
 		TransposedTriangular U(U1);
@@ -805,7 +805,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 		}
 
 		// Create 2 trinagular matrix as view of matrix
-		TriangularMatrix TAl(Al,LinBoxTag::Lower,LinBoxTag::NonUnit), TAu(Au,LinBoxTag::Upper,LinBoxTag::NonUnit);
+		TriangularMatrix TAl(Al,LinBoxTag::Shape::Lower,LinBoxTag::Diag::NonUnit), TAu(Au,LinBoxTag::Shape::Upper,LinBoxTag::Diag::NonUnit);
 
 		// testing solver with matrix right hand side
 		BMD.left_solve(X,TAl,B);
@@ -1341,8 +1341,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
 		LQUPMatrix<Field> X(A,P,Q);
 
-		TriangularBlasMatrix<Field> L(F,m,m,LinBoxTag::Lower,LinBoxTag::Unit);
-		TriangularBlasMatrix<Field> U(F,m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
+		TriangularBlasMatrix<Field> L(F,m,m,LinBoxTag::Shape::Lower,LinBoxTag::Diag::Unit);
+		TriangularBlasMatrix<Field> U(F,m,n,LinBoxTag::Shape::Upper,LinBoxTag::Diag::NonUnit);
 		X.getL(L);
 		X.getU(U);
 		P=X.getP();
@@ -1367,8 +1367,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 		LQUPMatrix<Field> Y(A,P,Q);
 
-		TriangularBlasMatrix<Field> L2(F,m,m,LinBoxTag::Lower,LinBoxTag::Unit);
-		TriangularBlasMatrix<Field> U2(F,m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
+		TriangularBlasMatrix<Field> L2(F,m,m,LinBoxTag::Shape::Lower,LinBoxTag::Diag::Unit);
+		TriangularBlasMatrix<Field> U2(F,m,n,LinBoxTag::Shape::Upper,LinBoxTag::Diag::NonUnit);
 		Y.getL(L2);
 		Y.getU(U2);
 		P=Y.getP();

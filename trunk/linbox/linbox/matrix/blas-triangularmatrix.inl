@@ -63,14 +63,14 @@ namespace LinBox
 		BlasMatrix< _Field, _Rep >(A.field(), A.rowdim(),A.coldim()), _uplo(A._uplo), _diag(A._diag)
 	{
 		switch (A._uplo) {
-		case LinBoxTag::Upper:
+		case LinBoxTag::Shape::Upper:
 			{
 				for (size_t i=0;i<A.rowdim();++i)
 					for (size_t j=i;j<A.coldim();++j)
 						this->setEntry(i,j,A.getEntry(i,j));
 				break;
 			}
-		case LinBoxTag::Lower:
+		case LinBoxTag::Shape::Lower:
 			{
 				for (size_t i=0;i<A.rowdim();++i) {
 					for (size_t j=0;j<=i;++j)
@@ -92,7 +92,7 @@ namespace LinBox
 		BlasMatrix< _Field, _Rep >(A.field(),A.rowdim(),A.coldim()), _uplo(x), _diag(y)
 	{
 		switch (x) {
-		case LinBoxTag::Upper:
+		case LinBoxTag::Shape::Upper:
 			{
 				for (size_t i=0;i<A.rowdim();++i){
 					for (size_t j=i;j<A.coldim();++j) {
@@ -102,7 +102,7 @@ namespace LinBox
 				}
 				break;
 			}
-		case LinBoxTag::Lower:
+		case LinBoxTag::Shape::Lower:
 			{
 				for (size_t i=0;i<A.rowdim();++i) {
 					for (size_t j=0;j<=i;++j) {
