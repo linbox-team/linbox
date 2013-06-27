@@ -1127,8 +1127,8 @@ namespace LinBox
 
 	protected:
 
-		LinBoxTag::Shape          _uplo; //!< upper or lower triangular
-		LinBoxTag::Diag           _diag; //!< unit or non unit diagonal
+		LINBOX_enum (LinBoxTag::Shape)          _uplo; //!< upper or lower triangular
+		LINBOX_enum (LinBoxTag::Diag)           _diag; //!< unit or non unit diagonal
 
 	public:
 		typedef _Field                       Field;
@@ -1147,8 +1147,8 @@ namespace LinBox
 		 */
 		TriangularBlasMatrix (const Field & F,
 				      const size_t m, const size_t n,
-				      LinBoxTag::Shape x=LinBoxTag::Shape::Upper,
-				      LinBoxTag::Diag y= LinBoxTag::Diag::NonUnit) ;
+				      LINBOX_enum (LinBoxTag::Shape) x=LinBoxTag::Shape::Upper,
+				      LINBOX_enum (LinBoxTag::Diag) y= LinBoxTag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c BlasMatrix (copy).
 		 * @param A matrix
@@ -1156,8 +1156,8 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (const BlasMatrix<Field,Rep>& A,
-				      LinBoxTag::Shape x=LinBoxTag::Shape::Upper,
-				      LinBoxTag::Diag y= LinBoxTag::Diag::NonUnit) ;
+				      LINBOX_enum (LinBoxTag::Shape) x=LinBoxTag::Shape::Upper,
+				      LINBOX_enum (LinBoxTag::Diag) y= LinBoxTag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c BlasMatrix (no copy).
 		 * @param A matrix
@@ -1165,8 +1165,8 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (BlasMatrix<Field,Rep>& A,
-				      LinBoxTag::Shape x=LinBoxTag::Shape::Upper,
-				      LinBoxTag::Diag y= LinBoxTag::Diag::NonUnit) ;
+				      LINBOX_enum (LinBoxTag::Shape) x=LinBoxTag::Shape::Upper,
+				      LINBOX_enum (LinBoxTag::Diag) y= LinBoxTag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c TriangularBlasMatrix (copy).
 		 * @param A matrix
@@ -1180,14 +1180,14 @@ namespace LinBox
 		 */
 		template<class Matrix>
 		TriangularBlasMatrix (const Matrix& A,
-				      LinBoxTag::Shape x=LinBoxTag::Shape::Upper,
-				      LinBoxTag::Diag y= LinBoxTag::Diag::NonUnit) ;
+				      LINBOX_enum (LinBoxTag::Shape) x=LinBoxTag::Shape::Upper,
+				      LINBOX_enum (LinBoxTag::Diag) y= LinBoxTag::Diag::NonUnit) ;
 
 		/// get the shape of the matrix (upper or lower)
-		LinBoxTag::Shape getUpLo() const ;
+		LINBOX_enum (LinBoxTag::Shape) getUpLo() const ;
 
 		/// Is the diagonal implicitly unit ?
-		LinBoxTag::Diag getDiag() const ;
+		LINBOX_enum (LinBoxTag::Diag) getDiag() const ;
 
 	}; // end of class TriangularBlasMatrix
 
@@ -1201,6 +1201,7 @@ namespace LinBox
 	 * For example, create a vector <code>(0 1 2 ...)</code> over \c
 	 * size_t, then apply a permutation to it using a \c BlasMatrixDomain to
 	 * get the natural representation of the permutation.
+	 * @bug does not belong here
 	 */
 	class indexDomain {
 	public:

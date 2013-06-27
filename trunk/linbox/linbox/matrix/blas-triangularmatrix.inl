@@ -39,22 +39,22 @@ namespace LinBox
 {
 	template < class _Field, class _Rep >
 	TriangularBlasMatrix< _Field, _Rep >::TriangularBlasMatrix (const _Field & F, const size_t m, const size_t n,
-							    LinBoxTag::Shape x,
-							    LinBoxTag::Diag y) :
+							    LINBOX_enum (LinBoxTag::Shape) x,
+							    LINBOX_enum (LinBoxTag::Diag) y) :
 		BlasMatrix< _Field, _Rep >(F, m, n ) , _uplo(x), _diag(y)
 	{}
 
 	template < class _Field, class _Rep >
 	TriangularBlasMatrix< _Field, _Rep >::TriangularBlasMatrix (const BlasMatrix< _Field, _Rep >& A,
-							    LinBoxTag::Shape x,
-							    LinBoxTag::Diag y) :
+							    LINBOX_enum (LinBoxTag::Shape) x,
+							    LINBOX_enum (LinBoxTag::Diag) y) :
 		BlasMatrix< _Field, _Rep >(A) , _uplo(x), _diag(y)
 	{}
 
 	template < class _Field, class _Rep >
 	TriangularBlasMatrix< _Field, _Rep >::TriangularBlasMatrix (BlasMatrix< _Field, _Rep >& A,
-							    LinBoxTag::Shape x,
-							    LinBoxTag::Diag y) :
+							    LINBOX_enum (LinBoxTag::Shape) x,
+							    LINBOX_enum (LinBoxTag::Diag) y) :
 		BlasMatrix< _Field, _Rep >(A), _uplo(x), _diag(y)
 	{}
 
@@ -87,8 +87,8 @@ namespace LinBox
 	template < class _Field, class _Rep >
 	template<class Matrix>
 	TriangularBlasMatrix< _Field, _Rep >::TriangularBlasMatrix (const Matrix& A,
-							    LinBoxTag::Shape x,
-							    LinBoxTag::Diag y) :
+							    LINBOX_enum (LinBoxTag::Shape) x,
+							    LINBOX_enum (LinBoxTag::Diag) y) :
 		BlasMatrix< _Field, _Rep >(A.field(),A.rowdim(),A.coldim()), _uplo(x), _diag(y)
 	{
 		switch (x) {
@@ -119,13 +119,13 @@ namespace LinBox
 	}
 
 	template < class _Field, class _Rep >
-	LinBoxTag::Shape TriangularBlasMatrix< _Field, _Rep >::getUpLo() const
+	LINBOX_enum (LinBoxTag::Shape) TriangularBlasMatrix< _Field, _Rep >::getUpLo() const
 	{
 		return _uplo;
 	}
 
 	template < class _Field, class _Rep >
-	LinBoxTag::Diag TriangularBlasMatrix< _Field, _Rep >::getDiag() const
+	LINBOX_enum (LinBoxTag::Diag) TriangularBlasMatrix< _Field, _Rep >::getDiag() const
 	{
 		return _diag;
 	}
