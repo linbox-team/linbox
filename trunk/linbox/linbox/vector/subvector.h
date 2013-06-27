@@ -240,9 +240,11 @@ namespace LinBox
 } // namespace LinBox
 
 
+//! @warning why do we need this ?
 namespace std
 {
 
+#if 0
 	template<class _Tp>
 	void swap (_Tp&, _Tp&)
 #ifdef __GNUC__
@@ -254,6 +256,7 @@ namespace std
 #endif
 #endif
 	    ;
+#endif
 
 
 
