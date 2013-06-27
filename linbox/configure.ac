@@ -3,7 +3,7 @@
 #  ========LICENCE========
 # This file is part of the library LinBox.
 #
- LinBox is free software: you can redistribute it and/or modify
+# LinBox is free software: you can redistribute it and/or modify
 # it under the terms of the  GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
@@ -18,10 +18,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 # ========LICENCE========
 
-AC_PREREQ([2.64])
+AC_PREREQ([2.61])
 
 AC_INIT([LinBox], [1.4.0],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
+
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.8 gnu no-dependencies -Wall -Wno-portability])
@@ -74,7 +75,6 @@ AC_COMPILER_NAME
 AC_SUBST([DEFAULT_CFLAGS])
 AC_SUBST([DEBUG_CFLAGS])
 AC_SUBST([TESTS_CFLAGS])
-
 
 TESTS_CFLAGS="-O0"
 DEBUG_CFLAGS="-g"
@@ -152,7 +152,6 @@ AC_PROG_LIBTOOL
 # newer libtool...
 LT_PREREQ([2.2])
 LT_INIT
-
 
 
 echo "-----------------------------------------------"
