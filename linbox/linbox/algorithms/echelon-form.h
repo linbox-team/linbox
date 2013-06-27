@@ -226,7 +226,7 @@ namespace LinBox
 			// BlasSubmatrix<Field> Er(E,0,0,rank,rank);
 			BlasMatrix<Field> Er(E,0,0,rank,rank);
 			TriangularBlasMatrix<Field> Err(Er, LinBoxTag::Shape::Lower, LinBoxTag::Diag::Unit);
-			BlasSubmatrix<Field> En(E,rank,0,m-rank,rank);
+			BlasSubmatrix<BlasMatrix<Field> > En(E,rank,0,m-rank,rank);
 
 			_BMD.right_solve(Err, En);
 

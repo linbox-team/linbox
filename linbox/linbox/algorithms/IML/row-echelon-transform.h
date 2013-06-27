@@ -338,6 +338,7 @@ size_t
 	{
 		typedef typename Field::Element Element;
 		Field F = A.field();
+		typedef BlasMatrix<Field> Matrix ;
 		BlasMatrixDomain<Field> BMD(F);
 		size_t n = A.rowdim();
 		size_t m = A.coldim();
@@ -372,9 +373,9 @@ size_t
 			}
 			else {
 				B.resize(r,m);
-				BlasSubmatrix<Field> U2(U,0,0,r,n);
-				BlasSubmatrix<Field> A2(A,0,0,n,m);
-				BlasSubmatrix<Field> B2(B,0,0,r,m);
+				BlasSubmatrix<Matrix> U2(U,0,0,r,n);
+				BlasSubmatrix<Matrix> A2(A,0,0,n,m);
+				BlasSubmatrix<Matrix> B2(B,0,0,r,m);
 				BMD.mul(B2,U2,A2);
 			}
 			if (r ==n) {
@@ -404,9 +405,9 @@ size_t
 				}
 			}
 			B.resize(r,m);
-			BlasSubmatrix<Field> U2(U,0,0,r,n);
-			BlasSubmatrix<Field> A2(A,0,0,n,m);
-			BlasSubmatrix<Field> B2(B,0,0,r,m);
+			BlasSubmatrix<Matrix> U2(U,0,0,r,n);
+			BlasSubmatrix<Matrix> A2(A,0,0,n,m);
+			BlasSubmatrix<Matrix> B2(B,0,0,r,m);
 			BMD.mul(B2,U2,A2);
 
 			return r;

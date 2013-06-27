@@ -71,7 +71,7 @@ namespace LinBox
 
 namespace LinBox
 { /*  Blas Matrix */
-	template<class _Field, class _Rep>
+	template<class _Matrix>
 	class BlasSubmatrix ;
 
 	/*! Dense matrix representation.
@@ -91,7 +91,7 @@ namespace LinBox
 		typedef typename Rep::pointer               pointer;    //!< pointer type to elements
 		typedef const pointer                 const_pointer;    //!< const pointer type
 		typedef BlasMatrix<Field,Rep>                   Self_t;    //!< Self typeype
-                typedef BlasSubmatrix<Field,Rep>         subMatrixType;    //!< Submatrix type
+                typedef BlasSubmatrix<Self_t>         subMatrixType;    //!< Submatrix type
                 typedef BlasMatrix<Field,Rep>               matrixType;    //!< matrix type
                 typedef BlasMatrix<Field,Rep>                 blasType;    //!< blas matrix type
 
@@ -738,18 +738,18 @@ namespace LinBox
 
 
 	 */
-	template <class _Field, class _blasRep=typename RawVector<typename _Field::Element >::Dense >
+	template <class _Matrix>
 	class BlasSubmatrix {
 	public :
-		typedef _Field                             Field;
-		typedef typename Field::Element          Element;    //!< Element type
-		typedef _blasRep                             Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
-		typedef BlasSubmatrix<Field,Rep>             Self_t;    //!< Self type
-		typedef typename Rep::pointer            pointer;    //!< pointer type to elements
-		typedef const pointer              const_pointer;    //!< const pointer type
-                typedef Self_t                     subMatrixType;    //!< Submatrix type
-                typedef BlasMatrix<Field,Rep>            matrixType;    //!< matrix type
-                typedef BlasMatrix<Field,Rep>              blasType;    //!< blas matrix type
+		typedef typename _Matrix::Field           Field;
+		typedef typename Field::Element         Element;    //!< Element type
+		typedef typename _Matrix::Rep               Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		typedef BlasSubmatrix<_Matrix>           Self_t;    //!< Self type
+		typedef typename Rep::pointer           pointer;    //!< pointer type to elements
+		typedef const pointer             const_pointer;    //!< const pointer type
+                typedef Self_t                    subMatrixType;    //!< Submatrix type
+                typedef BlasMatrix<Field,Rep>        matrixType;    //!< matrix type
+                typedef BlasMatrix<Field,Rep>          blasType;    //!< blas matrix type
 
 
 	protected:
@@ -800,7 +800,7 @@ namespace LinBox
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
-		BlasSubmatrix (const BlasSubmatrix<Field,Rep> &SM,
+		BlasSubmatrix (const BlasSubmatrix<_Matrix> &SM,
 				size_t rowbeg,
 				size_t colbeg,
 				size_t Rowdim,
@@ -809,7 +809,7 @@ namespace LinBox
 		/** Copy constructor.
 		 * @param SM Submatrix to copy
 		 */
-		BlasSubmatrix (const BlasSubmatrix<Field,Rep> &SM);
+		BlasSubmatrix (const BlasSubmatrix<_Matrix> &SM);
 
 
 		/*  Members  */
@@ -821,10 +821,10 @@ namespace LinBox
 		 * @param SM Submatrix to assign
 		 * @return Reference to this submatrix
 		 */
-		BlasSubmatrix &operator = (const BlasSubmatrix<Field,Rep> &SM);
+		BlasSubmatrix &operator = (const BlasSubmatrix<_Matrix> &SM);
 
 		// function for repurposing Submatrices.
-		BlasSubmatrix &submatrix(const BlasSubmatrix<Field,Rep> &SM,
+		BlasSubmatrix &submatrix(const BlasSubmatrix<_Matrix> &SM,
 				size_t rowbeg,
 				size_t colbeg,
 				size_t Rowdim,
@@ -835,7 +835,7 @@ namespace LinBox
 		BlasSubmatrix &copy( const Matrix & B);
 
 		/// Swap contents.  Shapes must be the same.
-		BlasSubmatrix &swap( BlasSubmatrix<Field,Rep> & B);
+		BlasSubmatrix &swap( BlasSubmatrix<_Matrix> & B);
 
 		/// Overwrite with zeroes.
 		BlasSubmatrix &zero();
@@ -1090,19 +1090,19 @@ namespace LinBox
 			return y;
 		}
 
-		const _Field& field() const { return _Mat->field() ;}
-		// _Field & field() { return _Mat->field(); }
+		const Field& field() const { return _Mat->field() ;}
+		// Field & field() { return _Mat->field(); }
 	};
 
-	template <class _Field, class _Rep>
-	struct MatrixTraits< BlasSubmatrix<_Field,_Rep> > {
-		typedef BlasSubmatrix<_Field,_Rep> MatrixType;
+	template <class _Matrix>
+	struct MatrixTraits< BlasSubmatrix<_Matrix> > {
+		typedef BlasSubmatrix<_Matrix> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 
-	template <class _Field, class _Rep>
-	struct MatrixTraits< const BlasSubmatrix<_Field,_Rep> > {
-		typedef const BlasSubmatrix<_Field,_Rep> MatrixType;
+	template <class _Matrix>
+	struct MatrixTraits< const BlasSubmatrix<_Matrix> > {
+		typedef const BlasSubmatrix<_Matrix> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 

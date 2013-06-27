@@ -47,7 +47,7 @@
 namespace LinBox
 {
 	template<class Field, class Rep> class BlasMatrix;
-	template<class Field, class Rep> class BlasSubmatrix;
+	template<class Matrix> class BlasSubmatrix;
 
 
 
@@ -102,7 +102,7 @@ namespace LinBox
 		// subvector
 		typedef typename RawVector<typename Field::Element >::Dense Rep_;
 		typedef BlasMatrix<Field,Rep_> Matrix;
-		typedef BlasSubmatrix<Field,Rep_> Submatrix;
+		typedef BlasSubmatrix<Matrix> Submatrix;
 
 		MatrixDomain () {/*std::cerr << "MD def cstor" << std::endl;*/ }
 
