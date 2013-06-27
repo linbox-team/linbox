@@ -478,7 +478,7 @@ namespace LinBox
 
 	template < class _Field, class _Rep >
 	std::ostream& BlasMatrix< _Field, _Rep >::write (std::ostream &os,
-						  enum LinBoxTag::Format f) const
+						  LINBOX_enum (LinBoxTag::Format) f ) const
 	{
 
 		ConstRowIterator p;

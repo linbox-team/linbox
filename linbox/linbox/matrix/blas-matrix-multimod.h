@@ -44,7 +44,7 @@
 // #include "linbox/vector/subvector.h"
 
 #include "linbox/matrix/matrix-category.h"
-#include "linbox/algorithms/linbox-tags.h"
+#include "linbox/linbox-tags.h"
 #include "linbox/matrix/blas-matrix.h"
 
 THIS_CODE_MAY_NOT_COMPILE_AND_IS_NOT_TESTED

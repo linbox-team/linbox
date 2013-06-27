@@ -1,4 +1,4 @@
-/* linbox/matrix/sparse-matrix.h
+/* linbox/matrix/sparse-csr-matrix.h
  * Copyright (C) 2013 the LinBox
  *
  * Written by :
@@ -30,8 +30,8 @@
  */
 
 
-#ifndef __LINBOX_matrix_sparse_coo_matrix_H
-#define __LINBOX_matrix_sparse_coo_matrix_H
+#ifndef __LINBOX_sparse_matrix_sparse_csr_matrix_H
+#define __LINBOX_sparse_matrix_sparse_csr_matrix_H
 
 #include <utility>
 #include <iostream>
@@ -898,7 +898,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __LINBOX_matrix_sparse_coo_matrix_H
+#endif // __LINBOX_sparse_matrix_sparse_csr_matrix_H
 
 // Local Variables:
 // mode: C++

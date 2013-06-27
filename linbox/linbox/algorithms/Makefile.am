@@ -146,7 +146,6 @@ pkgincludesub_HEADERS =            \
 	toeplitz-det.h                     \
 	dense-nullspace.h                  \
 	dense-nullspace.inl                \
-	linbox-tags.h                      \
 	short-vector.h                     \
 	rns.h                              \
 	rns.inl                            \

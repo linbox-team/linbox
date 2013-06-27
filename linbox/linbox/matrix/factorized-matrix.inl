@@ -1210,8 +1210,8 @@ namespace LinBox
 
 		linbox_check( L.coldim() == _m);
 		linbox_check( L.rowdim() == _m);
-		linbox_check( L.getUpLo() == LinBoxTag::Lower);
-		linbox_check( L.getDiag() == LinBoxTag::Unit);
+		linbox_check( L.getUpLo() == LinBoxTag::Shape::Lower);
+		linbox_check( L.getDiag() == LinBoxTag::Diag::Unit);
 
 #if 0
 		if (_m > _n) {
@@ -1283,8 +1283,8 @@ namespace LinBox
 
 		linbox_check( U.rowdim() == _m);
 		linbox_check( U.coldim() == _n);
-		linbox_check( U.getUpLo() == LinBoxTag::Upper);
-		linbox_check( U.getDiag() == LinBoxTag::NonUnit);
+		linbox_check( U.getUpLo() == LinBoxTag::Shape::Upper);
+		linbox_check( U.getDiag() == LinBoxTag::Diag::NonUnit);
 		for ( size_t i=0; i<_m; ++i )
 			for ( size_t j=i; j<_n; ++j )
 				U.setEntry( i, j, _factLU.getEntry(i,j) );

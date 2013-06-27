@@ -21,6 +21,7 @@
 
 EXTRA_DIST=\
 	   aclocal-include.m4      \
+	   ax_cxx_compile_stdcxx_11.m4 \
 	   config-header.m4        \
 	   debug.m4                \
 	   expat-check.m4          \

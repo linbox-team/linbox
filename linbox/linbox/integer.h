@@ -46,9 +46,10 @@
 #endif
 
 //#include <cstdint>
+#include "../config.h"
 #include "linbox/linbox-config.h"
-#include "givaro/givconfig.h"
-#include "gmp++/gmp++.h"
+#include <givaro/givconfig.h>
+#include <gmp++/gmp++.h>
 #include <cfloat> // BB : needed on some rare platforms...
 
 using std::ptrdiff_t;

@@ -18,8 +18,9 @@
 # ========LICENCE========
 
 
-
 pkgincludesubdir=$(pkgincludedir)/matrix
+
+SUBDIRS= SparseMatrix
 
 BASIC_HDRS =              \
 	archetype.h               \
@@ -42,9 +43,6 @@ BASIC_HDRS =              \
 	blas-matrix.inl           \
 	sparse-matrix.h           \
 	sparse-formats.h          \
-	sparse-coo-matrix.h       \
-	sparse-csr-matrix.h       \
-	sparse-ell-matrix.h       \
 	blas-submatrix.inl        \
 	blas-matrix-multimod.h    \
 	factorized-matrix.h       \

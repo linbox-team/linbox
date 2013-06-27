@@ -23,9 +23,11 @@ AM_CPPFLAGS=-I$(top_srcdir)
 
 SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions ring
 
-BASIC_HDRS =    \
-    integer.h   \
-    config-blas.h   linbox-config.h
+BASIC_HDRS =          \
+    config-blas.h     \
+    integer.h         \
+    linbox-config.h   \
+    linbox-tags.h
 
 NTL_HDRS =
 
