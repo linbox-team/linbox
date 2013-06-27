@@ -180,14 +180,14 @@ namespace LinBox
 		Integer da=1, di=1; Integer D=1;
 		FA.denominator(da);
 
-		for (int i=M.size()-2; i >= 0 ; --i) {
+		for (int i=(int)M.size()-2; i >= 0 ; --i) {
 			//c[m]=1, c[0]=det(A);
 			FA.denominator(di,i);
 			D *=di;
 			Di[(size_t)i]=di;
 			M[(size_t)i] = M[(size_t)i+1]*da;
 		}
-		for (int i=0; i < M.size() ; ++i ) {
+		for (int i=0; i <(int) M.size() ; ++i ) {
 			gcd(M[(size_t)i],M[(size_t)i],D);
 		}
 
@@ -229,7 +229,7 @@ namespace LinBox
 			Integer m; //Integer r; Integer a,b;
 			cra.getModulus(m);
 			cra.result(PP);//need to divide
-			for (int i=0; i < PP.size(); ++i) {
+			for (int i=0; i < (int)PP.size(); ++i) {
 				Integer D_1;
 				inv(D_1,M[(size_t)i],m);
 				PP[(size_t)i] = (PP[(size_t)i]*D_1) % m;
@@ -240,7 +240,7 @@ namespace LinBox
 			if (RR.reconstructRational(num,den,PP,m,-1)) {//performs reconstruction strating form c[m], use c[(size_t)i] as prec for c[(size_t)i-1]
 				cra(1,PP,iteration,genprime);
 				cra.getModulus(m);
-				for (int i=0; i < PP.size(); ++i) {
+				for (int i=0; i < (int)PP.size(); ++i) {
 					Integer D_1;
 					inv(D_1,M[(size_t)i],m);
 					PP[(size_t)i] = (PP[(size_t)i]*D_1) % m;
@@ -248,7 +248,7 @@ namespace LinBox
 				if (RR.reconstructRational(num1,den1,PP,m,-1)) {
 					bool terminated = true;
 					if (den==den1) {
-						for (int i=0; i < num.size(); ++i) {
+						for (int i=0; i < (int)num.size(); ++i) {
 							if (num[(size_t)i] != num1[(size_t)i]) {
 								terminated =false;
 								break;
