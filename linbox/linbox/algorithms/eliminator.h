@@ -29,7 +29,7 @@
 #ifndef __LINBOX_eliminator_H
 #define __LINBOX_eliminator_H
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <vector>
 

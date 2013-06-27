@@ -37,7 +37,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/matrix/sparse.h"
 // #include "linbox/blackbox/factory.h"

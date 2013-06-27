@@ -27,7 +27,7 @@
   \brief Rank of sparse matrix over Z or Zp.
   \ingroup examples
   */
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 

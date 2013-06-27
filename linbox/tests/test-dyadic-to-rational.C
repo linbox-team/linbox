@@ -23,7 +23,7 @@
  */
 
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/util/commentator.h"
 #include "test-common.h"
 

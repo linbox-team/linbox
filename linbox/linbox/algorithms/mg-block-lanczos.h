@@ -30,7 +30,7 @@
 #ifndef __LINBOX_mg_block_lanczos_H
 #define __LINBOX_mg_block_lanczos_H
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #undef _matT
 
 #include <vector>

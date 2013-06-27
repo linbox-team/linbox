@@ -34,7 +34,7 @@
 #define __LINBOX_PERMUTATION_STORAGE std::vector< long >
 #endif
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/randiter/mersenne-twister.h"
 

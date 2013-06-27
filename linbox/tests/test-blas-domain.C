@@ -39,7 +39,7 @@
 
  // where is this used?
 #define __MINP_CONSTRUCT
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include <iostream>
 #include <string>
 #include "linbox/integer.h"

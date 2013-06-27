@@ -28,7 +28,7 @@
 
 #include <math.h>
 #include <vector>
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/PIR-modular-int32.h"

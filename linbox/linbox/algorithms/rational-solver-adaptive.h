@@ -26,7 +26,7 @@
 #ifndef __LINBOX_rational_solver_adaptive_H
 #define __LINBOX_rational_solver_adaptive_H
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/util/debug.h"
 
 

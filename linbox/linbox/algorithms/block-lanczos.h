@@ -30,7 +30,7 @@
 #ifndef __LINBOX_block_lanczos_H
 #define __LINBOX_block_lanczos_H
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <vector>
 

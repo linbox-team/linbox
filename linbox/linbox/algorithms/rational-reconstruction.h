@@ -33,7 +33,7 @@
 #ifndef __LINBOX_reconstruction_H
 #define __LINBOX_reconstruction_H
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/util/debug.h"
 
 

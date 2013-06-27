@@ -41,35 +41,9 @@
 #ifndef __LINBOX_integer_H
 #define __LINBOX_integer_H
 
-#ifndef INT32_MAX
-#define INT32_MAX (2147483647L)
-#endif
-
-//#include <cstdint>
-#include "../config.h"
-#include "linbox/linbox-config.h"
-#include <givaro/givconfig.h>
+#include "linbox-config.h"
+// #include <givaro/givconfig.h>
 #include <gmp++/gmp++.h>
-#include <cfloat> // BB : needed on some rare platforms...
-
-using std::ptrdiff_t;
-
-
-#ifdef __LINBOX_HAVE_STDINT_H
-#ifndef __STDC_LIMIT_MACROS
-#define __STDC_LIMIT_MACROS
-// else ??
-#endif
-#include <stdint.h>
-#ifndef INT32_MAX
-#error "INT32_MAX is not defined. It should at least be defined in Givaro..."
-#endif
-#endif
-
-
-#ifndef FFLAFLAS_VERSION
-#define FFLAFLAS_VERSION __LINBOX_FFLAFFLAS_VERSION
-#endif
 
 
 namespace LinBox
@@ -144,7 +118,6 @@ namespace LinBox
  * in LinBox or Givaro.
  */
 #include <givaro/givconfig.h>
-#include <math.h>
 
 #ifndef GIVARO_VERSION
 #error "Givaro didn't tell us about his version !"
@@ -171,6 +144,23 @@ namespace LinBox
 	}
 #endif
 }
+
+
+#if (GIVARO_VERSION < 30601)
+namespace Givaro {
+	template <typename Target, typename Source>
+	Target& Caster (Target& t, const Source& s) {
+		return t = static_cast<Target>(s);
+	}
+}
+#else
+#include <givaro/givcaster.h>
+#endif
+
+#ifdef GIVARO_USES_OMP // _OPENMP or others are present
+#define LINBOX_USES_OPENMP 1
+#endif
+
 
 namespace LinBox { /*  signedness of integers */
 	/*! Positiveness of an integer.
@@ -207,32 +197,14 @@ namespace LinBox { /*  signedness of integers */
 		return true ;
 	}
 	//@}
-}
-
-#if (GIVARO_VERSION < 30601)
-namespace Givaro {
-	template <typename Target, typename Source>
-	Target& Caster (Target& t, const Source& s) {
-		return t = static_cast<Target>(s);
-	}
-}
-#else
-#include <givaro/givcaster.h>
-#endif
-
-#ifdef GIVARO_USES_OMP // _OPENMP or others are present
-#define LINBOX_USES_OPENMP 1
-#endif
-
-namespace LinBox {
 
 	template<class U>
 	inline bool IsNegative(const U & p)
 	{
-		return (p<0);
+		return (!isPositive<U>(p));
 	}
 
-	// or use integer_traits<T>::is_unsigned ??
+	//! @todo or use integer_traits<T>::is_unsigned ??
 	template<>
 	inline bool IsNegative(const uint8_t & p)
 	{
@@ -257,6 +229,7 @@ namespace LinBox {
 		return false;
 	}
 
+	// maybe isOdd here too ?
 }
 
 #endif // __LINBOX_integer_H

@@ -27,7 +27,7 @@
 #define __LINBOX_pir_ntl_zz_p_H
 
 #include "linbox/field/unparametric.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/util/debug.h"
 #include <NTL/ZZ.h>
 #include <NTL/ZZ_p.h>

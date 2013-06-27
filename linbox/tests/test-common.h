@@ -41,7 +41,7 @@
 // #include <vector>
 #include "linbox/vector/blas-vector.h"
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/field/archetype.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/integer.h"

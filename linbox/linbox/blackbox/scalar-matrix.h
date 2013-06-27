@@ -36,7 +36,7 @@
 #include <iostream>
 #include "linbox/field/hom.h"
 #include "linbox/vector/vector-traits.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/solutions/solution-tags.h"
 #include "linbox/util/matrix-stream.h"

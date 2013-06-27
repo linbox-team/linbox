@@ -42,7 +42,7 @@
 #endif
 
 #include <time.h>
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/util/debug.h"
 #include <NTL/lzz_p.h>
 #include <NTL/ZZ.h>

@@ -32,7 +32,7 @@
 #include "linbox/solutions/methods.h"
 #include "linbox/util/debug.h"
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 //#define DEBUG_DIO
 //#define INFO_DIO

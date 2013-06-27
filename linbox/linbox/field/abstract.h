@@ -32,7 +32,7 @@
 #include "linbox/element/abstract.h"
 #include "linbox/randiter/abstract.h"
 #include "linbox/integer.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #ifdef __LINBOX_XMLENABLED
 

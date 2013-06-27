@@ -39,7 +39,7 @@
 
 #include <cassert>
 #include "linbox/field/modular.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "fflas-ffpack/fflas/fflas.h"
 #include "fflas-ffpack/ffpack/ffpack.h"
 #include "linbox/integer.h" // for fflas on integers...

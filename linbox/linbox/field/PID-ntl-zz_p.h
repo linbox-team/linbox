@@ -28,7 +28,7 @@
 
 #include "linbox/field/NTL/ntl-lzz_p.h"
 #include "linbox/util/debug.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include <NTL/ZZ.h>
 #include "linbox/field/field-traits.h"
 

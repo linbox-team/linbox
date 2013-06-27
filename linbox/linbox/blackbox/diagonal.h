@@ -47,7 +47,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/util/debug.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/field/hom.h"
 #include "linbox/solutions/solution-tags.h"
 #include "linbox/util/matrix-stream.h"

@@ -41,7 +41,7 @@
  * @bug this test does not even test if anything is outputted (and it passes even though)
  */
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 #include <fstream>
