@@ -27,7 +27,7 @@
   \brief Ranks of sparse matrix modulo 2^k
   \ingroup examples
   */
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 

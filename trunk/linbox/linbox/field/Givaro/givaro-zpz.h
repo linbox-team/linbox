@@ -36,7 +36,7 @@
 #define __LINBOX_field_givaro_zpz_H
 
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/util/debug.h"

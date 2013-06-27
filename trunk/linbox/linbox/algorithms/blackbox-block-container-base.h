@@ -35,7 +35,7 @@
 
 #include <time.h> // for seeding
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/matrix/blas-matrix.h"

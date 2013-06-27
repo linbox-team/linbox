@@ -35,7 +35,7 @@
 #endif
 
 #include <time.h>
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/util/debug.h"
 #include <NTL/ZZ_pXFactoring.h>
 #include <NTL/ZZ_pE.h>

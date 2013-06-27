@@ -52,7 +52,7 @@
 #ifndef __LINBOX_blackbox_sparse_H
 #define __LINBOX_blackbox_sparse_H
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/matrix/sparse.h"
 #include "linbox/matrix/matrix-domain.h"

@@ -26,7 +26,7 @@
 #define __LINBOX_minpoly_H
 
 #include <string>
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/util/commentator.h"
 

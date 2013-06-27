@@ -32,7 +32,7 @@
 
 
 #include <iostream>
-#include <linbox/linbox-config.h>
+#include <linbox-config.h>
 #include <linbox/field/modular.h>
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/matrix/random-matrix.h>

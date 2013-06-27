@@ -84,6 +84,9 @@ uninstall-hook:
 		"$(datarootdir)/" \
 		"$(includedir)" ) || true
 
+pkginclude_HEADERS=   \
+	       linbox-config.h
+
 VERSION=1.4.0
 
 EXTRA_DIST=auto-install.sh

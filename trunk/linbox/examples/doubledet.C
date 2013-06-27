@@ -30,7 +30,7 @@
 
 #include <iostream>
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/solutions/det.h"

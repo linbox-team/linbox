@@ -37,7 +37,7 @@
 
 
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/util/timer.h"
 // #include "linbox/field/givaro-gfq.h"
 

@@ -30,7 +30,7 @@
 #include <iterator>
 //#include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/zo.h"

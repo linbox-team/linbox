@@ -33,7 +33,7 @@
 #define __LINBOX_field_multimod_field_H
 
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/integer.h"
 #include "linbox/field/modular.h"

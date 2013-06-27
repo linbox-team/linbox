@@ -48,11 +48,10 @@
 #define __LINBOX_field_vector_domain_INL
 
 
-#include <iostream>
-#include <cctype>
-//#include "linbox/util/field-axpy.h"
+
 namespace LinBox
 { /*  VectorDomain */
+
 	template <class Field>
 	template <class Vector>
 	std::ostream &VectorDomain<Field>::writeSpecialized (std::ostream &os, const Vector &x,
