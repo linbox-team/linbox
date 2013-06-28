@@ -695,9 +695,12 @@ namespace LinBox
 			_randIter_ptr = static_cast<RandIterAbstract*> (new typename Field_qcq::RandIter (*field_ptr));
 
 			//! @bug leaks here (new not deleted)
-			one  = field_ptr->one .clone();
-			zero = field_ptr->zero.clone();
-			mOne = field_ptr->mOne.clone();
+			// one  = field_ptr->one .clone();
+			// zero = field_ptr->zero.clone();
+			// mOne = field_ptr->mOne.clone();
+			one  = & field_ptr->one;
+			zero = & field_ptr->zero;
+			mOne = & field_ptr->mOne;
 
 			// one  = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->one  ) );
 			// zero = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->zero ) );
