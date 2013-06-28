@@ -55,7 +55,7 @@ namespace LinBox {
 	namespace SparseMatrix2Format {
 		class ANY {} ;
 		class COO : public ANY {} ; // Cordinate
-		// template<class Row = LinBoxTag::RowFirst>
+		// template<typename Row_t>
 		class CSR : public ANY {} ; // compressed row
 		class ELL : public ANY {} ; // ellpack
 		class HYB : public ANY {} ; // hybrid

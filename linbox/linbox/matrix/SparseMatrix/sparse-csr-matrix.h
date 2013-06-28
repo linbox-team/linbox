@@ -56,7 +56,7 @@ namespace LinBox
 	 * \ingroup sparse
 	 */
 	template<class _Field>
-	class SparseMatrix2<_Field, SparseMatrix2Format::COO> {
+	class SparseMatrix2<_Field, SparseMatrix2Format::CSR > {
 	public :
 		typedef _Field                             Field ; //!< Field
 		typedef typename _Field::Element         Element ; //!< Element
