@@ -117,7 +117,7 @@ namespace LinBox
 		{}
 #endif
 
-		// XXX only for COO
+		// XXX only for CSR
 		template<typename _Tp1, typename _Rw1 = SparseMatrix2Format::CSR>
 		struct rebind ;
 
@@ -182,7 +182,7 @@ namespace LinBox
 
 
 		template<class VectStream>
-		SparseMatrix2<_Field, SparseMatrix2Format::COO> (const _Field & F, VectStream & stream) :
+		SparseMatrix2<_Field, SparseMatrix2Format::CSR> (const _Field & F, VectStream & stream) :
 			_rownb(stream.size()),_colnb(stream.size()),
 			_start(0),_colid(0),_data(0)
 			, _nbnz(0)
@@ -203,7 +203,7 @@ namespace LinBox
 					_data[j] = lig_i[j].second ;
 				}
 			}
-			for (size_t 1 = 0 ; i < rowdim() ; ++i)
+			for (size_t i = 0 ; i < rowdim() ; ++i)
 				_start[i+1] += _start[i];
 		}
 
@@ -211,7 +211,7 @@ namespace LinBox
 		{
 #ifndef NDEBUG
 			if (nn < _nbnz) {
-				std::cerr << "*** Warning *** you are possibly loosing data (COO resize)" << std::endl;
+				std::cerr << "*** Warning *** you are possibly loosing data (CSR resize)" << std::endl;
 				// could be a commentator()...
 			}
 #endif
@@ -225,14 +225,12 @@ namespace LinBox
 		 * @param S a sparse matrix in any storage.
 		 */
 		template<class _OtherStorage>
-		SparseMatrix2<_Field, SparseMatrix2Format::COO> (const SparseMatrix2<_Field, _OtherStorage> & S) :
+		SparseMatrix2<_Field, SparseMatrix2Format::CSR> (const SparseMatrix2<_Field, _OtherStorage> & S) :
 			_rownb(S._rownb),_colnb(S._colnb),
-			_rowid(S.size()),_colid(S.size()),_data(S.size()),
+			_start(S.size()),_colid(S.size()),_data(S.size()),
 			_field(S._field)
 		{
-			SparseMatrix2<_Field,SparseMatrix2Format::CSR> Temp(_field,_rownb,_colnb) ;
-			S.exporte(Temp); // convert S to CSR
-			this->importe(Temp); // convert Temp from COO
+			this->importe(S); // convert Temp from anything
 		}
 
 
@@ -243,20 +241,33 @@ namespace LinBox
 		 * A specialisation can skip the temporary CSR matrix created.
 		 */
 		//@{
-		/*! Import a matrix in CSR format to COO.
-		 * @param S CSR matrix to be converted in COO
+		/*! Import a matrix in COO format to CSR.
+		 * @param S COO matrix to be converted in CSR
 		 */
-		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
+		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::COO> &S)
 		{
-			_rownb = S._rownb ;
-			_colnb = S._colnb ;
-			_rowid = S._rowid;
-			_data = S._data;
+			_rownb = S.rowdim() ;
+			_colnb = S.coldim() ;
+
+			_data = S.getData();
 			_colid.resize(S.size());
 			for (size_t i = 0 ; i < _rownb ; ++i)
-				for (size_t j = S.start[i] ; j < S.start[i+1]; ++j)
+				for (size_t j = S.getStart(i) ; j < S.getStart(i+1); ++j)
 					_colid[j] = i ;
 
+		}
+
+		/*! Import a matrix in CSR format to CSR.
+		 * @param S CSR matrix to be converted in CSR
+		 */
+
+		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
+		{
+			resize(S.rowdim(), S.coldim(), S.size());
+
+			_data = S.getData();
+			_colid = S.getColid();
+			_start = S.getStart();
 		}
 
 		/*! Export a matrix in CSR format from COO.
@@ -265,15 +276,14 @@ namespace LinBox
 		SparseMatrix2<_Field,SparseMatrix2Format::CSR > &
 		exporte(SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
 		{
-			S._rownb = _rownb ;
-			S._colnb = _colnb ;
-			S._rowid = _rowid ;
-			S._data  = _data  ;
-			S._start.resize(_rownb+1);
-			for (size_t i = 0 ; i < _nbnz ; ++i)
-				S._start[_rowid[i]+1] += 1 ;
-			for (size_t i= 0 ; i < _rownb ; ++i)
-				S._start[i+1] += S._start[i] ;
+			// S = *this ;
+
+			S.resize(_rownb, _colnb, _nbnz);
+			S.setData(  _data ) ;
+			S.setStart( _start );
+			S.setColdid (_colid );
+
+			return S ;
 		}
 		//@}
 
@@ -282,75 +292,47 @@ namespace LinBox
 		void transposeIn()
 		{
 			SparseMatrix2<_Field,SparseMatrix2Format::CSR> Temp(*this);
-			std::vector<size_t> start (_colnb+1,0);
+			resize(_colnb, _rownb, _nbnz );
+
+			for (size_t i = 0 ; i <= _colnb ; ++i)
+				_start[i] = 0 ;
+
 			for (size_t i = 0 ; i < size() ; ++i)
-				start[_colid[i]+1] += 1 ;
+				_start[_colid[i]+1] += 1 ;
+
 			for (size_t i = 0 ; i < _colnb ; ++i)
-				start[i+1] += start[i] ;
+				_start[i+1] += _start[i] ;
 			{
 				size_t i = 0 ;
-				std::vector<size_t> done_col(_colnb,0);
-				for (size_t nextlig = 1 ; nextlig <= _rownb ; ++nextlig) {
+				std::vector<size_t> done_col(_rownb,0);
+				for (size_t nextlig = 1 ; nextlig <= _colnb ; ++nextlig) {
 					// treating line before nextlig
 					while (i < Temp._start[nextlig]){
 						size_t cur_place ;
-						cur_place = start[Temp._colid[i]] + done_col[Temp._colid[i]] ;
-						_data[ cur_place ]  = Temp._data[i] ;
+						cur_place = _start[Temp.getColid(i)] + done_col[Temp.getColid(i)] ;
+						_data[ cur_place ]  = Temp.getData(i) ;
 						_colid[ cur_place ] = nextlig-1 ;
-						done_col[Temp._colid[i]] += 1 ;
+						done_col[Temp.getColid(i)] += 1 ;
 						++i;
 					}
 				}
 			}
-			std::swap(_rownb,_colnb);
-			for (size_t i = 0 ; i < _rownb ; ++i)
-				for (size_t j = start[i] ; j < start[i+1]; ++j)
-					_rowid[j] = i ;
 		}
 
 		/*! Transpose the matrix.
 		 *  @param S [out] transpose of self.
 		 *  @return a reference to \p S.
 		 */
-		SparseMatrix2<_Field,SparseMatrix2Format::COO> &
-		transpose(SparseMatrix2<_Field,SparseMatrix2Format::COO> &S)
+		SparseMatrix2<_Field,SparseMatrix2Format::CSR> &
+		transpose(SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
 		{
-			assert(S.rowdim() == _colnb);
-			assert(S.coldim() == _rownb);
+			// assert(S.rowdim() == _colnb);
+			// assert(S.coldim() == _rownb);
+			S.importe(*this);
+			S.transposeIn();
+			return S;
 
-			// outStart
-			std::vector<size_t> start (_colnb+1,0);
-			for (size_t i = 0 ; i < size() ; ++i)
-				start[_colid[i]+1] += 1 ;
-			for (size_t i = 0 ; i < _colnb ; ++i)
-				start[i+1] += start[i] ;
-			// inStart;
-			std::vector<size_t> _start (_rownb+1,0);
-			for (size_t i = 0 ; i < size() ; ++i)
-				_start[_rowid[i]+1] += 1 ;
-			for (size_t i = 0 ; i < _rownb ; ++i)
-				_start[i+1] += _start[i] ;
 
-			{
-				size_t i = 0 ;
-				std::vector<size_t> done_col(_colnb,0);
-				for (size_t nextlig = 1 ; nextlig <= _rownb ; ++nextlig) {
-					// treating line before nextlig
-					while (i < _start[nextlig]){
-					size_t cur_place ;
-						cur_place = start[_colid[i]] + done_col[_colid[i]] ;
-						S._data[ cur_place ]  = _data[i] ;
-						S._colid[ cur_place ] = nextlig-1 ;
-						done_col[_colid[i]] += 1 ;
-						++i;
-					}
-				}
-			}
-
-			std::swap(_rownb,_colnb);
-			for (size_t i = 0 ; i < _rownb ; ++i)
-				for (size_t j = start[i] ; j < start[i+1]; ++j)
-					S._rowid[j] = i ;
 		}
 
 		/*! number of rows.
@@ -392,9 +374,9 @@ namespace LinBox
 			// typedef typename std::vector<size_t>::iterator myIterator ;
 			typedef typename std::vector<size_t>::const_iterator myConstIterator ;
 
-			std::pair<myConstIterator,myConstIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
-			size_t ibeg = (size_t)(bounds.first-_rowid.begin());
-			size_t iend = (size_t)(bounds.second-_rowid.begin())-ibeg;
+			std::pair<myConstIterator,myConstIterator> bounds = std::equal_range (_start.begin(), _start.end(), i);
+			size_t ibeg = (size_t)(bounds.first-_start.begin());
+			size_t iend = (size_t)(bounds.second-_start.begin())-ibeg;
 			if (!iend)
 				return _field.zero;
 
@@ -427,11 +409,11 @@ namespace LinBox
 				return clearEntry(i,j);
 			}
 			typedef typename std::vector<size_t>::iterator myIterator ;
-			std::pair<myIterator,myIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
-			size_t ibeg = bounds.first-_rowid.begin();
-			size_t iend = (bounds.second-_rowid.begin())-ibeg;
+			std::pair<myIterator,myIterator> bounds = std::equal_range (_start.begin(), _start.end(), i);
+			size_t ibeg = bounds.first-_start.begin();
+			size_t iend = (bounds.second-_start.begin())-ibeg;
 			if (!iend) {
-				_rowid.insert(_rowid.begin()+ibeg,i);
+				_start.insert(_start.begin()+ibeg,i);
 				_colid.insert(_colid.begin()+ibeg,j);
 				_data.insert( _data.begin() +ibeg,e);
 				return ;
@@ -440,7 +422,7 @@ namespace LinBox
 			myIterator low = std::lower_bound (beg, beg+(ptrdiff_t)iend, j);
 			ibeg = low-_colid.begin();
 			if (low == beg+(ptrdiff_t)iend) {
-				_rowid.insert(_rowid.begin()+(ptrdiff_t)ibeg,i);
+				_start.insert(_start.begin()+(ptrdiff_t)ibeg,i);
 				_colid.insert(_colid.begin()+(ptrdiff_t)ibeg,j);
 				_data.insert( _data.begin() +(ptrdiff_t)ibeg,e);
 				return ;
@@ -467,11 +449,11 @@ namespace LinBox
 			// Could be improved by adding an initial guess j/rodim*size()
 			typedef typename std::vector<size_t>::iterator myIterator ;
 
-			std::pair<myIterator,myIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
-			size_t ibeg = bounds.first-_rowid.begin();
-			size_t iend = (bounds.second-_rowid.begin())-ibeg;
+			std::pair<myIterator,myIterator> bounds = std::equal_range (_start.begin(), _start.end(), i);
+			size_t ibeg = bounds.first-_start.begin();
+			size_t iend = (bounds.second-_start.begin())-ibeg;
 			if (!iend) {
-				_rowid.insert(_rowid.begin()+ibeg,i);
+				_start.insert(_start.begin()+ibeg,i);
 				_colid.insert(_colid.begin()+ibeg,j);
 				_data.insert( _data.begin() +ibeg,_field.zero);
 				return _data[ibeg];
@@ -479,7 +461,7 @@ namespace LinBox
 			myIterator beg = _colid.begin()+ibeg ;
 			myIterator low = std::lower_bound (beg, beg+(ptrdiff_t)iend, j);
 			if (low == beg+(ptrdiff_t)iend) {
-				_rowid.insert(_rowid.begin()+ibeg,i);
+				_start.insert(_start.begin()+ibeg,i);
 				_colid.insert(_colid.begin()+ibeg,j);
 				_data.insert( _data.begin() +ibeg,_field.zero);
 				return _data[ibeg];
@@ -526,9 +508,9 @@ namespace LinBox
 			// Could be improved by adding an initial guess j/rodim*size()
 			typedef typename std::vector<size_t>::iterator myIterator ;
 
-			std::pair<myIterator,myIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
-			size_t ibeg = bounds.first-_rowid.begin();
-			size_t iend = (bounds.second-_rowid.begin())-ibeg;
+			std::pair<myIterator,myIterator> bounds = std::equal_range (_start.begin(), _start.end(), i);
+			size_t ibeg = bounds.first-_start.begin();
+			size_t iend = (bounds.second-_start.begin())-ibeg;
 			if (!iend)
 				return ;
 
@@ -539,7 +521,7 @@ namespace LinBox
 			else {
 				// not sure
 				size_t la = low-_colid.begin() ;
-				_rowid.erase(_rowid.begin()+la);
+				_start.erase(_start.begin()+la);
 				_colid.erase(_colid.begin()+la);
 				_data. erase(_data. begin()+la);
 				return  ;
@@ -553,7 +535,7 @@ namespace LinBox
 		{
 			for (size_t i = 0 ; i < _data.size() ; ++i) {
 				if ( _field.isZero(_data[i]) ) {
-					_rowid.erase(_rowid.begin()+i);
+					_start.erase(_start.begin()+i);
 					_colid.erase(_colid.begin()+i);
 					_data. erase(_data. begin()+i);
 				}
@@ -569,7 +551,7 @@ namespace LinBox
 				_field.assign(y[i],_field.zero);
 
 			for (size_t i = 0 ; i < _nbnz ; ++i)
-				_field.axpyin( y[_rowid[i]], _data[i], x[_colid[i]] );
+				_field.axpyin( y[_start[i]], _data[i], x[_colid[i]] );
 
 			return y;
 		}
@@ -582,7 +564,7 @@ namespace LinBox
 				_field.assign(y[i],_field.zero);
 
 			for (size_t i = 0 ; i < _nbnz ; ++i)
-				_field.axpyin( y[_colid[i]], _data[i], x[_rowid[i]] );
+				_field.axpyin( y[_colid[i]], _data[i], x[_start[i]] );
 
 			return y;
 		}
@@ -605,11 +587,11 @@ namespace LinBox
 			size_t lig = 0 ;
 			size_t i = 0 ;
 			while(i < size()) {
-				while(lig < _rowid[i]) {
+				while(lig < _start[i]) {
 					os << "-1" << std::endl;
 					++lig ;
 				}
-				while (lig == _rowid[i]) {
+				while (lig == _start[i]) {
 					_field.write(_data[i], os << _colid[i] << ' ') << std::endl;
 					++i;
 				}
@@ -627,7 +609,7 @@ namespace LinBox
 			os << _rownb << ' ' << _colnb  << ' ' << size() << std::endl;
 			size_t i = 0 ;
 			while(i < size()) {
-				_field.write(_data[i], os << _rowid[i] << ' ' << _colid[i] << ' ') << std::endl;
+				_field.write(_data[i], os << _start[i] << ' ' << _colid[i] << ' ') << std::endl;
 				++i;
 			}
 			return os << "0 0 0" << std::endl;
@@ -655,7 +637,7 @@ namespace LinBox
 
 
 						for (size_t j = 0; j < _colnb ; ++j) {
-							if (_colid[idx] == j && _rowid[idx] ==i) {
+							if (_colid[idx] == j && _start[idx] ==i) {
 								_field.write (os, _data[idx]);
 								++idx;
 							}
@@ -702,7 +684,7 @@ namespace LinBox
 				throw LinBoxError("bad input");
 			if (x.empty() || x.compare("M")) {  /* SMS */
 				// mem = m ;
-				_rowid.reserve(mem);
+				_start.reserve(mem);
 				_colid.reserve(mem);
 				_data.reserve(mem);
 			}
@@ -712,7 +694,7 @@ namespace LinBox
 				if (!nnz)
 					throw LinBoxError("bad input");
 				mem = nnz ;
-				_rowid.reserve(nnz);
+				_start.reserve(nnz);
 				_colid.reserve(nnz);
 				_data.reserve(nnz);
 			}
@@ -734,18 +716,18 @@ namespace LinBox
 					if (!_field.isZero(z)){
 						if (mem == nnz) {
 							mem+=20 ;
-							_rowid.resize(mem);
+							_start.resize(mem);
 							_colid.resize(mem);
 							_data.resize (mem);
 						}
 
-						_rowid[nnz]= lig ;
+						_start[nnz]= lig ;
 						_colid[nnz]= n ;
 						_data[nnz] = z ;
 						++nnz ;
 					}
 				}
-				_rowid.resize(nnz);
+				_start.resize(nnz);
 				_colid.resize(nnz);
 				_data.resize (nnz);
 
@@ -765,7 +747,7 @@ namespace LinBox
 					if (n<0 || lig >=_rownb || n >> _colnb)
 						throw LinBoxError("bad input");
 					if (!_field.isZero(z)){
-						_rowid[loc]= lig ;
+						_start[loc]= lig ;
 						_colid[loc]= n ;
 						_data[loc] = z ;
 						++loc ;
@@ -773,7 +755,7 @@ namespace LinBox
 				}
 				if (loc > nnz)
 					throw LinBoxError("bad input");
-				_rowid.resize(loc);
+				_start.resize(loc);
 				_colid.resize(loc);
 				_data.resize (loc);
 			}
@@ -798,7 +780,7 @@ namespace LinBox
 				throw LinBoxError("bad input");
 			if (x.empty() || x.compare("M")) {  /* SMS */
 				// mem = m ;
-				_rowid.reserve(mem);
+				_start.reserve(mem);
 				_colid.reserve(mem);
 				_data.reserve(mem);
 			}
@@ -808,7 +790,7 @@ namespace LinBox
 				if (!nnz)
 					throw LinBoxError("bad input");
 				mem = nnz ;
-				_rowid.reserve(nnz);
+				_start.reserve(nnz);
 				_colid.reserve(nnz);
 				_data.reserve(nnz);
 			}
@@ -826,17 +808,17 @@ namespace LinBox
 					if (!_field.isZero(z)){
 						if (mem == nnz) {
 							mem+=20 ;
-							_rowid.resize(mem);
+							_start.resize(mem);
 							_colid.resize(mem);
 							_data.resize (mem);
 						}
-						_rowid[nnz]= m ;
+						_start[nnz]= m ;
 						_colid[nnz]= n ;
 						_data[nnz] = z ;
 						++nnz ;
 					}
 				}
-				_rowid.resize(nnz);
+				_start.resize(nnz);
 				_colid.resize(nnz);
 				_data.resize (nnz);
 
@@ -851,7 +833,7 @@ namespace LinBox
 						throw LinBoxError("bad input");
 					_field.read(is,z)  ;
 					if (!_field.isZero(z)){
-						_rowid[loc]= m ;
+						_start[loc]= m ;
 						_colid[loc]= n ;
 						_data[loc] = z ;
 						++loc ;
@@ -860,7 +842,7 @@ namespace LinBox
 
 				if (loc > nnz)
 					throw LinBoxError("bad input");
-				_rowid.resize(loc);
+				_start.resize(loc);
 				_colid.resize(loc);
 				_data.resize (loc);
 
@@ -873,13 +855,13 @@ namespace LinBox
 		// pseudo iterators
 		size_t getRowid(const size_t i) const
 		{
-			return _rowid[i];
+			return _start[i];
 		}
 
 		void setRowid(const size_t i, const size_t j)
 		{
 			if (i>=_nbnz) this->resize(i);
-			_rowid[i]=j;
+			_start[i]=j;
 		}
 
 		size_t getColid(const size_t i) const
@@ -890,7 +872,7 @@ namespace LinBox
 		void setColid(const size_t i, const size_t j)
 		{
 			if (i>=_nbnz) this->resize(i);
-			_rowid[i]=j;
+			_start[i]=j;
 		}
 
 		const Element & getData(const size_t i) const
@@ -910,7 +892,7 @@ namespace LinBox
 		size_t              _colnb ;
 		size_t               _nbnz ;
 
-		std::vector<size_t> _rowid ;
+		std::vector<size_t> _start ;
 		std::vector<size_t> _colid ;
 		std::vector<Element> _data ;
 

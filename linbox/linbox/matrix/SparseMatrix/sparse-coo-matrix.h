@@ -225,15 +225,21 @@ namespace LinBox
 		 */
 		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
 		{
-			_rownb = S._rownb ;
-			_colnb = S._colnb ;
-			_rowid = S._rowid;
-			_data = S._data;
-			_colid.resize(S.size());
+			resize( S.rowdim() , S.coldim() , S.size() );
+			_colid = S.getColid();
+			_data = S.getData();
 			for (size_t i = 0 ; i < _rownb ; ++i)
-				for (size_t j = S.start[i] ; j < S.start[i+1]; ++j)
-					_colid[j] = i ;
+				for (size_t j = S.getStart(i) ; j < S.getStart(i+1); ++j)
+					_rowid[j] = i ;
 
+		}
+
+		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::COO> &S)
+		{
+			resize( S.rowdim() , S.coldim() , S.size() );
+			_rowid = S.getRowid();
+			_colid = S.getColid();
+			_data = S.getData();
 		}
 
 		/*! Export a matrix in CSR format from COO.
@@ -242,47 +248,34 @@ namespace LinBox
 		SparseMatrix2<_Field,SparseMatrix2Format::CSR > &
 		exporte(SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
 		{
-			S._rownb = _rownb ;
-			S._colnb = _colnb ;
-			S._rowid = _rowid ;
-			S._data  = _data  ;
-			S._start.resize(_rownb+1);
+			S.resize(_rownb,_colnb,_nbnz) ;
+			S.setData( _data ) ;
 			for (size_t i = 0 ; i < _nbnz ; ++i)
-				S._start[_rowid[i]+1] += 1 ;
+				S.refStart()[_rowid[i]+1] += 1 ;
 			for (size_t i= 0 ; i < _rownb ; ++i)
-				S._start[i+1] += S._start[i] ;
+				S.refStart()[i+1] += S._start[i] ;
+			return S;
 		}
+
+		SparseMatrix2<_Field,SparseMatrix2Format::COO > &
+		exporte(SparseMatrix2<_Field,SparseMatrix2Format::COO> &S)
+		{
+			S.resize(_rownb,_colnb,_nbnz) ;
+			S.setData( _data ) ;
+			S.setColid( _colid ) ;
+			S.setRowid( _rowid ) ;
+		}
+
 		//@}
 
-		/*! In place transpose
+		/*! In place transpose. Not quite...
 		*/
 		void transposeIn()
 		{
-			SparseMatrix2<_Field,SparseMatrix2Format::CSR> Temp(*this);
-			std::vector<size_t> start (_colnb+1,0);
-			for (size_t i = 0 ; i < size() ; ++i)
-				start[_colid[i]+1] += 1 ;
-			for (size_t i = 0 ; i < _colnb ; ++i)
-				start[i+1] += start[i] ;
-			{
-				size_t i = 0 ;
-				std::vector<size_t> done_col(_colnb,0);
-				for (size_t nextlig = 1 ; nextlig <= _rownb ; ++nextlig) {
-					// treating line before nextlig
-					while (i < Temp._start[nextlig]){
-						size_t cur_place ;
-						cur_place = start[Temp._colid[i]] + done_col[Temp._colid[i]] ;
-						_data[ cur_place ]  = Temp._data[i] ;
-						_colid[ cur_place ] = nextlig-1 ;
-						done_col[Temp._colid[i]] += 1 ;
-						++i;
-					}
-				}
-			}
-			std::swap(_rownb,_colnb);
-			for (size_t i = 0 ; i < _rownb ; ++i)
-				for (size_t j = start[i] ; j < start[i+1]; ++j)
-					_rowid[j] = i ;
+			// SparseMatrix2<_Field,SparseMatrix2Format::CSR> Temp(*this);
+			SparseMatrix2<_Field,SparseMatrix2Format::COO> Temp(*this);
+			Temp.transposeIn();
+			importe(Temp);
 		}
 
 		/*! Transpose the matrix.
