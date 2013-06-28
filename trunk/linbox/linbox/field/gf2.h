@@ -982,6 +982,9 @@ namespace LinBox
 // Specialization of homomorphism for basefield
 #include "linbox/randiter/gf2.h"
 
+#if __cplusplus >= 201103L
+#include <bits/stl_bvector.h>
+#else
 // #include <bits/stl_bvector.h>
 namespace std
 {
@@ -993,6 +996,7 @@ namespace std
 		__y = __tmp;
 	}
 }
+#endif
 
 
 #include "linbox/field/gf2.inl"
