@@ -64,13 +64,19 @@ echo "-----------------------------------------------"
 
 #set CXX
 AC_PROG_CXX
+
+AC_COMPILER_NAME
+
+if test "x$CCNAM" = "xgcc44" ; then
+AX_CXX_COMPILE_STDCXX_11([ext],[optional])
+else
 AX_CXX_COMPILE_STDCXX_11([noext],[optional])
+fi
 
 STDFLAG=${CXXFLAGS}
 CXXFLAGS=""
 
 
-AC_COMPILER_NAME
 
 AC_SUBST([DEFAULT_CFLAGS])
 AC_SUBST([DEBUG_CFLAGS])
@@ -333,11 +339,7 @@ fi
 #CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
 #AC_SUBST(CXXFLAGS)
 
-if test "x$CCNAM" = "xgcc44" ; then
-CXXFLAGS="${GMP_CFLAGS} ${CXXFLAGS}"
-else
 CXXFLAGS="${GMP_CFLAGS} ${CXXFLAGS} ${STDFLAG}"
-fi
 
 AC_SUBST(CXXFLAGS)
 
