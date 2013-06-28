@@ -67,8 +67,7 @@ AC_PROG_CXX
 
 AC_COMPILER_NAME
 
-if test "x$CCNAM" = "xgcc44" ; then
-else
+if test "x$CCNAM" != "xgcc44" ; then
 AX_CXX_COMPILE_STDCXX_11([noext],[optional])
 fi
 
