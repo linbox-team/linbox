@@ -105,7 +105,7 @@ if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 		xeko)
 			WARN_CFLAGS="${WARN_CFLAGS} -Wno-unused-parameter"
 			;;
-		xgcc)
+		xgcc|xgcc44)
 			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
 			if test "x${WARN}" = "xfull" ; then
 				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -ansi -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long"
@@ -333,7 +333,11 @@ fi
 #CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
 #AC_SUBST(CXXFLAGS)
 
+if test "x$CCNAM" = "xgcc44" ; then
+CXXFLAGS="${GMP_CFLAGS} ${CXXFLAGS}"
+else
 CXXFLAGS="${GMP_CFLAGS} ${CXXFLAGS} ${STDFLAG}"
+fi
 
 AC_SUBST(CXXFLAGS)
 
