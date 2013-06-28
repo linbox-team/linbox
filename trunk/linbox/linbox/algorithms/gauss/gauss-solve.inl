@@ -94,8 +94,6 @@ namespace LinBox
 	template <class Matrix, class Vector1, class Vector2, class Random> inline Vector1&
 	GaussDomain<_Field>::solvein(Vector1& x, Matrix& A, const Vector2& b, Random& generator)  const
 	{
-		THIS_CODE_MAY_NOT_COMPILE_AND_IS_NOT_TESTED;
-
 		typename Field::Element Det;
 		unsigned long Rank;
 		Matrix L(field(), A.rowdim(), A.rowdim());
@@ -104,7 +102,7 @@ namespace LinBox
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
-		Vector1 w(A.coldim());
+                Vector1 w(A.field(),A.coldim());
 		for(typename Vector1::iterator it=w.begin()+(ptrdiff_t)Rank;it!=w.end();++it)
 			generator.random( *it );
 
