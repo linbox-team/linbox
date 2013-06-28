@@ -386,7 +386,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	std::cerr<<"extracting bminpoly... ";
 	std::vector<Matrix> LS2;
 	extractLeftSigma(F, LS2, Sigma, defect, nb);
-	std::cerr<<"done\n";
+	std::cerr<<"done with size: " << LS2.size() << std::endl;
 	std::cerr<<"Rank of the highest degree coefficient...";
 	unsigned long rdeg;
 	LinBox::BlasMatrixDomain<Field> D(F);
