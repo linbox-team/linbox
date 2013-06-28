@@ -107,6 +107,7 @@ namespace LinBox
 			_field(S._field)
 		{}
 
+#if 0
 		template<class _OtherField>
 		SparseMatrix2<_Field, SparseMatrix2Format::COO> (const SparseMatrix2<_OtherField, SparseMatrix2Format::COO> & S) :
 			_rownb(S._rownb),_colnb(S._colnb),
@@ -114,6 +115,7 @@ namespace LinBox
 			_rowid(S._rowid),_colid(S._colid),_data(S._data),
 			_field(S._field)
 		{}
+#endif
 
 		// XXX only for COO
 		template<typename _Tp1, typename _Rw1 = SparseMatrix2Format::COO>
