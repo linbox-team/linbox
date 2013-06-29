@@ -1409,8 +1409,7 @@ namespace LinBox
 		// reduce the matrix mod p
 		Field F(_prime);
 		typedef typename IMatrix::template rebind<Field>::other FMatrix;
-		FMatrix Ap(F, A.rowdim(), A.coldim());
-		typename IMatrix::template rebind<Field>()( Ap, A, F);
+		FMatrix Ap(A, F);
 
 		// precondition Ap  with a random diagonal Matrix
 		typename Field::RandIter G(F,0,123456);
@@ -1505,8 +1504,7 @@ namespace LinBox
 		// reduce the matrix mod p
 		Field F(_prime);
 		typedef typename IMatrix::template rebind<Field>::other FMatrix;
-		FMatrix Ap(F, A.rowdim(), A.coldim());
-		typename IMatrix::template rebind<Field>()( Ap, A, F);
+		FMatrix Ap(A, F);
 
 		// compute LQUP Factorization
 		Permutation<Field> P(A.coldim(),F),Q(A.rowdim(),F);
@@ -1515,7 +1513,7 @@ namespace LinBox
 		Element_t det;
 
 		GaussDomain<Field> GD(F);
-		GD.QLUPin(rank,det,Q,L,*Ap,P,Ap->rowdim(), Ap->coldim());
+		GD.QLUPin(rank,det,Q,L,Ap,P,Ap.rowdim(), Ap.coldim());
 		if (rank != A.rowdim()) {
 #if 0
 			throw LinboxError ("ERROR in DIXON SparseLU: singular matrix or bad prime");
@@ -1525,8 +1523,8 @@ namespace LinBox
 			// Therefore, prune unnecessary elements
 			// in those last columns of U
 			size_t origNNZ=0,newNNZ=0;
-			for(typename FMatrix::RowIterator row=Ap->rowBegin();
-			    row != Ap->rowEnd(); ++row) {
+			for(typename FMatrix::RowIterator row=Ap.rowBegin();
+			    row != Ap.rowEnd(); ++row) {
 				if (row->size()) {
 					origNNZ += row->size();
 					size_t ns=0;
@@ -1545,7 +1543,7 @@ namespace LinBox
 
 
 		typedef SparseLULiftingContainer<Ring,Field,IMatrix,FMatrix> LiftingContainer;
-		LiftingContainer lc(_ring, F, A, L, Q, *Ap, P, rank, b, _prime);
+		LiftingContainer lc(_ring, F, A, L, Q, Ap, P, rank, b, _prime);
 		RationalReconstruction<LiftingContainer > re(lc);
 
 		if (!re.getRational(num, den, 0))
