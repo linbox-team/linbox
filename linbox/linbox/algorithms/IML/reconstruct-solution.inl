@@ -373,7 +373,7 @@ template<class FiniteField>
 template<class FiniteField>
 	int
 	SolutionReconstruct<FiniteField>::
-	soluRecon (const LinBoxTag::Side solupos
+	soluRecon (const Tag::Side solupos
 		   , const size_t              k
 		   , RNS<FiniteField>        & rns
 		   , pAdicLift<FiniteField>  & C
@@ -410,7 +410,7 @@ template<class FiniteField>
 			for (j = 0; j < rns.size(); j++) {
 				C1[j] = C.getEntry(i,j,0);
 			}
-			rns.ChineseRemainder(C1, mp_C[i],LinBoxTag::Positive); //positive
+			rns.ChineseRemainder(C1, mp_C[i],Tag::Positive); //positive
 		}
 		sumliftCoeff(rns.basisProd(), k, mp_C, mp_sum);
 		ri = iratrecon(mp_sum, mp_m, mp_nb, mp_db, mp_N[0], mp_Dt[0]);
@@ -441,7 +441,7 @@ template<class FiniteField>
 						C1[l] = C.getEntry(j,l,h);
 						// C1[l] = C[j][l][h];
 					}
-				ChineseRemainder(basislen, basis, cmbasis, C1, mp_C[j],LinBoxTag::Positive);
+				ChineseRemainder(basislen, basis, cmbasis, C1, mp_C[j],Tag::Positive);
 			}
 
 			sumliftCoeff(mp_basisprod, k, mp_C, mp_sum);

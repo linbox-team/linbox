@@ -42,7 +42,7 @@
 #include "linbox/util/matrix-stream.h"
 
 #if 0
-namespace LinBox__FORMAT_MAPLE_H
+namespace LinBox__Tag::FileFormat::Maple_H
 {
 	static const char* name = "Maple Text Format";
 	static const char* shortname = "maple";
@@ -458,10 +458,10 @@ namespace LinBox
 		bool isSparse() const { return !array; }
 
 		const char* getName() const
-		{ return "Maple Text Format"; }// LinBox__FORMAT_MAPLE_H::name; }
+		{ return "Maple Text Format"; }// LinBox__Tag::FileFormat::Maple_H::name; }
 
 		const char* shortName() const
-		{ return "maple"; }// LinBox__FORMAT_MAPLE_H::shortname;
+		{ return "maple"; }// LinBox__Tag::FileFormat::Maple_H::shortname;
 };
 
 

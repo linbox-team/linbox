@@ -211,7 +211,7 @@ namespace LinBox
 
 		const Field& field() const { return *_field; }
 
-		std::ostream &write(std::ostream &os) const //, FileFormatTag format = FORMAT_MAPLE) const
+		std::ostream &write(std::ostream &os) const //, LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Maple) const
 		{
 			// 		for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it)
 			//                     std::cerr << *it << ' ';

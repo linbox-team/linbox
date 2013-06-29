@@ -67,7 +67,7 @@ int main (int argc, char **argv)
 		LinBox::GivaroRational ZZ;
 		MatrixStream<GivaroRational> ms( ZZ, input );
 		SparseMatrix<GivaroRational, Vector<GivaroRational>::SparseSeq > A ( ms );
-        if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",FORMAT_MAPLE) << ';' << std::endl;
+        if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
         
 
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;

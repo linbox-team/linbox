@@ -45,15 +45,15 @@ namespace LinBox
 	/*! Structure for tags.
 	 * Tags are simple enums that set a choice in a routine.
 	 * For instance, if the user wants a <i>right</i> nullspace,
-	 * she will use a \c LinBoxTag::Right parameter.
+	 * she will use a \c Tag::Right parameter.
 	 *
 	 * There it total compatiblity with \c FFLAS tags (cross link)
-	 * For instance, in LinBox, it is similar to use \c LinBoxTag::Upper and
-	 * <code>(LinBoxTag::Shape) FFLAS::FflasUpper</code>.
+	 * For instance, in LinBox, it is similar to use \c Tag::Upper and
+	 * <code>(Tag::Shape) FFLAS::FflasUpper</code>.
 	 *
 	 * @note Tags are not Methods.
 	 */
-	namespace LinBoxTag {
+	namespace Tag {
 		//! Left/Right Tag
 #if HAVE_CXX11
 		enum struct Side : int32_t
@@ -108,18 +108,28 @@ namespace LinBox
 
 		//! Dense format (table) output Tag
 #if HAVE_CXX11
-		enum  class Format : int32_t
+		enum  class FileFormat : int32_t
 #else
 		};
 
-		struct Format { enum  enum_t
+		struct FileFormat { enum  enum_t
 #endif
 		{
-			FormatPlain = 0,
-			FormatMaple = 1,
-			FormatHTML  = 2,
-			FormatLaTeX = 3
+			Plain = 0,
+			Maple = 1,
+			HTML  = 2,
+			LaTeX = 3,
+			Detect,
+			Guillaume,
+			Turner,
+			Matlab,
+			Pretty,
+			MagmaCpt,
+			OneBased
+
 		} ;
+
+
 
 #if HAVE_CXX11
 		enum struct Direction : int32_t

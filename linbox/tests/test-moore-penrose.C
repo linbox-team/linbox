@@ -262,7 +262,7 @@ static bool testRandomApply1 (Field                 &F,
 		{
 			ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "Input matrix" << endl;
-			A->write (report, FORMAT_PRETTY);
+			A->write (report, Tag::FileFormat::Pretty);
 		}
 
 		Submatrix<Blackbox> Aprime (A, 0, 0, MIN (n, m), MIN (n, m));

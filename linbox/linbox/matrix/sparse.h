@@ -70,6 +70,7 @@
 
 #include "linbox-config.h"
 #include "linbox/util/debug.h"
+#include "linbox/linbox-tags.h"
 #include "linbox/matrix/sparse-formats.h"
 // #include "linbox/blackbox/factory.h"
 #include "linbox/matrix/matrix-domain.h"
@@ -102,7 +103,7 @@ namespace LinBox
 
 			 static std::ostream &write (const SparseMatrix<Field, Row> &A
 						     , std::ostream &os
-						     , FileFormatTag format);
+						     , LINBOX_enum(Tag::FileFormat) format);
 		 };
 
 	template <class Field, class Row, class Trait = typename VectorTraits<Row>::VectorCategory>
@@ -134,7 +135,7 @@ namespace LinBox
 		static std::istream &read (SparseMatrix<Field, Row> &A
 					   , std::istream &is
 					   // , const Field &F
-					   , FileFormatTag format);
+					   ,  LINBOX_enum(Tag::FileFormat) format);
 	};
 
 	/** Sparse matrix container
@@ -294,7 +295,7 @@ namespace LinBox
 		 * @param is Input stream from which to read the matrix
 		 * @param format Format of input matrix
 		 */
-		std::istream &read (std::istream &is,  FileFormatTag format /*= FORMAT_DETECT*/);
+		std::istream &read (std::istream &is,   LINBOX_enum(Tag::FileFormat) format /*= Tag::FileFormat::Detect*/);
 
 		// Read from matrix market format
 		std::istream &read (std::istream &is)
@@ -319,7 +320,7 @@ namespace LinBox
 		{
 			// typedef SparseMatrixBase<Element, _Row> SMB;
 			writeMMCoordHeader(os, *this, this->size(), "SparseMatrix");
-			return this->write(os, FORMAT_ONE_BASED);
+			return this->write(os, Tag::FileFormat::OneBased);
 		}
 
 		/** Write a matrix to the given output stream using field read/write
@@ -327,7 +328,7 @@ namespace LinBox
 		 * @param F Field with which to write
 		 * @param format Format with which to write
 		 */
-		std::ostream &write (std::ostream &os, FileFormatTag format /*  = FORMAT_PRETTY*/) const;
+		std::ostream &write (std::ostream &os,  LINBOX_enum(Tag::FileFormat) format /*  = Tag::FileFormat::Pretty*/) const;
 
 		/** Set an individual entry
 		 * Setting the entry to 0 will remove it from the matrix

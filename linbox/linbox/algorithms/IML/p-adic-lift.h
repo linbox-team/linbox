@@ -79,7 +79,7 @@ namespace LinBox{ namespace iml{
 
 		void invBasis () ;
 
-		void iml_lift(LinBoxTag::Side s,
+		void iml_lift(Tag::Side s,
 			      LiftStep<Field> & C,
 			      BlasMatrix<PID_integer> & mp_r
 			     );

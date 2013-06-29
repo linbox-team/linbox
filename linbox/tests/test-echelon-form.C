@@ -211,8 +211,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
 		LQUPMatrix<Field> X(A,P,Q);
 
-		TriangularBlasMatrix<Field> L(F,m,m,LinBoxTag::Lower,LinBoxTag::Unit);
-		TriangularBlasMatrix<Field> U(F,m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
+		TriangularBlasMatrix<Field> L(F,m,m,Tag::Lower,Tag::Unit);
+		TriangularBlasMatrix<Field> U(F,m,n,Tag::Upper,Tag::NonUnit);
 		X.getL(L);
 		X.getU(U);
 		P=X.getP();
@@ -237,8 +237,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 
 		LQUPMatrix<Field> Y(A,P,Q);
 
-		TriangularBlasMatrix<Field> L2(F,m,m,LinBoxTag::Lower,LinBoxTag::Unit);
-		TriangularBlasMatrix<Field> U2(F,m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
+		TriangularBlasMatrix<Field> L2(F,m,m,Tag::Lower,Tag::Unit);
+		TriangularBlasMatrix<Field> U2(F,m,n,Tag::Upper,Tag::NonUnit);
 		Y.getL(L2);
 		Y.getU(U2);
 		P=Y.getP();

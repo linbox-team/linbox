@@ -218,16 +218,16 @@ bool CheckMulAdd( const Integer & alpha ,
 		std::cout << "#########################################" << std::endl;
 		std::cout << "p := " << p << ';' << std::endl;
 		std::cout << "ap,bp := " << ap << ',' << bp << ';' << std::endl;
-		Ap.write(std::cout << "Ap :=", LinBoxTag::FormatMaple) << ";" << std::endl;
-		Bp.write(std::cout << "Bp :=", LinBoxTag::FormatMaple) << ";" << std::endl;
-		Cp.write(std::cout << "Cp :=", LinBoxTag::FormatMaple) << ";" << std::endl;
-		Dp.write(std::cout << "Dp :=", LinBoxTag::FormatMaple) << ";" << std::endl;
-		Ep.write(std::cout << "Ep :=", LinBoxTag::FormatMaple) << ";" << std::endl;
+		Ap.write(std::cout << "Ap :=", Tag::FileMaple) << ";" << std::endl;
+		Bp.write(std::cout << "Bp :=", Tag::FileMaple) << ";" << std::endl;
+		Cp.write(std::cout << "Cp :=", Tag::FileMaple) << ";" << std::endl;
+		Dp.write(std::cout << "Dp :=", Tag::FileMaple) << ";" << std::endl;
+		Ep.write(std::cout << "Ep :=", Tag::FileMaple) << ";" << std::endl;
 		std::cout << "alpha,beta := " << alpha << ',' << beta << ';' << std::endl;
-		A.write(std::cout << "A :=",LinBoxTag::FormatMaple) << ';' << std::endl;
-		B.write(std::cout << "B :=",LinBoxTag::FormatMaple) << ';' << std::endl;
-		C.write(std::cout << "C :=",LinBoxTag::FormatMaple) << ';' << std::endl;
-		D.write(std::cout << "E :=",LinBoxTag::FormatMaple) << ';' << std::endl;
+		A.write(std::cout << "A :=",Tag::FileMaple) << ';' << std::endl;
+		B.write(std::cout << "B :=",Tag::FileMaple) << ';' << std::endl;
+		C.write(std::cout << "C :=",Tag::FileMaple) << ';' << std::endl;
+		D.write(std::cout << "E :=",Tag::FileMaple) << ';' << std::endl;
 		std::cout << "evalm(E-alpha*A.B-beta*C);" << std::endl;
 		std::cout << "#########################################" << std::endl;
 #endif
@@ -471,12 +471,12 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 	/****  DIRECT ****/
 	{
 		/*  L */
-		TriangularMatrix L (A, LinBoxTag::Shape::Lower,
-				    (UnitDiag?LinBoxTag::Diag::Unit:LinBoxTag::Diag::NonUnit));
+		TriangularMatrix L (A, Tag::Shape::Lower,
+				    (UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
 
 		/*  U */
-		TriangularMatrix U (A, LinBoxTag::Shape::Upper,
-				    (!UnitDiag?LinBoxTag::Diag::Unit:LinBoxTag::Diag::NonUnit));
+		TriangularMatrix U (A, Tag::Shape::Upper,
+				    (!UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
 
 		/*  make product */
 		E = B ;
@@ -505,12 +505,12 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 	/****  Transpose ****/
 	{
 		/*  L */
-		TriangularMatrix L1 (A1, LinBoxTag::Shape::Lower,
-				    (UnitDiag?LinBoxTag::Diag::Unit:LinBoxTag::Diag::NonUnit));
+		TriangularMatrix L1 (A1, Tag::Shape::Lower,
+				    (UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
 
 		/*  U */
-		TriangularMatrix U1 (A1, LinBoxTag::Shape::Upper,
-				    (!UnitDiag?LinBoxTag::Diag::Unit:LinBoxTag::Diag::NonUnit));
+		TriangularMatrix U1 (A1, Tag::Shape::Upper,
+				    (!UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
 
 		TransposedTriangular L(L1);
 		TransposedTriangular U(U1);
@@ -805,7 +805,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 		}
 
 		// Create 2 trinagular matrix as view of matrix
-		TriangularMatrix TAl(Al,LinBoxTag::Shape::Lower,LinBoxTag::Diag::NonUnit), TAu(Au,LinBoxTag::Shape::Upper,LinBoxTag::Diag::NonUnit);
+		TriangularMatrix TAl(Al,Tag::Shape::Lower,Tag::Diag::NonUnit), TAu(Au,Tag::Shape::Upper,Tag::Diag::NonUnit);
 
 		// testing solver with matrix right hand side
 		BMD.left_solve(X,TAl,B);
@@ -1341,8 +1341,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
 		LQUPMatrix<Field> X(A,P,Q);
 
-		TriangularBlasMatrix<Field> L(F,m,m,LinBoxTag::Shape::Lower,LinBoxTag::Diag::Unit);
-		TriangularBlasMatrix<Field> U(F,m,n,LinBoxTag::Shape::Upper,LinBoxTag::Diag::NonUnit);
+		TriangularBlasMatrix<Field> L(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
+		TriangularBlasMatrix<Field> U(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
 		X.getL(L);
 		X.getU(U);
 		P=X.getP();
@@ -1367,8 +1367,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 		LQUPMatrix<Field> Y(A,P,Q);
 
-		TriangularBlasMatrix<Field> L2(F,m,m,LinBoxTag::Shape::Lower,LinBoxTag::Diag::Unit);
-		TriangularBlasMatrix<Field> U2(F,m,n,LinBoxTag::Shape::Upper,LinBoxTag::Diag::NonUnit);
+		TriangularBlasMatrix<Field> L2(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
+		TriangularBlasMatrix<Field> U2(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
 		Y.getL(L2);
 		Y.getU(U2);
 		P=Y.getP();

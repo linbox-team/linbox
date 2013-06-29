@@ -380,7 +380,7 @@ namespace LinBox
 				LQUPMatrix<Field> LQUP(CopyDiscr,Pp,Qt);
 
 				// Get the matrix L of LQUP decomposition
-				TriangularBlasMatrix<Field> L(field(),m+n,m+n, LinBoxTag::Shape::Lower, LinBoxTag::Diag::Unit );
+				TriangularBlasMatrix<Field> L(field(),m+n,m+n, Tag::Shape::Lower, Tag::Diag::Unit );
 				LQUP.getL(L);
 
 				// Get the tranposed  permutation of Q from LQUP
@@ -396,7 +396,7 @@ namespace LinBox
 				BlasPermutation<size_t> BPerm2(Perm2);
 
 				// compute the inverse of L
-				TriangularBlasMatrix<Field> invL (field(),m+n,m+n, LinBoxTag::Shape::Lower,LinBoxTag::Diag::Unit);
+				TriangularBlasMatrix<Field> invL (field(),m+n,m+n, Tag::Shape::Lower,Tag::Diag::Unit);
 				FFPACK::trinv_left((typename Field::Father_t)field(),m+n,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
 
 #ifdef 	__CHECK_TRANSFORMATION
@@ -485,7 +485,7 @@ namespace LinBox
 
 				// Discrepancy= BPerm2.U.Pp from LQUP
 				Coefficient U(field(),m+n,n);
-				TriangularBlasMatrix<Field> trU(U,LinBoxTag::Shape::Upper,LinBoxTag::Diag::NonUnit);
+				TriangularBlasMatrix<Field> trU(U,Tag::Shape::Upper,Tag::Diag::NonUnit);
 				LQUP.getU(trU);
 				//Discrepancy=U;
 				// BlasPermutation<size_t> Pp= LQUP.getP();

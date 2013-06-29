@@ -94,7 +94,7 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		Element * Kern  = NULL;
 		size_t ld_k = 0 ;
 		if (a_droite) {
-			NullSpaceBasis (F, LinBoxTag::Side::Right,m,n,A,ld_a,Kern,ld_k,ker_dim);
+			NullSpaceBasis (F, Tag::Side::Right,m,n,A,ld_a,Kern,ld_k,ker_dim);
 			if (ker_dim != (ld_a - rank)) {
 				ret = false;
 				cout << "faux : (1) mauvaises dim : " << ker_dim << " != " << (ld_a - rank) << endl;
@@ -105,7 +105,7 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 			}
 		}
 		else {
-			NullSpaceBasis (F, LinBoxTag::Side::Left,m,n,A,ld_a,Kern,ld_k,ker_dim);
+			NullSpaceBasis (F, Tag::Side::Left,m,n,A,ld_a,Kern,ld_k,ker_dim);
 			if (ker_dim != (wd_a - rank) ) {
 				ret = false;
 				cout << "faux : (1) mauvaises dim " << ker_dim << " != " << (wd_a - rank)  << endl;

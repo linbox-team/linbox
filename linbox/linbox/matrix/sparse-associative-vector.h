@@ -184,7 +184,7 @@ public:
 
 	std::istream &read (std::istream &is
 			    // , const Field &F
-			    , FileFormatTag format /* = FORMAT_DETECT */)
+			    , LINBOX_enum(Tag::FileFormat) format /* = Tag::FileFormat::Detect */)
 	{
 		return SparseMatrixReadWriteHelper<Field, Row>::read (*this, is, format);
 	}
@@ -208,7 +208,7 @@ public:
 
 	std::ostream &write (std::ostream &os
 			     // , const Field &F
-			     , FileFormatTag format /*  = FORMAT_PRETTY */) const
+			     , LINBOX_enum(Tag::FileFormat) format /*  = Tag::FileFormat::Pretty */) const
 	{
 		return SparseMatrixReadWriteHelper<Field, Row>::write (*this, os, format);
 	}
@@ -218,7 +218,7 @@ public:
 	{
 		// typedef SparseMatrixBase<Element, _Row> SMB;
 		writeMMCoordHeader(os, *this, this->size(), "SparseMatrix");
-		return this->write(os, FORMAT_ONE_BASED);
+		return this->write(os, Tag::FileFormat::OneBased);
 	}
 
 	void           setEntry (size_t i, size_t j, const Element &value)

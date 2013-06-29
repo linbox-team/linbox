@@ -162,7 +162,7 @@ namespace LinBox { namespace iml {
 				// for (i = 0; i < m * s; i++)
 				// mpz_init(mp_N[i]);
 
-				nonsingSolve(LinBoxTag::Right, C, mp_B, mp_N, mp_D);
+				nonsingSolve(Tag::Right, C, mp_B, mp_N, mp_D);
 
 				Integer::negin(mp_D);
 

@@ -450,13 +450,13 @@ namespace LinBox
 
 	template<class Field>
 	size_t
-	NullSpaceBasis (const Field& F, const LinBoxTag::Side Side,
+	NullSpaceBasis (const Field& F, const Tag::Side Side,
 			const size_t & m, const size_t & n,
 			typename Field::Element * A, const size_t & lda,
 			typename Field::Element *& Ker, size_t& ldk,
 			size_t & kerdim)
 	{
-		if (Side == LinBoxTag::Side::Right){
+		if (Side == Tag::Side::Right){
 			if (m < n)
 				Ker = RightNullspaceDirect(F,A,m,n,lda,kerdim) ;
 			else
@@ -476,7 +476,7 @@ namespace LinBox
 
 	template<class Field>
 	size_t&
-	NullSpaceBasis (const Field& F, const LinBoxTag::Side Side,
+	NullSpaceBasis (const Field& F, const Tag::Side Side,
 			BlasMatrix<Field> & A,
 			BlasMatrix<Field> & Ker,
 			size_t & kerdim)
@@ -485,7 +485,7 @@ namespace LinBox
 		typename Field::Element * Ker_ptr;
 		size_t ldk;
 		NullSpaceBasis(F,Side,A.rowdim(),A.coldim(), A.getWritePointer(),A.getStride(), Ker_ptr,ldk,kerdim);
-		if (Side == LinBoxTag::Side::Right){
+		if (Side == Tag::Side::Right){
 			Ker = BlasMatrix<Field>(F,A.rowdim(),kerdim);
 		}
 		else {

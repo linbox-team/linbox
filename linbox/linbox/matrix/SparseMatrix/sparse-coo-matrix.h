@@ -503,7 +503,7 @@ namespace LinBox
 		}
 
 		std::ostream & write(std::ostream &os,
-				     enum FileFormatTag ff  = FORMAT_MAPLE)
+				     enum LINBOX_enum(Tag::FileFormat) ff  = Tag::FileFormat::Maple)
 		{
 			return this->writeSpecialized(os,ff);
 		}
@@ -607,10 +607,10 @@ namespace LinBox
 	private :
 
 		std::ostream & writeSpecialized(std::ostream &os,
-						FileFormatTag format) const
+						LINBOX_enum(Tag::FileFormat) format) const
 		{
 			switch (format) {
-			case (FORMAT_MAPLE):
+			case (Tag::FileFormat::Maple):
 				{
 
 					linbox_check(_colnb > 0);

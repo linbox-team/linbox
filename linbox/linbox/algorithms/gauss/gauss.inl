@@ -184,8 +184,8 @@ namespace LinBox
 			}
 			E one((unsigned)k,Eone);
 			LigneL[(size_t)k].push_back(one);
-			//                 LigneL.write(rep << "L:= ", FORMAT_MAPLE) << std::endl;
-			//                 LigneA.write(rep << "U:= ", FORMAT_MAPLE) << std::endl;
+			//                 LigneL.write(rep << "L:= ", Tag::FileFormat::Maple) << std::endl;
+			//                 LigneA.write(rep << "U:= ", Tag::FileFormat::Maple) << std::endl;
 		}//for k
 
 		SparseFindPivot ( LigneA[(size_t)last], Rank, c, determinant);
@@ -229,10 +229,10 @@ namespace LinBox
 
 
 		//             std::ostream& rep = commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT);
-		//             Q.write(rep << "Q:= ", FORMAT_MAPLE) << ':' << std::endl;
-		//             LigneL.write(rep << "L:= ", FORMAT_MAPLE) << ':' << std::endl;
-		//             LigneA.write(rep << "U:= ", FORMAT_MAPLE) << ':' << std::endl;
-		//             P.write(rep << "P:= ", FORMAT_MAPLE) << ':' << std::endl;
+		//             Q.write(rep << "Q:= ", Tag::FileFormat::Maple) << ':' << std::endl;
+		//             LigneL.write(rep << "L:= ", Tag::FileFormat::Maple) << ':' << std::endl;
+		//             LigneA.write(rep << "U:= ", Tag::FileFormat::Maple) << ':' << std::endl;
+		//             P.write(rep << "P:= ", Tag::FileFormat::Maple) << ':' << std::endl;
 
 		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 		<< "Rank : " << Rank

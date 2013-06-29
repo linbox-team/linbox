@@ -304,7 +304,7 @@ namespace LinBox{ namespace iml{
 
 	template<class Field>
 	void
-	pAdicLift<Field>::iml_lift (const LinBoxTag::Side solupos
+	pAdicLift<Field>::iml_lift (const Tag::Side solupos
 		  // , std::vector<std::vector<BlasMatrix<Field> > > & C
 				    , LiftStep<Field> & C
 		  // , const size_t k
@@ -381,8 +381,8 @@ namespace LinBox{ namespace iml{
 				}
 
 				/* compute the coefficients of p-adic lifting */
-				FFLAS::fgemm(Fq,(solupos==LinBoxTag::Left)?(LinBoxTag::Trans):(LinBoxTag::NoTrans)
-					     ,LinBoxTag::NoTrans,n,m,n
+				FFLAS::fgemm(Fq,(solupos==Tag::Left)?(Tag::Trans):(Tag::NoTrans)
+					     ,Tag::NoTrans,n,m,n
 					     ,Fq.one,_AInv[l].getPointer(),n,dtemp.getPointer(),m
 					     ,F.zero,C[i][l].getWritePointer(),m);
 #if 0
@@ -415,8 +415,8 @@ namespace LinBox{ namespace iml{
 				_liftbasis.basisExtPos(Fq, C[i], dtemp);
 				// _liftbasis.basisExtPos(liftbasislen, m*n, q[j], _liftbasis, cmbasis, C[i], dtemp);
 
-				FFLAS::fgemm(Fq,(solupos==LinBoxTag::Left)?(LinBoxTag::Trans):(LinBoxTag::NoTrans)
-					     ,LinBoxTag::NoTrans,n,m,n
+				FFLAS::fgemm(Fq,(solupos==Tag::Left)?(Tag::Trans):(Tag::NoTrans)
+					     ,Tag::NoTrans,n,m,n
 					     ,Fq.one,ARNS[j].getPointer(),n,dtemp.getPointer(),m
 					     ,F.zero,Ac[j].getWritePointer(),m);
 
