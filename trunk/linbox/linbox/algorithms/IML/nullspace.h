@@ -60,16 +60,16 @@ namespace LinBox { namespace iml {
 	size_t nullspace (
 			  BlasMatrix<UnparaRing>        & N
 			  ,const BlasMatrix<UnparaRing> & A
-			  , const LinBoxTag::Side Side=LinBoxTag::Right
+			  , const Tag::Side Side=Tag::Right
 			 );
 template<class ZZ>
 size_t nullspace (
 		BlasMatrix<ZZ>        & N
 		,const BlasMatrix<ZZ> & A
-		, const LinBoxTag::Side Side
+		, const Tag::Side Side
 		)
 {
-	if (Side == LinBoxTag::Right)
+	if (Side == Tag::Right)
 		return Protected::nullspaceRight(N,A);
 	else {
 		//! XXX throw error

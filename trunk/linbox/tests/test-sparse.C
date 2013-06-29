@@ -84,7 +84,7 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Matrix:" << endl;
-	A.write (report, FORMAT_PRETTY);
+	A.write (report, Tag::FileFormat::Pretty);
 
 	Vector v, w;
 
@@ -158,7 +158,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Matrix:" << endl;
-	A.write (report, FORMAT_PRETTY);
+	A.write (report, Tag::FileFormat::Pretty);
 
 	size_t j;
 	NonzeroRandIter<Field> r (F, typename Field::RandIter (F));
@@ -276,7 +276,7 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
 
 		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
-		A.write (report, FORMAT_PRETTY);
+		A.write (report, Tag::FileFormat::Pretty);
 
 		stream.reset ();
 
@@ -360,7 +360,7 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 
 		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
-		A.write (report, FORMAT_PRETTY);
+		A.write (report, Tag::FileFormat::Pretty);
 
 		A.apply (w, v);
 
@@ -420,7 +420,7 @@ static bool testRandomTranspose (Field                &F,
 
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix:" << endl;
-	A.write (report, FORMAT_PRETTY);
+	A.write (report, Tag::FileFormat::Pretty);
 
 	bool ret = testTranspose (F, A, stream1, stream2);
 
@@ -461,7 +461,7 @@ static bool testRandomLinearity (Field                 &F,
 
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix:" << endl;
-	A.write (report, FORMAT_PRETTY);
+	A.write (report, Tag::FileFormat::Pretty);
 
 	bool ret = testLinearity (A, stream1, stream2);
 

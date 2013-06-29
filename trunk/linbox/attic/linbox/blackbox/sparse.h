@@ -92,7 +92,7 @@ namespace LinBox
 		BB_list_list sub_list;
 #endif
 
-		FileFormatTag Format;
+		LINBOX_enum(Tag::FileFormat) Format;
 
 		typedef typename SparseMatrixBase<typename Field::Element, _Row>::Iterator Iterator;
 		typedef typename SparseMatrixBase<typename Field::Element, _Row>::IndexedIterator IndexedIterator;
@@ -269,22 +269,22 @@ namespace LinBox
 		 * @param format Format of input matrix
 		 * @return Reference to input stream
 		 */
-		std::istream &read (std::istream &is, FileFormatTag format/* = FORMAT_DETECT*/)
+		std::istream &read (std::istream &is, LINBOX_enum(Tag::FileFormat) format/* = Tag::FileFormat::Detect*/)
 		{ return SparseMatrixBase<Element, _Row>::read (is, field(), format); }
 
 		/// Write in matrix market format
 		std::ostream &write (std::ostream &os) const
 		{ typedef SparseMatrixBase<Element, _Row> SMB;
 		  writeMMCoordHeader(os, *this, this->size(), "SparseMatrix");
-          return this->write(os, FORMAT_ONE_BASED);
+          return this->write(os, Tag::FileFormat::OneBased);
 		}
 
 		/** Write the matrix to a stream in the given format
 		 * @return Reference to output stream
 		 * @param os Output stream to which to write the matrix
-		 * @param format Format of output. FORMAT_PRETTY is often used on small matrices in debugging.
+		 * @param format Format of output. Tag::FileFormat::Pretty is often used on small matrices in debugging.
 		 */
-		std::ostream &write (std::ostream &os, FileFormatTag format) const
+		std::ostream &write (std::ostream &os, LINBOX_enum(Tag::FileFormat) format) const
 		{ return SparseMatrixBase<Element, _Row>::write (os, field(), format); }
 
 		// JGD 28.08.2002

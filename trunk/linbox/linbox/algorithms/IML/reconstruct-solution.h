@@ -55,7 +55,7 @@ public:
 		   , Integer &mp_D);
 
 	int
-	soluRecon (const LinBoxTag::Side solupos
+	soluRecon (const Tag::Side solupos
 		   , const size_t              k
 		   , RNS<FiniteField>        & rns
 		   , pAdicLift<FiniteField>  & C

@@ -38,17 +38,6 @@ namespace LinBox {
 	}
 
 
-	/// tags for SparseMatrixBase::read() and write()
-	enum FileFormatTag {
-		FORMAT_DETECT,
-		FORMAT_GUILLAUME,
-		FORMAT_TURNER,
-		FORMAT_MATLAB,
-		FORMAT_MAPLE,
-		FORMAT_PRETTY,
-		FORMAT_MAGMACPT,
-		FORMAT_ONE_BASED
-	};
 
 	// add here the sparse matrix types
 

@@ -117,10 +117,7 @@ int main (int argc, char **argv)
 
 		//         A.write(std::cout << "A: ") << std::endl;
 
-		std::cout << "B is [";
-		for(DenseVector::const_iterator it=B.begin();it != B.end(); ++it)
-			F.write(cout, *it) << " ";
-		std::cout << "]" << std::endl;
+		std::cout << "B is " << B << std::endl;
 
 		Timer chrono;
 
@@ -207,7 +204,7 @@ int main (int argc, char **argv)
 		if (createB) {
 			cerr << "Creating a random {-1,1} vector U, B is AU" << endl;
 			DenseVector U(ZZ, A.coldim() );
-			for(DenseVector::iterator it=B.begin();
+			for(DenseVector::iterator it=U.begin();
 			    it != U.end(); ++it)
 				if (drand48() <0.5)
 					*it = -1;
@@ -222,11 +219,7 @@ int main (int argc, char **argv)
 		}
 
 
-		std::cout << "B is [";
-		for(DenseVector::const_iterator it=B.begin();
-		    it != B.end(); ++it)
-			ZZ.write(cout, *it) << " ";
-		std::cout << "]" << std::endl;
+		std::cout << "B is " << B << std::endl;
 
 
 		Timer chrono;

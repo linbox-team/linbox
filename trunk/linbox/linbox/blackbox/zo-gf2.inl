@@ -149,9 +149,9 @@ namespace LinBox
 		return is;
 	}
 
-	inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, FileFormatTag format) const
+	inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, LINBOX_enum(Tag::FileFormat) format) const
 	{
-		if (format == FORMAT_GUILLAUME) {
+		if (format == Tag::FileFormat::Guillaume) {
 			out << _rowdim << ' ' << _coldim << " M\n";
 			for(size_t i=0; i<_rowdim; ++i) {
 				const Row_t& rowi = this->operator[](i);
@@ -160,7 +160,7 @@ namespace LinBox
 			}
 			return out << "0 0 0" << std::endl;
 		}
-		else if (format == FORMAT_MAPLE) {
+		else if (format == Tag::FileFormat::Maple) {
 			out << '[';
 			bool firstrow=true;
 			for (const_iterator i = begin (); i != end (); ++i) {

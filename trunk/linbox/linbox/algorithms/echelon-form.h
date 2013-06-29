@@ -225,7 +225,7 @@ namespace LinBox
 			// Update the first r columns of E by Err^(-1)
 			// BlasSubmatrix<Field> Er(E,0,0,rank,rank);
 			BlasMatrix<Field> Er(E,0,0,rank,rank);
-			TriangularBlasMatrix<Field> Err(Er, LinBoxTag::Shape::Lower, LinBoxTag::Diag::Unit);
+			TriangularBlasMatrix<Field> Err(Er, Tag::Shape::Lower, Tag::Diag::Unit);
 			BlasSubmatrix<BlasMatrix<Field> > En(E,rank,0,m-rank,rank);
 
 			_BMD.right_solve(Err, En);

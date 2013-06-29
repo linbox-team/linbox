@@ -239,13 +239,13 @@ namespace LinBox
 	template <class Field, class Row, class Trait>
 	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::read (SparseMatrix<Field, Row> &A, std::istream &is
 									     // , const Field &F
-									     , FileFormatTag format)
+									     , LINBOX_enum(Tag::FileFormat) format)
 	{
 		char buf[80];
 		buf[0]=0;
 
 		switch (format) {
-		case FORMAT_DETECT: {
+		case Tag::FileFormat::Detect: {
 					    char c;
 					    is.getline (buf, 80);
 					    std::istringstream str (buf);
@@ -270,15 +270,15 @@ namespace LinBox
 					    break;
 				    }
 
-		case FORMAT_TURNER:
+		case Tag::FileFormat::Turner:
 				    return readTurner (A, is, buf);
-		case FORMAT_GUILLAUME:
+		case Tag::FileFormat::Guillaume:
 				    return readGuillaume (A, is, buf);
-		case FORMAT_MATLAB:
+		case Tag::FileFormat::Matlab:
 				    return readMatlab (A, is, buf);
-		case FORMAT_PRETTY:
+		case Tag::FileFormat::Pretty:
 				    return readPretty (A, is, buf);
-		case FORMAT_MAGMACPT:
+		case Tag::FileFormat::MagmaCpt:
 				    return readMagmaCpt (A, is, buf);
 		default:
 				    throw Exceptions::InvalidMatrixInput();
@@ -290,7 +290,7 @@ namespace LinBox
 	template <class Field, class Row, class Trait>
 	std::ostream &SparseMatrixWriteHelper<Field, Row, Trait> ::write (const SparseMatrix<Field, Row> &A, std::ostream &os
 									  // , const Field &F
-									  , FileFormatTag format)
+									  , LINBOX_enum(Tag::FileFormat) format)
 	{
 		typename SparseMatrix<Field, Row>::Rep::const_iterator i;
 		typename Row::const_iterator j;
@@ -305,11 +305,11 @@ namespace LinBox
 			return os;
 
 		switch (format) {
-		case FORMAT_DETECT:
-			throw PreconditionFailed (__func__, __LINE__, "format != FORMAT_DETECT");
+		case Tag::FileFormat::Detect:
+			throw PreconditionFailed (__func__, __LINE__, "format != Tag::FileFormat::Detect");
 			//break;//BB: unreachable
 
-		case FORMAT_TURNER:
+		case Tag::FileFormat::Turner:
 			// The i j v triples, with zero based indices.
 			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
 				for (j = i->begin (), j_idx = 0; j != i->end (); ++j, ++j_idx) {
@@ -320,7 +320,7 @@ namespace LinBox
 			}
 			break;
 
-		case FORMAT_ONE_BASED:
+		case Tag::FileFormat::OneBased:
 			// The i j v triples, with zero based indices.
 			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
 				for (j = i->begin (), j_idx = 0; j != i->end (); ++j, ++j_idx) {
@@ -331,7 +331,7 @@ namespace LinBox
 			}
 			break;
 
-		case FORMAT_GUILLAUME:
+		case Tag::FileFormat::Guillaume:
 			// row col 'M' header line followed by the i j v triples, one based,
 			// followed by 0 0 0.
 			os << A._m << ' ' << A._n << " M" << std::endl;
@@ -348,7 +348,7 @@ namespace LinBox
 
 			break;
 
-		case FORMAT_MATLAB:
+		case Tag::FileFormat::Matlab:
 
 			os << "[";
 
@@ -374,7 +374,7 @@ namespace LinBox
 
 			break;
 
-		case FORMAT_MAPLE:
+		case Tag::FileFormat::Maple:
 
 			os << "[";
 			firstrow=true;
@@ -408,7 +408,7 @@ namespace LinBox
 
 			break;
 
-		case FORMAT_PRETTY:
+		case Tag::FileFormat::Pretty:
 			//A.field().characteristic (c);
 			//col_width = (int) ceil (log ((double) c) / M_LN10);
 
@@ -435,7 +435,7 @@ namespace LinBox
 
 			break;
 
-		case FORMAT_MAGMACPT:
+		case Tag::FileFormat::MagmaCpt:
 			os << "sparse matrix written in MagmaCpt form is not implemented" << std::endl;
 			break;
 		}

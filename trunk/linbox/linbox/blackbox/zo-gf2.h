@@ -119,7 +119,7 @@ namespace LinBox
 		 *  @return Reference to input stream
 		 */
 		std::istream &read (std::istream &is) ;
-		std::ostream& write (std::ostream& out, FileFormatTag format=FORMAT_GUILLAUME) const ;
+		std::ostream& write (std::ostream& out, LINBOX_enum(Tag::FileFormat) format=Tag::FileFormat::Guillaume) const ;
 
 		const Field& field() const { return *_field; }
 

@@ -46,7 +46,7 @@ namespace LinBox
 	template <class Field, class Row>
 	std::ostream &SparseMatrixWriteHelper<Field, Row, VectorCategories::SparseParallelVectorTag >::write (const SparseMatrix<Field, Row> &A, std::ostream &os
 		 // , const Field &F
-		 , FileFormatTag format)
+		 , LINBOX_enum(Tag::FileFormat) format)
 	{
 		const Field & F = A.field();
 		typename SparseMatrix<Field, Row>::Rep::const_iterator i;
@@ -63,11 +63,11 @@ namespace LinBox
 			return os;
 
 		switch (format) {
-		case FORMAT_DETECT:
-			throw PreconditionFailed (__func__, __LINE__, "format != FORMAT_DETECT");
+		case Tag::FileFormat::Detect:
+			throw PreconditionFailed (__func__, __LINE__, "format != Tag::FileFormat::Detect");
 			//break//BB: unreachable;
 
-		case FORMAT_TURNER:
+		case Tag::FileFormat::Turner:
 			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
 				for (j_idx = i->first.begin (), j_elt = i->second.begin ();
 				     j_idx != i->first.end ();
@@ -81,7 +81,7 @@ namespace LinBox
 
 			break;
 
-		case FORMAT_ONE_BASED:
+		case Tag::FileFormat::OneBased:
 			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
 				for (j_idx = i->first.begin (), j_elt = i->second.begin ();
 				     j_idx != i->first.end ();
@@ -95,7 +95,7 @@ namespace LinBox
 
 			break;
 
-		case FORMAT_GUILLAUME:
+		case Tag::FileFormat::Guillaume:
 			os << A._m << ' ' << A._n << " M" << std::endl;
 
 			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
@@ -113,7 +113,7 @@ namespace LinBox
 
 			break;
 
-		case FORMAT_MAPLE:
+		case Tag::FileFormat::Maple:
 			firstrow=true;
 
 			os << "[";
@@ -149,7 +149,7 @@ namespace LinBox
 
 			break;
 
-		case FORMAT_MATLAB:
+		case Tag::FileFormat::Matlab:
 
 			os << "[";
 
@@ -177,7 +177,7 @@ namespace LinBox
 
 			break;
 
-		case FORMAT_PRETTY:
+		case Tag::FileFormat::Pretty:
 			//F.characteristic (c);
 			//col_width = (int) ceil (log ((double) c) / M_LN10);
 
@@ -204,7 +204,7 @@ namespace LinBox
 			}
 
 			break;
-		case FORMAT_MAGMACPT:
+		case Tag::FileFormat::MagmaCpt:
 			os << "sparse matrix written in MagmaCpt form is not implemented" << std::endl;
 			break;
 		}

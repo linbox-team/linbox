@@ -81,7 +81,7 @@ namespace LinBox
 				}
 			}
 		}
-		// x.write( std::cerr << "X:=", FORMAT_MAPLE ) << ';' << std::endl;
+		// x.write( std::cerr << "X:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 		return x;
 	}
 
@@ -104,11 +104,11 @@ namespace LinBox
 
 		Permutation<Field> P((int)Nj,field());
 
-		// A.write( std::cerr << "A:=", FORMAT_MAPLE ) << ';' << std::endl;
+		// A.write( std::cerr << "A:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 		this->InPlaceLinearPivoting(Rank, Det, A, P, Ni, Nj );
 
-		// P.write( std::cerr << "P:=", FORMAT_MAPLE ) << ';' << std::endl;
-		// A.write( std::cerr << "Ua:=", FORMAT_MAPLE ) << ';' << std::endl;
+		// P.write( std::cerr << "P:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+		// A.write( std::cerr << "Ua:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 
 		for(size_t i=0; i< Ni; ++i) {
 			if (A[i].size() == 0) {
@@ -123,7 +123,7 @@ namespace LinBox
 			}
 		}
 
-		// A.write( std::cerr << "Ub:=", FORMAT_MAPLE ) << ';' << std::endl;
+		// A.write( std::cerr << "Ub:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 
 		return this->nullspacebasis(x, Rank, A, P);
 	}

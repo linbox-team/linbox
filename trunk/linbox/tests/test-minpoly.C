@@ -74,7 +74,7 @@ static bool testZeroMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& 
 	minpoly(phi, A, M);
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-        A.write(report, FORMAT_MAPLE);
+        A.write(report, Tag::FileFormat::Maple);
 	report << "Minimal polynomial is: ";
 
 	printPolynomial<Field, Polynomial> (F, report, phi);
@@ -195,7 +195,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 	minpoly (phi, A, M);
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-        A.write (report, FORMAT_MAPLE);
+        A.write (report, Tag::FileFormat::Maple);
 	report << "Minimal polynomial is: ";
 	printPolynomial (F, report, phi);
 
@@ -268,7 +268,7 @@ bool testRandomMinpoly (Field                 &F,
 
 		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
-		A.write (report, FORMAT_MAPLE);
+		A.write (report, Tag::FileFormat::Maple);
 
 		Polynomial phi(F);
 

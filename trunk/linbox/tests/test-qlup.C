@@ -86,7 +86,7 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		std::ostream & report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		F.write( report ) << endl;
-		A.write( report,FORMAT_MAPLE ) << endl;
+		A.write( report,Tag::FileFormat::Maple ) << endl;
 
 		BlasVector<Field> u(F,Nj), v(F,Ni), w1(F,Nj), w2(F,Ni), w3(F,Ni), w(F,Ni);
 		for(typename BlasVector<Field>::iterator it=u.begin();it!=u.end();++it)
@@ -190,7 +190,7 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 		std::ostream & report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		F.write( report ) << endl;
-		A.write( report, FORMAT_MAPLE ) << endl;
+		A.write( report, Tag::FileFormat::Maple ) << endl;
 
 		BlasVector<Field> u(F,Nj), v(F,Ni), x(F,Nj), y(F,Ni);
 		for(typename BlasVector<Field>::iterator it=u.begin();it!=u.end();++it)
@@ -215,7 +215,7 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 
 		if (! VD.areEqual(v,y)) {
 			res=false;
-                        A.write( report, FORMAT_MAPLE ) << endl;
+                        A.write( report, Tag::FileFormat::Maple ) << endl;
 
 			report << "ERROR v: matrix(" << v.size() << ",1,[";
 			for(typename BlasVector<Field>::const_iterator itu=v.begin(); itu!=v.end();++itu)
@@ -271,7 +271,7 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 		std::ostream & report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		F.write( report ) << endl;
-		A.write( report, FORMAT_MAPLE ) << endl;
+		A.write( report, Tag::FileFormat::Maple ) << endl;
 
 
 		Method::SparseElimination SE;
@@ -299,7 +299,7 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 		if (! VD.isZero(w)) {
 			res=false;
-                        A.write( report, FORMAT_MAPLE ) << endl;
+                        A.write( report, Tag::FileFormat::Maple ) << endl;
 
 			report << "ERROR u: matrix(" << u.size() << ",1,[";
 			for(typename BlasVector<Field>::const_iterator itu=u.begin(); itu!=u.end();++itu)

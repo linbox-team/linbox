@@ -92,7 +92,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 		Blackbox A (F, stream);
 
 		F.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl;
-		A.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_MAPLE ) << endl;
+		A.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),Tag::FileFormat::Maple ) << endl;
 
 		LinBox::rank (rank_blackbox, A, Method::Blackbox ());
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -174,8 +174,8 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 		}
 
 		F2.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl;
-		B.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_GUILLAUME ) << endl;
-		A.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_GUILLAUME ) << endl;
+		B.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),Tag::FileFormat::Guillaume ) << endl;
+		A.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),Tag::FileFormat::Guillaume ) << endl;
 
 
 		LinBox::rank (rank_blackbox, A, Method::Blackbox ());

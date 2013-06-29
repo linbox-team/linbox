@@ -160,7 +160,7 @@ namespace LinBox
 				nbelem += LigneA_k->size ();
 #endif
 			}
-			// LigneA.write(rep << "U:= ", FORMAT_MAPLE) << std::endl;
+			// LigneA.write(rep << "U:= ", Tag::FileFormat::Maple) << std::endl;
 		}//for k
 
 		SparseFindPivotBinary ( LigneA[(size_t)last], Rank, c, determinant);
@@ -196,7 +196,7 @@ namespace LinBox
 		<< "Determinant : " << determinant
 		<< " over GF (2)" << std::endl;
 
-		// LigneA.write(rep << "U:= ", FORMAT_MAPLE) << ':' << std::endl;
+		// LigneA.write(rep << "U:= ", Tag::FileFormat::Maple) << ':' << std::endl;
 
 		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 		<< "Rank : " << Rank
@@ -341,8 +341,8 @@ namespace LinBox
 #endif
 			}
 			LigneL[(size_t)k].push_back((size_t)k);
-			//  LigneL.write(rep << "L:= ", FORMAT_MAPLE) << std::endl;
-			//  LigneA.write(rep << "U:= ", FORMAT_MAPLE) << std::endl;
+			//  LigneL.write(rep << "L:= ", Tag::FileFormat::Maple) << std::endl;
+			//  LigneA.write(rep << "U:= ", Tag::FileFormat::Maple) << std::endl;
 		}//for k
 
 		SparseFindPivotBinary ( LigneA[(size_t)last], Rank, c, determinant);
@@ -384,10 +384,10 @@ namespace LinBox
 			Q.permute( it->first, it->second );
 
 #if 0
-		Q.write(rep << "Q:= ", FORMAT_MAPLE) << ':' << std::endl;
-		LigneL.write(rep << "L:= ", FORMAT_MAPLE) << ':' << std::endl;
-		LigneA.write(rep << "U:= ", FORMAT_MAPLE) << ':' << std::endl;
-		P.write(rep << "P:= ", FORMAT_MAPLE) << ':' << std::endl;
+		Q.write(rep << "Q:= ", Tag::FileFormat::Maple) << ':' << std::endl;
+		LigneL.write(rep << "L:= ", Tag::FileFormat::Maple) << ':' << std::endl;
+		LigneA.write(rep << "U:= ", Tag::FileFormat::Maple) << ':' << std::endl;
+		P.write(rep << "P:= ", Tag::FileFormat::Maple) << ':' << std::endl;
 #endif
 		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 		<< "Rank : " << Rank

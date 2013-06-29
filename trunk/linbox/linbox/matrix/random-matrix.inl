@@ -59,11 +59,11 @@ namespace LinBox
 			//size_t  * P = new size_t [m]   ;
 			BlasPermutation<size_t> P(m);
 			//Element * L = new Element[m*m] ;
-			//TriangularBlasMatrix<Field> L(F,m,m,LinBoxTag::Lower,LinBoxTag::Unit);
+			//TriangularBlasMatrix<Field> L(F,m,m,Tag::Lower,Tag::Unit);
 			//! @todo !!!
 			BlasMatrix<Field> L(F,m,m);
 			// Element * U = new Element[m*n] ;
-			// TriangularBlasMatrix<Field> U(F,m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
+			// TriangularBlasMatrix<Field> U(F,m,n,Tag::Upper,Tag::NonUnit);
 			//
 			BlasMatrix<Field> U(F,m,n);
 			//size_t  * Q = new size_t [n]   ;
@@ -119,7 +119,7 @@ namespace LinBox
 			BMD.mul(A,L,U);
 
 			/*!
-			 * @todo create BMD.applyP(A,P,LinBoxTag::Left) ;
+			 * @todo create BMD.applyP(A,P,Tag::Left) ;
 			 * avec P : BlasPermutation
 			 * ou P : MatrixPermutation
 			 * @todo BlasPermutation a un ordre \p p et une taille \p r distinctes !!!

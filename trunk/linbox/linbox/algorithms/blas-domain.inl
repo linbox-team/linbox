@@ -1625,14 +1625,14 @@ namespace LinBox
 			linbox_check( A.rowdim() == b.size());
 
 			switch (A.getUpLo()) {
-			case LinBoxTag::Shape::Upper:
+			case Tag::Shape::Upper:
 				switch(A.getDiag()) {
-				case LinBoxTag::Diag::Unit:
+				case Tag::Diag::Unit:
 					FFLAS::ftrsv((typename Field::Father_t) F,
 						      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
-				case LinBoxTag::Diag::NonUnit:
+				case Tag::Diag::NonUnit:
 					FFLAS::ftrsv((typename Field::Father_t) F,
 						      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
@@ -1641,14 +1641,14 @@ namespace LinBox
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
 				break;
-			case LinBoxTag::Shape::Lower:
+			case Tag::Shape::Lower:
 				switch(A.getDiag()) {
-				case LinBoxTag::Diag::Unit:
+				case Tag::Diag::Unit:
 					FFLAS::ftrsv((typename Field::Father_t) F,
 						      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
-				case LinBoxTag::Diag::NonUnit:
+				case Tag::Diag::NonUnit:
 					FFLAS::ftrsv((typename Field::Father_t) F,
 						      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
@@ -1693,14 +1693,14 @@ namespace LinBox
 
 
 			switch (A.getUpLo()) {
-			case LinBoxTag::Shape::Upper:
+			case Tag::Shape::Upper:
 				switch(A.getDiag()) {
-				case LinBoxTag::Diag::Unit:
+				case Tag::Diag::Unit:
 					FFLAS::ftrsv( (typename Field::Father_t)F,
 						      FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
-				case LinBoxTag::Diag::NonUnit:
+				case Tag::Diag::NonUnit:
 					FFLAS::ftrsv((typename Field::Father_t) F,
 						     FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
 						     b.size(),A.getPointer(),A.getStride(),&b[0],1);
@@ -1709,14 +1709,14 @@ namespace LinBox
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
 				break;
-			case LinBoxTag::Shape::Lower:
+			case Tag::Shape::Lower:
 				switch(A.getDiag()) {
-				case LinBoxTag::Diag::Unit:
+				case Tag::Diag::Unit:
 					FFLAS::ftrsv((typename Field::Father_t) F,
 						     FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit,
 						     b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
-				case LinBoxTag::Diag::NonUnit:
+				case Tag::Diag::NonUnit:
 					FFLAS::ftrsv( (typename Field::Father_t)F,
 						      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);

@@ -293,7 +293,7 @@ findLiftbasis(std::vector<unsigned long> liftbasis,
 
 template<class Matrix>
 void
-nonsingSolv(const LinBoxTag::Side solupos, Matrix & A, BlasVector<PID_Integer> & mp_B, BlasVector<PID_Integer> & mp_N,  Integer & mp_D)
+nonsingSolv(const Tag::Side solupos, Matrix & A, BlasVector<PID_Integer> & mp_B, BlasVector<PID_Integer> & mp_N,  Integer & mp_D)
 {
 
   double tt, tt1=0, tt2=0;

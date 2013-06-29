@@ -62,7 +62,7 @@ namespace LinBox
 	 */
 	template<class Field>
 	size_t
-	NullSpaceBasis (const Field& F, const LinBoxTag::Side Side,
+	NullSpaceBasis (const Field& F, const Tag::Side Side,
 			const size_t & m, const size_t & n,
 			typename Field::Element * A, const size_t & lda,
 			typename Field::Element *& Ker, size_t& ldk,
@@ -79,7 +79,7 @@ namespace LinBox
 	 */
 	template<class Field>
 	size_t&
-	NullSpaceBasis (const Field& F, const LinBoxTag::Side Side,
+	NullSpaceBasis (const Field& F, const Tag::Side Side,
 			BlasMatrix<Field> & A,
 			BlasMatrix<Field> & Ker,
 			size_t & kerdim) ;
@@ -95,7 +95,7 @@ namespace LinBox
 	 */
 	template<class Field>
 	size_t&
-	NullSpaceBasis (const Field& F, const LinBoxTag::Side Side,
+	NullSpaceBasis (const Field& F, const Tag::Side Side,
 			const BlasMatrix<Field> & A,
 			BlasMatrix<Field> & Ker,
 			size_t & kerdim)
