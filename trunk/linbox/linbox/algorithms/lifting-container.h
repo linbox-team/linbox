@@ -1446,8 +1446,8 @@ namespace LinBox
 		typedef _FMatrix                           FMatrix;
 		typedef typename Field::Element            Element;
 		typedef typename IMatrix::Element          Integer_t;
-		typedef std::vector<Integer_t>               IVector;
-		typedef std::vector<Element>               FVector;
+		typedef BlasVector<Ring>               IVector;
+		typedef BlasVector<Field>               FVector;
 
 	protected:
 
@@ -1477,7 +1477,7 @@ namespace LinBox
 					  const VectorIn&    b,
 					  const Prime_Type&  p) :
 			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), LL(L),QQ(Q),UU(U), PP(P), _rank(rank),
-			_field(&F), _res_p(b.size()), _digit_p(A.coldim()), _GD(F)
+			_field(&F), _res_p(F,b.size()), _digit_p(F,A.coldim()), _GD(F)
 		{
 			for (size_t i=0; i< _res_p.size(); ++i)
 				field().init(_res_p[i]);
@@ -1505,8 +1505,9 @@ namespace LinBox
 					hom.image(*iter_p, *iter);
 			}
 
+                        FVector w(field(), UU.coldim());
 			// solve the system mod p using L.Q.U.P Factorization
-			_GD.solve(_digit_p, _rank, QQ,LL,UU,PP, _res_p);
+			_GD.solve(_digit_p, w, _rank, QQ,LL,UU,PP, _res_p);
 
 
 			// promote new solution mod p to integers
