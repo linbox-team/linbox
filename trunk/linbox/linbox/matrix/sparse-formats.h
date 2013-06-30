@@ -47,6 +47,7 @@ namespace LinBox {
 		// template<typename Row_t>
 		class CSR : public ANY {} ; // compressed row
 		class ELL : public ANY {} ; // ellpack
+		class ELL_R : public ANY {} ; // ellpack
 		class HYB : public ANY {} ; // hybrid
 		// class TPL : public ANY {} ; // triples
 	} // SparseMatrix2Format
