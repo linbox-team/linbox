@@ -285,22 +285,16 @@ namespace LinBox
 			linbox_check(consistent());
 			S.resize(_rownb, _colnb, _nbnz);
 			S.setStart(0,0);
-#ifndef NDEBUG
 			size_t k = 0 ;
-#endif
 			for (size_t i = 0 ; i < S.rowdim() ; ++i) {
 				for (size_t j = 0  ; j < _rowid[i]; ++j ) {
 					S.setColid(k,getColid(i,j));
 					S.setData(k,getData(i,j));
-#ifndef NDEBUG
 					++k ;
-#endif
 				}
 				S.setStart(i+1,S.getStart(i)+_rowid[i]);
 			}
-#ifndef NDEBUG
 			linbox_check(k == _nbnz);
-#endif
 
 			return S ;
 		}
