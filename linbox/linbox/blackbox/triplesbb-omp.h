@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <map>
 using std::istream;
 using std::ostream;
 using std::max;
@@ -46,19 +47,20 @@ using std::max;
 namespace LinBox
 {
 
-	/** \brief wrapper for NAG Sparse Matrix format.
-	 *
-	 \ingroup blackbox
-	 * Sparse matrix representation which stores nonzero entries by i,j,value triples.
-	 */
-  template<class Field_>
-  class TriplesBBOMP : public BlackboxInterface {
+/** \brief wrapper for NAG Sparse Matrix format.
+ *
+ \ingroup blackbox
+ * Sparse matrix representation which stores nonzero entries by i,j,value triples.
+ */
+template<class Field_>
+class TriplesBBOMP : public BlackboxInterface {
 
 	public:
 	typedef Field_ Field;
 	typedef typename Field::Element Element;
 	typedef TriplesBBOMP<Field> Self_t;
 	typedef size_t Index; // would prefer a signed type
+	typedef long long Llong;
 
 	// Default constructor.
 	TriplesBBOMP();
@@ -98,6 +100,9 @@ namespace LinBox
 	template<class OutVector, class InVector>
 	OutVector & apply(OutVector &, const InVector &) const;
 
+	template<class OutVector, class InVector>
+	OutVector & seqApply(OutVector &, const InVector &) const;
+
 	/** y <- A^T x.
 	 *
 	 *  Performance will be better if A is in rowMajor or colMajor order.
@@ -107,6 +112,12 @@ namespace LinBox
 	 */
 	template<class OutVector, class InVector>
 	OutVector & applyTranspose(OutVector &, const InVector &) const;
+
+	void sortBlock();
+
+	void sortRow();
+
+	void sortColumn();
 
 	size_t rowdim() const;
 
@@ -141,11 +152,71 @@ namespace LinBox
 	protected:
 	const Field *field_; // The field used by this class
 
-	struct Triple { Index row; Index col; Element elt;
+	union Coord {
+		Index rowCol[2];
+		Llong blockIx;
+	};
+
+	struct Triple {
+		union Coord coord;
+		Element elt;
 		Triple(Index& r, Index& c, const Element& e)
 		{ init(r, c, e); }
-		void init(Index& r, Index& c, const Element& e)
-		{ row = r; col = c; elt = e; }
+		void init(Index r, Index c, const Element& e)
+		{
+			row()=r;
+			col()=c;
+			elt = e;
+		}
+		inline Index& row() {return coord.rowCol[0];}
+		inline Index& col() {return coord.rowCol[1];}
+		inline const Index& getRow() const {return coord.rowCol[0];}
+		inline const Index& getCol() const {return coord.rowCol[1];}
+		inline Llong& blockIx() {return coord.blockIx;}
+		static Llong toBlockIx (Index row, Index col)
+		{
+			Llong temp,final;
+			final=(((Llong)row)<<32)|((Llong)col);
+			temp=(final^(final>>16))&0x00000000FFFF0000;
+			final^=temp^(temp<<16);
+			temp=(final^(final>>8))&0x0000FF000000FF00;
+			final^=temp^(temp<<8);
+			temp=(final^(final>>4))&0x00F000F000F000F0;
+			final^=temp^(temp<<4);
+			temp=(final^(final>>2))&0x0C0C0C0C0C0C0C0C;
+			final^=temp^(temp<<2);
+			temp=(final^(final>>1))&0x2222222222222222;
+			final^=temp^(temp<<1);
+			return final;
+		}
+		void toBlock()
+		{
+			blockIx()=toBlockIx(row(),col());
+		}
+		static Llong fromBlockIx(Llong final)
+		{
+			Llong temp;
+			temp=(final^(final>>1))&0x2222222222222222;
+			final^=temp^(temp<<1);
+			temp=(final^(final>>2))&0x0C0C0C0C0C0C0C0C;
+			final^=temp^(temp<<2);
+			temp=(final^(final>>4))&0x00F000F000F000F0;
+			final^=temp^(temp<<4);
+			temp=(final^(final>>8))&0x0000FF000000FF00;
+			final^=temp^(temp<<8);
+			temp=(final^(final>>16))&0x00000000FFFF0000;
+			final^=temp^(temp<<16);
+			return final;
+		}
+		void fromBlock()
+		{
+			Llong final=fromBlockIx(blockIx());
+			row()=(Index)((final>>32)&0xFFFFFFFF);
+			col()=(Index)(final&0xFFFFFFFF);
+		}
+		static bool compareBlockTriples(const Triple& left, const Triple& right) {
+			return left.coord.blockIx<right.coord.blockIx;
+		}
 	};
 
 	// the data
@@ -154,7 +225,24 @@ namespace LinBox
 	/// The number of rows, columns
 	Index rows_, cols_;
 
-	int rowMajor_; // 1 = rowMajor, -1 = colMajor, 0 = unsorted.
+        
+        #define TRIPLES_UNSORTED 1
+        #define TRIPLES_ROW_MAJOR_SORT 2
+        #define TRIPLES_COL_MAJOR_SORT 4
+        #define TRIPLES_BLOCK_SORT 8
+
+	int sortType_;
+
+	struct Block {
+		Index start_,end_;
+		Block(Index start,Index end) : start_(start),end_(end) {}
+	};
+
+        typedef std::vector<std::vector<Block> > BlockList;
+
+        BlockList colBlocks_;
+
+        BlockList rowBlocks_;
 
   }; // TriplesBBOMP
 
