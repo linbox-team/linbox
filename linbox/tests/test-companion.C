@@ -40,6 +40,7 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/companion.h"
+#include "linbox/algorithms/blas-domain.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -70,7 +71,8 @@ int main (int argc, char **argv)
 	typedef Modular<uint32_t> Field;
 	typedef vector <Field::Element> Vector;
 	typedef vector <Field::Element> Polynomial;
-	typedef Companion<Field> Blackbox;
+	typedef BlasMatrixDomain<Field> MatrixDomain;
+	typedef Companion<MatrixDomain> Blackbox;
 
 	Field F ((uint32_t)q);
 	Field::Element d;

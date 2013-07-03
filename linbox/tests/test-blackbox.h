@@ -131,7 +131,7 @@ testTranspose (const Field                      &F,
 			<< "ERROR: Values are not equal" << endl;
 		}
 
-		LinBox::commentator().stop ("done");
+		LinBox::commentator().stop ("testTranspose iteration done");
 		LinBox::commentator().progress ();
 	}
 
@@ -220,8 +220,8 @@ testLinearity (//const Field                             &F,
 			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Vectors are not equal" << endl;
 
-	//	LinBox::commentator().stop ("done");
-	//	LinBox::commentator().progress ();
+		LinBox::commentator().stop ("testLinearity iteration done");
+		LinBox::commentator().progress ();
 	}
 
 	return ret;

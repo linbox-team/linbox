@@ -830,7 +830,7 @@ namespace LinBox
 				size_t Rowdim,
 				size_t Coldim);
 
-		/// This is deep copy, operator= is shallow copy.
+		/// This is deep copy of the data, operator= is a shallow copy.
 		template<class Matrix>
 		BlasSubmatrix &copy( const Matrix & B);
 
