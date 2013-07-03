@@ -84,11 +84,13 @@ namespace LinBox
 			_field (&F)//, accu(F)
 		{ /* std::cerr <<"VDB cstor " << this << std::endl;*/ }
 
-		VectorDomainBase& operator= (const VectorDomainBase& VD)
+		/*VectorDomainBase& operator= (const VectorDomainBase& VD)
 		{	_field = VD._field;
 			//accu = VD.accu;
 			return *this;
 		}
+		*/
+		void init(const Field &F) { _field = &F; }
 
 		inline const Field & field() const { return *_field; }
 	//protected:
@@ -123,6 +125,8 @@ namespace LinBox
 		{ /* std::cerr << "DPD cstor " << this << std::endl;*/ }
 
 		using VectorDomainBase<Field>::field;
+		using VectorDomainBase<Field>::init;
+
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -137,6 +141,35 @@ namespace LinBox
 
 namespace LinBox
 { /*  Vector Domain */
+/* public members
+VectorDomain<F>()
+VectorDomain<F>(VD)
+VectorDomain (F)
+VD1 = VD2
+VD.field()
+VD.write<V>(os, v)
+VD.read<V>(os, v)
+VD.copy<V1,V2>(v1,v2)
+VD.copy<V1,V2>(v1,v2,i,n)
+VD.areEqual<V1,V2>(v1,v2)
+VD.isZero<V>(v)
+VD.dot<V1,V2>(e,v1,v2) aka dotprod
+VD.add<V1,V2,V3>(v1,v2,v3) 
+VD.addin<V1,V2>(v1,v2) 
+VD.sub<V1,V2,V3>(v1,v2,v3) 
+VD.subin<V1,V2>(v1,v2) 
+VD.neg<V1,V2>(v1,v2) 
+VD.negin<V>(v) 
+VD.mul<V1,V2>(v1,v2,e) 
+VD.mulin<V>(v,e) 
+VD.axpy<V1,V2,V3>(v1,e,v2,v3) 
+VD.axpyin<V1,V2>(v1,e,v2) 
+VD.swap<V1,V2>(v1,v2) 
+VD.random<V>(v) 
+class Transposition;
+class Permutation;
+VD.permute<V,PI>(v1,pb,pe) 
+*/
 
 	/** @name Vector Domain
 	 * @brief Vector arithmetic
@@ -154,14 +187,16 @@ namespace LinBox
 	 */
 	// JGD 01.10.2003 : Why inherit twice from VectorDomainBase<Field> ???
 	// bds 2004Apr25 : well, g++ 3.4.3 wants explicit base domains on everything - eases that.
-	template <class Field>
-	class VectorDomain : public virtual DotProductDomain<Field> {//, public virtual VectorDomainBase<Field> {
+	template <class Field_>
+	class VectorDomain : public virtual DotProductDomain<Field_> {//, public virtual VectorDomainBase<Field> {
 	public:
 
+		typedef Field_ Field;
 
 		typedef typename Field::Element         Element;
 
-		VectorDomain(){ /*std::cerr << "VD def cstor" << std::endl;*/ }
+		VectorDomain(): DotProductDomain<Field>() { /*std::cerr << "VD def cstor" << std::endl;*/ }
+
 		void init(const Field& F) { this->_field = &F; }
 
 		/** Copy constructor.
@@ -171,9 +206,11 @@ namespace LinBox
 		 * @param  VD VectorDomain object.
 		 */
 		VectorDomain (const VectorDomain &VD) :
-		VectorDomainBase<Field> (VD.field()),
+		//VectorDomainBase<Field> (VD.field()),
 		DotProductDomain<Field> (VD.field())
 		{}
+
+		//using DotProductDomain<Field>::init;
 
 		/** Assignment operator.
 		 * Assigns VectorDomain object MD to field.
@@ -181,7 +218,8 @@ namespace LinBox
 		 */
 		VectorDomain &operator = (const VectorDomain &VD)
 		{
-			this->_field = VD._field;
+			this->init(VD.field());
+			//this->_field = VD._field;
 			//VectorDomainBase<Field>:: accu = VD.accu;
 			return *this;
 		}
@@ -193,7 +231,6 @@ namespace LinBox
 		 */
 
 		using VectorDomainBase<Field>::field;
-		using VectorDomainBase<Field>::_field;
 
 		/** Vector input/output operations
 		 * These routines are useful for reading and writing vectors to
@@ -210,7 +247,7 @@ namespace LinBox
 		 * @param  os  output stream to which field element is written.
 		 * @param  x   field element.
 		 */
-		template <class Vector>
+		template <class Vector> 
 		inline std::ostream &write (std::ostream &os, const Vector &x) const
 		{
 			return writeSpecialized (os, x, typename VectorTraits<Vector>::VectorCategory ());

@@ -26,7 +26,7 @@ gunzip -c $1 | tar xf -
 
 
 #switches
-STABLE_VAR="true"
+STABLE_VAR="false"
 DEBUG=""
 DEBUG_VAR=""
 WARNINGS=""
@@ -35,7 +35,7 @@ OPTIM="--enable-optimization"
 OPTIM_VAR=""
 CHECK_VAR=""
 #options
-PREFIX_LOC="/tmp"
+PREFIX_LOC="/home/saunders/software"
 PREFIX_VAR=""
 PREFIX="--prefix=$PREFIX_LOC"
 BLAS=""

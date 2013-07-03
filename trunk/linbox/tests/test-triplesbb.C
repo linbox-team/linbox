@@ -38,10 +38,33 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/triplesbb.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/algorithms/blas-domain.h"
 #include "test-blackbox.h"
 #include "test-common.h"
 
 using namespace LinBox;
+
+template<class BB>
+void randBuild(BB & A, size_t nnz){
+	for(size_t i = 0; i < (int)nnz; ++i)
+	{	typename BB::Field::Element d; A.field().init(d, rand());
+		size_t ii = rand()%A.rowdim();
+		size_t jj = rand()%A.coldim();
+		A.setEntry(ii,jj, d);
+	}
+}
+
+template<class BB>
+void bidiag(BB & A){
+	typename BB::Field::Element d; A.field().init(d, 1);
+	A.setEntry(0,0, d);
+	size_t n = A.coldim() > A.rowdim() ? A.rowdim() : A.coldim();
+	for(size_t i = 1; i < n; ++i)
+	{	A.setEntry(i,i, d);
+		A.setEntry(i,i-1, d);
+	}
+}
 
 int main (int argc, char **argv)
 {
@@ -71,26 +94,59 @@ int main (int argc, char **argv)
 
 	commentator().start("TriplesBB black box test suite", "triplesbb");
 
-	//typedef Modular<uint32_t> Field;
+	//Field
 	typedef Modular<double> Field;
 	typedef Field::Element Element;
-	typedef TriplesBB<Field> Blackbox;
-
 	Field F (q);
+	//Vectors
+	VectorDomain<Field> VD(F);
+	std::vector<Element> x(n), y(m), z(m);
+	for (size_t i = 0; i < n; ++i) F.init(x[i], i+1);
 
-	// set up the matrix
-	Blackbox A(F, m, n);
-	Element d;
+	// using MatrixDomain
+	TriplesBB<MatrixDomain<Field> > A(F, m, n);
+	randBuild(A, nnz);
+	pass = pass && testBlackbox(A);
 
-	for(int i = 0; i < (int)nnz; ++i)
-	{
-		F.init(d, rand());
-		size_t ii = rand()%m;
-		size_t jj = rand()%n;
-		A.setEntry(ii,jj, d);
+	// using BlasMatrixDomain
+	typedef BlasMatrixDomain<Field> MatDom;
+	// standard constructor
+	TriplesBB<MatDom> B(F, m, n); 
+	bidiag(B);
+	pass = pass && testBlackbox(B);
+	B.apply(y, x);
+	// default cstor plus init
+	TriplesBB<MatDom> C;  C.init(F, m, n);
+	bidiag(C);
+	pass = pass && testBlackbox(C);
+	// check B == C
+	C.apply(z, x);
+	if (not VD.areEqual(y, z)) {
+		pass = false;
+		LinBox::commentator().report() << "fail: cstor and init disagree" << std::endl;
+	}
+	// copy construction
+	TriplesBB<MatDom> D(B); 
+	pass = pass && testBlackbox(D);
+	// check B == D
+	D.apply(z, x);
+	if (not VD.areEqual(y, z)) {
+		pass = false;
+		LinBox::commentator().report() << "copy cstor failure" << std::endl;
 	}
 
-	pass = pass && testBlackbox(A);
+	// check that it's deep copy
+	Element a; 
+	B.getEntry(a,0,0);
+	F.addin(a, F.one);
+	D.setEntry(0,0,a);
+	D.apply(z, x);
+	if (VD.areEqual(y, z)) {
+		pass = false;
+		LinBox::commentator().report() << "fail changed copy cstor and original agree" << std::endl;
+		VD.write(commentator().report() << "y ", y) << std::endl;
+		VD.write(commentator().report() << "z ", z) << std::endl;
+	}
 
 	commentator().stop("TriplesBB black box test suite");
 	return pass ? 0 : -1;

@@ -332,6 +332,7 @@ namespace LinBox
 		typedef typename RawVector<Element >::Dense Rep;
 		typedef BlasMatrix<Field,Rep> OwnMatrix;
 		typedef BlasSubmatrix<OwnMatrix> Matrix;
+		typedef BlasSubmatrix<OwnMatrix> Submatrix;
 
 	protected:
 
@@ -344,9 +345,12 @@ namespace LinBox
 
 		//! Constructor of BlasDomain.
 
-		BlasMatrixDomain (const Field& F ) :
-			_field(&F)
+		BlasMatrixDomain () {}
+		BlasMatrixDomain (const Field& F ) { init(F); }
+
+		void init(const Field& F ) 
 		{
+			_field = &F; 
 			F.init(_One,1);
 			F.init(_Zero,0);
 			F.init(_MOne,-1);
@@ -702,7 +706,7 @@ namespace LinBox
 		//! @todo Temporary: waiting for an implementation of a domain of polynomial
 		template<class Polynomial>
 		Polynomial &
-		mulpoly(Polynomial &res, const Polynomial & P1, const Polynomial & P2)const
+		mulpoly(Polynomial &res, const Polynomial & P1, const Polynomial & P2) const
 		{
 			size_t i,j;
 			res.resize(P1.size()+P2.size()-1);
@@ -717,19 +721,20 @@ namespace LinBox
 		//@}
 
 		template<class Matrix1, class Matrix2>
-		bool areEqual(const Matrix1 & A, const Matrix2 & B)
+		bool areEqual(const Matrix1 & A, const Matrix2 & B) const
 		{
 			if ( (A.rowdim() != B.rowdim()) || (A.coldim() != B.coldim()) )
 				return false ;
+			Element a, b; field().init(a); field().init(b);
 			for (size_t i = 0 ; i < A.rowdim() ; ++i)
 				for (size_t j = 0 ; j < A.coldim() ; ++j)
-					if (!field().areEqual(A.getEntry(i,j),B.getEntry(i,j))) //!@bug use refs
+					if (!field().areEqual(A.getEntry(a,i,j),B.getEntry(b,i,j))) //!@bug use refs
 						return false ;
 			return true ;
 		}
 
 		template<class Matrix>
-		void setIdentity(Matrix & I)
+		void setIdentity(Matrix & I) const
 		{
 			for (size_t i = 0 ; i< I.rowdim() ; ++i)
 				for (size_t j = 0 ; j < I.coldim() ; ++j) {
@@ -743,7 +748,7 @@ namespace LinBox
 
 		//!@bug use  fflas-ffpack
 		template<class Matrix>
-		void setZero(Matrix & I)
+		void setZero(Matrix & I) const
 		{
 			// use Iterator
 			for (size_t i = 0 ; i< I.rowdim() ; ++i)
@@ -753,7 +758,7 @@ namespace LinBox
 		}
 
 		template<class Matrix1>
-		bool isZero(const Matrix1 & A)
+		bool isZero(const Matrix1 & A) const
 		{
 			for (size_t i = 0 ; i < A.rowdim() ; ++i)
 				for (size_t j = 0 ; j < A.coldim() ; ++j)
@@ -763,7 +768,7 @@ namespace LinBox
 		}
 
 		template<class Matrix1>
-		bool isIdentity(const Matrix1 & A)
+		bool isIdentity(const Matrix1 & A) const
 		{
 			if (A.rowdim() != A.coldim())
 				return false ;
@@ -783,7 +788,7 @@ namespace LinBox
 		}
 
 		template<class Matrix1>
-		bool isIdentityGeneralized(const Matrix1 & A)
+		bool isIdentityGeneralized(const Matrix1 & A) const
 		{
 			size_t mn = std::min(A.rowdim(),A.coldim());
 			for (size_t i = 0 ; i < mn ; ++i)
@@ -803,7 +808,7 @@ namespace LinBox
 
 		// if there is some comparison on the elements, max abs of elements.
 		template<class myBlasMatrix>
-		Element& Magnitude(Element&r, const myBlasMatrix &A)
+		Element& Magnitude(Element&r, const myBlasMatrix &A) const
 		{
 			r = 0;
 			for (size_t i = 0 ; i < A.rowdim(); ++i)

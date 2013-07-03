@@ -51,13 +51,15 @@ namespace LinBox
 	 \ingroup blackbox
 	 * Sparse matrix representation which stores nonzero entries by i,j,value triples.
 	 */
-  template<class Field_>
+  template<class MatDom>
   class TriplesBB : public BlackboxInterface {
 
 	public:
-	typedef Field_ Field;
+	typedef MatDom MatrixDomain;
+	typedef typename MatrixDomain::Field Field;
+	typedef typename MatrixDomain::Submatrix Matrix;
 	typedef typename Field::Element Element;
-	typedef TriplesBB<Field> Self_t;
+	typedef TriplesBB<MatrixDomain> Self_t;
 	typedef size_t Index; // would prefer a signed type
 
 	// Default constructor.
@@ -77,8 +79,8 @@ namespace LinBox
 
 	TriplesBB(const Field& F, Index r = 0, Index c = 0);
 
-	// (re)shape the matrix.  Any prior entries are abandoned.
-	TriplesBB& shape(const Field& F, Index r = 0, Index c = 0);
+	// (re)initialize the matrix.  Any prior entries are abandoned.
+	TriplesBB& init(const Field& F, Index r = 0, Index c = 0);
 
 	// need cstor from matrix stream, read, write
 
@@ -88,6 +90,12 @@ namespace LinBox
 	// Element e is set to the i,j entry.
 	Element& getEntry(Element& e, Index i, Index j) const;
 
+	/// Y <- AX, requires conformal shapes.
+	Matrix & apply_right(Matrix &Y, const Matrix &X) const;
+
+	/// Y <- XA, requires conformal shapes.
+	Matrix & apply_left(Matrix &Y, const Matrix &X) const;
+
 	/** y <- A x.
 	 *
 	 *  Performance will be better if A is in rowMajor or colMajor order.
@@ -96,7 +104,7 @@ namespace LinBox
 	 *  optimizations would be desirable.
 	 */
 	template<class OutVector, class InVector>
-	OutVector & apply(OutVector &, const InVector &) const;
+	OutVector & apply(OutVector &y, const InVector &x) const;
 
 	/** y <- A^T x.
 	 *
@@ -113,6 +121,8 @@ namespace LinBox
 	size_t coldim() const;
 
 	const Field & field() const;
+
+	const MatrixDomain & domain() const;
 
 	/* Returns number of non-zero entries */
 	size_t size() const;
@@ -139,7 +149,8 @@ namespace LinBox
 	};
 
 	protected:
-	const Field *field_; // The field used by this class
+	const Field *field_; // The field of the entries
+	MatrixDomain MD_; // The matrix domain for apply_left and apply_right
 
 	struct Triple { Index row; Index col; Element elt;
 		Triple(Index& r, Index& c, const Element& e)

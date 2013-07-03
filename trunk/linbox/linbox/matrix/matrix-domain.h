@@ -174,12 +174,13 @@ namespace LinBox
 						typename MatrixTraits<Matrix1>::MatrixCategory (),
 						typename MatrixTraits<Matrix2>::MatrixCategory ());
 		}
+		/// B <-- A.  They must already have the same shape.
 		inline Submatrix &copy (Submatrix &B, const Submatrix &A) const {
 			return B.copy(A);
 		}
 
 		/** Matrix swap
-		 * B <--> A.
+		 * B <--> A.  They must already have the same shape.
 		 * @returns Reference to B
 		 */
 		inline Submatrix &swap(Submatrix &B, Submatrix &A) const {
