@@ -31,10 +31,10 @@ pkgincludesub_HEADERS =         \
 	sparse-hyb-matrix.h
 
 
-	#  sparse-coo-1-matrix.h     \
-	#  sparse-csr-1-matrix.h     \
-	#  sparse-ellr-1-matrix.h    \
-	#  sparse-bcsr-matrix.h    \
-	#  sparse-dia-matrix.h    \
-	#  sparse-tpl-matrix.h    \
-	#
+#  sparse-coo-1-matrix.h     \
+#  sparse-csr-1-matrix.h     \
+#  sparse-ellr-1-matrix.h    \
+#  sparse-bcsr-matrix.h    \
+#  sparse-dia-matrix.h    \
+#  sparse-tpl-matrix.h    \
+#

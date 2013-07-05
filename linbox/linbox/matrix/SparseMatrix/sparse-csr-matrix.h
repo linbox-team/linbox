@@ -968,6 +968,23 @@ namespace LinBox
 			return _start ;
 		}
 
+		size_t rowLength(const size_t & i)
+		{
+			return getEnd(i) - getStart(i) ;
+		}
+
+		// remove empty last lines
+		void compress()
+		{
+			size_t i = rowdim();
+			for ( ; i != 0 ; --i) {
+				if ( _start[i] != _start[i-1] )
+					break;
+			}
+			_rownb = i ;
+
+		}
+
 		size_t getColid(const size_t & i) const
 		{
 			return _colid[i];
