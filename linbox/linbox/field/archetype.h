@@ -426,6 +426,21 @@ namespace LinBox
 		 */
 		bool isOne (const Element &x) const
 		{ return _field_ptr->isOne (*x._elem_ptr); }
+
+		/** MOne equality.
+		 * Test if field element is equal to one.
+		 * This function assumes the field element has already been
+		 * constructed and initialized.
+		 *
+		 * In this implementation, this means the <tt> _elem_ptr</tt>
+		 *of x exists and does not point to null.
+		 *
+		 * @return boolean true if equals one, false if not.
+		 * @param  x field element.
+		 */
+		bool isMOne (const Element &x) const
+		{ return _field_ptr->isMOne (*x._elem_ptr); }
+
 		//@}
 
 		/** @name Inplace Arithmetic Operations

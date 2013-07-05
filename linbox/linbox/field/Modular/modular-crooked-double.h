@@ -305,6 +305,12 @@ namespace LinBox
 			return x == 1.;
 		}
 
+		inline bool isMOne (const Element &x) const
+		{
+			return x == modulus-1.;
+		}
+
+
 		inline bool isMinusOne (const Element &x) const
 		{
 			return (x == -1.);

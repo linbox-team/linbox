@@ -264,6 +264,11 @@ namespace LinBox
 			return x == std::vector<double>(_size, 1.);
 		}
 
+		inline bool isMOne (const Element &x) const
+		{
+			return x == std::vector<double>(_size, -1.); // bug
+		}
+
 		inline Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			for (size_t i=0;i<_size;++i) {

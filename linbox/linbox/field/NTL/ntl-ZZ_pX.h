@@ -205,6 +205,12 @@ namespace LinBox
 				 ( _CField.isOne( NTL::ConstTerm(x) ) ) );
 		}
 
+		bool isMOne (const Element& x) const
+		{
+			return ( (this->deg(x) == 0) &&
+				 ( _CField.isMOne( NTL::ConstTerm(x) ) ) );
+		}
+
 		/** The LinBox field for coefficients */
 		const CoeffField& getCoeffField() const
 		{

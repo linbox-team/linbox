@@ -37,7 +37,7 @@ namespace LinBox
 	 *   \c convert(), \c init(), \c assign(), \c characteristic(), \c cardinality().
 	 *
 	 * Predicates on field elements:
-	 *   \c areEqual(), \c isZero(), \c isOne().
+	 *   \c areEqual(), \c isZero(), \c isOne(),  \c isMOne().
 	 *
 	 * Basic arithmetic functions:
 	 *   \c axpy(), \c add(), \c neg(), \c sub(), \c mul(), \c inv(),\c  div().

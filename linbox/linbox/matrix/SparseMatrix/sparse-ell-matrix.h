@@ -39,11 +39,7 @@
 
 #include "linbox-config.h"
 #include "linbox/util/debug.h"
-#include "linbox/matrix/sparse.h"
-// #include "linbox/blackbox/factory.h"
-// #include "linbox/vector/vector-traits.h"
-// #include "linbox/matrix/matrix-domain.h"
-// #include "linbox/util/matrix-stream.h"
+#include "sparse-domain.h"
 
 
 namespace LinBox
@@ -601,12 +597,12 @@ namespace LinBox
 		template<class Vector>
 		Vector& apply(Vector &y, const Vector& x ) const
 		{
-			return apply(y,x,field().zero());
+			return apply(y,x,field().zero);
 		}
 		template<class Vector>
 		Vector& applyTranspose(Vector &y, const Vector& x ) const
 		{
-			return apply(y,x,field().zero());
+			return apply(y,x,field().zero);
 		}
 
 
@@ -616,7 +612,6 @@ namespace LinBox
 		}
 
 
-	protected:
 		/** @todo Non element marker.
 		 * We could end up a line with a marker.
 		 * A field F would contain an element that does not belong to
@@ -893,7 +888,7 @@ namespace LinBox
 			_colid.resize(ll*_rownb);
 			for (size_t i = _rownb ; i>1 ; --i ) {
 				std::copy(_data.begin()+(i-1)*_maxc, _data.begin()+(i)*_maxc+1, _data.begin()+(i-1)*ll);
-				for (size_t j = (i-1)*_maxc ; j < (i-1)*ll ; ++j ) _data[j] = field().zero() ;
+				for (size_t j = (i-1)*_maxc ; j < (i-1)*ll ; ++j ) _data[j] = field().zero ;
 			}
 			for (size_t i = _rownb ; i>1 ; --i ) {
 				std::copy(_colid.begin()+(i-1)*_maxc, _colid.begin()+(i)*_maxc+1, _colid.begin()+(i-1)*ll);

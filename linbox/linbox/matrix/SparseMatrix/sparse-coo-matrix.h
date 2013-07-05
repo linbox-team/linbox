@@ -40,11 +40,6 @@
 #include "linbox-config.h"
 #include "linbox/util/debug.h"
 #include "sparse-domain.h"
-#include "linbox/matrix/sparse.h"
-// #include "linbox/blackbox/factory.h"
-// #include "linbox/vector/vector-traits.h"
-// #include "linbox/matrix/matrix-domain.h"
-// #include "linbox/util/matrix-stream.h"
 
 
 namespace LinBox
@@ -602,12 +597,12 @@ namespace LinBox
 		template<class Vector>
 		Vector& apply(Vector &y, const Vector& x ) const
 		{
-			return apply(y,x,field().zero());
+			return apply(y,x,field().zero);
 		}
 		template<class Vector>
 		Vector& applyTranspose(Vector &y, const Vector& x ) const
 		{
-			return apply(y,x,field().zero());
+			return apply(y,x,field().zero);
 		}
 
 
@@ -617,7 +612,6 @@ namespace LinBox
 			return _field ;
 		}
 
-	protected :
 		//! @todo
 		bool consistent() const
 		{

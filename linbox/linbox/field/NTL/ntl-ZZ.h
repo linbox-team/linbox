@@ -224,6 +224,16 @@ namespace LinBox
 		{
 			return NTL::IsOne (x);
 		}
+		/** @brief
+		 *  Test if x == -1
+		 */
+		inline bool isMOne (const Element& x) const
+		{
+			Element y ; neg(y,x);
+			return isOne(y);
+
+		}
+
 
 		// arithmetic
 

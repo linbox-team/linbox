@@ -33,17 +33,20 @@
 #ifndef __LINBOX_sparse_matrix_sparse_domain_H
 #define __LINBOX_sparse_matrix_sparse_domain_H
 
+#include "linbox-config.h"
+#include "linbox/util/debug.h"
+
 namespace LinBox {
 
 	//! @todo Vector knows Field
 	template<class Field, class Vector>
-	Vector & prepare(const Field & F , Vector & y, typename Field::Element & a) {
+	Vector & prepare(const Field & F , Vector & y, const typename Field::Element & a) {
 		if ( !F.isOne(a) ) {
 			if ( F.isZero(a) ) {
 				for (size_t i = 0 ; i < y.size() ; ++i)
 					F.assign(y[i],F.zero);
 			}
-			else if (F.isMone(a)) {
+			else if (F.isMOne(a)) {
 				for (size_t i = 0 ; i < y.size() ; ++i)
 					F.negin(y[i]);
 			}
