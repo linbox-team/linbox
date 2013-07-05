@@ -315,7 +315,7 @@ namespace LinBox
 			_blasMatrixDomain.inv(*(B.matrix), *(A.matrix), nullflag);
 
 			if (nullflag)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMatrix: inverse undefined");
+				throw PreconditionFailed(LB_FILE_LOC,"InvMatrix: inverse undefined");
 
 			return B;
 		}
@@ -332,7 +332,7 @@ namespace LinBox
 			_blasMatrixDomain.inv(*(B.matrix), *(A.matrix), nullflag);
 
 			if (nullflag)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMatrix: inverse undefined");
+				throw PreconditionFailed(LB_FILE_LOC,"InvMatrix: inverse undefined");
 
 			A=B;
 

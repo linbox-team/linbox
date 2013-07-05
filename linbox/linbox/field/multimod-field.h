@@ -201,9 +201,9 @@ namespace LinBox
 #if 0
 			is >> modulus;
 			if(modulus <= 1)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+				throw PreconditionFailed(LB_FILE_LOC,"modulus must be > 1");
 			if(modulus > 94906265)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+				throw PreconditionFailed(LB_FILE_LOC,"modulus is too big");
 #endif
 			return is;
 		}

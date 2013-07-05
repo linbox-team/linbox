@@ -114,10 +114,10 @@ namespace LinBox
 		{
 			modulusinv = 1 / ((double) value);
 #ifdef DEBUG
-			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
-			if(value <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			if(exp != 1) throw PreconditionFailed(LB_FILE_LOC,"exponent must be 1");
+			if(value <= 1) throw PreconditionFailed(LB_FILE_LOC,"modulus must be > 1");
 			integer max;
-			if(value > FieldTraits< Modular<Element> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			if(value > FieldTraits< Modular<Element> >::maxModulus(max)) throw PreconditionFailed(LB_FILE_LOC,"modulus is too big");
 #endif
 		}
 
@@ -181,9 +181,9 @@ namespace LinBox
 			modulus = (Element) prime;
 			modulusinv = 1 /((double) modulus );
 #ifdef DEBUG
-			if(prime <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			if(prime <= 1) throw PreconditionFailed(LB_FILE_LOC,"modulus must be > 1");
 			integer max;
-			if(prime > FieldTraits< Modular<Element> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			if(prime > FieldTraits< Modular<Element> >::maxModulus(max)) throw PreconditionFailed(LB_FILE_LOC,"modulus is too big");
 #endif
 
 			return is;
@@ -309,7 +309,7 @@ namespace LinBox
 			XGCD(d, x, t, y, modulus);
 #ifdef DEBUG
 			if (d != 1)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMod: inverse undefined");
+				throw PreconditionFailed(LB_FILE_LOC,"InvMod: inverse undefined");
 #endif
 			if (x < 0)
 				return x=Element(x+modulus);
@@ -409,7 +409,7 @@ namespace LinBox
 
 			if (a < 0) {
 #ifdef DEBUG
-				if (a < -LINBOX_MAX_INT8) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
+				if (a < -LINBOX_MAX_INT8) throw PreconditionFailed(LB_FILE_LOC,"XGCD: integer overflow");
 #endif
 				a = Element(-a);
 				aneg = 1;
@@ -417,7 +417,7 @@ namespace LinBox
 
 			if (b < 0) {
 #ifdef DEBUG
-				if (b < -LINBOX_MAX_INT8) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
+				if (b < -LINBOX_MAX_INT8) throw PreconditionFailed(LB_FILE_LOC,"XGCD: integer overflow");
 #endif
 				b = (Element)-b;
 				bneg = 1;

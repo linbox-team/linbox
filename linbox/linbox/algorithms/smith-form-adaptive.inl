@@ -182,7 +182,7 @@ namespace LinBox
 	template <class Matrix>
 	void SmithFormAdaptive::compute_local_big (BlasVector<PID_integer>& s, const Matrix& A, long p, long e)
 	{
-		throw(LinBoxError("you need NTL to use SmithFormAdaptive",__func__,__FILE__,__LINE__));
+		throw(LinBoxError("you need NTL to use SmithFormAdaptive",LB_FILE_LOC));
 	}
 
 #endif
@@ -316,7 +316,7 @@ namespace LinBox
 	template <class Matrix>
 	void SmithFormAdaptive::smithFormRough  (BlasVector<PID_integer>& s, const Matrix& A, integer m)
 	{
-		throw(LinBoxError("you need NTL to use SmithFormAdaptive",__func__,__FILE__,__LINE__));
+		throw(LinBoxError("you need NTL to use SmithFormAdaptive",LB_FILE_LOC));
 	}
 #endif
 

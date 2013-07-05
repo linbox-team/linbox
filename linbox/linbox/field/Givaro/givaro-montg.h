@@ -103,7 +103,7 @@ namespace LinBox
 		{
 
 			if (k!=1)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+				throw PreconditionFailed(LB_FILE_LOC,"exponent must be 1");
 		}
 
 		/** Characteristic.

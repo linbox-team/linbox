@@ -100,8 +100,8 @@ namespace LinBox
 		GF2 (int p, int exp = 1) :
 			zero(false),one(true),mOne(true)
 		{
-			if(p != 2) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 2");
-			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+			if(p != 2) throw PreconditionFailed(LB_FILE_LOC,"modulus must be 2");
+			if(exp != 1) throw PreconditionFailed(LB_FILE_LOC,"exponent must be 1");
 		}
 
 		/** Copy constructor.

@@ -74,9 +74,15 @@ namespace LinBox {
 } // LinBox
 
 #include "SparseMatrix/sparse-coo-matrix.h"
+// #include "SparseMatrix/sparse-coo-1-matrix.h"
 #include "SparseMatrix/sparse-csr-matrix.h"
+// #include "SparseMatrix/sparse-csr-1-matrix.h"
 #include "SparseMatrix/sparse-ell-matrix.h"
 #include "SparseMatrix/sparse-ellr-matrix.h"
+// #include "SparseMatrix/sparse-ellr-1-matrix.h"
+// #include "SparseMatrix/sparse-bcsr-matrix.h"
+// #include "SparseMatrix/sparse-dia-matrix.h"
+#include "SparseMatrix/sparse-hyb-matrix.h"
 
 #endif // __LINBOX_matrix_sparse_matrix_H
 

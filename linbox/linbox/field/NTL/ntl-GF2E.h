@@ -99,7 +99,7 @@ namespace LinBox
 	public :
 		NTL_GF2E_Initialiser( const Integer & p, size_t k = 1) {
 			linbox_check(p == 2);
-			// if(p != 2) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 2");
+			// if(p != 2) throw PreconditionFailed(LB_FILE_LOC,"modulus must be 2");
 			NTL::GF2X irredPoly = NTL::BuildSparseIrred_GF2X((long) k);
 			NTL::GF2E::init(irredPoly);
 

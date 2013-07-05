@@ -139,12 +139,12 @@ namespace LinBox
 			int32_t pl=p;
 			for(int32_t i=1;i<k;++i) pl*=(int32_t)p;
 			if(!FieldTraits<GivaroGfq>::goodModulus(p)) {
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus be between 2 and 2^15 and prime");
+				throw PreconditionFailed(LB_FILE_LOC,"modulus be between 2 and 2^15 and prime");
 			}
 			else if(pl>(1<<_GIVARO_FF_MAXEXPONENT_))  {
                             std::stringstream MSGFFMAXE;
                             MSGFFMAXE << "cardinality must be < 2^" << _GIVARO_FF_MAXEXPONENT_;       
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,MSGFFMAXE.str().c_str());
+				throw PreconditionFailed(LB_FILE_LOC,MSGFFMAXE.str().c_str());
 			}
 			// Givaro::GFqDom<int32_t>::init(one,1);
 			// Givaro::GFqDom<int32_t>::init(mOne,-1);

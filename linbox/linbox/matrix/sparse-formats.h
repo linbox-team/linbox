@@ -43,13 +43,25 @@ namespace LinBox {
 
 	namespace SparseMatrix2Format {
 		class ANY {} ;
-		class COO : public ANY {} ; // Cordinate
 		// template<typename Row_t>
-		class CSR : public ANY {} ; // compressed row
-		class ELL : public ANY {} ; // ellpack
-		class ELL_R : public ANY {} ; // ellpack
-		class HYB : public ANY {} ; // hybrid
-		// class TPL : public ANY {} ; // triples
+		class COO    : public ANY {} ; // Cordinate
+		// template<typename Row_t>
+		// class COO1   : public ANY {} ; // COO with only ones (or mones, or..)
+		// template<typename Row_t>
+		class CSR    : public ANY {} ; // compressed row
+		// template<typename Row_t>
+		// class CSR1   : public ANY {} ; // CSR with only ones (or mones, or..)
+		// template<typename Row_t>
+		class ELL    : public ANY {} ; // ellpack
+		// template<typename Row_t>
+		class ELL_R  : public ANY {} ; // ellpack
+		// template<typename Row_t>
+		// class ELL_R1 : public ANY {} ; // ELL_R with only ones (or mones, or..)
+		// class DIA    : public ANY {} ; // Cordinate
+		// class BCSR   : public ANY {} ; // Cordinate
+		// class TPL    : public ANY {} ; // triples
+
+		class HYB    : public ANY {} ; // hybrid
 	} // SparseMatrix2Format
 
 	namespace SparseFileFormat {
