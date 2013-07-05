@@ -428,6 +428,19 @@ namespace LinBox
 		bool isOne (const Element &x) const
 		{ return mpq_cmp_ui (x.rep, 1L, 1L) == 0; }
 
+		/** MOne equality.
+		 * Test if field element is equal to one.
+		 * This function assumes the field element has already been
+		 * constructed and initialized.
+		 * In this implementation, this means the _elem_ptr of x
+		 * exists and does not point to null.
+		 * @return boolean true if equals one, false if not.
+		 * @param  x field element.
+		 */
+		bool isMOne (const Element &x) const
+		{ return mpq_cmp_ui (x.rep, 1L, 1L) == 0; }
+
+
 		/** Inplace Addition.
 		 * x += y
 		 * This function assumes both field elements have already been

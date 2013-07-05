@@ -381,6 +381,17 @@ namespace LinBox
 		bool isOne (const ElementAbstract& x) const
 		{ return _field.isOne (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
 
+		/** MOne equality.
+		 * Test if field base element is equal to one.
+		 * This function assumes the field base element has already been
+		 * constructed and initialized.
+		 * @return boolean true if equals one, false if not.
+		 * @param  x field base element.
+		 */
+		bool isMOne (const ElementAbstract& x) const
+		{ return _field.isMOne (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
+
+
 		/** Inplace Addition.
 		 * x += y
 		 * This function assumes both field base elements have already been

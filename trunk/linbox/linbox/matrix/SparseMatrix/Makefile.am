@@ -36,4 +36,5 @@ pkgincludesub_HEADERS =         \
 	#  sparse-ellr-1-matrix.h    \
 	#  sparse-bcsr-matrix.h    \
 	#  sparse-dia-matrix.h    \
+	#  sparse-tpl-matrix.h    \
 	#

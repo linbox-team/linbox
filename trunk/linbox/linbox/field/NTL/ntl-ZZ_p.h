@@ -392,6 +392,20 @@ namespace LinBox
 			return static_cast<bool>(IsOne(x));
 		}
 
+		/** MOne equality.
+		 * Test if field element is equal to one.
+		 * This function assumes the field element has already been
+		 * constructed and initialized.
+		 * In this specialization, NTL's IsMOne function is called.
+		 * @return boolean true if equals one, false if not.
+		 * @param  x field element.
+		 */
+		bool isMOne(const Element& x) const
+		{
+		Element y ; neg(y,x);
+			return isOne(y);
+		}
+
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
 		 * This function assumes both field elements have already been

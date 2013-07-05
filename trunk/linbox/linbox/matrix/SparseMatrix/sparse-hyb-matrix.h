@@ -39,7 +39,10 @@
 
 #include "linbox-config.h"
 #include "linbox/util/debug.h"
-#include "linbox/matrix/sparse.h"
+#include "sparse-domain.h"
+#include "sparse-coo-matrix.h"
+#include "sparse-csr-matrix.h"
+#include "sparse-ellr-matrix.h"
 
 /*! @todo benchmark me */
 #define HYB_ELL_THRESHOLD 0.9
@@ -88,7 +91,7 @@ namespace LinBox
 							++one ;
 							row_one[i] += 1 ;
 						}
-						else if (_field.isMone(Mat.getEntry(k))) {
+						else if (_field.isMOne(Mat.getEntry(k))) {
 							++mone ;
 							row_mone[i] += 1 ;
 						}
@@ -226,7 +229,7 @@ namespace LinBox
 		struct rebind ;
 
 		template<typename _Tp1>
-		struct rebind<_Tp1/*  ,SparseMatrix2Format::COO */ > {
+		struct rebind<_Tp1 > {
 			typedef SparseMatrix2<_Tp1, SparseMatrix2Format::HYB> other;
 
 			void operator() (other & Ap, const Self_t& A)
@@ -236,22 +239,26 @@ namespace LinBox
 
 				if (A.have_reader()) {
 					Ap.newReader();
-					typename SparseMatrix2<_Tp1,SparseMatrix2Format::CSR>::template rebind<Field,SparseMatrix2Format::COO>()(Ap.reader(),A.reader());
+					typename SparseMatrix2<Field,SparseMatrix2Format::CSR>::template
+					rebind<_Tp1,SparseMatrix2Format::CSR>()(Ap.reader(),A.reader());
 				}
 
 				if (A.have_coo()) {
 					Ap.newCOO();
-					typename SparseMatrix2<_Tp1,SparseMatrix2Format::COO>::template rebind<Field,SparseMatrix2Format::COO>()(Ap.coo(),A.coo());
+					typename SparseMatrix2<Field,SparseMatrix2Format::COO>::template
+					rebind<_Tp1,SparseMatrix2Format::COO>()(Ap.coo(),A.coo());
 				}
 
 				if (A.have_csr()) {
 					Ap.newCSR();
-					typename SparseMatrix2<_Tp1,SparseMatrix2Format::CSR>::template rebind<Field,SparseMatrix2Format::CSR>()(Ap.csr(),A.csr());
+					typename SparseMatrix2<Field,SparseMatrix2Format::CSR>::template
+					rebind<_Tp1,SparseMatrix2Format::CSR>()(Ap.csr(),A.csr());
 				}
 
 				if (A.have_ell_r()) {
 					Ap.newELL_R();
-					typename SparseMatrix2<_Tp1,SparseMatrix2Format::ELL_R>::template rebind<Field,SparseMatrix2Format::ELL_R>()(Ap.ell_r(),A.ell_r());
+					typename SparseMatrix2<Field,SparseMatrix2Format::ELL_R>::template
+					rebind<_Tp1,SparseMatrix2Format::ELL_R>()(Ap.ell_r(),A.ell_r());
 				}
 			}
 		};
@@ -262,8 +269,10 @@ namespace LinBox
 			,_coo(NULL)
 			,_csr(NULL)
 			,_ell_r(NULL)
+			,_field(F)
 		{
-			typename SparseMatrix2<_Tp1,_Rw1>::template rebind<Field,SparseMatrix2Format::HYB>()(*this, S);
+			typename SparseMatrix2<_Tp1,_Rw1>::template
+			rebind<Field,SparseMatrix2Format::HYB>()(*this, S);
 		}
 
 
@@ -477,11 +486,15 @@ namespace LinBox
 		 */
 		constElement &getEntry(const size_t &i, const size_t &j) const
 		{
+			std::cout << " *** Warning/Error **** un optimised" << std::endl;
 			// get Entry in various opt, then reader
+			return reader().getEntry(i,j);
 		}
+
 
 		Element      &getEntry (Element &x, size_t i, size_t j) const
 		{
+			std::cout << " *** Warning/Error **** un optimised" << std::endl;
 			return x = getEntry (i, j);
 		}
 
@@ -496,6 +509,8 @@ namespace LinBox
 		{
 			// only setentry on _reader, destroy other ?
 			// or add in coo/ wherever possible ? (seems doable)
+			std::cout << " *** Warning/Error **** un optimised" << std::endl;
+			return reader().setEntry(i,j,e);
 		}
 
 
@@ -510,6 +525,8 @@ namespace LinBox
 		Element &refEntry(const size_t &i, const size_t&j)
 		{
 			// dangerous if ref is 0, but doable.
+			std::cout << " *** Warning/Error **** un optimised" << std::endl;
+			return reader().refEntry(i,j);
 		}
 
 		/** Write a matrix to the given output stream using field read/write.
@@ -642,12 +659,12 @@ namespace LinBox
 		template<class Vector>
 	Vector& apply(Vector &y, const Vector& x ) const
 		{
-			return apply(y,x,field().zero());
+			return apply(y,x,field().zero);
 		}
 		template<class Vector>
 		Vector& applyTranspose(Vector &y, const Vector& x ) const
 		{
-			return apply(y,x,field().zero());
+			return apply(y,x,field().zero);
 		}
 
 		const Field & field()  const
@@ -656,7 +673,6 @@ namespace LinBox
 		}
 
 
-	protected:
 		/** @todo Non element marker.
 		 * We could end up a line with a marker.
 		 * A field F would contain an element that does not belong to
@@ -702,13 +718,14 @@ namespace LinBox
 		std::ostream & writeSpecialized(std::ostream &os,
 						LINBOX_enum(Tag::FileFormat) format) const
 		{
-			if (have_reader())
+			if (have_reader()) {
 				return reader().write(os,format);
+			}
 
 			// SparseMatrix2<Field,SparseMatrix2Format::CSR> Temp(field());
 			// this->exporte(Temp);
 			// Temp.write(os,format);
-			return os << "no export yet in HYB" << __FILE__ << ','  __LINE__ ;
+			return os << "no export yet in HYB" << __FILE__ << ',' <<   __LINE__ ;
 
 		}
 
@@ -745,11 +762,6 @@ namespace LinBox
 		}
 
 
-		SparseMatrix2<Field,SparseMatrix2Format::COO> & coo(void)
-		{
-			linbox_check(have_coo());
-			return _coo[0] ;
-		}
 
 		bool have_coo() const
 		{
@@ -768,8 +780,27 @@ namespace LinBox
 			return _reader != NULL ;
 		}
 
+	SparseMatrix2<Field,SparseMatrix2Format::COO> & coo(void)
+		{
+			linbox_check(have_coo());
+			return _coo[0] ;
+		}
+
+	const SparseMatrix2<Field,SparseMatrix2Format::COO> & coo(void) const
+		{
+			linbox_check(have_coo());
+			return _coo[0] ;
+		}
+
+
 
 		SparseMatrix2<Field,SparseMatrix2Format::CSR> & csr(void)
+		{
+			linbox_check(have_csr());
+			return _csr[0] ;
+		}
+
+		const	SparseMatrix2<Field,SparseMatrix2Format::CSR> & csr(void) const
 		{
 			linbox_check(have_csr());
 			return _csr[0] ;
@@ -781,13 +812,19 @@ namespace LinBox
 			return _ell_r[0] ;
 		}
 
-		SparseMatrix2<Field,SparseMatrix2Format::ELL_R> & reader(void)
+		const	SparseMatrix2<Field,SparseMatrix2Format::ELL_R> & ell_r(void) const
+		{
+			linbox_check(have_ell_r());
+			return _ell_r[0] ;
+		}
+
+		SparseMatrix2<Field,SparseMatrix2Format::CSR> & reader(void)
 		{
 			linbox_check(have_reader());
 			return _reader[0] ;
 		}
 
-		const	SparseMatrix2<Field,SparseMatrix2Format::ELL_R> & reader(void) const
+		const SparseMatrix2<Field,SparseMatrix2Format::CSR> & reader(void) const
 		{
 			linbox_check(have_reader());
 			return _reader[0] ;

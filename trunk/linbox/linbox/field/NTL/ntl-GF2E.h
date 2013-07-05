@@ -145,6 +145,12 @@ namespace LinBox
 			return NTL::IsOne(a);
 		}
 
+		bool isMOne (const Element& x) const
+		{
+			Element y ; neg(y,x);
+			return isOne(y);
+		}
+
 		integer& characteristic (integer &c) const
 		{
 			return c = 2;

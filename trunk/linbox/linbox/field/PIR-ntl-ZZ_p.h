@@ -204,9 +204,15 @@ namespace LinBox
 		 *  Test if x == 1
 		 */
 		inline static bool isOne (const Element& x)  {
-
 			return NTL::IsOne (x);
 		}
+
+	bool isMOne (const Element& a) const
+		{
+			Element y ; negin(y,x);
+			return isOne(y);
+		}
+
 
 		// arithmetic
 

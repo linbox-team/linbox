@@ -281,6 +281,17 @@ namespace LinBox
 			return x == 1;
 		}
 
+		/*- MOne equality.
+		 * Test if field base element is equal to one.
+		 * This function assumes the field base element has already been
+		 * constructed and initialized.
+		 * @return boolean true if equals one, false if not.
+		 * @param  x field base element.
+		 */
+		bool isMOne (const Element &x) const
+		{
+			return x == (_modulus - 1);
+		}
 
 		//@} Arithmetic Operations
 

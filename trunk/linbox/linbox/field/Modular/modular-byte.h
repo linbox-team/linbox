@@ -258,6 +258,12 @@ namespace LinBox
 			return x == 1;
 		}
 
+		inline bool isMOne (const Element &x) const
+		{
+			return x == modulus-1;
+		}
+
+
 		inline Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			x = Element(y + z);

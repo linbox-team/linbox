@@ -166,6 +166,7 @@ namespace LinBox
 		using Father_t::write;
 		using Father_t::isZero;
 		using Father_t::isOne;
+		using Father_t::isMOne;
 
 		template<typename Src>
 		Element&init(Element&x, const Src&s) const

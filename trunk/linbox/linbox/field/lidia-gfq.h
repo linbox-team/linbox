@@ -491,6 +491,20 @@ namespace LinBox
 			return x.is_one();
 		}
 
+		/** MOne equality.
+		 * Test if field Element is equal to one of field.
+		 * This function assumes the field Element has already been
+		 * constructed and initialized.
+		 * @return boolean true if equals one of field, false if not.
+		 * @param  x field Element.
+		 */
+		bool isMOne(const Element& x) const
+		{
+			// is_mone ?
+			Element y ; F.neg(y,x);
+			return y.is_one();
+		}
+
 
 
 		/** Inplace Addition.

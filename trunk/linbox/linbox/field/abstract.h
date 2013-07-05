@@ -285,6 +285,16 @@ namespace LinBox
 		 */
 		virtual bool isOne (const Element &x) const = 0;
 
+		/** MOne equality.
+		 * Test if field element is equal to one.
+		 * This function assumes the field element has already been
+		 * constructed and initialized.
+		 * Purely virtual.
+		 * @return boolean true if equals one, false if not.
+		 * @param  x field element.
+		 */
+		virtual bool isMOne (const Element &x) const = 0;
+
 		/** Inplace Addition.
 		 * x += y
 		 * This function assumes both field elements have already been

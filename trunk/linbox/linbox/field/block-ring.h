@@ -529,6 +529,38 @@ namespace LinBox
 		}
 
 
+	bool isMOne(const Element& X) const
+		{
+			size_t n = X.matrix->rowdim();
+
+			if(n != X.matrix->coldim()) {
+				return false;
+			}
+
+			Scalar* x=X.matrix->getPointer();
+
+			for(size_t i=1; i <= n; ++i)
+				for(size_t j=1; j <= n; ++j)
+				{
+					if(i==j) { // on the diagonal
+						if(!_field.isMOne(*x)) {
+							return false;
+						}
+					}
+					else {
+						if(!_field.isZero(*x)) {
+							return false;
+						}
+					}
+
+					x++;
+				}
+
+
+			return true;
+		}
+
+
 		bool isZero(const Element& X) const
 		{
 

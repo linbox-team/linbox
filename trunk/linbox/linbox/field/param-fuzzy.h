@@ -297,6 +297,13 @@ namespace LinBox
 		bool isOne (const Element &x) const
 		{ return ( ( x - 1 <= _fuzz ) && ( 1 - x <= _fuzz ) ); }
 
+		bool isMOne (const Element& a) const
+		{
+			Element y ; negin(y,x);
+			return isOne(y);
+		}
+
+
 		/** Inplace Addition.
 		 * x += y
 		 * This function assumes both field base elements have already been
