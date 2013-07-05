@@ -66,8 +66,8 @@ namespace LinBox
 
 		NTL_ZZ(int p = 0, int exp = 1)
 		{
-			if( p != 0 ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 0 (no modulus)");
-			if( exp != 1 ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+			if( p != 0 ) throw PreconditionFailed(LB_FILE_LOC,"modulus must be 0 (no modulus)");
+			if( exp != 1 ) throw PreconditionFailed(LB_FILE_LOC,"exponent must be 1");
 		}
 
 		inline integer& cardinality (integer& c) const
@@ -276,7 +276,7 @@ namespace LinBox
 				return x = q;
 
 			else
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"Div: not dividable");
+				throw PreconditionFailed(LB_FILE_LOC,"Div: not dividable");
 		}
 
 		/** @brief
@@ -291,7 +291,7 @@ namespace LinBox
 			else if ( NTL::IsOne (-y)) return x = y;
 
 			else
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"Inv: Not invertible");
+				throw PreconditionFailed(LB_FILE_LOC,"Inv: Not invertible");
 		}
 
 		/** @brief
@@ -371,7 +371,7 @@ namespace LinBox
 
 			else if (NTL::IsOne (-x)) return x;
 
-			else throw PreconditionFailed(__func__,__FILE__,__LINE__,"Div: not dividable");
+			else throw PreconditionFailed(LB_FILE_LOC,"Div: not dividable");
 		}
 
 		/** @brief

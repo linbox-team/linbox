@@ -751,8 +751,8 @@ namespace LinBox
 			_cardinality (0), _characteristic (0), _zero (0), _one (1), _mOne (-1),
 			zero (_zero, _one), one (_one, _one), mOne (_mOne, _one)
 		{
-			if(p != 0) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 0 (no modulus)");
-			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+			if(p != 0) throw PreconditionFailed(LB_FILE_LOC,"modulus must be 0 (no modulus)");
+			if(exp != 1) throw PreconditionFailed(LB_FILE_LOC,"exponent must be 1");
 		}
 
 		/// max modulus.

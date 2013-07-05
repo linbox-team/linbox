@@ -67,6 +67,9 @@
 #define THIS_CODE_MAY_NOT_COMPILE_AND_IS_NOT_TESTED \
 throw(" *** Warning ***  this piece of code is not compiled by default and may not work")
 
+#define LB_FILE_LOC \
+	__func__,__FILE__,__LINE__
+
 namespace LinBox
 { /*  Preconditions,Error,Failure,NotImplementedYet */
 	/*!  A precondition failed.

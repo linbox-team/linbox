@@ -76,6 +76,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 	// typedef SparseMatrix2<Field,SparseMatrix2Format::CSR> Blackbox;
 	// typedef SparseMatrix2<Field,SparseMatrix2Format::ELL> Blackbox;
 	// typedef SparseMatrix2<Field,SparseMatrix2Format::ELL_R> Blackbox;
+	// typedef SparseMatrix2<Field,SparseMatrix2Format::HYB> Blackbox;
 
 	commentator().start ("Testing elimination-based and blackbox rank", "testRankMethods", (unsigned int)iterations);
 

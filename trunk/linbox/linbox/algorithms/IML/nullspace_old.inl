@@ -232,7 +232,7 @@ namespace Protected {
 					--essai;
 					std::cout << "Bad prime (very bad)" << std::endl;
 					if (!essai)
-						throw(LinBoxFailure(__func__,__FILE__,__LINE__,
+						throw(LinBoxFailure(LB_FILE_LOC,
 								    "could not find a nullspace..."));
 					continue; // A non nulle, pas de bol hein ?
 				}
@@ -371,7 +371,7 @@ namespace Protected {
 						--essai;
 						std::cout << "Recoonstruction failed" << std::endl;
 						if (!essai)
-							throw(LinBoxFailure(__func__,__FILE__,__LINE__,"could not find a nullspace..."));
+							throw(LinBoxFailure(LB_FILE_LOC,"could not find a nullspace..."));
 
 						recontructed = false ;
 						break;
@@ -439,7 +439,7 @@ namespace Protected {
 						--essai ;
 						std::cout << "trying again..." << std::endl;
 						if (!essai)
-							throw(LinBoxFailure(__func__,__FILE__,__LINE__,"could not find a nullspace..."));
+							throw(LinBoxFailure(LB_FILE_LOC,"could not find a nullspace..."));
 
 						continue;
 					}

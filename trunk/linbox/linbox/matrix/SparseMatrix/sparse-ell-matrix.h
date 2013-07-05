@@ -210,8 +210,8 @@ namespace LinBox
 		 */
 		template<class _OtherStorage>
 		SparseMatrix2<_Field, SparseMatrix2Format::ELL> (const SparseMatrix2<_Field, _OtherStorage> & S) :
-			_rownb(S._rownb),_colnb(S._colnb),
-			_maxc(0),_colid(S.size()),_data(S.size()),
+			_rownb(S._rownb),_colnb(S._colnb),_nbnz(S.size()),
+			_maxc(0),_colid(0),_data(0),
 			_field(S._field)
 		{
 			this->importe(S); // convert Temp from anything
@@ -232,13 +232,13 @@ namespace LinBox
 		{
 			// can be sped up on multicores.
 			for (size_t i = 0 ; i < S.rowdim() ; ++i)
-				_maxc = std::max(_maxc, S.getStart(i+1)-S.getStart(i));
+				_maxc = std::max(_maxc, S.getEnd(i)-S.getStart(i));
 
 			resize(S.rowdim(), S.coldim(), S.size(),_maxc);
 
 			for (size_t i = 0 ; i < S.rowdim() ; ++i) {
 				size_t k = 0 ;
-				for (size_t j = S.getStart(i) ; j < S.getStart(i+1) ; ++j, ++k) {
+				for (size_t j = S.getStart(i) ; j < S.getEnd(i) ; ++j, ++k) {
 					setColid(i,k,S.getColid(j));
 					setData(i,k,S.getData(j));
 				}
@@ -256,6 +256,14 @@ namespace LinBox
 
 			setColid(S.getColid());
 			setData(S.getData());
+
+		}
+
+		template<class _OtherStorage>
+		void importe(const SparseMatrix2<_Field,_OtherStorage> &S)
+		{
+			SparseMatrix2<_Field,SparseMatrix2Format::CSR> Tmp(S);
+			this->importe(S);
 
 		}
 
@@ -283,6 +291,7 @@ namespace LinBox
 			linbox_check(k == _nbnz);
 
 			return S ;
+
 		}
 
 
@@ -357,14 +366,14 @@ namespace LinBox
 			size_t iend = _start[i+1] ;
 			if (ibeg == iend) {
 				// std::cout << "get entry : " << 0 << std::endl;
-				return _field.zero;
+				return field().zero;
 			}
 
 			myConstIterator beg = _colid.begin() ;
 			myConstIterator low = std::lower_bound (beg+(ptrdiff_t)ibeg, beg+(ptrdiff_t)iend, j);
 			if (low == beg+(ptrdiff_t)iend) {
 				// std::cout << "get entry : " << 0 << std::endl;
-				return _field.zero;
+				return field().zero;
 		}
 			else {
 				// not sure
@@ -393,7 +402,7 @@ namespace LinBox
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
 
-			if (_field.isZero(e)) {
+			if (field().isZero(e)) {
 				return clearEntry(i,j);
 			}
 
@@ -447,7 +456,7 @@ namespace LinBox
 			if (ibeg==iend) {
 				for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] +=1 ;
 				_colid.insert(_colid.begin()+ibeg,j);
-				_data.insert( _data.begin() +ibeg,_field.zero);
+				_data.insert( _data.begin() +ibeg,field().zero);
 				return _data[ibeg];
 			}
 			typedef typename std::vector<size_t>::iterator myIterator ;
@@ -456,7 +465,7 @@ namespace LinBox
 			if (low == beg+(ptrdiff_t)iend) {
 				for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] +=1 ;
 				_colid.insert(_colid.begin()+ibeg,j);
-				_data.insert( _data.begin() +ibeg,_field.zero);
+				_data.insert( _data.begin() +ibeg,field().zero);
 				return _data[ibeg];
 			}
 			else {
@@ -472,13 +481,13 @@ namespace LinBox
 		 */
 		template<class Format>
 		std::ostream & write(std::ostream &os,
-				     Format = SparseFileFormat::CSR())
+				     Format = SparseFileFormat::CSR()) const
 		{
 			return this->writeSpecialized(os,Format());
 		}
 
 		std::ostream & write(std::ostream &os,
-				     enum LINBOX_enum(Tag::FileFormat) ff  = Tag::FileFormat::Maple)
+				     enum LINBOX_enum(Tag::FileFormat) ff  = Tag::FileFormat::Maple) const
 		{
 			return this->writeSpecialized(os,ff);
 		}
@@ -537,7 +546,7 @@ namespace LinBox
 #if 0
 			size_t i = 0 ;
 			while(i < _data.size()) {
-				if ( _field.isZero(_data[i]) ) {
+				if ( field().isZero(_data[i]) ) {
 					for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] -= 1 ;
 					_colid.erase(_colid.begin()+i);
 					_data. erase(_data. begin()+i);
@@ -552,17 +561,15 @@ namespace LinBox
 		// y= Ax
 		// y[i] = sum(A(i,j) x(j)
 		template<class Vector>
-		Vector& apply(Vector &y, const Vector& x) const
+		Vector& apply(Vector &y, const Vector& x, const Element & a ) const
 		{
 			linbox_check(consistent());
-			//! @bug why always zero-assign ?
-			for (size_t i = 0 ; i < y.size() ; ++i)
-				_field.assign(y[i],_field.zero);
+			prepare(field(),y,a);
 
 			for (size_t i = 0 ; i < _rownb ; ++i) {
 				for (size_t k = 0   ; k < _maxc ; ++k)
 					if (!field().isZero(getData(i,k)))
-						_field.axpyin( y[i], getData(i,k), x[getColid(i,k)] ); //! @todo delay !!!
+						field().axpyin( y[i], getData(i,k), x[getColid(i,k)] ); //! @todo delay !!!
 					else
 						break;
 			}
@@ -570,26 +577,38 @@ namespace LinBox
 			return y;
 		}
 
+		class Helper ; // transpose
+
 		// y= A^t x
 		// y[i] = sum(A(j,i) x(j)
 		template<class Vector>
-		Vector& applyTranspose(Vector &y, const Vector& x) const
+		Vector& applyTranspose(Vector &y, const Vector& x, const Element & a ) const
 		{
 			linbox_check(consistent());
 			//! @bug if too big, create transpose.
-			//! @bug why always zero-assign ?
-			for (size_t i = 0 ; i < y.size() ; ++i)
-				_field.assign(y[i],_field.zero);
+			prepare(field(),y,a);
 
 			for (size_t i = 0 ; i < _rownb ; ++i)
 				for (size_t k = 0   ; k < _maxc ; ++k)
 					if (!field().isZero(getData(i,k)))
-						_field.axpyin( y[getColid(i,k)], getData(i,k), x[i] ); //! @todo delay !!!
+						field().axpyin( y[getColid(i,k)], getData(i,k), x[i] ); //! @todo delay !!!
 					else
 						break;
 
 			return y;
 		}
+
+		template<class Vector>
+		Vector& apply(Vector &y, const Vector& x ) const
+		{
+			return apply(y,x,field().zero());
+		}
+		template<class Vector>
+		Vector& applyTranspose(Vector &y, const Vector& x ) const
+		{
+			return apply(y,x,field().zero());
+		}
+
 
 		const Field & field()  const
 		{
@@ -612,7 +631,7 @@ namespace LinBox
 				bool row_ok = true ;
 				bool zero = false ;
 				for (size_t j = 0 ; j < _maxc ; ++j) {
-					if (_field.isZero(getData(i,j))) {
+					if (field().isZero(getData(i,j))) {
 						zero = true ;
 					}
 					else {
@@ -657,7 +676,7 @@ namespace LinBox
 					++lig ;
 				}
 				while (lig == _start[i]) {
-					_field.write(_data[i], os << _colid[i] << ' ') << std::endl;
+					field().write(_data[i], os << _colid[i] << ' ') << std::endl;
 					++i;
 				}
 				++lig ;
@@ -674,7 +693,7 @@ namespace LinBox
 			os << _rownb << ' ' << _colnb  << ' ' << size() << std::endl;
 			for (size_t i = 0 ; i < rowdim() ; ++i)
 				for (size_t j = _start[i] ; j < _start[j+1] ; ++j)
-					_field.write(_data[j], os << i << ' ' << _colid[j] << ' ') << std::endl;
+					field().write(_data[j], os << i << ' ' << _colid[j] << ' ') << std::endl;
 
 			return os << "0 0 0" << std::endl;
 		}
@@ -725,10 +744,10 @@ namespace LinBox
 						++lig ;
 						is >> n ;
 					}
-					_field.read(is,z)  ;
+					field().read(is,z)  ;
 					if (n<0 || lig >=_rownb || n >> _colnb)
 						throw LinBoxError("bad input");
-					if (!_field.isZero(z)){
+					if (!field().isZero(z)){
 						if (mem == nnz) {
 							mem+=20 ;
 							_start.resize(mem);
@@ -758,10 +777,10 @@ namespace LinBox
 						++lig ;
 						is >> n ;
 					}
-					_field.read(is,z)  ;
+					field().read(is,z)  ;
 					if (n<0 || lig >=_rownb || n >> _colnb)
 						throw LinBoxError("bad input");
-					if (!_field.isZero(z)){
+					if (!field().isZero(z)){
 						_start[loc]= lig ;
 						_colid[loc]= n ;
 						_data[loc] = z ;
@@ -819,8 +838,8 @@ namespace LinBox
 						break;
 					if (n<0 || m<0 ||  m >=_rownb || n >> _colnb)
 						throw LinBoxError("bad input");
-					_field.read(is,z)  ;
-					if (!_field.isZero(z)){
+					field().read(is,z)  ;
+					if (!field().isZero(z)){
 						if (mem == nnz) {
 							mem+=20 ;
 							_start.resize(mem);
@@ -846,8 +865,8 @@ namespace LinBox
 						break;
 					if (n<0 || m<0 ||  m >=_rownb || n >> _colnb)
 						throw LinBoxError("bad input");
-					_field.read(is,z)  ;
-					if (!_field.isZero(z)){
+					field().read(is,z)  ;
+					if (!field().isZero(z)){
 						_start[loc]= m ;
 						_colid[loc]= n ;
 						_data[loc] = z ;

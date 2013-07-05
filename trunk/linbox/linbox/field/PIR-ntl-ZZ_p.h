@@ -82,7 +82,7 @@ namespace LinBox
 			Father_t(d,(size_t)e)
 		{
 
-			// if(e != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+			// if(e != 1) throw PreconditionFailed(LB_FILE_LOC,"exponent must be 1");
 			linbox_check(e == 1);
 
 			// NTL::ZZ_p::init (NTL::to_ZZ(((std::string)d). c_str()));
@@ -269,7 +269,7 @@ namespace LinBox
 			}
 
 			else
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"Div: not dividable");
+				throw PreconditionFailed(LB_FILE_LOC,"Div: not dividable");
 
 
 			return x;

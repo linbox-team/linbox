@@ -350,7 +350,7 @@ namespace LinBox
 						       int    rank
 						       , const Method & meth )
 	{
-		throw NotImplementedYet(__func__,__FILE__,__LINE__);
+		throw NotImplementedYet(LB_FILE_LOC);
 	}
 #endif
 
