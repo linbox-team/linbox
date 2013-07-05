@@ -56,6 +56,7 @@ namespace LinBox
 	class Stats {
 		const SparseMatrix2<Field,SparseMatrix2Format::CSR> & _Mat;
 		const Field & _field ;
+	public:
 		size_t one ;
 		size_t mone ;
 		size_t avg ;
@@ -67,6 +68,7 @@ namespace LinBox
 		std::vector<size_t> null_row ;
 		// size_t mean ;
 		size_t ell ;
+		size_t ell_nbnz ;
 		size_t ell_one ;
 		size_t ell_mone ;
 	public :
@@ -79,6 +81,7 @@ namespace LinBox
 			,null_row(0)
 			,avg(0)
 			,ell(0)
+			,ell_nbnz(0)
 			// ,_off_ell(Mat.rowdim(),0);
 		{
 			if (Mat.size() > 100) { /*! @todo what is small ?  */
@@ -104,7 +107,6 @@ namespace LinBox
 
 		void getOptimsedFormat(SparseMatrix2<Field,SparseMatrix2Format::HYB> & hyb)
 		{
-			std::vector<SparseMatrix2Format::ANY>  try1 ;
 			// std::sort(row.start(), row.end());
 			// std::vector<size_t>::iterator up;
 			// up= std::upper_bound (row.begin(), row.end(), 0); //
@@ -122,12 +124,15 @@ namespace LinBox
 			ell = 0 ;
 			if ( r1 > HYB_ELL_THRESHOLD) {
 				ell = e1 ;
+				ell_nbnz =t1;
 			}
 			if (r2 > std::min(r1, HYB_ELL_THRESHOLD)) { /*! @todo benchmark me */
 				ell = e2 ;
+				ell_nbnz =t2;
 			}
 			if (r3 > std::min( std::min(r2,r1), HYB_ELL_THRESHOLD) ) { /*! @todo benchmark me */
 				ell = e3 ;
+				ell_nbnz =t3;
 			}
 
 			size_t choose_ell = 0 ; // 0 is nothing, 1 is ell, 2 is ellr
@@ -334,8 +339,8 @@ namespace LinBox
 		 * A specialisation can skip the temporary CSR matrix created.
 		 */
 		//@{
-		/*! Import a matrix in COO format to CSR.
-		 * @param S COO matrix to be converted in CSR
+		/*! Import a matrix in CSR format to HYB.
+		 * @param S HYB matrix to be converted in HYB and optimsed
 		 */
 		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
 		{
@@ -345,6 +350,46 @@ namespace LinBox
 		void optimise()
 		{
 			Stats<Field> stats(*this);
+			//! @todo ±1 !
+			if (have_ell_r()) {
+				ell_r().resize(rowdim(),coldim(),stats.ell_nbnz,stats.ell);
+				size_t l = 0 ;
+				for (size_t  i = 0 ;  i < rowdim() ;++i) {
+					size_t j = 0 ;
+					ell_r.setRowid(i,std::min(reader().rowLength(i),stats.ell));
+					for (size_t k = reader().getStart(i) ; k < reader().getStart(i)+ell_r.getRowid(i) ; ++k, ++j) {
+						ell_r().setColid(i,j,reader().getColid(k));
+						ell_r().setData (i,j,reader().getData (k));
+
+					}
+					for (size_t k = reader().getStart(i)+ell_r.getRowid(i) ; k < reader.getEnd(i) ; ++k , ++l) {
+						if (have_coo()) {
+							coo().setRowid(l,i);
+							coo().setColid(l,reader().getColid(k));
+							coo().setData (l,reader().getData (k));
+						}
+						else {
+							csr().setEnd(i,csr.getEnd(i)+1);
+							csr().setColid(l,reader().getColid(k));
+							csr().setData (l,reader().getData (k));
+						}
+					}
+				}
+				if (have_csr()) {
+					for (size_t  i = 0 ;  i < rowdim() ;++i) {
+						csr().setEnd(i,csr().getStart(i)+csr().getEnd(i));
+					}
+					csr().compress();
+				}
+
+			}
+			else if (have_csr()) {
+				csr().importe(reader());
+
+			}
+			else if (have_coo()) {
+				coo().importe(reader());
+			}
 		}
 
 		/*! Import a matrix in CSR format to CSR.
@@ -622,12 +667,18 @@ namespace LinBox
 			linbox_check(consistent());
 			prepare(field(),y,a);
 
-			if (have_ell_r())
-				ell_r().apply(y,x,field().one);
-			if (have_coo())
-				coo()  .apply(y,x,field().one);
-			if (have_csr())
-				csr()  .apply(y,x,field().one);
+			bool is_optimised = (have_ell_r() || have_coo() || have_csr());
+			if (is_optimised) {
+				if (have_ell_r())
+					ell_r().apply(y,x,field().one);
+				if (have_coo())
+					coo()  .apply(y,x,field().one);
+				if (have_csr())
+					csr()  .apply(y,x,field().one);
+			}
+			else {
+				reader(). apply(y,x,field().one);
+			}
 
 
 
@@ -644,13 +695,19 @@ namespace LinBox
 			linbox_check(consistent());
 			//! @bug if too big, create transpose.
 			prepare(field(),y,a);
+			bool is_optimised = (have_ell_r() || have_coo() || have_csr());
+			if (is_optimised) {
 
-			if (have_ell_r())
-				ell_r().applyTranspose(y,x,field().one);
-			if (have_coo())
-				coo()  .applyTranspose(y,x,field().one);
-			if (have_csr())
-				csr()  .applyTranspose(y,x,field().one);
+				if (have_ell_r())
+					ell_r().applyTranspose(y,x,field().one);
+				if (have_coo())
+					coo()  .applyTranspose(y,x,field().one);
+				if (have_csr())
+					csr()  .applyTranspose(y,x,field().one);
+			}
+			else {
+				reader(). applyTranspose(y,x,field().one);
+			}
 
 
 			return y;
