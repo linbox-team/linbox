@@ -207,9 +207,9 @@ namespace LinBox
 			return NTL::IsOne (x);
 		}
 
-	bool isMOne (const Element& a) const
+	bool isMOne (const Element& x) const
 		{
-			Element y ; negin(y,x);
+			Element y ; neg(y,x);
 			return isOne(y);
 		}
 
