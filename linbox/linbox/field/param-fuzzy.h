@@ -297,9 +297,9 @@ namespace LinBox
 		bool isOne (const Element &x) const
 		{ return ( ( x - 1 <= _fuzz ) && ( 1 - x <= _fuzz ) ); }
 
-		bool isMOne (const Element& a) const
+		bool isMOne (const Element& x) const
 		{
-			Element y ; negin(y,x);
+			Element y ; neg(y,x);
 			return isOne(y);
 		}
 
