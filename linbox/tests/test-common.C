@@ -78,7 +78,7 @@ inline double incompleteGamma (double a, double x, double tol)
 
 double chiSquaredCDF (double chi_sqr, double df)
 {
-	return incompleteGamma (df / 2.0, chi_sqr / 2.0, 1e-10) / exp (gamma (df / 2.0));
+	return incompleteGamma (df / 2.0, chi_sqr / 2.0, 1e-10) / exp (lgamma (df / 2.0));
 }
 #endif // __LINBOX_test_common_C
 
