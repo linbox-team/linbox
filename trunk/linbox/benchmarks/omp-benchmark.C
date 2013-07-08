@@ -32,6 +32,8 @@
 #include <stdlib.h>
 #include <fstream>
 
+#include <omp.h>
+
 #include "linbox/vector/blas-vector.h"
 #include "linbox/util/timer.h"
 #include "linbox/field/modular.h"
@@ -39,8 +41,6 @@
 #include "linbox/blackbox/triplesbb.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/vector/vector-domain.h"
-
-//#include "benchmarks/benchmark-file.h"
 
 using namespace LinBox;
 
@@ -54,12 +54,12 @@ int randRange(int start, int end)
         return start+offset;
 }
 
-void runOMPTest(std::ostream &out,int numThreads, integer q, int n, int m, int nnz)
+void runOMPTest(std::ostream &out,int numThreads, integer q, int n, int m, int nnz, int iters)
 {
         typedef Modular<double> Field;
 	typedef Field::Element Element;
 	typedef std::vector <Element> Vector;
-	typedef TriplesBBOMP<Field> Blackbox;
+	typedef TriplesBBOMP<MatrixDomain<Field> > Blackbox;
 
 	Field F (q);
 
@@ -67,19 +67,14 @@ void runOMPTest(std::ostream &out,int numThreads, integer q, int n, int m, int n
         Vector x(n), y(n);
 	Element d;
 
-
 	for(int i = 0; i < (int)nnz; ++i)
 	{
                 size_t row,col;
-                //do {
-                        row = randRange(0,m);
-                        col = randRange(0,n);
-                        //                        A.getEntry(d,row,col);
-                        //                } while (!F.isZero(d));
-
+                row = randRange(0,m);
+                col = randRange(0,n);
                 F.init(d, randRange(0,q));
                 A.setEntry(row,col,d);
-	}
+        }
 
         for (int i=0;i<(int)n;++i) {
                 F.init(x[i],randRange(0,q));
@@ -87,21 +82,22 @@ void runOMPTest(std::ostream &out,int numThreads, integer q, int n, int m, int n
         omp_set_num_threads(numThreads);
         A.sortBlock();
         A.sortRow();
-        Timer t;
-        t.start();
-        A.apply(y,x);
-        t.stop();
-        double time=t.usertime();
+        double start = omp_get_wtime();
+        for (int i=0;i<iters;++i) {
+                A.apply(y,x);
+                A.apply(x,y);
+        }
+        double time=omp_get_wtime()-start;
         out.precision(10);
-        out << time << "," << numThreads << "," << q << "," << n << "," << m << "," << nnz << "," << "omp" << std::endl;
+        out << time << "," << numThreads << "," << q << "," << n << "," << m << "," << nnz << "," << iters << "," << "omp" << std::endl;
 }
 
-void runSeqTest(std::ostream &out, integer q, int n, int m, int nnz)
+void runSeqTest(std::ostream &out, integer q, int n, int m, int nnz, int iters)
 {
         typedef Modular<double> Field;
 	typedef Field::Element Element;
 	typedef std::vector <Element> Vector;
-	typedef TriplesBB<Field> Blackbox;
+	typedef TriplesBB<MatrixDomain<Field> > Blackbox;
 
 	Field F (q);
 
@@ -113,12 +109,8 @@ void runSeqTest(std::ostream &out, integer q, int n, int m, int nnz)
 	for(int i = 0; i < (int)nnz; ++i)
 	{
                 size_t row,col;
-                //do {
-                        row = randRange(0,m);
-                        col = randRange(0,n);
-                        //                        A.getEntry(d,row,col);
-                        //                } while (!F.isZero(d));
-
+                row = randRange(0,m);
+                col = randRange(0,n);
                 F.init(d, randRange(0,q));
                 A.setEntry(row,col,d);
 	}
@@ -126,19 +118,20 @@ void runSeqTest(std::ostream &out, integer q, int n, int m, int nnz)
         for (int i=0;i<(int)n;++i) {
                 F.init(x[i],randRange(0,q));
         }
-        Timer t;
-        t.start();
-        A.apply(y,x);
-        t.stop();
-        double time=t.usertime();
+        double start = omp_get_wtime();
+        for (int i=0;i<iters;++i) {
+                A.apply(y,x);
+                A.apply(x,y);
+        }
+        double time=omp_get_wtime()-start;
         out.precision(10);
-        out << time << "," << 1 << "," << q << "," << n << "," << m << "," << nnz << "," << "seq" << std::endl;
+        out << time << "," << 1 << "," << q << "," << n << "," << m << "," << nnz << "," << iters << "," << "seq" << std::endl;
 }
 
 
 void printHeader(std::ostream &out)
 {
-        out << "time,num_threads,field_size,n,m,nnz,code" << std::endl;
+        out << "time,num_threads,field_size,n,m,nnz,code,iters" << std::endl;
 }
 
 int main(int argc, char **argv)
@@ -146,10 +139,10 @@ int main(int argc, char **argv)
 	srand ((unsigned)time (NULL));
 
         printHeader(std::cout);
-        runOMPTest(std::cout,4,101,50000,50000,5000000);
-        runOMPTest(std::cout,2,101,50000,50000,5000000);
-        runOMPTest(std::cout,1,101,50000,50000,5000000);
-        runSeqTest(std::cout,101,50000,50000,5000000);
+        runOMPTest(std::cout,4,2147483629,500000,500000,5000000,3);
+        runOMPTest(std::cout,2,2147483629,500000,500000,5000000,3);
+        runOMPTest(std::cout,1,2147483629,500000,500000,5000000,3);
+        runSeqTest(std::cout,2147483629,500000,500000,5000000,3);
         return 0;
 }
 

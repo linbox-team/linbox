@@ -47,15 +47,17 @@ using std::ostream;
 namespace LinBox
 {
 
-template<class Field> TriplesBBOMP<Field>::TriplesBBOMP() : sortType_(TRIPLES_UNSORTED) {}
-template<class Field> TriplesBBOMP<Field>::~TriplesBBOMP() {}
+template<class MatDom> TriplesBBOMP<MatDom>::TriplesBBOMP() : sortType_(TRIPLES_UNSORTED) {}
+template<class MatDom> TriplesBBOMP<MatDom>::~TriplesBBOMP() {}
 
-template<class Field> TriplesBBOMP<Field>::TriplesBBOMP(const Field& F, istream& in) : field_(&F) {
+template<class MatDom> TriplesBBOMP<MatDom>::
+TriplesBBOMP(const Field& F, istream& in) : field_(&F), MD_(F)
+{
 	read(in);
 }
 
-template<class Field>
-istream& TriplesBBOMP<Field>::read(istream& in){
+template<class MatDom>
+istream& TriplesBBOMP<MatDom>::read(istream& in){
 	Index r, c;
 	typename Field::Element v; field().init(v);
 	MatrixStream<Field> ms(field(), in);
@@ -65,8 +67,8 @@ istream& TriplesBBOMP<Field>::read(istream& in){
 	return in;
 }
 
-template<class Field>
-ostream& TriplesBBOMP<Field>::write(ostream& out){
+template<class MatDom>
+ostream& TriplesBBOMP<MatDom>::write(ostream& out){
 	Index r, c;
 	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
 	out << "% written from a LinBox TriplesBBOMP" << std::endl;
@@ -78,22 +80,25 @@ ostream& TriplesBBOMP<Field>::write(ostream& out){
 	return out;
 }
 
-template<class Field>
-TriplesBBOMP<Field>& TriplesBBOMP<Field>::shape(const Field& F, Index r, Index c)
-{ field_ = &F; data_.clear(); rows_ = r; cols_ = c; sortType_ = TRIPLES_UNSORTED; return *this; }
+template<class MatDom>
+TriplesBBOMP<MatDom>& TriplesBBOMP<MatDom>::shape(const Field& F, Index r, Index c)
+{ field_ = &F; MD_=F; data_.clear(); rows_ = r; cols_ = c; sortType_ = TRIPLES_UNSORTED; return *this; }
 
-template<class Field> TriplesBBOMP<Field>::TriplesBBOMP(const Field& F, Index r, Index c)
-: field_(&F), data_(), rows_(r), cols_(c), sortType_(TRIPLES_UNSORTED) {}
+template<class MatDom> TriplesBBOMP<MatDom>::
+TriplesBBOMP(const Field& F, Index r, Index c)
+        : field_(&F),MD_(F), data_(), rows_(r), cols_(c),
+          sortType_(TRIPLES_UNSORTED) {}
 
-template<class Field>
-TriplesBBOMP<Field>::TriplesBBOMP(const TriplesBBOMP<Field> & B)
-: field_ ( B.field_ ), data_ ( B.data_ ), rows_ ( B.rows_ ), cols_ ( B.cols_ ),
-  sortType_ ( B.sortType_ ),
-  colBlocks_ (B.colBlocks__), rowBlocks_ (B.rowBlocks_)
+template<class MatDom>
+TriplesBBOMP<MatDom>::TriplesBBOMP(const TriplesBBOMP<MatDom> & B)
+        : field_ ( B.field_ ), MD_(B.MD_), data_ ( B.data_ ),
+          rows_ ( B.rows_ ), cols_ ( B.cols_ ),
+          sortType_ ( B.sortType_ ),
+          colBlocks_ (B.colBlocks__), rowBlocks_ (B.rowBlocks_)
 {}
 
-template<class Field>
-TriplesBBOMP<Field> & TriplesBBOMP<Field>::operator=(const TriplesBBOMP<Field> & rhs)
+template<class MatDom>
+TriplesBBOMP<MatDom> & TriplesBBOMP<MatDom>::operator=(const TriplesBBOMP<MatDom> & rhs)
 {
 	if (rhs == this)
 		return ;
@@ -107,9 +112,35 @@ TriplesBBOMP<Field> & TriplesBBOMP<Field>::operator=(const TriplesBBOMP<Field> &
 	return *this;
 }
 
-template<class Field>
+template<class MatDom>
+typename TriplesBBOMP<MatDom>::Matrix& TriplesBBOMP<MatDom>::
+apply_right(typename TriplesBBOMP<MatDom>::Matrix &Y,
+           const typename TriplesBBOMP<MatDom>::Matrix &X) const
+{
+        Y.zero();
+#pragma omp parallel
+        {
+                typename MatrixDomain::Submatrix Yr, Xr; // row submatrices
+#pragma omp for schedule (static,1)
+                for (Index i=0;i<rowBlocks_.size();++i) {
+                        for (Index j=0;j<rowBlocks_[i].size();++j) {
+                                Index start=rowBlocks_[i][j].start_;
+                                Index end=rowBlocks_[i][j].end_;
+                                for (Index k=start;k<end;++k) {
+                                        const Triple& t = data_[k];
+                                        Yr.submatrix(Y,0,t.getCol(),Y.rowdim(),1);
+                                        Xr.submatrix(X,0,t.getRow(),X.rowdim(),1);
+                                        MD_.axpyin(Yr, t.elt, Xr);
+                                }
+                        }
+                }
+        }
+	return Y;
+}
+
+template<class MatDom>
 template<class OutVector, class InVector>
-OutVector & TriplesBBOMP<Field>::apply(OutVector & y, const InVector & x) const
+OutVector & TriplesBBOMP<MatDom>::apply(OutVector & y, const InVector & x) const
 {
 
 	linbox_check( rowdim() == y.size() );
@@ -136,9 +167,9 @@ OutVector & TriplesBBOMP<Field>::apply(OutVector & y, const InVector & x) const
         return y;
 }
 
-template<class Field>
+template<class MatDom>
 template<class OutVector, class InVector>
-OutVector & TriplesBBOMP<Field>::seqApply(OutVector & y, const InVector & x) const
+OutVector & TriplesBBOMP<MatDom>::seqApply(OutVector & y, const InVector & x) const
 {
 
 	linbox_check( rowdim() == y.size() );
@@ -151,34 +182,39 @@ OutVector & TriplesBBOMP<Field>::seqApply(OutVector & y, const InVector & x) con
 	return y;
 }
 
-template<class Field>
+template<class MatDom>
 template<class OutVector, class InVector>
-OutVector & TriplesBBOMP<Field>::applyTranspose(OutVector & y, const InVector & x) const
+OutVector & TriplesBBOMP<MatDom>::applyTranspose(OutVector & y, const InVector & x) const
 {
 	linbox_check( coldim() == y.size() );
 	linbox_check( rowdim() == x.size() );
 	for (Index i = 0; i < y.size(); ++i) field().init(y[i], field().zero);
 	for (Index k = 0; k < data_.size(); ++k) {
 		const Triple& t = data_[k];
-		field().axpyin(y[t.col()], t.elt, x[t.row()]);
+		field().axpyin(y[t.getCol()], t.elt, x[t.getRow()]);
 	}
 	return y;
 }
 
-template<class Field>
-size_t TriplesBBOMP<Field>::rowdim() const { return rows_; }
+template<class MatDom>
+size_t TriplesBBOMP<MatDom>::rowdim() const { return rows_; }
 
-template<class Field>
-size_t TriplesBBOMP<Field>::coldim() const { return cols_; }
+template<class MatDom>
+size_t TriplesBBOMP<MatDom>::coldim() const { return cols_; }
 
-template<class Field>
-const Field & TriplesBBOMP<Field>::field() const { return *field_; }
+template<class MatDom>
+const typename MatDom::Field& TriplesBBOMP<MatDom>::
+field() const { return *field_; }
 
-template<class Field>
-size_t TriplesBBOMP<Field>::size() const { return data_.size(); }
+template<class MatDom> const MatDom& TriplesBBOMP<MatDom>::
+domain() const { return MD_; }
 
-template<class Field>
-void TriplesBBOMP<Field>::sortRow()
+
+template<class MatDom>
+size_t TriplesBBOMP<MatDom>::size() const { return data_.size(); }
+
+template<class MatDom>
+void TriplesBBOMP<MatDom>::sortRow()
 {
         if ((sortType_ & TRIPLES_ROW_MAJOR_SORT) != 0) {
                 return;
@@ -190,25 +226,25 @@ void TriplesBBOMP<Field>::sortRow()
 
         BlockMap blocks;
 
-        Index blockSize=1024;
-        Index blockMask=~(blockSize-1);
-        Index startRow=0;
+        Index blockMask=~(65535);
+        Index startRowBlock=0;
         Index startIx=0;
         for (Index k=0;k<data_.size();++k) {
-                if (data_[k].getRow()>startRow+blockSize) {
-                        BlockMapIt vec=blocks.find(startRow);
+                Index rowBlock=(data_[k].getRow())&blockMask;
+                if (rowBlock!=startRowBlock) {
+                        BlockMapIt vec=blocks.find(startRowBlock);
                         if (vec==blocks.end()) {
-                                blocks.insert(make_pair(startRow,std::vector<Block>(1,Block(startIx,k))));
+                                blocks.insert(make_pair(startRowBlock,std::vector<Block>(1,Block(startIx,k))));
                         } else {
                                 vec->second.push_back(Block(startIx,k));
                         }
-                        startRow=data_[k].getRow()&blockMask;
+                        startRowBlock=rowBlock;
                         startIx=k;
                 }
         }
-        BlockMapIt vec=blocks.find(startRow);
+        BlockMapIt vec=blocks.find(startRowBlock);
         if (vec==blocks.end()) {
-                blocks.insert(make_pair(startRow,std::vector<Block>(1,Block(startIx,data_.size()))));
+                blocks.insert(make_pair(startRowBlock,std::vector<Block>(1,Block(startIx,data_.size()))));
         } else {
                 vec->second.push_back(Block(startIx,data_.size()));
         }
@@ -221,8 +257,8 @@ void TriplesBBOMP<Field>::sortRow()
         sortType_ |= TRIPLES_ROW_MAJOR_SORT;
 }
 
-template<class Field>
-void TriplesBBOMP<Field>::sortColumn()
+template<class MatDom>
+void TriplesBBOMP<MatDom>::sortColumn()
 {
         if (sortType_ & TRIPLES_COL_MAJOR_SORT != 0) {
                 return;
@@ -235,25 +271,25 @@ void TriplesBBOMP<Field>::sortColumn()
 
         BlockMap blocks;
 
-        Index blockSize=1024;
-        Index blockMask=~(blockSize-1);
-        Index startCol=0;
+        Index blockMask=~(1023);
+        Index startColBlock=0;
         Index startIx=0;
         for (Index k=0;k<data_.size();++k) {
-                if (data_[k].getCol()>startCol+blockSize) {
-                        BlockMapIt vec=blocks.find(startCol);
+                Index colBlock=data_[k].getCol&blockMask;
+                if (colBlock!=startColBlock) {
+                        BlockMapIt vec=blocks.find(startColBlock);
                         if (vec==blocks.end()) {
-                                blocks.insert(make_pair(startCol,std::vector<Block>(1,Block(startIx,k))));
+                                blocks.insert(make_pair(startColBlock,std::vector<Block>(1,Block(startIx,k))));
                         } else {
                                 vec->second.push_back(Block(startIx,k));
                         }
-                        startCol=data_[k].getCol()&blockMask;
+                        startColBlock=data_[k].getCol()&blockMask;
                         startIx=k;
                 }
         }
-        BlockMapIt vec=blocks.find(startCol);
+        BlockMapIt vec=blocks.find(startColBlock);
         if (vec==blocks.end()) {
-                blocks.insert(make_pair(startCol,std::vector<Block>(1,Block(startIx,data_.size()))));
+                blocks.insert(make_pair(startColBlock,std::vector<Block>(1,Block(startIx,data_.size()))));
         } else {
                 vec->second.push_back(Block(startIx,data_.size()));
         }
@@ -266,11 +302,10 @@ void TriplesBBOMP<Field>::sortColumn()
         sortType_ |= TRIPLES_COL_MAJOR_SORT;
 }
 
-template<class Field>
-void TriplesBBOMP<Field>::sortBlock()
+template<class MatDom>
+void TriplesBBOMP<MatDom>::sortBlock()
 {
-        if (sortType_ & TRIPLES_BLOCK_SORT != 0) { return; }
-
+        if ((sortType_ & TRIPLES_BLOCK_SORT) != 0) {return; }
         for (Index k=0; k<data_.size();++k) {
                 data_[k].toBlock();
         }
@@ -284,15 +319,16 @@ void TriplesBBOMP<Field>::sortBlock()
         sortType_=TRIPLES_BLOCK_SORT;
 }
 
-template<class Field>
-void TriplesBBOMP<Field>::setEntry(Index i, Index j, const typename Field::Element & e)
+template<class MatDom>
+void TriplesBBOMP<MatDom>::setEntry(Index i, Index j, const typename Field::Element & e)
 {
 	sortType_ = TRIPLES_UNSORTED;
 	data_.push_back(Triple(i, j, e));
 }
 
-template<class Field>
-typename Field::Element& TriplesBBOMP<Field>::getEntry(typename Field::Element& e, Index i, Index j) const
+template<class MatDom>
+typename MatDom::Field::Element& TriplesBBOMP<MatDom>::
+getEntry(typename Field::Element& e, Index i, Index j) const
 {
 	for (Index k = 0; k < data_.size(); ++k)
 		if (data_[k].row == i and data_[k].col == j)

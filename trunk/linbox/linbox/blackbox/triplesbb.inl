@@ -41,6 +41,8 @@ using std::ostream;
 #include "linbox/field/hom.h"
 #include "linbox/util/matrix-stream.h"
 
+#include <omp.h>
+
 #include <vector>
 
 namespace LinBox
@@ -143,6 +145,7 @@ OutVector & TriplesBB<MatDom>::apply(OutVector & y, const InVector & x) const
 {
 	linbox_check( rowdim() == y.size() );
 	linbox_check( coldim() == x.size() );
+        double start = omp_get_wtime();
 	for (Index i = 0; i < y.size(); ++i) field().init(y[i], field().zero);
 	for (Index k = 0; k < data_.size(); ++k) {
 		Triple t = data_[k];
