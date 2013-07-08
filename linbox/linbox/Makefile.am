@@ -26,7 +26,6 @@ SUBDIRS=util element field randiter vector matrix blackbox switch algorithms sol
 BASIC_HDRS =          \
     config-blas.h     \
     integer.h         \
-    linbox-config.h   \
     linbox-tags.h
 
 NTL_HDRS =
