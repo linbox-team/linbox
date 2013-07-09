@@ -63,7 +63,7 @@ namespace LinBox
 		 * @param indices Vector of indices representing the permutation
 		 */
 		Permutation (Storage & indices, const Field& F = Field()) :
-			_field(F), _indices (indices)
+			_field(&F), _indices (indices)
 		{}
 
 		/** Constructor from a dimension.
