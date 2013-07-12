@@ -440,6 +440,15 @@ namespace LinBox
 	}
 
 	template < class _Field, class _Rep >
+	void BlasMatrix< _Field, _Rep >::zero()
+	{
+		typename _Field::Element x; field().init(x);
+		for (size_t i = 0; i < rowdim(); ++i)
+			for (size_t j = 0; j < coldim(); ++j)
+				setEntry(i, j, field().zero);
+	}
+
+	template < class _Field, class _Rep >
 	void BlasMatrix< _Field, _Rep >::random()
 	{
 		typename _Field::Element x; field().init(x);

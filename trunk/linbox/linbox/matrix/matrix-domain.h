@@ -101,8 +101,8 @@ namespace LinBox
 		typedef std::vector<Element> Vector;
 		// subvector
 		typedef typename RawVector<typename Field::Element >::Dense Rep_;
-		typedef BlasMatrix<Field,Rep_> Matrix;
-		typedef BlasSubmatrix<Matrix> Submatrix;
+		typedef BlasMatrix<Field,Rep_> OwnMatrix;
+		typedef BlasSubmatrix<OwnMatrix> Matrix;
 
 		MatrixDomain () {/*std::cerr << "MD def cstor" << std::endl;*/ }
 
@@ -175,7 +175,7 @@ namespace LinBox
 						typename MatrixTraits<Matrix2>::MatrixCategory ());
 		}
 		/// B <-- A.  They must already have the same shape.
-		inline Submatrix &copy (Submatrix &B, const Submatrix &A) const {
+		inline Matrix &copy (Matrix &B, const Matrix &A) const {
 			return B.copy(A);
 		}
 
@@ -183,7 +183,7 @@ namespace LinBox
 		 * B <--> A.  They must already have the same shape.
 		 * @returns Reference to B
 		 */
-		inline Submatrix &swap(Submatrix &B, Submatrix &A) const {
+		inline Matrix &swap(Matrix &B, Matrix &A) const {
 			return B.swap(A);
 		}
 
@@ -448,6 +448,15 @@ namespace LinBox
 			return Y;
 		}
 
+		// Y <- Y + aX
+		template <class Matrix1, class Matrix3>
+		inline Matrix1 &saxpyin (Matrix1 &Y, const Element &a, const Matrix3 &X) const
+		{	// a crude hack for now
+			Element x, y;
+			for (size_t i = 0; i < X.rowdim(); ++i)
+			for (size_t j = 0; j < X.coldim(); ++j)
+				Y.setEntry(i,j,field().axpyin(y, a, X.getEntry(x, i, j)));
+		}
 
 		/*!  General matrix multiply
 		 * \f$ D \gets \alpha A B + \beta C\f$.

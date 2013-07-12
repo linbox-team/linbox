@@ -40,6 +40,7 @@ using std::max;
 #include "linbox/util/field-axpy.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/field/hom.h"
+#include "linbox/matrix/matrix-domain.h"
 
 #include <vector>
 
@@ -51,16 +52,17 @@ namespace LinBox
 	 \ingroup blackbox
 	 * Sparse matrix representation which stores nonzero entries by i,j,value triples.
 	 */
-  template<class MatDom>
+  template<class Field_>
   class TriplesBB : public BlackboxInterface {
 
 	public:
-	typedef MatDom MatrixDomain;
-	typedef typename MatrixDomain::Field Field;
-	typedef typename MatrixDomain::Submatrix Matrix;
+	typedef Field_ Field;
+	typedef typename MatrixDomain<Field>::Matrix Matrix;
 	typedef typename Field::Element Element;
-	typedef TriplesBB<MatrixDomain> Self_t;
+	typedef TriplesBB<Field> Self_t;
 	typedef size_t Index; // would prefer a signed type
+	enum sortPolicy {unsorted, cacheOpt, rowMajor, colMajor};
+
 
 	// Default constructor.
 	TriplesBB();
@@ -87,31 +89,36 @@ namespace LinBox
 	// Element e is added in the i,j position.
 	void setEntry(Index i, Index j, const Element & e);
 
+	/// Establish triples order.  Use after setEntry's, before any applies.
+	void finalize(sortPolicy s = cacheOpt);
+
 	// Element e is set to the i,j entry.
 	Element& getEntry(Element& e, Index i, Index j) const;
 
-	/// Y <- AX, requires conformal shapes.
-	Matrix & apply_right(Matrix &Y, const Matrix &X) const;
+	/// Mul with this on left: Y <- AX. Requires conformal shapes.
+	template<class Mat1, class Mat2>
+	Mat1 & applyLeft(Mat1 &Y, const Mat2 &X) const;
+	//Matrix & applyLeft(Matrix &Y, const Matrix &X) const;
 
-	/// Y <- XA, requires conformal shapes.
-	Matrix & apply_left(Matrix &Y, const Matrix &X) const;
+	/// Mul with this on right: Y <- XA. Requires conformal shapes.
+	template<class Mat1, class Mat2>
+	Mat1 & applyRight(Mat1 &Y, const Mat2 &X) const;
+	//Matrix & applyRight(Matrix &Y, const Matrix &X) const;
 
 	/** y <- A x.
 	 *
-	 *  Performance will be better if A is in rowMajor or colMajor order.
+	 *  Performance will generally be best if A is in cacheOpt order, 
+	 *  and rowMajor, colMajor orders are generally better than random.
 	 *
-	 *  If this were to be used extensively for sparse black box ops,
-	 *  optimizations would be desirable.
 	 */
 	template<class OutVector, class InVector>
 	OutVector & apply(OutVector &y, const InVector &x) const;
 
 	/** y <- A^T x.
 	 *
-	 *  Performance will be better if A is in rowMajor or colMajor order.
+	 *  Performance will generally be best if A is in cacheOpt order, 
+	 *  and rowMajor, colMajor orders are generally better than random.
 	 *
-	 *  If this were to be used extensively for sparse black box ops,
-	 *  optimizations would be desirable.
 	 */
 	template<class OutVector, class InVector>
 	OutVector & applyTranspose(OutVector &, const InVector &) const;
@@ -121,8 +128,6 @@ namespace LinBox
 	size_t coldim() const;
 
 	const Field & field() const;
-
-	const MatrixDomain & domain() const;
 
 	/* Returns number of non-zero entries */
 	size_t size() const;
@@ -149,8 +154,7 @@ namespace LinBox
 	};
 
 	protected:
-	const Field *field_; // The field of the entries
-	MatrixDomain MD_; // The matrix domain for apply_left and apply_right
+	MatrixDomain<Field> MD_; // Contains the field and dense mat ops for applyLeft and applyRight
 
 	struct Triple { Index row; Index col; Element elt;
 		Triple(Index& r, Index& c, const Element& e)
@@ -165,7 +169,9 @@ namespace LinBox
 	/// The number of rows, columns
 	Index rows_, cols_;
 
-	int rowMajor_; // 1 = rowMajor, -1 = colMajor, 0 = unsorted.
+	sortPolicy sort_;
+	// 0 = unsorted, 1 = cache optimized, 2 = row major, 3 = col major.
+	//int sort_; 
 
   }; // TriplesBB
 

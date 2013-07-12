@@ -1,5 +1,5 @@
 /* linbox/blackbox/triplesbb.inl
- * Copyright (c) Linbox
+ * Copyright (c) LinBox
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -19,12 +19,12 @@
  * ========LICENCE========
 
  * Written by Rich Seagraves <seagrave@cis.udel.edu>
- * with mods by bds
+ * with mods by bds and Alex Stachnik
  */
 
 /** @file blackbox/triplesbb.h
  * @ingroup blackbox
- * @brief NO DOC
+ * @brief A COO (vector of i,j,v triples) sparse matrix rep.
  */
 
 #ifndef __LINBOX_triplesbb_INL
@@ -34,30 +34,25 @@
 #include <iostream>
 using std::istream;
 using std::ostream;
-#include "linbox-config.h"
-#include "linbox/util/debug.h"
-#include "linbox/util/field-axpy.h"
-#include "linbox/blackbox/blackbox-interface.h"
-#include "linbox/field/hom.h"
+//#include <vector>
+
 #include "linbox/util/matrix-stream.h"
-
-#include <omp.h>
-
-#include <vector>
 
 namespace LinBox
 {
 
-template<class MatDom> TriplesBB<MatDom>::
-TriplesBB() {}
+template<class Field_> TriplesBB<Field_>::
+TriplesBB() : data_(), rows_(0), cols_(0), sort_(unsorted) {}
 
-template<class MatDom> TriplesBB<MatDom>::
+template<class Field_> TriplesBB<Field_>::
 ~TriplesBB() {}
 
-template<class MatDom> TriplesBB<MatDom>::
-TriplesBB(const Field& F, istream& in) : field_(&F), MD_(F) { read(in); }
+template<class Field_> TriplesBB<Field_>::
+TriplesBB(const Field& F, istream& in) 
+: MD_(F), data_(), rows_(0), cols_(0), sort_(unsorted) 
+{ read(in); }
 
-template<class MatDom> istream& TriplesBB<MatDom>::
+template<class Field_> istream& TriplesBB<Field_>::
 read(istream& in){
 	Index r, c;
 	typename Field::Element v; field().init(v);
@@ -68,7 +63,7 @@ read(istream& in){
 	return in;
 }
 
-template<class MatDom> ostream& TriplesBB<MatDom>::
+template<class Field_> ostream& TriplesBB<Field_>::
 write(ostream& out){
 	Index r, c;
 	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
@@ -81,67 +76,71 @@ write(ostream& out){
 	return out;
 }
 
-template<class MatDom> TriplesBB<MatDom>& TriplesBB<MatDom>::
+template<class Field_> TriplesBB<Field_>& TriplesBB<Field_>::
 init(const Field& F, Index r, Index c)
-{ field_ = &F; MD_.init(F), data_.clear(); rows_ = r; cols_ = c; rowMajor_ = 0; return *this; }
+{ MD_.init(F), data_.clear(); rows_ = r; cols_ = c; sort_ = unsorted; return *this; }
 
-template<class MatDom> TriplesBB<MatDom>::
+template<class Field_> TriplesBB<Field_>::
 TriplesBB(const Field& F, Index r, Index c)
-: field_(&F), data_(), rows_(r), cols_(c), rowMajor_(0) {}
+: MD_(F), data_(), rows_(r), cols_(c), sort_(unsorted) {}
 
-template<class MatDom> TriplesBB<MatDom>::
-TriplesBB(const TriplesBB<MatDom> & B)
-: field_ ( B.field_ ), MD_(B.field()), data_ ( B.data_ ), rows_ ( B.rows_ ), cols_ ( B.cols_ ),
-   rowMajor_ ( B.rowMajor_ )
+template<class Field_> TriplesBB<Field_>::
+TriplesBB(const TriplesBB<Field_> & B)
+: MD_(B.field()), data_ ( B.data_ ), rows_ ( B.rows_ ), cols_ ( B.cols_ ),
+   sort_ ( B.sort_ )
 {}
 
-template<class MatDom> TriplesBB<MatDom>& TriplesBB<MatDom>::
-operator=(const TriplesBB<MatDom> & rhs)
+template<class Field_> TriplesBB<Field_>& TriplesBB<Field_>::
+operator=(const TriplesBB<Field_> & rhs)
 {	if (rhs == this) return ;
-	field_ = rhs.field_;
 	MD_.init(rhs.field_);
 	data_ = rhs.data_;
 	rows_ = rhs.rows_;
 	cols_ = rhs.cols_;
-	rowMajor_ = rhs.rowMajor_;
+	sort_ = rhs.sort_;
 	return *this;
 }
 
-template<class MatDom> typename TriplesBB<MatDom>::Matrix& TriplesBB<MatDom>::
-apply_left // Y = AX
-	( typename TriplesBB<MatDom>::Matrix &Y,
-	  const typename TriplesBB<MatDom>::Matrix &X
+template<class Field_> 
+template<class Mat1, class Mat2> Mat1& TriplesBB<Field_>::
+// I do not like this need to templatize -bds
+//typename TriplesBB<Field_>::Matrix& TriplesBB<Field_>::
+applyLeft // Y = AX
+	( /*typename TriplesBB<Field_>::Matrix*/Mat1 &Y,
+	  const /*typename TriplesBB<Field_>::Matrix*/Mat2 &X
 	) const 
 {	Y.zero();
-	typename MatrixDomain::Submatrix Yc, Xc;// col submatrices
+	Matrix Yc, Xc;// row submatrices
 	for (Index k = 0; k < data_.size(); ++k) {
 		Triple t = data_[k];
 		Yc.submatrix(Y,t.row,0,1,Y.coldim());
 		Xc.submatrix(X,t.col,0,1,X.coldim());
-		MD_.axpyin(Yc, t.elt, Xc);
+		MD_.saxpyin(Yc, t.elt, Xc);
 	}
 	return Y;
 }
 
-template<class MatDom> typename TriplesBB<MatDom>::Matrix& TriplesBB<MatDom>::
-apply_right // Y = XA
-	( typename TriplesBB<MatDom>::Matrix &Y,
-	  const typename TriplesBB<MatDom>::Matrix &X
+//template<class Field_> typename TriplesBB<Field_>::Matrix& TriplesBB<Field_>::
+template<class Field_> 
+template<class Mat1, class Mat2> Mat1& TriplesBB<Field_>::
+applyRight // Y = XA
+	( /*TriplesBB<Field_>::Matrix*/Mat1 &Y,
+	  const /*typename TriplesBB<Field_>::Matrix*/Mat2 &X
 	) const 
 {	Y.zero();
-	typename MatrixDomain::Submatrix Yr, Xr; // row submatrices
+	Matrix Yr, Xr; // row submatrices
 	for (Index k = 0; k < data_.size(); ++k) {
 		Triple t = data_[k];
 		Yr.submatrix(Y,0,t.col,Y.rowdim(),1);
 		Xr.submatrix(X,0,t.row,X.rowdim(),1);
-		MD_.axpyin(Yr, t.elt, Xr);
+		MD_.saxpyin(Yr, t.elt, Xr);
 	}
 	return Y;
 }
 
-template<class MatDom> 
+template<class Field_> 
 template<class OutVector, class InVector>
-OutVector & TriplesBB<MatDom>::apply(OutVector & y, const InVector & x) const
+OutVector & TriplesBB<Field_>::apply(OutVector & y, const InVector & x) const
 {
 	linbox_check( rowdim() == y.size() );
 	linbox_check( coldim() == x.size() );
@@ -153,9 +152,9 @@ OutVector & TriplesBB<MatDom>::apply(OutVector & y, const InVector & x) const
 	return y;
 }
 
-template<class MatDom> 
+template<class Field_> 
 template<class OutVector, class InVector>
-OutVector & TriplesBB<MatDom>::applyTranspose(OutVector & y, const InVector & x) const
+OutVector & TriplesBB<Field_>::applyTranspose(OutVector & y, const InVector & x) const
 {
 	linbox_check( coldim() == y.size() );
 	linbox_check( rowdim() == x.size() );
@@ -167,30 +166,30 @@ OutVector & TriplesBB<MatDom>::applyTranspose(OutVector & y, const InVector & x)
 	return y;
 }
 
-template<class MatDom> size_t TriplesBB<MatDom>::
+template<class Field_> size_t TriplesBB<Field_>::
 rowdim() const { return rows_; }
 
-template<class MatDom> size_t TriplesBB<MatDom>::
+template<class Field_> size_t TriplesBB<Field_>::
 coldim() const { return cols_; }
 
-template<class MatDom> const typename MatDom::Field& TriplesBB<MatDom>::
-field() const { return *field_; }
+template<class Field_> const Field_& TriplesBB<Field_>::
+field() const { return MD_.field(); }
 
-template<class MatDom> const MatDom& TriplesBB<MatDom>::
-domain() const { return MD_; }
-
-template<class MatDom> size_t TriplesBB<MatDom>::
+template<class Field_> size_t TriplesBB<Field_>::
 size() const { return data_.size(); }
 
-template<class MatDom> void TriplesBB<MatDom>::
+template<class Field_> void TriplesBB<Field_>::
 setEntry(Index i, Index j, const typename Field::Element & e)
 {
-	rowMajor_ = false;
+	sort_ = unsorted;
 	data_.push_back(Triple(i, j, e));
 }
 
-template<class MatDom> typename MatDom::Field::Element& TriplesBB<MatDom>::
-getEntry(typename Field::Element& e, Index i, Index j) const
+template<class Field_> void TriplesBB<Field_>::
+finalize(sortPolicy s) { /* sort according to policy */ sort_ = s; }
+
+template<class Field_> typename Field_::Element& TriplesBB<Field_>::
+getEntry(typename Field_::Element& e, Index i, Index j) const
 {
 	for (Index k = 0; k < data_.size(); ++k)
 		if (data_[k].row == i and data_[k].col == j)
@@ -201,7 +200,6 @@ getEntry(typename Field::Element& e, Index i, Index j) const
 } // namespace LinBox
 
 #endif // __LINBOX_triplesbb_INL
-
 
 // Local Variables:
 // mode: C++

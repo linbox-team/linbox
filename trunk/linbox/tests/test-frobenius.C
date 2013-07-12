@@ -40,7 +40,6 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/frobenius.h"
-#include "linbox/algorithms/blas-domain.h"
 
 #include "test-generic.h"
 
@@ -86,7 +85,7 @@ int main (int argc, char **argv)
 	F.init(plist[2][pdeg],1);
 
 	commentator().start("Frobenius form black box test suite", "frobenius");
-	Frobenius<BlasMatrixDomain<Field> >  A(F, plist.begin(), plist.end());
+	Frobenius<Field>  A(F, plist.begin(), plist.end());
 
 	pass = pass && testBlackboxNoRW(A);
 

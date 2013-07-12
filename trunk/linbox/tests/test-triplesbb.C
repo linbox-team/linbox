@@ -98,25 +98,30 @@ int main (int argc, char **argv)
 	typedef Modular<double> Field;
 	typedef Field::Element Element;
 	Field F (q);
+	MatrixDomain<Field> MD(F);
+	typedef MatrixDomain<Field>::OwnMatrix OwnMatrix;
 	//Vectors
 	VectorDomain<Field> VD(F);
 	std::vector<Element> x(n), y(m), z(m);
 	for (size_t i = 0; i < n; ++i) F.init(x[i], i+1);
 
-	// using MatrixDomain
-	TriplesBB<MatrixDomain<Field> > A(F, m, n);
+	TriplesBB<Field> A(F, m, n);
 	randBuild(A, nnz);
 	pass = pass && testBlackbox(A);
+	// just see if it compiles
+	size_t b = 10;
+	OwnMatrix X(F,n,b), Y(F,m,b), Z(F,b,m), W(F,b,n);
+	X.random(); Z.random();
+	A.applyLeft(Y, X);
+	A.applyRight(W, Z);
 
-	// using BlasMatrixDomain
-	typedef BlasMatrixDomain<Field> MatDom;
 	// standard constructor
-	TriplesBB<MatDom> B(F, m, n); 
+	TriplesBB<Field> B(F, m, n); 
 	bidiag(B);
 	pass = pass && testBlackbox(B);
 	B.apply(y, x);
 	// default cstor plus init
-	TriplesBB<MatDom> C;  C.init(F, m, n);
+	TriplesBB<Field> C;  C.init(F, m, n);
 	bidiag(C);
 	pass = pass && testBlackbox(C);
 	// check B == C
@@ -126,7 +131,7 @@ int main (int argc, char **argv)
 		LinBox::commentator().report() << "fail: cstor and init disagree" << std::endl;
 	}
 	// copy construction
-	TriplesBB<MatDom> D(B); 
+	TriplesBB<Field> D(B); 
 	pass = pass && testBlackbox(D);
 	// check B == D
 	D.apply(z, x);

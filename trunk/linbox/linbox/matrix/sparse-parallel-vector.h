@@ -233,6 +233,8 @@ namespace LinBox
 
 
 		void           setEntry (size_t i, size_t j, const Element &value);
+		void finalize(){}
+
 		Element       &refEntry (size_t i, size_t j);
 		const Element &getEntry (size_t i, size_t j) const;
 		Element       &getEntry (Element &x, size_t i, size_t j) const

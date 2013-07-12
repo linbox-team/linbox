@@ -59,7 +59,7 @@ namespace LinBox
 		}
 
 	template < class _Matrix >
-	BlasSubmatrix<_Matrix>::BlasSubmatrix (const BlasMatrix<BlasSubmatrix<_Matrix>::Field,BlasSubmatrix<_Matrix>::Rep> &Mat,
+	BlasSubmatrix<_Matrix>::BlasSubmatrix (const typename BlasSubmatrix<_Matrix>::matrixType &Mat,
 						size_t row,
 						size_t col,
 						size_t Rowdim,
@@ -78,7 +78,8 @@ namespace LinBox
 
 
 	template < class _Matrix >
-	BlasSubmatrix<_Matrix>::BlasSubmatrix (const BlasMatrix<BlasSubmatrix<_Matrix>::Field,BlasSubmatrix<_Matrix>::Rep> &Mat) :
+	BlasSubmatrix<_Matrix>::BlasSubmatrix (const typename BlasSubmatrix<_Matrix>::matrixType &Mat) :
+//	BlasSubmatrix<_Matrix>::BlasSubmatrix (const BlasMatrix<BlasSubmatrix<_Matrix>::Field,BlasSubmatrix<_Matrix>::Rep> &Mat) :
 		_Mat(&(const_cast<BlasMatrix<Field>& >(Mat))),
 		_row(Mat.rowdim()), _col(Mat.coldim()),
 		_r0(0), _c0(0),
@@ -189,8 +190,8 @@ namespace LinBox
 	template < class _Matrix >
 	BlasSubmatrix<_Matrix> &BlasSubmatrix<_Matrix>::random()
 	{
-		typename Field::RandIter r(*(_Mat->field()));
-		Element temp; _Mat->field()->init(temp);
+		typename Field::RandIter r(_Mat->field());
+		Element temp; _Mat->field().init(temp);
 		for (size_t i = 0 ; i < rowdim() ; ++i)
 		for (size_t j = 0 ; j < coldim() ; ++j) {
 			setEntry(i,j,r.random(temp));

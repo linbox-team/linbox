@@ -58,8 +58,8 @@ namespace LinBox
         typedef typename Domain::Field           Field;
         typedef typename Domain::Element       Element;
         typedef _Sequence                     Sequence;
-        typedef typename Domain::Matrix    Coefficient;
-        typedef typename Domain::Submatrix         Sub;
+        typedef typename Domain::OwnMatrix    Coefficient;
+        typedef typename Domain::Matrix         Sub;
 
 
     protected:

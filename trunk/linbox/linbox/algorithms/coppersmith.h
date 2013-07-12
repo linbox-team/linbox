@@ -51,8 +51,8 @@ namespace LinBox
 		typedef _Domain 			Domain;
 		typedef typename Domain::Field                    Field;
 		typedef typename Domain::Element       Element;
-		typedef typename Domain::Matrix 	Block;
-		typedef typename Domain::Submatrix 	Sub;
+		typedef typename Domain::OwnMatrix 	Block;
+		typedef typename Domain::Matrix 	Sub;
 
 		inline const Domain & domain() const { return *_MD; }
 		inline const Field & field() const { return domain().field(); }
