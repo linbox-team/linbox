@@ -63,12 +63,12 @@ int randRange(int start, int end)
 typedef Modular<double> Field;
 typedef Field::Element Element;
 typedef std::vector <Element> STLVector;
-typedef TriplesBBOMP<MatrixDomain<Field> > OMPBlackbox;
-typedef TriplesBB<MatrixDomain<Field> > SeqBlackbox;
+typedef TriplesBBOMP<Field> OMPBlackbox;
+typedef TriplesBB<Field> SeqBlackbox;
 typedef BlasMatrix<Field> DenseMat;
 
 
-bool testRand(size_t m, size_t n, size_t nnz, integer q, bool shouldFail, int numThreads, ostream &report)
+bool testRand(size_t m, size_t n, size_t nnz, int q, bool shouldFail, int numThreads, ostream &report)
 {
         bool pass=true;
 
@@ -123,8 +123,7 @@ bool testRand(size_t m, size_t n, size_t nnz, integer q, bool shouldFail, int nu
                 pairs.insert(CoordPair(row,col));
 	}
 
-        TestMat.sortBlock();
-        TestMat.sortRow();
+        TestMat.finalize();
 
         omp_set_num_threads(numThreads);
 
@@ -164,8 +163,8 @@ bool testRand(size_t m, size_t n, size_t nnz, integer q, bool shouldFail, int nu
 
                 report << "Testing triplesbb-omp applyTranspose() against triplesbb applyTranspose() on random matrix using: " <<
                         "m=" << m << " n=" << n << " nnz=" << nnz << " numthreads=" << numThreads << " q=" << q << std::endl;
-                TestMat.applyTranspose(testYT,x);
-                RefMat.applyTranspose(refYT,x);
+                TestMat.applyTranspose(testYT,xT);
+                RefMat.applyTranspose(refYT,xT);
                 if (testYT==refYT) {
                         report << "PASS: Transpose-Equality test passed" << std::endl;
                 } else {
@@ -176,7 +175,7 @@ bool testRand(size_t m, size_t n, size_t nnz, integer q, bool shouldFail, int nu
         return pass;
 }
 
-bool testRandSuite(integer q, ostream &report)
+bool testRandSuite(int q, ostream &report)
 {
         bool pass=true;
 
@@ -272,8 +271,7 @@ bool testDenseRand(size_t n, size_t m, integer q, bool shouldFail, int numThread
                 pairs.insert(CoordPair(row,col));
         }
 
-        TestMat.sortBlock();
-        TestMat.sortRow();
+        TestMat.finalize();
 
         omp_set_num_threads(numThreads);
 
@@ -293,7 +291,7 @@ bool testDenseRand(size_t n, size_t m, integer q, bool shouldFail, int numThread
 }
 */
 
-bool testIdent(size_t n, integer q, bool shouldFail, int numThreads, ostream &report)
+bool testIdent(size_t n, int q, bool shouldFail, int numThreads, ostream &report)
 {
         bool pass=true;
 
@@ -321,8 +319,7 @@ bool testIdent(size_t n, integer q, bool shouldFail, int numThreads, ostream &re
                 TestMat.setEntry(i,i,d);
         }
 
-        TestMat.sortBlock();
-        TestMat.sortRow();
+        TestMat.finalize();
 
         omp_set_num_threads(numThreads);
         if (shouldFail) {
@@ -373,7 +370,7 @@ bool testIdent(size_t n, integer q, bool shouldFail, int numThreads, ostream &re
         return pass;
 }
 
-bool testIdentSuite(integer q,ostream &report)
+bool testIdentSuite(int q,ostream &report)
 {
         bool pass=true;
 
@@ -427,10 +424,10 @@ int main (int argc, char **argv)
 	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
         pass = pass && testIdentSuite(2,report);
-        pass = pass && testIdentSuite(2147483629,report);
+        pass = pass && testIdentSuite(65537,report);
 
         pass = pass && testRandSuite(2,report);
-        pass = pass && testRandSuite(2147483629,report);
+        pass = pass && testRandSuite(65537,report);
 
         report << "Testing" << std::endl;
 
