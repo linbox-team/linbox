@@ -60,8 +60,8 @@ namespace LinBox
 		 *
 		 */
 		typedef  Givaro::Rational Element;
-		Element zero,one,mOne;
-
+		const Element zero,one,mOne;
+        GivaroRational() : zero(0), one(1), mOne(-1) {}
 
 		Element& init(Element& x , const integer& y) const
 		{
