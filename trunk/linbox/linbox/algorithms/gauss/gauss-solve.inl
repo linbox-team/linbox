@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <23 Mar 12 17:33:46 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <09 Jul 13 14:09:52 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -40,15 +40,19 @@ namespace LinBox
 	template <class Matrix, class Perm, class Vector1, class Vector2> inline Vector1&
 	GaussDomain<_Field>::solve(Vector1& x, Vector1& w, unsigned long Rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const
 	{
-
+            // Q L U P x = b
 		Vector2 y(U.field(),U.rowdim()), v(U.field(),U.rowdim());
 
+            // L U P x = y = Q^T b
 		Q.applyTranspose(y, b);
 
+            // U P x = v = L^{-1} y
 		lowerTriangularUnitarySolve(v, L, y);
 
+            // P x = w = U^{-1} v, only for the upper part of w 
 		upperTriangularSolve(w, U, v);
 
+            // x = P^T w = P^T U^{-1} L^{-1} Q^T b
 		return P.applyTranspose(x, w);
 	}
 
