@@ -31,16 +31,17 @@
 
 #include <stdlib.h>
 #include <fstream>
-
+#include <time.h>
 #include <omp.h>
+
+#include "benchmarks/CSValue.h"
+#include "benchmarks/BenchmarkFile.h"
 
 #include "linbox/vector/blas-vector.h"
 #include "linbox/util/timer.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/triplesbb-omp.h"
 #include "linbox/blackbox/triplesbb.h"
-//#include "linbox/blackbox/csf.h"
-#include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/vector/vector-domain.h"
 
@@ -56,106 +57,90 @@ int randRange(int start, int end)
         return start+offset;
 }
 
-void runOMPTest(std::ostream &out,int numThreads, integer q, int n, int m, int nnz, int iters)
+template<class Blackbox>
+void randMVPTest(BenchmarkFile& of, int p, int numThreads, int m, int n, int nnz, int iters)
 {
-        typedef Modular<double> Field;
-	typedef Field::Element Element;
-	typedef std::vector <Element> Vector;
-	typedef TriplesBBOMP<MatrixDomain<Field> > Blackbox;
+        typedef typename Blackbox::Field Field;
+        typedef typename Field::Element Element;
+        typedef std::vector<Element> Vector;
 
-	Field F (q);
+        Field F(p);
 
-	Blackbox A(F, m, n);
+        Blackbox A(F,m,n);
         Vector x(n), y(n);
-	Element d;
+        Element d;
 
-	for(int i = 0; i < (int)nnz; ++i)
-	{
-                size_t row,col;
-                row = randRange(0,m);
-                col = randRange(0,n);
-                F.init(d, randRange(0,q));
-                A.setEntry(row,col,d);
-        }
-
-        for (int i=0;i<(int)n;++i) {
-                F.init(x[i],randRange(0,q));
-        }
         omp_set_num_threads(numThreads);
-        A.sortBlock();
-        A.sortRow();
-        double start = omp_get_wtime();
-        for (int i=0;i<iters;++i) {
-                A.apply(y,x);
-                A.apply(x,y);
-        }
-        double time=omp_get_wtime()-start;
-        out.precision(10);
-        out << time << "," << numThreads << "," << q << "," << n << "," << m << "," << nnz << "," << iters << "," << "omp" << std::endl;
-}
-
-template<class SparseMat>
-void runSeqTest(std::ostream &out, integer q, int n, int m, int nnz, int iters)
-{
-        typedef typename SparseMat::Field Field;
-	typedef typename Field::Element Element;
-	typedef std::vector <Element> Vector;
-
-	Field F (q);
-
-	SparseMat A(F, m, n);
-        Vector x(n), y(n);
-	Element d;
-
 
 	for(int i = 0; i < (int)nnz; ++i)
 	{
                 size_t row,col;
                 row = randRange(0,m);
                 col = randRange(0,n);
-                F.init(d, randRange(0,q));
+                F.init(d, randRange(0,p));
                 A.setEntry(row,col,d);
 	}
-	A.finalize();
+        A.finalize();
 
         for (int i=0;i<(int)n;++i) {
-                F.init(x[i],randRange(0,q));
+                F.init(x[i],randRange(0,p));
         }
+
         double start = omp_get_wtime();
         for (int i=0;i<iters;++i) {
                 A.apply(y,x);
                 A.apply(x,y);
         }
         double time=omp_get_wtime()-start;
-        out.precision(10);
-        out << time << "," << 1 << "," << q << "," << n << "," << m << "," << nnz << "," << iters << "," << "seq" << std::endl;
-}
 
-
-void printHeader(std::ostream &out)
-{
-        out << "time,num_threads,field_size,n,m,nnz,code,iters" << std::endl;
+        of.addDataField("time",CSDouble(time));
+        of.addDataField("num_threads",CSInt(numThreads));
+        of.addDataField("GF(p)",CSInt(p));
+        of.addDataField("rows",CSInt(m));
+        of.addDataField("columns",CSInt(n));
+        of.addDataField("nnz",CSInt(nnz));
+        of.addDataField("iterations",CSInt(iters));
 }
 
 int main(int argc, char **argv)
 {
-	srand ((unsigned)time (NULL));
         typedef Modular<double> Field;
-	size_t m = 500000;
-	size_t n = 500000;
-	//size_t m = 160000;
-	//size_t n = 160000;
-	size_t nnz = 5000000;
-	int p = 8388593;
-	//int p = 2147483629;
+        typedef TriplesBBOMP<Field> OMPBB;
+        typedef TriplesBB<Field> SeqBB;
 
-        printHeader(std::cout);
-        runOMPTest(std::cout,4,p,m,n,nnz,3);
-        runOMPTest(std::cout,2,p,m,n,nnz,3);
-        runOMPTest(std::cout,1,p,m,n,nnz,3);
-        runSeqTest<TriplesBB<MatrixDomain<Field> > >(std::cout,p,m,n,nnz,3);
-        runSeqTest<SparseMatrix<Field> >(std::cout,p,m,n,nnz,3);
-//        runSeqTest<CSR<Field> >(std::cout,p,m,n,nnz,3);
+        time_t rawTime;
+        struct tm *timeInfo;
+	srand ((unsigned)time (&rawTime));
+        timeInfo=localtime(&rawTime);
+
+        BenchmarkFile benchmarkFile;
+        benchmarkFile.addMapping("problem",CSString("Matrix-Vector Product"));
+        benchmarkFile.addMapping("date",CSDate(*timeInfo));
+
+        int p=65521;
+        int n=50000;
+        int m=n;
+        int nnz=500000;
+        int iters=30;
+
+        benchmarkFile.addDataField("algorithm",CSString("TriplesBBOMP-apply"));
+        randMVPTest<OMPBB>(benchmarkFile,p,4,m,n,nnz,iters);
+        benchmarkFile.pushBackTest();
+
+        benchmarkFile.addDataField("algorithm",CSString("TriplesBBOMP-apply"));
+        randMVPTest<OMPBB>(benchmarkFile,p,2,m,n,nnz,iters);
+        benchmarkFile.pushBackTest();
+
+        benchmarkFile.addDataField("algorithm",CSString("TriplesBBOMP-apply"));
+        randMVPTest<OMPBB>(benchmarkFile,p,1,m,n,nnz,iters);
+        benchmarkFile.pushBackTest();
+
+        benchmarkFile.addDataField("algorithm",CSString("TriplesBB-apply"));
+        randMVPTest<SeqBB>(benchmarkFile,p,1,m,n,nnz,iters);
+        benchmarkFile.pushBackTest();
+
+        benchmarkFile.write(std::cout);
+
         return 0;
 }
 
