@@ -337,6 +337,7 @@ namespace LinBox
 		 * @param value Value of the new entry
 		 */
 		void setEntry (size_t i, size_t j, const Element &value);
+		void finalize(){}
 
 		/** Get a writeable reference to an entry in the matrix
 		 * If there is no entry at the position (i, j), then a new entry

@@ -37,11 +37,10 @@
 namespace LinBox
 {
 	/// \ingroup blackbox
-	template <class MatDom>
-	class Frobenius: public BlackboxInterface, public DirectSum<Companion<MatDom> > {
+	template <class Field_>
+	class Frobenius: public BlackboxInterface, public DirectSum<Companion<Field_> > {
 	public:
-		typedef MatDom MatrixDomain;
-		typedef typename MatrixDomain::Field Field;
+		typedef Field_ Field;
 
 		Frobenius() { }   // default constructor
 
@@ -52,7 +51,7 @@ namespace LinBox
 		 *    @param vlist diagonal-block sizes, positive ints in non-increasing order
 		 */
 		template <class VDegList>
-		Frobenius( const MatrixDomain &F, const VDegList &vlist)
+		Frobenius( const Field &F, const VDegList &vlist)
 		{ }
 
 		/** Constructor.
@@ -67,11 +66,11 @@ namespace LinBox
 		{
 			this->_VB.resize((size_t)(pend - pbegin));
 			PolyIterator pp = pbegin;
-			typename std::vector<const Companion<MatrixDomain>* >::iterator vp;
+			typename std::vector<const Companion<Field>* >::iterator vp;
 			this->m = 0;
 			this->n = 0;
 			for(vp = this->_VB.begin(); vp != this->_VB.end(); ++vp,++pp)  {
-				*vp = new  Companion<MatrixDomain>(F,*pp);
+				*vp = new  Companion<Field>(F,*pp);
 				this->m += (*vp) -> rowdim();
 				this->n += (*vp) -> coldim();
 			}
@@ -81,7 +80,7 @@ namespace LinBox
 		/// destructor
 		~Frobenius()
 		{
-			typename std::vector< const Companion<MatrixDomain>* >::iterator vp;
+			typename std::vector< const Companion<Field>* >::iterator vp;
 			for(vp = this->_VB.begin(); vp != this->_VB.end(); ++vp)
 				delete (*vp);
 		}

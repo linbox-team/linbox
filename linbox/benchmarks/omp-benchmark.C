@@ -39,6 +39,8 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/triplesbb-omp.h"
 #include "linbox/blackbox/triplesbb.h"
+//#include "linbox/blackbox/csf.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/vector/vector-domain.h"
 
@@ -92,16 +94,16 @@ void runOMPTest(std::ostream &out,int numThreads, integer q, int n, int m, int n
         out << time << "," << numThreads << "," << q << "," << n << "," << m << "," << nnz << "," << iters << "," << "omp" << std::endl;
 }
 
+template<class SparseMat>
 void runSeqTest(std::ostream &out, integer q, int n, int m, int nnz, int iters)
 {
-        typedef Modular<double> Field;
-	typedef Field::Element Element;
+        typedef typename SparseMat::Field Field;
+	typedef typename Field::Element Element;
 	typedef std::vector <Element> Vector;
-	typedef TriplesBB<MatrixDomain<Field> > Blackbox;
 
 	Field F (q);
 
-	Blackbox A(F, m, n);
+	SparseMat A(F, m, n);
         Vector x(n), y(n);
 	Element d;
 
@@ -114,6 +116,7 @@ void runSeqTest(std::ostream &out, integer q, int n, int m, int nnz, int iters)
                 F.init(d, randRange(0,q));
                 A.setEntry(row,col,d);
 	}
+	A.finalize();
 
         for (int i=0;i<(int)n;++i) {
                 F.init(x[i],randRange(0,q));
@@ -137,12 +140,22 @@ void printHeader(std::ostream &out)
 int main(int argc, char **argv)
 {
 	srand ((unsigned)time (NULL));
+        typedef Modular<double> Field;
+	size_t m = 500000;
+	size_t n = 500000;
+	//size_t m = 160000;
+	//size_t n = 160000;
+	size_t nnz = 5000000;
+	int p = 8388593;
+	//int p = 2147483629;
 
         printHeader(std::cout);
-        runOMPTest(std::cout,4,2147483629,500000,500000,5000000,3);
-        runOMPTest(std::cout,2,2147483629,500000,500000,5000000,3);
-        runOMPTest(std::cout,1,2147483629,500000,500000,5000000,3);
-        runSeqTest(std::cout,2147483629,500000,500000,5000000,3);
+        runOMPTest(std::cout,4,p,m,n,nnz,3);
+        runOMPTest(std::cout,2,p,m,n,nnz,3);
+        runOMPTest(std::cout,1,p,m,n,nnz,3);
+        runSeqTest<TriplesBB<MatrixDomain<Field> > >(std::cout,p,m,n,nnz,3);
+        runSeqTest<SparseMatrix<Field> >(std::cout,p,m,n,nnz,3);
+//        runSeqTest<CSR<Field> >(std::cout,p,m,n,nnz,3);
         return 0;
 }
 

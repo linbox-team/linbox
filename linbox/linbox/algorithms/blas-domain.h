@@ -337,23 +337,69 @@ namespace LinBox
 	protected:
 
 		const Field  * _field;
-		Element _One;
-		Element _Zero;
-		Element _MOne;
 
 	public:
 
 		//! Constructor of BlasDomain.
+/*
+		BlasMatrixDomain () 
+		BlasMatrixDomain (const Field& F ) 
+		void init(const Field& F ) 
+		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) 
+		const Field& field() const 
+		T1& copy(T1& B, const T2& A) const
+		T1& add(T1& C, const T2& A, const T3& B) const
+		T1& sub(T1& C, const T2& A, const T3& B) const
+		T1& mul(T1& C, const T2& A, const T3& B) const
+		T1& mul(T1& C, const Elt& alpha, const T2& A, const T3& B) const
+		T1& axpy(T1& D, const T2& A, const T3& B, const T1& C) const
+		T1& maxpy(T1& D, const T2& A, const T3& B, const T1& C) const
+		T1& axmy(T1& D, const T2& A, const T3& B, const T1& C) const
+		T1& muladd(T1& D, const Elt& beta, const T1& C, const Elt& alpha, const T2& A, const T3& B) const
+		Matrix& inv( Matrix &B, Matrix &A) const
+		M1& inv( M1 &Ainv, const M2 &A, int& nullity) const // ?
+		Matrix& div( Matrix &C, const Matrix &A, const Matrix &B) const
+		T1& addin(T1& A, const T2& B) const
+		T1& subin(T1& A, const T2& B) const
+		T1& mulin_left(T1& A, const T2& B) const // A <- AB
+		T1& mulin_right(T1& A, const T2& B) const // A <- BA
+		T1& axpyin(T1& C, const T2& A, const T3& B) const
+		T1& maxpyin(T1& C, const T2& A, const T3& B) const
+		T1& axmyin(T1& C, const T2& A, const T3& B) const
+		const
+		T1& muladdin(const Elt& beta, T1& C, const Elt& alpha, const T2& A, const T3& B) const
 
+		Matrix& invin( Matrix &Ainv, Matrix &A) const //?
+		Matrix& invin(Matrix &A) const
+		M1& invin( M1 &Ainv, M2 &A, int& nullity) const
+		unsigned int rank(const Matrix &A) const
+		unsigned int rankin(Matrix &A) const
+		Element det(const Matrix &A) const
+		Element detin(Matrix &A) const
+		T& left_solve (T& X, const Matrix& A, const T& B) const
+		T& left_solve (const Matrix& A, T& B) const
+		T1& right_solve (T1& X, const Matrix& A, const T2& B) const
+		T& right_solve (const Matrix& A, T& B) const
+		Polynomial& minpoly( Polynomial& P, const Matrix& A ) const
+		Polynomial& charpoly( Polynomial& P, const Matrix& A ) const
+		std::list<Polynomial>& charpoly( std::list<Polynomial>& P, const Matrix& A ) const
+		bool isZero(const Matrix1 & A) const
+		bool areEqual(const Matrix1 & A, const Matrix2 & B) const
+		void setIdentity(Matrix & I) const
+		void setZero(Matrix & I) const
+		bool isIdentity(const Matrix1 & A) const
+		bool isIdentityGeneralized(const Matrix1 & A) const
+		Element& Magnitude(Element&r, const myBlasMatrix &A) const
+		inline std::ostream &write (std::ostream &os, const Matrix &A) const
+		inline std::ostream &write (std::ostream &os, const Matrix &A, bool maple_format) const
+		inline std::istream &read (std::istream &is, Matrix &A) const
+*/
 		BlasMatrixDomain () {}
 		BlasMatrixDomain (const Field& F ) { init(F); }
 
 		void init(const Field& F ) 
 		{
 			_field = &F; 
-			F.init(_One,1);
-			F.init(_Zero,0);
-			F.init(_MOne,-1);
 #ifndef NDEBUG
 			if (!Givaro::probab_prime(F.characteristic())) {
 				std::cout << " *** WARNING *** "                                           << std::endl;
@@ -365,7 +411,7 @@ namespace LinBox
 
 		//! Copy constructor
 		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) :
-			_field(BMD._field), _One(BMD._One), _Zero(BMD._Zero), _MOne(BMD._MOne)
+			_field(BMD._field)
 		{
 #ifndef NDEBUG
 			if (!Givaro::probab_prime(field().characteristic())) {
@@ -436,7 +482,7 @@ namespace LinBox
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& mul(Operand1& C, const Element& alpha, const Operand2& A, const Operand3& B) const
 		{
-			return muladdin(_Zero,C,alpha,A,B);
+			return muladdin(field().zero,C,alpha,A,B);
 		}
 
 		//! In place multiplication.
@@ -460,7 +506,7 @@ namespace LinBox
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& axpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const
 		{
-			return muladd(D,_One,C,_One,A,B);
+			return muladd(D,field().one,C,field().one,A,B);
 		}
 
 		//! axpyin.
@@ -468,7 +514,7 @@ namespace LinBox
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& axpyin(Operand1& C, const Operand2& A, const Operand3& B) const
 		{
-			return muladdin(_One,C,_One,A,B);
+			return muladdin(field().one,C,field().one,A,B);
 		}
 
 		//! maxpy.
@@ -476,7 +522,7 @@ namespace LinBox
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& maxpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C)const
 		{
-			return muladd(D,_One,C,_MOne,A,B);
+			return muladd(D,field().one,C,field().mOne,A,B);
 		}
 
 		//! maxpyin.
@@ -484,7 +530,7 @@ namespace LinBox
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& maxpyin(Operand1& C, const Operand2& A, const Operand3& B) const
 		{
-			return muladdin(_One,C,_MOne,A,B);
+			return muladdin(field().one,C,field().mOne,A,B);
 		}
 
 		//! axmy.
@@ -492,7 +538,7 @@ namespace LinBox
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& axmy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const
 		{
-			return muladd(D,_MOne,C,_One,A,B);
+			return muladd(D,field().mOne,C,field().one,A,B);
 		}
 
 		//! axmyin.
@@ -500,7 +546,7 @@ namespace LinBox
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& axmyin(Operand1& C, const Operand2& A, const Operand3& B) const
 		{
-			return muladdin(_MOne,C,_One,A,B);
+			return muladdin(field().mOne,C,field().one,A,B);
 		}
 
 		//!  general matrix-matrix multiplication and addition with scaling.
@@ -711,7 +757,7 @@ namespace LinBox
 			size_t i,j;
 			res.resize(P1.size()+P2.size()-1);
 			for (i=0;i<res.size();i++)
-				field().assign(res[i],_Zero);
+				field().assign(res[i],field().zero);
 			for ( i=0;i<P1.size();i++)
 				for ( j=0;j<P2.size();j++)
 					field().axpyin(res[i+j],P1[i],P2[j]);
@@ -739,9 +785,9 @@ namespace LinBox
 			for (size_t i = 0 ; i< I.rowdim() ; ++i)
 				for (size_t j = 0 ; j < I.coldim() ; ++j) {
 					if (i == j)
-						I.setEntry(i,j,_One);
+						I.setEntry(i,j,field().one);
 					else
-						I.setEntry(i,j,_Zero);
+						I.setEntry(i,j,field().zero);
 				}
 
 		}
@@ -753,7 +799,7 @@ namespace LinBox
 			// use Iterator
 			for (size_t i = 0 ; i< I.rowdim() ; ++i)
 				for (size_t j = 0 ; j < I.coldim() ; ++j) {
-						I.setEntry(i,j,_Zero);
+						I.setEntry(i,j,field().zero);
 				}
 		}
 

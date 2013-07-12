@@ -71,8 +71,7 @@ int main (int argc, char **argv)
 	typedef Modular<uint32_t> Field;
 	typedef vector <Field::Element> Vector;
 	typedef vector <Field::Element> Polynomial;
-	typedef BlasMatrixDomain<Field> MatrixDomain;
-	typedef Companion<MatrixDomain> Blackbox;
+	typedef Companion<Field> Blackbox;
 
 	Field F ((uint32_t)q);
 	Field::Element d;

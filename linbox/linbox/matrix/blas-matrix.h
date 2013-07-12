@@ -474,6 +474,8 @@ namespace LinBox
 		 */
 		void reverse() ;
 
+		// init to field zero elements
+		void zero() ;
 		// init to random field elements
 		void random() ;
 		///////////////////
@@ -780,7 +782,7 @@ namespace LinBox
 		 * \param Rowdim Row dimension
 		 * \param Coldim Column dimension
 		 */
-		BlasSubmatrix (const BlasMatrix<Field,Rep> &M,
+		BlasSubmatrix (const matrixType &M,
 			       size_t rowbeg,
 				size_t colbeg,
 				size_t Rowdim,
@@ -789,7 +791,7 @@ namespace LinBox
 		/** Constructor from an existing @ref BlasMatrix
 		 * \param M Pointer to @ref BlasMatrix of which to construct submatrix
 		 */
-		BlasSubmatrix (const BlasMatrix<Field,Rep> &M);
+		BlasSubmatrix (const matrixType &M);
 
 
 		/** Constructor from an existing submatrix and dimensions
