@@ -211,37 +211,75 @@ namespace LinBox
 
 		const Field& field() const { return *_field; }
 
-		std::ostream &write(std::ostream &os) const //, LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Maple) const
+		std::ostream &write(std::ostream &os, LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Plain) const
 		{
-			// 		for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it)
-			//                     std::cerr << *it << ' ';
-			typename Field::Element one, zero; field().init(one,1UL);field().init(zero,0UL);
-			os << "[";
-			bool firstrow=true;
-			long nmu = (long)_indices.size()-1;
-			for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) {
-				if (firstrow) {
-					os << "[";
-					firstrow =false;
-				}
-				else
-					os << ", [";
 
-				long i=0;
-				for( ; i< *it ; ++i) {
-					field().write(os, zero);
-					if (i < nmu) os << ',';
-				}
-				field().write(os, one);
-				if (i < nmu) os << ',';
-				for(++i ; i< static_cast<long>(_indices.size()) ; ++i) {
-					field().write(os, zero);
-					if (i < nmu) os << ',';
-				}
-				os << " ]";
-			}
+                // Avoid unneeded overhead in the case that this
+                // printing is disabled
+            if (not os)
+                return os;
+            
+            switch (format) {
+                case Tag::FileFormat::Maple: {
+                    os << '[';
+                    bool firstrow=true;
+                    long nmu = (long)_indices.size()-1;
+                    for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) {
+                        if (firstrow) {
+                            os << '[';
+                            firstrow =false;
+                        }
+                        else
+                            os << ", [";
+                        
+                        long i=0;
+                        for( ; i< *it ; ++i) {
+                            field().write(os, field().zero);
+                            if (i < nmu) os << ',';
+                        }
+                        field().write(os, field().one);
+                        if (i < nmu) os << ',';
+                        for(++i ; i< static_cast<long>(_indices.size()) ; ++i) {
+                            field().write(os, field().zero);
+                            if (i < nmu) os << ',';
+                        }
+                        os << ']';
+                        
+                    }
+                    os << ']';
+                    break;
+                }
+                case Tag::FileFormat::Pretty: {
+                    for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) {
+                        os << "  [";
+                        
+                        long i=0;
+                        for( ; i< *it ; ++i) {
+                            field().write(os << ' ', field().zero);
+                        }
+                        field().write(os << ' ', field().one);
+                        for(++i ; i< static_cast<long>(_indices.size()) ; ++i) {
+                            field().write(os << ' ', field().zero);
+                        }
+                        os << " ]" << std::endl;
+                        
+                    }
+                    break;
+                }
+            
 
-			return os << "]";
+                default:
+                    os << '{';
+                    for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it)
+                        os << *it << ' ';
+                    os << '}';
+                    break;
+
+                    
+            }
+            
+
+			return os;
 		}
 
 		//!@bug there is no read here. (needed by test-blackbox.h)
