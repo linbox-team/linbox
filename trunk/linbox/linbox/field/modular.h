@@ -809,6 +809,7 @@ namespace LinBox
 	public:
 
 		typedef _Element Element;
+		typedef Element Abnormal;
 		typedef Modular<_Element> Field;
 
 		FieldAXPY (const Field &F) :

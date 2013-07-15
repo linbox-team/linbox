@@ -461,6 +461,7 @@ namespace LinBox
 	public:
 
 		typedef double Element;
+		typedef double Abnormal;
 		typedef ModularCrooked<double> Field;
 
 		FieldAXPY (const Field &F) :

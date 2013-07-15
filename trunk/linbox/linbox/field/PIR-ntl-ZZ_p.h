@@ -566,6 +566,7 @@ namespace LinBox
 	public:
 		typedef PIR_ntl_ZZ_p Field;
 		typedef Field::Element Element;
+		typedef NTL::ZZ Abnormal;
 
 		/** Constructor.
 		 * A faxpy object if constructed from a Field.

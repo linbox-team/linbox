@@ -154,6 +154,7 @@ namespace LinBox
 	public:
 
 		typedef int64_t Element;
+		typedef int64_t Abnormal;
 		typedef Modular<int64_t> Field;
 
 		FieldAXPY (const Field &F) :

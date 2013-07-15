@@ -32,24 +32,22 @@ namespace LinBox
 {
 	/** FieldAXPY object.
 	 *
-	 * This class is used to wrap the operation <code>y = y + a * x</code>. It acts as an
-	 * accumulator for \c y.
+	 * A fieldAXPY is an accumulator, allowing to add a number of field elements or products 
+	 * in an unnormalized state, delaying modular reduction as long as possible.
+	 * This class containse a value y and wraps the operations <code>y = y + a * x</code> and 
+	 * <code>y = y + a</code>. 
 	 *
+	 * This default instance does no optimization, no delayed modular reduction.
 	 * Through the use of template specialization, objects of this type can
-	 * be used to speed up vector dot product operations. In particular, for
-	 * finite fields, dividing by the modulus and taking the remainder is
-	 * expensive. In many cases, this can be postponed until the end of the
+	 * be used to speed up operations such as vector dot product operations. 
+	 * In particular, for finite fields, dividing by the modulus and taking the remainder 
+	 * is expensive. In many cases, this can be postponed until the end of the
 	 * dot product operation, thus vastly improving performance.
 	 *
-	 * This object is constructed from the field object \c F and a field
-	 * element a which it stores and thus can use several times.  The use of
-	 * an object instead of a static variable to store the element a makes
-	 * this method thread-safe. (?? -bds)
-	 *
-	 * FieldAXPY<Fld> is an assignable type.
-	 * The methods are mulacc(), accumulate(), assign(), reset(), get(), and field().
+	 * FieldAXPY<Fld> is an assignable type.  It is constructed from a field instance.
+	 * The methods are mulacc(), accumulate(), operator=(), reset(), get(), and field().
 	 * Of a const instance you can access get() and field().
-	 * [Note: get() may renormalize the value, but it remains constant as a field element.
+	 * [Note: get() may renormalize the value, but it remains constant as a field element.]
 	 *
 	 * @param Field \ref LinBox @link Fields field@endlink
 	 */
@@ -59,10 +57,9 @@ namespace LinBox
 
 		/// Definition of element type
 		typedef typename Field::Element Element;
+		typedef Element Abnormal; // the type of the unnormalized values
 
 		/** Constructor.
-		 * A faxpy object if constructed from a Field and a field element.
-		 * Copies of this objects are stored in the faxpy object.
 		 * @param F field F in which arithmetic is done
 		 */
 		FieldAXPY (const Field &F) :
@@ -103,17 +100,7 @@ namespace LinBox
 		 */
 		inline Element &get (Element &y) const { return y = _y; }
 
-		/** Assign method.
-		 * Stores new field element for arithmetic.
-		 * @return reference to self
-		 * @param y constant reference to element a
-		 */
-		inline FieldAXPY &assign (const Element y)
-		{
-			_y = y;
-			return *this;
-		}
-
+		/// reset value to zero.
 		inline void reset() {
 			field().init(_y,0);
 		}
@@ -122,11 +109,10 @@ namespace LinBox
 	    protected:
 
 		/// Field in which arithmetic is done
-		/// Not sure why it must be mutable, but the compiler complains otherwise
 		const Field *_field;
 
-		/// Field element for arithmetic
-		Element _y;
+		/// Accumulator, unnormalized field element. 
+		Abnormal _y;
 
 	}; // class FieldAXPY
 

@@ -176,6 +176,7 @@ namespace LinBox
 	class FieldAXPY<ModularBalanced<float> > {
 	public:
 		typedef float Element;
+		typedef float Abnormal;
 		typedef ModularBalanced<Element> Field;
 
 		FieldAXPY (const Field &F) :

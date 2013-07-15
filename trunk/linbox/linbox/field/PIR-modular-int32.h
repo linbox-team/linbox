@@ -369,6 +369,7 @@ namespace LinBox
 	public:
 
 		typedef int32_t Element;
+		typedef int64_t Abnormal;
 		typedef PIRModular<int32_t> Field;
 
 		FieldAXPY (const Field &F) :
