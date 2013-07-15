@@ -315,6 +315,7 @@ namespace LinBox
 	public:
 
 		typedef GivaroZpz< Givaro::Std32>::Element Element;
+		typedef uint64_t Abnormal;
 		typedef GivaroZpz< Givaro::Std32> Field;
 
 		FieldAXPY (const Field &F) :
@@ -381,6 +382,7 @@ namespace LinBox
 	public:
 
 		typedef GivaroZpz< Givaro::Std16>::Element Element;
+		typedef uint32_t Abnormal;
 		typedef GivaroZpz< Givaro::Std16> Field;
 
 		FieldAXPY (const Field &F) :

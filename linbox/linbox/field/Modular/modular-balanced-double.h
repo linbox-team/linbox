@@ -181,6 +181,7 @@ namespace LinBox
 	public:
 
 		typedef double Element;
+		typedef double Abnormal;
 		typedef ModularBalanced<double> Field;
 
 		FieldAXPY (const Field &F) :

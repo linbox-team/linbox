@@ -261,6 +261,7 @@ namespace LinBox
 	public:
 		typedef UnparametricField<integer> Field;
 		typedef integer Element;
+		typedef Element Abnormal;
 
 		/** Constructor.
 		 * A faxpy object if constructed from a Field and a field element.

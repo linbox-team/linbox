@@ -172,6 +172,7 @@ namespace LinBox
 	public:
 
 		typedef float Element;
+		typedef float Abnormal;
 		typedef Modular<float> Field;
 
 		FieldAXPY (const Field &F) :
