@@ -53,9 +53,6 @@ namespace LinBox
 	BlasSubmatrix<_Matrix>::BlasSubmatrix () :
 			_Mat(NULL),_row(0),_col(0),_r0(0),_c0(0),_stride(0),_off(0)
 		{
-#ifndef NDEBUG
-			std::cerr << "***Warning*** you are creating a NULL BlasSubmatrix. You are stuck with it now." << std::endl;
-#endif
 		}
 
 	template < class _Matrix >

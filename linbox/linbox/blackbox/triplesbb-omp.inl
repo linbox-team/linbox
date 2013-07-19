@@ -47,17 +47,21 @@ using std::ostream;
 namespace LinBox
 {
 
-template<class Field_>
-void TriplesBBOMP<Field_>::computeRowBlocks()
+template<class Field_> void
+TriplesBBOMP<Field_>::nonOverlappingIntervals(BlockListIt startIt,
+                                              BlockListIt endIt,
+                                              IntervalSet& intervals,
+                                              const int rowOrCol)
 {
-	typedef std::map<Index,Index> IntervalSet;
-	typedef typename IntervalSet::iterator IntervalIterator;
-	typedef std::pair<Index,Index> Interval;
-	IntervalSet intervals;
-
-	for (Index k=0;k<superBlocks_.size();++k) {
-		Index start=superBlocks_[k].getStartRow();
-		Index end=superBlocks_[k].getEndRow();
+        for (;startIt!=endIt;++startIt) {
+                Index start,end;
+                if (rowOrCol==CHUNK_BY_ROW) {
+                        start=(*startIt).getStartRow();
+                        end=(*startIt).getEndRow();
+                } else {
+                        start=(*startIt).getStartCol();
+                        end=(*startIt).getEndCol();
+                }
 
 		//invariant: no existing interval is dominated by any other
 
@@ -91,30 +95,82 @@ void TriplesBBOMP<Field_>::computeRowBlocks()
 			intervals.erase(intervals.upper_bound(start),it);
 		}
 	}
+}
 
-	typedef std::map<Index,std::vector<Block> > RowBlockMap;
+template<class Field_>
+void TriplesBBOMP<Field_>::combineIntervals(BlockListIt startIt,
+                                            BlockListIt endIt,
+                                            IntervalSet& intervals,
+                                            VectorChunks& chunksOut,
+                                            const int rowOrCol)
+{
+	typedef std::map<Index,std::vector<Block> > VectorBlockMap;
 
-	RowBlockMap blocksByRow;
+	VectorBlockMap vectorMap;
 	for (IntervalIterator it=intervals.begin();it!=intervals.end();++it) {
-		blocksByRow[it->first];
+		vectorMap[it->first];
 	}
 
-	for (Index k=0;k<superBlocks_.size();++k) {
-		Index start=superBlocks_[k].getStartRow();
+        for (;startIt!=endIt;++startIt) {
+                Index start;
+                if (rowOrCol==CHUNK_BY_ROW) {
+                        start=startIt->getStartRow();
+                } else {
+                        start=startIt->getStartCol();
+                }
 
 		IntervalIterator it=intervals.lower_bound(start);
 		if (it != intervals.begin()) {
 			--it;
 		}
-		blocksByRow[it->first].push_back(superBlocks_[k]);
+		vectorMap[it->first].push_back(*startIt);
 	}
 
-	rowBlocks_.clear();
-	for (typename RowBlockMap::iterator it=blocksByRow.begin();
-	     it!=blocksByRow.end();
-	     ++it) {
-		rowBlocks_.push_back(it->second);
-	}
+        chunksOut.clear();
+        for (typename VectorBlockMap::iterator it=vectorMap.begin();
+             it!=vectorMap.end();
+             ++it) {
+                chunksOut.push_back(it->second);
+        }
+}
+
+template<class Field_>
+void TriplesBBOMP<Field_>::computeVectors(const int rowOrCol)
+{
+	IntervalSet intervals;
+        VectorChunks chunks;
+
+        if (rowOrCol==CHUNK_BY_ROW) {
+                rowBlocks_.clear();
+        } else {
+                colBlocks_.clear();
+        }
+
+        std::sort(superBlocks_.begin(),superBlocks_.end(),Block::compareBlockSizes);
+
+        Index k=0;
+        Index numSuperBlocks=superBlocks_.size();
+        while (k<numSuperBlocks) {
+                Coord blockSize=superBlocks_[k].blockSize();
+                BlockListIt start=superBlocks_.begin()+k;
+                while (superBlocks_[k].blockSize()==blockSize) {
+                        ++k;
+                        if (k>=numSuperBlocks) {
+                                break;
+                        }
+                }
+                BlockListIt end=superBlocks_.begin()+k;
+
+                intervals.clear();
+                nonOverlappingIntervals(start,end,intervals,rowOrCol);
+                chunks.clear();
+                combineIntervals(start,end,intervals,chunks,rowOrCol);
+                if (rowOrCol==CHUNK_BY_ROW) {
+                        rowBlocks_.push_back(chunks);
+                } else {
+                        colBlocks_.push_back(chunks);
+                }
+        }
 }
 
 template<class Field_> TriplesBBOMP<Field_>::TriplesBBOMP() : sortType_(TRIPLES_UNSORTED) {}
@@ -145,7 +201,7 @@ ostream& TriplesBBOMP<Field_>::write(ostream& out){
 	out << rowdim() <<" " << coldim() << " " << size() << std::endl;
 	for (Index k = 0; k < size(); ++k) {
 		Triple t = data_[k];
-		field().write(out << t.row()+1 << " " << t.col()+1 << " ", t.elt) << std::endl;
+		field().write(out << t.getRow()+1 << " " << t.getCol()+1 << " ", t.getElt()) << std::endl;
 	}
 	return out;
 }
@@ -185,84 +241,34 @@ TriplesBBOMP<Field_> & TriplesBBOMP<Field_>::operator=(const TriplesBBOMP<Field_
 }
 
 template<class Field_>
-void TriplesBBOMP<Field_>::fromBlock(TriplesBBOMP<Field_>::Coord& coord)
+template<class Mat1, class Mat2> Mat1& TriplesBBOMP<Field_>::
+applyLeft(Mat1 &Y, const Mat2 &X) const
 {
-	Llong temp,final;
-	Index localRow=0,localCol=0;
-#ifdef USING_64_BIT_SIZE_T
-	if (coord.blockIxArr[1]!=0) {
-		final=coord.blockIxArr[1];
-		temp=(final^(final>>1))&0x2222222222222222;
-		final^=temp^(temp<<1);
-		temp=(final^(final>>2))&0x0C0C0C0C0C0C0C0C;
-		final^=temp^(temp<<2);
-		temp=(final^(final>>4))&0x00F000F000F000F0;
-		final^=temp^(temp<<4);
-		temp=(final^(final>>8))&0x0000FF000000FF00;
-		final^=temp^(temp<<8);
-		temp=(final^(final>>16))&0x00000000FFFF0000;
-		final^=temp^(temp<<16);
-		localRow=(Index)(final&(~0xFFFFFFFF));
-		localCol=(Index)((final<<32)&(~0xFFFFFFFF));
-	}
-#endif
-	final=coord.blockIx;
-	temp=(final^(final>>1))&0x2222222222222222;
-	final^=temp^(temp<<1);
-	temp=(final^(final>>2))&0x0C0C0C0C0C0C0C0C;
-	final^=temp^(temp<<2);
-	temp=(final^(final>>4))&0x00F000F000F000F0;
-	final^=temp^(temp<<4);
-	temp=(final^(final>>8))&0x0000FF000000FF00;
-	final^=temp^(temp<<8);
-	temp=(final^(final>>16))&0x00000000FFFF0000;
-	final^=temp^(temp<<16);
-	localRow|=(Index)((final>>32)&0xFFFFFFFF);
-	localCol|=(Index)(final&0xFFFFFFFF);
-	coord.rowCol[0]=localRow;
-	coord.rowCol[1]=localCol;
-}
+        Y.zero();
 
+#pragma omp parallel
+        {
+                Matrix Yc,Xc;
 
-template<class Field_>
-void TriplesBBOMP<Field_>::toBlock(TriplesBBOMP<Field_>::Coord& coord)
-{
-	Llong temp,final;
-	Index localRow=coord.rowCol[0],localCol=coord.rowCol[1];
-#ifdef USING_64_BIT_SIZE_T
-	Index highOrderLocalRow=localRow&(~0xFFFFFFFF);
-	Index highOrderLocalCol=localCol&(~0xFFFFFFFF);
-	Llong highOrderFinal;
-	coord.blockIxArr[1]=0;
-	if ((highOrderLocalRow != 0) || (highOrderLocalCol != 0)) {
-		highOrderFinal=((Llong)localRow)|(((Llong)localCol)>>32);
-		temp=(highOrderFinal^(highOrderFinal>>16))&0x00000000FFFF0000;
-		highOrderFinal^=temp^(temp<<16);
-		temp=(highOrderFinal^(highOrderFinal>>8))&0x0000FF000000FF00;
-		highOrderFinal^=temp^(temp<<8);
-		temp=(highOrderFinal^(highOrderFinal>>4))&0x00F000F000F000F0;
-		highOrderFinal^=temp^(temp<<4);
-		temp=(highOrderFinal^(highOrderFinal>>2))&0x0C0C0C0C0C0C0C0C;
-		highOrderFinal^=temp^(temp<<2);
-		temp=(highOrderFinal^(highOrderFinal>>1))&0x2222222222222222;
-		highOrderFinal^=temp^(temp<<1);
-		coord.blockIxArr[1]=highOrderFinal;
-	}
-	localCol&=0xFFFFFFFF;
-	localRow&=0xFFFFFFFF;
-#endif
-	final=(((Llong)localRow)<<32)|((Llong)localCol);
-	temp=(final^(final>>16))&0x00000000FFFF0000;
-	final^=temp^(temp<<16);
-	temp=(final^(final>>8))&0x0000FF000000FF00;
-	final^=temp^(temp<<8);
-	temp=(final^(final>>4))&0x00F000F000F000F0;
-	final^=temp^(temp<<4);
-	temp=(final^(final>>2))&0x0C0C0C0C0C0C0C0C;
-	final^=temp^(temp<<2);
-	temp=(final^(final>>1))&0x2222222222222222;
-	final^=temp^(temp<<1);
-	coord.blockIx=final;
+                for (Index chunkSizeIx=0;chunkSizeIx<rowBlocks_.size();++chunkSizeIx) {
+#pragma omp for schedule (static,1)
+                        for (Index rowChunk=0;rowChunk<rowBlocks_[chunkSizeIx].size();++rowChunk) {
+                                for (Index subChunk=0;subChunk<rowBlocks_[chunkSizeIx][rowChunk].size();++subChunk) {
+                                        Index start=rowBlocks_[chunkSizeIx][rowChunk][subChunk].start_;
+                                        Index end=rowBlocks_[chunkSizeIx][rowChunk][subChunk].end_;
+                                        for (Index k=start;k<end;++k) {
+                                                const Triple& t = data_[k];
+                                                Yc.submatrix(Y,t.getRow(),0,1,Y.coldim());
+                                                Xc.submatrix(X,t.getCol(),0,1,X.coldim());
+                                                MD_.saxpyin(Yc,t.getElt(),Xc);
+                                        }
+                                }
+
+                        }
+                }
+
+        }
+        return Y;
 }
 
 template<class Field_>
@@ -272,26 +278,25 @@ OutVector & TriplesBBOMP<Field_>::apply(OutVector & y, const InVector & x) const
 	linbox_check( coldim() == x.size() );
 	linbox_check( rowdim() == y.size() );
 
-
         std::vector<FieldAXPY<Field> > yTemp(y.size(),FieldAXPY<Field>(field()));
 
-#pragma omp parallel
-        {
-#pragma omp for schedule (static,1)
-                for (Index i=0;i<rowBlocks_.size();++i) {
-                        for (Index j=0;j<rowBlocks_[i].size();++j) {
-                                Index start=rowBlocks_[i][j].start_;
-                                Index end=rowBlocks_[i][j].end_;
+        for (Index chunkSizeIx=0;chunkSizeIx<rowBlocks_.size();++chunkSizeIx) {
+#pragma omp parallel for schedule (static,1)
+                for (Index rowChunk=0;rowChunk<rowBlocks_[chunkSizeIx].size();++rowChunk) {
+                        for (Index subChunk=0;subChunk<rowBlocks_[chunkSizeIx][rowChunk].size();++subChunk) {
+                                Index start=rowBlocks_[chunkSizeIx][rowChunk][subChunk].start_;
+                                Index end=rowBlocks_[chunkSizeIx][rowChunk][subChunk].end_;
                                 for (Index k=start;k<end;++k) {
                                         const Triple& t = data_[k];
                                         yTemp[t.getRow()].mulacc(t.getElt(),x[t.getCol()]);
                                 }
                         }
+                        
                 }
-#pragma omp for schedule (static,100)
-                for (Index i = 0; i < y.size(); ++i) {
-                        yTemp[i].get(y[i]);
-                }
+        }
+#pragma omp parallel for schedule (static,100)
+        for (Index i = 0; i < y.size(); ++i) {
+                yTemp[i].get(y[i]);
         }
         return y;
 }
@@ -345,53 +350,48 @@ void TriplesBBOMP<Field_>::finalize()
         sortBlock();
 }
 
-
 template<class Field_>
-void TriplesBBOMP<Field_>::mergeBlocks(Index maxSize,
-				       std::vector<int>& mergeCounts,
-				       std::vector<bool>& mergeFlags)
+void TriplesBBOMP<Field_>::splitBlock(TriplesBBOMP<Field_>::Block block)
 {
-        int i=0;
-        while (mergeCounts[i]==4) {
-                mergeCounts[i]=0;
-                ++mergeCounts[i+1];
-
-		bool shouldMerge=!(mergeFlags[i]);
-
-                //compute nnz of tentative new block
-                int numSuperBlocks=superBlocks_.size();
-                int newBlockNNZ=0;
-                newBlockNNZ+=superBlocks_[numSuperBlocks-1].nnz();
-                newBlockNNZ+=superBlocks_[numSuperBlocks-2].nnz();
-                newBlockNNZ+=superBlocks_[numSuperBlocks-3].nnz();
-                newBlockNNZ+=superBlocks_[numSuperBlocks-4].nnz();
-
-		shouldMerge = shouldMerge && newBlockNNZ<MAX_BLOCK_NNZ;
-
-		superBlocks_[numSuperBlocks-4].fromBlock();
-		int newBlockSize = 4*(superBlocks_[numSuperBlocks-4].blockSize());
-		superBlocks_[numSuperBlocks-4].toBlock();
-
-		shouldMerge = shouldMerge && (newBlockSize <= maxSize);
-
-		if (shouldMerge) {
-			int dataEnd=superBlocks_[numSuperBlocks-1].end_;
-			int blockEnd=superBlocks_[numSuperBlocks-1].blockEnd_.blockIx;
-                        superBlocks_[numSuperBlocks-4].expand(dataEnd,blockEnd);
-                        superBlocks_.pop_back();
-                        superBlocks_.pop_back();
-                        superBlocks_.pop_back();
-                } else {
-                        mergeFlags[i+1]=true;
-                }
-                mergeFlags[i]=false;
-		++i;
+        if (block.nnz()<MAX_BLOCK_NNZ) {
+                --block.blockEnd_;
+                superBlocks_.push_back(block);
+                return;
         }
+
+        Triple blockStart(block.blockStart_);
+        Triple blockEnd(block.blockEnd_);
+        Coord blockSize=block.blockSize();
+        Coord quarterSize=blockSize>>2;
+        Triple midOne(blockStart.coord_+quarterSize);
+        Triple midTwo(midOne.coord_+quarterSize);
+        Triple midThree(midTwo.coord_+quarterSize);
+
+	typedef typename std::vector<Triple>::iterator BlockVecIt;
+
+        BlockVecIt dataBegin=data_.begin()+block.start_;
+        BlockVecIt dataEnd=data_.begin()+block.end_;
+        Index midOneData,midTwoData,midThreeData;
+
+        midOneData=std::upper_bound(dataBegin,dataEnd,midOne,Triple::compareBlockTriples)-data_.begin();
+        midTwoData=std::upper_bound(dataBegin,dataEnd,midTwo,Triple::compareBlockTriples)-data_.begin();
+        midThreeData=std::upper_bound(dataBegin,dataEnd,midThree,Triple::compareBlockTriples)-data_.begin();
+
+        Block blockOne(block.start_,midOneData,block.blockStart_,midOne.coord_);
+        Block blockTwo(midOneData,midTwoData,midOne.coord_,midTwo.coord_);
+        Block blockThree(midTwoData,midThreeData,midTwo.coord_,midThree.coord_);
+        Block blockFour(midThreeData,block.end_,midThree.coord_,block.blockEnd_);
+
+        splitBlock(blockOne);
+        splitBlock(blockTwo);
+        splitBlock(blockThree);
+        splitBlock(blockFour);
 }
 
 template<class Field_>
 void TriplesBBOMP<Field_>::sortBlock()
 {
+        double start=omp_get_wtime();
         if ((sortType_ & TRIPLES_SORTED) != 0) {return; }
         for (Index k=0; k<data_.size();++k) {
                 data_[k].toBlock();
@@ -399,31 +399,15 @@ void TriplesBBOMP<Field_>::sortBlock()
 
         std::sort(data_.begin(),data_.end(),Triple::compareBlockTriples);
 
-
         superBlocks_.clear();
-        Index startBlockIx=0,startDataIx=0;
 
-        std::vector<int> mergeCounts(64,0);
-        std::vector<bool> mergeFlags(64,false);
+        Index rowBound=roundUpIndex(rowdim());
+        Index colBound=roundUpIndex(coldim());
+        Llong rowColBound=(rowBound<colBound)?colBound:rowBound;
+        Coord startBlockIx(0),endBlockIx(rowColBound*rowColBound);
+        Block initialBlock(0,data_.size(),startBlockIx,endBlockIx);
 
-	int maxBlockSize = ((rowdim()*coldim())>>BLOCK_SIZE_BITS)/(EXPECTED_THREADS*EXPECTED_THREADS);
-	maxBlockSize = (maxBlockSize==0)?1:maxBlockSize;
-
-        for (Index k=0;k<data_.size();++k) {
-                Index blockIx=(data_[k].blockIx()&BLOCK_MASK)>>BLOCK_SIZE_BITS;
-                //make new blocks:
-                while (startBlockIx < blockIx) {
-                        superBlocks_.push_back(Block(startDataIx,k,startBlockIx));
-                        startDataIx=k;
-                        ++startBlockIx;
-                        ++(mergeCounts[0]);
-                        mergeBlocks(maxBlockSize,mergeCounts,mergeFlags);
-                }
-        }
-
-        superBlocks_.push_back(Block(startDataIx,data_.size(),startBlockIx));
-        ++(mergeCounts[0]);
-        mergeBlocks(maxBlockSize,mergeCounts,mergeFlags);
+        splitBlock(initialBlock);
 
         for (Index k=0;k<data_.size();++k) {
                 data_[k].fromBlock();
@@ -432,9 +416,11 @@ void TriplesBBOMP<Field_>::sortBlock()
 	for (Index i=0;i<superBlocks_.size();++i) {
 		superBlocks_[i].fromBlock();
 	}
-	computeRowBlocks();
+        computeVectors(CHUNK_BY_ROW);
+        computeVectors(CHUNK_BY_COL);
 
         sortType_=TRIPLES_SORTED;
+        //std::cerr << omp_get_wtime()-start << std::endl;
 }
 
 template<class Field_>

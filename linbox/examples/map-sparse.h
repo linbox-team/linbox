@@ -95,6 +95,8 @@ public:
 
 	void print(std::ostream& out) const;
 
+	void write(std::ostream& out) const;
+
 protected:
 
 	MatrixDomain<Field> MD_;

@@ -30,7 +30,7 @@
 #ifndef __LINBOX_triplesbb_omp_H
 #define __LINBOX_triplesbb_omp_H
 
-#include <limits.h>
+
 #include <algorithm>
 #include <iostream>
 #include <map>
@@ -42,12 +42,10 @@ using std::max;
 #include "linbox/util/field-axpy.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/field/hom.h"
+#include "linbox/blackbox/triples-coord.h"
 
 #include <vector>
 
-#if ULONG_MAX > 4294967295UL
-#define USING_64_BIT_SIZE_T 1
-#endif
 
 namespace LinBox
 {
@@ -65,8 +63,6 @@ class TriplesBBOMP : public BlackboxInterface {
 	typedef typename MatrixDomain<Field>::Matrix Matrix;
 	typedef typename Field::Element Element;
 	typedef TriplesBBOMP<Field> Self_t;
-	typedef size_t Index; // would prefer a signed type
-	typedef long long Llong;
 
 	// Default constructor.
 	TriplesBBOMP();
@@ -111,8 +107,9 @@ class TriplesBBOMP : public BlackboxInterface {
 	template<class OutVector, class InVector>
 	OutVector & seqApply(OutVector &, const InVector &) const;
 
-	/// Y <- AX, requires conformal shapes.
-	//Matrix & apply_right(Matrix &Y, const Matrix &X) const;
+        /// Mul with this on left: Y <- AX. Requires conformal shapes.
+	template<class Mat1, class Mat2>
+	Mat1 & applyLeft(Mat1 &Y, const Mat2 &X) const;
 
 	/** y <- A^T x.
 	 *
@@ -124,9 +121,9 @@ class TriplesBBOMP : public BlackboxInterface {
 	template<class OutVector, class InVector>
 	OutVector & applyTranspose(OutVector &, const InVector &) const;
 
-	size_t rowdim() const;
+	Index rowdim() const;
 
-	size_t coldim() const;
+	Index coldim() const;
 
 	const Field & field() const;
 
@@ -156,30 +153,21 @@ class TriplesBBOMP : public BlackboxInterface {
 
 protected:
 
-	const static Index BLOCK_SIZE_BITS=10;
-	const static Index BLOCK_MASK=~((1<<BLOCK_SIZE_BITS)-1);
-	const static Index MAX_BLOCK_NNZ=4096;
-	const static Index EXPECTED_THREADS=64;
-	void sortBlock();
+	const static Index MAX_BLOCK_NNZ=1024;
 
-	void mergeBlocks(Index maxSize,std::vector<int>& mergeCounts, std::vector<bool>& mergeFlags);
-
-	MatrixDomain<Field> MD_;
-
-	union Coord {
-		Index rowCol[2];
-#ifdef USING_64_BIT_SIZE_T
-		Llong blockIxArr[2]; // little endian
-#endif
-		Llong blockIx;
-	};
-
-	static void toBlock(Coord& coord);
-
-	static void fromBlock(Coord& coord);
+        inline static int roundUpIndex(Index val) {
+                int exponent=0;
+                --val;
+                while (val > 0) {
+                        ++exponent;
+                        val=val>>1;
+                }
+                return 1<<exponent;
+        }
 
         struct Triple {
-                Triple(Index& r, Index& c, const Element& e){init(r, c, e);}
+                Triple(Coord c):coord_(c) {}
+                Triple(Index r, Index c, const Element& e){init(r, c, e);}
                 void init(Index r, Index c, const Element& e)
                 {
                         row()=r;
@@ -192,59 +180,35 @@ protected:
                 inline const Index& getRow() const {return coord_.rowCol[0];}
                 inline const Index& getCol() const {return coord_.rowCol[1];}
 		inline const Element& getElt() const {return elt_;}
-		void toBlock() {TriplesBBOMP<Field_>::toBlock(coord_);}
-		void fromBlock() {TriplesBBOMP<Field_>::fromBlock(coord_);}
+		void toBlock() {coordToBlock(coord_);}
+		void fromBlock() {coordFromBlock(coord_);}
                 inline Llong& blockIx() {return coord_.blockIx;}
 		static bool compareBlockTriples(const Triple& lhs,
 						const Triple& rhs) {
-#ifdef USING_64_BIT_SIZE_T
-			return (lhs.coord_.blockIxArr[1]<rhs.coord_.blockIxArr[1])||
-				((!(lhs.coord_.blockIxArr[1]>rhs.coord_.blockIxArr[1])) &&
-				 (lhs.coord_.blockIxArr[0]<rhs.coord_.blockIxArr[0]));
-#else
-			return lhs.coord_.blockIx<rhs.coord_.blockIx;
-#endif
+                        lhs.coord_<rhs.coord_;
 		}
-	protected:
                 union Coord coord_;
                 Element elt_;
         };
 
-	std::vector<Triple> data_;
-
-	Index rows_, cols_;
-
-#define TRIPLES_UNSORTED 1
-#define TRIPLES_SORTED 2
-
-	//Either TRIPLES_SORTED or TRIPLES_UNSORTED, maybe extend this later
-	int sortType_;
-
 	struct Block {
 		Index start_,end_;
 		Coord blockStart_, blockEnd_;
-		Index blockSize_;
 
-		Block(Index start,Index end,Index blockIx) :
-			start_(start),end_(end),blockSize_(1) {
-			blockStart_.blockIx=blockIx;
-			blockEnd_.blockIx=blockIx;
+		Block(Index start,Index end,Coord blockStart,Coord blockEnd) :
+			start_(start),end_(end),
+                        blockStart_(blockStart),blockEnd_(blockEnd) {
 		}
-
                 Index nnz() const {return end_-start_;}
-                Index blockSize() const {return blockSize_;}
-		void expand(Index newDataEnd, Index newBlockEnd) {
-			end_=newDataEnd;
-			blockEnd_.blockIx=newBlockEnd;
-			blockSize_=1+blockEnd_.blockIx-blockStart_.blockIx;
-		}
+                Coord blockSize() const {return blockEnd_-blockStart_;}
 		void toBlock() {
-			TriplesBBOMP<Field_>::toBlock(blockStart_);
-			TriplesBBOMP<Field_>::toBlock(blockEnd_);
+			coordToBlock(blockStart_);
+			coordToBlock(blockEnd_);
 		}
 		void fromBlock() {
-			TriplesBBOMP<Field_>::fromBlock(blockStart_);
-			TriplesBBOMP<Field_>::fromBlock(blockEnd_);
+			coordFromBlock(blockStart_);
+			coordFromBlock(blockEnd_);
+
 		}
 		inline const Index& getStartRow() const {
 			return blockStart_.rowCol[0];
@@ -258,17 +222,60 @@ protected:
 		inline const Index& getEndCol() const {
 			return blockEnd_.rowCol[1];
 		}
+                static bool compareBlockSizes(const Block& lhs,
+                                              const Block& rhs) {
+                        lhs.blockSize()<rhs.blockSize();
+                }
 	};
 
-	void computeRowBlocks();
+        typedef std::vector<Block> BlockList;
+        typedef typename BlockList::iterator BlockListIt;
+        typedef std::vector<BlockList> VectorChunks;
+        typedef typename VectorChunks::iterator VectorChunkIt;
+        typedef std::vector<VectorChunks> SizedChunks;
 
-        typedef std::vector<std::vector<Block> > BlockList;
+	typedef std::map<Index,Index> IntervalSet;
+	typedef typename IntervalSet::iterator IntervalIterator;
+	typedef std::pair<Index,Index> Interval;
 
-        std::vector<Block> superBlocks_;
+	void sortBlock();
 
-        BlockList rowBlocks_;
+	void splitBlock(Block block);
 
-        BlockList colBlocks_;
+	void computeVectors(const int rowOrCol);
+
+        void combineIntervals(BlockListIt startIt,
+                              BlockListIt endIt,
+                              IntervalSet& intervals,
+                              VectorChunks& chunksOut,
+                              const int rowOrCol);
+
+        void nonOverlappingIntervals(BlockListIt startIt,
+                                     BlockListIt endIt,
+                                     IntervalSet& intervals,
+                                     const int rowOrCol);
+
+
+	std::vector<Triple> data_;
+
+	MatrixDomain<Field> MD_;
+
+	Index rows_, cols_;
+
+#define TRIPLES_UNSORTED 1
+#define TRIPLES_SORTED 2
+
+	//Either TRIPLES_SORTED or TRIPLES_UNSORTED, maybe extend this later
+	int sortType_;
+
+#define CHUNK_BY_ROW 1
+#define CHUNK_BY_COL 2
+
+        BlockList superBlocks_;
+
+        SizedChunks rowBlocks_;
+
+        SizedChunks colBlocks_;
   }; // TriplesBBOMP
 
 } // namespace LinBox
