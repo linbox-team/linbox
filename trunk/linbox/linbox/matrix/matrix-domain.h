@@ -455,7 +455,7 @@ namespace LinBox
 			Element x, y;
 			for (size_t i = 0; i < X.rowdim(); ++i)
 			for (size_t j = 0; j < X.coldim(); ++j)
-				Y.setEntry(i,j,field().axpyin(y, a, X.getEntry(x, i, j)));
+				Y.setEntry(i,j,field().axpyin(Y.getEntry(y,i,j), a, X.getEntry(x, i, j)));
 		}
 
 		/*!  General matrix multiply

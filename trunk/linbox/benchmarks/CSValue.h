@@ -58,6 +58,7 @@ public:
 std::ostream& operator<< (std::ostream& out, const CSValue& v)
 {
 	v.print(out);
+        return out;
 }
 
 class CSString : public CSValue {

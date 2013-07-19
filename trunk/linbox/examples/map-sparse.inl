@@ -261,6 +261,18 @@ void MapSparse<Field_>::print(std::ostream& out) const
 	}
 }
 
+template<class Field_>
+void MapSparse<Field_>::write(std::ostream& out) const
+{
+	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
+	out << "% written from a LinBox MapSparse" << std::endl;
+        out << numRows_ << " " << numCols_ << " " << nnz_ << std::endl;
+        //for (Index i = 0; i < numRows_; ++i)
+        for (MapConstIt p = rowMap_.begin(); p != rowMap_.end(); ++p)
+                for (VectorConstIt rp = p->second.begin(); rp != p->second.end(); ++rp)
+                        field().write(out << 1+p->first << " " << 1+rp->first << " ", rp->second) << std::endl;
+}
+
 }
 
 #endif // __LINBOX_MAP_SPARSE_INL
