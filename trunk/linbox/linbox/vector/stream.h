@@ -220,8 +220,9 @@ namespace LinBox
 	/** @brief Random dense vector stream.
 	 * Generates a sequence of random dense vectors over a given field
 	 */
-	template <class Field, class _Vector = typename LinBox::BlasVector<Field>
-		, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<_Vector>::VectorCategory>
+	template <typename Field, typename _Vector = BlasVector<Field>, 
+              class RandIter = typename Field::RandIter, 
+              class Trait = typename VectorTraits<_Vector>::VectorCategory>
 	class RandomDenseStream : public VectorStream<_Vector> {
 	public:
 		typedef _Vector Vector;
@@ -323,13 +324,14 @@ namespace LinBox
 
 }
 
+#include "linbox/vector/sparse.h"
 //Sparse
 namespace LinBox
 {
 	/** @brief Random sparse vector stream.
 	 * Generates a sequence of random sparse vectors over a given field
 	 */
-	template <class Field, class _Vector = typename LinBox::Vector<Field>::Sparse, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<_Vector>::VectorCategory>
+	template <class Field, class _Vector = Sparse_Vector<typename Field::Element>, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<_Vector>::VectorCategory>
 	class RandomSparseStream : public VectorStream<_Vector> {
 	public:
 		typedef _Vector Vector;

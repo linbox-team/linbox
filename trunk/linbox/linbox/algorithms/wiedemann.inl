@@ -601,7 +601,7 @@ namespace LinBox
 
 		SparseMatrix<Field>    *P = new SparseMatrix<Field> (field(), m, m);
 
-		RandomSparseStream<Field> stream (field(), _randiter, init_p, m, m);
+		RandomSparseStream<Field,typename SparseMatrix<Field>::Row> stream (field(), _randiter, init_p, m, m);
 
 		for (unsigned int i = 0; i < m; ++i) {
 		double                   new_p;
