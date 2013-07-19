@@ -34,6 +34,7 @@
 #ifndef __LINBOX_matrix_blas_matrix_H
 #define __LINBOX_matrix_blas_matrix_H
 
+#include "linbox/vector/stream.h"
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
 
