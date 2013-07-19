@@ -29,7 +29,7 @@
 
 
 #include "linbox/field/PID-integer.h"
-
+#include "linbox/vector/blas-vector.h"
 #include "linbox/algorithms/rational-reconstruction-base.h"
 #include "linbox/algorithms/classic-rational-reconstruction.h"
 
