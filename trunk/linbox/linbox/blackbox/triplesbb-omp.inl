@@ -403,8 +403,9 @@ void TriplesBBOMP<Field_>::sortBlock()
 
         Index rowBound=roundUpIndex(rowdim());
         Index colBound=roundUpIndex(coldim());
-        Llong rowColBound=(rowBound<colBound)?colBound:rowBound;
-        Coord startBlockIx(0),endBlockIx(rowColBound*rowColBound);
+        Index rowColBound=(rowBound<colBound)?colBound:rowBound;
+        Coord startBlockIx(0,0),endBlockIx(0,rowColBound);
+        coordToBlock(endBlockIx);
         Block initialBlock(0,data_.size(),startBlockIx,endBlockIx);
 
         splitBlock(initialBlock);

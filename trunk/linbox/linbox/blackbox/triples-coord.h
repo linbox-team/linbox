@@ -34,47 +34,25 @@
 #include <fstream>
 #include <limits.h>
 
-#if ULONG_MAX > 4294967295UL
-#define USING_64_BIT_SIZE_T 1
-#endif
-
 namespace LinBox
 {
 
 typedef size_t Index;
-typedef long long Llong;
 
 union Coord {
         Index rowCol[2];
-#ifdef USING_64_BIT_SIZE_T
-        Llong blockIxArr[2]; // little endian
-#endif
-        Llong blockIx;
+        Index blockIxArr[2]; // little endian
 
         Coord() {};
 
         Coord(Index row, Index col) {rowCol[0]=row;rowCol[1]=col;}
 
-        Coord(Llong block) {
-#ifdef USING_64_BIT_SIZE_T
-                blockIxArr[0]=block;
-                blockIxArr[1]=0;
-#else
-                blockIx=block;
-#endif
-        }
-
         inline Coord operator--() {
-#ifdef USING_64_BIT_SIZE_T
                 linbox_check(!((blockIxArr[0]==0)&&(blockIxArr[1]==0)));
                 if (blockIxArr[0] == 0) {
                         --blockIxArr[1];
                 }
                 --blockIxArr[0];
-#else
-                linbox_check(blockIx!=0);
-                --blockIx;
-#endif
         }
 };
 
@@ -86,71 +64,50 @@ std::ostream& operator<<(std::ostream& out, const Coord& coord)
 
 inline Coord operator>>(const Coord& coord,unsigned int shift) {
 	Coord retVal;
-#ifdef USING_64_BIT_SIZE_T
 	retVal.blockIxArr[1]=coord.blockIxArr[1]>>shift;
         retVal.blockIxArr[0]=
                 ((((1<<shift)-1)&coord.blockIxArr[1])<<(64-shift))|
                 (coord.blockIxArr[0]>>shift);
-#else
-	retVal.blockIx=coord.blockIx>>shift;
-#endif
 	return retVal;
 }
 
 inline Coord operator+(const Coord& lhs,const Coord& rhs) {
 	Coord retVal;
-#ifdef USING_64_BIT_SIZE_T
 	retVal.blockIxArr[0]=lhs.blockIxArr[0]+rhs.blockIxArr[0];
 	retVal.blockIxArr[1]=lhs.blockIxArr[1]+rhs.blockIxArr[1];
 	if (retVal.blockIxArr[0]<lhs.blockIxArr[0]) {
 		++(retVal.blockIxArr[1]);
 	}
-#else
-	retVal.blockIx=lhs.blockIx+rhs.blockIx;
-#endif
 	return retVal;
 }
 
 inline bool operator==(const Coord& lhs,const Coord& rhs) {
-#ifdef USING_64_BIT_SIZE_T
         return (lhs.blockIxArr[1]==rhs.blockIxArr[1]) &&
                 (lhs.blockIxArr[0]==rhs.blockIxArr[0]);
-#else
-	return lhs.blockIx==rhs.blockIx;
-#endif
 
 }
 
 inline bool operator<(const Coord& lhs,const Coord& rhs) {
-#ifdef USING_64_BIT_SIZE_T
 	return (lhs.blockIxArr[1]<rhs.blockIxArr[1])||
 		((!(lhs.blockIxArr[1]>rhs.blockIxArr[1])) &&
 		 (lhs.blockIxArr[0]<rhs.blockIxArr[0]));
-#else
-	return lhs.blockIx<rhs.blockIx;
-#endif
 }
 
 inline Coord operator-(const Coord& lhs,const Coord& rhs) {
 	Coord retVal;
 	linbox_check(!(lhs<rhs));
-#ifdef USING_64_BIT_SIZE_T
 	retVal.blockIxArr[0]=lhs.blockIxArr[0]-rhs.blockIxArr[0];
 	retVal.blockIxArr[1]=lhs.blockIxArr[1]-rhs.blockIxArr[1];
 	if (lhs.blockIxArr[0]<rhs.blockIxArr[0]) {
 		--(retVal.blockIxArr[1]);
 	}
-#else
-	retVal.blockIx=lhs.blockIx-rhs.blockIx;
-#endif
 	return retVal;
 }
 
 void coordFromBlock(Coord& coord)
 {
-	Llong temp,final;
+	Index temp,final;
 	Index localRow=0,localCol=0;
-#ifdef USING_64_BIT_SIZE_T
 	if (coord.blockIxArr[1]!=0) {
 		final=coord.blockIxArr[1];
 		temp=(final^(final>>1))&0x2222222222222222;
@@ -166,8 +123,7 @@ void coordFromBlock(Coord& coord)
 		localRow=(Index)(final&(~0xFFFFFFFF));
 		localCol=(Index)((final<<32)&(~0xFFFFFFFF));
 	}
-#endif
-	final=coord.blockIx;
+	final=coord.blockIxArr[0];
 	temp=(final^(final>>1))&0x2222222222222222;
 	final^=temp^(temp<<1);
 	temp=(final^(final>>2))&0x0C0C0C0C0C0C0C0C;
@@ -186,15 +142,14 @@ void coordFromBlock(Coord& coord)
 
 void coordToBlock(Coord& coord)
 {
-	Llong temp,final;
+	Index temp,final;
 	Index localRow=coord.rowCol[0],localCol=coord.rowCol[1];
-#ifdef USING_64_BIT_SIZE_T
 	Index highOrderLocalRow=localRow&(~0xFFFFFFFF);
 	Index highOrderLocalCol=localCol&(~0xFFFFFFFF);
-	Llong highOrderFinal;
+	Index highOrderFinal;
 	coord.blockIxArr[1]=0;
 	if ((highOrderLocalRow != 0) || (highOrderLocalCol != 0)) {
-		highOrderFinal=((Llong)localRow)|(((Llong)localCol)>>32);
+		highOrderFinal=localRow|(localCol>>32);
 		temp=(highOrderFinal^(highOrderFinal>>16))&0x00000000FFFF0000;
 		highOrderFinal^=temp^(temp<<16);
 		temp=(highOrderFinal^(highOrderFinal>>8))&0x0000FF000000FF00;
@@ -209,8 +164,7 @@ void coordToBlock(Coord& coord)
 	}
 	localCol&=0xFFFFFFFF;
 	localRow&=0xFFFFFFFF;
-#endif
-	final=(((Llong)localRow)<<32)|((Llong)localCol);
+	final=(localRow<<32)|localCol;
 	temp=(final^(final>>16))&0x00000000FFFF0000;
 	final^=temp^(temp<<16);
 	temp=(final^(final>>8))&0x0000FF000000FF00;
@@ -221,9 +175,8 @@ void coordToBlock(Coord& coord)
 	final^=temp^(temp<<2);
 	temp=(final^(final>>1))&0x2222222222222222;
 	final^=temp^(temp<<1);
-	coord.blockIx=final;
+	coord.blockIxArr[0]=final;
 }
-
 
 }
 

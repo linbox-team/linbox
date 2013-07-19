@@ -182,10 +182,9 @@ protected:
 		inline const Element& getElt() const {return elt_;}
 		void toBlock() {coordToBlock(coord_);}
 		void fromBlock() {coordFromBlock(coord_);}
-                inline Llong& blockIx() {return coord_.blockIx;}
 		static bool compareBlockTriples(const Triple& lhs,
 						const Triple& rhs) {
-                        lhs.coord_<rhs.coord_;
+                        return lhs.coord_<rhs.coord_;
 		}
                 union Coord coord_;
                 Element elt_;
@@ -224,7 +223,7 @@ protected:
 		}
                 static bool compareBlockSizes(const Block& lhs,
                                               const Block& rhs) {
-                        lhs.blockSize()<rhs.blockSize();
+                        return lhs.blockSize()<rhs.blockSize();
                 }
 	};
 
