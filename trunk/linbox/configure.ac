@@ -114,12 +114,19 @@ if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 			if test "x${WARN}" = "xfull" ; then
 				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long"
 			fi
+			if test "x${HAVE_CXX11}" = "x0" ; then
+				WARN_CFLAGS="${WARN_CFLAGS} -ansi"
+			fi
 			;;
 		xgcc48)
 			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
 			if test "x${WARN}" = "xfull" ; then
 				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long"
 			fi
+			if test "x${HAVE_CXX11}" = "x0" ; then
+				WARN_CFLAGS="${WARN_CFLAGS} -ansi"
+			fi
+
 			;;
 
 		xclang)
