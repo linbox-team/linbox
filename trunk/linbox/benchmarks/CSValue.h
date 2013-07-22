@@ -127,7 +127,11 @@ public:
 
 	struct tm getVal() const {return elt_;}
 
-	void print(std::ostream& out) const {out << asctime(&elt_);}
+	void print(std::ostream& out) const {
+                std::string timeStr(asctime(&elt_));
+                timeStr.pop_back();
+                out << timeStr;
+        }
 
 	CSValue* clone() const {return new CSDate(elt_);}
 

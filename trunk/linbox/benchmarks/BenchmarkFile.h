@@ -48,11 +48,13 @@ public:
 
 	void write(std::ostream& out);
 
-	void addMapping(const std::string& key,const CSValue& val);
+	void addMetadata(const std::string& key,const CSValue& val);
 
         MetadataIterator metadataBegin();
 
 	void addDataField(const std::string& fieldName,const CSValue& val);
+
+        void setType(const std::string& fieldName, const std::string& type);
 
 	void pushBackTest();
 
@@ -60,6 +62,7 @@ protected:
 	typedef std::vector<CSValue*> TestLine;
 	typedef std::map<std::string,CSValue*> MetadataMap;
 	typedef std::map<std::string,int> FieldPosMap;
+        typedef std::map<std::string,std::string> TypeMap;
 
 	void printMetadata(std::ostream& out);
 
@@ -73,6 +76,8 @@ protected:
 
 
 	MetadataMap metadata_;
+
+        TypeMap typeMap_;
 
 	int numFields_;
 
