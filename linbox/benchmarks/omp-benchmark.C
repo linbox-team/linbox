@@ -114,8 +114,11 @@ int main(int argc, char **argv)
         timeInfo=localtime(&rawTime);
 
         BenchmarkFile benchmarkFile;
-        benchmarkFile.addMapping("problem",CSString("Matrix-Vector Product"));
-        benchmarkFile.addMapping("date",CSDate(*timeInfo));
+        benchmarkFile.addMetadata("problem",CSString("Matrix-Vector Product"));
+        benchmarkFile.addMetadata("date",CSDate(*timeInfo));
+
+        benchmarkFile.setType("date", "%a %m/%d %H/%M/%S %Y");
+        benchmarkFile.setType("time", "seconds");
 
         int p=65521;
         int n=50000;

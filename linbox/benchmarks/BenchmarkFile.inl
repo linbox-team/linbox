@@ -66,6 +66,16 @@ void BenchmarkFile::printMetadata(std::ostream& out)
 		it->second->print(out);
 		out << std::endl;
 	}
+        
+        typedef TypeMap::iterator TypeMapIT;
+
+        if (!(typeMap_.empty())) {
+                out << "types";
+                for (TypeMapIT it=typeMap_.begin();it!=typeMap_.end();++it) {
+                        out << ", (" << it->first << "," << it->second << ")";
+                }
+                out << std::endl;
+        }
 	out << "end, metadata" << std::endl << std::endl;
 }
 
@@ -124,9 +134,15 @@ BenchmarkFile::MetadataIterator BenchmarkFile::metadataBegin()
         return metadata_.begin();
 }
 
-void BenchmarkFile::addMapping(const std::string& key,const CSValue& val)
+void BenchmarkFile::addMetadata(const std::string& key,const CSValue& val)
 {
 	metadata_.insert(std::pair<std::string,CSValue*>(key,val.clone()));
+}
+
+
+void BenchmarkFile::setType(const std::string& fieldName, const std::string& type)
+{
+        typeMap_[fieldName]=type;
 }
 
 void BenchmarkFile::addDataField(const std::string& fieldName,const CSValue& val)
