@@ -39,15 +39,15 @@ namespace LinBox
 
 typedef size_t Index;
 
-union Coord {
+union TriplesCoord {
         Index rowCol[2];
         Index blockIxArr[2]; // little endian
 
-        Coord() {};
+        TriplesCoord() {};
 
-        Coord(Index row, Index col) {rowCol[0]=row;rowCol[1]=col;}
+        TriplesCoord(Index row, Index col) {rowCol[0]=row;rowCol[1]=col;}
 
-        inline Coord operator--() {
+        inline TriplesCoord operator--() {
                 linbox_check(!((blockIxArr[0]==0)&&(blockIxArr[1]==0)));
                 if (blockIxArr[0] == 0) {
                         --blockIxArr[1];
@@ -56,14 +56,14 @@ union Coord {
         }
 };
 
-std::ostream& operator<<(std::ostream& out, const Coord& coord)
+std::ostream& operator<<(std::ostream& out, const TriplesCoord& coord)
 {
 	out << coord.rowCol[0] << "," << coord.rowCol[1];
 	return out;
 }
 
-inline Coord operator>>(const Coord& coord,unsigned int shift) {
-	Coord retVal;
+inline TriplesCoord operator>>(const TriplesCoord& coord,unsigned int shift) {
+	TriplesCoord retVal;
 	retVal.blockIxArr[1]=coord.blockIxArr[1]>>shift;
         retVal.blockIxArr[0]=
                 ((((1<<shift)-1)&coord.blockIxArr[1])<<(64-shift))|
@@ -71,8 +71,8 @@ inline Coord operator>>(const Coord& coord,unsigned int shift) {
 	return retVal;
 }
 
-inline Coord operator+(const Coord& lhs,const Coord& rhs) {
-	Coord retVal;
+inline TriplesCoord operator+(const TriplesCoord& lhs,const TriplesCoord& rhs) {
+	TriplesCoord retVal;
 	retVal.blockIxArr[0]=lhs.blockIxArr[0]+rhs.blockIxArr[0];
 	retVal.blockIxArr[1]=lhs.blockIxArr[1]+rhs.blockIxArr[1];
 	if (retVal.blockIxArr[0]<lhs.blockIxArr[0]) {
@@ -81,20 +81,20 @@ inline Coord operator+(const Coord& lhs,const Coord& rhs) {
 	return retVal;
 }
 
-inline bool operator==(const Coord& lhs,const Coord& rhs) {
+inline bool operator==(const TriplesCoord& lhs,const TriplesCoord& rhs) {
         return (lhs.blockIxArr[1]==rhs.blockIxArr[1]) &&
                 (lhs.blockIxArr[0]==rhs.blockIxArr[0]);
 
 }
 
-inline bool operator<(const Coord& lhs,const Coord& rhs) {
+inline bool operator<(const TriplesCoord& lhs,const TriplesCoord& rhs) {
 	return (lhs.blockIxArr[1]<rhs.blockIxArr[1])||
 		((!(lhs.blockIxArr[1]>rhs.blockIxArr[1])) &&
 		 (lhs.blockIxArr[0]<rhs.blockIxArr[0]));
 }
 
-inline Coord operator-(const Coord& lhs,const Coord& rhs) {
-	Coord retVal;
+inline TriplesCoord operator-(const TriplesCoord& lhs,const TriplesCoord& rhs) {
+	TriplesCoord retVal;
 	linbox_check(!(lhs<rhs));
 	retVal.blockIxArr[0]=lhs.blockIxArr[0]-rhs.blockIxArr[0];
 	retVal.blockIxArr[1]=lhs.blockIxArr[1]-rhs.blockIxArr[1];
@@ -104,7 +104,7 @@ inline Coord operator-(const Coord& lhs,const Coord& rhs) {
 	return retVal;
 }
 
-void coordFromBlock(Coord& coord)
+void coordFromBlock(TriplesCoord& coord)
 {
 	Index temp,final;
 	Index localRow=0,localCol=0;
@@ -140,7 +140,7 @@ void coordFromBlock(Coord& coord)
 	coord.rowCol[1]=localCol;
 }
 
-void coordToBlock(Coord& coord)
+void coordToBlock(TriplesCoord& coord)
 {
 	Index temp,final;
 	Index localRow=coord.rowCol[0],localCol=coord.rowCol[1];
