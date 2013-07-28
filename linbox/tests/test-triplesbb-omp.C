@@ -84,7 +84,6 @@ void generateRandMat(MapSparse<Field>& mat,int m, int n, int nnz, int q)
                         col = randRange(0,n);
                 } while (pairs.count(CoordPair(row,col))!=0);
                 
-                int randVal=randRange(0,q);
                 mat.field().init(d, randRange(0,q));
                 mat.setEntry(row,col,d);
                 pairs.insert(CoordPair(row,col));
@@ -309,7 +308,6 @@ bool testDenseRand(size_t m, size_t n, size_t nnz, int q, int numThreads, ostrea
                         col = randRange(0,n);
                 } while (pairs.count(CoordPair(row,col))!=0);
 
-                int randVal=randRange(0,q);
                 F.init(d, randRange(0,q));
                 TestMat.setEntry(row,col,d);
                 RefMat.setEntry(row,col,d);
@@ -354,7 +352,7 @@ bool testIdent(size_t n, int q, bool shouldFail, int numThreads, ostream &report
         int scaleFactor=(q==2)?1:2;
 	for(int i = 0; i < (int)n; ++i)
 	{
-                if (shouldFail && (i==(n/3))) {
+                if (shouldFail && (((size_t)i)==(n/3))) {
                         F.init(d,0);
                 } else {
                         F.init(d,scaleFactor);
@@ -467,6 +465,7 @@ int main (int argc, char **argv)
 	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
         pass = pass && testDenseRand(5,100,1000,65537,1,report);
+        pass = pass && testDenseRand(5,100,1000,65537,4,report);
 
         pass = pass && testRandSuite(65537,report);
         pass = pass && testRandSuite(2,report);

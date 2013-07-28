@@ -104,7 +104,7 @@ void TriplesBBOMP<Field_>::combineIntervals(BlockListIt startIt,
                                             VectorChunks& chunksOut,
                                             const int rowOrCol)
 {
-	typedef std::map<Index,std::vector<TriplesBlock> > VectorBlockMap;
+	typedef std::map<Index,BlockList> VectorBlockMap;
 
 	VectorBlockMap vectorMap;
 	for (IntervalIterator it=intervals.begin();it!=intervals.end();++it) {
@@ -141,8 +141,6 @@ void TriplesBBOMP<Field_>::computeVectors(SizedChunks& sizedChunks,
 {
 	IntervalSet intervals;
         VectorChunks chunks;
-
-        std::sort(superBlocks.begin(),superBlocks.end(),TriplesBlock::compareBlockSizes);
 
         Index k=0;
         Index numSuperBlocks=superBlocks.size();
@@ -237,26 +235,28 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
         Y.zero();
 
 #pragma omp parallel
-        {
+	{
                 Matrix Yc,Xc;
-
-                for (Index chunkSizeIx=0;chunkSizeIx<rowBlocks_.size();++chunkSizeIx) {
+		Index numBlockSizes=rowBlocks_.size();
+		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
+			const VectorChunks *rowChunks=&(rowBlocks_[chunkSizeIx]);
+			Index numChunks=rowChunks->size();
 #pragma omp for schedule (static,1)
-                        for (Index rowChunk=0;rowChunk<rowBlocks_[chunkSizeIx].size();++rowChunk) {
-                                for (Index subChunk=0;subChunk<rowBlocks_[chunkSizeIx][rowChunk].size();++subChunk) {
-                                        Index start=rowBlocks_[chunkSizeIx][rowChunk][subChunk].start_;
-                                        Index end=rowBlocks_[chunkSizeIx][rowChunk][subChunk].end_;
-                                        for (Index k=start;k<end;++k) {
-                                                const Triple& t = data_[k];
-                                                Yc.submatrix(Y,t.getRow(),0,1,Y.coldim());
-                                                Xc.submatrix(X,t.getCol(),0,1,X.coldim());
-                                                MD_.saxpyin(Yc,t.getElt(),Xc);
+			for (Index rowChunk=0;rowChunk<numChunks;++rowChunk) {
+				const BlockList *blocks=&((*rowChunks)[rowChunk]);
+				Index numBlocks=blocks->size();
+				for (Index block=0;block<numBlocks;++block) {
+                                        const DataBlock *dataBlock=&((*blocks)[block]);
+					for (Index k=0;k<dataBlock->elts_.size();++k) {
+                                                const Index row=dataBlock->getRow(k);
+                                                const Index col=dataBlock->getCol(k);
+                                                Yc.submatrix(Y,row,0,1,Y.coldim());
+                                                Xc.submatrix(X,col,0,1,X.coldim());
+                                                MD_.saxpyin(Yc,dataBlock->elts_[k],Xc);
                                         }
                                 }
-
                         }
                 }
-
         }
         return Y;
 }
@@ -271,12 +271,16 @@ OutVector & TriplesBBOMP<Field_>::apply(OutVector & y, const InVector & x) const
 	uint8_t* yTempSpace=new uint8_t[sizeof(Field_)*y.size()+CACHE_ALIGNMENT];
 	size_t spacePtr=(size_t)yTempSpace;
 	FieldAXPY<Field_>* yTemp=(FieldAXPY<Field_>*)(spacePtr+CACHE_ALIGNMENT-(spacePtr%CACHE_ALIGNMENT));
-	for (int i=0;i<y.size();++i) { 
-		new ((void*)(yTemp+i)) FieldAXPY<Field_>(field());
-	}
+
 
 #pragma omp parallel
 	{
+                const Field_& fieldRef=field();
+#pragma omp for schedule (static,1024)
+                for (size_t i=0;i<y.size();++i) {
+                        new ((void*)(yTemp+i)) FieldAXPY<Field_>(fieldRef);
+                }
+
 		Index numBlockSizes=rowBlocks_.size();
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *rowChunks=&(rowBlocks_[chunkSizeIx]);
@@ -286,11 +290,11 @@ OutVector & TriplesBBOMP<Field_>::apply(OutVector & y, const InVector & x) const
 				const BlockList *blocks=&((*rowChunks)[rowChunk]);
 				Index numBlocks=blocks->size();
 				for (Index block=0;block<numBlocks;++block) {
-					Index start=(*blocks)[block].start_;
-					Index end=(*blocks)[block].end_;
-					for (Index k=start;k<end;++k) {
-						const Triple& t = data_[k];
-						yTemp[t.getRow()].mulacc(t.getElt(),x[t.getCol()]);
+                                        const DataBlock *dataBlock=&((*blocks)[block]);
+					for (Index k=0;k<dataBlock->elts_.size();++k) {
+                                                const Index row=dataBlock->getRow(k);
+                                                const Index col=dataBlock->getCol(k);
+                                                yTemp[row].mulacc(dataBlock->elts_[k],x[col]);
 					}
 				}
 			}
@@ -351,7 +355,7 @@ template<class Field_>
 size_t TriplesBBOMP<Field_>::size() const { return data_.size(); }
 
 template<class Field_>
-void TriplesBBOMP<Field_>::splitBlock(BlockList& superBlocks,TriplesBlock startBlock)
+void TriplesBBOMP<Field_>::splitBlock(RefBlockList& superBlocks,TriplesBlock startBlock)
 {
 	typedef typename std::vector<Triple>::iterator BlockVecIt;
 
@@ -379,9 +383,11 @@ void TriplesBBOMP<Field_>::splitBlock(BlockList& superBlocks,TriplesBlock startB
 		BlockVecIt dataEnd=data_.begin()+block.end_;
 		Index midOneData,midTwoData,midThreeData;
 
-		midOneData=std::upper_bound(dataBegin,dataEnd,midOne,Triple::compareBlockTriples)-data_.begin();
-		midTwoData=std::upper_bound(dataBegin,dataEnd,midTwo,Triple::compareBlockTriples)-data_.begin();
-		midThreeData=std::upper_bound(dataBegin,dataEnd,midThree,Triple::compareBlockTriples)-data_.begin();
+                Triple midOneMM(midOne), midTwoMM(midTwo), midThreeMM(midThree);
+                --midOneMM.coord_; --midTwoMM.coord_; --midThreeMM.coord_;
+		midOneData=std::upper_bound(dataBegin,dataEnd,midOneMM,Triple::compareBlockTriples)-data_.begin();
+		midTwoData=std::upper_bound(dataBegin,dataEnd,midTwoMM,Triple::compareBlockTriples)-data_.begin();
+		midThreeData=std::upper_bound(dataBegin,dataEnd,midThreeMM,Triple::compareBlockTriples)-data_.begin();
 
 		TriplesBlock blockOne(block.start_,midOneData,block.blockStart_,midOne.coord_);
 		TriplesBlock blockTwo(midOneData,midTwoData,midOne.coord_,midTwo.coord_);
@@ -416,9 +422,43 @@ void TriplesBBOMP<Field_>::splitBlock(BlockList& superBlocks,TriplesBlock startB
 }
 
 template<class Field_>
+void TriplesBBOMP<Field_>::toDataBlock(const RefBlockList& superBlocks,
+				       BlockList& dataBlocks)
+{
+	dataBlocks.clear();
+	dataBlocks.resize(superBlocks.size());
+	for (size_t i=0;i<superBlocks.size();++i) {
+		TriplesBlock block=superBlocks[i];
+		int ccf;
+		
+		Index rowDiff=block.getStartRow()^block.getEndRow();
+		Index colDiff=block.getStartCol()^block.getEndCol();
+		Index combinedDiff=rowDiff|colDiff;
+		if ((combinedDiff>>8)==0) {
+			ccf=3;
+		} else if ((combinedDiff>>16) == 0) {
+			ccf=2;
+		} else if ((combinedDiff>>32) == 0) {
+			ccf=1;
+		} else {
+			ccf=0;
+		}
+
+		typename DataBlock::TripleListIt startIt=data_.begin()+block.start_;
+		typename DataBlock::TripleListIt endIt=data_.begin()+block.end_;
+		block.toBlock();
+		TriplesCoord blockSize=block.blockSize();
+                ++blockSize;
+		block.fromBlock();
+		dataBlocks[i].init(block.blockStart_,block.blockEnd_,
+				   blockSize,startIt,endIt,ccf);
+				   
+	}
+}
+
+template<class Field_>
 void TriplesBBOMP<Field_>::finalize()
 {
-        double start=omp_get_wtime();
         if ((sortType_ & TRIPLES_SORTED) != 0) {return; }
         for (Index k=0; k<data_.size();++k) {
                 data_[k].toBlock();
@@ -430,14 +470,14 @@ void TriplesBBOMP<Field_>::finalize()
 	if (!(data_.empty())) {
 		tempData.push_back(data_[0]);
 	}
-	for (int k=1;k<data_.size();++k) {
+	for (size_t k=1;k<data_.size();++k) {
 		if (!(data_[k].coord_==tempData.back().coord_)) {
 			tempData.push_back(data_[k]);
 		}
 	}
 	data_.swap(tempData);
 
-	BlockList superBlocks;
+	RefBlockList superBlocks;
         Index rowBound=roundUpIndex(rowdim());
         Index colBound=roundUpIndex(coldim());
         Index rowColBound=(rowBound<colBound)?colBound:rowBound;
@@ -451,13 +491,19 @@ void TriplesBBOMP<Field_>::finalize()
                 data_[k].fromBlock();
         }
 
+        std::sort(superBlocks.begin(),superBlocks.end(),TriplesBlock::compareBlockSizes);
+
 	for (Index i=0;i<superBlocks.size();++i) {
 		superBlocks[i].fromBlock();
 	}
+
+	std::vector<DataBlock> dataBlocks;
+	toDataBlock(superBlocks,dataBlocks);
+	
 	rowBlocks_.clear();
-        computeVectors(rowBlocks_,superBlocks,CHUNK_BY_ROW);
+        computeVectors(rowBlocks_,dataBlocks,CHUNK_BY_ROW);
 	colBlocks_.clear();
-        computeVectors(colBlocks_,superBlocks,CHUNK_BY_COL);
+        computeVectors(colBlocks_,dataBlocks,CHUNK_BY_COL);
 
         sortType_=TRIPLES_SORTED;
 }
@@ -473,9 +519,9 @@ template<class Field_>
 typename Field_::Element& TriplesBBOMP<Field_>::
 getEntry(typename Field::Element& e, Index i, Index j) const
 {
-	for (Index k = 0; k < data_.size(); ++k)
-		if (data_[k].row == i and data_[k].col == j)
-			return e = data_[k].elt;
+	for (Index k = data_.size(); k > 0; --k)
+		if (data_[k-1].getRow() == i and data_[k-1].getCol() == j)
+			return e = data_[k-1].getElt();
 	return e = field().zero;
 }
 

@@ -50,6 +50,13 @@ using std::max;
 namespace LinBox
 {
 
+union TriplesSmallCoord {
+	uint8_t c[8];
+	uint16_t s[4];
+	uint32_t i[2];
+	uint64_t l;
+};
+
 template <class Element>
 struct TriplesBBTriple {
 	TriplesBBTriple(TriplesCoord c):coord_(c) {}
@@ -110,6 +117,119 @@ struct TriplesBlock {
 	static bool compareBlockSizes(const TriplesBlock& lhs,
 				      const TriplesBlock& rhs) {
 		return lhs.blockSize()<rhs.blockSize();
+	}
+};
+
+
+template <class Element>
+struct TriplesDataBlock {
+	TriplesCoord blockStart_, blockEnd_, blockSize_;
+	std::vector<TriplesSmallCoord> rowIxs_,colIxs_;
+	std::vector<Element> elts_;
+	int ccf_;
+
+	typedef TriplesBBTriple<Element> Triple;
+	typedef typename std::vector<Triple> TripleList;
+	typedef typename TripleList::const_iterator TripleListIt;
+
+        inline Index getRow(int ix) const {
+                Index retVal=getStartRow();
+                const TriplesSmallCoord *rowIxPtr=&(rowIxs_[ix>>ccf_]);
+                switch (ccf_) {
+                case 0:
+                        return rowIxPtr->l;
+                case 1:
+                        return (retVal|(rowIxPtr->i[ix&1]));
+                case 2:
+                        return (retVal|(rowIxPtr->s[ix&3]));
+                case 3:
+                default:
+                        return (retVal|(rowIxPtr->c[ix&7]));
+                }
+        }
+        inline Index getCol(int ix) const {
+                Index retVal=getStartCol();
+                const TriplesSmallCoord *colIxPtr=&(colIxs_[ix>>ccf_]);
+                switch (ccf_) {
+                case 0:
+                        return colIxPtr->l;
+                case 1:
+                        return (retVal|(colIxPtr->i[ix&1]));
+                case 2:
+                        return (retVal|(colIxPtr->s[ix&3]));
+                case 3:
+                default:
+                        return (retVal|(colIxPtr->c[ix&7]));
+                }
+        }
+
+	void init(TriplesCoord blockStart,
+		  TriplesCoord blockEnd,
+		  TriplesCoord blockSize,
+		  TripleListIt triplesStart,
+		  TripleListIt triplesEnd,
+		  int ccf) {
+		blockStart_=blockStart;
+		blockEnd_=blockEnd;
+		blockSize_=blockSize;
+		ccf_=ccf;
+                int numElts=triplesEnd-triplesStart;
+		rowIxs_.resize(1+(numElts>>ccf));
+		colIxs_.resize(1+(numElts>>ccf));
+		elts_.reserve(numElts);
+
+		int coordOffset=0, coordIx=0;
+		while (triplesStart != triplesEnd) {
+			elts_.push_back(triplesStart->getElt());
+
+			switch (ccf) {
+			case 0:
+				rowIxs_[coordIx].l=(uint64_t)(triplesStart->getRow());
+				colIxs_[coordIx].l=(uint64_t)(triplesStart->getCol());
+				break;
+			case 1:
+				rowIxs_[coordIx].i[coordOffset]=
+					(uint32_t)(triplesStart->getRow());
+				colIxs_[coordIx].i[coordOffset]=
+					(uint32_t)(triplesStart->getCol());
+				break;
+			case 2:
+				rowIxs_[coordIx].s[coordOffset]=
+					(uint16_t)(triplesStart->getRow());
+				colIxs_[coordIx].s[coordOffset]=
+					(uint16_t)(triplesStart->getCol());
+				break;
+			case 3:
+				rowIxs_[coordIx].c[coordOffset]=
+					(uint8_t)(triplesStart->getRow());
+				colIxs_[coordIx].c[coordOffset]=
+					(uint8_t)(triplesStart->getCol());
+				break;
+			}
+
+			++coordOffset;
+			if (coordOffset==(1<<ccf)) {
+				coordOffset=0;
+				++coordIx;
+			}
+			++triplesStart;
+		}
+	}
+
+	inline TriplesCoord blockSize() const {
+		return blockSize_;
+	}
+	inline Index getStartRow() const {
+		return blockStart_.rowCol[0];
+	}
+	inline Index getStartCol() const {
+		return blockStart_.rowCol[1];
+	}
+	inline Index getEndRow() const {
+		return blockEnd_.rowCol[0];
+	}
+	inline Index getEndCol() const {
+		return blockEnd_.rowCol[1];
 	}
 };
 
@@ -231,8 +351,11 @@ protected:
         }
 
 	typedef TriplesBBTriple<Element> Triple;
+	typedef TriplesDataBlock<Element> DataBlock;
 
-        typedef std::vector<TriplesBlock> BlockList;
+        typedef std::vector<TriplesBlock> RefBlockList;
+
+        typedef std::vector<DataBlock> BlockList;
         typedef typename BlockList::iterator BlockListIt;
         typedef std::vector<BlockList> VectorChunks;
         typedef typename VectorChunks::iterator VectorChunkIt;
@@ -242,7 +365,10 @@ protected:
 	typedef typename IntervalSet::iterator IntervalIterator;
 	typedef std::pair<Index,Index> Interval;
 
-	void splitBlock(BlockList &superBlocks, TriplesBlock block);
+	void splitBlock(RefBlockList &superBlocks, TriplesBlock block);
+
+	void toDataBlock(const RefBlockList& superBlocks,
+			 BlockList& dataBlocks);
 
 	void computeVectors(SizedChunks &sizedChunks,
 			    BlockList &superBlocks,
@@ -259,10 +385,9 @@ protected:
                                      IntervalSet& intervals,
                                      const int rowOrCol);
 
+	MatrixDomain<Field> MD_;
 
 	std::vector<Triple> data_;
-
-	MatrixDomain<Field> MD_;
 
 	Index rows_, cols_;
 
