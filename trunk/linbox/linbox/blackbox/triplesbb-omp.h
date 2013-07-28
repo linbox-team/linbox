@@ -50,6 +50,70 @@ using std::max;
 namespace LinBox
 {
 
+template <class Element>
+struct TriplesBBTriple {
+	TriplesBBTriple(TriplesCoord c):coord_(c) {}
+	TriplesBBTriple(Index r, Index c, const Element& e){init(r, c, e);}
+	void init(Index r, Index c, const Element& e)
+	{
+		row()=r;
+		col()=c;
+		elt_ = e;
+	}
+	inline Index& row() {return coord_.rowCol[0];}
+	inline Index& col() {return coord_.rowCol[1];}
+	inline Element& elt() {return elt_;}
+	inline const Index& getRow() const {return coord_.rowCol[0];}
+	inline const Index& getCol() const {return coord_.rowCol[1];}
+	inline const Element& getElt() const {return elt_;}
+	void toBlock() {coordToBlock(coord_);}
+	void fromBlock() {coordFromBlock(coord_);}
+	static bool compareBlockTriples(const TriplesBBTriple<Element>& lhs,
+					const TriplesBBTriple<Element>& rhs) {
+		return lhs.coord_<rhs.coord_;
+	}
+	TriplesCoord coord_;
+	Element elt_;
+};
+
+struct TriplesBlock {
+	Index start_,end_;
+	TriplesCoord blockStart_, blockEnd_;
+
+	TriplesBlock(Index start,Index end,TriplesCoord blockStart,TriplesCoord blockEnd) :
+		start_(start),end_(end),
+		blockStart_(blockStart),blockEnd_(blockEnd) {
+	}
+	Index nnz() const {return end_-start_;}
+	TriplesCoord blockSize() const {return blockEnd_-blockStart_;}
+	void toBlock() {
+		coordToBlock(blockStart_);
+		coordToBlock(blockEnd_);
+	}
+	void fromBlock() {
+		coordFromBlock(blockStart_);
+		coordFromBlock(blockEnd_);
+
+	}
+	inline const Index& getStartRow() const {
+		return blockStart_.rowCol[0];
+	}
+	inline const Index& getStartCol() const {
+		return blockStart_.rowCol[1];
+	}
+	inline const Index& getEndRow() const {
+		return blockEnd_.rowCol[0];
+	}
+	inline const Index& getEndCol() const {
+		return blockEnd_.rowCol[1];
+	}
+	static bool compareBlockSizes(const TriplesBlock& lhs,
+				      const TriplesBlock& rhs) {
+		return lhs.blockSize()<rhs.blockSize();
+	}
+};
+
+
 /** \brief wrapper for NAG Sparse Matrix format.
  *
  \ingroup blackbox
@@ -154,6 +218,7 @@ class TriplesBBOMP : public BlackboxInterface {
 protected:
 
 	const static Index MAX_BLOCK_NNZ=1024;
+        const static size_t CACHE_ALIGNMENT=64;
 
         inline static int roundUpIndex(Index val) {
                 int exponent=0;
@@ -165,69 +230,9 @@ protected:
                 return 1<<exponent;
         }
 
-        struct Triple {
-                Triple(Coord c):coord_(c) {}
-                Triple(Index r, Index c, const Element& e){init(r, c, e);}
-                void init(Index r, Index c, const Element& e)
-                {
-                        row()=r;
-                        col()=c;
-                        elt_ = e;
-                }
-                inline Index& row() {return coord_.rowCol[0];}
-                inline Index& col() {return coord_.rowCol[1];}
-		inline Element& elt() {return elt_;}
-                inline const Index& getRow() const {return coord_.rowCol[0];}
-                inline const Index& getCol() const {return coord_.rowCol[1];}
-		inline const Element& getElt() const {return elt_;}
-		void toBlock() {coordToBlock(coord_);}
-		void fromBlock() {coordFromBlock(coord_);}
-		static bool compareBlockTriples(const Triple& lhs,
-						const Triple& rhs) {
-                        return lhs.coord_<rhs.coord_;
-		}
-                union Coord coord_;
-                Element elt_;
-        };
+	typedef TriplesBBTriple<Element> Triple;
 
-	struct Block {
-		Index start_,end_;
-		Coord blockStart_, blockEnd_;
-
-		Block(Index start,Index end,Coord blockStart,Coord blockEnd) :
-			start_(start),end_(end),
-                        blockStart_(blockStart),blockEnd_(blockEnd) {
-		}
-                Index nnz() const {return end_-start_;}
-                Coord blockSize() const {return blockEnd_-blockStart_;}
-		void toBlock() {
-			coordToBlock(blockStart_);
-			coordToBlock(blockEnd_);
-		}
-		void fromBlock() {
-			coordFromBlock(blockStart_);
-			coordFromBlock(blockEnd_);
-
-		}
-		inline const Index& getStartRow() const {
-			return blockStart_.rowCol[0];
-		}
-		inline const Index& getStartCol() const {
-			return blockStart_.rowCol[1];
-		}
-		inline const Index& getEndRow() const {
-			return blockEnd_.rowCol[0];
-		}
-		inline const Index& getEndCol() const {
-			return blockEnd_.rowCol[1];
-		}
-                static bool compareBlockSizes(const Block& lhs,
-                                              const Block& rhs) {
-                        return lhs.blockSize()<rhs.blockSize();
-                }
-	};
-
-        typedef std::vector<Block> BlockList;
+        typedef std::vector<TriplesBlock> BlockList;
         typedef typename BlockList::iterator BlockListIt;
         typedef std::vector<BlockList> VectorChunks;
         typedef typename VectorChunks::iterator VectorChunkIt;
@@ -237,11 +242,11 @@ protected:
 	typedef typename IntervalSet::iterator IntervalIterator;
 	typedef std::pair<Index,Index> Interval;
 
-	void sortBlock();
+	void splitBlock(BlockList &superBlocks, TriplesBlock block);
 
-	void splitBlock(Block block);
-
-	void computeVectors(const int rowOrCol);
+	void computeVectors(SizedChunks &sizedChunks,
+			    BlockList &superBlocks,
+			    const int rowOrCol);
 
         void combineIntervals(BlockListIt startIt,
                               BlockListIt endIt,
@@ -269,8 +274,6 @@ protected:
 
 #define CHUNK_BY_ROW 1
 #define CHUNK_BY_COL 2
-
-        BlockList superBlocks_;
 
         SizedChunks rowBlocks_;
 
