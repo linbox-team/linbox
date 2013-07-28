@@ -53,6 +53,15 @@ union TriplesCoord {
                         --blockIxArr[1];
                 }
                 --blockIxArr[0];
+                return *this;
+        }
+
+        inline TriplesCoord operator++() {
+                ++blockIxArr[0];
+                if (blockIxArr[0] == 0) {
+                        ++blockIxArr[1];
+                }
+                return *this;
         }
 };
 
