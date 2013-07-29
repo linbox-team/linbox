@@ -445,7 +445,7 @@ namespace LinBox
 
 	public:
 		MapleReader() :
-			array(false),openParen(false)
+                        openParen(false),array(false)
 		{
 			currentCol = currentRow = 0;
 			stin = NULL;

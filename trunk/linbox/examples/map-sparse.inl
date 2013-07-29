@@ -41,7 +41,7 @@ MapSparse<Field_>::MapSparse() : numRows_(0), numCols_(0), nnz_(0) {}
 
 template<class Field_>
 MapSparse<Field_>::MapSparse(const Field& F, Index r, Index c):
-	numRows_(r), numCols_(c), nnz_(0), MD_(F) {F.init(zero_,0);}
+	MD_(F), numCols_(c), numRows_(r), nnz_(0) {F.init(zero_,0);}
 
 template<class Field_>
 MapSparse<Field_>::MapSparse(const MapSparse& M):

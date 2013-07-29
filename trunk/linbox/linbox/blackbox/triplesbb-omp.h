@@ -288,12 +288,13 @@ class TriplesBBOMP : public BlackboxInterface {
 	template<class OutVector, class InVector>
 	OutVector & apply(OutVector &, const InVector &) const;
 
-	template<class OutVector, class InVector>
-	OutVector & seqApply(OutVector &, const InVector &) const;
-
         /// Mul with this on left: Y <- AX. Requires conformal shapes.
 	template<class Mat1, class Mat2>
 	Mat1 & applyLeft(Mat1 &Y, const Mat2 &X) const;
+
+        /// Mul with this on right: Y <- XA. Requires conformal shapes.
+	template<class Mat1, class Mat2>
+	Mat1 & applyRight(Mat1 &Y, const Mat2 &X) const;
 
 	/** y <- A^T x.
 	 *
