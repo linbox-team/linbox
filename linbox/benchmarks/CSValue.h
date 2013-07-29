@@ -129,7 +129,7 @@ public:
 
 	void print(std::ostream& out) const {
                 std::string timeStr(asctime(&elt_));
-                timeStr.pop_back();
+                timeStr.erase(timeStr.size()-1);
                 out << timeStr;
         }
 

@@ -163,11 +163,11 @@ void TriplesBBOMP<Field_>::computeVectors(SizedChunks& sizedChunks,
         }
 }
 
-template<class Field_> TriplesBBOMP<Field_>::TriplesBBOMP() : sortType_(TRIPLES_UNSORTED) {}
+template<class Field_> TriplesBBOMP<Field_>::TriplesBBOMP() {}
 template<class Field_> TriplesBBOMP<Field_>::~TriplesBBOMP() {}
 
 template<class Field_> TriplesBBOMP<Field_>::
-TriplesBBOMP(const Field_& F, istream& in) : MD_(F), data_(),rows_(0),cols_(0)
+TriplesBBOMP(const Field_& F, istream& in) : MD_(F)
 {
 	read(in);
 }
@@ -202,7 +202,7 @@ TriplesBBOMP<Field_>& TriplesBBOMP<Field_>::shape(const Field& F, Index r, Index
 
 template<class Field_> TriplesBBOMP<Field_>::
 TriplesBBOMP(const Field& F, Index r, Index c)
-        : MD_(F), data_(), rows_(r), cols_(c),
+        : MD_(F), rows_(r), cols_(c),
           sortType_(TRIPLES_UNSORTED) {}
 
 template<class Field_>
@@ -253,6 +253,39 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
                                                 Yc.submatrix(Y,row,0,1,Y.coldim());
                                                 Xc.submatrix(X,col,0,1,X.coldim());
                                                 MD_.saxpyin(Yc,dataBlock->elts_[k],Xc);
+                                        }
+                                }
+                        }
+                }
+        }
+        return Y;
+}
+
+template<class Field_>
+template<class Mat1, class Mat2> Mat1& TriplesBBOMP<Field_>::
+applyRight(Mat1 &Y, const Mat2 &X) const
+{
+        Y.zero();
+
+#pragma omp parallel
+	{
+                Matrix Yr,Xr;
+		Index numBlockSizes=colBlocks_.size();
+		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
+			const VectorChunks *colChunks=&(colBlocks_[chunkSizeIx]);
+			Index numChunks=colChunks->size();
+#pragma omp for schedule (static,1)
+			for (Index colChunk=0;colChunk<numChunks;++colChunk) {
+				const BlockList *blocks=&((*colChunks)[colChunk]);
+				Index numBlocks=blocks->size();
+				for (Index block=0;block<numBlocks;++block) {
+                                        const DataBlock *dataBlock=&((*blocks)[block]);
+					for (Index k=0;k<dataBlock->elts_.size();++k) {
+                                                const Index row=dataBlock->getRow(k);
+                                                const Index col=dataBlock->getCol(k);
+						Yr.submatrix(Y,0,col,Y.rowdim(),1);
+						Xr.submatrix(X,0,row,X.rowdim(),1);
+                                                MD_.saxpyin(Yr,dataBlock->elts_[k],Xr);
                                         }
                                 }
                         }
@@ -313,32 +346,52 @@ OutVector & TriplesBBOMP<Field_>::apply(OutVector & y, const InVector & x) const
 
 template<class Field_>
 template<class OutVector, class InVector>
-OutVector & TriplesBBOMP<Field_>::seqApply(OutVector & y, const InVector & x) const
-{
-
-	linbox_check( coldim() == x.size() );
-	linbox_check( rowdim() == y.size() );
-
-	for (Index i = 0; i < y.size(); ++i) field().init(y[i], field().zero);
-	for (Index k = 0; k < data_.size(); ++k) {
-		const Triple& t = data_[k];
-		field().axpyin(y[t.getRow()], t.getElt(), x[t.getCol()]);
-	}
-	return y;
-}
-
-template<class Field_>
-template<class OutVector, class InVector>
 OutVector & TriplesBBOMP<Field_>::applyTranspose(OutVector & y, const InVector & x) const
 {
 	linbox_check( coldim() == y.size() );
 	linbox_check( rowdim() == x.size() );
-	for (Index i = 0; i < y.size(); ++i) field().init(y[i], field().zero);
-	for (Index k = 0; k < data_.size(); ++k) {
-		const Triple& t = data_[k];
-		field().axpyin(y[t.getCol()], t.getElt(), x[t.getRow()]);
+
+	uint8_t* yTempSpace=new uint8_t[sizeof(Field_)*y.size()+CACHE_ALIGNMENT];
+	size_t spacePtr=(size_t)yTempSpace;
+	FieldAXPY<Field_>* yTemp=(FieldAXPY<Field_>*)(spacePtr+CACHE_ALIGNMENT-(spacePtr%CACHE_ALIGNMENT));
+
+
+#pragma omp parallel
+	{
+                const Field_& fieldRef=field();
+#pragma omp for schedule (static,1024)
+                for (size_t i=0;i<y.size();++i) {
+                        new ((void*)(yTemp+i)) FieldAXPY<Field_>(fieldRef);
+                }
+
+		Index numBlockSizes=colBlocks_.size();
+		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
+			const VectorChunks *colChunks=&(colBlocks_[chunkSizeIx]);
+			Index numChunks=colChunks->size();
+#pragma omp for schedule (static,1)
+			for (Index colChunk=0;colChunk<numChunks;++colChunk) {
+				const BlockList *blocks=&((*colChunks)[colChunk]);
+				Index numBlocks=blocks->size();
+				for (Index block=0;block<numBlocks;++block) {
+                                        const DataBlock *dataBlock=&((*blocks)[block]);
+					for (Index k=0;k<dataBlock->elts_.size();++k) {
+                                                const Index row=dataBlock->getRow(k);
+                                                const Index col=dataBlock->getCol(k);
+                                                yTemp[col].mulacc(dataBlock->elts_[k],x[row]);
+					}
+				}
+			}
+			//implicit barrier
+		}
+#pragma omp for schedule (static,1024)
+		for (Index i = 0; i < y.size(); ++i) {
+			yTemp[i].get(y[i]);
+			yTemp[i].~FieldAXPY<Field_>();
+		}
 	}
-	return y;
+
+	delete[] yTempSpace;
+        return y;
 }
 
 template<class Field_>

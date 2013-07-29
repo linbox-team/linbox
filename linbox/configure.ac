@@ -86,6 +86,17 @@ DEBUG_CFLAGS="-g"
 DEFAULT_CFLAGS="-Wno-vla"
 WARN_CFLAGS="-Wall"
 
+AC_ARG_WITH(
+	[openmp],
+	[AS_HELP_STRING([--with-openmp],[Turn on OpenMP based parallel code])],
+	[with_openmp=yes],
+	[with_openmp=no])
+
+if test "$with_openmp" == "yes"
+then
+	CXXFLAGS="-fopenmp -D__FFLAS_USE_OMP ${CXXFLAGS}"
+fi
+
 #TODO use -fast for icc, -ipa for eko...
 if test "x$DBG" = "xyes" ; then
 	DEFAULT_CFLAGS="-O0 ${DEFAULT_CFLAGS} " #those are CXXFLAGS
