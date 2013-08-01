@@ -86,23 +86,13 @@ DEBUG_CFLAGS="-g"
 DEFAULT_CFLAGS="-Wno-vla"
 WARN_CFLAGS="-Wall"
 
-AC_ARG_WITH(
-	[openmp],
-	[AS_HELP_STRING([--with-openmp],[Turn on OpenMP based parallel code])],
-	[with_openmp=yes],
-	[with_openmp=no])
-
-if test "$with_openmp" == "yes"
-then
-	CXXFLAGS="-fopenmp -D__FFLAS_USE_OMP ${CXXFLAGS}"
-fi
 
 #TODO use -fast for icc, -ipa for eko...
 if test "x$DBG" = "xyes" ; then
-	DEFAULT_CFLAGS="-O0 ${DEFAULT_CFLAGS} " #those are CXXFLAGS
+	DEFAULT_CFLAGS="-O0 ${DEFAULT_CFLAGS}" #those are CXXFLAGS
 	DEBUG_CFLAGS="${DEBUG_CFLAGS} -DDEBUG -D_LB_DEBUG"
 else
-	DEFAULT_CFLAGS="-O2 ${DEFAULT_CFLAGS} "
+	DEFAULT_CFLAGS="-O2 ${DEFAULT_CFLAGS}"
 	DEBUG_CFLAGS="${DEBUG_CFLAGS} -DNDEBUG -U_LB_DEBUG"
 fi
 
@@ -114,7 +104,7 @@ if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 	case x${CCNAM} in
 		xicc)
 		WARN_CFLAGS="${WARN_CFLAGS} -Wcheck"
-		WARN_CFLAGS="${WARN_CFLAGS} -Wall -Wno-unused-parameter -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith  -Wwrite-strings -Wno-long-long"
+		WARN_CFLAGS="${WARN_CFLAGS} -Wall -Wno-unused-parameter -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wwrite-strings -Wno-long-long"
 		WARN_CFLAGS="${WARN_CFLAGS} -Wextra -ansi"
 			;;
 		xeko)
@@ -149,7 +139,7 @@ if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 		xclang31)
 			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
 			if test "x${WARN}" = "xfull" ; then
-				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long -fsanitize=address  -g"
+				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long -fsanitize=address -g"
 			fi
 			;;
 
@@ -177,7 +167,11 @@ LT_INIT
 
 
 echo "-----------------------------------------------"
+echo "        START  LINBOX CONFIG                   "
+echo "-----------------------------------------------"
 
+
+LB_OMP
 
 # Machine characteristics
 
@@ -324,7 +318,7 @@ echo ''
 echo '*******************************************************************************'
 echo ' ERROR: Fflas-Ffpack not found!'
 echo
-echo ' Fflas-Ffpack routines  are required for this library to compile. Please'
+echo ' Fflas-Ffpack routines are required for this library to compile. Please'
 echo ' make sure they are installed and specify its location with the option'
 echo ' --with-fflas-ffpack=<lib> when running configure.'
 echo '*******************************************************************************'
@@ -346,12 +340,12 @@ LB_DOC
 LB_CHECK_OCL
 
 
-if test ! -d ./benchmarks/data  ; then
+if test ! -d ./benchmarks/data ; then
 	echo "Creating data dir in benchmark" ;
-	mkdir ./benchmarks/data  ;
+	mkdir ./benchmarks/data ;
 fi
 
-# this is bogus so far as I can tell.  -bds
+# this is bogus so far as I can tell. -bds
 #CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
 #AC_SUBST(CXXFLAGS)
 
@@ -359,6 +353,19 @@ CXXFLAGS="${GMP_CFLAGS} ${CXXFLAGS} ${STDFLAG}"
 
 AC_SUBST(CXXFLAGS)
 
+echo "-----------------------------------------------"
+
+MYLIBS="${GIVARO_LIBS} ${BLAS_LIBS} ${NTL_LIBS} ${GMP_LIBS} ${LIDIA_LIBS} ${MPFR_LIBS} ${FPLLL_LIBS} ${IML_LIBS} ${FLINT_LIBS} ${LDFLAGS} ${OCL_LIBS}"
+MYFLAGS="${CBLAS_FLAG} ${FFLAS_FFPACK_CFLAGS} ${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${LIDIA_CFLAGS} ${IML_CFLAGS} ${FLINT_CFLAGS} ${OPT_FLAGS} ${AM_CPPFLAGS}"
+
+echo "CXXFLAGS       = ${CXXFLAGS}"
+echo "LIBS           = ${MYLIBS}"
+echo "FLAGS          = ${MYFLAGS}"
+echo "DEFAULT CFLAGS = ${DEFAULT_CFLAGS}"
+echo "TESTS CFLAGS   = ${TESTS_CFLAGS}"
+
+echo "-----------------------------------------------"
+echo "         END   LINBOX CONFIG                   "
 echo "-----------------------------------------------"
 
 AC_CONFIG_FILES([
