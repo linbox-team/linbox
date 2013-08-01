@@ -74,18 +74,19 @@ AC_DEFUN([LB_CHECK_OCL],[
 		fi
 	done
 
-	if test "x$ocl_found" = "xyes"; then
+	AS_IF([ test "x$ocl_found" = "xyes" ],
+	[
 		AC_SUBST(OCL_CFLAGS)
 		AC_SUBST(OCL_LIBS)
 		AC_DEFINE(HAVE_OCL,1,[Define if OpenCL is installed])
 		HAVE_OCL=yes
 
 		AC_MSG_RESULT(found)
-	else
+	],[
 		unset OCL_CFLAGS
 		unset OCL_LIBS
 		AC_MSG_RESULT(not found)
-	fi
+	])
 
 	AM_CONDITIONAL(LINBOX_HAVE_OCL, test "x$HAVE_OCL" = "xyes")
 
