@@ -41,6 +41,7 @@ using std::ostream;
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/field/hom.h"
 #include "linbox/util/matrix-stream.h"
+#include "linbox/matrix/abnormal-matrix.h"
 
 #include <vector>
 
@@ -185,7 +186,6 @@ istream& TriplesBBOMP<Field_>::read(istream& in){
 
 template<class Field_>
 ostream& TriplesBBOMP<Field_>::write(ostream& out){
-	Index r, c;
 	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
 	out << "% written from a LinBox TriplesBBOMP" << std::endl;
 	out << rowdim() <<" " << coldim() << " " << size() << std::endl;
@@ -232,11 +232,14 @@ template<class Field_>
 template<class Mat1, class Mat2> Mat1& TriplesBBOMP<Field_>::
 applyLeft(Mat1 &Y, const Mat2 &X) const
 {
-        Y.zero();
+        typedef AbnormalMatrix<Field_,true,64> AbnormalMat;
+        typedef typename AbnormalMat::AbnormalSubmatrix AbnormalSubmat;
+        AbnormalMat YTemp(field(),Y.rowdim(),Y.coldim());
 
 #pragma omp parallel
 	{
-                Matrix Yc,Xc;
+                Matrix Xc;
+
 		Index numBlockSizes=rowBlocks_.size();
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *rowChunks=&(rowBlocks_[chunkSizeIx]);
@@ -250,14 +253,15 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
 					for (Index k=0;k<dataBlock->elts_.size();++k) {
                                                 const Index row=dataBlock->getRow(k);
                                                 const Index col=dataBlock->getCol(k);
-                                                Yc.submatrix(Y,row,0,1,Y.coldim());
+                                                AbnormalSubmat Yc=YTemp.rowSlice(row);
                                                 Xc.submatrix(X,col,0,1,X.coldim());
-                                                MD_.saxpyin(Yc,dataBlock->elts_[k],Xc);
+                                                Yc.saxpyin(dataBlock->elts_[k],Xc);
                                         }
                                 }
                         }
                 }
         }
+        YTemp.wholeSlice().normalize(Y);
         return Y;
 }
 

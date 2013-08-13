@@ -93,6 +93,10 @@ public:
 
 	Index nnz() const;
 
+        Index rowdim() const;
+
+        Index coldim() const;
+
 	void print(std::ostream& out) const;
 
 	void write(std::ostream& out) const;

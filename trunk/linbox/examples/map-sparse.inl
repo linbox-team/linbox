@@ -273,6 +273,19 @@ void MapSparse<Field_>::write(std::ostream& out) const
                         field().write(out << 1+p->first << " " << 1+rp->first << " ", rp->second) << std::endl;
 }
 
+template<class Field_>
+typename MapSparse<Field_>::Index MapSparse<Field_>::rowdim() const
+{
+        return numRows_;
+}
+
+
+template<class Field_>
+typename MapSparse<Field_>::Index MapSparse<Field_>::coldim() const
+{
+        return numCols_;
+}
+
 }
 
 #endif // __LINBOX_MAP_SPARSE_INL
