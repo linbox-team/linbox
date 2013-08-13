@@ -336,6 +336,11 @@ class TriplesBBOMP : public BlackboxInterface {
 		}
 	};
 
+        //For debugging:
+        typename std::vector<std::vector<std::vector<TriplesDataBlock<Element> > > >& getRowBlocks() {
+                return rowBlocks_;
+        }
+
 protected:
 
 	const static Index MAX_BLOCK_NNZ=1024;
