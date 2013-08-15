@@ -1,4 +1,3 @@
-
 /* tests/test-block-wiedemann.C
  * evolved by -bds from test-solve.C
  *
@@ -48,26 +47,49 @@
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/block-wiedemann.h"
 #include "linbox/algorithms/coppersmith.h"
-#include "linbox/blackbox/sparse.h"
-//#include "linbox/blackbox/diagonal.h"
-//#include "linbox/blackbox/scalar-matrix.h"
+//#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/triplesbb.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/vector/stream.h"
 
 #include "test-common.h"
 
 using namespace LinBox;
 
-/* Solution of diagonal system
+/* Tests nonsingular solving for a random right-hand side.
  *
- * Constructs a random nonsingular diagonal matrix D and a random right-hand
- * side b, and computes the solution to the Dx=b, checking the result
+ * Solver - a block Wiedemann solver (see coppersmith.h or block-wiedemann.h).
+ * Blackbox - nonsingular matrix (rhs will be a random vector.
  *
- * F - Field over which to perform computations
- * stream1 - Vector stream for diagonal entries
- * stream2 - Vector stream for right-hand sides
- *
- * Return true on success and false on failure
+ * Checks the result, returning true on success and false on failure
  */
+template <class Solver, class Blackbox>
+bool testBlockSolver(Solver & S, Blackbox & M, string desc){
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
+	typedef typename Blackbox::Field Field;
+	typedef BlasVector<Field> Vector;
+	bool pass = true;
+	size_t n = M.coldim();
+	Vector b(M.field(),n), x(M.field(),n), y(M.field(),n);
+	RandomDenseStream<Field> s (M.field(), n, 1);
+	s.next (b);
+	VectorDomain<Field> VD (M.field());
+	VD.write (report << "Right-hand side: b =  ", b) << endl;
+ 
+	S.solveNonSingular(x, M, b);
+
+	VD.write (report << desc << " solution:  ", x) << endl;
+	M.apply (y, x);
+	VD.write ( report << "Output:           ", y) << endl;
+
+	if (!VD.areEqual (y, b)) {
+		pass = false;
+		report << "ERROR: " << desc << " solution is incorrect" << endl;
+	}
+	return pass;
+}
 
 int main (int argc, char **argv)
 {
@@ -86,65 +108,29 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
+	parseArguments (argc, argv, args);
+
 	//typedef Modular<double> Field;
 	typedef Modular<uint32_t> Field;
-	typedef MatrixDomain<Field> MyDomain;
 	typedef BlasVector<Field> Vector;
 
-	parseArguments (argc, argv, args);
 	Field F ( (uint32_t) q);
-	MyDomain MD(F);
-	VectorDomain<Field> VD (F);
+	MatrixDomain<Field> MD(F);
 
 	commentator().start("block wiedemann test suite", "block-wiedemann");
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	RandomDenseStream<Field> stream1 (F, n, 3);// stream2 (F, n, 1);
-	Vector d(F,n), b(F,n), x(F,n), y(F,n);
-	stream1.next (d);
-	stream1.next (b);
-	d[n-1] = F.zero;
-	b[n-1] = F.zero;
+	RandomDenseStream<Field> s(F, n, 2);
+	Vector d(F,n);
+	s.next (d);
+	//d[n-1] = F.zero;
+	//b[n-1] = F.zero;
 
-	VD.write (report << "Right-hand side: b =  ", b) << endl;
+// RCS is Yuhasz' Matrix Berlekamp Massey method.
+	CoppersmithSolver< MatrixDomain<Field> > RCS(MD,blocking);
 
-// sparse
-	typedef SparseMatrix <Field> Blackbox;
-	Blackbox D (F, n, n);
-	for (size_t i = 0; i < n; ++i) D.setEntry(i, i, d[i]);
-	stream1.next (d);
-	//for (size_t i = 0; i < n-1; ++i) D.setEntry(i, i+1, d[i]);
-	//D.setEntry(0, n-1, d[n-1]);
-	//... setup entries
-
-// diagonal
-	//typedef Diagonal <Field> Blackbox;
-	//Blackbox D (F, d);
-	//VD.write (report << "Diagonal entries: ", d) << endl;
-
-// scalar
-	//typedef ScalarMatrix<Field> Blackbox;
-	//Blackbox D (F, n, F.one);
-	//report << "Scalar matrix: D = " << F.one << endl;
+// LBWS is Giorgi's block method, SigmaBasis based.
 
 #if 1
-	// Yuhasz' Matrix Berlekamp Massey being used
-	CoppersmithSolver<MyDomain> RCS(MD,blocking);
-	RCS.solveNonSingular(x, D, b);
-
-	VD.write (report << "Matrix Berlekamp Massey solution:  ", x) << endl;
-	D.apply (y, x);
-	VD.write ( report << "Output:           ", y) << endl;
-
-	if (!VD.areEqual (y, b)) {
-		pass = false;
-		report << "ERROR: Right generator based solution is incorrect" << endl;
-	}
-#endif
-
-#if 0
-	// Giorgi's block method, SigmaBasis based, being used
-
 #ifdef __LINBOX_HAVE_OCL
 // using this as a test of the opencl matrix domain
 	typedef OpenCLMatrixDomain<Field> Context;
@@ -152,23 +138,32 @@ int main (int argc, char **argv)
 #else
 	typedef BlasMatrixDomain<Field> Context;
 #endif
-	Context MD(F);
-	Vector z(F,n);
-	BlockWiedemannSolver<Context> LBWS(MD);
-	report << "calling solver" << endl;
-	LBWS.solveNonSingular(z, D, b);
-
-	VD.write (report << "SigmaBasis solution: D^{_1}b = ", z) << endl;
-	D.apply (y, z);
-	VD.write ( report << "Output: D D^{-1}b = ", y) << endl;
-
-	if (!VD.areEqual (y, b)) {
-		pass = false;
-		report << "ERROR: Left generator based solution is incorrect" << endl;
-	}
-
+	Context BMD(F);
+	BlockWiedemannSolver<Context> LBWS(BMD);
 #endif
 
+// sparse
+	//SparseMatrix <Field> S (F, n, n);
+	TriplesBB <Field> S (F, n, n);
+	for (size_t i = 0; i < n; ++i) S.setEntry(i, i, d[i]);
+	s.next (d);
+	for (size_t i = 0; i < n-1; ++i) S.setEntry(i, i+1, d[i]);
+	S.setEntry(0, n-1, d[n-1]);
+	S.finalize();
+	pass = pass and testBlockSolver(RCS, S, "TriplesBB, Matrix Berlekamp Massey");
+	pass = pass and testBlockSolver(LBWS, S, "TriplesBB, Sigma Basis");
+
+// diagonal
+	Diagonal <Field> D (d);
+	pass = pass and testBlockSolver(RCS, D, "Diagonal, Matrix Berlekamp Massey");
+	pass = pass and testBlockSolver(LBWS, D, "Diagonal, Sigma Basis");
+
+#if 0
+// scalar (identity)
+	ScalarMatrix<Field> SC (F, n, F.one);
+	pass = pass and testBlockSolver(RCS, SC, "ScalarMatrix(I), Matrix Berlekamp Massey");
+	pass = pass and testBlockSolver(LBWS, SC, "ScalarMatrix(I), Sigma Basis");
+#endif
 	commentator().stop("block wiedemann test suite");
     //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
 

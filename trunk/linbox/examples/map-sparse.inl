@@ -68,6 +68,12 @@ template<class Field_>
 MapSparse<Field_>::~MapSparse() {}
 
 template<class Field_>
+typename MapSparse<Field_>::Index MapSparse<Field_>::rowdim() const { return numRows_; }
+
+template<class Field_>
+typename MapSparse<Field_>::Index MapSparse<Field_>::coldim() const { return numCols_; }
+
+template<class Field_>
 const Field_& MapSparse<Field_>::field() const
 {
 	return MD_.field();
@@ -247,6 +253,53 @@ typename MapSparse<Field_>::Index MapSparse<Field_>::nnz() const
 	return nnz_;
 }
 
+// A -> A' = SAS^{-1}, and A' has about nnz nonzero entries.
+template<class Field_>
+void MapSparse<Field_>::randomSim(Index nz, int seed)
+{	typename Field::Element a;
+	Index i,j;
+	MersenneTwister ri;
+	typename Field::RandIter r(field());
+	//if (seed != 0) { ri.setSeed(seed); r.setSeed(seed); }
+	if (seed != 0) 
+	{	ri.setSeed(seed); 
+		// ridiculous constructor only seeding!
+		typename Field::RandIter s(field(), seed);
+		r = s;
+	}
+	while (nnz() < nz) 
+	{	r.nonzerorandom(a); 
+		i = ri.randomIntRange(0, rowdim()); j = ri.randomIntRange(0, coldim());
+		addCol(a, i, j);
+		//std::cout << nnz() << std::endl;
+		field().negin(a);
+		addRow(a, i, j);
+	}
+}
+
+// A -> A' = UAV, with U and V nonsingular, and A' has about nnz nonzero entries.
+template<class Field_>
+void MapSparse<Field_>::randomEquiv(Index nz, int seed)
+{	typename Field::Element a;
+	Index i,j;
+	MersenneTwister ri;
+	typename Field::RandIter r(field());
+	if (seed != 0) 
+	{	ri.setSeed(seed); 
+		// ridiculous seeding!
+		typename Field::RandIter s(field(), seed);
+		r = s; 
+	}
+	bool flip = true;
+	while (nnz() < nz) 
+	{	r.nonzerorandom(a); 
+		i = ri.randomIntRange(0, rowdim()); j = ri.randomIntRange(0, coldim());
+		if (flip) addCol(a, i, j);
+		else addRow(a, i, j);
+		flip = not flip;
+	}
+}
+
 template<class Field_>
 void MapSparse<Field_>::print(std::ostream& out) const
 {
@@ -279,14 +332,13 @@ typename MapSparse<Field_>::Index MapSparse<Field_>::rowdim() const
         return numRows_;
 }
 
-
 template<class Field_>
 typename MapSparse<Field_>::Index MapSparse<Field_>::coldim() const
 {
         return numCols_;
 }
 
-}
+} // linbox
 
 #endif // __LINBOX_MAP_SPARSE_INL
 

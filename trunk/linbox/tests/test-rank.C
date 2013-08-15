@@ -71,9 +71,9 @@ using namespace LinBox;
 template <class Field>
 bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
-	typedef SparseMatrix<Field,typename Vector<Field>::SparseSeq> Blackbox;
-	// typedef SparseMatrix2<Field,SparseMatrix2Format::COO> Blackbox;
-	// typedef SparseMatrix2<Field,SparseMatrix2Format::CSR> Blackbox;
+	 typedef SparseMatrix<Field,typename Vector<Field>::SparseSeq> Blackbox;
+	//typedef SparseMatrix2<Field,SparseMatrix2Format::COO> Blackbox;
+	// typedef SparseMatrix2<Field,SparseMatrix2Format::CSR> Blackbox; // inf loop
 	// typedef SparseMatrix2<Field,SparseMatrix2Format::ELL> Blackbox;
 	// typedef SparseMatrix2<Field,SparseMatrix2Format::ELL_R> Blackbox;
 	// typedef SparseMatrix2<Field,SparseMatrix2Format::HYB> Blackbox;

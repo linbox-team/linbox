@@ -49,7 +49,7 @@ template<class Field_>
 class MapSparse {
 public:
 
-	typedef Field_ Field;
+	typedef typename Field_ Field;
 	typedef typename Field::Element Element;
 	typedef size_t Index;
 	typedef std::map<Index,Element> VectorType;
@@ -68,6 +68,10 @@ public:
 	MapSparse& operator=(const MapSparse& M);
 
 	~MapSparse();
+
+	Index rowdim() const;
+
+	Index coldim() const;
 
 	const Field& field() const;
 
@@ -93,6 +97,12 @@ public:
 
 	Index nnz() const;
 
+	// A -> A' = SAS^{-1}, and A' has about nnz nonzero entries.
+	void randomSim(Index nnz, int seed = 0);
+
+	// A -> A' = UAV, with U and V nonsingular, and A' has about nnz nonzero entries.
+	void randomEquiv(Index nnz, int seed = 0);
+
         Index rowdim() const;
 
         Index coldim() const;
@@ -100,6 +110,10 @@ public:
 	void print(std::ostream& out) const;
 
 	void write(std::ostream& out) const;
+
+	template <class SparseMat> void convert (SparseMat & S);
+
+	template <class SparseMat> MapSparse(const SparseMat & S);
 
 protected:
 

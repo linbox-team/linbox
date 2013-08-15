@@ -42,7 +42,7 @@ namespace LinBox
 {
 
 template<class Field_> TriplesBB<Field_>::
-TriplesBB() : data_(), rows_(0), cols_(0), sort_(unsorted) {}
+TriplesBB() : MD_(), data_(), rows_(0), cols_(0), sort_(unsorted) {}
 
 template<class Field_> TriplesBB<Field_>::
 ~TriplesBB() {}

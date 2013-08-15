@@ -131,8 +131,11 @@ testTranspose (const Field                      &F,
 			<< "ERROR: Values are not equal" << endl;
 		}
 
-		LinBox::commentator().stop ("testTranspose iteration done");
-		LinBox::commentator().progress ();
+		if (ret) 
+			LinBox::commentator().stop ("testTranspose pass");
+		else
+			LinBox::commentator().stop ("testTranspose FAIL");
+		//LinBox::commentator().progress ();
 	}
 
 	return ret;
@@ -219,9 +222,11 @@ testLinearity (//const Field                             &F,
 		if (!iter_passed)
 			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Vectors are not equal" << endl;
-
-		LinBox::commentator().stop ("testLinearity iteration done");
-		LinBox::commentator().progress ();
+		if (iter_passed) 
+			LinBox::commentator().stop ("testLinearity pass");
+		else
+			LinBox::commentator().stop ("testLinearity FAIL");
+		//LinBox::commentator().progress ();
 	}
 
 	return ret;
@@ -269,6 +274,25 @@ testReadWrite(BB &A)
 	if (pass) report << "PASS: successful write/read" << std::endl;
 	return pass;
 }
+
+template <class BB, class Vector>
+static bool
+LooksLikeZero(BB &A, LinBox::VectorStream<Vector> &stream)
+{	typedef typename BB::Field Field;
+	LinBox::VectorDomain<Field> VD(A.field());
+	LinBox::BlasVector<Field> x(A.field(), A.coldim()), 
+				  y(A.field(), A.rowdim());
+	while (stream)
+	{	stream.next(x);
+		A.apply(y, x);
+		if (not VD.isZero(y)) return false;
+	}
+	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "BB looks like zero:" << std::endl;
+	VD.write(report << "x: ", x) << std::endl;
+	VD.write(report << "Ax: ", y) << std::endl;
+	return true;
+} 
 /** Generic blackbox test 3: combination of tests
  *
  * If large, time apply and applyTranspose.
@@ -277,7 +301,7 @@ testReadWrite(BB &A)
 
 template <class BB>
 static bool
-testBlackboxNoRW(BB &A)
+testBlackboxNoRW(BB &A, bool zeroCheck=true)
 {
 	typedef typename BB::Field Field;
 	typedef LinBox::BlasVector<Field> DenseVector;
@@ -324,6 +348,12 @@ testBlackboxNoRW(BB &A)
 	LinBox::RandomDenseStream<Field, DenseVector> stream3 (F, r, A.rowdim(), iterations);
 	LinBox::RandomDenseStream<Field, DenseVector> stream4 (F, r, A.coldim(), iterations);
 	ret = ret && testTranspose (F, A, stream3, stream4);
+
+	DenseVector x(F,A.coldim()), y(F,A.rowdim());
+	if (zeroCheck) { 
+		LinBox::RandomDenseStream<Field, DenseVector> stream5 (F, r, A.coldim(), 10);
+		ret = ret & not LooksLikeZero(A, stream5);
+	}
 
 	return ret;
 }
