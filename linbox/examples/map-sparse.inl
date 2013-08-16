@@ -32,22 +32,56 @@
 
 #include <stdlib.h>
 #include <fstream>
+#include <sstream>
+#include "linbox/util/matrix-stream.h"
 
 namespace LinBox
 {
 
 template<class Field_>
-MapSparse<Field_>::MapSparse() : numRows_(0), numCols_(0), nnz_(0) {}
+MapSparse<Field_>::MapSparse() : numCols_(0), numRows_(0), nnz_(0) {}
 
 template<class Field_>
 MapSparse<Field_>::MapSparse(const Field& F, Index r, Index c):
 	MD_(F), numCols_(c), numRows_(r), nnz_(0) {F.init(zero_,0);}
 
 template<class Field_>
+void MapSparse<Field_>::init(const Field& F, Index r, Index c) {
+        MD_=F;
+        F.init(zero_,0);
+        shape(r,c);
+}
+
+template<class Field_>
+void MapSparse<Field_>::shape(Index r, Index c) {
+        rowMap_.clear();
+        colMap_.clear();
+        numRows_=r;
+        numCols_=c;
+        nnz_=0;
+}
+
+template<class Field_>
+template<class Vector>
+void MapSparse<Field_>::fromVector(const Vector& vec, Index r, Index c) {
+        shape(r,c);
+        if (numCols_==1) {
+                for (Index i=0;i<numRows_;++i) {
+                        setEntry(i,0,vec[i]);
+                }
+        } else {
+                for (Index j=0;j<numCols_;++j) {
+                        setEntry(0,j,vec[j]);
+                }
+        }
+}
+
+template<class Field_>
 MapSparse<Field_>::MapSparse(const MapSparse& M):
-	numRows_(M.numRows_), numCols_(M.numCols_),
+        MD_(M.field()),
 	rowMap_(M.rowMap_), colMap_(M.colMap_),
-	MD_(M.field()), nnz_(M.nnz_), zero_(M.zero_) {}
+        numCols_(M.numCols_), numRows_(M.numRows_),
+        nnz_(M.nnz_), zero_(M.zero_) {}
 
 template<class Field_>
 MapSparse<Field_>& MapSparse<Field_>::operator=(const MapSparse<Field_>& rhs)
@@ -66,12 +100,6 @@ MapSparse<Field_>& MapSparse<Field_>::operator=(const MapSparse<Field_>& rhs)
 
 template<class Field_>
 MapSparse<Field_>::~MapSparse() {}
-
-template<class Field_>
-typename MapSparse<Field_>::Index MapSparse<Field_>::rowdim() const { return numRows_; }
-
-template<class Field_>
-typename MapSparse<Field_>::Index MapSparse<Field_>::coldim() const { return numCols_; }
 
 template<class Field_>
 const Field_& MapSparse<Field_>::field() const
@@ -301,7 +329,7 @@ void MapSparse<Field_>::randomEquiv(Index nz, int seed)
 }
 
 template<class Field_>
-void MapSparse<Field_>::print(std::ostream& out) const
+std::ostream& MapSparse<Field_>::print(std::ostream& out) const
 {
 	for (Index i=0;i<numRows_;++i) {
 		for (Index j=0;j<numCols_;++j) {
@@ -312,10 +340,11 @@ void MapSparse<Field_>::print(std::ostream& out) const
 		}
 		out << std::endl;
 	}
+        return out;
 }
 
 template<class Field_>
-void MapSparse<Field_>::write(std::ostream& out) const
+std::ostream& MapSparse<Field_>::write(std::ostream& out) const
 {
 	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
 	out << "% written from a LinBox MapSparse" << std::endl;
@@ -324,6 +353,20 @@ void MapSparse<Field_>::write(std::ostream& out) const
         for (MapConstIt p = rowMap_.begin(); p != rowMap_.end(); ++p)
                 for (VectorConstIt rp = p->second.begin(); rp != p->second.end(); ++rp)
                         field().write(out << 1+p->first << " " << 1+rp->first << " ", rp->second) << std::endl;
+        out << std::endl;
+        return out;
+}
+
+template<class Field_>
+std::istream& MapSparse<Field_>::read(std::istream& in) {
+        Index r,c;
+        Element d;
+        field().init(d);
+        MatrixStream<Field> ms(field(),in);
+        ms.getDimensions(r,c);
+        shape(r,c);
+        while (ms.nextTriple(r,c,d)) setEntry(r,c,d);
+        return in;
 }
 
 template<class Field_>
@@ -338,7 +381,79 @@ typename MapSparse<Field_>::Index MapSparse<Field_>::coldim() const
         return numCols_;
 }
 
-} // linbox
+template<class Field_>
+void MapSparse<Field_>::transpose()
+{
+        rowMap_.swap(colMap_);
+        int temp=numCols_;numCols_=numRows_;numRows_=temp;
+}
+
+template<class Field_>
+template<class Matrix>
+void MapSparse<Field_>::copy(Matrix& mat) const
+{
+        std::stringstream ss;
+        write(ss);
+        mat.read(ss);
+        mat.finalize();
+}
+
+template<class Field_>
+template<class Matrix>
+void MapSparse<Field_>::copyFrom(Matrix& mat)
+{
+        std::stringstream ss;
+        mat.write(ss);
+        read(ss);
+}
+
+template<class Field_>
+template<class Vector>
+void MapSparse<Field_>::toVector(Vector& vec) const
+{
+        if (numCols_ == 1) {
+                for (Index i=0;i<numRows_;++i) {
+                        vec[i]=getEntry(i,0);
+                }
+        } else {
+                for (Index j=0;j<numCols_;++j) {
+                        vec[j]=getEntry(0,j);
+                }
+        }
+}
+
+template<class Field_>
+void MapSparse<Field_>::scaleMat(const Element& k)
+{
+        for (size_t i=0;i<numRows_;++i) {
+                timesRow(k,i);
+        }
+}
+
+template<class Field_>
+bool MapSparse<Field_>::areEqual(MapSparse<Field_> rhs) const
+{
+        if (rhs.numCols_ != numCols_) {
+                return false;
+        }
+        if (rhs.numRows_ != numRows_) {
+                return false;
+        }
+        if (nnz_ != rhs.nnz_) {
+                return false;
+        }
+
+        for (MapConstIt rowIt=rowMap_.begin();rowIt!=rowMap_.end();++rowIt) {
+                for (VectorConstIt eltIt=rowIt->second.begin();eltIt!=rowIt->second.end();++eltIt) {
+                        if (eltIt->second != rhs.getEntry(rowIt->first,eltIt->first)) {
+                                return false;
+                        }
+                }
+        }
+        return true;
+}
+
+}
 
 #endif // __LINBOX_MAP_SPARSE_INL
 
