@@ -68,8 +68,8 @@ namespace LinBox
 		class FactorMult {
 		public:
 			FactorMult() :
-				multiplicity(0),dep(NULL)
-				,fieldP(NULL),intP(NULL)
+				fieldP(NULL),intP(NULL)
+				,multiplicity(0),dep(NULL)
 			{}
 			FactorMult( FieldPoly* FP, IntPoly* IP, unsigned long m, FactorMult<FieldPoly,IntPoly>*d) :
 				fieldP(FP), intP(IP), multiplicity(m), dep(d)

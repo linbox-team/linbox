@@ -598,8 +598,8 @@ namespace LinBox
 		IMLTraits ( const IMLNonSing & imlroutine, // routine 1
 			    bool withRNS = false) :
 			_computeRNS(withRNS),
+			_reduce(false),_nullcol(10),
 			_imlroutine(1)
-			,_reduce(false),_nullcol(10)
 		{
 			singular(NONSINGULAR);
 		}
@@ -616,10 +616,10 @@ namespace LinBox
 			    bool certify            = DONT_CERTIFY,
 			    bool reduce             = false ,
 			    unsigned int nullcolred = 10  /* IML default */) :
+			_computeRNS(false),
 			_reduce(reduce),
 			_nullcol(nullcolred),
 			_imlroutine(2)
-			,_computeRNS(false)
 		{
 			certificate(certify);
 		}

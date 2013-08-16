@@ -40,9 +40,10 @@ size_t RowEchelonTransform<FField>::reduce_rec( BlasMatrix<FField> & A, size_t m
 	typedef BlasMatrix<FField> Matrix ;
 			size_t m = A.coldim();
 			size_t n = A.rowdim();
-			size_t i, j, r1, r2, r, ri, mm, inv;
+			size_t i, j, r1, r2, r, ri, mm; //, inv; // inv not used
 			Element a;
-			double t, b;
+			//double t;  // t not used
+			double b;
 			BlasMatrixDomain<FField> BMD(_field);
 
 			if (m1 == m2)

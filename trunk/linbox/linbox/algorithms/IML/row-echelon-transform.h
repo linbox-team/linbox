@@ -546,7 +546,7 @@ size_t
 		typedef typename Field::Element Element;
 		Field F = A.field();
 		size_t i;
-		size_t n = A.rowdim(),m=A.coldim();
+		size_t n = A.rowdim();//,m=A.coldim(); // ...m is not used
 		std::vector<size_t> P(n+1),rp(n+1);
 		Element d=F.one;
 

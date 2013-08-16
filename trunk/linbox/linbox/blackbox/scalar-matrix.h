@@ -73,16 +73,16 @@ namespace LinBox
 		/// Constructs an initially 0 by 0 matrix.
 		//! @bug this should not be allowed (unknown field)
 		ScalarMatrix ()	:
+			field_(NULL),
 			n_(0)
-			,field_(NULL)
 		{}
 
 		/** Constructor of readable scalar matrix.
 		 * @param F	field in which to do arithmetic.
 		 */
 		ScalarMatrix (const Field &F) :
-			n_(0),
-			field_(&F)
+			field_(&F),
+			n_(0)
 		{}
 
 #if 0
@@ -120,9 +120,10 @@ namespace LinBox
 
 		ScalarMatrix(const ScalarMatrix<Field> &Mat) :
 			field_(Mat.field_)
+			, n_(Mat.n_), v_(Mat.v_)
 		{
-			n_ = Mat.n_;
-			v_ = Mat.v_;
+			//n_ = Mat.n_;
+			//v_ = Mat.v_;
 		}
 
 		void setScalar(Element & x)
