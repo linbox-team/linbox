@@ -269,11 +269,14 @@ template<class Field_>
 template<class Mat1, class Mat2> Mat1& TriplesBBOMP<Field_>::
 applyRight(Mat1 &Y, const Mat2 &X) const
 {
-        Y.zero();
+        typedef AbnormalMatrix<Field_,true,64> AbnormalMat;
+        typedef typename AbnormalMat::AbnormalSubmatrix AbnormalSubmat;
+        AbnormalMat YTemp(field(),Y.rowdim(),Y.coldim());
 
 #pragma omp parallel
 	{
-                Matrix Yr,Xr;
+                Matrix Xr;
+
 		Index numBlockSizes=colBlocks_.size();
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *colChunks=&(colBlocks_[chunkSizeIx]);
@@ -287,14 +290,15 @@ applyRight(Mat1 &Y, const Mat2 &X) const
 					for (Index k=0;k<dataBlock->elts_.size();++k) {
                                                 const Index row=dataBlock->getRow(k);
                                                 const Index col=dataBlock->getCol(k);
-						Yr.submatrix(Y,0,col,Y.rowdim(),1);
+                                                AbnormalSubmat Yr=YTemp.colSlice(col);
 						Xr.submatrix(X,0,row,X.rowdim(),1);
-                                                MD_.saxpyin(Yr,dataBlock->elts_[k],Xr);
+                                                Yr.saxpyin(dataBlock->elts_[k],Xr);
                                         }
                                 }
                         }
                 }
         }
+        YTemp.wholeSlice().normalize(Y);
         return Y;
 }
 

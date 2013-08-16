@@ -74,7 +74,7 @@ void AbnormalMatrix<Field,ROW_MAJOR,ALIGNMENT>::setEntry(Index i, Index j, const
 }
 
 template <class Field, bool ROW_MAJOR,size_t ALIGNMENT>
-typename AbnormalMatrix<Field,ROW_MAJOR,ALIGNMENT>::Element&
+typename AbnormalMatrix<Field,ROW_MAJOR,ALIGNMENT>::Abnormal&
 AbnormalMatrix<Field,ROW_MAJOR,ALIGNMENT>::refEntry(Index i, Index j)
 {
 	if (ROW_MAJOR) {

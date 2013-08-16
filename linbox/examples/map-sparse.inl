@@ -33,6 +33,8 @@
 #include <stdlib.h>
 #include <fstream>
 #include <sstream>
+#include <set>
+#include <utility>
 #include "linbox/util/matrix-stream.h"
 
 namespace LinBox
@@ -451,6 +453,72 @@ bool MapSparse<Field_>::areEqual(MapSparse<Field_> rhs) const
                 }
         }
         return true;
+}
+
+template<class Field>
+void MapSparse<Field>::generateDenseRandMat(MapSparse<Field>& mat, int q)
+{
+        typedef typename Field::Element Element;
+
+        size_t m=mat.rowdim(),n=mat.coldim();
+	Element d;
+
+        for (size_t i=0;i<m;++i) {
+                for (size_t j=0;j<n;++j) {
+                        mat.field().init(d,randRange(0,q));
+                        mat.setEntry(i,j,d);
+                }
+        }
+}
+
+template<class Field>
+void MapSparse<Field>::generateRandMat(MapSparse<Field>& mat, int nnz, int q)
+{
+        typedef typename Field::Element Element;
+
+        size_t m=mat.rowdim(),n=mat.coldim();
+	Element d;
+
+        typedef std::pair<size_t,size_t> CoordPair;
+        typedef std::set<CoordPair> PairSet;
+        PairSet pairs;
+
+	for(int i = 0; i < (int)nnz; ++i) {
+                size_t row,col;
+                do {
+                        row = randRange(0,m);
+                        col = randRange(0,n);
+                } while (pairs.count(CoordPair(row,col))!=0);
+
+                mat.field().init(d, randRange(1,q));
+                mat.setEntry(row,col,d);
+                pairs.insert(CoordPair(row,col));
+        }
+}
+
+template<class Field>
+void MapSparse<Field>::generateScaledIdent(MapSparse<Field>& mat, int alpha)
+{
+        typedef typename Field::Element Element;
+        size_t m=mat.rowdim(),n=mat.coldim();
+        size_t minDim=(m<n)?m:n;
+	Element d;
+        mat.field().init(d,alpha);
+
+        for (size_t i=0;i<minDim;++i) {
+                mat.setEntry(i,i,d);
+        }
+}
+
+template<class Field>
+int MapSparse<Field>::randRange(int start, int end)
+{
+        double rval = rand();
+        static const double NORMALIZING_CONSTANT = 1.0/(1.0+RAND_MAX);
+        double normedRVal = rval*NORMALIZING_CONSTANT;
+        double rangeSize = end-start;
+        int offset = rangeSize*normedRVal;
+        return start+offset;
 }
 
 }
