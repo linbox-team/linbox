@@ -166,8 +166,8 @@ public:
 
                 Iterator end();
 
-                friend Iterator;
-                friend AbnormalMat;
+                friend class AbnormalSubmatrixIterator<Field,ROW_MAJOR,ALIGNMENT>;
+                friend class AbnormalMatrix<Field,ROW_MAJOR,ALIGNMENT>;
 
 	protected:
 		AbnormalSubmatrix(AbnormalMat *mat,
@@ -181,7 +181,7 @@ public:
                 Index startRow_, startCol_, endRow_, endCol_;
 	};
 
-        friend Iterator;
+        friend class AbnormalSubmatrixIterator<Field,ROW_MAJOR,ALIGNMENT>;
 
 protected:
         inline Abnormal& refEntry(Index i, Index j);
@@ -204,8 +204,8 @@ public:
         typedef typename AbnormalMat::AbnormalSubmatrix Submat;
         typedef AbnormalSubmatrixIterator<Field,ROW_MAJOR,ALIGNMENT> Iterator;
 
-        friend AbnormalMat;
-        friend Submat;
+        friend class AbnormalMatrix<Field,ROW_MAJOR,ALIGNMENT>;
+        friend class AbnormalMat::AbnormalSubmatrix;
 
         inline AbnormalSubmatrixIterator& operator++() {
                 if (ROW_MAJOR) {
