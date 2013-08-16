@@ -89,7 +89,7 @@ namespace LinBox
 		Vector numer;
 		Element denom;
 		const Domain& _domain;
-		Element zero;
+		//Element zero;
 
 		/**
 		 * constructor from vector of rational numbers
@@ -103,7 +103,7 @@ namespace LinBox
 			bool alreadyReduced = false;
 			typename FVector::iterator i;
 
-			D.init(zero, 0);
+			//D.init(zero, 0);
 			D.init(denom, 1);
 			if (!alreadyReduced)
 				for (i=frac.begin(); i!=frac.end(); ++i)
@@ -125,8 +125,8 @@ namespace LinBox
 
 		/** allocating constructor, returns [0, 0, ... 0]/1 */
 		VectorFraction(const Domain& D, size_t n) :
-			_domain(D)
-			,numer(D,n)
+			numer(D,n)
+			,_domain(D)
 		{
 			typename Vector::iterator j;
 
@@ -136,8 +136,8 @@ namespace LinBox
 
 		/** copy constructor */
 		VectorFraction(const VectorFraction<Domain>& VF) :
-			_domain(VF._domain)
-			,numer(VF._domain)
+			numer(VF._domain)
+			,_domain(VF._domain)
 		{
 			copy(VF);
 		}

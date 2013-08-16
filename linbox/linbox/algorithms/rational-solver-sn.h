@@ -96,9 +96,10 @@ namespace LinBox {
 
 		RationalSolverSN(const Ring& R = Ring(), const NumericSolver& S = NumericSolver(),
 				 bool ea=false) :
-		       	_ring(R), _VDR(R), _field(), _VDF(field()), _numsolver(S), exact_apply(ea)
+		       	_ring(R), _VDR(R), _field(), _VDF(field()), _numsolver(S)
 			// randow default to 0
 			,shift(0),shift_prev(0),shift_max(0),SHIFT_BOUND(0), HIT(0), MISS(0), iterations(0),sstatus(SHIFT_GROW),searchPeak(false),mnorm(0)
+			, exact_apply(ea)
 		{}
 
 		/**

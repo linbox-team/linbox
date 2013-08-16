@@ -813,8 +813,8 @@ namespace LinBox
 		typedef Modular<_Element> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (F)
-		{ _y = 0; }
+			_field(&F), _y(0)
+		{}
 		FieldAXPY (const FieldAXPY<Modular<Element> > &faxpy) :
 			_field (faxpy._field), _y (faxpy._y)
 		{}
@@ -836,7 +836,7 @@ namespace LinBox
 			return _y+=t;
 		}
 
-		inline Element &get (Element &y) { _y %= _field._modulus; y = _y; return y;
+		inline Element &get (Element &y) { _y %= field()._modulus; y = _y; return y;
 		}
 
 		inline FieldAXPY &assign (const Element y)
@@ -846,12 +846,14 @@ namespace LinBox
 		}
 
 		inline void reset() {
-			_field.init(_y, 0);
+			field().init(_y, 0);
 		}
 
-	private:
+		inline Field &field(){ return *_field; }
 
-		Field _field;
+	protected:
+
+		const Field *_field;
 		Element _y;
 	};
 

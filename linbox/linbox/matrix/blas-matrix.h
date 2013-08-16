@@ -100,12 +100,13 @@ namespace LinBox
 		size_t			    _row;
 		size_t			    _col;
 		Rep			    _rep;
-		const Field		    * _field;
-		VectorDomain<Field>    _VD;
-	public://! @bug why public ?
-		bool		     _use_fflas ;
+	public: bool		     _use_fflas ; //! @bug why public ?
+	protected:
 		pointer			    _ptr;
-		MatrixDomain<Field>    _MD;
+	public: const Field		    * _field; //! @bug why public ? 
+		MatrixDomain<Field>    _MD; //! @bug why public ?
+	protected:
+		VectorDomain<Field>    _VD;
 
 
 	private:

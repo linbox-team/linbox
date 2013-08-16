@@ -438,6 +438,9 @@ namespace LinBox
 		case Tag::FileFormat::MagmaCpt:
 			os << "sparse matrix written in MagmaCpt form is not implemented" << std::endl;
 			break;
+
+		default:
+			os << "sparse matrix written in format " << format << " is not implemented" << std::endl;
 		}
 
 		return os;

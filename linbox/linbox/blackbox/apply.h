@@ -330,7 +330,9 @@ namespace LinBox
 
 		BlasMatrixApplyDomain(const Domain& D, const IMatrix &Mat) :
 			_domain(D), _matM(Mat), _MD(D), _m(Mat.rowdim()), _n(Mat.coldim())
-			,use_chunks(false),use_neg(false),chunk_size(0),chunks(NULL),vchunks(NULL),num_chunks(0)
+			,use_chunks(false),use_neg(false),chunk_size(0)
+			,num_chunks(0)
+			,chunks(NULL),vchunks(NULL)
 		{
 			_switcher= Classic;_rns=NULL;
 		}

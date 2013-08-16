@@ -617,12 +617,12 @@ namespace LinBox
 		friend class SparseMatrixReadWriteHelper<Field, Row>;
 
 		const Field & _field;
-		Rep               _matA;
-		size_t            _m;
-		size_t            _n;
 
 		MatrixDomain<Field>       _MD; // Matrix domain for matrix operations
 		TransposeMatrix<SparseMatrix<_Field, _Row> > _AT;
+		Rep               _matA;
+		size_t            _m;
+		size_t            _n;
 
 		// template<class F, class R, class T> friend class SparseMatrix;
 	};
