@@ -171,6 +171,21 @@ void BenchmarkFile::pushBackTest()
 	curTest_.resize(numFields_);
 }
 
+CSDate BenchmarkFile::getDateStamp()
+{
+        time_t rawTime;
+        struct tm *timeInfo;
+	srand ((unsigned)time (&rawTime));
+        timeInfo=localtime(&rawTime);
+        return CSDate(*timeInfo);
+}
+
+std::string BenchmarkFile::getDateFormat()
+{
+        return "%a %m/%d %H/%M/%S %Y";
+}
+
+
 }
 #endif // __LINBOX_BENCHMARKFILE_INL
 

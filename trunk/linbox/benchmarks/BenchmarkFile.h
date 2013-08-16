@@ -58,6 +58,10 @@ public:
 
 	void pushBackTest();
 
+        static CSDate getDateStamp();
+
+        static std::string getDateFormat();
+
 protected:
 	typedef std::vector<CSValue*> TestLine;
 	typedef std::map<std::string,CSValue*> MetadataMap;

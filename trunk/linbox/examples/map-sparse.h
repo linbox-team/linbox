@@ -154,7 +154,15 @@ public:
         template<class Vector>
         void fromVector(const Vector& vec, Index r, Index c);
 
+        static void generateDenseRandMat(MapSparse<Field_>& mat, int q);
+
+        static void generateRandMat(MapSparse<Field>& mat, int nnz, int q);
+
+        static void generateScaledIdent(MapSparse<Field>& mat, int alpha);
+
 protected:
+
+        static int randRange(int start, int end);
 
 	MatrixDomain<Field> MD_;
 

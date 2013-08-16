@@ -32,87 +32,10 @@
 
 #include <stdlib.h>
 #include <fstream>
+#include "linbox/matrix/abnormal-helpers.h"
 
 namespace LinBox
 {
-
-template <class Field>
-class AbnormalHelper {
-public:
-        typedef typename Field::Element Element;
-	typedef typename Field::Element Abnormal;
-
-	AbnormalHelper () {}
-
-	AbnormalHelper(const Field& F) : field_(&F) {}
-
-	void init(const Field& field) { field_=&field; }
-
-	inline Abnormal& mulacc(Abnormal& x, const Element& y, const Element& z) const {
-		field_->mulacc(x,y,z);
-		return x;
-	}
-
-	inline Element normalize(Abnormal& elt) const {
-		Element d;
-		field_->init(d,elt);
-		return d;
-	}
-
-protected:
-	Field* field_;
-};
-
-
-
-
-template <>
-class AbnormalHelper<Modular<double> > {
-public:
-	typedef Modular<double> Field;
-        typedef double Element;
-	typedef double Abnormal;
-
-	AbnormalHelper () {}
-
-	AbnormalHelper(const Field& field) {init(field);}
-
-	void init(const Field& field) {
-		modulus_=field.characteristic();
-		unsigned long long maxDouble = 1ULL<<52;
-		bound_=(double)maxDouble;
-		field_=&field;
-	}
-
-	inline Abnormal& mulacc(Abnormal& x, const Element& y, const Element& z) const
-        {
-		Element d;
-		d=y*z;//at most (2**26-1)**2
-		x=x+d;//at most (2**26-1)**2+(2**52-1)<2**53
-                maybeNormalize(x);
-                return x;
-        }
-
-	inline double normalize(double& elt) const
-	{
-		return elt=fmod(elt,modulus_);
-	}
-
-protected:
-	inline double& maybeNormalize(double& elt) const
-	{
-		if (elt>=bound_) {
-			elt=fmod(elt,modulus_);
-		}
-		return elt;
-	}
-
-	double modulus_;
-
-	double bound_;
-
-	const Field* field_;
-};
 
 template <class T, size_t ALIGNMENT>
 class AlignedMat {
@@ -120,8 +43,7 @@ public:
 	typedef size_t Index;
 
 	AlignedMat() : space_(NULL), elts_(NULL),
-                       rowDim_(0), colDim_(0), stride_(0) {}
-		       
+                       rowDim_(0), colDim_(0), stride_(0), packing_(0) {}
 
 	AlignedMat(const AlignedMat<T,ALIGNMENT>& rhs) {
 		shape(rhs.rowDim_,rhs.colDim_);
@@ -156,10 +78,17 @@ public:
 	}
 
 	void shape(size_t r, size_t c) {
-		stride_=roundUp(r*sizeof(T));
+                packing_=0;
+                while (((c*sizeof(T))<<packing_)<=ALIGNMENT) {
+                        ++packing_;
+                }
+                if (packing_ != 0) {
+                        --packing_;
+                }
+		stride_=roundUp(c*sizeof(T));
 		rowDim_=r;
 		colDim_=c;
-		space_=new uint8_t[stride_*c+ALIGNMENT];
+		space_=new uint8_t[stride_*r+ALIGNMENT];
 		size_t spacePtr=(size_t)space_;
 		elts_=(uint8_t*)(roundUp(spacePtr));
 		for (Index i=0;i<rowDim_;++i) {
@@ -170,7 +99,9 @@ public:
 	}
 
 	inline T* refElt(size_t i, size_t j) {
-		return (T*)(elts_+j*stride_+sizeof(T)*i);
+                int rowBlock=i>>packing_;
+                int rowMod=((1<<packing_)-1)&i;
+                return (T*)(elts_+rowBlock*stride_+colDim_*sizeof(T)*rowMod+sizeof(T)*j);
 	}
 
 protected:
@@ -183,7 +114,7 @@ protected:
 
 	uint8_t *space_;
 	uint8_t *elts_;
-	Index rowDim_, colDim_, stride_;
+	Index rowDim_, colDim_, stride_,packing_;
 };
 
 template <class Field, bool ROW_MAJOR=true,size_t ALIGNMENT=0>
@@ -253,7 +184,7 @@ public:
         friend Iterator;
 
 protected:
-        inline Element& refEntry(Index i, Index j);
+        inline Abnormal& refEntry(Index i, Index j);
 
         AlignedMat<Abnormal,ALIGNMENT> elts_;
 
@@ -275,7 +206,7 @@ public:
 
         friend AbnormalMat;
         friend Submat;
-        
+
         inline AbnormalSubmatrixIterator& operator++() {
                 if (ROW_MAJOR) {
                         ++col_;

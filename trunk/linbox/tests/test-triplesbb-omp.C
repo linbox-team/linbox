@@ -64,62 +64,6 @@ int randRange(int start, int end)
 }
 
 template<class Field>
-void generateDenseRandMat(MapSparse<Field>& mat, int q)
-{
-        typedef typename Field::Element Element;
-
-        size_t m=mat.rowdim(),n=mat.coldim();
-	Element d;
-
-        for (size_t i=0;i<m;++i) {
-                for (size_t j=0;j<n;++j) {
-                        mat.field().init(d,randRange(0,q));
-                        mat.setEntry(i,j,d);
-                }
-        }
-}
-
-template<class Field>
-void generateRandMat(MapSparse<Field>& mat, int nnz, int q)
-{
-        typedef typename Field::Element Element;
-
-        size_t m=mat.rowdim(),n=mat.coldim();
-	Element d;
-
-        typedef pair<size_t,size_t> CoordPair;
-        typedef set<CoordPair> PairSet;
-        PairSet pairs;
-
-	for(int i = 0; i < (int)nnz; ++i) {
-                size_t row,col;
-                do {
-                        row = randRange(0,m);
-                        col = randRange(0,n);
-                } while (pairs.count(CoordPair(row,col))!=0);
-
-                mat.field().init(d, randRange(1,q));
-                mat.setEntry(row,col,d);
-                pairs.insert(CoordPair(row,col));
-        }
-}
-
-template<class Field>
-void generateScaledIdent(MapSparse<Field>& mat, int alpha)
-{
-        typedef typename Field::Element Element;
-        size_t m=mat.rowdim(),n=mat.coldim();
-        size_t minDim=(m<n)?m:n;
-	Element d;
-        mat.field().init(d,alpha);
-
-        for (size_t i=0;i<minDim;++i) {
-                mat.setEntry(i,i,d);
-        }
-}
-
-
-template<class Field>
 void varyMatMatPair(MapSparse<Field>& leftMat, MapSparse<Field>& rightMat, int q)
 {
         typedef typename Field::Element Element;
@@ -265,8 +209,8 @@ bool runIdentTest(int n,
                 YRef.init(F,n,p);
         }
         int alpha=randRange(1,q);
-        generateScaledIdent<Field>(A,alpha);
-        generateDenseRandMat<Field>(X,q);
+        MapSparse<Field>::generateScaledIdent(A,alpha);
+        MapSparse<Field>::generateDenseRandMat(X,q);
         if (isRight) {
                 reshapeAndScale<Field>(YRef,X,p,m,alpha);
         } else {
@@ -325,8 +269,8 @@ bool runRandTest(int n,
                 YTest.init(F,n,p);
                 YRef.init(F,n,p);
         }
-        generateRandMat<Field>(A,nnz,q);
-        generateDenseRandMat<Field>(X,q);
+        MapSparse<Field>::generateRandMat(A,nnz,q);
+        MapSparse<Field>::generateDenseRandMat(X,q);
 
         computeAnswer<Field,SeqBlackbox>(A,X,YRef,F,isRight,useVector);
 
