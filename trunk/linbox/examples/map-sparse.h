@@ -46,10 +46,33 @@ namespace LinBox
 {
 
 template<class Field_>
-class MapSparse {
+class MapSparseIF {
 public:
+	typedef Field_ Field;
+	typedef typename Field::Element Element;
+	typedef size_t Index;
 
-	typedef typename Field_ Field;
+        virtual ~MapSparseIF() {};
+
+	virtual void setEntry(Index i, Index j, const Element& e) =0;
+
+        virtual const Element& getEntry(Index i, Index j) const =0;
+
+protected:
+        typedef std::map<Index,Element> VectorType;
+	typedef typename VectorType::iterator VectorIt;
+	typedef typename VectorType::const_iterator VectorConstIt;
+	typedef std::map<Index,VectorType> MapType;
+	typedef typename MapType::iterator MapIt;
+	typedef typename MapType::const_iterator MapConstIt;
+
+
+};
+
+template<class Field_>
+class MapSparse : public MapSparseIF<Field_> {
+public:
+	typedef Field_ Field;
 	typedef typename Field::Element Element;
 	typedef size_t Index;
 	typedef std::map<Index,Element> VectorType;
@@ -64,6 +87,10 @@ public:
 	MapSparse(const Field& F, Index r, Index c);
 
 	MapSparse(const MapSparse& M);
+
+        void init(const Field& F, Index r, Index c);
+
+        void shape(Index r, Index c);
 
 	MapSparse& operator=(const MapSparse& M);
 
@@ -95,6 +122,10 @@ public:
 
 	void swapCols(Index i, Index j);
 
+        void scaleMat(const Element& k);
+
+        void transpose();
+
 	Index nnz() const;
 
 	// A -> A' = SAS^{-1}, and A' has about nnz nonzero entries.
@@ -103,17 +134,25 @@ public:
 	// A -> A' = UAV, with U and V nonsingular, and A' has about nnz nonzero entries.
 	void randomEquiv(Index nnz, int seed = 0);
 
-        Index rowdim() const;
+        bool areEqual(MapSparse<Field_> rhs) const;
 
-        Index coldim() const;
+        std::istream& read(std::istream& in);
 
-	void print(std::ostream& out) const;
+        std::ostream& print(std::ostream& out) const;
 
-	void write(std::ostream& out) const;
+        std::ostream& write(std::ostream& out) const;
 
-	template <class SparseMat> void convert (SparseMat & S);
+        template<class Matrix>
+        void copy(Matrix& mat) const;
 
-	template <class SparseMat> MapSparse(const SparseMat & S);
+        template<class Matrix>
+        void copyFrom(Matrix& mat);
+
+        template<class Vector>
+        void toVector(Vector& vec) const;
+
+        template<class Vector>
+        void fromVector(const Vector& vec, Index r, Index c);
 
 protected:
 
@@ -123,9 +162,9 @@ protected:
 
 	MapType colMap_;
 
-	int numCols_;
+	Index numCols_;
 
-	int numRows_;
+	Index numRows_;
 
 	Index nnz_;
 

@@ -646,6 +646,8 @@ namespace LinBox
 			return _row * _col;
 		}
 
+                void finalize() {}
+
 		///////////////////
 		//   BLACK BOX   //
 		///////////////////

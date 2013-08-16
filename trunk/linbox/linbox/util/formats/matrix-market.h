@@ -97,8 +97,10 @@ namespace LinBox
 				this->ms->readWhiteSpace();
 			}
 
-			if( this->sin->eof()) return END_OF_FILE;
-			if( !this->sin->good()) return BAD_FORMAT;
+                        if (entriesLeft != 0) {
+                                if( this->sin->eof()) return END_OF_FILE;
+                                if( !this->sin->good()) return BAD_FORMAT;
+                        }
 
 			this->knowM = this->knowN = true;
 			currentCol = currentRow = 1;

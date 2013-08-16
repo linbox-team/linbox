@@ -63,14 +63,28 @@ int randRange(int start, int end)
         return start+offset;
 }
 
-typedef Modular<double> Field;
-typedef Field::Element Element;
-typedef std::vector <Element> STLVector;
-typedef TriplesBBOMP<Field> OMPBlackbox;
-typedef TriplesBB<Field> SeqBlackbox;
-
-void generateRandMat(MapSparse<Field>& mat,int m, int n, int nnz, int q)
+template<class Field>
+void generateDenseRandMat(MapSparse<Field>& mat, int q)
 {
+        typedef typename Field::Element Element;
+
+        size_t m=mat.rowdim(),n=mat.coldim();
+	Element d;
+
+        for (size_t i=0;i<m;++i) {
+                for (size_t j=0;j<n;++j) {
+                        mat.field().init(d,randRange(0,q));
+                        mat.setEntry(i,j,d);
+                }
+        }
+}
+
+template<class Field>
+void generateRandMat(MapSparse<Field>& mat, int nnz, int q)
+{
+        typedef typename Field::Element Element;
+
+        size_t m=mat.rowdim(),n=mat.coldim();
 	Element d;
 
         typedef pair<size_t,size_t> CoordPair;
@@ -83,65 +97,39 @@ void generateRandMat(MapSparse<Field>& mat,int m, int n, int nnz, int q)
                         row = randRange(0,m);
                         col = randRange(0,n);
                 } while (pairs.count(CoordPair(row,col))!=0);
-                
-                mat.field().init(d, randRange(0,q));
+
+                mat.field().init(d, randRange(1,q));
                 mat.setEntry(row,col,d);
                 pairs.insert(CoordPair(row,col));
         }
 }
 
-void generateRandVec(STLVector& vec,int n, int q)
+template<class Field>
+void generateScaledIdent(MapSparse<Field>& mat, int alpha)
 {
-        Field F(q);
+        typedef typename Field::Element Element;
+        size_t m=mat.rowdim(),n=mat.coldim();
+        size_t minDim=(m<n)?m:n;
+	Element d;
+        mat.field().init(d,alpha);
 
-        for (int i=0;i<n;++i) {
-                F.init(vec[i],randRange(0,q));
+        for (size_t i=0;i<minDim;++i) {
+                mat.setEntry(i,i,d);
         }
 }
 
-void varyMatVecPair(MapSparse<Field>& leftMat,STLVector& rightVec, int m, int n, int q)
+
+template<class Field>
+void varyMatMatPair(MapSparse<Field>& leftMat, MapSparse<Field>& rightMat, int q)
 {
+        typedef typename Field::Element Element;
+
         Field F(q);
         Element d;
 
-        int row=randRange(0,m);
-        int col=randRange(0,n);
-
-        if (F.isZero(rightVec[col])) {
-                F.init(rightVec[col],randRange(1,q));
-                F.init(d,randRange(1,q));
-        } else {
-                do {
-                        F.init(d,randRange(0,q));
-                } while (F.areEqual(d,leftMat.getEntry(row,col)));
-        }
-        leftMat.setEntry(row,col,d);
-}
-
-void varyMatVecPair(STLVector& leftVec, MapSparse<Field>& rightMat, int m, int n, int q)
-{
-        Field F(q);
-        Element d;
-
-        int row=randRange(0,m);
-        int col=randRange(0,n);
-
-        if (F.isZero(rightMat.getEntry(row,col))) {
-                F.init(d,randRange(1,q));
-                rightMat.setEntry(row,col,d);
-                F.init(leftVec[row],randRange(1,q));
-        } else {
-                do {
-                        F.init(d,randRange(0,q));
-                } while (F.areEqual(d,leftVec[row]));
-                leftVec[row]=d;
-        }
-}
-
-void varyMatMatPair(MapSparse<Field>& leftMat, MapSparse<Field>& rightMat, int m, int n, int p, int q)
-{
-        Field F(q);
-        Element d;
+        int m=leftMat.rowdim();
+        int n=leftMat.coldim();
+        int p=rightMat.coldim();
 
         int leftRow=randRange(0,m);
         int leftCol=randRange(0,n);
@@ -157,18 +145,67 @@ void varyMatMatPair(MapSparse<Field>& leftMat, MapSparse<Field>& rightMat, int m
                         F.init(d,randRange(0,q));
                 } while (F.areEqual(d,leftMat.getEntry(leftRow,leftCol)));
                 leftMat.setEntry(leftRow,leftCol,d);
+        }
+}
 
+template<class Field,class Blackbox>
+void computeAnswer(const MapSparse<Field>& A,
+                   const MapSparse<Field>& X,
+                   MapSparse<Field>& Y,
+                   const Field& F,
+                   bool isRight,
+                   bool useVector)
+{
+        typedef typename Field::Element Element;
+        typedef std::vector<Element> STLVector;
+        typedef typename MatrixDomain<Field>::OwnMatrix OwnMatrix;
+
+        LinBox::MatrixDomain<Field> MD(F);
+
+        if (useVector) {
+                if (isRight) {
+                        STLVector vecX(X.coldim()),vecY(A.coldim());
+                        X.toVector(vecX);
+                        Blackbox matA(F);
+                        A.copy(matA);
+                        matA.applyTranspose(vecY,vecX);
+                        Y.fromVector(vecY,1,A.coldim());
+                } else {
+                        STLVector vecX(X.rowdim()),vecY(A.rowdim());
+                        X.toVector(vecX);
+                        Blackbox matA(F);
+                        A.copy(matA);
+                        matA.apply(vecY,vecX);
+                        Y.fromVector(vecY,A.rowdim(),1);
+                }
+        } else {
+                OwnMatrix matX(F,X.rowdim(),X.coldim());
+                if (isRight) {
+                        OwnMatrix matY(F,X.rowdim(),A.coldim());
+                        X.copy(matX);
+                        Blackbox matA(F);
+                        A.copy(matA);
+                        matA.applyRight(matY,matX);
+                        Y.copyFrom(matY);
+                } else {
+                        OwnMatrix matY(F,A.rowdim(),X.coldim());
+                        X.copy(matX);
+                        Blackbox matA(F);
+                        A.copy(matA);
+                        matA.applyLeft(matY,matX);
+                        Y.copyFrom(matY);
+                }
         }
 }
 
 bool outputResult(std::string testName,
                   bool expected,
                   bool actual,
-                  int m, int n, int nnz, int numThreads, int q,
+                  int m, int n, int p, int nnz, int numThreads, int q,
                   ostream& report)
 {
         report << "Testing " << testName << " using: " <<
-                "m=" << m << " n=" << n << " nnz=" << nnz << " numthreads=" << numThreads << " q=" << q << std::endl;
+                "m=" << m << " n=" << n << " p=" << p << " nnz=" << nnz << " numthreads=" << numThreads << " q=" << q << std::endl;
 
         if (expected==actual) {
                 report << "PASS: ";
@@ -180,255 +217,201 @@ bool outputResult(std::string testName,
         return expected==actual;
 }
 
-bool testRandVec(size_t m, size_t n, size_t nnz, int q, bool shouldFail, int numThreads, ostream &report)
+template<class Field>
+void reshapeAndScale(MapSparse<Field>& matOut,
+                     MapSparse<Field>& matIn,
+                     int m, int n, int alpha)
 {
-        bool pass=true;
+        typedef typename Field::Element Element;
 
-	Field F (q);
-
-	OMPBlackbox TestMat(F, m, n);
-        SeqBlackbox RefMat(F, m, n);
-        MapSparse<Field> CommonMat(F,m,n);
-        STLVector x(n), xT(m), testY(m), refY(m), testYT(n), refYT(n);
-        VectorDomain<Field> VD(F);
-
-        generateRandMat(CommonMat,m,n,nnz,q);
-        generateRandVec(x,n,q);
-        generateRandVec(xT,m,q);
-
-        std::stringstream testMatSS,refMatSS;
-
-        CommonMat.write(testMatSS);
-        TestMat.read(testMatSS);
-        TestMat.finalize();
-
-        if (shouldFail) {
-                varyMatVecPair(CommonMat,x,m,n,q);
-                varyMatVecPair(xT,CommonMat,m,n,q);
+        matOut.shape(m,n);
+        m=((size_t)m<matIn.rowdim())?m:matIn.rowdim();
+        n=((size_t)n<matIn.coldim())?n:matIn.coldim();
+        Element d,a,t;
+        matIn.field().init(a,alpha);
+        for (int i=0;i<m;++i) {
+                for (int j=0;j<n;++j) {
+                        d=matIn.getEntry(i,j);
+                        matIn.field().mul(t,d,a);
+                        matOut.setEntry(i,j,t);
+                }
         }
+}
 
-        CommonMat.write(refMatSS);
-        RefMat.read(refMatSS);
+template <class Field>
+bool runIdentTest(int n,
+                  int m,
+                  int p,
+                  int q,
+                  int numThreads,
+                  bool shouldFail,
+                  bool isRight,
+                  bool useVector,
+                  ostream& report)
+{
+        typedef TriplesBBOMP<Field> OMPBlackbox;
 
         omp_set_num_threads(numThreads);
 
-        TestMat.apply(testY,x);
-        RefMat.apply(refY,x);
-        pass=pass&&outputResult("apply() random",!shouldFail,VD.areEqual(testY,refY),m,n,nnz,numThreads,q,report);
-        
-        TestMat.applyTranspose(testYT,xT);
-        RefMat.applyTranspose(refYT,xT);
-        pass=pass&&outputResult("applyTranspose() random",!shouldFail,VD.areEqual(testYT,refYT),m,n,nnz,numThreads,q,report);
-
-        return pass;
-}
-
-bool testRandSuite(int q, ostream &report)
-{
-        bool pass=true;
-
-        pass = pass && testRandVec(100,100,100,q,false,1,report);
-        pass = pass && testRandVec(100,100,100,q,true,1,report);
-        pass = pass && testRandVec(100,100,100,q,false,2,report);
-        pass = pass && testRandVec(100,100,100,q,true,2,report);
-        pass = pass && testRandVec(100,100,100,q,false,4,report);
-        pass = pass && testRandVec(100,100,100,q,true,4,report);
-
-        pass = pass && testRandVec(100000,100000,100000,q,false,1,report);
-        pass = pass && testRandVec(100000,100000,100000,q,true,1,report);
-        pass = pass && testRandVec(100000,100000,100000,q,false,2,report);
-        pass = pass && testRandVec(100000,100000,100000,q,true,2,report);
-        pass = pass && testRandVec(100000,100000,100000,q,false,4,report);
-        pass = pass && testRandVec(100000,100000,100000,q,true,4,report);
-
-        pass = pass && testRandVec(100000,1000,100000,q,false,1,report);
-        pass = pass && testRandVec(100000,1000,100000,q,true,1,report);
-        pass = pass && testRandVec(100000,1000,100000,q,false,2,report);
-        pass = pass && testRandVec(100000,1000,100000,q,true,2,report);
-        pass = pass && testRandVec(100000,1000,100000,q,false,4,report);
-        pass = pass && testRandVec(100000,1000,100000,q,true,4,report);
-
-        pass = pass && testRandVec(1000,100000,100000,q,false,1,report);
-        pass = pass && testRandVec(1000,100000,100000,q,true,1,report);
-        pass = pass && testRandVec(1000,100000,100000,q,false,2,report);
-        pass = pass && testRandVec(1000,100000,100000,q,true,2,report);
-        pass = pass && testRandVec(1000,100000,100000,q,false,4,report);
-        pass = pass && testRandVec(1000,100000,100000,q,true,4,report);
-
-        pass = pass && testRandVec(10000,10000,1000000,q,false,1,report);
-        pass = pass && testRandVec(10000,10000,1000000,q,true,1,report);
-        pass = pass && testRandVec(10000,10000,1000000,q,false,2,report);
-        pass = pass && testRandVec(10000,10000,1000000,q,true,2,report);
-        pass = pass && testRandVec(10000,10000,1000000,q,false,4,report);
-        pass = pass && testRandVec(10000,10000,1000000,q,true,4,report);
-
-        pass = pass && testRandVec(100000,100000,1000000,q,false,2,report);
-        pass = pass && testRandVec(100000,100000,1000000,q,true,2,report);
-
-        return pass;
-}
-
-bool isScaled(STLVector y,STLVector x,int n,int scaleFactor)
-{
-        for (int i=0;i<n;++i) {
-                if (y[i]!=(x[i]*scaleFactor)) {
-                        return false;
-                }
+        Field F(q);
+        MapSparse<Field> A(F,n,m),X,YTest,YRef;
+        if (isRight) {
+                X.init(F,p,n);
+                YTest.init(F,p,m);
+                YRef.init(F,p,m);
+        } else {
+                X.init(F,m,p);
+                YTest.init(F,n,p);
+                YRef.init(F,n,p);
         }
-        return true;
-}
-
-bool testDenseRand(size_t m, size_t n, size_t nnz, int q, int numThreads, ostream &report)
-{
-        bool pass=true;
-
-	Field F (q);
-
-        typedef MatrixDomain<Field>::OwnMatrix OwnMatrix;
-        LinBox::MatrixDomain<Field> MD(F);
-        OwnMatrix MatIn(F,n,m);
-        OwnMatrix TestY(F,n,m);
-        OwnMatrix RefY(F,n,m);
-	OMPBlackbox TestMat(F, n, n);
-        SeqBlackbox RefMat(F,n,n);
-        Element d;
-
-        TestY.zero();
-        RefY.zero();
-        MatIn.random();
-
-        typedef pair<size_t,size_t> CoordPair;
-        typedef set<CoordPair> PairSet;
-        PairSet pairs;
-	for(int i = 0; i < (int)nnz; ++i)
-	{
-                size_t row,col;
-                do {
-                        row = randRange(0,n);
-                        col = randRange(0,n);
-                } while (pairs.count(CoordPair(row,col))!=0);
-
-                F.init(d, randRange(0,q));
-                TestMat.setEntry(row,col,d);
-                RefMat.setEntry(row,col,d);
-                pairs.insert(CoordPair(row,col));
+        int alpha=randRange(1,q);
+        generateScaledIdent<Field>(A,alpha);
+        generateDenseRandMat<Field>(X,q);
+        if (isRight) {
+                reshapeAndScale<Field>(YRef,X,p,m,alpha);
+        } else {
+                reshapeAndScale<Field>(YRef,X,n,p,alpha);
         }
 
-        TestMat.finalize();
+        if (isRight && shouldFail) {
+                varyMatMatPair<Field>(X,A,q);
+        } else if ((!isRight) && shouldFail) {
+                varyMatMatPair<Field>(A,X,q);
+        }
+
+        computeAnswer<Field,OMPBlackbox>(A,X,YTest,F,isRight,useVector);
+        std::string testName;
+        if ((!isRight) && useVector) {
+                testName="ident apply()";
+        } else if (isRight && (!useVector)) {
+                testName="ident applyRight()";
+        } else if (isRight && useVector) {
+                testName="ident applyTranspose()";
+        } else {
+                testName="ident applyLeft()";
+        }
+        int nnz=(n<m)?n:m;
+        return outputResult(testName,!shouldFail,YRef.areEqual(YTest),m,n,p,nnz,numThreads,q,report);
+}
+
+template <class Field>
+bool runRandTest(int n,
+                 int m,
+                 int p,
+                 double density,
+                 int q,
+                 int numThreads,
+                 bool shouldFail,
+                 bool isRight,
+                 bool useVector,
+                 ostream& report)
+{
+        typedef TriplesBBOMP<Field> OMPBlackbox;
+        typedef TriplesBB<Field> SeqBlackbox;
 
         omp_set_num_threads(numThreads);
 
-        report << "Testing triplesbb-omp applyLeft against triplesbb applyLeft on random matrix using: " <<
-                        "m=" << m << " n=" << n << " nnz=" << nnz << " numthreads=" << numThreads << " q=" << q << std::endl;
-        RefMat.applyLeft(RefY,MatIn);
-        TestMat.applyLeft(TestY,MatIn);
-        if (MD.areEqual(TestY,RefY)) {
-                report << "PASS: applyLeft test passed" << std::endl;
+        double matSize=n*m;
+        int nnz=density*matSize;
+
+        Field F(q);
+        MapSparse<Field> A(F,n,m),X,YTest,YRef;
+        if (isRight) {
+                X.init(F,p,n);
+                YTest.init(F,p,m);
+                YRef.init(F,p,m);
         } else {
-                pass=false;
-                report << "FAILURE: applyLeft test failed" << std::endl;
+                X.init(F,m,p);
+                YTest.init(F,n,p);
+                YRef.init(F,n,p);
+        }
+        generateRandMat<Field>(A,nnz,q);
+        generateDenseRandMat<Field>(X,q);
+
+        computeAnswer<Field,SeqBlackbox>(A,X,YRef,F,isRight,useVector);
+
+        if (isRight && shouldFail) {
+                varyMatMatPair<Field>(X,A,q);
+        } else if ((!isRight) && shouldFail) {
+                varyMatMatPair<Field>(A,X,q);
         }
 
+        computeAnswer<Field,OMPBlackbox>(A,X,YTest,F,isRight,useVector);
+
+        std::string testName;
+        if ((!isRight) && useVector) {
+                testName="rand apply()";
+        } else if (isRight && (!useVector)) {
+                testName="rand applyRight()";
+        } else if (isRight && useVector) {
+                testName="rand applyTranspose()";
+        } else {
+                testName="rand applyLeft()";
+        }
+        return outputResult(testName,!shouldFail,YRef.areEqual(YTest),m,n,p,nnz,numThreads,q,report);
+}
+
+
+template<class Field>
+bool runSizeSuite(int n, int m, int p,
+                  double density,
+                  std::vector<int>& qs,
+                  std::vector<int>& numThreads,
+                  bool shouldFail, bool isRight,
+                  ostream& report)
+{
+        bool pass=true;
+        for (size_t i=0;i<qs.size();++i) {
+                for (size_t j=0;j<numThreads.size();++j) {
+                        if (p==1) {
+                                bool useVector=true;
+                                pass = pass && runRandTest<Field>
+                                        (n,m,p,density,qs[i],numThreads[j],
+                                         shouldFail,isRight,useVector,report);
+                                pass = pass && runIdentTest<Field>
+                                        (n,m,p,qs[i],numThreads[j],
+                                        shouldFail,isRight,useVector,report);
+                        }
+                        pass = pass && runRandTest<Field>
+                                (n,m,p,density,qs[i],numThreads[j],
+                                 shouldFail,isRight,false,report);
+                        pass = pass && runIdentTest<Field>
+                                (n,m,p,qs[i],numThreads[j],
+                                 shouldFail,isRight,false,report);
+                }
+        }
         return pass;
 }
 
-bool testIdent(size_t n, int q, bool shouldFail, int numThreads, ostream &report)
+template<class Field>
+bool testSuite(std::vector<int>& qs, ostream &report)
 {
         bool pass=true;
 
-	Field F (q);
+        std::vector<int> numThreads;
+        numThreads.push_back(1);
+        numThreads.push_back(2);
+        numThreads.push_back(3);
+        numThreads.push_back(4);
+        bool shouldFail=false,isRight=false;
+        do {
+                pass=pass&&runSizeSuite<Field>(10000,10,1,0.01,qs,numThreads,shouldFail,isRight,report);
+                pass=pass&&runSizeSuite<Field>(10000,10,10,0.01,qs,numThreads,shouldFail,isRight,report);
+                pass=pass&&runSizeSuite<Field>(10,10000,1,0.01,qs,numThreads,shouldFail,isRight,report);
+                pass=pass&&runSizeSuite<Field>(10,10000,10,0.01,qs,numThreads,shouldFail,isRight,report);
+                pass=pass&&runSizeSuite<Field>(1,10000,1,0.1,qs,numThreads,shouldFail,isRight,report);
 
-	OMPBlackbox TestMat(F, n, n);
-        STLVector x(n), y(n);
-	Element d;
+                pass=pass&&runSizeSuite<Field>(10000,10000,1,0.0,qs,numThreads,shouldFail,isRight,report);
 
-        for (int i=0;i<(int)n;++i) {
-                F.init(x[i],randRange(1,q/2));
-        }
+                pass=pass&&runSizeSuite<Field>(2,2,1,1.0,qs,numThreads,shouldFail,isRight,report);
+                pass=pass&&runSizeSuite<Field>(2,2,10000,1.0,qs,numThreads,shouldFail,isRight,report);
 
-        typedef pair<size_t,size_t> CoordPair;
-        typedef set<CoordPair> PairSet;
-        PairSet pairs;
-        int scaleFactor=(q==2)?1:2;
-	for(int i = 0; i < (int)n; ++i)
-	{
-                if (shouldFail && (((size_t)i)==(n/3))) {
-                        F.init(d,0);
-                } else {
-                        F.init(d,scaleFactor);
-                }
-                TestMat.setEntry(i,i,d);
-        }
+                pass=pass&&runSizeSuite<Field>(10000,10000,1,0.0001,qs,numThreads,shouldFail,isRight,report);
+                pass=pass&&runSizeSuite<Field>(10000,10000,10,0.0001,qs,numThreads,shouldFail,isRight,report);
 
-        TestMat.finalize();
-
-        omp_set_num_threads(numThreads);
-        if (shouldFail) {
-                report << "Testing triplesbb-omp apply() on non-diagonal matrix using: "<<
-                        "n=" << n << " q=" << q << " numThreads=" << numThreads << std::endl;
-                TestMat.apply(y,x);
-                if (isScaled(y,x,n,scaleFactor)) {
-                        report << "FAILURE: Diagonal-nonscale test failed" << std::endl;
-                        pass=false;
-                } else {
-                        report << "PASS: Diagonal-nonscale test passed" << std::endl;
-                }
-        } else {
-                report << "Testing triplesbb-omp apply() on diagonal matrix using: " <<
-                        "n=" << n << " q=" << q << " numThreads=" << numThreads << std::endl;
-                TestMat.apply(y,x);
-                if (!isScaled(y,x,n,scaleFactor)) {
-                        report << "FAILURE: Diagonal-scale test failed" << std::endl;
-                        pass=false;
-                } else {
-                        report << "PASS: Diagonal-scale test passed" << std::endl;
-                }
-        }
-
-        if (shouldFail) {
-                report << "Testing triplesbb-omp applyTranspose() on non-diagonal matrix using: "<<
-                        "n=" << n << " q=" << q << " numThreads=" << numThreads << std::endl;
-                TestMat.applyTranspose(y,x);
-                if (isScaled(y,x,n,scaleFactor)) {
-                        report << "FAILURE: Diagonal-nonscale test failed" << std::endl;
-                        pass=false;
-                } else {
-                        report << "PASS: Diagonal-nonscale test passed" << std::endl;
-                }
-        } else {
-                report << "Testing triplesbb-omp applyTranspose() on diagonal matrix using: " <<
-                        "n=" << n << " q=" << q << " numThreads=" << numThreads << std::endl;
-                TestMat.applyTranspose(y,x);
-                if (!isScaled(y,x,n,scaleFactor)) {
-                        report << "FAILURE: Diagonal-scale test failed" << std::endl;
-                        pass=false;
-                } else {
-                        report << "PASS: Diagonal-scale test passed" << std::endl;
-                }
-        }
-
-
-        return pass;
-}
-
-bool testIdentSuite(int q,ostream &report)
-{
-        bool pass=true;
-
-        pass = pass && testIdent(100,q,true,1,report);
-        pass = pass && testIdent(100,q,false,1,report);
-        pass = pass && testIdent(100,q,true,2,report);
-        pass = pass && testIdent(100,q,false,2,report);
-        pass = pass && testIdent(100,q,true,4,report);
-        pass = pass && testIdent(100,q,false,4,report);
-
-        pass = pass && testIdent(100000,q,false,1,report);
-        pass = pass && testIdent(100000,q,true,1,report);
-        pass = pass && testIdent(100000,q,false,1,report);
-        pass = pass && testIdent(100000,q,true,2,report);
-        pass = pass && testIdent(100000,q,false,2,report);
-        pass = pass && testIdent(100000,q,true,4,report);
-        pass = pass && testIdent(100000,q,false,4,report);
+                shouldFail^=isRight;
+                isRight=!isRight;
+        } while (shouldFail || isRight);
 
         return pass;
 }
@@ -464,15 +447,11 @@ int main (int argc, char **argv)
 
 	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-        pass = pass && testDenseRand(5,100,1000,65537,1,report);
-        pass = pass && testDenseRand(5,100,1000,65537,4,report);
+        std::vector<int> qs;
+        qs.push_back(2);
+        qs.push_back(65537);
 
-        pass = pass && testRandSuite(65537,report);
-        pass = pass && testRandSuite(2,report);
-
-        pass = pass && testIdentSuite(65537,report);
-        pass = pass && testIdentSuite(2,report);
-        report << "Testing" << std::endl;
+        pass = testSuite<Modular<double> >(qs,report);
 
 	commentator().stop("TriplesBBOMP black box test suite");
 	return pass ? 0 : -1;

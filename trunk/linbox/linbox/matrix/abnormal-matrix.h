@@ -146,8 +146,8 @@ public:
 
 	~AlignedMat() {
 		if (space_ != NULL) {
-			for (int i=0;i<rowDim_;++i) {
-				for (int j=0;j<colDim_;++j) {
+			for (Index i=0;i<rowDim_;++i) {
+				for (Index j=0;j<colDim_;++j) {
 					refElt(i,j)->~T();
 				}
 			}
@@ -162,8 +162,8 @@ public:
 		space_=new uint8_t[stride_*c+ALIGNMENT];
 		size_t spacePtr=(size_t)space_;
 		elts_=(uint8_t*)(roundUp(spacePtr));
-		for (int i=0;i<rowDim_;++i) {
-			for (int j=0;j<colDim_;++j) {
+		for (Index i=0;i<rowDim_;++i) {
+			for (Index j=0;j<colDim_;++j) {
 				new ((void*)refElt(i,j)) T();
 			}
 		}
