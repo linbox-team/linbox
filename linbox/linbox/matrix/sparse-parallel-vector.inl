@@ -207,6 +207,8 @@ namespace LinBox
 		case Tag::FileFormat::MagmaCpt:
 			os << "sparse matrix written in MagmaCpt form is not implemented" << std::endl;
 			break;
+		default:
+			os << "sparse matrix written in Tag::FileFormat::" << (int)format << " is not implemented" << std::endl;
 		}
 
 		return os;
@@ -216,9 +218,9 @@ namespace LinBox
 
 	template <class Field, class Row>
 	SparseMatrix<Field,Row,VectorCategories::SparseParallelVectorTag> ::SparseMatrix( MatrixStream<Field>& ms ) :
-		_matA(0), _m(0), _n(0),
-		_field(ms.field()),
-		_MD(ms.field()),_AT(*this)
+		_field(ms.field())
+		,_MD(ms.field()),_AT(*this)
+		,_matA(0), _m(0), _n(0)
 	{
 		Element val;
 		size_t i, j;

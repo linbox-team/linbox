@@ -440,7 +440,7 @@ namespace LinBox
 			break;
 
 		default:
-			os << "sparse matrix written in format " << format << " is not implemented" << std::endl;
+			os << "sparse matrix written in Tag::FileFormat::" << (int)format << " is not implemented" << std::endl;
 		}
 
 		return os;

@@ -65,7 +65,6 @@ read(istream& in){
 
 template<class Field_> ostream& TriplesBB<Field_>::
 write(ostream& out){
-	Index r, c;
 	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
 	out << "% written from a LinBox TriplesBB" << std::endl;
 	out << rowdim() <<" " << coldim() << " " << size() << std::endl;

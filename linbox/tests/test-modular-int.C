@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 	static integer q2 = 1073741789;
 	static integer q3 = 65521U;
 	static int q4 = 101;
-	static integer q5 = 144115188075855881;
+	static integer q5("144115188075855881");
 	static size_t n = 10000;
 	static unsigned int iterations = 1;
 	static unsigned int trials = 10000;

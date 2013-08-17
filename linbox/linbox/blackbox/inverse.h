@@ -68,8 +68,8 @@ namespace LinBox
 		Inverse (const Blackbox *BB) :
 			_VD (BB->field()), _BB (BB)
 			, _minpoly(BB->field())
-			, _z(BB->field())
 			, _transposeMinpoly(BB->field())
+			, _z(BB->field())
 		{
 			linbox_check ((BB->rowdim ()) == (BB->coldim ()));
 
@@ -204,7 +204,7 @@ namespace LinBox
 
 		const Field& field() const
 		{ return _BB->field();}
-	private:
+	protected:
 
 		const VectorDomain<Field>  _VD;
 		const Blackbox             *_BB;

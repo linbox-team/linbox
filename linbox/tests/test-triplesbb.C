@@ -47,7 +47,7 @@ using namespace LinBox;
 
 template<class BB>
 void randBuild(BB & A, size_t nnz){
-	for(size_t i = 0; i < (int)nnz; ++i)
+	for(size_t i = 0; i < nnz; ++i)
 	{	typename BB::Field::Element d; A.field().init(d, rand());
 		size_t ii = rand()%A.rowdim();
 		size_t jj = rand()%A.coldim();

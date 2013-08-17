@@ -104,8 +104,8 @@ namespace LinBox
 		/// \brief cstor ready for a read.
 		Diagonal(const Field &F) :
 			_field(&F)
-			, _v(F)
 			, _n(0)
+			, _v(F)
 		{}
 
 		/// \brief cstor from vector of elements.
@@ -382,7 +382,7 @@ namespace LinBox
 
 
 
-	private:
+	protected:
 
 		// Field for arithmetic
 		const Field *_field;

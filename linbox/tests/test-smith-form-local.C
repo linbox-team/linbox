@@ -201,16 +201,16 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 
 int main (int argc, char **argv)
 {
-	bool pass = true, pass1 = true;
+	bool pass1 = true, pass2 = true;
 
 	static size_t n = 6;
-	static integer q = 101;
-	static int iterations = 1;
+	static size_t q = 10201; // 101^2
+	//static integer q = 10201; // 101^2
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ 'q', "-q Q", "Operate over the ring Z/qZ.", TYPE_INT, &q },
+		//{ 'q', "-q Q", "Operate over the ring Z/qZ.", TYPE_INTEGER, &q },
 		END_OF_ARGUMENTS
 	};
 
@@ -219,28 +219,30 @@ int main (int argc, char **argv)
 	commentator().start("Local Smith Form test suite", "LocalSmith");
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "q = " << q << std::endl;
 
-#if 0
-//PIRModular does not currently support the local ring interface -bds Mar2011
   { // first local ring type
+  // FIXME: incorrect for many prime powers.
 	typedef PIRModular<int32_t> LocalPID;
-	LocalPID R (536870912); // 2^32
 	//typedef PIRModular<dense> LocalPID;
-	//LocalPID R (32768);
+	//LocalPID R (81); 
+	LocalPID R (q);
 	vector<LocalPID::Element> d(n);
 
 	commentator().start ("Testing local smith on singular dense mat over PIRModular", "testSingular");
 	for( size_t i = 0; i < n; ++i ) d[i] = i;
-	if (!testLocalSmith<LocalPID> (R, d, "PIRModular<int32_t>")) pass1 = false;
+	pass1 = testLocalSmith<LocalPID> (R, d, "PIRModular<int32_t>");
 	commentator().stop ("testSingular");
+	if (not pass1) report << "PIRModular sing FAIL" << std::endl;
 
 	commentator().start ("Testing local smith on nonsingular dense mat over PIRModular", "testNonsingular");
 	for( size_t i = 0; i < n; ++i ) d[i] = i+1;
-	if (!testLocalSmith<LocalPID> (R, d, "PIRModular<int32_t>")) pass1 = false;
+	bool p = testLocalSmith<LocalPID> (R, d, "PIRModular<int32_t>");
+	if (not p) report << "PIRModular nonsing FAIL" << std::endl;
 	commentator().stop ("testNonsingular");
+	pass1 = pass1 and p;
+	if (not pass1) report << "PIRModular FAIL" << std::endl;
   }
-  if (not pass1) report << "PIRModular FAIL" << std::endl;
-#endif
 
   { // second local ring type
 	typedef Local2_32 LocalPID;
@@ -250,19 +252,19 @@ int main (int argc, char **argv)
 	commentator().start ("Testing local smith on singular dense mat over Local2_32", "testSingular");
 	for( size_t i = 0; i < n; ++i )
 		d[i] = (LocalPID::Element) i;
-	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass = false;
+	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass2 = false;
 	commentator().stop ("testSingular");
 
 	commentator().start ("Testing local smith on nonsingular dense mat over Local2_32", "testNonsingular");
 	for( size_t i = 0; i < n; ++i )
 		d[i] = (LocalPID::Element) i+1;
-	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass = false;
+	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass2 = false;
 	commentator().stop ("testNonsingular");
+	if (not pass2) report << "Local2_32 FAIL" << std::endl;
   }
-  if (not pass) report << "PIRModular FAIL" << std::endl;
 
 	commentator().stop("Local Smith Form test suite");
-	return pass and pass1 ? 0 : -1;
+	return pass1 and pass2 ? 0 : -1;
 }
 
 
