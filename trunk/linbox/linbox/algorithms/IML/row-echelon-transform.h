@@ -600,7 +600,7 @@ size_t
 		Field F = A.field();
 
 		size_t i, r;
-		size_t n = A.rowdim(),m=A.coldim();
+		size_t n = A.rowdim();//,m=A.coldim(); // m unused
 		std::vector<size_t> P(n+1),rp(n+1);
 		Element d=F.one;
 

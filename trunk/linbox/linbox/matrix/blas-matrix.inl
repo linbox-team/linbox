@@ -221,8 +221,10 @@ namespace LinBox
 
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F) :
-		_row(0),_col(0),_rep(0),_ptr(NULL),
-		_field(&F),_MD(F),_VD(F),_use_fflas(false)
+		_row(0),_col(0),_rep(0)
+		,_use_fflas(false)
+		,_ptr(NULL)
+		,_field(&F),_MD(F),_VD(F)
 	{ }
 
 	template < class _Field, class _Rep >

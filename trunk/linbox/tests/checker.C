@@ -513,7 +513,7 @@ build |wc" should yield the same number of lines.
 #endif
 
 	// tests of "doubles as a field" which doesn't adhere to LinBox field or ring specs.
-	if (flag > 0) cout << "	Noncompliant tests" << endl;
+	if (flag > 0) cout << "	Noncompliant field tests" << endl;
 	build_n_run("test-param-fuzzy", counter, flag);
 
 #if 1
