@@ -52,17 +52,17 @@
 #ifndef __LINBOX_blackbox_sparse_H
 #define __LINBOX_blackbox_sparse_H
 
-#include "linbox-config.h"
-#include "linbox/blackbox/blackbox-interface.h"
+//#include "linbox-config.h"
+//#include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/matrix/sparse.h"
-#include "linbox/matrix/matrix-domain.h"
-#include "linbox/vector/vector-domain.h"
-#include "linbox/vector/vector-traits.h"
-#include "linbox/vector/stream.h"
-#include "linbox/util/field-axpy.h"
-#include "linbox/field/hom.h"
-#include "linbox/field/rebind.h"
-#include "linbox/solutions/solution-tags.h"
+//#include "linbox/matrix/matrix-domain.h"
+//#include "linbox/vector/vector-domain.h"
+//#include "linbox/vector/vector-traits.h"
+//#include "linbox/vector/stream.h"
+//#include "linbox/util/field-axpy.h"
+//#include "linbox/field/hom.h"
+//#include "linbox/field/rebind.h"
+//#include "linbox/solutions/solution-tags.h"
 
 
 #endif // __LINBOX_blackbox_sparse_H

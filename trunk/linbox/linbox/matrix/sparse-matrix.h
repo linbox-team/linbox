@@ -49,7 +49,7 @@ namespace LinBox {
 
 
 	// Forward definition
-	template<class _Field, class _Storage = SparseMatrix2Format::CSR >
+	template<class _Field, class _Storage = SparseMatrixFormat::CSR >
 	class SparseMatrix2 ;
 
 
@@ -83,6 +83,12 @@ namespace LinBox {
 // #include "SparseMatrix/sparse-bcsr-matrix.h"
 // #include "SparseMatrix/sparse-dia-matrix.h"
 #include "SparseMatrix/sparse-hyb-matrix.h"
+
+// wrappers on the old sparse reps.
+#include "SparseMatrix/sparse-vvp-matrix.h" // sparseSeq
+#include "SparseMatrix/sparse-vpv-matrix.h" // sparsePar
+#include "SparseMatrix/sparse-vmap-matrix.h" // sparseMap
+#include "SparseMatrix/sparse-coot-matrix.h" // sparseMap
 
 #endif // __LINBOX_matrix_sparse_matrix_H
 

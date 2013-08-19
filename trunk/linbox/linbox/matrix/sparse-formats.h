@@ -41,7 +41,7 @@ namespace LinBox {
 
 	// add here the sparse matrix types
 
-	namespace SparseMatrix2Format {
+	namespace SparseMatrixFormat {
 		class ANY {} ;
 		// template<typename Row_t>
 		class COO    : public ANY {} ; // Cordinate
@@ -60,9 +60,15 @@ namespace LinBox {
 		// class DIA    : public ANY {} ; // Cordinate
 		// class BCSR   : public ANY {} ; // Cordinate
 		// class TPL    : public ANY {} ; // triples
-
 		class HYB    : public ANY {} ; // hybrid
-	} // SparseMatrix2Format
+
+		// the old sparse matrix reps.
+		class VVP : public ANY {} ; // vector of vector of pairs
+		class VPV : public ANY {} ; // vector of pair of vectors
+		class VMap : public ANY {} ; // vector of index to value maps.
+		class COO_T : public ANY {} ; // triplesbb
+
+	} // SparseMatrixFormat
 
 	namespace SparseFileFormat {
 		class SMS {} ; // JG format
