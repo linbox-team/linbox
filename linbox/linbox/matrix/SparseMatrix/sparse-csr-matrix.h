@@ -52,12 +52,12 @@ namespace LinBox
 	 * \ingroup sparse
 	 */
 	template<class _Field>
-	class SparseMatrix2<_Field, SparseMatrix2Format::CSR > {
+	class SparseMatrix2<_Field, SparseMatrixFormat::CSR > {
 	public :
 		typedef _Field                             Field ; //!< Field
 		typedef typename _Field::Element         Element ; //!< Element
 		typedef const Element               constElement ; //!< const Element
-		typedef SparseMatrix2Format::CSR         Storage ; //!< Matrix Storage Format
+		typedef SparseMatrixFormat::CSR         Storage ; //!< Matrix Storage Format
 		typedef SparseMatrix2<_Field,Storage>     Self_t ; //!< Self type
 		// typedef Vector<_Field,VectorStorage::Sparse> Rep ;
 
@@ -66,7 +66,7 @@ namespace LinBox
 		 *
 		 */
 		//@{
-		SparseMatrix2<_Field, SparseMatrix2Format::CSR> () :
+		SparseMatrix2<_Field, SparseMatrixFormat::CSR> () :
 			_rownb(0),_colnb(0),
 			_nbnz(0),
 			_start(1),_colid(0),_data(0)
@@ -75,7 +75,7 @@ namespace LinBox
 			_start[0] = 0 ;
 		}
 
-		SparseMatrix2<_Field, SparseMatrix2Format::CSR> (const _Field & F) :
+		SparseMatrix2<_Field, SparseMatrixFormat::CSR> (const _Field & F) :
 			_rownb(0),_colnb(0),
 			_nbnz(0),
 			_start(1),_colid(0),_data(0)
@@ -84,7 +84,7 @@ namespace LinBox
 			_start[0] = 0 ;
 		}
 
-		SparseMatrix2<_Field, SparseMatrix2Format::CSR> (const _Field & F, size_t m, size_t n) :
+		SparseMatrix2<_Field, SparseMatrixFormat::CSR> (const _Field & F, size_t m, size_t n) :
 			_rownb(m),_colnb(n),
 			_nbnz(0),
 			_start(1),_colid(0),_data(0)
@@ -93,7 +93,7 @@ namespace LinBox
 			_start[0] = 0 ;
 		}
 
-		SparseMatrix2<_Field, SparseMatrix2Format::CSR> (const _Field & F,
+		SparseMatrix2<_Field, SparseMatrixFormat::CSR> (const _Field & F,
 							       size_t m, size_t n,
 							       size_t z) :
 			_rownb(m),_colnb(n),
@@ -104,7 +104,7 @@ namespace LinBox
 			_start[0] = 0 ;
 		}
 
-		SparseMatrix2<_Field, SparseMatrix2Format::CSR> (const SparseMatrix2<_Field, SparseMatrix2Format::CSR> & S) :
+		SparseMatrix2<_Field, SparseMatrixFormat::CSR> (const SparseMatrix2<_Field, SparseMatrixFormat::CSR> & S) :
 			_rownb(S._rownb),_colnb(S._colnb),
 			_nbnz(S._nbnz),
 			_start(S._start),_colid(S._colid),_data(S._data),
@@ -113,7 +113,7 @@ namespace LinBox
 
 #if 0
 		template<class _OtherField>
-		SparseMatrix2<_Field, SparseMatrix2Format::COO> (const SparseMatrix2<_OtherField, SparseMatrix2Format::COO> & S) :
+		SparseMatrix2<_Field, SparseMatrixFormat::COO> (const SparseMatrix2<_OtherField, SparseMatrixFormat::COO> & S) :
 			_rownb(S._rownb),_colnb(S._colnb),
 			_nbnz(S._nbnz),
 			_rowid(S._rowid),_colid(S._colid),_data(S._data),
@@ -122,12 +122,12 @@ namespace LinBox
 #endif
 
 		// XXX only for CSR
-		template<typename _Tp1, typename _Rw1 = SparseMatrix2Format::CSR>
+		template<typename _Tp1, typename _Rw1 = SparseMatrixFormat::CSR>
 		struct rebind ;
 
 		template<typename _Tp1>
-		struct rebind<_Tp1/*  ,SparseMatrix2Format::CSR */ > {
-			typedef SparseMatrix2<_Tp1, SparseMatrix2Format::CSR> other;
+		struct rebind<_Tp1/*  ,SparseMatrixFormat::CSR */ > {
+			typedef SparseMatrix2<_Tp1, SparseMatrixFormat::CSR> other;
 
 			void operator() (other & Ap, const Self_t& A)
 			{
@@ -177,11 +177,11 @@ namespace LinBox
 			_start(S.rowdim()+1),_colid(S.size()),_data(S.size()),
 			_field(F)
 		{
-			typename SparseMatrix2<_Tp1,_Rw1>::template rebind<Field,SparseMatrix2Format::CSR>()(*this, S);
+			typename SparseMatrix2<_Tp1,_Rw1>::template rebind<Field,SparseMatrixFormat::CSR>()(*this, S);
 		}
 
 
-		void merge(const SparseMatrix2<_Field, SparseMatrix2Format::CSR> & S)
+		void merge(const SparseMatrix2<_Field, SparseMatrixFormat::CSR> & S)
 		{
 			for (size_t i_ex = 0 ; i_ex < S.rowdim() ; ++i_ex)
 				for (size_t k = S.getStart(i_ex) ; k < S.getEnd(i_ex) ; ++k) {
@@ -192,7 +192,7 @@ namespace LinBox
 
 
 		template<class VectStream>
-		SparseMatrix2<_Field, SparseMatrix2Format::CSR> (const _Field & F, VectStream & stream) :
+		SparseMatrix2<_Field, SparseMatrixFormat::CSR> (const _Field & F, VectStream & stream) :
 			_rownb(stream.size()),_colnb(stream.dim()),
 			_start(_rownb+1),_colid(0),_data(0)
 			, _nbnz(0)
@@ -246,7 +246,7 @@ namespace LinBox
 		 * @param S a sparse matrix in any storage.
 		 */
 		template<class _OtherStorage>
-		SparseMatrix2<_Field, SparseMatrix2Format::CSR> (const SparseMatrix2<_Field, _OtherStorage> & S) :
+		SparseMatrix2<_Field, SparseMatrixFormat::CSR> (const SparseMatrix2<_Field, _OtherStorage> & S) :
 			_rownb(S._rownb),_colnb(S._colnb),
 			_start(S.rowdim()+1),_colid(S.size()),_data(S.size()),
 			_field(S._field)
@@ -265,7 +265,7 @@ namespace LinBox
 		/*! Import a matrix in COO format to CSR.
 		 * @param S COO matrix to be converted in CSR
 		 */
-		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::COO> &S)
+		void importe(const SparseMatrix2<_Field,SparseMatrixFormat::COO> &S)
 		{
 			resize(S.rowdim(), S.coldim(), S.size());
 
@@ -282,7 +282,7 @@ namespace LinBox
 		 * @param S CSR matrix to be converted in CSR
 		 */
 
-		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
+		void importe(const SparseMatrix2<_Field,SparseMatrixFormat::CSR> &S)
 		{
 			resize( S.rowdim(), S.coldim(), S.size() );
 
@@ -294,8 +294,8 @@ namespace LinBox
 		/*! Export a matrix in CSR format from COO.
 		 * @param S CSR matrix to be converted from COO
 		 */
-		SparseMatrix2<_Field,SparseMatrix2Format::CSR > &
-		exporte(SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
+		SparseMatrix2<_Field,SparseMatrixFormat::CSR > &
+		exporte(SparseMatrix2<_Field,SparseMatrixFormat::CSR> &S)
 		{
 			// S = *this ;
 
@@ -307,8 +307,8 @@ namespace LinBox
 			return S ;
 		}
 
-		SparseMatrix2<_Field,SparseMatrix2Format::COO > &
-		exporte(SparseMatrix2<_Field,SparseMatrix2Format::COO> &S)
+		SparseMatrix2<_Field,SparseMatrixFormat::COO > &
+		exporte(SparseMatrix2<_Field,SparseMatrixFormat::COO> &S)
 		{
 			// S = *this ;
 
@@ -328,7 +328,7 @@ namespace LinBox
 		*/
 		void transposeIn()
 		{
-			SparseMatrix2<_Field,SparseMatrix2Format::CSR> Temp(*this);
+			SparseMatrix2<_Field,SparseMatrixFormat::CSR> Temp(*this);
 			resize(_colnb, _rownb, _nbnz );
 
 			for (size_t i = 0 ; i <= _colnb ; ++i)
@@ -360,8 +360,8 @@ namespace LinBox
 		 *  @param S [out] transpose of self.
 		 *  @return a reference to \p S.
 		 */
-		SparseMatrix2<_Field,SparseMatrix2Format::CSR> &
-		transpose(SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
+		SparseMatrix2<_Field,SparseMatrixFormat::CSR> &
+		transpose(SparseMatrix2<_Field,SparseMatrixFormat::CSR> &S)
 		{
 			// linbox_check(S.rowdim() == _colnb);
 			// linbox_check(S.coldim() == _rownb);
@@ -436,6 +436,7 @@ namespace LinBox
 			return x = getEntry (i, j);
 		}
 
+		void finalize(){} // end construction after a sequence of setEntry calls.
 		/** Set an individual entry.
 		 * Setting the entry to 0 will not remove it from the matrix
 		 * @param i Row _colid of entry

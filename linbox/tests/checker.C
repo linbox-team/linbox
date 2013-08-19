@@ -400,6 +400,10 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
+		  Build_n_run("test-sparse2",                       counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
 		  Build_n_run("test-subiterator",                  counter , flag);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section

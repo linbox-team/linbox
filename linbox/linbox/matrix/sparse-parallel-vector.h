@@ -485,7 +485,7 @@ namespace LinBox
 
 
 			// JGD 26.11.2012
-			// Since siome compliers would not choose it even though they are
+			// Since some compliers would not choose it even though they are
 			// called via a ConstIterator, const version is removed,
 			// call to const is now only explicit
 			// via call to "value()" below instead

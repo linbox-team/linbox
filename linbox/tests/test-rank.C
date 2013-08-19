@@ -48,7 +48,7 @@
 #include "linbox/field/gf2.h"
 #include "linbox/field/givaro.h"
 #include "linbox/blackbox/diagonal.h"
-#include "linbox/matrix/sparse-matrix.h"
+//#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/direct-sum.h"
@@ -72,11 +72,11 @@ template <class Field>
 bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
 	 typedef SparseMatrix<Field,typename Vector<Field>::SparseSeq> Blackbox;
-	//typedef SparseMatrix2<Field,SparseMatrix2Format::COO> Blackbox;
-	// typedef SparseMatrix2<Field,SparseMatrix2Format::CSR> Blackbox; // inf loop
-	// typedef SparseMatrix2<Field,SparseMatrix2Format::ELL> Blackbox;
-	// typedef SparseMatrix2<Field,SparseMatrix2Format::ELL_R> Blackbox;
-	// typedef SparseMatrix2<Field,SparseMatrix2Format::HYB> Blackbox;
+	//typedef SparseMatrix2<Field,SparseMatrixFormat::COO> Blackbox;
+	// typedef SparseMatrix2<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
+	// typedef SparseMatrix2<Field,SparseMatrixFormat::ELL> Blackbox;
+	// typedef SparseMatrix2<Field,SparseMatrixFormat::ELL_R> Blackbox;
+	// typedef SparseMatrix2<Field,SparseMatrixFormat::HYB> Blackbox;
 
 	commentator().start ("Testing elimination-based and blackbox rank", "testRankMethods", (unsigned int)iterations);
 

@@ -54,7 +54,7 @@ namespace LinBox
 
 	template<class Field>
 	class Stats {
-		const SparseMatrix2<Field,SparseMatrix2Format::CSR> & _Mat;
+		const SparseMatrix2<Field,SparseMatrixFormat::CSR> & _Mat;
 		const Field & _field ;
 	public:
 		size_t one ;
@@ -72,7 +72,7 @@ namespace LinBox
 		size_t ell_one ;
 		size_t ell_mone ;
 	public :
-		Stats( const SparseMatrix2<Field,SparseMatrix2Format::CSR> & Mat) :
+		Stats( const SparseMatrix2<Field,SparseMatrixFormat::CSR> & Mat) :
 			_Mat(Mat),_field(_Mat.field())
 			,one(0),mone(0)
 			,row(Mat.rowdim(),0)
@@ -105,7 +105,7 @@ namespace LinBox
 			avg = std::ceil((Mat.rowdim()-null_row.size())/Mat.size());
 		}
 
-		void getOptimsedFormat(SparseMatrix2<Field,SparseMatrix2Format::HYB> & hyb)
+		void getOptimsedFormat(SparseMatrix2<Field,SparseMatrixFormat::HYB> & hyb)
 		{
 			// std::sort(row.start(), row.end());
 			// std::vector<size_t>::iterator up;
@@ -184,12 +184,12 @@ namespace LinBox
 	 * \ingroup sparse
 	 */
 	template<class _Field>
-	class SparseMatrix2<_Field, SparseMatrix2Format::HYB > {
+	class SparseMatrix2<_Field, SparseMatrixFormat::HYB > {
 	public :
 		typedef _Field                             Field ; //!< Field
 		typedef typename _Field::Element         Element ; //!< Element
 		typedef const Element               constElement ; //!< const Element
-		typedef SparseMatrix2Format::HYB         Storage ; //!< Matrix Storage Format
+		typedef SparseMatrixFormat::HYB         Storage ; //!< Matrix Storage Format
 		typedef SparseMatrix2<_Field,Storage>     Self_t ; //!< Self type
 		// typedef Vector<_Field,VectorStorage::Sparse> Rep ;
 
@@ -198,28 +198,28 @@ namespace LinBox
 		 *
 		 */
 		//@{
-		SparseMatrix2<_Field, SparseMatrix2Format::HYB> () :
+		SparseMatrix2<_Field, SparseMatrixFormat::HYB> () :
 			_rownb(0),_colnb(0) ,_nbnz(0)
 			,_coo(NULL),_csr(NULL),_ell_r(NULL)
 			, _field()
 		{
 		}
 
-		SparseMatrix2<_Field, SparseMatrix2Format::HYB> (const _Field & F) :
+		SparseMatrix2<_Field, SparseMatrixFormat::HYB> (const _Field & F) :
 			_rownb(0),_colnb(0) ,_nbnz(0)
 			,_coo(NULL),_csr(NULL),_ell_r(NULL)
 			, _field(F)
 		{
 		}
 
-		SparseMatrix2<_Field, SparseMatrix2Format::HYB> (const _Field & F, size_t m, size_t n) :
+		SparseMatrix2<_Field, SparseMatrixFormat::HYB> (const _Field & F, size_t m, size_t n) :
 			_rownb(m),_colnb(n) ,_nbnz(0)
 			,_coo(NULL),_csr(NULL),_ell_r(NULL)
 			, _field(F)
 		{
 		}
 
-		SparseMatrix2<_Field, SparseMatrix2Format::HYB> (const SparseMatrix2<_Field, SparseMatrix2Format::CSR> & S) :
+		SparseMatrix2<_Field, SparseMatrixFormat::HYB> (const SparseMatrix2<_Field, SparseMatrixFormat::CSR> & S) :
 			_rownb(S._rownb),_colnb(S._colnb), _nbnz(S._nbnz)
 			,_coo(NULL),_csr(NULL),_ell_r(NULL)
 			,_field(S._field)
@@ -230,12 +230,12 @@ namespace LinBox
 
 
 		// XXX only for CSR
-		template<typename _Tp1, typename _Rw1 = SparseMatrix2Format::HYB>
+		template<typename _Tp1, typename _Rw1 = SparseMatrixFormat::HYB>
 		struct rebind ;
 
 		template<typename _Tp1>
 		struct rebind<_Tp1 > {
-			typedef SparseMatrix2<_Tp1, SparseMatrix2Format::HYB> other;
+			typedef SparseMatrix2<_Tp1, SparseMatrixFormat::HYB> other;
 
 			void operator() (other & Ap, const Self_t& A)
 			{
@@ -244,26 +244,26 @@ namespace LinBox
 
 				if (A.have_reader()) {
 					Ap.newReader();
-					typename SparseMatrix2<Field,SparseMatrix2Format::CSR>::template
-					rebind<_Tp1,SparseMatrix2Format::CSR>()(Ap.reader(),A.reader());
+					typename SparseMatrix2<Field,SparseMatrixFormat::CSR>::template
+					rebind<_Tp1,SparseMatrixFormat::CSR>()(Ap.reader(),A.reader());
 				}
 
 				if (A.have_coo()) {
 					Ap.newCOO();
-					typename SparseMatrix2<Field,SparseMatrix2Format::COO>::template
-					rebind<_Tp1,SparseMatrix2Format::COO>()(Ap.coo(),A.coo());
+					typename SparseMatrix2<Field,SparseMatrixFormat::COO>::template
+					rebind<_Tp1,SparseMatrixFormat::COO>()(Ap.coo(),A.coo());
 				}
 
 				if (A.have_csr()) {
 					Ap.newCSR();
-					typename SparseMatrix2<Field,SparseMatrix2Format::CSR>::template
-					rebind<_Tp1,SparseMatrix2Format::CSR>()(Ap.csr(),A.csr());
+					typename SparseMatrix2<Field,SparseMatrixFormat::CSR>::template
+					rebind<_Tp1,SparseMatrixFormat::CSR>()(Ap.csr(),A.csr());
 				}
 
 				if (A.have_ell_r()) {
 					Ap.newELL_R();
-					typename SparseMatrix2<Field,SparseMatrix2Format::ELL_R>::template
-					rebind<_Tp1,SparseMatrix2Format::ELL_R>()(Ap.ell_r(),A.ell_r());
+					typename SparseMatrix2<Field,SparseMatrixFormat::ELL_R>::template
+					rebind<_Tp1,SparseMatrixFormat::ELL_R>()(Ap.ell_r(),A.ell_r());
 				}
 			}
 		};
@@ -277,19 +277,19 @@ namespace LinBox
 			,_field(F)
 		{
 			typename SparseMatrix2<_Tp1,_Rw1>::template
-			rebind<Field,SparseMatrix2Format::HYB>()(*this, S);
+			rebind<Field,SparseMatrixFormat::HYB>()(*this, S);
 		}
 
 
 
 
 		template<class VectStream>
-		SparseMatrix2<_Field, SparseMatrix2Format::HYB> (const _Field & F, VectStream & stream) :
+		SparseMatrix2<_Field, SparseMatrixFormat::HYB> (const _Field & F, VectStream & stream) :
 			_rownb(stream.size()),_colnb(stream.dim()), _nbnz(0)
 			,_coo(NULL),_csr(NULL),_ell_r(NULL)
 			, _field(F)
 		{
-			_csr = (new SparseMatrix2<Field,SparseMatrix2Format::CSR>(F,stream));
+			_csr = (new SparseMatrix2<Field,SparseMatrixFormat::CSR>(F,stream));
 		}
 
 
@@ -304,7 +304,7 @@ namespace LinBox
 		 * @param S a sparse matrix in any storage.
 		 */
 		template<class _OtherStorage>
-		SparseMatrix2<_Field, SparseMatrix2Format::HYB> (const SparseMatrix2<_Field, _OtherStorage> & S) :
+		SparseMatrix2<_Field, SparseMatrixFormat::HYB> (const SparseMatrix2<_Field, _OtherStorage> & S) :
 			_rownb(S._rownb),_colnb(S._colnb),_nbnz(S._nbnz)
 			,_coo(NULL),_csr(NULL),_ell_r(NULL)
 			,_field(S._field)
@@ -312,7 +312,7 @@ namespace LinBox
 			this->importe(S); // convert Temp from anything
 		}
 
-		~SparseMatrix2<_Field, SparseMatrix2Format::HYB>()
+		~SparseMatrix2<_Field, SparseMatrixFormat::HYB>()
 		{
 			if(have_coo()) {
 				delete _coo ;
@@ -342,7 +342,7 @@ namespace LinBox
 		/*! Import a matrix in CSR format to HYB.
 		 * @param S HYB matrix to be converted in HYB and optimsed
 		 */
-		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
+		void importe(const SparseMatrix2<_Field,SparseMatrixFormat::CSR> &S)
 		{
 			optimise();
 		}
@@ -396,7 +396,7 @@ namespace LinBox
 		 * @param S CSR matrix to be converted in CSR
 		 */
 
-		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::HYB> &A)
+		void importe(const SparseMatrix2<_Field,SparseMatrixFormat::HYB> &A)
 		{
 			resize( A.rowdim(), A.coldim(), A.size() );
 
@@ -419,14 +419,14 @@ namespace LinBox
 		/*! Export a matrix in CSR format from COO.
 		 * @param S CSR matrix to be converted from COO
 		 */
-		SparseMatrix2<_Field,SparseMatrix2Format::HYB > &
-		exporte(SparseMatrix2<_Field,SparseMatrix2Format::HYB> &S) const
+		SparseMatrix2<_Field,SparseMatrixFormat::HYB > &
+		exporte(SparseMatrix2<_Field,SparseMatrixFormat::HYB> &S) const
 		{
 
 			// could save memory by doing that iteratively and resize to 0,0,0
-			SparseMatrix2<_Field,SparseMatrix2Format::CSR> S1(field());
-			SparseMatrix2<_Field,SparseMatrix2Format::CSR> S2(field());
-			SparseMatrix2<_Field,SparseMatrix2Format::CSR> S3(field());
+			SparseMatrix2<_Field,SparseMatrixFormat::CSR> S1(field());
+			SparseMatrix2<_Field,SparseMatrixFormat::CSR> S2(field());
+			SparseMatrix2<_Field,SparseMatrixFormat::CSR> S3(field());
 			if (have_coo()) {
 				S1.importe(coo());
 			}
@@ -470,8 +470,8 @@ namespace LinBox
 		 *  @param S [out] transpose of self.
 		 *  @return a reference to \p S.
 		 */
-		SparseMatrix2<_Field,SparseMatrix2Format::HYB> &
-		transpose(SparseMatrix2<_Field,SparseMatrix2Format::HYB> &S)
+		SparseMatrix2<_Field,SparseMatrixFormat::HYB> &
+		transpose(SparseMatrix2<_Field,SparseMatrixFormat::HYB> &S)
 		{
 			if (have_coo()) {
 				S.newCoo();
@@ -542,6 +542,8 @@ namespace LinBox
 			std::cout << " *** Warning/Error **** un optimised" << std::endl;
 			return x = getEntry (i, j);
 		}
+
+		void finalize(){ optimise(); } // end construction after a sequence of setEntry calls.
 
 		/** Set an individual entry.
 		 * Setting the entry to 0 will not remove it from the matrix
@@ -779,7 +781,7 @@ namespace LinBox
 				return reader().write(os,format);
 			}
 
-			// SparseMatrix2<Field,SparseMatrix2Format::CSR> Temp(field());
+			// SparseMatrix2<Field,SparseMatrixFormat::CSR> Temp(field());
 			// this->exporte(Temp);
 			// Temp.write(os,format);
 			return os << "no export yet in HYB" << __FILE__ << ',' <<   __LINE__ ;
@@ -794,28 +796,28 @@ namespace LinBox
 		void newCOO ()
 		{
 			linbox_check (!have_coo())
-			_coo= new SparseMatrix2<Field,SparseMatrix2Format::COO>(_field);
+			_coo= new SparseMatrix2<Field,SparseMatrixFormat::COO>(_field);
 
 		}
 
 		void newCSR ()
 		{
 			linbox_check (!have_csr()) ;
-			_csr= new SparseMatrix2<Field,SparseMatrix2Format::CSR>(_field);
+			_csr= new SparseMatrix2<Field,SparseMatrixFormat::CSR>(_field);
 
 		}
 
 		void newELL_R ()
 		{
 			linbox_check (!have_ell_r()) ;
-			_ell_r= new SparseMatrix2<Field,SparseMatrix2Format::ELL_R>(_field);
+			_ell_r= new SparseMatrix2<Field,SparseMatrixFormat::ELL_R>(_field);
 
 		}
 
 		void newReader ()
 		{
 			linbox_check(!have_reader()) ;
-			_reader= new SparseMatrix2<Field,SparseMatrix2Format::CSR>(_field);
+			_reader= new SparseMatrix2<Field,SparseMatrixFormat::CSR>(_field);
 		}
 
 
@@ -837,13 +839,13 @@ namespace LinBox
 			return _reader != NULL ;
 		}
 
-	SparseMatrix2<Field,SparseMatrix2Format::COO> & coo(void)
+	SparseMatrix2<Field,SparseMatrixFormat::COO> & coo(void)
 		{
 			linbox_check(have_coo());
 			return _coo[0] ;
 		}
 
-	const SparseMatrix2<Field,SparseMatrix2Format::COO> & coo(void) const
+	const SparseMatrix2<Field,SparseMatrixFormat::COO> & coo(void) const
 		{
 			linbox_check(have_coo());
 			return _coo[0] ;
@@ -851,37 +853,37 @@ namespace LinBox
 
 
 
-		SparseMatrix2<Field,SparseMatrix2Format::CSR> & csr(void)
+		SparseMatrix2<Field,SparseMatrixFormat::CSR> & csr(void)
 		{
 			linbox_check(have_csr());
 			return _csr[0] ;
 		}
 
-		const	SparseMatrix2<Field,SparseMatrix2Format::CSR> & csr(void) const
+		const	SparseMatrix2<Field,SparseMatrixFormat::CSR> & csr(void) const
 		{
 			linbox_check(have_csr());
 			return _csr[0] ;
 		}
 
-		SparseMatrix2<Field,SparseMatrix2Format::ELL_R> & ell_r(void)
+		SparseMatrix2<Field,SparseMatrixFormat::ELL_R> & ell_r(void)
 		{
 			linbox_check(have_ell_r());
 			return _ell_r[0] ;
 		}
 
-		const	SparseMatrix2<Field,SparseMatrix2Format::ELL_R> & ell_r(void) const
+		const	SparseMatrix2<Field,SparseMatrixFormat::ELL_R> & ell_r(void) const
 		{
 			linbox_check(have_ell_r());
 			return _ell_r[0] ;
 		}
 
-		SparseMatrix2<Field,SparseMatrix2Format::CSR> & reader(void)
+		SparseMatrix2<Field,SparseMatrixFormat::CSR> & reader(void)
 		{
 			linbox_check(have_reader());
 			return _reader[0] ;
 		}
 
-		const SparseMatrix2<Field,SparseMatrix2Format::CSR> & reader(void) const
+		const SparseMatrix2<Field,SparseMatrixFormat::CSR> & reader(void) const
 		{
 			linbox_check(have_reader());
 			return _reader[0] ;
@@ -896,11 +898,11 @@ namespace LinBox
 		size_t              _colnb ;
 		size_t               _nbnz ;
 
-		SparseMatrix2<Field,SparseMatrix2Format::COO>   * _coo  ;
-		SparseMatrix2<Field,SparseMatrix2Format::CSR>   * _csr  ;
-		SparseMatrix2<Field,SparseMatrix2Format::ELL_R> * _ell_r ;
+		SparseMatrix2<Field,SparseMatrixFormat::COO>   * _coo  ;
+		SparseMatrix2<Field,SparseMatrixFormat::CSR>   * _csr  ;
+		SparseMatrix2<Field,SparseMatrixFormat::ELL_R> * _ell_r ;
 
-		SparseMatrix2<Field,SparseMatrix2Format::CSR>   * _reader  ;
+		SparseMatrix2<Field,SparseMatrixFormat::CSR>   * _reader  ;
 
 		const _Field            & _field ;
 

@@ -501,8 +501,8 @@ bool runSparseMatrixTestsByVector (const Field           &F,
 	A_stream.reset ();
 	if (testRW){
 		if (!testBlackbox(A)) 					pass = false;
-		else
-			if (!testBlackboxNoRW(A)) 				pass = false;
+	else 
+		if (!testBlackboxNoRW(A)) 				pass = false;
 	}
 	commentator().progress ();
 
@@ -518,12 +518,6 @@ bool runSparseMatrixTests (const Field       &F,
 			   VectorStream<Row> &A_stream,
 				bool testRW)
 {
-	//! @bug seems like this is defined elsewhere... why ?
-	typedef std::vector <typename Field::Element> DenseVector;
-	typedef std::vector <pair <size_t, typename Field::Element> > SparseSeqVector;
-	typedef std::map <size_t, typename Field::Element> SparseMapVector;
-	typedef std::pair <std::vector<size_t>, std::vector<typename Field::Element> > SparseParVector;
-
 	bool pass = true;
 
 	ostringstream str1, str2, str3, str4, str5;
@@ -536,35 +530,31 @@ bool runSparseMatrixTests (const Field       &F,
 	str4 << desc << "/sparse associative" << ends;
 	str5 << desc << "/sparse parallel" << ends;
 
-	RandomDenseStream<Field, DenseVector>     dense_stream1 (F, A_stream.n (), (size_t)iterations);
-	RandomDenseStream<Field, DenseVector>     dense_stream2 (F, A_stream.m (), (size_t)iterations);
-#if 0
-	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream1 (F, 0.1, A_stream.n (), iterations);
-	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream2 (F, 0.1, A_stream.m (), iterations);
-	RandomSparseStream<Field, SparseMapVector> sparse_map_stream1 (F, 0.1, A_stream.n (), iterations);
-	RandomSparseStream<Field, SparseMapVector> sparse_map_stream2 (F, 0.1, A_stream.m (), iterations);
-	RandomSparseStream<Field, SparseParVector> sparse_par_stream1 (F, 0.1, A_stream.n (), iterations);
-	RandomSparseStream<Field, SparseParVector> sparse_par_stream2 (F, 0.1, A_stream.m (), iterations);
-#endif
+	RandomDenseStream<Field, typename Vector<Field>::Dense>     dense_stream1 (F, A_stream.n (), (size_t)iterations);
+	RandomDenseStream<Field, typename Vector<Field>::Dense>     dense_stream2 (F, A_stream.m (), (size_t)iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparseSeq> sparse_seq_stream1 (F, 0.1, A_stream.n (), iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparseSeq> sparse_seq_stream2 (F, 0.1, A_stream.m (), iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparseMap> sparse_map_stream1 (F, 0.1, A_stream.n (), iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparseMap> sparse_map_stream2 (F, 0.1, A_stream.m (), iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparsePar> sparse_par_stream1 (F, 0.1, A_stream.n (), iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparsePar> sparse_par_stream2 (F, 0.1, A_stream.m (), iterations);
 
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), (unsigned int)iterations,
 					   dense_stream1, dense_stream2, A_stream, testRW))
 		pass = false;
-#if 0
 	commentator().progress ();
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
-					   sparse_seq_stream1, sparse_seq_stream2, A_stream))
+					   sparse_seq_stream1, sparse_seq_stream2, A_stream, testRW))
 		pass = false;
 	commentator().progress ();
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
-					   sparse_map_stream1, sparse_map_stream2, A_stream))
+					   sparse_map_stream1, sparse_map_stream2, A_stream, testRW))
 		pass = false;
 	commentator().progress ();
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
-					   sparse_par_stream1, sparse_par_stream2, A_stream))
+					   sparse_par_stream1, sparse_par_stream2, A_stream, testRW))
 		pass = false;
 	commentator().progress ();
-#endif
 
 	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runSparseMatrixTests");
 
@@ -597,12 +587,6 @@ int main (int argc, char **argv)
 	typedef	Modular<double> Field;
 	typedef Field::Element  Element;
 
-	//! @bug seems like this is defined elsewhere... why ?
-	typedef std::vector <Element> DenseVector;
-	typedef std::vector <pair <size_t, Element> > SparseSeqVector;
-	typedef std::map <size_t, Element> SparseMapVector;
-	typedef std::pair <std::vector<size_t>, std::vector<Element> > SparseParVector;
-
 	Field F (q);
 
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
@@ -610,19 +594,17 @@ int main (int argc, char **argv)
 
 	commentator().start("Sparse matrix black box test suite", "Sparse");
 
-	RandomSparseStream<Field, SparseSeqVector>
+	RandomSparseStream<Field, Vector<Field>::SparseSeq>
 		stream1 (F, (double) k / (double) n, n, m);
-	RandomSparseStream<Field, SparseMapVector>
+	RandomSparseStream<Field, Vector<Field>::SparseMap>
 		stream2 (F, (double) k / (double) n, n, m);
-	RandomSparseStream<Field, SparseParVector>
+	RandomSparseStream<Field, Vector<Field>::SparsePar>
 		stream3 (F, (double) k / (double) n, n, m);
 	bool testRW = true;
-#if 0
 	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1, !testRW))
 		pass = false;
 	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2, !testRW))
 		pass = false;
-#endif
 	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3, testRW))
 		pass = false;
 
