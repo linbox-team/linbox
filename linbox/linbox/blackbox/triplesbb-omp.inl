@@ -232,13 +232,13 @@ template<class Field_>
 template<class Mat1, class Mat2> Mat1& TriplesBBOMP<Field_>::
 applyLeft(Mat1 &Y, const Mat2 &X) const
 {
-        typedef AbnormalMatrix<Field_,true,64> AbnormalMat;
-        typedef typename AbnormalMat::AbnormalSubmatrix AbnormalSubmat;
-        AbnormalMat YTemp(field(),Y.rowdim(),Y.coldim());
+        Y.zero();
+        typedef AbnormalMatrix<Field_,Mat1> AbnormalMat;
+        AbnormalMat YTemp(field(),Y);
 
 #pragma omp parallel
 	{
-                Matrix Xc;
+                Matrix Xr;
 
 		Index numBlockSizes=rowBlocks_.size();
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
@@ -253,15 +253,15 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
 					for (Index k=0;k<dataBlock->elts_.size();++k) {
                                                 const Index row=dataBlock->getRow(k);
                                                 const Index col=dataBlock->getCol(k);
-                                                AbnormalSubmat Yc=YTemp.rowSlice(row);
-                                                Xc.submatrix(X,col,0,1,X.coldim());
-                                                Yc.saxpyin(dataBlock->elts_[k],Xc);
+                                                Xr.submatrix(X,col,0,1,X.coldim());
+                                                YTemp.saxpyin(dataBlock->elts_[k],Xr,
+                                                              row,0,1,Y.coldim());
                                         }
                                 }
                         }
                 }
         }
-        YTemp.wholeSlice().normalize(Y);
+        YTemp.normalize();
         return Y;
 }
 
@@ -269,13 +269,13 @@ template<class Field_>
 template<class Mat1, class Mat2> Mat1& TriplesBBOMP<Field_>::
 applyRight(Mat1 &Y, const Mat2 &X) const
 {
-        typedef AbnormalMatrix<Field_,true,64> AbnormalMat;
-        typedef typename AbnormalMat::AbnormalSubmatrix AbnormalSubmat;
-        AbnormalMat YTemp(field(),Y.rowdim(),Y.coldim());
+        Y.zero();
+        typedef AbnormalMatrix<Field_,Mat1> AbnormalMat;
+        AbnormalMat YTemp(field(),Y);
 
 #pragma omp parallel
 	{
-                Matrix Xr;
+                Matrix Xc;
 
 		Index numBlockSizes=colBlocks_.size();
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
@@ -290,15 +290,15 @@ applyRight(Mat1 &Y, const Mat2 &X) const
 					for (Index k=0;k<dataBlock->elts_.size();++k) {
                                                 const Index row=dataBlock->getRow(k);
                                                 const Index col=dataBlock->getCol(k);
-                                                AbnormalSubmat Yr=YTemp.colSlice(col);
-						Xr.submatrix(X,0,row,X.rowdim(),1);
-                                                Yr.saxpyin(dataBlock->elts_[k],Xr);
+						Xc.submatrix(X,0,row,X.rowdim(),1);
+                                                YTemp.saxpyin(dataBlock->elts_[k],Xc,
+                                                              0,col,Y.rowdim(),1);
                                         }
                                 }
                         }
                 }
         }
-        YTemp.wholeSlice().normalize(Y);
+        YTemp.normalize();
         return Y;
 }
 

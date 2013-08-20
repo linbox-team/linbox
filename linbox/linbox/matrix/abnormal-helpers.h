@@ -90,13 +90,13 @@ public:
                 return x;
         }
 
-	inline double normalize(double& elt) const
+	inline Element& normalize(Abnormal& elt) const
 	{
 		return elt=fmod(elt,modulus_);
 	}
 
 protected:
-	inline double& maybeNormalize(double& elt) const
+	inline Abnormal& maybeNormalize(Abnormal& elt) const
 	{
 		if (elt>=bound_) {
 			elt=fmod(elt,modulus_);
@@ -116,53 +116,6 @@ class AbnormalHelper<Modular<uint64_t> > {
 public:
 	typedef Modular<uint64_t> Field;
         typedef uint64_t Element;
-	typedef uint64_t Abnormal;
-
-	AbnormalHelper () {}
-
-	AbnormalHelper(const Field& field) {init(field);}
-
-	void init(const Field& field) {
-		modulus_=field.characteristic();
-		bound_=(uint64_t)(1ULL<<62);
-		field_=&field;
-	}
-
-	inline Abnormal& mulacc(Abnormal& x, const Element& y, const Element& z) const
-        {
-		Abnormal d;
-		d=y*z;
-		x=x+d;
-                maybeNormalize(x);
-                return x;
-        }
-
-	inline Element normalize(Abnormal& elt) const
-	{
-		return elt=elt%modulus_;
-	}
-
-protected:
-	inline Abnormal& maybeNormalize(Abnormal& elt) const
-	{
-		if (elt>=bound_) {
-                        elt=elt%modulus_;
-		}
-		return elt;
-	}
-
-	Abnormal modulus_;
-
-	Abnormal bound_;
-
-	const Field* field_;
-};
-
-template <>
-class AbnormalHelper<Modular<uint32_t> > {
-public:
-	typedef Modular<uint32_t> Field;
-        typedef uint32_t Element;
 	typedef uint64_t Abnormal;
 
 	AbnormalHelper () {}
