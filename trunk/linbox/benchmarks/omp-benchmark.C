@@ -37,6 +37,8 @@
 #include "benchmarks/CSValue.h"
 #include "benchmarks/BenchmarkFile.h"
 
+#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/util/timer.h"
@@ -52,6 +54,11 @@
 
 using namespace LinBox;
 
+typedef Modular<double> Field;
+typedef TriplesBBOMP<Field> OMPBB;
+typedef TriplesBB<Field> SeqBB;
+typedef SparseMatrix2<Field,SparseMatrixFormat::VPV> VPVBB;
+
 int randRange(int start, int end)
 {
         double rval = rand();
@@ -63,15 +70,14 @@ int randRange(int start, int end)
 }
 
 template<class Blackbox>
-void blockWiedemannBenchmark(BenchmarkFile& of,
-                             typename Blackbox::Field F,
-                             MapSparse<typename Blackbox::Field> matA,
-                             MapSparse<typename Blackbox::Field> matU,
-                             MapSparse<typename Blackbox::Field> matV,
-                             int numThreads)
+void runBlockWiedemann(BenchmarkFile& of,
+                       typename Blackbox::Field F,
+                       MapSparse<typename Blackbox::Field> matA,
+                       MapSparse<typename Blackbox::Field> matU,
+                       MapSparse<typename Blackbox::Field> matV,
+                       int iters)
 {
         typedef typename Blackbox::Field Field;
-        typedef typename Field::Element Element;
         typedef BlackboxBlockContainer<Field,Blackbox> BlockContainer;
         typedef BlasMatrix<Field> Block;
 
@@ -87,77 +93,28 @@ void blockWiedemannBenchmark(BenchmarkFile& of,
         matA.copy(A);
         A.finalize();
 
-        omp_set_num_threads(numThreads);
-
         BlockContainer Sequence(&A,F,U,V);
         BlockMasseyDomain<Field,BlockContainer> MBD(&Sequence);
         std::vector<Block> minpoly;
         std::vector<size_t> degree;
 
         double start = omp_get_wtime();
-        MBD.left_minpoly_rec(minpoly,degree);
+        for (int i=0;i<iters;++i) { 
+                MBD.left_minpoly_rec(minpoly,degree);
+        }
         double time=omp_get_wtime()-start;
 
         of.addDataField("time",CSDouble(time));
 }
 
-void randBlockWiedemannBenchmark(int numThreads,
-                                 int m,
-                                 int n,
-                                 int p,
-                                 int q,
-                                 int nnz,
-                                 int fieldPrime)
-{
-        typedef Modular<double> Field;
-        typedef TriplesBBOMP<Field> OMPBB;
-        typedef TriplesBB<Field> SeqBB;
-
-        BenchmarkFile benchmarkFile;
-        benchmarkFile.addMetadata("problem",CSString("Min-poly"));
-        benchmarkFile.addMetadata("date",BenchmarkFile::getDateStamp());
-        benchmarkFile.addMetadata("GF(q)",CSInt(fieldPrime));
-        benchmarkFile.addMetadata("left-matrix-rows",CSInt(n));
-        benchmarkFile.addMetadata("left-matrix-columns",CSInt(n));
-        benchmarkFile.addMetadata("right-matrix-columns",CSInt(p));
-        benchmarkFile.addMetadata("nnz",CSInt(nnz));
-        benchmarkFile.setType("date",BenchmarkFile::getDateFormat());
-        benchmarkFile.setType("time","seconds");
-
-        Field F(fieldPrime);
-
-        MapSparse<Field> A(F,m,n);
-        MapSparse<Field> U(F,p,m);
-        MapSparse<Field> V(F,n,q);
-        MapSparse<Field>::generateRandMat(A,nnz,fieldPrime);
-        MapSparse<Field>::generateDenseRandMat(U,fieldPrime);
-        MapSparse<Field>::generateDenseRandMat(V,fieldPrime);
-
-        benchmarkFile.addDataField("algorithm",CSString("Block-Wiedemann Parallel"));
-        benchmarkFile.addDataField("num_threads",CSInt(numThreads));
-        blockWiedemannBenchmark<OMPBB>(benchmarkFile,F,A,U,V,numThreads);
-        benchmarkFile.pushBackTest();
-
-        benchmarkFile.addDataField("algorithm",CSString("Block-Wiedemann Seq"));
-        benchmarkFile.addDataField("num_threads",CSInt(numThreads));
-        blockWiedemannBenchmark<SeqBB>(benchmarkFile,F,A,U,V,numThreads);
-        benchmarkFile.pushBackTest();
-
-        benchmarkFile.write(std::cout);
-}
-                                 
-
 template<class Blackbox>
-void randMMPTest(BenchmarkFile& of,
-                 typename Blackbox::Field F,
-                 MapSparse<typename Blackbox::Field> leftMat,
-                 MapSparse<typename Blackbox::Field> rightMat,
-                 int numThreads, int iters)
+void runMMP(BenchmarkFile& of,
+            typename Blackbox::Field F,
+            MapSparse<typename Blackbox::Field> leftMat,
+            MapSparse<typename Blackbox::Field> rightMat,
+            int iters)
 {
-        typedef typename Blackbox::Field Field;
-        typedef typename Field::Element Element;
-        typedef typename std::vector<Element> Vector;
-        typedef typename MatrixDomain<Field>::OwnMatrix OwnMatrix;
+        typedef typename MatrixDomain<typename Blackbox::Field>::OwnMatrix OwnMatrix;
 
         int m=leftMat.rowdim();
         int n=leftMat.coldim();
@@ -166,8 +123,6 @@ void randMMPTest(BenchmarkFile& of,
         Blackbox A(F,m,n);
         OwnMatrix x(F,n,p), y(F,n,p);
         linbox_check(n==p);
-
-        omp_set_num_threads(numThreads);
 
         leftMat.copy(A);
         rightMat.copy(x);
@@ -184,11 +139,11 @@ void randMMPTest(BenchmarkFile& of,
 }
 
 template<class Blackbox>
-void randMVPTest(BenchmarkFile& of,
-                 typename Blackbox::Field F,
-                 MapSparse<typename Blackbox::Field> mat,
-                 MapSparse<typename Blackbox::Field> vec,
-                 int numThreads, int iters)
+void runMVP(BenchmarkFile& of,
+            typename Blackbox::Field F,
+            MapSparse<typename Blackbox::Field> mat,
+            MapSparse<typename Blackbox::Field> vec,
+            int iters)
 {
         typedef typename Blackbox::Field Field;
         typedef typename Field::Element Element;
@@ -199,8 +154,6 @@ void randMVPTest(BenchmarkFile& of,
 
         Blackbox A(F,m,n);
         Vector x(n), y(n);
-
-        omp_set_num_threads(numThreads);
 
         mat.copy(A);
         vec.toVector(x);
@@ -216,111 +169,110 @@ void randMVPTest(BenchmarkFile& of,
         of.addDataField("time",CSDouble(time));
 }
 
-void MMPBenchmark(int numThreads,
-                  int n,
-                  int p,
-                  int nnz,
-                  int iters,
-                  int q)
-{
-        typedef Modular<double> Field;
-        typedef TriplesBBOMP<Field> OMPBB;
-        typedef TriplesBB<Field> SeqBB;
 
-        BenchmarkFile benchmarkFile;
-        benchmarkFile.addMetadata("problem",CSString("Matrix-Matrix Product"));
-        benchmarkFile.addMetadata("date",BenchmarkFile::getDateStamp());
-        benchmarkFile.addMetadata("GF(q)",CSInt(q));
-        benchmarkFile.addMetadata("left-matrix-rows",CSInt(n));
-        benchmarkFile.addMetadata("left-matrix-columns",CSInt(n));
-        benchmarkFile.addMetadata("right-matrix-columns",CSInt(p));
-        benchmarkFile.addMetadata("nnz",CSInt(nnz));
-        benchmarkFile.addMetadata("iterations",CSInt(iters));
-        benchmarkFile.setType("date",BenchmarkFile::getDateFormat());
-        benchmarkFile.setType("time","seconds");
+void blockWiedemannBenchmark(BenchmarkFile& benchmarkFile,
+                             int n,
+                             int m,
+                             int nnz,
+                             int iters,
+                             int q)
+{
+        benchmarkFile.addMetadata("problem",CSString("Min-poly"));
 
         Field F(q);
 
         MapSparse<Field> A(F,n,n);
-        MapSparse<Field> X(F,n,p);
+        MapSparse<Field> U(F,n,m);
+        MapSparse<Field> V(F,m,n);
         MapSparse<Field>::generateRandMat(A,nnz,q);
-        MapSparse<Field>::generateDenseRandMat(X,q);
+        MapSparse<Field>::generateDenseRandMat(U,q);
+        MapSparse<Field>::generateDenseRandMat(V,q);
 
-        benchmarkFile.addDataField("algorithm",CSString("TriplesBBOMP-applyLeft"));
-        benchmarkFile.addDataField("num_threads",CSInt(numThreads));
-        randMMPTest<OMPBB>(benchmarkFile,F,A,X,numThreads,iters);
+        benchmarkFile.addDataField("algorithm",CSString("Block-Wiedemann Parallel"));
+        runBlockWiedemann<OMPBB>(benchmarkFile,F,A,U,V,iters);
         benchmarkFile.pushBackTest();
 
-        benchmarkFile.addDataField("algorithm",CSString("TriplesBB-seq-applyLeft"));
-        randMMPTest<SeqBB>(benchmarkFile,F,A,X,1,iters);
+        benchmarkFile.addDataField("algorithm",CSString("Block-Wiedemann Seq"));
+        runBlockWiedemann<SeqBB>(benchmarkFile,F,A,U,V,iters);
         benchmarkFile.pushBackTest();
-        benchmarkFile.write(std::cout);
 }
 
 
-void MVPBenchmarkSuite(int numThreads,
-                       int n,
-                       int nnz,
-                       int iters,
-                       int q)
+void MMPBenchmark(BenchmarkFile& benchmarkFile,
+                  int n,
+                  int m,
+                  int nnz,
+                  int iters,
+                  int q)
 {
-        typedef Modular<double> Field;
-        typedef TriplesBBOMP<Field> OMPBB;
-        typedef TriplesBB<Field> SeqBB;
+        benchmarkFile.addMetadata("problem",CSString("Matrix-Matrix Product"));
 
-        int m=n;
         Field F(q);
 
-        BenchmarkFile benchmarkFile;
-        benchmarkFile.addMetadata("problem",CSString("Matrix-Vector Product"));
-        benchmarkFile.addMetadata("date",BenchmarkFile::getDateStamp());
-        benchmarkFile.addMetadata("GF(q)",CSInt(q));
-        benchmarkFile.addMetadata("rows",CSInt(m));
-        benchmarkFile.addMetadata("columns",CSInt(n));
-        benchmarkFile.addMetadata("nnz",CSInt(nnz));
-        benchmarkFile.addMetadata("iterations",CSInt(iters));
-        benchmarkFile.setType("date",BenchmarkFile::getDateFormat());
-        benchmarkFile.setType("time","seconds");
-
-        MapSparse<Field> A(F,m,n);
-        MapSparse<Field> X(F,n,1);
+        MapSparse<Field> A(F,n,n);
+        MapSparse<Field> X(F,n,m);
         MapSparse<Field>::generateRandMat(A,nnz,q);
         MapSparse<Field>::generateDenseRandMat(X,q);
-        benchmarkFile.addDataField("algorithm",CSString("TriplesBBOMP-apply"));
-        benchmarkFile.addDataField("num_threads",CSInt(numThreads));
-        randMVPTest<OMPBB>(benchmarkFile,F,A,X,numThreads,iters);
-        benchmarkFile.pushBackTest();
 
         benchmarkFile.addDataField("algorithm",CSString("TriplesBBOMP-applyLeft"));
-        benchmarkFile.addDataField("num_threads",CSInt(numThreads));
-        randMMPTest<OMPBB>(benchmarkFile,F,A,X,numThreads,iters);
+        runMMP<OMPBB>(benchmarkFile,F,A,X,iters);
         benchmarkFile.pushBackTest();
 
         benchmarkFile.addDataField("algorithm",CSString("TriplesBB-seq-applyLeft"));
-        benchmarkFile.addDataField("num_threads",CSInt(numThreads));
-        randMMPTest<SeqBB>(benchmarkFile,F,A,X,numThreads,iters);
+        runMMP<SeqBB>(benchmarkFile,F,A,X,iters);
+        benchmarkFile.pushBackTest();
+}
+
+
+void MVPBenchmark(BenchmarkFile& benchmarkFile,
+                  int n,
+                  int nnz,
+                  int iters,
+                  int q)
+{
+        benchmarkFile.addMetadata("problem",CSString("Matrix-Vector Product"));
+
+        Field F(q);
+
+        MapSparse<Field> A(F,n,n);
+        MapSparse<Field> X(F,n,1);
+        MapSparse<Field>::generateRandMat(A,nnz,q);
+        MapSparse<Field>::generateDenseRandMat(X,q);
+
+        benchmarkFile.addDataField("algorithm",CSString("TriplesBBOMP-apply"));
+        runMVP<OMPBB>(benchmarkFile,F,A,X,iters);
+        benchmarkFile.pushBackTest();
+
+        benchmarkFile.addDataField("algorithm",CSString("TriplesBBOMP-applyLeft"));
+        runMVP<OMPBB>(benchmarkFile,F,A,X,iters);
+        benchmarkFile.pushBackTest();
+
+        benchmarkFile.addDataField("algorithm",CSString("TriplesBB-seq-applyLeft"));
+        runMVP<SeqBB>(benchmarkFile,F,A,X,iters);
         benchmarkFile.pushBackTest();
 
         benchmarkFile.addDataField("algorithm",CSString("TriplesBB-seq-apply"));
-        randMVPTest<SeqBB>(benchmarkFile,F,A,X,1,iters);
+        runMVP<SeqBB>(benchmarkFile,F,A,X,iters);
         benchmarkFile.pushBackTest();
-        benchmarkFile.write(std::cout);
+
+        benchmarkFile.addDataField("algorithm",CSString("SparseMatrix::VPV"));
+        runMVP<VPVBB>(benchmarkFile,F,A,X,iters);
+        benchmarkFile.pushBackTest();
 }
 
 int main(int argc, char **argv)
 {
-        int numThreads=1,n=50000,p=100,iters=30,q=65521,m=100,r=100,nnz=50000;
-        bool runMMPBenchmarks=false,runMVPBenchmarks=true,runWiedemann=false;
+        int numThreads=1,n=50000,m=100,nnz=50000,q=65521,iters=1;
+        bool runMMPBenchmarks=false,runMVPBenchmarks=false,runWiedemann=false;
 
 	static Argument args[] = {
 		{ 't', "-t THREADS", "Number of threads", TYPE_INT, &numThreads },
-                { 'm', "-m M", "Dimension", TYPE_INT, &m },
-                { 'r', "-r R", "Dimension", TYPE_INT, &r },
-                { 'n', "-n N", "Dimension of N*N matrix", TYPE_INT, &n },
-                { 'p', "-p P", "Dimension of N*P matrix", TYPE_INT, &p },
-                { 'i', "-i ITERS", "Number of iterations", TYPE_INT, &iters},
-                { 'q', "-q PRIME", "Use field GF(Q) for prime Q", TYPE_INT, &q},
+                { 'n', "-n N", "Dimension of N*N matrix A", TYPE_INT, &n },
+                { 'm', "-m M", "Dimension of N*M matrix X", TYPE_INT, &m },
                 { 'z', "-z NNZ", "Number of non-zero entries", TYPE_INT, &nnz},
+                { 'q', "-q PRIME", "Use field GF(Q) for prime Q", TYPE_INT, &q},
+                { 'i', "-i ITERS", "Number of iterations", TYPE_INT, &iters},
+
                 { 'a', NULL, "Run Matrix-Matrix Benchmarks", TYPE_BOOL,&runMMPBenchmarks},
                 { 'b', NULL, "Run Matrix-Vector Benchmarks", TYPE_BOOL,&runMVPBenchmarks},
                 { 'c', NULL, "Run Block-Wiedemann Benchmarks", TYPE_BOOL,&runWiedemann},
@@ -328,15 +280,35 @@ int main(int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
+        BenchmarkFile benchmarkFile;
+
+        benchmarkFile.addMetadata("Field-Implementation",CSString("Modular<double>"));
+        benchmarkFile.addMetadata("num_threads",CSInt(numThreads));
+        benchmarkFile.addMetadata("N*N Blackbox Dimensions",CSInt(n));
+        benchmarkFile.addMetadata("Fat Vector Dimension",CSInt(m));
+        benchmarkFile.addMetadata("nnz",CSInt(nnz));
+        benchmarkFile.addMetadata("iterations",CSInt(iters));
+        benchmarkFile.addMetadata("date",BenchmarkFile::getDateStamp());
+        benchmarkFile.addMetadata("GF(q)",CSInt(q));
+
+        benchmarkFile.setType("date",BenchmarkFile::getDateFormat());
+        benchmarkFile.setType("time","seconds");
+
+        omp_set_num_threads(numThreads);
+
         if (runMMPBenchmarks) {
-                MMPBenchmark(numThreads,n,p,nnz,iters,q);
+                MMPBenchmark(benchmarkFile,n,m,nnz,iters,q);
+                benchmarkFile.write(std::cout);
         }
         if (runMVPBenchmarks) {
-                MVPBenchmarkSuite(numThreads,n,nnz,iters,q);
+                MVPBenchmark(benchmarkFile,n,nnz,iters,q);
+                benchmarkFile.write(std::cout);
         }
         if (runWiedemann) {
-                randBlockWiedemannBenchmark(numThreads,m,n,p,r,nnz,q);
+                blockWiedemannBenchmark(benchmarkFile,n,m,nnz,iters,q);
+                benchmarkFile.write(std::cout);
         }
+
         return 0;
 }
 
