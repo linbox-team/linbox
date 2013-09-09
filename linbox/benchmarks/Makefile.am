@@ -72,6 +72,7 @@ EXTRA_PROGRAMS= $(BENCH_BASIC)
 
 pkginclude_HEADERS = \
 		     benchmark.h \
+		     benchmark.C \
 		     benchmark.inl
 
 EXTRA_DIST= \
