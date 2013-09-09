@@ -30,10 +30,9 @@ pkgincludesubdir=$(pkgincludedir)/benchmarks
 #  libbenchmarks_la_LIBADD=$(top_srcdir)/linbox/.libs/liblinbox.la
 
 
-#  AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
-
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/linbox
+AM_CPPFLAGS += $(GMP_CFLAGS) $(NTL_CFLAGS)  $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS)
 AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
-AM_CPPFLAGS = $(GMP_CFLAGS) $(NTL_CFLAGS)  $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS)
 LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS)
 #  AM_LDFLAGS=-static $(LDFLAGS)
 #  AM_LDFLAGS = .libs/libbenchmarks.la
@@ -42,11 +41,11 @@ LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS) $(MPFR
 
 
 BENCH_BASIC=               \
-		benchmark-fgemm    \
-		benchmark-ftrXm \
 		benchmark-example
 
 FAILS=    \
+		benchmark-ftrXm \
+		benchmark-ftrXm \
 		benchmark-crafixed
 
 TODO= \
@@ -82,11 +81,11 @@ benchmarks: ${EXTRA_PROGRAMS}
 
 ### BASE BENCHMARK ###
 
-benchmark_fgemm_SOURCES         = benchmark-fgemm.C
+#  benchmark_fgemm_SOURCES         = benchmark-fgemm.C
 
-benchmark_ftrXm_SOURCES         = benchmark-ftrXm.C
+#  benchmark_ftrXm_SOURCES         = benchmark-ftrXm.C
 
-benchmark_crafixed_SOURCES      = benchmark-crafixed.C
+#  benchmark_crafixed_SOURCES      = benchmark-crafixed.C
 
 benchmark_example_SOURCES       = benchmark-example.C
 

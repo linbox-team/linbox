@@ -28,8 +28,9 @@ namespace LinBox { namespace iml {
 	 *
 	 */
 
+	template<class Field>
 	void
-	adBasis (const long idx, const long basislen, FiniteField *liftbasis)
+	adBasis (const long idx, const long basislen, std::vector<typename Field::Element> & liftbasis)
 	{
 		long i;
 		Integer mp_temp;
@@ -39,7 +40,7 @@ namespace LinBox { namespace iml {
 		for (i = idx+1; i < basislen; i++) {
 			liftbasis[i-1] = liftbasis[i];
 		}
-		mp_temp = (unsigned long) liftbasis[basislen-1];
+		mp_temp =  liftbasis[basislen-1];
 		// mpz_set_ui(mp_temp, liftbasis[basislen-1]);
 		Integer::subin(mp_temp, 1UL);
 		// mpz_sub_ui(mp_temp, mp_temp, 1);

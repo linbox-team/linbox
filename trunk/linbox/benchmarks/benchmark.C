@@ -30,6 +30,7 @@
 // Least Squares
 #ifdef __LINBOX_HAVE_LAPACK
 extern "C" {
+#if 1 // from lapack (not clapack)
 
 	void dgels_(char *trans, int *m, int *n, int *nrhs, double *a, int *lda,
 			double *b, int *ldb, double *work, int *lwork, int *info);
@@ -41,21 +42,39 @@ extern "C" {
 	void dgelss_(int *m, int *n, int *nrhs, double *a, int *lda,
 			double *b, int *ldb, double *s, double *RCOND, int *RANK,
 			double *work, int *lwork, int *info);
+#endif
+
+#if 0
+	int clapack_dgels (const enum CBLAS_ORDER 	Order,
+			   const enum CBLAS_TRANSPOSE 	TA,
+			   int M,
+			   int N,
+			   int NRHS,
+			   double * 	A,
+			   int lda,
+			   double * 	B,
+			   const int 	ldb
+			  );
+#endif
 }
 #endif // __LINBOX_HAVE_LAPACK
 
 // Curve fitting
 namespace LinBox {
 
+	// fit X[nn-1,nn],Y[nn-1,nn] and return evaluation at x.
 	double fit2(const dvector_t & X, const dvector_t & Y, int nn, double x)
 	{
 		index_t n = (index_t) nn;
 		assert(n>0);
 		if ( n==1 ) {
-			if ( X[0]==X[1] )
+			if ( X[0]==X[1] ) {
+				// std::cerr << "two of your evaluation points are at the same X" << std::endl;
+				// this is NOT supposed to happen.
 				return (Y[0]+Y[1])/2 ;
+			}
 		}
-		if (X[n]==X[n-1])
+		if (X[n]==X[n-1]) // discard the last one.
 			return fit2(X,Y,(int)n-1,x);
 
 		double a = (Y[n-1]-Y[n])/(X[n-1]-X[n]) ;
@@ -65,30 +84,51 @@ namespace LinBox {
 
 #ifdef __LINBOX_HAVE_LAPACK
 
-	// this will destroy Y
-	double fit_lapack(dvector_t &X, dvector_t &Y, int n, double x)
+	double fit_lapack3(const dvector_t &X, const dvector_t &Z, double x)
 	{
-		assert(n == (int)Y.size());
-		int deg = std::min((int)4,n);
+
+		dvector_t Y = Z ;
+
+		int n = (int) Z.size();
+		linbox_check((size_t)n == X.size());
+
+		int deg = (int) std::min((int)4,n);
 		dvector_t V((size_t)(deg*n));
-		std::cout << V.size() << std::endl;
+
 		int ldv = deg ;
+
+#if 0 // Clapack (not working)
+		for(index_t i = 0 ; i < (index_t)n; ++i) {
+			for (index_t j = 0 ; j < (index_t)ldv; ++j) {
+				V[i*ldv+j] = std::pow(X[i],j);
+			}
+		}
+
+		clapack_dgels(CblasRowMajor, CblasNoTrans, n, deg, 1, &V[0],
+			      deg, &Y[0], 1);
+
+#endif
+
+#if 1 /* basic least squares */
+		// std::cout << V.size() << std::endl;
 		for(index_t i = 0 ; i < (index_t)n; ++i) {
 			for (index_t j = 0 ; j < (index_t)ldv; ++j) {
 				V[i+j*(index_t)n] = std::pow(X[i],j);
 			}
 		}
 
+		// std::cout << V << std::endl;
+
 		int info;
 		int ldun = 1 ;
-
-#if 1 /* basic least squares */
 		{
+
 			int lwork = 2*n*deg*4 ;
 			dvector_t work((size_t)lwork);
 			char N[] = "N";
 			dgels_(N, &n, &ldv, &ldun, &(V[0]) , &n, &(Y[0]), &n, &work[0], &lwork, &info);
 		}
+
 #endif
 
 #if 0 /* least squares using SVN and V not nec. full rank */
@@ -104,11 +144,17 @@ namespace LinBox {
 
 #if 0 /* weighted least squares */
 		//DGGGLM
+
+		// TODO
+
 #endif
+
+
+		// std::cout << Y << std::endl;
 		// horner eval the poly
 		double res = 0.0;
 
-		for(int i=n-1; i >= 0; i--) {
+		for(int i=deg-1; i >= 0; i--) {
 			res = res * x + Y[(index_t)i];
 		}
 		return res;
@@ -119,7 +165,9 @@ namespace LinBox {
 	double fit3(const dvector_t & X, const dvector_t & Y,int n, double x)
 	{
 #ifndef __LINBOX_HAVE_LAPACK /* à la main */
-		assert(n>1);
+		linbox_check(n>1);
+		linbox_check((size_t)n< X.size());
+		linbox_check((size_t)n< Y.size());
 		if (n==2) {
 			if (X[1]==X[2])
 				return fit2(X,Y,1,x) ;
@@ -154,11 +202,13 @@ namespace LinBox {
 		}
 
 		// todo: use Lagrange ?
+		// std::cout << X[n-2] << ',' << X[n-1] << ',' << X[n] << std::endl;
 		double d  = (-X[n]+X[n-1])*(-X[n]+X[n-2])*(X[n-2]-X[n-1]) ;
 		double a1 = -X[n]*Y[n-2]+X[n-2]*Y[n]+X[n-1]*Y[n-2]-X[n-1]*Y[n]+X[n]*Y[n-1]-X[n-2]*Y[n-1];
 		double a2 = -X[n-2]*X[n-2]*Y[n]+X[n-2]*X[n-2]*Y[n-1]+X[n-1]*X[n-1]*Y[n]-Y[n-2]*X[n-1]*X[n-1]+Y[n-2]*X[n]*X[n]-Y[n-1]*X[n]*X[n];
 		double a3 = X[n-2]*X[n-2]*X[n-1]*Y[n]-X[n-2]*X[n-2]*X[n]*Y[n-1]-X[n-1]*X[n-1]*X[n-2]*Y[n]+Y[n-1]*X[n-2]*X[n]*X[n]+X[n-1]*X[n-1]*X[n]*Y[n-2]-Y[n-2]*X[n-1]*X[n]*X[n];
 
+		// std::cout <<" (("<<a1<<"*x+"<<a2<<")*x+"<<a3<<")/"<<d << std::endl;
 		return ((a1*x+a2)*x+a3)/d ;
 #else // __LINBOX_HAVE_LAPACK
 		int m = min(n,5);
@@ -166,7 +216,7 @@ namespace LinBox {
 		dvector_t Y1((index_t)m) ;
 		for (int i = 0 ; i < m ; ++i) X1[(index_t)i] = X[(index_t)(n-m+i)] ;
 		for (int i = 0 ; i < m ; ++i) Y1[(index_t)i] = Y[(index_t)(n-m+i)] ;
-		return fit_lapack(X1,Y1,m,x);
+		return fit_lapack3(X1,Y1,x);
 
 #endif // __LINBOX_HAVE_LAPACK
 	}
@@ -370,11 +420,14 @@ namespace LinBox {
 		return *Values_ ;
 	}
 
+	// we don't assume that t(0sec) = 0 unless nothing has been computed yet.
 	double TimeWatcher::predict(double x)
 	{
 		index_t Current_ = size();
-		if (Current_ < 2)
-			return refX()[Current_-1] ; // unknown.
+		if (Current_ == 0)
+			return 0 ;
+		if (Current_ ==1 )
+			return refX()[Current_-1] ; // unknown. could be known if we suppose t(0)=0
 		if (Current_ == 2 ) {
 			return fit2(refX(),refY(),1,x);
 		}

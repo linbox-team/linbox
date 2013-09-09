@@ -30,8 +30,8 @@
  */
 
 
-#ifndef __LINBOX_sparse_matrix_sparse_coo_matrix_H
-#define __LINBOX_sparse_matrix_sparse_coo_matrix_H
+#ifndef __LINBOX_sparse_matrix_sparse_impl_coo_matrix_H
+#define __LINBOX_sparse_matrix_sparse_impl_coo_matrix_H
 
 #include <utility>
 #include <iostream>
@@ -45,62 +45,60 @@
 namespace LinBox
 {
 
-
 	/** Sparse matrix, Coordinate storage.
 	 *
 	 * \ingroup matrix
 	 * \ingroup sparse
 	 */
 	template<class _Field>
-	class SparseMatrix2<_Field, SparseMatrixFormat::COO> {
+	class SparseMatrix2<_Field, SparseMatrix2Format::COO::implicit> {
 	public :
-		typedef _Field                             Field ; //!< Field
-		typedef typename _Field::Element         Element ; //!< Element
-		typedef const Element               constElement ; //!< const Element
-		typedef SparseMatrixFormat::COO         Storage ; //!< Matrix Storage Format
-		typedef SparseMatrix2<_Field,Storage>     Self_t ; //!< Self type
-		// typedef Vector<_Field,VectorStorage::Sparse> Rep ;
+		typedef _Field                                 Field ; //!< Field
+		typedef typename _Field::Element             Element ; //!< Element
+		typedef const Element                   constElement ; //!< const Element
+		typedef SparseMatrix2Format::COO::implicit   Storage ; //!< Matrix Storage Format
+		typedef SparseMatrix2<_Field,Storage>         Self_t ; //!< Self type
 
 		/*! Constructors.
 		 * @todo convert from other matrix.
 		 *
 		 */
 		//@{
-		SparseMatrix2<_Field, SparseMatrixFormat::COO> () :
+		SparseMatrix2<_Field, SparseMatrix2Format::COO::implicit> () :
 			_rownb(0),_colnb(0),
 			_nbnz(0),
-			_rowid(0),_colid(0),_data(0)
+			_rowid(0),_colid(0)
 			, _field()
 		{
 		}
 
-		SparseMatrix2<_Field, SparseMatrixFormat::COO> (const _Field & F) :
+		SparseMatrix2<_Field, SparseMatrix2Format::COO::implicit> (const _Field & F) :
 			_rownb(0),_colnb(0),
 			_nbnz(0),
-			_rowid(0),_colid(0),_data(0)
+			_rowid(0),_colid(0),_data(F.zero)
 			, _field(F)
 		{
 		}
 
-		SparseMatrix2<_Field, SparseMatrixFormat::COO> (const _Field & F, size_t m, size_t n) :
+		SparseMatrix2<_Field, SparseMatrix2Format::COO::implicit> (const _Field & F, size_t m, size_t n) :
 			_rownb(m),_colnb(n),
 			_nbnz(0),
-			_rowid(0),_colid(0),_data(0)
+			_rowid(0),_colid(0),_data(F.zero)
 			, _field(F)
 		{
 		}
 
-		SparseMatrix2<_Field, SparseMatrixFormat::COO> (const _Field & F,
+		SparseMatrix2<_Field, SparseMatrix2Format::COO::implicit> (const _Field & F,
 							       size_t m, size_t n,
 							       size_t z) :
 			_rownb(m),_colnb(n),
 			_nbnz(z),
-			_rowid(z),_colid(z),_data(z),
+			_rowid(z),_colid(z),_data(F.zero),
 			_field(F)
 		{
 		}
 
-		SparseMatrix2<_Field, SparseMatrixFormat::COO> (const SparseMatrix2<_Field, SparseMatrixFormat::COO> & S) :
+		SparseMatrix2<_Field, SparseMatrix2Format::COO::implicit> (const SparseMatrix2<_Field, SparseMatrix2Format::COO::implicit> & S) :
 			_rownb(S._rownb),_colnb(S._colnb),
 			_nbnz(S._nbnz),
 			_rowid(S._rowid),_colid(S._colid),_data(S._data),
@@ -109,7 +107,7 @@ namespace LinBox
 
 #if 0
 		template<class _OtherField>
-		SparseMatrix2<_Field, SparseMatrixFormat::COO> (const SparseMatrix2<_OtherField, SparseMatrixFormat::COO> & S) :
+		SparseMatrix2<_Field, SparseMatrix2Format::COO::implicit> (const SparseMatrix2<_OtherField, SparseMatrix2Format::COO::implicit> & S) :
 			_rownb(S._rownb),_colnb(S._colnb),
 			_nbnz(S._nbnz),
 			_rowid(S._rowid),_colid(S._colid),_data(S._data),
@@ -117,13 +115,13 @@ namespace LinBox
 		{}
 #endif
 
-		// XXX only for COO
-		template<typename _Tp1, typename _Rw1 = SparseMatrixFormat::COO>
+		// XXX only for COO::implicit
+		template<typename _Tp1, typename _Rw1 = SparseMatrix2Format::COO::implicit>
 		struct rebind ;
 
 		template<typename _Tp1>
-		struct rebind<_Tp1/*  ,SparseMatrixFormat::COO */ > {
-			typedef SparseMatrix2<_Tp1, SparseMatrixFormat::COO> other;
+		struct rebind<_Tp1/*  ,SparseMatrix2Format::COO::implicit */ > {
+			typedef SparseMatrix2<_Tp1, SparseMatrix2Format::COO::implicit> other;
 
 			void operator() (other & Ap, const Self_t& A)
 			{
@@ -132,18 +130,10 @@ namespace LinBox
 				typename _Tp1::Element e;
 
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
-				size_t j = 0 ;
-				for (size_t i = 0 ; i < A.size() ; ++i) {
-					hom. image ( e, A.getData(i) );
-					if (!Ap.field().isZero(e)) {
-						Ap.setColid(j,A.getColid(i));
-						Ap.setRowid(j,A.getRowid(i));
-						Ap.setData(j,e);
-						++j;
-					}
+				hom. image ( e, A.getData() );
+				if (!Ap.field().isZero(e)) {
+					Ap.setData(e);
 				}
-				if (j != Ap.size())
-					Ap.resize(j);
 			}
 		};
 
@@ -154,16 +144,17 @@ namespace LinBox
 			_rowid(S.size()),_colid(S.size()),_data(S.size()),
 			_field(F)
 		{
-			typename SparseMatrix2<_Tp1,_Rw1>::template rebind<Field,SparseMatrixFormat::COO>()(*this, S);
+			typename SparseMatrix2<_Tp1,_Rw1>::template rebind<Field,SparseMatrix2Format::COO::implicit>()(*this, S);
 		}
 
 
 
+#if  0
 
 		template<class VectStream>
-		SparseMatrix2<_Field, SparseMatrixFormat::COO> (const _Field & F, VectStream & stream) :
+		SparseMatrix2<_Field, SparseMatrix2Format::COO::implicit> (const _Field & F, VectStream & stream) :
 			_rownb(stream.size()),_colnb(stream.dim()),
-			_rowid(0),_colid(0),_data(0)
+			_rowid(0),_colid(0),_data(F.zero)
 			, _nbnz(0)
 			, _field(F)
 		{
@@ -183,19 +174,19 @@ namespace LinBox
 				}
 			}
 		}
+#endif
 
 
 		void resize(size_t nn)
 		{
 #ifndef NDEBUG
 			if (nn < _nbnz) {
-				std::cerr << "*** Warning *** you are possibly loosing data (COO resize)" << std::endl;
+				std::cerr << "*** Warning *** you are possibly loosing data (COO::implicit resize)" << std::endl;
 				// could be a commentator()...
 			}
 #endif
 			_rowid.resize(nn);
 			_colid.resize(nn);
-			_data.resize(nn);
 			_nbnz = nn ;
 		}
 
@@ -207,23 +198,21 @@ namespace LinBox
 
 			_rowid.resize(zz);
 			_colid.resize(zz);
-			_data.resize(zz);
 		}
 
 		/*! Default converter.
 		 * @param S a sparse matrix in any storage.
 		 */
 		template<class _OtherStorage>
-		SparseMatrix2<_Field, SparseMatrixFormat::COO> (const SparseMatrix2<_Field, _OtherStorage> & S) :
+		SparseMatrix2<_Field, SparseMatrix2Format::COO::implicit> (const SparseMatrix2<_Field, _OtherStorage> & S) :
 			_rownb(S._rownb),_colnb(S._colnb),
 			_rowid(S.size()),_colid(S.size()),_data(S.size()),
 			_field(S._field)
 		{
-			SparseMatrix2<_Field,SparseMatrixFormat::CSR> Temp(_field,_rownb,_colnb) ;
+			SparseMatrix2<_Field,SparseMatrix2Format::CSR> Temp(_field,_rownb,_colnb) ;
 			S.exporte(Temp); // convert S to CSR
-			this->importe(Temp); // convert Temp from COO
+			this->importe(Temp); // convert Temp from COO::implicit
 		}
-
 
 
 		//@}
@@ -232,10 +221,10 @@ namespace LinBox
 		 * A specialisation can skip the temporary CSR matrix created.
 		 */
 		//@{
-		/*! Import a matrix in CSR format to COO.
-		 * @param S CSR matrix to be converted in COO
+		/*! Import a matrix in CSR format to COO::implicit.
+		 * @param S CSR matrix to be converted in COO::implicit
 		 */
-		void importe(const SparseMatrix2<_Field,SparseMatrixFormat::CSR> &S)
+		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
 		{
 			resize( S.rowdim() , S.coldim() , S.size() );
 			_colid = S.getColid();
@@ -246,7 +235,7 @@ namespace LinBox
 
 		}
 
-		void importe(const SparseMatrix2<_Field,SparseMatrixFormat::COO> &S)
+		void importe(const SparseMatrix2<_Field,SparseMatrix2Format::COO::implicit> &S)
 		{
 			resize( S.rowdim(), S.coldim(), S.size() );
 
@@ -255,11 +244,11 @@ namespace LinBox
 			setData(S.getData());
 		}
 
-		/*! Export a matrix in CSR format from COO.
-		 * @param S CSR matrix to be converted from COO
+		/*! Export a matrix in CSR format from COO::implicit.
+		 * @param S CSR matrix to be converted from COO::implicit
 		 */
-		SparseMatrix2<_Field,SparseMatrixFormat::CSR > &
-		exporte(SparseMatrix2<_Field,SparseMatrixFormat::CSR> &S)
+		SparseMatrix2<_Field,SparseMatrix2Format::CSR > &
+		exporte(SparseMatrix2<_Field,SparseMatrix2Format::CSR> &S)
 		{
 			S.resize(_rownb,_colnb,_nbnz) ;
 			S.setData( _data ) ;
@@ -278,8 +267,8 @@ namespace LinBox
 			return S ;
 		}
 
-		SparseMatrix2<_Field,SparseMatrixFormat::COO > &
-		exporte(SparseMatrix2<_Field,SparseMatrixFormat::COO> &S)
+		SparseMatrix2<_Field,SparseMatrix2Format::COO::implicit > &
+		exporte(SparseMatrix2<_Field,SparseMatrix2Format::COO::implicit> &S)
 		{
 			S.resize(_rownb,_colnb,_nbnz) ;
 			S.setData( _data ) ;
@@ -293,8 +282,8 @@ namespace LinBox
 		*/
 		void transposeIn()
 		{
-			// SparseMatrix2<_Field,SparseMatrixFormat::CSR> Temp(*this);
-			SparseMatrix2<_Field,SparseMatrixFormat::COO> Temp(*this);
+			// SparseMatrix2<_Field,SparseMatrix2Format::CSR> Temp(*this);
+			SparseMatrix2<_Field,SparseMatrix2Format::COO::implicit> Temp(*this);
 			Temp.transposeIn();
 			importe(Temp);
 		}
@@ -303,8 +292,8 @@ namespace LinBox
 		 *  @param S [out] transpose of self.
 		 *  @return a reference to \p S.
 		 */
-		SparseMatrix2<_Field,SparseMatrixFormat::COO> &
-		transpose(SparseMatrix2<_Field,SparseMatrixFormat::COO> &S)
+		SparseMatrix2<_Field,SparseMatrix2Format::COO::implicit> &
+		transpose(SparseMatrix2<_Field,SparseMatrix2Format::COO::implicit> &S)
 		{
 			linbox_check(S.rowdim() == _colnb);
 			linbox_check(S.coldim() == _rownb);
@@ -448,8 +437,6 @@ namespace LinBox
 			}
 		}
 
-		/// make matrix ready to use after a sequence of setEntry calls.
-		void finalize(){}
 
 		/** Get a writeable reference to an entry in the matrix.
 		 * If there is no entry at the position (i, j), then a new entry
@@ -703,10 +690,10 @@ namespace LinBox
 		}
 
 		/*! @internal
-		 * write for COO format.
+		 * write for COO::implicit format.
 		 */
 		std::ostream & writeSpecialized(std::ostream &os,
-						SparseFileFormat::COO) const
+						SparseFileFormat::COO::implicit) const
 		{
 			os << _rownb << ' ' << _colnb  << ' ' << size() << std::endl;
 			size_t i = 0 ;
@@ -816,10 +803,10 @@ namespace LinBox
 		}
 
 		/*! @internal
-		 * Read for COO format.
+		 * Read for COO::implicit format.
 		 */
 		std::istream & readSpecialized(std::istream &is,
-					       SparseFileFormat::COO)
+					       SparseFileFormat::COO::implicit)
 		{
 			size_t nnz = 0;
 			bool sms = true ;
@@ -951,24 +938,14 @@ namespace LinBox
 			return _colid ;
 		}
 
-		const Element & getData(const size_t & i) const
-		{
-			return _data[i];
-		}
 
-		void setData(const size_t & i, const Element & e)
-		{
-			if (i>=_nbnz) this->resize(i);
-			field().assign(_data[i],e);
-		}
 
-		void setData(std::vector<Element> & new_data)
+		void setData(Element & new_data)
 		{
-			// linbox_check(_start.size() == new_start.size());
 			_data = new_data ;
 		}
 
-		std::vector<Element>  getData( ) const
+		Element  getData( ) const
 		{
 			return _data ;
 		}
@@ -981,15 +958,17 @@ namespace LinBox
 
 		std::vector<size_t> _rowid ;
 		std::vector<size_t> _colid ;
-		std::vector<Element> _data ;
+		Element              _data ;
 
 		const _Field & _field;
 	};
 
 
+
+
 } // namespace LinBox
 
-#endif // __LINBOX_sparse_matrix_sparse_coo_matrix_H
+#endif // __LINBOX_sparse_matrix_sparse_impl_coo_matrix_H
 
 // Local Variables:
 // mode: C++

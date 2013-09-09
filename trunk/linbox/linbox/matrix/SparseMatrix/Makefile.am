@@ -25,6 +25,7 @@ pkgincludesubdir=$(pkgincludedir)/matrix/SparseMatrix
 pkgincludesub_HEADERS =         \
 	sparse-domain.h         \
 	sparse-coo-matrix.h     \
+	sparse-impl-coo-matrix.h     \
 	sparse-csr-matrix.h     \
 	sparse-ell-matrix.h     \
 	sparse-ellr-matrix.h    \
