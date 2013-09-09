@@ -19,24 +19,10 @@
 # ========LICENCE========
 #/
 
-#INCLUDES=-I$(top_srcdir)
 AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 
-#if LinBoxSrcOnly
-#AM_CPPFLAGS=-g -DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
-#LINBOX_LIBS=
-#else
-#AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
-#LINBOX_LIBS= $(top_builddir)/linbox/liblinbox.la
-#endif
-
-# SAFER_FLAGS=--std=c++98 -g -Wall -Wextra -Wno-ignored-qualifiers -Wno-unused-parameter
-#  SAFER_FLAGS=-g -Wall -Wextra -Wno-unused-parameter
-
-# AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -DDEBUG -O0
 AM_CXXFLAGS = @DEFAULT_CFLAGS@  @DEBUG_CFLAGS@ -DLinBoxSrcOnly -DDISABLE_COMMENTATOR
 AM_CPPFLAGS += $(GMP_CFLAGS) $(NTL_CFLAGS) $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS)
-#LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)  "-Wl,-enable-auto-import"
 LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS)
 #  AM_LDFLAGS=-static
 AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
@@ -84,8 +70,6 @@ sparseelimdet_SOURCES  = sparseelimdet.C
 sparseelimrank_SOURCES = sparseelimrank.C
 LINBOX=@prefix@
 
-# no /bin if LinBox is uncompiled
-#LINBOX_BIN=$(LINBOX)/bin
 LINBOX_BIN=@bindir@
 
 

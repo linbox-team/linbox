@@ -335,7 +335,7 @@ namespace LinBox
 	template <>
 	class DotProductDomain<Modular<double> > : public virtual VectorDomainBase<Modular<double> > {
 	private:
-		double _bound;
+		// double _bound; // BB : not used
 		size_t _nmax;
 		//double _invmod;
 
@@ -343,7 +343,9 @@ namespace LinBox
 		DotProductDomain () { /*std::cerr << "DPD-Md def cstor" << std::endl;*/ }
 		typedef double Element;
 		DotProductDomain (const Modular<double> &F) :
-			VectorDomainBase<Modular<double> > (F), _bound( (double) ( (1ULL<<53) - (unsigned long int) (F.modulus*F.modulus))), _nmax(0)//, _invmod(1./field().modulus)
+			VectorDomainBase<Modular<double> > (F)
+			// , _bound( (double) ( (1ULL<<53) - (unsigned long int) (F.modulus*F.modulus)))
+			, _nmax(0)//, _invmod(1./field().modulus)
 		{
 			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (F.modulus * F.modulus));
 			_nmax = (_nmax>0?_nmax:1);

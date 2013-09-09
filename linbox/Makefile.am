@@ -23,7 +23,7 @@
 
 ACLOCAL_AMFLAGS = -I macros
 
-SUBDIRS=linbox macros tests interfaces doc examples benchmarks
+SUBDIRS=benchmarks linbox macros tests interfaces doc examples
 
 # I intend to pare down the target "check" so as to be a smaller check used
 # at installation time with a focus on confirming that dependencies on

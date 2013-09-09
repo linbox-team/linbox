@@ -23,6 +23,7 @@ AM_CPPFLAGS=-I$(top_srcdir)
 
 SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions ring
 
+
 BASIC_HDRS =          \
     config-blas.h     \
     integer.h         \
@@ -68,3 +69,7 @@ liblinbox_la_LIBADD =           \
     randiter/libranditer.la     \
     algorithms/libalgorithms.la \
     $(MPFR_LIBS) $(IML_LIBS) $(BLAS_LIBS)
+
+
+#  $(top_srcdir)/benchmarks/libbenchmarks.la \
+#

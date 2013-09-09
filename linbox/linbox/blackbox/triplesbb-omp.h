@@ -34,9 +34,6 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
-using std::istream;
-using std::ostream;
-using std::max;
 #include "linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
@@ -165,13 +162,13 @@ struct TriplesDataBlock {
 
 	void init(TriplesCoord blockStart,
 		  TriplesCoord blockEnd,
-		  TriplesCoord blockSize,
+		  TriplesCoord myBlockSize, // blockSize shadows blockSize()
 		  TripleListIt triplesStart,
 		  TripleListIt triplesEnd,
 		  int ccf) {
 		blockStart_=blockStart;
 		blockEnd_=blockEnd;
-		blockSize_=blockSize;
+		blockSize_=myBlockSize;
 		ccf_=ccf;
                 int numElts=triplesEnd-triplesStart;
 		rowIxs_.resize(1+(numElts>>ccf));
@@ -255,11 +252,11 @@ class TriplesBBOMP : public BlackboxInterface {
 
 	TriplesBBOMP & operator=(const TriplesBBOMP & B);
 
-	TriplesBBOMP(const Field& F, istream& in);
+	TriplesBBOMP(const Field& F, std::istream& in);
 
-	istream& read(istream& in);
+	std::istream& read(std::istream& in);
 
-	ostream& write(ostream& out);
+	std::ostream& write(std::ostream& out);
 
 	~TriplesBBOMP();
 

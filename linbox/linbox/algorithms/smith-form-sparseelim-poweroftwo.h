@@ -70,6 +70,7 @@ namespace LinBox
         bool isNZero(const UInt_t& a ) const { return (bool)a ;}
         bool isZero(const UInt_t& a ) const { return a == 0U;}
         bool isOne(const UInt_t& a ) const { return a == 1U;}
+	/// @todo use Givaro isOdd
         bool isOdd(const UInt_t& b) const {
             return (bool)(b & 1U);
         }
