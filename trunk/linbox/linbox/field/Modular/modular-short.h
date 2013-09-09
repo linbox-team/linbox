@@ -534,7 +534,7 @@ namespace LinBox
 
 		const Field *_field;
 		uint64_t _y;
-		uint16_t _two_64;
+		// uint16_t _two_64; // bb : NOT USED
 	};
 
 

@@ -75,7 +75,7 @@ public:
 	AbnormalHelper(const Field& field) {init(field);}
 
 	void init(const Field& field) {
-		modulus_=field.characteristic();
+		modulus_=(double)field.characteristic();
 		unsigned long long maxDouble = 1ULL<<52;
 		bound_=(double)maxDouble;
 		field_=&field;

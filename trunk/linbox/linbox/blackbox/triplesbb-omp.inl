@@ -236,7 +236,9 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
         typedef AbnormalMatrix<Field_,Mat1> AbnormalMat;
         AbnormalMat YTemp(field(),Y);
 
+#ifdef LINBOX_USES_OMP
 #pragma omp parallel
+#endif
 	{
                 Matrix Xr;
 
@@ -244,7 +246,9 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *rowChunks=&(rowBlocks_[chunkSizeIx]);
 			Index numChunks=rowChunks->size();
+#ifdef LINBOX_USES_OMP
 #pragma omp for schedule (static,1)
+#endif
 			for (Index rowChunk=0;rowChunk<numChunks;++rowChunk) {
 				const BlockList *blocks=&((*rowChunks)[rowChunk]);
 				Index numBlocks=blocks->size();
@@ -273,7 +277,9 @@ applyRight(Mat1 &Y, const Mat2 &X) const
         typedef AbnormalMatrix<Field_,Mat1> AbnormalMat;
         AbnormalMat YTemp(field(),Y);
 
+#ifdef LINBOX_USES_OMP
 #pragma omp parallel
+#endif
 	{
                 Matrix Xc;
 
@@ -281,7 +287,9 @@ applyRight(Mat1 &Y, const Mat2 &X) const
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *colChunks=&(colBlocks_[chunkSizeIx]);
 			Index numChunks=colChunks->size();
+#ifdef LINBOX_USES_OMP
 #pragma omp for schedule (static,1)
+#endif
 			for (Index colChunk=0;colChunk<numChunks;++colChunk) {
 				const BlockList *blocks=&((*colChunks)[colChunk]);
 				Index numBlocks=blocks->size();
@@ -314,10 +322,14 @@ OutVector & TriplesBBOMP<Field_>::apply(OutVector & y, const InVector & x) const
 	FieldAXPY<Field_>* yTemp=(FieldAXPY<Field_>*)(spacePtr+CACHE_ALIGNMENT-(spacePtr%CACHE_ALIGNMENT));
 
 
+#ifdef LINBOX_USES_OMP
 #pragma omp parallel
+#endif
 	{
                 const Field_& fieldRef=field();
+#ifdef LINBOX_USES_OMP
 #pragma omp for schedule (static,1024)
+#endif
                 for (size_t i=0;i<y.size();++i) {
                         new ((void*)(yTemp+i)) FieldAXPY<Field_>(fieldRef);
                 }
@@ -326,7 +338,9 @@ OutVector & TriplesBBOMP<Field_>::apply(OutVector & y, const InVector & x) const
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *rowChunks=&(rowBlocks_[chunkSizeIx]);
 			Index numChunks=rowChunks->size();
+#ifdef LINBOX_USES_OMP
 #pragma omp for schedule (static,1)
+#endif
 			for (Index rowChunk=0;rowChunk<numChunks;++rowChunk) {
 				const BlockList *blocks=&((*rowChunks)[rowChunk]);
 				Index numBlocks=blocks->size();
@@ -341,7 +355,9 @@ OutVector & TriplesBBOMP<Field_>::apply(OutVector & y, const InVector & x) const
 			}
 			//implicit barrier
 		}
+#ifdef LINBOX_USES_OMP
 #pragma omp for schedule (static,1024)
+#endif
 		for (Index i = 0; i < y.size(); ++i) {
 			yTemp[i].get(y[i]);
 			yTemp[i].~FieldAXPY<Field_>();
@@ -364,10 +380,14 @@ OutVector & TriplesBBOMP<Field_>::applyTranspose(OutVector & y, const InVector &
 	FieldAXPY<Field_>* yTemp=(FieldAXPY<Field_>*)(spacePtr+CACHE_ALIGNMENT-(spacePtr%CACHE_ALIGNMENT));
 
 
+#ifdef LINBOX_USES_OMP
 #pragma omp parallel
+#endif
 	{
                 const Field_& fieldRef=field();
+#ifdef LINBOX_USES_OMP
 #pragma omp for schedule (static,1024)
+#endif
                 for (size_t i=0;i<y.size();++i) {
                         new ((void*)(yTemp+i)) FieldAXPY<Field_>(fieldRef);
                 }
@@ -376,7 +396,9 @@ OutVector & TriplesBBOMP<Field_>::applyTranspose(OutVector & y, const InVector &
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *colChunks=&(colBlocks_[chunkSizeIx]);
 			Index numChunks=colChunks->size();
+#ifdef LINBOX_USES_OMP
 #pragma omp for schedule (static,1)
+#endif
 			for (Index colChunk=0;colChunk<numChunks;++colChunk) {
 				const BlockList *blocks=&((*colChunks)[colChunk]);
 				Index numBlocks=blocks->size();
@@ -391,7 +413,9 @@ OutVector & TriplesBBOMP<Field_>::applyTranspose(OutVector & y, const InVector &
 			}
 			//implicit barrier
 		}
+#ifdef LINBOX_USES_OMP
 #pragma omp for schedule (static,1024)
+#endif
 		for (Index i = 0; i < y.size(); ++i) {
 			yTemp[i].get(y[i]);
 			yTemp[i].~FieldAXPY<Field_>();
@@ -439,7 +463,7 @@ void TriplesBBOMP<Field_>::splitBlock(RefBlockList& superBlocks,TriplesBlock sta
 		Triple midOne(blockStart.coord_+quarterSize);
 		Triple midTwo(midOne.coord_+quarterSize);
 		Triple midThree(midTwo.coord_+quarterSize);
-		
+
 		BlockVecIt dataBegin=data_.begin()+block.start_;
 		BlockVecIt dataEnd=data_.begin()+block.end_;
 		Index midOneData,midTwoData,midThreeData;
@@ -491,7 +515,7 @@ void TriplesBBOMP<Field_>::toDataBlock(const RefBlockList& superBlocks,
 	for (size_t i=0;i<superBlocks.size();++i) {
 		TriplesBlock block=superBlocks[i];
 		int ccf;
-		
+
 		Index rowDiff=block.getStartRow()^block.getEndRow();
 		Index colDiff=block.getStartCol()^block.getEndCol();
 		Index combinedDiff=rowDiff|colDiff;
@@ -513,7 +537,7 @@ void TriplesBBOMP<Field_>::toDataBlock(const RefBlockList& superBlocks,
 		block.fromBlock();
 		dataBlocks[i].init(block.blockStart_,block.blockEnd_,
 				   blockSize,startIt,endIt,ccf);
-				   
+
 	}
 }
 
@@ -560,7 +584,7 @@ void TriplesBBOMP<Field_>::finalize()
 
 	std::vector<DataBlock> dataBlocks;
 	toDataBlock(superBlocks,dataBlocks);
-	
+
 	rowBlocks_.clear();
         computeVectors(rowBlocks_,dataBlocks,CHUNK_BY_ROW);
 	colBlocks_.clear();

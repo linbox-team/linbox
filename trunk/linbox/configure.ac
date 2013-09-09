@@ -406,6 +406,8 @@ interfaces/kaapi/Makefile
 interfaces/sage/Makefile
 macros/Makefile
 benchmarks/Makefile
+benchmarks/data/Makefile
+benchmarks/matrix/Makefile
 ])
 
 # examples/Readme-make

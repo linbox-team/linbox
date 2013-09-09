@@ -69,6 +69,7 @@ namespace LinBox {
 
 }
 
+
 #endif // __LINBOX_linbox_config_H
 
 // Local Variables:

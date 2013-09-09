@@ -17,37 +17,52 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 # ========LICENCE========
+#/
+
+SUBDIRS=data matrix
+
+pkgincludesubdir=$(pkgincludedir)/benchmarks
+
+#  noinst_LTLIBRARIES=libbenchmarks.la
+#  libbenchmarks_la_SOURCES= benchmark.C
+#  libbenchmarks_la_LDFLAGS=$(LDFLAGS)
+
+#  libbenchmarks_la_LIBADD=$(top_srcdir)/linbox/.libs/liblinbox.la
 
 
+#  AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
+
+AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
+AM_CPPFLAGS = $(GMP_CFLAGS) $(NTL_CFLAGS)  $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS)
+LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS)
+#  AM_LDFLAGS=-static $(LDFLAGS)
+#  AM_LDFLAGS = .libs/libbenchmarks.la
+#  AM_LDFLAGS = .libs/benchmark.o
 
 
-AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
-
-#  SAFER_FLAGS=-g -Wall -Wextra -Wno-unused-parameter
-
-AM_CXXFLAGS= @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
-AM_CPPFLAGS+= $(IML_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(FFLAS_FFPACK_CFLAGS)
-LDADD= $(IML_LIBS) $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)
-AM_LDFLAGS=-static $(LDFLAGS)
 
 BENCH_BASIC=               \
 		benchmark-fgemm    \
-		benchmark-crafixed \
-		benchmark-ftrXm
-TODO=
+		benchmark-ftrXm \
+		benchmark-example
+
+FAILS=    \
+		benchmark-crafixed
+
+TODO= \
 		benchmark-matmul   \
 		benchmark-spmv     \
 		benchmark-fields
 
 #  BENCH_ALGOS=               \
-TODO=
+TODO= \
 		benchmark-solve    \
 		benchmark-rank     \
 		benchmark-det      \
 		benchmark-nullspace
 
 #  BENCH_FORMS=               \
-TODO=
+TODO= \
 		benchmark-lu
 		benchmark-echelon  \
 		benchmark-hermite  \
@@ -55,17 +70,24 @@ TODO=
 
 EXTRA_PROGRAMS= $(BENCH_BASIC)
 
-EXTRA_DIST= benchmark.h benchmark.inl benchmark.doxy
+pkginclude_HEADERS = \
+		     benchmark.h \
+		     benchmark.inl
+
+EXTRA_DIST= \
+	    benchmark.doxy
 
 benchmarks: ${EXTRA_PROGRAMS}
 
 ### BASE BENCHMARK ###
 
-benchmark_fgemm_SOURCES          = benchmark-fgemm.C
+benchmark_fgemm_SOURCES         = benchmark-fgemm.C
 
-benchmark_ftrXm_SOURCES          = benchmark-ftrXm.C
+benchmark_ftrXm_SOURCES         = benchmark-ftrXm.C
 
-benchmark_crafixed_SOURCES       = benchmark-crafixed.C
+benchmark_crafixed_SOURCES      = benchmark-crafixed.C
+
+benchmark_example_SOURCES       = benchmark-example.C
 
 #  benchmark_matmul_SOURCES         = benchmark-matmul.C
 #  benchmark_spmv_SOURCES           = benchmark-spmv.C

@@ -60,10 +60,10 @@ namespace LinBox
 #else
 		struct Side { enum enum_t
 #endif
-					   {
-						   Left  = FFLAS::FflasLeft, //!< Left
-						   Right = FFLAS::FflasRight  //!< Right
-					   };
+			{
+				Left  = FFLAS::FflasLeft, //!< Left
+				Right = FFLAS::FflasRight  //!< Right
+			};
 
 					   //! (No)Transpose Tag
 #if HAVE_CXX11

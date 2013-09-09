@@ -57,8 +57,8 @@ std::ostream& writeMMCoordHeader(std::ostream& os, BB& A, size_t nnz, std::strin
 	return os;
 }
 
-/// Write matrix market header (up to the i,j lines) for a {0,1} sparse or structured matrix. 
-template <class BB> 
+/// Write matrix market header (up to the i,j lines) for a {0,1} sparse or structured matrix.
+template <class BB>
 std::ostream& writeMMPatternHeader(std::ostream& os, BB& A, size_t nnz, std::string name, std::string comment = "") {
 	os << "%%MatrixMarket matrix coordinate pattern general" << std::endl;
 	writeMMComment(os, A.field(), name, comment);
@@ -87,26 +87,25 @@ std::ostream& writeMMArray(std::ostream& os, Mat& A, std::string name, std::stri
 }
 
 /// eltype(x) returns a string containing the name of the type of field or ring element x.
-std::string eltype(float x) { return "float"; }
-std::string eltype(double x) { return "double"; }
-std::string eltype(int8_t x) { return "int8_t"; }
-std::string eltype(int16_t x) { return "int16_t"; }
-std::string eltype(int32_t x) { return "int32"; }
-std::string eltype(int64_t x) { return "int64"; }
-std::string eltype(integer x) { return "integer"; }
-std::string eltype(uint8_t x) { return "uint8_t"; }
-std::string eltype(uint16_t x) { return "uint16_t"; }
-std::string eltype(uint32_t x) { return "uint32"; }
-std::string eltype(uint64_t x) { return "uint64"; }
+inline std::string eltype(float x) { return "float"; }
+inline std::string eltype(double x) { return "double"; }
+inline std::string eltype(int8_t x) { return "int8_t"; }
+inline std::string eltype(int16_t x) { return "int16_t"; }
+inline std::string eltype(int32_t x) { return "int32"; }
+inline std::string eltype(int64_t x) { return "int64"; }
+inline std::string eltype(integer x) { return "integer"; }
+inline std::string eltype(uint8_t x) { return "uint8_t"; }
+inline std::string eltype(uint16_t x) { return "uint16_t"; }
+inline std::string eltype(uint32_t x) { return "uint32"; }
+inline std::string eltype(uint64_t x) { return "uint64"; }
 
 }  // end of namespace LinBox
 #endif // __write_mm_h
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -875,7 +875,7 @@ namespace LinBox
 	}
 
 	template<>
-	integer Modular<integer>::getMaxModulus()
+	inline integer Modular<integer>::getMaxModulus()
 	{
 		return -1 ;
 	}

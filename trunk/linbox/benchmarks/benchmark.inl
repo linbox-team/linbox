@@ -50,23 +50,473 @@
 #include <string>
 #include <fstream>
 
-typedef uint32_t index_t ;
 
-// Plot structures
-namespace LinBox
-{
+// Plot structures (Style, Data, Graph)
+namespace LinBox {
 
-	typedef std::vector<double>    dvector_t;
-	typedef std::vector<dvector_t> dmatrix_t;
 
-	/*- @brief Represents a table of values to plot.
-	 * list of values are reprensented by vectors.  the table is a vector
-	 * of these vectors.
-	 *
-	 * @warning NaN, inf are used as missing data. More genenally
-	 * we could store data in strings.
-	 * @todo Allow for 'speed up against col X' style
-	 */
+	// template by string *always*
+	template<class Xkind>
+	class PlotData {
+	private :
+		std::vector<DataSeries<Xkind> > _tableau_     ;   //!< data. \c _tableau_[i] represents a series of measurements. A data series is resized only when a new element comes in.
+		std::vector< std::string >      _serie_label_ ;   //!< label for each serie of measures. Used in the legend of the plots/tables of points.
+		TimeWatcher                     _time_watch_  ;   //!< time predictor, helper. See \c TimeWatcher.
+		index_t                         _curr_serie_  ;   //!< index of the current series of measurements.
+	public :
+
+		/*! Inits a plot with series of data.
+		 * @param nb_pts number of points in each serie.
+		 * @param nb_srs number of series of points. Default is 1.
+		 */
+		PlotData() :
+			_tableau_      (0)
+			,_serie_label_ (0)
+			,_time_watch_  ()
+			,_curr_serie_()
+		{
+		}
+
+		/*! destructor.
+		 */
+		~PlotData() {} ;
+
+		/*! copy constructor.
+		 * @param PD a PlotData to copy.
+		 */
+		PlotData(const PlotData<Xkind> & PD):
+			_tableau_(PD.getTable())
+			,_serie_label_(PD.getSerieLabels())
+			,_curr_serie_(PD.getSerieNumber())
+			,_time_watch_  (_tableau_[_curr_serie_].Points,_tableau_[_curr_serie_].Times)
+		{
+		}
+
+
+		void merge(const PlotData<Xkind> &PD)
+		{
+			for (size_t i = 0 ; i < PD.size() ; ++i) {
+				_tableau_.push_back(PD.getSeries(i));
+				_serie_label_.push_back(PD.getSerieName(i));
+			}
+			return ;
+		}
+
+		/*! @brief get the number of series.
+		 * @return number of series.
+		 */
+		index_t size() const
+		{
+			linbox_check(_tableau_.size() == _serie_label_.size());
+			return (index_t)_tableau_.size() ;
+		}
+
+		/** @brief gets the current series number.
+		 */
+		index_t getCurrentSerieNumber() const
+		{
+			return _curr_serie_ ;
+		}
+
+		/*! @brief Sets the name of a serie.
+		 * @param i index of the serie
+		 * @param nom name of the serie
+		 */
+		void setSerieName(const index_t & i, const std::string & nom)
+		{
+			linbox_check(i<size());
+			_serie_label_[i] = nom ;
+		}
+
+		/** Gets the name of a serie.
+		 * @param i index of the serie
+		 */
+		std::string  getSerieName(const index_t & i) const
+		{
+			linbox_check(i<size());
+			return _serie_label_[i] ;
+		}
+
+		/** Gets the name of the current serie.
+		 */
+		std::string  getCurrentSerieName() const
+		{
+			return getSerieName(_curr_serie_) ;
+		}
+
+		/*! @brief Sets the name of the current serie.
+		 * @param nom name of the serie
+		 */
+		void setCurrentSerieName(const std::string & nom)
+		{
+			return setSerieName(_curr_serie_,nom);
+		}
+
+
+		/** Inits the watch on a series
+		 * @param i index of a series
+		 */
+		void initWatch ( const size_t & i)
+		{
+			linbox_check(i < size());
+			_time_watch_.init(_tableau_[i].Points,_tableau_[i].Times);
+		}
+
+		/** Inits the watch to current series
+		 */
+		void initCurrentSeriesWatch ()
+		{
+			initWatch(_curr_serie_);
+		}
+
+		/** Creates a new series.
+		 * It is created after the last series.
+		 * \c getCurrentSeries() points to it.
+		 * @param nom name of the new series
+		 */
+		void newSerie(const std::string & nom = "")
+		{
+
+			index_t old_size = size() ;
+			_curr_serie_ = old_size ;
+
+			_tableau_.resize(old_size+1);
+			_serie_label_.resize(old_size+1);
+
+			if (nom.empty()) {
+				std::ostringstream emptytitle ;
+				emptytitle << "serie." << _curr_serie_ ;
+				setCurrentSerieName(emptytitle.str());
+			}
+			else
+				setCurrentSerieName(nom);
+
+			initCurrentSeriesWatch();
+
+			return;
+		}
+
+		/** Finish a serie of measurements.
+		 * Nothing is done for the moment.
+		 */
+		void finishSerie()
+		{
+		}
+
+		/*! Returns the ith series of measurements.
+		 * @param i ith series to be returned
+		 */
+		const DataSeries<Xkind> & getSeries(const index_t  &i) const
+		{
+			linbox_check(i < size());
+			return _tableau_[i] ;
+		}
+
+		/*! Returns the ith series of measurements.
+		 * @param i ith series to be returned
+		 */
+		DataSeries<Xkind> & refSeries(const index_t  &i)
+		{
+			linbox_check(i < size());
+			return _tableau_[i] ;
+		}
+
+
+		/*! Returns the current series of measurements.
+		 */
+		const DataSeries<Xkind> & getCurrentSeries() const
+		{
+			return getSeries(_curr_serie_);
+		}
+
+		/*! Returns the current series of measurements.
+		 */
+		DataSeries<Xkind> & refCurrentSeries()
+		{
+			return refSeries(_curr_serie_);
+		}
+
+		/** @brief size of a series.
+		 * @param i index of the series
+		 */
+		index_t getSerieSize(const index_t & i) const
+		{
+			return getSeries(i).size();
+		}
+
+		/** @brief size of the current series.
+		 */
+		index_t getCurrentSerieSize() const
+		{
+			return getSerieSize(_curr_serie_);
+		}
+
+		/** Sets the current series of measurements.
+		 * @param s index for the series we wish to add measures to.
+		 */
+		void selectSeries(const index_t & s)
+		{
+			linbox_check(s < size());
+			_curr_serie_ = s ;
+			initCurrentSeriesWatch();
+
+			return;
+		}
+
+		/*! goes to the next series of points
+		 */
+		void selectNextSeries()
+		{
+			++_curr_serie_ ;
+			selectSeries(_curr_serie_);
+		}
+
+		/*! @brief Sets the name of a point.
+		 * @param i series number
+		 * @param j index for the the point
+		 * @param nom name of the point
+		 */
+		void setSeriesPointLabel(const index_t & i, const index_t & j, const Xkind & nom)
+		{
+			linbox_check(j<getSerieSize(i) );
+			getSeries(i).PointLabels[j] = nom ;
+
+			return;
+		}
+
+		/*! @brief Sets the name of a point.
+		 * @param j index for the the point
+		 * @param nom name of the point
+		 */
+		void setCurrentSeriesPointLabel(const index_t & j, const Xkind & nom)
+		{
+			return setSeriesPointLabel(_curr_serie_,j,nom);
+		}
+
+		/*! @brief gets the name of a point.
+		 * @param i series number
+		 * @param j its index.
+		 * @return its name.
+		 * @warning no default. \c setPointXLabel has to be used beforehands.
+		 */
+		Xkind getSeriesPointLabel(const index_t &i, const index_t & j) const
+		{
+			linbox_check(j<getSerieSize(i));
+			return(getSeries(i).PointLabels[j]) ;
+		}
+
+		/*! @brief gets the name of a point.
+		 * @param j its index.
+		 * @return its name.
+		 * @warning no default. \c setPointXLabel has to be used beforehands.
+		 */
+		Xkind getCurrentSeriesPointLabel(const index_t & j) const
+		{
+			return getSeriesPointLabel(_curr_serie_,j);
+		}
+
+		/*! @brief gets the name of a serie.
+		 * Defaults to \c "serie.i"
+		 * @param i its index.
+		 * @return its name.
+		 */
+		std::string getSerieLabel(const index_t & i) const
+		{
+			linbox_check(i<size());
+			linbox_check(i<_serie_label_.size() );
+			if (_serie_label_[i].empty()) {
+				std::ostringstream emptytitle ;
+				emptytitle << "serie." << i ;
+				return emptytitle.str();
+			}
+			return(_serie_label_[i]);
+		}
+
+		/*! @brief gets the name of a serie.
+		 * Defaults to \c "serie.i"
+		 * @param i its index.
+		 * @return its name.
+		 */
+		std::string getCurrentSerieLabel() const
+		{
+			return getSerieLabel(_curr_serie_);
+		}
+
+		/*! @brief gets all the names in the series.
+		 * @return a vector of names.
+		 */
+		std::vector<std::string > getSerieLabels() const
+		{
+			return _serie_label_ ;
+		}
+
+		/*! @brief gets all the names in the points of a series
+		 * @param  i index of the series
+		 * @return a vector of names.
+		 */
+		const svector_t & getSeriePointLabel( const index_t & i) const
+		{
+			return(getSeries(i).PointLabels) ;
+		}
+
+		/*! @brief gets all the names in the points.
+		 * @return a vector of names.
+		 */
+		const svector_t & getCurrentSeriesPointLabel() const
+		{
+			return getSeriePointLabel(_curr_serie_);
+		}
+
+		/*! @brief gets all the names in the points of a series.
+		 * @param i index of the series
+		 * @return a vector of names.
+		 */
+		const dvector_t & getSeriesValues(const index_t & i) const
+		{
+			return(getSeries(i).Values) ;
+		}
+
+		/*! @brief gets all the names in the points.
+		 * @return a vector of names.
+		 */
+		const dvector_t & getCurrentSeriesValues() const
+		{
+			return getSeriesValues(_curr_serie_);
+		}
+
+		/*! @brief sets a new entry.
+		 * @param i index of the series
+		 * @param j index of the point
+		 * @param nam name of the point (eg size of the matrix, name of a sparse matrix,...)
+		 * @param val value to be inserted (eg mflops, sec,...).
+		 * @param xval x value of the point (eg size of the matrix, of a sparse matrix,...)
+		 * @param yval time for this computation (seconds)
+		 */
+		void setSeriesEntry(const index_t &i, const Xkind & nam, const double & val
+			      , const double & xval = NAN, const double & yval = NAN)
+		{
+			refSeries(i).push_back(nam,val,xval,yval);
+			// std::cout << "points : " << refSeries(i).Points << std::endl;
+			initWatch(i); //  in case series has changed
+			return ;
+		}
+
+		/*! @brief sets a new entry.
+		 * @param j index of the point
+		 * @param nam name of the point (eg size of the matrix, name of a sparse matrix,...)
+		 * @param val value to be inserted (eg mflops, sec,...).
+		 */
+		void setCurrentSeriesEntry(const Xkind & nam, const double & val
+					   , const double & xval = NAN, const double & yval = NAN)
+		{
+			return setSeriesEntry(_curr_serie_,nam,val,xval,yval) ;
+		}
+
+
+		/*! @brief gets a value for an entry.
+		 * @param i index of the series
+		 * @param j index of the point
+		 * @return val value of point j in ith serie.
+		 */
+		double getSeriesEntry(const index_t & i, const index_t & j) const
+		{
+			linbox_check(j<getSerieSize());
+			linbox_check(i<size());
+			return getSeries(i).Values[j] ;
+		}
+
+		/*! @brief gets a value for an entry.
+		 * @param j index of the point
+		 * @return val value of point j in current serie.
+		 */
+		double getCurrentSeriesEntry(const index_t & j) const
+		{
+			return getSeries(_curr_serie_,j);
+		}
+
+
+		/*! @brief gets a time spent on an entry.
+		 * @param i index of the series
+		 * @param j index of the point
+		 * @return time for the point j in current serie.
+		 */
+		double getSeriesEntryTime(const index_t &i, const index_t & j) const
+		{
+			linbox_check(j<getSerieSize(i));
+			return getSeries(i).Time[j] ;
+		}
+
+		/*! @brief gets a time spent on an entry.
+		 * @param j index of the point
+		 * @return time for the point j in current serie.
+		 */
+		double getCurrentSeriesEntryTime(const index_t & j) const
+		{
+			return getSeriesEntryTime(_curr_serie_,j);
+		}
+
+
+		/*! @brief gets the point corresponding to an entry.
+		 * @warning, this is not the label, but the value associated to the point
+		 * @param i index of the series
+		 * @param j index of the point
+		 * @return time for the point j in current serie.
+		 */
+		double getSeriesEntryPoint(const index_t & i, const index_t & j) const
+		{
+			linbox_check(j<getSerieSize(i));
+			return getSeries(i).Point[j] ;
+		}
+
+		/*! @brief gets the point corresponding to an entry.
+		 * @warning, this is not the label, but the value associated to the point
+		 * @param j index of the point
+		 * @return time for the point j in current serie.
+		 */
+		double getCurrentSeriesEntryPoint(const index_t & j) const
+		{
+			return getSeriesEntryPoint(_curr_serie_,j);
+		}
+
+
+		/*! gets a reference to the array of data.
+		 * @return a reference to the member \c _tableau_ representing the data.
+		 */
+		const std::vector<DataSeries<Xkind > > & getTable() const
+		{
+			return _tableau_ ;
+		}
+
+		/*! gets a reference to the array of data.
+		 * @return a reference to the member \c _tableau_ representing the data.
+		 */
+		std::vector<DataSeries<Xkind > > & refTable()
+		{
+			return _tableau_ ;
+		}
+
+
+		/** @brief Continue for another time measure ?
+		 * @see TimeWatcher::keepon
+		 * @param repet  current number of repetitions for this new measure
+		 * @param tim    time previously spent on the measures.
+		 * @return true if one more measure can be done
+		 */
+		bool keepon(index_t & repet, double tim, bool usePrediction=false)
+		{
+			return _time_watch_.keepon(repet,tim, usePrediction);
+		}
+
+		// tinyxml
+		void exporte( const std::string & filename) const ;
+		// tinyxml
+		void importe( const std::string & filename) ;
+
+
+
+	}; // PlotData
+
+
 	class PlotStyle {
 	public:
 		//! What format the plot should be in?
@@ -141,7 +591,7 @@ namespace LinBox
 		/*! @brief Gets the title of the graph.
 		 * @return a gnuplot command to set the title of the graph.
 		 */
-		std::string getTitle()
+		std::string getTitle() const
 		{
 			std::string title = "#title\nset title \""  + _title_ + '\"';
 			if (!_title_x_.empty())
@@ -154,7 +604,7 @@ namespace LinBox
 		/*! @brief Gets the title of points abscissa.
 		 * @return a gnuplot command to set the title of the abscissa.
 		 */
-		std::string getTitleX()
+		std::string getTitleX() const
 		{
 			return "\nset xlabel \"" + _title_x_ + '\"' ;
 		}
@@ -162,7 +612,7 @@ namespace LinBox
 		/*! @brief Gets the title of the series.
 		 * @return a gnuplot command to set the title of the ordinate (series).
 		 */
-		std::string getTitleY()
+		std::string getTitleY() const
 		{
 			return "\nset ylabel \"" + _title_y_ + '\"' ;
 		}
@@ -170,7 +620,7 @@ namespace LinBox
 		/*! @brief get the title string.
 		 * @param index can be (0,1,2)
 		 */
-		std::string getRawTitle(int index=0)
+		std::string getRawTitle(int index=0) const
 		{
 			switch (index) {
 			case 0 :
@@ -205,7 +655,7 @@ namespace LinBox
 		/*! @brief Gets the output format.
 		 * @return string for setting the expected output format in gnuplot.
 		 */
-		std::string getTerm()
+		std::string getTerm() const
 		{
 			std::string term = "#term\nset term " ;
 			switch(_term_) {
@@ -235,7 +685,7 @@ namespace LinBox
 		 * @return a string for this extension, including the sepatating dot.
 		 *
 		 */
-		std::string getExt()
+		std::string getExt() const
 		{
 			switch(_term_) {
 			case (Term::png) :
@@ -288,7 +738,7 @@ namespace LinBox
 		/*! @brief Gets the legend position.
 		 * by default, it is "under".
 		 */
-		std::string getKeyPos()
+		std::string getKeyPos() const
 		{
 			std::string lgd ="#legend\nset key " ;
 			if (!_legend_pos_.empty())
@@ -316,7 +766,7 @@ namespace LinBox
 		/*! @brief Gets the legend position.
 		 * by default, it is 45° inclined (use in on long tics legends).
 		 */
-		std::string getXtics()
+		std::string getXtics() const
 		{
 			return _xtics_ ;
 		}
@@ -325,7 +775,7 @@ namespace LinBox
 		 * @param basnam the raw name for the output.
 		 * @return basnam+extenstion.
 		 */
-		std::string getOutput(std::string basnam)
+		std::string getOutput(std::string basnam) const
 		{
 			std::string setout = "#output\nset output \'" ;
 #ifdef __LINBOX_HAVE_GHOSTSCRIPT
@@ -366,7 +816,7 @@ namespace LinBox
 		 * @sa PlotType
 		 *
 		 */
-		std::string getPlotType()
+		std::string getPlotType() // const
 		{
 			_styleopts_ += "\nset datafile missing \"inf\"" ;
 			std::string mystyle = "#style\nset style data " ;
@@ -551,12 +1001,11 @@ namespace LinBox
 		 * @param File the name of/path to the data file (with extension)
 		 * @return a gnuplot "plot" command stream.
 		 */
-		std::string getPlotCommand(std::string File)
+		std::string getPlotCommand(std::string File) const
 		{
 			std::string PC = "#plot\nplot \'" + File + "\' ";
 			PC += _usingcols_ ;
 			return PC ;
-			// "plot './data/fgemm_square_2ex03aS2.dat'  using 1:2 title columnheader(2), for [i=3:5] '' using 1:i title  columnheader(i)"
 		}
 
 	private :
@@ -582,203 +1031,17 @@ namespace LinBox
 		std::string                         _usingcols_ ; //!< columns to be used (gp command)
 
 
-	} ;
+	} ; // PlotStyle
 
-	/*- @brief The raw data to plot.
-	 * Represents the series of points and the labels for the points (X)
-	 * axis and the series (Y) axis.  The internal representation is a
-	 * vector of vector, each series of point being a vector of double.
-	 * @tparam NAM the X axis is parametered by NAM (string, int, double...)
-	 * @todo write members that permute, add, scale,... data.
-	 */
-	template<class NAM>
-	class PlotData {
-	private :
-		dmatrix_t _tableau_   ;   //!< data. \c _tableau_[i][j] is the \e jth value of serie \e i.
-		index_t                              _nb_points_ ;   //!< number of points in each series. (size of \c _tableau_[0])
-		index_t                              _nb_series_ ;   //!< number of series. (size of \c _tableau_)
-		std::vector< std::string >           _serie_name_;   //!< name for each serie of points
-		std::vector< NAM >                   _absci_name_;   //!< values of the x axis.
-		dmatrix_t _times_     ;   //!< actual computation times
-	public :
-		/*! Inits a plot with series of data.
-		 * @param nb_pts number of points in each serie.
-		 * @param nb_srs number of series of points. Default is 1.
-		 */
-		PlotData(index_t nb_pts, index_t nb_srs=1) :
-			_tableau_(nb_srs),_nb_points_(nb_pts),_nb_series_(nb_srs),_serie_name_(nb_srs),_absci_name_(nb_pts)
-		{
-			linbox_check(nb_srs);
-			linbox_check(nb_pts);
-			for (index_t i = 0 ; i < nb_srs ; ++i)
-				_tableau_[i].resize(nb_pts);
-		}
 
-		//! destructor.
-		~PlotData() {} ;
-
-		//! copy constructor.
-		//! @param PD a PlotData to copy.
-		PlotData(const PlotData<NAM> & PD):
-			_tableau_(PD.getTable()),_nb_points_(PD.getPointsDim()),_nb_series_(PD.getSeriesDim()),_serie_name_(PD.getSerieNames()),_absci_name_(PD.getAbsciNames())
-		{
-
-		}
-
-		/*! @brief get the number of series.
-		 * @return number of series.
-		 */
-		index_t getSeriesDim()
-		{
-			return _nb_series_ ;
-		}
-
-		/*! @brief get the common number of points in each serie.
-		 * @return number of points.
-		 */
-		index_t getPointsDim()
-		{
-			return _nb_points_ ;
-		}
-
-		/*! @brief Sets the name of a serie.
-		 * @param i index of the serie
-		 * @param nom name of the serie
-		 */
-		void setSerieName(index_t i, std::string nom)
-		{
-			linbox_check(i<_nb_series_);
-			_serie_name_[i] = nom ;
-		}
-
-		/*! @brief Sets the name of a point.
-		 * @param j index for the the point
-		 * @param nom name of the point
-		 */
-		void setAbsciName(index_t j, NAM nom)
-		{
-			linbox_check(j<_nb_points_);
-			_absci_name_[j] = nom ;
-		}
-
-		/*! @brief gets the name of a serie.
-		 * Defaults to \c "serie.i"
-		 * @param i its index.
-		 * @return its name.
-		 */
-		std::string getSerieName(index_t i)
-		{
-			linbox_check(i<_nb_series_);
-			if (_serie_name_[i].empty()) {
-				std::ostringstream emptytitle ;
-				emptytitle << "serie." << i ;
-				return emptytitle.str();
-			}
-			return(_serie_name_[i]);
-		}
-
-		/*! @brief gets the name of a point.
-		 * @param j its index.
-		 * @return its name.
-		 * @warning no default. \c setAbsciName has to be used beforehands.
-		 */
-		NAM getAbsciName(index_t j)
-		{
-			linbox_check(j<_nb_points_);
-			return(_absci_name_[j]) ;
-		}
-
-		/*! @brief gets all the names in the series.
-		 * @return a vector of names.
-		 */
-		std::vector<std::string > getSerieNames()
-		{
-			return _serie_name_ ;
-		}
-
-		/*! @brief gets all the names in the points.
-		 * @return a vector of names.
-		 */
-		std::vector<NAM > getAbsciNames()
-		{
-			return _absci_name_ ;
-		}
-
-		/*! @brief modifies the number of series.
-		 * @param n the new number of series. Some data will be lost if n is smaller than
-		 * the current size.
-		 */
-		void resizeSeries( index_t & n)
-		{
-			if (n<_nb_series_) {
-				std::cerr  << "warning, you are dropping series" << std::endl;
-			}
-			_tableau_.resize(n);
-			return;
-		}
-
-		/*! @brief modifies the number of points.
-		 * @param n the new number of points in every series. Some data
-		 * will be lost if n is smaller than the current size.
-		 */
-		void resizePoints( index_t & n)
-		{
-			if (n<_nb_points_) {
-				std::cerr  << "warning, you are dropping points in the series" << std::endl;
-			}
-			for (index_t i = 0 ; i < _nb_series_ ; ++i)
-				_tableau_[i].resize(n);
-		}
-
-		/*! @brief sets a new entry.
-		 * @param i index of the serie
-		 * @param j index of the point
-		 * @param val value to be inserted.
-		 */
-		void setEntry(index_t i, index_t j, double val)
-		{
-			linbox_check(i<_nb_series_);
-			linbox_check(j<_nb_points_);
-			_tableau_[i][j] = val ;
-			return ;
-		}
-
-		/*! @brief gets a value for an entry.
-		 * @param i index of the serie
-		 * @param j index of the point
-		 * @return val value of point j in serie j.
-		 */
-		double getEntry(index_t i, index_t j)
-		{
-			linbox_check(i<_nb_series_);
-			linbox_check(j<_nb_points_);
-			return _tableau_[i][j] ;
-		}
-
-		/*! gets a reference to the array of data.
-		 * @return a reference to the member \c _tableau_ representing the data.
-		 */
-		std::vector<std::vector< float > > & getTable()
-		{
-			return _tableau_ ;
-		}
-
-	};
-
-	/*- @brief The graph.
-	 * This class joins a PlotStyle and a PlotData to build up a graph.  A
-	 * filename should be provided as well, indicating where the output
-	 * graph and scripts will be generated.
-	 *
-	 * @warning the filename will get a random suffix before the extension
-	 * so as not to overwrite files "par inadvertance".
-	 */
-	template<class NAM>
+	template<class Xkind>
 	class PlotGraph {
 	private :
-		PlotData<NAM>          & _data_ ;   //!< reference to the data points
+		PlotData<Xkind>          & _data_ ;   //!< reference to the data points
 		PlotStyle             & _style_ ;   //!< reference to a plotting style
 		std::string         _filename_  ;   //!< name for the output file (without extension). a random \c _XXXXXX suffix will be added to make it unique.
+		dmatrix_t             _merge_data_   ;
+		svector_t     _merge_points_ ;
 
 		/*! @internal
 		 * @brief random <code>:alnum:</code> \c char.
@@ -828,10 +1091,83 @@ namespace LinBox
 
 		}
 
+
+		//! @bug this supposes the two series have unique measurements for one point.
+		void mergeTwoSeries( svector_t & merge_points
+				     , dmatrix_t & merge_data
+				     , const svector_t & pts
+				     , const dvector_t & dat
+				     , const index_t & idx) const
+		{
+			index_t data_size = (index_t)merge_points.size();
+			linbox_check(data_size == (index_t)merge_data[0].size());
+
+			merge_data[idx].resize(data_size,NAN);
+			typename svector_t::iterator it ;
+
+			for (index_t i = 0 ; i < pts.size() ; ++i) {
+				// iterators change because of push_back, so they are here :
+				typename svector_t::iterator beg = merge_points.begin() ;
+				typename svector_t::iterator end = merge_points.begin()+data_size ;
+
+				// std::cout << "inserting "<< pts[i] << std::endl;
+				it = std::find( beg, end, pts[i] ) ;
+				if (it != end){
+					index_t j = (index_t) std::distance(beg,it);
+					merge_data[idx][j] = dat[i] ;
+				}
+				else {
+					for (index_t j = 0 ; j < idx ; ++j) {
+						merge_data[j].push_back(NAN);
+					}
+
+					merge_data[idx].push_back(dat[i]) ;
+					merge_points.push_back(pts[i]) ;
+				}
+				// std::cout << "..." << std::endl;
+				// std::cout << merge_points << std::endl;
+				// std::cout << merge_data << std::endl;
+				// std::cout << "..." << std::endl;
+			}
+
+			return;
+
+		}
+
+		//! merge all series of points into a vector of absissa points  and a vector of vector of data points
+		void mergeSeries()
+		{
+			_data_. selectSeries(0);
+			_merge_points_ = _data_.getCurrentSeriesPointLabel() ;
+			_merge_data_[0] = _data_.getCurrentSeriesValues() ;
+
+			// std::cout << "merge points " << _merge_points_ << std::endl;
+			// std::cout << "merge data   " << _merge_data_ << std::endl;
+
+			for (index_t i = 1 ; i < _data_.size() ; ++i) {
+				_data_. selectNextSeries() ;
+				// std::cout << "to be merged "  << i << " : "  << std::endl;
+				// std::cout << "new points " << _data_.getCurrentSeriesPointLabel() << std::endl;
+				// std::cout << "new data   " << _data_.getCurrentSeriesValues() << std::endl;
+
+				mergeTwoSeries(_merge_points_,_merge_data_,
+					       _data_. getCurrentSeriesPointLabel(), _data_. getCurrentSeriesValues(),i);
+
+				// std::cout << "result : " << std::endl;
+				// std::cout << "merge points " << _merge_points_ << std::endl;
+				// std::cout << "merge data   " << _merge_data_ << std::endl;
+
+			}
+
+			return ;
+		}
+
+		public :
+
 		/*! @brief Sets a new data structure.
 		 * @param data a reference to a PlotData class.
 		 */
-		void setData( PlotData<NAM> & data )
+		void setData( PlotData<Xkind> & data )
 		{
 			_data_ = data ;
 		}
@@ -839,7 +1175,7 @@ namespace LinBox
 		/*! @brief Gets the data.
 		 * @param[in,out] data a reference to a PlotData class.
 		 */
-		PlotData<NAM> & refData( PlotData<NAM> & data)
+		PlotData<Xkind> & refData( PlotData<Xkind> & data)
 		{
 			return data = _data_ ;
 		}
@@ -860,18 +1196,30 @@ namespace LinBox
 			return style = _style_ ;
 		}
 
-	public :
 
-		/*! @brief Constructor for the PlotGraph class.
+		// not implemented yet
+		void sortSeries()  ;
+
+		// not implemented yet
+		void unique() ;
+
+		// metadata : machine (uname -a) ; date (date --rfc-3339=seconds) ; program name ; other
+		void addMetadata() ;
+
+			/*! @brief Constructor for the PlotGraph class.
 		 * Plots a series of data according to a style.
 		 * @param data data to be plot, will be processed by the style
 		 * @param style sets parameters to gnuplot to achieve a nice
 		 * plot.
 		 */
-		PlotGraph( PlotData<NAM> & data, PlotStyle & style ) :
-			_data_(data),_style_(style)
+		PlotGraph( PlotData<Xkind> & data, PlotStyle & style ) :
+			_data_(data)
+			,_style_(style)
+			,_merge_data_(data.size())
+			,_merge_points_(data.getSeries(0).size())
 		{
 			srand((unsigned)time(NULL));
+			mergeSeries();
 		}
 
 		/*! @brief sets the ouput file name.
@@ -881,6 +1229,11 @@ namespace LinBox
 		 */
 		void setOutFilename( std::string filename )
 		{
+			int err = system( "test -d data || ( rm -rf data && mkdir data )" ) ;
+			if (err) {
+				throw LinBoxError("could not create directory data");
+			}
+
 			if ( filename.empty() ) {
 				_filename_ = "./data/plotdata" ;
 				std::cerr << "you should provide a filename. Using " << _filename_ << " as default ."<<std::endl;
@@ -891,12 +1244,21 @@ namespace LinBox
 
 		} ;
 
+		//! @todo
+		 void print_csv() ;
+
+ 		 //! @todo
+		 void print_xml() ;
+
+		//! @todo
+		 void print_html() ;
+
 		/*! @brief Prints data in a latex tabular.
 		*/
 		void print_latex()
 		{
-			index_t nb_points = _data_.getPointsDim();
-			index_t nb_series = _data_.getSeriesDim();
+			index_t nb_points = (index_t)_merge_points_.size();
+			index_t nb_series = _data_.size();
 
 			linbox_check(nb_points);
 			linbox_check(nb_series);
@@ -927,15 +1289,15 @@ namespace LinBox
 			}
 			// first line
 			for (index_t j = 0 ; j < nb_points ; ++j ) {
-				FN << " & " <<  _data_.getAbsciName(j) ;
+				FN << " & " <<  _merge_points_[j] ;
 			}
 			// lines of data
 			FN << std::endl << "\\hline" << std::endl;
 			FN.precision(2);
 			for (index_t i = 0 ; i < nb_series ; ++i) {
-				FN << _data_.getSerieName(i) ;
+				FN << _data_.getSerieLabel(i) ;
 				for (index_t j =  0 ; j < nb_points ; ++j )
-					FN << " & " << _data_.getEntry(i,j) ;
+					FN << " & " << _merge_data_[i][j] ;
 				if (i+1 < nb_series )
 					FN << "\\\\" ;
 				FN << std::endl;
@@ -965,8 +1327,8 @@ namespace LinBox
 			print_latex();
 #else
 			// srand(time(NULL));
-			index_t nb_points = _data_.getPointsDim() ;
-			index_t nb_series = _data_.getSeriesDim() ;
+			index_t nb_points = (index_t)_merge_points_.size() ;
+			index_t nb_series = (index_t)_data_.size() ;
 
 			std::string unique_filename  = _randomName();
 			std::string DataFileName = unique_filename + ".dat" ;
@@ -978,14 +1340,14 @@ namespace LinBox
 			DF.precision(2);
 			DF << "legend " ;
 			for (index_t i = 0 ; i < nb_series ; ++i) {
-				DF << _data_.getSerieName(i) << ' ' ;
+				DF << _data_.getSerieLabel(i) << ' ' ;
 			}
 			DF << std::endl;
 
 			for (index_t j = 0 ; j < nb_points ; ++j) {
-				DF << _data_.getAbsciName(j) ;
+				DF << _merge_points_[j] ;
 				for (index_t i = 0 ; i < nb_series ; ++i) {
-					DF << " " << _data_.getEntry(i,j) ;
+					DF << " " << _merge_data_[i][j] ;
 				}
 				DF << std::endl;
 			}
@@ -1032,268 +1394,55 @@ namespace LinBox
 #endif
 		}
 
-	};
+	}; // PlotGraph
 
-}
+} // LinBox
 
+//
+// DataSeries
+//
+namespace LinBox {
 
-#ifdef __LINBOX_HAVE_LAPACK
-extern "C" {
+	template<class Xkind>
+	DataSeries<Xkind>:: DataSeries() :
+		PointLabels(0)
+		, Points(0)
+		, Times(0)
+		, Values(0)
+	{}
 
-	void dgels_(char *trans, int *m, int *n, int *nrhs, double *a, int *lda,
-			double *b, int *ldb, double *work, int *lwork, int *info);
+	template<class Xkind>
+	DataSeries<Xkind>::~DataSeries() {}
 
-	void dgelsy_(int *m, int *n, int *nrhs, double *a, int *lda,
-			double *b, int *ldb, int *JPVT, double *RCOND, int *RANK,
-			double *work, int *lwork, int *info);
+	template<class Xkind>
+	void
+	DataSeries<Xkind>::resize(const index_t & n)
+	{
+		linbox_check(n == Values.size()+1);
+		PointLabels.resize(n);
+		Times.resize(n);
+		Points.resize(n);
+		Values.resize(n);
 
-	void dgelss_(int *m, int *n, int *nrhs, double *a, int *lda,
-			double *b, int *ldb, double *s, double *RCOND, int *RANK,
-			double *work, int *lwork, int *info);
-}
-#endif // __LINBOX_HAVE_LAPACK
-
-// Helper
-namespace LinBox
-{
-
-	double fit2(const dvector_t & X, const dvector_t & Y, int n, double x) {
-		assert(n>0);
-		if ( n==1 ) {
-			if ( X[0]==X[1] )
-				return (Y[0]+Y[1])/2 ;
-		}
-		if (X[n]==X[n-1])
-			return fit2(X,Y,n-1,x);
-
-		double a = (Y[n-1]-Y[n])/(X[n-1]-X[n]) ;
-		double b = (X[n-1]*Y[n]-X[n]*Y[n-1])/(X[n-1]-X[n]) ;
-		return a*x+b ;
+		return;
 	}
 
-#ifdef __LINBOX_HAVE_LAPACK
+	template<class Xkind>
+	index_t
+	DataSeries<Xkind>::size() const
+	{
+		linbox_check(PointLabels.size() == Points.size())
+		linbox_check(Times.size() == Points.size())
+		linbox_check(Times.size() == Values.size())
 
-	// this will destroy Y
-	double fit_lapack(dvector_t &X, dvector_t &Y, int n, double x) {
-		assert(n == (int)Y.size());
-		int deg = std::min(4,n);
-		dvector_t V(deg*n);
-		std::cout << V.size() << std::endl;
-		int ldv = deg ;
-		for(int i = 0 ; i < n; ++i) {
-			for (int j = 0 ; j < ldv; ++j) {
-				V[i+j*n] = std::pow(X[i],j);
-			}
-		}
-
-		int info;
-		int ldun = 1 ;
-
-#if 1 /* basic least squares */
-		{
-			int lwork = 2*n*deg*4 ;
-			dvector_t work(lwork);
-			char N[] = "N";
-			dgels_(N, &n, &ldv, &ldun, &(V[0]) , &n, &(Y[0]), &n, &work[0], &lwork, &info);
-		}
-#endif
-
-#if 0 /* least squares using SVN and V not nec. full rank */
-		{
-			int lwork = 2*deg+std::max(2*deg,n)*4 ;
-			dvector_t work(lwork);
-			dvector_t s(deg);
-			double rcond = 1e-8 ;
-			int rank ;
-			dgelss_( &n, &ldv, &ldun, &(V[0]) , &n, &(Y[0]), &n, &s[0], &rcond, &rank, &work[0], &lwork, &info);
-		}
-#endif
-
-#if 0 /* weighted least squares */
-		//DGGGLM
-#endif
-		// horner eval the poly
-		double res = 0.0;
-
-		for(int i=n-1; i >= 0; i--) {
-			res = res * x + Y[i];
-		}
-		return res;
-	}
-#endif // __LINBOX_HAVE_LAPACK
-
-
-	double fit3(const dvector_t & X, const dvector_t & Y,int n, double x) {
-#ifndef __LINBOX_HAVE_LAPACK /* à la main */
-		assert(n>1);
-		if (n==2) {
-			if (X[1]==X[2])
-				return fit2(X,Y,1,x) ;
-			if (X[0]==X[2]) {
-				return fit2(X,Y,1,x) ;
-			}
-			if (X[0]==X[1]) {
-				dvector_t X1(2); X1[0]=X[1]; X1[2]=X[2];
-				dvector_t Y1(2); Y1[0]=Y[1]; Y1[2]=Y[2];
-				return fit2(X1,Y1,1,x) ;
-			}
-		}
-		if (X[n]==X[n-1]) { // discard last
-			dvector_t X1(X.begin(),X.begin()+(n-1));
-			dvector_t Y1(Y.begin(),Y.begin()+(n-1));
-
-			return fit3(X1,Y1,n-1,x) ;
-		}
-		if (X[n]==X[n-2]) { // discard last
-			dvector_t X1(X.begin(),X.begin()+(n-1));
-			dvector_t Y1(Y.begin(),Y.begin()+(n-1));
-
-			return fit3(X1,Y1,n-1,x) ;
-		}
-		if (X[n-1]==X[n-2]) { // discard last but one
-			dvector_t X1(X.begin(),X.begin()+(n-1));
-			dvector_t Y1(Y.begin(),Y.begin()+(n-1));
-			X1[n-1]=X[n];
-			Y1[n-1]=Y[n];
-
-			return fit3(X1,Y1,n-1,x) ;
-		}
-
-		// todo: use Lagrange ?
-		double d  = (-X[n]+X[n-1])*(-X[n]+X[n-2])*(X[n-2]-X[n-1]) ;
-		double a1 = -X[n]*Y[n-2]+X[n-2]*Y[n]+X[n-1]*Y[n-2]-X[n-1]*Y[n]+X[n]*Y[n-1]-X[n-2]*Y[n-1];
-		double a2 = -X[n-2]*X[n-2]*Y[n]+X[n-2]*X[n-2]*Y[n-1]+X[n-1]*X[n-1]*Y[n]-Y[n-2]*X[n-1]*X[n-1]+Y[n-2]*X[n]*X[n]-Y[n-1]*X[n]*X[n];
-		double a3 = X[n-2]*X[n-2]*X[n-1]*Y[n]-X[n-2]*X[n-2]*X[n]*Y[n-1]-X[n-1]*X[n-1]*X[n-2]*Y[n]+Y[n-1]*X[n-2]*X[n]*X[n]+X[n-1]*X[n-1]*X[n]*Y[n-2]-Y[n-2]*X[n-1]*X[n]*X[n];
-
-		return ((a1*x+a2)*x+a3)/d ;
-#else // __LINBOX_HAVE_LAPACK
-		int m = min(n,5);
-		dvector_t X1(m) ;
-		dvector_t Y1(m) ;
-		for (int i = 0 ; i < m ; ++i) X1[i] = X[n-m+i] ;
-		for (int i = 0 ; i < m ; ++i) Y1[i] = Y[n-m+i] ;
-		return fit_lapack(X1,Y1,m,x);
-
-#endif // __LINBOX_HAVE_LAPACK
+		return (index_t)Values.size();
 	}
 
-	/*- Helper.
-	 * This helper has several functions :
-	 *   - Records the timings
-	 *   - predict the execution time for the next experiment
-	 *   - helps producing enough experiments (but not too much and not too time consuming) for producing a valid measure.
-	 *   .
-	 *   See member function help for more information.
-	 */
-	class TimeWatcher  {
-	private :
-		dmatrix_t    Data_; //!< Time data. 2xn table, first line is some parameter \e x and second line is \e time=f(x).
-		int         Line_ ; //!< current line in PlotData.
-		int       Current_; //!< Data_ has been filled from 0 to Current_ (excluded). It is assumed that \e f(0)=0.
+
+} // LinBox
 
 
-	public:
-		/** Constructor.
-		 * @param size number of experiments expected
-		 * @param Line current line in PlotData
-		 */
-		TimeWatcher (int size, int Line) :
-			Data_(2),Line_(Line),Current_(1)
-		{
-			// Data.resize(2);
-			Data_[0].resize(size+1);
-			Data_[1].resize(size+1);
-			Data_[0][0] = 0 ; // f(0)=0
-			Data_[1][0] = 0 ;
-		}
 
-		int getCurrent() { return Current_ ; }
-
-		dvector_t & getX() { return Data_[0] ; }
-		dvector_t & getY() { return Data_[1] ; }
-
-		/** accumulate some new data.
-		 * @param x some parameter. (for instance the size n of a matrix).
-		 * @param y time used for computing the benchmark at \c x.
-		 */
-		void newData(double x, double y)
-		{
-			getX()[Current_] = x;
-			getY()[Current_] = y;
-			++Current_ ;
-			if (getX().size()<(size_t)Current_) {
-				getX().resize(Current_+20);
-				getY().resize(Current_+20);
-			}
-		}
-
-		/** Prediction for the next experiment time.
-		 * It is assumed that \c predict(0)=0. If Curent_<3, a linear,
-		 * then quadratic fit is done. Other wise, a cubic fit is
-		 * performed.
-		 * @param x the next evaluation point.
-		 * @return f(x) where f tries to fit the points : \f$ f(\mathtt{Data\_}[0][0..\mathtt{Current\_}-1]) \approx  getY()[0..\mathtt{Current\_}-1]\f$
-		 */
-		double predict(double x)
-		{
-			if (Current_ < 2)
-				return 0. ; // unknown.
-			if (Current_ ==2 ) {
-				return fit2(getX(),getY(),1,x);
-			}
-			return fit3(getX(),getY(),Current_-1,x);
-
-		}
-
-		/*! @brief Watches a timer and a number and repet and signals if over.
-		 *
-		 * We want at least 2 repetions but not more than maxtime spent on timing.
-		 *
-		 * @param repet number of previous repetitions. Should be 0 on the first time
-		 * \c whatchon is called.
-		 * @param tim timer to watch
-		 * @param maxtime maximum time (in seconds) until \c keepon tells stop.
-		 * @return \c true if we conditions are not met to stop, \c false otherwise.
-		 * @pre \c tim was clear at the beginning and never started.
-		 *
-		 */
-		bool keepon(index_t & repet, const Timer & tim, double maxtime=0.2)
-		{
-			if (repet<2 || tim.usertime() < maxtime) {
-				++repet ;
-				return true;
-			}
-			return false ;
-		}
-
-		/*! @brief Watches a timer and a number and repet and signals if over.
-		 *
-		 * We want at least 2 repetions but not more than maxtime spent on timing.
-		 *
-		 * @param repet number of previous repetitions. Should be 0 on the first time \c whatchon is called.
-		 * @param tim timer to watch
-		 * @param maxtime maximum time (in seconds) until \c watchon tells stop.
-		 * @return \c true if we conditions are not met to stop, \c false otherwise.
-		 * @pre \c tim should have been started previously !
-		 *
-		 */
-		bool whatchon(index_t & repet, /*  const */Timer & tim, double maxtime=0.5)
-		{
-			if (repet<2 || tim.userElapsedTime() < maxtime) {
-				++repet ;
-				return true;
-			}
-			return false ;
-		}
-
-		bool doNext(double t1, double next, double maxtime=60)
-		{
-			if (t1 == 0) return true;
-			return (predict(next)<maxtime);
-		}
-	};
-
-}
 
 #endif // __LINBOX_benchmarks_benchmark_INL
 

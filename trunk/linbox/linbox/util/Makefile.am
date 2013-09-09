@@ -19,7 +19,7 @@
 
 
 
-#we now need to include givaro headers for timer ? (oupa ? plus moche que ça tu meurs)
+#we now need to include givaro headers for timer ?
 AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS)
 
 LIBS=$(GIVARO_LIBS)
@@ -34,7 +34,7 @@ noinst_LTLIBRARIES=libutil.la
 
 
 libutil_la_SOURCES=	\
-	error.C		    \
+	error.C		\
 	debug.C
 
 libutil_la_LDFLAGS=$(GIVARO_LIBS)  $(LDFLAGS)
@@ -42,20 +42,20 @@ libutil_la_LDFLAGS=$(GIVARO_LIBS)  $(LDFLAGS)
 #libutil_la_LIBADD=	\
 #	gmp++/libgmpxx.la
 
-pkgincludesub_HEADERS=      \
-	debug.h				    \
-	timer.h				    \
-	error.h				    \
-	commentator.h 			\
-	commentator.inl 			\
-	contracts.h 			\
-	prime-stream.h			\
-	iml_wrapper.h           \
-	field-axpy.h			\
-	matrix-stream.h			\
-	matrix-stream.inl		\
-	mpicpp.h			    \
-	mpicpp.inl			\
+pkgincludesub_HEADERS=    \
+	debug.h		  \
+	timer.h		  \
+	error.h		  \
+	commentator.h 	  \
+	commentator.inl   \
+	contracts.h 	  \
+	prime-stream.h	  \
+	iml_wrapper.h     \
+	field-axpy.h	  \
+	matrix-stream.h	  \
+	matrix-stream.inl \
+	mpicpp.h	  \
+	mpicpp.inl	  \
 	write-mm.h
 
 EXTRA_DIST = util.doxy

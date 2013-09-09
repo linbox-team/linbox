@@ -71,14 +71,18 @@ namespace LinBox
 	 */
 	class PlotStyle ;
 
-	/*! @brief The raw data to plot (2D).
-	 * Represents the series of points and the labels for the points (X)
-	 * axis and the series (Y) axis.  The internal representation is a
+	/*! @brief The raw data to plot.
+	 * Represents  the labels for the points (X axis) and the values for
+	 * each series of measures (Y axis).
+	 *
+	 * @internal The internal representation is a
 	 * vector of vector, each series of point being a vector of double.
-	 * @tparam NAM the X axis is parametered by NAM (string, int, double...)
+	 *
+	 * @tparam Xkind the X axis is parametrised by \p Xkind (string, int, double...)
+	 * The Y axis is always represented by double.
 	 * @todo write members that permute, add, scale,... data.
 	 */
-	template<class NAM>
+	template<class Xkind>
 	class PlotData ;
 
 	/*! @brief The graph (2D).
@@ -89,51 +93,317 @@ namespace LinBox
 	 * @warning the filename will get a random suffix before the extension
 	 * so as not to overwrite files "par inadvertance".
 	 */
-	template<class NAM>
+	template<class Xkind>
 	class PlotGraph ;
 
-}
+} // LinBox
+
+
+/* ********************** */
+/*        Tags            */
+/* ********************** */
+
+// Tags (cf linbox/linbox-tags.h )
+namespace LinBox { namespace Tag {
+
+//! selection of best times in a series.
+#if HAVE_CXX11
+	enum struct TimeSelect : int32_t
+#else
+	struct TimeSelect { enum enum_t
+#endif
+		{
+			average   = 1, //!< select the average
+			bestThree = 2, //!< select the average among the three best (supposes order is <)
+			bestOne   = 3, //!< select the best one (supposes order is <)
+			median    = 4, //!< median
+			medmean   = 5  //!< interquartile mean (remove 25% extremes and average the rest)
+		};
+#if HAVE_CXX11
+#else
+	};
+#endif
+
+} // Tag
+} // LinBox
+
+
 
 /* ********************** */
 /*        Outils          */
 /* ********************** */
 
-using Givaro::Timer; // template by timer_t ?
 
 namespace LinBox {
 
-	/** Helper.
+	//! vector of double
+	typedef std::vector<double>       dvector_t;
+#define svector_t std::vector<Xkind>
+	// typedef std::vector<std::string>  svector_t;
+
+	//! matrix of double
+	typedef std::vector<dvector_t>    dmatrix_t;
+
+	/** @brief this structure holds a bunch of timings.
+	 * It collects the points, the time spent at each point and a measure
+	 * (for instance mflops).
+	 * @todo Times and Values could be dmatrix_t (and mergeable)
+	 */
+	template<class Xkind>
+	struct DataSeries {
+		svector_t   PointLabels ; //!< points abscisa, values for the x axis. Used in legend for the X axis.
+		dvector_t   Points      ; //!< points abscisa, values for the x axis. Used in TimeWatcher (for instance, if PointLabels are the names of sparse matrices, Points would be their number of non zeros, or 1,2,3,... or whatever relevant for predicting time)
+		dvector_t   Times       ; //!< actual computation times.
+		dvector_t   Values      ; //!< actual data to be plotted (for instance mflops)
+
+		//! Constructor
+		DataSeries() ;
+
+		~DataSeries() ;
+
+		/** @brief resize
+		 * @param n new size
+		 * @pre the size before was n-1
+		 */
+		void resize(const index_t & n);
+
+		//! Size of the series of measurements.
+		index_t size() const;
+
+		void push_back(const Xkind & nam, const double & val, const double & x = NAN, const double &y = NAN)
+		{
+			linbox_check(PointLabels.size() == Values.size());
+
+			PointLabels.push_back(nam);
+
+			Values.push_back(val);
+
+			if ( std::isnan(x) )
+				Points.push_back((double)Points.size());
+			else
+				Points.push_back(x);
+
+			if ( std::isnan(y))
+				Times.push_back(val);
+			else
+				Times.push_back(y);
+
+			return;
+		}
+
+
+	}; // DataSeries
+
+	/*! Helper.
 	 * This helper has several functions :
 	 *   - Records the timings
 	 *   - predict the execution time for the next experiment
 	 *   - helps producing enough experiments (but not too much and not too time consuming) for producing a valid measure.
 	 *   .
+	 *   @warning if the timings are too short, this may not be accurate.
+	 *
 	 *   See member function help for more information.
 	 */
-	class TimeWatcher  ;
+	class TimeWatcher  {
+	private :
+		dvector_t  *    Points_; //!< Points data. If <code>Points_[i] = x</code>, then <code>Values_[i]=f(x)<code>.
+		dvector_t  *    Values_; //!< Time data. See \p Points_ .
 
+		index_t       MaxRepet_; //!< Maximum number of repetitions of timings
+		index_t       MinRepet_; //!< Minimum number of repetitions of timings
+		double         MaxTime_; //!< Maximum time to be spent on repetitions (after MinRepet_ iters have been done)
+		double       AbortTime_; //!< Time to abort a series of computation.
+		bool           aborted_; //!< abort any subsequent computation
+
+
+	public:
+		/** Constructor.
+		 * @param size number of experiments expected
+		 * @param Line current line in PlotData
+		 */
+
+		TimeWatcher (dvector_t & pts, dvector_t & vals) ;
+		TimeWatcher () ;
+
+		void init(dvector_t & pts, dvector_t & vals);
+
+		//! returns the vector of abscissa (points)
+		dvector_t & refX() ;
+
+		//! returns the vector of ordiantes (values)
+		dvector_t & refY() ;
+
+		/** Prediction for the next experiment time.
+		 * It is assumed that \c predict(0)=0. If Curent_<3, a linear,
+		 * then quadratic fit is done. Other wise, a cubic fit is
+		 * performed.
+		 * @param x the next evaluation point.
+		 * @return f(x) where f tries to fit the points : \f$ f(\mathtt{Data\_}[0][0..\mathtt{Current\_}-1]) \approx  refY()[0..\mathtt{Current\_}-1]\f$
+		 */
+		double predict(double x) ;
+
+		/*! @brief Watches a timer and a number and repet and signals if over.
+		 *
+		 * We want at least 2 repetions but not more than maxtime spent on timing.
+		 *
+		 * @param repet number of previous repetitions. Should be 0 on the first time \c keepon is called.
+		 * @param tim timer to watch
+		 * @param maxtime maximum time (in seconds) until \c watchon tells stop.
+		 * @return \c true if we conditions are not met to stop, \c false otherwise.
+		 * @pre \c tim should have been started previously !
+		 *
+		 */
+		bool keepon(index_t & repet, double tim, bool usePrediction = false) ;
+
+		//! size
+		index_t size() const
+		{
+			if (Points_ == NULL || Values_ == NULL) {
+				linbox_check(Values_ == NULL && Points_ == NULL);
+				return  0 ;
+			}
+			linbox_check(Points_->size() == Values_->size());
+			return (index_t)Points_->size();
+		}
+	} ; // TimeWatcher
+
+
+	template<class MyTimer>
+	class Chrono  {
+	private :
+		MyTimer   _chrono_ ;
+		dvector_t _times_  ;
+		double    _total_  ;
+	public:
+		Chrono()  :
+			_chrono_(),
+			_times_(0),
+			_total_(0)
+		{
+			_chrono_.clear();
+		}
+
+		~Chrono() {} ;
+
+		void clear()
+		{
+			_chrono_.clear();
+			_times_.resize(0);
+			_total_ = 0;
+		}
+
+		void start()
+		{
+			_chrono_.start();
+		}
+
+		void stop()
+		{
+			_chrono_.stop();
+			double split = _chrono_.userElapsedTime();
+			_times_.push_back( split );
+			_total_ += split ;
+			_chrono_.clear();
+		}
+
+		double time() const
+		{
+			return _total_ ;
+		}
+
+		dvector_t times() const
+		{
+			return _times_ ;
+		}
+
+
+	};
 }// LinBox
-	void showAdvanceLinear(int curr, int min, int max)
-	{
-		std::cout << std::setprecision(4) << "\033[2K" << "\033[30D" << min <<std::flush;
-		std::cout << '<' << curr << '<' << max << " (" << std::flush;
-		std::cout << double(curr-min)/double(max-min)*100 << "%)" << std::flush;
-	}
-	void showFinish(int curr, int all)
-	{
-		std::cout <<  "\033[2K" << "\033[30D" << "finished : " << curr << std::flush;
-		std::cout << '/' << all-1 << std::flush << std::endl;
-	}
-	void showSkip(int curr, int all)
-	{
-		std::cout <<  "\033[2K" << "\033[30D" << "skipped : " << curr << std::flush;
-		std::cout << '/' << all-1 << std::flush << std::endl;
-	}
+
+// advancement printing on terminal
+namespace LinBox {
+
+	/*! show the advancement (on the terminal)
+	 * suppose linear advancement
+	 * @param curr current iteration
+	 * @param min starting iteration
+	 * @param max terminal iteration
+	 */
+	void showAdvanceLinear(index_t curr, index_t min, index_t max);
+
+	/*! tells the current series of measure has completed (on the terminal)
+	 * @param curr current iteration
+	 * @param all number of iterations
+	 */
+	void showFinish(index_t curr, index_t all);
+
+	/*! tells the current series of measure was skipped (on the terminal)
+	 * @param curr current iteration
+	 * @param all number of iterations
+	 */
+	void showSkip(index_t curr, index_t all);
 
 
-// double compute_mflops(const Timer & t, const double mflo, const int rpt = 1)
+	class showProgression {
+	private :
+		index_t _cur_ ;
+		index_t _tot_ ;
+	public :
+		showProgression (index_t tot) :
+			_cur_(0)
+			,_tot_(tot)
+		{}
 
-#include "benchmark.inl"
+		void FinishIter()
+		{
+			++_cur_ ;
+			showFinish(_cur_,_tot_);
+		}
+
+		void SkipIter()
+		{
+			++_cur_ ;
+			showSkip(_cur_,_tot_);
+		}
+	};
+} // LinBox
+
+// computing megaflops from time (series)/number ops
+namespace LinBox {
+
+	/**
+	 * @brief computes the number of megaflops.
+	 * @param tim timer (seconds)
+	 * @param mflo number of operations (1e6 operations)
+	 * @param rpt number of experiences
+	 * @return mflo/(tim*rpt)
+	 */
+	double computeMFLOPS(const double & tim, const double mflo, const index_t rpt = 1);
+
+	/*! @internal @brief inserts a time in a vector of 3 best times.
+	 * @param tim3 ordered form min to max vector of 3 best times
+	 * @param tps inserts that time in \p tim3 if better.
+	 * @return a reference to \p tim3
+	 */
+	dvector_t &
+	insertTime(dvector_t & tim3, const double & tps);
+
+	/**
+	 * @brief computes the number of megaflops.
+	 * @param tim timer (seconds)
+	 * @param mflo number of operations (1e6 operations)
+	 * @param ts number of experiences to select. @see TimeSelect. Default to the best three
+	 * @return mflo/(tim*rpt)
+	 */
+	double computeMFLOPS(const dvector_t & tim, const double mflo, LINBOX_enum(Tag::TimeSelect) ts = Tag::TimeSelect::bestThree);
+
+}
+
+#include "benchmarks/benchmark.inl"
+
+#ifdef LinBoxSrcOnly
+#include "benchmarks/benchmark.C"
+#endif
 
 #endif // __LINBOX_benchmarks_benchmark_H
 

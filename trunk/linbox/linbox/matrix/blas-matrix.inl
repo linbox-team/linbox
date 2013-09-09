@@ -296,8 +296,13 @@ namespace LinBox
 	template < class _Field, class _Rep >
 	template<class T>
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F, const uint64_t &m, const T & n) :
-		_row(m),_col((size_t)n),_rep(_row*_col, F.zero),_field(&F),
-		_VD(F),_ptr(&_rep[0]),_MD(F)
+		_row(m)
+		,_col((size_t)n)
+		,_rep(_row*_col, F.zero)
+		,_ptr(&_rep[0])
+		,_field(&F)
+		,_MD(F)
+		, _VD(F)
 	{
 		//!@todo
 		// linbox_check_non_neg(n);
