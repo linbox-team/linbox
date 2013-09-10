@@ -50,33 +50,24 @@
 #include <string>
 #include <fstream>
 
+#ifdef __LINBOX_HAVE_TINYXML2
+#include <sys/utsname.h>
+#include <ctime>
+#include <tinyxml2.h>
+#endif
+
 
 // Plot structures (Style, Data, Graph)
 namespace LinBox {
 
-
 	// template by string *always*
-	template<class Xkind>
 	class PlotData {
 	private :
-		std::vector<DataSeries<Xkind> > _tableau_     ;   //!< data. \c _tableau_[i] represents a series of measurements. A data series is resized only when a new element comes in.
+		std::vector<DataSeries > _tableau_     ;   //!< data. \c _tableau_[i] represents a series of measurements. A data series is resized only when a new element comes in.
 		std::vector< std::string >      _serie_label_ ;   //!< label for each serie of measures. Used in the legend of the plots/tables of points.
-		TimeWatcher                     _time_watch_  ;   //!< time predictor, helper. See \c TimeWatcher.
 		index_t                         _curr_serie_  ;   //!< index of the current series of measurements.
+		TimeWatcher                     _time_watch_  ;   //!< time predictor, helper. See \c TimeWatcher.
 	private :
-		bool fortifiedString(const std::string & s)
-		{
-			linbox_check(!s.empty());
-			return s.front() == '\"' && s.back() ==  '\"' ;
-		}
-
-		std::string fortifyString(const std::string & s)
-		{
-			if (fortifiedString(s))
-				return s ;
-			string r = "\"" ;
-			return r + s + "\"";
-		}
 
 	public :
 
@@ -87,8 +78,8 @@ namespace LinBox {
 		PlotData() :
 			_tableau_      (0)
 			,_serie_label_ (0)
-			,_time_watch_  ()
-			,_curr_serie_()
+			,_curr_serie_  ( )
+			,_time_watch_  ( )
 		{
 		}
 
@@ -99,10 +90,10 @@ namespace LinBox {
 		/*! copy constructor.
 		 * @param PD a PlotData to copy.
 		 */
-		PlotData(const PlotData<Xkind> & PD):
+		PlotData(const PlotData & PD):
 			_tableau_(PD.getTable())
 			,_serie_label_(PD.getSerieLabels())
-			,_curr_serie_(PD.getSerieNumber())
+			,_curr_serie_(PD.getCurrentSerieNumber())
 			,_time_watch_  (_tableau_[_curr_serie_].Points,_tableau_[_curr_serie_].Times)
 		{
 		}
@@ -131,9 +122,9 @@ namespace LinBox {
 			}
 		}
 
-		void merge(const PlotData<Xkind> &PD)
+		void merge(const PlotData &PD)
 		{
-			for (size_t i = 0 ; i < PD.size() ; ++i) {
+			for (index_t i = 0 ; i < (index_t)PD.size() ; ++i) {
 				_tableau_.push_back(PD.getSeries(i));
 				_serie_label_.push_back(fortifyString(PD.getSerieName(i)));
 			}
@@ -244,7 +235,7 @@ namespace LinBox {
 		/*! Returns the ith series of measurements.
 		 * @param i ith series to be returned
 		 */
-		const DataSeries<Xkind> & getSeries(const index_t  &i) const
+		const DataSeries & getSeries(const index_t  &i) const
 		{
 			linbox_check(i < size());
 			return _tableau_[i] ;
@@ -253,7 +244,7 @@ namespace LinBox {
 		/*! Returns the ith series of measurements.
 		 * @param i ith series to be returned
 		 */
-		DataSeries<Xkind> & refSeries(const index_t  &i)
+		DataSeries & refSeries(const index_t  &i)
 		{
 			linbox_check(i < size());
 			return _tableau_[i] ;
@@ -262,14 +253,14 @@ namespace LinBox {
 
 		/*! Returns the current series of measurements.
 		 */
-		const DataSeries<Xkind> & getCurrentSeries() const
+		const DataSeries & getCurrentSeries() const
 		{
 			return getSeries(_curr_serie_);
 		}
 
 		/*! Returns the current series of measurements.
 		 */
-		DataSeries<Xkind> & refCurrentSeries()
+		DataSeries & refCurrentSeries()
 		{
 			return refSeries(_curr_serie_);
 		}
@@ -303,10 +294,15 @@ namespace LinBox {
 
 		/*! goes to the next series of points
 		 */
-		void selectNextSeries()
+		bool selectNextSeries()
 		{
+			linbox_check(_curr_serie_ < size());
 			++_curr_serie_ ;
-			selectSeries(_curr_serie_);
+			if (_curr_serie_ < size()) {
+				selectSeries(_curr_serie_);
+				return true;
+			}
+			return false;
 		}
 
 		/*! @brief Sets the name of a point.
@@ -314,10 +310,12 @@ namespace LinBox {
 		 * @param j index for the the point
 		 * @param nom name of the point
 		 */
-		void setSeriesPointLabel(const index_t & i, const index_t & j, const Xkind & nom)
+		template<class T>
+		void setSeriesPointLabel(const index_t & i, const index_t & j, const T & nom)
 		{
+			std::string nom_s = fortifyString(toString(nom));
 			linbox_check(j<getSerieSize(i) );
-			getSeries(i).PointLabels[j] = nom ;
+			refSeries(i).PointLabels[j] = nom_s ;
 
 			return;
 		}
@@ -326,7 +324,7 @@ namespace LinBox {
 		 * @param j index for the the point
 		 * @param nom name of the point
 		 */
-		void setCurrentSeriesPointLabel(const index_t & j, const Xkind & nom)
+		void setCurrentSeriesPointLabel(const index_t & j, const std::string & nom)
 		{
 			return setSeriesPointLabel(_curr_serie_,j,nom);
 		}
@@ -337,7 +335,7 @@ namespace LinBox {
 		 * @return its name.
 		 * @warning no default. \c setPointXLabel has to be used beforehands.
 		 */
-		Xkind getSeriesPointLabel(const index_t &i, const index_t & j) const
+		const std::string & getSeriesPointLabel(const index_t &i, const index_t & j) const
 		{
 			linbox_check(j<getSerieSize(i));
 			return(getSeries(i).PointLabels[j]) ;
@@ -348,7 +346,7 @@ namespace LinBox {
 		 * @return its name.
 		 * @warning no default. \c setPointXLabel has to be used beforehands.
 		 */
-		Xkind getCurrentSeriesPointLabel(const index_t & j) const
+		const std::string & getCurrentSeriesPointLabel(const index_t & j) const
 		{
 			return getSeriesPointLabel(_curr_serie_,j);
 		}
@@ -430,10 +428,10 @@ namespace LinBox {
 		 * @param xval x value of the point (eg size of the matrix, of a sparse matrix,...)
 		 * @param yval time for this computation (seconds)
 		 */
-		void setSeriesEntry(const index_t &i, const Xkind & nam, const double & val
+		void setSeriesEntry(const index_t &i, const std::string & nam, const double & val
 			      , const double & xval = NAN, const double & yval = NAN)
 		{
-			refSeries(i).push_back(nam,val,xval,yval);
+			refSeries(i).push_back(fortifyString(nam),val,xval,yval);
 			// std::cout << "points : " << refSeries(i).Points << std::endl;
 			initWatch(i); //  in case series has changed
 			return ;
@@ -447,10 +445,10 @@ namespace LinBox {
 		 * @param xval x value of the point (eg size of the matrix, of a sparse matrix,...)
 		 * @param yval time for this computation (seconds)
 		 */
-		void setEntry(const std::string & nom, const Xkind & nam, const double & val
+		void setEntry(const std::string & nom, const std::string & nam, const double & val
 			      , const double & xval = NAN, const double & yval = NAN)
 		{
-			std::cout << nom << " has index : " << getIndex(nom) << std::endl;
+			// std::cout << nom << " has index : " << getIndex(nom) << std::endl;
 			return setSeriesEntry(getIndex(nom),nam,val,xval,yval);
 		}
 
@@ -460,10 +458,12 @@ namespace LinBox {
 		 * @param nam name of the point (eg size of the matrix, name of a sparse matrix,...)
 		 * @param val value to be inserted (eg mflops, sec,...).
 		 */
-		void setCurrentSeriesEntry(const Xkind & nam, const double & val
+		template<class T>
+		void setCurrentSeriesEntry(const T & nam, const double & val
 					   , const double & xval = NAN, const double & yval = NAN)
 		{
-			return setSeriesEntry(_curr_serie_,nam,val,xval,yval) ;
+			std::string nam_s = fortifyString(toString(nam));
+			return setSeriesEntry(_curr_serie_,nam_s,val,xval,yval) ;
 		}
 
 
@@ -474,8 +474,8 @@ namespace LinBox {
 		 */
 		double getSeriesEntry(const index_t & i, const index_t & j) const
 		{
-			linbox_check(j<getSerieSize());
 			linbox_check(i<size());
+			linbox_check(j<getSerieSize(i));
 			return getSeries(i).Values[j] ;
 		}
 
@@ -485,7 +485,7 @@ namespace LinBox {
 		 */
 		double getCurrentSeriesEntry(const index_t & j) const
 		{
-			return getSeries(_curr_serie_,j);
+			return getSeriesEntry(_curr_serie_,j);
 		}
 
 
@@ -497,7 +497,7 @@ namespace LinBox {
 		double getSeriesEntryTime(const index_t &i, const index_t & j) const
 		{
 			linbox_check(j<getSerieSize(i));
-			return getSeries(i).Time[j] ;
+			return getSeries(i).Times[j] ;
 		}
 
 		/*! @brief gets a time spent on an entry.
@@ -519,7 +519,7 @@ namespace LinBox {
 		double getSeriesEntryPoint(const index_t & i, const index_t & j) const
 		{
 			linbox_check(j<getSerieSize(i));
-			return getSeries(i).Point[j] ;
+			return getSeries(i).Points[j] ;
 		}
 
 		/*! @brief gets the point corresponding to an entry.
@@ -536,7 +536,7 @@ namespace LinBox {
 		/*! gets a reference to the array of data.
 		 * @return a reference to the member \c _tableau_ representing the data.
 		 */
-		const std::vector<DataSeries<Xkind > > & getTable() const
+		const std::vector<DataSeries > & getTable() const
 		{
 			return _tableau_ ;
 		}
@@ -544,7 +544,7 @@ namespace LinBox {
 		/*! gets a reference to the array of data.
 		 * @return a reference to the member \c _tableau_ representing the data.
 		 */
-		std::vector<DataSeries<Xkind > > & refTable()
+		std::vector<DataSeries > & refTable()
 		{
 			return _tableau_ ;
 		}
@@ -561,21 +561,18 @@ namespace LinBox {
 			return _time_watch_.keepon(repet,tim, usePrediction);
 		}
 
-		// tinyxml
-		void exporte( const std::string & filename) const ;
-		// tinyxml
+		// QXmlStreamWriter
 		void importe( const std::string & filename) ;
 
 
 
 	}; // PlotData
 
-
+	//!@todo setUsingSeries(const svector_t &)
 	class PlotStyle {
 	public:
 		//! What format the plot should be in?
-		struct Term
-		{
+		struct Term {
 			//! Term type
 			enum Type {
 				png  = 100, //!< png. Portable Network Graphics file.
@@ -590,18 +587,16 @@ namespace LinBox {
 
 		// enum NoType { other = 0 } ;
 		//! What style of graphic : histogram ? graph ?
-		struct Plot
-		{
+		struct Plot {
 			//! Plot type
 			enum Type {
 				histo = 200, //! histogram plot. This is the default. x ticks are evenly spaced, whatever there value and are labelled with their value.
-				graph = 201, //! standard plot. Plots y_i=f(x) with x in the first colum and y_i in ith column. x-ticks are well spaced.
+				graph = 201, //! standard plot. Plots y_i=f(x) with x in the first colum and y_i in ith column. x-ticks are well spaced. This will not work if the X are not numbers (but strings).
 				other = 202  //! other (ie user supplied).
 			} ;
 		};
 
-		struct Line
-		{
+		struct Line {
 			enum Type {
 				lines      = 300,  //! lines.
 				histogram  = 301,  //! histogram (boxes).
@@ -611,8 +606,7 @@ namespace LinBox {
 			} ;
 		};
 
-		struct Options
-		{
+		struct Options {
 			enum Type {
 				oblique = 400,
 				other   = 401
@@ -781,7 +775,20 @@ namespace LinBox {
 
 		/*! @brief sets the legend position.
 		 * @param keypos the arguments to key (where the legend should be put)
-		 * can be : inside, outside,...
+		 * can be :
+		 * <code>
+		 *      set key {on|off} {default}
+		 *              {{inside | outside} | {lmargin | rmargin | tmargin | bmargin} | {at <position>}}
+		 *              {left | right | center} {top | bottom | center}
+		 *              {vertical | horizontal} {Left | Right}
+		 *              {{no}reverse} {{no}invert}
+		 *              {samplen <sample_length>} {spacing <vertical_spacing>}
+		 *              {width <width_increment>}
+		 *              {height <height_increment>}
+		 *              {{no}autotitle {columnheader}}
+		 *              {title "<text>"} {{no}enhanced}
+		 *              {{no}box { {linestyle | ls <line_style>} | {linetype | lt <line_type>} {linewidth | lw <line_width>}}}
+		 * </code>
 		 */
 		void setKeyPos(std::string keypos)
 		{
@@ -870,7 +877,7 @@ namespace LinBox {
 		 * @sa PlotType
 		 *
 		 */
-		std::string getPlotType() // const
+		std::string getPlotType(std::string extraargs ="") // const
 		{
 			_styleopts_ += "\nset datafile missing \"inf\"" ;
 			std::string mystyle = "#style\nset style data " ;
@@ -881,6 +888,8 @@ namespace LinBox {
 					break;
 				case (Line::histogram) :
 					mystyle += "histogram" ;
+					if (extraargs.empty()) // default style
+						mystyle += "\nset style histogram cluster gap 1\nset style fill solid border rgb \"black\"";
 					break;
 				case (Line::points) :
 					mystyle += "points" ;
@@ -897,7 +906,7 @@ namespace LinBox {
 				return _styleopts_  ;
 			}
 			// some more style args :
-			mystyle += "\n" + _styleopts_ + "\n";
+			mystyle += "\n" + _styleopts_ + "\n" + extraargs + "\n";
 			return mystyle ;
 		}
 
@@ -936,7 +945,7 @@ namespace LinBox {
 		void addUsingSeries(index_t col, std::string moreargs= "")
 		{
 			linbox_check(col>2);
-			linbox_check(!_usingcols_.empty());
+			linbox_check(!_usingcols_.empty()); // we don't add if nothing was set
 			std::ostringstream usingcols ;
 			usingcols << ", \'\' using " ;
 			if (_plot_type_ == Plot::graph)
@@ -955,7 +964,7 @@ namespace LinBox {
 			std::list<index_t>::iterator it = cols.begin();
 			// no way to check *it< coldim...
 			std::ostringstream usingcols ;
-			if (_plot_type_ == Plot::histo) {
+			if ( _plot_type_ == Plot::histo ) {
 				usingcols << " using " << *it << ":xtic(1) title columnheader(" << *it << ") " << moreargs << " " ;
 				++it ;
 				for (;it != cols.end();++it) {
@@ -983,13 +992,12 @@ namespace LinBox {
 		void addUsingSeries(std::list<index_t> cols, std::string moreargs= "")
 		{
 			linbox_check(!cols.empty());
-			linbox_check(!_usingcols_.empty());
+			linbox_check(!_usingcols_.empty()); // we don't add if nothing was set
 			std::list<index_t>::iterator it = cols.begin();
 			std::ostringstream usingcols ;
 			if (_plot_type_ == Plot::histo) {
 				for (;it != cols.end();++it) {
 					usingcols << ", \'\' using " << *it << " ti col "  << moreargs << " ";
-
 				}
 			}
 			else {
@@ -1004,7 +1012,7 @@ namespace LinBox {
 		}
 
 		/*! @brief tells which columns to use.
-		 * @param cols all colums between \c cols.first and \c cols.second
+		 * @param cols all colums between \c cols.first and \c cols.second (included)
 		 * will be used.
 		 * @param moreargs more stuff
 		 *
@@ -1037,7 +1045,7 @@ namespace LinBox {
 		 */
 		void addUsingSeries(std::pair<index_t,index_t> cols, std::string moreargs= "")
 		{
-			linbox_check(!_usingcols_.empty());
+			linbox_check(!_usingcols_.empty()); // we don't add if nothing was set
 			std::ostringstream usingcols ;
 			if (_plot_type_ == Plot::histo) {
 				usingcols << ", for i=[" << cols.first << ":" << cols.second << "] \'\' using i title columnheader(i) " << moreargs << " ";
@@ -1051,15 +1059,9 @@ namespace LinBox {
 
 		}
 
-		/*! @brief Gets the plot command line.
-		 * @param File the name of/path to the data file (with extension)
-		 * @return a gnuplot "plot" command stream.
-		 */
-		std::string getPlotCommand(std::string File) const
+		std::string getUsingSeries() const
 		{
-			std::string PC = "#plot\nplot \'" + File + "\' ";
-			PC += _usingcols_ ;
-			return PC ;
+			return _usingcols_ ;
 		}
 
 	private :
@@ -1088,10 +1090,10 @@ namespace LinBox {
 	} ; // PlotStyle
 
 
-	template<class Xkind>
+	//!@todo use getUsingSeries in latex/html/csv/xml
 	class PlotGraph {
 	private :
-		PlotData<Xkind>          & _data_ ;   //!< reference to the data points
+		PlotData               & _data_ ;   //!< reference to the data points
 		PlotStyle             & _style_ ;   //!< reference to a plotting style
 		std::string         _filename_  ;   //!< name for the output file (without extension). a random \c _XXXXXX suffix will be added to make it unique.
 		dmatrix_t             _merge_data_   ;
@@ -1195,21 +1197,21 @@ namespace LinBox {
 			_merge_points_ = _data_.getCurrentSeriesPointLabel() ;
 			_merge_data_[0] = _data_.getCurrentSeriesValues() ;
 
-			std::cout << "merge points " << _merge_points_ << std::endl;
-			std::cout << "merge data   " << _merge_data_ << std::endl;
+			// std::cout << "merge points " << _merge_points_ << std::endl;
+			// std::cout << "merge data   " << _merge_data_ << std::endl;
 
 			for (index_t i = 1 ; i < _data_.size() ; ++i) {
 				_data_. selectNextSeries() ;
-				std::cout << "to be merged "  << i << " : "  << std::endl;
-				std::cout << "new points " << _data_.getCurrentSeriesPointLabel() << std::endl;
-				std::cout << "new data   " << _data_.getCurrentSeriesValues() << std::endl;
+				// std::cout << "to be merged "  << i << " : "  << std::endl;
+				// std::cout << "new points " << _data_.getCurrentSeriesPointLabel() << std::endl;
+				// std::cout << "new data   " << _data_.getCurrentSeriesValues() << std::endl;
 
 				mergeTwoSeries(_merge_points_,_merge_data_,
 					       _data_. getCurrentSeriesPointLabel(), _data_. getCurrentSeriesValues(),i);
 
-				std::cout << "result : " << std::endl;
-				std::cout << "merge points " << _merge_points_ << std::endl;
-				std::cout << "merge data   " << _merge_data_ << std::endl;
+				// std::cout << "result : " << std::endl;
+				// std::cout << "merge points " << _merge_points_ << std::endl;
+				// std::cout << "merge data   " << _merge_data_ << std::endl;
 
 			}
 
@@ -1221,7 +1223,7 @@ namespace LinBox {
 		/*! @brief Sets a new data structure.
 		 * @param data a reference to a PlotData class.
 		 */
-		void setData( PlotData<Xkind> & data )
+		void setData( PlotData & data )
 		{
 			_data_ = data ;
 		}
@@ -1229,7 +1231,7 @@ namespace LinBox {
 		/*! @brief Gets the data.
 		 * @param[in,out] data a reference to a PlotData class.
 		 */
-		PlotData<Xkind> & refData( PlotData<Xkind> & data)
+		PlotData & refData( PlotData & data)
 		{
 			return data = _data_ ;
 		}
@@ -1266,7 +1268,7 @@ namespace LinBox {
 		 * @param style sets parameters to gnuplot to achieve a nice
 		 * plot.
 		 */
-		PlotGraph( PlotData<Xkind> & data, PlotStyle & style ) :
+		PlotGraph( PlotData & data, PlotStyle & style ) :
 			_data_(data)
 			,_style_(style)
 			,_merge_data_(data.size())
@@ -1298,11 +1300,116 @@ namespace LinBox {
 
 		} ;
 
+		std::string getUsingSeries() // const
+		{
+			// mutable _style_ ?
+			linbox_check(_merge_points_.size());
+			if (_style_.getUsingSeries().empty()) {
+				_style_.setUsingSeries(std::pair<index_t,index_t>((index_t)2,(index_t)_merge_data_.size()+1));
+			}
+			return _style_.getUsingSeries();
+		}
+
+		/*! @brief Gets the plot command line.
+		 * @param File the name of/path to the data file (with extension)
+		 * @return a gnuplot "plot" command stream.
+		 */
+		std::string getPlotCommand(std::string File) //const
+		{
+			std::string PC = "#plot\nplot \'" + File + "\' ";
+			PC += getUsingSeries() ;
+			return PC ;
+		}
+
+
 		//! @todo
 		 void print_csv() ;
 
  		 //! @todo
-		 void print_xml() ;
+		 void print_xml()
+		 {
+#ifdef __LINBOX_HAVE_TINYXML2
+			 using namespace tinyxml2;
+			 XMLDocument doc;
+
+			 doc.InsertEndChild(doc.NewDeclaration());
+
+			 XMLElement * benchmark = doc.NewElement( "benchmark" );
+			 doc.InsertEndChild(benchmark);
+
+			 { // Metadata
+				 XMLElement * metadata = doc.NewElement( "metadata" );
+
+				 struct utsname unameData;
+				 uname(&unameData);
+				 metadata->SetAttribute("sysname",unameData.sysname);
+				 metadata->SetAttribute("nodename",unameData.nodename);
+				 metadata->SetAttribute("release",unameData.release);
+				 metadata->SetAttribute("version",unameData.version);
+				 metadata->SetAttribute("machine",unameData.machine);
+
+				 std::time_t rawtime;
+				 std::tm* timeinfo;
+				 char buffer [80];
+
+				 std::time(&rawtime);
+				 timeinfo = std::gmtime(&rawtime);
+
+				 std::strftime(buffer,80,"%Y-%m-%d:%H-%M-%S",timeinfo);
+
+				 metadata->SetAttribute("time",buffer);
+
+				 benchmark->InsertEndChild(metadata);
+			 }
+
+			 { // Legende
+				 XMLElement * legende = doc.NewElement( "legende" );
+
+				 legende->SetAttribute("title",unfortifyString(_style_.getRawTitle()).c_str());
+				 legende->SetAttribute("X",unfortifyString(_style_.getRawTitle(1)).c_str());
+				 legende->SetAttribute("Y",unfortifyString(_style_.getRawTitle(2)).c_str());
+
+				 benchmark->InsertEndChild(legende);
+			 }
+
+			 // series
+			 {
+				 XMLElement * data = doc.NewElement( "data" );
+
+				 _data_.selectSeries(0);
+				 for (index_t i = 0 ; i < _data_.size() ; ++i  ) {
+
+					 XMLElement * serie = doc.NewElement ( "serie" );
+					 serie->SetAttribute("name",unfortifyString(_data_.getCurrentSerieName()).c_str());
+
+					 for (index_t j = 0 ;  j < _data_.getCurrentSerieSize() ; ++j)
+					 {
+						 XMLElement * point = doc.NewElement ( "point" );
+						 point->SetAttribute("x",unfortifyString(_data_.getCurrentSeriesPointLabel(j)).c_str());
+						 point->SetAttribute("y",_data_.getCurrentSeriesEntry(j));
+						 point->SetAttribute("time",_data_.getCurrentSeriesEntryTime(j));
+						 point->SetAttribute("id",_data_.getCurrentSeriesEntryPoint(j));
+
+						 serie->InsertEndChild( point );
+					 }
+
+					 data->InsertEndChild( serie );
+
+					 _data_.selectNextSeries();
+				 }
+
+				 benchmark->InsertEndChild(data);
+			 }
+
+		 	 std::string unique_filename = _randomName();
+			 unique_filename += ".xml" ;
+			 doc.SaveFile(unique_filename.c_str());
+
+			std::cout << "xml table in " << unique_filename << '.' << std::endl;
+#else
+			std::cout << "tinyxml2 is not installed, could not print" << std::endl;
+#endif
+		 }
 
 		//! @todo
 		 void print_html() ;
@@ -1419,7 +1526,7 @@ namespace LinBox {
 				PF << "set style line " << _style_.getLineStyle() << std::endl;
 			}
 #endif
-			PF << _style_.getPlotCommand(DataFileName) << std::endl;
+			PF << getPlotCommand(DataFileName) << std::endl;
 #if 0
 			for (index_t i = 0 ; i < nb_series ; ++i) {
 				PF << '\"' << DataFileName << "\" using 1:" << i+2 << " with lines " ;
@@ -1457,20 +1564,17 @@ namespace LinBox {
 //
 namespace LinBox {
 
-	template<class Xkind>
-	DataSeries<Xkind>:: DataSeries() :
+	DataSeries:: DataSeries() :
 		PointLabels(0)
 		, Points(0)
 		, Times(0)
 		, Values(0)
 	{}
 
-	template<class Xkind>
-	DataSeries<Xkind>::~DataSeries() {}
+	DataSeries::~DataSeries() {}
 
-	template<class Xkind>
 	void
-	DataSeries<Xkind>::resize(const index_t & n)
+	DataSeries::resize(const index_t & n)
 	{
 		linbox_check(n == Values.size()+1);
 		PointLabels.resize(n);
@@ -1481,9 +1585,8 @@ namespace LinBox {
 		return;
 	}
 
-	template<class Xkind>
 	index_t
-	DataSeries<Xkind>::size() const
+	DataSeries::size() const
 	{
 		linbox_check(PointLabels.size() == Points.size())
 		linbox_check(Times.size() == Points.size())

@@ -82,7 +82,6 @@ namespace LinBox
 	 * The Y axis is always represented by double.
 	 * @todo replace Xkind by std::string everywhere.
 	 */
-	template<class Xkind>
 	class PlotData ;
 
 	/*! @brief The graph (2D).
@@ -93,7 +92,6 @@ namespace LinBox
 	 * @warning the filename will get a random suffix before the extension
 	 * so as not to overwrite files "par inadvertance".
 	 */
-	template<class Xkind>
 	class PlotGraph ;
 
 } // LinBox
@@ -138,8 +136,7 @@ namespace LinBox {
 
 	//! vector of double
 	typedef std::vector<double>       dvector_t;
-#define svector_t std::vector<Xkind>
-	// typedef std::vector<std::string>  svector_t;
+	typedef std::vector<std::string>  svector_t;
 
 	//! matrix of double
 	typedef std::vector<dvector_t>    dmatrix_t;
@@ -149,7 +146,6 @@ namespace LinBox {
 	 * (for instance mflops).
 	 * @todo Times and Values could be dmatrix_t (and mergeable)
 	 */
-	template<class Xkind>
 	struct DataSeries {
 		svector_t   PointLabels ; //!< points abscisa, values for the x axis. Used in legend for the X axis.
 		dvector_t   Points      ; //!< points abscisa, values for the x axis. Used in TimeWatcher (for instance, if PointLabels are the names of sparse matrices, Points would be their number of non zeros, or 1,2,3,... or whatever relevant for predicting time)
@@ -170,7 +166,7 @@ namespace LinBox {
 		//! Size of the series of measurements.
 		index_t size() const;
 
-		void push_back(const Xkind & nam, const double & val, const double & x = NAN, const double &y = NAN)
+		void push_back(const std::string & nam, const double & val, const double & x = NAN, const double &y = NAN)
 		{
 			linbox_check(PointLabels.size() == Values.size());
 
@@ -318,6 +314,50 @@ namespace LinBox {
 
 
 	};
+
+	bool isDigit (const std::string & s)
+	{
+		std::istringstream ss(s);
+		double d = 0.0;
+		ss >> d ; // try to read.
+		ss >> std::ws;  // suppress whitespace
+
+		return (!ss.fail() && ss.eof()) ;
+	}
+
+	bool fortifiedString(const std::string & s)
+	{
+		if (isDigit(s))
+			return true ;
+		linbox_check(!s.empty());
+		return s.front() == '\"' && s.back() ==  '\"' ;
+	}
+
+	std::string unfortifyString(const std::string &s)
+	{
+		std::string t = s ;
+		if (fortifiedString(s)) {
+			t.erase(t.begin());
+			t.pop_back();
+		}
+		return t;
+	}
+	std::string fortifyString(const std::string & s)
+	{
+		if (fortifiedString(s))
+			return s ;
+		string r = "\"" ;
+		return r + s + "\"";
+	}
+
+	template<class T>
+	std::string toString(T & nam)
+	{
+		std::ostringstream nam_ss ;
+		nam_ss << nam ;
+		return nam_ss.str();
+	}
+
 }// LinBox
 
 // advancement printing on terminal
