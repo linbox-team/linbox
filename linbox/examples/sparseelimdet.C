@@ -83,14 +83,14 @@ int main (int argc, char **argv)
 		Field::Element d;
 		det (d, B, SE);
 
-		if (B.rowdim() <= 20 && B.coldim() <= 20) 
+		if (B.rowdim() <= 20 && B.coldim() <= 20)
 			B.write(cout) << endl;
 		F.write(cout << "Determinant is ", d) << endl;
 
 		// using Sparse Elimination with reordering
 		SE.strategy(Specifier::PIVOT_LINEAR);
 		detin (d, B, SE);
-		if (B.rowdim() <= 20 && B.coldim() <= 20) 
+		if (B.rowdim() <= 20 && B.coldim() <= 20)
 			B.write(cout) << endl;
 		F.write(cout << "Determinant is ", d) << endl;
 
@@ -100,11 +100,10 @@ int main (int argc, char **argv)
 	return 0;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

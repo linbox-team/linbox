@@ -38,6 +38,8 @@
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
+#include "linbox/blackbox/sparse.h"
+#include "linbox/solutions/rank.h"
 
 
 using namespace LinBox ;
@@ -122,188 +124,8 @@ void launch_bench_square(Field & F // const problem
 	Data.finishSerie();
 }
 
-#if 0
-/*! @internal
- * @brief launches the benchmarks for the square case directly BLAS.
- * @param min min size to bench
- * @param max max size to bench
- * @param step step between two sizes
- * @param Data where data is stored
- * @param series_nb index of the current series.
- */
-template<class Field>
-void launch_bench_blas(Field & F
-		       , index_t min, index_t max, int step
-		       , PlotData<index_t> & Data
-		       , index_t series_nb
-		       )
-{
-	TimeWatcher TW(10,series_nb);
-	// typedef Modular<T> Field ;
-	// Field F((int)charact);
-	index_t l = 0 ;
-	Timer fgemm_blas_tim ;
-	Timer chrono ;
-	typedef typename Field::Element  Element ;
-	typedef typename Field::RandIter Randiter;
-	Randiter R(F) ;
-	// BlasMatrixDomain<Field> BMD(F) ;
-	// RandomDenseMatrix<Randiter,Field> RandMat(F,R);
-	// index_t repet = 3 ;
-	index_t mm = max * max ;
-	Element *  A = new Element[mm] ;
-	Element *  B = new Element[mm] ;
-	Element *  C = new Element[mm] ;
-	// typedef typename UnparametricField<T> FloatingDomain ;
-	// FloatingDomain G ;
-
-	for ( index_t i = min ; i < max ; i += step , ++l ) {
-	double mflops ;
-	showAdvanceLinear(i,min,max);
-
-		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
-		index_t mimi = (index_t) ii*ii ;
-		if (!series_nb)
-			Data.setPointXLabel(l,i); // only write abscissa for serie 0
-
-		for (index_t j = 0 ; j < mimi ; ++j) R.random(A[j]);
-		for (index_t j = 0 ; j < mimi ; ++j) R.random(B[j]);
-		for (index_t j = 0 ; j < mimi ; ++j) R.random(C[j]);
-
-		index_t j = 0 ;
-		fgemm_blas_tim.clear() ;
-		// double fgemm_blas_tim = 0 ;
-		while(TW.keepon(j,fgemm_blas_tim)) {
-			chrono.clear(); chrono.start() ;
-			FFLAS::fgemm((typename Field::Father_t)F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,
-					     ii,ii,ii,
-					     F.one,
-					     A,ii,B,ii,
-					     F.zero,
-					     C,ii) ;
-			chrono.stop() ;
-			fgemm_blas_tim += chrono ;
-		}
-		mflops = computeMFLOPS(fgemm_blas_tim,fgemm_mflops(i,i,i),j);
-// #ifndef NDEBUG
-		if (i >=950 && i <= 1050 ) {
-			std::cerr << std::endl<< typeid(Field).name() << ' ' << i << ':' << mflops << std::endl;
-			std::cerr << fgemm_blas_tim << std::endl;
-		}
-// #endif
-
-		Data.setEntry(series_nb,l,mflops);
-	}
-
-	delete[] A ;
-	delete[] B ;
-	delete[] C ;
-	std::ostringstream nam ;
-	nam << '\"' ;
-	F.write(nam);
-	nam << '\"' ;
-	Data.setSerieName(series_nb,nam.str());
-
-}
-#endif
-
 /* Collects Benchmarks */
 
-#if 0
-/*! Benchmark fgemm Y=AX for several sizes of sqare matrices.
- * @param min min size
- * @param max max size
- * @param step step of the size between 2 benchmarks
- * @param charac characteristic of the field.
- */
-void bench_blas( index_t min, index_t max, int step, int charac )
-{
-	int nb = 1 ;// une col de plus (la première)
-	typedef Modular<double>          Field0 ; ++nb ;
-	typedef Modular<float>           Field1 ; ++nb ;
-	typedef Modular<int32_t>         Field2 ; ++nb ;
-	typedef ModularBalanced<double>  Field3 ; ++nb ;
-	typedef ModularBalanced<float>   Field4 ; ++nb ;
-	typedef ModularBalanced<int32_t> Field5 ; ++nb ;
-	typedef UnparametricField<double>Field6 ; ++nb ;
-	typedef UnparametricField<float> Field7 ; ++nb ;
-
-	int nb_pts = (int) std::ceil((double)(max-min)/(double)step) ;
-	PlotData<index_t>  Data(nb_pts,nb);
-	int it = 0 ;
-
-	Field0 F0(charac) ;
-	launch_bench_blas(F0,min,max,step,Data,it++);
-	showFinish(it,nb);
-	if (charac < 2048) {
-		Field1 F1(charac) ;
-		launch_bench_blas(F1,min,max,step,Data,it++);
-		showFinish(it,nb);
-	}
-	else {
-		showSkip(it,nb);
-	}
-	Field2 F2(charac) ;
-	launch_bench_blas(F2,min,max,step,Data,it++);
-	showFinish(it,nb);
-	Field3 F3(charac) ;
-	launch_bench_blas(F3,min,max,step,Data,it++);
-	showFinish(it,nb);
-	if (charac < 2048) {
-		Field4 F4(charac) ;
-		launch_bench_blas(F4,min,max,step,Data,it++);
-	showFinish(it,nb);
-	}
-	else {
-		showSkip(it,nb);
-	}
-	Field5 F5(charac) ;
-	launch_bench_blas(F5,min,max,step,Data,it++);
-	showFinish(it,nb);
-	Field6 F6(charac) ;
-	launch_bench_blas(F6,min,max,step,Data,it++);
-	showFinish(it,nb);
-	if (charac < 2048) {
-		Field7 F7((float)charac) ;
-		launch_bench_blas(F7,min,max,step,Data,it++);
-		showFinish(it,nb);
-	}
-	else {
-		showSkip(it,nb);
-	}
-
-	linbox_check(it <= nb);
-
-
-	PlotStyle Style;
-	// Style.setTerm(PlotStyle::pdf);
-	// Style.setTerm(PlotStyle::png);
-	// Style.setTerm(PlotStyle::svg);
-	Style.setTerm(PlotStyle::Term::eps);
-	Style.setTitle("FFLAS::fgemm","Mflops","dimensions");
-	// Style.setType(PlotStyle::histogram);
-	// Style.setStyle("set style histogram cluster gap 1");
-	// Style.addStyle("set style fill solid border -1");
-	// Style.addStyle("set boxwidth 0.9");
-
-	Style.setPlotType(PlotStyle::Plot::graph);
-	Style.setLineType(PlotStyle::Line::linespoints);
-	Style.setUsingSeries(std::pair<index_t,index_t>(2,nb));
-
-	PlotGraph<index_t> Graph(Data,Style);
-	Graph.setOutFilename("fgemm_blas");
-
-	// Graph.plot();
-
-	Graph.print_gnuplot();
-
-	Graph.print_latex();
-
-	return ;
-
-}
-
-#endif
 
 /*! @brief Benchmark square fgemm Y=AX for several fields.
  * @param min min size
@@ -394,6 +216,103 @@ void bench_square( index_t min, index_t max, index_t step, int charac )
 
 }
 
+template<class Field>
+void launch_bench_rank(const Field &F, const std::string & name
+			 , PlotData<std::string> & Data
+		       )
+{
+	std::cout << name << std::endl;
+
+	SparseMatrix<Field> Mat(F);
+	std::ifstream mat1 (name);
+	Mat.read(mat1);
+	std::cout << Mat.rowdim() << "," << Mat.coldim() << std::endl;
+
+	// Data.newSerie(name);
+	Chrono<Timer> TW ;
+
+	showAdvanceLinear(1,1,2);
+
+	TW.clear() ;
+	index_t j = 0 ;
+	while( Data.keepon(j,TW.time()) ) {
+		TW.start() ;
+		size_t d ;
+		LinBox::rank(d,Mat,Method::Blackbox());
+		TW.stop();
+		// std::cout << TW.times() << std::endl;
+		++j ;
+	}
+	std::cout << TW.time() << std::endl;
+
+	// double mflops = computeMFLOPS(TW.times(),mm_mflops(i,i,i));
+
+	Data.setEntry("Rank (Blackbox)",name,TW.time(),(double)Mat.size(),TW.time());
+
+	showAdvanceLinear(2,1,2);
+
+	TW.clear() ;
+	j = 0 ;
+	while( Data.keepon(j,TW.time()) ) {
+		TW.start() ;
+		size_t d ;
+		LinBox::rank(d,Mat,Method::SparseElimination());
+		TW.stop();
+		// std::cout << TW.times() << std::endl;
+		++j ;
+	}
+	std::cout << TW.time() << std::endl;
+
+	Data.setEntry("Rank (SparseElimination)",name,TW.time(),(double)Mat.size(),TW.time());
+}
+
+void bench_rank(int carac)
+{
+	typedef LinBox::Modular<double>  Field0 ;
+	Field0 F(carac);
+	int nb = 1;
+
+	//! @bug no gz reader ?
+
+	std::string m1 = "matrix/bibd_12_5_66x792.sms" ; ++nb;
+	std::string m2 = "matrix/bibd_13_6_78x1716.sms" ; ++nb;
+	std::string m3 = "matrix/bibd_14_7_91x3432.sms" ; ++nb;
+
+	PlotData<std::string>  Data;
+	showProgression Show(nb) ;
+
+	launch_bench_rank(F,m1,Data);
+	Show.FinishIter();
+
+	launch_bench_rank(F,m2,Data);
+	Show.FinishIter();
+
+	launch_bench_rank(F,m3,Data);
+	Show.FinishIter();
+
+	///// PLOT STYLE ////
+	LinBox::PlotStyle Style;
+	Style.setTerm(LinBox::PlotStyle::Term::eps);
+	Style.setTitle("Rank algorithms","seconds","matrices");
+
+	Style.setPlotType(LinBox::PlotStyle::Plot::histo);
+	Style.setLineType(LinBox::PlotStyle::Line::histogram);
+	Style.setUsingSeries(std::pair<index_t,index_t>(2,3));
+
+
+	LinBox::PlotGraph<std::string> Graph(Data,Style);
+	Graph.setOutFilename("rank_comparison");
+
+	// Graph.plot();
+
+	Graph.print_gnuplot();
+
+	Graph.print_latex();
+
+
+	return;
+}
+
 /*  main */
 
 int main( int ac, char ** av)
@@ -424,25 +343,21 @@ int main( int ac, char ** av)
 		std::cout << "Warning : your x axis has only one point. You should have a smaller step." << std::endl;
 	}
 
-#if 0
-	/* against pure blas routine */
-	{
-		std::cout << "bench 1 : blas" << std::endl;
-		bench_blas(min,max,step,13);
-		bench_blas(min,max,step,2011);
-		bench_blas(min,max,step,65537);
-		if (++it == lst.end()) return EXIT_SUCCESS ;
-	}
-#endif
-
 	/* square for various fields */
 	{
 		std::cout << " *** Lines plot *** " << std::endl;
 		std::cout << "Benchmark square matrix multiplication via BMD.mul()" << std::endl;
-		bench_square(min,max,step,13);
-		// bench_square(min,max,step,2011);
-		// bench_square(min,max,step,65537);
-		return EXIT_SUCCESS ;
+		// bench_square(min,max,step,13);
+		// return EXIT_SUCCESS ;
+	}
+
+	/* different sparse matrix   */
+
+	{
+		std::cout << " *** Bar plot *** " << std::endl;
+		std::cout << "Benchmark different matrices on XXX" << std::endl;
+		bench_rank(13);
+		// return EXIT_SUCCESS ;
 	}
 
 

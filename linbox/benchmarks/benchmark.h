@@ -80,7 +80,7 @@ namespace LinBox
 	 *
 	 * @tparam Xkind the X axis is parametrised by \p Xkind (string, int, double...)
 	 * The Y axis is always represented by double.
-	 * @todo write members that permute, add, scale,... data.
+	 * @todo replace Xkind by std::string everywhere.
 	 */
 	template<class Xkind>
 	class PlotData ;
