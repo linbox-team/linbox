@@ -191,7 +191,8 @@ namespace LinBox
 	inline unsigned long &rank (unsigned long                   &r,
 				    const Blackbox                  &A,
 				    const Method    &M)
-	{  return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+	{
+		return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
 
 	/// M may be <code>Method::Wiedemann()</code>.

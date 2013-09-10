@@ -63,6 +63,21 @@ namespace LinBox {
 		std::vector< std::string >      _serie_label_ ;   //!< label for each serie of measures. Used in the legend of the plots/tables of points.
 		TimeWatcher                     _time_watch_  ;   //!< time predictor, helper. See \c TimeWatcher.
 		index_t                         _curr_serie_  ;   //!< index of the current series of measurements.
+	private :
+		bool fortifiedString(const std::string & s)
+		{
+			linbox_check(!s.empty());
+			return s.front() == '\"' && s.back() ==  '\"' ;
+		}
+
+		std::string fortifyString(const std::string & s)
+		{
+			if (fortifiedString(s))
+				return s ;
+			string r = "\"" ;
+			return r + s + "\"";
+		}
+
 	public :
 
 		/*! Inits a plot with series of data.
@@ -92,12 +107,35 @@ namespace LinBox {
 		{
 		}
 
+		/** Return the index of a series according to its name.
+		 * Creates one if necessary.
+		 * the current serie is set to this one.
+		 * @param name of the series
+		 * @return index of the series
+		 */
+		index_t getIndex(const std::string & nom)
+		{
+			std::vector<std::string>:: iterator it ;
+			std::string nomf = fortifyString(nom);
+			it = std::find(_serie_label_.begin() , _serie_label_.end() , nomf);
+			if ( it != _serie_label_.end() ) {
+				return (index_t)std::distance(_serie_label_.begin(),it);
+			}
+			else {
+				index_t sz = (index_t)_serie_label_.size() ;
+				_serie_label_.push_back(fortifyString(nom));
+				_tableau_.resize(sz+1);
+				_curr_serie_ = sz ;
+				initWatch(sz);
+				return sz ;
+			}
+		}
 
 		void merge(const PlotData<Xkind> &PD)
 		{
 			for (size_t i = 0 ; i < PD.size() ; ++i) {
 				_tableau_.push_back(PD.getSeries(i));
-				_serie_label_.push_back(PD.getSerieName(i));
+				_serie_label_.push_back(fortifyString(PD.getSerieName(i)));
 			}
 			return ;
 		}
@@ -125,7 +163,7 @@ namespace LinBox {
 		void setSerieName(const index_t & i, const std::string & nom)
 		{
 			linbox_check(i<size());
-			_serie_label_[i] = nom ;
+			_serie_label_[i] = fortifyString(nom) ;
 		}
 
 		/** Gets the name of a serie.
@@ -400,6 +438,22 @@ namespace LinBox {
 			initWatch(i); //  in case series has changed
 			return ;
 		}
+
+		/*! @brief sets a new entry.
+		 * @param name name of the series
+		 * @param j index of the point
+		 * @param nam name of the point (eg size of the matrix, name of a sparse matrix,...)
+		 * @param val value to be inserted (eg mflops, sec,...).
+		 * @param xval x value of the point (eg size of the matrix, of a sparse matrix,...)
+		 * @param yval time for this computation (seconds)
+		 */
+		void setEntry(const std::string & nom, const Xkind & nam, const double & val
+			      , const double & xval = NAN, const double & yval = NAN)
+		{
+			std::cout << nom << " has index : " << getIndex(nom) << std::endl;
+			return setSeriesEntry(getIndex(nom),nam,val,xval,yval);
+		}
+
 
 		/*! @brief sets a new entry.
 		 * @param j index of the point
@@ -1141,21 +1195,21 @@ namespace LinBox {
 			_merge_points_ = _data_.getCurrentSeriesPointLabel() ;
 			_merge_data_[0] = _data_.getCurrentSeriesValues() ;
 
-			// std::cout << "merge points " << _merge_points_ << std::endl;
-			// std::cout << "merge data   " << _merge_data_ << std::endl;
+			std::cout << "merge points " << _merge_points_ << std::endl;
+			std::cout << "merge data   " << _merge_data_ << std::endl;
 
 			for (index_t i = 1 ; i < _data_.size() ; ++i) {
 				_data_. selectNextSeries() ;
-				// std::cout << "to be merged "  << i << " : "  << std::endl;
-				// std::cout << "new points " << _data_.getCurrentSeriesPointLabel() << std::endl;
-				// std::cout << "new data   " << _data_.getCurrentSeriesValues() << std::endl;
+				std::cout << "to be merged "  << i << " : "  << std::endl;
+				std::cout << "new points " << _data_.getCurrentSeriesPointLabel() << std::endl;
+				std::cout << "new data   " << _data_.getCurrentSeriesValues() << std::endl;
 
 				mergeTwoSeries(_merge_points_,_merge_data_,
 					       _data_. getCurrentSeriesPointLabel(), _data_. getCurrentSeriesValues(),i);
 
-				// std::cout << "result : " << std::endl;
-				// std::cout << "merge points " << _merge_points_ << std::endl;
-				// std::cout << "merge data   " << _merge_data_ << std::endl;
+				std::cout << "result : " << std::endl;
+				std::cout << "merge points " << _merge_points_ << std::endl;
+				std::cout << "merge data   " << _merge_data_ << std::endl;
 
 			}
 
