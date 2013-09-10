@@ -65,16 +65,14 @@ double mm_mflops(index_t m, index_t n, index_t k)
 template<class Field>
 void launch_bench_square(Field & F // const problem
 			 , index_t min, index_t max, index_t step // no negative step
-			 , PlotData<index_t> & Data
+			 , PlotData & Data
 			)
 {
 	linbox_check(step);
 	linbox_check(min <= max);
 
 	std::ostringstream nam ;
-	nam << '\"' ;
 	F.write(nam);
-	nam << '\"' ;
 	// Data.setCurrentSerieName(nam.str());
 
 	Data.newSerie(nam.str());
@@ -104,17 +102,8 @@ void launch_bench_square(Field & F // const problem
 			TW.start() ;
 			BMD.mul(C,A,B) ; // C = AB
 			TW.stop();
-			// std::cout << TW.times() << std::endl;
 			++j ;
 		}
-		if (!j){
-			std::cout << "multiplication did not happen" << std::endl;
-		}
-#ifdef _LB_DEBUG
-		else {
-			std::cout << i << ',' << j << std::endl;
-		}
-#endif
 		double mflops = computeMFLOPS(TW.times(),mm_mflops(i,i,i));
 
 		Data.setCurrentSeriesEntry(i,mflops,i,TW.time()); // could be i*i*i
@@ -147,7 +136,7 @@ void bench_square( index_t min, index_t max, index_t step, int charac )
 
 	///// DATA HARVEST ////
 
-	PlotData<index_t>  Data;
+	PlotData  Data;
 	showProgression Show(nb) ;
 
 	Field0 F0(charac) ;
@@ -200,10 +189,9 @@ void bench_square( index_t min, index_t max, index_t step, int charac )
 
 	Style.setPlotType(LinBox::PlotStyle::Plot::graph);
 	Style.setLineType(LinBox::PlotStyle::Line::linespoints);
-	Style.setUsingSeries(std::pair<index_t,index_t>(2,nb));
 
 
-	LinBox::PlotGraph<index_t> Graph(Data,Style);
+	LinBox::PlotGraph Graph(Data,Style);
 	Graph.setOutFilename("bmdmul_square");
 
 	// Graph.plot();
@@ -218,15 +206,13 @@ void bench_square( index_t min, index_t max, index_t step, int charac )
 
 template<class Field>
 void launch_bench_rank(const Field &F, const std::string & name
-			 , PlotData<std::string> & Data
+			 , PlotData & Data
 		       )
 {
-	std::cout << name << std::endl;
 
 	SparseMatrix<Field> Mat(F);
 	std::ifstream mat1 (name);
 	Mat.read(mat1);
-	std::cout << Mat.rowdim() << "," << Mat.coldim() << std::endl;
 
 	// Data.newSerie(name);
 	Chrono<Timer> TW ;
@@ -240,10 +226,8 @@ void launch_bench_rank(const Field &F, const std::string & name
 		size_t d ;
 		LinBox::rank(d,Mat,Method::Blackbox());
 		TW.stop();
-		// std::cout << TW.times() << std::endl;
 		++j ;
 	}
-	std::cout << TW.time() << std::endl;
 
 	// double mflops = computeMFLOPS(TW.times(),mm_mflops(i,i,i));
 
@@ -258,10 +242,8 @@ void launch_bench_rank(const Field &F, const std::string & name
 		size_t d ;
 		LinBox::rank(d,Mat,Method::SparseElimination());
 		TW.stop();
-		// std::cout << TW.times() << std::endl;
 		++j ;
 	}
-	std::cout << TW.time() << std::endl;
 
 	Data.setEntry("Rank (SparseElimination)",name,TW.time(),(double)Mat.size(),TW.time());
 }
@@ -278,7 +260,7 @@ void bench_rank(int carac)
 	std::string m2 = "matrix/bibd_13_6_78x1716.sms" ; ++nb;
 	std::string m3 = "matrix/bibd_14_7_91x3432.sms" ; ++nb;
 
-	PlotData<std::string>  Data;
+	PlotData  Data;
 	showProgression Show(nb) ;
 
 	launch_bench_rank(F,m1,Data);
@@ -297,18 +279,17 @@ void bench_rank(int carac)
 
 	Style.setPlotType(LinBox::PlotStyle::Plot::histo);
 	Style.setLineType(LinBox::PlotStyle::Line::histogram);
-	Style.setUsingSeries(std::pair<index_t,index_t>(2,3));
 
 
-	LinBox::PlotGraph<std::string> Graph(Data,Style);
+	LinBox::PlotGraph Graph(Data,Style);
 	Graph.setOutFilename("rank_comparison");
 
 	// Graph.plot();
 
 	Graph.print_gnuplot();
 
-	Graph.print_latex();
 
+	Graph.print_xml();
 
 	return;
 }
@@ -347,7 +328,7 @@ int main( int ac, char ** av)
 	{
 		std::cout << " *** Lines plot *** " << std::endl;
 		std::cout << "Benchmark square matrix multiplication via BMD.mul()" << std::endl;
-		// bench_square(min,max,step,13);
+		bench_square(min,max,step,13);
 		// return EXIT_SUCCESS ;
 	}
 

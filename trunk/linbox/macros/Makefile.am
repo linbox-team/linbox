@@ -42,4 +42,5 @@ EXTRA_DIST=\
 	   fplll-check.m4          \
 	   m4rie-check.m4          \
 	   m4ri-check.m4           \
+	   tinyxml-check.m4        \
 	   sage-check.m4
