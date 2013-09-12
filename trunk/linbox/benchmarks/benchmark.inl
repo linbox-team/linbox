@@ -50,12 +50,6 @@
 #include <string>
 #include <fstream>
 
-#ifdef __LINBOX_HAVE_TINYXML2
-#include <sys/utsname.h>
-#include <ctime>
-#include <tinyxml2.h>
-#endif
-
 
 // Plot structures (Style, Data, Graph)
 namespace LinBox {
@@ -67,8 +61,39 @@ namespace LinBox {
 		std::vector< std::string >      _serie_label_ ;   //!< label for each serie of measures. Used in the legend of the plots/tables of points.
 		index_t                         _curr_serie_  ;   //!< index of the current series of measurements.
 		TimeWatcher                     _time_watch_  ;   //!< time predictor, helper. See \c TimeWatcher.
-	private :
+	private:
 
+#ifdef __LINBOX_HAVE_TINYXML2
+		tinyxml2::XMLElement * saveData(tinyxml2::XMLDocument & doc)
+			 {
+				 using namespace tinyxml2;
+				 XMLElement * data = doc.NewElement( "data" );
+
+				 selectSeries(0);
+				 for (index_t i = 0 ; i < size() ; ++i  ) {
+
+					 XMLElement * serie = doc.NewElement ( "serie" );
+					 serie->SetAttribute("name",unfortifyString(getCurrentSerieName()).c_str());
+
+					 for (index_t j = 0 ;  j < getCurrentSerieSize() ; ++j)
+					 {
+						 XMLElement * point = doc.NewElement ( "point" );
+						 point->SetAttribute("x",unfortifyString(getCurrentSeriesPointLabel(j)).c_str());
+						 point->SetAttribute("y",getCurrentSeriesEntry(j));
+						 point->SetAttribute("time",getCurrentSeriesEntryTime(j));
+						 point->SetAttribute("id",getCurrentSeriesEntryPoint(j));
+
+						 serie->InsertEndChild( point );
+					 }
+
+					 data->InsertEndChild( serie );
+
+					 selectNextSeries();
+				 }
+
+				 return data ;
+			 }
+#endif
 	public :
 
 		/*! Inits a plot with series of data.
@@ -120,6 +145,16 @@ namespace LinBox {
 				initWatch(sz);
 				return sz ;
 			}
+		}
+
+		/** @brief initialize to empty
+		 */
+		void clear()
+		{
+			_tableau_.resize(0);
+			_serie_label_.resize(0);
+			_curr_serie_ =  0;
+			_time_watch_.clear();
 		}
 
 		void merge(const PlotData &PD)
@@ -561,9 +596,114 @@ namespace LinBox {
 			return _time_watch_.keepon(repet,tim, usePrediction);
 		}
 
-		// QXmlStreamWriter
-		void importe( const std::string & filename) ;
+		void load( const std::string & filename)
+		{
+#ifdef __LINBOX_HAVE_TINYXML2
+			using namespace tinyxml2;
+			XMLDocument doc;
+			doc.LoadFile( filename.c_str() );
+			// std::cout << "loaded " << filename << std::endl;
+			linbox_check(!doc.ErrorID());
 
+			XMLElement * bench = doc.FirstChildElement( "benchmark");
+			linbox_check(bench);
+			XMLElement* data = bench -> FirstChildElement( "data" ) ;
+			linbox_check(data);
+			XMLElement* series = data -> FirstChildElement( "serie" ) ;
+
+			clear();
+
+			while (series)
+			{
+				newSerie( series->Attribute( "name" ) );
+				XMLElement * points = series->FirstChildElement() ;
+				while (points) {
+					std::string x = points->Attribute( "x" );
+					double      y = points->DoubleAttribute( "y" );
+					double      time = points->DoubleAttribute( "time" );
+					double      id = points->DoubleAttribute( "id" );
+
+					setCurrentSeriesEntry(x,y,id,time);
+
+					points = points->NextSiblingElement();
+				}
+
+				series = series->NextSiblingElement();
+			}
+#else
+			throw LinBoxError("You need tinyxml2 for loading data");
+#endif
+			// save("toto.xml");
+
+		}
+
+		/** @brief saves the data in XML format.
+		 * @param filename file name
+		 * @param title titles of the data
+		 * @param xtitle legend of the X axis
+		 * @param ytitle legend of the Y axis.
+		 */
+		void save( const std::string & filename
+			   , const std::string & title = ""
+			   , const std::string & xtitle = ""
+			   , const std::string & ytitle = "")
+		{
+#ifdef __LINBOX_HAVE_TINYXML2
+			 using namespace tinyxml2;
+			 XMLDocument doc;
+
+			 doc.InsertEndChild(doc.NewDeclaration());
+
+			 XMLElement * benchmark = doc.NewElement( "benchmark" );
+			 doc.InsertEndChild(benchmark);
+
+			 { // Metadata
+				 XMLElement * metadata = doc.NewElement( "metadata" );
+
+				 smatrix_t uname = getMachineInformation();
+
+				 for (size_t i = 0 ; i < uname[0].size() ; ++i) {
+					 metadata->SetAttribute(uname[0][i].c_str(),uname[1][i].c_str());
+				 }
+
+				 std::string myTime = getDateTime();
+
+				 metadata->SetAttribute("time",myTime.c_str());
+
+				 benchmark->InsertEndChild(metadata);
+			 }
+
+			 { // Legende
+				 XMLElement * legende = doc.NewElement( "legende" );
+
+				 std::string mytitle = title;
+				 if (title.empty())
+					 mytitle =filename ;
+				 legende->SetAttribute("title",unfortifyString(mytitle).c_str());
+				 if (!xtitle.empty())
+					 legende->SetAttribute("X",unfortifyString(xtitle).c_str());
+				 if (!ytitle.empty())
+					 legende->SetAttribute("Y",unfortifyString(ytitle).c_str());
+
+
+				 benchmark->InsertEndChild(legende);
+			 }
+
+			 // series
+			 {
+				 XMLElement * data = saveData(doc);
+
+				 benchmark->InsertEndChild(data);
+			 }
+
+			 doc.SaveFile(filename.c_str());
+
+			std::cout << "xml table saved in " << filename << std::endl;
+#else
+			std::cout << "tinyxml2 is not installed, could not save" << std::endl;
+#endif
+
+		}
 
 
 	}; // PlotData
@@ -1093,11 +1233,12 @@ namespace LinBox {
 	//!@todo use getUsingSeries in latex/html/csv/xml
 	class PlotGraph {
 	private :
-		PlotData               & _data_ ;   //!< reference to the data points
-		PlotStyle             & _style_ ;   //!< reference to a plotting style
-		std::string         _filename_  ;   //!< name for the output file (without extension). a random \c _XXXXXX suffix will be added to make it unique.
-		dmatrix_t             _merge_data_   ;
-		svector_t     _merge_points_ ;
+		PlotData              & _data_ ;   //!< reference to the data points
+		PlotStyle            & _style_ ;   //!< reference to a plotting style
+		std::string         _filename_ ;   //!< name for the output file (without extension). a random \c _XXXXXX suffix will be added to make it unique.
+		std::string        _printname_ ;   //!< name for the output file (without extension) to be printed. a random \c _XXXXXX suffix makes it unique.
+		dmatrix_t         _merge_data_ ;
+		svector_t       _merge_points_ ;
 
 		/*! @internal
 		 * @brief random <code>:alnum:</code> \c char.
@@ -1135,7 +1276,7 @@ namespace LinBox {
 		 * underscore followed by 8 random alnum chars.
 		 * @return the concatenation of \c _filename_ and this suffix.
 		 */
-		std::string _randomName()
+		void _randomName()
 		{
 			std::ostringstream unique_filename ;
 			unique_filename << _filename_ << '_' ;
@@ -1143,10 +1284,16 @@ namespace LinBox {
 				unique_filename << _randomAlNum() ;
 			}
 			// std::cout << unique_filename.str() << std::endl;
-			return unique_filename.str() ;
+
+			_printname_ = unique_filename.str() ;
 
 		}
 
+		std::string getFileName() {
+			if (_printname_.empty())
+				_randomName();
+			return _printname_;
+		}
 
 		//! @bug this supposes the two series have unique measurements for one point.
 		void mergeTwoSeries( svector_t & merge_points
@@ -1218,201 +1365,74 @@ namespace LinBox {
 			return ;
 		}
 
-		public :
-
-		/*! @brief Sets a new data structure.
-		 * @param data a reference to a PlotData class.
-		 */
-		void setData( PlotData & data )
+		void print_csv()
 		{
-			_data_ = data ;
-		}
+			char comma   = ',';
+			char comment = '#';
+			index_t nb_points = (index_t)_merge_points_.size() ;
+			index_t nb_series = (index_t)_data_.size() ;
 
-		/*! @brief Gets the data.
-		 * @param[in,out] data a reference to a PlotData class.
-		 */
-		PlotData & refData( PlotData & data)
-		{
-			return data = _data_ ;
-		}
+			std::string unique_filename  = getFileName();
+			std::string DataFileName = unique_filename + ".csv" ;
+			std::ofstream DF(DataFileName.c_str());
 
-		/*! @brief Sets a new style structure.
-		 * @param style a reference to a PlotStyle class.
-		 */
-		void setStyle( PlotStyle & style )
-		{
-			_style_ = style ;
-		}
+			/*  Data file to be plot */
+			DF.precision(2);
+			// metadata
+			DF << comment << fortifyString("title") << comma << fortifyString(_style_.getRawTitle()) << std::endl;
+			DF << comment << fortifyString("date") << fortifyString(getDateTime()) << std::endl;
+			smatrix_t uname = getMachineInformation();
+			for (size_t i = 0 ; i < uname[0].size() ; ++i)
+				DF << comment << fortifyString(uname[0][i]) << comma << fortifyString(uname[1][i]) << std::endl ;
 
-		/*! @brief Gets the style.
-		 * @param[in,out] style a reference to a PlotStyle class.
-		 */
-		PlotStyle & refStyle( PlotStyle & style)
-		{
-			return style = _style_ ;
-		}
+			// data
+			DF << fortifyString(_style_.getRawTitle(1)) << comma ;
+			for (index_t i = 0 ; i < nb_series ; ++i) {
+				DF << _data_.getSerieLabel(i) ;
+				if (i != nb_series -1)
+					DF << comma ;
+			}
+			DF << std::endl;
 
+			for (index_t j = 0 ; j < nb_points ; ++j) {
+				DF << _merge_points_[j] << comma;
+				for (index_t i = 0 ; i < nb_series ; ++i) {
+					DF  << _merge_data_[i][j] ;
+					if (i != nb_series -1)
+					DF << comma ;
 
-		// not implemented yet
-		void sortSeries()  ;
-
-		// not implemented yet
-		void unique() ;
-
-		// metadata : machine (uname -a) ; date (date --rfc-3339=seconds) ; program name ; other
-		void addMetadata() ;
-
-			/*! @brief Constructor for the PlotGraph class.
-		 * Plots a series of data according to a style.
-		 * @param data data to be plot, will be processed by the style
-		 * @param style sets parameters to gnuplot to achieve a nice
-		 * plot.
-		 */
-		PlotGraph( PlotData & data, PlotStyle & style ) :
-			_data_(data)
-			,_style_(style)
-			,_merge_data_(data.size())
-			,_merge_points_(data.getSeries(0).size())
-		{
-			srand((unsigned)time(NULL));
-			mergeSeries();
-		}
-
-		/*! @brief sets the ouput file name.
-		 * All output is put in a "data" subfolder.
-		 * @warning Since no file is overwritten, this
-		 * directory can rapidly get very populated.
-		 */
-		void setOutFilename( std::string filename )
-		{
-			int err = system( "test -d data || ( rm -rf data && mkdir data )" ) ;
-			if (err) {
-				throw LinBoxError("could not create directory data");
+				}
+				DF << std::endl;
 			}
 
-			if ( filename.empty() ) {
-				_filename_ = "./data/plotdata" ;
-				std::cerr << "you should provide a filename. Using " << _filename_ << " as default ."<<std::endl;
-			}
-			else {
-				_filename_ = "./data/" + filename;
-			}
+			std::cout << "csv data in " << DataFileName << std::endl;
 
-		} ;
-
-		std::string getUsingSeries() // const
-		{
-			// mutable _style_ ?
-			linbox_check(_merge_points_.size());
-			if (_style_.getUsingSeries().empty()) {
-				_style_.setUsingSeries(std::pair<index_t,index_t>((index_t)2,(index_t)_merge_data_.size()+1));
-			}
-			return _style_.getUsingSeries();
 		}
 
-		/*! @brief Gets the plot command line.
-		 * @param File the name of/path to the data file (with extension)
-		 * @return a gnuplot "plot" command stream.
-		 */
-		std::string getPlotCommand(std::string File) //const
+		void print_dat()
 		{
-			std::string PC = "#plot\nplot \'" + File + "\' ";
-			PC += getUsingSeries() ;
-			return PC ;
+			print_gnuplot(true);
 		}
-
-
-		//! @todo
-		 void print_csv() ;
 
  		 //! @todo
 		 void print_xml()
 		 {
 #ifdef __LINBOX_HAVE_TINYXML2
-			 using namespace tinyxml2;
-			 XMLDocument doc;
-
-			 doc.InsertEndChild(doc.NewDeclaration());
-
-			 XMLElement * benchmark = doc.NewElement( "benchmark" );
-			 doc.InsertEndChild(benchmark);
-
-			 { // Metadata
-				 XMLElement * metadata = doc.NewElement( "metadata" );
-
-				 struct utsname unameData;
-				 uname(&unameData);
-				 metadata->SetAttribute("sysname",unameData.sysname);
-				 metadata->SetAttribute("nodename",unameData.nodename);
-				 metadata->SetAttribute("release",unameData.release);
-				 metadata->SetAttribute("version",unameData.version);
-				 metadata->SetAttribute("machine",unameData.machine);
-
-				 std::time_t rawtime;
-				 std::tm* timeinfo;
-				 char buffer [80];
-
-				 std::time(&rawtime);
-				 timeinfo = std::gmtime(&rawtime);
-
-				 std::strftime(buffer,80,"%Y-%m-%d:%H-%M-%S",timeinfo);
-
-				 metadata->SetAttribute("time",buffer);
-
-				 benchmark->InsertEndChild(metadata);
-			 }
-
-			 { // Legende
-				 XMLElement * legende = doc.NewElement( "legende" );
-
-				 legende->SetAttribute("title",unfortifyString(_style_.getRawTitle()).c_str());
-				 legende->SetAttribute("X",unfortifyString(_style_.getRawTitle(1)).c_str());
-				 legende->SetAttribute("Y",unfortifyString(_style_.getRawTitle(2)).c_str());
-
-				 benchmark->InsertEndChild(legende);
-			 }
-
-			 // series
-			 {
-				 XMLElement * data = doc.NewElement( "data" );
-
-				 _data_.selectSeries(0);
-				 for (index_t i = 0 ; i < _data_.size() ; ++i  ) {
-
-					 XMLElement * serie = doc.NewElement ( "serie" );
-					 serie->SetAttribute("name",unfortifyString(_data_.getCurrentSerieName()).c_str());
-
-					 for (index_t j = 0 ;  j < _data_.getCurrentSerieSize() ; ++j)
-					 {
-						 XMLElement * point = doc.NewElement ( "point" );
-						 point->SetAttribute("x",unfortifyString(_data_.getCurrentSeriesPointLabel(j)).c_str());
-						 point->SetAttribute("y",_data_.getCurrentSeriesEntry(j));
-						 point->SetAttribute("time",_data_.getCurrentSeriesEntryTime(j));
-						 point->SetAttribute("id",_data_.getCurrentSeriesEntryPoint(j));
-
-						 serie->InsertEndChild( point );
-					 }
-
-					 data->InsertEndChild( serie );
-
-					 _data_.selectNextSeries();
-				 }
-
-				 benchmark->InsertEndChild(data);
-			 }
-
-		 	 std::string unique_filename = _randomName();
+		 	 std::string unique_filename = getFileName();
 			 unique_filename += ".xml" ;
-			 doc.SaveFile(unique_filename.c_str());
 
-			std::cout << "xml table in " << unique_filename << '.' << std::endl;
+			 _data_.save(unique_filename,_style_.getRawTitle(),_style_.getRawTitle(1),_style_.getRawTitle(2));
+
 #else
 			std::cout << "tinyxml2 is not installed, could not print" << std::endl;
 #endif
+
+			load(unique_filename);
+			return ;
 		 }
 
 		//! @todo
-		 void print_html() ;
+		 void print_html() {};
 
 		/*! @brief Prints data in a latex tabular.
 		*/
@@ -1425,7 +1445,7 @@ namespace LinBox {
 			linbox_check(nb_series);
 			// srand(time(NULL));
 			// std::ostringstream unique_filename  ;
-			std::string unique_filename = _randomName();
+			std::string unique_filename = getFileName();
 			unique_filename += ".tex" ;
 			// std::cout << _filename_ << " plot in " << unique_filename << '.'<< std::endl;
 			std::ofstream FN(unique_filename.c_str());
@@ -1481,24 +1501,32 @@ namespace LinBox {
 		 * outputs a graph calling gnuplot.
 		 * @warning If gnuplot is not available, fall back to the latex method.
 		 */
-		void print_gnuplot()
+		void print_gnuplot(bool only_data=false)
 		{
 #ifndef __LINBOX_HAVE_GNUPLOT
-			std::cout << "gnuplot is not available on your system. using latex table as fallback" << std::endl;
-			print_latex();
-#else
-			// srand(time(NULL));
+			std::cout << "gnuplot is not available on your system. only the data will be printed" << std::endl;
+#endif
 			index_t nb_points = (index_t)_merge_points_.size() ;
 			index_t nb_series = (index_t)_data_.size() ;
 
-			std::string unique_filename  = _randomName();
+			std::string unique_filename  = getFileName();
 			std::string DataFileName = unique_filename + ".dat" ;
-			std::string PlotFileName = unique_filename + ".gp" ;
 			std::ofstream DF(DataFileName.c_str());
-			std::ofstream PF(PlotFileName.c_str());
+
 			/*  Data file to be plot */
 			// DF.precision(_style_.getPrecision());
 			DF.precision(2);
+
+			char comment = '#' ;
+			char comma   = ' ';
+			// metadata
+			DF << comment << ("title") << comma << (_style_.getRawTitle()) << std::endl;
+			DF << comment << ("date") << (getDateTime()) << std::endl;
+			smatrix_t uname = getMachineInformation();
+			for (size_t i = 0 ; i < uname[0].size() ; ++i)
+				DF << comment << (uname[0][i]) << comma << (uname[1][i]) << std::endl ;
+
+
 			DF << "legend " ;
 			for (index_t i = 0 ; i < nb_series ; ++i) {
 				DF << _data_.getSerieLabel(i) << ' ' ;
@@ -1513,48 +1541,196 @@ namespace LinBox {
 				DF << std::endl;
 			}
 
-			/*  Ploting script */
-			PF << "#" << _filename_                    << std::endl;
-			PF << _style_.getTerm()                    << std::endl;
-			PF << _style_.getOutput(unique_filename)   << std::endl;
-			PF << _style_.getTitle()                   << std::endl;
-			PF << _style_.getKeyPos()                  << std::endl;
-			PF << _style_.getXtics()                   << std::endl;
-			PF << _style_.getPlotType()                << std::endl;
-#if 0
-			for (index_t i = 0 ; i < nb_series ; ++i) {
-				PF << "set style line " << _style_.getLineStyle() << std::endl;
+			if (only_data)
+				std::cout << "data in " << DataFileName << std::endl;
+
+#ifdef __LINBOX_HAVE_GNUPLOT
+			if (!only_data) {
+				std::string PlotFileName = unique_filename + ".gp" ;
+				std::ofstream PF(PlotFileName.c_str());
+
+				/*  Ploting script */
+				PF << "#" << _filename_                    << std::endl;
+				PF << _style_.getTerm()                    << std::endl;
+				PF << _style_.getOutput(unique_filename)   << std::endl;
+				PF << _style_.getTitle()                   << std::endl;
+				PF << _style_.getKeyPos()                  << std::endl;
+				PF << _style_.getXtics()                   << std::endl;
+				PF << _style_.getPlotType()                << std::endl;
+
+				PF << getPlotCommand(DataFileName) << std::endl;
+
+				PF.close();
+
+				std::string command( "gnuplot " ) ;
+				command += PlotFileName ;
+				int err = system( command.c_str() ) ;
+				if (err) {
+					std::cout << "errors have occured. Look at gnuplot output." << std::endl;
+				}
+				else {
+					std::cout << "Output generated as " << unique_filename  + _style_.getExt() << std::endl;
+				}
 			}
 #endif
-			PF << getPlotCommand(DataFileName) << std::endl;
-#if 0
-			for (index_t i = 0 ; i < nb_series ; ++i) {
-				PF << '\"' << DataFileName << "\" using 1:" << i+2 << " with lines " ;
-				PF << " ls " << i+1 ;
-				PF << " title '" << names[i] << "'";
-				if (i < (nb_series-1))
-					PF << ",\\" << std::endl;
-				else
-					PF << ';' ;
-			}
-			PF << std::endl;
-#endif
-			PF.close();
-
-			std::string command( "gnuplot " ) ;
-			command += PlotFileName ;
-			int err = system( command.c_str() ) ;
-			if (err) {
-				std::cout << "errors have occured. Look at gnuplot output." << std::endl;
-			}
-			else {
-				std::cout << "Output generated as " << unique_filename  + _style_.getExt() << std::endl;
-			}
 
 
-#endif
+			return;
 		}
 
+		public :
+
+		/*! @brief Sets a new data structure.
+		 * @param data a reference to a PlotData class.
+		 */
+		void setData( PlotData & data )
+		{
+			_data_ = data ;
+		}
+
+		/*! @brief Gets the data.
+		 * @param[in,out] data a reference to a PlotData class.
+		 */
+		PlotData & refData( PlotData & data)
+		{
+			return data = _data_ ;
+		}
+
+		/*! @brief Sets a new style structure.
+		 * @param style a reference to a PlotStyle class.
+		 */
+		void setStyle( PlotStyle & style )
+		{
+			_style_ = style ;
+		}
+
+		/*! @brief Gets the style.
+		 * @param[in,out] style a reference to a PlotStyle class.
+		 */
+		PlotStyle & refStyle( PlotStyle & style)
+		{
+			return style = _style_ ;
+		}
+
+
+		// not implemented yet
+		void sortSeries()  ;
+
+		// not implemented yet
+		void unique() ;
+
+			/*! @brief Constructor for the PlotGraph class.
+		 * Plots a series of data according to a style.
+		 * @param data data to be plot, will be processed by the style
+		 * @param style sets parameters to gnuplot to achieve a nice
+		 * plot.
+		 */
+		PlotGraph( PlotData & data, PlotStyle & style ) :
+			_data_(data)
+			,_style_(style)
+			,_filename_("")
+			,_printname_("")
+			,_merge_data_(data.size())
+			,_merge_points_(data.getSeries(0).size())
+		{
+			srand((unsigned)time(NULL));
+			mergeSeries();
+		}
+
+		/*! @brief sets the ouput file name.
+		 * All output is put in a "data" subfolder.
+		 * @warning Since no file is overwritten, this
+		 * directory can rapidly get very populated.
+		 */
+		void setOutFilename( std::string filename )
+		{
+			int err = system( "test -d data || ( rm -rf data && mkdir data )" ) ;
+			if (err) {
+				throw LinBoxError("could not create directory data");
+			}
+
+			if ( filename.empty() ) {
+				_filename_ = "./data/plotdata" ;
+				std::cerr << "you should provide a filename. Using " << _filename_ << " as default ."<<std::endl;
+			}
+			else {
+				_filename_ = "./data/" + filename;
+			}
+
+		} ;
+
+		std::string getUsingSeries() // const
+		{
+			// mutable _style_ ?
+			linbox_check(_merge_points_.size());
+			if (_style_.getUsingSeries().empty()) {
+				_style_.setUsingSeries(std::pair<index_t,index_t>((index_t)2,(index_t)_merge_data_.size()+1));
+			}
+			return _style_.getUsingSeries();
+		}
+
+		/*! @brief Gets the plot command line.
+		 * @param File the name of/path to the data file (with extension)
+		 * @return a gnuplot "plot" command stream.
+		 */
+		std::string getPlotCommand(std::string File) //const
+		{
+			std::string PC = "#plot\nplot \'" + File + "\' ";
+			PC += getUsingSeries() ;
+			return PC ;
+		}
+
+		void print( LINBOX_enum(Tag::Printer) pt = Tag::Printer::xml) {
+			switch (pt) {
+			case (Tag::Printer::xml):
+				{
+					print_xml();
+					break;
+				}
+			case (Tag::Printer::csv) :
+				{
+					print_csv();
+					break;
+				}
+			case (Tag::Printer::dat) :
+				{
+					print_dat();
+					break;
+				}
+			case (Tag::Printer::gnuplot) :
+				{
+					print_gnuplot();
+					break;
+				}
+			case (Tag::Printer::tex) :
+				{
+					print_latex();
+					break;
+				}
+			case (Tag::Printer::html) :
+				{
+					print_html();
+					break;
+				}
+			default :
+				{
+					throw LinBoxError("printer unknown");
+				}
+
+			}
+
+			return ;
+		}
+
+		void save()
+		{
+			return print_xml();
+		}
+
+		void load(const std::string & filename)
+		{
+			return _data_.load(filename);
+		}
 	}; // PlotGraph
 
 } // LinBox

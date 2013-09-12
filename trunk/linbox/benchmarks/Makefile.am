@@ -106,6 +106,8 @@ benchmark_example_SOURCES       = benchmark-example.C
 #  benchmark_hermite_SOURCES        = benchmark-hermite.C
 #  benchmark_smith_SOURCES          = benchmark-smith.C
 
+cleanup :
+	(cd data ; make cleanup)
 
 LINBOX=@prefix@
 
