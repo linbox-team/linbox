@@ -181,9 +181,7 @@ void bench_square( index_t min, index_t max, index_t step, int charac )
 
 	///// PLOT STYLE ////
 	LinBox::PlotStyle Style;
-	// Style.setTerm(LinBox::PlotStyle::Term::pdf);
-	// Style.setTerm(LinBox::PlotStyle::Term::png);
-	// Style.setTerm(LinBox::PlotStyle::Term::svg);
+
 	Style.setTerm(LinBox::PlotStyle::Term::eps);
 	Style.setTitle("BlasMatrixDomain mul","Mflops","dimensions");
 
@@ -196,9 +194,10 @@ void bench_square( index_t min, index_t max, index_t step, int charac )
 
 	// Graph.plot();
 
-	Graph.print_gnuplot();
+	Graph.print(Tag::Printer::gnuplot);
 
-	Graph.print_latex();
+	Graph.print(Tag::Printer::tex);
+	Graph.print(Tag::Printer::csv);
 
 	return ;
 
@@ -286,10 +285,9 @@ void bench_rank(int carac)
 
 	// Graph.plot();
 
-	Graph.print_gnuplot();
+	Graph.print(Tag::Printer::gnuplot);
 
-
-	Graph.print_xml();
+	Graph.print(Tag::Printer::xml);
 
 	return;
 }
@@ -328,17 +326,15 @@ int main( int ac, char ** av)
 	{
 		std::cout << " *** Lines plot *** " << std::endl;
 		std::cout << "Benchmark square matrix multiplication via BMD.mul()" << std::endl;
-		bench_square(min,max,step,13);
-		// return EXIT_SUCCESS ;
+		// bench_square(min,max,step,13);
 	}
 
 	/* different sparse matrix   */
 
 	{
 		std::cout << " *** Bar plot *** " << std::endl;
-		std::cout << "Benchmark different matrices on XXX" << std::endl;
+		std::cout << "Benchmark different matrices on different rank algorithms" << std::endl;
 		bench_rank(13);
-		// return EXIT_SUCCESS ;
 	}
 
 

@@ -20,3 +20,5 @@
 #/
 
 
+cleanup :
+	\rm -rf *dat *tex *gp *xml *cvs *html *eps

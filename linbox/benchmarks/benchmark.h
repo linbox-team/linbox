@@ -68,6 +68,7 @@ namespace LinBox
 	 * @warning NaN, inf are used as missing data. More genenally
 	 * we could store data in strings.
          * @todo Allow for 'speed up against col X' style
+	 * @todo make depend on PlotData
 	 */
 	class PlotStyle ;
 
@@ -80,7 +81,7 @@ namespace LinBox
 	 *
 	 * @tparam Xkind the X axis is parametrised by \p Xkind (string, int, double...)
 	 * The Y axis is always represented by double.
-	 * @todo replace Xkind by std::string everywhere.
+	 * @todo put the legend (title, x, y) in there
 	 */
 	class PlotData ;
 
@@ -91,6 +92,8 @@ namespace LinBox
 	 *
 	 * @warning the filename will get a random suffix before the extension
 	 * so as not to overwrite files "par inadvertance".
+	 * @warning don't name anything else than a folder "data" in your working directory. You've been warned.
+	 * @todo make depend on PlotStyle (that owns data)
 	 */
 	class PlotGraph ;
 
@@ -122,6 +125,26 @@ namespace LinBox { namespace Tag {
 	};
 #endif
 
+//! selection of printers
+#if HAVE_CXX11
+	enum struct Printer : int32_t
+#else
+	struct Printer { enum enum_t
+#endif
+		{
+			dat       = 1, //!< print data  raw (format chosen by implementation)
+			tex       = 2, //!< print latex useable
+			xml       = 3, //!< print using xml syntax
+			gnuplot   = 4, //!< print using gnuplot
+			csv       = 5, //!< coma separated values
+			html      = 6  //!< coma separated values
+		};
+#if HAVE_CXX11
+#else
+	};
+#endif
+
+
 } // Tag
 } // LinBox
 
@@ -140,6 +163,7 @@ namespace LinBox {
 
 	//! matrix of double
 	typedef std::vector<dvector_t>    dmatrix_t;
+	typedef std::vector<svector_t>    smatrix_t;
 
 	/** @brief this structure holds a bunch of timings.
 	 * It collects the points, the time spent at each point and a measure
@@ -260,6 +284,13 @@ namespace LinBox {
 			}
 			linbox_check(Points_->size() == Values_->size());
 			return (index_t)Points_->size();
+		}
+
+		//! clear the pointers (not the settings)
+		void clear()
+		{
+			Points_ = NULL ;
+			Values_ = NULL ;
 		}
 	} ; // TimeWatcher
 
@@ -436,6 +467,55 @@ namespace LinBox {
 	 * @return mflo/(tim*rpt)
 	 */
 	double computeMFLOPS(const dvector_t & tim, const double mflo, LINBOX_enum(Tag::TimeSelect) ts = Tag::TimeSelect::bestThree);
+
+}
+
+// Machine info
+
+#include <sys/utsname.h>
+#include <ctime>
+#ifdef __LINBOX_HAVE_TINYXML2
+#include <tinyxml2.h>
+#endif
+
+
+namespace LinBox {
+
+		std::string getDateTime()
+		{
+			std::time_t rawtime;
+			std::tm* timeinfo;
+			char buffer [80];
+
+			std::time(&rawtime);
+			timeinfo = std::gmtime(&rawtime);
+
+			std::strftime(buffer,80,"%Y-%m-%d:%H-%M-%S GMT",timeinfo);
+
+			std::string mytime(buffer);
+
+			return mytime;
+		}
+
+		smatrix_t getMachineInformation()
+		{
+			smatrix_t Machine(2);
+			Machine[0].resize(5);
+			Machine[1].resize(5);
+			struct utsname unameData;
+			uname(&unameData);
+			Machine[0][0] = "sysname";
+			Machine[1][0] = unameData.sysname;
+			Machine[0][1] = "nodename";
+			Machine[1][1] = unameData.nodename;
+			Machine[0][2] = "release";
+			Machine[1][2] = unameData.release;
+			Machine[0][3] = "version";
+			Machine[1][3] = unameData.version;
+			Machine[0][4] = "machine";
+			Machine[1][4] = unameData.machine;
+			return Machine ;
+		}
 
 }
 
