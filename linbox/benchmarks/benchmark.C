@@ -535,14 +535,14 @@ namespace LinBox {
 		std::string term = "#term\nset term " ;
 		switch(_term_) {
 		case (Term::png) :
-			term += "png enhanced" ;
+			term += "png noenhanced" ;
 			break;
 		case (Term::pdf) :
 			std::cerr << "warning, pdf not really working for now" << std::endl;
-			term += "postscript eps enhanced color" ;
+			term += "postscript eps noenhanced color" ;
 			break;
 		case (Term::eps) :
-			term += "postscript eps enhanced color" ;
+			term += "postscript eps noenhanced color" ;
 			break;
 		case (Term::svg) :
 			term += "svg" ;
@@ -1572,13 +1572,50 @@ namespace LinBox {
 
 		void PlotGraph::print_html()
 		{
-#if 0
-Le tableau est encadré par les balises <TABLE> et </TABLE>.
-Le titre du tableau est encadré par <CAPTION> </CAPTION>
-Chaque ligne est encadrée par <TR> </TR> (Table Row, traduisez par ligne du tableau).
-Les cellules d'en-tête sont encadrées par <TH> </TH> (pour Table Header : En-tête de tableau)
-Les cellules de valeur sont encadrées par <TD> </TD> (Table Data: Donnée de tableau)
-#endif
+
+			std::string comment_in = "<!--";
+			std::string comment_out = "-->";
+			index_t nb_points = (index_t)_merge_points_.size() ;
+			index_t nb_series = (index_t)_data_.size() ;
+
+			std::string unique_filename  = getFileName();
+			std::string DataFileName = unique_filename + ".html" ;
+			std::ofstream DF(DataFileName.c_str());
+
+			/*  Data file to be plot */
+			DF.precision(2);
+			// metadata
+			DF << comment_in << ("date") << (getDateTime()) << std::endl;
+			smatrix_t uname = getMachineInformation();
+			for (size_t i = 0 ; i < uname[0].size() ; ++i)
+				DF << (uname[0][i]) << " : " << (uname[1][i]) << std::endl ;
+			DF << comment_out << std::endl ;
+
+			// data
+			DF << "<table border=\"1\">" << std::endl;
+			DF << "<caption> " <<  (_style_.getRawTitle()) << " (data in " << _style_.getRawTitle(2) << ')'  << " </caption>" << std::endl;
+			DF << "<tr> " << std::endl;
+			DF << "<th> " << _style_.getRawTitle(1) << " </th>";
+			for (index_t i = 0 ; i < nb_series ; ++i) {
+				DF << "<th> " << unfortifyString(_data_.getSerieLabel(i)) << " </th>";
+			}
+			DF << " </tr>" << std::endl;
+
+			for (index_t j = 0 ; j < nb_points ; ++j) {
+				DF << "<tr> " << std::endl;
+				DF << "<th> " << unfortifyString(_merge_points_[j]) << " </th>";
+				for (index_t i = 0 ; i < nb_series ; ++i) {
+					DF  << "<td> " << _merge_data_[i][j]  << " </td>";
+
+				}
+				DF << std::endl;
+				DF << "</tr>" << std::endl;
+			}
+
+			DF << "</table>" << std::endl;
+			std::cout << "html data in " << DataFileName << std::endl;
+
+
 		}
 
 		void PlotGraph::print_latex()
