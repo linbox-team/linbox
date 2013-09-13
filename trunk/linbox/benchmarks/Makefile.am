@@ -70,6 +70,7 @@ TODO= \
 EXTRA_PROGRAMS= $(BENCH_BASIC)
 
 pkginclude_HEADERS = \
+		     optimizer.h \
 		     benchmark.h \
 		     benchmark.C \
 		     benchmark.inl

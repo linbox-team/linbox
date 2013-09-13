@@ -26,40 +26,768 @@
 
 #include "benchmark.h"
 
+//
+// PlotData
+//
 
-// Least Squares
-#ifdef __LINBOX_HAVE_LAPACK
-extern "C" {
-#if 1 // from lapack (not clapack)
+namespace LinBox {
+#ifdef __LINBOX_HAVE_TINYXML2
+	tinyxml2::XMLElement * PlotData::saveData(tinyxml2::XMLDocument & doc)
+	{
+		using namespace tinyxml2;
+		XMLElement * data = doc.NewElement( "data" );
 
-	void dgels_(char *trans, int *m, int *n, int *nrhs, double *a, int *lda,
-			double *b, int *ldb, double *work, int *lwork, int *info);
+		selectSeries(0);
+		for (index_t i = 0 ; i < size() ; ++i  ) {
 
-	void dgelsy_(int *m, int *n, int *nrhs, double *a, int *lda,
-			double *b, int *ldb, int *JPVT, double *RCOND, int *RANK,
-			double *work, int *lwork, int *info);
+			XMLElement * serie = doc.NewElement ( "serie" );
+			serie->SetAttribute("name",unfortifyString(getCurrentSerieName()).c_str());
 
-	void dgelss_(int *m, int *n, int *nrhs, double *a, int *lda,
-			double *b, int *ldb, double *s, double *RCOND, int *RANK,
-			double *work, int *lwork, int *info);
+			for (index_t j = 0 ;  j < getCurrentSerieSize() ; ++j)
+			{
+				XMLElement * point = doc.NewElement ( "point" );
+				point->SetAttribute("x",unfortifyString(getCurrentSeriesPointLabel(j)).c_str());
+				point->SetAttribute("y",getCurrentSeriesEntry(j));
+				point->SetAttribute("time",getCurrentSeriesEntryTime(j));
+				point->SetAttribute("id",getCurrentSeriesEntryPoint(j));
+
+				serie->InsertEndChild( point );
+			}
+
+			data->InsertEndChild( serie );
+
+			selectNextSeries();
+		}
+
+		return data ;
+	}
 #endif
 
-#if 0
-	int clapack_dgels (const enum CBLAS_ORDER 	Order,
-			   const enum CBLAS_TRANSPOSE 	TA,
-			   int M,
-			   int N,
-			   int NRHS,
-			   double * 	A,
-			   int lda,
-			   double * 	B,
-			   const int 	ldb
-			  );
-#endif
-}
-#endif // __LINBOX_HAVE_LAPACK
 
+	PlotData::PlotData() :
+		_tableau_      (0)
+		,_serie_label_ (0)
+		,_curr_serie_  ( )
+		,_time_watch_  ( )
+	{
+	}
+
+	PlotData::~PlotData() {}
+
+	PlotData::PlotData(const PlotData & PD):
+		_tableau_(PD.getTable())
+		,_serie_label_(PD.getSerieLabels())
+		,_curr_serie_(PD.getCurrentSerieNumber())
+		,_time_watch_  (_tableau_[_curr_serie_].Points,_tableau_[_curr_serie_].Times)
+	{
+	}
+
+	index_t PlotData::getIndex(const std::string & nom)
+	{
+		std::vector<std::string>:: iterator it ;
+		std::string nomf = fortifyString(nom);
+		it = std::find(_serie_label_.begin() , _serie_label_.end() , nomf);
+		if ( it != _serie_label_.end() ) {
+			return (index_t)std::distance(_serie_label_.begin(),it);
+		}
+		else {
+			index_t sz = (index_t)_serie_label_.size() ;
+			_serie_label_.push_back(fortifyString(nom));
+			_tableau_.resize(sz+1);
+			_curr_serie_ = sz ;
+			initWatch(sz);
+			return sz ;
+		}
+	}
+
+	void PlotData::clear()
+	{
+		_tableau_.resize(0);
+		_serie_label_.resize(0);
+		_curr_serie_ =  0;
+		_time_watch_.clear();
+	}
+
+	void PlotData::merge(const PlotData &PD)
+	{
+		for (index_t i = 0 ; i < (index_t)PD.size() ; ++i) {
+			_tableau_.push_back(PD.getSeries(i));
+			_serie_label_.push_back(fortifyString(PD.getSerieName(i)));
+		}
+		return ;
+	}
+
+	index_t PlotData::size() const
+	{
+		linbox_check(_tableau_.size() == _serie_label_.size());
+		return (index_t)_tableau_.size() ;
+	}
+
+	index_t PlotData::getCurrentSerieNumber() const
+	{
+		return _curr_serie_ ;
+	}
+
+	void PlotData::setSerieName(const index_t & i, const std::string & nom)
+	{
+		linbox_check(i<size());
+		_serie_label_[i] = fortifyString(nom) ;
+	}
+
+	const std::string & PlotData::getSerieName(const index_t & i) const
+	{
+		linbox_check(i<size());
+		return _serie_label_[i] ;
+	}
+
+	const std::string & PlotData::getCurrentSerieName() const
+	{
+		return getSerieName(_curr_serie_) ;
+	}
+
+	void PlotData::setCurrentSerieName(const std::string & nom)
+	{
+		return setSerieName(_curr_serie_,nom);
+	}
+
+	void PlotData::initWatch ( const size_t & i)
+	{
+		linbox_check(i < size());
+		_time_watch_.init(_tableau_[i].Points,_tableau_[i].Times);
+	}
+
+	void PlotData::initCurrentSeriesWatch ()
+	{
+		initWatch(_curr_serie_);
+	}
+
+	void PlotData::newSerie(const std::string & nom )
+	{
+
+		index_t old_size = size() ;
+		_curr_serie_ = old_size ;
+
+		_tableau_.resize(old_size+1);
+		_serie_label_.resize(old_size+1);
+
+		if (nom.empty()) {
+			std::ostringstream emptytitle ;
+			emptytitle << "serie." << _curr_serie_ ;
+			setCurrentSerieName(emptytitle.str());
+		}
+		else
+			setCurrentSerieName(nom);
+
+		initCurrentSeriesWatch();
+
+		return;
+	}
+
+	void PlotData::finishSerie()
+	{
+	}
+
+	const DataSeries & PlotData::getSeries(const index_t  &i) const
+	{
+		linbox_check(i < size());
+		return _tableau_[i] ;
+	}
+
+	DataSeries & PlotData::refSeries(const index_t  &i)
+	{
+		linbox_check(i < size());
+		return _tableau_[i] ;
+	}
+
+
+	const DataSeries & PlotData::getCurrentSeries() const
+	{
+		return getSeries(_curr_serie_);
+	}
+
+	DataSeries & PlotData::refCurrentSeries()
+	{
+		return refSeries(_curr_serie_);
+	}
+
+	index_t PlotData::getSerieSize(const index_t & i) const
+	{
+		return getSeries(i).size();
+	}
+
+	index_t PlotData::getCurrentSerieSize() const
+	{
+		return getSerieSize(_curr_serie_);
+	}
+
+	void PlotData::selectSeries(const index_t & s)
+	{
+		linbox_check(s < size());
+		_curr_serie_ = s ;
+		initCurrentSeriesWatch();
+
+		return;
+	}
+
+	bool PlotData::selectNextSeries()
+	{
+		linbox_check(_curr_serie_ < size());
+		++_curr_serie_ ;
+		if (_curr_serie_ < size()) {
+			selectSeries(_curr_serie_);
+			return true;
+		}
+		return false;
+	}
+
+	void PlotData::setCurrentSeriesPointLabel(const index_t & j, const std::string & nom)
+	{
+		return setSeriesPointLabel(_curr_serie_,j,nom);
+	}
+
+	const std::string & PlotData::getSeriesPointLabel(const index_t &i, const index_t & j) const
+	{
+		linbox_check(j<getSerieSize(i));
+		return(getSeries(i).PointLabels[j]) ;
+	}
+
+	const std::string & PlotData::getCurrentSeriesPointLabel(const index_t & j) const
+	{
+		return getSeriesPointLabel(_curr_serie_,j);
+	}
+
+	std::string  PlotData::getSerieLabel(const index_t & i) const
+	{
+		linbox_check(i<size());
+		linbox_check(i<_serie_label_.size() );
+		if (_serie_label_[i].empty()) {
+			std::ostringstream emptytitle ;
+			emptytitle << "serie." << i ;
+			return emptytitle.str();
+		}
+		return(_serie_label_[i]);
+	}
+
+	std::string PlotData::getCurrentSerieLabel() const
+	{
+		return getSerieLabel(_curr_serie_);
+	}
+
+	const std::vector<std::string > &  PlotData::getSerieLabels() const
+	{
+		return _serie_label_ ;
+	}
+
+	const svector_t & PlotData::getSeriePointLabel( const index_t & i) const
+	{
+		return(getSeries(i).PointLabels) ;
+	}
+
+	const svector_t & PlotData::getCurrentSeriesPointLabel() const
+	{
+		return getSeriePointLabel(_curr_serie_);
+	}
+
+	const dvector_t & PlotData::getSeriesValues(const index_t & i) const
+	{
+		return(getSeries(i).Values) ;
+	}
+
+	const dvector_t & PlotData::getCurrentSeriesValues() const
+	{
+		return getSeriesValues(_curr_serie_);
+	}
+
+	void PlotData::setSeriesEntry(const index_t &i, const std::string & nam, const double & val
+				      , const double & xval , const double & yval)
+	{
+		refSeries(i).push_back(fortifyString(nam),val,xval,yval);
+		// std::cout << "points : " << refSeries(i).Points << std::endl;
+		initWatch(i); //  in case series has changed
+		return ;
+	}
+
+	void PlotData::setEntry(const std::string & nom, const std::string & nam, const double & val
+				, const double & xval, const double & yval)
+	{
+		// std::cout << nom << " has index : " << getIndex(nom) << std::endl;
+		return setSeriesEntry(getIndex(nom),nam,val,xval,yval);
+	}
+
+	double PlotData::getSeriesEntry(const index_t & i, const index_t & j) const
+	{
+		linbox_check(i<size());
+		linbox_check(j<getSerieSize(i));
+		return getSeries(i).Values[j] ;
+	}
+
+	double PlotData::getCurrentSeriesEntry(const index_t & j) const
+	{
+		return getSeriesEntry(_curr_serie_,j);
+	}
+
+	double PlotData::getSeriesEntryTime(const index_t &i, const index_t & j) const
+	{
+		linbox_check(j<getSerieSize(i));
+		return getSeries(i).Times[j] ;
+	}
+
+	double PlotData::getCurrentSeriesEntryTime(const index_t & j) const
+	{
+		return getSeriesEntryTime(_curr_serie_,j);
+	}
+
+	double PlotData::getSeriesEntryPoint(const index_t & i, const index_t & j) const
+	{
+		linbox_check(j<getSerieSize(i));
+		return getSeries(i).Points[j] ;
+	}
+
+	double PlotData::getCurrentSeriesEntryPoint(const index_t & j) const
+	{
+		return getSeriesEntryPoint(_curr_serie_,j);
+	}
+
+	const std::vector<DataSeries > & PlotData::getTable() const
+	{
+		return _tableau_ ;
+	}
+
+	std::vector<DataSeries > & PlotData::refTable()
+	{
+		return _tableau_ ;
+	}
+
+	bool PlotData::keepon(index_t & repet, double tim, bool usePrediction)
+	{
+		return _time_watch_.keepon(repet,tim, usePrediction);
+	}
+
+	void PlotData::load( const std::string & filename)
+	{
+#ifdef __LINBOX_HAVE_TINYXML2
+		using namespace tinyxml2;
+		XMLDocument doc;
+		doc.LoadFile( filename.c_str() );
+		// std::cout << "loaded " << filename << std::endl;
+		linbox_check(!doc.ErrorID());
+
+		XMLElement * bench = doc.FirstChildElement( "benchmark");
+		linbox_check(bench);
+		XMLElement* data = bench -> FirstChildElement( "data" ) ;
+		linbox_check(data);
+		XMLElement* series = data -> FirstChildElement( "serie" ) ;
+
+		clear();
+
+		while (series)
+		{
+			newSerie( series->Attribute( "name" ) );
+			XMLElement * points = series->FirstChildElement() ;
+			while (points) {
+				std::string x = points->Attribute( "x" );
+				double      y = points->DoubleAttribute( "y" );
+				double      time = points->DoubleAttribute( "time" );
+				double      id = points->DoubleAttribute( "id" );
+
+				setCurrentSeriesEntry(x,y,id,time);
+
+				points = points->NextSiblingElement();
+			}
+
+			series = series->NextSiblingElement();
+		}
+#else
+		throw LinBoxError("You need tinyxml2 for loading data");
+#endif
+		// save("toto.xml");
+
+	}
+
+	void PlotData::save( const std::string & filename
+			     , const std::string & title
+			     , const std::string & xtitle
+			     , const std::string & ytitle )
+	{
+#ifdef __LINBOX_HAVE_TINYXML2
+		using namespace tinyxml2;
+		XMLDocument doc;
+
+		doc.InsertEndChild(doc.NewDeclaration());
+
+		XMLElement * benchmark = doc.NewElement( "benchmark" );
+		doc.InsertEndChild(benchmark);
+
+		{ // Metadata
+			XMLElement * metadata = doc.NewElement( "metadata" );
+
+			smatrix_t uname = getMachineInformation();
+
+			for (size_t i = 0 ; i < uname[0].size() ; ++i) {
+				metadata->SetAttribute(uname[0][i].c_str(),uname[1][i].c_str());
+			}
+
+			std::string myTime = getDateTime();
+
+			metadata->SetAttribute("time",myTime.c_str());
+
+			benchmark->InsertEndChild(metadata);
+		}
+
+		{ // Legende
+			XMLElement * legende = doc.NewElement( "legende" );
+
+			std::string mytitle = title;
+			if (title.empty())
+				mytitle =filename ;
+			legende->SetAttribute("title",unfortifyString(mytitle).c_str());
+			if (!xtitle.empty())
+				legende->SetAttribute("X",unfortifyString(xtitle).c_str());
+			if (!ytitle.empty())
+				legende->SetAttribute("Y",unfortifyString(ytitle).c_str());
+
+
+			benchmark->InsertEndChild(legende);
+		}
+
+		// series
+		{
+			XMLElement * data = saveData(doc);
+
+			benchmark->InsertEndChild(data);
+		}
+
+		doc.SaveFile(filename.c_str());
+
+		std::cout << "xml table saved in " << filename << std::endl;
+#else
+		std::cout << "tinyxml2 is not installed, could not save" << std::endl;
+#endif
+
+	}
+
+} // LinBox
+
+
+//
+// PlotStyle
+//
+
+namespace LinBox {
+
+
+	PlotStyle::PlotStyle() :
+		_term_(Term::eps),_plot_type_(Plot::histo),_line_type_(Line::histogram)
+	{
+
+	}
+
+	void PlotStyle::setTitle ( const std::string  &  titre
+				   , const std::string  & titre_y
+				   , const std::string  & titre_x)
+	{
+		_title_   = titre ;
+		_title_x_ = titre_x ;
+		_title_y_ = titre_y ;
+	}
+
+	std::string PlotStyle::getTitle() const
+	{
+		std::string title = "#title\nset title \""  + _title_ + '\"';
+		if (!_title_x_.empty())
+			title +="\nset xlabel \"" + _title_x_ +'\"' ;
+		if (!_title_y_.empty())
+			title +="\nset ylabel \"" + _title_y_ +'\"' ;
+		return title ;
+	}
+
+	std::string PlotStyle::getTitleX() const
+	{
+		return "\nset xlabel \"" + _title_x_ + '\"' ;
+	}
+
+	std::string PlotStyle::PlotStyle::getTitleY() const
+	{
+		return "\nset ylabel \"" + _title_y_ + '\"' ;
+	}
+
+	std::string PlotStyle::getRawTitle(int index) const
+	{
+		switch (index) {
+		case 0 :
+			return _title_ ;
+		case 1 :
+			return _title_x_ ;
+		case 2 :
+			return _title_y_ ;
+		default :
+			return "bad index" ;
+		}
+	}
+
+	void PlotStyle::setTerm( enum Term::Type term)
+	{
+		_term_ = term ;
+	}
+
+	std::string PlotStyle::getTerm() const
+	{
+		std::string term = "#term\nset term " ;
+		switch(_term_) {
+		case (Term::png) :
+			term += "png enhanced" ;
+			break;
+		case (Term::pdf) :
+			std::cerr << "warning, pdf not really working for now" << std::endl;
+			term += "postscript eps enhanced color" ;
+			break;
+		case (Term::eps) :
+			term += "postscript eps enhanced color" ;
+			break;
+		case (Term::svg) :
+			term += "svg" ;
+			break;
+		case (Term::other) :
+		default :
+			std::cerr  << " *** error ***" << std::endl << "No supported term set" << std::endl;
+			term += "unknown" ;
+		}
+		return term ;
+	}
+
+	std::string PlotStyle::getExt() const
+	{
+		switch(_term_) {
+		case (Term::png) :
+			return ".png" ;
+		case (Term::pdf) :
+#ifndef __LINBOX_HAVE_GHOSTSCRIPT
+			std::cerr << "warning, pdf not available. falling back to eps" << std::endl;
+#endif
+			return ".pdf" ;
+		case (Term::eps) :
+			return ".eps" ;
+		case (Term::svg) :
+			return ".svg" ;
+		default :
+			std::cerr << "unknown extension set" << std::endl;
+			return ".xxx" ;
+		}
+	}
+
+	void PlotStyle::setKeyPos(const std::string & keypos)
+	{
+		_legend_pos_ = keypos ;
+	}
+
+	std::string PlotStyle::getKeyPos() const
+	{
+		std::string lgd ="#legend\nset key " ;
+		if (!_legend_pos_.empty())
+			lgd +=  _legend_pos_ ;
+		else
+			lgd += " under" ;
+		return lgd;
+	}
+
+	void PlotStyle::setXtics ( enum Options::Type opt, const std::string & more )
+	{
+		_xtics_ =  "#xtics\nset xtics ";
+		if (opt == Options::oblique)
+			_xtics_ +=  "nomirror rotate by -45 scale 0 ";
+		else {
+			linbox_check(opt == Options::other);
+			_xtics_ += more ;
+		}
+	}
+
+	const std::string & PlotStyle::getXtics() const
+	{
+		return _xtics_ ;
+	}
+
+	std::string PlotStyle::getOutput(const std::string & basnam) const
+	{
+		std::string setout = "#output\nset output \'" ;
+#ifdef __LINBOX_HAVE_GHOSTSCRIPT
+		if (_term_ == Term::pdf)
+			setout += "| ps2pdf - " ;
+		setout += basnam + getExt() + '\'' ;
+#else
+		setout += basnam + ".eps\'" ;
+#endif
+
+		return setout ;
+	}
+
+	void PlotStyle::setPlotType(enum Plot::Type type)
+	{
+		_plot_type_ = type ;
+		// _plot_extra_ = moreargs ;
+	}
+
+	void PlotStyle::setLineType( enum Line::Type type)
+	{
+		_line_type_ = type ;
+	}
+
+	std::string PlotStyle::getPlotType(const std::string & extraargs) // const
+	{
+		_styleopts_ += "\nset datafile missing \"inf\"" ;
+		std::string mystyle = "#style\nset style data " ;
+		if (_line_type_ != Line::other) {
+			switch (_line_type_) {
+			case (Line::lines) :
+				mystyle += "lines" ;
+				break;
+			case (Line::histogram) :
+				mystyle += "histogram" ;
+				if (extraargs.empty()) // default style
+					mystyle += "\nset style histogram cluster gap 1\nset style fill solid border rgb \"black\"";
+				break;
+			case (Line::points) :
+				mystyle += "points" ;
+				break;
+			case (Line::linespoints) :
+				mystyle += "linespoints" ;
+				break;
+			default :
+				std::cout << __func__ << " : you should have set the LineType when ploting PlotType::graph !" << std::endl;
+				mystyle += "other" ;
+			}
+		}
+		else { // userd defined datastyle
+			return _styleopts_  ;
+		}
+		// some more style args :
+		mystyle += "\n" + _styleopts_ + "\n" + extraargs + "\n";
+		return mystyle ;
+	}
+
+	void PlotStyle::addPlotType(const std::string & style)
+	{
+		_styleopts_ += "\n" + style ;
+	}
+
+	void PlotStyle::setUsingSeries(index_t col, const std::string & moreargs)
+	{
+		linbox_check(col>1);
+		std::ostringstream usingcols ;
+		if (_plot_type_ == Plot::histo) {
+			usingcols << " using " << col << ":xtic(1) title columnheader(" << col << ") "  << moreargs << " ";
+		}
+		else {
+			linbox_check(_plot_type_ == Plot::graph);
+			usingcols << " using 1:" << col << " title columnheader(" << col << ") "  << moreargs << " ";
+		}
+		_usingcols_ = usingcols.str();
+	}
+
+	void PlotStyle::addUsingSeries(index_t col, const std::string & moreargs)
+	{
+		linbox_check(col>2);
+		linbox_check(!_usingcols_.empty()); // we don't add if nothing was set
+		std::ostringstream usingcols ;
+		usingcols << ", \'\' using " ;
+		if (_plot_type_ == Plot::graph)
+			usingcols << "1:" ;
+		usingcols << col << " ti col "  << moreargs << " ";
+		_usingcols_ += usingcols.str();
+	}
+
+	void PlotStyle::setUsingSeries(std::list<index_t> cols, const std::string & moreargs)
+	{
+		linbox_check(!cols.empty());
+		std::list<index_t>::iterator it = cols.begin();
+		// no way to check *it< coldim...
+		std::ostringstream usingcols ;
+		if ( _plot_type_ == Plot::histo ) {
+			usingcols << " using " << *it << ":xtic(1) title columnheader(" << *it << ") " << moreargs << " " ;
+			++it ;
+			for (;it != cols.end();++it) {
+				usingcols << ", \'\' using " << *it << " ti col "  << moreargs << " ";
+			}
+		}
+		else {
+			linbox_check(_plot_type_ == Plot::graph);
+			usingcols << " using 1:" << *it << " title columnheader(" << *it << ") "  << moreargs << " ";
+			++it ;
+			for (;it != cols.end();++it) {
+				usingcols << ", \'\' using 1:" << *it << " ti col "  << moreargs << " ";
+			}
+		}
+
+		_usingcols_ = usingcols.str();
+		return;
+	}
+
+	void PlotStyle::addUsingSeries(std::list<index_t> cols, const std::string & moreargs)
+	{
+		linbox_check(!cols.empty());
+		linbox_check(!_usingcols_.empty()); // we don't add if nothing was set
+		std::list<index_t>::iterator it = cols.begin();
+		std::ostringstream usingcols ;
+		if (_plot_type_ == Plot::histo) {
+			for (;it != cols.end();++it) {
+				usingcols << ", \'\' using " << *it << " ti col "  << moreargs << " ";
+			}
+		}
+		else {
+			linbox_check(_plot_type_ == Plot::graph);
+			for (;it != cols.end();++it) {
+				usingcols << ", \'\' using 1:" << *it << " ti col "  << moreargs << " ";
+
+			}
+		}
+		_usingcols_ += usingcols.str();
+		return;
+	}
+
+	void PlotStyle::setUsingSeries(std::pair<index_t,index_t> cols, const std::string & moreargs)
+	{
+		std::ostringstream usingcols ;
+		if (_plot_type_ == Plot::histo) {
+			usingcols << " using " << cols.first << ":xtic(1) title columnheader(" << cols.first << ") "  << moreargs << " ";
+			usingcols << ", for [i=" << cols.first+1 << ":" << cols.second << "] \'\' using i title columnheader(i) "  << moreargs << " ";
+		}
+		else {
+			linbox_check(_plot_type_ == Plot::graph);
+			usingcols << " using 1:" << cols.first << " title columnheader(" << cols.first << ") "  << moreargs << " ";
+			usingcols << ", for [i=" << cols.first+1 << ":" << cols.second << "] \'\' using 1:i title columnheader(i) "  << moreargs << " ";
+		}
+
+		_usingcols_ = usingcols.str();
+		return;
+
+	}
+
+	void PlotStyle::addUsingSeries(std::pair<index_t,index_t> cols, const std::string & moreargs)
+	{
+		linbox_check(!_usingcols_.empty()); // we don't add if nothing was set
+		std::ostringstream usingcols ;
+		if (_plot_type_ == Plot::histo) {
+			usingcols << ", for i=[" << cols.first << ":" << cols.second << "] \'\' using i title columnheader(i) " << moreargs << " ";
+		}
+		else {
+			usingcols << ", for i=[" << cols.first << ":" << cols.second << "] \'\' using 1:i title columnheader(i) "  << moreargs << " ";
+			linbox_check(_plot_type_ == Plot::graph);
+		}
+
+		_usingcols_ += usingcols.str();
+
+	}
+
+	const std::string & PlotStyle::getUsingSeries() const
+	{
+		return _usingcols_ ;
+	}
+
+} // LinBox
+
+//
 // Curve fitting
+//
+
 namespace LinBox {
 
 	// fit X[nn-1,nn],Y[nn-1,nn] and return evaluation at x.
@@ -223,7 +951,10 @@ namespace LinBox {
 
 } // LinBox
 
+//
 // Terminal progression
+//
+
 namespace LinBox {
 
 	void showAdvanceLinear(index_t curr, index_t min, index_t max)
@@ -245,9 +976,32 @@ namespace LinBox {
 		std::cout << '/' << all-1 << std::flush << std::endl;
 	}
 
+	showProgression::showProgression (index_t tot) :
+		_cur_(0)
+		,_tot_(tot)
+	{}
+
+	//! show an inter has finished
+	void showProgression::FinishIter()
+	{
+		++_cur_ ;
+		showFinish(_cur_,_tot_);
+	}
+
+	//! show an inter has been skipped.
+	void showProgression::SkipIter()
+	{
+		++_cur_ ;
+		showSkip(_cur_,_tot_);
+	}
+
+
 } // LinBox
 
+//
 // MFLOPS helper
+//
+
 namespace LinBox {
 
 	double computeMFLOPS(const double & tim, const double mflo, const index_t rpt)
@@ -373,9 +1127,9 @@ namespace LinBox {
 }
 
 
-	//
-	//  TimeWatcher
-	//
+//
+//  TimeWatcher
+//
 
 namespace LinBox {
 	TimeWatcher::TimeWatcher (dvector_t & pts, dvector_t & vals) :
@@ -456,7 +1210,642 @@ namespace LinBox {
 		return false ;
 	}
 
+	index_t TimeWatcher::size() const
+	{
+		if (Points_ == NULL || Values_ == NULL) {
+			linbox_check(Values_ == NULL && Points_ == NULL);
+			return  0 ;
+		}
+		linbox_check(Points_->size() == Values_->size());
+		return (index_t)Points_->size();
+	}
+
+	void TimeWatcher::clear()
+	{
+		Points_ = NULL ;
+		Values_ = NULL ;
+	}
+
 } // LinBox
+
+//
+// DataSeries
+//
+
+namespace LinBox {
+
+	DataSeries:: DataSeries() :
+		PointLabels(0)
+		, Points(0)
+		, Times(0)
+		, Values(0)
+	{}
+
+	DataSeries::~DataSeries() {}
+
+	void
+	DataSeries::resize(const index_t & n)
+	{
+		linbox_check(n == Values.size()+1);
+		PointLabels.resize(n);
+		Times.resize(n);
+		Points.resize(n);
+		Values.resize(n);
+
+		return;
+	}
+
+	index_t
+	DataSeries::size() const
+	{
+		linbox_check(PointLabels.size() == Points.size())
+		linbox_check(Times.size() == Points.size())
+		linbox_check(Times.size() == Values.size())
+
+		return (index_t)Values.size();
+	}
+
+	void DataSeries::push_back(const std::string & nam, const double & val, const double & x , const double &y )
+	{
+		linbox_check(PointLabels.size() == Values.size());
+
+		PointLabels.push_back(nam);
+
+		Values.push_back(val);
+
+		if ( std::isnan(x) )
+			Points.push_back((double)Points.size());
+		else
+			Points.push_back(x);
+
+		if ( std::isnan(y))
+			Times.push_back(val);
+		else
+			Times.push_back(y);
+
+		return;
+	}
+
+} // LinBox
+
+//
+//String processing
+//
+
+namespace LinBox {
+
+	bool isDigit (const std::string & s)
+	{
+		std::istringstream ss(s);
+		double d = 0.0;
+		ss >> d ; // try to read.
+		ss >> std::ws;  // suppress whitespace
+
+		return (!ss.fail() && ss.eof()) ;
+	}
+
+	bool fortifiedString(const std::string & s)
+	{
+		if (isDigit(s))
+			return true ;
+		linbox_check(!s.empty());
+		return s.front() == '\"' && s.back() ==  '\"' ;
+	}
+
+	std::string unfortifyString(const std::string &s)
+	{
+		std::string t = s ;
+		if (fortifiedString(s)) {
+			t.erase(t.begin());
+			t.pop_back();
+		}
+		return t;
+	}
+
+	std::string fortifyString(const std::string & s)
+	{
+		if (fortifiedString(s))
+			return s ;
+		string r = "\"" ;
+		return r + s + "\"";
+	}
+
+}// LinBox
+
+
+
+//
+// Machine information
+//
+
+namespace LinBox {
+
+	//! get ISO time and date
+	std::string getDateTime()
+	{
+		std::time_t rawtime;
+		std::tm* timeinfo;
+		char buffer [80];
+
+		std::time(&rawtime);
+		timeinfo = std::gmtime(&rawtime);
+
+		std::strftime(buffer,80,"%Y-%m-%d:%H-%M-%S GMT",timeinfo);
+
+		std::string mytime(buffer);
+
+		return mytime;
+	}
+
+	//! get some machine information (not cpu yet)
+	smatrix_t getMachineInformation()
+	{
+		smatrix_t Machine(2);
+		Machine[0].resize(5);
+		Machine[1].resize(5);
+		struct utsname unameData;
+		uname(&unameData);
+		Machine[0][0] = "sysname";
+		Machine[1][0] = unameData.sysname;
+		Machine[0][1] = "nodename";
+		Machine[1][1] = unameData.nodename;
+		Machine[0][2] = "release";
+		Machine[1][2] = unameData.release;
+		Machine[0][3] = "version";
+		Machine[1][3] = unameData.version;
+		Machine[0][4] = "machine";
+		Machine[1][4] = unameData.machine;
+		// Machine[0][5] = "RAM (kb)";
+		// system("cat /proc/meminfo  | grep MemTotal | awk '{print $2}'");
+		// Machine[0][6] = "CPU name";
+		// system("/proc/cpuinfo  | grep 'model name' | awk '{$1=$2=$3=""; print $0}'");
+		// Machine[0][7] = "CPU nb";
+		// system("/proc/cpuinfo  | grep 'model name' | wc -l");
+		// Machine[0][8] = "CPU Ghz";
+		// cpuid ?
+		return Machine ;
+	}
+
+}
+
+//
+// PlotGraph
+//
+
+namespace LinBox {
+
+	//!@todo use getUsingSeries in latex/html/csv/xml
+
+		char PlotGraph::_randomAlNum()
+		{
+			int c = rand()%62 ;
+			c += 48 ; // c entre 48 et 109
+			if (c < 58) {
+				return (char) c;
+			}
+			else {
+				c += 7 ;
+				if (c < 91) {
+					return (char)c ;
+				}
+				else {
+					c += 6 ;
+					return (char)c;
+				}
+			}
+
+
+		}
+
+		void PlotGraph::_randomName()
+		{
+			std::ostringstream unique_filename ;
+			unique_filename << _filename_ << '_' ;
+			for (index_t i = 8 ; i-- ; ) {
+				unique_filename << _randomAlNum() ;
+			}
+			// std::cout << unique_filename.str() << std::endl;
+
+			_printname_ = unique_filename.str() ;
+
+		}
+
+		const std::string & PlotGraph::getFileName()
+		{
+			if (_printname_.empty())
+				_randomName();
+			return _printname_;
+		}
+
+		void PlotGraph::mergeTwoSeries( svector_t & merge_points
+				     , dmatrix_t & merge_data
+				     , const svector_t & pts
+				     , const dvector_t & dat
+				     , const index_t & idx) const
+		{
+			index_t data_size = (index_t)merge_points.size();
+			linbox_check(data_size == (index_t)merge_data[0].size());
+
+			merge_data[idx].resize(data_size,NAN);
+			typename svector_t::iterator it ;
+
+			for (index_t i = 0 ; i < pts.size() ; ++i) {
+				// iterators change because of push_back, so they are here :
+				typename svector_t::iterator beg = merge_points.begin() ;
+				typename svector_t::iterator end = merge_points.begin()+data_size ;
+
+				// std::cout << "inserting "<< pts[i] << std::endl;
+				it = std::find( beg, end, pts[i] ) ;
+				if (it != end){
+					index_t j = (index_t) std::distance(beg,it);
+					merge_data[idx][j] = dat[i] ;
+				}
+				else {
+					for (index_t j = 0 ; j < idx ; ++j) {
+						merge_data[j].push_back(NAN);
+					}
+
+					merge_data[idx].push_back(dat[i]) ;
+					merge_points.push_back(pts[i]) ;
+				}
+				// std::cout << "..." << std::endl;
+				// std::cout << merge_points << std::endl;
+				// std::cout << merge_data << std::endl;
+				// std::cout << "..." << std::endl;
+			}
+
+			return;
+
+		}
+
+		void PlotGraph::mergeSeries()
+		{
+			_data_. selectSeries(0);
+			_merge_points_ = _data_.getCurrentSeriesPointLabel() ;
+			_merge_data_[0] = _data_.getCurrentSeriesValues() ;
+
+			// std::cout << "merge points " << _merge_points_ << std::endl;
+			// std::cout << "merge data   " << _merge_data_ << std::endl;
+
+			for (index_t i = 1 ; i < _data_.size() ; ++i) {
+				_data_. selectNextSeries() ;
+				// std::cout << "to be merged "  << i << " : "  << std::endl;
+				// std::cout << "new points " << _data_.getCurrentSeriesPointLabel() << std::endl;
+				// std::cout << "new data   " << _data_.getCurrentSeriesValues() << std::endl;
+
+				mergeTwoSeries(_merge_points_,_merge_data_,
+					       _data_. getCurrentSeriesPointLabel(), _data_. getCurrentSeriesValues(),i);
+
+				// std::cout << "result : " << std::endl;
+				// std::cout << "merge points " << _merge_points_ << std::endl;
+				// std::cout << "merge data   " << _merge_data_ << std::endl;
+
+			}
+
+			return ;
+		}
+
+		void PlotGraph::print_csv()
+		{
+			char comma   = ',';
+			char comment = '#';
+			index_t nb_points = (index_t)_merge_points_.size() ;
+			index_t nb_series = (index_t)_data_.size() ;
+
+			std::string unique_filename  = getFileName();
+			std::string DataFileName = unique_filename + ".csv" ;
+			std::ofstream DF(DataFileName.c_str());
+
+			/*  Data file to be plot */
+			DF.precision(2);
+			// metadata
+			DF << comment << fortifyString("title") << comma << fortifyString(_style_.getRawTitle()) << std::endl;
+			DF << comment << fortifyString("date") << fortifyString(getDateTime()) << std::endl;
+			smatrix_t uname = getMachineInformation();
+			for (size_t i = 0 ; i < uname[0].size() ; ++i)
+				DF << comment << fortifyString(uname[0][i]) << comma << fortifyString(uname[1][i]) << std::endl ;
+
+			// data
+			DF << fortifyString(_style_.getRawTitle(1)) << comma ;
+			for (index_t i = 0 ; i < nb_series ; ++i) {
+				DF << _data_.getSerieLabel(i) ;
+				if (i != nb_series -1)
+					DF << comma ;
+			}
+			DF << std::endl;
+
+			for (index_t j = 0 ; j < nb_points ; ++j) {
+				DF << _merge_points_[j] << comma;
+				for (index_t i = 0 ; i < nb_series ; ++i) {
+					DF  << _merge_data_[i][j] ;
+					if (i != nb_series -1)
+						DF << comma ;
+
+				}
+				DF << std::endl;
+			}
+
+			std::cout << "csv data in " << DataFileName << std::endl;
+
+		}
+
+		void PlotGraph::print_dat()
+		{
+			print_gnuplot(true);
+		}
+
+		void PlotGraph::print_xml()
+		{
+#ifdef __LINBOX_HAVE_TINYXML2
+			std::string unique_filename = getFileName();
+			unique_filename += ".xml" ;
+
+			_data_.save(unique_filename,_style_.getRawTitle(),_style_.getRawTitle(1),_style_.getRawTitle(2));
+
+#else
+			std::cout << "tinyxml2 is not installed, could not print" << std::endl;
+#endif
+
+			load(unique_filename);
+			return ;
+		}
+
+		void PlotGraph::print_html()
+		{
+#if 0
+Le tableau est encadré par les balises <TABLE> et </TABLE>.
+Le titre du tableau est encadré par <CAPTION> </CAPTION>
+Chaque ligne est encadrée par <TR> </TR> (Table Row, traduisez par ligne du tableau).
+Les cellules d'en-tête sont encadrées par <TH> </TH> (pour Table Header : En-tête de tableau)
+Les cellules de valeur sont encadrées par <TD> </TD> (Table Data: Donnée de tableau)
+#endif
+		}
+
+		void PlotGraph::print_latex()
+		{
+			index_t nb_points = (index_t)_merge_points_.size();
+			index_t nb_series = _data_.size();
+
+			linbox_check(nb_points);
+			linbox_check(nb_series);
+			// srand(time(NULL));
+			// std::ostringstream unique_filename  ;
+			std::string unique_filename = getFileName();
+			unique_filename += ".tex" ;
+			// std::cout << _filename_ << " plot in " << unique_filename << '.'<< std::endl;
+			std::ofstream FN(unique_filename.c_str());
+			//!@todo check FN opened.
+			// begin
+			FN << "%\\usepackage{slashbox}" << std::endl;
+			FN << "\\begin{table}" << std::endl;
+			FN << "\\centering"    << std::endl;
+			// format
+			FN << "\\begin{tabular}{c||" ;
+			for (index_t j = nb_points ; j-- ; )
+				FN << 'c' ;
+			FN << "|}" << std::endl;
+			// top left case
+			std::string series = _style_.getRawTitle(2);
+			std::string points = _style_.getRawTitle(1);
+			if (!points.empty()) {
+				FN << "\\backslashbox{" << points << "}{" << series << "}" ;
+			}
+			else {
+				FN << series ;
+			}
+			// first line
+			for (index_t j = 0 ; j < nb_points ; ++j ) {
+				FN << " & " <<  _merge_points_[j] ;
+			}
+			// lines of data
+			FN << std::endl << "\\hline" << std::endl;
+			FN.precision(2);
+			for (index_t i = 0 ; i < nb_series ; ++i) {
+				FN << _data_.getSerieLabel(i) ;
+				for (index_t j =  0 ; j < nb_points ; ++j )
+					FN << " & " << _merge_data_[i][j] ;
+				if (i+1 < nb_series )
+					FN << "\\\\" ;
+				FN << std::endl;
+			}
+			// end
+			FN << "\\end{tabular}" << std::endl;
+			FN << "\\caption{" << _style_.getRawTitle() << "}" << std::endl;
+			FN << "\\label{tab:<+" << "label+>}" << std::endl;
+			FN << "\\end{table}" << std::endl ;
+
+			FN.close();
+
+			std::cout << "latex table in " << unique_filename << '.' << std::endl;
+			return ;
+
+		}
+
+		void PlotGraph::print_gnuplot(bool only_data)
+		{
+#ifndef __LINBOX_HAVE_GNUPLOT
+			std::cout << "gnuplot is not available on your system. only the data will be printed" << std::endl;
+#endif
+			index_t nb_points = (index_t)_merge_points_.size() ;
+			index_t nb_series = (index_t)_data_.size() ;
+
+			std::string unique_filename  = getFileName();
+			std::string DataFileName = unique_filename + ".dat" ;
+			std::ofstream DF(DataFileName.c_str());
+
+			/*  Data file to be plot */
+			// DF.precision(_style_.getPrecision());
+			DF.precision(2);
+
+			char comment = '#' ;
+			char comma   = ' ';
+			// metadata
+			DF << comment << ("title") << comma << (_style_.getRawTitle()) << std::endl;
+			DF << comment << ("date") << (getDateTime()) << std::endl;
+			smatrix_t uname = getMachineInformation();
+			for (size_t i = 0 ; i < uname[0].size() ; ++i)
+				DF << comment << (uname[0][i]) << comma << (uname[1][i]) << std::endl ;
+
+
+			DF << "legend " ;
+			for (index_t i = 0 ; i < nb_series ; ++i) {
+				DF << _data_.getSerieLabel(i) << ' ' ;
+			}
+			DF << std::endl;
+
+			for (index_t j = 0 ; j < nb_points ; ++j) {
+				DF << _merge_points_[j] ;
+				for (index_t i = 0 ; i < nb_series ; ++i) {
+					DF << " " << _merge_data_[i][j] ;
+				}
+				DF << std::endl;
+			}
+
+			if (only_data)
+				std::cout << "data in " << DataFileName << std::endl;
+
+#ifdef __LINBOX_HAVE_GNUPLOT
+			if (!only_data) {
+				std::string PlotFileName = unique_filename + ".gp" ;
+				std::ofstream PF(PlotFileName.c_str());
+
+				/*  Ploting script */
+				PF << "#" << _filename_                    << std::endl;
+				PF << _style_.getTerm()                    << std::endl;
+				PF << _style_.getOutput(unique_filename)   << std::endl;
+				PF << _style_.getTitle()                   << std::endl;
+				PF << _style_.getKeyPos()                  << std::endl;
+				PF << _style_.getXtics()                   << std::endl;
+				PF << _style_.getPlotType()                << std::endl;
+
+				PF << getPlotCommand(DataFileName) << std::endl;
+
+				PF.close();
+
+				std::string command( "gnuplot " ) ;
+				command += PlotFileName ;
+				int err = system( command.c_str() ) ;
+				if (err) {
+					std::cout << "errors have occured. Look at gnuplot output." << std::endl;
+				}
+				else {
+					std::cout << "Output generated as " << unique_filename  + _style_.getExt() << std::endl;
+				}
+			}
+#endif
+
+
+			return;
+		}
+
+
+		void PlotGraph::setData( PlotData & data )
+		{
+			_data_ = data ;
+		}
+
+		PlotData & PlotGraph::refData( PlotData & data)
+		{
+			return data = _data_ ;
+		}
+
+		void PlotGraph::setStyle( PlotStyle & style )
+		{
+			_style_ = style ;
+		}
+
+		PlotStyle & PlotGraph::refStyle( PlotStyle & style)
+		{
+			return style = _style_ ;
+		}
+
+
+		// not implemented yet
+		void PlotGraph::sortSeries() {}
+
+		// not implemented yet
+		void PlotGraph::unique() {}
+
+		PlotGraph::PlotGraph( PlotData & data, PlotStyle & style ) :
+			_data_(data)
+			,_style_(style)
+			,_filename_("")
+			,_printname_("")
+			,_merge_data_(data.size())
+			,_merge_points_(data.getSeries(0).size())
+		{
+			srand((unsigned)time(NULL));
+			mergeSeries();
+		}
+
+		void PlotGraph::setOutFilename( const std::string & filename )
+		{
+			int err = system( "test -d data || ( rm -rf data && mkdir data )" ) ;
+			if (err) {
+				throw LinBoxError("could not create directory data");
+			}
+
+			if ( filename.empty() ) {
+				_filename_ = "./data/plotdata" ;
+				std::cerr << "you should provide a filename. Using " << _filename_ << " as default ."<<std::endl;
+			}
+			else {
+				_filename_ = "./data/" + filename;
+			}
+
+		}
+
+		const std::string & PlotGraph::getUsingSeries() // const
+		{
+			// mutable _style_ ?
+			linbox_check(_merge_points_.size());
+			if (_style_.getUsingSeries().empty()) {
+				_style_.setUsingSeries(std::pair<index_t,index_t>((index_t)2,(index_t)_merge_data_.size()+1));
+			}
+			return _style_.getUsingSeries();
+		}
+
+		std::string PlotGraph::getPlotCommand(const std::string & File) //const
+		{
+			std::string PC = "#plot\nplot \'" + File + "\' ";
+			PC += getUsingSeries() ;
+			return PC ;
+		}
+
+		void PlotGraph::print( LINBOX_enum(Tag::Printer) pt ) {
+			switch (pt) {
+			case (Tag::Printer::xml):
+				{
+					print_xml();
+					break;
+				}
+			case (Tag::Printer::csv) :
+				{
+					print_csv();
+					break;
+				}
+			case (Tag::Printer::dat) :
+				{
+					print_dat();
+					break;
+				}
+			case (Tag::Printer::gnuplot) :
+				{
+					print_gnuplot();
+					break;
+				}
+			case (Tag::Printer::tex) :
+				{
+					print_latex();
+					break;
+				}
+			case (Tag::Printer::html) :
+				{
+					print_html();
+					break;
+				}
+			default :
+				{
+					throw LinBoxError("printer unknown");
+				}
+
+			}
+
+			return ;
+		}
+
+		void PlotGraph::save()
+		{
+			return print_xml();
+		}
+
+		void PlotGraph::load(const std::string & filename)
+		{
+			return _data_.load(filename);
+		}
+
+} // LinBox
+
 
 // Local Variables:
 // mode: C++
