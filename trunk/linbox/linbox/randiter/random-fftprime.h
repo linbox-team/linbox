@@ -1,6 +1,6 @@
 /* linbox/algorithms/
  * Copyright (C) 2005  Pascal Giorgi
- *
+ * 
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
  * ========LICENCE========
@@ -35,46 +35,70 @@ namespace LinBox
 	class RandomFFTPrime {
 	public:
 
-		int         _bits;
+		size_t         _bits;
 
-		RandomFFTPrime(int bits = 20, unsigned long seed = 0) :
+		RandomFFTPrime(size_t bits = 20, unsigned long seed = 0) :
 			_bits(bits)
 		{
 			if (! seed)
-				setSeed( (unsigned long)BaseTimer::seed() );
+				RandomFFTPrime::setSeed( (unsigned long)BaseTimer::seed() );
 			else
-				setSeed( seed );
+				RandomFFTPrime::setSeed( seed );
 		}
 
 		// define the prime type
 		typedef integer Prime_Type;
-
-		/** @brief randomPrime()
-		 *  return a random prime
+                
+                 /** @brief randomPrime(size_t b)
+		 *  return a random FFT prime with a 2-valuation larger than b in its order
+                 *  the randomness is on the FFT primes lying in the given range
+                 *  an error is thrown if no such prime exist
 		 */
-		inline Prime_Type randomPrime() const
+		inline Prime_Type randomPrime (size_t b) const
 		{
-			integer tmp;
-			size_t cbits=5;
+                        integer tmp;
+                        randomPrime(tmp,b); 
+			return tmp;
+                }
+
+                /** @brief randomPrime(Prime_Type& p, size_t b)
+		 *  return a random FFT prime with a 2-valuation larger than b in its order
+                 *  the randomness is on the FFT primes lying in the given range
+                 *  an error is thrown if no such prime exist
+		 */
+		inline Prime_Type randomPrime (Prime_Type& t, size_t b) const
+		{
+                        linbox_check(b<_bits);
 			size_t tresh;
 			do {
+                                size_t cbits= rand() %(_bits-b);
 				tresh = 1<<(cbits);
 				size_t p = 1<<((size_t)_bits-cbits);
 				do {
-					integer::random(tmp,cbits);
-					tmp = tmp*p+1;
+					integer::random(t,cbits);
+					t = t*p+1;
 					tresh--;
-				} while (( Givaro::probab_prime(tmp)<2) && (tresh));
-				cbits++;
+				} while (!Givaro::probab_prime(t,25) && (tresh));
 			}
 			while(tresh==0);
+                        linbox_check(Givaro::probab_prime(t,25))
+			return t;
+		}
+
+		/** @brief generatePrime() 
+		 *  return a FFT prime with the largest 2-valuation in its order
+		 */
+		inline Prime_Type generatePrime() const
+		{
+			integer tmp;
+                        generatePrime(tmp); 
 			return tmp;
 		}
 
-		/** @brief randomPrime(Prime_Type& p)
-		 *  return a random prime
+		/** @brief generatePrime(Prime_Type& p)
+		 *  return a FFT prime with the largest 2-valuation in its order
 		 */
-		inline Prime_Type randomPrime (Prime_Type& t) const
+		inline Prime_Type generatePrime (Prime_Type& t) const
 		{
 			size_t cbits=5;
 			size_t tresh;
@@ -85,13 +109,32 @@ namespace LinBox
 					integer::random(t,cbits);
 					t = t*p+1;
 					tresh--;
-				} while (!Givaro::probab_prime(t) && (tresh));
+				} while (!Givaro::probab_prime(t,25) && (tresh));
 				cbits++;
 			}
 			while(tresh==0);
 
 			return t;
 		}
+                
+                // generate a vector of distinct FFT primes with largest 2-valuation
+                inline vector<Prime_Type> generatePrimes (vector<Prime_Type>& primes) const {
+                        size_t pos = 0;
+                        size_t k= primes.size();
+                        integer tmp;
+                        for (int b = _bits - 1; b >= 0; b--)
+                                for (int l = (1 << (_bits - b - 1)) + 1; l < (1 << (_bits - b)); l +=2) {
+                                        tmp = (1 << b) * l + 1;
+                                        if (Givaro::probab_prime(tmp, 25) >= 1) { 
+                                                primes[pos] = tmp;
+                                                pos++;
+                                                if (pos >= k)
+                                                        return primes;
+                                        }
+                                }                        
+                        linbox_check(primes[k] != 0); // Could not find enough primes
+                        return primes;
+                }
 
 		/** @brief setSeed (unsigned long ul)
 		 *  Set the random seed to be ul.
@@ -100,8 +143,6 @@ namespace LinBox
 		{
 			integer::seeding(ul);
 		}
-
-
 	};
 }
 
