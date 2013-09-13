@@ -260,7 +260,7 @@ void bench_rank(int carac)
 	std::string m3 = "matrix/bibd_14_7_91x3432.sms" ; ++nb;
 
 	PlotData  Data;
-	showProgression Show(nb) ;
+	showProgression Show((index_t)nb) ;
 
 	launch_bench_rank(F,m1,Data);
 	Show.FinishIter();
@@ -275,6 +275,7 @@ void bench_rank(int carac)
 	LinBox::PlotStyle Style;
 	Style.setTerm(LinBox::PlotStyle::Term::eps);
 	Style.setTitle("Rank algorithms","seconds","matrices");
+	Style.setXtics(LinBox::PlotStyle::Options::oblique);
 
 	Style.setPlotType(LinBox::PlotStyle::Plot::histo);
 	Style.setLineType(LinBox::PlotStyle::Line::histogram);
@@ -288,6 +289,7 @@ void bench_rank(int carac)
 	Graph.print(Tag::Printer::gnuplot);
 
 	Graph.print(Tag::Printer::xml);
+	Graph.print(Tag::Printer::html);
 
 	return;
 }
@@ -326,7 +328,7 @@ int main( int ac, char ** av)
 	{
 		std::cout << " *** Lines plot *** " << std::endl;
 		std::cout << "Benchmark square matrix multiplication via BMD.mul()" << std::endl;
-		// bench_square(min,max,step,13);
+		bench_square(min,max,step,13);
 	}
 
 	/* different sparse matrix   */

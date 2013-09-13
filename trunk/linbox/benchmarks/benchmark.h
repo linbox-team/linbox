@@ -426,6 +426,9 @@ namespace LinBox {
 
 		/*! @brief Gets the output format.
 		 * @return string for setting the expected output format in gnuplot.
+		 * @warning noenhanced allows underscores while enhanced does subscripts.
+		 * if we add a (no) enhanced option, we'll have to add a safeFormat(std::string) that replaces \c _ with <code>\_</code> .
+		 * This is tricky and can be done at "post production" stage :-)
 		 */
 		std::string getTerm() const ;
 
