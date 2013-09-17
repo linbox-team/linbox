@@ -211,7 +211,7 @@ void launch_bench_rank(const Field &F, const std::string & name
 	std::ifstream mat1 (name);
 	Mat.read(mat1);
 
-	MatrixMetaData mmd (Mat);
+	MatrixMetaData mmd (Mat,name);
 
 	// Data.newSerie(name);
 	Chrono<Timer> TW ;
@@ -231,7 +231,9 @@ void launch_bench_rank(const Field &F, const std::string & name
 	// double mflops = computeMFLOPS(TW.times(),mm_mflops(i,i,i));
 
 	Data.addEntry("Rank (Blackbox)",name,TW.time(),(double)Mat.size(),TW.time());
-	// Data.addMetaData(name,mmd);
+	Data.addCurrentEntryMetaData(mmd);
+	// Data.addCurrentSerieMetaData(mmd);
+	// Data.addMetaData(mmd);
 
 
 	showAdvanceLinear(2,1,2);
@@ -248,6 +250,7 @@ void launch_bench_rank(const Field &F, const std::string & name
 
 	Data.selectSeries("Rank (SparseElimination)");
 	Data.addCurrentSeriesEntry(name,TW.time(),(double)Mat.size(),TW.time());
+	Data.addCurrentEntryMetaData(mmd);
 
 }
 

@@ -153,18 +153,20 @@ namespace LinBox {
 		dvector_t   Points      ; //!< points abscisa, values for the x axis. Used in TimeWatcher (for instance, if PointLabels are the names of sparse matrices, Points would be their number of non zeros, or 1,2,3,... or whatever relevant for predicting time)
 		dvector_t   Times       ; //!< actual computation times.
 		dvector_t   Values      ; //!< actual data to be plotted (for instance mflops)
-		mvector_t   Meta        ; //!< information about each point
+		svector_t   UID         ; //!< unique id of a point.
 
 		//! Constructor
 		DataSeries() ;
 
 		~DataSeries() ;
 
+#if 0
 		/** @brief resize
 		 * @param n new size
 		 * @pre the size before was n-1
 		 */
 		void resize(const index_t & n);
+#endif
 
 		//! Size of the series of measurements.
 		index_t size() const;
@@ -172,11 +174,8 @@ namespace LinBox {
 		//! add some new data.
 		void push_back(const std::string & nam, const double & val, const double & x = NAN, const double &y = NAN);
 
-		template<class T>
-		void addMetadata(const std::string & keyword, T & value);
-
 		// use it but change time
-		void useMetadata(const MetaData & m) ;
+		// void useMetadata(const MetaData & m) ;
 	}; // DataSeries
 
 } // LinBox
@@ -473,6 +472,14 @@ namespace LinBox {
 	 * Represents  the labels for the points (X axis) and the values for
 	 * each series of measures (Y axis).
 	 *
+	 * Members that set/get are named as follows :
+	 * - getX(nom,j) return the j'th element of series named nom
+	 * - getX(i,j) return the j'th element of series number i
+	 * - getCurrentSeriesX(j) return the j'th element of current series
+	 * - getCurrentEntryX() return the current element of current series (ie the last one)
+	 * - .
+	 *
+	 *
 	 * @internal The internal representation is a
 	 * vector of vector, each series of point being a vector of double.
 	 *
@@ -482,10 +489,12 @@ namespace LinBox {
 	 */
 	class PlotData {
 	private :
-		std::vector<DataSeries > _tableau_     ;   //!< data. \c _tableau_[i] represents a series of measurements. A data series is resized only when a new element comes in.
+		std::vector<DataSeries > _tableau_            ;   //!< data. \c _tableau_[i] represents a series of measurements. A data series is augmented only via the \c push_back method. A series may be accessed by its name, its number or it is the current working series.
 		std::vector< std::string >      _serie_label_ ;   //!< label for each serie of measures. Used in the legend of the plots/tables of points.
 		index_t                         _curr_serie_  ;   //!< index of the current series of measurements.
 		TimeWatcher                     _time_watch_  ;   //!< time predictor, helper. See \c TimeWatcher.
+		MetaData                          _plot_data_ ;   //!< information abouth the benchmark
+		MetaDataSeries                    _meta_data_ ;   //!< information about each point
 	private:
 
 #ifdef __LINBOX_HAVE_TINYXML2
@@ -821,6 +830,20 @@ namespace LinBox {
 			   , const std::string & xtitle = ""
 			   , const std::string & ytitle = "") ;
 
+		void addCurrentEntryMetaData(const MetaData & m)
+		{
+			_meta_data_.push_back(getCurrentEntryId(),m);
+		}
+
+		const std::string & getCurrentEntryId() const
+		{
+			return (getCurrentSeries().UID).back();
+		}
+
+		const std::string & getCurrentSeriesId(const index_t & j) const
+		{
+			return   (getCurrentSeries().UID[j]);
+		}
 
 	}; // PlotData
 
