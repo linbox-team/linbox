@@ -58,7 +58,8 @@ namespace LinBox {
 				point->SetAttribute("x",unfortifyString(getCurrentSeriesPointLabel(j)).c_str());
 				point->SetAttribute("y",getCurrentSeriesEntry(j));
 				point->SetAttribute("time",getCurrentSeriesEntryTime(j));
-				point->SetAttribute("id",getCurrentSeriesEntryPoint(j));
+				point->SetAttribute("xval",getCurrentSeriesEntryPoint(j));
+				point->SetAttribute("id",getCurrentSeriesId(j).c_str());
 
 				serie->InsertEndChild( point );
 			}
@@ -421,9 +422,12 @@ namespace LinBox {
 				std::string x = points->Attribute( "x" );
 				double      y = points->DoubleAttribute( "y" );
 				double      time = points->DoubleAttribute( "time" );
-				double      id = points->DoubleAttribute( "id" );
+				double      xval = points->DoubleAttribute( "xval" );
+				// std::string id   = points->Attribute( "id" );
 
-				setCurrentSeriesEntry(x,y,id,time);
+				setCurrentSeriesEntry(x,y,xval,time);
+
+				// setCurrentSeriesEntryId(id);
 
 				points = points->NextSiblingElement();
 			}
@@ -451,7 +455,7 @@ namespace LinBox {
 		XMLElement * benchmark = doc.NewElement( "benchmark" );
 		doc.InsertEndChild(benchmark);
 
-		{ // Metadata
+		{ // Benchmark Metadata
 			XMLElement * metadata = doc.NewElement( "metadata" );
 
 			smatrix_t uname = getMachineInformation();
@@ -483,11 +487,30 @@ namespace LinBox {
 			benchmark->InsertEndChild(legende);
 		}
 
-		// series
-		{
+
+		{ // series
 			XMLElement * data = saveData(doc);
 
 			benchmark->InsertEndChild(data);
+		}
+
+		{ // point metadata
+			XMLElement * metapoint = doc.NewElement( "PointMetaData" );
+			for (index_t i = 0 ; i < _meta_data_.MetaDataVec.size() ; ++i)
+			{
+				XMLElement * item = NULL ;
+				_meta_data_.MetaDataVec[i].writeMetaData(&item,doc);
+				std::string pts = "";
+				for (index_t j = 0 ; j < _meta_data_.MetaDataIDs[i].size(); ++j){
+					pts += _meta_data_.MetaDataIDs[i][j] ;
+					if (j+1 < _meta_data_.MetaDataIDs[i].size()  )
+						pts += ',';
+				}
+				item->SetAttribute("used_in",pts.c_str());
+				metapoint->InsertEndChild(item);
+			}
+
+			benchmark->InsertEndChild(metapoint);
 		}
 
 		doc.SaveFile(filename.c_str());
@@ -1097,10 +1120,12 @@ namespace LinBox {
 		, Points(0)
 		, Times(0)
 		, Values(0)
+		, UID(0)
 	{}
 
 	DataSeries::~DataSeries() {}
 
+#if 0
 	void
 	DataSeries::resize(const index_t & n)
 	{
@@ -1109,9 +1134,11 @@ namespace LinBox {
 		Times.resize(n);
 		Points.resize(n);
 		Values.resize(n);
+		UID.resize(n);
 
 		return;
 	}
+#endif
 
 	index_t
 	DataSeries::size() const
@@ -1119,6 +1146,7 @@ namespace LinBox {
 		linbox_check(PointLabels.size() == Points.size())
 		linbox_check(Times.size() == Points.size())
 		linbox_check(Times.size() == Values.size())
+		linbox_check(Times.size() == UID.size())
 
 		return (index_t)Values.size();
 	}
@@ -1141,6 +1169,7 @@ namespace LinBox {
 		else
 			Times.push_back(y);
 
+		UID.push_back("point_" + randomAlNum(8));
 		return;
 	}
 
