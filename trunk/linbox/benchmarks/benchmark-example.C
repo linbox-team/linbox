@@ -22,12 +22,10 @@
  * ========LICENCE========
  */
 
-/*! @file benchmarks/benchmark-fgemm.C
+/*! @file benchmarks/benchmark-example.C
  * @ingroup benchmarks
- * @brief Benchmarking dense matrix multiplication on finite fields.
- * This file benchmarks the FFLAS::fgemm implementation for various fields,
- * shape and parameters. Actually, we use the wrapper member \c mul of BlasMatrixDomain.
- * @todo make graphs look better (legends, units,...)
+ * @brief Benchmarking example
+ * @example benchmark
  */
 
 #include "benchmarks/benchmark.h"
