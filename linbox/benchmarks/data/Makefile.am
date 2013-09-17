@@ -21,4 +21,4 @@
 
 
 cleanup :
-	\rm -rf *dat *tex *gp *xml *cvs *html *eps
+	\rm -rf *dat *tex *gp *xml *csv *html *eps

@@ -71,6 +71,10 @@ EXTRA_PROGRAMS= $(BENCH_BASIC)
 
 pkginclude_HEADERS = \
 		     optimizer.h \
+		     benchmark-utils.h \
+		     benchmark-utils.C \
+		     benchmark-metadata.h \
+		     benchmark-metadata.C \
 		     benchmark.h \
 		     benchmark.C \
 		     benchmark.inl
