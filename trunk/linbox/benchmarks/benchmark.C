@@ -37,7 +37,7 @@ namespace LinBox {
 		using namespace tinyxml2;
 		XMLElement * data = doc.NewElement( "data" );
 
-		selectSeries(0);
+		selectFirstSeries();
 		for (index_t i = 0 ; i < size() ; ++i  ) {
 
 			XMLElement * serie = doc.NewElement ( "serie" );
@@ -84,11 +84,13 @@ namespace LinBox {
 
 	index_t PlotData::getIndex(const std::string & nom)
 	{
-		std::vector<std::string>:: iterator it ;
+
 		std::string nomf = fortifyString(nom);
-		it = std::find(_serie_label_.begin() , _serie_label_.end() , nomf);
-		if ( it != _serie_label_.end() ) {
-			return (index_t)std::distance(_serie_label_.begin(),it);
+		index_t j ;
+		bool ok = findKeyword(j,_serie_label_.begin() , _serie_label_.end() , nomf);
+
+		if ( ok ) {
+			return j ;
 		}
 		else {
 			index_t sz = (index_t)_serie_label_.size() ;
@@ -229,6 +231,19 @@ namespace LinBox {
 		return;
 	}
 
+	void PlotData::selectSeries(const std::string & name)
+	{
+		_curr_serie_ = getIndex(name);
+		selectSeries(_curr_serie_);
+	}
+
+	void PlotData::selectFirstSeries()
+	{
+		selectSeries(0);
+
+		return;
+	}
+
 	bool PlotData::selectNextSeries()
 	{
 		linbox_check(_curr_serie_ < size());
@@ -307,17 +322,26 @@ namespace LinBox {
 		return ;
 	}
 
-	void PlotData::setEntry(const std::string & nom, const std::string & nam, const double & val
+	void PlotData::addEntry(const std::string & nom, const std::string & nam, const double & val
 				, const double & xval, const double & yval)
 	{
 		// std::cout << nom << " has index : " << getIndex(nom) << std::endl;
-		return setSeriesEntry(getIndex(nom),nam,val,xval,yval);
+		selectSeries(nom);
+		return setCurrentSeriesEntry(nam,val,xval,yval);
+	}
+
+	void PlotData::addCurrentSeriesEntry(const std::string & nam, const double & val
+				, const double & xval, const double & yval)
+	{
+		// std::cout << nom << " has index : " << getIndex(nom) << std::endl;
+		return setSeriesEntry(_curr_serie_,nam,val,xval,yval);
 	}
 
 	double PlotData::getSeriesEntry(const index_t & i, const index_t & j) const
 	{
 		linbox_check(i<size());
 		linbox_check(j<getSerieSize(i));
+
 		return getSeries(i).Values[j] ;
 	}
 
@@ -1330,6 +1354,35 @@ namespace LinBox {
 		return r + s + "\"";
 	}
 
+	char randomAlNum()
+	{
+		int c = rand()%62 ;
+		c += 48 ; // c entre 48 et 109
+		if (c < 58) {
+			return (char) c;
+		}
+		else {
+			c += 7 ;
+			if (c < 91) {
+				return (char)c ;
+			}
+			else {
+				c += 6 ;
+				return (char)c;
+			}
+		}
+
+	}
+
+
+	std::string randomAlNum(const size_t & m)
+	{
+		std::string r = "" ;
+		for (size_t i = 0 ; i < m ; ++i)
+			r += randomAlNum();
+		return r ;
+	}
+
 }// LinBox
 
 
@@ -1341,7 +1394,7 @@ namespace LinBox {
 namespace LinBox {
 
 	//! get ISO time and date
-	std::string getDateTime()
+	std::string getDateTime(const std::string & sep)
 	{
 		std::time_t rawtime;
 		std::tm* timeinfo;
@@ -1350,7 +1403,14 @@ namespace LinBox {
 		std::time(&rawtime);
 		timeinfo = std::gmtime(&rawtime);
 
-		std::strftime(buffer,80,"%Y-%m-%d:%H-%M-%S GMT",timeinfo);
+		std::string fmt ;
+		std::string date = "%Y-%m-%d" ;
+		std::string time = "%H:%M:%S" ;
+		std::string tz   = "GMT" ;
+
+		fmt = date + sep + time + sep + tz ;
+
+		std::strftime(buffer,80,fmt.c_str(),timeinfo);
 
 		std::string mytime(buffer);
 
@@ -1396,34 +1456,12 @@ namespace LinBox {
 
 	//!@todo use getUsingSeries in latex/html/csv/xml
 
-		char PlotGraph::_randomAlNum()
-		{
-			int c = rand()%62 ;
-			c += 48 ; // c entre 48 et 109
-			if (c < 58) {
-				return (char) c;
-			}
-			else {
-				c += 7 ;
-				if (c < 91) {
-					return (char)c ;
-				}
-				else {
-					c += 6 ;
-					return (char)c;
-				}
-			}
-
-
-		}
 
 		void PlotGraph::_randomName()
 		{
 			std::ostringstream unique_filename ;
-			unique_filename << _filename_ << '_' ;
-			for (index_t i = 8 ; i-- ; ) {
-				unique_filename << _randomAlNum() ;
-			}
+			unique_filename << _filename_ << '_' << getDateTime("_") << '_' << randomAlNum(4);
+
 			// std::cout << unique_filename.str() << std::endl;
 
 			_printname_ = unique_filename.str() ;
@@ -1450,15 +1488,12 @@ namespace LinBox {
 			typename svector_t::iterator it ;
 
 			for (index_t i = 0 ; i < pts.size() ; ++i) {
-				// iterators change because of push_back, so they are here :
-				typename svector_t::iterator beg = merge_points.begin() ;
-				typename svector_t::iterator end = merge_points.begin()+data_size ;
 
-				// std::cout << "inserting "<< pts[i] << std::endl;
-				it = std::find( beg, end, pts[i] ) ;
-				if (it != end){
-					index_t j = (index_t) std::distance(beg,it);
-					merge_data[idx][j] = dat[i] ;
+				index_t k ;
+			       bool ok = findKeyword(k, merge_points.begin(), merge_points.begin()+data_size,pts[i]);
+
+				if ( ok ){
+					merge_data[idx][k] = dat[i] ;
 				}
 				else {
 					for (index_t j = 0 ; j < idx ; ++j) {
@@ -1480,7 +1515,7 @@ namespace LinBox {
 
 		void PlotGraph::mergeSeries()
 		{
-			_data_. selectSeries(0);
+			_data_. selectFirstSeries();
 			_merge_points_ = _data_.getCurrentSeriesPointLabel() ;
 			_merge_data_[0] = _data_.getCurrentSeriesValues() ;
 

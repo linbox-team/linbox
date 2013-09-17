@@ -240,43 +240,6 @@ namespace LinBox {
 } // LinBox
 
 //
-// DataSeries
-//
-
-namespace LinBox {
-	/** @brief this structure holds a bunch of timings.
-	 * It collects the points, the time spent at each point and a measure
-	 * (for instance mflops).
-	 * @todo Times and Values could be dmatrix_t (and mergeable)
-	 */
-	struct DataSeries {
-		svector_t   PointLabels ; //!< points abscisa, values for the x axis. Used in legend for the X axis.
-		dvector_t   Points      ; //!< points abscisa, values for the x axis. Used in TimeWatcher (for instance, if PointLabels are the names of sparse matrices, Points would be their number of non zeros, or 1,2,3,... or whatever relevant for predicting time)
-		dvector_t   Times       ; //!< actual computation times.
-		dvector_t   Values      ; //!< actual data to be plotted (for instance mflops)
-
-		//! Constructor
-		DataSeries() ;
-
-		~DataSeries() ;
-
-		/** @brief resize
-		 * @param n new size
-		 * @pre the size before was n-1
-		 */
-		void resize(const index_t & n);
-
-		//! Size of the series of measurements.
-		index_t size() const;
-
-		//! add some new data.
-		void push_back(const std::string & nam, const double & val, const double & x = NAN, const double &y = NAN);
-
-	}; // DataSeries
-
-} // LinBox
-
-//
 //String processing
 //
 
@@ -317,7 +280,362 @@ namespace LinBox {
 		return nam_ss.str();
 	}
 
+	//! finds keyword betwen begin and end, return true if found and i is the index where it is (possibly correspondig to end)
+	bool findKeyword(index_t & i, const svector_t::iterator & begin, const svector_t::iterator & end, const std::string & keyword)
+		{
+			svector_t::iterator it ;
+			it = std::find(begin, end, keyword);
+			i = (index_t)std::distance(begin, it);
+			return (it != end) ;
+
+		}
+
+	/*! @internal
+	 * @brief random <code>:alnum:</code> \c char.
+	 * [[:alnum:]] characters are in range
+	 *  - num : 48-57
+	 *  - AL  : 67-90
+	 *  - al  : 97-122
+	 *  .
+	 * @return a random alphabetic or numeric char.
+	 */
+	char randomAlNum() ;
+
+	/*! @internal
+	 * @brief random <code>:alnum:</code> \c string.
+	 * @param m size of string
+	 * [[:alnum:]] characters are in range
+	 *  - num : 48-57
+	 *  - AL  : 67-90
+	 *  - al  : 97-122
+	 *  .
+	 * @return a random alphabetic or numeric char.
+	 */
+	std::string randomAlNum(const size_t & m) ;
 }// LinBox
+
+//
+// Machine info
+//
+
+
+namespace LinBox {
+
+	/*! get ISO time and date
+	 * year-time YYYY-MM-DD 'sep' HH:MM:SS 'sep' (GMT)
+	 * @param sep separation between
+	 */
+	std::string getDateTime( const std::string & sep = " ");
+
+	//! get some machine information (not cpu yet)
+	smatrix_t getMachineInformation();
+
+} // LinBox
+
+//
+// Metadata
+//
+
+
+namespace LinBox {
+
+	class MetaData ;
+
+	//! This is the general metadata class
+	class MetaData {
+	private :
+		std::string name ;    //! name tag to refer to.
+		// std::string hash ; //! unique id (used to save space)
+		svector_t  keys ;     //! keys
+		svector_t  vals ;     //! values
+		std::vector<MetaData *> metadata ; //! child metadata array
+
+	private :
+
+		//! @internal recursively free memory
+		void clean ()
+		{
+			if (this != NULL) {
+				for (size_t i = 0 ; i < metadata.size() ; ++i) {
+					metadata[i]->clean();
+					delete metadata[i] ;
+					metadata[i] = NULL ;
+				}
+			}
+			return;
+		}
+
+		//!  @internal copy all, including metadata children
+		void deep_copy(const MetaData * md)
+		{
+			name = md->getName();
+			keys = md->getKeys();
+			vals = md->getVals();
+			size_t md_size = md->getMetaDataSize();
+			if (md_size) {
+				metadata.resize(md_size,NULL);
+				for (size_t i = 0 ; i <md_size ; ++i) {
+					metadata[i] = new MetaData ;
+					metadata[i]->deep_copy(md->getMetaData(i));
+				}
+			}
+
+			return;
+		}
+
+		//!  @internal adds some metadata child
+		void push_back(const MetaData * md)
+		{
+			size_t md_size = getMetaDataSize();
+			metadata.resize(md_size+1,NULL);
+			metadata[md_size] = new MetaData ;
+			metadata[md_size]->deep_copy(md);
+		}
+
+	protected :
+
+		const std::string & getName() const
+		{
+			return name ;
+		}
+
+		const svector_t & getKeys() const
+		{
+			return keys ;
+		}
+
+		const svector_t & getVals() const
+		{
+			return vals ;
+		}
+
+		size_t getMetaDataSize() const
+		{
+			return metadata.size();
+		}
+
+		const MetaData * getMetaData(const size_t & i) const
+		{
+			return metadata[i];
+		}
+
+	public:
+
+		MetaData() :
+			name(randomAlNum(8))
+			, keys(0)
+			, vals(0)
+			, metadata(0)
+		{}
+
+		~MetaData()
+		{
+			clean();
+		}
+
+		MetaData(const MetaData * md)
+		{
+			deep_copy(md);
+		}
+
+		template<class T>
+		void changeValue(const std::string & keyword, T& value)
+		{
+			index_t i ;
+		       	bool ok = findKeyword(i, keys.begin(), keys.end(), keyword);
+			if ( !ok )
+				// throw LinBoxError("undefined keyword",keyword);
+				throw LinBoxError("undefined keyword");
+
+			vals[i] = toString(value);
+
+			return;
+		}
+
+		const std::string & getValue(const std::string & keyword)
+		{
+			index_t i ;
+		       	bool ok = findKeyword(i, keys.begin(), keys.end(), keyword);
+			if ( !ok )
+				// throw LinBoxError("undefined keyword",keyword);
+				throw LinBoxError("undefined keyword");
+
+			return vals[i] ;
+		}
+
+		void addValue(const std::string & nom, const std::string & val = "N/A")
+		{
+			keys.push_back(nom);
+			vals.push_back(val);
+			linbox_check(keys.size() == vals.size());
+			return;
+		}
+
+		template <class T>
+		void addValue(const std::string & nom, const T & val )
+		{
+			keys.push_back(nom);
+			vals.push_back(toString(val));
+			linbox_check(keys.size() == vals.size());
+			return;
+		}
+
+		void addMetaData( const MetaData * md)
+		{
+			push_back(md);
+		}
+
+		void setName (const std::string & nom)
+		{
+			name = nom ;
+
+			return;
+		}
+
+#ifdef __LINBOX_HAVE_TINYXML2
+		void writeMetaData(tinyxml2::XMLElement * data, tinyxml2::XMLDocument & doc)
+		{
+			//! @warning only one name allowed. Todo : matrix1, matrix2,...
+			using namespace tinyxml2;
+			data = doc.NewElement( name.c_str() );
+
+			for (index_t i = 0 ; i < keys.size() ; ++i  ) {
+				data->SetAttribute(keys[i].c_str(),vals[i].c_str());
+			}
+
+			for (index_t i = 0 ; i < getMetaDataSize() ; ++i  ) {
+				XMLElement * child ;
+				writeMetaData(child,doc);
+				data->InsertEndChild( child );
+			}
+
+			return ;
+		}
+#endif
+
+
+	}; // MetaData
+
+
+	class RepresentationMetaData ;
+	class MatrixMetaData ;
+	class VectorMetaData ;
+	class StorageMetaData ;
+	class GeneratorMetaData ;
+	class FieldMetaData ;
+	class SolutionMetaData ;
+	class AlgorithmMetaData ;
+	class MachineMetaData ;
+	class BenchmarkMetaData ;
+
+	//! Field metadata
+	class FieldMetaData : public MetaData {
+	public :
+		FieldMetaData()
+		{
+			setName("field");
+			addValue("name");
+			addValue("characteristic");
+		}
+		// a general field/ring has no exponent.
+
+		template<class Field>
+		FieldMetaData( const Field & F)
+		{
+#if 0
+			F.getMetaData(this); // this would also print representation
+			also det(A, some_mehtod(), Meta) would do  a dry run and print in Meta.
+#endif
+
+			std::ostringstream a ;
+			F.write(a);
+			addValue("name",a.str());
+			addValue("characteristic", F.characteristic());
+
+		}
+	}; // FieldMetaData
+
+	//! Matrix metadata
+	class MatrixMetaData : public MetaData {
+		void initMetadata()
+		{
+			addValue("rowdim");
+			addValue("coldim");
+			addValue("nbnz");
+
+			FieldMetaData FMD;
+			addMetaData(&FMD);
+		}
+	public:
+		MatrixMetaData()
+		{
+			setName("matrix");
+			initMetadata() ;
+		}
+
+		template<class Matrix>
+		MatrixMetaData(Matrix & M )
+		{
+			// M.getMetaData(this);
+			addValue("rowdim",M.rowdim());
+			addValue("coldim",M.coldim());
+			addValue("nbnz",M.size());
+
+			FieldMetaData FMD(M.field());
+			addMetaData(&FMD);
+
+		}
+
+	} ; // MatrixMetaData
+
+} // LinBox
+
+namespace LinBox {
+	typedef std::vector<MetaData>  mvector_t ;
+}
+//
+// DataSeries
+//
+
+namespace LinBox {
+	/** @brief this structure holds a bunch of timings.
+	 * It collects the points, the time spent at each point and a measure
+	 * (for instance mflops).
+	 * @todo Times and Values could be dmatrix_t (and mergeable)
+	 */
+	struct DataSeries {
+		svector_t   PointLabels ; //!< points abscisa, values for the x axis. Used in legend for the X axis.
+		dvector_t   Points      ; //!< points abscisa, values for the x axis. Used in TimeWatcher (for instance, if PointLabels are the names of sparse matrices, Points would be their number of non zeros, or 1,2,3,... or whatever relevant for predicting time)
+		dvector_t   Times       ; //!< actual computation times.
+		dvector_t   Values      ; //!< actual data to be plotted (for instance mflops)
+		mvector_t   Meta        ; //!< information about each point
+
+		//! Constructor
+		DataSeries() ;
+
+		~DataSeries() ;
+
+		/** @brief resize
+		 * @param n new size
+		 * @pre the size before was n-1
+		 */
+		void resize(const index_t & n);
+
+		//! Size of the series of measurements.
+		index_t size() const;
+
+		//! add some new data.
+		void push_back(const std::string & nam, const double & val, const double & x = NAN, const double &y = NAN);
+
+		template<class T>
+		void addMetadata(const std::string & keyword, T & value);
+
+		// use it but change time
+		void useMetadata(const MetaData & m) ;
+	}; // DataSeries
+
+} // LinBox
+
 
 /* ********************** */
 /*    Plot structures     */
@@ -624,8 +942,23 @@ namespace LinBox {
 	private:
 
 #ifdef __LINBOX_HAVE_TINYXML2
+		//! @internal data part of the XML output
 		tinyxml2::XMLElement * saveData(tinyxml2::XMLDocument & doc) ;
 #endif
+		/** Return the index of a series according to its name.
+		 * Creates one if necessary.
+		 * the current serie is set to this one.
+		 * @param name of the series
+		 * @return index of the series
+		 */
+		index_t getIndex(const std::string & nom) ;
+
+		/** Sets the current series of measurements.
+		 * @param s index for the series we wish to add measures to.
+		 */
+		void selectSeries(const index_t & s) ;
+
+
 	public :
 
 		/*! Inits a plot with series of data.
@@ -642,14 +975,6 @@ namespace LinBox {
 		 */
 		PlotData(const PlotData & PD);
 
-		/** Return the index of a series according to its name.
-		 * Creates one if necessary.
-		 * the current serie is set to this one.
-		 * @param name of the series
-		 * @return index of the series
-		 */
-		index_t getIndex(const std::string & nom) ;
-
 		/** @brief initialize to empty
 		*/
 		void clear() ;
@@ -664,6 +989,7 @@ namespace LinBox {
 		/** @brief gets the current series number.
 		*/
 		index_t getCurrentSerieNumber() const ;
+
 
 		/*! @brief Sets the name of a serie.
 		 * @param i index of the serie
@@ -735,14 +1061,19 @@ namespace LinBox {
 		*/
 		index_t getCurrentSerieSize() const ;
 
-		/** Sets the current series of measurements.
-		 * @param s index for the series we wish to add measures to.
+			/** Sets the current series of measurements.
+		 * @param name name of the series we wish to add measures to.
 		 */
-		void selectSeries(const index_t & s) ;
+		void selectSeries(const std::string & name) ;
 
 		/*! goes to the next series of points
 		*/
 		bool selectNextSeries() ;
+
+		/** selects the first series
+		 */
+		void selectFirstSeries() ;
+
 
 		/*! @brief Sets the name of a point.
 		 * @param i series number
@@ -839,8 +1170,19 @@ namespace LinBox {
 		 * @param xval x value of the point (eg size of the matrix, of a sparse matrix,...)
 		 * @param yval time for this computation (seconds)
 		 */
-		void setEntry(const std::string & nom, const std::string & nam, const double & val
+		void addEntry(const std::string & nom, const std::string & nam, const double & val
 			      , const double & xval = NAN, const double & yval = NAN) ;
+
+		/*! @brief adds a new entry to the current series.
+		 * @param j index of the point
+		 * @param nam name of the point (eg size of the matrix, name of a sparse matrix,...)
+		 * @param val value to be inserted (eg mflops, sec,...).
+		 * @param xval x value of the point (eg size of the matrix, of a sparse matrix,...)
+		 * @param yval time for this computation (seconds)
+		 */
+		void addCurrentSeriesEntry(const std::string & nam, const double & val
+			      , const double & xval = NAN, const double & yval = NAN) ;
+
 
 
 		/*! @brief sets a new entry.
@@ -851,10 +1193,10 @@ namespace LinBox {
 		template<class T>
 		void setCurrentSeriesEntry(const T & nam, const double & val
 					   , const double & xval = NAN, const double & yval = NAN)
-	{
-		std::string nam_s = fortifyString(toString(nam));
-		return setSeriesEntry(_curr_serie_,nam_s,val,xval,yval) ;
-	}
+		{
+			std::string nam_s = fortifyString(toString(nam));
+			return setSeriesEntry(_curr_serie_,nam_s,val,xval,yval) ;
+		}
 
 		/*! @brief gets a value for an entry.
 		 * @param i index of the series
@@ -964,16 +1306,6 @@ namespace LinBox {
 		svector_t       _merge_points_ ;
 
 	private :
-		/*! @internal
-		 * @brief random <code>:alnum:</code> \c char.
-		 * [[:alnum:]] characters are in range
-		 *  - num : 48-57
-		 *  - AL  : 67-90
-		 *  - al  : 97-122
-		 *  .
-		 * @return a random alphabetic or numeric char.
-		 */
-		char _randomAlNum();
 
 		/*! @internal
 		 * @brief Appends random suffix.
@@ -983,6 +1315,7 @@ namespace LinBox {
 		 */
 		void _randomName();
 
+		//! @internal returns the file name (without extension and uid)
 		const std::string & getFileName()  ;
 
 		//! @bug this supposes the two series have unique measurements for one point.
@@ -1155,20 +1488,6 @@ namespace LinBox {
 
 }
 
-//
-// Machine info
-//
-
-
-namespace LinBox {
-
-	//! get ISO time and date
-	std::string getDateTime();
-
-	//! get some machine information (not cpu yet)
-	smatrix_t getMachineInformation();
-
-} // LinBox
 
 //
 // Least Squares
