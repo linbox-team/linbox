@@ -382,7 +382,7 @@ namespace LinBox {
 		 * @sa PlotType
 		 *
 		 */
-		std::string getPlotType(const std::string & extraargs ="") ;// const
+		std::string getPlotType(const std::string & extraargs ="") ;
 
 		/*! @brief adds some style line to the graph.
 		 * This is very user-tweakable !!
@@ -479,6 +479,11 @@ namespace LinBox {
 	 * - getCurrentEntryX() return the current element of current series (ie the last one)
 	 * - .
 	 *
+	 * Members are also named as follows :
+	 * - getXXX is a const member
+	 * - selectXXX is non const and may create/update stuff
+	 * - refXXX returns a reference
+	 * - setXXX sets something
 	 *
 	 * @internal The internal representation is a
 	 * vector of vector, each series of point being a vector of double.
@@ -489,33 +494,65 @@ namespace LinBox {
 	 */
 	class PlotData {
 	private :
-		std::vector<DataSeries > _tableau_            ;   //!< data. \c _tableau_[i] represents a series of measurements. A data series is augmented only via the \c push_back method. A series may be accessed by its name, its number or it is the current working series.
-		std::vector< std::string >      _serie_label_ ;   //!< label for each serie of measures. Used in the legend of the plots/tables of points.
-		index_t                         _curr_serie_  ;   //!< index of the current series of measurements.
-		TimeWatcher                     _time_watch_  ;   //!< time predictor, helper. See \c TimeWatcher.
-		MetaData                          _plot_data_ ;   //!< information abouth the benchmark
-		MetaDataSeries                    _meta_data_ ;   //!< information about each point
+		std::vector<DataSeries >      _tableau_  ;   //!< data. \c _tableau_[i] represents a series of measurements. A data series is augmented only via the \c push_back method. A series may be accessed by its name, its number or it is the current working series.
+		svector_t                  _serie_label_ ;   //!< label for each serie of measures. Used in the legend of the plots/tables of points.
+		mutable index_t            _curr_serie_  ;   //!< index of the current series of measurements.
+		mutable TimeWatcher        _time_watch_  ;   //!< time predictor, helper. See \c TimeWatcher.
+		MetaData                     _plot_data_ ;   //!< information abouth the benchmark
+		MetaDataSeries               _meta_data_ ;   //!< information about each point
 	private:
 
 #ifdef __LINBOX_HAVE_TINYXML2
 		//! @internal data part of the XML output
 		tinyxml2::XMLElement * saveData(tinyxml2::XMLDocument & doc) ;
 #endif
-		/** Return the index of a series according to its name.
-		 * Creates one if necessary.
-		 * the current serie is set to this one.
-		 * @param name of the series
-		 * @return index of the series
-		 */
-		index_t getIndex(const std::string & nom) ;
 
-		/** Sets the current series of measurements.
-		 * @param s index for the series we wish to add measures to.
+		/** Finds the index of a series by its name.
+		 * @param nom name of the series
+		 * @return its index
 		 */
-		void selectSeries(const index_t & s) ;
+		index_t getIndex(const std::string & nom) const ;
 
+		/** Finds the index of a series by its name.
+		 * @param nom name of the series
+		 * @return its index
+		 */
+		index_t selectIndex(const std::string & nom) ;
 
 	public :
+
+		/*! Returns the ith series of measurements.
+		 * @param i ith series to be returned
+		 */
+		const DataSeries & getSeries(const index_t  &i) const ;
+
+		/*! Returns the ith series of measurements.
+		 * @param i ith series to be returned
+		 */
+		const DataSeries & selectSeries(const index_t  &i) ;
+
+		/*! Returns the series of measurements after its name.
+		 * @param nom name of series to be returned
+		 */
+		const DataSeries & selectSeries(const std::string &name) ;
+
+		/*! Returns the current series of measurements.
+		*/
+		const DataSeries & getCurrentSeries() const;
+
+		/*! Returns the ith series of measurements.
+		 * @param i ith series to be returned
+		 */
+		DataSeries & refSeries(const index_t  &i) ;
+
+		/*! Returns the ith series of measurements.
+		 * @param i ith series to be returned
+		 */
+		DataSeries & refSeries(const std::string  & nom) ;
+
+		/*! Returns the current series of measurements.
+		*/
+		DataSeries & refCurrentSeries() ;
 
 		/*! Inits a plot with series of data.
 		 * @param nb_pts number of points in each serie.
@@ -535,6 +572,9 @@ namespace LinBox {
 		*/
 		void clear() ;
 
+		/*! merges another plot data to the current one.
+		 * (just adds to the end, does not merge series by name yet)
+		 */
 		void merge(const PlotData &PD) ;
 
 		/*! @brief get the number of series.
@@ -545,7 +585,6 @@ namespace LinBox {
 		/** @brief gets the current series number.
 		*/
 		index_t getCurrentSerieNumber() const ;
-
 
 		/*! @brief Sets the name of a serie.
 		 * @param i index of the serie
@@ -567,11 +606,10 @@ namespace LinBox {
 		 */
 		void setCurrentSerieName(const std::string & nom) ;
 
-
 		/** Inits the watch on a series
 		 * @param i index of a series
 		 */
-		void initWatch ( const size_t & i) ;
+		void initWatch ( const index_t & i) ;
 
 		/** Inits the watch to current series
 		*/
@@ -589,25 +627,6 @@ namespace LinBox {
 		 */
 		void finishSerie() ;
 
-		/*! Returns the ith series of measurements.
-		 * @param i ith series to be returned
-		 */
-		const DataSeries & getSeries(const index_t  &i) const ;
-
-		/*! Returns the ith series of measurements.
-		 * @param i ith series to be returned
-		 */
-		DataSeries & refSeries(const index_t  &i) ;
-
-
-		/*! Returns the current series of measurements.
-		*/
-		const DataSeries & getCurrentSeries() const ;
-
-		/*! Returns the current series of measurements.
-		*/
-		DataSeries & refCurrentSeries() ;
-
 		/** @brief size of a series.
 		 * @param i index of the series
 		 */
@@ -617,11 +636,6 @@ namespace LinBox {
 		*/
 		index_t getCurrentSerieSize() const ;
 
-			/** Sets the current series of measurements.
-		 * @param name name of the series we wish to add measures to.
-		 */
-		void selectSeries(const std::string & name) ;
-
 		/*! goes to the next series of points
 		*/
 		bool selectNextSeries() ;
@@ -630,7 +644,6 @@ namespace LinBox {
 		 */
 		void selectFirstSeries() ;
 
-
 		/*! @brief Sets the name of a point.
 		 * @param i series number
 		 * @param j index for the the point
@@ -638,13 +651,14 @@ namespace LinBox {
 		 */
 		template<class T>
 		void setSeriesPointLabel(const index_t & i, const index_t & j, const T & nom)
-	{
-		std::string nom_s = fortifyString(toString(nom));
-		linbox_check(j<getSerieSize(i) );
-		refSeries(i).PointLabels[j] = nom_s ;
+		{
+			std::string nom_s = fortifyString(toString(nom));
+			linbox_check(j<getSerieSize(i) );
+			refSeries(i).PointLabels[j] = nom_s ;
 
-		return;
-	}
+			return;
+		}
+
 		/*! @brief Sets the name of a point.
 		 * @param j index for the the point
 		 * @param nom name of the point
@@ -683,7 +697,7 @@ namespace LinBox {
 		/*! @brief gets all the names in the series.
 		 * @return a vector of names.
 		 */
-		const std::vector<std::string > & getSerieLabels() const ;
+		const svector_t  & getSerieLabels() const ;
 
 		/*! @brief gets all the names in the points of a series
 		 * @param  i index of the series
@@ -738,8 +752,6 @@ namespace LinBox {
 		 */
 		void addCurrentSeriesEntry(const std::string & nam, const double & val
 			      , const double & xval = NAN, const double & yval = NAN) ;
-
-
 
 		/*! @brief sets a new entry.
 		 * @param j index of the point
@@ -835,14 +847,37 @@ namespace LinBox {
 			_meta_data_.push_back(getCurrentEntryId(),m);
 		}
 
+		/** returns the unique ID of the current series last entry
+		 */
 		const std::string & getCurrentEntryId() const
 		{
 			return (getCurrentSeries().UID).back();
 		}
 
+		/** @brief returns the unique ID of the current series j'th entry.
+		 * @param j index of the entry.
+		 */
 		const std::string & getCurrentSeriesId(const index_t & j) const
 		{
 			return   (getCurrentSeries().UID[j]);
+		}
+
+		/** @brief returns the unique ID of the i'th series j'th entry.
+		 * @param i index of the series.
+		 * @param j index of the entry.
+		 */
+		const std::string & getId(const index_t & i, const index_t & j)
+		{
+			return   (selectSeries(i).UID[j]);
+		}
+
+		/** @brief returns the unique ID of the i'th series j'th entry.
+		 * @param i index of the series.
+		 * @param j index of the entry.
+		 */
+		const std::string & getId(const std::string & name, const index_t & j)
+		{
+			return   (selectSeries(name).UID[j]);
 		}
 
 	}; // PlotData
@@ -961,13 +996,13 @@ namespace LinBox {
 		 */
 		void setOutFilename( const std::string & filename ) ;
 
-		const std::string & getUsingSeries() ; // const
+		const std::string & getUsingSeries() ;
 
 		/*! @brief Gets the plot command line.
 		 * @param File the name of/path to the data file (with extension)
 		 * @return a gnuplot "plot" command stream.
 		 */
-		std::string getPlotCommand(const std::string & File) ; //const
+		std::string getPlotCommand(const std::string & File) ;
 
 		void print( LINBOX_enum(Tag::Printer) pt = Tag::Printer::xml) ;
 
