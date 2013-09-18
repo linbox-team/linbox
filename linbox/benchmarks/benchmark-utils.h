@@ -144,9 +144,9 @@ namespace LinBox {
 	}
 
 	//! finds keyword betwen begin and end, return true if found and i is the index where it is (possibly correspondig to end)
-	bool findKeyword(index_t & i, const svector_t::iterator & begin, const svector_t::iterator & end, const std::string & keyword)
+	bool findKeyword(index_t & i, const svector_t::const_iterator & begin, const svector_t::const_iterator & end, const std::string & keyword)
 		{
-			svector_t::iterator it ;
+			svector_t::const_iterator it ;
 			it = std::find(begin, end, keyword);
 			i = (index_t)std::distance(begin, it);
 			return (it != end) ;
