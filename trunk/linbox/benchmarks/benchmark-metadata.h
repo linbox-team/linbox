@@ -285,15 +285,15 @@ namespace LinBox {
 
 namespace LinBox {
 
-	class RepresentationMetaData ;
+	// class RepresentationMetaData ;
 	class MatrixMetaData ;
-	class VectorMetaData ;
+	// class VectorMetaData ;
 	class StorageMetaData ;
 	class GeneratorMetaData ;
 	class FieldMetaData ;
-	class SolutionMetaData ;
+	// class SolutionMetaData ;
 	class AlgorithmMetaData ;
-	class MachineMetaData ;
+	class EnvrironmentMetaData ;
 	class BenchmarkMetaData ;
 
 	//! Field metadata
@@ -386,6 +386,67 @@ namespace LinBox {
 		}
 
 	} ; // MatrixMetaData
+
+	//! Environment metadata;
+	class EnvironmentMetaData : public MetaData {
+		void initMetadata()
+		{
+			// Machine
+			// compiler
+		}
+	public :
+		EnvironmentMetaData()
+		{
+		}
+	}; // EnvironmentMetaData
+
+	//! Benchmark metadata;
+	class BenchmarkMetaData : public MetaData {
+		void initMetadata()
+		{
+			// problem
+			// machine
+		}
+	public :
+		BenchmarkMetaData()
+		{
+		}
+	}; // BenchmarkMetaData
+
+	//! Algorithm metadata;
+	class AlgorithmMetaData : public MetaData {
+		void initMetadata()
+		{
+			// name
+			// method
+		}
+	public :
+		AlgorithmMetaData()
+		{
+		}
+	}; // AlgorithmMetaData
+
+	//! Generator metadata;
+	class GeneratorMetaData : public MetaData {
+		void initMetadata()
+		{
+		}
+	public :
+		GeneratorMetaData()
+		{
+		}
+	}; // GeneratorMetaData
+
+	//! Storage metadata;
+	class StorageMetaData : public MetaData {
+		void initMetadata()
+		{
+		}
+	public :
+		StorageMetaData()
+		{
+		}
+	}; // StorageMetaData
 
 } // LinBox
 
