@@ -110,6 +110,67 @@ namespace LinBox {
 
 } // LinBox
 
+//
+// PlotData
+//
+
+namespace LinBox {
+
+	// set Series
+
+		template<>
+		svector_t & PlotData::refSeries(const index_t & i, Point::Labels)
+		{
+			linbox_check(i<size());
+			return (refSeries(i).PointLabels) ;
+		}
+
+		template<>
+		dvector_t & PlotData::refSeries(const index_t & i, Point::Values)
+		{
+			return (refSeries(i).Values) ;
+		}
+
+		template<>
+		dvector_t & PlotData::refSeries(const index_t & i, Point::Points)
+		{
+			return (refSeries(i).Points) ;
+		}
+
+		template<>
+		dvector_t & PlotData::refSeries(const index_t & i, Point::Times)
+		{
+			return (refSeries(i).Times) ;
+		}
+
+	// get Series
+		template<>
+		const svector_t & PlotData::getSeries(const index_t & i, Point::Labels) const
+		{
+			linbox_check(i<size());
+			return (getSeries(i).PointLabels) ;
+		}
+
+		template<>
+		const dvector_t & PlotData::getSeries(const index_t & i, Point::Values) const
+		{
+			return (getSeries(i).Values) ;
+		}
+
+		template<>
+		const dvector_t & PlotData::getSeries(const index_t & i, Point::Points) const
+		{
+			return (getSeries(i).Points) ;
+		}
+
+		template<>
+		const dvector_t & PlotData::getSeries(const index_t & i, Point::Times) const
+		{
+			return (getSeries(i).Times) ;
+		}
+
+} // LinBox
+
 #endif // __LINBOX_benchmarks_benchmark_INL
 
 // Local Variables:

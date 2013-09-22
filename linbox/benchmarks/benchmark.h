@@ -209,6 +209,7 @@ namespace LinBox {
 				png  = 100, //!< png. Portable Network Graphics file.
 				pdf  = 101, //!< pdf. Portable Document Format actually, this is eps converted to pdf.
 				eps  = 102, //!< eps. Encapsulated PostScript. Cool for inclusion in LaTex files. This is the default.
+				epstex  = 107, //!< epslatex. Encapsulated PostScript. Cool for inclusion in LaTex files with latex formulas.
 				svg  = 103, //!< sgv. Scalable Vector Graphics.
 				tex  = 104, //!< tex. Simple tabular.
 				html = 105, //!< html. HTML table.
@@ -468,6 +469,29 @@ namespace LinBox {
 //
 
 namespace LinBox {
+
+		struct Point {
+			//! x
+			struct Labels {
+				typedef std::string type;
+			};
+
+			//! y
+			struct Values {
+				typedef double type;
+			} ;
+
+			//! numerical value for x
+			struct Points {
+				typedef double type;
+			};
+
+			//! y time
+			struct Times  {
+				typedef double type;
+			};
+		} ;
+
 	/*! @brief The raw data to plot.
 	 * Represents  the labels for the points (X axis) and the values for
 	 * each series of measures (Y axis).
@@ -592,6 +616,74 @@ namespace LinBox {
 		 */
 		void setSerieName(const index_t & i, const std::string & nom) ;
 
+		// ref  Series
+
+		template<class Pt>
+		std::vector<typename Pt::type> & refSeries(const index_t & i,  Pt kind) ;
+
+		template<class Pt>
+		std::vector<typename Pt::type> & refSeries(const std::string & name,  Pt kind)
+		{
+			return refSeries(getIndex(name ), kind );
+		}
+
+		// get Series
+
+		template<class Pt>
+		const std::vector<typename Pt::type> & getSeries(const index_t & i,  Pt kind) const ;
+
+		template<class Pt>
+		const std::vector<typename Pt::type> & getSeries(const std::string & name,  Pt kind) const
+		{
+			return getSeries(getIndex(name),kind);
+		}
+
+		template<class Pt>
+		const std::vector<typename Pt::type> & getCurrentSeries( Pt kind) const
+		{
+			return getSeries(_curr_serie_, kind);
+		}
+
+		template<class Pt>
+		const typename Pt::type & getSeriesEntry(const index_t & i, const index_t & j, Pt kind) const
+		{
+			linbox_check(j<getSerieSize(i));
+			return (getSeries(i,kind)[j]) ;
+		}
+
+		template<class Pt>
+		const typename Pt::type & getSeriesEntry(const std::string & name, const index_t & j, Pt kind) const
+		{
+			return getSeriesEntry(getIndex(name),j,kind);
+		}
+
+		template<class Pt>
+		const typename Pt::type & getSeriesEntry(const index_t & i,  Pt kind) const
+		{
+			return ( getSeries(i,kind).back() ) ;
+		}
+
+		template<class Pt>
+		const typename Pt::type & getSeriesEntry(const std::string & name,  Pt kind) const
+		{
+			return getSeriesEntry(getIndex(name),kind);
+		}
+
+		template<class Pt>
+		const typename Pt::type & getCurrentSeriesEntry(const index_t & j, Pt kind) const
+		{
+			return getSeriesEntry(_curr_serie_, j, kind);
+		}
+
+		template<class Pt>
+		const typename Pt::type & getCurrentSeriesEntry( Pt kind) const
+		{
+			return getSeriesEntry(_curr_serie_, kind);
+		}
+
+
+		// set Series
+
 		/** Gets the name of a serie.
 		 * @param i index of the serie
 		 */
@@ -665,20 +757,7 @@ namespace LinBox {
 		 */
 		void setCurrentSeriesPointLabel(const index_t & j, const std::string & nom) ;
 
-		/*! @brief gets the name of a point.
-		 * @param i series number
-		 * @param j its index.
-		 * @return its name.
-		 * @warning no default. \c setPointXLabel has to be used beforehands.
-		 */
-		const std::string & getSeriesPointLabel(const index_t &i, const index_t & j) const ;
 
-		/*! @brief gets the name of a point.
-		 * @param j its index.
-		 * @return its name.
-		 * @warning no default. \c setPointXLabel has to be used beforehands.
-		 */
-		const std::string & getCurrentSeriesPointLabel(const index_t & j) const ;
 
 		/*! @brief gets the name of a serie.
 		 * Defaults to \c "serie.i"
@@ -699,27 +778,9 @@ namespace LinBox {
 		 */
 		const svector_t  & getSerieLabels() const ;
 
-		/*! @brief gets all the names in the points of a series
-		 * @param  i index of the series
-		 * @return a vector of names.
-		 */
-		const svector_t & getSeriePointLabel( const index_t & i) const ;
 
-		/*! @brief gets all the names in the points.
-		 * @return a vector of names.
-		 */
-		const svector_t & getCurrentSeriesPointLabel() const ;
 
-		/*! @brief gets all the names in the points of a series.
-		 * @param i index of the series
-		 * @return a vector of names.
-		 */
-		const dvector_t & getSeriesValues(const index_t & i) const ;
 
-		/*! @brief gets all the names in the points.
-		 * @return a vector of names.
-		 */
-		const dvector_t & getCurrentSeriesValues() const ;
 
 		/*! @brief sets a new entry.
 		 * @param i index of the series
@@ -740,17 +801,7 @@ namespace LinBox {
 		 * @param xval x value of the point (eg size of the matrix, of a sparse matrix,...)
 		 * @param yval time for this computation (seconds)
 		 */
-		void addEntry(const std::string & nom, const std::string & nam, const double & val
-			      , const double & xval = NAN, const double & yval = NAN) ;
-
-		/*! @brief adds a new entry to the current series.
-		 * @param j index of the point
-		 * @param nam name of the point (eg size of the matrix, name of a sparse matrix,...)
-		 * @param val value to be inserted (eg mflops, sec,...).
-		 * @param xval x value of the point (eg size of the matrix, of a sparse matrix,...)
-		 * @param yval time for this computation (seconds)
-		 */
-		void addCurrentSeriesEntry(const std::string & nam, const double & val
+		void setSeriesEntry(const std::string & nom, const std::string & nam, const double & val
 			      , const double & xval = NAN, const double & yval = NAN) ;
 
 		/*! @brief sets a new entry.
@@ -766,48 +817,6 @@ namespace LinBox {
 			return setSeriesEntry(_curr_serie_,nam_s,val,xval,yval) ;
 		}
 
-		/*! @brief gets a value for an entry.
-		 * @param i index of the series
-		 * @param j index of the point
-		 * @return val value of point j in ith serie.
-		 */
-		double getSeriesEntry(const index_t & i, const index_t & j) const ;
-
-		/*! @brief gets a value for an entry.
-		 * @param j index of the point
-		 * @return val value of point j in current serie.
-		 */
-		double getCurrentSeriesEntry(const index_t & j) const ;
-
-
-		/*! @brief gets a time spent on an entry.
-		 * @param i index of the series
-		 * @param j index of the point
-		 * @return time for the point j in current serie.
-		 */
-		double getSeriesEntryTime(const index_t &i, const index_t & j) const ;
-
-		/*! @brief gets a time spent on an entry.
-		 * @param j index of the point
-		 * @return time for the point j in current serie.
-		 */
-		double getCurrentSeriesEntryTime(const index_t & j) const ;
-
-
-		/*! @brief gets the point corresponding to an entry.
-		 * @warning, this is not the label, but the value associated to the point
-		 * @param i index of the series
-		 * @param j index of the point
-		 * @return time for the point j in current serie.
-		 */
-		double getSeriesEntryPoint(const index_t & i, const index_t & j) const ;
-
-		/*! @brief gets the point corresponding to an entry.
-		 * @warning, this is not the label, but the value associated to the point
-		 * @param j index of the point
-		 * @return time for the point j in current serie.
-		 */
-		double getCurrentSeriesEntryPoint(const index_t & j) const ;
 
 
 		/*! gets a reference to the array of data.
@@ -973,6 +982,9 @@ namespace LinBox {
 		 * @param[in,out] style a reference to a PlotStyle class.
 		 */
 		PlotStyle & refStyle( PlotStyle & style) ;
+
+		PlotStyle & refStyle( )
+		{ return _style_ ; }
 
 
 		// not implemented yet

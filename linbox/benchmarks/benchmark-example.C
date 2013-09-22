@@ -230,7 +230,7 @@ void launch_bench_rank(const Field &F, const std::string & name
 
 	// double mflops = computeMFLOPS(TW.times(),mm_mflops(i,i,i));
 
-	Data.addEntry("Rank (Blackbox)",name,TW.time(),(double)Mat.size(),TW.time());
+	Data.setSeriesEntry("Rank (Blackbox)",name,TW.time(),(double)Mat.size(),TW.time());
 	Data.addCurrentEntryMetaData(mmd);
 	// Data.addCurrentSerieMetaData(mmd);
 	// Data.addMetaData(mmd);
@@ -249,7 +249,7 @@ void launch_bench_rank(const Field &F, const std::string & name
 	}
 
 	Data.selectSeries("Rank (SparseElimination)");
-	Data.addCurrentSeriesEntry(name,TW.time(),(double)Mat.size(),TW.time());
+	Data.setCurrentSeriesEntry(name,TW.time(),(double)Mat.size(),TW.time());
 	Data.addCurrentEntryMetaData(mmd);
 
 }
@@ -293,6 +293,10 @@ void bench_rank(int carac)
 
 	// Graph.plot();
 
+	Graph.print(Tag::Printer::gnuplot);
+
+	// change style
+	Graph.refStyle().setTerm(LinBox::PlotStyle::Term::png);
 	Graph.print(Tag::Printer::gnuplot);
 
 	Graph.print(Tag::Printer::xml);

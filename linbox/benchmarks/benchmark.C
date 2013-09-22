@@ -55,10 +55,10 @@ namespace LinBox {
 			for (index_t j = 0 ;  j < getCurrentSerieSize() ; ++j)
 			{
 				XMLElement * point = doc.NewElement ( "point" );
-				point->SetAttribute("x",unfortifyString(getCurrentSeriesPointLabel(j)).c_str());
-				point->SetAttribute("y",getCurrentSeriesEntry(j));
-				point->SetAttribute("time",getCurrentSeriesEntryTime(j));
-				point->SetAttribute("xval",getCurrentSeriesEntryPoint(j));
+				point->SetAttribute("x",unfortifyString(getCurrentSeriesEntry(j,Point::Labels() )).c_str());
+				point->SetAttribute("y",getCurrentSeriesEntry(j,Point::Values() ));
+				point->SetAttribute("time",getCurrentSeriesEntry(j,Point::Times() ));
+				point->SetAttribute("xval",getCurrentSeriesEntry(j,Point::Points() ));
 				point->SetAttribute("id",getCurrentSeriesId(j).c_str());
 
 				serie->InsertEndChild( point );
@@ -288,16 +288,6 @@ namespace LinBox {
 		return setSeriesPointLabel(_curr_serie_,j,nom);
 	}
 
-	const std::string & PlotData::getSeriesPointLabel(const index_t &i, const index_t & j) const
-	{
-		linbox_check(j<getSerieSize(i));
-		return(getSeries(i).PointLabels[j]) ;
-	}
-
-	const std::string & PlotData::getCurrentSeriesPointLabel(const index_t & j) const
-	{
-		return getSeriesPointLabel(_curr_serie_,j);
-	}
 
 	std::string  PlotData::getSerieLabel(const index_t & i) const
 	{
@@ -308,35 +298,11 @@ namespace LinBox {
 		return(_serie_label_[i]);
 	}
 
-	std::string PlotData::getCurrentSerieLabel() const
-	{
-		return getSerieLabel(_curr_serie_);
-	}
-
 	const svector_t &  PlotData::getSerieLabels() const
 	{
 		return _serie_label_ ;
 	}
 
-	const svector_t & PlotData::getSeriePointLabel( const index_t & i) const
-	{
-		return(getSeries(i).PointLabels) ;
-	}
-
-	const svector_t & PlotData::getCurrentSeriesPointLabel() const
-	{
-		return getSeriePointLabel(_curr_serie_);
-	}
-
-	const dvector_t & PlotData::getSeriesValues(const index_t & i) const
-	{
-		return(getSeries(i).Values) ;
-	}
-
-	const dvector_t & PlotData::getCurrentSeriesValues() const
-	{
-		return getSeriesValues(_curr_serie_);
-	}
 
 	void PlotData::setSeriesEntry(const index_t &i, const std::string & nam, const double & val
 				      , const double & xval , const double & yval)
@@ -346,52 +312,11 @@ namespace LinBox {
 		return ;
 	}
 
-	void PlotData::addEntry(const std::string & nom, const std::string & nam, const double & val
+	void PlotData::setSeriesEntry(const std::string & nom, const std::string & nam, const double & val
 				, const double & xval, const double & yval)
 	{
 		selectSeries(nom);
 		return setCurrentSeriesEntry(nam,val,xval,yval);
-	}
-
-	void PlotData::addCurrentSeriesEntry(const std::string & nam, const double & val
-				, const double & xval, const double & yval)
-	{
-		return setSeriesEntry(_curr_serie_,nam,val,xval,yval);
-	}
-
-	double PlotData::getSeriesEntry(const index_t & i, const index_t & j) const
-	{
-		linbox_check(i<size());
-		linbox_check(j<getSerieSize(i));
-
-		return getSeries(i).Values[j] ;
-	}
-
-	double PlotData::getCurrentSeriesEntry(const index_t & j) const
-	{
-		return getSeriesEntry(_curr_serie_,j);
-	}
-
-	double PlotData::getSeriesEntryTime(const index_t &i, const index_t & j) const
-	{
-		linbox_check(j<getSerieSize(i));
-		return getSeries(i).Times[j] ;
-	}
-
-	double PlotData::getCurrentSeriesEntryTime(const index_t & j) const
-	{
-		return getSeriesEntryTime(_curr_serie_,j);
-	}
-
-	double PlotData::getSeriesEntryPoint(const index_t & i, const index_t & j) const
-	{
-		linbox_check(j<getSerieSize(i));
-		return getSeries(i).Points[j] ;
-	}
-
-	double PlotData::getCurrentSeriesEntryPoint(const index_t & j) const
-	{
-		return getSeriesEntryPoint(_curr_serie_,j);
 	}
 
 	const std::vector<DataSeries > & PlotData::getTable() const
@@ -612,6 +537,10 @@ namespace LinBox {
 		case (Term::eps) :
 			term += "postscript eps noenhanced color" ;
 			break;
+		case (Term::epstex) :
+			term += "epslatex color colortext" ;
+			break;
+
 		case (Term::svg) :
 			term += "svg" ;
 			break;
@@ -635,6 +564,8 @@ namespace LinBox {
 			return ".pdf" ;
 		case (Term::eps) :
 			return ".eps" ;
+		case (Term::epstex) :
+			return ".tex" ;
 		case (Term::svg) :
 			return ".svg" ;
 		default :
@@ -1255,8 +1186,8 @@ namespace LinBox {
 		void PlotGraph::mergeSeries()
 		{
 			_data_. selectFirstSeries();
-			_merge_points_ = _data_.getCurrentSeriesPointLabel() ;
-			_merge_data_[0] = _data_.getCurrentSeriesValues() ;
+			_merge_points_ = _data_.getCurrentSeries( Point::Labels() ) ;
+			_merge_data_[0] = _data_.getCurrentSeries( Point::Values() ) ;
 
 			// std::cout << "merge points " << _merge_points_ << std::endl;
 			// std::cout << "merge data   " << _merge_data_ << std::endl;
@@ -1268,7 +1199,7 @@ namespace LinBox {
 				// std::cout << "new data   " << _data_.getCurrentSeriesValues() << std::endl;
 
 				mergeTwoSeries(_merge_points_,_merge_data_,
-					       _data_. getCurrentSeriesPointLabel(), _data_. getCurrentSeriesValues(),i);
+					       _data_. getCurrentSeries( Point::Labels() ), _data_. getCurrentSeries( Point::Values() ),i);
 
 				// std::cout << "result : " << std::endl;
 				// std::cout << "merge points " << _merge_points_ << std::endl;
