@@ -35,7 +35,7 @@ OPTIM="--enable-optimization"
 OPTIM_VAR=""
 CHECK_VAR=""
 #options
-PREFIX_LOC="/home/saunders/software"
+PREFIX_LOC="/tmp"
 PREFIX_VAR=""
 PREFIX="--prefix=$PREFIX_LOC"
 BLAS=""

@@ -28,7 +28,7 @@
 
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/algorithms/blas-domain.h"
-#include "linbox/matrix/matrix-domain.h"
+ainclude "linbox/matrix/matrix-domain.h"
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/timer.h"
@@ -527,12 +527,12 @@ namespace LinBox
 				size_t nbrprimes=1;
 				RandomFFTPrime fftprime((int)bit, FFT_PRIME_SEED);
 				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
-				lprimes[0] = fftprime.randomPrime();
+				lprimes[0] = fftprime.generatePrime();
 				primesprod = lprimes[0];
 				while (primesprod < ibound) {
 					++nbrprimes;
 					lprimes.resize(nbrprimes);
-					do {lprimes[nbrprimes-1] = fftprime.randomPrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
+					do {lprimes[nbrprimes-1] = fftprime.generatePrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
 					primesprod *= lprimes[nbrprimes-1];
 				}
 #ifdef FFT_TIMING
@@ -643,12 +643,12 @@ namespace LinBox
 				size_t nbrprimes=1;
 				RandomFFTPrime fftprime((int)bit, FFT_PRIME_SEED);
 				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
-				lprimes[0] = fftprime.randomPrime();
+				lprimes[0] = fftprime.generatePrime();
 				primesprod = lprimes[0];
 				while (primesprod < ibound) {
 					++nbrprimes;
 					lprimes.resize(nbrprimes);
-					do {lprimes[nbrprimes-1] = fftprime.randomPrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
+					do {lprimes[nbrprimes-1] = fftprime.generatePrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
 					primesprod *= lprimes[nbrprimes-1];
 				}
 
@@ -780,12 +780,12 @@ namespace LinBox
 			integer primesprod=1; size_t nbrprimes=1;
 			RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
 			std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
-			lprimes[0] = fftprime.randomPrime();
+			lprimes[0] = fftprime.generatePrime();
 			primesprod = lprimes[0];
 			while (primesprod < ibound) {
 				++nbrprimes;
 				lprimes.resize(nbrprimes);
-				do {lprimes[nbrprimes-1] = fftprime.randomPrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
+				do {lprimes[nbrprimes-1] = fftprime.generatePrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
 				primesprod *= lprimes[nbrprimes-1];
 			}
 #ifdef FFT_TIMING
@@ -897,12 +897,12 @@ namespace LinBox
 				integer primesprod=1; size_t nbrprimes=1;
 				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
 				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
-				lprimes[0] = fftprime.randomPrime();
+				lprimes[0] = fftprime.generatePrime();
 				primesprod = lprimes[0];
 				while (primesprod < ibound) {
 					++nbrprimes;
 					lprimes.resize(nbrprimes);
-					do {lprimes[nbrprimes-1] = fftprime.randomPrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
+					do {lprimes[nbrprimes-1] = fftprime.generatePrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
 					primesprod *= lprimes[nbrprimes-1];
 				}
 

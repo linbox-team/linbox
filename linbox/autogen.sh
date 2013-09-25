@@ -63,15 +63,6 @@ DIE=0
 LIBTOOL=libtool
 LIBTOOLIZE=libtoolize
 
-# Fix OSx problem with GNU libtool
-(uname -a|grep -v Darwin) < /dev/null > /dev/null 2>&1 ||
-{
-echo "....Adding fix for OSX"
-LIBTOOL=glibtool
-LIBTOOLIZE=glibtoolize
-}
-
-
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
 	echo
 	echo "You must have autoconf installed to compile $PROJECT."
