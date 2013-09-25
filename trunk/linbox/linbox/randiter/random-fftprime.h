@@ -119,7 +119,7 @@ namespace LinBox
 		}
                 
                 // generate a vector of distinct FFT primes with largest 2-valuation
-                inline vector<Prime_Type> generatePrimes (vector<Prime_Type>& primes) const {
+                inline std::vector<Prime_Type> generatePrimes (std::vector<Prime_Type>& primes) const {
                         size_t pos = 0;
                         size_t k= primes.size();
                         integer tmp;
