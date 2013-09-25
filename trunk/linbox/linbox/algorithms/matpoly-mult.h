@@ -28,7 +28,7 @@
 
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/algorithms/blas-domain.h"
-ainclude "linbox/matrix/matrix-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/timer.h"
