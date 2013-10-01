@@ -44,6 +44,13 @@
 #include <string>
 #include "linbox/integer.h"
 #include "linbox/field/gf2.h"
+//#include "linbox/domain/blas_matrix_domain_gf2.h"
+// defines template<> class BlasMatrixDomain<GF2> { ... };
+// ... and template<> BlasMatrix<GF2> {}
+#include "linbox/field/gf3.h"
+//#include "linbox/domain/blas_matrix_domain_gf3.h"
+// defines template<> class BlasMatrixDomain<GF3> { ... };
+// ... and template<> BlasMatrix<GF3> {}
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-balanced.h"
 #include "linbox/field/givaro.h"
@@ -56,6 +63,7 @@
 #include "linbox/randiter/nonzero.h"
 #include "linbox/util/commentator.h"
 #include "linbox/algorithms/blas-domain.h"
+//#include "linbox/domain/blas-matrix_domain.h"
 #include "linbox/field/PID-integer.h"
 // #include "linbox/algorithms/matrix-hom.h"
 
@@ -71,6 +79,121 @@ using namespace LinBox;
 const int maxpretty = 35;
 
 string blank;
+
+const char* pretty(string a)
+;
+template <class Field>
+static bool testMulAdd (const Field& F, size_t n, int iterations)
+;
+template <class Field>
+static bool testMulAddAgain (const Field& , size_t n, int iterations)
+;
+template <class Field>
+static bool testMulAddShapeTrans (const Field &F, size_t m, size_t n, size_t k, int iterations)
+;
+template<class Field, bool LeftSide, bool UnitDiag>
+static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int iterations)
+;
+template <class Field>
+static bool testRank (const Field& F,size_t n, int iterations)
+;
+template <class Field>
+static bool testDet (const Field& F,size_t n, int iterations)
+;
+template <class Field>
+static bool testInv (const Field& F,size_t n, int iterations)
+;
+template <class Field>
+static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterations)
+;
+template <class Field>
+static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
+;
+template <class Field>
+static bool testPermutation (const Field& F, size_t m, int iterations)
+;
+template <class Field>
+static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
+;
+template <class Field>
+static bool testMinPoly (const Field& F, size_t n, int iterations)
+;
+template <class Field>
+static bool testCharPoly (const Field& F, size_t n, int iterations)
+;
+template<class Field>
+static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n)
+;
+template<class Field>
+int launch_tests(Field & F, size_t n, int iterations)
+;
+bool launch_gf2_tests(GF2 & F, size_t n)
+;
+bool launch_gf3_tests(GF3 & F, size_t n)
+;
+
+// test BlasMatrixDomain<Field> for various fields
+int main(int argc, char **argv)
+{
+
+	static size_t n = 40;
+	static integer q = 1000003U;
+	static int iterations = 2;
+
+    static Argument args[] = {
+        { 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
+        { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1]",  TYPE_INTEGER, &q },
+        { 'i', "-i I", "Perform each test for I iterations",    TYPE_INT,     &iterations },
+	END_OF_ARGUMENTS
+    };
+
+	parseArguments (argc, argv, args);
+
+	// BB. (Blas)MatrixDomain are not very generic...
+
+	bool pass = true;
+	srand ((unsigned)time (NULL));
+
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator().start("BlasMatrixDomain test suite", "BlasMatrixDomain");
+
+	Modular<double> F1 (q);
+	//Modular<int> F1 (q);
+	pass &= launch_tests(F1,n,iterations);
+
+#pragma message "#warning GF2 -> working on m4ri wrapper"
+	GF2 F2 ;
+	pass &= launch_gf2_tests(F2,n);
+
+#pragma message "#warning GF3 -> working on sliced wrapper"
+	GF3 F3 ;
+	pass &= launch_gf3_tests(F3,n);
+
+	ModularBalanced<double> F4(q);
+	pass &= launch_tests(F4,n,iterations);
+
+	Modular<float> F5(2011);
+	pass &= launch_tests(F5,n,iterations);
+
+#pragma message "#warning GivaroZpz is not working at all"
+	GivaroZpz<Givaro::Unsigned32> F6(2001);
+	// pass &= launch_tests(F6,n,iterations);
+
+//#pragma message "#warning Modular<bool> is not working"
+	Modular<bool> F7 ;
+	//pass &= launch_tests(F7,n,iterations);
+
+#ifdef __LINBOX_HAVE_NTL
+#pragma message "#warning NTL_ZZp is not working at all"
+	NTL::ZZ_p::init(NTL::to_ZZ((size_t)q));
+	NTL_ZZ_p F8;
+	// pass &= launch_tests(F8,n,iterations);
+#endif
+
+	commentator().stop(MSG_STATUS (pass), (const char *) 0,"BlasMatrixDomain test suite");
+	return pass ? 0 : -1;
+}
 
 const char* pretty(string a)
 {
@@ -1548,7 +1671,8 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 }
 
 template<class Field>
-static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n) {
+static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n)
+{
 	bool pass = true;
 	typedef typename Field::Element Element;
 	BlasMatrixDomain<Field> BMD(Fld);
@@ -1633,66 +1757,20 @@ int launch_tests(Field & F, size_t n, int iterations)
 
 }
 
-int main(int argc, char **argv)
+bool launch_gf2_tests(GF2 & F, size_t n)
 {
-
-	static size_t n = 40;
-	static integer q = 1000003U;
-	static int iterations = 2;
-
-    static Argument args[] = {
-        { 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
-        { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1]",  TYPE_INTEGER, &q },
-        { 'i', "-i I", "Perform each test for I iterations",    TYPE_INT,     &iterations },
-	END_OF_ARGUMENTS
-    };
-
-	parseArguments (argc, argv, args);
-
-	typedef Modular<double> Field;
-	//typedef Modular<int> Field;
-	//typedef Modular<float> Field;
-
-	Field F1 (q);
-	ModularBalanced<double> F2(q);
-	Modular<float> F3(2011);
-	GF2 F4 ;
-	GivaroZpz<Givaro::Unsigned32> F5(2001);
-	Modular<bool> F6 ;
-	// BB. (Blas)MatrixDomain are not very generic...
-#ifdef __LINBOX_HAVE_NTL
-	NTL::ZZ_p::init(NTL::to_ZZ((size_t)q));
-	NTL_ZZ_p F7;
-#endif
-
-
 	bool pass = true;
-
-	srand ((unsigned)time (NULL));
-
-
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-
-	commentator().start("BlasMatrixDomain test suite", "BlasMatrixDomain");
-
-	pass &= launch_tests(F1,n,iterations);
-	pass &= launch_tests(F2,n,iterations);
-	pass &= launch_tests(F3,n,iterations);
-#pragma message "#warning GF2 is not working at all -> working on m4ri"
-	// pass &= launch_tests(F4,n,iterations);
-	// pass &= launch_tests(F6,n,iterations);
-#pragma message "#warning GivaroZpz is not working at all"
-	// pass &= launch_tests(F5,n,iterations);
-#ifdef __LINBOX_HAVE_NTL
-#pragma message "#warning NTL_ZZp is not working at all"
-	// pass &= launch_tests(F7,n,iterations);
-#endif
-
-	commentator().stop(MSG_STATUS (pass), (const char *) 0,"BlasMatrixDomain test suite");
-	return pass ? 0 : -1;
+	//pass = pass and testRank(F, n, 1);
+	return pass ;
 }
 
+bool launch_gf3_tests(GF3 & F, size_t n)
+{
+	bool pass = true;
+	//pass = pass and testRank(F, n, 1);
+	//pass = pass and launch_tests(F, n, 1); // fails with std BlasMatrixDomain
+	return pass ;
+}
 
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
