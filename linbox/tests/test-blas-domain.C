@@ -1761,6 +1761,8 @@ bool launch_gf2_tests(GF2 & F, size_t n)
 {
 	bool pass = true;
 	//pass = pass and testRank(F, n, 1);
+	//pass = pass and testDet(F, n, 1);
+	//pass = pass and testMulAdd(F, n, 1);
 	return pass ;
 }
 
