@@ -584,7 +584,7 @@ namespace LinBox
 		linbox_check( a < LinBox::BlasBound);
 		BlasMatrix<Field> B(A);
 		BlasMatrixDomain<Field> D(F);
-		r = D.rank(B);
+		r = D.rankin(B);
 		commentator().stop ("done", NULL, "blasrank");
 		return r;
 	}
