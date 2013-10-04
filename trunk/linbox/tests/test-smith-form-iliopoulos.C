@@ -31,20 +31,24 @@
 
 
 
-#include "linbox/field/ntl.h"
-#include "linbox/field/modular.h"
+//#include "linbox/field/ntl.h"
+//#include "linbox/field/modular.h"
+#include "linbox/field/PID-integer.h"
 #include "linbox/field/PIR-ntl-ZZ_p.h"
 #include "linbox/field/PIR-modular-int32.h"
-#include "linbox/integer.h"
+//#include "linbox/integer.h"
 #include "linbox/randiter/random-prime.h"
-#include "linbox/algorithms/last-invariant-factor.h"
+//#include "linbox/algorithms/last-invariant-factor.h"
 #include "linbox/algorithms/smith-form-iliopoulos.h"
-#include "linbox/algorithms/rational-solver.h"
-#include <time.h>
+#include "linbox/algorithms/blas-domain.h"
+//#include "linbox/algorithms/rational-solver.h"
+//#include <time.h>
 #include "linbox/util/commentator.h"
-#include "linbox/vector/stream.h"
+//#include "linbox/vector/stream.h"
 #include "test-common.h"
 #include "linbox/algorithms/matrix-hom.h"
+#include "linbox/solutions/det.h"
+#include <iostream>
 
 #ifndef __LINBOX_HAVE_NTL
 #error "you can't compile this test without NTL enabled. Please make sure you configured Linbox with --with-ntl=path/to/ntl"
@@ -54,221 +58,99 @@
 
 using namespace LinBox;
 
-template <class Ring, class Vector>
-bool testRandom(const Ring& R,
-		LinBox::VectorStream<Vector>& stream1)
+template <class Ring>
+bool testRead(const Ring& R, string file) {
+	BlasMatrix<Ring> A(R);
+	BlasMatrixDomain<Ring> BMD(R);
+	std::ifstream data(file);
+	A.read(data);
+	size_t m = A.rowdim();
+	size_t n = A.coldim();
+	BlasMatrix<Ring> U(R, m, m), V(R, n, n), B(R, m, n);
+	/* random unimodular
+	BMD.randomNonsingular(U);
+	BMD.randomNonsingular(V);
+	*/
+	for (size_t i = 0; i < m; ++i)
+	{	for (size_t j = 0; j < m; ++j)
+			U.setEntry(i, j, R.zero);
+		U.setEntry(i, i, R.one);
+	}
+	for (size_t i = 0; i < n; ++i)
+	{	for (size_t j = 0; j < n; ++j)
+			V.setEntry(i, j, R.zero);
+		V.setEntry(i, i, R.one);
+	}
+	BMD.copy(B, A);
+	BMD.mulin_left(B,V);
+	BMD.mulin_right(U,B);
+	SmithFormIliopoulos::smithFormIn (B);
+	return BMD.areEqual(A, B);
+}
+
+template <class Ring>
+bool testRandom(const Ring& R, size_t n)
 {
+        bool pass = true;
 
+        commentator().start ("Testing Iloipoulos elimination:", "testRandom");
 	using namespace std;
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	ostringstream str;
+	BlasMatrixDomain<Ring> BMD(R);
+	BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
-	str << "Testing Iloipoulos elimination:";
+	// D is Smith Form
+	const int m = 16; 
+	int p[m] = {1,1,1,1,1,1,2, 2, 2, 4, 3, 3, 3, 5, 7, 101};
+	typename Ring::Element x, y; 
+	R.init(x, 1);
+	if (n > 0) D.setEntry(0,0,x);
+	for(size_t i = 1; i < n; ++i){ 
+		R.init(y, p[rand()%m]);
+		D.setEntry(i,i, R.mulin(x, y));
+	}
+	if (n > 0) D.setEntry(n-1,n-1, R.zero);
 
-        commentator().start (str.str ().c_str (), "testRandom", stream1.m ());
-
-        bool ret = true;
-
-
-        VectorDomain<Ring> VD (R);
-
-	Vector d(R), x(R);
-
-	VectorWrapper::ensureDim (d, stream1.n ());
-
-	VectorWrapper::ensureDim (x, stream1.n ());
-
-	int n = (int)d. size();
-
-	 while (stream1) {
-
-                commentator().startIteration ((unsigned)stream1.j ());
-
-		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-
-                bool iter_passed = true;
-
-                stream1.next (d);
-
-		report << "Input vector:  ";
-		VD.write (report, d);
-                report << endl;
-
-		BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
-
-		int i, j;
-
-		for(i = 0; i < n; ++i) { R. assign (D[(size_t)i][(size_t)i], d[(size_t)i]); R. init (L[(size_t)i][(size_t)i], 1); R. init (U[(size_t)i][(size_t)i], 1);}
-
-		for (i = 0; i < n; ++ i)
-
-			for (j = 0; j < i; ++ j) {
-
-				R.init(L[(size_t)i][(size_t)j], rand() % 10);
-
-				R.init(U[(size_t)j][(size_t)i], rand() % 10);
-			}
-
-
-		BlasVector<Ring> tmp1(R,(size_t)n), tmp2(R,(size_t)n), e(R,(size_t)n);
-
-		typename BlasMatrix<Ring>::ColIterator col_p;
-
-		i = 0;
-		for (col_p = A.colBegin(); col_p != A.colEnd(); ++ col_p, ++ i) {
-
-			R.init(e[(size_t)i],1);
-			U.apply(tmp1, e);
-			D.apply(tmp2, tmp1);
-			L.apply(*col_p, tmp2);
-			R.init(e[(size_t)i],0);
+	// L and U are random unit triangular.
+	for (size_t i = 0; i < n; ++ i) {
+		for (size_t j = 0; j < i; ++ j) {
+			L.setEntry(i,j, R.init(x, rand() % 10));
+			U.setEntry(j,i, R.init(x, rand() % 10));
 		}
-
-
-
-		typename Ring::Element s;
-
-		R. init (s, 1);
-
-		typename Vector::iterator d_p;
-
-		for(d_p = d.begin(); d_p!= d.end(); ++ d_p)
-
-			R. lcm (s, s, *d_p);
-
-		report << "Last Invariant factor: " ;
-
-		R. write (report, s);
-
-		report << '\n';
-
-
-		if (s >= LINBOX_MAX_MODULUS) {
-
-			report << "Using PIR_ntl_ZZ_p\n";
-
-			PIR_ntl_ZZ_p PIR(s);
-
-			BlasMatrix<PIR_ntl_ZZ_p> Ap(PIR, A.rowdim(), A.coldim());
-
-			MatrixHom::map (Ap, A, PIR);
-
-			SmithFormIliopoulos::smithFormIn (Ap);
-
-			report << "Computed Smith form: \n";
-
-			for ( unsigned int ii = 0; ii < A. rowdim(); ++ ii)
-				report << Ap[(size_t)ii][(size_t)ii] << " ";
-
-			report << '\n';
-
-			int ii = 0;
-
-			typename BlasVector<Ring>::iterator p1;
-
-
-			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ ii) {
-
-				if (PIR.isZero(Ap[(size_t)ii][(size_t)ii]))
-
-					R.assign (*p1, s);
-
-				else
-
-					R.assign (*p1, NTL::rep(Ap[(size_t)ii][(size_t)ii]));
-			}
-		}
-
-		else {
-
-			report << "Using PIRModular<int32_t>\n";
-
-			PIRModular<int32_t> PIR( (int32_t)(s % LINBOX_MAX_MODULUS));
-
-			BlasMatrix<PIRModular<int32_t> > Ap(PIR, A.rowdim(), A.coldim());
-
-			MatrixHom::map (Ap, A, PIR);
-
-			SmithFormIliopoulos::smithFormIn (Ap);
-
-
-			report << "Computed Smith form: \n";
-
-			for ( unsigned int ii = 0; ii < A. rowdim(); ++ ii)
-				report << Ap[(size_t)ii][(size_t)ii] << " ";
-
-			report << '\n';
-
-
-			typename BlasVector<Ring>::iterator p1;
-			int ii = 0;
-
-			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ ii) {
-				if (PIR.isZero(Ap[(size_t)ii][(size_t)ii]))
-					R.assign (*p1, s);
-				else
-					R.init (*p1, Ap[(size_t)ii][(size_t)ii]);
-			}
-		}
-
-		typename BlasVector<Ring>::iterator p1, p2;
-
-		typename Ring::Element g;
-
-		for (p1 = d.begin(); p1 != d.end(); ++ p1) {
-
-			for ( p2 = p1 + 1; p2 != d.end(); ++ p2) {
-
-				if (R. isUnit(*p1))  break;
-
-				else if (R. isZero (*p2)) continue;
-
-				else if (R. isZero (*p1)) {
-                                                std::swap (*p1, *p2);
-				}
-
-				else {
-					R. gcd (g, *p1, *p2);
-
-					R. divin (*p2, g);
-
-					R. mulin (*p2, *p1);
-
-					R. assign (*p1, g);
-				}
-			}
-		}
-
-
-		report << "Expected smith form:\n";
-
-		for (p1 = d.begin(); p1 != d.end(); ++ p1)
-			report << * p1 << " ";
-
-		report << '\n';
-
-		if (!VD.areEqual (d, x))
-
-			ret = iter_passed = false;
-
-                if (!iter_passed)
-
-                        commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Computed Smith form is incorrect" << endl;
-
-
-
-                commentator().stop ("done");
-
-                commentator().progress ();
-
-	 }
-
-	 //stream1.reset ();
-
-	  commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
-
-	  return ret;
+		L.setEntry(i,i, R.one);
+		U.setEntry(i,i, R.one);
+	}
+
+	// A is ULDU	
+	BMD.mul(A, U, L);
+	BMD.mulin_left(A, D);
+	BMD.mulin_left(A, U);
+
+	D.write( report << "Smith form matrix:\n  " ) << endl; 
+	A.write( report << "input matrix:\n " ) << endl; 
+//	SmithFormIliopoulos::smithFormIn (A);
+//	A.write( report << "smith of input matrix direct:\n " ) << endl; 
+
+	report << "Using PIRModular<int32_t>\n";
+	typename Ring::Element d; R.init(d,1);//16*101*5*7*9); 
+	for (int i = 0; i < n-1; ++i) R.mulin(d, D.getEntry(x, i, i));
+	R.write(report << "modulus: ", d) << endl;
+	//det(d, D);
+	//PIRModular<int32_t> Rd( (int32_t)(s % LINBOX_MAX_MODULUS));
+	PIRModular<int32_t> Rp( (int32_t)d);
+	BlasMatrix<PIRModular<int32_t> > Ap(Rp, n, n), Dp(Rp, n, n);
+	MatrixHom::map (Ap, A, Rp);
+
+	SmithFormIliopoulos::smithFormIn (Ap);
+
+	Ap.write( report << "Computed Smith form: \n") << endl;
+	MatrixHom::map (Dp, D, Rp);
+	BlasMatrixDomain<PIRModular<int32_t> > BMDp(Rp);
+	pass = pass and BMDp.areEqual(Dp, Ap);
+
+	commentator().stop (MSG_STATUS (pass), (const char *) 0, "testRandom");
+	return pass;
 
 }
 
@@ -278,31 +160,21 @@ int main(int argc, char** argv)
         using namespace LinBox;
 
         bool pass = true;
-
-        static size_t n = 20;
-
-        static int iterations = 1;
-
+        static size_t n = 2;
         static Argument args[] = {
                 { 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,     &n },
-                { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		END_OF_ARGUMENTS
         };
-
-
         parseArguments (argc, argv, args);
 
-        typedef NTL_ZZ      Ring;
-
-        Ring R;
-
 	commentator().start("Ilioloulos Smith Form test suite", "Ilioloulos");
-
         commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-        RandomDenseStream<Ring> s1 (R, n, (unsigned int)iterations);
+        PID_integer R; // Ring of integers
+        //NTL_ZZ R;
 
-        if (!testRandom(R, s1)) pass = false;
+        if (!testRandom(R, n)) pass = false;
+//        if (!testRead(R, "data/Ismith.mat")) pass = false;
 
 	commentator().stop("Ilioloulos Smith Form test suite");
         return pass ? 0 : -1;
