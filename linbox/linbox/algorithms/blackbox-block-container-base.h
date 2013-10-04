@@ -201,7 +201,6 @@ public:
                         MulHelper<Field,Block>::mul(field(),M1,M2,M3);
                 }
 
-
 		/// User Left and Right blocks
 		void init (const Block& U, const Block& V)
 		{

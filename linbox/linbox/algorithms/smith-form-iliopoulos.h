@@ -32,10 +32,10 @@
 namespace LinBox
 {
 
-	/** \brief This is Iliopoulos' algorithm do diagonalize.
+	/** \brief This is Iliopoulos' algorithm to diagonalize.
 
-	 * Compute Smith Form by elimination modulo m, for some modulus m such
-	 * as S(n), the last invariant factor.
+	 * Compute Smith Form by elimination modulo m, 
+	 * for m = S(n), the last invariant factor.
 	 * The elimination method is originally described in
 	 * @bib
 	 * <i>Worst Case Complexity Bounds on Algorithms for computing the Canonical
@@ -106,7 +106,10 @@ namespace LinBox
 
 					Element g, s, t;
 
-					r. dxgcd (g, s, t, y2, y1, *row_p1, *row_p2);
+					//r. dxgcd (g, s, t, y2, y1, *row_p1, *row_p2);
+					r. xgcd (g, s, t, *row_p1, *row_p2);
+					r.div(y2, *row_p1, g);
+					r.div(y1, *row_p2, g);
 
 					r. negin (y1);
 
@@ -265,7 +268,10 @@ namespace LinBox
 
 					col_p2 = col_p1 + 1;
 
-					r.dxgcd(g, s, t, y2, y1, *col_p1, *col_p2);
+					//r.dxgcd(g, s, t, y2, y1, *col_p1, *col_p2);
+					r. xgcd (g, s, t, *col_p1, *col_p2);
+					r.div(y2, *col_p1, g);
+					r.div(y1, *col_p2, g);
 
 					r. negin (y1);
 
@@ -377,7 +383,7 @@ namespace LinBox
 			cur_r = A.rowBegin();
 			row_p = cur_r -> begin();
 
-			tmp = * (A.rowBegin() -> begin());
+			tmp = *row_p;// (A.rowBegin() -> begin());
 
 			if (r.isZero(tmp)) return true;
 
@@ -399,14 +405,15 @@ namespace LinBox
 
 			if (A.rowdim() == 0 || A.coldim() == 0) return A;
 
-
-			do {
+			//eliminationCol (A, r);
+			//if (!check(A, r))
+			  do {
 
 				eliminationRow (A, r);
 
 				eliminationCol (A, r);
-			}
-			while (!check(A, r));
+			  }
+			  while (!check(A, r));
 
 			typedef typename SubMatrixTraits<Matrix>::value_type sub_mat_t ;
 
@@ -431,12 +438,6 @@ namespace LinBox
 			Ring r (A.field());
 
 			typename Matrix::RowIterator row_p;
-
-			Element zero, one;
-
-			r. init (zero, 0);
-
-			r. init (one, 1);
 
 			diagonalizationIn(A, r);
 

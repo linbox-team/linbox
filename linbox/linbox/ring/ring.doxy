@@ -25,9 +25,34 @@
 
   \brief LinBox rings, ring wrappers, ring construction tools.
 
-  LinBox rings implement the ring concept,
-  inheriting from the field concept,
-  as it is defined in the ring archetype.
+  LinBox ring classes implement the BasicRing concept,
+  which has the same members as the field concept.
+  The difference is that some functions have different semantics.  Specifically,
+  inv and div are partial functions.
+
+  Some ring classes extend BasicRing:
+
+  The PIR concept (principal ideal ring) has, beyond BasicRing,
+  \c gcd(g, a, b),  g = (a,b), greatest common divisor of a, b.
+  \c gcd(g, s, a, b),  g = (a,b) = sa modulo b. s < b/g.
+  \c gcd(g, s, t, a, b),  g = (a,b) = sa + tb, s < b/g, t < a/g.
+  \c gcd(g, s, t, u, v, a, b),  (a,b) = g = sa + tb, u = a/g, v = b/g.
+  \c gcdin(g, a), g = (g,a)
+  \c lcm(), \c isUnit(), \c isZeroDivisor().
+
+  The PID concept (principal ideal domain) has the same members as the PIR concept,
+  but it is promised that there are no zero divisors.
+
+  The LocalPIR concept has the members of PIR, but 
+  there is a unique prime ideal.  Some algorithms exploit this.
+
+  Local2_32 exploits a few additional functions and the type \c Exponent.  
+  This concept could be used for other small rings extending tiny fields as well.
+
+  Example of BasicRing: Modular<int32_t> when the modulus may be non-prime.
+  Example of PIR: PIRModular
+  Example of PID: PIDInteger.
+  Example of LocalPIR: Local2_32.
 
  */
 

@@ -388,6 +388,8 @@ namespace LinBox
 			return os << I;
 		}
 
+		inline Element & normalIn(Element & a) const { return a; }
+
 	protected:
 		/*! Rational number reconstruction.
 		* \f$\frac{n}{d} \equiv f \mod m\f$, with \f$\vert n
