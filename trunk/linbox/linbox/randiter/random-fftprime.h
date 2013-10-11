@@ -25,7 +25,8 @@
 
 #ifndef __LINBOX_random_fftprime_H
 #define __LINBOX_random_fftprime_H
-
+#include <vector>
+using namespace std;
 #include "linbox/integer.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/timer.h"
