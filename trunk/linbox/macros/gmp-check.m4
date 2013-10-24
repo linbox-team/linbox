@@ -37,11 +37,11 @@ AC_DEFUN([LB_CHECK_GMP], [
 				Otherwise you give the <path> to the directory which contain the library.
 				])],
 		[if test "$withval" = yes ; then
-			GMP_HOME_PATH="/usr"
+			GMP_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	         elif test "$withval" != no ; then
-			GMP_HOME_PATH="$withval"
+			GMP_HOME_PATH="$withval ${DEFAULT_CHECKING_PATH}"
 	        fi],
-			[GMP_HOME_PATH=" /usr"])
+			[GMP_HOME_PATH="${DEFAULT_CHECKING_PATH}"])
 
 		min_gmp_version=ifelse([$1], ,4.0.0,$1)
 
