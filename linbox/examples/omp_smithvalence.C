@@ -42,7 +42,10 @@ int main (int argc, char **argv)
 
 
 	if (argc < 2 || argc > 4) {
-		std::cerr << "Usage: valence <matrix-file-in-supported-format> [-ata|-aat|valence] [coprime]" << std::endl;
+		std::cerr << "Usage: omp_smithvalence <matrix-file-in-supported-format> [-ata|-aat|valence] [coprime]" << std::endl;
+        std::cerr << "       Optional parameters valence and coprime are integers." << std::endl;
+        std::cerr << "       Prime factors of valence will be used for local computation." << std::endl;
+        std::cerr << "       coprime will be used for overall rank computation." << std::endl;
 		return -1;
 	}
 
