@@ -55,9 +55,9 @@ int main (int argc, char **argv)
 	// long unsigned int r;
 
 	if (argc == 4) {
-		LinBox::int64_t p = atoi(argv[2]);
-		LinBox::int64_t q = atoi(argv[3]);
-		typedef GivaroZpz<Std64> Field;
+		int64_t p = atoi(argv[2]);
+		int64_t q = atoi(argv[3]);
+		typedef GivaroZpz<Givaro::Std64> Field;
 		Field F(q);
 		MatrixStream<Field> ms( F, input );
 		SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
@@ -74,9 +74,9 @@ int main (int argc, char **argv)
 
 
 		std::cout << "Local Smith Form : (";
-		for (std::vector<std::pair<size_t,size_t> >::const_iterator  p = local.begin();
-		     p != local.end(); ++p)
-			std::cout << p->first << " " << p->second << ", ";
+		for (std::vector<std::pair<size_t,size_t> >::const_iterator  ip = local.begin();
+		     ip != local.end(); ++ip)
+			std::cout << ip->first << " " << ip->second << ", ";
 		cout << ")" << endl;
 
 

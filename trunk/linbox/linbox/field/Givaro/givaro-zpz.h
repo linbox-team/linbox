@@ -41,6 +41,7 @@
 #include "linbox/field/field-interface.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
+#include "linbox/util/write-mm.h"
 //-------------------------------------
 // Files of Givaro library
 #include <givaro/givzpz.h>
