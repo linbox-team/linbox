@@ -109,37 +109,37 @@ Givaro::Integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz<Givaro::Std64> >
 
 std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponent, char * filename,Givaro::Integer p, size_t e, size_t intr)
 {
-    effective_exponent = e;
-    Givaro::Integer maxmod;
+	effective_exponent = e;
+	Givaro::Integer maxmod;
 	LinBox::FieldTraits<LinBox::GivaroZpz<Givaro::Std64> >::maxModulus(maxmod);
 	if (p <= maxmod) {
-		typedef LinBox::GivaroZpz<Givaro::Std64> Ring;
-		int64_t lp(p);
-        Givaro::Integer q = pow(p,e); int64_t lq(q);
-		if (q >Givaro::Integer(lq)) {
-			std::cerr << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
-                // << "Such a large composite is not yet implemented ..." << std::endl;
-			q = p; lq = (int64_t)q;
-            for(effective_exponent=1; q == Givaro::Integer(lq); ++effective_exponent) {
-				q *= p; lq = (int64_t)q;
-			}
-			q/=p; --effective_exponent; lq = (int64_t)q;
-			std::cerr << "First trying: " << lq << " (=" << p << '^' << effective_exponent << ", without further warning this will be sufficient)." << std::endl;
+	    typedef LinBox::GivaroZpz<Givaro::Std64> Ring;
+	    int64_t lp(p);
+            Givaro::Integer q = pow(p,e); int64_t lq(q);
+	    if (q >Givaro::Integer(lq)) {
+		std::cerr << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
+		q = p; 
+                for(effective_exponent=1; q <= Ring::getMaxModulus(); ++effective_exponent) {
+			q *= p; 
 		}
-		Ring F(lq);
-		std::ifstream input(filename);
-		LinBox::MatrixStream<Ring> ms( F, input );
-		LinBox::SparseMatrix<Ring, LinBox::Vector<Ring>::SparseSeq > A (ms);
-		input.close();
-		LinBox::PowerGaussDomain< Ring > PGD( F );
+		q/=p; --effective_exponent; 
+		lq = (int64_t)q;
+		std::cerr << "First trying: " << lq << " (=" << p << '^' << effective_exponent << ", without further warning this will be sufficient)." << std::endl;
+	    }
+	    Ring F(lq);
+	    std::ifstream input(filename);
+	    LinBox::MatrixStream<Ring> ms( F, input );
+	    LinBox::SparseMatrix<Ring, LinBox::Vector<Ring>::SparseSeq > A (ms);
+	    input.close();
+	    LinBox::PowerGaussDomain< Ring > PGD( F );
 
-                LinBox::Timer tim; tim.clear(); tim.start();
-		PGD.prime_power_rankin( lq, lp, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
-                tim.stop();
-		F.write(std::cerr << "Ranks over ") << " are " ;
-		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-			std::cerr << *rit << ' ';
-		std::cerr << ' ' << tim << std::endl;
+            LinBox::Timer tim; tim.clear(); tim.start();
+	    PGD.prime_power_rankin( lq, lp, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
+            tim.stop();
+	    F.write(std::cerr << "Ranks over ") << " are " ;
+	    for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
+		std::cerr << *rit << ' ';
+	    std::cerr << ' ' << tim << std::endl;
 	}
 	else {
 		std::cerr << "*** WARNING *** Sorry power rank mod large composite not yet implemented" << std::endl;
@@ -155,7 +155,6 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effective_exponent, char * filename, size_t e, size_t intr)
 {
     effective_exponent = e;
-    typedef uint64_t RingElements;
     if (e > 63) {
         std::cerr << "Power rank power of two might need extra large composite (2^" << e << ")." << std::endl;
         std::cerr << "First trying: 63, without further warning this will be sufficient)." << std::endl;

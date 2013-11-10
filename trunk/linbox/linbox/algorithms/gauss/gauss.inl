@@ -253,7 +253,6 @@ namespace LinBox
 						    unsigned long   Nj) const
 	{
 		typedef typename Matrix::Row        Vector;
-		typedef typename Vector::value_type E;
 
 		// Requirements : LigneA is an array of sparse rows
 		// In place (LigneA is modified)
@@ -393,7 +392,6 @@ namespace LinBox
 						    unsigned long   Nj) const
 	{
 		typedef typename Matrix::Row        Vector;
-		typedef typename Vector::value_type E;
 
 		// Requirements : LigneA is an array of sparse rows
 		// In place (LigneA is modified)
@@ -555,7 +553,7 @@ namespace LinBox
 		<< "Gaussian elimination on " << Ni << " x " << Nj << " matrix" << std::endl;
 
 		typedef typename Matrix::Row          Vector;
-		typedef typename Vector::value_type   E;
+		// typedef typename Vector::value_type   E;
 		// typedef typename Matrix::Element      Elem;
 
 #ifdef __LINBOX_COUNT__

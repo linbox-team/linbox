@@ -134,7 +134,6 @@ namespace LinBox
 		 */
 		Integer& denominator(Integer& di, const int i) const {
 			if (_denAi[(size_t)i]==1) {
-				typedef typename QMatrix::ConstRow::const_iterator EltIterator;
 				for (size_t j=0; j < _matA->coldim(); ++j) {
 					Integer d;
 					_ratField.get_den(d,_matA->getEntry((size_t)i,(size_t)j));
@@ -202,7 +201,6 @@ namespace LinBox
 		 * optimization: computes normAprim, normAprim, rationalNormat the same time
 		 */
 		Integer getNorms(Integer& ratnorm, Integer& normaprim, Integer& normatilde) const {
-			typedef typename QMatrix::ConstRow::const_iterator EltIterator;
 			ratnorm = 0L; normaprim=0L; normatilde= 0L;
 			Integer da=1L;
 			std::vector<integer> di(_matA->rowdim(),1L);
