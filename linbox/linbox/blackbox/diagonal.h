@@ -418,7 +418,6 @@ namespace LinBox
 		_field(&F), _n(n), _v(F,n)
 	{
 		typename Field::RandIter r(F);
-		typedef typename BlasVector<Field>::iterator iter;
 		if (nonsing)
 			randomNonsingular();
 		else

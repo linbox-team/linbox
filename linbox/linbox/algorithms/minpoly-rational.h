@@ -164,8 +164,6 @@ namespace LinBox
 							       const BlasMatrix<Rationals > &A,
 							       const MyMethod &Met=  Method::Hybrid())
 	{
-
-		typedef Modular<double> myModular;
 		typedef typename Rationals::Element Quotient;
 
 		commentator().start ("Rational Minpoly", "Rminpoly");

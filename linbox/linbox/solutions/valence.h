@@ -82,7 +82,6 @@ namespace LinBox
 						    const MyMethod& M)
 	{
 		typedef typename Blackbox::Field Field;
-		typedef typename Field::Element Elt_t;
 		BlasVector<Field> minp(A.field());
 		minpoly(minp, A, tag, M);
 		typename BlasVector<Field>::const_iterator it = minp.begin();
