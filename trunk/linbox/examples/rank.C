@@ -91,6 +91,10 @@ int main (int argc, char **argv)
 		*/
 		//to use ints, prime < 2^{31}
 		int32_t q = atoi(argv[2]);
+                if (q == 0) {
+                        std::cerr << "second argument should be a non-zero integer or missing\n";
+                        return -1;
+                }
 		typedef Modular<int32_t> Field;
 
 		Field F(q);
