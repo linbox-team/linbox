@@ -4,7 +4,6 @@ file docs of examples fixed
 file docs of */archetype.h removed
 eliminate */archetype.doxy's ?
 eliminate randiter/randiters.doxy's ?
-resolve modular-balance-int32 vs modular-int32 wierdness (same ifndef, can't coexist?).
 ------- older below -----------
  - Test suite for random iterators
  - Test suite for vector stream
