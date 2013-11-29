@@ -229,7 +229,6 @@ namespace LinBox
 	{
 		std::cerr<<"in singular solver\n";
 
-		typedef BlasVector<Field> FVector;
 		typedef BlasVector<Ring>  IVector;
 		typedef SparseMatrix<Field>                  FMatrix;
 
@@ -1401,9 +1400,6 @@ namespace LinBox
 
 		linbox_check(A.rowdim() == A.coldim());
 		linbox_check(A.rowdim() % blocksize == 0);
-
-		typedef typename Field::Element Element_t;
-
 
 
 		// reduce the matrix mod p

@@ -164,8 +164,7 @@ namespace LinBox
 						   const MyMethod                 &Met=  Method::Hybrid())
 	{
 
-		typedef Modular<double>            myModular;
-		typedef typename Rationals::Element Quotient;
+// 		typedef typename Rationals::Element Quotient;
 		typedef BlasVector<PID_integer>       IVect ;
 
 		commentator().start ("Rational Det", "Rdeterminant");
