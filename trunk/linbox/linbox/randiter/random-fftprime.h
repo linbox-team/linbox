@@ -124,9 +124,9 @@ namespace LinBox
                         size_t pos = 0;
                         size_t k= primes.size();
                         integer tmp;
-                        for (int b = _bits - 1; b >= 0; b--)
-                                for (int l = (1 << (_bits - b - 1)) + 1; l < (1 << (_bits - b)); l +=2) {
-                                        tmp = (1 << b) * l + 1;
+                        for (long b = (long)_bits - 1; b >= 0; b--)
+                                for (long l = (1L << (_bits - b - 1)) + 1; l < (1L << (_bits - b)); l +=2) {
+                                        tmp = (1L << b) * l + 1;
                                         if (Givaro::probab_prime(tmp, 25) >= 1) { 
                                                 primes[pos] = tmp;
                                                 pos++;
