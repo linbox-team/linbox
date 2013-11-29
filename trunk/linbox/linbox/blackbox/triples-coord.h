@@ -37,7 +37,8 @@
 namespace LinBox
 {
 
-typedef size_t Index;
+//typedef size_t Index;
+    typedef uint64_t Index;
 
 union TriplesCoord {
         Index rowCol[2];

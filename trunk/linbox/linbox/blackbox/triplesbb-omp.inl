@@ -427,10 +427,10 @@ OutVector & TriplesBBOMP<Field_>::applyTranspose(OutVector & y, const InVector &
 }
 
 template<class Field_>
-size_t TriplesBBOMP<Field_>::rowdim() const { return rows_; }
+Index TriplesBBOMP<Field_>::rowdim() const { return rows_; }
 
 template<class Field_>
-size_t TriplesBBOMP<Field_>::coldim() const { return cols_; }
+Index TriplesBBOMP<Field_>::coldim() const { return cols_; }
 
 template<class Field_>
 const Field_& TriplesBBOMP<Field_>::
