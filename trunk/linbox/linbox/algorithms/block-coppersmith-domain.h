@@ -737,7 +737,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 			}
 			std::vector<size_t> get_deg()
 			{
-				std::vector<size_t> gendegree(&_deg[0], &_deg[_col-1]);
+				std::vector<size_t> gendegree(&_deg[0], &_deg[_col]);
 				return gendegree;
 			}
 		}; //End of BM_iterator
