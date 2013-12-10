@@ -55,6 +55,7 @@
 using namespace std;
 
 
+//#include "linbox/util/matrix-stream.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
@@ -117,7 +118,12 @@ int main(int argc, char* argv[])
 		typedef PID_integer Ints;
 		Ints Z;
 		BlasMatrix<Ints> M(Z);
-		Mat(M, Z, n, src, file, format);
+
+		std::ifstream input (file);
+		//MatrixStream<Ints> ms(Z, input);
+		M.read(input);
+		//Mat(M, Z, n, src, file, format);
+
 		BlasVector<PID_integer> v(Z,(size_t)n);
 		T.start();
 		SmithFormAdaptive::smithForm(v, M);

@@ -187,7 +187,8 @@ int main (int argc, char **argv)
 	     dit != SmithDiagonal.end(); ++dit) {
 		if (*dit == si) ++num;
 		else {
-			std::cerr << '[' << si << ',' << num << "] ";
+			if (num > 0)
+				std::cerr << '[' << si << ',' << num << "] ";
 			num=1;
 			si = *dit;
 		}

@@ -173,7 +173,7 @@ namespace LinBox
 			report << "      Done \n";
 		}
 		else {
-			std::cout << "Compute local smith at " << p << '^' << e << std::endl;
+			std::cerr << "Compute local smith at " << p << '^' << e << std::endl;
 			std::cerr << "Not implemented yet.\n";
 		}
 		return;
@@ -429,6 +429,7 @@ namespace LinBox
 			if (Val == 1) {
 				smithFormVal (s, A, r, e);
 				report << "Computation of the invariant factors ends." << std::endl;
+				//cerr << "Computation of the invariant factors ends." << std::endl;
 				return;
 			}
 			else
@@ -509,16 +510,20 @@ namespace LinBox
 
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
+		//cerr << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
-		report << "Computation of the rank starts:\n";
+
+		report << "Computation of the rank starts:" << std::endl;
 		typedef typename BlasMatrix<IRing>::Field Ring;
 		unsigned long r;
 		MatrixRank<Ring, Modular<int32_t> > MR;
 		r = (unsigned long)MR. rank (A);
-		report << "   Matrix rank over a random prime field: " << r << '\n';
+		report << "   Matrix rank over a random prime field: " << r << std::endl;
 		report << "Computation of the rank finished.\n";
+		// a hack
+		if (r == 0) { for (size_t i = 0; i < order; ++i) s[i]=0; return; }
 		const long* prime_p;
 		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
 

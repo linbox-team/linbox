@@ -1592,12 +1592,16 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	if (k >= m) k = m/2+1 ;
 
-
 	Modular<uint32_t>                F1 (q);
 	ModularBalanced<int32_t>         F2 (q2);
 	GivaroZpz<Givaro::Unsigned32>    F3(q);
+	/*
 	if (q2 < q/2)
 		std::cerr <<"...étrange..." << std::endl;
+	This is in the modular-balanced maxModulus 
+	// (p-1)(p+1)/4 < 2^{31}
+	92681;
+	*/
 
 	commentator().start("Matrix domain test suite", "MatrixDomain");
 
@@ -1607,9 +1611,9 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (3);
 
-	pass &= launchTestMatrixDomain(F1,m,n,k,iterations);
-	pass &= launchTestMatrixDomain(F2,m,n,k,iterations);
-	pass &= launchTestMatrixDomain(F3,m,n,k,iterations);
+	pass = pass and launchTestMatrixDomain(F1,m,n,k,iterations);
+	pass = pass and launchTestMatrixDomain(F2,m,n,k,iterations);
+	pass = pass and launchTestMatrixDomain(F3,m,n,k,iterations);
 
 	commentator().stop (MSG_STATUS (pass), "Matrix domain test suite");
 	return pass ? 0 : -1;

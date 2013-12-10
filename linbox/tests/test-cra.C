@@ -544,10 +544,10 @@ int main(int ac, char ** av)
 
 	/*  Argument parsing/setting */
 
-	static size_t       n = 50;    /*  Taille */
+	static size_t       n = 30;    /*  Taille */
 	static size_t       p = 22;    /*  PrimeSize */
 	// static size_t    seed =  0;    /*  ! unused */
-	static size_t   iters = 20;    /* _LB_REPEAT */
+	static size_t   iters = 2;    /* _LB_REPEAT */
 
         static Argument as[] = {
                 { 'n', "-n N", "Set number of primes.", TYPE_INT , &n },

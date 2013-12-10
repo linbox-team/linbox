@@ -45,8 +45,10 @@ namespace LinBox__FORMAT_MATRIX_MARKET_H
 namespace LinBox
 {
 
+#if 0
 #ifndef __LINBOX_integer_H
 	class integer;
+#endif
 #endif
 
 #if 1 /* Unused */

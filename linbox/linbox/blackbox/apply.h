@@ -1387,12 +1387,12 @@ namespace LinBox
 				D.convert(*(chunks+i), *it);
 		else {
 			for (size_t i=0; i<mn; ++i, ++it) {
-		size_t tmpsize, tmpbitsize, j;
+		size_t tmpsize, /*tmpbitsize,*/ j;
 				integer tmp;
 				double* pdbl = chunks + i*num_chunks;
 				D.convert(tmp, *it);
 				tmpsize    = tmp.size();
-				tmpbitsize = tmp.bitsize();
+				//tmpbitsize = tmp.bitsize();
 
 				if (tmp ==0)
 					*pdbl=0;
@@ -1402,6 +1402,7 @@ namespace LinBox
 
 #if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
+						size_t tmpbitsize = tmp.bitsize();
 						for (j=0; j<tmpsize-1; j++) {
 							*pdbl     =  double(tmp[j] & 0xFFFFFFFF);
 							*(pdbl+1) =  double(tmp[j] >> 32);

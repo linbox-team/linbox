@@ -113,7 +113,8 @@ namespace LinBox
 			break;
 
 		case SS_SINGULAR:
-			std::cerr<<"switching to singular\n";
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << "switching to singular" << std::endl;
+			//std::cerr<<"switching to singular\n";
 			status=solveSingular(num, den,A,b);
 			break;
 
@@ -497,7 +498,8 @@ namespace LinBox
 			break;
 
 		case SS_SINGULAR:
-			std::cerr<<"switching to singular\n";
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << "could switch to singular but not doing it(?)" << std::endl;
+			//std::cerr<<"switching to singular\n";
 			//status=solveSingular(num, den,A,b);
 			break;
 
@@ -1042,7 +1044,7 @@ namespace LinBox
 					if (level == SL_CERTIFIED) lastCertificate.copy(cert);
 					return SS_INCONSISTENT;
 				}
-				std::cout<<"system is suspected to be inconsistent but it was only a bad prime\n";
+				commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) << "system is suspected to be inconsistent but it was only a bad prime" << std::endl;
 				continue; // try new prime. analogous to u.A12 != A22 in Muld.+Storj.
 			}
 

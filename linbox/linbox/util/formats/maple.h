@@ -39,6 +39,7 @@
 
 #include <string>
 #include <sstream>
+#include <cstring>
 #include "linbox/util/matrix-stream.h"
 
 #if 0

@@ -258,7 +258,11 @@ namespace LinBox { /* BlasVector */
 
 		BlasVector (const _Field &F, const uint32_t &m, const Element e=Element())  :
 			Father_t(),
-			_size((size_t)m),_1stride(1),_rep((size_t)_size, e),_ptr(&_rep[0]),_field(&F)
+			_size((size_t)m),
+			_1stride(1),
+			_rep((size_t)_size, e),
+			_ptr(&_rep[0]),
+			_field(&F)
 		{
 	// Father_t is garbage until then:
 			setIterators();

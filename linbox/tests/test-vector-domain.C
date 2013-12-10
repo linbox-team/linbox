@@ -38,8 +38,10 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
+#include "linbox/field/gf2.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/vector/vector-domain.h"
+#include "linbox/vector/vector-domain-gf2.h"
 #include "linbox/vector/stream.h"
 
 #include "test-vector-domain.h"
@@ -141,6 +143,7 @@ int main (int argc, char **argv)
 	Modular<uint32_t> F_uint32_t ((uint32_t) q2);
 	Modular<uint16_t> F_uint16_t ((uint16_t) q3);
 	Modular<uint8_t> F_uint8_t ((uint8_t) q4);
+	GF2 gf2(2);
 
 	commentator().start("Vector domain test suite", "VectorDomain");
 
@@ -153,6 +156,7 @@ int main (int argc, char **argv)
 	if (!testVectorDomain (F_uint32_t, "Modular <uint32_t>", n, iterations)) pass = false;
 	if (!testVectorDomain (F_uint16_t, "Modular <uint16_t>", n, iterations)) pass = false;
 	if (!testVectorDomain (F_uint8_t, "Modular <uint8_t>", n, iterations)) pass = false;
+//	if (!testVectorDomain (gf2, "GF2", n, iterations)) pass = false;
 
 	commentator().stop("Vector domain test suite");
 	return pass ? 0 : -1;

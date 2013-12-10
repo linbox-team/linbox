@@ -194,7 +194,8 @@ namespace LinBox
 		int *P = new int[n];
 		int ierr = clapack_dgetrf (order, n, n, M, lda, P);
 		if (ierr != 0) {
-			std::cerr << "In RationalSolver::cblas_dgeinv Matrix is not full rank" << std::endl;
+			commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) 
+			/*std::cerr*/ << "In RationalSolver::cblas_dgeinv Matrix is not full rank" << std::endl;
 			delete[] P ;
 			return -1;
 		}
