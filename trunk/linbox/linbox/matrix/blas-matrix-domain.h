@@ -46,6 +46,7 @@
 
 #include <fflas-ffpack/ffpack/ffpack.h>
 #include <fflas-ffpack/fflas/fflas.h>
+//#include <linbox/matrix/f3las.h>
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/matrix/permutation-matrix.h"

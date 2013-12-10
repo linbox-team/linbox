@@ -756,6 +756,7 @@ namespace LinBox
                 typedef Self_t                    subMatrixType;    //!< Submatrix type
                 typedef BlasMatrix<Field,Rep>        matrixType;    //!< matrix type
                 typedef BlasMatrix<Field,Rep>          blasType;    //!< blas matrix type
+                typedef BlasVector<Field>          vectorType;    //!< blas matrix type
 
 
 	protected:
@@ -796,6 +797,7 @@ namespace LinBox
 		 * \param M Pointer to @ref BlasMatrix of which to construct submatrix
 		 */
 		BlasSubmatrix (const matrixType &M);
+		BlasSubmatrix (const vectorType &V); 
 
 
 		/** Constructor from an existing submatrix and dimensions
