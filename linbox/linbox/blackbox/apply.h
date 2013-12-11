@@ -1424,6 +1424,7 @@ namespace LinBox
 						++tmp;
 #if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
+						size_t tmpbitsize = tmp.bitsize();
 						for (j=0; j<tmpsize; j++) {
 							*pdbl     = double(0xFFFFFFFF ^ ( tmp[j] & 0xFFFFFFFF));
 							*(pdbl+2) = double(0xFFFFFFFF ^ ( tmp[j] >> 32));
