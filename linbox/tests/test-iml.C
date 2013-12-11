@@ -61,7 +61,6 @@ bool testIMLrank(const Field &F, size_t m, size_t n, size_t rank, int iterations
 	m += (size_t)Integer::random_lessthan(Integer(10)) ;
 	rank += (size_t)Integer::random_lessthan(Integer(7)) ;
 
-	typedef typename Field::Element			Element;
 	commentator().start ("Testing Rank from IML","testIMLrank",(unsigned int)iterations);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);

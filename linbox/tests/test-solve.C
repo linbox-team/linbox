@@ -522,8 +522,6 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 					     const char                   *text,
 					     Method::Wiedemann::Preconditioner preconditioner)
 {
-	typedef SparseMatrix <Field> Blackbox;
-
 	ostringstream str;
 	str << "Testing singular preconditioned solve (" << text << ")";
 
@@ -727,7 +725,6 @@ static bool testBasicMethodsSolve (const Field &F, size_t n)
 	commentator().start ("Testing Basic Methods Solve");
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-	typedef typename Field::Element Elt;
 	BlasVector<Field> xd(F,n), xh(F,n), xb(F,n), xe(F,n), b(F,n, F.zero);
 	for(size_t i = 0; i < n/2; ++i) b[i] = F.one;
 	//ScalarMatrix<Field> I(F, n/2, F.one), Z(F, n/2, F.zero);

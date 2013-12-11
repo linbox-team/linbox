@@ -203,8 +203,6 @@ namespace LinBox
 			// L.write(std::cout << "L:=",true ) << ';' << std::endl;
 			// L.write(std::cout << "U:=",true ) << ';' << std::endl;
 
-			typedef typename Ring::Element Element;
-
 			MD.mul(A,L,U);
 			// A.write(std::cout << "pre A=",true) << std::endl;
 
@@ -292,7 +290,6 @@ namespace LinBox
 				   , const RingCategories::IntegerTag          &tag
 				 )
 		{
-			typedef typename Field::Element Int ;
 			size_t m = A.rowdim();
 			size_t n = A.coldim();
 
