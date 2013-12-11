@@ -81,7 +81,6 @@ template <class Dom>
 static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 {
 	typedef typename Dom::Element Element;
-	typedef BlasVector<Dom> Vector;
 	typedef ScalarMatrix<Dom> Blackbox;
 	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
 	// typedef BlasVector<Dom,GivPolynomialRing<Dom, Givaro::Dense> > PolDom;
