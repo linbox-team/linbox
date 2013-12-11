@@ -165,7 +165,6 @@ namespace LinBox
 								const MyMethod &Met=  Method::Hybrid())
 	{
 
-		typedef Modular<double> myModular;
 		typedef typename Rationals::Element Quotient;
 
 		commentator().start ("Rational Charpoly", "Rminpoly");

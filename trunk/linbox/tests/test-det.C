@@ -74,7 +74,6 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 {
 	typedef BlasVector<Field> Vector;
 	typedef BlasVector<Field> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
 	commentator().start ("Testing nonsingular diagonal determinant (1)", "testDiagonalDet1", (unsigned int) iterations);
@@ -168,7 +167,6 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 {
 	typedef BlasVector<Field> Vector;
 	typedef BlasVector<Field> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
 	commentator().start ("Testing nonsingular diagonal determinant (2)", "testDiagonalDet2", (unsigned int) iterations);
@@ -260,7 +258,6 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 {
 	typedef BlasVector <Field> Vector;
 	typedef BlasVector <Field> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field> Blackbox;
 
 	commentator().start ("Testing singular diagonal determinant", "testSingularDiagonalDet",(size_t) iterations);

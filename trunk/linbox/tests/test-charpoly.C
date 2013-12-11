@@ -292,7 +292,6 @@ int main (int argc, char **argv)
 	typedef Modular<double> Field;
 	typedef BlasVector<Field> DenseVector;
 	typedef SparseMatrix<Field>::Row SparseVector;
-	typedef SparseMatrix<PID_integer>::Row ZSparseVector;
 	// typedef pair<vector<size_t>, BlasVector<Field> > SparseVector;
 	Field F (q);
 	srand ((unsigned)time (NULL));
