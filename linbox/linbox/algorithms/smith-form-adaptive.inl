@@ -513,7 +513,7 @@ namespace LinBox
 		//cerr << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
-		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
+		const size_t order = (A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 
 		report << "Computation of the rank starts:" << std::endl;
 		typedef typename BlasMatrix<IRing>::Field Ring;
@@ -523,7 +523,7 @@ namespace LinBox
 		report << "   Matrix rank over a random prime field: " << r << std::endl;
 		report << "Computation of the rank finished.\n";
 		// a hack
-		if (r == 0) { for (size_t i = 0; i < order; ++i) s[i]=0; return; }
+		if (r == 0) { for (size_t i = 0; i <  order; ++i) s[i]=0; return; }
 		const long* prime_p;
 		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
 
@@ -586,7 +586,7 @@ namespace LinBox
 		}
 		// bonus assigns to its rough part
 		bonus = gcd (bonus, r_mod);
-		BlasVector<PID_integer> smooth (Z,(size_t)order), rough (Z,(size_t)order);
+		BlasVector<PID_integer> smooth (Z,order), rough (Z,order);
 		smithFormSmooth (smooth, A, (long)r, e);
 		smithFormRough (rough, A, bonus);
 		// fixed the rough largest invariant factor
