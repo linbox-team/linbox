@@ -154,21 +154,21 @@ VD.copy<V1,V2>(v1,v2,i,n)
 VD.areEqual<V1,V2>(v1,v2)
 VD.isZero<V>(v)
 VD.dot<V1,V2>(e,v1,v2) aka dotprod
-VD.add<V1,V2,V3>(v1,v2,v3) 
-VD.addin<V1,V2>(v1,v2) 
-VD.sub<V1,V2,V3>(v1,v2,v3) 
-VD.subin<V1,V2>(v1,v2) 
-VD.neg<V1,V2>(v1,v2) 
-VD.negin<V>(v) 
-VD.mul<V1,V2>(v1,v2,e) 
-VD.mulin<V>(v,e) 
-VD.axpy<V1,V2,V3>(v1,e,v2,v3) 
-VD.axpyin<V1,V2>(v1,e,v2) 
-VD.swap<V1,V2>(v1,v2) 
-VD.random<V>(v) 
+VD.add<V1,V2,V3>(v1,v2,v3)
+VD.addin<V1,V2>(v1,v2)
+VD.sub<V1,V2,V3>(v1,v2,v3)
+VD.subin<V1,V2>(v1,v2)
+VD.neg<V1,V2>(v1,v2)
+VD.negin<V>(v)
+VD.mul<V1,V2>(v1,v2,e)
+VD.mulin<V>(v,e)
+VD.axpy<V1,V2,V3>(v1,e,v2,v3)
+VD.axpyin<V1,V2>(v1,e,v2)
+VD.swap<V1,V2>(v1,v2)
+VD.random<V>(v)
 class Transposition;
 class Permutation;
-VD.permute<V,PI>(v1,pb,pe) 
+VD.permute<V,PI>(v1,pb,pe)
 */
 
 	/** @name Vector Domain
@@ -248,7 +248,7 @@ VD.permute<V,PI>(v1,pb,pe)
 		 * @param  os  output stream to which field element is written.
 		 * @param  x   field element.
 		 */
-		template <class Vector> 
+		template <class Vector>
 		inline std::ostream &write (std::ostream &os, const Vector &x) const
 		{
 			return writeSpecialized (os, x, typename VectorTraits<Vector>::VectorCategory ());

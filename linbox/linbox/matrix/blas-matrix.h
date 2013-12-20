@@ -51,6 +51,7 @@ namespace LinBox
 	namespace Protected
 	{
 
+		//!@bug this does not seem right for float or any non M/modular field
 		template <class Field>
 		bool checkBlasApply(const Field &F, size_t n)
 		{
@@ -100,10 +101,11 @@ namespace LinBox
 		size_t			    _row;
 		size_t			    _col;
 		Rep			    _rep;
-	public: bool		     _use_fflas ; //! @bug why public ?
+	public:
+		bool		     _use_fflas ; //! @bug why public ?
 	protected:
 		pointer			    _ptr;
-	public: const Field		    * _field; //! @bug why public ? 
+	public: const Field		    * _field; //! @bug why public ?
 		MatrixDomain<Field>    _MD; //! @bug why public ?
 	protected:
 		VectorDomain<Field>    _VD;
@@ -797,7 +799,7 @@ namespace LinBox
 		 * \param M Pointer to @ref BlasMatrix of which to construct submatrix
 		 */
 		BlasSubmatrix (const matrixType &M);
-		BlasSubmatrix (const vectorType &V); 
+		BlasSubmatrix (const vectorType &V);
 
 
 		/** Constructor from an existing submatrix and dimensions
