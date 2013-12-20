@@ -81,7 +81,7 @@ string blank;
 
 const char* pretty(string a)
 ;
-template <class Field> bool localAreEqual(Field& F, 
+template <class Field> bool localAreEqual(Field& F,
 	std::vector<typename Field::Element>& a,
 	std::vector<typename Field::Element>& b)
 ;
@@ -210,7 +210,7 @@ const char* pretty(string a)
 }
 #define mycommentator commentator
 
-template <class Field> bool localAreEqual(Field& F, 
+template <class Field> bool localAreEqual(Field& F,
 	std::vector<typename Field::Element>& a,
 	std::vector<typename Field::Element>& b)
 {
@@ -274,22 +274,34 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 		BMD.add(T,A,B);
 		BMD.muladd(R,malpha,D,alpha,T,C);
 
-		if (!BMD.isZero(R))
+		if (!BMD.isZero(R)) {
 			ret=false;
+		}
 
 		// compute z = beta.y + alpha.A*x
+		// std::cout << "beta := " << beta <<  ";"  << std::endl;
+		// std::cout << "y := " <<y <<  ";" << std::endl;
+		// std::cout << "alpha := " << alpha <<  ";" << std::endl;
+		// A.write(std::cout << "A :=",Tag::FileFormat::Maple) << ";" << std::endl;
+		// std::cout << "x := " << x << std::endl;
 
 		BMD.muladd(z,beta,y,alpha,A,x);
+		// std::cout << "z := "<< z << std::endl;
 
+		// std::cout << "#apply" <<std::endl;
 		A.apply(t, x);
 		//MD.vectorMul(t,A,x);
 		for (size_t i=0;i<n;++i){
-		  F.mulin(t[i],alpha);
-		  F.axpyin(t[i],beta,y[i]);
+			F.mulin(t[i],alpha);
+			F.axpyin(t[i],beta,y[i]);
 		}
+		// std::cout << "t := "<< t << std::endl;
 
-		if (!localAreEqual(F,t,z))
+		if (!localAreEqual(F,t,z)){
+			exit(-1);
+			std::cout << "2 alpha = " << alpha << "mod " << F.characteristic() << std::endl;
 			ret=false;
+		}
 	}
 
 	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testMulAdd");
@@ -355,16 +367,16 @@ bool CheckMulAdd(const Field& Zp, const Integer & alpha ,
 		std::cout << "#########################################" << std::endl;
 		std::cout << "p := " << p << ';' << std::endl;
 		std::cout << "ap,bp := " << ap << ',' << bp << ';' << std::endl;
-		Ap.write(std::cout << "Ap :=", Tag::FileMaple) << ";" << std::endl;
-		Bp.write(std::cout << "Bp :=", Tag::FileMaple) << ";" << std::endl;
-		Cp.write(std::cout << "Cp :=", Tag::FileMaple) << ";" << std::endl;
-		Dp.write(std::cout << "Dp :=", Tag::FileMaple) << ";" << std::endl;
-		Ep.write(std::cout << "Ep :=", Tag::FileMaple) << ";" << std::endl;
+		Ap.write(std::cout << "Ap :=", Tag::FileFormat::Maple) << ";" << std::endl;
+		Bp.write(std::cout << "Bp :=", Tag::FileFormat::Maple) << ";" << std::endl;
+		Cp.write(std::cout << "Cp :=", Tag::FileFormat::Maple) << ";" << std::endl;
+		Dp.write(std::cout << "Dp :=", Tag::FileFormat::Maple) << ";" << std::endl;
+		Ep.write(std::cout << "Ep :=", Tag::FileFormat::Maple) << ";" << std::endl;
 		std::cout << "alpha,beta := " << alpha << ',' << beta << ';' << std::endl;
-		A.write(std::cout << "A :=",Tag::FileMaple) << ';' << std::endl;
-		B.write(std::cout << "B :=",Tag::FileMaple) << ';' << std::endl;
-		C.write(std::cout << "C :=",Tag::FileMaple) << ';' << std::endl;
-		D.write(std::cout << "E :=",Tag::FileMaple) << ';' << std::endl;
+		A.write(std::cout << "A :=",Tag::FileFormat::Maple) << ';' << std::endl;
+		B.write(std::cout << "B :=",Tag::FileFormat::Maple) << ';' << std::endl;
+		C.write(std::cout << "C :=",Tag::FileFormat::Maple) << ';' << std::endl;
+		D.write(std::cout << "E :=",Tag::FileFormat::Maple) << ';' << std::endl;
 		std::cout << "evalm(E-alpha*A.B-beta*C);" << std::endl;
 		std::cout << "#########################################" << std::endl;
 #endif
@@ -1728,8 +1740,8 @@ int launch_tests(Field & F, size_t n, int iterations)
 	// no slow test while I work on io
 	if (!testBlasMatrixConstructors(F, n, n))             pass=false;
 	if (!testMulAdd (F,n,iterations))                     pass=false;
-	if (F.cardinality()==F.characteristic() and
-	    !testMulAddAgain (F,n,iterations))                pass=false;
+	if (F.cardinality()==F.characteristic()) if
+	    (!testMulAddAgain (F,n,iterations))                pass=false;
 	size_t m = n+n/2 ; size_t k = 2*n+1 ;
 	if (!testMulAddShapeTrans (F,n,m,k,iterations))       pass=false;
 	if (!testMulAddShapeTrans (F,n,k,m,iterations))       pass=false;

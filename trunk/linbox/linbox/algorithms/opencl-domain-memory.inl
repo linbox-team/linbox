@@ -113,8 +113,9 @@ namespace LinBox{
 				transferSize = (int) ((size_t)(matrixBufferSize - matrixBufferPosition) * sizeof(T));
 			}
 
-			cl_int tempErrcode;
-			tempErrcode = clEnqueueWriteBuffer(
+			// cl_int tempErrcode;
+			// tempErrcode =
+				clEnqueueWriteBuffer(
 				commandQue,
 				matrixBuffer,
 				CL_TRUE,
@@ -171,8 +172,9 @@ namespace LinBox{
 				transferSize = (int) ( (size_t)(matrixBufferSize - matrixBufferPosition) * sizeof(T) );
 			}
 
-			cl_int tempErrcode;
-			tempErrcode = clEnqueueReadBuffer(
+			// cl_int tempErrcode;
+			// tempErrcode =
+				clEnqueueReadBuffer(
 				commandQue,
 				matrixBuffer,
 				CL_TRUE,
