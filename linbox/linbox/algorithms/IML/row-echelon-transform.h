@@ -214,10 +214,10 @@ namespace LinBox{ namespace iml{
 				}
 			}
 			if (count % 2 == 0) {
-				FFLAS::fscal(F,B.rowdim(),B.coldim(),det,B.getPointer(),B.getStride());
+				FFLAS::fscalin(F,B.rowdim(),B.coldim(),det,B.getPointer(),B.getStride());
 			}
 			else {
-				FFLAS::fscal(F,B.rowdim(),B.coldim(),-det,B.getPointer(),B.getStride());
+				FFLAS::fscalin(F,B.rowdim(),B.coldim(),-det,B.getPointer(),B.getStride());
 			}
 			return B;
 		}
@@ -243,7 +243,7 @@ namespace LinBox{ namespace iml{
 			std::vector<Element> Aj(n) ;
 			FFLAS::fcopy(F,n,&(Aj[0]),1,A.getPointer()+(j-1),n);
 			B.apply(C,Aj);
-			FFLAS::fscal(F,n,-1,&C[0],1);
+			FFLAS::fscalin(F,n,-1,&C[0],1);
 			for (i = 0; i < n-1; i++) {
 				for (k = 0; k < n; k++) {
 					B.setEntry(i,k,F.zero);
@@ -255,10 +255,10 @@ namespace LinBox{ namespace iml{
 				FFLAS::fswap(F,n,B.getWritePointer()+(i*n),n,B.getWritePointer()+(i+1)*n,n);
 			}
 			if (count % 2 == 0){
-				FFLAS::fscal(F,B.rowdim(),B.coldim(),det,B.getPointer(),B.getStride());
+				FFLAS::fscalin(F,B.rowdim(),B.coldim(),det,B.getPointer(),B.getStride());
 			}
 			else {
-				FFLAS::fscal(F,B.rowdim(),B.coldim(),-det,B.getPointer(),B.getStride());
+				FFLAS::fscalin(F,B.rowdim(),B.coldim(),-det,B.getPointer(),B.getStride());
 			}
 			return B;
 		}
