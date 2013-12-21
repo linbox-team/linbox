@@ -101,12 +101,12 @@ bool testRandom(const Ring& R, size_t n)
 	BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
 	// D is Smith Form
-	const int m = 16; 
+	const int m = 16;
 	int p[m] = {1,1,1,1,1,1,2, 2, 2, 4, 3, 3, 3, 5, 7, 101};
-	typename Ring::Element x, y; 
+	typename Ring::Element x, y;
 	R.init(x, 1);
 	if (n > 0) D.setEntry(0,0,x);
-	for(size_t i = 1; i < n; ++i){ 
+	for(size_t i = 1; i < n; ++i){
 		R.init(y, p[rand()%m]);
 		D.setEntry(i,i, R.mulin(x, y));
 	}
@@ -122,18 +122,18 @@ bool testRandom(const Ring& R, size_t n)
 		U.setEntry(i,i, R.one);
 	}
 
-	// A is ULDU	
+	// A is ULDU
 	BMD.mul(A, U, L);
 	BMD.mulin_left(A, D);
 	BMD.mulin_left(A, U);
 
-	D.write( report << "Smith form matrix:\n  " ) << endl; 
-	A.write( report << "input matrix:\n " ) << endl; 
+	D.write( report << "Smith form matrix:\n  " ) << endl;
+	A.write( report << "input matrix:\n " ) << endl;
 //	SmithFormIliopoulos::smithFormIn (A);
-//	A.write( report << "smith of input matrix direct:\n " ) << endl; 
+//	A.write( report << "smith of input matrix direct:\n " ) << endl;
 
 	report << "Using PIRModular<int32_t>\n";
-	typename Ring::Element d; R.init(d,1);//16*101*5*7*9); 
+	typename Ring::Element d; R.init(d,16*101);//16*101*5*7*9);
 	for (int i = 0; i < n-1; ++i) R.mulin(d, D.getEntry(x, i, i));
 	R.write(report << "modulus: ", d) << endl;
 	//det(d, D);
