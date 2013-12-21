@@ -41,15 +41,15 @@ using std::ostream;
 namespace LinBox
 {
 
-template<class Field_> TriplesBB<Field_>::
-TriplesBB() : MD_(), data_(), rows_(0), cols_(0), sort_(unsorted) {}
+// template<class Field_> TriplesBB<Field_>::
+// TriplesBB() : MD_(), data_(), rows_(0), cols_(0), sort_(unsorted) {}
 
 template<class Field_> TriplesBB<Field_>::
 ~TriplesBB() {}
 
 template<class Field_> TriplesBB<Field_>::
-TriplesBB(const Field& F, istream& in) 
-: MD_(F), data_(), rows_(0), cols_(0), sort_(unsorted) 
+TriplesBB(const Field& F, istream& in)
+: MD_(F), data_(), rows_(0), cols_(0), sort_(unsorted)
 { read(in); }
 
 template<class Field_> istream& TriplesBB<Field_>::
@@ -100,14 +100,14 @@ operator=(const TriplesBB<Field_> & rhs)
 	return *this;
 }
 
-template<class Field_> 
+template<class Field_>
 template<class Mat1, class Mat2> Mat1& TriplesBB<Field_>::
 // I do not like this need to templatize -bds
 //typename TriplesBB<Field_>::Matrix& TriplesBB<Field_>::
 applyLeft // Y = AX
 	( /*typename TriplesBB<Field_>::Matrix*/Mat1 &Y,
 	  const /*typename TriplesBB<Field_>::Matrix*/Mat2 &X
-	) const 
+	) const
 {	Y.zero();
 	Matrix Yc, Xc;// row submatrices
 	for (Index k = 0; k < data_.size(); ++k) {
@@ -120,12 +120,12 @@ applyLeft // Y = AX
 }
 
 //template<class Field_> typename TriplesBB<Field_>::Matrix& TriplesBB<Field_>::
-template<class Field_> 
+template<class Field_>
 template<class Mat1, class Mat2> Mat1& TriplesBB<Field_>::
 applyRight // Y = XA
 	( /*TriplesBB<Field_>::Matrix*/Mat1 &Y,
 	  const /*typename TriplesBB<Field_>::Matrix*/Mat2 &X
-	) const 
+	) const
 {	Y.zero();
 	Matrix Yr, Xr; // row submatrices
 	for (Index k = 0; k < data_.size(); ++k) {
@@ -137,7 +137,7 @@ applyRight // Y = XA
 	return Y;
 }
 
-template<class Field_> 
+template<class Field_>
 template<class OutVector, class InVector>
 OutVector & TriplesBB<Field_>::apply(OutVector & y, const InVector & x) const
 {
@@ -151,7 +151,7 @@ OutVector & TriplesBB<Field_>::apply(OutVector & y, const InVector & x) const
 	return y;
 }
 
-template<class Field_> 
+template<class Field_>
 template<class OutVector, class InVector>
 OutVector & TriplesBB<Field_>::applyTranspose(OutVector & y, const InVector & x) const
 {

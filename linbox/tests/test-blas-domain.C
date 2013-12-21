@@ -237,11 +237,11 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 
-	Matrix A;
+	Matrix A(F,n,n);
 	for (int k=0;k<iterations; ++k) {
 
 		mycommentator().progress(k);
-		A.init(F, n, n);
+		// A.init(F, n, n);
 		Matrix /*A(F, n,n),*/B(F, n,n),C(F, n,n),D(F, n,n),T(F, n,n),R(F, n,n);
 		std::vector<Element> x(n),y(n),z(n),t(n);
 

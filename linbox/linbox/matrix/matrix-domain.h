@@ -104,7 +104,7 @@ namespace LinBox
 		typedef BlasMatrix<Field,Rep_> OwnMatrix;
 		typedef BlasSubmatrix<OwnMatrix> Matrix;
 
-		MatrixDomain () {/*std::cerr << "MD def cstor" << std::endl;*/ }
+		// MatrixDomain () {/*std::cerr << "MD def cstor" << std::endl;*/ }
 
 		void init(const Field & F) { _field = &F; _VD.init(F); }
 

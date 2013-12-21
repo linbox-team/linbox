@@ -227,11 +227,11 @@ namespace LinBox
 		,_field(&F),_MD(F),_VD(F)
 	{ }
 
-	template < class _Field, class _Rep >
-	BlasMatrix< _Field, _Rep >::BlasMatrix () //:
+	// template < class _Field, class _Rep >
+	// BlasMatrix< _Field, _Rep >::BlasMatrix () //:
 			//_row(0),_col(0),_rep(0),_ptr(NULL),
 			//_field(Field()),_MD(_field ),_VD(_field )
-		{}
+		// {}
 
 	template < class _Field, class _Rep >
 	void BlasMatrix< _Field, _Rep >::init(const _Field &F, size_t r, size_t c)

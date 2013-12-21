@@ -87,7 +87,7 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	
+
 	if (nnz == 0) nnz = m*n/10;
 
 	srand ((unsigned)time (NULL));
@@ -116,12 +116,12 @@ int main (int argc, char **argv)
 	A.applyRight(W, Z);
 
 	// standard constructor
-	TriplesBB<Field> B(F, m, n); 
+	TriplesBB<Field> B(F, m, n);
 	bidiag(B);
 	pass = pass && testBlackbox(B);
 	B.apply(y, x);
 	// default cstor plus init
-	TriplesBB<Field> C;  C.init(F, m, n);
+	TriplesBB<Field> C(F);  C.init(F, m, n);
 	bidiag(C);
 	pass = pass && testBlackbox(C);
 	// check B == C
@@ -131,7 +131,7 @@ int main (int argc, char **argv)
 		LinBox::commentator().report() << "fail: cstor and init disagree" << std::endl;
 	}
 	// copy construction
-	TriplesBB<Field> D(B); 
+	TriplesBB<Field> D(B);
 	pass = pass && testBlackbox(D);
 	// check B == D
 	D.apply(z, x);
@@ -141,7 +141,7 @@ int main (int argc, char **argv)
 	}
 
 	// check that it's deep copy
-	Element a; 
+	Element a;
 	B.getEntry(a,0,0);
 	F.addin(a, F.one);
 	D.setEntry(0,0,a);
