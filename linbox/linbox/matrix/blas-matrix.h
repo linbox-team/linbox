@@ -46,6 +46,9 @@
 #include "linbox/util/matrix-stream.h"
 #include "linbox/field/hom.h"
 
+#include "linbox/field/modular.h" // just for checkBlasApply
+#include "linbox/field/modular-balanced.h" // just for checkBlasApply
+
 namespace LinBox
 { /*  not generic wrt Field (eg NTL_ZZ_p) */
 	namespace Protected
@@ -56,18 +59,45 @@ namespace LinBox
 		bool checkBlasApply(const Field &F, size_t n)
 		{
 
-			integer chara, card;
-			F.characteristic(chara);
-			F.cardinality(card);
+			return false;
+			// integer chara, card;
+			// F.characteristic(chara);
+			// F.cardinality(card);
 
-			if ((chara != card) || chara == 0)
-				return false;
-			else
-				if (n*chara*chara < integer("9007199254740992"))
-					return true;
-				else
-					return false;
+			// if ((chara != card) || chara == 0)
+				// return false;
+			// else
+				// if (n*chara*chara < integer("9007199254740992"))
+					// return true;
+				// else
+					// return false;
 		}
+
+		template<>
+		bool checkBlasApply(const Modular<double> &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const ModularBalanced<double> &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const Modular<float> &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const ModularBalanced<float> &, size_t)
+		{
+			return true;
+		}
+
+
 	}
 }
 
