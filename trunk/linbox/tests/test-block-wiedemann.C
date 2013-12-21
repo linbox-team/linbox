@@ -77,7 +77,7 @@ bool testBlockSolver(Solver & S, Blackbox & M, string desc){
 	s.next (b);
 	VectorDomain<Field> VD (M.field());
 	VD.write (report << "Right-hand side: b =  ", b) << endl;
- 
+
 	S.solveNonSingular(x, M, b);
 
 	VD.write (report << desc << " solution:  ", x) << endl;
@@ -176,4 +176,4 @@ int main (int argc, char **argv)
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

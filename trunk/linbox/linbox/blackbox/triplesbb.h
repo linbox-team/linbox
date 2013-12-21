@@ -65,7 +65,7 @@ namespace LinBox
 
 
 	// Default constructor.
-	TriplesBB();
+	// TriplesBB();
 
 	TriplesBB(const TriplesBB & B);
 
@@ -107,7 +107,7 @@ namespace LinBox
 
 	/** y <- A x.
 	 *
-	 *  Performance will generally be best if A is in cacheOpt order, 
+	 *  Performance will generally be best if A is in cacheOpt order,
 	 *  and rowMajor, colMajor orders are generally better than random.
 	 *
 	 */
@@ -116,7 +116,7 @@ namespace LinBox
 
 	/** y <- A^T x.
 	 *
-	 *  Performance will generally be best if A is in cacheOpt order, 
+	 *  Performance will generally be best if A is in cacheOpt order,
 	 *  and rowMajor, colMajor orders are generally better than random.
 	 *
 	 */
@@ -171,7 +171,7 @@ namespace LinBox
 
 	sortPolicy sort_;
 	// 0 = unsorted, 1 = cache optimized, 2 = row major, 3 = col major.
-	//int sort_; 
+	//int sort_;
 
   }; // TriplesBB
 

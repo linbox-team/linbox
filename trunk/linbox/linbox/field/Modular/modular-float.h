@@ -248,11 +248,6 @@ namespace LinBox
 
 	public:
 		typedef float Element;
-		DotProductDomain() :
-		   _nmax(1)
-		{
-			std::cerr << "it is not safe to use this constructor:" << __func__ << ','  << __FILE__ << ':' << __LINE__ << std::endl;
-		}
 		DotProductDomain (const Modular<float> &F) :
 			VectorDomainBase<Modular<float> > (F)
 			, _bound( (float) ( (1<<23) - (int) (field().modulus*field().modulus)))

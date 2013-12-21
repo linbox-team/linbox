@@ -215,9 +215,9 @@ namespace LinBox
 		*/
 		BlasMatrix (const _Field &F) ;
 
-		/*! Allocates a new bare \f$ 0 \times 0\f$ matrix (unshaped, unready).
-		*/
-		BlasMatrix () ;
+		// /*! Allocates a new bare \f$ 0 \times 0\f$ matrix (unshaped, unready).
+		// */
+		// BlasMatrix () ;
 
 		/// (Re)allocates a new \f$ m \times n\f$ zero matrix (shaped and ready).
 		void init(const _Field & F, size_t r = 0, size_t c = 0);

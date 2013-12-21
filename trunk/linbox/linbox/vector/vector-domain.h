@@ -195,7 +195,7 @@ VD.permute<V,PI>(v1,pb,pe)
 
 		typedef typename Field::Element         Element;
 
-		VectorDomain(): DotProductDomain<Field>() { /*std::cerr << "VD def cstor" << std::endl;*/ }
+		// VectorDomain(): DotProductDomain<Field>() { /*std::cerr << "VD def cstor" << std::endl;*/ }
 
 		void init(const Field& F) { this->_field = &F; }
 
