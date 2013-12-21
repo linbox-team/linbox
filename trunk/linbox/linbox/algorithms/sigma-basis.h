@@ -446,7 +446,7 @@ namespace LinBox
 
 					//PM_domain.midproduct(Serie2,Sigma1,PowerSerie);
 					ComputeNewSerie(Serie2,Sigma1,PowerSerie, degree1, degree2);
-					Serie2.resize(degree2+1);
+					Serie2.resize(degree2+1,ZeroSerie);
 
 #ifdef _BM_TIMING
 					tUpdateSerie.stop();ttUpdateSerie += tUpdateSerie;
@@ -494,11 +494,12 @@ namespace LinBox
 
 			// Reserve memory for the Sigma Base and set SigmaBase[0] to Identity
 			SigmaBase.reserve(length+1);
-			SigmaBase.resize(1);
+			SigmaBase.resize(1,Zero);
 			Coefficient Identity(field(),m,m);
 			for (size_t i=0;i< m;++i)
 				Identity.setEntry(i,i,field().one);
-			SigmaBase[0]=Identity;
+			// SigmaBase.resize(1,Identity) won't work
+			SigmaBase[0] = Identity;
 
 			// Keep track on Sigma Base's row degree
 			// I adjust the degree with the maximal difference between defects
