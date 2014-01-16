@@ -80,7 +80,8 @@ int main(int argc, char **argv)
 
 // random 3 per row matrix
 	size_t *rows, *cols, i;
-	const size_t npr = n / 10000;
+	// const size_t npr = n / 10000;
+	const size_t npr = 3;
 	rows = new size_t[npr * n];
 	cols = new size_t[npr * n];
 

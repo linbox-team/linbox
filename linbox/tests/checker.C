@@ -444,7 +444,7 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  No_build_n_run("test-zo", counter, flag, "constructor problem");
+		  Build_n_run("test-zo",                            counter, flag);
 	  }
 
 /*  section eliminated because Givaro now is required
