@@ -34,6 +34,7 @@
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/zo.h"
+#include "linbox/vector/subvector.h"
 //#include "linbox/blackbox/side-by-side.h"
 //#include "linbox/blackbox/over-under.h"
 
