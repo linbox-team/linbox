@@ -42,31 +42,7 @@
 namespace LinBox
 {
 
-	/** Computes the kernel of a dense matrix using \c LQUP.
-	 *
-	 * Acccording to the dimensions of the input matrix, we chose different methods.
-	 * @warning timings may vary and these choices were made on an experimental basis.
-	 *
-	 * @param F  Field
-	 * @param Side  left or right from \c LinBox::SideTag
-	 * @param m rows
-	 * @param n cols
-	 * @param A input matrix
-	 * @param lda leading dimension of A
-	 * @param Ker Kernel. \c NULL if \c kerdim==0
-	 * @param ldk leading dimension of the kernel.
-	 * @param kerdim dimension of the kernel.
-	 * @return dimension of the kernel.
-	 *
-	 * @warning A is modified.
-	 */
-	template<class Field>
-	size_t
-	NullSpaceBasis (const Field& F, const Tag::Side Side,
-			const size_t & m, const size_t & n,
-			typename Field::Element * A, const size_t & lda,
-			typename Field::Element *& Ker, size_t& ldk,
-			size_t & kerdim) ;
+
 
 	/*! Nullspace of a dense matrix on a finite field.
 	 * A is modified.
@@ -76,13 +52,23 @@ namespace LinBox
 	 * @param[out]    Ker Nullspace of the matrix (Allocated in the routine)
 	 * @param[out]    kerdim rank of the kernel
 	 * @return \p kerdim
+	 *
+	 * @todo make it work for BlasSubmatrix too
 	 */
 	template<class Field>
 	size_t&
-	NullSpaceBasis (const Field& F, const Tag::Side Side,
+	NullSpaceBasisIn (const Tag::Side Side,
 			BlasMatrix<Field> & A,
 			BlasMatrix<Field> & Ker,
 			size_t & kerdim) ;
+
+	template<class DenseMat>
+	size_t&
+	NullSpaceBasisIn (const Tag::Side Side,
+			BlasSubmatrix<DenseMat> & A,
+			BlasMatrix<typename DenseMat::Field> & Ker,
+			size_t & kerdim) ;
+
 
 	/*! Nullspace of a dense matrix on a finite field.
 	 * A is preserved.
@@ -92,18 +78,23 @@ namespace LinBox
 	 * @param[out] Ker Nullspace of the matrix (Allocated in the routine)
 	 * @param[out] kerdim rank of the kernel
 	 * @return \p kerdim
+	 *
+	 * @todo make it work for BlasSubmatrix too
 	 */
 	template<class Field>
 	size_t&
-	NullSpaceBasis (const Field& F, const Tag::Side Side,
+	NullSpaceBasis (const Tag::Side Side,
 			const BlasMatrix<Field> & A,
 			BlasMatrix<Field> & Ker,
-			size_t & kerdim)
-	{
-		BlasMatrix<Field> B (A);
-		return NullSpaceBasis<Field>(F,Side,B,Ker,kerdim);
+			size_t & kerdim) ;
 
-	}
+	template<class DenseMat>
+	size_t&
+	NullSpaceBasis (const Tag::Side Side,
+			const BlasSubmatrix<DenseMat> & A,
+			BlasMatrix<typename DenseMat::Field> & Ker,
+			size_t & kerdim);
+
 
 
 } // LinBox
