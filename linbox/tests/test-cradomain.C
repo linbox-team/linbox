@@ -29,9 +29,9 @@
  */
 
 
-#include "linbox/algorithms/cra-domain.h"
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/blas-domain.h"
+#include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/algorithms/cra-full-multip.h"
 #include "linbox/algorithms/cra-full-multip-fixed.h"
@@ -268,6 +268,7 @@ bool TestCra(size_t N, int S, size_t seed)
 	     Interator, LinBox::RandomPrimeIterator>(
 						     report, iteration, genprime, N, 3*iteration.getLogSize()+15);
 
+#if 0
 	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
 	     InteratorIt, LinBox::RandomPrimeIterator>(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,iteration.getLogSize()+1));
@@ -294,6 +295,7 @@ bool TestCra(size_t N, int S, size_t seed)
 	     InteratorBlas< LinBox::Modular<double> >,
 	     LinBox::RandomPrimeIterator>(
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
+#endif
 
 
         BlasVector<PID_integer>  PrimeSet(Z);

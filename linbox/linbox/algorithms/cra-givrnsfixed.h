@@ -31,6 +31,7 @@
 #define __LINBOX_cra_givrnsfix_H
 
 #include <stdlib.h>
+#include "linbox/vector/blas-vector.h"
 #include <givaro/givrnsfixed.h>
 
 namespace LinBox
@@ -65,8 +66,21 @@ namespace LinBox
 		{
 			for(size_t i=0; i<primes.size(); ++i)
 				_product *= primes[i];
-		 Givaro::Integer::div(_midprod,_product,2);
+			Givaro::Integer::div(_midprod,_product,2);
 		}
+
+		GivaroRnsFixedCRA(const BlasVector<PID_integer>& primes)
+				: Father_t(primes.getRep()), // refRep ?
+				  nbloops(primes.size()),
+				  iterationnumber(0)
+				  , residues(0,BlasVector<PID_integer>(PID_integer()))
+				  , _product(1)
+		{
+			for(size_t i=0; i<primes.size(); ++i)
+				_product *= primes[i];
+			Givaro::Integer::div(_midprod,_product,2);
+		}
+
 
 		Integer& getModulus(Integer& m)
 		{
