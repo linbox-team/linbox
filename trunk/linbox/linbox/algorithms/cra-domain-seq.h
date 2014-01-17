@@ -218,7 +218,6 @@ namespace LinBox
 		/*
 		 *progress for k iterations
 		 */
-
 		template<class Iterator, class Function, class PrimeIterator>
 		bool operator() (const int k, Iterator& res, Function& Iteration, PrimeIterator& primeiter)
 		{

@@ -147,7 +147,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-det",                          counter , flag);
 	build_n_run("test-frobenius",                    counter , flag);
 	build_n_run("test-rank",                         counter , flag/*, "vector (bb) responsible"*/);
-	no_build_n_run("test-qlup",                         counter , flag, "vector (bb) responsible");
+	Build_n_runWarn("test-qlup",                         counter , flag, "GF2 does not compile");
 	build_n_run("test-solve",                        counter , flag);
 	no_build_n_run("test-nullspace",                    counter , flag, "bb or ff responsible");
 	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
@@ -208,7 +208,7 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  No_build_n_run("test-cradomain",                    counter , flag,"intermittent failure, as in 1 every 10-20");
+		  Build_n_runWarn("test-cradomain",                    counter , flag,"most of the test does not compile");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -352,7 +352,7 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  No_build_n_run("test-qlup",                         counter , flag, "vector (bb) responsible");
+		  Build_n_runWarn("test-qlup",                         counter , flag, "GF2 fails to compile");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -488,16 +488,16 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-smith-form-iliopoulos", counter , flag);
 #else
 	if (flag > 0) cout << "	not doing NTL dependent tests" << endl;
-	no_build_n_run("test-ntl-hankel",            counter , flag);
-	no_build_n_run("test-ntl-lzz_p",             counter , flag);
-	no_build_n_run("test-ntl-toeplitz",          counter , flag);
-	no_build_n_run("test-ntl-RR",                counter , flag, "floating point equality");
-	no_build_n_run("test-ntl-sylvester",         counter , flag);
-	no_build_n_run("test-ntl-ZZ_p",              counter , flag);
+	no_build_n_run("test-ntl-hankel",            counter , flag, "no NTL");
+	no_build_n_run("test-ntl-lzz_p",             counter , flag, "no NTL");
+	no_build_n_run("test-ntl-toeplitz",          counter , flag, "no NTL");
+	no_build_n_run("test-ntl-RR",                counter , flag, "no NTL");
+	no_build_n_run("test-ntl-sylvester",         counter , flag, "no NTL");
+	no_build_n_run("test-ntl-ZZ_p",              counter , flag, "no NTL");
 	no_build_n_run("test-toeplitz-det",          counter , flag, "can we have non NTL version?");
-	no_build_n_run("test-smith-form",            counter , flag);
-	no_build_n_run("test-smith-form-adaptive",   counter , flag);
-	no_build_n_run("test-smith-form-iliopoulos", counter , flag);
+	no_build_n_run("test-smith-form",            counter , flag, "no NTL");
+	no_build_n_run("test-smith-form-adaptive",   counter , flag, "no NTL");
+	no_build_n_run("test-smith-form-iliopoulos", counter , flag, "no NTL");
 #endif
 
 #if __LINBOX_HAVE_LIDIA
@@ -505,7 +505,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("./test-lidia-gfq", counter, flag);
 #else
 	if (flag > 0) cout << "	not doing Lidia dependent test" << endl;
-	no_build_n_run("test-lidia-gfq", counter, flag);
+	no_build_n_run("test-lidia-gfq", counter, flag, "no LIDIA");
 #endif
 
 #if __LINBOX_HAVE_ATLAS
@@ -530,7 +530,7 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible");
 	// test-integer-tools -- there is no test-integer-tools.C file
 	// no one has taken these on.
-	no_build_n_run("test-la-block-lanczos",counter,flag,"segfaults");
+	no_build_n_run("test-la-block-lanczos",counter,flag,"operator >> missing");
 #endif
 
 #if 0
