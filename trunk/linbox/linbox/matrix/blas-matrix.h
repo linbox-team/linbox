@@ -54,7 +54,8 @@ namespace LinBox
 	namespace Protected
 	{
 
-		//!@bug this does not seem right for float or any non M/modular field
+		//!@bug this does not seem right for float or any non M/modular field: doing blas wherever we have a fflas-ffpack field (?)
+		//! @bug should return true for some UnparametricField
 		template <class Field>
 		bool checkBlasApply(const Field &F, size_t n)
 		{
@@ -97,6 +98,77 @@ namespace LinBox
 			return true;
 		}
 
+		template<>
+		bool checkBlasApply(const Modular<double>::Father_t &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const ModularBalanced<double>::Father_t &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const Modular<float>::Father_t &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const ModularBalanced<float>::Father_t &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const Modular<int64_t> &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const ModularBalanced<int64_t> &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const Modular<int32_t> &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const ModularBalanced<int32_t> &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const Modular<int64_t>::Father_t &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const ModularBalanced<int64_t>::Father_t &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const Modular<int32_t>::Father_t &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const ModularBalanced<int32_t>::Father_t &, size_t)
+		{
+			return true;
+		}
 
 	}
 }
@@ -1083,7 +1155,7 @@ namespace LinBox
 				FFLAS::fgemv((typename Field::Father_t) _Mat->field(), FFLAS::FflasNoTrans,
 					      _row, _col,
 					      _Mat->field().one,
-					      _Mat->_ptr, getStride(),
+					      _Mat->getWritePointer(), getStride(),
 					      &x[0],ldx,
 					      _Mat->field().zero,
 					      &y[0],ldy);

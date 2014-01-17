@@ -72,8 +72,6 @@ BASIC_TESTS =  \
 	test-cra                      \
 	test-charpoly
 
-#  test-nullspace                \
-#
 
 
 FULLCHECK_TESTS =                 \
@@ -112,6 +110,7 @@ FULLCHECK_TESTS =                 \
         test-block-ring               \
         test-PID-integer              \
         test-moore-penrose            \
+	test-nullspace                \
         test-randiter-nonzero         \
         test-rational-matrix-factory  \
         test-scalar-matrix            \
@@ -590,9 +589,9 @@ test_optimization_SOURCES=    \
         test-common.h         \
         test-optimization.C
 
-#  test_nullspace_SOURCES=    \
-	#  test-common.h      \
-	#  test-nullspace.C
+test_nullspace_SOURCES=    \
+	test-common.h      \
+	test-nullspace.C
 
 test_bitonic_sort_SOURCES=              \
         test-common.h                   \

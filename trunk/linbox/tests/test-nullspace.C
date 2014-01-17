@@ -27,12 +27,16 @@
  * \brief Tests the dense nullspace functions for Zp
  * @ingroup tests
  * @test dense nullspace
+ *  @todo test non dense nullspace
+ *  @todo test for submatrices
+ *  @todo make sure this is faster than FFPACK ?
  */
 
 #include "linbox-config.h"
 #include <iostream>
 #include "linbox/integer.h"
 #include "linbox/matrix/matrix-domain.h"
+#include "linbox/matrix/blas-matrix-domain.h"
 //#include "linbox/field/givaro-zpz.h"
 #include "linbox/field/modular.h"
 //#include "fflas-ffpack/ffpack/ffpack.h"
@@ -62,15 +66,11 @@ using namespace LinBox;
 template <class Field >
 static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank, int iterations, bool a_droite)
 {
-	typedef typename Field::Element			Element;
 
 	//Commentator commentator;
 	//commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	//commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().start ("Testing NullSpace Decomposition","testNullSpace",(unsigned int)iterations);
-	// typename Field::Element one,zero;
-	// F.init(one,1UL);
-	// F.init(zero,0UL);
 
 	bool ret = true;
 	{
@@ -82,78 +82,47 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 	for (int k=0; k<iterations; ++k) {
 
 		commentator().progress(k);
-		Element * A = new Element[m*n];
-		size_t ld_a =  n ;
-		size_t wd_a =  m ;
-		RandomMatrixWithRank(F,A,m,n,rank);
+		BlasMatrix<Field> A(F,m,n+5);
+		BlasSubmatrix<BlasMatrix<Field> > Aref(A,0,0,m,n);
+		RandomMatrixWithRank(F,A.getWritePointer(),m,n,n+5,rank);
 
-		Element * Abis = new Element[m*n]; // copie de A
-		for (size_t i=0; i<m*n; ++i)
-			*(Abis+i) = *(A+i);
-		size_t ker_dim = 0 ; // or coker_dim
-		Element * Kern  = NULL;
-		size_t ld_k = 0 ;
+		//tests on a submatrix (more general/prone to errors)
+		BlasSubmatrix<BlasMatrix<Field> > Abis(A,0,0,m,n);
+		BlasMatrix<Field> Kern(F);
+		size_t ker_dim;
 		if (a_droite) {
-			NullSpaceBasis (F, Tag::Side::Right,m,n,A,ld_a,Kern,ld_k,ker_dim);
-			if (ker_dim != (ld_a - rank)) {
+			NullSpaceBasis (Tag::Side::Right,Abis,Kern,ker_dim);
+			if (ker_dim != (Abis.coldim() - rank)) {
 				ret = false;
-				cout << "faux : (1) mauvaises dim : " << ker_dim << " != " << (ld_a - rank) << endl;
-				delete[] Kern;
-				delete[] A;
-				delete[] Abis;
+				cout << "wrong: (1) bad dim : " << ker_dim << " != " << (Abis.coldim() - rank) << endl;
 				break ;
 			}
 		}
 		else {
-			NullSpaceBasis (F, Tag::Side::Left,m,n,A,ld_a,Kern,ld_k,ker_dim);
-			if (ker_dim != (wd_a - rank) ) {
+			NullSpaceBasis ( Tag::Side::Left,Abis,Kern,ker_dim);
+			if (ker_dim != (Abis.rowdim() - rank) ) {
 				ret = false;
-				cout << "faux : (1) mauvaises dim " << ker_dim << " != " << (wd_a - rank)  << endl;
-				delete[] Kern;
-				delete[] A;
-				delete[] Abis;
+				cout << "wrong : (1) bad dim " << ker_dim << " != " << (Abis.rowdim() - rank)  << endl;
 				break ;
 			}
 		}
-		size_t ld_ker = (a_droite)?ker_dim:m ;
-		size_t wd_ker = (a_droite)?n:ker_dim ;
-		assert(ld_ker == ld_k) ;
-		size_t ld_n = (a_droite)?ker_dim:ld_a;
-		size_t wd_n = (a_droite)?wd_a:ker_dim;
-		assert(CheckRank(F,Kern,wd_ker,ld_ker,ld_ker,ker_dim)); // ...il est bien de rang plein...
-		Element * NullMat = new Element[ld_n*wd_n] ;// ...et on s'attend à ce que ça soit nul !
+
+		assert(CheckRank(F,Kern,ker_dim));
+		BlasMatrix<Field> NullMat(F,(a_droite)?m:ker_dim,(a_droite)?ker_dim:n);
+		BlasMatrixDomain<Field> BMD(F);
 
 		if ( a_droite){
-			FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, wd_a, ld_ker, ld_a,
-				     F.one, Abis, ld_a, Kern, ld_ker , F.zero, NullMat, ld_n);
+			BMD.mul(NullMat,Aref,Kern);
 		}
 		else{
-			FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, wd_ker,ld_a, ld_ker,
-				     F.one,  Kern, ld_ker , Abis, ld_a, F.zero, NullMat, ld_n);
+			BMD.mul(NullMat,Kern,Aref);
 		}
 
-		// write_field (F, std::cout<<"final: NullMat"<<std::endl, NullMat, (int)wd_n, (int)ld_n, (int)ld_n, true);
-		//write_field (F, std::cout<<"A="<<endl, A, m, n, n,true);
-		//write_field (F, std::cout<<"Abis="<<endl, Abis, m, n, n, true);
-		delete[] Abis ;
-		delete[] A ;
-		delete[] Kern ;
-#if 1
-		for (size_t i = 0 ; i < wd_n ; ++i ){
-			for (size_t j = 0 ; j < ld_n ; ++j ) {
-				if (!F.isZero(*(NullMat + j+i*ld_n)) ){
-					    	write_field (F, std::cout<<"faux : (3) NullMat pas nulle. "<<std::endl, NullMat, (int)wd_n, (int)ld_n, (int)ld_n, true);
-					ret = false;
-					break;
-				}
-			}
-			if (!ret)
-				break;
+		if (!BMD.isZero(NullMat)) {
+			std::cout << "wrong (3) NullMat non zero :" << NullMat << std::endl;
+			ret = false;
+			break;
 		}
-#endif
-		delete[] NullMat;
-		if (!ret)  break;
-
 
 	}
 
@@ -206,10 +175,57 @@ int main(int argc, char** argv)
 		pass=false;
 	RAPPORT("left kernel");
 
+	TESTE("left kernel");
+	if (!testNullSpaceBasis (F, n,m,r, iterations, false))
+		pass=false;
+	RAPPORT("left kernel");
+
+	TESTE("left kernel");
+	if (!testNullSpaceBasis (F, m,n,0, iterations, false))
+		pass=false;
+	RAPPORT("left kernel");
+
+
+	TESTE("left kernel");
+	if (!testNullSpaceBasis (F, n,m,0, iterations, false))
+		pass=false;
+	RAPPORT("left kernel");
+
+	TESTE("left kernel");
+	if (!testNullSpaceBasis (F, m,n,std::min(m,n), iterations, false))
+		pass=false;
+	RAPPORT("left kernel");
+
+
+
+
+
 	TESTE("right kernel");
 	if (!testNullSpaceBasis (F, m,n,r, iterations, true))
 		pass=false;
 	RAPPORT("right kernel");
+
+	TESTE("right kernel");
+	if (!testNullSpaceBasis (F, n,m,r, iterations, true))
+		pass=false;
+	RAPPORT("right kernel");
+
+	TESTE("right kernel");
+	if (!testNullSpaceBasis (F, m,n,0, iterations, true))
+		pass=false;
+	RAPPORT("right kernel");
+
+	TESTE("right kernel");
+	if (!testNullSpaceBasis (F, n,m,0, iterations, true))
+		pass=false;
+	RAPPORT("right kernel");
+
+	TESTE("right kernel");
+	if (!testNullSpaceBasis (F, n,m,std::min(m,n), iterations, true))
+		pass=false;
+	RAPPORT("right kernel");
+
+
 
 	// if we are here, no RAPPORT exited
 	report << "\033[1;32m +++ ALL MY TESTS PASSED +++\033[0;m" << endl;

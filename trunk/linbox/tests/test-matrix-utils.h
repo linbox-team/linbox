@@ -116,13 +116,29 @@ bool CheckRank( const Field & F,
 		const size_t & alledged_rank)
 {
 	//  std::cout << " is rank truely " << alledged_rank << " ?" << std::endl;
-	element_t(Field) * Acopy = new element_t(Field)[m*n] ;
-	FFLAS::fcopy(F,m*n,Acopy,1,A,1);
+	element_t(Field) * Acopy = new element_t(Field)[m*lda] ;
+	FFLAS::fcopy(F,m*lda,Acopy,1,A,1);
 	size_t true_rank = FFPACK::Rank(F,m,n,Acopy,lda);
 	delete[] Acopy ;
 	//                std::cout << "It is " << true_rank << "." << std::endl;
 	return (alledged_rank == true_rank);
 }
+
+template <class Field>
+bool CheckRank( const Field & F,
+		const BlasMatrix<Field> & A,
+		const size_t & alledged_rank)
+{
+	return CheckRank(F,A.getPointer(),A.rowdim(),A.coldim(),A.stride(),alledged_rank);
+}
+template <class Field>
+bool CheckRank( const Field & F,
+		const BlasSubmatrix<Field> & A,
+		const size_t & alledged_rank)
+{
+	return CheckRank(F,A.getPointer(),A.rowdim(),A.coldim(),A.stride(),alledged_rank);
+}
+
 
 template <class Field>
 bool CheckDet( const Field & F,
@@ -148,6 +164,7 @@ void RandomMatrixWithRank(const Field & F,
 			  element_t(Field) * A,
 			  const size_t & m,
 			  const size_t & n,
+			  const size_t & lda,
 			  const size_t & rank)
 {
 	assert(rank <= m);
@@ -174,7 +191,6 @@ void RandomMatrixWithRank(const Field & F,
 			G.random (*(B+i*m+j));
 	}
 	// Create C a random matrix of rank \p ( m x n format)
-	// for (size_t i = 0; i < std::min(rank,m); ++i)
 	for (size_t i = 0; i < rank; ++i){
 		size_t j = 0;
 		for ( ; j < std::min(i,n) ; ++j)
@@ -188,27 +204,21 @@ void RandomMatrixWithRank(const Field & F,
 	linbox_check(CheckRank(F,C,m,n,n,rank));
 	// create P a random permutation of size \p n
 	size_t *P = new size_t[n];
-	//srandom( (unsigned) time(NULL) ) ; // on met une nouvelle graine.
 	RandomPermutation(P,n);
 	// create Q a random permutation of size \p m
 	size_t *Q = new size_t[m];
 	RandomPermutation(Q,m);
 	FFPACK::applyP(F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 		       n, 0, (int)m, C, n, Q );
-	//PrintLapackPermutation(P,n,std::cout << "P == ");
-	//write_field (F, std::cout<<"C_perm1="<<std::endl, C, m, n, n);
 	FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 		       m, 0, (int)n, C, n, P );
-	//PrintLapackPermutation(Q,m,std::cout << "Q == ");
-	//write_field (F, std::cout<<"C_perm2="<<std::endl, C, m, n, n);
-	// A = B*C (m x n format), of rank \p rank
 	FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
-		      F.one, B, m, C, n, F.zero, A, n );
+		      F.one, B, m, C, n, F.zero, A, lda );
 	delete[] B;
 	delete[] C;
 	delete[] P;
 	delete[] Q;
-	linbox_check(CheckRank(F,A,m,n,n,rank));
+	linbox_check(CheckRank(F,A,m,n,lda,rank));
 	return;
 
 }
