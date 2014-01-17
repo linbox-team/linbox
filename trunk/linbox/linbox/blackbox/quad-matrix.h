@@ -35,6 +35,7 @@
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/zo.h"
 #include "linbox/vector/subvector.h"
+#include "linbox/vector/blas-vector.h"
 //#include "linbox/blackbox/side-by-side.h"
 //#include "linbox/blackbox/over-under.h"
 
@@ -198,6 +199,13 @@ namespace LinBox
 			   }
 			   //*/
 		}
+
+
+		std::istream &read (std::istream &is)
+		{
+			throw(LinBoxError("no read in ZOQuad"));
+		}
+
 		std::ostream & write(std::ostream & out) const
 		{
 			switch (_tag)
@@ -445,14 +453,14 @@ namespace LinBox
 
 		template <typename InVector, typename OutVector>
 		OutVector& apply(OutVector& y, const InVector& x) const
-		//OutVector& apply(OutVector& y, const InVector& x)
 		{
 			std::vector<typename Field::Element> z(y.size());
+			// BlasVector<Field> z(field(),y.size());
 			VectorDomain<Field> VD(field());
-			//std::vector<typename Field::Element> x_1( x.begin(), x.begin() + _quadLeft->coldim() );
-			//std::vector<typename Field::Element> x_2( x.begin() + _quadLeft->coldim(), x.end() );
 			Subvector<typename InVector::const_iterator> x_1(x.begin(), x.begin()+(ptrdiff_t)_quadLeft->coldim());
+			// BlasSubvector<Field> x_1(x.begin(), x.begin()+(ptrdiff_t)_quadLeft->coldim());
 			Subvector<typename InVector::const_iterator> x_2(x.begin()+(ptrdiff_t)_quadLeft->coldim(), x.end());
+			// BlasSubvector<Field> x_2(x.begin()+(ptrdiff_t)_quadLeft->coldim(), x.end());
 			//std::cout << " side-by-side apply size of x: " << x.size() << " " << " size of y: " << y.size() << endl;
 			//std::cout << " side-by-side apply size of x_1: " << x_1.size() << " " << " size of x_2: " << x_2.size() << endl;
 			_quadLeft->apply (y, x_1);
@@ -464,12 +472,12 @@ namespace LinBox
 
 		template <typename InVector, typename OutVector>
 		OutVector& applyTranspose(OutVector& y, const InVector& x) const
-		//OutVector& applyTranspose(OutVector& y, const InVector& x)
 		{
-			//std::vector<typename Field::Element> y_1( y.begin(), y.begin() + _quadLeft->coldim() );
-			//std::vector<typename Field::Element> y_2( y.begin() + _quadLeft->coldim(), y.end() );
 			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_1(y.begin(), y.begin()+(ptrdiff_t)_quadLeft->coldim());
+			// BlasSubvector<Field> y_1(y.begin(), y.begin()+(ptrdiff_t)_quadLeft->coldim());
 			Subvector<typename OutVector::iterator, typename OutVector::const_iterator> y_2(y.begin()+(ptrdiff_t)_quadLeft->coldim(), y.end());
+
+			// BlasSubvector<Field> y_2(y.begin()+(ptrdiff_t)_quadLeft->coldim(), y.end());
 			_quadLeft->applyTranspose (y_1, x);
 			_quadRight->applyTranspose (y_2, x);
 			copy(y_1.begin(), y_1.end(), y.begin());
@@ -495,7 +503,6 @@ namespace LinBox
 
 		template <typename InVector, typename OutVector>
 		OutVector& apply(OutVector& y, const InVector& x) const
-		//OutVector& apply(OutVector& y, const InVector& x)
 		{
 			//std::vector<typename Field::Element> y_1( y.begin(), y.begin() + _quadUp->rowdim() );
 			//std::vector<typename Field::Element> y_2( y.begin() + _quadUp->rowdim(), y.end() );
@@ -514,7 +521,6 @@ namespace LinBox
 
 		template <typename InVector, typename OutVector>
 		OutVector& applyTranspose(OutVector& y, const InVector& x) const
-		//OutVector& applyTranspose(OutVector& y, const InVector& x)
 		{
 			std::vector<typename Field::Element> z(y.size());
 			VectorDomain<Field> VD(field());

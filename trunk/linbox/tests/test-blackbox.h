@@ -131,7 +131,7 @@ testTranspose (const Field                      &F,
 			<< "ERROR: Values are not equal" << endl;
 		}
 
-		if (ret) 
+		if (ret)
 			LinBox::commentator().stop ("testTranspose pass");
 		else
 			LinBox::commentator().stop ("testTranspose FAIL");
@@ -222,7 +222,7 @@ testLinearity (//const Field                             &F,
 		if (!iter_passed)
 			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Vectors are not equal" << endl;
-		if (iter_passed) 
+		if (iter_passed)
 			LinBox::commentator().stop ("testLinearity pass");
 		else
 			LinBox::commentator().stop ("testLinearity FAIL");
@@ -280,7 +280,7 @@ static bool
 LooksLikeZero(BB &A, LinBox::VectorStream<Vector> &stream)
 {	typedef typename BB::Field Field;
 	LinBox::VectorDomain<Field> VD(A.field());
-	LinBox::BlasVector<Field> x(A.field(), A.coldim()), 
+	LinBox::BlasVector<Field> x(A.field(), A.coldim()),
 				  y(A.field(), A.rowdim());
 	while (stream)
 	{	stream.next(x);
@@ -292,7 +292,7 @@ LooksLikeZero(BB &A, LinBox::VectorStream<Vector> &stream)
 	VD.write(report << "x: ", x) << std::endl;
 	VD.write(report << "Ax: ", y) << std::endl;
 	return true;
-} 
+}
 /** Generic blackbox test 3: combination of tests
  *
  * If large, time apply and applyTranspose.
@@ -350,7 +350,7 @@ testBlackboxNoRW(BB &A, bool zeroCheck=true)
 	ret = ret && testTranspose (F, A, stream3, stream4);
 
 	DenseVector x(F,A.coldim()), y(F,A.rowdim());
-	if (zeroCheck) { 
+	if (zeroCheck) {
 		LinBox::RandomDenseStream<Field, DenseVector> stream5 (F, r, A.coldim(), 10);
 		ret = ret & not LooksLikeZero(A, stream5);
 	}
@@ -360,9 +360,14 @@ testBlackboxNoRW(BB &A, bool zeroCheck=true)
 
 template <class BB>
 static bool
-testBlackbox(BB &A)
+testBlackbox(BB &A, bool read_write=true)
 {
-	return testBlackboxNoRW(A) and testReadWrite(A);
+	bool ok = testBlackboxNoRW(A);
+	if (ok && read_write)
+			return testReadWrite(A);
+	return ok ;
+
+	// return testBlackboxNoRW(A) and testReadWrite(A);
 }
 #endif // __LINBOX_test_blackbox_H
 
