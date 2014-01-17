@@ -248,7 +248,7 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-gf2",                          counter , flag);
+		  Build_n_runWarn("test-gf2",                          counter , flag, "not much is tested there");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -340,7 +340,7 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  No_build_n_run("test-nullspace",                    counter , flag,"fails");
+		  build_n_run("test-nullspace",                    counter , flag);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
