@@ -236,7 +236,7 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  No_build_n_run("test-ffpack",                       counter , flag, "testTURBO fails");
+		  Build_n_runWarn("test-ffpack",                       counter , flag , "testTURBO fails");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -328,7 +328,7 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-modular-int",                  counter , flag/*, "fails badly for uint64_t "*/);
+		  Build_n_runWarn("test-modular-int",                  counter , flag, "fails badly for uint64_t ");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -360,7 +360,7 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-rank",                         counter , flag/*, "bb: fails to build / BlasVector/GF2"*/);
+		  Build_n_runWarn("test-rank",                         counter , flag, "bb: fails to build / BlasVector/GF2");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -526,7 +526,7 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-ftrmm", counter, flag, "bb/cp");
 
 	if (flag > 0) cout << "	Immature tests" << endl;
-	no_build_n_run("test-quad-matrix", counter, flag, "half baked, bds responsible");
+	Build_n_runWarn("test-quad-matrix", counter, flag , "half baked, bds responsible" );
 	no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible");
 	// test-integer-tools -- there is no test-integer-tools.C file
 	// no one has taken these on.

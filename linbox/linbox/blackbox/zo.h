@@ -86,8 +86,9 @@ namespace LinBox
 
 		// basic constructor, can be used with subsequent read.
 		ZeroOne(const Field& F) :
-		       	_field(&F), sorted(true)
+			_field(&F)
 			,_rowdim(0),_coldim(0)
+			, sorted(true)
 		{}
 
 		// constructor for use by ZOQuad.  Needs work.

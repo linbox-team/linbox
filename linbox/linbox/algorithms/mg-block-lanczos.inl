@@ -869,8 +869,10 @@ namespace LinBox
 		_MD.write (report, T);
 #endif
 
-		BlasMatrix<Field> M1 (_matM, 0, 0, T.rowdim (), T.coldim ());
-		BlasMatrix<Field> M2 (_matM, 0, T.coldim (), T.rowdim (), T.coldim ());
+		// BlasMatrix<Field> M1 (_matM, 0, 0, T.rowdim (), T.coldim ());
+		Matrix M1 (_matM, 0, 0, T.rowdim (), T.coldim ());
+		// BlasMatrix<Field> M2 (_matM, 0, T.coldim (), T.rowdim (), T.coldim ());
+		Matrix M2 (_matM, 0, T.coldim (), T.rowdim (), T.coldim ());
 
 		_MD.copy (M1, T);
 		setIN (M2);
@@ -1211,7 +1213,8 @@ namespace LinBox
 		// I'm assuming everything left of the column with the index of the pivot row is 0
 		size_t row;
 
-		typename BlasMatrix<Field>::Row pivot_row;
+		// typename BlasMatrix<Field>::Row pivot_row;
+		typename Matrix::Row pivot_row;
 		typename Field::Element p;
 
 		pivot_row = *(A.rowBegin () + (int)indices[pivot]);

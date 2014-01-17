@@ -123,7 +123,8 @@ int main (int argc, char **argv)
 
 	//BB.write(cout) << endl; //just writes the sizes of the strips.
 
-	pass = pass && testBlackbox(BB);
+	std::cout << " *** Warning ***, no read-write test" << std::endl;
+	pass = pass && testBlackbox(BB, false);
 
 	return pass ? 0 : -1;
 }

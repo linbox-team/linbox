@@ -39,12 +39,14 @@
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/solutions/methods.h"
+#include "linbox/matrix/blas-matrix.h"
 
 // I'm putting everything inside the LinBox namespace so that I can drop all of
 // this in to LinBox easily at a later date, without any messy porting.
 
 namespace LinBox
 {
+
 
 	/** \brief Block Lanczos iteration
 	 *
@@ -62,7 +64,7 @@ namespace LinBox
 	 * Currently, only dense vectors are supported for this iteration, and it is
 	 * unlikely any other vector archetypes will be supported in the future.
 	 */
-	template <class Field, class Matrix = BlasMatrix<Field> >
+	template <class Field, class Matrix = BlasMatrix<Field,typename RawVector<typename Field::Element >::Dense> >
 	class MGBlockLanczosSolver {
 	public:
 
@@ -74,7 +76,9 @@ namespace LinBox
 		 *               options for the solver
 		 */
 		MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits) :
-			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (F), _block (traits.blockingFactor ())
+			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (F)
+			,_AV(F)
+			, _block (traits.blockingFactor ())
 		{
 			init_temps ();
 			field().init (_one, 1);
@@ -87,7 +91,9 @@ namespace LinBox
 		 * @param r Random iterator to use for randomization
 		 */
 		MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits, typename Field::RandIter r) :
-			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (r), _block (traits.blockingFactor ())
+			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (r)
+			,_AV(F)
+			, _block (traits.blockingFactor ())
 		{
 			init_temps ();
 			field().init (_one, 1);
@@ -231,10 +237,12 @@ namespace LinBox
 
 		// Temporaries used in the computation
 
-		Matrix  _matV[3];             // n x N
+		// Matrix  _matV[3];             // n x N
+		std::vector<Matrix> _matV;
 		Matrix  _AV;               // n x N
 		Matrix  _VTAV;             // N x N
-		Matrix  _Winv[2];          // N x N
+		// Matrix  _Winv[2];          // N x N
+		std::vector<Matrix> _Winv ;
 		Matrix  _AVTAVSST_VTAV;    // N x N
 		Matrix  _matT;                // N x N
 		Matrix  _DEF;              // N x N
@@ -289,11 +297,11 @@ namespace LinBox
 
 #endif // __LINBOX_mg_block_lanczos_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
