@@ -32,9 +32,6 @@
 
 #include <algorithm>
 #include <iostream>
-using std::istream;
-using std::ostream;
-using std::max;
 #include "linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
@@ -71,11 +68,11 @@ namespace LinBox
 
 	TriplesBB & operator=(const TriplesBB & B);
 
-	TriplesBB(const Field& F, istream& in);
+	TriplesBB(const Field& F, std::istream& in);
 
-	istream& read(istream& in);
+	std::istream& read(std::istream& in);
 
-	ostream& write(ostream& out);
+	std::ostream& write(std::ostream& out);
 
 	~TriplesBB();
 

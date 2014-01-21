@@ -48,7 +48,7 @@
 #include "linbox/field/gf2.h"
 #include "linbox/field/givaro.h"
 #include "linbox/blackbox/diagonal.h"
-//#include "linbox/matrix/sparse-matrix.h"
+// #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/direct-sum.h"

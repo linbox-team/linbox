@@ -32,8 +32,6 @@
 
 #include <algorithm>
 #include <iostream>
-using std::istream;
-using std::ostream;
 #include <omp.h>
 #include "linbox-config.h"
 #include "linbox/util/debug.h"
@@ -168,13 +166,13 @@ template<class Field_> TriplesBBOMP<Field_>::TriplesBBOMP() {}
 template<class Field_> TriplesBBOMP<Field_>::~TriplesBBOMP() {}
 
 template<class Field_> TriplesBBOMP<Field_>::
-TriplesBBOMP(const Field_& F, istream& in) : MD_(F)
+TriplesBBOMP(const Field_& F, std::istream& in) : MD_(F)
 {
 	read(in);
 }
 
 template<class Field_>
-istream& TriplesBBOMP<Field_>::read(istream& in){
+std::istream& TriplesBBOMP<Field_>::read(std::istream& in){
 	Index r, c;
 	typename Field::Element v; field().init(v);
 	MatrixStream<Field> ms(field(), in);
@@ -185,7 +183,7 @@ istream& TriplesBBOMP<Field_>::read(istream& in){
 }
 
 template<class Field_>
-ostream& TriplesBBOMP<Field_>::write(ostream& out){
+std::ostream& TriplesBBOMP<Field_>::write(std::ostream& out){
 	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
 	out << "% written from a LinBox TriplesBBOMP" << std::endl;
 	out << rowdim() <<" " << coldim() << " " << size() << std::endl;

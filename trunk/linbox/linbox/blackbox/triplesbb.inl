@@ -32,8 +32,6 @@
 
 #include <algorithm>
 #include <iostream>
-using std::istream;
-using std::ostream;
 //#include <vector>
 
 #include "linbox/util/matrix-stream.h"
@@ -48,12 +46,12 @@ template<class Field_> TriplesBB<Field_>::
 ~TriplesBB() {}
 
 template<class Field_> TriplesBB<Field_>::
-TriplesBB(const Field& F, istream& in)
+TriplesBB(const Field& F, std::istream& in)
 : MD_(F), data_(), rows_(0), cols_(0), sort_(unsorted)
 { read(in); }
 
-template<class Field_> istream& TriplesBB<Field_>::
-read(istream& in){
+template<class Field_> std::istream& TriplesBB<Field_>::
+read(std::istream& in){
 	Index r, c;
 	typename Field::Element v; field().init(v);
 	MatrixStream<Field> ms(field(), in);
@@ -63,8 +61,8 @@ read(istream& in){
 	return in;
 }
 
-template<class Field_> ostream& TriplesBB<Field_>::
-write(ostream& out){
+template<class Field_> std::ostream& TriplesBB<Field_>::
+write(std::ostream& out){
 	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
 	out << "% written from a LinBox TriplesBB" << std::endl;
 	out << rowdim() <<" " << coldim() << " " << size() << std::endl;
