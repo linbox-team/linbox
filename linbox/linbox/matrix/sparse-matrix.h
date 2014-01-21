@@ -85,10 +85,10 @@ namespace LinBox {
 #include "SparseMatrix/sparse-hyb-matrix.h"
 
 // wrappers on the old sparse reps.
-#include "SparseMatrix/sparse-vvp-matrix.h" // sparseSeq
-#include "SparseMatrix/sparse-vpv-matrix.h" // sparsePar
-#include "SparseMatrix/sparse-vmap-matrix.h" // sparseMap
-#include "SparseMatrix/sparse-coot-matrix.h" // sparseMap
+// #include "SparseMatrix/sparse-vvp-matrix.h" // sparseSeq
+// #include "SparseMatrix/sparse-vpv-matrix.h" // sparsePar
+// #include "SparseMatrix/sparse-vmap-matrix.h" // sparseMap
+// #include "SparseMatrix/sparse-coot-matrix.h" // sparseMap
 
 #endif // __LINBOX_matrix_sparse_matrix_H
 
