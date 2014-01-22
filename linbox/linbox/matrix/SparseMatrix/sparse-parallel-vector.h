@@ -625,7 +625,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#include "linbox/matrix/sparse-parallel-vector.inl"
+#include "linbox/matrix/SparseMatrix/sparse-parallel-vector.inl"
 
 #endif // __LINBOX_matrix_sparse_parallel_H
 

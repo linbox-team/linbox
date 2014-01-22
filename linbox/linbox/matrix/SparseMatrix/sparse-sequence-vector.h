@@ -631,7 +631,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#include "linbox/matrix/sparse-sequence-vector.inl"
+#include "linbox/matrix/SparseMatrix/sparse-sequence-vector.inl"
 
 #endif // __LINBOX_matrix_sparse_sequence_H
 
