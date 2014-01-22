@@ -1,0 +1,210 @@
+%%% packages
+\clubpenalty 1000
+\widowpenalty 1000
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{iftex}
+\usepackage{etex}
+\usepackage{xspace}
+\usepackage{setspace}
+
+\ifXeTeX
+%xetex
+\fi
+
+\ifLuaTeX
+%luatex
+\usepackage{fontspec}
+\fi
+
+\ifPDFTeX
+% pdftex
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\fi
+
+
+\usepackage[english]{babel}
+\usepackage{caption}
+\usepackage{adforn}
+
+\usepackage[x11names,svgnames]{xcolor}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,graphicx}
+% \usepackage{algorithm,%
+%algorithmic%
+% algpseudocode%
+% }
+\usepackage[%algochapter%
+% ,linesnumbered%
+,titlenumbered%
+% ,vlined%
+% ,lined%
+,ruled%
+% ,french%
+% ,nofillcomment%
+% ,onelanguage%
+% ,scleft%
+]{algorithm2e}
+% \let\chapter\undefined % use this line
+
+% FIXME numbersep>innerleftmargin, leftmargin=0.
+\usepackage[%style=1
+framemethod=%
+TikZ
+% PSTricks
+% default
+% ,skipbelow=-\topskip
+% ,skipabove=\topskip
+,nobreak=false
+]{mdframed}
+
+\usepackage{listings}
+
+\usepackage[autolanguage]{numprint}
+
+\usepackage{paralist,array,enumerate,multirow,float}% à moi
+\usepackage[
+breaklinks%
+,colorlinks%
+% ,linkcolor=red% internal document links
+,linkcolor=MidnightBlue%
+,anchorcolor=cyan%
+%,pagecolor=blue%
+,citecolor=blue%
+,bookmarks=false%
+]{hyperref}
+\usepackage{url,xspace}
+\usepackage{bm} %boldmath
+\usepackage{booktabs}
+\usepackage[%
+% french%
+]{cleveref}
+
+\usepackage{stmaryrd}
+\usepackage{tikz}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% to be removed packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fourier-orns}
+\usepackage{comment}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Tuning
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usetikzlibrary{shapes,matrix,arrows}
+
+\renewcommand\algomargin{1em} %double cadratin
+%%% LISTINGS %%%
+\mdfsetup{roundcorner=5%
+,backgroundcolor=LightBlue!2!white%
+,linecolor=LightBlue!60!black%
+,leftmargin=0pt,rightmargin=0pt
+,innerleftmargin=8pt,innerrightmargin=5pt
+% ,innerleftmargin=15pt,innerrightmargin=5pt
+,skipabove=\topskip
+,skipbelow=-\topskip
+% ,nobreak=false
+}
+
+\BeforeBeginEnvironment{lstlisting}%
+{\begin{mdframed}[nobreak=false]
+	% \NoAutoSpacing %french
+	\vskip-0.4\baselineskip
+}
+\AfterEndEnvironment{lstlisting}{\end{mdframed}\vspace{1\baselineskip}\par\nobreak}
+\def\ifempty#1{\def\temparg{#1}\ifx\temparg\empty}
+\newcommand{\lstcapt}[2][]{%
+\captionsetup*{type=lstlisting} %étoile pour virer les warnings
+\vspace{-0.4\baselineskip}%
+\ifempty{#1}%
+\captionof{lstlisting}{#2}%
+\else%
+\captionof{lstlisting}[#1]{#2}%
+\fi%
+\vspace{0.5\baselineskip}%
+\setlength{\parindent}{5mm}
+\captionsetup*{type=""} %étoile pour virer les warnings
+% XXX bug à la con. parindent est perdu par lstlinting ou autres
+}
+
+\lstset{language=C++%
+,numbers=left%
+,numberfirstline=false%
+% ,numberfirstline=true%
+,stepnumber=5
+,firstnumber=1
+,numberstyle=\tiny%
+,numbersep=15pt%
+% ,numbersep=0pt%
+,numberbychapter=true%
+,keywordstyle=\color{DarkGreen}\bfseries%
+,showspaces=false%
+,showstringspaces=false%
+,numberblanklines=true%
+,captionpos=b%
+,literate={>>}{\ensuremath{>>}}1%
+% ,literate={::}{::}1%
+,basicstyle=\small\ttfamily%
+% ,lineskip=-1pt%
+% ,emph={inline}%
+,emphstyle=\color{DarkRed}\bfseries%
+,commentstyle=\ttfamily\color{gray}%
+,rulecolor=\color{LightBlue!50}%
+,breaklines=true%
+,columns=fixed%
+% ,stringstyle=\ttfamily%
+% ,basicstyle=\small\fontfamily{LuxiMono}\selectfont%
+% ,backgroundcolor=\color{LightBlue!5!white}%
+% ,float
+,belowskip=0em%\smallskipamount%
+% ,aboveskip=\smallskipamount%
+% ,aboveskip=\bigskipamount%
+% ,belowskip=\bigskipamount%
+% ,abovecaptionskip=1em%
+% ,belowcaptionskip=-2em%
+% ,framesep=5em
+,upquote=false
+% ,inputencoding=OT1
+,extendedchars=true
+,escapechar=¬
+,basewidth=0.55em
+}
+% \def\lstlistingname{Code}
+\captionsetup[lstlisting]{position=below}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% defs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\largesimpletilde{\adforn{19}}
+\def\largetilde{\adforn{18}}
+\def\frob#1#2{\left\langle#1, #2 \right\rangle}
+
+\newcommand{\dbl}{\texttt{double}\xspace}
+\newcommand{\flt}{\texttt{float}\xspace}
+
+\def\Zb{\mathbf{Z}}
+\def\modring#1{\ensuremath\Zb{/ #1\Zb}}
+\def\gnuplot{\textsf{gnuplot}\xspace}
+
+
+
+\newcolumntype{C}{>{$}c<{$}}
+\newcolumntype{L}{>{$}l<{$}}
+\newcolumntype{R}{>{$}r<{$}}
+
+
+\def\linbox{\textsf{LinBox}\xspace}
+\def\mari{\textsf{m4ri}\xspace}
+\def\fflas{\textsf{FFLAS}\xspace}
+\def\fflaflas{\fflas}
+\def\givaro{\textsf{Givaro}\xspace}
+\def\applin{\textsf{BlackBox}\xspace}
+\newcommand{\cf}{\mbox{\emph{cf.}}\xspace}
+\newcommand{\eg}{\mbox{\emph{e.g.}}\xspace}
+\newcommand{\ie}{\mbox{\emph{i.e.}}\xspace}
+
