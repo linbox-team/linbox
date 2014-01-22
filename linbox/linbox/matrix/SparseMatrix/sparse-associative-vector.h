@@ -114,7 +114,7 @@ namespace LinBox
 			typename SparseMatrix<_Tp1,_Rw1, myTrait>::template rebind<Field,_Row>()(*this, Mat);
 		}
 
-	SparseMatrix (const Field & F, size_t m, size_t n) :
+		SparseMatrix (const Field & F, size_t m, size_t n) :
 			_field(F),
 			_MD(F),_AT(*this),
 			_matA (m), _m (m), _n (n)
@@ -127,7 +127,7 @@ namespace LinBox
 		{};
 
 
-			SparseMatrix (const SparseMatrix<Field, Row> &A) :
+		SparseMatrix (const SparseMatrix<Field, Row> &A) :
 			_field(A.field()),
 			_MD(A.field()),_AT(*this),
 			_matA (A._matA), _m (A._m), _n (A._n)
