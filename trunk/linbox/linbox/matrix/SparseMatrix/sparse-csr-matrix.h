@@ -131,7 +131,8 @@ namespace LinBox
 
 			void operator() (other & Ap, const Self_t& A)
 			{
-				// Ap = new other(F, A.rowdim(), A.coldim());
+
+				//! @todo are the rows/cols of Ap == A ?
 
 				typename _Tp1::Element e;
 
@@ -193,9 +194,9 @@ namespace LinBox
 
 		template<class VectStream>
 		SparseMatrix2<_Field, SparseMatrixFormat::CSR> (const _Field & F, VectStream & stream) :
-			_rownb(stream.size()),_colnb(stream.dim()),
-			_start(_rownb+1),_colid(0),_data(0)
+			_rownb(stream.size()),_colnb(stream.dim())
 			, _nbnz(0)
+			, _start(_rownb+1),_colid(0),_data(0)
 			, _field(F)
 		{
 			// VectStream == RandomSparseStream<Field, typename Vector<Field>::SparseSeq>
@@ -247,9 +248,9 @@ namespace LinBox
 		 */
 		template<class _OtherStorage>
 		SparseMatrix2<_Field, SparseMatrixFormat::CSR> (const SparseMatrix2<_Field, _OtherStorage> & S) :
-			_rownb(S._rownb),_colnb(S._colnb),
+			_rownb(S.rowdim()),_colnb(S.coldim()),
 			_start(S.rowdim()+1),_colid(S.size()),_data(S.size()),
-			_field(S._field)
+			_field(S.field())
 		{
 			this->importe(S); // convert Temp from anything
 		}
@@ -481,7 +482,7 @@ namespace LinBox
 			}
 		}
 
-
+#if 0
 		/** Get a writeable reference to an entry in the matrix.
 		 * If there is no entry at the position (i, j), then a new entry
 		 * with a value of zero is inserted and a reference  to it is
@@ -518,6 +519,7 @@ namespace LinBox
 				return _data[la] ;
 			}
 		}
+#endif
 
 		/** Write a matrix to the given output stream using field read/write.
 		 * @param os Output stream to which to write the matrix
@@ -601,8 +603,8 @@ namespace LinBox
 		// y= Ax
 		// y[i] = sum(A(i,j) x(j)
 		// start(i)<k < start(i+1) : _delta[k] = A(i,colid(k))
-		template<class Vector>
-		Vector& apply(Vector &y, const Vector& x, const Element & a ) const
+		template<class inVector, class outVector>
+		outVector& apply(outVector &y, const inVector& x, const Element & a ) const
 		{
 			prepare(field(),y,a);
 
@@ -618,8 +620,8 @@ namespace LinBox
 
 		// y= A^t x
 		// y[i] = sum(A(j,i) x(j)
-		template<class Vector>
-		Vector& applyTranspose(Vector &y, const Vector& x, const Element & a) const
+		template<class inVector, class outVector>
+		outVector& applyTranspose(outVector &y, const inVector& x, const Element & a) const
 		{
 			//! @bug if too big, create transpose.
 			prepare(field(),y,a);
@@ -631,13 +633,13 @@ namespace LinBox
 			return y;
 		}
 
-		template<class Vector>
-		Vector& apply(Vector &y, const Vector& x ) const
+		template<class inVector, class outVector>
+		outVector& apply(outVector &y, const inVector& x ) const
 		{
 			return apply(y,x,field().zero);
 		}
-		template<class Vector>
-		Vector& applyTranspose(Vector &y, const Vector& x ) const
+		template<class inVector, class outVector>
+		outVector& applyTranspose(outVector &y, const inVector& x ) const
 		{
 			return apply(y,x,field().zero);
 		}

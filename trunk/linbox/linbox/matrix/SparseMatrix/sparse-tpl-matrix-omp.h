@@ -237,35 +237,35 @@ struct TriplesDataBlock {
  * Sparse matrix representation which stores nonzero entries by i,j,value triples.
  */
 template<class Field_>
-class TriplesBBOMP : public BlackboxInterface {
+class SparseMatrix2<Field_, SparseMatrixFormat::TPL_omp> : public BlackboxInterface {
 
 	public:
         typedef Field_ Field;
 	typedef typename MatrixDomain<Field>::Matrix Matrix;
 	typedef typename Field::Element Element;
-	typedef TriplesBBOMP<Field> Self_t;
+	typedef SparseMatrix2<Field, SparseMatrixFormat::TPL_omp> Self_t;
 
 	// Default constructor.
-	TriplesBBOMP();
+	SparseMatrix2();
 
-	TriplesBBOMP(const TriplesBBOMP & B);
+	SparseMatrix2(const SparseMatrix2 & B);
 
-	TriplesBBOMP & operator=(const TriplesBBOMP & B);
+	SparseMatrix2 & operator=(const SparseMatrix2 & B);
 
-	TriplesBBOMP(const Field& F, std::istream& in);
+	SparseMatrix2(const Field& F, std::istream& in);
 
 	std::istream& read(std::istream& in);
 
 	std::ostream& write(std::ostream& out);
 
-	~TriplesBBOMP();
+	~SparseMatrix2();
 
-	TriplesBBOMP(const Field& F, Index r = 0, Index c = 0);
+	SparseMatrix2(const Field& F, Index r = 0, Index c = 0);
 
         void finalize();
 
 	// (re)shape the matrix.  Any prior entries are abandoned.
-	TriplesBBOMP& shape(const Field& F, Index r = 0, Index c = 0);
+	SparseMatrix2& shape(const Field& F, Index r = 0, Index c = 0);
 
 	// need cstor from matrix stream, read, write
 
@@ -314,10 +314,10 @@ class TriplesBBOMP : public BlackboxInterface {
 
 	template<typename Tp1_>
 	struct rebind {
-		typedef TriplesBBOMP<Tp1_> other;
-		void operator() (other & Ap, const Self_t& A, const Tp1_& F)
+		typedef SparseMatrix2<Tp1_> other;
+		void operator() (other & Ap, const Self_t& A)
 		{
-			Hom <typename Self_t::Field, Tp1_> hom( A.field(), F);
+			Hom <typename Self_t::Field, Tp1_> hom( A.field(), Ap.field());
 
 			typedef typename Tp1_::Element otherElt;
 			typedef typename std::vector<otherElt> othervec;
@@ -406,11 +406,11 @@ protected:
         SizedChunks rowBlocks_;
 
         SizedChunks colBlocks_;
-  }; // TriplesBBOMP
+  }; // SparseMatrix2
 
 } // namespace LinBox
 
-#include "linbox/blackbox/triplesbb-omp.inl"
+#include "sparse-tpl-matrix-omp.inl"
 
 #endif // __LINBOX_triplesbb_omp_H
 

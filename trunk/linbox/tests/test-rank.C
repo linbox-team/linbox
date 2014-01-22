@@ -72,11 +72,13 @@ template <class Field>
 bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
 	 typedef SparseMatrix<Field,typename Vector<Field>::SparseSeq> Blackbox;
-	//typedef SparseMatrix2<Field,SparseMatrixFormat::COO> Blackbox;
+	// typedef SparseMatrix2<Field,SparseMatrixFormat::VVP> Blackbox;
+	// typedef SparseMatrix2<Field,SparseMatrixFormat::COO> Blackbox;
 	// typedef SparseMatrix2<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
 	// typedef SparseMatrix2<Field,SparseMatrixFormat::ELL> Blackbox;
 	// typedef SparseMatrix2<Field,SparseMatrixFormat::ELL_R> Blackbox;
 	// typedef SparseMatrix2<Field,SparseMatrixFormat::HYB> Blackbox;
+	// typedef SparseMatrix2<Field,SparseMatrixFormat::TPL> Blackbox;
 
 	commentator().start ("Testing elimination-based and blackbox rank", "testRankMethods", (unsigned int)iterations);
 
@@ -93,6 +95,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 
 		RandomSparseStream<Field, typename Vector<Field>::SparseSeq> stream (F, ri, sparsity, n, n);
 		Blackbox A (F, stream);
+		// std::cout << A.rowdim() << ',' << A.coldim() << std::endl;
 
 		F.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl;
 		A.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),Tag::FileFormat::Maple ) << endl;

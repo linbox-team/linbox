@@ -41,7 +41,7 @@ namespace LinBox
 {
 
 template<class Field_>
-MapSparse<Field_>::MapSparse() : numCols_(0), numRows_(0), nnz_(0) {}
+MapSparse<Field_>::MapSparse() : MD_(Field_()),numCols_(0), numRows_(0), nnz_(0) {}
 
 template<class Field_>
 MapSparse<Field_>::MapSparse(const Field& F, Index r, Index c):
@@ -291,14 +291,14 @@ void MapSparse<Field_>::randomSim(Index nz, int seed)
 	MersenneTwister ri;
 	typename Field::RandIter r(field());
 	//if (seed != 0) { ri.setSeed(seed); r.setSeed(seed); }
-	if (seed != 0) 
-	{	ri.setSeed(seed); 
+	if (seed != 0)
+	{	ri.setSeed(seed);
 		// ridiculous constructor only seeding!
 		typename Field::RandIter s(field(), seed);
 		r = s;
 	}
-	while (nnz() < nz) 
-	{	r.nonzerorandom(a); 
+	while (nnz() < nz)
+	{	r.nonzerorandom(a);
 		i = ri.randomIntRange(0, rowdim()); j = ri.randomIntRange(0, coldim());
 		addCol(a, i, j);
 		//std::cout << nnz() << std::endl;
@@ -314,15 +314,15 @@ void MapSparse<Field_>::randomEquiv(Index nz, int seed)
 	Index i,j;
 	MersenneTwister ri;
 	typename Field::RandIter r(field());
-	if (seed != 0) 
-	{	ri.setSeed(seed); 
+	if (seed != 0)
+	{	ri.setSeed(seed);
 		// ridiculous seeding!
 		typename Field::RandIter s(field(), seed);
-		r = s; 
+		r = s;
 	}
 	bool flip = true;
-	while (nnz() < nz) 
-	{	r.nonzerorandom(a); 
+	while (nnz() < nz)
+	{	r.nonzerorandom(a);
 		i = ri.randomIntRange(0, rowdim()); j = ri.randomIntRange(0, coldim());
 		if (flip) addCol(a, i, j);
 		else addRow(a, i, j);

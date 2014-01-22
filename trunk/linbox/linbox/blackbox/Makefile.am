@@ -53,8 +53,6 @@ BASIC_HDRS =			\
 	zo-gf2.h                  \
 	zo-gf2.inl                \
 	quad-matrix.h             \
-	triplesbb.h               \
-	triplesbb.inl             \
 	apply.h                   \
 	submatrix-traits.h        \
 	random-matrix-traits.h    \

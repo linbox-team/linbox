@@ -31,6 +31,7 @@
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/vector/blas-vector.h"
 
 namespace LinBox
 {
@@ -236,7 +237,7 @@ namespace LinBox
 		const Blackbox2 *_B_ptr;
 
 		// local intermediate vector
-		mutable std::vector<Element> _z;
+		mutable BlasVector<Field> _z;
 	};
 
 	/// specialization for _Blackbox1 = _Blackbox2
@@ -463,6 +464,7 @@ namespace LinBox
 		 */
 		ComposeOwner (const Blackbox1 &A, const Blackbox2 &B) :
 			_A_data(A), _B_data(B)
+			,_z(A.field())
 		{
 			// Rich Seagraves - "It seems VectorWrapper somehow
 			// became depricated.  Makes the assumption that
@@ -477,6 +479,7 @@ namespace LinBox
 		 */
 		ComposeOwner (const Blackbox1 *A_data, const Blackbox2 *B_data) :
 			_A_data(*A_data), _B_data(*B_data)
+			,_z(*A_data.field())
 		{
 			linbox_check (A_data != (Blackbox1 *) 0);
 			linbox_check (B_data != (Blackbox2 *) 0);
@@ -493,6 +496,7 @@ namespace LinBox
 		 */
 		ComposeOwner (const ComposeOwner<Blackbox1, Blackbox2>& Mat) :
 			_A_data ( Mat.getLeftData()), _B_data ( Mat.getRightData())
+			,_z(Mat.field())
 		{
 			_z.resize(_A_data.coldim());
 		}
@@ -558,7 +562,7 @@ namespace LinBox
 		ComposeOwner (const Compose<_BBt1, _BBt2> &Mat, const Field& F) :
 			_A_data(*(Mat.getLeftPtr()), F),
 			_B_data(*(Mat.getRightPtr()), F),
-			_z(_A_data.coldim())
+			_z(F,_A_data.coldim())
 		{
 			typename Compose<_BBt1, _BBt2>::template rebind<Field>()(*this,Mat);
 		}
@@ -567,7 +571,7 @@ namespace LinBox
 		ComposeOwner (const ComposeOwner<_BBt1, _BBt2> &Mat, const Field& F) :
 			_A_data(Mat.getLeftData(), F),
 			_B_data(Mat.getRightData(), F) ,
-			_z(_A_data.coldim())
+			_z(F,_A_data.coldim())
 		{
 			typename ComposeOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,Mat);
 		}
@@ -614,7 +618,7 @@ namespace LinBox
 		Blackbox2 _B_data;
 
 		// local intermediate vector
-		mutable std::vector<Element> _z;
+		mutable BlasVector<Field> _z;
 	};
 
 } // LinBox

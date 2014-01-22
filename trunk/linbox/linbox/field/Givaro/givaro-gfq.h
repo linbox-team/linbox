@@ -8,20 +8,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -58,12 +58,18 @@
 #include <givaro/givpoly1factor.h>
 //------------------------------------
 
+// #include "linbox/vector/blas-vector.h"
+
 // Namespace in which all LinBox code resides
 namespace LinBox
 {
+	template<class A, class B>
+		class BlasVector ;
 
 	template <class Ring>
 	struct ClassifyRing;
+
+	struct PID_integer;
 
 	class GivaroGfq;
 
@@ -143,7 +149,7 @@ namespace LinBox
 			}
 			else if(pl>(1<<_GIVARO_FF_MAXEXPONENT_))  {
                             std::stringstream MSGFFMAXE;
-                            MSGFFMAXE << "cardinality must be < 2^" << _GIVARO_FF_MAXEXPONENT_;       
+                            MSGFFMAXE << "cardinality must be < 2^" << _GIVARO_FF_MAXEXPONENT_;
 				throw PreconditionFailed(LB_FILE_LOC,MSGFFMAXE.str().c_str());
 			}
 			// Givaro::GFqDom<int32_t>::init(one,1);
@@ -156,6 +162,11 @@ namespace LinBox
 		// to use (for modular arithmetic on the extension field).
 		GivaroGfq(const integer& p, const integer& k, const std::vector<integer>& modPoly) :
 		 Givaro::GFqDom<int32_t>(static_cast<UTT>(int32_t(p)), static_cast<UTT>(int32_t(k)), modPoly)
+		{
+		}
+
+		GivaroGfq(const integer& p, const integer& k, const BlasVector<PID_integer,std::vector<integer> >& modPoly) :
+			Givaro::GFqDom<int32_t>(static_cast<UTT>(int32_t(p)), static_cast<UTT>(int32_t(k)), modPoly)
 		{
 		}
 
@@ -273,11 +284,11 @@ namespace LinBox
 #endif // __LINBOX_field_givaro_gfq_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

@@ -39,6 +39,7 @@
 
 #include "linbox-config.h"
 #include "linbox/util/debug.h"
+#include "linbox/field/hom.h"
 #include "sparse-domain.h"
 
 
@@ -105,7 +106,8 @@ namespace LinBox
 			_nbnz(S._nbnz),
 			_rowid(S._rowid),_colid(S._colid),_data(S._data),
 			_field(S._field)
-		{}
+		{
+		}
 
 #if 0
 		template<class _OtherField>
@@ -127,8 +129,9 @@ namespace LinBox
 
 			void operator() (other & Ap, const Self_t& A)
 			{
-				// Ap = new other(F, A.rowdim(), A.coldim());
 
+				// A.write(std::cout<<"A :=") << ";" ;
+				// std::cout << A.field().characteristic() << std::endl;
 				typename _Tp1::Element e;
 
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
@@ -144,6 +147,8 @@ namespace LinBox
 				}
 				if (j != Ap.size())
 					Ap.resize(j);
+				// Ap.write(std::cout<<"Ap :=") << ";" ;
+				// std::cout << Ap.field().characteristic() << std::endl;
 			}
 		};
 
@@ -162,9 +167,9 @@ namespace LinBox
 
 		template<class VectStream>
 		SparseMatrix2<_Field, SparseMatrixFormat::COO> (const _Field & F, VectStream & stream) :
-			_rownb(stream.size()),_colnb(stream.dim()),
-			_rowid(0),_colid(0),_data(0)
+			_rownb(stream.size()),_colnb(stream.dim())
 			, _nbnz(0)
+			, _rowid(0),_colid(0),_data(0)
 			, _field(F)
 		{
 			// VectStream == RandomSparseStream<Field, typename Vector<Field>::SparseSeq>
@@ -377,6 +382,8 @@ namespace LinBox
 		 */
 		constElement &getEntry(const size_t &i, const size_t &j) const
 		{
+			std::cout << "called" << std::endl;
+#if 0
 			// std::cout << "get entry : " << i << ',' << j << std::endl;
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
@@ -401,6 +408,7 @@ namespace LinBox
 				size_t la = (size_t)(low-_colid.begin()) ;
 				return _data[la] ;
 			}
+#endif
 		}
 
 		Element      &getEntry (Element &x, size_t i, size_t j) const
@@ -417,7 +425,9 @@ namespace LinBox
 		 */
 		void setEntry(const size_t &i, const size_t &j, const Element& e)
 		{
-	linbox_check(i<_rownb);
+			std::cout << "called" << std::endl;
+#if 0
+			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
 
 			if (field().isZero(e)) {
@@ -446,11 +456,13 @@ namespace LinBox
 				_data[ibeg] = e ;
 				return ;
 			}
+#endif
 		}
 
 		/// make matrix ready to use after a sequence of setEntry calls.
 		void finalize(){}
 
+#if 0
 		/** Get a writeable reference to an entry in the matrix.
 		 * If there is no entry at the position (i, j), then a new entry
 		 * with a value of zero is inserted and a reference  to it is
@@ -461,6 +473,7 @@ namespace LinBox
 		 */
 		Element &refEntry(const size_t &i, const size_t&j)
 		{
+			std::cout << "called" << std::endl;
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
 			// Could be improved by adding an initial guess j/rodim*size()
@@ -488,6 +501,7 @@ namespace LinBox
 				return _data[la] ;
 			}
 		}
+#endif
 
 		/** Write a matrix to the given output stream using field read/write.
 		 * @param os Output stream to which to write the matrix
@@ -574,12 +588,16 @@ namespace LinBox
 		template<class Vector>
 		Vector& apply(Vector &y, const Vector& x, const Element & a ) const
 		{
+			// write(std::cout<<"A :=") << ";" ;
+			// std::cout << "x := " << x << ';'<< std::endl;
 
 			prepare(field(),y,a);
 
 			for (size_t i = 0 ; i < _nbnz ; ++i)
 				field().axpyin( y[_rowid[i]], _data[i], x[_colid[i]] ); //!@bug may be 0...
 
+			// std::cout << "y := " << y << ';'<< std::endl;
+			// std::cout << "map(x->x mod " << field().characteristic() << ",evalm(y-A.x));" << std::endl;
 			return y;
 		}
 
@@ -588,10 +606,17 @@ namespace LinBox
 		template<class Vector>
 		Vector& applyTranspose(Vector &y, const Vector& x, const Element & a ) const
 		{
+			// write(std::cout<<"A :=") << ";" ;
+			// std::cout << "x := " << x << ';'<< std::endl;
+
+
 			prepare(field(),y,a);
 
 			for (size_t i = 0 ; i < _nbnz ; ++i)
 				field().axpyin( y[_colid[i]], _data[i], x[_rowid[i]] );
+
+			// std::cout << "y := " << y << ';'<< std::endl;
+			// std::cout << "map(x->x mod " << field().characteristic() << ",evalm(y-x.A));" << std::endl;
 
 			return y;
 		}
@@ -599,8 +624,9 @@ namespace LinBox
 		template<class Vector>
 		Vector& apply(Vector &y, const Vector& x ) const
 		{
-			return apply(y,x,field().zero);
+					return apply(y,x,field().zero);
 		}
+
 		template<class Vector>
 		Vector& applyTranspose(Vector &y, const Vector& x ) const
 		{

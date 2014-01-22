@@ -49,7 +49,8 @@
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/matrix/blas-matrix.h"
-#include "linbox/blackbox/triplesbb.h"
+// #include "linbox/blackbox/triplesbb.h"
+#include "linbox/matrix/sparse-matrix.h"
 
 #include "test-common.h"
 #include "test-blackbox.h"
@@ -201,7 +202,7 @@ int main (int argc, char **argv)
 	commentator().stop("test on BlasMatrix");
 
 	commentator().start("test on TriplesBB");
-	TriplesBB<Field> C(F, m, n);
+	SparseMatrix2<Field,SparseMatrixFormat::TPL> C(F, m, n);
 	for (size_t i = 0; i < min(m, n); ++i) C.setEntry(i, i, F.init(s, i+1));
 	pass = pass and testTransposeBlackbox(C);
 	pass = pass and testTransposeMatrix(C);

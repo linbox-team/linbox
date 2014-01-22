@@ -78,7 +78,7 @@ namespace LinBox
 		SparseMatrix2<_Field, SparseMatrixFormat::ELL_R> (const _Field & F) :
 			_rownb(0),_colnb(0)
 			,_maxc(0),_nbnz(0)
-			,_rowid(0),_colid(0) 
+			,_rowid(0),_colid(0)
 			,_data(0), _field(F)
 		{
 		}
@@ -86,7 +86,7 @@ namespace LinBox
 		SparseMatrix2<_Field, SparseMatrixFormat::ELL_R> (const _Field & F, size_t m, size_t n) :
 			_rownb(m),_colnb(n)
 			,_maxc(0),_nbnz(0)
-			,_rowid(m,0),_colid(0) 
+			,_rowid(m,0),_colid(0)
 			,_data(0), _field(F)
 		{
 		}
@@ -164,10 +164,10 @@ namespace LinBox
 		SparseMatrix2 (const SparseMatrix2<_Tp1, _Rw1> &S, const Field& F) :
 			_rownb(S.rowdim()),_colnb(S.coldim()),
 			_maxc(0),
-			_nbnz(S.size()),
-			_colid(0),_data(0),
-			_field(F)
-			,_rowid(S.rowdim(),0)
+			_nbnz(S.size())
+			, _rowid(S.rowdim(),0)
+			, _colid(0),_data(0)
+			, _field(F)
 		{
 			typename SparseMatrix2<_Tp1,_Rw1>::template rebind<Field,SparseMatrixFormat::ELL_R>()(*this, S);
 		}
@@ -177,12 +177,12 @@ namespace LinBox
 
 		template<class VectStream>
 		SparseMatrix2<_Field, SparseMatrixFormat::ELL_R> (const _Field & F, VectStream & stream) :
-			_rownb(stream.size()),_colnb(stream.dim()),
-			_colid(0),_data(0)
-			,_maxc(0)
+			_rownb(stream.size()),_colnb(stream.dim())
+			, _maxc(0)
 			, _nbnz(0)
+			, _rowid(_rownb,0)
+			, _colid(0),_data(0)
 			, _field(F)
-			,_rowid(_rownb,0)
 		{
 			SparseMatrix2<_Field,SparseMatrixFormat::CSR> Tmp(F,stream);
 			importe(Tmp);
@@ -616,9 +616,9 @@ namespace LinBox
 		bool consistent() const
 		{
 			size_t nbnz = 0 ;
-			bool ok = true ;
+			// bool ok = true ;
 			for (size_t i = 0 ; i < _rownb ; ++i) {
-				bool row_ok = true ;
+				// bool row_ok = true ;
 				bool zero = false ;
 				for (size_t j = 0 ; j < _maxc ; ++j) {
 					if (field().isZero(getData(i,j))) {

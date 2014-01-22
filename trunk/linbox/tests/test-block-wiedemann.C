@@ -48,7 +48,8 @@
 #include "linbox/algorithms/block-wiedemann.h"
 #include "linbox/algorithms/coppersmith.h"
 //#include "linbox/blackbox/sparse.h"
-#include "linbox/blackbox/triplesbb.h"
+// #include "linbox/blackbox/triplesbb.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/vector/stream.h"
@@ -144,7 +145,8 @@ int main (int argc, char **argv)
 
 // sparse
 	//SparseMatrix <Field> S (F, n, n);
-	TriplesBB <Field> S (F, n, n);
+	// TriplesBB <Field> S (F, n, n);
+	SparseMatrix2<Field, SparseMatrixFormat::TPL> S (F, n, n);
 	for (size_t i = 0; i < n; ++i) S.setEntry(i, i, d[i]);
 	s.next (d);
 	for (size_t i = 0; i < n-1; ++i) S.setEntry(i, i+1, d[i]);

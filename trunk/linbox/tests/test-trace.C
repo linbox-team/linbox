@@ -69,7 +69,7 @@ int main (int argc, char **argv)
 
 	typedef Modular<int> Field;
 	typedef Field::Element Element;
-	typedef vector<Element> Vector;
+	// typedef vector<Element> Vector;
 	Field F (q);
 	Element t, t1, t2, t3;
 	F.init(t, 0); F.init(t1, 0); F.init(t2, 0); F.init(t3, 0);
