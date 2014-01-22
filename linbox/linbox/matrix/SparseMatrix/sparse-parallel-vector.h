@@ -77,7 +77,6 @@ namespace LinBox
 
 
 	/* Specialization for sparse parallel vectors */
-
 	template <class _Field, class _Row>
 	class SparseMatrix<_Field, _Row, VectorCategories::SparseParallelVectorTag > {
 	public:
@@ -96,48 +95,37 @@ namespace LinBox
 #endif
 
 
-	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other>
-	struct rebind {
-		typedef SparseMatrix<_Tp1, _R1> other;
+		template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
+		struct rebind {
+			typedef SparseMatrix<_Tp1, _R1> other;
 
-		void operator() (other & Ap, const Self_t& A) {
+			void operator() (other & Ap, const Self_t& A) {
 
-			typename _Tp1::Element e;
+				typename _Tp1::Element e;
 
-			Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
-			for( typename Self_t::ConstIndexedIterator
-			     indices = A.IndexedBegin();
-			     (indices != A.IndexedEnd()) ;
-			     ++indices ) {
-				// hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
-				hom. image (e, indices.value() );
-				if (!Ap.field().isZero(e))
-					Ap.setEntry (indices.rowIndex(),
-						     indices.colIndex(), e);
+				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
+				for( typename Self_t::ConstIndexedIterator
+				     indices = A.IndexedBegin();
+				     (indices != A.IndexedEnd()) ;
+				     ++indices ) {
+					// hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
+					hom. image (e, indices.value() );
+					if (!Ap.field().isZero(e))
+						Ap.setEntry (indices.rowIndex(),
+							     indices.colIndex(), e);
+				}
 			}
-		}
 
-	};
-	template<typename _Tp1, typename _Rw1>
-	SparseMatrix (const SparseMatrix<_Tp1, _Rw1, myTrait> &Mat, const Field& F) :
-		_field (F),
-		_MD (F), _AT (*this)
+		};
+
+		template<typename _Tp1, typename _Rw1>
+		SparseMatrix (const SparseMatrix<_Tp1, _Rw1, myTrait> &Mat, const Field& F) :
+			_field (F),
+			_MD (F), _AT (*this)
 			, _matA (Mat.rowdim()), _m (Mat.rowdim()), _n (Mat.coldim())
-	{
-		typename SparseMatrix<_Tp1,_Rw1, myTrait>::template rebind<Field,_Row>()(*this, Mat);
-	}
-
-
-	template<class VectStream>
-	SparseMatrix (const Field &F, VectStream &stream) :
-		_field (F), _MD (F), _AT (*this)
-		, _matA (stream.size()), _m (stream.size()), _n (stream.dim())
-	{
-		typename Self_t::RowIterator i;
-
-		for (i = Self_t::rowBegin (); i != Self_t::rowEnd (); ++i)
-			stream >> *i;
-	}
+		{
+			typename SparseMatrix<_Tp1,_Rw1, myTrait>::template rebind<Field,_Row>()(*this, Mat);
+		}
 
 		SparseMatrix (const Field & F, size_t m, size_t n) :
 			_field(F),
@@ -145,11 +133,12 @@ namespace LinBox
 			_matA (m), _m (m), _n (n)
 		{}
 
-	SparseMatrix (const Field & F) :
+		SparseMatrix (const Field & F) :
 			_field (F),
 			_MD(F),_AT(*this),
 			_matA(0), _m(0), _n(0)
 		{};
+
 
 		SparseMatrix (const SparseMatrix<Field, Row> &A) :
 			_field(A.field()),
@@ -161,7 +150,7 @@ namespace LinBox
 		SparseMatrix (const SparseMatrix<Field, VectorType> &A) :
 			_field(A.field()),
 			_MD(A.field()),_AT(*this),
-			_matA(A._m), _m (A._m), _n (A._n)
+			_matA(A.rowdim()), _m (A.rowdim()), _n (A.coldim())
 		{
 			typename Rep::iterator meit = this->_matA.begin();
 			typename SparseMatrix<Field, VectorType>::Rep::const_iterator copit = A._matA.begin();
@@ -173,16 +162,29 @@ namespace LinBox
 		*/
 		SparseMatrix ( MatrixStream<Field>& ms );
 
+		template<class VectStream>
+		SparseMatrix (const Field &F, VectStream &stream) :
+			_field (F), _MD (F), _AT (*this)
+			, _matA (stream.size()), _m (stream.size()), _n (stream.dim())
+		{
+			typename Self_t::RowIterator i;
+
+			for (i = Self_t::rowBegin (); i != Self_t::rowEnd (); ++i)
+				stream >> *i;
+		}
+
 		~SparseMatrix () {}
 
 		size_t rowdim () const
 		{
 			return _m;
 		}
+
 		size_t coldim () const
 		{
 			return _n;
 		}
+
 		size_t size () const
 		{
 			size_t s(0);
@@ -195,7 +197,8 @@ namespace LinBox
 				    // , const Field &F
 				    , LINBOX_enum(Tag::FileFormat) format /*  = Tag::FileFormat::Detect */)
 		{
-			return SparseMatrixReadWriteHelper<Field, Row>::read (*this, is,format);
+			return SparseMatrixReadWriteHelper<Field, Row>::read (*this, is
+									      , format);
 		}
 
 		/// Read from matrix market format
@@ -226,17 +229,19 @@ namespace LinBox
 		/// Write in matrix market format
 		std::ostream &write (std::ostream &os) const
 		{
-			// typedef SparseMatrixBase<Element, _Row> SMB;
 			writeMMCoordHeader(os, *this, this->size(), "SparseMatrix");
 			return this->write(os, Tag::FileFormat::OneBased);
 		}
 
-
-		void           setEntry (size_t i, size_t j, const Element &value);
 		void finalize(){}
 
+		void           setEntry (size_t i, size_t j, const Element &value);
+
+
 		Element       &refEntry (size_t i, size_t j);
+
 		const Element &getEntry (size_t i, size_t j) const;
+
 		Element       &getEntry (Element &x, size_t i, size_t j) const
 		{
 			return x = getEntry (i, j);
@@ -249,14 +254,17 @@ namespace LinBox
 		{
 			return _matA.begin ();
 		}
+
 		ConstRowIterator rowEnd () const
 		{
 			return _matA.end ();
 		}
+
 		RowIterator rowBegin ()
 		{
 			return _matA.begin ();
 		}
+
 		RowIterator rowEnd ()
 		{
 			return _matA.end ();
@@ -338,6 +346,7 @@ namespace LinBox
 			{
 				return static_cast<value_type&>(*_j);
 			}
+
 			value_type *operator -> ()
 			{
 				return &(*_j);
@@ -613,12 +622,12 @@ namespace LinBox
 		friend class SparseMatrixReadWriteHelper<Field, Row>;
 
 		const Field & _field;
+
 		MatrixDomain<Field>       _MD; // Matrix domain for matrix operations
 		TransposeMatrix<SparseMatrix<_Field, _Row> > _AT;
 		Rep               _matA;
 		size_t            _m;
 		size_t            _n;
-
 
 		// template<class F, class R, class T> friend class SparseMatrix;
 	};
