@@ -44,42 +44,46 @@
 namespace LinBox
 {
 
-	/** \brief wrapper for NAG Sparse Matrix format.
+	/** \brief Sparse Matrix in Triples storage
 	 *
 	 \ingroup blackbox
 	 * Sparse matrix representation which stores nonzero entries by i,j,value triples.
 	 */
   template<class Field_>
-  class TriplesBB : public BlackboxInterface {
+  class SparseMatrix2<Field_, SparseMatrixFormat::TPL> : public BlackboxInterface {
 
 	public:
 	typedef Field_ Field;
 	typedef typename MatrixDomain<Field>::Matrix Matrix;
 	typedef typename Field::Element Element;
-	typedef TriplesBB<Field> Self_t;
+	typedef SparseMatrix2<Field,SparseMatrixFormat::TPL> Self_t;
 	typedef size_t Index; // would prefer a signed type
 	enum sortPolicy {unsorted, cacheOpt, rowMajor, colMajor};
 
 
 	// Default constructor.
-	// TriplesBB();
+	// SparseMatrix2();
 
-	TriplesBB(const TriplesBB & B);
+	SparseMatrix2(const SparseMatrix2 & B);
 
-	TriplesBB & operator=(const TriplesBB & B);
+	SparseMatrix2 & operator=(const SparseMatrix2 & B);
 
-	TriplesBB(const Field& F, std::istream& in);
+	SparseMatrix2(const Field& F, std::istream& in);
 
 	std::istream& read(std::istream& in);
 
+	template<class Format>
+	std::ostream& write(std::ostream& out, Format f);
+
 	std::ostream& write(std::ostream& out);
 
-	~TriplesBB();
 
-	TriplesBB(const Field& F, Index r = 0, Index c = 0);
+	~SparseMatrix2();
+
+	SparseMatrix2(const Field& F, Index r = 0, Index c = 0);
 
 	// (re)initialize the matrix.  Any prior entries are abandoned.
-	TriplesBB& init(const Field& F, Index r = 0, Index c = 0);
+	SparseMatrix2& init(const Field& F, Index r = 0, Index c = 0);
 
 	// need cstor from matrix stream, read, write
 
@@ -126,29 +130,55 @@ namespace LinBox
 
 	const Field & field() const;
 
-	/* Returns number of non-zero entries */
+	/*! Returns number of non-zero entries
+	 * @warning (some could be zero, for instance after a rebind...
+	 */
 	size_t size() const;
 
-	template<typename Tp1_>
+
+	void resize( size_t row, size_t col, size_t nbnz)
+	{
+		rows_ = row ;
+		cols_ = col ;
+		data_.resize(nbnz);
+	}
+
+	template<typename _Tp1, typename _Rw1 >
+	struct rebind ;
+
+
+	template<typename Tp1_, typename _Rw1 = SparseMatrixFormat::TPL>
 	struct rebind {
-		typedef TriplesBB<Tp1_> other;
-		void operator() (other & Ap, const Self_t& A, const Tp1_& F)
+		typedef SparseMatrix2<Tp1_, SparseMatrixFormat::TPL> other;
+		void operator() (other & Ap, const Self_t& A)
 		{
-			Hom <typename Self_t::Field, Tp1_> hom( A.field(), F);
+			Hom <typename Self_t::Field, Tp1_> hom( A.field(), Ap.field( ));
 
-			typedef typename Tp1_::Element otherElt;
-			typedef typename std::vector<otherElt> othervec;
-			typedef typename std::vector<Element> selfvec;
+			// typedef typename Tp1_::Element otherElt;
+			typedef typename other::Rep othervec;
 			typedef typename othervec::iterator otheriter;
+			otheriter vp_i;
+			typedef Rep selfvec;
 			typedef typename selfvec::const_iterator selfiter;
-			otheriter vp_p; selfiter v_p;
+			selfiter v_i;
 
-			Ap.data_.resize(A.data.size());
-			for (v_p = A.data_.begin(), vp_p = Ap.data_.begin();
-			     v_p != A.data.end(); ++ v_p, ++ vp_p)
-				hom.image (vp_p->elt, v_p->elt);
+			Ap.resize(A.rowdim(),A.coldim(),A.size());
+			// Ap.data_.resize(A.data.size()); !!! this is protected
+
+			for (v_i = A.refDataConst().begin(), vp_i = Ap.refData().begin();
+			     v_i != A.refDataConst().end(); ++ v_i, ++ vp_i)
+				hom.image (vp_i->elt, v_i->elt);
 		}
 	};
+
+	template<typename _Tp1, typename _Rw1>
+	SparseMatrix2 (const SparseMatrix2<_Tp1, _Rw1> &S, const Field& F) :
+		MD_(F), data_(), rows_(0), cols_(0), sort_(unsorted)
+	  {
+		  typename SparseMatrix2<_Tp1,_Rw1>::template rebind<Field,SparseMatrixFormat::TPL>()(*this, S);
+	  }
+
+
 
 	protected:
 	MatrixDomain<Field> MD_; // Contains the field and dense mat ops for applyLeft and applyRight
@@ -156,6 +186,7 @@ namespace LinBox
 	struct Triple { Index row; Index col; Element elt;
 		Triple(Index& r, Index& c, const Element& e)
 		{ init(r, c, e); }
+		Triple() {} ;
 		void init(Index& r, Index& c, const Element& e)
 		{ row = r; col = c; elt = e; }
 	};
@@ -169,12 +200,24 @@ namespace LinBox
 	sortPolicy sort_;
 	// 0 = unsorted, 1 = cache optimized, 2 = row major, 3 = col major.
 	//int sort_;
+	public:
+	typedef std::vector<Triple> Rep ;
+	const std::vector<Triple> & refDataConst() const
+	{
+		return data_ ;
+	}
+	std::vector<Triple> & refData()
+	{
+		return data_ ;
+	}
 
-  }; // TriplesBB
+
+
+  }; // SparseMatrix2
 
 } // namespace LinBox
 
-#include "linbox/blackbox/triplesbb.inl"
+#include "sparse-tpl-matrix.inl"
 
 #endif // __LINBOX_triplesbb_H
 

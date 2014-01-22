@@ -93,7 +93,7 @@ namespace LinBox
 		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
 		{
 			Vector2 u (x);
-			Vector2 v(u.size());
+			Vector2 v(field(),u.size());
 			_VD.mul( y, x, _P_ptr->operator[](0) );
 			for (size_t i=1; i<_P_ptr->size(); ++i){
 				_A_ptr->apply( v, u );
@@ -117,7 +117,7 @@ namespace LinBox
 		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
 		{
 			Vector2 u( x );
-			Vector2 v(u.size());
+			Vector2 v(field(),u.size());
 			_VD.mul( y, x, _P_ptr->operator[](0));
 			for (size_t i=1; i<_P_ptr->size(); ++i){
 				_A_ptr->applyTranspose( v, u );
@@ -238,7 +238,7 @@ namespace LinBox
 		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
 		{
 			Vector2 u (x);
-			Vector2 v(u.size());
+			Vector2 v(field(),u.size());
 			_VD.mul( y, x, _P_data[0] );
 			for (size_t i=1; i<_P_data.size(); ++i){
 				_A_data.apply( v, u );
@@ -262,7 +262,7 @@ namespace LinBox
 		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
 		{
 			Vector2 u( x );
-			Vector2 v(u.size());
+			Vector2 v(field(), u.size());
 			_VD.mul( y, x, _P_data[0]);
 			for (size_t i=1; i<_P_data.size(); ++i){
 				_A_data.applyTranspose( v, u );

@@ -462,6 +462,7 @@ namespace LinBox
 
 				//                 trace(t, B);
 				WhisartTraceTranspose(t, F, D1, BP, D2);
+				// std::cout << t << ',' << p2 << std::endl;
 				tryagain = (! F.areEqual( t, p2 ));
 				if (res > rk)
 					tryagain = true;

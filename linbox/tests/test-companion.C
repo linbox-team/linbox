@@ -69,7 +69,7 @@ int main (int argc, char **argv)
 	commentator().start("Companion matrix black box test suite", "companion");
 
 	typedef Modular<uint32_t> Field;
-	typedef vector <Field::Element> Vector;
+	// typedef vector <Field::Element> Vector;
 	typedef vector <Field::Element> Polynomial;
 	typedef Companion<Field> Blackbox;
 

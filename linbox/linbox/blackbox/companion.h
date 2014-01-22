@@ -25,7 +25,8 @@
 #define __LINBOX_companion_H
 
 #include "linbox/blackbox/blackbox-interface.h"
-#include "linbox/blackbox/triplesbb.h"
+// #include "linbox/blackbox/triplesbb.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include <vector>
 
 namespace LinBox
@@ -35,13 +36,14 @@ namespace LinBox
 	  \brief %Companion matrix of a monic polynomial.
 	  */
 	template<class Field_>
-	struct Companion: public TriplesBB<Field_> {
+	struct Companion: public SparseMatrix2<Field_,SparseMatrixFormat::TPL> {
 		typedef Field_ Field;
+		typedef SparseMatrix2<Field,SparseMatrixFormat::TPL> Father_t;
 
 		/// This is the n by n companion matrix of a given polynomial of degree n.
 		template<class Polynomial>
 		Companion(const Field& F = Field(), const Polynomial& P = Polynomial(1)) :
-			TriplesBB<Field>(F, P.size()-1, P.size()-1)
+			Father_t(F, P.size()-1, P.size()-1)
 		{
 			size_t n = P.size() - 1;
 			for (size_t i = 1; i < n; ++i)
@@ -64,7 +66,7 @@ namespace LinBox
 		 */
 		Companion(const Field& F, size_t n,
 			  typename Field::RandIter r ) :
-			TriplesBB<Field>(F, n, n)
+			Father_t(F, n, n)
 		{
 			std::vector<typename Field::Element> p(n+1);
 			for (typename std::vector<typename Field::Element>::iterator i = p.begin(); i != p.end(); ++i)
@@ -81,7 +83,7 @@ namespace LinBox
 		}
 
 		Companion(const Field& F, size_t n) :
-			TriplesBB<Field>(F,n,n)
+			Father_t(F,n,n)
 		{
 			typename Field::RandIter r(F);
 			std::vector<typename Field::Element> p(n+1);

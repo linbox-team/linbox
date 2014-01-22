@@ -59,14 +59,14 @@ namespace LinBox {
 		// class ELL_R1 : public ANY {} ; // ELL_R with only ones (or mones, or..)
 		// class DIA    : public ANY {} ; // Cordinate
 		// class BCSR   : public ANY {} ; // Cordinate
-		// class TPL    : public ANY {} ; // triples
 		class HYB    : public ANY {} ; // hybrid
+		class TPL    : public ANY {} ; // triplesbb
+		class TPL_omp    : public ANY {} ; // triplesbb
 
 		// the old sparse matrix reps.
 		class VVP : public ANY {} ; // vector of vector of pairs
 		class VPV : public ANY {} ; // vector of pair of vectors
 		class VMap : public ANY {} ; // vector of index to value maps.
-		class COO_T : public ANY {} ; // triplesbb
 
 	} // SparseMatrixFormat
 

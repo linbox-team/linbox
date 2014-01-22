@@ -138,6 +138,19 @@ namespace LinBox
 			}
 			return p;
 		}
+		template <class ANY>
+		Element& init( Element& p, const BlasVector<ANY>& v ) const
+		{
+			p = 0;
+			Coeff temp;
+			for( long i = 0; i < (long)v.size(); ++i ) {
+				_CField.init( temp, v[ (size_t) i ] );
+				if( !_CField.isZero(temp) )
+					NTL::SetCoeff( p, i, temp );
+			}
+			return p;
+		}
+
 
 		/** Initialize p from a vector of coefficients.
 		 * The vector should be ordered the same way NTL does it: the front

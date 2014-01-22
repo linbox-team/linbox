@@ -167,6 +167,11 @@ namespace LinBox
 			return x = NTL::to_zz_p((long)(y));
 		}
 
+		Element& init(Element& x, const NTL::zz_p & y) const
+		{
+			return x = y ;
+		}
+
 		template <class ANY>
 		ANY& convert(ANY& x, const Element& y) const
 		{

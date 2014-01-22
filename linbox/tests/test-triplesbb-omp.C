@@ -29,7 +29,7 @@
  */
 
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 #include <fstream>
@@ -40,8 +40,9 @@
 #include <sstream>
 
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/triplesbb-omp.h"
-#include "linbox/blackbox/triplesbb.h"
+#include "linbox/matrix/sparse-matrix.h"
+// #include "linbox/blackbox/triplesbb-omp.h"
+// #include "linbox/blackbox/triplesbb.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/matrix/blas-matrix.h"
@@ -193,7 +194,7 @@ bool runIdentTest(int n,
                   bool useVector,
                   ostream& report)
 {
-        typedef TriplesBBOMP<Field> OMPBlackbox;
+        typedef SparseMatrix2<Field,SparseMatrixFormat::TPL_omp> OMPBlackbox;
 
         omp_set_num_threads(numThreads);
 
@@ -250,8 +251,8 @@ bool runRandTest(int n,
                  bool useVector,
                  ostream& report)
 {
-        typedef TriplesBBOMP<Field> OMPBlackbox;
-        typedef TriplesBB<Field> SeqBlackbox;
+        typedef SparseMatrix2<Field,SparseMatrixFormat::TPL_omp> OMPBlackbox;
+        typedef SparseMatrix2<Field,SparseMatrixFormat::TPL> SeqBlackbox;
 
         omp_set_num_threads(numThreads);
 

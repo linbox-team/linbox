@@ -174,10 +174,10 @@ namespace LinBox
 
 		template<class VectStream>
 		SparseMatrix2<_Field, SparseMatrixFormat::ELL> (const _Field & F, VectStream & stream) :
-			_rownb(stream.size()),_colnb(stream.dim()),
-			_colid(0),_data(0)
-			,_maxc(0)
+			_rownb(stream.size()),_colnb(stream.dim())
+			, _maxc(0)
 			, _nbnz(0)
+			, _colid(0),_data(0)
 			, _field(F)
 		{
 			SparseMatrix2<_Field,SparseMatrixFormat::CSR> Tmp(F,stream);
@@ -622,9 +622,9 @@ namespace LinBox
 		bool consistent() const
 		{
 			size_t nbnz = 0 ;
-			bool ok = true ;
+			// bool ok = true ;
 			for (size_t i = 0 ; i < _rownb ; ++i) {
-				bool row_ok = true ;
+				// bool row_ok = true ;
 				bool zero = false ;
 				for (size_t j = 0 ; j < _maxc ; ++j) {
 					if (field().isZero(getData(i,j))) {

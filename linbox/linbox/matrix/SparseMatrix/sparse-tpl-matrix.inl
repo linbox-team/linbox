@@ -39,18 +39,21 @@
 namespace LinBox
 {
 
-// template<class Field_> TriplesBB<Field_>::
-// TriplesBB() : MD_(), data_(), rows_(0), cols_(0), sort_(unsorted) {}
+// template<class Field_> SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
+// SparseMatrix2() : MD_(), data_(), rows_(0), cols_(0), sort_(unsorted) {}
 
-template<class Field_> TriplesBB<Field_>::
-~TriplesBB() {}
+template<class Field_>
+ SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
+~SparseMatrix2() {}
 
-template<class Field_> TriplesBB<Field_>::
-TriplesBB(const Field& F, std::istream& in)
+template<class Field_>
+ SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
+SparseMatrix2(const Field& F, std::istream& in)
 : MD_(F), data_(), rows_(0), cols_(0), sort_(unsorted)
 { read(in); }
 
-template<class Field_> std::istream& TriplesBB<Field_>::
+template<class Field_>
+ std::istream& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 read(std::istream& in){
 	Index r, c;
 	typename Field::Element v; field().init(v);
@@ -61,10 +64,20 @@ read(std::istream& in){
 	return in;
 }
 
-template<class Field_> std::ostream& TriplesBB<Field_>::
-write(std::ostream& out){
+template<class Field_>
+template<class Format>
+ std::ostream& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
+write(std::ostream& out,
+      Format f ){
+	return write(out);
+}
+template<class Field_>
+ std::ostream& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
+write(std::ostream& out ){
+	// linbox_check(f == SparseFileFormat::COO());
+	//! @bug we should not support too many formats
 	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
-	out << "% written from a LinBox TriplesBB" << std::endl;
+	out << "% written from a LinBox SparseMatrix2" << std::endl;
 	out << rowdim() <<" " << coldim() << " " << size() << std::endl;
 	for (Index k = 0; k < size(); ++k) {
 		Triple t = data_[k];
@@ -73,22 +86,26 @@ write(std::ostream& out){
 	return out;
 }
 
-template<class Field_> TriplesBB<Field_>& TriplesBB<Field_>::
+template<class Field_>
+ SparseMatrix2<Field_,SparseMatrixFormat::TPL>& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 init(const Field& F, Index r, Index c)
 { MD_.init(F), data_.clear(); rows_ = r; cols_ = c; sort_ = unsorted; return *this; }
 
-template<class Field_> TriplesBB<Field_>::
-TriplesBB(const Field& F, Index r, Index c)
+template<class Field_>
+ SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
+SparseMatrix2(const Field& F, Index r, Index c)
 : MD_(F), data_(), rows_(r), cols_(c), sort_(unsorted) {}
 
-template<class Field_> TriplesBB<Field_>::
-TriplesBB(const TriplesBB<Field_> & B)
+template<class Field_>
+ SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
+SparseMatrix2(const SparseMatrix2<Field_,SparseMatrixFormat::TPL> & B)
 : MD_(B.field()), data_ ( B.data_ ), rows_ ( B.rows_ ), cols_ ( B.cols_ ),
    sort_ ( B.sort_ )
 {}
 
-template<class Field_> TriplesBB<Field_>& TriplesBB<Field_>::
-operator=(const TriplesBB<Field_> & rhs)
+template<class Field_>
+ SparseMatrix2<Field_,SparseMatrixFormat::TPL>& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
+operator=(const SparseMatrix2<Field_,SparseMatrixFormat::TPL> & rhs)
 {	if (rhs == this) return ;
 	MD_.init(rhs.field_);
 	data_ = rhs.data_;
@@ -99,12 +116,13 @@ operator=(const TriplesBB<Field_> & rhs)
 }
 
 template<class Field_>
-template<class Mat1, class Mat2> Mat1& TriplesBB<Field_>::
+
+template<class Mat1, class Mat2> Mat1& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 // I do not like this need to templatize -bds
-//typename TriplesBB<Field_>::Matrix& TriplesBB<Field_>::
+//typename SparseMatrix2<Field_,SparseMatrixFormat::TPL>::Matrix& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 applyLeft // Y = AX
-	( /*typename TriplesBB<Field_>::Matrix*/Mat1 &Y,
-	  const /*typename TriplesBB<Field_>::Matrix*/Mat2 &X
+	( /*typename SparseMatrix2<Field_,SparseMatrixFormat::TPL>::Matrix*/Mat1 &Y,
+	  const /*typename SparseMatrix2<Field_,SparseMatrixFormat::TPL>::Matrix*/Mat2 &X
 	) const
 {	Y.zero();
 	Matrix Yc, Xc;// row submatrices
@@ -117,12 +135,12 @@ applyLeft // Y = AX
 	return Y;
 }
 
-//template<class Field_> typename TriplesBB<Field_>::Matrix& TriplesBB<Field_>::
+//template<class Field_> typename SparseMatrix2<Field_,SparseMatrixFormat::TPL>::Matrix& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 template<class Field_>
-template<class Mat1, class Mat2> Mat1& TriplesBB<Field_>::
+template<class Mat1, class Mat2> Mat1& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 applyRight // Y = XA
-	( /*TriplesBB<Field_>::Matrix*/Mat1 &Y,
-	  const /*typename TriplesBB<Field_>::Matrix*/Mat2 &X
+	( /*SparseMatrix2<Field_,SparseMatrixFormat::TPL>::Matrix*/Mat1 &Y,
+	  const /*typename SparseMatrix2<Field_,SparseMatrixFormat::TPL>::Matrix*/Mat2 &X
 	) const
 {	Y.zero();
 	Matrix Yr, Xr; // row submatrices
@@ -137,7 +155,7 @@ applyRight // Y = XA
 
 template<class Field_>
 template<class OutVector, class InVector>
-OutVector & TriplesBB<Field_>::apply(OutVector & y, const InVector & x) const
+OutVector & SparseMatrix2<Field_,SparseMatrixFormat::TPL>::apply(OutVector & y, const InVector & x) const
 {
 	linbox_check( rowdim() == y.size() );
 	linbox_check( coldim() == x.size() );
@@ -150,8 +168,9 @@ OutVector & TriplesBB<Field_>::apply(OutVector & y, const InVector & x) const
 }
 
 template<class Field_>
+
 template<class OutVector, class InVector>
-OutVector & TriplesBB<Field_>::applyTranspose(OutVector & y, const InVector & x) const
+OutVector & SparseMatrix2<Field_,SparseMatrixFormat::TPL>::applyTranspose(OutVector & y, const InVector & x) const
 {
 	linbox_check( coldim() == y.size() );
 	linbox_check( rowdim() == x.size() );
@@ -163,29 +182,36 @@ OutVector & TriplesBB<Field_>::applyTranspose(OutVector & y, const InVector & x)
 	return y;
 }
 
-template<class Field_> size_t TriplesBB<Field_>::
+template<class Field_>
+ size_t SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 rowdim() const { return rows_; }
 
-template<class Field_> size_t TriplesBB<Field_>::
+template<class Field_>
+ size_t SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 coldim() const { return cols_; }
 
-template<class Field_> const Field_& TriplesBB<Field_>::
+template<class Field_>
+ const Field_& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 field() const { return MD_.field(); }
 
-template<class Field_> size_t TriplesBB<Field_>::
+template<class Field_>
+ size_t SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 size() const { return data_.size(); }
 
-template<class Field_> void TriplesBB<Field_>::
+template<class Field_>
+ void SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 setEntry(Index i, Index j, const typename Field::Element & e)
 {
 	sort_ = unsorted;
 	data_.push_back(Triple(i, j, e));
 }
 
-template<class Field_> void TriplesBB<Field_>::
+template<class Field_>
+ void SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 finalize(sortPolicy s) { /* sort according to policy */ sort_ = s; }
 
-template<class Field_> typename Field_::Element& TriplesBB<Field_>::
+template<class Field_>
+ typename Field_::Element& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 getEntry(typename Field_::Element& e, Index i, Index j) const
 {
 	for (Index k = 0; k < data_.size(); ++k)

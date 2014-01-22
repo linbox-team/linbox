@@ -56,7 +56,7 @@ void buildBySetEntry(SM & A, size_t nnz)
 {
 	typename SM::Field::RandIter r(A.field());
 	//size_t i, j, k;
-	typename SM::Field::Element x; 
+	typename SM::Field::Element x;
 
 	for (size_t k = 0; k < nnz; ++k)
 	{
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
 	static size_t n = 10;
 	static size_t m = 10;
 	static integer q = 101;
-	static int N = m+n;
+	static size_t N = m+n;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set column dimension of test matrices to N.", TYPE_INT,     &n },
@@ -88,7 +88,7 @@ int main (int argc, char **argv)
 
 	//typedef	Modular<uint32_t> Field;
 	typedef	Modular<double> Field;
-	typedef Field::Element  Element;
+	// typedef Field::Element  Element;
 
 	Field F (q);
 
@@ -100,7 +100,7 @@ int main (int argc, char **argv)
 	commentator().start("SparseMatrix<Field>", "Field");
 	SparseMatrix<Field> S1(F, m, n);
 	buildBySetEntry(S1, N);
-	if ( testBlackboxNoRW(S1) ) 
+	if ( testBlackboxNoRW(S1) )
 		commentator().stop("SparseMatrix<Field> pass");
 	else {
 		commentator().stop("SparseMatrix<Field> FAIL");
@@ -111,7 +111,7 @@ int main (int argc, char **argv)
 	commentator().start("SparseMatrix2<Field>", "Field");
 	SparseMatrix2<Field> S1a(F, m, n);
 	buildBySetEntry(S1a, N);
-	if ( testBlackboxNoRW(S1) ) 
+	if ( testBlackboxNoRW(S1) )
 		commentator().stop("SparseMatrix2<Field> pass");
 	else {
 		commentator().stop("SparseMatrix2<Field> FAIL");
@@ -123,7 +123,7 @@ int main (int argc, char **argv)
 	commentator().start("SparseMatrix2<Field, SparseMatrixFormat::COO>", "COO");
 	SparseMatrix2<Field, SparseMatrixFormat::COO> S2(F, m, n);
 	buildBySetEntry(S2, N);
-	if ( testBlackboxNoRW(S2) ) 
+	if ( testBlackboxNoRW(S2) )
 		commentator().stop("Format COO pass");
 	else {
 		commentator().stop("Format COO FAIL");
@@ -135,7 +135,7 @@ int main (int argc, char **argv)
 	commentator().start("SparseMatrix2<Field, SparseMatrixFormat::CSR>", "CSR");
 	SparseMatrix2<Field, SparseMatrixFormat::CSR> S3(F, m, n);
 	buildBySetEntry(S3, N);
-	if ( testBlackboxNoRW(S3) ) 
+	if ( testBlackboxNoRW(S3) )
 		commentator().stop("Format CSR pass");
 	else {
 		commentator().stop("Format CSR FAIL");
@@ -148,7 +148,7 @@ int main (int argc, char **argv)
 	commentator().report() << "SparseMatrix2<Field, SparseMatrixFormat::ELL>" << std::endl;
 	SparseMatrix2<Field, SparseMatrixFormat::ELL> S4(F, m, n);
 	buildBySetEntry(S4, N);
-	if ( testBlackboxNoRW(S4) ) 
+	if ( testBlackboxNoRW(S4) )
 		commentator().stop("Format ELL pass");
 	else {
 		commentator().stop("Format ELL FAIL");
@@ -160,7 +160,7 @@ int main (int argc, char **argv)
 	commentator().start("SparseMatrix2<Field, SparseMatrixFormat::ELL_R>", "ELL_R");
 	SparseMatrix2<Field, SparseMatrixFormat::ELL_R> S5(F, m, n);
 	buildBySetEntry(S5, N);
-	if ( testBlackboxNoRW(S5) ) 
+	if ( testBlackboxNoRW(S5) )
 		commentator().stop("Format ELL_R pass");
 	else {
 		commentator().stop("Format ELL_R FAIL");
@@ -168,12 +168,12 @@ int main (int argc, char **argv)
 	}
 #endif
 
-#if 0 // doesn't compile 
+#if 0 // doesn't compile
 	commentator().start("SparseMatrix2<Field, SparseMatrixFormat::HYB>", "HYB");
 	SparseMatrix2<Field, SparseMatrixFormat::HYB> S6(F, m, n);
 	buildBySetEntry(S6, N);
 	S6.optimise();
-	if ( testBlackboxNoRW(S6) ) 
+	if ( testBlackboxNoRW(S6) )
 		commentator().stop("Format HYB pass");
 	else {
 		commentator().stop("Format HYB FAIL");
@@ -181,47 +181,54 @@ int main (int argc, char **argv)
 	}
 #endif
 
+#if 0 /* not ported yet */
 // Vector of row, row is Vector of index/value Pair
 	commentator().start("SparseMatrix2<Field, SparseMatrixFormat::VVP>", "VVP");
 	SparseMatrix2<Field, SparseMatrixFormat::VVP> Svvp(F, m, n);
 	buildBySetEntry(Svvp, N);
-	if ( testBlackboxNoRW(Svvp) ) 
+	if ( testBlackboxNoRW(Svvp) )
 		commentator().stop("Format VVP pass");
 	else {
 		commentator().stop("Format VVP FAIL");
 		pass = false;
 	}
+#endif
 
+#if 0 /* not ported yet */
 // Vector of row, row is Pair of Vectors, one of indices, one of values.
 	commentator().start("SparseMatrix2<Field, SparseMatrixFormat::VPV>", "VPV");
 	SparseMatrix2<Field, SparseMatrixFormat::VPV> Svpv(F, m, n);
 	buildBySetEntry(Svpv, N);
-	if ( testBlackboxNoRW(Svpv) ) 
+	if ( testBlackboxNoRW(Svpv) )
 		commentator().stop("Format VPV pass");
 	else {
 		commentator().stop("Format VPV FAIL");
 		pass = false;
 	}
+#endif
 
+#if 0 /* not ported yet */
 // Vector of row, row is Map, index to value.
 	commentator().start("SparseMatrix2<Field, SparseMatrixFormat::VMap>", "VMap");
 	SparseMatrix2<Field, SparseMatrixFormat::VMap> Svm(F, m, n);
 	buildBySetEntry(Svm, N);
-	if ( testBlackboxNoRW(Svm) ) 
+	if ( testBlackboxNoRW(Svm) )
 		commentator().stop("Format VMap pass");
 	else {
 		commentator().stop("Format VMap FAIL");
 		pass = false;
 	}
+#endif
 
+#if 1 /* not ported yet */
 // Vector of i,j,val triples
-	commentator().start("SparseMatrix2<Field, SparseMatrixFormat::COO_T>", "COO_T");
-	SparseMatrix2<Field, SparseMatrixFormat::COO_T> Striple(F, m, n);
+	commentator().start("SparseMatrix2<Field, SparseMatrixFormat::TPL>", "TPL");
+	SparseMatrix2<Field, SparseMatrixFormat::TPL> Striple(F, m, n);
 	buildBySetEntry(Striple, N);
-	if ( testBlackboxNoRW(Striple) ) 
-		commentator().stop("Format COO_T pass");
+	if ( testBlackboxNoRW(Striple) )
+		commentator().stop("Format TPL pass");
 	else {
-		commentator().stop("Format COO_T FAIL");
+		commentator().stop("Format TPL FAIL");
 		pass = false;
 	}
 
@@ -231,6 +238,7 @@ int main (int argc, char **argv)
 		commentator().stop("Sparse matrix black box test suite FAIL");
 	return pass ? 0 : -1;
 }
+#endif
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

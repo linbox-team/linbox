@@ -59,17 +59,17 @@ namespace LinBox {
 		return A.read (is);
 	}
 
-	template <class _Field, class _Storage>
-	struct MatrixTraits< SparseMatrix2<_Field, _Storage> > {
-		typedef SparseMatrix2<_Field, _Storage>      MatrixType;
-		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
-	};
+	// template <class _Field, class _Storage>
+	// struct MatrixTraits< SparseMatrix2<_Field, _Storage> > {
+		// typedef SparseMatrix2<_Field, _Storage>      MatrixType;
+		// typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	// };
 
 
-	template <class _Field, class _Storage>
-	struct GetEntryCategory<SparseMatrix2<_Field,_Storage> > {
-		  typedef SolutionTags::Local Tag;
-	};
+	// template <class _Field, class _Storage>
+	// struct GetEntryCategory<SparseMatrix2<_Field,_Storage> > {
+		  // typedef SolutionTags::Local Tag;
+	// };
 
 } // LinBox
 
@@ -83,6 +83,12 @@ namespace LinBox {
 // #include "SparseMatrix/sparse-bcsr-matrix.h"
 // #include "SparseMatrix/sparse-dia-matrix.h"
 #include "SparseMatrix/sparse-hyb-matrix.h"
+
+#include "SparseMatrix/sparse-tpl-matrix.h"
+// #ifdef __LINBOX_USES_OPENMP
+#ifdef _OPENMP
+#include "SparseMatrix/sparse-tpl-matrix-omp.h"
+#endif
 
 // wrappers on the old sparse reps.
 // #include "SparseMatrix/sparse-vvp-matrix.h" // sparseSeq

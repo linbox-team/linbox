@@ -39,6 +39,7 @@
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/solutions/solution-tags.h"
+#include "linbox/vector/blas-vector.h"
 
 namespace LinBox
 {
@@ -66,10 +67,11 @@ namespace LinBox
 	typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, SolutionTags::Generic t)
 	{
 		typedef typename BB::Field Field;
-		typedef std::vector<typename Field::Element> Vector;
+		// typedef std::vector<typename Field::Element> Vector;
+		typedef BlasVector<Field> Vector ;
 
 		const Field& F = A.field();
-		Vector v(A.coldim(), F.zero), w(A.rowdim(), F.zero);
+		Vector v(F,A.coldim(), F.zero), w(F,A.rowdim(), F.zero);
 		F.init(v[j],1UL);
 		A.apply (w, v);
 		/* This causes a warning "returning reference to temporary" and is not necessary, I believe. -bds
