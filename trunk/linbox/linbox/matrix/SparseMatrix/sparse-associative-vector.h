@@ -580,7 +580,7 @@ protected:
 
 } // namespace LinBox
 
-#include "linbox/matrix/sparse-associative-vector.inl"
+#include "linbox/matrix/SparseMatrix/sparse-associative-vector.inl"
 
 #endif // __LINBOX_matrix_sparse_associative_H
 

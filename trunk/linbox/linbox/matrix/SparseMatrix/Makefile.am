@@ -33,7 +33,16 @@ pkgincludesub_HEADERS =         \
 	sparse-tpl-matrix.h     \
        	sparse-tpl-matrix.inl   \
 	sparse-tpl-matrix-omp.h  \
-	sparse-tpl-matrix-omp.inl
+	sparse-tpl-matrix-omp.inl  \
+	sparse-generic.h \
+	sparse-generic.inl \
+	sparse-associative-vector.h      \
+	sparse-associative-vector.inl    \
+        sparse-parallel-vector.h         \
+        sparse-parallel-vector.inl       \
+        sparse-sequence-vector.h         \
+        sparse-sequence-vector.inl
+
 
 
 

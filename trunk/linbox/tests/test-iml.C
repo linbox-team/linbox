@@ -79,7 +79,7 @@ bool testIMLrank(const Field &F, size_t m, size_t n, size_t rank, int iterations
 
 		commentator().startIteration((unsigned int)k);
 		BlasMatrix<Field> A(F,m,n);
-		RandomMatrixWithRank(F,A.getWritePointer(),m,n,rank);
+		RandomMatrixWithRank(F,A.getWritePointer(),m,n,A.getStride(),rank);
 		assert(CheckRank(F,A.getWritePointer(),m,n,n,rank));
 
 #ifdef __LINBOX_HAVE_IML
@@ -141,7 +141,7 @@ bool testIMLstuff(const Field &F, size_t m, size_t n, size_t rank, int iteration
 		{ // mAdjoint
 			commentator().report()<< "mAdjoint" << std::endl;
 			BlasMatrix<Field> A(F,m,m);
-			RandomMatrixWithRank(F,A.getWritePointer(),m,m,rank);
+			RandomMatrixWithRank(F,A.getWritePointer(),m,m,A.getStride(),rank);
 			assert(CheckRank(F,A.getWritePointer(),m,m,m,rank));
 
 			BlasMatrix<Field> B(F,m,m);
@@ -164,7 +164,7 @@ bool testIMLstuff(const Field &F, size_t m, size_t n, size_t rank, int iteration
 		{ // mBasis 1,1
 			commentator().report()<< "mBasis 11" << std::endl;
 			BlasMatrix<Field> A(F,m,n);
-			RandomMatrixWithRank(F,A.getWritePointer(),m,n,rank);
+			RandomMatrixWithRank(F,A.getWritePointer(),m,n,A.getStride(),rank);
 			assert(CheckRank(F,A.getWritePointer(),m,n,n,rank));
 
 			BlasMatrix<Field> B(F,m,n);
@@ -199,7 +199,7 @@ bool testIMLstuff(const Field &F, size_t m, size_t n, size_t rank, int iteration
 		{ // mBasis 1,0
 			commentator().report()<< "mBasis 10" << std::endl;
 			BlasMatrix<Field> A(F,m,n);
-			RandomMatrixWithRank(F,A.getWritePointer(),m,n,rank);
+			RandomMatrixWithRank(F,A.getWritePointer(),m,n,A.getStride(),rank);
 			assert(CheckRank(F,A.getWritePointer(),m,n,n,rank));
 
 			BlasMatrix<Field> B(F,m,n);
@@ -231,7 +231,7 @@ bool testIMLstuff(const Field &F, size_t m, size_t n, size_t rank, int iteration
 		{ // mBasis 0,1
 			commentator().report()<< "mBasis 01" << std::endl;
 			BlasMatrix<Field> A(F,m,n);
-			RandomMatrixWithRank(F,A.getWritePointer(),m,n,rank);
+			RandomMatrixWithRank(F,A.getWritePointer(),m,n,A.getStride(),rank);
 			assert(CheckRank(F,A.getWritePointer(),m,n,n,rank));
 
 			BlasMatrix<Field> B(F,m,n);
@@ -263,7 +263,7 @@ bool testIMLstuff(const Field &F, size_t m, size_t n, size_t rank, int iteration
 		{ // mRankProfile
 			commentator().report()<< "mRankProfile" << std::endl;
 			BlasMatrix<Field> A(F,m,n);
-			RandomMatrixWithRank(F,A.getWritePointer(),m,n,rank);
+			RandomMatrixWithRank(F,A.getWritePointer(),m,n,A.getStride(),rank);
 			assert(CheckRank(F,A.getWritePointer(),m,n,n,rank));
 
 			BlasMatrix<Field> B(F,m,n);
@@ -319,7 +319,7 @@ bool testIMLinverse(const Field &F, size_t m, int iterations)
 		BlasMatrix<Field> A(F,m,m);
 		Element det ;
 	       	Gn.random(det);
-		RandomMatrixWithDet(F,A.getWritePointer(),m,m,det);
+		RandomMatrixWithDet(F,A.getWritePointer(),m,A.getStride(),det);
 		assert(CheckDet(F,A.getWritePointer(),m,m,det));
 
 		BlasMatrix<Field> Ac(F,m,m);
