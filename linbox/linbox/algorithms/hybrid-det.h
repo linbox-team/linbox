@@ -29,7 +29,7 @@
 #include "linbox-config.h"
 #include "linbox/util/debug.h"
 
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/rational-solver.h"

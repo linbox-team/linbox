@@ -39,29 +39,30 @@ namespace LinBox {
 
 
 
-	// add here the sparse matrix types
 
+	//! Sparse matrix format (memory storage)
 	namespace SparseMatrixFormat {
 		class ANY {} ;
 		// template<typename Row_t>
-		class COO    : public ANY {} ; // Cordinate
+		class COO         : public ANY {} ; //!< Cordinate
 		// template<typename Row_t>
-		// class COO1   : public ANY {} ; // COO with only ones (or mones, or..)
+		class COO1        : public ANY {} ; //!< implicit value COO (with only ones, or mones, or..)
 		// template<typename Row_t>
-		class CSR    : public ANY {} ; // compressed row
+		class CSR         : public ANY {} ; //!< compressed row
 		// template<typename Row_t>
-		// class CSR1   : public ANY {} ; // CSR with only ones (or mones, or..)
+		class CSR1        : public ANY {} ; //!< implicit value CSR (with only ones, or mones, or..)
 		// template<typename Row_t>
-		class ELL    : public ANY {} ; // ellpack
+		class ELL         : public ANY {} ; //!< ellpack
 		// template<typename Row_t>
-		class ELL_R  : public ANY {} ; // ellpack
+		class ELL_R       : public ANY {} ; //!< ellpack fixed row
 		// template<typename Row_t>
-		// class ELL_R1 : public ANY {} ; // ELL_R with only ones (or mones, or..)
-		// class DIA    : public ANY {} ; // Cordinate
-		// class BCSR   : public ANY {} ; // Cordinate
-		class HYB    : public ANY {} ; // hybrid
-		class TPL    : public ANY {} ; // triplesbb
-		class TPL_omp    : public ANY {} ; // triplesbb
+		class ELL_R1      : public ANY {} ; // ELL_R with only ones (or mones, or..)
+		class DIA         : public ANY {} ; //!< Diagonal
+		class BCSR        : public ANY {} ; //!< Block CSR
+		class HYB         : public ANY {} ; //!< hybrid
+		class TPL         : public ANY {} ; //!< vector of triples
+		class TPL_omp     : public ANY {} ; //!< triplesbb for openmp
+		class LIL         : public ANY {} ; //!< vector of pairs
 
 		// the old sparse matrix reps.
 		class VVP : public ANY {} ; // vector of vector of pairs
@@ -70,6 +71,7 @@ namespace LinBox {
 
 	} // SparseMatrixFormat
 
+	//! Sparse matrix format (file storage)
 	namespace SparseFileFormat {
 		class SMS {} ; // JG format
 		class CSR {} ; // Raleigh 11 format

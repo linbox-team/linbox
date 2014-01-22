@@ -41,7 +41,7 @@ void printPolynomial (const Field &F, const Polynomial &v)
 }
 
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/solutions/minpoly.h"
 
 using namespace LinBox;

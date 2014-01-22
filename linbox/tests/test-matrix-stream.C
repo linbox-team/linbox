@@ -40,7 +40,7 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/integer.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 
 using namespace LinBox;
 

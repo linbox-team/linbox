@@ -32,7 +32,7 @@
 #include "linbox/util/timer.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/unparametric.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 using namespace std;
 
 #include "linbox/solutions/charpoly.h"

@@ -38,7 +38,7 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/field/givaro-gfq.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/vector/stream.h"

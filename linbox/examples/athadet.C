@@ -42,7 +42,7 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/field/gmp-integers.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/solutions/det.h"
 #include "linbox/util/matrix-stream.h"
 

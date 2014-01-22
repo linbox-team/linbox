@@ -32,7 +32,7 @@
 //#include "linbox/util/debug.h"
 //#include "linbox/vector/vector-domain.h"
 //#include "linbox/matrix/blas-matrix.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/methods.h"

@@ -91,7 +91,7 @@ namespace LinBox {
 #endif
 
 // wrappers on the old sparse reps.
-// #include "SparseMatrix/sparse-vvp-matrix.h" // sparseSeq
+#include "SparseMatrix/sparse-vvp-matrix.h" // sparseSeq
 // #include "SparseMatrix/sparse-vpv-matrix.h" // sparsePar
 // #include "SparseMatrix/sparse-vmap-matrix.h" // sparseMap
 // #include "SparseMatrix/sparse-coot-matrix.h" // sparseMap

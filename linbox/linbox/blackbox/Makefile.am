@@ -29,7 +29,6 @@ BASIC_HDRS =			\
 	compose.h                 \
 	permutation.h             \
 	squarize.h                \
-	sparse.h                  \
 	scalar-matrix.h           \
 	submatrix.h               \
 	inverse.h                 \

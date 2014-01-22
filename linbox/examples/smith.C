@@ -57,7 +57,7 @@ using namespace std;
 
 //#include "linbox/util/matrix-stream.h"
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
 
 #include "linbox/util/timer.h"

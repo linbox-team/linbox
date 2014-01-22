@@ -37,7 +37,7 @@
 #include "benchmarks/CSValue.h"
 #include "benchmarks/BenchmarkFile.h"
 
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/matrix/blas-matrix.h"

@@ -40,7 +40,7 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/solutions/is-positive-semidefinite.h"
 
 #include "test-common.h"

@@ -32,7 +32,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/blackbox/compose.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/solutions/valence.h"
 #include "linbox/util/matrix-stream.h"
 

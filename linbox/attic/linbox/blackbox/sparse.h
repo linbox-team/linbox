@@ -1,4 +1,4 @@
-/* linbox/blackbox/sparse.h
+/* linbox/matrix/sparse.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2001-2002 Bradford Hovinen
  *

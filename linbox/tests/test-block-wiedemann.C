@@ -47,7 +47,7 @@
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/block-wiedemann.h"
 #include "linbox/algorithms/coppersmith.h"
-//#include "linbox/blackbox/sparse.h"
+//#include "linbox/matrix/sparse.h"
 // #include "linbox/blackbox/triplesbb.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/diagonal.h"

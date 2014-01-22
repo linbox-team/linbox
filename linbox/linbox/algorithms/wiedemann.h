@@ -69,7 +69,7 @@
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/squarize.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/methods.h"
@@ -141,7 +141,7 @@ namespace LinBox
 #define LINBOX_EXTENSION_DEGREE_MAX 19
 #endif
 
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/field/givaro.h"

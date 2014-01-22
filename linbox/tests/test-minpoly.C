@@ -50,7 +50,7 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/field/givaro.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/util/commentator.h"
 #include "linbox/solutions/minpoly.h"

@@ -38,7 +38,7 @@
 #include <vector>
 
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/algorithms/blackbox-container-symmetrize.h"
 #include "linbox/algorithms/massey-domain.h"
 

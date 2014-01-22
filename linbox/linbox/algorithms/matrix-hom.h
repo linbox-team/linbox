@@ -37,7 +37,7 @@
 //! @bug it is dangerous to include matrices defs that include hom for their rebind...
 #include "linbox/integer.h"
 #include "linbox/matrix/blas-matrix.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/polynomial.h"
 #include "linbox/blackbox/scalar-matrix.h"
