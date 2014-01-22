@@ -1,0 +1,188 @@
+\section{Improving \linbox matrix multiplication}\label{sec:matmul}
+%
+Efficient matrix multiplication is key to \linbox library.
+%
+\subsection{Plugin}
+%
+We propose the following design pattern (the closest design pattner to our
+knowledge is the \emph{strategy} one, see also \cite[Fig 2.]{Cung:2006:TC}.
+The main advantage of this design pattern is that the modules always call back
+the controller so that the best choice is always chosen.  Besides modules can
+be easily added as \emph{plug-ins}.  An analogy can be drawn with dynamic
+systems---once the controller sends a correction to the system, it receives
+back a new measure that allows for a new correction.
+%
+\par
+%
+\begin{figure}[htbp]
+\tikzstyle{block} = [draw, fill=blue!20, rectangle,
+    minimum height=2em, minimum width=6em, rounded corners]
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{fleche} = [draw,->,shorten <=2pt, shorten >=2pt,thick]
+% \tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+        \centering
+\begin{tikzpicture}[auto, node distance=2.5cm,>=latex']
+        \node [input, name=input] (input) {};
+        \node [block, right of=input] (controller) {Controler};
+        \node [output, right of=controller] (output) {};
+
+        \node [block, below of=controller] (modules) {Modules};
+
+        \draw [fleche] (input) to [near start] node {input} (controller);
+        \draw [fleche] (controller) to [near end] node {output} (output);
+        \draw [fleche] (controller.300) to [bend left,near end] node [right] {call} (modules.60);
+        \draw [fleche] (modules.120) to [bend left,near end] node [left] {call back} (controller.240);
+\end{tikzpicture}
+\caption{Controller--Modules design pattern}
+\label{fig:diag:patt}
+\end{figure}
+%
+For instance, we can write the standard cascade algorithms in that model:
+%
+\par
+%
+\begin{figure}[htbp]
+        \hfil
+        \begin{minipage}{0.45\textwidth}
+                \begin{algorithm}[H]
+                        \caption{\texttt{AlgoThresh}: controler}
+                        \label{alg:controle}
+                        \KwIn{$A$ and $B$, denses, with resp. dimensions $n\times
+                        k$ and $k\times n$.}
+                        \KwOut{$C = A\times B$}
+                        \eIf{$\mathrm{min}(m,k,n)<t$}{ {\tt
+                        BaseCase}(C,A,B) \tcc{\small{\color{gray}fast BLAS}} }
+                        { {\tt RecursiveCase}(C,A,B,t)  }
+                        \KwRet C \;
+                \end{algorithm}
+        \end{minipage}
+        \hfil
+        \begin{minipage}{0.45\textwidth}
+                \begin{algorithm}[H]
+                        \DontPrintSemicolon
+                        \caption{\texttt{RecursiveCase}: recursive module}
+                        \label{alg:action}
+                        \KwIn{$A$, $B$, $C$ and $t$ as in controller.}
+                        \KwOut{$C = A\times B$}
+                        Cuts $A$,$B$,$C$ in $S_i, T_i\cdots$\;
+                        \ldots \;
+                        $P_i = \mathtt{AlgoThresh}(S_i,T_i,t)$ \;
+                        \ldots \;
+                        \KwRet C \;
+                \end{algorithm}
+        \end{minipage}
+        \hfil
+        \caption{Conception of a recursive controlled algorithm}
+        \label{fig:seuil}
+\end{figure}
+%
+This method allows for the reuse of modules and ensures efficiency.
+It is then possible to adapt to the architecture, the available modules,
+the resources. The only limitation is that the choice of the module
+should be done fast.
+%
+%
+\danger timing old fgemm/plugin fgemm with no noticeable change ?
+%
+\subsection{New algorithms/infrastructure}
+%
+We introduce now several new algorithms that improve on matrix multiplication
+in various ways: reducing memory consumption, introducing new efficient
+algorithms, using graphics capabilities, generalizing the BLAS to integer
+routines.
+%
+\subsubsection{New algorithms: low memory}
+%
+\texttt{ffgem} in \fflas uses the classic schedules for the multiplication and
+the product with accumulation (\cf \cite{Boyer:2009:sched}), but we also
+implement the lower memory routines therein.
+%
+\par
+%
+The difficutlty consists in using the part of the memory contained in a
+submatrix of the original matrix. It is two-fold. -- First we use some part
+of a memory that has already been allocated to the input matrices, therefore
+we cannot free and reallocate part of it. -- Second, several of these algorithms
+are meant for square matrices and rectangular sub-matrices will just not be enough.
+For instance,
+%
+\par
+%
+\danger table comparing speeds
+%
+\subsubsection{New algorithms: Bini}
+%
+ We recall
+in \cref{tab:bini:322}\footnote{This table corrects some typo in the original
+$W$ of the reference.} Bini's algorithm.
+%
+\input{bini332.tex}
+%
+The formula is recovered as this:
+\begin{equation} \label{eq:base}
+   %
+   C = \sum_{r=1}^\mu \frob{A}{X^{(r)}} \frob{B}{Y^{(r)}} Z^{(r)}
+   %
+\end{equation}
+where $\frob{\cdot}{\cdot}$ is the usual Frobenius product.
+%
+\par
+%
+It is well known (\cite{Bini:80:apa}) that approximate formulas for matrix
+multiplication  yield exact matrix matrix multiplication formula.
+This gives an approximate multiplication formula of type $(3, 2, 2)$ in $10$
+multiplications (hence $\omega \approx 2.78$, in particular lower than
+Strassen--Winograd).
+%
+\par
+%
+However, we can use this algorithm in several settings that seem to be new for
+getting an exact algorithm.  We can for instance set $\epsilon = 2^{-26}$ (so
+that $\epsilon^2 = 0$ for a \dbl) and then round off; or use $\epsilon = p$ for
+computation in $\modring{p}$
+%
+\paragraph{Size of  $p$}
+%
+XXX
+%
+\paragraph{Implementation and timings}
+%
+XXX use something else than 101 (\flt...)
+\begin{table}[htpb]
+        \caption{XXX Algorithme approché de Bini \emph{\mbox{vs.}}
+        Winograd (\texttt{fgemm}) sur $\modring{101}$ avec seuil de \numprint{1000}.}
+        \label{tab:bini:fgemm}
+        \centering
+        \begin{tabular}{c cc}
+                \toprule
+                % \multirow{2}{*}{dimensions}
+                & \multicolumn{2}{c}{temps (s)} \\
+                \cmidrule(lr){2-3}
+                 dimensions
+                  &  \texttt{fgemm-bini} &  \texttt{fgemm-wino} \\
+                \midrule
+                $(\numprint{1080}, \numprint{1080}, \numprint{1080})$ & \numprint{0.33}  & \bf \numprint{0.32} \\
+                $(\numprint{1800}, \numprint{1800}, \numprint{1800})$ &\numprint{1.37} & \bf \numprint{1.35} \\
+                $(\numprint{2700}, \numprint{2700}, \numprint{2700})$ &\bf \numprint{4.38}& \numprint{4.56} \\
+                $(\numprint{2700}, \numprint{1800}, \numprint{1800})$ &\bf \numprint{3.18}& \numprint{3.24} \\
+                $(\numprint{4500}, \numprint{1800}, \numprint{1800})$ &\bf \numprint{1.95} & \numprint{1.98} \\
+                $(\numprint{4050}, \numprint{2700}, \numprint{2700})$ & \bf \numprint{6.35} & \numprint{6.75} \\
+                \bottomrule
+        \end{tabular}
+\end{table}
+% \subsubsection{New algorithms: tr-tr}
+%
+% [schedule/implementation]
+%
+\subsubsection{integer blas}
+%
+\danger pascal
+%
+\subsubsection{OpenCL}
+%
+\danger dave
+\subsubsection{Using conversions}
+- using flint for integer matmul is faster, even with conversion. Need better CRA implementation. \\
+- implementation of Toom-Cook for GF(q)\\
+- when does spmv choose to optimise ?

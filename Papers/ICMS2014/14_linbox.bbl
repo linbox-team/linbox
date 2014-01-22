@@ -1,0 +1,95 @@
+\begin{thebibliography}{10}
+
+\bibitem{alexandrescu:01:modern}
+A.~Alexandrescu.
+\newblock {\em Modern {C}++ design: generic programming and design patterns
+  applied}.
+\newblock C++ in-depth series. Addison-Wesley, 2001.
+
+\bibitem{Bini:80:apa}
+D.~Bini.
+\newblock Relations between exact and approximate bilinear algorithms.
+  applications.
+\newblock {\em Calcolo}, 17:87--97, 1980.
+\newblock 10.1007/BF02575865.
+
+\bibitem{Boyer:12}
+B.~Boyer.
+\newblock {\em Multiplication matricielle efficace et conception logicielle
+  pour la biblioth\`eque de calcul exact LinBox}.
+\newblock PhD thesis, Universit\'e de Grenoble, June 2012.
+
+\bibitem{Boyer:2010:spmv}
+B.~Boyer, J.-G. Dumas, and P.~Giorgi.
+\newblock Exact sparse matrix-vector multiplication on {GPU}'s and multicore
+  architectures.
+\newblock In {\em Proceedings of the 4th International Workshop on Parallel and
+  Symbolic Computation}, PASCO '10, pages 80--88, New York, NY, USA, 2010. ACM.
+
+\bibitem{Boyer:2009:sched}
+B.~Boyer, J.-G. Dumas, C.~Pernet, and W.~Zhou.
+\newblock Memory efficient scheduling of {S}trassen-{W}inograd's matrix
+  multiplication algorithm.
+\newblock In {\em Proceedings of the 2009 international symposium on Symbolic
+  and algebraic computation}, ISSAC '09, pages 55--62, New York, NY, USA, 2009.
+  ACM.
+
+\bibitem{Cung:2006:TC}
+V.-D. Cung, V.~Danjean, J.-G. Dumas, T.~Gautier, G.~Huard, B.~Raffin,
+  C.~Rapine, J.-L. Roch, and D.~Trystram.
+\newblock Adaptive and hybrid algorithms: classification and illustration on
+  triangular system solving.
+\newblock In J.-G. Dumas, editor, {\em Proceedings of Transgressive Computing
+  2006, Granada, Espa\~na}, Apr. 2006.
+
+\bibitem{Dumas:2002:icms}
+J.-G. Dumas, T.~Gautier, M.~Giesbrecht, P.~Giorgi, B.~Hovinen, E.~Kaltofen,
+  B.~D. Saunders, W.~J. Turner, and G.~Villard.
+\newblock {\sc LinBox}: {A} generic library for exact linear algebra.
+\newblock In {\em Proceedings of the 2002 International Congress of
+  Mathematical Software, Beijing, China}. World Scientific Pub, Aug. 2002.
+
+\bibitem{Dumas:2010:lbpar}
+J.-G. Dumas, T.~Gautier, C.~Pernet, and B.~D. Saunders.
+\newblock {LinBox} founding scope allocation, parallel building blocks, and
+  separate compilation.
+\newblock In K.~Fukuda, J.~{Van Der Hoeven}, and M.~Joswig, editors, {\em
+  Proceedings of the Third International Congress Conference on Mathematical
+  Software}, volume 6327 of {\em ICMS'10}, pages 77--83, Berlin, Heidelberg,
+  Sept. 2010. Springer-Verlag.
+
+\bibitem{gamma:95:design}
+E.~Gamma.
+\newblock {\em Design Patterns: Elements of Reusable Object-Oriented Software}.
+\newblock Addison-Wesley Professional Computing Series. Addison-Wesley, 1995.
+
+\bibitem{Giorgi:2004:these}
+P.~Giorgi.
+\newblock {\em Arithmétique et algorithmique en algèbre linéaire exacte pour
+  la bibliothèque {\sc LinBox}}.
+\newblock PhD thesis, \'Ecole normale supérieure de Lyon, Dec. 2004.
+
+\bibitem{Douglas:05:GPHP}
+D.~Gregor, J.~Järvi, M.~Kulkarni, A.~Lumsdaine, D.~Musser, and S.~Schupp.
+\newblock Generic programming and high-performance libraries.
+\newblock {\em International Journal of Parallel Programming}, 33:145--164,
+  2005.
+\newblock 10.1007/s10766-005-3580-8.
+
+\bibitem{stroustrup1994design}
+B.~Stroustrup.
+\newblock {\em The design and evolution of {C}++}.
+\newblock Programming languages/C++. Addison-Wesley, 1994.
+
+\bibitem{sutter:05:cpp}
+H.~Sutter and A.~Alexandrescu.
+\newblock {\em {C}++ Coding Standards: 101 Rules, Guidelines, And Best
+  Practices}.
+\newblock The C++ In-Depth Series. Addison-Wesley, 2005.
+
+\bibitem{Turner:2002:these}
+W.~J. Turner.
+\newblock {\em Blackbox linear algebra with the {\sc LinBox} library}.
+\newblock PhD thesis, North Carolina State University, May 2002.
+
+\end{thebibliography}

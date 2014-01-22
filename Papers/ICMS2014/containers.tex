@@ -1,0 +1,217 @@
+\section{Containers}\label{sec:container}
+%
+\linbox is mainly conceived around the RAII concept with re-entrant function
+(Resource Acquisition Is Initialisation), introduced by
+\cite{stroustrup1994design}, or the \emph{mother model}
+(\cite{Dumas:2010:lbpar}) in the sense that the memory used by objects is
+allocated in the constructor and freed only at its destruction. The gestion of
+the memory allocated by an object is exlusively reserved to it.
+%
+\par
+%
+\linbox essentially uses matrix and vectors over fields as data objects.  The
+fragmentation of the containers into various matrices and blackboxes needed to
+be addressed and simplified.  The many different matrix and vector types with
+different interfaces needed to be simplified into  only two (possibly
+essentially one in the future) containers: \texttt{Matrix} and \texttt{Vector}.
+%
+% \par
+%
+\subsection{Dense Vectors and Matrix}
+%
+First, all matrices and vectors now depend on the field and not its element, so
+that operation can always be performed on a matrix or vector. The storage is
+given by another template parameter that can be defauted to \eg dense BLAS type
+matrices, \cf \cref{code:clmat}.
+%
+{
+\begin{lstlisting}
+template< class _Field, class _Storage = denseDefault >
+class Matrix ;
+
+template< class _Field, class _Storage = denseDefault >
+class Vector ;
+\end{lstlisting}
+\lstcapt{Matrix classes in \linbox.\label{code:clmat}}
+}
+%
+\subsubsection{Interface}
+%
+The empty constructors are  forbidden (no field).
+%
+In the mother model (\cite{Dumas:2010:lbpar}), we need types that Own/Share
+memory.  The \texttt{SubMatrix} and \texttt{SubVector} types share the memory
+while \texttt{Matrix} and \texttt{Vector} own it.
+%
+The common interface to all matrices is the \applin  interface \cref{code:bb}.
+{
+\begin{lstlisting}
+template< ¬\ldots¬ >
+class Matrix {
+public:
+        /* constructors */
+	// with a field, rows, columns, nbnz, other matrix\dots
+        ¬\ldots¬
+	/* types */
+	// submatrix types
+        ¬\ldots¬
+
+        /* y <- A.x ou y <- A^T.x */
+        template<class _in, class _out>
+        _out& apply(_out &y, const _in &x) const;
+        template<class _in, class _out>
+        _out& applyTranspose(_out &y, const _in &x) const;
+
+        /* operator rebind */
+        template<typename _Tp1>
+        struct rebind ;
+
+        /* dimensions */
+        size_t rowdim() const;
+        size_t coldim() const;
+
+        /* field */
+        const Field& field() const;
+
+	/* conversions ?*/
+	// resize
+	// export/import to default types
+	// read from MM/stdout/...
+	// write to MM/stdout/...
+	// setEntry/init()/finalise()/optimize()
+protected:
+        /* internals */
+        ¬\ldots¬
+};
+\end{lstlisting}
+\lstcapt{Interface of an \applin\label{code:bb}}
+}
+
+\emph{Notes on xxxEntry:}
+%
+Some handy functions are missing from the \applin interface.
+%
+For instance, \texttt{refEntry(...)} may be difficult to impelement (compressed
+fields, sparse matrices).
+%
+The function \texttt{getEntry(...)} may be specialised because potentially
+costly (it is however a solution).
+%
+\texttt{setEntry(...)} can be used to populate/grow the matrix (from some
+\texttt{init()} until a \texttt{finish()} is emitted).  setEntry can be (very)
+costly (ELL format) so set entry should always build some COO or CSR and then
+convert to the format.
+%
+\texttt{clearEntry(...)} can be used to zero out an entry if this is allowed
+(possibly not for structured matrices).
+%
+\danger needs trait system for algos to adapt. How to check at compile time
+(static\_assert) ?
+%
+\subsubsection{Sparse Matrix}
+%
+Sparse Matrix are tricky to handle and must be well implemented to offer best
+\applin performance (\cf \cite{Boyer:2010:spmv}). There is a huge litterature
+on sparse matrix formats, some of which are becoming standard. Numerical
+analysis brings various shapes for sparse matrices and numerous algorithms and
+routines.  Just like the \textsc{Blas} numerical routines, we would like to
+take advantage of existing high performance libraries.
+%
+\par
+%
+\danger sparse blas, metis, sparse suite, zero-one matrices
+%
+\par
+%
+Matrix market matrices must be supported (we have a convertor in ffspmvgpu, I should commit it)
+%
+\par
+%
+SparseMatrix are Matrix with specified storage : COO, CSR, CSC, ELL,
+ELL\_R,..., and more to come. (including 0-1 based)
+%
+\par
+%
+{
+\def\indexTrait{other}
+\begin{lstlisting}
+namespace matrixStorage {
+        struct sparse {} ;
+        struct COO : public sparse {} ;
+        struct CSR : public sparse {} ;
+        struct ELL : public sparse {} ;
+        struct ELLR: public sparse {} ;
+        struct HYB : public sparse {} ;
+        ¬\ldots¬
+};
+
+template<class _Field >
+class Matrix<_Field, matrixStorage::COO> {
+        //specialisation  for COO
+};
+\end{lstlisting}
+\lstcapt{Standard sparse matrix formats.\label{code:sparse:nvl}}
+}
+
+%
+\par
+ HYB format is a specialisation for ELL(\_R)+COO/CSR. no easy setEntry (in the
+COO/CSR) part ? a function \texttt{optimize()}. Could use \textsf{Metis} too.
+litterature for other HYB.
+\par
+We use MM reader.
+\par
+Added to the interface is a convert method to/from CSR (default).
+%
+\par
+%
+We can adapt the hearder to suit our needs. In particular write matrix in CSR
+fashion (saving roughly 1/3 space over COO)
+%
+\par
+%
+XXX timing new matrices, example rank.
+%
+\subsubsection{Other Matrices}
+%
+All other matrices (including the special case of Permutations) : the same
+Structured matrices, add, sub, stacked,\dots
+%
+\subsection{The \texttt{apply} method}
+%
+The \texttt{apply} method (left or right) is arguably the most important feature in the
+matrix interface and the \linbox library. It performs what a linear application is defined for:
+apply to a vector (and by extension  a block of vectors, \ie a matrix).
+%
+\par
+%
+Proposed interface :
+%
+{
+\begin{lstlisting}
+// y = A.x
+template< class _In, class _Out  >
+_Out& apply(_Out &y, const _In& x, enum Side) ;
+
+// y = alpha y + beta A.x
+template< class _In, class _Out  >
+_Out& applyAcc(_Out &y, const Element& alpha, const _In& x, const Element& beta, enum Side) ;
+
+\end{lstlisting}
+\lstcapt{Proposed apply.\label{code:apply}}
+}
+%
+The apply method should be using a \texttt{mul} solution as in the \cref{code:applymul}.
+{
+	\begin{lstlisting}
+	template<class _outVector, class _inVector>
+	OutVector &apply (_outVector &y, const _inVector &x) const
+	{
+		/* return _MD.vectorMul (y, *this, x); */
+		return blas3::mul(y, *this, x); // selects the best mul algorithm
+	}
+	\end{lstlisting}
+	\lstcapt{Implantation d'\texttt{apply} sur un vecteur par solution
+	\texttt{mul}.\label{code:applymul}}
+}
+
