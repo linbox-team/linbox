@@ -65,7 +65,6 @@ namespace LinBox
 
 
 	/* Specialization for sparse sequence vectors */
-
 	template <class _Field, class _Row>
 	class SparseMatrix<_Field, _Row, VectorCategories::SparseSequenceVectorTag > {
 	public:
@@ -110,15 +109,14 @@ namespace LinBox
 		template<typename _Tp1, typename _Rw1>
 		SparseMatrix (const SparseMatrix<_Tp1, _Rw1, myTrait> &Mat, const Field& F) :
 			_field (F),
-			_MD (F), _AT (*this),
-			_matA (Mat.rowdim()), _m (Mat.rowdim()), _n (Mat.coldim())
+			_MD (F), _AT (*this)
+			, _matA (Mat.rowdim()), _m (Mat.rowdim()), _n (Mat.coldim())
 		{
 			typename SparseMatrix<_Tp1,_Rw1, myTrait>::template rebind<Field,_Row>()(*this, Mat);
 		}
 
-
-		SparseMatrix (const Field & F,size_t m, size_t n) :
-			_field (F),
+		SparseMatrix (const Field & F, size_t m, size_t n) :
+			_field(F),
 			_MD(F),_AT(*this),
 			_matA (m), _m (m), _n (n)
 		{}
@@ -129,10 +127,6 @@ namespace LinBox
 			_matA(0), _m(0), _n(0)
 		{};
 
-
-		/** Constructor from a MatrixStream
-		*/
-		SparseMatrix ( MatrixStream<Field>& ms );
 
 		SparseMatrix (const SparseMatrix<Field, Row> &A) :
 			_field(A.field()),
@@ -152,16 +146,20 @@ namespace LinBox
 				LinBox::RawVector<Element>::convert(*meit, *copit);
 		}
 
-		template<class VectStream>
-	SparseMatrix (const Field &F, VectStream &stream) :
-		_field (F), _MD (F), _AT (*this)
-		, _matA (stream.size()), _m (stream.size()), _n (stream.dim())
-	{
-		typename Self_t::RowIterator i;
+		/** Constructor from a MatrixStream
+		*/
+		SparseMatrix ( MatrixStream<Field>& ms );
 
-		for (i = Self_t::rowBegin (); i != Self_t::rowEnd (); ++i)
-			stream >> *i;
-	}
+		template<class VectStream>
+		SparseMatrix (const Field &F, VectStream &stream) :
+			_field (F), _MD (F), _AT (*this)
+			, _matA (stream.size()), _m (stream.size()), _n (stream.dim())
+		{
+			typename Self_t::RowIterator i;
+
+			for (i = Self_t::rowBegin (); i != Self_t::rowEnd (); ++i)
+				stream >> *i;
+		}
 
 		~SparseMatrix () {}
 
@@ -169,6 +167,7 @@ namespace LinBox
 		{
 			return _m;
 		}
+
 		size_t coldim () const
 		{
 			return _n;
@@ -184,7 +183,7 @@ namespace LinBox
 
 		std::istream &read (std::istream &is
 				    // , const Field &F
-				    , LINBOX_enum(Tag::FileFormat) format /*= Tag::FileFormat::Detect*/)
+				    , LINBOX_enum(Tag::FileFormat) format /* = Tag::FileFormat::Detect */)
 		{
 			return SparseMatrixReadWriteHelper<Field, Row>::read (*this, is
 									      , format);
@@ -212,20 +211,20 @@ namespace LinBox
 				     // , const Field &F
 				     , LINBOX_enum(Tag::FileFormat) format /* = Tag::FileFormat::Pretty*/) const
 		{
-
 			return SparseMatrixReadWriteHelper<Field, Row>::write (*this, os, format);
 		}
 
-		//x Write in matrix market format
+		/// Write in matrix market format
 		std::ostream &write (std::ostream &os) const
 		{
 			writeMMCoordHeader(os, *this, this->size(), "SparseMatrix");
 			return this->write(os, Tag::FileFormat::OneBased);
 		}
 
-		// std::ostream &write(std::ostream &) const;
+		void finalize(){}
 
 		void           setEntry (size_t i, size_t j, const Element &value);
+
 
 		Element       &refEntry (size_t i, size_t j);
 
@@ -306,10 +305,6 @@ namespace LinBox
 					if (++_i == _A_end) return *this;
 					_j = _i->begin ();
 				}
-
-				// if (++_j == _i->end ())
-				// 				if (++_i != _A_end)
-				// 					_j = _i->begin ();
 				return *this;
 			}
 
@@ -344,10 +339,12 @@ namespace LinBox
 			{
 				return &(_j->second);
 			}
+
 			const value_type &operator*() const
 			{
 				return _j->second;
 			}
+
 			const value_type *operator-> () const
 			{
 				return &(_j->second);
@@ -626,8 +623,6 @@ namespace LinBox
 
 		// template<class F, class R, class T> friend class SparseMatrix;
 	};
-
-
 
 } // namespace LinBox
 
