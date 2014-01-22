@@ -32,7 +32,7 @@
 #include <iostream>
 
 #include "linbox/field/givaro.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
 
 using namespace LinBox;

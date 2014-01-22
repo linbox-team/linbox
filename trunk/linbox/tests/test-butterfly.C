@@ -50,7 +50,7 @@
 #include "linbox/blackbox/butterfly.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/solutions/det.h"
 #include "linbox/switch/boolean.h"

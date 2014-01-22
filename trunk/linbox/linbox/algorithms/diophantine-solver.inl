@@ -25,7 +25,7 @@
 #ifndef __LINBOX_diophantine_solver_INL
 #define __LINBOX_diophantine_solver_INL
 
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/lambda-sparse.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/vector-fraction.h"

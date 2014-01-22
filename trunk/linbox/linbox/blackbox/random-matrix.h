@@ -28,7 +28,7 @@
 #define __LINBOX_blackbox_random_matrix_H
 
 #include "linbox/blackbox/blackbox-interface.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 
 namespace LinBox
 {

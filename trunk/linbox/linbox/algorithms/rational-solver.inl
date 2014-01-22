@@ -29,7 +29,7 @@
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
 
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/lambda-sparse.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/blackbox/diagonal.h"

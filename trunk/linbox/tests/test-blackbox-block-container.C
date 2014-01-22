@@ -104,7 +104,7 @@ int main (int argc, char **argv)
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blackbox-block-container.h"
 

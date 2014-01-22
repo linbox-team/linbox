@@ -41,7 +41,7 @@
 
 #include <cstdio>
 
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/solutions/charpoly.h"
 #include "linbox/util/commentator.h"

@@ -44,7 +44,7 @@
 #include "linbox/field/givaro-gfq.h"
 
 // Black box classes we are going to work with
-#include "linbox/blackbox/sparse.h"
+#include "linbox/matrix/sparse.h"
 
 // Minimal polynomial algorithm
 #include "linbox/solutions/minpoly.h"
