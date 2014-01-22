@@ -32,6 +32,7 @@
 #ifndef __LINBOX_matrix_sparse_matrix_H
 #define __LINBOX_matrix_sparse_matrix_H
 
+
 #include "linbox/matrix/sparse-formats.h"
 #include "linbox/matrix/matrix-category.h"
 
@@ -51,6 +52,13 @@ namespace LinBox {
 	// Forward definition
 	template<class _Field, class _Storage = SparseMatrixFormat::CSR >
 	class SparseMatrix2 ;
+
+	template <class _Field,
+		 class _Row   = typename RawVector<typename _Field::Element>::Sparse,
+		 class Trait  = typename VectorTraits<_Row>::VectorCategory>
+		 class SparseMatrix;
+
+
 
 
 	template <class _Field, class _Storage>
@@ -90,11 +98,7 @@ namespace LinBox {
 #include "SparseMatrix/sparse-tpl-matrix-omp.h"
 #endif
 
-// wrappers on the old sparse reps.
-// #include "SparseMatrix/sparse-vvp-matrix.h" // sparseSeq
-// #include "SparseMatrix/sparse-vpv-matrix.h" // sparsePar
-// #include "SparseMatrix/sparse-vmap-matrix.h" // sparseMap
-// #include "SparseMatrix/sparse-coot-matrix.h" // sparseMap
+#include "SparseMatrix/sparse-generic.h"
 
 #endif // __LINBOX_matrix_sparse_matrix_H
 

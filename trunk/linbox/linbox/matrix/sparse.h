@@ -59,7 +59,7 @@
 #ifndef __LINBOX_matrix_sparse_tmp_H
 #define __LINBOX_matrix_sparse_tmp_H
 
-#include "linbox/matrix/SparseMatrix/sparse-generic.h"
+#include "linbox/matrix/sparse-matrix.h"
 
 #endif // __LINBOX_matrix_sparse_tmp_H
 
