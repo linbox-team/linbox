@@ -206,7 +206,7 @@ namespace LinBox
 
 		Element& getScalar(Element& x) const { return this->field().assign(x,this->v_); }
 		Element& setScalar(const Element& x) { return this->field().assign(this->v_,x); }
-		std::ostream& write(std::ostream& os) {
+		std::ostream& write(std::ostream& os) const {
 			writeMMCoordHeader(os, *this, 1, "ScalarMatrix");
 			field().write(os << "1 1 ", v_) << std::endl;
 			return os;

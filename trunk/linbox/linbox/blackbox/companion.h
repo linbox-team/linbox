@@ -108,6 +108,8 @@ namespace LinBox
 		};
 
 
+		using Father_t::write;
+
 
 
 		// companion would be faster if built direct, using one axpy per entry: y_i = x_i-1 + p_i*x_n

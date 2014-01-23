@@ -239,7 +239,7 @@ int main (int argc, char **argv)
 
         GivaroZpz< Givaro::Std32> F2(q2);
 
-	typedef BlasVector<Field> Vector;
+	// typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);
 

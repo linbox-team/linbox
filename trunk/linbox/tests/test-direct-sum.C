@@ -63,7 +63,7 @@ int main (int argc, char **argv)
 	};
 
 	typedef Modular<uint32_t> Field;
-	typedef vector<Field::Element> Vector;
+	// typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
