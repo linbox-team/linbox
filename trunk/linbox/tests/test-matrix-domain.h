@@ -30,7 +30,7 @@ subin(x,y) x -= y
 neg(z,x) z = -x
 negin(x) x = -x
 axpy(z,a,x,y) z = a*x + y
-axpyin(a,x,y) y += a*x 
+axpyin(a,x,y) y += a*x
 mulladd(z,a,x,b,y) z = ax + by
 mulladdin(a,x,b,y) x = ax + by
 copy(x,y) x <-- y
@@ -46,9 +46,9 @@ mul(C,A,B) C = A*B
 mulin_left(A,B) A = A*B (square)
 mulin_right(A,B) B = A*B (square)
 axpy(D,A,B,C) D = A*B + C
-axpyin(C,A,B) C += A*B 
+axpyin(C,A,B) C += A*B
 axpy(D,a,B,C) D = a*B + C
-axpyin(a,B,C) C += a*B 
+axpyin(a,B,C) C += a*B
 mulladd(D,b,C,a,A,B) D = bC + aAB
 mulladdin(b,C,a,A,B) C = bC + aAB
 inv(F,A) F = A^{dagger}
@@ -57,9 +57,9 @@ inv(B,A) B = A^{dagger}
 invin(B,A) B = A^{dagger}, A modified
  nullity?
 div_left(C,A,B) C = A^{dagger}*B (if consistent, AC = B)
-divin_left(A,B) B = A^{dagger}*B, and A modified 
+divin_left(A,B) B = A^{dagger}*B, and A modified
 div_right(C,A,B) C = A*B^{dagger} (if consistent, CB = A)
-divin_right(A,B) A = A*B^{dagger}, and B modified 
+divin_right(A,B) A = A*B^{dagger}, and B modified
 
 areEqual(A, B)
 copy(B,A) B <-- A
@@ -145,10 +145,10 @@ Matrix<MatrixDomain>
   domain() returns the MatrixDomain
     domain().mul
   field() returns MD().field()
-SparseMatrix<MatrixDomain>
- 
+SparseMatrix2<MatrixDomain>
+
  Those matrix classes know basic matrix functions rank, det, minpoly, etc
- as well as 
+ as well as
 */
 
 #ifndef LinBox_test_matrix_domain_h
@@ -162,7 +162,7 @@ bool testMatrixDomain(const MDom& MD, int n) {
 	typename MDom::Matrix A(MD,n,n), B(MD,n,n), C(MD,n,n), D(MD, n, n);
 	A.random(); B.random();
 	C.zero();
-	typename MDom::Scalar a,b,c,d; 
+	typename MDom::Scalar a,b,c,d;
 	MD.init(a); MD.init(b); MD.init(c); MD.init(d);
 
 	MD.add(C, A, B);

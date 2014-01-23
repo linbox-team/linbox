@@ -39,7 +39,7 @@
 #include "linbox/util/field-axpy.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/field/hom.h"
-#include "linbox/blackbox/triples-coord.h"
+#include "linbox/matrix/SparseMatrix/triples-coord.h"
 
 #include <vector>
 

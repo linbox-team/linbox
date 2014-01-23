@@ -62,7 +62,7 @@ typedef LinBox::GivaroGfq Field;
 typedef vector <Field::Element> Vector;
 typedef vector <Field::Element> Polynomial;
 typedef vector <pair <size_t, Field::Element> > Row;
-typedef LinBox::SparseMatrix <Field, Row> Blackbox;
+typedef LinBox::SparseMatrix2 <Field, VectorTraits<Row>::SparseFormat > Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 10;

@@ -648,8 +648,8 @@ static bool testRandomSolve (const Field                  &F,
 	VectorWrapper::ensureDim (ATAx, A_stream.dim ());
 	VectorWrapper::ensureDim (ATb, A_stream.dim ());
 
-	SparseMatrix<Field> A (F, A_stream);
-	SparseMatrix<Field> AT (F,A.coldim (), A.rowdim ());
+	SparseMatrix2<Field> A (F, A_stream);
+	SparseMatrix2<Field> AT (F,A.coldim (), A.rowdim ());
 	BlasMatrix<Field> ATA (A.coldim (), A.coldim ());
 
 	A.transpose (AT);

@@ -1502,7 +1502,7 @@ bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, unsign
 {
 
 	bool pass = true ;
-	typedef typename Field::Element Element ;
+	// typedef typename Field::Element Element ;
 	BlasMatrix<Field> M1 (F, n, m);
 	BlasMatrix<Field> M2 (F, n, m);
 	BlasMatrix<Field> M3 (F, m, m);
@@ -1532,14 +1532,14 @@ bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, unsign
 			       typename MatrixTraits<Diagonal<Field> >::MatrixCategory ()))
 		pass = false;
 
-	SparseMatrix<Field> M4 (F,n, m);
-	SparseMatrix<Field> M5 (F,n, m);
-	SparseMatrix<Field> M6 (F,m, m);
-	MatrixBlackbox<Field, SparseMatrix<Field> > A2 (F, n, m);
+	SparseMatrix2<Field> M4 (F,n, m);
+	SparseMatrix2<Field> M5 (F,n, m);
+	SparseMatrix2<Field> M6 (F,m, m);
+	MatrixBlackbox<Field, SparseMatrix2<Field> > A2 (F, n, m);
 
-	RandomSparseStream<Field, typename SparseMatrix<Field>::Row> stream2 (F, (double) k / (double) n, m);
+	RandomSparseStream<Field, typename SparseMatrix2<Field>::Row> stream2 (F, (double) k / (double) n, m);
 
-	typename SparseMatrix<Field>::RowIterator i2;
+	typename SparseMatrix2<Field>::RowIterator i2;
 
 	for (i2 = M4.rowBegin (); i2 != M4.rowEnd (); ++i2)
 		stream2 >> *i2;
@@ -1554,15 +1554,15 @@ bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, unsign
 		stream2 >> *i2;
 
 	if (!testMatrixDomain (F, "sparse row-wise", M4, M5, M6, A2, iterations,
-			       typename MatrixTraits<SparseMatrix<Field> >::MatrixCategory ()))
+			       typename MatrixTraits<SparseMatrix2<Field> >::MatrixCategory ()))
 		pass = false;
 
-	TransposeMatrix<SparseMatrix<Field> > M7 (M4);
-	TransposeMatrix<SparseMatrix<Field> > M8 (M5);
-	TransposeMatrix<SparseMatrix<Field> > M9 (M6);
+	TransposeMatrix<SparseMatrix2<Field> > M7 (M4);
+	TransposeMatrix<SparseMatrix2<Field> > M8 (M5);
+	TransposeMatrix<SparseMatrix2<Field> > M9 (M6);
 
 	if (!testMatrixDomain (F, "sparse column-wise", M7, M8, M9, A2, iterations,
-			       typename MatrixTraits<TransposeMatrix<SparseMatrix<Field> > >::MatrixCategory ()))
+			       typename MatrixTraits<TransposeMatrix<SparseMatrix2<Field> > >::MatrixCategory ()))
 		pass = false;
 
 	return pass ;
@@ -1598,7 +1598,7 @@ int main (int argc, char **argv)
 	/*
 	if (q2 < q/2)
 		std::cerr <<"...étrange..." << std::endl;
-	This is in the modular-balanced maxModulus 
+	This is in the modular-balanced maxModulus
 	// (p-1)(p+1)/4 < 2^{31}
 	92681;
 	*/

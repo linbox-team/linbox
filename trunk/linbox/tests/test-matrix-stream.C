@@ -207,7 +207,7 @@ bool testMatrixStream(const string& matfile)
 	if( !testMatrix< BlasMatrix<TestField> >
 			( out, matfile[0], "Dense BlackBox Matrix" )
 	  ) pass = false;
-	if( !testMatrix< SparseMatrix<TestField> >
+	if( !testMatrix< SparseMatrix2<TestField> >
 			( out, matfile[0], "Sparse BlackBox Matrix" )
 	  ) pass = false;
 	if( !testMatrix< BlasMatrix<TestField> >

@@ -133,7 +133,7 @@ namespace LinBox
 	{
 		// call BlasElimination code
 		BlasMatrix<typename Blackbox::Field> DA(A.field(), A.rowdim(), A.coldim());
-		MatrixHom::map(DA, A, A. field());
+		MatrixHom::map(DA, A); //! @warning this is a copy
 		return Signature::isPosSemiDef(DA, Signature::BLAS_LPM_Method() );
 	}
 

@@ -146,8 +146,8 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 // 	typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
 // 	typedef typename PolDom::Element Polynomial;
 	typedef Vector Polynomial;
-	typedef pair <vector <size_t>, std::vector <typename Field::Element> > Row;
-	typedef SparseMatrix <Field> Blackbox;
+	typedef std::pair <std::vector <size_t>, std::vector <typename Field::Element> > Row;
+	typedef SparseMatrix2<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
 
 	LinBox::commentator().start ("Testing nilpotent charpoly", "testNilpotentCharpoly");
 
@@ -214,7 +214,7 @@ bool testRandomCharpoly (Field                 &F,
 	//typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
 	//typedef typename PolDom::Element Polynomial;
 	typedef BlasVector<Field> Polynomial;
-	typedef SparseMatrix <Field> Blackbox;
+	typedef SparseMatrix2<Field> Blackbox;
 
 	LinBox::commentator().start ("Testing sparse random charpoly", "testRandomCharpoly", 1);
 
@@ -290,7 +290,7 @@ int main (int argc, char **argv)
 	// Temporarily, only Modular<double> is enabled for the givaro/ntl factorization based charpoly
 	typedef Modular<double> Field;
 	typedef BlasVector<Field> DenseVector;
-	typedef SparseMatrix<Field>::Row SparseVector;
+	typedef SparseMatrix2<Field>::Row SparseVector;
 	// typedef pair<vector<size_t>, BlasVector<Field> > SparseVector;
 	Field F (q);
 	srand ((unsigned)time (NULL));

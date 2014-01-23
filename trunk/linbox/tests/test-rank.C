@@ -149,7 +149,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
 	typedef ZeroOne<GF2> Blackbox;
-	typedef SparseMatrix<Modular<double>,Vector<Modular<double> >::SparseSeq> MdBlackbox;
+	typedef SparseMatrix2<Modular<double>,Vector<Modular<double> >::SparseSeq> MdBlackbox;
 	Modular<double> MdF2(2);
 	GF2::Element one; Modular<double>::Element mdone;
 	F2.init(one,true);

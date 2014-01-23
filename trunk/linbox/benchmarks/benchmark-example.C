@@ -207,7 +207,7 @@ void launch_bench_rank(const Field &F, const std::string & name
 		       )
 {
 
-	SparseMatrix<Field> Mat(F);
+	SparseMatrix2<Field> Mat(F);
 	std::ifstream mat1 (name);
 	Mat.read(mat1);
 
