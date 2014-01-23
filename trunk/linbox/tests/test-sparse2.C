@@ -1,8 +1,8 @@
-
-/* tests/test-sparse.C
- * Copyright (C) 2001, 2002 Bradford Hovinen
+/* tests/test-sparse2.C
+ * Copyright (C) 2014 the LinBox group
  *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ * Written by bds <saunders@udel.edu>
+ *            BB <bbboyer@ncsu.edu>
  *
  * --------------------------------------------------------
  *
@@ -103,18 +103,6 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	commentator().start("Sparse matrix black box test suite", "Sparse");
-
-	{ /*  Default */
-		commentator().start("SparseMatrix<Field>", "Field");
-		SparseMatrix<Field> S1(F, m, n);
-		buildBySetEntry(S1, N);
-		if ( testBlackbox(S1,true) )
-			commentator().stop("SparseMatrix<Field> pass");
-		else {
-			commentator().stop("SparseMatrix<Field> FAIL");
-			pass = false;
-		}
-	}
 
 	{ /*  default */
 		commentator().start("SparseMatrix2<Field>", "Field");
@@ -244,6 +232,18 @@ int main (int argc, char **argv)
 			commentator().stop("Sparse matrix black box test suite pass");
 		else
 			commentator().stop("Sparse matrix black box test suite FAIL");
+	}
+
+	{ /*  Default OLD */
+		commentator().start("SparseMatrix<Field>", "Field");
+		SparseMatrix<Field> S1(F, m, n);
+		buildBySetEntry(S1, N);
+		if ( testBlackbox(S1,true) )
+			commentator().stop("SparseMatrix<Field> pass");
+		else {
+			commentator().stop("SparseMatrix<Field> FAIL");
+			pass = false;
+		}
 	}
 
 	return pass ? 0 : -1;
