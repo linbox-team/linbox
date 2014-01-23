@@ -188,17 +188,26 @@ namespace LinBox
 
 		void resize(const size_t & mm, const size_t & nn, const size_t & zz, const size_t & ll)
 		{
+			// attention RowMajor/ColMajor
+			if (!_maxc || mm == _maxc) {
+				_colid.resize(mm*ll,0);
+				_data .resize(mm*ll,field().zero);
+			}
+			else if ( ll > _maxc) {
+				reshape(ll);
+			}
+			else {
 #ifndef NDEBUG
 			if (_maxc && ll != _maxc)
-				std::cout << " ***Warning*** loosing data in ELL resize " << std::endl;
+				std::cout << " ***Warning*** possibly loosing data in ELL resize " << std::endl;
 #endif
+				_colid.resize(mm*ll,0);
+				_data .resize(mm*ll,field().zero);
+			}
 			_rownb = mm ;
 			_colnb = nn ;
 			_nbnz  = zz;
 			_maxc  = ll;
-
-			_colid.resize(mm*ll,0);
-			_data .resize(mm*ll,0);
 		}
 
 		/*! Default converter.
@@ -269,6 +278,11 @@ namespace LinBox
 		SparseMatrix2<_Field,SparseMatrixFormat::CSR > &
 		exporte(SparseMatrix2<_Field,SparseMatrixFormat::CSR> &S) const
 		{
+			// std::cout <<_rownb << ',' << _colnb << std::endl;
+			// std::cout << _maxc << std::endl;
+			// std::cout << _nbnz << std::endl;
+			// std::cout << _data << std::endl;
+			// std::cout << _colid << std::endl;
 
 			linbox_check(consistent());
 			S.resize(_rownb, _colnb, _nbnz);
@@ -385,7 +399,11 @@ namespace LinBox
 			return x = getEntry (i, j);
 		}
 
-		void finalize(){} // end construction after a sequence of setEntry calls.
+		// end construction after a sequence of setEntry calls.
+		void finalize(){
+			// could check that maxc is not too large and shrink ? Is is optimize job ?
+		}
+
 		/** Set an individual entry.
 		 * Setting the entry to 0 will not remove it from the matrix
 		 * @param i Row _colid of entry
@@ -395,7 +413,10 @@ namespace LinBox
 		 */
 		void setEntry(const size_t &i, const size_t &j, const Element& e)
 		{
-#if 0
+			// std::cout << "on entry : " << i << ',' << j << ',' << e  << std::endl; write_raw();
+			// std::cout << _nbnz << std::endl;
+			linbox_check(consistent());
+
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
 
@@ -403,33 +424,47 @@ namespace LinBox
 				return clearEntry(i,j);
 			}
 
-			size_t ibeg = _start[i];
-			size_t iend = _start[i+1];
-			// element does not exist, insert
-			if (ibeg == iend) {
-				for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] += 1 ;
-				_colid.insert(_colid.begin()+ibeg,j);
-				_data.insert( _data.begin() +ibeg,e);
-				return ;
+			size_t * beg = &_colid[i*_maxc];
+			Element * dat = &_data[i*_maxc];
+			bool found = false;
+			for (size_t k = 0 ; k < _maxc ; ++k) {
+				// std::cout << "beg = " << beg[k] << std::endl;
+				// std::cout << "dat = " << dat[k] << std::endl;
+				// std::cout << "nz  = " << _nbnz << std::endl;
+				if (dat[k]==0 && field().isZero(dat[k])) {
+					// std::cout << "===2===" << std::endl;
+					field().assign(dat[k], e) ;
+					beg[k] = j;
+					found = true;
+					++_nbnz ;
+					// write_raw();
+					break;
+				}
+				if (beg[k] == j) {
+					// std::cout << "===1===" << std::endl;
+					if (field().isZero(dat[k])) {
+						++_nbnz ;
+					}
+					field().assign(dat[k], e) ;
+					beg[k] = j;
+					found = true;
+					// write_raw();
+					break;
+				}
+				if (beg[k] > j) {
+					// std::cout << "===3===" << std::endl;
+					found = true;
+					insert(i,k,j,e);
+					// write_raw();
+					break;
+				}
 			}
-			// element may exist
-			typedef typename std::vector<size_t>::iterator myIterator ;
-			myIterator beg = _colid.begin() ;
-			myIterator low = std::lower_bound (beg+(ptrdiff_t)ibeg, beg+(ptrdiff_t)iend, j);
-			ibeg = low-beg;
-			// insert
-			if (low == beg+(ptrdiff_t)iend) {
-				for (size_t k = i ; k <= _rownb ; ++k) _start[k] += 1 ;
-				_colid.insert(_colid.begin() +(ptrdiff_t)ibeg,j);
-				_data.insert( _data. begin() +(ptrdiff_t)ibeg,e);
-				return ;
+			if (!found) {
+				// std::cout << "===4===" << std::endl;
+				insert(i,_maxc,j,e);
+				// write_raw();
 			}
-			// replace
-			else {
-				_data[ibeg] = e ;
-				return ;
-			}
-#endif
+			return;
 		}
 
 
@@ -476,13 +511,6 @@ namespace LinBox
 		 * @param os Output stream to which to write the matrix
 		 * @param format Format with which to write
 		 */
-		template<class Format>
-		std::ostream & write(std::ostream &os,
-				     Format = SparseFileFormat::CSR()) const
-		{
-			return this->writeSpecialized(os,Format());
-		}
-
 		std::ostream & write(std::ostream &os,
 				     enum LINBOX_enum(Tag::FileFormat) ff  = Tag::FileFormat::Maple) const
 		{
@@ -490,16 +518,32 @@ namespace LinBox
 		}
 
 
-		/** Read a matrix from the given input stream using field read/write
-		 * @param file Input stream from which to read the matrix
-		 * @param format Format of input matrix
-		 * @return ref to \p file.
-		 */
-		template<class Format>
-		std::istream& read (std::istream &file,
-				    Format = SparseFileFormat::CSR())
+		// /** Read a matrix from the given input stream using field read/write
+		 // * @param file Input stream from which to read the matrix
+		 // * @param format Format of input matrix
+		 // * @return ref to \p file.
+		 // */
+		// std::istream& read (std::istream &file,
+				    // LINBOX_enum(Tag::FileFormat) format)
+		// {
+			// return readSpecialized(file,Format());
+		// }
+
+		/// Read from matrix market format
+		std::istream &read (std::istream &is)
 		{
-			return readSpecialized(file,Format());
+			MatrixStream<Field> ms(field(), is);
+			if( !ms.getDimensions( this->_rownb, this->_colnb ) )
+				throw ms.reportError(__func__,__LINE__);
+			// this->_matA.resize( this->_m );
+			Element val;
+			size_t i, j;
+			while( ms.nextTriple(i,j,val) ) {
+				setEntry(i,j,val);
+			}
+			if( ms.getError() > END_OF_MATRIX )
+				throw ms.reportError(__func__,__LINE__);
+			return is;
 		}
 
 		/*! @internal
@@ -510,29 +554,26 @@ namespace LinBox
 		 */
 		void clearEntry(const size_t &i, const size_t &j)
 		{
-#if 0
-			linbox_check(i<_rownb);
-			linbox_check(j<_colnb);
-
-			size_t ibeg = _start[i];
-			size_t iend = _start[i+1];
-			if (ibeg == iend)
-				return ;
-
-			typedef typename std::vector<size_t>::iterator myIterator ;
-			myIterator beg = _colid.begin() ;
-			myIterator low = std::lower_bound (beg+(ptrdiff_t)ibeg, beg+(ptrdiff_t)iend, j);
-			if (low == beg+(ptrdiff_t)iend)
-				return ;
-			else {
-				// not sure
-				size_t la = low-beg ;
-				for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] -= 1 ;
-				_colid.erase(_colid.begin()+la);
-				_data. erase(_data. begin()+la);
-				return  ;
+			size_t k = 0 ;
+			for ( ; k < _maxc ; ++k){
+				if (_colid[i*_maxc+k] == j)
+					break;
+				if (_colid[i*_maxc+k] > j)
+					return;
 			}
-#endif
+			if (k == _maxc)
+				return; // not found
+
+			if (field().isZero(_data[i*_maxc+k]) && _colid[i*_maxc+k] == 0)
+				return;
+
+			for (size_t l = k ; l < _maxc-1 ; ++l) {
+				field().assign(_data[i*_maxc+l],_data[i*_maxc+l+1]);
+				_colid[i*_maxc+l] = _colid[i*_maxc+l+1];
+			}
+			field().assign(_data[i*_maxc+_maxc-1],field().zero) ;
+			_colid[i*_maxc+_maxc-1] = 0;
+			--_nbnz;
 		}
 
 		/*! @internal
@@ -560,15 +601,20 @@ namespace LinBox
 		template<class Vector>
 		Vector& apply(Vector &y, const Vector& x, const Element & a ) const
 		{
-			linbox_check(consistent());
+			// linbox_check(consistent());
 			prepare(field(),y,a);
 
+			FieldAXPY<Field> accu(field());
 			for (size_t i = 0 ; i < _rownb ; ++i) {
+				accu.reset();
 				for (size_t k = 0   ; k < _maxc ; ++k)
 					if (!field().isZero(getData(i,k)))
-						field().axpyin( y[i], getData(i,k), x[getColid(i,k)] ); //! @todo delay !!!
-					else
+						// field().axpyin( y[i], getData(i,k), x[getColid(i,k)] ); //! @todo delay !!!
+						 accu.mulacc( getData(i,k), x[getColid(i,k)] );
+					else {
 						break;
+					}
+				accu.get(y[i]);
 			}
 
 			return y;
@@ -581,7 +627,7 @@ namespace LinBox
 		template<class Vector>
 		Vector& applyTranspose(Vector &y, const Vector& x, const Element & a ) const
 		{
-			linbox_check(consistent());
+			// linbox_check(consistent());
 			//! @bug if too big, create transpose.
 			prepare(field(),y,a);
 
@@ -603,7 +649,7 @@ namespace LinBox
 		template<class Vector>
 		Vector& applyTranspose(Vector &y, const Vector& x ) const
 		{
-			return apply(y,x,field().zero);
+			return applyTranspose(y,x,field().zero);
 		}
 
 
@@ -947,15 +993,61 @@ namespace LinBox
 		{
 			return _maxc;
 		}
+	private:
+
+		void insert (const size_t &i, const size_t &k, const size_t &j, const Element& e)
+		{
+			// std::cout << "before inserting at " << k << std::endl; write_raw();
+			if (k == _maxc) {
+				resize(_rownb,_colnb,_nbnz,_maxc+1);
+				_colid[_maxc*i+k-1] = j;
+				field().assign(_data[_maxc*i+k-1],e);
+				++_nbnz;
+				// std::cout << "after (1)" << std::endl; write_raw();
+				return;
+			}
+			size_t l = k;
+			for ( ; l < _maxc ; ++l)
+				if (field().isZero(_data[i*_maxc+l]))
+					break;
+			if (l == _maxc)
+				resize(_rownb,_colnb,_nbnz,_maxc+1);
+
+			for (size_t u = l ; u > k ; --u) {
+				_colid[_maxc*i+u] = _colid[_maxc*i+u-1] ;
+				field().assign(_data[_maxc*i+u],_data[_maxc*i+u-1]);
+			}
+			_colid[_maxc*i+k] = j;
+			field().assign(_data[_maxc*i+k],e);
+			++_nbnz;
+			// std::cout << "after (2)" << std::endl; write_raw();
+			return;
+		}
+
+		void write_raw() {
+			std::cout << "colids" << std::endl;
+			for (size_t i = 0 ; i < _rownb ; ++i){
+				for (size_t j = 0 ; j < _maxc ; ++j)
+					std::cout << _colid[i*_maxc+j] << ' ' ;
+				std::cout << std::endl;
+			}
+
+			std::cout << "data" << std::endl;
+			for (size_t i = 0 ; i < _rownb ; ++i){
+				for (size_t j = 0 ; j < _maxc ; ++j)
+					std::cout << _data[i*_maxc+j] << ' ' ;
+				std::cout << std::endl;
+			}
+		}
 	protected :
 
 		size_t              _rownb ;
 		size_t              _colnb ;
-		size_t               _maxc ;
+		size_t               _maxc ; //!< longest column
 		size_t               _nbnz ;
 
-		std::vector<size_t> _colid ;
-		std::vector<Element> _data ;
+		std::vector<size_t> _colid ; //!< \p _colid is \p _rownb x \p _maxc in RowMajor
+		std::vector<Element> _data ; //!< \p _data  is \p _rownb x \p _maxc in RowMajor
 
 		const _Field            & _field ;
 	};
