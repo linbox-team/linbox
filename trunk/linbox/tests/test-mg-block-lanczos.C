@@ -81,7 +81,7 @@ static bool testRandomSolve (const Field           &F,
 	VectorWrapper::ensureDim (x1, A_stream.dim ());
 	VectorWrapper::ensureDim (x2, A_stream.dim ());
 
-	SparseMatrix<Field> A (F, A_stream);
+	SparseMatrix2<Field> A (F, A_stream);
 
 	report1 << "n = " << y_stream.dim () << endl;
 	report1 << "N = " << N << endl;
@@ -149,7 +149,7 @@ static bool testSampleNullspace (const Field           &F,
 
 	Matrix x (A_stream.dim (), N);
 
-	SparseMatrix<Field> A (F, A_stream);
+	SparseMatrix2<Field> A (F, A_stream);
 
 	report1 << "n = " << A_stream.dim () << endl;
 	report1 << "N = " << N << endl;

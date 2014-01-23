@@ -56,6 +56,7 @@
 
 #include "linbox/field/archetype.h"
 #include "linbox/field/rebind.h"
+#include "linbox/matrix/sparse-formats.h"
 
 namespace LinBox
 {
@@ -187,6 +188,7 @@ namespace LinBox
 	struct VectorTraits< std::vector< std::pair<size_t, Element> > > {
 		typedef typename VectorCategories::SparseSequenceVectorTag VectorCategory;
 		typedef std::vector< std::pair<size_t, Element> >              VectorType;
+		typedef SparseMatrixFormat::SparseSeq               SparseFormat;
 
 		static void sort (VectorType& v) { std::stable_sort(v.begin(), v.end(), SparseSequenceVectorPairLessThan<Element>()); }
 	};
@@ -216,6 +218,7 @@ namespace LinBox
 	{
 		typedef typename VectorCategories::SparseAssociativeVectorTag VectorCategory;
 		typedef std::map<size_t, Element>                                 VectorType;
+		typedef SparseMatrixFormat::SparseMap                  SparseFormat;
 	};
 
 	// Specialization for an STL pair of an STL vector of size_t's and an STL vector of elements
@@ -224,6 +227,7 @@ namespace LinBox
 	{
 		typedef typename VectorCategories::SparseParallelVectorTag VectorCategory;
 		typedef std::pair<std::vector<size_t>, std::vector<Element> >  VectorType;
+		typedef SparseMatrixFormat::SparsePar               SparseFormat;
 	};
 
 	// Namespace containing some useful generic functions
