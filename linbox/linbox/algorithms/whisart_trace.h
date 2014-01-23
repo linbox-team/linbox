@@ -60,7 +60,7 @@ namespace LinBox
 		typedef IndexedTags::HasIndexed Tag; };
 
 	template<class Field, class Row>
-	struct IndexedCategory< SparseMatrix<Field,Row> > 	{
+	struct IndexedCategory< SparseMatrix2<Field,Row> > 	{
 		typedef IndexedTags::HasIndexed Tag; };
 
 #if 0

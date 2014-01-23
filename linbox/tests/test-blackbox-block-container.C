@@ -146,7 +146,7 @@ int main (int argc, char **argv)
 	// ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	commentator().start("SparseMatrix test");
-	SparseMatrix<Field> A(F, n, n);
+	SparseMatrix2<Field> A(F, n, n);
 	/*
 	if (n > 2) {
 		A.setEntry(0,1,F.one);

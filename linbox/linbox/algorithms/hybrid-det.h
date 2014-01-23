@@ -430,7 +430,7 @@ namespace LinBox
 #if 0
 	template <class Integers, class MyMethod>
 	typename Integers::Element & lif_cra_det (typename Integers::Element                &d,
-						  const SparseMatrix<Integers>              &A,
+						  const SparseMatrix2<Integers>              &A,
 						  const RingCategories::IntegerTag          &tag,
 						  const MyMethod                            &M)
 	{
@@ -456,7 +456,7 @@ namespace LinBox
 		RandomPrime genprime( (Integer)p_size );
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "prime size: " << p_size << "\n";
 		ChineseRemainder< myModular > cra(3UL);
-		IntegerModularDetReduced<SparseMatrix<Integers >,MyMethod> iteration(A, M, beta,myfactor);
+		IntegerModularDetReduced<SparseMatrix2<Integers >,MyMethod> iteration(A, M, beta,myfactor);
 #if 0
 		if (A.rowdim() < 200 ) {
 			cra(d,iteration,genprime);

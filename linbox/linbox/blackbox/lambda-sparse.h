@@ -39,7 +39,7 @@ namespace LinBox
 	/// \ingroup blackbox
 	template< class _Field,
 	class _Row = typename Vector<_Field>::SparseSeq >
-	class LambdaSparseMatrix : public SparseMatrix<_Field,_Row> {
+	class LambdaSparseMatrix : public SparseMatrix2<_Field,_Row> {
 
 	public:
 
@@ -53,7 +53,7 @@ namespace LinBox
 		// Contructor of a lambda-sparse matrix as defined in Mulder 2003
 		// with non-zero elements choosen from entire Field
 		LambdaSparseMatrix(const Field& F,size_t m, size_t n, double LAMBDA = 3.) :
-			SparseMatrix<Field,Row> (F,m,n)
+			SparseMatrix2<Field,Row> (F,m,n)
 		{
 
 			integer card;
@@ -80,7 +80,7 @@ namespace LinBox
 		// Contructor of a lambda-sparse matrix as defined in Mulder 2003
 		// with non-zero elements choosen from a subset of the Field
 		LambdaSparseMatrix(const Field& F,size_t m, size_t n,const integer size, double LAMBDA = 3.) :
-			SparseMatrix<Field,Row> (F,m,n)
+			SparseMatrix2<Field,Row> (F,m,n)
 		{
 
 			typename Field::RandIter _randiter(F,size,0);
@@ -105,7 +105,7 @@ namespace LinBox
 
 		// Copy constructor
 		LambdaSparseMatrix (const LambdaSparseMatrix<Field,Row>& L) :
-			SparseMatrix<Field,Row>(L)
+			SparseMatrix2<Field,Row>(L)
 		{}
 
 
@@ -113,7 +113,7 @@ namespace LinBox
 		// allow the mod p reduction for all entries.
 		template<class _Ring, class _IRow>
 		LambdaSparseMatrix (const Field& F, const LambdaSparseMatrix<_Ring,_IRow>& L) :
-			SparseMatrix<Field,Row> (F,L.rowdim(),L.coldim())
+			SparseMatrix2<Field,Row> (F,L.rowdim(),L.coldim())
 		{
 
 			//typename LambdaSparseMatrix<_Ring,_IRow>::ConstIterator Liter = L.Begin();

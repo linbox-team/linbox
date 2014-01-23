@@ -73,7 +73,7 @@ namespace LinBox
 			std::list <Local2_32::Element> l;
 			SmithFormLocal<Local2_32> SF;
 			BlasMatrix <Local2_32> A_local(R, A.rowdim(),A.coldim());
-			MatrixHom::map (A_local, A, R);
+			MatrixHom::map (A_local, A);
 			SF (l, A_local, R);
 			std::list <Local2_32::Element>::iterator l_p;
 			BlasVector<PID_integer>::iterator s_p;
@@ -134,7 +134,7 @@ namespace LinBox
 			BlasMatrix <PIR> A_local(R, A.rowdim(), A.coldim());
 			SmithFormLocal <PIR> SF;
 			std::list <PIR::Element> l;
-			MatrixHom::map (A_local, A, R);
+			MatrixHom::map (A_local, A);
 			SF (l, A_local, R);
 			std::list <PIR::Element>::iterator l_p;
 			BlasVector<PID_integer>::iterator s_p;
@@ -164,7 +164,7 @@ namespace LinBox
 			BlasMatrix <PIR_ntl_ZZ_p> A_local(R, A.rowdim(), A.coldim());
 			SmithFormLocal <PIR_ntl_ZZ_p> SF;
 			std::list <PIR_ntl_ZZ_p::Element> l;
-			MatrixHom::map (A_local, A, R);
+			MatrixHom::map (A_local, A);
 			SF (l, A_local, R);
 			std::list <PIR_ntl_ZZ_p::Element>::iterator l_p;
 			BlasVector<PID_integer>::iterator s_p;
@@ -272,7 +272,7 @@ namespace LinBox
 			report << "    Elimination starts:\n";
 			PIRModular<int32_t> R (m);
 			BlasMatrix<PIRModular<int32_t> > A_ilio(R, A.rowdim(), A.coldim());
-			MatrixHom::map (A_ilio, A, R);
+			MatrixHom::map (A_ilio, A);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; BlasVector<PID_integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ i, ++ s_p)
@@ -303,7 +303,7 @@ namespace LinBox
 			report << "    Elimination start:\n";
 			PIR_ntl_ZZ_p R (m);
 			BlasMatrix<PIR_ntl_ZZ_p> A_ilio(R, A.rowdim(), A.coldim());
-			MatrixHom::map (A_ilio, A, R);
+			MatrixHom::map (A_ilio, A);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; BlasVector<PID_integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ i, ++ s_p)
@@ -408,7 +408,7 @@ namespace LinBox
 		RandomPrimeIterator rg; rg.template setBitsField<Field>();
 		Field F ((unsigned long)*rg);
 		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
-		MatrixHom::map (Ap, A, F);
+		MatrixHom::map (Ap, A);
 		Valence::one_valence (v, degree, Ap);
 		report <<"   Degree of minimal polynomial of AA^T = " << degree << '\n';
 		// if degree is small
@@ -445,7 +445,7 @@ namespace LinBox
 		//Chnage A to BlasMatrix
 		Ring R(A. field());
 		BlasMatrix<Ring> DA(R,A.rowdim(),A.coldim());
-		MatrixHom::map (DA, A, R);
+		MatrixHom::map (DA, A);
 		do {
 			oif. oneInvariantFactor_Bonus (_lif, _bonus, DA, (int)r);
 
@@ -533,7 +533,7 @@ namespace LinBox
 		RandomPrimeIterator rg; rg.template setBitsField<Field>();
 		Field F ((unsigned long)*rg);
 		typename MatrixHomTrait<BlasMatrix <IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
-		MatrixHom::map (Ap, A, F);
+		MatrixHom::map (Ap, A);
 		Valence::one_valence (v, degree, Ap);
 		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';
 		// if degree is small

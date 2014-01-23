@@ -56,7 +56,7 @@ namespace LinBox
 			if (P. size () < n)
 				return false;
 
-			typedef typename Matrix::Field::Element Int;
+			// typedef typename Matrix::Field::Element Int;
 			// std::vector<Int> D(n);
 			BlasVector<typename Matrix::Field> D(M.field(),n);
 			semiD(D, M);
@@ -316,13 +316,12 @@ namespace LinBox
 			FMatrix FM(F, IM.rowdim(), IM.coldim());
 			//std::cout << "Random prime " << p << "\n";
 
-			Element zero; F. init (zero, 0);
-			MatrixHom::map (FM, IM, F);
+			MatrixHom::map (FM, IM);
 			VectorDomain<Field> VD(F);
 			FMatrix& M = FM;
 
 			//typename FMatrix::RowIterator cur_r, tmp_r;
-			typedef FMatrix::Row Row;
+			// typedef FMatrix::Row Row;
 			//the index is 0-based.
 			int i = 0;
 			int n = (int) M. rowdim();
@@ -367,7 +366,7 @@ namespace LinBox
 				//not necessary
 				//M. write(std::cout);
 				for (j = i + 1; j < n; ++ j)
-					F. assign (M[(size_t)i][(size_t)j], zero);
+					F. assign (M[(size_t)i][(size_t)j], F.zero);
 			}
 
 			v. resize ((size_t)n);
@@ -396,10 +395,10 @@ namespace LinBox
 		static long rank_random (const Matrix& M)
 		{
 
-			typedef typename Matrix::Field Ring;
+			// typedef typename Matrix::Field Ring;
 			// typedef typename Ring::Element Integer_t;
 			typedef Modular<double> Field;
-			typedef Field::Element Element;
+			// typedef Field::Element Element;
 
 			int n = (int)M. rowdim();
 

@@ -619,7 +619,7 @@ typedef unsigned int mod_int;
 typedef Modular<unsigned int> GFp;
 typedef GFp::Element  GFpElement;
 typedef std::vector <std::pair <size_t, GFpElement> > SparseSeqVectorGFp;
-typedef SparseMatrix<GFp, SparseSeqVectorGFp> SparseMatrixGFp;
+typedef SparseMatrix2<GFp, VectorTraits<SparseSeqVectorGFp>::SparseFormat> SparseMatrixGFp;
 
 static SparseMatrixGFp linbox_new_modn_sparse_matrix(mod_int modulus, size_t numrows, size_t numcols, void *rows)
 {

@@ -70,7 +70,7 @@ static bool testZeroMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& 
 	commentator().start ("Testing zero minpoly", "testZeroMinpoly");
 	typedef BlasVector<Field> Polynomial;
 	Polynomial phi(F);
-	SparseMatrix<Field> A(F, n, n);
+	SparseMatrix2<Field> A(F, n, n);
 	minpoly(phi, A, M);
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -175,7 +175,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 {
 	typedef BlasVector<Field> Vector;
 	typedef BlasVector<Field> Polynomial;
-	typedef SparseMatrix <Field> Blackbox;
+	typedef SparseMatrix2<Field> Blackbox;
 	typedef typename Blackbox::Row Row;
 
 	commentator().start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
@@ -244,7 +244,7 @@ bool testRandomMinpoly (Field                 &F,
                         const Meth& M)
 {
 	typedef BlasVector<Field> Polynomial;
-	typedef SparseMatrix <Field> Blackbox;
+	typedef SparseMatrix2<Field> Blackbox;
         typedef typename VectStream::Vector Vector;
 
         commentator().start ("Testing sparse random minpoly", "testRandomMinpoly", (unsigned int)iterations);
@@ -490,7 +490,7 @@ int main (int argc, char **argv)
 
 	// /////////////// integer part //////////////////
 	typedef vector<PID_integer::Element> ZDenseVector;
-	typedef SparseMatrix<PID_integer>::Row ZSparseVector;
+	typedef SparseMatrix2<PID_integer>::Row ZSparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 	PID_integer Z;
 	srand ((unsigned)time (NULL));

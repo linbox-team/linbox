@@ -146,7 +146,7 @@ namespace LinBox
 
 
 
-		SparseMatrix<Field> *Ap;
+		SparseMatrix2<Field> *Ap;
 		FPolynomial MinPoly;
 		unsigned long  deg;
 		unsigned long issingular = SINGULARITY_THRESHOLD;
@@ -160,10 +160,10 @@ namespace LinBox
 			_prime = prime;
 			if (F != NULL) delete F;
 			F=new Field(prime);
-			Ap = new SparseMatrix<Field>(A, *F);
+			Ap = new SparseMatrix2<Field>(A, *F);
 			typename Field::RandIter random(*F);
-			BlackboxContainer<Field,SparseMatrix<Field> > Sequence(Ap,*F,random);
-			MasseyDomain<Field,BlackboxContainer<Field,SparseMatrix<Field> > > MD(&Sequence);
+			BlackboxContainer<Field,SparseMatrix2<Field> > Sequence(Ap,*F,random);
+			MasseyDomain<Field,BlackboxContainer<Field,SparseMatrix2<Field> > > MD(&Sequence);
 #ifdef RSTIMING
 			tNonsingularSetup.stop();
 			ttNonsingularSetup+=tNonsingularSetup;
@@ -187,7 +187,7 @@ namespace LinBox
 		}
 		else {
 
-			typedef SparseMatrix<Field> FMatrix;
+			typedef SparseMatrix2<Field> FMatrix;
 
 			typedef WiedemannLiftingContainer<Ring, Field, IMatrix, FMatrix, FPolynomial> LiftingContainer;
 
@@ -215,7 +215,7 @@ namespace LinBox
 		std::cerr<<"in singular solver\n";
 
 		typedef BlasVector<Ring>  IVector;
-		typedef SparseMatrix<Field>                  FMatrix;
+		typedef SparseMatrix2<Field>                  FMatrix;
 
 		// checking size of system
 		linbox_check(A.rowdim() == b.size());
@@ -525,7 +525,7 @@ namespace LinBox
 		root(tmproot, tmp,3);
 		m = n = tmproot;
 		// 		std::cout<<"block factor= "<<m<<"\n";;
-		typedef SparseMatrix<Field> FMatrix;
+		typedef SparseMatrix2<Field> FMatrix;
 
 		Field F(_prime);
 		FMatrix Ap(A, F);
@@ -675,7 +675,7 @@ namespace LinBox
 
 				FMP = new BlasMatrix<Field>(*F, A.rowdim(),A.coldim());
 
-				MatrixHom::map (*FMP, A, *F); // use MatrixHom to reduce matrix PG 2005-06-16
+				MatrixHom::map (*FMP, A ); // use MatrixHom to reduce matrix PG 2005-06-16
 #if 0
 				typename BlasMatrix<Field>::Iterator iter_p  = FMP->Begin();
 				typename IMatrix::ConstIterator iter  = A.Begin();
@@ -846,7 +846,7 @@ namespace LinBox
 			Hom<Ring, Field> Hmap(_ring, F);
 
 			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim());
-			MatrixHom::map(Ap, A, F);
+			MatrixHom::map(Ap, A);
 
 			for (size_t i=0;i<A.rowdim();++i)
 				for (size_t j=0;j<A.coldim();++j)

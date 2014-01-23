@@ -140,12 +140,12 @@ bool testRandom(const Ring& R, size_t n)
 	//PIRModular<int32_t> Rd( (int32_t)(s % LINBOX_MAX_MODULUS));
 	PIRModular<int32_t> Rp( (int32_t)d);
 	BlasMatrix<PIRModular<int32_t> > Ap(Rp, n, n), Dp(Rp, n, n);
-	MatrixHom::map (Ap, A, Rp);
+	MatrixHom::map (Ap, A);
 
 	SmithFormIliopoulos::smithFormIn (Ap);
 
 	Ap.write( report << "Computed Smith form: \n") << endl;
-	MatrixHom::map (Dp, D, Rp);
+	MatrixHom::map (Dp, D);
 	BlasMatrixDomain<PIRModular<int32_t> > BMDp(Rp);
 	pass = pass and BMDp.areEqual(Dp, Ap);
 

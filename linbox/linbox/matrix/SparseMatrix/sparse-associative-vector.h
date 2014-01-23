@@ -598,10 +598,10 @@ namespace LinBox
 		typedef _Field                                       Field ; //!< Field
 		typedef typename _Field::Element                   Element ; //!< Element
 		typedef const Element                         constElement ; //!< const Element
-		typedef typename Vector<_Field>::SparseMap             Rep ;
+		typedef typename Vector<_Field>::SparseMap             Row ;
 		typedef SparseMatrixFormat::SparseMap              Storage ; //!< Matrix Storage Format
 		typedef SparseMatrix2<_Field,Storage>               Self_t ; //!< Self type
-		typedef SparseMatrix<_Field,Rep,myTrait >         Father_t ;
+		typedef SparseMatrix<_Field,Row,myTrait >         Father_t ;
 
 	public:
 		template<class VectStream>
@@ -609,7 +609,7 @@ namespace LinBox
 			Father_t(F,stream)
 		{}
 
-		SparseMatrix2(Field & F, size_t m, size_t n) :
+		SparseMatrix2(const Field & F, size_t m, size_t n) :
 			Father_t(F, m, n)
 		{}
 
@@ -622,6 +622,22 @@ namespace LinBox
 		{}
 
 	} ; // SparseMatrix2
+
+	template <class Field>
+	struct MatrixTraits< SparseMatrix2<Field, SparseMatrixFormat::SparseMap> >
+	{
+		typedef SparseMatrix2<Field, SparseMatrixFormat::SparseMap> MatrixType;
+		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	};
+
+	template <class Field>
+	struct MatrixTraits< const SparseMatrix2<Field, SparseMatrixFormat::SparseMap> >
+	{
+		typedef SparseMatrix2<Field, SparseMatrixFormat::SparseMap> MatrixType;
+		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	};
+
+
 } // namespace LinBox
 
 

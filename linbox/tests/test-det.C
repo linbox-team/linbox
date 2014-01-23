@@ -340,7 +340,7 @@ bool testIntegerDet (size_t n, int iterations)
 	for (int i = 0; i < iterations; ++i) {
 		commentator().startIteration ((unsigned int)i);
 		PID_integer R;
-		SparseMatrix<PID_integer> A (R, n, n);
+		SparseMatrix2<PID_integer> A (R, n, n);
 
 	 	integer pi = 1L;
  		integer det_A_wiedemann, det_A_symm_wied, det_A_blas_elimination;
@@ -418,7 +418,7 @@ bool testIntegerDetGen (size_t n, int iterations)
 	for (int i = 0; i < iterations; ++i) {
 		commentator().startIteration ((unsigned int)i);
 		PID_integer R;
-		SparseMatrix<PID_integer> A (R, n, n);
+		SparseMatrix2<PID_integer> A (R, n, n);
 
 	 	integer pi = 1L;
  		integer det_A, det_A_H, det_A_B, det_A_E;
@@ -501,7 +501,7 @@ bool testRationalDetGen (size_t n, int iterations)
 	for (int i = 0; i < iterations; ++i) {
 		commentator().startIteration ((unsigned int)i);
 		GMPRationalField Q;
-		SparseMatrix<GMPRationalField > A (Q, n, n);
+		SparseMatrix2<GMPRationalField > A (Q, n, n);
 		BlasMatrix <GMPRationalField > BB(Q, n, n);
 
 	 	GMPRationalField::Element pi(1,1);

@@ -144,7 +144,6 @@ int main (int argc, char **argv)
 #endif
 
 // sparse
-	//SparseMatrix <Field> S (F, n, n);
 	// TriplesBB <Field> S (F, n, n);
 	SparseMatrix2<Field, SparseMatrixFormat::TPL> S (F, n, n);
 	for (size_t i = 0; i < n; ++i) S.setEntry(i, i, d[i]);

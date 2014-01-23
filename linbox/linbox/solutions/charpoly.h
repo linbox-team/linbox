@@ -106,7 +106,7 @@ namespace LinBox
 	//! @bug not Hybrid at all
 	template<class Polynomial, class Domain>
 	Polynomial &charpoly (Polynomial            &P,
-			      const SparseMatrix<Domain>       & A,
+			      const SparseMatrix2<Domain>       & A,
 			      const RingCategories::ModularTag & tag,
 			      const Method::Hybrid             & M)
 	{
