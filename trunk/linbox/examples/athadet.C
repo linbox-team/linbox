@@ -65,7 +65,7 @@ struct  cra_det_task {
 
 		Util::logfile() << "creating matrix" << std::endl;
 		Integers ZZ;
-		SparseMatrix<Integers> sparseMatrix (ZZ);
+		SparseMatrix2<Integers> sparseMatrix (ZZ);
 		sparseMatrix.read(input);
 		Util::logfile() << "matrix created" << std::endl;
 		PID_integer::Element det_A;

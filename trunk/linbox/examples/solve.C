@@ -94,7 +94,7 @@ int main (int argc, char **argv)
 		typedef BlasVector<Field> DenseVector ;
 		Field F(q);
 		MatrixStream< Field > ms ( F, input );
-		SparseMatrix<Field> A (ms);  // A.write(std::cout);
+		SparseMatrix2<Field> A (ms);  // A.write(std::cout);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		DenseVector X(F, A.coldim()),B(F, A.rowdim());
@@ -195,7 +195,7 @@ int main (int argc, char **argv)
 		PID_integer ZZ;
 		typedef BlasVector<PID_integer> DenseVector ;
 		MatrixStream< PID_integer > ms( ZZ, input );
-		SparseMatrix<PID_integer> A (ms);
+		SparseMatrix2<PID_integer> A (ms);
 		PID_integer::Element d;
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
 

@@ -45,8 +45,8 @@ int main (int argc, char **argv)
         std::cerr << "       Optional parameters valence and coprime are integers." << std::endl;
         std::cerr << "       Prime factors of valence will be used for local computation." << std::endl;
         std::cerr << "       coprime will be used for overall rank computation." << std::endl;
-        
-            
+
+
 		return -1;
 	}
 
@@ -55,7 +55,7 @@ int main (int argc, char **argv)
 
 	PID_integer ZZ;
 	MatrixStream< PID_integer > ms( ZZ, input );
-	typedef SparseMatrix<PID_integer>  Blackbox;
+	typedef SparseMatrix2<PID_integer>  Blackbox;
 	Blackbox A (ms);
 	input.close();
 
@@ -169,7 +169,7 @@ int main (int argc, char **argv)
                     }
                 }
             }
-            
+
 			std::vector<size_t>::const_iterator rit=ranks.begin();
 			// unsigned long modrank = *rit;
 			for(++rit; rit!= ranks.end(); ++rit) {
