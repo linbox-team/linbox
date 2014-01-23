@@ -587,6 +587,41 @@ namespace LinBox
 
 #include "linbox/matrix/SparseMatrix/sparse-associative-vector.inl"
 
+namespace LinBox
+{
+
+	template <class _Field /*, class _Row */  >
+	class SparseMatrix2<_Field, SparseMatrixFormat::SparseMap/* <_Row> */ > : public SparseMatrix<_Field,/*  _Row */ typename Vector<_Field>::SparseMap,VectorCategories::SparseAssociativeVectorTag>
+	{
+	public:
+		typedef VectorCategories::SparseAssociativeVectorTag  myTrait ;
+		typedef _Field                                       Field ; //!< Field
+		typedef typename _Field::Element                   Element ; //!< Element
+		typedef const Element                         constElement ; //!< const Element
+		typedef typename Vector<_Field>::SparseMap             Rep ;
+		typedef SparseMatrixFormat::SparseMap              Storage ; //!< Matrix Storage Format
+		typedef SparseMatrix2<_Field,Storage>               Self_t ; //!< Self type
+		typedef SparseMatrix<_Field,Rep,myTrait >         Father_t ;
+
+	public:
+		template<class VectStream>
+		SparseMatrix2 (const Field &F, VectStream &stream) :
+			Father_t(F,stream)
+		{}
+
+		SparseMatrix2(Field & F, size_t m, size_t n) :
+			Father_t(F, m, n)
+		{}
+
+		SparseMatrix2(const Field & F) :
+			Father_t(F)
+		{}
+
+
+	} ; // SparseMatrix2
+} // namespace LinBox
+
+
 #endif // __LINBOX_matrix_sparse_associative_H
 
 
