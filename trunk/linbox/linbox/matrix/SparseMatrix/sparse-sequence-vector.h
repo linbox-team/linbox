@@ -633,7 +633,7 @@ namespace LinBox
 {
 
 	template <class _Field /*, class _Row */  >
-	class SparseMatrix2<_Field, SparseMatrixFormat::SparseSequence/* <_Row> */ > : public SparseMatrix<_Field,/*  _Row */ typename Vector<_Field>::SparseSeq ,VectorCategories::SparseSequenceVectorTag>
+	class SparseMatrix2<_Field, SparseMatrixFormat::SparseSeq/* <_Row> */ > : public SparseMatrix<_Field,/*  _Row */ typename Vector<_Field>::SparseSeq ,VectorCategories::SparseSequenceVectorTag>
 	{
 	public:
 		typedef VectorCategories::SparseSequenceVectorTag  myTrait ;
@@ -641,7 +641,7 @@ namespace LinBox
 		typedef typename _Field::Element                   Element ; //!< Element
 		typedef const Element                         constElement ; //!< const Element
 		typedef typename Vector<_Field>::SparseSeq             Rep ;
-		typedef SparseMatrixFormat::SparseSequence         Storage ; //!< Matrix Storage Format
+		typedef SparseMatrixFormat::SparseSeq              Storage ; //!< Matrix Storage Format
 		typedef SparseMatrix2<_Field,Storage>               Self_t ; //!< Self type
 		typedef SparseMatrix<_Field,Rep,myTrait >         Father_t ;
 

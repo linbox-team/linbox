@@ -69,7 +69,7 @@ namespace LinBox {
 		// class VPV : public ANY {} ; // vector of pair of vectors
 		// class VMap : public ANY {} ; // vector of index to value maps.
 		// template<class Row_t>
-		class SparseSequence    /* CoP  */ : public ANY {} ;//!< vector/list of pairs (Container of Pairs). SparseSequence.
+		class SparseSeq    /* CoP  */ : public ANY {} ;//!< vector/list of pairs (Container of Pairs). SparseSequence.
 		// template<class Row_t>
 		class SparsePar /* CoM  */ : public ANY {} ;//!< vector/list of pairs (Container of Maps). SparseAssociative.
 		// template<class Row_t>

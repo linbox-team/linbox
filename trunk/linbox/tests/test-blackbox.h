@@ -307,6 +307,8 @@ testBlackboxNoRW(BB &A, bool zeroCheck=true)
 	typedef LinBox::BlasVector<Field> DenseVector;
 	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "testBlackbox on " << A.rowdim() << " by " << A.coldim() << " matrix." << endl;
+	if (std::max(A.rowdim(),A.coldim())<15)
+	    A.write(report << "Blackbox = ");
 
 	LinBox::commentator().setMaxDepth(-1);
 	bool ret = true;
