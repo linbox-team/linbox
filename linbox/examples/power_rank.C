@@ -60,7 +60,7 @@ int main (int argc, char **argv)
 		typedef GivaroZpz<Givaro::Std64> Field;
 		Field F(q);
 		MatrixStream<Field> ms( F, input );
-		SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
+		SparseMatrix2<Field, SparseMatrixFormat::SparseSeq > B (ms);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 

@@ -81,7 +81,7 @@ int main (int argc, char **argv)
 		{ cerr << "Error opening matrix file " << argv[1] << endl;
 			return -1;
 		}
-		SparseMatrix<Field> B (F); B.read(input);
+		SparseMatrix2<Field> B (F); B.read(input);
 		cout << "Matrix is " << B.rowdim() << " by " << B.coldim() << endl;
 
 		Field::Element det_B;

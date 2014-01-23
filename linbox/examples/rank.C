@@ -63,7 +63,7 @@ int main (int argc, char **argv)
 
 	LinBox::GivaroRational ZZ;
 	MatrixStream<GivaroRational> ms( ZZ, input );
-	SparseMatrix<GivaroRational> A ( ms );
+	SparseMatrix2<GivaroRational> A ( ms );
 	if (argc == 2) { // rank over the rational numbers.
 
 		/* We could pick a random prime and work mod that prime, But
@@ -101,7 +101,7 @@ int main (int argc, char **argv)
 /*
 		MatrixStream<Field> ms( F, input );
 */
-		SparseMatrix<Field, Vector<Field>::SparseSeq > B (F, A.rowdim(), A.coldim());// modular image of A
+		SparseMatrix2<Field, SparseMatrixFormat::SparseSeq > B (F, A.rowdim(), A.coldim());// modular image of A
 		MatrixHom::map(B, A);
 		std::cout << "matrix is " << B.rowdim() << " by " << B.coldim() << std::endl;
 		//if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
