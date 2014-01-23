@@ -186,23 +186,7 @@ namespace LinBox
 			return SS_SINGULAR;
 		}
 		else {
-#if 0
-			std::cerr<<"A:\n";
-			A.write(std::cerr);
-			std::cerr<<"A mod p:\n";
-			Ap->write(std::cerr);
-			Ring r;
-			VectorDomain<Ring> VD(r);
-			std::cerr<<"b:\n";
-			VD.write(std::cerr,b)<<std::endl;
-			std::cerr<<"prime: "<<_prime<<std::endl;
 
-			std::cerr<<"non singular\n";
-
-			CSRSparseMatrix<Field> csr_Ap(*F,*Ap);
-
-			typedef CSRSparseMatrix<Field> FMatrix;
-#endif
 			typedef SparseMatrix<Field> FMatrix;
 
 			typedef WiedemannLiftingContainer<Ring, Field, IMatrix, FMatrix, FPolynomial> LiftingContainer;

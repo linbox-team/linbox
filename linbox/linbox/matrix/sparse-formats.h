@@ -77,6 +77,7 @@ namespace LinBox {
 
 	} // SparseMatrixFormat
 
+
 	//! Sparse matrix format (file storage) @bug use the enum!!!!
 	namespace SparseFileFormat {
 		class SMS {} ; // JG format

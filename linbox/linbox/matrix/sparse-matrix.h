@@ -50,7 +50,7 @@ namespace LinBox {
 
 
 	// Forward definition
-	template<class _Field, class _Storage = SparseMatrixFormat::CSR >
+	template<class _Field, class _Storage = SparseMatrixFormat::SparseSeq >
 	class SparseMatrix2 ;
 
 
