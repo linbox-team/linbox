@@ -178,11 +178,11 @@ namespace LinBox
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D);
 		}
 
-#if 0
-		std::ostream& write(std::ostream& out) {
+#if 1
+		std::ostream& write(std::ostream& out) const {
 			out << "diag(";
-			for (typename std::vector<Element>::iterator p = _v.begin(); p != _v.end(); ++p)
-				field().write(out, *p) << ", ";
+			// for (typename std::vector<Element>::const_iterator p = _v.begin(); p != _v.end(); ++p)
+				// field().write(out, *p) << ", ";
 			return out << "\b\b)";
 		}
 #endif

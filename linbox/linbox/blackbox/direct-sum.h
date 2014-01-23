@@ -217,6 +217,12 @@ namespace LinBox
 		const Blackbox1* getLeftPtr() const {return  _Ap;}
 		const Blackbox2* getRightPtr() const {return  _Bp;}
 
+		std::ostream & write(std::ostream & os) const
+		{
+		        _Ap->write(os); _Bp->write(os << '+') ;
+			return os ;
+		}
+
 	protected:
 		// the direct summands
 		const Blackbox1* _Ap;
@@ -353,6 +359,15 @@ namespace LinBox
 		size_t size() const {
 			return this->_VB.size();
 		}
+		std::ostream & write(std::ostream & os) const
+		{
+			typename std::vector<const Blackbox* >::const_iterator bp;
+			for(bp = _VB.begin(); bp != _VB.end(); ++bp){
+		        (*bp)->write(os);
+			}
+			return os ;
+		}
+
 	protected:
 		std::vector<const Blackbox* > _VB;
 		size_t m;

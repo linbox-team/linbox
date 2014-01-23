@@ -189,6 +189,11 @@ namespace LinBox
 
 		const Blackbox2* getRightPtr() const {return  _B_ptr;}
 
+		std::ostream & write(std::ostream & os) const
+		{
+		        _A_ptr->write(os); _B_ptr->write(os << '+') ;
+			return os ;
+		}
 	protected:
 
 		// use a copy of the input field for faster performance (no pointer dereference).
@@ -390,6 +395,12 @@ namespace LinBox
 		Blackbox2& getRightData()
 		{
 			return  _B_data;
+		}
+
+		std::ostream & write(std::ostream & os) const
+		{
+		        _A_data.write(os); _B_data.write(os << '+') ;
+			return os ;
 		}
 
 	protected:

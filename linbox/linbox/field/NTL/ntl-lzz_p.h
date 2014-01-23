@@ -301,6 +301,11 @@ namespace LinBox
 			return os << "unparameterized field Element with p = "
 			<< Element::modulus();
 		}
+		std::ostream& write(std::ostream& os, const std::string& ) const
+		{
+			return os << "unparameterized field Element with p = "
+			<< Element::modulus();
+		}
 
 		std::ostream &write (std::ostream &os, const Element &x) const { return FFPACK::UnparametricOperations<Element>::write(os,x); }
 	};

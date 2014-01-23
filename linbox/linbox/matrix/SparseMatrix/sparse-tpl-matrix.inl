@@ -68,12 +68,12 @@ template<class Field_>
 template<class Format>
  std::ostream& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
 write(std::ostream& out,
-      Format f ){
+      Format f ) const{
 	return write(out);
 }
 template<class Field_>
  std::ostream& SparseMatrix2<Field_,SparseMatrixFormat::TPL>::
-write(std::ostream& out ){
+write(std::ostream& out ) const{
 	// linbox_check(f == SparseFileFormat::COO());
 	//! @bug we should not support too many formats
 	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;

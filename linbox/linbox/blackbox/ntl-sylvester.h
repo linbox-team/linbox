@@ -75,6 +75,11 @@ namespace LinBox
 
 		//Sylvester(char *dataFileName ); // read from a file -- not implemented yet
 
+		std::ostream& write(std::ostream & os)
+		{
+			os << "NOT YET" ;
+			return os ;
+		}
 	protected:
 		Field         K;
 

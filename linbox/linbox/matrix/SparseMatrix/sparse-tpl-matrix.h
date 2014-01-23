@@ -73,9 +73,9 @@ namespace LinBox
 	std::istream& read(std::istream& in);
 
 	template<class Format>
-	std::ostream& write(std::ostream& out, Format f);
+	std::ostream& write(std::ostream& out, Format f) const;
 
-	std::ostream& write(std::ostream& out);
+	std::ostream& write(std::ostream& out) const;
 
 
 	~SparseMatrix2();
