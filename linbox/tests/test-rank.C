@@ -61,18 +61,18 @@
 using namespace LinBox;
 
 // tests 1 and 2 were certain diagonals - now deemed unnecessary.  -bds 2005Mar15
+
 /* Test 3: Rank of a random sparse matrix
  *
  * Constructs a random sparse matrix and computes its rank using Gaussian
  * elimination (direct and blas) and Wiedemann's algorithm. Checks that the results match.
  */
-
-
 template <class Field>
 bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
-	 typedef SparseMatrix<Field,typename Vector<Field>::SparseSeq> Blackbox;
-	// typedef SparseMatrix2<Field,SparseMatrixFormat::VVP> Blackbox;
+	 typedef SparseMatrix2<Field,SparseMatrixFormat::SparseSeq > Blackbox;
+	 // typedef SparseMatrix2<Field,SparseMatrixFormat::SparsePar > Blackbox;
+	 // typedef SparseMatrix2<Field,SparseMatrixFormat::SparseMap > Blackbox;
 	// typedef SparseMatrix2<Field,SparseMatrixFormat::COO> Blackbox;
 	// typedef SparseMatrix2<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
 	// typedef SparseMatrix2<Field,SparseMatrixFormat::ELL> Blackbox;
@@ -144,6 +144,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 	return ret;
 }
 
+// this test just doesn't work/compile
 #if 0
 bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
@@ -224,7 +225,6 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 /* Test 4: Rank of zero and identity matrices by Wiedemann variants
  *
  */
-
 template <class Field>
 bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 {
