@@ -43,6 +43,7 @@ pkgincludesub_HEADERS =         \
         sparse-sequence-vector.h         \
         sparse-sequence-vector.inl
 
+EXTRA_DIST=sparse-matrix.doxy
 
 
 

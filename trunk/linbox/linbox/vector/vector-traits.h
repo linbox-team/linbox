@@ -431,8 +431,9 @@ namespace LinBox
 	struct RawVector {
 		typedef std::vector<Element> Dense;
 		typedef std::vector<std::pair<size_t, Element> > SparseSeq;
-		typedef std::map<size_t, Element> SparseMap;
-		typedef std::pair<std::vector<size_t>, std::vector<Element> > SparsePar;
+		typedef std::list<std::pair<size_t, Element> >   SparseSeq2;
+		typedef std::map<size_t, Element>                SparseMap;
+		typedef std::pair<std::vector<size_t>, Dense >   SparsePar;
 		typedef SparsePar Sparse;
 
 		template<class VType> static size_t size(const VType& d)

@@ -207,7 +207,6 @@ namespace LinBox
 
 
 		std::ostream &write (std::ostream &os
-				     // , const Field &F
 				     , LINBOX_enum(Tag::FileFormat) format /*  = Tag::FileFormat::Pretty */) const
 		{
 			return SparseMatrixReadWriteHelper<Field, Row>::write (*this, os, format);

@@ -65,13 +65,19 @@ namespace LinBox {
 		class LIL         : public ANY {} ; //!< vector of pairs
 
 		// the old sparse matrix reps.
-		class VVP : public ANY {} ; // vector of vector of pairs
-		class VPV : public ANY {} ; // vector of pair of vectors
-		class VMap : public ANY {} ; // vector of index to value maps.
+		// class VVP : public ANY {} ; // vector of vector of pairs
+		// class VPV : public ANY {} ; // vector of pair of vectors
+		// class VMap : public ANY {} ; // vector of index to value maps.
+		// template<class Row_t>
+		class SparseSequence    /* CoP  */ : public ANY {} ;//!< vector/list of pairs (Container of Pairs). SparseSequence.
+		// template<class Row_t>
+		class SparseAssociative /* CoM  */ : public ANY {} ;//!< vector/list of pairs (Container of Maps). SparseAssociative.
+		// template<class Row_t>
+		class SparseParallel    /* PoC  */ : public ANY {} ;//!< pair of vector/list (Pair of Containers). SparseParallel.
 
 	} // SparseMatrixFormat
 
-	//! Sparse matrix format (file storage)
+	//! Sparse matrix format (file storage) @bug use the enum!!!!
 	namespace SparseFileFormat {
 		class SMS {} ; // JG format
 		class CSR {} ; // Raleigh 11 format
@@ -79,7 +85,7 @@ namespace LinBox {
 	} // SparseFileFormat
 }
 
-#endif
+#endif // __LINBOX_matrix_sparse_formats_H
 
 // Local Variables:
 // mode: C++

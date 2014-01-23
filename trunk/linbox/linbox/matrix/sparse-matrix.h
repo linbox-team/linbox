@@ -53,13 +53,6 @@ namespace LinBox {
 	template<class _Field, class _Storage = SparseMatrixFormat::CSR >
 	class SparseMatrix2 ;
 
-	template <class _Field,
-		 class _Row   = typename RawVector<typename _Field::Element>::Sparse,
-		 class Trait  = typename VectorTraits<_Row>::VectorCategory>
-		 class SparseMatrix;
-
-
-
 
 	template <class _Field, class _Storage>
 	std::istream &operator >> (std::istream &is, SparseMatrix2<_Field, _Storage> &A)
@@ -81,6 +74,8 @@ namespace LinBox {
 
 } // LinBox
 
+#include "SparseMatrix/sparse-generic.h"
+
 #include "SparseMatrix/sparse-coo-matrix.h"
 // #include "SparseMatrix/sparse-coo-1-matrix.h"
 #include "SparseMatrix/sparse-csr-matrix.h"
@@ -98,7 +93,6 @@ namespace LinBox {
 #include "SparseMatrix/sparse-tpl-matrix-omp.h"
 #endif
 
-#include "SparseMatrix/sparse-generic.h"
 
 #endif // __LINBOX_matrix_sparse_matrix_H
 

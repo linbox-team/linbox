@@ -382,7 +382,7 @@ namespace LinBox
 		 */
 		constElement &getEntry(const size_t &i, const size_t &j) const
 		{
-			std::cout << "called" << std::endl;
+			std::cout << "called 1" << std::endl;
 #if 0
 			// std::cout << "get entry : " << i << ',' << j << std::endl;
 			linbox_check(i<_rownb);
@@ -425,8 +425,6 @@ namespace LinBox
 		 */
 		void setEntry(const size_t &i, const size_t &j, const Element& e)
 		{
-			std::cout << "called" << std::endl;
-#if 0
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
 
@@ -436,27 +434,32 @@ namespace LinBox
 			typedef typename std::vector<size_t>::iterator myIterator ;
 			std::pair<myIterator,myIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
 			size_t ibeg = bounds.first-_rowid.begin();
-			size_t iend = (bounds.second-_rowid.begin())-ibeg;
-			if (!iend) {
+			size_t iend = bounds.second-_rowid.begin();
+			if (ibeg == iend) {
+				// std::cout << "# insert " << i << ',' << j << ':' << e << std::endl;
 				_rowid.insert(_rowid.begin()+ibeg,i);
 				_colid.insert(_colid.begin()+ibeg,j);
 				_data.insert( _data.begin() +ibeg,e);
+				++_nbnz;
 				return ;
 			}
 			myIterator beg = _colid.begin()+(ptrdiff_t)ibeg ;
-			myIterator low = std::lower_bound (beg, beg+(ptrdiff_t)iend, j);
-			ibeg = low-_colid.begin();
-			if (low == beg+(ptrdiff_t)iend) {
-				_rowid.insert(_rowid.begin()+(ptrdiff_t)ibeg,i);
+			myIterator end = _colid.begin()+(ptrdiff_t)iend ;
+			myIterator low = std::lower_bound (beg, end, j);
+			ibeg = (size_t)(low-_colid.begin());
+			if ( low == end || j != _colid[ibeg] ) {
+				// std::cout << "# 2 insert " << i << ',' << j << ':' << e << std::endl;
+				_rowid.insert(_rowid.begin() +(ptrdiff_t)ibeg,i);
 				_colid.insert(_colid.begin() +(ptrdiff_t)ibeg,j);
-				_data.insert( _data. begin() +(ptrdiff_t)ibeg,e);
+				_data.insert (_data. begin() +(ptrdiff_t)ibeg,e);
+				++_nbnz;
 				return ;
 			}
 			else {
+				// std::cout << "# replace " << i << ',' << j << ':' << e << std::endl;
 				_data[ibeg] = e ;
 				return ;
 			}
-#endif
 		}
 
 		/// make matrix ready to use after a sequence of setEntry calls.
@@ -507,12 +510,6 @@ namespace LinBox
 		 * @param os Output stream to which to write the matrix
 		 * @param format Format with which to write
 		 */
-		template<class Format>
-		std::ostream & write(std::ostream &os,
-				     Format = SparseFileFormat::CSR()) const
-		{
-			return this->writeSpecialized(os,Format());
-		}
 
 		std::ostream & write(std::ostream &os,
 				     enum LINBOX_enum(Tag::FileFormat) ff  = Tag::FileFormat::Maple) const
@@ -521,16 +518,32 @@ namespace LinBox
 		}
 
 
-		/** Read a matrix from the given input stream using field read/write
-		 * @param file Input stream from which to read the matrix
-		 * @param format Format of input matrix
-		 * @return ref to \p file.
-		 */
-		template<class Format>
-		std::istream& read (std::istream &file,
-				    Format = SparseFileFormat::CSR())
+		// /** Read a matrix from the given input stream using field read/write
+		 // * @param file Input stream from which to read the matrix
+		 // * @param format Format of input matrix
+		 // * @return ref to \p file.
+		 // */
+		// std::istream& read (std::istream &file,
+				    // LINBOX_enum(Tag::FileFormat) format)
+		// {
+			// return readSpecialized(file,format);
+		// }
+
+		/// Read from matrix market format
+		std::istream &read (std::istream &is)
 		{
-			return readSpecialized(file,Format());
+			MatrixStream<Field> ms(field(), is);
+			if( !ms.getDimensions( this->_rownb, this->_colnb ) )
+				throw ms.reportError(__func__,__LINE__);
+			// this->_matA.resize( this->_m );
+			Element val;
+			size_t i, j;
+			while( ms.nextTriple(i,j,val) ) {
+				setEntry(i,j,val);
+			}
+			if( ms.getError() > END_OF_MATRIX )
+				throw ms.reportError(__func__,__LINE__);
+			return is;
 		}
 
 		/*! @internal
@@ -548,20 +561,22 @@ namespace LinBox
 
 			std::pair<myIterator,myIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
 			size_t ibeg = bounds.first-_rowid.begin();
-			size_t iend = (bounds.second-_rowid.begin())-ibeg;
-			if (!iend)
+			size_t iend = (bounds.second-_rowid.begin());
+			if (ibeg == iend)
 				return ;
 
-			myIterator beg = _colid.begin()+ibeg ;
-			myIterator low = std::lower_bound (beg, beg+(ptrdiff_t)iend, j);
-			if (low == beg+(ptrdiff_t)iend)
+			myIterator beg = _colid.begin()+(ptrdiff_t)ibeg ;
+			myIterator end = _colid.begin()+(ptrdiff_t)iend ;
+			myIterator low = std::lower_bound (beg, end, j);
+			if (low == end)
 				return ;
 			else {
 				// not sure
 				size_t la = low-_colid.begin() ;
-				_rowid.erase(_rowid.begin()+la);
-				_colid.erase(_colid.begin()+la);
-				_data. erase(_data. begin()+la);
+				_rowid.erase(_rowid.begin()+(ptrdiff_t)la);
+				_colid.erase(_colid.begin()+(ptrdiff_t)la);
+				_data. erase(_data. begin()+(ptrdiff_t)la);
+				--_nbnz;
 				return  ;
 			}
 		}
@@ -630,7 +645,7 @@ namespace LinBox
 		template<class Vector>
 		Vector& applyTranspose(Vector &y, const Vector& x ) const
 		{
-			return apply(y,x,field().zero);
+			return applyTranspose(y,x,field().zero);
 		}
 
 

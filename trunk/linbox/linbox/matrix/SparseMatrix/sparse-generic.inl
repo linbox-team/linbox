@@ -59,7 +59,6 @@ namespace LinBox
 
 	template <class Field, class Row, class Trait>
 	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readTurner (SparseMatrix<Field, Row> &A, std::istream &is
-										   // , const Field &F
 										   , char *buf)
 	{
 		size_t i, j;
@@ -84,7 +83,6 @@ namespace LinBox
 
 	template <class Field, class Row, class Trait>
 	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readGuillaume (SparseMatrix<Field, Row> &A, std::istream &is
-										      // , const Field &F
 										      , char *buf)
 	{
 		size_t i = 0, j = 0 ;
@@ -111,7 +109,6 @@ namespace LinBox
 
 	template <class Field, class Row, class Trait>
 	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readMatlab (SparseMatrix<Field, Row> &A, std::istream &is
-										   // , const Field &F
 										   , char *buf)
 	{
 		size_t i = 0, j = 0;
@@ -142,7 +139,6 @@ namespace LinBox
 
 	template <class Field, class Row, class Trait>
 	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readPretty (SparseMatrix<Field, Row> &A, std::istream &is
-										   // , const Field &F
 										   , char *buf)
 	{
 		size_t i;
@@ -191,7 +187,6 @@ namespace LinBox
 
 	template <class Field, class Row, class Trait>
 	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readMagmaCpt (SparseMatrix<Field, Row> &A, std::istream &is
-										     // , const Field &F
 										     , char *buf)
 	{
 		size_t i, j;
@@ -238,7 +233,6 @@ namespace LinBox
 
 	template <class Field, class Row, class Trait>
 	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::read (SparseMatrix<Field, Row> &A, std::istream &is
-									     // , const Field &F
 									     , LINBOX_enum(Tag::FileFormat) format)
 	{
 		char buf[80];
@@ -289,7 +283,6 @@ namespace LinBox
 
 	template <class Field, class Row, class Trait>
 	std::ostream &SparseMatrixWriteHelper<Field, Row, Trait> ::write (const SparseMatrix<Field, Row> &A, std::ostream &os
-									  // , const Field &F
 									  , LINBOX_enum(Tag::FileFormat) format)
 	{
 		typename SparseMatrix<Field, Row>::Rep::const_iterator i;
