@@ -636,6 +636,40 @@ namespace LinBox
 
 #include "linbox/matrix/SparseMatrix/sparse-parallel-vector.inl"
 
+namespace LinBox
+{
+
+	template <class _Field /*, class _Row */  >
+	class SparseMatrix2<_Field, SparseMatrixFormat::SparsePar/* <_Row> */ > : public SparseMatrix<_Field,/*  _Row */ typename Vector<_Field>::SparsePar,VectorCategories::SparseParallelVectorTag>
+	{
+	public:
+		typedef VectorCategories::SparseParallelVectorTag  myTrait ;
+		typedef _Field                                       Field ; //!< Field
+		typedef typename _Field::Element                   Element ; //!< Element
+		typedef const Element                         constElement ; //!< const Element
+		typedef typename Vector<_Field>::SparsePar             Rep ;
+		typedef SparseMatrixFormat::SparsePar              Storage ; //!< Matrix Storage Format
+		typedef SparseMatrix2<_Field,Storage>               Self_t ; //!< Self type
+		typedef SparseMatrix<_Field,Rep,myTrait >         Father_t ;
+
+	public:
+		template<class VectStream>
+		SparseMatrix2 (const Field &F, VectStream &stream) :
+			Father_t(F,stream)
+		{}
+
+		SparseMatrix2(Field & F, size_t m, size_t n) :
+			Father_t(F, m, n)
+		{}
+
+		SparseMatrix2(const Field & F) :
+			Father_t(F)
+		{}
+
+
+	} ; // SparseMatrix2
+} // namespace LinBox
+
 #endif // __LINBOX_matrix_sparse_parallel_H
 
 

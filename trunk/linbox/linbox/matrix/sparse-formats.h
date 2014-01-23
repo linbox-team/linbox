@@ -71,9 +71,9 @@ namespace LinBox {
 		// template<class Row_t>
 		class SparseSequence    /* CoP  */ : public ANY {} ;//!< vector/list of pairs (Container of Pairs). SparseSequence.
 		// template<class Row_t>
-		class SparseAssociative /* CoM  */ : public ANY {} ;//!< vector/list of pairs (Container of Maps). SparseAssociative.
+		class SparsePar /* CoM  */ : public ANY {} ;//!< vector/list of pairs (Container of Maps). SparseAssociative.
 		// template<class Row_t>
-		class SparseParallel    /* PoC  */ : public ANY {} ;//!< pair of vector/list (Pair of Containers). SparseParallel.
+		class SparseMap    /* PoC  */ : public ANY {} ;//!< pair of vector/list (Pair of Containers). SparseParallel.
 
 	} // SparseMatrixFormat
 
