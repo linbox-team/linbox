@@ -666,6 +666,9 @@ namespace LinBox
 			Father_t(F)
 		{}
 
+		SparseMatrix2 ( MatrixStream<Field>& ms ) :
+			Father_t(ms)
+		{}
 
 	} ; // SparseMatrix2
 } // namespace LinBox
