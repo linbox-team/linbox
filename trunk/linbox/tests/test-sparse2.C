@@ -236,7 +236,7 @@ int main (int argc, char **argv)
 
 	{ /*  Default OLD */
 		commentator().start("SparseMatrix<Field>", "Field");
-		SparseMatrix<Field> S1(F, m, n);
+		Protected::SparseMatrix<Field> S1(F, m, n);
 		buildBySetEntry(S1, N);
 		if ( testBlackbox(S1,true) )
 			commentator().stop("SparseMatrix<Field> pass");

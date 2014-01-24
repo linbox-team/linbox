@@ -59,8 +59,7 @@
 #ifndef __LINBOX_matrix_sparse_parallel_H
 #define __LINBOX_matrix_sparse_parallel_H
 
-namespace LinBox
-{
+namespace LinBox { namespace Protected {
 
 
 	// Specialization of the above for sparse parallel vectors
@@ -633,6 +632,7 @@ namespace LinBox
 	};
 
 } // namespace LinBox
+} // namespace Protected
 
 #include "linbox/matrix/SparseMatrix/sparse-parallel-vector.inl"
 
@@ -640,7 +640,7 @@ namespace LinBox
 {
 
 	template <class _Field /*, class _Row */  >
-	class SparseMatrix2<_Field, SparseMatrixFormat::SparsePar/* <_Row> */ > : public SparseMatrix<_Field,/*  _Row */ typename Vector<_Field>::SparsePar,VectorCategories::SparseParallelVectorTag>
+	class SparseMatrix2<_Field, SparseMatrixFormat::SparsePar/* <_Row> */ > : public Protected::SparseMatrix<_Field,/*  _Row */ typename Vector<_Field>::SparsePar,VectorCategories::SparseParallelVectorTag>
 	{
 	public:
 		typedef VectorCategories::SparseParallelVectorTag  myTrait ;
@@ -650,7 +650,7 @@ namespace LinBox
 		typedef typename Vector<_Field>::SparsePar             Row ;
 		typedef SparseMatrixFormat::SparsePar              Storage ; //!< Matrix Storage Format
 		typedef SparseMatrix2<_Field,Storage>               Self_t ; //!< Self type
-		typedef SparseMatrix<_Field,Row,myTrait >         Father_t ;
+		typedef Protected::SparseMatrix<_Field,Row,myTrait >         Father_t ;
 
 	public:
 		template<class VectStream>

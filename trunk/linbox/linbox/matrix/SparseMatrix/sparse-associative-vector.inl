@@ -40,8 +40,7 @@
 #ifndef __LINBOX_matrix_sparse_associative_INL
 #define __LINBOX_matrix_sparse_associative_INL
 
-namespace LinBox
-{
+namespace LinBox { namespace Protected {
 
 	template <class Field, class Row>
 	SparseMatrix<Field,Row,VectorCategories::SparseAssociativeVectorTag> ::SparseMatrix( MatrixStream<Field>& ms ) :
@@ -124,6 +123,7 @@ namespace LinBox
 	}
 
 
+} // namespace Protected
 } // namespace LinBox
 
 #endif // __LINBOX_matrix_sparse_INL

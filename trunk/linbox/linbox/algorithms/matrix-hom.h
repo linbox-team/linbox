@@ -89,6 +89,27 @@ namespace LinBox
 	namespace MatrixHom
 	{
 
+		template<class Field, class Vect>
+		struct SparseVectorTranslate {
+			typedef Vect other_t;
+		};
+
+		template<class Field>
+		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparseSeq> {
+			typedef typename Vector<Field>::SparseSeq other_t;
+		};
+
+		template<class Field>
+		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparsePar> {
+			typedef typename Vector<Field>::SparsePar other_t;
+		};
+		template<class Field>
+		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparseMap> {
+			typedef typename Vector<Field>::SparseMap other_t;
+		};
+
+
+
 		//public:
 
 		template<class FMatrix, class IMatrix>
@@ -105,7 +126,9 @@ namespace LinBox
 		template<class Ring, class Vect1, class Field, class Vect2>
 		void map (SparseMatrix2<Field, Vect2>& Ap, const SparseMatrix2<Ring, Vect1>& A)
 		{
-			typename SparseMatrix2<Ring,Vect1>::template rebind<Field,Vect2>()( Ap, A);
+			// typedef typename SparseVectorTranslate<Field,Vect1>::other_t Vect_1 ;
+			typedef typename SparseVectorTranslate<Field,Vect2>::other_t Vect_2 ;
+			typename SparseMatrix2<Ring,Vect1>::template rebind<Field,Vect_2>()( Ap, A);
 		}
 
 

@@ -80,11 +80,12 @@
 #include "linbox/matrix/matrix-traits.h"
 #include "linbox/field/hom.h"
 
-namespace LinBox
-{
+namespace LinBox {
 	template<class Field>
 	class MatrixDomain ;
+} // Linbox
 
+namespace LinBox { namespace Protected {
 	// Forward declaration
 	template <class _Field,
 		 class _Row   = typename RawVector<typename _Field::Element>::Sparse,
@@ -503,6 +504,7 @@ namespace LinBox
 	};
 
 } // LinBox
+} // namespace Protected
 
 #include "linbox/matrix/SparseMatrix/sparse-sequence-vector.h"
 #include "linbox/matrix/SparseMatrix/sparse-parallel-vector.h"
@@ -513,45 +515,45 @@ namespace LinBox
 namespace LinBox {
 
 	template <class Field, class Row>
-	std::ostream &operator << (std::ostream &os, const SparseMatrix<Field, Row> &A)
+	std::ostream &operator << (std::ostream &os, const Protected::SparseMatrix<Field, Row> &A)
 	{
 		return A.write (os);
 	}
 
 	template <class Field, class Row>
-	std::istream &operator >> (std::istream &is, SparseMatrix<Field, Row> &A)
+	std::istream &operator >> (std::istream &is, Protected::SparseMatrix<Field, Row> &A)
 	{
 		return A.read (is);
 	}
 
 	template <class Field, class Row, class Trait>
-	struct MatrixTraits< SparseMatrix<Field, Row, Trait> >
+	struct MatrixTraits< Protected::SparseMatrix<Field, Row, Trait> >
 	{
-		typedef SparseMatrix<Field, Row, Trait> MatrixType;
+		typedef Protected::SparseMatrix<Field, Row, Trait> MatrixType;
 		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	};
 
 	template <class Field, class Row, class Trait>
-	struct MatrixTraits< const SparseMatrix<Field, Row, Trait> >
+	struct MatrixTraits< const Protected::SparseMatrix<Field, Row, Trait> >
 	{
-		typedef const SparseMatrix<Field, Row, Trait> MatrixType;
+		typedef const Protected::SparseMatrix<Field, Row, Trait> MatrixType;
 		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	};
 
 	template<class A, class B, class C>
-	struct GetEntryCategory<SparseMatrix<A,B,C> > {
+	struct GetEntryCategory<Protected::SparseMatrix<A,B,C> > {
 		typedef SolutionTags::Local Tag;
 	} ;
 
 	template <class Field, class _Row>
-	struct MatrixTraits< SparseMatrix<Field, _Row> >
+	struct MatrixTraits< Protected::SparseMatrix<Field, _Row> >
 	{
-		typedef SparseMatrix<Field, _Row> MatrixType;
+		typedef Protected::SparseMatrix<Field, _Row> MatrixType;
 		typedef MatrixCategories::RowMatrixTag MatrixCategory;
 	};
 
 	template<class A, class B>
-	struct GetEntryCategory<SparseMatrix<A,B> >
+	struct GetEntryCategory<Protected::SparseMatrix<A,B> >
 	{
 		typedef SolutionTags::Local Tag;
 	};

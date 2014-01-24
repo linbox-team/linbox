@@ -60,8 +60,7 @@
 #define __LINBOX_matrix_sparse_sequence_H
 
 
-namespace LinBox
-{
+namespace LinBox { namespace Protected {
 
 
 	/* Specialization for sparse sequence vectors */
@@ -624,6 +623,7 @@ namespace LinBox
 	};
 
 } // namespace LinBox
+} // namespace Protected
 
 
 
@@ -633,7 +633,7 @@ namespace LinBox
 {
 
 	template <class _Field /*, class _Row */  >
-	class SparseMatrix2<_Field, SparseMatrixFormat::SparseSeq/* <_Row> */ > : public SparseMatrix<_Field,/*  _Row */ typename Vector<_Field>::SparseSeq ,VectorCategories::SparseSequenceVectorTag>
+	class SparseMatrix2<_Field, SparseMatrixFormat::SparseSeq/* <_Row> */ > : public Protected::SparseMatrix<_Field,/*  _Row */ typename Vector<_Field>::SparseSeq ,VectorCategories::SparseSequenceVectorTag>
 	{
 	public:
 		typedef VectorCategories::SparseSequenceVectorTag  myTrait ;
@@ -643,7 +643,7 @@ namespace LinBox
 		typedef typename Vector<_Field>::SparseSeq             Row ;
 		typedef SparseMatrixFormat::SparseSeq              Storage ; //!< Matrix Storage Format
 		typedef SparseMatrix2<_Field,Storage>               Self_t ; //!< Self type
-		typedef SparseMatrix<_Field,Row,myTrait >         Father_t ;
+		typedef Protected::SparseMatrix<_Field,Row,myTrait >         Father_t ;
 
 	public:
 		template<class VectStream>
@@ -664,6 +664,7 @@ namespace LinBox
 		{}
 
 
+		using Father_t::rebind;
 	} ; // SparseMatrix2
 
 	template <class Field>

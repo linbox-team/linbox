@@ -60,8 +60,7 @@
 #define __LINBOX_matrix_sparse_associative_H
 
 
-namespace LinBox
-{
+namespace LinBox { namespace Protected {
 
 	/* Specialization for sparse associative vectors */
 	template <class _Field, class _Row>
@@ -583,6 +582,7 @@ namespace LinBox
 		// template<class F, class R, class T> friend class SparseMatrix;
 	};
 
+} // namespace Protected
 } // namespace LinBox
 
 #include "linbox/matrix/SparseMatrix/sparse-associative-vector.inl"
@@ -591,7 +591,7 @@ namespace LinBox
 {
 
 	template <class _Field /*, class _Row */  >
-	class SparseMatrix2<_Field, SparseMatrixFormat::SparseMap/* <_Row> */ > : public SparseMatrix<_Field,/*  _Row */ typename Vector<_Field>::SparseMap,VectorCategories::SparseAssociativeVectorTag>
+	class SparseMatrix2<_Field, SparseMatrixFormat::SparseMap/* <_Row> */ > : public Protected::SparseMatrix<_Field,/*  _Row */ typename Vector<_Field>::SparseMap,VectorCategories::SparseAssociativeVectorTag>
 	{
 	public:
 		typedef VectorCategories::SparseAssociativeVectorTag  myTrait ;
@@ -601,7 +601,7 @@ namespace LinBox
 		typedef typename Vector<_Field>::SparseMap             Row ;
 		typedef SparseMatrixFormat::SparseMap              Storage ; //!< Matrix Storage Format
 		typedef SparseMatrix2<_Field,Storage>               Self_t ; //!< Self type
-		typedef SparseMatrix<_Field,Row,myTrait >         Father_t ;
+		typedef Protected::SparseMatrix<_Field,Row,myTrait >         Father_t ;
 
 	public:
 		template<class VectStream>

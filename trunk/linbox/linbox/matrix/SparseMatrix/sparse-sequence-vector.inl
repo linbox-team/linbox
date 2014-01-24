@@ -40,8 +40,7 @@
 #ifndef __LINBOX_matrix_sparse_sequence_INL
 #define __LINBOX_matrix_sparse_sequence_INL
 
-namespace LinBox
-{
+namespace LinBox { namespace Protected {
 
 	template <class Field, class Row>
 	SparseMatrix<Field,Row,VectorCategories::SparseSequenceVectorTag> ::SparseMatrix( MatrixStream<Field>& ms ) :
@@ -166,6 +165,7 @@ namespace LinBox
 
 
 } // namespace LinBox
+} // namespace Protected
 
 #endif // __LINBOX_matrix_sparse_sequence_INL
 

@@ -40,8 +40,7 @@
 #ifndef __LINBOX_matrix_sparse_parallel_INL
 #define __LINBOX_matrix_sparse_parallel_INL
 
-namespace LinBox
-{
+namespace LinBox { namespace Protected {
 
 	template <class Field, class Row>
 	std::ostream &SparseMatrixWriteHelper<Field, Row, VectorCategories::SparseParallelVectorTag >::write (const SparseMatrix<Field, Row> &A, std::ostream &os
@@ -354,6 +353,7 @@ namespace LinBox
 
 
 } // namespace LinBox
+} // namespace Protected
 
 #endif // __LINBOX_matrix_sparse_parallel_INL
 
