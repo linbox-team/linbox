@@ -74,7 +74,6 @@ void buildBySetEntry(SM & A, size_t nnz)
 	// std::cout << ';' << std::endl;
 }
 
-// this test should make sure the same matrices are read by each buildBySetEntry (like SMD.areEqual(some_ref,some_test), possibly implemented by applying to random vectors.
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -103,24 +102,24 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	commentator().start("Sparse matrix black box test suite", "Sparse");
+	MatrixDomain<Field> MD ;
 
-	{ /*  default */
-		commentator().start("SparseMatrix<Field>", "Field");
-		SparseMatrix<Field> S1a(F, m, n);
-		buildBySetEntry(S1a, N);
-		if ( testBlackbox(S1a,false) )
-			commentator().stop("SparseMatrix<Field> pass");
-		else {
-			commentator().stop("SparseMatrix<Field> FAIL");
-			pass = false;
-		}
+	 /*  default */
+	commentator().start("SparseMatrix<Field>", "Field");
+	SparseMatrix<Field> S1(F, m, n);
+	buildBySetEntry(S1, N);
+	if ( testBlackbox(S1,false))
+		commentator().stop("SparseMatrix<Field> pass");
+	else {
+		commentator().stop("SparseMatrix<Field> FAIL");
+		pass = false;
 	}
 
 	{ /*  COO */
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::COO>", "COO");
 		SparseMatrix<Field, SparseMatrixFormat::COO> S2(F, m, n);
 		buildBySetEntry(S2, N);
-		if ( testBlackbox(S2,false) )
+		if ( testBlackbox(S2,false)  && MD.areEqual(S1,S2) )
 			commentator().stop("Format COO pass");
 		else {
 			commentator().stop("Format COO FAIL");
@@ -132,7 +131,7 @@ int main (int argc, char **argv)
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::CSR>", "CSR");
 		SparseMatrix<Field, SparseMatrixFormat::CSR> S3(F, m, n);
 		buildBySetEntry(S3, N);
-		if ( testBlackbox(S3,false) )
+		if ( testBlackbox(S3,false)  && MD.areEqual(S1,S3))
 			commentator().stop("Format CSR pass");
 		else {
 			commentator().stop("Format CSR FAIL");
@@ -145,7 +144,7 @@ int main (int argc, char **argv)
 		commentator().report() << "SparseMatrix<Field, SparseMatrixFormat::ELL>" << std::endl;
 		SparseMatrix<Field, SparseMatrixFormat::ELL> S4(F, m, n);
 		buildBySetEntry(S4, N);
-		if ( testBlackbox(S4,false) )
+		if ( testBlackbox(S4,false)  && MD.areEqual(S1,S4))
 			commentator().stop("Format ELL pass");
 		else {
 			commentator().stop("Format ELL FAIL");
@@ -157,7 +156,7 @@ int main (int argc, char **argv)
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::ELL_R>", "ELL_R");
 		SparseMatrix<Field, SparseMatrixFormat::ELL_R> S5(F, m, n);
 		buildBySetEntry(S5, N);
-		if ( testBlackbox(S5,false) )
+		if ( testBlackbox(S5,false)  && MD.areEqual(S1,S5))
 			commentator().stop("Format ELL_R pass");
 		else {
 			commentator().stop("Format ELL_R FAIL");
@@ -170,7 +169,7 @@ int main (int argc, char **argv)
 	SparseMatrix<Field, SparseMatrixFormat::HYB> S6(F, m, n);
 	buildBySetEntry(S6, N);
 	S6.optimise();
-	if ( testBlackbox(S6,false) )
+	if ( testBlackbox(S6,false)  && MD.areEqual(S1,S6))
 		commentator().stop("Format HYB pass");
 	else {
 		commentator().stop("Format HYB FAIL");
@@ -180,9 +179,9 @@ int main (int argc, char **argv)
 
 	{ /* Vector of row, row is Vector of index/value Pair */
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::SparseSeq>", "VVP");
-		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> Svvp(F, m, n);
-		buildBySetEntry(Svvp, N);
-		if ( testBlackbox(Svvp,true) )
+		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> S7(F, m, n);
+		buildBySetEntry(S7, N);
+		if ( testBlackbox(S7,true)  && MD.areEqual(S1,S7))
 			commentator().stop("Format VVP pass");
 		else {
 			commentator().stop("Format VVP FAIL");
@@ -193,9 +192,9 @@ int main (int argc, char **argv)
 	{ /*  SparsePar */
 		// Vector of row, row is Pair of Vectors, one of indices, one of values.
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::SparsePar>", "VPV");
-		SparseMatrix<Field, SparseMatrixFormat::SparsePar> Svpv(F, m, n);
-		buildBySetEntry(Svpv, N);
-		if ( testBlackbox(Svpv,true) )
+		SparseMatrix<Field, SparseMatrixFormat::SparsePar> S8(F, m, n);
+		buildBySetEntry(S8, N);
+		if ( testBlackbox(S8,true)  && MD.areEqual(S1,S8))
 			commentator().stop("Format VPV pass");
 		else {
 			commentator().stop("Format VPV FAIL");
@@ -206,9 +205,9 @@ int main (int argc, char **argv)
 	{ /*  SparseMap */
 		// Vector of row, row is Map, index to value.
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::SparseMap>", "VMap");
-		SparseMatrix<Field, SparseMatrixFormat::SparseMap> Svm(F, m, n);
-		buildBySetEntry(Svm, N);
-		if ( testBlackbox(Svm,true) )
+		SparseMatrix<Field, SparseMatrixFormat::SparseMap> S9(F, m, n);
+		buildBySetEntry(S9, N);
+		if ( testBlackbox(S9,true)  && MD.areEqual(S1,S9))
 			commentator().stop("Format VMap pass");
 		else {
 			commentator().stop("Format VMap FAIL");
@@ -219,9 +218,9 @@ int main (int argc, char **argv)
 
 	{ /* Vector of i,j,val triples */
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::TPL>", "TPL");
-		SparseMatrix<Field, SparseMatrixFormat::TPL> Striple(F, m, n);
-		buildBySetEntry(Striple, N);
-		if ( testBlackbox(Striple,true) )
+		SparseMatrix<Field, SparseMatrixFormat::TPL> S10(F, m, n);
+		buildBySetEntry(S10, N);
+		if ( testBlackbox(S10,true)  && MD.areEqual(S1,S10))
 			commentator().stop("Format TPL pass");
 		else {
 			commentator().stop("Format TPL FAIL");
@@ -236,9 +235,9 @@ int main (int argc, char **argv)
 
 	{ /*  Default OLD */
 		commentator().start("SparseMatrix<Field>", "Field");
-		Protected::SparseMatrixGeneric<Field> S1(F, m, n);
-		buildBySetEntry(S1, N);
-		if ( testBlackbox(S1,true) )
+		Protected::SparseMatrixGeneric<Field> S11(F, m, n);
+		buildBySetEntry(S11, N);
+		if ( testBlackbox(S1,true)  && MD.areEqual(S1,S11))
 			commentator().stop("SparseMatrix<Field> pass");
 		else {
 			commentator().stop("SparseMatrix<Field> FAIL");
