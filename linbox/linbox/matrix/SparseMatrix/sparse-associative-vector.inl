@@ -43,7 +43,7 @@
 namespace LinBox { namespace Protected {
 
 	template <class Field, class Row>
-	SparseMatrix<Field,Row,VectorCategories::SparseAssociativeVectorTag> ::SparseMatrix( MatrixStream<Field>& ms ) :
+	SparseMatrixGeneric<Field,Row,VectorCategories::SparseAssociativeVectorTag> ::SparseMatrixGeneric( MatrixStream<Field>& ms ) :
 		_field(ms.field()),
 		_MD(ms.field()),_AT(*this),
 		_matA(0), _m(0), _n(0)
@@ -70,7 +70,7 @@ namespace LinBox { namespace Protected {
 
 
 	template <class Field, class Row>
-	const typename Field::Element &SparseMatrix<Field, Row, VectorCategories::SparseAssociativeVectorTag > ::getEntry (size_t i, size_t j) const
+	const typename Field::Element &SparseMatrixGeneric<Field, Row, VectorCategories::SparseAssociativeVectorTag > ::getEntry (size_t i, size_t j) const
 	{
 
 		const Row &v = _matA[i];
@@ -91,7 +91,7 @@ namespace LinBox { namespace Protected {
 
 	template <class Field, class Row>
 	template <class Vector>
-	Vector &SparseMatrix<Field, Row, VectorCategories::SparseAssociativeVectorTag >::columnDensity (Vector &v) const
+	Vector &SparseMatrixGeneric<Field, Row, VectorCategories::SparseAssociativeVectorTag >::columnDensity (Vector &v) const
 	{
 		unsigned int row = 0;
 
@@ -107,8 +107,8 @@ namespace LinBox { namespace Protected {
 
 
 	template <class Field, class Row>
-	SparseMatrix<Field, Row, VectorCategories::SparseAssociativeVectorTag >
-	&SparseMatrix<Field, Row, VectorCategories::SparseAssociativeVectorTag >::transpose (SparseMatrix &AT) const
+	SparseMatrixGeneric<Field, Row, VectorCategories::SparseAssociativeVectorTag >
+	&SparseMatrixGeneric<Field, Row, VectorCategories::SparseAssociativeVectorTag >::transpose (SparseMatrixGeneric &AT) const
 	{
 		unsigned int row = 0;
 

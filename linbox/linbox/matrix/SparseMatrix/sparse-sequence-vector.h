@@ -26,8 +26,8 @@
  *
  * Refactoring:
  *   - Eliminated SparseMatrixAux and moved that functionality into Sparse0
- *   - Made SparseMatrix parameterized only on the element type
- *   - New read/write implementations for SparseMatrix, supporting multiple
+ *   - Made SparseMatrixGeneric parameterized only on the element type
+ *   - New read/write implementations for SparseMatrixGeneric, supporting multiple
  *     formats
  *   - Eliminated Gaussian elimination code
  *   - Added iterators, including ColOfRowsIterator, Iterator, and
@@ -65,7 +65,7 @@ namespace LinBox { namespace Protected {
 
 	/* Specialization for sparse sequence vectors */
 	template <class _Field, class _Row>
-	class SparseMatrix<_Field, _Row, VectorCategories::SparseSequenceVectorTag > {
+	class SparseMatrixGeneric<_Field, _Row, VectorCategories::SparseSequenceVectorTag > {
 	public:
 
 		typedef         _Field          Field;
@@ -75,7 +75,7 @@ namespace LinBox { namespace Protected {
 		typedef const Row           ConstRow;
 		typedef _SP_BB_VECTOR_<Row> Rep;
 		typedef VectorCategories::SparseSequenceVectorTag myTrait;
-		typedef SparseMatrix<_Field, _Row, myTrait> Self_t;
+		typedef SparseMatrixGeneric<_Field, _Row, myTrait> Self_t;
 
 #ifdef __LINBOX_PARALLEL
 		BB_list_list sub_list;
@@ -84,7 +84,7 @@ namespace LinBox { namespace Protected {
 
 		template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
 		struct rebind {
-			typedef SparseMatrix<_Tp1, _R1> other;
+			typedef SparseMatrixGeneric<_Tp1, _R1> other;
 
 			void operator() (other & Ap, const Self_t& A) {
 
@@ -106,51 +106,51 @@ namespace LinBox { namespace Protected {
 		};
 
 		template<typename _Tp1, typename _Rw1>
-		SparseMatrix (const SparseMatrix<_Tp1, _Rw1, myTrait> &Mat, const Field& F) :
+		SparseMatrixGeneric (const SparseMatrixGeneric<_Tp1, _Rw1, myTrait> &Mat, const Field& F) :
 			_field (F),
 			_MD (F), _AT (*this)
 			, _matA (Mat.rowdim()), _m (Mat.rowdim()), _n (Mat.coldim())
 		{
-			typename SparseMatrix<_Tp1,_Rw1, myTrait>::template rebind<Field,_Row>()(*this, Mat);
+			typename SparseMatrixGeneric<_Tp1,_Rw1, myTrait>::template rebind<Field,_Row>()(*this, Mat);
 		}
 
-		SparseMatrix (const Field & F, size_t m, size_t n) :
+		SparseMatrixGeneric (const Field & F, size_t m, size_t n) :
 			_field(F),
 			_MD(F),_AT(*this),
 			_matA (m), _m (m), _n (n)
 		{}
 
-		SparseMatrix (const Field & F) :
+		SparseMatrixGeneric (const Field & F) :
 			_field (F),
 			_MD(F),_AT(*this),
 			_matA(0), _m(0), _n(0)
 		{};
 
 
-		SparseMatrix (const SparseMatrix<Field, Row> &A) :
+		SparseMatrixGeneric (const SparseMatrixGeneric<Field, Row> &A) :
 			_field(A.field()),
 			_MD(A.field()),_AT(*this),
 			_matA (A._matA), _m (A._m), _n (A._n)
 		{}
 
 		template<class VectorType>
-		SparseMatrix (const SparseMatrix<Field, VectorType> &A) :
+		SparseMatrixGeneric (const SparseMatrixGeneric<Field, VectorType> &A) :
 			_field(A.field()),
 			_MD(A.field()),_AT(*this),
 			_matA(A.rowdim()), _m (A.rowdim()), _n (A.coldim())
 		{
 			typename Rep::iterator meit = this->_matA.begin();
-			typename SparseMatrix<Field, VectorType>::Rep::const_iterator copit = A.getRep().begin();
+			typename SparseMatrixGeneric<Field, VectorType>::Rep::const_iterator copit = A.getRep().begin();
 			for( ; meit != this->_matA.end(); ++meit, ++copit)
 				LinBox::RawVector<Element>::convert(*meit, *copit);
 		}
 
 		/** Constructor from a MatrixStream
 		*/
-		SparseMatrix ( MatrixStream<Field>& ms );
+		SparseMatrixGeneric ( MatrixStream<Field>& ms );
 
 		template<class VectStream>
-		SparseMatrix (const Field &F, VectStream &stream) :
+		SparseMatrixGeneric (const Field &F, VectStream &stream) :
 			_field (F), _MD (F), _AT (*this)
 			, _matA (stream.size()), _m (stream.size()), _n (stream.dim())
 		{
@@ -160,7 +160,7 @@ namespace LinBox { namespace Protected {
 				stream >> *i;
 		}
 
-		~SparseMatrix () {}
+		~SparseMatrixGeneric () {}
 
 		size_t rowdim () const
 		{
@@ -215,7 +215,7 @@ namespace LinBox { namespace Protected {
 		/// Write in matrix market format
 		std::ostream &write (std::ostream &os) const
 		{
-			writeMMCoordHeader(os, *this, this->size(), "SparseMatrix");
+			writeMMCoordHeader(os, *this, this->size(), "SparseMatrixGeneric");
 			return this->write(os, Tag::FileFormat::OneBased);
 		}
 
@@ -563,7 +563,7 @@ namespace LinBox { namespace Protected {
 		}
 
 		template <class Vector> Vector &columnDensity (Vector &v) const;
-		SparseMatrix &transpose (SparseMatrix &AT) const;
+		SparseMatrixGeneric &transpose (SparseMatrixGeneric &AT) const;
 
 		const Field & field() const
 		{
@@ -614,12 +614,12 @@ namespace LinBox { namespace Protected {
 		const Field & _field;
 
 		MatrixDomain<Field>       _MD; // Matrix domain for matrix operations
-		TransposeMatrix<SparseMatrix<_Field, _Row> > _AT;
+		TransposeMatrix<SparseMatrixGeneric<_Field, _Row> > _AT;
 		Rep               _matA;
 		size_t            _m;
 		size_t            _n;
 
-		// template<class F, class R, class T> friend class SparseMatrix;
+		// template<class F, class R, class T> friend class SparseMatrixGeneric;
 	};
 
 } // namespace LinBox
@@ -633,7 +633,7 @@ namespace LinBox
 {
 
 	template <class _Field /*, class _Row */  >
-	class SparseMatrix2<_Field, SparseMatrixFormat::SparseSeq/* <_Row> */ > : public Protected::SparseMatrix<_Field,/*  _Row */ typename Vector<_Field>::SparseSeq ,VectorCategories::SparseSequenceVectorTag>
+	class SparseMatrix2<_Field, SparseMatrixFormat::SparseSeq/* <_Row> */ > : public Protected::SparseMatrixGeneric<_Field,/*  _Row */ typename Vector<_Field>::SparseSeq ,VectorCategories::SparseSequenceVectorTag>
 	{
 	public:
 		typedef VectorCategories::SparseSequenceVectorTag  myTrait ;
@@ -643,7 +643,7 @@ namespace LinBox
 		typedef typename Vector<_Field>::SparseSeq             Row ;
 		typedef SparseMatrixFormat::SparseSeq              Storage ; //!< Matrix Storage Format
 		typedef SparseMatrix2<_Field,Storage>               Self_t ; //!< Self type
-		typedef Protected::SparseMatrix<_Field,Row,myTrait >         Father_t ;
+		typedef Protected::SparseMatrixGeneric<_Field,Row,myTrait >         Father_t ;
 
 	public:
 		template<class VectStream>

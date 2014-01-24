@@ -43,8 +43,10 @@ namespace LinBox
 	template<class _Field, class _Storage>
 	class SparseMatrix2 ;
 
-	template<class _Field, class _Row, class _Traits>
-	class SparseMatrix ;
+	// namespace Protected {
+	// template<class _Field, class _Row, class _Traits>
+	// class SparseMatrixGeneric ;
+	// }
 
 
 	struct MatrixContainerCategory {
@@ -85,12 +87,12 @@ namespace LinBox
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 
-	template <class Field, class _Row, class _Traits>
-	class MatrixContainerTrait<SparseMatrix<Field,_Row,_Traits> > {
-	public:
-		typedef MatrixContainerCategory::Container Type;
+	// template <class Field, class _Row, class _Traits>
+	// class MatrixContainerTrait<Protected::SparseMatrixGeneric<Field,_Row,_Traits> > {
+	// public:
+		// typedef MatrixContainerCategory::Container Type;
 		// typedef MatrixContainerCategory::Blackbox Type;
-	};
+	// };
 
 	template <class Field, class Storage>
 	class MatrixContainerTrait<SparseMatrix2<Field,Storage> > {

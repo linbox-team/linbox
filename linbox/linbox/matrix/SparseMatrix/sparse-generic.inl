@@ -57,7 +57,7 @@
 namespace LinBox { namespace Protected {
 
 	template <class Field, class Row, class Trait>
-	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readTurner (SparseMatrix<Field, Row> &A, std::istream &is
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readTurner (SparseMatrixGeneric<Field, Row> &A, std::istream &is
 										   , char *buf)
 	{
 		size_t i, j;
@@ -81,7 +81,7 @@ namespace LinBox { namespace Protected {
 	}
 
 	template <class Field, class Row, class Trait>
-	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readGuillaume (SparseMatrix<Field, Row> &A, std::istream &is
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readGuillaume (SparseMatrixGeneric<Field, Row> &A, std::istream &is
 										      , char *buf)
 	{
 		size_t i = 0, j = 0 ;
@@ -107,7 +107,7 @@ namespace LinBox { namespace Protected {
 	}
 
 	template <class Field, class Row, class Trait>
-	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readMatlab (SparseMatrix<Field, Row> &A, std::istream &is
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readMatlab (SparseMatrixGeneric<Field, Row> &A, std::istream &is
 										   , char *buf)
 	{
 		size_t i = 0, j = 0;
@@ -137,7 +137,7 @@ namespace LinBox { namespace Protected {
 	}
 
 	template <class Field, class Row, class Trait>
-	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readPretty (SparseMatrix<Field, Row> &A, std::istream &is
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readPretty (SparseMatrixGeneric<Field, Row> &A, std::istream &is
 										   , char *buf)
 	{
 		size_t i;
@@ -185,7 +185,7 @@ namespace LinBox { namespace Protected {
 	}
 
 	template <class Field, class Row, class Trait>
-	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readMagmaCpt (SparseMatrix<Field, Row> &A, std::istream &is
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readMagmaCpt (SparseMatrixGeneric<Field, Row> &A, std::istream &is
 										     , char *buf)
 	{
 		size_t i, j;
@@ -231,7 +231,7 @@ namespace LinBox { namespace Protected {
 	}
 
 	template <class Field, class Row, class Trait>
-	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::read (SparseMatrix<Field, Row> &A, std::istream &is
+	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::read (SparseMatrixGeneric<Field, Row> &A, std::istream &is
 									     , LINBOX_enum(Tag::FileFormat) format)
 	{
 		char buf[80];
@@ -281,10 +281,10 @@ namespace LinBox { namespace Protected {
 	}
 
 	template <class Field, class Row, class Trait>
-	std::ostream &SparseMatrixWriteHelper<Field, Row, Trait> ::write (const SparseMatrix<Field, Row> &A, std::ostream &os
+	std::ostream &SparseMatrixWriteHelper<Field, Row, Trait> ::write (const SparseMatrixGeneric<Field, Row> &A, std::ostream &os
 									  , LINBOX_enum(Tag::FileFormat) format)
 	{
-		typename SparseMatrix<Field, Row>::Rep::const_iterator i;
+		typename SparseMatrixGeneric<Field, Row>::Rep::const_iterator i;
 		typename Row::const_iterator j;
 		size_t i_idx, j_idx;
 		//	int col_width;
@@ -440,7 +440,7 @@ namespace LinBox { namespace Protected {
 
 
 	template <class Field, class Row, class Tag>
-	SparseMatrix<Field,Row,Tag> ::SparseMatrix( MatrixStream<Field>& ms ) :
+	SparseMatrixGeneric<Field,Row,Tag> ::SparseMatrixGeneric( MatrixStream<Field>& ms ) :
 		_matA(0), _m(0), _n(0)
 	{
 		Element val;
@@ -467,12 +467,12 @@ namespace LinBox { namespace Protected {
 
 #if 0 /*  weird */
 	template <class Field,  class _Row, class BRow>
-	SparseMatrix<Field,_Row> *SparseMatrixFactory<Field, _Row, BRow>::makeBlackbox (const Field &F)
+	SparseMatrixGeneric<Field,_Row> *SparseMatrixFactory<Field, _Row, BRow>::makeBlackbox (const Field &F)
 	{
-		SparseMatrix<Field, _Row> *A = new SparseMatrix<Field, _Row> (F, rowdim (), coldim ());
+		SparseMatrixGeneric<Field, _Row> *A = new SparseMatrixGeneric<Field, _Row> (F, rowdim (), coldim ());
 
-		typename SparseMatrix<Field, BRow>::ConstIterator i;
-		typename SparseMatrix<Field, BRow>::ConstIndexedIterator j;
+		typename SparseMatrixGeneric<Field, BRow>::ConstIterator i;
+		typename SparseMatrixGeneric<Field, BRow>::ConstIndexedIterator j;
 
 		for (i = _matA.Begin (), j = _matA.IndexedBegin (); i != _matA.End (); ++i, ++j)
 			A.field().init (A->refEntry (j.rowIndex (), j.colIndex ()), *i);
