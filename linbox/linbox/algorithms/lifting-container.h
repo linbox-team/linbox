@@ -1476,7 +1476,7 @@ namespace LinBox
 					  unsigned long   rank,
 					  const VectorIn&    b,
 					  const Prime_Type&  p) :
-			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), LL(L),QQ(Q),UU(U), PP(P), _rank(rank),
+			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), LL(L),UU(U),QQ(Q), PP(P), _rank(rank),
 			_field(&F), _res_p(F,b.size()), _digit_p(F,A.coldim()), _GD(F)
 		{
 			for (size_t i=0; i< _res_p.size(); ++i)

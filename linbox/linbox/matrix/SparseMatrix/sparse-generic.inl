@@ -54,8 +54,7 @@
 #include "linbox/vector/vector-domain.h"
 #include "linbox/util/debug.h"
 
-namespace LinBox
-{
+namespace LinBox { namespace Protected {
 
 	template <class Field, class Row, class Trait>
 	std::istream &SparseMatrixReadWriteHelper<Field, Row, Trait> ::readTurner (SparseMatrix<Field, Row> &A, std::istream &is
@@ -483,6 +482,7 @@ namespace LinBox
 #endif
 
 } // namespace LinBox
+} // namespace Protected
 
 #endif // __LINBOX_matrix_sparse_INL
 
