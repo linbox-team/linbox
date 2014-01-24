@@ -55,7 +55,7 @@ int main (int argc, char **argv)
 
 	PID_integer ZZ;
 	MatrixStream< PID_integer > ms( ZZ, input );
-	typedef SparseMatrix2<PID_integer>  Blackbox;
+	typedef SparseMatrix<PID_integer>  Blackbox;
 	Blackbox A (ms);
 	input.close();
 

@@ -356,7 +356,7 @@ namespace LinBox
 	private:
 
 		// Make an m x m lambda-sparse matrix, c.f. Mulders (2000)
-		SparseMatrix2<Field> *makeLambdaSparseMatrix (size_t m);
+		SparseMatrix<Field> *makeLambdaSparseMatrix (size_t m);
 
 		WiedemannTraits                      _traits;
 		const Field                         *_field;

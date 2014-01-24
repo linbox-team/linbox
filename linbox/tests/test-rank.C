@@ -70,15 +70,15 @@ using namespace LinBox;
 template <class Field>
 bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
-	 typedef SparseMatrix2<Field,SparseMatrixFormat::SparseSeq > Blackbox;
-	 // typedef SparseMatrix2<Field,SparseMatrixFormat::SparsePar > Blackbox;
-	 // typedef SparseMatrix2<Field,SparseMatrixFormat::SparseMap > Blackbox;
-	// typedef SparseMatrix2<Field,SparseMatrixFormat::COO> Blackbox;
-	// typedef SparseMatrix2<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
-	// typedef SparseMatrix2<Field,SparseMatrixFormat::ELL> Blackbox;
-	// typedef SparseMatrix2<Field,SparseMatrixFormat::ELL_R> Blackbox;
-	// typedef SparseMatrix2<Field,SparseMatrixFormat::HYB> Blackbox;
-	// typedef SparseMatrix2<Field,SparseMatrixFormat::TPL> Blackbox;
+	 typedef SparseMatrix<Field,SparseMatrixFormat::SparseSeq > Blackbox;
+	 // typedef SparseMatrix<Field,SparseMatrixFormat::SparsePar > Blackbox;
+	 // typedef SparseMatrix<Field,SparseMatrixFormat::SparseMap > Blackbox;
+	// typedef SparseMatrix<Field,SparseMatrixFormat::COO> Blackbox;
+	// typedef SparseMatrix<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
+	// typedef SparseMatrix<Field,SparseMatrixFormat::ELL> Blackbox;
+	// typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
+	// typedef SparseMatrix<Field,SparseMatrixFormat::HYB> Blackbox;
+	// typedef SparseMatrix<Field,SparseMatrixFormat::TPL> Blackbox;
 
 	commentator().start ("Testing elimination-based and blackbox rank", "testRankMethods", (unsigned int)iterations);
 
@@ -149,7 +149,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
 	typedef ZeroOne<GF2> Blackbox;
-	typedef SparseMatrix2<Modular<double>,Vector<Modular<double> >::SparseSeq> MdBlackbox;
+	typedef SparseMatrix<Modular<double>,Vector<Modular<double> >::SparseSeq> MdBlackbox;
 	Modular<double> MdF2(2);
 	GF2::Element one; Modular<double>::Element mdone;
 	F2.init(one,true);

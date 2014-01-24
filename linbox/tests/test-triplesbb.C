@@ -107,7 +107,7 @@ int main (int argc, char **argv)
 	for (size_t i = 0; i < n; ++i) F.init(x[i], i+1);
 
 	// TriplesBB<Field> A(F, m, n);
-	SparseMatrix2<Field,SparseMatrixFormat::TPL> A(F, m, n);
+	SparseMatrix<Field,SparseMatrixFormat::TPL> A(F, m, n);
 	randBuild(A, nnz);
 	pass = pass && testBlackbox(A);
 	// just see if it compiles
@@ -119,13 +119,13 @@ int main (int argc, char **argv)
 
 	// standard constructor
 	// TriplesBB<Field> B(F, m, n);
-	SparseMatrix2<Field,SparseMatrixFormat::TPL> B(F, m, n);
+	SparseMatrix<Field,SparseMatrixFormat::TPL> B(F, m, n);
 	bidiag(B);
 	pass = pass && testBlackbox(B);
 	B.apply(y, x);
 	// default cstor plus init
 	// TriplesBB<Field> C(F);
-	SparseMatrix2<Field,SparseMatrixFormat::TPL> C(F);
+	SparseMatrix<Field,SparseMatrixFormat::TPL> C(F);
       	C.init(F, m, n);
 	bidiag(C);
 	pass = pass && testBlackbox(C);
@@ -137,7 +137,7 @@ int main (int argc, char **argv)
 	}
 	// copy construction
 	// TriplesBB<Field> D(B);
-	SparseMatrix2<Field,SparseMatrixFormat::TPL> D(B);
+	SparseMatrix<Field,SparseMatrixFormat::TPL> D(B);
 	pass = pass && testBlackbox(D);
 	// check B == D
 	D.apply(z, x);

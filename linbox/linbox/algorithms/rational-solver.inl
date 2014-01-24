@@ -146,7 +146,7 @@ namespace LinBox
 
 
 
-		SparseMatrix2<Field> *Ap;
+		SparseMatrix<Field> *Ap;
 		FPolynomial MinPoly;
 		unsigned long  deg;
 		unsigned long issingular = SINGULARITY_THRESHOLD;
@@ -160,10 +160,10 @@ namespace LinBox
 			_prime = prime;
 			if (F != NULL) delete F;
 			F=new Field(prime);
-			Ap = new SparseMatrix2<Field>(A, *F);
+			Ap = new SparseMatrix<Field>(A, *F);
 			typename Field::RandIter random(*F);
-			BlackboxContainer<Field,SparseMatrix2<Field> > Sequence(Ap,*F,random);
-			MasseyDomain<Field,BlackboxContainer<Field,SparseMatrix2<Field> > > MD(&Sequence);
+			BlackboxContainer<Field,SparseMatrix<Field> > Sequence(Ap,*F,random);
+			MasseyDomain<Field,BlackboxContainer<Field,SparseMatrix<Field> > > MD(&Sequence);
 #ifdef RSTIMING
 			tNonsingularSetup.stop();
 			ttNonsingularSetup+=tNonsingularSetup;
@@ -187,7 +187,7 @@ namespace LinBox
 		}
 		else {
 
-			typedef SparseMatrix2<Field> FMatrix;
+			typedef SparseMatrix<Field> FMatrix;
 
 			typedef WiedemannLiftingContainer<Ring, Field, IMatrix, FMatrix, FPolynomial> LiftingContainer;
 
@@ -215,7 +215,7 @@ namespace LinBox
 		std::cerr<<"in singular solver\n";
 
 		typedef BlasVector<Ring>  IVector;
-		typedef SparseMatrix2<Field>                  FMatrix;
+		typedef SparseMatrix<Field>                  FMatrix;
 
 		// checking size of system
 		linbox_check(A.rowdim() == b.size());
@@ -525,7 +525,7 @@ namespace LinBox
 		root(tmproot, tmp,3);
 		m = n = tmproot;
 		// 		std::cout<<"block factor= "<<m<<"\n";;
-		typedef SparseMatrix2<Field> FMatrix;
+		typedef SparseMatrix<Field> FMatrix;
 
 		Field F(_prime);
 		FMatrix Ap(A, F);

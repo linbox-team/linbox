@@ -46,7 +46,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
 {
 	std::ifstream input(filename);
 	LinBox::MatrixStream< Field > msf( F, input );
-	LinBox::SparseMatrix2<Field,LinBox::SparseMatrixFormat::SparseSeq> FA(msf);
+	LinBox::SparseMatrix<Field,LinBox::SparseMatrixFormat::SparseSeq> FA(msf);
 	input.close();
 	LinBox::Timer tim; tim.start();
 	LinBox::rankin(r, FA);
@@ -129,7 +129,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		Ring F(lq);
 		std::ifstream input(filename);
 		LinBox::MatrixStream<Ring> ms( F, input );
-		LinBox::SparseMatrix2<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
+		LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
 		input.close();
 		LinBox::PowerGaussDomain< Ring > PGD( F );
 
@@ -165,7 +165,7 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	typedef LinBox::UnparametricField<int64_t> Ring;
 	Ring F;
 	LinBox::MatrixStream<Ring> ms( F, input );
-	LinBox::SparseMatrix2<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
+	LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
 	input.close();
 	LinBox::PowerGaussDomainPowerOfTwo< uint64_t > PGD;
 
@@ -186,7 +186,7 @@ std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Gi
 	Ring F(q);
 	std::ifstream input(filename);
 	LinBox::MatrixStream<Ring> ms( F, input );
-	LinBox::SparseMatrix2<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
+	LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
 	input.close();
 	LinBox::PowerGaussDomain< Ring > PGD( F );
 
@@ -206,7 +206,7 @@ std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, char * f
 	Ring ZZ;
 	std::ifstream input(filename);
 	LinBox::MatrixStream<Ring> ms( ZZ, input );
-	LinBox::SparseMatrix2<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
+	LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
 	input.close();
 	LinBox::PowerGaussDomainPowerOfTwo< Givaro::Integer > PGD;
 

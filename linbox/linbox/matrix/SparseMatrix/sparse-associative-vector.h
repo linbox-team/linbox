@@ -591,7 +591,7 @@ namespace LinBox
 {
 
 	template <class _Field /*, class _Row */  >
-	class SparseMatrix2<_Field, SparseMatrixFormat::SparseMap/* <_Row> */ > : public Protected::SparseMatrixGeneric<_Field,/*  _Row */ typename Vector<_Field>::SparseMap,VectorCategories::SparseAssociativeVectorTag>
+	class SparseMatrix<_Field, SparseMatrixFormat::SparseMap/* <_Row> */ > : public Protected::SparseMatrixGeneric<_Field,/*  _Row */ typename Vector<_Field>::SparseMap,VectorCategories::SparseAssociativeVectorTag>
 	{
 	public:
 		typedef VectorCategories::SparseAssociativeVectorTag  myTrait ;
@@ -600,40 +600,40 @@ namespace LinBox
 		typedef const Element                         constElement ; //!< const Element
 		typedef typename Vector<_Field>::SparseMap             Row ;
 		typedef SparseMatrixFormat::SparseMap              Storage ; //!< Matrix Storage Format
-		typedef SparseMatrix2<_Field,Storage>               Self_t ; //!< Self type
+		typedef SparseMatrix<_Field,Storage>               Self_t ; //!< Self type
 		typedef Protected::SparseMatrixGeneric<_Field,Row,myTrait >         Father_t ;
 
 	public:
 		template<class VectStream>
-		SparseMatrix2 (const Field &F, VectStream &stream) :
+		SparseMatrix (const Field &F, VectStream &stream) :
 			Father_t(F,stream)
 		{}
 
-		SparseMatrix2(const Field & F, size_t m, size_t n) :
+		SparseMatrix(const Field & F, size_t m, size_t n) :
 			Father_t(F, m, n)
 		{}
 
-		SparseMatrix2(const Field & F) :
+		SparseMatrix(const Field & F) :
 			Father_t(F)
 		{}
 
-		SparseMatrix2 ( MatrixStream<Field>& ms ) :
+		SparseMatrix ( MatrixStream<Field>& ms ) :
 			Father_t(ms)
 		{}
 
-	} ; // SparseMatrix2
+	} ; // SparseMatrix
 
 	template <class Field>
-	struct MatrixTraits< SparseMatrix2<Field, SparseMatrixFormat::SparseMap> >
+	struct MatrixTraits< SparseMatrix<Field, SparseMatrixFormat::SparseMap> >
 	{
-		typedef SparseMatrix2<Field, SparseMatrixFormat::SparseMap> MatrixType;
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> MatrixType;
 		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	};
 
 	template <class Field>
-	struct MatrixTraits< const SparseMatrix2<Field, SparseMatrixFormat::SparseMap> >
+	struct MatrixTraits< const SparseMatrix<Field, SparseMatrixFormat::SparseMap> >
 	{
-		typedef SparseMatrix2<Field, SparseMatrixFormat::SparseMap> MatrixType;
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> MatrixType;
 		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	};
 

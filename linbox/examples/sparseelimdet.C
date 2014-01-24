@@ -59,7 +59,7 @@ int main (int argc, char **argv)
 	if (argc == 2) { // determinant over the integers.
 
 		PID_integer ZZ;
-		SparseMatrix2<PID_integer> A ( ZZ );
+		SparseMatrix<PID_integer> A ( ZZ );
 		A.read(input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
@@ -73,7 +73,7 @@ int main (int argc, char **argv)
 		typedef Modular<double> Field;
 		double q = atof(argv[2]);
 		Field F(q);
-		SparseMatrix2<Field> B (F);
+		SparseMatrix<Field> B (F);
 		B.read(input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;

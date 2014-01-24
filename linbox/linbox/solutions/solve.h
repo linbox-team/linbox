@@ -150,7 +150,7 @@ namespace LinBox
 
 	//! @internal inplace Sparse Elimination.
 	template <class Vector, class Field>
-	Vector& solvein(Vector& x, SparseMatrix2<Field, SparseMatrixFormat::SparseSeq>& A, const Vector& b, const Method::SparseElimination& m)
+	Vector& solvein(Vector& x, SparseMatrix<Field, SparseMatrixFormat::SparseSeq>& A, const Vector& b, const Method::SparseElimination& m)
 	{
 		commentator().start ("Sparse Elimination Solve In Place", "sesolvein");
 		GaussDomain<Field> GD ( A.field() );
@@ -160,7 +160,7 @@ namespace LinBox
 	}
 
 	template <class Vector, class Field, class Random>
-	Vector& solvein(Vector& x, SparseMatrix2<Field, SparseMatrixFormat::SparseSeq>& A, const Vector& b, const Method::SparseElimination& m, Random& generator)
+	Vector& solvein(Vector& x, SparseMatrix<Field, SparseMatrixFormat::SparseSeq>& A, const Vector& b, const Method::SparseElimination& m, Random& generator)
 	{
 		commentator().start ("Sparse Elimination Solve In Place with random solution", "sesolvein");
 		GaussDomain<Field> GD ( A.field() );
@@ -176,7 +176,7 @@ namespace LinBox
 		      const Method::SparseElimination& m)
 	{
 		typedef typename Blackbox::Field Field;
-		typedef SparseMatrix2<Field,SparseMatrixFormat::SparseSeq> SparseBB;
+		typedef SparseMatrix<Field,SparseMatrixFormat::SparseSeq> SparseBB;
 		SparseBB SpA(A.field(), A.rowdim(), A.coldim());
 		MatrixHom::map(SpA, A);
 		return solvein(x, SpA, b, m);
@@ -187,7 +187,7 @@ namespace LinBox
 		      const Method::SparseElimination& m, Random& generator)
 	{
 		typedef typename Blackbox::Field Field;
-		typedef SparseMatrix2<Field,SparseMatrixFormat::SparseSeq> SparseBB;
+		typedef SparseMatrix<Field,SparseMatrixFormat::SparseSeq> SparseBB;
 		SparseBB SpA(A.field(), A.rowdim(), A.coldim());
 		MatrixHom::map(SpA, A);
 		return solvein(x, SpA, b, generator);
@@ -247,7 +247,7 @@ namespace LinBox
 
 	//! @internal Generic Elimination for SparseMatrix
 	template <class Vector, class Field>
-	Vector& solve(Vector& x, const SparseMatrix2<Field>& A, const Vector& b,
+	Vector& solve(Vector& x, const SparseMatrix<Field>& A, const Vector& b,
 		      const Method::Elimination& m)
 	{
 		//             bool consistent = false;
@@ -255,7 +255,7 @@ namespace LinBox
 		// For now we call the dense one
 
 		return solve(x, A, b,
-			     typename FieldTraits<typename SparseMatrix2<Field>::Field>::categoryTag(),
+			     typename FieldTraits<typename SparseMatrix<Field>::Field>::categoryTag(),
 			     Method::BlasElimination(m));
 
 #if 0
@@ -512,7 +512,7 @@ namespace LinBox
 	// input matrix is a SparseMatrix (no copy)
 	template <class Vect, class Ring>
 	Vect& solve(Vect& x, typename Ring::Element &d,
-		    const SparseMatrix2<Ring, SparseMatrixFormat::SparseSeq>& A,
+		    const SparseMatrix<Ring, SparseMatrixFormat::SparseSeq>& A,
 		    const Vect& b,
 		    const RingCategories::IntegerTag & tag,
 		    const Method::SparseElimination& m)
@@ -622,7 +622,7 @@ namespace LinBox
 	*/
 	template <class Vect, class Ring>
 	Vect& solve(Vect& x, typename Ring::Element &d,
-		    const SparseMatrix2<Ring, SparseMatrixFormat::SparseSeq> & A,
+		    const SparseMatrix<Ring, SparseMatrixFormat::SparseSeq> & A,
 		    const Vect& b,
 		    const RingCategories::IntegerTag tag,
 		    Method::Dixon& m)

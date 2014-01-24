@@ -62,7 +62,7 @@ int main (int argc, char **argv) {
             Ring ZZ;
             Smith_t local;
             LinBox::MatrixStream<Ring> ms( ZZ, input );
-            LinBox::SparseMatrix2<Ring, LinBox::SparseMatrixFormat::SparseSeq > A (ms);
+            LinBox::SparseMatrix<Ring, LinBox::SparseMatrixFormat::SparseSeq > A (ms);
             input.close();
             LinBox::PowerGaussDomainPowerOfTwo< Givaro::Integer > PGD;
             tim.clear(); tim.start();
@@ -79,7 +79,7 @@ int main (int argc, char **argv) {
             Smith_t local;
             Ring R;
             LinBox::MatrixStream<Ring> ms( R, input );
-            LinBox::SparseMatrix2<Ring, LinBox::SparseMatrixFormat::SparseSeq > A (ms);
+            LinBox::SparseMatrix<Ring, LinBox::SparseMatrixFormat::SparseSeq > A (ms);
             input.close();
             LinBox::PowerGaussDomainPowerOfTwo< uint64_t > PGD;
 

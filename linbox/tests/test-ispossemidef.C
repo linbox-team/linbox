@@ -56,7 +56,7 @@ using namespace LinBox;
 template <class Ring>
 bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
-	typedef SparseMatrix2<Ring> Blackbox;
+	typedef SparseMatrix<Ring> Blackbox;
 
 	commentator().start ("Testing isPositiveDefinite", "testIsPosDef", iterations);
 

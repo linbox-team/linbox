@@ -150,7 +150,7 @@ namespace LinBox
 
 	template <class Field, class Vector>
 	inline unsigned long &rank (unsigned long                      &r,
-				    const SparseMatrix2<Field, Vector>  &A,
+				    const SparseMatrix<Field, Vector>  &A,
 				    const RingCategories::ModularTag   &tag,
 				    const Method::Elimination          &m)
 	{
@@ -482,18 +482,18 @@ namespace LinBox
 	/// M may be <code>Method::SparseElimination()</code>.
 	template <class Field>
 	inline unsigned long &rank (unsigned long                       &r,
-				    const SparseMatrix2<Field, SparseMatrixFormat::SparseSeq>  &A,
+				    const SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
 				    const RingCategories::ModularTag    &tag,
 				    const Method::SparseElimination     &M)
 	{
 		// We make a copy as these data will be destroyed
-		SparseMatrix2<Field, SparseMatrixFormat::SparseSeq> A1 (A);
+		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> A1 (A);
 		return rankin(r, A1, tag, M);
 	}
 
 	template <class Field, class Method>
 	inline unsigned long &rankin (unsigned long                   &r,
-				      SparseMatrix2<Field, SparseMatrixFormat::SparseSeq>  &A,
+				      SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
 				      const Method                    &M)
 	{
 		return rankin(r, A, typename FieldTraits<Field>::categoryTag(), M);
@@ -523,7 +523,7 @@ namespace LinBox
 
 	template <class Field>
 	inline unsigned long &rankin (unsigned long                       &r,
-				      SparseMatrix2<Field, SparseMatrixFormat::SparseSeq >  &A,
+				      SparseMatrix<Field, SparseMatrixFormat::SparseSeq >  &A,
 				      const RingCategories::ModularTag    &tag,
 				      const Method::SparseElimination     &M)
 	{
@@ -563,7 +563,7 @@ namespace LinBox
 				    const Method::SparseElimination     &M)
 	{
 		typedef typename Blackbox::Field Field;
-		typedef SparseMatrix2<Field, SparseMatrixFormat::SparseSeq > SparseBB;
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseSeq > SparseBB;
 		SparseBB SpA(A.field(), A.rowdim(), A.coldim() );
 		MatrixHom::map(SpA, A);
 		return rankin(r, SpA, tag, M);

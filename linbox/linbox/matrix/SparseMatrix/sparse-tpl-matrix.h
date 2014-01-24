@@ -50,25 +50,25 @@ namespace LinBox
 	 * Sparse matrix representation which stores nonzero entries by i,j,value triples.
 	 */
   template<class Field_>
-  class SparseMatrix2<Field_, SparseMatrixFormat::TPL> : public BlackboxInterface {
+  class SparseMatrix<Field_, SparseMatrixFormat::TPL> : public BlackboxInterface {
 
 	public:
 	typedef Field_ Field;
 	typedef typename MatrixDomain<Field>::Matrix Matrix;
 	typedef typename Field::Element Element;
-	typedef SparseMatrix2<Field,SparseMatrixFormat::TPL> Self_t;
+	typedef SparseMatrix<Field,SparseMatrixFormat::TPL> Self_t;
 	typedef size_t Index; // would prefer a signed type
 	enum sortPolicy {unsorted, cacheOpt, rowMajor, colMajor};
 
 
 	// Default constructor.
-	// SparseMatrix2();
+	// SparseMatrix();
 
-	SparseMatrix2(const SparseMatrix2 & B);
+	SparseMatrix(const SparseMatrix & B);
 
-	SparseMatrix2 & operator=(const SparseMatrix2 & B);
+	SparseMatrix & operator=(const SparseMatrix & B);
 
-	SparseMatrix2(const Field& F, std::istream& in);
+	SparseMatrix(const Field& F, std::istream& in);
 
 	std::istream& read(std::istream& in);
 
@@ -78,12 +78,12 @@ namespace LinBox
 	std::ostream& write(std::ostream& out) const;
 
 
-	~SparseMatrix2();
+	~SparseMatrix();
 
-	SparseMatrix2(const Field& F, Index r = 0, Index c = 0);
+	SparseMatrix(const Field& F, Index r = 0, Index c = 0);
 
 	// (re)initialize the matrix.  Any prior entries are abandoned.
-	SparseMatrix2& init(const Field& F, Index r = 0, Index c = 0);
+	SparseMatrix& init(const Field& F, Index r = 0, Index c = 0);
 
 	// need cstor from matrix stream, read, write
 
@@ -149,7 +149,7 @@ namespace LinBox
 
 	template<typename Tp1_, typename _Rw1 = SparseMatrixFormat::TPL>
 	struct rebind {
-		typedef SparseMatrix2<Tp1_, SparseMatrixFormat::TPL> other;
+		typedef SparseMatrix<Tp1_, SparseMatrixFormat::TPL> other;
 		void operator() (other & Ap, const Self_t& A)
 		{
 			Hom <typename Self_t::Field, Tp1_> hom( A.field(), Ap.field( ));
@@ -172,10 +172,10 @@ namespace LinBox
 	};
 
 	template<typename _Tp1, typename _Rw1>
-	SparseMatrix2 (const SparseMatrix2<_Tp1, _Rw1> &S, const Field& F) :
+	SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &S, const Field& F) :
 		MD_(F), data_(), rows_(0), cols_(0), sort_(unsorted)
 	  {
-		  typename SparseMatrix2<_Tp1,_Rw1>::template rebind<Field,SparseMatrixFormat::TPL>()(*this, S);
+		  typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,SparseMatrixFormat::TPL>()(*this, S);
 	  }
 
 
@@ -213,7 +213,7 @@ namespace LinBox
 
 
 
-  }; // SparseMatrix2
+  }; // SparseMatrix
 
 } // namespace LinBox
 

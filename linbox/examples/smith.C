@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
 			if (!input) { std::cerr << "Error opening matrix file: " << argv[1] << std::endl; return -1; }
 
 			MatrixStream<Field> ms( F, input );
-			SparseMatrix2<Field, SparseMatrixFormat::SparseSeq > B (ms);
+			SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (ms);
 			std::cout << "B is " << B.rowdim() << " by " << B.coldim() << std::endl;
 			if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
 

@@ -202,7 +202,7 @@ int main (int argc, char **argv)
 	commentator().stop("test on BlasMatrix");
 
 	commentator().start("test on TriplesBB");
-	SparseMatrix2<Field,SparseMatrixFormat::TPL> C(F, m, n);
+	SparseMatrix<Field,SparseMatrixFormat::TPL> C(F, m, n);
 	for (size_t i = 0; i < min(m, n); ++i) C.setEntry(i, i, F.init(s, i+1));
 	pass = pass and testTransposeBlackbox(C);
 	pass = pass and testTransposeMatrix(C);

@@ -55,7 +55,7 @@ using namespace LinBox;
 #define STOR_T typename VectorTraits<Row>::SparseFormat
 
 template <class Vector, class Field, class Row>
-static SparseMatrix2<Field,  STOR_T>
+static SparseMatrix<Field,  STOR_T>
 *buildRandomSparseMatrix (Field                           &F,
 			  size_t                           n,
 			  size_t                           m,
@@ -65,7 +65,7 @@ static SparseMatrix2<Field,  STOR_T>
 			  VectorStream<Row>               &top_right_stream,
 			  VectorStream<Row>               &bottom_left_stream)
 {
-	typedef SparseMatrix2<Field, STOR_T> Blackbox;
+	typedef SparseMatrix<Field, STOR_T> Blackbox;
 
 	Blackbox *A = new Blackbox (F, n, m);
 	typename Field::RandIter rnd_p (F);
@@ -137,7 +137,7 @@ static bool testIdentityApply (Field                                           &
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef SparseMatrix2<Field, STOR_T> Blackbox;
+	typedef SparseMatrix<Field, STOR_T> Blackbox;
 
 	commentator().start ("Testing identity apply", "testIdentityApply", stream.m ());
 
@@ -227,7 +227,7 @@ static bool testRandomApply1 (Field                 &F,
 			      VectorStream<Row>    &M_stream2,
 			      VectorStream<Vector> &stream)
 {
-	typedef SparseMatrix2<Field, STOR_T> Blackbox;
+	typedef SparseMatrix<Field, STOR_T> Blackbox;
 
 	commentator().start ("Testing random apply", "testRandomApply1", iterations);
 
