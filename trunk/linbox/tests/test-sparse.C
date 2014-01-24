@@ -70,7 +70,7 @@ using namespace LinBox;
 template <class Row, class Field, class Vector>
 static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> &stream)
 {
-	typedef SparseMatrix2<Field, typename VectorTraits<Row>::SparseFormat > Blackbox;
+	typedef SparseMatrix<Field, typename VectorTraits<Row>::SparseFormat > Blackbox;
 
 	ostringstream str;
 	str << "Testing identity apply (" << text << ")" << ends;
@@ -143,7 +143,7 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 template <class Row, class Field, class Vector>
 static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector> &stream)
 {
-	typedef SparseMatrix2<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
+	typedef SparseMatrix<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
 
 	ostringstream str;
 	str << "Testing nilpotent apply (" << text << ")" << ends;
@@ -248,7 +248,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 template <class Vector, class Row, class Field>
 bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, VectorStream<Row> &A_stream)
 {
-	typedef SparseMatrix2<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
+	typedef SparseMatrix<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
 
 	ostringstream str;
 	str << "Testing sparse random apply (1, " << text << ")" << ends;
@@ -322,7 +322,7 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
 template <class Vector, class Row, class Field>
 bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, VectorStream<Row> &A_stream)
 {
-	typedef SparseMatrix2<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
+	typedef SparseMatrix<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
 
 	ostringstream str;
 	str << "Testing sparse random apply (2, " << text << ")" << ends;
@@ -409,7 +409,7 @@ static bool testRandomTranspose (Field                &F,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2)
 {
-	typedef SparseMatrix2<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
+	typedef SparseMatrix<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
 
 	ostringstream str;
 	str << "Testing random transpose (" << text << ")" << ends;
@@ -450,7 +450,7 @@ static bool testRandomLinearity (Field                 &F,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2)
 {
-	typedef SparseMatrix2<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
+	typedef SparseMatrix<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
 
 	ostringstream str;
 	str << "Testing linearity (" << text << ")" << ends;
@@ -497,7 +497,7 @@ bool runSparseMatrixTestsByVector (const Field           &F,
 	commentator().progress ();
 	if (!testRandomApply2<Vector> (F, desc, iterations, A_stream))	pass = false;
 	commentator().progress ();
-	SparseMatrix2<Field, typename VectorTraits<Row>::SparseFormat> A(F, A_stream);
+	SparseMatrix<Field, typename VectorTraits<Row>::SparseFormat> A(F, A_stream);
 	A_stream.reset ();
 	if (testRW){
 		if (!testBlackbox(A)) 					pass = false;

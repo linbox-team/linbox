@@ -36,9 +36,9 @@ namespace LinBox
 	  \brief %Companion matrix of a monic polynomial.
 	  */
 	template<class Field_>
-	struct Companion: public SparseMatrix2<Field_,SparseMatrixFormat::TPL> {
+	struct Companion: public SparseMatrix<Field_,SparseMatrixFormat::TPL> {
 		typedef Field_ Field;
-		typedef SparseMatrix2<Field,SparseMatrixFormat::TPL> Father_t;
+		typedef SparseMatrix<Field,SparseMatrixFormat::TPL> Father_t;
 
 		/// This is the n by n companion matrix of a given polynomial of degree n.
 		template<class Polynomial>

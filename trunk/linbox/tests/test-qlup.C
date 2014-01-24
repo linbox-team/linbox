@@ -366,7 +366,7 @@ int main (int argc, char **argv)
 		<< "over Modular<uint32_t>" << endl;
 		typedef Modular<uint32_t> Field;
 		Field F (q);
-		typedef SparseMatrix2<Field, STOR_T > Blackbox;
+		typedef SparseMatrix<Field, STOR_T > Blackbox;
 		typedef RandomSparseStream<Field, Blackbox::Row   > RandStream;
 		if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))
 			pass = false;
@@ -381,7 +381,7 @@ int main (int argc, char **argv)
 		<< "over Modular<double>" << endl;
 		typedef Modular<double> Field;
 		Field F (q);
-		typedef SparseMatrix2<Field, STOR_T > Blackbox;
+		typedef SparseMatrix<Field, STOR_T > Blackbox;
 		typedef RandomSparseStream<Field, Blackbox::Row   > RandStream;
 
 		if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))
@@ -398,7 +398,7 @@ int main (int argc, char **argv)
 		<< "over GivaroZpz<Integer>" << endl;
 		typedef GivaroZpz<Integer> Field;
 		Field F (bigQ);
-		typedef SparseMatrix2<Field, STOR_T > Blackbox;
+		typedef SparseMatrix<Field, STOR_T > Blackbox;
 		typedef RandomSparseStream<Field, Blackbox::Row   > RandStream;
 
 		if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))

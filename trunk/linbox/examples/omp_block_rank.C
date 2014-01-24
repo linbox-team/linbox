@@ -241,7 +241,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 
 	std::ifstream input (argv[1]);
 	LinBox::MatrixStream<Field> ms( F, input );
-	typedef LinBox::SparseMatrix2<Field, LinBox::SparseMatrixFormat::SparseSeq > Blackbox;
+	typedef LinBox::SparseMatrix<Field, LinBox::SparseMatrixFormat::SparseSeq > Blackbox;
 	typedef LinBox::BlasMatrix<Field> Block_t;
 
 	Blackbox B (ms);

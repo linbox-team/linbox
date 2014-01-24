@@ -57,7 +57,7 @@ using namespace LinBox;
 typedef Modular<double> Field;
 typedef TriplesBBOMP<Field> OMPBB;
 typedef TriplesBB<Field> SeqBB;
-typedef SparseMatrix2<Field,SparseMatrixFormat::VPV> VPVBB;
+typedef SparseMatrix<Field,SparseMatrixFormat::VPV> VPVBB;
 
 int randRange(int start, int end)
 {

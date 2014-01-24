@@ -357,7 +357,7 @@ namespace LinBox
 		typedef typename Blackbox::Field Field;
 		commentator().start ("Sparse Elimination Determinant", "SEDet");
 		// We make a copy as these data will be destroyed
-		SparseMatrix2<Field, SparseMatrixFormat::SparseSeq> A1 (A.field(), A.rowdim(), A.coldim());
+		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> A1 (A.field(), A.rowdim(), A.coldim());
 		typename Blackbox::Field::Element tmp;
 		for(size_t i = 0; i < A.rowdim() ; ++i)
 			for(size_t j = 0; j < A.coldim(); ++j)
@@ -372,7 +372,7 @@ namespace LinBox
 
 	template <class Field, class Vector>
 	typename Field::Element &det (typename Field::Element	&d,
-				      const SparseMatrix2<Field, Vector>	&A,
+				      const SparseMatrix<Field, Vector>	&A,
 				      const RingCategories::ModularTag  	&tag,
 				      const Method::SparseElimination		&Meth)
 	{
@@ -380,7 +380,7 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
 		commentator().start ("Sparse Elimination Determinant", "SEDet");
 		// We make a copy as these data will be destroyed
-		SparseMatrix2<Field, SparseMatrixFormat::SparseSeq> A1 (A);
+		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> A1 (A);
 		GaussDomain<Field> GD ( A.field() );
 		GD.detin (d, A1, Meth.strategy ());
 		commentator().stop ("done", NULL, "SEdet");
@@ -389,7 +389,7 @@ namespace LinBox
 
 	template <class Field>
 	typename Field::Element &detin (typename Field::Element         	&d,
-					SparseMatrix2<Field, SparseMatrixFormat::SparseSeq>  &A,
+					SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
 					const RingCategories::ModularTag  	&tag,
 					const Method::SparseElimination     	&Meth)
 	{
@@ -406,7 +406,7 @@ namespace LinBox
 	// The det with Elimination Method
 	template<class Field, class Vector>
 	typename Field::Element &det (typename Field::Element		&d,
-				      const SparseMatrix2<Field, Vector>	&A,
+				      const SparseMatrix<Field, Vector>	&A,
 				      const RingCategories::ModularTag	&tag,
 				      const Method::Elimination		&Meth)
 	{
@@ -416,7 +416,7 @@ namespace LinBox
 
 	template <class Field>
 	typename Field::Element &detin (typename Field::Element         	&d,
-					SparseMatrix2<Field, SparseMatrixFormat::SparseSeq>  &A,
+					SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
 					const RingCategories::ModularTag  	&tag,
 					const Method::Elimination     		&Meth)
 	{
@@ -425,12 +425,12 @@ namespace LinBox
 
 	template<class Field, class Vector>
 	typename Field::Element &detin (typename Field::Element			&d,
-					SparseMatrix2<Field, Vector> 		&A,
+					SparseMatrix<Field, Vector> 		&A,
 					const RingCategories::ModularTag      	&tag,
 					const Method::Elimination		&Meth)
 	{
-		// Matrix is not of type SparseMatrix2<..SparseSeq> otherwise previous specialization would occur
-		// will copy A into SparseMatrix2<..SparseSeq> or BlasMatrix
+		// Matrix is not of type SparseMatrix<..SparseSeq> otherwise previous specialization would occur
+		// will copy A into SparseMatrix<..SparseSeq> or BlasMatrix
 		const Field& F = A.field();
 		integer c; F.characteristic(c);
 		if ((c < LinBox::BlasBound) && ((A.rowdim() < 300) || (A.coldim() < 300) || (A.size() > (A.coldim()*A.rowdim()/100))))

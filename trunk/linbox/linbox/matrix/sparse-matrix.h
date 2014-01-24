@@ -26,7 +26,7 @@
 /*! @file matrix/sparse-matrix.h
  * @ingroup matrix
  * @ingroup sparse
- * A <code>SparseMatrix2<_Field ></code> ....
+ * A <code>SparseMatrix<_Field ></code> ....
  */
 
 #ifndef __LINBOX_matrix_sparse_matrix_H
@@ -51,24 +51,24 @@ namespace LinBox {
 
 	// Forward definition
 	template<class _Field, class _Storage = SparseMatrixFormat::SparseSeq >
-	class SparseMatrix2 ;
+	class SparseMatrix ;
 
 
 	template <class _Field, class _Storage>
-	std::istream &operator >> (std::istream &is, SparseMatrix2<_Field, _Storage> &A)
+	std::istream &operator >> (std::istream &is, SparseMatrix<_Field, _Storage> &A)
 	{
 		return A.read (is);
 	}
 
 	// template <class _Field, class _Storage>
-	// struct MatrixTraits< SparseMatrix2<_Field, _Storage> > {
-		// typedef SparseMatrix2<_Field, _Storage>      MatrixType;
+	// struct MatrixTraits< SparseMatrix<_Field, _Storage> > {
+		// typedef SparseMatrix<_Field, _Storage>      MatrixType;
 		// typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	// };
 
 
 	// template <class _Field, class _Storage>
-	// struct GetEntryCategory<SparseMatrix2<_Field,_Storage> > {
+	// struct GetEntryCategory<SparseMatrix<_Field,_Storage> > {
 		  // typedef SolutionTags::Local Tag;
 	// };
 

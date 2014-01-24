@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
         ofstream out_stream(out_file);
         ifstream in_stream(in_file);
 
-//	SparseMatrix2<Field, Row, Vector>  A(K,4,4);
+//	SparseMatrix<Field, Row, Vector>  A(K,4,4);
 //      A.read(in_stream);
 //	A.write(out_stream);
 

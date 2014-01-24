@@ -194,7 +194,7 @@ bool runIdentTest(int n,
                   bool useVector,
                   ostream& report)
 {
-        typedef SparseMatrix2<Field,SparseMatrixFormat::TPL_omp> OMPBlackbox;
+        typedef SparseMatrix<Field,SparseMatrixFormat::TPL_omp> OMPBlackbox;
 
         omp_set_num_threads(numThreads);
 
@@ -251,8 +251,8 @@ bool runRandTest(int n,
                  bool useVector,
                  ostream& report)
 {
-        typedef SparseMatrix2<Field,SparseMatrixFormat::TPL_omp> OMPBlackbox;
-        typedef SparseMatrix2<Field,SparseMatrixFormat::TPL> SeqBlackbox;
+        typedef SparseMatrix<Field,SparseMatrixFormat::TPL_omp> OMPBlackbox;
+        typedef SparseMatrix<Field,SparseMatrixFormat::TPL> SeqBlackbox;
 
         omp_set_num_threads(numThreads);
 

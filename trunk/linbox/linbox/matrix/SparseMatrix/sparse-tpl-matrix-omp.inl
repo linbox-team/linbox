@@ -47,7 +47,7 @@ namespace LinBox
 {
 
 template<class Field_>
-void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::nonOverlappingIntervals(BlockListIt startIt,
+void SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::nonOverlappingIntervals(BlockListIt startIt,
                                               BlockListIt endIt,
                                               IntervalSet& intervals,
                                               const int rowOrCol)
@@ -97,7 +97,7 @@ void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::nonOverlappingIntervals(
 }
 
 template<class Field_>
-void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::combineIntervals(BlockListIt startIt,
+void SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::combineIntervals(BlockListIt startIt,
                                             BlockListIt endIt,
                                             IntervalSet& intervals,
                                             VectorChunks& chunksOut,
@@ -134,7 +134,7 @@ void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::combineIntervals(BlockLi
 }
 
 template<class Field_>
-void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::computeVectors(SizedChunks& sizedChunks,
+void SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::computeVectors(SizedChunks& sizedChunks,
 					  BlockList& superBlocks,
 					  const int rowOrCol)
 {
@@ -162,17 +162,17 @@ void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::computeVectors(SizedChun
         }
 }
 
-template<class Field_> SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::SparseMatrix2() {}
-template<class Field_> SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::~SparseMatrix2() {}
+template<class Field_> SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::SparseMatrix() {}
+template<class Field_> SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::~SparseMatrix() {}
 
-template<class Field_> SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::
-SparseMatrix2(const Field_& F, std::istream& in) : MD_(F)
+template<class Field_> SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::
+SparseMatrix(const Field_& F, std::istream& in) : MD_(F)
 {
 	read(in);
 }
 
 template<class Field_>
-std::istream& SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::read(std::istream& in){
+std::istream& SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::read(std::istream& in){
 	Index r, c;
 	typename Field::Element v; field().init(v);
 	MatrixStream<Field> ms(field(), in);
@@ -183,7 +183,7 @@ std::istream& SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::read(std::istre
 }
 
 template<class Field_>
-std::ostream& SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::write(std::ostream& out){
+std::ostream& SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::write(std::ostream& out){
 	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
 	out << "% written from a LinBox TriplesBBOMP" << std::endl;
 	out << rowdim() <<" " << coldim() << " " << size() << std::endl;
@@ -195,16 +195,16 @@ std::ostream& SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::write(std::ostr
 }
 
 template<class Field_>
-SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>& SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::shape(const Field& F, Index r, Index c)
+SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>& SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::shape(const Field& F, Index r, Index c)
 { MD_=F; data_.clear(); rows_ = r; cols_ = c; sortType_ = TRIPLES_UNSORTED; return *this; }
 
-template<class Field_> SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::
-SparseMatrix2(const Field& F, Index r, Index c)
+template<class Field_> SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::
+SparseMatrix(const Field& F, Index r, Index c)
         : MD_(F), rows_(r), cols_(c),
           sortType_(TRIPLES_UNSORTED) {}
 
 template<class Field_>
-SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::SparseMatrix2(const SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp> & B)
+SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::SparseMatrix(const SparseMatrix<Field_,SparseMatrixFormat::TPL_omp> & B)
         : MD_(B.MD_), data_ ( B.data_ ),
           rows_ ( B.rows_ ), cols_ ( B.cols_ ),
           sortType_ ( B.sortType_ ),
@@ -212,7 +212,7 @@ SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::SparseMatrix2(const SparseMat
 {}
 
 template<class Field_>
-SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp> & SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::operator=(const SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp> & rhs)
+SparseMatrix<Field_,SparseMatrixFormat::TPL_omp> & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::operator=(const SparseMatrix<Field_,SparseMatrixFormat::TPL_omp> & rhs)
 {
 	if (rhs == this)
 		return ;
@@ -227,7 +227,7 @@ SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp> & SparseMatrix2<Field_,SparseM
 }
 
 template<class Field_>
-template<class Mat1, class Mat2> Mat1& SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::
+template<class Mat1, class Mat2> Mat1& SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::
 applyLeft(Mat1 &Y, const Mat2 &X) const
 {
         Y.zero();
@@ -268,7 +268,7 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
 }
 
 template<class Field_>
-template<class Mat1, class Mat2> Mat1& SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::
+template<class Mat1, class Mat2> Mat1& SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::
 applyRight(Mat1 &Y, const Mat2 &X) const
 {
         Y.zero();
@@ -310,7 +310,7 @@ applyRight(Mat1 &Y, const Mat2 &X) const
 
 template<class Field_>
 template<class OutVector, class InVector>
-OutVector & SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::apply(OutVector & y, const InVector & x) const
+OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::apply(OutVector & y, const InVector & x) const
 {
 	linbox_check( coldim() == x.size() );
 	linbox_check( rowdim() == y.size() );
@@ -368,7 +368,7 @@ OutVector & SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::apply(OutVector &
 
 template<class Field_>
 template<class OutVector, class InVector>
-OutVector & SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::applyTranspose(OutVector & y, const InVector & x) const
+OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::applyTranspose(OutVector & y, const InVector & x) const
 {
 	linbox_check( coldim() == y.size() );
 	linbox_check( rowdim() == x.size() );
@@ -425,20 +425,20 @@ OutVector & SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::applyTranspose(Ou
 }
 
 template<class Field_>
-Index SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::rowdim() const { return rows_; }
+Index SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::rowdim() const { return rows_; }
 
 template<class Field_>
-Index SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::coldim() const { return cols_; }
+Index SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::coldim() const { return cols_; }
 
 template<class Field_>
-const Field_& SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::
+const Field_& SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::
 field() const { return MD_.field();}
 
 template<class Field_>
-size_t SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::size() const { return data_.size(); }
+size_t SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::size() const { return data_.size(); }
 
 template<class Field_>
-void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::splitBlock(RefBlockList& superBlocks,TriplesBlock startBlock)
+void SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::splitBlock(RefBlockList& superBlocks,TriplesBlock startBlock)
 {
 	typedef typename std::vector<Triple>::iterator BlockVecIt;
 
@@ -505,7 +505,7 @@ void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::splitBlock(RefBlockList&
 }
 
 template<class Field_>
-void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::toDataBlock(const RefBlockList& superBlocks,
+void SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::toDataBlock(const RefBlockList& superBlocks,
 				       BlockList& dataBlocks)
 {
 	dataBlocks.clear();
@@ -540,7 +540,7 @@ void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::toDataBlock(const RefBlo
 }
 
 template<class Field_>
-void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::finalize()
+void SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::finalize()
 {
         if ((sortType_ & TRIPLES_SORTED) != 0) {return; }
         for (Index k=0; k<data_.size();++k) {
@@ -592,14 +592,14 @@ void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::finalize()
 }
 
 template<class Field_>
-void SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::setEntry(Index i, Index j, const typename Field::Element & e)
+void SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::setEntry(Index i, Index j, const typename Field::Element & e)
 {
 	sortType_ = TRIPLES_UNSORTED;
 	data_.push_back(Triple(i, j, e));
 }
 
 template<class Field_>
-typename Field_::Element& SparseMatrix2<Field_,SparseMatrixFormat::TPL_omp>::
+typename Field_::Element& SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::
 getEntry(typename Field::Element& e, Index i, Index j) const
 {
 	for (Index k = data_.size(); k > 0; --k)

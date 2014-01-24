@@ -316,14 +316,14 @@ namespace LinBox
 			{
 				commentator().start ("Constructing sparse preconditioner");
 
-				SparseMatrix2<Field> *P, *QT;
+				SparseMatrix<Field> *P, *QT;
 				P = makeLambdaSparseMatrix (A.rowdim ());
 				QT = makeLambdaSparseMatrix (A.coldim ());
 
-				Transpose< SparseMatrix2<Field> > Q(QT);
+				Transpose< SparseMatrix<Field> > Q(QT);
 
-				Compose< Blackbox, Transpose< SparseMatrix2<Field> > > AQ(&A, &Q);
-				Compose< SparseMatrix2<Field>, Compose< Blackbox, Transpose< SparseMatrix2<Field> > > > PAQ(P, &AQ);
+				Compose< Blackbox, Transpose< SparseMatrix<Field> > > AQ(&A, &Q);
+				Compose< SparseMatrix<Field>, Compose< Blackbox, Transpose< SparseMatrix<Field> > > > PAQ(P, &AQ);
 				commentator().stop ("done");
 
 				sfrs = findRandomSolution (PAQ, x, b, r, P, &Q);
@@ -338,7 +338,7 @@ namespace LinBox
 
 		case WiedemannTraits::NO_PRECONDITIONER:
 			{
-				SparseMatrix2<Field> *P = NULL;
+				SparseMatrix<Field> *P = NULL;
 				sfrs = findRandomSolution (A, x, b, r, P, P);
 				delete P;
 				break;
@@ -589,7 +589,7 @@ namespace LinBox
 
 
 	template <class Field>
-	SparseMatrix2<Field> *WiedemannSolver<Field>::makeLambdaSparseMatrix (size_t m)
+	SparseMatrix<Field> *WiedemannSolver<Field>::makeLambdaSparseMatrix (size_t m)
 	{
 		const double             LAMBDA = 3;
 		integer                  card;
@@ -599,9 +599,9 @@ namespace LinBox
 		double                   init_p = 1.0 - 1.0 / (double) card;
 		double                   log_m = LAMBDA * log ((double) m) / M_LN2;
 
-		SparseMatrix2<Field>    *P = new SparseMatrix2<Field> (field(), m, m);
+		SparseMatrix<Field>    *P = new SparseMatrix<Field> (field(), m, m);
 
-		RandomSparseStream<Field,typename SparseMatrix2<Field>::Row> stream (field(), _randiter, init_p, m, m);
+		RandomSparseStream<Field,typename SparseMatrix<Field>::Row> stream (field(), _randiter, init_p, m, m);
 
 		for (unsigned int i = 0; i < m; ++i) {
 		double                   new_p;

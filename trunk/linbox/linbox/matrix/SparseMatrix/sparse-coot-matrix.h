@@ -26,7 +26,7 @@
 /*! @file matrix/SparseMatrix/sparse-coot-matrix.h
  * @ingroup matrix
  * @ingroup sparse
- * A <code>SparseMatrix2<_Field, SparseMatrixFormat::COO_T ></code> 
+ * A <code>SparseMatrix<_Field, SparseMatrixFormat::COO_T ></code> 
  * is a vector of (i,j,value) triples. 
  *
  * This is a variant of COO format.
@@ -48,18 +48,18 @@ namespace LinBox
 	 * \ingroup sparse
 	 */
 	template<class _Field>
-	class SparseMatrix2<_Field, SparseMatrixFormat::COO_T> 
+	class SparseMatrix<_Field, SparseMatrixFormat::COO_T> 
 	: public TriplesBB<_Field> {
 	public :
 		typedef _Field                             Field ; //!< Field
 		typedef typename _Field::Element         Element ; //!< Element
 		typedef const Element               constElement ; //!< const Element
 		typedef SparseMatrixFormat::COO_T         Storage ; //!< Matrix Storage Format
-		typedef SparseMatrix2<_Field,Storage>     Self_t ; //!< Self type
+		typedef SparseMatrix<_Field,Storage>     Self_t ; //!< Self type
 		typedef TriplesBB<Field> Father_t ; 
-		SparseMatrix2() :  Father_t() {}
+		SparseMatrix() :  Father_t() {}
 
-		SparseMatrix2(Field & F, size_t m, size_t n) 
+		SparseMatrix(Field & F, size_t m, size_t n) 
 		:  Father_t(F, m, n) {}
 
 		void finalize(){}// this should be in Father_t

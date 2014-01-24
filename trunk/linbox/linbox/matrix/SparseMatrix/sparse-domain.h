@@ -26,7 +26,7 @@
 /*! @file matrix/sparse-domain.h
  * @ingroup matrix
  * @ingroup sparse
- * A <code>SparseMatrix2<_Field ></code> ....
+ * A <code>SparseMatrix<_Field ></code> ....
  */
 
 

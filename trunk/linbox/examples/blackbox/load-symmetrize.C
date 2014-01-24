@@ -49,7 +49,7 @@ typedef Modular<uint32_t> Field;
 
 typedef vector <Field::Element> Vector;
 typedef vector <Field::Element> Polynomial;
-typedef SparseMatrix2 <Field, VectorTraits<Vector>::SparseFormat > Blackbox;
+typedef SparseMatrix <Field, VectorTraits<Vector>::SparseFormat > Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 1000;

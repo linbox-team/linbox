@@ -45,7 +45,7 @@
 #include "linbox/matrix/matrix-category.h"
 
 namespace LinBox {
-	template<class A, class B, class C>
+	template<class A, class B>
 	class SparseMatrix ;
 
 	template<class A, class R>
@@ -66,18 +66,18 @@ namespace LinBox
 
 
 	template <class Ring, class Field>
-	struct MatrixHomTrait<SparseMatrix2<Ring, SparseMatrixFormat::SparseSeq>, Field> {
-		typedef SparseMatrix2<Field, SparseMatrixFormat::SparseSeq> value_type;
+	struct MatrixHomTrait<SparseMatrix<Ring, SparseMatrixFormat::SparseSeq>, Field> {
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseSeq> value_type;
 	};
 
 	template <class Ring, class Field>
-	struct MatrixHomTrait<SparseMatrix2<Ring, SparseMatrixFormat::SparsePar>, Field> {
-		typedef SparseMatrix2<Field, SparseMatrixFormat::SparsePar> value_type;
+	struct MatrixHomTrait<SparseMatrix<Ring, SparseMatrixFormat::SparsePar>, Field> {
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparsePar> value_type;
 	};
 
 	template <class Ring, class Field>
-	struct MatrixHomTrait<SparseMatrix2<Ring, SparseMatrixFormat::SparseMap>, Field> {
-		typedef SparseMatrix2<Field, SparseMatrixFormat::SparseMap> value_type;
+	struct MatrixHomTrait<SparseMatrix<Ring, SparseMatrixFormat::SparseMap>, Field> {
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> value_type;
 	};
 
 	template <class Ring, class Field>
@@ -120,15 +120,15 @@ namespace LinBox
 
 		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Field, class Vect, class IMatrix>
-		void map (SparseMatrix2<Field, Vect> &Ap, const IMatrix& A);
+		void map (SparseMatrix<Field, Vect> &Ap, const IMatrix& A);
 
 		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Vect1, class Field, class Vect2>
-		void map (SparseMatrix2<Field, Vect2>& Ap, const SparseMatrix2<Ring, Vect1>& A)
+		void map (SparseMatrix<Field, Vect2>& Ap, const SparseMatrix<Ring, Vect1>& A)
 		{
 			// typedef typename SparseVectorTranslate<Field,Vect1>::other_t Vect_1 ;
 			typedef typename SparseVectorTranslate<Field,Vect2>::other_t Vect_2 ;
-			typename SparseMatrix2<Ring,Vect1>::template rebind<Field,Vect_2>()( Ap, A);
+			typename SparseMatrix<Ring,Vect1>::template rebind<Field,Vect_2>()( Ap, A);
 		}
 
 
@@ -173,7 +173,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Vect, class IMatrix>
-	void MatrixHom::map (SparseMatrix2<Field, Vect> &Ap, const IMatrix& A)
+	void MatrixHom::map (SparseMatrix<Field, Vect> &Ap, const IMatrix& A)
 	{
 
 		typedef typename IMatrix::Field Ring;

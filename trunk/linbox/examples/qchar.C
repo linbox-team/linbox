@@ -49,7 +49,7 @@ typedef Vector<Integers>::Dense DVector;
 typedef GMPRationalField Rationals;
 typedef Rationals::Element Quotient;
 typedef BlasMatrix<Integers > Blackbox;
-typedef SparseMatrix2<Rationals > RBlackbox;
+typedef SparseMatrix<Rationals > RBlackbox;
 
 //#define _LB_CONT_FR
 

@@ -132,7 +132,7 @@ namespace LinBox
 	template <class Matrix, class Block> inline Block&
 	GaussDomain<_Field>::nullspacebasis(Block& x, const Matrix& A)  const
 	{
-		SparseMatrix2<Field, SparseMatrixFormat::SparseSeq> A1 (A);
+		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> A1 (A);
 		return this->nullspacebasisin(x, A1);
 	}
 

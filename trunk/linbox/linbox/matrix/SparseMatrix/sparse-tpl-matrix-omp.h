@@ -237,35 +237,35 @@ struct TriplesDataBlock {
  * Sparse matrix representation which stores nonzero entries by i,j,value triples.
  */
 template<class Field_>
-class SparseMatrix2<Field_, SparseMatrixFormat::TPL_omp> : public BlackboxInterface {
+class SparseMatrix<Field_, SparseMatrixFormat::TPL_omp> : public BlackboxInterface {
 
 	public:
         typedef Field_ Field;
 	typedef typename MatrixDomain<Field>::Matrix Matrix;
 	typedef typename Field::Element Element;
-	typedef SparseMatrix2<Field, SparseMatrixFormat::TPL_omp> Self_t;
+	typedef SparseMatrix<Field, SparseMatrixFormat::TPL_omp> Self_t;
 
 	// Default constructor.
-	SparseMatrix2();
+	SparseMatrix();
 
-	SparseMatrix2(const SparseMatrix2 & B);
+	SparseMatrix(const SparseMatrix & B);
 
-	SparseMatrix2 & operator=(const SparseMatrix2 & B);
+	SparseMatrix & operator=(const SparseMatrix & B);
 
-	SparseMatrix2(const Field& F, std::istream& in);
+	SparseMatrix(const Field& F, std::istream& in);
 
 	std::istream& read(std::istream& in);
 
 	std::ostream& write(std::ostream& out);
 
-	~SparseMatrix2();
+	~SparseMatrix();
 
-	SparseMatrix2(const Field& F, Index r = 0, Index c = 0);
+	SparseMatrix(const Field& F, Index r = 0, Index c = 0);
 
         void finalize();
 
 	// (re)shape the matrix.  Any prior entries are abandoned.
-	SparseMatrix2& shape(const Field& F, Index r = 0, Index c = 0);
+	SparseMatrix& shape(const Field& F, Index r = 0, Index c = 0);
 
 	// need cstor from matrix stream, read, write
 
@@ -314,7 +314,7 @@ class SparseMatrix2<Field_, SparseMatrixFormat::TPL_omp> : public BlackboxInterf
 
 	template<typename Tp1_>
 	struct rebind {
-		typedef SparseMatrix2<Tp1_> other;
+		typedef SparseMatrix<Tp1_> other;
 		void operator() (other & Ap, const Self_t& A)
 		{
 			Hom <typename Self_t::Field, Tp1_> hom( A.field(), Ap.field());
@@ -406,7 +406,7 @@ protected:
         SizedChunks rowBlocks_;
 
         SizedChunks colBlocks_;
-  }; // SparseMatrix2
+  }; // SparseMatrix
 
 } // namespace LinBox
 

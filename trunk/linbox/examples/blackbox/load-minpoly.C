@@ -50,7 +50,7 @@ typedef Modular<uint32_t> Field;
 
 // Select our black box: a sparse matrix over the above-mentioned field with
 // default application vector and row representation types
-typedef SparseMatrix2<Field> Blackbox;
+typedef SparseMatrix<Field> Blackbox;
 
 // We are using dense vectors to represent polynomials
 typedef Vector<Field>::Dense Polynomial;

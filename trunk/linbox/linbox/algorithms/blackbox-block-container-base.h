@@ -72,7 +72,7 @@ public:
 	}
 
 	static void mul (const Field& F,
-			 Block &M1, const SparseMatrix2<Field,SparseMatrixFormat::TPL> &M2, const Block& M3) {
+			 Block &M1, const SparseMatrix<Field,SparseMatrixFormat::TPL> &M2, const Block& M3) {
 		M2.applyLeft(M1,M3);
 	}
 };

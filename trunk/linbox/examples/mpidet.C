@@ -63,7 +63,7 @@ int main (int argc, char **argv)
 			return -1;
 		}
 
-		SparseMatrix2<Integers>A(ZZ);
+		SparseMatrix<Integers>A(ZZ);
 		A.read(input);
 		if(!Cptr->rank()){
 			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;

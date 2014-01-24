@@ -87,12 +87,12 @@ namespace LinBox
 		// constructor a very special random sparse matrix
 		// [I, R] or [I, R]^t, where R is a sparse random matrix.
 		template<class Field>
-		static SparseMatrix2<Field>*& randomMatrix( SparseMatrix2<Field>*& Ap,
+		static SparseMatrix<Field>*& randomMatrix( SparseMatrix<Field>*& Ap,
 							   const Field& f,
 							   int rowdim, int coldim)
 		{
 
-			Ap = new SparseMatrix2<Field>(f, rowdim, coldim);
+			Ap = new SparseMatrix<Field>(f, rowdim, coldim);
 
 			const int m = rowdim < coldim ? rowdim : coldim;
 

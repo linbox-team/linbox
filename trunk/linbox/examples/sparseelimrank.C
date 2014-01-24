@@ -66,7 +66,7 @@ int main (int argc, char **argv)
 		   */
 		LinBox::GivaroRational ZZ;
 		MatrixStream<GivaroRational> ms( ZZ, input );
-		SparseMatrix2<GivaroRational, SparseMatrixFormat::SparseSeq > A ( ms );
+		SparseMatrix<GivaroRational, SparseMatrixFormat::SparseSeq > A ( ms );
         if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 
 
@@ -81,7 +81,7 @@ int main (int argc, char **argv)
 		typedef Modular<double> Field;
 		Field F(q);
 		MatrixStream<Field> ms( F, input );
-		SparseMatrix2<Field, SparseMatrixFormat::SparseSeq > B (ms);
+		SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (ms);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 

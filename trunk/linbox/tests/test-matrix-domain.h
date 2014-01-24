@@ -145,7 +145,7 @@ Matrix<MatrixDomain>
   domain() returns the MatrixDomain
     domain().mul
   field() returns MD().field()
-SparseMatrix2<MatrixDomain>
+SparseMatrix<MatrixDomain>
 
  Those matrix classes know basic matrix functions rank, det, minpoly, etc
  as well as

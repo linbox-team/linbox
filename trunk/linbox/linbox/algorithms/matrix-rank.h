@@ -127,12 +127,12 @@ namespace LinBox
 		 * @bug we suppose we can map IRing to Field...
 		 */
 		template <class Row>
-		long rank(const SparseMatrix2<Ring, Row>& A) const
+		long rank(const SparseMatrix<Ring, Row>& A) const
 		{
 			rp.template setBitsField<Field>();
 
 			Field F (*rp);
-			typename SparseMatrix2<Ring, Row>::template rebind<Field>::other Ap(A, F);
+			typename SparseMatrix<Ring, Row>::template rebind<Field>::other Ap(A, F);
 			long result;
 			result = rankIn (Ap);
 			return result;
@@ -229,7 +229,7 @@ namespace LinBox
 		 * @return its rank
 		 */
 		template<class Field, class Row>
-		long rankIn(SparseMatrix2<Field, Row>& A) const
+		long rankIn(SparseMatrix<Field, Row>& A) const
 		{
 
 			unsigned long result;
