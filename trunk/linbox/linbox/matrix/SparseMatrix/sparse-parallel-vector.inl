@@ -43,12 +43,12 @@
 namespace LinBox { namespace Protected {
 
 	template <class Field, class Row>
-	std::ostream &SparseMatrixWriteHelper<Field, Row, VectorCategories::SparseParallelVectorTag >::write (const SparseMatrix<Field, Row> &A, std::ostream &os
+	std::ostream &SparseMatrixWriteHelper<Field, Row, VectorCategories::SparseParallelVectorTag >::write (const SparseMatrixGeneric<Field, Row> &A, std::ostream &os
 		 // , const Field &F
 		 , LINBOX_enum(Tag::FileFormat) format)
 	{
 		const Field & F = A.field();
-		typename SparseMatrix<Field, Row>::Rep::const_iterator i;
+		typename SparseMatrixGeneric<Field, Row>::Rep::const_iterator i;
 		typename Row::first_type::const_iterator j_idx;
 		typename Row::second_type::const_iterator j_elt;
 		size_t i_idx, j_idx_1, col_idx;
@@ -216,7 +216,7 @@ namespace LinBox { namespace Protected {
 
 
 	template <class Field, class Row>
-	SparseMatrix<Field,Row,VectorCategories::SparseParallelVectorTag> ::SparseMatrix( MatrixStream<Field>& ms ) :
+	SparseMatrixGeneric<Field,Row,VectorCategories::SparseParallelVectorTag> ::SparseMatrixGeneric( MatrixStream<Field>& ms ) :
 		_field(ms.field())
 		,_MD(ms.field()),_AT(*this)
 		,_matA(0), _m(0), _n(0)
@@ -243,7 +243,7 @@ namespace LinBox { namespace Protected {
 
 
 	template <class Field, class Row>
-	void SparseMatrix<Field, Row, VectorCategories::SparseParallelVectorTag > ::setEntry (size_t i, size_t j, const typename Field::Element &value)
+	void SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag > ::setEntry (size_t i, size_t j, const typename Field::Element &value)
 	{
 		while (_matA.size() < i + 1) _matA.push_back(Row());
 		_m = _matA.size();
@@ -268,7 +268,7 @@ namespace LinBox { namespace Protected {
 	}
 
 	template <class Field, class Row>
-	typename Field::Element &SparseMatrix<Field, Row, VectorCategories::SparseParallelVectorTag > ::refEntry (size_t i, size_t j)
+	typename Field::Element &SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag > ::refEntry (size_t i, size_t j)
 	{
 
 		Row &v = _matA[i];
@@ -295,7 +295,7 @@ namespace LinBox { namespace Protected {
 	}
 
 	template <class Field, class Row>
-	const typename Field::Element &SparseMatrix<Field, Row, VectorCategories::SparseParallelVectorTag > ::getEntry (size_t i, size_t j) const
+	const typename Field::Element &SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag > ::getEntry (size_t i, size_t j) const
 	{
 
 		const Row &v = _matA[i];
@@ -316,7 +316,7 @@ namespace LinBox { namespace Protected {
 
 	template <class Field, class Row>
 	template <class Vector>
-	Vector &SparseMatrix<Field, Row, VectorCategories::SparseParallelVectorTag >::columnDensity (Vector &v) const
+	Vector &SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag >::columnDensity (Vector &v) const
 	{
 		unsigned int row = 0;
 
@@ -333,8 +333,8 @@ namespace LinBox { namespace Protected {
 
 
 	template <class Field, class Row>
-	SparseMatrix<Field, Row, VectorCategories::SparseParallelVectorTag >
-	&SparseMatrix<Field, Row, VectorCategories::SparseParallelVectorTag >::transpose (SparseMatrix &AT) const
+	SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag >
+	&SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag >::transpose (SparseMatrixGeneric &AT) const
 	{
 		unsigned int row = 0;
 
