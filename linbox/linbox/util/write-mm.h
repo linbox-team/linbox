@@ -41,8 +41,8 @@ namespace LinBox
 /// Write second line and comment part of matrix market header
 template <class Field>
 std::ostream& writeMMComment(std::ostream& os, Field& F, std::string name, std::string comment) {
-	F.write(os << "% written by LinBox::"/*,std::string("F")*/) << "; ";
-	F.write(os << name << "<", std::string("")) << " >(F)" << std::endl;
+	F.write(os << "% written by LinBox::" << name << "<field>, field = ") << std::endl;
+	//F.write(os << name << "<"/*, std::string("")*/) << " >(F)" << std::endl;
 	if (comment.size() > 0)
 		os << "%" << std::endl << "% " << comment << std::endl << "%" << std::endl;
     return os;
@@ -75,12 +75,12 @@ std::ostream& writeMMArrayHeader(std::ostream& os, BB& A, std::string name, std:
 	return os;
 }
 
-/// Generic dense matrix writer to matrix market array format.
+/// Generic dense matrix writer to matrix market array format (col major).
 template <class Mat>
 std::ostream& writeMMArray(std::ostream& os, Mat& A, std::string name, std::string comment = "") {
 	writeMMArrayHeader(os, A, name, comment);
 	typename Mat::Field::Element x; A.field().init(x, 0);
-	for (size_t j = 0; j < A.coldim(); ++j)
+	for (size_t j = 0; j < A.coldim(); ++j) 
 		for (size_t i = 0; i < A.rowdim(); ++i)
 			os << A.getEntry(x, i, j) << std::endl;
 	return os;
@@ -91,13 +91,13 @@ inline std::string eltype(float x) { return "float"; }
 inline std::string eltype(double x) { return "double"; }
 inline std::string eltype(int8_t x) { return "int8_t"; }
 inline std::string eltype(int16_t x) { return "int16_t"; }
-inline std::string eltype(int32_t x) { return "int32"; }
-inline std::string eltype(int64_t x) { return "int64"; }
+inline std::string eltype(int32_t x) { return "int32_t"; }
+inline std::string eltype(int64_t x) { return "int64_t"; }
 inline std::string eltype(integer x) { return "integer"; }
 inline std::string eltype(uint8_t x) { return "uint8_t"; }
 inline std::string eltype(uint16_t x) { return "uint16_t"; }
-inline std::string eltype(uint32_t x) { return "uint32"; }
-inline std::string eltype(uint64_t x) { return "uint64"; }
+inline std::string eltype(uint32_t x) { return "uint32_t"; }
+inline std::string eltype(uint64_t x) { return "uint64_t"; }
 
 }  // end of namespace LinBox
 #endif // __write_mm_h

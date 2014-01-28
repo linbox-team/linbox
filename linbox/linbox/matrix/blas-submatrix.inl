@@ -981,16 +981,8 @@ namespace LinBox
 
 	template <class _Matrix>
 	std::ostream &BlasSubmatrix< _Matrix >::write (std::ostream &os) const
-	{
-		os << "%%MatrixMarket matrix array integer general" << std::endl;
-		field().write(os << "% ") << std::endl;
-		os << rowdim() << " " << coldim() << std::endl;
-		typename _Matrix::Element x; field().init(x, 0);
-		for (size_t j = 0; j < coldim(); ++j)
-			for (size_t i = 0; i < rowdim(); ++i)
-				os << getEntry(x, i, j) << std::endl;
-		return os;
-	}
+	{	return writeMMArray(os, *this, "BlasSubmatrix");	}
+
 	template <class _Matrix>
 	std::ostream &BlasSubmatrix< _Matrix >::write (std::ostream &os,
 						     LINBOX_enum (Tag::FileFormat) f ) const
