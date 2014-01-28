@@ -33,7 +33,7 @@
 #ifndef __LINBOX_sparse_matrix_sparse_domain_H
 #define __LINBOX_sparse_matrix_sparse_domain_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
 namespace LinBox {

@@ -26,18 +26,17 @@
  \brief Gaussian elimination determinant of sparse matrix over Z or Zp.
  \ingroup examples
  */
-//#include "linbox-config.h"
 
 #include <iostream>
 #include <vector>
 #include <utility>
 
-#include "linbox/field/modular.h"
-#include "linbox/field/gf2.h"
-#include "linbox/matrix/sparse.h"
-#include "linbox/blackbox/zero-one.h"
-#include "linbox/solutions/rank.h"
-#include "linbox/solutions/det.h"
+#include <linbox/field/modular.h>
+#include <linbox/field/gf2.h>
+#include <linbox/matrix/sparse.h>
+#include <linbox/blackbox/zero-one.h>
+#include <linbox/solutions/rank.h>
+#include <linbox/solutions/det.h>
 
 using namespace LinBox;
 using namespace std;

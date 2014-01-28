@@ -35,7 +35,7 @@
 #include "linbox/element/archetype.h"
 #include "linbox/element/abstract.h"
 #include "linbox/element/envelope.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <sys/time.h>
 #include <stdlib.h>

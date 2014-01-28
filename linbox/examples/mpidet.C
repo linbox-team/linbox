@@ -31,10 +31,10 @@
 #include <iostream>
 #include <string>
 
-#include "linbox/field/modular.h"
-#include "linbox/matrix/sparse.h"
-#include "linbox/solutions/det.h"
-#include "linbox/util/matrix-stream.h"
+#include <linbox/field/modular.h>
+#include <linbox/matrix/sparse.h>
+#include <linbox/solutions/det.h>
+#include <linbox/util/matrix-stream.h>
 
 using namespace LinBox;
 using namespace std;

@@ -34,7 +34,7 @@
 #include <algorithm>
 
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/randiter/unparametric.h"

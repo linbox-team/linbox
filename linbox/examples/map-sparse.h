@@ -35,11 +35,11 @@
 #include <map>
 #include <iostream>
 
-#include "linbox-config.h"
-#include "linbox/util/debug.h"
-#include "linbox/util/field-axpy.h"
-#include "linbox/blackbox/blackbox-interface.h"
-#include "linbox/field/hom.h"
+#include <linbox/linbox-config.h>
+#include <linbox/util/debug.h>
+#include <linbox/util/field-axpy.h>
+#include <linbox/blackbox/blackbox-interface.h>
+#include <linbox/field/hom.h>
 
 
 namespace LinBox
@@ -181,7 +181,7 @@ protected:
 
 }
 
-#include "examples/map-sparse.inl"
+#include <examples/map-sparse.inl>
 
 #endif // __LINBOX_MAP_SPARSE_H
 

@@ -27,12 +27,11 @@
   \ingroup examples
   */
 
-//#include "linbox-config.h"
 #include <iostream>
 
-#include "linbox/field/modular.h"
-#include "linbox/matrix/sparse.h"
-#include "linbox/solutions/det.h"
+#include <linbox/field/modular.h>
+#include <linbox/matrix/sparse.h>
+#include <linbox/solutions/det.h>
 
 using namespace LinBox;
 using namespace std;

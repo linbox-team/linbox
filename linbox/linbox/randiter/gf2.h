@@ -33,7 +33,7 @@
 #include <vector>
 
 #include <time.h>
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 // #include "linbox/field/modular.h"
 #include "linbox/element/abstract.h"

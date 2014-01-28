@@ -32,6 +32,7 @@
 #define __LINBOX_linbox_tags_H
 
 #include <fflas-ffpack/fflas/fflas.h>
+#include "linbox/linbox-config.h"
 
 #if HAVE_CXX11
 #define LINBOX_enum(name) name

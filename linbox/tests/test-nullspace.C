@@ -32,7 +32,7 @@
  *  @todo make sure this is faster than FFPACK ?
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include <iostream>
 #include "linbox/integer.h"
 #include "linbox/matrix/matrix-domain.h"

@@ -35,14 +35,14 @@
  * required time.
  */
 
-#include "linbox-config.h"
+#include <linbox/linbox-config.h>
 
 #include <iostream>
 
-#include "linbox/field/modular.h"
-#include "linbox/vector/vector-domain.h"
-#include "linbox/vector/stream.h"
-#include "linbox/util/commentator.h"
+#include <linbox/field/modular.h>
+#include <linbox/vector/vector-domain.h>
+#include <linbox/vector/stream.h>
+#include <linbox/util/commentator.h>
 
 using namespace LinBox;
 

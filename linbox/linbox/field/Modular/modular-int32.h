@@ -30,7 +30,7 @@
 
 
 #include <math.h>
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"
@@ -113,11 +113,10 @@ namespace LinBox
 	       	Modular (int32_t value, int32_t exp=1) :
 			Father_t(value,exp)
 		      {}
-#if (FFLAFLAS_VERSIONW>10400)
+
 		Modular (long value) :
 			Father_t(value)
 		      {}
-#endif
 
 		Modular (unsigned long value) :
 			Father_t(value)

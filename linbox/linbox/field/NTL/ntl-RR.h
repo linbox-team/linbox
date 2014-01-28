@@ -38,7 +38,7 @@
 #ifndef __LINBOX_field_ntl_rr_H
 #define __LINBOX_field_ntl_rr_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #ifndef __LINBOX_HAVE_NTL
 #error "you need NTL here"

@@ -42,7 +42,7 @@
 #include <string>
 
 
-//#include "linbox-config.h"
+//#include "linbox/linbox-config.h"
 #include "test-common.h"
 
 #include "linbox/field/modular.h"

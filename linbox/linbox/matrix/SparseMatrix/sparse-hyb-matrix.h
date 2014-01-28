@@ -37,7 +37,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "sparse-domain.h"
 #include "sparse-coo-matrix.h"

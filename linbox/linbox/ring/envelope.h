@@ -36,7 +36,7 @@
 #include "linbox/randiter/abstract.h"
 #include "linbox/randiter/envelope.h"
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"

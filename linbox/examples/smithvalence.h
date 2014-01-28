@@ -27,18 +27,18 @@
  */
 
 #include <givaro/givintnumtheo.h>
-#include "linbox/field/gf2.h"
-#include "linbox/field/modular.h"
-#include "linbox/field/givaro.h"
-#include "linbox/field/field-traits.h"
-#include "linbox/blackbox/transpose.h"
-#include "linbox/blackbox/compose.h"
-#include "linbox/matrix/sparse.h"
-#include "linbox/solutions/rank.h"
-#include "linbox/solutions/valence.h"
-#include "linbox/algorithms/smith-form-sparseelim-local.h"
-#include "linbox/util/matrix-stream.h"
-#include "linbox/util/timer.h"
+#include <linbox/field/gf2.h>
+#include <linbox/field/modular.h>
+#include <linbox/field/givaro.h>
+#include <linbox/field/field-traits.h>
+#include <linbox/blackbox/transpose.h>
+#include <linbox/blackbox/compose.h>
+#include <linbox/matrix/sparse.h>
+#include <linbox/solutions/rank.h>
+#include <linbox/solutions/valence.h>
+#include <linbox/algorithms/smith-form-sparseelim-local.h>
+#include <linbox/util/matrix-stream.h>
+#include <linbox/util/timer.h>
 
 
 template<class Field>
@@ -149,7 +149,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 	return ranks;
 }
 
-#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
+#include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
 
 
 std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effective_exponent, char * filename, size_t e, size_t intr)

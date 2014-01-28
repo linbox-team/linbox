@@ -31,7 +31,7 @@
 
 #include <iostream>
 #include <omp.h>
-#include "smithvalence.h"
+#include <smithvalence.h>
 using namespace LinBox;
 
 int main (int argc, char **argv)

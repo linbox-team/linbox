@@ -25,7 +25,7 @@
 #ifndef __LINBOX_lb_blackbox_C
 #define __LINBOX_lb_blackbox_C
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <lb-blackbox.h>
 #include <lb-blackbox-function.h>

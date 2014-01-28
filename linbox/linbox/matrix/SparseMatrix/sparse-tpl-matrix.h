@@ -32,7 +32,7 @@
 
 #include <algorithm>
 #include <iostream>
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/blackbox/blackbox-interface.h"

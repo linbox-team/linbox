@@ -29,7 +29,7 @@
 
 
 #include "linbox/util/debug.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/vector/blas-vector.h"
 

@@ -55,19 +55,18 @@
 using namespace std;
 
 
-//#include "linbox/util/matrix-stream.h"
-#include "linbox/field/modular.h"
-#include "linbox/matrix/sparse.h"
-#include "linbox/algorithms/smith-form-sparseelim-local.h"
+#include <linbox/field/modular.h>
+#include <linbox/matrix/sparse.h>
+#include <linbox/algorithms/smith-form-sparseelim-local.h>
 
-#include "linbox/util/timer.h"
+#include <linbox/util/timer.h>
 
-#include "linbox/field/unparametric.h"
-#include "linbox/field/local2_32.h"
-#include "linbox/field/PIR-modular-int32.h"
-#include "linbox/algorithms/smith-form-local.h"
-#include "linbox/algorithms/smith-form-iliopoulos.h"
-#include "linbox/algorithms/smith-form-adaptive.h"
+#include <linbox/field/unparametric.h>
+#include <linbox/field/local2_32.h>
+#include <linbox/field/PIR-modular-int32.h>
+#include <linbox/algorithms/smith-form-local.h>
+#include <linbox/algorithms/smith-form-iliopoulos.h>
+#include <linbox/algorithms/smith-form-adaptive.h>
 
 using namespace LinBox;
 

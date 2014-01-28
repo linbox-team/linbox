@@ -32,11 +32,11 @@
 #include <sstream>
 #include<fstream>
 
-#include "linbox/field/PID-integer.h"
-#include "linbox/field/modular.h"
-#include "linbox/util/timer.h"
-#include "linbox-config.h"
-#include "linbox/matrix/grid.h"
+#include <linbox/linbox-config.h>
+#include <linbox/field/PID-integer.h>
+#include <linbox/field/modular.h>
+#include <linbox/util/timer.h>
+#include <linbox/matrix/grid.h>
 
 using namespace LinBox;
 

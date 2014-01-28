@@ -29,7 +29,7 @@
 #include <fstream>
 #include <cstdlib>
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/randiter/random-prime.h"

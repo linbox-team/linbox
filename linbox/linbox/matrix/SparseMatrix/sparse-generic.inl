@@ -40,7 +40,7 @@
 #ifndef __LINBOX_matrix_sparse_INL
 #define __LINBOX_matrix_sparse_INL
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 #include <sstream>

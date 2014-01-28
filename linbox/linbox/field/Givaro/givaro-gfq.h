@@ -41,7 +41,7 @@
 #define __LINBOX_field_givaro_gfq_H
 
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-traits.h"

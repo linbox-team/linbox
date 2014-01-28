@@ -29,7 +29,7 @@
  */
 
 #include "config.h"
-#include "linbox-configuration.h"
+// #include "linbox-configuration.h"
 
 #ifndef INT32_MAX
 #define INT32_MAX (2147483647L)
@@ -58,10 +58,6 @@ using std::ptrdiff_t;
 #endif
 #endif
 
-
-#ifndef FFLAFLAS_VERSION
-#define FFLAFLAS_VERSION __LINBOX_FFLAFFLAS_VERSION
-#endif
 
 
 

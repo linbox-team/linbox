@@ -43,7 +43,7 @@
  * @brief Block Wiedemann Rank with OpenMP
  */
 
-#include "linbox-config.h"
+#include <linbox/linbox-config.h>
 
 
 #include <iostream>
@@ -54,7 +54,7 @@
 
 #include <givaro/givtimer.h>
 #include <givaro/givpoly1crt.h>
-#include "linbox/integer.h"
+#include <linbox/integer.h>
 
 
 #ifndef LINBOX_USES_OPENMP
@@ -75,17 +75,17 @@ FFTSeeder  FFTgenerator;
 // **********************************************************
 
 
-#include "linbox/field/givaro.h"
+#include <linbox/field/givaro.h>
 #define LINBOX_EXTENSION_DEGREE_MAX 20
-#include "linbox/field/givaro.h"
-#include "linbox/field/modular.h"
-#include "linbox/blackbox/zero-one.h"
-#include "linbox/blackbox/diagonal.h"
-#include "linbox/solutions/rank.h"
-#include "linbox/solutions/trace.h"
-#include "linbox/util/matrix-stream.h"
-#include "linbox/algorithms/sigma-basis.h"
-#include "linbox/algorithms/block-massey-domain.h"
+#include <linbox/field/givaro.h>
+#include <linbox/field/modular.h>
+#include <linbox/blackbox/zero-one.h>
+#include <linbox/blackbox/diagonal.h>
+#include <linbox/solutions/rank.h>
+#include <linbox/solutions/trace.h>
+#include <linbox/util/matrix-stream.h>
+#include <linbox/algorithms/sigma-basis.h>
+#include <linbox/algorithms/block-massey-domain.h>
 
 template<class Field>
 void extractLeftSigma(const Field &F,
@@ -217,7 +217,7 @@ void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::BlasMatrixDomain
 	//     }
 }
 
-#include "linbox/algorithms/whisart_trace.h"
+#include <linbox/algorithms/whisart_trace.h>
 
 
 using namespace Givaro;

@@ -25,7 +25,7 @@
 #ifndef __LINBOX_rank_H
 #define __LINBOX_rank_H
 
-//#include "linbox-config.h"
+//#include "linbox/linbox-config.h"
 #include "linbox/field/modular.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"

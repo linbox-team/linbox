@@ -26,7 +26,6 @@
   \brief Valence of sparse matrix over Z or Zp.
   \ingroup examples
   */
-//#include "linbox-config.h"
 #include <iostream>
 
 #include "smithvalence.h"

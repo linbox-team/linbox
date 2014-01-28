@@ -31,7 +31,7 @@
 #ifndef __LINBOX_benchmarks_benchmark_utils_C
 #define __LINBOX_benchmarks_benchmark_utils_C
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "benchmark-utils.h"
 
 //

@@ -33,7 +33,7 @@
 #include <climits>
 #include <cmath>
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"

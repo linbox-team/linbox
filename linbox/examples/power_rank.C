@@ -27,13 +27,13 @@
   \brief Rank of sparse matrix over Z or Zp.
   \ingroup examples
   */
-#include "linbox-config.h"
+#include <linbox/linbox-config.h>
 
 #include <iostream>
 
-#include "linbox/field/givaro.h"
-#include "linbox/matrix/sparse.h"
-#include "linbox/algorithms/smith-form-sparseelim-local.h"
+#include <linbox/field/givaro.h>
+#include <linbox/matrix/sparse.h>
+#include <linbox/algorithms/smith-form-sparseelim-local.h>
 
 using namespace LinBox;
 using namespace std;

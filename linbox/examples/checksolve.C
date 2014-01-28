@@ -25,13 +25,12 @@
   \brief Solving of sparse matrix over Z or Zp.
   \ingroup examples
   */
-//#include "linbox-config.h"
 #include <iostream>
 
-#include "linbox/field/modular.h"
-#include "linbox/solutions/solve.h"
-#include "linbox/util/matrix-stream.h"
-#include "linbox/solutions/methods.h"
+#include <linbox/field/modular.h>
+#include <linbox/solutions/solve.h>
+#include <linbox/util/matrix-stream.h>
+#include <linbox/solutions/methods.h>
 
 using namespace LinBox;
 // using namespace std;

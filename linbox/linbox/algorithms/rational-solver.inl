@@ -27,7 +27,7 @@
 #define __LINBOX_rational_solver_INL
 
 #include "linbox/util/debug.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/lambda-sparse.h"

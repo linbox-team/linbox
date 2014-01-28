@@ -37,7 +37,7 @@
 #if 0
 
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 #include <fstream>
@@ -97,7 +97,7 @@ int main (int argc, char **argv)
  * --------------------------------------------------------
  *
  */
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 
