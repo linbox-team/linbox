@@ -19,8 +19,6 @@ cflags=false
 libs=false
 
 
-
-
 usage()
 {
     cat <<EOF
