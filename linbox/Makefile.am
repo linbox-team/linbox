@@ -86,7 +86,9 @@ uninstall-hook:
 		"$(includedir)" ) || true
 
 pkginclude_HEADERS=   \
-	       linbox-config.h
+	       linbox-config.h \
+		config.h	\
+		linbox-configuration.h
 
 VERSION=1.4.0
 
