@@ -74,6 +74,7 @@ namespace LinBox {
 
 } // LinBox
 
+
 #include "SparseMatrix/sparse-generic.h"
 
 #include "SparseMatrix/sparse-coo-matrix.h"
@@ -92,6 +93,8 @@ namespace LinBox {
 #ifdef _OPENMP
 #include "SparseMatrix/sparse-tpl-matrix-omp.h"
 #endif
+
+#include "SparseMatrix/read-write-sparse.h"
 
 
 #endif // __LINBOX_matrix_sparse_matrix_H

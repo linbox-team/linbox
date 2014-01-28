@@ -116,6 +116,7 @@ FULLCHECK_TESTS =                 \
         test-scalar-matrix            \
         test-solve-nonsingular        \
         test-sparse                   \
+        test-sparse2                  \
         test-subiterator              \
         test-submatrix                \
         test-subvector                \
@@ -357,6 +358,12 @@ test_dense_SOURCES =                    \
 test_sparse_SOURCES =                   \
         test-sparse.C                   \
         test-common.h
+
+test_sparse2_SOURCES =                   \
+        test-sparse2.C                   \
+        test-common.h
+
+
 
 test_submatrix_SOURCES =                \
         test-submatrix.C                \

@@ -23,15 +23,13 @@
  * ========LICENCE========
  */
 
-/*! @file matrix/sparse-matrix.h
- * @ingroup matrix
- * @ingroup sparse
- * A <code>SparseMatrix<_Field ></code> ....
+/*! @file matrix/SparseMatrix/sparse-ell-matrix.h
+ * @ingroup sparsematrix
  */
 
 
-#ifndef __LINBOX_sparse_matrix_sparse_ell_matrix_H
-#define __LINBOX_sparse_matrix_sparse_ell_matrix_H
+#ifndef __LINBOX_matrix_sparsematrix_sparse_ell_matrix_H
+#define __LINBOX_matrix_sparsematrix_sparse_ell_matrix_H
 
 #include <utility>
 #include <iostream>
@@ -1058,7 +1056,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __LINBOX_sparse_matrix_sparse_ell_matrix_H
+#endif // __LINBOX_matrix_sparsematrix_sparse_ell_matrix_H
 
 // Local Variables:
 // mode: C++

@@ -56,8 +56,12 @@
  *.
  */
 
-#ifndef __LINBOX_matrix_sparse_sequence_H
-#define __LINBOX_matrix_sparse_sequence_H
+/** @file linbox/matrix/SparseMatrix/sparse-sequence-vector.h
+ * @brief
+ */
+
+#ifndef __LINBOX_matrix_sparsematrix_sparse_sequence_vector_H
+#define __LINBOX_matrix_sparsematrix_sparse_sequence_vector_H
 
 
 namespace LinBox { namespace Protected {
@@ -184,7 +188,7 @@ namespace LinBox { namespace Protected {
 				    // , const Field &F
 				    , LINBOX_enum(Tag::FileFormat) format /* = Tag::FileFormat::Detect */)
 		{
-			return SparseMatrixReadWriteHelper<Field, Row>::read (*this, is
+			return SparseMatrixReadWriteHelper<Self_t>::read (*this, is
 									      , format);
 		}
 
@@ -209,7 +213,7 @@ namespace LinBox { namespace Protected {
 		std::ostream &write (std::ostream &os
 				     , LINBOX_enum(Tag::FileFormat) format /* = Tag::FileFormat::Pretty*/) const
 		{
-			return SparseMatrixReadWriteHelper<Field, Row>::write (*this, os, format);
+			return SparseMatrixReadWriteHelper<Self_t>::write (*this, os, format);
 		}
 
 		/// Write in matrix market format
@@ -608,8 +612,8 @@ namespace LinBox { namespace Protected {
 
 	protected:
 
-		friend class SparseMatrixWriteHelper<Field, Row>;
-		friend class SparseMatrixReadWriteHelper<Field, Row>;
+		friend class SparseMatrixWriteHelper<Self_t>;
+		friend class SparseMatrixReadWriteHelper<Self_t>;
 
 		const Field & _field;
 
@@ -683,7 +687,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __LINBOX_matrix_sparse_sequence_H
+#endif // __LINBOX_matrix_sparsematrix_sparse_sequence_vector_H
 
 
 // Local Variables:

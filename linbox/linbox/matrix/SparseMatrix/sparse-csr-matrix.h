@@ -23,10 +23,9 @@
  * ========LICENCE========
  */
 
-/*! @file matrix/sparse-matrix.h
- * @ingroup matrix
- * @ingroup sparse
- * A <code>SparseMatrix<_Field ></code> ....
+/*! @file matrix/SparseMatrix/sparse-csr-matrix.h
+ * @ingroup sparsematrix
+ * @brief
  */
 
 

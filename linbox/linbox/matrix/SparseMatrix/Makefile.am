@@ -42,6 +42,8 @@ pkgincludesub_HEADERS =         \
         sparse-parallel-vector.inl       \
         sparse-sequence-vector.h         \
 	triples-coord.h  \
+	read-write-sparse.h \
+	read-write-sparse.inl \
         sparse-sequence-vector.inl
 
 EXTRA_DIST=sparse-matrix.doxy
