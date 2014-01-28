@@ -29,14 +29,14 @@
 #include <iostream>
 #include <iomanip>
 
-#include "linbox/util/timer.h"
-#include "linbox/field/modular.h"
-#include "linbox/field/unparametric.h"
-#include "linbox/matrix/sparse.h"
+#include <linbox/util/timer.h>
+#include <linbox/field/modular.h>
+#include <linbox/field/unparametric.h>
+#include <linbox/matrix/sparse.h>
 using namespace std;
 
-#include "linbox/solutions/charpoly.h"
-#include "linbox/ring/givaro-polynomial.h"
+#include <linbox/solutions/charpoly.h>
+#include <linbox/ring/givaro-polynomial.h>
 using namespace LinBox;
 
 template <class Field, class Polynomial>

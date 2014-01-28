@@ -31,11 +31,11 @@
 
 #include <iostream>
 
-#include "linbox/blackbox/zero-one.h"
-#include "linbox/field/PID-integer.h"
-#include "linbox/solutions/charpoly.h"
-#include "linbox/ring/givaro-polynomial.h"
-#include "linbox/solutions/methods.h"
+#include <linbox/blackbox/zero-one.h>
+#include <linbox/field/PID-integer.h>
+#include <linbox/solutions/charpoly.h>
+#include <linbox/ring/givaro-polynomial.h>
+#include <linbox/solutions/methods.h>
 
 using namespace std;
 using namespace LinBox;

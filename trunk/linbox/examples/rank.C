@@ -31,13 +31,13 @@
 #include <iostream>
 #include <sstream>
 
-#include "linbox/field/modular.h"
-#include "linbox/field/gf2.h"
-#include "linbox/matrix/sparse.h"
-#include "linbox/blackbox/zero-one.h"
-#include "linbox/solutions/rank.h"
-#include "linbox/util/matrix-stream.h"
-#include "linbox/field/givaro.h"
+#include <linbox/field/modular.h>
+#include <linbox/field/gf2.h>
+#include <linbox/matrix/sparse.h>
+#include <linbox/blackbox/zero-one.h>
+#include <linbox/solutions/rank.h>
+#include <linbox/util/matrix-stream.h>
+#include <linbox/field/givaro.h>
 
 using namespace LinBox;
 

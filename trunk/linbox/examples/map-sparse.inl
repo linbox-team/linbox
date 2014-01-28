@@ -35,7 +35,7 @@
 #include <sstream>
 #include <set>
 #include <utility>
-#include "linbox/util/matrix-stream.h"
+#include <linbox/util/matrix-stream.h>
 
 namespace LinBox
 {

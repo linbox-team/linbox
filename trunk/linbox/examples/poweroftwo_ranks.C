@@ -27,13 +27,13 @@
   \brief Ranks of sparse matrix modulo 2^k
   \ingroup examples
   */
-#include "linbox-config.h"
+#include <linbox/linbox-config.h>
 
 #include <iostream>
 
-#include "linbox/field/givaro.h"
-#include "linbox/matrix/sparse.h"
-#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
+#include <linbox/field/givaro.h>
+#include <linbox/matrix/sparse.h>
+#include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
 
 using namespace LinBox;
 using namespace std;

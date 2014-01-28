@@ -32,7 +32,7 @@
 
 #include <iostream>
 //#include "linbox/field/hom.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include <vector>
 #include "linbox/blackbox/blackbox-interface.h"
 

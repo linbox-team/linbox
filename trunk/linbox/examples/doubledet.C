@@ -30,11 +30,11 @@
 
 #include <iostream>
 
-#include "linbox-config.h"
-#include "linbox/field/PID-integer.h"
-#include "linbox/util/matrix-stream.h"
-#include "linbox/solutions/det.h"
-#include "linbox/algorithms/double-det.h"
+#include <linbox/linbox-config.h>
+#include <linbox/field/PID-integer.h>
+#include <linbox/util/matrix-stream.h>
+#include <linbox/solutions/det.h>
+#include <linbox/algorithms/double-det.h>
 
 
 using namespace LinBox;

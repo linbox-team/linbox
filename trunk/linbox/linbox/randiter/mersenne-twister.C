@@ -42,7 +42,7 @@
  * generation in LinBox.
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/util/debug.h"

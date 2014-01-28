@@ -41,7 +41,7 @@
 #include <iostream>
 #include <vector>
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
 #include <fflas-ffpack/ffpack/ffpack.h>

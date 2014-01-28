@@ -30,8 +30,8 @@
 
 #include <iostream>
 
-#include "linbox/field/modular.h"
-#include "linbox/algorithms/echelon-form.h"
+#include <linbox/field/modular.h>
+#include <linbox/algorithms/echelon-form.h>
 #include <fflas-ffpack/ffpack/ffpack.h>
 
 using namespace LinBox;

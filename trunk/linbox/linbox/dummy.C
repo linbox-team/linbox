@@ -27,7 +27,7 @@
  *.
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 // This file contains something to fool libtool into building the library
 // correctly

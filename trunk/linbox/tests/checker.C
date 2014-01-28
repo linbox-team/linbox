@@ -51,7 +51,7 @@ here to build_n_run() or no_build_n_run() (possibly commented out).
 using namespace std;
 
 #include "fflas-ffpack/fflas-ffpack-config.h"
-#include "../linbox-config.h"
+#include "linbox/linbox-config.h"
 
 struct counts {
 	int      pass;

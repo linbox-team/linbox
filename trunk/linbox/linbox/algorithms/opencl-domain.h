@@ -39,7 +39,7 @@
 #include <pthread.h>
 
 #include "linbox/algorithms/blas-domain.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
 #ifdef __LINBOX_HAVE_OCL

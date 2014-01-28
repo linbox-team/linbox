@@ -29,7 +29,7 @@
 #ifndef __LINBOX_mg_block_lanczos_INL
 #define __LINBOX_mg_block_lanczos_INL
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 

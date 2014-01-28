@@ -27,7 +27,7 @@
 #define __LINBOX_matrix_matrix_traits_H
 
 #include "linbox/util/debug.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/matrix/matrix-category.h"
 
 namespace LinBox {

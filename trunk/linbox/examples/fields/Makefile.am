@@ -19,7 +19,7 @@
 # ========LICENCE========
 #/
 
-AM_CPPFLAGS=-I$(top_srcdir)
+#  AM_CPPFLAGS=-I$(top_srcdir)
 
 EXTRA_PROGRAMS =		\
 	ex-fields 		\

@@ -26,7 +26,7 @@
 #ifndef __LINBOX_lb_maple_utilities_H
 #define __LINBOX_lb_maple_utilities_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include <lb-driver.h>
 extern "C" {
 #include <gmp.h>

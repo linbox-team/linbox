@@ -25,7 +25,7 @@
 #ifndef __LINBOX_vector_fraction_H
 #define __LINBOX_vector_fraction_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include <stdio.h>
 #include "linbox/vector/blas-vector.h"

@@ -25,7 +25,7 @@
 #ifndef __LINBOX_lb_vector_C
 #define __LINBOX_lb_vector_C
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <lb-vector.h>
 #include <lb-vector-function.h>

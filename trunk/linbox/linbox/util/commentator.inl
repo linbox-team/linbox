@@ -34,7 +34,7 @@
  * @brief implementation of LinBox::Commentator.
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <string>
 #include <sstream>

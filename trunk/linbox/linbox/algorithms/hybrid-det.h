@@ -26,7 +26,7 @@
 #ifndef __LINBOX_hybrid_det_H
 #define __LINBOX_hybrid_det_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
 #include "linbox/matrix/sparse.h"

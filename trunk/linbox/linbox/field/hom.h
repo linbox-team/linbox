@@ -25,7 +25,7 @@
 #ifndef __LINBOX_hom_H
 #define __LINBOX_hom_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/util/error.h"
