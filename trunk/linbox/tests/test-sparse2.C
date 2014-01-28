@@ -35,7 +35,7 @@
  * @test no doc.
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 #include <fstream>
@@ -102,7 +102,7 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	commentator().start("Sparse matrix black box test suite", "Sparse");
-	MatrixDomain<Field> MD ;
+	MatrixDomain<Field> MD(F) ;
 
 	 /*  default */
 	commentator().start("SparseMatrix<Field>", "Field");
