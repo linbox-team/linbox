@@ -176,7 +176,7 @@ namespace LinBox
 	 *-----    Print The Matrix To Screen
 	 *----------------------------------------------------------------*/
 	template <class _PRing>
-	void Toeplitz<typename _PRing::CoeffField,_PRing>::write(std::ostream& os) const
+	std::ostream & Toeplitz<typename _PRing::CoeffField,_PRing>::write(std::ostream& os) const
 	{
 
 		int N;
@@ -206,14 +206,14 @@ namespace LinBox
 			this->P.write(os, this->pdata) << std::endl;
 		} //[v(2n-2),....,v(0)]; where v(0) is the top right entry of the matrix
 
-		return;
+		return os;
 	} //---- write()----- [Tested 6/14/02 -- Works]
 
 
+#if 0
 	// 	/*-----------------------------------------------------------------
 	// 	 *----    The infamous clone has been created here
 	// 	 *----------------------------------------------------------------*/
-#if 0
 	template <class Field, class Vector>
 	BlackboxArchetype<Vector>* Toeplitz<Field, Vector>::clone() const
 	{

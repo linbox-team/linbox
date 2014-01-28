@@ -66,7 +66,7 @@ namespace LinBox
 
 		~Hankel();
 		// Hankel();// : Toeplitz<_Field>(){}
-
+		Hankel( const Field F) : Father_t (F) {};
 		// Cnstr. with Field and STL vec. of elems
 		Hankel( const Field F,    const std::vector<Element>&v);// : Toeplitz<_Field>(F, v){}
 

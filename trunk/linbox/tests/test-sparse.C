@@ -499,11 +499,7 @@ bool runSparseMatrixTestsByVector (const Field           &F,
 	commentator().progress ();
 	SparseMatrix<Field, typename VectorTraits<Row>::SparseFormat> A(F, A_stream);
 	A_stream.reset ();
-	if (testRW){
-		if (!testBlackbox(A)) 					pass = false;
-	else
-		if (!testBlackboxNoRW(A)) 				pass = false;
-	}
+	if (!testBlackbox(A,testRW)) 					pass = false;
 	commentator().progress ();
 
 	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runSparseMatrixTests");

@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
 	commentator().start("ZeroOne matrix blackbox test suite", "ZeroOne");
 
-	pass = pass && testBlackboxNoRW(testMatrix);
+	pass = pass && testBlackbox(testMatrix,false);
 
 	delete [] rows;
 	delete [] cols;
