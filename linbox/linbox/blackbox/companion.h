@@ -33,8 +33,10 @@ namespace LinBox
 {
 
 	/** \ingroup blackbox
-	  \brief %Companion matrix of a monic polynomial.
-	  */
+	 *  \brief %Companion matrix of a monic polynomial.
+	 *
+	 * @warning companion would be faster if built direct, using one axpy per entry: y_i = x_i-1 + p_i*x_n
+	 */
 	template<class Field_>
 	struct Companion: public SparseMatrix<Field_,SparseMatrixFormat::TPL> {
 		typedef Field_ Field;
@@ -42,7 +44,7 @@ namespace LinBox
 
 		/// This is the n by n companion matrix of a given polynomial of degree n.
 		template<class Polynomial>
-		Companion(const Field& F = Field(), const Polynomial& P = Polynomial(1)) :
+		Companion(const Field& F , const Polynomial& P ) :
 			Father_t(F, P.size()-1, P.size()-1)
 		{
 			size_t n = P.size() - 1;
@@ -56,13 +58,18 @@ namespace LinBox
 			}
 		}// Companion cstor
 
-
+		/// zero matrix
+		Companion(const Field& F) :
+			Father_t(F)
+		{}
 
 
 		/**
 		 * \brief This constructs a random companion matrix.
-
-		 Builds n by n matrix from degree n monic poly with other coefficients random.
+		 *
+		 * Builds n by n matrix from degree n monic poly with other coefficients random.
+		 *
+		 * @warning should it be a constructor ?
 		 */
 		Companion(const Field& F, size_t n,
 			  typename Field::RandIter r ) :
@@ -82,6 +89,13 @@ namespace LinBox
 
 		}
 
+		/**
+		 * \brief This constructs a random companion matrix.
+		 *
+		 * Builds n by n matrix from degree n monic poly with other coefficients random.
+		 *
+		 * @warning should it be a constructor ?
+		 */
 		Companion(const Field& F, size_t n) :
 			Father_t(F,n,n)
 		{
@@ -112,7 +126,6 @@ namespace LinBox
 
 
 
-		// companion would be faster if built direct, using one axpy per entry: y_i = x_i-1 + p_i*x_n
 
 	}; //Companion class
 

@@ -122,6 +122,17 @@ namespace LinBox
 		// Converts from polynomial rep to a vector rep
 		// inverse of the convert from Element to ZZ_pX
 		*/
+	public:
+		std::ostream & write(std::ostream & out) const
+		{
+			return out << "NO WRITE IMPLEMENTED" << std::endl;
+		}
+
+	void read(std::istream & in)
+	{
+		throw(NotImplementedYet());
+	}
+
 
 	}; //  class ToeplitzBase
 
@@ -141,32 +152,28 @@ namespace LinBox
 	#endif
 	class Toeplitz : public ToeplitzBase<_CField,_PRing> {
 	protected:
-		typedef ToeplitzBase<_CField,_PRing> TBase;
+		typedef ToeplitzBase<_CField,_PRing> Father_t;
 	public:
-		typedef TBase Father_t;
-		typedef typename TBase::PRing PRing;
-		typedef typename TBase::Poly Poly;
+		typedef typename Father_t::PRing PRing;
+		typedef typename Father_t::Poly Poly;
 
-		typedef typename TBase::Field Field;
+		typedef typename Father_t::Field Field;
 
-		typedef typename TBase::Element Element;
+		typedef typename Father_t::Element Element;
 
-		// Toeplitz() :
-			// TBase()
-		// {}
 		Toeplitz(const Field& F) :
-			TBase(F)
+			Father_t(F)
 		{}
 		Toeplitz( const PRing& PF ) :
-			TBase(PF)
+			Father_t(PF)
 		{}
 		Toeplitz( const PRing& PF, const Poly& p,
 			  size_t m, size_t n=0 ) :
-			TBase(PF,p,m,n)
+			Father_t(PF,p,m,n)
 		{}
 
-		using TBase::field_;
-		using TBase::field;
+		using Father_t::field_;
+		using Father_t::field;
 	}; // end of class Toeplitz
 
 	/** Specialization for when the field of matrix elements is the same
@@ -175,52 +182,49 @@ namespace LinBox
 	template< class _PRing >
 	class Toeplitz< typename _PRing::CoeffField, _PRing > : public ToeplitzBase< typename _PRing::CoeffField, _PRing > {
 	protected:
-		typedef ToeplitzBase< typename _PRing::CoeffField, _PRing > TBase;
-		typedef TBase Father_t;
-		using TBase::P;
-		using TBase::rowDim;
-		using TBase::colDim;
-		using TBase::sysDim;
-		using TBase::shape;
-		using TBase::pdata;
-		using TBase::rpdata;
-		using TBase::field_;
+		typedef ToeplitzBase< typename _PRing::CoeffField, _PRing > Father_t;
+		using Father_t::P;
+		using Father_t::rowDim;
+		using Father_t::colDim;
+		using Father_t::sysDim;
+		using Father_t::shape;
+		using Father_t::pdata;
+		using Father_t::rpdata;
+		using Father_t::field_;
 	public:
-		using TBase::rowdim;
-		using TBase::coldim;
-		typedef typename TBase::PRing PRing;
-		typedef typename TBase::Poly Poly;
+		using Father_t::rowdim;
+		using Father_t::coldim;
+		typedef typename Father_t::PRing PRing;
+		typedef typename Father_t::Poly Poly;
 
-		typedef typename TBase::Field Field;
+		typedef typename Father_t::Field Field;
 
-		typedef typename TBase::Element Element;
+		typedef typename Father_t::Element Element;
 
 		//------- CONSTRUCTORS AND DESTRUCTORS
-		// Toeplitz() :
-			// TBase()
-		// {}
 		Toeplitz(const Field& F) :
-			TBase(F)
+			Father_t(F)
 		{}
 		Toeplitz( const PRing& PF ) :
-			TBase(PF)
+			Father_t(PF)
 		{}
 		Toeplitz( const PRing& PF, const Poly& p,
 			  size_t m, size_t n=0 ) :
-			TBase(PF,p,m,n)
+			Father_t(PF,p,m,n)
 		{}
 
 		Toeplitz( const Field& F,    // Cnstr. with Field and STL vec. of elems
 			  const std::vector<Element>& v) :
-			TBase(F)
+			Father_t(F)
 		{ init_vector(v); }
 
 		Toeplitz( const Field& F,    // Cnstr. with Field and STL vec. of elems
 			  const BlasVector<Field>& v) :
-			TBase(F)
+			Father_t(F)
 		{ init_vector(v.getRep()); }
 
-		void   write( std::ostream& os = std::cout) const;        // Print the contents to the screen
+		//! @bug this is not MM format at all
+		std::ostream & write( std::ostream& os = std::cout) const;        // Print the contents to the screen
 
 		void   write( char *outFileName) const;
 		// Print the contents to a file
@@ -235,6 +239,7 @@ namespace LinBox
 		Element& det( Element& res ) const;
 
 		Element& trace( Element& res ) const;
+
 	protected:
 		// initialization via a vector. Usually called by a constructor
 		// Moved in a separate protected function to enable easier
@@ -247,6 +252,7 @@ namespace LinBox
 
 	template<class Field, class PD>
 	struct TraceCategory<Toeplitz<Field,PD> >	{ typedef typename SolutionTags::Local Tag; };
+
 
 
 } // namespace LinBox
