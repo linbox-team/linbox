@@ -25,6 +25,7 @@ ACLOCAL_AMFLAGS = -I macros
 
 SUBDIRS=benchmarks linbox macros tests interfaces doc examples
 
+include_HEADERS=linbox-config.h
 # I intend to pare down the target "check" so as to be a smaller check used
 # at installation time with a focus on confirming that dependencies on
 # other packages and compilation environment are in order.  In contrast, the
@@ -34,7 +35,7 @@ SUBDIRS=benchmarks linbox macros tests interfaces doc examples
 #  Fullcheck provides a full check for regression testing purposes.
 fullcheck:
 	(${MAKE} ; cd tests; ${MAKE} fullcheck )
-	(cd examples ; ${MAKE} examples ; ) # sh ./test.sh
+	${MAKE} install ; ${MAKE} examples
 
 docs:doc/linbox-html/index.html
 
@@ -47,7 +48,7 @@ doc/linbox-dev-html/pages.html:
 	(cd doc; ${MAKE} docs_dev)
 
 examples:
-	(  ${MAKE} ; cd examples; ${MAKE} examples)
+	(  ${MAKE} ;   ${MAKE} install ;cd examples; ${MAKE} examples)
 
 benchmarks:
 	(cd benchmarks; ${MAKE} benchmarks)
@@ -65,6 +66,8 @@ uninstall-hook:
 		"$(mandir)/man1" \
 		"$(mandir)" \
 		"$(includedir)/linbox/algorithms/gauss" \
+		"$(includedir)/linbox/algorithms/IML" \
+		"$(includedir)/linbox/algorithms/matrix-blas3" \
 		"$(includedir)/linbox/algorithms" \
 		"$(includedir)/linbox/blackbox" \
 		"$(includedir)/linbox/element" \
@@ -73,6 +76,7 @@ uninstall-hook:
 		"$(includedir)/linbox/field/NTL" \
 		"$(includedir)/linbox/field/" \
 		"$(includedir)/linbox/kaapi" \
+		"$(includedir)/linbox/matrix/SparseMatrix" \
 		"$(includedir)/linbox/matrix" \
 		"$(includedir)/linbox/randiter" \
 		"$(includedir)/linbox/ring" \

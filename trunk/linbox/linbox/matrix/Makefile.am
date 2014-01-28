@@ -34,8 +34,8 @@ BASIC_HDRS =              \
 	matrix-domain-gf2.h       \
 	blas-matrix.h             \
 	blas-matrix.inl           \
-	blas-matrix-domain.h	  \
-	blas-matrix-domain.inl	  \
+	blas-matrix-domain.h      \
+	blas-matrix-domain.inl    \
 	sparse-matrix.h           \
 	sparse-formats.h          \
 	blas-submatrix.inl        \
