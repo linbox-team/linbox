@@ -56,8 +56,13 @@
  *.
  */
 
-#ifndef __LINBOX_matrix_sparse_H
-#define __LINBOX_matrix_sparse_H
+/** @file linbox/matrix/SparseMatrix/sparse-generic.h
+ * @brief
+ */
+
+#ifndef __LINBOX_matrix_sparsematrix_sparse_generic_H
+#define __LINBOX_matrix_sparsematrix_sparse_generic_H
+
 
 #ifndef _SP_BB_VECTOR_
 #include <vector>
@@ -83,59 +88,25 @@
 namespace LinBox {
 	template<class Field>
 	class MatrixDomain ;
-} // Linbox
 
-namespace LinBox { namespace Protected {
+	namespace Protected {
 	// Forward declaration
 	template <class _Field,
 		 class _Row   = typename RawVector<typename _Field::Element>::Sparse,
 		 class Trait  = typename VectorTraits<_Row>::VectorCategory>
 		 class SparseMatrixGeneric;
 
+	template<class Matrix>
+	class SparseMatrixWriteHelper ;
 
-	// Small helper classes to make read and write easier
-	template <class _Field, class Row,
-		 class Trait = typename VectorTraits<Row>::VectorCategory>
-		 class SparseMatrixWriteHelper {
-		 public:
-			 typedef         _Field          Field;
-			 typedef typename Field::Element Element;
+	template<class Matrix>
+	class SparseMatrixReadWriteHelper ;
 
-			 static std::ostream &write (const SparseMatrixGeneric<Field, Row> &A
-						     , std::ostream &os
-						     , LINBOX_enum(Tag::FileFormat) format);
-		 };
+	}
 
-	template <class Field, class Row, class Trait = typename VectorTraits<Row>::VectorCategory>
-	class SparseMatrixReadWriteHelper : public SparseMatrixWriteHelper<Field, Row, Trait> {
-		static std::istream &readTurner    (SparseMatrixGeneric<Field, Row> &A
-						    , std::istream &is
-						    // , const Field &F
-						    , char *buf);
-		static std::istream &readGuillaume (SparseMatrixGeneric<Field, Row> &A
-						    , std::istream &is
-						    // , const Field &F
-						    , char *buf);
-		static std::istream &readMatlab    (SparseMatrixGeneric<Field, Row> &A
-						    , std::istream &is
-						    // , const Field &F
-						    , char *buf);
-		static std::istream &readPretty    (SparseMatrixGeneric<Field, Row> &A
-						    , std::istream &is
-						    // , const Field &F
-						    , char *buf);
-		static std::istream &readMagmaCpt  (SparseMatrixGeneric<Field, Row> &A
-						    , std::istream &is
-						    // , const Field &F
-						    , char *buf);
+}
 
-	public:
-		typedef typename Field::Element Element;
-
-		static std::istream &read (SparseMatrixGeneric<Field, Row> &A
-					   , std::istream &is
-					   , LINBOX_enum(Tag::FileFormat) format);
-	};
+namespace LinBox { namespace Protected {
 
 	/** Sparse matrix container
 	 * This class acts as a generic row-wise container for sparse
@@ -226,7 +197,7 @@ namespace LinBox { namespace Protected {
 			_MD (F), _AT (*this)
 			, _matA (Mat.rowdim()), _m (Mat.rowdim()), _n (Mat.coldim())
 		{
-				typename SparseMatrixGeneric<_Tp1,_Rw1, _myT>::template rebind<Field,_Row>()(*this, Mat);
+			typename SparseMatrixGeneric<_Tp1,_Rw1, _myT>::template rebind<Field,_Row>()(*this, Mat);
 		}
 
 		template<class VectStream>
@@ -488,8 +459,8 @@ namespace LinBox { namespace Protected {
 
 	protected:
 
-		friend class SparseMatrixWriteHelper<Field, Row>;
-		friend class SparseMatrixReadWriteHelper<Field, Row>;
+		friend class SparseMatrixWriteHelper<Self_t >;
+		friend class SparseMatrixReadWriteHelper<Self_t >;
 
 		Rep               _matA;
 		size_t            _m;
@@ -503,8 +474,11 @@ namespace LinBox { namespace Protected {
 		// template<class F, class R, class T> friend class SparseMatrixGeneric;
 	};
 
-} // LinBox
-} // namespace Protected
+} // Protected
+
+
+} // Linbox
+
 
 #include "linbox/matrix/SparseMatrix/sparse-sequence-vector.h"
 #include "linbox/matrix/SparseMatrix/sparse-parallel-vector.h"
@@ -561,7 +535,7 @@ namespace LinBox {
 } // namespace LinBox
 
 
-#endif // __LINBOX_matrix_sparse_H
+#endif // __LINBOX_matrix_sparsematrix_sparse_generic_H
 
 
 // Local Variables:

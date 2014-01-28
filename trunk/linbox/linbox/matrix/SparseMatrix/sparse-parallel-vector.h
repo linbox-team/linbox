@@ -56,15 +56,20 @@
  *.
  */
 
-#ifndef __LINBOX_matrix_sparse_parallel_H
-#define __LINBOX_matrix_sparse_parallel_H
+/** @file linbox/matrix/SparseMatrix/sparse-parallel-vector.h
+ * @brief
+ */
+
+#ifndef __LINBOX_matrix_sparsematrix_sparse_parallel_vector_H
+#define __LINBOX_matrix_sparsematrix_sparse_parallel_vector_H
+
 
 namespace LinBox { namespace Protected {
 
 
 	// Specialization of the above for sparse parallel vectors
 	template <class _Field, class Row>
-	class SparseMatrixWriteHelper<_Field, Row, VectorCategories::SparseParallelVectorTag > {
+	class SparseMatrixWriteHelper<SparseMatrixGeneric<_Field, Row, VectorCategories::SparseParallelVectorTag > > {
 	public:
 		typedef         _Field          Field;
 		typedef typename Field::Element Element;
@@ -193,10 +198,9 @@ namespace LinBox { namespace Protected {
 		}
 
 		std::istream &read (std::istream &is
-				    // , const Field &F
 				    , LINBOX_enum(Tag::FileFormat) format /*  = Tag::FileFormat::Detect */)
 		{
-			return SparseMatrixReadWriteHelper<Field, Row>::read (*this, is
+			return SparseMatrixReadWriteHelper<Self_t>::read (*this, is
 									      , format);
 		}
 
@@ -219,10 +223,9 @@ namespace LinBox { namespace Protected {
 
 
 		std::ostream &write (std::ostream &os
-				     // , const Field &F
 				     , LINBOX_enum(Tag::FileFormat) format /* = Tag::FileFormat::Pretty */) const
 		{
-			return SparseMatrixWriteHelper<Field, Row, myTrait>::write (*this, os, format);
+			return SparseMatrixWriteHelper<Self_t>::write (*this, os, format);
 		}
 
 		/// Write in matrix market format
@@ -617,8 +620,8 @@ namespace LinBox { namespace Protected {
 
 	protected:
 
-		friend class SparseMatrixWriteHelper<Field, Row>;
-		friend class SparseMatrixReadWriteHelper<Field, Row>;
+		friend class SparseMatrixWriteHelper<Self_t>;
+		friend class SparseMatrixReadWriteHelper<Self_t>;
 
 		const Field & _field;
 
@@ -690,7 +693,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __LINBOX_matrix_sparse_parallel_H
+#endif // __LINBOX_matrix_sparsematrix_sparse_parallel_vector_H
 
 
 // Local Variables:

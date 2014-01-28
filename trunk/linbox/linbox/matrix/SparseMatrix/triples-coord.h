@@ -22,13 +22,12 @@
  * ========LICENCE========
  */
 
-/*! @file   linbox/blackbox/triples-coord.h
- * @ingroup linbox/blackbox
+/*! @file   linbox/matrix/SparseMatrix/tripples-coord.h
  * @brief
  */
 
-#ifndef __LINBOX_TRIPLES_COORD_H
-#define __LINBOX_TRIPLES_COORD_H
+#ifndef __LINBOX_matrix_sparsematrix_triples_coord_H
+#define __LINBOX_matrix_sparsematrix_triples_coord_H
 
 #include <stdlib.h>
 #include <fstream>
@@ -190,7 +189,7 @@ void coordToBlock(TriplesCoord& coord)
 
 }
 
-#endif // __LINBOX_TRIPLES_COORD_H
+#endif // __LINBOX_matrix_sparsematrix_triples_coord_H
 
 // Local Variables:
 // mode: C++

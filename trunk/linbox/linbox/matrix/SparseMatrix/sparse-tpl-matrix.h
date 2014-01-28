@@ -22,13 +22,18 @@
  * with mods by bds
  */
 
-/** @file blackbox/triplesbb.h
- * @ingroup blackbox
- * @brief NO DOC
+/*! @file matrix/SparseMatrix/sparse-tpl-matrix.h
+ * @ingroup sparsematrix
+ * @brief
+ * A <code>SparseMatrix<_Field, SparseMatrixFormat::TPL ></code>
+ * is a vector of (i,j,value) triples.
+ *
+ * This is a variant of COO format.
  */
 
-#ifndef __LINBOX_triplesbb_H
-#define __LINBOX_triplesbb_H
+
+#ifndef __LINBOX_matrix_sparsematrix_sparse_tpl_matrix_H
+#define __LINBOX_matrix_sparsematrix_sparse_tpl_matrix_H
 
 #include <algorithm>
 #include <iostream>
@@ -219,7 +224,7 @@ namespace LinBox
 
 #include "sparse-tpl-matrix.inl"
 
-#endif // __LINBOX_triplesbb_H
+#endif // __LINBOX_matrix_sparsematrix_sparse_tpl_matrix_H
 
 
 // Local Variables:

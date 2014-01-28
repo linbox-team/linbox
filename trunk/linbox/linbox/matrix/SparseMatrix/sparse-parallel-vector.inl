@@ -43,7 +43,7 @@
 namespace LinBox { namespace Protected {
 
 	template <class Field, class Row>
-	std::ostream &SparseMatrixWriteHelper<Field, Row, VectorCategories::SparseParallelVectorTag >::write (const SparseMatrixGeneric<Field, Row> &A, std::ostream &os
+	std::ostream &SparseMatrixWriteHelper<SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag > >::write (const SparseMatrixGeneric<Field, Row> &A, std::ostream &os
 		 // , const Field &F
 		 , LINBOX_enum(Tag::FileFormat) format)
 	{

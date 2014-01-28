@@ -22,13 +22,14 @@
  * with mods by bds
  */
 
-/** @file blackbox/triplesbb-omp.h
- * @ingroup blackbox
+/*! @file matrix/SparseMatrix/sparse-tpl-matrix-omp.h
+ * @ingroup sparsematrix
+ * @ingroup omp
  * @brief NO DOC
  */
 
-#ifndef __LINBOX_triplesbb_omp_H
-#define __LINBOX_triplesbb_omp_H
+#ifndef __LINBOX_matrix_sparsematrix_sparse_tpl_matrix_omp_H
+#define __LINBOX_matrix_sparsematrix_sparse_tpl_matrix_omp_H
 
 
 #include <algorithm>
@@ -412,7 +413,7 @@ protected:
 
 #include "sparse-tpl-matrix-omp.inl"
 
-#endif // __LINBOX_triplesbb_omp_H
+#endif // __LINBOX_matrix_sparsematrix_sparse_tpl_matrix_omp_H
 
 
 // Local Variables:
