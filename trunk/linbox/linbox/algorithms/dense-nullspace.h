@@ -57,14 +57,14 @@ namespace LinBox
 	 */
 	template<class Field>
 	size_t&
-	NullSpaceBasisIn (const Tag::Side Side,
+	NullSpaceBasisIn (const LINBOX_enum(Tag::Side) Side,
 			BlasMatrix<Field> & A,
 			BlasMatrix<Field> & Ker,
 			size_t & kerdim) ;
 
 	template<class DenseMat>
 	size_t&
-	NullSpaceBasisIn (const Tag::Side Side,
+	NullSpaceBasisIn (const LINBOX_enum(Tag::Side) Side,
 			BlasSubmatrix<DenseMat> & A,
 			BlasMatrix<typename DenseMat::Field> & Ker,
 			size_t & kerdim) ;
@@ -83,14 +83,14 @@ namespace LinBox
 	 */
 	template<class Field>
 	size_t&
-	NullSpaceBasis (const Tag::Side Side,
+	NullSpaceBasis (const LINBOX_enum(Tag::Side) Side,
 			const BlasMatrix<Field> & A,
 			BlasMatrix<Field> & Ker,
 			size_t & kerdim) ;
 
 	template<class DenseMat>
 	size_t&
-	NullSpaceBasis (const Tag::Side Side,
+	NullSpaceBasis (const LINBOX_enum(Tag::Side) Side,
 			const BlasSubmatrix<DenseMat> & A,
 			BlasMatrix<typename DenseMat::Field> & Ker,
 			size_t & kerdim);
