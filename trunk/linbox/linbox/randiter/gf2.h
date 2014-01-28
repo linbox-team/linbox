@@ -34,7 +34,6 @@
 
 #include <time.h>
 #include "linbox-config.h"
-// #include "linbox/linbox-config.h" << no longer exists (replaced by linbox-config.h linbox-configuration.h)
 #include "linbox/integer.h"
 // #include "linbox/field/modular.h"
 #include "linbox/element/abstract.h"
