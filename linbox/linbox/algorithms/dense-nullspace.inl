@@ -364,7 +364,7 @@ namespace LinBox
 		 */
 	template<class Field>
 	size_t
-	NullSpaceBasisIn ( const Field & F, const Tag::Side Side,
+	NullSpaceBasisIn ( const Field & F, const LINBOX_enum(Tag::Side) Side,
 			const size_t & m, const size_t & n,
 			typename Field::Element * A, const size_t & lda,
 			typename Field::Element *& Ker, size_t& ldk,
@@ -398,7 +398,7 @@ namespace LinBox
 	//!@todo uses too much memory
 	template<class DenseMat>
 	size_t&
-	NullSpaceBasisIn (const Tag::Side Side,
+	NullSpaceBasisIn (const LINBOX_enum(Tag::Side) Side,
 			BlasSubmatrix<DenseMat> & A,
 			BlasMatrix<typename DenseMat::Field> & Ker,
 			size_t & kerdim)
@@ -428,7 +428,7 @@ namespace LinBox
 
 	template<class Field>
 	size_t&
-	NullSpaceBasisIn (const Tag::Side Side,
+	NullSpaceBasisIn (const LINBOX_enum(Tag::Side) Side,
 			BlasMatrix<Field> & A,
 			BlasMatrix<Field> & Ker,
 			size_t & kerdim)
@@ -439,7 +439,7 @@ namespace LinBox
 
 	template<class Field>
 	size_t&
-	NullSpaceBasis (const Tag::Side Side,
+	NullSpaceBasis (const LINBOX_enum(Tag::Side) Side,
 			const BlasMatrix<Field> & A,
 			BlasMatrix<Field> & Ker,
 			size_t & kerdim)
@@ -450,7 +450,7 @@ namespace LinBox
 
 	template<class DenseMat>
 	size_t&
-	NullSpaceBasis (const Tag::Side Side,
+	NullSpaceBasis (const LINBOX_enum(Tag::Side) Side,
 			const BlasSubmatrix<DenseMat> & A,
 			BlasMatrix<typename DenseMat::Field> & Ker,
 			size_t & kerdim)
