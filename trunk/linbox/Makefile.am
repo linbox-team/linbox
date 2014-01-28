@@ -48,7 +48,7 @@ doc/linbox-dev-html/pages.html:
 	(cd doc; ${MAKE} docs_dev)
 
 examples:
-	(  ${MAKE} ;   ${MAKE} install ; cd examples; ${MAKE} examples)
+	(  ${MAKE} ;   ${MAKE} install ; cd examples; ${MAKE} examples ; ./test.sh )
 
 benchmarks:
 	(cd benchmarks; ${MAKE} benchmarks)
