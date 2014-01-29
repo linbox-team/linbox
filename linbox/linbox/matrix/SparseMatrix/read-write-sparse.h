@@ -33,15 +33,28 @@
 #define __LINBOX_matrix_sparse_matrix_read_write_sparse_H
 
 
-namespace LinBox { namespace Protected {
-
+namespace LinBox {
 	// Small helper classes to make read and write easier
 	template <class Matrix>
 	class SparseMatrixWriteHelper {
 	public:
 		typedef typename Matrix::Field          Field;
-		typedef typename Field::Element Element;
+		typedef typename Field::Element       Element;
 
+	private:
+		static std::ostream &writeTriple (const Matrix &A, std::ostream &os, bool oneBased = false);
+
+		static std::ostream &writePretty (const Matrix &A, std::ostream &os
+					   , std::string begmat
+					   , std::string endmat
+					   , std::string begrow
+					   , std::string endrow
+					   , std::string sepelt
+					   , std::string seprow
+					  );
+
+
+	public:
 		static std::ostream &write (const Matrix &A
 					    , std::ostream &os
 					    , LINBOX_enum(Tag::FileFormat) format);
@@ -49,6 +62,12 @@ namespace LinBox { namespace Protected {
 
 	template <class Matrix>
 	class SparseMatrixReadWriteHelper : public SparseMatrixWriteHelper<Matrix> {
+
+	public:
+		typedef typename Matrix::Field::Element Element;
+
+	private:
+
 		static std::istream &readTurner    (Matrix &A
 						    , std::istream &is
 						    , char *buf);
@@ -65,16 +84,14 @@ namespace LinBox { namespace Protected {
 						    , std::istream &is
 						    , char *buf);
 
-	public:
-		typedef typename Matrix::Field::Element Element;
 
+	public:
 		static std::istream &read (Matrix &A
 					   , std::istream &is
 					   , LINBOX_enum(Tag::FileFormat) format);
 	};
 
 
-} // namespace Protected
 } // LinBox
 
 

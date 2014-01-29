@@ -126,7 +126,8 @@ namespace LinBox
 			Matlab,
 			Pretty,
 			MagmaCpt,
-			OneBased
+			OneBased,
+			MatrixMarket
 
 		} ;
 

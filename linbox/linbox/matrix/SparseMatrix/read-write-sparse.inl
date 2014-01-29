@@ -27,11 +27,13 @@
 #ifndef __LINBOX_matrix_sparse_matrix_read_write_sparse_INL
 #define __LINBOX_matrix_sparse_matrix_read_write_sparse_INL
 
-namespace LinBox { namespace Protected {
+// read/write functions
+namespace LinBox {
 
+	/**** Read ***/
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix> ::readTurner (Matrix &A, std::istream &is
-										   , char *buf)
+	std::istream &SparseMatrixReadWriteHelper<Matrix>::readTurner (Matrix &A, std::istream &is
+				  , char *buf)
 	{
 		size_t i, j;
 
@@ -54,9 +56,10 @@ namespace LinBox { namespace Protected {
 	}
 
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix> ::readGuillaume (Matrix &A, std::istream &is
-										      , char *buf)
+	std::istream &SparseMatrixReadWriteHelper<Matrix>::readGuillaume (Matrix &A, std::istream &is
+				     , char *buf)
 	{
+		typedef typename Matrix::Field::Element Element;
 		size_t i = 0, j = 0 ;
 
 		std::istringstream str (buf);
@@ -80,9 +83,10 @@ namespace LinBox { namespace Protected {
 	}
 
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix> ::readMatlab (Matrix &A, std::istream &is
-										   , char *buf)
+	std::istream &SparseMatrixReadWriteHelper<Matrix>::readMatlab (Matrix &A, std::istream &is
+				  , char *buf)
 	{
+		typedef typename Matrix::Field::Element Element;
 		size_t i = 0, j = 0;
 		char c;
 		Element a_ij;
@@ -110,9 +114,10 @@ namespace LinBox { namespace Protected {
 	}
 
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix> ::readPretty (Matrix &A, std::istream &is
-										   , char *buf)
+	std::istream &SparseMatrixReadWriteHelper<Matrix>::readPretty (Matrix &A, std::istream &is
+				  , char *buf)
 	{
+		typedef typename Matrix::Field::Element Element;
 		size_t i;
 		Element a_ij;
 
@@ -158,9 +163,10 @@ namespace LinBox { namespace Protected {
 	}
 
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix> ::readMagmaCpt (Matrix &A, std::istream &is
-										     , char *buf)
+	std::istream &SparseMatrixReadWriteHelper<Matrix>::readMagmaCpt (Matrix &A, std::istream &is
+				    , char *buf)
 	{
+		typedef typename Matrix::Field::Element Element;
 		size_t i, j;
 		Element a_ij;
 		char c;
@@ -200,13 +206,92 @@ namespace LinBox { namespace Protected {
 				++i;
 			}
 		}
-		//return is; //BB: unreachable
 	}
 
+	/**** Write ***/
+	template<class Matrix>
+	std::ostream &SparseMatrixWriteHelper<Matrix>::writeTriple (const Matrix &A, std::ostream &os, bool oneBased)
+	{
+		typename Matrix::Rep::const_iterator i;
+		typename Matrix::Row::const_iterator j;
+		size_t i_idx, j_idx;
+		//	int col_width;
+		integer c;
+		// bool firstrow;
+
+
+		// The i j v triples, with zero based indices.
+		for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
+			for (j = i->begin (), j_idx = 0; j != i->end (); ++j, ++j_idx) {
+				if (oneBased)
+					os << i_idx + 1 << ' ' << j->first + 1 << ' ';
+				else
+					os << i_idx << ' ' << j->first << ' ';
+				A.field().write (os, j->second);
+				os << std::endl;
+			}
+		}
+		return os;
+
+	}
+
+	template<class Matrix>
+	std::ostream &SparseMatrixWriteHelper<Matrix>::writePretty (const Matrix &A, std::ostream &os
+				   , std::string begmat
+				   , std::string endmat
+				   , std::string begrow
+				   , std::string endrow
+				   , std::string sepelt
+				   , std::string seprow
+				  )
+	{
+		typename Matrix::Rep::const_iterator i;
+		typename Matrix::Row::const_iterator j;
+		size_t i_idx, j_idx;
+		//	int col_width;
+		integer c;
+		bool firstrow;
+
+		os << begmat;
+		firstrow=true;
+
+		for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
+			j = i->begin ();
+
+			if (firstrow) {
+				os << begrow;
+				firstrow =false;
+			}
+			else
+				os << seprow << begrow;
+
+
+			for (j_idx = 0; j_idx < A._n; ++j_idx) {
+				if (j == i->end () || j_idx != j->first)
+					A.field().write (os, A.field().zero);
+				else {
+					A.field().write (os, j->second);
+					++j;
+				}
+
+				if (j_idx < A._n - 1)
+					os << sepelt << ' ';
+			}
+
+			os << endrow;
+		}
+
+		os << endmat;
+
+		return os ;
+	}
+} // namespace LinBox
+
+namespace LinBox {
 	// read
 	template<class Matrix>
 	std::istream &SparseMatrixReadWriteHelper<Matrix> ::read (Matrix &A, std::istream &is
-									     , LINBOX_enum(Tag::FileFormat) format)
+								  , LINBOX_enum(Tag::FileFormat) format)
 	{
 		char buf[80];
 		buf[0]=0;
@@ -239,17 +324,17 @@ namespace LinBox { namespace Protected {
 			}
 
 		case Tag::FileFormat::Turner:
-					      return readTurner (A, is, buf);
+			return readTurner (A, is, buf);
 		case Tag::FileFormat::Guillaume:
-					      return readGuillaume (A, is, buf);
+			return readGuillaume (A, is, buf);
 		case Tag::FileFormat::Matlab:
-					      return readMatlab (A, is, buf);
+			return readMatlab (A, is, buf);
 		case Tag::FileFormat::Pretty:
-					      return readPretty (A, is, buf);
+			return readPretty (A, is, buf);
 		case Tag::FileFormat::MagmaCpt:
-					      return readMagmaCpt (A, is, buf);
+			return readMagmaCpt (A, is, buf);
 		default:
-					      throw Exceptions::InvalidMatrixInput();
+			throw Exceptions::InvalidMatrixInput();
 		}
 
 		return is;
@@ -258,15 +343,8 @@ namespace LinBox { namespace Protected {
 	// write
 	template<class Matrix>
 	std::ostream &SparseMatrixWriteHelper<Matrix> ::write (const Matrix &A, std::ostream &os
-									  , LINBOX_enum(Tag::FileFormat) format)
+							       , LINBOX_enum(Tag::FileFormat) format)
 	{
-		typename Matrix::Rep::const_iterator i;
-		typename Matrix::Row::const_iterator j;
-		size_t i_idx, j_idx;
-		//	int col_width;
-		integer c;
-		bool firstrow;
-
 		// Avoid massive unneeded overhead in the case that this
 		// printing is disabled
 		if (not os)
@@ -277,130 +355,49 @@ namespace LinBox { namespace Protected {
 			throw PreconditionFailed (__func__, __LINE__, "format != Tag::FileFormat::Detect");
 
 		case Tag::FileFormat::Turner:
-			// The i j v triples, with zero based indices.
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
-				for (j = i->begin (), j_idx = 0; j != i->end (); ++j, ++j_idx) {
-					os << i_idx << ' ' << j->first << ' ';
-					A.field().write (os, j->second);
-					os << std::endl;
-				}
-			}
-			break;
+			return writeTriple(A,os);
 
 		case Tag::FileFormat::OneBased:
-			// The i j v triples, with zero based indices.
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
-				for (j = i->begin (), j_idx = 0; j != i->end (); ++j, ++j_idx) {
-					os << i_idx + 1 << ' ' << j->first + 1 << ' ';
-					A.field().write (os, j->second);
-					os << std::endl;
-				}
-			}
-			break;
+			return writeTriple(A,os,true);
 
 		case Tag::FileFormat::Guillaume:
 			// row col 'M' header line followed by the i j v triples, one based,
 			// followed by 0 0 0.
 			os << A._m << ' ' << A._n << " M" << std::endl;
-
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
-				for (j = i->begin (), j_idx = 0; j != i->end (); ++j, ++j_idx) {
-					os << i_idx + 1 << ' ' << j->first + 1 << ' ';
-					A.field().write (os, j->second);
-					os << std::endl;
-				}
-			}
-
+			writeTriple(A,os,true);
 			os << "0 0 0" << std::endl;
 
-			break;
+			return os;
 
 		case Tag::FileFormat::Matlab:
-
-			os << "[";
-
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
-				j = i->begin ();
-
-				for (j_idx = 0; j_idx < A._n; ++j_idx) {
-					if (j == i->end () || j_idx != j->first)
-						A.field().write (os, A.field().zero);
-					else {
-						A.field().write (os, j->second);
-						++j;
-					}
-
-					if (j_idx < A._n - 1)
-						os << ", ";
-				}
-
-				os << "; ";
-			}
-
-			os << "]";
-
-			break;
+			return writePretty(A,os,"[","]","","; ",",","");
+			// std::string begmat = "[";
+			// std::string endmat = "]";
+			// std::string begrow = "";
+			// std::string endrow = "; ";
+			// std::string sepelt  = ",";
+			// std::string seprow  = "";
 
 		case Tag::FileFormat::Maple:
-
-			os << "[";
-			firstrow=true;
-
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
-				if (firstrow) {
-					os << "[";
-					firstrow =false;
-				}
-				else
-					os << ", [";
-
-				j = i->begin ();
-
-				for (j_idx = 0; j_idx < A._n; ++j_idx) {
-					if (j == i->end () || j_idx != j->first)
-						A.field().write (os, A.field().zero);
-					else {
-						A.field().write (os, j->second);
-						++j;
-					}
-
-					if (j_idx < A._n - 1)
-						os << ", ";
-				}
-
-				os << " ]";
-			}
-
-			os << "]";
+			return writePretty(A,os,"[","]","["," ]",",",", ");
+			// std::string begmat = "[";
+			// std::string endmat = "]";
+			// std::string begrow = "[";
+			// std::string endrow = " ]";
+			// std::string sepelt = ",";
+			// std::string seprow = ", "
 
 			break;
 
 		case Tag::FileFormat::Pretty:
-			//A.field().characteristic (c);
-			//col_width = (int) ceil (log ((double) c) / M_LN10);
+			return writePretty(A,os,"",""," [ ","]\n"," ","");
+			// std::string begmat = "";
+			// std::string endmat = "";
+			// std::string begrow = " [ ";
+			// std::string endrow = "]\n";
+			// std::string sepelt  = " ";
+			// std::string seprow  = "";
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
-				os << "  [ ";
-
-				j = i->begin ();
-
-				for (j_idx = 0; j_idx < A._n; ++j_idx) {
-					//os.width (col_width);
-
-					if (j == i->end () || j_idx != j->first)
-						A.field().write (os, A.field().zero);
-					else {
-						A.field().write (os, j->second);
-						++j;
-					}
-
-					os << ' ';
-				}
-
-				os << ']' << std::endl;
-			}
-
-			break;
 
 		case Tag::FileFormat::MagmaCpt:
 			os << "sparse matrix written in MagmaCpt form is not implemented" << std::endl;
@@ -414,7 +411,6 @@ namespace LinBox { namespace Protected {
 	}
 
 } // namespace LinBox
-} // namespace Protected
 
 #endif // __LINBOX_matrix_sparse_matrix_read_write_sparse_INL
 

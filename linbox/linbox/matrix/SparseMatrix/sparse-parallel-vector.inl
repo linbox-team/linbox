@@ -40,15 +40,16 @@
 #ifndef __LINBOX_matrix_sparse_parallel_INL
 #define __LINBOX_matrix_sparse_parallel_INL
 
-namespace LinBox { namespace Protected {
+namespace LinBox {
 
 	template <class Field, class Row>
-	std::ostream &SparseMatrixWriteHelper<SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag > >::write (const SparseMatrixGeneric<Field, Row> &A, std::ostream &os
+	std::ostream &SparseMatrixWriteHelper<Protected::SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag > >::write (const Protected::SparseMatrixGeneric<Field, Row> &A, std::ostream &os
+
 		 // , const Field &F
 		 , LINBOX_enum(Tag::FileFormat) format)
 	{
 		const Field & F = A.field();
-		typename SparseMatrixGeneric<Field, Row>::Rep::const_iterator i;
+		typename Protected::SparseMatrixGeneric<Field, Row>::Rep::const_iterator i;
 		typename Row::first_type::const_iterator j_idx;
 		typename Row::second_type::const_iterator j_elt;
 		size_t i_idx, j_idx_1, col_idx;
@@ -213,7 +214,9 @@ namespace LinBox { namespace Protected {
 		return os;
 	}
 
+} // LinBox
 
+namespace LinBox { namespace Protected {
 
 	template <class Field, class Row>
 	SparseMatrixGeneric<Field,Row,VectorCategories::SparseParallelVectorTag> ::SparseMatrixGeneric( MatrixStream<Field>& ms ) :
