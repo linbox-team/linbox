@@ -74,8 +74,8 @@ namespace LinBox { namespace Protected {
 	};
 
 
-} // LinBox
 } // namespace Protected
+} // LinBox
 
 
 #include "linbox/matrix/SparseMatrix/read-write-sparse.inl"
