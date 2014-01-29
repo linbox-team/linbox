@@ -203,6 +203,7 @@ namespace LinBox { namespace Protected {
 		//return is; //BB: unreachable
 	}
 
+	// read
 	template<class Matrix>
 	std::istream &SparseMatrixReadWriteHelper<Matrix> ::read (Matrix &A, std::istream &is
 									     , LINBOX_enum(Tag::FileFormat) format)
@@ -254,6 +255,7 @@ namespace LinBox { namespace Protected {
 		return is;
 	}
 
+	// write
 	template<class Matrix>
 	std::ostream &SparseMatrixWriteHelper<Matrix> ::write (const Matrix &A, std::ostream &os
 									  , LINBOX_enum(Tag::FileFormat) format)
@@ -273,7 +275,6 @@ namespace LinBox { namespace Protected {
 		switch (format) {
 		case Tag::FileFormat::Detect:
 			throw PreconditionFailed (__func__, __LINE__, "format != Tag::FileFormat::Detect");
-			//break;//BB: unreachable
 
 		case Tag::FileFormat::Turner:
 			// The i j v triples, with zero based indices.

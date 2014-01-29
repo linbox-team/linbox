@@ -28,7 +28,6 @@ BASIC_HDRS =              \
 	matrix-traits.h           \
 	sparse.h                  \
 	transpose-matrix.h        \
-	dense-rows-matrix.h       \
 	matrix-domain.h           \
 	matrix-domain.inl         \
 	matrix-domain-gf2.h       \
