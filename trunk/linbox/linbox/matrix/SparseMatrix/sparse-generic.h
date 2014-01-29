@@ -85,26 +85,29 @@
 #include "linbox/matrix/matrix-traits.h"
 #include "linbox/field/hom.h"
 
+
+
+/* ** forward declarations ** */
 namespace LinBox {
 	template<class Field>
 	class MatrixDomain ;
+} // LinBox
 
-	namespace Protected {
-	// Forward declaration
-	template <class _Field,
-		 class _Row   = typename RawVector<typename _Field::Element>::Sparse,
-		 class Trait  = typename VectorTraits<_Row>::VectorCategory>
-		 class SparseMatrixGeneric;
+namespace LinBox { namespace Protected {
+		template <class _Field,
+			 class _Row   = typename RawVector<typename _Field::Element>::Sparse,
+			 class Trait  = typename VectorTraits<_Row>::VectorCategory>
+			 class SparseMatrixGeneric;
+} // Protected
+} // LinBox
 
-	template<class Matrix>
-	class SparseMatrixWriteHelper ;
+namespace LinBox {
+		template<class Matrix>
+		class SparseMatrixWriteHelper ;
 
-	template<class Matrix>
-	class SparseMatrixReadWriteHelper ;
-
-	}
-
-}
+		template<class Matrix>
+		class SparseMatrixReadWriteHelper ;
+} // LinBox
 
 namespace LinBox { namespace Protected {
 

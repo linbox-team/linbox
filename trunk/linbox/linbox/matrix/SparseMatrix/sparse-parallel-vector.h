@@ -64,22 +64,24 @@
 #define __LINBOX_matrix_sparsematrix_sparse_parallel_vector_H
 
 
-namespace LinBox { namespace Protected {
+namespace LinBox {
 
 
 	// Specialization of the above for sparse parallel vectors
 	template <class _Field, class Row>
-	class SparseMatrixWriteHelper<SparseMatrixGeneric<_Field, Row, VectorCategories::SparseParallelVectorTag > > {
+	class SparseMatrixWriteHelper<Protected::SparseMatrixGeneric<_Field, Row, VectorCategories::SparseParallelVectorTag > > {
 	public:
 		typedef         _Field          Field;
 		typedef typename Field::Element Element;
 
-		static std::ostream &write (const SparseMatrixGeneric<Field, Row> &A, std::ostream &os
-					    // , const Field &F
+		static std::ostream &write (const Protected::SparseMatrixGeneric<Field, Row> &A, std::ostream &os
 					    , LINBOX_enum(Tag::FileFormat) format);
 	};
 
+} // LinBox
 
+
+namespace LinBox { namespace Protected {
 	/* Specialization for sparse parallel vectors */
 	template <class _Field, class _Row>
 	class SparseMatrixGeneric<_Field, _Row, VectorCategories::SparseParallelVectorTag > {

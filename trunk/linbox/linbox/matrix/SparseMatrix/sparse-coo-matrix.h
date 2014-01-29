@@ -45,6 +45,16 @@
 namespace LinBox
 {
 
+	// template<class _Field>
+	// std::ostream& SparseMatrixWriteHelper<
+	// SparseMatrix<_Field, SparseMatrixFormat::COO> >::write (const SparseMatrix<_Field, SparseMatrixFormat::COO> &A
+								// , std::ostream &os
+								// , LINBOX_enum(Tag::FileFormat) format)
+	// {
+		// std::cout << "wirtten" << std::endl;
+
+	// }
+
 
 	/** Sparse matrix, Coordinate storage.
 	 *
@@ -511,22 +521,12 @@ namespace LinBox
 		 */
 
 		std::ostream & write(std::ostream &os,
-				     enum LINBOX_enum(Tag::FileFormat) ff  = Tag::FileFormat::Maple) const
+				     enum LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::MatrixMarket) const
 		{
-			return this->writeSpecialized(os,ff);
+			// return SparseMatrixWriteHelper<Self_t>::write(*this,os,format);
+			return this->writeSpecialized(os,format);
 		}
 
-
-		// /** Read a matrix from the given input stream using field read/write
-		 // * @param file Input stream from which to read the matrix
-		 // * @param format Format of input matrix
-		 // * @return ref to \p file.
-		 // */
-		// std::istream& read (std::istream &file,
-				    // LINBOX_enum(Tag::FileFormat) format)
-		// {
-			// return readSpecialized(file,format);
-		// }
 
 		/// Read from matrix market format
 		std::istream &read (std::istream &is)
@@ -1014,6 +1014,9 @@ namespace LinBox
 		}
 
 	protected :
+		friend class SparseMatrixWriteHelper<Self_t >;
+		friend class SparseMatrixReadWriteHelper<Self_t >;
+
 
 		size_t              _rownb ;
 		size_t              _colnb ;
