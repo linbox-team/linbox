@@ -45,6 +45,8 @@ BASIC_HDRS =              \
 	blas-triangularmatrix.inl \
 	permutation-matrix.h      \
 	permutation-matrix.inl    \
+	abnormal-matrix.h         \
+	abnormal-helpers.h         \
 	random-matrix.h           \
 	random-matrix.inl
 
