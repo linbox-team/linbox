@@ -460,6 +460,11 @@ namespace LinBox { namespace Protected {
 			return _matA;
 		}
 
+		Rep & refRep()
+		{
+			return _matA;
+		}
+
 	protected:
 
 		friend class SparseMatrixWriteHelper<Self_t >;

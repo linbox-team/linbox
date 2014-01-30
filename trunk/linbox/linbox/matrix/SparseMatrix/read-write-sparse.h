@@ -34,6 +34,7 @@
 
 #include "linbox/matrix/matrix-traits.h"
 #include "linbox/matrix/matrix-category.h"
+#include "linbox/util/matrix-stream.h"
 
 namespace LinBox {
 	// Small helper classes to make read and write easier
@@ -102,6 +103,11 @@ namespace LinBox {
 		static std::istream &readMagmaCpt  (Matrix &A
 						    , std::istream &is
 						    , char *buf);
+
+		static std::istream &readMatrixMarket (Matrix &A
+						    , std::istream &is
+						    , char *buf);
+
 		static std::istream &read (Matrix &A
 				    , std::istream &is
 				    , LINBOX_enum(Tag::FileFormat) format

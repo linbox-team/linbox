@@ -217,7 +217,12 @@ namespace LinBox
 		reader(NULL),in(i),readAnythingYet(false),f(fld)
 	{
 		init();
-		if( currentError > GOOD ) throw currentError;
+		if( currentError > GOOD ){
+#ifndef NDEBUG
+			reportError(__func__,__LINE__);
+#endif
+			throw currentError;
+		}
 	}
 
 	template<class Field>

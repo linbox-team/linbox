@@ -215,27 +215,10 @@ namespace LinBox { namespace Protected {
 		}
 
 		std::istream &read (std::istream &is
-				    , LINBOX_enum(Tag::FileFormat) format /*  = Tag::FileFormat::Detect */)
+				    , LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::Detect )
 		{
 			return SparseMatrixReadWriteHelper<Self_t>::read (*this, is
 									      , format);
-		}
-
-		/// Read from matrix market format
-		std::istream &read (std::istream &is)
-		{
-			MatrixStream<Field> ms(field(), is);
-			if( !ms.getDimensions( this->_m, this->_n ) )
-				throw ms.reportError(__func__,__LINE__);
-			this->_matA.resize( this->_m );
-			Element val;
-			size_t i, j;
-			while( ms.nextTriple(i,j,val) ) {
-				setEntry(i,j,val);
-			}
-			if( ms.getError() > END_OF_MATRIX )
-				throw ms.reportError(__func__,__LINE__);
-			return is;
 		}
 
 
@@ -631,6 +614,11 @@ namespace LinBox { namespace Protected {
 		}
 
 		const Rep & getRep() const
+		{
+			return _matA;
+		}
+
+		Rep & refRep()
 		{
 			return _matA;
 		}

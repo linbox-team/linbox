@@ -231,7 +231,7 @@ class MatrixStream {
 	const Field& f;
 
     /** To ensure no one makes a copy of an instance of this class */
-	MatrixStream( const MatrixStream<Field>& )  ;// BB si {} pbm d'initialisation
+	MatrixStream( const MatrixStream<Field>& )  ;
 
     /** Called by the constructors to get things going. */
 	void init();
