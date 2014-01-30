@@ -187,7 +187,7 @@ namespace LinBox { namespace Protected {
 		std::istream &read (std::istream &is
 				    , LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::Detect)
 		{
-			return SparseMatrixReadWriteHelper<Self_t>::read (*this, is
+			return SparseMatrixReadHelper<Self_t>::read (*this, is
 									      , format);
 		}
 
@@ -195,7 +195,7 @@ namespace LinBox { namespace Protected {
 		std::ostream &write (std::ostream &os
 				     , LINBOX_enum(Tag::FileFormat) format /*  = Tag::FileFormat::Pretty */) const
 		{
-			return SparseMatrixReadWriteHelper<Self_t>::write (*this, os, format);
+			return SparseMatrixWriteHelper<Self_t>::write (*this, os, format);
 		}
 
 		/// Write in matrix market format
@@ -562,7 +562,7 @@ namespace LinBox { namespace Protected {
 	protected:
 
 		friend class SparseMatrixWriteHelper<Self_t>;
-		friend class SparseMatrixReadWriteHelper<Self_t>;
+		friend class SparseMatrixReadHelper<Self_t>;
 
 		const Field & _field;
 

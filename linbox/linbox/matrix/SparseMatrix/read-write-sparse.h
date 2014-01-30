@@ -61,6 +61,7 @@ namespace LinBox {
 				   , LINBOX_enum(Tag::FileFormat) format
 				   , MatrixCategories::BlackboxTag);
 
+		// atempt to make the Generic stuff generic
 		static std::ostream& write(const Matrix &A
 				   , std::ostream &os
 				   , LINBOX_enum(Tag::FileFormat) format
@@ -77,10 +78,11 @@ namespace LinBox {
 	};
 
 	template <class Matrix>
-	class SparseMatrixReadWriteHelper : public SparseMatrixWriteHelper<Matrix> {
+	class SparseMatrixReadHelper  {
 
 	public:
-		typedef typename Matrix::Field::Element Element;
+		typedef typename Matrix::Field      Field;
+		typedef typename Field::Element   Element;
 
 	private:
 
@@ -129,6 +131,7 @@ namespace LinBox {
 			return read(A,is,format, typename MatrixTraits<Matrix>::MatrixCategory ());
 		}
 	};
+
 
 
 } // LinBox
