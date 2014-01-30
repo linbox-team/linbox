@@ -37,8 +37,8 @@ namespace LinBox {
 	{
 		size_t i, j;
 
-		A._matA.clear ();
-		A._matA.resize (A._m);
+		A.getRep().clear ();
+		A.getRep().resize (A.rowdim());
 
 		do {
 			std::istringstream str (buf);
@@ -65,14 +65,14 @@ namespace LinBox {
 		std::istringstream str (buf);
 		str >> A._m >> A._n;
 
-		A._matA.clear ();
-		A._matA.resize (A._m);//cerr<<A.coldim()<<" "<<A.rowdim()<<endl;
+		A.getRep().clear ();
+		A.getRep().resize (A.rowdim());
 
 		Element x;
 		while (is >> i) {
 			if (i == 0 || i == (size_t) -1) {is >> j; A.field().read(is, x); break;}
 			is >> j;
-			if (i > A._m || j > A._n)
+			if (i > A.rowdim() || j > A.coldim())
 				throw Exceptions::InvalidMatrixInput ();
 			A.field().read (is, x);
 			if (! A.field().isZero(x)) A.setEntry (i - 1, j - 1, x);
@@ -122,7 +122,7 @@ namespace LinBox {
 		Element a_ij;
 
 		A._m = 0;
-		A._matA.clear ();
+		A.getRep().clear ();
 
 		i = 0;
 
@@ -130,7 +130,7 @@ namespace LinBox {
 			char c;
 			size_t j;
 			++(A._m);
-			A._matA.push_back (Matrix::Row ());
+			A.getRep().push_back (Matrix::Row ());
 
 			std::istringstream str (buf);
 
@@ -146,7 +146,7 @@ namespace LinBox {
 				A.field().read (str, a_ij);
 
 				++j;
-				if (j > A._n)
+				if (j > A.coldim())
 					++(A._n);
 
 				if (!A.field().isZero(a_ij))
@@ -175,7 +175,7 @@ namespace LinBox {
 		const char pairstart = '[', pairend = ']';
 
 		A._m = A._n = 0;
-		A._matA.clear ();
+		A.getRep().clear ();
 
 		do {is.get(c);} while (c != matrixstart ); // find matrix start
 		i = 0;
@@ -186,7 +186,7 @@ namespace LinBox {
 			else
 			{
 				++(A._m);
-				A._matA.push_back (Matrix::Row ());
+				A.getRep().push_back (Matrix::Row ());
 				//processrow(i)
 				while (true)
 				{
@@ -195,7 +195,7 @@ namespace LinBox {
 					else
 					{  //processpair( j v for row i);
 						is >> j;
-						if (j > A._n) A._n = j;
+						if (j > A.coldim()) A._n = j;
 						do {is.get(c);} while (!std::isdigit(c) && c != '-' && c != '+');
 						is.unget();
 						A.field().read(is, a_ij);
@@ -221,7 +221,7 @@ namespace LinBox {
 
 
 		// The i j v triples, with zero based indices.
-		for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
+		for (i = A.getRep().begin (), i_idx = 0; i != A.getRep().end (); ++i, ++i_idx) {
 			for (j = i->begin (), j_idx = 0; j != i->end (); ++j, ++j_idx) {
 				if (oneBased)
 					os << i_idx + 1 << ' ' << j->first + 1 << ' ';
@@ -255,7 +255,7 @@ namespace LinBox {
 		os << begmat;
 		firstrow=true;
 
-		for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
+		for (i = A.getRep().begin (), i_idx = 0; i != A.getRep().end (); ++i, ++i_idx) {
 			j = i->begin ();
 
 			if (firstrow) {
@@ -266,7 +266,7 @@ namespace LinBox {
 				os << seprow << begrow;
 
 
-			for (j_idx = 0; j_idx < A._n; ++j_idx) {
+			for (j_idx = 0; j_idx < A.coldim(); ++j_idx) {
 				if (j == i->end () || j_idx != j->first)
 					A.field().write (os, A.field().zero);
 				else {
@@ -274,7 +274,7 @@ namespace LinBox {
 					++j;
 				}
 
-				if (j_idx < A._n - 1)
+				if (j_idx < A.coldim() - 1)
 					os << sepelt << ' ';
 			}
 
@@ -365,7 +365,7 @@ namespace LinBox {
 		case Tag::FileFormat::Guillaume:
 			// row col 'M' header line followed by the i j v triples, one based,
 			// followed by 0 0 0.
-			os << A._m << ' ' << A._n << " M" << std::endl;
+			os << A.rowdim() << ' ' << A.coldim() << " M" << std::endl;
 			writeTriple(A,os,true);
 			os << "0 0 0" << std::endl;
 

@@ -43,19 +43,97 @@
 namespace LinBox {
 
 	template <class Field, class Row>
-	std::ostream &SparseMatrixWriteHelper<Protected::SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag > >::write (const Protected::SparseMatrixGeneric<Field, Row> &A, std::ostream &os
-
-		 // , const Field &F
-		 , LINBOX_enum(Tag::FileFormat) format)
+	std::ostream &SparseMatrixWriteHelper<Protected::SparseMatrixGeneric<Field, Row,
+	VectorCategories::SparseParallelVectorTag > >::writeTriple (const Protected::SparseMatrixGeneric<Field, Row> &A
+								    , std::ostream &os
+								    , bool oneBased)
 	{
-		const Field & F = A.field();
-		typename Protected::SparseMatrixGeneric<Field, Row>::Rep::const_iterator i;
+		typename Matrix::Rep::const_iterator i;
 		typename Row::first_type::const_iterator j_idx;
 		typename Row::second_type::const_iterator j_elt;
-		size_t i_idx, j_idx_1, col_idx;
-		//int col_width;
-		integer c;
-		bool firstrow;
+		const Field & F = A.field();
+
+		size_t i_idx;
+		for (i = A.getRep().begin (), i_idx = 0; i != A.getRep().end (); i++, i_idx++) {
+			for (j_idx = i->first.begin (), j_elt = i->second.begin ();
+			     j_idx != i->first.end ();
+			     ++j_idx, ++j_elt)
+			{
+				if (oneBased)
+					os << i_idx +1 << ' ' << *j_idx +1 << ' ';
+				else
+					os << i_idx << ' ' << *j_idx << ' ';
+				F.write (os, *j_elt);
+				os << std::endl;
+			}
+		}
+		return os ;
+
+
+	}
+
+	template <class Field, class Row>
+	std::ostream &SparseMatrixWriteHelper<Protected::SparseMatrixGeneric<Field, Row,
+	VectorCategories::SparseParallelVectorTag > >::writePretty (const Protected::SparseMatrixGeneric<Field, Row> &A
+								    , std::ostream &os
+								    , std::string begmat
+								    , std::string endmat
+								    , std::string begrow
+								    , std::string endrow
+								    , std::string sepelt
+								    , std::string seprow
+								   )
+	{
+		typename Matrix::Rep::const_iterator i;
+		typename Row::first_type::const_iterator j_idx;
+		typename Row::second_type::const_iterator j_elt;
+		const Field & F = A.field();
+
+		size_t i_idx, j_idx_1;
+		bool firstrow=true;
+
+		os << begmat;
+
+		for (i = A.getRep().begin (), i_idx = 0; i != A.getRep().end (); i++, i_idx++) {
+			if (firstrow) {
+				os << begrow;
+				firstrow =false;
+			}
+			else
+				os << seprow << begrow ;
+
+			j_idx = i->first.begin ();
+			j_elt = i->second.begin ();
+
+			for (j_idx_1 = 0; j_idx_1 < A.coldim(); j_idx_1++) {
+				if (j_idx == i->first.end () || j_idx_1 != *j_idx)
+					F.write (os, F.zero);
+				else {
+					F.write (os, *j_elt);
+					++j_idx;
+					++j_elt;
+				}
+
+				if (j_idx_1 < A.coldim() - 1)
+					os << sepelt << ' ';
+			}
+
+			os << endrow;
+		}
+
+		os << endmat;
+
+		return os ;
+	}
+
+
+	//! @bug this is reall the "generic" one
+	template <class Field, class Row>
+	std::ostream &SparseMatrixWriteHelper<Protected::SparseMatrixGeneric<Field, Row,
+	VectorCategories::SparseParallelVectorTag > >::write (const Protected::SparseMatrixGeneric<Field, Row> &A
+							      , std::ostream &os
+							      , LINBOX_enum(Tag::FileFormat) format)
+	{
 
 		// Avoid massive unneeded overhead in the case that this
 		// printing is disabled
@@ -68,142 +146,51 @@ namespace LinBox {
 			//break//BB: unreachable;
 
 		case Tag::FileFormat::Turner:
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				for (j_idx = i->first.begin (), j_elt = i->second.begin ();
-				     j_idx != i->first.end ();
-				     ++j_idx, ++j_elt)
-				{
-					os << i_idx << ' ' << *j_idx << ' ';
-					F.write (os, *j_elt);
-					os << std::endl;
-				}
-			}
+			return writeTriple(A,os,false);
 
-			break;
 
 		case Tag::FileFormat::OneBased:
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				for (j_idx = i->first.begin (), j_elt = i->second.begin ();
-				     j_idx != i->first.end ();
-				     ++j_idx, ++j_elt)
-				{
-					os << i_idx + 1 << ' ' << *j_idx + 1 << ' ';
-					F.write (os, *j_elt);
-					os << std::endl;
-				}
-			}
-
-			break;
+			return writeTriple(A,os,true);
 
 		case Tag::FileFormat::Guillaume:
-			os << A._m << ' ' << A._n << " M" << std::endl;
+			os << A.rowdim() << ' ' << A.coldim() << " M" << std::endl;
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				for (j_idx = i->first.begin (), j_elt = i->second.begin ();
-				     j_idx != i->first.end ();
-				     ++j_idx, ++j_elt)
-				{
-					os << i_idx + 1 << ' ' << *j_idx + 1 << ' ';
-					F.write (os, *j_elt);
-					os << std::endl;
-				}
-			}
+			writeTriple(A,os,true);
 
 			os << "0 0 0" << std::endl;
 
-			break;
-
-		case Tag::FileFormat::Maple:
-			firstrow=true;
-
-			os << "[";
-
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				if (firstrow) {
-					os << "[";
-					firstrow =false;
-				}
-				else
-					os << ", [";
-
-				j_idx = i->first.begin ();
-				j_elt = i->second.begin ();
-
-				for (j_idx_1 = 0; j_idx_1 < A._n; j_idx_1++) {
-					if (j_idx == i->first.end () || j_idx_1 != *j_idx)
-						F.write (os, F.zero);
-					else {
-						F.write (os, *j_elt);
-						++j_idx;
-						++j_elt;
-					}
-
-					if (j_idx_1 < A._n - 1)
-						os << ", ";
-				}
-
-				os << "]";
-			}
-
-			os << "]";
-
-			break;
+			return os;
 
 		case Tag::FileFormat::Matlab:
+			return writePretty(A,os,"[","]","","; ",",","");
+			// std::string begmat = "[";
+			// std::string endmat = "]";
+			// std::string begrow = "";
+			// std::string endrow = "; ";
+			// std::string sepelt  = ",";
+			// std::string seprow  = "";
 
-			os << "[";
-
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				j_idx = i->first.begin ();
-				j_elt = i->second.begin ();
-
-				for (j_idx_1 = 0; j_idx_1 < A._n; j_idx_1++) {
-					if (j_idx == i->first.end () || j_idx_1 != *j_idx)
-						F.write (os, F.zero);
-					else {
-						F.write (os, *j_elt);
-						++j_idx;
-						++j_elt;
-					}
-
-					if (j_idx_1 < A._n - 1)
-						os << ", ";
-				}
-
-				os << "; ";
-			}
-
-			os << "]";
+		case Tag::FileFormat::Maple:
+			return writePretty(A,os,"[","]","["," ]",",",", ");
+			// std::string begmat = "[";
+			// std::string endmat = "]";
+			// std::string begrow = "[";
+			// std::string endrow = " ]";
+			// std::string sepelt = ",";
+			// std::string seprow = ", "
 
 			break;
 
 		case Tag::FileFormat::Pretty:
-			//F.characteristic (c);
-			//col_width = (int) ceil (log ((double) c) / M_LN10);
+			return writePretty(A,os,"",""," [ ","]\n"," ","");
+			// std::string begmat = "";
+			// std::string endmat = "";
+			// std::string begrow = " [ ";
+			// std::string endrow = "]\n";
+			// std::string sepelt  = " ";
+			// std::string seprow  = "";
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
-				os << "  [ ";
 
-				j_idx = i->first.begin ();
-				j_elt = i->second.begin ();
-
-				for (col_idx = 0; col_idx < A._n; col_idx++) {
-					//os.width (col_width);
-
-					if (j_idx == i->first.end () || col_idx != *j_idx)
-						F.write (os, F.zero);
-					else {
-						F.write (os, *j_elt);
-						++j_idx; ++j_elt;
-					}
-
-					os << ' ';
-				}
-
-				os << ']'<<std::endl;
-			}
-
-			break;
 		case Tag::FileFormat::MagmaCpt:
 			os << "sparse matrix written in MagmaCpt form is not implemented" << std::endl;
 			break;
