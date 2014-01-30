@@ -37,8 +37,8 @@ namespace LinBox {
 	{
 		size_t i, j;
 
-		A.getRep().clear ();
-		A.getRep().resize (A.rowdim());
+		A.refRep().clear ();
+		A.refRep().resize (A.rowdim());
 
 		do {
 			std::istringstream str (buf);
@@ -65,8 +65,8 @@ namespace LinBox {
 		std::istringstream str (buf);
 		str >> A._m >> A._n;
 
-		A.getRep().clear ();
-		A.getRep().resize (A.rowdim());
+		A.refRep().clear ();
+		A.refRep().resize (A.rowdim());
 
 		Element x;
 		while (is >> i) {
@@ -82,6 +82,7 @@ namespace LinBox {
 
 	}
 
+	//! @bug buf is not used (hence the first line is always lost.
 	template<class Matrix>
 	std::istream &SparseMatrixReadWriteHelper<Matrix>::readMatlab (Matrix &A, std::istream &is
 				  , char *buf)
@@ -122,7 +123,7 @@ namespace LinBox {
 		Element a_ij;
 
 		A._m = 0;
-		A.getRep().clear ();
+		A.refRep().clear ();
 
 		i = 0;
 
@@ -130,7 +131,7 @@ namespace LinBox {
 			char c;
 			size_t j;
 			++(A._m);
-			A.getRep().push_back (Matrix::Row ());
+			A.refRep().push_back ( typename Matrix::Row ());
 
 			std::istringstream str (buf);
 
@@ -175,7 +176,7 @@ namespace LinBox {
 		const char pairstart = '[', pairend = ']';
 
 		A._m = A._n = 0;
-		A.getRep().clear ();
+		A.refRep().clear ();
 
 		do {is.get(c);} while (c != matrixstart ); // find matrix start
 		i = 0;
@@ -186,7 +187,7 @@ namespace LinBox {
 			else
 			{
 				++(A._m);
-				A.getRep().push_back (Matrix::Row ());
+				A.refRep().push_back (typename Matrix::Row ());
 				//processrow(i)
 				while (true)
 				{
@@ -206,6 +207,27 @@ namespace LinBox {
 				++i;
 			}
 		}
+	}
+
+	template<class Matrix>
+	std::istream &SparseMatrixReadWriteHelper<Matrix>::readMatrixMarket (Matrix &A, std::istream &is
+									     , char *buf)
+	{
+		typedef typename Matrix::Field   Field;
+		typedef typename Field::Element  Element;
+
+		MatrixStream<Field> ms(A.field(), is);
+		if( !ms.getDimensions( A._m, A._n ) )
+			throw ms.reportError(__func__,__LINE__);
+		A.refRep().resize( A.rowdim() );
+		Element val;
+		size_t i, j;
+		while( ms.nextTriple(i,j,val) ) {
+			A.setEntry(i,j,val);
+		}
+		if( ms.getError() > END_OF_MATRIX )
+			throw ms.reportError(__func__,__LINE__);
+		return is;
 	}
 
 	/**** Write ***/
@@ -311,6 +333,12 @@ namespace LinBox {
 					else
 						readPretty (A, is, buf);
 				}
+				else if (c == '%') {
+					size_t un = is.gcount() ;
+					for (size_t i = 0 ; i < un ; ++i)
+						is.unget();
+					readMatrixMarket(A,is,buf);
+				}
 				else if (std::isdigit (c)) {
 					do str >> c; while (str && (isspace (c) || std::isdigit (c)));
 
@@ -334,6 +362,8 @@ namespace LinBox {
 			return readPretty (A, is, buf);
 		case Tag::FileFormat::MagmaCpt:
 			return readMagmaCpt (A, is, buf);
+		case Tag::FileFormat::MatrixMarket:
+			return readMatrixMarket (A, is, buf);
 		default:
 			throw Exceptions::InvalidMatrixInput();
 		}
@@ -399,6 +429,8 @@ namespace LinBox {
 			// std::string endrow = "]\n";
 			// std::string sepelt  = " ";
 			// std::string seprow  = "";
+
+		case Tag::FileFormat::MatrixMarket:
 
 
 		case Tag::FileFormat::MagmaCpt:
