@@ -73,8 +73,23 @@ namespace LinBox {
 	public:
 		typedef         _Field          Field;
 		typedef typename Field::Element Element;
+		typedef typename Protected::SparseMatrixGeneric<Field, Row> Matrix ;
+	private:
+		static std::ostream &writeTriple (const Matrix &A, std::ostream &os, bool oneBased = false);
 
-		static std::ostream &write (const Protected::SparseMatrixGeneric<Field, Row> &A, std::ostream &os
+		static std::ostream &writePretty (const Matrix &A, std::ostream &os
+						  , std::string begmat
+						  , std::string endmat
+						  , std::string begrow
+						  , std::string endrow
+						  , std::string sepelt
+						  , std::string seprow
+						 );
+
+
+	public:
+
+		static std::ostream &write (const Matrix &A, std::ostream &os
 					    , LINBOX_enum(Tag::FileFormat) format);
 	};
 
