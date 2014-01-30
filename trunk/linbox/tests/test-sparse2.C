@@ -54,7 +54,7 @@ using namespace LinBox;
 template <class SM>
 void buildBySetEntry(SM & A, size_t nnz)
 {
-	typename SM::Field::RandIter r(A.field());
+	typename SM::Field::RandIter r(A.field(),0);
 	//size_t i, j, k;
 	typename SM::Field::Element x;
 
@@ -108,6 +108,7 @@ int main (int argc, char **argv)
 	commentator().start("SparseMatrix<Field>", "Field");
 	SparseMatrix<Field> S1(F, m, n);
 	buildBySetEntry(S1, N);
+	// it is assumed that any other matrix is built with the same random number generator  with the same seed
 	if ( testBlackbox(S1,false))
 		commentator().stop("SparseMatrix<Field> pass");
 	else {
@@ -177,7 +178,7 @@ int main (int argc, char **argv)
 	}
 #endif
 
-	{ /* Vector of row, row is Vector of index/value Pair */
+	{ /* SparseSeq: Vector of row, row is Vector of index/value Pair */
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::SparseSeq>", "VVP");
 		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> S7(F, m, n);
 		buildBySetEntry(S7, N);
@@ -215,8 +216,7 @@ int main (int argc, char **argv)
 		}
 	}
 
-
-	{ /* Vector of i,j,val triples */
+	{ /* TPL: Vector of i,j,val triples */
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::TPL>", "TPL");
 		SparseMatrix<Field, SparseMatrixFormat::TPL> S10(F, m, n);
 		buildBySetEntry(S10, N);
