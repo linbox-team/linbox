@@ -1005,7 +1005,7 @@ namespace LinBox
 
 	protected :
 		friend class SparseMatrixWriteHelper<Self_t >;
-		friend class SparseMatrixReadWriteHelper<Self_t >;
+		friend class SparseMatrixReadHelper<Self_t >;
 
 
 		size_t              _rownb ;
@@ -1020,16 +1020,24 @@ namespace LinBox
 	};
 
 
-#if 0
+	template<class _Field>
+	class SparseMatrixWriteHelper<SparseMatrix<_Field, SparseMatrixFormat::COO> >
+	{
+		std::ostream& write (const SparseMatrix<_Field, SparseMatrixFormat::COO> &A
+				     , std::ostream &os
+				     , LINBOX_enum(Tag::FileFormat) format);
+
+	};
+
 	template<class _Field>
 	std::ostream& SparseMatrixWriteHelper<SparseMatrix<_Field, SparseMatrixFormat::COO> >::write (const SparseMatrix<_Field, SparseMatrixFormat::COO> &A
-								, std::ostream &os
-								, LINBOX_enum(Tag::FileFormat) format)
+													  , std::ostream &os
+													  , LINBOX_enum(Tag::FileFormat) format)
 	{
 		std::cout << "wirtten" << std::endl;
 
 	}
-#endif
+
 
 
 } // namespace LinBox

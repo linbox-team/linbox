@@ -106,7 +106,7 @@ namespace LinBox {
 		class SparseMatrixWriteHelper ;
 
 		template<class Matrix>
-		class SparseMatrixReadWriteHelper ;
+		class SparseMatrixReadHelper ;
 } // LinBox
 
 namespace LinBox { namespace Protected {
@@ -468,7 +468,7 @@ namespace LinBox { namespace Protected {
 	protected:
 
 		friend class SparseMatrixWriteHelper<Self_t >;
-		friend class SparseMatrixReadWriteHelper<Self_t >;
+		friend class SparseMatrixReadHelper<Self_t >;
 
 		Rep               _matA;
 		size_t            _m;

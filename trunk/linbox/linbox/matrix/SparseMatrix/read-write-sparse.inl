@@ -32,7 +32,7 @@ namespace LinBox {
 
 	/**** Read ***/
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix>::readTurner (Matrix &A, std::istream &is
+	std::istream &SparseMatrixReadHelper<Matrix>::readTurner (Matrix &A, std::istream &is
 				  , char *buf)
 	{
 		size_t i, j;
@@ -56,7 +56,7 @@ namespace LinBox {
 	}
 
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix>::readGuillaume (Matrix &A, std::istream &is
+	std::istream &SparseMatrixReadHelper<Matrix>::readGuillaume (Matrix &A, std::istream &is
 				     , char *buf)
 	{
 		typedef typename Matrix::Field::Element Element;
@@ -84,7 +84,7 @@ namespace LinBox {
 
 	//! @bug buf is not used (hence the first line is always lost.
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix>::readMatlab (Matrix &A, std::istream &is
+	std::istream &SparseMatrixReadHelper<Matrix>::readMatlab (Matrix &A, std::istream &is
 				  , char *buf)
 	{
 		typedef typename Matrix::Field::Element Element;
@@ -115,7 +115,7 @@ namespace LinBox {
 	}
 
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix>::readPretty (Matrix &A, std::istream &is
+	std::istream &SparseMatrixReadHelper<Matrix>::readPretty (Matrix &A, std::istream &is
 				  , char *buf)
 	{
 		typedef typename Matrix::Field::Element Element;
@@ -164,7 +164,7 @@ namespace LinBox {
 	}
 
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix>::readMagmaCpt (Matrix &A, std::istream &is
+	std::istream &SparseMatrixReadHelper<Matrix>::readMagmaCpt (Matrix &A, std::istream &is
 				    , char *buf)
 	{
 		typedef typename Matrix::Field::Element Element;
@@ -210,7 +210,7 @@ namespace LinBox {
 	}
 
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix>::readMatrixMarket (Matrix &A, std::istream &is
+	std::istream &SparseMatrixReadHelper<Matrix>::readMatrixMarket (Matrix &A, std::istream &is
 									     , char *buf)
 	{
 		typedef typename Matrix::Field   Field;
@@ -312,7 +312,7 @@ namespace LinBox {
 namespace LinBox {
 	// read
 	template<class Matrix>
-	std::istream &SparseMatrixReadWriteHelper<Matrix> ::read (Matrix &A, std::istream &is
+	std::istream &SparseMatrixReadHelper<Matrix> ::read (Matrix &A, std::istream &is
 								  , LINBOX_enum(Tag::FileFormat) format
 								  , MatrixCategories::RowMatrixTag)
 	{
