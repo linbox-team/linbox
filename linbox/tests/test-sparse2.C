@@ -227,11 +227,7 @@ int main (int argc, char **argv)
 			pass = false;
 		}
 
-		if (pass)
-			commentator().stop("Sparse matrix black box test suite pass");
-		else
-			commentator().stop("Sparse matrix black box test suite FAIL");
-	}
+		}
 
 	{ /*  Default OLD */
 		commentator().start("SparseMatrix<Field>", "Field");
@@ -244,6 +240,12 @@ int main (int argc, char **argv)
 			pass = false;
 		}
 	}
+
+	if (pass)
+		commentator().stop("Sparse matrix black box test suite pass");
+	else
+		commentator().stop("Sparse matrix black box test suite FAIL");
+
 
 	return pass ? 0 : -1;
 }

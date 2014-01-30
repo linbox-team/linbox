@@ -32,6 +32,8 @@
 #ifndef __LINBOX_matrix_sparse_matrix_read_write_sparse_H
 #define __LINBOX_matrix_sparse_matrix_read_write_sparse_H
 
+#include "linbox/matrix/matrix-traits.h"
+#include "linbox/matrix/matrix-category.h"
 
 namespace LinBox {
 	// Small helper classes to make read and write easier
@@ -45,19 +47,32 @@ namespace LinBox {
 		static std::ostream &writeTriple (const Matrix &A, std::ostream &os, bool oneBased = false);
 
 		static std::ostream &writePretty (const Matrix &A, std::ostream &os
-					   , std::string begmat
-					   , std::string endmat
-					   , std::string begrow
-					   , std::string endrow
-					   , std::string sepelt
-					   , std::string seprow
-					  );
+						  , std::string begmat
+						  , std::string endmat
+						  , std::string begrow
+						  , std::string endrow
+						  , std::string sepelt
+						  , std::string seprow
+						 );
+
+		static std::ostream& write(const Matrix &A
+				   , std::ostream &os
+				   , LINBOX_enum(Tag::FileFormat) format
+				   , MatrixCategories::BlackboxTag);
+
+		static std::ostream& write(const Matrix &A
+				   , std::ostream &os
+				   , LINBOX_enum(Tag::FileFormat) format
+				   , MatrixCategories::RowMatrixTag);
 
 
 	public:
 		static std::ostream &write (const Matrix &A
 					    , std::ostream &os
-					    , LINBOX_enum(Tag::FileFormat) format);
+					    , LINBOX_enum(Tag::FileFormat) format)
+		{
+			return write(A,os,format, typename MatrixTraits<Matrix>::MatrixCategory ());
+		}
 	};
 
 	template <class Matrix>
@@ -71,24 +86,42 @@ namespace LinBox {
 		static std::istream &readTurner    (Matrix &A
 						    , std::istream &is
 						    , char *buf);
+
 		static std::istream &readGuillaume (Matrix &A
 						    , std::istream &is
 						    , char *buf);
+
 		static std::istream &readMatlab    (Matrix &A
 						    , std::istream &is
 						    , char *buf);
+
 		static std::istream &readPretty    (Matrix &A
 						    , std::istream &is
 						    , char *buf);
+
 		static std::istream &readMagmaCpt  (Matrix &A
 						    , std::istream &is
 						    , char *buf);
+		static std::istream &read (Matrix &A
+				    , std::istream &is
+				    , LINBOX_enum(Tag::FileFormat) format
+				    , MatrixCategories::RowMatrixTag
+				   );
+
+		static std::istream &read (Matrix &A
+				    , std::istream &is
+				    , LINBOX_enum(Tag::FileFormat) format
+				    , MatrixCategories::BlackboxTag
+				   );
 
 
 	public:
 		static std::istream &read (Matrix &A
 					   , std::istream &is
-					   , LINBOX_enum(Tag::FileFormat) format);
+					   , LINBOX_enum(Tag::FileFormat) format)
+		{
+			return read(A,is,format, typename MatrixTraits<Matrix>::MatrixCategory ());
+		}
 	};
 
 
