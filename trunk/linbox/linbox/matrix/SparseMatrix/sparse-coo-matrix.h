@@ -45,16 +45,6 @@
 namespace LinBox
 {
 
-	// template<class _Field>
-	// std::ostream& SparseMatrixWriteHelper<
-	// SparseMatrix<_Field, SparseMatrixFormat::COO> >::write (const SparseMatrix<_Field, SparseMatrixFormat::COO> &A
-								// , std::ostream &os
-								// , LINBOX_enum(Tag::FileFormat) format)
-	// {
-		// std::cout << "wirtten" << std::endl;
-
-	// }
-
 
 	/** Sparse matrix, Coordinate storage.
 	 *
@@ -1028,6 +1018,18 @@ namespace LinBox
 
 		const _Field & _field;
 	};
+
+
+#if 0
+	template<class _Field>
+	std::ostream& SparseMatrixWriteHelper<SparseMatrix<_Field, SparseMatrixFormat::COO> >::write (const SparseMatrix<_Field, SparseMatrixFormat::COO> &A
+								, std::ostream &os
+								, LINBOX_enum(Tag::FileFormat) format)
+	{
+		std::cout << "wirtten" << std::endl;
+
+	}
+#endif
 
 
 } // namespace LinBox

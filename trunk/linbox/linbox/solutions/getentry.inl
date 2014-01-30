@@ -67,17 +67,13 @@ namespace LinBox
 	typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, SolutionTags::Generic t)
 	{
 		typedef typename BB::Field Field;
-		// typedef std::vector<typename Field::Element> Vector;
 		typedef BlasVector<Field> Vector ;
 
 		const Field& F = A.field();
 		Vector v(F,A.coldim(), F.zero), w(F,A.rowdim(), F.zero);
-		F.init(v[j],1UL);
+		F.assign(v[j],F.one); // use standard basis ?
 		A.apply (w, v);
-		/* This causes a warning "returning reference to temporary" and is not necessary, I believe. -bds
-		F.assign (x, VectorWrapper::constRef<Field, Vector> (w, i));
-		*/
-		return x = w[i];
+		return F.assign(x, w[i]);
 	}
 
 	// some BBs have their own.
@@ -112,7 +108,7 @@ namespace LinBox
 	typename Field::Element& getEntry(typename Field::Element& x, const Compose<Diagonal<Field,T1>, Diagonal<Field, T2> >& A, const size_t i, const size_t j)
 	{
 		if (i != j)
-			return A.field().init(x, 0UL);
+			return A.field().zero;
 		else {
 			typename Field::Element y;
 			getEntry(y, *(A.getLeftPtr()), i, i);

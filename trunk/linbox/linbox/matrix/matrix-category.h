@@ -26,9 +26,6 @@
 #ifndef __LINBOX_matrix_category_H
 #define __LINBOX_matrix_category_H
 
-// #include "linbox/matrix/sparse.h"
-// #include "linbox/matrix/blas-matrix.h"
-// #include "linbox/matrix/sparse.h"
 
 
 namespace LinBox
@@ -42,11 +39,6 @@ namespace LinBox
 
 	template<class _Field, class _Storage>
 	class SparseMatrix ;
-
-	// namespace Protected {
-	// template<class _Field, class _Row, class _Traits>
-	// class SparseMatrixGeneric ;
-	// }
 
 
 	struct MatrixContainerCategory {
@@ -73,26 +65,11 @@ namespace LinBox
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 
-#if 0
-	template <class Field,class Rep>
-	class MatrixContainerTrait<BlasMatrix<Field,Rep> > {
-	public:
-		typedef MatrixContainerCategory::BlasContainer Type;
-	};
-#endif
-
 	template <class _Matrix>
 	class MatrixContainerTrait<const BlasSubmatrix<_Matrix> > {
 	public:
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
-
-	// template <class Field, class _Row, class _Traits>
-	// class MatrixContainerTrait<Protected::SparseMatrixGeneric<Field,_Row,_Traits> > {
-	// public:
-		// typedef MatrixContainerCategory::Container Type;
-		// typedef MatrixContainerCategory::Blackbox Type;
-	// };
 
 	template <class Field, class Storage>
 	class MatrixContainerTrait<SparseMatrix<Field,Storage> > {
