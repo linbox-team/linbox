@@ -55,19 +55,23 @@ template <class SM>
 void buildBySetEntry(SM & A, size_t nnz)
 {
 	typename SM::Field::RandIter r(A.field(),0);
+	srand(0);
+
 	//size_t i, j, k;
 	typename SM::Field::Element x;
 
 	for (size_t k = 0; k < nnz; ++k)
 	{
-		size_t i = random() % A.rowdim();
-		size_t j = random() % A.coldim();
+		size_t i = rand() % A.rowdim();
+		size_t j = rand() % A.coldim();
 		r.nonzerorandom(x);
 		// r.random(x); // I want to see what happens when one reads in zero. If we don't want it, we just stop permitting setting zero... (hence the clearEntry function)
 		// std::cout << "A[ " << i+1 << ',' << j+1 << "]:=" << x << ';' << std::endl;
 		// if (A.field().isZero(x)) std::cout << "#is zero" << std::endl;
+		// std::cout << i << ',' << j << ',' << x << std::endl;
 		A.setEntry(i,j,x);
 	}
+	// std::cout << "---" << std::endl;
 	A.finalize();
 	// std::cout << "B :=" << std::endl;
 	// A.write(std::cout);
