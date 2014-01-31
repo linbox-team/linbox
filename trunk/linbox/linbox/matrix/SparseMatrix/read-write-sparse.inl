@@ -64,10 +64,9 @@ namespace LinBox {
 		size_t i = 0, j = 0 ;
 
 		std::istringstream str (buf);
-		str >> A._m >> A._n;
-
-		A.refRep().clear ();
-		A.refRep().resize (A.rowdim());
+		size_t m, n ;
+		str >> m >> n;
+		A.resize(m,n);
 
 		Element x;
 		while (is >> i) {
@@ -116,8 +115,10 @@ namespace LinBox {
 	}
 
 	template<class Matrix>
-	std::istream &SparseMatrixReadHelper<Matrix>::readPretty (Matrix &A, std::istream &is
-								  , char *buf)
+	std::istream &SparseMatrixReadHelper<Matrix>::readPretty (Matrix &A
+								  , std::istream &is
+								  , char *buf
+								  , MatrixCategories::RowMatrixTag)
 	{
 		typedef typename Matrix::Field::Element Element;
 		size_t i;
@@ -164,7 +165,62 @@ namespace LinBox {
 
 	}
 
-	//! there is no writer for this, should we care ?
+	template<class Matrix>
+	std::istream &SparseMatrixReadHelper<Matrix>::readPretty (Matrix &A
+								  , std::istream &is
+								  , char *buf
+								  , MatrixCategories::BlackboxTag)
+	{
+		typedef typename Matrix::Field::Element Element;
+		size_t i;
+		Element a_ij;
+
+		A.resize(0,0);
+
+		i = 0;
+
+		do {
+			char c;
+			size_t j;
+
+			A.resize(i+1,A.coldim());
+			std::istringstream str (buf);
+
+			do {
+				str >> c;
+			} while (isspace (c));
+
+			if (c != '[')
+				throw Exceptions::InvalidMatrixInput ();
+
+			j = 0;
+
+			while (str) {
+				do str >> c; while (isspace (c));
+				if (!str || c == ']') break;
+				A.field().read (str, a_ij);
+
+				++j;
+
+				if (!A.field().isZero(a_ij)) {
+					if (j >= A.coldim())
+						A.resize(i,j+1);
+
+					A.setEntry (i, j, a_ij);
+				}
+			}
+
+			is.getline (buf, 80);
+
+			++i;
+		} while (is);
+
+			return is;
+
+	}
+
+#if 0 /* there is no writer for this, no autodetect, should we care ? */
+
 	template<class Matrix>
 	std::istream &SparseMatrixReadHelper<Matrix>::readMagmaCpt (Matrix &A, std::istream &is
 								    , char *buf)
@@ -177,8 +233,7 @@ namespace LinBox {
 		const char rowstart = '[', rowend = ']';
 		const char pairstart = '[', pairend = ']';
 
-		A._m = A._n = 0;
-		A.refRep().clear ();
+		A.resize(0,0);
 
 		do {is.get(c);} while (c != matrixstart ); // find matrix start
 		i = 0;
@@ -210,6 +265,7 @@ namespace LinBox {
 			}
 		}
 	}
+#endif
 
 	template<class Matrix>
 	std::istream &SparseMatrixReadHelper<Matrix>::readMatrixMarket (Matrix &A, std::istream &is
@@ -219,9 +275,10 @@ namespace LinBox {
 		typedef typename Field::Element  Element;
 
 		MatrixStream<Field> ms(A.field(), is);
-		if( !ms.getDimensions( A._m, A._n ) )
+		size_t m,n ;
+		if( !ms.getDimensions( m, n ) )
 			throw ms.reportError(__func__,__LINE__);
-		A.refRep().resize( A.rowdim() );
+		A.resize(m,n);
 		Element val;
 		size_t i, j;
 		while( ms.nextTriple(i,j,val) ) {
@@ -244,9 +301,6 @@ namespace LinBox {
 		typename Matrix::Rep::const_iterator i;
 		typename Matrix::Row::const_iterator j;
 		size_t i_idx, j_idx;
-		//	int col_width;
-		// integer c;
-		// bool firstrow;
 
 
 		// The i j v triples, with zero based indices.
@@ -385,9 +439,10 @@ namespace LinBox {
 namespace LinBox {
 	// read
 	template<class Matrix>
-	std::istream &SparseMatrixReadHelper<Matrix> ::read (Matrix &A, std::istream &is
-								  , LINBOX_enum(Tag::FileFormat) format
-								  , MatrixCategories::RowMatrixTag)
+	std::istream &SparseMatrixReadHelper<Matrix> ::read (Matrix &A
+							     , std::istream &is
+							     , LINBOX_enum(Tag::FileFormat) format
+							    )
 	{
 		char buf[80];
 		buf[0]=0;
@@ -404,7 +459,7 @@ namespace LinBox {
 					if (strchr (buf, ';') != NULL)
 						readMatlab (A, is, buf);
 					else
-						readPretty (A, is, buf);
+						readPretty (A, is, buf, typename MatrixTraits<Matrix>::MatrixCategory ());
 				}
 				else if (c == '%') {
 					size_t un = is.gcount() ;
@@ -417,28 +472,26 @@ namespace LinBox {
 
 					if (c == 'M')
 						return readGuillaume (A, is, buf);
-					// else
-						// return readTurner (A, is, buf);
+					// else return readTurner (A, is, buf);
 				}
 				else {
 #ifndef NDEBUG
-					std::cout << c << std::endl;
+					std::cout << "buffer :" << buf << std::endl;
 #endif
 					throw Exceptions::InvalidMatrixInput ();
 				}
 				break;
 			}
 
-		// case Tag::FileFormat::Turner:
-			// return readTurner (A, is, buf);
+			// case Tag::FileFormat::Turner:  return readTurner (A, is, buf);
 		case Tag::FileFormat::Guillaume:
 			return readGuillaume (A, is, buf);
 		case Tag::FileFormat::Matlab:
 			return readMatlab (A, is, buf);
 		case Tag::FileFormat::Pretty:
-			return readPretty (A, is, buf);
-		case Tag::FileFormat::MagmaCpt:
-			return readMagmaCpt (A, is, buf);
+			return readPretty (A, is, buf, typename MatrixTraits<Matrix>::MatrixCategory ());
+		// case Tag::FileFormat::MagmaCpt:
+			// return readMagmaCpt (A, is, buf);
 		case Tag::FileFormat::MatrixMarket:
 			return readMatrixMarket (A, is, buf);
 		default:

@@ -45,28 +45,6 @@
 namespace LinBox
 {
 
-#if 0
-	// template<class Element>
-	class tripleIter {
-	private:
-		ptrdiff_t i  ;
-		// size_t * i_idx;
-		// size_t * j_idx;
-		// Element * f_elt;
-	public:
-		nextTriple() :
-			i (-1)
-			// i_idx(NULL),j_idx(NULL),f_elt(NULL)
-		{}
-		void reset() {
-			// i_idx = NULL;
-			// j_idx = NULL;
-			// f_elt = NULL;
-			i = -1 ;
-		}
-
-	};
-#endif
 
 	/** Sparse matrix, Coordinate storage.
 	 *
@@ -225,7 +203,7 @@ namespace LinBox
 			_nbnz = nn ;
 		}
 
-		void resize(const size_t & mm, const size_t & nn, const size_t & zz)
+		void resize(const size_t & mm, const size_t & nn, const size_t & zz = 0)
 		{
 			_rownb = mm ;
 			_colnb = nn ;
@@ -235,6 +213,7 @@ namespace LinBox
 			_colid.resize(zz);
 			_data.resize(zz);
 		}
+
 
 		/*! Default converter.
 		 * @param S a sparse matrix in any storage.
@@ -532,29 +511,18 @@ namespace LinBox
 		 * @param format Format with which to write
 		 */
 
-		std::ostream & write(std::ostream &os,
-				     enum LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::MatrixMarket) const
+		std::ostream & write(std::ostream &os
+				     , LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::MatrixMarket) const
 		{
 			return SparseMatrixWriteHelper<Self_t>::write(*this,os,format);
 		}
 
 
 		/// Read from matrix market format
-		std::istream &read (std::istream &is)
-				     // enum LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::FormatDetect)
+		std::istream &read ( std::istream &is
+				     , LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::Detect)
 		{
-			MatrixStream<Field> ms(field(), is);
-			if( !ms.getDimensions( this->_rownb, this->_colnb ) )
-				throw ms.reportError(__func__,__LINE__);
-			// this->_matA.resize( this->_m );
-			Element val;
-			size_t i, j;
-			while( ms.nextTriple(i,j,val) ) {
-				setEntry(i,j,val);
-			}
-			if( ms.getError() > END_OF_MATRIX )
-				throw ms.reportError(__func__,__LINE__);
-			return is;
+			return SparseMatrixReadHelper<Self_t>::read(*this,is,format);
 		}
 
 		/*! @internal
@@ -956,7 +924,6 @@ namespace LinBox
 		}
 #endif
 
-
 	public:
 		// pseudo iterators
 		size_t getRowid(const size_t & i) const
@@ -1029,7 +996,7 @@ namespace LinBox
 		{
 			ptrdiff_t idx = _triples.next();
 			if (idx > _nbnz) {
-				_triples.idx = -1 ;
+				_triples.reset() ;
 				return false;
 			}
 
@@ -1062,6 +1029,10 @@ namespace LinBox
 			ptrdiff_t next() {
 				return idx = idx + 1 ;
 			} ;
+			void reset()
+			{
+				idx = -1 ;
+			}
 		}_triples;
 	};
 
