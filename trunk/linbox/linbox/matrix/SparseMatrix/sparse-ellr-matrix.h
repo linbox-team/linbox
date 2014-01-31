@@ -188,7 +188,7 @@ namespace LinBox
 
 
 
-		void resize(const size_t & mm, const size_t & nn, const size_t & zz, const size_t & ll)
+		void resize(const size_t & mm, const size_t & nn, const size_t & zz = 0, const size_t & ll = 0)
 		{
 			// attention RowMajor/ColMajor
 			if (!_maxc || mm == _maxc) {
@@ -510,39 +510,23 @@ namespace LinBox
 		 * @param format Format with which to write
 		 */
 		std::ostream & write(std::ostream &os,
-				     enum LINBOX_enum(Tag::FileFormat) ff  = Tag::FileFormat::Maple) const
+				     LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::MatrixMarket) const
 		{
-			return this->writeSpecialized(os,ff);
+			return SparseMatrixWriteHelper<Self_t>::write(*this,os,format);
 		}
 
 
-		// /** Read a matrix from the given input stream using field read/write
-		 // * @param file Input stream from which to read the matrix
-		 // * @param format Format of input matrix
-		 // * @return ref to \p file.
-		 // */
-		// std::istream& read (std::istream &file,
-				    // LINBOX_enum(Tag::FileFormat) format)
-		// {
-			// return readSpecialized(file,Format());
-		// }
-
-		/// Read from matrix market format
-		std::istream &read (std::istream &is)
+		/** Read a matrix from the given input stream using field read/write
+		 * @param is Input stream from which to read the matrix
+		 * @param format Format of input matrix
+		 * @return ref to \p is.
+		 */
+		std::istream& read (std::istream &is,
+				    LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Detect)
 		{
-			MatrixStream<Field> ms(field(), is);
-			if( !ms.getDimensions( this->_rownb, this->_colnb ) )
-				throw ms.reportError(__func__,__LINE__);
-			// this->_matA.resize( this->_m );
-			Element val;
-			size_t i, j;
-			while( ms.nextTriple(i,j,val) ) {
-				setEntry(i,j,val);
-			}
-			if( ms.getError() > END_OF_MATRIX )
-				throw ms.reportError(__func__,__LINE__);
-			return is;
+			return SparseMatrixReadHelper<Self_t>::read(*this,is,format);
 		}
+
 
 		/*! @internal
 		 * @brief Deletes the entry.
@@ -685,6 +669,7 @@ namespace LinBox
 			return (nbnz == _nbnz);
 
 		}
+
 
 
 	private :
@@ -1006,6 +991,32 @@ namespace LinBox
 		{
 			return _maxc;
 		}
+
+		bool nextTriple(size_t & i, size_t &j, Element &e) const
+		{
+			ptrdiff_t off =_triples.next(_maxc);
+
+			i = _triples._row ;
+			if (  i >= rowdim() ) {
+				_triples.reset() ;
+				return false ;
+			}
+
+			while ( off >= _rowid[i] )  {
+				_triples._off = off = 0;
+				_triples._row = i   = i+1 ;
+				if (i >= rowdim()) {
+					_triples.reset();
+					return false;
+				}
+			}
+
+			j = _colid[i*_maxc+off];
+			e = _data[i*_maxc+off];
+
+			return true;
+		}
+
 	private:
 
 		void insert (const size_t &i, const size_t &k, const size_t &j, const Element& e)
@@ -1068,6 +1079,31 @@ namespace LinBox
 		std::vector<Element> _data ; //!< \p _data  is \p _rownb x \p _maxc in RowMajor
 
 		const _Field            & _field ;
+
+		mutable struct _triples {
+			ptrdiff_t _row ;
+			ptrdiff_t _off ;
+			_triples() :
+				_row(-1)
+				, _off(-1)
+			{}
+			ptrdiff_t next(size_t maxc) {
+				++ _off ;
+				if (_row == -1) {
+					++_row ;
+					return _off ;
+				}
+				if (_off >= maxc) {
+					_row += 1 ;
+					_off = 0 ;
+				}
+				return _off;
+			}
+			void reset() {
+				_row = -1 ;
+				_off = -1 ;
+			}
+		}_triples;
 	};
 
 
