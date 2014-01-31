@@ -27,13 +27,13 @@
 #ifndef __LINBOX_matrix_sparse_matrix_read_write_sparse_INL
 #define __LINBOX_matrix_sparse_matrix_read_write_sparse_INL
 
-// read/write functions
+/**** Read Iterators ***/
 namespace LinBox {
 
-	/**** Read ***/
+#if 0 /* dubious (where are size set, why is it not checked ?) */
 	template<class Matrix>
 	std::istream &SparseMatrixReadHelper<Matrix>::readTurner (Matrix &A, std::istream &is
-				  , char *buf)
+								  , char *buf)
 	{
 		size_t i, j;
 
@@ -54,10 +54,11 @@ namespace LinBox {
 
 		return is;
 	}
+#endif
 
 	template<class Matrix>
 	std::istream &SparseMatrixReadHelper<Matrix>::readGuillaume (Matrix &A, std::istream &is
-				     , char *buf)
+								     , char *buf)
 	{
 		typedef typename Matrix::Field::Element Element;
 		size_t i = 0, j = 0 ;
@@ -85,7 +86,7 @@ namespace LinBox {
 	//! @bug buf is not used (hence the first line is always lost.
 	template<class Matrix>
 	std::istream &SparseMatrixReadHelper<Matrix>::readMatlab (Matrix &A, std::istream &is
-				  , char *buf)
+								  , char *buf)
 	{
 		typedef typename Matrix::Field::Element Element;
 		size_t i = 0, j = 0;
@@ -116,7 +117,7 @@ namespace LinBox {
 
 	template<class Matrix>
 	std::istream &SparseMatrixReadHelper<Matrix>::readPretty (Matrix &A, std::istream &is
-				  , char *buf)
+								  , char *buf)
 	{
 		typedef typename Matrix::Field::Element Element;
 		size_t i;
@@ -163,9 +164,10 @@ namespace LinBox {
 
 	}
 
+	//! there is no writer for this, should we care ?
 	template<class Matrix>
 	std::istream &SparseMatrixReadHelper<Matrix>::readMagmaCpt (Matrix &A, std::istream &is
-				    , char *buf)
+								    , char *buf)
 	{
 		typedef typename Matrix::Field::Element Element;
 		size_t i, j;
@@ -211,7 +213,7 @@ namespace LinBox {
 
 	template<class Matrix>
 	std::istream &SparseMatrixReadHelper<Matrix>::readMatrixMarket (Matrix &A, std::istream &is
-									     , char *buf)
+									, char *buf)
 	{
 		typedef typename Matrix::Field   Field;
 		typedef typename Field::Element  Element;
@@ -229,16 +231,21 @@ namespace LinBox {
 			throw ms.reportError(__func__,__LINE__);
 		return is;
 	}
+} // LinBox
 
-	/**** Write ***/
+/**** Write Iterators ***/
+namespace LinBox {
 	template<class Matrix>
-	std::ostream &SparseMatrixWriteHelper<Matrix>::writeTriple (const Matrix &A, std::ostream &os, bool oneBased)
+	std::ostream &SparseMatrixWriteHelper<Matrix>::writeTriple (const Matrix &A
+								    , std::ostream &os
+								    , MatrixCategories::RowMatrixTag
+								    , bool oneBased)
 	{
 		typename Matrix::Rep::const_iterator i;
 		typename Matrix::Row::const_iterator j;
 		size_t i_idx, j_idx;
 		//	int col_width;
-		integer c;
+		// integer c;
 		// bool firstrow;
 
 
@@ -258,20 +265,40 @@ namespace LinBox {
 	}
 
 	template<class Matrix>
+	std::ostream &SparseMatrixWriteHelper<Matrix>::writeTriple (const Matrix &A
+								    , std::ostream &os
+								    , MatrixCategories::BlackboxTag
+								    , bool oneBased)
+	{
+		size_t i,j ;
+		Element e ;
+
+		while (A.nextTriple(i,j,e)) {
+			if (oneBased)
+				os << i + 1 << ' ' << j + 1 << ' ';
+			else
+				os << i << ' ' << j << ' ';
+			A.field().write (os, e);
+			os << std::endl;
+		}
+		return os;
+	}
+
+
+	template<class Matrix>
 	std::ostream &SparseMatrixWriteHelper<Matrix>::writePretty (const Matrix &A, std::ostream &os
-				   , std::string begmat
-				   , std::string endmat
-				   , std::string begrow
-				   , std::string endrow
-				   , std::string sepelt
-				   , std::string seprow
-				  )
+								    , std::string begmat
+								    , std::string endmat
+								    , std::string begrow
+								    , std::string endrow
+								    , std::string sepelt
+								    , std::string seprow
+								    , MatrixCategories::RowMatrixTag
+								   )
 	{
 		typename Matrix::Rep::const_iterator i;
 		typename Matrix::Row::const_iterator j;
 		size_t i_idx, j_idx;
-		//	int col_width;
-		integer c;
 		bool firstrow;
 
 		os << begmat;
@@ -307,6 +334,52 @@ namespace LinBox {
 
 		return os ;
 	}
+
+	template<class Matrix>
+	std::ostream &SparseMatrixWriteHelper<Matrix>::writePretty (const Matrix &A, std::ostream &os
+								    , std::string begmat
+								    , std::string endmat
+								    , std::string begrow
+								    , std::string endrow
+								    , std::string sepelt
+								    , std::string seprow
+								    , MatrixCategories::BlackboxTag
+								   )
+	{
+		size_t i_idx=0, j_idx=0;
+		Element e;
+
+		os << begmat;
+
+		bool ok = A.nextTriple(i_idx,j_idx,e);
+
+		for (size_t i = 0 ; i < A.rowdim() ; ++i) {
+
+			if (i != 0 ) { /*  not first row */
+				os << seprow ;
+			}
+
+			os << begrow;
+
+			for (size_t j = 0 ; j < A.coldim() ; ++j) {
+				if (ok && i == i_idx && j == j_idx) {
+					A.field().write (os, e);
+					ok = A.nextTriple(i_idx,j_idx,e);
+				}
+				else {
+					A.field().write (os, A.field().zero);
+				}
+				if (j < A.coldim() - 1)
+					os << sepelt << ' ';
+			}
+			os << endrow ;
+		}
+
+		os << endmat;
+
+		return os ;
+	}
+
 } // namespace LinBox
 
 namespace LinBox {
@@ -344,16 +417,20 @@ namespace LinBox {
 
 					if (c == 'M')
 						return readGuillaume (A, is, buf);
-					else
-						return readTurner (A, is, buf);
+					// else
+						// return readTurner (A, is, buf);
 				}
-				else
+				else {
+#ifndef NDEBUG
+					std::cout << c << std::endl;
+#endif
 					throw Exceptions::InvalidMatrixInput ();
+				}
 				break;
 			}
 
-		case Tag::FileFormat::Turner:
-			return readTurner (A, is, buf);
+		// case Tag::FileFormat::Turner:
+			// return readTurner (A, is, buf);
 		case Tag::FileFormat::Guillaume:
 			return readGuillaume (A, is, buf);
 		case Tag::FileFormat::Matlab:
@@ -373,9 +450,10 @@ namespace LinBox {
 
 	// write
 	template<class Matrix>
-	std::ostream &SparseMatrixWriteHelper<Matrix> ::write (const Matrix &A, std::ostream &os
+	std::ostream &SparseMatrixWriteHelper<Matrix> ::write (const Matrix &A
+							       , std::ostream &os
 							       , LINBOX_enum(Tag::FileFormat) format
-							       , MatrixCategories::RowMatrixTag)
+							       )
 	{
 		// Avoid massive unneeded overhead in the case that this
 		// printing is disabled
@@ -386,23 +464,23 @@ namespace LinBox {
 		case Tag::FileFormat::Detect:
 			throw PreconditionFailed (__func__, __LINE__, "format != Tag::FileFormat::Detect");
 
-		case Tag::FileFormat::Turner:
-			return writeTriple(A,os);
+		// case Tag::FileFormat::Turner:
+			// return writeTriple(A,os);
 
 		case Tag::FileFormat::OneBased:
-			return writeTriple(A,os,true);
+			return writeTriple(A,os,typename MatrixTraits<Matrix>::MatrixCategory (),true);
 
 		case Tag::FileFormat::Guillaume:
 			// row col 'M' header line followed by the i j v triples, one based,
 			// followed by 0 0 0.
 			os << A.rowdim() << ' ' << A.coldim() << " M" << std::endl;
-			writeTriple(A,os,true);
+			writeTriple(A,os,typename MatrixTraits<Matrix>::MatrixCategory (),true);
 			os << "0 0 0" << std::endl;
 
 			return os;
 
 		case Tag::FileFormat::Matlab:
-			return writePretty(A,os,"[","]","","; ",",","");
+			return writePretty(A,os,"[","]","","; ",",","",typename MatrixTraits<Matrix>::MatrixCategory ());
 			// std::string begmat = "[";
 			// std::string endmat = "]";
 			// std::string begrow = "";
@@ -411,7 +489,7 @@ namespace LinBox {
 			// std::string seprow  = "";
 
 		case Tag::FileFormat::Maple:
-			return writePretty(A,os,"[","]","["," ]",",",", ");
+			return writePretty(A,os,"[","]","["," ]",",",", ",typename MatrixTraits<Matrix>::MatrixCategory ());
 			// std::string begmat = "[";
 			// std::string endmat = "]";
 			// std::string begrow = "[";
@@ -422,7 +500,7 @@ namespace LinBox {
 			break;
 
 		case Tag::FileFormat::Pretty:
-			return writePretty(A,os,"",""," [ ","]\n"," ","");
+			return writePretty(A,os,"",""," [ ","]\n"," ","",typename MatrixTraits<Matrix>::MatrixCategory ());
 			// std::string begmat = "";
 			// std::string endmat = "";
 			// std::string begrow = " [ ";
@@ -431,6 +509,8 @@ namespace LinBox {
 			// std::string seprow  = "";
 
 		case Tag::FileFormat::MatrixMarket:
+			writeMMCoordHeader(os, A, A.size(), "SparseMatrix");
+			return writeTriple(A,os,typename MatrixTraits<Matrix>::MatrixCategory (),true);
 
 
 		case Tag::FileFormat::MagmaCpt:

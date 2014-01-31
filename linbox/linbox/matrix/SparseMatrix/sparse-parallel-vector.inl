@@ -179,8 +179,6 @@ namespace LinBox {
 			// std::string sepelt = ",";
 			// std::string seprow = ", "
 
-			break;
-
 		case Tag::FileFormat::Pretty:
 			return writePretty(A,os,"",""," [ ","]\n"," ","");
 			// std::string begmat = "";
@@ -189,6 +187,10 @@ namespace LinBox {
 			// std::string endrow = "]\n";
 			// std::string sepelt  = " ";
 			// std::string seprow  = "";
+
+		case Tag::FileFormat::MatrixMarket:
+			writeMMCoordHeader(os, A, A.size(), "SparseMatrixGeneric");
+			return writeTriple(A,os,true);
 
 
 		case Tag::FileFormat::MagmaCpt:

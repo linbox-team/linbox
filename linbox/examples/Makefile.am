@@ -49,8 +49,9 @@ EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 CLEANFILES=$(EXTRA_PROGRAMS)
 
 EXTRA_DIST = examples.doxy smithvalence.h
+#map-sparse.h map-sparse.inl
 
-examples: ${EXTRA_PROGRAMS}
+examples:  ${EXTRA_PROGRAMS}
 
 dot_product_SOURCES    = dot-product.C
 doubledet_SOURCES      = doubledet.C

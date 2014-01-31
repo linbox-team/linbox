@@ -192,17 +192,11 @@ namespace LinBox { namespace Protected {
 		}
 
 		std::ostream &write (std::ostream &os
-				     , LINBOX_enum(Tag::FileFormat) format /* = Tag::FileFormat::Pretty*/) const
+				     , LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::MatrixMarket ) const
 		{
 			return SparseMatrixWriteHelper<Self_t>::write (*this, os, format);
 		}
 
-		/// Write in matrix market format
-		std::ostream &write (std::ostream &os) const
-		{
-			writeMMCoordHeader(os, *this, this->size(), "SparseMatrixGeneric");
-			return this->write(os, Tag::FileFormat::OneBased);
-		}
 
 		void finalize(){}
 

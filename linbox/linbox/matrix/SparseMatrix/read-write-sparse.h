@@ -45,36 +45,45 @@ namespace LinBox {
 		typedef typename Field::Element       Element;
 
 	private:
-		static std::ostream &writeTriple (const Matrix &A, std::ostream &os, bool oneBased = false);
+		static std::ostream &writeTriple (const Matrix &A
+						  , std::ostream &os
+						  , MatrixCategories::RowMatrixTag
+						  , bool oneBased = false);
 
-		static std::ostream &writePretty (const Matrix &A, std::ostream &os
+		static std::ostream &writeTriple (const Matrix &A
+						  , std::ostream &os
+						  , MatrixCategories::BlackboxTag
+						  , bool oneBased = false);
+
+
+		static std::ostream &writePretty (const Matrix &A
+						  , std::ostream &os
 						  , std::string begmat
 						  , std::string endmat
 						  , std::string begrow
 						  , std::string endrow
 						  , std::string sepelt
 						  , std::string seprow
+						  , MatrixCategories::RowMatrixTag
 						 );
 
-		static std::ostream& write(const Matrix &A
-				   , std::ostream &os
-				   , LINBOX_enum(Tag::FileFormat) format
-				   , MatrixCategories::BlackboxTag);
+		static std::ostream &writePretty (const Matrix &A
+						  , std::ostream &os
+						  , std::string begmat
+						  , std::string endmat
+						  , std::string begrow
+						  , std::string endrow
+						  , std::string sepelt
+						  , std::string seprow
+						  , MatrixCategories::BlackboxTag
+						 );
 
-		// atempt to make the Generic stuff generic
-		static std::ostream& write(const Matrix &A
-				   , std::ostream &os
-				   , LINBOX_enum(Tag::FileFormat) format
-				   , MatrixCategories::RowMatrixTag);
 
 
 	public:
 		static std::ostream &write (const Matrix &A
 					    , std::ostream &os
-					    , LINBOX_enum(Tag::FileFormat) format)
-		{
-			return write(A,os,format, typename MatrixTraits<Matrix>::MatrixCategory ());
-		}
+					    , LINBOX_enum(Tag::FileFormat) format);
 	};
 
 	template <class Matrix>

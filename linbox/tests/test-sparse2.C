@@ -124,7 +124,7 @@ int main (int argc, char **argv)
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::COO>", "COO");
 		SparseMatrix<Field, SparseMatrixFormat::COO> S2(F, m, n);
 		buildBySetEntry(S2, N);
-		if ( testBlackbox(S2,false)  && MD.areEqual(S1,S2) )
+		if ( testBlackbox(S2,true)  && MD.areEqual(S1,S2) )
 			commentator().stop("Format COO pass");
 		else {
 			commentator().stop("Format COO FAIL");

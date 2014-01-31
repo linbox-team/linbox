@@ -45,6 +45,28 @@
 namespace LinBox
 {
 
+#if 0
+	// template<class Element>
+	class tripleIter {
+	private:
+		ptrdiff_t i  ;
+		// size_t * i_idx;
+		// size_t * j_idx;
+		// Element * f_elt;
+	public:
+		nextTriple() :
+			i (-1)
+			// i_idx(NULL),j_idx(NULL),f_elt(NULL)
+		{}
+		void reset() {
+			// i_idx = NULL;
+			// j_idx = NULL;
+			// f_elt = NULL;
+			i = -1 ;
+		}
+
+	};
+#endif
 
 	/** Sparse matrix, Coordinate storage.
 	 *
@@ -513,13 +535,13 @@ namespace LinBox
 		std::ostream & write(std::ostream &os,
 				     enum LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::MatrixMarket) const
 		{
-			// return SparseMatrixWriteHelper<Self_t>::write(*this,os,format);
-			return this->writeSpecialized(os,format);
+			return SparseMatrixWriteHelper<Self_t>::write(*this,os,format);
 		}
 
 
 		/// Read from matrix market format
 		std::istream &read (std::istream &is)
+				     // enum LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::FormatDetect)
 		{
 			MatrixStream<Field> ms(field(), is);
 			if( !ms.getDimensions( this->_rownb, this->_colnb ) )
@@ -1003,6 +1025,21 @@ namespace LinBox
 			return _data ;
 		}
 
+		bool nextTriple(size_t & i, size_t &j, Element &e) const
+		{
+			ptrdiff_t idx = _triples.next();
+			if (idx > _nbnz) {
+				_triples.idx = -1 ;
+				return false;
+			}
+
+			i = _rowid[idx];
+			j = _colid[idx];
+			e = _data[idx];
+
+			return true;
+		}
+
 	protected :
 		friend class SparseMatrixWriteHelper<Self_t >;
 		friend class SparseMatrixReadHelper<Self_t >;
@@ -1017,26 +1054,16 @@ namespace LinBox
 		std::vector<Element> _data ;
 
 		const _Field & _field;
+		mutable struct _triples {
+			ptrdiff_t idx ;
+			_triples() :
+				idx(-1)
+			{}
+			ptrdiff_t next() {
+				return idx = idx + 1 ;
+			} ;
+		}_triples;
 	};
-
-
-	template<class _Field>
-	class SparseMatrixWriteHelper<SparseMatrix<_Field, SparseMatrixFormat::COO> >
-	{
-		std::ostream& write (const SparseMatrix<_Field, SparseMatrixFormat::COO> &A
-				     , std::ostream &os
-				     , LINBOX_enum(Tag::FileFormat) format);
-
-	};
-
-	template<class _Field>
-	std::ostream& SparseMatrixWriteHelper<SparseMatrix<_Field, SparseMatrixFormat::COO> >::write (const SparseMatrix<_Field, SparseMatrixFormat::COO> &A
-													  , std::ostream &os
-													  , LINBOX_enum(Tag::FileFormat) format)
-	{
-		return os << "written" << std::endl;
-
-	}
 
 
 
