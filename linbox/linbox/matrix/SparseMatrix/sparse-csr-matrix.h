@@ -436,6 +436,7 @@ namespace LinBox
 			return x = getEntry (i, j);
 		}
 
+		void appendEntry(size_t i, size_t j, const Element & value) { setEntry(i,j,value) ;}
 		void finalize(){} // end construction after a sequence of setEntry calls.
 		/** Set an individual entry.
 		 * Setting the entry to 0 will not remove it from the matrix
@@ -508,7 +509,7 @@ namespace LinBox
 		{
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
-			// Could be improved by adding an initial guess j/rodim*size()
+			// Could be improved by adding an initial guess j/rowdim*size()
 
 			size_t ibeg = _start[i];
 			size_t iend = _start[i+1];

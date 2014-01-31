@@ -382,38 +382,59 @@ namespace LinBox
 		 */
 		constElement &getEntry(const size_t &i, const size_t &j) const
 		{
-			std::cout << "called 1" << std::endl;
-#if 0
-			// std::cout << "get entry : " << i << ',' << j << std::endl;
-			linbox_check(i<_rownb);
-			linbox_check(j<_colnb);
-			// Could be improved by adding an initial guess j/rodim*size()
-			// typedef typename std::vector<size_t>::iterator myIterator ;
-			typedef typename std::vector<size_t>::const_iterator myConstIterator ;
-
-			std::pair<myConstIterator,myConstIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
-			size_t ibeg = (size_t)(bounds.first-_rowid.begin());
-			size_t iend = (size_t)(bounds.second-_rowid.begin())-ibeg;
-			if (!iend) {
-				return field().zero;
+			// not tested
+			std::cout << "not tested" << std::endl;
+			size_t idx = _triples.idx ; /* sort of nextTriple */
+			if (_rowid[idx+1] == i && _colid[idx+1] == j) {
+				linbox_check(!field().isZero(_data[idx+1]));
+				_triples.next();
+				return _data[idx+1];
 			}
-
-			myConstIterator beg = _colid.begin()+(ptrdiff_t)ibeg ;
-			myConstIterator low = std::lower_bound (beg, beg+(ptrdiff_t)iend, j);
-			if (low == beg+(ptrdiff_t)iend) {
-				return field().zero;
+			else { /* searching */
+				typedef typename std::vector<size_t>::iterator myIterator ;
+				std::pair<myIterator,myIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
+				size_t ibeg = bounds.first-_rowid.begin();
+				size_t iend = bounds.second-_rowid.begin();
+				if (ibeg == iend) {
+					return field().zero();
+				}
+				myIterator beg = _colid.begin()+(ptrdiff_t)ibeg ;
+				myIterator end = _colid.begin()+(ptrdiff_t)iend ;
+				myIterator low = std::lower_bound (beg, end, j);
+				ibeg = (size_t)(low-_colid.begin());
+				if ( low == end || j != _colid[ibeg] ) {
+					return field().zero();
+				}
+				else {
+					_triples.idx = ibeg ; // just in case it can be used, after all that work...
+					return _data[ibeg];
+				}
 			}
-			else {
-				// not sure
-				size_t la = (size_t)(low-_colid.begin()) ;
-				return _data[la] ;
-			}
-#endif
 		}
 
 		Element      &getEntry (Element &x, size_t i, size_t j) const
 		{
 			return x = getEntry (i, j);
+		}
+
+
+		void appendEntry(const size_t &i, const size_t &j, const Element& e)
+		{
+
+			if (field().isZero(e)) { // probably already tested
+				return ;
+			}
+			if (_nbnz % 10) {
+				_rowid.reserve(_nbnz+10);
+				_colid.reserve(_nbnz+10);
+				_data. reserve(_nbnz+10);
+			}
+			// resize(rowdim(),coldim(),_nbnz+1);
+			_rowid.push_back(i);
+			_colid.push_back(j);
+			_data.push_back(e);
+			++ _nbnz;
+			return;
 		}
 
 		/** Set an individual entry.
@@ -423,8 +444,13 @@ namespace LinBox
 		 * @param value Value of the new entry
 		 * @todo make it faster if i is 0 or m-1 ?
 		 */
-		void setEntry(const size_t &i, const size_t &j, const Element& e)
+		void setEntry(const size_t &i, const size_t &j, const Element& e
+			      // , bool trust_me_i_append = false
+			      )
 		{
+			// if (trust_me_i_append)
+				// return appendEntry(i,j,e);
+
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
 
@@ -479,7 +505,7 @@ namespace LinBox
 			std::cout << "called" << std::endl;
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
-			// Could be improved by adding an initial guess j/rodim*size()
+			// Could be improved by adding an initial guess j/rowdim*size()
 			typedef typename std::vector<size_t>::iterator myIterator ;
 
 			std::pair<myIterator,myIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
@@ -535,7 +561,7 @@ namespace LinBox
 		{
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
-			// Could be improved by adding an initial guess j/rodim*size()
+			// Could be improved by adding an initial guess j/rowdim*size()
 			typedef typename std::vector<size_t>::iterator myIterator ;
 
 			std::pair<myIterator,myIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
