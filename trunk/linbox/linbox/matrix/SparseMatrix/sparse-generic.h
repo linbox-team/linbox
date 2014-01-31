@@ -284,6 +284,7 @@ namespace LinBox { namespace Protected {
 		 * @param value Value of the new entry
 		 */
 		void setEntry (size_t i, size_t j, const Element &value);
+		void appendEntry(size_t i, size_t j, const Element & value) { setEntry(i,j,value) ;}
 		void finalize(){}
 
 		/** Get a writeable reference to an entry in the matrix

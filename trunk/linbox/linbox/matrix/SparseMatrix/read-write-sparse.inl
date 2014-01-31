@@ -75,7 +75,8 @@ namespace LinBox {
 			if (i > A.rowdim() || j > A.coldim())
 				throw Exceptions::InvalidMatrixInput ();
 			A.field().read (is, x);
-			if (! A.field().isZero(x)) A.setEntry (i - 1, j - 1, x);
+			if (! A.field().isZero(x)) // this is probably tested in setEntry (hopefully)
+			       	A.appendEntry (i - 1, j - 1, x);
 		}
 
 		return is;
@@ -99,7 +100,7 @@ namespace LinBox {
 			is.putback (c);
 
 			A.field().read (is, a_ij);
-			A.setEntry (i, j++, a_ij);
+			A.appendEntry (i, j++, a_ij);
 
 			do is >> c; while (is && c != ',' && c != ';' && c != ']');
 			if (!is) break;;
@@ -152,8 +153,9 @@ namespace LinBox {
 				if (j > A.coldim())
 					++(A._n);
 
-				if (!A.field().isZero(a_ij))
-					A.setEntry (i, j, a_ij);
+				if (!A.field().isZero(a_ij)) { // probably tested
+					A.appendEntry (i, j, a_ij);
+				}
 			}
 
 			is.getline (buf, 80);
@@ -206,7 +208,7 @@ namespace LinBox {
 					if (j >= A.coldim())
 						A.resize(i,j+1);
 
-					A.setEntry (i, j, a_ij);
+					A.appendEntry (i, j, a_ij);
 				}
 			}
 
@@ -282,7 +284,7 @@ namespace LinBox {
 		Element val;
 		size_t i, j;
 		while( ms.nextTriple(i,j,val) ) {
-			A.setEntry(i,j,val);
+			A.appendEntry(i,j,val);
 		}
 		if( ms.getError() > END_OF_MATRIX )
 			throw ms.reportError(__func__,__LINE__);

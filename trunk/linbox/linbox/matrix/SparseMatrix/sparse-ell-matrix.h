@@ -397,6 +397,7 @@ namespace LinBox
 			return x = getEntry (i, j);
 		}
 
+		void appendEntry(size_t i, size_t j, const Element & value) { setEntry(i,j,value) ;}
 		// end construction after a sequence of setEntry calls.
 		void finalize(){
 			// could check that maxc is not too large and shrink ? Is is optimize job ?
@@ -479,7 +480,7 @@ namespace LinBox
 #if 0
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
-			// Could be improved by adding an initial guess j/rodim*size()
+			// Could be improved by adding an initial guess j/rowdim*size()
 
 			size_t ibeg = _start[i];
 			size_t iend = _start[i+1];
