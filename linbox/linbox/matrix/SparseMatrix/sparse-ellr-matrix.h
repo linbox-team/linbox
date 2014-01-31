@@ -994,21 +994,13 @@ namespace LinBox
 
 		bool nextTriple(size_t & i, size_t &j, Element &e) const
 		{
-			ptrdiff_t off =_triples.next(_maxc);
+			ptrdiff_t off =_triples.next(_rowid);
 
 			i = _triples._row ;
+
 			if (  i >= rowdim() ) {
 				_triples.reset() ;
 				return false ;
-			}
-
-			while ( off >= _rowid[i] )  {
-				_triples._off = off = 0;
-				_triples._row = i   = i+1 ;
-				if (i >= rowdim()) {
-					_triples.reset();
-					return false;
-				}
 			}
 
 			j = _colid[i*_maxc+off];
@@ -1087,15 +1079,17 @@ namespace LinBox
 				_row(-1)
 				, _off(-1)
 			{}
-			ptrdiff_t next(size_t maxc) {
+			ptrdiff_t next(const std::vector<size_t> & rowid) {
 				++ _off ;
 				if (_row == -1) {
 					++_row ;
 					return _off ;
 				}
-				if (_off >= maxc) {
+				while (_off >= rowid[_row]) {
 					_row += 1 ;
 					_off = 0 ;
+					if (_row >= rowid.size())
+						break;
 				}
 				return _off;
 			}
