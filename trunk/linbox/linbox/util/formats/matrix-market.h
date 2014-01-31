@@ -33,6 +33,7 @@
 #include <string>
 #include <sstream>
 #include "linbox/util/matrix-stream.h"
+#include "linbox/integer.h"
 
 #if 0
 namespace LinBox__FORMAT_MATRIX_MARKET_H
@@ -147,7 +148,7 @@ namespace LinBox
 				if( !this->sin->good() ) return BAD_FORMAT;
 			}
 
-			if( pattern ) this->ms->getField().init(v,(integer)1);
+			if( pattern ) this->ms->getField().init(v,Integer::one);
 			else {
 				this->ms->readWhiteSpace();
 				this->ms->getField().read(*(this->sin),v);
