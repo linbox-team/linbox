@@ -517,9 +517,9 @@ namespace LinBox
 
 
 		/** Read a matrix from the given input stream using field read/write
-		 * @param file Input stream from which to read the matrix
+		 * @param is Input stream from which to read the matrix
 		 * @param format Format of input matrix
-		 * @return ref to \p file.
+		 * @return ref to \p is.
 		 */
 		std::istream& read (std::istream &is,
 				    LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Detect)
@@ -1003,6 +1003,7 @@ namespace LinBox
 
 			return true;
 		}
+
 	private:
 
 		void insert (const size_t &i, const size_t &k, const size_t &j, const Element& e)

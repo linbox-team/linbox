@@ -161,7 +161,7 @@ int main (int argc, char **argv)
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::ELL_R>", "ELL_R");
 		SparseMatrix<Field, SparseMatrixFormat::ELL_R> S5(F, m, n);
 		buildBySetEntry(S5, N);
-		if ( testBlackbox(S5,false)  && MD.areEqual(S1,S5))
+		if ( testBlackbox(S5,true)  && MD.areEqual(S1,S5))
 			commentator().stop("Format ELL_R pass");
 		else {
 			commentator().stop("Format ELL_R FAIL");
