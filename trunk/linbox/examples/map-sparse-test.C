@@ -1,8 +1,9 @@
-#include <examples/map-sparse.h>
-#include <tests/test-common.h>
+#include "examples/map-sparse.h"
+#include <tests/test-common.h> //bb: is this supposed to be installed ?
 
 using namespace LinBox;
 
+// why this test here ?
 int main(int argc, char* argv[])
 {
 	typedef Modular<double> Field;

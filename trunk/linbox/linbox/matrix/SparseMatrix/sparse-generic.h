@@ -268,40 +268,14 @@ namespace LinBox { namespace Protected {
 		 * @param is Input stream from which to read the matrix
 		 * @param format Format of input matrix
 		 */
-		std::istream &read (std::istream &is,   LINBOX_enum(Tag::FileFormat) format /*= Tag::FileFormat::Detect*/);
-
-		// Read from matrix market format
-		std::istream &read (std::istream &is)
-		{
-			MatrixStream<Field> ms(field(), is);
-			if( !ms.getDimensions( this->_m, this->_n ) )
-				throw ms.reportError(__func__,__LINE__);
-			this->_matA.resize( this->_m );
-			Element val;
-			size_t i, j;
-			while( ms.nextTriple(i,j,val) ) {
-				setEntry(i,j,val);
-			}
-			if( ms.getError() > END_OF_MATRIX )
-				throw ms.reportError(__func__,__LINE__);
-			return is;
-		}
-
-
-		/// Write in matrix market format
-		std::ostream &write (std::ostream &os) const
-		{
-			// typedef SparseMatrixBase<Element, _Row> SMB;
-			writeMMCoordHeader(os, *this, this->size(), "SparseMatrixGeneric");
-			return this->write(os, Tag::FileFormat::OneBased);
-		}
+		std::istream &read (std::istream &is,   LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Detect );
 
 		/** Write a matrix to the given output stream using field read/write
 		 * @param os Output stream to which to write the matrix
 		 * @param F Field with which to write
 		 * @param format Format with which to write
 		 */
-		std::ostream &write (std::ostream &os,  LINBOX_enum(Tag::FileFormat) format /*  = Tag::FileFormat::Pretty*/) const;
+		std::ostream &write (std::ostream &os,  LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::MatrixMarket) const;
 
 		/** Set an individual entry
 		 * Setting the entry to 0 will remove it from the matrix

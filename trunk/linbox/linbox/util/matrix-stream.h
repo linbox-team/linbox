@@ -42,6 +42,8 @@
 #include <iostream>
 #include <queue>
 #include <vector>
+#include "linbox/linbox-config.h"
+#include "linbox/integer.h"
 
 namespace LinBox
 {

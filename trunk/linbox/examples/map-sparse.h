@@ -181,7 +181,7 @@ protected:
 
 }
 
-#include <examples/map-sparse.inl>
+#include "examples/map-sparse.inl"
 
 #endif // __LINBOX_MAP_SPARSE_H
 
