@@ -1034,7 +1034,7 @@ namespace LinBox
 													  , std::ostream &os
 													  , LINBOX_enum(Tag::FileFormat) format)
 	{
-		std::cout << "wirtten" << std::endl;
+		return os << "written" << std::endl;
 
 	}
 

@@ -107,14 +107,11 @@ namespace LinBox
 	template <class Field, class T1, class T2>
 	typename Field::Element& getEntry(typename Field::Element& x, const Compose<Diagonal<Field,T1>, Diagonal<Field, T2> >& A, const size_t i, const size_t j)
 	{
-		if (i != j)
-			return A.field().zero;
-		else {
-			typename Field::Element y;
-			getEntry(y, *(A.getLeftPtr()), i, i);
-			getEntry(x, *(A.getRightPtr()), j, j);
-			return A.field().mulin(x, y);
-		}
+		if (i != j) return A.field().assign(x, A.field().zero);
+        typename Field::Element y;
+        getEntry(y, *(A.getLeftPtr()), i, i);
+        getEntry(x, *(A.getRightPtr()), j, j);
+        return A.field().mulin(x, y);
 	}
 
 }
