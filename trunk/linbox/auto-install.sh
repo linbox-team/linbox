@@ -35,7 +35,7 @@ OPTIM="--enable-optimization"
 OPTIM_VAR=""
 CHECK_VAR=""
 #options
-PREFIX_LOC="/tmp"
+PREFIX_LOC="/usr/local"
 PREFIX_VAR=""
 PREFIX="--prefix=$PREFIX_LOC"
 BLAS=""
