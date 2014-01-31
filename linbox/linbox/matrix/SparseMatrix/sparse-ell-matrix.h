@@ -364,32 +364,43 @@ namespace LinBox
 		 */
 		constElement &getEntry(const size_t &i, const size_t &j) const
 		{
-#if 0
-			// std::cout << "get entry : " << i << ',' << j << std::endl;
-			linbox_check(i<_rownb);
-			linbox_check(j<_colnb);
-			typedef typename std::vector<size_t>::const_iterator myConstIterator ;
+			// write_raw();
+			ptrdiff_t off = _triples.next(_maxc);
+			size_t ii = i ;
+			while ( field().isZero(_data[ii*_maxc+off]) )  {
+				_triples._off = off = 0;
+				_triples._row = ii  = ii+1 ;
+			}
+			if (  i == ii &&  _colid[ii*_maxc+off]  == j  ) { /* sort of nextTriple */
+				linbox_check(!field().isZero(_data[ii*_maxc+off]));
+				return _data[ii*_maxc+off];
+			}
+			else { /* searching */
 
-			size_t ibeg = _start[i] ;
-			size_t iend = _start[i+1] ;
-			if (ibeg == iend) {
-				// std::cout << "get entry : " << 0 << std::endl;
+				// std::cout << _nbnz << std::endl;
+				linbox_check(consistent());
+
+				linbox_check(i<_rownb);
+				linbox_check(j<_colnb);
+
+				const size_t * beg = &_colid[i*_maxc];
+				const Element * dat = &_data[i*_maxc];
+				for (size_t k = 0 ; k < _maxc ; ++k) {
+					if ( field().isZero(dat[k])) {
+						return field().zero;
+					}
+					if (beg[k] == j) {
+						_triples._off = k;
+						_triples._row = i;
+						return dat[k];
+					}
+					if (beg[k] > j) {
+						return field().zero;
+					}
+				}
 				return field().zero;
 			}
 
-			myConstIterator beg = _colid.begin() ;
-			myConstIterator low = std::lower_bound (beg+(ptrdiff_t)ibeg, beg+(ptrdiff_t)iend, j);
-			if (low == beg+(ptrdiff_t)iend) {
-				// std::cout << "get entry : " << 0 << std::endl;
-				return field().zero;
-		}
-			else {
-				// not sure
-				size_t la = (size_t)(low-beg) ;
-				// std::cout << "get entry : " << _data[la] << std::endl;
-				return _data[la] ;
-			}
-#endif
 		}
 
 		Element      &getEntry (Element &x, size_t i, size_t j) const
@@ -397,10 +408,44 @@ namespace LinBox
 			return x = getEntry (i, j);
 		}
 
-		void appendEntry(size_t i, size_t j, const Element & value) { setEntry(i,j,value) ;}
+		void appendEntry(size_t i, size_t j, const Element & e)
+		{
+			if (field().isZero(e)) {
+				return ;
+			}
+			ptrdiff_t row = _triples._row ;
+			ptrdiff_t off = _triples._off ;
+			if (row != i) { /* new row */
+				_triples._row = i ;
+				_triples._off = 0 ;
+				if (_maxc == 0) {
+					insert(i,_maxc,j,e);
+				}
+				else {
+					_colid[i*_maxc] = j ;
+					_data [i*_maxc]  = e ;
+					++_nbnz;
+				}
+			}
+			else { /* smae row */
+
+				_triples._off = off = off + 1 ;
+				if (off == _maxc) {
+					insert(i,_maxc,j,e);
+				}
+				else {
+					_colid[i*_maxc+off] = j ;
+					_data [i*_maxc+off] = e ;
+					++_nbnz;
+				}
+
+			}
+		}
+
 		// end construction after a sequence of setEntry calls.
 		void finalize(){
 			// could check that maxc is not too large and shrink ? Is is optimize job ?
+			_triples.reset();
 		}
 
 		/** Set an individual entry.
@@ -430,8 +475,8 @@ namespace LinBox
 				// std::cout << "beg = " << beg[k] << std::endl;
 				// std::cout << "dat = " << dat[k] << std::endl;
 				// std::cout << "nz  = " << _nbnz << std::endl;
-				if (dat[k]==0 && field().isZero(dat[k])) {
-					// std::cout << "===2===" << std::endl;
+				if (field().isZero(dat[k])) {
+					// std::cout << "===new===" << std::endl;
 					field().assign(dat[k], e) ;
 					beg[k] = j;
 					found = true;
@@ -440,7 +485,7 @@ namespace LinBox
 					break;
 				}
 				if (beg[k] == j) {
-					// std::cout << "===1===" << std::endl;
+					// std::cout << "===rew===" << std::endl;
 					if (field().isZero(dat[k])) {
 						++_nbnz ;
 					}
@@ -451,7 +496,7 @@ namespace LinBox
 					break;
 				}
 				if (beg[k] > j) {
-					// std::cout << "===3===" << std::endl;
+					// std::cout << "===oops===" << std::endl;
 					found = true;
 					insert(i,k,j,e);
 					// write_raw();
@@ -977,6 +1022,10 @@ namespace LinBox
 			return _maxc;
 		}
 
+		void firstTriple() const
+		{
+			_triples.reset();
+		}
 
 
 		// a zero means end of line
@@ -1036,7 +1085,8 @@ namespace LinBox
 			return;
 		}
 
-		void write_raw() {
+		void write_raw() const
+		{
 			std::cout << "colids" << std::endl;
 			for (size_t i = 0 ; i < _rownb ; ++i){
 				for (size_t j = 0 ; j < _maxc ; ++j)

@@ -78,6 +78,24 @@ void buildBySetEntry(SM & A, size_t nnz)
 	// std::cout << ';' << std::endl;
 }
 
+template <class SM>
+bool buildBySetGetEntry(SM & A, const SM &B)
+{
+
+	A.resize(B.rowdim(),B.coldim());
+
+	for (size_t i = 0; i < B.rowdim(); ++i)
+		for (size_t j = 0; j < B.coldim(); ++j)
+		{
+			A.setEntry(i,j,B.getEntry(i,j));
+		}
+	A.finalize();
+
+	MatrixDomain<typename SM::Field> MD(B.field()) ;
+
+	return MD.areEqual(A,B);
+}
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -123,49 +141,88 @@ int main (int argc, char **argv)
 	{ /*  COO */
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::COO>", "COO");
 		SparseMatrix<Field, SparseMatrixFormat::COO> S2(F, m, n);
+		SparseMatrix<Field, SparseMatrixFormat::COO> S3(F, m, n);
 		buildBySetEntry(S2, N);
-		if ( testBlackbox(S2,true)  && MD.areEqual(S1,S2) )
+		if ( ! testBlackbox(S2,true) ) {
+			commentator().stop("Format COO FAIL (testBlackbox)");
+			pass = false;
+		}
+		else if ( ! MD.areEqual(S1,S2) ) {
+			commentator().stop("Format COO FAIL (areEqual)");
+			pass = false;
+		}
+		else if (! buildBySetGetEntry(S3,S2) ) {
+			commentator().stop("Format COO FAIL (getEntry)");
+			pass = false;
+		}
+		else {
 			commentator().stop("Format COO pass");
-		else {
-			commentator().stop("Format COO FAIL");
-			pass = false;
 		}
 	}
 
-	{ /*  CSR  */
+	{ /*  CSR */
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::CSR>", "CSR");
+		SparseMatrix<Field, SparseMatrixFormat::CSR> S2(F, m, n);
 		SparseMatrix<Field, SparseMatrixFormat::CSR> S3(F, m, n);
-		buildBySetEntry(S3, N);
-		if ( testBlackbox(S3,true)  && MD.areEqual(S1,S3))
+		buildBySetEntry(S2, N);
+		if ( ! testBlackbox(S2,true) ) {
+			commentator().stop("Format CSR FAIL (testBlackbox)");
+			pass = false;
+		}
+		else if ( ! MD.areEqual(S1,S2) ) {
+			commentator().stop("Format CSR FAIL (areEqual)");
+			pass = false;
+		}
+		else if (! buildBySetGetEntry(S3,S2) ) {
+			commentator().stop("Format CSR FAIL (getEntry)");
+			pass = false;
+		}
+		else {
 			commentator().stop("Format CSR pass");
-		else {
-			commentator().stop("Format CSR FAIL");
-			pass = false;
 		}
 	}
 
-	{ /*  ELL  */
+	{ /*  ELL */
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::ELL>", "ELL");
-		commentator().report() << "SparseMatrix<Field, SparseMatrixFormat::ELL>" << std::endl;
-		SparseMatrix<Field, SparseMatrixFormat::ELL> S4(F, m, n);
-		buildBySetEntry(S4, N);
-		if ( testBlackbox(S4,true)  && MD.areEqual(S1,S4))
-			commentator().stop("Format ELL pass");
-		else {
-			commentator().stop("Format ELL FAIL");
+		SparseMatrix<Field, SparseMatrixFormat::ELL> S2(F, m, n);
+		SparseMatrix<Field, SparseMatrixFormat::ELL> S3(F, m, n);
+		buildBySetEntry(S2, N);
+		if ( ! testBlackbox(S2,true) ) {
+			commentator().stop("Format ELL FAIL (testBlackbox)");
 			pass = false;
+		}
+		else if ( ! MD.areEqual(S1,S2) ) {
+			commentator().stop("Format ELL FAIL (areEqual)");
+			pass = false;
+		}
+		else if (! buildBySetGetEntry(S3,S2) ) {
+			commentator().stop("Format ELL FAIL (getEntry)");
+			pass = false;
+		}
+		else {
+			commentator().stop("Format ELL pass");
 		}
 	}
 
-	{ /*  ELL_R  */
+	{ /*  ELL_R */
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::ELL_R>", "ELL_R");
-		SparseMatrix<Field, SparseMatrixFormat::ELL_R> S5(F, m, n);
-		buildBySetEntry(S5, N);
-		if ( testBlackbox(S5,true)  && MD.areEqual(S1,S5))
-			commentator().stop("Format ELL_R pass");
-		else {
-			commentator().stop("Format ELL_R FAIL");
+		SparseMatrix<Field, SparseMatrixFormat::ELL_R> S2(F, m, n);
+		SparseMatrix<Field, SparseMatrixFormat::ELL_R> S3(F, m, n);
+		buildBySetEntry(S2, N);
+		if ( ! testBlackbox(S2,true) ) {
+			commentator().stop("Format ELL_R FAIL (testBlackbox)");
 			pass = false;
+		}
+		else if ( ! MD.areEqual(S1,S2) ) {
+			commentator().stop("Format ELL_R FAIL (areEqual)");
+			pass = false;
+		}
+		else if (! buildBySetGetEntry(S3,S2) ) {
+			commentator().stop("Format ELL_R FAIL (getEntry)");
+			pass = false;
+		}
+		else {
+			commentator().stop("Format ELL_R pass");
 		}
 	}
 
@@ -182,56 +239,93 @@ int main (int argc, char **argv)
 	}
 #endif
 
-	{ /* SparseSeq: Vector of row, row is Vector of index/value Pair */
-		commentator().start("SparseMatrix<Field, SparseMatrixFormat::SparseSeq>", "VVP");
-		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> S7(F, m, n);
-		buildBySetEntry(S7, N);
-		if ( testBlackbox(S7,true)  && MD.areEqual(S1,S7))
-			commentator().stop("Format VVP pass");
-		else {
-			commentator().stop("Format VVP FAIL");
+	{ /*  SparseSeq */
+		commentator().start("SparseMatrix<Field, SparseMatrixFormat::SparseSeq>", "SparseSeq");
+		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> S2(F, m, n);
+		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> S3(F, m, n);
+		buildBySetEntry(S2, N);
+		if ( ! testBlackbox(S2,true) ) {
+			commentator().stop("Format SparseSeq FAIL (testBlackbox)");
 			pass = false;
+		}
+		else if ( ! MD.areEqual(S1,S2) ) {
+			commentator().stop("Format SparseSeq FAIL (areEqual)");
+			pass = false;
+		}
+		else if (! buildBySetGetEntry(S3,S2) ) {
+			commentator().stop("Format SparseSeq FAIL (getEntry)");
+			pass = false;
+		}
+		else {
+			commentator().stop("Format SparseSeq pass");
 		}
 	}
 
 	{ /*  SparsePar */
-		// Vector of row, row is Pair of Vectors, one of indices, one of values.
-		commentator().start("SparseMatrix<Field, SparseMatrixFormat::SparsePar>", "VPV");
-		SparseMatrix<Field, SparseMatrixFormat::SparsePar> S8(F, m, n);
-		buildBySetEntry(S8, N);
-		if ( testBlackbox(S8,true)  && MD.areEqual(S1,S8))
-			commentator().stop("Format VPV pass");
-		else {
-			commentator().stop("Format VPV FAIL");
+		commentator().start("SparseMatrix<Field, SparseMatrixFormat::SparsePar>", "SparsePar");
+		SparseMatrix<Field, SparseMatrixFormat::SparsePar> S2(F, m, n);
+		SparseMatrix<Field, SparseMatrixFormat::SparsePar> S3(F, m, n);
+		buildBySetEntry(S2, N);
+		if ( ! testBlackbox(S2,true) ) {
+			commentator().stop("Format SparsePar FAIL (testBlackbox)");
 			pass = false;
+		}
+		else if ( ! MD.areEqual(S1,S2) ) {
+			commentator().stop("Format SparsePar FAIL (areEqual)");
+			pass = false;
+		}
+		else if (! buildBySetGetEntry(S3,S2) ) {
+			commentator().stop("Format SparsePar FAIL (getEntry)");
+			pass = false;
+		}
+		else {
+			commentator().stop("Format SparsePar pass");
 		}
 	}
 
 	{ /*  SparseMap */
-		// Vector of row, row is Map, index to value.
-		commentator().start("SparseMatrix<Field, SparseMatrixFormat::SparseMap>", "VMap");
-		SparseMatrix<Field, SparseMatrixFormat::SparseMap> S9(F, m, n);
-		buildBySetEntry(S9, N);
-		if ( testBlackbox(S9,true)  && MD.areEqual(S1,S9))
-			commentator().stop("Format VMap pass");
-		else {
-			commentator().stop("Format VMap FAIL");
+		commentator().start("SparseMatrix<Field, SparseMatrixFormat::SparseMap>", "SparseMap");
+		SparseMatrix<Field, SparseMatrixFormat::SparseMap> S2(F, m, n);
+		SparseMatrix<Field, SparseMatrixFormat::SparseMap> S3(F, m, n);
+		buildBySetEntry(S2, N);
+		if ( ! testBlackbox(S2,true) ) {
+			commentator().stop("Format SparseMap FAIL (testBlackbox)");
 			pass = false;
+		}
+		else if ( ! MD.areEqual(S1,S2) ) {
+			commentator().stop("Format SparseMap FAIL (areEqual)");
+			pass = false;
+		}
+		else if (! buildBySetGetEntry(S3,S2) ) {
+			commentator().stop("Format SparseMap FAIL (getEntry)");
+			pass = false;
+		}
+		else {
+			commentator().stop("Format SparseMap pass");
 		}
 	}
 
-	{ /* TPL: Vector of i,j,val triples */
+	{ /*  TPL */
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::TPL>", "TPL");
-		SparseMatrix<Field, SparseMatrixFormat::TPL> S10(F, m, n);
-		buildBySetEntry(S10, N);
-		if ( testBlackbox(S10,true)  && MD.areEqual(S1,S10))
-			commentator().stop("Format TPL pass");
-		else {
-			commentator().stop("Format TPL FAIL");
+		SparseMatrix<Field, SparseMatrixFormat::TPL> S2(F, m, n);
+		SparseMatrix<Field, SparseMatrixFormat::TPL> S3(F, m, n);
+		buildBySetEntry(S2, N);
+		if ( ! testBlackbox(S2,true) ) {
+			commentator().stop("Format TPL FAIL (testBlackbox)");
 			pass = false;
 		}
-
+		else if ( ! MD.areEqual(S1,S2) ) {
+			commentator().stop("Format TPL FAIL (areEqual)");
+			pass = false;
 		}
+		else if (! buildBySetGetEntry(S3,S2) ) {
+			commentator().stop("Format TPL FAIL (getEntry)");
+			pass = false;
+		}
+		else {
+			commentator().stop("Format TPL pass");
+		}
+	}
 
 	{ /*  Default OLD */
 		commentator().start("SparseMatrix<Field>", "Field");

@@ -383,27 +383,26 @@ namespace LinBox
 		constElement &getEntry(const size_t &i, const size_t &j) const
 		{
 			// not tested
-			std::cout << "not tested" << std::endl;
-			size_t idx = _triples.idx ; /* sort of nextTriple */
-			if (_rowid[idx+1] == i && _colid[idx+1] == j) {
-				linbox_check(!field().isZero(_data[idx+1]));
-				_triples.next();
-				return _data[idx+1];
+			// std::cout << "not tested" << std::endl;
+			size_t idx =  _triples.next();
+			if (_rowid[idx] == i && _colid[idx] == j) {/* sort of nextTriple */
+				linbox_check(!field().isZero(_data[idx]));
+				return _data[idx];
 			}
 			else { /* searching */
-				typedef typename std::vector<size_t>::iterator myIterator ;
-				std::pair<myIterator,myIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
+				typedef typename std::vector<size_t>::const_iterator myConstIterator ;
+				std::pair<myConstIterator,myConstIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
 				size_t ibeg = bounds.first-_rowid.begin();
 				size_t iend = bounds.second-_rowid.begin();
 				if (ibeg == iend) {
-					return field().zero();
+					return field().zero;
 				}
-				myIterator beg = _colid.begin()+(ptrdiff_t)ibeg ;
-				myIterator end = _colid.begin()+(ptrdiff_t)iend ;
-				myIterator low = std::lower_bound (beg, end, j);
+				myConstIterator beg = _colid.begin()+(ptrdiff_t)ibeg ;
+				myConstIterator end = _colid.begin()+(ptrdiff_t)iend ;
+				myConstIterator low = std::lower_bound (beg, end, j);
 				ibeg = (size_t)(low-_colid.begin());
 				if ( low == end || j != _colid[ibeg] ) {
-					return field().zero();
+					return field().zero;
 				}
 				else {
 					_triples.idx = ibeg ; // just in case it can be used, after all that work...
@@ -421,10 +420,10 @@ namespace LinBox
 		void appendEntry(const size_t &i, const size_t &j, const Element& e)
 		{
 
-			if (field().isZero(e)) { // probably already tested
+			if (field().isZero(e)) { /* probably already tested */
 				return ;
 			}
-			if (_nbnz % 10) {
+			if (_nbnz % 10 == 0 ) {
 				_rowid.reserve(_nbnz+10);
 				_colid.reserve(_nbnz+10);
 				_data. reserve(_nbnz+10);
@@ -489,7 +488,10 @@ namespace LinBox
 		}
 
 		/// make matrix ready to use after a sequence of setEntry calls.
-		void finalize(){}
+		void finalize()
+		{
+			_triples.reset();
+		}
 
 #if 0
 		/** Get a writeable reference to an entry in the matrix.
@@ -1016,6 +1018,11 @@ namespace LinBox
 		std::vector<Element>  getData( ) const
 		{
 			return _data ;
+		}
+
+		void firstTriple() const
+		{
+			_triples.reset();
 		}
 
 		bool nextTriple(size_t & i, size_t &j, Element &e) const

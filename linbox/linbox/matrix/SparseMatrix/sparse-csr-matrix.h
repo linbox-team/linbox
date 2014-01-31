@@ -408,27 +408,39 @@ namespace LinBox
 			// std::cout << "get entry : " << i << ',' << j << std::endl;
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
-			typedef typename std::vector<size_t>::const_iterator myConstIterator ;
 
-			size_t ibeg = _start[i] ;
-			size_t iend = _start[i+1] ;
-			if (ibeg == iend) {
-				// std::cout << "get entry : " << 0 << std::endl;
-				return field().zero;
+			ptrdiff_t nnz = _triples.next(_start);
+			if ( _colid[nnz]  == j && i == _triples._row ) { /* sort of nextTriple */
+				linbox_check(!field().isZero(_data[nnz]));
+				return _data[nnz];
+			}
+			else { /* searching */
+
+				size_t ibeg = _start[i] ;
+				size_t iend = _start[i+1] ;
+				if (ibeg == iend) {
+					// std::cout << "get entry : " << 0 << std::endl;
+					return field().zero;
+				}
+				// element may exist
+				typedef typename std::vector<size_t>::const_iterator myConstIterator ;
+				myConstIterator beg = _colid.begin() + (ptrdiff_t)ibeg ;
+				myConstIterator end = _colid.begin() +  (ptrdiff_t)(iend);
+				myConstIterator low = std::lower_bound (beg, end, j);
+				ibeg = (size_t)(low-_colid.begin());
+				// insert
+				if ( low == end || _colid[ibeg] != j ) {
+					// std::cout << "# 2 insert " << i << ',' << j << ':' << e << std::endl;
+					return field().zero;
+				}
+				// replace
+				else {
+					_triples._nnz = ibeg ;
+					_triples._row = i ;
+					return _data[ibeg] ;
+				}
 			}
 
-			myConstIterator beg = _colid.begin() ;
-			myConstIterator low = std::lower_bound (beg+(ptrdiff_t)ibeg, beg+(ptrdiff_t)iend, j);
-			if (low == beg+(ptrdiff_t)iend) {
-				// std::cout << "get entry : " << 0 << std::endl;
-				return field().zero;
-		}
-			else {
-				// not sure
-				size_t la = (size_t)(low-beg) ;
-				// std::cout << "get entry : " << _data[la] << std::endl;
-				return _data[la] ;
-			}
 		}
 
 		Element      &getEntry (Element &x, size_t i, size_t j) const
@@ -436,8 +448,34 @@ namespace LinBox
 			return x = getEntry (i, j);
 		}
 
-		void appendEntry(size_t i, size_t j, const Element & value) { setEntry(i,j,value) ;}
-		void finalize(){} // end construction after a sequence of setEntry calls.
+		void appendEntry(size_t i, size_t j, const Element & e)
+		{
+
+			if (field().isZero(e)) { /* probably already tested */
+				return ;
+			}
+
+			_start[i+1] += 1 ;
+			if (_nbnz % 10 == 0 ) {
+				_colid.reserve(_nbnz + 10);
+				_data.reserve(_nbnz + 10);
+			}
+			_colid.push_back(j);
+			_data .push_back(e);
+			++_nbnz ;
+
+		}
+
+		void finalize()
+		{
+			if (_start[rowdim()] != _nbnz) { /* if it is so, then all before are 0 and we are fine... */
+				for (size_t i = 2 ; i <= rowdim() ; ++i)
+					_start[i] += _start[i-1];
+				linbox_check(_start[rowdim()] == _nbnz);
+				_triples.reset();
+			}
+		} // end construction after a sequence of setEntry calls.
+
 		/** Set an individual entry.
 		 * Setting the entry to 0 will not remove it from the matrix
 		 * @param i Row _colid of entry
@@ -473,27 +511,27 @@ namespace LinBox
 				_nbnz++ ;
 				return ;
 			}
-				// element may exist
-				typedef typename std::vector<size_t>::iterator myIterator ;
-				myIterator beg = _colid.begin() + (ptrdiff_t)ibeg ;
-				myIterator end = _colid.begin() +  (ptrdiff_t)(iend);
-				myIterator low = std::lower_bound (beg, end, j);
-				ibeg = (size_t)(low-_colid.begin());
-				// insert
-				if ( low == end || _colid[ibeg] != j ) {
-					// std::cout << "# 2 insert " << i << ',' << j << ':' << e << std::endl;
-					for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] += 1 ;
-					_colid.insert(_colid.begin() + ibeg,j);
-					_data.insert( _data. begin() + ibeg,e);
-					_nbnz++ ;
-					return ;
-				}
-				// replace
-				else {
-					// std::cout << "# replace " << i << ',' << j << ':' << e << std::endl;
-					_data[ibeg] = e ;
-					return ;
-				}
+			// element may exist
+			typedef typename std::vector<size_t>::iterator myIterator ;
+			myIterator beg = _colid.begin() + (ptrdiff_t)ibeg ;
+			myIterator end = _colid.begin() +  (ptrdiff_t)(iend);
+			myIterator low = std::lower_bound (beg, end, j);
+			ibeg = (size_t)(low-_colid.begin());
+			// insert
+			if ( low == end || _colid[ibeg] != j ) {
+				// std::cout << "# 2 insert " << i << ',' << j << ':' << e << std::endl;
+				for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] += 1 ;
+				_colid.insert(_colid.begin() + ibeg,j);
+				_data.insert( _data. begin() + ibeg,e);
+				_nbnz++ ;
+				return ;
+			}
+			// replace
+			else {
+				// std::cout << "# replace " << i << ',' << j << ':' << e << std::endl;
+				_data[ibeg] = e ;
+				return ;
+			}
 		}
 
 #if 0
@@ -1048,6 +1086,11 @@ namespace LinBox
 		std::vector<size_t>  getData( ) const
 		{
 			return _data ;
+		}
+
+		void firstTriple() const
+		{
+			_triples.reset();
 		}
 
 		bool nextTriple(size_t & i, size_t &j, Element &e) const

@@ -101,6 +101,13 @@ namespace LinBox
 	// Element e is set to the i,j entry.
 	Element& getEntry(Element& e, Index i, Index j) const;
 
+	const Element /* & */getEntry(Index i, Index j) const
+	{
+		Element x ;
+		getEntry(x,i,j);
+		return x;
+	}
+
 	/// Mul with this on left: Y <- AX. Requires conformal shapes.
 	template<class Mat1, class Mat2>
 	Mat1 & applyLeft(Mat1 &Y, const Mat2 &X) const;
@@ -141,7 +148,7 @@ namespace LinBox
 	size_t size() const;
 
 
-	void resize( size_t row, size_t col, size_t nbnz)
+	void resize( size_t row, size_t col, size_t nbnz =  0)
 	{
 		rows_ = row ;
 		cols_ = col ;
