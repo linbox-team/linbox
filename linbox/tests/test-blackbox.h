@@ -264,7 +264,6 @@ testReadWrite(BB &A)
 		report << "failure to open file for reading" << std::endl;
 	}
 	B.read(in);
-	std::vector<typename Field::Element> x(A.coldim()), y(A.rowdim()), z(B.rowdim());
 	LinBox::MatrixDomain<Field> MD(A.field());
 	if (not MD.areEqual(A, B)) {
 		pass = false;

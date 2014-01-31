@@ -37,7 +37,8 @@
 #include "linbox/util/matrix-stream.h"
 
 namespace LinBox {
-	// Small helper classes to make read and write easier
+
+	//! Write helper
 	template <class Matrix>
 	class SparseMatrixWriteHelper {
 	public:
@@ -86,6 +87,7 @@ namespace LinBox {
 					    , LINBOX_enum(Tag::FileFormat) format);
 	};
 
+	//! Read helper
 	template <class Matrix>
 	class SparseMatrixReadHelper  {
 
@@ -95,9 +97,15 @@ namespace LinBox {
 
 	private:
 
+#if 0
 		static std::istream &readTurner    (Matrix &A
 						    , std::istream &is
 						    , char *buf);
+
+		static std::istream &readMagmaCpt  (Matrix &A
+						    , std::istream &is
+						    , char *buf);
+#endif
 
 		static std::istream &readGuillaume (Matrix &A
 						    , std::istream &is
@@ -109,36 +117,27 @@ namespace LinBox {
 
 		static std::istream &readPretty    (Matrix &A
 						    , std::istream &is
-						    , char *buf);
+						    , char *buf
+						    , MatrixCategories::RowMatrixTag);
 
-		static std::istream &readMagmaCpt  (Matrix &A
+		static std::istream &readPretty    (Matrix &A
 						    , std::istream &is
-						    , char *buf);
+						    , char *buf
+						    , MatrixCategories::BlackboxTag);
 
 		static std::istream &readMatrixMarket (Matrix &A
 						    , std::istream &is
 						    , char *buf);
 
-		static std::istream &read (Matrix &A
-				    , std::istream &is
-				    , LINBOX_enum(Tag::FileFormat) format
-				    , MatrixCategories::RowMatrixTag
-				   );
 
-		static std::istream &read (Matrix &A
-				    , std::istream &is
-				    , LINBOX_enum(Tag::FileFormat) format
-				    , MatrixCategories::BlackboxTag
-				   );
 
 
 	public:
 		static std::istream &read (Matrix &A
 					   , std::istream &is
 					   , LINBOX_enum(Tag::FileFormat) format)
-		{
-			return read(A,is,format, typename MatrixTraits<Matrix>::MatrixCategory ());
-		}
+		;
+			// return read(A,is,format, typename MatrixTraits<Matrix>::MatrixCategory ());
 	};
 
 

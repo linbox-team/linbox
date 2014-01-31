@@ -136,7 +136,7 @@ int main (int argc, char **argv)
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::CSR>", "CSR");
 		SparseMatrix<Field, SparseMatrixFormat::CSR> S3(F, m, n);
 		buildBySetEntry(S3, N);
-		if ( testBlackbox(S3,false)  && MD.areEqual(S1,S3))
+		if ( testBlackbox(S3,true)  && MD.areEqual(S1,S3))
 			commentator().stop("Format CSR pass");
 		else {
 			commentator().stop("Format CSR FAIL");

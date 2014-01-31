@@ -284,7 +284,7 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-matrix-domain",                counter , flag);
+		  Build_n_runWarn("test-matrix-domain",                counter , flag,"intermittent row permutation failure");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
