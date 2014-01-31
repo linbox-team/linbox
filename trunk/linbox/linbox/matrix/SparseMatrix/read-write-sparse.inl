@@ -79,6 +79,8 @@ namespace LinBox {
 			       	A.appendEntry (i - 1, j - 1, x);
 		}
 
+		A.finalize();
+
 		return is;
 
 	}
@@ -112,6 +114,7 @@ namespace LinBox {
 			else if (c == ']') break;
 		}
 
+		A.finalize();
 		return is;
 	}
 
@@ -163,6 +166,7 @@ namespace LinBox {
 			++i;
 		} while (is);
 
+		A.finalize();
 			return is;
 
 	}
@@ -217,6 +221,7 @@ namespace LinBox {
 			++i;
 		} while (is);
 
+		A.finalize();
 			return is;
 
 	}
@@ -288,6 +293,8 @@ namespace LinBox {
 		}
 		if( ms.getError() > END_OF_MATRIX )
 			throw ms.reportError(__func__,__LINE__);
+
+		A.finalize();
 		return is;
 	}
 } // LinBox
@@ -328,6 +335,8 @@ namespace LinBox {
 	{
 		size_t i,j ;
 		Element e ;
+
+		A.firstTriple();
 
 		while (A.nextTriple(i,j,e)) {
 			if (oneBased)
@@ -404,6 +413,8 @@ namespace LinBox {
 	{
 		size_t i_idx=0, j_idx=0;
 		Element e;
+
+		A.firstTriple();
 
 		os << begmat;
 
