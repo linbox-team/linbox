@@ -149,7 +149,7 @@ int main (int argc, char **argv)
 		commentator().report() << "SparseMatrix<Field, SparseMatrixFormat::ELL>" << std::endl;
 		SparseMatrix<Field, SparseMatrixFormat::ELL> S4(F, m, n);
 		buildBySetEntry(S4, N);
-		if ( testBlackbox(S4,false)  && MD.areEqual(S1,S4))
+		if ( testBlackbox(S4,true)  && MD.areEqual(S1,S4))
 			commentator().stop("Format ELL pass");
 		else {
 			commentator().stop("Format ELL FAIL");
