@@ -125,7 +125,7 @@ namespace LinBox
 		struct rebind ;
 
 		template<typename _Tp1>
-		struct rebind<_Tp1/*  ,SparseMatrixFormat::CSR */ > {
+		struct rebind<_Tp1 > {
 			typedef SparseMatrix<_Tp1, SparseMatrixFormat::CSR> other;
 
 			void operator() (other & Ap, const Self_t& A)
@@ -139,6 +139,7 @@ namespace LinBox
 				size_t j = 0 ;
 				Ap.setStart(A.getStart());
 				std::vector<size_t> offset(A.rowdim()+1,0UL);
+				//! @bug use nextTriple
 				bool changed = false ;
 				for (size_t i = 0 ; i < A.rowdim() ; ++i) {
 					for (size_t k = A.getStart(i) ; k < A.getEnd(i) ; ++k) {
@@ -216,6 +217,44 @@ namespace LinBox
 			for (size_t i = 0 ; i < rowdim() ; ++i)
 				_start[i+1] += _start[i];
 			linbox_check(_start[rowdim()] == _nbnz );
+		}
+
+		SparseMatrix<_Field, SparseMatrixFormat::CSR> ( MatrixStream<Field>& ms ):
+			_rownb(0),_colnb(0)
+			,_nbnz(0)
+			,_start(1,0)
+			,_colid(0)
+			,_data(0)
+			,_field(ms.field())
+		{
+			firstTriple();
+
+			Element val;
+			size_t i, j;
+			while( ms.nextTriple(i,j,val) ) {
+				if (! field().isZero(val)) {
+					if( i >= _rownb ) {
+						_rownb = i + 1;
+					}
+					if( j >= _colnb ) {
+						_colnb = j + 1;
+					}
+					appendEntry(i,j,val);
+				}
+			}
+			if( ms.getError() > END_OF_MATRIX )
+				throw ms.reportError(__func__,__LINE__);
+			if( !ms.getDimensions( i, j ) )
+				throw ms.reportError(__func__,__LINE__);
+#ifndef NDEBUG
+			if( i != _rownb  || j != _colnb) {
+				std::cout << " ***Warning*** the sizes got changed" << __func__ << ',' << __LINE__ << std::endl;
+				// _rownb = i;
+				// _matA.resize(_m);
+			}
+#endif
+
+			firstTriple();
 		}
 
 		void resize(size_t nn)
@@ -450,9 +489,17 @@ namespace LinBox
 
 		void appendEntry(size_t i, size_t j, const Element & e)
 		{
+			linbox_check(i < rowdim());
+			linbox_check(j < rowdim());
 
 			if (field().isZero(e)) { /* probably already tested */
 				return ;
+			}
+
+			if ( rowdim() +1  != _start.size()) {
+				if (rowdim() % 10 == 0)
+					_start.reserve(rowdim()+10);
+				_start.resize(rowdim()+1,0);
 			}
 
 			_start[i+1] += 1 ;

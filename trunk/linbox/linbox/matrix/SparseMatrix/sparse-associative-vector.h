@@ -348,6 +348,7 @@ namespace LinBox { namespace Protected {
 			return ConstIterator (_matA.end (), _matA.back ().end (), _matA.end ());
 		}
 
+		//! no doc
 		template <class RepIterator, class RowIdxIterator>
 		class _IndexedIterator {
 		public:

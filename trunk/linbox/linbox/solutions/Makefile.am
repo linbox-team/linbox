@@ -33,6 +33,7 @@ pkgincludesub_HEADERS=          \
     minpoly.h                   \
     nullspace.h                 \
     rank.h                      \
+    rank.inl                    \
     smith-form.h                \
     solve.h                     \
     trace.h                     \

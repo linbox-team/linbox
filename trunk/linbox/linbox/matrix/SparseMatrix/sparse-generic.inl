@@ -85,22 +85,6 @@ namespace LinBox { namespace Protected {
 
 
 
-#if 0 /*  weird */
-	template <class Field,  class _Row, class BRow>
-	SparseMatrixGeneric<Field,_Row> *SparseMatrixFactory<Field, _Row, BRow>::makeBlackbox (const Field &F)
-	{
-		SparseMatrixGeneric<Field, _Row> *A = new SparseMatrixGeneric<Field, _Row> (F, rowdim (), coldim ());
-
-		typename SparseMatrixGeneric<Field, BRow>::ConstIterator i;
-		typename SparseMatrixGeneric<Field, BRow>::ConstIndexedIterator j;
-
-		for (i = _matA.Begin (), j = _matA.IndexedBegin (); i != _matA.End (); ++i, ++j)
-			A.field().init (A->refEntry (j.rowIndex (), j.colIndex ()), *i);
-
-		return A;
-	}
-#endif
-
 } // namespace LinBox
 } // namespace Protected
 

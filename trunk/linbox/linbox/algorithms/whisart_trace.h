@@ -1,4 +1,4 @@
-/* linbox/algorithms/cra-domain.h
+/* linbox/algorithms/whisart_trace.h
  * Copyright (C) 1999-2010 The LinBox group
  *
  * Time-stamp: <19 Apr 10 18:35:14 Jean-Guillaume.Dumas@imag.fr>
@@ -22,6 +22,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
  */
+
+/** @file linbox/algorithms/whisart_trace.h
+ * @brief  Whisart trace
+ * Computes the trace of D1 B D2 B^T D1 or D1 B^T D2 B D1
+ */
+
 #ifndef __LINBOX_whisart_trace_H
 #define __LINBOX_whisart_trace_H
 
@@ -36,13 +42,14 @@
 namespace LinBox
 {
 
-	// Trait to show whether or not the BB class has a Indexed iterator
+	/// Trait to show whether or not the BB class has a Indexed iterator
 	template<class BB> struct IndexedCategory;
 
 	/// limited doc so far
 	namespace IndexedTags
 	{
 		struct HasIndexed{};
+		struct HasNext{};
 		struct NoIndexed{};
 	}
 
@@ -52,16 +59,19 @@ namespace LinBox
 
 	template<class Field>
 	struct IndexedCategory< BlasMatrix<Field> > 	{
-		typedef IndexedTags::HasIndexed Tag; };
+		typedef IndexedTags::HasIndexed Tag;
+	};
 
 
 	template<class Field, class Row>
 	struct IndexedCategory< LambdaSparseMatrix<Field,Row> > 	{
-		typedef IndexedTags::HasIndexed Tag; };
+		typedef IndexedTags::HasIndexed Tag;
+	};
 
 	template<class Field, class Row>
 	struct IndexedCategory< SparseMatrix<Field,Row> > 	{
-		typedef IndexedTags::HasIndexed Tag; };
+		typedef IndexedTags::HasIndexed Tag;
+	};
 
 #if 0
 	template<class Matrix, class MatrixCategory>
@@ -183,9 +193,9 @@ namespace LinBox
 		    it != A.IndexedEnd(); ++it) {
 
 			typename Field::Element tmp,e,i;
-			F.init(tmp,0UL);
-			F.init(e,0UL);
-			F.init(i,0UL);
+			F.init(tmp,F.zero);
+			F.init(e,F.zero);
+			F.init(i,F.zero);
 
 			F.mul(tmp, it.value(),it.value());
 			ExtD.getEntry(e, it.colIndex(),it.colIndex());

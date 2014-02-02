@@ -117,11 +117,17 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 		}
 
 		//!@bug not working.
-#if 0 /*  not working */
-		rank (rank_Wiedemann, A, Method::Wiedemann ());
-		//rank (rank_elimination, B, Method::SparseElimination());
+#if 1
+		size_t rank_Wiedemann ;
+		LinBox::rank (rank_Wiedemann, A, Method::Wiedemann ());
 		rank_elimination = rank_Wiedemann;
-		rank (rank_blas_elimination, A, Method::BlasElimination ());
+		size_t rank_blas_elimination ;
+		if (F.characteristic() < LinBox::BlasBound && F.characteristic() == F.cardinality()) {
+			LinBox::rank (rank_blas_elimination, A, Method::BlasElimination ());
+		}
+		else {
+			LinBox::rank (rank_blas_elimination, A, Method::Elimination ());
+		}
 
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Rank computed by Wiedemann: " << rank_Wiedemann << endl
