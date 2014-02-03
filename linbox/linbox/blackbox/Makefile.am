@@ -64,11 +64,11 @@ BASIC_HDRS =			\
 	block-toeplitz.h          \
 	block-hankel-inverse.h    \
 	jit-matrix.h              \
+	toeplitz.h              \
+	toeplitz.inl            \
 	rational-matrix-factory.h
 
 NTL_HDRS =			\
-	toeplitz.h              \
-	toeplitz.inl            \
 	ntl-hankel.h            \
 	ntl-hankel.inl          \
 	ntl-sylvester.h         \
