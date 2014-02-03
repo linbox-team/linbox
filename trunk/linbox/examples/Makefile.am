@@ -34,9 +34,9 @@ AM_LDFLAGS=-L@libdir@ -llinbox
 
 #  SUBDIRS=fields solver data blackbox
 
-EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence
+EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly
 # EXAMPLES+=nulp yabla
-GIVARONTL_EXAMPLES=smith charpoly graph-charpoly
+GIVARONTL_EXAMPLES=smith graph-charpoly
 if LINBOX_HAVE_NTL
 if LINBOX_HAVE_GIVARO
 USE_GIVARONTL_EXAMPLES = $(GIVARONTL_EXAMPLES)
