@@ -139,7 +139,7 @@ namespace LinBox
 				return oif;
 			}
 
-			r.init (oif, 0);
+			r.assign (oif, r.zero);
 
 			int count;
 
@@ -236,7 +236,7 @@ namespace LinBox
 				return oif;
 			}
 
-			r.init (oif, 0); r. init (bonus, 0);
+			r.assign (oif, r.zero); r. assign (bonus, r.zero);
 			int count;
 			Integer prev, tmp_i, p_bonus;
 			//typename RandomMatrixTraits<IMatrix>::value_type *L, *U;

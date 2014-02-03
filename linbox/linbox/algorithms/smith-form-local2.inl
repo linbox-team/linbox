@@ -65,7 +65,7 @@ namespace LinBox
 			if ( m == 0 || n == 0 )
 				return L;
 
-			LocalPIR::Exponent g = LocalPIR::Exponent(32); //R.init(g, 0); // must change to 2^31 maybe.
+			LocalPIR::Exponent g = LocalPIR::Exponent(32); //R.init(g); // must change to 2^31 maybe.
 			size_t i, j;
 			/* Arguably this search order should be reversed to increase the likelyhood of no col swap,
 			   assuming row swaps cheaper.  Not so, however on my example. -bds 11Nov */

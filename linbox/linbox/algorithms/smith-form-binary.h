@@ -112,18 +112,16 @@ namespace LinBox
 
 			typename Vector::iterator p;
 
-			Integer zero;
 
 			long Ar = rank.rank(A);
 
 
 			report << "Rank = " << Ar <<'\n';
 
-			r.init (zero,0);
 
 			// set k-th invariant factor to zero for all k > Ar
 			for (p = sf.begin() + Ar; p!= sf.end(); ++p)
-				r.assign(*p,zero);
+				r.assign(*p,r.zero);
 
 
 			// A is a zero matrix
@@ -221,7 +219,7 @@ namespace LinBox
 		Integer& firstInvariantFactor(Integer& fif, const IMatrix& A, const Vector& PrimeL) const
 		{
 
-			r.init(fif,0);
+			r.assign(fif,r.zero);
 
 			typename IMatrix::ConstIterator A_p;
 
@@ -327,18 +325,16 @@ namespace LinBox
 
 			typename Vector::iterator p;
 
-			Integer zero;
 
 			long Ar = rank.rank(A);
 
 
 			report << "Rank = " << Ar <<'\n';
 
-			r.init (zero,0);
 
 			// set k-th invariant factor to zero for all k > Ar
 			for (p = sf.begin() + Ar; p!= sf.end(); ++p)
-				r.assign(*p,zero);
+				r.assign(*p,r.zero);
 
 
 			// A is a zero matrix

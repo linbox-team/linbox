@@ -72,7 +72,7 @@ namespace LinBox
 
 			VectorDomain<Field> VD(F2);
 			for( ; row != U.begin(); --row, --vec, --res) {
-				F2.init(*res, 0UL);
+				F2.assign(*res, F2.zero);
 				if (row->size()) {
 					typename Field::Element tmp;
 					VD.dotSpecialized(tmp, x, *row, DZOtag, SZOtag);
@@ -87,7 +87,7 @@ namespace LinBox
 					}
 				}
 			}
-			F2.init(*res, 0UL);
+			F2.assign(*res, F2.zero);
 			if (row->size()) {
 				typename Field::Element tmp;
 				VD.dotSpecialized(tmp, x, *row, DZOtag, SZOtag);
@@ -125,7 +125,7 @@ namespace LinBox
 		VectorCategories::SparseZeroOneVectorTag SZOtag;
 		VectorDomain<GF2> VD(F2);
 		for( ; row != L.end(); ++row, ++vec, ++res) {
-			F2.init(*res, 0UL);
+			F2.assign(*res, F2.zero);
 			GF2::Element tmp;
 			VD.dotSpecialized(tmp, *row, x, SZOtag, DZOtag);
 			F2.negin(tmp);

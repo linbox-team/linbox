@@ -585,11 +585,10 @@ namespace LinBox { namespace Protected {
 #include "linbox/matrix/SparseMatrix/sparse-associative-vector.inl"
 
 namespace LinBox
-{
+{ /*  SparseMatrix for SparseMatrixFormat::SparseMap */
 
 	template <class _Field /*, class _Row */  >
-	class SparseMatrix<_Field, SparseMatrixFormat::SparseMap/* <_Row> */ > : public Protected::SparseMatrixGeneric<_Field,/*  _Row */ typename Vector<_Field>::SparseMap,VectorCategories::SparseAssociativeVectorTag>
-	{
+	class SparseMatrix<_Field, SparseMatrixFormat::SparseMap/* <_Row> */ > : public Protected::SparseMatrixGeneric<_Field,/*  _Row */ typename Vector<_Field>::SparseMap,VectorCategories::SparseAssociativeVectorTag> {
 	public:
 		typedef VectorCategories::SparseAssociativeVectorTag  myTrait ;
 		typedef _Field                                       Field ; //!< Field

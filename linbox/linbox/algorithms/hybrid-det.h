@@ -197,7 +197,7 @@ namespace LinBox
 			myModular D(*genprime);
 			iteration.primes[early_counter] = *genprime;
 			myModular::Element r;
-			D.init(r,0);
+			D.assign(r,D.zero);
 			cra.initialize( D, iteration(r, D));
 			++early_counter;
 		}
@@ -209,7 +209,7 @@ namespace LinBox
 			iteration.primes[early_counter] = *genprime;
 			// prime(p, early_counter);
 			myModular::Element r;
-			D.init(r,0);
+			D.assign(r,D.zero);
 			cra.progress( D, iteration(r, D));
 			++early_counter;
 		}
@@ -239,7 +239,7 @@ namespace LinBox
 				iteration.primes[early_counter] = p;
 				//		prime(p, early_counter);
 				myModular::Element r;
-				D.init(r,0);
+				D.assign(r,D.zero);
 				cra.progress( D, iteration(r, D));
 				++early_counter;
 			}
@@ -303,7 +303,7 @@ namespace LinBox
 		while ( early_counter < myfactor && !cra2.terminated() ) {
 			myModular D(iteration.primes[early_counter]);
 			myModular::Element r;
-			D.init(r,0);
+			D.assign(r,D.zero);
 			cra2.progress( D, iteration(r, D) );
 			++early_counter;
 		}
@@ -339,7 +339,7 @@ namespace LinBox
 				while ( (early_counter < myfactor) && (!cra3.terminated() )) {
 					myModular D(iteration.primes[early_counter]);
 					myModular::Element r;
-					D.init(r,0);
+					D.assign(r,D.zero);
 					cra3.progress( D, iteration(r, D));
 					++early_counter;
 					//iteration.Inc();
@@ -362,7 +362,7 @@ namespace LinBox
 						while (cra3.noncoprime(*genprime)) ++genprime;
 						myModular D(*genprime);
 						myModular::Element r;
-						D.init(r,0);
+						D.assign(r,D.zero);
 						cra3.progress( D, iteration(r, D));
 					}
 					cra3.result(k);
@@ -379,7 +379,7 @@ namespace LinBox
 					while (cra2.noncoprime(*genprime)) ++genprime;
 					myModular D(*genprime);
 					myModular::Element r;
-					D.init(r,0);
+					D.assign(r,D.zero);
 					cra2.progress( D, iteration(r, D));
 				}
 				cra2.result(k);
@@ -394,7 +394,7 @@ namespace LinBox
 				while (cra2.noncoprime(*genprime)) ++genprime;
 				myModular D(*genprime);
 				myModular::Element r;
-				D.init(r,0);
+				D.assign(r,D.zero);
 				cra2.progress( D, iteration(r, D));
 			}
 			cra2.result(k);
@@ -477,7 +477,7 @@ namespace LinBox
                 myModular D(p);
                 iteration.primes[early_counter] = p;
                 myModular::Element r;
-                D.init(r,0);
+                D.assign(r,D.zero);
                 cra.initialize( D, iteration(r, D));
                 ++early_counter;
 
@@ -488,7 +488,7 @@ namespace LinBox
 			iteration.primes[early_counter] = p;
 			//          prime(p, early_counter);
 			myModular::Element r;
-			D.init(r,0);
+			D.assign(r,D.zero);
 			cra.progress( D, iteration(r, D));
 			++early_counter;
 		}
@@ -515,7 +515,7 @@ namespace LinBox
 				iteration.primes[early_counter] = p;
 				//          prime(p, early_counter);
 				myModular::Element r;
-				D.init(r,0);
+				D.assign(r,D.zero);
 				cra.progress( D, iteration(r, D));
 				++early_counter;
 			}
@@ -574,7 +574,7 @@ namespace LinBox
 		while ( early_counter < myfactor && !cra2.terminated() ) {
 			myModular D(iteration.primes[early_counter]);
 			myModular::Element r;
-			D.init(r,0);
+			D.assign(r,D.zero);
 			cra2.progress( D, iteration(r, D));
 			++early_counter;
 		}
@@ -610,7 +610,7 @@ namespace LinBox
 				while ( (early_counter < myfactor) && (!cra3.terminated() )) {
 					myModular D(iteration.primes[early_counter]);
 					myModular::Element r;
-					D.init(r,0);
+					D.assign(r,D.zero);
 					cra3.progress( D, iteration(r, D));
 					++early_counter;
 					//iteration.Inc();
@@ -633,7 +633,7 @@ namespace LinBox
 						while (cra3.noncoprime(p)) genprime.randomPrime(p);
 						myModular D(p);
 						myModular::Element r;
-						D.init(r,0);
+						D.assign(r,D.zero);
 						cra3.progress( D, iteration(r, D));
 					}
 					cra3.result(k);
@@ -650,7 +650,7 @@ namespace LinBox
 					while (cra2.noncoprime(p)) genprime.randomPrime(p);
 					myModular D(p);
 					myModular::Element r;
-					D.init(r,0);
+					D.assign(r,D.zero);
 					cra2.progress( D, iteration(r, D));
 				}
 				cra2.result(k);
@@ -665,7 +665,7 @@ namespace LinBox
 				while (cra2.noncoprime(p)) genprime.randomPrime(p);
 				myModular D(p);
 				myModular::Element r;
-				D.init(r,0);
+				D.assign(r,D.zero);
 				cra2.progress( D, iteration(r, D));
 			}
 			cra2.result(k);

@@ -101,7 +101,7 @@ namespace LinBox
 					     const Vector& PrimeL) const
 		{
 
-			r.init(lif, 1);
+			r.assign(lif, r.one);
 			int count = 0;
 			SolverReturnStatus tmp;
 			// Storage of rational solution
@@ -127,7 +127,7 @@ namespace LinBox
 				tmp = solver.solveNonsingular(r_num, r_den, A, b);
 				// If no solution found
 				if (tmp != SS_OK) {
-					r.init (lif, 0);
+					r.assign (lif, r.zero);
 					break;
 				}
 
@@ -160,8 +160,8 @@ namespace LinBox
 						   const Vector& PrimeL) const
 		{
 
-			r. init(lif, 1);
-			r. init (Bonus, 1);
+			r. assign(lif, r.one);
+			r. assign(Bonus, r.one);
 			int count = 0;
 			SolverReturnStatus tmp1, tmp2;
 			// Storage of rational solution
@@ -188,7 +188,7 @@ namespace LinBox
 				tmp2 = solver. solveNonsingular(r2_num, r2_den, A, b2);
 				// If no solution found
 				if ((tmp1 != SS_OK) || (tmp2 != SS_OK)){
-					r.init (lif, 0);
+					r.assign (lif, r.zero);
 					break;
 				}
 
@@ -201,14 +201,14 @@ namespace LinBox
 				DVect r1 (r,A. rowdim());
 				DVect r2 (r,A. rowdim());
 				typename DVect::iterator r1_p, r2_p;
-				r. init (l, 0);
+				r. assign (l, r.zero);
 				int i;
 				for (i = 0; i < 20; ++ i) {
 					for (r1_p = r1. begin(), r2_p = r2. begin(); r1_p != r1. end(); ++ r1_p, ++ r2_p) {
 						r. init (*r1_p, rand());
 						r. init (*r2_p, rand());
 					}
-					r. init (a11, 0); r. init (a12, 0); r. init (a21, 0); r. init (a22, 0);
+					r. assign(a11, r.zero); r. assign (a12, r.zero); r. assign (a21, r.zero); r. assign (a22, r.zero);
 					for (r1_p = r1. begin(), num1_p = r1_num. begin(); r1_p != r1. end(); ++ r1_p, ++ num1_p)
 						r. axpyin (a11, *r1_p, *num1_p);
 					for (r1_p = r1. begin(), num2_p = r2_num. begin(); r1_p != r1. end(); ++ r1_p, ++ num2_p)
@@ -284,7 +284,7 @@ namespace LinBox
 			tmp = solver.solveNonsingular(r_num, r_den, A, b,oldMatrix);
 			// If no solution found
 			if (tmp != SS_OK) {
-				//r.init (lif, 0);
+				//r.assign (lif, r.zero);
 				//break;
 				return lif=0;
 			}
@@ -313,14 +313,14 @@ namespace LinBox
 			DVect r1 (r,r1_num. size());
 			DVect r2 (r,r2_num. size());
 			typename DVect::iterator r1_p, r2_p;
-			r. init (l, 0);
+			r. assign (l, r.zero);
 			int i;
 			for (i = 0; i < 20; ++ i) {
 				for (r1_p = r1. begin(), r2_p = r2. begin(); r1_p != r1. end(); ++ r1_p, ++ r2_p) {
 					r. init (*r1_p, rand());
 					r. init (*r2_p, rand());
 				}
-				r. init (a11, 0); r. init (a12, 0); r. init (a21, 0); r. init (a22, 0);
+				r. assign (a11, r.zero); r. assign (a12, r.zero); r. assign (a21, r.zero); r. assign (a22, r.zero);
 				for (r1_p = r1. begin(), num1_p = r1_num. begin(); r1_p != r1. end(); ++ r1_p, ++ num1_p)
 					r. axpyin (a11, *r1_p, *num1_p);
 				for (r1_p = r1. begin(), num2_p = r2_num. begin(); r1_p != r1. end(); ++ r1_p, ++ num2_p)

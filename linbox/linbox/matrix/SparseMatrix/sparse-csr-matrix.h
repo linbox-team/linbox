@@ -56,8 +56,9 @@ namespace LinBox
 		typedef _Field                             Field ; //!< Field
 		typedef typename _Field::Element         Element ; //!< Element
 		typedef const Element               constElement ; //!< const Element
-		typedef SparseMatrixFormat::CSR         Storage ; //!< Matrix Storage Format
-		typedef SparseMatrix<_Field,Storage>     Self_t ; //!< Self type
+		typedef SparseMatrixFormat::CSR          Storage ; //!< Matrix Storage Format
+		typedef SparseMatrix<_Field,Storage>      Self_t ; //!< Self type
+		typedef typename Vector<Field>::SparseSeq    Row ; //!< @warning this is not the row type. Just used for streams.
 		// typedef Vector<_Field,VectorStorage::Sparse> Rep ;
 
 		/*! Constructors.

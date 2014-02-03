@@ -38,13 +38,12 @@ namespace LinBox
 	  const typename PField::Element& T, size_t n )
 	{
 		short int sign = 1;
-		typename PField::Coeff one, temp;
+		typename PField::Coeff  temp;
 		const typename PField::CoeffField& CField = F.getCoeffField();
-		CField.init(one,1);
-		CField.init(res,1);
+		CField.assign(res,CField.one);
 		typename PField::Element f1, f2( T ), fi;
-		F.setCoeff( f1, 2*n - 1, one );
-		F.init( fi, one );
+		F.setCoeff( f1, 2*n - 1, CField.one );
+		F.assign( fi, F.one );
 
 		while( F.deg(f2) >= n ) {
 			F.rem( fi, f1, f2 );
@@ -67,7 +66,7 @@ namespace LinBox
 				CField.mulin( res, negOne );
 			}
 		}
-		else CField.init( res, 0 );
+		else CField.assign( res, CField.zero );
 
 		return res;
 	}

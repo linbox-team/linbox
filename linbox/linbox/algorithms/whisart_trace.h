@@ -73,6 +73,12 @@ namespace LinBox
 		typedef IndexedTags::HasIndexed Tag;
 	};
 
+	template<class Field>
+	struct IndexedCategory< SparseMatrix<Field,SparseMatrixFormat::CSR> > 	{
+		typedef IndexedTags::HasNext Tag;
+	};
+
+
 #if 0
 	template<class Matrix, class MatrixCategory>
 	struct IndexedCategory< SubRowMatrix<Matrix,MatrixCategory> > 	{
@@ -160,7 +166,7 @@ namespace LinBox
 	{
 		// Trace of ExtD B InD B^T ExtD
 		// is sum ExtD_i^2 B_{i,j} InD_j
-		F.init(tr, 0);
+		F.init(tr);
 		for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
 		    it != A.IndexedEnd(); ++it) {
 			typename Field::Element tmp,e,i;
@@ -188,15 +194,15 @@ namespace LinBox
 	{
 		// Trace of ExtD B^T  InD B ExtD
 		// is sum ExtD_j^2 B_{i,j} InD_i
-		F.init(tr, 0);
+		F.init(tr);
 		for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
 		    it != A.IndexedEnd(); ++it) {
 
 			typename Field::Element tmp,e,i;
 			//! @bug F.init does not work with givaro/givaroextension.h
-			F.assign(tmp,F.zero);
-			F.assign(e,F.zero);
-			F.assign(i,F.zero);
+			F.init(tmp);
+			F.init(e);
+			F.init(i);
 
 			F.mul(tmp, it.value(),it.value());
 			ExtD.getEntry(e, it.colIndex(),it.colIndex());

@@ -108,7 +108,7 @@ namespace LinBox
 		}
 
 		IntPoly intCharPoly (A.coldim());
-		intRing.init (intCharPoly[0], 1);
+		intRing.assign (intCharPoly[0], intRing.one);
 		for (size_t i = 0; i < nf; ++i){
 			IPD.pow( P, *intFactors[i], multip[i] );
 			IPD.mulin( intCharPoly, P );

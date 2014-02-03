@@ -72,7 +72,7 @@ namespace LinBox
 		//size_t m, n, col=0;
 		//n=A.coldim();
 		//m=A.rowdim();
-		R.init(H_col_sqr, 1);
+		R.init(H_col_sqr, R.one);
 
 		typename ItMatrix::ConstRowIterator row= A.rowBegin();
 		std::vector<Integer_t> tmp(A.coldim(), R.zero);
@@ -92,7 +92,7 @@ namespace LinBox
 
 		   for (; colIter != A.colEnd(); ++colIter, ++col) {
 		   typename ItMatrix::ConstCol::const_iterator elm;
-		   R.init(sqsum, 0);
+		   R.assign(sqsum, R.zero);
 		   for (elm = colIter->begin(); elm != colIter->end(); ++elm)
 		   R.axpyin(sqsum, *elm, *elm);
 		   R.mulin(H_col_sqr, sqsum);
@@ -255,8 +255,8 @@ namespace LinBox
 
 		for (; rowIter != A.rowEnd(); ++rowIter) {
 			typename ItMatrix::ConstRow::const_iterator elm;
-			R.init(possum, 0);
-			R.init(negsum, 0);
+			R.assign(possum, R.zero);
+			R.assign(negsum, R.zero);
 			for (elm = rowIter->begin(); elm != rowIter->end(); ++elm)
 				if (*elm > R.zero)
 					R.addin(possum, *elm);
@@ -372,7 +372,7 @@ namespace LinBox
 
 			typename BlasVector<Ring>::const_iterator iterb = _b.begin();
 			Integer_t normb_sq;
-			this->_intRing.init(normb_sq, 0);
+			this->_intRing.assign(normb_sq, this->_intRing.zero);
 			for (;iterb!=_b.end();++iterb)
 				normb_sq += (*iterb)*(*iterb);
 

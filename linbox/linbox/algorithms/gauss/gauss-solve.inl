@@ -49,7 +49,7 @@ namespace LinBox
             // U P x = v = L^{-1} y
 		lowerTriangularUnitarySolve(v, L, y);
 
-            // P x = w = U^{-1} v, only for the upper part of w 
+            // P x = w = U^{-1} v, only for the upper part of w
 		upperTriangularSolve(w, U, v);
 
             // x = P^T w = P^T U^{-1} L^{-1} Q^T b
@@ -89,7 +89,7 @@ namespace LinBox
 		Vector1 w(A.field(),A.coldim());
 
 		for(typename Vector1::iterator it=w.begin()+(ptrdiff_t)Rank;it!=w.end();++it)
-			field().init(*it,0);
+			field().assign(*it,field().zero);
 
 		return this->solve(x, w, Rank, Q, L, A, P, b);
 	}

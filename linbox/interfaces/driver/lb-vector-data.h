@@ -229,9 +229,7 @@ public:
 	template<class Domain>
 	void operator()(void *&res, Domain *D) const
 	{
-		typename Domain::Element zero;
-		D->init(zero, 0UL);
-		res = new Vector<typename Domain::Element, Alloc<typename Domain::Element> >(_dim, zero);
+		res = new Vector<typename Domain::Element, Alloc<typename Domain::Element> >(_dim, D->zero);
 	}
 };
 

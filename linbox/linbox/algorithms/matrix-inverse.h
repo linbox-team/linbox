@@ -55,6 +55,7 @@ namespace LinBox
 			//typedef typename AnyDenseMatrix::Field Field;
 
 			// step1 PLU Inplcae, actually, LPA = U.
+			// XXX Permutation
 			std::vector<std::pair<int,int> > P;
 			P.reserve (A.rowdim());
 
@@ -128,19 +129,15 @@ namespace LinBox
 
 
 			//2a compute inverse of PA, by solving upper-triangeular system, PA = U^{-1} L.
-			typename Field::Element Zero;
-			typename Field::Element N_one;
-			F.init(Zero,0);
-			F.init(N_one, -1);
 
 			offset = 0;
 			for(cur_c = A.colBegin();cur_c != A. colEnd(); ++ cur_c, ++ offset) {
 
 				for (cur_cp = cur_c -> begin();
 				     cur_cp != cur_c -> begin() + offset; ++ cur_cp)
-					F.assign (*cur_cp, Zero);
+					F.assign (*cur_cp, F.zero);
 
-				F.assign(*cur_cp, N_one); ++ cur_cp;
+				F.assign(*cur_cp, F.mOne); ++ cur_cp;
 
 				for (; cur_cp != cur_c -> end(); ++ cur_cp)
 					F.negin(*cur_cp);

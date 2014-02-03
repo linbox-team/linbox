@@ -72,7 +72,7 @@ namespace LinBox
 		Vector1 w(A.coldim());
 
         for(typename Vector1::iterator it=w.begin()+(ptrdiff_t)Rank;it!=w.end();++it)
-				F2.init(*it,0);
+				F2.assign(*it,F2.zero);
 
 		return this->solve(x, w, Rank, Q, L, A, P, b);
 	}

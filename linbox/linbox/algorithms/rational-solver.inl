@@ -298,7 +298,7 @@ namespace LinBox
 
 #if 0
 				   typename Ring::Element lden;
-				   _ring. init (lden, 1);
+				   _ring. assign (lden, _ring.one);
 				   typename Vector1::iterator p;
 				   for (p = answer.begin(); p != answer.end(); ++ p)
 				   _ring. lcm (lden, lden, p->second);
@@ -815,7 +815,7 @@ namespace LinBox
 #endif
 
 			// typedef typename Field::Element Element;
-			typedef typename Ring::Element  Integer_t;
+			// typedef typename Ring::Element  Integer_t;
 			typedef DixonLiftingContainer<Ring, Field,
 				BlasMatrix<Ring>, BlasMatrix<Field> > LiftingContainer;
 
@@ -823,9 +823,6 @@ namespace LinBox
 			linbox_check(A.rowdim() == b.size());
 
 			LinBox::integer tmp;
-			Integer_t _rone,_rzero; //!@bug remove those
-			_ring.init(_rone,1);
-			_ring.init(_rzero,0);
 
 			Field F (_prime);
 			BlasMatrixDomain<Ring>  BMDI(_ring);
@@ -910,28 +907,28 @@ namespace LinBox
 				}
 				if (aEmpty) {
 					for (size_t i=0; i<b.size(); ++i)
-						if (!_ring.areEqual(b[i], _rzero)) {
+						if (!_ring.areEqual(b[i], _ring.zero)) {
 							if (level >= SL_CERTIFIED) {
 								lastCertificate.clearAndResize(b.size());
-								_ring.assign(lastCertificate.numer[i], _rone);
+								_ring.assign(lastCertificate.numer[i], _ring.one);
 							}
 							return SS_INCONSISTENT;
 						}
 #if 0
 					// both A and b are all zero.
 					for (size_t i=0; i<answer.size(); ++i) {
-						answer[i].first = _rzero;
-						answer[i].second = _rone;
+						answer[i].first = _ring.zero;
+						answer[i].second = _ring.one;
 					}
 #endif
-					_ring. assign (den, _rone);
+					_ring. assign (den, _ring.one);
 					for (typename Vector1::iterator p = num. begin(); p != num. end(); ++ p)
-						_ring. assign (*p, _rzero);
+						_ring. assign (*p, _ring.zero);
 
 					if (level >= SL_LASVEGAS)
-						_ring.init(lastCertifiedDenFactor, 1);
+						_ring.assign(lastCertifiedDenFactor, _ring.one);
 					if (level == SL_CERTIFIED) {
-						_ring.init(lastZBNumer, 0);
+						_ring.assign(lastZBNumer, _ring.zero);
 						lastCertificate.clearAndResize(b.size());
 					}
 					return SS_OK;
@@ -1008,7 +1005,7 @@ namespace LinBox
 				cert. denom = short_den;
 				cert.numer.resize(b.size());
 				_ring.subin(cert.numer[rank], cert.denom);
-				_ring.init(cert.denom, 1);
+				_ring.assign(cert.denom, _ring.one);
 				BMDI.mulin_left(cert.numer, TAS_P);
 #ifdef DEBUG_INC
 				cert.write(std::cout << "cert:") << std::endl;
@@ -1100,9 +1097,9 @@ namespace LinBox
 					typename BlasMatrix<Ring>::Iterator iter;
 					for (iter = P->Begin(); iter != P->End(); ++iter) {
 						if (rand() > RAND_MAX/2)
-							_ring.assign(*iter, _rone);
+							_ring.assign(*iter, _ring.one);
 						else
-							_ring.assign(*iter, _rzero);
+							_ring.assign(*iter, _ring.zero);
 					}
 
 					// compute A_minor = B.P
@@ -1188,7 +1185,7 @@ namespace LinBox
 
 			if (!randomSolution) {
 				// short_answer = TAS_Q * short_answer
-				answer_to_vf.numer.resize(A.coldim()+1,_rzero);
+				answer_to_vf.numer.resize(A.coldim()+1,_ring.zero);
 				BMDI.mulin_left(answer_to_vf.numer, TAS_Qt);
 				answer_to_vf.numer.resize(A.coldim());
 			}
@@ -1288,11 +1285,11 @@ namespace LinBox
 					allzero = true;
 					for (q_iter = q.begin(); q_iter != q.end(); ++q_iter) {
 						if (rand() > RAND_MAX/2) {
-							(*q_iter) = _rone;
+							_ring.assign((*q_iter), _ring.one);
 							allzero = false;
 						}
 						else
-							(*q_iter) = _rzero;
+							(*q_iter) = _ring.zero;
 					}
 				} while (allzero);
 #ifdef RSTIMING
@@ -1325,7 +1322,7 @@ namespace LinBox
 				u_to_vf.write(std::cout  << "u: ") << std::endl;
 #endif
 
-				Integer numergcd = _rzero;
+				Integer numergcd = _ring.zero;
 				vectorGcdIn(numergcd, _ring, uB);
 
 				// denom(partial_cert . Mr) = partial_cert_to_vf.denom / numergcd

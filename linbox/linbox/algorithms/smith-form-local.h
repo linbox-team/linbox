@@ -5,20 +5,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -55,7 +55,7 @@ namespace LinBox
 		template<class Matrix>
 		std::list<Elt>& operator()(std::list<Elt>& L, Matrix& A, const LocalPID& R)
 		{
-			Elt d; R.init(d, 1);
+			Elt d; R.assign(d,R.one);
 			return smithStep(L, d, A, R);
 		}
 
@@ -66,7 +66,7 @@ namespace LinBox
 			//std::cout << "Dimension: " << A.rowdim() << " " << A.coldim() <<"\n";
 			if ( A.rowdim() == 0 || A.coldim() == 0 ) return L;
 
-			Elt g; R.init(g, 0);
+			Elt g; R.assign(g, R.zero);
 			typename Matrix::RowIterator p;
 			typename Matrix::Row::iterator q, r;
 			for ( p = A.rowBegin(); p != A.rowEnd(); ++p) {

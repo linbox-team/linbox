@@ -169,7 +169,7 @@ namespace LinBox
 		{
 			typename InVect1::const_iterator v1_p;
 			typename InVect2::const_iterator v2_p;
-			_r. init (d, 0);
+			_r. assign(d, _r.zero);
 			for (v1_p = v1. begin(), v2_p = v2. begin(); v1_p != v1. end(); ++ v1_p, ++ v2_p)
 				_r. axpyin (d, *v1_p, *v2_p);
 
@@ -216,13 +216,13 @@ namespace LinBox
 			Integer denbound; // store current bound for den
 			Integer numbound; //store current bound for num
 
-			_r. init (modulus, 1);
-			_r. init (denbound, 1);
-			_r. init (numbound, 1);
+			_r. assign (modulus, _r.one);
+			_r. assign (denbound, _r.one);
+			_r. assign (numbound, _r.one);
 			Integer c1, c2, c1_den, c1_num, c2_den, c2_num;
 			IVector r1(_r,num.size()), r2(_r,num.size());
-			_r. init (c1, 0); _r. init(c1_den, 1); _r. init (c1_num, 0);
-			_r. init (c2, 0); _r. init(c2_den, 1); _r. init (c2_num, 0);
+			_r. assign(c1, _r.zero); _r. assign(c1_den, _r.one); _r. assign (c1_num, _r.zero);
+			_r. assign(c2, _r.zero); _r. assign(c2_den, _r.one); _r. assign (c2_num, _r.zero);
 
 			typename IVector::iterator r_p;
 			for (r_p = r1. begin(); r_p != r1. end(); ++ r_p)
@@ -238,7 +238,7 @@ namespace LinBox
 			Integer pmodulus; //store previous modulus
 			Integer tmp; //temprary integer
 
-			_r. init (den, 1);
+			_r. assign (den, _r.one);
 			typename LiftingContainer::const_iterator iter = _lcontainer.begin();
 
 			Integer tmp_den, tmp_num, rem1, rem2;
@@ -333,7 +333,7 @@ namespace LinBox
 			std::cout << "Start rational reconstruction:\n";
 			typename Vector::iterator num_p; typename IVector::iterator res_p;
 			Integer tmp_res, neg_res, abs_neg, l, g;
-			_r. init (den, 1);
+			_r. assign(den, _r.one);
 			int counter=0;
 			for (num_p = num. begin(), res_p = res. begin(); num_p != num. end(); ++ num_p, ++ res_p) {
 				_r. mul (tmp_res, *res_p, den);
@@ -401,7 +401,7 @@ namespace LinBox
 #endif
 			linbox_check(num.size() == (size_t)_lcontainer.size());
 
-			_r. init (den, 1);
+			_r. assign (den, _r.one);
 			Integer prime = _lcontainer.prime(); 		        // prime used for lifting
 			std::vector<size_t> accuracy(_lcontainer.size(), 0); 	// accuracy (in powers of p) of each answer so far
 			Vector digit(_lcontainer.size());  		        // to store next digit
@@ -409,9 +409,9 @@ namespace LinBox
 			Integer prev_modulus;       	                        // store previous modulus
 			Integer numbound, denbound;                             // current num/den bound for early termination
 			size_t numConfirmed;                                       // number of reconstructions which passed twice
-			_r.init(modulus, 0);
+			_r.assign(modulus, _r.zero);
 			std::vector<Integer> zz(_lcontainer.size(), modulus);   // stores each truncated p-adic approximation
-			_r.init(modulus, 1);
+			_r.assign(modulus, _r.one);
 
 			size_t len = _lcontainer.length();
 			/* should be ceil(log(2*numbound*denbound)/log(prime))
@@ -673,7 +673,7 @@ namespace LinBox
 
 
 			Integer g;
-			_r. init (g, 0);
+			_r. assign (g, _r.zero);
 			_r. gcdin (g, den);
 			for (num_p = num. begin(); num_p != num. end(); ++ num_p)
 				_r. gcdin (g, *num_p);
@@ -705,9 +705,7 @@ namespace LinBox
 				size_t deg_low, deg_high;
 				deg_high = deg/2;
 				deg_low  = deg - deg_high;
-				Integer zero;
-				_r.init(zero,0);
-				Vector y1(_r,y.size(),zero), y2(_r,y.size(),zero);
+				Vector y1(_r,y.size(),_r.zero), y2(_r,y.size(),_r.zero);
 				Integer x1=x, x2=x;
 
 				PolEval(y1, Pol, deg_low, x1);
@@ -752,20 +750,18 @@ namespace LinBox
 			size_t size= _lcontainer.size();
 
 
-			Integer zero;
-			_r.init(zero,0);
-			Vector zero_digit(_r,_lcontainer.size(),zero);
+			Vector zero_digit(_r,_lcontainer.size(),_r.zero);
 
 			// store approximation as a polynomial and evaluate by baby step giant step
 			std::vector<Vector>  digit_approximation(length,zero_digit);
 
 			// store real approximation
-			Vector real_approximation(_r,size,zero);
+			Vector real_approximation(_r,size,_r.zero);
 
 
 			// store modulus (intially set to 1)
 			Integer modulus;
-			_r.init(modulus, 1);
+			_r.assign(modulus, _r.one);
 
 			// denominator upper bound
 			Integer denbound;
@@ -915,8 +911,8 @@ namespace LinBox
 			Timer ratrecon;
 			ratrecon.start();
 			Integer common_den, common_den_mod_prod, bound,two,tmp;
-			_r.init(common_den,1);
-			_r.init(common_den_mod_prod,1);
+			_r.assign(common_den,_r.one);
+			_r.assign(common_den_mod_prod,_r.one);
 			_r.init(two,2);
 
 			Vector denominator(_r,num.size());
@@ -939,11 +935,11 @@ namespace LinBox
 
 				if ( _r.compare(*iter_approx, numbound) < 0){
 					_r.assign(*iter_num, *iter_approx);
-					_r.init(*iter_denom, 1);
+					_r.assign(*iter_denom, _r.one);
 				}
 				else if (_r.compare(abs_approx, numbound) <0){
 					_r.assign(*iter_num, neg_approx);
-					_r.init(*iter_denom, 1);
+					_r.assign(*iter_denom, _r.one);
 				}
 				else {
 					if  (!_r.reconstructRational(*iter_num, *iter_denom, *iter_approx, modulus, numbound, denbound))
@@ -987,7 +983,7 @@ namespace LinBox
 
 			}
 
-			_r.init(tmp,1);
+			_r.assign(tmp,_r.one);
 			for (int i= idx_last_den ; i>=0;--i){
 				_r.mulin(num[(size_t)i],tmp);
 				_r.mulin(tmp,denominator[(size_t)i]);
@@ -997,7 +993,7 @@ namespace LinBox
 #if 0
 			typename Vector1::reverse_iterator rev_iter_num   = num.rbegin();
 			typename Vector::reverse_iterator  rev_iter_denom = denominator.rbegin();
-			_r.init(tmp,1);
+			_r.assign(tmp,_r.one);
 			for (; rev_iter_num != num.rend(); ++rev_iter_num, ++rev_iter_denom){
 
 				_r.mulin(*rev_iter_num,tmp);
@@ -1035,7 +1031,7 @@ namespace LinBox
 
 			Integer init_den = den_app;
 			if (den > 0) lcm(init_den,den,den_app);
-			_r. init (den, 1);
+			_r. assign(den, _r.one);
 #ifdef DEBUG_RR
 			cout << "debug: den " << den;
 #endif
@@ -1043,9 +1039,9 @@ namespace LinBox
 			Vector digit(_lcontainer.size());                       // to store next digit
 			Integer modulus;                                        // store modulus (power of prime)
 			Integer prev_modulus;                                   // store previous modulus
-			_r.init(modulus, 0);
+			_r.assign(modulus, _r.zero);
 			std::vector<Integer> zz(_lcontainer.size(), modulus);   // stores each truncated p-adic approximation
-			_r.init(modulus, 1);
+			_r.assign(modulus, _r.one);
 
 			size_t len = _lcontainer.length(); // should be ceil(log(2*numbound*denbound)/log(prime))
 #ifdef DEBUG_RR
@@ -1190,7 +1186,7 @@ namespace LinBox
 #endif
 			Integer g;
 			Integer abs_num_p(0);
-			_r. init (g, 0);
+			_r. assign(g, _r.zero);
 			_r. gcdin (g, den);
 			for (num_p = num. begin(); num_p != num. end(); ++ num_p) {
 				_r. gcdin (g, *num_p);
@@ -1276,20 +1272,18 @@ namespace LinBox
 			std::cout<<"magnitude time:                 "<<magn<<"\n";
 
 			// some constants
-			Integer zero;
-			_r.init(zero,0);
-			Vector zero_digit(_lcontainer.size(),zero);
+			Vector zero_digit(_lcontainer.size(),_r.zero);
 
 			// store approximation as a polynomial and evaluate by baby step giant step
 			std::vector<Vector>  digit_approximation(length,zero_digit);
 
 			// store real approximation
-			Vector real_approximation(size,zero);
+			Vector real_approximation(size,_r.zero);
 			Vector last_real_approximation;
 
 			// store modulus (intially set to 1)
 			Integer modulus, last_modulus;
-			_r.init(modulus, 1);
+			_r.assign(modulus, _r.one);
 
 			typename LiftingContainer::const_iterator iter = _lcontainer.begin();
 
@@ -1303,7 +1297,7 @@ namespace LinBox
 
 			// common denominator
 			Integer common_denom;
-			_r.init(common_denom,1);
+			_r.assign(common_denom,_r.one);
 
 			// bad numerator index
 			size_t bad_num_index=0;
@@ -1619,20 +1613,18 @@ namespace LinBox
 			std::cout<<"magnitude time:                 "<<magn<<"\n";
 
 			// some constants
-			Integer zero;
-			_r.init(zero,0);
-			Vector zero_digit(_lcontainer.size(),zero);
+			Vector zero_digit(_lcontainer.size(),_r.zero);
 
 			// store approximation as a polynomial and evaluate by baby step giant step
 			std::vector<Vector>  digit_approximation(length,zero_digit);
 
 			// store real approximation
-			Vector real_approximation(size,zero);
+			Vector real_approximation(size,_r.zero);
 			Vector last_real_approximation;
 
 			// store modulus (intially set to 1)
 			Integer modulus, last_modulus;
-			_r.init(modulus, 1);
+			_r.assign(modulus, _r.one);
 
 			typename LiftingContainer::const_iterator iter = _lcontainer.begin();
 
@@ -1646,7 +1638,7 @@ namespace LinBox
 
 			// common denominator
 			Integer common_denom;
-			_r.init(common_denom,1);
+			_r.assign(common_denom,_r.one);
 
 			// bad numerator index
 			size_t bad_num_index=0;
@@ -1961,20 +1953,18 @@ namespace LinBox
 			std::cout<<"magnitude time:                 "<<magn<<"\n";
 
 			// some constants
-			Integer zero;
-			_r.init(zero,0);
-			Vector zero_digit(_lcontainer.size(),zero);
+			Vector zero_digit(_lcontainer.size(),_r.zero);
 
 			// store approximation as a polynomial and evaluate by baby step giant step
 			std::vector<Vector>  digit_approximation(length,zero_digit);
 
 			// store real approximation
-			Vector real_approximation(size,zero);
+			Vector real_approximation(size,_r.zero);
 			Vector last_real_approximation;
 
 			// store modulus (intially set to 1)
 			Integer modulus, last_modulus;
-			_r.init(modulus, 1);
+			_r.assign(modulus, _r.one);
 
 			typename LiftingContainer::const_iterator iter = _lcontainer.begin();
 
@@ -1988,7 +1978,7 @@ namespace LinBox
 
 			// common denominator
 			Integer common_denom;
-			_r.init(common_denom,1);
+			_r.assign(common_denom,_r.one);
 
 			// bad numerator index
 			size_t bad_num_index=0;

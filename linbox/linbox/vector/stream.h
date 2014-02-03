@@ -220,8 +220,8 @@ namespace LinBox
 	/** @brief Random dense vector stream.
 	 * Generates a sequence of random dense vectors over a given field
 	 */
-	template <typename Field, typename _Vector = BlasVector<Field>, 
-              class RandIter = typename Field::RandIter, 
+	template <typename Field, typename _Vector = BlasVector<Field>,
+              class RandIter = typename Field::RandIter,
               class Trait = typename VectorTraits<_Vector>::VectorCategory>
 	class RandomDenseStream : public VectorStream<_Vector> {
 	public:
@@ -405,7 +405,6 @@ namespace LinBox
 			MT ((uint32_t)time (NULL))
 		{
 			linbox_check ((p >= 0.0) && (p <= 1.0));
-			_field.init (_zero, 0);
 		}
 
 		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL)) :
@@ -413,7 +412,6 @@ namespace LinBox
 			MT ((uint32_t)seed)
 		{
 			linbox_check ((p >= 0.0) && (p <= 1.0));
-			_field.init (_zero, 0);
 		}
 
 		Vector &get (Vector &v)
@@ -429,7 +427,7 @@ namespace LinBox
 				if (val < _p)
 					_r.random (*i);
 				else
-					_field.assign (*i, _zero);
+					_field.assign (*i, _field.zero);
 			}
 
 			return v;
@@ -448,7 +446,6 @@ namespace LinBox
 
 	private:
 		const Field                      &_field;
-		typename Field::Element           _zero;
 		RandIter                          _r1;
 		NonzeroRandIter<Field, RandIter>  _r;
 		size_t                            _n;
