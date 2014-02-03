@@ -150,7 +150,7 @@ namespace LinBox
 		// compute P[i]:= L/(x-i)
 		P[0]= std::vector<typename Field::Element>(++L.begin(), L.end());
 		size_t deg=L.size();
-		F.init(a,0);
+		F.assign(a,F.zero);
 		for (size_t i=1;i<k;++i){
 			F.addin(a,F.one);
 			P[i].resize(deg-1);
@@ -163,7 +163,7 @@ namespace LinBox
 
 		// compute P[i]= P[i] / Prod((i-j), j<>i)
 		typename Field::Element prod, ui, uj, tmp;
-		F.init(ui,-1);
+		F.assign(ui,F.mOne);
 		for (size_t i=0;i<k;++i){
 			F.assign(prod,F.one);
 			F.addin(ui,F.one);

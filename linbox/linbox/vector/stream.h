@@ -748,15 +748,14 @@ namespace LinBox
 
 		Vector &get (Vector &v)
 		{
-			static typename Field::Element zero;
 			typename Vector::iterator i;
 
 			size_t idx;
 			for (i = v.begin (), idx = 0; i != v.end (); ++i, ++idx) {
 				if (idx == _j)
-					_field.init (*i, 1);
+					_field.assign(*i, _field.one);
 				else
-					_field.assign (*i, zero);
+					_field.assign (*i, _field.zero);
 			}
 
 			++_j;
@@ -797,14 +796,15 @@ namespace LinBox
 
 		StandardBasisStream (Field &F, size_t N) :
 			_field (F), _n (N), _j (0)
-		{ _field.init (_one, 1); }
+		{
+		}
 
 		Vector &get (Vector &v)
 		{
 			v.clear ();
 
 			if (_j < _n)
-				v.push_back (std::pair <size_t, typename Field::Element> (_j++, _one));
+				v.push_back (std::pair <size_t, typename Field::Element> (_j++, _field.one));
 
 			return v;
 		}
@@ -823,7 +823,6 @@ namespace LinBox
 		const Field              &_field;
 		size_t                    _n;
 		size_t                    _j;
-		typename Field::Element   _one;
 	};
 
 	//! Specialization of standard basis stream for sparse associative vectors
@@ -835,14 +834,15 @@ namespace LinBox
 
 		StandardBasisStream (Field &F, size_t N) :
 			_field (F), _n (N), _j (0)
-		{ _field.init (_one, 1); }
+		{
+		}
 
 		Vector &get (Vector &v)
 		{
 			v.clear ();
 
 			if (_j < _n)
-				v.insert (std::pair <size_t, typename Field::Element> (_j++, _one));
+				v.insert (std::pair <size_t, typename Field::Element> (_j++, _field.one));
 
 			return v;
 		}
@@ -861,7 +861,6 @@ namespace LinBox
 		const Field              &_field;
 		size_t                    _n;
 		size_t                    _j;
-		typename Field::Element   _one;
 	};
 
 	//! Specialization of standard basis stream for sparse parallel vectors
@@ -873,7 +872,7 @@ namespace LinBox
 
 		StandardBasisStream (Field &F, size_t N) :
 			_field (F), _n (N), _j (0)
-		{ _field.init (_one, 1); }
+		{  }
 
 		Vector &get (Vector &v)
 		{
@@ -882,7 +881,7 @@ namespace LinBox
 
 			if (_j < _n) {
 				v.first.push_back (_j++);
-				v.second.push_back (_one);
+				v.second.push_back (_field.one);
 			}
 
 			return v;
@@ -902,7 +901,6 @@ namespace LinBox
 		const Field              &_field;
 		size_t                    _n;
 		size_t                    _j;
-		typename Field::Element   _one;
 	};
 
 } // namespace LinBox

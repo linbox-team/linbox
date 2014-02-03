@@ -2,20 +2,20 @@
  * Copyright (C) LinBox
  * Written by Austin Lobo, David Saunders
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -72,17 +72,17 @@ int main (int argc, char **argv)
 	size_t  pdeg = 10;
 	plist[0].resize(pdeg+1);
 	for ( size_t i=0; i < pdeg; ++i) r.random(plist[0][i]);
-	F.init(plist[0][pdeg],1);
+	F.assign(plist[0][pdeg],F.one);
 
 	pdeg = 6;
 	plist[1].resize(pdeg+1);
 	for ( size_t i=0; i < pdeg; ++i) r.random(plist[1][i]);
-	F.init(plist[1][pdeg],1);
+	F.assign(plist[1][pdeg],F.one);
 
 	pdeg = 4;
 	plist[2].resize(pdeg+1);
 	for ( size_t i=0; i < pdeg; ++i) r.random(plist[2][i]);
-	F.init(plist[2][pdeg],1);
+	F.assign(plist[2][pdeg],F.one);
 
 	commentator().start("Frobenius form black box test suite", "frobenius");
 	Frobenius<Field>  A(F, plist.begin(), plist.end());

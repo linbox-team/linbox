@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 
 	NTL_zz_p::Element temp;
 	NTL_zz_pX::Element poly;
-	PF.init(poly,0);
+	PF.assign(poly,PF.zero);
 
 	for( int diff = 1 - ((int)n); diff <= ((int)n) - 1; ++diff ) {
 		size_t c;
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
 #if 0
 	NTL_ZZ_pX F( 65521 );
 	NTL_ZZ_pX::Element a,b;
-	F.init(a,1);
+	F.assign(a,F.one);
 	F.init(b,4);
 	F.mulin(a,b);
 	F.write(cout,a) << endl;

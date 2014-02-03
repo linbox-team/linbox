@@ -172,9 +172,6 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 	// unsigned long real_r;
 	typename Field::Element det_Ap;
 
-	typename Field::Element one;
-
-	F.init (one, 1);
 
 	while (stream) {
 		commentator().startIteration ((unsigned int)stream.pos ());

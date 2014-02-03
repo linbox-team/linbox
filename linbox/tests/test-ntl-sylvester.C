@@ -96,8 +96,6 @@ int main(int argc, char* argv[])
 
 	// Now we are using the NTL wrapper as the field, call the instance F
 	Field F(q); // XXX same bug ?
-	element zero;
-	F.init(zero, 0);
 
 	// Use the default constructor to create a matrix
 	LinBox::Sylvester<Field> T;

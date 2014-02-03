@@ -392,7 +392,7 @@ build |wc" should yield the same number of lines.
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-solve",                        counter , flag);
+		  Build_n_runWarn("test-solve",                        counter , flag, "most of the tests are commented out");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif

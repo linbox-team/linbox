@@ -190,15 +190,12 @@ namespace LinBox
 		int L = int(this->rowDim-1)<<1;
 		this->shape.shape(BlackboxSpecifier::UNIMOD_LT);
 
-		Element one,zero;
-		this->field().init(one,1);
-		this->field().init(zero,0);
 		for (int i= int(this->rowDim)-1; i <= L; i++ ) {
 			// zero out the below-diagonal entries
-			this->P.setCoeff(this->pdata,i,zero);
+			this->P.setCoeff(this->pdata,i,field().zero);
 		}
 		// set the antidiagonal to 1
-		this->P.setCoeff( this->pdata, this->rowDim-1, one);       // update the corresponding coeff of this->pdata
+		this->P.setCoeff( this->pdata, this->rowDim-1, field().one);       // update the corresponding coeff of this->pdata
 		//reverse(rpdata,this->pdata);        // no need to construct the transpose
 		return;
 	}//
@@ -215,17 +212,13 @@ namespace LinBox
 	{
 		this->shape.shape(BlackboxSpecifier::UNIMOD_UT);
 
-		Element one,zero;
-		this->field().init(one,1);
-		this->field().init(zero,0);
-
 		for (size_t i=0; i < this->rowDim-1; i++ ) {
 			// zero out the below-antidiagonal entries
-			this->P.setCoeff(this->pdata, i , zero);
+			this->P.setCoeff(this->pdata, i , field().zero);
 		}
 
 		// set antidiagonal to 1
-		this->P.setCoeff(this->pdata,this->rowDim-1, one);      // update the corresponding coeff of this->pdata
+		this->P.setCoeff(this->pdata,this->rowDim-1, field().one);      // update the corresponding coeff of this->pdata
 		//reverse(rpdata,this->pdata);    // no need to construct the transpose
 
 		return;

@@ -52,7 +52,6 @@ namespace LinBox
 				this->setEntry(i, i-1, F.one);
 			for (size_t i = 0; i < n; ++i) {
 				typename Field::Element x;
-				F.init(x, 0);
 				F.neg(x, P[i]);
 				this->setEntry(i, n-1, x);
 			}
@@ -82,7 +81,6 @@ namespace LinBox
 			for (size_t i = 1; i < n; ++i) setEntry(i, i-1, F.one);
 			for (size_t i = 0; i < n; ++i)
 			{	typename Field::Element x;
-				F.init(x, 0);
 				F.neg(x, p[i]);
 				setEntry(i, n-1, x);
 			}
@@ -109,7 +107,6 @@ namespace LinBox
 				this->setEntry(i, i-1, F.one);
 			for (size_t i = 0; i < n; ++i)
 			{	typename Field::Element x;
-				F.init(x, 0);
 				F.neg(x, p[i]);
 				this->setEntry(i, n-1, x);
 			}

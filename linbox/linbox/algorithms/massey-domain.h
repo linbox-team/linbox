@@ -388,7 +388,6 @@ namespace LinBox
 					phi[(size_t)(dp-i)] = phi[0];
 				}
 				phi[0] = phi[(size_t)dp];
-// 				field().init (phi[(size_t)dp], 1UL);
 				field().assign (phi[(size_t)dp], field().one);
 			}
 			return L;
@@ -404,7 +403,6 @@ namespace LinBox
 				for (long i = dp >> 1; i > 0; --i)
 					std::swap (phi[(size_t)i], phi[(size_t)(dp-i)]);
 				phi[0] = phi[(size_t)dp];
-// 				field().init (phi[(size_t)dp], 1UL);
 				field().assign(phi[(size_t)dp], field().one);
 			}
 		}

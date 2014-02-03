@@ -174,7 +174,7 @@ namespace LinBox
 
 			for (out_p = out. begin() + pos; out_p != out. end(); ++ out_p)
 
-				cm. field(). init (*out_p, 0);
+				cm. field(). assign(*out_p, cm.field().zero);
 
 			for (ti_p = cp ->second. begin(); ti_p != cp -> second. end(); ++ ti_p)
 
@@ -194,7 +194,7 @@ namespace LinBox
 
 			 for (out_p = out. begin(); out_p != out. end(); ++ out_p)
 
-                                cm. field(). init (*out_p, 0);
+                                cm. field(). assign(*out_p, cm.field().zero);
 
 			std::vector<std::vector<typename Matrix::Field::Element> > out_v(nthr);
 

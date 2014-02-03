@@ -63,9 +63,9 @@ bool testGenericBBgetEntry (const Field &F, size_t n)
 	bool ret = true;
     typename Field::Element s, x, z;
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	F.init(x, 0);
+	F.assign(x, F.zero);
 	F.init(s, 2);
-	F.init(z, 0);
+	F.assign(z, F.zero);
 	ScalarMatrix<Field> B(F, n, n, s);
 	SolutionTags::Generic t;
 	//getEntry(x, B, 0, n-1, t);
@@ -84,7 +84,7 @@ bool testScalarMatrixgetEntry (const Field &F, size_t n)
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "scalarmatrix getEntry test (using specialization)" << endl;
     typename Field::Element s, t, r, th;
-	F.init(r, 0);
+	F.assign(r, F.zero);
 	F.init(s, 2);
 	F.init(th, 2);
 	ScalarMatrix<Field> B(F, n, n, s);
@@ -225,7 +225,7 @@ static bool testDiagonalgetEntry (const Field &F, VectorStream<Vector > &stream)
 		VD.write (report, d);
 		report << endl;
 
-		F.init (sigma, 0);
+		F.assign(sigma, F.zero);
 		for (i = 0; i < stream.n (); i++)
 			F.addin (sigma, VectorWrapper::constRef<Field, Vector> (d, i));
 
@@ -236,7 +236,7 @@ static bool testDiagonalgetEntry (const Field &F, VectorStream<Vector > &stream)
 		Blackbox D (d);
 
 
-		F.init (res, 0);
+		F.assign(res, F.zero);
 		for (i = 0; i < stream.n (); i++)
 			F.addin (res, getEntry (ge, D, i, i));
                 F.addin(res, getEntry (ge, D, 0,stream.n ()-1));
@@ -271,10 +271,10 @@ bool testSpecialCDgetEntry (const Field &F, size_t n)
 	typedef Diagonal<Field> DD;
 	Elt s, x, t, u;
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	F.init(x, 0);
+	F.assign(x, F.zero);
 	F.init(s, 2);
-	F.init(t, 0);
-	F.init(u, 0);
+	F.assign(t, F.zero);
+	F.assign(u, F.zero);
 	F.mul(u, s, t);
 	BB B(F, n, n, s);
 	BlasVector<Field> d(F,n, t);

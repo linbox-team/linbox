@@ -88,7 +88,7 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 	VectorWrapper::ensureDim (d, stream.n ());
 
 	for (i = 0; i < stream.n (); i++)
-		F.init (VectorWrapper::ref<Field> (d, i), 1);
+		F.assign(VectorWrapper::ref<Field> (d, i), F.one);
 
 	Blackbox D (d);
 
@@ -168,7 +168,7 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 	while (stream) {
 		commentator().startIteration ((unsigned)stream.j ());
 
-		F.init (pi, 1);
+		F.assign(pi, F.one);
 
 		stream.next (d);
 

@@ -113,7 +113,7 @@ bool testRandomSolve (const Ring& R,
 #if 0
 		typename Ring::Element lden;
 
-		R. init (lden, 1);
+		R. assign (lden, R.one);
 
 		typename std::vector<std::pair<typename Ring::Element, typename Ring::Element> >::iterator p;
 

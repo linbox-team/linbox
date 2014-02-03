@@ -143,7 +143,7 @@ namespace LinBox
 		 * @return Reference to x
 		 */
 		Element &getEntry (Element &x, size_t i, size_t j) const {
-			return (i==j?field().assign(x,_v[i]):field().init(x,0));
+			return (i==j?field().assign(x,_v[i]):field().assign(x,field().zero));
 		}
 
 		/** (i,i) entry is set to x.
@@ -202,7 +202,7 @@ namespace LinBox
 			size_t c, i, j;
 			if( !ms.getDimensions(_n, c) || c != _n )
 				throw ms.reportError(__FUNCTION__,__LINE__);
-			typename Field::Element x; field().init(x, 0);
+			typename Field::Element x; field().assign(x, field().zero);
 			_v.resize(_n);
 			for (size_t k = 0; k < _n; ++ k) {
 				ms.nextTriple(i, j, x);

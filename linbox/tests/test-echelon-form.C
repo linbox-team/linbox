@@ -171,9 +171,6 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
-	Element One,zero,tmp;
-	F.init(One,1UL);
-	F.init(zero,0UL);
 
 	bool ret = true;
 	MatrixDomain<Field> MD(F);
@@ -193,7 +190,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 				  B.setEntry(i,j,G.random(tmp));
 			else
 			  for (size_t i=0;i<m;++i)
-			    B.setEntry(i,j,zero);
+			    B.setEntry(i,j,F.zero);
 		// Create C a random matrix of rank n/2
 		for (size_t i=0;i<m;++i)
 			if ( i % 2 )
@@ -201,7 +198,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 					C.setEntry(i,j,G.random(tmp));
 			else
 				for (size_t j=0;j<n;++j)
-					C.setEntry(i,j,zero);
+					C.setEntry(i,j,F.zero);
 
 		// A = B*C
 		BMD.mul(A, B, C);

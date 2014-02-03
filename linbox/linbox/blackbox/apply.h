@@ -650,7 +650,7 @@ namespace LinBox
 						// shift back the result
 						if (use_neg) {
 							Element acc;
-							_domain.init(acc,0);
+							_domain.assign(acc,_domain.zero);
 							for (size_t i=0;i<x.size();++i)
 								_domain.addin(acc,x[i]);
 							_domain.mulin(acc,shift);
@@ -749,7 +749,7 @@ namespace LinBox
 					// shift back the result
 					if (use_neg) {
 						Element acc;
-						_domain.init(acc,0);
+						_domain.assign(acc,_domain.zero);
 						for (size_t i=0;i<x.size();++i)
 							_domain.addin(acc,x[i]);
 						_domain.mulin(acc,shift);

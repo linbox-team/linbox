@@ -91,7 +91,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 	for (i = 0; i < iterations; i++) {
 		commentator().startIteration ((unsigned int) i);
 
-		F.init (pi, 1);
+		F.assign(pi, F.one);
 
 		for (j = 0; j < n; j++) {
 			do {
@@ -180,7 +180,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 	for (i = 0; i < iterations; i++) {
 		commentator().startIteration ((unsigned int)i);
 
-		F.init (pi, 1);
+		F.assign(pi, F.one);
 
 		for (j = 0; j < n / 2; j++) {
 			do r.random (d[j]); while (F.isZero (d[j]));
@@ -274,8 +274,8 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 			r.random (d[j]);
 
 		// until bug about the upper left entry being zero is fixed:
-		F.init (d[1+ (size_t)rand () % (n-1)], 0);
-		//F.init (d[rand () % n], 0);
+		F.assign(d[1+ (size_t)rand () % (n-1)], F.zero);
+		//F.assign(d[rand () % n], zero);
 
 		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";

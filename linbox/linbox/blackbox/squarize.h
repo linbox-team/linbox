@@ -59,13 +59,13 @@ namespace LinBox
 		Squarize (const Blackbox& A) :
 			_A_ptr(&A)
 		{
-			_A_ptr->field().init(_Zero,0UL);
+			_A_ptr->field().assign(_Zero,_A_ptr->field().zero);
 		}
 
 		Squarize (const Blackbox *A_ptr) :
 			_A_ptr(A_ptr)
 		{
-			_A_ptr->field().init(_Zero,0UL);
+			_A_ptr->field().assign(_Zero,_A_ptr->field().zero);
 			// create new copies of matrices in dynamic memory
 			//linbox_check (A_ptr != NULL);
 			//_A_ptr = A_ptr->clone ();
@@ -78,7 +78,7 @@ namespace LinBox
 		Squarize (const Squarize<Blackbox> &M) :
 			_A_ptr(M._A_ptr)
 		{
-			_A_ptr->field().init(_Zero,0UL);
+			_A_ptr->field().assign(_Zero,_A_ptr->field().zero);
 			// create new copies of matrices in dynamic memory
 			//linbox_check (M._A_ptr != NULL);
 			//_A_ptr = M._A_ptr->clone ();
@@ -106,6 +106,7 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 * @param y
+		 * @todo use field().zero
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
@@ -128,6 +129,7 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 * @param y
+		 * @todo use field().zero
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const

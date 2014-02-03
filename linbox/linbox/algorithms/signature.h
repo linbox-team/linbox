@@ -242,7 +242,7 @@ namespace LinBox
 					}
 
 			} while(! faithful);
-			K2. init (tmp, 1UL);
+			K2. assign(tmp, K2.one);
 
 			// typename std::vector<Element>::iterator vp;
 			typename BlasVector<NoField>::iterator vp;
@@ -276,7 +276,7 @@ namespace LinBox
 					continue;
 				}
 
-				K3. init (tmp, 1UL);
+				K3. assign(tmp, K3.one);
 
 				for (j = 0, vp = v.begin(); vp != v.end(); ++j, ++vp) {
 					K3.mulin(tmp, *(FA + (j * n + j)));

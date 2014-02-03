@@ -1119,10 +1119,10 @@ namespace LinBox
 
 		typename Matrix1::Iterator p=M1.Begin();
 		for(;p!=M1.End();++p)
-			M1.field().init(*p,0);
+			M1.field().assign(*p,M1.field().zero);
 		for(p=M1.Begin();p<M1.End();)
 		{
-			M1.field().init(*p,1);
+			M1.field().assign(*p,M1.field().one);
 			p=p+M1.rowdim()+1;
 		}
 
@@ -1145,10 +1145,10 @@ namespace LinBox
 		{
 			typename Matrix1::Iterator p=M1.Begin();
 			for(;p!=M1.End();++p)
-				M1.field().init(*p,0);
+				M1.field().assign(*p,M1.field().zero);
 			for(p=M1.Begin();p<M1.End();)
 			{
-				M1.field().init(*p,1);
+				M1.field().assign(*p,M1.field().one);
 				p+=M1.rowdim()+1;
 			}
 			return M1;

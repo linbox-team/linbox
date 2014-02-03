@@ -1213,13 +1213,11 @@ namespace LinBox
 								 BlasMatrix<Field>& A,
 								 const TriangularBlasMatrix<Field>& B) const
 		{
-			typename Field::Element one;
-			F.init(one, 1UL);
 			linbox_check( A.coldim() == B.rowdim() );
 
 			FFLAS::ftrmm((typename Field::Father_t) F, FFLAS::FflasRight, (FFLAS::FFLAS_UPLO) (B.getUpLo()),
 				      FFLAS::FflasNoTrans,(FFLAS::FFLAS_DIAG) (B.getDiag()),
-				      A.rowdim(), A.coldim(), one,
+				      A.rowdim(), A.coldim(), F.one,
 				      B.getPointer(), B.getStride(), A.getPointer(), A.getStride() );
 			return A;
 		}
@@ -1229,11 +1227,9 @@ namespace LinBox
 								 BlasMatrix<Field>& A) const
 		{
 			linbox_check( B.coldim() == A.rowdim() );
-			typename Field::Element one;
-			F.init(one, 1UL);
 			FFLAS::ftrmm((typename Field::Father_t) F, FFLAS::FflasLeft, (FFLAS::FFLAS_UPLO)(B.getUpLo()),
 				      FFLAS::FflasNoTrans, (FFLAS::FFLAS_DIAG) (B.getDiag()),
-				      A.rowdim(), A.coldim(), one,
+				      A.rowdim(), A.coldim(), F.one,
 				      B.getPointer(), B.getStride(),
 				      A.getPointer(), A.getStride() );
 			return A;
@@ -1251,8 +1247,6 @@ namespace LinBox
 								 BlasMatrix<Field>& A,
 								 const TransposedBlasMatrix< TriangularBlasMatrix<Field> >& B) const
 		{
-			typename Field::Element one;
-			F.init(one, 1UL);
 			linbox_check( B.getMatrix().coldim() == A.coldim() );
 
 			FFLAS::ftrmm((typename Field::Father_t) F, FFLAS::FflasRight,
@@ -1260,7 +1254,7 @@ namespace LinBox
 				      FFLAS::FflasTrans,
 				      (FFLAS::FFLAS_DIAG) (B.getMatrix().getDiag()),
 				      A.rowdim(), A.coldim(),
-				      one,
+				      F.one,
 				      B.getMatrix().getPointer(), B.getMatrix().getStride(),
 				      A.getPointer(), A.getStride() );
 			return A;
@@ -1271,13 +1265,11 @@ namespace LinBox
 								 BlasMatrix<Field>& A) const
 		{
 			linbox_check( B.getMatrix().coldim() == A.rowdim() );
-			typename Field::Element one;
-			F.init(one, 1UL);
 			FFLAS::ftrmm((typename Field::Father_t) F, FFLAS::FflasLeft,
 				      (FFLAS::FFLAS_UPLO) (B.getMatrix().getUpLo()),
 				      FFLAS::FflasTrans,
 				      (FFLAS::FFLAS_DIAG) (B.getMatrix().getDiag()),
-				      A.rowdim(), A.coldim(), one,
+				      A.rowdim(), A.coldim(), F.one,
 				      B.getMatrix().getPointer(), B.getMatrix().getStride(),
 				      A.getPointer(), A.getStride() );
 			return A;
@@ -1490,8 +1482,6 @@ namespace LinBox
 		{
 			linbox_check( A.rowdim() == A.coldim());
 			linbox_check( A.coldim() == B.rowdim());
-			// typename Field::Element _One;
-			// F.init(_One,1UL);
 
 			FFLAS::ftrsm((typename Field::Father_t) F,
 				      FFLAS::FflasLeft, (FFLAS::FFLAS_UPLO) A.getUpLo(),
@@ -1532,8 +1522,6 @@ namespace LinBox
 
 			linbox_check( A.rowdim() == A.coldim());
 			linbox_check( B.coldim() == A.rowdim());
-			// typename Field::Element _One;
-			// F.init(_One,1UL);
 
 			FFLAS::ftrsm((typename Field::Father_t) F,
 				      FFLAS::FflasRight,(FFLAS::FFLAS_UPLO) A.getUpLo(),
@@ -1576,8 +1564,6 @@ namespace LinBox
 
 			linbox_check( A.rowdim() == A.coldim());
 			linbox_check( B.coldim() == A.rowdim());
-			// typename Field::Element _One;
-			// F.init(_One,1UL);
 
 			FFLAS::ftrsm((typename Field::Father_t) F,
 				      FFLAS::FflasRight,(FFLAS::FFLAS_UPLO) A.getUpLo(),

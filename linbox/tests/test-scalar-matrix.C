@@ -70,7 +70,7 @@ int main (int argc, char **argv)
 
 	Field F (q);
 	Field::Element d;
-	F.init (d, -1);
+	F.assign(d, F.mOne);
 
 	typedef ScalarMatrix <Field> Blackbox;
 	// C Pernet: why is the default constructor even public?

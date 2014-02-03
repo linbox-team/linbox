@@ -161,7 +161,7 @@ namespace LinBox
 			{
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 				typename _Tp1::Element e;
-				Ap.field().init(e,0UL);
+				Ap.field().assign(e,Ap.field().zero);
 				hom.image (e, A.v_);
 				Ap.setScalar(e);
 			}
@@ -190,7 +190,7 @@ namespace LinBox
 
 		Element& getEntry(Element& x, const size_t i, const size_t j) const
 		{
-			// return (i==j ? field().assign(x,v_) : field().init(x,0));
+			// return (i==j ? field().assign(x,v_) : field().assign(x,field().zero));
 			return (i==j ? field().assign(x,v_) : field().assign(x,field().zero));
 		}
 
@@ -247,7 +247,7 @@ namespace LinBox
 		// p <- a^e.  Really should be a field op
 		Element& pow(Field& F, Element& p, const Element& a, const size_t e) {
 			Element x; F.init(x);
-			if (e == 0) return F.init(p, 1);
+			if (e == 0) return F.assign(p, F.one);
 			if (e%2 == 0) return pow(F, p, F.mul(x, a, a), e/2);
 			else /* (e%2 == 1)*/ return F.mul(p, a, pow(F, p, a, e-1));
 		}
@@ -290,7 +290,7 @@ namespace LinBox
 
 		// field element to be used in calculations
 		Element entry;
-		field().init (entry, 0); // needed?
+		field().assign(entry, field().zero);
 
 		// For each element, multiply input element with corresponding element
 		// of stored scalar and insert non-zero elements into output vector
@@ -312,7 +312,7 @@ namespace LinBox
 
 		// create field elements and size_t to be used in calculations
 		Element entry;
-		field().init (entry, 0);
+		field().assign(entry, field().zero);
 
 		// Iterator over indices of input vector.
 		// For each element, multiply input element with

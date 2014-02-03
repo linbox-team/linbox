@@ -84,7 +84,7 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 	VectorWrapper::ensureDim (d, stream.n ());
 
 	for (i = 0; i < stream.n (); i++)
-		F.init (VectorWrapper::ref<Field> (d, i), 1);
+		F.assign(VectorWrapper::ref<Field> (d, i), F.one);
 
 	Blackbox D (d);
 	Inverse<Blackbox> DT (&D);
@@ -254,7 +254,7 @@ static bool testVandermondeInverse (const Field           &F,
 
 		/* Build the Vandermonde matrix */
 		for (j = 0; j < x_stream.n (); j++) {
-			F.init (t, 1);
+			F.assign(t, F.one);
 
 			for (k = 0; k < x_stream.n (); k++) {
 				V.setEntry (j, k, t);
@@ -368,7 +368,7 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 		Inverse <Blackbox> DT (&D);
 
 		for (j = 0; j < stream.n (); j++) {
-			F.init (VectorWrapper::ref<Field> (e, j), 1);
+			F.assign(VectorWrapper::ref<Field> (e, j), F.one);
 			DT.apply (DTe, e);
 		}
 

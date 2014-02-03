@@ -102,7 +102,7 @@ namespace LinBox
 		if (level >= SL_LASVEGAS)
 			lowerDenBound = _rationalSolver.lastCertifiedDenFactor;
 		else
-			_ring.init(lowerDenBound, 1);
+			_ring.assign(lowerDenBound, _ring.one);
 #ifdef DEBUG_DIO
 		std::cout << "lower bound on denominator: " << lowerDenBound << std::endl;
 		std::cout << "upper bound on denominator: " << upperDenBound << std::endl;

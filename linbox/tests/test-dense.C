@@ -85,12 +85,10 @@ static bool testIdentity (Field &F, size_t n, int iterations = 1)
 	//typename Field::Element x; F.init(x);
 	//F.write(std::cout, K.getEntry(x, i, j)) << std::endl;
 	//Matrix L(K);
-	typename Field::Element one;
 
-	F.init (one, 1);
 
 	for (size_t i = 0; i < n; i++)
-		I.setEntry (i, i, one);
+		I.setEntry (i, i, F.one);
 
 	Vector v(F,n), w(F,n);
 	typename Field::RandIter r (F);
@@ -198,7 +196,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 
 		/* Build the Vandermonde matrix */
 		for (j = 0; j < (int) n; j++) {
-			F.init (t, 1);
+			F.assign(t, F.one);
 
 			for (k = 0; k < (int) n; k++) {
 				V.setEntry ((size_t)j,(size_t) k, t);

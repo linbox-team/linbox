@@ -379,7 +379,7 @@ namespace LinBox
 				++a; ++b; c++;
 			}
 
-			//Scalar alpha; _field.init(alpha, 1);
+			//Scalar alpha; _field.assign(alpha, _field.one);
 			//FFLAS::faxpy((typename Field::Father_t)_field, rows*cols, alpha, a, 1, c, 1);
 
 			return C;

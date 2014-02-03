@@ -319,37 +319,33 @@ int main (int argc, char* argv[])
 
 	DenseZeroOne<BlackboxDomain<FieldF> > A(F, n, n);
 	DenseZeroOne<BlackboxDomain<FieldD> > B(D, n, n);
-	FieldF::Element zeroF, oneF;
-	FieldD::Element zeroD, oneD;
-	F.init(oneF, 1); F.init(zeroF, 0);
-	D.init(oneD, 1); D.init(zeroD, 0);
 
 	for (size_t i = 0; i < n; ++i)
 		for (size_t j = 0; j < n; ++j) {
 			if (rand()%2){
-				A.setEntry(i, j, oneF);
-				B.setEntry(i, j, oneD);
+				A.setEntry(i, j, F.one);
+				B.setEntry(i, j, D.one);
 			}
 
 			else {
-				A.setEntry(i, j, zeroF);
-				B.setEntry(i, j, zeroD);
+				A.setEntry(i, j, F.zero);
+				B.setEntry(i, j, D.zero);
 			}
 		}
 
 	//A.write(cout) << endl << endl;
 	//B.write(cout) << endl << endl;
 
-	/* basic everyday test
+#if 0
+	/* basic everyday test */
 	cout << endl;
 	cout << "Domain: Modular<float>, GF(" << f << ")" << endl;
 	testTiming(A);
 
 	cout << "Domain: Modular<double>, GF(" << d << ")" << endl;
 	testTiming(B);
-	*/
 
-	/* block size tests
+	/* block size tests */
 	cout << endl;
 	cout << "Domain: Modular<double>, GF(" << d << ")" << endl << endl;
 	cout << "block Size     n     unpackingApply   unpackingApplyTranspose    Domain mul" << endl << endl;
@@ -360,53 +356,48 @@ int main (int argc, char* argv[])
 			for (size_t i = 0; i < count; ++i)
 				for (size_t j = 0; j < count; ++j) {
 					if (rand()%2)
-						C.setEntry(i, j, oneD);
+						C.setEntry(i, j, D.one);
 					else
-						C.setEntry(i, j, zeroD);
+						C.setEntry(i, j, D.zero);
 				}
 
 				blockSizeTimingTest(C, sizeU);
 		}
-	*/
 
+#endif
 
-	/* stress test
+#if 0
+	/* stress test */
 	cout << "Domain: Modular<double>, GF(" << d << ")" << endl;
 	DenseZeroOne<BlackboxDomain<FieldD> > C(D, 30000, 30000);
 	for (size_t i = 0; i != 30000; ++i)
 		for (size_t j = 0; j != 30000; ++j) {
 			if (rand()%2)
-				C.setEntry(i, j, oneD);
+				C.setEntry(i, j, D.one);
 			else
-				C.setEntry(i, j, zeroD);
+				C.setEntry(i, j, D.zero);
 		}
 	stressTest(C);
-	*/
 
-	/* large tests
+	/* large tests */
 	cout << "Domain: Modular<double>, GF(" << d << ")" << endl;
 	for (size_t dim = 120000; dim < 150000; dim *= 2){
 		DenseZeroOne<BlackboxDomain<FieldD> > C(D, dim, dim);
 		for (size_t i = 0; i != dim; ++i)
 			for (size_t j = 0; j != dim; ++j) {
 				if (rand()%2)
-					C.setEntry(i, j, oneD);
+					C.setEntry(i, j, D.one);
 				else
-					C.setEntry(i, j, zeroD);
+					C.setEntry(i, j, D.zero);
 			}
 		cout << "blackbox created\n";
 		largeTest(C);
 	}
-	*/
+#endif
 
+	std::cout << "most test is commented out" << std::endl;
 	if (!t){
 		bool pass = testAssociativity(B);
-		/*
-		if (pass)
-			cout << "passes" << endl;
-		else
-			cout << "fails" << endl;
-		*/
 
 		return pass ? 0 : -1;
 	}

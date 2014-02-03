@@ -348,7 +348,7 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 	VectorWrapper::ensureDim (w, A_stream.m ());
 
 	for (k = 0; k < A_stream.n (); k++)
-		F.init (VectorWrapper::ref<Field> (v, k), 1);
+		F.assign(VectorWrapper::ref<Field> (v, k), F.one);
 
 	for (i = 0; i < iterations; i++) {
 		commentator().startIteration ((unsigned)i);
@@ -365,7 +365,7 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 		A.apply (w, v);
 
 		for (j = 0; j < A_stream.m (); j++) {
-			F.init (sum, 0);
+			F.assign(sum, F.zero);
 
 			for (k = 0; k < A_stream.n (); k++)
 				F.addin (sum, A.getEntry (j, k));

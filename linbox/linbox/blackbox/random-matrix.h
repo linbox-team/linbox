@@ -99,7 +99,7 @@ namespace LinBox
 
 			typename Field::Element elt;
 
-			f. init (elt, 1);
+			f. assign(elt, f.one);
 
 			for ( i = 0; i < m; ++ i)
 

@@ -85,7 +85,6 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 	VectorWrapper::ensureDim (d2, stream1.dim ());
 	VectorWrapper::ensureDim (v, stream1.dim ());
 	VectorWrapper::ensureDim (w, stream2.dim ());
-	//F.init (neg_one, -1);
 
 	while (stream1) {
 		commentator().startIteration ((unsigned)stream1.j ());

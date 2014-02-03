@@ -310,7 +310,7 @@ namespace LinBox
 			size_t outRow = 0;
 			size_t outCol = 0;
 			Scalar x, zero;
-			_MD.init(zero,0);
+			_MD.init(zero,_MD.zro);
 			size_t bp = bitPlace;
 
 			for(;outRow != numRows; ++outRow){

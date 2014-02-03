@@ -325,7 +325,7 @@ interpolatePoly (const Field             &F,
 	// negative-first coefficient. This streamlines some of the code.
 	static const int g_FUDGE = 1;
 	Vector g(F,(size_t)(n + g_FUDGE));
-	F.init (g[0], 0);
+	F.assign (g[0], F.zero);
 
 	typename Field::Element gk, c1, c2;
 
@@ -334,10 +334,10 @@ interpolatePoly (const Field             &F,
 	f.resize ((size_t)n);
 
 	for (i = 0; i < n; i++)
-		F.init (f[(size_t)i], 0);
+		F.assign(f[(size_t)i], F.zero);
 
 	for (j = 0; j < n; j++) {
-		F.init (g[0 + g_FUDGE], 1);
+		F.assign (g[0 + g_FUDGE], F.one);
 
 		// d is the current degree of the Lagrange interpolant. i is the
 		// current index in the array of x-coordonites
@@ -351,7 +351,7 @@ interpolatePoly (const Field             &F,
 			F.negin (c2);
 
 			// Initialize the next element of the Lagrange interpolant
-			F.init (g[(size_t)(d + 1 + g_FUDGE)], 0);
+			F.assign (g[(size_t)(d + 1 + g_FUDGE)], F.zero);
 
 			// Multiply this factor by the existing partial product
 			for (k = d + 1 + g_FUDGE; k >= g_FUDGE; k--) {

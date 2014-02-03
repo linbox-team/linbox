@@ -69,7 +69,7 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 		commentator().startIteration (i);
 
 		Blackbox A (Z, n, n);
-		typename Ring::Element e; Z.init(e, 1);
+		typename Ring::Element e; Z.assign(e, Z.one);
 		for (size_t j = 0; j < n; ++j)
 			A.setEntry(j, j, e);
 

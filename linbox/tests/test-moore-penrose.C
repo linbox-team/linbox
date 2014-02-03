@@ -154,7 +154,7 @@ static bool testIdentityApply (Field                                           &
 
 	typename Field::Element x;
 
-	F.init (x, 1);
+	F.assign (x, F.one);
 
 	for (i = 0; i < r; i++)
 		A.setEntry (i, i, x);

@@ -65,9 +65,8 @@ namespace LinBox
 
 	template <class Field, class Matrix>
 	Eliminator<Field, Matrix>::Eliminator (const Field &F, unsigned int N) :
-		_field (const_cast<Field*>(&F)), _VD (F), _MD (F), _number (N), _indepRows (N), _indepCols (N)
+		 _VD (F), _MD (F), _number (N), _indepRows (N), _indepCols (N)
 	{
-		field().init (_one, 1);
 	}
 
 	template <class Field, class Matrix>
@@ -108,7 +107,7 @@ namespace LinBox
 		_perm.clear ();
 		_profile_idx = 0;
 
-		kthGaussJordan (rank, d, 0, 0, A.coldim (), _one);
+		kthGaussJordan (rank, d, 0, 0, A.coldim (), field().one);
 
 		buildMinimalPermutation (P, rank, A.rowdim (), _perm);
 		buildMinimalPermutationFromProfile (Q, rank, A.coldim (), _profile);
@@ -215,7 +214,7 @@ namespace LinBox
 
 		/* Run the computation */
 
-		kthGaussJordan (rank, d, 0, 0, _matA.coldim (), _one);
+		kthGaussJordan (rank, d, 0, 0, _matA.coldim (), fiedl().one);
 
 		/* Set _indepRows based on the permutation */
 		std::fill (_indepRows.begin (), _indepRows.begin () + rank, true);
@@ -295,7 +294,7 @@ namespace LinBox
 		_perm.clear ();
 		_MD.copy (_matA, A);
 		_profile_idx = 0;
-		kthGaussJordan (rank, det, 0, 0,  (unsigned int) A.coldim (), _one);
+		kthGaussJordan (rank, det, 0, 0,  (unsigned int) A.coldim (), field().one);
 
 		buildMinimalPermutation (P, rank,  (unsigned int) A.rowdim (), _perm);
 		buildMinimalPermutationFromProfile (Q, rank,  (unsigned int) A.coldim (), _profile);
@@ -589,7 +588,7 @@ namespace LinBox
 
 		for (i = A.rowBegin (), i_idx = 0; i != A.rowEnd (); ++i, ++i_idx) {
 			_VD.subin (*i, *i);
-			A.field().assign ((*i)[i_idx], _one);
+			A.field().assign ((*i)[i_idx], A.field().one);
 		}
 
 		return A;

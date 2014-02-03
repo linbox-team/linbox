@@ -136,8 +136,8 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Me
 
 	bool ret;
 
-	F.init (c0, -1);
-	F.init (c1, 1);
+	F.assign(c0, F.mOne);
+	F.assign(c1, F.one);
 
 	if (phi.size () == 2 && F.areEqual (phi[0], c0) && F.areEqual (phi[1], c1))
 		ret = true;
@@ -338,10 +338,9 @@ static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& 
 	F.characteristic(n); n += 1;
 	if (n > 30) n = 2;
 	Polynomial phi(F);
-	typename Field::Element one, zero, neg1; F.init(one, 1); F.init(zero, 0); F.init(neg1); F.neg(neg1, one);
 	BlasMatrix<Field> A(F, n, n);
-	for (size_t i = 0; i < n; ++i) for (size_t j = 0; j < n; ++j) A.setEntry(i, j, one);
-	for (size_t i = 0; i < n; ++i) A.setEntry(i, i, zero);
+	for (size_t i = 0; i < n; ++i) for (size_t j = 0; j < n; ++j) A.setEntry(i, j, F.one);
+	for (size_t i = 0; i < n; ++i) A.setEntry(i, i, F.zero);
 	minpoly(phi, A, M);
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -351,7 +350,7 @@ static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& 
 
 	bool ret;
 	if (n == 2)
-		if ( phi.size() == 3 && F.areEqual(phi[0], neg1) && F.isZero(phi[1]) && F.isOne(phi[2]))
+		if ( phi.size() == 3 && F.areEqual(phi[0], F.mOne) && F.isZero(phi[1]) && F.isOne(phi[2]))
 			ret = true;
 		else
 		{

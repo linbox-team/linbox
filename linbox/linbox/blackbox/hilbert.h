@@ -8,20 +8,20 @@
  * The original hilbert.h, providing one of the first blackbox examples, but not using the JIT feature,
  * was written by Will Turner.
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -74,9 +74,8 @@ namespace LinBox
 	template<typename _Field>
 	void Hilbert_JIT_Entry<_Field>::init(const _Field& F, size_t m, size_t n) {
 
-		Element temp, one;
-		F.init(one, 1);
-		F.init(temp, 0);
+		Element temp;
+		F.assign(temp, F.zero);
 
 		_vecH = std::vector<Element>(m+n, temp);
 
@@ -84,7 +83,7 @@ namespace LinBox
 
 		// the ith entry of _vecH = 1/(i+1)
 		for (iter=_vecH.begin(); iter != _vecH.end(); iter++) {
-			F.addin(temp, one);
+			F.addin(temp, F.one);
 			F.inv(*iter, temp);
 		}
 
@@ -123,7 +122,7 @@ namespace LinBox
 
 		std::istream& read(std::istream& is) {
 			MatrixStream<Field> ms(field(), is);
-			ms.getDimensions(_m, _n); 
+			ms.getDimensions(_m, _n);
 			_gen.init(field(), _m, _n);
 			return is;
 		}

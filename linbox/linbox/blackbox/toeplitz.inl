@@ -123,9 +123,7 @@ namespace LinBox
 		// Account for possible trailing zeroes
 		if( P.deg(pdata) < rowDim + this->colDim - 2 ) {
 			Poly x;
-			P.init(x,0);
-			// Element one;
-			// field().init(one,1);
+			P.assign(x,P.zero);
 			P.setCoeff(x, (rowDim + this->colDim - 2 - P.deg(pdata)), field().one);
 			P.mulin( rpdata, x );
 		}
@@ -152,9 +150,7 @@ namespace LinBox
 		// Account for possible trailing zeroes
 		if( this->P.deg(this->pdata) < v.size() - 1 ) {
 			Poly x;
-			this->P.init(x,0);
-			// Element one;
-			// this->field().init(one,1);
+			this->P.assign(x,this->P.zero);
 			this->P.setCoeff(x, (v.size() - 1 - this->P.deg(this->pdata)), this->field().one);
 			this->P.mulin( this->rpdata, x );
 		}
@@ -257,18 +253,16 @@ namespace LinBox
 	template <class _CField, class _PRing>
 	void ToeplitzBase<_CField, _PRing>::setToUniModUT()
 	{
-		typename PRing::Coeff zero, one;
-		P.getCoeffField().init(zero,0);
-		P.getCoeffField().init(one,1);
+		const PRing & PF = P.getCoeffField() ;
 
 		for( size_t i = sysdim(); i <= P.deg(pdata); ++i )
-			P.setCoeff(pdata,i,zero);
+			P.setCoeff(pdata,i,PF.zero);
 
 		for( size_t i = 0; i < sysDim - 1; ++i )
-			P.setCoeff(rpdata,i,zero);
+			P.setCoeff(rpdata,i,PF.zero);
 
-		P.setCoeff(pdata,sysDim-1,one);
-		P.setCoeff(rpdata,sysDim-1,one);
+		P.setCoeff(pdata,sysDim-1,PF.one);
+		P.setCoeff(rpdata,sysDim-1,PF.one);
 
 		shape.shape(BlackboxSpecifier::UNIMOD_UT);
 		return;
@@ -283,18 +277,16 @@ namespace LinBox
 	template <class _CField, class _PRing>
 	void ToeplitzBase<_CField, _PRing>::setToUniModLT()
 	{
-		typename PRing::Coeff zero, one;
-		P.getCoeffField().init(zero,0);
-		P.getCoeffField().init(one,1);
+		const PRing & PF = P.getCoeffField() ;
 
 		for( size_t i = sysDim; i <= P.deg(rpdata); ++i )
-			P.setCoeff(rpdata,i,zero);
+			P.setCoeff(rpdata,i,PF.zero);
 
 		for( size_t i = 0; i < sysDim - 1; ++i )
-			P.setCoeff(pdata,i,zero);
+			P.setCoeff(pdata,i,PF.zero);
 
-		P.setCoeff(pdata,sysDim-1,one);
-		P.setCoeff(rpdata,sysDim-1,one);
+		P.setCoeff(pdata,sysDim-1,PF.one);
+		P.setCoeff(rpdata,sysDim-1,PF.one);
 
 		shape.shape(BlackboxSpecifier::UNIMOD_LT);
 		return;

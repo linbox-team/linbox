@@ -54,7 +54,8 @@ namespace LinBox
 
 		template<class Matrix>
 		std::list<Elt>& operator()(std::list<Elt>& L, Matrix& A, const LocalPIR& R)
-		{   Elt d; R.init(d, 1);
+		{
+			Elt d; R.assign(d, R.one);
 			Elt *p = &(A[0][0]);
 			return smithStep(L, d, p, A.rowdim(), A.coldim(), A.getStride(), R);
 		}
