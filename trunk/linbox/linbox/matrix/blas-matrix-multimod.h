@@ -68,7 +68,7 @@ namespace LinBox
 		MultiModDouble                 _field;
 		const std::vector<MatrixDomain<Modular<double> > >   _MD;
 		size_t                  _row,_col;
-		Element                _One,_Zero;
+		Element                _One,_Zero; //! @warning used ?
 		std::vector<BlasMatrix<Modular<double> >* > _rep;
 		std::vector<double>       _entry;
 	public:

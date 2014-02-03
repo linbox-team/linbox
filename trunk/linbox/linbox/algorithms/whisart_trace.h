@@ -193,9 +193,10 @@ namespace LinBox
 		    it != A.IndexedEnd(); ++it) {
 
 			typename Field::Element tmp,e,i;
-			F.init(tmp,F.zero);
-			F.init(e,F.zero);
-			F.init(i,F.zero);
+			//! @bug F.init does not work with givaro/givaroextension.h
+			F.assign(tmp,F.zero);
+			F.assign(e,F.zero);
+			F.assign(i,F.zero);
 
 			F.mul(tmp, it.value(),it.value());
 			ExtD.getEntry(e, it.colIndex(),it.colIndex());

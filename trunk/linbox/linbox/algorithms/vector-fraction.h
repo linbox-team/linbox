@@ -89,7 +89,6 @@ namespace LinBox
 		Vector numer;
 		Element denom;
 		const Domain& _domain;
-		//Element zero;
 
 		/**
 		 * constructor from vector of rational numbers
@@ -103,8 +102,7 @@ namespace LinBox
 			bool alreadyReduced = false;
 			typename FVector::iterator i;
 
-			//D.init(zero, 0);
-			D.init(denom, 1);
+			D.init(denom, D.one);
 			if (!alreadyReduced)
 				for (i=frac.begin(); i!=frac.end(); ++i)
 					reduceIn(D, *i);

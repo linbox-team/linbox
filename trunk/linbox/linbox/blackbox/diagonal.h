@@ -513,9 +513,8 @@ namespace LinBox
 		y.clear (); // we'll overwrite using push_backs.
 
 		// create field elements and size_t to be used in calculations
-		Element zero, entry;
-		// field().init (zero, 0);
-		field().init (entry, 0);
+		Element  entry;
+		field().init (entry, field().zero);
 
 		// Create iterators for input and stored vectors
 		typename BlasVector<Field>::const_iterator v_iter;
@@ -561,9 +560,8 @@ namespace LinBox
 		y.clear (); // we'll overwrite using inserts
 
 		// create field elements and size_t to be used in calculations
-		Element zero, entry;
-		// field().init (zero, 0);
-		field().init (entry, 0);
+		Element  entry;
+		field().init (entry, field().zero);
 
 		// Create iterators for input and stored vectors
 		typename BlasVector<Field>::const_iterator v_iter;

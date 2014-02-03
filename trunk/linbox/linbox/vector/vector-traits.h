@@ -253,6 +253,7 @@ namespace LinBox
 		       	return v[i];
 		}
 
+		//! @bug who is zero ?
 		template <class Field, class Vector>
 		inline typename Field::Element &
 		refSpecialized (Vector &v, size_t i,
@@ -282,6 +283,7 @@ namespace LinBox
 			return v[i];
 		}
 
+		//! @bug who is zero ?
 		template <class Field, class Vector>
 		inline typename Field::Element &
 		refSpecialized (Vector &v, size_t i,
@@ -322,6 +324,7 @@ namespace LinBox
 			return v[i];
 		}
 
+		//! @bug who is zero ?
 		template <class Field, class Vector>
 		inline const typename Field::Element &
 		constRefSpecialized (Vector &v, size_t i,
@@ -349,6 +352,7 @@ namespace LinBox
 			return v[i];
 		}
 
+		//! @bug who is zero ?
 		template <class Field, class Vector>
 		inline typename Field::Element &
 		constRefSpecialized (Vector &v, size_t i,

@@ -488,20 +488,23 @@ namespace LinBox { namespace Protected {
 			}
 
 
+#if 0
 			// JGD 26.11.2012
 			// Since some compliers would not choose it even though they are
 			// called via a ConstIterator, const version is removed,
 			// call to const is now only explicit
 			// via call to "value()" below instead
-			//         const value_type &operator * () const
-			// 		{
-			// 			return *(_i->second.begin () + _c_index);
-			// 		}
+				const value_type &operator * () const
+					{
+						return *(_i->second.begin () + _c_index);
+					}
+#endif
 
 			value_type &operator * ()
 			{
 				return (_i->second)[_value_index];
 			}
+
 #if 0
 			value_type *operator -> ()
 			{

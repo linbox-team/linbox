@@ -577,17 +577,15 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 	mycommentator().start (pretty("Testing triangular matmul for shapes and transposition"),"testTriangMulShapeTrans",(unsigned int)iterations);
 
 
-	typedef typename Field::Element                               Element;
+	// typedef typename Field::Element                               Element;
 	typedef BlasMatrix<Field>                                   Matrix ;
 	typedef TriangularBlasMatrix<Field>               TriangularMatrix ;
-	typedef TransposedBlasMatrix<Matrix>                TransposedMatrix ;
+	// typedef TransposedBlasMatrix<Matrix>                TransposedMatrix ;
 	typedef TransposedBlasMatrix<TriangularMatrix > TransposedTriangular ;
 	typedef typename Field::RandIter                            Randiter ;
 	Randiter R(F) ;
 	RandomDenseMatrix<Randiter,Field> RandMat(F,R);
 
-	Element one ;
-	F.init(one,1);
 
 	BlasMatrixDomain<Field> BMD (F);
 
@@ -611,9 +609,9 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 
 	/*  test (L+U-I) B+B = LB+UB */
 	if (LeftSide)
-		BMD.muladd(D,one,B,one,A,B);
+		BMD.muladd(D,F.one,B,F.one,A,B);
 	else
-		BMD.muladd(D,one,B,one,B,A);
+		BMD.muladd(D,F.one,B,F.one,B,A);
 
 	/****  DIRECT ****/
 	{
@@ -773,8 +771,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
-	Element tmp,One,d;
-	F.init(One,1UL);
+	Element tmp,d;
 
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
@@ -790,7 +787,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 		// create S as an upper triangular matrix of full rank
 		// with diagonal's element equal to 1 except the first entry wich equals to d
 		for (size_t i=0;i<n;++i){
-			S.setEntry(i,i,One);
+			S.setEntry(i,i,F.one);
 			for (size_t j=i+1;j<n;++j)
 				S.setEntry(i,j,G.random(tmp));
 		}
@@ -800,7 +797,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				L.setEntry(i,j,G.random(tmp));
-			L.setEntry(i,i,One);
+			L.setEntry(i,i,F.one);
 		}
 
 
@@ -838,15 +835,14 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
-	Element One,tmp;
-	F.init(One,1UL);
+	Element tmp;
 
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 
 	Matrix Id(F, n,n);
 	for (size_t i=0;i<n;++i)
-		Id.setEntry(i,i,One);
+		Id.setEntry(i,i,F.one);
 
 	for (int k=0;k<iterations;++k) {
 
@@ -868,7 +864,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				L.setEntry(i,j,G.random(tmp));
-			L.setEntry(i,i,One);
+			L.setEntry(i,i,F.one);
 		}
 
 		//  compute A=LS
@@ -910,8 +906,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
-	Element One,tmp;
-	F.init(One,1UL);
+	Element tmp;
 
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
@@ -1020,8 +1015,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
-	Element One,tmp;
-	F.init(One,1UL);
+	Element tmp;
 
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
@@ -1058,7 +1052,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 		for (size_t i=0;i<m;++i){
 			for (size_t j=0;j<i;++j)
 				L.setEntry(i,j,G.random(tmp));
-			L.setEntry(i,i,One);
+			L.setEntry(i,i,F.one);
 		}
 
 		//  compute A=LS
@@ -1135,9 +1129,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
-	Element One,zero,tmp;
-	F.init(One,1UL);
-	F.init(zero,0UL);
+	Element tmp;
 
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
@@ -1440,9 +1432,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
-	Element One,zero,tmp;
-	F.init(One,1UL);
-	F.init(zero,0UL);
+	Element tmp;
 
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
@@ -1461,7 +1451,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 				  B.setEntry(i,j,G.random(tmp));
 			else
 			  for (size_t i=0;i<m;++i)
-			    B.setEntry(i,j,zero);
+			    B.setEntry(i,j,F.zero);
 		// Create C a random matrix of rank n/2
 		for (size_t i=0;i<m;++i)
 			if ( i % 2 )
@@ -1469,7 +1459,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 					C.setEntry(i,j,G.random(tmp));
 			else
 				for (size_t j=0;j<n;++j)
-					C.setEntry(i,j,zero);
+					C.setEntry(i,j,F.zero);
 
 		// A = B*C
 		BMD.mul(A, B, C);
@@ -1540,13 +1530,9 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator().start (pretty("Testing minpoly"),"testMinPoly",(unsigned int)iterations);
-	Element tmp, one, zero,mOne;
+	Element tmp  ;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
-	F.init(one, 1UL);
-	F.init(zero, 0UL);
-	F.neg(mOne, one);
-	//F.neg( mOne, one);
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 
@@ -1558,15 +1544,15 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 		Polynomial P;
 		// Test MinPoly(In) = X-1
 		for (size_t i=0;i<n;++i)
-			A.setEntry(i,i,one);
+			A.setEntry(i,i,F.one);
 
 		BMD.minpoly( P, A );
 
 		if ( P.size() !=2 )
 			ret = false;
-		if ( !F.areEqual(P[0], mOne) )
+		if ( !F.areEqual(P[0], F.mOne) )
 			ret = false;
-		if ( !F.areEqual(P[1], one) )
+		if ( !F.areEqual(P[1], F.one) )
 			ret = false;
 
 		// Test MinPoly(a*In) = X-a
@@ -1580,27 +1566,27 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 			ret = false;
 		if ( !F.areEqual(P[0], tmp) )
 			ret = false;
-		if ( !F.areEqual(P[1], one) )
+		if ( !F.areEqual(P[1], F.one) )
 			ret = false;
 
 		for (size_t i=0;i<n-1;++i){
 			for (size_t j=0; j<i+1; ++j)
-				A.setEntry(i,j,zero);
-			A.setEntry(i,i+1,one);
+				A.setEntry(i,j,F.zero);
+			A.setEntry(i,i+1,F.one);
 			if (i<n-2)
 				for (size_t j=i+2; j<n; ++j)
-					A.setEntry(i,j,zero);
+					A.setEntry(i,j,F.zero);
 		}
 		for (size_t j=0;j<n;++j)
-			A.setEntry(n-1,j,zero);
+			A.setEntry(n-1,j,F.zero);
 
 		BMD.minpoly( P, A );
 		if ( P.size() !=n+1 )
 			ret = false;
 		for (size_t i=0; i<n;++i)
-			if ( !F.areEqual(P[i], zero) )
+			if ( !F.areEqual(P[i], F.zero) )
 				ret = false;
-		if ( !F.areEqual(P[n], one) )
+		if ( !F.areEqual(P[n], F.one) )
 			ret = false;
 
 	}
@@ -1621,13 +1607,9 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator().start (pretty("Testing charpoly"),"testCharPoly",(unsigned int)iterations);
-	Element tmp, one, zero,mOne;
+	Element tmp ;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
-	F.init(one, 1UL);
-	F.init(zero, 0UL);
-	F.neg(mOne, one);
-	//F.neg( mOne, one);
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 
@@ -1640,10 +1622,10 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 		// Test CharPoly(In) = (X-1)^n
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
-				A.setEntry(i,j,zero);
-			A.setEntry(i,i,one);
+				A.setEntry(i,j,F.zero);
+			A.setEntry(i,i,F.one);
 			for (size_t j=i+1;j<n;++j)
-				A.setEntry(i,j,zero);
+				A.setEntry(i,j,F.zero);
 		}
 		P.clear();
 		BMD.charpoly( P, A );
@@ -1652,9 +1634,9 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 		while (P_it != P.end()){
 			if ( P_it->size() !=2 )
 				ret = false;
-			if ( !F.areEqual(P_it->operator[](0), mOne) )
+			if ( !F.areEqual(P_it->operator[](0), F.mOne) )
 				ret = false;
-			if ( !F.areEqual(P_it->operator[](1), one) )
+			if ( !F.areEqual(P_it->operator[](1), F.one) )
 				ret = false;
 
 			++P_it;
@@ -1674,7 +1656,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 				ret = false;
 			if ( !F.areEqual(P_it->operator[](0), tmp) )
 				ret = false;
-			if ( !F.areEqual(P_it->operator[](1), one) )
+			if ( !F.areEqual(P_it->operator[](1), F.one) )
 			ret = false;
 			++P_it;
 		}
@@ -1689,7 +1671,7 @@ template<class Field>
 static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n)
 {
 	bool pass = true;
-	typedef typename Field::Element Element;
+	// typedef typename Field::Element Element;
 	BlasMatrixDomain<Field> BMD(Fld);
 	//BlasMatrix<Field> A; // nowhere to go
 

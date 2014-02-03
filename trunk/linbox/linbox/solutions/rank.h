@@ -130,7 +130,8 @@ namespace LinBox
 	inline unsigned long &rankin (unsigned long                   &r,
 				      Blackbox &A)
 	{
-		return rankin(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::Elimination());
+		//! @bug there is no Elimination() method there.
+		return rankin(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::SparseElimination());
 	}
 
 

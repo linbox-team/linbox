@@ -376,8 +376,7 @@ void scramble(BlasMatrix<Ring>& M)
 // each repeated twice), involving the s primes 101, 103, ...
 template <class PIR>
 void RandomRoughMat(BlasMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize((size_t)n, (size_t)n, zero);
+	M.resize((size_t)n, (size_t)n, R.zero);
 	if (n > 10000) {cerr << "n too big" << endl; exit(-1);}
 	int jth_factor[130] =
 	{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
@@ -405,8 +404,7 @@ void RandomRoughMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 // diag(1,2,3,5,8, ... 999, 0, 1, 2, ...).
 template <class PIR>
 void RandomFromDiagMat(BlasMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize((size_t)n,(size_t) n, zero);
+	M.resize((size_t)n,(size_t) n, R.zero);
 
 	for (int i= 0 ; i < n; ++i)
 
@@ -423,12 +421,11 @@ void RandomFromDiagMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 // the last block may be truncated, thus repeating an earlier fibonacci number.
 template <class PIR>
 void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize((size_t)n,(size_t) n, zero);
+	M.resize((size_t)n,(size_t) n, R.zero);
 
-	typename PIR::Element one; R.init(one, 1);
+	typename PIR::Element one; R.init(one, R.one);
 
-	for (int i= 0 ; i < n; ++i) M[(size_t)i][(size_t)i] = one;
+	for (int i= 0 ; i < n; ++i) M[(size_t)i][(size_t)i] = R.one;
 
 	int j = 1, k = 0;
 
@@ -436,7 +433,7 @@ void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 
 		if ( i == k) {
 
-			M[(size_t)i][(size_t)i+1] = zero;
+			M[(size_t)i][(size_t)i+1] = R.zero;
 
 			k += ++j;
 		}
@@ -459,8 +456,7 @@ void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 // Trefethen's challenge #7 mat (primes on diag, 1's on 2^e bands).
 template <class PIR>
 void TrefMat(BlasMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize((size_t)n, (size_t)n, zero);
+	M.resize((size_t)n, (size_t)n, R.zero);
 
 	std::vector<int> power2;
 
@@ -587,7 +583,6 @@ template <class PIR>
 void Mat(BlasMatrix<PIR>& M, PIR& R, int n,
 	 string src, string file, string format) {
 
-	typename PIR::Element zero; R.init(zero, 0);
 	if (src == "random-rough") RandomRoughMat(M, R, n);
 
 	else if (src == "random") RandomFromDiagMat(M, R, n);
