@@ -229,7 +229,7 @@ namespace LinBox
 			size_t i;
 			size_t iternum = 1;
 			do {
-				F.init (pi, 1);
+				F.assign(pi, F.one);
 				for (i = 0; i < A.coldim (); i++) {
 					do iter.random (diag[i]); while (F.isZero (diag[i]));
 					F.mulin (pi, diag[i]);
@@ -245,14 +245,16 @@ namespace LinBox
 				MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, Meth.earlyTermThreshold ());
 
 				WD.minpoly (phi, deg);
-				//                         std::cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= "
-				//                                   << phi.size() << "\n" ;
-				//                         std::cout << "[" ;
-				//                         for(typename Polynomial::const_iterator refs =  phi.begin();
-				// 			        refs != phi.end() ;
-				// 				      ++refs )
-				// 		          std::cout << (*refs) << " " ;
-				//                         std::cout << "]" << std::endl;
+#if 0
+				std::cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= "
+				<< phi.size() << "\n" ;
+				std::cout << "[" ;
+				for(typename Polynomial::const_iterator refs =  phi.begin();
+				    refs != phi.end() ;
+				    ++refs )
+					std::cout << (*refs) << " " ;
+				std::cout << "]" << std::endl;
+#endif
 
 				++iternum;
 			} while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
@@ -285,7 +287,7 @@ namespace LinBox
 			size_t i;
 			size_t iternum = 1;
 			do {
-				F.init (pi, 1);
+				F.assign(pi, F.one);
 				for (i = 0; i < A.coldim (); i++) {
 					do iter.random (diag[i]); while (F.isZero (diag[i]));
 					F.mulin (pi, diag[i]);

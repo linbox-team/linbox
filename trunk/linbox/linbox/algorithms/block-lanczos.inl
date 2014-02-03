@@ -909,7 +909,7 @@ namespace LinBox
 		size_t idx = 0;
 
 		for (i = A.rowBegin (); i != A.rowEnd (); ++i, ++idx)
-			field().addin ((*i)[idx], _one);
+			field().addin ((*i)[idx], field().one);
 
 		return A;
 	}
@@ -969,7 +969,7 @@ namespace LinBox
 
 		for (i = A.rowBegin (), i_idx = 0; i != A.rowEnd (); ++i, ++i_idx) {
 			_VD.subin (*i, *i);
-			field().assign ((*i)[i_idx], _one);
+			field().assign ((*i)[i_idx], field().one);
 		}
 
 		return A;
@@ -1065,9 +1065,7 @@ namespace LinBox
 	{
 		linbox_check (M.rowdim () == M.coldim ());
 
-		typename Field::Element neg_one;
 
-		field().init (neg_one, -1);
 
 		size_t i, j;
 
@@ -1087,7 +1085,7 @@ namespace LinBox
 					else
 						return false;
 				}
-				else if (!field().isZero (M.getEntry (i, j)) && !field().areEqual (M.getEntry (i, j), neg_one))
+				else if (!field().isZero (M.getEntry (i, j)) && !field().areEqual (M.getEntry (i, j), field().mOne))
 					return false;
 			}
 		}

@@ -104,9 +104,9 @@ int main (int argc, char **argv)
 			for(DenseVector::iterator it=U.begin();
 			    it != U.end(); ++it)
 				if (drand48() <0.5)
-					F.init(*it,-1);
+					F.assign(*it,F.mOne);
 				else
-					F.init(*it,1);
+					F.assign(*it,F.one);
 			A.apply(B,U);
 		}
 		else {

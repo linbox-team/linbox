@@ -72,7 +72,7 @@ int main (int argc, char **argv)
 	// typedef vector<Element> Vector;
 	Field F (q);
 	Element t, t1, t2, t3;
-	F.init(t, 0); F.init(t1, 0); F.init(t2, 0); F.init(t3, 0);
+	F.assign(t, F.zero); F.assign(t1, F.zero); F.assign(t2, F.zero); F.assign(t3, F.zero);
 
 // scalar matrix
 	Element s; F.init(s, 3);
@@ -95,12 +95,12 @@ int main (int argc, char **argv)
 
 	NTL_zz_p CF( q );
 	NTL_zz_p::Element u, u1, u2, u3;
-	CF.init(u, 0); CF.init(u1, 0); CF.init(u2, 0); CF.init(u3, 0);
+	CF.assign(u, CF.zero); CF.assign(u1, CF.zero); CF.assign(u2, CF.zero); CF.assign(u3, CF.zero);
     NTL_zz_pX PF(CF);
 
     NTL_zz_p::Element temp;
     NTL_zz_pX::Element poly;
-    PF.init(poly,0);
+    PF.assign(poly,PF.zero);
 
     for( int diff = 1 - ((int)n); diff <= ((int)n) - 1; ++diff ) {
 		PF.setCoeff(poly,(size_t)((size_t)diff + n - 1), CF.init(temp,diff) );
@@ -108,7 +108,7 @@ int main (int argc, char **argv)
 
 	Toeplitz<NTL_zz_p,NTL_zz_pX> B( PF, poly, n );
 
-	CF.init(u, 0);
+	CF.assign(u, CF.zero);
 	trace(u1, B);
 	if (! CF.areEqual(u1, u)) {
 		pass = false;

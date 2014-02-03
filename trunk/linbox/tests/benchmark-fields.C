@@ -78,8 +78,8 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 
 	// initialize a few field elements,
 	typedef typename Field::Element Element;
-	Element returnValue; f.init(returnValue, 1);
-	Element s; f.init(s, 0);
+	Element returnValue; f.assign(returnValue, f.one);
+	Element s; f.assign(s, f.zero);
 
 	Element a, b, c;
 	typename Field::RandIter r(f);
@@ -129,7 +129,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 	double overHeadTime;
 
 	timer.clear(); timer.start();
-	f.init(s, 0);
+	f.assign(s, f.zero);
 	for( i = 0; i < iter; i++ ) { f.init(returnValue, i); f.addin(s, returnValue); }
 	timer.stop(); overHeadTime = timer.time();
 
@@ -177,7 +177,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 		// inv
 		timer.clear(); timer.start();
 		for( i = 0; i < iter; i++ ) {
-			f.init(a, i);  if (f.isZero(a)) f.init(a, 1);
+			f.init(a, i);  if (f.isZero(a)) f.assign(a, f.one);
 			f.inv( returnValue, a);
 			f.addin(s, returnValue);
 		}

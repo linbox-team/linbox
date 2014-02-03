@@ -98,25 +98,25 @@ namespace LinBox
 	template<class Field> typename
 	ZeroOne<Field>::Iterator ZeroOne<Field>::Begin()
 	{
-	       	return Iterator( 0, field().init(_tmp, 1) );
+	       	return Iterator( 0, field().assign(_tmp, field().one) );
 	}
 
 	template<class Field> typename
 	ZeroOne<Field>::Iterator ZeroOne<Field>::End()
 	{
-	       	return Iterator( _nnz, field().init(_tmp, 1) );
+	       	return Iterator( _nnz, field().assign(_tmp, field().one) );
 	}
 
 	template<class Field>
 	const typename ZeroOne<Field>::Iterator ZeroOne<Field>::Begin() const
 	{
-	       	return Iterator(0, field().init(_tmp, 1) );
+	       	return Iterator(0, field().assign(_tmp, field().one) );
 	}
 
 	template<class Field>
 	const typename ZeroOne<Field>::Iterator ZeroOne<Field>::End() const
 	{
-	       	return Iterator(_nnz, field().init(_tmp, 1) );
+	       	return Iterator(_nnz, field().assign(_tmp, field().one) );
 	}
 
 	/*! IndexIterator.
@@ -331,7 +331,7 @@ namespace LinBox
 
 		// 0 out y.  Note, this implementation assumes a dense vector.
 		for(yp = y.begin(); yp != y.end(); ++yp)
-			field().init(*yp , 0);
+			field().assign(*yp , field().zero);
 
 		rowSort();
 
@@ -373,7 +373,7 @@ namespace LinBox
 		Index* ip, *jp;
 
 		for(yp = y.begin(); yp != y.end(); ++yp)
-			field().init(*yp , 0);
+			field().assign(*yp , field().zero);
 
 		rowSort();
 
@@ -425,7 +425,7 @@ namespace LinBox
 
 		// 0 out y.  Note, this implementation assumes a dense vector.
 		for(yp = y.begin(); yp != y.end(); ++yp)
-			field().init(*yp , 0);
+			field().assign(*yp , field().zero);
 
 		rowSort();
 

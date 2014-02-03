@@ -104,7 +104,7 @@ bool testRandom(const Ring& R, size_t n)
 	const int m = 16;
 	int p[m] = {1,1,1,1,1,1,2, 2, 2, 4, 3, 3, 3, 5, 7, 101};
 	typename Ring::Element x, y;
-	R.init(x, 1);
+	R.assign(x, R.one);
 	if (n > 0) D.setEntry(0,0,x);
 	for(size_t i = 1; i < n; ++i){
 		R.init(y, p[rand()%m]);

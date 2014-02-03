@@ -69,7 +69,7 @@ Matrix& randomMat(const Ring& R, Matrix& Mat, size_t n, size_t epr){
 
 			//std::cerr << "\t set value " << val << " in pos " << pos << std::endl;
 			//  finally, set entry
-			//Mat.setEntry(i, pos, R.init(tmp, 1));
+			//Mat.setEntry(i, pos, R.assign(tmp, R.one));
 			Mat.setEntry((size_t)i, (size_t)pos, R.init(tmp, val));
 		}
 	}

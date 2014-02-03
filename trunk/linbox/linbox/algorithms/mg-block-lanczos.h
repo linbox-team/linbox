@@ -81,7 +81,6 @@ namespace LinBox
 			, _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			field().init (_one, 1);
 		}
 
 		/** Constructor with a random iterator
@@ -96,7 +95,6 @@ namespace LinBox
 			, _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			field().init (_one, 1);
 		}
 
 		/** Solve the linear system Ax = b.
@@ -255,7 +253,6 @@ namespace LinBox
 		mutable Matrix _tmp;       // N x <=N
 		mutable Matrix _tmp1;      // N x <=N
 
-		typename Field::Element   _one;
 
 		std::vector<size_t>       _indices;          // N
 

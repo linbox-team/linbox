@@ -68,10 +68,11 @@ Matrix& randomAns(const Ring& R, Matrix& Mat, size_t n, size_t epr){
 		}
 	}
 
+	//! @bug use BlasVector.
 	//  to store each element in our final row
 	vector<typename Ring::Element> tmps(n);
 	for(size_t i=0; i<n; ++i)
-		R.init(tmps[i], 0);
+		R.assign(tmps[i], R.zero);
 
 	//  build last row incorporate every row
 	for(size_t i = 0; i < n-1; ++i){

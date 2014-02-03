@@ -92,8 +92,8 @@ bool testRandom(const Ring& R,
 
 		for(i = 0; i < n; ++i) {
 			R. assign (D[(size_t)i][(size_t)i], d[(size_t)i]);
-			R. init (L[(size_t)i][(size_t)i], 1);
-			R. init (U[(size_t)i][(size_t)i], 1);}
+			R. assign (L[(size_t)i][(size_t)i], R.one);
+			R. assign (U[(size_t)i][(size_t)i], R.one);}
 
 		for (i = 0; i < n; ++ i)
 
@@ -113,11 +113,11 @@ bool testRandom(const Ring& R,
 		for (col_p = A.colBegin();
 		     col_p != A.colEnd(); ++ col_p, ++ i) {
 
-			R.init(e[(size_t)i],1);
+			R.assign(e[(size_t)i],R.one);
 			U.apply(tmp1, e);
 			D.apply(tmp2, tmp1);
 			L.apply(*col_p, tmp2);
-			R.init(e[(size_t)i],0);
+			R.assign(e[(size_t)i],R.zero);
 		}
 
 
@@ -136,7 +136,7 @@ bool testRandom(const Ring& R,
 
 		typename Ring::Element l;
 
-		R. init (l , 1);
+		R. assign(l , R.one);
 
 		for (p1 = d.begin(); p1 != d.end(); ++ p1)
 

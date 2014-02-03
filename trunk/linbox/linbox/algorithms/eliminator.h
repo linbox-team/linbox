@@ -223,12 +223,10 @@ namespace LinBox
 		// Private variables
 	private:
 
-		/*const*/ Field                      *_field; //!@bug useless, using _MD.field() instead.
 		VectorDomain<Field>               _VD;
 		MatrixDomain<Field>               _MD;
 		unsigned int                      _number;
 
-		typename Field::Element           _one;
 
 		// Temporaries used in the computation
 

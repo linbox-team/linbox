@@ -574,7 +574,7 @@ namespace LinBox
 
 			for (; it != vf.end(); ++it) {
 				DomainElement z,i;
-				D.init(z,1);
+				D.assign(z,D.one);
 				D.init(i,*it);
 				if (!D.isZero(i)) D.inv(z,i);
 				vz.push_back(z);

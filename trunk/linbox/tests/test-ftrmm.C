@@ -124,7 +124,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 	//! @todo F.isInvertible()
 	//! @todo InvertibleRandomIter
 	Element invalpha ;
-	F.init(invalpha,0UL);
+	F.assign(invalpha,F.zero);
 	Gn.random(alpha);
 	// F.init(alpha,1UL);
 	F.inv(invalpha,alpha);
@@ -571,7 +571,7 @@ int test_fgemm(std::ostream & report, const Field & F)
 			for (size_t i = 0 ; i < M ; ++i)
 				for (size_t j = 0 ; j < N ; ++j) {
 					Element temp;
-					F.init(temp,0UL);
+					F.assign(temp,F.zero);
 					for (size_t k = 0 ; k < K ; ++k)
 						F.axpyin(temp,A[i*lda+k],B[k*ldb+j]);
 					F.mulin(C[i*ldc+j],beta);
@@ -581,7 +581,7 @@ int test_fgemm(std::ostream & report, const Field & F)
 			for (size_t i = 0 ; i < M ; ++i)
 				for (size_t j = 0 ; j < N ; ++j) {
 					Element temp;
-					F.init(temp,0UL);
+					F.assign(temp,F.zero);
 					for (size_t k = 0 ; k < K ; ++k)
 						F.axpyin(temp,A[i*lda+k],B[j*ldb+k]);
 					F.mulin(C[i*ldc+j],beta);
@@ -592,7 +592,7 @@ int test_fgemm(std::ostream & report, const Field & F)
 			for (size_t i = 0 ; i < M ; ++i)
 				for (size_t j = 0 ; j < N ; ++j) {
 					Element temp;
-					F.init(temp,0UL);
+					F.assign(temp,F.zero);
 					for (size_t k = 0 ; k < K ; ++k)
 						F.axpyin(temp,A[k*lda+i],B[k*ldb+j]);
 					F.mulin(C[i*ldc+j],beta);
@@ -602,7 +602,7 @@ int test_fgemm(std::ostream & report, const Field & F)
 			for (size_t i = 0 ; i < M ; ++i)
 				for (size_t j = 0 ; j < N ; ++j) {
 					Element temp;
-					F.init(temp,0UL);
+					F.assign(temp,F.zero);
 					for (size_t k = 0 ; k < K ; ++k)
 						F.axpyin(temp,A[k*lda+i],B[j*ldb+k]);
 					F.mulin(C[i*ldc+j],beta);

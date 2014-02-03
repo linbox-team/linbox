@@ -58,7 +58,7 @@ void randBuild(BB & A, size_t nnz){
 
 template<class BB>
 void bidiag(BB & A){
-	typename BB::Field::Element d; A.field().init(d, 1);
+	typename BB::Field::Element d; A.field().assign(d, A.field().one);
 	A.setEntry(0,0, d);
 	size_t n = A.coldim() > A.rowdim() ? A.rowdim() : A.coldim();
 	for(size_t i = 1; i < n; ++i)

@@ -64,7 +64,7 @@ namespace LinBox
 		typename Field::Element d;
 
 		// Multiplying all (N-1) first pivots)
-		F.init(d, 1UL);
+		F.assign(d, F.one);
 		for (size_t i=0; i<N-1; ++i)
 			F.mulin (d, *(A + i*(lda+1)));
 

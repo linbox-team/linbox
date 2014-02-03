@@ -79,8 +79,8 @@ std::ostream& writeMMArrayHeader(std::ostream& os, BB& A, std::string name, std:
 template <class Mat>
 std::ostream& writeMMArray(std::ostream& os, Mat& A, std::string name, std::string comment = "") {
 	writeMMArrayHeader(os, A, name, comment);
-	typename Mat::Field::Element x; A.field().init(x, 0);
-	for (size_t j = 0; j < A.coldim(); ++j) 
+	typename Mat::Field::Element x; A.field().assign(x, A.field().zero);
+	for (size_t j = 0; j < A.coldim(); ++j)
 		for (size_t i = 0; i < A.rowdim(); ++i)
 			os << A.getEntry(x, i, j) << std::endl;
 	return os;

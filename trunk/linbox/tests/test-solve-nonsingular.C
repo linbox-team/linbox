@@ -168,7 +168,7 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		case diag:
 		  {
 		  //typename Ring::Element product;
-		  //R.init(product, 1);
+		  //R.assign(product, R.one);
 		  randLim = 100000;
 		  for(int i = 0; i < (int)n; ++i) {
 		    int xx = d[(size_t)i]%randLim;
@@ -183,16 +183,16 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		  break;
 		case tref: //trefethen(R, D, n); break;
 		case I:
-			R.init(tmp, 1);
+			R.assign(tmp, R.one);
 			for(int i = 0; i < (int)n; ++i)
 				D.setEntry((size_t)i, (size_t)i, tmp);
 			break;
 		case jordan2:
 			//randomMat(R, D, n, n);
 			for(int i = 0; i < (int)n; ++i){
-				R.init(tmp, 1);
+				R.assign(tmp, R.one);
 				D.setEntry((size_t)i, (size_t)i, tmp);
-				R.init(tmp, 0);
+				R.assign(tmp, R.zero);
 				for(int j = i+1; j < (int)n; ++j)
 					D.setEntry((size_t)i,(size_t) j, tmp);
 				R.init(tmp, 2);

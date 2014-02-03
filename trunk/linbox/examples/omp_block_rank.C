@@ -367,7 +367,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	chrono3.start();
 	// append Identity to the serie
 	for (int i=0;i<nb;++i)
-		F.init(Serie[0].refEntry(nb+i,i), 1);
+		F.assign(Serie[0].refEntry(nb+i,i), F.one);
 
 	// define defect
 	std::vector<size_t> defect(2*nb,0);
@@ -465,7 +465,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	F.write(std::cerr, Determinant[Determinant.size()-1]) << "Y^" << deg << std::endl;
 
 
-	typename Field::Element t, p2; F.init(p2, 0UL);
+	typename Field::Element t, p2; F.assign(p2, F.zero);
 	if (Determinant.size() >= 2) {
 		F.neg(p2, Determinant[ Determinant.size()-2]);
 		F.divin(p2, Determinant[ Determinant.size()-1]);

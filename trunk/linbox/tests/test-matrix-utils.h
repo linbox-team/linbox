@@ -174,9 +174,6 @@ void RandomMatrixWithRank(const Field & F,
 	typename Field::RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 	typedef element_t(Field) Element;
-	// element_t(Field) one,zero;
-	// F.init(one,1UL);
-	// F.init(zero,0UL);
 
 	Element * B = new Element[m*m];
 	Element * C = new Element[m*n];

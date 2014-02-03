@@ -71,7 +71,7 @@ int main (int argc, char **argv)
 
 	Field F (q);
 	Field::Element d;
-	F.init (d, 1);
+	F.assign(d, F.one);
 
        	//ScalarMatrix<Field> A (F, n, d); // a small identity.
         //BlackBox AA(A);

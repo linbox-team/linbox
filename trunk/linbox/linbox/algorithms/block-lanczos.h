@@ -77,7 +77,6 @@ namespace LinBox
 			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (F), _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			field().init (_one, 1);
 		}
 
 		/** Constructor with a random iterator.
@@ -90,7 +89,6 @@ namespace LinBox
 			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (r), _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			field().init (_one, 1);
 		}
 
 		/** Solve the linear system Ax = b.
@@ -231,7 +229,6 @@ namespace LinBox
 
 		mutable typename Vector<Field>::Dense _tmp;  // N
 
-		typename Field::Element   _one;
 
 		std::vector<size_t>       _indices;          // N
 

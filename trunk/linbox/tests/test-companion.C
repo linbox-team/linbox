@@ -75,9 +75,9 @@ int main (int argc, char **argv)
 
 	Field F ((uint32_t)q);
 	Field::Element d;
-	F.init (d, -1);
+	F.assign(d, F.mOne);
 	Polynomial p(n+1, d);
-	F.init (d, 1); F.assign(p[n], d);
+	F.assign (d, F.one); F.assign(p[n], d);
 
 	Blackbox A (F, p);
 

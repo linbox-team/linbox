@@ -84,7 +84,6 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 	FVector nextx(field(),n), quo(field(),n);
 
 	integer denx_i;
-	typename Field::Element one; field().init(one, 1);
 
 	//  need to save original r for zw_shift calculation
 	//  TODO: I took out the ZWSHIFT, still need last r??
@@ -112,7 +111,7 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 			// TODO - analyze logic here
 			//  quo[i] = xs_frac[i] / nextx[i] - 1;
 			//field().div(quo[i], xs_frac[i], nextx[i]);
-			//field().subin(quo[i], one);
+			//field().subin(quo[i], field().one);
 			field().sub(quo[i], xs_frac[i], nextx[i]);
 		}
 

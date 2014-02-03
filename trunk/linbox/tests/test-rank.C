@@ -158,8 +158,8 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 	typedef SparseMatrix<Modular<double>,Vector<Modular<double> >::SparseSeq> MdBlackbox;
 	Modular<double> MdF2(2);
 	GF2::Element one; Modular<double>::Element mdone;
-	F2.init(one,true);
-	MdF2.init(mdone,1UL);
+	// F2.init(one,true);
+	MdF2.assign(mdone,MdF2.one);
 
 
 	commentator().start ("Testing elimination-based and blackbox rank over GF2", "testRankMethodsGF2", (unsigned int)iterations);
@@ -180,7 +180,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 		for(size_t ii=0; ii<n;++ii) {
 			for(size_t jj=0; jj<n; ++jj) {
 				if (drand48()<sparsity) {
-					A.setEntry(ii,jj,one);
+					A.setEntry(ii,jj,F2.one);
 					B.setEntry(ii,jj,mdone);
 				}
 			}

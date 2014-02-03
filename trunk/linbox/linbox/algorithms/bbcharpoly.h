@@ -503,7 +503,7 @@ namespace LinBox
 
 					// Compute Prod(Pi(-gamma)^mi)
 					typename Field::Element tmp, e;
-					F.init (d2,1);
+					F.assign(d2,F.one);
 					typename FactPoly::iterator it_f=factCharPoly.begin();
 					PolyDom PD_f (F);
 					for (size_t i = 0; i < factCharPoly.size()-factnum; ++i, ++it_f){
@@ -512,7 +512,7 @@ namespace LinBox
 							F.mulin (d2, tmp);
 					}
 					while ( uf_it != sols.end() ){
-						F.init (e,1);
+						F.assign (e,F.one);
 						for (size_t i = 0; i < uf_it->size(); ++i){
 							PD_f.eval( tmp, *(*uf_it)[i].fieldP, mgamma );
 							for (size_t  j=0; j < (*uf_it)[i].multiplicity; ++j)

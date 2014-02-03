@@ -846,7 +846,7 @@ namespace LinBox
 		}
 
 		inline void reset() {
-			field().init(_y, 0);
+			field().assign(_y, field().zero);
 		}
 
 		inline Field &field(){ return *_field; }

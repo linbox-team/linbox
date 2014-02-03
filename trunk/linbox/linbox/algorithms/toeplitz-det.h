@@ -61,9 +61,7 @@ namespace LinBox
 			( res, CField.powin( F.leadCoeff( temp, f2 ),
 					     (long)(F.deg(f1) - F.deg(f2)) ) );
 			if( sign == -1 ) {
-				typename PField::Coeff negOne;
-				CField.init( negOne, -1 );
-				CField.mulin( res, negOne );
+				CField.mulin( res, CField.mOne);
 			}
 		}
 		else CField.assign( res, CField.zero );

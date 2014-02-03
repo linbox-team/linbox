@@ -96,19 +96,12 @@ static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1
 		// , zero
 		;
 	VectorDomain<Field1> VD (F1);
-	//! @bug !
-	typename Field1::Element neg_one
-		// = F1.mone
-		;
-	F1.init (neg_one, -1);
 
 	// VectorWrapper::ensureDim (zero, stream1.dim ());
 	VectorWrapper::ensureDim (d1, stream1.dim ());
 	VectorWrapper::ensureDim (d2, stream1.dim ());
 	VectorWrapper::ensureDim (v, stream1.dim ());
 	VectorWrapper::ensureDim (w, stream2.dim ());
-// 	F.init (neg_one, 1);
-// 	F.negin (neg_one);
 
 
 	while (stream1) {
@@ -116,7 +109,7 @@ static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1
 		bool iter_passed = true;
 
 		stream1.next (d1);
-		VD.mul (d2, d1, neg_one);
+		VD.mul (d2, d1, F1.mOne);
 
 		Diagonal <Field1> D1 (d1), D2 (d2);
 

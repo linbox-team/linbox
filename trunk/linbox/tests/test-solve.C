@@ -88,7 +88,7 @@ static bool testIdentitySolve (const Field          &F,
 	VectorDomain<Field> VD (F);
 
 	typename Field::Element s;
-	F.init (s, 1);
+	F.assign (s, F.one);
 	Blackbox I (F, stream.n (), stream.n(), s);
 
 	size_t n = stream.n();
@@ -542,9 +542,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 	VectorWrapper::ensureDim (x, stream2.dim ());
 	VectorWrapper::ensureDim (y, stream2.dim ());
 
-	typename Field::Element one;
 
-	F.init (one, 1);
 
 	Method::Wiedemann traits;
 	traits.preconditioner (preconditioner);
@@ -796,13 +794,15 @@ int main (int argc, char **argv)
 		pass = false;
 	if (!testNonsingularSolve            (F, stream1, stream2, "Wiedemann", WM))
 		pass = false;
-/* the solve solution doesn't make the right call?
+#if 0
+/* the solve solution doesn't make the right call? */
 	Method::BlockWiedemann BWM;
 	if (!testIdentitySolve               (F, stream1, "BlockWiedemann", BWM))
 		pass = false;
 	if (!testNonsingularSolve            (F, stream1, stream2, "BlockWiedemann", BWM))
 		pass = false;
-*/
+#endif
+
 #if 0
 	if (!testSingularConsistentSolve     (F, n, stream3, stream4,
 					      "Wiedemann", Method::Wiedemann ()))

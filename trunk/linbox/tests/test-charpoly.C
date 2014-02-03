@@ -90,12 +90,10 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	LinBox::commentator().start ("Testing identity Charpoly", "testIdentityCharpoly");
 
 	bool ret = true;
-	Element one; Z.init(one, 1);
-	Element negone; Z.init(negone, -1);
 
 	//PolDom IPD(Z);
 
-	Blackbox A (Z, n, n, one);
+	Blackbox A (Z, n, n, Z.one);
 
 	Polynomial phi;
 
@@ -108,14 +106,14 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	// partial check - just that charpoly has right values at 0, 1, -1.
 	Element val, val2, neg2, pow2;
 	// value at 1 should be zero
-	eval(Z, val, phi, one);
+	eval(Z, val, phi, Z.one);
 	if (! Z.isZero(val) ) ret = false;
 	// value at zero should be (-1)^n
-	val = (n % 2 == 0) ? one : negone;
+	val = (n % 2 == 0) ? Z.one : Z.mOne;
 	if (! Z.areEqual(val, phi[0])) ret = false;
 	// value at -1 should be (-2)^n
-	eval(Z, val2, phi, negone);
-	Z.init(neg2, -2); Z.init(pow2, 1);
+	eval(Z, val2, phi, Z.mOne);
+	Z.init(neg2, -2); Z.assign(pow2, Z.one);
 	for (size_t i = 0; i < n; ++i) Z.mulin(pow2, neg2);
 	if (! Z.areEqual(val2, pow2)) ret = false;
 

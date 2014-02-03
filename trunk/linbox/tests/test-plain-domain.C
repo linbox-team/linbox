@@ -1104,9 +1104,7 @@ static bool testMVAxpy (Field &F, const char *text, const Matrix &M)
 	report << "Output vector w:" << endl;
 	VD.write (report, w);
 
-	typename Field::Element one;
-	F.init (one, 1);
-	typename LinBox::Vector<Field>::Dense z (M.coldim (), one), w1 (M.rowdim ());
+	typename LinBox::Vector<Field>::Dense z (M.coldim (), F.one), w1 (M.rowdim ());
 
 	MD.vectorMul (w1, M, z);
 

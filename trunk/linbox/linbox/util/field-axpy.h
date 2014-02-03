@@ -32,15 +32,15 @@ namespace LinBox
 {
 	/** FieldAXPY object.
 	 *
-	 * A fieldAXPY is an accumulator, allowing to add a number of field elements or products 
+	 * A fieldAXPY is an accumulator, allowing to add a number of field elements or products
 	 * in an unnormalized state, delaying modular reduction as long as possible.
-	 * This class containse a value y and wraps the operations <code>y = y + a * x</code> and 
-	 * <code>y = y + a</code>. 
+	 * This class containse a value y and wraps the operations <code>y = y + a * x</code> and
+	 * <code>y = y + a</code>.
 	 *
 	 * This default instance does no optimization, no delayed modular reduction.
 	 * Through the use of template specialization, objects of this type can
-	 * be used to speed up operations such as vector dot product operations. 
-	 * In particular, for finite fields, dividing by the modulus and taking the remainder 
+	 * be used to speed up operations such as vector dot product operations.
+	 * In particular, for finite fields, dividing by the modulus and taking the remainder
 	 * is expensive. In many cases, this can be postponed until the end of the
 	 * dot product operation, thus vastly improving performance.
 	 *
@@ -64,7 +64,7 @@ namespace LinBox
 		 */
 		FieldAXPY (const Field &F) :
 		       	_field (&F)
-		{ field().init (_y, 0); }
+		{ field().assign(_y, field().zero); }
 
 		/** Copy constructor.
 		 * @param faxpy
@@ -102,7 +102,7 @@ namespace LinBox
 
 		/// reset value to zero.
 		inline void reset() {
-			field().init(_y,0);
+			field().assign(_y,field().zero);
 		}
 
 		inline const Field& field() const { return *_field; }
@@ -111,7 +111,7 @@ namespace LinBox
 		/// Field in which arithmetic is done
 		const Field *_field;
 
-		/// Accumulator, unnormalized field element. 
+		/// Accumulator, unnormalized field element.
 		Abnormal _y;
 
 	}; // class FieldAXPY

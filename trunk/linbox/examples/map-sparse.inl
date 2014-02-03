@@ -45,12 +45,12 @@ MapSparse<Field_>::MapSparse() : MD_(Field_()),numCols_(0), numRows_(0), nnz_(0)
 
 template<class Field_>
 MapSparse<Field_>::MapSparse(const Field& F, Index r, Index c):
-	MD_(F), numCols_(c), numRows_(r), nnz_(0) {F.init(zero_,0);}
+	MD_(F), numCols_(c), numRows_(r), nnz_(0) {F.assign(zero_,F.zero);}
 
 template<class Field_>
 void MapSparse<Field_>::init(const Field& F, Index r, Index c) {
         MD_=F;
-        F.init(zero_,0);
+        F.assign(zero_,F.zero);
         shape(r,c);
 }
 
@@ -169,8 +169,8 @@ void MapSparse<Field_>::addCol(const Element& k, Index i, Index j)
 			if (!(field().isZero(getEntry(row,i)))) {
 				--nnz_;
 			} else {
-				field().init(rowMap_[row][i],0);
-				field().init(colMap_[i][row],0);
+				field().assign(rowMap_[row][i],field().zero);
+				field().assign(colMap_[i][row],field().zero);
 			}
 			field().axpyin(rowMap_[row][i],k,it->second);
 			field().axpyin(colMap_[i][row],k,it->second);

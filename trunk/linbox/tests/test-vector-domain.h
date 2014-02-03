@@ -81,7 +81,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 	while (stream1 && stream2) {
 		LinBox::commentator().startIteration ((unsigned)stream1.j ());
 
-		F.init (sigma, 0);
+		F.assign (sigma, F.zero);
 
 		stream1.next (v1);
 		stream2.next (v2);

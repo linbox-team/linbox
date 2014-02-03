@@ -25,14 +25,14 @@ int main(int argc, char* argv[])
 	MapSparse<Field> ms(F,n,n);
 	Element d;
 	for (int i=0;i<n;++i) {
-		F.init(d,1);
+		F.assign(d,F.one);
 		ms.setEntry(i,i,d);
 		F.init(d,2);
 		ms.setEntry(n-1-i,i,d);
 	}
 	F.init(d,2);
 	ms.addCol(d,1,3);
-	F.init(d,1);
+	F.assign(d,F.one);
 	ms.addCol(d,3,1);
 	F.init(d,2);
 	ms.timesRow(d,3);
