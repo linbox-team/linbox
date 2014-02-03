@@ -409,8 +409,10 @@ namespace LinBox
 	{
 		typedef typename Blackbox::Field Field;
 		//! @bug choose (benchmark) best representation for Sparse Elimination
-		// typedef SparseMatrix<Field, SparseMatrixFormat::SparseSeq > SparseBB;
-		typedef Blackbox SparseBB;
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseSeq > SparseBB;
+		// typedef SparseMatrix<Field, SparseMatrixFormat::SparsePar > SparseBB;
+		// typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap > SparseBB;
+		// typedef Blackbox SparseBB;
 		SparseBB SpA(A.field(), A.rowdim(), A.coldim() );
 		MatrixHom::map(SpA, A);
 		return rankin(r, SpA, tag, M);
@@ -525,7 +527,7 @@ namespace LinBox
 		return rank(r, A, tag, Method::Wiedemann(m));
 	}
 }
-#endif
+#endif // __LINBOX_HAVE_GIVARO
 
 namespace LinBox { /*  rankin */
 

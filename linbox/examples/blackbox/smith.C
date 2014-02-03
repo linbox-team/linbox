@@ -230,7 +230,6 @@ template <class PIR>
 void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 	 string src, string file, string format) {
 
-	typename PIR::Element zero; R.init(zero, 0);
 	if (src == "random-rough") RandomRoughMat(M, R, n);
 
 	else if (src == "random") RandomFromDiagMat(M, R, n);
@@ -314,8 +313,7 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 // each repeated twice), involving the s primes 101, 103, ...
 template <class PIR>
 void RandomRoughMat(DenseMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
+	M.resize(n, n, R.zero);
 	if (n > 10000) {cerr << "n too big" << endl; exit(-1);}
 	int jth_factor[130] =
 	{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
@@ -343,8 +341,7 @@ void RandomRoughMat(DenseMatrix<PIR>& M, PIR& R, int n) {
 // diag(1,2,3,5,8, ... 999, 0, 1, 2, ...).
 template <class PIR>
 void RandomFromDiagMat(DenseMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
+	M.resize(n, n, R.zero);
 
 	for (int i= 0 ; i < n; ++i)
 
@@ -361,12 +358,11 @@ void RandomFromDiagMat(DenseMatrix<PIR>& M, PIR& R, int n) {
 // the last block may be truncated, thus repeating an earlier fibonacci number.
 template <class PIR>
 void RandomFibMat(DenseMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
+	M.resize(n, n, R.zero);
 
-	typename PIR::Element one; R.init(one, 1);
+	typename PIR::Element one; R.init(one, R.one);
 
-	for (int i= 0 ; i < n; ++i) M[i][i] = one;
+	for (int i= 0 ; i < n; ++i) M[i][i] = R.one;
 
 	int j = 1, k = 0;
 
@@ -374,7 +370,7 @@ void RandomFibMat(DenseMatrix<PIR>& M, PIR& R, int n) {
 
 		if ( i == k) {
 
-			M[i][i+1] = zero;
+			M[i][i+1] = R.zero;
 
 			k += ++j;
 		}
@@ -467,8 +463,7 @@ void scramble(DenseMatrix<Ring>& M)
 // Trefethen's challenge #7 mat (primes on diag, 1's on 2^e bands).
 template <class PIR>
 void TrefMat(DenseMatrix<PIR>& M, PIR& R, int n) {
-	typename PIR::Element zero; R.init(zero, 0);
-	M.resize(n, n, zero);
+	M.resize(n, n, R.zero);
 
 	std::vector<int> power2;
 

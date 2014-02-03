@@ -56,15 +56,14 @@ namespace LinBox
 
 			Ap = new BlasMatrix<Field>(f, rowdim, coldim);
 			typename BlasMatrix<Field>::Iterator Ap_p;
-			typename Field::Element zero, one, elt;
-			f. init (one, 1); f. init (zero, 0);
+			typename Field::Element  elt;
 
 			for (Ap_p = Ap -> Begin(); Ap_p != Ap -> End(); ++ Ap_p)
-				f. assign (*Ap_p, zero);
+				f. assign (*Ap_p, f.zero);
 
 			if (rowdim < coldim)
 				for (int i = 0; i < rowdim; ++ i) {
-					Ap -> setEntry ((size_t)i,(size_t) i, one);
+					Ap -> setEntry ((size_t)i,(size_t) i, f.one);
 					for (int j = rowdim; j < coldim; ++ j){
 						f. init (elt, rand()%10);
 						Ap -> setEntry ((size_t)i, (size_t)j, elt);
@@ -72,7 +71,7 @@ namespace LinBox
 				}
 			else
 				for (int i = 0; i < coldim; ++ i) {
-					Ap -> setEntry ((size_t)i,(size_t) i, one);
+					Ap -> setEntry ((size_t)i,(size_t) i, f.one);
 					for (int j = coldim; j < rowdim; ++ j) {
 						f. init (elt, rand()%10);
 						Ap -> setEntry ((size_t)j,(size_t) i, elt);

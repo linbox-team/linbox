@@ -85,13 +85,11 @@ int main(int argc, char* argv[])
 	report  <<"     \tDimension= " << n << "\t modulus= " << q << endl;
 
 	typedef LinBox::NTL_ZZ_p Field;
-	typedef Field::Element element;
+	// typedef Field::Element element;
 	typedef LinBox::BlasVector<Field> Vector;
 
 	// Now we are using the NTL wrapper as the field, call the instance F
 	Field F(q);
-	element zero;
-	F.init(zero, 0);
 
 	// Use the default constructor to create a matrix
 	LinBox::Toeplitz<Field> T(F);

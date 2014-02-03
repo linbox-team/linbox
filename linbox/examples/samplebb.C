@@ -94,9 +94,7 @@ template <class List, class Ring>
 void augmentBB(List& L, char* code, int e, int k, const Ring& R)
 {
 	typedef typename Ring::Element Int;
-	Int a, one, zero;
-	R.init(one, 1);
-	R.init(zero, 0);
+	Int a;
 	ZZX p;
 
 	// build poly p
@@ -105,21 +103,21 @@ void augmentBB(List& L, char* code, int e, int k, const Ring& R)
 	{
 		R.init(a, -atoi(code));
 		p += ZZX(0, a);
-		p += ZZX(1, one);
+		p += ZZX(1, r.one);
 	}
 	else // build long poly
 	{
 		int n = atoi(code+1);
 		R.init(a, n-1);
-		p += ZZX(n, one);
-		p += ZZX(1, one);
+		p += ZZX(n, r.one);
+		p += ZZX(1, r.one);
 		p += ZZX(0, a);
 	}
 
 	//std::cout << "(code, e, k) =(" << code << ", " << e << ", " << k << ")" << std::endl;
 	//std::cout << "Correspoding poly: " << p << std::endl;
 	// compute q =  p^e
-	ZZX q(0, one);
+	ZZX q(0, r.one);
 	for(int i = 0; i < e; ++i) q *= p;
 	//std::cout <<"Polynomial: " << q << std::endl;
 
@@ -199,19 +197,16 @@ void printMatrix (const Matrix& A)
 	typedef typename Ring::Element Element;
 	std::vector<Element> x(m), y(n);
 	Ring r = A. field();
-	Element one, zero;
-	r. init (one, 1);
-	r. init (zero, 0);
 
 	std::cout << m << " " << n <<  " M" << std::endl;
 	typename std::vector<Element>::iterator y_p;
 	for (int i = 0; i < m; ++ i) {
-		r. assign (x[i], one);
+		r. assign (x[i], r.one);
 		A. applyTranspose(y, x);
 		for(y_p = y. begin(); y_p != y. end(); ++ y_p)
 			if (! r.isZero(*y_p))
 				std::cout << i+1 << " " << y_p - y.begin() + 1 << " " << *y_p << std::endl;
-		r. assign (x[i], zero);
+		r. assign (x[i], r.zero);
 	}
 	std::cout << "0 0 0" << std::endl;
 }

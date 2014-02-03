@@ -99,12 +99,11 @@ namespace LinBox
 
 		E.resize(k);
 		E[0]=P.back();
-		typename Field::Element a, one;
-		F.init(one,1);
-		F.assign(a,one);
+		typename Field::Element a ;
+		F.assign(a,F.one);
 		for (size_t i=1;i<k;++i){
 			MatPolyHornerEval(F, E[i], P, a);
-			F.addin(a, one);
+			F.addin(a, F.one);
 		}
 	}
 
@@ -116,13 +115,12 @@ namespace LinBox
 	{
 		size_t k=E.size();
 		E[0]=std::vector<typename Field::Element> (P.begin(), P.begin()+block);
-		typename Field::Element a, one;
-		F.init(one,1);
-		F.assign(a,one);
+		typename Field::Element a;
+		F.assign(a,F.one);
 
 		for (size_t i=1;i<k;++i){
 			VectHornelEval (F, E[i], P, block, a);
-			F.addin(a, one);
+			F.addin(a, F.one);
 		}
 	}
 
@@ -133,17 +131,16 @@ namespace LinBox
 				   std::vector<std::vector<typename Field::Element> >  &P,
 				   size_t                                  k)
 	{
-		typename Field::Element one,zero, a;
-		F.init(one,1);F.init(zero,0);
-		F.init(a,0);
+		typename Field::Element  a;
+		F.init(a,F.zero);
 
 		// compute L:= (x)(x-1)(x-2)(x-3)...(x-k+1) = a1x+a2x^2+...+a(k-1)x^(k-1)
 		std::list<typename Field::Element> L(2);
-		F.assign(L.front(), zero);
-		F.assign(*(++L.begin()), one);
+		F.assign(L.front(), F.zero);
+		F.assign(*(++L.begin()), F.one);
 		for (size_t i=1;i<k;++i){
-			F.subin(a, one);
-			L.push_front(zero);
+			F.subin(a, F.one);
+			L.push_front(F.zero);
 			typename std::list<typename Field::Element>::iterator it_next = L.begin();++it_next;
 			typename std::list<typename Field::Element>::iterator it = L.begin();
 			for (;it_next != L.end();++it, ++it_next)
@@ -155,7 +152,7 @@ namespace LinBox
 		size_t deg=L.size();
 		F.init(a,0);
 		for (size_t i=1;i<k;++i){
-			F.addin(a,one);
+			F.addin(a,F.one);
 			P[i].resize(deg-1);
 			typename std::list<typename Field::Element>::const_reverse_iterator rit=L.rbegin();
 			F.assign(P[i][deg-2],*rit);
@@ -168,15 +165,15 @@ namespace LinBox
 		typename Field::Element prod, ui, uj, tmp;
 		F.init(ui,-1);
 		for (size_t i=0;i<k;++i){
-			F.assign(prod,one);
-			F.addin(ui,one);
-			F.assign(uj,zero);
+			F.assign(prod,F.one);
+			F.addin(ui,F.one);
+			F.assign(uj,F.zero);
 			for (size_t j=0;j<k;++j){
 				if (j != i){
 					F.sub(tmp,ui,uj);
 					F.mulin(prod,tmp);
 				}
-				F.addin(uj,one);
+				F.addin(uj,F.one);
 			}
 			F.invin(prod);
 			//std::cout<<"coeff: ";F.write(std::cout, prod)<<"\n";
@@ -286,11 +283,9 @@ namespace LinBox
 			_inv_vander = BlasMatrix<Field> (_field,_numpoints,_numpoints);
 
 			std::vector<Element> points(_numpoints);
-			Element one;
-			F.init(one,1);
 			for (size_t i=0;i<_numpoints;++i){
 				F.init(points[i],i);
-				_vander.setEntry(i,0, one);
+				_vander.setEntry(i,0, F.one);
 			}
 
 

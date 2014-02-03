@@ -73,11 +73,9 @@ namespace LinBox
 		//n=A.coldim();
 		//m=A.rowdim();
 		R.init(H_col_sqr, 1);
-		Integer_t zero;
-		R.init(zero,0UL);
 
 		typename ItMatrix::ConstRowIterator row= A.rowBegin();
-		std::vector<Integer_t> tmp(A.coldim(), zero);
+		std::vector<Integer_t> tmp(A.coldim(), R.zero);
 		for (; row != A.rowEnd(); ++row){
 			typename ItMatrix::ConstRow::const_iterator elm= row->begin();
 			for (size_t i=0; elm != row->end(); ++elm, ++i)
@@ -130,27 +128,25 @@ namespace LinBox
 	{
 
 		typedef typename Ring::Element Integer_t;
-		Integer_t one,zero,sqsum;
+		Integer_t sqsum;
 		size_t m,n;
 		n=A.coldim();
 		m=A.rowdim();
-		R.init(one,1);
-		R.init(zero,0);
-		R.init(H_col_sqr, 1);
+		R.init(H_col_sqr, R.one);
 		typename std::vector<Integer_t>::const_iterator iter;
-		std::vector<Integer_t> e(n,zero),tmp(m);
+		std::vector<Integer_t> e(n,R.zero),tmp(m);
 
 		for (size_t i=0;i<n;++i){
-			e[i]=one;
+			e[i]=R.one;
 			A.apply(tmp,e);
-			sqsum=zero;
+			sqsum=R.zero;
 			for (iter=tmp.begin();iter!=tmp.end();++iter){
 				sqsum += (*iter)*(*iter);
 			}
 			R.mulin(H_col_sqr, sqsum);
 			if (i==0 || sqsum < short_col_sqr)
 				short_col_sqr = sqsum;
-			e[i]=zero;
+			e[i]=R.zero;
 		}
 	}
 
@@ -160,25 +156,23 @@ namespace LinBox
 			    const Compose<Matrix1,Matrix2> & A)
 	{
 		typedef typename Ring::Element Integer_t;
-		Integer_t one,zero,sqsum;
+		Integer_t sqsum;
 		size_t m,n;
 		n=A.coldim();
 		m=A.rowdim();
-		R.init(one,1);
-		R.init(zero,0);
-		R.init(H_col_sqr, 1);
+		R.init(H_col_sqr, R.one);
 		typename std::vector<Integer_t>::const_iterator iter;
-		std::vector<Integer_t> e(n,zero),tmp(m);
+		std::vector<Integer_t> e(n,R.zero),tmp(m);
 		for (size_t i=0;i<n;++i){
-			e[i]=one;
+			e[i]=R.one;
 			A.apply(tmp,e);
-			sqsum=zero;
+			sqsum=R.zero;
 			for (iter=tmp.begin();iter!=tmp.end();++iter)
 				sqsum += (*iter)*(*iter);
 			R.mulin(H_col_sqr, sqsum);
 			if (i==0 || sqsum < short_col_sqr)
 				short_col_sqr = sqsum;
-			e[i]=zero;
+			e[i]=R.zero;
 		}
 	}
 
@@ -188,25 +182,23 @@ namespace LinBox
 			    const Transpose<Matrix> & A)
 	{
 		typedef typename Ring::Element Integer_t;
-		Integer_t one,zero,sqsum;
+		Integer_t sqsum;
 		size_t m,n;
 		n=A.coldim();
 		m=A.rowdim();
-		R.init(one,1);
-		R.init(zero,0);
-		R.init(H_col_sqr, 1);
+		R.init(H_col_sqr, R.one);
 		typename std::vector<Integer_t>::const_iterator iter;
-		std::vector<Integer_t> e(n,zero),tmp(m);
+		std::vector<Integer_t> e(n,R.zero),tmp(m);
 		for (size_t i=0;i<n;++i){
-			e[i]=one;
+			e[i]=R.one;
 			A.applyTranspose(tmp,e);
-			sqsum=zero;
+			sqsum=R.zero;
 			for (iter=tmp.begin();iter!=tmp.end();++iter)
 				sqsum += (*iter)*(*iter);
 			R.mulin(H_col_sqr, sqsum);
 			if (i==0 || sqsum < short_col_sqr)
 				short_col_sqr = sqsum;
-			e[i]=zero;
+			e[i]=R.zero;
 		}
 	}
 
@@ -223,25 +215,23 @@ namespace LinBox
 	   void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
 			       typename Ring::Element& short_col_sqr, const IMatrix& A) {
 		   typedef typename Ring::Element Integer_t;
-		   Integer_t one,zero,sqsum;
+		   Integer_t sqsum;
 		   size_t m,n;
 		   n=A.coldim();
 		   m=A.rowdim();
-		   R.init(one,1);
-		   R.init(zero,0);
-		   R.init(H_col_sqr, 1);
+		   R.init(H_col_sqr, R.one);
 		   typename std::vector<Integer_t>::const_iterator iter;
-		   std::vector<Integer_t> e(n,zero),tmp(m);
+		   std::vector<Integer_t> e(n,R.zero),tmp(m);
 		   for (size_t i=0;i<n;++i){
-			   e[i]=one;
+			   e[i]=R.one;
 			   A.apply(tmp,e);
-			   sqsum=zero;
+			   sqsum=R.zero;
 			   for (iter=tmp.begin();iter!=tmp.end();++iter)
 				   sqsum += (*iter)*(*iter);
 			   R.mulin(H_col_sqr, sqsum);
 			   if (i==0 || sqsum < short_col_sqr)
 				   short_col_sqr = sqsum;
-			   e[i]=zero;
+			   e[i]=R.zero;
 		   }
 	   }
 #endif
@@ -257,9 +247,8 @@ namespace LinBox
 	void ApplyBound(const Ring& R, typename Ring::Element& bound_A, const ItMatrix& A)
 	{
 		typedef typename Ring::Element Integer_t;
-		Integer_t possum, negsum, zero;
-		R.init(bound_A, 0);
-		R.init(zero, 0);
+		Integer_t possum, negsum;
+		R.init(bound_A, R.zero);
 
 		typename ItMatrix::ConstRowIterator rowIter;
 		rowIter = A.rowBegin();
@@ -269,7 +258,7 @@ namespace LinBox
 			R.init(possum, 0);
 			R.init(negsum, 0);
 			for (elm = rowIter->begin(); elm != rowIter->end(); ++elm)
-				if (*elm > zero)
+				if (*elm > R.zero)
 					R.addin(possum, *elm);
 				else
 					R.subin(negsum, *elm);
@@ -858,9 +847,7 @@ namespace LinBox
 				}
 
 				// update the minimal polynomial
-				Element zero;
-				field().init(zero,0);
-				FPolynomial newMinPoly(_MinPoly.size()+Poly.size()-1,zero);
+				FPolynomial newMinPoly(_MinPoly.size()+Poly.size()-1,field().zero);
 				for (size_t i=0; i < _MinPoly.size(); ++i)
 					for (size_t j=0 ; j < Poly.size(); ++j)
 						field().axpyin(newMinPoly[i+j],_MinPoly[i],Poly[j]);
@@ -1253,7 +1240,7 @@ namespace LinBox
 					field().assign(_u[i][j], U.getEntry(0, i*_numblock+j));
 					field().assign(_v[i][j], V.getEntry(i*_numblock+j, i));
 				}
-			field().init(_zero,0);
+			field().init(_zero,field().zero);
 
 			//Ap.write(std::cout,F);
 #ifdef RSTIMING
@@ -1385,7 +1372,7 @@ namespace LinBox
 			// compute digit_p  = [V^T AV^T ... A^k]^T.z1
 			FVector b_bar(n), b_hat(_numblock);
 			for (size_t i=0;i<n;++i)
-				field().assign(_digit_p[i], _zero);
+				field().assign(_digit_p[i], field().zero);
 
 			for (int i= _numblock-1;i>=0; --i){
 				_Ap.apply(b1, _digit_p);

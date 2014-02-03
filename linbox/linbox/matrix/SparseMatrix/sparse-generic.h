@@ -87,13 +87,13 @@
 
 
 
-/* ** forward declarations ** */
-namespace LinBox {
+
+namespace LinBox { /*  forward declarations  */
 	template<class Field>
 	class MatrixDomain ;
 } // LinBox
 
-namespace LinBox { namespace Protected {
+namespace LinBox { namespace Protected { /*  SparseMatrixGeneric defaults */
 		template <class _Field,
 			 class _Row   = typename RawVector<typename _Field::Element>::Sparse,
 			 class Trait  = typename VectorTraits<_Row>::VectorCategory>
@@ -101,7 +101,7 @@ namespace LinBox { namespace Protected {
 } // Protected
 } // LinBox
 
-namespace LinBox {
+namespace LinBox { /*  read write helper  */
 		template<class Matrix>
 		class SparseMatrixWriteHelper ;
 
@@ -109,7 +109,7 @@ namespace LinBox {
 		class SparseMatrixReadHelper ;
 } // LinBox
 
-namespace LinBox { namespace Protected {
+namespace LinBox { namespace Protected { /*  SparseMatrixGeneric */
 
 	/** Sparse matrix container
 	 * This class acts as a generic row-wise container for sparse
@@ -182,7 +182,7 @@ namespace LinBox { namespace Protected {
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 				for( typename Self_t::ConstIndexedIterator
 				     indices = A.IndexedBegin();
-				     (indices != A.IndexedEnd()) ;
+				     indices != A.IndexedEnd() ;
 				     ++indices ) {
 					// hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
 					hom. image (e, indices.value() );
@@ -478,7 +478,7 @@ namespace LinBox { namespace Protected {
 
 #include "linbox/matrix/SparseMatrix/sparse-generic.inl"
 
-namespace LinBox {
+namespace LinBox { /*  IO / Traits */
 
 	template <class Field, class Row>
 	std::ostream &operator << (std::ostream &os, const Protected::SparseMatrixGeneric<Field, Row> &A)

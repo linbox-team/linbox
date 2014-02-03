@@ -822,6 +822,12 @@ namespace LinBox
 			return x;
 		}
 
+		Element &init (Element &x, const unsigned int &y ) const
+		{
+			x = Element(y %  (ModularBase<Element>::_modulus));
+			return x;
+		}
+
 		Element &init (Element &x, const double &y) const
 		{
 			double z = fmod(y, (double)_modulus);

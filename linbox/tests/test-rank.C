@@ -93,7 +93,8 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 	for (i = 0; i < iterations; ++i) {
 		commentator().startIteration (i);
 
-		RandomSparseStream<Field, typename Vector<Field>::SparseSeq> stream (F, ri, sparsity, n, n);
+		RandomSparseStream<Field, typename Blackbox::Row> stream (F, ri, sparsity, n, n);
+		// RandomSparseStream<Field, typename Vector<Field>::SparseSeq> stream (F, ri, sparsity, n, n);
 		Blackbox A (F, stream);
 		// std::cout << A.rowdim() << ',' << A.coldim() << std::endl;
 
@@ -116,30 +117,29 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 			ret = false;
 		}
 
-		//!@bug not working.
-#if 1
-		size_t rank_Wiedemann ;
-		LinBox::rank (rank_Wiedemann, A, Method::Wiedemann ());
-		rank_elimination = rank_Wiedemann;
-		size_t rank_blas_elimination ;
-		if (F.characteristic() < LinBox::BlasBound && F.characteristic() == F.cardinality()) {
-			LinBox::rank (rank_blas_elimination, A, Method::BlasElimination ());
-		}
-		else {
-			LinBox::rank (rank_blas_elimination, A, Method::Elimination ());
-		}
+		{
+			size_t rank_Wiedemann ;
+			LinBox::rank (rank_Wiedemann, A, Method::Wiedemann ());
+			rank_elimination = rank_Wiedemann;
+			size_t rank_blas_elimination ;
+			if (F.characteristic() < LinBox::BlasBound && F.characteristic() == F.cardinality()) {
+				LinBox::rank (rank_blas_elimination, A, Method::BlasElimination ());
+			}
+			else {
+				LinBox::rank (rank_blas_elimination, A, Method::Elimination ());
+			}
 
-		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Rank computed by Wiedemann: " << rank_Wiedemann << endl
 			<< "Rank computed by sparse elimination: " << rank_elimination << endl
 			<< "Rank computed by blas_elimination: " << rank_blas_elimination << endl;
 
-		if (rank_Wiedemann != rank_elimination || rank_elimination != rank_blas_elimination) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			if (rank_Wiedemann != rank_elimination || rank_elimination != rank_blas_elimination) {
+				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Ranks are not equal" << endl;
-			ret = false;
+				ret = false;
+			}
 		}
-#endif
 
 		commentator().stop ("done");
 		commentator().progress ();

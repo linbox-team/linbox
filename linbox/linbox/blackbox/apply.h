@@ -92,8 +92,6 @@ namespace LinBox
 			_domain(D), _MD(D)
 		{
 			_domain.characteristic(_prime);
-			_domain.init(_one,1UL);
-			_domain.init(_zero,0UL);
 		}
 
 
@@ -107,10 +105,10 @@ namespace LinBox
 
 				FFLAS::fgemv((typename Domain::Father_t) _domain, FFLAS::FflasNoTrans,
 					      A.rowdim(), A.coldim(),
-					      _one,
+					      _domain.one,
 					      A.getPointer(), A.getStride(),
 					      &x[0],1,
-					      _zero,
+					      _domain.zero,
 					      &y[0],1);
 			}
 			else {
@@ -128,10 +126,10 @@ namespace LinBox
 
 				FFLAS::fgemv((typename Domain::Father_t) _domain, FFLAS::FflasTrans,
 					      A.rowdim(), A.coldim(),
-					      _one,
+					      _domain.one,
 					      A.getPointer(), A.getStride(),
 					      &x[0],1,
-					      _zero,
+					      _domain.zero,
 					      &y[0],1);
 			}
 			else {
@@ -262,7 +260,6 @@ namespace LinBox
 	private:
 		Domain            _domain;
 		integer            _prime;
-		Element        _one,_zero;
 		MatrixDomain<Domain>  _MD;
 
 
@@ -509,13 +506,13 @@ namespace LinBox
 				vchunks = new double[_n*_rns->size()];
 
 				// prepare special CRT
-				Element g, s, q, zero,one,two;
+				Element g, s, q, two;
 				_q= _rns->getCRTmodulo();
-				_domain.init(q,_q);_domain.init(zero,0UL);_domain.init(one,1UL);_domain.init(two,2UL);
+				_domain.init(q,_q);_domain.init(two,2UL);
 				_domain.xgcd(g, _inv_q, s, q, _prime);
-				if (_domain.compare(_inv_q, zero)<0 ) _domain.addin(_inv_q,_prime);
+				if (_domain.compare(_inv_q, _domain.zero)<0 ) _domain.addin(_inv_q,_prime);
 				_domain.mul(_pq,_prime,q);
-				_domain.sub(_h_pq,_pq, one);
+				_domain.sub(_h_pq,_pq, _domain.one);
 				_domain.divin(_h_pq, two);
 
 				break;

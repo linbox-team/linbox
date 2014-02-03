@@ -158,9 +158,6 @@ namespace LinBox
 			size_t m,n, rank;
 			m = E.rowdim();
 			n = E.coldim();
-			// Element zero, one;
-			// field().init(zero,0);
-			// field().init(one,1);
 
 			BlasPermutation<size_t> P(E.coldim());
 			BlasPermutation<size_t> Qt(E.rowdim());
@@ -194,9 +191,6 @@ namespace LinBox
 
 			m = E.rowdim();
 			n = E.coldim();
-			// Element zero, one;
-			// field().init(zero,0);
-			// field().init(one,1);
 
 			// compute the LQUP of E
 			BlasPermutation<size_t> P(E.coldim());

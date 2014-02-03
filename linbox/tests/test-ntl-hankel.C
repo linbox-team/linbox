@@ -90,8 +90,6 @@ int main(int argc, char* argv[])
 
 	// Now we are using the NTL wrapper as the field, call the instance F
 	Field F(q); //!@bug q or not q ?
-	element zero;
-	F.init(zero, 0);
 
 	// Use the default constructor to create a matrix
 	// LinBox::Hankel<Field> T(F);

@@ -117,8 +117,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 
 	for (size_t i = 0 ; i < rows*ldb  ; ++i) G.random( *(B+i) ) ;
 
-	Element zero ; F.init(zero,0UL);
-	for (size_t i = 0 ; i < M*N ; ++i) *(C+i) = zero;
+	for (size_t i = 0 ; i < M*N ; ++i) *(C+i) = F.zero;
 	// for (size_t i = 0 ; i < rows*ldb ; ++i) *(D+i) = *(B+i);
 	FFLAS::fcopy(F,rows*ldb,D,1,B,1);
 	Element alpha ;

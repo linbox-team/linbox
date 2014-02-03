@@ -71,9 +71,6 @@ namespace LinBox
 
 			// be ready for random elements
 			NonzeroRandIter<Field> Rnz(F,R);
-			Element one,zero;
-			F.init(one,1UL);
-			F.init(zero,0UL);
 
 			/* Create L a random invertible lower unit triangular matrix (m x m format) */
 			for (size_t j=0 ; j<m ; ++j)
@@ -84,7 +81,7 @@ namespace LinBox
 				Rnz.random( L.refEntry( i,i ) ); // non zero diagonal
 			for (size_t j=0 ; j<m ; ++j)
 				for (size_t i=0; i<j;++i)
-					L.setEntry( i,j,zero );
+					L.setEntry( i,j,F.zero );
 
 
 #endif
@@ -98,7 +95,7 @@ namespace LinBox
 #if 1
 			for (size_t i = (size_t)rank ; i < m ; ++i)
 				for (size_t j = i ; j < n ; ++j)
-					U.setEntry( i,j,zero ) ; //  zero on remaining 'triangular' lines
+					U.setEntry( i,j,F.zero ) ; //  zero on remaining 'triangular' lines
 #endif
 
 			/**
@@ -166,7 +163,6 @@ namespace LinBox
 			RandomIntegerIter<false> T_(3);
 			NonzeroRandIter<Ring,RandomIntegerIter<false> > U_(ZZ,T_);
 
-			Int one(1),zero(0);
 
 			/* Create L a random invertible lower unit triangular matrix (m x m format) */
 			for (size_t j=0 ; j<m ; ++j)
@@ -177,7 +173,7 @@ namespace LinBox
 				U_.random( L.refEntry( i,i ) ); // non zero diagonal
 			for (size_t j=0 ; j<m ; ++j)
 				for (size_t i=0; i<j;++i)
-					L.setEntry( i,j,zero );
+					L.setEntry( i,j,ZZ.zero );
 
 
 #endif
@@ -191,7 +187,7 @@ namespace LinBox
 #if 1
 			for (size_t i = (size_t)rank ; i < m ; ++i)
 				for (size_t j = i ; j < n ; ++j)
-					U.setEntry( i,j,zero ) ; //  zero on remaining 'triangular' lines
+					U.setEntry( i,j,ZZ.zero ) ; //  zero on remaining 'triangular' lines
 #endif
 
 			RandomBlasPermutation(P);
