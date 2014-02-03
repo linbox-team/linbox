@@ -81,7 +81,7 @@ namespace LinBox
 		 * @param B blackbox
 		 */
 		Compose (const Blackbox1 &A, const Blackbox2 &B) :
-			_A_ptr(&A), _B_ptr(&B)
+			_A_ptr(&A), _B_ptr(&B),_z(A.field())
 		{
 			// Rich Seagraves - "It seems VectorWrapper somehow
 			// became depricated.  Makes the assumption that
@@ -97,7 +97,7 @@ namespace LinBox
 		 * @param B_ptr blackbox
 		 */
 		Compose (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr) :
-			_A_ptr(A_ptr), _B_ptr(B_ptr)
+			_A_ptr(A_ptr), _B_ptr(B_ptr),_z(A_ptr->field())
 		{
 			linbox_check (A_ptr != (Blackbox1 *) 0);
 			linbox_check (B_ptr != (Blackbox2 *) 0);
@@ -113,8 +113,7 @@ namespace LinBox
 		 * @param[in] Mat blackbox to copy.
 		 */
 		Compose (const Compose<Blackbox1, Blackbox2>& Mat) :
-			_A_ptr ( Mat._A_ptr), _B_ptr ( Mat._B_ptr)
-			//{ VectorWrapper::ensureDim (_z, _A_ptr->coldim ()); }
+			_A_ptr ( Mat._A_ptr), _B_ptr ( Mat._B_ptr),_z(Mat.field())
 		{
 			_z.resize(_A_ptr->coldim());
 		}
