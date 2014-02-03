@@ -689,7 +689,7 @@ namespace LinBox
 
 		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); ++i, ++j, ++idx) {
 			while (idx < j->first) {
-				field().init (*i, 0);
+				field().assign(*i, field().zero);
 				++i; ++idx;
 			}
 
@@ -746,7 +746,7 @@ namespace LinBox
 
 		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); ++i, ++j, ++idx) {
 			while (idx < j->first) {
-				field().init (*i, 0);
+				field().assign(*i, field.zero);
 				++i; ++idx;
 			}
 
@@ -821,7 +821,7 @@ namespace LinBox
 
 		while (j_idx != v.first.end ()) {
 			while (idx < *j_idx) {
-				field().init (*i, 0);
+				field().assign(*i, field().zero);
 				++i; ++idx;
 			}
 

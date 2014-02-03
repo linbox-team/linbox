@@ -95,8 +95,7 @@ int dyadicToRational (
 	// now a/b is solution but signs may be wrong
 	Z.abs(a,a);
 	Z.abs(b,b);
-	Int zero; Z.init(zero, 0);
-	if (Z.compare(n, zero) < 0)  Z.negin(a); // a = -a;
+	if (Z.compare(n, Z.zero) < 0)  Z.negin(a); // a = -a;
 
 //std::cout << "DtR in n, d " << n << " "<< d << ", bound " << B << ", out a, b " << a << " " << b << std::endl;
 	bool guarantee = b*B < d;
@@ -124,9 +123,9 @@ bool partial_hegcd(Ring& Z, typename Ring::Element& e, typename Ring::Element& b
 	Int quo, r, tmp;  Z.init(quo); Z.init(r); Z.init(tmp);
 	bool withinbound, wellapproximated;
 
-	Int b0; Z.init(b0, 1); // and a0 = -0
+	Int b0; Z.assign(b0, Z.one); // and a0 = -0
 	Int r0; Z.init(r0, n); // so that r0 = b0*n - a0*d
-	Int b1; Z.init(b1, -0); // and a1 = 1
+	Int b1; Z.assign(b1, Z.zero); // and a1 = 1
 	Int r1; Z.init(r1, d); // so that r1 = b1*n - a1*d
 //std::cout << "init 1 -0: " << b0 << " " << b1 << std::endl;
 
@@ -164,17 +163,16 @@ int dyadicToRational(
 	typedef typename Ring::Element Int;
 	Int q, rem, tmp_den, nx;
 	Z.init(q); Z.init(rem); Z.init(tmp_den); Z.init(nx);
-	Int one; Z.init(one, 1);
 	Int two; Z.init(two, 2);
 	Int denx2;
 	Z.init(denx2, denx); Z.divin(denx2, two);// denx2 = denx/2, for balancing remainders.
 	std::stack<std::pair<size_t, Int> > S;
 	Int tmp; Z.init(tmp);
 
-	Int den_lcm; Z.init(den_lcm, 1);
+	Int den_lcm; Z.assign(den_lcm, Z.one);
 	den = den_lcm; // = 1.
 
-	S.push(std::pair<int, Int>(0, 1));
+	S.push(std::pair<int, Int>(0, Z.one));
 	Int e; Z.init(e);// e for error
 	int ret = 2; // 2 means guaranteed, 1 possible, 0 fail.
 	for (size_t i = 0; i < num.size(); ++i) {
@@ -183,7 +181,7 @@ int dyadicToRational(
 		Z.quoRem(num[i], e, tmp, denx); //nx*den - num[i]*denx = e, with num[i] and e nonneg.
 		// we need |nx/denx - num[i]/den| == e/den*denx <= 1/2denx, so 2e <= den.
 		// adjust to balanced remainder e.
-		if (Z.compare(e, denx2) >= 0) {Z.subin(e, denx), Z.addin(num[i], one); }
+		if (Z.compare(e, denx2) >= 0) {Z.subin(e, denx), Z.addin(num[i], Z.one); }
 		//nx*den = num[i]*denx + e , thus |nx/denx - num[i]/den| = e/denx*den
 
 	// can try e < den && 2*e < den for speed
@@ -208,12 +206,11 @@ int dyadicToRational(
 			if (Z.compare(den, denBound)>0) return false; // den > denBound
 		}
 
-		Int zero; Z.init(zero);
-		if (Z.compare(numx[i], zero) < 0) Z.negin(num[i]); // numx[i] < 0
+		if (Z.compare(numx[i], Z.zero) < 0) Z.negin(num[i]); // numx[i] < 0
 
 	}
 	// now fix shorties
-	Int t; Z.init(t, 1);
+	Int t; Z.assign(t, Z.one);
 	while ( S.size() > 1 ) {
 		Z.mulin(t, S.top().second);
 		int k = (int)S.top().first;

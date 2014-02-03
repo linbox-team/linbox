@@ -1117,8 +1117,8 @@ namespace LinBox
 			//std::cout<<"degree: "<<pts<<"\n";
 
 			// compute power of w and w^(-1)
-			field().init(pow_w[0],1);
-			field().init(pow_inv_w[0],1);
+			field().assign(pow_w[0],field().one);
+			field().assign(pow_inv_w[0],field().one);
 			for (size_t i=1;i<pts;++i){
 				field().mul(pow_w[(size_t)i], pow_w[(size_t)i-1], _w);
 				field().mul(pow_inv_w[(size_t)i], pow_inv_w[(size_t)i-1], _inv_w);
@@ -1336,8 +1336,8 @@ namespace LinBox
 			std::vector<Element> pow_inv_w(pts);
 
 			// compute power of w and w^(-1)
-			field().init(pow_w[0],1);
-			field().init(pow_inv_w[0],1);
+			field().assign(pow_w[0],field().one);
+			field().assign(pow_inv_w[0],field().one);
 			for (size_t i=1;i<pts;++i){
 				field().mul(pow_w[(size_t)i], pow_w[(size_t)i-1], _w);
 				field().mul(pow_inv_w[(size_t)i], pow_inv_w[(size_t)i-1], _inv_w);
@@ -1495,8 +1495,8 @@ namespace LinBox
 			std::vector<Element> pow_inv_w(pts);
 
 			// compute power of w and w^(-1)
-			field().init(pow_w[0],1);
-			field().init(pow_inv_w[0],1);
+			field().assign(pow_w[0],field().one);
+			field().assign(pow_inv_w[0],field().one);
 			for (size_t i=1;i<pts;++i){
 				field().mul(pow_w[(size_t)i], pow_w[(size_t)i-1], _w);
 				field().mul(pow_inv_w[(size_t)i], pow_inv_w[(size_t)i-1], _inv_w);
@@ -1688,8 +1688,7 @@ namespace LinBox
 				//_MD.addin(fft[shift],fft[shift+n2]);
 				//_MD.sub(fft[shift+n2], tmp, fft[shift+n2]);
 				//myAddSub(fft[shift],fft[shift+n2]);
-				Element one;field().init(one,integer(1));
-				Butterfly(fft[shift],fft[shift+n2],one);
+				Butterfly(fft[shift],fft[shift+n2],field().one);
 
 				for (size_t i=1; i< n2; ++i){
 					Butterfly(fft[shift+i],fft[shift+i+n2],pow_w[(size_t)idx_w*i]);

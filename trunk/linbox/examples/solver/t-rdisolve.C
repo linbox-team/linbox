@@ -202,11 +202,13 @@ int test()
 		if (iteration==2 && !useDiophantine) continue;
 
 		// no more cleaning
+#if 0
 		//clear x
-		//for (FractionVector::Dense::iterator i=x.begin(); i!=x.end(); i++) {
-		//	R.init(i->first, 0);
-		//	R.init(i->second, 0);
-		//}
+		for (FractionVector::Dense::iterator i=x.begin(); i!=x.end(); i++) {
+			R.assign(i->first, R.zero);
+			R.assign(i->second, R.zero);
+		}
+#endif
 
 		QSolver* rsolver;
 		if (defaultPrime == 0)
@@ -284,7 +286,7 @@ int test()
 
 				Integer dp, tmp, denzb;
 				VectorFraction<Ring> z(zsolver.lastCertificate);
-				R.init(dp, 0);
+				R.assign(dp, R.zero);
 				typename Vector::iterator zi = z.numer.begin();
 				typename Vector::iterator bi = b.begin();
 				for (; bi != b.end(); bi++, zi++)
@@ -300,7 +302,7 @@ int test()
 
 				bool certified2 = true;
 				Integer* nza = new Integer[c]; //z.numer * A
-				for (int i=0; i<c; i++) R.init(nza[i], 0);
+				for (int i=0; i<c; i++) R.assign(nza[i], R.zero);
 				for (int i=0; i<n; i++)
 					for (int j=0; j<c; j++)
 						R.addin(nza[j], R.mul(tmp, z.numer[i], A[i][j]));
@@ -327,8 +329,8 @@ int test()
 
 			Integer certb, tmp;
 
-			for (int i=0; i<c; i++) R.init(certA[i], 0);
-			R.init(certb, 0);
+			for (int i=0; i<c; i++) R.assign(certA[i], R.zero);
+			R.assign(certb, R.zero);
 
 			for (int i=0; i<n; i++)
 				for (int j=0; j<c; j++)

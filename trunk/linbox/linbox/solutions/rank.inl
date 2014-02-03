@@ -25,6 +25,12 @@
 #ifndef __LINBOX_rank_INL
 #define __LINBOX_rank_INL
 
+#define __LINBOX_rank_sparse_elimination_format SparseMatrixFormat::SparseSeq
+// #define __LINBOX_rank_sparse_elimination_format SparseMatrixFormat::SparseMar
+// #define __LINBOX_rank_sparse_elimination_format SparseMatrixFormat::SparsePar
+// #define __LINBOX_rank_sparse_elimination_format SparseMatrixFormat::COO
+// #define __LINBOX_rank_sparse_elimination_format SparseMatrixFormat::CSR
+
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -142,7 +148,7 @@ namespace LinBox
 			commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Pseudo Minpoly degree: " << res << std::endl;
 
 			commentator().start ("Monte Carlo certification (1)", "trace");
-			typename Field::Element t, p2; F.init(p2, 0UL);
+			typename Field::Element t, p2; F.assign(p2, F.zero);
 			trace(t, B);
 			if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
 
@@ -283,7 +289,7 @@ namespace LinBox
 			commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Pseudo Minpoly degree: " << res << std::endl;
 			commentator().start ("Monte Carlo certification (4)", "trace");
 
-			typename Field::Element t, p2; F.init(p2, 0UL);
+			typename Field::Element t, p2; F.assign(p2, F.zero);
 			//             trace(t, B_i);
 			WhisartTraceTranspose(t, F, D1_i, A, D2_i);
 			if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
@@ -409,9 +415,7 @@ namespace LinBox
 	{
 		typedef typename Blackbox::Field Field;
 		//! @bug choose (benchmark) best representation for Sparse Elimination
-		typedef SparseMatrix<Field, SparseMatrixFormat::SparseSeq > SparseBB;
-		// typedef SparseMatrix<Field, SparseMatrixFormat::SparsePar > SparseBB;
-		// typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap > SparseBB;
+		typedef SparseMatrix<Field, __LINBOX_rank_sparse_elimination_format > SparseBB;
 		// typedef Blackbox SparseBB;
 		SparseBB SpA(A.field(), A.rowdim(), A.coldim() );
 		MatrixHom::map(SpA, A);

@@ -417,7 +417,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 			void  Algorithm3dot2(Coefficient &tau, Coefficient &D, std::vector<size_t> &d, size_t &mu, size_t &sigma, size_t &beta)
 			{
 				Element pivel;
-				field().init(pivel,0);
+				field().assign(pivel,field().zero);
 				// Retrieve the row and column dimensions of the sequence and the dimension of the discrepancy
 				size_t n = D.rowdim();
 				size_t nm  = D.coldim();

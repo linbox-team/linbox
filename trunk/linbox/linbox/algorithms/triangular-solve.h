@@ -66,7 +66,7 @@ namespace LinBox
 
 			VectorDomain<Field> VD(F);
 			for( ; row != U.rowBegin(); --row, --vec, --res) {
-				F.init(*res, 0UL);
+				F.assign(*res, F.zero);
 				if (row->size()) {
 					typename Field::Element tmp;
 					VD.dot(tmp, *row, x);
@@ -84,7 +84,7 @@ namespace LinBox
 				}
 			}
 
-			F.init(*res, 0UL);
+			F.assign(*res, F.zero);
 			if (row->size()) {
 				typename Field::Element tmp;
 				VD.dot(tmp, *row, x);
@@ -188,7 +188,7 @@ namespace LinBox
 
 		VectorDomain<Field> VD(F);
 		for( ; row != L.rowEnd(); ++row, ++vec, ++res) {
-			F.init(*res, 0UL);
+			F.assign(*res, F.zero);
 			typename Field::Element tmp;
 			VD.dot(tmp, *row, x);
 			F.negin(tmp);

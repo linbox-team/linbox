@@ -91,7 +91,7 @@ namespace LinBox
 			typename Matrix::ConstIterator raw_p;
 			Modular<double>::Element* A_local_p;
 			for (A_local_p = A_local; A_local_p != A_local + (n*m); ++ A_local_p)
-				F. init (*A_local_p, 0);
+				F. assign (*A_local_p, F.zero);
 			integer tmp;
 			for (rawi_p = A. IndexedBegin(), raw_p = A. Begin(), A_local_p = A_local; rawi_p != A. IndexedEnd(); ++ rawi_p, ++ raw_p, ++ A_local_p) {
 				//F. init (*A_local_p, *raw_p);

@@ -517,7 +517,7 @@ namespace LinBox
 				    const Vect1<DomainElement, Alloc<DomainElement> >& v1,
 				    const Vect2& v2)
 		{
-			D.init(z,0); DomainElement tmp;
+			D.assign(z,D.zero); DomainElement tmp;
 			typename Vect1<DomainElement, Alloc<DomainElement> >::const_iterator v1_p;
 			typename Vect2::const_iterator v2_p;
 
@@ -531,7 +531,7 @@ namespace LinBox
 				    const BlasVector<Domain>& v1,
 				    const Vect2& v2)
 		{
-			D.init(z,0); DomainElement tmp;
+			D.assign(z,D.zero); DomainElement tmp;
 			typename BlasVector<Domain>::const_iterator v1_p;
 			typename Vect2::const_iterator v2_p;
 

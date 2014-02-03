@@ -34,7 +34,7 @@ namespace LinBox
 
 	/** \brief This is Iliopoulos' algorithm to diagonalize.
 
-	 * Compute Smith Form by elimination modulo m, 
+	 * Compute Smith Form by elimination modulo m,
 	 * for m = S(n), the last invariant factor.
 	 * The elimination method is originally described in
 	 * @bib
@@ -146,7 +146,7 @@ namespace LinBox
 
 				typename std::vector<Element>::iterator p1, p2;
 
-				r. init(tmp_v[0], 1);
+				r. assign(tmp_v[0], r.one);
 
 				p1 = tmp_v.begin() + 1;
 				p2 = tmp_v.begin() + 1;
@@ -157,7 +157,7 @@ namespace LinBox
 
 				r.assign(g, *row_p2); ++ row_p2;
 
-				r.init(*p1, 1); ++ p1;
+				r.assign(*p1, r.one); ++ p1;
 
 				for (; row_p2 != cur_r -> end(); ++ row_p2, ++ p1) {
 
@@ -315,11 +315,11 @@ namespace LinBox
 
 				r.assign (g, *col_p2); ++ col_p2;
 
-				r. init (tmp_v[0], 1);
+				r. assign(tmp_v[0], r.one);
 
 				p1 = tmp_v.begin() + 1;
 
-				r.init(*p1,1); ++ p1;
+				r.assign(*p1,r.one); ++ p1;
 
 				for(; col_p2 != cur_c -> end(); ++ col_p2, ++ p1) {
 

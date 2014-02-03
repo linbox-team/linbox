@@ -64,7 +64,7 @@ namespace LinBox
 	template<class Domain, class Vector>
 	typename Domain::Element vectorGcd(Domain& D, Vector& v) {
 		typename Domain::Element result;
-		D.init(result, 0);
+		D.assign(result, D.zero);
 		vectorGcdIn(result, D, v);
 		return result;
 	}
@@ -160,7 +160,7 @@ namespace LinBox
 			typename Vector::iterator i;
 			numer.resize(size);
 			for (i=numer.begin(); i!=numer.end(); ++i)
-				_domain.init(*i, 0);
+				_domain.assign(*i, _domain.zero);
 		}
 
 		/**
@@ -261,7 +261,7 @@ namespace LinBox
 				return true;
 			}
 
-			Element A, g, l, n1d2_g, n2d1_g, lincomb, g2, tmpe, one;
+			Element A, g, l, n1d2_g, n2d1_g, lincomb, g2, tmpe;
 
 			_domain.gcd(g, d1, d2);   //compute gcd
 			_domain.mul(l, d1, d2);
@@ -277,7 +277,6 @@ namespace LinBox
 			integer tmp;
 			_domain.mul(tmpe, denom, other.denom);
 			_domain.convert(tmp, tmpe);
-			_domain.init(one, 1);
 			typename Domain::RandIter randiter(_domain, tmp); //seed omitted
 			// TODO: I don't think this random iterator has high-quality low order bits, which are needed
 			do {
@@ -286,7 +285,7 @@ namespace LinBox
 				_domain.axpyin(lincomb, A, n2d1_g);
 				_domain.gcd(g2, lincomb, l);
 			}
-			while (!_domain.areEqual(one, g2));
+			while (!_domain.areEqual(_domain.one, g2));
 
 			this->axpyin(A, other);
 			_domain.lcmin(d1, d2);

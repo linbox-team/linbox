@@ -90,7 +90,7 @@ namespace LinBox
 		if (it != minp.end())
 			return v=*it;
 		else
-			return A.field().init(v,0UL);
+			return A.field().assign(v,A.field().zero);
 	}
 
 }
@@ -242,7 +242,7 @@ namespace LinBox
 			// compute the minpoly of AAT
 			minpoly(poly, AAT, Method::Wiedemann());
 			typename Poly::iterator p;
-			F. init (v, 0);
+			F. assign(v, F.zero);
 
 			for (p = poly. begin(); p != poly. end(); ++ p)
 				if (! F. isZero (*p)) {

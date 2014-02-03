@@ -230,7 +230,7 @@ namespace LinBox
 			// Building the integer charpoly
 			IntPoly intCharPoly (n+1);
 			IntPoly tmpP;
-			intRing.init (intCharPoly[0], 1);
+			intRing.assign(intCharPoly[0], intRing.one);
 			for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
 				IPD.pow (tmpP, *it_f->second->intP, (long) it_f->second->multiplicity);
 				IPD.mulin (intCharPoly, tmpP);
@@ -327,7 +327,7 @@ namespace LinBox
 
 				// Building the product
 				Polynomial tmpP;
-				F.init (charPoly[0], 1);
+				F.assign(charPoly[0], F.one);
 				for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
 					PD.pow (tmpP, *it_f->second->fieldP,(long) it_f->second->multiplicity);
 					PD.mulin (charPoly, tmpP);

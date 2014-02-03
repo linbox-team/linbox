@@ -268,7 +268,8 @@ namespace LinBox
 #endif
 
 		field().init(determinant,field().one);
-		Vector Vzer (0);
+		Vector Vzer(0) ;
+
 		// allocation of the column density
 		std::vector<size_t> col_density (Nj);
 
