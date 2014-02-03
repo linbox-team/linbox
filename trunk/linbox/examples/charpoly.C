@@ -42,7 +42,7 @@ using namespace LinBox;
 template <class Field, class Polynomial>
 std::ostream& printPolynomial (std::ostream& out, const Field &F, const Polynomial &v)
 {
-	for (int i = v.size () - 1; i >= 0; i--) {
+	for (int i = (int)(v.size () - 1); i >= 0; i--) {
 		F.write (out, v[(size_t)i]);
 		if (i > 0)
 			out << " X^" << i << " + ";
@@ -119,7 +119,7 @@ int main (int argc, char **argv)
 		tim.stop();
 
 		cout << "Characteristic Polynomial is ";
-		//printPolynomial (cout, ZZ, c_A) << endl;
+		printPolynomial (cout, ZZ, c_A) << endl;
 		cout << tim << endl;
 
 #ifdef __LINBOX_HAVE_NTL
@@ -159,7 +159,7 @@ int main (int argc, char **argv)
 		tim.stop();
 
 		cout << "Characteristic Polynomial is ";
-		//printPolynomial (cout, F, c_B) << endl;
+		printPolynomial (cout, F, c_B) << endl;
 		cout << tim << endl;
 	}
 
