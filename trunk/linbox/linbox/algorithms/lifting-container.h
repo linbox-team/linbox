@@ -72,7 +72,7 @@ namespace LinBox
 		//size_t m, n, col=0;
 		//n=A.coldim();
 		//m=A.rowdim();
-		R.init(H_col_sqr, R.one);
+		R.assign(H_col_sqr, R.one);
 
 		typename ItMatrix::ConstRowIterator row= A.rowBegin();
 		std::vector<Integer_t> tmp(A.coldim(), R.zero);
@@ -132,7 +132,7 @@ namespace LinBox
 		size_t m,n;
 		n=A.coldim();
 		m=A.rowdim();
-		R.init(H_col_sqr, R.one);
+		R.assign(H_col_sqr, R.one);
 		typename std::vector<Integer_t>::const_iterator iter;
 		std::vector<Integer_t> e(n,R.zero),tmp(m);
 
@@ -160,7 +160,7 @@ namespace LinBox
 		size_t m,n;
 		n=A.coldim();
 		m=A.rowdim();
-		R.init(H_col_sqr, R.one);
+		R.assign(H_col_sqr, R.one);
 		typename std::vector<Integer_t>::const_iterator iter;
 		std::vector<Integer_t> e(n,R.zero),tmp(m);
 		for (size_t i=0;i<n;++i){
@@ -186,7 +186,7 @@ namespace LinBox
 		size_t m,n;
 		n=A.coldim();
 		m=A.rowdim();
-		R.init(H_col_sqr, R.one);
+		R.assign(H_col_sqr, R.one);
 		typename std::vector<Integer_t>::const_iterator iter;
 		std::vector<Integer_t> e(n,R.zero),tmp(m);
 		for (size_t i=0;i<n;++i){
@@ -219,7 +219,7 @@ namespace LinBox
 		   size_t m,n;
 		   n=A.coldim();
 		   m=A.rowdim();
-		   R.init(H_col_sqr, R.one);
+		   R.assign(H_col_sqr, R.one);
 		   typename std::vector<Integer_t>::const_iterator iter;
 		   std::vector<Integer_t> e(n,R.zero),tmp(m);
 		   for (size_t i=0;i<n;++i){
@@ -248,7 +248,7 @@ namespace LinBox
 	{
 		typedef typename Ring::Element Integer_t;
 		Integer_t possum, negsum;
-		R.init(bound_A, R.zero);
+		R.assign(bound_A, R.zero);
 
 		typename ItMatrix::ConstRowIterator rowIter;
 		rowIter = A.rowBegin();
@@ -1199,7 +1199,6 @@ namespace LinBox
 		size_t                        _numblock;
 		VectorDomain<Field>                 _VD;
 		BlasMatrixDomain<Field>            _BMD;
-		Element                           _zero;
 
 	public:
 #ifdef RSTIMING
@@ -1240,7 +1239,6 @@ namespace LinBox
 					field().assign(_u[i][j], U.getEntry(0, i*_numblock+j));
 					field().assign(_v[i][j], V.getEntry(i*_numblock+j, i));
 				}
-			field().init(_zero,field().zero);
 
 			//Ap.write(std::cout,F);
 #ifdef RSTIMING

@@ -130,9 +130,6 @@ namespace LinBox
 		GivaroGfq() :
 		 Givaro::GFqDom<int32_t>()
 		{
-			// Givaro::GFqDom<int32_t>::init(one,1);
-			// Givaro::GFqDom<int32_t>::init(mOne,-1);
-			// Givaro::GFqDom<int32_t>::init(zero,0);
 		}
 
 		/** Constructor from an integer
@@ -152,9 +149,6 @@ namespace LinBox
                             MSGFFMAXE << "cardinality must be < 2^" << _GIVARO_FF_MAXEXPONENT_;
 				throw PreconditionFailed(LB_FILE_LOC,MSGFFMAXE.str().c_str());
 			}
-			// Givaro::GFqDom<int32_t>::init(one,1);
-			// Givaro::GFqDom<int32_t>::init(mOne,-1);
-			// Givaro::GFqDom<int32_t>::init(zero,0);
 
 		}
 

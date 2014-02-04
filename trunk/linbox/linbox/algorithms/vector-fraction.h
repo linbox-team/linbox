@@ -102,7 +102,7 @@ namespace LinBox
 			bool alreadyReduced = false;
 			typename FVector::iterator i;
 
-			D.init(denom, D.one);
+			D.assign(denom, D.one);
 			if (!alreadyReduced)
 				for (i=frac.begin(); i!=frac.end(); ++i)
 					reduceIn(D, *i);

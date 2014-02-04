@@ -132,7 +132,7 @@ namespace LinBox
 				   size_t                                  k)
 	{
 		typename Field::Element  a;
-		F.init(a,F.zero);
+		F.assign(a,F.zero);
 
 		// compute L:= (x)(x-1)(x-2)(x-3)...(x-k+1) = a1x+a2x^2+...+a(k-1)x^(k-1)
 		std::list<typename Field::Element> L(2);
