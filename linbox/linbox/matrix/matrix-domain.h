@@ -43,11 +43,14 @@
 #include "linbox/matrix/matrix-traits.h"
 #include "linbox/vector/vector-domain.h"
 //#include "linbox/matrix/blas-matrix.h"
+// #include "linbox/vector/blas-vector.h"
 
 namespace LinBox
 {
 	template<class Field, class Rep> class BlasMatrix;
 	template<class Matrix> class BlasSubmatrix;
+	template<class _Field, class _Rep> class BlasVector ;
+
 
 
 
@@ -67,6 +70,7 @@ namespace LinBox
 		template <class Vector1, class Matrix, class Vector2>
 		inline Vector1 &mulColDense (const VectorDomain<Field> &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const;
 	};
+
 
 	/** Class of matrix arithmetic functions.
 	 *
@@ -99,9 +103,9 @@ namespace LinBox
 		typedef typename Field::Element Element;
 		typedef Element Scalar;
 		//! @bug should be BlasVector
-		typedef std::vector<Element> Vector;
-		// subvector
-		typedef typename RawVector<typename Field::Element >::Dense Rep_;
+		typedef typename Vector<Field>::Dense Rep_;
+		// typedef Rep_ DenseVector;
+		typedef BlasVector<Field_,Rep_> DenseVector;
 		typedef BlasMatrix<Field,Rep_> OwnMatrix;
 		typedef BlasSubmatrix<OwnMatrix> Matrix;
 
@@ -1080,7 +1084,7 @@ namespace LinBox
 						   VectorCategories::GenericVectorTag,
 						   VectorCategories::GenericVectorTag) const
 		{
-			typename LinBox::Vector<Field>::Dense y;
+			DenseVector y(field());
 
 			VectorWrapper::ensureDim (y, w.size ());
 

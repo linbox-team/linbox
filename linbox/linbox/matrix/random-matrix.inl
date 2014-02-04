@@ -53,7 +53,7 @@ namespace LinBox
 				rank = (int) ( (double)std::min(m,n)*drand48() );
 			linbox_check(!(rank<0 || rank>(int)std::min(m,n)));
 
-			typedef typename Field::Element Element ;
+			// typedef typename Field::Element Element ;
 
 			// be ready for PLUQ
 			//size_t  * P = new size_t [m]   ;
@@ -140,7 +140,7 @@ namespace LinBox
 			       const RingCategories::IntegerTag & tag)
 		{
 
-			typedef typename Ring::Element Int ;
+			// typedef typename Ring::Element Int ;
 			size_t m = A.rowdim() ;
 			size_t n = A.coldim() ;
 

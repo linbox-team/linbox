@@ -473,12 +473,12 @@ namespace LinBox
 		linbox_check (A.rowdim () == A.coldim ());
 		linbox_check (A.coldim () == B.rowdim ());
 
-		typename LinBox::Vector<Field>::Dense t (A.rowdim ());
+		DenseVector t (field(),A.rowdim ());
 
 		typename Matrix2::ColIterator i;
 		typename Matrix1::ConstRowIterator j;
 
-		typename LinBox::Vector<Field>::Dense::iterator k;
+		typename DenseVector::iterator k;
 
 		for (i = B.colBegin (); i != B.colEnd (); ++i) {
 			for (j = A.rowBegin (), k = t.begin (); j != A.rowEnd (); ++j, ++k)
@@ -497,12 +497,12 @@ namespace LinBox
 		linbox_check (A.coldim () == B.rowdim ());
 		linbox_check (B.rowdim () == B.coldim ());
 
-		typename LinBox::Vector<Field>::Dense t (B.coldim ());
+		DenseVector t (field(),B.coldim ());
 
 		typename Matrix1::RowIterator i;
 		typename Matrix2::ConstColIterator j;
 
-		typename LinBox::Vector<Field>::Dense::iterator k;
+		typename DenseVector::iterator k;
 
 		for (i = A.rowBegin (); i != A.rowEnd (); ++i) {
 			for (j = B.colBegin (), k = t.begin (); j != B.colEnd (); ++j, ++k)
@@ -634,7 +634,7 @@ namespace LinBox
 		linbox_check (A.rowdim () == Y.rowdim ());
 		linbox_check (X.coldim () == Y.coldim ());
 
-		typename LinBox::Vector<Field>::Dense t (X.coldim ());
+		DenseVector t (field(),X.coldim ());
 
 		typename Matrix2::ConstRowIterator i = A.rowBegin ();
 		typename Matrix1::RowIterator j = Y.rowBegin ();
@@ -657,7 +657,7 @@ namespace LinBox
 		linbox_check (A.rowdim () == Y.rowdim ());
 		linbox_check (X.coldim () == Y.coldim ());
 
-		typename LinBox::Vector<Field>::Dense t (A.rowdim ());
+		DenseVector t (field(),A.rowdim ());
 
 		typename Matrix3::ConstColIterator i = X.colBegin ();
 		typename Matrix1::ColIterator j = Y.colBegin ();
@@ -865,7 +865,7 @@ namespace LinBox
 	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseSequenceVectorTag) const
 	{
-		typename LinBox::Vector<Field>::Dense t1 (A.coldim ()), t2 (A.rowdim ());
+		DenseVector t1 (field(),A.coldim ()), t2 (field(),A.rowdim ());
 
 		_VD.copy (t1, x);
 		_VD.copy (t2, y);
@@ -880,7 +880,7 @@ namespace LinBox
 	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseAssociativeVectorTag) const
 	{
-		typename LinBox::Vector<Field>::Dense t1 (A.coldim ()), t2 (A.rowdim ());
+		DenseVector t1 (field(),A.coldim ()), t2 (field(),A.rowdim ());
 
 		_VD.copy (t1, x);
 		_VD.copy (t2, y);
@@ -895,7 +895,7 @@ namespace LinBox
 	Vector1 &MatrixDomain<Field>::axpyinRowSpecialized (Vector1 &y, const Matrix_ &A, const Vector2 &x,
 							    VectorCategories::SparseParallelVectorTag) const
 	{
-		typename LinBox::Vector<Field>::Dense t1 (A.coldim ()), t2 (A.rowdim ());
+		DenseVector t1 (field(),A.coldim ()), t2 (field(),A.rowdim ());
 
 		_VD.copy (t1, x);
 		_VD.copy (t2, y);
@@ -931,7 +931,7 @@ namespace LinBox
 		typename Vector2::iterator j = x.begin ();
 
 
-		typename LinBox::Vector<Field>::Dense t (A.rowdim ());
+		DenseVector t (field(),A.rowdim ());
 
 		_VD.copy (t, y);
 
@@ -957,7 +957,7 @@ namespace LinBox
 		typename Vector2::iterator j = x.begin ();
 
 
-		typename LinBox::Vector<Field>::Dense t (A.rowdim ());
+		DenseVector t (field(),A.rowdim ());
 
 		_VD.copy (t, y);
 
@@ -984,7 +984,7 @@ namespace LinBox
 		typename Vector2::iterator j_elt = x.second.begin ();
 
 
-		typename LinBox::Vector<Field>::Dense t (A.rowdim ());
+		DenseVector t (field(),A.rowdim ());
 
 		_VD.copy (t, y);
 
