@@ -309,21 +309,20 @@ namespace LinBox
 			std::vector<PackedUnit>::const_iterator p;
 			size_t outRow = 0;
 			size_t outCol = 0;
-			Scalar x, zero;
-			_MD.init(zero,_MD.zro);
+			Scalar x;
 			size_t bp = bitPlace;
 
 			for(;outRow != numRows; ++outRow){
 				p = _rep.begin() + unitNum + outRow*(_rep.size()/_rows);
 				if(i + outRow >= _rows){
 					for(; outCol != numCols; ++outCol)
-						Out.setEntry(outRow, outCol, zero);
+						Out.setEntry(outRow, outCol, _MD._zro);
 				}
 
 				else{
 					for(; outCol != numCols; ++p){
 						for(; (bp != _valPerWord + 1) && (outCol != numCols); ++bp){
-							if (j + outCol >= _cols) x = zero;
+							if (j + outCol >= _cols) x = _MD._zro;
 							else _MD.init(x, ((*p) >> (_valPerWord - bp)) & _mask);
 							Out.setEntry(outRow, outCol, x);
 							++outCol;

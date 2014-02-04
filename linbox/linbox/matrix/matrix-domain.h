@@ -98,6 +98,7 @@ namespace LinBox
 		typedef Field_ Field;
 		typedef typename Field::Element Element;
 		typedef Element Scalar;
+		//! @bug should be BlasVector
 		typedef std::vector<Element> Vector;
 		// subvector
 		typedef typename RawVector<typename Field::Element >::Dense Rep_;

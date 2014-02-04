@@ -69,7 +69,6 @@ namespace LinBox
 			this->init(one, 1UL);
 			this->init(mOne);
 			this->neg(mOne,one);
-			// neg(init(mOne),one);
 		}
 
 		using BaseField::init;

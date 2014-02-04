@@ -78,8 +78,7 @@ namespace LinBox
 		long long nbelem = 0;
 #endif
 
-		Element Eone; field().init(Eone,field().one);
-		field().init(determinant,field().one);
+		field().assign(determinant,field().one);
 		// allocation of the column density
 		std::vector<size_t> col_density (Nj);
 
@@ -182,7 +181,7 @@ namespace LinBox
 				nbelem += LigneA_k->size ();
 #endif
 			}
-			E one((unsigned)k,Eone);
+			E one((unsigned)k,field().one);
 			LigneL[(size_t)k].push_back(one);
 			//                 LigneL.write(rep << "L:= ", Tag::FileFormat::Maple) << std::endl;
 			//                 LigneA.write(rep << "U:= ", Tag::FileFormat::Maple) << std::endl;
@@ -197,7 +196,7 @@ namespace LinBox
 			}
 		}
 
-		E one((unsigned)last,Eone);
+		E one((unsigned)last,field().one);
 		LigneL[(size_t)last].push_back(one);
 
 #ifdef __LINBOX_COUNT__
@@ -217,7 +216,7 @@ namespace LinBox
 #endif
 
 		if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
-			field().init(determinant,field().zero);
+			field().assign(determinant,field().zero);
 
 		integer card;
 		field().write(commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
@@ -267,7 +266,7 @@ namespace LinBox
 		long long nbelem = 0;
 #endif
 
-		field().init(determinant,field().one);
+		field().assign(determinant,field().one);
 		Vector Vzer(0) ;
 
 		// allocation of the column density
@@ -370,7 +369,7 @@ namespace LinBox
 		integer card;
 
 		if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
-			field().init(determinant,field().zero);
+			field().assign(determinant,field().zero);
 
 		field().write(commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 			      << "Determinant : ", determinant)
@@ -407,7 +406,7 @@ namespace LinBox
 		long long nbelem = 0;
 #endif
 
-		field().init(determinant,field().one);
+		field().assign(determinant,field().one);
 		// allocation of the column density
 		std::vector<size_t> col_density (Nj);
 
@@ -522,7 +521,7 @@ namespace LinBox
 		integer card;
 
 		if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
-			field().init(determinant,field().zero);
+			field().assign(determinant,field().zero);
 
 		field().write(commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 			      << "Determinant : ", determinant)
@@ -562,7 +561,7 @@ namespace LinBox
 #endif
 		Vector Vzer (0);
 
-		field().init(determinant,field().one);
+		field().assign(determinant,field().one);
 		long last = (long)Ni - 1;
 		long c;
 		unsigned long indcol (0);
@@ -599,7 +598,7 @@ namespace LinBox
 
 		if ((res < Ni) || (res < Nj))
 			if ((res < Ni) || (res < Nj) || (Ni == 0) || (Nj == 0))
-				field().init(determinant,field().zero);
+				field().assign(determinant,field().zero);
 
 		integer card;
 

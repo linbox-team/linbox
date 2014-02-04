@@ -514,7 +514,7 @@ namespace LinBox
 
 		// create field elements and size_t to be used in calculations
 		Element  entry;
-		field().init (entry, field().zero);
+		field().assign (entry, field().zero);
 
 		// Create iterators for input and stored vectors
 		typename BlasVector<Field>::const_iterator v_iter;
@@ -561,7 +561,7 @@ namespace LinBox
 
 		// create field elements and size_t to be used in calculations
 		Element  entry;
-		field().init (entry, field().zero);
+		field().assing (entry, field().zero);
 
 		// Create iterators for input and stored vectors
 		typename BlasVector<Field>::const_iterator v_iter;

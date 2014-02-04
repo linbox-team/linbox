@@ -69,16 +69,17 @@ int main(int argc, char **argv)
 	for(i = 0; i < n; i++) { rows[2*n+i] = i; cols[2*n+i] = i; } // diag
 	Matrix testMatrix(afield, rows, cols, n, n, 3*n - 2);
 
-	/*
+#if 0
 	   for(i = 0; i < n; i++) { rows[i] = i; cols[i] = i; } // diag
 	   Matrix testMatrix(afield, rows, cols, n, n, n);
-	   */
-	/*
+#endif
+
+#if 0
 	   Matrix testMatrix(afield);
 	   ifstream mat_in("data/n4c6.b9.186558x198895.sms");
 	   testMatrix.read(mat_in);
 	   std::cout << testMatrix.rowdim() << " " << testMatrix.coldim() << " " << testMatrix.nnz() << std::endl;
-	   */
+#endif
 
 
 	commentator().start("ZeroOne matrix blackbox test suite", "ZeroOne");
@@ -92,11 +93,10 @@ int main(int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

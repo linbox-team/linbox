@@ -148,7 +148,7 @@ namespace LinBox
 				if( !this->sin->good() ) return BAD_FORMAT;
 			}
 
-			if( pattern ) this->ms->getField().init(v,Integer::one);
+			if( pattern ) this->ms->getField().assign(v,this->ms->getField().one);
 			else {
 				this->ms->readWhiteSpace();
 				this->ms->getField().read(*(this->sin),v);

@@ -423,7 +423,7 @@ template <class PIR>
 void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 	M.resize((size_t)n,(size_t) n, R.zero);
 
-	typename PIR::Element one; R.init(one, R.one);
+	typename PIR::Element pmone; R.assign(pmone, R.one);
 
 	for (int i= 0 ; i < n; ++i) M[(size_t)i][(size_t)i] = R.one;
 
@@ -440,9 +440,9 @@ void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 
 		else {
 
-			M[(size_t)i][(size_t)i+1] = one;
+			M[(size_t)i][(size_t)i+1] = pmone;
 
-			R.negin(one);
+			R.negin(pmone);
 		}
 		R.neg(M[(size_t)i+1][(size_t)i], M[(size_t)i][(size_t)i+1]);
 	}

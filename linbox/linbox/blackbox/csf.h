@@ -213,7 +213,7 @@ namespace LinBox
 			size_t k;
 			for (k = _ptrs[i]; k < _ptrs[i+1]; ++k)
 				if (_inds[k] == j) break;
-			if (k == _ptrs[i+1]) return field().init(x, field().zero);
+			if (k == _ptrs[i+1]) return field().assign(x, field().zero);
 			else return field().copy(x, _vals[k]);
 		}
 

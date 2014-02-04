@@ -159,7 +159,7 @@ OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL>::apply(OutVector & y, c
 {
 	linbox_check( rowdim() == y.size() );
 	linbox_check( coldim() == x.size() );
-	for (Index i = 0; i < y.size(); ++i) field().init(y[i], field().zero);
+	for (Index i = 0; i < y.size(); ++i) field().assign(y[i], field().zero);
 	for (Index k = 0; k < data_.size(); ++k) {
 		Triple t = data_[k];
 		field().axpyin(y[t.row], t.elt, x[t.col]);
@@ -174,7 +174,7 @@ OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL>::applyTranspose(OutVect
 {
 	linbox_check( coldim() == y.size() );
 	linbox_check( rowdim() == x.size() );
-	for (Index i = 0; i < y.size(); ++i) field().init(y[i], field().zero);
+	for (Index i = 0; i < y.size(); ++i) field().assign(y[i], field().zero);
 	for (Index k = 0; k < data_.size(); ++k) {
 		const Triple& t = data_[k];
 		field().axpyin(y[t.col], t.elt, x[t.row]);
