@@ -59,7 +59,7 @@ using namespace LinBox;
 
 
 
-/*
+#if 0
 template <class Field2, class Blackbox>
 static bool testBBrebind (const Field2 &F2, const Blackbox& B)
 {
@@ -69,7 +69,7 @@ static bool testBBrebind (const Field2 &F2, const Blackbox& B)
 
     return testBlackbox(A);
 }
-*/
+#endif
 
 /* Test Transpose:
  * Check that Transpose<Blackbox> meets blackbox interface and behaves
@@ -80,7 +80,7 @@ static bool testBBrebind (const Field2 &F2, const Blackbox& B)
 template <class Blackbox>
 static bool testTransposeBlackbox(Blackbox & A)
 {
-	typedef typename Blackbox::Field::Element Element;
+	typedef typename Blackbox::Field Field;
 	commentator().start ("Testing Transpose", "testTranspose", 1);
 
 	Transpose<Blackbox> B(A);
@@ -88,8 +88,9 @@ static bool testTransposeBlackbox(Blackbox & A)
 	bool ret = true, ret1;
 
 	size_t m = A.rowdim(), n = A.coldim();
-	VectorDomain<typename Blackbox::Field> VD (A.field());
-	std::vector<Element> x(n), y(m), z(n), w(m);
+	const Field & F = A.field();
+	VectorDomain<Field> VD (F);
+	BlasVector<Field> x(F,n), y(F,m), z(F,n), w(F,m);
 
 	VD.random(x);
 	A.apply(y, x);
@@ -105,7 +106,7 @@ static bool testTransposeBlackbox(Blackbox & A)
 	if (not ret1) commentator().report() << "A^T and B disagree, FAIL" << std::endl;
 	ret = ret and ret1;
 
-    ret1 = testBlackbox(B);
+	ret1 = testBlackbox(B,false);
 	if (not ret1) commentator().report() << "testBlackbox A^T FAIL" << std::endl;
 	ret = ret and ret1;
 
@@ -126,32 +127,35 @@ static bool testTransposeBlackbox(Blackbox & A)
 template <class Matrix>
 bool testTransposeMatrix(Matrix& A) {
 	bool ret = true, ret1;
-	typename Matrix::Field::Element x, y;
-	A.field().init(x);
-	A.field().init(y);
+	typedef typename Matrix::Field Field;
+	typename Field::Element x, y;
+	const Field & F = A.field();
+	F.init(x);
+	F.init(y);
 	Transpose<Matrix> B(A);
 	size_t m = A.rowdim(), n = A.coldim();
 
 	size_t i = (size_t)rand()%m, j = (size_t)rand()%n;
 	A.getEntry(x, i, j);
 	B.getEntry(y, j, i);
-	ret = ret and (ret1 = A.field().areEqual(x, y));
+	ret = ret and (ret1 = F.areEqual(x, y));
 	if (not ret1) commentator().report() << "A, A^T same getentry FAIL" << std::endl;
 
 	i = (size_t)rand()%m, j = (size_t)rand()%n;
 	A.setEntry(i, j, x);
 	B.getEntry(y, j, i);
-	ret = ret and (ret1 = A.field().areEqual(x, y));
+	ret = ret and (ret1 = F.areEqual(x, y));
 	if (not ret1) commentator().report() << "A set, A^T getEntry FAIL" << std::endl;
 
 	i = (size_t)rand()%m, j = (size_t)rand()%n;
 	B.setEntry(i, j, x);
 	A.getEntry(y, j, i);
-	ret = ret and (ret1 = A.field().areEqual(x, y));
+	ret = ret and (ret1 = F.areEqual(x, y));
 	if (not ret1) commentator().report() << "A^T set, A getEntry FAIL" << std::endl;
 
 	return ret;
 }
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -177,7 +181,7 @@ int main (int argc, char **argv)
     //typedef GivaroZpz< Givaro::Std32> Field2;
 	Field F(q);
 
-	typedef vector<Field::Element> Vector;
+	// typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
 

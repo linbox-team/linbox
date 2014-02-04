@@ -128,17 +128,26 @@ int main(int argc, char* argv[])
 		return counter.buildfail || counter.runfail ? -1 : 0;
 	}
 
-/*
-Each test gets a line below.  A LinBox unit/regresssion test has a default behaviour -- when there are no command line file names -- in which nothing is written to any output stream and the return value is 0 for a passing test, nonzero for any failure.
-
-The current convention is that (1) linbox' check macro, checker.C, runs the tests with no command line parameters at all, and (2) if there is a command line file name, verbose diagnostic output is written to that file and more terse output may be written to standard output streams.  The second feature is intended to assist debugging with individual tests.
-
-In future, command line arguments could be used in checking to vary matrix sizes and other parameters in check runs.
-
-There should be a 1-1 correspondence between files tests/test-*.C and calls
-here to build_n_run or no_build_n_run (possibly commented out).
-Thus "ls test-*.C |wc" and "grep test- checker.C |grep \
-build |wc" should yield the same number of lines.
+/** @internal
+* Each test gets a line below.  A LinBox unit/regresssion test has a default
+* behaviour -- when there are no command line file names -- in which nothing is
+* written to any output stream and the return value is 0 for a passing test,
+* nonzero for any failure.
+*
+* The current convention is that (1) linbox' check macro, \c checker.C, runs the
+* tests with no command line parameters at all, and (2) if there is a command
+* line file name, verbose diagnostic output is written to that file and more
+* terse output may be written to standard output streams.  The second feature
+* is intended to assist debugging with individual tests.
+*
+* In future, command line arguments could be used in checking to vary matrix
+* sizes and other parameters in check runs.
+*
+* There should be a 1-1 correspondence between files \c tests/test-*.C and calls
+* here to \c build_n_run or \c no_build_n_run (possibly commented out).  Thus
+* <code>ls test-*.C |wc</code> and
+* <code>grep test- checker.C |grep \ build |wc</code>
+* should yield * the same number of lines.
 */
 
   if (check) {
@@ -180,6 +189,11 @@ build |wc" should yield the same number of lines.
 #pragma omp section
 #endif
 		  Build_n_run("test-block-ring",                   counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
+		  Build_n_run("test-transpose",                   counter , flag);
+
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif

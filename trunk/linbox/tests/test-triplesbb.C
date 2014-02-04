@@ -103,7 +103,7 @@ int main (int argc, char **argv)
 	typedef MatrixDomain<Field>::OwnMatrix OwnMatrix;
 	//Vectors
 	VectorDomain<Field> VD(F);
-	std::vector<Element> x(n), y(m), z(m);
+	BlasVector<Field> x(F,n), y(F,m), z(F,m);
 	for (size_t i = 0; i < n; ++i) F.init(x[i], i+1);
 
 	// TriplesBB<Field> A(F, m, n);
