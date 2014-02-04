@@ -170,10 +170,22 @@ namespace LinBox
 		const Blackbox* getPtr() const {return  _A_ptr;}
 
 		Element& getEntry(Element& x, size_t i, size_t j) const
-		{ return _A_ptr->getEntry(x, j, i); }
+		{
+			return _A_ptr->getEntry(x, j, i);
+		}
 
 		void setEntry(size_t i, size_t j, const Element& x)
-		{ const_cast<Blackbox_t*>(_A_ptr)->setEntry( j, i, x); }
+		{
+			const_cast<Blackbox_t*>(_A_ptr)->setEntry( j, i, x);
+		}
+
+		std::ostream &write(std::ostream & os) const {
+			return _A_ptr->write(os << "transpose of:");
+		}
+		std::istream &read(std::istream & is) {
+			throw LinBoxError("you don't want to call read here");
+			return is;
+		}
 
 	protected:
 
