@@ -188,7 +188,7 @@ VD.permute<V,PI>(v1,pb,pe)
 	// JGD 01.10.2003 : Why inherit twice from VectorDomainBase<Field> ???
 	// bds 2004Apr25 : well, g++ 3.4.3 wants explicit base domains on everything - eases that.
 	template <class Field_>
-	class VectorDomain : public virtual DotProductDomain<Field_> {//, public virtual VectorDomainBase<Field> {
+	class VectorDomain : public virtual DotProductDomain<Field_>, public virtual VectorDomainBase<Field_> {
 	public:
 
 		typedef Field_ Field;

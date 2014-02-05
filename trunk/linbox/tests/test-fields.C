@@ -84,13 +84,13 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 
 	// initialize a few field elements,
 	typedef typename Field::Element Element;
-	register Element returnValue; f.assign(returnValue, f.one);
-	register Element s; f.assign(s, f.zero);
+	Element returnValue; f.assign(returnValue, f.one);
+	Element s; f.assign(s, f.zero);
 
-	register Element a, b, c;
+	Element a, b, c;
 	typename Field::RandIter r(f);
 	r.random( a ); r.random( b ); r.random( c );
-	std::vector<Element> dv1( vectorSize ), dv2( vectorSize );
+	BlasVector<Field> dv1( f, vectorSize ), dv2( f , vectorSize );
 	for (i = 0; i < (int) vectorSize; ++i ) {
 		r.random( dv1[(size_t)i] );
 		r.random( dv2[(size_t)i] );
