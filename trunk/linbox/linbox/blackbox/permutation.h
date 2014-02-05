@@ -6,7 +6,7 @@
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -35,6 +35,7 @@
 #endif
 
 #include "linbox/linbox-config.h"
+#include "linbox/linbox-tags.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/randiter/mersenne-twister.h"
 
@@ -200,7 +201,7 @@ namespace LinBox
 
 		/**
 		 * Add a transposition to the matrix
-		*/
+		 */
 		void permute (size_t row1, size_t row2)
 		{
 			linbox_check (/*  row1 >= 0 &&*/ row1 < _indices.size ());
@@ -214,106 +215,115 @@ namespace LinBox
 		std::ostream &write(std::ostream &os, LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Plain) const
 		{
 
-                // Avoid unneeded overhead in the case that this
-                // printing is disabled
-            if (not os)
-                return os;
-            
-            switch (format) {
-                case Tag::FileFormat::Maple: {
-                    os << '[';
-                    bool firstrow=true;
-                    long nmu = (long)_indices.size()-1;
-                    for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) {
-                        if (firstrow) {
-                            os << '[';
-                            firstrow =false;
-                        }
-                        else
-                            os << ", [";
-                        
-                        long i=0;
-                        for( ; i< *it ; ++i) {
-                            field().write(os, field().zero);
-                            if (i < nmu) os << ',';
-                        }
-                        field().write(os, field().one);
-                        if (i < nmu) os << ',';
-                        for(++i ; i< static_cast<long>(_indices.size()) ; ++i) {
-                            field().write(os, field().zero);
-                            if (i < nmu) os << ',';
-                        }
-                        os << ']';
-                        
-                    }
-                    os << ']';
-                    break;
-                }
-                case Tag::FileFormat::Pretty: {
-                    for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) {
-                        os << "  [";
-                        
-                        long i=0;
-                        for( ; i< *it ; ++i) {
-                            field().write(os << ' ', field().zero);
-                        }
-                        field().write(os << ' ', field().one);
-                        for(++i ; i< static_cast<long>(_indices.size()) ; ++i) {
-                            field().write(os << ' ', field().zero);
-                        }
-                        os << " ]" << std::endl;
-                        
-                    }
-                    break;
-                }
-            
+			// Avoid unneeded overhead in the case that this
+			// printing is disabled
+			if (not os)
+				return os;
 
-                default:
-                    os << '{';
-                    for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it)
-                        os << *it << ' ';
-                    os << '}';
-                    break;
+			switch (format) {
+			case Tag::FileFormat::Maple:
+				{
+					os << '[';
+					bool firstrow=true;
+					long nmu = (long)_indices.size()-1;
+					for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) {
+						if (firstrow) {
+							os << '[';
+							firstrow =false;
+						}
+						else
+							os << ", [";
 
-                    
-            }
-            
+						long i=0;
+						for( ; i< *it ; ++i) {
+							field().write(os, field().zero);
+							if (i < nmu) os << ',';
+						}
+						field().write(os, field().one);
+						if (i < nmu) os << ',';
+						for(++i ; i< static_cast<long>(_indices.size()) ; ++i) {
+							field().write(os, field().zero);
+							if (i < nmu) os << ',';
+						}
+						os << ']';
+
+					}
+					os << ']';
+					break;
+				}
+			case Tag::FileFormat::Pretty:
+				{
+					for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) {
+						os << "  [";
+
+						long i=0;
+						for( ; i< *it ; ++i) {
+							field().write(os << ' ', field().zero);
+						}
+						field().write(os << ' ', field().one);
+						for(++i ; i< static_cast<long>(_indices.size()) ; ++i) {
+							field().write(os << ' ', field().zero);
+						}
+						os << " ]" << std::endl;
+
+					}
+					break;
+				}
+
+			default:
+				os << '{';
+				for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it)
+					os << *it << ' ';
+				os << '}';
+				break;
+
+
+			}
+
+
 
 			return os;
 		}
 
 		//!@bug there is no read here. (needed by test-blackbox.h)
-
-		Storage& setStorage(const Storage& s) { return _indices=s; }
-		const Storage& getStorage() const { return _indices; }
-
-		/// Generate next permutation in lex order.
-		void next() {
-			int n = _indices.size();
-			if (n == 1) return;
-			int i, j;
-			for (i = n-2; i >= 0 and _indices[(size_t)i] >= _indices[(size_t)i+1]; --i);
-			if (i < 0) {identity(n); return; }
-			for (j = i+2; j < n and _indices[(size_t)i] <= _indices[(size_t)j]; ++j);
-			std::swap(_indices[(size_t)i], _indices[(size_t)j-1]);
-			reverse(_indices.begin() + i + 1, _indices.end());
+		std::istream &read(std::istream &is, LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Plain) const
+		{
+			throw NotImplementedYet();
+			return is ;
 		}
-	private:
-		// Vector of indices
-		Storage _indices;
 
-	}; // template <Vector> class Permutation
+
+
+	Storage& setStorage(const Storage& s) { return _indices=s; }
+	const Storage& getStorage() const { return _indices; }
+
+	/// Generate next permutation in lex order.
+	void next()
+	{
+		int n = _indices.size();
+		if (n == 1) return;
+		int i, j;
+		for (i = n-2; i >= 0 and _indices[(size_t)i] >= _indices[(size_t)i+1]; --i);
+		if (i < 0) {identity(n); return; }
+		for (j = i+2; j < n and _indices[(size_t)i] <= _indices[(size_t)j]; ++j);
+		std::swap(_indices[(size_t)i], _indices[(size_t)j-1]);
+		reverse(_indices.begin() + i + 1, _indices.end());
+	}
+private:
+	// Vector of indices
+	Storage _indices;
+
+}; // template <Vector> class Permutation
 
 } // namespace LinBox
 
 #endif // __LINBOX_bb_permutation_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

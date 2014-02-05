@@ -123,10 +123,11 @@ FULLCHECK_TESTS =                 \
         test-blas-subvector           \
         test-sum                      \
         test-trace                    \
-        test-transpose              \
+        test-transpose                \
         test-triplesbb                \
-        test-triplesbb-omp                \
-        test-tutorial                \
+	test-permutation              \
+        test-triplesbb-omp            \
+        test-tutorial                 \
         test-vector-domain            \
         test-qlup                     \
         test-zero-one                 \
@@ -684,6 +685,12 @@ test_ispossemidef_SOURCES=            \
 
 test_ftrmm_SOURCES =                  \
         test-ftrmm.C
+
+test_permutation_SOURCES =                  \
+        test-common.h                  \
+	test-permutation.C
+
+
 
 test_iml_SOURCES =                    \
         test-iml.C
