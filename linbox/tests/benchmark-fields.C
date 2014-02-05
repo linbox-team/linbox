@@ -84,7 +84,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 	Element a, b, c;
 	typename Field::RandIter r(f);
 	r.random( a ); r.random( b ); r.random( c );
-	std::vector<Element> dv1( vectorSize ), dv2( vectorSize );
+	BlasVector<Field> dv1( f,  vectorSize ), dv2( f, vectorSize );
 	for (i = 0; i <(int) vectorSize; ++i ) {
 		r.random( dv1[(size_t)i] );
 		r.random( dv2[(size_t)i] );

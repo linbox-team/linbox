@@ -556,7 +556,6 @@ int main(int argc, char* argv[])
 	// test-common.C is included in test-common.h,
 	//  but could be separately compiled (no templates).
 	no_build_n_run("test-common", counter, flag, "not a test");
-	no_build_n_run("test-fields", counter, flag, "deprecated");
 	no_build_n_run("test-matrix", counter, flag, "deprecated?");
 	no_build_n_run("test-image-field", counter, flag, "deprecated");
 
