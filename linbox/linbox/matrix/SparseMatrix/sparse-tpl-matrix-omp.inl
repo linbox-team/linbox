@@ -253,8 +253,8 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
 				for (Index block=0;block<numBlocks;++block) {
                                         const DataBlock *dataBlock=&((*blocks)[block]);
 					for (Index k=0;k<dataBlock->elts_.size();++k) {
-                                                const Index row=dataBlock->getRow(k);
-                                                const Index col=dataBlock->getCol(k);
+                                                const Index row=dataBlock->getRow((int)k);
+                                                const Index col=dataBlock->getCol((int)k);
                                                 Xr.submatrix(X,col,0,1,X.coldim());
                                                 YTemp.saxpyin(dataBlock->elts_[k],Xr,
                                                               row,0,1,Y.coldim());
@@ -294,8 +294,8 @@ applyRight(Mat1 &Y, const Mat2 &X) const
 				for (Index block=0;block<numBlocks;++block) {
                                         const DataBlock *dataBlock=&((*blocks)[block]);
 					for (Index k=0;k<dataBlock->elts_.size();++k) {
-                                                const Index row=dataBlock->getRow(k);
-                                                const Index col=dataBlock->getCol(k);
+                                                const Index row=dataBlock->getRow((int)k);
+                                                const Index col=dataBlock->getCol((int)k);
 						Xc.submatrix(X,0,row,X.rowdim(),1);
                                                 YTemp.saxpyin(dataBlock->elts_[k],Xc,
                                                               0,col,Y.rowdim(),1);
@@ -345,8 +345,8 @@ OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::apply(OutVector & 
 				for (Index block=0;block<numBlocks;++block) {
                                         const DataBlock *dataBlock=&((*blocks)[block]);
 					for (Index k=0;k<dataBlock->elts_.size();++k) {
-                                                const Index row=dataBlock->getRow(k);
-                                                const Index col=dataBlock->getCol(k);
+                                                const Index row=dataBlock->getRow((int)k);
+                                                const Index col=dataBlock->getCol((int)k);
                                                 yTemp[row].mulacc(dataBlock->elts_[k],x[col]);
 					}
 				}
@@ -403,8 +403,8 @@ OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::applyTranspose(Out
 				for (Index block=0;block<numBlocks;++block) {
                                         const DataBlock *dataBlock=&((*blocks)[block]);
 					for (Index k=0;k<dataBlock->elts_.size();++k) {
-                                                const Index row=dataBlock->getRow(k);
-                                                const Index col=dataBlock->getCol(k);
+                                                const Index row=dataBlock->getRow((int)k);
+                                                const Index col=dataBlock->getCol((int)k);
                                                 yTemp[col].mulacc(dataBlock->elts_[k],x[row]);
 					}
 				}

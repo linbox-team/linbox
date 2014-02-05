@@ -331,7 +331,6 @@ static bool testSubvector2(Field &F, size_t n)
 	bool ret = true;
 
 	typedef typename Field::Element Element;
-	// typedef std::vector<Element>	Vector;
 	typedef BlasVector<Field>	Vector;
 	// typedef typename Vector::iterator       Iter;
 	typedef Subiterator<typename Vector::iterator>	Subiter;
@@ -554,7 +553,6 @@ static bool testSubvector3(Field &F, size_t n)
 	bool ret = true;
 
 	typedef typename Field::Element Element;
-	// typedef std::vector<Element>	Vector;
 	typedef BlasVector<Field>	Vector;
 	typedef BlasSubvector<Vector>	subVector;
 	// typedef typename Vector::iterator       Iter;
