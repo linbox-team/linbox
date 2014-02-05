@@ -59,12 +59,12 @@
 #include <linbox/blackbox/direct-sum.h>
 #include <linbox/blackbox/companion.h>
 #include <linbox/algorithms/matrix-hom.h>
-#include <linbox/field/ntl-ZZ.h>
+#include <linbox/field/ntl.h>
 #include <NTL/ZZX.h>
+#include <linbox/vector/blas-vector.h>
 
 using std::string;
 using std::list;
-using std::vector;
 using LinBox::Companion;
 using LinBox::DirectSum;
 using LinBox::BlasMatrix;
@@ -103,25 +103,25 @@ void augmentBB(List& L, char* code, int e, int k, const Ring& R)
 	{
 		R.init(a, -atoi(code));
 		p += ZZX(0, a);
-		p += ZZX(1, r.one);
+		p += ZZX(1, R.one);
 	}
 	else // build long poly
 	{
 		int n = atoi(code+1);
 		R.init(a, n-1);
-		p += ZZX(n, r.one);
-		p += ZZX(1, r.one);
+		p += ZZX(n, R.one);
+		p += ZZX(1, R.one);
 		p += ZZX(0, a);
 	}
 
 	//std::cout << "(code, e, k) =(" << code << ", " << e << ", " << k << ")" << std::endl;
 	//std::cout << "Correspoding poly: " << p << std::endl;
 	// compute q =  p^e
-	ZZX q(0, r.one);
+	ZZX q(0, R.one);
 	for(int i = 0; i < e; ++i) q *= p;
 	//std::cout <<"Polynomial: " << q << std::endl;
 
-	vector<Int>  v(deg(q)+1);
+	LinBox::BlasVector<Ring>  v(R,deg(q)+1);
 	for (int i = 0; i < v.size(); ++i) v[i] = coeff(q, i);
 
 	// companion matrix of q
@@ -195,11 +195,11 @@ void printMatrix (const Matrix& A)
 	int n = A. coldim();
 	typedef typename Matrix::Field Ring;
 	typedef typename Ring::Element Element;
-	std::vector<Element> x(m), y(n);
-	Ring r = A. field();
+	const Ring &r = A.field();
+	LinBox::BlasVector<Ring> x(r,m), y(r,n);
 
 	std::cout << m << " " << n <<  " M" << std::endl;
-	typename std::vector<Element>::iterator y_p;
+	typename LinBox::BlasVector<Ring>::iterator y_p;
 	for (int i = 0; i < m; ++ i) {
 		r. assign (x[i], r.one);
 		A. applyTranspose(y, x);
@@ -246,16 +246,16 @@ int main(int ac, char* av[])
 	{	if (opts[0] == 'r')
 		{
 			// into sparse matrix, then 3n row ops with corresponding col ops
-			BlasMatrix<Ring>* B;//(Z,A.rowdim(), A.coldim());
+			BlasMatrix<Ring> B(Z,A.rowdim(), A.coldim());
 			//MatrixDomain<Ring> MD(Z);
-			LinBox::MatrixHom::map (B, A, Z);
+			LinBox::MatrixHom::map (B, A);
 
-			scramble(*B);
-			printMatrix(*B);
-			delete B;
+			scramble(B);
+			printMatrix(B);
+			// delete B;
 		}
 
-		if (opts[0] == 'R') ;
+		if (opts[0] == 'R') { throw LinBox::NotImplementedYet(); }
 		// into dense matrix, then many row ops
 		//...
 
