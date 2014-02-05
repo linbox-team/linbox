@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-transpose",                   counter , flag);
+		  Build_n_runWarn("test-transpose",                   counter , flag, "sometimes, fails on Sparsematrix/getEntry");
 
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
@@ -600,6 +600,7 @@ void no_build_n_run(string s, counts& cnt, int flag, string r)
 	cnt.skipped++;
 }
 
+//! @bug r is ignored but brings some details
 void build_n_run(string s, counts& cnt, int flag, string r)
 {
 // ignore r.

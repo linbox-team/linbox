@@ -83,8 +83,9 @@ static bool testInvEqTrans (Blackbox & P)
 		VD.write (report << "v = P^Tu = ", v) << endl;
 		P.write(report << "P = ") << endl;
 		VD.write (report << "w = Pv = ", w) << endl;
-		commentator().stop (MSG_STATUS (pass), (const char *) 0, "testInvEqTrans");
 	}
+
+	commentator().stop (MSG_STATUS (pass), (const char *) 0, "testInvEqTrans");
 
 	return pass;
 }
