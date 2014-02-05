@@ -171,7 +171,7 @@ struct TriplesDataBlock {
 		blockEnd_=blockEnd;
 		blockSize_=myBlockSize;
 		ccf_=ccf;
-                int numElts=triplesEnd-triplesStart;
+                int numElts=(int)(triplesEnd-triplesStart);
 		rowIxs_.resize(1+(numElts>>ccf));
 		colIxs_.resize(1+(numElts>>ccf));
 		elts_.reserve(numElts);

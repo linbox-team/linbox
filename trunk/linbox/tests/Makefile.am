@@ -125,6 +125,7 @@ FULLCHECK_TESTS =                 \
         test-trace                    \
         test-transpose              \
         test-triplesbb                \
+        test-triplesbb-omp                \
         test-tutorial                \
         test-vector-domain            \
         test-qlup                     \
@@ -408,6 +409,12 @@ test_triplesbb_SOURCES =                \
         test-triplesbb.C                \
         test-generic.h                  \
         test-common.h
+
+test_triplesbb_omp_SOURCES =                \
+        test-triplesbb-omp.C                \
+        test-generic.h                  \
+        test-common.h
+
 
 test_tutorial_SOURCES =                \
         test-tutorial.C

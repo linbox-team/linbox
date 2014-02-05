@@ -60,7 +60,7 @@ int randRange(int start, int end)
         static const double NORMALIZING_CONSTANT = 1.0/(1.0+RAND_MAX);
         double normedRVal = rval*NORMALIZING_CONSTANT;
         double rangeSize = end-start;
-        int offset = rangeSize*normedRVal;
+        int offset = (int)(rangeSize*normedRVal);
         return start+offset;
 }
 
@@ -72,9 +72,9 @@ void varyMatMatPair(MapSparse<Field>& leftMat, MapSparse<Field>& rightMat, int q
         Field F(q);
         Element d;
 
-        int m=leftMat.rowdim();
-        int n=leftMat.coldim();
-        int p=rightMat.coldim();
+        int m=(int)leftMat.rowdim();
+        int n=(int)leftMat.coldim();
+        int p=(int)rightMat.coldim();
 
         int leftRow=randRange(0,m);
         int leftCol=randRange(0,n);
@@ -101,22 +101,23 @@ void computeAnswer(const MapSparse<Field>& A,
                    bool isRight,
                    bool useVector)
 {
-        typedef typename Field::Element Element;
-        typedef std::vector<Element> STLVector;
+	// typedef typename Field::Element Element;
+	// typedef std::vector<Element> Vector;
+	typedef BlasVector<Field> Vector ;
         typedef typename MatrixDomain<Field>::OwnMatrix OwnMatrix;
 
         LinBox::MatrixDomain<Field> MD(F);
 
         if (useVector) {
                 if (isRight) {
-                        STLVector vecX(X.coldim()),vecY(A.coldim());
+                        Vector vecX(F,X.coldim()),vecY(F,A.coldim());
                         X.toVector(vecX);
                         Blackbox matA(F);
                         A.copy(matA);
                         matA.applyTranspose(vecY,vecX);
                         Y.fromVector(vecY,1,A.coldim());
                 } else {
-                        STLVector vecX(X.rowdim()),vecY(A.rowdim());
+                        Vector vecX(F,X.rowdim()),vecY(F,A.rowdim());
                         X.toVector(vecX);
                         Blackbox matA(F);
                         A.copy(matA);
@@ -170,8 +171,8 @@ void reshapeAndScale(MapSparse<Field>& matOut,
         typedef typename Field::Element Element;
 
         matOut.shape(m,n);
-        m=((size_t)m<matIn.rowdim())?m:matIn.rowdim();
-        n=((size_t)n<matIn.coldim())?n:matIn.coldim();
+        m=(m<(int)matIn.rowdim())?m:(int)matIn.rowdim();
+        n=(n<(int)matIn.coldim())?n:(int)matIn.coldim();
         Element d,a,t;
         matIn.field().init(a,alpha);
         for (int i=0;i<m;++i) {
@@ -257,7 +258,7 @@ bool runRandTest(int n,
         omp_set_num_threads(numThreads);
 
         double matSize=n*m;
-        int nnz=density*matSize;
+        int nnz=(int) (density*matSize);
 
         Field F(q);
         MapSparse<Field> A(F,n,m),X,YTest,YRef;

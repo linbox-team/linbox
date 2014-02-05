@@ -486,8 +486,8 @@ void MapSparse<Field>::generateRandMat(MapSparse<Field>& mat, int nnz, int q)
 	for(int i = 0; i < (int)nnz; ++i) {
                 size_t row,col;
                 do {
-                        row = randRange(0,m);
-                        col = randRange(0,n);
+                        row = randRange(0,(int)m);
+                        col = randRange(0,(int)n);
                 } while (pairs.count(CoordPair(row,col))!=0);
 
                 mat.field().init(d, randRange(1,q));
@@ -517,7 +517,7 @@ int MapSparse<Field>::randRange(int start, int end)
         static const double NORMALIZING_CONSTANT = 1.0/(1.0+RAND_MAX);
         double normedRVal = rval*NORMALIZING_CONSTANT;
         double rangeSize = end-start;
-        int offset = rangeSize*normedRVal;
+        int offset = (int)(rangeSize*normedRVal);
         return start+offset;
 }
 
