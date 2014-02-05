@@ -126,6 +126,7 @@ static bool testTransposeBlackbox(Blackbox & A)
  */
 template <class Matrix>
 bool testTransposeMatrix(Matrix& A) {
+	commentator().start ("Testing Transpose", "testTranspose", 1);
 	bool ret = true, ret1;
 	typedef typename Matrix::Field Field;
 	typename Field::Element x, y;
@@ -153,6 +154,7 @@ bool testTransposeMatrix(Matrix& A) {
 	ret = ret and (ret1 = F.areEqual(x, y));
 	if (not ret1) commentator().report() << "A^T set, A getEntry FAIL" << std::endl;
 
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testTranspose");
 	return ret;
 }
 
