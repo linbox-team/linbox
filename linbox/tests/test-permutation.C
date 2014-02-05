@@ -58,7 +58,6 @@ static bool testInvEqTrans (Blackbox & P)
 {
 	typedef typename Blackbox::Field Field;
 	const Field & F = P.field();
-	// typedef std::vector<typename Field::Element> Vector;
 	typedef BlasVector<Field> Vector;
 
 	Transpose<Blackbox> PT(P);
