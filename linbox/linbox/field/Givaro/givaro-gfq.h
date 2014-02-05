@@ -69,7 +69,7 @@ namespace LinBox
 	template <class Ring>
 	struct ClassifyRing;
 
-	struct PID_integer;
+	class PID_integer;
 
 	class GivaroGfq;
 

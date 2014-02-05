@@ -57,11 +57,16 @@ namespace LinBox
 		typedef typename std::iterator_traits<Iterator>::pointer		pointer;
 		typedef typename std::iterator_traits<Iterator>::reference		reference;
 
-		// Constructors
 
-		Subiterator () {}
+		// Basic constructors
 
-		/** Subiterator p (pp, 3) provides an iterator which initially  has
+		Subiterator ()
+		{
+		}
+
+		/** Constructors.
+		 *
+		 *  Subiterator p (pp, 3) provides an iterator which initially  has
 		 *  the same reference, but for which increments and offsets step by
 		 *  the amount stride rather than 1.
 		 *  Thus p+k is equivalent to pp+(stride*k).
@@ -71,88 +76,179 @@ namespace LinBox
 		 *  iterator only when it has a valid reference.
 		 */
 		Subiterator (const Iterator &iter, const difference_type& stride = 1) :
-		       	_iter (iter), _stride (stride) {}
+			_iter (iter), _stride (stride)
+		{
+		}
 
+		// copy-constructor
+		Subiterator (const Subiterator & iter) :
+			_iter (iter._iter), _stride (iter._stride)
+		{
+		}
+
+		Subiterator (Iterator & iter) :
+			_iter (iter._iter), _stride (iter._stride)
+		{
+		}
+
+		// constructor
 		template<class Iterator2>
 		Subiterator (const Subiterator<Iterator2>& iter) :
-		       	_iter (iter._iter), _stride (iter._stride) {}
+			_iter (iter._iter), _stride (iter._stride)
+		{
+		}
 
+		template<class Iterator2>
+		Subiterator (Subiterator<Iterator2>& iter) :
+			_iter (iter._iter), _stride (iter._stride)
+		{
+		}
+
+		// copy-assign
 
 		template<class Iterator2>
 		Subiterator& operator = (const Subiterator<Iterator2>& sub)
 		{
-			_iter=sub._iter;
-			_stride=sub._stride;
+			_iter  =sub.showIterator();
+			_stride=sub.showStride();
+			return *this;
+		}
+
+		Subiterator& operator = (const Subiterator& sub)
+		{
+			_iter  =sub.showIterator();
+			_stride=sub.showStride();
 			return *this;
 		}
 
 		// Access operations
 		reference operator * () const
-		{ return *_iter; }
+		{
+			return *_iter;
+		}
 
 		Iterator operator -> () const
-		{ return _iter; }
+		{
+			return _iter;
+		}
 
 		reference operator [] (difference_type n) const
-		{ return _iter[n * _stride]; }
+		{
+			return _iter[n * _stride];
+		}
 
 		// Iteration operations
 
 		Subiterator& operator ++ ()
-		{ _iter += _stride; return *this; }
+		{
+			_iter += _stride;
+			return *this;
+		}
 
 		Subiterator operator ++ (int)
-		{ Subiterator tmp = *this; _iter += _stride; return tmp; }
+		{
+			Subiterator tmp = *this;
+			_iter += _stride;
+			return tmp;
+		}
 
 		Subiterator& operator -- ()
-		{ _iter -= _stride; return *this; }
+		{
+			_iter -= _stride;
+			return *this;
+		}
 
 		Subiterator operator -- (int)
-		{ Subiterator tmp = *this; _iter -= _stride; return tmp; }
+		{
+			Subiterator tmp = *this;
+			_iter -= _stride;
+			return tmp;
+		}
 
 		Subiterator operator + (difference_type n) const
-		{ return Subiterator (_iter + (n * _stride), _stride); }
+		{
+			return Subiterator (_iter + (n * _stride), _stride);
+		}
 
 		Subiterator& operator += (difference_type n)
-		{ _iter += (n * _stride); return *this; }
+		{
+			_iter += (n * _stride);
+			return *this;
+		}
 
 		Subiterator operator - (difference_type n) const
-		{ return Subiterator (_iter - (n * _stride), _stride); }
+		{
+			return Subiterator (_iter - (n * _stride), _stride);
+		}
 
 		difference_type operator - (const Subiterator& x) const
-		{ return (_iter - x._iter)/_stride; }
+		{
+			return (_iter - x._iter)/_stride;
+		}
 
 		Subiterator& operator -= (difference_type n)
-		{ _iter -= (n * _stride); return *this; }
+		{
+			_iter -= (n * _stride);
+			return *this;
+		}
 
 		// Comparison operations
 
 		bool operator == (const Subiterator& i) const
-		{ return ( (this->_stride == i._stride) && (this->_iter == i._iter) ); }
+		{
+			return ( (this->_stride == i._stride) && (this->_iter == i._iter) );
+		}
 
 		bool operator != (const Subiterator& i) const
-		{ return !(*this == i); }
+		{
+			return !(*this == i);
+		}
 
 		bool operator < (const Subiterator& i) const
-		{ return (this->_iter < i._iter); }
+		{
+			return (this->_iter < i._iter);
+		}
 
 		bool operator > (const Subiterator& i) const
-		{ return (this->_iter > i._iter); }
+		{
+			return (this->_iter > i._iter);
+		}
 
 		bool operator <= (const Subiterator& i) const
-		{ return (this->_iter <= i._iter); }
+		{
+			return (this->_iter <= i._iter);
+		}
 
 		bool operator >= (const Subiterator& i) const
-		{ return (this->_iter >= i._iter); }
+		{
+			return (this->_iter >= i._iter);
+		}
+
+		// swap
 
 		void swap (Subiterator& x)
-		{ std::swap (_iter, x._iter); std::swap (_stride, x._stride); }
+		{
+			std::swap (_iter, x._iter); std::swap (_stride, x._stride);
+		}
 
-		difference_type showStride() { return _stride ; }
+		// view protected members
+
+		difference_type showStride() const
+		{
+			return this->_stride ;
+		}
+
+		const Iterator & showIterator() const
+		{
+			return this->_iter ;
+		}
+
+
 	protected:
 
-		Iterator	_iter;		// wrapped iterator
-		/*const*/ difference_type	_stride;	// length between iterations
+		Iterator          _iter;	//!< @internal wrapped iterator
+
+		difference_type	_stride;	//!< @internal length between iterations
 
 	}; // template <class Iterator> class Subiterator
 
@@ -161,11 +257,10 @@ namespace LinBox
 #endif // __LINBOX_subiterator_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
