@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-permuation",                    counter , flag);
+		  Build_n_run("test-permutation",                    counter , flag);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif

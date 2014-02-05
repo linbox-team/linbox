@@ -101,8 +101,6 @@ void computeAnswer(const MapSparse<Field>& A,
                    bool isRight,
                    bool useVector)
 {
-	// typedef typename Field::Element Element;
-	// typedef std::vector<Element> Vector;
 	typedef BlasVector<Field> Vector ;
         typedef typename MatrixDomain<Field>::OwnMatrix OwnMatrix;
 

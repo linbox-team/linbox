@@ -316,6 +316,7 @@ class SparseMatrix<Field_, SparseMatrixFormat::TPL_omp> : public BlackboxInterfa
 	template<typename Tp1_>
 	struct rebind {
 		typedef SparseMatrix<Tp1_> other;
+		// BB : is this working at all ?
 		void operator() (other & Ap, const Self_t& A)
 		{
 			Hom <typename Self_t::Field, Tp1_> hom( A.field(), Ap.field());
