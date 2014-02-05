@@ -77,7 +77,7 @@ LINBOX_BIN=@bindir@
 
 # for compilation of new examples
 %:%.C
-	$(CXX) $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(AM_LDFLAGS) $(LDADD)
+	$(CXX) -I@includedir@ $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ -L@libdir] -llinbox $(AM_LDFLAGS) $(LDADD)
 
 %:%.cpp
 	$(CXX)  $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.cpp -o $@ $(AM_LDFLAGS) $(LDADD)

@@ -64,9 +64,9 @@ int main (int argc, char **argv)
 	BlasMatrix<Field> A (ms); // A.write(std::cout);
 	std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
 
-	std::vector<Field::Element> X( A.coldim()),B(A.rowdim());
+	BlasVector<Field> X(F, A.coldim()),B(F, A.rowdim());
 
-	for(std::vector<Field::Element>::iterator it=B.begin();
+	for(BlasVector<Field>::iterator it=B.begin();
 	    it != B.end(); ++it)
 		invect >> *it;
 
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
 	solve (X, A, B, Method::BlasElimination());
 
 	std::cout << "(BlasElimination) Solution is [ "<<X<< "]" << std::endl;
-	std::vector<Field::Element> r(A.rowdim());
+	BlasVector<Field> r(F, A.rowdim());
 	BlasMatrixDomain<Field> BMD(F);
 	BMD.mul(r, static_cast<BlasMatrix<Field>& >(A), X);
 	//A.apply (r,X);
