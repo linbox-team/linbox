@@ -213,8 +213,6 @@ namespace LinBox
 		class BlasMatrixDomainDet;
 		template <class Field, class MatrixView>
 		class BlasMatrixDomainRank;
-
-
 	}
 
 	/*! @internal
@@ -310,13 +308,18 @@ namespace LinBox
 
 	/*! @internal
 	 * Class handling the characteristic polynomial  of a Matrix.
+	 * \p ContPol is either:
 	 */
 	template< class Field, class ContPol, class Matrix>
 	class BlasMatrixDomainCharpoly {
 	public:
-		//		typedef Container<Polynomial> ContPol;
-
 		ContPol&  operator() (const Field &F, ContPol& P, const Matrix& A) const;
+	};
+
+	template< class Field, class Matrix>
+	class BlasMatrixDomainCharpoly<Field,BlasVector<Field>,Matrix> {
+	public:
+		BlasVector<Field>&  operator() (const Field &F, BlasVector<Field>& P, const Matrix& A) const;
 	};
 
 	/**
@@ -345,11 +348,11 @@ namespace LinBox
 
 		//! Constructor of BlasDomain.
 /*
-		BlasMatrixDomain () 
-		BlasMatrixDomain (const Field& F ) 
-		void init(const Field& F ) 
-		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) 
-		const Field& field() const 
+		BlasMatrixDomain ()
+		BlasMatrixDomain (const Field& F )
+		void init(const Field& F )
+		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD)
+		const Field& field() const
 		T1& copy(T1& B, const T2& A) const
 		T1& add(T1& C, const T2& A, const T3& B) const
 		T1& sub(T1& C, const T2& A, const T3& B) const
@@ -400,9 +403,9 @@ namespace LinBox
 		BlasMatrixDomain () {}
 		BlasMatrixDomain (const Field& F ) { init(F); }
 
-		void init(const Field& F ) 
+		void init(const Field& F )
 		{
-			_field = &F; 
+			_field = &F;
 #ifndef NDEBUG
 			if (!Givaro::probab_prime(F.characteristic())) {
 				std::cout << " *** WARNING *** "                                           << std::endl;

@@ -81,10 +81,13 @@ string blank;
 
 const char* pretty(string a)
 ;
-template <class Field> bool localAreEqual(Field& F,
-	std::vector<typename Field::Element>& a,
-	std::vector<typename Field::Element>& b)
+
+template <class Vector>
+bool localAreEqual(
+	const Vector& a,
+	const Vector& b)
 ;
+
 template <class Field>
 static bool testMulAdd (const Field& F, size_t n, int iterations)
 ;
@@ -210,14 +213,22 @@ const char* pretty(string a)
 }
 #define mycommentator commentator
 
-template <class Field> bool localAreEqual(Field& F,
-	std::vector<typename Field::Element>& a,
-	std::vector<typename Field::Element>& b)
+template<class Vector>
+ bool localAreEqual(
+	const Vector& a,
+	const Vector& b)
 {
-	BlasMatrixDomain<Field> BMD(F);
-	BlasMatrix<Field> A(F, a, a.size(), 1);
-	BlasMatrix<Field> B(F, b, b.size(), 1);
-	return BMD.areEqual(A,B);
+	if ( a.size() != b.size() )
+		return false;
+
+	const typename Vector::Field & F = a.field();
+
+	typename Vector::const_iterator it = a.begin();
+	typename Vector::const_iterator jt = b.begin();
+	for ( ; it != a.end(); ++it, ++jt)
+		if (! F.areEqual(*it,*jt))
+			return false;
+	return true;
 }
 
 template <class Field>
@@ -243,7 +254,7 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 		mycommentator().progress(k);
 		// A.init(F, n, n);
 		Matrix /*A(F, n,n),*/B(F, n,n),C(F, n,n),D(F, n,n),T(F, n,n),R(F, n,n);
-		std::vector<Element> x(n),y(n),z(n),t(n);
+		BlasVector<Field> x(F,n),y(F,n),z(F,n),t(F,n);
 
 		Element alpha, beta,malpha;
 
@@ -297,7 +308,7 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 		}
 		// std::cout << "t := "<< t << std::endl;
 
-		if (!localAreEqual(F,t,z)){
+		if (!localAreEqual(t,z)){
 			exit(-1);
 			std::cout << "2 alpha = " << alpha << "mod " << F.characteristic() << std::endl;
 			ret=false;
@@ -918,7 +929,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 		Matrix Al(F, m,m),Au(F, m,m);
 		Matrix X(F, m,n), B(F, m,n), C(F, m,n);
 
-		std::vector<Element> b(m),x(m),c(m);
+		BlasVector<Field> b(F,m),x(F,m),c(F,m);
 
 		// Create B a random matrix
 		for (size_t i=0;i<m;++i)
@@ -972,23 +983,23 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 		// testing solver with vector right hand side
 		BMD.left_solve(x,TAl,b);
 		BMD.mul(c,Al,x);
-		if (!localAreEqual(F,c,b))
+		if (!localAreEqual(c,b))
 			ret=false;
 
 		BMD.left_solve(x,TAu,b);
 		BMD.mul(c,Au,x);
-		if (!localAreEqual(F,c,b))
+		if (!localAreEqual(c,b))
 			ret=false;
 
 		// testing solver with vector left hand side
 		BMD.right_solve(x,TAl,b);
 		BMD.mul(c,x,Al);
-		if (!localAreEqual(F,c,b))
+		if (!localAreEqual(c,b))
 			ret=false;
 
 		BMD.right_solve(x,TAu,b);
 		BMD.mul(c,x,Au);
-		if (!localAreEqual(F,c,b))
+		if (!localAreEqual(c,b))
 			ret=false;
 	}
 
@@ -1027,7 +1038,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 		Matrix A(F, m,m),L(F, m,m),S(F, m,m);
 		Matrix X(F, m,n), B(F, m,n), C(F, m,n);
 
-		std::vector<Element> b(m),x(m),c(m);
+		BlasVector<Field> b(F,m),x(F,m),c(F,m);
 
 		// Create B a random matrix
 		for (size_t i=0;i<m;++i)
@@ -1085,23 +1096,23 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 		// testing solver with vector right hand side
 		BMD.left_solve(x,A,b);
 		BMD.mul(c,A,x);
-		if (!localAreEqual(F,c,b))
+		if (!localAreEqual(c,b))
 			ret=false;
 
 		BMD.left_solve(x,A,b);
 		BMD.mul(c,A,x);
-		if (!localAreEqual(F,c,b))
+		if (!localAreEqual(c,b))
 			ret=false;
 
 		// testing solver with vector left hand side
 		BMD.right_solve(x,A,b);
 		BMD.mul(c,x,A);
-		if (!localAreEqual(F,c,b))
+		if (!localAreEqual(c,b))
 			ret=false;
 
 		BMD.right_solve(x,A,b);
 		BMD.mul(c,x,A);
-		if (!localAreEqual(F,c,b))
+		if (!localAreEqual(c,b))
 			ret=false;
 
 	}
@@ -1153,7 +1164,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 
 		//std::cerr<<P<<std::endl;
 		Matrix A(F, m,m), Abis(F, m,m), B(F, m,m), C(F, m,m), D(F, m,m);
-		std::vector<Element> a(m),abis(m),b(m),c(m), d(m);
+		BlasVector<Field> a(F,m),abis(F,m),b(F,m),c(F,m), d(F,m);
 		BlasPermutation<size_t>  Perm(m);
 		RandomBlasPermutation(Perm);
 
@@ -1219,7 +1230,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 		// c = b.P^t
 		BMD.mul( c, b, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm) );
 		// Test c==a
-		if (!localAreEqual(F,a,c))
+		if (!localAreEqual(a,c))
 			ret=false;
 
 		/*
@@ -1231,7 +1242,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 		// c = B.P
 		BMD.mul( c, b, Perm );
 		// Test c==a
-		if (!localAreEqual(F,a,c))
+		if (!localAreEqual(a,c))
 			ret=false;
 		/*
 		 * Test P.P^t.a == a
@@ -1242,7 +1253,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 		// c = P^t.b
 		BMD.mul( c, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm) , b);
 		// Test c==a
-		if (!localAreEqual(F,a,c))
+		if (!localAreEqual(a,c))
 			ret=false;
 
 		/*
@@ -1254,7 +1265,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 		// c = P.b
 		BMD.mul( c, Perm, b);
 		// Test c==a
-		if (!localAreEqual(F,a,c))
+		if (!localAreEqual(a,c))
 			ret=false;
 
 
@@ -1525,7 +1536,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
-	typedef vector<Element>                       Polynomial;
+	typedef BlasVector<Field>                       Polynomial;
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
@@ -1541,7 +1552,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 		mycommentator().progress(k);
 
 		Matrix A(F,n,n);
-		Polynomial P;
+		Polynomial P(F);
 		// Test MinPoly(In) = X-1
 		for (size_t i=0;i<n;++i)
 			A.setEntry(i,i,F.one);
@@ -1602,6 +1613,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
+	// typedef BlasVector<Field>                       Polynomial;
 	typedef vector<Element>                       Polynomial;
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -1701,7 +1713,7 @@ static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n)
 	BlasMatrix<Field> H(B); // copy cstor
 	pass = pass and BMD.areEqual(B, H);
 
-	std::vector<Element> v(m*n, Fld.zero);
+	BlasVector<Field> v(Fld,m*n, Fld.zero);
 	BlasMatrix<Field> I(Fld,v,m,n);
 	pass = pass and BMD.areEqual(B, I);
 
