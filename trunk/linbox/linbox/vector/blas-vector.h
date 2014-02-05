@@ -78,7 +78,7 @@ namespace LinBox { /* BlasVector */
 
 	public: /* iterators */
 		typedef Subvector<Subiterator<typename _blasRep::iterator > > Father_t;
-		typedef typename Father_t::iterator iterator;
+		typedef typename Father_t::iterator             iterator;
 		typedef typename Father_t::const_iterator const_iterator;
 		// typedef typename Father_t::size_type size_type;
 
@@ -189,7 +189,6 @@ namespace LinBox { /* BlasVector */
 		{
 			// Father_t is garbage until then:
 			setIterators();
-
 			// linbox_check(_ptr != NULL);
 		}
 
@@ -401,6 +400,10 @@ namespace LinBox { /* BlasVector */
 			_1stride = 1;
 			_rep = Rep(_size);
 			_ptr = &_rep[0] ;
+
+			linbox_check(field().characteristic() == V.field().characteristic());
+			// _field = &V.field();
+
 			createBlasVector(V);
 			linbox_check(_size==0 || _ptr != NULL);
 
@@ -553,7 +556,7 @@ namespace LinBox { /* BlasVector */
 
 		Rep & refRep() { return _rep ; }
 
-		Rep getRep() const { return _rep ; }
+		const Rep &getRep() const { return _rep ; }
 
 		pointer getPointer() const
 		{
@@ -601,18 +604,18 @@ namespace LinBox { /* BlasVector */
 
 
 		const _Field& field() const { return const_cast<Field&>( *_field );}
-		//
-		//
-		// _Field & field() { return const_cast<Field&>(*_field;) }
-		void changeField(const Field & G) {
+
+		void changeField(const Field & G)
+		{
 			_field = const_cast<Field*>(&G) ;
 		}
+
 
 	private:
 		void setIterators()
 		{
 			Father_t::_begin = iterator (_rep.begin() , 1);
-			Father_t::_end = iterator (_rep.begin()+(ptrdiff_t)_size , 1);
+			Father_t::_end   = iterator (_rep.begin()+(ptrdiff_t)_size , 1);
 		}
 
 
@@ -632,7 +635,10 @@ namespace LinBox { /*  BlasSubvector */
 
 
 	template <class _Vector > // inherit that from owner ?
-	class BlasSubvector {
+	class BlasSubvector :
+		public Subvector<Subiterator<typename _Vector::Rep::iterator > >
+		// public  BlasVector<typename _Vector::Field, typename _Vector::Rep>
+	{
 	public :
 		typedef typename _Vector::Field                   Field;
 		typedef typename Field::Element                 Element;      //!< Element type
@@ -650,9 +656,13 @@ namespace LinBox { /*  BlasSubvector */
 		size_t _size;                   //!< size of Subvector
 		size_t _i0;                    //!< beginning of Subvector in \p _Vec
 		size_t _1stride ;               //!< number of columns in \p _Vec (or stride of \p _Vec)
-		Field & _field;
+		const Field & _field;
 
 	public:
+		typedef Subvector<Subiterator<typename Rep::iterator > > Father_t;
+		typedef typename Father_t::iterator             iterator;
+		typedef typename Father_t::const_iterator const_iterator;
+
 
 		//////////////////
 		// CONSTRUCTORS //
@@ -664,68 +674,87 @@ namespace LinBox { /*  BlasSubvector */
 		/** NULL constructor.  */
 		// BlasSubvector () ;
 
-		BlasSubvector (const BlasVector<Field,Rep> &V,
+		BlasSubvector (BlasVector<Field,Rep> &V,
 			       size_t ibeg,
-			       size_t siz,
-			       size_t str
+			       size_t Stride,
+			       size_t Size
 			      ) :
-			_Vec (const_cast<Rep&>(V.refRep())),
-			_size(siz),_i0 (ibeg),_1stride(str)
+			Father_t(),
+			_Vec ((V.refRep())),
+			_size(Size),_i0 (ibeg),_1stride(Stride)
 			,_field(V.field())
-		{}
+		{
+			setIterators();
+		}
 
 
-		BlasSubvector (const BlasVector<Field,Rep> &V) :
+#if 0
+		BlasSubvector (BlasVector<Field,Rep> &V) :
+			Father_t(),
 			_Vec (const_cast<Rep&>(V.refRep())),
 			_size(V.size()),_i0 (0),_1stride(1)
 			,_field(V.field())
-		{}
+		{
+			setIterators();
+		}
 
 
 
 		BlasSubvector (const BlasSubvector<_Vector> &SV,
 			       size_t ibeg,
-			       size_t siz
-			       // , size_t stride //!stride in new subvector as if SV were of stride 1
+			       size_t Stride,
+			       size_t Size
 			      ) :
+			Father_t(),
 			_Vec (SV._Vec),
-			_size(siz),_i0 (SV._i0*SV._1stride+ibeg)
-			,_1stride(SV._1stride)
-			// ,_1stride(SV._1stride*stride)
+			_size(Size),_i0 (SV._i0*SV._1stride+ibeg)
+			// ,_1stride(SV._1stride)
+			,_1stride(SV._1stride*Stride)
 			,_field(SV.field())
-		{}
-
+		{
+			setIterators();
+		}
 
 		/** Copy constructor.
 		 * @param SM Subvector to copy
 		 */
 		BlasSubvector (const BlasSubvector<_Vector> &SV) :
+			Father_t(),
 			_Vec (SV._Vec),
 			_size(SV._size),_i0 (SV._i0)
 			,_1stride(SV._1stride)
 			,_field(SV.field())
-		{}
+		{
+			setIterators();
+		}
 
 		BlasSubvector (const BlasMatrix<Field,Rep> &M
-			       , size_t beg
+			       , size_t ibeg
 			       , LINBOX_enum (Tag::Direction) f ) :
+			Father_t(),
 			_Vec (const_cast<Rep&>(M.refRep()))
 			,_size((f==Tag::Direction::Row)?(M.coldim()):(M.rowdim()))
-			,_i0 ((f==Tag::Direction::Row)?(beg*M.coldim()):(beg))
+			,_i0 ((f==Tag::Direction::Row)?(ibeg*M.coldim()):(ibeg))
 			,_1stride((f==Tag::Direction::Row)?(1):(M.coldim()))
 			,_field(M.field())
-			{}
+		{
+			setIterators();
+		}
 
 		template<class _Matrix>
 		BlasSubvector (const BlasSubmatrix<_Matrix> &M
-			       , size_t beg
+			       , size_t ibeg
 			       , LINBOX_enum (Tag::Direction) f ) :
+			Father_t(),
 			_Vec (const_cast<Rep&>(M.refRep()))
 			,_size((f==Tag::Direction::Row)?(M.coldim()):(M.rowdim()))
-			,_i0 ((f==Tag::Direction::Row)?(M.offset()+beg*M.stride()):(M.offset()+beg))
+			,_i0 ((f==Tag::Direction::Row)?(M.offset()+ibeg*M.stride()):(M.offset()+ibeg))
 			,_1stride((f==Tag::Direction::Row)?(1):(M.stride()))
 			,_field(M.field())
-			{}
+		{
+			setIterators();
+		}
+#endif
 
 
 		//! @todo more general subvectors
@@ -736,11 +765,13 @@ namespace LinBox { /*  BlasSubvector */
 		{
 			if ( &SV == this)
 				return *this ;
-			_Vec=SV._Vec ; //!@todo use functions
+			_Vec=SV._Vec ; //!@todo use functions, not =
 			_size = SV.size();
 			_i0=SV._i0;
 			_1stride = SV.stride();
-			_field = SV.field();
+			// _field = SV.field();
+			linbox_check(field().characteristic() == SV.field().characteristic());
+			setIterators();
 			return *this ;
 
 		}
@@ -796,26 +827,64 @@ namespace LinBox { /*  BlasSubvector */
 			return _Vec[_i0+i*_1stride] ;
 		}
 
-		Element &getEntry (Element &x, size_t i) const
+		Element &getEntry (Element &x, size_t i)
 		{
 			x = _Vec[_i0+i*_1stride] ;
 			return x;
 		}
 
 
+#if 0 /* using Father_t */
 		///////////////////
 		//   ITERATORS   //
 		///////////////////
 
-		// class Iterator  ;
-		// class ConstIterator ;
+		class Iterator  ;
+		class ConstIterator ;
 
-		// class IndexedIterator ;
-		// class ConstIndexedIterator ;
+		class IndexedIterator ;
+		class ConstIndexedIterator ;
+#endif
 
 
 		const Field& field() const { return _field ;}
-		Field & field() { return _field; }
+		// Field & field() { return _field; }
+
+		// write (same as BlasVector)
+		std::ostream &write ( std::ostream &os, LINBOX_enum(Tag::FileFormat) fmt = Tag::FileFormat::Pretty ) const
+		{
+			switch(fmt) {
+			case (Tag::FileFormat::Pretty) :
+				{
+					os << '[' ;
+					for(const_iterator it= this->begin();it != this->end(); ++it)
+						field().write(os, *it) << " ";
+					return	os << ']' ;
+				}
+			case (Tag::FileFormat::Maple) :
+				{
+					os << '<' ;
+					for(const_iterator it=this->begin();it != this->end(); ) {
+						field().write(os, *it);
+						++it ;
+						if (it != this->end())
+							os << ',' ;
+					}
+					return	os << '>' ;
+				}
+
+			default :
+				return os << "not implemented" ;
+			}
+		}
+
+	private:
+		void setIterators()
+		{
+			Father_t::_begin = iterator (_Vec.begin()+_i0 , _1stride);
+			Father_t::_end   = iterator (_Vec.begin()+(ptrdiff_t)(_i0 + _size*_1stride) , _1stride);
+		}
+
 	};
 
 	template<class T>

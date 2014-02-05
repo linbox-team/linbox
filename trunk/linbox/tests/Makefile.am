@@ -120,6 +120,7 @@ FULLCHECK_TESTS =                 \
         test-subiterator              \
         test-submatrix                \
         test-subvector                \
+        test-blas-subvector           \
         test-sum                      \
         test-trace                    \
         test-transpose              \
