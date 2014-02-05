@@ -401,8 +401,8 @@ namespace LinBox { /* BlasVector */
 			_rep = Rep(_size);
 			_ptr = &_rep[0] ;
 
-			linbox_check(field().characteristic() == V.field().characteristic());
-			// _field = &V.field();
+			// linbox_check(field().characteristic() == V.field().characteristic());
+			_field = &V.field();
 
 			createBlasVector(V);
 			linbox_check(_size==0 || _ptr != NULL);

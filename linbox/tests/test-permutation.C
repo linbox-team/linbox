@@ -6,20 +6,20 @@
  * Time-stamp: <22 Jun 10 15:59:39 Jean-Guillaume.Dumas@imag.fr>
  * --------------------------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -54,18 +54,19 @@ using namespace LinBox;
 
 // Test 1: PP^T should = I.
 template <class Blackbox>
-static bool testInvEqTrans (Blackbox & P) 
+static bool testInvEqTrans (Blackbox & P)
 {
-	typedef typename Blackbox::Field Field; 
-	typedef std::vector<typename Field::Element> Vector;
+	typedef typename Blackbox::Field Field;
+	const Field & F = P.field();
+	// typedef std::vector<typename Field::Element> Vector;
+	typedef BlasVector<Field> Vector;
 
 	Transpose<Blackbox> PT(P);
-	Field F(P.field());
 
 	RandomDenseStream<Field, Vector> stream1 (F, P.rowdim(), 3);
 	commentator().start ("Testing PP^T = I", "testInvEqTrans", stream1.m ());
 
-	Vector u, v, w;
+	Vector u(F), v(F), w(F);
 	VectorWrapper::ensureDim (u, stream1.n ());
 	VectorWrapper::ensureDim (v, stream1.n ());
 	VectorWrapper::ensureDim (w, stream1.n ());
@@ -102,7 +103,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Modular<uint32_t> Field; 
+	typedef Modular<uint32_t> Field;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -117,7 +118,7 @@ int main (int argc, char **argv)
 
 	LinBox::Permutation<Field> P(F);
 	P.random(n);
-	pass = pass && testBlackbox(P);
+	pass = pass && testBlackbox(P,false);
 	pass = pass && testInvEqTrans(P);
 
 	commentator().stop (MSG_STATUS (pass));
@@ -125,11 +126,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -199,10 +199,13 @@ int main(int argc, char* argv[])
 #endif
 		  Build_n_runWarn("test-block-wiedemann",              counter , flag, "GY(wrong ans)");
 #ifdef LINBOX_HAVE_OPENMP
-		  //test could be stronger");
 #pragma omp section
 #endif
 		  Build_n_run("test-butterfly",                    counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
+		  Build_n_run("test-permuation",                    counter , flag);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif

@@ -104,7 +104,9 @@ bool testRandomSolve (const Ring& R,
 		typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> RSolver;
 		RSolver rsolver;
 
-		//std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
+#if 0
+		std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
+#endif
 		BlasVector<Ring> num(R,(size_t)n);
 		typename Ring::Element den;
 
