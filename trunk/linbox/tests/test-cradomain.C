@@ -101,6 +101,7 @@ namespace LinBox
 
 struct InteratorIt : public Interator {
 
+	// could use BlasVector and changeField
 	mutable std::vector<double> _vectC;
 
 	InteratorIt(const BlasVector<PID_integer>& v) :
