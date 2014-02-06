@@ -28,6 +28,7 @@
 
 #include "linbox/blackbox/blackbox-interface.h"
 #include "toeplitz.h" // we inherit everything from ntl-toeplitz
+// #include "linbox/vector/blas-vector.h"
 
 //#define DBGMSGS 1
 
@@ -69,6 +70,7 @@ namespace LinBox
 		Hankel( const Field F) : Father_t (F) {};
 		// Cnstr. with Field and STL vec. of elems
 		Hankel( const Field F,    const std::vector<Element>&v);// : Toeplitz<_Field>(F, v){}
+		Hankel( const BlasVector<Field>&v);// : Toeplitz<_Field>(F, v){}
 
 		Hankel( const Field F,    size_t n);// : Toeplitz<_Field>(F, n) {}
 		//	  Hankel(char *dataFileName ); // read from a file

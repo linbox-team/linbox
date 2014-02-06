@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 
 	// typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
 	typedef LinBox::NTL_ZZ_p Field;
-	typedef Field::Element element;
+	// typedef Field::Element element;
 	typedef LinBox::BlasVector<Field> Vector;
 
 	// Now we are using the NTL wrapper as the field, call the instance F
@@ -128,8 +128,10 @@ int main(int argc, char* argv[])
 
 	// LinBox::Sylvester<Field> TT(F,pdata,qdata);
 	LinBox::Sylvester<Field> TT(pdata,qdata);
-#if 0 /* this is not a test */
 	report << "The matrix is: " << std::endl;
+	TT.print(report);
+
+#if 0 /* this is not a test */
 	//  TT.printcp( "cpout.txt");
 	//  TT.print(report);
 
