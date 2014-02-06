@@ -47,10 +47,13 @@ namespace LinBox
 		typedef _Field Field;
 		typedef typename Field::Element element;      // Currently restricted to ZZ_p
 		~Sylvester();                                 // Destructor
-		Sylvester();                                  // Default Constructor
+		Sylvester( const Field &F );                                  // Default Constructor
 		Sylvester( const Field F,
 			   const std::vector<element> &vpx,
 			   const std::vector<element> &vpy ); // Constructor given 2 polys and Field
+		Sylvester(
+			   const BlasVector<Field> &vpx,
+			   const BlasVector<Field> &vpy );
 
 
 		void   print( std::ostream& os = std::cout ) const; // Print to stream or stdout
@@ -81,7 +84,6 @@ namespace LinBox
 			return os ;
 		}
 	protected:
-		Field         K;
 
 		size_t        rowDim,
 			      colDim,
@@ -97,6 +99,7 @@ namespace LinBox
 		size_t qxdeg() const { return qdata.size() - 1; }
 
 
+		const Field       &   K;
 
 	};// End, Sylvester
 }

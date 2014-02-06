@@ -339,10 +339,7 @@ int main (int argc, char **argv)
 		}
 	}
 
-	if (pass)
-		commentator().stop("Sparse matrix black box test suite pass");
-	else
-		commentator().stop("Sparse matrix black box test suite FAIL");
+	commentator().stop( MSG_STATUS(pass), "Sparse matrix black box test suite pass");
 
 
 	return pass ? 0 : -1;

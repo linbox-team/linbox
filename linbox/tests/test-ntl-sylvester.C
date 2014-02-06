@@ -92,17 +92,17 @@ int main(int argc, char* argv[])
 	// typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
 	typedef LinBox::NTL_ZZ_p Field;
 	typedef Field::Element element;
-	typedef std::vector<element> Vector;
+	typedef LinBox::BlasVector<Field> Vector;
 
 	// Now we are using the NTL wrapper as the field, call the instance F
 	Field F(q); // XXX same bug ?
 
 	// Use the default constructor to create a matrix
-	LinBox::Sylvester<Field> T;
+	// LinBox::Sylvester<Field> T(F);
 
 	// Use a special constructor to construct a matrix of dim TSIZE
 
-	Vector pdata(n), qdata(m);
+	Vector pdata(F,n), qdata(F,m);
 
 	report << "\n\tpx:=";
 
@@ -126,7 +126,9 @@ int main(int argc, char* argv[])
 	report << std::endl;
 
 
-	LinBox::Sylvester<Field> TT(F,pdata,qdata);
+	// LinBox::Sylvester<Field> TT(F,pdata,qdata);
+	LinBox::Sylvester<Field> TT(pdata,qdata);
+#if 0 /* this is not a test */
 	report << "The matrix is: " << std::endl;
 	//  TT.printcp( "cpout.txt");
 	//  TT.print(report);
@@ -135,7 +137,7 @@ int main(int argc, char* argv[])
 
 
 	// Create an interesting input vector called idata
-	Vector idata( TT.sysdim() ), odata( TT.sysdim() );
+	Vector idata(F, TT.sysdim() ), odata( F, TT.sysdim() );
 	report << "A random col vector:\npx:=[" << std::endl;
 
 	for (unsigned int i=0; i < idata.size(); i++) {
@@ -162,12 +164,13 @@ int main(int argc, char* argv[])
 
 	for (unsigned int i = 0; i < odata.size(); i++)
 		report << odata[i] << " ";
+#endif
 
 	pass = testBlackboxNoRW(TT);
 	report <<"<====\tDone Sylvester matrix black box test suite" << endl;
 
 
-	LinBox::commentator().stop("Sylvester black box test suite");
+	LinBox::commentator().stop(MSG_STATUS (pass),"Sylvester black box test suite");
 	return pass ? 0 : -1;
 
 }
