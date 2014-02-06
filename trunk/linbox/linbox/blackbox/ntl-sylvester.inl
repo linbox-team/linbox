@@ -53,7 +53,8 @@ namespace LinBox
 	 *    Default constructor.
 	 *---------------------------------------------------------------------*/
 	template <class Field>
-	Sylvester<Field>::Sylvester()
+	Sylvester<Field>::Sylvester( const Field & F) :
+		pdata(0),qdata(0),K(F)
 	{
 		sysDim =               // Default dimension is 0
 		rowDim =               // Default row dim is 0
@@ -79,7 +80,7 @@ namespace LinBox
 				    const std::vector<typename Field::Element> &vp,
 				    const std::vector<typename Field::Element> &vq
 				   ) :
-		pdata(vp), qdata(vq)
+		pdata(vp), qdata(vq), K(F)
 	{
 
 		// Set the row, col, and system dimensions
@@ -103,17 +104,61 @@ namespace LinBox
 							   "x"<< colDim<< " Sylvester matrix "<< std::endl;
 #endif
 
-		/* Inserted for a timing calculation with the gcd
-		 *  double start_time = GetTime();
-		 *	  ZZ_pX gx;
-		 *	  GCD( gx, pxdata, qxdata);
-		 *
-		 *	  double end_time = GetTime();
-		 *	  cout << gx << endl;
-		 *	  std::cout << "Time for gcd = " << end_time-start_time << " sec\n";
-		 */
+		/* Inserted for a timing calculation with the gcd */
+#if 0
+		double start_time = GetTime();
+		ZZ_pX gx;
+		GCD( gx, pxdata, qxdata);
+
+		double end_time = GetTime();
+		cout << gx << endl;
+		std::cout << "Time for gcd = " << end_time-start_time << " sec\n";
+#endif
+
 	}// Sylvester()
 
+	template <class Field>
+	Sylvester<Field>::Sylvester(
+				    const BlasVector<Field> &vp,
+				    const BlasVector<Field> &vq
+				   ) :
+		 pdata(vp.size()), qdata(vq.size()), K(vp.field())
+	{
+		std::copy(vp.begin(), vp.end(), pdata.begin());
+		std::copy(vq.begin(), vq.end(), qdata.begin());
+
+		// Set the row, col, and system dimensions
+		rowDim =
+		colDim =
+		sysDim = vp.size() + vq.size()-2;  // square system with dimension deg(px)+deg(qx)
+
+		// Copy the vector to a polynomial representation, for px
+		pxdata.SetMaxLength((long) vp.size() );
+		for (size_t ip=0; ip< vp.size(); ip++ )
+			SetCoeff( pxdata, (long)ip, vp[ip]);
+
+		// Copy the vector to a polynomial representation, for qx
+		qxdata.SetMaxLength((long) vq.size() );
+		for ( size_t iq=0; iq< vq.size(); iq++ )
+			SetCoeff( qxdata, (long)iq, vq[iq] );
+
+
+#ifdef DBGMSGS
+		std::cout << "Sylvester::Sylvester(F,v,w):\tCreated a " << rowDim <<
+							   "x"<< colDim<< " Sylvester matrix "<< std::endl;
+#endif
+
+#if 0
+		double start_time = GetTime();
+		ZZ_pX gx;
+		GCD( gx, pxdata, qxdata);
+
+		double end_time = GetTime();
+		cout << gx << endl;
+		std::cout << "Time for gcd = " << end_time-start_time << " sec\n";
+#endif
+
+	}// Sylvester()
 
 
 	/*----------------------------------------------------------------------

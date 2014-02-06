@@ -1892,7 +1892,8 @@ namespace LinBox
 					tUpdateSerie.clear();
 					tUpdateSerie.start();
 #endif
-					/*
+
+#if 0
 					//write_maple("Sigma1", Sigma1);
 					Sigma1.resize(degree1+1, ZeroSigma);
 
@@ -1908,7 +1909,7 @@ namespace LinBox
 					//ClassicMulDomain<Field, std::vector<Coefficient> > CM_domain(field());
 					//CM_domain.midproduct(Serie2, Sigma1, Serie);
 					Serie2.resize(degree2, ZeroSerie);
-					*/
+#endif
 					std::vector<Coefficient> Serie2(degree2,ZeroSerie);
 					UpdateSerie(Serie2, Sigma1, PowerSerie, degree1, degree2);
 
