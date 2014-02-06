@@ -83,12 +83,12 @@ namespace LinBox
 			       const std::vector<typename Field::Element>&v) : Father_t(F)
 	{
 		// Assumes that the input is a vector of ZZ_p else things will FAIL
-		if ( (1 & v.size()) == 0)
+		if ( isEven(v.size()) )
 		{
 			std::cout << "There must be an ODD number of entries in the input vector " <<
 			"The length given is " << v.size();
 		}
-		assert( (1 & v.size()) == 1);
+		assert( isOdd(v.size()) );
 
 		this->rowDim = (1+v.size())/2; // The vector is 0..2n-2;
 		this->colDim = (1+v.size())/2;
@@ -109,6 +109,37 @@ namespace LinBox
 
 	}//----- Constructor given a vector----
 
+	/*-----------------------------------------------------------------
+	 *----- Constructor With User-Supplied First Row And Column
+	 *----------------------------------------------------------------*/
+	template <class Field>
+	Hankel<Field>::Hankel( const BlasVector<Field>&v ) :
+	       	Father_t(v.field())
+	{
+		//! @warning Assumes that the input is a vector of ZZ_p else things will FAIL
+		if ( isEven( v.size() ) )
+		{
+			std::cout << "There must be an ODD number of entries in the input vector " <<
+			"The length given is " << v.size();
+		}
+		assert(  isOdd(v.size())  );
+
+		this->rowDim = (1+v.size())/2; // The vector is 0..2n-2;
+		this->colDim = (1+v.size())/2;
+		this->sysDim = (1+v.size())/2;
+
+		this->pdata.SetMaxLength( (long) v.size());
+		for (unsigned int i=0; i< v.size(); i++)
+		{
+			this->P.setCoeff( this->pdata, i, v[i]);
+		}
+
+#ifdef DBGMSGS
+		std::cout << "Hankel::Hankel(F,V):\tCreated a " << this->rowDim << "x"<< this->colDim<<
+						   " Hankel matrix "<< std::endl;
+#endif
+
+	}//----- Constructor given a vector----
 
 
 	/*-----------------------------------------------------------------
