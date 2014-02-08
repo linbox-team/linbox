@@ -1,5 +1,5 @@
 
-/* tests/test-gf2.C
+/* tests/test-givaropoly.C
  * Copyright (C) 2014 Gavin Harrison,
  *
  * Written by Gavin Harrison <gmh33@drexel.edu>,
