@@ -108,7 +108,7 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 
 bool reportError(string rep, bool& flag)
 {
-	ostream &report = commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+	ostream &report = std::cout; //commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
 	report << "ERROR: " << rep << endl;
 	return flag = false;
 }
@@ -132,8 +132,31 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	// ostream &report = std::cout ;
 	ostream &report = commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-	typename Field::Element zero, one, mOne, two, three;
-	F.init(zero, 0); F.init(one, 1); F.init(two, 2); F.init(three, 3);
+	LinBox::integer q;
+	F.characteristic(q);
+	
+	typename Field::Element zero, one, mOne, two, mTwo, three, five, six, eight;
+	F.init(zero, 0); F.init(one, 1); 
+	
+	if (q > 0)
+	{
+		F.init(two, 2 % q);
+		F.init(mTwo, q - 2);
+		F.init(three, 3 % q);
+		F.init(five, 5 % q);
+		F.init(six, 6 % q);
+		F.init(eight, 8 % q);
+	}
+	else
+	{
+		F.init(two, 2);
+		F.init(mTwo, -2);
+		F.init(three, 3);
+		F.init(five, 5);
+		F.init(six, 6);
+		F.init(eight, 8);
+	}
+		
 	F.init(mOne);
 	F.neg(mOne,one);
 
@@ -152,7 +175,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.characteristic (n);
 	F.cardinality (m);
 
-	if (n > 0 && !isPower (m, n)) part_pass = reportError("Characteristic, cardinality mismatch", pass);
+	if (n > 0 && m > 0 && !isPower (m, n)) part_pass = reportError("Characteristic, cardinality mismatch", pass);
 
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
@@ -221,27 +244,23 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	commentator().start ("\t--Testing field arithmetic");
 	part_pass = true;
 
-	F.init (b, n-2);
-	F.init (d, n-2);
-	F.init (e, 3);
-
 	F.add (a, three, two); F.write (report << "Result of 2 + 3: ", a) << endl;
 	F.assign (d, three);
 	F.addin (d, two); F.write (report << "Result of 2 + 3 (inplace): ", d) << endl;
 
-	if (!F.areEqual (a, F.init (f, 5)) || !F.areEqual (d, a))
+	if (!F.areEqual (a, F.assign (f, five)) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of add are incorrect", pass);
 
 	F.neg (a, two); F.write (report << "Result of -2: ", a) << endl;
 	F.assign (d, two);
 	F.negin (d); F.write (report << "Result of -2 (inplace): ", d) << endl;
-	F.init (f, -2); F.write( report << "-2 via init: ", f) << endl;
+	F.assign (f, mTwo); F.write( report << "-2 via init: ", f) << endl;
 
 	if (!F.areEqual (a, f) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of neg are incorrect", pass);
 
 	F.sub (a, three, two); F.write (report << "Result of 3 - 2: ", a) << endl;
-	F.init (d, 3);
+	F.assign (d, three);
 	F.subin (d, two); F.write (report << "Result of 3 - 2 (inplace): ", d) << endl;
 
 	if (!F.areEqual (a, one) || !F.areEqual (d, a))
@@ -250,7 +269,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.mul (a, two, three); F.write (report << "Result of 2 * 3: ", a) << endl;
 	F.assign (d, two);
 	F.mulin (d, three); F.write (report << "Result of 2 * 3 (inplace): ", d) << endl;
-	F.init (f, 6);
+	F.assign (f, six);
 
 	if (!F.areEqual (a, f) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of mul incorrect", pass);
@@ -269,11 +288,11 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 	if (!F.areEqual (a, one) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of div incorrect", pass);
-
+	
 	F.axpy (a, two, three, two); F.write ( report << "Result of axpy 2*3 + 2: ", a) << endl;
 	F.assign (d, two);
 	F.axpyin (d, two, three); F.write ( report << "Result of axpy 2*3 + 2 (inplace): ", d) << endl;
-	F.init (f, 8);
+	F.assign (f, eight);
 
 	if ( !F.areEqual (a, f) || !F.areEqual (d, a) )
 		part_pass = reportError( "Results of axpy incorrect", pass);
