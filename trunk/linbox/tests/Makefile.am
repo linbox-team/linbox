@@ -305,12 +305,12 @@ test_gf2_SOURCES =                        \
         test-generic.h                    \
         test-common.h
 
-test_gf2_SOURCES = \
+test_givaropoly_SOURCES = \
 		test-givaropoly.C \
 		test-generic.h \
 		test-common.h
-		
-        
+
+
 test_gmp_rational_SOURCES =               \
         test-gmp-rational.C               \
         test-generic.h                    \
