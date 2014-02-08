@@ -108,7 +108,7 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 
 bool reportError(string rep, bool& flag)
 {
-	ostream &report = std::cout; //commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+	ostream &report = commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
 	report << "ERROR: " << rep << endl;
 	return flag = false;
 }
