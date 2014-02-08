@@ -55,52 +55,37 @@ namespace LinBox
 			return x;
 		}
 		
-		//template<class XXX>
 		Element &init(Element &x, const integer &y) const {
-			typedef integer XXX;
-			
 			_pd.init(x, Givaro::Degree(0), 0);
 			
-			XXX p = _pd.subdomain().cardinality();
+			integer q = _pd.characteristic();
 			
-			XXX i = 0;
-			XXX tmp = y;
+			integer i = 0;
+			integer tmp = y;
 			
 			while (tmp != 0)
 			{
 				Element xi;
-				_pd.init(xi, Givaro::Degree(i), tmp % p);
+				_pd.init(xi, Givaro::Degree(i), tmp % q);
 				_pd.addin(x, xi);
 				
 				i++;
-				tmp /= p;
+				tmp /= q;
 			}
 			
 			return x;
 		}
 		
-		/*
-		Element &init(Element &x, const float &y) const {
-			integer a = y;
-			return init(x, a);
-		}
-		
-		Element &init(Element &x, const double &y) const {
-			integer a = y;
-			return init(x, a);
-		}
-		*/
-		
-		template<class XXX>
-		XXX &convert(XXX &x, Element y) {
+		integer &convert(integer &x, Element y) {
 			x = 0;
+			integer q = _pd.characteristic();
 			Givaro::Degree d = _pd.degree(y);
 			
 			while (d >= 0) {
-				XXX tmp;
+				integer tmp;
 				Scalar_t e;
 				
-				x *= _pd.characteristic();
+				x *= q;
 				_pd.getEntry(e, d, y);
 				x += _pd.subdomain().convert(tmp, e);
 				
