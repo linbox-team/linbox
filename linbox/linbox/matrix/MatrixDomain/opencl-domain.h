@@ -1,4 +1,4 @@
-/* linbox/algorithms/opencl-domain.h
+/*
  * Copyright (C) 2011      David Saunders
  *               2011-2012 Matthew Wezowicz
  *
@@ -24,8 +24,9 @@
  *.
  */
 
-/*! @file algorithms/opencl-domain.h
- * @ingroup algorithms
+/*! @file matrix/MatrixDomain/opencl-domain.h
+ * @ingroup matrixdomain
+ * @ingroup opencl
  * @brief NO DOC
  * @warning An <code>OpenCLMatrixDomain<Field></code> should be templated by a
  * Modular<double> or Modular<float> field only.
@@ -38,13 +39,13 @@
 #include <iostream>
 #include <pthread.h>
 
-#include "linbox/algorithms/blas-domain.h"
+#ifdef __LINBOX_HAVE_OCL
+#include <CL/cl.h>
+#endif
+
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
-
-#ifdef __LINBOX_HAVE_OCL
-#include "CL/cl.h"
-#endif
+#include "linbox/matrix/MatrixDomain/blas-matrix-domain.h"
 
 namespace LinBox{
 
@@ -263,7 +264,7 @@ namespace LinBox{
 	public:
 		typedef Field_                          Field;
 		typedef typename Field::Element         Element;
-		typedef BlasMatrix<Field>               Matrix;
+		typedef BlasMatrix<Field,typename Vector<Field>::Dense >               Matrix;
 #ifdef __LINBOX_HAVE_OCL
 		friend class OpenCLMatrixDomainFactory;
 #endif
@@ -977,10 +978,10 @@ namespace LinBox{
 } /* end of namespace LinBox */
 
 #ifdef __LINBOX_HAVE_OCL
-	#include "linbox/algorithms/opencl-domain-factory.h"
-	#include "linbox/algorithms/opencl-domain-util.inl"
-	#include "linbox/algorithms/opencl-domain-memory.inl"
-	#include "linbox/algorithms/opencl-domain.inl"
+	#include "linbox/matrix/MatrixDomain/opencl-domain-factory.h"
+	#include "linbox/matrix/MatrixDomain/opencl-domain-util.inl"
+	#include "linbox/matrix/MatrixDomain/opencl-domain-memory.inl"
+	#include "linbox/matrix/MatrixDomain/opencl-domain.inl"
 #endif
 
 #endif // __LINBOX_opencl_matrix_domain_H

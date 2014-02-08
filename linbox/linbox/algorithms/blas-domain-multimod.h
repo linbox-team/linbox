@@ -30,7 +30,7 @@
 #define __LINBOX_blas_matrix_domain_multimod_H
 
 #include "linbox/matrix/blas-matrix-multimod.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 
 THIS_CODE_MAY_NOT_COMPILE_AND_IS_NOT_TESTED
 

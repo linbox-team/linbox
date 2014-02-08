@@ -58,8 +58,8 @@
 //#include "linbox/vector/vector-domain.h"
 //#include "linbox/matrix/matrix-domain.h"
 //#include "linbox/vector/stream.h"
-//#include "linbox/matrix/blas-matrix.h"
-//#include "linbox/matrix/sparse.h"
+//#include "linbox/matrix/dense-matrix.h"
+//#include "linbox/matrix/sparse-matrix.h"
 //#include "linbox/blackbox/matrix-blackbox.h"
 
 //#include "linbox/solutions/det.h"

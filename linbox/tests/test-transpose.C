@@ -48,7 +48,7 @@
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/transpose.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 // #include "linbox/blackbox/triplesbb.h"
 #include "linbox/matrix/sparse-matrix.h"
 

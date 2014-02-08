@@ -32,7 +32,7 @@
 
 #include <vector>
 #include "linbox/integer.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 
 namespace LinBox
 {
@@ -95,8 +95,8 @@ namespace LinBox
 		/** Specialization for dense case*/
 		// template <class IRing>
 		// static void smithForm (BlasVector<PID_integer>& s, const BlasMatrix<IRing>& A);
-		template <class IRing>
-		static void smithForm (BlasVector<PID_integer>& s, const BlasMatrix<IRing>& A);
+		template <class IRing, class _Rep>
+		static void smithForm (BlasVector<PID_integer>& s, const BlasMatrix<IRing, _Rep>& A);
 
 	};
 	const long SmithFormAdaptive::prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};

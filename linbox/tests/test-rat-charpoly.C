@@ -44,7 +44,7 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/solutions/charpoly.h"
 
 #include "test-common.h"

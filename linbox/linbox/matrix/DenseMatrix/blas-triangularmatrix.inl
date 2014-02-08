@@ -1,4 +1,4 @@
-/* linbox/matrix/blas-matrix.h
+/* linbox/matrix/dense-matrix.h
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
  * Written by :

@@ -1,9 +1,10 @@
-/* linbox/matrix/blas-matrix.h
+/*
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
  * Written by :
  *               Pascal Giorgi  pascal.giorgi@ens-lyon.fr
  *               Clément Pernet clement.pernet@imag.fr
+ *               Brice Boyer    <bboyer@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -24,30 +25,32 @@
  * ========LICENCE========
  */
 
-/*! @file matrix/blas-matrix.h
- * @ingroup matrix
+/*! @file matrix/DenseMatrix/blas-matrix.h
+ * @ingroup densematrix
  * A \c BlasMatrix<\c _Field > represents a matrix as an array of
  * <code>_Field::Element</code>s. It also has the BlasBlackbox interface.
  *
  */
 
-#ifndef __LINBOX_matrix_blas_matrix_H
-#define __LINBOX_matrix_blas_matrix_H
-
-#include "linbox/vector/stream.h"
-#include "linbox/vector/subiterator.h"
-#include "linbox/vector/subvector.h"
+#ifndef __LINBOX_matrix_densematrix_blas_matrix_H
+#define __LINBOX_matrix_densematrix_blas_matrix_H
 
 #include "linbox/util/debug.h"
+#include "linbox/linbox-tags.h"
+#include "linbox/vector/stream.h"
+#include "linbox/field/hom.h"
+#include "linbox/vector/blas-vector.h"
+
 #include "linbox/matrix/matrix-category.h"
 #include "linbox/matrix/matrix-traits.h"
-#include "linbox/linbox-tags.h"
-#include "linbox/vector/blas-vector.h"
 #include "linbox/util/matrix-stream.h"
-#include "linbox/field/hom.h"
 
 #include "linbox/field/modular.h" // just for checkBlasApply
 #include "linbox/field/modular-balanced.h" // just for checkBlasApply
+
+//! @bug this does not belong here.
+#include "blas-transposed-matrix.h"
+#include "linbox/matrix/MatrixDomain/matrix-domain.h"
 
 namespace LinBox
 { /*  not generic wrt Field (eg NTL_ZZ_p) */
@@ -178,11 +181,15 @@ namespace LinBox
 	template<class _Matrix>
 	class BlasSubmatrix ;
 
+	template<class Matrix>
+	class MatrixDomain;
+
 	/*! Dense matrix representation.
 	 * @ingroup matrix
-	 * A BlasMatrix is a matrix of \p _Field::Element, with the structure of BLAS matrices.
+	 * A \p BlasMatrix is a matrix of \p _Field::Element, with the structure of BLAS matrices.
 	 * It is basically a vector of \p _Field::Element.
-	 * In the Mother model, a BlasMatrix is allocated by the user.
+	 * In the Mother model, a \p BlasMatrix is allocated by the user.
+	 *@bug why not BlasMatrixDomain ?
 	 */
 	template <class _Field, class _blasRep=typename RawVector<typename _Field::Element >::Dense >
 	class BlasMatrix {
@@ -207,7 +214,8 @@ namespace LinBox
 		bool		     _use_fflas ; //! @bug why public ?
 	protected:
 		pointer			    _ptr;
-	public: const Field		    * _field; //! @bug why public ?
+	public:
+	       	const Field		    * _field; //! @bug why public ?
 		MatrixDomain<Field>    _MD; //! @bug why public ?
 	protected:
 		VectorDomain<Field>    _VD;
@@ -322,7 +330,7 @@ namespace LinBox
 		// BlasMatrix () ;
 
 		/// (Re)allocates a new \f$ m \times n\f$ zero matrix (shaped and ready).
-		void init(const _Field & F, size_t r = 0, size_t c = 0);
+		void init(const _Field & F, const size_t & r = 0, const size_t & c = 0);
 
 		/*! Allocates a new \f$ m \times n\f$ zero matrix (shaped and ready).
 		 * @param F
@@ -330,37 +338,8 @@ namespace LinBox
 		 * @param n cols
 		 */
 		//@{
-#ifdef __GNUC__
-#ifndef __x86_64__
-#if (__GNUC__ == 4 && __GNUC_MINOR__ ==4 && __GNUC_PATCHLEVEL__==5)
-		template<class T>
-		BlasMatrix (const _Field &F, const long &m, const T &n) ;
-#endif
-#endif
-#endif
 
-		// Pascal Giorgi: fix a bug with MAC OSX
-		// MAC OSX defines in stdint.h the int64_t to be a long long which causes trouble here
-		// might be useful to add signed type either but need to resolve conflict with pathch version above for GCC-4.4.5
-#if defined(__APPLE__) || (defined(__s390__) && !defined(__s390x__))
-		template<class T>
-		BlasMatrix (const _Field &F, const unsigned long &m, const T &n) ;
-#endif
-
-		template<class T>
-		BlasMatrix (const _Field &F, const uint64_t &m, const T &n) ;
-
-		template<class T>
-		BlasMatrix (const _Field &F, const int64_t &m, const T &n) ;
-
-		template<class T>
-		BlasMatrix (const _Field &F, const uint32_t &m, const T  &n) ;
-
-		template<class T>
-		BlasMatrix (const _Field &F, const int32_t &m, const T &n) ;
-
-		template<class T>
-		BlasMatrix (const _Field &F, const Integer & m, const T &n) ;
+		BlasMatrix (const _Field &F, const size_t & m, const size_t &n) ;
 
 		//@}
 
@@ -385,8 +364,8 @@ namespace LinBox
 		 */
 		template <class Matrix>
 		BlasMatrix (const Matrix& A,
-			    const size_t i0, const size_t j0,
-			    const size_t m,  const size_t n) ;
+			    const size_t & i0, const size_t & j0,
+			    const size_t & m,  const size_t & n) ;
 
 		/*! Constructor.
 		 * @param A matrix to be copied
@@ -412,7 +391,7 @@ namespace LinBox
 		 * @param n
 		 */
 		BlasMatrix (const _Field &F, const std::vector<Element>& v,
-			    size_t m, size_t n) ;
+			    const size_t &m , const size_t &n) ;
 
 		/*! Create a BlasMatrix from an array of elements
 		 * @param F
@@ -421,7 +400,7 @@ namespace LinBox
 		 * @param n
 		 */
 		BlasMatrix (const _Field &F, const Element * v,
-			    size_t m, size_t n) ;
+			    const size_t & m, const size_t & n) ;
 
 
 		/** Constructor using a finite vector stream (stream of the rows).
@@ -488,7 +467,7 @@ namespace LinBox
 		 * @param n Number of columns
 		 * @param val
 		 */
-		void resize (size_t m, size_t n, const Element& val = Element()) ;
+		void resize (const size_t &m, const size_t &n, const Element& val = Element()) ;
 
 		//////////////////
 		//   ELEMENTS   //
@@ -761,7 +740,8 @@ namespace LinBox
 		template <class Vector1, class Vector2>
 		Vector1&  apply (Vector1& y, const Vector2& x) const ;
 
-		BlasVector<_Field>&  apply (BlasVector<_Field>& y, const BlasVector<_Field>& x) const ;
+		template<class _VRep>
+		BlasVector<Field,_VRep>&  apply (BlasVector<Field,_VRep>& y, const BlasVector<Field,_VRep>& x) const ;
 
 		template <class Vector1, class Vector2>
 		Vector1&  applyTranspose (Vector1& y, const Vector2& x) const ;
@@ -860,7 +840,7 @@ namespace LinBox
                 typedef Self_t                    subMatrixType;    //!< Submatrix type
                 typedef BlasMatrix<Field,Rep>        matrixType;    //!< matrix type
                 typedef BlasMatrix<Field,Rep>          blasType;    //!< blas matrix type
-                typedef BlasVector<Field>          vectorType;    //!< blas matrix type
+                typedef BlasVector<Field,Rep>        vectorType;    //!< blas matrix type
 
 
 	protected:
@@ -1147,7 +1127,7 @@ namespace LinBox
 		{
 			//_stride ?
 			if (_Mat->_use_fflas){
-				//!@bug this supposes &x[0]++ == &x[1]
+				//!@bug this is obfuscating. x and y should know their strides...
                                 // PG: try to discover stride of x and y (not use it works on every platform)
                                 size_t ldx,ldy;
                                 ldx=&x[1] - &x[0];
@@ -1174,6 +1154,7 @@ namespace LinBox
 			return y;
 		}
 
+		//! @bug use Matrix domain
 		template <class Vector1, class Vector2>
 		Vector1&  applyTranspose (Vector1& y, const Vector2& x) const
 		{
@@ -1232,7 +1213,7 @@ namespace LinBox
 }
 
 namespace LinBox
-{ /* Triangular, Transposed Matrix */
+{ /* Triangular Matrix */
 	//! Triangular BLAS matrix.
 	template <class _Field, class _Rep=typename RawVector<typename _Field::Element >::Dense >
 	class TriangularBlasMatrix: public BlasMatrix<_Field,_Rep> {
@@ -1305,97 +1286,13 @@ namespace LinBox
 
 } // LinBox
 
-namespace LinBox
-{ /*  indexDomain : used only once in linbox/algorithms/rational-solver.inl */
-
-
-	/** Class used for permuting indices.
-	 * For example, create a vector <code>(0 1 2 ...)</code> over \c
-	 * size_t, then apply a permutation to it using a \c BlasMatrixDomain to
-	 * get the natural representation of the permutation.
-	 * @bug does not belong here
-	 */
-	class indexDomain {
-	public:
-		typedef size_t Element;
-	public:
-		typedef indexDomain Father_t;
-		indexDomain() {};
-		template <class ANY>
-		size_t init(size_t& dst, const ANY& src) const {
-			return dst = static_cast<size_t>(src);
-		}
-		template <class ANY>
-		size_t assign(ANY& dst, const size_t& src) const {
-			return dst = static_cast<ANY>(src);
-		}
-		int characteristic() const { return 0 ; }
-	};
-}
-
-namespace LinBox
-{ /*  Transposed Matrix */
-	/*! TransposedBlasMatrix.
-	 * NO DOC
-	 */
-	template< class Matrix >
-	class TransposedBlasMatrix {
-
-	public:
-
-		/*! NO DOC
-		 * @param Mat
-		 */
-		TransposedBlasMatrix ( Matrix& Mat ) :
-			_Mat(Mat)
-		{}
-
-		/*! NO DOC
-		*/
-		Matrix& getMatrix() const
-		{
-			return _Mat;
-		}
-
-	protected:
-		Matrix& _Mat; //!< NO DOC
-	};
-
-	/*! TransposedBlasMatrix.
-	 * NO DOC
-	 */
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) & !defined(__clang__)
-	template <>
-#endif
-	template< class Matrix >
-	class TransposedBlasMatrix< TransposedBlasMatrix< Matrix > > : public Matrix {
-
-	public:
-		/*! TransposedBlasMatrix.
-		 * NO DOC
-		 */
-		TransposedBlasMatrix ( Matrix& Mat ) :
-			Matrix(Mat)
-		{}
-
-		/*! TransposedBlasMatrix.
-		 * NO DOC
-		 */
-		TransposedBlasMatrix ( const Matrix& Mat ) :
-			Matrix(Mat)
-		{}
-
-	};
-
-
-}
 
 
 #include "blas-matrix.inl"
 #include "blas-submatrix.inl"
 #include "blas-triangularmatrix.inl"
 
-#endif // __LINBOX_blas_matrix_H
+#endif // __LINBOX_densematrix_blas_matrix_H
 
 
 // Local Variables:

@@ -33,7 +33,7 @@
 
 #include <linbox/field/modular.h>
 #include <linbox/field/gf2.h>
-#include <linbox/matrix/sparse.h>
+#include <linbox/matrix/sparse-matrix.h>
 #include <linbox/blackbox/zero-one.h>
 #include <linbox/solutions/rank.h>
 #include <linbox/solutions/det.h>

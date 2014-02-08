@@ -31,8 +31,8 @@
 
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/compose.h"

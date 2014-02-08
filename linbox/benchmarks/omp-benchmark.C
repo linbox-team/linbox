@@ -37,10 +37,10 @@
 #include "benchmarks/CSValue.h"
 #include "benchmarks/BenchmarkFile.h"
 
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/vector/blas-vector.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/util/timer.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/triplesbb-omp.h"

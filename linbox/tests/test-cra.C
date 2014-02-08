@@ -35,7 +35,7 @@
 #include "linbox/algorithms/cra-early-single.h"
 #include "linbox/algorithms/cra-early-multip.h"
 
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/algorithms/cra-full-multip.h"
 #include "linbox/algorithms/cra-full-multip-fixed.h"
 

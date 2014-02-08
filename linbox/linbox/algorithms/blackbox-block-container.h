@@ -34,8 +34,8 @@
 #include "linbox/util/debug.h"
 
 #include "linbox/algorithms/blackbox-block-container-base.h"
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 
 #define _BBC_TIMING
 

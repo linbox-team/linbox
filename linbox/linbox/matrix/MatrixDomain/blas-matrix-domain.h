@@ -26,8 +26,8 @@
  * ========LICENCE========
  */
 
-/*! @file algorithms/blas-domain.h
- * @ingroup algorithms
+/*! @file matrix/MatrixDomain/blas-domain.h
+ * @ingroup matrixdomain
  * @brief NO DOC
  * @warning A <code>BlasMatrixDomain<Field></code> should be templated by a
  * \link LinBox::Modular Modular\endlink field. In particular, this domain
@@ -41,21 +41,21 @@
 #include <iostream>
 #include <vector>
 
+#include <fflas-ffpack/ffpack/ffpack.h>
+#include <fflas-ffpack/fflas/fflas.h>
+
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
-#include <fflas-ffpack/ffpack/ffpack.h>
-#include <fflas-ffpack/fflas/fflas.h>
-//#include <linbox/matrix/f3las.h>
-#include "linbox/matrix/blas-matrix.h"
 #include "linbox/vector/blas-vector.h"
+#include "linbox/matrix/DenseMatrix/blas-matrix.h"
 #include "linbox/matrix/permutation-matrix.h"
+#include "linbox/matrix/factorized-matrix.h"
 
 
 
 namespace LinBox
 {
-
 	//!@bug not used ?
 	const int BlasBound = 1 << 26;
 
@@ -316,10 +316,10 @@ namespace LinBox
 		ContPol&  operator() (const Field &F, ContPol& P, const Matrix& A) const;
 	};
 
-	template< class Field, class Matrix>
-	class BlasMatrixDomainCharpoly<Field,BlasVector<Field>,Matrix> {
+	template< class Field, class Matrix, class _Vrep>
+	class BlasMatrixDomainCharpoly<Field,BlasVector<Field,_Vrep>,Matrix> {
 	public:
-		BlasVector<Field>&  operator() (const Field &F, BlasVector<Field>& P, const Matrix& A) const;
+		BlasVector<Field,_Vrep>&  operator() (const Field &F, BlasVector<Field,_Vrep>& P, const Matrix& A) const;
 	};
 
 	/**
@@ -947,7 +947,7 @@ namespace LinBox
 
 } /* end of namespace LinBox */
 
-#include "linbox/matrix/blas-matrix-domain.inl"
+#include "linbox/matrix/MatrixDomain/blas-matrix-domain.inl"
 
 #endif /* __LINBOX_blas_matrix_domain_H */
 

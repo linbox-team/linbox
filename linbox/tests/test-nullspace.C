@@ -36,7 +36,6 @@
 #include <iostream>
 #include "linbox/integer.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/matrix/blas-matrix-domain.h"
 //#include "linbox/field/givaro-zpz.h"
 #include "linbox/field/modular.h"
 //#include "fflas-ffpack/ffpack/ffpack.h"

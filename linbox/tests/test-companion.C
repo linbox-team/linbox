@@ -40,7 +40,7 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/companion.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 
 #include "test-common.h"
 #include "test-generic.h"

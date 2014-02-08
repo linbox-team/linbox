@@ -37,7 +37,7 @@
 
 
 #include "linbox/linbox-tags.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 
 namespace LinBox
 {

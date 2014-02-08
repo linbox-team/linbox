@@ -29,7 +29,7 @@
 #include <athapascan-1>
 #include "linbox/integer.h"
 #include "linbox/field/modular-double.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 
 /*
  * gmp integers

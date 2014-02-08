@@ -47,7 +47,7 @@
 #include "linbox/field/archetype.h"
 #include "linbox/field/gf2.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/archetype.h"
 #include "linbox/solutions/methods.h"

@@ -25,7 +25,7 @@
 #ifndef __LINBOX_dense_nullspace_INL
 #define __LINBOX_dense_nullspace_INL
 
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 
 #include "fflas-ffpack/ffpack/ffpack.h" // LU
 #include "fflas-ffpack/fflas/fflas.h" // trsm

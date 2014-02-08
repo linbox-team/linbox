@@ -25,8 +25,8 @@
 
 /*! @file matrix/sparse-matrix.h
  * @ingroup matrix
- * @ingroup sparse
- * A <code>SparseMatrix<_Field ></code> ....
+ * @ingroup sparsematrix
+ * A <code>SparseMatrix<_Field, _Storage></code> ....
  */
 
 #ifndef __LINBOX_matrix_sparse_matrix_H

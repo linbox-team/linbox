@@ -30,8 +30,8 @@
 #include "linbox/solutions/methods.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 
 #ifdef __LINBOX_HAVE_GIVARO
 // BBcharpoly without givaropolynomials is not yet implemented

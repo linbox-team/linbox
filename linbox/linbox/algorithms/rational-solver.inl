@@ -29,7 +29,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/lambda-sparse.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/blackbox/diagonal.h"
@@ -53,8 +53,8 @@
 
 // #ifdef __LINBOX_BLAS_AVAILABLE
 #include "linbox/config-blas.h"
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/factorized-matrix.h"
 #include "linbox/util/timer.h"
 // #endif

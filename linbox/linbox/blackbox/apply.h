@@ -40,8 +40,8 @@
 #include "linbox/field/multimod-field.h"
 #include "linbox/field/hom.h"
 #include "linbox/randiter/multimod-randomprime.h"
-#include "linbox/matrix/sparse.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/sparse-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/algorithms/lifting-container.h"
 #include <vector>
 #include "linbox/vector/blas-vector.h"

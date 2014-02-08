@@ -1,4 +1,4 @@
-/* linbox/matrix/blas-matrix.h
+/*
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
  * Written by :
@@ -26,14 +26,14 @@
  */
 
 /*!@internal
- * @file matrix/blas-matrix.inl
- * @ingroup matrix
+ * @file matrix/DenseMatrix/blas-matrix.inl
+ * @ingroup densematrix
  * A \c BlasMatrix<\c _Field > represents a matrix as an array of
  * <code>_Field</code>s.
  */
 
-#ifndef __LINBOX_blas_matrix_INL
-#define __LINBOX_blas_matrix_INL
+#ifndef __LINBOX_densematrix_blas_matrix_INL
+#define __LINBOX_densematrix_blas_matrix_INL
 
 /////////////////
 //   PRIVATE   //
@@ -236,7 +236,7 @@ namespace LinBox
 		// {}
 
 	template < class _Field, class _Rep >
-	void BlasMatrix< _Field, _Rep >::init(const _Field &F, size_t r, size_t c)
+	void BlasMatrix< _Field, _Rep >::init(const _Field &F, const size_t & r, const size_t & c)
 	{
 		_field = &F; _row = r; _col = c;
 		 _rep.resize(r*c, F.zero);
@@ -245,99 +245,12 @@ namespace LinBox
 	}
 
 	template < class _Field, class _Rep >
-	template<class T>
-	BlasMatrix< _Field, _Rep >::BlasMatrix ( const _Field &F, const uint32_t& m, const T& n) :
+	BlasMatrix< _Field, _Rep >::BlasMatrix ( const _Field &F, const size_t & m, const size_t & n) :
 		_row(m),_col(n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
 		_field(&F),_MD(F),_VD(F)
 	{
 		_use_fflas = Protected::checkBlasApply(field(),_col);
 	}
-
-	template < class _Field, class _Rep >
-	template<class T>
-	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F, const int64_t& m, const T& n) :
-		_row((size_t)m),_col((size_t)n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
-		_field(&F),_MD(F),_VD(F)
-	{
-		linbox_check(n>=0);// check sgn of T
-		linbox_check(m>=0);
-		_use_fflas = Protected::checkBlasApply(field(),_col);
-	}
-
-#ifdef __GNUC__
-#ifndef __x86_64__
-#if (__GNUC__ == 4 && __GNUC_MINOR__ ==4 && __GNUC_PATCHLEVEL__==5)
-	template < class _Field, class _Rep >
-	template<class T>
-	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F, const long & m, const T& n) :
-		_row(m),_col(n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
-		_field(&F),_MD(F),_VD(F)
-	{
-		linbox_check(n>=0);
-		linbox_check(m>=0);
-		_use_fflas = Protected::checkBlasApply(field(),_col);
-	}
-#endif
-#endif
-#endif
-
-#if defined(__APPLE__) || (defined(__s390__) && !defined(__s390x__))
-	template < class _Field, class _Rep >
-	template<class T>
-	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F, const unsigned long & m, const T& n) :
-		_row(m),_col(n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
-		_field(&F),_MD(F),_VD(F)
-	{
-		linbox_check(n>=0);
-		linbox_check(m>=0);
-		_use_fflas = Protected::checkBlasApply(field(),_col);
-	}
-#endif
-
-
-	template < class _Field, class _Rep >
-	template<class T>
-	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F, const uint64_t &m, const T & n) :
-		_row(m)
-		,_col((size_t)n)
-		,_rep(_row*_col, F.zero)
-		,_ptr(&_rep[0])
-		,_field(&F)
-		,_MD(F)
-		, _VD(F)
-	{
-		//!@todo
-		// linbox_check_non_neg(n);
-		// linbox_check(n>=0);
-		// makePointer();
-		_use_fflas = Protected::checkBlasApply(field(), _col);
-	}
-
-	template < class _Field, class _Rep >
-	template<class T>
-	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F, const int32_t & m, const T &n) :
-		_row((size_t) m),_col((size_t)n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
-		_field(&F),_MD(F),_VD(F)
-	{
-		linbox_check(isPositive<T>(n));
-		linbox_check(m>=0);
-		// makePointer();
-		_use_fflas = Protected::checkBlasApply(field(), _col);
-	}
-
-	template < class _Field, class _Rep >
-	template<class T>
-	BlasMatrix< _Field, _Rep >::BlasMatrix ( const _Field &F, const Integer & m, const T &n) :
-		_row(m),_col(n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
-		_field(&F),_MD(F),_VD(F)
-	{
-		//!@todo check m,n not too big ?
-		linbox_check(n>=0);
-		linbox_check(m>=0);
-		// makePointer();
-		_use_fflas = Protected::checkBlasApply(field(), _col);
-	}
-
 
 
 	template < class _Field, class _Rep >
@@ -385,8 +298,8 @@ namespace LinBox
 	template < class _Field, class _Rep >
 	template <class Matrix>
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const Matrix& A,
-					 const size_t i0, const size_t j0,
-					 const size_t m, const size_t n) :
+					 const size_t &i0, const size_t &j0,
+					 const size_t &m,  const size_t &n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(&(A.field())),_MD(field() ),_VD(field() )
 	{
@@ -419,7 +332,7 @@ namespace LinBox
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F,
 					 const std::vector<typename _Field::Element>& v,
-					 size_t m, size_t n) :
+					 const size_t & m, const size_t & n) :
 		_row(m), _col(n),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(&F),_MD(field() ),_VD(field() )
 	{
@@ -432,7 +345,7 @@ namespace LinBox
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F,
 					 const typename _Field::Element * v,
-					 size_t m, size_t n) :
+					 const size_t & m, const size_t & n) :
 		_row(m), _col(n),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(&F), _MD(field() ),_VD(field() )
 	{
@@ -702,7 +615,7 @@ namespace LinBox
 	}
 
 	template < class _Field, class _Rep >
-	void BlasMatrix< _Field, _Rep >::resize (size_t m, size_t n, const Element& val )
+	void BlasMatrix< _Field, _Rep >::resize (const size_t & m, const size_t & n, const Element& val )
 	{
 #ifndef NDEBUG
 		if (_col > 0 && _col != n)
@@ -1692,7 +1605,8 @@ namespace LinBox
 		return y;
 	}
 	template < class _Field, class _Rep >
-	BlasVector<_Field>&  BlasMatrix< _Field, _Rep >::apply (BlasVector<_Field>& y, const BlasVector<_Field>& x) const
+	template<class _Vrep>
+	BlasVector<_Field,_Vrep>&  BlasMatrix< _Field, _Rep >::apply (BlasVector<_Field,_Vrep>& y, const BlasVector<_Field,_Vrep>& x) const
 	{
 		//_stride ?
 		if (_use_fflas){
@@ -1762,7 +1676,7 @@ namespace LinBox
 }
 
 
-#endif // __LINBOX_blas_matrix_INL
+#endif // __LINBOX_densematrix_blas_matrix_INL
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

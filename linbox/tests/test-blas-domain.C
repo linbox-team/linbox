@@ -57,12 +57,11 @@
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/ntl.h"
 #endif
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/randiter/nonzero.h"
 #include "linbox/util/commentator.h"
-#include "linbox/matrix/blas-matrix-domain.h"
-//#include "linbox/domain/blas-matrix_domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/field/PID-integer.h"
 // #include "linbox/algorithms/matrix-hom.h"
 

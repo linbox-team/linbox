@@ -69,7 +69,6 @@ int main (int argc, char **argv)
 
 	commentator().start("Hilbert matrix blackbox test suite", "Hilbert");
 
-	typedef vector<Field::Element> Vector;
 	typedef Hilbert<Field> BB;
 	BB A (F, n);
 

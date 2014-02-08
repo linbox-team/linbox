@@ -39,7 +39,7 @@
 #include <vector>
 
 #include "linbox/field/modular.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/solutions/minpoly.h"
 
 using namespace LinBox;

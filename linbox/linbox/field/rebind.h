@@ -30,7 +30,7 @@ namespace LinBox
 
 	/** \brief used in support of Hom, MatrixHom
 
-	  Helps define rebind for vector types.  See matrix/sparse.h for example of use.
+	  Helps define rebind for vector types.  See matrix/sparse-matrix.h for example of use.
 	  */
 	template<class XXX, class U>
 	struct Rebind

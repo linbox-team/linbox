@@ -28,7 +28,7 @@
 #ifndef __LINBOX_gauss_nullspace_INL
 #define __LINBOX_gauss_nullspace_INL
 
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/triangular-solve.h"
 #include "linbox/blackbox/permutation.h"

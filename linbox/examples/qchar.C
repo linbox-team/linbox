@@ -31,8 +31,8 @@
 #include <linbox/field/PID-integer.h>
 #include <linbox/field/modular.h>
 #include <linbox/field/gmp-rational.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/matrix/sparse.h>
+#include <linbox/matrix/dense-matrix.h>
+#include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/charpoly.h>
 #include <linbox/solutions/minpoly.h>
 #include <linbox/ring/givaro-polynomial.h>

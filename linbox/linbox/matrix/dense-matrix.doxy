@@ -22,17 +22,11 @@
  */
 
 /**  \ingroup matrix
- * \defgroup sparsematrix matrix
- * \brief These are sparse matrix reprensentations
+ * \defgroup densematrix Dense Matrix
+ * \brief These are dense matrix reprensentations
  *
  * NO DOC YET
  *
  */
-
- /*! @ingroup sparsematrix
- * @defgroup iterators Iterators
- * @brief NO DOC YET
- */
-
 
 // vim:syn=doxygen

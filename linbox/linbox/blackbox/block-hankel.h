@@ -26,9 +26,9 @@
 #define __LINBOX_bb_block_hankel_H
 
 #include <vector>
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/util/debug.h"
 
 //#define BHANKEL_TIMER

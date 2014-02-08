@@ -33,7 +33,7 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/vector/stream.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/vector/light_container.h"
 
 namespace LinBox

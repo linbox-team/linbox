@@ -45,7 +45,7 @@
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/block-hankel-inverse.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/field/hom.h"
 #include "linbox/matrix/transpose-matrix.h"
 #include "linbox/blackbox/transpose.h"

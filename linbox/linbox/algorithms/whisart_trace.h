@@ -34,7 +34,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/lambda-sparse.h"
 // #include "linbox/blackbox/subrowmatrix.h"
 #include "linbox/solutions/trace.h"

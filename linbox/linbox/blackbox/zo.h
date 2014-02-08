@@ -34,8 +34,8 @@
 
 
 #include "linbox/integer.h"
-//#include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
+#include "linbox/matrix/matrix-category.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/blackbox-interface.h"

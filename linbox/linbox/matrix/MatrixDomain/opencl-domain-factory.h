@@ -1,4 +1,4 @@
-/* linbox/algorithms/opencl-domain-factory.h
+/*
  * Copyright (C) 2011-2012 Matthew Wezowicz
  *
  * Written by Matthew Wezowicz <mwezz@udel.edu>
@@ -23,6 +23,11 @@
  *.
  */
 
+
+/** @file linbox/matrix/MatrixDoamin/opencl-domain-factory.h
+ * @brief NO DOC
+ */
+
 #ifndef __LINBOX_opencl_matrix_domain_factory_H
 #define __LINBOX_opencl_matrix_domain_factory_H
 
@@ -33,12 +38,14 @@
 
 #include <vector>
 
-#include "linbox/algorithms/opencl-domain.h"
+#include <CL/cl.h>
+
+#include "linbox/matrix/MatrixDomain/opencl-domain.h"
+
 #include "linbox/algorithms/opencl-environ.h"
 #include "linbox/algorithms/opencl-resource-controller.h"
 #include "linbox/algorithms/opencl-kernels/opencl-domain-kernels.inl"
 
-#include "CL/cl.h"
 
 #define NUM_KERNELS 20
 

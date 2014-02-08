@@ -502,8 +502,8 @@ namespace LinBox
 	 * Otherwise, compute the largest invariant factor,
 	 * then based on that, compute the rough and smooth part, seperately.
 	 */
-	template <class IRing>
-	void SmithFormAdaptive::smithForm (BlasVector<PID_integer>& s, const BlasMatrix<IRing>& A)
+	template <class IRing, class _Rep>
+	void SmithFormAdaptive::smithForm (BlasVector<PID_integer>& s, const BlasMatrix<IRing, _Rep>& A)
 	{
 		//commentator().start ("Smith Form starts", "Smithform");
 		PID_integer Z;
@@ -516,7 +516,7 @@ namespace LinBox
 		const size_t order = (A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 
 		report << "Computation of the rank starts:" << std::endl;
-		typedef typename BlasMatrix<IRing>::Field Ring;
+		typedef typename BlasMatrix<IRing,_Rep>::Field Ring;
 		unsigned long r;
 		MatrixRank<Ring, Modular<int32_t> > MR;
 		r = (unsigned long)MR. rank (A);
@@ -532,7 +532,7 @@ namespace LinBox
 		integer Val; Field::Element v; unsigned long degree;
 		RandomPrimeIterator rg; rg.template setBitsField<Field>();
 		Field F ((unsigned long)*rg);
-		typename MatrixHomTrait<BlasMatrix <IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
+		typename MatrixHomTrait<BlasMatrix <IRing, _Rep>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A);
 		Valence::one_valence (v, degree, Ap);
 		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';

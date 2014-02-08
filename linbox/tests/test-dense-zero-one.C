@@ -32,8 +32,8 @@
 
 
 
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/field/modular.h"
 

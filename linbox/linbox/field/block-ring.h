@@ -28,9 +28,9 @@
 #ifndef __LINBOX_blockring_H
 #define __LINBOX_blockring_H
 #include <iostream>
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/field/field-interface.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include <fflas-ffpack/fflas/fflas.h>
 
 namespace LinBox
