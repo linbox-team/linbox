@@ -31,28 +31,20 @@
  * @test no doc.
  */
 
+#include <iostream>
 
 #include "linbox/linbox-config.h"
 
-#include <iostream>
-
-
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#ifdef __LINBOX_HAVE_OCL
-  #include "linbox/algorithms/opencl-domain.h"
-#else
-  #include "linbox/algorithms/blas-domain.h"
-#endif
+#include "linbox/vector/stream.h"
 #include "linbox/matrix/matrix-domain.h"
+
 #include "linbox/algorithms/block-wiedemann.h"
 #include "linbox/algorithms/coppersmith.h"
-//#include "linbox/matrix/sparse.h"
-// #include "linbox/blackbox/triplesbb.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/scalar-matrix.h"
-#include "linbox/vector/stream.h"
 
 #include "test-common.h"
 

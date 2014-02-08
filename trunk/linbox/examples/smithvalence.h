@@ -33,7 +33,7 @@
 #include <linbox/field/field-traits.h>
 #include <linbox/blackbox/transpose.h>
 #include <linbox/blackbox/compose.h>
-#include <linbox/matrix/sparse.h>
+#include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/rank.h>
 #include <linbox/solutions/valence.h>
 #include <linbox/algorithms/smith-form-sparseelim-local.h>

@@ -49,7 +49,7 @@
 #include "linbox/field/gmp-rational.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/blackbox/diagonal.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/solutions/det.h"
 #include "linbox/solutions/methods.h"
 

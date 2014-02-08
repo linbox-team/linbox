@@ -20,28 +20,20 @@
 
 pkgincludesubdir=$(pkgincludedir)/matrix
 
-SUBDIRS= SparseMatrix
+SUBDIRS= SparseMatrix DenseMatrix MatrixDomain
 
 BASIC_HDRS =              \
 	archetype.h               \
 	matrix-category.h         \
 	matrix-traits.h           \
-	sparse.h                  \
 	transpose-matrix.h        \
+	plain-matrix.h            \
+	dense-matrix.h             \
 	matrix-domain.h           \
-	matrix-domain.inl         \
-	matrix-domain-gf2.h       \
-	blas-matrix.h             \
-	blas-matrix.inl           \
-	blas-matrix-domain.h      \
-	blas-matrix-domain.inl    \
 	sparse-matrix.h           \
 	sparse-formats.h          \
-	blas-submatrix.inl        \
-	blas-matrix-multimod.h    \
 	factorized-matrix.h       \
 	factorized-matrix.inl     \
-	blas-triangularmatrix.inl \
 	permutation-matrix.h      \
 	permutation-matrix.inl    \
 	abnormal-matrix.h         \
@@ -75,5 +67,10 @@ EXTRA_DIST =            \
     $(NTL_HDRS)         \
     $(GIVARO_HDRS)      \
     $(LIDIA_HDRS)       \
-    matrix.doxy
+    matrix.doxy \
+    sparse-matrix.doxy \
+    dense-matrix.doxy \
+    permutation-matrix.doxy \
+    matrix-domain.doxy \
+    matrix-iterators.doxy
 

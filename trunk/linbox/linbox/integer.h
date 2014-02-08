@@ -245,6 +245,35 @@ namespace LinBox { /*  signedness of integers */
 	// maybe isOdd here too ?
 }
 
+namespace LinBox
+{ /*  indexDomain : used only once in linbox/algorithms/rational-solver.inl */
+
+
+	/** Class used for permuting indices.
+	 * For example, create a vector <code>(0 1 2 ...)</code> over \c
+	 * size_t, then apply a permutation to it using a \c BlasMatrixDomain to
+	 * get the natural representation of the permutation.
+	 * @bug does not belong here
+	 */
+	class indexDomain {
+	public:
+		typedef size_t Element;
+	public:
+		typedef indexDomain Father_t;
+		indexDomain() {};
+		template <class ANY>
+		size_t init(size_t& dst, const ANY& src) const {
+			return dst = static_cast<size_t>(src);
+		}
+		template <class ANY>
+		size_t assign(ANY& dst, const size_t& src) const {
+			return dst = static_cast<ANY>(src);
+		}
+		int characteristic() const { return 0 ; }
+	};
+}
+
+
 #endif // __LINBOX_integer_H
 
 

@@ -25,7 +25,7 @@
 #ifndef __LINBOX_lb_blackbox_type_H
 #define __LINBOX_lb_blackbox_type_H
 
-#include <linbox/matrix/blas-matrix.h>
+#include <linbox/matrix/dense-matrix.h>
 
 /****************************************
  * Define the list of all Blackbox Type *

@@ -32,22 +32,6 @@
 
 namespace LinBox {
 
-	/** \brief For specializing matrix arithmetic
-	 *
-	 * This class defines matrix categories that allow us to specialize the matrix
-	 * arithmetic in \ref MatrixDomain for different matrix representations. For
-	 * example, a sparse matrix may have an efficient iterator over row vectors but
-	 * not over column vectors. Therefore, an algorithm that tries to iterate over
-	 * column vectors will run very slowly. Hence a specialization that avoids using
-	 * column vectors is used instead.
-	 */
-
-	struct MatrixCategories {
-		struct BlackboxTag { };
-		struct RowMatrixTag : public virtual BlackboxTag { };
-		struct ColMatrixTag : public virtual BlackboxTag { };
-		struct RowColMatrixTag : public RowMatrixTag, public ColMatrixTag { };
-	};
 
 	//! @brief NO DOC.
 	template <class Matrix>

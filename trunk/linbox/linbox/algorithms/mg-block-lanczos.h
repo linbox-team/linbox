@@ -39,7 +39,7 @@
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/solutions/methods.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 
 // I'm putting everything inside the LinBox namespace so that I can drop all of
 // this in to LinBox easily at a later date, without any messy porting.

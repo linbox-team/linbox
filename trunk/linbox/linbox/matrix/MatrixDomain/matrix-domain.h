@@ -33,43 +33,18 @@
  *.
  */
 
-#ifndef __LINBOX_matrix_domain_H
-#define __LINBOX_matrix_domain_H
+#ifndef __LINBOX_matrixdomain_matrix_domain_H
+#define __LINBOX_matrixdomain_matrix_domain_H
 
 #include <iostream>
 #include <vector>
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/matrix/matrix-traits.h"
-#include "linbox/vector/vector-domain.h"
-//#include "linbox/matrix/blas-matrix.h"
 // #include "linbox/vector/blas-vector.h"
 
 namespace LinBox
 {
-	template<class Field, class Rep> class BlasMatrix;
-	template<class Matrix> class BlasSubmatrix;
-	template<class _Field, class _Rep> class BlasVector ;
-
-
-
-
-	/** \brief Helper class to allow specializations of certain matrix-vector products
-	 *
-	 * This class implements a method mulColSPD that multiplies a
-	 * column-represented matrix by a dense vector
-	 */
-	template <class Field>
-	class MVProductDomain {
-	public:
-		typedef typename Field::Element Element;
-
-		MVProductDomain () {}
-
-	protected:
-		template <class Vector1, class Matrix, class Vector2>
-		inline Vector1 &mulColDense (const VectorDomain<Field> &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const;
-	};
 
 
 	/** Class of matrix arithmetic functions.
@@ -1242,7 +1217,7 @@ namespace LinBox
 
 }
 
-#include "linbox/matrix/matrix-domain.inl"
+#include "linbox/matrix/MatrixDomain/matrix-domain.inl"
 
 #endif // __LINBOX_matrix_domain_H
 

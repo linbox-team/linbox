@@ -37,9 +37,9 @@
 #include "linbox/util/timer.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/factorized-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/sigma-basis.h"
 
 

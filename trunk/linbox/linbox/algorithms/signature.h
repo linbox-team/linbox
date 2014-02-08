@@ -30,8 +30,8 @@
 #include "linbox/algorithms/cra-early-multip.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
 #include "linbox/randiter/random-prime.h"
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/solutions/minpoly.h"
 
 namespace LinBox

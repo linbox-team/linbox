@@ -44,6 +44,8 @@
 #define __LINBOX_field_archetype_H
 
 #include <iostream>
+#include "linbox/linbox-config.h"
+#include "linbox/util/error.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/field/abstract.h"
@@ -54,8 +56,6 @@
 #include "linbox/randiter/abstract.h"
 #include "linbox/randiter/envelope.h"
 #include "linbox/integer.h"
-#include "linbox/linbox-config.h"
-#include "linbox/util/error.h"
 
 namespace LinBox
 {

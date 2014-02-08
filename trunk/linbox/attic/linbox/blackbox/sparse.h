@@ -1,4 +1,4 @@
-/* linbox/matrix/sparse.h
+/* linbox/matrix/sparse-matrix.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2001-2002 Bradford Hovinen
  *
@@ -54,7 +54,7 @@
 
 #include "linbox/linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/vector/vector-traits.h"

@@ -19,7 +19,7 @@
 
 
 
-pkgincludesubdir=$(pkgincludedir)/algorithms/opencl-kernels
+pkgincludesubdir=$(pkgincludedir)/matrix/MatrixDomain//opencl-kernels
 
 OCL_HDRS =                      \
     opencl-domain-kernels.inl

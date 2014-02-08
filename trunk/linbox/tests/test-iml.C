@@ -37,7 +37,7 @@
 #include "linbox/integer.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/algorithms/matrix-hom.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/solutions/det.h"
 #include "linbox/randiter/generic.h"

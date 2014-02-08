@@ -34,7 +34,7 @@
 #include <iostream>
 #include <linbox-config.h>
 #include <linbox/field/modular.h>
-#include <linbox/matrix/blas-matrix.h>
+#include <linbox/matrix/dense-matrix.h>
 #include <linbox/matrix/random-matrix.h>
 // #include <fflas-ffpack/fflas/fflas.h>
 #include <linbox/field/givaro.h>

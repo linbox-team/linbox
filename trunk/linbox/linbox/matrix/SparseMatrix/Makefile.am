@@ -46,7 +46,6 @@ pkgincludesub_HEADERS =         \
 	read-write-sparse.inl \
         sparse-sequence-vector.inl
 
-EXTRA_DIST=sparse-matrix.doxy
 
 
 

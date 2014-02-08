@@ -32,8 +32,8 @@ using namespace std;
 
 
 #include "linbox/integer.h"
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/block-massey-domain.h"
 #include "linbox/vector/vector-domain.h"

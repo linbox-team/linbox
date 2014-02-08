@@ -45,7 +45,7 @@
 // #include "linbox/blackbox/triplesbb.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 
 #include "examples/map-sparse.h"
 

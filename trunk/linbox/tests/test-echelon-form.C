@@ -47,9 +47,9 @@
 
 #include "linbox/field/modular.h"
 //#include "linbox/field/givaro.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/util/commentator.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/echelon-form.h"
 
 using namespace LinBox;

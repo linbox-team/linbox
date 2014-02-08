@@ -45,7 +45,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-balanced.h"
 #include "linbox/matrix/random-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/rns.h"
 
 #include "linbox/algorithms/cra-domain.h"

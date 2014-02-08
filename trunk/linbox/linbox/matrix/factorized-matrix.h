@@ -31,9 +31,9 @@
 
 #include <vector>
 
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
+
+#include "linbox/matrix/DenseMatrix/blas-matrix.h"
 
 #include "linbox/matrix/permutation-matrix.h"
 
@@ -63,6 +63,7 @@ namespace LinBox
 	 * a finite field.  There are methods for retrieving \p L,\p Q,\p U and \p P
 	 * matrices and methods for solving systems.
 	 */
+	//! @bug Should really be tempalted by Matrix and be a (sub)domain
 	template <class Field>
 	class LQUPMatrix {
 
@@ -73,7 +74,7 @@ namespace LinBox
 	protected:
 
 		Field                     _field;
-		BlasMatrix<Field>       &_factLU;
+		BlasMatrix<Field,typename Vector<Field>::Dense >       &_factLU;
 		BlasPermutation<size_t> &_permP;
 		BlasPermutation<size_t> &_permQ;  //note: this is actually Qt!
 		size_t                    _m;
@@ -86,8 +87,8 @@ namespace LinBox
 
 #if 0
 		//! Contruction of LQUP factorization of A (making a copy of A)
-		LQUPMatrix (const Field& F, const BlasMatrix<Field>& A) :
-			_field(F), _factLU(*(new BlasMatrix<Field> (A))) ,
+		LQUPMatrix (const Field& F, const BlasMatrix<Field,_Rep>& A) :
+			_field(F), _factLU(*(new BlasMatrix<Field,_Rep> (A))) ,
 			_permP(*(new BlasPermutation<size_t>(A.coldim()))),
 			_permQ(*(new BlasPermutation<size_t>(A.rowdim()))),
 			_m(A.rowdim()), _n(A.coldim()),
@@ -104,7 +105,7 @@ namespace LinBox
 		}
 
 		//! Contruction of LQUP factorization of A (in-place in A)
-		LQUPMatrix (const Field& F, BlasMatrix<Field>& A) :
+		LQUPMatrix (const Field& F, BlasMatrix<Field,_Rep>& A) :
 			_field(F), _factLU(A) ,
 			_permP(*(new BlasPermutation<size_t>(A.coldim()))),
 			_permQ(*(new BlasPermutation<size_t>(A.rowdim()))),
@@ -129,9 +130,9 @@ namespace LinBox
 		/*! Contruction of LQUP factorization of A (making a copy of A).
 		 * P and Q are arguments !
 		 */
-		LQUPMatrix (const BlasMatrix<Field>& A,
+		LQUPMatrix (const BlasMatrix<Field,_Rep>& A,
 			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
-			_field(F), _factLU(*(new BlasMatrix<Field> (A))) ,
+			_field(F), _factLU(*(new BlasMatrix<Field,_Rep> (A))) ,
 			_permP(P), _permQ(Q),
 			_m(A.rowdim()), _n(A.coldim()),
 			_alloc(true),_plloc(false)
@@ -152,7 +153,7 @@ namespace LinBox
 		/*! Contruction of LQUP factorization of A (in-place in A).
 		 * P and Q are arguments !
 		 */
-		LQUPMatrix ( BlasMatrix<Field>& A,
+		LQUPMatrix ( BlasMatrix<Field,_Rep>& A,
 			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
 			_field(F), _factLU(A) , _permP(P), _permQ(Q),
 			_m(A.rowdim()), _n(A.coldim()),
@@ -175,23 +176,27 @@ namespace LinBox
 		}
 #endif
 		//! Contruction of LQUP factorization of A (making a copy of A)
-		LQUPMatrix (const BlasMatrix<Field>& A) ;
+		template<class _Rep>
+		LQUPMatrix (const BlasMatrix<Field,_Rep>& A) ;
 
 		//! Contruction of LQUP factorization of A (in-place in A)
-		LQUPMatrix (BlasMatrix<Field>& A) ;
+		template<class _Rep>
+		LQUPMatrix (BlasMatrix<Field,_Rep>& A) ;
 
 
 		/*! Contruction of LQUP factorization of A (making a copy of A).
 		 * P and Q are arguments !
 		 */
-		LQUPMatrix (const BlasMatrix<Field>& A,
+		template<class _Rep>
+		LQUPMatrix (const BlasMatrix<Field,_Rep>& A,
 			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) ;
 
 		/*! Contruction of LQUP factorization of A (in-place in A).
 		 * P and Q are arguments !
 		 * @bug in place ?
 		 */
-		LQUPMatrix (BlasMatrix<Field>& A,
+		template<class _Rep>
+		LQUPMatrix (BlasMatrix<Field,_Rep>& A,
 			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) ;
 
 		//! destructor.
@@ -244,17 +249,21 @@ namespace LinBox
 		 * else \c L is form \c LQUP decomposition.
 		 * @pre \c L has unit diagonal
 		 */
-		TriangularBlasMatrix<Field>& getL(TriangularBlasMatrix<Field>& L, bool _QLUP = false) const;
+
+		template<class _Rep>
+		TriangularBlasMatrix<Field,_Rep>& getL(TriangularBlasMatrix<Field,_Rep>& L, bool _QLUP = false) const;
 
 		/*! get the matrix  \c  U.
 		 * @pre \c   U has non-unit diagonal
 		 */
-		TriangularBlasMatrix<Field>& getU(TriangularBlasMatrix<Field>& U) const;
+		template<class _Rep>
+		TriangularBlasMatrix<Field,_Rep>& getU(TriangularBlasMatrix<Field,_Rep>& U) const;
 
 		/*! get the matrix S.
 		 *  from the LSP factorization of A deduced from LQUP)
 		 */
-		BlasMatrix<Field>& getS( BlasMatrix<Field>& S) const;
+		template<class _Rep>
+		BlasMatrix<Field,_Rep>& getS( BlasMatrix<Field,_Rep>& S) const;
 
 		/*! @internal get a pointer to the begin of storage.
 		*/
@@ -266,7 +275,7 @@ namespace LinBox
 
 		/*!
 		 * Solvers with matrices or vectors
-		 * Operand can be a BlasMatrix<Field> or a std::vector<Element>
+		 * Operand can be a BlasMatrix<Field,_Rep> or a std::vector<Element>
 		 */
 		//@{
 		// solve AX=B

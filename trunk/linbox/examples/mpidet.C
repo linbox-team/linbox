@@ -32,7 +32,7 @@
 #include <string>
 
 #include <linbox/field/modular.h>
-#include <linbox/matrix/sparse.h>
+#include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/det.h>
 #include <linbox/util/matrix-stream.h>
 

@@ -42,7 +42,7 @@
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/lambda-sparse.h"
 #include "linbox/blackbox/compose.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/algorithms/vector-fraction.h"
 #include "linbox/util/timer.h"
 

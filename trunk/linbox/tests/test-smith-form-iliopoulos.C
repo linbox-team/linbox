@@ -40,7 +40,7 @@
 #include "linbox/randiter/random-prime.h"
 //#include "linbox/algorithms/last-invariant-factor.h"
 #include "linbox/algorithms/smith-form-iliopoulos.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 //#include "linbox/algorithms/rational-solver.h"
 //#include <time.h>
 #include "linbox/util/commentator.h"

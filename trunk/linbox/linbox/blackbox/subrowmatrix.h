@@ -26,6 +26,9 @@
 #ifndef __LINBOX_subrowmatrix_H
 #define __LINBOX_subrowmatrix_H
 
+THIS_CODE_MAY_NOT_COMPILE_AND_IS_NOT_TESTED
+
+
 #include <iostream>
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/vector/vector-domain.h"

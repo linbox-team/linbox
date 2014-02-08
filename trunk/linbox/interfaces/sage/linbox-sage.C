@@ -35,15 +35,15 @@
 
 #include "linbox/util/commentator.h"
 
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 
 //#include "linbox/element/givaro-polynomial.h"
 
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/vector/sparse.h"
 
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/echelon-form.h"
 #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/smith-form-adaptive.h"

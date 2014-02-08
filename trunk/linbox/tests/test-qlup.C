@@ -48,7 +48,7 @@
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/givaro.h"
 #include "linbox/blackbox/diagonal.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/direct-sum.h"
 #include "linbox/solutions/rank.h"

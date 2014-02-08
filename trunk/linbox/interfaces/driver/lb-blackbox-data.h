@@ -25,7 +25,7 @@
 #ifndef __LINBOX_lb_blackbox_data_H
 #define __LINBOX_lb_blackbox_data_H
 
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/util/matrix-stream.h"
 #include <map>
 #include <utility>

@@ -32,7 +32,7 @@
 
 #include "linbox/blackbox/squarize.h"
 
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/wiedemann.h"
 
 #ifdef __LINBOX_HAVE_MPI

@@ -36,11 +36,11 @@
 #include "linbox/solutions/getentry.h"
 #include "linbox/vector/blas-vector.h"
 
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/blackbox-container-symmetric.h"
 #include "linbox/algorithms/massey-domain.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/gauss.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/prime-stream.h"

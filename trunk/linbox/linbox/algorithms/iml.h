@@ -1,7 +1,7 @@
 #ifndef __LINBOX_algorithm_iml_H
 #define __LINBOX_algorithm_iml_H
 
-// #include "linbox/matrix/blas-matrix.h"
+// #include "linbox/matrix/dense-matrix.h"
 // #include "linbox/integer.h"
 // #include "linbox/linbox-tags.h"
 // #include "integer-matrix-tools.h"

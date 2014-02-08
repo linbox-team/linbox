@@ -45,7 +45,7 @@
 
 #include "linbox/matrix/matrix-category.h"
 #include "linbox/linbox-tags.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 
 THIS_CODE_MAY_NOT_COMPILE_AND_IS_NOT_TESTED
 

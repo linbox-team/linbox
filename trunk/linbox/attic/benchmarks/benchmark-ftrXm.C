@@ -39,8 +39,8 @@
 #include "fflas-ffpack/ffpack/ffpack.h"
 #include "fflas-ffpack/fflas/fflas.h"
 #include "linbox/matrix/random-matrix.h"
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 // parse arguments
 #include "fflas-ffpack/utils/args-parser.h"
 

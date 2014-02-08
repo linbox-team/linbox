@@ -21,7 +21,7 @@
 
 pkgincludesubdir=$(pkgincludedir)/algorithms
 
-SUBDIRS=gauss matrix-blas3 opencl-kernels IML
+SUBDIRS=gauss matrix-blas3 IML opencl-kernels
 
 noinst_LTLIBRARIES=libalgorithms.la
 
@@ -32,17 +32,14 @@ libalgorithms_la_SOURCES= diophantine-solver.C
 AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(CBLAS_FLAG) $(FFLAS_FFPACK_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(FPLLL_CFLAGS) $(OCL_CFLAGS)
 
 OCL_HDRS =                                  \
-    opencl-domain.h                         \
-    opencl-domain.inl                       \
-    opencl-domain-util.inl                  \
-    opencl-domain-memory.inl                \
-    opencl-domain-factory.h                 \
     opencl-resource-controller.h            \
     opencl-environ.h
 
 #  if LINBOX_HAVE_OCL // we include them anyway. (for make dist when OCL not available)
 USE_OCL_HDRS = $(OCL_HDRS)
 #  endif
+
+
 
 pkgincludesub_HEADERS =            \
 	blackbox-container.h               \
@@ -88,8 +85,6 @@ pkgincludesub_HEADERS =            \
 	rational-cra-early-multip.h        \
 	rational-cra-early-single.h        \
 	rational-cra-full-multip.h         \
-	blas-domain.h                      \
-	blas-domain.inl                    \
 	blas-domain-multimod.h             \
 	bitonic-sort.h                     \
 	blackbox-block-container-base.h    \

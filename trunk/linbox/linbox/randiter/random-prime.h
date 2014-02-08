@@ -30,10 +30,12 @@
 
 #ifndef __LINBOX_random_prime_iterator_H
 #define __LINBOX_random_prime_iterator_H
-#include "linbox/integer.h"
+
+#include <cstdlib> // drand48, temporary
+
 #include "linbox/util/timer.h"
 #include "linbox/util/debug.h"
-#include <cstdlib> // drand48, temporary
+#include "linbox/integer.h"
 #include "linbox/field/field-traits.h"
 
 namespace LinBox

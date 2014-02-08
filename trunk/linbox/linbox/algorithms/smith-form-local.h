@@ -34,7 +34,7 @@
 //#include <algorithm>
 
 // #include "linbox/field/multimod-field.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 
 namespace LinBox
 {

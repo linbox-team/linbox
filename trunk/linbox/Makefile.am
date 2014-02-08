@@ -77,6 +77,8 @@ uninstall-hook:
 		"$(includedir)/linbox/field/" \
 		"$(includedir)/linbox/kaapi" \
 		"$(includedir)/linbox/matrix/SparseMatrix" \
+		"$(includedir)/linbox/matrix/DenseMatrix" \
+		"$(includedir)/linbox/matrix/MatrixDomain" \
 		"$(includedir)/linbox/matrix" \
 		"$(includedir)/linbox/randiter" \
 		"$(includedir)/linbox/ring" \

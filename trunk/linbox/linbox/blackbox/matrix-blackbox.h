@@ -32,7 +32,7 @@
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/field/rebind.h"
 
 // Namespace in which all LinBox library code resides

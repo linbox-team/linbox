@@ -40,7 +40,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/randiter/nonzero.h"
 #include "linbox/blackbox/submatrix.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/moore-penrose.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/vector/stream.h"

@@ -392,6 +392,8 @@ linbox/field/Givaro/Makefile
 linbox/field/Modular/Makefile
 linbox/matrix/Makefile
 linbox/matrix/SparseMatrix/Makefile
+linbox/matrix/DenseMatrix/Makefile
+linbox/matrix/MatrixDomain/Makefile
 linbox/randiter/Makefile
 linbox/ring/Makefile
 linbox/solutions/Makefile

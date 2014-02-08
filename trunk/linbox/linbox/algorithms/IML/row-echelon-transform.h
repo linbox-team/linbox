@@ -2,8 +2,8 @@
 #ifndef __LINBOX_algorithms_iml_row_echelon_transform_H
 #define __LINBOX_algorithms_iml_row_echelon_transform_H
 
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 #include <fflas-ffpack/fflas/fflas.h>
 
 

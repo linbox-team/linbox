@@ -1,4 +1,4 @@
-/* linbox/matrix/blas-matrix.h
+/*
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
  * Written by :
@@ -26,14 +26,14 @@
  */
 
 /*!@internal
- * @file matrix/blas-matrix.inl
- * @ingroup matrix
+ * @file matrix/DenseMatrix/blas-matrix.inl
+ * @ingroup densematrix
  * A \c BlasMatrix<\c _Field > represents a matrix as an array of
  * <code>_Field</code>s.
  */
 
-#ifndef __LINBOX_blas_submatrix_INL
-#define __LINBOX_blas_submatrix_INL
+#ifndef __LINBOX_densematrix_blas_submatrix_INL
+#define __LINBOX_densematrix_blas_submatrix_INL
 
 /////////////////
 //   PRIVATE   //
@@ -1137,7 +1137,7 @@ namespace LinBox
 namespace LinBox
 {
 } // LinBox
-#endif // __LINBOX_blas_submatrix_INL
+#endif // __LINBOX_densematrix_blas_submatrix_INL
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

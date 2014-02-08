@@ -36,13 +36,13 @@
 
 //! @bug it is dangerous to include matrices defs that include hom for their rebind...
 #include "linbox/integer.h"
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/field/hom.h"
+#include "linbox/matrix/matrix-category.h"
+// #include "linbox/matrix/dense-matrix.h"
+// #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/polynomial.h"
 #include "linbox/blackbox/scalar-matrix.h"
-#include "linbox/field/hom.h"
-#include "linbox/matrix/matrix-category.h"
 
 namespace LinBox {
 	template<class A, class B>
@@ -80,10 +80,18 @@ namespace LinBox
 		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> value_type;
 	};
 
+	//non working partial specialisation
+	template<class _Rep>
 	template <class Ring, class Field>
-	struct MatrixHomTrait<BlasMatrix<Ring>, Field> {
-		typedef BlasMatrix<Field> value_type;
+	struct MatrixHomTrait<BlasMatrix<Ring, _Rep>, Field> {
+		typedef BlasMatrix<Field,_Rep> value_type;
 	};
+
+	template <class Ring, class Field>
+	struct MatrixHomTrait<BlasMatrix<Ring, typename Vector<Ring>::Dense >, Field> {
+		typedef BlasMatrix<Field,typename Vector<Field>::Dense > value_type;
+	};
+
 
 	/// \brief Limited doc so far. Used in RationalSolver.
 	namespace MatrixHom
@@ -137,20 +145,21 @@ namespace LinBox
 		template< class Field, class IMatrix, class Type>
 		class BlasMatrixMAP {
 		public:
-			void operator() (BlasMatrix<Field> &Ap, const IMatrix& A, Type type);
+			template<class _Rep>
+			void operator() (BlasMatrix<Field,_Rep> &Ap, const IMatrix& A, Type type);
 		};
 
 		// construct a BlasMatrix over finite fiel, such that Ap - A mod p, where F = Ring / <p>
 
-		template<class Ring, class Field>
-		void map (BlasMatrix<Field> &Ap, const BlasMatrix<Ring>& A )
+		template<class Ring, class Field, class _Rep>
+		void map (BlasMatrix<Field,_Rep> &Ap, const BlasMatrix<Ring,_Rep>& A )
 		{
-			typename BlasMatrix<Ring>::template rebind<Field>()( Ap, A);
+			typename BlasMatrix<Ring,_Rep>::template rebind<Field>()( Ap, A);
 		}
 
 
-		template <class Field, class IMatrix>
-		void map (BlasMatrix<Field> &Ap, const IMatrix &A)
+		template <class Field, class IMatrix, class _Rep>
+		void map (BlasMatrix<Field,_Rep> &Ap, const IMatrix &A)
 		{
 			BlasMatrixMAP<Field, IMatrix, typename MatrixContainerTrait<IMatrix>::Type> ()(Ap, A, typename MatrixContainerTrait<IMatrix>::Type());
 		}
@@ -212,7 +221,8 @@ namespace LinBox
 		template<class Field, class IMatrix>
 		class BlasMatrixMAP<Field, IMatrix, MatrixContainerCategory::Blackbox> {
 		public:
-			void operator() (BlasMatrix<Field> &Ap, const IMatrix &A, MatrixContainerCategory::Blackbox type)
+			template<class _Rep>
+			void operator() (BlasMatrix<Field,_Rep> &Ap, const IMatrix &A, MatrixContainerCategory::Blackbox type)
 			{
 
 
@@ -222,9 +232,9 @@ namespace LinBox
 
 				std::vector<typename Ring::Element> e(A.coldim(), r.zero), tmp(A.rowdim());
 
-				typename BlasMatrix<Field>::ColIterator col_p;
+				typename BlasMatrix<Field,_Rep>::ColIterator col_p;
 
-				typename BlasMatrix<Field>::Col::iterator elt_p;
+				typename BlasMatrix<Field,_Rep>::Col::iterator elt_p;
 
 				typename std::vector<typename Ring::Element>::iterator e_p, tmp_p;
 
@@ -248,7 +258,8 @@ namespace LinBox
 		template<class Field, class IMatrix>
 		class BlasMatrixMAP<Field, IMatrix, MatrixContainerCategory::Container> {
 		public:
-			void operator() (BlasMatrix<Field> &Ap, const IMatrix &A,  MatrixContainerCategory::Container type)
+			template<class _Rep>
+			void operator() (BlasMatrix<Field,_Rep> &Ap, const IMatrix &A,  MatrixContainerCategory::Container type)
 			{
 				Hom<typename IMatrix::Field , Field> hom(A.field(), Ap.field());
 				typename Field::Element e;
@@ -272,12 +283,13 @@ namespace LinBox
 		template<class Field, class IMatrix>
 		class BlasMatrixMAP<Field, IMatrix, MatrixContainerCategory::BlasContainer> {
 		public:
-			void operator() (BlasMatrix<Field> &Ap, const IMatrix &A, MatrixContainerCategory::BlasContainer type)
+			template<class _Rep>
+			void operator() (BlasMatrix<Field,_Rep> &Ap, const IMatrix &A, MatrixContainerCategory::BlasContainer type)
 			{
 				Hom<typename IMatrix::Field , Field> hom(A.field(), Ap.field());
 
 				typename IMatrix::ConstIterator        iterA  = A.Begin();
-				typename BlasMatrix<Field>::Iterator iterAp = Ap.Begin();
+				typename BlasMatrix<Field,_Rep>::Iterator iterAp = Ap.Begin();
 
 				for(; iterA != A.End(); ++iterA, ++iterAp)
 					hom. image (*iterAp, *iterA);
@@ -285,15 +297,16 @@ namespace LinBox
 		};
 
 		template<class Field>
-		class BlasMatrixMAP<Field, BlasMatrix<PID_integer>, MatrixContainerCategory::BlasContainer> {
+		template<class _Rep>
+		class BlasMatrixMAP<Field, BlasMatrix<PID_integer,_Rep>, MatrixContainerCategory::BlasContainer> {
 		public:
-			void operator() (BlasMatrix<Field> &Ap, const BlasMatrix<PID_integer> &A, MatrixContainerCategory::BlasContainer type)
+			void operator() (BlasMatrix<Field,_Rep> &Ap, const BlasMatrix<PID_integer,_Rep> &A, MatrixContainerCategory::BlasContainer type)
 			{
 				PID_integer ZZ ;
 				Hom<PID_integer , Field> hom(ZZ, Ap.field());
 
-				typename BlasMatrix<PID_integer>::ConstIterator        iterA  = A.Begin();
-				typename BlasMatrix<Field>::Iterator iterAp = Ap.Begin();
+				typename BlasMatrix<PID_integer,_Rep>::ConstIterator        iterA  = A.Begin();
+				typename BlasMatrix<Field,_Rep>::Iterator iterAp = Ap.Begin();
 
 				for(; iterA != A.End(); ++iterA, ++iterAp)
 					hom. image (*iterAp, *iterA);
@@ -304,7 +317,8 @@ namespace LinBox
 		template< class IMatrix>
 		class BlasMatrixMAP<MultiModDouble, IMatrix, MatrixContainerCategory::BlasContainer > {
 		public:
-			void operator() (BlasMatrix<MultiModDouble> &Ap, const IMatrix &A,  MatrixContainerCategory::BlasContainer type)
+			template<class _Rep>
+			void operator() (BlasMatrix<MultiModDouble,_Rep> &Ap, const IMatrix &A,  MatrixContainerCategory::BlasContainer type)
 			{
 				for (size_t i=0; i<Ap.field().size();++i)
 					MatrixHom::map(Ap.getMatrix(i), A);
@@ -314,7 +328,8 @@ namespace LinBox
 		template< class IMatrix>
 		class BlasMatrixMAP<MultiModDouble, IMatrix, MatrixContainerCategory::Container > {
 		public:
-			void operator() (BlasMatrix<MultiModDouble> &Ap, const IMatrix &A,  MatrixContainerCategory::Container type)
+			template<class _Rep>
+			void operator() (BlasMatrix<MultiModDouble,_Rep> &Ap, const IMatrix &A,  MatrixContainerCategory::Container type)
 			{
 				for (size_t i=0; i<Ap.field().size();++i)
 					MatrixHom::map(Ap.getMatrix(i), A);
@@ -324,7 +339,8 @@ namespace LinBox
 		template< class IMatrix>
 		class BlasMatrixMAP<MultiModDouble, IMatrix, MatrixContainerCategory::Blackbox > {
 		public:
-			void operator() (BlasMatrix<MultiModDouble> &Ap, const IMatrix &A,  MatrixContainerCategory::Blackbox type)
+			template<class _Rep>
+			void operator() (BlasMatrix<MultiModDouble,_Rep> &Ap, const IMatrix &A,  MatrixContainerCategory::Blackbox type)
 			{
 				for (size_t i=0; i<Ap.field().size();++i)
 					MatrixHom::map(Ap.getMatrix(i), A);

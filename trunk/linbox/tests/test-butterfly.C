@@ -50,7 +50,7 @@
 #include "linbox/blackbox/butterfly.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/solutions/det.h"
 #include "linbox/switch/boolean.h"
@@ -196,7 +196,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 		typedef Butterfly<Field, CekstvSwitch<Field> > Blackbox1;
 
 		Diagonal<Field> D (d);
-		typedef Diagonal<Field> Blackbox2;
+		// typedef Diagonal<Field> Blackbox2;
 
 		Compose<Blackbox1>  DQ (&P, &Q);
 		typedef Compose<Blackbox1, Blackbox1> Blackbox3;

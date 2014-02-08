@@ -32,7 +32,7 @@
 #define __LINBOX_matrix_rank_H
 
 #include "linbox/util/debug.h"
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/solutions/rank.h"
 
 #include "linbox/algorithms/matrix-hom.h"

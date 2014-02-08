@@ -27,7 +27,7 @@
 #ifndef __LINBOX_getentry_H
 #define __LINBOX_getentry_H
 
-#include "linbox/matrix/sparse.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/methods.h"

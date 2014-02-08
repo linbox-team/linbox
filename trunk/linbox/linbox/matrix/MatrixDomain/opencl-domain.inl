@@ -1,4 +1,4 @@
-/* linbox/algorithms/opencl-domain.inl
+/*
  * Copyright (C) 2011      David Saunders
  *               2011-2012 Matthew Wezowicz
  *
@@ -24,12 +24,17 @@
  *.
  */
 
+/** @internal
+ * @file linbox/matrix/MatrixDomain/opencl-domain.inl
+ * @brief NO DOC
+ */
+
 #ifndef __LINBOX_opencl_matrix_domain_INL
 #define __LINBOX_opencl_matrix_domain_INL
 
 #include <pthread.h>
 
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/DenseMatrix/blas-matrix.h"
 
 #include "CL/cl.h"
 

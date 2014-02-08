@@ -32,7 +32,7 @@
 #include <iostream>
 
 #include <linbox/field/givaro.h>
-#include <linbox/matrix/sparse.h>
+#include <linbox/matrix/sparse-matrix.h>
 #include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
 
 using namespace LinBox;

@@ -40,9 +40,9 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/blackbox/archetype.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/matrix-domain.h"
 
 // #include "linbox/blackbox/triplesbb-omp.h"

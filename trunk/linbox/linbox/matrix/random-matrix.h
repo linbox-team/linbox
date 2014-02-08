@@ -34,11 +34,11 @@
  * @bug this belongs to algorithms...
  */
 
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/randiter/random-integer.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/matrix/permutation-matrix.h"
-#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-full-multip-fixed.h"

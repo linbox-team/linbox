@@ -25,6 +25,8 @@
 
 /** @file matrix/permutation-matrix.h
  * @ingroup matrix
+ * @defgroup permutationmatrix
+ *
  * A permutation class for operations on permutations, their representations
  * and matrix row/column permuting.
  *

@@ -1,4 +1,4 @@
-/* linbox/algorithms/opencl-domain-setup.inl
+/*
  * Copyright (C) 2012 Matthew Wezowicz
  *
  * Written by Matthew Wezowicz <mwezz@udel.edu>
@@ -23,6 +23,12 @@
  *.
  */
 
+/** @internal
+ * @file linbox/matrix/MatrixDomain/opencl-domain-setup.inl
+ * @brief NO DOC
+ */
+
+
 #ifndef __LINBOX_opencl_matrix_domain_util_INL
 #define __LINBOX_opencl_matrix_domain_util_INL
 
@@ -30,7 +36,7 @@
 
 #include <utility>
 
-#include "linbox/algorithms/opencl-domain-factory.h"
+#include "linbox/matrix/MatrixDomain/opencl-domain-factory.h"
 
 namespace LinBox{
 

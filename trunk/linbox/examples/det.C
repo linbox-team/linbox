@@ -30,7 +30,7 @@
 #include <iostream>
 
 #include <linbox/field/modular.h>
-#include <linbox/matrix/sparse.h>
+#include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/det.h>
 
 using namespace LinBox;

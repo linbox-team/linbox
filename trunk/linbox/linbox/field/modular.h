@@ -56,8 +56,6 @@
 #include <cmath>
 
 #include "linbox/integer.h"
-#include "linbox/vector/vector-domain.h"
-#include "linbox/matrix/matrix-domain.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/write-mm.h"
@@ -91,7 +89,7 @@ namespace LinBox
 	};
 
 
-	/** * <!-- @name ModularBase-->
+	/**
 	 * \brief Base for prime fields where the elements are represented by various primitive types (and their operations).
 	 * \ingroup field
 	 * \defgroup Fields Fields <!--for old \ref Fields...-->
@@ -883,6 +881,14 @@ namespace LinBox
 
 
 } // namespace LinBox
+
+#include "linbox/vector/vector-domain.h"
+
+namespace LinBox {
+	template<class Field>
+	class MVProductDomain ;
+
+} // LinBox
 
 #include "linbox/field/Modular/modular-unsigned.h"
 #include "linbox/randiter/modular.h"

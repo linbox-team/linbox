@@ -37,7 +37,7 @@
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/solutions/methods.h"
-#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 
 
 namespace LinBox

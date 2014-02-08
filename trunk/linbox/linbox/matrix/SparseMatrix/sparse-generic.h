@@ -1,4 +1,4 @@
-/* linbox/matrix/sparse.h
+/* linbox/matrix/sparse-matrix.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *               1999-2001 William J Turner,
  *
@@ -8,7 +8,7 @@
  * --------------------------------------------------------
  * 2003-01-11  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
  *
- * Move from blackbox/sparse-base.h to matrix/sparse.h
+ * Move from blackbox/sparse-base.h to matrix/sparse-matrix.h
  * ------------------------------------
  * 2002-11-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
  *
