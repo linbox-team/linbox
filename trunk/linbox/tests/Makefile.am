@@ -133,7 +133,8 @@ FULLCHECK_TESTS =                 \
         test-zero-one                 \
         test-last-invariant-factor    \
         test-cradomain                \
-        test-rational-reconstruction-base
+        test-rational-reconstruction-base \
+        test-givaropoly
 
 #  test-integer-tools
 
@@ -304,6 +305,12 @@ test_gf2_SOURCES =                        \
         test-generic.h                    \
         test-common.h
 
+test_gf2_SOURCES = \
+		test-givaropoly.C \
+		test-generic.h \
+		test-common.h
+		
+        
 test_gmp_rational_SOURCES =               \
         test-gmp-rational.C               \
         test-generic.h                    \
