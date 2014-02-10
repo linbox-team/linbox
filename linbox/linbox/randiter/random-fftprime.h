@@ -1,6 +1,6 @@
 /* linbox/algorithms/
  * Copyright (C) 2005  Pascal Giorgi
- * 
+ *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
  * ========LICENCE========
@@ -50,7 +50,7 @@ namespace LinBox
 
 		// define the prime type
 		typedef integer Prime_Type;
-                
+
                  /** @brief randomPrime(size_t b)
 		 *  return a random FFT prime with a 2-valuation larger than b in its order
                  *  the randomness is on the FFT primes lying in the given range
@@ -59,7 +59,7 @@ namespace LinBox
 		inline Prime_Type randomPrime (size_t b) const
 		{
                         integer tmp;
-                        randomPrime(tmp,b); 
+                        randomPrime(tmp,b);
 			return tmp;
                 }
 
@@ -73,7 +73,7 @@ namespace LinBox
                         linbox_check(b<_bits);
 			size_t tresh;
 			do {
-                                size_t cbits= rand() %(_bits-b);
+                                size_t cbits= (size_t)rand() %(_bits-b);
 				tresh = 1<<(cbits);
 				size_t p = 1<<((size_t)_bits-cbits);
 				do {
@@ -87,13 +87,13 @@ namespace LinBox
 			return t;
 		}
 
-		/** @brief generatePrime() 
+		/** @brief generatePrime()
 		 *  return a FFT prime with the largest 2-valuation in its order
 		 */
 		inline Prime_Type generatePrime() const
 		{
 			integer tmp;
-                        generatePrime(tmp); 
+                        generatePrime(tmp);
 			return tmp;
 		}
 
@@ -118,22 +118,22 @@ namespace LinBox
 
 			return t;
 		}
-                
+
                 // generate a vector of distinct FFT primes with largest 2-valuation
                 inline std::vector<Prime_Type> generatePrimes (std::vector<Prime_Type>& primes) const {
                         size_t pos = 0;
                         size_t k= primes.size();
                         integer tmp;
                         for (long b = (long)_bits - 1; b >= 0; b--)
-                                for (long l = (1L << (_bits - b - 1)) + 1; l < (1L << (_bits - b)); l +=2) {
+                                for (long l = (1L << ((long)_bits - b - 1)) + 1; l < (1L << ((long)_bits - b)); l +=2) {
                                         tmp = (1L << b) * l + 1;
-                                        if (Givaro::probab_prime(tmp, 25) >= 1) { 
+                                        if (Givaro::probab_prime(tmp, 25) >= 1) {
                                                 primes[pos] = tmp;
                                                 pos++;
                                                 if (pos >= k)
                                                         return primes;
                                         }
-                                }                        
+                                }
                         linbox_check(primes[k] != 0); // Could not find enough primes
                         return primes;
                 }

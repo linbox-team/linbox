@@ -38,60 +38,22 @@
 #include "linbox/integer.h"
 #include "linbox/field/hom.h"
 #include "linbox/matrix/matrix-category.h"
-// #include "linbox/matrix/dense-matrix.h"
-// #include "linbox/matrix/sparse-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/polynomial.h"
 #include "linbox/blackbox/scalar-matrix.h"
 
-namespace LinBox {
-	template<class A, class B>
-	class SparseMatrix ;
+// namespace LinBox {
+	// template<class A, class B>
+	// class SparseMatrix ;
 
-	template<class A, class R>
-	class BlasMatrix;
-}
+	// template<class A, class R>
+	// class BlasMatrix;
+// } // LinBox
 
 namespace LinBox
 {
-
-	// try to map a blackbox over a homorphic ring
-	// The most suitable type
-	template <class Blackbox, class Field>
-	struct MatrixHomTrait {
-		//typedef ... FBlackbox
-		// donot know
-		typedef Blackbox value_type;
-	};
-
-
-	template <class Ring, class Field>
-	struct MatrixHomTrait<SparseMatrix<Ring, SparseMatrixFormat::SparseSeq>, Field> {
-		typedef SparseMatrix<Field, SparseMatrixFormat::SparseSeq> value_type;
-	};
-
-	template <class Ring, class Field>
-	struct MatrixHomTrait<SparseMatrix<Ring, SparseMatrixFormat::SparsePar>, Field> {
-		typedef SparseMatrix<Field, SparseMatrixFormat::SparsePar> value_type;
-	};
-
-	template <class Ring, class Field>
-	struct MatrixHomTrait<SparseMatrix<Ring, SparseMatrixFormat::SparseMap>, Field> {
-		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> value_type;
-	};
-
-	//non working partial specialisation
-	template<class _Rep>
-	template <class Ring, class Field>
-	struct MatrixHomTrait<BlasMatrix<Ring, _Rep>, Field> {
-		typedef BlasMatrix<Field,_Rep> value_type;
-	};
-
-	template <class Ring, class Field>
-	struct MatrixHomTrait<BlasMatrix<Ring, typename Vector<Ring>::Dense >, Field> {
-		typedef BlasMatrix<Field,typename Vector<Field>::Dense > value_type;
-	};
-
 
 	/// \brief Limited doc so far. Used in RationalSolver.
 	namespace MatrixHom
@@ -296,17 +258,17 @@ namespace LinBox
 			}
 		};
 
-		template<class Field>
-		template<class _Rep>
+		template<class Field, class _Rep>
 		class BlasMatrixMAP<Field, BlasMatrix<PID_integer,_Rep>, MatrixContainerCategory::BlasContainer> {
 		public:
-			void operator() (BlasMatrix<Field,_Rep> &Ap, const BlasMatrix<PID_integer,_Rep> &A, MatrixContainerCategory::BlasContainer type)
+			template<class _Rep2>
+			void operator() (BlasMatrix<Field,_Rep2> &Ap, const BlasMatrix<PID_integer,_Rep> &A, MatrixContainerCategory::BlasContainer type)
 			{
 				PID_integer ZZ ;
 				Hom<PID_integer , Field> hom(ZZ, Ap.field());
 
 				typename BlasMatrix<PID_integer,_Rep>::ConstIterator        iterA  = A.Begin();
-				typename BlasMatrix<Field,_Rep>::Iterator iterAp = Ap.Begin();
+				typename BlasMatrix<Field,_Rep2>::Iterator iterAp = Ap.Begin();
 
 				for(; iterA != A.End(); ++iterA, ++iterAp)
 					hom. image (*iterAp, *iterA);
@@ -348,7 +310,7 @@ namespace LinBox
 		};
 #endif
 	}
-}
+} // LinBox
 
 #endif //__LINBOX_matrix_hom_H
 

@@ -525,7 +525,7 @@ namespace LinBox
 				integer ibound = n * _p * _p * std::max(b.size(), c.size());
 				integer primesprod;
 				size_t nbrprimes=1;
-				RandomFFTPrime fftprime((int)bit, FFT_PRIME_SEED);
+				RandomFFTPrime fftprime((size_t)bit, FFT_PRIME_SEED);
 				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
 				lprimes[0] = fftprime.generatePrime();
 				primesprod = lprimes[0];
@@ -641,7 +641,7 @@ namespace LinBox
 				integer ibound = n * _p * _p * std::max(b.size(), c.size());
 				integer primesprod;
 				size_t nbrprimes=1;
-				RandomFFTPrime fftprime((int)bit, FFT_PRIME_SEED);
+				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
 				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
 				lprimes[0] = fftprime.generatePrime();
 				primesprod = lprimes[0];

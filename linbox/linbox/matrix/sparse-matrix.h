@@ -34,19 +34,10 @@
 
 
 #include "linbox/matrix/sparse-formats.h"
+#include "linbox/matrix/matrix-traits.h"
 #include "linbox/matrix/matrix-category.h"
 
 namespace LinBox {
-#if 0
-	namespace Exception {
-
-		/** Exception class for invalid matrix input.
-		 * @todo should be factorised for all matrix readers.
-		 */
-
-		class InvalidMatrixInput {};
-	} // Exception
-#endif
 
 
 	// Forward definition
@@ -55,22 +46,17 @@ namespace LinBox {
 
 
 	template <class _Field, class _Storage>
+	std::ostream& operator<< (std::ostream & os, const SparseMatrix<_Field,_Storage> & Mat)
+	{
+		return Mat.write(os);
+	}
+
+	template <class _Field, class _Storage>
 	std::istream &operator >> (std::istream &is, SparseMatrix<_Field, _Storage> &A)
 	{
 		return A.read (is);
 	}
 
-	// template <class _Field, class _Storage>
-	// struct MatrixTraits< SparseMatrix<_Field, _Storage> > {
-		// typedef SparseMatrix<_Field, _Storage>      MatrixType;
-		// typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
-	// };
-
-
-	// template <class _Field, class _Storage>
-	// struct GetEntryCategory<SparseMatrix<_Field,_Storage> > {
-		  // typedef SolutionTags::Local Tag;
-	// };
 
 } // LinBox
 
@@ -87,7 +73,7 @@ namespace LinBox {
 // #include "SparseMatrix/sparse-ellr-1-matrix.h"
 // #include "SparseMatrix/sparse-bcsr-matrix.h"
 // #include "SparseMatrix/sparse-dia-matrix.h"
-#include "SparseMatrix/sparse-hyb-matrix.h"
+// #include "SparseMatrix/sparse-hyb-matrix.h"
 
 #include "SparseMatrix/sparse-tpl-matrix.h"
 // #ifdef __LINBOX_USES_OPENMP
@@ -95,7 +81,91 @@ namespace LinBox {
 #include "SparseMatrix/sparse-tpl-matrix-omp.h"
 #endif
 
+namespace LinBox { /*  MatrixContainerTraits */
 
+	template <class Field, class Storage>
+	class MatrixContainerTrait<SparseMatrix<Field,Storage> > {
+	public:
+		typedef MatrixContainerCategory::Blackbox Type;
+		// typedef MatrixContainerCategory::Container Type;
+	};
+
+	// template <class _Field, class _Storage>
+	// struct MatrixTraits< SparseMatrix<_Field, _Storage> > {
+		// typedef SparseMatrix<_Field, _Storage>      MatrixType;
+		// typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	// };
+
+
+	// template <class _Field, class _Storage>
+	// struct GetEntryCategory<SparseMatrix<_Field,_Storage> > {
+		  // typedef SolutionTags::Local Tag;
+	// };
+}
+
+namespace LinBox { /*  MatrixTraits */
+
+	template <class Field>
+	struct MatrixTraits< SparseMatrix<Field, SparseMatrixFormat::SparseMap> >
+	{
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> MatrixType;
+		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	};
+
+	template <class Field>
+	struct MatrixTraits< const SparseMatrix<Field, SparseMatrixFormat::SparseMap> >
+	{
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> MatrixType;
+		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	};
+
+	template <class Field>
+	struct MatrixTraits< SparseMatrix<Field, SparseMatrixFormat::SparsePar> >
+	{
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparsePar> MatrixType;
+		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	};
+
+	template <class Field>
+	struct MatrixTraits< const SparseMatrix<Field, SparseMatrixFormat::SparsePar> >
+	{
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparsePar> MatrixType;
+		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	};
+
+	template <class Field>
+	struct MatrixTraits< SparseMatrix<Field, SparseMatrixFormat::SparseSeq> >
+	{
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseSeq> MatrixType;
+		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	};
+
+	template <class Field>
+	struct MatrixTraits< const SparseMatrix<Field, SparseMatrixFormat::SparseSeq> >
+	{
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseSeq> MatrixType;
+		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	};
+
+} // LinBox
+
+namespace LinBox { /*  MatrixHomTrait */
+	template <class Ring, class Field>
+	struct MatrixHomTrait<SparseMatrix<Ring, SparseMatrixFormat::SparseSeq>, Field> {
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseSeq> value_type;
+	};
+
+	template <class Ring, class Field>
+	struct MatrixHomTrait<SparseMatrix<Ring, SparseMatrixFormat::SparsePar>, Field> {
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparsePar> value_type;
+	};
+
+	template <class Ring, class Field>
+	struct MatrixHomTrait<SparseMatrix<Ring, SparseMatrixFormat::SparseMap>, Field> {
+		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> value_type;
+	};
+
+} // LinBox
 
 #endif // __LINBOX_matrix_sparse_matrix_H
 

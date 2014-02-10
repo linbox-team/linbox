@@ -271,11 +271,11 @@ namespace LinBox
 		_field (&F), _MD (F), _VD(F)
 	{
 		StreamVector tmp(F);
-		typename BlasMatrix<Field>::RowIterator p;
+		typename BlasMatrix<Field,_Rep>::RowIterator p;
 
 		VectorWrapper::ensureDim (tmp, stream.dim ());
 
-		for (p = BlasMatrix<Field>::rowBegin (); p != BlasMatrix<Field>::rowEnd (); ++p) {
+		for (p = BlasMatrix<Field,_Rep>::rowBegin (); p != BlasMatrix<Field,_Rep>::rowEnd (); ++p) {
 			stream >> tmp;
 			_VD.copy (*p, tmp);
 		}
@@ -563,12 +563,14 @@ namespace LinBox
 #endif
 
 #if 1 /*  HOM */
+	//! @bug other rep
 	template < class _Field, class _Rep >
 	template<typename _Tp1>
 	struct BlasMatrix< _Field, _Rep >::rebind {
-		typedef BlasMatrix<_Tp1> other;
+		typedef BlasMatrix<_Tp1,typename Vector<_Tp1>::Dense> other;
 
 		void operator() (other & Ap, const Self_t& A) {
+			// typedef Self_t::ConstIterator ConstSelfIterator ;
 			typedef typename BlasMatrix< _Field, _Rep >::ConstIterator ConstSelfIterator ;
 			typedef typename other::Iterator OtherIterator ;
 			OtherIterator    Ap_i = Ap.Begin();

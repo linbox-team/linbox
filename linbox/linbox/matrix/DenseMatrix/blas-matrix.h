@@ -178,9 +178,6 @@ namespace LinBox
 
 namespace LinBox
 { /*  Blas Matrix */
-	template<class _Matrix>
-	class BlasSubmatrix ;
-
 	template<class Matrix>
 	class MatrixDomain;
 
@@ -191,14 +188,14 @@ namespace LinBox
 	 * In the Mother model, a \p BlasMatrix is allocated by the user.
 	 *@bug why not BlasMatrixDomain ?
 	 */
-	template <class _Field, class _blasRep=typename RawVector<typename _Field::Element >::Dense >
+	template <class _Field, class _Storage>
 	class BlasMatrix {
 		// private :
 
 	public:
 		typedef _Field                                Field;
 		typedef typename Field::Element             Element;    //!< Element type
-		typedef _blasRep                                Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		typedef _Storage                                Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
 		typedef typename Rep::pointer               pointer;    //!< pointer type to elements
 		typedef const pointer                 const_pointer;    //!< const pointer type
 		typedef BlasMatrix<Field,Rep>                   Self_t;    //!< Self typeype
@@ -788,28 +785,6 @@ namespace LinBox
 
 	}; // end of class BlasMatrix
 
-	template <class _Field, class _Rep>
-	struct MatrixTraits< BlasMatrix<_Field,_Rep> > {
-		typedef BlasMatrix<_Field,_Rep> MatrixType;
-		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
-	};
-
-	template <class _Field, class _Rep>
-	struct MatrixTraits< const BlasMatrix<_Field,_Rep> > {
-		typedef const BlasMatrix<_Field,_Rep> MatrixType;
-		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
-	};
-
-	/*! Write a matrix to a stream.
-	 * The \c C++ way using <code>operator<< </code>
-	 * @param o output stream
-	 * @param Mat matrix to write.
-	 */
-	template<class T>
-	std::ostream& operator<< (std::ostream & o, const BlasMatrix<T> & Mat)
-	{
-		return Mat.write(o);
-	}
 
 } // end of namespace LinBox
 
@@ -936,7 +911,7 @@ namespace LinBox
 		/// Overwrite with random elements.
 		BlasSubmatrix &random();
 
-		template<typename _Tp1>
+		template<typename _Tp1, class _Rep2 = Rep>
 		struct rebind ;
 
 		//////////////////
@@ -1188,36 +1163,13 @@ namespace LinBox
 		// Field & field() { return _Mat->field(); }
 	};
 
-	template <class _Matrix>
-	struct MatrixTraits< BlasSubmatrix<_Matrix> > {
-		typedef BlasSubmatrix<_Matrix> MatrixType;
-		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
-	};
-
-	template <class _Matrix>
-	struct MatrixTraits< const BlasSubmatrix<_Matrix> > {
-		typedef const BlasSubmatrix<_Matrix> MatrixType;
-		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
-	};
-
-	/*! Write a matrix to a stream.
-	 * The C++ way using <code>operator<<</code>
-	 * @param o output stream
-	 * @param Mat matrix to write.
-	 */
-	template<class T>
-	std::ostream& operator<< (std::ostream & o, const BlasSubmatrix<T> & Mat)
-	{
-		return Mat.write(o);
-	}
-
 }
 
 namespace LinBox
 { /* Triangular Matrix */
 	//! Triangular BLAS matrix.
-	template <class _Field, class _Rep=typename RawVector<typename _Field::Element >::Dense >
-	class TriangularBlasMatrix: public BlasMatrix<_Field,_Rep> {
+	template <class _Field, class _Storage >
+	class TriangularBlasMatrix: public BlasMatrix<_Field,_Storage> {
 
 	protected:
 
@@ -1226,7 +1178,7 @@ namespace LinBox
 
 	public:
 		typedef _Field                       Field;
-		typedef _Rep                         Rep;
+		typedef _Storage                         Rep;
 		typedef typename Field::Element      Element;      //!< Element type
 		typedef BlasMatrix<Field,Rep>           Father_t;
 		typedef TriangularBlasMatrix<Field,Rep> Self_t;

@@ -94,10 +94,10 @@ namespace LinBox { /*  forward declarations  */
 } // LinBox
 
 namespace LinBox { namespace Protected { /*  SparseMatrixGeneric defaults */
-		template <class _Field,
-			 class _Row   = typename RawVector<typename _Field::Element>::Sparse,
-			 class Trait  = typename VectorTraits<_Row>::VectorCategory>
-			 class SparseMatrixGeneric;
+	template <class _Field,
+		 class _Row   = typename RawVector<typename _Field::Element>::Sparse,
+		 class Trait  = typename VectorTraits<_Row>::VectorCategory >
+	class SparseMatrixGeneric;
 } // Protected
 } // LinBox
 
