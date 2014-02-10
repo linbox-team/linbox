@@ -312,6 +312,7 @@ namespace LinBox { namespace Protected {
 			{
 				return _j->second;
 			}
+
 			// Dan Roche 2005-7-7 I believe this was a memory leak.
 			value_type *operator -> ()
 			{
@@ -341,6 +342,7 @@ namespace LinBox { namespace Protected {
 		{
 			return Iterator (_matA.begin (), _matA.front ().begin (), _matA.end ());
 		}
+
 		Iterator End ()
 		{
 			return Iterator (_matA.end (), _matA.back ().end (), _matA.end ());

@@ -1158,6 +1158,274 @@ namespace LinBox
 			return true;
 		}
 
+		template<class element_iterator, class Element>
+		class _Iterator {
+		private :
+			element_iterator _data_it ;
+			const element_iterator _data_beg ;
+			const element_iterator _data_end ;
+		public:
+			typedef Element value_type ;
+			_Iterator(element_iterator e_beg, element_iterator e_end) :
+				  _data_it(e_beg)
+				, _data_beg(e_beg)
+				, _data_end(e_end)
+			{}
+
+			_Iterator (const _Iterator &iter) :
+				  _data_it(iter._data_it)
+				, _data_beg(iter._data_beg)
+				, _data_end(iter._data_end)
+			{}
+
+			_Iterator &operator = (const _Iterator &iter)
+			{
+			       	_data_it  = iter._data_it  ;
+			       	_data_beg  = iter._data_beg  ;
+			       	_data_end  = iter._data_end  ;
+
+				return *this;
+			}
+
+			bool operator == (const _Iterator &i) const
+			{
+				return  (_data_it == i._data_it) && (_data_beg == i._data_beg) && (_data_end == i._data_end);
+			}
+
+			bool operator != (const _Iterator &i) const
+			{
+				return  (_data_it != i._data_it) || (_data_beg != i._data_beg) || (_data_end != i._data_end);
+			}
+
+			_Iterator &operator ++ ()
+			{
+				if (_data_it == _data_end)
+					return *this ;
+				++_data_it ;
+			}
+
+			_Iterator operator ++ (int)
+			{
+				_Iterator tmp = *this;
+				++(*this);
+				return tmp;
+			}
+
+			_Iterator &operator -- ()
+			{
+				if (_data_it == _data_beg)
+					return *this ;
+				--_data_it ;
+			}
+
+			_Iterator operator -- (int)
+			{
+				_Iterator tmp = *this;
+				--(*this);
+				return tmp;
+			}
+
+			value_type &operator * ()
+			{
+				return *_data_it;
+			}
+
+			value_type *operator -> ()
+			{
+				return _data_it ;
+			}
+
+			const value_type &operator*() const
+			{
+				return *_data_it;
+			}
+
+			const value_type *operator -> () const
+			{
+				return _data_it ;
+			}
+
+			const value_type &value() const
+			{
+				return *_data_it;
+			}
+
+		};
+
+		template<class index_iterator, class element_iterator, class Element>
+		class _IndexedIterator {
+		private :
+			typedef  index_iterator    index_it ;
+			typedef  element_iterator  data_it ;
+			index_it _start_it ;
+			index_it _start_beg ;
+			index_it _colid_it ;
+			data_it _data_it ;
+			const data_it _data_beg ;
+			const data_it _data_end ;
+		public:
+			typedef Element value_type ;
+			_IndexedIterator( index_it i, index_it j, data_it e, data_it e_e) :
+				_start_it(i)
+				, _start_beg(i)
+				, _colid_it(j)
+				, _data_it(e)
+				, _data_beg(e)
+				, _data_end(e_e)
+			{}
+
+			_IndexedIterator (const _IndexedIterator &iter) :
+				_start_it(iter._start_it)
+				, _start_beg(iter._start_beg)
+				, _colid_it(iter._colid_it)
+				, _data_it(iter._data_it)
+				, _data_beg(iter._data_beg)
+				, _data_end(iter._data_end)
+			{}
+
+			_IndexedIterator &operator = (const _IndexedIterator &iter)
+			{
+				_start_it = iter._start_it ;
+				_start_beg = iter._start_beg ;
+			       	_colid_it = iter._colid_it ;
+			       	_data_it  = iter._data_it  ;
+				_data_beg = iter._data_beg ;
+			       	_data_end  = iter._data_end  ;
+
+				return *this;
+			}
+
+			bool operator == (const _IndexedIterator &i) const
+			{
+				return (_start_it == i._start_it) && (_colid_it == i._colid_it) && (_data_it == i._data_it);
+			}
+
+			bool operator != (const _IndexedIterator &i) const
+			{
+				return (_start_it != i._start_it) || (_colid_it != i._colid_it) || (_data_it != i._data_it) ;
+			}
+
+			_IndexedIterator &operator ++ ()
+			{
+				if (_data_it == _data_end)
+					return *this ;
+				++_colid_it ;
+				++_data_it  ;
+				while (std::distance(_data_beg, _data_it) >= *(_start_it+1)) {
+					++_start_it ;
+				}
+			}
+
+			_IndexedIterator operator ++ (int)
+			{
+				_IndexedIterator tmp = *this;
+				++(*this);
+				return tmp;
+			}
+
+			_IndexedIterator &operator -- ()
+			{
+				if (_data_it == _data_beg)
+					return *this ;
+				--_colid_it ;
+				--_data_it  ;
+				if (std::distance(_data_beg, _data_it) > *(_start_it)) {
+					--_start_it ;
+				}
+			}
+
+			_IndexedIterator operator -- (int)
+			{
+				_IndexedIterator tmp = *this;
+				--(*this);
+				return tmp;
+			}
+
+			value_type &operator * ()
+			{
+				return *_data_it;
+			}
+
+			value_type *operator -> ()
+			{
+				return _data_it ;
+			}
+
+			const value_type &operator*() const
+			{
+				return *_data_it;
+			}
+
+			const value_type *operator -> () const
+			{
+				return _data_it ;
+			}
+
+			size_t rowIndex () const
+			{
+				return std::distance(_start_beg, _start_it);
+			}
+
+			size_t colIndex () const
+			{
+				return *_colid_it;
+			}
+
+			const value_type &value() const
+			{
+				return *_data_it;
+			}
+
+
+		};
+
+		typedef _Iterator<typename std::vector<Element>::iterator, Element> Iterator;
+		typedef _Iterator<typename std::vector<Element>::const_iterator, constElement> ConstIterator;
+
+		typedef _IndexedIterator<std::vector<size_t>::iterator, typename std::vector<Element>::iterator, Element> IndexedIterator;
+		typedef _IndexedIterator<std::vector<size_t>::const_iterator, typename std::vector<Element>::const_iterator, constElement> ConstIndexedIterator;
+
+
+		Iterator      Begin ()
+		{
+			return Iterator(_data.begin(),_data.end()) ;
+		}
+
+		Iterator      End   ()
+		{
+			return Iterator(_data.end(), _data.end()) ;
+		}
+
+		ConstIterator      Begin () const
+		{
+			return ConstIterator(_data.begin(),_data.end()) ;
+		}
+
+		ConstIterator      End   () const
+		{
+			return ConstIterator(_data.end(), _data.end()) ;
+		}
+
+		IndexedIterator      IndexedBegin ()
+		{
+			return IndexedIterator(_start.begin(), _colid.begin(), _data.begin(),_data.end()) ;
+		}
+
+		IndexedIterator      IndexedEnd   ()
+		{
+			return IndexedIterator(_start.end(), _colid.end(), _data.end(),_data.end()) ;
+		}
+
+		ConstIndexedIterator      IndexedBegin () const
+		{
+			return IndexedIterator(_start.begin(), _colid.begin(), _data.begin(),_data.end()) ;
+		}
+
+		ConstIndexedIterator      IndexedEnd   () const
+		{
+			return IndexedIterator(_start.end(), _colid.end(), _data.end(),_data.end()) ;
+		}
+
 
 
 	protected :
