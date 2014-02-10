@@ -41,6 +41,23 @@ namespace LinBox {
 	};
 
 
+	template <class Matrix>
+	class MatrixContainerTrait {
+	public:
+		typedef MatrixContainerCategory::Blackbox Type;
+	};
+
+
+	// try to map a blackbox over a homorphic ring
+	// The most suitable type
+	template <class Blackbox, class Field>
+	struct MatrixHomTrait {
+		// static_assert(false,"should not be instanciated");
+		//typedef ... FBlackbox
+		// donot know
+		// typedef Blackbox value_type;
+	};
+
 } // LinBox
 
 #endif // __LINBOX_matrix_matrix_traits_H

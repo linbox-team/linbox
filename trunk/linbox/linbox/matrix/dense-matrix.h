@@ -32,13 +32,111 @@
 #define __LINBOX_matrix_dense_matrix_H
 
 
+//! @bug those are not just
+#include "linbox/vector/vector-traits.h"
 
-#include "DenseMatrix/blas-matrix.h"
-// #include "DenseMatrix/blas-matrix-multimod.h"
-// #include "DenseMatrix/m4ri-matrix.h"
+#include "linbox/matrix/matrix-traits.h"
+
+namespace LinBox { /*  forward declarations */
+
+	template <class _Field, class _blasRep=typename Vector<_Field>::Dense >
+	class BlasMatrix ;
+
+	template<class _Matrix>
+	class BlasSubmatrix ;
+
+	template <class _Field, class _Storage=typename Vector<_Field>::Dense >
+	class TriangularBlasMatrix ;
+
+	/*! Write a matrix to a stream.
+	 * The \c C++ way using <code>operator<< </code>
+	 * @param o output stream
+	 * @param Mat matrix to write.
+	 */
+	template <class _Field, class _Storage>
+	std::ostream& operator<< (std::ostream & os, const BlasMatrix<_Field,_Storage> & Mat)
+	{
+		return Mat.write(os);
+	}
+
+	template <class _Matrix>
+	std::ostream& operator<< (std::ostream & os, const BlasSubmatrix<_Matrix> & Mat)
+	{
+		return Mat.write(os);
+	}
+
+}
+
+#include "linbox/matrix/DenseMatrix/blas-matrix.h"
+// #include "linbox/matrix/DenseMatrix/blas-matrix-multimod.h"
+// #include "linbox/matrix/DenseMatrix/m4ri-matrix.h"
+
+namespace LinBox { /*  MatrixContainerTrait */
 
 
+	template <class Field, class Rep>
+	class MatrixContainerTrait<BlasMatrix<Field,Rep> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
 
+	template <class Field, class Rep>
+	class MatrixContainerTrait<const BlasMatrix<Field,Rep> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
+
+	template <class _Matrix>
+	class MatrixContainerTrait<const BlasSubmatrix<_Matrix> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
+
+} // LinBox
+
+namespace LinBox { /*  MatrixTraits */
+
+	template <class _Field, class _Rep>
+	struct MatrixTraits< BlasMatrix<_Field,_Rep> > {
+		typedef BlasMatrix<_Field,_Rep> MatrixType;
+		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
+	};
+
+	template <class _Field, class _Rep>
+	struct MatrixTraits< const BlasMatrix<_Field,_Rep> > {
+		typedef const BlasMatrix<_Field,_Rep> MatrixType;
+		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
+	};
+
+	template <class _Matrix>
+	struct MatrixTraits< BlasSubmatrix<_Matrix> > {
+		typedef BlasSubmatrix<_Matrix> MatrixType;
+		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
+	};
+
+	template <class _Matrix>
+	struct MatrixTraits< const BlasSubmatrix<_Matrix> > {
+		typedef const BlasSubmatrix<_Matrix> MatrixType;
+		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
+	};
+
+}
+
+namespace LinBox { /*  MatrixHomTrait */
+
+	//non working partial specialisation
+	// template <class Ring, class Field, class _Rep>
+	// struct MatrixHomTrait<BlasMatrix<Ring, _Rep>, Field> {
+		// typedef BlasMatrix<Field,_Rep> value_type;
+	// };
+
+	template <class Ring, class Field>
+	struct MatrixHomTrait<BlasMatrix<Ring, typename Vector<Ring>::Dense >, Field> {
+		typedef BlasMatrix<Field,typename Vector<Field>::Dense > value_type;
+	};
+
+
+}
 #endif // __LINBOX_matrix_dense_matrix_H
 
 

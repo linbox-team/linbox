@@ -61,7 +61,7 @@ namespace LinBox
 						size_t col,
 						size_t Rowdim,
 						size_t Coldim) :
-		_Mat (&(const_cast<BlasMatrix<Field>& >(Mat))),
+		_Mat (&(const_cast<BlasMatrix<Field,Rep>& >(Mat))),
 		_row (Rowdim), _col(Coldim),
 		_r0(row),_c0(col),
 		_stride(Mat.coldim()),_off(row*_stride+col)
@@ -77,7 +77,7 @@ namespace LinBox
 	template < class _Matrix >
 	BlasSubmatrix<_Matrix>::BlasSubmatrix (const typename BlasSubmatrix<_Matrix>::matrixType &Mat) :
 //	BlasSubmatrix<_Matrix>::BlasSubmatrix (const BlasMatrix<BlasSubmatrix<_Matrix>::Field,BlasSubmatrix<_Matrix>::Rep> &Mat) :
-		_Mat(&(const_cast<BlasMatrix<Field>& >(Mat))),
+		_Mat(&(const_cast<BlasMatrix<Field,Rep>& >(Mat))),
 		_row(Mat.rowdim()), _col(Mat.coldim()),
 		_r0(0), _c0(0),
 		_stride(Mat.coldim()),_off(0)
@@ -1112,9 +1112,9 @@ namespace LinBox
 	}
 
 	template <class _Matrix>
-	template<typename _Tp1>
+	template<typename _Tp1, class _Rep2>
 	struct BlasSubmatrix< _Matrix>::rebind {
-		typedef BlasMatrix<_Tp1> other;
+		typedef BlasMatrix<_Tp1,_Rep2> other;
 
 		void operator() (other & Ap, const Self_t& A) {
 			typedef typename BlasSubmatrix<_Matrix>::ConstIterator ConstSelfIterator ;

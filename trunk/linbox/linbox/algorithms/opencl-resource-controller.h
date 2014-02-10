@@ -479,9 +479,11 @@ namespace LinBox{
 		unsigned int deallocateInstance(unsigned int ID){
 #ifndef __MPI_SHARED
 			(*IDsToInstances)[ID] -= 1;
+#if 0
 			if((*IDsToInstances)[ID] < 0){ //! @bug BB Toujours faux
 				(*IDsToInstances)[ID] = 0;
 			}
+#endif
 			return (*IDsToInstances)[ID];
 #else
 			(*namesToInstances)[(*IDsToNames)[ID]] -= 1;

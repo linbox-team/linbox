@@ -30,14 +30,6 @@
 namespace LinBox
 {
 
-	template<class _Field, class _Rep>
-	class BlasMatrix ;
-
-	template<class _Matrix>
-	class BlasSubmatrix ;
-
-	template<class _Field, class _Storage>
-	class SparseMatrix ;
 
 	/** \brief For specializing matrix arithmetic
 	 *
@@ -62,36 +54,7 @@ namespace LinBox
 		struct Blackbox{};
 	};
 
-	template <class Matrix>
-	class MatrixContainerTrait {
-	public:
-		typedef MatrixContainerCategory::Blackbox Type;
-	};
 
-	template <class Field, class Rep>
-	class MatrixContainerTrait<BlasMatrix<Field,Rep> > {
-	public:
-		typedef MatrixContainerCategory::BlasContainer Type;
-	};
-
-	template <class Field, class Rep>
-	class MatrixContainerTrait<const BlasMatrix<Field,Rep> > {
-	public:
-		typedef MatrixContainerCategory::BlasContainer Type;
-	};
-
-	template <class _Matrix>
-	class MatrixContainerTrait<const BlasSubmatrix<_Matrix> > {
-	public:
-		typedef MatrixContainerCategory::BlasContainer Type;
-	};
-
-	template <class Field, class Storage>
-	class MatrixContainerTrait<SparseMatrix<Field,Storage> > {
-	public:
-		typedef MatrixContainerCategory::Blackbox Type;
-		// typedef MatrixContainerCategory::Container Type;
-	};
 
 
 }

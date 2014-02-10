@@ -1499,8 +1499,7 @@ namespace LinBox
 	 * Specialization for Operand of type std::vector<Element>
 	 */
 
-	template <class Field>
-	template<class _Rep>
+	template <class Field, class _Rep>
 	class BlasMatrixDomainLeftSolve<Field, std::vector<typename Field::Element>, BlasMatrix<Field, _Rep> > {
 	public:
 		std::vector<typename Field::Element>& operator() (const Field& F,
@@ -1524,8 +1523,7 @@ namespace LinBox
 
 	};
 
-	template <class Field>
-	template<class _Rep>
+	template <class Field, class _Rep>
 	class BlasMatrixDomainRightSolve<Field, std::vector<typename Field::Element>, BlasMatrix<Field, _Rep> > {
 	public:
 		std::vector<typename Field::Element>& operator() (const Field& F,
@@ -1549,8 +1547,7 @@ namespace LinBox
 
 	};
 
-	template <class Field>
-	template<class _Rep>
+	template <class Field, class _Rep>
 	class BlasMatrixDomainLeftSolve<Field, BlasVector<Field>, BlasMatrix<Field, _Rep> > {
 	public:
 		BlasVector<Field>& operator() (const Field& F,
@@ -1574,8 +1571,7 @@ namespace LinBox
 
 	};
 
-	template <class Field>
-	template<class _Rep>
+	template <class Field, class _Rep>
 	class BlasMatrixDomainRightSolve<Field, BlasVector<Field>, BlasMatrix<Field, _Rep> > {
 	public:
 		BlasVector<Field>& operator() (const Field& F,
@@ -1613,8 +1609,7 @@ namespace LinBox
 	 * specialization for Operand of type BlasMatrix<Field, _Rep>
 	 */
 
-	template <class Field>
-	template<class _Rep>
+	template <class Field, class _Rep>
 	class BlasMatrixDomainLeftSolve<Field, BlasMatrix<Field, _Rep>, TriangularBlasMatrix<Field,_Rep> > {
 	public:
 		BlasMatrix<Field, _Rep>& operator() (const Field& F,
@@ -1655,8 +1650,7 @@ namespace LinBox
 		}
 	};
 
-	template <class Field>
-	template<class _Rep>
+	template <class Field, class _Rep>
 	class BlasMatrixDomainRightSolve<Field, BlasMatrix<Field,_Rep>, TriangularBlasMatrix<Field,_Rep> > {
 	public:
 		BlasMatrix<Field, _Rep>& operator() (const Field& F,
@@ -1697,8 +1691,7 @@ namespace LinBox
 		}
 	};
 
-	template <class Matrix>
-	template<class _Rep>
+	template <class Matrix, class _Rep>
 	class BlasMatrixDomainRightSolve<typename Matrix::Field, BlasSubmatrix<Matrix>, TriangularBlasMatrix<typename Matrix::Field, _Rep> > {
 	public:
 		typedef typename Matrix::Field Field;
@@ -1747,8 +1740,7 @@ namespace LinBox
 	 * specialization for Operand of type std::vector<Element>
 	 */
 
-	template <class Field>
-	template<class _Rep>
+	template <class Field, class _Rep>
 	class BlasMatrixDomainLeftSolve<Field, std::vector<typename Field::Element>, TriangularBlasMatrix<Field,_Rep> > {
 	public:
 		std::vector<typename Field::Element>& operator() (const Field& F,
@@ -1815,8 +1807,7 @@ namespace LinBox
 		}
 	};
 
-	template <class Field>
-	template<class _Rep>
+	template <class Field, class _Rep>
 	class BlasMatrixDomainRightSolve<Field, std::vector<typename Field::Element>, TriangularBlasMatrix<Field,_Rep> > {
 	public:
 		std::vector<typename Field::Element>& operator() (const Field& F,
@@ -1884,8 +1875,7 @@ namespace LinBox
 		}
 	};
 
-	template <class Field>
-	template<class _Rep>
+	template <class Field, class _Rep>
 	class BlasMatrixDomainLeftSolve<Field, BlasVector<Field>, TriangularBlasMatrix<Field,_Rep> > {
 	public:
 		BlasVector<Field>& operator() (const Field& F,
@@ -1952,8 +1942,7 @@ namespace LinBox
 		}
 	};
 
-	template <class Field>
-	template<class _Rep>
+	template <class Field, class _Rep>
 	class BlasMatrixDomainRightSolve<Field, BlasVector<Field>, TriangularBlasMatrix<Field,_Rep> > {
 	public:
 		BlasVector<Field>& operator() (const Field& F,

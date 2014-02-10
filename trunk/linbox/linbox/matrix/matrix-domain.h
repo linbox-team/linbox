@@ -36,6 +36,7 @@
 
 namespace LinBox {
 #if 1
+	//! @bug necessitates the inclusion of those things after of before. We should not include directly this but just the matrices and they automatically need their domain (for now)
 	template<class Field, class Rep> class BlasMatrix;
 	template<class Matrix> class BlasSubmatrix;
 	template<class _Field, class _Rep> class BlasVector ;

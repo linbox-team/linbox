@@ -478,7 +478,7 @@ namespace LinBox
 		 */
 		ComposeOwner (const Blackbox1 *A_data, const Blackbox2 *B_data) :
 			_A_data(*A_data), _B_data(*B_data)
-			,_z(*A_data.field())
+			,_z(A_data->field())
 		{
 			linbox_check (A_data != (Blackbox1 *) 0);
 			linbox_check (B_data != (Blackbox2 *) 0);

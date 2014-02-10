@@ -619,19 +619,6 @@ namespace LinBox
 
 	} ; // SparseMatrix
 
-	template <class Field>
-	struct MatrixTraits< SparseMatrix<Field, SparseMatrixFormat::SparseMap> >
-	{
-		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> MatrixType;
-		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
-	};
-
-	template <class Field>
-	struct MatrixTraits< const SparseMatrix<Field, SparseMatrixFormat::SparseMap> >
-	{
-		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> MatrixType;
-		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
-	};
 
 
 } // namespace LinBox

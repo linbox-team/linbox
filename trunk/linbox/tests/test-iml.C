@@ -50,10 +50,12 @@
 #include "linbox/util/iml_wrapper.h"
 #endif
 
-#include "linbox/algorithms/iml.h"
+// BB it just works but I can do better (later, with [time/money/job])
+// #include "linbox/algorithms/iml.h"
 
 using namespace LinBox;
 
+#if 0
 template <class Field>
 bool testIMLrank(const Field &F, size_t m, size_t n, size_t rank, int iterations)
 {
@@ -107,8 +109,9 @@ bool testIMLrank(const Field &F, size_t m, size_t n, size_t rank, int iterations
 
 	return ret;
 }
+#endif
 
-
+#if 0
 #ifdef __LINBOX_HAVE_IML
 // WARNING this test checks equality with IML, not that IML results are correct
 template <class Field>
@@ -295,7 +298,9 @@ bool testIMLstuff(const Field &F, size_t m, size_t n, size_t rank, int iteration
 	return ret;
 }
 #endif
+#endif
 
+#if 0
 
 template <class Field>
 bool testIMLinverse(const Field &F, size_t m, int iterations)
@@ -372,6 +377,10 @@ bool testIMLinverse(const Field &F, size_t m, int iterations)
 	commentator().stop (MSG_STATUS(ret),"testIMLinverse");
 	return ret;
 }
+
+#endif
+
+#if 0
 
 #ifdef __LINBOX_HAVE_IML
 template<class Field>
@@ -465,6 +474,8 @@ bool testIMLcra(const Field &F, int iterations)
 	return ret;
 }
 
+#endif
+
 #if 0
 template<class Field>
 bool testIMLnonSingularSolve(const Field &F, size_t m, size_t b, int iterations)
@@ -557,12 +568,14 @@ int main(int argc, char ** argv)
 	Field F (q);
 
 
-#if 1
+#if 0
 	TESTE("IML rank");
 	if (!testIMLrank (F, m,n,r, iterations))
 		pass=false;
 	RAPPORT("IML rank");
+#endif
 
+#if 0
 	TESTE("IML det");
 	if (!testIMLinverse (F, m, iterations))
 		pass=false;
@@ -570,13 +583,14 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef __LINBOX_HAVE_IML
-#if 1
+#if 0
 	TESTE("IML stuff");
 	if (!testIMLstuff(F, m,n,r, iterations))
 		pass=false;
 	RAPPORT("IML stuff");
 #endif
 
+#if 0
 	TESTE("IML rns");
 	if (!testIMLcra(F, iterations))
 		pass=false;
@@ -586,6 +600,7 @@ int main(int argc, char ** argv)
 	// if (!testIMLpadic(F, iterations))
 	// pass=false;
 	// RAPPORT("IML rns");
+#endif
 
 #if 0
 	size_t b = 10 ;
