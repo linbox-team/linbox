@@ -708,6 +708,7 @@ namespace LinBox
 		 * Since rows may also be indexed, this allows A[i][j] notation
 		 * to be used.
 		 * @param i Row index
+		 * @bug Rows and Cols should be BlasVectors
 		 */
 		//@{
 		Row      operator[] (size_t i) ;
