@@ -38,6 +38,7 @@
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
+#include "linbox/field/hom.h"
 #include "sparse-domain.h"
 
 
@@ -121,14 +122,11 @@ namespace LinBox
 		{}
 #endif
 
-		// XXX only for CSR
 		template<typename _Tp1, typename _Rw1 = SparseMatrixFormat::CSR>
 		struct rebind {
 			typedef SparseMatrix<_Tp1, _Rw1> other;
 		private:
 
-
-			// void rebindIt(other & Ap, const Self_t & A,  MatrixCategories::BlackboxTag) ;
 			template<class _Rw>
 			void rebindMethod(SparseMatrix<_Tp1, _Rw> & Ap, const Self_t & A  /*, IndexedCategory::HasNext */)
 			{
@@ -141,7 +139,7 @@ namespace LinBox
 				while ( A.nextTriple(i,j,f) ) {
 					linbox_check(i < A.rowdim() && j < A.coldim()) ;
 					hom. image ( e, f) ;
-					if (! Ap.field().isZero(f) )
+					if (! Ap.field().isZero(e) )
 						Ap.appendEntry(i,j,e);
 				}
 				A.firstTriple();
@@ -195,6 +193,7 @@ namespace LinBox
 				rebindMethod(Ap, A );
 
 			}
+
 		};
 
 		template<typename _Tp1, typename _Rw1>
@@ -375,8 +374,6 @@ namespace LinBox
 		SparseMatrix<_Field,SparseMatrixFormat::COO > &
 		exporte(SparseMatrix<_Field,SparseMatrixFormat::COO> &S)
 		{
-			// S = *this ;
-
 			S.resize(_rownb, _colnb, _nbnz);
 			S.setData(  _data ) ;
 			S.setColid( _colid ) ;
@@ -513,7 +510,7 @@ namespace LinBox
 			return x = getEntry (i, j);
 		}
 
-		void appendEntry(size_t i, size_t j, const Element & e)
+		void appendEntry(const size_t &i, const size_t &j, const Element& e)
 		{
 			linbox_check(i < rowdim());
 			linbox_check(j < rowdim());
@@ -536,6 +533,7 @@ namespace LinBox
 			_colid.push_back(j);
 			_data .push_back(e);
 			++_nbnz ;
+			return;
 
 		}
 
@@ -545,8 +543,8 @@ namespace LinBox
 				for (size_t i = 2 ; i <= rowdim() ; ++i)
 					_start[i] += _start[i-1];
 				linbox_check(_start[rowdim()] == _nbnz);
-				_triples.reset();
 			}
+			_triples.reset();
 		} // end construction after a sequence of setEntry calls.
 
 		/** Set an individual entry.
@@ -559,7 +557,6 @@ namespace LinBox
 		 * it can be sped up (no checking that the entry already exists).
 		 */
 		void setEntry(const size_t &i, const size_t &j, const Element& e
-			      // , bool i_pledge_this_entry_is_new = false
 			      )
 		{
 			linbox_check(i<_rownb);
@@ -571,8 +568,8 @@ namespace LinBox
 				return clearEntry(i,j);
 			}
 
-
 			// nothing has been done yet
+			typedef typename std::vector<size_t>::iterator myIterator ;
 			size_t ibeg = _start[i];
 			size_t iend = _start[i+1];
 			// element does not exist, insert
@@ -581,22 +578,21 @@ namespace LinBox
 				for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] += 1 ;
 				_colid.insert(_colid.begin()+ibeg,j);
 				_data.insert( _data.begin() +ibeg,e);
-				_nbnz++ ;
+				++_nbnz;
 				return ;
 			}
 			// element may exist
-			typedef typename std::vector<size_t>::iterator myIterator ;
 			myIterator beg = _colid.begin() + (ptrdiff_t)ibeg ;
-			myIterator end = _colid.begin() +  (ptrdiff_t)(iend);
+			myIterator end = _colid.begin() + (ptrdiff_t)iend ;
 			myIterator low = std::lower_bound (beg, end, j);
 			ibeg = (size_t)(low-_colid.begin());
 			// insert
-			if ( low == end || _colid[ibeg] != j ) {
+			if ( low == end || j != _colid[ibeg] ) {
 				// std::cout << "# 2 insert " << i << ',' << j << ':' << e << std::endl;
 				for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] += 1 ;
-				_colid.insert(_colid.begin() + ibeg,j);
-				_data.insert( _data. begin() + ibeg,e);
-				_nbnz++ ;
+				_colid.insert(_colid.begin() + (ptrdiff_t)ibeg,j);
+				_data.insert (_data. begin() + (ptrdiff_t)ibeg,e);
+				++_nbnz;
 				return ;
 			}
 			// replace
@@ -650,8 +646,8 @@ namespace LinBox
 		 * @param os Output stream to which to write the matrix
 		 * @param format Format with which to write
 		 */
-		std::ostream & write(std::ostream &os,
-				     LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::MatrixMarket) const
+		std::ostream & write(std::ostream &os
+				     , LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::MatrixMarket) const
 		{
 			return SparseMatrixWriteHelper<Self_t>::write(*this,os,format);
 		}
@@ -662,12 +658,11 @@ namespace LinBox
 		 * @param format Format of input matrix
 		 * @return ref to \p file.
 		 */
-		std::istream& read (std::istream &is,
-				    LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Detect)
+		std::istream& read (std::istream &is
+				    , LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Detect)
 		{
 			return SparseMatrixReadHelper<Self_t>::read(*this,is,format);
 		}
-
 
 		/*! @internal
 		 * @brief Deletes the entry.
@@ -679,13 +674,13 @@ namespace LinBox
 		{
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
+			typedef typename std::vector<size_t>::iterator myIterator ;
 
 			size_t ibeg = _start[i];
 			size_t iend = _start[i+1];
 			if (ibeg == iend)
 				return ;
 
-			typedef typename std::vector<size_t>::iterator myIterator ;
 			myIterator beg = _colid.begin() +(ptrdiff_t)ibeg;
 			myIterator end = _colid.begin() +(ptrdiff_t)iend;
 			myIterator low = std::lower_bound (beg, end, j);
@@ -695,9 +690,9 @@ namespace LinBox
 				// not sure
 				size_t la = (size_t)(low-_colid.begin()) ;
 				for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] -= 1 ;
-				_colid.erase(_colid.begin()+la);
-				_data. erase(_data. begin()+la);
-				_nbnz-- ;
+				_colid.erase(_colid.begin()+(ptrdiff_t)la);
+				_data. erase(_data. begin()+(ptrdiff_t)la);
+				--_nbnz;
 				return  ;
 			}
 		}
@@ -783,292 +778,6 @@ namespace LinBox
 
 	private :
 
-		std::ostream & writeSpecialized(std::ostream &os,
-						LINBOX_enum(Tag::FileFormat) format) const
-		{
-			switch (format) {
-			case (Tag::FileFormat::Maple):
-				{
-					// std::cout << "#" << _start << std::endl;
-					// std::cout << "#" << _colid << std::endl;
-					// std::cout << "#" << _data  << std::endl;
-
-					linbox_check(_colnb > 0);
-					os << "[";
-					bool firstrow=true;
-					size_t idx = 0 ;
-
-					linbox_check(_rownb+1 == _start.size());
-					linbox_check(_nbnz == _data.size());
-					linbox_check(_nbnz == _colid.size());
-					linbox_check(_start[_rownb] == _nbnz);
-					for (size_t i = 0 ; i < _rownb ; ++i ) {
-						if (firstrow) {
-							os << "[";
-							firstrow =false;
-						}
-						else
-							os << ", [";
-
-
-						for (size_t j = 0; j < _colnb ; ++j) {
-							if (idx == _nbnz)
-								field().write (os, field().zero);
-							else if (_colid[idx] == j &&
-								 _start[i] <= idx && idx < _start[i+1]) {
-								field().write (os, _data[idx]);
-								++idx;
-							}
-							else {
-								field().write (os, field().zero);
-							}
-
-							if (j < _colnb - 1)
-								os << ", ";
-						}
-
-						os << " ]";
-					}
-
-					os << "]";
-					linbox_check(idx == _nbnz);
-
-					break;
-				}
-			default :
-				os << "I don't know" << std::endl;
-
-			}
-			return os ;
-
-		}
-
-#if 0 /*  not updated and to be cleaned */
-		/*! @internal
-		 * write for CSR format.
-		 * @bug wrong.
-		 */
-		std::ostream & writeSpecialized(std::ostream &os,
-						SparseFileFormat::CSR) const
-		{
-			os << _rownb << ' ' << _colnb  << ' ' << size() << std::endl;
-			size_t lig = 0 ;
-			size_t i = 0 ;
-			while(i < size()) {
-				while(lig < _start[i]) {
-					os << "-1" << std::endl;
-					++lig ;
-				}
-				while (lig == _start[i]) {
-					field().write(_data[i], os << _colid[i] << ' ') << std::endl;
-					++i;
-				}
-				++lig ;
-			}
-			return os << "0 0 0" << std::endl;
-		}
-
-		/*! @internal
-		 * write for COO format.
-		 */
-		std::ostream & writeSpecialized(std::ostream &os,
-						SparseFileFormat::COO) const
-		{
-			os << _rownb << ' ' << _colnb  << ' ' << size() << std::endl;
-			for (size_t i = 0 ; i < rowdim() ; ++i)
-				for (size_t j = _start[i] ; j < _start[j+1] ; ++j)
-					field().write(_data[j], os << i << ' ' << _colid[j] << ' ') << std::endl;
-
-			return os << "0 0 0" << std::endl;
-		}
-
-
-
-		/*! @internal
-		 * Read for CSR format.
-		 */
-		std::istream & readSpecialized(std::istream &is,
-					       SparseFileFormat::CSR)
-		{
-			size_t nnz = 0 ;
-			bool sms = true ;
-			std::string firstLine ;
-			std::string x ;
-			getline(is, firstLine);
-			std::istringstream line(firstLine);
-			line >> _rownb >> _colnb >> x ;
-			size_t mem = 10 ;
-			if (!_rownb || _colnb)
-				throw LinBoxError("bad input");
-			if (x.empty() || x.compare("M")) {  /* SMS */
-				// mem = m ;
-				_start.reserve(mem);
-				_colid.reserve(mem);
-				_data.reserve(mem);
-			}
-			else { /* SMF */
-				sms = false ;
-				std::istringstream (x) >> nnz ;
-				if (!nnz)
-					throw LinBoxError("bad input");
-				mem = nnz ;
-				_start.reserve(nnz);
-				_colid.reserve(nnz);
-				_data.reserve(nnz);
-			}
-			Element z ;
-			if (sms) { /*  SMS */
-				size_t lig = 0 ;
-				nnz = 0 ;
-				int n ;
-				while (is>>n) {
-					if (n == 0)
-						break;
-					while (n == -1) {
-						++lig ;
-						is >> n ;
-					}
-					field().read(is,z)  ;
-					if (n<0 || lig >=_rownb || n >> _colnb)
-						throw LinBoxError("bad input");
-					if (!field().isZero(z)){
-						if (mem == nnz) {
-							mem+=20 ;
-							_start.resize(mem);
-							_colid.resize(mem);
-							_data.resize (mem);
-						}
-
-						_start[nnz]= lig ;
-						_colid[nnz]= n ;
-						_data[nnz] = z ;
-						++nnz ;
-					}
-				}
-				_start.resize(nnz);
-				_colid.resize(nnz);
-				_data.resize (nnz);
-
-			}
-			else { /*  SMF */
-				size_t lig = 0 ;
-				int n ;
-				size_t loc = 0;
-				while (is>>n) {
-					if (n == 0)
-						break;
-					while (n == -1) {
-						++lig ;
-						is >> n ;
-					}
-					field().read(is,z)  ;
-					if (n<0 || lig >=_rownb || n >> _colnb)
-						throw LinBoxError("bad input");
-					if (!field().isZero(z)){
-						_start[loc]= lig ;
-						_colid[loc]= n ;
-						_data[loc] = z ;
-						++loc ;
-					}
-				}
-				if (loc > nnz)
-					throw LinBoxError("bad input");
-				_start.resize(loc);
-				_colid.resize(loc);
-				_data.resize (loc);
-			}
-			return is ;
-		}
-
-		/*! @internal
-		 * Read for COO format.
-		 */
-		std::istream & readSpecialized(std::istream &is,
-					       SparseFileFormat::COO)
-		{
-			size_t nnz = 0;
-			bool sms = true ;
-			std::string firstLine ;
-			getline(is, firstLine);
-			std::istringstream line(firstLine);
-			std::string x ;
-			line >> _rownb >> _colnb >> x ;
-			size_t mem  = 10 ;
-			if (!_rownb || _colnb)
-				throw LinBoxError("bad input");
-			if (x.empty() || x.compare("M")) {  /* SMS */
-				// mem = m ;
-				_start.reserve(mem);
-				_colid.reserve(mem);
-				_data.reserve(mem);
-			}
-			else { /* SMF */
-				sms = false ;
-				std::istringstream (x) >> nnz ;
-				if (!nnz)
-					throw LinBoxError("bad input");
-				mem = nnz ;
-				_start.reserve(nnz);
-				_colid.reserve(nnz);
-				_data.reserve(nnz);
-			}
-			Element z ;
-			if (sms) { /*  SMS */
-				// size_t lig = 0 ;
-				nnz = 0 ;
-				int m,n ;
-				while (is>>m >> n) {
-					if (m == 0 && n == 0)
-						break;
-					if (n<0 || m<0 ||  m >=_rownb || n >> _colnb)
-						throw LinBoxError("bad input");
-					field().read(is,z)  ;
-					if (!field().isZero(z)){
-						if (mem == nnz) {
-							mem+=20 ;
-							_start.resize(mem);
-							_colid.resize(mem);
-							_data.resize (mem);
-						}
-						_start[nnz]= m ;
-						_colid[nnz]= n ;
-						_data[nnz] = z ;
-						++nnz ;
-					}
-				}
-				_start.resize(nnz);
-				_colid.resize(nnz);
-				_data.resize (nnz);
-
-			}
-			else { /*  SMF */
-				size_t loc = 0 ;
-				int m,n ;
-				while (is>>m >> n) {
-					if (m == 0 && n == 0)
-						break;
-					if (n<0 || m<0 ||  m >=_rownb || n >> _colnb)
-						throw LinBoxError("bad input");
-					field().read(is,z)  ;
-					if (!field().isZero(z)){
-						_start[loc]= m ;
-						_colid[loc]= n ;
-						_data[loc] = z ;
-						++loc ;
-					}
-				}
-
-				if (loc > nnz)
-					throw LinBoxError("bad input");
-				_start.resize(loc);
-				_colid.resize(loc);
-				_data.resize (loc);
-
-			}
-			return is ;
-		}
-#endif
-
 
 	public:
 		// pseudo iterators
@@ -1150,13 +859,12 @@ namespace LinBox
 			field().assign(_data[i],e);
 		}
 
-		void setData(std::vector<size_t> & new_data)
+		void setData(std::vector<Element> & new_data)
 		{
-			// linbox_check(_start.size() == new_start.size());
 			_data = new_data ;
 		}
 
-		std::vector<size_t>  getData( ) const
+		std::vector<Element>  getData( ) const
 		{
 			return _data ;
 		}
@@ -1174,7 +882,6 @@ namespace LinBox
 				_triples.reset() ;
 				return false;
 			}
-
 
 
 			j = _colid[idx];
@@ -1464,8 +1171,10 @@ namespace LinBox
 		}
 
 
-
 	protected :
+		friend class SparseMatrixWriteHelper<Self_t >;
+		friend class SparseMatrixReadHelper<Self_t >;
+
 
 		size_t              _rownb ;
 		size_t              _colnb ;
@@ -1475,7 +1184,7 @@ namespace LinBox
 		std::vector<size_t> _colid ;
 		std::vector<Element> _data ;
 
-		const _Field            & _field ;
+		const _Field & _field;
 
 		mutable struct _triples {
 			ptrdiff_t _row ;
@@ -1484,21 +1193,23 @@ namespace LinBox
 				_row(-1)
 				, _nnz(-1)
 			{}
-			ptrdiff_t next( const std::vector<size_t> & start) {
+
+			ptrdiff_t next( const std::vector<size_t> & start)
+			{
 				_nnz +=1 ;
 				while (_row+1 < start.size() && _nnz >= start[_row+1]) {
 					_row += 1;
 				}
 				return _nnz ;
 			}
-			void reset() {
+
+			void reset()
+			{
 				_row = -1 ;
 				_nnz = -1 ;
 			}
 		}_triples;
 	};
-
-
 
 
 
