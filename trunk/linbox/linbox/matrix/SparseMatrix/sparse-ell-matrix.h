@@ -77,8 +77,9 @@ namespace LinBox
 		SparseMatrix<_Field, SparseMatrixFormat::ELL> (const _Field & F) :
 			_rownb(0),_colnb(0)
 			,_maxc(0)
-			,_nbnz(0),
-			_colid(0),_data(0)
+			,_nbnz(0)
+			,_colid(0)
+			,_data(0)
 			, _field(F)
 		{
 		}
@@ -87,7 +88,8 @@ namespace LinBox
 			_rownb(m),_colnb(n)
 			,_maxc(0)
 			,_nbnz(0)
-			,_colid(0),_data(0)
+			,_colid(0)
+			,_data(0)
 			, _field(F)
 		{
 		}
@@ -95,20 +97,22 @@ namespace LinBox
 		SparseMatrix<_Field, SparseMatrixFormat::ELL> (const _Field & F,
 							       size_t m, size_t n,
 							       size_t z) :
-			_rownb(m),_colnb(n),
-			_maxc(0),
-			_nbnz(z),
-			_colid(z),_data(z),
-			_field(F)
+			_rownb(m),_colnb(n)
+			, _maxc(0)
+			, _nbnz(z)
+			, _colid(z)
+			,_data(z)
+			, _field(F)
 		{
 		}
 
 		SparseMatrix<_Field, SparseMatrixFormat::ELL> (const SparseMatrix<_Field, SparseMatrixFormat::CSR> & S) :
-			_rownb(S._rownb),_colnb(S._colnb),
-			_maxc(S._maxc),
-			_nbnz(S._nbnz),
-			_colid(S._colid),_data(S._data),
-			_field(S._field)
+			_rownb(S._rownb),_colnb(S._colnb)
+			,_maxc(S._maxc)
+			,_nbnz(S._nbnz)
+			, _colid(S._colid)
+			,_data(S._data)
+			, _field(S._field)
 		{}
 
 #if 0
@@ -144,7 +148,7 @@ namespace LinBox
 				A.firstTriple();
 			}
 
-			void rebindMethod(SparseMatrix<_Tp1, SparseMatrixFormat::CSR>  & Ap, const Self_t & A /*,  IndexedCategory::HasNext*/)
+			void rebindMethod(SparseMatrix<_Tp1, SparseMatrixFormat::ELL>  & Ap, const Self_t & A /*,  IndexedCategory::HasNext*/)
 			{
 				// we don't use nextTriple because we can do better.
 				linbox_check(A.consistent());
@@ -158,8 +162,9 @@ namespace LinBox
 				for (size_t i = 0 ; i < A.rowdim() ; ++i) {
 					size_t j = 0 ;
 					for (size_t k = 0 ; k < A.ld() ; ++k) {
-						if (A.field().isZero(A.getData(i,k)))
+						if (A.field().isZero(A.getData(i,k))) {
 							break;
+						}
 						hom. image ( e, A.getData(i,k) );
 						if (!Ap.field().isZero(e)) {
 							Ap.setColid(i,j,A.getColid(i,k));
@@ -182,15 +187,16 @@ namespace LinBox
 
 			}
 
-					};
+		};
 
 		template<typename _Tp1, typename _Rw1>
 		SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &S, const Field& F) :
 			_rownb(S.rowdim()),_colnb(S.coldim()),
 			_maxc(0),
-			_nbnz(S.size()),
-			_colid(0),_data(0),
-			_field(F)
+			_nbnz(S.size())
+			, _colid(0)
+			,_data(0)
+			, _field(F)
 		{
 			typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,SparseMatrixFormat::ELL>()(*this, S);
 		}
@@ -542,7 +548,7 @@ namespace LinBox
 			Element * dat = &_data[i*_maxc];
 			bool found = false;
 			for (size_t k = 0 ; k < _maxc ; ++k) {
-				if (field().isZero(dat[k])) {
+				if ( field().isZero(dat[k])) {
 					field().assign(dat[k], e) ;
 					beg[k] = j;
 					found = true;
@@ -764,8 +770,9 @@ namespace LinBox
 						zero = true ;
 					}
 					else {
-						if (zero)
+						if (zero) {
 							return false ; // elements after a 0...
+						}
 						++nbnz ;
 
 					}
@@ -777,6 +784,7 @@ namespace LinBox
 
 
 
+	private :
 
 		void reshape(const size_t &ll)
 		{
@@ -944,6 +952,7 @@ namespace LinBox
 
 			_Iterator &operator -- ()
 			{
+				throw NotImplementedYet("not sure");
 				do {
 					--_data_it ;
 				} while (_data_it  != _data_beg && _field.isZero(*_data_it));
