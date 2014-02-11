@@ -345,7 +345,7 @@ namespace LinBox
 		SparseMatrix<_Field,SparseMatrixFormat::COO > &
 		exporte(SparseMatrix<_Field,SparseMatrixFormat::COO> &S)
 		{
-			S.resize(_rownb,_colnb,_nbnz) ;
+			S.resize(_rownb, _colnb, _nbnz);
 			S.setData( _data ) ;
 			S.setColid( _colid ) ;
 			S.setRowid( _rowid ) ;
@@ -359,7 +359,6 @@ namespace LinBox
 		*/
 		void transposeIn()
 		{
-			// SparseMatrix<_Field,SparseMatrixFormat::CSR> Temp(*this);
 			SparseMatrix<_Field,SparseMatrixFormat::COO> Temp(*this);
 			Temp.transposeIn();
 			importe(Temp);
@@ -444,12 +443,13 @@ namespace LinBox
 		 */
 		constElement &getEntry(const size_t &i, const size_t &j) const
 		{
-			// not tested
-			// std::cout << "not tested" << std::endl;
-			size_t idx =  _triples.next();
-			if (_rowid[idx] == i && _colid[idx] == j) {/* sort of nextTriple */
-				linbox_check(!field().isZero(_data[idx]));
-				return _data[idx];
+			linbox_check(i<_rownb);
+			linbox_check(j<_colnb);
+
+			ptrdiff_t nnz =  _triples.next();
+			if ( _colid[nnz] == j && i ==_rowid[nnz] ) { /* sort of nextTriple */
+				linbox_check(!field().isZero(_data[nnz]));
+				return _data[nnz];
 			}
 			else { /* searching */
 				typedef typename std::vector<size_t>::const_iterator myConstIterator ;
@@ -508,7 +508,8 @@ namespace LinBox
 		void finalize()
 		{
 			_triples.reset();
-		}
+		} // end construction after a sequence of setEntry calls.
+
 		/** Set an individual entry.
 		 * Setting the entry to 0 will not remove it from the matrix
 		 * @param i Row _colid of entry
@@ -1114,7 +1115,7 @@ namespace LinBox
 
 			ptrdiff_t next()
 			{
-				return _nnz = _nnz + 1 ;
+				return _nnz +=1 ;
 			}
 
 			void reset()
