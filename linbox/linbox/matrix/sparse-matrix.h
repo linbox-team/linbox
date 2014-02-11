@@ -35,7 +35,6 @@
 
 #include "linbox/matrix/sparse-formats.h"
 #include "linbox/matrix/matrix-traits.h"
-#include "linbox/matrix/matrix-category.h"
 
 namespace LinBox {
 
@@ -163,6 +162,15 @@ namespace LinBox { /*  MatrixHomTrait */
 	template <class Ring, class Field>
 	struct MatrixHomTrait<SparseMatrix<Ring, SparseMatrixFormat::SparseMap>, Field> {
 		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> value_type;
+	};
+
+} // LinBox
+
+namespace LinBox { /*  IndexedCategory */
+
+	template<class Field, class Row>
+	struct IndexedCategory< SparseMatrix<Field,Row> > 	{
+		typedef IndexedTags::HasIndexed Tag;
 	};
 
 } // LinBox

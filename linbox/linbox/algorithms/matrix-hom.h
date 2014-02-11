@@ -40,17 +40,7 @@
 #include "linbox/matrix/matrix-category.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/sparse-matrix.h"
-#include "linbox/blackbox/compose.h"
-#include "linbox/blackbox/polynomial.h"
-#include "linbox/blackbox/scalar-matrix.h"
-
-// namespace LinBox {
-	// template<class A, class B>
-	// class SparseMatrix ;
-
-	// template<class A, class R>
-	// class BlasMatrix;
-// } // LinBox
+#include "linbox/blackbox/blackbox.h"
 
 namespace LinBox
 {
@@ -58,51 +48,6 @@ namespace LinBox
 	/// \brief Limited doc so far. Used in RationalSolver.
 	namespace MatrixHom
 	{
-
-		template<class Field, class Vect>
-		struct SparseVectorTranslate {
-			typedef Vect other_t;
-		};
-
-		template<class Field>
-		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparseSeq> {
-			typedef typename Vector<Field>::SparseSeq other_t;
-		};
-
-		template<class Field>
-		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparsePar> {
-			typedef typename Vector<Field>::SparsePar other_t;
-		};
-		template<class Field>
-		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparseMap> {
-			typedef typename Vector<Field>::SparseMap other_t;
-		};
-
-
-
-		//public:
-
-		template<class FMatrix, class IMatrix>
-		void map (FMatrix & Ap, const IMatrix& A)
-		{
-			typename IMatrix::template rebind<typename FMatrix::Field>()( Ap, A);
-		}
-
-		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
-		template<class Field, class Vect, class IMatrix>
-		void map (SparseMatrix<Field, Vect> &Ap, const IMatrix& A);
-
-		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
-		template<class Ring, class Vect1, class Field, class Vect2>
-		void map (SparseMatrix<Field, Vect2>& Ap, const SparseMatrix<Ring, Vect1>& A)
-		{
-			// typedef typename SparseVectorTranslate<Field,Vect1>::other_t Vect_1 ;
-			typedef typename SparseVectorTranslate<Field,Vect2>::other_t Vect_2 ;
-			typename SparseMatrix<Ring,Vect1>::template rebind<Field,Vect_2>()( Ap, A);
-		}
-
-
-
 		// function class to hanle map to BlasMatrix (needed to allow partial specialization)
 		template< class Field, class IMatrix, class Type>
 		class BlasMatrixMAP {
@@ -110,75 +55,6 @@ namespace LinBox
 			template<class _Rep>
 			void operator() (BlasMatrix<Field,_Rep> &Ap, const IMatrix& A, Type type);
 		};
-
-		// construct a BlasMatrix over finite fiel, such that Ap - A mod p, where F = Ring / <p>
-
-		template<class Ring, class Field, class _Rep>
-		void map (BlasMatrix<Field,_Rep> &Ap, const BlasMatrix<Ring,_Rep>& A )
-		{
-			typename BlasMatrix<Ring,_Rep>::template rebind<Field>()( Ap, A);
-		}
-
-
-		template <class Field, class IMatrix, class _Rep>
-		void map (BlasMatrix<Field,_Rep> &Ap, const IMatrix &A)
-		{
-			BlasMatrixMAP<Field, IMatrix, typename MatrixContainerTrait<IMatrix>::Type> ()(Ap, A, typename MatrixContainerTrait<IMatrix>::Type());
-		}
-
-		template <class Field, class IPoly, class IMatrix>
-		void map (PolynomialBB< typename IMatrix::template rebind<Field>::other,
-			 typename IPoly::template rebind<Field>::other> &Ap,
-			  const PolynomialBB<IMatrix, IPoly> &A)
-		{
-			typename PolynomialBB<IMatrix,IPoly>::template rebind<Field>() (Ap, A);
-		}
-
-		template <class Field, class Ring>
-		void map (ScalarMatrix<Field> &Ap,
-			  const ScalarMatrix<Ring> &A)
-		{
-			typename ScalarMatrix<Ring>::template rebind<Field>() (Ap, A);
-		}
-
-	}
-
-	template <class Field, class Vect, class IMatrix>
-	void MatrixHom::map (SparseMatrix<Field, Vect> &Ap, const IMatrix& A)
-	{
-
-		typedef typename IMatrix::Field Ring;
-
-		Ring r = A.field();
-
-
-		std::vector<typename Ring::Element> e(A.coldim(), r.zero), tmp(A.rowdim());
-
-		typename std::vector<typename Ring::Element>::iterator iter, e_p;
-
-		typename Field::Element val;
-
-		int i = 0;
-
-		Hom<Ring, Field> hom(A. field(), Ap.field());
-
-		for (e_p=e.begin();e_p != e.end(); ++e_p,++i){
-			r.assign(*e_p, r.one);
-			A.apply(tmp,e);
-			int j;
-			for (iter=tmp.begin(),j=0; iter != tmp.end(); ++iter,++j) {
-				hom. image (val, *iter);
-				if (!Ap.field().isZero(val))
-					Ap.setEntry ((size_t)j,(size_t)i, val);
-
-			}
-			r.assign(*e_p, r.zero);
-		}
-
-	}
-
-	namespace MatrixHom
-	{
 
 		template<class Field, class IMatrix>
 		class BlasMatrixMAP<Field, IMatrix, MatrixContainerCategory::Blackbox> {
@@ -215,7 +91,6 @@ namespace LinBox
 				}
 			}
 		};
-
 
 		template<class Field, class IMatrix>
 		class BlasMatrixMAP<Field, IMatrix, MatrixContainerCategory::Container> {
@@ -309,7 +184,113 @@ namespace LinBox
 			}
 		};
 #endif
-	}
+	} // MatrixHom
+
+	namespace MatrixHom
+	{
+
+		template<class Field, class Vect>
+		struct SparseVectorTranslate {
+			typedef Vect other_t;
+		};
+
+		template<class Field>
+		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparseSeq> {
+			typedef typename Vector<Field>::SparseSeq other_t;
+		};
+
+		template<class Field>
+		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparsePar> {
+			typedef typename Vector<Field>::SparsePar other_t;
+		};
+
+		template<class Field>
+		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparseMap> {
+			typedef typename Vector<Field>::SparseMap other_t;
+		};
+
+		template<class FMatrix, class IMatrix>
+		void map (FMatrix & Ap, const IMatrix& A)
+		{
+			typename IMatrix::template rebind<typename FMatrix::Field>()( Ap, A);
+		}
+
+		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
+		template<class Ring, class Vect1, class Field, class Vect2>
+		void map (SparseMatrix<Field, Vect2>& Ap, const SparseMatrix<Ring, Vect1>& A)
+		{
+			// typedef typename SparseVectorTranslate<Field,Vect1>::other_t Vect_1 ;
+			typedef typename SparseVectorTranslate<Field,Vect2>::other_t Vect_2 ;
+			typename SparseMatrix<Ring,Vect1>::template rebind<Field,Vect_2>()( Ap, A);
+		}
+
+
+		// construct a BlasMatrix over finite field, such that Ap - A mod p, where F = Ring / <p>
+		template<class Ring, class Field, class _Rep>
+		void map (BlasMatrix<Field,_Rep> &Ap, const BlasMatrix<Ring,_Rep>& A )
+		{
+			typename BlasMatrix<Ring,_Rep>::template rebind<Field>()( Ap, A);
+		}
+
+		template <class Field, class IMatrix, class _Rep>
+		void map (BlasMatrix<Field,_Rep> &Ap, const IMatrix &A)
+		{
+			BlasMatrixMAP<Field, IMatrix, typename MatrixContainerTrait<IMatrix>::Type> ()(Ap, A, typename MatrixContainerTrait<IMatrix>::Type());
+		}
+
+		template <class Field, class IPoly, class IMatrix>
+		void map (PolynomialBB< typename IMatrix::template rebind<Field>::other,
+			  typename IPoly::template rebind<Field>::other> &Ap,
+			  const PolynomialBB<IMatrix, IPoly> &A)
+		{
+			typename PolynomialBB<IMatrix,IPoly>::template rebind<Field>() (Ap, A);
+		}
+
+		template <class Field, class Ring>
+		void map (ScalarMatrix<Field> &Ap,
+			  const ScalarMatrix<Ring> &A)
+		{
+			typename ScalarMatrix<Ring>::template rebind<Field>() (Ap, A);
+		}
+
+		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
+		template <class Field, class Vect, class IMatrix>
+		void map (SparseMatrix<Field, Vect> &Ap, const IMatrix& A)
+		{
+
+			typedef typename IMatrix::Field Ring;
+
+			Ring r = A.field();
+
+
+			std::vector<typename Ring::Element> e(A.coldim(), r.zero), tmp(A.rowdim());
+
+			typename std::vector<typename Ring::Element>::iterator iter, e_p;
+
+			typename Field::Element val;
+
+			int i = 0;
+
+			Hom<Ring, Field> hom(A. field(), Ap.field());
+
+			for (e_p=e.begin();e_p != e.end(); ++e_p,++i){
+				r.assign(*e_p, r.one);
+				A.apply(tmp,e);
+				int j;
+				for (iter=tmp.begin(),j=0; iter != tmp.end(); ++iter,++j) {
+					hom. image (val, *iter);
+					if (!Ap.field().isZero(val))
+						Ap.setEntry ((size_t)j,(size_t)i, val);
+
+				}
+				r.assign(*e_p, r.zero);
+			}
+
+		}
+
+
+	} // MatrixHom
+
 } // LinBox
 
 #endif //__LINBOX_matrix_hom_H

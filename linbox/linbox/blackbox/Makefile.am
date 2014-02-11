@@ -23,6 +23,7 @@ pkgincludesubdir=$(pkgincludedir)/blackbox
 
 BASIC_HDRS =			\
 	archetype.h               \
+	blackbox.h                \
 	factory.h                 \
 	butterfly.h               \
 	hilbert.h                 \

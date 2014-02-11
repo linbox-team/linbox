@@ -32,56 +32,17 @@
 #define __LINBOX_whisart_trace_H
 
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/compose.h"
-#include "linbox/blackbox/transpose.h"
+
+#include "linbox/matrix/dense-matrix.h"
+
 #include "linbox/matrix/sparse-matrix.h"
-#include "linbox/blackbox/lambda-sparse.h"
-// #include "linbox/blackbox/subrowmatrix.h"
+
+#include "linbox/blackbox/blackbox.h"
+
 #include "linbox/solutions/trace.h"
 
 namespace LinBox
 {
-
-	/// Trait to show whether or not the BB class has a Indexed iterator
-	template<class BB> struct IndexedCategory;
-
-	/// limited doc so far
-	namespace IndexedTags
-	{
-		struct HasIndexed{};
-		struct HasNext{};
-		struct NoIndexed{};
-	}
-
-	template<class BB> struct IndexedCategory {
-		typedef IndexedTags::NoIndexed Tag;
-	};
-
-	template<class Field>
-	struct IndexedCategory< BlasMatrix<Field> > 	{
-		typedef IndexedTags::HasIndexed Tag;
-	};
-
-
-	template<class Field, class Row>
-	struct IndexedCategory< LambdaSparseMatrix<Field,Row> > 	{
-		typedef IndexedTags::HasIndexed Tag;
-	};
-
-	template<class Field, class Row>
-	struct IndexedCategory< SparseMatrix<Field,Row> > 	{
-		typedef IndexedTags::HasIndexed Tag;
-	};
-
-
-#if 0
-	template<class Matrix, class MatrixCategory>
-	struct IndexedCategory< SubRowMatrix<Matrix,MatrixCategory> > 	{
-		typedef IndexedTags::HasIndexed Tag;
-	};
-#endif
-
-
 
 	template<class Field, class BB>
 	typename Field::Element& WhisartTrace(
@@ -217,11 +178,10 @@ namespace LinBox
 #endif //__LINBOX_whisart_trace_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
