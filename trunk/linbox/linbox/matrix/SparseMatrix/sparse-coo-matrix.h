@@ -459,18 +459,22 @@ namespace LinBox
 				if (ibeg == iend) {
 					return field().zero;
 				}
-				myConstIterator beg = _colid.begin()+(ptrdiff_t)ibeg ;
-				myConstIterator end = _colid.begin()+(ptrdiff_t)iend ;
+				// element may exist
+				myConstIterator beg = _colid.begin() + (ptrdiff_t)ibeg ;
+				myConstIterator end = _colid.begin() + (ptrdiff_t)iend ;
 				myConstIterator low = std::lower_bound (beg, end, j);
 				ibeg = (size_t)(low-_colid.begin());
+				// insert
 				if ( low == end || j != _colid[ibeg] ) {
 					return field().zero;
 				}
+				// replace
 				else {
-					_triples.idx = ibeg ; // just in case it can be used, after all that work...
+					_triples._nnz = ibeg ;// just in case it can be used, after all that work...
 					return _data[ibeg];
 				}
 			}
+
 		}
 
 		Element      &getEntry (Element &x, size_t i, size_t j) const
@@ -814,7 +818,6 @@ namespace LinBox
 			return true;
 		}
 
-
 		template<class element_iterator, class Element>
 		class _Iterator {
 		private :
@@ -1104,19 +1107,19 @@ namespace LinBox
 		const _Field & _field;
 
 		mutable struct _triples {
-			ptrdiff_t nnz ;
+			ptrdiff_t _nnz ;
 			_triples() :
-				nnz(-1)
+				_nnz(-1)
 			{}
 
 			ptrdiff_t next()
 			{
-				return nnz = nnz + 1 ;
+				return _nnz = _nnz + 1 ;
 			}
 
 			void reset()
 			{
-				nnz = -1 ;
+				_nnz = -1 ;
 			}
 		}_triples;
 	};

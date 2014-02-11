@@ -477,27 +477,25 @@ namespace LinBox
 				return _data[nnz];
 			}
 			else { /* searching */
-
+				typedef typename std::vector<size_t>::const_iterator myConstIterator ;
 				size_t ibeg = _start[i] ;
 				size_t iend = _start[i+1] ;
+
 				if (ibeg == iend) {
-					// std::cout << "get entry : " << 0 << std::endl;
 					return field().zero;
 				}
 				// element may exist
-				typedef typename std::vector<size_t>::const_iterator myConstIterator ;
 				myConstIterator beg = _colid.begin() + (ptrdiff_t)ibeg ;
-				myConstIterator end = _colid.begin() +  (ptrdiff_t)(iend);
+				myConstIterator end = _colid.begin() + (ptrdiff_t)iend ;
 				myConstIterator low = std::lower_bound (beg, end, j);
 				ibeg = (size_t)(low-_colid.begin());
 				// insert
-				if ( low == end || _colid[ibeg] != j ) {
-					// std::cout << "# 2 insert " << i << ',' << j << ':' << e << std::endl;
+				if ( low == end || j != _colid[ibeg] ) {
 					return field().zero;
 				}
 				// replace
 				else {
-					_triples._nnz = ibeg ;
+					_triples._nnz = ibeg ;// just in case it can be used, after all that work...
 					_triples._row = i ;
 					return _data[ibeg] ;
 				}
