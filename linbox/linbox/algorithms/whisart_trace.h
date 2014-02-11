@@ -140,6 +140,40 @@ namespace LinBox
 	}
 
 	template<class Field, class BB>
+	typename Field::Element& WhisartTrace(
+					      typename Field::Element& tr,
+					      const Field& F,
+					      const LinBox::Diagonal<Field>& ExtD,
+					      const BB& A,
+					      const LinBox::Diagonal<Field>& InD,
+					      IndexedTags::HasNext )
+	{
+		// Trace of ExtD B InD B^T ExtD
+		// is sum ExtD_i^2 B_{i,j} InD_j
+		size_t i,j ;
+		typename Field::Element it ;
+		F.init(tr);
+		A.firstTriple();
+		while ( A.nextTriple(i,j,it) ) {
+			typename Field::Element tmp,e,f;
+			F.init(tmp);
+			F.init(e);
+			F.init(i);
+			F.mul(tmp,it,it);
+			ExtD.getEntry(e, i, i);
+			F.mulin(tmp,e);
+			F.mulin(tmp,e);
+			InD.getEntry(f, j , j);
+			F.mulin(tmp,f);
+			F.addin(tr, tmp);
+		}
+		A.firstTriple();
+		return tr;
+	}
+
+
+
+	template<class Field, class BB>
 	typename Field::Element& WhisartTraceTranspose(
 						       typename Field::Element& tr,
 						       const Field& F,
@@ -172,6 +206,41 @@ namespace LinBox
 		return tr;
 	}
 
+	template<class Field, class BB>
+	typename Field::Element& WhisartTraceTranspose(
+						       typename Field::Element& tr,
+						       const Field& F,
+						       const LinBox::Diagonal<Field>& ExtD,
+						       const BB& A,
+						       const LinBox::Diagonal<Field>& InD,
+						       IndexedTags::HasNext )
+	{
+		// Trace of ExtD B^T  InD B ExtD
+		// is sum ExtD_j^2 B_{i,j} InD_i
+		F.init(tr);
+		size_t i,j ;
+		typename Field::Element it ;
+		F.init(tr);
+		A.firstTriple();
+		while ( A.nextTriple(i,j,it) ) {
+
+			typename Field::Element tmp,e,f;
+			//! @bug F.init does not work with givaro/givaroextension.h
+			F.init(tmp);
+			F.init(e);
+			F.init(f);
+
+			F.mul(tmp, it,it);
+			ExtD.getEntry(e,j,j);
+			F.mulin(tmp,e);
+			F.mulin(tmp,e);
+			InD.getEntry(f, i,i);
+			F.mulin(tmp,f);
+			F.addin(tr, tmp);
+		}
+
+		return tr;
+	}
 
 
 }
