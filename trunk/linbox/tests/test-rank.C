@@ -73,8 +73,8 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 	 // typedef SparseMatrix<Field,SparseMatrixFormat::SparseSeq > Blackbox;
 	 // typedef SparseMatrix<Field,SparseMatrixFormat::SparsePar > Blackbox;
 	 // typedef SparseMatrix<Field,SparseMatrixFormat::SparseMap > Blackbox;
-	// typedef SparseMatrix<Field,SparseMatrixFormat::COO> Blackbox;
-	typedef SparseMatrix<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
+	typedef SparseMatrix<Field,SparseMatrixFormat::COO> Blackbox;
+	// typedef SparseMatrix<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
 	// typedef SparseMatrix<Field,SparseMatrixFormat::ELL> Blackbox;
 	// typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
 	// typedef SparseMatrix<Field,SparseMatrixFormat::HYB> Blackbox;
