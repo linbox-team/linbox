@@ -123,16 +123,33 @@ namespace LinBox
 
 		// XXX only for CSR
 		template<typename _Tp1, typename _Rw1 = SparseMatrixFormat::CSR>
-		struct rebind ;
+		struct rebind {
+			typedef SparseMatrix<_Tp1, _Rw1> other;
+		private:
 
-		template<typename _Tp1>
-		struct rebind<_Tp1 > {
-			typedef SparseMatrix<_Tp1, SparseMatrixFormat::CSR> other;
 
-			void operator() (other & Ap, const Self_t& A)
+			// void rebindIt(other & Ap, const Self_t & A,  MatrixCategories::BlackboxTag) ;
+			template<class _Rw>
+			void rebindMethod(SparseMatrix<_Tp1, _Rw> & Ap, const Self_t & A  /*, IndexedCategory::HasNext */)
 			{
+				typename _Tp1::Element e;
+				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 
-				//! @todo are the rows/cols of Ap == A ?
+				size_t i, j ;
+				Element f ;
+				A.firstTriple();
+				while ( A.nextTriple(i,j,f) ) {
+					linbox_check(i < A.rowdim() && j < A.coldim()) ;
+					hom. image ( e, f) ;
+					if (! Ap.field().isZero(f) )
+						Ap.appendEntry(i,j,e);
+				}
+				A.firstTriple();
+			}
+
+			void rebindMethod(SparseMatrix<_Tp1, SparseMatrixFormat::CSR>  & Ap, const Self_t & A /*,  IndexedCategory::HasNext*/)
+			{
+				// we don't use nextTriple because we can do better.
 
 				typename _Tp1::Element e;
 
@@ -140,7 +157,6 @@ namespace LinBox
 				size_t j = 0 ;
 				Ap.setStart(A.getStart());
 				std::vector<size_t> offset(A.rowdim()+1,0UL);
-				//! @bug use nextTriple
 				bool changed = false ;
 				for (size_t i = 0 ; i < A.rowdim() ; ++i) {
 					for (size_t k = A.getStart(i) ; k < A.getEnd(i) ; ++k) {
@@ -169,6 +185,15 @@ namespace LinBox
 
 				if (j != Ap.size())
 					Ap.resize(j);
+
+			}
+
+		public:
+
+			void operator() (other & Ap, const Self_t& A)
+			{
+				rebindMethod(Ap, A );
+
 			}
 		};
 
@@ -1144,14 +1169,14 @@ namespace LinBox
 		bool nextTriple(size_t & i, size_t &j, Element &e) const
 		{
 			ptrdiff_t idx =_triples.next( _start );
-			if (idx > _nbnz) {
+			i = _triples._row ;
+			if (idx >= _nbnz || i >= _rownb ) {
 				_triples.reset() ;
 				return false;
 			}
 
 
 
-			i = _triples._row ;
 			j = _colid[idx];
 			e = _data[idx];
 
@@ -1265,7 +1290,10 @@ namespace LinBox
 			const data_it _data_end ;
 		public:
 			typedef Element value_type ;
-			_IndexedIterator( index_it i, index_it j, data_it e, data_it e_e) :
+			_IndexedIterator( const index_it &i
+					  , const index_it &j
+					  , const data_it &e
+					  , const data_it &e_e) :
 				_start_it(i)
 				, _start_beg(i)
 				, _colid_it(j)
@@ -1297,23 +1325,29 @@ namespace LinBox
 
 			bool operator == (const _IndexedIterator &i) const
 			{
-				return (_start_it == i._start_it) && (_colid_it == i._colid_it) && (_data_it == i._data_it);
+				// we assume consistency
+				return /*(_start_it == i._start_it) && (_colid_it == i._colid_it) &&*/ (_data_it == i._data_it);
 			}
 
 			bool operator != (const _IndexedIterator &i) const
 			{
-				return (_start_it != i._start_it) || (_colid_it != i._colid_it) || (_data_it != i._data_it) ;
+				// we assume consistency
+				return /*(_start_it != i._start_it) || (_colid_it != i._colid_it) ||*/ (_data_it != i._data_it) ;
 			}
 
 			_IndexedIterator &operator ++ ()
 			{
-				if (_data_it == _data_end)
-					return *this ;
-				++_colid_it ;
+
 				++_data_it  ;
+				if (_data_it == _data_end) {
+					return *this ;
+				}
+				++_colid_it ;
+
 				while (std::distance(_data_beg, _data_it) >= *(_start_it+1)) {
 					++_start_it ;
 				}
+				return *this;
 			}
 
 			_IndexedIterator operator ++ (int)
@@ -1325,13 +1359,16 @@ namespace LinBox
 
 			_IndexedIterator &operator -- ()
 			{
+				throw NotImplementedYet("not sure");
+				--_data_it  ;
 				if (_data_it == _data_beg)
 					return *this ;
 				--_colid_it ;
-				--_data_it  ;
-				if (std::distance(_data_beg, _data_it) > *(_start_it)) {
+				while (std::distance(_data_beg, _data_it) > *(_start_it)) {
 					--_start_it ;
 				}
+
+				return *this;
 			}
 
 			_IndexedIterator operator -- (int)
@@ -1418,12 +1455,12 @@ namespace LinBox
 
 		ConstIndexedIterator      IndexedBegin () const
 		{
-			return IndexedIterator(_start.begin(), _colid.begin(), _data.begin(),_data.end()) ;
+			return ConstIndexedIterator(_start.begin(), _colid.begin(), _data.begin(),_data.end()) ;
 		}
 
 		ConstIndexedIterator      IndexedEnd   () const
 		{
-			return IndexedIterator(_start.end(), _colid.end(), _data.end(),_data.end()) ;
+			return ConstIndexedIterator(_start.end(), _colid.end(), _data.end(),_data.end()) ;
 		}
 
 

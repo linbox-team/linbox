@@ -105,6 +105,20 @@ namespace LinBox { /*  MatrixContainerTraits */
 namespace LinBox { /*  MatrixTraits */
 
 	template <class Field>
+	struct MatrixTraits< SparseMatrix<Field, SparseMatrixFormat::CSR> >
+	{
+		typedef SparseMatrix<Field, SparseMatrixFormat::CSR> MatrixType;
+		typedef typename MatrixCategories::IndexedMatrixTag MatrixCategory;
+	};
+
+	template <class Field>
+	struct MatrixTraits< const SparseMatrix<Field, SparseMatrixFormat::CSR> >
+	{
+		typedef SparseMatrix<Field, SparseMatrixFormat::CSR> MatrixType;
+		typedef typename MatrixCategories::IndexedMatrixTag MatrixCategory;
+	};
+
+	template <class Field>
 	struct MatrixTraits< SparseMatrix<Field, SparseMatrixFormat::SparseMap> >
 	{
 		typedef SparseMatrix<Field, SparseMatrixFormat::SparseMap> MatrixType;
@@ -172,6 +186,39 @@ namespace LinBox { /*  IndexedCategory */
 	struct IndexedCategory< SparseMatrix<Field,Row> > 	{
 		typedef IndexedTags::HasIndexed Tag;
 	};
+
+	// template<class Field>
+	// struct IndexedCategory< SparseMatrix<Field,SparseMatrixFormat::CSR> > 	{
+		// typedef IndexedTags::HasNext Tag;
+	// };
+
+
+} // LinBox
+
+namespace LinBox { /* Junk */
+
+#if 0 /* make correspond SparseMatrixFormat::XXXSeq and Vector<Field>::XXXSeq */
+		template<class Field, class Vect>
+		struct SparseVectorTranslate {
+			typedef Vect other_t;
+		};
+
+		template<class Field>
+		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparseSeq> {
+			typedef typename Vector<Field>::SparseSeq other_t;
+		};
+
+		template<class Field>
+		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparsePar> {
+			typedef typename Vector<Field>::SparsePar other_t;
+		};
+
+		template<class Field>
+		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparseMap> {
+			typedef typename Vector<Field>::SparseMap other_t;
+		};
+
+#endif
 
 } // LinBox
 

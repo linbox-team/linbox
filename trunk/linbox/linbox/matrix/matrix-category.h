@@ -42,6 +42,7 @@ namespace LinBox
 	 */
 	struct MatrixCategories {
 		struct BlackboxTag { };
+		struct IndexedMatrixTag : public virtual BlackboxTag { } ;
 		struct RowMatrixTag : public virtual BlackboxTag { };
 		struct ColMatrixTag : public virtual BlackboxTag { };
 		struct RowColMatrixTag : public RowMatrixTag, public ColMatrixTag { };

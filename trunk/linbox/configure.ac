@@ -137,12 +137,14 @@ if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
 			if test "x${WARN}" = "xfull" ; then
 				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long"
+				WARN_CFLAGS="{WARN_CFLAGS} -D__STRICT_ANSI__"
 			fi
 			;;
 		xclang31)
 			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
 			if test "x${WARN}" = "xfull" ; then
 				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long  -g"
+				WARN_CFLAGS="{WARN_CFLAGS} -D__STRICT_ANSI__"
 				# WARN_CFLAGS="${WARN_CFLAGS} -fsanitize=address"
 			fi
 			;;
