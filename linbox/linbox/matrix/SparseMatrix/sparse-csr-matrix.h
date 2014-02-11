@@ -467,7 +467,6 @@ namespace LinBox
 		 */
 		constElement &getEntry(const size_t &i, const size_t &j) const
 		{
-			// std::cout << "get entry : " << i << ',' << j << std::endl;
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
 
@@ -535,6 +534,7 @@ namespace LinBox
 
 		}
 
+		/// make matrix ready to use after a sequence of setEntry calls.
 		void finalize()
 		{
 			if (_start[rowdim()] != _nbnz) { /* if it is so, then all before are 0 and we are fine... */
@@ -652,9 +652,9 @@ namespace LinBox
 
 
 		/** Read a matrix from the given input stream using field read/write
-		 * @param file Input stream from which to read the matrix
+		 * @param is Input stream from which to read the matrix
 		 * @param format Format of input matrix
-		 * @return ref to \p file.
+		 * @return ref to \p is.
 		 */
 		std::istream& read (std::istream &is
 				    , LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Detect)
@@ -701,7 +701,7 @@ namespace LinBox
 		void clean()
 		{
 			size_t i = 0 ;
-			while(i < _data.size()) {
+			while ( i < _data.size() ) {
 				if ( field().isZero(_data[i]) ) {
 					for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] -= 1 ;
 					_colid.erase(_colid.begin()+i);
@@ -929,9 +929,10 @@ namespace LinBox
 
 			_Iterator &operator ++ ()
 			{
+				++_data_it ;
+
 				if (_data_it == _data_end)
 					return *this ;
-				++_data_it ;
 			}
 
 			_Iterator operator ++ (int)
@@ -943,9 +944,10 @@ namespace LinBox
 
 			_Iterator &operator -- ()
 			{
+				--_data_it ;
+
 				if (_data_it == _data_beg)
 					return *this ;
-				--_data_it ;
 			}
 
 			_Iterator operator -- (int)
