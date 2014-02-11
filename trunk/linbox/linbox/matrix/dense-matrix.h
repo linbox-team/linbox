@@ -32,7 +32,7 @@
 #define __LINBOX_matrix_dense_matrix_H
 
 
-//! @bug those are not just
+//! @bug those are not just traits:
 #include "linbox/vector/vector-traits.h"
 
 #include "linbox/matrix/matrix-traits.h"
@@ -137,6 +137,16 @@ namespace LinBox { /*  MatrixHomTrait */
 
 
 }
+
+namespace LinBox { /*  IndexedCategory */
+
+	template<class Field, class _Rep>
+	struct IndexedCategory< BlasMatrix<Field,_Rep> > {
+		typedef IndexedTags::HasIndexed Tag;
+	};
+
+} // LinBox
+
 #endif // __LINBOX_matrix_dense_matrix_H
 
 

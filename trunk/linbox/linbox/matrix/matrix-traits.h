@@ -41,6 +41,7 @@ namespace LinBox {
 	};
 
 
+	//! NODOC
 	template <class Matrix>
 	class MatrixContainerTrait {
 	public:
@@ -48,14 +49,28 @@ namespace LinBox {
 	};
 
 
-	// try to map a blackbox over a homorphic ring
-	// The most suitable type
+	//! try to map a blackbox over a homorphic ring
+	//! The most suitable type
 	template <class Blackbox, class Field>
 	struct MatrixHomTrait {
 		// static_assert(false,"should not be instanciated");
 		//typedef ... FBlackbox
 		// donot know
 		// typedef Blackbox value_type;
+	};
+
+	/// limited doc so far
+	namespace IndexedTags
+	{
+		struct HasIndexed{};
+		struct HasNext{};
+		struct NoIndexed{};
+	}
+
+	/// Trait to show whether or not the BB class has a Indexed iterator
+	template<class BB>
+	struct IndexedCategory {
+		typedef IndexedTags::NoIndexed Tag;
 	};
 
 } // LinBox
