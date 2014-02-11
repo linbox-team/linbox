@@ -142,7 +142,7 @@ namespace LinBox
 				A.firstTriple();
 			}
 
-			void rebindMethod(SparseMatrix<_Tp1, SparseMatrixFormat::CSR>  & Ap, const Self_t & A /*,  IndexedCategory::HasNext*/)
+			void rebindMethod(SparseMatrix<_Tp1, SparseMatrixFormat::COO>  & Ap, const Self_t & A /*,  IndexedCategory::HasNext*/)
 			{
 				// we don't use nextTriple because we can do better.
 
