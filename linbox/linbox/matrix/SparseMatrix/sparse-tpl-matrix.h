@@ -74,6 +74,7 @@ namespace LinBox
 	SparseMatrix & operator=(const SparseMatrix & B);
 
 	SparseMatrix(const Field& F, std::istream& in);
+	SparseMatrix(MatrixStream<Field>& ms);
 
 	std::istream& read(std::istream& in);
 

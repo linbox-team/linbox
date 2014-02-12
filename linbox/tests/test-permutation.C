@@ -118,7 +118,7 @@ int main (int argc, char **argv)
 
 	LinBox::Permutation<Field> P(F);
 	P.random(n);
-	pass = pass && testBlackbox(P,false);
+	pass = pass && testBlackboxNoRW(P);
 	pass = pass && testInvEqTrans(P);
 
 	commentator().stop (MSG_STATUS (pass));

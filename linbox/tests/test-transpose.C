@@ -106,7 +106,7 @@ static bool testTransposeBlackbox(Blackbox & A)
 	if (not ret1) commentator().report() << "A^T and B disagree, FAIL" << std::endl;
 	ret = ret and ret1;
 
-	ret1 = testBlackbox(B,false);
+	ret1 = testBlackboxNoRW(B);
 	if (not ret1) commentator().report() << "testBlackbox A^T FAIL" << std::endl;
 	ret = ret and ret1;
 
