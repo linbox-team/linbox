@@ -909,6 +909,7 @@ namespace LinBox
 			const element_iterator _data_end ;
 			const Field & _field ;
 			const std::vector<size_t> & _rowid ;
+			const size_t & _ld ;
 			size_t _row ;
 			typedef typename Field::Element Element;
 		public:
@@ -971,7 +972,7 @@ namespace LinBox
 					return *this;
 				}
 
-				_data_it = _data_beg + _ld * _row + _idx ;
+				_data_it = _data_beg + _ld * _row + idx ;
 				if (_data_it == _data_end)
 					return *this ;
 			}
@@ -997,7 +998,7 @@ namespace LinBox
 					return *this;
 				}
 
-				_data_it = _data_beg + _ld * _row + _idx ;
+				_data_it = _data_beg + _ld * _row + idx ;
 				if (_data_it == _data_beg)
 					return *this ;
 			}
@@ -1036,234 +1037,242 @@ namespace LinBox
 
 		};
 
-		template<class index_iterator, class element_iterator, class Field>
-		class _IndexedIterator {
-		private :
-			typedef  index_iterator    index_it ;
-			typedef  element_iterator  data_it ;
-			index_it _colid_beg ;
-			index_it _colid_it ;
-			data_it _data_it ;
-			const data_it _data_beg ;
-			const data_it _data_end ;
-			const Field & _field ;
-			const size_t & _ld ;
-			size_t  _row ;
-			typedef typename Field::Element Element;
-		public:
-			typedef Element value_type ;
-			_IndexedIterator( const Field & F
-					  , const size_t & ld
-					  , const index_it &j
-					  , const data_it &e
-					  , const data_it &e_e) :
-				  _colid_beg(j)
-				, _colid_it(j)
-				, _data_it(e)
-				, _data_beg(e)
-				, _data_end(e_e)
-				, _field(F)
-				, _ld(ld)
-				, _row(0)
-			{}
+	template<class index_iterator, class element_iterator, class Field>
+	class _IndexedIterator {
+	private :
+		typedef  index_iterator    index_it ;
+		typedef  element_iterator  data_it ;
+		index_it _rowid_it ;
+		index_it _colid_beg ;
+		index_it _colid_it ;
+		data_it _data_it ;
+		const data_it _data_beg ;
+		const data_it _data_end ;
+		const Field & _field ;
+		const size_t & _ld ;
+		size_t  _row ;
+		typedef typename Field::Element Element;
+	public:
+		typedef Element value_type ;
+		_IndexedIterator( const Field & F
+				  , const size_t & ld
+				  , const index_it &i
+				  , const index_it &j
+				  , const data_it &e
+				  , const data_it &e_e) :
+			_rowid_it(i)
+			, _colid_beg(j)
+			, _colid_it(j)
+			, _data_it(e)
+			, _data_beg(e)
+			, _data_end(e_e)
+			, _field(F)
+			, _ld(ld)
+			, _row(0)
+		{}
 
-			_IndexedIterator (const _IndexedIterator &iter) :
-				 _colid_beg(iter._colid_beg)
-				, _colid_it(iter._colid_it)
-				, _data_it(iter._data_it)
-				, _data_beg(iter._data_beg)
-				, _data_end(iter._data_end)
-				, _field(iter._field)
-				, _ld(iter._ld)
-				, _row(iter._row)
-			{}
+		_IndexedIterator (const _IndexedIterator &iter) :
+			_rowid_it(iter._rowid_it)
+			, _colid_beg(iter._colid_beg)
+			, _colid_it(iter._colid_it)
+			, _data_it(iter._data_it)
+			, _data_beg(iter._data_beg)
+			, _data_end(iter._data_end)
+			, _field(iter._field)
+			, _ld(iter._ld)
+			, _row(iter._row)
+		{}
 
-			_IndexedIterator &operator = (const _IndexedIterator &iter)
-			{
-				_colid_beg = iter._colid_beg ;
-			       	_colid_it = iter._colid_it ;
-			       	_data_it  = iter._data_it  ;
-				_data_beg = iter._data_beg ;
-			       	_data_end  = iter._data_end  ;
-				_field = iter._field ;
-				_ld = iter._ld ;
-				_row = iter._row ;
-
-				return *this;
-			}
-
-			bool operator == (const _IndexedIterator &i) const
-			{
-				// we assume consistency
-				return  (_data_it == i._data_it);
-			}
-
-			bool operator != (const _IndexedIterator &i) const
-			{
-				// we assume consistency
-				return  (_data_it != i._data_it) ;
-			}
-
-			_IndexedIterator &operator ++ ()
-			{
-
-				++_data_it  ;
-				if (_data_it == _data_end) {
-					return *this ;
-				}
-				if (std::distance(_data_beg,_data_it) % _ld == 0)
-					++_row ;
-
-				++_colid_it ;
-				while (_field.isZero(*_data_it)) {
-					++_row ;
-					_data_it = _data_beg + _row * _ld ;
-					_colid_it = _colid_beg + _row * _ld ;
-					if (_data_it == _data_end) {
-						return *this;
-					}
-				}
-
-				return *this;
-			}
-
-			_IndexedIterator operator ++ (int)
-			{
-				_IndexedIterator tmp = *this;
-				++(*this);
-				return tmp;
-			}
-
-			_IndexedIterator &operator -- ()
-			{
-				throw NotImplementedYet("not sure");
-
-				--_data_it  ;
-				if (_data_it == _data_beg) {
-					return *this ;
-				}
-				if (std::distance(_data_beg,_data_it) % _ld == 0)
-					--_row ;
-
-				--_colid_it ;
-				while (_field.isZero(*_data_it)) {
-					--_row ;
-					_data_it = _data_beg + _row * _ld ;
-					_colid_it = _colid_beg + _row * _ld ;
-					if (_data_it == _data_beg) {
-						return *this;
-					}
-				}
-
-				return *this;
-			}
-
-			_IndexedIterator operator -- (int)
-			{
-				_IndexedIterator tmp = *this;
-				--(*this);
-				return tmp;
-			}
-
-			value_type &operator * ()
-			{
-				return *_data_it;
-			}
-
-			value_type *operator -> ()
-			{
-				return _data_it ;
-			}
-
-			const value_type &operator*() const
-			{
-				return *_data_it;
-			}
-
-			const value_type *operator -> () const
-			{
-				return _data_it ;
-			}
-
-			size_t rowIndex () const
-			{
-				return _row;
-			}
-
-			size_t colIndex () const
-			{
-				return *_colid_it;
-			}
-
-			const value_type &value() const
-			{
-				return *_data_it;
-			}
-
-
-		};
-
-		typedef _Iterator<typename std::vector<Element>::iterator, Element> Iterator;
-		typedef _Iterator<typename std::vector<Element>::const_iterator, constElement> ConstIterator;
-
-		typedef _IndexedIterator<std::vector<size_t>::iterator, typename std::vector<Element>::iterator, Field> IndexedIterator;
-		typedef _IndexedIterator<std::vector<size_t>::const_iterator, typename std::vector<Element>::const_iterator, const Field> ConstIndexedIterator;
-
-
-		Iterator      Begin ()
+		_IndexedIterator &operator = (const _IndexedIterator &iter)
 		{
-			return Iterator(field(),_data.begin(),_data.end()) ;
+			_rowid_it  = iter._rowid_it ;
+			_colid_beg = iter._colid_beg ;
+			_colid_it  = iter._colid_it ;
+			_data_it   = iter._data_it  ;
+			_data_beg  = iter._data_beg ;
+			_data_end  = iter._data_end  ;
+			_field     = iter._field ;
+			_ld        = iter._ld ;
+			_row       = iter._row ;
+
+			return *this;
 		}
 
-		Iterator      End   ()
+		bool operator == (const _IndexedIterator &i) const
 		{
-			return Iterator(field(),_data.end(), _data.end()) ;
+			// we assume consistency
+			return  (_data_it == i._data_it);
 		}
 
-		ConstIterator      Begin () const
+		bool operator != (const _IndexedIterator &i) const
 		{
-			return ConstIterator(field(),_data.begin(),_data.end()) ;
+			// we assume consistency
+			return  (_data_it != i._data_it) ;
 		}
 
-		ConstIterator      End   () const
+		_IndexedIterator &operator ++ ()
 		{
-			return ConstIterator(field(),_data.end(), _data.end()) ;
+
+			++_data_it  ;
+			if (_data_it == _data_end) {
+				return *this ;
+			}
+			++_colid_it ;
+
+			bool new_row = false ;
+
+			while (std::distance(_data_beg,_data_it) % _ld >= *_rowid_it) {
+				++_row ;
+				++_rowid_it ;
+				new_row = true;
+			}
+
+			if (new_row) {
+				_data_it  = _data_beg + _row * _ld ;
+				_colid_it = _colid_beg + _row * _ld ;
+			}
+
+			return *this;
 		}
 
-		IndexedIterator      IndexedBegin ()
+		_IndexedIterator operator ++ (int)
 		{
-			return IndexedIterator(field(), _maxc , _colid.begin(), _data.begin(),_data.end()) ;
+			_IndexedIterator tmp = *this;
+			++(*this);
+			return tmp;
 		}
 
-		IndexedIterator      IndexedEnd   ()
+		_IndexedIterator &operator -- ()
 		{
-			return IndexedIterator(field(), _maxc, _colid.end(), _data.end(),_data.end()) ;
+			throw NotImplementedYet("not sure");
+
+			--_data_it  ;
+			if (_data_it == _data_beg) {
+				return *this ;
+			}
+			--_colid_it ;
+
+			bool new_row = false ;
+
+			// will not work
+			while (std::distance(_data_beg,_data_it) % _ld >= *_rowid_it ) {
+				--_row ;
+				--_rowid_it ;
+				new_row = true;
+			}
+
+			if (new_row) {
+				_data_it  = _data_beg + _row * _ld ;
+				_colid_it = _colid_beg + _row * _ld ;
+			}
+
+			return *this;
 		}
 
-		ConstIndexedIterator      IndexedBegin () const
+		_IndexedIterator operator -- (int)
 		{
-			return ConstIndexedIterator(field(), _maxc, _colid.begin(), _data.begin(),_data.end()) ;
+			_IndexedIterator tmp = *this;
+			--(*this);
+			return tmp;
 		}
 
-		ConstIndexedIterator      IndexedEnd   () const
+		value_type &operator * ()
 		{
-			return ConstIndexedIterator(field(), _maxc, _colid.end(), _data.end(),_data.end()) ;
+			return *_data_it;
 		}
+
+		value_type *operator -> ()
+		{
+			return _data_it ;
+		}
+
+		const value_type &operator*() const
+		{
+			return *_data_it;
+		}
+
+		const value_type *operator -> () const
+		{
+			return _data_it ;
+		}
+
+		size_t rowIndex () const
+		{
+			return _row;
+		}
+
+		size_t colIndex () const
+		{
+			return *_colid_it;
+		}
+
+		const value_type &value() const
+		{
+			return *_data_it;
+		}
+
+
+	};
+
+	typedef _Iterator<typename std::vector<Element>::iterator, Element> Iterator;
+	typedef _Iterator<typename std::vector<Element>::const_iterator, constElement> ConstIterator;
+
+	typedef _IndexedIterator<std::vector<size_t>::iterator, typename std::vector<Element>::iterator, Field> IndexedIterator;
+	typedef _IndexedIterator<std::vector<size_t>::const_iterator, typename std::vector<Element>::const_iterator, const Field> ConstIndexedIterator;
+
+
+	Iterator      Begin ()
+	{
+		return Iterator(field(),_rowid,_maxc,_data.begin(),_data.end()) ;
+	}
+
+	Iterator      End   ()
+	{
+		return Iterator(field(),_rowid,_maxc,_data.end(), _data.end()) ;
+	}
+
+	ConstIterator      Begin () const
+	{
+		return ConstIterator(field(),_rowid,_maxc,_data.begin(),_data.end()) ;
+	}
+
+	ConstIterator      End   () const
+	{
+		return ConstIterator(field(),_rowid,_maxc,_data.end(), _data.end()) ;
+	}
+
+	IndexedIterator      IndexedBegin ()
+	{
+		return IndexedIterator(field(), _maxc , _rowid.begin(), _colid.begin(), _data.begin(),_data.end()) ;
+	}
+
+	IndexedIterator      IndexedEnd   ()
+	{
+		return IndexedIterator(field(), _maxc,  _rowid.begin(), _colid.end(), _data.end(),_data.end()) ;
+	}
+
+	ConstIndexedIterator      IndexedBegin () const
+	{
+		return ConstIndexedIterator(field(), _maxc, _rowid.begin(),  _colid.begin(), _data.begin(),_data.end()) ;
+	}
+
+	ConstIndexedIterator      IndexedEnd   () const
+	{
+		return ConstIndexedIterator(field(), _maxc,  _rowid.begin(), _colid.end(), _data.end(),_data.end()) ;
+	}
 
 
 
 	private:
 
-		void insert (const size_t &i, const size_t &k, const size_t &j, const Element& e)
+	void insert (const size_t &i, const size_t &k, const size_t &j, const Element& e)
 		{
-			// std::cout << "before inserting at " << k << std::endl; write_raw();
 			if (k == _maxc) {
 				resize(_rownb,_colnb,_nbnz,_maxc+1);
 				_colid[_maxc*i+k-1] = j;
 				field().assign(_data[_maxc*i+k-1],e);
 				++_nbnz;
 				_rowid[i] += 1;
-				// std::cout << "after (1)" << std::endl; write_raw();
 				return;
 			}
 			size_t l = k;
@@ -1281,7 +1290,6 @@ namespace LinBox
 			field().assign(_data[_maxc*i+k],e);
 			++_nbnz;
 			_rowid[i] += 1;
-			// std::cout << "after (2)" << std::endl; write_raw();
 			return;
 		}
 
@@ -1303,7 +1311,11 @@ namespace LinBox
 				std::cout << std::endl;
 			}
 		}
+
 	protected :
+		friend class SparseMatrixWriteHelper<Self_t >;
+		friend class SparseMatrixReadHelper<Self_t >;
+
 
 		size_t              _rownb ;
 		size_t              _colnb ;
@@ -1314,7 +1326,7 @@ namespace LinBox
 		std::vector<size_t> _colid ; //!< \p _colid is \p _rownb x \p _maxc in RowMajor
 		std::vector<Element> _data ; //!< \p _data  is \p _rownb x \p _maxc in RowMajor
 
-		const _Field            & _field ;
+		const _Field            & _field;
 
 		mutable struct _triples {
 			ptrdiff_t _row ;
@@ -1323,8 +1335,8 @@ namespace LinBox
 				_row(-1)
 				, _off(-1)
 			{}
-			ptrdiff_t next(const std::vector<size_t> & rowid) {
-				// std::cout << "in" <<  _off << ','<< _row << std::endl;
+			ptrdiff_t next(const std::vector<size_t> & rowid)
+			{
 				++ _off ;
 				if (_row == -1) {
 					++_row ;
@@ -1332,13 +1344,14 @@ namespace LinBox
 				while (_off >= rowid[_row]) {
 					_row += 1 ;
 					_off = 0 ;
-					// std::cout << "out" << _off << ','<< _row << std::endl;
 					if (_row >= rowid.size())
 						break;
 				}
 				return _off;
 			}
-			void reset() {
+
+			void reset()
+			{
 				_row = -1 ;
 				_off = -1 ;
 			}

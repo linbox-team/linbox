@@ -926,12 +926,12 @@ namespace LinBox
 
 			bool operator == (const _Iterator &i) const
 			{
-				return  (_data_it == i._data_it) && (_data_beg == i._data_beg) && (_data_end == i._data_end);
+				return  (_data_it == i._data_it) ;
 			}
 
 			bool operator != (const _Iterator &i) const
 			{
-				return  (_data_it != i._data_it) || (_data_beg != i._data_beg) || (_data_end != i._data_end);
+				return  (_data_it != i._data_it) ;
 			}
 
 			_Iterator &operator ++ ()
@@ -1039,13 +1039,13 @@ namespace LinBox
 			_IndexedIterator &operator = (const _IndexedIterator &iter)
 			{
 				_colid_beg = iter._colid_beg ;
-			       	_colid_it = iter._colid_it ;
-			       	_data_it  = iter._data_it  ;
-				_data_beg = iter._data_beg ;
-			       	_data_end  = iter._data_end  ;
-				_field = iter._field ;
-				_ld = iter._ld ;
-				_row = iter._row ;
+				_colid_it  = iter._colid_it ;
+				_data_it   = iter._data_it  ;
+				_data_beg  = iter._data_beg ;
+				_data_end  = iter._data_end  ;
+				_field     = iter._field ;
+				_ld        = iter._ld ;
+				_row       = iter._row ;
 
 				return *this;
 			}
