@@ -682,7 +682,40 @@ namespace LinBox
 		SparseMatrix ( MatrixStream<Field>& ms ) :
 			Father_t(ms)
 		{}
+
+		template<class _Tp1, class _Storage>
+		SparseMatrix(const SparseMatrix<_Tp1,_Storage> & Mat, const Field & F) :
+			Father_t(F, Mat.rowdim(), Mat.coldim())
+		{
+			typename SparseMatrix<_Tp1,_Storage>::template rebind<Field,Storage>()(*this, Mat);
+
+		}
+
+
+
 		// using Father_t::RowIterator;
+
+		template<typename _Tp1, typename _R1 = SparseMatrixFormat::SparsePar >
+		struct rebind {
+			typedef SparseMatrix<_Tp1, _R1> other;
+
+			void operator() (other & Ap, const Self_t& A) {
+
+				typename _Tp1::Element e;
+
+				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
+				for( typename Self_t::ConstIndexedIterator
+				     indices = A.IndexedBegin();
+				     indices != A.IndexedEnd() ;
+				     ++indices ) {
+					hom. image (e, indices.value() );
+					if (!Ap.field().isZero(e))
+						Ap.setEntry (indices.rowIndex(),
+							     indices.colIndex(), e);
+				}
+			}
+
+		};
 
 	} ; // SparseMatrix
 

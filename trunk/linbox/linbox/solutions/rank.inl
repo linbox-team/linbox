@@ -61,8 +61,14 @@ namespace LinBox
 				    const Method::Hybrid             &m)
 	{ // this should become a BB/Blas hybrid in the style of Duran/Saunders/Wan.
 		//! @bug choose (benchmark) better cuttoff (size, nbnz, sparse rep)
-		if (useBB(A)) return rank(r, A, tag, Method::Blackbox(m ));
-		else return rank(r, A, tag, Method::Elimination( m ));
+		if (useBB(A)) {
+			std::cout << "here" << std::endl;
+			return rank(r, A, tag, Method::Blackbox(m ));
+		}
+		else {
+			std::cout << "there" << std::endl;
+			return rank(r, A, tag, Method::Elimination( m ));
+		}
 	}
 
 	template <class Blackbox>

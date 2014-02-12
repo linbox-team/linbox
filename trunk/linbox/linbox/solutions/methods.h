@@ -59,6 +59,9 @@
 #include "linbox/util/mpicpp.h"
 #endif
 
+#ifndef LINBOX_USE_BLACKBOX_THRESHOLD
+#define LINBOX_USE_BLACKBOX_THRESHOLD 1000
+#endif
 
 namespace LinBox
 {
@@ -680,7 +683,7 @@ namespace LinBox
 	template<class BB>
 	bool useBB(const BB& A)
 	{
-		return (A.coldim() > 1000) && (A.rowdim() > 1000);
+		return (A.coldim() > LINBOX_USE_BLACKBOX_THRESHOLD) && (A.rowdim() > LINBOX_USE_BLACKBOX_THRESHOLD);
 	}
 
 
