@@ -142,7 +142,8 @@ namespace LinBox
 		 * @param j Column index
 		 * @return Reference to x
 		 */
-		Element &getEntry (Element &x, size_t i, size_t j) const {
+		Element &getEntry (Element &x, size_t i, size_t j) const
+		{
 			return (i==j?field().assign(x,_v[i]):field().assign(x,field().zero));
 		}
 
@@ -150,7 +151,8 @@ namespace LinBox
 		 *
 		 * could throw error if j != i, but now j is ignored.
 		 */
-		void setEntry (size_t i, size_t j, Element &x) {
+		void setEntry (size_t i, size_t j, Element &x)
+		{
 			_v[i] = x;
 		}
 
@@ -178,26 +180,16 @@ namespace LinBox
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D);
 		}
 
-#if 1
-		std::ostream& write(std::ostream& out) const {
-			out << "diag(";
-			// for (typename std::vector<Element>::const_iterator p = _v.begin(); p != _v.end(); ++p)
-				// field().write(out, *p) << ", ";
-			return out << "\b\b)";
-		}
-#endif
-
-		std::ostream& write(std::ostream& os) {
+		std::ostream& write(std::ostream& os) const
+		{
 			writeMMCoordHeader(os, *this, rowdim(), "Diagonal");
-			//os << "%%MatrixMarket matrix coordinate integer general" << std::endl;
-			//field().write(os << "% Diagonal ") << std::endl;
-			//os << rowdim() << " " << coldim() << " " << rowdim() << std::endl;
 			for (size_t i = 0; i < rowdim(); ++i)
 				field().write(os << i + 1 << " " << i + 1 << " ", _v[i]) << std::endl;
 			return os;
 		}
 
-		std::istream& read(std::istream& is) {
+		std::istream& read(std::istream& is)
+		{
 			MatrixStream<Field> ms(field(), is);
 			size_t c, i, j;
 			if( !ms.getDimensions(_n, c) || c != _n )
@@ -210,6 +202,23 @@ namespace LinBox
 				setEntry(i, j, x);
 			}
 			return is;
+		}
+
+		Diagonal ( MatrixStream<Field>& ms ):
+			_field(&ms.field())
+			,_n(0)
+			,_v(ms.field())
+		{
+			size_t c, i, j;
+			if( !ms.getDimensions(_n, c) || c != _n )
+				throw ms.reportError(__FUNCTION__,__LINE__);
+			typename Field::Element x; field().assign(x, field().zero);
+			_v.resize(_n);
+			for (size_t k = 0; k < _n; ++ k) {
+				ms.nextTriple(i, j, x);
+				if (i != j) throw ms.reportError(__FUNCTION__,__LINE__);
+				setEntry(i, j, x);
+			}
 		}
 
 		const BlasVector<Field>& getData() const { return _v; }

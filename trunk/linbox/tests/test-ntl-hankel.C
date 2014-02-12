@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 
 	report << "\n\nCalling testBlackbox:--------------------- \n";
 #endif
-	pass = testBlackbox(TT,false);
+	pass = testBlackboxNoRW(TT);
 
 	LinBox::commentator().stop(MSG_STATUS (pass),"Hankel black box test test suite");
 	return pass ? 0 : -1;

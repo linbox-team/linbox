@@ -117,7 +117,7 @@ testMatrix.apply(y, x);
 
   //std::cout << std::endl << "ZeroOne matrix blackbox test suite" << std::endl;
 
-  pass = pass && testBlackbox(testMatrix,false);
+  pass = pass && testBlackboxNoRW(testMatrix);
   //bool pass2 = testBlackbox(testMat);
 
   //delete [] rows;

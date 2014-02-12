@@ -116,15 +116,24 @@ namespace LinBox
 			JIT_Matrix<Field, Hilbert_JIT_Entry<Field> >(F, n, n, Hilbert_JIT_Entry<Field>(F, n, n))
 		{};
 
-		std::ostream& write(std::ostream& os) const {
+		std::ostream& write(std::ostream& os) const
+		{
 			return writeMMPatternHeader(os, *this, 0, "Hilbert");
 		}
 
-		std::istream& read(std::istream& is) {
+		std::istream& read(std::istream& is)
+		{
 			MatrixStream<Field> ms(field(), is);
 			ms.getDimensions(_m, _n);
 			_gen.init(field(), _m, _n);
 			return is;
+		}
+
+		Hilbert(MatrixStream<_Field> &ms) :
+			JIT_Matrix<_Field,Hilbert_JIT_Entry<_Field> >(ms.field())
+		{
+			ms.getDimensions(_m, _n);
+			_gen.init(field(), _m, _n);
 		}
 	};
 

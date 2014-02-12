@@ -53,6 +53,20 @@ SparseMatrix(const Field& F, std::istream& in)
 { read(in); }
 
 template<class Field_>
+SparseMatrix<Field_,SparseMatrixFormat::TPL>::
+SparseMatrix(MatrixStream<Field_> &ms):
+	MD_(ms.field()), data_(), rows_(0), cols_(0), sort_(unsorted)
+{
+	Index r, c;
+	typename Field::Element v; field().init(v);
+	ms.getDimensions(r, c);
+	init(field(), r, c);
+	while (ms.nextTriple(r, c, v)) setEntry(r, c, v);
+	finalize();
+}
+
+
+template<class Field_>
  std::istream& SparseMatrix<Field_,SparseMatrixFormat::TPL>::
 read(std::istream& in){
 	Index r, c;
@@ -61,6 +75,7 @@ read(std::istream& in){
 	ms.getDimensions(r, c);
 	init(field(), r, c);
 	while (ms.nextTriple(r, c, v)) setEntry(r, c, v);
+	finalize();
 	return in;
 }
 
