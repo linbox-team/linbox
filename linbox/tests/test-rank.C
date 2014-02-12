@@ -48,7 +48,6 @@
 #include "linbox/field/gf2.h"
 #include "linbox/field/givaro.h"
 #include "linbox/blackbox/diagonal.h"
-// #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/direct-sum.h"
@@ -67,19 +66,10 @@ using namespace LinBox;
  * Constructs a random sparse matrix and computes its rank using Gaussian
  * elimination (direct and blas) and Wiedemann's algorithm. Checks that the results match.
  */
-template <class Field>
-bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05)
+template <class BlackBox>
+bool testRankMethods(const typename BlackBox::Field & F, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
-	 // typedef SparseMatrix<Field,SparseMatrixFormat::SparseSeq > Blackbox;
-	 // typedef SparseMatrix<Field,SparseMatrixFormat::SparsePar > Blackbox;
-	 // typedef SparseMatrix<Field,SparseMatrixFormat::SparseMap > Blackbox;
-	// typedef SparseMatrix<Field,SparseMatrixFormat::COO> Blackbox;
-	// typedef SparseMatrix<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
-	// typedef SparseMatrix<Field,SparseMatrixFormat::ELL> Blackbox;
-	typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
-	// typedef SparseMatrix<Field,SparseMatrixFormat::HYB> Blackbox;
-	// typedef SparseMatrix<Field,SparseMatrixFormat::TPL> Blackbox;
-
+	typedef typename BlackBox::Field Field ;
 	commentator().start ("Testing elimination-based and blackbox rank", "testRankMethods", (unsigned int)iterations);
 
 	bool ret = true;
@@ -93,9 +83,9 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 	for (i = 0; i < iterations; ++i) {
 		commentator().startIteration (i);
 
-		RandomSparseStream<Field, typename Blackbox::Row> stream (F, ri, sparsity, n, n);
+		RandomSparseStream<Field, typename BlackBox::Row> stream (F, ri, sparsity, n, n);
 		// RandomSparseStream<Field, typename Vector<Field>::SparseSeq> stream (F, ri, sparsity, n, n);
-		Blackbox A (F, stream);
+		BlackBox A (F, stream);
 		// std::cout << A.rowdim() << ',' << A.coldim() << std::endl;
 
 		F.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl;
@@ -285,6 +275,58 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 	return ret;
 }
 
+template <class Field>
+bool testSparseRank(const Field &F, const size_t & n, const size_t & iterations, const double & sparsity)
+{
+	bool pass = true ;
+	F.write(commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+	<< "over ") << endl;
+
+	{
+		typedef SparseMatrix<Field,SparseMatrixFormat::SparseSeq > Blackbox;
+		if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
+	}
+	{
+		// typedef SparseMatrix<Field,SparseMatrixFormat::SparsePar > Blackbox;
+		// if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
+	}
+	{
+		// typedef SparseMatrix<Field,SparseMatrixFormat::SparseMap > Blackbox;
+		// if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
+	}
+	{
+		typedef SparseMatrix<Field,SparseMatrixFormat::COO> Blackbox;
+		if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
+	}
+	{
+		typedef SparseMatrix<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
+		if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
+	}
+	{
+		typedef SparseMatrix<Field,SparseMatrixFormat::ELL> Blackbox;
+		if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
+	}
+	{
+		typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
+		if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
+	}
+	// {
+	// typedef SparseMatrix<Field,SparseMatrixFormat::HYB> Blackbox;
+		// if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
+	// }
+	// {
+	// typedef SparseMatrix<Field,SparseMatrixFormat::TPL> Blackbox;
+		// if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
+	// }
+
+
+	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
+
+	return pass ;
+
+
+}
+
 int main (int argc, char **argv)
 {
 
@@ -317,28 +359,17 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
-	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-	<< "over Modular<uint32_t>" << endl;
 	Modular<uint32_t> F (q);
-	if (!testRankMethods (F, n, (unsigned int)iterations, sparsity)) pass = false;
-	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
+	pass = pass && testSparseRank(F,n,iterations,sparsity);
 
-	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-	<< "over Modular<int>" << endl;
 	Modular<double> G (q);
-    	if (!testRankMethods (G, n, (unsigned int)iterations, sparsity)) pass = false;
-	if (!testZeroAndIdentRank (G, n, 1)) pass = false;
+	pass = pass && testSparseRank(G,n,iterations,sparsity);
 
-	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-	<< "over PID_integer" << endl;
 	PID_integer R;
-	if (!testRankMethods (R, n, (unsigned int)iterations, sparsity)) pass = false;
+	pass = pass && testSparseRank(R,n,iterations,sparsity);
 
-	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-	<< "over GivaroZpz<Integer>" << endl;
-        GivaroZpz<Integer> Gq(bigQ);
-	if (!testRankMethods (Gq, n, (unsigned int)iterations, sparsity)) pass = false;
-	if (!testZeroAndIdentRank (Gq, n, 1)) pass = false;
+	GivaroZpz<Integer> Gq(bigQ);
+	pass = pass && testSparseRank(Gq,n,iterations,sparsity);
 
 #if 0
 	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)

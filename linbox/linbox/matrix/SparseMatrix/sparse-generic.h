@@ -184,7 +184,6 @@ namespace LinBox { namespace Protected { /*  SparseMatrixGeneric */
 				     indices = A.IndexedBegin();
 				     indices != A.IndexedEnd() ;
 				     ++indices ) {
-					// hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
 					hom. image (e, indices.value() );
 					if (!Ap.field().isZero(e))
 						Ap.setEntry (indices.rowIndex(),
