@@ -44,6 +44,7 @@
 #include "linbox/vector/stream.h"
 //#include "linbox/vector/vector-domain.h"
 #include "linbox/matrix/matrix-domain.h"
+#include "linbox/util/matrix-stream.h"
 
 #include "test-common.h"
 
@@ -245,7 +246,7 @@ testLinearity (//const Field                             &F,
 template <class BB>
 static bool
 testReadWrite(BB &A)
-{ //perhaps read/write to a stringstream?
+{
 	typedef typename BB::Field Field;
 	bool pass = true;
 	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -257,22 +258,43 @@ testReadWrite(BB &A)
 		report << "failure to open file for writing" << std::endl;
 	}
 	A.write(out) << std::endl;
-	BB B(A.field());
-	ifstream in("temp2");
-	if (not in) {
-		pass = false;
-		report << "failure to open file for reading" << std::endl;
+	{
+		BB B(A.field());
+		ifstream in("temp2");
+		if (not in) {
+			pass = false;
+			report << "failure to open file for reading" << std::endl;
+		}
+		B.read(in);
+		LinBox::MatrixDomain<Field> MD(A.field());
+		if (not MD.areEqual(A, B)) {
+			pass = false;
+			report << "failure to get same matrix back from write/read" << std::endl;
+			B.write(report << "B is ") << std::endl;
+		}
 	}
-	B.read(in);
-	LinBox::MatrixDomain<Field> MD(A.field());
-	if (not MD.areEqual(A, B)) {
-		pass = false;
-		report << "failure to get same matrix back from write/read" << std::endl;
-		B.write(report << "B is ") << std::endl;
+
+	{
+		ifstream in("temp2");
+		if (not in) {
+			pass = false;
+			report << "failure to open file for reading" << std::endl;
+		}
+
+
+		LinBox::MatrixStream<Field> ms (A.field(), in);
+		BB B( ms );
+		LinBox::MatrixDomain<Field> MD(A.field());
+		if (not MD.areEqual(A, B)) {
+			pass = false;
+			report << "failure to get same matrix back from write/read" << std::endl;
+			B.write(report << "B is ") << std::endl;
+		}
 	}
 	if (pass) report << "PASS: successful write/read" << std::endl;
 	return pass;
 }
+
 
 template <class BB, class Vector>
 static bool

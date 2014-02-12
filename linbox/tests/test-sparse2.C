@@ -47,6 +47,7 @@
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/sparse-matrix.h"
 
+
 #include "test-blackbox.h"
 
 using namespace LinBox;
@@ -305,6 +306,7 @@ int main (int argc, char **argv)
 		}
 	}
 
+#if 0 /*  not working */
 	{ /*  TPL */
 		commentator().start("SparseMatrix<Field, SparseMatrixFormat::TPL>", "TPL");
 		SparseMatrix<Field, SparseMatrixFormat::TPL> S2(F, m, n);
@@ -326,6 +328,7 @@ int main (int argc, char **argv)
 			commentator().stop("Format TPL pass");
 		}
 	}
+#endif
 
 	{ /*  Default OLD */
 		commentator().start("SparseMatrix<Field>", "Field");

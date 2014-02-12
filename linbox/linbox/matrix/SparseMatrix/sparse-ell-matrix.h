@@ -7,7 +7,7 @@
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -25,6 +25,7 @@
 
 /*! @file matrix/SparseMatrix/sparse-ell-matrix.h
  * @ingroup sparsematrix
+ * @brief
  */
 
 
@@ -113,7 +114,8 @@ namespace LinBox
 			, _colid(S._colid)
 			,_data(S._data)
 			, _field(S._field)
-		{}
+		{
+		}
 
 #if 0
 		template<class _OtherField>
@@ -146,6 +148,7 @@ namespace LinBox
 						Ap.appendEntry(i,j,e);
 				}
 				A.firstTriple();
+				Ap.finalize();
 			}
 
 			void rebindMethod(SparseMatrix<_Tp1, SparseMatrixFormat::ELL>  & Ap, const Self_t & A /*,  IndexedCategory::HasNext*/)
@@ -191,14 +194,14 @@ namespace LinBox
 
 		template<typename _Tp1, typename _Rw1>
 		SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &S, const Field& F) :
-			_rownb(S.rowdim()),_colnb(S.coldim()),
-			_maxc(0),
-			_nbnz(S.size())
+			_rownb(S.rowdim()),_colnb(S.coldim())
+			,_maxc(0)
+			,_nbnz(S.size())
 			, _colid(0)
 			,_data(0)
 			, _field(F)
 		{
-			typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,SparseMatrixFormat::ELL>()(*this, S);
+			typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,Storage>()(*this, S);
 		}
 
 
@@ -209,7 +212,8 @@ namespace LinBox
 			_rownb(stream.size()),_colnb(stream.dim())
 			, _maxc(0)
 			, _nbnz(0)
-			, _colid(0),_data(0)
+			, _colid(0)
+			,_data(0)
 			, _field(F)
 		{
 			SparseMatrix<_Field,SparseMatrixFormat::CSR> Tmp(F,stream);
@@ -252,6 +256,7 @@ namespace LinBox
 #endif
 
 			firstTriple();
+			finalize();
 		}
 
 
@@ -267,8 +272,8 @@ namespace LinBox
 			}
 			else {
 #ifndef NDEBUG
-			if (_maxc && ll != _maxc)
-				std::cout << " ***Warning*** possibly loosing data in ELL resize " << std::endl;
+				if (_maxc && ll != _maxc)
+					std::cout << " ***Warning*** possibly loosing data in ELL resize " << std::endl;
 #endif
 				_colid.resize(mm*ll,0);
 				_data .resize(mm*ll,field().zero);
@@ -349,8 +354,8 @@ namespace LinBox
 		SparseMatrix<_Field,SparseMatrixFormat::CSR > &
 		exporte(SparseMatrix<_Field,SparseMatrixFormat::CSR> &S) const
 		{
-
 			linbox_check(consistent());
+
 			S.resize(_rownb, _colnb, _nbnz);
 			S.setStart(0,0);
 			size_t k = 0 ;
@@ -435,7 +440,6 @@ namespace LinBox
 		 */
 		constElement &getEntry(const size_t &i, const size_t &j) const
 		{
-			// write_raw();
 			ptrdiff_t off = _triples.next(_maxc);
 			size_t ii = i ;
 			while ( field().isZero(_data[ii*_maxc+off]) )  {
@@ -483,7 +487,7 @@ namespace LinBox
 		void appendEntry(const size_t &i, const size_t &j, const Element& e)
 		{
 			linbox_check(i < rowdim());
-			linbox_check(j < rowdim());
+			linbox_check(j < coldim());
 
 			if (field().isZero(e)) {
 				return ;
@@ -533,7 +537,7 @@ namespace LinBox
 		 * it can be sped up (no checking that the entry already exists).
 		 */
 		void setEntry(const size_t &i, const size_t &j, const Element& e
-			      )
+			     )
 		{
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
@@ -704,7 +708,7 @@ namespace LinBox
 				for (size_t k = 0   ; k < _maxc ; ++k)
 					if (!field().isZero(getData(i,k)))
 						// field().axpyin( y[i], getData(i,k), x[getColid(i,k)] ); //! @todo delay !!!
-						 accu.mulacc( getData(i,k), x[getColid(i,k)] );
+						accu.mulacc( getData(i,k), x[getColid(i,k)] );
 					else {
 						break;
 					}
@@ -835,15 +839,16 @@ namespace LinBox
 
 		void setData(const size_t & i, const size_t & j, const Element & e)
 		{
+			linbox_check(i*_maxc+j <= _data.size());
 			field().assign(_data[i*_maxc+j],e);
 		}
 
-		void setData(std::vector<size_t> & new_data)
+		void setData(std::vector<Element> & new_data)
 		{
 			_data = new_data ;
 		}
 
-		std::vector<size_t>  getData( ) const
+		std::vector<Element>  getData( ) const
 		{
 			return _data ;
 		}
@@ -897,28 +902,28 @@ namespace LinBox
 		public:
 			typedef Element value_type ;
 			_Iterator(const Field & F /*, const size_t & rowc*/, const element_iterator & e_beg, const element_iterator & e_end) :
-				  _data_it(e_beg)
-				  , _data_beg(e_beg)
-				  , _data_end(e_end)
-				  ,_field(F)
-				  // ,_ld(r)
+				_data_it(e_beg)
+				, _data_beg(e_beg)
+				, _data_end(e_end)
+				,_field(F)
+				// ,_ld(r)
 			{}
 
 			_Iterator (const _Iterator &iter) :
-				  _data_it(iter._data_it)
+				_data_it(iter._data_it)
 				, _data_beg(iter._data_beg)
 				, _data_end(iter._data_end)
-				  ,_field(iter._field)
-				  // ,_ld(r)
+				,_field(iter._field)
+				// ,_ld(r)
 
 			{}
 
 			_Iterator &operator = (const _Iterator &iter)
 			{
-			       	_data_it  = iter._data_it  ;
-			       	_data_beg  = iter._data_beg  ;
-			       	_data_end  = iter._data_end  ;
-			       	_field  = iter._field  ;
+				_data_it  = iter._data_it  ;
+				_data_beg  = iter._data_beg  ;
+				_data_end  = iter._data_end  ;
+				_field  = iter._field  ;
 				// _ld  = iter._ld  ;
 
 				return *this;
@@ -1015,7 +1020,7 @@ namespace LinBox
 					  , const index_it &j
 					  , const data_it &e
 					  , const data_it &e_e) :
-				  _colid_beg(j)
+				_colid_beg(j)
 				, _colid_it(j)
 				, _data_it(e)
 				, _data_beg(e)
@@ -1026,7 +1031,7 @@ namespace LinBox
 			{}
 
 			_IndexedIterator (const _IndexedIterator &iter) :
-				 _colid_beg(iter._colid_beg)
+				_colid_beg(iter._colid_beg)
 				, _colid_it(iter._colid_it)
 				, _data_it(iter._data_it)
 				, _data_beg(iter._data_beg)

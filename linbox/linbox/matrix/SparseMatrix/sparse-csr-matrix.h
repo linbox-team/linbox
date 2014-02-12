@@ -7,7 +7,7 @@
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -68,27 +68,31 @@ namespace LinBox
 		 */
 		//@{
 		SparseMatrix<_Field, SparseMatrixFormat::CSR> () :
-			_rownb(0),_colnb(0),
-			_nbnz(0),
-			_start(1,0),_colid(0),_data(0)
+			_rownb(0),_colnb(0)
+			,_nbnz(0)
+			,_start(1,0),_colid(0),_data(0)
 			, _field()
 		{
 			_start[0] = 0 ;
 		}
 
 		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const _Field & F) :
-			_rownb(0),_colnb(0),
-			_nbnz(0),
-			_start(1,0),_colid(0),_data(0)
+			_rownb(0),_colnb(0)
+			,_nbnz(0)
+			,_start(1,0)
+			,_colid(0)
+			,_data(0)
 			, _field(F)
 		{
 			_start[0] = 0 ;
 		}
 
 		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const _Field & F, size_t m, size_t n) :
-			_rownb(m),_colnb(n),
-			_nbnz(0),
-			_start(m+1,0),_colid(0),_data(0)
+			_rownb(m),_colnb(n)
+			,_nbnz(0)
+			,_start(m+1,0)
+			,_colid(0)
+			,_data(0)
 			, _field(F)
 		{
 			_start[0] = 0 ;
@@ -97,20 +101,25 @@ namespace LinBox
 		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const _Field & F,
 							       size_t m, size_t n,
 							       size_t z) :
-			_rownb(m),_colnb(n),
-			_nbnz(z),
-			_start(m+1,0),_colid(z),_data(z),
-			_field(F)
+			_rownb(m),_colnb(n)
+			, _nbnz(z)
+			,_start(m+1,0)
+			, _colid(z)
+			,_data(z)
+			, _field(F)
 		{
 			_start[0] = 0 ;
 		}
 
 		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const SparseMatrix<_Field, SparseMatrixFormat::CSR> & S) :
-			_rownb(S._rownb),_colnb(S._colnb),
-			_nbnz(S._nbnz),
-			_start(S._start),_colid(S._colid),_data(S._data),
-			_field(S._field)
-		{}
+			_rownb(S._rownb),_colnb(S._colnb)
+			,_nbnz(S._nbnz)
+			,_start(S._start)
+			, _colid(S._colid)
+			,_data(S._data)
+			, _field(S._field)
+		{
+		}
 
 #if 0
 		template<class _OtherField>
@@ -143,6 +152,7 @@ namespace LinBox
 						Ap.appendEntry(i,j,e);
 				}
 				A.firstTriple();
+				Ap.finalize();
 			}
 
 			void rebindMethod(SparseMatrix<_Tp1, SparseMatrixFormat::CSR>  & Ap, const Self_t & A /*,  IndexedCategory::HasNext*/)
@@ -198,12 +208,14 @@ namespace LinBox
 
 		template<typename _Tp1, typename _Rw1>
 		SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &S, const Field& F) :
-			_rownb(S.rowdim()),_colnb(S.coldim()),
-			_nbnz(S.size()),
-			_start(S.rowdim()+1,0),_colid(S.size()),_data(S.size()),
-			_field(F)
+			_rownb(S.rowdim()),_colnb(S.coldim())
+			,_nbnz(S.size())
+			, _start(S.rowdim()+1,0)
+			, _colid(S.size())
+			,_data(S.size())
+			, _field(F)
 		{
-			typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,SparseMatrixFormat::CSR>()(*this, S);
+			typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,Storage>()(*this, S);
 		}
 
 
@@ -221,10 +233,11 @@ namespace LinBox
 		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const _Field & F, VectStream & stream) :
 			_rownb(stream.size()),_colnb(stream.dim())
 			, _nbnz(0)
-			, _start(_rownb+1,0),_colid(0),_data(0)
+			, _start(_rownb+1,0)
+			, _colid(0)
+			,_data(0)
 			, _field(F)
 		{
-			// VectStream == RandomSparseStream<Field, typename Vector<Field>::SparseSeq>
 			{
 				_start[0] = 0 ;
 			}
@@ -280,6 +293,7 @@ namespace LinBox
 #endif
 
 			firstTriple();
+			finalize();
 		}
 
 		void resize(size_t nn)
@@ -338,7 +352,7 @@ namespace LinBox
 
 			_start[0] = 0 ;
 			for (size_t i = 0 ; i < _nbnz ; ++i)
-					_start[S.rowid(i)+1] += 1 ;
+				_start[S.rowid(i)+1] += 1 ;
 
 		}
 
@@ -361,7 +375,7 @@ namespace LinBox
 		SparseMatrix<_Field,SparseMatrixFormat::CSR > &
 		exporte(SparseMatrix<_Field,SparseMatrixFormat::CSR> &S)
 		{
-			// S = *this ;
+			linbox_check(consistent());
 
 			S.resize(_rownb, _colnb, _nbnz);
 			S.setStart( _start );
@@ -383,6 +397,7 @@ namespace LinBox
 
 			return S ;
 		}
+
 
 		//@}
 
@@ -459,6 +474,12 @@ namespace LinBox
 			// return _data.size();
 			return _nbnz ;
 		}
+
+		void setSize(const size_t & z)
+		{
+			_nbnz = z ;
+		}
+
 
 		/** Get a read-only individual entry from the matrix.
 		 * @param i Row _colid
@@ -555,7 +576,7 @@ namespace LinBox
 		 * it can be sped up (no checking that the entry already exists).
 		 */
 		void setEntry(const size_t &i, const size_t &j, const Element& e
-			      )
+			     )
 		{
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
@@ -719,6 +740,7 @@ namespace LinBox
 		template<class inVector, class outVector>
 		outVector& apply(outVector &y, const inVector& x, const Element & a ) const
 		{
+			// linbox_check(consistent());
 			prepare(field(),y,a);
 
 
@@ -741,12 +763,13 @@ namespace LinBox
 		template<class inVector, class outVector>
 		outVector& applyTranspose(outVector &y, const inVector& x, const Element & a) const
 		{
+			// linbox_check(consistent());
 			//! @bug if too big, create transpose.
 			prepare(field(),y,a);
 
 			for (size_t i = 0 ; i < _rownb ; ++i)
 				for (size_t k = _start[i] ; k < _start[i+1] ; ++k)
-				field().axpyin( y[_colid[k]], _data[k], x[i] );
+					field().axpyin( y[_colid[k]], _data[k], x[i] );
 
 			return y;
 		}
@@ -838,7 +861,6 @@ namespace LinBox
 
 		void setColid(std::vector<size_t> new_colid)
 		{
-			// linbox_check(_colid.size() == new_colid.size());
 			_colid = new_colid ;
 		}
 
@@ -854,7 +876,8 @@ namespace LinBox
 
 		void setData(const size_t & i, const Element & e)
 		{
-			if (i>=_nbnz) this->resize(i);
+			if (i>=_nbnz) this->resize(i+1);
+			linbox_check(i <= _data.size());
 			field().assign(_data[i],e);
 		}
 
@@ -898,22 +921,22 @@ namespace LinBox
 		public:
 			typedef Element value_type ;
 			_Iterator(element_iterator e_beg, element_iterator e_end) :
-				  _data_it(e_beg)
+				_data_it(e_beg)
 				, _data_beg(e_beg)
 				, _data_end(e_end)
 			{}
 
 			_Iterator (const _Iterator &iter) :
-				  _data_it(iter._data_it)
+				_data_it(iter._data_it)
 				, _data_beg(iter._data_beg)
 				, _data_end(iter._data_end)
 			{}
 
 			_Iterator &operator = (const _Iterator &iter)
 			{
-			       	_data_it  = iter._data_it  ;
-			       	_data_beg  = iter._data_beg  ;
-			       	_data_end  = iter._data_end  ;
+				_data_it  = iter._data_it  ;
+				_data_beg  = iter._data_beg  ;
+				_data_end  = iter._data_end  ;
 
 				return *this;
 			}
@@ -1023,10 +1046,10 @@ namespace LinBox
 			{
 				_start_it = iter._start_it ;
 				_start_beg = iter._start_beg ;
-			       	_colid_it = iter._colid_it ;
-			       	_data_it  = iter._data_it  ;
+				_colid_it = iter._colid_it ;
+				_data_it  = iter._data_it  ;
 				_data_beg = iter._data_beg ;
-			       	_data_end  = iter._data_end  ;
+				_data_end  = iter._data_end  ;
 
 				return *this;
 			}
@@ -1034,13 +1057,13 @@ namespace LinBox
 			bool operator == (const _IndexedIterator &i) const
 			{
 				// we assume consistency
-				return /*(_start_it == i._start_it) && (_colid_it == i._colid_it) &&*/ (_data_it == i._data_it);
+				return  (_data_it == i._data_it);
 			}
 
 			bool operator != (const _IndexedIterator &i) const
 			{
 				// we assume consistency
-				return /*(_start_it != i._start_it) || (_colid_it != i._colid_it) ||*/ (_data_it != i._data_it) ;
+				return  (_data_it != i._data_it) ;
 			}
 
 			_IndexedIterator &operator ++ ()
@@ -1069,8 +1092,9 @@ namespace LinBox
 			{
 				throw NotImplementedYet("not sure");
 				--_data_it  ;
-				if (_data_it == _data_beg)
+				if (_data_it == _data_beg) {
 					return *this ;
+				}
 				--_colid_it ;
 				while (std::distance(_data_beg, _data_it) > *(_start_it)) {
 					--_start_it ;
@@ -1211,6 +1235,8 @@ namespace LinBox
 			}
 		}_triples;
 	};
+
+
 
 
 
