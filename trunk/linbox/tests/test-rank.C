@@ -78,7 +78,6 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, unsigned int 
 	unsigned int i;
 
 	unsigned long rank_blackbox, rank_elimination, rank_hybrid;
-	//unsigned long rank_Wiedemann, rank_elimination, rank_blas_elimination;
 
 	typename Field::RandIter ri (F);
 
@@ -95,12 +94,14 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, unsigned int 
 		LinBox::rank (rank_blackbox, A, Method::Blackbox ());
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "blackbox rank " << rank_blackbox << endl;
+
 		LinBox::rank (rank_elimination, A, Method::Elimination());
 		if (rank_blackbox != rank_elimination) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != elimination rank " << rank_elimination << endl;
 			ret = false;
 		}
+
 		LinBox::rank (rank_hybrid, A, Method::Hybrid());
 		if (rank_blackbox != rank_hybrid) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -108,28 +109,30 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, unsigned int 
 			ret = false;
 		}
 
-		{
-			size_t rank_Wiedemann ;
-			LinBox::rank (rank_Wiedemann, A, Method::Wiedemann ());
-			rank_elimination = rank_Wiedemann;
-			size_t rank_blas_elimination ;
-			if (F.characteristic() < LinBox::BlasBound && F.characteristic() == F.cardinality()) {
-				LinBox::rank (rank_blas_elimination, A, Method::BlasElimination ());
-			}
-			else {
-				LinBox::rank (rank_blas_elimination, A, Method::Elimination ());
-			}
+		size_t rank_Wiedemann, rank_blas_elimination ;
+		LinBox::rank (rank_Wiedemann, A, Method::Wiedemann ());
+		if (rank_Wiedemann != rank_blackbox ) {
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: Ranks are not equal" << endl;
+			ret = false;
+		}
 
-			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-			<< "Rank computed by Wiedemann: " << rank_Wiedemann << endl
-			<< "Rank computed by sparse elimination: " << rank_elimination << endl
-			<< "Rank computed by blas_elimination: " << rank_blas_elimination << endl;
+		if (F.characteristic() < LinBox::BlasBound && F.characteristic() == F.cardinality()) {
+			LinBox::rank (rank_blas_elimination, A, Method::BlasElimination ());
+		}
+		else {
+			LinBox::rank (rank_blas_elimination, A, Method::Elimination ());
+		}
 
-			if (rank_Wiedemann != rank_elimination || rank_elimination != rank_blas_elimination) {
-				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Ranks are not equal" << endl;
-				ret = false;
-			}
+		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		<< "Rank computed by Wiedemann: " << rank_Wiedemann << endl
+		<< "Rank computed by sparse elimination: " << rank_elimination << endl
+		<< "Rank computed by blas_elimination: " << rank_blas_elimination << endl;
+
+		if ( rank_blackbox != rank_blas_elimination) {
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: Ranks are not equal" << endl;
+			ret = false;
 		}
 
 		commentator().stop ("done");
