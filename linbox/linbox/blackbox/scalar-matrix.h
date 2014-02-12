@@ -77,6 +77,11 @@ namespace LinBox
 			n_(0)
 		{}
 
+		void changeField(const Field &F)
+		{
+			field_ = &F ;
+		}
+
 		/** Constructor of readable scalar matrix.
 		 * @param F	field in which to do arithmetic.
 		 */

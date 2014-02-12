@@ -37,6 +37,8 @@
 
 #include "linbox/linbox-config.h"
 
+#define LINBOX_USE_BLACKBOX_THRESHOLD 100
+
 #include <iostream>
 #include <fstream>
 
@@ -84,7 +86,6 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, unsigned int 
 		commentator().startIteration (i);
 
 		RandomSparseStream<Field, typename BlackBox::Row> stream (F, ri, sparsity, n, n);
-		// RandomSparseStream<Field, typename Vector<Field>::SparseSeq> stream (F, ri, sparsity, n, n);
 		BlackBox A (F, stream);
 		// std::cout << A.rowdim() << ',' << A.coldim() << std::endl;
 
@@ -287,11 +288,12 @@ bool testSparseRank(const Field &F, const size_t & n, const size_t & iterations,
 		if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
 	}
 	{
-		// typedef SparseMatrix<Field,SparseMatrixFormat::SparsePar > Blackbox;
-		// if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
+		typedef SparseMatrix<Field,SparseMatrixFormat::SparsePar > Blackbox;
+		if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
 	}
 	{
 		// typedef SparseMatrix<Field,SparseMatrixFormat::SparseMap > Blackbox;
+		// typedef Protected::SparseMatrixGeneric<Field,typename Vector<Field>::SparseMap > Blackbox;
 		// if (!testRankMethods<Blackbox> (F, n, (unsigned int)iterations, sparsity)) pass = false;
 	}
 	{
@@ -361,15 +363,21 @@ int main (int argc, char **argv)
 
 	Modular<uint32_t> F (q);
 	pass = pass && testSparseRank(F,n,iterations,sparsity);
+	pass = pass && testSparseRank(F,LINBOX_USE_BLACKBOX_THRESHOLD+n,iterations,sparsity);
 
 	Modular<double> G (q);
 	pass = pass && testSparseRank(G,n,iterations,sparsity);
+	pass = pass && testSparseRank(G,LINBOX_USE_BLACKBOX_THRESHOLD+n,iterations,sparsity);
 
-	PID_integer R;
-	pass = pass && testSparseRank(R,n,iterations,sparsity);
+	// PID_integer R;
+	// pass = pass && testSparseRank(R,n,iterations,sparsity);
+	// pass = pass && testSparseRank(R,LINBOX_USE_BLACKBOX_THRESHOLD+n,iterations,sparsity);
 
 	GivaroZpz<Integer> Gq(bigQ);
 	pass = pass && testSparseRank(Gq,n,iterations,sparsity);
+	pass = pass && testSparseRank(Gq,LINBOX_USE_BLACKBOX_THRESHOLD+n,iterations,sparsity);
+
+
 
 #if 0
 	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)

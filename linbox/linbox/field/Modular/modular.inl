@@ -706,7 +706,7 @@ namespace LinBox {
 		typename Vector1::iterator w_j;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ()._modulus;
+			*w_j = (uint32_t) (uint32_t)*l % VD.field ()._modulus;
 
 		return w;
 	}

@@ -349,10 +349,11 @@ namespace LinBox { namespace Protected {
 		}
 
 		//! no doc
-		template <class RepIterator, class RowIdxIterator>
+		template <class RepIterator, class RowIdxIterator, class _I_Element>
 		class _IndexedIterator {
 		public:
-			typedef std::pair<size_t, size_t> value_type;
+			// typedef std::pair<size_t, size_t> value_type;
+			typedef _I_Element value_type;
 
 			_IndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end) :
 				_i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index (0)
@@ -363,7 +364,7 @@ namespace LinBox { namespace Protected {
 					if( ++_i == _A_end ) return;
 					_j = _i->begin();
 				}
-				_c_index = _j->second;
+				_c_index = _j->first;
 			}
 
 			_IndexedIterator (const _IndexedIterator &iter) :
@@ -399,11 +400,11 @@ namespace LinBox { namespace Protected {
 				++_j;
 				while (_j == _i->end ()) {
 					++_r_index;
-					if (++_i == _A_end ()) return *this;
+					if (++_i == _A_end ) return *this;
 					_j = _i->begin ();
 				}
 
-				_c_index = _j->second;
+				_c_index = _j->first;
 
 				return *this;
 			}
@@ -436,19 +437,19 @@ namespace LinBox { namespace Protected {
 
 			value_type &operator * ()
 			{
-				return *_j;
+				return _j->second;
 			}
 			const value_type &operator * () const
 			{
-				return *_j;
+				return _j->second;
 			}
 			value_type *operator -> ()
 			{
-				return &(*_j);
+				return &(_j->second);
 			}
 			const value_type *operator -> () const
 			{
-				return &(*_j);
+				return &(_j->second);
 			}
 
 			size_t rowIndex () const
@@ -461,7 +462,7 @@ namespace LinBox { namespace Protected {
 			}
 			const value_type &value() const
 			{
-				return *_j;
+				return _j->second;
 			}
 
 		private:
@@ -473,8 +474,8 @@ namespace LinBox { namespace Protected {
 			mutable size_t _c_index;
 		};
 
-		typedef _IndexedIterator<typename Rep::iterator, typename Row::iterator> IndexedIterator;
-		typedef _IndexedIterator<typename Rep::const_iterator, typename Row::const_iterator> ConstIndexedIterator;
+		typedef _IndexedIterator<typename Rep::iterator, typename Row::iterator, Element> IndexedIterator;
+		typedef _IndexedIterator<typename Rep::const_iterator, typename Row::const_iterator, Element> ConstIndexedIterator;
 
 		IndexedIterator IndexedBegin ()
 		{
@@ -616,6 +617,41 @@ namespace LinBox
 		SparseMatrix ( MatrixStream<Field>& ms ) :
 			Father_t(ms)
 		{}
+
+		template<class _Tp1, class _Storage>
+		SparseMatrix(const SparseMatrix<_Tp1,_Storage> & Mat, const Field & F) :
+			Father_t(F, Mat.rowdim(), Mat.coldim())
+		{
+			typename SparseMatrix<_Tp1,_Storage>::template rebind<Field,Storage>()(*this, Mat);
+
+		}
+
+
+
+		// using Father_t::RowIterator;
+
+		template<typename _Tp1, typename _R1 = SparseMatrixFormat::SparseMap >
+		struct rebind {
+			typedef SparseMatrix<_Tp1, _R1> other;
+
+			void operator() (other & Ap, const Self_t& A) {
+
+				typename _Tp1::Element e;
+
+				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
+				for( typename Self_t::ConstIndexedIterator
+				     indices = A.IndexedBegin();
+				     (indices != A.IndexedEnd()) ;
+				     ++indices ) {
+					hom. image (e, indices.value() );
+					if (!Ap.field().isZero(e))
+						Ap.setEntry (indices.rowIndex(),
+							     indices.colIndex(), e);
+				}
+			}
+
+		};
+
 
 	} ; // SparseMatrix
 

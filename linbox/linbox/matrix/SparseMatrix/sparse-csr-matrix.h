@@ -510,7 +510,7 @@ namespace LinBox
 		void appendEntry(const size_t &i, const size_t &j, const Element& e)
 		{
 			linbox_check(i < rowdim());
-			linbox_check(j < rowdim());
+			linbox_check(j < coldim());
 
 			if (field().isZero(e)) { /* probably already tested */
 				return ;
@@ -831,7 +831,8 @@ namespace LinBox
 
 		void setColid(const size_t & i, const size_t & j)
 		{
-			if (i>=_nbnz) this->resize(i);
+			if (i>=_nbnz) this->resize(i+1);
+			linbox_check(i <= _colid.size())
 			_colid[i]=j;
 		}
 

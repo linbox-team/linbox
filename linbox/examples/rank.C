@@ -39,6 +39,8 @@
 #include <linbox/util/matrix-stream.h>
 #include <linbox/field/givaro.h>
 
+#define SP_STOR SparseMatrixFormat::SparseSeq
+
 using namespace LinBox;
 
 /// rank or rank mod p
@@ -63,8 +65,9 @@ int main (int argc, char **argv)
 
 	LinBox::GivaroRational ZZ;
 	MatrixStream<GivaroRational> ms( ZZ, input );
-	SparseMatrix<GivaroRational, SparseMatrixFormat::SparseSeq> A ( ms );
+	SparseMatrix<GivaroRational, SP_STOR> A ( ms );
 	// SparseMatrix<GivaroRational, SparseMatrixFormat::CSR> A ( ms );
+	LinBox::Timer tim ; tim.clear() ; tim.start();
 	if (argc == 2) { // rank over the rational numbers.
 
 		/* We could pick a random prime and work mod that prime, But
@@ -103,7 +106,7 @@ int main (int argc, char **argv)
 		MatrixStream<Field> ms( F, input );
 */
 		// SparseMatrix<Field, SparseMatrixFormat::CSR > B (F, A.rowdim(), A.coldim());// modular image of A
-		SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (F, A.rowdim(), A.coldim());// modular image of A
+		SparseMatrix<Field, SP_STOR > B (F, A.rowdim(), A.coldim());// modular image of A
 		MatrixHom::map(B, A);
 		std::cout << "matrix is " << B.rowdim() << " by " << B.coldim() << std::endl;
 		//if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
@@ -129,8 +132,9 @@ int main (int argc, char **argv)
 
 
 	}
+	tim.stop();
 
-	std::cout << "Rank is " << r << std::endl;
+	std::cout << "Rank is " << r << " (" << tim << " )" << std::endl;
 	return 0;
 }
 

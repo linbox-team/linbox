@@ -617,6 +617,9 @@ namespace LinBox
 		DirectSumOwner (const DirectSum<_BBt> &M, const Field& F) :
 			_VB_data( M.size() ), m( M.rowdim() ), n( M.coldim())
 		{
+			// for (size_t i = 0 ; i < M.size() ; ++i)
+				// _VB_data[i].changeField(F);
+
 			typename DirectSum<_BBt>::template rebind<Field>()(*this, M);
 		}
 
