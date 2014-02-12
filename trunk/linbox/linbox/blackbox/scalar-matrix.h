@@ -77,6 +77,18 @@ namespace LinBox
 			n_(0)
 		{}
 
+		ScalarMatrix( MatrixStream<Field> & ms) :
+			field_(&ms.field())
+			,n_(0)
+		{
+			size_t c, i, j;
+			if( !ms.getDimensions(n_, c) || c != n_ )
+				throw ms.reportError(__FUNCTION__,__LINE__);
+			ms.nextTriple(i, j, v_);
+			if (i != j) throw ms.reportError(__FUNCTION__,__LINE__);
+			// finalize();
+		}
+
 		void changeField(const Field &F)
 		{
 			field_ = &F ;
@@ -216,6 +228,7 @@ namespace LinBox
 			field().write(os << "1 1 ", v_) << std::endl;
 			return os;
 		}
+
 		std::istream& read(std::istream& is) {
 			MatrixStream<Field> ms(field(), is);
 			size_t c, i, j;
