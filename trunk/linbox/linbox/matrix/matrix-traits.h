@@ -73,6 +73,12 @@ namespace LinBox {
 		typedef IndexedTags::NoIndexed Tag;
 	};
 
+	template<class Field, class Vect>
+	struct SparseVectorTranslate {
+		typedef Vect other_t;
+	};
+
+
 } // LinBox
 
 #endif // __LINBOX_matrix_matrix_traits_H

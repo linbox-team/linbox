@@ -200,6 +200,7 @@ namespace LinBox
 		template<class Ring, class Vect1, class Field, class Vect2>
 		void map (SparseMatrix<Field, Vect2>& Ap, const SparseMatrix<Ring, Vect1>& A)
 		{
+			// typename SparseMatrix<Ring,Vect1>::template rebind<Field, typename SparseVectorTranslate<Field,Vect2>::other_t >()( Ap, A);
 			typename SparseMatrix<Ring,Vect1>::template rebind<Field,Vect2>()( Ap, A);
 		}
 

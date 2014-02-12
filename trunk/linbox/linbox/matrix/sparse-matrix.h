@@ -206,16 +206,18 @@ namespace LinBox { /*  IndexedCategory */
 
 namespace LinBox { /* Junk */
 
-#if 0 /* make correspond SparseMatrixFormat::XXXSeq and Vector<Field>::XXXSeq */
-		template<class Field, class Vect>
-		struct SparseVectorTranslate {
-			typedef Vect other_t;
-		};
+#if 1 /* make correspond SparseMatrixFormat::XXXSeq and Vector<Field>::XXXSeq */
 
 		template<class Field>
 		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparseSeq> {
 			typedef typename Vector<Field>::SparseSeq other_t;
 		};
+
+		template<class Field>
+		struct SparseVectorTranslate<Field,typename Vector<Field>::SparseSeq> {
+			typedef SparseMatrixFormat::SparseSeq other_t;
+		};
+
 
 		template<class Field>
 		struct SparseVectorTranslate<Field,SparseMatrixFormat::SparsePar> {

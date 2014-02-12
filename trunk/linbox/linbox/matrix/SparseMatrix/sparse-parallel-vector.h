@@ -682,7 +682,7 @@ namespace LinBox
 		SparseMatrix ( MatrixStream<Field>& ms ) :
 			Father_t(ms)
 		{}
-		using Father_t::RowIterator;
+		// using Father_t::RowIterator;
 
 	} ; // SparseMatrix
 
