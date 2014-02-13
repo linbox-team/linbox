@@ -262,7 +262,7 @@ namespace LinBox
 
 		void resize(const size_t & mm, const size_t & nn, const size_t & zz = 0, const size_t & ll = 0)
 		{
-			linbox_check(_rownb*_maxc == _colid.size());
+			// linbox_check(_rownb*_maxc == _colid.size());
 			// attention RowMajor/ColMajor
 			if (!_maxc || mm == _maxc) {
 				_colid.resize(mm*ll,0);
@@ -920,16 +920,14 @@ namespace LinBox
 			const element_iterator _data_beg ;
 			const element_iterator _data_end ;
 			const Field & _field ;
-			// const size_t & _ld ;
 			typedef typename Field::Element Element;
 		public:
 			typedef Element value_type ;
-			_Iterator(const Field & F /*, const size_t & rowc*/, const element_iterator & e_beg, const element_iterator & e_end) :
+			_Iterator(const Field & F , const element_iterator & e_beg, const element_iterator & e_end) :
 				_data_it(e_beg)
 				, _data_beg(e_beg)
 				, _data_end(e_end)
 				,_field(F)
-				// ,_ld(r)
 			{}
 
 			_Iterator (const _Iterator &iter) :
@@ -937,7 +935,6 @@ namespace LinBox
 				, _data_beg(iter._data_beg)
 				, _data_end(iter._data_end)
 				,_field(iter._field)
-				// ,_ld(r)
 
 			{}
 
@@ -947,7 +944,6 @@ namespace LinBox
 				_data_beg  = iter._data_beg  ;
 				_data_end  = iter._data_end  ;
 				_field  = iter._field  ;
-				// _ld  = iter._ld  ;
 
 				return *this;
 			}

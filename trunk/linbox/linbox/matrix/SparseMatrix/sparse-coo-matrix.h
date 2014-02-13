@@ -162,7 +162,7 @@ namespace LinBox
 				for (size_t i = 0 ; i < A.size() ; ++i) {
 					hom. image ( e, A.getData(i) );
 					if (!Ap.field().isZero(e)) {
-						setTriple(j,A.getRowid(i),A.getColid(i),e);
+						Ap.setTriple(j,A.getRowid(i),A.getColid(i),e);
 						++j;
 					}
 				}

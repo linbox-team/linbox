@@ -272,7 +272,7 @@ namespace LinBox
 
 		void resize(const size_t & mm, const size_t & nn, const size_t & zz = 0, const size_t & ll = 0)
 		{
-			linbox_check(_rownb*_maxc == _colid.size());
+			// linbox_check(_rownb*_maxc == _colid.size());
 			// attention RowMajor/ColMajor
 			if (!_maxc || mm == _maxc) {
 				_colid.resize(mm*ll,0);
