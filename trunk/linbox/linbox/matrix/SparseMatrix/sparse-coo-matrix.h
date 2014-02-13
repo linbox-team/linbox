@@ -162,9 +162,7 @@ namespace LinBox
 				for (size_t i = 0 ; i < A.size() ; ++i) {
 					hom. image ( e, A.getData(i) );
 					if (!Ap.field().isZero(e)) {
-						Ap.setColid(j,A.getColid(i));
-						Ap.setRowid(j,A.getRowid(i));
-						Ap.setData(j,e);
+						setTriple(j,A.getRowid(i),A.getColid(i),e);
 						++j;
 					}
 				}
@@ -280,11 +278,8 @@ namespace LinBox
 		{
 			_rownb = mm ;
 			_colnb = nn ;
-			_nbnz = zz;
 
-			_rowid.resize(zz);
-			_colid.resize(zz);
-			_data.resize(zz);
+			resize(zz);
 		}
 
 		/*! Default converter.
@@ -467,9 +462,13 @@ namespace LinBox
 		{
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
-
 			ptrdiff_t nnz =  _triples.next();
-			if ( _colid[nnz] == j && i ==_rowid[nnz] ) { /* sort of nextTriple */
+
+			// linbox_check(nnz < _colid.size());
+			// linbox_check(nnz < _rowid.size());
+			// linbox_check(nnz < _data.size());
+
+			if ( nnz < _nbnz && _colid[nnz] == j && i ==_rowid[nnz] ) { /* sort of nextTriple */
 				linbox_check(!field().isZero(_data[nnz]));
 				return _data[nnz];
 			}
@@ -763,15 +762,32 @@ namespace LinBox
 			return _rowid[i];
 		}
 
-		void setRowid(const size_t &i, const size_t & j)
+		void setTriple(const size_t &loc, const size_t & i, const size_t & j, const Element & e)
 		{
-			if (i>=_nbnz) this->resize(i);
-			_rowid[i]=j;
+			linbox_check(loc <= _nbnz);
+			linbox_check( _rowid.size() == _nbnz);
+			linbox_check( _colid.size() == _nbnz);
+			linbox_check( _data.size() == _nbnz);
+			if (loc==_nbnz) {
+				if (loc % 10 == 0) {
+					_rowid.reserve(loc+10);
+					_colid.reserve(loc+10);
+					_data.reserve(loc+10);
+				}
+				_rowid.push_back(i);
+				_colid.push_back(j);
+				_data.push_back(e);
+				++_nbnz;
+				return;
+			}
+			_rowid[loc]=i;
+			_colid[loc]=j;
+			_data[loc]=e;
+
 		}
 
 		void setRowid(const std::vector<size_t> &  new_rowid)
 		{
-			// linbox_check(_rowid.size() == new_rowid.size());
 			_rowid = new_rowid ;
 		}
 
@@ -785,11 +801,6 @@ namespace LinBox
 			return _colid[i];
 		}
 
-		void setColid(const size_t & i, const size_t & j)
-		{
-			if (i>=_nbnz) this->resize(i);
-			_colid[i]=j;
-		}
 
 		void setColid(std::vector<size_t> new_colid)
 		{
@@ -806,12 +817,6 @@ namespace LinBox
 			return _data[i];
 		}
 
-		void setData(const size_t & i, const Element & e)
-		{
-			if (i>=_nbnz) this->resize(i+1);
-			linbox_check(i <= _data.size());
-			field().assign(_data[i],e);
-		}
 
 		void setData(std::vector<Element> & new_data)
 		{
