@@ -156,8 +156,7 @@ namespace LinBox
 				Ap.finalize();
 			}
 
-
-			void rebindMethod(SparseMatrix<_Tp1, SparseMatrixFormat::ELL_R>  & Ap, const Self_t & A /*,  IndexedCategory::HasNext*/)
+			void rebindMethod(SparseMatrix<_Tp1, Storage>  & Ap, const Self_t & A /*,  IndexedCategory::HasNext*/)
 			{
 				// we don't use nextTriple because we can do better.
 				linbox_check(A.consistent());
@@ -246,10 +245,12 @@ namespace LinBox
 			while( ms.nextTriple(i,j,val) ) {
 				if (! field().isZero(val)) {
 					if( i >= _rownb ) {
-						_rownb = i + 1;
+						// _rownb = i + 1;
+						resize(i+1,_colnb,_nbnz,_maxc);
 					}
 					if( j >= _colnb ) {
-						_colnb = j + 1;
+						// _colnb = j + 1;
+						resize(_rownb,j+1,_nbnz,_maxc);
 					}
 					appendEntry(i,j,val);
 				}
@@ -261,8 +262,6 @@ namespace LinBox
 #ifndef NDEBUG
 			if( i != _rownb  || j != _colnb) {
 				std::cout << " ***Warning*** the sizes got changed" << __func__ << ',' << __LINE__ << std::endl;
-				// _rownb = i;
-				// _matA.resize(_m);
 			}
 #endif
 
@@ -273,6 +272,7 @@ namespace LinBox
 
 		void resize(const size_t & mm, const size_t & nn, const size_t & zz = 0, const size_t & ll = 0)
 		{
+			linbox_check(_rownb*_maxc == _colid.size());
 			// attention RowMajor/ColMajor
 			if (!_maxc || mm == _maxc) {
 				_colid.resize(mm*ll,0);
@@ -295,6 +295,8 @@ namespace LinBox
 			_colnb = nn ;
 			_nbnz  = zz;
 			_maxc  = ll;
+
+			linbox_check(_rownb*_maxc == _colid.size());
 		}
 
 		/*! Default converter.
@@ -302,10 +304,13 @@ namespace LinBox
 		 */
 		template<class _OtherStorage>
 		SparseMatrix<_Field, SparseMatrixFormat::ELL_R> (const SparseMatrix<_Field, _OtherStorage> & S) :
-			_rownb(S._rownb),_colnb(S._colnb),_nbnz(S.size()),
-			_maxc(0),_colid(0),_data(0),
-			_field(S._field)
+			_rownb(S.rowdim()),_colnb(S.coldim())
+			,_nbnz(S.size())
 			,_rowid(S.rowdim(),0)
+			, _maxc(0)
+			,_colid(0)
+			,_data(0)
+			,_field(S.field())
 		{
 			this->importe(S); // convert Temp from anything
 		}
@@ -393,7 +398,7 @@ namespace LinBox
 		*/
 		void transposeIn()
 		{
-			SparseMatrix<_Field,SparseMatrixFormat::ELL_R> Temp(*this);
+			SparseMatrix<_Field,Storage> Temp(*this);
 			Temp.transposeIn();
 			importe(Temp);
 		}
@@ -453,7 +458,6 @@ namespace LinBox
 		constElement &getEntry(const size_t &i, const size_t &j) const
 		{
 			ptrdiff_t off = _triples.next(_rowid);
-			// write_raw();
 			if ( (_triples._row  == i) && _colid[i*_maxc+off]  == j  ) { /* sort of nextTriple */
 				linbox_check(!field().isZero(_data[i*_maxc+off]));
 				return _data[i*_maxc+off];
@@ -496,6 +500,8 @@ namespace LinBox
 		{
 			linbox_check(i < rowdim());
 			linbox_check(j < coldim());
+			linbox_check(_colid.size() == _data.size());
+			linbox_check(_rownb*_maxc == _colid.size());
 
 			if (field().isZero(e)) {
 				return ;
@@ -503,12 +509,14 @@ namespace LinBox
 			ptrdiff_t row = _triples._row ;
 			ptrdiff_t off = _triples._off ;
 			if (row != i) { /* new row */
+				linbox_check((ptrdiff_t)i>row);
 				_triples._row = i ;
 				_triples._off = 0 ;
 				if (_maxc == 0) {
 					insert(i,_maxc,j,e);
 				}
 				else {
+					linbox_check(i*_maxc < _colid.size());
 					_colid[i*_maxc] = j ;
 					_data [i*_maxc]  = e ;
 					_rowid[i] +=1;
@@ -522,6 +530,7 @@ namespace LinBox
 					insert(i,_maxc,j,e);
 				}
 				else {
+					linbox_check(i*_maxc+off < _colid.size());
 					_colid[i*_maxc+off] = j ;
 					_data [i*_maxc+off] = e ;
 					_rowid[i] +=1;
@@ -529,6 +538,7 @@ namespace LinBox
 				}
 
 			}
+			linbox_check(_rownb*_maxc == _colid.size());
 		}
 
 		/// make matrix ready to use after a sequence of setEntry calls.
@@ -804,6 +814,7 @@ namespace LinBox
 
 		void reshape(const size_t &ll)
 		{
+			linbox_check(_rownb*_maxc == _colid.size());
 			linbox_check(ll > _maxc);
 
 			_data .resize(ll*_rownb);
@@ -818,6 +829,7 @@ namespace LinBox
 			}
 
 			_maxc = ll ;
+			linbox_check(_rownb*_maxc == _colid.size());
 		}
 
 	public:
@@ -840,12 +852,17 @@ namespace LinBox
 
 		size_t getColid(const size_t & i, const size_t j) const
 		{
+			linbox_check(i < _rownb);
+			linbox_check(_maxc*_rownb == _colid.size());
 			return _colid[i*_maxc+j];
 		}
 
 		void setColid(const size_t & i, const size_t & j, const size_t & k)
 		{
-			linbox_check(i <= _rownb);
+			linbox_check(i < _rownb);
+			linbox_check(i*_maxc+j < _colid.size());
+			linbox_check(_maxc*_rownb == _colid.size());
+
 			_colid[i*_maxc+j]=k;
 		}
 
@@ -861,12 +878,16 @@ namespace LinBox
 
 		const Element & getData(const size_t & i, const size_t & j) const
 		{
+			linbox_check(i < _rownb);
+			linbox_check(j < _colnb);
+			linbox_check(_maxc*_rownb == _colid.size());
 			return _data[ i*_maxc+j ];
 		}
 
 		void setData(const size_t & i, const size_t & j, const Element & e)
 		{
-			linbox_check(i*_maxc+j <= _data.size());
+			linbox_check(i*_maxc+j < _data.size());
+			linbox_check(_maxc*_rownb == _colid.size());
 			field().assign(_data[i*_maxc+j],e);
 		}
 
@@ -1273,8 +1294,10 @@ namespace LinBox
 
 		void insert (const size_t &i, const size_t &k, const size_t &j, const Element& e)
 		{
+			linbox_check(_rownb*_maxc == _colid.size());
 			if (k == _maxc) {
 				resize(_rownb,_colnb,_nbnz,_maxc+1);
+			linbox_check(_rownb*_maxc == _colid.size());
 				_colid[_maxc*i+k-1] = j;
 				field().assign(_data[_maxc*i+k-1],e);
 				++_nbnz;
@@ -1296,6 +1319,7 @@ namespace LinBox
 			field().assign(_data[_maxc*i+k],e);
 			++_nbnz;
 			_rowid[i] += 1;
+			linbox_check(_rownb*_maxc == _colid.size());
 			return;
 		}
 

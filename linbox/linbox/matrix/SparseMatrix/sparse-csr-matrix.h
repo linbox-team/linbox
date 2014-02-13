@@ -492,7 +492,7 @@ namespace LinBox
 			linbox_check(j<_colnb);
 
 			ptrdiff_t nnz = _triples.next(_start);
-			if ( _colid[nnz]  == j && i == _triples._row ) { /* sort of nextTriple */
+			if ( nnz < _nbnz && _colid[nnz]  == j && i == _triples._row ) { /* sort of nextTriple */
 				linbox_check(!field().isZero(_data[nnz]));
 				return _data[nnz];
 			}
