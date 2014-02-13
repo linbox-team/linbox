@@ -272,10 +272,12 @@ namespace LinBox
 			while( ms.nextTriple(i,j,val) ) {
 				if (! field().isZero(val)) {
 					if( i >= _rownb ) {
-						_rownb = i + 1;
+						// _rownb = i + 1;
+						resize(i+1,_colnb,_nbnz);
 					}
 					if( j >= _colnb ) {
-						_colnb = j + 1;
+						// _colnb = j + 1;
+						resize(_rownb,j+1,_nbnz);
 					}
 					appendEntry(i,j,val);
 				}
@@ -287,8 +289,6 @@ namespace LinBox
 #ifndef NDEBUG
 			if( i != _rownb  || j != _colnb) {
 				std::cout << " ***Warning*** the sizes got changed" << __func__ << ',' << __LINE__ << std::endl;
-				// _rownb = i;
-				// _matA.resize(_m);
 			}
 #endif
 
@@ -538,16 +538,18 @@ namespace LinBox
 			}
 
 			if ( rowdim() +1  != _start.size()) {
-				if (rowdim() % 10 == 0)
-					_start.reserve(rowdim()+10);
+				if (rowdim() % 100 == 0)
+					_start.reserve(rowdim()+100);
 				_start.resize(rowdim()+1,0);
 			}
 
 			_start[i+1] += 1 ;
-			if (_nbnz % 10 == 0 ) {
-				_colid.reserve(_nbnz + 10);
-				_data.reserve(_nbnz + 10);
+#if 0 /*  reserve is slow */
+			if (_nbnz % 100 == 0 ) {
+				_colid.reserve(_nbnz + 100);
+				_data.reserve(_nbnz + 100);
 			}
+#endif
 			_colid.push_back(j);
 			_data .push_back(e);
 			++_nbnz ;

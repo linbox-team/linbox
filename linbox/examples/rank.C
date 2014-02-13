@@ -77,6 +77,7 @@ int main (int argc, char **argv)
 		 * rank of that matrix by some blackbox magic inside linbox.
 		 */
 		std::cout << "matrix is " << A.rowdim() << " by " << A.coldim() << std::endl;
+		// A.write(std::cout) << std::endl;;
 
 		LinBox::rank (r, A);
 	}
