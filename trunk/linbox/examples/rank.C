@@ -64,10 +64,13 @@ int main (int argc, char **argv)
 	long unsigned int r;
 
 	LinBox::GivaroRational ZZ;
+		LinBox::Timer tim ; tim.clear() ; tim.start();
 	MatrixStream<GivaroRational> ms( ZZ, input );
 	SparseMatrix<GivaroRational, SP_STOR> A ( ms );
 	// SparseMatrix<GivaroRational, SparseMatrixFormat::CSR> A ( ms );
-	LinBox::Timer tim ; tim.clear() ; tim.start();
+	tim.stop();
+	std::cout << "matrix is " << A.rowdim() << " by " << A.coldim() << " (" << tim << ")" << std::endl;
+	tim.clear() ; tim.start();
 	if (argc == 2) { // rank over the rational numbers.
 
 		/* We could pick a random prime and work mod that prime, But
@@ -76,7 +79,6 @@ int main (int argc, char **argv)
 		 * rational matrix and our concept is that we are getting the
 		 * rank of that matrix by some blackbox magic inside linbox.
 		 */
-		std::cout << "matrix is " << A.rowdim() << " by " << A.coldim() << std::endl;
 		// A.write(std::cout) << std::endl;;
 
 		LinBox::rank (r, A);

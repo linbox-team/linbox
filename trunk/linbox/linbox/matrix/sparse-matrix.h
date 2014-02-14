@@ -187,7 +187,7 @@ namespace LinBox { /*  IndexedCategory */
 		typedef IndexedTags::HasIndexed Tag;
 	};
 
-#if 0
+#if 1
 	template<class Field>
 	struct IndexedCategory< SparseMatrix<Field,SparseMatrixFormat::CSR> > 	{
 		typedef IndexedTags::HasNext Tag;
@@ -197,6 +197,17 @@ namespace LinBox { /*  IndexedCategory */
 	struct IndexedCategory< SparseMatrix<Field,SparseMatrixFormat::COO> > 	{
 		typedef IndexedTags::HasNext Tag;
 	};
+
+	template<class Field>
+	struct IndexedCategory< SparseMatrix<Field,SparseMatrixFormat::ELL> > 	{
+		typedef IndexedTags::HasNext Tag;
+	};
+
+	template<class Field>
+	struct IndexedCategory< SparseMatrix<Field,SparseMatrixFormat::ELL_R> > 	{
+		typedef IndexedTags::HasNext Tag;
+	};
+
 #endif
 
 

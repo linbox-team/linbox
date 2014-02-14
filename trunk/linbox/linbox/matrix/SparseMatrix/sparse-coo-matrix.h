@@ -407,7 +407,7 @@ namespace LinBox
 					while (i < _start[nextlig]){
 						size_t cur_place ;
 						cur_place = start[_colid[i]] + done_col[_colid[i]] ;
-						S._data[ cur_place ]  = _data[i] ;
+						S._data [ cur_place ] = _data[i] ;
 						S._colid[ cur_place ] = nextlig-1 ;
 						done_col[_colid[i]] += 1 ;
 						++i;

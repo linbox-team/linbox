@@ -41,6 +41,9 @@
 #include "linbox/field/hom.h"
 #include "sparse-domain.h"
 
+#ifndef LINBOX_CSR_TRANSPOSE
+#define LINBOX_CSR_TRANSPOSE 1000
+#endif
 
 namespace LinBox
 {
@@ -67,14 +70,17 @@ namespace LinBox
 		 *
 		 */
 		//@{
+#if 0 /*  No empty CSTOR */
 		SparseMatrix<_Field, SparseMatrixFormat::CSR> () :
 			_rownb(0),_colnb(0)
 			,_nbnz(0)
 			,_start(1,0),_colid(0),_data(0)
 			, _field()
+			, _helper()
 		{
 			_start[0] = 0 ;
 		}
+#endif
 
 		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const _Field & F) :
 			_rownb(0),_colnb(0)
@@ -83,6 +89,7 @@ namespace LinBox
 			,_colid(0)
 			,_data(0)
 			, _field(F)
+			, _helper()
 		{
 			_start[0] = 0 ;
 		}
@@ -94,6 +101,7 @@ namespace LinBox
 			,_colid(0)
 			,_data(0)
 			, _field(F)
+			, _helper()
 		{
 			_start[0] = 0 ;
 		}
@@ -107,6 +115,7 @@ namespace LinBox
 			, _colid(z)
 			,_data(z)
 			, _field(F)
+			, _helper()
 		{
 			_start[0] = 0 ;
 		}
@@ -118,6 +127,7 @@ namespace LinBox
 			, _colid(S._colid)
 			,_data(S._data)
 			, _field(S._field)
+			, _helper()
 		{
 		}
 
@@ -216,9 +226,11 @@ namespace LinBox
 			, _field(F)
 		{
 			typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,Storage>()(*this, S);
+			finalize();
 		}
 
 
+#if 0
 		void merge(const SparseMatrix<_Field, SparseMatrixFormat::CSR> & S)
 		{
 			for (size_t i_ex = 0 ; i_ex < S.rowdim() ; ++i_ex)
@@ -227,6 +239,7 @@ namespace LinBox
 					setEntry(i_ex,S.getColid(k),S.getData(k));
 				}
 		}
+#endif
 
 
 		template<class VectStream>
@@ -255,6 +268,8 @@ namespace LinBox
 			for (size_t i = 0 ; i < rowdim() ; ++i)
 				_start[i+1] += _start[i];
 			linbox_check(_start[rowdim()] == _nbnz );
+
+			finalize();
 		}
 
 		SparseMatrix<_Field, SparseMatrixFormat::CSR> ( MatrixStream<Field>& ms ):
@@ -313,11 +328,9 @@ namespace LinBox
 		{
 			_rownb = mm ;
 			_colnb = nn ;
-			_nbnz = zz;
 
 			_start.resize(mm+1);
-			_colid.resize(zz);
-			_data.resize(zz);
+			resize(zz);
 		}
 
 		/*! Default converter.
@@ -330,6 +343,7 @@ namespace LinBox
 			_field(S.field())
 		{
 			this->importe(S); // convert Temp from anything
+			finalize();
 		}
 
 
@@ -354,6 +368,8 @@ namespace LinBox
 			for (size_t i = 0 ; i < _nbnz ; ++i)
 				_start[S.rowid(i)+1] += 1 ;
 
+			finalize();
+
 		}
 
 		/*! Import a matrix in CSR format to CSR.
@@ -367,6 +383,7 @@ namespace LinBox
 			setStart(S.getStart());
 			setColid(S.getColid());
 			setData(S.getData());
+			finalize();
 		}
 
 		/*! Export a matrix in CSR format from COO.
@@ -381,6 +398,7 @@ namespace LinBox
 			S.setStart( _start );
 			S.setColid (_colid );
 			S.setData(  _data ) ;
+			S.finalize();
 
 			return S ;
 		}
@@ -394,6 +412,7 @@ namespace LinBox
 			for(size_t i = 0 ; i < rowdim() ; ++i)
 				for (size_t j = _start[i] ; j < _start[i+1] ; ++j)
 					S.setRowid(j,i);
+			S.finalize();
 
 			return S ;
 		}
@@ -406,31 +425,35 @@ namespace LinBox
 		void transposeIn()
 		{
 			SparseMatrix<_Field,SparseMatrixFormat::CSR> Temp(*this);
-			resize(_colnb, _rownb, _nbnz );
+			resize((size_t)_colnb, (size_t)_rownb, (size_t)_nbnz ); // necessary copy to temp, no const ref
 
-			for (size_t i = 0 ; i <= _colnb ; ++i)
+			for (size_t i = 0 ; i <= rowdim() ; ++i)
 				_start[i] = 0 ;
 
 			for (size_t i = 0 ; i < size() ; ++i)
 				_start[_colid[i]+1] += 1 ;
 
-			for (size_t i = 0 ; i < _colnb ; ++i)
+			for (size_t i = 0 ; i < rowdim() ; ++i)
 				_start[i+1] += _start[i] ;
+
 			{
 				size_t i = 0 ;
-				std::vector<size_t> done_col(_rownb,0);
-				for (size_t nextlig = 1 ; nextlig <= _colnb ; ++nextlig) {
+				std::vector<size_t> done_col(rowdim(),0);
+				for (size_t nextlig = 1 ; nextlig <= coldim() ; ++nextlig) {
 					// treating line before nextlig
 					while (i < Temp._start[nextlig]){
 						size_t cur_place ;
 						cur_place = _start[Temp.getColid(i)] + done_col[Temp.getColid(i)] ;
-						_data[ cur_place ]  = Temp.getData(i) ;
+						linbox_check(cur_place < size());
+						_data [ cur_place ] = Temp.getData(i) ;
 						_colid[ cur_place ] = nextlig-1 ;
 						done_col[Temp.getColid(i)] += 1 ;
 						++i;
 					}
 				}
 			}
+			finalize();
+
 		}
 
 		/*! Transpose the matrix.
@@ -438,12 +461,43 @@ namespace LinBox
 		 *  @return a reference to \p S.
 		 */
 		SparseMatrix<_Field,SparseMatrixFormat::CSR> &
-		transpose(SparseMatrix<_Field,SparseMatrixFormat::CSR> &S)
+		transpose(SparseMatrix<_Field,SparseMatrixFormat::CSR> &S) const
 		{
-			// linbox_check(S.rowdim() == _colnb);
-			// linbox_check(S.coldim() == _rownb);
+#if 1
+			S.resize((size_t)_colnb, (size_t)_rownb, (size_t)_nbnz ); // necessary copy to temp, no const ref
+
+			for (size_t i = 0 ; i <= S.rowdim() ; ++i)
+				S.setStart(i,0)  ;
+
+			for (size_t i = 0 ; i < S.size() ; ++i)
+				S.setStart(_colid[i]+1, S.getStart( _colid[i]+1)+1 );
+
+			for (size_t i = 0 ; i < S.rowdim() ; ++i)
+				S.setStart(i+1, S.getStart(i+1)+ S.getStart(i)) ;
+
+			{
+				size_t i = 0 ;
+				std::vector<size_t> done_col(S.rowdim(),0);
+				for (size_t nextlig = 1 ; nextlig <= S.coldim() ; ++nextlig) {
+					// treating line before nextlig
+					while (i < _start[nextlig]){
+						size_t cur_place ;
+						cur_place = S.getStart(_colid[i]) + done_col[_colid[i]] ;
+						linbox_check(cur_place < S.size());
+						S.setData( cur_place, _data[i]) ;
+						S.setColid( cur_place ,  nextlig-1) ;
+						done_col[_colid[i]] += 1 ;
+						++i;
+					}
+				}
+			}
+#else
 			S.importe(*this);
 			S.transposeIn();
+#endif
+			S.finalize();
+
+			// S.write(std::cout) << std::endl;
 			return S;
 
 
@@ -566,6 +620,7 @@ namespace LinBox
 				linbox_check(_start[rowdim()] == _nbnz);
 			}
 			_triples.reset();
+
 		} // end construction after a sequence of setEntry calls.
 
 		/** Set an individual entry.
@@ -746,6 +801,7 @@ namespace LinBox
 			prepare(field(),y,a);
 
 
+			// std::cout << "apply" << std::endl;
 			FieldAXPY<Field> accu(field());
 			for (size_t i = 0 ; i < _rownb ; ++i) {
 				accu.reset();
@@ -758,7 +814,6 @@ namespace LinBox
 			return y;
 		}
 
-		class Helper ; // transpose
 
 		// y= A^t x
 		// y[i] = sum(A(j,i) x(j)
@@ -767,6 +822,11 @@ namespace LinBox
 		{
 			// linbox_check(consistent());
 			//! @bug if too big, create transpose.
+			if (_helper.optimized(*this)) {
+				// std::cout << time(NULL) << std::endl;
+				return _helper.matrix().apply(y,x,a) ; // NEVER use applyTranspose on that thing.
+			}
+
 			prepare(field(),y,a);
 
 			for (size_t i = 0 ; i < _rownb ; ++i)
@@ -775,6 +835,8 @@ namespace LinBox
 
 			return y;
 		}
+
+
 
 		template<class inVector, class outVector>
 		outVector& apply(outVector &y, const inVector& x ) const
@@ -801,6 +863,54 @@ namespace LinBox
 
 	private :
 
+		class Helper {
+			bool _useable ;
+			bool _optimized ;
+			bool blackbox_usage ;
+			Self_t *_AT ;
+		public:
+
+			Helper() :
+				_useable(false)
+				,_optimized(false)
+				, blackbox_usage(true)
+				, _AT(NULL)
+			{}
+
+			~Helper()
+			{
+				if ( _AT ) {
+					delete _AT ;
+				}
+			}
+
+			bool optimized(const Self_t & A)
+			{
+				// std::cout << "optimized ?" << std::endl;
+				if (!_useable) {
+					getHelp(A);
+					_useable = true;
+				}
+				return	_optimized;
+			}
+
+			void getHelp(const Self_t & A)
+			{
+				if ( A.size() > LINBOX_CSR_TRANSPOSE ) { // and/or A.rowDensity(), A.coldim(),...
+					// std::cout << "optimizing..." ;
+					_optimized = true ;
+					_AT = new Self_t(A.field(),A.coldim(),A.rowdim());
+					A.transpose(*_AT);
+					// std::cout << "done!" << std::endl;
+				}
+			}
+
+			const Self_t & matrix() const
+			{
+				return *_AT ;
+			}
+
+		};
 
 	public:
 		// pseudo iterators
@@ -883,7 +993,7 @@ namespace LinBox
 			field().assign(_data[i],e);
 		}
 
-		void setData(std::vector<Element> & new_data)
+		void setData(const std::vector<Element> & new_data)
 		{
 			_data = new_data ;
 		}
@@ -892,6 +1002,7 @@ namespace LinBox
 		{
 			return _data ;
 		}
+
 
 		void firstTriple() const
 		{
@@ -1212,6 +1323,8 @@ namespace LinBox
 		std::vector<Element> _data ;
 
 		const _Field & _field;
+
+		mutable Helper _helper ;
 
 		mutable struct _triples {
 			ptrdiff_t _row ;
