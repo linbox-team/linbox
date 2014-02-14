@@ -424,56 +424,28 @@ namespace LinBox
 		*/
 		void transposeIn()
 		{
-			SparseMatrix<_Field,SparseMatrixFormat::CSR> Temp(*this);
-			resize((size_t)_colnb, (size_t)_rownb, (size_t)_nbnz ); // necessary copy to temp, no const ref
-
-			for (size_t i = 0 ; i <= rowdim() ; ++i)
-				_start[i] = 0 ;
-
-			for (size_t i = 0 ; i < size() ; ++i)
-				_start[_colid[i]+1] += 1 ;
-
-			for (size_t i = 0 ; i < rowdim() ; ++i)
-				_start[i+1] += _start[i] ;
-
-			{
-				size_t i = 0 ;
-				std::vector<size_t> done_col(rowdim(),0);
-				for (size_t nextlig = 1 ; nextlig <= coldim() ; ++nextlig) {
-					// treating line before nextlig
-					while (i < Temp._start[nextlig]){
-						size_t cur_place ;
-						cur_place = _start[Temp.getColid(i)] + done_col[Temp.getColid(i)] ;
-						linbox_check(cur_place < size());
-						_data [ cur_place ] = Temp.getData(i) ;
-						_colid[ cur_place ] = nextlig-1 ;
-						done_col[Temp.getColid(i)] += 1 ;
-						++i;
-					}
-				}
-			}
-			finalize();
-
+			Self_t Temp(*this);
+			Temp.transpose(*this);
 		}
 
 		/*! Transpose the matrix.
 		 *  @param S [out] transpose of self.
 		 *  @return a reference to \p S.
 		 */
-		SparseMatrix<_Field,SparseMatrixFormat::CSR> &
-		transpose(SparseMatrix<_Field,SparseMatrixFormat::CSR> &S) const
+		Self_t &
+		transpose(Self_t &S) const
 		{
-#if 1
 			S.resize((size_t)_colnb, (size_t)_rownb, (size_t)_nbnz ); // necessary copy to temp, no const ref
 
+			// outStart
 			for (size_t i = 0 ; i <= S.rowdim() ; ++i)
-				S.setStart(i,0)  ;
+				S._start[i] = 0  ;
 
 			for (size_t i = 0 ; i < S.size() ; ++i)
-				S.setStart(_colid[i]+1, S.getStart( _colid[i]+1)+1 );
+				S._start[_colid[i]+1] += 1 ;
 
 			for (size_t i = 0 ; i < S.rowdim() ; ++i)
-				S.setStart(i+1, S.getStart(i+1)+ S.getStart(i)) ;
+				S._start[i+1] +=  S._start[i] ;
 
 			{
 				size_t i = 0 ;
@@ -482,22 +454,18 @@ namespace LinBox
 					// treating line before nextlig
 					while (i < _start[nextlig]){
 						size_t cur_place ;
-						cur_place = S.getStart(_colid[i]) + done_col[_colid[i]] ;
+						cur_place = S._start[_colid[i]] + done_col[_colid[i]] ;
 						linbox_check(cur_place < S.size());
-						S.setData( cur_place, _data[i]) ;
-						S.setColid( cur_place ,  nextlig-1) ;
+						S._data [ cur_place ] = _data[i] ;
+						S._colid[ cur_place ] = nextlig-1 ;
 						done_col[_colid[i]] += 1 ;
 						++i;
 					}
 				}
 			}
-#else
-			S.importe(*this);
-			S.transposeIn();
-#endif
+
 			S.finalize();
 
-			// S.write(std::cout) << std::endl;
 			return S;
 
 
@@ -693,6 +661,7 @@ namespace LinBox
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
 			// Could be improved by adding an initial guess j/rowdim*size()
+			typedef typename std::vector<size_t>::iterator myIterator ;
 
 			size_t ibeg = _start[i];
 			size_t iend = _start[i+1];
@@ -702,7 +671,6 @@ namespace LinBox
 				_data.insert( _data.begin() +ibeg,field().zero);
 				return _data[ibeg];
 			}
-			typedef typename std::vector<size_t>::iterator myIterator ;
 			myIterator beg = _colid.begin() ;
 			myIterator low = std::lower_bound (beg+(ptrdiff_t)ibeg, beg+(ptrdiff_t)iend, j);
 			if (low == beg+(ptrdiff_t)iend) {
@@ -821,9 +789,7 @@ namespace LinBox
 		outVector& applyTranspose(outVector &y, const inVector& x, const Element & a) const
 		{
 			// linbox_check(consistent());
-			//! @bug if too big, create transpose.
 			if (_helper.optimized(*this)) {
-				// std::cout << time(NULL) << std::endl;
 				return _helper.matrix().apply(y,x,a) ; // NEVER use applyTranspose on that thing.
 			}
 
@@ -886,7 +852,6 @@ namespace LinBox
 
 			bool optimized(const Self_t & A)
 			{
-				// std::cout << "optimized ?" << std::endl;
 				if (!_useable) {
 					getHelp(A);
 					_useable = true;
@@ -1002,7 +967,6 @@ namespace LinBox
 		{
 			return _data ;
 		}
-
 
 		void firstTriple() const
 		{
