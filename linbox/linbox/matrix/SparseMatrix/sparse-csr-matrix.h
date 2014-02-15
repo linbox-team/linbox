@@ -435,27 +435,28 @@ namespace LinBox
 		Self_t &
 		transpose(Self_t &S) const
 		{
-			S.resize((size_t)_colnb, (size_t)_rownb, (size_t)_nbnz ); // necessary copy to temp, no const ref
 
 			// outStart
-			for (size_t i = 0 ; i <= S.rowdim() ; ++i)
+			for (size_t i = 0 ; i <= coldim() ; ++i)
 				S._start[i] = 0  ;
 
-			for (size_t i = 0 ; i < S.size() ; ++i)
+			for (size_t i = 0 ; i < size() ; ++i)
 				S._start[_colid[i]+1] += 1 ;
 
-			for (size_t i = 0 ; i < S.rowdim() ; ++i)
+			S.resize((size_t)_colnb, (size_t)_rownb, (size_t)_nbnz ); // necessary copy to temp, no const ref
+
+			for (size_t i = 0 ; i < coldim() ; ++i)
 				S._start[i+1] +=  S._start[i] ;
 
 			{
 				size_t i = 0 ;
 				std::vector<size_t> done_col(S.rowdim(),0);
-				for (size_t nextlig = 1 ; nextlig <= S.coldim() ; ++nextlig) {
+				for (size_t nextlig = 1 ; nextlig <= rowdim() ; ++nextlig) {
 					// treating line before nextlig
 					while (i < _start[nextlig]){
 						size_t cur_place ;
 						cur_place = S._start[_colid[i]] + done_col[_colid[i]] ;
-						linbox_check(cur_place < S.size());
+						linbox_check(cur_place < size());
 						S._data [ cur_place ] = _data[i] ;
 						S._colid[ cur_place ] = nextlig-1 ;
 						done_col[_colid[i]] += 1 ;

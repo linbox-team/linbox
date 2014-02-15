@@ -41,6 +41,9 @@
 #include "linbox/field/hom.h"
 #include "sparse-domain.h"
 
+#ifndef LINBOX_ELLR_TRANSPOSE
+#define LINBOX_ELLR_TRANSPOSE 1000
+#endif
 
 namespace LinBox
 {
@@ -67,14 +70,17 @@ namespace LinBox
 		 *
 		 */
 		//@{
+#if 0 /*  No empty CSTOR */
 		SparseMatrix<_Field, SparseMatrixFormat::ELL_R> () :
 			_rownb(0),_colnb(0),_maxc(0)
 			,_nbnz(0)
 			,_colid(0),_data(0)
 			,_rowid(0)
 			, _field()
+			, _helper()
 		{
 		}
+#endif
 
 		SparseMatrix<_Field, SparseMatrixFormat::ELL_R> (const _Field & F) :
 			_rownb(0),_colnb(0)
@@ -84,6 +90,7 @@ namespace LinBox
 			,_colid(0)
 			,_data(0)
 			, _field(F)
+			, _helper()
 		{
 		}
 
@@ -95,6 +102,7 @@ namespace LinBox
 			,_colid(0)
 			,_data(0)
 			, _field(F)
+			, _helper()
 		{
 		}
 
@@ -108,6 +116,7 @@ namespace LinBox
 			, _colid(z)
 			,_data(z)
 			, _field(F)
+			, _helper()
 		{
 		}
 
@@ -119,6 +128,7 @@ namespace LinBox
 			, _colid(S._colid)
 			,_data(S._data)
 			, _field(S._field)
+			, _helper()
 		{
 		}
 
@@ -211,6 +221,7 @@ namespace LinBox
 			, _field(F)
 		{
 			typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,Storage>()(*this, S);
+			finalize();
 		}
 
 
@@ -226,8 +237,10 @@ namespace LinBox
 			,_data(0)
 			, _field(F)
 		{
+			//! @todo
 			SparseMatrix<_Field,SparseMatrixFormat::CSR> Tmp(F,stream);
 			importe(Tmp);
+			finalize();
 		}
 
 		SparseMatrix<_Field, SparseMatrixFormat::ELL_R> ( MatrixStream<Field>& ms ):
@@ -246,11 +259,11 @@ namespace LinBox
 				if (! field().isZero(val)) {
 					if( i >= _rownb ) {
 						// _rownb = i + 1;
-						resize(i+1,_colnb,_nbnz,_maxc);
+						resize(i+1,_colnb,_nbnz,(size_t)_maxc);
 					}
 					if( j >= _colnb ) {
 						// _colnb = j + 1;
-						resize(_rownb,j+1,_nbnz,_maxc);
+						resize(_rownb,j+1,_nbnz,(size_t)_maxc);
 					}
 					appendEntry(i,j,val);
 				}
@@ -267,10 +280,11 @@ namespace LinBox
 
 			firstTriple();
 			finalize();
+			linbox_check(consistent());
 		}
 
 
-		void resize(const size_t & mm, const size_t & nn, const size_t & zz = 0, const size_t & ll = 0)
+		void resize(const size_t  mm, const size_t  nn, const size_t  zz = 0, const size_t  ll = 0)
 		{
 			// linbox_check(_rownb*_maxc == _colid.size());
 			// attention RowMajor/ColMajor
@@ -312,6 +326,7 @@ namespace LinBox
 			,_data(0)
 			,_field(S.field())
 		{
+			// _nbnz is set there:
 			this->importe(S); // convert Temp from anything
 		}
 
@@ -332,7 +347,7 @@ namespace LinBox
 			for (size_t i = 0 ; i < S.rowdim() ; ++i)
 				_maxc = std::max(_maxc, S.getEnd(i)-S.getStart(i));
 
-			resize(S.rowdim(), S.coldim(), S.size(),_maxc);
+			resize(S.rowdim(), S.coldim(), S.size(),(size_t)_maxc);
 
 			for (size_t i = 0 ; i < S.rowdim() ; ++i) {
 				size_t k = 0 ;
@@ -398,22 +413,66 @@ namespace LinBox
 		*/
 		void transposeIn()
 		{
-			SparseMatrix<_Field,Storage> Temp(*this);
-			Temp.transposeIn();
-			importe(Temp);
+			Self_t Temp(*this);
+			Temp.transpose(*this);
 		}
 
 		/*! Transpose the matrix.
 		 *  @param S [out] transpose of self.
 		 *  @return a reference to \p S.
 		 */
-		SparseMatrix<_Field,SparseMatrixFormat::ELL_R> &
-		transpose(SparseMatrix<_Field,SparseMatrixFormat::ELL_R> &S)
+		Self_t &
+		transpose(Self_t &S) const
 		{
-			// linbox_check(S.rowdim() == _colnb);
-			// linbox_check(S.coldim() == _rownb);
-			S.importe(*this);
-			S.transposeIn();
+			// outStart
+			size_t maxc = 0;
+			{
+				S._rowid.resize(coldim());
+				for (size_t i = 0 ; i < coldim() ; ++i)
+					S._rowid[i] = 0 ;
+
+				for (size_t i = 0 ; i < rowdim() ; ++i) {
+					for (size_t j = 0 ; j < _maxc ; ++j) {
+						if (!field().isZero(getData(i,j)))
+							S._rowid[getColid(i,j)] += 1 ;
+						else
+							break;
+					}
+				}
+
+				maxc = S._rowid[0] ;
+				for (size_t i = 1 ; i < coldim() ; ++i)
+					maxc= std::max(maxc, S._rowid[i]);
+			}
+
+
+
+			S.resize((size_t)_colnb, (size_t)_rownb, (size_t)_nbnz, (size_t)maxc ); // necessary copy to temp, no const ref
+
+			{
+				std::vector<size_t> done_col(coldim(),0);
+
+
+				for (size_t i = 0 ; i < rowdim() ; ++i) {
+					for (size_t j = 0 ; j < _maxc ; ++j) {
+						if (!field().isZero(getData(i,j))) {
+							size_t loc_col = getColid(i,j) ;
+							S.setData (loc_col,done_col[loc_col],getData(i,j));
+							S.setColid(loc_col,done_col[loc_col],i);
+
+							linbox_check(done_col[loc_col] < maxc);
+							done_col[loc_col] += 1 ;
+
+						}
+						else
+							break;
+					}
+				}
+			}
+
+			S.finalize();
+
+
 			return S;
 
 
@@ -445,10 +504,11 @@ namespace LinBox
 			return _nbnz ;
 		}
 
-		void setSize(const size_t & z)
+		void setSize(const size_t  z)
 		{
 			_nbnz = z ;
 		}
+
 
 		/** Get a read-only individual entry from the matrix.
 		 * @param i Row _colid
@@ -464,7 +524,6 @@ namespace LinBox
 			}
 			else { /* searching */
 
-				// std::cout << _nbnz << std::endl;
 				linbox_check(consistent());
 
 				linbox_check(i<_rownb);
@@ -524,7 +583,7 @@ namespace LinBox
 				}
 			}
 			else { /* same row */
-
+				linbox_check(_triples._row == i);
 				_triples._off = off = off + 1 ;
 				if (off == _maxc) {
 					insert(i,_maxc,j,e);
@@ -593,7 +652,6 @@ namespace LinBox
 				if (beg[k] > j) {
 					found = true;
 					insert(i,k,j,e);
-					// write_raw();
 					break;
 				}
 			}
@@ -739,7 +797,6 @@ namespace LinBox
 			return y;
 		}
 
-		class Helper ; // transpose
 
 		// y= A^t x
 		// y[i] = sum(A(j,i) x(j)
@@ -747,7 +804,10 @@ namespace LinBox
 		Vector& applyTranspose(Vector &y, const Vector& x, const Element & a ) const
 		{
 			// linbox_check(consistent());
-			//! @bug if too big, create transpose.
+			if (_helper.optimized(*this)) {
+				return _helper.matrix().apply(y,x,a) ; // NEVER use applyTranspose on that thing.
+			}
+
 			prepare(field(),y,a);
 
 			for (size_t i = 0 ; i < _rownb ; ++i)
@@ -756,6 +816,8 @@ namespace LinBox
 
 			return y;
 		}
+
+
 
 		template<class inVector, class outVector>
 		outVector& apply(outVector &y, const inVector& x ) const
@@ -804,6 +866,8 @@ namespace LinBox
 						return false;
 					}
 			}
+			if (nbnz != _nbnz)
+				std::cout << "bad number of non zero" << std::endl;
 			return (nbnz == _nbnz);
 
 		}
@@ -812,20 +876,74 @@ namespace LinBox
 
 	private :
 
-		void reshape(const size_t &ll)
+		class Helper {
+			bool _useable ;
+			bool _optimized ;
+			bool blackbox_usage ;
+			Self_t *_AT ;
+		public:
+
+			Helper() :
+				_useable(false)
+				,_optimized(false)
+				, blackbox_usage(true)
+				, _AT(NULL)
+			{}
+
+			~Helper()
+			{
+				if ( _AT ) {
+					delete _AT ;
+				}
+			}
+
+			bool optimized(const Self_t & A)
+			{
+				if (!_useable) {
+					getHelp(A);
+					_useable = true;
+				}
+				return	_optimized;
+			}
+
+			void getHelp(const Self_t & A)
+			{
+				if ( A.size() > LINBOX_ELL_TRANSPOSE ) { // and/or A.rowDensity(), A.coldim(),...
+					// std::cout << "optimizing..." ;
+					_optimized = true ;
+					_AT = new Self_t(A.field(),A.coldim(),A.rowdim());
+					A.transpose(*_AT);
+					// std::cout << "done!" << std::endl;
+				}
+			}
+
+			const Self_t & matrix() const
+			{
+				return *_AT ;
+			}
+
+		};
+
+
+		//! @todo much less needs to be copied (faster?)
+		void reshape(const size_t ll)
 		{
 			linbox_check(_rownb*_maxc == _colid.size());
 			linbox_check(ll > _maxc);
 
 			_data .resize(ll*_rownb);
 			_colid.resize(ll*_rownb);
-			for (size_t i = _rownb ; i>1 ; --i ) {
-				std::copy(_data.begin()+(i-1)*_maxc, _data.begin()+(i)*_maxc+1, _data.begin()+(i-1)*ll);
-				for (size_t j = (i-1)*_maxc ; j < (i-1)*ll ; ++j ) _data[j] = field().zero ;
+			for (size_t i = _rownb ; i>0 ; --i ) {
+				// std::copy(_data.begin()+(i-1)*_maxc, _data.begin()+(i)*_maxc, _data.begin()+(i-1)*ll);
+				std::copy_backward(_data.begin()+(i-1)*_maxc, _data.begin()+(i)*_maxc, _data.begin()+(i-1)*ll+_maxc);
+				for (size_t j = (i-1)*ll+_maxc ; j < (i)*ll ; ++j )
+					_data[j] = field().zero ;
 			}
-			for (size_t i = _rownb ; i>1 ; --i ) {
-				std::copy(_colid.begin()+(i-1)*_maxc, _colid.begin()+(i)*_maxc+1, _colid.begin()+(i-1)*ll);
-				for (size_t j = (i-1)*_maxc ; j < (i-1)*ll ; ++j ) _colid[j] = 0 ;
+			for (size_t i = _rownb ; i>0 ; --i ) {
+				// std::copy(_colid.begin()+(i-1)*_maxc, _colid.begin()+(i)*_maxc, _colid.begin()+(i-1)*ll);
+				std::copy_backward(_colid.begin()+(i-1)*_maxc, _colid.begin()+(i)*_maxc, _colid.begin()+(i-1)*ll+_maxc);
+				for (size_t j = (i-1)*ll+_maxc ; j < (i)*ll ; ++j )
+					_colid[j] = 0 ;
 			}
 
 			_maxc = ll ;
@@ -891,7 +1009,7 @@ namespace LinBox
 			field().assign(_data[i*_maxc+j],e);
 		}
 
-		void setData(std::vector<Element> & new_data)
+		void setData(const std::vector<Element> & new_data)
 		{
 			_data = new_data ;
 		}
@@ -1292,14 +1410,14 @@ namespace LinBox
 
 	private:
 
-		void insert (const size_t &i, const size_t &k, const size_t &j, const Element& e)
+		void insert (const size_t i, const size_t k, const size_t j, const Element e)
 		{
 			linbox_check(_rownb*_maxc == _colid.size());
 			if (k == _maxc) {
 				resize(_rownb,_colnb,_nbnz,_maxc+1);
 			linbox_check(_rownb*_maxc == _colid.size());
-				_colid[_maxc*i+k-1] = j;
-				field().assign(_data[_maxc*i+k-1],e);
+				_colid[_maxc*i+k] = j;
+				field().assign(_data[_maxc*i+k],e);
 				++_nbnz;
 				_rowid[i] += 1;
 				return;
@@ -1349,7 +1467,7 @@ namespace LinBox
 
 		size_t              _rownb ;
 		size_t              _colnb ;
-		size_t               _maxc ; //!< longest column
+		size_t               _maxc ; //!< longest row
 		size_t               _nbnz ;
 
 		std::vector<size_t> _rowid ;
@@ -1358,6 +1476,8 @@ namespace LinBox
 
 		const _Field            & _field;
 
+		mutable Helper _helper ;
+
 		mutable struct _triples {
 			ptrdiff_t _row ;
 			ptrdiff_t _off ;
@@ -1365,6 +1485,7 @@ namespace LinBox
 				_row(-1)
 				, _off(-1)
 			{}
+
 			ptrdiff_t next(const std::vector<size_t> & rowid)
 			{
 				++ _off ;

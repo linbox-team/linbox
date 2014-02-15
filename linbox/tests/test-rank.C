@@ -38,7 +38,10 @@
 #include "linbox/linbox-config.h"
 
 #define LINBOX_USE_BLACKBOX_THRESHOLD 100
+#define LINBOX_COO_TRANSPOSE 100 /*  this is supposed to be triggerd half the time */
 #define LINBOX_CSR_TRANSPOSE 100 /*  this is supposed to be triggerd half the time */
+#define LINBOX_ELL_TRANSPOSE 100 /*  this is supposed to be triggerd half the time */
+#define LINBOX_ELLR_TRANSPOSE 100 /*  this is supposed to be triggerd half the time */
 
 #include <iostream>
 #include <fstream>
