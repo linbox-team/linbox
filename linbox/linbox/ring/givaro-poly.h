@@ -39,7 +39,7 @@ namespace LinBox
 	template<class Field>
 	class GivaroPolyRandIter;
 	
-	template<class Domain, class StorageTag = Givaro::Dense>
+	template<class Domain>
 	class GivaroPoly {
 		Domain _pd;
 	public:
@@ -47,7 +47,7 @@ namespace LinBox
 		typedef typename Domain::Element Element;
 		typedef typename Domain::Type_t Scalar_t;
 		
-		typedef GivaroPolyRandIter<GivaroPoly<Domain,StorageTag>> RandIter;
+		typedef GivaroPolyRandIter<GivaroPoly<Domain>> RandIter;
 		
 		Element zero, one, mOne;
 		
@@ -100,6 +100,10 @@ namespace LinBox
 			}
 			
 			return x;
+		}
+		
+		Element &init(Element &x, const Element &y) const {
+			return _pd.assign(x, y);
 		}
 		
 		integer &convert(integer &x, Element y) {
