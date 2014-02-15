@@ -146,6 +146,14 @@ namespace LinBox
 			return Givaro::gcd(g,s,t,a,b);
 #endif
 		}
+		
+		Element &dxgcd(Element &g, Element &s, Element &t, Element &u, Element &v, const Element &a, const Element &b) const
+		{
+			xgcd(g,s,t,a,b);
+			div(u,a,g);
+			div(v,b,g);
+			return g;
+		}
 
 		/** @brief lcm (c, a, b)
 		 *  c = lcm (a, b)
