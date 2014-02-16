@@ -55,4 +55,5 @@ pkgincludesub_HEADERS =         \
 #  sparse-bcsr-matrix.h    \
 #  sparse-dia-matrix.h    \
 #  sparse-tpl-matrix.h    \
+#  sparse-csc-matrix.h     \
 #
