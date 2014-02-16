@@ -39,7 +39,13 @@
 #include <linbox/util/matrix-stream.h>
 #include <linbox/field/givaro.h>
 
-#define SP_STOR SparseMatrixFormat::SparseSeq
+// #define SP_STOR SparseMatrixFormat::SparseSeq
+// #define SP_STOR SparseMatrixFormat::COO
+// #define SP_STOR SparseMatrixFormat::CSR
+// #define SP_STOR SparseMatrixFormat::ELL
+#define SP_STOR SparseMatrixFormat::ELL_R
+
+
 
 using namespace LinBox;
 

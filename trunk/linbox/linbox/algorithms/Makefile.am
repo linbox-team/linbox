@@ -100,6 +100,7 @@ pkgincludesub_HEADERS =            \
 	hybrid-det.h                       \
 	lifting-container.h                \
 	smith-form-local.h                 \
+	smith-form-direct.h                 \
 	smith-form-local2.inl              \
 	matrix-inverse.h                   \
 	matrix-hom.h                       \
