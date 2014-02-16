@@ -25,7 +25,9 @@
  */
 
 #include "linbox/matrix/dense-matrix.h"
-// #include "linbox/matrix/matrix-domain.h"
+
+#ifndef __LINBOX_smith_form_direct_domain_H
+#define __LINBOX_smith_form_direct_domain_H
 
 namespace LinBox
 {
@@ -34,7 +36,7 @@ namespace LinBox
 	public:
 		typedef typename MatrixDomain::Field Field;
 		typedef typename Field::Element Element;
-		typedef BlasMatrix<Field> Matrix; // BB: use Rep ?
+		typedef BlasMatrix<Field> Rep;
 
 	private:
 		MatrixDomain _MD;
@@ -45,7 +47,7 @@ namespace LinBox
 		SmithFormDirectDomain(const SmithFormDirectDomain &D) : _MD(D._MD) {}
 
 	private:
-		void swapRows(Matrix &A, int n, int a, int b) const
+		void swapRows(Rep &A, int n, int a, int b) const
 		{
 			for (int i = n; i < A.coldim(); i++)
 			{
@@ -59,7 +61,7 @@ namespace LinBox
 			}
 		}
 
-		void swapCols(Matrix &A, int n, int a, int b) const
+		void swapCols(Rep &A, int n, int a, int b) const
 		{
 			for (int i = n; i < A.rowdim(); i++)
 			{
@@ -89,7 +91,7 @@ namespace LinBox
 			field().dxgcd(g,s,t,u,v,a,b);
 		}
 
-		bool findPivot(Matrix &A, int n) const
+		bool findPivot(Rep &A, int n) const
 		{
 			for (int i = n; i < A.rowdim(); i++)
 			{
@@ -114,7 +116,7 @@ namespace LinBox
 			return false;
 		}
 
-		bool eliminateCol(Matrix &A, int n) const
+		bool eliminateCol(Rep &A, int n) const
 		{
 			bool modified = false;
 
@@ -157,7 +159,7 @@ namespace LinBox
 			return modified;
 		}
 
-		bool eliminateRow(Matrix &A, int n) const
+		bool eliminateRow(Rep &A, int n) const
 		{
 			int modified = false;
 
@@ -200,7 +202,7 @@ namespace LinBox
 			return modified;
 		}
 
-		bool fixDiagonal(Matrix &A) const
+		bool fixDiagonal(Rep &A) const
 		{
 			bool fixed = false;
 
@@ -234,11 +236,14 @@ namespace LinBox
 		}
 
 	public:
-		std::vector<Element> &solve(std::vector<Element> &S, const Matrix &A) const // BB: use linbox vectors ? BlasVector with the proper Rep, or Vector<Field>::Dense ?  This could be totally templated by Vector and S could be a Matrix (block of vectors)
+		template<class Vector>
+		Vector &solve(Vector &S, const Rep &A) const
 		{
-			Matrix B(A);
-
-			int dim = B.rowdim() < B.coldim() ? B.rowdim() : B.coldim();
+			int dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
+			
+			linbox_check(S.size() >= dim);
+			
+			Rep B(A);
 
 			do
 			{
@@ -248,12 +253,12 @@ namespace LinBox
 					while(eliminateRow(B, n) && eliminateCol(B, n));
 				}
 			} while(fixDiagonal(B));
-
-			S.clear();
+			
 			for (int i = 0; i < dim; i++)
 			{
 				Element tmp;
-				S.push_back(B.getEntry(tmp, i, i));
+				B.getEntry(tmp, i, i);
+				S.setEntry(i, tmp);
 			}
 
 			return S;
@@ -261,3 +266,4 @@ namespace LinBox
 	};
 }
 
+#endif // __LINBOX_smith_form_direct_domain_H
