@@ -1278,6 +1278,9 @@ namespace LinBox
 		friend class SparseMatrixWriteHelper<Self_t >;
 		friend class SparseMatrixReadHelper<Self_t >;
 
+		// bool is_upper ;
+		// bool zero_based;
+		// bool implicit_diag ;
 
 		size_t              _rownb ;
 		size_t              _colnb ;

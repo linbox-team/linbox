@@ -383,8 +383,6 @@ doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
 linbox/algorithms/gauss/Makefile
-linbox/algorithms/IML/Makefile
-linbox/algorithms/matrix-blas3/Makefile
 linbox/algorithms/opencl-kernels/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
@@ -416,6 +414,8 @@ benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile
 ])
+# linbox/algorithms/IML/Makefile
+# linbox/algorithms/matrix-blas3/Makefile
 
 # examples/Readme-make
 # examples/field

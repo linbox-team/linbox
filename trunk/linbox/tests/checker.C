@@ -287,6 +287,10 @@ int main(int argc, char* argv[])
 #pragma omp section
 #endif
 		  Build_n_run("test-hom",                          counter , flag);
+// #ifdef LINBOX_HAVE_OPENMP
+// #pragma omp section
+// #endif
+		  // Build_n_run("test-iml",                      counter , flag);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif

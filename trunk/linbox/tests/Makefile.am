@@ -68,10 +68,11 @@ BASIC_TESTS =  \
         test-rational-solver          \
         test-rational-solver-adaptive \
 	test-rank                     \
-	test-iml                      \
 	test-cra                      \
 	test-charpoly
 
+#  test-iml                      \
+#
 
 
 FULLCHECK_TESTS =                 \
@@ -699,8 +700,8 @@ test_permutation_SOURCES =                  \
 
 
 
-test_iml_SOURCES =                    \
-        test-iml.C
+#  test_iml_SOURCES =                    \
+#  test-iml.C
 
 
 # OCL Test

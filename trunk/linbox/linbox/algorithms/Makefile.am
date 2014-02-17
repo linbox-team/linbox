@@ -21,7 +21,9 @@
 
 pkgincludesubdir=$(pkgincludedir)/algorithms
 
-SUBDIRS=gauss matrix-blas3 IML opencl-kernels
+SUBDIRS=gauss opencl-kernels
+#  IML
+# matrix-blas3
 
 noinst_LTLIBRARIES=libalgorithms.la
 
@@ -64,7 +66,6 @@ pkgincludesub_HEADERS =            \
 	eliminator.h                       \
 	eliminator.inl                     \
 	gauss.h                            \
-	iml.h                              \
 	triangular-solve.h                 \
 	gauss-gf2.h                        \
 	triangular-solve-gf2.h             \
@@ -146,6 +147,9 @@ pkgincludesub_HEADERS =            \
 	rns.h                              \
 	rns.inl                            \
 	$(USE_OCL_HDRS)
+
+#  iml.h                              \
+#
 
 EXTRA_DIST =           \
     algorithms.doxy    \
