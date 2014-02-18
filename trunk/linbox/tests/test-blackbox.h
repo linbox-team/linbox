@@ -274,6 +274,7 @@ testReadWrite(BB &A)
 		}
 	}
 
+/*  A constructor from a matrix stream is not a required member of a blackbox. -bds
 	{
 		ifstream in("temp2");
 		if (not in) {
@@ -291,6 +292,7 @@ testReadWrite(BB &A)
 			B.write(report << "B is ") << std::endl;
 		}
 	}
+*/
 	if (pass) report << "PASS: successful write/read" << std::endl;
 	return pass;
 }

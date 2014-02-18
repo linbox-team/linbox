@@ -101,12 +101,13 @@ namespace LinBox
 			
 			return x;
 		}
-		
+		/*
 		Element &init(Element &x, const Element &y) const {
 			return _pd.assign(x, y);
 		}
+		*/
 		
-		integer &convert(integer &x, Element y) {
+		integer &convert(integer &x, Element y) const {
 			x = 0;
 			integer q = _pd.characteristic();
 			Givaro::Degree d = _pd.degree(y);
