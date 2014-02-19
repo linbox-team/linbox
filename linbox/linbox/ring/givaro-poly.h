@@ -53,7 +53,7 @@ namespace LinBox
 		
 		GivaroPoly(){}
 		
-		GivaroPoly(Domain pd) {
+		GivaroPoly(const Domain &pd) {
 			_pd = pd;
 			
 			_pd.assign(zero, _pd.zero);
@@ -86,7 +86,8 @@ namespace LinBox
 			return x;
 		}
 		
-		Element &init(Element &x, const integer &y) const {
+		template<class XXX>
+		Element &init(Element &x, const XXX &y) const {
 			_pd.init(x, Givaro::Degree(0), 0);
 			
 			integer q = _pd.characteristic();
@@ -106,13 +107,8 @@ namespace LinBox
 			
 			return x;
 		}
-		/*
-		Element &init(Element &x, const Element &y) const {
-			return _pd.assign(x, y);
-		}
-		*/
 		
-		integer &convert(integer &x, Element y) const {
+		integer &convert(integer &x, const Element &y) const {
 			x = 0;
 			integer q = _pd.characteristic();
 			Givaro::Degree d = _pd.degree(y);
@@ -131,7 +127,7 @@ namespace LinBox
 			return x;
 		}
 		
-		Element &assign(Element &x, const Element y) const {
+		Element &assign(Element &x, const Element &y) const {
 			return _pd.assign(x, y);
 		}
 		
@@ -143,19 +139,19 @@ namespace LinBox
 			return c = _pd.characteristic(c);
 		}
 		
-		bool areEqual(Element x, Element y) const {
+		bool areEqual(const Element &x, const Element &y) const {
 			return _pd.areEqual(x, y);
 		}
 		
-		bool isZero(Element x) const {
+		bool isZero(const Element &x) const {
 			return _pd.isZero(x);
 		}
 		
-		bool isOne(Element x) const {
+		bool isOne(const Element &x) const {
 			return _pd.isOne(x);
 		}
 		
-		bool isMOne(Element x) const {
+		bool isMOne(const Element &x) const {
 			return _pd.isMOne(x);
 		}
 		
@@ -167,7 +163,7 @@ namespace LinBox
 			return is;
 		}
 		
-		std::ostream &write(std::ostream &os, Element x) const {
+		std::ostream &write(std::ostream &os, const Element &x) const {
 			return _pd.write(os, x);
 		}
 		
@@ -176,27 +172,27 @@ namespace LinBox
 			return is;
 		}
 		
-		Element &add(Element &x, Element y, Element z) const {
+		Element &add(Element &x, const Element &y, const Element &z) const {
 			return _pd.add(x, y, z);
 		}
 		
-		Element &sub(Element &x, Element y, Element z) const {
+		Element &sub(Element &x, const Element &y, const Element &z) const {
 			return _pd.sub(x, y, z);
 		}
 		
-		Element &mul(Element &x, Element y, Element z) const {
+		Element &mul(Element &x, const Element &y, const Element &z) const {
 			return _pd.mul(x, y, z);
 		}
 		
-		Element &div(Element &x, Element y, Element z) const {
+		Element &div(Element &x, const Element &y, const Element &z) const {
 			return _pd.div(x, y, z);
 		}
 		
-		Element &neg(Element &x, Element y) const {
+		Element &neg(Element &x, const Element &y) const {
 			return _pd.neg(x, y);
 		}
 		
-		Element &inv(Element &x, Element y) const {
+		Element &inv(Element &x, const Element &y) const {
 			if (_pd.degree(y) == 0 && !_pd.isZero(y)) {
 				Scalar_t tmp;
 				_pd.subdomain().inv(tmp, _pd.getEntry(tmp, Givaro::Degree(0), y));
@@ -206,23 +202,23 @@ namespace LinBox
 			return _pd.assign(x,zero);
 		}
 		
-		Element &axpy(Element &r, Element a, Element x, Element y) const {
+		Element &axpy(Element &r, const Element &a, const Element &x, const Element &y) const {
 			return _pd.axpy(r,a,x,y);
 		}
 		
-		Element &addin(Element &x, Element y) const {
+		Element &addin(Element &x, const Element &y) const {
 			return _pd.addin(x, y);
 		}
 		
-		Element &subin(Element &x, Element y) const {
+		Element &subin(Element &x, const Element &y) const {
 			return _pd.subin(x, y);
 		}
 		
-		Element &mulin(Element &x, Element y) const {
+		Element &mulin(Element &x, const Element &y) const {
 			return _pd.mulin(x, y);
 		}
 		
-		Element &divin(Element &x, Element y) const {
+		Element &divin(Element &x, const Element &y) const {
 			return _pd.divin(x, y);
 		}
 		
@@ -237,7 +233,7 @@ namespace LinBox
 			return x;
 		}
 		
-		Element &axpyin(Element &r, Element a, Element x) const {
+		Element &axpyin(Element &r, const Element &a, const Element &x) const {
 			return _pd.axpyin(r, a, x);
 		}
 		
@@ -253,12 +249,12 @@ namespace LinBox
 		}
 		
 		// g = gcd(a,b)
-		Element &gcd(Element &g, Element a, Element b) const {
+		Element &gcd(Element &g, const Element &a, const Element &b) const {
 			return _pd.gcd(g,a,b);
 		}
 		
 		// g = gcd(a,b) = a*s + b*t
-		Element &xgcd(Element &g, Element &s, Element &t, Element a, Element b) const {
+		Element &xgcd(Element &g, Element &s, Element &t, const Element &a, const Element &b) const {
 			return _pd.gcd(g,s,t,a,b);
 		}
 		
@@ -274,8 +270,8 @@ namespace LinBox
 			Element &t,
 			Element &u,
 			Element &v,
-			Element a,
-			Element b) const
+			const Element &a,
+			const Element &b) const
 		{
 			xgcd(g,s,t,a,b);
 			
