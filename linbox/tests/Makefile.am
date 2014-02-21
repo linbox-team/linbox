@@ -702,7 +702,7 @@ test_permutation_SOURCES =                  \
 
 test_blas_matrix_SOURCES =              \
 	test-common.h                   \
-	test-blas-matrix.h
+	test-blas-matrix.C
 
 #  test_iml_SOURCES =                    \
 #  test-iml.C
