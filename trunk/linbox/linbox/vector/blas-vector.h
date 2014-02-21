@@ -699,10 +699,10 @@ namespace LinBox { /*  BlasSubvector */
 		}
 
 		BlasSubvector (const Field & F, const std::vector<Element> &V
-			       , const size_t ibeg, const size_t stride, const size_t size) :
+			       , const size_t ibeg, const size_t Stride, const size_t Size) :
 			Father_t(),
 			_Vec (V),
-			_size(V.size()),_i0 (ibeg),_1stride(stride)
+			_size(Size),_i0 (ibeg),_1stride(Stride)
 			// could have _i0 = 0 and start at V+ibeg
 			,_field(F)
 		{
