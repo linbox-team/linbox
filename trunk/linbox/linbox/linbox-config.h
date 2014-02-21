@@ -60,9 +60,20 @@ using std::ptrdiff_t;
 
 
 
-
 namespace LinBox {
 
+	//! used to separate BLAS2 and BLAS3 operations
+	struct ContainerCategories {
+		struct Vector {};
+		struct Matrix {};
+		struct Other  {};
+	} ;
+
+	//! Trait for the Category
+	template<class Container>
+	struct ContainerTraits {
+		typedef ContainerCategories::Other  ContainerCategory ;
+	} ;
 }
 
 

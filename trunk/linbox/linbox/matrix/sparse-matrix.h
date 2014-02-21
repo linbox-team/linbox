@@ -57,6 +57,9 @@ namespace LinBox {
 	}
 
 
+	template<class _Field, class _Storage>
+	class SparseMatrixDomain ;
+
 } // LinBox
 
 #include "SparseMatrix/read-write-sparse.h"
@@ -214,6 +217,31 @@ namespace LinBox { /*  IndexedCategory */
 
 
 } // LinBox
+
+namespace LinBox { /*  ContainerTraits */
+
+	// this could also be a member of BlasVector
+	template<class Field, class _Rep>
+	struct ContainerTraits<SparseMatrix<_Field, SparseMatrixFormat::COO> > {
+		typedef ContainerCategories::Matrix ContainerCategory ;
+	}
+
+	template<class Field, class _Rep>
+	struct ContainerTraits<SparseMatrix<_Field, SparseMatrixFormat::CSR> > {
+		typedef ContainerCategories::Matrix ContainerCategory ;
+	}
+
+	template<class Field, class _Rep>
+	struct ContainerTraits<SparseMatrix<_Field, SparseMatrixFormat::ELL> > {
+		typedef ContainerCategories::Matrix ContainerCategory ;
+	}
+
+	template<class Field, class _Rep>
+	struct ContainerTraits<SparseMatrix<_Field, SparseMatrixFormat::ELL_R> > {
+		typedef ContainerCategories::Matrix ContainerCategory ;
+	}
+
+}
 
 namespace LinBox { /* Junk */
 
