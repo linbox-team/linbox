@@ -81,13 +81,8 @@ namespace LinBox
 			return x;
 		}
 		
-		Element &init(Element &x, const Element &y) const {
-			_pd.assign(x, y);
-			return x;
-		}
-		
 		template<class XXX>
-		Element &init(Element &x, const XXX &y) const {
+		Element &init(Element &x, const integer &y) const {
 			_pd.init(x, Givaro::Degree(0), 0);
 			
 			integer q = _pd.characteristic();

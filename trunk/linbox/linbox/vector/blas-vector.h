@@ -909,15 +909,15 @@ namespace LinBox { /*  BlasSubvector */
 namespace LinBox { /*  traits */
 
 	// this could also be a member of BlasVector
-	template<class Field, class _Rep>
+	template<class _Field, class _Rep>
 	struct ContainerTraits<BlasVector<_Field,_Rep> > {
 		typedef ContainerCategories::Vector ContainerCategory ;
-	}
+	};
 
-	template<class Field, class _Rep>
-	struct ContainerTraits<BlasSubvector<_Field,_Rep> > {
+	template<class _Vector>
+	struct ContainerTraits<BlasSubvector<_Vector> > {
 		typedef ContainerCategories::Vector ContainerCategory ;
-	}
+	};
 
 }
 

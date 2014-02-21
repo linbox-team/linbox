@@ -62,7 +62,10 @@ namespace LinBox
 		// Iterator  iter_addr = this->Begin();
 		Element * iter_addr = _ptr ;
 		for (; v != v_end ; ++v, ++iter_addr)
-			field().init(*iter_addr,*v);
+		{
+			field().init(*iter_addr);
+			field().assign(*iter_addr,*v);
+		}
 	}
 
 	template<class _Field, class _Rep>
@@ -71,7 +74,10 @@ namespace LinBox
 		typename std::vector< Element>::const_iterator iter_value = v.begin();
 		Iterator  iter_addr = this->Begin();
 		for (;iter_value != v.end(); ++iter_value,++iter_addr)
-			field().init(*iter_addr,*iter_value);
+		{
+			field().init(*iter_addr);
+			field().assign(*iter_addr,*iter_value);
+		}
 	}
 
 
@@ -84,7 +90,10 @@ namespace LinBox
 		typename _Matrix::ConstIterator         iter_value = A.Begin();
 		Iterator  iter_addr = this->Begin();
 		for (;iter_value != A.End(); ++iter_value,++iter_addr)
-			field().init(*iter_addr, *iter_value);
+		{
+			field().init(*iter_addr);
+			field().assign(*iter_addr, *iter_value);
+		}
 	}
 
 	template<class _Field, class _Rep>
@@ -555,7 +564,8 @@ namespace LinBox
 			ConstIndexedIterator  iter_index = A.IndexedBegin();
 			typename _Tp1::Element tmp;
 			for (;iter_value != A.End(); ++iter_value,++iter_index){
-				Ap.field().init(  tmp, *iter_value );
+				Ap.field().init(tmp);
+				Ap.field().assign(tmp, *iter_value);
 				Ap.setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
 			}
 		}
