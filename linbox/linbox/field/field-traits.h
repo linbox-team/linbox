@@ -44,6 +44,8 @@ namespace LinBox {
 		struct GenericTag{};
 		//! If it is isomorphic to Z/mZ, for some m or its extensions.
 		struct ModularTag : public virtual GenericTag{};
+		//! Galois Field  GF(p^e)
+		struct GaloisTag : public virtual GenericTag {};
 		//! If it is isomorphic to Z
 		struct IntegerTag : public virtual GenericTag{};
 		//! If it is isomorphic to Q
@@ -122,6 +124,7 @@ namespace LinBox {
 			else
 				return ( i >= 1 && i <= max );
 		}
+
 	};
 
 

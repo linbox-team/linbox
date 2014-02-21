@@ -688,16 +688,30 @@ namespace LinBox { /*  BlasSubvector */
 		}
 
 
-#if 0
-		BlasSubvector (BlasVector<Field,Rep> &V) :
+		BlasSubvector (const Field & F, const std::vector<Element> &V) :
 			Father_t(),
-			_Vec (const_cast<Rep&>(V.refRep())),
+			_Vec (V),
 			_size(V.size()),_i0 (0),_1stride(1)
-			,_field(V.field())
+			,_field(F)
 		{
+			// not tested
 			setIterators();
 		}
 
+		BlasSubvector (const Field & F, const std::vector<Element> &V
+			       , const size_t ibeg, const size_t stride, const size_t size) :
+			Father_t(),
+			_Vec (V),
+			_size(V.size()),_i0 (ibeg),_1stride(stride)
+			// could have _i0 = 0 and start at V+ibeg
+			,_field(F)
+		{
+			// not tested
+			setIterators();
+		}
+
+		//! @todo subvector of givvector
+		//! @todo subvector of ptr
 
 
 		BlasSubvector (const BlasSubvector<_Vector> &SV,
@@ -707,11 +721,11 @@ namespace LinBox { /*  BlasSubvector */
 			      ) :
 			Father_t(),
 			_Vec (SV._Vec),
-			_size(Size),_i0 (SV._i0*SV._1stride+ibeg)
-			// ,_1stride(SV._1stride)
+			_size(Size),_i0 (SV._i0+SV._1stride*ibeg)
 			,_1stride(SV._1stride*Stride)
 			,_field(SV.field())
 		{
+			// not tested
 			setIterators();
 		}
 
@@ -725,9 +739,11 @@ namespace LinBox { /*  BlasSubvector */
 			,_1stride(SV._1stride)
 			,_field(SV.field())
 		{
+			// not tested
 			setIterators();
 		}
 
+#if 0 /*  from BlasMatrix (should be a Row/Col in BlasMatrix, not here... */
 		BlasSubvector (const BlasMatrix<Field,Rep> &M
 			       , size_t ibeg
 			       , LINBOX_enum (Tag::Direction) f ) :
@@ -793,12 +809,7 @@ namespace LinBox { /*  BlasSubvector */
 		//      I/O      //
 		///////////////////
 
-		// template<class Field>
-		// std::istream& read (std::istream &file/*, const Field& field*/);
-
-
 		// std::ostream &write (std::ostream &os) const;
-
 
 		//////////////////
 		//   ELEMENTS   //
@@ -895,7 +906,20 @@ namespace LinBox { /*  BlasSubvector */
 
 } // LinBox
 
+namespace LinBox { /*  traits */
 
+	// this could also be a member of BlasVector
+	template<class Field, class _Rep>
+	struct ContainerTraits<BlasVector<_Field,_Rep> > {
+		typedef ContainerCategories::Vector ContainerCategory ;
+	}
+
+	template<class Field, class _Rep>
+	struct ContainerTraits<BlasSubvector<_Field,_Rep> > {
+		typedef ContainerCategories::Vector ContainerCategory ;
+	}
+
+}
 
 #include "blas-vector.inl"
 

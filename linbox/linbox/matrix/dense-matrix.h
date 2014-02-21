@@ -138,14 +138,30 @@ namespace LinBox { /*  MatrixHomTrait */
 
 }
 
-namespace LinBox { /*  IndexedCategory */
+namespace LinBox { /*  IndexedCategory  */
 
+	//! @bug this is trait, not a Category
 	template<class Field, class _Rep>
 	struct IndexedCategory< BlasMatrix<Field,_Rep> > {
 		typedef IndexedTags::HasIndexed Tag;
 	};
 
 } // LinBox
+
+namespace LinBox { /*  ContainerTraits */
+
+	// this could also be a member of BlasVector
+	template<class Field, class _Rep>
+	struct ContainerTraits<BlasMatrix<_Field,_Rep> > {
+		typedef ContainerCategories::Matrix ContainerCategory ;
+	}
+
+	template<class Field, class _Rep>
+	struct ContainerTraits<BlasSubmatrix<_Field,_Rep> > {
+		typedef ContainerCategories::Matrix ContainerCategory ;
+	}
+
+}
 
 #endif // __LINBOX_matrix_dense_matrix_H
 
