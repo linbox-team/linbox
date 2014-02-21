@@ -151,15 +151,15 @@ namespace LinBox { /*  IndexedCategory  */
 namespace LinBox { /*  ContainerTraits */
 
 	// this could also be a member of BlasVector
-	template<class Field, class _Rep>
+	template<class _Field, class _Rep>
 	struct ContainerTraits<BlasMatrix<_Field,_Rep> > {
 		typedef ContainerCategories::Matrix ContainerCategory ;
-	}
+	};
 
-	template<class Field, class _Rep>
-	struct ContainerTraits<BlasSubmatrix<_Field,_Rep> > {
+	template<class _Matrix>
+	struct ContainerTraits<BlasSubmatrix<_Matrix> > {
 		typedef ContainerCategories::Matrix ContainerCategory ;
-	}
+	};
 
 }
 
