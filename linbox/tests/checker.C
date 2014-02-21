@@ -414,6 +414,11 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
+		  Build_n_run("test-blas-matrix",            counter , flag);
+
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
 		  Build_n_run("test-smith-form-binary",            counter , flag);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
