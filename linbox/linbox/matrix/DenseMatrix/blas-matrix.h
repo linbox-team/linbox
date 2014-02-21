@@ -214,7 +214,7 @@ namespace LinBox
 	public:
 	       	const Field		    * _field; //! @bug why public ?
 		MatrixDomain<Field>    _MD; //! @bug why public ?
-	protected:
+	// protected:
 		VectorDomain<Field>    _VD;
 
 
@@ -1144,7 +1144,7 @@ namespace LinBox
                                 FFLAS::fgemv((typename Field::Father_t) _Mat->field(), FFLAS::FflasTrans,
 					      _row, _col,
 					      _Mat->field().one,
-					      _Mat->_ptr, getStride(),
+					      _Mat->getPointer(), getStride(),
 					      &x[0],ldx,
 					      _Mat->field().zero,
 					      &y[0],ldy);
