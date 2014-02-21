@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
+ *               2013, 2014 the LinBox group
  *
  * Written by :
  *               Pascal Giorgi  pascal.giorgi@ens-lyon.fr
@@ -1117,7 +1118,6 @@ namespace LinBox
 					      &y[0],ldy);
 			}
 			else {
-                                std::cout<<"USING MD "<<std::endl;
 				_Mat->_MD. vectorMul (y, *this, x);
 #if 0
 				typename BlasMatrix<Field,Rep>::ConstRowIterator i = this->rowBegin ();

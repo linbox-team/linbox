@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
+ *               2013, 2014 the LinBox group
  *
  * Written by :
  *               Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
