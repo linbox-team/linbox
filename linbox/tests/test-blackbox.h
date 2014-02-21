@@ -65,7 +65,7 @@ testBB(F) has been deleted. It assumed a BB could be built from a single size pa
 
 /** Generic Blackbox test 1: Random check that (u^T A) v = u^T (A v).
  *
- * Take the given black box and compute u^T A v via <A^T u, v> and <u, Av> for
+ * Take the given black box and compute u^T A v via <code><A^T u, v></code> and <code><u, Av></code> for
  * randomly chosen u and v. Check whether the results are equal. In theory, this
  * should guarantee that tranpose is working correctly if apply and dot product
  * are also working correctly. Apply and dot product should, of course, be
