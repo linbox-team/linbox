@@ -32,12 +32,30 @@
 #include "linbox/integer.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/modular.h"
+#include "linbox/field/givaro.h"
+
 #include "linbox/matrix/dense-matrix.h"
 
 #include "test-common.h"
 #include "test-blackbox.h"
 
 using namespace LinBox ;
+
+//! @bug remove rw
+template<class Matrix>
+bool testField(const typename Matrix::Field & F, size_t m, size_t n, bool rw = true) {
+	bool pass = true;
+	Matrix A(F, m, n);
+	A.random();
+	pass = pass && testBlackbox(A,rw);
+
+	if (std::min(m,n)>1) {
+		BlasSubmatrix<Matrix> B(A,1,1,m/2,n/2);
+		pass = pass && testBlackboxNoRW(B);
+	}
+
+	return pass ;
+}
 
 int main (int argc, char **argv)
 {
@@ -64,24 +82,62 @@ int main (int argc, char **argv)
 
 	commentator().start("BlasMatrix black box test suite", "triplesbb");
 
-	//Field
-	typedef Modular<double> Field;
-	// typedef Field::Element Element;
-	Field F (q);
+	{
+		//Field
+		typedef Modular<double> Field;
 
-	typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		Field F (q);
 
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
-	Matrix A(F, m, n);
-	A.random();
-	pass = pass && testBlackbox(A);
-
-	if (std::min(m,n)>1) {
-	BlasSubmatrix<Matrix> B(A,1,1,m/2,n/2);
-	pass = pass && testBlackboxNoRW(B);
+		pass = pass && testField<Matrix>(F,m,n);
 	}
 
+	{
+		//Field
+		typedef Modular<int64_t> Field;
 
+		Field F (q);
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+	}
+
+#if 0
+	{
+		//Field
+		typedef GivaroZpz<Givaro::Unsigned32> Field;
+
+		Field F (q);
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+	}
+#endif
+
+	{
+		//Field
+		typedef PID_integer Field;
+
+		Field F ;
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+	}
+
+	{
+		//Field
+		typedef GivaroExtension<> Field;
+
+		Field F(103,4) ;
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n, false);
+	}
 
 	commentator().stop(MSG_STATUS(pass),(const char *) 0,"TriplesBB black box test suite");
 	return pass ? 0 : -1;
