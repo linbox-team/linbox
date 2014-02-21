@@ -104,7 +104,7 @@ int main (int argc, char **argv)
 		pass = pass && testField<Matrix>(F,m,n);
 	}
 
-#if 0
+#if 0 /*  bug somewhere */
 	{
 		//Field
 		typedef GivaroZpz<Givaro::Unsigned32> Field;
@@ -116,6 +116,17 @@ int main (int argc, char **argv)
 		pass = pass && testField<Matrix>(F,m,n);
 	}
 #endif
+
+	{
+		//Field
+		typedef GivaroZpz<integer> Field;
+
+		Field F (q);
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+	}
 
 	{
 		//Field
