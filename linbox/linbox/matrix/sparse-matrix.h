@@ -221,25 +221,25 @@ namespace LinBox { /*  IndexedCategory */
 namespace LinBox { /*  ContainerTraits */
 
 	// this could also be a member of BlasVector
-	template<class Field, class _Rep>
+	template<class _Field>
 	struct ContainerTraits<SparseMatrix<_Field, SparseMatrixFormat::COO> > {
 		typedef ContainerCategories::Matrix ContainerCategory ;
-	}
+	};
 
-	template<class Field, class _Rep>
+	template<class _Field>
 	struct ContainerTraits<SparseMatrix<_Field, SparseMatrixFormat::CSR> > {
 		typedef ContainerCategories::Matrix ContainerCategory ;
-	}
+	};
 
-	template<class Field, class _Rep>
+	template<class _Field>
 	struct ContainerTraits<SparseMatrix<_Field, SparseMatrixFormat::ELL> > {
 		typedef ContainerCategories::Matrix ContainerCategory ;
-	}
+	};
 
-	template<class Field, class _Rep>
+	template<class _Field>
 	struct ContainerTraits<SparseMatrix<_Field, SparseMatrixFormat::ELL_R> > {
 		typedef ContainerCategories::Matrix ContainerCategory ;
-	}
+	};
 
 }
 
