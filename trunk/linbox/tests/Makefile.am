@@ -69,6 +69,7 @@ BASIC_TESTS =  \
         test-rational-solver-adaptive \
 	test-rank                     \
 	test-cra                      \
+	test-blas-matrix              \
 	test-charpoly
 
 #  test-iml                      \
@@ -699,6 +700,9 @@ test_permutation_SOURCES =                  \
 	test-permutation.C
 
 
+test_blas_matrix_SOURCES =              \
+	test-common.h                   \
+	test-blas-matrix.h
 
 #  test_iml_SOURCES =                    \
 #  test-iml.C

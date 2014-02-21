@@ -45,6 +45,56 @@
 #define LINBOX_CSR_TRANSPOSE 1000
 #endif
 
+namespace LinBox {
+#if 0
+	template<class _Field>
+	struct AutoField {
+		typedef _Field Base ;
+	};
+
+	template<>
+	struct AutoField<PID_Integer> {
+		typedef ModularBalanced<double> Base ;
+
+	};
+
+	template<Field>
+	struct AutoField<GivaroExtension<Field>> {
+		// typedef AutoField<Field>::Base Base ;
+		typedef Field Base ;
+	};
+
+	template<>
+	struct AutoField<Modular<float> > {
+		typedef Unparametric<float> Base ;
+	};
+
+	template<>
+	struct AutoField<ModularBalanced<float> > {
+		typedef Unparametric<float> Base ;
+	};
+
+	template<>
+	struct AutoField<Modular<double> > {
+		// sometimes, could be Unparametric<float>...
+		typedef Unparametric<double> Base ;
+	};
+
+	template<>
+	struct AutoField<ModularBalanced<double> > {
+		typedef Unparametric<double> Base ;
+	};
+
+
+
+	template<>
+	struct AutoField<Modular<float> > {
+		typedef Unparametric<float> Base ;
+	};
+#endif
+
+}
+
 namespace LinBox
 {
 
@@ -1278,6 +1328,8 @@ namespace LinBox
 		friend class SparseMatrixWriteHelper<Self_t >;
 		friend class SparseMatrixReadHelper<Self_t >;
 
+		// friend class SparseMatrixDomain<Self_t > ;
+
 		// bool is_upper ;
 		// bool zero_based;
 		// bool implicit_diag ;
@@ -1320,7 +1372,95 @@ namespace LinBox
 	};
 
 
+} // LinBox
 
+namespace LinBox {
+
+#if 0
+	template<class _Field>
+	SparseMatrixDomain<SparseMatrix<_Field, SparseMatrixFormat::CSR> {
+	public:
+		typedef typename _Field Field ;
+		typedef typename SparseMatrix<Field, SparseMatrixFormat::CSR> Matrix_t ;
+		typedef typename SparseMatrixDomain<Matrix_t> Self_t ;
+
+		Self_t(Matrix_t & M) :
+			_mat(M)
+		{}
+
+		// template<class inMatrix, class outMatrix>
+		// outMatrix & apply( outMatrix & y, const inMatrix & x, Element & alpha, const LINBOX_enum(Tag::Side) lr)
+
+		template<class inMatrix, class outMatrix>
+		outMatrix & applyLeft( outMatrix & y, const inMatrix & x, Element & alpha)
+		{
+			return applyLeft(y,x,alpha
+					 , typename ContainerTraits<inMatrix>::ContainerCategory()
+					 , typename FieldTraits<typename inMatrix::Field>::categoryTag() );
+		}
+
+		template<class inMatrix, class outMatrix>
+		outMatrix & applyRight( outMatrix & y, const inMatrix & x, Element & alpha)
+		{
+			return applyRight(y,x,alpha
+					  , typename ContainerTraits<inMatrix>::ContainerCategory()
+					 , typename FieldTraits<typename inMatrix::Field>::categoryTag() );
+		}
+
+#if 0 /*  allow y to be transposed */
+		template<class inMatrix, class outMatrix>
+		outMatrix & applyRight( outMatrix & y, const Transpose<inMatrix> & x, Element & alpha)
+		{
+			return applyRight(y,x,alpha,lr, typename ContainerTraits<inMatrix>::ContainerCategory() );
+		}
+#endif
+
+
+	private :
+		// XXX generic Tag
+		// axpy, trans
+
+		// XXX generic Tag
+		// MKL
+
+		// Modular Tag
+		// sum of matrices
+		template<class inMatrix, class outMatrix>
+		outMatrix & applyLeft( outMatrix & y, const inMatrix & x, Element & alpha
+				  , typename ContainerCategories::Vector
+				  , typename RingCategories::ModularTag);
+
+		template<class inMatrix, class outMatrix>
+		outMatrix & applyLeft( outMatrix & y, const inMatrix & x, Element & alpha
+				  , typename ContainerCategories::Matrix
+				  , typename RingCategories::ModularTag);
+
+		template<class inMatrix, class outMatrix>
+		outMatrix & applyRight( outMatrix & y, const inMatrix & x, Element & alpha
+				  , typename ContainerCategories::Vector
+				  , typename RingCategories::ModularTag);
+
+		template<class inMatrix, class outMatrix>
+		outMatrix & applyRight( outMatrix & y, const inMatrix & x, Element & alpha
+				  , typename ContainerCategories::Matrix
+				  , typename RingCategories::ModularTag);
+
+
+		// XXX Integer Tag
+		// RNS (needs _Field -> ModularField)
+
+		// XXX Galois Tag
+		// Toom Cook or the like (needs _Field -> Base(_Field)=ModularField)
+
+	private :
+		Matrix_t & _mat ;
+
+		SparseMatrix< AutoField<Field>::Base, SparseMatrixFormat::HYB > N_mat ;
+		SparseMatrix< AutoField<Field>::Base, SparseMatrixFormat::HYB > T_mat ;
+		// Helper
+
+	}
+#endif
 
 
 } // namespace LinBox
