@@ -87,6 +87,12 @@ namespace LinBox { /*  MatrixContainerTrait */
 	};
 
 	template <class _Matrix>
+	class MatrixContainerTrait<BlasSubmatrix<_Matrix> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
+
+	template <class _Matrix>
 	class MatrixContainerTrait<const BlasSubmatrix<_Matrix> > {
 	public:
 		typedef MatrixContainerCategory::BlasContainer Type;

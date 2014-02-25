@@ -82,7 +82,7 @@ int main (int argc, char **argv)
 
 	commentator().start("BlasMatrix black box test suite", "triplesbb");
 
-	{
+	{ /* Modular<double> */
 		//Field
 		typedef Modular<double> Field;
 
@@ -93,9 +93,21 @@ int main (int argc, char **argv)
 		pass = pass && testField<Matrix>(F,m,n);
 	}
 
-	{
+	{ /* Modular<int64_t> */
 		//Field
 		typedef Modular<int64_t> Field;
+
+		Field F (q);
+		linbox_check(q < F.getMaxModulus());
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+	}
+
+	{ /* ModularBalanced<float> */
+		//Field
+		typedef ModularBalanced<float> Field;
 
 		Field F (q);
 
@@ -104,8 +116,32 @@ int main (int argc, char **argv)
 		pass = pass && testField<Matrix>(F,m,n);
 	}
 
+	{ /* ModularBalanced<int32_t> */
+		//Field
+		typedef ModularBalanced<int32_t> Field;
+
+		Field F (q);
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+	}
+
+#if 0 /* not working */
+	{ /* ModularBalanced<char> */
+		//Field
+		typedef ModularBalanced<char> Field;
+
+		Field F (q);
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+	}
+#endif
+
 #if 0 /*  bug somewhere */
-	{
+	{ /* GivaroZpz<Givaro::Unsigned32> */
 		//Field
 		typedef GivaroZpz<Givaro::Unsigned32> Field;
 
@@ -117,7 +153,7 @@ int main (int argc, char **argv)
 	}
 #endif
 
-	{
+	{ /* GivaroZpz<integer> */
 		//Field
 		typedef GivaroZpz<integer> Field;
 
@@ -128,7 +164,7 @@ int main (int argc, char **argv)
 		pass = pass && testField<Matrix>(F,m,n);
 	}
 
-	{
+	{ /* PID_integer */
 		//Field
 		typedef PID_integer Field;
 
@@ -139,7 +175,7 @@ int main (int argc, char **argv)
 		pass = pass && testField<Matrix>(F,m,n);
 	}
 
-	{
+	{ /* GivaroExtension<> */
 		//Field
 		typedef GivaroExtension<> Field;
 

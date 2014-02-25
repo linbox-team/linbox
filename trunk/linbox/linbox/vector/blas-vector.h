@@ -914,6 +914,12 @@ namespace LinBox { /*  traits */
 		typedef ContainerCategories::Vector ContainerCategory ;
 	};
 
+	//! @todo remove vectors
+	template<class _Rep>
+	struct ContainerTraits<std::vector<_Rep> > {
+		typedef ContainerCategories::Vector ContainerCategory ;
+	};
+
 	template<class _Vector>
 	struct ContainerTraits<BlasSubvector<_Vector> > {
 		typedef ContainerCategories::Vector ContainerCategory ;
