@@ -116,6 +116,7 @@ testTranspose (const Field                      &F,
 		VD.write( report << "Result of apply:           ", Av) << endl;
 
 		VD.dot (r1, u, Av);
+
 		A.applyTranspose (uA, u);
 
 		VD.write( report << "Result of transpose apply: ", uA) << endl;

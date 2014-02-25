@@ -30,7 +30,7 @@ AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la
 #  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly
 #AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly -O2
 #  AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -DDEBUG -O0
-AM_CXXFLAGS = -DLinBoxTestOnly @TESTS_CFLAGS@ @DEBUG_CFLAGS@
+AM_CPPFLAGS+= -DLinBoxTestOnly @TESTS_CFLAGS@ @DEBUG_CFLAGS@
 # AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
 # AM_CFLAGS = -g -Wall
 
