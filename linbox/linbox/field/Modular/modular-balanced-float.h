@@ -284,7 +284,8 @@ namespace LinBox
 				t+= fmodf(y, field().modulus);
 				y = fmodf(t, field().modulus);
 			}
-			return res = y;
+			//!@bug should not be neccessary (use assign)
+			return field().init(res, y);
 		}
 
 		template <class Vector1, class Vector2>
@@ -313,7 +314,8 @@ namespace LinBox
 				t+= fmodf(y, field().modulus);
 				y = fmodf(t, field().modulus);
 			}
-			return res = y;
+			//!@bug should not be neccessary (use assign)
+			return field().init(res, y);
 		}
 	private:
 		Element _bound;
