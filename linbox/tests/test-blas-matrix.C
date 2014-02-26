@@ -87,10 +87,13 @@ int main (int argc, char **argv)
 		typedef Modular<double> Field;
 
 		Field F (q);
+		commentator().start("Modular<double>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
+
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<double>");
 	}
 
 	{ /* Modular<int64_t> */
@@ -98,11 +101,12 @@ int main (int argc, char **argv)
 		typedef Modular<int64_t> Field;
 
 		Field F (q);
-		linbox_check(q < F.getMaxModulus());
+		commentator().start("Modular<int64_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<int64_t>");
 	}
 
 	{ /* ModularBalanced<float> */
@@ -110,10 +114,12 @@ int main (int argc, char **argv)
 		typedef ModularBalanced<float> Field;
 
 		Field F (q);
+		commentator().start("ModularBalanced<float>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<float>");
 	}
 
 	{ /* ModularBalanced<int32_t> */
@@ -121,10 +127,12 @@ int main (int argc, char **argv)
 		typedef ModularBalanced<int32_t> Field;
 
 		Field F (q);
+		commentator().start("ModularBalanced<int32_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<int32_t>");
 	}
 
 #if 0 /* not working */
@@ -158,10 +166,12 @@ int main (int argc, char **argv)
 		typedef GivaroZpz<integer> Field;
 
 		Field F (q);
+		commentator().start("GivaroZpz<integer>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"GivaroZpz<integer>");
 	}
 
 	{ /* PID_integer */
@@ -169,10 +179,12 @@ int main (int argc, char **argv)
 		typedef PID_integer Field;
 
 		Field F ;
+		commentator().start("PID_integer");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"PID_integer");
 	}
 
 	{ /* GivaroExtension<> */
@@ -180,13 +192,15 @@ int main (int argc, char **argv)
 		typedef GivaroExtension<> Field;
 
 		Field F(103,4) ;
+		commentator().start("GivaroExtension<>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n, false);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"GivaroExtension<>");
 	}
 
-	commentator().stop(MSG_STATUS(pass),(const char *) 0,"TriplesBB black box test suite");
+	commentator().stop(MSG_STATUS(pass),(const char *) 0,"BlasMatrix BB test suite");
 	return pass ? 0 : -1;
 }
 
