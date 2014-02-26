@@ -189,7 +189,6 @@ namespace LinBox
 		    it != A.IndexedEnd(); ++it) {
 
 			typename Field::Element tmp,e,i;
-			//! @bug F.init does not work with givaro/givaroextension.h
 			F.init(tmp);
 			F.init(e);
 			F.init(i);
@@ -225,7 +224,6 @@ namespace LinBox
 		while ( A.nextTriple(i,j,it) ) {
 
 			typename Field::Element tmp,e,f;
-			//! @bug F.init does not work with givaro/givaroextension.h
 			F.init(tmp);
 			F.init(e);
 			F.init(f);

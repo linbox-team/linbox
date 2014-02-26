@@ -165,7 +165,7 @@ int main (int argc, char **argv)
 		//Field
 		typedef GivaroZpz<integer> Field;
 
-		Field F (q);
+		Field F (123456789124);
 		commentator().start("GivaroZpz<integer>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
