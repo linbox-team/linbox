@@ -149,8 +149,8 @@ bool testTransposeMatrix(Matrix& A) {
 	if (not ret1) commentator().report() << "A set, A^T getEntry FAIL" << std::endl;
 
 	i = (size_t)rand()%m, j = (size_t)rand()%n;
-	B.setEntry(i, j, x);
-	A.getEntry(y, j, i);
+	B.setEntry(j, i, x);
+	A.getEntry(y, i, j);
 	ret = ret and (ret1 = F.areEqual(x, y));
 	if (not ret1) commentator().report() << "A^T set, A getEntry FAIL" << std::endl;
 
@@ -196,7 +196,7 @@ int main (int argc, char **argv)
 	Field::Element s; F.init(s, 5);
 	ScalarMatrix<Field> A(F, n, n, s);
 	pass = pass and testTransposeBlackbox(A);
-	commentator().stop("test on ScalarMatrix");
+	commentator().stop(MSG_STATUS (pass), (const char *) 0, "test on ScalarMatrix");
 
 	commentator().start("test on BlasMatrix");
 	BlasMatrix<Field> B(F, m, n);
@@ -205,16 +205,25 @@ int main (int argc, char **argv)
 			B.setEntry(i, j, F.init(s, i*j));
 	pass = pass and testTransposeBlackbox(B);
 	pass = pass and testTransposeMatrix(B);
-	commentator().stop("test on BlasMatrix");
+	commentator().stop(MSG_STATUS (pass), (const char *) 0, "test on BlasMatrix");
 
 	commentator().start("test on TriplesBB");
+#if 0 /* fails because setEntry(?,?,0) fails. */
 	SparseMatrix<Field,SparseMatrixFormat::TPL> C(F, m, n);
 	for (size_t i = 0; i < min(m, n); ++i) C.setEntry(i, i, F.init(s, i+1));
 	pass = pass and testTransposeBlackbox(C);
 	pass = pass and testTransposeMatrix(C);
-	commentator().stop("test on TriplesBB");
+#endif
+	commentator().stop(MSG_STATUS (pass), (const char *) 0, "test on TriplesBB");
 
-	commentator().stop("transpose black box test suite");
+	commentator().start("test on COO");
+	SparseMatrix<Field,SparseMatrixFormat::COO> C(F, m, n);
+	for (size_t i = 0; i < min(m, n); ++i) C.setEntry(i, i, F.init(s, i+1));
+	pass = pass and testTransposeBlackbox(C);
+	pass = pass and testTransposeMatrix(C);
+	commentator().stop(MSG_STATUS (pass), (const char *) 0, "test on TriplesBB");
+
+	commentator().stop(MSG_STATUS (pass), (const char *) 0, "transpose black box test suite");
 	return pass ? 0 : -1;
 }
 

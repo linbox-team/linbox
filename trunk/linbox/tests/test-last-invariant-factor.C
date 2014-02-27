@@ -116,6 +116,8 @@ bool testRandom(const Ring& R,
 			R.assign(e[(size_t)i],R.one);
 			U.apply(tmp1, e);
 			D.apply(tmp2, tmp1);
+			// LinBox::BlasSubvector<BlasVector<Ring> > col_p_v(R,*col_p);
+			// L.apply(col_p_v, tmp2);
 			L.apply(*col_p, tmp2);
 			R.assign(e[(size_t)i],R.zero);
 		}
