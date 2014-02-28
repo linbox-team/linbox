@@ -63,7 +63,7 @@ AC_MSG_CHECKING(for FLINT)
 
 for FLINT_HOME in ${FLINT_HOME_PATH}
   do
-    AS_IF([test -r "$FLINT_HOME/include/flint.h"],[
+    AS_IF([test -r "$FLINT_HOME/include/flint/flint.h"],[
 
        AS_IF([ test "x$FLINT_HOME" != "x/usr" -a "x$FLINT_HOME" != "x/usr/local"],[
            FLINT_CFLAGS="-I${FLINT_HOME}/include"
@@ -77,15 +77,21 @@ for FLINT_HOME in ${FLINT_HOME_PATH}
        AC_TRY_LINK(
        [ //extern "C" {
       #define __GMP_BITS_PER_MP_LIMB GMP_LIMB_BITS
-       #include <flint.h>
-       #include <fmpz_mat.h>
+       #include <flint/flint.h>
+       #include <flint/fmpz_mat.h>
        //}
        ],
        [fmpz_mat_t a;],
        [
 	   AC_TRY_RUN(
 	   [
-	   int main () { return 0; /* not possible to check version */ }
+	   #include "flint/flint.h"
+	   int main () {
+	   if ( (__FLINT_VERSION < 2) || ( (__FLINT_VERSION ==2) && (__FLINT_VERSION_MINOR < 4) ) )
+	     return 1 ;
+	   else
+	     return 0;
+	   }
 	   ],[
 	   flint_found="yes"
 	   break
@@ -129,7 +135,7 @@ AS_IF([test "x$flint_found" = "xyes"],[
 		echo "Sorry, your FLINT version is too old. Disabling."
 		ifelse([$3], , :, [$3]) ],
 		[ test "x$flint_found" = "xno" ],
-		[ AC_MSG_RESULT(>=2.3 not found )
+		[ AC_MSG_RESULT(>=2.4 not found )
 		ifelse([$3], , :, [$3])])
 
 AM_CONDITIONAL(LINBOX_HAVE_FLINT, test "x$HAVE_FLINT" = "xyes")

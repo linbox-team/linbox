@@ -47,6 +47,7 @@ int main(int ac, char ** av) {
 	static int p = 1009;
 	static int e = 3 ;
 	static size_t m = 10, n = 10 , k = 10;
+	static size_t b = 10 ;
 
 	static Argument as[] = {
 		{ 'n', "-n N", "Set cols of C .",                 TYPE_INT,     &n },
@@ -54,108 +55,141 @@ int main(int ac, char ** av) {
 		{ 'k', "-k N", "Set rows of B .",                 TYPE_INT,     &k },
 		{ 'p', "-p N", "Set characteristic.",                 TYPE_INT,     &p },
 		{ 'e', "-e N", "Set degree.",                 TYPE_INT,     &e },
+		{ 'b', "-b N", "Set length of integers.",                 TYPE_INT,     &b },
 		END_OF_ARGUMENTS
 	};
 
 
 	LinBox::parseArguments (ac, av, as);
 
-	// if (e < 2) {
-		// std::cout << " e > 1 please ! " << std::endl;
-		// return 0 ;
-	// }
-
-
-	typedef LinBox::Modular<int64_t> Zpz;
-	// typedef LinBox::Modular<double> Zpz;
-	typedef LinBox::GivaroExtension< Zpz > GFpe ;
-
-	// Z/pZ
-	Zpz F(p);
-	// GF(p^e) ;
-	GFpe GF (F, 2);
-
-	GF.write(std::cout << "This is the field with " << (LinBox::Integer)pow((LinBox::Integer)p,e) << " elements: ") << ", using: "   << GF.irreducible() << " as irreducible polynomial" << std::endl;
-
-	LinBox::BlasMatrix<GFpe> A(GF,m,k);
-	LinBox::BlasMatrix<GFpe> B(GF,k,n);
-	LinBox::BlasMatrix<GFpe> C(GF,m,n);
-
-	typedef GFpe::RandIter Randiter;
-	Randiter R(GF);
-	LinBox::RandomDenseMatrix<Randiter,GFpe> randomizer(GF,R) ;
-	randomizer.random(A);
-	// std::cout << "A[0,0] = " << A.getEntry(0,0) << std::endl;
-	randomizer.random(B);
-
 	LinBox::Timer Tim ;
-	std::cout << "naive over GFq" << std::endl;
-	Tim.clear(); Tim.start();
-	LinBox::BLAS3::mul(C,A,B,LinBox::BLAS3::mulMethod::naive());
-	Tim.stop();
-	std::cout << Tim << '(' << C.getEntry(0,0) << ')' << std::endl;
+	{ /* Toom Cook over GivarorExtension */
+		typedef LinBox::Modular<int64_t> Zpz;
+		// typedef LinBox::Modular<double> Zpz;
+		typedef LinBox::GivaroExtension< Zpz > GFpe ;
 
-	// for (size_t i = 0 ; i< m ; ++i)
+		// Z/pZ
+		Zpz F(p);
+		// GF(p^e) ;
+		GFpe GF (F, 2);
+		LinBox::MatrixDomain<GFpe> MD(GF);
+
+		GF.write(std::cout << "This is the field with " << (LinBox::Integer)pow((LinBox::Integer)p,e) << " elements: ") << ", using: "   << GF.irreducible() << " as irreducible polynomial" << std::endl;
+		std::cout << "matrices are " << m << 'x' << k << " and " << k << 'x' << n <<  std::endl;
+
+		LinBox::BlasMatrix<GFpe> A(GF,m,k);
+		LinBox::BlasMatrix<GFpe> B(GF,k,n);
+		LinBox::BlasMatrix<GFpe> C(GF,m,n);
+
+		typedef GFpe::RandIter Randiter;
+		Randiter R(GF);
+		LinBox::RandomDenseMatrix<Randiter,GFpe> randomizer(GF,R) ;
+		randomizer.random(A);
+		// std::cout << "A[0,0] = " << A.getEntry(0,0) << std::endl;
+		randomizer.random(B);
+
+		std::cout << "naive over GFq" << std::endl;
+		Tim.clear(); Tim.start();
+		LinBox::BLAS3::mul(C,A,B,LinBox::BLAS3::mulMethod::naive());
+		Tim.stop();
+		std::cout << Tim << '(' << C.getEntry(0,0) << ')' << std::endl;
+
+		// for (size_t i = 0 ; i< m ; ++i)
 		// for (size_t j = 0 ; j< n ; ++j)
-			// C.setEntry(i,j,GF.zero);
+		// C.setEntry(i,j,GF.zero);
 
-	// std::cout << "A[0,0] = " << A.getEntry(0,0) << std::endl;
-	{
-		std::cout << "ToomCook low mem" << std::endl;
-		LinBox::BlasMatrix<GFpe> D(GF,m,n);
-		Tim.clear(); Tim.start();
-		LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::ToomCook<GFpe>(GF,false));
-		Tim.stop();
-		std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
-		if (m*n < 100) {
-			for (size_t i = 0 ; i < m ; ++i)
-				for (size_t j = 0 ; j < n ; ++j)
-					if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j)))) {
-					std::cout << "error" << std::endl;
-						return 1;
-		}
-		}
-		else {
-			int r =100 ;
-			while (--r)  {
-				size_t i = (size_t)rand()%m;
-				size_t j = (size_t)rand()%n;
-				if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j)))) {
-					std::cout << "error" << std::endl;
-					return 1;
+		// std::cout << "A[0,0] = " << A.getEntry(0,0) << std::endl;
+		{
+			std::cout << "ToomCook low mem" << std::endl;
+			LinBox::BlasMatrix<GFpe> D(GF,m,n);
+			Tim.clear(); Tim.start();
+			LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::ToomCook<GFpe>(GF,false));
+			Tim.stop();
+			std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
+
+			if (!MD.areEqual(D,C)) {
+				std::cout << "error" << std::endl;
+				return 1;
 			}
+		}
+
+		{
+			std::cout << "ToomCook high mem" << std::endl;
+			LinBox::BlasMatrix<GFpe> D(GF,m,n);
+			Tim.clear(); Tim.start();
+			LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::ToomCook<GFpe>(GF,true));
+			Tim.stop();
+			std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
+
+			if (!MD.areEqual(D,C)) {
+				std::cout << "error" << std::endl;
+				return 1;
 			}
-			// TODO check with apply !
+		}
+
+		{
+			std::cout << "Matrix Domain" << std::endl;
+			LinBox::BlasMatrix<GFpe> D(GF,m,n);
+			Tim.clear(); Tim.start();
+			MD.mul(D,A,B);
+			Tim.stop();
+			std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
+
+			if (!MD.areEqual(D,C)) {
+				std::cout << "error" << std::endl;
+				return 1;
+			}
 		}
 	}
 
-	{
-		std::cout << "ToomCook high mem" << std::endl;
-		LinBox::BlasMatrix<GFpe> D(GF,m,n);
-		Tim.clear(); Tim.start();
-		LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::ToomCook<GFpe>(GF,true));
+	{ /* ZZ mat mul */
+
+		LinBox::PID_integer ZZ ;
+		LinBox::MatrixDomain<LinBox::PID_integer> MD(ZZ);
+		LinBox::BlasMatrix<LinBox::PID_integer> A(ZZ,m,k) ;
+		LinBox::BlasMatrix<LinBox::PID_integer> B(ZZ,k,n) ;
+		LinBox::BlasMatrix<LinBox::PID_integer> C(ZZ,m,n) ;
+
+		A.random((unsigned)b);
+		B.random((unsigned)b);
+
+		std::cout << "Naïve " << std::endl ;
+		Tim.clear() ; Tim.start() ;
+		LinBox::BLAS3::mul(C,A,B,LinBox::BLAS3::mulMethod::naive());
 		Tim.stop();
-		std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
-		if (m*n < 100) {
-			for (size_t i = 0 ; i < m ; ++i)
-				for (size_t j = 0 ; j < n ; ++j)
-					if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j)))) {
-					std::cout << "error" << std::endl;
-						return 1;
-					}
-		}
-		else {
-			int r =100 ;
-			while (--r)  {
-				size_t i = (size_t)rand()%m;
-				size_t j = (size_t)rand()%n;
-				if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j)))) {
-					std::cout << "error" << std::endl;
-					return 1;
-				}
+		std::cout << Tim << '(' << C.getEntry(0,0) << ')' << std::endl;
+
+#ifdef __LINBOX_HAVE_FLINT
+		{
+			std::cout << "FLINT " << std::endl;
+			LinBox::BlasMatrix<LinBox::PID_integer> D(ZZ,m,n);
+			Tim.clear(); Tim.start();
+			LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::FLINT());
+			Tim.stop();
+			std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
+
+			if (!MD.areEqual(D,C)) {
+				std::cout << "error" << std::endl;
+				return 1;
 			}
-			// TODO check with apply !
+		}
+#endif // __LINBOX_HAVE_FLINT
+
+		{
+			std::cout << "Matrix Domain" << std::endl;
+			LinBox::BlasMatrix<LinBox::PID_integer> D(ZZ,m,n);
+			Tim.clear(); Tim.start();
+			MD.mul(D,A,B);
+			Tim.stop();
+			std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
+
+			if (!MD.areEqual(D,C)) {
+				std::cout << "error" << std::endl;
+				return 1;
+			}
 		}
 	}
+
+
 	return 0;
 }

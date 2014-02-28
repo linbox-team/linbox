@@ -22,6 +22,9 @@
  * ========LICENCE========
  */
 
+#ifndef __LINBOX_matrix_random_matrix_H
+#define __LINBOX_matrix_random_matrix_H
+
 /** @file matrix/random-matrix.h
  * @ingroup matrix
  * @brief Implementation of random matrices.
@@ -149,6 +152,7 @@ namespace LinBox
 
 #include "linbox/matrix/random-matrix.inl"
 
+#endif // __LINBOX_matrix_random_matrix_H
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

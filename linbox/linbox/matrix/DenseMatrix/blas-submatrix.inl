@@ -186,15 +186,15 @@ namespace LinBox
 	}
 
 	template < class _Matrix >
-	BlasSubmatrix<_Matrix> &BlasSubmatrix<_Matrix>::random()
+	void BlasSubmatrix<_Matrix>::random()
 	{
 		typename Field::RandIter r(_Mat->field());
 		Element temp; _Mat->field().init(temp);
 		for (size_t i = 0 ; i < rowdim() ; ++i)
-		for (size_t j = 0 ; j < coldim() ; ++j) {
-			setEntry(i,j,r.random(temp));
+			for (size_t j = 0 ; j < coldim() ; ++j) {
+				setEntry(i,j,r.random(temp));
 		}
-		return *this;
+		return ;
 	}
 
 } // LinBox
