@@ -28,7 +28,7 @@
 #ifndef __LINBOX_util_args_parser_H
 #define __LINBOX_util_args_parser_H
 
-#include <gmp++/gmp++_int.h>
+#include <gmp++/gmp++.h>
 #include <fflas-ffpack/utils/args-parser.h>
 
 #endif // __LINBOX_util_args_parser_H

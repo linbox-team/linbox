@@ -48,6 +48,7 @@
 
 namespace LinBox
 {
+	template<class Field> class BlasMatrixDomain ;
 
 	// non dependant struct -> out of class.
 	struct RankBuildMethod {
@@ -148,7 +149,7 @@ namespace LinBox
 
 	/// @todo To be factorized.
 	void RandomBlasPermutation(BlasPermutation<size_t> & P) ;
-}
+} // LinBox
 
 #include "linbox/matrix/random-matrix.inl"
 
