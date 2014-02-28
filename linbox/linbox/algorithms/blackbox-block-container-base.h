@@ -35,7 +35,9 @@
 
 #include <time.h> // for seeding
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
