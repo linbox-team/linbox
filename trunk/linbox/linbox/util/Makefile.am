@@ -43,19 +43,20 @@ libutil_la_LDFLAGS=$(GIVARO_LIBS)  $(LDFLAGS)
 #	gmp++/libgmpxx.la
 
 pkgincludesub_HEADERS=    \
-	debug.h		  \
-	timer.h		  \
-	error.h		  \
+	args-parser.h     \
 	commentator.h 	  \
 	commentator.inl   \
 	contracts.h 	  \
-	prime-stream.h	  \
-	iml_wrapper.h     \
+	debug.h		  \
+	error.h		  \
 	field-axpy.h	  \
+	iml_wrapper.h     \
 	matrix-stream.h	  \
 	matrix-stream.inl \
 	mpicpp.h	  \
 	mpicpp.inl	  \
+	prime-stream.h	  \
+	timer.h		  \
 	write-mm.h
 
 EXTRA_DIST = util.doxy

@@ -48,7 +48,7 @@
 
 using namespace std;
 #include "linbox/util/commentator.h"
-#include "fflas-ffpack/utils/args-parser.h"
+#include "linbox/util/args-parser.h"
 
 
 template <class Field, class Vector>
