@@ -60,13 +60,14 @@ int main(int ac, char ** av) {
 
 	LinBox::parseArguments (ac, av, as);
 
-	if (e < 2) {
-		std::cout << " e > 1 please ! " << std::endl;
-		return 0 ;
-	}
+	// if (e < 2) {
+		// std::cout << " e > 1 please ! " << std::endl;
+		// return 0 ;
+	// }
 
 
-	typedef LinBox::Modular<double> Zpz;
+	typedef LinBox::Modular<int64_t> Zpz;
+	// typedef LinBox::Modular<double> Zpz;
 	typedef LinBox::GivaroExtension< Zpz > GFpe ;
 
 	// Z/pZ
@@ -109,16 +110,20 @@ int main(int ac, char ** av) {
 		if (m*n < 100) {
 			for (size_t i = 0 ; i < m ; ++i)
 				for (size_t j = 0 ; j < n ; ++j)
-					if (!(GF.areEqual(D.getEntry(0,0),C.getEntry(0,0))))
+					if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j)))) {
+					std::cout << "error" << std::endl;
 						return 1;
+		}
 		}
 		else {
 			int r =100 ;
 			while (--r)  {
 				size_t i = (size_t)rand()%m;
 				size_t j = (size_t)rand()%n;
-				if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j))))
+				if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j)))) {
+					std::cout << "error" << std::endl;
 					return 1;
+			}
 			}
 			// TODO check with apply !
 		}
@@ -134,16 +139,20 @@ int main(int ac, char ** av) {
 		if (m*n < 100) {
 			for (size_t i = 0 ; i < m ; ++i)
 				for (size_t j = 0 ; j < n ; ++j)
-					if (!(GF.areEqual(D.getEntry(0,0),C.getEntry(0,0))))
+					if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j)))) {
+					std::cout << "error" << std::endl;
 						return 1;
+					}
 		}
 		else {
 			int r =100 ;
 			while (--r)  {
 				size_t i = (size_t)rand()%m;
 				size_t j = (size_t)rand()%n;
-				if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j))))
+				if (!(GF.areEqual(D.getEntry(i,j),C.getEntry(i,j)))) {
+					std::cout << "error" << std::endl;
 					return 1;
+				}
 			}
 			// TODO check with apply !
 		}

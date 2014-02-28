@@ -35,6 +35,7 @@
 
 #include <fflas-ffpack/fflas/fflas.h>
 #include <fflas-ffpack/ffpack/ffpack.h>
+#include "linbox/algorithms/matrix-hom.h"
 
 namespace LinBox {
 	namespace BLAS3 {
@@ -167,7 +168,8 @@ namespace LinBox {
 					}
 				}
 
-				std::vector<double>  minpoly_vector  =  GF.irreducible() ;
+				typedef typename Zpz::Element Element;
+				std::vector<Element>  minpoly_vector  =  GF.irreducible() ;
 				for (size_t i = 0 ; i < minpoly_vector.size(); ++i)
 					F.negin(minpoly_vector[i]);
 
@@ -272,11 +274,33 @@ namespace LinBox {
 			 const BlasMatrix<GivaroExtension<Zpz> >& B,
 			 const mulMethod::ToomCook<GivaroExtension<Zpz> > & T)
 		{
+
+			size_t e = (size_t) A.field().exponent() ; // extension degree
+
 			size_t m = C.rowdim();
 			size_t k = B.rowdim();
 			size_t n = C.coldim();
+
 			Zpz F ( A.field().characteristic() ); // BaseField ?
-			size_t e = (size_t) A.field().exponent();
+
+
+			if (e == 1) {
+				BlasMatrix<Zpz> Af(A,F);
+				BlasMatrix<Zpz> Bf(B,F);
+				BlasMatrix<Zpz> Cf(C,F);
+				FFLAS::fgemm((typename Zpz::Father_t)F,
+							 FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+							 // m, k , n,
+							 m,n,k,
+							 F.one,
+							 Af.getPointer(), A.getStride(), //lda
+							 Bf.getPointer(), B.getStride(), //ldb
+							 F.zero,
+							 Cf.getWritePointer(), C.getStride());
+				MatrixHom::map(C,Cf);
+				return C;
+			}
+
 			BlasMatrix<Zpz> Cbloc(F,e,m*n);
 			BlasMatrix<Zpz> Abloc(F,e,m*k);
 			BlasMatrix<Zpz> Bbloc(F,e,k*n);
