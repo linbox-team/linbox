@@ -29,7 +29,7 @@ namespace LinBox {
 	namespace BLAS3 {
 		namespace Protected {
 			template<class _ZZ>
-			void getFlintMatrix(BlasMatrix<_ZZ> &C , FLINT::fmpz_mat_t Cf)
+			void getFlintMatrix(BlasMatrix<_ZZ> &C , const FLINT::fmpz_mat_t Cf)
 			{
 				Integer toto(0) ;
 				for (size_t i = 0 ; i< C.rowdim() ; ++i)
@@ -40,7 +40,18 @@ namespace LinBox {
 			}
 
 			template<class _ZZ>
-			void getFlintMatrix(BlasSubmatrix<_ZZ> &C , FLINT::fmpz_mat_t Cf)
+			void setFlintMatrix(FLINT::fmpz_mat_t Cf, const BlasMatrix<_ZZ> &C )
+			{
+				Integer toto(0) ;
+				for (size_t i = 0 ; i< C.rowdim() ; ++i)
+					for (size_t j = 0 ; j< C.coldim() ; ++j) {
+						FLINT::fmpz_set_mpz(fmpz_mat_entry(Cf,i,j), C.getEntry(i,j).get_mpz_const());
+					}
+			}
+
+#if 0
+			template<class _Mat>
+			void getFlintMatrix(BlasSubmatrix<_Mat> &C , const FLINT::fmpz_mat_t Cf)
 			{
 				Integer toto(0) ;
 				for (size_t i = 0 ; i< C.rowdim() ; ++i)
@@ -50,18 +61,9 @@ namespace LinBox {
 					}
 			}
 
-			template<class _ZZ>
-			void setFlintMatrix(FLINT::fmpz_mat_t Cf, BlasMatrix<_ZZ> &C )
-			{
-				Integer toto(0) ;
-				for (size_t i = 0 ; i< C.rowdim() ; ++i)
-					for (size_t j = 0 ; j< C.coldim() ; ++j) {
-						FLINT::fmpz_set_mpz(fmpz_mat_entry(Cf,i,j), C.getEntry(i,j).get_mpz_const());
-					}
-			}
 
 			template<class _ZZ>
-			void setFlintMatrix(FLINT::fmpz_mat_t Cf, BlasSubmatrix<_ZZ> &C )
+			void setFlintMatrix(FLINT::fmpz_mat_t Cf, const BlasSubmatrix<_ZZ> &C )
 			{
 				Integer toto(0) ;
 				for (size_t i = 0 ; i< C.rowdim() ; ++i)
@@ -69,6 +71,7 @@ namespace LinBox {
 						FLINT::fmpz_set_mpz(fmpz_mat_entry(Cf,i,j), C.getEntry(i,j).get_mpz_const());
 					}
 			}
+#endif
 
 		}
 
@@ -81,17 +84,21 @@ namespace LinBox {
 		{
 			FLINT::fmpz_mat_t Af ;
 			FLINT::fmpz_mat_t Bf ;
-			FLINT::fmpz_mat_t Df ;
+			FLINT::fmpz_mat_t Cf ;
 			FLINT::fmpz_mat_init(Af, A.rowdim(), A.coldim());
 			FLINT::fmpz_mat_init(Bf, B.rowdim(), B.coldim());
-			FLINT::fmpz_mat_init(Df, D.rowdim(), D.coldim());
-			setFlintMatrix<typename DenseIntMat::Field>(Af,A);
-			setFlintMatrix<typename DenseIntMat::Field>(Af,A)(Bf,B);
-			FLINT::fmpz_mat_mul(Df,Af,Bf);
-			getFlintMatrix<typename DenseIntMat::Field>(Af,A)(D,Df);
+			FLINT::fmpz_mat_init(Cf, C.rowdim(), C.coldim());
+			Protected::setFlintMatrix<typename DenseIntMat::Field>(Af,A);
+			Protected::setFlintMatrix<typename DenseIntMat::Field>(Bf,B);
+			// Timer Tim ;Tim.clear(); Tim.start();
+			FLINT::fmpz_mat_mul(Cf,Af,Bf);
+			// Tim.stop() ; std::cout << "inside : " << Tim << std::endl;
+			Protected::getFlintMatrix<typename DenseIntMat::Field>(C,Cf);
 			FLINT::fmpz_mat_clear(Af);
 			FLINT::fmpz_mat_clear(Bf);
-			FLINT::fmpz_mat_clear(Df);
+			FLINT::fmpz_mat_clear(Cf);
+
+			return C;
 		}
 	} // BLAS3
 }

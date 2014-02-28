@@ -560,7 +560,18 @@ namespace LinBox
 		// init to field zero elements
 		void zero() ;
 		// init to random field elements
-		void random() ;
+		void random()
+		{
+			subMatrixType B(*this, 0, 0, rowdim(), coldim());
+			B.random();
+		}
+
+		template<class Rand>
+		void random(const Rand&)
+		{
+			return random();
+		}
+
 		///////////////////
 		//      I/O      //
 		///////////////////
@@ -910,7 +921,13 @@ namespace LinBox
 		BlasSubmatrix &zero();
 
 		/// Overwrite with random elements.
-		BlasSubmatrix &random();
+		void random();
+
+		template<class T>
+		void random(const T&)
+		{
+			return random() ;
+		}
 
 		template<typename _Tp1, class _Rep2 = Rep>
 		struct rebind ;
@@ -1239,7 +1256,25 @@ namespace LinBox
 
 } // LinBox
 
+#include "linbox/matrix/random-matrix.h"
 
+namespace LinBox
+{
+	//! @bug does not work for submatrices.
+	template<>
+	template<>
+	void BlasMatrix<PID_integer, Vector<PID_integer>::Dense >::random<unsigned>(const unsigned & b)
+	{
+		// std::cout << "randomized " <<  b << std::endl;
+		RandomIntegerIter<> R((unsigned)b);
+		typedef RandomIntegerIter<> IntRandIter ;
+		typedef RandomDenseMatrix<IntRandIter, PID_integer > IntRand_t;
+		IntRand_t Randomize(field(),R);
+		Randomize.random(*this);
+
+	}
+
+} // LinBox
 
 #include "blas-matrix.inl"
 #include "blas-submatrix.inl"
