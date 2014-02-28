@@ -169,8 +169,8 @@ namespace LinBox {
 
 	}
 }
+#include "linbox/algorithms/matrix-blas3/mul-flint.inl"
 #endif // __LINBOX_HAVE_FLINT
-//#include "linbox/algorithms/matrix-blas3/mul-flint.inl"
 
 
 

@@ -21,9 +21,8 @@
 
 pkgincludesubdir=$(pkgincludedir)/algorithms
 
-SUBDIRS=gauss opencl-kernels
+SUBDIRS=gauss opencl-kernels matrix-blas3
 #  IML
-# matrix-blas3
 
 noinst_LTLIBRARIES=libalgorithms.la
 
