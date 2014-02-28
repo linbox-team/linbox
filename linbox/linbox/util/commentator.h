@@ -1007,7 +1007,7 @@ namespace LinBox
 
 
 
-#include "fflas-ffpack/utils/args-parser.h"
+#include "linbox/util/args-parser.h"
 namespace LinBox
 {
     void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = true) {
