@@ -839,16 +839,23 @@ namespace LinBox
 		template<class inVector, class outVector>
 		outVector& applyTranspose(outVector &y, const inVector& x, const Element & a) const
 		{
-			// linbox_check(consistent());
+			linbox_check(consistent());
 			if (_helper.optimized(*this)) {
 				return _helper.matrix().apply(y,x,a) ; // NEVER use applyTranspose on that thing.
 			}
 
 			prepare(field(),y,a);
 
+			const FieldAXPY<Field> accu0(field());
+			std::vector<FieldAXPY<Field> > Y(_colnb, accu0);
+
 			for (size_t i = 0 ; i < _rownb ; ++i)
-				for (size_t k = _start[i] ; k < _start[i+1] ; ++k)
-					field().axpyin( y[_colid[k]], _data[k], x[i] );
+				for (size_t k = _start[i] ; k < _start[i+1] ; ++k) {
+					Y[_colid[k]].mulacc(_data[k], x[i] );
+				}
+
+			for (size_t i = 0 ; i < _colnb ; ++i)
+				Y[i].get(y[i]) ;
 
 			return y;
 		}

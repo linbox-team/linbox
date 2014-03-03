@@ -810,9 +810,23 @@ namespace LinBox
 
 			prepare(field(),y,a);
 
+#if 0
 			for (size_t i = 0 ; i < _rownb ; ++i)
 				for (size_t k = 0   ; k < _rowid[i] ; ++k)
 					field().axpyin( y[getColid(i,k)], getData(i,k), x[i] ); //! @todo delay !!!
+#else
+			const FieldAXPY<Field> accu0(field());
+			std::vector<FieldAXPY<Field> > Y(_colnb, accu0);
+
+			for (size_t i = 0 ; i < _rownb ; ++i)
+				for (size_t k = 0   ; k < _rowid[i] ; ++k)
+					Y[getColid(i,k)].mulacc( getData(i,k), x[i] );
+
+			for (size_t i = 0 ; i < _colnb ; ++i)
+				Y[i].get(y[i]) ;
+#endif
+
+
 
 			return y;
 		}
