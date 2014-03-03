@@ -732,11 +732,11 @@ namespace LinBox
 			size_t z = 0 ;
 			size_t last_i = 0 ;
 
-			FieldAXPY<Field> accu(field());
 #if 0
 			for (size_t i = 0 ; i < _nbnz ; ++i)
 				field().axpyin( y[_rowid[i]], _data[i], x[_colid[i]] );
-#endif
+#else
+			FieldAXPY<Field> accu(field());
 			while ( z < _nbnz) {
 				if (_rowid[z] == last_i) {
 					accu.mulacc(  _data[z], x[_colid[z]] );
@@ -750,6 +750,7 @@ namespace LinBox
 				++z ;
 			}
 			accu.get(y[last_i]);
+#endif
 
 			return y;
 		}
@@ -758,15 +759,26 @@ namespace LinBox
 		template<class Vector>
 		Vector& applyTranspose(Vector &y, const Vector& x, const Element & a ) const
 		{
-			// linbox_check(consistent());
+			linbox_check(consistent());
 			if (_helper.optimized(*this)) {
 				return _helper.matrix().apply(y,x,a) ; // NEVER use applyTranspose on that thing.
 			}
 
 			prepare(field(),y,a);
 
+#if 0
 			for (size_t i = 0 ; i < _nbnz ; ++i)
 				field().axpyin( y[_colid[i]], _data[i], x[_rowid[i]] );
+#else
+			const FieldAXPY<Field> accu0(field());
+			std::vector<FieldAXPY<Field> > Y(_colnb, accu0);
+			for (size_t i = 0 ; i < _nbnz ; ++i)
+				Y[_colid[i]].mulacc( _data[i], x[_rowid[i]] );
+			for (size_t i = 0 ; i < _colnb ; ++i)
+				Y[i].get(y[i]) ;
+#endif
+
+
 
 
 			return y;
