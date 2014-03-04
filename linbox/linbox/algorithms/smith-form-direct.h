@@ -75,7 +75,7 @@ namespace LinBox
 			}
 		}
 
-		// Ensures that if a=b then s=u=1 and t=v=0 to avoid an infinite loop
+		// Ensures that if a=b then s=u=v=1 and t=0 to avoid an infinite loop
 		void dxgcd(Element &s, Element &t, Element &u, Element &v, const Element &a, const Element &b) const
 		{
 			if (field().areEqual(a,b))
@@ -83,7 +83,7 @@ namespace LinBox
 				field().assign(s, field().one);
 				field().assign(t, field().zero);
 				field().assign(u, field().one);
-				field().assign(v, field().zero);
+				field().assign(v, field().one);
 				return;
 			}
 
