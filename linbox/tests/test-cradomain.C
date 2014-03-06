@@ -51,6 +51,7 @@ struct Interator {
 	{
 		for(BlasVector<PID_integer> ::const_iterator it=_v.begin();
 		    it != _v.end(); ++it) {
+			//!@bug bb: *it < 0 ?
 			double ds = Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
 		}

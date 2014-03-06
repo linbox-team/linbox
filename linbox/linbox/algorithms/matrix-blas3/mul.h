@@ -57,6 +57,8 @@ namespace LinBox {
 			struct naive {};
 
 			struct FLINT {};
+
+			struct CRA {} ;
 		}
 	}
 }
@@ -156,6 +158,7 @@ namespace FLINT {
 #include "flint/fmpz_mat.h"
 	}
 }
+
 namespace LinBox {
 	namespace BLAS3 {
 
@@ -173,6 +176,19 @@ namespace LinBox {
 #endif // __LINBOX_HAVE_FLINT
 
 
+// CRA
+namespace LinBox {
+	namespace BLAS3 {
+	template<class DenseIntMat>
+		DenseIntMat &
+		mul (DenseIntMat& C,
+			 const DenseIntMat& A,
+			 const DenseIntMat& B,
+			 const mulMethod::CRA & );
+
+	}
+}
+#include "linbox/algorithms/matrix-blas3/mul-cra.inl"
 
 // <+other algo+>
 namespace LinBox {

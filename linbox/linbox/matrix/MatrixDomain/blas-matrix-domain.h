@@ -859,14 +859,16 @@ namespace LinBox
 		}
 
 		// if there is some comparison on the elements, max abs of elements.
+		// whenever a max exists
 		template<class myBlasMatrix>
 		Element& Magnitude(Element&r, const myBlasMatrix &A) const
 		{
 			r = 0;
 			for (size_t i = 0 ; i < A.rowdim(); ++i)
 				for (size_t j = 0 ; j < A.coldim(); ++j) {
-					Element z = std::abs(A.refEntry(i,j));
-					if (r > z )
+					Element z = A.getEntry(i,j);
+					if (z < 0) z = -z ;
+					if (r < z )
 						r = z;
 				}
 			return r;

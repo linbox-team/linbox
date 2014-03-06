@@ -39,11 +39,11 @@
 #include <linbox/util/matrix-stream.h>
 #include <linbox/field/givaro.h>
 
-// #define SP_STOR SparseMatrixFormat::SparseSeq
+#define SP_STOR SparseMatrixFormat::SparseSeq
 // #define SP_STOR SparseMatrixFormat::COO
 // #define SP_STOR SparseMatrixFormat::CSR
 // #define SP_STOR SparseMatrixFormat::ELL
-#define SP_STOR SparseMatrixFormat::ELL_R
+// #define SP_STOR SparseMatrixFormat::ELL_R
 
 
 
@@ -70,7 +70,7 @@ int main (int argc, char **argv)
 	long unsigned int r;
 
 	LinBox::GivaroRational ZZ;
-		LinBox::Timer tim ; tim.clear() ; tim.start();
+	LinBox::Timer tim ; tim.clear() ; tim.start();
 	MatrixStream<GivaroRational> ms( ZZ, input );
 	SparseMatrix<GivaroRational, SP_STOR> A ( ms );
 	// SparseMatrix<GivaroRational, SparseMatrixFormat::CSR> A ( ms );
@@ -90,18 +90,16 @@ int main (int argc, char **argv)
 		LinBox::rank (r, A);
 	}
 	if (argc == 3) { // rank mod a prime
-		//for prime greater than wordsize:
-		//stringstream qstr(argv[2]);
-		//qstr >> q;
-		/*
-		integer q = atoi(argv[2]);
+#if 0
+		// for prime greater than wordsize:
+		integer q (argv[2]);
 		typedef Modular<integer> Field;
-		*/
-		/*
+#endif
+#if 0
 		//to use doubles, prime < 2^{23}
 		double q = atof(argv[2]);
 		typedef Modular<double> Field;
-		*/
+#endif
 		//to use ints, prime < 2^{31}
 		int32_t q = atoi(argv[2]);
                 if (q == 0) {
@@ -111,10 +109,11 @@ int main (int argc, char **argv)
 		typedef Modular<int32_t> Field;
 
 		Field F(q);
-/*
-		MatrixStream<Field> ms( F, input );
-*/
-		// SparseMatrix<Field, SparseMatrixFormat::CSR > B (F, A.rowdim(), A.coldim());// modular image of A
+		if (q > F.getMaxModulus()) {
+			std::cerr << "your number is too big for this field" << std::endl;
+			return -1 ;
+		}
+
 		SparseMatrix<Field, SP_STOR > B (F, A.rowdim(), A.coldim());// modular image of A
 		MatrixHom::map(B, A);
 		std::cout << "matrix is " << B.rowdim() << " by " << B.coldim() << std::endl;

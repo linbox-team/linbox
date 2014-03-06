@@ -188,6 +188,22 @@ int main(int ac, char ** av) {
 				return 1;
 			}
 		}
+
+		{
+			std::cout << "CRA " << std::endl;
+			LinBox::BlasMatrix<LinBox::PID_integer> D(ZZ,m,n);
+			Tim.clear(); Tim.start();
+			LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::CRA());
+			Tim.stop();
+			std::cout << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
+
+			if (!MD.areEqual(D,C)) {
+				// std::cout << D << std::endl;
+				// std::cout << C << std::endl;
+				std::cout << "error" << std::endl;
+				return 1;
+			}
+		}
 	}
 
 

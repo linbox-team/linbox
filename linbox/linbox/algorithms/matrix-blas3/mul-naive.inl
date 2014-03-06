@@ -25,31 +25,30 @@
 #define __LINBOX_matrix_blas3_mul_naive_INL
 
 
-namespace LinBox {
-	namespace BLAS3 {
-		template<class _anyMatrix, class _otherMatrix1, class _otherMatrix2>
-		_anyMatrix & mul (_anyMatrix& C,
-				  const _otherMatrix1& A,
-				  const _otherMatrix2& B,
-				  const mulMethod::naive &)
-		{
-			// TODO check sizes
-			// TODO check fields
-			// TODO check get/set Entry
-			typedef typename _anyMatrix::Field Field;
-			const Field &F = B.field();
-			for (size_t i = 0 ; i <C.rowdim(); ++i)
-				for (size_t j = 0 ; j <C.coldim(); ++j) {
-					C.setEntry(i,j,F.zero);
-					for (size_t k = 0 ; k <B.rowdim(); ++k)
-						F.axpyin(C.refEntry(i,j),
-							 A.getEntry(i, k),
-							 B.getEntry(k, j));
-				}
-			return C;
-		}
+namespace LinBox { namespace BLAS3 {
+	template<class _anyMatrix, class _otherMatrix1, class _otherMatrix2>
+	_anyMatrix & mul (_anyMatrix& C,
+			  const _otherMatrix1& A,
+			  const _otherMatrix2& B,
+			  const mulMethod::naive &)
+	{
+		// TODO check sizes
+		// TODO check fields
+		// TODO check get/set Entry
+		typedef typename _anyMatrix::Field Field;
+		const Field &F = B.field();
+		for (size_t i = 0 ; i <C.rowdim(); ++i)
+			for (size_t j = 0 ; j <C.coldim(); ++j) {
+				C.setEntry(i,j,F.zero);
+				for (size_t k = 0 ; k <B.rowdim(); ++k)
+					F.axpyin(C.refEntry(i,j),
+						 A.getEntry(i, k),
+						 B.getEntry(k, j));
+			}
+		return C;
 	}
-}
+} // BLAS3
+} // LinBox
 
 
 #endif //  __LINBOX_matrix_blas3_mul_naive_INL
