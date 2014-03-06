@@ -1261,13 +1261,14 @@ namespace LinBox
 namespace LinBox
 {
 	//! @bug does not work for submatrices.
+	//! @todo b should be the random generator
 	template<>
 	template<>
 	void BlasMatrix<PID_integer, Vector<PID_integer>::Dense >::random<unsigned>(const unsigned & b)
 	{
 		// std::cout << "randomized " <<  b << std::endl;
-		RandomIntegerIter<> R((unsigned)b);
-		typedef RandomIntegerIter<> IntRandIter ;
+		RandomIntegerIter<false> R((unsigned)b);
+		typedef RandomIntegerIter<false> IntRandIter ;
 		typedef RandomDenseMatrix<IntRandIter, PID_integer > IntRand_t;
 		IntRand_t Randomize(field(),R);
 		Randomize.random(*this);
