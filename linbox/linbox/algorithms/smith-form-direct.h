@@ -107,12 +107,12 @@ namespace LinBox
 
 						if (j != n)
 							swapCols(A, n, n, j);
-
+						
 						return true;;
 					}
 				}
 			}
-
+			
 			return false;
 		}
 
@@ -155,7 +155,7 @@ namespace LinBox
 					}
 				}
 			}
-
+			
 			return modified;
 		}
 
@@ -198,7 +198,7 @@ namespace LinBox
 					}
 				}
 			}
-
+			
 			return modified;
 		}
 
@@ -219,8 +219,8 @@ namespace LinBox
 				{
 					Element g;
 					field().gcd(g, tmp1, tmp2);
-
-					if (!field().areEqual(g, tmp1))
+					
+					if (!field().areAssociates(g, tmp1))
 					{
 						A.setEntry(i+1, i, tmp2);
 						fixed = true;
@@ -231,7 +231,7 @@ namespace LinBox
 					return fixed;
 				}
 			}
-
+			
 			return fixed;
 		}
 

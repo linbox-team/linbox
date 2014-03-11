@@ -136,6 +136,20 @@ namespace LinBox
 		bool areEqual(const Element &x, const Element &y) const {
 			return _pd.areEqual(x, y);
 		}
+		
+		bool areAssociates(const Element &x, const Element &y) const {
+			Scalar_t a, b;
+			Element z;
+			
+			domain().leadcoef(a, x);
+			domain().leadcoef(b, y);
+			
+			subdomain().divin(a, b);
+			
+			domain().mul(z, y, a);
+			
+			return _pd.areEqual(x, z);
+		}
 
 		bool isZero(const Element &x) const {
 			return _pd.isZero(x);

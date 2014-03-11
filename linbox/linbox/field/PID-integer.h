@@ -58,7 +58,18 @@ namespace LinBox
 		// defaults are fine: PID_integer() and PID_integer& operator=(PID_integer& K) 
 
 		typedef integer Element;
-
+		
+		bool areAssociates(integer &a, integer &b) const
+		{
+			integer t1;
+			integer t2;
+			
+			abs(t1, a);
+			abs(t2, b);
+			
+			return t1 == t2;
+		}
+		
 		/// axpyin
 		inline Element& axpyin (integer &r, const integer& a, const integer& x) const
 		{
