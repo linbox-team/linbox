@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <29 Jun 12 10:07:49 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Mar 14 09:47:48 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -407,7 +407,7 @@ ENSURE( TWOKMONE == (TWOK - 1UL) );
                         if (isNZero(r)) {
                             ++col_density[ tmp[k].first ];
                             toto[rs] =tmp[k];
-                            toto[rs].second = (long)( r );
+                            toto[rs].second = ( r );
                             ++rs;
                         }
                     }
