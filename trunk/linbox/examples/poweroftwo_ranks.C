@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <06 Apr 12 11:08:48 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Mar 14 14:14:09 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -69,7 +69,7 @@ int main (int argc, char **argv) {
             PGD(local, A, exponent);
             tim.stop();
 
-            std::cout << "Local Smith Form : (";
+            ZZ.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
             for (Smith_t::const_iterator  p = local.begin(); p != local.end(); ++p)
                 std::cout << '[' << p->second << ',' << p->first << "] ";
             cout << ')' << endl;
@@ -87,7 +87,7 @@ int main (int argc, char **argv) {
             PGD(local, A, exponent);
             tim.stop();
 
-            std::cout << "Local Smith Form : (";
+            R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
             for (Smith_t::const_iterator  p = local.begin(); p != local.end(); ++p)
                 std::cout << '[' << p->second << ',' << p->first << "] ";
             cout << ')' << endl;
