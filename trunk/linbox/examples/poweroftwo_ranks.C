@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <13 Mar 14 14:14:09 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Mar 14 14:16:32 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -38,7 +38,30 @@
 using namespace LinBox;
 using namespace std;
 
+template<class Int_type, class Ring_type = LinBox::UnparametricField<Int_type> >
+void runpoweroftworank(ifstream& input, const size_t exponent) {
+    typedef std::vector<std::pair<size_t,Int_type> > Smith_t;
+    typedef Ring_type Ring; // signed ?
+    Smith_t local;
+    Ring R;
+    LinBox::MatrixStream<Ring> ms( R, input );
+    LinBox::SparseMatrix<Ring, LinBox::SparseMatrixFormat::SparseSeq > A (ms);
 
+    input.close();
+    LinBox::PowerGaussDomainPowerOfTwo< Int_type > PGD;
+            
+    LinBox::Timer tim; 
+    tim.clear(); tim.start();
+    PGD(local, A, exponent);
+    tim.stop();
+
+    R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
+    for (auto  p = local.begin(); p != local.end(); ++p)
+        std::cout << '[' << p->second << ',' << p->first << "] ";
+    cout << ')' << endl;
+       
+    std::cerr << tim << std::endl;
+}
 
 int main (int argc, char **argv) {
     commentator().setMaxDetailLevel (-1);
@@ -57,40 +80,11 @@ int main (int argc, char **argv) {
         LinBox::Timer tim;
         size_t exponent = atoi(argv[2]);
         if (exponent > 63) {
-            typedef std::vector<std::pair<size_t,Integer> >  Smith_t;
-            typedef LinBox::PID_integer Ring;
-            Ring ZZ;
-            Smith_t local;
-            LinBox::MatrixStream<Ring> ms( ZZ, input );
-            LinBox::SparseMatrix<Ring, LinBox::SparseMatrixFormat::SparseSeq > A (ms);
-            input.close();
-            LinBox::PowerGaussDomainPowerOfTwo< Givaro::Integer > PGD;
-            tim.clear(); tim.start();
-            PGD(local, A, exponent);
-            tim.stop();
+            runpoweroftworank<Givaro::Integer, LinBox::PID_integer>(input, exponent);
 
-            ZZ.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
-            for (Smith_t::const_iterator  p = local.begin(); p != local.end(); ++p)
-                std::cout << '[' << p->second << ',' << p->first << "] ";
-            cout << ')' << endl;
         } else {
-            typedef std::vector<std::pair<size_t,uint64_t> > Smith_t;
-            typedef LinBox::UnparametricField<int64_t> Ring;
-            Smith_t local;
-            Ring R;
-            LinBox::MatrixStream<Ring> ms( R, input );
-            LinBox::SparseMatrix<Ring, LinBox::SparseMatrixFormat::SparseSeq > A (ms);
-            input.close();
-            LinBox::PowerGaussDomainPowerOfTwo< uint64_t > PGD;
-
-            tim.clear(); tim.start();
-            PGD(local, A, exponent);
-            tim.stop();
-
-            R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
-            for (Smith_t::const_iterator  p = local.begin(); p != local.end(); ++p)
-                std::cout << '[' << p->second << ',' << p->first << "] ";
-            cout << ')' << endl;
+            runpoweroftworank<uint64_t, LinBox::UnparametricField<int64_t> >(input, exponent);
+            
         }
 
 
