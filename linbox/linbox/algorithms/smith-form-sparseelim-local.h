@@ -540,7 +540,7 @@ namespace LinBox
 
 
 		template<class Modulo, class Matrix, template<class, class> class Container, template<class> class Alloc>
-		Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& operator()(Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& L, Matrix& A, Modulo FMOD, Modulo PRIME, int StaticParameters=0)
+		Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& operator()(Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& L, Matrix& A, Modulo FMOD, Modulo PRIME, int StaticParameters=0)
 		{
 			Container<size_t, Alloc<size_t> > ranks;
 			prime_power_rankin( FMOD, PRIME, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>(),StaticParameters);
@@ -551,7 +551,7 @@ namespace LinBox
 				size_t diff;
 				diff = *it-num;
 				if (diff > 0)
-					L.push_back( std::pair<size_t,size_t>(*it-num,MOD) );
+					L.push_back( std::pair<size_t,Modulo>(*it-num,MOD) );
 				MOD *= (size_t)PRIME;
 				num = *it;
 			}
