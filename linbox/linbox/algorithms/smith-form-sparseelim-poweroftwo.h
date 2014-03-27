@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <13 Mar 14 09:47:48 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Mar 14 10:34:29 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -24,10 +24,19 @@
 
 #ifndef __LINBOX_pp_gauss_poweroftwo_H
 #define __LINBOX_pp_gauss_poweroftwo_H
-
 #include <map>
 #include <givaro/givconfig.h> // for Signed_Trait
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
+
+// LINBOX_pp_gauss_intermediate_OUT outputs intermediate matrices
+#ifdef LINBOX_pp_gauss_intermediate_OUT
+
+// LINBOX_pp_gauss_steps_OUT outputs elimination steps
+#  ifndef LINBOX_pp_gauss_steps_OUT
+#  define LINBOX_pp_gauss_steps_OUT
+#  endif
+
+#endif
 
 // LINBOX_pp_gauss_steps_OUT outputs elimination steps
 #ifdef LINBOX_pp_gauss_steps_OUT
@@ -79,6 +88,10 @@ namespace LinBox
             return (!(b%a));
         }
 
+            // [On Newton-Raphson iteration for multiplicative 
+            //  inverses modulo prime powers. J-G. Dumas. 
+            //  IEEE Transactions on Computers, 2013]  
+            // http://doi.ieeecomputersociety.org/10.1109/TC.2013.94
         UInt_t& MY_Zpz_inv (UInt_t& u1, const UInt_t& a, const size_t exponent, const UInt_t& TWOTOEXPMONE) const {
             static const UInt_t ttep2(TWOTOEXPMONE+3UL);
             if (this->isOne(a)) return u1=this->one;
@@ -88,17 +101,11 @@ namespace LinBox
             u1=ttep2-a; // 2-a
             UInt_t xmone(a-1);
             for(size_t i=2; i<exponent; i<<=1) {
-//                 xmone *= xmone;
                 UInt_t tmp(xmone); xmone *= tmp;
                 xmone &= TWOTOEXPMONE;
                 u1 *= ++xmone; --xmone;
                 u1 &= TWOTOEXPMONE;
             }
-// std::cerr << a << std::endl;
-// std::cerr << u1 << std::endl;
-// std::cerr << TWOTOEXPMONE << std::endl;
-
-//  std::cerr << a << '*' << u1 << " mod 2^" << exponent << '-' << 1 << ';' << std::endl;
             ENSURE( ((a * u1) & TWOTOEXPMONE) == 1UL );
             return u1;
         }
@@ -213,7 +220,7 @@ namespace LinBox
                             UInt_t ttm = (UInt_t)lignepivot[(size_t)p].second;
                             indpermut = (long)lignepivot[(size_t)p].first;
                             lignepivot[(size_t)p].second = (lignepivot[0].second);
-                            lignepivot[0].second = (long)(ttm);
+                            lignepivot[0].second = (UInt_t)(ttm);
                         }
                         else {
                             E ttm = (E) lignepivot[(size_t)p];
@@ -271,8 +278,8 @@ namespace LinBox
                         if (lignecourante[0].first == k) {
                                 // non zero  <--> non zero
                             UInt_t tmp = (UInt_t) lignecourante[0].second ;
-                            lignecourante[0].second = (lignecourante[(size_t)j_head].second );
-                            lignecourante[(size_t)j_head].second = (long)(tmp);
+                            lignecourante[0].second = lignecourante[(size_t)j_head].second;
+                            lignecourante[(size_t)j_head].second = tmp;
                         }
                         else {
                                 // zero <--> non zero
@@ -298,12 +305,17 @@ namespace LinBox
                     unsigned long m=1;
                     unsigned long l(0);
                         // A[(size_t)i,k] <-- A[(size_t)i,k] / A[(size_t)k,k]
+
                     UInt_t headcoeff = TWOK-(UInt_t)(lignecourante[0].second);
+
+                    
 //                     UInt_t invpiv; MY_Zpz_inv(invpiv, lignepivot[0].second, TWOK);
                     UInt_t invpiv;
-		    MY_Zpz_inv(invpiv, (UInt_t) (lignepivot[0].second), EXPONENT, TWOKMONE);
+                    MY_Zpz_inv(invpiv, (UInt_t) (lignepivot[0].second), EXPONENT, TWOKMONE);
                     headcoeff *= invpiv;
                     headcoeff &= TWOKMONE ;
+
+
 //                     lignecourante[0].second = (  ((UModulo)( ( MOD-(lignecourante[0].second) ) * ( MY_Zpz_inv( lignepivot[0].second, MOD) ) ) ) % (UModulo)MOD ) ;
 //                     UInt_t headcoeff = lignecourante[0].second ;
                     --columns[ lignecourante[0].first ];
@@ -320,8 +332,12 @@ namespace LinBox
                             // if A[(size_t)i,j]!=0, then A[(size_t)i,j] <-- A[(size_t)i,j] - A[(size_t)i,k]*A[(size_t)k,j]
                         if ((m<nj) && (lignecourante[(size_t)m].first == j_piv)) {
 //                             lignecourante[(size_t)m].second = ( ((UModulo)( headcoeff  *  lignepivot[(size_t)l].second  + lignecourante[(size_t)m].second ) ) % (UModulo)MOD );
+                            STATE( UInt_t lcs = lignecourante[(size_t)m].second);
+                            
+
                             lignecourante[(size_t)m].second += ( headcoeff  *  (UInt_t)lignepivot[(size_t)l].second );
                             lignecourante[(size_t)m].second &= TWOKMONE;
+
                             if (isNZero((UInt_t)(lignecourante[(size_t)m].second)))
                                 *ci++ = lignecourante[(size_t)m++];
                             else
@@ -334,7 +350,7 @@ namespace LinBox
                             tmp &= TWOKMONE;
                             if (isNZero(tmp)) {
                                 ++columns[(size_t)j_piv];
-                                *ci++ =  E(j_piv, (long)tmp );
+                                *ci++ =  E(j_piv, (UInt_t)tmp );
                             }
                         }
                     }
@@ -385,6 +401,8 @@ namespace LinBox
                 UInt_t TWOKMONE(TWOK); --TWOKMONE;
 ENSURE( TWOK == (UInt_t(1UL) << EXPONENT) );
 ENSURE( TWOKMONE == (TWOK - 1UL) );
+
+
 
 #ifdef LINBOX_PRANK_OUT
                 std::cerr << "Elimination mod " << TWOK << std::endl;
@@ -493,9 +511,12 @@ ENSURE( TWOKMONE == (TWOK - 1UL) );
                         for(unsigned long l=k + 1; l < Ni; ++l)
                             FaireElimination(EXPONENT, TWOK, TWOKMONE, LigneA[(size_t)l], LigneA[(size_t)k], (long)indcol, c, col_density);
 
-
 #ifdef  LINBOX_pp_gauss_steps_OUT
-                    LigneA.write(std::cerr << "step[" << k << "], pivot: " << c << std::endl) << std::endl;
+                    std::cerr << "step[" << k << "], pivot: " << c << std::endl;
+#endif
+
+#ifdef  LINBOX_pp_gauss_intermediate_OUT
+                    LigneA.write(std::cerr) << std::endl;
 #endif
 
                     PreserveUpperMatrixRow(LigneA[(size_t)k], typename Boolean_Trait<PreserveUpperMatrix>::BooleanType());
@@ -518,7 +539,10 @@ ENSURE( TWOKMONE == (TWOK - 1UL) );
 
                     //             ranks.push_back(indcol);
 #ifdef LINBOX_pp_gauss_steps_OUT
-                LigneA.write(std::cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl) << std::endl;
+                std::cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl;
+#endif
+#ifdef LINBOX_pp_gauss_intermediate_OUT
+                LigneA.write(std::cerr) << std::endl;
 #endif
 #ifdef LINBOX_PRANK_OUT
                 std::cerr << "Rank mod 2^" << EXPONENTMAX << " : " << indcol << std::endl;
