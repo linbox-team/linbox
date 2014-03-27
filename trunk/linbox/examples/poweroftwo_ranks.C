@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <13 Mar 14 14:16:32 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Mar 14 10:19:58 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -50,6 +50,9 @@ void runpoweroftworank(ifstream& input, const size_t exponent) {
     input.close();
     LinBox::PowerGaussDomainPowerOfTwo< Int_type > PGD;
             
+    cout << "B is " << A.rowdim() << " by " << A.coldim() << endl;
+//     R.write(std::cerr << "Last entry: ", A.getEntry(A.rowdim()-1,A.coldim()-1)) << std::endl;
+
     LinBox::Timer tim; 
     tim.clear(); tim.start();
     PGD(local, A, exponent);
