@@ -113,64 +113,6 @@ For instance,
 %
 \subsubsection{New algorithms: Bini}
 %
- We recall
-in \cref{tab:bini:322}\footnote{This table corrects some typo in the original
-$W$ of the reference.} Bini's algorithm.
-%
-\input{bini332.tex}
-%
-The formula is recovered as this:
-\begin{equation} \label{eq:base}
-   %
-   C = \sum_{r=1}^\mu \frob{A}{X^{(r)}} \frob{B}{Y^{(r)}} Z^{(r)}
-   %
-\end{equation}
-where $\frob{\cdot}{\cdot}$ is the usual Frobenius product.
-%
-\par
-%
-It is well known (\cite{Bini:80:apa}) that approximate formulas for matrix
-multiplication  yield exact matrix matrix multiplication formula.
-This gives an approximate multiplication formula of type $(3, 2, 2)$ in $10$
-multiplications (hence $\omega \approx 2.78$, in particular lower than
-Strassen--Winograd).
-%
-\par
-%
-However, we can use this algorithm in several settings that seem to be new for
-getting an exact algorithm.  We can for instance set $\epsilon = 2^{-26}$ (so
-that $\epsilon^2 = 0$ for a \dbl) and then round off; or use $\epsilon = p$ for
-computation in $\modring{p}$
-%
-\paragraph{Size of  $p$}
-%
-XXX
-%
-\paragraph{Implementation and timings}
-%
-XXX use something else than 101 (\flt...)
-\begin{table}[htpb]
-        \caption{XXX Algorithme approché de Bini \emph{\mbox{vs.}}
-        Winograd (\texttt{fgemm}) sur $\modring{101}$ avec seuil de \numprint{1000}.}
-        \label{tab:bini:fgemm}
-        \centering
-        \begin{tabular}{c cc}
-                \toprule
-                % \multirow{2}{*}{dimensions}
-                & \multicolumn{2}{c}{temps (s)} \\
-                \cmidrule(lr){2-3}
-                 dimensions
-                  &  \texttt{fgemm-bini} &  \texttt{fgemm-wino} \\
-                \midrule
-                $(\numprint{1080}, \numprint{1080}, \numprint{1080})$ & \numprint{0.33}  & \bf \numprint{0.32} \\
-                $(\numprint{1800}, \numprint{1800}, \numprint{1800})$ &\numprint{1.37} & \bf \numprint{1.35} \\
-                $(\numprint{2700}, \numprint{2700}, \numprint{2700})$ &\bf \numprint{4.38}& \numprint{4.56} \\
-                $(\numprint{2700}, \numprint{1800}, \numprint{1800})$ &\bf \numprint{3.18}& \numprint{3.24} \\
-                $(\numprint{4500}, \numprint{1800}, \numprint{1800})$ &\bf \numprint{1.95} & \numprint{1.98} \\
-                $(\numprint{4050}, \numprint{2700}, \numprint{2700})$ & \bf \numprint{6.35} & \numprint{6.75} \\
-                \bottomrule
-        \end{tabular}
-\end{table}
 % \subsubsection{New algorithms: tr-tr}
 %
 % [schedule/implementation]
