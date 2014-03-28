@@ -6,32 +6,51 @@
 %%% Title
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{\linbox XXX}
+\title{Elements of Design for Containers and Solutions in the \linbox library}
 
-\author{aut1 \and aut2 \and aut3 \and autn}
+\author{Brice Boyer\footnote{\mailto{bbboyer@ncsu.edu}; this material is based on work supported in part by the National Science Foundation
+under Grant CCF-1115772 (Kaltofen)}
+\and Jean-Guillaume Dumas
+\footnote{\mailto{Jean-Guillaume.Dumas@imag.fr}}
+% \and Pascal Giorgi
+% \footnote{\mailto{pascal.giorgi@lirmm.fr}}
+% \and Cl\'ement Pernet
+% \footnote{\mailto{clement.pernet@ens-lyon.fr}}
+% \and B David Saunders
+% \footnote{\mailto{saunders@udel.edu}}
+}
 
 \date{}
+
+\newif\ifAbstractOnly
+\AbstractOnlytrue
+% \AbstractOnlyfalse
+
 
 \begin{document}
 
 \maketitle
 
-\begin{abstract}
-\large \danger In this paper\dots
-\end{abstract}
+\input{0-abstract}
+
+\ifAbstractOnly
+% \ifdefined\doabstract
+\else
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Intro
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-\input{intro}
+\input{1-intro}
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Containers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %
-\input{containers}
+\input{2-containers}
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,13 +58,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %
-\input{matmul}
+\input{3-matmul}
 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bench
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\input{benchmarks}
+\input{4-benchmarks}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Conclusion
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+\input{5-conclusion}
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,6 +80,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %
+\fi % abstractonly
+
 \bibliographystyle{abbrv}
 \bibliography{bboyer}
 %
