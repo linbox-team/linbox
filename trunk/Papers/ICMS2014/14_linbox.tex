@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[runningheads,a4paper]{llncs}
 
 \input{top}
 
@@ -7,18 +7,52 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{Elements of Design for Containers and Solutions in the \linbox library}
+\titlerunning{\linbox, design pattern, solutions and containers, benchmarking}
 
-\author{Brice Boyer\footnote{\mailto{bbboyer@ncsu.edu}; this material is based on work supported in part by the National Science Foundation
-under Grant CCF-1115772 (Kaltofen)}
-\and Jean-Guillaume Dumas
-\footnote{\mailto{Jean-Guillaume.Dumas@imag.fr}}
-% \and Pascal Giorgi
+\author{Brice Boyer\inst{1}
+%
+\and Jean-Guillaume Dumas\inst{2}
+%
+% \and Pascal Giorgi\inst{3}
 % \footnote{\mailto{pascal.giorgi@lirmm.fr}}
-\and Cl\'ement Pernet
- \footnote{\mailto{clement.pernet@imag.fr}}
-\and B David Saunders
-\footnote{\mailto{saunders@udel.edu}}
+\and Cl\'ement Pernet\inst{3}
+%
+\and B. David Saunders\inst{4}
+ %
 }
+% \authorrunning{B. Boyer, J-G. Dumas, C. Pernet, B. D. Saunders}
+
+
+\institute{%
+	North Carolina State University, Department of Mathematics, Raleigh,
+	NC, USA\footnote{This material is based on work supported in part by
+	the National Science Foundation under Grant CCF-1115772 (Kaltofen)},
+	%
+	\mailto{bbboyer@ncsu.edu}.
+	%
+	\and
+	%
+	Laboratoire J. Kuntzmann, Universit\'e de Grenoble. 51, rue des
+	Math\'ematiques, umr CNRS 5224, bp 53X, F38041 Grenoble, France,
+	%
+	\mailto{Jean-Guillaume.Dumas@imag.fr}.
+	%
+	\and
+	%
+	Laboratoire LIG, Universit\'e de Grenoble et INRIA. umr CNRS, F38330
+	Montbonnot, France,
+	%
+	\mailto{clement.pernet@imag.fr}.
+%
+	\and
+	%
+	University of Delaware, Computer and Information Science Department.
+	Newark / DE / 19716, USA,
+	%
+	\mailto{saunders@udel.edu}.%
+	%
+}
+
 
 \date{}
 

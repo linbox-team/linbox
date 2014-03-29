@@ -1,33 +1,38 @@
 \begin{abstract}
 	%
-	We develop in this paper design techniques used in the \cpp exact linear
-	algebra library \linbox. They are intended to make the library safer
-	and easier to use, while keeping it generic and efficient.
+	We develop in this paper design techniques used in the \cpp exact
+	linear algebra library \linbox. They are intended to make the library
+	safer and easier to use, while keeping it generic and efficient.
 	%
 	\par
 	%
 	First, we review the new simplified structure of the containers, based
-	on the \emph{mother model} (cf. \cite{Dumas:2010:lbpar}).  Namely,
-	vectors and matrix are all templated by a field and a storage type.
-	Matrix interface all agree with the same minimal blackbox interface. We
-	explain the design choices and their impact on coding.	%
+	on our \emph{founding scope allocation} model (cf.
+	\cite{Dumas:2010:lbpar}).  Namely, vectors and matrix containers are
+	all templated by a field and a storage type.  Matrix interfaces all
+	agree with the same minimal blackbox interface. This allows e.g. for a
+	unification of our dense and sparse matrices, as well as a clearer
+	model for matrices and submatrices. We explain the design choices and
+	their impact on coding.	 We will describe serveral of the new
+	containers, especially our sparse and dense matrices storages as well
+	as their \apply (\emph{blackbox}) method and compare to previous
+	implementations.%
 	\par
 	%
 	Then we present a variation of the \emph{strategy} design pattern that
 	is comprised of a controller--plugin system: the controller (solution)
 	chooses among plug-ins (algorithms) and the plug-ins always call back
 	the solution so a new choice can be made by the controller. We give
-	examples using the solution \mul.  We will describe
-	serveral of the new containers, especially our sparse and dense
-	matrices storages as well as their \apply method and compare to previous
-	implementations.
-
+	examples using the solution \mul, and generalise this design pattern
+	to the library. We also show performance comparisons with former \linbox
+	versions.
 	%
 	\par
 	%
 	Finally we present a benchmark architecture that serves two purposes.
 	The first one consists in providing the user with an easy way to
-	produces graphs using \cpp. The second one is to create a
-	framework for tuning the library and doing regression testing.
+	produces graphs using \cpp. The second goal is to create a framework
+	for automatically tuning the library (determine thresholds, choose
+	algorithms) and provide a regression testing scheme.
 	%
 \end{abstract}
