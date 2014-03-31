@@ -212,3 +212,12 @@ breaklinks%
 \newcommand{\ie}{\mbox{\emph{i.e.}}\xspace}
 \def\mailto#1{\href{mailto:#1}{#1}}
 
+%JGD
+\makeatletter
+\def\@fnsymbol#1{\ensuremath{\ifcase#1\or \natural \or
+    \mathparagraph\or \dagger\or \ddagger\or \mathsection\or \nshortmid
+    \or \dagger\dagger \or \ddagger\ddagger \or \sharp \or
+   \nshortparallel \or \lightning \or \oint \or \daleth \or \gimel
+   \or \clubsuit \or
+   \spadesuit \or\hearsuit \or \diamondsuit \else\@ctrerr\fi}}
+\makeatother
