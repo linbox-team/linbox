@@ -301,8 +301,8 @@ namespace LinBox
 
 		for (size_t i=0; i<A.rowdim(); i++)
 			FFLAS::fcopy ((typename Field::Father_t)F, A_v.coldim(),
-				      B_v.getPointer() + i*B_v.getStride(), 1,
-				      A_v.getPointer() + i*A_v.getStride(), 1);
+				      A_v.getPointer() + i*A_v.getStride(), 1,
+				      B_v.getPointer() + i*B_v.getStride(), 1);
 		return B;
 	}
 } // LinBox

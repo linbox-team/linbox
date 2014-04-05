@@ -59,8 +59,8 @@ dnl -------------------- dnl
 dnl FFLAS-FFPACK VERSION dnl
 dnl -------------------- dnl
 
-version_min=10700
-version_max=10800
+version_min=10800
+version_max=10900
 
 
 dnl Check for existence

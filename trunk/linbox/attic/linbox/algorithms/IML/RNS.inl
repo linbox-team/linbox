@@ -104,15 +104,15 @@ namespace LinBox { namespace iml {
 		//!@bug copy method for blas things (vector/blas and sub)
 		U[0].resize(R[0]);
 		FFLAS::fcopy(_unF,
-			     U[0].getWritePointer(),1,
-			     R[0].getPointer(),1);
+			     R[0].getPointer(),1,
+			     U[0].getWritePointer(),1);
 		// cblas_dcopy(n, R[0], 1, U[0], 1);
 
 		for (i = 1; i < _basislen; i++) {
 			FiniteField Fq(q[i]);
 			FFLAS::fcopy(_unF,
-				     U[i].getWritePointer(),1,
-				     U[i-1].getPointer(),1);
+				     U[i-1].getPointer(),1,
+				     U[i].getWritePointer(),1);
 			U[i].resize(R[0]);
 			// cblas_dcopy(n, U[i-1], 1, U[i], 1);
 			// for (j = i-2; j >= 0; j--) {}
@@ -138,8 +138,8 @@ namespace LinBox { namespace iml {
 		}
 
 		/* compute mod(r, p) in positive representation and store into RE */
-		FFLAS::fcopy(Fp,n,U[_basislen-1].getPointer(),1,
-			     RE.getWritePointer(),1);
+		FFLAS::fcopy(Fp,n,
+			     RE.getWritePointer(),1,U[_basislen-1].getPointer(),1);
 		// cblas_dcopy(n, U[_basislen-1], 1, RE, 1);
 		// Dmod((double)p, RE, 1, n, n);
 		ModElement qmp ;

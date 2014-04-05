@@ -241,7 +241,7 @@ namespace LinBox{ namespace iml{
 			std::vector<Element> C(n);
 			//!@bug I want to apply to the vector column j-1 of A
 			std::vector<Element> Aj(n) ;
-			FFLAS::fcopy(F,n,&(Aj[0]),1,A.getPointer()+(j-1),n);
+			FFLAS::fcopy(F,n,A.getPointer()+(j-1),n,&(Aj[0]),1);
 			B.apply(C,Aj);
 			FFLAS::fscalin(F,n,-1,&C[0],1);
 			for (i = 0; i < n-1; i++) {
@@ -360,7 +360,7 @@ size_t
 				U.setEntry(i,i,F.one);
 			}
 			if (r != 0) {
-				FFLAS::fcopy(F,n,r,U.getPointer(),n,RET.refRed().getPointer(),m);
+				FFLAS::fcopy(F,n,r,RET.refRed().getPointer(),m,U.getPointer(),n);
 			}
 			for (i = r; i > 0; i--) {
 				if (P[i] != i) {
@@ -383,7 +383,7 @@ size_t
 			}
 			else {
 				N.resize(n-r,n);
-				FFLAS::fcopy(F,n-r,n,N.getWritePointer(),n,U.getPointer()+r*n,n);
+				FFLAS::fcopy(F,n-r,n,U.getPointer()+r*n,n,N.getWritePointer(),n);
 			}
 			return r;
 		}
@@ -398,7 +398,7 @@ size_t
 			}
 			BlasMatrix<Field> U(F,r,n);
 			//! @bug A1=rref(A1) ??
-			FFLAS::fcopy(F,r,r,U.getPointer(),n,RET.refRed().getPointer(),m);
+			FFLAS::fcopy(F,r,r,RET.refRed().getPointer(),m,U.getPointer(),n);
 			for (i = r; i > 0; i--) {
 				if (P[i] != i) {
 					FFLAS::fswap(F,r,U.getPointer()+(i-1),n,U.getPointer()+(P[i]-1),n);
@@ -423,7 +423,7 @@ size_t
 			}
 			N.resize(n-r,n);
 			if (r != 0) {
-				FFLAS::fcopy(F,n-r,r,N.getWritePointer(),n,A.getPointer()+(r*m),m);
+				FFLAS::fcopy(F,n-r,r,A.getPointer()+(r*m),m,N.getWritePointer(),n);
 			}
 			for (i = 0; i < n-r; i++) {
 				N.setEntry(i,r+i,F.one);
