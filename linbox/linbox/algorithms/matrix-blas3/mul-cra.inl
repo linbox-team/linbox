@@ -165,9 +165,11 @@ namespace LinBox { namespace BLAS3 {
 			cra(C, iteration, genprime);
 
 #ifdef _LB_DEBUG
+#ifdef _LB_MM_TIMING
 			std::cout << "Sole modular matrix multiplications: " << iteration.chrono << std::endl;
+#endif
 
-			Integer mC; MaxElement(mC, C);
+			Integer mC; BMD.Magnitude(mC, C);
 			std::cout << "C max: " << logtwo(mC) <<  " (" << LinBox::naturallog(mC) << ')' << std::endl;
 #endif
 

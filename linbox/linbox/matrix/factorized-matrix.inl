@@ -308,8 +308,9 @@ namespace LinBox
 
 				// The last rows of B are now supposed to be 0
 
-				for (size_t i=0; i < A.getRank(); ++i)
-					FFLAS::fcopy ((typename Field::Father_t)F, B.coldim(), Xp + i*ldx, 1, Bp + i*ldx,1);
+				// for (size_t i=0; i < A.getRank(); ++i)
+					// FFLAS::fcopy ((typename Field::Father_t)F, B.coldim(), Bp + i*ldx,1, Xp + i*ldx, 1);
+				FFLAS::fcopy((typename Field::Father_t)F, A.getRank(),B.coldim(),Bp ,ldx, Xp, ldx);
 
 				FFLAS::ftrsm ((typename Field::Father_t)F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
 					      A.getRank(), X.coldim(), F.one, A.getPointer(), A.getStride(), X.getPointer(), X.getStride());
@@ -364,8 +365,9 @@ namespace LinBox
 				size_t ldb = B.getStride();
 				size_t ldx = X.getStride();
 
-				for (size_t i = 0; i < X.getrowdim(); ++i)
-					FFLAS::fcopy ((typename Field::Father_t)F, R, Xp + i*ldx, 1, Bp + i*ldb,1);
+				// for (size_t i = 0; i < X.getrowdim(); ++i)
+					// FFLAS::fcopy ((typename Field::Father_t)F, R, Xp + i*ldx, 1, Bp + i*ldb,1);
+				FFLAS::fcopy ((typename Field::Father_t)F, R, X.getrowdim(), Bp , ldb, Xp , ldx);
 
 				FFLAS::ftrsm ((typename Field::Father_t)F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
 					      X.rowdim(), R, F.one, A.getPointer(), A.getStride(), X.getPointer(), X.getStride());

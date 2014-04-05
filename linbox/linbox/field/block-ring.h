@@ -371,7 +371,6 @@ namespace LinBox
 			Scalar* b=B.matrix->getPointer();
 			Scalar* c=C.matrix->getPointer();
 
-			//FFLAS::fcopy((typename Field::Father_t)_field, rows*cols, b, 1, c, 1); // C = B
 
 
 			for(size_t i=0; i < rows*cols; ++i) {

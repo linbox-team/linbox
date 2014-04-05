@@ -117,7 +117,7 @@ bool CheckRank( const Field & F,
 {
 	//  std::cout << " is rank truely " << alledged_rank << " ?" << std::endl;
 	element_t(Field) * Acopy = new element_t(Field)[m*lda] ;
-	FFLAS::fcopy(F,m*lda,Acopy,1,A,1);
+	FFLAS::fcopy(F,m*lda,A,1,Acopy,1);
 	size_t true_rank = FFPACK::Rank(F,m,n,Acopy,lda);
 	delete[] Acopy ;
 	//                std::cout << "It is " << true_rank << "." << std::endl;
@@ -149,7 +149,7 @@ bool CheckDet( const Field & F,
 {
 	 // std::cout << " is det truely " << alledged_det << " ?" << std::endl;
 	element_t(Field) * Acopy = new element_t(Field)[m*m] ;
-	FFLAS::fcopy(F,m*m,Acopy,1,A,1);
+	FFLAS::fcopy(F,m*m,A,1,Acopy,1);
 	element_t(Field) true_det = FFPACK::Det(F,m,m,Acopy,lda);
 	delete[] Acopy ;
 	// std::cout << "It is " << true_det << "." << std::endl;

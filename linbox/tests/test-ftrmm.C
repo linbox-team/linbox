@@ -111,7 +111,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 #ifdef _LB_DEBUG
 	Element * E = new Element[rows*lda]; // copy of A
 	assert(E);
-	FFLAS::fcopy(F,rows*lda,E,1,A,1);
+	FFLAS::fcopy(F,rows*lda,A,1,E,1);
 	// for (size_t i = 0 ; i < rows*lda ; ++i) *(E+i) = *(A+i);
 #endif
 
@@ -119,7 +119,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 
 	for (size_t i = 0 ; i < M*N ; ++i) *(C+i) = F.zero;
 	// for (size_t i = 0 ; i < rows*ldb ; ++i) *(D+i) = *(B+i);
-	FFLAS::fcopy(F,rows*ldb,D,1,B,1);
+	FFLAS::fcopy(F,rows*ldb,B,1,D,1);
 	Element alpha ;
 	//! @todo F.isInvertible()
 	//! @todo InvertibleRandomIter
@@ -378,7 +378,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 	int eur = 0 ;
 
 	// for (size_t i = 0 ; i < rows*ldb ; ++i) *(B+i) = *(D+i);
-	FFLAS::fcopy(F,rows*ldb,B,1,D,1);
+	FFLAS::fcopy(F,rows*ldb,D,1,B,1);
 	if (Diag == FFLAS::FflasNonUnit)
 		for (size_t i = 0 ; i < K ; ++i) Gn.random(*(A+i*(lda+1))) ; // invertible diag !
 	FFLAS::ftrmm(F, Side, UpLo, Trans, Diag, M, N, alpha,    A, lda, B, ldb);
