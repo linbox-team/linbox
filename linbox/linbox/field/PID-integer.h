@@ -59,6 +59,11 @@ namespace LinBox
 
 		typedef integer Element;
 		
+		integer &normalize(integer &n, const integer &a) const
+		{
+			return n = abs(a);
+		}
+		
 		bool areAssociates(integer &a, integer &b) const
 		{
 			integer t1;
@@ -223,14 +228,12 @@ namespace LinBox
 			return  (b > b_bound)? 0: 1;
 		}
 
-
-
 		/** @brief quo (q, x, y)
 		 *  q = floor (x/y);
 		 */
 		inline  Element& quo (Element& q, const Element& a, const Element& b) const
 		{
-			return  q = a/b;
+			return Integer::floor(q, a, b);
 		}
 
 		/** @brief rem (r, a, b)
@@ -264,8 +267,7 @@ namespace LinBox
 		 */
 		inline  void quoRem (Element& q, Element& r, const Element& a, const Element& b) const
 		{
-			quo(q,a,b);
-			r = a - q*b;
+			Integer::divmod(q,r,a,b);
 		}
 
 		/** @brief isDivisor (a, b)

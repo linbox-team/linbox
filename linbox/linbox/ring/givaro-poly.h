@@ -101,6 +101,19 @@ namespace LinBox
 
 			return x;
 		}
+		
+		Element &init(Element &x, const std::vector<integer> &y) const {
+			_pd.init(x, Givaro::Degree(0), 0);
+			
+			for (int i = 0; i < y.size(); i++)
+			{
+				Element xi;
+				_pd.init(xi, Givaro::Degree(i), y[i]);
+				_pd.addin(x, xi);
+			}
+			
+			return x;
+		}
 
 		integer &convert(integer &x, const Element &y) const {
 			x = 0;
@@ -135,6 +148,13 @@ namespace LinBox
 
 		bool areEqual(const Element &x, const Element &y) const {
 			return _pd.areEqual(x, y);
+		}
+		
+		Element &normalize(Element &z, const Element &x) const {
+			Scalar_t a;
+			domain().leadcoef(a, x);
+			domain().div(z, x, a);
+			return z;
 		}
 		
 		bool areAssociates(const Element &x, const Element &y) const {
@@ -255,10 +275,23 @@ namespace LinBox
 			mod(tmp, a, b);
 			return tmp == zero;
 		}
+		
+		// a = q b + r
+		Element &quo(Element &q, const Element &a, const Element &b) const {
+			return div(q,a,b);
+		}
+		
+		Element &rem(Element &r, const Element &a, const Element &b) const {
+			return _pd.mod(r,a,b);
+		}
+		
+		Element &divrem(Element &q, Element &r, const Element &a, const Element &b) const {
+			return _pd.divmod(q,r,a,b);
+		}
 
 		// g = gcd(a,b)
-		Element &gcd(Element &g, const Element &a, const Element &b) const {
-			return _pd.gcd(g,a,b);
+		void gcd(Element &g, const Element &a, const Element &b) const {
+			_pd.gcd(g,a,b);
 		}
 
 		// g = gcd(a,b) = a*s + b*t
