@@ -122,7 +122,6 @@ FULLCHECK_TESTS =                 \
         test-subiterator              \
         test-submatrix                \
         test-subvector                \
-        test-blas-subvector           \
         test-sum                      \
         test-trace                    \
         test-transpose                \
@@ -138,6 +137,7 @@ FULLCHECK_TESTS =                 \
         test-rational-reconstruction-base \
         test-givaropoly
 
+#  test-blas-subvector
 #  test-integer-tools
 
 # tests of components not adhering to LinBox requirements.
