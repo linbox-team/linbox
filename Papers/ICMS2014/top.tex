@@ -183,6 +183,18 @@ breaklinks%
 \def\num#1{\numprint{#1}}
 
 
+% \usepackage{footmisc}%footref
+% \usepackage[symbol*]{footmisc}
+% \DefineFNsymbolsTM{myfnsymbols}{% def. from footmisc.sty "bringhurst" symbols
+	% \textasteriskcentered *
+	% \textdagger    \dagger
+	% \textdaggerdbl \ddagger
+	% \textsection   \mathsection
+	% \textbardbl    \|%
+	% \textparagraph \mathparagraph
+% }%
+% \setfnsymbol{myfnsymbols}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% defs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -220,14 +232,14 @@ breaklinks%
 \def\mailto#1{\href{mailto:#1}{#1}}
 
 %JGD
-\makeatletter
-\def\@fnsymbol#1{\ensuremath{\ifcase#1\or \natural \or
-    \mathparagraph\or \dagger\or \ddagger\or \mathsection\or \nshortmid
-    \or \dagger\dagger \or \ddagger\ddagger \or \sharp \or
-   \nshortparallel \or \lightning \or \oint \or \daleth \or \gimel
-   \or \clubsuit \or
-   \spadesuit \or\hearsuit \or \diamondsuit \else\@ctrerr\fi}}
-\makeatother
+% \makeatletter
+% \def\@fnsymbol#1{\ensuremath{\ifcase#1\or \natural \or
+    % \mathparagraph\or \dagger\or \ddagger\or \mathsection\or \nshortmid
+    % \or \dagger\dagger \or \ddagger\ddagger \or \sharp \or
+   % \nshortparallel \or \lightning \or \oint \or \daleth \or \gimel
+   % \or \clubsuit \or
+   % \spadesuit \or\hearsuit \or \diamondsuit \else\@ctrerr\fi}}
+% \makeatother
 
 \def\td{\textsuperscript{\textdagger}}
 \def\tdd{\textsuperscript{\textdaggerdbl}}
