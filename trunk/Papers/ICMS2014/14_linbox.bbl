@@ -12,6 +12,12 @@ B.~Boyer.
   pour la biblioth\`eque de calcul exact LinBox}.
 \newblock PhD thesis, Universit\'e de Grenoble, June 2012.
 
+\bibitem{Boyer:2012:these}
+B.~Boyer.
+\newblock {\em Multiplication matricielle efficace et conception logicielle
+  pour la bibliothèque de calcul exact {\sc LinBox}}.
+\newblock PhD thesis, Université de Grenoble, June 2012.
+
 \bibitem{Boyer:2010:spmv}
 B.~Boyer, J.-G. Dumas, and P.~Giorgi.
 \newblock Exact sparse matrix-vector multiplication on {GPU}'s and multicore
@@ -50,6 +56,12 @@ J.-G. Dumas, T.~Gautier, C.~Pernet, and B.~D. Saunders.
   Proceedings of the Third International Congress Conference on Mathematical
   Software}, volume 6327 of {\em ICMS'10}, pages 77--83, Berlin, Heidelberg,
   Sept. 2010. Springer-Verlag.
+
+\bibitem{Dumas:2008:Flas}
+J.-G. Dumas, P.~Giorgi, and C.~Pernet.
+\newblock Dense linear algebra over word-size prime fields: the {FFLAS} and
+  {FFPACK} packages.
+\newblock {\em ACM Trans. Math. Softw.}, 35(3):1--42, 2008.
 
 \bibitem{gamma:95:design}
 E.~Gamma.

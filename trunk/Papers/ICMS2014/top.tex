@@ -63,7 +63,7 @@ TikZ
 
 \usepackage{listings}
 
-\usepackage[autolanguage]{numprint}
+
 
 \usepackage{paralist,array,enumerate,multirow,float}% à moi
 \usepackage[
@@ -176,6 +176,13 @@ breaklinks%
 % \def\lstlistingname{Code}
 \captionsetup[lstlisting]{position=below}
 
+\usepackage{numprint}
+\npthousandsep{\,}
+\npdecimalsign{.}
+% \usepackage{siunitx}
+\def\num#1{\numprint{#1}}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% defs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -204,7 +211,7 @@ breaklinks%
 \def\cpp{\textsf{C++}\xspace}
 \def\mari{\textsf{m4ri}\xspace}
 \def\fflas{\textsf{FFLAS}\xspace}
-\def\fflaflas{\fflas}
+\def\fflasffpack{\textsf{FFLAS--FFPACK}\xspace}
 \def\givaro{\textsf{Givaro}\xspace}
 \def\applin{\textsf{BlackBox}\xspace}
 \newcommand{\cf}{\mbox{\emph{cf.}}\xspace}
@@ -221,3 +228,32 @@ breaklinks%
    \or \clubsuit \or
    \spadesuit \or\hearsuit \or \diamondsuit \else\@ctrerr\fi}}
 \makeatother
+
+\def\td{\textsuperscript{\textdagger}}
+\def\tdd{\textsuperscript{\textdaggerdbl}}
+
+% \newtheorem{thm}{Theorem}
+% \crefname{thm}{theorem}{theorems}
+% \Crefname{thm}{Theorem}{Theorems}
+% \newtheorem{lem}{Lemma}
+% \crefname{lem}{lemma}{lemmas}
+% \Crefname{lem}{Lemma}{Lemmas}
+% \newtheorem{cor}{Corollary}
+% \crefname{cor}{corollary}{corollaries}
+% \Crefname{cor}{Corollary}{Corollaries}
+% \newtheorem{prop}{Proposition}
+% \crefname{prop}{proposition}{propositions}
+% \Crefname{prop}{Proposition}{Propositions}
+{%\theoremstyle{remark}
+% \newtheorem{remark}[prop]{Remark}
+% \crefname{remark}{remark}{remarks}
+% \Crefname{remark}{Remark}{Remarks}
+}
+{
+	% \theoremstyle{definition}
+% \newtheorem{defi}{Definition}
+% \crefname{defi}{definition}{definitions}
+% \Crefname{defi}{Definition}{Definitions}
+}
+
+
