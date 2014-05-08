@@ -1,8 +1,18 @@
-\documentclass[runningheads
-% ,a4paper
-]{llncs}
-
+%===== DO NOT MODIFY BEGIN============================
+\documentclass[runningheads,a4paper]{llncs}
+\usepackage{amssymb}
+\setcounter{tocdepth}{3}
+\usepackage{graphicx}
+\usepackage{url}
+\newcommand{\keywords}[1]{\par\addvspace\baselineskip
+\noindent\keywordname\enspace\ignorespaces#1}
+%===== DO NOT MODIFY END==============================
 \input{top}
+%===== DO NOT MODIFY BEGIN============================
+\begin{document}
+
+\mainmatter
+%===== DO NOT MODIFY END==============================
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Title
@@ -10,60 +20,66 @@
 
 \title{Elements of Design for Containers and Solutions in the \linbox library}
 \titlerunning{Elements of Design for Containers and Solutions in the \linbox library}
-% \keywords{\linbox, design pattern, solutions and containers, benchmarking}
 
-\author{Brice Boyer\inst{1}
+\author{Brice Boyer\inst{1}%
 %
-\and Jean-Guillaume Dumas\inst{2}
+\and Jean-Guillaume Dumas\inst{2}%
 %
-\and Pascal Giorgi\inst{3}
-% \footnote{\mailto{pascal.giorgi@lirmm.fr}}
-\and Cl\'ement Pernet\inst{4}
+\and Pascal Giorgi\inst{3}%
 %
-\and B. David Saunders\inst{5}
+\and Cl\'ement Pernet\inst{4}%
+%
+\and B. David Saunders\inst{5}%
  %
 }
+\authorrunning{Boyer--Dumas--Giorgi--Pernet--Saunders}%
 % \authorrunning{B. Boyer, J-G. Dumas, P. Giorgi, C. Pernet, B. D. Saunders}
 
 
 \institute{%
-	North Carolina State University, Department of Mathematics, Raleigh,
-	NC, USA\footnote{This material is based on work supported in part by
-	the National Science Foundation under Grant CCF-1115772 (Kaltofen)},
+	\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+	Department of Mathematics, North Carolina State University,
+	%Raleigh, NC,
+	USA\footnote[2]{This material is based on work supported in part by
+	the National Science Foundation under Grant CCF-1115772 (Kaltofen)}\\
 	%
-	\mailto{bbboyer@ncsu.edu}.
+	\email{bbboyer@ncsu.edu}.
 	%
 	\and
 	%
-	Laboratoire J. Kuntzmann, Universit\'e de Grenoble. 51, rue des
-	Math\'ematiques, umr CNRS 5224, bp 53X, F38041 Grenoble,
-        France\footnote{This material is based on work supported in part by the
+	Laboratoire J. Kuntzmann, Universit\'e de Grenoble.
+	% 51, rue des Math\'ematiques, umr CNRS 5224, bp 53X, F38041 Grenoble,
+        France\footnote[3]{This material is based on work supported in part by the
           Agence Nationale pour la Recherche under Grant
-          ANR-11-BS02-013 HPAC (Dumas, Giorgi, Pernet).},
+          ANR-11-BS02-013 HPAC (Dumas, Giorgi, Pernet).}\\
 	%
-	\mailto{Jean-Guillaume.Dumas@imag.fr}.
+	\email{Jean-Guillaume.Dumas@imag.fr}.
 	%
 	\and
 	%
 	Laboratoire d'Informatique, de Robotique et de
         Micro\'electronique de Montpellier (LIRMM), CNRS, Universit\'e
-        Montpellier 2, 161 rue ADA, F-34095 Montpellier, France\footnotemark[4],
+        Montpellier 2,
+	% 161 rue ADA, F-34095 Montpellier,
+	France\footnotemark[3]\\
         %
-        \mailto{pascal.giorgi@lirmm.fr.}
+        \email{pascal.giorgi@lirmm.fr.}
 	%
 	\and
 	%
-	Laboratoire LIG, Universit\'e de Grenoble et INRIA. umr CNRS, F38330
-	Montbonnot, France\footnotemark[4],
+	Laboratoire LIG, Universit\'e de Grenoble et INRIA,
+% umr CNRS, F38330 Montbonnot,
+	France\footnotemark[3]\\
 	%
-	\mailto{clement.pernet@imag.fr}.
+	\email{clement.pernet@imag.fr}.
 %
 	\and
 	%
-	University of Delaware, Computer and Information Science Department.
-	Newark / DE / 19716, USA,
+	University of Delaware, Computer and Information Science Department,
+	% Newark / DE / 19716,
+	USA\\
 	%
-	\mailto{saunders@udel.edu}.%
+	\email{saunders@udel.edu}.%
 	%
 }
 
@@ -74,8 +90,6 @@
 % \AbstractOnlytrue
 \AbstractOnlyfalse
 
-
-\begin{document}
 
 \maketitle
 

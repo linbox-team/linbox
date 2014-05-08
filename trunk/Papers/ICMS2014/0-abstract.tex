@@ -7,16 +7,15 @@
 	\par
 	%
 	First, we review the new simplified structure of the containers, based
-	on our \emph{founding scope allocation} model (cf.
-	\cite{Dumas:2010:lbpar}).  Namely, vectors and matrix containers are
-	all templated by a field and a storage type.  Matrix interfaces all
-	agree with the same minimal blackbox interface. This allows e.g. for a
-	unification of our dense and sparse matrices, as well as a clearer
-	model for matrices and submatrices. We explain the design choices and
-	their impact on coding.	 We will describe serveral of the new
-	containers, especially our sparse and dense matrices storages as well
-	as their \apply (\emph{blackbox}) method and compare to previous
-	implementations.%
+	on our \emph{founding scope allocation} model.  Namely, vectors and
+	matrix containers are all templated by a field and a storage type.
+	Matrix interfaces all agree with the same minimal blackbox interface.
+	This allows e.g. for a unification of our dense and sparse matrices, as
+	well as a clearer model for matrices and submatrices. We explain the
+	design choices and their impact on coding.	 We will describe
+	serveral of the new containers, especially our sparse and dense
+	matrices storages as well as their \apply (\emph{blackbox}) method and
+	compare to previous implementations.%
 	\par
 	%
 	Then we present a variation of the \emph{strategy} design pattern that
@@ -35,4 +34,5 @@
 	for automatically tuning the library (determine thresholds, choose
 	algorithms) and provide a regression testing scheme.
 	%
+        \keywords{\linbox, design pattern, solutions and containers, benchmarking}
 \end{abstract}
