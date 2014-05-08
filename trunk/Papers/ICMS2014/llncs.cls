@@ -1,4 +1,4 @@
-% LLNCS DOCUMENT CLASS -- version 2.16 (15-Apr-2010)
+% LLNCS DOCUMENT CLASS -- version 2.18 (27-Sep-2013)
 % Springer Verlag LaTeX2e support for Lecture Notes in Computer Science
 %
 %%
@@ -19,7 +19,7 @@
 %%   Right brace   \}     Tilde         \~}
 %%
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{llncs}[2010/04/15 v2.16
+\ProvidesClass{llncs}[2013/09/27 v2.18
 ^^J LaTeX document class for Lecture Notes in Computer Science]
 % Options
 \let\if@envcntreset\iffalse
@@ -35,6 +35,7 @@
 \let\if@runhead\iffalse
 \DeclareOption{runningheads}{\let\if@runhead\iftrue}
 
+\let\if@openright\iftrue
 \let\if@openbib\iffalse
 \DeclareOption{openbib}{\let\if@openbib\iftrue}
 
@@ -881,6 +882,7 @@ to0pt{\kern0.55\wd0\vrule height0.45\ht0\hss}\box0}}}}
 \@ifundefined{extrasenglish}{}{\addto\extrasenglish{\switcht@albion}}%
 \@ifundefined{extrasfrenchb}{}{\addto\extrasfrenchb{\switcht@francais}}%
 \@ifundefined{extrasgerman}{}{\addto\extrasgerman{\switcht@deutsch}}%
+\@ifundefined{extrasngerman}{}{\addto\extrasngerman{\switcht@deutsch}}%
 }{\switcht@@therlang}%
 \providecommand{\keywords}[1]{\par\addvspace\baselineskip
 \noindent\keywordname\enspace\ignorespaces#1}%
