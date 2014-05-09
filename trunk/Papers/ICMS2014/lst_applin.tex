@@ -1,17 +1,14 @@
 {
+	\small
 \begin{lstlisting}
 template< ¬\ldots¬ >
 class Matrix {
 public:
         /* constructors */
 	// no empty constructor
-	// with a field, rows, columns, nbnz, other matrix\dots
-        ¬\ldots¬
-	/* types */
-	// submatrix types
-        ¬\ldots¬
+	// with a field, rows, columns, other matrix\dots
 
-        /* y <- A.x ou y <- A^T.x */
+	/* y <- A.x or y <- A^T.x */
         template<class _in, class _out>
         _out& apply(_out &y, const _in &x) const;
         template<class _in, class _out>
@@ -28,9 +25,11 @@ public:
         /* field */
         const Field& field() const;
 
-	/* conversions ?*/
+	/* conversions */
 	// resize
 	// export/import to default types
+
+	/* building the matrix */
 	// read from MM/stdout/...
 	// write to MM/stdout/...
 	// setEntry/init()/finalise()/optimize()
@@ -41,3 +40,7 @@ protected:
 \end{lstlisting}
 \lstcapt{Interface of an \applin\label{code:bb}}
 }
+	% ¬\ldots¬
+	% /* types */
+	% // submatrix types
+	% ¬\ldots¬
