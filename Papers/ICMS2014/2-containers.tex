@@ -17,23 +17,14 @@ vector types with different interfaces needed to be reduced into only two
 (possibly essentially one in the future) containers: \texttt{Matrix} and
 \texttt{Vector}.
 %
-\subsection{Dense Vectors and Matrices}
+\subsection{General Vectors and Matrices}
 %
 Firstly, in order to allow operations on its elements, a container is
 parametrized by a field, not the element type; this is also more general.  The
 storage type is given by another template parameter that can default to \eg
 dense BLAS type matrices, \cf the \Cref{code:clmat}.
 %
-{
-\begin{lstlisting}
-template< class _Field, class _Storage = denseDefault >
-class Matrix ;
-
-template< class _Field, class _Storage = denseDefault >
-class Vector ;
-\end{lstlisting}
-\lstcapt{Matrix and vector classes in \linbox.\label{code:clmat}}
-}
+\input{lst_container}
 %
 \subsubsection{Interface of the containers.}
 %
@@ -52,8 +43,8 @@ The common interface to all matrices is the \applin  interface described in
 			%
 	\begin{itemize}
 			%
-		\item \texttt{refEntry} that retreives a reference to an entry
-			may be difficult to impelement or inefficient
+		\item \texttt{refEntry} that retrieves a reference to an entry
+			may be difficult to implement or inefficient
 			(compressed fields, sparse matrices)
 			%
 		\item \texttt{getEntry} may be specialized, in all cases, there
@@ -65,7 +56,7 @@ The common interface to all matrices is the \applin  interface described in
 			(possibly not for structured matrices).
 			%
 		\item iterators may be difficult to implement (but a lot of
-			code relies on them\ldots). Do we want only const
+			code relies on them\ldots). Do we want only {\tt const}
 			iterators ?
 	\end{itemize}
 %
@@ -78,12 +69,54 @@ costly (for some sparse formats for instance) (Dave ?)
 % \danger needs trait system for algos to adapt. How to check at compile time
 % (static\_assert) ?
 \end{remark}
-
-\subsubsection{Input/Output.}
-MM
-\subsubsection{The \texttt{apply} function.}
 %
+\subsubsection{Input/Output.}
+%
+Our matrix all read and write from MatrixMarket format (ref, link).
+Adding extra comments ? (for instance the init function in GF(q) needs a polynomial\ldots)
+%
+\subsection{The \texttt{apply} method}
+%
+We will discuss the \texttt{apply} function in \cref{sec:apply}.
 vec/mat
+%
+\par
+%
+The \texttt{apply} method (left or right) is arguably the most important feature in the
+matrix interface and the \linbox library. It performs what a linear application is defined for:
+apply to a vector (and by extension  a block of vectors, \ie a matrix).
+%
+\par
+%
+Proposed interface :
+%
+{
+\begin{lstlisting}
+// y = A.x
+template< class _In, class _Out  >
+_Out& apply(_Out &y, const _In& x, enum Side) ;
+
+// y = alpha y + beta A.x
+template< class _In, class _Out  >
+_Out& applyAcc(_Out &y, const Element& alpha, const _In& x, const Element& beta, enum Side) ;
+
+\end{lstlisting}
+\lstcapt{Proposed apply.\label{code:apply}}
+}
+%
+The apply method should be using a \texttt{mul} solution as in the \Cref{code:applymul}.
+{
+\begin{lstlisting}
+template<class _outVector, class _inVector>
+OutVector &apply (_outVector &y, const _inVector &x) const
+{
+	/* return _MD.vectorMul (y, *this, x); */
+	return blas3::mul(y, *this, x); // selects the best mul algorithm
+}
+\end{lstlisting}
+\lstcapt{Implantation d'\texttt{apply} sur un vecteur par solution
+\texttt{mul}.\label{code:applymul}}
+}
 %
 \subsection{Sparse Matrix}
 %
@@ -157,41 +190,5 @@ XXX timing new matrices, example rank.
 All other matrices (including the special case of Permutations) : the same
 Structured matrices, add, sub, stacked,\dots
 %
-\subsection{The \texttt{apply} method}
-%
-The \texttt{apply} method (left or right) is arguably the most important feature in the
-matrix interface and the \linbox library. It performs what a linear application is defined for:
-apply to a vector (and by extension  a block of vectors, \ie a matrix).
-%
-\par
-%
-Proposed interface :
-%
-{
-\begin{lstlisting}
-// y = A.x
-template< class _In, class _Out  >
-_Out& apply(_Out &y, const _In& x, enum Side) ;
 
-// y = alpha y + beta A.x
-template< class _In, class _Out  >
-_Out& applyAcc(_Out &y, const Element& alpha, const _In& x, const Element& beta, enum Side) ;
-
-\end{lstlisting}
-\lstcapt{Proposed apply.\label{code:apply}}
-}
-%
-The apply method should be using a \texttt{mul} solution as in the \Cref{code:applymul}.
-{
-	\begin{lstlisting}
-	template<class _outVector, class _inVector>
-	OutVector &apply (_outVector &y, const _inVector &x) const
-	{
-		/* return _MD.vectorMul (y, *this, x); */
-		return blas3::mul(y, *this, x); // selects the best mul algorithm
-	}
-	\end{lstlisting}
-	\lstcapt{Implantation d'\texttt{apply} sur un vecteur par solution
-	\texttt{mul}.\label{code:applymul}}
-}
 
