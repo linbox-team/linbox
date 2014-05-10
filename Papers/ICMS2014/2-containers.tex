@@ -17,178 +17,144 @@ vector types with different interfaces needed to be reduced into only two
 (possibly essentially one in the future) containers: \texttt{Matrix} and
 \texttt{Vector}.
 %
-\subsection{General Vectors and Matrices}
+\subsection{General Interface for %Vectors and
+Matrices}
 %
 Firstly, in order to allow operations on its elements, a container is
-parametrized by a field, not the element type; this is also more general.  The
-storage type is given by another template parameter that can default to \eg
-dense BLAS type matrices, \cf the \Cref{code:clmat}.
+parametrized by a field (\cf \Cref{code:clmat}), not the element type; this is
+also more general.  The storage type is given by another template parameter
+that can default to \eg dense BLAS type matrices (a stride and a leading
+dimension or an increment).
 %
 \input{lst_container}
-%
-\subsubsection{Interface of the containers.}
 %
 In the mother model, we need types that own or and types that share some
 memory.  The \texttt{SubMatrix} and \texttt{SubVector} types share the memory
 while \texttt{Matrix} and \texttt{Vector} own it.
 %
-The common interface to all matrices is the \applin  interface described in
-\Cref{code:bb}.
+The common interface shared by all matrices is the \applin  interface described
+in the following paragraphs.
+% \Cref{code:bb}.
 %
-\input{lst_applin}
+% \input{lst_applin}
 %
-\begin{remark}
+\begin{description}
 %
-	Some functions are not part of the default interface :
-			%
-	\begin{itemize}
-			%
-		\item \texttt{refEntry} that retrieves a reference to an entry
-			may be difficult to implement or inefficient
-			(compressed fields, sparse matrices)
-			%
-		\item \texttt{getEntry} may be specialized, in all cases, there
-			is a solution for this operation (can always be
-			implemented from \texttt{imply}, \cf{} later.
-			%
-		\item \texttt{clearEntry} can be used to zero out an entry,
-			especially for a sparse matrix, if this is allowed
-			(possibly not for structured matrices).
-			%
-		\item iterators may be difficult to implement (but a lot of
-			code relies on them\ldots). Do we want only {\tt const}
-			iterators ?
-	\end{itemize}
+	\item[Input/Output.] Our matrix all read and write from MatrixMarket
+		format (ref, link).  Adding extra comments ? (for instance the
+		{\tt init} field function in GF(q) needs a polynomial\ldots) We
+		can adapt the hearder to suit our needs. In particular write
+		matrix in CSR fashion (saving roughly 1/3 space over COO)
 %
-The function \texttt{setEntry(...)} can be used to populate/grow the matrix (from some
-\texttt{init()} until a \texttt{finish()} is emitted).  The function \texttt{setEntry} can be (very)
-costly (for some sparse formats for instance) (Dave ?)
+	\item[Accessing Elements.] The function \texttt{setEntry(...)} can be
+		used to populate/grow the matrix (from some \texttt{init()}
+		until a \texttt{finish()} is emitted).  The function
+		\texttt{setEntry} can be (very) costly (for some sparse formats
+		for instance) (Dave ?)
 % so set entry should always build some COO or CSR and then
 % convert to the format.
 %
-% \danger needs trait system for algos to adapt. How to check at compile time
-% (static\_assert) ?
-\end{remark}
+		\begin{itemize}
+			%
+			\item \texttt{refEntry} that retrieves a reference to
+				an entry may be difficult to implement or
+				inefficient (compressed fields, sparse
+				matrices)
+			%
+			\item \texttt{getEntry} may be specialized, in all
+				cases, there is a solution for this operation
+				(can always be implemented from \texttt{imply},
+				\cf{} later.
+			%
+			\item \texttt{clearEntry} can be used to zero out an
+				entry, especially for a sparse matrix, if this
+				is allowed (possibly not for structured
+				matrices).
+			%
+			\item iterators may be difficult to implement (but a
+				lot of code relies on them\ldots). Do we want
+				only {\tt const} iterators ?
 %
-\subsubsection{Input/Output.}
+		\end{itemize}
 %
-Our matrix all read and write from MatrixMarket format (ref, link).
-Adding extra comments ? (for instance the init function in GF(q) needs a polynomial\ldots)
+	\item[Apply method.]
+		Described later
+%
+	\item[Rebind] Rebind from one field to the other
+%
+	\item[Other] Conversion mechanism Added to the interface is a convert
+		method to/from CSR (default) for sparse matrix.
+%
+\end{description}
 %
 \subsection{The \texttt{apply} method}
 %
-We will discuss the \texttt{apply} function in \cref{sec:apply}.
-vec/mat
+% We will discuss the \texttt{apply} function in \Cref{sec:apply}.
+% Both vec/mat
 %
 \par
 %
-The \texttt{apply} method (left or right) is arguably the most important feature in the
-matrix interface and the \linbox library. It performs what a linear application is defined for:
-apply to a vector (and by extension  a block of vectors, \ie a matrix).
+The \texttt{apply} method (left or right) is arguably the most important
+feature in the matrix interface and the \linbox library. It performs what a
+linear application is defined for: apply to a vector (and by extension  a block
+of vectors, \ie a matrix).
 %
 \par
 %
-Proposed interface :
+We propose the new interface (\Cref{code:apply}), where {\tt \_In} and {\tt
+\_Out} are vector or matrices, and {\tt Side} is either {\tt Tag::Right} or
+{\tt Tag::Left}, wether the operation $y \gets A^{\top} x$ or  $y \gets A x$ is
+performed.
 %
-{
-\begin{lstlisting}
-// y = A.x
-template< class _In, class _Out  >
-_Out& apply(_Out &y, const _In& x, enum Side) ;
-
-// y = alpha y + beta A.x
-template< class _In, class _Out  >
-_Out& applyAcc(_Out &y, const Element& alpha, const _In& x, const Element& beta, enum Side) ;
-
-\end{lstlisting}
-\lstcapt{Proposed apply.\label{code:apply}}
-}
+\input{lst_apply}
 %
-The apply method should be using a \texttt{mul} solution as in the \Cref{code:applymul}.
-{
-\begin{lstlisting}
-template<class _outVector, class _inVector>
-OutVector &apply (_outVector &y, const _inVector &x) const
-{
-	/* return _MD.vectorMul (y, *this, x); */
-	return blas3::mul(y, *this, x); // selects the best mul algorithm
-}
-\end{lstlisting}
-\lstcapt{Implantation d'\texttt{apply} sur un vecteur par solution
-\texttt{mul}.\label{code:applymul}}
-}
+This method is important for two reasons: first it is the building block of the
+\applin algorithms (for instance Wiedemann and block-Wiedemann); second the
+matrix multiplication is a basic operation in linear algebra that needs to be
+extremely efficient (this is the matter of \Cref{sec:matmul}).
 %
-\subsection{Sparse Matrix}
+% The apply method should be using a \texttt{mul} solution as in the
+% \Cref{code:applymul}.
 %
-Sparse matrices are usually problematic because the notion of \emph{sparsity} is too general and the matrices
-we use are usually very specific: the algorithms have to adapt to the shape of the sparse matrices.
-Getting the best performance for an sparse matrix as an \applin is not an easy task
-(\cf \cite{Boyer:2010:spmv}). There is a huge litterature
-on sparse matrix formats, some of which are becoming standard. Numerical
+%
+\paragraph{Matrix Formats}
+%% TRANSITION %%
+Dense matrix for instance BLAS, inherits from the iterators of {\tt
+std::vector}.
+%
+All other matrices (including the special case of Permutations) : the same
+Structured matrices, add, sub, stacked,\dots
+%
+Now special case of Sparse Matrix.
+%
+\subsection{The Sparse Matrix Case}
+%
+Sparse matrices are usually problematic because the notion of \emph{sparsity}
+is too general and the matrices we use are usually very specific: the
+algorithms have to adapt to the shape of the sparse matrices.  Getting the best
+performance for an sparse matrix as an \applin is not an easy task. In
+\cite{Boyer:2010:spmv} we developped some techniques to improve the \spmv
+(Sparse Matrix Vector multiplication). There is a huge literature on sparse
+matrix formats and \spmv, some of which are becoming standard. Numerical
 analysis brings various shapes for sparse matrices and numerous algorithms and
 routines.  Just like the \textsc{Blas} numerical routines, we would like to
-take advantage of existing high performance libraries. They are however not very widespread, for instance
-sparse blas in intel mkl (only).
+take advantage of existing high performance libraries. They are however not
+very widespread, for instance sparse blas in intel mkl (only). Metis for graph
+partitionning.  zero-one matrices are special (no numerical routines)
 %
 \par
 %
-\danger  metis, sparse suite, zero-one matrices
+Legacy \linbox sparse matrix formats: STL structures (map,\ldots)
+%
+Helper structure to store a matrix as a sum of structures (HYB), possibly the
+transpose. Memory.  Reduce inits on Z/pZ.
 %
 \par
 %
-Matrix market matrices must be supported (we have a convertor in ffspmvgpu, I should commit it)
-%
-\par
-%
-SparseMatrix are Matrix with specified storage : COO, CSR, CSC, ELL,
-ELL\_R,..., and more to come. (including 0-1 based)
-%
-\par
-%
-{
-\def\indexTrait{other}
-\begin{lstlisting}
-namespace matrixStorage {
-        struct sparse {} ;
-        struct COO : public sparse {} ;
-        struct CSR : public sparse {} ;
-        struct ELL : public sparse {} ;
-        struct ELLR: public sparse {} ;
-        struct HYB : public sparse {} ;
-        ¬\ldots¬
-};
-
-template<class _Field >
-class Matrix<_Field, matrixStorage::COO> {
-        //specialisation  for COO
-};
-\end{lstlisting}
-\lstcapt{Standard sparse matrix formats.\label{code:sparse:nvl}}
-}
-
-%
-\par
- HYB format is a specialisation for ELL(\_R)+COO/CSR. no easy setEntry (in the
-COO/CSR) part ? a function \texttt{optimize()}. Could use \textsf{Metis} too.
-litterature for other HYB.
-\par
-We use MM reader.
-\par
-Added to the interface is a convert method to/from CSR (default).
-%
-\par
-%
-We can adapt the hearder to suit our needs. In particular write matrix in CSR
-fashion (saving roughly 1/3 space over COO)
 %
 \par
 %
 XXX timing new matrices, example rank.
 %
-\subsubsection{Other Matrices.}
 %
-All other matrices (including the special case of Permutations) : the same
-Structured matrices, add, sub, stacked,\dots
-%
-
 

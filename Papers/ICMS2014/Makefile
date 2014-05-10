@@ -1,7 +1,8 @@
 #  TEX=pdflatex
 TEX=lualatex
 BIB=bibtex
-ART=14_linbox
+#  ART=14_linbox
+ART=14_linbox_short
 
 RERUN='(There were undefined references|Rerun to get (bibliographical references|cross-references|the bars|outlines) right)'
 UNDEFINED='((Reference|Citation).*undefined)|(Label.*multiply defined)'

@@ -4,7 +4,7 @@ Efficient matrix multiplication is key to \linbox library.
 %
 \subsection{Plugin}
 %
-We propose the following design pattern (the closest design pattner to our
+We propose the following design pattern (the closest design pattern to our
 knowledge is the \emph{strategy} one, see also \cite[Fig 2.]{Cung:2006:TC}.
 The main advantage of this design pattern is that the modules always call back
 the controller so that the best choice is always chosen.  Besides modules can
@@ -14,74 +14,24 @@ back a new measure that allows for a new correction.
 %
 \par
 %
-\begin{figure}[htbp]
-\tikzstyle{block} = [draw, fill=blue!20, rectangle,
-    minimum height=2em, minimum width=6em, rounded corners]
-\tikzstyle{input} = [coordinate]
-\tikzstyle{output} = [coordinate]
-\tikzstyle{fleche} = [draw,->,shorten <=2pt, shorten >=2pt,thick]
-% \tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
-        \centering
-\begin{tikzpicture}[auto, node distance=2.5cm,>=latex']
-        \node [input, name=input] (input) {};
-        \node [block, right of=input] (controller) {Controler};
-        \node [output, right of=controller] (output) {};
-
-        \node [block, below of=controller] (modules) {Modules};
-
-        \draw [fleche] (input) to [near start] node {input} (controller);
-        \draw [fleche] (controller) to [near end] node {output} (output);
-        \draw [fleche] (controller.300) to [bend left,near end] node [right] {call} (modules.60);
-        \draw [fleche] (modules.120) to [bend left,near end] node [left] {call back} (controller.240);
-\end{tikzpicture}
-\caption{Controller--Modules design pattern}
-\label{fig:diag:patt}
-\end{figure}
+\input{fig_control}
 %
 For instance, we can write the standard cascade algorithms in that model:
 %
 \par
 %
-\begin{figure}[htbp]
-        \hfil
-        \begin{minipage}{0.45\textwidth}
-                \begin{algorithm}[H]
-                        \caption{\texttt{AlgoThresh}: controler}
-                        \label{alg:controle}
-                        \KwIn{$A$ and $B$, denses, with resp. dimensions $n\times
-                        k$ and $k\times n$.}
-                        \KwOut{$C = A\times B$}
-                        \eIf{$\mathrm{min}(m,k,n)<t$}{ {\tt
-                        BaseCase}(C,A,B) \tcc{\small{\color{gray}fast BLAS}} }
-                        { {\tt RecursiveCase}(C,A,B,t)  }
-                        \KwRet C \;
-                \end{algorithm}
-        \end{minipage}
-        \hfil
-        \begin{minipage}{0.45\textwidth}
-                \begin{algorithm}[H]
-                        \DontPrintSemicolon
-                        \caption{\texttt{RecursiveCase}: recursive module}
-                        \label{alg:action}
-                        \KwIn{$A$, $B$, $C$ and $t$ as in controller.}
-                        \KwOut{$C = A\times B$}
-                        Cuts $A$,$B$,$C$ in $S_i, T_i\cdots$\;
-                        \ldots \;
-                        $P_i = \mathtt{AlgoThresh}(S_i,T_i,t)$ \;
-                        \ldots \;
-                        \KwRet C \;
-                \end{algorithm}
-        \end{minipage}
-        \hfil
-        \caption{Conception of a recursive controlled algorithm}
-        \label{fig:seuil}
-\end{figure}
+\input{fig_cascade}
 %
 This method allows for the reuse of modules and ensures efficiency.
 It is then possible to adapt to the architecture, the available modules,
 the resources. The only limitation is that the choice of the module
 should be done fast.
 %
+\par
+%
+On top of this design, we have Methods/Helpers that\ldots
+%
+\par
 %
 \danger timing old fgemm/plugin fgemm with no noticeable change ?
 %
@@ -112,6 +62,7 @@ For instance,
 \danger table comparing speeds
 %
 \subsubsection{New algorithms: Bini}
+\cite{BD:2014:Bini}
 %
 % \subsubsection{New algorithms: tr-tr}
 %
@@ -121,10 +72,23 @@ For instance,
 %
 \danger pascal
 %
+\subsubsection{Polynomial Matrix Multiplication}
+\danger Pascal
 \subsubsection{OpenCL}
 %
 \danger dave
+\subsubsection{Sparse Matrix--Vector Multiplication}
+\danger brice
 \subsubsection{Using conversions}
-- using flint for integer matmul is faster, even with conversion. Need better CRA implementation. \\
-- implementation of Toom-Cook for GF(q)\\
+\begin{itemize}
+	\item
+- double->float
+	\item
+- using flint for integer matmul is faster, even with conversion. Need better CRA implementation.
+	\item
+- implementation of Toom-Cook for GF(q)
+	\item
 - when does spmv choose to optimise ?
+	\item
+- transition to benchmarking
+\end{itemize}

@@ -1,0 +1,25 @@
+\begin{figure}[htbp]
+	\small
+\tikzstyle{block} = [draw, fill=blue!20, rectangle,
+    minimum height=1.6em, minimum width=5.5em, rounded corners]
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{fleche} = [draw,->,shorten <=2pt, shorten >=2pt,thick]
+% \tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+        \centering
+\begin{tikzpicture}[auto, node distance=2.5cm,>=latex']
+        \node [input, name=input] (input) {};
+        \node [block, right of=input] (controller) {Controlers};
+        \node [output, right of=controller] (output) {};
+
+        \node [block, below of=controller] (modules) {Modules};
+
+        \draw [fleche] (input) to [near start] node {input} (controller);
+        \draw [fleche] (controller) to [near end] node {output} (output);
+        \draw [fleche] (controller.300) to [bend left,near end] node [right] {call} (modules.60);
+        \draw [fleche] (modules.120) to [bend left,near end] node [left] {call back} (controller.240);
+\end{tikzpicture}
+\caption{Controller--Module design pattern}
+\label{fig:diag:patt}
+\end{figure}
+
