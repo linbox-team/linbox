@@ -1,39 +1,52 @@
 \section{Benchmarking}\label{sec:bench}
 %
-Benchmarking was introduced in \linbox for several reasons. It would give the
-user a user-friendly way for producing nice graph with no necessary knowledge
-of the graphing library \gnuplot%
+Benchmarking was introduced in \linbox for several reasons. First, It would
+give the user a user-friendly way for producing quality graph with no necessary
+knowledge of a graphing library like \gnuplot%
 %
 %
 \footnote{\url{http://www.gnuplot.info/}}
 %
-or provide \linbox website with automatic new tables/graphs.
-It would be used for regression testing.
-It can be used for selecting default method, threshold. (cite atlas and?)
+or provide the \linbox website with automatically updated tables and graphs.
+Second, it would be used for regression testing.  Finally, it would be used for
+selecting default method, threshold. A lot of libraries do some automatic tuning
+at installation (fftw, ATLAS, NTL,\ldots).
+%
 \par
 %
-XXX needs introductory bench references\\
-XXX BTL\footnote{\url{http://projects.opencascade.org/btl/}}/eigen
+What do we do differently ? Selection between "larger" algorithms, takes more time.
+Interpolation.
+% XXX BTL\footnote{\url{http://projects.opencascade.org/btl/}}/eigen
 %
-\danger dave benchmark formats
 %
 \subsection{Graph/Table creation}
 %
-XXX data/plot structure of abstraction (update code 6.1 with new plot structure)
+Our plotting mechanism is based on two structures: {\tt PlotStyle} and {\tt
+PlotData}. The  {\tt PlotGraph} structure uses the style and data to manage the
+output.  We allow ploting in standard image formats, html and \LaTeX tables,
+but also in raw csv or xml. The last raw formats allow for file exchange, data
+comparisons and extrapolation.
+\danger dave benchmark formats discussion ?
 %
 \par
 %
 % \input{fig_bench}
 %
-XXX Time spent on each data is limited (will not start execution if fit (linear least squares) forecasts 'too long'.\\
-XXX Adapts to the environment.
+% XXX Time spent on each data is limited (will not start execution if fit (linear least squares) forecasts 'too long'.\\
+% XXX Adapts to the environment.
 %
 \subsection{Regression Testing}
 %
-XXX Tests are supposed to be comparable: regression testing.\\
-XXX howto.
+Saving graphs in raw format can enable automatic regression testing on the
+buildbots. For some determined matrices (of different shape and size) over a
+few fields, we can accumulate over time the timings for some of our solutions
+(rank, det, mul,\ldots). At each new release, when we update the documentation,
+we can check any regression on these base cases and automatically update the
+regression plots.
+\danger We need to implement this framework (not difficult; anybody?).
 %
 \subsection{Method Selecting}
 %
+CPU throttling for ATLAS, \fflasffpack not reliable.
 XXX Default are provided, method can be selected via a benchmark (cf wino\_threshold)\\
 XXX howto
