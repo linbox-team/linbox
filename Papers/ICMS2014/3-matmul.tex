@@ -2,7 +2,7 @@
 %
 Efficient matrix multiplication is key to \linbox library.
 %
-\subsection{Plugin}
+\subsection{Plug-in structure}
 %
 We propose the following design pattern (the closest design pattern to our
 knowledge is the \emph{strategy} one, see also \cite[Fig 2.]{Cung:2006:TC}.
@@ -29,11 +29,29 @@ should be done fast.
 %
 \par
 %
-On top of this design, we have Methods/Helpers that\ldots
+On top of this design, we have Methods/Helpers that allow (preferred) selection
+of algorithms and cut short in the strategy selection of \Cref{fig:diag:patt}.
 %
 \par
 %
 \danger timing old fgemm/plugin fgemm with no noticeable change ?
+%
+\par
+%
+This infrastructure also forces/invites to modularise the code. For instance, a lot
+of work has been done in \fflasffpack to factor code in modules (addition,
+scaling, initialisation,\ldots). Not only this permits to write code with
+hardly more line than it takes for pseudo-code listings in
+\cite{Boyer:2009:sched} (compared to $\approx 2.5\times$ on some routines
+before) but also it automatically brings performance, because we can the
+separately improve on these modules. Also, this reduces the lines of code,
+hence the probability for bugs, and eases the tracing/traking of bugs, allows
+for more unit tests. Modularising the code comes at almost no cost because we
+may add $O(1)$  operations that 1) don't cost much compared to $O(n^2)$ or more
+complexity of the modules; 2) allow early decisions and terminations by testing
+against $0$, $\pm 1$ or checking the leading dimensions and increments; 3)
+allow better code (AVX, SSE, copy--cache friendly operation--copy back,
+representation switching,\ldots)
 %
 \subsection{New algorithms/infrastructure}
 %
@@ -44,14 +62,14 @@ routines.
 %
 \subsubsection{New algorithms: low memory}
 %
-\texttt{ffgem} in \fflas uses the classic schedules for the multiplication and
+The routine \fgemm in \fflas uses the classic schedules for the multiplication and
 the product with accumulation (\cf \cite{Boyer:2009:sched}), but we also
 implement the lower memory routines therein.
 %
 \par
 %
-The difficutlty consists in using the part of the memory contained in a
-submatrix of the original matrix. It is two-fold. -- First we use some part
+The difficulty consists in using the part of the memory contained in a
+sub-matrix of the original matrix. It is two-fold. -- First we use some part
 of a memory that has already been allocated to the input matrices, therefore
 we cannot free and reallocate part of it. -- Second, several of these algorithms
 are meant for square matrices and rectangular sub-matrices will just not be enough.
@@ -84,7 +102,7 @@ For instance,
 	\item
 - double->float
 	\item
-- using flint for integer matmul is faster, even with conversion. Need better CRA implementation.
+- using flint for integer matmul is faster, even with conversion. Need better CRA implementation (but with the plugins, we can do without our faulty code and just use flint).
 	\item
 - implementation of Toom-Cook for GF(q)
 	\item

@@ -31,14 +31,14 @@ increase in the size%
 \footnote{Using \textsf{sloccount}, available at
 \url{http://sourceforge.net/projects/sloccount/}.}
 %
-of \linbox and its dependancies in terms of ``lines of code''.
+of \linbox and its dependencies in terms of ``lines of code''.
 %
 % \par
 %
 \input{tab_sloc}
 %
 This increase affects the library in several ways.  First, it demands a
-stricter developpement model, and we are going to list some techniques we used.
+stricter development model, and we are going to list some techniques we used.
 %% SPLITING
 For instance, we have transformed \fflasffpack %
 %
@@ -46,19 +46,19 @@ For instance, we have transformed \fflasffpack %
 	%
 (\cf{} \cite{Dumas:2008:Flas}) into a new stand-alone header library, resulting
 in more visibility for the \fflasffpack project (Singular ?) but also in a better
-structuration an maintanability of the library, focusing the developpement
+structuration an maintainability of the library, focusing the development
 areas more precisely.
 %
 %% FIXING
 %
 Also, a larger template library is harder to manage, there is more difficulty
 to trace, debug and write new code: techniques employed
-for easier developpement include reducing
+for easier development include reducing
 compile times, enforcing stricter warnings and checks, supporting for more
-compilers and more architectures, simplifiying and automatising version number
-changes, automatising memory leak checks, setting up buildbots to check the code
+compilers and more architectures, simplifying and automatising version number
+changes, automatising memory leak checks, setting up build-bots to check the code
 frequently,\dots
-% This demand on the developper
+% This demand on the developer
 % side is also driven by the fact that code introduced by various one-timers
 % needs to be maintained.
 %
@@ -67,27 +67,30 @@ frequently,\dots
 But this increase also forces the library to be more user friendly. For
 instance, we have:
 %
-Developped an \texttt{auto-install.sh} script that installs automatically the
-lastest stable or developpement versions of the trio, resolving the version
-dependancies;
+Developed an \texttt{auto-install.sh} script that installs automatically the
+latest stable or development versions of the trio, resolving the version
+dependencies;
 %
 Facilitated the discovery of the \textsc{Blas}/\textsc{Lapack} libraries;
 %
 Simplified and sped up the checking process while covering more of the library
 (\danger dave ?);
 %
-Updated the documentation and created user and developper oriented docs;
+Updated the documentation and created user and developer oriented docs;
 %
 Added comprehensive benchmarking tools,\dots
 %
 %
 \par
 %
-Developping generic and high-performance libraries is difficult. We can find a
-large litterature on coding standards and software design references in (\cf{}
+Developing generic and high-performance libraries is difficult. We can find a
+large literature on coding standards and software design references in (\cf{}
 \cite{alexandrescu:01:modern,gamma:95:design,sutter:05:cpp,stroustrup1994design,Douglas:05:GPHP}),
 and many internet sources and a lot of experience acquired by/from free
-software projects.
+software projects.  Another motivation for developing a high-performance
+mathematical library is to make it available and easy for researchers and
+engineers that will use it for producing quality reliable results and quality
+research papers.
 %
 \par
 %
@@ -95,7 +98,7 @@ We are going to describe the advancement in the design of \linbox in the next
 three sections. We will first describe the new \emph{container} framework in
 \Cref{sec:container}, then improve the \emph{matrix multiplication} algorithms
 in \Cref{sec:matmul} by contributing special purpose matrix multiplication
-plugings, and finally present the new \emph{benchmark/optimisation}
+plug-ins, and finally present the new \emph{benchmark/optimisation}
 architecture (\Cref{sec:bench}).
 %
 \danger develop this § more later
