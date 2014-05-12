@@ -78,16 +78,19 @@ in the following paragraphs.
 		\end{itemize}
 %
 	\item[Apply method.]
-		Described later
+		This is essential in the \applin interface, and we'll described
+		it in \Cref{ssec:apply,sec:matmul}.
 %
-	\item[Rebind] Rebind from one field to the other
+	\item[Rebind] Rebind from one field to the other (if possible, using some default homeomorphism)
 %
-	\item[Other] Conversion mechanism Added to the interface is a convert
-		method to/from CSR (default) for sparse matrix.
+	\item[Other] Conversion mechanisms are added to the interface when
+		convenient, for instance all sparse matrix formats can convert
+		to/from CSR format. This `star' mechanism can simplify the code
+		(to the expense of memory).
 %
 \end{description}
 %
-\subsection{The \texttt{apply} method}
+\subsection{The \texttt{apply} method}\label{ssec:apply}
 %
 % We will discuss the \texttt{apply} function in \Cref{sec:apply}.
 % Both vec/mat
@@ -117,44 +120,51 @@ extremely efficient (this is the matter of \Cref{sec:matmul}).
 % \Cref{code:applymul}.
 %
 %
-\paragraph{Matrix Formats}
-%% TRANSITION %%
-Dense matrix for instance BLAS, inherits from the iterators of {\tt
-std::vector}.
+\section{Examples of Containers}
 %
+First, we have the dense containers that follow some BLAS conventions (row
+major ordering, leading dimension or increment,\ldots) and are based on {\tt
+std::vector} (inheriting for instance the iterators). In the same fashion, we
+have permutations matrices that follow the compressed \textsc{Lapack} format or
+more traditional representations.
+%
+\par
+%
+We have many kinds of structured or compound matrices (Hankel, stacked, add, sub,\ldots)
 All other matrices (including the special case of Permutations) : the same
 Structured matrices, add, sub, stacked,\dots
 %
-Now special case of Sparse Matrix.
+\par
 %
-\subsection{The Sparse Matrix Case}
+Finally, the sparse matrices are very important containers and require
+particular interest because they are the basis of our \applin algorithms.
+%
 %
 Sparse matrices are usually problematic because the notion of \emph{sparsity}
-is too general and the matrices we use are usually very specific: the
-algorithms have to adapt to the shape of the sparse matrices.  Getting the best
-performance for an sparse matrix as an \applin is not an easy task. In
-\cite{Boyer:2010:spmv} we developped some techniques to improve the \spmv
-(Sparse Matrix Vector multiplication). There is a huge literature on sparse
-matrix formats and \spmv, some of which are becoming standard. Numerical
-analysis brings various shapes for sparse matrices and numerous algorithms and
-routines.  Just like the \textsc{Blas} numerical routines, we would like to
-take advantage of existing high performance libraries. They are however not
-very widespread, for instance sparse blas in intel mkl (only). Metis for graph
-partitionning.  zero-one matrices are special (no numerical routines)
+is too general \emph{vs.} the specificity of real world sparse matrices: the
+algorithms have to adapt to the shape of the sparse matrices ---which is not really the case
+for the dense case.
+%
+Getting the best performance for an sparse matrix as an \applin is not a
+challenging task. There is a huge literature on \spmv (Sparse Matrix Vector
+multiplication) and on sparse matrix formats, some of which are becoming
+standard (COO, CSR, BCSR, SKY,\ldots).  In \cite{Boyer:2010:spmv} we developped
+some techniques to improve the \spmv operation in \linbox.
+Just like the \textsc{Blas} numerical
+routines, we would also like to take advantage of existing high performance
+numerical libraries (come back to this later).
 %
 \par
 %
-Legacy \linbox sparse matrix formats: STL structures (map,\ldots)
+The addition of standard matrix format is driven by the availability of
+numerical routines and the expectation of better performance in the \spmv
+operation. However, legacy \linbox sparse matrix formats (based on STL
+structures such as {\tt map}, {\tt deque}, {\tt pair},\ldots) can be more
+convenient for elimination techniques.
 %
-Helper structure to store a matrix as a sum of structures (HYB), possibly the
-transpose. Memory.  Reduce inits on Z/pZ.
 %
 \par
 %
-%
-\par
-%
-XXX timing new matrices, example rank.
+%XXX timing new matrices, example rank.
 %
 %
-
