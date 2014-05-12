@@ -12,6 +12,13 @@ B.~Boyer.
   pour la bibliothèque de calcul exact {\sc LinBox}}.
 \newblock PhD thesis, Université de Grenoble, June 2012.
 
+\bibitem{BD:2014:Bini}
+B.~Boyer and J.-G. Dumas.
+\newblock {Matrix multiplication over word-size prime fields using Bini's
+  approximate formula}.
+\newblock Submitted. \url{http://hal.archives-ouvertes.fr/hal-00987812}, May
+  2014.
+
 \bibitem{Boyer:2010:spmv}
 B.~Boyer, J.-G. Dumas, and P.~Giorgi.
 \newblock Exact sparse matrix-vector multiplication on {GPU}'s and multicore
