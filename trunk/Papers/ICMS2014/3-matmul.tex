@@ -60,53 +60,82 @@ in various ways: reducing memory consumption, introducing new efficient
 algorithms, using graphics capabilities, generalizing the BLAS to integer
 routines.
 %
-\subsubsection{New algorithms: low memory}
+\paragraph{New algorithms: low memory}
 %
 The routine \fgemm in \fflas uses the classic schedules for the multiplication and
 the product with accumulation (\cf \cite{Boyer:2009:sched}), but we also
 implement the lower memory routines therein.
 %
-\par
+% \par
 %
 The difficulty consists in using the part of the memory contained in a
-sub-matrix of the original matrix. It is two-fold. -- First we use some part
-of a memory that has already been allocated to the input matrices, therefore
-we cannot free and reallocate part of it. -- Second, several of these algorithms
-are meant for square matrices and rectangular sub-matrices will just not be enough.
-For instance,
+sub-matrix of the original matrix. It is two-fold. -- First we have to use some
+part of a memory that has already been allocated to the input matrices,
+therefore we cannot free and reallocate part of it. -- Second, several of these
+algorithms are meant for square matrices.
 %
-\par
+% \par
 %
-\danger table comparing speeds
+% XXX \danger table comparing speeds
 %
-\subsubsection{New algorithms: Bini}
-\cite{BD:2014:Bini}
+\paragraph{New algorithms: Bini.}
 %
-% \subsubsection{New algorithms: tr-tr}
+In \cite{BD:2014:Bini}, we use Bini's approximate matrix multiplication formula
+to derive a new algorithms that is more efficient that the Strassen--Winograd
+implementation in \fgemm by $\approx 5-10\%$ on sizes \num{1500}--\num{3000}.
+This is a cascade of Bini's algorithm and Strassen--Winograd algorithm and/or
+the naïve algorithm (using BLAS). The idea is to analyse precisely the error
+term in the approximate formula and make it vanish.
 %
-% [schedule/implementation]
-%
-\subsubsection{integer blas}
+\paragraph{Integer BLAS}
 %
 \danger pascal
 %
-\subsubsection{Polynomial Matrix Multiplication}
+\paragraph{Polynomial Matrix Multiplication}
 \danger Pascal
-\subsubsection{OpenCL}
+\paragraph{OpenCL}
 %
 \danger dave
-\subsubsection{Sparse Matrix--Vector Multiplication}
-\danger brice
-\subsubsection{Using conversions}
+\paragraph{Sparse Matrix--Vector Multiplication}
+%
+The issue in the \spmv operation is taking advantage of existing numerical
+routines. There is a Sparse BLAS specification, but it is not widely
+impelemented (Intel's MKL does, there is a cuSPARSE library in the Nvidia Cuda
+toolkit). Contrary to dense BLAS representation, there is no way of viewing a
+sparse submatrix in most of the standard formats, so we cannot apply the same
+techniques as those in \fflas for $Z/pZ$. However, we develop hybrid structures
+that represent a matrix $A$ as a sum $A_1 + A_2 + \cdots + A_k$. For instance,
+the number of non zeros in each row of each $A_i$ will not overflow a dot
+product and numerical sparse BLAS can be used. Besides, the format of each
+submatrix is independant and we can create some ELL+CSR format for instance.
+Besides, sparse matrices  from many domains have only $\pm1$ as non zero
+entries and we take advantage of that (no multiplication, accumulation further
+delayed, no need to store the data).
+%
+\par
+%
+Contrary to the BLAS case, the apply using the transpose of $A$ can be very
+inefficient compared to the apply on $A$. In this case, we create a helper
+function that (if memory allows) just stores $A^\top$ in an optimised hybrid
+format too. Setting up the hybrid representation of $A$ usually costs the order
+of $5$to $10$ non optimised \spmv operations: the conversion is performed only
+for larger matrices that will be used repeatedly for the \spmv operation and
+remains constant.
+% They are however not very widespread, for instance sparse blas in
+% intel mkl (only). Metis for graph partitionning.  zero-one matrices are special
+% (no numerical routines)
+% Helper structure to store a matrix as a sum of structures (HYB), possibly the
+% transpose. Memory.  Reduce inits on Z/pZ.
+\paragraph{Using conversions}
 \begin{itemize}
 	\item
-- double->float
+ double->float
 	\item
-- using flint for integer matmul is faster, even with conversion. Need better CRA implementation (but with the plugins, we can do without our faulty code and just use flint).
+ using flint for integer matmul is faster, even with conversion. Need better CRA implementation (but with the plugins, we can do without our faulty code and just use flint).
 	\item
-- implementation of Toom-Cook for GF(q)
+ implementation of Toom-Cook for GF(q)
 	\item
-- when does spmv choose to optimise ?
+ when does spmv choose to optimise ?
 	\item
-- transition to benchmarking
+ transition to benchmarking
 \end{itemize}
