@@ -688,7 +688,7 @@ namespace LinBox { /*  BlasSubvector */
 		}
 
 
-		BlasSubvector (const Field & F, const std::vector<Element> &V) :
+		BlasSubvector (const Field & F, std::vector<Element> &V) :
 			Father_t(),
 			_Vec (V),
 			_size(V.size()),_i0 (0),_1stride(1)
@@ -697,6 +697,30 @@ namespace LinBox { /*  BlasSubvector */
 			// not tested
 			setIterators();
 		}
+
+#if 0 /* impossible */
+		BlasSubvector (const Field & F, Subvector<typename Rep::iterator, typename Rep::const_iterator> &V) :
+			Father_t(),
+			_Vec (V),
+			_size(V.size()),_i0 (0),_1stride(1)
+			,_field(F)
+		{
+			// not tested
+			setIterators();
+		}
+#endif
+
+		BlasSubvector (const Field & F, const std::vector<Element> &V) :
+			Father_t(),
+			_Vec (V),
+			_size(V.size()),_i0 (0),_1stride(1)
+			,_field(F)
+		{
+			std::cout << "oops, copy (?)" << std::endl;
+			// not tested
+			setIterators();
+		}
+
 
 		BlasSubvector (const Field & F, const std::vector<Element> &V
 			       , const size_t ibeg, const size_t Stride, const size_t Size) :

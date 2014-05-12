@@ -64,15 +64,16 @@ namespace LinBox {
 
 	//! used to separate BLAS2 and BLAS3 operations
 	struct ContainerCategories {
-		struct Vector {};
-		struct Matrix {};
-		struct Other  {};
+		struct Any {} ;
+		struct Vector : public Any {};
+		struct Matrix : public Any {};
+		struct Other  : public Any {};
 	} ;
 
 	//! Trait for the Category
 	template<class Container>
 	struct ContainerTraits {
-		typedef ContainerCategories::Other  ContainerCategory ;
+		typedef ContainerCategories::Any  ContainerCategory ;
 	} ;
 }
 

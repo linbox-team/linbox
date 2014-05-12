@@ -297,14 +297,18 @@ namespace LinBox
 			typename std::vector<std::vector<Element> >::reverse_iterator z_p, pz_p;
 			b_p = _BlackboxL.rbegin();
 			pz_p = z_p = _zl.rbegin();
+			typedef BlasSubvector<BlasVector<Field, typename Vector<Field>::Dense> > BSub;
+			BSub pz_p_vec(field(),*pz_p);
 
-			(*b_p) -> apply(*pz_p, x);
+			(*b_p) -> apply(pz_p_vec, x);
 			++ b_p;  ++ z_p;
 
-			for (; z_p != _zl.rend(); ++ b_p, ++ z_p, ++ pz_p)
-				(*b_p) -> apply (*z_p,*pz_p);
+			for (; z_p != _zl.rend(); ++ b_p, ++ z_p, ++ pz_p) {
+				 BSub z_p_vec(field(),*z_p);
+				(*b_p) -> apply (z_p_vec,pz_p_vec);
+			}
 
-			(*b_p) -> apply(y, *pz_p);
+			(*b_p) -> apply(y, pz_p_vec);
 
 			return y;
 		}

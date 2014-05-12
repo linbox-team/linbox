@@ -1,8 +1,10 @@
-/* linbox/matrix/matrix-domain.h
+/*
  * Copyright (C) 2002 Zhendong Wan, Bradford Hovinen
+ * Copyright (C) 2013,2014 the LinBox group
  *
  * Written by Zhendong Wan <wan@mail.eecis.udel.edu>,
  *            Bradford Hovinen <bghovinen@math.uwaterloo.ca>
+ *            BB <bbboyer@ncsu.edu>
  *
  * ------------------------------------------------------------
  * 2002-11-26  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
@@ -31,6 +33,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
  *.
+ */
+
+/** @file linbox/matrix/MatrixDomain/matrix-domain.h
+ * @brief NO DOC
  */
 
 #ifndef __LINBOX_matrixdomain_matrix_domain_H
@@ -598,6 +604,10 @@ namespace LinBox
 		}
 		//@}
 
+		const VectorDomain<Field> & vectorDomain() const
+		{
+			return _VD ;
+		}
 	protected:
 
 		// Specialized function implementations

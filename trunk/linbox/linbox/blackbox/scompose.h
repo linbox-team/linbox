@@ -86,13 +86,16 @@ namespace LinBox
 
 			typename BlasMatrix<Field>::RowIterator row_p;
 
-			std::vector<typename Field::Element> tmp(R.rowdim());
+			// std::vector<typename Field::Element> tmp(R.rowdim());
+			BlasVector<Field> tmp(R.field(),R.rowdim());
 
 			for (row_p = LAR -> rowBegin(), crow_p = L.rowBegin();
 			     row_p != LAR -> rowEnd(); ++ row_p, ++ crow_p) {
 
 				A.applyTranspose(tmp, *crow_p);
 
+				// BlasSubvector<BlasVector<Field> > row_p_v(R.field(),*row_p); //! @warning should not be necessary (RowIterator should be a BlasSubvector...).
+				// R.applyTranspose(row_p_v, tmp);
 				R.applyTranspose(*row_p, tmp);
 			}
 
