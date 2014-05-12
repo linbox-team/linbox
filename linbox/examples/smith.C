@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
 			LinBox::PowerGaussDomain< Field > PGD( F );
 			std::vector<std::pair<size_t,size_t> > local;
 
-			PGD(local, B, m, (int)p);
+			PGD(local, B, m, p);
 
 			typedef list< Field::Element > List;
 			List L;

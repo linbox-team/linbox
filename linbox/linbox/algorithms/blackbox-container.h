@@ -43,12 +43,13 @@ namespace LinBox
 	public:
 		typedef _Blackbox Blackbox;
 
-		BlackboxContainer () { /*std::cerr << "BC def cstor" << std::endl;*/ }
+		// BlackboxContainer () { /*std::cerr << "BC def cstor" << std::endl;*/ }
 
 		template<class Vector>
 
 		BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0) :
 			BlackboxContainerBase<Field, Blackbox> (D, F)
+			,w(F)
 		{
 			init (u0, u0); w = this->u;
 #ifdef INCLUDE_TIMING
@@ -60,6 +61,7 @@ namespace LinBox
 		template<class Vector>
 		BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0, unsigned long size) :
 			BlackboxContainerBase<Field, Blackbox> (D, F,size)
+			,w(F)
 		{
 			init (u0, u0); w = this->u;
 #ifdef INCLUDE_TIMING
@@ -71,6 +73,7 @@ namespace LinBox
 		template<class Vector1, class Vector2>
 		BlackboxContainer(const Blackbox * D, const Field &F, const Vector1 &u0, const Vector2& v0) :
 			BlackboxContainerBase<Field, Blackbox> (D, F)
+			,w(F)
 		{
 			init (u0, v0); w = this->v;
 #ifdef INCLUDE_TIMING
@@ -80,6 +83,7 @@ namespace LinBox
 
 		BlackboxContainer(const Blackbox * D, const Field &F, RandIter &g) :
 			BlackboxContainerBase<Field, Blackbox> (D, F)
+			,w(F)
 		{
 			this->casenumber = 1;
 			this->u.resize (this->_BB->coldim ());
@@ -101,7 +105,8 @@ namespace LinBox
 #endif // INCLUDE_TIMING
 
 	protected:
-		std::vector<typename Field::Element> w;
+		// std::vector<typename Field::Element> w;
+		BlasVector<Field> w ;
 
 #ifdef INCLUDE_TIMING
 		Timer _timer;

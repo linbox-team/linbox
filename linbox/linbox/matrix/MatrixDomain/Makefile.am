@@ -40,6 +40,7 @@ pkgincludesub_HEADERS =           \
 	matrix-domain.h           \
 	matrix-domain.inl         \
 	matrix-domain-gf2.h       \
+	apply-domain.h            \
 	blas-matrix-domain.h      \
 	blas-matrix-domain.inl    \
 	plain-domain.h            \

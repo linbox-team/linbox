@@ -140,11 +140,14 @@ applyLeft // Y = AX
 	  const /*typename SparseMatrix<Field_,SparseMatrixFormat::TPL>::Matrix*/Mat2 &X
 	) const
 {	Y.zero();
-	Matrix Yc, Xc;// row submatrices
+	// Matrix Yc(field()) ;
+	// const Matrix Xc(field());// row submatrices
 	for (Index k = 0; k < data_.size(); ++k) {
 		Triple t = data_[k];
-		Yc.submatrix(Y,t.row,0,1,Y.coldim());
-		Xc.submatrix(X,t.col,0,1,X.coldim());
+		Matrix Yc (Y,t.row,0,1,Y.coldim());
+		// Yc.submatrix(Y,t.row,0,1,Y.coldim());
+		typename Matrix::constSubMatrixType Xc(X,t.col,0,1,X.coldim());
+		// Xc.submatrix(X,t.col,0,1,X.coldim());
 		MD_.saxpyin(Yc, t.elt, Xc);
 	}
 	return Y;
@@ -158,11 +161,14 @@ applyRight // Y = XA
 	  const /*typename SparseMatrix<Field_,SparseMatrixFormat::TPL>::Matrix*/Mat2 &X
 	) const
 {	Y.zero();
-	Matrix Yr, Xr; // row submatrices
+	// Matrix Yr(field());
+	// const Matrix Xr(field()); // row submatrices
 	for (Index k = 0; k < data_.size(); ++k) {
 		Triple t = data_[k];
-		Yr.submatrix(Y,0,t.col,Y.rowdim(),1);
-		Xr.submatrix(X,0,t.row,X.rowdim(),1);
+		Matrix Yr(Y,0,t.col,Y.rowdim(),1);
+		// Yr.submatrix(Y,0,t.col,Y.rowdim(),1);
+		typename Matrix::constSubMatrixType Xr(X,0,t.row,X.rowdim(),1);
+		// Xr.submatrix(X,0,t.row,X.rowdim(),1);
 		MD_.saxpyin(Yr, t.elt, Xr);
 	}
 	return Y;

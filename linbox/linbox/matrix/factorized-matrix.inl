@@ -132,8 +132,9 @@ namespace LinBox
 			int info;
 			// we don't really need that...
 			typedef typename Matrix1::subMatrixType subMatrixType ;
+			typedef typename Matrix1::constSubMatrixType constSubMatrixType ;
 			subMatrixType X_v(X);
-			subMatrixType B_v(B);
+			constSubMatrixType B_v(B);
 
 
 			FFPACK::fgetrs ((typename Field::Father_t)F, FFLAS::FflasLeft, A.rowdim(), A.coldim(), B_v.coldim(), A.getRank(),
@@ -184,8 +185,9 @@ namespace LinBox
 			linbox_check (B.rowdim() == X.rowdim());
 			int info;
 			typedef typename Matrix1::subMatrixType subMatrixType ;
+			typedef typename Matrix1::constSubMatrixType constSubMatrixType ;
 			subMatrixType X_v(X);
-			subMatrixType B_v(B);
+			constSubMatrixType B_v(B);
 
 			FFPACK::fgetrs ((typename Field::Father_t)F, FFLAS::FflasRight, A.rowdim(), A.coldim(), B_v.rowdim(), A.getRank(),
 					A.getPointer(), A.getStride(),

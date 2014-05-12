@@ -102,11 +102,11 @@ namespace LinBox
 	typename Field::Element
 	BlasMatrixDomainDet<Field, Matrix>::operator() (const Field &F, const Matrix& A) const
 	{
-		typedef typename Matrix::subMatrixType subMatrixType ;
+		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
 		typedef typename Matrix::matrixType       matrixType ;
 		matrixType A_c(A); // do copy
-		subMatrixType A_v(A_c);
-		return Protected::BlasMatrixDomainDet<Field, subMatrixType>()(F, A_v);
+		constSubMatrixType A_v(A_c);
+		return Protected::BlasMatrixDomainDet<Field, constSubMatrixType>()(F, A_v);
 	}
 
 	template< class Field, class Matrix>
@@ -145,12 +145,12 @@ namespace LinBox
 							 const  Matrix  &A) const
 	{
 
-		typedef typename Matrix::subMatrixType subMatrixType ;
+		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
 		typedef typename Matrix::matrixType       matrixType ;
 		matrixType A_c(A); // do copy
-		subMatrixType A_v(A_c);
+		constSubMatrixType A_v(A_c);
 
-		return Protected::BlasMatrixDomainRank<Field, subMatrixType>()(F, A_v);
+		return Protected::BlasMatrixDomainRank<Field, constSubMatrixType>()(F, A_v);
 
 	}
 
@@ -174,6 +174,7 @@ namespace LinBox
 	int BlasMatrixDomainInv<Field, Matrix1, Matrix2>::operator() (const Field &F, Matrix1 &Ainv, const Matrix2 &A) const
 	{
 		typedef typename Matrix1::subMatrixType subMatrixType ;
+		// typedef typename Matrix1::constSubMatrixType constSubMatrixType ;
 		typedef typename Matrix1::matrixType       matrixType ;
 		subMatrixType Ai_v(Ainv);
 		//! @todo check equal submatrix types
@@ -208,8 +209,9 @@ namespace LinBox
 		linbox_check( A.coldim() == B.coldim());
 		linbox_check( C.coldim() == A.coldim());
 		typedef typename Matrix1::subMatrixType subMatrixType ;
-		subMatrixType A_v(A);
-		subMatrixType B_v(B);
+		typedef typename Matrix1::constSubMatrixType constSubMatrixType ;
+		constSubMatrixType A_v(A);
+		constSubMatrixType B_v(B);
 		subMatrixType C_v(C);
 
 		FFLAS::fadd ((typename Field::Father_t)F, C_v.rowdim(), C_v.coldim(),
@@ -229,7 +231,8 @@ namespace LinBox
 		linbox_check( C.rowdim() == B.rowdim());
 		linbox_check( C.coldim() == B.coldim());
 		typedef typename Matrix1::subMatrixType subMatrixType ;
-		subMatrixType B_v(B);
+		typedef typename Matrix1::constSubMatrixType constSubMatrixType ;
+		constSubMatrixType B_v(B);
 		subMatrixType C_v(C);
 
 		FFLAS::faddin ((typename Field::Father_t)F, C_v.rowdim(), C_v.coldim(),
@@ -252,8 +255,9 @@ namespace LinBox
 		linbox_check( A.coldim() == B.coldim());
 		linbox_check( C.coldim() == A.coldim());
 		typedef typename Matrix1::subMatrixType subMatrixType ;
-		subMatrixType A_v(A);
-		subMatrixType B_v(B);
+		typedef typename Matrix1::constSubMatrixType constSubMatrixType ;
+		constSubMatrixType A_v(A);
+		constSubMatrixType B_v(B);
 		subMatrixType C_v(C);
 
 		FFLAS::fsub ((typename Field::Father_t)F, C_v.rowdim(), C_v.coldim(),
@@ -273,7 +277,8 @@ namespace LinBox
 		linbox_check( C.rowdim() == B.rowdim());
 		linbox_check( C.coldim() == B.coldim());
 		typedef typename Matrix1::subMatrixType subMatrixType ;
-		subMatrixType B_v(B);
+		typedef typename Matrix1::constSubMatrixType constSubMatrixType ;
+		constSubMatrixType B_v(B);
 		subMatrixType C_v(C);
 
 		FFLAS::fsubin ((typename Field::Father_t)F, C_v.rowdim(), C_v.coldim(),
@@ -296,7 +301,8 @@ namespace LinBox
 		linbox_check( A.rowdim() == B.rowdim());
 		linbox_check( A.coldim() == B.coldim());
 		typedef typename Matrix1::subMatrixType subMatrixType ;
-		subMatrixType A_v(A);
+		typedef typename Matrix1::constSubMatrixType constSubMatrixType ;
+		constSubMatrixType A_v(A);
 		subMatrixType B_v(B);
 
 		for (size_t i=0; i<A.rowdim(); i++)
@@ -390,12 +396,13 @@ namespace LinBox
 			linbox_check( D.rowdim() == C.rowdim());
 			linbox_check( D.coldim() == C.coldim());
 			typedef typename Matrix1::subMatrixType subMatrixType ;
+			typedef typename Matrix1::constSubMatrixType constSubMatrixType ;
 
 			D.copy(C);
 
-			subMatrixType A_v(A);
-			subMatrixType B_v(B);
-			subMatrixType C_v(C);
+			constSubMatrixType A_v(A);
+			constSubMatrixType B_v(B);
+			constSubMatrixType C_v(C);
 			subMatrixType D_v(D);
 
 			FFLAS::fgemm((typename Field::Father_t) C.field(), FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
@@ -419,8 +426,9 @@ namespace LinBox
 			linbox_check( C.rowdim() == A.rowdim());
 			linbox_check( C.coldim() == B.coldim());
 			typedef typename Matrix1::subMatrixType subMatrixType ;
-			subMatrixType A_v(A);
-			subMatrixType B_v(B);
+			typedef typename Matrix1::constSubMatrixType constSubMatrixType ;
+			constSubMatrixType A_v(A);
+			constSubMatrixType B_v(B);
 			subMatrixType C_v(C);
 
 
@@ -2030,8 +2038,8 @@ namespace LinBox
 		for ( size_t i=0; i<n; ++i)
 			Perm[i] = 0;
 		// (typename Field::Father_t)
-		typedef typename Matrix::subMatrixType subMatrixType ;
-		subMatrixType A_v(A);
+		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
+		constSubMatrixType A_v(A);
 
 		FFPACK::MinPoly<Field, Polynomial>(  F, P, n, A_v.getPointer(), A_v.getStride(), X, n, Perm);
 
@@ -2053,8 +2061,8 @@ namespace LinBox
 		size_t n = A.coldim();
 		P.clear();
 		linbox_check( n == A.rowdim());
-		typedef typename Matrix::subMatrixType subMatrixType ;
-		subMatrixType A_v(A);
+		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
+		constSubMatrixType A_v(A);
 
 		FFPACK::CharPoly((typename Field::Father_t) F, P, n, A_v.getPointer(), A_v.getStride());
 
@@ -2071,8 +2079,8 @@ namespace LinBox
 		size_t n = A.coldim();
 		P.clear();
 		linbox_check( n == A.rowdim());
-		typedef typename Matrix::subMatrixType subMatrixType ;
-		subMatrixType A_v(A);
+		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
+		constSubMatrixType A_v(A);
 
 		linbox_check(P.stride() == 1);
 		FFPACK::CharPoly((typename Field::Father_t) F, P.getWritePointer(), n, A_v.getPointer(), A_v.getStride());

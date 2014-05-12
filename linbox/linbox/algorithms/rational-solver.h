@@ -40,9 +40,9 @@
 // #include "linbox/field/multimod-field.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/blackbox/archetype.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/blackbox/lambda-sparse.h"
 #include "linbox/blackbox/compose.h"
-#include "linbox/matrix/dense-matrix.h"
 #include "linbox/algorithms/vector-fraction.h"
 #include "linbox/util/timer.h"
 

@@ -186,7 +186,7 @@ namespace LinBox
 
 		realtime = top_act->_timer.realtime ();
 		usertime = top_act->_timer.usertime ();
-		systime = top_act->_timer.systime ();
+		systime  = top_act->_timer.systime ();
 
 		if (realtime < 0) realtime = 0;
 		if (usertime < 0) usertime = 0;

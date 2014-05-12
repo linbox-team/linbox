@@ -10,7 +10,7 @@
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -85,7 +85,7 @@ namespace LinBox
 	template<class _Field, class _Rep>
 	template <class _Matrix>
 	void BlasMatrix< _Field, _Rep >::createBlasMatrix (const _Matrix& A,
-						   MatrixContainerCategory::BlasContainer)
+							   MatrixContainerCategory::BlasContainer)
 	{
 		linbox_check( areFieldEqual(A.field(),field()));
 		typename _Matrix::ConstIterator         iter_value = A.Begin();
@@ -100,7 +100,7 @@ namespace LinBox
 	template<class _Field, class _Rep>
 	template <class Matrix>
 	void BlasMatrix< _Field, _Rep >::createBlasMatrix (const Matrix& A,
-						   MatrixContainerCategory::Container)
+							   MatrixContainerCategory::Container)
 	{
 		linbox_check( areFieldEqual(A.field(),field()));
 		// const Field & F = A.field();
@@ -116,15 +116,15 @@ namespace LinBox
 	template<class _Field, class _Rep>
 	template <class Matrix>
 	void BlasMatrix< _Field, _Rep >::createBlasMatrix (const Matrix& A,
-						   MatrixContainerCategory::Blackbox)
+							   MatrixContainerCategory::Blackbox)
 	{
 		linbox_check( areFieldEqual(A.field(),field()) );
 
-		std::vector<Element> e(A.coldim(), field().zero), tmp(A.rowdim());
+		BlasVector<Field> e(A.field(),A.coldim(), field().zero), tmp(A.field(),A.rowdim());
 		ColIterator col_p;
 
 		typename BlasMatrix< _Field, _Rep >::Col::iterator elt_p;
-		typename std::vector<Element>::iterator e_p, tmp_p;
+		typename BlasVector<Field>::iterator e_p, tmp_p;
 
 
 		for (col_p = colBegin(), e_p = e.begin();
@@ -147,9 +147,9 @@ namespace LinBox
 	template<class _Field, class _Rep>
 	template <class _Matrix>
 	void BlasMatrix< _Field, _Rep >::createBlasMatrix (const _Matrix& A,
-						   const size_t i0,const size_t j0,
-						   const size_t m, const size_t n,
-						   MatrixContainerCategory::Container)
+							   const size_t i0,const size_t j0,
+							   const size_t m, const size_t n,
+							   MatrixContainerCategory::Container)
 	{
 		linbox_check( areFieldEqual(A.field(),field() ) );
 
@@ -168,9 +168,9 @@ namespace LinBox
 	template<class _Field, class _Rep>
 	template <class Matrix>
 	void BlasMatrix< _Field, _Rep >::createBlasMatrix (const Matrix& A,
-						   const size_t i0,const size_t j0,
-						   const size_t m, const size_t n,
-						   MatrixContainerCategory::BlasContainer)
+							   const size_t i0,const size_t j0,
+							   const size_t m, const size_t n,
+							   MatrixContainerCategory::BlasContainer)
 	{
 		linbox_check( areFieldEqual(A.field(),field() ) );
 
@@ -189,18 +189,18 @@ namespace LinBox
 	template<class _Field, class _Rep>
 	template <class Matrix>
 	void BlasMatrix< _Field, _Rep >::createBlasMatrix (const Matrix& A,
-						   const size_t i0,const size_t j0,
-						   const size_t m, const size_t n,
-						   MatrixContainerCategory::Blackbox)
+							   const size_t i0,const size_t j0,
+							   const size_t m, const size_t n,
+							   MatrixContainerCategory::Blackbox)
 	{
 		linbox_check( areFieldEqual(A.field(),field() ) );
 
 
-		std::vector<Element> e(A.coldim(), field().zero), tmp(A.rowdim());
+		BlasVector<Field> e(A.field(),A.coldim(), field().zero), tmp(A.field(),A.rowdim());
 		ColIterator col_p;
 
 		typename BlasMatrix< _Field, _Rep >::Col::iterator elt_p;
-		typename std::vector<Element>::iterator e_p, tmp_p;
+		typename BlasVector<Element>::iterator e_p, tmp_p;
 
 
 		for (col_p = colBegin(), e_p = e.begin()+(ptrdiff_t)j0;
@@ -235,30 +235,37 @@ namespace LinBox
 		// ,_use_fflas(false)
 		,_ptr(NULL)
 		,_field(&F),_MD(F),_VD(F)
+		// ,_AD(F)
 	{
+		// std::cout << "cstor 1 called" << std::endl;
 		_use_fflas = Protected::checkBlasApply(field(),_col);
 	}
 
-	// template < class _Field, class _Rep >
-	// BlasMatrix< _Field, _Rep >::BlasMatrix () //:
-			//_row(0),_col(0),_rep(0),_ptr(NULL),
-			//_field(Field()),_MD(_field ),_VD(_field )
-		// {}
+#if 0
+	template < class _Field, class _Rep >
+	BlasMatrix< _Field, _Rep >::BlasMatrix () :
+		_row(0),_col(0),_rep(0),_ptr(NULL),
+		_field(Field()),_MD(_field ),_VD(_field )
+	{}
+#endif
 
 	template < class _Field, class _Rep >
 	void BlasMatrix< _Field, _Rep >::init(const _Field &F, const size_t & r, const size_t & c)
 	{
 		_field = &F; _row = r; _col = c;
-		 _rep.resize(r*c, F.zero);
+		_rep.resize(r*c, F.zero);
 		_ptr = &_rep[0];
 		_VD.init(F); _MD.init(F);
+		// _AD.init(F);
 	}
 
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >::BlasMatrix ( const _Field &F, const size_t & m, const size_t & n) :
 		_row(m),_col(n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
 		_field(&F),_MD(F),_VD(F)
+		// ,_AD(F)
 	{
+		// std::cout << "cstor 2 called" << std::endl;
 		_use_fflas = Protected::checkBlasApply(field(),_col);
 	}
 
@@ -267,7 +274,9 @@ namespace LinBox
 	BlasMatrix< _Field, _Rep >::BlasMatrix(MatrixStream<_Field>& ms) :
 		_row(0),_col(0),_rep(0),
 		_field(&(ms.getField())),_MD(field() ),_VD(field() )
+		// ,_AD(field())
 	{
+		// std::cout << "cstor 3 called" << std::endl;
 		if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) )
 			throw ms.reportError(__FUNCTION__,__LINE__);
 		_ptr = &_rep[0];
@@ -279,7 +288,9 @@ namespace LinBox
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const Field &F, VectorStream<StreamVector> &stream) :
 		_row(stream.size ()), _col(stream.dim ()), _rep(_row*_col), _ptr(&_rep[0]),
 		_field (&F), _MD (F), _VD(F)
+		// ,_AD(F)
 	{
+		// std::cout << "cstor 4 called" << std::endl;
 		StreamVector tmp(F);
 		typename BlasMatrix<Field,_Rep>::RowIterator p;
 
@@ -298,8 +309,9 @@ namespace LinBox
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const Matrix &A) :
 		_row(A.rowdim()),_col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(&(A.field())),_MD(field() ),_VD(field() )
-
+		// ,_AD(field())
 	{
+		// std::cout << "cstor 5 called" << std::endl;
 		// makePointer();
 		_use_fflas = Protected::checkBlasApply(field(), _col);
 		createBlasMatrix(A, typename MatrixContainerTrait<Matrix>::Type());
@@ -308,11 +320,13 @@ namespace LinBox
 	template < class _Field, class _Rep >
 	template <class Matrix>
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const Matrix& A,
-					 const size_t &i0, const size_t &j0,
-					 const size_t &m,  const size_t &n) :
+						const size_t &i0, const size_t &j0,
+						const size_t &m,  const size_t &n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(&(A.field())),_MD(field() ),_VD(field() )
+		// ,_AD(field())
 	{
+		// std::cout << "cstor 6 called" << std::endl;
 		_use_fflas = Protected::checkBlasApply(field(), _col);
 		// makePointer();
 		createBlasMatrix(A, i0, j0, m, n,
@@ -324,7 +338,9 @@ namespace LinBox
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Matrix &A,  const _Field &F) :
 		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(&F),_MD(field() ),_VD(field() )
+		// ,_AD(field())
 	{
+		// std::cout << "cstor 7 called" << std::endl;
 		_use_fflas = Protected::checkBlasApply(field(), _col);
 		typename _Matrix::template rebind<_Field>()(*this,A);
 	}
@@ -333,7 +349,9 @@ namespace LinBox
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const BlasMatrix< _Field, _Rep >& A) :
 		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(&(A.field())),_MD(field() ),_VD(field() )
+		// ,_AD(field())
 	{
+		// std::cout << "cstor 8 called" << std::endl;
 		_use_fflas = Protected::checkBlasApply(field(), _col);
 		// makePointer();
 		createBlasMatrix(A);
@@ -341,11 +359,13 @@ namespace LinBox
 
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F,
-					 const std::vector<typename _Field::Element>& v,
-					 const size_t & m, const size_t & n) :
+						const std::vector<typename _Field::Element>& v,
+						const size_t & m, const size_t & n) :
 		_row(m), _col(n),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(&F),_MD(field() ),_VD(field() )
+		// ,_AD(field())
 	{
+		// std::cout << "cstor 9 called" << std::endl;
 		linbox_check(v.size() == m*n);
 		// makePointer();
 		_use_fflas = Protected::checkBlasApply(field(), _col);
@@ -354,11 +374,13 @@ namespace LinBox
 
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F,
-					 const typename _Field::Element * v,
-					 const size_t & m, const size_t & n) :
+						const typename _Field::Element * v,
+						const size_t & m, const size_t & n) :
 		_row(m), _col(n),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(&F), _MD(field() ),_VD(field() )
+		// ,_AD(field())
 	{
+		// std::cout << "cstor 10 called" << std::endl;
 		// makePointer();
 		_use_fflas = Protected::checkBlasApply(field(), _col);
 		createBlasMatrix(v);
@@ -400,7 +422,6 @@ namespace LinBox
 		return file;
 	}
 
-
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >& BlasMatrix< _Field, _Rep >::operator= (const BlasMatrix< _Field, _Rep >& A)
 	{
@@ -436,7 +457,7 @@ namespace LinBox
 				Ap.setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
 			}
 		}
-		};
+	};
 #endif
 
 #if 1 /*  HOM */
@@ -460,7 +481,7 @@ namespace LinBox
 #endif
 
 
-	} // LinBox
+} // LinBox
 
 //////////////////
 //  DIMENSIONS  //
@@ -600,15 +621,15 @@ namespace LinBox
 	{
 		/*! @internal
 		 *  @brief In-Place Tranpose.
-		* Adapted from the Wikipedia article.
-		* @todo make it for strides and Submatrices
-		* @todo use specialized versions when available (eg dgetmi)
-		* @todo make transpose have an inplace=true default parameter
-		* (execpt maybe when below a threshold).
-		* @param m pointer to the beginning of a row-major matrix vector
-		* @param w rows in the matrix
-		* @param h cols in the matrix
-		*/
+		 * Adapted from the Wikipedia article.
+		 * @todo make it for strides and Submatrices
+		 * @todo use specialized versions when available (eg dgetmi)
+		 * @todo make transpose have an inplace=true default parameter
+		 * (execpt maybe when below a threshold).
+		 * @param m pointer to the beginning of a row-major matrix vector
+		 * @param w rows in the matrix
+		 * @param h cols in the matrix
+		 */
 		template<class T>
 		void transposeIP(T *m, size_t h, size_t w)
 		{
@@ -696,7 +717,7 @@ namespace LinBox
 		size_t r = this->rowdim()/2 ;
 		for (size_t i = 0 ; i <  r ; ++i) {
 			_VD.swap( this->rowBegin()+i,
-				 this->rowBegin()+(r-1-i) );
+				  this->rowBegin()+(r-1-i) );
 		}
 
 	}
@@ -1451,90 +1472,44 @@ namespace LinBox
 
 namespace LinBox
 {
+#if 1
 	template < class _Field, class _Rep >
 	template <class Vector1, class Vector2>
 	Vector1&  BlasMatrix< _Field, _Rep >::apply (Vector1& y, const Vector2& x) const
 	{
-		//_stride ?
-		if (_use_fflas){
-			//!@bug this supposes &x[0]++ == &x[1]
-			// PG: try to discover stride of x and y (not use it works on every platform)
-			size_t ldx,ldy;
-			ldx=(size_t)(&x[1] - &x[0]);
-			ldy=(size_t)(&y[1] - &y[0]);
-
-			FFLAS::fgemv((typename Field::Father_t) field(), FFLAS::FflasNoTrans,
-					_row, _col,
-					field().one,
-					_ptr, getStride(),
-					&x[0],ldx,
-					field().zero,
-					&y[0],ldy);
-		}
-		else {
-			_MD. vectorMul (y, *this, x);
-#if 0
-			typename BlasMatrix< _Field, _Rep >::ConstRowIterator i = this->rowBegin ();
-			typename Vector1::iterator j = y.begin ();
-
-			for (; j != y.end (); ++j, ++i)
-				_VD.dot (*j, *i, x);
-#endif
-		}
+		// std::cout << "prepare apply1 Matrix" << std::endl;
+		BlasSubmatrix<constSelf_t> A(*this);
+		// std::cout << "...................." << std::endl;
+		A.apply(y,x);
+		// std::cout << ".......done........." << std::endl;
 		return y;
 	}
+#endif
+
+#if 1
 	template < class _Field, class _Rep >
 	template<class _Vrep>
 	BlasVector<_Field,_Vrep>&  BlasMatrix< _Field, _Rep >::apply (BlasVector<_Field,_Vrep>& y, const BlasVector<_Field,_Vrep>& x) const
 	{
-		//_stride ?
-		if (_use_fflas){
-			//!@bug this supposes &x[0]++ == &x[1]
-                        // PG: try to discover stride of x and y (not use it works on every platform)
-			// size_t ldx,ldy;
-			// ldx=(size_t)x.getStride();
-			// ldy=(size_t)y.getStride();
+		// std::cout << "prepare apply2 Matrix" << std::endl;
+		BlasSubmatrix<constSelf_t> A(*this);
+		// std::cout << "...................." << std::endl;
+		A.apply(y,x);
+		// std::cout << ".......done........." << std::endl;
 
-			FFLAS::fgemv((typename Field::Father_t) field(), FFLAS::FflasNoTrans,
-				      _row, _col,
-				      field().one,
-				      _ptr, getStride(),
-				      x.getPointer(),x.getStride(),
-				      field().zero,
-				      y.getWritePointer(),y.getStride());
-		}
-		else {
-			_MD. vectorMul (y, *this, x);
-		}
 		return y;
 	}
+#endif
 
 	template < class _Field, class _Rep >
 	template <class Vector1, class Vector2>
 	Vector1&  BlasMatrix< _Field, _Rep >::applyTranspose (Vector1& y, const Vector2& x) const
 	{
-
-		//_stride ?
-		if (_use_fflas) {
-                        // PG: try to discover stride of x and y (not use it works on every platform)
-                        size_t ldx,ldy;
-                        ldx=(size_t)(&x[1] - &x[0]);
-                        ldy=(size_t)(&y[1] - &y[0]);
-
-			FFLAS::fgemv((typename Field::Father_t) field(), FFLAS::FflasTrans,
-				      _row, _col,
-				      field().one,
-				      _ptr, getStride(),
-				      &x[0],ldx,
-				      field().zero,
-				      &y[0],ldy);
-		}
-		else {
-			typename BlasMatrix< _Field, _Rep >::ConstColIterator i = this->colBegin ();
-			typename Vector1::iterator j = y.begin ();
-			for (; j != y.end (); ++j, ++i)
-				_VD.dot (*j, x, *i);
-		}
+		// std::cout << "prepare applyT Matrix" << std::endl;
+		BlasSubmatrix<constSelf_t> A(*this);
+		// std::cout << "...................." << std::endl;
+		A.applyTranspose(y,x);
+		// std::cout << ".......done........." << std::endl;
 
 		return y;
 	}
@@ -1557,11 +1532,10 @@ namespace LinBox
 
 #endif // __LINBOX_densematrix_blas_matrix_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
