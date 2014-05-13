@@ -44,6 +44,7 @@ pkgincludesub_HEADERS =           \
 	blas-matrix-domain.h      \
 	blas-matrix-domain.inl    \
 	plain-domain.h            \
+	apply-domain.h            \
 	$(USE_OCL_HDRS)
 
 
