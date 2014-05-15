@@ -145,7 +145,7 @@ namespace LinBox {
 			     , typename ContainerCategories::Any
 			     ) const
 		{
-			linbox_check(F.isZero(a) && F.isOne(a));
+			// linbox_check(_field.isZero(a) && _field.isOne(a));
 			if (t == Tag::Transpose::Trans ) {
 				typename Matrix::ConstColIterator i = A.colBegin ();
 				typename _Out::iterator j = y.begin ();

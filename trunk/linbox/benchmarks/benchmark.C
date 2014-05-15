@@ -1269,8 +1269,8 @@ namespace LinBox {
 
 #else
 			std::cout << "tinyxml2 is not installed, could not print" << std::endl;
+			exit(-1);
 #endif
-
 			load(unique_filename);
 			return ;
 		}
