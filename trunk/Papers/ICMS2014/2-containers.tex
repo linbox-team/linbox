@@ -10,9 +10,9 @@ exlusively reserved to it.
 %
 \par
 %
-\linbox essentially uses matrix and vectors over fields as data objects
-(containers).  The fragmentation of the containers into various matrices and
-blackboxes needed to be addressed and simplified. The many different matrix and
+\linbox essentially uses matrix and vectors over fields and rings as data objects
+(containers).  The fragmentation of the containers into various matrix and
+blackbox types needed to be addressed and simplified. The many different matrix and
 vector types with different interfaces needed to be reduced into only two
 (possibly essentially one in the future) containers: \texttt{Matrix} and
 \texttt{Vector}.
@@ -20,15 +20,15 @@ vector types with different interfaces needed to be reduced into only two
 \subsection{General Interface for %Vectors and
 Matrices}
 %
-Firstly, in order to allow operations on its elements, a container is
-parametrized by a field (\cf \Cref{code:clmat}), not the element type; this is
-also more general.  The storage type is given by another template parameter
+First, in order to allow operations on its elements, a container is
+parametrized by a field object (\cf \Cref{code:clmat}), not the field's element type. This simpler and 
+more general.  The storage type is given by a second template parameter
 that can default to \eg dense BLAS type matrices (a stride and a leading
-dimension or an increment).
+dimension or an increment).  % what else can it be?
 %
 \input{lst_container}
 %
-In the mother model, we need types that own or and types that share some
+In the mother model, we must distinguish containers that own (are responsible for allocated memory) and containers that share some
 memory.  The \texttt{SubMatrix} and \texttt{SubVector} types share the memory
 while \texttt{Matrix} and \texttt{Vector} own it.
 %

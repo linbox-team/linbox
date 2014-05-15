@@ -7,7 +7,7 @@ This article follows several papers and memoirs on the \linbox%
 (\cf{} \cite{Giorgi:2004:these,Turner:2002:these,Boyer:2012:these,Dumas:2002:icms,Dumas:2010:lbpar})
 and builds upon them.
 
-\linbox is a \cpp template library for fast and exact linear algebra. It is designed with genericity
+\linbox is a \cpp template library for fast and exact linear algebra. It is designed with generiality
 and efficiency in mind.
 % The main concepts include:
 % \begin{itemize}[---]
@@ -20,18 +20,18 @@ and efficiency in mind.
 %
 The \linbox library is under constant evolution, driven by new problems and
 algorithms, by new computing paradigms, new compilers and architectures. This
-poses many new challenges. To address this changes, we are incrementally
+poses many challenges. To address these changes, we are incrementally
 updating the \emph{design} of the library towards a \textsf{2.0} release.
 %
 \par
 %
-Let's start from a basic consideration: we show in the \Cref{tab:sloc} the
-increase in the size%
+Let us start from a basic consideration: we show in the \Cref{tab:sloc} the
+increase in the ``lines of code'' size
 %
 \footnote{Using \textsf{sloccount}, available at
 \url{http://sourceforge.net/projects/sloccount/}.}
 %
-of \linbox and its dependencies in terms of ``lines of code''.
+of \linbox and its co-evolved dependencies \givaro and \fflasffpack.
 %
 % \par
 %
@@ -45,18 +45,18 @@ For instance, we have transformed \fflasffpack %
 \footnote{See \url{http://www.linalg.org/projects/fflas-ffpack/}.}
 	%
 (\cf{} \cite{Dumas:2008:Flas}) into a new stand-alone header library, resulting
-in more visibility for the \fflasffpack project (Singular ?) but also in a better
-structuration an maintainability of the library, focusing the development
+in more visibility for the \fflasffpack project (Singular ?) and also in better
+structure and maintainability of the library.% focusing the development
 areas more precisely.
 %
 %% FIXING
 %
-Also, a larger template library is harder to manage, there is more difficulty
-to trace, debug and write new code: techniques employed
+A larger template library is harder to manage. There is more difficulty
+to trace, debug and write new code. Techniques employed
 for easier development include reducing
-compile times, enforcing stricter warnings and checks, supporting for more
-compilers and more architectures, simplifying and automatising version number
-changes, automatising memory leak checks, setting up build-bots to check the code
+compile times, enforcing stricter warnings and checks, supporting more
+compilers and architectures, simplifying and automating version number
+changes, automating memory leak checks, setting up build-bots to check the code
 frequently,\dots
 % This demand on the developer
 % side is also driven by the fact that code introduced by various one-timers
@@ -64,7 +64,7 @@ frequently,\dots
 %
 \par
 %
-But this increase also forces the library to be more user friendly. For
+This size increase also requires more efforts to make the library user friendly. For
 instance, we have:
 %
 Developed an \texttt{auto-install.sh} script that installs automatically the
@@ -76,7 +76,7 @@ Facilitated the discovery of the \textsc{Blas}/\textsc{Lapack} libraries;
 Simplified and sped up the checking process while covering more of the library
 (\danger dave ?);
 %
-Updated the documentation and created user and developer oriented docs;
+Updated the documentation and distinguished user and developer oriented docs;
 %
 Added comprehensive benchmarking tools,\dots
 %
@@ -86,19 +86,21 @@ Added comprehensive benchmarking tools,\dots
 Developing generic and high-performance libraries is difficult. We can find a
 large literature on coding standards and software design references in (\cf{}
 \cite{alexandrescu:01:modern,gamma:95:design,sutter:05:cpp,stroustrup1994design,Douglas:05:GPHP}),
-and many internet sources and a lot of experience acquired by/from free
-software projects.  Another motivation for developing a high-performance
+and many internet sources and experience acquired by/from free
+software projects.  
+% next sentence is off topic
+Another motivation for developing a high-performance
 mathematical library is to make it available and easy for researchers and
 engineers that will use it for producing quality reliable results and quality
 research papers.
 %
 \par
 %
-We are going to describe the advancement in the design of \linbox in the next
+We describe advances in the design of \linbox in the next
 three sections. We will first describe the new \emph{container} framework in
-\Cref{sec:container}, then improve the \emph{matrix multiplication} algorithms
-in \Cref{sec:matmul} by contributing special purpose matrix multiplication
-plug-ins, and finally present the new \emph{benchmark/optimisation}
+\Cref{sec:container}, then the improved \emph{matrix multiplication} algorithms
+in \Cref{sec:matmul} made by contributing special purpose matrix multiplication
+plug-ins, and, finally, we present the new \emph{benchmark/optimisation}
 architecture (\Cref{sec:bench}).
 %
 \danger develop this § more later
