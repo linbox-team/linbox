@@ -1,7 +1,7 @@
-\begin{figure}[htbp]
+\begin{figure}[tbp]
 	\small
         \hfil
-        \begin{minipage}{0.47\textwidth}
+	\begin{minipage}[t]{0.47\textwidth}
                 \begin{algorithm}[H]
                         \caption{\texttt{Algo}: controler}
                         \label{alg:controle}
@@ -10,18 +10,18 @@
 			\KwIn{$H$ Helper}
                         \KwOut{$C = A\times B$}
 			\eIf{$\mathrm{min}(m,k,n)<H.{\tt threshold}()$}{
-				{\tt BaseCase} K() ; \\
-				{\tt Algo}(C,A,B,K) ; %\tcc{\small{\color{gray}fast BLAS}}
+				% {\tt BaseCase} K() ; \\
+				{\tt Algo}(C,A,B,{\tt BaseCase}()) ; %\tcc{\small{\color{gray}fast BLAS}}
 			}
 			{
-				{\tt RecursiveCase} H() ; \\
-				{\tt Algo}(C,A,B,H)
+				% {\tt RecursiveCase} H() ; \\
+				{\tt Algo}(C,A,B,{\tt RecursiveCase}())
 			}
                         \KwRet C \;
                 \end{algorithm}
         \end{minipage}
         \hfil
-        \begin{minipage}{0.47\textwidth}
+	\begin{minipage}[t]{0.47\textwidth}
                 \begin{algorithm}[H]
                         \DontPrintSemicolon
                         \caption{\texttt{Algo}: recursive module}
