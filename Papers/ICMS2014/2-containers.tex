@@ -21,19 +21,24 @@ vector types with different interfaces needed to be reduced into only two
 Matrices}
 %
 First, in order to allow operations on its elements, a container is
-parametrized by a field object (\cf \Cref{code:clmat}), not the field's element type. This simpler and
-more general.  The storage type is given by a second template parameter
-that can default to \eg dense BLAS type matrices (a stride and a leading
-dimension or an increment).  % what else can it be?
+parametrized by a field object (\cf \Cref{code:clmat}), not the field's element
+type. This simpler and more general.  The storage type is given by a second
+template parameter that can use defaults,
+\eg dense BLAS type matrices (a stride
+and a leading dimension or an increment).
+% what else can it be? It can default to other dense formats such as vectors of
+% rows or anything.
 %
 \input{lst_container}
 %
-In the mother model, we must distinguish containers that own (are responsible for allocated memory) and containers that share some
-memory.  The \texttt{SubMatrix} and \texttt{SubVector} types share the memory
-while \texttt{Matrix} and \texttt{Vector} own it.
+In the mother model, we must distinguish containers that own (are responsible
+for allocated memory) and containers that share some memory.  The
+\texttt{SubMatrix} and \texttt{SubVector} types share the memory while
+\texttt{Matrix} and \texttt{Vector} own it.
 %
-The common interface shared by all matrices is the \applin  interface described
-in the following paragraphs.
+The common interface shared by all container matrices is the \applin  interface
+described in the following paragraphs, that accomodates both owner and sharer
+container types.
 % \Cref{code:bb}.
 %
 % \input{lst_applin}
@@ -108,7 +113,13 @@ in the following paragraphs.
 This is a common minimal interface to all our matrices that can be used by all
 of our algorithms. Additional elements to a container can be added, and flagged
 with a trait. This model also ensures basic ``linear application'' use of a
-matrix (blackbox) which is the least one can request from a matrix.
+matrix (blackbox) which is the least one can request from a matrix.  For
+instance, this interface is shared by: Our \emph{dense} containers (BLAS type or
+vector of rows); Our  \emph{permutations} containers (compressed \textsc{Lapack} or
+cycles representation); Our sparse formats (based on common formats such as
+COO, CSR, \ldots or based on STL structures such as {\tt map}, {\tt deque}, {\tt
+pair},\ldots) ; Our structured containers (diagonal, Hankel, Butterfly,\ldots) ;
+Our compound containers (Sum and Hybrid, Compose, Submatrix,\ldots);
 %
 \subsection{The \texttt{apply} method}\label{ssec:apply}
 %
@@ -134,60 +145,18 @@ performed.
 This method is important for two reasons: first it is the building block of the
 \applin algorithms (for instance Wiedemann and block-Wiedemann); second the
 matrix multiplication is a basic operation in linear algebra that needs to be
-extremely efficient (this is the matter of \Cref{sec:matmul}).  The
-implementation of the apply method can be left to the {\tt mul} solution (see
-\Cref{sec:matmul}), with possibly a Helper/method argument if the apply
+extremely efficient (this is the matter of \Cref{sec:matmul}).
+%
+\par
+%
+The implementation of the apply method can be left to the {\tt mul} solution
+(see \Cref{sec:matmul}), with possibly a Helper/method argument if the apply
 parameters are specialized enough.
 %
-% The apply method should be using a \texttt{mul} solution as in the
 % \Cref{code:applymul}.
 %
-%
-\subsection{Examples of Containers}
-%
-First, we have the dense containers that follow some BLAS conventions (row
-major ordering, leading dimension or increment,\ldots) and are based on {\tt
-std::vector} (inheriting for instance the iterators). In the same fashion, we
-have permutations matrices that follow the compressed \textsc{Lapack} format or
-more traditional representations.
-%
-\par
-%
-We have many kinds of structured or compound matrices (Hankel, stacked, add, sub,\ldots)
-All other matrices (including the special case of Permutations) : the same
-Structured matrices, add, sub, stacked,\dots
-%
-\par
-%
-Finally, the sparse matrices are very important containers and require
-particular interest because they are the basis of our \applin algorithms.
-%
-%
-Sparse matrices are usually problematic because the notion of \emph{sparsity}
-is too general \emph{vs.} the specificity of real world sparse matrices: the
-algorithms have to adapt to the shape of the sparse matrices ---which is not really the case
-for the dense case.
-%
-Getting the best performance for an sparse matrix as an \applin is not a
-challenging task. There is a huge literature on \spmv (Sparse Matrix Vector
-multiplication) and on sparse matrix formats, some of which are becoming
-standard (COO, CSR, BCSR, SKY,\ldots).  In \cite{Boyer:2010:spmv} we developped
-some techniques to improve the \spmv operation in \linbox.
-Just like the \textsc{Blas} numerical
-routines, we would also like to take advantage of existing high performance
-numerical libraries (come back to this later).
-%
-\par
-%
-The addition of standard matrix format is driven by the availability of
-numerical routines and the expectation of better performance in the \spmv
-operation. However, legacy \linbox sparse matrix formats (based on STL
-structures such as {\tt map}, {\tt deque}, {\tt pair},\ldots) can be more
-convenient for elimination techniques.
-%
-%
-\par
-%
-%XXX timing new matrices, example rank.
-%
+Usually,  the {\tt apply} method for these
+containers is strongly dependant on the format representation of the matrix. In
+the case of Hybrid containers, it will simply be calls to the {\tt apply}
+method of the children.
 %
