@@ -98,6 +98,25 @@ term in the approximate formula and make it vanish.
 \danger dave
 \paragraph{Sparse Matrix--Vector Multiplication}
 %
+Sparse matrices are usually problematic because the notion of \emph{sparsity}
+is too general \emph{vs.} the specificity of real world sparse matrices: the
+algorithms have to adapt to the shape of the sparse matrices ---which is not really the case
+for the dense case.
+%
+Getting the best performance for an sparse matrix as an \applin is a
+challenging task. There is a huge literature on \spmv (Sparse Matrix Vector
+multiplication) and on sparse matrix formats, some of which are becoming
+standard (COO, CSR, BCSR, SKY,\ldots).  In \cite{Boyer:2010:spmv} we developped
+some techniques to improve the \spmv operation in \linbox.
+Just like the \textsc{Blas} numerical
+routines, we would also like to take advantage of existing high performance
+numerical libraries (come back to this later).
+%
+\par
+%
+The addition of standard matrix format is driven by the availability of
+numerical routines and the expectation of better performance in the \spmv
+operation.
 The issue in the \spmv operation is taking advantage of existing numerical
 routines. There is a Sparse BLAS specification, but it is not widely
 impelemented (Intel's MKL does, there is a cuSPARSE library in the Nvidia Cuda
