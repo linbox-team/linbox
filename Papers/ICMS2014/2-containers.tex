@@ -41,41 +41,53 @@ in the following paragraphs.
 \begin{description}
 %
 	\item[Input/Output.] Our matrix all read and write from MatrixMarket
-		format (ref, link).  Adding extra comments ? (for instance the
-		{\tt init} field function in GF(q) needs a polynomial\ldots) We
-		can adapt the hearder to suit our needs. In particular write
-		matrix in CSR fashion (saving roughly 1/3 space over COO)
+		format\footnote{See \url{http://math.nist.gov/MatrixMarket/}.})
+		which is well established in the numerical linear algebra
+		community.  This allows for easy exchange and
+		interoperability, but \linbox containers can also add some
+		comments to the file, for instance the field characteristics
+		(modulo, irreducible polynomial, {\tt init} function,
+		rank,\ldots) We can adapt the header to suit our needs, and
+		even create new formats that save space (CSR fashion saving
+		roughly a third space over COO), or dedicated to structured
+		matrices.
 %
 	\item[Accessing Elements.] The function \texttt{setEntry(...)} can be
-		used to populate/grow the matrix (from some \texttt{init()}
-		until a \texttt{finish()} is emitted).  The function
-		\texttt{setEntry} can be (very) costly (for some sparse formats
-		for instance) (Dave ?)
+		used to populate the matrix (from some \texttt{init()} until a
+		\texttt{finish()} is emitted).  The function \texttt{setEntry}
+		can be (very) costly (for some sparse formats for instance)
+		(\danger Dave, more words on the init/finish?)
 % so set entry should always build some COO or CSR and then
 % convert to the format.
 %
-		\begin{itemize}
-			%
-			\item \texttt{refEntry} that retrieves a reference to
-				an entry may be difficult to implement or
-				inefficient (compressed fields, sparse
-				matrices)
-			%
-			\item \texttt{getEntry} may be specialized, in all
-				cases, there is a solution for this operation
-				(can always be implemented from the solution
-				\texttt{getEntry}, \cf{} later).
-			%
-			\item \texttt{clearEntry} can be used to zero out an
-				entry, especially for a sparse matrix, if this
-				is allowed (possibly not for structured
-				matrices).
-			%
-			\item iterators may be difficult to implement (but a
-				lot of code relies on them\ldots). \danger Do we want
-				only {\tt const} iterators ?
-%
-		\end{itemize}
+		Other functions such as {\tt refEntry} (that retrieves a
+		writable reference to an entry) may be difficult to implement
+		or inefficient (compressed fields, sparse matrices);
+		\texttt{getEntry} may be specialized, in all cases, there is a
+		solution for this operation falling back to the {\tt apply}
+		method.
+		The function {\tt clearEntry} may be used to zero an entry and
+		update the storage. (\danger setEntry to zero is sometimes
+		buggy, is this a feature?)
+		%
+		\par
+		%
+		Accessing (read or write) elements, rows or columns through
+		iterators, although handy, is not required because it can be
+		very tricky to implement (compressed fields, hybrid or
+		recursive formats). Traits on matrices where efficient iterators
+		are available allow for their selections in some algorithms.
+		(\danger We cannot have {\tt const} iterators for all formats
+		(see hybrid), walking through a matrix in unspecified order can
+		be problematic, for instance, in an hom when a zero may
+		alter/change the representation. I don't understand hom more
+		than I understand init/rebind by the way, and I won't
+		understand it until the morphism is given/chooseable/enforced.
+		Rebind is really hom, so why is it in the interface anyway?
+		This is the same with getEntry. We don't require it because we
+		have a solution. Also, if apply is to be implemented via a
+		domain or {\tt mul}, we could stress it is in the interface for
+		convenience when writing code only. End of \danger)
 %
 	\item[Apply method.]
 		This is essential in the \applin interface, and we'll described
@@ -93,7 +105,10 @@ in the following paragraphs.
 %
 \end{description}
 %
-
+This is a common minimal interface to all our matrices that can be used by all
+of our algorithms. Additional elements to a container can be added, and flagged
+with a trait. This model also ensures basic ``linear application'' use of a
+matrix (blackbox) which is the least one can request from a matrix.
 %
 \subsection{The \texttt{apply} method}\label{ssec:apply}
 %
@@ -119,7 +134,10 @@ performed.
 This method is important for two reasons: first it is the building block of the
 \applin algorithms (for instance Wiedemann and block-Wiedemann); second the
 matrix multiplication is a basic operation in linear algebra that needs to be
-extremely efficient (this is the matter of \Cref{sec:matmul}).
+extremely efficient (this is the matter of \Cref{sec:matmul}).  The
+implementation of the apply method can be left to the {\tt mul} solution (see
+\Cref{sec:matmul}), with possibly a Helper/method argument if the apply
+parameters are specialized enough.
 %
 % The apply method should be using a \texttt{mul} solution as in the
 % \Cref{code:applymul}.
