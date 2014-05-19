@@ -7,24 +7,25 @@
 	\par
 	%
 	First, we review the new simplified structure of the containers, based
-	on our \emph{founding scope allocation} model.  Namely, vectors and
-	matrix containers are all templated by a field and a storage type.
-	Matrix interfaces all agree with the same minimal blackbox interface.
+	on our \emph{founding scope allocation} model.
+	% Namely, vectors and matrix containers are all templated by a field
+	% and a storage type.
+	% Matrix interfaces all agree with the same minimal black-box interface.
 	This allows e.g. for a unification of our dense and sparse matrices, as
 	well as a clearer model for matrices and submatrices. We explain the
-	design choices and their impact on coding.	 We will describe
-	serveral of the new containers, especially our sparse and dense
-	matrices storages as well as their \apply (\emph{blackbox}) method and
-	compare to previous implementations.%
+	design choices and their impact on coding. We will describe serveral of
+	the new containers, especially our sparse and dense matrices storages
+	as well as their \apply (\emph{black-box}) method and compare to
+	previous implementations.%
 	\par
 	%
 	Then we present a variation of the \emph{strategy} design pattern that
 	is comprised of a controller--plugin system: the controller (solution)
 	chooses among plug-ins (algorithms) and the plug-ins always call back
 	the solution so a new choice can be made by the controller. We give
-	examples using the solution \mul, and generalise this design pattern
-	to the library. We also show performance comparisons with former \linbox
-	versions.
+	examples using the solution \mul, and generalise this design pattern to
+	the library.
+	% We also show performance comparisons with former \linbox versions.
 	%
 	\par
 	%
@@ -34,5 +35,6 @@
 	for automatically tuning the library (determine thresholds, choose
 	algorithms) and provide a regression testing scheme.
 	%
-        \keywords{\linbox, design pattern, solutions and containers, benchmarking}
+        \keywords{\linbox; design pattern; algorithms and containers; benchmarking;
+	matrix multiplication algorithms; exact linear algebra.}
 \end{abstract}

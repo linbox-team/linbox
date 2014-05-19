@@ -21,7 +21,7 @@ vector types with different interfaces needed to be reduced into only two
 Matrices}
 %
 First, in order to allow operations on its elements, a container is
-parametrized by a field object (\cf \Cref{code:clmat}), not the field's element type. This simpler and 
+parametrized by a field object (\cf \Cref{code:clmat}), not the field's element type. This simpler and
 more general.  The storage type is given by a second template parameter
 that can default to \eg dense BLAS type matrices (a stride and a leading
 dimension or an increment).  % what else can it be?
@@ -63,8 +63,8 @@ in the following paragraphs.
 			%
 			\item \texttt{getEntry} may be specialized, in all
 				cases, there is a solution for this operation
-				(can always be implemented from \texttt{imply},
-				\cf{} later.
+				(can always be implemented from the solution
+				\texttt{getEntry}, \cf{} later).
 			%
 			\item \texttt{clearEntry} can be used to zero out an
 				entry, especially for a sparse matrix, if this
@@ -72,7 +72,7 @@ in the following paragraphs.
 				matrices).
 			%
 			\item iterators may be difficult to implement (but a
-				lot of code relies on them\ldots). Do we want
+				lot of code relies on them\ldots). \danger Do we want
 				only {\tt const} iterators ?
 %
 		\end{itemize}
@@ -81,14 +81,19 @@ in the following paragraphs.
 		This is essential in the \applin interface, and we'll described
 		it in \Cref{ssec:apply,sec:matmul}.
 %
-	\item[Rebind] Rebind from one field to the other (if possible, using some default homeomorphism)
+	\item[Rebind/Conversions] Rebind from one field to the other (if
+		possible, using some default homeomorphism)
 %
-	\item[Other] Conversion mechanisms are added to the interface when
-		convenient, for instance all sparse matrix formats can convert
-		to/from CSR format. This `star' mechanism can simplify the code
-		(to the expense of memory).
+	 Conversion mechanisms between formats are added to the interface when
+	 convenient, for instance all sparse matrix formats can convert to/from
+	 CSR format.  This `star' mechanism can simplify the code (to the
+	 expense of memory usage) and may speed it up when the mother format
+	 (CSR for instance) is well tuned for some task. Such tasks could be
+	 read/write from a file for instance, or update the matrix.
 %
 \end{description}
+%
+
 %
 \subsection{The \texttt{apply} method}\label{ssec:apply}
 %
