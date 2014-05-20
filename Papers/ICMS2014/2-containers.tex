@@ -43,9 +43,12 @@ container types.
 %
 % \input{lst_applin}
 %
-\begin{description}
+% \begin{description}
 %
-	\item[Input/Output.] Our matrix all read and write from MatrixMarket
+	% \item[Input/Output.]
+\def\monitem#1{\par\textit{#1}\ }
+\monitem{Input/Output.}
+		Our matrix all read and write from MatrixMarket
 		format\footnote{See \url{http://math.nist.gov/MatrixMarket/}.})
 		which is well established in the numerical linear algebra
 		community.  This allows for easy exchange and
@@ -57,11 +60,13 @@ container types.
 		roughly a third space over COO), or dedicated to structured
 		matrices.
 %
-	\item[Accessing Elements.] The function \texttt{setEntry(...)} can be
+	% \item[Accessing Elements.]
+		\monitem{Accessing Elements.}
+		The function \texttt{setEntry(...)} can be
 		used to populate the matrix (from some \texttt{init()} until a
 		\texttt{finish()} is emitted).  The function \texttt{setEntry}
 		can be (very) costly (for some sparse formats for instance)
-		(\danger Dave, more words on the init/finish?)
+		% (\danger Dave, more words on the init/finish?)
 % so set entry should always build some COO or CSR and then
 % convert to the format.
 %
@@ -71,17 +76,19 @@ container types.
 		\texttt{getEntry} may be specialized, in all cases, there is a
 		solution for this operation falling back to the {\tt apply}
 		method.
-		The function {\tt clearEntry} may be used to zero an entry and
-		update the storage. (\danger setEntry to zero is sometimes
-		buggy, is this a feature?)
+		% The function {\tt clearEntry} may be used to zero an entry and
+		% update the storage.
+		% (\danger setEntry to zero is sometimes
+		% buggy, is this a feature?)
 		%
-		\par
+		% \par
 		%
 		Accessing (read or write) elements, rows or columns through
 		iterators, although handy, is not required because it can be
 		very tricky to implement (compressed fields, hybrid or
 		recursive formats). Traits on matrices where efficient iterators
 		are available allow for their selections in some algorithms.
+		\begin{comment}
 		(\danger We cannot have {\tt const} iterators for all formats
 		(see hybrid), walking through a matrix in unspecified order can
 		be problematic, for instance, in an hom when a zero may
@@ -93,13 +100,17 @@ container types.
 		have a solution. Also, if apply is to be implemented via a
 		domain or {\tt mul}, we could stress it is in the interface for
 		convenience when writing code only. End of \danger)
+		\end{comment}
 %
-	\item[Apply method.]
+	% \item[Apply method.]
+		\monitem{Apply method.}
 		This is essential in the \applin interface, and we'll described
 		it in \Cref{ssec:apply,sec:matmul}.
 %
-	\item[Rebind/Conversions] Rebind from one field to the other (if
-		possible, using some default homeomorphism)
+	% \item[Rebind/Conversions.]
+		\monitem{Rebind/Conversions.}
+		Rebind from one field to the other (if
+		possible, using some default homeomorphism).
 %
 	 Conversion mechanisms between formats are added to the interface when
 	 convenient, for instance all sparse matrix formats can convert to/from
@@ -108,7 +119,9 @@ container types.
 	 (CSR for instance) is well tuned for some task. Such tasks could be
 	 read/write from a file for instance, or update the matrix.
 %
-\end{description}
+% \end{description}
+	 % \paragraph{}
+	 \par
 %
 This is a common minimal interface to all our matrices that can be used by all
 of our algorithms. Additional elements to a container can be added, and flagged
@@ -137,15 +150,17 @@ of vectors, \ie a matrix).
 %
 We propose the new interface (\Cref{code:apply}), where {\tt \_In} and {\tt
 \_Out} are vector or matrices, and {\tt Side} is either {\tt Tag::Right} or
-{\tt Tag::Left}, wether the operation $y \gets A^{\top} x$ or  $y \gets A x$ is
-performed.
+{\tt Tag::Left}, whether the operation $y \gets A^{\top} x$ or  $y \gets A x$ is
+performed. We also generalize to the operation $y \gets \alpha A x + \beta y$ as
+it is often handy to allow accumulation.
 %
-\input{lst_apply}
 %
 This method is important for two reasons: first it is the building block of the
 \applin algorithms (for instance Wiedemann and block-Wiedemann); second the
 matrix multiplication is a basic operation in linear algebra that needs to be
 extremely efficient (this is the matter of \Cref{sec:matmul}).
+%
+\input{lst_apply}
 %
 \par
 %
