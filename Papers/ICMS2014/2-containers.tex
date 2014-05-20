@@ -21,10 +21,13 @@ Matrices}
 %
 First, in order to allow operations on its elements, a container is
 parametrized by a field object (\Cref{code:clmat}), not the field's element
-type. This simpler and more general.  The storage type is given by a second
+type. This is simpler and more general. 
+Indeed, the field element type can be infered from a
+\texttt{value_type} type definition within the field type.
+Then, the storage type is given by a second
 template parameter that can use defaults,
 \eg dense BLAS matrices (stride
-and leading dimension or increment).
+and leading dimension or increment), or some sparse format.
 % what else can it be? It can default to other dense formats such as vectors of
 % rows or anything.
 %
@@ -37,7 +40,8 @@ for allocated memory) and containers that share some memory.  The
 %
 The common interface shared by all container matrices is the \applin  interface
 described in the following paragraphs, that accomodates both owner and sharer
-container types.
+container types, and defines the minimal methods required to be a
+template \applin type:
 % \Cref{code:bb}.
 %
 % \input{lst_applin}
