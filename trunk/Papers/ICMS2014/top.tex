@@ -22,6 +22,7 @@
 \ifPDFTeX
 % pdftex
 \usepackage[utf8x]{inputenc}
+\usepackage{libertine} % textsf
 \usepackage{lmodern}
 \fi
 
@@ -216,6 +217,7 @@ breaklinks%
 \newcolumntype{L}{>{$}l<{$}}
 \newcolumntype{R}{>{$}r<{$}}
 
+\def\textsf#1{{\biolinum #1}}
 
 \def\linbox{\textsf{LinBox}\xspace}
 \def\mul{\texttt{mul}\xspace}
@@ -223,9 +225,9 @@ breaklinks%
 \def\spmv{\textrm{SpMV}}
 \def\cpp{\texttt{C++}\xspace}
 \def\mari{\textsf{m4ri}\xspace}
-\def\fflas{\textsf{FFLAS}\xspace}
+\def\fflas{\textsf{\scshape Fflas}\xspace}
 \def\fgemm{\texttt{fgemm}\xspace}
-\def\fflasffpack{\textsf{FFLAS--FFPACK}\xspace}
+\def\fflasffpack{\textsf{\scshape Fflas--Ffpack}\xspace}
 \def\givaro{\textsf{Givaro}\xspace}
 \def\applin{\textsf{BlackBox}\xspace}
 \newcommand{\cf}{\mbox{\emph{cf.}}\xspace}
