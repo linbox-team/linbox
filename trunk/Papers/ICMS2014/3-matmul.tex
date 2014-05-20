@@ -34,10 +34,10 @@ the resources. The only limitation is that the choice of the module
 should be done fast.
 %
 \input{fig_cascade}
-\par
+% \par
 %
 On top of this design, we have Methods/Helpers that allow (preferred) selection
-of algorithms and cut short in the strategy selection of \Cref{fig:diag:patt}.
+of algorithms and cut short in the strategy selection.
 %
 % \par
 %
@@ -47,18 +47,18 @@ of algorithms and cut short in the strategy selection of \Cref{fig:diag:patt}.
 %
 This infrastructure also invites to modularise the code. For instance,
 \fflasffpack has seen major  modularization (addition, scaling,
-reduction,...). Not only it allows to write code with hardly more line than
+reduction,\ldots) Not only it allows to write code with hardly more line than
 it takes for pseudo-code listings in \cite{Boyer:2009:sched} (compared to
 $\approx 2.5\times$ on some routines before) but also it automatically brings
 performance, because we can the separately improve on these modules and can
 switch easier between them. Also, this reduces the lines of code, hence the
-probability for bugs, and eases the tracing/traking of bugs, allows for more
+probability for bugs, and eases the tracing/tracking of bugs, allows for more
 unit tests. Modularising the code comes at almost no cost because we may add
 $O(1)$  operations that 1) don't cost much compared to $O(n^2)$ or more
 complexity of the modules; 2) allow early decisions and terminations (\eg by
 testing against $0$, $\pm 1$, checking leading dimensions and increments); 3)
 allow better code (AVX, SSE, copy--cache friendly operation--copy back,
-representation switching,...)
+representation switching,\ldots)
 %
 \subsection{New algorithms/infrastructure}
 %
@@ -96,13 +96,24 @@ term in the approximate formula and make it vanish.
 %
 \paragraph{Integer BLAS.}
 %
-In order to provide fast matrix multiplication with multiprecision integers, we rely on multi-modular approach through the chinese remainder theorem. Our approach is to reduce as much as possible to \fgemm. Despite, the existence of fast multimodular reduction (resp. reconstruction) algorithm \cite{VonzurGathen:1999:MCA},
-the naive quadratic approach can be reduced to \fgemm which makes it more efficient into practice.
-Note that providing optimized fast multimodular reduction remains challenging. This code is directly integrated  into \fflas.
+In order to provide fast matrix multiplication with multiprecision integers, we
+rely on multi-modular approach through the chinese remainder theorem. Our
+approach is to reduce as much as possible to \fgemm. Despite, the existence of
+fast multimodular reduction (resp.\ reconstruction) algorithm
+\cite{VonzurGathen:1999:MCA}, the naive quadratic approach can be reduced to
+\fgemm which makes it more efficient into practice.  Note that providing
+optimized fast multimodular reduction remains challenging. This code is
+directly integrated  into \fflas.
 
 %
 \paragraph{Polynomial Matrix Multiplication over small prime fields.}
-The situation is similar to integer matrices since one can use evaluation/interpolation techniques through DFT transforms. However, the optimized Fast Fourier Transform of \cite{Harvey:2014}  makes fast evaluation (resp. interpolation) competitive into practice. We thus rely on this scheme together with \fgemm for pointwise matrix multiplications. One can find some benchmark of our code in \cite{GioLeb14}.
+%
+The situation is similar to integer matrices since one can use
+evaluation/interpolation techniques through DFT transforms. However, the
+optimized Fast Fourier Transform of \cite{Harvey:2014}  makes fast evaluation
+(resp.\ interpolation) competitive into practice. We thus rely on this scheme
+together with \fgemm for pointwise matrix multiplications. One can find some
+benchmark of our code in \cite{GioLeb14}.
 
 \paragraph{OpenCL}
 %
@@ -111,13 +122,13 @@ The situation is similar to integer matrices since one can use evaluation/interp
 %
 Sparse matrices are usually problematic because the notion of \emph{sparsity}
 is too general \emph{vs.} the specificity of real world sparse matrices: the
-algorithms have to adapt to the shape of the sparse matrices ---which is not really the case
-for the dense case.
+algorithms have to adapt to the shape of the sparse matrices ---which is not
+really the case for the dense case.
 %
 Getting the best performance for an sparse matrix as an \applin is a
 challenging task. There is a huge literature on \spmv (Sparse Matrix Vector
 multiplication) and on sparse matrix formats, some of which are becoming
-standard (COO, CSR, BCSR, SKY,...).  In \cite{Boyer:2010:spmv} we developped
+standard (COO, CSR, BCSR, SKY,\ldots).  In \cite{Boyer:2010:spmv} we developed
 some techniques to improve the \spmv operation in \linbox.
 Just like the \textsc{Blas} numerical
 routines, we would also like to take advantage of existing high performance
@@ -130,14 +141,14 @@ numerical routines and the expectation of better performance in the \spmv
 operation.
 The issue in the \spmv operation is taking advantage of existing numerical
 routines. There is a Sparse BLAS specification, but it is not widely
-impelemented (Intel's MKL does, there is a cuSPARSE library in the Nvidia Cuda
+implemented (Intel's MKL does, there is a cuSPARSE library in the Nvidia Cuda
 toolkit). Contrary to dense BLAS representation, there is no way of viewing a
 sparse submatrix in most of the standard formats, so we cannot apply the same
 techniques as those in \fflas for $Z/pZ$. However, we develop hybrid structures
 that represent a matrix $A$ as a sum $A_1 + A_2 + \cdots + A_k$. For instance,
 the number of non zeros in each row of each $A_i$ will not overflow a dot
 product and numerical sparse BLAS can be used. Besides, the format of each
-submatrix is independant and we can create some ELL+CSR format for instance.
+submatrix is independent and we can create some ELL+CSR format for instance.
 Besides, sparse matrices  from many domains have only $\pm1$ as non zero
 entries and we take advantage of that (no multiplication, accumulation further
 delayed, no need to store the data).
