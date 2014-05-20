@@ -24,7 +24,7 @@
 \usepackage[utf8x]{inputenc}
 \usepackage{libertine} % textsf
 \usepackage{lmodern}
-\usepackage{inconsolata} % texttt
+\usepackage[scaled=0.95]{inconsolata} % texttt
 \fi
 
 
@@ -108,28 +108,28 @@ breaklinks%
 ,leftmargin=0pt,rightmargin=0pt
 ,innerleftmargin=8pt,innerrightmargin=5pt
 % ,innerleftmargin=15pt,innerrightmargin=5pt
-,skipabove=\topskip
-,skipbelow=-\topskip
+,skipabove=0.9\topskip
+,skipbelow=-0.9\topskip
 % ,nobreak=false
 }
 
 \BeforeBeginEnvironment{lstlisting}%
 {\begin{mdframed}[nobreak=false]
 	% \NoAutoSpacing %french
-	\vskip-0.4\baselineskip
+	\vskip-0.6\baselineskip
 }
-\AfterEndEnvironment{lstlisting}{\end{mdframed}\vspace{1\baselineskip}\par\nobreak}
+\AfterEndEnvironment{lstlisting}{\vspace{-0.15\baselineskip}\end{mdframed}\vspace{1.0\baselineskip}\par\nobreak}
 \def\ifempty#1{\def\temparg{#1}\ifx\temparg\empty}
 \newcommand{\lstcapt}[2][]{%
 \captionsetup*{type=lstlisting} %étoile pour virer les warnings
-\vspace{-0.4\baselineskip}%
+\vspace{-0.5\baselineskip}%
 \ifempty{#1}%
 \captionof{lstlisting}{#2}%
 \else%
 \captionof{lstlisting}[#1]{#2}%
 \fi%
-\vspace{0.5\baselineskip}%
-\setlength{\parindent}{5mm}
+\vspace{0.3\baselineskip}%
+% \setlength{\parindent}{5mm}
 \captionsetup*{type=""} %étoile pour virer les warnings
 % XXX bug à la con. parindent est perdu par lstlinting ou autres
 }
@@ -152,7 +152,7 @@ breaklinks%
 ,literate={>>}{\ensuremath{>>}}1%
 % ,literate={::}{::}1%
 ,basicstyle=\small\ttfamily%
-% ,lineskip=-1pt%
+,lineskip=-2pt%
 % ,emph={inline}%
 ,emphstyle=\color{DarkRed}\bfseries%
 ,commentstyle=\ttfamily\color{gray}%
@@ -174,7 +174,7 @@ breaklinks%
 % ,inputencoding=OT1
 ,extendedchars=true
 ,escapechar=¬
-,basewidth=0.55em
+% ,basewidth=0.5em
 }
 % \def\lstlistingname{Code}
 \captionsetup[lstlisting]{position=below}
@@ -276,5 +276,6 @@ breaklinks%
 }
 
 \def\ldots{...}
+% \def\ldots{…}
 
 
