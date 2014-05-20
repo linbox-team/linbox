@@ -45,20 +45,20 @@ of algorithms and cut short in the strategy selection of \Cref{fig:diag:patt}.
 %
 \par
 %
-This infrastructure also forces/invites to modularise the code. For instance, a lot
-of work has been done in \fflasffpack to factor code in modules (addition,
-scaling, initialisation,\ldots). Not only this permits to write code with
-hardly more line than it takes for pseudo-code listings in
-\cite{Boyer:2009:sched} (compared to $\approx 2.5\times$ on some routines
-before) but also it automatically brings performance, because we can the
-separately improve on these modules. Also, this reduces the lines of code,
-hence the probability for bugs, and eases the tracing/traking of bugs, allows
-for more unit tests. Modularising the code comes at almost no cost because we
-may add $O(1)$  operations that 1) don't cost much compared to $O(n^2)$ or more
-complexity of the modules; 2) allow early decisions and terminations by testing
-against $0$, $\pm 1$ or checking the leading dimensions and increments; 3)
+This infrastructure also invites to modularise the code. For instance,
+\fflasffpack has seen major  modularization (addition, scaling,
+reduction,...). Not only it allows to write code with hardly more line than
+it takes for pseudo-code listings in \cite{Boyer:2009:sched} (compared to
+$\approx 2.5\times$ on some routines before) but also it automatically brings
+performance, because we can the separately improve on these modules and can
+switch easier between them. Also, this reduces the lines of code, hence the
+probability for bugs, and eases the tracing/traking of bugs, allows for more
+unit tests. Modularising the code comes at almost no cost because we may add
+$O(1)$  operations that 1) don't cost much compared to $O(n^2)$ or more
+complexity of the modules; 2) allow early decisions and terminations (\eg by
+testing against $0$, $\pm 1$, checking leading dimensions and increments); 3)
 allow better code (AVX, SSE, copy--cache friendly operation--copy back,
-representation switching,\ldots)
+representation switching,...)
 %
 \subsection{New algorithms/infrastructure}
 %
@@ -96,8 +96,8 @@ term in the approximate formula and make it vanish.
 %
 \paragraph{Integer BLAS.}
 %
-In order to provide fast matrix multiplication with multiprecision integers, we rely on multi-modular approach through the chinese remainder theorem. Our approach is to reduce as much as possible to \fgemm. Despite, the existence of fast multimodular reduction (resp. reconstruction) algorithm \cite{VonzurGathen:1999:MCA}, 
-the naive quadratic approach can be reduced to \fgemm which makes it more efficient into practice. 
+In order to provide fast matrix multiplication with multiprecision integers, we rely on multi-modular approach through the chinese remainder theorem. Our approach is to reduce as much as possible to \fgemm. Despite, the existence of fast multimodular reduction (resp. reconstruction) algorithm \cite{VonzurGathen:1999:MCA},
+the naive quadratic approach can be reduced to \fgemm which makes it more efficient into practice.
 Note that providing optimized fast multimodular reduction remains challenging. This code is directly integrated  into \fflas.
 
 %
@@ -106,8 +106,8 @@ The situation is similar to integer matrices since one can use evaluation/interp
 
 \paragraph{OpenCL}
 %
-\danger dave  
-\paragraph{Sparse Matrix--Vector Multiplication} 
+\danger dave
+\paragraph{Sparse Matrix--Vector Multiplication}
 %
 Sparse matrices are usually problematic because the notion of \emph{sparsity}
 is too general \emph{vs.} the specificity of real world sparse matrices: the
@@ -117,7 +117,7 @@ for the dense case.
 Getting the best performance for an sparse matrix as an \applin is a
 challenging task. There is a huge literature on \spmv (Sparse Matrix Vector
 multiplication) and on sparse matrix formats, some of which are becoming
-standard (COO, CSR, BCSR, SKY,\ldots).  In \cite{Boyer:2010:spmv} we developped
+standard (COO, CSR, BCSR, SKY,...).  In \cite{Boyer:2010:spmv} we developped
 some techniques to improve the \spmv operation in \linbox.
 Just like the \textsc{Blas} numerical
 routines, we would also like to take advantage of existing high performance

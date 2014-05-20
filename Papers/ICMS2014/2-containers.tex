@@ -61,7 +61,7 @@ container types.
 %
 	% \item[Accessing Elements.]
 		\monitem{Accessing Elements.}
-		The function \texttt{setEntry(...)} can be
+		The function \texttt{setEntry} can be
 		used to populate the matrix (from some \texttt{init()} until a
 		\texttt{finish()} is emitted).  The function \texttt{setEntry}
 		can be (very) costly (for some sparse formats for instance)
@@ -84,7 +84,7 @@ container types.
 		%
 		Accessing (read or write) elements, rows or columns through
 		iterators, although handy, is not required because it can be
-		very tricky to implement (compressed fields, hybrid or
+		tricky to implement (compressed fields, hybrid or
 		recursive formats). Traits on matrices where efficient iterators
 		are available allow for their selections in some algorithms.
 		\begin{comment}
@@ -103,8 +103,7 @@ container types.
 %
 	% \item[Apply method.]
 		\monitem{Apply method.}
-		This is essential in the \applin interface, and we'll described
-		it in \Cref{ssec:apply,sec:matmul}.
+		This is essential in the \applin interface (\Cref{ssec:apply,sec:matmul}).
 %
 	% \item[Rebind/Conversions.]
 		\monitem{Rebind/Conversions.}
@@ -128,10 +127,10 @@ with a trait. This model also ensures basic ``linear application'' use of a
 matrix (blackbox) which is the least one can request from a matrix.  For
 instance, this interface is shared by: Our \emph{dense} containers (BLAS type or
 vector of rows); Our  \emph{permutations} containers (compressed \textsc{Lapack} or
-cycles representation); Our sparse formats (based on common formats such as
-COO, CSR, \ldots or based on STL structures such as {\tt map}, {\tt deque}, {\tt
-pair},\ldots) ; Our structured containers (diagonal, Hankel, Butterfly,\ldots) ;
-Our compound containers (Sum and Hybrid, Compose, Submatrix,\ldots);
+cycle representation); Our \emph{sparse} formats (based on common formats such as
+COO, CSR,\ldots\ or based on STL containers such as {\tt map}, {\tt deque}, {\tt
+pair},\ldots); Our \emph{structured} containers (Diagonal, Hankel, Butterfly,\ldots);
+Our \emph{compound} containers (Sum, Compose, Submatrix,\ldots).
 %
 \subsection{The \texttt{apply} method}\label{ssec:apply}
 %

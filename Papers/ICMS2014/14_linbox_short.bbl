@@ -69,11 +69,23 @@ E.~Gamma.
 \newblock {\em Design Patterns: Elements of Reusable Object-Oriented Software}.
 \newblock Addison-Wesley Professional Computing Series. Addison-Wesley, 1995.
 
+\bibitem{VonzurGathen:1999:MCA}
+J.~v. Gathen and J.~Gerhard.
+\newblock {\em Modern Computer Algebra}.
+\newblock Cambridge University Press, New York, NY, USA, 1999.
+
 \bibitem{Giorgi:2004:these}
 P.~Giorgi.
 \newblock {\em Arithmétique et algorithmique en algèbre linéaire exacte pour
   la bibliothèque {\sc LinBox}}.
 \newblock PhD thesis, \'Ecole normale supérieure de Lyon, Dec. 2004.
+
+\bibitem{GioLeb14}
+P.~Giorgi and R.~Lebreton.
+\newblock Online order basis and its impact on block {W}iedemann algorithm.
+\newblock In {\em Proceedings of the 2014 international symposium on symbolic
+  and algebraic computation}, ISSAC '14. ACM, 2014.
+\newblock (to appear).
 
 \bibitem{Douglas:05:GPHP}
 D.~Gregor, J.~Järvi, M.~Kulkarni, A.~Lumsdaine, D.~Musser, and S.~Schupp.
@@ -81,6 +93,11 @@ D.~Gregor, J.~Järvi, M.~Kulkarni, A.~Lumsdaine, D.~Musser, and S.~Schupp.
 \newblock {\em International Journal of Parallel Programming}, 33:145--164,
   2005.
 \newblock 10.1007/s10766-005-3580-8.
+
+\bibitem{Harvey:2014}
+D.~Harvey.
+\newblock Faster arithmetic for number-theoretic transforms.
+\newblock {\em Journal of Symbolic Compututations.}, 60:113--119, Jan. 2014.
 
 \bibitem{stroustrup1994design}
 B.~Stroustrup.
