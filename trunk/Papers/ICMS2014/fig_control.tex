@@ -1,15 +1,16 @@
 \begin{wrapfigure}{r}{0.5\textwidth}
 % \begin{figure}[htbp]
+	\vspace{-2em}
 	\begin{center}
 	\small
 \tikzstyle{block} = [draw, fill=blue!20, rectangle,
-    minimum height=1.6em, minimum width=5.5em, rounded corners]
+    minimum height=1.7em, minimum width=5.5em, rounded corners]
 \tikzstyle{input} = [coordinate]
 \tikzstyle{output} = [coordinate]
-\tikzstyle{fleche} = [draw,->,shorten <=2pt, shorten >=2pt,thick]
+\tikzstyle{fleche} = [draw,->,shorten <=3pt, shorten >=3pt,thick]
 % \tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
 	% \centering
-\begin{tikzpicture}[auto, node distance=2.5cm,>=latex']
+\begin{tikzpicture}[auto, node distance=2.0cm,>=latex']
         \node [input, name=input] (input) {};
         \node [block, right of=input] (controller) {Controlers};
         \node [output, right of=controller] (output) {};
@@ -22,7 +23,9 @@
         \draw [fleche] (modules.120) to [bend left,near end] node [left] {call back} (controller.240);
 \end{tikzpicture}
 \end{center}
+	\vspace{-1em}
 \caption{Controller--Module design pattern}
 \label{fig:diag:patt}
+	\vspace{-1em}
 % \end{figure}
 \end{wrapfigure}
