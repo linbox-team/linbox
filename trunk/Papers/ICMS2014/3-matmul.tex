@@ -4,7 +4,7 @@
 %
 \subsection{Plug-in structure}
 %
-We propose the following design pattern (the closest design pattern to our
+We propose the following \emph{design pattern} (the closest design pattern to our
 knowledge is the \emph{strategy} one, see also \cite[Fig 2.]{Cung:2006:TC}).
 The main advantage of this design pattern is that the modules always call back
 the controller so that the best choice is always chosen.  Besides modules can
@@ -27,13 +27,13 @@ efficiency than any of the algorithms within used separately.
 %
 % \par
 %
-\input{fig_cascade}
 %
 This method allows for the reuse of modules and ensures efficiency.
 It is then possible to adapt to the architecture, the available modules,
 the resources. The only limitation is that the choice of the module
 should be done fast.
 %
+\input{fig_cascade}
 \par
 %
 On top of this design, we have Methods/Helpers that allow (preferred) selection
