@@ -7,27 +7,26 @@
 	% \par
 	% \\
 	%
-	First, we review the new simplified structure for containers, based
-	on our \emph{founding scope allocation} model: providing \eg
-	unification for our matrices classes, a clearer model for matrices and
-	submatrices. We explain design choices and their impact on coding.
+	First, we review the new simplified structure for containers, based on
+	our \emph{founding scope allocation} model. We explain design choices
+	and their impact on coding: unification of our matrix classes, clearer
+	model for matrices and submatrices, \etc
 	%
 	% \par
 	% \\
 	%
 	Then we present a variation of the \emph{strategy} design pattern that
 	is comprised of a controller--plugin system: the controller (solution)
-	chooses among plug-ins (algorithms) and the plug-ins always call back
+	chooses among plug-ins (algorithms) that always call back
 	the controller. We give examples using the solution \mul.
 	%
 	% \par
 	% \\
 	%
 	Finally we present a benchmark architecture that serves two purposes:
-	Providing the user with easier ways to produce graphs using
-	\cpp; Creating a framework for automatically tuning the library
-	(determine thresholds, choose algorithms) and provide regression
-	testing schemes.
+	Providing the user with easier ways to produce graphs using \cpp;
+	Creating a framework for automatically tuning the library and provide
+	regression testing schemes.
 	%
         \keywords{\linbox; design pattern; algorithms and containers; benchmarking;
 	matrix multiplication algorithms; exact linear algebra.}
