@@ -1,12 +1,11 @@
 \section{Containers architecture}\label{sec:container}
 %
-\linbox is mainly conceived around the RAII concept with re-entrant function
-(Resource Acquisition Is Initialisation), introduced by
-\cite{stroustrup1994design}. We also follow the {founding scope allocation}
-model (or \emph{mother model}) from \cite{Dumas:2010:lbpar} which ensures that
-the memory used by objects is allocated in the constructor and freed only at
-its destruction. The gestion of the memory allocated by an object is then
-exlusively reserved to it.
+\linbox is mainly conceived around the RAII (Resource Acquisition Is
+Initialisation, see \cite{stroustrup1994design}) concept with re-entrant
+function. We also follow the {founding scope allocation} model (or \emph{mother
+model}) from \cite{Dumas:2010:lbpar} which ensures that the memory used by
+objects is allocated in the constructor and freed only at its destruction. The
+gestion of the memory allocated by an object is then exlusively reserved to it.
 %
 \par
 %
@@ -21,11 +20,11 @@ vector types with different interfaces needed to be reduced into only two
 Matrices}
 %
 First, in order to allow operations on its elements, a container is
-parametrized by a field object (\cf \Cref{code:clmat}), not the field's element
+parametrized by a field object (\Cref{code:clmat}), not the field's element
 type. This simpler and more general.  The storage type is given by a second
 template parameter that can use defaults,
-\eg dense BLAS type matrices (a stride
-and a leading dimension or an increment).
+\eg dense BLAS matrices (stride
+and leading dimension or increment).
 % what else can it be? It can default to other dense formats such as vectors of
 % rows or anything.
 %
@@ -154,13 +153,13 @@ We propose the new interface (\Cref{code:apply}), where {\tt \_In} and {\tt
 performed. We also generalize to the operation $y \gets \alpha A x + \beta y$ as
 it is often handy to allow accumulation.
 %
+\input{lst_apply}
 %
 This method is important for two reasons: first it is the building block of the
 \applin algorithms (for instance Wiedemann and block-Wiedemann); second the
 matrix multiplication is a basic operation in linear algebra that needs to be
 extremely efficient (this is the matter of \Cref{sec:matmul}).
 %
-\input{lst_apply}
 %
 \par
 %
