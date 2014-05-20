@@ -94,16 +94,20 @@ This is a cascade of Bini's algorithm and Strassen--Winograd algorithm and/or
 the naïve algorithm (using BLAS). The idea is to analyse precisely the error
 term in the approximate formula and make it vanish.
 %
-\paragraph{Integer BLAS}
+\paragraph{Integer BLAS.}
 %
-\danger pascal
+In order to provide fast matrix multiplication with multiprecision integers, we rely on multi-modular approach through the chinese remainder theorem. Our approach is to reduce as much as possible to \fgemm. Despite, the existence of fast multimodular reduction (resp. reconstruction) algorithm \cite{VonzurGathen:1999:MCA}, 
+the naive quadratic approach can be reduced to \fgemm which makes it more efficient into practice. 
+Note that providing optimized fast multimodular reduction remains challenging. This code is directly integrated  into \fflas.
+
 %
-\paragraph{Polynomial Matrix Multiplication}
-\danger Pascal
+\paragraph{Polynomial Matrix Multiplication over small prime fields.}
+The situation is similar to integer matrices since one can use evaluation/interpolation techniques through DFT transforms. However, the optimized Fast Fourier Transform of \cite{Harvey:2014}  makes fast evaluation (resp. interpolation) competitive into practice. We thus rely on this scheme together with \fgemm for pointwise matrix multiplications. One can find some benchmark of our code in \cite{GioLeb14}.
+
 \paragraph{OpenCL}
 %
-\danger dave
-\paragraph{Sparse Matrix--Vector Multiplication}
+\danger dave  
+\paragraph{Sparse Matrix--Vector Multiplication} 
 %
 Sparse matrices are usually problematic because the notion of \emph{sparsity}
 is too general \emph{vs.} the specificity of real world sparse matrices: the
