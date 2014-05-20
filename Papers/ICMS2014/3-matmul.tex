@@ -1,6 +1,6 @@
 \section{Improving \linbox matrix multiplication}\label{sec:matmul}
 %
-Efficient matrix multiplication is key to \linbox library.
+% Efficient matrix multiplication is key to \linbox library.
 %
 \subsection{Plug-in structure}
 %
@@ -8,19 +8,24 @@ We propose the following design pattern (the closest design pattern to our
 knowledge is the \emph{strategy} one, see also \cite[Fig 2.]{Cung:2006:TC}.
 The main advantage of this design pattern is that the modules always call back
 the controller so that the best choice is always chosen.  Besides modules can
-be easily added as \emph{plug-ins}.  An analogy can be drawn with dynamic
-systems---once the controller sends a correction to the system, it receives
-back a new measure that allows for a new correction.
-%
-\par
+be easily added as \emph{plug-ins}.
 %
 \input{fig_control}
 %
+An analogy can be drawn with dynamic
+systems---once the controller sends a correction to the system, it receives
+back a new measure that allows for a new correction.
+%
+%
+%
 \par
 %
-For instance, we can write the standard cascade algorithms in that model:
+For instance, we can write (\Cref{fig:seuil}) the standard cascade algorithms
+(see \cite{Dumas:Fflas}) in that model. Cascade algorithms are used to combine
+several algorithms that are switched using thresholds, ensuring better
+efficiency than any of the algorithms within used separately.
 %
-\par
+% \par
 %
 \input{fig_cascade}
 %

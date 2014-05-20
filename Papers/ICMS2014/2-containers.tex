@@ -151,7 +151,7 @@ We propose the new interface (\Cref{code:apply}), where {\tt \_In} and {\tt
 \_Out} are vector or matrices, and {\tt Side} is either {\tt Tag::Right} or
 {\tt Tag::Left}, whether the operation $y \gets A^{\top} x$ or  $y \gets A x$ is
 performed. We also generalize to the operation $y \gets \alpha A x + \beta y$ as
-it is often handy to allow accumulation.
+it is often handy and efficient to allow for accumulation.
 %
 \input{lst_apply}
 %
@@ -164,13 +164,13 @@ extremely efficient (this is the matter of \Cref{sec:matmul}).
 \par
 %
 The implementation of the apply method can be left to the {\tt mul} solution
-(see \Cref{sec:matmul}), with possibly a Helper/method argument if the apply
+(see \Cref{sec:matmul}), with possibly a helper/method argument if the apply
 parameters are specialized enough.
 %
 % \Cref{code:applymul}.
 %
-Usually,  the {\tt apply} method for these
-containers is strongly dependant on the format representation of the matrix. In
-the case of Hybrid containers, it will simply be calls to the {\tt apply}
-method of the children.
+% Usually,  the {\tt apply} method for
+% containers is strongly dependant on the representation of the matrix. In
+% the case of Hybrid containers, it will simply be calls to the {\tt apply}
+% method of the children.
 %
