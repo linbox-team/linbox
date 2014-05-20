@@ -7,7 +7,7 @@ This article follows several papers and memoirs on the \linbox%
 (\cf{} \cite{Giorgi:2004:these,Turner:2002:these,Boyer:2012:these,Dumas:2002:icms,Dumas:2010:lbpar})
 and builds upon them.
 %
-\linbox is a \cpp template library for fast and exact linear algebra. It is designed with genericity
+\linbox is a \cpp template library for fast and exact linear algebra, designed with genericity
 and efficiency in mind.
 % The main concepts include:
 % \begin{itemize}[---]
@@ -20,7 +20,7 @@ and efficiency in mind.
 %
 The \linbox library is under constant evolution, driven by new problems and
 algorithms, by new computing paradigms, new compilers and architectures. This
-poses many challenges. To address these changes, we are incrementally
+poses many challenges: we are incrementally
 updating the \emph{design} of the library towards a \textsf{2.0} release.
 %
 \par
@@ -58,7 +58,7 @@ for easier development include reducing
 compile times, enforcing stricter warnings and checks, supporting more
 compilers and architectures, simplifying and automating version number
 changes, automating memory leak checks, setting up build-bots to check the code
-frequently,\dots
+frequently,\ldots
 % This demand on the developer
 % side is also driven by the fact that code introduced by various one-timers
 % needs to be maintained.
@@ -74,18 +74,18 @@ dependencies;
 %
 Facilitated the discovery of the \textsc{Blas}/\textsc{Lapack} libraries;
 %
-Simplified and sped up the checking process while covering more of the library
+Simplified and sped up the checking process while covering more of the library;
 % (\danger dave a word on make fullcheck or on the future feature matrix ---what
 % solution, what field, what implementation we recommend/provide if at all ?);
 %
 Updated the documentation and distinguished user and developer oriented docs;
 %
-Added comprehensive benchmarking tools,\dots
+Added comprehensive benchmarking tools,\ldots
 %
 %
 \par
 %
-Developing generic and high-performance libraries is difficult. We can find a
+Developing generic high-performance libraries is difficult. We can find a
 large literature on coding standards and software design references in (\cf{}
 \cite{alexandrescu:01:modern,gamma:95:design,sutter:05:cpp,stroustrup1994design,Douglas:05:GPHP}),
 and many internet sources and experience acquired by/from free

@@ -21,7 +21,7 @@ Matrices}
 %
 First, in order to allow operations on its elements, a container is
 parametrized by a field object (\Cref{code:clmat}), not the field's element
-type. This is simpler and more general. 
+type. This is simpler and more general.
 Indeed, the field element type can be infered from a
 \verb!value_type! type definition within the field type.
 Then, the storage type is given by a second
@@ -34,12 +34,12 @@ and leading dimension or increment), or some sparse format.
 \input{lst_container}
 %
 In the mother model, we must distinguish containers that own (are responsible
-for allocated memory) and containers that share some memory.  The
+for allocated memory) and containers that share memory.  The
 \texttt{SubMatrix} and \texttt{SubVector} types share the memory while
 \texttt{Matrix} and \texttt{Vector} own it.
 %
 The common interface shared by all container matrices is the \applin  interface
-described in the following paragraphs, that accomodates both owner and sharer
+described in the following paragraphs, it accomodates both owner and sharer
 container types, and defines the minimal methods required to be a
 template \applin type:
 % \Cref{code:bb}.
@@ -118,8 +118,9 @@ template \applin type:
 	 convenient, for instance all sparse matrix formats can convert to/from
 	 CSR format.  This `star' mechanism can simplify the code (to the
 	 expense of memory usage) and may speed it up when the mother format
-	 (CSR for instance) is well tuned for some task. Such tasks could be
-	 read/write from a file for instance, or update the matrix.
+	 (CSR for instance) is well tuned for some task.
+	 % Such tasks could be
+	 % read/write from a file for instance, or update the matrix.
 %
 % \end{description}
 	 % \paragraph{}
