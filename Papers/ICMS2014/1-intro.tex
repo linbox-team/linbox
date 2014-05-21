@@ -23,8 +23,8 @@ algorithms, by new computing paradigms, new compilers and architectures. This
 poses many challenges: we are incrementally
 updating the \emph{design} of the library towards a \textsf{2.0} release.
 The evolution is also motivated by developing a high-performance mathematical
-library available and easy for researchers and engineers that will use it for
-producing quality reliable results and quality research papers.
+library available for researchers and engineers that is easy to use and help
+produce quality reliable results and quality research papers.
 %
 \par
 %
@@ -32,7 +32,9 @@ Let us start from a basic consideration: we show in the \Cref{tab:sloc} the
 increase in the ``lines of code'' size\footnote{Using \textsf{sloccount}, available at
 \url{http://sourceforge.net/projects/sloccount/}.}
 %
-of \linbox and its coevolved dependencies \givaro and \fflasffpack.
+of \linbox and its coevolved dependencies \givaro and
+\fflasffpack\footnote{symbol \td when \givaro is included and \tdd when
+contains \fflasffpack}.
 %
 % \par
 %
@@ -43,7 +45,7 @@ stricter development model, and we are going to list some techniques we used.
 %% SPLITTING
 For instance, we have transformed \fflasffpack %
 %
-\footnote{See \url{http://www.linalg.org/projects/fflas-ffpack/}.}
+% \footnote{See \url{http://www.linalg.org/projects/fflas-ffpack/}.}
 	%
 (\cf{} \cite{Dumas:2008:Flas}) into a new standalone header library, resulting
 in more visibility for the \fflasffpack project
@@ -69,13 +71,14 @@ frequently.
 This size increase also requires more efforts to make the library user friendly. For
 instance, we have:
 %
-Developed an \texttt{auto-install.sh} script that installs automatically the
-latest stable or development versions of the trio, resolving the version
+Developed %an \texttt{auto-install.sh}
+scripts that install automatically the
+latest stable/development versions of the trio, resolving version
 dependencies;
 %
-Facilitated the discovery of the \textsc{Blas}/\textsc{Lapack} libraries;
+Eased the discovery of \textsf{\textsc{Blas}}/\textsf{\textsc{Lapack}} libraries;
 %
-Simplified and sped up the checking process while covering more of the library;
+Simplified and sped up the checking process, covering more of the library;
 % (\danger dave a word on make fullcheck or on the future feature matrix ---what
 % solution, what field, what implementation we recommend/provide if at all ?);
 %
