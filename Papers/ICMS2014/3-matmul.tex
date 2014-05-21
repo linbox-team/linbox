@@ -1,24 +1,26 @@
 \section{Improving \linbox matrix multiplication}\label{sec:matmul}
 %
-% Efficient matrix multiplication is key to \linbox library.
+We propose a \emph{design pattern} (the closest pattern to our knowledge is the
+\emph{strategy} one, see \cite[Fig 2.]{Cung:2006:TC}) in \Cref{ssec:plugin} and
+we show a variety of new algorithms where it is used in the \mul  solution
+(\Cref{ssec:algmul}).
 %
-\subsection{Plug-in structure}
+\subsection{Plug-in structure}\label{ssec:plugin}
 %
 We propose the following version of the \emph{strategy design pattern}, 
 see \cite[Fig 2.]{Cung:2006:TC}).
 The main advantage of this pattern is that the modules always call 
 the controller of a function so that the best version will be chosen. 
 % Besides modules can be easily added as \emph{plug-ins}.
-%
-\input{fig_control}
-%
 An analogy can be drawn with dynamic
+\input{fig_control}
 systems---once the controller sends a correction to the system, it receives
 back a new measure that allows for a new correction.
 %
-%
-%
 \par
+%
+%
+%
 %
 For instance, we can write (\Cref{fig:seuil}) the standard cascade algorithms
 (see \cite{Dumas:2008:Flas}) in that model. Cascade algorithms are used to combine
@@ -33,12 +35,12 @@ It is then possible to adapt to the architecture, the available modules,
 the resources. The only limitation is that the choice of module
 must be fast.
 %
-\input{fig_cascade}
 % \par
 %
 On top of this design, we have Method objects that allow caller selection
 of preferred algorithms, shortcutting the strategy selection.
 %
+\input{fig_cascade}
 % \par
 %
 % \danger timing old fgemm/plugin fgemm with no noticeable change ?
@@ -61,7 +63,7 @@ performance, because we can separately improve individual modules and immediatel
 %Allow better code (AVX, SSE, copy--cache friendly operation--copy back,
 %representation switching,\ldots)
 %
-\subsection{New algorithms/infrastructure}
+\subsection{New algorithms for the \mul solution}\label{ssec:algmul}
 %
 New algorithms and techniques improve on matrix multiplication
 in several  ways: reducing memory consumption, reducing runtime, 
