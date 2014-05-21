@@ -10,12 +10,12 @@ knowledge of a graphing library like \gnuplot%
 or provide the \linbox website with automatically updated tables and graphs.
 Second, it would be used for regression testing.  Finally, it would be used for
 selecting default method, threshold. A lot of libraries do some automatic tuning
-at installation (fftw, ATLAS, NTL,\ldots).
+at installation (\textsf{fftw}, \textsf{ATLAS}, \textsf{NTL},\ldots).
 %
 \par
 %
-What do we do differently ? Selection between "larger" algorithms, takes more time.
-Interpolation.
+% What do we do differently ? Selection between "larger" algorithms, takes more time.
+% Interpolation.
 % XXX BTL\footnote{\url{http://projects.opencascade.org/btl/}}/eigen
 %
 %
@@ -23,31 +23,47 @@ Interpolation.
 %
 Our plotting mechanism is based on two structures: {\tt PlotStyle} and {\tt
 PlotData}. The  {\tt PlotGraph} structure uses the style and data to manage the
-output.  We allow ploting in standard image formats, html and \LaTeX tables,
-but also in raw csv or xml. The last raw formats allow for file exchange, data
-comparisons and extrapolation.
-\danger dave benchmark formats discussion ?
+output.  We allow plotting in standard image formats, html and \LaTeX tables,
+but also in raw csv or xml for file exchange, data comparisons and
+extrapolation. This mechanism can also automatically update \linbox feature
+matrix that describes how our solutions behave on the fields we support. (vague)
+% \danger dave benchmark formats discussion ?
 %
 \par
 %
 % \input{fig_bench}
 %
-% XXX Time spent on each data is limited (will not start execution if fit (linear least squares) forecasts 'too long'.\\
+% XXX Time spent on each data is limited (will not start execution if fit
+% (linear least squares) forecasts 'too long'.\\
+%
 % XXX Adapts to the environment.
 %
 Saving graphs in raw format can enable automatic regression testing on the
-buildbots. For some determined matrices (of different shape and size) over a
-few fields, we can accumulate over time the timings for some of our solutions
-(rank, det, mul,\ldots). At each new release, when we update the documentation,
-we can check any regression on these base cases and automatically update the
-regression plots.
-\danger We need to implement this framework (not difficult; anybody?).
+build-bots that already checked our code. For some determined matrices (of
+different shape and size) over several fields, we can accumulate the timings
+for some of our solutions ({\tt rank}, {\tt det}, {\tt mul},\ldots) over time.
+At each new release, when the documentation is updated, we can check any
+regression on these base cases and automatically update the regression plots.
+% \danger We need to implement this framework (not difficult; anybody?).
 %JGD: we already have the buildbot, lets focus on this right now
 %
 \subsection{Automatized tuning and method selection}
 %
-CPU throttling for ATLAS, \fflasffpack not reliable.
-XXX Default are provided, method can be selected via a benchmark (cf wino\_threshold)\\
-XXX howto
-feature matrix
+Some of the code in \linbox is already automatically tuned (such as thresholds
+in \fgemm), but we improve on it. It is well known that CPU throttling while
+building ATLAS causes bad optimisations; the \fflasffpack library could also
+suffer from not-to-reliable threshold detection (up to $50\%$ relative
+difference for some thresholds between runs). Instead of searching for a
+threshold using fast dichotomous techniques for instance, we propose to
+interpolate curves and find the intersection. Using least squares fitting, we
+can even tolerate outliers. This is however more time consuming.
 %JGD: there is already optimiser/winograd.C etc.
+%
+\par
+%
+Automatically tuning a library is not only about defining thresholds, it is
+also about method/algorithm selection. Our strategy is the following: a given
+algorithm is tuned for each {\tt Helper} (method) it has.  Then the solution
+(that uses these algorithms) is tuned for selecting the best methods.  At each
+stages, defaults are given, but can be overridden by the optimiser. The areas
+where a method is better are extrapolated from the benchmarking curves.
