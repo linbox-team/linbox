@@ -58,10 +58,9 @@ template \applin type:
 community.
 The MatrixMarket header comment provides space for metadata about the provenance of a matrix and our interest in it.  Also, use of MatrixMarket facilitates sharing matrices with other software tools.  However, because of our many entry domains (fields and rings) and many matrix representations, extensions are necessary to the MatrixMarket format for some.
 For instance, for a matrix over GF($p^ek$) we have established a convention to record in the header comment the modulus and irreducible polynomial defining the representation.
-
 % we haven't committed to this as a MM variant, should we?
 		We can further adapt the header to suit our needs, for instance
-		create new formats that save space (for sparse matrix, CSR fashion saves
+		formats that save space (for sparse matrix, CSR fashion saves
 		roughly a third space over COO). Structured
 		matrices
 (Toeplitz, Vandermonde, etc.)
