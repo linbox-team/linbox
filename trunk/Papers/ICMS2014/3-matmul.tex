@@ -52,40 +52,35 @@ it takes for pseudo-code listings in \cite{Boyer:2009:sched} (compared to
 $\approx 2.5\times$ on some routines before) but also it automatically brings
 performance, because we can the separately improve on these modules and can
 switch easier between them. Also, this reduces the lines of code, hence the
-probability for bugs, and eases the tracing/tracking of bugs, allows for more
+probability for bugs, eases their tracing/tracking, and allows for more
 unit tests. Modularising the code comes at almost no cost because we may add
-$O(1)$  operations that 1) don't cost much compared to $O(n^2)$ or more
-complexity of the modules; 2) allow early decisions and terminations (\eg by
-testing against $0$, $\pm 1$, checking leading dimensions and increments); 3)
-allow better code (AVX, SSE, copy--cache friendly operation--copy back,
+$O(1)$  operations that: Do not cost much compared to $O(n^2)$ or more
+complexity of the modules; Allow early decisions and terminations (\eg by
+testing against $0$, $\pm 1$, checking leading dimensions or increments);
+Allow better code (AVX, SSE, copy--cache friendly operation--copy back,
 representation switching,\ldots)
 %
 \subsection{New algorithms/infrastructure}
 %
-We introduce now several new algorithms that improve on matrix multiplication
+We show several new algorithms that improve on matrix multiplication
 in various ways: reducing memory consumption, introducing new efficient
 algorithms, using graphics capabilities, generalizing the BLAS to integer
 routines.
 %
-\paragraph{New algorithms: low memory}
+\def\monitem#1{\par \textit{#1}\ }
+\monitem{Reduced memory.}
 %
-The routine \fgemm in \fflas uses the classic schedules for the multiplication and
-the product with accumulation (\cf \cite{Boyer:2009:sched}), but we also
-implement the lower memory routines therein.
-%
-% \par
-%
-The difficulty consists in using the part of the memory contained in a
-sub-matrix of the original matrix. It is two-fold. -- First we have to use some
-part of a memory that has already been allocated to the input matrices,
-therefore we cannot free and reallocate part of it. -- Second, several of these
-algorithms are meant for square matrices.
+The routine \fgemm in \fflas uses by default the classic schedules for the multiplication
+and the product with accumulation (\cf \cite{Boyer:2009:sched}), but we also
+implement the low memory routines therein. The new algorithms are competitive
+and can reach sizes that were limiting.
 %
 % \par
 %
-% XXX \danger table comparing speeds
+One difficulty consists in using the memory space contained in a sub-matrix of
+the original matrix, that one cannot free or re-allocate.
 %
-\paragraph{New algorithms: Bini.}
+\monitem{Using Bini's approximate formula.}
 %
 In \cite{BD:2014:Bini}, we use Bini's approximate matrix multiplication formula
 to derive a new algorithms that is more efficient that the Strassen--Winograd
@@ -94,7 +89,7 @@ This is a cascade of Bini's algorithm and Strassen--Winograd algorithm and/or
 the naïve algorithm (using BLAS). The idea is to analyse precisely the error
 term in the approximate formula and make it vanish.
 %
-\paragraph{Integer BLAS.}
+\monitem{Integer BLAS.}
 %
 In order to provide fast matrix multiplication with multiprecision integers, we
 rely on multi-modular approach through the chinese remainder theorem. Our
@@ -106,7 +101,7 @@ optimized fast multimodular reduction remains challenging. This code is
 directly integrated  into \fflas.
 
 %
-\paragraph{Polynomial Matrix Multiplication over small prime fields.}
+\monitem{Polynomial Matrix Multiplication over small prime fields.}
 %
 The situation is similar to integer matrices since one can use
 evaluation/interpolation techniques through DFT transforms. However, the
@@ -114,60 +109,44 @@ optimized Fast Fourier Transform of \cite{Harvey:2014}  makes fast evaluation
 (resp.\ interpolation) competitive into practice. We thus rely on this scheme
 together with \fgemm for pointwise matrix multiplications. One can find some
 benchmark of our code in \cite{GioLeb14}.
-
-\paragraph{OpenCL}
 %
-\danger dave
-\paragraph{Sparse Matrix--Vector Multiplication}
+\monitem{Sparse Matrix--Vector Multiplication}
 %
 Sparse matrices are usually problematic because the notion of \emph{sparsity}
-is too general \emph{vs.} the specificity of real world sparse matrices: the
-algorithms have to adapt to the shape of the sparse matrices ---which is not
-really the case for the dense case.
+is too general \vs the specificity of real world sparse matrices: the
+algorithms have to adapt to the shape of the sparse matrices.
 %
-Getting the best performance for an sparse matrix as an \applin is a
-challenging task. There is a huge literature on \spmv (Sparse Matrix Vector
-multiplication) and on sparse matrix formats, some of which are becoming
-standard (COO, CSR, BCSR, SKY,\ldots).  In \cite{Boyer:2010:spmv} we developed
-some techniques to improve the \spmv operation in \linbox.
-Just like the \textsc{Blas} numerical
-routines, we would also like to take advantage of existing high performance
-numerical libraries (come back to this later).
-%
-\par
-%
-The addition of standard matrix format is driven by the availability of
-numerical routines and the expectation of better performance in the \spmv
-operation.
-The issue in the \spmv operation is taking advantage of existing numerical
-routines. There is a Sparse BLAS specification, but it is not widely
-implemented (Intel's MKL does, there is a cuSPARSE library in the Nvidia Cuda
-toolkit). Contrary to dense BLAS representation, there is no way of viewing a
-sparse submatrix in most of the standard formats, so we cannot apply the same
-techniques as those in \fflas for $Z/pZ$. However, we develop hybrid structures
-that represent a matrix $A$ as a sum $A_1 + A_2 + \cdots + A_k$. For instance,
-the number of non zeros in each row of each $A_i$ will not overflow a dot
-product and numerical sparse BLAS can be used. Besides, the format of each
-submatrix is independent and we can create some ELL+CSR format for instance.
-Besides, sparse matrices  from many domains have only $\pm1$ as non zero
-entries and we take advantage of that (no multiplication, accumulation further
-delayed, no need to store the data).
-%
-\par
-%
-Contrary to the BLAS case, the apply using the transpose of $A$ can be very
-inefficient compared to the apply on $A$. In this case, we create a helper
-function that (if memory allows) just stores $A^\top$ in an optimised hybrid
-format too. Setting up the hybrid representation of $A$ usually costs the order
-of $5$to $10$ non optimised \spmv operations: the conversion is performed only
-for larger matrices that will be used repeatedly for the \spmv operation and
-remains constant.
-% They are however not very widespread, for instance sparse blas in
-% intel mkl (only). Metis for graph partitionning.  zero-one matrices are special
-% (no numerical routines)
+There is a huge literature from numerical linear algebra  on \spmv (Sparse
+Matrix Vector multiplication) and on sparse matrix formats, some of which are
+becoming standard (COO, CSR, BCSR, SKY,\ldots).  In \cite{Boyer:2010:spmv} we
+developed some techniques to improve the \spmv operation in \linbox. Ideas
+include the separation of the $\pm 1$ for removing multiplications, splitting
+in a sum (HYB for hybrid format) of sparse matrix  whose formats are
+independant and using specific routines. For instance, on $\modring{p}$ with
+word size $p$, one can split the matrix ensuring no reduction is needed  in the
+dot product and call Sparse BLAS (from Intel \textsf{MKL} or Nvidia
+\textsf{cuBLAS} for instance) on each matrix. One trade-off is as usual between
+available memory, time spent on optimizing \vs time spent on \apply, and all
+the more so because we allow the concurrent storarge of the transpose in an
+optimised fashion, usually yielding huge speed-ups. This can be decided by
+\emph{ad hoc.\ } optimizers.
 % Helper structure to store a matrix as a sum of structures (HYB), possibly the
-% transpose. Memory.  Reduce inits on Z/pZ.
-\paragraph{Using conversions}
+%
+\monitem{Parallelisation}
+Work on parallelizations using \textsf{OpenCL}, \textsf{OpenMP} or
+\textsf{XKaapi} for dense or sparse matrix multiplication include
+\cite{Boyer:2010:spmv,WST12,DGPZ14}.
+
+\paragraph{}
+These state-of-the-art algorithms, often inter-dependant, need to be selected
+by the \mul solution, possibly using a Method/Helper parameter. The
+Controller/Module model works particularly well here: cascading, switch
+methods, algorithms selection is made easy. Besides, the choosing of a
+particular algorithms or base case is never settled in advance: the library has
+to be tuned wrt. available libraries, local performance of these libraries.
+
+\begin{comment}
+\monitem{Using conversions}
 \begin{itemize}
 	\item
  double->float
@@ -182,3 +161,4 @@ remains constant.
 \end{itemize}
 %
 \danger dave some words on the Domain architecture that you support and why it is best than functions (for instance for mul or apply) ?
+\end{comment}

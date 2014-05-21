@@ -58,6 +58,11 @@ J.-G. Dumas, T.~Gautier, C.~Pernet, and B.~D. Saunders.
   Software}, volume 6327 of {\em ICMS'10}, pages 77--83, Berlin, Heidelberg,
   Sept. 2010. Springer-Verlag.
 
+\bibitem{DGPZ14}
+J.-G. Dumas, T.~Gautier, C.~Pernet, and Z.~Sultan.
+\newblock {Parallel computation of echelon forms}.
+\newblock Technical report, Feb. 2014.
+
 \bibitem{Dumas:2008:Flas}
 J.-G. Dumas, P.~Giorgi, and C.~Pernet.
 \newblock Dense linear algebra over word-size prime fields: the {FFLAS} and
@@ -114,5 +119,12 @@ H.~Sutter and A.~Alexandrescu.
 W.~J. Turner.
 \newblock {\em Blackbox linear algebra with the {\sc LinBox} library}.
 \newblock PhD thesis, North Carolina State University, May 2002.
+
+\bibitem{WST12}
+M.~Wezowicz, B.~D. Saunder, and M.~Taufer.
+\newblock Dealing with performance/portability and performance/accuracy
+  trade-offs in heterogeneous computing systems: a case study with matrix
+  multiplication modulo primes.
+\newblock volume 8403, pages 08--08--10, 2012.
 
 \end{thebibliography}
