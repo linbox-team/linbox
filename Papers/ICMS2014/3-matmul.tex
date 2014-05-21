@@ -7,10 +7,10 @@ we show a variety of new algorithms where it is used in the \mul  solution
 %
 \subsection{Plugin structure}\label{ssec:plugin}
 %
-We propose the following version of the \emph{strategy design pattern}, 
+We propose the following version of the \emph{strategy design pattern},
 see \cite[Fig 2.]{Cung:2006:TC}).
-The main advantage of this pattern is that the modules always call 
-the controller of a function so that the best version will be chosen. 
+The main advantage of this pattern is that the modules always call
+the controller of a function so that the best version will be chosen.
 % Besides modules can be easily added as \emph{plugins}.
 An analogy can be drawn with dynamic
 \input{fig_control}
@@ -66,8 +66,8 @@ performance, because we can separately improve individual modules and immediatel
 \subsection{New algorithms for the \mul solution}\label{ssec:algmul}
 %
 New algorithms and techniques improve on matrix multiplication
-in several  ways: reducing memory consumption, reducing runtime, 
-using graphics capabilities, generalizing the BLAS to integer
+in several  ways: reducing memory consumption, reducing runtime,
+using graphics capabilities, generalizing the \blas to integer
 routines.
 %
 \def\monitem#1{\par \textit{#1}\ }
@@ -89,10 +89,10 @@ In \cite{BD:2014:Bini}, we use Bini's approximate matrix multiplication formula
 to derive a new algorithms that is more efficient that the Strassen--Winograd
 implementation in \fgemm by $\approx 5-10\%$ on sizes \num{1500}--\num{3000}.
 This is a cascade of Bini's algorithm and Strassen--Winograd algorithm and/or
-the naïve algorithm (using BLAS). The idea is to analyze precisely the error
+the naïve algorithm (using \blas). The idea is to analyze precisely the error
 term in the approximate formula and make it vanish.
 %
-\monitem{Integer BLAS.}
+\monitem{Integer \blas.}
 %
 In order to provide fast matrix multiplication with multiprecision integers, we
 rely on multimodular approach through the Chinese remainder theorem. Our
@@ -127,7 +127,7 @@ include the separation of the $\pm 1$ for removing multiplications, splitting
 in a sum (HYB for hybrid format) of sparse matrix  whose formats are
 independent and using specific routines. For instance, on $\modring{p}$ with
 word size $p$, one can split the matrix ensuring no reduction is needed  in the
-dot product and call Sparse BLAS (from Intel \textsf{MKL} or Nvidia
+dot product and call Sparse \blas (from Intel \textsf{MKL} or Nvidia
 \textsf{cuBLAS} for instance) on each matrix. One tradeoff is as usual between
 available memory, time spent on optimizing \vs time spent on \apply, and all
 the more so because we allow the concurrent storage of the transpose in an
