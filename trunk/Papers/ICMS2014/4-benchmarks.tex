@@ -1,8 +1,8 @@
 \section{Benchmarking  for automated tuning and regression testing}\label{sec:bench}
 %
-Benchmarking was introduced in \linbox for several reasons. First, It 
+Benchmarking was introduced in \linbox for several reasons. First, It
 gives the user a convenient way to produce quality graphs with the
-help  
+help
 of a graphing library like \gnuplot
 \footnote{\url{http://www.gnuplot.info/}}
 %
@@ -24,12 +24,11 @@ Our plotting mechanism is based on two structures: {\tt PlotStyle} and {\tt
 PlotData}. The  {\tt PlotGraph} structure uses the style and data to manage the
 output.  We allow plotting in standard image formats, html and \LaTeX tables,
 but also in raw csv or xml for file exchange, data comparisons and
-extrapolation. 
+extrapolation.
 %JGD: no comprendo
-%This mechanism can also automatically update \linbox feature
-%matrix that describes how our solutions behave on the fields we
-%support. 
-%(vague)
+This mechanism can also automatically create benchmarks in \linbox
+feature matrix (this is a table that describes what solutions we support, on
+which the fields).
 % \danger dave benchmark formats discussion ?
 %
 \par
@@ -53,14 +52,14 @@ regression on these base cases and automatically update the regression plots.
 \subsection{Automated tuning and method selection}
 %
 Some of the code in \linbox is already automatically tuned (such as thresholds
-in \fgemm), but we improve on it. 
+in \fgemm), but we improve on it.
 %It is well known that CPU throttling while
 
 %building ATLAS causes bad optimizations; the \fflasffpack library could also
 
 %suffer from not very reliable threshold detection (up to $50\%$ relative
 
-%difference for some thresholds between runs). 
+%difference for some thresholds between runs).
 Instead of searching for a
 threshold using fast dichotomous techniques, for instance, we propose to
 interpolate curves and find the intersection. Using least squares fitting, we
@@ -69,7 +68,7 @@ may even tolerate outliers (but this is time consuming).
 %
 \par
 %
-Automatically tuning a library is not only about thresholds, it may 
+Automatically tuning a library is not only about thresholds, it may
 also involve method/algorithm selection. Our strategy is the following: a given
 algorithm is tuned for each {\tt Helper} (method) it has.  Then the solution
 (that uses these algorithms) is tuned for selecting the best methods.  At each
