@@ -1,7 +1,7 @@
 \section{Benchmarking  for automated tuning and regression testing}\label{sec:bench}
 %
 Benchmarking was introduced in \linbox for several reasons. First, It would
-give the user a user-friendly way for producing quality graph with no necessary
+give the user a user friendly way for producing quality graph with no necessary
 knowledge of a graphing library like \gnuplot%
 %
 %
@@ -39,7 +39,7 @@ matrix that describes how our solutions behave on the fields we support. (vague)
 % XXX Adapts to the environment.
 %
 Saving graphs in raw format can enable automatic regression testing on the
-build-bots that already checked our code. For some determined matrices (of
+buildbots that already checked our code. For some determined matrices (of
 different shape and size) over several fields, we can accumulate the timings
 for some of our solutions ({\tt rank}, {\tt det}, {\tt mul},\ldots) over time.
 At each new release, when the documentation is updated, we can check any
@@ -51,13 +51,13 @@ regression on these base cases and automatically update the regression plots.
 %
 Some of the code in \linbox is already automatically tuned (such as thresholds
 in \fgemm), but we improve on it. It is well known that CPU throttling while
-building ATLAS causes bad optimisations; the \fflasffpack library could also
-suffer from not-to-reliable threshold detection (up to $50\%$ relative
+building ATLAS causes bad optimizations; the \fflasffpack library could also
+suffer from not very reliable threshold detection (up to $50\%$ relative
 difference for some thresholds between runs). Instead of searching for a
 threshold using fast dichotomous techniques for instance, we propose to
 interpolate curves and find the intersection. Using least squares fitting, we
 can even tolerate outliers. This is however more time consuming.
-%JGD: there is already optimiser/winograd.C etc.
+%JGD: there is already optimizer/winograd.C etc.
 %
 \par
 %
@@ -65,5 +65,5 @@ Automatically tuning a library is not only about defining thresholds, it is
 also about method/algorithm selection. Our strategy is the following: a given
 algorithm is tuned for each {\tt Helper} (method) it has.  Then the solution
 (that uses these algorithms) is tuned for selecting the best methods.  At each
-stages, defaults are given, but can be overridden by the optimiser. The areas
+stages, defaults are given, but can be overridden by the optimizer. The areas
 where a method is better are extrapolated from the benchmarking curves.

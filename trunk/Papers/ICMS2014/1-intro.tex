@@ -12,7 +12,7 @@ and efficiency in mind.
 % The main concepts include:
 % \begin{itemize}[---]
 	% \item A hierarchy fields--containers--algorithms--solutions
-	% \item Matix containers are BlackBoxes
+	% \item Matrix containers are Blackboxes
 	% \item RAII reentrant style
 % \end{itemize}
 %
@@ -32,7 +32,7 @@ Let us start from a basic consideration: we show in the \Cref{tab:sloc} the
 increase in the ``lines of code'' size\footnote{Using \textsf{sloccount}, available at
 \url{http://sourceforge.net/projects/sloccount/}.}
 %
-of \linbox and its co-evolved dependencies \givaro and \fflasffpack.
+of \linbox and its coevolved dependencies \givaro and \fflasffpack.
 %
 % \par
 %
@@ -40,12 +40,12 @@ of \linbox and its co-evolved dependencies \givaro and \fflasffpack.
 %
 This increase affects the library in several ways.  First, it demands a
 stricter development model, and we are going to list some techniques we used.
-%% SPLITING
+%% SPLITTING
 For instance, we have transformed \fflasffpack %
 %
 \footnote{See \url{http://www.linalg.org/projects/fflas-ffpack/}.}
 	%
-(\cf{} \cite{Dumas:2008:Flas}) into a new stand-alone header library, resulting
+(\cf{} \cite{Dumas:2008:Flas}) into a new standalone header library, resulting
 in more visibility for the \fflasffpack project
 % (\danger Singular ?)
 and also in better structure and maintainability of the library.
@@ -58,7 +58,7 @@ to trace, debug, and write new code. Techniques employed
 for easier development include reducing
 compile times, enforcing stricter warnings and checks, supporting more
 compilers and architectures, simplifying and automating version number
-changes, automating memory leak checks, and setting up build-bots to check the code
+changes, automating memory leak checks, and setting up buildbots to check the code
 frequently.
 % This demand on the developer
 % side is also driven by the fact that code introduced by various one-timers
@@ -86,12 +86,11 @@ Added comprehensive benchmarking tools.
 %
 \par
 %
-Developing generic high-performance libraries is difficult. We can find a
+Developing generic high performance libraries is difficult. We can find a
 large literature on coding standards and software design references in (\cf{}
 \cite{alexandrescu:01:modern,gamma:95:design,sutter:05:cpp,stroustrup1994design,Douglas:05:GPHP}),
 and draw from many internet sources and experience acquired by/from free
 software projects.
-% (\danger next sentence, while great, seems off topic here);
 %
 % \par
 %
@@ -100,7 +99,7 @@ three sections. We will first describe the new \emph{container} framework in
 \Cref{sec:container}, then,
 in \Cref{sec:matmul},
 the improved \emph{matrix multiplication} algorithms
-made by contributing special purpose matrix multiplication plug-ins, and, finally, we present the new \emph{benchmark/optimisation}
+made by contributing special purpose matrix multiplication plugins, and, finally, we present the new \emph{benchmark/optimization}
 architecture (\Cref{sec:bench}).
 %
 \par

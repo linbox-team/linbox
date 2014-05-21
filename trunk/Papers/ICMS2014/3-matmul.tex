@@ -5,16 +5,16 @@ We propose a \emph{design pattern} (the closest pattern to our knowledge is the
 we show a variety of new algorithms where it is used in the \mul  solution
 (\Cref{ssec:algmul}).
 %
-\subsection{Plug-in structure}\label{ssec:plugin}
+\subsection{Plugin structure}\label{ssec:plugin}
 %
 We propose the following version of the \emph{strategy design pattern}, 
 see \cite[Fig 2.]{Cung:2006:TC}).
 The main advantage of this pattern is that the modules always call 
 the controller of a function so that the best version will be chosen. 
-% Besides modules can be easily added as \emph{plug-ins}.
+% Besides modules can be easily added as \emph{plugins}.
 An analogy can be drawn with dynamic
 \input{fig_control}
-systems---once the controller sends a correction to the system, it receives
+systems --- once the controller sends a correction to the system, it receives
 back a new measure that allows for a new correction.
 %
 \par
@@ -50,13 +50,13 @@ of preferred algorithms, shortcutting the strategy selection.
 This infrastructure supports modular code. For instance,
 \fflasffpack has seen major  modularization (addition, scaling,
 reduction,\ldots) Not only does it enable code to be hardly longer than
-the corresponding pseudo-code listings, \cite{Boyer:2009:sched}, (compared to
+the corresponding pseudocode listings, \cite{Boyer:2009:sched}, (compared to
 $\approx 2.5\times$ on some routines before) but it also automatically brings
 performance, because we can separately improve individual modules and immediately have the benefit throughout the library.
 %% following could be in, but perhaps cut now for reducing to 8 pages
 %Also, this reduces the lines of code, hence the
 %probability for bugs, eases their tracing/tracking, and allows for more
-%unit tests. Modularising the code comes at almost no cost because we may add
+%unit tests. Modularizing the code comes at almost no cost because we may add
 %$O(1)$  operations that: Do not cost much compared to $O(n^2)$ or more
 %complexity of the modules; Allow early decisions and terminations (\eg by
 %testing against $0$, $\pm 1$, checking leading dimensions or increments);
@@ -89,13 +89,13 @@ In \cite{BD:2014:Bini}, we use Bini's approximate matrix multiplication formula
 to derive a new algorithms that is more efficient that the Strassen--Winograd
 implementation in \fgemm by $\approx 5-10\%$ on sizes \num{1500}--\num{3000}.
 This is a cascade of Bini's algorithm and Strassen--Winograd algorithm and/or
-the naïve algorithm (using BLAS). The idea is to analyse precisely the error
+the naïve algorithm (using BLAS). The idea is to analyze precisely the error
 term in the approximate formula and make it vanish.
 %
 \monitem{Integer BLAS.}
 %
 In order to provide fast matrix multiplication with multiprecision integers, we
-rely on multi-modular approach through the chinese remainder theorem. Our
+rely on multimodular approach through the Chinese remainder theorem. Our
 approach is to reduce as much as possible to \fgemm. Despite, the existence of
 fast multimodular reduction (resp.\ reconstruction) algorithm
 \cite{VonzurGathen:1999:MCA}, the naive quadratic approach can be reduced to
@@ -125,23 +125,23 @@ becoming standard (COO, CSR, BCSR, SKY,\ldots).  In \cite{Boyer:2010:spmv} we
 developed some techniques to improve the \spmv operation in \linbox. Ideas
 include the separation of the $\pm 1$ for removing multiplications, splitting
 in a sum (HYB for hybrid format) of sparse matrix  whose formats are
-independant and using specific routines. For instance, on $\modring{p}$ with
+independent and using specific routines. For instance, on $\modring{p}$ with
 word size $p$, one can split the matrix ensuring no reduction is needed  in the
 dot product and call Sparse BLAS (from Intel \textsf{MKL} or Nvidia
-\textsf{cuBLAS} for instance) on each matrix. One trade-off is as usual between
+\textsf{cuBLAS} for instance) on each matrix. One tradeoff is as usual between
 available memory, time spent on optimizing \vs time spent on \apply, and all
-the more so because we allow the concurrent storarge of the transpose in an
-optimised fashion, usually yielding huge speed-ups. This can be decided by
+the more so because we allow the concurrent storage of the transpose in an
+optimized fashion, usually yielding huge speedups. This can be decided by
 \emph{ad hoc.\ } optimizers.
 % Helper structure to store a matrix as a sum of structures (HYB), possibly the
 %
-\monitem{Parallelisation}
+\monitem{Parallelization}
 Work on parallelizations using \textsf{OpenCL}, \textsf{OpenMP} or
 \textsf{XKaapi} for dense or sparse matrix multiplication include
 \cite{Boyer:2010:spmv,WST12,DGPZ14}.
 
 \paragraph{}
-These state-of-the-art algorithms, often inter-dependant, need to be selected
+These state-of-the-art algorithms, often interdependent, need to be selected
 by the \mul solution, possibly using a Method/Helper parameter. The
 Controller/Module model works particularly well here: cascading, switch
 methods, algorithms selection is made easy. Besides, the choosing of a
@@ -158,7 +158,7 @@ to be tuned wrt. available libraries, local performance of these libraries.
 	\item
  implementation of Toom-Cook for GF(q)
 	\item
- when does spmv choose to optimise ?
+ when does spmv choose to optimize ?
 	\item
  transition to benchmarking
 \end{itemize}
