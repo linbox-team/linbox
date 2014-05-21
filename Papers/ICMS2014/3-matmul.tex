@@ -7,10 +7,13 @@ we show a variety of new algorithms where it is used in the \mul  solution
 %
 \subsection{Plugin structure}\label{ssec:plugin}
 %
-We propose the following version of the \emph{strategy design pattern},
-see \cite[Fig 2.]{Cung:2006:TC}).
-The main advantage of this pattern is that the modules always call
-the controller of a function so that the best version will be chosen.
+We propose in \Cref{fig:diag:patt} a generalization of the \emph{strategy
+  design pattern} of \cite[Fig 2.]{Cung:2006:TC}, where distinct
+algorithms (modules) can solve the 
+same problem and are combined, recursively, by a controller.
+The main advantage of our pattern is that the modules always call
+the controller of a function so that the best version will be chosen
+at each level.
 % Besides modules can be easily added as \emph{plugins}.
 An analogy can be drawn with dynamic
 \input{fig_control}
@@ -52,7 +55,8 @@ This infrastructure supports modular code. For instance,
 reduction,\ldots) Not only does it enable code to be hardly longer than
 the corresponding pseudocode listings, \cite{Boyer:2009:sched}, (compared to
 $\approx 2.5\times$ on some routines before) but it also automatically brings
-performance, because we can separately improve individual modules and immediately have the benefit throughout the library.
+performance, because we can separately improve individual modules and
+immediately have the benefit throughout the whole library.
 %% following could be in, but perhaps cut now for reducing to 8 pages
 %Also, this reduces the lines of code, hence the
 %probability for bugs, eases their tracing/tracking, and allows for more

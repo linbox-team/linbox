@@ -34,7 +34,7 @@ and leading dimension or increment), or some sparse format.
 %
 \input{lst_container}
 %
-In the mother model, we must distinguish containers that own (responsible for
+In the founding scope allocation model, we must distinguish containers that own (responsible for
 dynamically allocated memory) and containers that share memory of another.
 \texttt{SubMatrix} and \texttt{SubVector} types share the memory;
 \texttt{Matrix} and \texttt{Vector} own it.
@@ -174,14 +174,15 @@ performed. We also generalize to the operation $y \gets \alpha A x + \beta y$.
 %
 \input{lst_apply}
 %
-This method is important because: It is the building block of the \applin
-algorithms (for instance block-Wiedemann); The matrix multiplication is
-a basic operation in linear algebra that needs to be extremely efficient (\Cref{sec:matmul}).
+This method is fundamental as it is the building block of the \applin
+algorithms (for instance block-Wiedemann) and as the matrix
+multiplication, main operation in linear algebra, needs to be extremely efficient (\Cref{sec:matmul}).
 %
 %
 % \par
 %
-The implementation of the apply method can be left to the \mul solution, with possibly a helper/method argument if the apply
+The implementation of the apply method can be left to a \mul solution,
+which can include a helper/method argument if the apply
 parameters are specialized enough.
 %
 % \Cref{code:applymul}.
