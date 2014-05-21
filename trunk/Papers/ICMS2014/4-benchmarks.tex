@@ -1,16 +1,14 @@
 \section{Benchmarking  for automated tuning and regression testing}\label{sec:bench}
 %
-Benchmarking was introduced in \linbox for several reasons. First, It would
-give the user a user friendly way for producing quality graph with no necessary
-knowledge of a graphing library like \gnuplot%
-%
-%
+Benchmarking was introduced in \linbox for several reasons. First, It 
+gives the user a convenient way to produce quality graphs without 
+of a graphing library like \gnuplot
 \footnote{\url{http://www.gnuplot.info/}}
 %
-or provide the \linbox website with automatically updated tables and graphs.
-Second, it would be used for regression testing.  Finally, it would be used for
-selecting default method, threshold. A lot of libraries do some automatic tuning
-at installation (\textsf{fftw}, \textsf{ATLAS}, \textsf{NTL},\ldots).
+and provides the \linbox website with automatically updated tables and graphs.
+Second, it can be used for regression testing.  Finally, it will be used for
+selecting default methods and setting thresholds in installation time autotuning. % A lot of libraries do some automatic tuning
+%at installation (\textsf{fftw}, \textsf{ATLAS}, \textsf{NTL},\ldots).
 %
 \par
 %
@@ -39,9 +37,9 @@ matrix that describes how our solutions behave on the fields we support. (vague)
 % XXX Adapts to the environment.
 %
 Saving graphs in raw format can enable automatic regression testing on the
-buildbots that already checked our code. For some determined matrices (of
-different shape and size) over several fields, we can accumulate the timings
-for some of our solutions ({\tt rank}, {\tt det}, {\tt mul},\ldots) over time.
+buildbots that already checked our code. For some specifically determined matrices (of
+various shapes and sizes and over several fields), we can accumulate the timings
+for key solutions such as ({\tt rank}, {\tt det}, {\tt mul},\ldots) over time.
 At each new release, when the documentation is updated, we can check any
 regression on these base cases and automatically update the regression plots.
 % \danger We need to implement this framework (not difficult; anybody?).
@@ -50,20 +48,25 @@ regression on these base cases and automatically update the regression plots.
 \subsection{Automated tuning and method selection}
 %
 Some of the code in \linbox is already automatically tuned (such as thresholds
-in \fgemm), but we improve on it. It is well known that CPU throttling while
-building ATLAS causes bad optimizations; the \fflasffpack library could also
-suffer from not very reliable threshold detection (up to $50\%$ relative
-difference for some thresholds between runs). Instead of searching for a
-threshold using fast dichotomous techniques for instance, we propose to
+in \fgemm), but we improve on it. 
+%It is well known that CPU throttling while
+
+%building ATLAS causes bad optimizations; the \fflasffpack library could also
+
+%suffer from not very reliable threshold detection (up to $50\%$ relative
+
+%difference for some thresholds between runs). 
+Instead of searching for a
+threshold using fast dichotomous techniques, for instance, we propose to
 interpolate curves and find the intersection. Using least squares fitting, we
-can even tolerate outliers. This is however more time consuming.
+may even tolerate outliers (but this is time consuming).
 %JGD: there is already optimizer/winograd.C etc.
 %
 \par
 %
-Automatically tuning a library is not only about defining thresholds, it is
-also about method/algorithm selection. Our strategy is the following: a given
+Automatically tuning a library is not only about thresholds, it may 
+also involve method/algorithm selection. Our strategy is the following: a given
 algorithm is tuned for each {\tt Helper} (method) it has.  Then the solution
 (that uses these algorithms) is tuned for selecting the best methods.  At each
-stages, defaults are given, but can be overridden by the optimizer. The areas
-where a method is better are extrapolated from the benchmarking curves.
+stage, defaults are given, but can be overridden by the optimizer. The areas
+where a method is better are extrapolated from the benchmark curves.
