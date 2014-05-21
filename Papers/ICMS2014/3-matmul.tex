@@ -135,11 +135,12 @@ optimized fashion, usually yielding huge speedups. This can be decided by
 \emph{ad hoc.\ } optimizers.
 % Helper structure to store a matrix as a sum of structures (HYB), possibly the
 %
-\monitem{Parallelization}
+%\monitem{Parallelization}
 Work on parallelizations using \textsf{OpenCL}, \textsf{OpenMP} or
 \textsf{XKaapi} for dense or sparse matrix multiplication include
 \cite{Boyer:2010:spmv,WST12,DGPZ14}.
 
+\begin{comment} % taken for length reduction
 \paragraph{}
 These state-of-the-art algorithms, often interdependent, need to be selected
 by the \mul solution, possibly using a Method/Helper parameter. The
@@ -147,6 +148,7 @@ Controller/Module model works particularly well here: cascading, switch
 methods, algorithms selection is made easy. Besides, the choosing of a
 particular algorithms or base case is never settled in advance: the library has
 to be tuned wrt. available libraries, local performance of these libraries.
+\end{comment}
 
 \begin{comment}
 \monitem{Using conversions}
