@@ -3014,7 +3014,7 @@ Power, {Chebychev}, and {Pochhammer} Bases",
 	 title = {Dealing with performance/portability and performance/accuracy
 		 trade-offs in heterogeneous computing systems: a case study
 			 with matrix multiplication modulo primes},
-	 journal = {Proc. SPIE},
+	 booktitle = {Proc. SPIE},
 	 volume = {8403},
 	 pages = {08--08-10},
 	 number = {},
@@ -3039,17 +3039,13 @@ Power, {Chebychev}, and {Pochhammer} Bases",
 	 eprint = {}
  }
 
-@techreport{DGPZ14,
-	hal_id = {hal-00947013},
-	url = {http://hal.archives-ouvertes.fr/hal-00947013},
-	title = {{Parallel computation of echelon forms}},
-	author = {Dumas, Jean-Guillaume and Gautier, Thierry and Pernet, Cl{\'e}ment and Sultan, Ziad},
-	abstract = {{We propose efficient parallel algorithms and implementations on shared memory architectures of LU factorization over a finite field. Compared to the corresponding numerical routines, we have identified three main difficulties specific to linear algebra over finite fields. First, the arithmetic complexity could be dominated by modular reductions. Therefore, it is mandatory to delay as much as possible these reductions while mixing fine-grain parallelizations of tiled iterative and recursive algorithms. Second, fast linear algebra variants, e.g., using Strassen-Winograd algorithm, never suffer from instability and can thus be widely used in cascade with the classical algorithms. There, trade-offs are to be made between size of blocks well suited to those fast variants or to load and communication balancing. Third, many applications over finite fields require the rank profile of the matrix (quite often rank deficient) rather than the solution to a linear system. It is thus important to design parallel algorithms that preserve and compute this rank profile. Moreover, as the rank profile is only discovered during the algorithm, block size has then to be dynamic. We propose and compare several block decomposition: tile iterative with left-looking, right-looking and Crout variants, slab and tile recursive. Experiments demonstrate that the tile recursive variant performs better and matches the performance of reference numerical software when no rank deficiency occur. Furthermore, even in the most heterogeneous case, namely when all pivot blocks are rank deficient, we show that it is possbile to maintain a high efficiency.}},
-	keywords = {Echelon form; Parallel algorithm;},
-	language = {Anglais},
-	affiliation = {Laboratoire Jean Kuntzmann - LJK , MOAIS - INRIA Grenoble Rh{\^o}ne-Alpes / LIG Laboratoire d'Informatique de Grenoble},
-	year = {2014},
-	month = Feb,
-	pdf = {http://hal.archives-ouvertes.fr/hal-00947013/PDF/parallelPLUQ.pdf},
+@inproceedings{DGPZ14,
+author = "Jean-Guillaume Dumas and Thierry Gautier and Cl\'ement
+                  Pernet and Ziad Sultan",
+title = "Parallel computation of echelon forms",
+booktitle = "{Euro-Par 2014}, Proceedings of the 20th international conference on parallel processing, Porto, Portugal",
+url = "http://hal.archives-ouvertes.fr/hal-00947013",
+month = aug,
+day = "25--29",
+year = 2014,
 }
-
