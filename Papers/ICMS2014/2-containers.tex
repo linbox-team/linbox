@@ -55,21 +55,20 @@ template \applin matrix type:
 		Our matrix containers all read and write from Matrix Market
 		format\footnote{See \url{http://math.nist.gov/MatrixMarket/}.}
 		which is well established in the numerical linear algebra
-		community and facilitates sharing matrices
-		with other software tools.  The MatrixMarket header comment provides space for
+		community and facilitates sharing matrices with other software
+		tools.  The MatrixMarket header comment provides space for
 		metadata about the provenance of a matrix and our interest in
-		it.  However, because of our many entry
-		domains and many matrix representations,
-		extensions are necessary to the MatrixMarket format.
-		For instance, the header comment records the modulus and
-		irreducible polynomial defining the representation of a matrix over
-		GF($p^e$).
+		it.  However, because of our many entry domains and matrix
+		representations, extensions are necessary to the MatrixMarket
+		format.  For instance, the header comment records the modulus
+		and irreducible polynomial defining the representation of a
+		matrix over GF($p^e$).
 % we haven't committed to this as a MM variant, should we? bb: yes!..
-We can further adapt the header to suit our needs, for instance
-create new formats that save space (for sparse matrix, CSR fashion saves
-roughly a third space over COO). Structured matrices
-(Toeplitz, Vandermonde, \etc)
-can have file representations specified.
+		We can further adapt the header to suit our needs, for instance
+		create new file formats that save space (\eg CSR fashion saves
+		roughly a third space over COO, \cf Harwell-Boeing format).
+		Structured matrices (Toeplitz, Vandermonde, \etc) can have file
+		representations specified.
 %
 \begin{comment}
 % setEntry is not universal to all blackboxes so skip for abstract
