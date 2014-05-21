@@ -15,12 +15,12 @@ The main advantage of our pattern is that the modules always call
 the controller of a function so that the best version will be chosen
 at each level.
 % Besides modules can be easily added as \emph{plugins}.
-An analogy can be drawn with dynamic
-\input{fig_control}
-systems --- once the controller sends a correction to the system, it receives
-back a new measure that allows for a new correction.
+An analogy can be drawn with dynamic systems --- once the controller sends a
+correction to the system, it receives back a new measure that allows for a new
+correction.
 %
 \par
+\input{fig_control}
 %
 %
 %
@@ -140,6 +140,7 @@ optimized fashion, usually yielding huge speedups. This can be decided by
 % Helper structure to store a matrix as a sum of structures (HYB), possibly the
 %
 %\monitem{Parallelization}
+\par
 Work on parallelizations using \textsf{OpenCL}, \textsf{OpenMP} or
 \textsf{XKaapi} for dense or sparse matrix multiplication include
 \cite{Boyer:2010:spmv,WST12,DGPZ14}.
