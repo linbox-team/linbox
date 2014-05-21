@@ -9,7 +9,7 @@ we show a variety of new algorithms where it is used in the \mul  solution
 %
 We propose in \Cref{fig:diag:patt} a generalization of the \emph{strategy
   design pattern} of \cite[Fig 2.]{Cung:2006:TC}, where distinct
-algorithms (modules) can solve the 
+algorithms (modules) can solve the
 same problem and are combined, recursively, by a controller.
 The main advantage of our pattern is that the modules always call
 the controller of a function so that the best version will be chosen
@@ -117,7 +117,7 @@ optimized Fast Fourier Transform of \cite{Harvey:2014}  makes fast evaluation
 together with \fgemm for pointwise matrix multiplications. One can find some
 benchmark of our code in \cite{GioLeb14}.
 %
-\monitem{Sparse Matrix--Vector Multiplication}
+\monitem{Sparse Matrix--Vector Multiplication.}
 %
 For sparse matrices a main issue is that the notion of \emph{sparsity}
 is too general \vs the specificity of real world sparse matrices: the
@@ -136,7 +136,7 @@ dot product and call Sparse \blas (from Intel \textsf{MKL} or Nvidia
 available memory, time spent on optimizing \vs time spent on \apply, and all
 the more so because we allow the concurrent storage of the transpose in an
 optimized fashion, usually yielding huge speedups. This can be decided by
-\emph{ad hoc.\ } optimizers.
+\adhoc optimizers.
 % Helper structure to store a matrix as a sum of structures (HYB), possibly the
 %
 %\monitem{Parallelization}
