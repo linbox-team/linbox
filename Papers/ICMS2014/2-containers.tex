@@ -13,7 +13,8 @@ management of the memory allocated by an object is exclusively reserved to it.
 The fragmentation of the containers into various matrix and
 blackbox types has been addressed and simplified. The many different matrix and
 vector types with different interfaces has been reduced into only two
-(possibly essentially one in the future) containers: \texttt{Matrix} and
+%(possibly essentially one in the future) 
+containers: \texttt{Matrix} and
 \texttt{Vector}.
 %
 \subsection{General Interface for %Vectors and
@@ -41,7 +42,7 @@ for dynamically allocated memory) and containers that share memory of another.  
 The common interface shared by all matrix containers is the \applin  interface
 described in the following paragraphs, it accommodates both owner and sharer
 container types, and defines the minimal methods required to be a
-template \applin type:
+template \applin matrix type:
 % \Cref{code:bb}.
 %
 % \input{lst_applin}
@@ -57,15 +58,16 @@ template \applin type:
 		which is well established in the numerical linear algebra
 community.
 The MatrixMarket header comment provides space for metadata about the provenance of a matrix and our interest in it.  Also, use of MatrixMarket facilitates sharing matrices with other software tools.  However, because of our many entry domains (fields and rings) and many matrix representations, extensions are necessary to the MatrixMarket format for some.
-For instance, for a matrix over GF($p^ek$) we have established a convention to record in the header comment the modulus and irreducible polynomial defining the representation.
+For instance, for a matrix over GF($p^e$) we have established a convention to record in the header comment the modulus and irreducible polynomial defining the representation.
 % we haven't committed to this as a MM variant, should we?
-		We can further adapt the header to suit our needs, for instance
-		formats that save space (for sparse matrix, CSR fashion saves
-		roughly a third space over COO). Structured
-		matrices
+We can further adapt the header to suit our needs, for instance
+create new formats that save space (for sparse matrix, CSR fashion saves
+roughly a third space over COO). Structured matrices
 (Toeplitz, Vandermonde, \etc)
 can have file representations specified.
 %
+\begin{comment}
+% setEntry is not universal to all blackboxes so skip for abstract
 	% \item[Accessing Elements.]
 		\monitem{Accessing Elements.}
 		The function \texttt{setEntry} can be
@@ -95,6 +97,7 @@ can have file representations specified.
 		tricky to implement (compressed fields, hybrid or
 		recursive formats). Traits on matrices where efficient iterators
 		are available allow for their selections in some algorithms.
+\end{comment}
 		\begin{comment}
 		(\danger We cannot have {\tt const} iterators for all formats
 		(see hybrid), walking through a matrix in unspecified order can
@@ -129,16 +132,18 @@ can have file representations specified.
 	 % \paragraph{}
 	 \par
 %
-This is a common minimal interface to all our matrices that all
-of our algorithms can use. Additional elements to a container can be added and flagged
-%bb removed ,
-with a trait. This model also ensures the minimal ``linear application'' use of a
-matrix.  This \applin interface is shared by \eg: \emph{dense}
-containers ({\scsf{Blas}-like,\ldots); \emph{permutations} containers (compressed
-\scsf{Lapack}, cycles); \emph{sparse} containers (based on
+This is a common minimal interface to all our matrix containers that can be used by all
+algorithms. 
+This interface provides the basic {\em external} 
+functionality of a matrix as a   
+ ``linear mapping'' (black box).
+This interface is shared by: \emph{dense}
+containers (BLAS-like,\ldots); \emph{permutation} containers (compressed
+\textsc{Lapack} or cycle representation); \emph{sparse} containers (based on
 common formats or on STL containers such as {\tt map}, {\tt deque},\ldots);
 \emph{structured} containers ({\tt Diagonal}, {\tt Hankel}, {\tt Butterfly},\ldots);
 \emph{compound} containers ({\tt Compose}, {\tt Submatrix},\ldots).
+Additional functions of a container can be added, and flagged with a trait, for example those that support internal changes as for Gaussian elimination.. 
 %
 \subsection{The \texttt{apply} method}\label{ssec:apply}
 %
