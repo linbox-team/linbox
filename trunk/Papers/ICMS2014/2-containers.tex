@@ -5,14 +5,14 @@ Initialisation, see \cite{stroustrup1994design}) concept with re-entrant
 function. We also follow the {founding scope allocation} model (or \emph{mother
 model}) from \cite{Dumas:2010:lbpar} which ensures that the memory used by
 objects is allocated in the constructor and freed only at its destruction. The
-gestion of the memory allocated by an object is then exlusively reserved to it.
+management of the memory allocated by an object is thus exlusively reserved to it.
 %
 \par
 %
-\linbox essentially uses matrix and vectors over fields and rings as data objects
-(containers).  The fragmentation of the containers into various matrix and
-blackbox types needed to be addressed and simplified. The many different matrix and
-vector types with different interfaces needed to be reduced into only two
+\linbox uses a variety of container types (representations) for matrix and vectors over fields and rings.
+The fragmentation of the containers into various matrix and
+blackbox types has been addressed and simplified. The many different matrix and
+vector types with different interfaces has been reduced into only two
 (possibly essentially one in the future) containers: \texttt{Matrix} and
 \texttt{Vector}.
 %
@@ -34,11 +34,11 @@ and leading dimension or increment), or some sparse format.
 \input{lst_container}
 %
 In the mother model, we must distinguish containers that own (are responsible
-for allocated memory) and containers that share memory.  The
+for dynamically allocated memory) and containers that share memory of another.  The
 \texttt{SubMatrix} and \texttt{SubVector} types share the memory while
 \texttt{Matrix} and \texttt{Vector} own it.
 %
-The common interface shared by all container matrices is the \applin  interface
+The common interface shared by all matrix containers is the \applin  interface
 described in the following paragraphs, it accomodates both owner and sharer
 container types, and defines the minimal methods required to be a
 template \applin type:
@@ -48,20 +48,24 @@ template \applin type:
 %
 % \begin{description}
 %
+
 	% \item[Input/Output.]
 \def\monitem#1{\par\textit{#1}\ }
 \monitem{Input/Output.}
-		Our matrix all read and write from MatrixMarket
+		Our matrix containers all read and write from MatrixMarket
 		format\footnote{See \url{http://math.nist.gov/MatrixMarket/}.})
 		which is well established in the numerical linear algebra
-		community.  This allows for easy exchange and
-		interoperability, but \linbox containers can also add some
-		comments to the file, for instance the field characteristics
-		(modulo, irreducible polynomial, {\tt init} function,
-		rank,\ldots) We can adapt the header to suit our needs, and
-		even create new formats that save space (CSR fashion saving
-		roughly a third space over COO), or dedicated to structured
-		matrices.
+community.
+The MatrixMarket header comment provides space for metadata about the provenance of a matrix and our interest in it.  Also, use of MatrixMarket facilitates sharing matrices with other software tools.  However, because of our many entry domains (fields and rings) and many matrix representations, extensions are necessary to the MatrixMarket format for some.
+For instance, for a matrix over GF($p^ek$) we have established a convention to record in the header comment the modulus and irreducible polynomial defining the representation.
+
+% we haven't committed to this as a MM variant, should we?
+		We can further adapt the header to suit our needs, for instance 
+		create new formats that save space (for sparse matrix, CSR fashion saves
+		roughly a third space over COO). Structured
+		matrices 
+(Toeplitz, Vandermonde, etc.)
+can have file representations specified.
 %
 	% \item[Accessing Elements.]
 		\monitem{Accessing Elements.}

@@ -1,5 +1,5 @@
-#  TEX=pdflatex
-TEX=lualatex
+TEX=pdflatex
+#TEX=lualatex
 BIB=bibtex
 #  ART=14_linbox
 ART=14_linbox_short
