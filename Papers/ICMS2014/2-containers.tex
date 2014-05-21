@@ -33,7 +33,7 @@ and leading dimension or increment), or some sparse format.
 %
 \input{lst_container}
 %
-In the mother model, we must distinguish containers that own (are responsible
+In the mother model, we must distinguish containers that own (responsible
 for dynamically allocated memory) and containers that share memory of another.  The
 \texttt{SubMatrix} and \texttt{SubVector} types share the memory while
 \texttt{Matrix} and \texttt{Vector} own it.
@@ -63,7 +63,7 @@ For instance, for a matrix over GF($p^ek$) we have established a convention to r
 		formats that save space (for sparse matrix, CSR fashion saves
 		roughly a third space over COO). Structured
 		matrices
-(Toeplitz, Vandermonde, etc.)
+(Toeplitz, Vandermonde, \etc)
 can have file representations specified.
 %
 	% \item[Accessing Elements.]
@@ -120,7 +120,7 @@ can have file representations specified.
 	 conversion mechanisms between formats, for instance all
 	 sparse matrix formats can convert to/from CSR format:  this `star'
 	 mechanism can simplify the code (to the expense of memory usage) and
-	 may speed it up when a central format (CSR or COO for instance) is
+	 may speed it up when some central formats  are
 	 well tuned for some task.
 	 % Such tasks could be
 	 % read/write from a file for instance, or update the matrix.
@@ -129,12 +129,13 @@ can have file representations specified.
 	 % \paragraph{}
 	 \par
 %
-This is a common minimal interface to all our matrices that can be used by all
-of our algorithms. Additional elements to a container can be added, and flagged
+This is a common minimal interface to all our matrices that all
+of our algorithms can use. Additional elements to a container can be added and flagged
+%bb removed ,
 with a trait. This model also ensures the minimal ``linear application'' use of a
-matrix (blackbox).  For instance, this interface is shared by: \emph{dense}
-containers (BLAS-like,\ldots); \emph{permutations} containers (compressed
-\textsc{Lapack} or cycle representation); \emph{sparse} containers (based on
+matrix.  This \applin interface is shared by \eg: \emph{dense}
+containers ({\scsf{Blas}-like,\ldots); \emph{permutations} containers (compressed
+\scsf{Lapack}, cycles); \emph{sparse} containers (based on
 common formats or on STL containers such as {\tt map}, {\tt deque},\ldots);
 \emph{structured} containers ({\tt Diagonal}, {\tt Hankel}, {\tt Butterfly},\ldots);
 \emph{compound} containers ({\tt Compose}, {\tt Submatrix},\ldots).
@@ -161,16 +162,14 @@ performed. We also generalize to the operation $y \gets \alpha A x + \beta y$.
 %
 \input{lst_apply}
 %
-This method is important because: first it is the building block of the \applin
-algorithms (for instance block-Wiedemann); second the matrix multiplication is
-a basic operation in linear algebra that needs to be extremely efficient (this
-is the matter of \Cref{sec:matmul}).
+This method is important because: It is the building block of the \applin
+algorithms (for instance block-Wiedemann); The matrix multiplication is
+a basic operation in linear algebra that needs to be extremely efficient (\Cref{sec:matmul}).
 %
 %
 % \par
 %
-The implementation of the apply method can be left to the {\tt mul} solution
-(see \Cref{sec:matmul}), with possibly a helper/method argument if the apply
+The implementation of the apply method can be left to the \mul solution, with possibly a helper/method argument if the apply
 parameters are specialized enough.
 %
 % \Cref{code:applymul}.
