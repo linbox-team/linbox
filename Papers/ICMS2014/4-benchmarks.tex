@@ -1,7 +1,8 @@
 \section{Benchmarking  for automated tuning and regression testing}\label{sec:bench}
 %
 Benchmarking was introduced in \linbox for several reasons. First, It 
-gives the user a convenient way to produce quality graphs without 
+gives the user a convenient way to produce quality graphs with the
+help  
 of a graphing library like \gnuplot
 \footnote{\url{http://www.gnuplot.info/}}
 %
@@ -23,8 +24,12 @@ Our plotting mechanism is based on two structures: {\tt PlotStyle} and {\tt
 PlotData}. The  {\tt PlotGraph} structure uses the style and data to manage the
 output.  We allow plotting in standard image formats, html and \LaTeX tables,
 but also in raw csv or xml for file exchange, data comparisons and
-extrapolation. This mechanism can also automatically update \linbox feature
-matrix that describes how our solutions behave on the fields we support. (vague)
+extrapolation. 
+%JGD: no comprendo
+%This mechanism can also automatically update \linbox feature
+%matrix that describes how our solutions behave on the fields we
+%support. 
+%(vague)
 % \danger dave benchmark formats discussion ?
 %
 \par
@@ -36,7 +41,7 @@ matrix that describes how our solutions behave on the fields we support. (vague)
 %
 % XXX Adapts to the environment.
 %
-Saving graphs in raw format can enable automatic regression testing on the
+Saving graphs in raw format can also enable automatic regression testing on the
 buildbots that already checked our code. For some specifically determined matrices (of
 various shapes and sizes and over several fields), we can accumulate the timings
 for key solutions such as ({\tt rank}, {\tt det}, {\tt mul},\ldots) over time.
