@@ -4,11 +4,11 @@
 %
 \subsection{Plug-in structure}
 %
-We propose the following \emph{design pattern} (the closest design pattern to our
-knowledge is the \emph{strategy} one, see also \cite[Fig 2.]{Cung:2006:TC}).
-The main advantage of this design pattern is that the modules always call back
-the controller so that the best choice is always chosen.  Besides modules can
-be easily added as \emph{plug-ins}.
+We propose the following version of the \emph{strategy design pattern}, 
+see \cite[Fig 2.]{Cung:2006:TC}).
+The main advantage of this pattern is that the modules always call 
+the controller of a function so that the best version will be chosen. 
+% Besides modules can be easily added as \emph{plug-ins}.
 %
 \input{fig_control}
 %
@@ -23,21 +23,21 @@ back a new measure that allows for a new correction.
 For instance, we can write (\Cref{fig:seuil}) the standard cascade algorithms
 (see \cite{Dumas:2008:Flas}) in that model. Cascade algorithms are used to combine
 several algorithms that are switched using thresholds, ensuring better
-efficiency than any of the algorithms within used separately.
+efficiency than that of any of the algorithms individually.
 %
 % \par
 %
 %
 This method allows for the reuse of modules and ensures efficiency.
 It is then possible to adapt to the architecture, the available modules,
-the resources. The only limitation is that the choice of the module
-should be done fast.
+the resources. The only limitation is that the choice of module
+must be fast.
 %
 \input{fig_cascade}
 % \par
 %
-On top of this design, we have Methods/Helpers that allow (preferred) selection
-of algorithms and cut short in the strategy selection.
+On top of this design, we have Method objects that allow caller selection
+of preferred algorithms, shortcutting the strategy selection.
 %
 % \par
 %
@@ -45,26 +45,27 @@ of algorithms and cut short in the strategy selection.
 %
 \par
 %
-This infrastructure also invites to modularise the code. For instance,
+This infrastructure supports modular code. For instance,
 \fflasffpack has seen major  modularization (addition, scaling,
-reduction,\ldots) Not only it allows to write code with hardly more line than
-it takes for pseudo-code listings in \cite{Boyer:2009:sched} (compared to
-$\approx 2.5\times$ on some routines before) but also it automatically brings
-performance, because we can the separately improve on these modules and can
-switch easier between them. Also, this reduces the lines of code, hence the
-probability for bugs, eases their tracing/tracking, and allows for more
-unit tests. Modularising the code comes at almost no cost because we may add
-$O(1)$  operations that: Do not cost much compared to $O(n^2)$ or more
-complexity of the modules; Allow early decisions and terminations (\eg by
-testing against $0$, $\pm 1$, checking leading dimensions or increments);
-Allow better code (AVX, SSE, copy--cache friendly operation--copy back,
-representation switching,\ldots)
+reduction,\ldots) Not only does it enable code to be hardly longer than
+the corresponding pseudo-code listings, \cite{Boyer:2009:sched}, (compared to
+$\approx 2.5\times$ on some routines before) but it also automatically brings
+performance, because we can separately improve individual modules and immediately have the benefit throughout the library.
+%% following could be in, but perhaps cut now for reducing to 8 pages
+%Also, this reduces the lines of code, hence the
+%probability for bugs, eases their tracing/tracking, and allows for more
+%unit tests. Modularising the code comes at almost no cost because we may add
+%$O(1)$  operations that: Do not cost much compared to $O(n^2)$ or more
+%complexity of the modules; Allow early decisions and terminations (\eg by
+%testing against $0$, $\pm 1$, checking leading dimensions or increments);
+%Allow better code (AVX, SSE, copy--cache friendly operation--copy back,
+%representation switching,\ldots)
 %
 \subsection{New algorithms/infrastructure}
 %
-We show several new algorithms that improve on matrix multiplication
-in various ways: reducing memory consumption, introducing new efficient
-algorithms, using graphics capabilities, generalizing the BLAS to integer
+New algorithms and techniques improve on matrix multiplication
+in several  ways: reducing memory consumption, reducing runtime, 
+using graphics capabilities, generalizing the BLAS to integer
 routines.
 %
 \def\monitem#1{\par \textit{#1}\ }
@@ -77,8 +78,8 @@ and can reach sizes that were limiting.
 %
 % \par
 %
-One difficulty consists in using the memory space contained in a sub-matrix of
-the original matrix, that one cannot free or re-allocate.
+One difficulty consists in using the memory contained in a submatrix of
+the original matrix, that one cannot free or reallocate.
 %
 \monitem{Using Bini's approximate formula.}
 %
