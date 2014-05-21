@@ -2998,7 +2998,7 @@ Power, {Chebychev}, and {Pochhammer} Bases",
  pages = {113--119},
  doi = {10.1016/j.jsc.2013.09.002},
  acmid = 2562751,
-} 
+}
 
 @InProceedings{GioLeb14,
  author = {P. Giorgi and R. Lebreton},
@@ -3006,5 +3006,50 @@ Power, {Chebychev}, and {Pochhammer} Bases",
  booktitle = {Proceedings of the 2014 international symposium on symbolic and algebraic computation},
  series = {ISSAC '14},
  year = 2014,
- publisher = {ACM},   
- note = {(to appear)}}  
+ publisher = {ACM},
+ note = {(to appear)}}
+
+ @InProceedings{WST12,
+	 author = {Wezowicz, Matthew and Saunder, B. David and Taufer, Michela},
+	 title = {Dealing with performance/portability and performance/accuracy
+		 trade-offs in heterogeneous computing systems: a case study
+			 with matrix multiplication modulo primes},
+	 journal = {Proc. SPIE},
+	 volume = {8403},
+	 pages = {08--08-10},
+	 number = {},
+	 abstract = {We present the study of two important trade-offs in
+		 heterogeneous systems (i.e., between performance versus
+				 portability and between performance and
+				 accuracy) for a relevant linear algebra
+			 problem, matrix multiplication modulo primes. Integer
+			 matrix linear algebra methods rely heavily on matrix
+			 multiplication modulo primes. Double precision is
+			 necessary for exact representation of sufficiently
+			 many primes. We examine the performance losses due to
+			 the use of OpenCL versus CUDA and the use of double
+			 versus single precision. Our results indicate that
+			 performance losses from the former are minimal with
+			 the benefit of cross-platform portability and from the
+			 latter are acceptable when double precision is
+			 required.},
+	 year = {2012},
+	 doi = {10.1117/12.919323},
+	 URL = { http://dx.doi.org/10.1117/12.919323},
+	 eprint = {}
+ }
+
+@techreport{DGPZ14,
+	hal_id = {hal-00947013},
+	url = {http://hal.archives-ouvertes.fr/hal-00947013},
+	title = {{Parallel computation of echelon forms}},
+	author = {Dumas, Jean-Guillaume and Gautier, Thierry and Pernet, Cl{\'e}ment and Sultan, Ziad},
+	abstract = {{We propose efficient parallel algorithms and implementations on shared memory architectures of LU factorization over a finite field. Compared to the corresponding numerical routines, we have identified three main difficulties specific to linear algebra over finite fields. First, the arithmetic complexity could be dominated by modular reductions. Therefore, it is mandatory to delay as much as possible these reductions while mixing fine-grain parallelizations of tiled iterative and recursive algorithms. Second, fast linear algebra variants, e.g., using Strassen-Winograd algorithm, never suffer from instability and can thus be widely used in cascade with the classical algorithms. There, trade-offs are to be made between size of blocks well suited to those fast variants or to load and communication balancing. Third, many applications over finite fields require the rank profile of the matrix (quite often rank deficient) rather than the solution to a linear system. It is thus important to design parallel algorithms that preserve and compute this rank profile. Moreover, as the rank profile is only discovered during the algorithm, block size has then to be dynamic. We propose and compare several block decomposition: tile iterative with left-looking, right-looking and Crout variants, slab and tile recursive. Experiments demonstrate that the tile recursive variant performs better and matches the performance of reference numerical software when no rank deficiency occur. Furthermore, even in the most heterogeneous case, namely when all pivot blocks are rank deficient, we show that it is possbile to maintain a high efficiency.}},
+	keywords = {Echelon form; Parallel algorithm;},
+	language = {Anglais},
+	affiliation = {Laboratoire Jean Kuntzmann - LJK , MOAIS - INRIA Grenoble Rh{\^o}ne-Alpes / LIG Laboratoire d'Informatique de Grenoble},
+	year = {2014},
+	month = Feb,
+	pdf = {http://hal.archives-ouvertes.fr/hal-00947013/PDF/parallelPLUQ.pdf},
+}
+

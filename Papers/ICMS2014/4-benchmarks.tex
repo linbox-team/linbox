@@ -19,7 +19,7 @@ Interpolation.
 % XXX BTL\footnote{\url{http://projects.opencascade.org/btl/}}/eigen
 %
 %
-\subsection{Performance evaluation}
+\subsection{Performance evaluation and Automatized regression testing}
 %
 Our plotting mechanism is based on two structures: {\tt PlotStyle} and {\tt
 PlotData}. The  {\tt PlotGraph} structure uses the style and data to manage the
@@ -34,8 +34,6 @@ comparisons and extrapolation.
 %
 % XXX Time spent on each data is limited (will not start execution if fit (linear least squares) forecasts 'too long'.\\
 % XXX Adapts to the environment.
-%
-\subsection{Automatized regression testing}
 %
 Saving graphs in raw format can enable automatic regression testing on the
 buildbots. For some determined matrices (of different shape and size) over a

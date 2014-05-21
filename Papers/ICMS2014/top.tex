@@ -202,17 +202,6 @@ breaklinks%
 %%% defs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\def\largesimpletilde{\adforn{19}}
-\def\largetilde{\adforn{18}}
-\def\frob#1#2{\left\langle#1, #2 \right\rangle}
-
-\newcommand{\dbl}{\texttt{double}\xspace}
-\newcommand{\flt}{\texttt{float}\xspace}
-
-\def\Zb{\mathbf{Z}}
-\def\modring#1{\ensuremath\Zb{/ #1\Zb}}
-\def\gnuplot{\textsf{gnuplot}\xspace}
-
 
 
 \newcolumntype{C}{>{$}c<{$}}
@@ -220,22 +209,34 @@ breaklinks%
 \newcolumntype{R}{>{$}r<{$}}
 
 \def\textsf#1{{\biolinum #1}}
+\def\ldots{...}
+% \def\ldots{…}
 
-\def\linbox{\textsf{LinBox}\xspace}
-\def\mul{\texttt{mul}\xspace}
-\def\apply{\texttt{apply}\xspace}
-\def\spmv{\textrm{SpMV}}
-\def\cpp{\texttt{C++}\xspace}
-\def\mari{\textsf{m4ri}\xspace}
-\def\fflas{\textsf{\scshape Fflas}\xspace}
-\def\fgemm{\texttt{fgemm}\xspace}
-\def\fflasffpack{\textsf{\scshape Fflas--Ffpack}\xspace}
-\def\givaro{\textsf{Givaro}\xspace}
-\def\applin{\textsf{BlackBox}\xspace}
+% newcommand, not def now
+\newcommand{\dbl}{\texttt{double}\xspace}
+\newcommand{\flt}{\texttt{float}\xspace}
+\newcommand\largesimpletilde{\adforn{19}}
+\newcommand\largetilde{\adforn{18}}
+\newcommand\frob[2]{\left\langle#1, #2 \right\rangle}
+\newcommand\Zb{\mathbf{Z}}
+\newcommand\modring[1]{\ensuremath\Zb{/ #1\Zb}}
+\newcommand\gnuplot{\textsf{gnuplot}\xspace}
+\newcommand\linbox{\textsf{LinBox}\xspace}
+\newcommand\mul{\texttt{mul}\xspace}
+\newcommand\apply{\texttt{apply}\xspace}
+\newcommand\spmv{\textrm{SpMV}}
+\newcommand\cpp{\texttt{C++}\xspace}
+\newcommand\mari{\textsf{m4ri}\xspace}
+\newcommand\fflas{\textsf{\scshape Fflas}\xspace}
+\newcommand\fgemm{\texttt{fgemm}\xspace}
+\newcommand\fflasffpack{\textsf{\scshape Fflas--Ffpack}\xspace}
+\newcommand\givaro{\textsf{Givaro}\xspace}
+\newcommand\applin{\textsf{BlackBox}\xspace}
 \newcommand{\cf}{\mbox{\emph{cf.}}\xspace}
-\newcommand{\eg}{\emph{e.g.\ }}
+\newcommand{\eg}{\mbox{\emph{e.g.}}\xspace}
 \newcommand{\ie}{\mbox{\emph{i.e.}}\xspace}
-\newcommand{\etc}{\emph{etc.}\xspace}
+\newcommand{\etc}{\mbox{\emph{etc.}}\xspace}
+\newcommand{\vs}{\mbox{\emph{vs.}}\xspace}
 \def\mailto#1{\href{mailto:#1}{#1}}
 
 %JGD
@@ -248,8 +249,8 @@ breaklinks%
    % \spadesuit \or\hearsuit \or \diamondsuit \else\@ctrerr\fi}}
 % \makeatother
 
-\def\td{\textsuperscript{\textdagger}}
-\def\tdd{\textsuperscript{\textdaggerdbl}}
+\newcommand\td{\textsuperscript{\textdagger}}
+\newcommand\tdd{\textsuperscript{\textdaggerdbl}}
 
 % \newtheorem{thm}{Theorem}
 % \crefname{thm}{theorem}{theorems}
@@ -274,8 +275,5 @@ breaklinks%
 % \crefname{defi}{definition}{definitions}
 % \Crefname{defi}{Definition}{Definitions}
 }
-
-\def\ldots{...}
-% \def\ldots{…}
 
 
