@@ -9,7 +9,7 @@ A.~Alexandrescu.
 \bibitem{Boyer:2012:these}
 B.~Boyer.
 \newblock {\em Multiplication matricielle efficace et conception logicielle
-  pour la bibliothèque de calcul exact {\sc LinBox}}.
+  pour la bibliothèque de calcul exact \linbox}.
 \newblock PhD thesis, Université de Grenoble, June 2012.
 
 \bibitem{BD:2014:Bini}
@@ -45,13 +45,13 @@ V.-D. Cung, V.~Danjean, J.-G. Dumas, T.~Gautier, G.~Huard, B.~Raffin,
 \bibitem{Dumas:2002:icms}
 J.-G. Dumas, T.~Gautier, M.~Giesbrecht, P.~Giorgi, B.~Hovinen, E.~Kaltofen,
   B.~D. Saunders, W.~J. Turner, and G.~Villard.
-\newblock {\sc LinBox}: {A} generic library for exact linear algebra.
+\newblock \linbox: {A} generic library for exact linear algebra.
 \newblock In {\em Proceedings of the 2002 International Congress of
   Mathematical Software, Beijing, China}. World Scientific Pub, Aug. 2002.
 
 \bibitem{Dumas:2010:lbpar}
 J.-G. Dumas, T.~Gautier, C.~Pernet, and B.~D. Saunders.
-\newblock {LinBox} founding scope allocation, parallel building blocks, and
+\newblock \linbox founding scope allocation, parallel building blocks, and
   separate compilation.
 \newblock In K.~Fukuda, J.~{Van Der Hoeven}, and M.~Joswig, editors, {\em
   Proceedings of the Third International Congress Conference on Mathematical
@@ -60,8 +60,9 @@ J.-G. Dumas, T.~Gautier, C.~Pernet, and B.~D. Saunders.
 
 \bibitem{DGPZ14}
 J.-G. Dumas, T.~Gautier, C.~Pernet, and Z.~Sultan.
-\newblock {Parallel computation of echelon forms}.
-\newblock Technical report, Feb. 2014.
+\newblock Parallel computation of echelon forms.
+\newblock In {\em {Euro-Par 2014}, Proceedings of the 20th international
+  conference on parallel processing, Porto, Portugal}, Aug. 2014.
 
 \bibitem{Dumas:2008:Flas}
 J.-G. Dumas, P.~Giorgi, and C.~Pernet.
@@ -82,7 +83,7 @@ J.~v. Gathen and J.~Gerhard.
 \bibitem{Giorgi:2004:these}
 P.~Giorgi.
 \newblock {\em Arithmétique et algorithmique en algèbre linéaire exacte pour
-  la bibliothèque {\sc LinBox}}.
+  la bibliothèque \linbox}.
 \newblock PhD thesis, \'Ecole normale supérieure de Lyon, Dec. 2004.
 
 \bibitem{GioLeb14}
@@ -117,7 +118,7 @@ H.~Sutter and A.~Alexandrescu.
 
 \bibitem{Turner:2002:these}
 W.~J. Turner.
-\newblock {\em Blackbox linear algebra with the {\sc LinBox} library}.
+\newblock {\em Blackbox linear algebra with the \linbox library}.
 \newblock PhD thesis, North Carolina State University, May 2002.
 
 \bibitem{WST12}
@@ -125,6 +126,6 @@ M.~Wezowicz, B.~D. Saunder, and M.~Taufer.
 \newblock Dealing with performance/portability and performance/accuracy
   trade-offs in heterogeneous computing systems: a case study with matrix
   multiplication modulo primes.
-\newblock volume 8403, pages 08--08--10, 2012.
+\newblock In {\em Proc. SPIE}, volume 8403, pages 08--08--10, 2012.
 
 \end{thebibliography}
