@@ -66,8 +66,8 @@ J.-G. Dumas, T.~Gautier, C.~Pernet, and Z.~Sultan.
 
 \bibitem{Dumas:2008:Flas}
 J.-G. Dumas, P.~Giorgi, and C.~Pernet.
-\newblock Dense linear algebra over word-size prime fields: the {FFLAS} and
-  {FFPACK} packages.
+\newblock Dense linear algebra over word-size prime fields: the \fflas and
+  \ffpack packages.
 \newblock {\em ACM Trans. Math. Softw.}, 35(3):1--42, 2008.
 
 \bibitem{gamma:95:design}

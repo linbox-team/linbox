@@ -213,6 +213,7 @@ breaklinks%
 % \def\ldots{…}
 
 % newcommand, not def now
+\def\scsf#1{\textsf{\textsc{#1}}}
 \newcommand{\dbl}{\texttt{double}\xspace}
 \newcommand{\flt}{\texttt{float}\xspace}
 \newcommand\largesimpletilde{\adforn{19}}
@@ -227,9 +228,10 @@ breaklinks%
 \newcommand\spmv{\textrm{SpMV}}
 \newcommand\cpp{\texttt{C++}\xspace}
 \newcommand\mari{\textsf{m4ri}\xspace}
-\newcommand\fflas{\textsf{\scshape Fflas}\xspace}
 \newcommand\fgemm{\texttt{fgemm}\xspace}
-\newcommand\fflasffpack{\textsf{\scshape Fflas--Ffpack}\xspace}
+\newcommand\fflas{\scsf{Fflas}\xspace}
+\newcommand\ffpack{\scsf{Ffpack}\xspace}
+\newcommand\fflasffpack{\scsf{Fflas--Ffpack}\xspace}
 \newcommand\givaro{\textsf{Givaro}\xspace}
 \newcommand\applin{\textsf{BlackBox}\xspace}
 \newcommand{\cf}{\mbox{\emph{cf.}}\xspace}
@@ -239,7 +241,6 @@ breaklinks%
 \newcommand{\vs}{\mbox{\emph{vs.}}\xspace}
 \newcommand{\adhoc}{\mbox{\emph{ad hoc.}}\xspace}
 \def\mailto#1{\href{mailto:#1}{#1}}
-\def\scsf#1{\textsf{\textsc{#1}}}
 \newcommand{\blas}{\scsf{Blas}\xspace}
 %JGD
 % \makeatletter
