@@ -1,11 +1,11 @@
 \section{Containers architecture}\label{sec:container}
 %
 \linbox is mainly conceived around the RAII (Resource Acquisition Is
-Initialisation, \cite{stroustrup1994design}) concept with re-entrant
+Initialization, see \cite{stroustrup1994design}) concept with reentrant
 function. We also follow the {founding scope allocation} model (or \emph{mother
 model}) of \cite{Dumas:2010:lbpar} which ensures that the memory used by
 objects is allocated in the constructor and freed only at its destruction. The
-management of the memory allocated by an object is exlusively reserved to it.
+management of the memory allocated by an object is exclusively reserved to it.
 %
 \par
 %
@@ -20,9 +20,9 @@ vector types with different interfaces has been reduced into only two
 Matrices}
 %
 First, in order to allow operations on its elements, a container is
-parametrized by a field object (\Cref{code:clmat}), not the field's element
+parameterized by a field object (\Cref{code:clmat}), not the field's element
 type. This is simpler and more general.
-Indeed, the field element type can be infered from a
+Indeed, the field element type can be inferred from a
 \verb!value_type! type definition within the field type.
 Then, the storage type is given by a second
 template parameter that can use defaults,
@@ -39,7 +39,7 @@ for dynamically allocated memory) and containers that share memory of another.  
 \texttt{Matrix} and \texttt{Vector} own it.
 %
 The common interface shared by all matrix containers is the \applin  interface
-described in the following paragraphs, it accomodates both owner and sharer
+described in the following paragraphs, it accommodates both owner and sharer
 container types, and defines the minimal methods required to be a
 template \applin type:
 % \Cref{code:bb}.
@@ -52,7 +52,7 @@ template \applin type:
 	% \item[Input/Output.]
 \def\monitem#1{\par\textit{#1}\ }
 \monitem{Input/Output.}
-		Our matrix containers all read and write from MatrixMarket
+		Our matrix containers all read and write from Matrix Market
 		format\footnote{See \url{http://math.nist.gov/MatrixMarket/}.})
 		which is well established in the numerical linear algebra
 community.
@@ -177,7 +177,7 @@ parameters are specialized enough.
 % \Cref{code:applymul}.
 %
 % Usually,  the {\tt apply} method for
-% containers is strongly dependant on the representation of the matrix. In
+% containers is strongly dependent on the representation of the matrix. In
 % the case of Hybrid containers, it will simply be calls to the {\tt apply}
 % method of the children.
 %
