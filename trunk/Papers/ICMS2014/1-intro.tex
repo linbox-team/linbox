@@ -7,7 +7,7 @@ This article follows several papers and memoirs concerning \linbox%
 (\cf{} \cite{Giorgi:2004:these,Turner:2002:these,Boyer:2012:these,Dumas:2002:icms,Dumas:2010:lbpar})
 and builds upon them.
 %
-\linbox is a \cpp template library for fast and exact linear algebra, designed with generality 
+\linbox is a \cpp template library for fast and exact linear algebra, designed with generality
 and efficiency in mind.
 % The main concepts include:
 % \begin{itemize}[---]
@@ -22,6 +22,9 @@ The \linbox library is under constant evolution, driven by new problems and
 algorithms, by new computing paradigms, new compilers and architectures. This
 poses many challenges: we are incrementally
 updating the \emph{design} of the library towards a \textsf{2.0} release.
+The evolution is also motivated by developing a high-performance mathematical
+library available and easy for researchers and engineers that will use it for
+producing quality reliable results and quality research papers.
 %
 \par
 %
@@ -88,17 +91,13 @@ large literature on coding standards and software design references in (\cf{}
 \cite{alexandrescu:01:modern,gamma:95:design,sutter:05:cpp,stroustrup1994design,Douglas:05:GPHP}),
 and draw from many internet sources and experience acquired by/from free
 software projects.
-(\danger next sentence, while great, seems off topic here);
-Another motivation for developing a high-performance
-mathematical library is to make it available and easy for researchers and
-engineers that will use it for producing quality reliable results and quality
-research papers.
+% (\danger next sentence, while great, seems off topic here);
 %
-\par
+% \par
 %
 We describe advances in the design of \linbox in the next
 three sections. We will first describe the new \emph{container} framework in
-\Cref{sec:container}, then, 
+\Cref{sec:container}, then,
 in \Cref{sec:matmul},
 the improved \emph{matrix multiplication} algorithms
 made by contributing special purpose matrix multiplication plug-ins, and, finally, we present the new \emph{benchmark/optimisation}

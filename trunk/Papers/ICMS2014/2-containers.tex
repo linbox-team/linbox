@@ -1,11 +1,11 @@
 \section{Containers architecture}\label{sec:container}
 %
 \linbox is mainly conceived around the RAII (Resource Acquisition Is
-Initialisation, see \cite{stroustrup1994design}) concept with re-entrant
+Initialisation, \cite{stroustrup1994design}) concept with re-entrant
 function. We also follow the {founding scope allocation} model (or \emph{mother
-model}) from \cite{Dumas:2010:lbpar} which ensures that the memory used by
+model}) of \cite{Dumas:2010:lbpar} which ensures that the memory used by
 objects is allocated in the constructor and freed only at its destruction. The
-management of the memory allocated by an object is thus exlusively reserved to it.
+management of the memory allocated by an object is exlusively reserved to it.
 %
 \par
 %
@@ -60,10 +60,10 @@ The MatrixMarket header comment provides space for metadata about the provenance
 For instance, for a matrix over GF($p^ek$) we have established a convention to record in the header comment the modulus and irreducible polynomial defining the representation.
 
 % we haven't committed to this as a MM variant, should we?
-		We can further adapt the header to suit our needs, for instance 
+		We can further adapt the header to suit our needs, for instance
 		create new formats that save space (for sparse matrix, CSR fashion saves
 		roughly a third space over COO). Structured
-		matrices 
+		matrices
 (Toeplitz, Vandermonde, etc.)
 can have file representations specified.
 %
@@ -72,7 +72,7 @@ can have file representations specified.
 		The function \texttt{setEntry} can be
 		used to populate the matrix (from some \texttt{init()} until a
 		\texttt{finish()} is emitted).  The function \texttt{setEntry}
-		can be (very) costly (for some sparse formats for instance)
+		can be costly (for some sparse formats for instance)
 		% (\danger Dave, more words on the init/finish?)
 % so set entry should always build some COO or CSR and then
 % convert to the format.
@@ -80,9 +80,10 @@ can have file representations specified.
 		Other functions such as {\tt refEntry} (that retrieves a
 		writable reference to an entry) may be difficult to implement
 		or inefficient (compressed fields, sparse matrices);
-		\texttt{getEntry} may be specialized, in all cases, there is a
-		solution for this operation falling back to the {\tt apply}
-		method.
+		\texttt{getEntry} may be specialized.
+		% , in all cases, there is a
+		% solution for this operation falling back to the {\tt apply}
+		% method.
 		% The function {\tt clearEntry} may be used to zero an entry and
 		% update the storage.
 		% (\danger setEntry to zero is sometimes
@@ -115,14 +116,13 @@ can have file representations specified.
 %
 	% \item[Rebind/Conversions.]
 		\monitem{Rebind/Conversions.}
-		Rebind from one field to the other (if
-		possible, using some default homeomorphism).
+		In addition to the rebind mechanism (convert from one field to the other), we add
 %
-	 Conversion mechanisms between formats are added to the interface when
-	 convenient, for instance all sparse matrix formats can convert to/from
-	 CSR format.  This `star' mechanism can simplify the code (to the
-	 expense of memory usage) and may speed it up when the mother format
-	 (CSR for instance) is well tuned for some task.
+	 conversion mechanisms between formats, for instance all
+	 sparse matrix formats can convert to/from CSR format:  this `star'
+	 mechanism can simplify the code (to the expense of memory usage) and
+	 may speed it up when a central format (CSR or COO for instance) is
+	 well tuned for some task.
 	 % Such tasks could be
 	 % read/write from a file for instance, or update the matrix.
 %
@@ -132,14 +132,13 @@ can have file representations specified.
 %
 This is a common minimal interface to all our matrices that can be used by all
 of our algorithms. Additional elements to a container can be added, and flagged
-with a trait. This model also ensures basic ``linear application'' use of a
-matrix (blackbox) which is the least one can request from a matrix.  For
-instance, this interface is shared by: Our \emph{dense} containers (BLAS type or
-vector of rows); Our  \emph{permutations} containers (compressed \textsc{Lapack} or
-cycle representation); Our \emph{sparse} formats (based on common formats such as
-COO, CSR,\ldots\ or based on STL containers such as {\tt map}, {\tt deque}, {\tt
-pair},\ldots); Our \emph{structured} containers (Diagonal, Hankel, Butterfly,\ldots);
-Our \emph{compound} containers (Sum, Compose, Submatrix,\ldots).
+with a trait. This model also ensures the minimal ``linear application'' use of a
+matrix (blackbox).  For instance, this interface is shared by: \emph{dense}
+containers (BLAS-like,\ldots); \emph{permutations} containers (compressed
+\textsc{Lapack} or cycle representation); \emph{sparse} containers (based on
+common formats or on STL containers such as {\tt map}, {\tt deque},\ldots);
+\emph{structured} containers ({\tt Diagonal}, {\tt Hankel}, {\tt Butterfly},\ldots);
+\emph{compound} containers ({\tt Compose}, {\tt Submatrix},\ldots).
 %
 \subsection{The \texttt{apply} method}\label{ssec:apply}
 %
@@ -156,17 +155,17 @@ of vectors, \ie a matrix).
 \par
 %
 We propose the new interface (\Cref{code:apply}), where {\tt \_In} and {\tt
-\_Out} are vector or matrices, and {\tt Side} is either {\tt Tag::Right} or
+\_Out} are vector or matrices, and {\tt Side} is {\tt Tag::Right} or
 {\tt Tag::Left}, whether the operation $y \gets A^{\top} x$ or  $y \gets A x$ is
-performed. We also generalize to the operation $y \gets \alpha A x + \beta y$ as
-it is often handy and efficient to allow for accumulation.
+performed. We also generalize to the operation $y \gets \alpha A x + \beta y$.
+% as it is often handy and efficient to allow for accumulation.
 %
 \input{lst_apply}
 %
-This method is important for two reasons: first it is the building block of the
-\applin algorithms (for instance Wiedemann and block-Wiedemann); second the
-matrix multiplication is a basic operation in linear algebra that needs to be
-extremely efficient (this is the matter of \Cref{sec:matmul}).
+This method is important because: first it is the building block of the \applin
+algorithms (for instance block-Wiedemann); second the matrix multiplication is
+a basic operation in linear algebra that needs to be extremely efficient (this
+is the matter of \Cref{sec:matmul}).
 %
 %
 % \par
