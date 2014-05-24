@@ -127,10 +127,18 @@ namespace LinBox
 
 		NTL_zz_pE (const integer &p, const integer &k) :
 			NTL_zz_pE_Initialiser(p,k),Father_t ()
-			,zero( NTL::to_zz_pE(0)),one( NTL::to_zz_pE(1)),mOne(-one)
+			//,zero( NTL::to_zz_pE(0)),one( NTL::to_zz_pE(1)),mOne(-one)
 
-		{
-
+		{	init(const_cast<Element &>(zero), 0); 
+		 	init(const_cast<Element &>(one), 1); 
+		 	init(const_cast<Element &>(mOne), p-1); 
+			
+			/*
+			NTL::clear(const_cast<Element &>(zero));
+			NTL::set(const_cast<Element &>(one));
+			init(const_cast<Element &>(mOne)); 
+			neg(const_cast<Element &>(mOne), one);  
+			*/
 		}
 
 		Element& random (Element& x) const
@@ -157,30 +165,59 @@ namespace LinBox
 			return isOne(y);
 		}
 
+		NTL::zz_pX & init(NTL::zz_pX & f, integer n, int e) const
+		{	long base = characteristic();
+			NTL::zz_pX x; SetCoeff(x, 1);
+			if ( n != 0 and e > 0 ) 
+				f = n%base + x*init(f, n/base, e-1);
+			return f;
+		}
+
+		Element & init(Element & x, integer n = 0) const 
+		{   // assumes n >= 0.
+			int e = exponent();
+			n %= cardinality();
+			init(const_cast<NTL::zz_pX &>(rep(x)), n, e);
+			//write(std::cout << "init-ed ", x) << std::endl;
+			return x;
+		}
+
+        integer & convert(integer & x, const Element & y) const
+	    {
+			NTL::zz_pX poly = rep(y);
+			long base = characteristic();
+			long i = deg(poly)+1;
+			x = 0;
+			for( ; i-- ; ) {
+				x *= base;
+				x +=  NTL::to_long(rep(coeff(poly, i)));
+			}
+			return x;
+		}
 
 		integer& characteristic (integer &c) const
+		{	return c = characteristic(); }
+		integer characteristic () const
 		{
-			return c = static_cast<integer>(NTL::zz_p::modulus());
+			return static_cast<integer>(NTL::zz_p::modulus());
 		}
 
 
 		integer& cardinality(integer& c) const
+		{	return c = cardinality(); }
+
+		int exponent() const
 		{
-			NTL::ZZ card = Element::cardinality();
-			long b = NumBytes(card);
-			unsigned char* byteArray;
-			byteArray = new unsigned char[(size_t)b ];
-			BytesFromZZ(byteArray, card, b);
+			return NTL::zz_pE::degree();
+		}
 
-			integer base(256);
-			c= integer(0);
-
-			for(long i = b - 1; i >= 0; --i) {
-				c *= base;
-				c += integer(byteArray[i]);
-			}
-			delete [] byteArray;
-
+		integer cardinality() const
+		{
+			int e = exponent();
+			long p = characteristic();
+		    integer c(1);
+			for(int i = 0; i < e; ++i) 
+				c *= p;
 			return c;
 		}
 
@@ -207,7 +244,7 @@ namespace LinBox
 			x=NTL::to_zz_pE(tmp);
 			return is;
 		}
-	}; // end o class NTL_zz_pE
+	}; // end of class NTL_zz_pE
 
 
 
@@ -257,8 +294,8 @@ namespace LinBox
 	protected:
 		size_t _size;
 		size_t _seed;
-	};
-}
+	}; // class UnparametricRandIters
+} // LinBox
 
 #endif //__LINBOX_ntl_lzz_pe_H
 
