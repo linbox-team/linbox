@@ -512,6 +512,7 @@ int main(int argc, char* argv[])
 	if (flag > 0) cout << "	NTL dependent tests" << endl;
 	build_n_run("test-ntl-hankel",            counter , flag);
 	build_n_run("test-ntl-lzz_p",             counter , flag);
+	build_n_run("test-ntl-lzz_pE",             counter , flag);
 	build_n_run("test-ntl-toeplitz",          counter , flag);
 	build_n_run("test-ntl-sylvester",         counter , flag);
 	no_build_n_run("test-ntl-RR",                counter , flag, "floating point equality");
@@ -524,6 +525,7 @@ int main(int argc, char* argv[])
 	if (flag > 0) cout << "	not doing NTL dependent tests" << endl;
 	no_build_n_run("test-ntl-hankel",            counter , flag, "no NTL");
 	no_build_n_run("test-ntl-lzz_p",             counter , flag, "no NTL");
+	no_build_n_run("test-ntl-lzz_pE",             counter , flag, "no NTL");
 	no_build_n_run("test-ntl-toeplitz",          counter , flag, "no NTL");
 	no_build_n_run("test-ntl-RR",                counter , flag, "no NTL");
 	no_build_n_run("test-ntl-sylvester",         counter , flag, "no NTL");

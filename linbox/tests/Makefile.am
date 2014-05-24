@@ -201,6 +201,7 @@ GIVARO_TESTS =                        \
 NTL_TESTS =                           \
         test-smith-form               \
         test-ntl-lzz_p                \
+        test-ntl-lzz_pE                \
         test-ntl-ZZ_p                 \
         test-ntl-toeplitz             \
         test-ntl-hankel               \
@@ -516,8 +517,11 @@ test_ntl_ZZ_p_SOURCES =                        \
 
 test_ntl_lzz_p_SOURCES =                \
         test-ntl-lzz_p.C                \
-        test-generic.h                  \
-        test-common.h
+        test-field.h
+
+test_ntl_lzz_pE_SOURCES =                \
+        test-ntl-lzz_pE.C                \
+        test-field.h
 
 test_givaro_fields_SOURCES =                \
         test-givaro-fields.C                \

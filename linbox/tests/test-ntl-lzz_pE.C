@@ -1,13 +1,11 @@
-
-/* tests/test-ntl-lzz_p.cpp
+/* tests/test-ntl-lzz_pE.C
+ * evolved by bds from tests/test-ntl-lzz_p.C
  * Copyright (C) 2002 William J. Turner
- *
- * Written by William J. Turner <wjturner@math.ncsu.edu>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -23,7 +21,7 @@
  * ========LICENCE========
  */
 
-/*! @file  tests/test-ntl-lzz_p.C
+/*! @file  tests/test-ntl-lzz_pE.C
  * @ingroup tests
  * @brief no doc.
  * @test no doc.
@@ -35,6 +33,7 @@
 #include <iostream>
 #include <fstream>
 
+
 #include "linbox/field/ntl.h"
 
 #include "test-field.h"
@@ -43,7 +42,8 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-        static integer q = 1073741789;
+        static integer q = 3;
+		int exponent = 3; 
 	static size_t n = 10000;
 	static int iterations = 1;
 
@@ -56,30 +56,31 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	commentator().start("NTL_zz_p field test suite", "NTL_zz_p");
+	commentator().start("NTL_zz_pE field test suite", "NTL_zz_p");
 	bool pass = true;
 
 	//NTL::zz_p::init(q);
-	//UnparametricField<NTL::zz_p> F(q);
+	//UnparametricField<NTL::zz_pE> F(q);
 	// NTL_zz_p F(q);
-	NTL_zz_p F(q);
+	NTL_zz_pE F(q, exponent);
 
-	if (F.characteristic() != q)
+    integer ch;
+	if (F.characteristic(ch) != q)
 		exit(-1);
 
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	if (!runFieldTests (F, "NTL_zz_p", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F, "NTL_zz_pE", (unsigned int)iterations, n, false)) pass = false;
 
 #if 0
-	FieldArchetype K(new NTL_zz_p(101));
+	FieldArchetype K(new NTL_zz_pE(101));
 
-	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField<NTL::zz_p> field"))
+	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField<NTL::zz_pE> field"))
 		pass = false;
 #endif
 
-	commentator().stop("NTL_zz_p field test suite");
+	commentator().stop("NTL_zz_pE field test suite");
 	return pass ? 0 : -1;
 }
 
