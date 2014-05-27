@@ -209,7 +209,7 @@ void RandomMatrixWithRank(const Field & F,
 		       n, 0, (int)m, C, n, Q );
 	FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 		       m, 0, (int)n, C, n, P );
-	FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
+	FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
 		      F.one, B, m, C, n, F.zero, A, lda );
 	delete[] B;
 	delete[] C;
@@ -295,7 +295,7 @@ void RandomMatrixWithDet(const Field & F,
 	//PrintLapackPermutation(Q,m,std::cout << "Q == ");
 	//write_field (F, std::cout<<"C_perm2="<<std::endl, C, m, m, m);
 	// A = B*C (m x m format), of rank \p rank
-	FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, m, m,
+	FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, m, m,
 		      F.one, B, m, C, m, F.zero, A, m );
 	delete[] B;
 	delete[] C;

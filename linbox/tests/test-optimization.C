@@ -75,7 +75,7 @@ int main (int argc, char ** argv)
 
 	do {
 		chrono.start();
-		FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+		FFLAS::fgemm((typename Field::Father_t)F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 			     n, n, n, 1., A, n, A, n, 0., C, n);
 		chrono.stop();
 		report << std::endl

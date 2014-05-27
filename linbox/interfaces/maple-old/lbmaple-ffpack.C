@@ -134,7 +134,7 @@ extern "C"
 		C = (Element*)RTableDataBlock(kv,Matrix);
 
 		//Ce=new Element[m*n];
-		FFLAS::fgemm(F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,m,n,k,a,A,k,B,n,b,C,n);
+		FFLAS::fgemm((typename Field::Father_t)F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,m,n,k,a,A,k,B,n,b,C,n);
 
 		Matrix = (ALGEB)argv[9];
 		RTableGetSettings(kv,&settings,Matrix);
