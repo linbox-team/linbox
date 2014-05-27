@@ -1,0 +1,13 @@
+First author's          Family Name  :   Boyer
+First author's          Given  Name  :   Brice
+
+Corresponding author's  Family Name  : Boyer
+Corresponding author's  Given  Name  : Brice
+Corresponding author's  Email address: bbboyer@ncsu.edu
+
+-----------
+Definitions
+-----------
+First author         : the author whose name appears first in the extended abstract.
+Corresponding author : the author who will communicate with the publisher.
+
