@@ -381,7 +381,7 @@ namespace LinBox{ namespace iml{
 				}
 
 				/* compute the coefficients of p-adic lifting */
-				FFLAS::fgemm(Fq,(solupos==Tag::Left)?(Tag::Trans):(Tag::NoTrans)
+				FFLAS::fgemm((typename Field::Father_t)Fq,(solupos==Tag::Left)?(Tag::Trans):(Tag::NoTrans)
 					     ,Tag::NoTrans,n,m,n
 					     ,Fq.one,_AInv[l].getPointer(),n,dtemp.getPointer(),m
 					     ,F.zero,C[i][l].getWritePointer(),m);
@@ -415,7 +415,7 @@ namespace LinBox{ namespace iml{
 				_liftbasis.basisExtPos(Fq, C[i], dtemp);
 				// _liftbasis.basisExtPos(liftbasislen, m*n, q[j], _liftbasis, cmbasis, C[i], dtemp);
 
-				FFLAS::fgemm(Fq,(solupos==Tag::Left)?(Tag::Trans):(Tag::NoTrans)
+				FFLAS::fgemm((typename Field::Father_t)Fq,(solupos==Tag::Left)?(Tag::Trans):(Tag::NoTrans)
 					     ,Tag::NoTrans,n,m,n
 					     ,Fq.one,ARNS[j].getPointer(),n,dtemp.getPointer(),m
 					     ,F.zero,Ac[j].getWritePointer(),m);

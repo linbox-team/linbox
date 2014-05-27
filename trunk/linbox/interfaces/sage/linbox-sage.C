@@ -309,7 +309,7 @@ Element* linbox_modn_dense_matrix_matrix_multiply (Element modulus, Element *ans
 
 	Modular<Element> F(modulus);
 
-	FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,k, 1.0,
+	FFLAS::fgemm ((typename Modular<Element>::Father_t)F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,k, 1.0,
 		      A, k, B, n, 0.0, ans, n);
 
 	return ans;
@@ -332,7 +332,7 @@ Element *  linbox_modn_dense_matrix_matrix_general_multiply(Element modulus,
 							    size_t m, size_t n, size_t k)
 {
 	Modular<Element> F(modulus);
-	FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,k, alpha,
+	FFLAS::fgemm ((typename Modular<Element>::Father_t)F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,k, alpha,
 		      A, k, B, n, beta,ans, n);
 	return ans;
 

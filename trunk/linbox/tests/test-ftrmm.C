@@ -609,7 +609,7 @@ int test_fgemm(std::ostream & report, const Field & F)
 					F.axpyin(C[i*ldc+j],alpha,temp);
 				}
 
-	FFLAS::fgemm(F,ATRANS,BTRANS,M,N,K,alpha,A,lda,B,ldb,beta,D,ldc);
+	FFLAS::fgemm((typename Field::Father_t)F,ATRANS,BTRANS,M,N,K,alpha,A,lda,B,ldb,beta,D,ldc);
 
 	int err = 0 ;
 	for (size_t i = 0 ; i < rowC && !err ; ++i)

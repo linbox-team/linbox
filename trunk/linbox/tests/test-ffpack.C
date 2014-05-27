@@ -117,7 +117,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 		}
 
 		//  compute A=LS
-		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
+		FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      F.one, L, n, S, n, F.zero, A, n );
 		delete[] L;
 		delete[] S;
@@ -186,7 +186,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 
 
 		//  compute A=LS
-		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
+		FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      F.one, L, n, S, n, F.zero, A, n );
 
 		delete[] L;
@@ -269,7 +269,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 
 		//  compute A=LS
-		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
+		FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      F.one, L, n, S, n, F.zero, A, n );
 		delete[] L;
 		delete[] S;
@@ -343,7 +343,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 					F.assign (*(C+i*n+j),F.zero);
 
 		// A = B*C
-		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
+		FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
 			      F.one, B, m, C, n, F.zero, A, n );
 		delete[] B;
 		delete[] C;
@@ -398,7 +398,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 		delete[] P;
 		delete[] Q;
 		// A = L*C
-		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
+		FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
 			      F.one, L, m, U, n, F.zero, A, n );
 		delete[] L;
 		delete[] U;
@@ -663,7 +663,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 		//  compute A=LS
 
-		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
+		FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      F.one, L, n, S, n, F.zero, A, n );
 
 		Element * Ab = new Element[n*n];
@@ -676,10 +676,10 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 		// compute Ainv*A and A*Ainv
 
-		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
+		FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      F.one, Ab, n, invA, n, F.zero, L, n );
 
-		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
+		FFLAS::fgemm((typename Field::Father_t) F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      F.one, invA, n, Ab, n, F.zero, S, n );
 
 		for (size_t i=0;i<n*n;++i)
