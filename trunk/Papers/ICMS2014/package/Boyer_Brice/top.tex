@@ -5,70 +5,39 @@
 %%% Packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage{iftex}
-\usepackage{etex}
-\usepackage{xspace}
-\usepackage{setspace}
+% \PassOptionsToPackage{utf8}{inputenc}
+\usepackage[utf8]{inputenc} % NEEDED for UTF-8 characters such as accented.
 
-\ifXeTeX
-%xetex
-\fi
+\usepackage{libertine} % NEEDED for textsf and textsc at the same time (not all sf fonts have small capitals)
+% \def\biolinum{} % uncomment of fix the next line for both textsf
+\def\textsf#1{{\biolinum #1}}
+\def\scsf#1{{\scshape \biolinum #1}} % THIS line does the sf and sc
+\usepackage{lmodern} % NEEDED if lmodern is the main font.
+\usepackage[scaled=0.95]{inconsolata} % NOT NEEDED but looks better for texttt
 
-\ifLuaTeX
-%luatex
-\usepackage{fontspec}
-\fi
+% \usepackage[english]{babel}
 
-\ifPDFTeX
-% pdftex
-\usepackage[utf8x]{inputenc}
-\usepackage{libertine} % textsf
-\usepackage{lmodern}
-\usepackage[scaled=0.95]{inconsolata} % texttt
-\fi
+% \usepackage{caption}
 
+\PassOptionsToPackage{svgnames}{xcolor}
 
-\usepackage[english]{babel}
-\usepackage{caption}
-\usepackage{adforn}
-
-\usepackage[x11names,svgnames]{xcolor}
-% \usepackage{amsmath,amsthm,amsfonts,amssymb,graphicx}
-% \usepackage{algorithm,%
-%algorithmic%
-% algpseudocode%
-% }
-\usepackage[%algochapter%
-% ,linesnumbered%
-,titlenumbered%
-% ,vlined%
-% ,lined%
+\usepackage[titlenumbered%
 ,ruled%
-% ,french%
-% ,nofillcomment%
-% ,onelanguage%
-% ,scleft%
-]{algorithm2e}
-% \let\chapter\undefined % use this line
+]{algorithm2e} % NEED that for my algorithms
 
-% FIXME numbersep>innerleftmargin, leftmargin=0.
-\usepackage[%style=1
+\usepackage[%
 framemethod=%
 TikZ
-% PSTricks
-% default
-% ,skipbelow=-\topskip
-% ,skipabove=\topskip
 ,nobreak=false
-]{mdframed}
+]{mdframed} % NEED that for my listings
+\usepackage{listings} % NEED that for my listings
 
-\usepackage{listings}
-\usepackage{wrapfig}
+\usepackage{wrapfig} % NEED that to wrap one figure in text.
 
 
-\usepackage{cite}
+\usepackage{cite} % NEED that to order citation automatically
 
-\usepackage{paralist,array,enumerate,multirow,float}% à moi
+\usepackage{paralist,array,enumerate,multirow,float}
 \usepackage[
 breaklinks%
 ,colorlinks%
@@ -79,21 +48,12 @@ breaklinks%
 ,citecolor=blue%
 ,bookmarks=false%
 ]{hyperref}
-\usepackage{url,xspace}
-\usepackage{bm} %boldmath
-\usepackage{booktabs}
-\usepackage[%
-% french%
-]{cleveref}
+% \usepackage{url}
 
-\usepackage{stmaryrd}
-\usepackage{tikz}
+\usepackage{booktabs} % NEED that for my tables
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% to be removed packages
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage{fourier-orns}
-\usepackage{comment}
+\usepackage{cleveref} % NEED that for easy referencing environemnts.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Tuning
@@ -121,7 +81,7 @@ breaklinks%
 \AfterEndEnvironment{lstlisting}{\vspace{-0.15\baselineskip}\end{mdframed}\vspace{1.0\baselineskip}\par\nobreak}
 \def\ifempty#1{\def\temparg{#1}\ifx\temparg\empty}
 \newcommand{\lstcapt}[2][]{%
-\captionsetup*{type=lstlisting} %étoile pour virer les warnings
+% \captionsetup*{type=lstlisting} %étoile pour virer les warnings
 \vspace{-0.5\baselineskip}%
 \ifempty{#1}%
 \captionof{lstlisting}{#2}%
@@ -130,7 +90,7 @@ breaklinks%
 \fi%
 \vspace{0.3\baselineskip}%
 % \setlength{\parindent}{5mm}
-\captionsetup*{type=""} %étoile pour virer les warnings
+% \captionsetup*{type=""} %étoile pour virer les warnings
 % XXX bug à la con. parindent est perdu par lstlinting ou autres
 }
 
@@ -177,26 +137,15 @@ breaklinks%
 % ,basewidth=0.5em
 }
 % \def\lstlistingname{Code}
-\captionsetup[lstlisting]{position=below}
+% \captionsetup[lstlisting]{position=below}
 
-\usepackage{numprint}
-\npthousandsep{\,}
-\npdecimalsign{.}
+% \usepackage{numprint} % NEED that to print numbers well
+% \npthousandsep{\,}
+% \npdecimalsign{.}
 % \usepackage{siunitx}
-\def\num#1{\numprint{#1}}
+% \def\num#1{\numprint{#1}}
+\def\num#1{#1}
 
-
-% \usepackage{footmisc}%footref
-% \usepackage[symbol*]{footmisc}
-% \DefineFNsymbolsTM{myfnsymbols}{% def. from footmisc.sty "bringhurst" symbols
-	% \textasteriskcentered *
-	% \textdagger    \dagger
-	% \textdaggerdbl \ddagger
-	% \textsection   \mathsection
-	% \textbardbl    \|%
-	% \textparagraph \mathparagraph
-% }%
-% \setfnsymbol{myfnsymbols}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% defs
@@ -208,12 +157,10 @@ breaklinks%
 \newcolumntype{L}{>{$}l<{$}}
 \newcolumntype{R}{>{$}r<{$}}
 
-\def\textsf#1{{\biolinum #1}}
 \def\ldots{...}
 % \def\ldots{…}
 
 % newcommand, not def now
-\def\scsf#1{\textsf{\textsc{#1}}}
 \newcommand{\dbl}{\texttt{double}\xspace}
 \newcommand{\flt}{\texttt{float}\xspace}
 \newcommand\largesimpletilde{\adforn{19}}
@@ -225,7 +172,7 @@ breaklinks%
 \newcommand\linbox{\textsf{LinBox}\xspace}
 \newcommand\mul{\texttt{mul}\xspace}
 \newcommand\apply{\texttt{apply}\xspace}
-\newcommand\spmv{\textrm{SpMV}}
+\newcommand\spmv{\textrm{SpMV}\xspace}
 \newcommand\cpp{\texttt{C++}\xspace}
 \newcommand\mari{\textsf{m4ri}\xspace}
 \newcommand\fgemm{\texttt{fgemm}\xspace}

@@ -102,7 +102,7 @@ In order to provide fast matrix multiplication with multiprecision integers, we
 rely on multimodular approach through the Chinese remainder theorem. Our
 approach is to reduce as much as possible to \fgemm. Despite, the existence of
 fast multimodular reduction (resp.\ reconstruction) algorithm
-\cite{VonzurGathen:1999:MCA}, the naive quadratic approach can be reduced to
+\cite{VonzurGathen:1999:MCA}, the naïve quadratic approach can be reduced to
 \fgemm which makes it more efficient into practice.  Note that providing
 optimized fast multimodular reduction remains challenging. This code is
 directly integrated  into \fflas.
@@ -144,31 +144,3 @@ optimized fashion, usually yielding huge speedups. This can be decided by
 Work on parallelizations using \textsf{OpenCL}, \textsf{OpenMP} or
 \textsf{XKaapi} for dense or sparse matrix multiplication include
 \cite{Boyer:2010:spmv,WST12,DGPZ14}.
-
-\begin{comment} % taken for length reduction
-\paragraph{}
-These state-of-the-art algorithms, often interdependent, need to be selected
-by the \mul solution, possibly using a Method/Helper parameter. The
-Controller/Module model works particularly well here: cascading, switch
-methods, algorithms selection is made easy. Besides, the choosing of a
-particular algorithms or base case is never settled in advance: the library has
-to be tuned wrt. available libraries, local performance of these libraries.
-\end{comment}
-
-\begin{comment}
-\monitem{Using conversions}
-\begin{itemize}
-	\item
- double->float
-	\item
- using flint for integer matmul is faster, even with conversion. Need better CRA implementation (but with the plugins, we can do without our faulty code and just use flint).
-	\item
- implementation of Toom-Cook for GF(q)
-	\item
- when does spmv choose to optimize ?
-	\item
- transition to benchmarking
-\end{itemize}
-%
-\danger dave some words on the Domain architecture that you support and why it is best than functions (for instance for mul or apply) ?
-\end{comment}
