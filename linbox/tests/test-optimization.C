@@ -63,7 +63,8 @@ int main (int argc, char ** argv)
 	commentator().start("Optimization suite", "Optim");
 	std::ostream& report = commentator().report();
 
-	Modular<double> F(17);
+	typedef Modular<double> Field;
+	Field F(17);
 	Timer chrono;
 
 	double *A, *C;
@@ -75,11 +76,11 @@ int main (int argc, char ** argv)
 
 	do {
 		chrono.start();
-		FFLAS::fgemm((typename Field::Father_t)F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+		FFLAS::fgemm((Field::Father_t)F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 			     n, n, n, 1., A, n, A, n, 0., C, n);
 		chrono.stop();
 		report << std::endl
-		<< "fgemm " << FFLAS::WinoSteps(F,n) << "Wino: " << n << "x" << n << ": "
+		<< "fgemm " << FFLAS::WinogradSteps(F,n) << "Wino: " << n << "x" << n << ": "
 		<< chrono.usertime() << " s, "
 		<< (2.0/chrono.usertime()*(double)n/100.0*(double)n/100.0*(double)n/100.0) << " Mffops"
 		<< std::endl;

@@ -846,6 +846,26 @@ namespace LinBox
 			return x = zero ;
 		}
 
+		integer &convert (integer &x, const Element &y) const
+		{
+			return x = integer(y);
+		}
+
+		Element &convert (Element &x, const Element &y) const
+		{
+			return x = y;
+		}
+
+		double &convert (double &x, const Element &y) const
+		{
+			return x = (double)y;
+		}
+
+		float &convert (float &x, const Element &y) const
+		{
+			return x = (float)y;
+		}
+
 
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
