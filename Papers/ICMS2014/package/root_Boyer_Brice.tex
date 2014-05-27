@@ -10,7 +10,50 @@
 \setcounter{tocdepth}{3}
 \newcommand{\keywords}[1]{\par\addvspace\baselineskip
 \noindent\keywordname\enspace\ignorespaces#1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\PassOptionsToPackage{svgnames}{xcolor}
+\usepackage[utf8]{inputenc} % NEEDED for UTF-8 characters such as accented.
+
+\usepackage{libertine} % NEEDED for textsf and textsc at the same time (not all sf fonts have small capitals)
+% \def\biolinum{\sffamily} % NEEDED if libertine is not there and sf+sc is correct, then uncomment/modify this line.
+\def\textsf#1{{\biolinum #1}}
+\def\scsf#1{{\scshape \biolinum #1}} % THIS line does the sf and sc
+\usepackage{lmodern} % NEEDED if lmodern is to be the main font (otherwise, libertine is used).
+\usepackage[scaled=0.95]{inconsolata} % NOT needed but looks better for texttt
+
+\usepackage[titlenumbered%
+,ruled%
+]{algorithm2e} % NEED that for my algorithms
+
+\usepackage[%
+framemethod=%
+TikZ
+,nobreak=false
+]{mdframed} % NEED that for my listings
+\usepackage{caption,listings} % NEED that for my listings
+
+\usepackage{wrapfig} % NEED that to wrap one figure in text.
+
+\usepackage{cite} % NEED that to order citation automatically, can be removed though, but citation order is meant to be increasing.
+
+\usepackage{booktabs} % NEED that for my tables
+
+\usepackage{cleveref} % NEED that for easy referencing environemnts.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Definitions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \input{Boyer_Brice/top.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END OF "DO NOT MODIFY" MODIFICATIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{document}
 
 \mainmatter

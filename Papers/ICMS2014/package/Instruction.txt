@@ -8,40 +8,40 @@ Now it is time to prepare
   * the final version of your extended abstract.
   * the copy-right transfer form signed by the corresponding author.
   * the author's info.
-   
+
 >>>>>>>>>>>>> INSTRUCTION <<<<<<<<<<<<<<<<<<<<<<
 
   * Please __carefully__ follow the instruction below.
-  
-    If you do not, the publisher tells us that 
-    it will cause much delay in the proceedings production, 
+
+    If you do not, the publisher tells us that
+    it will cause much delay in the proceedings production,
     and the proceedings might not be delivered on time for the meeting.
 
   * The whole process should take at most 30 minutes.
-    
-  * You must complete the process 
+
+  * You must complete the process
     at latest by May 28th.
     The earlier, the better.
-    
+
 1.  Save the attached "llncs.cls" and "root.tex" in a folder of your choice.
     From now on, the folder will be referred as the "parent folder".
-    
+
 2.  Create a subfolder "FamilyName_GivenName" in the parent folder.
     If there are several authors, then use the name appearing first on the extended abstract.
-    
-    For example: 
+
+    For example:
     If the authors are "Emmy Noether, David Hilbert and Heisuke Hironaka",
     then the subfolder should be named "Noether_Emmy".
-    
+
     From now on, the subfolder will be referred as the "child folder".
-    
+
 3.  Open the "root.tex" in the parent folder.
     Replace "FamilyName_GivenName" with the name of the child folder.
-    Save it back. 
-    
-4.  Save the complete LaTeX source of your final extended abstract 
+    Save it back.
+
+4.  Save the complete LaTeX source of your final extended abstract
     into the child folder.
-   
+
 5.  Name the main LaTeX file as "paper.tex".
 
 6.  Remove the following lines at the beginning of "paper.tex".
@@ -62,47 +62,46 @@ Now it is time to prepare
 
     \mainmatter
     %================================================
-   
+
 7.  Remove the following line at the end of "paper.tex".
 
     \end{document}
-   
-8.  If you include any figures, then make sure that 
+
+8.  If you include any figures, then make sure that
     the path include the name of the child folder.
-   
+
     For example,
-   
+
        \includegraphics{xyz}
-   
+
     should be changed to
-    
+
        \includegraphics{Noether_Emmy/xyz}
-       
-9. Make sure that all the bib items are "hard-coded" 
-   between 
-   
+
+9. Make sure that all the bib items are "hard-coded"
+   between
+
    \begin{thebibliography}{4}
-   \bibitem{...} .... 
-   \end{thebibliography}  
-    
+   \bibitem{...} ....
+   \end{thebibliography}
+
 10. LaTeX "root.tex" in the parent folder
     to produce a PDF file.
-    
+
 11. Rename the pdf file as "paper.pdf".
-    Move it into the child folder. 
-    
+    Move it into the child folder.
+
 12. Move the file "root.tex" to the child folder.
 
-13. The corresponding author should fill/sign/date 
+13. The corresponding author should fill/sign/date
     the attached copy-right transfer form "copyrightlncs.pdf".
     Save it into the child folder.
-         
+
 14. Fill in the attached form "author.txt".
     Save it into the child folder.
-    
+
 15. Zip the child folder.
     Send the zip file to the PC chair:
-       Hoon Hong 
+       Hoon Hong
        hong@ncsu.edu
     at latest by May 28th.
-========================================================================
