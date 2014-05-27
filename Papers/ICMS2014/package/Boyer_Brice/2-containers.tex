@@ -70,51 +70,6 @@ template \applin matrix type:
 		Structured matrices (Toeplitz, Vandermonde, \etc) can have file
 		representations specified.
 %
-\begin{comment}
-% setEntry is not universal to all blackboxes so skip for abstract
-	% \item[Accessing Elements.]
-		\monitem{Accessing Elements.}
-		The function \texttt{setEntry} can be
-		used to populate the matrix (from some \texttt{init()} until a
-		\texttt{finish()} is emitted).  The function \texttt{setEntry}
-		can be costly (for some sparse formats for instance)
-		% (\danger Dave, more words on the init/finish?)
-% so set entry should always build some COO or CSR and then
-% convert to the format.
-%
-		Other functions such as {\tt refEntry} (that retrieves a
-		writable reference to an entry) may be difficult to implement
-		or inefficient (compressed fields, sparse matrices);
-		\texttt{getEntry} may be specialized.
-		% , in all cases, there is a
-		% solution for this operation falling back to the {\tt apply}
-		% method.
-		% The function {\tt clearEntry} may be used to zero an entry and
-		% update the storage.
-		% (\danger setEntry to zero is sometimes
-		% buggy, is this a feature?)
-		%
-		% \par
-		%
-		Accessing (read or write) elements, rows or columns through
-		iterators, although handy, is not required because it can be
-		tricky to implement (compressed fields, hybrid or
-		recursive formats). Traits on matrices where efficient iterators
-		are available allow for their selections in some algorithms.
-\end{comment}
-		\begin{comment}
-		(\danger We cannot have {\tt const} iterators for all formats
-		(see hybrid), walking through a matrix in unspecified order can
-		be problematic, for instance, in an hom when a zero may
-		alter/change the representation. I don't understand hom more
-		than I understand init/rebind by the way, and I won't
-		understand it until the morphism is given/chooseable/enforced.
-		Rebind is really hom, so why is it in the interface anyway?
-		This is the same with getEntry. We don't require it because we
-		have a solution. Also, if apply is to be implemented via a
-		domain or {\tt mul}, we could stress it is in the interface for
-		convenience when writing code only. End of \danger)
-		\end{comment}
 %
 	% \item[Apply method.]
 		\monitem{Apply method.}
