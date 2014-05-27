@@ -1,0 +1,282 @@
+\clubpenalty 1000
+\widowpenalty 1000
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{iftex}
+\usepackage{etex}
+\usepackage{xspace}
+\usepackage{setspace}
+
+\ifXeTeX
+%xetex
+\fi
+
+\ifLuaTeX
+%luatex
+\usepackage{fontspec}
+\fi
+
+\ifPDFTeX
+% pdftex
+\usepackage[utf8x]{inputenc}
+\usepackage{libertine} % textsf
+\usepackage{lmodern}
+\usepackage[scaled=0.95]{inconsolata} % texttt
+\fi
+
+
+\usepackage[english]{babel}
+\usepackage{caption}
+\usepackage{adforn}
+
+\usepackage[x11names,svgnames]{xcolor}
+% \usepackage{amsmath,amsthm,amsfonts,amssymb,graphicx}
+% \usepackage{algorithm,%
+%algorithmic%
+% algpseudocode%
+% }
+\usepackage[%algochapter%
+% ,linesnumbered%
+,titlenumbered%
+% ,vlined%
+% ,lined%
+,ruled%
+% ,french%
+% ,nofillcomment%
+% ,onelanguage%
+% ,scleft%
+]{algorithm2e}
+% \let\chapter\undefined % use this line
+
+% FIXME numbersep>innerleftmargin, leftmargin=0.
+\usepackage[%style=1
+framemethod=%
+TikZ
+% PSTricks
+% default
+% ,skipbelow=-\topskip
+% ,skipabove=\topskip
+,nobreak=false
+]{mdframed}
+
+\usepackage{listings}
+\usepackage{wrapfig}
+
+
+\usepackage{cite}
+
+\usepackage{paralist,array,enumerate,multirow,float}% à moi
+\usepackage[
+breaklinks%
+,colorlinks%
+% ,linkcolor=red% internal document links
+,linkcolor=MidnightBlue%
+,anchorcolor=cyan%
+%,pagecolor=blue%
+,citecolor=blue%
+,bookmarks=false%
+]{hyperref}
+\usepackage{url,xspace}
+\usepackage{bm} %boldmath
+\usepackage{booktabs}
+\usepackage[%
+% french%
+]{cleveref}
+
+\usepackage{stmaryrd}
+\usepackage{tikz}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% to be removed packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fourier-orns}
+\usepackage{comment}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Tuning
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usetikzlibrary{shapes,matrix,arrows}
+
+\renewcommand\algomargin{1em} %double cadratin
+%%% LISTINGS %%%
+\mdfsetup{roundcorner=5%
+,backgroundcolor=LightBlue!2!white%
+,linecolor=LightBlue!60!black%
+,leftmargin=0pt,rightmargin=0pt
+,innerleftmargin=8pt,innerrightmargin=5pt
+% ,innerleftmargin=15pt,innerrightmargin=5pt
+,skipabove=0.9\topskip
+,skipbelow=-0.9\topskip
+% ,nobreak=false
+}
+
+\BeforeBeginEnvironment{lstlisting}%
+{\begin{mdframed}[nobreak=false]
+	% \NoAutoSpacing %french
+	\vskip-0.6\baselineskip
+}
+\AfterEndEnvironment{lstlisting}{\vspace{-0.15\baselineskip}\end{mdframed}\vspace{1.0\baselineskip}\par\nobreak}
+\def\ifempty#1{\def\temparg{#1}\ifx\temparg\empty}
+\newcommand{\lstcapt}[2][]{%
+\captionsetup*{type=lstlisting} %étoile pour virer les warnings
+\vspace{-0.5\baselineskip}%
+\ifempty{#1}%
+\captionof{lstlisting}{#2}%
+\else%
+\captionof{lstlisting}[#1]{#2}%
+\fi%
+\vspace{0.3\baselineskip}%
+% \setlength{\parindent}{5mm}
+\captionsetup*{type=""} %étoile pour virer les warnings
+% XXX bug à la con. parindent est perdu par lstlinting ou autres
+}
+
+\lstset{language=C++%
+,numbers=left%
+,numberfirstline=false%
+% ,numberfirstline=true%
+,stepnumber=5
+,firstnumber=1
+,numberstyle=\tiny%
+,numbersep=15pt%
+% ,numbersep=0pt%
+,numberbychapter=true%
+,keywordstyle=\color{DarkGreen}\bfseries%
+,showspaces=false%
+,showstringspaces=false%
+,numberblanklines=true%
+,captionpos=b%
+,literate={>>}{\ensuremath{>>}}1%
+% ,literate={::}{::}1%
+,basicstyle=\small\ttfamily%
+,lineskip=-1.5pt%
+% ,emph={inline}%
+,emphstyle=\color{DarkRed}\bfseries%
+,commentstyle=\ttfamily\color{gray}%
+,rulecolor=\color{LightBlue!50}%
+,breaklines=true%
+,columns=fixed%
+% ,stringstyle=\ttfamily%
+% ,basicstyle=\small\fontfamily{LuxiMono}\selectfont%
+% ,backgroundcolor=\color{LightBlue!5!white}%
+% ,float
+,belowskip=0em%\smallskipamount%
+% ,aboveskip=\smallskipamount%
+% ,aboveskip=\bigskipamount%
+% ,belowskip=\bigskipamount%
+% ,abovecaptionskip=1em%
+% ,belowcaptionskip=-2em%
+% ,framesep=5em
+,upquote=false
+% ,inputencoding=OT1
+,extendedchars=true
+,escapechar=¬
+% ,basewidth=0.5em
+}
+% \def\lstlistingname{Code}
+\captionsetup[lstlisting]{position=below}
+
+\usepackage{numprint}
+\npthousandsep{\,}
+\npdecimalsign{.}
+% \usepackage{siunitx}
+\def\num#1{\numprint{#1}}
+
+
+% \usepackage{footmisc}%footref
+% \usepackage[symbol*]{footmisc}
+% \DefineFNsymbolsTM{myfnsymbols}{% def. from footmisc.sty "bringhurst" symbols
+	% \textasteriskcentered *
+	% \textdagger    \dagger
+	% \textdaggerdbl \ddagger
+	% \textsection   \mathsection
+	% \textbardbl    \|%
+	% \textparagraph \mathparagraph
+% }%
+% \setfnsymbol{myfnsymbols}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% defs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\newcolumntype{C}{>{$}c<{$}}
+\newcolumntype{L}{>{$}l<{$}}
+\newcolumntype{R}{>{$}r<{$}}
+
+\def\textsf#1{{\biolinum #1}}
+\def\ldots{...}
+% \def\ldots{…}
+
+% newcommand, not def now
+\def\scsf#1{\textsf{\textsc{#1}}}
+\newcommand{\dbl}{\texttt{double}\xspace}
+\newcommand{\flt}{\texttt{float}\xspace}
+\newcommand\largesimpletilde{\adforn{19}}
+\newcommand\largetilde{\adforn{18}}
+\newcommand\frob[2]{\left\langle#1, #2 \right\rangle}
+\newcommand\Zb{\mathbf{Z}}
+\newcommand\modring[1]{\ensuremath\Zb{/ #1\Zb}}
+\newcommand\gnuplot{\textsf{gnuplot}\xspace}
+\newcommand\linbox{\textsf{LinBox}\xspace}
+\newcommand\mul{\texttt{mul}\xspace}
+\newcommand\apply{\texttt{apply}\xspace}
+\newcommand\spmv{\textrm{SpMV}}
+\newcommand\cpp{\texttt{C++}\xspace}
+\newcommand\mari{\textsf{m4ri}\xspace}
+\newcommand\fgemm{\texttt{fgemm}\xspace}
+\newcommand\fflas{\scsf{Fflas}\xspace}
+\newcommand\ffpack{\scsf{Ffpack}\xspace}
+\newcommand\fflasffpack{\scsf{Fflas--Ffpack}\xspace}
+\newcommand\givaro{\textsf{Givaro}\xspace}
+\newcommand\applin{\textsf{BlackBox}\xspace}
+\newcommand{\cf}{\mbox{\emph{cf.}}\xspace}
+\newcommand{\eg}{\mbox{\emph{e.g.}}\xspace}
+\newcommand{\ie}{\mbox{\emph{i.e.}}\xspace}
+\newcommand{\etc}{\mbox{\emph{etc.}}\xspace}
+\newcommand{\vs}{\mbox{\emph{vs.}}\xspace}
+\newcommand{\adhoc}{\mbox{\emph{ad hoc.}}\xspace}
+\def\mailto#1{\href{mailto:#1}{#1}}
+\newcommand{\blas}{\scsf{Blas}\xspace}
+%JGD
+% \makeatletter
+% \def\@fnsymbol#1{\ensuremath{\ifcase#1\or \natural \or
+    % \mathparagraph\or \dagger\or \ddagger\or \mathsection\or \nshortmid
+    % \or \dagger\dagger \or \ddagger\ddagger \or \sharp \or
+   % \nshortparallel \or \lightning \or \oint \or \daleth \or \gimel
+   % \or \clubsuit \or
+   % \spadesuit \or\hearsuit \or \diamondsuit \else\@ctrerr\fi}}
+% \makeatother
+
+\newcommand\td{\textsuperscript{\textdagger}}
+\newcommand\tdd{\textsuperscript{\textdaggerdbl}}
+
+% \newtheorem{thm}{Theorem}
+% \crefname{thm}{theorem}{theorems}
+% \Crefname{thm}{Theorem}{Theorems}
+% \newtheorem{lem}{Lemma}
+% \crefname{lem}{lemma}{lemmas}
+% \Crefname{lem}{Lemma}{Lemmas}
+% \newtheorem{cor}{Corollary}
+% \crefname{cor}{corollary}{corollaries}
+% \Crefname{cor}{Corollary}{Corollaries}
+% \newtheorem{prop}{Proposition}
+% \crefname{prop}{proposition}{propositions}
+% \Crefname{prop}{Proposition}{Propositions}
+{%\theoremstyle{remark}
+% \newtheorem{remark}[prop]{Remark}
+% \crefname{remark}{remark}{remarks}
+% \Crefname{remark}{Remark}{Remarks}
+}
+{
+	% \theoremstyle{definition}
+% \newtheorem{defi}{Definition}
+% \crefname{defi}{definition}{definitions}
+% \Crefname{defi}{Definition}{Definitions}
+}
+
+

@@ -1,0 +1,13 @@
+{
+\small
+\begin{lstlisting}
+template<class _outVector, class _inVector>
+OutVector &apply (_outVector &y, const _inVector &x) const
+{
+	/* return _MD.vectorMul (y, *this, x); */
+	return blas3::mul(y, *this, x); // selects the best mul algorithm
+}
+\end{lstlisting}
+\lstcapt{Implantation d'\texttt{apply} sur un vecteur par solution
+\texttt{mul}.\label{code:applymul}}
+}

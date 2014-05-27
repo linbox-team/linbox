@@ -1,0 +1,194 @@
+\section{Containers architecture}\label{sec:container}
+%
+\linbox is mainly conceived around the RAII (Resource Acquisition Is
+Initialization, see \cite{stroustrup1994design}) concept with reentrant
+function. We also follow the {founding scope allocation} model (or \emph{mother
+model}) of \cite{Dumas:2010:lbpar} which ensures that the memory used by
+objects is allocated in the constructor and freed only at its destruction. The
+management of the memory allocated by an object is exclusively reserved to it.
+%
+\par
+%
+\linbox uses a variety of container types (representations) for matrix and vectors over fields and rings.
+The fragmentation of the containers into various matrix and
+blackbox types has been addressed and simplified. The many different matrix and
+vector types with different interfaces has been reduced into only two
+%(possibly essentially one in the future)
+containers: \texttt{Matrix} and
+\texttt{Vector}.
+%
+\subsection{General Interface for %Vectors and
+Matrices}
+%
+First, in order to allow operations on its elements, a container is
+parameterized by a field object (\Cref{code:clmat}), not the field's element
+type. This is simpler and more general.
+Indeed, the field element type can be inferred from a
+\verb!value_type! type definition within the field type.
+Then, the storage type is given by a second
+template parameter that can use defaults,
+\eg dense \blas matrices (stride
+and leading dimension or increment), or some sparse format.
+% what else can it be? It can default to other dense formats such as vectors of
+% rows or anything.
+%
+\input{Boyer_Brice/lst_container}
+%
+In the founding scope allocation model, we must distinguish containers that own (responsible for
+dynamically allocated memory) and containers that share memory of another.
+\texttt{SubMatrix} and \texttt{SubVector} types share the memory;
+\texttt{Matrix} and \texttt{Vector} own it.
+%
+All matrix containers share the common \applin  interface
+described in the next paragraphs, it accommodates both owner and sharer
+container types, and defines the minimal methods required for a
+template \applin matrix type:
+% \Cref{code:bb}.
+%
+% \input{Boyer_Brice/lst_applin}
+%
+% \begin{description}
+%
+	% \item[Input/Output.]
+\def\monitem#1{\par\textit{#1}\ }
+\monitem{Input/Output.}
+		Our matrix containers all read and write from Matrix Market
+		format\footnote{See \url{http://math.nist.gov/MatrixMarket/}.}
+		which is well established in the numerical linear algebra
+		community and facilitates sharing matrices with other software
+		tools.  The MatrixMarket header comment provides space for
+		metadata about the provenance of a matrix and our interest in
+		it.  However, because of our many entry domains and matrix
+		representations, extensions are necessary to the MatrixMarket
+		format.  For instance, the header comment records the modulus
+		and irreducible polynomial defining the representation of a
+		matrix over GF($p^e$).
+% we haven't committed to this as a MM variant, should we? bb: yes!..
+		We can further adapt the header to suit our needs, for instance
+		create new file formats that save space (\eg CSR fashion saves
+		roughly a third space over COO, \cf Harwell-Boeing format).
+		Structured matrices (Toeplitz, Vandermonde, \etc) can have file
+		representations specified.
+%
+\begin{comment}
+% setEntry is not universal to all blackboxes so skip for abstract
+	% \item[Accessing Elements.]
+		\monitem{Accessing Elements.}
+		The function \texttt{setEntry} can be
+		used to populate the matrix (from some \texttt{init()} until a
+		\texttt{finish()} is emitted).  The function \texttt{setEntry}
+		can be costly (for some sparse formats for instance)
+		% (\danger Dave, more words on the init/finish?)
+% so set entry should always build some COO or CSR and then
+% convert to the format.
+%
+		Other functions such as {\tt refEntry} (that retrieves a
+		writable reference to an entry) may be difficult to implement
+		or inefficient (compressed fields, sparse matrices);
+		\texttt{getEntry} may be specialized.
+		% , in all cases, there is a
+		% solution for this operation falling back to the {\tt apply}
+		% method.
+		% The function {\tt clearEntry} may be used to zero an entry and
+		% update the storage.
+		% (\danger setEntry to zero is sometimes
+		% buggy, is this a feature?)
+		%
+		% \par
+		%
+		Accessing (read or write) elements, rows or columns through
+		iterators, although handy, is not required because it can be
+		tricky to implement (compressed fields, hybrid or
+		recursive formats). Traits on matrices where efficient iterators
+		are available allow for their selections in some algorithms.
+\end{comment}
+		\begin{comment}
+		(\danger We cannot have {\tt const} iterators for all formats
+		(see hybrid), walking through a matrix in unspecified order can
+		be problematic, for instance, in an hom when a zero may
+		alter/change the representation. I don't understand hom more
+		than I understand init/rebind by the way, and I won't
+		understand it until the morphism is given/chooseable/enforced.
+		Rebind is really hom, so why is it in the interface anyway?
+		This is the same with getEntry. We don't require it because we
+		have a solution. Also, if apply is to be implemented via a
+		domain or {\tt mul}, we could stress it is in the interface for
+		convenience when writing code only. End of \danger)
+		\end{comment}
+%
+	% \item[Apply method.]
+		\monitem{Apply method.}
+		This is essential in the \applin interface (\Cref{ssec:apply,sec:matmul}).
+%
+	% \item[Rebind/Conversions.]
+		\monitem{Rebind/Conversions.}
+		In addition to the rebind mechanism (convert from one field to the other), we add
+%
+	 conversion mechanisms between formats, for instance all
+	 sparse matrix formats can convert to/from CSR format:  this `star'
+	 mechanism can simplify the code (to the expense of memory usage) and
+	 may speed it up when some central formats  are
+	 well tuned for some task.
+	 % Such tasks could be
+	 % read/write from a file for instance, or update the matrix.
+%
+% \end{description}
+	 % \paragraph{}
+	 \par
+%
+This is a common minimal interface to all our matrix containers that can be
+used by all algorithms.
+% Additional elements to a container can be added, and flagged
+% with a trait.
+This interface provides the basic {\em external}
+functionality of a matrix as a
+ ``linear mapping'' (black box).
+This interface is shared by: \emph{dense}
+containers (\blas-like,\ldots); \emph{permutation} containers (compressed
+\scsf{Lapack} or cycle representation); \emph{sparse} containers (based on
+common formats or on STL containers such as {\tt map}, {\tt deque},\ldots);
+\emph{structured} containers ({\tt Diagonal}, {\tt Hankel}, {\tt Butterfly},\ldots);
+\emph{compound} containers ({\tt Compose}, {\tt Submatrix},\ldots).
+Additional functions of a container can be added, and flagged with a trait, for
+example those that support internal changes as for Gaussian elimination.
+%
+\subsection{The \texttt{apply} method}\label{ssec:apply}
+%
+% We will discuss the \texttt{apply} function in \Cref{sec:apply}.
+% Both vec/mat
+%
+\par
+%
+The \texttt{apply} method (left or right) is arguably the most important
+feature in the matrix interface and the \linbox library. It performs what a
+linear application is defined for: apply to a vector (and by extension  a block
+of vectors, \ie a matrix).
+%
+\par
+%
+We propose the new interface (\Cref{code:apply}), where {\tt \_In} and {\tt
+\_Out} are vector or matrices, and {\tt Side} is {\tt Tag::Right} or
+{\tt Tag::Left}, whether the operation $y \gets A^{\top} x$ or  $y \gets A x$ is
+performed. We also generalize to the operation $y \gets \alpha A x + \beta y$.
+% as it is often handy and efficient to allow for accumulation.
+%
+\input{Boyer_Brice/lst_apply}
+%
+This method is fundamental as it is the building block of the \applin
+algorithms (for instance block-Wiedemann) and as the matrix
+multiplication, main operation in linear algebra, needs to be extremely efficient (\Cref{sec:matmul}).
+%
+%
+% \par
+%
+The implementation of the apply method can be left to a \mul solution,
+which can include a helper/method argument if the apply
+parameters are specialized enough.
+%
+% \Cref{code:applymul}.
+%
+% Usually,  the {\tt apply} method for
+% containers is strongly dependent on the representation of the matrix. In
+% the case of Hybrid containers, it will simply be calls to the {\tt apply}
+% method of the children.
+%
