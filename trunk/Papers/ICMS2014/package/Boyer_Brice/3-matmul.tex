@@ -1,0 +1,174 @@
+\section{Improving \linbox matrix multiplication}\label{sec:matmul}
+%
+We propose a \emph{design pattern} (the closest pattern to our knowledge is the
+\emph{strategy} one, see \cite[Fig 2.]{Cung:2006:TC}) in \Cref{ssec:plugin} and
+we show a variety of new algorithms where it is used in the \mul  solution
+(\Cref{ssec:algmul}).
+%
+\subsection{Plugin structure}\label{ssec:plugin}
+%
+We propose in \Cref{fig:diag:patt} a generalization of the \emph{strategy
+  design pattern} of \cite[Fig 2.]{Cung:2006:TC}, where distinct
+algorithms (modules) can solve the
+same problem and are combined, recursively, by a controller.
+The main advantage of our pattern is that the modules always call
+the controller of a function so that the best version will be chosen
+at each level.
+% Besides modules can be easily added as \emph{plugins}.
+An analogy can be drawn with dynamic systems --- once the controller sends a
+correction to the system, it receives back a new measure that allows for a new
+correction.
+%
+\par
+\input{Boyer_Brice/fig_control}
+%
+%
+%
+%
+For instance, we can write (\Cref{fig:seuil}) the standard cascade algorithms
+(see \cite{Dumas:2008:Flas}) in that model. Cascade algorithms are used to combine
+several algorithms that are switched using thresholds, ensuring better
+efficiency than that of any of the algorithms individually.
+%
+% \par
+%
+%
+This method allows for the reuse of modules and ensures efficiency.
+It is then possible to adapt to the architecture, the available modules,
+the resources. The only limitation is that the choice of module
+must be fast.
+%
+% \par
+%
+On top of this design, we have Method objects that allow caller selection
+of preferred algorithms, shortcutting the strategy selection.
+%
+\input{Boyer_Brice/fig_cascade}
+% \par
+%
+% \danger timing old fgemm/plugin fgemm with no noticeable change ?
+%
+\par
+%
+This infrastructure supports modular code. For instance,
+\fflasffpack has seen major  modularization (addition, scaling,
+reduction,\ldots) Not only does it enable code to be hardly longer than
+the corresponding pseudocode listings, \cite{Boyer:2009:sched}, (compared to
+$\approx 2.5\times$ on some routines before) but it also automatically brings
+performance, because we can separately improve individual modules and
+immediately have the benefit throughout the whole library.
+%% following could be in, but perhaps cut now for reducing to 8 pages
+%Also, this reduces the lines of code, hence the
+%probability for bugs, eases their tracing/tracking, and allows for more
+%unit tests. Modularizing the code comes at almost no cost because we may add
+%$O(1)$  operations that: Do not cost much compared to $O(n^2)$ or more
+%complexity of the modules; Allow early decisions and terminations (\eg by
+%testing against $0$, $\pm 1$, checking leading dimensions or increments);
+%Allow better code (AVX, SSE, copy--cache friendly operation--copy back,
+%representation switching,\ldots)
+%
+\subsection{New algorithms for the \mul solution}\label{ssec:algmul}
+%
+New algorithms and techniques improve on matrix multiplication
+in several  ways: reducing memory consumption, reducing runtime,
+using graphics capabilities, generalizing the \blas to integer
+routines.
+%
+\def\monitem#1{\par \textit{#1}\ }
+\monitem{Reduced memory.}
+%
+The routine \fgemm in \fflas uses by default the classic schedules for the multiplication
+and the product with accumulation (\cf \cite{Boyer:2009:sched}), but we also
+implement the low memory routines therein. The new algorithms are competitive
+and can reach sizes that were limiting.
+%
+% \par
+%
+One difficulty consists in using the memory contained in a submatrix of
+the original matrix, that one cannot free or reallocate.
+%
+\monitem{Using Bini's approximate formula.}
+%
+In \cite{BD:2014:Bini}, we use Bini's approximate matrix multiplication formula
+to derive a new algorithms that is more efficient that the Strassen--Winograd
+implementation in \fgemm by $\approx 5-10\%$ on sizes \num{1500}--\num{3000}.
+This is a cascade of Bini's algorithm and Strassen--Winograd algorithm and/or
+the naïve algorithm (using \blas). The idea is to analyze precisely the error
+term in the approximate formula and make it vanish.
+%
+\monitem{Integer \blas.}
+%
+In order to provide fast matrix multiplication with multiprecision integers, we
+rely on multimodular approach through the Chinese remainder theorem. Our
+approach is to reduce as much as possible to \fgemm. Despite, the existence of
+fast multimodular reduction (resp.\ reconstruction) algorithm
+\cite{VonzurGathen:1999:MCA}, the naive quadratic approach can be reduced to
+\fgemm which makes it more efficient into practice.  Note that providing
+optimized fast multimodular reduction remains challenging. This code is
+directly integrated  into \fflas.
+
+%
+\monitem{Polynomial Matrix Multiplication over small prime fields.}
+%
+The situation is similar to integer matrices since one can use
+evaluation/interpolation techniques through DFT transforms. However, the
+optimized Fast Fourier Transform of \cite{Harvey:2014}  makes fast evaluation
+(resp.\ interpolation) competitive into practice. We thus rely on this scheme
+together with \fgemm for pointwise matrix multiplications. One can find some
+benchmark of our code in \cite{GioLeb14}.
+%
+\monitem{Sparse Matrix--Vector Multiplication.}
+%
+For sparse matrices a main issue is that the notion of \emph{sparsity}
+is too general \vs the specificity of real world sparse matrices: the
+algorithms have to adapt to the shape of the sparse matrices.
+%
+There is a huge literature from numerical linear algebra  on \spmv (Sparse
+Matrix Vector multiplication) and on sparse matrix formats, some of which are
+becoming standard (COO, CSR, BCSR, SKY,\ldots).  In \cite{Boyer:2010:spmv} we
+developed some techniques to improve the \spmv operation in \linbox. Ideas
+include the separation of the $\pm 1$ for removing multiplications, splitting
+in a sum (HYB for hybrid format) of sparse matrix  whose formats are
+independent and using specific routines. For instance, on $\modring{p}$ with
+word size $p$, one can split the matrix ensuring no reduction is needed  in the
+dot product and call Sparse \blas (from Intel \textsf{MKL} or Nvidia
+\textsf{cuBLAS} for instance) on each matrix. One tradeoff is as usual between
+available memory, time spent on optimizing \vs time spent on \apply, and all
+the more so because we allow the concurrent storage of the transpose in an
+optimized fashion, usually yielding huge speedups. This can be decided by
+\adhoc optimizers.
+% Helper structure to store a matrix as a sum of structures (HYB), possibly the
+%
+%\monitem{Parallelization}
+\par
+Work on parallelizations using \textsf{OpenCL}, \textsf{OpenMP} or
+\textsf{XKaapi} for dense or sparse matrix multiplication include
+\cite{Boyer:2010:spmv,WST12,DGPZ14}.
+
+\begin{comment} % taken for length reduction
+\paragraph{}
+These state-of-the-art algorithms, often interdependent, need to be selected
+by the \mul solution, possibly using a Method/Helper parameter. The
+Controller/Module model works particularly well here: cascading, switch
+methods, algorithms selection is made easy. Besides, the choosing of a
+particular algorithms or base case is never settled in advance: the library has
+to be tuned wrt. available libraries, local performance of these libraries.
+\end{comment}
+
+\begin{comment}
+\monitem{Using conversions}
+\begin{itemize}
+	\item
+ double->float
+	\item
+ using flint for integer matmul is faster, even with conversion. Need better CRA implementation (but with the plugins, we can do without our faulty code and just use flint).
+	\item
+ implementation of Toom-Cook for GF(q)
+	\item
+ when does spmv choose to optimize ?
+	\item
+ transition to benchmarking
+\end{itemize}
+%
+\danger dave some words on the Domain architecture that you support and why it is best than functions (for instance for mul or apply) ?
+\end{comment}

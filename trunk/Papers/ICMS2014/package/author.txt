@@ -1,0 +1,13 @@
+First author's          Family Name  :  
+First author's          Given  Name  :
+ 
+Corresponding author's  Family Name  :
+Corresponding author's  Given  Name  :
+Corresponding author's  Email address:
+
+-----------
+Definitions
+-----------
+First author         : the author whose name appears first in the extended abstract.
+Corresponding author : the author who will communicate with the publisher.
+ 

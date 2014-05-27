@@ -1,0 +1,44 @@
+\begin{figure}[h]
+	\vspace{-1em}
+	\small
+        \hfil
+	\begin{minipage}[t]{0.45\textwidth}
+                \begin{algorithm}[H]
+                        \caption{\texttt{Algo}: controller}
+                        \label{alg:controle}
+                        \KwIn{$A$ and $B$, dense, with resp. dimensions $n\times
+                        k$ and $k\times n$.}
+			\KwIn{$H$ Helper}
+                        \KwOut{$C = A\times B$}
+			\eIf{$\mathrm{min}(m,k,n)<H.{\tt threshold}()$}{
+				% {\tt BaseCase} K() ; \\
+				{\tt Algo}(C,A,B,{\tt BaseCase}()) ; %\tcc{\small{\color{gray}fast BLAS}}
+			}
+			{
+				% {\tt RecursiveCase} H() ; \\
+				{\tt Algo}(C,A,B,{\tt RecursiveCase}())
+			}
+			% \KwRet C \;
+                \end{algorithm}
+        \end{minipage}
+        \hfil
+	\begin{minipage}[t]{0.49\textwidth}
+                \begin{algorithm}[H]
+                        \DontPrintSemicolon
+                        \caption{\texttt{Algo}: recursive module}
+                        \label{alg:action}
+                        \KwIn{$A$, $B$, $C$ as in controller.}
+			\KwIn{$H$, {\tt RecursiveCase} Helper}
+                        \KwOut{$C = A\times B$}
+                        Cut $A$,$B$,$C$ in $S_i, T_i$\;
+                        \ldots \;
+                        $P_i = \mathtt{Algo}(S_i,T_i,H)$ \;
+                        \ldots \;
+			% \KwRet C \;
+                \end{algorithm}
+        \end{minipage}
+        \hfil
+        \caption{Conception of a recursive controlled algorithm}
+        \label{fig:seuil}
+	\vspace{-2em}
+\end{figure}
