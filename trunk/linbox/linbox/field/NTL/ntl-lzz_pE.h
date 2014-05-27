@@ -129,15 +129,15 @@ namespace LinBox
 			NTL_zz_pE_Initialiser(p,k),Father_t ()
 			//,zero( NTL::to_zz_pE(0)),one( NTL::to_zz_pE(1)),mOne(-one)
 
-		{	init(const_cast<Element &>(zero), 0); 
-		 	init(const_cast<Element &>(one), 1); 
-		 	init(const_cast<Element &>(mOne), p-1); 
-			
+		{	init(const_cast<Element &>(zero), 0);
+		 	init(const_cast<Element &>(one), 1);
+		 	init(const_cast<Element &>(mOne), p-1);
+
 			/*
 			NTL::clear(const_cast<Element &>(zero));
 			NTL::set(const_cast<Element &>(one));
-			init(const_cast<Element &>(mOne)); 
-			neg(const_cast<Element &>(mOne), one);  
+			init(const_cast<Element &>(mOne));
+			neg(const_cast<Element &>(mOne), one);
 			*/
 		}
 
@@ -168,12 +168,12 @@ namespace LinBox
 		NTL::zz_pX & init(NTL::zz_pX & f, integer n, int e) const
 		{	long base = characteristic();
 			NTL::zz_pX x; SetCoeff(x, 1);
-			if ( n != 0 and e > 0 ) 
+			if ( n != 0 and e > 0 )
 				f = n%base + x*init(f, n/base, e-1);
 			return f;
 		}
 
-		Element & init(Element & x, integer n = 0) const 
+		Element & init(Element & x, integer n = 0) const
 		{   // assumes n >= 0.
 			int e = exponent();
 			n %= cardinality();
@@ -208,7 +208,7 @@ namespace LinBox
 
 		int exponent() const
 		{
-			return NTL::zz_pE::degree();
+			return (int) NTL::zz_pE::degree();
 		}
 
 		integer cardinality() const
@@ -216,7 +216,7 @@ namespace LinBox
 			int e = exponent();
 			long p = characteristic();
 		    integer c(1);
-			for(int i = 0; i < e; ++i) 
+			for(int i = 0; i < e; ++i)
 				c *= p;
 			return c;
 		}
