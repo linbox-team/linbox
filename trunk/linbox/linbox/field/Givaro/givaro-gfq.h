@@ -239,10 +239,8 @@ namespace LinBox
 		}
 
 		/** Conversion of field base Element to an integer.
-		 * This function assumes the output field base Element x has already been
-		 * constructed, but that it is not already initialized.
-		 * @return reference to an integer.
-		 * @param x integer to contain output (reference returned).
+		 * @return reference to x.
+		 * @param x integer to contain output 
 		 * @param y constant field base Element.
 		 */
 		integer& convert(integer& x, const Element& y) const

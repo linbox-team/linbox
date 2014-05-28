@@ -221,6 +221,8 @@ namespace LinBox
 			return c;
 		}
 
+		static inline integer getMaxModulus()
+        { return NTL_zz_p::getMaxModulus(); }
 
 
 		Element& inv(Element& x, const Element& y) const

@@ -180,11 +180,68 @@ namespace LinBox
 				mOne.matrix->setEntry(i,i,_field.mOne);
 		}
 
-		Element& init(Element& B) const
-		{
-			// B is garbage from memory
+		/* n < cardinality goes to embedding of entry field as diagonals.  
+		   In particular, 
+		   n < characteristic goes to embedding of prime field as diagonals.
+		*/
+		Element& init(Element& B, integer n = 0) const
+		{	integer base; _field.cardinality(base);
 			B.set(new Matrix(_field,_b,_b));
+			typename Element::Entry a, c;
+			_field.init(c, n%base);
+			for (size_t i = 0 ;i < _b ;++i)
+				B.matrix->setEntry(i,i,c);
+			for (size_t i = 0; i < _b; ++i)
+			{	for (size_t j = 0; j < i; ++j, n /= base)
+				{	_field.init(a, n%base);
+					(B.matrix)->setEntry(i,j,a); 
+				}
+				if (i > 0) 
+				{
+					_field.init(a, n%base);
+					_field.addin(a, c);
+					(B.matrix)->setEntry(i,i,a); 
+				}
+				for (size_t j = i+1; j < _b; ++j, n /= base)
+				{	_field.init(a, n%base);
+					(B.matrix)->setEntry(i,j,a); 
+				}
+			}
 			return B;
+		}
+
+		/* 
+			(A, B | C, A+D) -> a + b*q + c*q^2 + d*q^3, 
+			where q is entry field cardinality, and x is conversion of X.
+			In particular, (A, 0 | 0, A) -> a
+		*/
+		integer& convert(integer& x, const Element &A) const
+		{	x = 0; integer pow, d, base;
+			typename Element::Entry a, c; _field.init(a);
+			_field.cardinality(base);
+			(A.matrix)->getEntry(c,0,0); 
+			_field.convert(x, c);
+			pow = base;
+		
+			for (size_t i = 0; i < _b; ++i)
+			{	for (size_t j = 0; j < i; ++j)
+				{	(A.matrix)->getEntry(a,i,j); 
+					_field.convert(d, a);
+					x += d*pow; pow *= base;
+				}
+				if (i > 0)
+				{	(A.matrix)->getEntry(a,i,i); 
+					_field.subin(a, c);
+					_field.convert(d, a);
+					x += d*pow; pow *= base;
+				}
+				for (size_t j = i+1; j < _b; ++j)
+				{	(A.matrix)->getEntry(a,i,j); 
+					_field.convert(d, a);
+					x += d*pow; pow *= base;
+				}
+			}
+			return x;
 		}
 
 		template <typename ints>
