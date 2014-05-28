@@ -20,13 +20,13 @@
  * ========LICENCE========
  *.
  *
- * Extracted by bds from test-generic.h, written by Bradford Hovinen <hovinen@cis.udel.edu>
+ * Extracted and evolved by bds from test-generic.h, written by Bradford Hovinen <hovinen@cis.udel.edu>
  */
 
 /*! @file tests/test-field.h
  * @ingroup tests
- * @brief tests field operations
- * @test  tests field operations
+ * @brief tests ring and field operations
+ * @test  tests ring and field operations
  */
 
 /*
@@ -45,6 +45,10 @@ bool testGeometricSummation
 bool testRingArithmeticConsistency
 bool testAxpyConsistency
 bool testRanditerBasic
+
+// top level runPIRTests calls these field_subtests after runBasicRingTests.
+bool testFieldCommutativity
+...
 
 // top level runFieldTests calls these field_subtests after runBasicRingTests.
 bool testFieldInversion
@@ -76,10 +80,7 @@ bool testRingTrivia
 /* Modular exponentiation */
 using namespace std;
 
-// LinBox::Commentator commentator(std::cout);
-
 using LinBox::commentator ;
-
 
 template <class Field>
 typename Field::Element& expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n)
@@ -129,42 +130,42 @@ template<class Field>
 bool testField (Field &F, const char *title, bool fieldp = true)
 {
 	commentator().start (title, "testField", 5);
-	// ostream &report = std::cout ;
 	ostream &report = commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-	LinBox::integer q;
-	F.characteristic(q);
+	LinBox::integer p, q;
+	F.characteristic(p);
+	F.cardinality (q);
 	
 	typename Field::Element zero, one, mOne, two, mTwo, three, five, six, eight;
-	F.init(zero, 0); F.init(one, 1); 
+	F.init(zero, 0); 
+	F.init(one, 1); 
+	F.init(mOne); F.neg(mOne,one);
+
 	
-	if (q > 0)
+	if (p > 0)
 	{
-		F.init(two, 2 % q);
-		F.init(mTwo, q - 2);
-		F.init(three, 3 % q);
-		F.init(five, 5 % q);
-		F.init(six, 6 % q);
-		F.init(eight, 8 % q);
+		F.init(two, 2 % p);
+		F.init(mTwo, p - 2);
+		F.init(three, 3 % p);
+		F.init(five, 5 % p);
+		F.init(six, 6 % p);
+		F.init(eight, 8 % p);
 	}
 	else
 	{
 		F.init(two, 2);
-		F.init(mTwo, -2);
+		F.init(mTwo, 2); F.negin(mTwo);
 		F.init(three, 3);
 		F.init(five, 5);
 		F.init(six, 6);
 		F.init(eight, 8);
 	}
 		
-	F.init(mOne);
-	F.neg(mOne,one);
-
 	typename Field::Element a, b, c, d, e, f;
 	F.init(a,0); F.init(b,0); F.init(c,0); F.init(d,0); F.init(e,0); F.init(f,0);
 
-
 	report << " (Field self description: " << F.write (report) << ')' << endl;
+	report << "Field characteristic: " << p << endl;
 	//	report << "field Element 2: " << F.write (report, two) << endl;
 
 	LinBox::integer n, m;
@@ -172,10 +173,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 	commentator().start ("\t--Testing characteristic/cardinality match");
 
-	F.characteristic (n);
-	F.cardinality (m);
-
-	if (n > 0 && m > 0 && !isPower (m, n)) part_pass = reportError("Characteristic, cardinality mismatch", pass);
+	if (p > 0 && q > 0 && !isPower (q, p)) part_pass = reportError("Characteristic, cardinality mismatch", pass);
 
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
@@ -208,13 +206,14 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 		part_pass = reportError( "isMOne (-One) is false", pass);
 	}
 
-	typename Field::Element mOneFromCst;
-    F.init(mOneFromCst, -1);
+	if (p > 0) {
+		typename Field::Element mOneFromCst;
+		F.init(mOneFromCst, p-1);
 
-    if ( !F.areEqual(F.mOne,mOneFromCst)) {
-		// std::cout << F.mOne << "," << mOneFromCst << std::endl;
-		part_pass = reportError( "isMOne (-1) is false", pass);
-    }
+		if ( !F.areEqual(F.mOne,mOneFromCst)) {
+			part_pass = reportError( "isMOne (p-1) is false", pass);
+		}
+	}
 
 
 	commentator().stop (MSG_STATUS (part_pass));
@@ -223,18 +222,28 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	commentator().start ("\t--Testing init/convert");
 	part_pass = true;
 
-	if (F.cardinality (m) <= 0)
+#if 0  
+	// test of 0..card bijection
+	typename Field::RandIter r (F);
+	r.random(a);
+	F.write ( report << "Initial Elt to convert: ", a) << endl;
+	F.convert(n, a);
+	report << "Result of convert: " << n << endl;
+	F.init(b, n);
+	F.write ( report << "Result of init: ", b) << endl;
+	if (not F.areEqual(a, b)) part_pass = reportError( "F.init (b, F.convert(n, a)) != a", pass);
+
+#endif
+	// test of prime subfield bijection
+	if (q <= 0)
 		n = 49193295;   // Just using some odd value
 	else
-		n = n/2-1;
-	if (!n) ++n;
-
-
+		n = rand()%p;
+	if (n==0) ++n;
 	report << "Initial integer: " << n << endl;
-	F.init (a, n);  F.write ( report << "Result of init: ", a) << endl;
 
-	F.convert (m, a);
-	report << "Result of convert: " << m << endl;
+	F.init (a, n);  F.write ( report << "Result of init: ", a) << endl;
+	F.convert (m, a); report << "Result of convert: " << m << endl;
 
 	if (m != n) part_pass = reportError( "F.convert (m, F.init (a, n)) != n", pass);
 
@@ -254,6 +263,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.neg (a, two); F.write (report << "Result of -2: ", a) << endl;
 	F.assign (d, two);
 	F.negin (d); F.write (report << "Result of -2 (inplace): ", d) << endl;
+//F.write( report << "-2 mTwo: ", mTwo) << endl;
 	F.assign (f, mTwo); F.write( report << "-2 via init: ", f) << endl;
 
 	if (!F.areEqual (a, f) || !F.areEqual (d, a))
@@ -314,9 +324,9 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.subin (a, one);
 	F.write( report << "using expt, 2^101 - 1: ", a) << endl;
 
-	for (int i = 1; i <= 101; ++i) {
-		F.addin (c, b);
-		F.mulin (b, two);
+	for (int i = 0; i < 101; ++i) {
+		F.mulin(c, two);
+		F.addin (c, one);
 	}
 
 	F.write( report << "using sum, 1 + 2 + .. + 2^100: ", c) << endl;
@@ -353,7 +363,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 }
 
 
-/** Tests of algebraic properties of fields */
+/** Tests of algebraic properties of rings and fields */
 
 namespace field_subtests {
 	/* Generic test 6: Negation of elements
@@ -1217,9 +1227,9 @@ namespace field_subtests {
 	}
 } // namespace field_subtests
 
-/* Convenience function to run all of the field tests on a given field */
-template <class Field>
-bool runBasicRingTests (const Field &F, const char *desc, unsigned int iterations, bool runCharacteristicTest = true)
+/* Convenience function to run all of the basic ring tests */
+template <class Ring>
+bool runBasicRingTests (const Ring &F, const char *desc, unsigned int iterations, bool runCharacteristicTest = true)
 {
 	bool pass = true;
 	ostringstream str;

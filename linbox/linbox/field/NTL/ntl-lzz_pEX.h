@@ -23,48 +23,49 @@
  * ========LICENCE========
  */
 
-/*! @file field/NTL/ntl-lzz_pX.h
+/*! @file field/NTL/ntl-lzz_pEX.h
  * @ingroup field
  * @ingroup NTL
  * @brief NO DOC
  */
 
-#ifndef __LINBOX_field_ntl_lzz_px_H
-#define __LINBOX_field_ntl_lzz_px_H
+#ifndef __LINBOX_field_ntl_lzz_pEX_H
+#define __LINBOX_field_ntl_lzz_pEX_H
 
 #ifndef __LINBOX_HAVE_NTL
 #error "you need NTL here"
 #endif
 
 #include <vector>
-#include <NTL/lzz_pX.h>
+#include <NTL/lzz_pEX.h>
 
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
 #include "linbox/field/unparametric.h"
-#include "linbox/field/NTL/ntl-lzz_p.h"
+#include "linbox/field/NTL/ntl-lzz_pE.h"
 #include "linbox/integer.h"
 
 
 // Namespace in which all LinBox code resides
 namespace LinBox
 {
-	class NTL_zz_pX_Initialiser {
+	class NTL_zz_pEX_Initialiser {
 	public :
-		NTL_zz_pX_Initialiser( const Integer & q, size_t e = 1) {
-			linbox_check(e == 1);
+		NTL_zz_pEX_Initialiser( const Integer & q, size_t e = 1) {
 			if ( q > 0 )
-				NTL::zz_p::init(q); // it's an error if q not prime, e not 1
+				NTL::zz_p::init(q); // it's an error if q not prime
+			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((long) e);
+			NTL::zz_pE::init(irredPoly); 
 		}
 
 		// template <class ElementInt>
-		// NTL_zz_pX_Initialiser(const ElementInt& d) {
+		// NTL_zz_pEX_Initialiser(const ElementInt& d) {
 			// NTL::ZZ_p::init (NTL::to_ZZ(d));
 		// }
 
-		NTL_zz_pX_Initialiser () { }
+		NTL_zz_pEX_Initialiser () { }
 
 	};
 
@@ -74,16 +75,16 @@ namespace LinBox
 	 * Coeff (type), CoeffField (type), getCoeffField, setCoeff, getCoeff,
 	 * leadCoeff, deg
 	 */
-	class NTL_zz_pX :  public NTL_zz_pX_Initialiser, public FFPACK::UnparametricOperations<NTL::zz_pX> {
+	class NTL_zz_pEX :  public NTL_zz_pEX_Initialiser, public FFPACK::UnparametricOperations<NTL::zz_pEX> {
 	public:
-		typedef NTL::zz_pX Element ;
+		typedef NTL::zz_pEX Element ;
 		typedef FFPACK::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
 
-		typedef NTL_zz_p CoeffField;
-		typedef NTL::zz_p Coeff;
-		// typedef NTL::zz_pX Element;
+		typedef NTL_zz_pE CoeffField;
+		typedef NTL::zz_pE Coeff;
+		// typedef NTL::zz_pEX Element;
 
 		const Element zero,one,mOne ;
 
@@ -91,17 +92,17 @@ namespace LinBox
 		/** Standard LinBox field constructor.  The paramters here
 		 * (prime, exponent) are only used to initialize the coefficient field.
 		 */
-		NTL_zz_pX( const integer& p, size_t e = 1 ) :
-			// UnparametricField<NTL::zz_pX>(p, e), _CField(p,e)
-			NTL_zz_pX_Initialiser(p,e),Father_t ()
-			, zero( NTL::to_zz_pX(0)),one( NTL::to_zz_pX(1)),mOne(-one)
+		NTL_zz_pEX( const integer& p, size_t e = 1 ) :
+			// UnparametricField<NTL::zz_pEX>(p, e), _CField(p,e)
+			NTL_zz_pEX_Initialiser(p,e),Father_t ()
+			, zero( NTL::to_zz_pEX(0)),one( NTL::to_zz_pEX(1)),mOne(-one)
 			, _CField(p,e)
 		{}
 
 		/** Constructor from a coefficient field */
-		NTL_zz_pX( CoeffField cf ) :
-			NTL_zz_pX_Initialiser(cf.cardinality()),Father_t ()
-			,zero( NTL::to_zz_pX(0)),one( NTL::to_zz_pX(1)),mOne(-one)
+		NTL_zz_pEX( CoeffField cf ) :
+			NTL_zz_pEX_Initialiser(cf.cardinality()),Father_t ()
+			,zero( NTL::to_zz_pEX(0)),one( NTL::to_zz_pEX(1)),mOne(-one)
 			,_CField(cf)
 		{}
 
@@ -112,23 +113,26 @@ namespace LinBox
 		{
 			p = 0;
 			integer base;
+			Coeff a;
 			_CField.cardinality(base);
 			for (int i = 0; n > 0; n /= base, ++i)
-				NTL::SetCoeff( p, i, n%base );
+			{
+			    _CField.init(a, n%base);
+				NTL::SetCoeff( p, i, a );
+			}
 			return p;
 		}
 
 		integer& convert( integer& n, Element& p ) const
 		{
 			integer base;
-			Coeff x; integer a;
+			integer d;
 			_CField.cardinality(base);
 			n = 0;
 			for (int i = deg(p); i >= 0; --i)
 			{
 				n *= base;
-				NTL::GetCoeff(x, p, i );
-				n += _CField.convert(a, x); 
+				n += _CField.convert(d, NTL::coeff(p, i)); 
 			}
 			return n;
 		}
@@ -352,14 +356,14 @@ namespace LinBox
 		{ return c = static_cast<integer>(-1); }
 
 		static inline integer getMaxModulus()
-		{ return CoeffField::getMaxModulus(); }
+		{ return NTL_zz_p::getMaxModulus(); }
 		/** Write a description of the field */
 		// Oustide of class definition so write(ostream&,const Element&) from
 		// UnparametricField still works.
 
 		std::ostream& write( std::ostream& os ) const
 		{
-			return os << "Polynomial ring using NTL::zz_pX";
+			return os << "Polynomial ring using NTL::zz_pEX";
 		}
 		std::ostream& write( std::ostream& os, const Element& x) const
 		{	return Father_t::write(os, x); }
@@ -375,7 +379,7 @@ namespace LinBox
 
 	protected:
 		CoeffField _CField;
-	}; // end of class NTL_zz_pX
+	}; // end of class NTL_zz_pEX
 
 
 
@@ -384,15 +388,15 @@ namespace LinBox
 	struct ClassifyRing;
 
 	template<>
-	struct ClassifyRing<UnparametricRandIter<NTL::zz_pX> > {
+	struct ClassifyRing<UnparametricRandIter<NTL::zz_pEX> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	template<>
-	class UnparametricRandIter<NTL::zz_pX> {
+	class UnparametricRandIter<NTL::zz_pEX> {
 	public:
-		typedef NTL::zz_pX Element;
-		UnparametricRandIter<NTL::zz_pX>(const NTL_zz_pX & F ,
+		typedef NTL::zz_pEX Element;
+		UnparametricRandIter<NTL::zz_pEX>(const NTL_zz_pEX & F ,
 						 const size_t& size = 0,
 						 const size_t& seed = 0
 						) :
@@ -404,7 +408,7 @@ namespace LinBox
 				NTL::SetSeed(NTL::to_ZZ(_seed));
 		}
 
-		UnparametricRandIter<NTL::zz_pX>(const UnparametricRandIter<NTL::zz_pX>& R) :
+		UnparametricRandIter<NTL::zz_pEX>(const UnparametricRandIter<NTL::zz_pEX>& R) :
 			_size(R._size), _seed(R._seed)
 
 		{
@@ -427,7 +431,7 @@ namespace LinBox
 
 } // end of namespace LinBox
 
-#endif // __LINBOX_field_ntl_lzz_px_H
+#endif // __LINBOX_field_ntl_lzz_pEX_H
 
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

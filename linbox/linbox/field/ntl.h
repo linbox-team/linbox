@@ -39,10 +39,11 @@
 #include "linbox/field/NTL/ntl-ZZ_p.h"
 #include "linbox/field/NTL/ntl-ZZ.h"
 #include "linbox/field/NTL/ntl-ZZ_pX.h"
+#include "linbox/field/NTL/ntl-ZZ_pE.h"
 #include "linbox/field/NTL/ntl-lzz_p.h"
 #include "linbox/field/NTL/ntl-lzz_pX.h"
-#include "linbox/field/NTL/ntl-ZZ_pE.h"
 #include "linbox/field/NTL/ntl-lzz_pE.h"
+#include "linbox/field/NTL/ntl-lzz_pEX.h"
 #include "linbox/field/NTL/ntl-GF2E.h"
 
 

@@ -138,7 +138,8 @@ namespace LinBox
 		using Father_t ::init;
 		inline Element &init (Element &x, const integer &y) const
 		{
-			x = Element (y % lmodulus);
+		//	x = Element (y % lmodulus);
+			x = Element (y % modulus);
 			if (x < 0) x += modulus;
 			return x;
 		}

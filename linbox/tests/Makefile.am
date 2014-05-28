@@ -202,6 +202,8 @@ NTL_TESTS =                           \
         test-smith-form               \
         test-ntl-lzz_p                \
         test-ntl-lzz_pE                \
+        test-ntl-lzz_pX                \
+        test-ntl-lzz_pEX                \
         test-ntl-ZZ_p                 \
         test-ntl-toeplitz             \
         test-ntl-hankel               \
@@ -521,6 +523,14 @@ test_ntl_lzz_p_SOURCES =                \
 
 test_ntl_lzz_pE_SOURCES =                \
         test-ntl-lzz_pE.C                \
+        test-field.h
+
+test_ntl_lzz_pX_SOURCES =                \
+        test-ntl-lzz_pX.C                \
+        test-field.h
+
+test_ntl_lzz_pEX_SOURCES =                \
+        test-ntl-lzz_pEX.C                \
         test-field.h
 
 test_givaro_fields_SOURCES =                \

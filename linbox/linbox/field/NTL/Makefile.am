@@ -27,10 +27,11 @@ NTL_HDRS =              \
     ntl-ZZ_p.h          \
     ntl-ZZ_pE.h         \
     ntl-ZZ_pX.h         \
-    ntl-lzz_p.h         \
     ntl-ZZ.h            \
+    ntl-lzz_p.h         \
     ntl-lzz_pE.h        \
     ntl-lzz_pX.h        \
+    ntl-lzz_pEX.h       \
     ntl-GF2E.h
 
 
