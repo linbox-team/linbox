@@ -65,15 +65,15 @@ using namespace LinBox;
 /* Test 0: Minimal polynomial of the zero matrix
 */
 template <class Field, class Meth>
-static bool testZeroMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& M)
+static bool testZeroMinpoly (Field &F, size_t n, const Meth& M)
 {
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	commentator().start ("Testing zero minpoly", "testZeroMinpoly");
 	typedef BlasVector<Field> Polynomial;
 	Polynomial phi(F);
 	SparseMatrix<Field> A(F, n, n);
 	minpoly(phi, A, M);
 
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
         A.write(report, Tag::FileFormat::Maple);
 	report << "Minimal polynomial is: ";
 
@@ -84,19 +84,13 @@ static bool testZeroMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& 
 		ret = true;
 	else
 	{
-		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: A = 0, should get x, got ";
+		report << "ERROR: A = 0, should get x, got ";
 		printPolynomial<Field, Polynomial> (F, report, phi);
 		report << endl;
 		ret = false;
 	}
 	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testZeroMinpoly");
 	return ret;
-}
-template <class Field>
-static bool testZeroMinpoly (Field &F, size_t n)
-{
-	return testZeroMinpoly(F, n, false, Method::Blackbox());
 }
 
 /* Test 1: Minimal polynomial of the identity matrix
@@ -111,7 +105,7 @@ static bool testZeroMinpoly (Field &F, size_t n)
  */
 
 template <class Field, class Meth>
-static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& M)
+static bool testIdentityMinpoly (Field &F, size_t n, const Meth& M)
 {
 	typedef BlasVector<Field> Vector;
 	typedef BlasVector<Field> Polynomial;
@@ -126,8 +120,6 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Me
 
 	Polynomial phi(F);
 
-	//if (symmetrizing) minpolySymmetric (phi, A);
-	//else minpoly (phi, A);
 	minpoly (phi, A, M );
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -151,12 +143,6 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Me
 	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentityMinpoly");
 
 	return ret;
-}
-
-template <class Field>
-static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false)
-{
-    return testIdentityMinpoly(F, n, symmetrizing, Method::Blackbox());
 }
 
 /* Test 2: Minimal polynomial of a nilpotent matrix
@@ -215,11 +201,6 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentMinpoly");
 
 	return ret;
-}
-template <class Field>
-static bool testNilpotentMinpoly (Field &F, size_t n)
-{
-    return testNilpotentMinpoly(F, n, Method::Blackbox());
 }
 
 /* Test 3: Random minpoly of sparse matrix
@@ -310,14 +291,6 @@ bool testRandomMinpoly (Field                 &F,
 
 	return ret;
 }
-template <class Field, class BBStream, class VectStream>
-bool testRandomMinpoly (Field                 &F,
-			int                    iterations,
-			BBStream    &A_stream,
-			VectStream &v_stream)
-{
-    return testRandomMinpoly(F, iterations, A_stream, v_stream, Method::Blackbox());
-}
 
 /* Test 4: test gram matrix.
      A test of behaviour with self-orthogonal rows and cols.
@@ -330,7 +303,7 @@ bool testRandomMinpoly (Field                 &F,
 	 if p is large, size is 2 and minpoly is x^2 -1.
 */
 template <class Field, class Meth>
-static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& M)
+static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 {
 	commentator().start ("Testing gram minpoly", "testGramMinpoly");
 	typedef BlasVector<Field> Polynomial;
@@ -373,13 +346,6 @@ static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& 
 		return ret;
 }
 
-template <class Field>
-static bool testGramMinpoly (Field &F, size_t n)
-{
-	return testGramMinpoly(F, n, false, Method::Blackbox());
-}
-
-
 int main (int argc, char **argv)
 {
 	commentator().setMaxDetailLevel (-1);
@@ -411,8 +377,10 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	// /////////////// finite field part //////////////////
-	if (e == 1)
+	Method::Blackbox MB;
+	//if (e == 1)
 	{
 		//typedef Modular<uint32_t> Field;
 		//typedef Modular<int> Field;
@@ -422,50 +390,56 @@ int main (int argc, char **argv)
 
 		commentator().start("Blackbox prime field minpoly test suite", "Wminpoly");
 
-		//no symmetrizing
-		if (!testZeroMinpoly  	  (F, n)) pass = false;
-		if (!testIdentityMinpoly  (F, n)) pass = false;
-		if (!testNilpotentMinpoly (F, n)) pass = false;
+		if (!testZeroMinpoly  	  (F, n, MB)) pass = false;
+		if (!testIdentityMinpoly  (F, n, MB)) pass = false;
+		if (!testNilpotentMinpoly (F, n, MB)) pass = false;
 		//if (!testRandomMinpoly    (F, n)) pass = false;
-		if (!testGramMinpoly      (F, n)) pass = false;
-
-		// symmetrizing
-		//if (!testZeroMinpoly  	  (F, n, true)) pass = false;
-		if (!testIdentityMinpoly  (F, n, true)) pass = false;
-		//if (!testNilpotentMinpoly (F, n, true)) pass = false;
-		//if (!testRandomMinpoly    (F, n, true)) pass = false;
-		//if (!testGramMinpoly      (F, n, true)) pass = false;
+		if (!testGramMinpoly      (F, n, MB)) pass = false;
 		//need other tests...
 
 		commentator().stop("Blackbox prime field minpoly test suite");
 	}
-	else{
+	//else
+	{	q = 3; e = 6;
 
 		typedef GivaroGfq Field;
 		Field F (q, e);
 		srand ((unsigned)time (NULL));
 
-		commentator().start("Blackbox non-prime field minpoly test suite", "Wminpoly");
-		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		commentator().start("Blackbox gfq field minpoly test suite", "Wminpoly");
 		F.write(report);
 
-		//no symmetrizing
-		if (!testZeroMinpoly  	  (F, n)) pass = false;
-		if (!testIdentityMinpoly  (F, n)) pass = false;
-		if (!testNilpotentMinpoly (F, n)) pass = false;
+		if (!testZeroMinpoly  	  (F, n, MB)) pass = false;
+		if (!testIdentityMinpoly  (F, n, MB)) pass = false;
+		if (!testNilpotentMinpoly (F, n, MB)) pass = false;
 		//if (!testRandomMinpoly    (F, n)) pass = false;
-		if (!testGramMinpoly      (F, n)) pass = false;
-
-		// symmetrizing
-		//if (!testZeroMinpoly  	  (F, n, true)) pass = false;
-		if (!testIdentityMinpoly  (F, n, true)) pass = false;
-		//if (!testNilpotentMinpoly (F, n, true)) pass = false;
-		//if (!testRandomMinpoly    (F, n, true)) pass = false;
-		//if (!testGramMinpoly      (F, n, true)) pass = false;
+		if (!testGramMinpoly      (F, n, MB)) pass = false;
 		//need other tests...
 
-		commentator().stop("Blackbox non-prime field minpoly test suite");
+		commentator().stop("Blackbox gfq minpoly test suite");
 	}
+
+#if 0
+	{	q = 3; e = 6;
+		typedef Modular<uint32_t> GroundField;
+		typedef GivaroExtension<GroundField> Field;
+		GroundField K(q);
+		Field F (K, e);
+		srand ((unsigned)time (NULL));
+
+		commentator().start("Blackbox givaro extension field minpoly test suite", "Wminpoly");
+		F.write(report);
+
+		if (!testZeroMinpoly  	  (F, n, MB)) pass = false;
+		if (!testIdentityMinpoly  (F, n, MB)) pass = false;
+		if (!testNilpotentMinpoly (F, n, MB)) pass = false;
+		//if (!testRandomMinpoly    (F, n)) pass = false;
+		if (!testGramMinpoly      (F, n, MB)) pass = false;
+		//need other tests...
+
+		commentator().stop("Blackbox givaro extension field minpoly test suite");
+	}
+#endif
 
 #if 0
 
@@ -505,30 +479,25 @@ int main (int argc, char **argv)
 	RandomSparseStream<PID_integer, ZSparseVector, NonzeroRandIter<PID_integer> >
 	zA_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), (double) k / (double) n, n, n);
 
-	// Hybrid
-	//no symmetrizing
-	if (!testIdentityMinpoly  (Z, n)) pass = false;
-	if (!testNilpotentMinpoly (Z, n)) pass = false;
+	if (!testIdentityMinpoly  (Z, n, MB)) pass = false;
+	if (!testNilpotentMinpoly (Z, n, MB)) pass = false;
 
 	if (!testRandomMinpoly    (Z, iterations, zA_stream, zv_stream)) pass = false;
-
-	// symmetrizing
-	if (!testIdentityMinpoly  (Z, n, true)) pass = false;
 
 	commentator().stop("Blackbox integer minpoly test suite");
 
 	commentator().start("Hybrid integer minpoly test suite", "HIminpoly");
-	if (!testIdentityMinpoly  (Z, n, false,  Method::Hybrid())) pass = false;
+	if (!testIdentityMinpoly  (Z, n, Method::Hybrid())) pass = false;
 	if (!testNilpotentMinpoly (Z, n, Method::Hybrid())) pass = false;
 	commentator().stop("Hybrid integer minpoly test suite");
 
 	commentator().start("Blackbox integer minpoly test suite", "BIminpoly");
-	if (!testIdentityMinpoly  (Z, n, false,  Method::Blackbox())) pass = false;
+	if (!testIdentityMinpoly  (Z, n, Method::Blackbox())) pass = false;
 	if (!testNilpotentMinpoly (Z, n, Method::Blackbox())) pass = false;
 	commentator().stop("Blackbox integer minpoly test suite");
 
 	commentator().start("Elimination integer minpoly test suite", "EIminpoly");
-	if (!testIdentityMinpoly  (Z, n, false,  Method::Elimination())) pass = false;
+	if (!testIdentityMinpoly  (Z, n, Method::Elimination())) pass = false;
 	if (!testNilpotentMinpoly (Z, n, Method::Elimination())) pass = false;
 	commentator().stop("Elimination integer minpoly test suite");
 
