@@ -131,8 +131,8 @@ int main (int argc, char **argv)
 #else
 	typedef BlasMatrixDomain<Field> Context;
 #endif
-	Context BMD(F);
-	BlockWiedemannSolver<Context> LBWS(BMD);
+	//Context BMD(F);
+	//BlockWiedemannSolver<Context> LBWS(BMD);
 #endif
 
 // sparse
@@ -144,14 +144,15 @@ int main (int argc, char **argv)
 	S.setEntry(0, n-1, d[n-1]);
 	S.finalize();
 	pass = pass and testBlockSolver(RCS, S, "TriplesBB, Matrix Berlekamp Massey");
-	pass = pass and testBlockSolver(LBWS, S, "TriplesBB, Sigma Basis");
+	//pass = pass and testBlockSolver(LBWS, S, "TriplesBB, Sigma Basis");
 
+#if 0
 // diagonal
 	Diagonal <Field> D (d);
 	pass = pass and testBlockSolver(RCS, D, "Diagonal, Matrix Berlekamp Massey");
 	pass = pass and testBlockSolver(LBWS, D, "Diagonal, Sigma Basis");
 
-#if 0
+#elseif 0
 // scalar (identity)
 	ScalarMatrix<Field> SC (F, n, F.one);
 	pass = pass and testBlockSolver(RCS, SC, "ScalarMatrix(I), Matrix Berlekamp Massey");
