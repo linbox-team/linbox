@@ -19,7 +19,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{Elements of Design for Containers and Solutions in the \linbox library}
-\titlerunning{Elements of Design for Containers and Solutions in the \linbox library}
+\subtitle{Extended abstract}
+\titlerunning{Design for Containers and Solutions in the \linbox library}
 
 \author{Brice Boyer\inst{1}%
 %
@@ -40,8 +41,8 @@
 	\renewcommand{\thefootnote}{\fnsymbol{footnote}}
 	Department of Mathematics, North Carolina State University,
 	%Raleigh, NC,
-	USA\footnote[2]{This material is based on work supported in part by
-	the National Science Foundation under Grant CCF-1115772 (Kaltofen)}\\
+	USA\footnote[4]{\footnotesize This material is based on work supported in part by
+	the National Science Foundation under Grant CCF-1115772 (Kaltofen) and Grant CCF-1018063 (Saunders)}\\
 	%
 	\email{bbboyer@ncsu.edu}.
 	%
@@ -49,7 +50,7 @@
 	%
 	Laboratoire J. Kuntzmann, Universit\'e de Grenoble.
 	% 51, rue des Math\'ematiques, umr CNRS 5224, bp 53X, F38041 Grenoble,
-        France\footnote[3]{This material is based on work supported in part by the
+        France\footnote[5]{\footnotesize This material is based on work supported in part by the
           Agence Nationale pour la Recherche under Grant
           ANR-11-BS02-013 HPAC (Dumas, Giorgi, Pernet).}\\
 	%
@@ -60,35 +61,33 @@
 	% Laboratoire d'Informatique, de Robotique et de
 	% Micro\'electronique de Montpellier (%
 	LIRMM%
-	%)
+%)
 	, CNRS, Universit\'e Montpellier 2,
 	% 161 rue ADA, F-34095 Montpellier,
-	France\footnotemark[3]\\
+	France\footnotemark[5]\\
         %
         \email{pascal.giorgi@lirmm.fr.}
 	%
 	\and
 	%
 	Laboratoire LIG, Universit\'e de Grenoble et INRIA,
-	% umr CNRS, F38330 Montbonnot,
-	France\footnotemark[3]\\
+% umr CNRS, F38330 Montbonnot,
+	France\footnotemark[5]\\
 	%
 	\email{clement.pernet@imag.fr}.
-	%
+%
 	\and
 	%
 	University of Delaware, Computer and Information Science Department,
 	% Newark / DE / 19716,
-	USA\\
-	USA\footnote[4]{This material is based on work supported in part by
-	the National Science Foundation under Grant CCF-1018063}\\
+	USA\footnotemark[4]\\
 	%
 	\email{saunders@udel.edu}.%
 	%
 }
 
 
-\date{}
+% \date{}
 
 \newif\ifAbstractOnly
 % \AbstractOnlytrue
@@ -149,7 +148,11 @@
 \fi % abstractonly
 
 \bibliographystyle{abbrv}
+% \bibliographystyle{acm}
+
+% unComment either of the following:
 \bibliography{bboyer}
+% \input{14_linbox.bbl}
 %
 %
 \end{document}
