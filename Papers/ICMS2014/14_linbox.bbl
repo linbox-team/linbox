@@ -9,7 +9,7 @@ A.~Alexandrescu.
 \bibitem{Boyer:2012:these}
 B.~Boyer.
 \newblock {\em Multiplication matricielle efficace et conception logicielle
-  pour la bibliothèque de calcul exact {\sc LinBox}}.
+  pour la bibliothèque de calcul exact \linbox}.
 \newblock PhD thesis, Université de Grenoble, June 2012.
 
 \bibitem{BD:2014:Bini}
@@ -45,23 +45,29 @@ V.-D. Cung, V.~Danjean, J.-G. Dumas, T.~Gautier, G.~Huard, B.~Raffin,
 \bibitem{Dumas:2002:icms}
 J.-G. Dumas, T.~Gautier, M.~Giesbrecht, P.~Giorgi, B.~Hovinen, E.~Kaltofen,
   B.~D. Saunders, W.~J. Turner, and G.~Villard.
-\newblock {\sc LinBox}: {A} generic library for exact linear algebra.
+\newblock \linbox: {A} generic library for exact linear algebra.
 \newblock In {\em Proceedings of the 2002 International Congress of
   Mathematical Software, Beijing, China}. World Scientific Pub, Aug. 2002.
 
 \bibitem{Dumas:2010:lbpar}
 J.-G. Dumas, T.~Gautier, C.~Pernet, and B.~D. Saunders.
-\newblock {LinBox} founding scope allocation, parallel building blocks, and
+\newblock \linbox founding scope allocation, parallel building blocks, and
   separate compilation.
 \newblock In K.~Fukuda, J.~{Van Der Hoeven}, and M.~Joswig, editors, {\em
   Proceedings of the Third International Congress Conference on Mathematical
   Software}, volume 6327 of {\em ICMS'10}, pages 77--83, Berlin, Heidelberg,
   Sept. 2010. Springer-Verlag.
 
+\bibitem{DGPZ14}
+J.-G. Dumas, T.~Gautier, C.~Pernet, and Z.~Sultan.
+\newblock Parallel computation of echelon forms.
+\newblock In {\em {Euro-Par 2014}, Proceedings of the 20th international
+  conference on parallel processing, Porto, Portugal}, Aug. 2014.
+
 \bibitem{Dumas:2008:Flas}
 J.-G. Dumas, P.~Giorgi, and C.~Pernet.
-\newblock Dense linear algebra over word-size prime fields: the {FFLAS} and
-  {FFPACK} packages.
+\newblock Dense linear algebra over word-size prime fields: the \fflas and
+  \ffpack packages.
 \newblock {\em ACM Trans. Math. Softw.}, 35(3):1--42, 2008.
 
 \bibitem{gamma:95:design}
@@ -69,11 +75,23 @@ E.~Gamma.
 \newblock {\em Design Patterns: Elements of Reusable Object-Oriented Software}.
 \newblock Addison-Wesley Professional Computing Series. Addison-Wesley, 1995.
 
+\bibitem{VonzurGathen:1999:MCA}
+J.~v. Gathen and J.~Gerhard.
+\newblock {\em Modern Computer Algebra}.
+\newblock Cambridge University Press, New York, NY, USA, 1999.
+
 \bibitem{Giorgi:2004:these}
 P.~Giorgi.
 \newblock {\em Arithmétique et algorithmique en algèbre linéaire exacte pour
-  la bibliothèque {\sc LinBox}}.
+  la bibliothèque \linbox}.
 \newblock PhD thesis, \'Ecole normale supérieure de Lyon, Dec. 2004.
+
+\bibitem{GioLeb14}
+P.~Giorgi and R.~Lebreton.
+\newblock Online order basis and its impact on block {W}iedemann algorithm.
+\newblock In {\em Proceedings of the 2014 international symposium on symbolic
+  and algebraic computation}, ISSAC '14. ACM, 2014.
+\newblock (to appear).
 
 \bibitem{Douglas:05:GPHP}
 D.~Gregor, J.~Järvi, M.~Kulkarni, A.~Lumsdaine, D.~Musser, and S.~Schupp.
@@ -81,6 +99,11 @@ D.~Gregor, J.~Järvi, M.~Kulkarni, A.~Lumsdaine, D.~Musser, and S.~Schupp.
 \newblock {\em International Journal of Parallel Programming}, 33:145--164,
   2005.
 \newblock 10.1007/s10766-005-3580-8.
+
+\bibitem{Harvey:2014}
+D.~Harvey.
+\newblock Faster arithmetic for number-theoretic transforms.
+\newblock {\em Journal of Symbolic Compututations.}, 60:113--119, Jan. 2014.
 
 \bibitem{stroustrup1994design}
 B.~Stroustrup.
@@ -95,7 +118,14 @@ H.~Sutter and A.~Alexandrescu.
 
 \bibitem{Turner:2002:these}
 W.~J. Turner.
-\newblock {\em Blackbox linear algebra with the {\sc LinBox} library}.
+\newblock {\em Blackbox linear algebra with the \linbox library}.
 \newblock PhD thesis, North Carolina State University, May 2002.
+
+\bibitem{WST12}
+M.~Wezowicz, B.~D. Saunders, and M.~Taufer.
+\newblock Dealing with performance/portability and performance/accuracy
+  trade-offs in heterogeneous computing systems: a case study with matrix
+  multiplication modulo primes.
+\newblock In {\em Proc. SPIE}, volume 8403, pages 08--08--10, 2012.
 
 \end{thebibliography}
