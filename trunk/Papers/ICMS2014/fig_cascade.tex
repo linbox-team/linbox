@@ -6,11 +6,10 @@
                 \begin{algorithm}[H]
                         \caption{\texttt{Algo}: controller}
                         \label{alg:controle}
-                        \KwIn{$A$ and $B$, dense, with resp. dimensions $n\times
-                        k$ and $k\times n$.}
+                        \KwIn{$A$, $B$ and $C$}
 			\KwIn{$H$ Helper}
                         \KwOut{$C = A\times B$}
-			\eIf{$\mathrm{min}(m,k,n)<H.{\tt threshold}()$}{
+			\eIf{$\mathrm{sizes}(\ldots)<H.{\tt threshold}()$}{
 				% {\tt BaseCase} K() ; \\
 				{\tt Algo}(C,A,B,{\tt BaseCase}()) ; %\tcc{\small{\color{gray}fast BLAS}}
 			}
@@ -32,7 +31,7 @@
                         \KwOut{$C = A\times B$}
                         Cut $A$,$B$,$C$ in $S_i, T_i$\;
                         \ldots \;
-                        $P_i = \mathtt{Algo}(S_i,T_i,H)$ \;
+                        $P_i = \mathtt{Algo}(P_i, S_i,T_i,H)$ \;
                         \ldots \;
 			% \KwRet C \;
                 \end{algorithm}
