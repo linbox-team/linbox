@@ -420,12 +420,15 @@ int main (int argc, char **argv)
 	}
 
 #if 0
-	{	q = 3; e = 6;
-		typedef Modular<uint32_t> GroundField;
+// this test can only work if Extension of Extension is compiling. -bds
+
+	{	q = 3; e = 2;
+		typedef Modular<int32_t> GroundField;
 		typedef GivaroExtension<GroundField> Field;
 		GroundField K(q);
 		Field F (K, e);
 		srand ((unsigned)time (NULL));
+		MB.certificate(false);
 
 		commentator().start("Blackbox givaro extension field minpoly test suite", "Wminpoly");
 		F.write(report);
@@ -441,16 +444,16 @@ int main (int argc, char **argv)
 	}
 #endif
 
-#if 0
+#if 1
 
 	Modular<uint32_t> F (q);
 
 
 	commentator().start("Hybrid prime field minpoly test suite", "Hminpoly");
-	if (!testIdentityMinpoly  (F, n, false,  Method::Hybrid())) pass = false;
+	if (!testIdentityMinpoly  (F, n, Method::Hybrid())) pass = false;
 	if (!testNilpotentMinpoly (F, n, Method::Hybrid())) pass = false;
 	commentator().stop("Hybrid prime field minpoly test suite");
-
+#elif 0
 	commentator().start("Blackbox prime field minpoly test suite", "Bminpoly");
 	if (!testIdentityMinpoly  (F, n, false,  Method::Blackbox())) pass = false;
 	if (!testNilpotentMinpoly (F, n, Method::Blackbox())) pass = false;
