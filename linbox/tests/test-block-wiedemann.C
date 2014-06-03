@@ -53,7 +53,7 @@ using namespace LinBox;
 /* Tests nonsingular solving for a random right-hand side.
  *
  * Solver - a block Wiedemann solver (see coppersmith.h or block-wiedemann.h).
- * Blackbox - nonsingular matrix (rhs will be a random vector.
+ * Blackbox - nonsingular matrix (rhs will be a random vector).
  *
  * Checks the result, returning true on success and false on failure
  */
@@ -89,13 +89,13 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 9;
-	static size_t N = 16;
+//	static size_t N = 16;
 	static size_t q = 2147483647U;
 	static size_t blocking = 0;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to N.", TYPE_INT,     &n },
-		{ 'N', "-N N", "Set blocking factor to N.", TYPE_INT,     &N },
+		{ 'n', "-n N", "Set dimension of test matrices to n.", TYPE_INT,     &n },
+//		{ 'N', "-N N", "Set blocking factor to N.", TYPE_INT,     &N },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &q },
 		{ 'b', "-b N", "Set the blocking size", TYPE_INT, &blocking },
 		END_OF_ARGUMENTS
@@ -111,19 +111,44 @@ int main (int argc, char **argv)
 	MatrixDomain<Field> MD(F);
 
 	commentator().start("block wiedemann test suite", "block-wiedemann");
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	RandomDenseStream<Field> s(F, n, 2);
 	Vector d(F,n);
 	s.next (d);
-	//d[n-1] = F.zero;
-	//b[n-1] = F.zero;
+	for (size_t i = 0; i < d.size(); ++i) 
+		if (F.isZero(d[i])) report << "Warning: zero in vector" << endl;
+
+	// some matrices
+	ScalarMatrix<Field> SC (F, n, F.one); // identity
+
+	Diagonal <Field> D (d); // random nonsingular diagonal
+
+	SparseMatrix<Field, SparseMatrixFormat::TPL> S (F, n, n);
+	for (size_t i = 1; i < n; ++i) S.setEntry(i, i-1, F.one); // subdiag
+	for (size_t i = 0; i < n; ++i) S.setEntry(i, n-1, d[i]); // last col
+	S.finalize(); // companion matrix of d
 
 // RCS is Yuhasz' Matrix Berlekamp Massey method.
 	CoppersmithSolver< MatrixDomain<Field> > RCS(MD,blocking);
 
-// LBWS is Giorgi's block method, SigmaBasis based.
+/*
+	commentator().start("Ident, CoppersmithSolver", "I-Coppersmith");
+	pass = pass and testBlockSolver(RCS, SC, "ScalarMatrix(I), Matrix Berlekamp Massey");
+	commentator().stop("Ident, CoppersmithSolver");
+*/
+
+	commentator().start("Diag, CoppersmithSolver", "D-Coppersmith");
+	pass = pass and testBlockSolver(RCS, D, "Diagonal, Matrix Berlekamp Massey");
+	commentator().stop("Diag, CoppersmithSolver");
+
+	commentator().start("Companion, CoppersmithSolver", "C-Coppersmith");
+	pass = pass and testBlockSolver(RCS, S, "Companion, Matrix Berlekamp Massey");
+	commentator().stop("Companion, CoppersmithSolver");
 
 #if 1
+// LBWS is Giorgi's block method, SigmaBasis based.
+
 #ifdef __LINBOX_HAVE_OCL
 // using this as a test of the opencl matrix domain
 	typedef OpenCLMatrixDomain<Field> Context;
@@ -131,33 +156,24 @@ int main (int argc, char **argv)
 #else
 	typedef BlasMatrixDomain<Field> Context;
 #endif
-	//Context BMD(F);
-	//BlockWiedemannSolver<Context> LBWS(BMD);
-#endif
+	Context BMD(F);
+	BlockWiedemannSolver<Context> LBWS(BMD);
 
-// sparse
-	// TriplesBB <Field> S (F, n, n);
-	SparseMatrix<Field, SparseMatrixFormat::TPL> S (F, n, n);
-	for (size_t i = 0; i < n; ++i) S.setEntry(i, i, d[i]);
-	s.next (d);
-	for (size_t i = 0; i < n-1; ++i) S.setEntry(i, i+1, d[i]);
-	S.setEntry(0, n-1, d[n-1]);
-	S.finalize();
-	pass = pass and testBlockSolver(RCS, S, "TriplesBB, Matrix Berlekamp Massey");
-	//pass = pass and testBlockSolver(LBWS, S, "TriplesBB, Sigma Basis");
-
-#if 0
-// diagonal
-	Diagonal <Field> D (d);
-	pass = pass and testBlockSolver(RCS, D, "Diagonal, Matrix Berlekamp Massey");
-	pass = pass and testBlockSolver(LBWS, D, "Diagonal, Sigma Basis");
-
-#elseif 0
-// scalar (identity)
-	ScalarMatrix<Field> SC (F, n, F.one);
-	pass = pass and testBlockSolver(RCS, SC, "ScalarMatrix(I), Matrix Berlekamp Massey");
+/*
+	commentator().start("Ident, BlockWiedemannSolver", "I-Sigma Basis");
 	pass = pass and testBlockSolver(LBWS, SC, "ScalarMatrix(I), Sigma Basis");
+	commentator().stop("Ident, BlockWiedemannSolver");
+*/
+
+	commentator().start("Diag, BlockWiedemannSolver", "D-Sigma Basis");
+	pass = pass and testBlockSolver(LBWS, D, "Diagonal, Sigma Basis");
+	commentator().stop("Diag, BlockWiedemannSolver");
+
+	commentator().start("Companion, BlockWiedemannSolver", "C-Sigma Basis");
+	pass = pass and testBlockSolver(LBWS, S, "Companion, Sigma Basis");
+	commentator().stop("Companion, BlockWiedemannSolver");
 #endif
+
 	commentator().stop("block wiedemann test suite");
     //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
 
