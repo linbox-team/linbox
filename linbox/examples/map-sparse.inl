@@ -110,12 +110,43 @@ const Field_& MapSparse<Field_>::field() const
 }
 
 template<class Field_>
+bool MapSparse<Field_>::verify()
+{
+	for (int i=0;i<rowdim();++i) {
+		for (int j=0;j<coldim();++j) {
+			Element d=zero_;
+			MapConstIt row=rowMap_.find(i);
+			if (row != rowMap_.end()) {
+				VectorConstIt entry=(row->second).find(j);
+				if (entry != (row->second.end())) {
+					d=entry->second;
+				}
+			}
+			Element e=zero_;
+			MapConstIt col=colMap_.find(j);
+			if (col != colMap_.end()) {
+				VectorConstIt entry=(col->second).find(i);
+				if (entry != (col->second.end())) {
+					e=entry->second;
+				}
+			}
+			if (d!=e) {
+				return false;
+			}
+		}
+	}
+        return true;
+}
+
+template<class Field_>
 void MapSparse<Field_>::setEntry(Index i, Index j, const Element& e)
 {
 	VectorIt it=rowMap_[i].find(j);
 	if (it != rowMap_[i].end()) {
 		--nnz_;
 		rowMap_[i].erase(it);
+		VectorIt colIt=colMap_[j].find(i);
+		colMap_[j].erase(colIt);
 	}
 
 	if (!field().isZero(e)) {
@@ -146,14 +177,9 @@ void MapSparse<Field_>::addRow(const Element& k, Index i, Index j)
 	if (rowJ != rowMap_.end()) {
 		for (VectorIt it=rowJ->second.begin();it!=rowJ->second.end();++it) {
 			Index col=it->first;
-			if (!(field().isZero(getEntry(i,col)))) {
-				--nnz_;
-			}
-			field().axpyin(rowMap_[i][col],k,it->second);
-			field().axpyin(colMap_[col][i],k,it->second);
-			if (!(field().isZero(getEntry(i,col)))) {
-				++nnz_;
-			}
+			Element d=getEntry(i,col);
+			field().axpyin(d,k,it->second);
+			setEntry(i,col,d);
 		}
 	}
 }
@@ -166,17 +192,9 @@ void MapSparse<Field_>::addCol(const Element& k, Index i, Index j)
 	if (colJ != colMap_.end()) {
 		for (VectorIt it=colJ->second.begin();it!=colJ->second.end();++it) {
 			Index row=it->first;
-			if (!(field().isZero(getEntry(row,i)))) {
-				--nnz_;
-			} else {
-				field().assign(rowMap_[row][i],field().zero);
-				field().assign(colMap_[i][row],field().zero);
-			}
-			field().axpyin(rowMap_[row][i],k,it->second);
-			field().axpyin(colMap_[i][row],k,it->second);
-			if (!(field().isZero(getEntry(row,i)))) {
-				++nnz_;
-			}
+			Element d = getEntry(row,i);
+			field().axpyin(d,k,it->second);
+			setEntry(row,i,d);
 		}
 	}
 }
@@ -289,12 +307,12 @@ void MapSparse<Field_>::randomSim(Index nz, int seed)
 {	typename Field::Element a;
 	Index i,j;
 	MersenneTwister ri;
-	typename Field::RandIter r(field());
+	typename Field::RandIter r(field(),0, seed);
 	//if (seed != 0) { ri.setSeed(seed); r.setSeed(seed); }
 	if (seed != 0)
 	{	ri.setSeed(seed);
 		// ridiculous constructor only seeding!
-		typename Field::RandIter s(field(), seed);
+		typename Field::RandIter s(field(), 0, seed);
 		r = s;
 	}
 	while (nnz() < nz)
@@ -313,20 +331,24 @@ void MapSparse<Field_>::randomEquiv(Index nz, int seed)
 {	typename Field::Element a;
 	Index i,j;
 	MersenneTwister ri;
-	typename Field::RandIter r(field());
+	typename Field::RandIter r(field(),0,seed);
 	if (seed != 0)
 	{	ri.setSeed(seed);
 		// ridiculous seeding!
-		typename Field::RandIter s(field(), seed);
+		typename Field::RandIter s(field(), 0, seed);
 		r = s;
 	}
 	bool flip = true;
+	int count=0;
 	while (nnz() < nz)
 	{	r.nonzerorandom(a);
 		i = ri.randomIntRange(0, rowdim()); j = ri.randomIntRange(0, coldim());
-		if (flip) addCol(a, i, j);
-		else addRow(a, i, j);
-		flip = not flip;
+		if (i!=j){
+			if (flip) addCol(a, i, j);
+			else addRow(a, i, j);
+			flip = not flip;
+		}
+		++count;
 	}
 }
 
@@ -508,6 +530,44 @@ void MapSparse<Field>::generateScaledIdent(MapSparse<Field>& mat, int alpha)
         for (size_t i=0;i<minDim;++i) {
                 mat.setEntry(i,i,d);
         }
+}
+
+template<class Field>
+void MapSparse<Field>::generateSparseNonSingular(MapSparse<Field>& mat, int approxNNZ, int seed)
+{
+        typedef typename Field::Element Element;
+        int n=mat.rowdim();
+        linbox_check(mat.rowdim()==mat.coldim());
+
+        typename Field::RandIter r(mat.field(),0,seed);
+
+	Element d;
+
+        for (int i=0;i<n;++i) {
+                r.nonzerorandom(d);
+                mat.setEntry(i,i,d);
+        }
+
+        mat.randomEquiv(approxNNZ,seed);
+}
+
+template<class Field>
+void MapSparse<Field>::generateCompanion(MapSparse<Field>& mat,std::vector<typename Field::Element>& coeffs)
+{
+        typedef typename Field::Element Element;
+        int n=mat.rowdim();
+        linbox_check(mat.rowdim()==mat.coldim());
+
+        typename Field::RandIter r(mat.field());
+
+	Element d;
+	mat.field().init(d,1);
+        for (int i=1;i<n;++i) {
+                mat.setEntry(i,i-1,d);
+        }
+	for (int i=0;i<n;++i) {
+		mat.setEntry(i,n-1,coeffs[i]);
+	}
 }
 
 template<class Field>
