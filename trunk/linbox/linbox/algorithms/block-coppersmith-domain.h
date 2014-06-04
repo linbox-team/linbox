@@ -245,6 +245,8 @@ EARLY_TERM_THRESHOLD (ett_default)
 			size_t _sigma;
 			size_t _gensize;
 			size_t _row, _col;
+			size_t _ett;
+			size_t _etc;
 
 		public:
 			// This is an enumeration class that tells what state the berlekamp/massey algoithm iterator is in.
@@ -312,7 +314,9 @@ EARLY_TERM_THRESHOLD (ett_default)
 			inline const Domain &domain() const { return *_MD;}
 			inline const Field &field() const { return domain().field();}
 			//Constructor
-			explicit BM_iterator(BM_Seq& s, typename BM_Seq::size_type elinit=0) :
+			explicit BM_iterator(BM_Seq& s,
+                                             unsigned long earlyTermThreshold=DEFAULT_BLOCK_EARLY_TERM_THRESHOLD,
+                                             typename BM_Seq::size_type elinit=0) :
 				 _MD(&s.domain()),  _seq(s)
 			{
 				_row = s.rowdim();
@@ -322,6 +326,8 @@ EARLY_TERM_THRESHOLD (ett_default)
 				_delta = (size_t)-1; // BB: is it meant ?
 				_seqel = _seq.begin();
 				_deg = std::vector<size_t>(_row+_col);
+                                _ett=earlyTermThreshold;
+                                _etc=0;
 				for(size_t i = _col; i < _row+_col; ++i)
 					_deg[i] = 1;
 				Coefficient gen1(field(),_col,_row+_col);
@@ -342,7 +348,8 @@ EARLY_TERM_THRESHOLD (ett_default)
 				_seqel(it._seqel), _gen(it._gen), _deg(it._deg),
 				_delta(it._delta), _mu(it._mu), _beta(it._beta),
 				_sigma(it._sigma), _gensize(it._gensize),
-				_row(it._row), _col(it._col), _state(it._state) {}
+				_row(it._row), _col(it._col),
+				_ett(it._ett), _etc(it._etc), _state(it._state) {}
 
 
 			//Assignment operator not overloaded since BlasMatrix class has overloaded assignment error
@@ -364,6 +371,8 @@ EARLY_TERM_THRESHOLD (ett_default)
 					(*this)._sigma   = it._sigma;
 					(*this)._beta    = it._beta;
 					(*this)._state   = it._state;
+					(*this)._ett     = it._ett;
+					(*this)._etc     = it._etc;
 					_gen.clear();
 					for(typename std::list<Coefficient>::const_iterator git = it._gen.begin(); git != it._gen.end(); ++git)
 						_seq.push_back(*git);
@@ -540,6 +549,12 @@ EARLY_TERM_THRESHOLD (ett_default)
 				}
 				//Compute tau with Algorith3.2
 				Coefficient tau(field(), _row+_col, _row+_col);
+				Sub primaryDisc(disc,0,0,_row,_col);
+				if (_MD->isZero(primaryDisc)) {
+					--_etc;
+				} else {
+					_etc=_ett;
+				}
 				Algorithm3dot2(tau, disc, _deg, _mu, _sigma, _beta);
 				//Multiply tau into each matrix in the generator
 				for(genit = _gen.begin(); genit!=_gen.end(); ++genit){
@@ -594,9 +609,13 @@ EARLY_TERM_THRESHOLD (ett_default)
 					else
 						_state._state = GeneratorFound;
 				}
+				if (_etc==0) {
+					_state._state=GeneratorFound;
+				}
 
 				return *this;
 			}
+			// Is this working? -AS
 			BM_iterator operator++(int)
 			{
 				//Create a copy of this
@@ -743,14 +762,14 @@ EARLY_TERM_THRESHOLD (ett_default)
 		}; //End of BM_iterator
 
 		//return an initialized BM_iterator
-		typename BM_Seq::BM_iterator BM_begin()
+		typename BM_Seq::BM_iterator BM_begin(int earlyTermThreshold)
 		{
-			return typename BM_Seq::BM_iterator(*this);
+			return typename BM_Seq::BM_iterator(*this,earlyTermThreshold);
 		}
 		//return an initialized BM_iterator that points to one past the end of the sequence
 		typename BM_Seq::BM_iterator BM_end()
 		{
-			return typename BM_Seq::BM_iterator(*this, _size);
+			return typename BM_Seq::BM_iterator(*this, -1, _size);
 		}
 		/**/
 	};//End of BM_Seq
@@ -771,12 +790,11 @@ _Sequence>::right_minpoly (std::vector<Coefficient> &P)
 	    BM_Seq seq(domain(),r,c);
 
 	    //Push the first projection onto the BM_Seq
-
 	    seq.push_back(*contiter);
 
 	    //Create the BM_Seq iterator whose incrementation performs a step of the generator
-	    typename BM_Seq::BM_iterator bmit(seq.BM_begin());
-	    bmit.setDelta((int)EARLY_TERM_THRESHOLD);
+	    typename BM_Seq::BM_iterator bmit(seq.BM_begin(EARLY_TERM_THRESHOLD));
+	    bmit.setDelta((int)(2*_container->getBB()->rowdim()+1));
 	    typename BM_Seq::BM_iterator::TerminationState check = bmit.state();
 	    while(!check.IsGeneratorFound() ){
 		    ++bmit;
