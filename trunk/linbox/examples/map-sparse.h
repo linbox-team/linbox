@@ -106,6 +106,8 @@ public:
 
 	const Element& getEntry(Index i, Index j) const;
 
+	bool verify();
+
 	//forall r: A_{i,r}<-A_{i,r}+k*A_{j,r}
 	void addRow(const Element& k, Index i, Index j);
 
@@ -154,11 +156,15 @@ public:
         template<class Vector>
         void fromVector(const Vector& vec, Index r, Index c);
 
+        static void generateCompanion(MapSparse<Field>& mat,std::vector<Element>& coeffs);
+
         static void generateDenseRandMat(MapSparse<Field_>& mat, int q);
 
         static void generateRandMat(MapSparse<Field>& mat, int nnz, int q);
 
         static void generateScaledIdent(MapSparse<Field>& mat, int alpha);
+
+        static void generateSparseNonSingular(MapSparse<Field>& mat, int approxNNZ, int seed=0);
 
 protected:
 
@@ -181,7 +187,7 @@ protected:
 
 }
 
-#include "examples/map-sparse.inl"
+#include <examples/map-sparse.inl>
 
 #endif // __LINBOX_MAP_SPARSE_H
 
