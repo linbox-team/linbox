@@ -666,6 +666,14 @@ namespace LinBox
 			typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,Storage>()(*this, Mat);
 		}
 
+		template<typename _Tp1, typename _Rw1>
+		SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &Mat) :
+			Father_t(Mat.field(),Mat.rowdim(),Mat.coldim())
+		{
+			typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,Storage>()(*this, Mat);
+		}
+
+
 		template<typename _Tp1, typename _R1 = SparseMatrixFormat::SparseSeq >
 		struct rebind {
 			typedef SparseMatrix<_Tp1, _R1> other;
