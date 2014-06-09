@@ -24,9 +24,8 @@
  *.
  */
 
-#include "linbox-config.h"
-#include "givaro/givpoly1.h"
-#include "givaro/giv_randiter.h"
+#include <givaro/givpoly1.h>
+#include <givaro/giv_randiter.h>
 
 #ifndef __LINBOX_randiter_givaro_poly_H
 #define __LINBOX_randiter_givaro_poly_H
