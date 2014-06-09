@@ -26,10 +26,8 @@
 
 #include <iostream>
 
-#include "linbox-config.h"
-
 #include "linbox/integer.h"
-#include "givaro/givpoly1.h"
+#include <givaro/givpoly1.h>
 
 #ifndef LINBOX_ring_givaro_poly_H
 #define LINBOX_ring_givaro_poly_H
@@ -324,6 +322,6 @@ namespace LinBox
 	};
 }
 
-#include "randiter/givaro-poly.h"
+#include "linbox/randiter/givaro-poly.h"
 
 #endif // LINBOX_ring_givaro_poly_H

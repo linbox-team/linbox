@@ -42,7 +42,8 @@ BASIC_HDRS =            \
     random-integer.h    \
     gmp-random-prime.h  \
     random-fftprime.h   \
-    multimod-randomprime.h
+    multimod-randomprime.h \
+    givaro-poly.h
 
 NTL_HDRS =
 

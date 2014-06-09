@@ -23,6 +23,7 @@ pkgincludesubdir=$(pkgincludedir)/ring
 
 BASIC_HDRS =            \
     ring-interface.h    \
+    givaro-poly.h       \
     givaro-polynomial.h \
     abstract.h          \
     archetype.h         \
