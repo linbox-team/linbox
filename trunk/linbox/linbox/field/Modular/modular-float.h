@@ -115,6 +115,8 @@ namespace LinBox
 
 		      }
 
+		      // Modular () : Father_t() {};
+
 		      using Father_t ::cardinality ;
 		      integer &cardinality (integer &c) const
 		      {

@@ -1138,7 +1138,7 @@ namespace LinBox
 			_permP.resize(A.coldim());
 
 
-		_rank= FFPACK::LUdivine((typename Field::Father_t) _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
+		_rank= FFPACK::LUdivine<typename Field::Father_t>((typename Field::Father_t) _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
 					 _m, _n,
 					 _factLU.getPointer(),_factLU.getStride(),
 					 _permP.getWritePointer(), _permQ.getWritePointer(),
