@@ -116,6 +116,8 @@ namespace LinBox
 
 		      }
 
+		      // ModularBalanced () : Father_t() {};
+
 		      using Father_t::cardinality ;
 		      integer &cardinality (integer &c) const
 		      {
