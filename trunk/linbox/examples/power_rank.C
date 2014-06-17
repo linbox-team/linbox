@@ -55,8 +55,9 @@ int main (int argc, char **argv)
 	// long unsigned int r;
 
 	if (argc == 4) {
-		int64_t p = atoi(argv[2]);
-		int64_t q = atoi(argv[3]);
+		typedef int64_t Base;
+		Base p = atoi(argv[2]);
+		Base q = atoi(argv[3]);
 		typedef GivaroZpz<Givaro::Std64> Field;
 		Field F(q);
 		MatrixStream<Field> ms( F, input );
@@ -66,7 +67,7 @@ int main (int argc, char **argv)
 
 		// using Sparse Elimination
 		PowerGaussDomain< Field > PGD( F );
-		std::vector<std::pair<size_t,size_t> > local;
+		std::vector<std::pair<size_t,Base> > local;
 
 		Timer tq; tq.clear(); tq.start();
 		PGD(local, B, q, p);
@@ -74,7 +75,7 @@ int main (int argc, char **argv)
 
 
 		std::cout << "Local Smith Form : (";
-		for (std::vector<std::pair<size_t,size_t> >::const_iterator  ip = local.begin();
+		for (std::vector<std::pair<size_t,Base> >::const_iterator  ip = local.begin();
 		     ip != local.end(); ++ip)
 			std::cout << ip->first << " " << ip->second << ", ";
 		cout << ")" << endl;
