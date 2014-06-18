@@ -124,11 +124,11 @@ namespace LinBox
 			Coeff x; integer a;
 			_CField.cardinality(base);
 			n = 0;
-			for (int i = deg(p); i >= 0; --i)
+			for (int i = (int)deg(p); i >= 0; --i)
 			{
 				n *= base;
 				NTL::GetCoeff(x, p, i );
-				n += _CField.convert(a, x); 
+				n += _CField.convert(a, x);
 			}
 			return n;
 		}
@@ -330,7 +330,7 @@ namespace LinBox
 
 		Element& inv( Element& y, const Element& x ) const
 		{
-			Element one(0, 1);
+			// Element one(0, 1);
 			return quo(y,one,x);
 		}
 

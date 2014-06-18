@@ -69,7 +69,7 @@ namespace LinBox
 		{}
 
 
-#ifdef  __LINBOX_HAVE_LAPACK
+#ifdef  __LINBOX_HAVE_CLAPACK
 		template <class IMatrix, class OutVector, class InVector>
 		SolverReturnStatus solve(OutVector& num, Integer& den,
 					 const IMatrix& M, const InVector& b) const
@@ -170,7 +170,7 @@ namespace LinBox
 		/** compute  the hadamard bound*/
 		inline static int cblas_hbound (integer& b, int m, int n, const double* M);
 
-#if __LINBOX_HAVE_LAPACK
+#if __LINBOX_HAVE_CLAPACK
 		// compute the inverse of a general matrix
 		inline static int cblas_dgeinv(double* M, int n);
 		/* solve Ax = b
@@ -185,7 +185,7 @@ namespace LinBox
 		inline static int cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b);
 #endif
 	};
-#if __LINBOX_HAVE_LAPACK
+#if __LINBOX_HAVE_CLAPACK
 	template <class Ring, class Field, class RandomPrime>
 	inline int RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits>::cblas_dgeinv(double* M, int n)
 	{
@@ -194,7 +194,7 @@ namespace LinBox
 		int *P = new int[n];
 		int ierr = clapack_dgetrf (order, n, n, M, lda, P);
 		if (ierr != 0) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) 
+			commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 			/*std::cerr*/ << "In RationalSolver::cblas_dgeinv Matrix is not full rank" << std::endl;
 			delete[] P ;
 			return -1;

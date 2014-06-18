@@ -78,12 +78,13 @@ for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
 
 
        if test "x$FFLAS_FFPACK_HOME" != "x/usr" -a "x$FFLAS_FFPACK_HOME" != "x/usr/local"; then
-           FFLAS_FFPACK_CFLAGS="-I${FFLAS_FFPACK_HOME}/include"
+           FFLAS_FFPACK_CFLAGS=
        else
            FFLAS_FFPACK_CFLAGS=
        fi
 
        CXXFLAGS="${BACKUP_CXXFLAGS} ${FFLAS_FFPACK_CFLAGS} ${BLAS_CFLAGS}"
+       dnl  CXXFLAGS="${BACKUP_CXXFLAGS}  ${BLAS_CFLAGS}"
        LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
        AC_TRY_LINK(

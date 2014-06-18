@@ -219,14 +219,31 @@ namespace LinBox {
 			     , typename ContainerCategories::Vector
 			     , typename ContainerCategories::Vector ) const
 		{
-			FFLAS::fgemv((typename Field::Father_t)	_field, (FFLAS::FFLAS_TRANSPOSE)t,
+			// std::cout << "here V" << std::endl;
+			// A.write(std::cout,Tag::FileFormat::Maple) << std::endl;
+			// std::cout << x << std::endl;
+
+
+			FFLAS::fgemv((typename Field::Father_t)	_field
+				     , (FFLAS::FFLAS_TRANSPOSE)t,
 				     A.rowdim(), A.coldim(),
 				     _field.one,
 				     A.getPointer(), A.getStride(),
-				     x.getPointer(),x.getStride(),
-				     // &x[0],ldx,
+				     x.getPointer(), x.getStride(),
 				     _field.zero,
 				     y.getWritePointer(),y.getStride());
+
+			// FFLAS::fgemm((typename Field::Father_t)	_field
+				     // , (FFLAS::FFLAS_TRANSPOSE)t
+				     // , FFLAS::FflasNoTrans
+				     // , A.rowdim(), 1, A.coldim()
+				     // , _field.one,
+				     // A.getPointer(), A.getStride(),
+				     // x.getPointer(),x.getStride(),
+				     // _field.zero,
+				     // y.getWritePointer(),y.getStride());
+
+			// std::cout << y << std::endl;
 
 			return y ;
 		}
@@ -244,6 +261,7 @@ namespace LinBox {
 			     ) const
 		{
 			// needs to be debuged (trans?). Never Used.
+			// std::cout << "here M" << std::endl;
 			FFLAS::fgemm((typename Field::Father_t)	_field
 				     , (FFLAS::FFLAS_TRANSPOSE)t
 				     , FFLAS::FflasNoTrans
@@ -303,6 +321,7 @@ namespace LinBox {
 			     , typename ContainerCategories::Vector
 			     ) const
 		{
+			// std::cout << "here V" << std::endl;
 			FFLAS::fgemv((typename Field::Father_t)	_field, (FFLAS::FFLAS_TRANSPOSE)t,
 				     A.rowdim(), A.coldim(),
 				     _field.one,
@@ -328,6 +347,7 @@ namespace LinBox {
 			     ) const
 		{
 			// needs to be debuged (trans?). Never Used.
+			// std::cout << "here M" << std::endl;
 			FFLAS::fgemm((typename Field::Father_t)	_field
 				     , (FFLAS::FFLAS_TRANSPOSE)t
 				     , FFLAS::FflasNoTrans

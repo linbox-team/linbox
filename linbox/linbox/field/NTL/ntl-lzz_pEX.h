@@ -57,7 +57,7 @@ namespace LinBox
 			if ( q > 0 )
 				NTL::zz_p::init(q); // it's an error if q not prime
 			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((long) e);
-			NTL::zz_pE::init(irredPoly); 
+			NTL::zz_pE::init(irredPoly);
 		}
 
 		// template <class ElementInt>
@@ -129,10 +129,10 @@ namespace LinBox
 			integer d;
 			_CField.cardinality(base);
 			n = 0;
-			for (int i = deg(p); i >= 0; --i)
+			for (int i = (int)deg(p); i >= 0; --i)
 			{
 				n *= base;
-				n += _CField.convert(d, NTL::coeff(p, i)); 
+				n += _CField.convert(d, NTL::coeff(p, i));
 			}
 			return n;
 		}
@@ -334,7 +334,7 @@ namespace LinBox
 
 		Element& inv( Element& y, const Element& x ) const
 		{
-			Element one(0, 1);
+			// Element one(0, 1);
 			return quo(y,one,x);
 		}
 
