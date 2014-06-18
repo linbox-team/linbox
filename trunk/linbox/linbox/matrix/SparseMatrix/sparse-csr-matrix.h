@@ -95,8 +95,7 @@ namespace LinBox {
 
 }
 
-namespace LinBox
-{
+namespace LinBox {
 
 
 	/** Sparse matrix, Coordinate storage.

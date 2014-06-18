@@ -1078,7 +1078,7 @@ namespace LinBox
 } // LinBox
 
 #include "linbox/config-blas.h"
-#ifdef __LINBOX_HAVE_LAPACK
+#ifdef __LINBOX_HAVE_CLAPACK
 #include "linbox/algorithms/numeric-solver-lapack.h"
 #include "linbox/algorithms/rational-solver-sn.h"
 namespace LinBox {

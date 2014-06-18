@@ -20,7 +20,7 @@
 
 
 #we now need to include givaro headers for timer ?
-AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS)
+AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox $(BLAS_CFLAGS) $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS)
 
 LIBS=$(GIVARO_LIBS)
 
