@@ -32,6 +32,9 @@
 #ifndef __LINBOX_matrix_sparse_matrix_H
 #define __LINBOX_matrix_sparse_matrix_H
 
+#ifndef index_t
+#define index_t ptrdiff_t
+#endif
 
 #include "linbox/matrix/sparse-formats.h"
 #include "linbox/matrix/matrix-traits.h"

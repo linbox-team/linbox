@@ -105,6 +105,8 @@ namespace LinBox {
 	 */
 	template<class _Field>
 	class SparseMatrix<_Field, SparseMatrixFormat::CSR > {
+	private :
+		typedef std::vector<index_t> svector_t ;
 	public :
 		typedef _Field                             Field ; //!< Field
 		typedef typename _Field::Element         Element ; //!< Element
@@ -223,7 +225,7 @@ namespace LinBox {
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 				size_t j = 0 ;
 				Ap.setStart(A.getStart());
-				std::vector<size_t> offset(A.rowdim()+1,0UL);
+				svector_t offset(A.rowdim()+1,0UL);
 				bool changed = false ;
 				for (size_t i = 0 ; i < A.rowdim() ; ++i) {
 					for (size_t k = A.getStart(i) ; k < A.getEnd(i) ; ++k) {
@@ -306,7 +308,7 @@ namespace LinBox {
 			for (size_t i = 0 ; i< _rownb ; ++i) {
 				typename Vector<Field>::SparseSeq lig_i ;
 				stream >> lig_i ;
-				_start[i+1] = lig_i.size();
+				_start[i+1] = (index_t) lig_i.size();
 				for (size_t j = 0 ; j < lig_i.size() ; ++j) {
 					size_t nbnz = _nbnz++ ;
 					resize(_nbnz);
@@ -459,7 +461,7 @@ namespace LinBox {
 			S.setData(  _data ) ;
 			S.setColid( _colid ) ;
 			for(size_t i = 0 ; i < rowdim() ; ++i)
-				for (size_t j = _start[i] ; j < _start[i+1] ; ++j)
+				for (index_t j = _start[i] ; j < _start[i+1] ; ++j)
 					S.setRowid(j,i);
 			S.finalize();
 
@@ -499,7 +501,7 @@ namespace LinBox {
 
 			{
 				size_t i = 0 ;
-				std::vector<size_t> done_col(S.rowdim(),0);
+				svector_t done_col(S.rowdim(),0);
 				for (size_t nextlig = 1 ; nextlig <= rowdim() ; ++nextlig) {
 					// treating line before nextlig
 					while (i < _start[nextlig]){
@@ -569,9 +571,9 @@ namespace LinBox {
 				return _data[nnz];
 			}
 			else { /* searching */
-				typedef typename std::vector<size_t>::const_iterator myConstIterator ;
-				size_t ibeg = _start[i] ;
-				size_t iend = _start[i+1] ;
+				typedef typename svector_t::const_iterator myConstIterator ;
+				index_t ibeg = _start[i] ;
+				index_t iend = _start[i+1] ;
 
 				if (ibeg == iend) {
 					return field().zero;
@@ -600,7 +602,7 @@ namespace LinBox {
 			return x = getEntry (i, j);
 		}
 
-		void appendEntry(const size_t &i, const size_t &j, const Element& e)
+		void appendEntry(const size_t &i, const index_t &j, const Element& e)
 		{
 			linbox_check(i < rowdim());
 			linbox_check(j < coldim());
@@ -663,13 +665,14 @@ namespace LinBox {
 			}
 
 			// nothing has been done yet
-			typedef typename std::vector<size_t>::iterator myIterator ;
-			size_t ibeg = _start[i];
-			size_t iend = _start[i+1];
+			typedef typename svector_t::iterator myIterator ;
+			index_t ibeg = _start[i];
+			index_t iend = _start[i+1];
 			// element does not exist, insert
 			if (ibeg == iend) {
 				// std::cout << "# insert " << i << ',' << j << ':' << e << std::endl;
-				for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] += 1 ;
+				for (size_t k = i+1 ; k <= _rownb ; ++k)
+					_start[k] += 1 ;
 				_colid.insert(_colid.begin()+ibeg,j);
 				_data.insert( _data.begin() +ibeg,e);
 				++_nbnz;
@@ -679,11 +682,12 @@ namespace LinBox {
 			myIterator beg = _colid.begin() + (ptrdiff_t)ibeg ;
 			myIterator end = _colid.begin() + (ptrdiff_t)iend ;
 			myIterator low = std::lower_bound (beg, end, j);
-			ibeg = (size_t)(low-_colid.begin());
+			ibeg = (index_t)(low-_colid.begin());
 			// insert
 			if ( low == end || j != _colid[ibeg] ) {
 				// std::cout << "# 2 insert " << i << ',' << j << ':' << e << std::endl;
-				for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] += 1 ;
+				for (size_t k = i+1 ; k <= _rownb ; ++k)
+					_start[k] += 1 ;
 				_colid.insert(_colid.begin() + (ptrdiff_t)ibeg,j);
 				_data.insert (_data. begin() + (ptrdiff_t)ibeg,e);
 				++_nbnz;
@@ -711,7 +715,7 @@ namespace LinBox {
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
 			// Could be improved by adding an initial guess j/rowdim*size()
-			typedef typename std::vector<size_t>::iterator myIterator ;
+			typedef typename svector_t::iterator myIterator ;
 
 			size_t ibeg = _start[i];
 			size_t iend = _start[i+1];
@@ -768,10 +772,10 @@ namespace LinBox {
 		{
 			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
-			typedef typename std::vector<size_t>::iterator myIterator ;
+			typedef typename svector_t::iterator myIterator ;
 
-			size_t ibeg = _start[i];
-			size_t iend = _start[i+1];
+			index_t ibeg = _start[i];
+			index_t iend = _start[i+1];
 			if (ibeg == iend)
 				return ;
 
@@ -783,7 +787,8 @@ namespace LinBox {
 			else {
 				// not sure
 				size_t la = (size_t)(low-_colid.begin()) ;
-				for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] -= 1 ;
+				for (size_t k = i+1 ; k <= _rownb ; ++k)
+					_start[k] -= 1 ;
 				_colid.erase(_colid.begin()+(ptrdiff_t)la);
 				_data. erase(_data. begin()+(ptrdiff_t)la);
 				--_nbnz;
@@ -799,7 +804,8 @@ namespace LinBox {
 			size_t i = 0 ;
 			while ( i < _data.size() ) {
 				if ( field().isZero(_data[i]) ) {
-					for (size_t k = i+1 ; k <= _rownb ; ++k) _start[k] -= 1 ;
+					for (size_t k = i+1 ; k <= _rownb ; ++k)
+						_start[k] -= 1 ;
 					_colid.erase(_colid.begin()+i);
 					_data. erase(_data. begin()+i);
 				}
@@ -823,7 +829,7 @@ namespace LinBox {
 			FieldAXPY<Field> accu(field());
 			for (size_t i = 0 ; i < _rownb ; ++i) {
 				accu.reset();
-				for (size_t k = _start[i] ; k < _start[i+1] ; ++k)
+				for (index_t k = _start[i] ; k < _start[i+1] ; ++k)
 					// field().axpyin( y[i], _data[k], x[_colid[k]] ); //! @todo delay !!!
 					accu.mulacc(_data[k],x[_colid[k]]);
 				accu.get(y[i]);
@@ -849,7 +855,7 @@ namespace LinBox {
 			std::vector<FieldAXPY<Field> > Y(_colnb, accu0);
 
 			for (size_t i = 0 ; i < _rownb ; ++i)
-				for (size_t k = _start[i] ; k < _start[i+1] ; ++k) {
+				for (index_t k = _start[i] ; k < _start[i+1] ; ++k) {
 					Y[_colid[k]].mulacc(_data[k], x[i] );
 				}
 
@@ -936,30 +942,30 @@ namespace LinBox {
 
 	public:
 		// pseudo iterators
-		size_t getStart(const size_t & i) const
+		index_t getStart(const size_t & i) const
 		{
 			return _start[i];
 		}
 
-		size_t getEnd(const size_t & i) const
+		index_t getEnd(const size_t & i) const
 		{
 			return _start[i+1];
 		}
 
 
-		void setStart(const size_t &i, const size_t & j)
+		void setStart(const size_t &i, const index_t & j)
 		{
 			if (i > _rownb) this->resize(i,_colnb,_nbnz);
 			_start[i] = j ;
 		}
 
-		void setStart(const std::vector<size_t> &  new_start)
+		void setStart(const svector_t &  new_start)
 		{
 			// linbox_check(_start.size() == new_start.size());
 			_start = new_start ;
 		}
 
-		std::vector<size_t>  getStart( ) const
+		svector_t  getStart( ) const
 		{
 			return _start ;
 		}
@@ -993,12 +999,12 @@ namespace LinBox {
 			_colid[i]=j;
 		}
 
-		void setColid(std::vector<size_t> new_colid)
+		void setColid(svector_t new_colid)
 		{
 			_colid = new_colid ;
 		}
 
-		std::vector<size_t>  getColid( ) const
+		svector_t  getColid( ) const
 		{
 			return _colid ;
 		}
@@ -1285,8 +1291,8 @@ namespace LinBox {
 		typedef _Iterator<typename std::vector<Element>::iterator, Element> Iterator;
 		typedef _Iterator<typename std::vector<Element>::const_iterator, constElement> ConstIterator;
 
-		typedef _IndexedIterator<std::vector<size_t>::iterator, typename std::vector<Element>::iterator, Element> IndexedIterator;
-		typedef _IndexedIterator<std::vector<size_t>::const_iterator, typename std::vector<Element>::const_iterator, constElement> ConstIndexedIterator;
+		typedef _IndexedIterator<svector_t::iterator, typename std::vector<Element>::iterator, Element> IndexedIterator;
+		typedef _IndexedIterator<svector_t::const_iterator, typename std::vector<Element>::const_iterator, constElement> ConstIndexedIterator;
 
 
 		Iterator      Begin ()
@@ -1344,8 +1350,8 @@ namespace LinBox {
 		size_t              _colnb ;
 		size_t               _nbnz ;
 
-		std::vector<size_t> _start ;
-		std::vector<size_t> _colid ;
+		svector_t _start ;
+		svector_t _colid ;
 		std::vector<Element> _data ;
 
 		const _Field & _field;
@@ -1360,7 +1366,7 @@ namespace LinBox {
 				, _nnz(-1)
 			{}
 
-			ptrdiff_t next( const std::vector<size_t> & start)
+			ptrdiff_t next( const svector_t & start)
 			{
 				_nnz +=1 ;
 				while (_row+1 < start.size() && _nnz >= start[_row+1]) {
@@ -1377,6 +1383,33 @@ namespace LinBox {
 		}_triples;
 	};
 
+#if 1
+	template<>
+	template<class inVector, class outVector>
+	outVector & SparseMatrix<Modular<double>, SparseMatrixFormat::CSR >::apply(outVector &Y, const inVector& X, const Element & a ) const
+	{
+		FFLAS::CSR_sub<typename Field::Element> A ;
+		// FFLAS::CSR_sub<typename Field::Element> A ;
+		A.m = rowdim();
+		A.n = coldim();
+		A.st = const_cast<index_t*>(&_start[0]);
+		A.col = const_cast<index_t*>(&_colid[0]);
+		A.dat = const_cast<typename Field::Element*>(&_data[0]);
+		// A.i0 = 0 ;
+		// A.j0 = 0 ;
+		FFLAS::VECT<typename Field::Element>  x ;
+		x.inc = 1 ;
+		x.m = X.size();
+		x.dat = X.getPointer();
+		FFLAS::VECT<typename Field::Element>  y ;
+		y.inc = 1;
+		y.m = Y.size();
+		y.dat = Y.getWritePointer();
+		// std::cout << "called" << std::endl ;
+		FFLAS::sp_fgemv((typename Field::Father_t)field(),  A, x, a, y);
+		return Y ;
+	}
+#endif
 
 } // LinBox
 

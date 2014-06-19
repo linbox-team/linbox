@@ -819,8 +819,10 @@ namespace LinBox
 			std::vector<FieldAXPY<Field> > Y(_colnb, accu0);
 
 			for (size_t i = 0 ; i < _rownb ; ++i)
-				for (size_t k = 0   ; k < _rowid[i] ; ++k)
+				for (size_t k = 0   ; k < _rowid[i] ; ++k) {
 					Y[getColid(i,k)].mulacc( getData(i,k), x[i] );
+					// Y[_colid[ i*_maxc+k ]].mulacc( _data[ i*_maxc+k ], x[i] );
+				}
 
 			for (size_t i = 0 ; i < _colnb ; ++i)
 				Y[i].get(y[i]) ;
