@@ -316,7 +316,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 		{
 			report<<"#-------------T-------------" <<std::endl;
 			report << "T :=" ;
-			write_field(F,report,UpLo,Diag,E,rows,lda,lda,true);
+			// write_field(F,report,UpLo,Diag,E,rows,lda,lda,true);
 			report << ':' << std::endl;
 			report<<"#------------TT--------------" <<std::endl;
 			report << "TT := " ; write_field(F,report,E,rows,lda,lda,true);
@@ -324,15 +324,15 @@ int test_ftrmm(std::ostream & report, const Field & F)
 
 			report<<"#-------------M-------------" <<std::endl;
 			report << "M :=" ;
-			write_field(F,report,D,M,N,ldb,true);
+			// write_field(F,report,D,M,N,ldb,true);
 			report << ':' << std::endl;
 			report<<"#------------a--------------" <<std::endl;
 			report << "alpha := " << alpha << ':' << std::endl;
 			report<<"#------------C--------------" <<std::endl;
-			report << "C := " ; write_field(F,report,C,M,N,N,true);
+			// report << "C := " ; write_field(F,report,C,M,N,N,true);
 			report << ':' << std::endl;
 			report << "#------------B--------------" << std::endl;
-			report << "B := " ; write_field(F,report,B,M,N,ldb,true);
+			// report << "B := " ; write_field(F,report,B,M,N,ldb,true);
 			report << ':' << std::endl;
 			report << "N := alpha * " ;
 			if (Side == FFLAS::FflasRight)
@@ -663,7 +663,7 @@ int main(int ac, char ** av)
 	FieldF FF(13);
 	FieldF FF2(1069);
 	FieldI FI(13);
-	FieldI FI2(106739);
+	FieldI FI2(10687);
 	int tot = 6;
 #ifdef __LINBOX_HAVE_INT64
 	//        typedef ModularBalanced<int64_t>  FieldU;
