@@ -52,14 +52,14 @@ public:
 	typedef typename Field::Element Element;
 	typedef size_t Index;
 
-        virtual ~MapSparseIF() {};
+	virtual ~MapSparseIF() {};
 
 	virtual void setEntry(Index i, Index j, const Element& e) =0;
 
-        virtual const Element& getEntry(Index i, Index j) const =0;
+	virtual const Element& getEntry(Index i, Index j) const =0;
 
 protected:
-        typedef std::map<Index,Element> VectorType;
+	typedef std::map<Index,Element> VectorType;
 	typedef typename VectorType::iterator VectorIt;
 	typedef typename VectorType::const_iterator VectorConstIt;
 	typedef std::map<Index,VectorType> MapType;
@@ -88,9 +88,9 @@ public:
 
 	MapSparse(const MapSparse& M);
 
-        void init(const Field& F, Index r, Index c);
+	void init(const Field& F, Index r, Index c);
 
-        void shape(Index r, Index c);
+	void shape(Index r, Index c);
 
 	MapSparse& operator=(const MapSparse& M);
 
@@ -124,9 +124,9 @@ public:
 
 	void swapCols(Index i, Index j);
 
-        void scaleMat(const Element& k);
+	void scaleMat(const Element& k);
 
-        void transpose();
+	void transpose();
 
 	Index nnz() const;
 
@@ -136,39 +136,39 @@ public:
 	// A -> A' = UAV, with U and V nonsingular, and A' has about nnz nonzero entries.
 	void randomEquiv(Index nnz, int seed = 0);
 
-        bool areEqual(MapSparse<Field_> rhs) const;
+	bool areEqual(MapSparse<Field_> rhs) const;
 
-        std::istream& read(std::istream& in);
+	std::istream& read(std::istream& in);
 
-        std::ostream& print(std::ostream& out) const;
+	std::ostream& print(std::ostream& out) const;
 
-        std::ostream& write(std::ostream& out) const;
+	std::ostream& write(std::ostream& out) const;
 
-        template<class Matrix>
-        void copy(Matrix& mat) const;
+	template<class Matrix>
+	void copy(Matrix& mat) const;
 
-        template<class Matrix>
-        void copyFrom(Matrix& mat);
+	template<class Matrix>
+	void copyFrom(Matrix& mat);
 
-        template<class Vector>
-        void toVector(Vector& vec) const;
+	template<class Vector>
+	void toVector(Vector& vec) const;
 
-        template<class Vector>
-        void fromVector(const Vector& vec, Index r, Index c);
+	template<class Vector>
+	void fromVector(const Vector& vec, Index r, Index c);
 
-        static void generateCompanion(MapSparse<Field>& mat,std::vector<Element>& coeffs);
+	static void generateCompanion(MapSparse<Field>& mat,std::vector<Element>& coeffs);
 
-        static void generateDenseRandMat(MapSparse<Field_>& mat, int q);
+	static void generateDenseRandMat(MapSparse<Field_>& mat, int q);
 
-        static void generateRandMat(MapSparse<Field>& mat, int nnz, int q);
+	static void generateRandMat(MapSparse<Field>& mat, int nnz, int q);
 
-        static void generateScaledIdent(MapSparse<Field>& mat, int alpha);
+	static void generateScaledIdent(MapSparse<Field>& mat, int alpha);
 
-        static void generateSparseNonSingular(MapSparse<Field>& mat, int approxNNZ, int seed=0);
+	static void generateSparseNonSingular(MapSparse<Field>& mat, int approxNNZ, int seed=0);
 
 protected:
 
-        static int randRange(int start, int end);
+	static int randRange(int start, int end);
 
 	MatrixDomain<Field> MD_;
 
