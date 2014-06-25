@@ -62,8 +62,7 @@ namespace LinBox { /* BlasVector */
 
 
 	template<class _Field, class _blasRep=typename RawVector<typename _Field::Element>::Dense>
-	class BlasVector : public Subvector<Subiterator<typename _blasRep::iterator > >
-	{
+	class BlasVector : public Subvector<Subiterator<typename _blasRep::iterator > > {
 
 	public:
 		typedef _Field                                Field;
@@ -79,6 +78,7 @@ namespace LinBox { /* BlasVector */
 	public: /* iterators */
 		typedef Subvector<Subiterator<typename _blasRep::iterator > > Father_t;
 		typedef typename Father_t::iterator             iterator;
+		typedef iterator Iterator ;
 		typedef typename Father_t::const_iterator const_iterator;
 		// typedef typename Father_t::size_type size_type;
 
@@ -138,7 +138,7 @@ namespace LinBox { /* BlasVector */
 			iterator it = _rep.begin();
 			typename OtherVector::const_iterator jt = V.begin();
 			for ( ; it != _rep.end(); ++it, ++jt)
-				*it = *jt ;
+				_field->init(*it, *jt) ;
 
 		}
 
@@ -309,6 +309,7 @@ namespace LinBox { /* BlasVector */
 			linbox_check(_size==0 || _ptr != NULL);
 		}
 
+		//! @bug F is last for matrix
 		template<class VectorBase>
 		BlasVector (const _Field & F, const VectorBase & V)  :
 			Father_t(), // will be created afterwards...
@@ -602,6 +603,13 @@ namespace LinBox { /* BlasVector */
 				setEntry(i, r.random(x));
 		}
 
+		template<class RandIter>
+		void random( RandIter r)
+		{
+			typename _Field::Element x; field().init(x);
+			for (size_t i = 0; i < size(); ++i)
+				setEntry(i, r.random(x));
+		}
 
 		const _Field& field() const { return const_cast<Field&>( *_field );}
 
@@ -610,7 +618,9 @@ namespace LinBox { /* BlasVector */
 			_field = const_cast<Field*>(&G) ;
 		}
 
+		Element magnitude() const ;
 
+		iterator Begin() { return _rep.begin() ; }
 	private:
 		void setIterators()
 		{
@@ -620,6 +630,17 @@ namespace LinBox { /* BlasVector */
 
 
 	};// BlasVector
+
+	template<>
+	Integer BlasVector<PID_integer>::magnitude() const
+	{
+		Integer max_elt(0UL);
+		for (size_t i = 0 ; i < size() ; ++i)
+			if (max_elt < Givaro::abs(_ptr[i]))
+				max_elt = Givaro::abs(_ptr[i]) ;
+		return max_elt ;
+	}
+
 
 	template<class T>
 	std::ostream& operator<< (std::ostream & o, const BlasVector<T> & Mat)
@@ -637,8 +658,7 @@ namespace LinBox { /*  BlasSubvector */
 	template <class _Vector > // inherit that from owner ?
 	class BlasSubvector :
 		public Subvector<Subiterator<typename _Vector::Rep::iterator > >
-		// public  BlasVector<typename _Vector::Field, typename _Vector::Rep>
-	{
+		/* public  BlasVector<typename _Vector::Field, typename _Vector::Rep> */ {
 	public :
 		typedef typename _Vector::Field                   Field;
 		typedef typename Field::Element                 Element;      //!< Element type

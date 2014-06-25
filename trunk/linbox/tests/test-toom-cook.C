@@ -32,17 +32,170 @@
 
 
 #include <iostream>
-#include <linbox-config.h>
-#include <linbox/field/modular.h>
-#include <linbox/matrix/dense-matrix.h>
-#include <linbox/matrix/random-matrix.h>
+#include "linbox-config.h"
+#include "linbox/field/modular.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/random-matrix.h"
 // #include <fflas-ffpack/fflas/fflas.h>
-#include <linbox/field/givaro.h>
-#include <linbox/util/timer.h>
+#include "linbox/field/givaro.h"
+#include "linbox/util/timer.h"
 
 #include "linbox/algorithms/matrix-blas3/mul.h"
 
 #include "test-common.h"
+
+
+
+namespace LinBox { namespace Protected {
+	struct IntegerSparseCraMatMul {
+
+
+		typedef SparseMatrixFormat::CSR spfmt ;
+		typedef Modular<double>         Field;
+		typedef Field::Element          Element;
+		typedef SparseMatrix<Field,spfmt>       ModularMatrix ;
+		typedef BlasVector<Field>               ModularVector;
+		typedef BlasVector<PID_integer>         IntegerVector;
+		typedef SparseMatrix<PID_integer,spfmt> IntegerMatrix ;
+
+#ifdef _LB_MM_TIMING
+#ifdef _OPENMP
+		typedef LinBox::OMPTimer Mytime;
+#else
+		typedef LinBox::Timer    Mytime;
+#endif
+#endif
+
+		const IntegerMatrix &_A_ ;
+		const IntegerVector &_B_ ;
+
+#ifdef _LB_MM_TIMING
+		mutable Mytime chrono;
+#endif
+
+		IntegerSparseCraMatMul(const IntegerMatrix& A, const IntegerVector& B) :
+			_A_(A), _B_(B)
+		{
+#ifdef _LB_MM_TIMING
+			chrono.clear();
+#endif
+			linbox_check(A.getPointer() == _A_.getPointer());
+		}
+
+		IntegerSparseCraMatMul(IntegerMatrix& A, IntegerVector& B) :
+			_A_(A), _B_(B)
+		{
+#ifdef _LB_MM_TIMING
+			chrono.clear();
+#endif
+			linbox_check(A.getPointer() == _A_.getPointer());
+		}
+
+		ModularVector& operator()(ModularVector& Cp, const Field& F) const
+		{
+			// BlasMatrixDomain<Field>   BMD(F);
+
+			/*  intialisation */
+			// ModularMatrix Cpp(_A_.rowdim(),_B_.coldim());
+			// Cp = Cpp ;
+			ModularMatrix Ap(_A_, F);
+			ModularVector Bp(F, _B_);
+			Cp.resize(Ap.rowdim());
+
+			/*  multiplication mod p */
+
+#ifdef _LB_MM_TIMING
+			Mytime matmul; matmul.clear(); matmul.start();
+#endif
+			// BMD.mul(Cp,Ap,Bp);
+			Ap.apply(Cp,Bp);
+			// BMD.axpyin(Cp,Ap,Bp);
+#if 0
+			// BMD.mul( static_cast<BlasMatrix<double>&>(Cp),Ap,Bp);
+			if (FAM_TYPE == _axpy)
+				BMD.axpyin(Cp,Ap,Bp);
+			else if (FAM_TYPE == _axmy)
+				BMD.axmyin(Cp,Ap,Bp);
+			else if (FAM_TYPE == _maxpy)
+				BMD.maxpyin(Cp,Ap,Bp);
+#endif
+#ifdef _LB_MM_TIMING
+			matmul.stop();
+			this->chrono+=matmul;
+#endif
+#if 0
+			if (Ap.rowdim() <= 20 && Ap.coldim() <= 20) {
+				Integer chara;
+				F.characteristic(chara);
+				F.write(cout) << endl;
+				cout << "p:=" << chara << ';' << std::endl;
+				A.write(cout<< "A:=",true) << ';' << std::endl;
+				Ap.write(cout << "Ap:=", F, true) << ';' << endl;
+				Bp.write(cout << "Bp:=", F, true) << ';' << endl;
+				Cp.write(cout<< "Cp:=", F, true) << ';' << endl;
+			}
+#endif
+			return Cp;
+		}
+
+
+
+	};
+} // Protected
+} // LinBox
+
+namespace LinBox { namespace BLAS2 {
+
+	template<class _anyVector>
+	_anyVector & mul (_anyVector& C,
+			  const SparseMatrix<typename _anyVector::Field, SparseMatrixFormat::CSR> & A,
+			  const _anyVector& B,
+			  const BLAS3::mulMethod::CRA &)
+	{
+
+		size_t PrimeSize = 22; //! @todo pourqoi ?
+
+		integer mA, mB ;
+		// MatrixDomain<typename _anyMatrix::Field> MD(A.field());
+		// VectorDomain<typename _anyMatrix::Field> VD(A.field());
+		// MD.Magnitude(mA,A);
+		mA = A.magnitude();
+		// VD.Magnitude(mB,B);
+		mB = B.magnitude();
+		integer cA = (integer) A.maxrow();
+		double logC = Givaro::naturallog(mA*mB*cA);
+
+		typedef Modular<double> ModularField ;
+
+		{
+
+			RandomPrimeIterator genprime( (unsigned int)PrimeSize );
+			ChineseRemainder< FullMultipBlasMatCRA< ModularField > > cra( std::pair<size_t,double>(C.size(), logC) );
+			Protected::IntegerSparseCraMatMul iteration(A,B);
+
+			cra(C, iteration, genprime);
+
+#ifdef _LB_DEBUG
+#ifdef _LB_MM_TIMING
+			// std::cout << "Sole modular matrix multiplications: " << iteration.chrono << std::endl;
+#endif
+
+			Integer mC;
+			// VD.Magnitude(mC, C);
+			mC = C.magnitude();
+			std::cout << "C max: " << logtwo(mC) <<  " (" << LinBox::naturallog(mC) << ')' << std::endl;
+#endif
+
+		}
+
+		std::cout << mA << ',' << mB << ',' <<  C.magnitude() << std::endl;
+
+		return C;
+
+	}
+} // BLAS2
+} // LinBox
+
 int main(int ac, char ** av) {
 	static int p = 1009;
 	static int e = 3 ;
@@ -207,5 +360,53 @@ int main(int ac, char ** av) {
 	}
 
 
+	{ /* ZZ spmat mul */
+
+		typedef LinBox::PID_integer Field;
+		typedef LinBox::SparseMatrix<Field,LinBox::SparseMatrixFormat::CSR> BlackBox;
+		Field ZZ ;
+
+		LinBox::VectorDomain<LinBox::PID_integer> MD(ZZ);
+
+		// typename Field::RandIter ri (ZZ,b);
+		LinBox::RandomIntegerIter<false> ri((unsigned int)b);
+		double sparsity = 0.05;
+		LinBox::RandomSparseStream<Field, typename BlackBox::Row, LinBox::RandomIntegerIter<false> > stream (ZZ, ri, sparsity, k, m);
+
+		BlackBox A (ZZ, stream);
+
+		typedef LinBox::BlasVector<Field> Vector ;
+		Vector x(ZZ,k);
+		Vector y(ZZ,m);
+
+		// size_t iter = 1 ;
+		// LinBox::RandomDenseStream<Field, Vector> vs (ZZ, k, iter);
+		x.random(ri);
+
+		std::cout << "Naïve " << std::endl ;
+		Tim.clear() ; Tim.start() ;
+		A.apply(y,x);
+		Tim.stop();
+		std::cout << Tim << '(' << y[0] << ')' << std::endl;
+
+
+		std::cout << "CRA " << std::endl;
+		{
+
+
+			LinBox::BlasVector<LinBox::PID_integer> z(ZZ,m);
+			Tim.clear(); Tim.start();
+			LinBox::BLAS2::mul(z,A,x,LinBox::BLAS3::mulMethod::CRA());
+			Tim.stop();
+			std::cout << Tim << '(' << z[0] << ')' << std::endl;
+
+			if (!MD.areEqual(y,z)) {
+				// std::cout << D << std::endl;
+				// std::cout << C << std::endl;
+				std::cout << "error" << std::endl;
+				return 1;
+			}
+		}
+	}
 	return 0;
 }

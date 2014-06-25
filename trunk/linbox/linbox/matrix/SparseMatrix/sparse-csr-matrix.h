@@ -890,6 +890,16 @@ namespace LinBox {
 			return true ;
 		}
 
+		Element magnitude() const ;
+
+		size_t maxrow() const
+		{
+			size_t maxr = _start[1]-_start[0] ;
+			for (size_t i = 1 ; i < _rownb ; ++i)
+				maxr = std::max(maxr,_start[i+1]-_start[i]);
+			return maxr;
+		}
+
 	private :
 
 		class Helper {
@@ -1409,6 +1419,17 @@ namespace LinBox {
 		FFLAS::sp_fgemv((typename Field::Father_t)field(),  A, x, a, y);
 		return Y ;
 	}
+
+	template<>
+	Integer SparseMatrix<PID_integer, SparseMatrixFormat::CSR >::magnitude() const
+	{
+		// XXX this is a vector magnitude
+		Integer max_elt(0UL);
+		for (size_t i = 0 ; i < _nbnz ; ++i)
+			if (max_elt < Givaro::abs(_data[i]))
+				max_elt = Givaro::abs(_data[i]) ;
+		return max_elt ;
+	}
 #endif
 
 } // LinBox
@@ -1503,6 +1524,8 @@ namespace LinBox {
 
 
 } // namespace LinBox
+
+
 
 #endif // __LINBOX_sparse_matrix_sparse_csr_matrix_H
 
