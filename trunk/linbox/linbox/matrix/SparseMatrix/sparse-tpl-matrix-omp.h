@@ -18,8 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
 
- * Written by Rich Seagraves <seagrave@cis.udel.edu>
- * with mods by bds
+ * Written by Alex Stachnik <stachnik@udel.edu>
  */
 
 /*! @file matrix/SparseMatrix/sparse-tpl-matrix-omp.h
@@ -277,29 +276,21 @@ class SparseMatrix<Field_, SparseMatrixFormat::TPL_omp> : public BlackboxInterfa
 	Element& getEntry(Element& e, Index i, Index j) const;
 
 	/** y <- A x.
-	 *
-	 *  Performance will be better if A is in rowMajor or colMajor order.
-	 *
-	 *  If this were to be used extensively for sparse black box ops,
-	 *  optimizations would be desirable.
 	 */
 	template<class OutVector, class InVector>
 	OutVector & apply(OutVector &, const InVector &) const;
 
-        /// Mul with this on left: Y <- AX. Requires conformal shapes.
+        // Mul with this on left: Y <- AX. Requires conformal shapes.
+	// Requires Y != X
 	template<class Mat1, class Mat2>
 	Mat1 & applyLeft(Mat1 &Y, const Mat2 &X) const;
 
-        /// Mul with this on right: Y <- XA. Requires conformal shapes.
+        // Mul with this on right: Y <- XA. Requires conformal shapes.
+	// Requires Y != X
 	template<class Mat1, class Mat2>
 	Mat1 & applyRight(Mat1 &Y, const Mat2 &X) const;
 
 	/** y <- A^T x.
-	 *
-	 *  Performance will be better if A is in rowMajor or colMajor order.
-	 *
-	 *  If this were to be used extensively for sparse black box ops,
-	 *  optimizations would be desirable.
 	 */
 	template<class OutVector, class InVector>
 	OutVector & applyTranspose(OutVector &, const InVector &) const;
@@ -399,7 +390,7 @@ protected:
 #define TRIPLES_UNSORTED 1
 #define TRIPLES_SORTED 2
 
-	//Either TRIPLES_SORTED or TRIPLES_UNSORTED, maybe extend this later
+	//Either TRIPLES_SORTED or TRIPLES_UNSORTED
 	int sortType_;
 
 #define CHUNK_BY_ROW 1

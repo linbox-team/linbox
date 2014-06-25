@@ -18,12 +18,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
 
- * Written by Rich Seagraves <seagrave@cis.udel.edu>
- * with mods by bds
+ * Written by Alex Stachnik <stachnik@udel.edu>
  */
 
-/** @file blackbox/triplesbb-omp.h
- * @ingroup blackbox
+/** @file matrix/SparseMatrix/sparse-tpl-matrix-omp.inl
+ * @ingroup sparsematrix
  * @brief NO DOC
  */
 
@@ -238,8 +237,6 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
 #pragma omp parallel
 #endif
 	{
-                Matrix Xr;
-
 		Index numBlockSizes=rowBlocks_.size();
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *rowChunks=&(rowBlocks_[chunkSizeIx]);
@@ -255,7 +252,7 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
 					for (Index k=0;k<dataBlock->elts_.size();++k) {
                                                 const Index row=dataBlock->getRow((int)k);
                                                 const Index col=dataBlock->getCol((int)k);
-                                                Xr.submatrix(X,col,0,1,X.coldim());
+                                                typename Matrix::constSubMatrixType Xr(X,col,0,1,X.coldim());
                                                 YTemp.saxpyin(dataBlock->elts_[k],Xr,
                                                               row,0,1,Y.coldim());
                                         }
@@ -279,8 +276,6 @@ applyRight(Mat1 &Y, const Mat2 &X) const
 #pragma omp parallel
 #endif
 	{
-                Matrix Xc;
-
 		Index numBlockSizes=colBlocks_.size();
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *colChunks=&(colBlocks_[chunkSizeIx]);
@@ -296,7 +291,7 @@ applyRight(Mat1 &Y, const Mat2 &X) const
 					for (Index k=0;k<dataBlock->elts_.size();++k) {
                                                 const Index row=dataBlock->getRow((int)k);
                                                 const Index col=dataBlock->getCol((int)k);
-						Xc.submatrix(X,0,row,X.rowdim(),1);
+                                                typename Matrix::constSubMatrixType Xc(X,0,row,X.rowdim(),1);
                                                 YTemp.saxpyin(dataBlock->elts_[k],Xc,
                                                               0,col,Y.rowdim(),1);
                                         }

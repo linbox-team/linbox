@@ -31,6 +31,10 @@
 #include <algorithm>
 #include <iomanip>
 
+#ifdef LINBOX_USES_OMP
+#include <omp.h>
+#endif
+
 #include "linbox/util/commentator.h"
 
 #define DEFAULT_BLOCK_EARLY_TERM_THRESHOLD 10
@@ -42,7 +46,6 @@
 
 namespace LinBox
 {
-
     /** Compute the linear generator of a sequence of matrices.
      *
      * This class encapsulates the functionality required for computing
@@ -543,10 +546,29 @@ EARLY_TERM_THRESHOLD (ett_default)
 				cseqit = _seqel;
 
 				//Compute the discrepancy
+				std::vector<Coefficient*> coeffVec;
+				std::vector<const Coefficient*> seqPtrVec;
 				for(genit = _gen.begin(); genit!=_gen.end(); ++genit){
-					domain().axpyin(disc,*cseqit,*genit);
+					coeffVec.push_back(&(*genit));
+					seqPtrVec.push_back(&(*cseqit));
 					--cseqit;
 				}
+				int numCoeffs=coeffVec.size();
+				std::vector <Coefficient> discComponents;
+				discComponents.reserve(numCoeffs);
+				for (int i=0;i<numCoeffs;++i) {
+					discComponents.push_back(Coefficient(field(),_row,_row+_col));
+				}
+#ifdef LINBOX_USES_OMP
+#pragma omp parallel for
+#endif
+				for (int i=0;i<numCoeffs;++i) {
+					domain().axpyin(discComponents[i],*(seqPtrVec[i]),*(coeffVec[i]));
+				}
+				for (int i=0;i<numCoeffs;++i) {
+					domain().addin(disc,discComponents[i]);
+				}
+
 				//Compute tau with Algorith3.2
 				Coefficient tau(field(), _row+_col, _row+_col);
 				Sub primaryDisc(disc,0,0,_row,_col);
@@ -556,10 +578,15 @@ EARLY_TERM_THRESHOLD (ett_default)
 					_etc=_ett;
 				}
 				Algorithm3dot2(tau, disc, _deg, _mu, _sigma, _beta);
+
 				//Multiply tau into each matrix in the generator
-				for(genit = _gen.begin(); genit!=_gen.end(); ++genit){
-					domain().mulin(*genit,tau);
+#ifdef LINBOX_USES_OMP
+#pragma omp parallel for
+#endif
+				for (int i=0;i<numCoeffs;++i) {
+					domain().mulin(*(coeffVec[i]),tau);
 				}
+
 				//Increment the auxiliary degrees and beta
 				for(size_t j = _col; j <_row+_col; ++j)
 					_deg[j]++;
