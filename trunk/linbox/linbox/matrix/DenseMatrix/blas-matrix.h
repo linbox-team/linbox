@@ -1243,7 +1243,7 @@ namespace LinBox
 
 } // LinBox
 
-#include "linbox/matrix/random-matrix.h"
+#include "linbox/randiter/random-integer.h"
 
 namespace LinBox
 {
@@ -1255,10 +1255,9 @@ namespace LinBox
 	{
 		// std::cout << "randomized " <<  b << std::endl;
 		RandomIntegerIter<false> R((unsigned)b);
-		typedef RandomIntegerIter<false> IntRandIter ;
-		typedef RandomDenseMatrix<IntRandIter, PID_integer > IntRand_t;
-		IntRand_t Randomize(field(),R);
-		Randomize.random(*this);
+		for (size_t i = 0 ; i < rowdim() ; ++i)
+			for (size_t j = 0 ; j < coldim() ; ++j)
+				R.random(refEntry(i,j));
 
 	}
 

@@ -334,6 +334,21 @@ namespace LinBox
 		return A;
 	}
 
+	template<class Randiter, class Field>
+	template<class Matrix>
+	Matrix&
+	RandomDenseMatrix<Randiter, Field>::randomFullRank(Matrix &A)
+	{
+		long unsigned r,b,m,n;
+		m=A.rowdim();
+		n=A.coldim();
+		b=m<n?m:n;
+		do {
+			random(A);
+		} while(LinBox::rank(r,A,Method::Hybrid()) < b);
+		return A;
+	}
+
 	//////// Random Matrix with prescribed Rank
 #if 0
 	template<class Randiter, class Field>

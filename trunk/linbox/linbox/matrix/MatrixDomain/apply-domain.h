@@ -248,6 +248,31 @@ namespace LinBox {
 			return y ;
 		}
 
+
+		// y = a A x + b y
+		template<class Matrix>
+		std::vector<Element>& _apply(LINBOX_enum(Tag::Transpose) t
+		             , std::vector<Element> & y
+		             , const Element & a
+		             , const Matrix & A
+		             , const Element & b
+		             , const std::vector<Element> & x
+			     , typename ContainerCategories::Vector
+			     , typename ContainerCategories::Vector ) const
+		{
+
+			FFLAS::fgemv((typename Field::Father_t)	_field
+				     , (FFLAS::FFLAS_TRANSPOSE)t,
+				     A.rowdim(), A.coldim(),
+				     _field.one,
+				     A.getPointer(), A.getStride(),
+			             &x[0], 1,
+				     _field.zero,
+			             &y[0],1);
+
+			return y ;
+		}
+
 		// y = a A x + b y
 		template<class _In, class _Out, class Matrix>
 		_Out& _apply( LINBOX_enum(Tag::Transpose) t

@@ -31,6 +31,25 @@ typedef SparseMatrix<Field, SparseMatrixFormat::TPL_omp> SparseMat;
 typedef MatrixDomain<Field> Domain;
 typedef typename Domain::OwnMatrix Block;
 
+
+typedef Givaro::ZpzDom<Givaro::Std32> BaseDom;
+typedef Givaro::Poly1Dom<BaseDom,Givaro::Dense> PolyDom;
+typedef GivaroPoly<PolyDom> Ring;
+typedef MatrixDomain<Ring> PolyMatDom;
+typedef BlasMatrix<Ring> PolyMat;
+
+
+int randRange(int start, int end)
+{
+        double rval = rand();
+        static const double NORMALIZING_CONSTANT = 1.0/(1.0+RAND_MAX);
+        double normedRVal = rval*NORMALIZING_CONSTANT;
+        double rangeSize = end-start;
+        int offset = rangeSize*normedRVal;
+        return start+offset;
+}
+
+
 void benchmarkBCD(Field& F,
                   Domain& MD,
                   SparseMat& M,
@@ -47,12 +66,6 @@ void benchmarkBCD(Field& F,
 
 	double start=omp_get_wtime();
 	deg=BCD.right_minpoly(gen);
-
-	typedef Givaro::ZpzDom<Givaro::Std32> BaseDom;
-	typedef Givaro::Poly1Dom<BaseDom,Givaro::Dense> PolyDom;
-	typedef GivaroPoly<PolyDom> Ring;
-	typedef MatrixDomain<Ring> PolyMatDom;
-	typedef BlasMatrix<Ring> PolyMat;
 
 	BaseDom BD(p);
 	PolyDom PD(BD, "x");
@@ -86,6 +99,40 @@ void benchmarkBCD(Field& F,
 		R.write(std::cout,diag[i]);
 		std::cout << std::endl;
 	}
+
+	testCorrectness(F,p,M,diag[diag.size()-1],PD);
+}
+
+bool testCorrectness(Field& F,
+                     int p,
+                     SparseMat& M,
+                     Ring& minPoly
+                     PolyDom& PD)
+{
+	int n=M.rowdim();
+	Element d,e;
+	F.init(d,0);
+	BlasVector<Element> v(F,n,d),sum(F,n,d),vPrime(F,n,d);
+	for (int i=0;i<n;++i) {
+		F.init(v[i],randRange(0,p));
+	}
+	for (int i=0;i<=PD.degree(minPoly);++i) {
+		PD.getEntry(d,i,minPoly);
+		for (int j=0;j<n;++j) {
+			F.mul(e,d,v[j]);
+			F.addin(sum[j],e);
+		}
+		M.apply(vPrime,v);
+		for (int j=0;j<n;++j) {
+			v[j]=vPrime[j]
+		}
+	}
+	for (int i=0;i<n;++i) {
+		if (!F.isZero(v[i])) {
+			return false;
+		}
+	}
+	return true;
 }
 
 int main(int argc, char** argv)
