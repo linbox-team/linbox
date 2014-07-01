@@ -41,6 +41,7 @@
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/blackbox.h"
+#include "linbox/vector/blas-vector.h"
 
 namespace LinBox
 {
@@ -242,10 +243,9 @@ namespace LinBox
 
 			Ring r = A.field();
 
+			BlasVector<Ring> e(r,A.coldim()), tmp(r,A.rowdim());
 
-			std::vector<typename Ring::Element> e(A.coldim(), r.zero), tmp(A.rowdim());
-
-			typename std::vector<typename Ring::Element>::iterator iter, e_p;
+			typename BlasVector<Ring>::iterator iter, e_p;
 
 			typename Field::Element val;
 

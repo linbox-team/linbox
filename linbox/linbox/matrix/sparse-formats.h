@@ -63,6 +63,7 @@ namespace LinBox {
 		class TPL         : public ANY {} ; //!< vector of triples
 		class TPL_omp     : public ANY {} ; //!< triplesbb for openmp
 		class LIL         : public ANY {} ; //!< vector of pairs
+		class SMM         : public ANY {} ; //!< Sparse Map of Maps
 
 		// the old sparse matrix reps.
 		// class VVP : public ANY {} ; // vector of vector of pairs

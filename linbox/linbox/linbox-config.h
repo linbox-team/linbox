@@ -59,8 +59,9 @@ using std::ptrdiff_t;
 #endif
 
 
-
 namespace LinBox {
+
+	const int BlasBound = 1 << 26;
 
 	//! used to separate BLAS2 and BLAS3 operations
 	struct ContainerCategories {

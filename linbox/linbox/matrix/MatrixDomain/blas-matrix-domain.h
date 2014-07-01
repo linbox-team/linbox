@@ -56,8 +56,6 @@
 
 namespace LinBox
 {
-	//!@bug not used ?
-	const int BlasBound = 1 << 26;
 
 	/** @internal
 	 * Class handling multiplication of a Matrix by an Operand with accumulation and scaling.

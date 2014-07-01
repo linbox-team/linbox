@@ -154,6 +154,13 @@ namespace LinBox
 			domain().div(z, x, a);
 			return z;
 		}
+
+		Element &normalizeIn(Element &x) const {
+			Scalar_t a;
+			domain().leadcoef(a, x);
+			domain().divin(x, a);
+			return x;
+		}
 		
 		bool areAssociates(const Element &x, const Element &y) const {
 			Scalar_t a, b;

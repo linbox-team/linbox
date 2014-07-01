@@ -45,6 +45,7 @@
 
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-full-multip-fixed.h"
+#include "linbox/solutions/rank.h"
 
 namespace LinBox
 {
@@ -106,6 +107,12 @@ namespace LinBox
 		 */
 		template<class Matrix>
 		Matrix & random(Matrix & A) ;
+
+		/*! Create a random matrix with rank=min(rowdim,coldim)
+		 * @param A
+		 */
+		template<class Matrix>
+		Matrix& randomFullRank(Matrix& A);
 
 		/*! provide a matrix with prescribed rank.
 		 * Default method.

@@ -122,7 +122,8 @@ int main(int argc, char** argv) {
 
 	parseArguments (argc, argv, args);
 
-	nnz=(int)((double)(n*n)*sparsity);
+	nnz=(int)((((double)(n))*n)*sparsity);
+	std::cout << nnz << std::endl;
 
 	Field F(q);
 	Domain MD(F);
