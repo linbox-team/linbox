@@ -32,100 +32,99 @@
 #include "linbox/randiter/random-prime.h"
 
 
-namespace LinBox { namespace BLAS3 {
+namespace LinBox { namespace BLAS3 { namespace Protected {
 
-	namespace Protected {
-		struct IntegerCraMatMul {
+	struct IntegerCraMatMul {
 
 
-			typedef Modular<double>     Field;
-			typedef Field::Element      Element;
-			typedef BlasMatrix<Field>   ModularMatrix ;
-			typedef BlasMatrix<PID_integer> IntegerMatrix ;
+		typedef Modular<double>     Field;
+		typedef Field::Element      Element;
+		typedef BlasMatrix<Field>   ModularMatrix ;
+		typedef BlasMatrix<PID_integer> IntegerMatrix ;
 
 #ifdef _LB_MM_TIMING
 #ifdef _OPENMP
-			typedef LinBox::OMPTimer Mytime;
+		typedef LinBox::OMPTimer Mytime;
 #else
-			typedef LinBox::Timer    Mytime;
+		typedef LinBox::Timer    Mytime;
 #endif
 #endif
 
-			const IntegerMatrix &_A_, &_B_;
+		const IntegerMatrix &_A_, &_B_;
 
 #ifdef _LB_MM_TIMING
-			mutable Mytime chrono;
+		mutable Mytime chrono;
 #endif
 
-			IntegerCraMatMul(const IntegerMatrix& A, const IntegerMatrix& B) :
-				_A_(A), _B_(B)
-			{
+		IntegerCraMatMul(const IntegerMatrix& A, const IntegerMatrix& B) :
+			_A_(A), _B_(B)
+		{
 #ifdef _LB_MM_TIMING
-				chrono.clear();
+			chrono.clear();
 #endif
-				linbox_check(A.getPointer() == _A_.getPointer());
-			}
+			linbox_check(A.getPointer() == _A_.getPointer());
+		}
 
-			IntegerCraMatMul(IntegerMatrix& A, IntegerMatrix& B) :
-				_A_(A), _B_(B)
-			{
+		IntegerCraMatMul(IntegerMatrix& A, IntegerMatrix& B) :
+			_A_(A), _B_(B)
+		{
 #ifdef _LB_MM_TIMING
-				chrono.clear();
+			chrono.clear();
 #endif
-				linbox_check(A.getPointer() == _A_.getPointer());
-			}
+			linbox_check(A.getPointer() == _A_.getPointer());
+		}
 
-			ModularMatrix& operator()(ModularMatrix& Cp, const Field& F) const
-			{
-				BlasMatrixDomain<Field>   BMD(F);
+		ModularMatrix& operator()(ModularMatrix& Cp, const Field& F) const
+		{
+			BlasMatrixDomain<Field>   BMD(F);
 
-				/*  intialisation */
-				// ModularMatrix Cpp(_A_.rowdim(),_B_.coldim());
-				// Cp = Cpp ;
-				ModularMatrix Ap(_A_, F);
-				ModularMatrix Bp(_B_, F);
-				Cp.resize(Ap.rowdim(),Bp.coldim());
+			/*  intialisation */
+			// ModularMatrix Cpp(_A_.rowdim(),_B_.coldim());
+			// Cp = Cpp ;
+			ModularMatrix Ap(_A_, F);
+			ModularMatrix Bp(_B_, F);
+			Cp.resize(Ap.rowdim(),Bp.coldim());
 
-				/*  multiplication mod p */
+			/*  multiplication mod p */
 
 #ifdef _LB_MM_TIMING
-				Mytime matmul; matmul.clear(); matmul.start();
+			Mytime matmul; matmul.clear(); matmul.start();
 #endif
-				BMD.mul(Cp,Ap,Bp);
-				// BMD.axpyin(Cp,Ap,Bp);
+			BMD.mul(Cp,Ap,Bp);
+			// BMD.axpyin(Cp,Ap,Bp);
 #if 0
-				// BMD.mul( static_cast<BlasMatrix<double>&>(Cp),Ap,Bp);
-				if (FAM_TYPE == _axpy)
-					BMD.axpyin(Cp,Ap,Bp);
-				else if (FAM_TYPE == _axmy)
-					BMD.axmyin(Cp,Ap,Bp);
-				else if (FAM_TYPE == _maxpy)
-					BMD.maxpyin(Cp,Ap,Bp);
+			// BMD.mul( static_cast<BlasMatrix<double>&>(Cp),Ap,Bp);
+			if (FAM_TYPE == _axpy)
+				BMD.axpyin(Cp,Ap,Bp);
+			else if (FAM_TYPE == _axmy)
+				BMD.axmyin(Cp,Ap,Bp);
+			else if (FAM_TYPE == _maxpy)
+				BMD.maxpyin(Cp,Ap,Bp);
 #endif
 #ifdef _LB_MM_TIMING
-				matmul.stop();
-				this->chrono+=matmul;
+			matmul.stop();
+			this->chrono+=matmul;
 #endif
 #if 0
-				if (Ap.rowdim() <= 20 && Ap.coldim() <= 20) {
-					Integer chara;
-					F.characteristic(chara);
-					F.write(cout) << endl;
-					cout << "p:=" << chara << ';' << std::endl;
-					A.write(cout<< "A:=",true) << ';' << std::endl;
-					Ap.write(cout << "Ap:=", F, true) << ';' << endl;
-					Bp.write(cout << "Bp:=", F, true) << ';' << endl;
-					Cp.write(cout<< "Cp:=", F, true) << ';' << endl;
-				}
-#endif
-				return Cp;
+			if (Ap.rowdim() <= 20 && Ap.coldim() <= 20) {
+				Integer chara;
+				F.characteristic(chara);
+				F.write(cout) << endl;
+				cout << "p:=" << chara << ';' << std::endl;
+				A.write(cout<< "A:=",true) << ';' << std::endl;
+				Ap.write(cout << "Ap:=", F, true) << ';' << endl;
+				Bp.write(cout << "Bp:=", F, true) << ';' << endl;
+				Cp.write(cout<< "Cp:=", F, true) << ';' << endl;
 			}
+#endif
+			return Cp;
+		}
 
 
 
-		};
-	} // Protected
+	};
 
+} // Protected
 } // BLAS3
 } // LinBox
 

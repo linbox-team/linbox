@@ -31,7 +31,8 @@ dnl Shamelessly stolen from Owen Taylor
 
 dnl LB_CHECK_GIVARO ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
-dnl Test for Givaro and define GIVARO_CFLAGS and GIVARO_LIBS
+dnl Tests for Givaro and define GIVARO_CFLAGS and GIVARO_LIBS
+dnl Defines HAVE_GIVARO
 
 AC_DEFUN([LB_CHECK_GIVARO],
 [

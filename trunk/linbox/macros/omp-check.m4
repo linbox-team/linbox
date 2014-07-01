@@ -36,7 +36,7 @@ AC_ARG_WITH(
 
 AS_IF([ test "$with_openmp" = "yes" ],
 	[AC_MSG_RESULT(yes)
-	CXXFLAGS="-fopenmp -D__FFLASFFPACK_USE_OPENMP ${CXXFLAGS}"
+	CXXFLAGS="-fopenmp ${CXXFLAGS}"
 	],[
 	AC_MSG_RESULT(no)
 	])
