@@ -21,10 +21,13 @@ dnl This file is part of LinBox
  dnl ========LICENCE========
  dnl
 dnl Modified by Pascal Giorgi, 2003-12-03
+dnl Modified by BB, 2013-5-22 and other times
 
 dnl LB_CHECK_GMP ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
 dnl Test for the GNU Multiprecision library and define GMP_CFLAGS and GMP_LIBS
+dnl Sets GMP_CFLAGS and GMP_LIBS
+dnl Defines HAVE_GMP
 
 AC_DEFUN([LB_CHECK_GMP], [
 
