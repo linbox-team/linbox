@@ -896,7 +896,7 @@ namespace LinBox {
 		{
 			size_t maxr = _start[1]-_start[0] ;
 			for (size_t i = 1 ; i < _rownb ; ++i)
-				maxr = std::max(maxr,_start[i+1]-_start[i]);
+				maxr = std::max(maxr,(size_t)(_start[i+1]-_start[i]));
 			return maxr;
 		}
 
