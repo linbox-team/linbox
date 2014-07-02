@@ -488,7 +488,7 @@ namespace LinBox
 			// linbox_check(nnz < _rowid.size());
 			// linbox_check(nnz < _data.size());
 
-			if ( nnz < _nbnz && _colid[nnz] == j && i ==_rowid[nnz] ) { /* sort of nextTriple */
+			if ( nnz < (ptrdiff_t)_nbnz && _colid[nnz] == j && i ==_rowid[nnz] ) { /* sort of nextTriple */
 				linbox_check(!field().isZero(_data[nnz]));
 				return _data[nnz];
 			}
@@ -942,7 +942,7 @@ namespace LinBox
 		bool nextTriple(size_t & i, size_t &j, Element &e) const
 		{
 			ptrdiff_t idx = _triples.next();
-			if (idx >= _nbnz) {
+			if (idx >= (ptrdiff_t)_nbnz) {
 				_triples.reset() ;
 				return false;
 			}
