@@ -133,7 +133,10 @@ namespace LinBox
 		      using Father_t::convert ;
 		      integer &convert (integer &x, const Element &y) const
 		      {
-			      return x = integer (y);
+			      if (y < 0)
+				  	return x = integer (y+modulus);
+				  else
+				  	return x = integer (y);
 		      }
 
 		      using Father_t::init ;
