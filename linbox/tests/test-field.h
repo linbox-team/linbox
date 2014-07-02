@@ -1096,7 +1096,7 @@ namespace field_subtests {
 		LinBox::integer mun = -1 ;
 		LinBox::integer zer = 0 ;
 		F.init(one,pun);
-		F.init(mOne,mun);
+		F.init(mOne,mun); F.neg(mOne,one);
 		F.neg(mOne,one);
 		// F.init(mOne,-1L);
 		F.init(zero,zer);
