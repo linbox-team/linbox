@@ -69,8 +69,8 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 
 	commentator().start ("Testing Sparse elimination qlup", "testQLUP", iterations);
 
-	unsigned long Ni = n;
-	unsigned long Nj = n;
+	size_t Ni = n;
+	size_t Nj = n;
 	integer card; F.cardinality(card);
 	typename Field::RandIter generator (F,card,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
@@ -171,8 +171,8 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 
 	commentator().start ("Testing Sparse elimination qlup solve", "testQLUPsolve", iterations);
 
-	unsigned long Ni = n;
-	unsigned long Nj = n;
+	size_t Ni = n;
+	size_t Nj = n;
 	integer card; F.cardinality(card);
 	typename Field::RandIter generator (F,card,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
@@ -256,8 +256,8 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 	commentator().start ("Testing Sparse elimination qlup nullspacebasis", "testQLUPnullspace", iterations);
 
-	unsigned long Ni = n;
-	unsigned long Nj = n;
+	size_t Ni = n;
+	size_t Nj = n;
 	integer card; F.cardinality(card);
 	typename Field::RandIter generator (F,card,rseed);
 	RandStream stream (F, generator, sparsity, n, n, rseed);
@@ -283,7 +283,7 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 		GD.nullspacebasisin(X, CopyA );
 
-		unsigned long nullity = X.coldim();
+		size_t nullity = X.coldim();
 
 		BlasVector<Field> u(F,nullity);
 		for(typename BlasVector<Field>::iterator it=u.begin();it!=u.end();++it)

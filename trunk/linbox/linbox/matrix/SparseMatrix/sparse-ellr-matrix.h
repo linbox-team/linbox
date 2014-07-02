@@ -518,7 +518,7 @@ namespace LinBox
 		constElement &getEntry(const size_t &i, const size_t &j) const
 		{
 			ptrdiff_t off = _triples.next(_rowid);
-			if ( (_triples._row  == i) && _colid[i*_maxc+off]  == j  ) { /* sort of nextTriple */
+			if ( (_triples._row  == (ptrdiff_t)i) && _colid[i*_maxc+off]  == j  ) { /* sort of nextTriple */
 				linbox_check(!field().isZero(_data[i*_maxc+off]));
 				return _data[i*_maxc+off];
 			}
@@ -567,7 +567,7 @@ namespace LinBox
 			}
 			ptrdiff_t row = _triples._row ;
 			ptrdiff_t off = _triples._off ;
-			if (row != i) { /* new row */
+			if (row != (ptrdiff_t)i) { /* new row */
 				linbox_check((ptrdiff_t)i>row);
 				_triples._row = i ;
 				_triples._off = 0 ;
@@ -585,7 +585,7 @@ namespace LinBox
 			else { /* same row */
 				linbox_check(_triples._row == i);
 				_triples._off = off = off + 1 ;
-				if (off == _maxc) {
+				if (off == (ptrdiff_t)_maxc) {
 					insert(i,_maxc,j,e);
 				}
 				else {
@@ -1508,10 +1508,10 @@ namespace LinBox
 				if (_row == -1) {
 					++_row ;
 				}
-				while (_off >= rowid[_row]) {
+				while (_off >= (ptrdiff_t)rowid[_row]) {
 					_row += 1 ;
 					_off = 0 ;
-					if (_row >= rowid.size())
+					if (_row >= (ptrdiff_t)rowid.size())
 						break;
 				}
 				return _off;

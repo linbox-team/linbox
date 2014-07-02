@@ -566,7 +566,7 @@ namespace LinBox {
 			linbox_check(j<_colnb);
 
 			ptrdiff_t nnz = _triples.next(_start);
-			if ( nnz < _nbnz && _colid[nnz]  == j && i == _triples._row ) { /* sort of nextTriple */
+			if ( nnz < (ptrdiff_t)_nbnz && _colid[nnz]  == j && (ptrdiff_t)i == _triples._row ) { /* sort of nextTriple */
 				linbox_check(!field().isZero(_data[nnz]));
 				return _data[nnz];
 			}
@@ -1379,7 +1379,7 @@ namespace LinBox {
 			ptrdiff_t next( const svector_t & start)
 			{
 				_nnz +=1 ;
-				while (_row+1 < start.size() && _nnz >= start[_row+1]) {
+				while (_row+1 < (ptrdiff_t)start.size() && _nnz >= (ptrdiff_t)start[_row+1]) {
 					_row += 1;
 				}
 				return _nnz ;

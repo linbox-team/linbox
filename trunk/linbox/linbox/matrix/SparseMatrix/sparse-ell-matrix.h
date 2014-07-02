@@ -557,7 +557,7 @@ namespace LinBox
 			}
 			ptrdiff_t row = _triples._row ;
 			ptrdiff_t off = _triples._off ;
-			if (row != i) { /* new row */
+			if (row != (ptrdiff_t)i) { /* new row */
 				linbox_check((ptrdiff_t)i>row);
 				_triples._row = i ;
 				_triples._off = 0 ;
@@ -574,7 +574,7 @@ namespace LinBox
 			else { /* same row */
 				linbox_check(_triples._row == i);
 				_triples._off = off = off + 1 ;
-				if (off == _maxc) {
+				if (off == (ptrdiff_t)_maxc) {
 					insert(i,_maxc,j,e);
 				}
 				else {
@@ -1456,7 +1456,7 @@ namespace LinBox
 					++_row ;
 					return _off ;
 				}
-				if (_off >= maxc) {
+				if (_off >= (ptrdiff_t)maxc) {
 					_row += 1 ;
 					_off = 0 ;
 				}

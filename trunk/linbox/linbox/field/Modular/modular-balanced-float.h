@@ -131,7 +131,7 @@ namespace LinBox
 				      return x = integer (y);
 		      }
 
-		      using Father_t::init ;
+		      //using Father_t::init ;
 		      inline Element &init (Element &x, const integer &y) const
 		      {
 			      x = (Element)(y%lmodulus);
