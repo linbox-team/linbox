@@ -125,9 +125,9 @@ namespace LinBox
 		      using Father_t::convert ;
 		      inline integer &convert (integer &x, const Element &y) const
 		      {
-			      // if ( y < 0. )
-				      // return x = integer (y + modulus) ;
-			      // else
+			       if ( y < 0. )
+				       return x = integer (y + modulus) ;
+			       else
 				      return x = integer (y);
 		      }
 
