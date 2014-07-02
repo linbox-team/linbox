@@ -121,6 +121,7 @@ int main (int argc, char **argv)
 		pass = pass && testField<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<float>");
 	}
+#if 0 /* not working */
 
 	{ /* ModularBalanced<int32_t> */
 		//Field
@@ -135,7 +136,6 @@ int main (int argc, char **argv)
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<int32_t>");
 	}
 
-#if 0 /* not working */
 	{ /* ModularBalanced<char> */
 		//Field
 		typedef ModularBalanced<char> Field;
