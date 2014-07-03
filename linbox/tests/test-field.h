@@ -235,11 +235,10 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 #endif
 	// test of prime subfield bijection
-	if (q <= 0)
-		n = 49193295;   // Just using some odd value
+	if (p <= 0)
+		n = 0;
 	else
 		n = rand()%p;
-	if (n==0) ++n;
 	report << "Initial integer: " << n << endl;
 
 	F.init (a, n);  F.write ( report << "Result of init: ", a) << endl;
