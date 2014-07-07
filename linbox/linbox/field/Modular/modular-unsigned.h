@@ -244,6 +244,11 @@ namespace LinBox
 			return 64;// 2^6 (ou plus ?)
 		}
 
+		Element& next(Element &x) const
+		{
+			return addin(x,one);
+		}
+
 	private:
 
 		friend class FieldAXPY<Modular<Element> >;

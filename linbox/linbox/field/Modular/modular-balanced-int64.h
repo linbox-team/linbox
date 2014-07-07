@@ -135,6 +135,11 @@ namespace LinBox
 			return x = 0 ;
 		}
 
+
+		Element& next(Element &x) const
+		{
+			return addin(x,one);
+		}
 	};
 
 	template <>

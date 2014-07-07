@@ -451,6 +451,11 @@ namespace LinBox
 		static inline double getMaxModulus()
 		{ return 67108864.0; } // 2^26
 
+		Element& next(Element &x) const
+		{
+			return addin(x,one);
+		}
+
 	};
 
 #define SQR(A) \

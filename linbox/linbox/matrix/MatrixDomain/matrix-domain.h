@@ -94,6 +94,8 @@ namespace LinBox
 
 		void init(const Field & F) { _field = &F; _VD.init(F); }
 
+		MatrixDomain() {}
+
 		/// Constructor.
 		//! @param F field for MatrixDomain operations.
 		MatrixDomain (const Field &F) :

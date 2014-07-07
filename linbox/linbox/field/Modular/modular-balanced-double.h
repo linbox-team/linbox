@@ -177,6 +177,11 @@ namespace LinBox
 			      return 0;
 		      }
 
+		Element& next(Element &x) const
+		{
+			return addin(x,one);
+		}
+
 	      };
 
 	//! Specialization  of FieldAXPY.

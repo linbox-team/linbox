@@ -168,6 +168,20 @@ namespace LinBox
 		}
 #endif
 
+		Element& next(Element &x) const
+		{
+			int maxDeg=Givaro::Extension<GivaroField<BaseField> >::_exponent-1;
+			x.resize(maxDeg);
+			for (int i=0;i<maxDeg;++i) {
+				Givaro::Extension<GivaroField<BaseField> >::_bF.next(x[i]);
+				if (!Givaro::Extension<GivaroField<BaseField> >::_bF.isZero(x[i])) {
+					break;
+				}
+			}
+			Givaro::Extension<GivaroField<BaseField> >::_pD.setDegree(x);
+			return x;
+		}
+
 	}; // class GivaroExtension
 
 

@@ -41,7 +41,7 @@ namespace LinBox
 {
 
 template<class Field_>
-SparseMatrix<Field_,SparseMatrixFormat::SMM>::SparseMatrix() : MD_(Field_()),numCols_(0), numRows_(0), nnz_(0) {}
+SparseMatrix<Field_,SparseMatrixFormat::SMM>::SparseMatrix() : MD_(),numCols_(0), numRows_(0), nnz_(0) {}
 
 template<class Field_>
 SparseMatrix<Field_,SparseMatrixFormat::SMM>::SparseMatrix(const Field& F) :
@@ -155,8 +155,8 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::setEntry(Index i, Index j, co
 
 	if (!field().isZero(e)) {
 		++nnz_;
-		rowMap_[i][j]=e;
-		colMap_[j][i]=e;
+		field().assign(rowMap_[i][j],e);
+		field().assign(colMap_[j][i],e);
 	}
 }
 
@@ -378,8 +378,8 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::randomSim(Index nz, int seed)
 		typename Field::RandIter s(field(), 0, seed);
 		r = s;
 	}
-	while (nnz() < nz)
-	{	r.nonzerorandom(a);
+	while (nnz() < nz) {
+		nonzerorandom(field(),r,a);
 		i = ri.randomIntRange(0, rowdim()); j = ri.randomIntRange(0, coldim());
 		if (i!=j) {
 			addCol(a, j, i);
@@ -405,8 +405,8 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::randomEquiv(Index nz, int see
 	}
 	bool flip = true;
 	int count=0;
-	while (nnz() < nz)
-	{	r.nonzerorandom(a);
+	while (nnz() < nz) {
+		nonzerorandom(field(),r,a);
 		i = ri.randomIntRange(0, rowdim()); j = ri.randomIntRange(0, coldim());
 		if (i!=j){
 			if (flip) addCol(a, i, j);
@@ -435,10 +435,8 @@ std::ostream& SparseMatrix<Field_,SparseMatrixFormat::SMM>::print(std::ostream& 
 template<class Field_>
 std::ostream& SparseMatrix<Field_,SparseMatrixFormat::SMM>::write(std::ostream& out) const
 {
-	out << "%%MatrixMarket matrix coordinate integer general" << std::endl;
-	out << "% written from a LinBox SMM" << std::endl;
-        out << numRows_ << " " << numCols_ << " " << nnz_ << std::endl;
-        //for (Index i = 0; i < numRows_; ++i)
+	writeMMCoordHeader(out,*this,nnz(),"SparseMatrix<SMM>","");
+
         for (MapConstIt p = rowMap_.begin(); p != rowMap_.end(); ++p)
                 for (VectorConstIt rp = p->second.begin(); rp != p->second.end(); ++rp)
                         field().write(out << 1+p->first << " " << 1+rp->first << " ", rp->second) << std::endl;
@@ -501,10 +499,12 @@ template<class Vector>
 void SparseMatrix<Field_,SparseMatrixFormat::SMM>::toVector(Vector& vec) const
 {
         if (numCols_ == 1) {
+	        vec.resize(numRows_);
                 for (Index i=0;i<numRows_;++i) {
                         vec[i]=getEntry(i,0);
                 }
         } else {
+	        vec.resize(numCols_);
                 for (Index j=0;j<numCols_;++j) {
                         vec[j]=getEntry(0,j);
                 }
@@ -543,28 +543,33 @@ bool SparseMatrix<Field_,SparseMatrixFormat::SMM>::areEqual(SparseMatrix<Field_,
 }
 
 template<class Field_>
-void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateDenseRandMat(SparseMatrix<Field_,SparseMatrixFormat::SMM>& mat, int q)
+void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateDenseRandMat(SparseMatrix<Field_,SparseMatrixFormat::SMM>& mat,int seed)
 {
         typedef typename Field::Element Element;
 
         size_t m=mat.rowdim(),n=mat.coldim();
 	Element d;
 
+	typename Field::RandIter ri(field(),0,seed);
+
         for (size_t i=0;i<m;++i) {
                 for (size_t j=0;j<n;++j) {
-                        mat.field().init(d,randRange(0,q));
+	                ri.random(d);
                         mat.setEntry(i,j,d);
                 }
         }
 }
 
 template<class Field_>
-void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateRandMat(SparseMatrix<Field_,SparseMatrixFormat::SMM>& mat, int nnz, int q)
+void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateRandMat(SparseMatrix<Field_,SparseMatrixFormat::SMM>& mat, int nnz, int seed)
 {
         typedef typename Field::Element Element;
 
+        
         size_t m=mat.rowdim(),n=mat.coldim();
 	Element d;
+	typename Field::RandIter ri(field(),0,seed);
+	srand(seed);
 
         typedef std::pair<size_t,size_t> CoordPair;
         typedef std::set<CoordPair> PairSet;
@@ -577,20 +582,19 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateRandMat(SparseMatrix<
                         col = randRange(0,(int)n);
                 } while (pairs.count(CoordPair(row,col))!=0);
 
-                mat.field().init(d, randRange(1,q));
+                nonzerorandom(field(),ri,d);
                 mat.setEntry(row,col,d);
                 pairs.insert(CoordPair(row,col));
         }
 }
 
 template<class Field_>
-void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateScaledIdent(SparseMatrix<Field_,SparseMatrixFormat::SMM>& mat, int alpha)
+void SparseMatrix<Field_,SparseMatrixFormat::SMM>::
+generateScaledIdent(SparseMatrix<Field_,SparseMatrixFormat::SMM>& mat,
+                    const typename Field_::Element& d)
 {
-        typedef typename Field::Element Element;
         size_t m=mat.rowdim(),n=mat.coldim();
         size_t minDim=(m<n)?m:n;
-	Element d;
-        mat.field().init(d,alpha);
 
         for (size_t i=0;i<minDim;++i) {
                 mat.setEntry(i,i,d);
@@ -609,7 +613,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateSparseNonSingular(Spa
 	Element d;
 
         for (int i=0;i<n;++i) {
-                r.nonzerorandom(d);
+	        nonzerorandom(field(),r,d);
                 mat.setEntry(i,i,d);
         }
 
@@ -622,11 +626,10 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateCompanion(SparseMatri
         typedef typename Field::Element Element;
         int n=mat.rowdim();
         linbox_check(mat.rowdim()==mat.coldim());
-
-        typename Field::RandIter r(mat.field());
+        linbox_check(n==coeffs.size());
 
 	Element d;
-	mat.field().init(d,1);
+	mat.field().assign(d,mat.field().one);
         for (int i=1;i<n;++i) {
                 mat.setEntry(i,i-1,d);
         }
@@ -644,6 +647,16 @@ int SparseMatrix<Field_,SparseMatrixFormat::SMM>::randRange(int start, int end)
         double rangeSize = end-start;
         int offset = (int)(rangeSize*normedRVal);
         return start+offset;
+}
+
+template<class Field_>
+typename Field_::Element&
+SparseMatrix<Field_,SparseMatrixFormat::SMM>::nonzerorandom(const Field_& F,typename Field_::RandIter&r,typename Field_::Element& e)
+{
+	do {
+		r.random(e);
+	} while (F.isZero(e));
+	return e;
 }
 
 }

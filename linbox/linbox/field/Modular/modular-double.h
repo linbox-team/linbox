@@ -234,6 +234,11 @@ namespace LinBox
             return Father_t::write(os,x);
         }
 
+		Element& next(Element &x) const
+		{
+			return addin(x,one);
+		}
+
     };
 
 } // LinBox
