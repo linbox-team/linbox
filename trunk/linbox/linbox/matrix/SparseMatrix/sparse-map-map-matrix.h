@@ -90,11 +90,14 @@ public:
 
 	const Element& getEntry(Element& d, Index i, Index j) const;
 
+	// For debugging only
 	bool verify();
 
+	// y <- Ax
 	template<class OutVector, class InVector>
 	OutVector& apply(OutVector& y, const InVector& x) const;
 
+	// y <- xA
 	template<class OutVector, class InVector>
 	OutVector& applyTranspose(OutVector& y, const InVector& x) const;
 
@@ -114,8 +117,10 @@ public:
 
 	void swapCols(Index i, Index j);
 
+	//forall i,j: A_{i,j} <- k*A_{i,j}
 	void scaleMat(const Element& k);
 
+	// A<-A^{t}
 	void transpose();
 
 	Index nnz() const;
@@ -130,35 +135,56 @@ public:
 
 	std::istream& read(std::istream& in);
 
+	// Output pretty-printed matrix
 	std::ostream& print(std::ostream& out) const;
 
 	std::ostream& write(std::ostream& out) const;
 
+	// Initialize argument from this matrix using mat.read()
 	template<class Matrix>
 	void copy(Matrix& mat) const;
 
+	// Initialize this matrix from argument using mat.write()
 	template<class Matrix>
 	void copyFrom(Matrix& mat);
 
+	// Initializes the given vector using the entries from this matrix
+	// Requires an n-by-1 or 1-by-n matrix
 	template<class Vector>
 	void toVector(Vector& vec) const;
 
+	// Initializes this matrix from the given vector
+	// For a row vector use r=vec.size(), c=1
+	// For a column vector use c=vec.size(), r=1
 	template<class Vector>
 	void fromVector(const Vector& vec, Index r, Index c);
 
+	// Initialize mat to be a companion matrix of the polynomial
+	// s.t. mat[i,n-1]==coeffs[i]
+	// Assumes mat is n-by-n with n==coeffs.size()
 	static void generateCompanion(Self_t& mat,std::vector<Element>& coeffs);
 
-	static void generateDenseRandMat(Self_t& mat, int q);
+	// Initializes each entry of mat with a random field element
+	static void generateDenseRandMat(Self_t& mat, int seed=0);
 
-	static void generateRandMat(Self_t& mat, int nnz, int q);
+	// Initialize mat with nnz non-zero random elements at random locations
+	// Warning: Very inefficient as nnz approaches n*m (keep nnz < about 0.2 n*m)
+	static void generateRandMat(Self_t& mat, int nnz, int seed=0);
 
-	static void generateScaledIdent(Self_t& mat, int alpha);
+	// Initializes mat to dI
+	static void generateScaledIdent(Self_t& mat, const Element& d);
 
+	// Initializes mat with at least approxNNZ entries
+	// Assumes mat is n-by-n
+	// Mat is guaranteed to be non-singular
+	// Warning: Very inefficient as nnz approaches n*m (keep nnz < about 0.2 n*m)
 	static void generateSparseNonSingular(Self_t& mat, int approxNNZ, int seed=0);
 
 protected:
 
 	static int randRange(int start, int end);
+
+	static Element& nonzerorandom(const Field& F, typename Field::RandIter& r,Element& e);
 
 	MatrixDomain<Field> MD_;
 

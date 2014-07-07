@@ -46,6 +46,7 @@
 
 namespace LinBox
 {
+	double g_time1=0.0,g_time2=0.0,g_time3=0.0,g_time4=0.0;
     /** Compute the linear generator of a sequence of matrices.
      *
      * This class encapsulates the functionality required for computing
@@ -545,6 +546,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				//get a iterator to the seq element to be processed
 				cseqit = _seqel;
 
+				double start1=omp_get_wtime();
 				//Compute the discrepancy
 				std::vector<Coefficient*> coeffVec;
 				std::vector<const Coefficient*> seqPtrVec;
@@ -568,7 +570,9 @@ EARLY_TERM_THRESHOLD (ett_default)
 				for (int i=0;i<numCoeffs;++i) {
 					domain().addin(disc,discComponents[i]);
 				}
+				g_time2 += omp_get_wtime()-start1;
 
+				double start2=omp_get_wtime();
 				//Compute tau with Algorith3.2
 				Coefficient tau(field(), _row+_col, _row+_col);
 				Sub primaryDisc(disc,0,0,_row,_col);
@@ -578,7 +582,8 @@ EARLY_TERM_THRESHOLD (ett_default)
 					_etc=_ett;
 				}
 				Algorithm3dot2(tau, disc, _deg, _mu, _sigma, _beta);
-
+				g_time3 += omp_get_wtime()-start2;
+				double start3=omp_get_wtime();
 				//Multiply tau into each matrix in the generator
 #ifdef LINBOX_USES_OMP
 #pragma omp parallel for
@@ -586,7 +591,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				for (int i=0;i<numCoeffs;++i) {
 					domain().mulin(*(coeffVec[i]),tau);
 				}
-
+				g_time4 += omp_get_wtime()-start3;
 				//Increment the auxiliary degrees and beta
 				for(size_t j = _col; j <_row+_col; ++j)
 					_deg[j]++;
@@ -827,12 +832,16 @@ _Sequence>::right_minpoly (std::vector<Coefficient> &P)
 		    ++bmit;
 		    check = bmit.state();
 		    if(check.IsSequenceExceeded()){
+			    double start=omp_get_wtime();
 			    ++contiter;
+			    g_time1+=omp_get_wtime()-start;
 			    seq.push_back(*contiter);
 		    }
 	    }
 	    P = bmit.GetGenerator();
 	    std::vector<size_t> deg(bmit.get_deg());
+	    commentator().report(Commentator::LEVEL_IMPORTANT,TIMING_MEASURE) <<
+		    "Times: " << g_time1 << " " << g_time2 << " " << g_time3 << " " << g_time4<<std::endl;
 	    return deg;
     }
 

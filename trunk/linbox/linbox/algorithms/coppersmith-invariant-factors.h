@@ -101,7 +101,8 @@ public:
 		std::vector<size_t> deg;
 		std::vector<Block> gen;
 		deg=coppersmith.right_minpoly(gen);
-
+		commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
+			<<"Finished computing minpoly"<<std::endl;
 		PolyDom PD(F_,"x");
 		PolyRing R(PD);
 		PolyMatDom PMD(R);

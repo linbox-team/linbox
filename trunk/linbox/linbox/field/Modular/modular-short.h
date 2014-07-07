@@ -421,6 +421,12 @@ namespace LinBox
 			// return 181 ;
 		}
 
+		Element& next(Element &x) const
+		{
+			return addin(x,one);
+		}
+
+
 	private:
 
 		static void XGCD(int16_t& d, int16_t& s, int16_t& t, int16_t a, int16_t b)

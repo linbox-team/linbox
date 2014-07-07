@@ -231,7 +231,7 @@ struct TriplesDataBlock {
 };
 
 
-/** \brief wrapper for NAG Sparse Matrix format.
+/**
  *
  \ingroup blackbox
  * Sparse matrix representation which stores nonzero entries by i,j,value triples.

@@ -14,6 +14,8 @@ public:
 	typedef typename Field::Element FieldElt;
 	typedef std::vector<std::vector<RingElt> > ProductTree;
 
+
+
 	RingElt& interpolate(RingElt& poly,
 	                     const std::vector<FieldElt>& pts,
 	                     const std::vector<FieldElt>& vals,
@@ -46,7 +48,7 @@ public:
 		std::vector<RingElt> fRow,tempRow;
 		fRow.resize(numPts);
 		for (int i=0;i<numPts;++i) {
-			PD.init(fRow[i],0,cs[i]);
+			PD.assign(fRow[i],cs[i]);
 		}
 
 		for (int i=0;i<k;++i) {
@@ -92,6 +94,17 @@ public:
 			++k;
 		}
 		return k;
+	}
+
+	void evaluate(std::vector<FieldElt>& vals,
+	              const std::vector<FieldElt>& pts,
+	              const RingElt& poly,
+	              PolyDom& PD,
+	              Field& F)
+	{
+		ProductTree Mtree;
+		productTree(Mtree,pts,PD);
+		evaluate(vals,poly,Mtree,PD,F);
 	}
 
 	void evaluate(std::vector<FieldElt>& vals,

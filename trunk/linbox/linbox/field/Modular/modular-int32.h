@@ -197,6 +197,11 @@ namespace LinBox
 		}
 
 
+		Element& next(Element &x) const
+		{
+			return addin(x,one);
+		}
+
 	private:
 
 	};
