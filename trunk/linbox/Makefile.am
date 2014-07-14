@@ -79,6 +79,7 @@ uninstall-hook:
 		"$(includedir)/linbox/matrix/SparseMatrix" \
 		"$(includedir)/linbox/matrix/DenseMatrix" \
 		"$(includedir)/linbox/matrix/MatrixDomain" \
+		"$(includedir)/linbox/matrix/Sliced3" \
 		"$(includedir)/linbox/matrix" \
 		"$(includedir)/linbox/randiter" \
 		"$(includedir)/linbox/ring" \
