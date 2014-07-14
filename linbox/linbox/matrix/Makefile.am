@@ -20,15 +20,15 @@
 
 pkgincludesubdir=$(pkgincludedir)/matrix
 
-SUBDIRS= SparseMatrix DenseMatrix MatrixDomain
+SUBDIRS= SparseMatrix DenseMatrix MatrixDomain Sliced3
 
-BASIC_HDRS =              \
+BASIC_HDRS =                  \
 	archetype.h               \
 	matrix-category.h         \
 	matrix-traits.h           \
 	transpose-matrix.h        \
 	plain-matrix.h            \
-	dense-matrix.h             \
+	dense-matrix.h            \
 	matrix-domain.h           \
 	sparse-matrix.h           \
 	sparse-formats.h          \
@@ -37,9 +37,10 @@ BASIC_HDRS =              \
 	permutation-matrix.h      \
 	permutation-matrix.inl    \
 	abnormal-matrix.h         \
-	abnormal-helpers.h         \
+	abnormal-helpers.h        \
 	random-matrix.h           \
-	random-matrix.inl
+	random-matrix.inl         \
+	sliced3.h		          
 
 NTL_HDRS =
 GIVARO_HDRS =
@@ -70,6 +71,7 @@ EXTRA_DIST =            \
     matrix.doxy \
     sparse-matrix.doxy \
     dense-matrix.doxy \
+    sliced3.doxy \
     permutation-matrix.doxy \
     matrix-domain.doxy \
     matrix-iterators.doxy
