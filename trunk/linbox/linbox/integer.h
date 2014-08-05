@@ -258,6 +258,8 @@ namespace LinBox
 	class indexDomain {
 	public:
 		typedef size_t Element;
+		typedef size_t* Element_ptr ;
+		typedef const size_t* ConstElement_ptr ;
 	public:
 		typedef indexDomain Father_t;
 		indexDomain() {};
