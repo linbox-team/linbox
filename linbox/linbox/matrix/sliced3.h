@@ -33,7 +33,7 @@
 #include "Sliced3/dense-sliced.h"
 #include "Sliced3/sliced-domain.h"
 
-#endif // __LINBOX_matrix_sparse_matrix_H
+#endif // __LINBOX_matrix_sliced3_H
 
 // Local Variables:
 // mode: C++

@@ -894,6 +894,7 @@ namespace LinBox
 		 * \param M Pointer to @ref BlasMatrix of which to construct submatrix
 		 */
 		BlasSubmatrix (constMatrixType &M);
+
 		BlasSubmatrix (matrixType &M);
 
 		//! @todo  BlasSub from (sub)Vector
