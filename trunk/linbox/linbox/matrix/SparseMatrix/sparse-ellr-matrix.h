@@ -345,7 +345,7 @@ namespace LinBox
 		{
 			// can be sped up on multicores.
 			for (size_t i = 0 ; i < S.rowdim() ; ++i)
-				_maxc = std::max(_maxc, S.getEnd(i)-S.getStart(i));
+				_maxc = std::max(_maxc, (size_t)(S.getEnd(i)-S.getStart(i)));
 
 			resize(S.rowdim(), S.coldim(), S.size(),(size_t)_maxc);
 

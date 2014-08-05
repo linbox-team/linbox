@@ -50,6 +50,8 @@ namespace LinBox
 	class Modular<uint8_t> : public FieldInterface, public ModularBase<uint8_t> {
 	public:
 		typedef uint8_t Element;
+		typedef Element* Element_ptr ;
+		typedef const uint8_t* ConstElement_ptr;
 		const Element zero,one, mOne;
 
 		Modular () :
@@ -416,6 +418,8 @@ namespace LinBox
 	public:
 
 		typedef uint16_t Element;
+		typedef Element* Element_ptr ;
+		typedef const uint16_t* ConstElement_ptr;
 
 		const Element zero,one, mOne;
 
@@ -768,6 +772,9 @@ namespace LinBox
 	public:
 
 		typedef uint32_t Element;
+		typedef Element* Element_ptr ;
+		typedef const uint32_t* ConstElement_ptr;
+
 		typedef Modular<Element>     Self_t;
 		// typedef ModularBase<Element> Father_t;
 		typedef Modular<uint32_t> Father_t;
