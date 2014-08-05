@@ -509,7 +509,7 @@ namespace LinBox {
 						cur_place = S._start[_colid[i]] + done_col[_colid[i]] ;
 						linbox_check(cur_place < size());
 						S._data [ cur_place ] = _data[i] ;
-						S._colid[ cur_place ] = nextlig-1 ;
+						S._colid[ cur_place ] = (index_t) nextlig-1 ;
 						done_col[_colid[i]] += 1 ;
 						++i;
 					}
