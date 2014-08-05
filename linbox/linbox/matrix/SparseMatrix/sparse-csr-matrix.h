@@ -312,7 +312,7 @@ namespace LinBox {
 				for (size_t j = 0 ; j < lig_i.size() ; ++j) {
 					size_t nbnz = _nbnz++ ;
 					resize(_nbnz);
-					_colid[nbnz] = lig_i[j].first ;
+					_colid[nbnz] = (index_t)lig_i[j].first ;
 					F.init(_data[nbnz], lig_i[j].second) ; //!@bug may be 0...
 				}
 			}
@@ -1006,7 +1006,7 @@ namespace LinBox {
 		{
 			if (i>=_nbnz) this->resize(i+1);
 			linbox_check(i <= _colid.size())
-			_colid[i]=j;
+			_colid[i]=(index_t)j;
 		}
 
 		void setColid(svector_t new_colid)

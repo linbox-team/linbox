@@ -116,7 +116,7 @@ if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 		xgcc|xgcc44)
 			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
 			if test "x${WARN}" = "xfull" ; then
-				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long  -Wno-variadic-macros"
+				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long  -Wno-variadic-macros -Wno-vla"
 			fi
 			if test "x${HAVE_CXX11}" = "x0" ; then
 				WARN_CFLAGS="${WARN_CFLAGS} -ansi"
@@ -125,7 +125,7 @@ if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 		xgcc48)
 			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
 			if test "x${WARN}" = "xfull" ; then
-				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long  -Wno-variadic-macros"
+				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long  -Wno-variadic-macros -Wno-vla"
 				# WARN_CFLAGS="${WARN_CFLAGS} -fsanitize=address"
 			fi
 			if test "x${HAVE_CXX11}" = "x0" ; then
