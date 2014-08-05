@@ -87,7 +87,9 @@ namespace LinBox
 	void BlasMatrix< _Field, _Rep >::createBlasMatrix (const _Matrix& A,
 							   MatrixContainerCategory::BlasContainer)
 	{
+		std::cout << "creator 4" << std::endl;
 		linbox_check( areFieldEqual(A.field(),field()));
+#if 0
 		typename _Matrix::ConstIterator         iter_value = A.Begin();
 		Iterator  iter_addr = this->Begin();
 		for (;iter_value != A.End(); ++iter_value,++iter_addr)
@@ -95,6 +97,11 @@ namespace LinBox
 			field().init(*iter_addr);
 			field().assign(*iter_addr, *iter_value);
 		}
+#else
+		for (size_t i = 0  ; i < A.rowdim() ; ++i)
+			for (size_t j = 0  ; j < A.coldim() ; ++j)
+				_rep[i*_col+j] = A.getEntry(i,j) ;
+#endif
 	}
 
 	template<class _Field, class _Rep>
@@ -102,6 +109,7 @@ namespace LinBox
 	void BlasMatrix< _Field, _Rep >::createBlasMatrix (const Matrix& A,
 							   MatrixContainerCategory::Container)
 	{
+		// std::cout << "creator 5" << std::endl;
 		linbox_check( areFieldEqual(A.field(),field()));
 		// const Field & F = A.field();
 		//!@bug With both iterators, it is Segfaulting !!!!
@@ -311,7 +319,7 @@ namespace LinBox
 		_field(&(A.field())),_MD(field() ),_VD(field() )
 		// ,_AD(field())
 	{
-		// std::cout << "cstor 5 called" << std::endl;
+		std::cout << "cstor 5 called" << std::endl;
 		// makePointer();
 		_use_fflas = Protected::checkBlasApply(field(), _col);
 		createBlasMatrix(A, typename MatrixContainerTrait<Matrix>::Type());

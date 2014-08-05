@@ -67,12 +67,13 @@ AC_PROG_CXX
 
 AC_COMPILER_NAME
 
+STDFLAG=${CXXFLAGS}
+
+CXXFLAGS=""
+
 if test "x$CCNAM" != "xgcc44" ; then
 AX_CXX_COMPILE_STDCXX_11([ext],[optional])
 fi
-
-STDFLAG=${CXXFLAGS}
-CXXFLAGS=""
 
 
 
@@ -327,6 +328,7 @@ echo
 echo ' Fflas-Ffpack routines are required for this library to compile. Please'
 echo ' make sure they are installed and specify its location with the option'
 echo ' --with-fflas-ffpack=<lib> when running configure.'
+echo ' Also make sure your compiler supports cxx-11...'
 echo '*******************************************************************************'
 exit 1
 ])

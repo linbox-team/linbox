@@ -215,6 +215,25 @@ static bool testRandomTranspose (const Field                                 &F,
 	return ret;
 }
 
+template<class Field>
+bool testBasics(const Field & F)
+{
+	BlasMatrix<Field> Container(F,2,2);
+	BlasSubmatrix<BlasMatrix<Field> > subContainer(Container,0,0,1,1);
+	if (Container.getPointer() != subContainer.getPointer()) {
+		return false ;
+	}
+
+	const BlasMatrix<Field> Container(F,2,2);
+	BlasSubmatrix<const BlasMatrix<Field> > subContainer(Container,0,0,1,1);
+	if (Container.getPointer() != subContainer.getPointer()) {
+		return false ;
+	}
+
+	return true ;
+
+}
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -252,6 +271,7 @@ int main (int argc, char **argv)
 #endif
 	if (!testRandomLinearity (F, A_stream, v1_stream, v2_stream)) pass = false;
 	if (!testRandomTranspose (F, A_stream, v1_stream, v2_stream)) pass = false;
+	if (!testBasics(F) ) pass = false;
 
 	commentator().stop("Submatrix black box test suite");
 	return pass ? 0 : -1;

@@ -122,7 +122,7 @@ namespace LinBox
 		,_AD(Mat.field())
 		,_VD(Mat.field())
 	{
-		// std::cout << "sub const cstor 2 called" << std::endl;
+		std::cout << "sub const cstor 2 called" << std::endl;
 	}
 
 	template < class _Matrix >
