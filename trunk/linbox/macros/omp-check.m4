@@ -28,17 +28,53 @@ dnl turn on OpenMP
 AC_DEFUN([LB_OMP],[
 	AC_MSG_CHECKING(enabling OpenMP)
 
-AC_ARG_WITH(
-	[openmp],
-	[AS_HELP_STRING([--with-openmp],[Turn on OpenMP based parallel code])],
-	[with_openmp=yes],
-	[with_openmp=no])
+AC_ARG_ENABLE(openmp,
+	[AC_HELP_STRING([--enable-openmp],
+	[ Use OpenMP ])
+	],
+	[ with_omp=$enable_openmp],
+	[ with_omp=yes ]
+)
 
-AS_IF([ test "$with_openmp" = "yes" ],
-	[AC_MSG_RESULT(yes)
-	CXXFLAGS="-fopenmp ${CXXFLAGS}"
+AS_IF([ test "x$with_openmp" != "xno" ],
+	[
+	BACKUP_CXXFLAGS=${CXXFLAGS}
+	OMPFLAGS="-fopenmp"
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${OMPFLAGS}"
+                AC_TRY_RUN([
+#include <omp.h>
+                        int main() {
+                        int p = omp_get_num_threads();
+                        return 0;
+                        }
+                ],
+                [ omp_found="yes" ],
+                [ omp_found="no" ],
+                [
+                        echo "cross compiling...disabling"
+                        omp_found="no"
+                ])
+                AS_IF(  [ test "x$omp_found" = "xyes" ],
+                        [
+                                AC_DEFINE(USE_OPENMP,1,[Define if OMP is available])
+                                AC_SUBST(OMPFLAGS)
+                                AC_MSG_RESULT(yes)
+                                HAVE_OMP=yes
+                        ],
+                        [
+                                OMPFLAGS=
+                                AC_SUBST(OMPFLAGS)
+                                AC_MSG_RESULT(no)
+                        ]
+                )
+                CXXFLAGS=${BACKUP_CXXFLAGS}
+
 	],[
 	AC_MSG_RESULT(no)
 	])
-])
+]
+
+AM_CONDITIONAL(LINBOX_HAVE_OMP, test "x$HAVE_OMP" = "xyes")
+
+)
 
