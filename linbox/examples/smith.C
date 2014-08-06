@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 
 	string algo = argv[1];
 
-	int m = atoi(argv[2]);
+	unsigned long m = atoi(argv[2]);
 
 	int n = atoi(argv[3]);
 
@@ -196,14 +196,13 @@ int main(int argc, char* argv[])
 
 			// using Sparse Elimination
 			LinBox::PowerGaussDomain< Field > PGD( F );
-			std::vector<std::pair<size_t,size_t> > local;
+			std::vector<std::pair<size_t,Field::Element> > local;
 
-			PGD(local, B, m, p);
+			PGD(local, B, (int32_t)m, (int32_t)p);
 
 			typedef list< Field::Element > List;
 			List L;
-			for ( std::vector<std::pair<size_t,size_t> >::iterator
-			      p_it = local.begin(); p_it != local.end(); ++p_it) {
+			for ( auto p_it = local.begin(); p_it != local.end(); ++p_it) {
 				for(size_t i = 0; i < (size_t) p_it->first; ++i)
 					L.push_back((Field::Element)p_it->second);
 			}
