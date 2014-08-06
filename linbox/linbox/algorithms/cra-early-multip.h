@@ -59,6 +59,7 @@ namespace LinBox
 		// of the elements to be reconstructed
 		std::vector< unsigned long >      	randv;
 
+		Integer& result(Integer &d) ; // DON'T TOUCH
 	public:
 
 		EarlyMultipCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
