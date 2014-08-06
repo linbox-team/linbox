@@ -67,6 +67,7 @@ namespace LinBox
 		BlasVector< PID_integer > vmultip_;
 
 		std::vector< unsigned long > randv;
+		Integer& result(Integer &d) ; // DON'T TOUCH
 	public:
 		VarPrecEarlyMultipCRA(const unsigned long EARLY = DEFAULT_EARLY_TERM_THRESHOLD, const double b=0.0,
 				      const BlasVector<PID_integer>& vf = BlasVector<PID_integer>(PID_integer()),

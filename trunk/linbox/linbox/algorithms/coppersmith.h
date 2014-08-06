@@ -316,7 +316,7 @@ namespace LinBox
 			Interpolator.getpolydom().degree(intdetdeg,Determinant);
 			Givaro::Degree intdetval;
 			Interpolator.getpolydom().val(intdetval,Determinant);
-			if(detdeg != intdetdeg.value()){
+			if(detdeg != (size_t) intdetdeg.value()){
 				report << "sum of column degrees " << detdeg << endl;
 				report << "interpolation degree " << intdetdeg.value() << endl;
 			}
@@ -326,7 +326,7 @@ namespace LinBox
 			for(size_t k = 0; k<gen.size(); k++)
 				domain().write(report, gen[k]) << "x^" << k << endl;
 			Interpolator.write(report << "Interpolated determinant: ", Determinant) << endl;
-			size_t myrank = intdetdeg.value() - intdetval.value();
+			size_t myrank = size_t(intdetdeg.value() - intdetval.value());
 			return myrank;
 		}
 
@@ -451,7 +451,7 @@ namespace LinBox
 			Interpolator.getpolydom().degree(intdetdeg,Determinant);
 			Givaro::Degree intdetval(0);
 			Interpolator.getpolydom().val(intdetval,Determinant);
-			if(d != intdetdeg.value()){
+			if(d != (size_t)intdetdeg.value()){
 				report << "The matrix is singular, determinant is zero" << endl;
 				return field(0).zero;
 			}

@@ -42,6 +42,15 @@ namespace LinBox
 		// of the elements to be reconstructed
 		std::vector< unsigned long >      	randv;
 
+		void initialize (const Integer& D, const Integer& e) ; // DON'T TOUCH
+		void progress (const Integer & D, const Integer & e) ;
+		 void initialize (const Domain& D, const DomainElement& e);
+		  Integer& result(Integer& d);
+
+
+
+
+
 	public:
 
 
