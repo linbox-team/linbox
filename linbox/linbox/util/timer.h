@@ -42,6 +42,14 @@
 #define __LINBOX_timer_H
 
 #include <time.h>
+
+#ifdef __LINBOX_USE_OPENMP
+#  ifndef __GIVARO_USE_OPENMP
+#    define __GIVARO_USE_OPENMP
+#    define GIVARO_USES_OPENMP
+#  endif
+#endif
+
 #include <givaro/givtimer.h>
 
 namespace LinBox {
