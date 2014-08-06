@@ -50,14 +50,14 @@
 #include <fstream>
 #include <omp.h>
 
-#define GIVARO_USES_OMP
+#define __GIVARO_USE_OPENMP
 
 #include <givaro/givtimer.h>
 #include <givaro/givpoly1crt.h>
 #include <linbox/integer.h>
 
 
-#ifndef LINBOX_USES_OPENMP
+#ifndef __LINBOX_USE_OPENMP
 #error "you have to compile this example with openmp enabled"
 #endif
 

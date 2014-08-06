@@ -31,12 +31,18 @@
 #include <algorithm>
 #include <iomanip>
 
-#include "givaro/givtimer.h"
+#include "linbox/util/timer.h"
+
 #ifdef __LINBOX_USE_OPENMP
 #include <omp.h>
-typedef Givaro::OMPTimer CTimer;
+#include "givaro/givtimer.h"
+namespace LinBox {
+    typedef Givaro::OMPTimer CTimer;
+}
 #else
-typedef Givaro::Timer CTimer;
+namespace LinBox {
+    typedef Givaro::Timer CTimer;
+}
 #endif
 
 #include "linbox/util/commentator.h"

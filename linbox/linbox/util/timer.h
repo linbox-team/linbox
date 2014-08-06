@@ -45,8 +45,7 @@
 
 #ifdef __LINBOX_USE_OPENMP
 #  ifndef __GIVARO_USE_OPENMP
-#    define __GIVARO_USE_OPENMP
-#    define GIVARO_USES_OPENMP
+#    define __GIVARO_USE_OPENMP 1
 #  endif
 #endif
 
