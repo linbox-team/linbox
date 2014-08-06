@@ -31,8 +31,12 @@
 #include <algorithm>
 #include <iomanip>
 
+#include "givaro/givtimer.h"
 #ifdef __LINBOX_USE_OPENMP
 #include <omp.h>
+typedef Givaro::OMPTimer CTimer;
+#else
+typedef Givaro::Timer CTimer;
 #endif
 
 #include "linbox/util/commentator.h"
@@ -546,7 +550,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				//get a iterator to the seq element to be processed
 				cseqit = _seqel;
 
-				double start1=omp_get_wtime();
+				CTimer start1; start1.start();
 				//Compute the discrepancy
 				std::vector<Coefficient*> coeffVec;
 				std::vector<const Coefficient*> seqPtrVec;
@@ -570,9 +574,10 @@ EARLY_TERM_THRESHOLD (ett_default)
 				for (int i=0;i<numCoeffs;++i) {
 					domain().addin(disc,discComponents[i]);
 				}
-				g_time2 += omp_get_wtime()-start1;
+                                start1.stop();
+				g_time2 += start1.realtime();
 
-				double start2=omp_get_wtime();
+				CTimer start2; start2.start();
 				//Compute tau with Algorith3.2
 				Coefficient tau(field(), _row+_col, _row+_col);
 				Sub primaryDisc(disc,0,0,_row,_col);
@@ -582,8 +587,9 @@ EARLY_TERM_THRESHOLD (ett_default)
 					_etc=_ett;
 				}
 				Algorithm3dot2(tau, disc, _deg, _mu, _sigma, _beta);
-				g_time3 += omp_get_wtime()-start2;
-				double start3=omp_get_wtime();
+                                start2.stop();
+				g_time3 += start2.realtime();
+				CTimer start3; start3.start();
 				//Multiply tau into each matrix in the generator
 #ifdef __LINBOX_USE_OPENMP
 #pragma omp parallel for
@@ -591,7 +597,8 @@ EARLY_TERM_THRESHOLD (ett_default)
 				for (int i=0;i<numCoeffs;++i) {
 					domain().mulin(*(coeffVec[i]),tau);
 				}
-				g_time4 += omp_get_wtime()-start3;
+                                start3.stop();
+				g_time4 += start3.realtime();
 				//Increment the auxiliary degrees and beta
 				for(size_t j = _col; j <_row+_col; ++j)
 					_deg[j]++;
@@ -832,9 +839,10 @@ _Sequence>::right_minpoly (std::vector<Coefficient> &P)
 		    ++bmit;
 		    check = bmit.state();
 		    if(check.IsSequenceExceeded()){
-			    double start=omp_get_wtime();
+			    CTimer start; start.start();
 			    ++contiter;
-			    g_time1+=omp_get_wtime()-start;
+                            start.stop();
+			    g_time1+=start.realtime();
 			    seq.push_back(*contiter);
 		    }
 	    }
