@@ -402,7 +402,7 @@ namespace LinBox
 		setMessageClassStream (INTERNAL_WARNING,     stream);
 		setMessageClassStream (INTERNAL_DESCRIPTION, stream);
 
-		if (stream == getMessageClass (BRIEF_REPORT)._stream)
+		if (&stream == &(getMessageClass (BRIEF_REPORT)._stream))
 			getMessageClass (BRIEF_REPORT).setMaxDepth (0);
 	}
 
