@@ -51,7 +51,7 @@ namespace LinBox
 	public:
 		typedef uint8_t Element;
 		typedef Element* Element_ptr ;
-		typedef const uint8_t* ConstElement_ptr;
+		typedef const Element* ConstElement_ptr;
 		const Element zero,one, mOne;
 
 		Modular () :
@@ -419,7 +419,7 @@ namespace LinBox
 
 		typedef uint16_t Element;
 		typedef Element* Element_ptr ;
-		typedef const uint16_t* ConstElement_ptr;
+		typedef const Element* ConstElement_ptr;
 
 		const Element zero,one, mOne;
 
@@ -773,7 +773,7 @@ namespace LinBox
 
 		typedef uint32_t Element;
 		typedef Element* Element_ptr ;
-		typedef const uint32_t* ConstElement_ptr;
+		typedef const Element* ConstElement_ptr;
 
 		typedef Modular<Element>     Self_t;
 		// typedef ModularBase<Element> Father_t;
