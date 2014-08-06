@@ -20,7 +20,6 @@
 # ========LICENCE========
 #/
 
-
 # Run this to generate all the initial makefiles, etc.
 
 # Recover command line, with double-quotes
@@ -43,7 +42,7 @@ chmod +x autogen.status
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-PKG_NAME="Linbox Library"
+PKG_NAME="LinBox Library"
 
 (test -f $srcdir/configure.ac \
 	&& test -f $srcdir/linbox/linbox.doxy) || {
@@ -63,6 +62,15 @@ DIE=0
 LIBTOOL=libtool
 LIBTOOLIZE=libtoolize
 
+# Fix OSx problem with GNU libtool
+(uname -a|grep -v Darwin) < /dev/null > /dev/null 2>&1 ||
+{
+echo "....Adding fix for OSX"
+LIBTOOL=glibtool
+LIBTOOLIZE=glibtoolize
+}
+
+
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
 	echo
 	echo "You must have autoconf installed to compile $PROJECT."
@@ -79,6 +87,13 @@ LIBTOOLIZE=libtoolize
 	DIE=1
 }
 
+(automake --version) < /dev/null > /dev/null 2>&1 || {
+	echo
+	echo "You must have automake installed to compile $PROJECT."
+	echo "Get ftp://sourceware.cygnus.com/pub/automake/automake-1.4.tar.gz"
+	echo "(or a newer version if it is available)"
+	DIE=1
+}
 
 (grep "^AC_PROG_LIBTOOL" configure.ac >/dev/null) && {
   ($LIBTOOL --version) < /dev/null > /dev/null 2>&1 || {
@@ -178,7 +193,7 @@ cd "$ORIGDIR"
 if test x$NOCONFIGURE = x; then
 	echo Running $srcdir/configure $conf_flags "$@" ...
 	$srcdir/configure $conf_flags "$@" \
-		&& echo "Now type \`make' to compile $PROJECT"  || exit 1
+		&& echo "Now type \`make install' to compile $PROJECT"  || exit 1
 else
 	echo Skipping configure process.
 fi
