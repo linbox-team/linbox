@@ -100,15 +100,11 @@ namespace LinBox {
 		bool ok = findKeyword(j,_serie_label_.begin() , _serie_label_.end() , nomf);
 
 
-#if 1
 		if ( ! ok ) {
 			linbox_check(j ==(index_t)_serie_label_.size() );
 			_serie_label_.push_back(fortifyString(nom));
 			_tableau_.resize(j+1);
 		}
-#else
-		linbox_check(ok);
-#endif
 
 		initWatch(j);
 
@@ -120,10 +116,12 @@ namespace LinBox {
 
 		std::string nomf = fortifyString(nom);
 		index_t j ;
+#ifdef NDEBUG 
+                findKeyword(j,_serie_label_.begin() , _serie_label_.end() , nomf);
+#else 
 		bool ok = findKeyword(j,_serie_label_.begin() , _serie_label_.end() , nomf);
-
 		linbox_check(ok);
-
+#endif
 
 		return j ;
 	}
