@@ -233,7 +233,7 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
         typedef AbnormalMatrix<Field_,Mat1> AbnormalMat;
         AbnormalMat YTemp(field(),Y);
 
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp parallel
 #endif
 	{
@@ -241,7 +241,7 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *rowChunks=&(rowBlocks_[chunkSizeIx]);
 			Index numChunks=rowChunks->size();
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp for schedule (static,1)
 #endif
 			for (Index rowChunk=0;rowChunk<numChunks;++rowChunk) {
@@ -272,7 +272,7 @@ applyRight(Mat1 &Y, const Mat2 &X) const
         typedef AbnormalMatrix<Field_,Mat1> AbnormalMat;
         AbnormalMat YTemp(field(),Y);
 
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp parallel
 #endif
 	{
@@ -280,7 +280,7 @@ applyRight(Mat1 &Y, const Mat2 &X) const
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *colChunks=&(colBlocks_[chunkSizeIx]);
 			Index numChunks=colChunks->size();
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp for schedule (static,1)
 #endif
 			for (Index colChunk=0;colChunk<numChunks;++colChunk) {
@@ -315,12 +315,12 @@ OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::apply(OutVector & 
 	FieldAXPY<Field_>* yTemp=(FieldAXPY<Field_>*)(spacePtr+CACHE_ALIGNMENT-(spacePtr%CACHE_ALIGNMENT));
 
 
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp parallel
 #endif
 	{
                 const Field_& fieldRef=field();
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp for schedule (static,1024)
 #endif
                 for (size_t i=0;i<y.size();++i) {
@@ -331,7 +331,7 @@ OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::apply(OutVector & 
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *rowChunks=&(rowBlocks_[chunkSizeIx]);
 			Index numChunks=rowChunks->size();
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp for schedule (static,1)
 #endif
 			for (Index rowChunk=0;rowChunk<numChunks;++rowChunk) {
@@ -348,7 +348,7 @@ OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::apply(OutVector & 
 			}
 			//implicit barrier
 		}
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp for schedule (static,1024)
 #endif
 		for (Index i = 0; i < y.size(); ++i) {
@@ -373,12 +373,12 @@ OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::applyTranspose(Out
 	FieldAXPY<Field_>* yTemp=(FieldAXPY<Field_>*)(spacePtr+CACHE_ALIGNMENT-(spacePtr%CACHE_ALIGNMENT));
 
 
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp parallel
 #endif
 	{
                 const Field_& fieldRef=field();
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp for schedule (static,1024)
 #endif
                 for (size_t i=0;i<y.size();++i) {
@@ -389,7 +389,7 @@ OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::applyTranspose(Out
 		for (Index chunkSizeIx=0;chunkSizeIx<numBlockSizes;++chunkSizeIx) {
 			const VectorChunks *colChunks=&(colBlocks_[chunkSizeIx]);
 			Index numChunks=colChunks->size();
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp for schedule (static,1)
 #endif
 			for (Index colChunk=0;colChunk<numChunks;++colChunk) {
@@ -406,7 +406,7 @@ OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::applyTranspose(Out
 			}
 			//implicit barrier
 		}
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp for schedule (static,1024)
 #endif
 		for (Index i = 0; i < y.size(); ++i) {

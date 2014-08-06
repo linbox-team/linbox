@@ -157,10 +157,6 @@ namespace Givaro {
 #include <givaro/givcaster.h>
 #endif
 
-//! @bug this is wrong...
-#ifdef GIVARO_USES_OMP // _OPENMP or others are present
-#define LINBOX_USES_OPENMP 1
-#endif
 
 
 namespace LinBox { /*  signedness of integers */
