@@ -46,6 +46,8 @@ namespace LinBox
 		void progress (const Integer & D, const Integer & e) ;
 		 void initialize (const Domain& D, const DomainElement& e);
 		  Integer& result(Integer& d);
+		         void progress (const Domain& D, const DomainElement& e);
+
 
 
 

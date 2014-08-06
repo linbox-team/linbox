@@ -949,13 +949,13 @@ namespace LinBox
 			_colid.resize(ll*_rownb);
 			for (size_t i = _rownb ; i>0 ; --i ) {
 				// std::copy(_data.begin()+(i-1)*_maxc, _data.begin()+(i)*_maxc, _data.begin()+(i-1)*ll);
-				std::copy_backward(_data.begin()+(i-1)*_maxc, _data.begin()+(i)*_maxc, _data.begin()+(i-1)*ll+_maxc);
+				std::copy_backward(_data.begin()+(ptrdiff_t)((i-1)*_maxc), _data.begin()+(ptrdiff_t)((i)*_maxc), _data.begin()+(ptrdiff_t)((i-1)*ll+_maxc));
 				for (size_t j = (i-1)*ll+_maxc ; j < (i)*ll ; ++j )
 					_data[j] = field().zero ;
 			}
 			for (size_t i = _rownb ; i>0 ; --i ) {
 				// std::copy(_colid.begin()+(i-1)*_maxc, _colid.begin()+(i)*_maxc, _colid.begin()+(i-1)*ll);
-				std::copy_backward(_colid.begin()+(i-1)*_maxc, _colid.begin()+(i)*_maxc, _colid.begin()+(i-1)*ll+_maxc);
+				std::copy_backward(_colid.begin()+(ptrdiff_t)((i-1)*_maxc), _colid.begin()+(ptrdiff_t)((i)*_maxc), _colid.begin()+(ptrdiff_t)((i-1)*ll+_maxc));
 				for (size_t j = (i-1)*ll+_maxc ; j < (i)*ll ; ++j )
 					_colid[j] = 0 ;
 			}
@@ -1031,9 +1031,9 @@ namespace LinBox
 		// a zero means end of line
 		bool nextTriple(size_t & i, size_t &j, Element &e) const
 		{
-			ptrdiff_t off =_triples.next(_maxc);
+			size_t off = (size_t)_triples.next(_maxc);
 
-			i = _triples._row ;
+			i = (size_t)_triples._row ;
 
 			if (  i >= rowdim() ) {
 				_triples.reset() ;
@@ -1041,8 +1041,9 @@ namespace LinBox
 			}
 
 			while ( field().isZero(_data[i*_maxc+off]) )  {
-				_triples._off = off = 0;
-				_triples._row = i   = i+1 ;
+				off = 0 ; i++;
+				_triples._off = (ptrdiff_t)off ;
+				_triples._row = (ptrdiff_t)i   ;
 				if (i >= rowdim()) {
 					_triples.reset();
 					return false;

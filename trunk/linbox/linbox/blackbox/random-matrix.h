@@ -54,7 +54,7 @@ namespace LinBox
 							  int rowdim, int coldim )
 		{
 
-			Ap = new BlasMatrix<Field>(f, rowdim, coldim);
+			Ap = new BlasMatrix<Field>(f, (size_t)rowdim, (size_t)coldim);
 			typename BlasMatrix<Field>::Iterator Ap_p;
 			typename Field::Element  elt;
 
@@ -91,7 +91,7 @@ namespace LinBox
 							   int rowdim, int coldim)
 		{
 
-			Ap = new SparseMatrix<Field>(f, rowdim, coldim);
+			Ap = new SparseMatrix<Field>(f, (size_t)rowdim, (size_t)coldim);
 
 			const int m = rowdim < coldim ? rowdim : coldim;
 

@@ -106,7 +106,7 @@ namespace LinBox
 		typedef ModularRandIter<int32_t> RandIter;
 
 		Modular (integer &p) :
-			Father_t((unsigned long)p)
+			Father_t((int32_t)p)
 		{
 		}
 
@@ -114,6 +114,7 @@ namespace LinBox
 			Father_t(value,exp)
 		      {}
 
+#if 0
 		Modular (long value) :
 			Father_t(value)
 		      {}
@@ -121,6 +122,7 @@ namespace LinBox
 		Modular (unsigned long value) :
 			Father_t(value)
 		      {}
+#endif
 
 		using Father_t ::cardinality;
 		 integer &cardinality (integer &c) const
