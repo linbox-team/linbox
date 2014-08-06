@@ -1048,7 +1048,7 @@ namespace LinBox {
 
 		bool nextTriple(size_t & i, size_t &j, Element &e) const
 		{
-			ptrdiff_t idx =_triples.next( _start );
+			size_t idx =_triples.next( _start );
 			i = _triples._row ;
 			if (idx >= _nbnz || i >= _rownb ) {
 				_triples.reset() ;
