@@ -31,7 +31,7 @@
 #include <algorithm>
 #include <iomanip>
 
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #include <omp.h>
 #endif
 
@@ -561,7 +561,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				for (int i=0;i<numCoeffs;++i) {
 					discComponents.push_back(Coefficient(field(),_row,_row+_col));
 				}
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp parallel for
 #endif
 				for (int i=0;i<numCoeffs;++i) {
@@ -585,7 +585,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				g_time3 += omp_get_wtime()-start2;
 				double start3=omp_get_wtime();
 				//Multiply tau into each matrix in the generator
-#ifdef LINBOX_USES_OMP
+#ifdef __LINBOX_USE_OPENMP
 #pragma omp parallel for
 #endif
 				for (int i=0;i<numCoeffs;++i) {
