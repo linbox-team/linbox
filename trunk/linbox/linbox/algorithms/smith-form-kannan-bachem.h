@@ -131,7 +131,7 @@ namespace LinBox
 			Element s,t,u,v;
 			dxgcd(s,t,u,v,pp,op);
 
-			for (int i = p; i < A.coldim(); i++)
+			for (size_t i = p; i < A.coldim(); i++)
 			{
 				Element pi,oi;
 
@@ -165,7 +165,7 @@ namespace LinBox
 			Element s,t,u,v;
 			dxgcd(s,t,u,v,pp,po);
 
-			for (int i = p; i < A.rowdim(); i++)
+			for (size_t i = p; i < A.rowdim(); i++)
 			{
 				Element ip, io;
 
