@@ -178,7 +178,11 @@ echo "        START  LINBOX CONFIG                   "
 echo "-----------------------------------------------"
 
 
+echo "-----------------------------------------------"
 LB_OMP
+echo "-----------------------------------------------"
+AC_SUBST([PARFLAGS],['${OMPFLAGS}'])
+AC_SUBST([PARLIBS],['${OMPFLAGS}'])
 
 # Machine characteristics
 
