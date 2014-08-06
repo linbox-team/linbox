@@ -41,7 +41,7 @@
 #include "linbox/field/field-traits.h"
 // #include "linbox/vector/vector-domain.h"
 
-#ifndef __PATHCC__
+#if !defined(__PATHCC__) && !defined(__clang__)
 #define stdBitReference std::_Bit_reference
 #else
 #define stdBitReference std::vector<bool>::reference
@@ -995,7 +995,11 @@ namespace LinBox
 #include "linbox/randiter/gf2.h"
 
 #if __cplusplus >= 201103L
+#ifdef __clang__
+#include <__bit_reference>
+#else
 #include <bits/stl_bvector.h>
+#endif /* __clang__ */
 #else
 // #include <bits/stl_bvector.h>
 namespace std
