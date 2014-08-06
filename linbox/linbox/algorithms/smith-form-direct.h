@@ -107,12 +107,12 @@ namespace LinBox
 
 						if (j != n)
 							swapCols(A, n, n, j);
-						
+
 						return true;;
 					}
 				}
 			}
-			
+
 			return false;
 		}
 
@@ -155,7 +155,7 @@ namespace LinBox
 					}
 				}
 			}
-			
+
 			return modified;
 		}
 
@@ -198,7 +198,7 @@ namespace LinBox
 					}
 				}
 			}
-			
+
 			return modified;
 		}
 
@@ -206,9 +206,9 @@ namespace LinBox
 		{
 			bool fixed = false;
 
-			int dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
+			size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
 
-			for (int i = 0; i < dim-1; i++)
+			for (int i = 0; i < (int)dim-1; i++)
 			{
 				Element tmp1, tmp2;
 
@@ -219,7 +219,7 @@ namespace LinBox
 				{
 					Element g;
 					field().gcd(g, tmp1, tmp2);
-					
+
 					if (!field().areAssociates(g, tmp1))
 					{
 						A.setEntry(i+1, i, tmp2);
@@ -231,7 +231,7 @@ namespace LinBox
 					return fixed;
 				}
 			}
-			
+
 			return fixed;
 		}
 
@@ -239,10 +239,10 @@ namespace LinBox
 		template<class Vector>
 		Vector &solve(Vector &S, const Rep &A) const
 		{
-			int dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
-			
+			size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
+
 			linbox_check(S.size() >= dim);
-			
+
 			Rep B(A);
 
 			do
@@ -253,7 +253,7 @@ namespace LinBox
 					while(eliminateRow(B, n) && eliminateCol(B, n));
 				}
 			} while(fixDiagonal(B));
-			
+
 			for (int i = 0; i < dim; i++)
 			{
 				Element tmp;
