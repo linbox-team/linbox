@@ -104,7 +104,7 @@ namespace LinBox
 
 			rp.template setBitsField<_Field>();
 
-			Field F ((unsigned long)*rp);
+			Field F ((integer)*rp);
 			//! bug the following should work :
 			// BlasMatrix<Field>  Ap(F,A);
 			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim());
