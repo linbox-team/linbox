@@ -947,9 +947,9 @@ namespace LinBox
 				return false;
 			}
 
-			i = _rowid[idx];
-			j = _colid[idx];
-			e = _data[idx];
+			i = _rowid[(size_t)idx];
+			j = _colid[(size_t)idx];
+			e = _data[(size_t)idx];
 
 			return true;
 		}

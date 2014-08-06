@@ -1048,8 +1048,8 @@ namespace LinBox {
 
 		bool nextTriple(size_t & i, size_t &j, Element &e) const
 		{
-			size_t idx =_triples.next( _start );
-			i = _triples._row ;
+			size_t idx = (size_t)_triples.next( _start );
+			i = (size_t)_triples._row ;
 			if (idx >= _nbnz || i >= _rownb ) {
 				_triples.reset() ;
 				return false;
@@ -1379,7 +1379,7 @@ namespace LinBox {
 			ptrdiff_t next( const svector_t & start)
 			{
 				_nnz +=1 ;
-				while (_row+1 < (ptrdiff_t)start.size() && _nnz >= (ptrdiff_t)start[_row+1]) {
+				while (_row+1 < (ptrdiff_t)start.size() && _nnz >= (ptrdiff_t)start[(size_t)_row+1]) {
 					_row += 1;
 				}
 				return _nnz ;
