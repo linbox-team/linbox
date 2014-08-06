@@ -489,7 +489,7 @@ namespace LinBox {
 					found = true ;
 					break;
 				}
-			if ( ! found) linbox_check(i == MetaDataVec.size());
+			linbox_check((!found) && (i == MetaDataVec.size()));
 
 			if (! found) {
 				MetaDataVec.push_back(pointMD);

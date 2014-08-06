@@ -92,7 +92,7 @@ namespace LinBox {
 		linbox_check(rpt);
 		// linbox_check(tim != 0.);
 		if (tim == 0.) return NAN ;
-		return (double) ((mflo*rpt)/tim);
+		return (double) ((mflo*(double)rpt)/tim);
 	}
 
 	dvector_t &
