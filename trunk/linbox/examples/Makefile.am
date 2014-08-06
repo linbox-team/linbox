@@ -19,7 +19,7 @@
 # ========LICENCE========
 #/
 
-#  DEFAULT_INCLUDES=-I@includedir@
+DEFAULT_INCLUDES=-I@includedir@
 
 #  -DLinBoxSrcOnly
 DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR
