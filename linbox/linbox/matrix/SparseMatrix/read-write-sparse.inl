@@ -475,7 +475,7 @@ namespace LinBox {
 						readPretty (A, is, buf, typename MatrixTraits<Matrix>::MatrixCategory ());
 				}
 				else if (c == '%') {
-					size_t un = is.gcount() ;
+					size_t un = (size_t) is.gcount() ;
 					for (size_t i = 0 ; i < un ; ++i)
 						is.unget();
 					readMatrixMarket(A,is,buf);

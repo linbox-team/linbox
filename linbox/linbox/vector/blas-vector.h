@@ -936,8 +936,8 @@ namespace LinBox { /*  BlasSubvector */
 	private:
 		void setIterators()
 		{
-			Father_t::_begin = iterator (_Vec.begin()+_i0 , _1stride);
-			Father_t::_end   = iterator (_Vec.begin()+(ptrdiff_t)(_i0 + _size*_1stride) , _1stride);
+			Father_t::_begin = iterator (_Vec.begin()+(ptrdiff_t)_i0 , (ptrdiff_t)_1stride);
+			Father_t::_end   = iterator (_Vec.begin()+(ptrdiff_t)(_i0 + _size*_1stride) , (ptrdiff_t)_1stride);
 		}
 
 	};
