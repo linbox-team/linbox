@@ -87,7 +87,7 @@ namespace LinBox
 	void BlasMatrix< _Field, _Rep >::createBlasMatrix (const _Matrix& A,
 							   MatrixContainerCategory::BlasContainer)
 	{
-		std::cout << "creator 4" << std::endl;
+		// std::cout << "creator 4" << std::endl;
 		linbox_check( areFieldEqual(A.field(),field()));
 #if 0
 		typename _Matrix::ConstIterator         iter_value = A.Begin();
@@ -319,7 +319,7 @@ namespace LinBox
 		_field(&(A.field())),_MD(field() ),_VD(field() )
 		// ,_AD(field())
 	{
-		std::cout << "cstor 5 called" << std::endl;
+		// std::cout << "cstor 5 called" << std::endl;
 		// makePointer();
 		_use_fflas = Protected::checkBlasApply(field(), _col);
 		createBlasMatrix(A, typename MatrixContainerTrait<Matrix>::Type());

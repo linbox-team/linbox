@@ -218,16 +218,20 @@ static bool testRandomTranspose (const Field                                 &F,
 template<class Field>
 bool testBasics(const Field & F)
 {
+	{
 	BlasMatrix<Field> Container(F,2,2);
 	BlasSubmatrix<BlasMatrix<Field> > subContainer(Container,0,0,1,1);
 	if (Container.getPointer() != subContainer.getPointer()) {
 		return false ;
 	}
+	}
 
+	{
 	const BlasMatrix<Field> Container(F,2,2);
 	BlasSubmatrix<const BlasMatrix<Field> > subContainer(Container,0,0,1,1);
 	if (Container.getPointer() != subContainer.getPointer()) {
 		return false ;
+	}
 	}
 
 	return true ;

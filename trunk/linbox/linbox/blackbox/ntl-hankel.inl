@@ -148,7 +148,7 @@ namespace LinBox
 	template <class Field>
 	void Hankel<Field>::print(std::ostream& os) const
 	{
-		register size_t N;
+		size_t N;
 
 		os<< this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl;
 		N = (this->rowDim-1)<<1;
