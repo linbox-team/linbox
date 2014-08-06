@@ -103,7 +103,7 @@ void launch_bench_square(Field & F // const problem
 		}
 		double mflops = computeMFLOPS(TW.times(),mm_mflops(i,i,i));
 
-		Data.setCurrentSeriesEntry(i,mflops,i,TW.time()); // could be i*i*i
+		Data.setCurrentSeriesEntry(i,mflops,(double)i,TW.time()); // could be i*i*i
 
 	}
 
