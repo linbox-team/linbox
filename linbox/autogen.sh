@@ -59,8 +59,8 @@ TEST_TYPE=-f
 DIE=0
 
 # Defaults
-LIBTOOL=glibtool
-LIBTOOLIZE=glibtoolize
+LIBTOOL=libtool
+LIBTOOLIZE=libtoolize
 
 # Fix OSx problem with GNU libtool
 (uname -a|grep -v Darwin) < /dev/null > /dev/null 2>&1 ||
