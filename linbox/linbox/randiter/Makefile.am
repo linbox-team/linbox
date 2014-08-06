@@ -18,11 +18,13 @@
 # ========LICENCE========
 
 
-
-AM_CPPFLAGS=-I$(top_srcdir)/linbox
+AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox $(BLAS_CFLAGS) $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS)
+LIBS=$(GIVARO_LIBS)
+AM_CXXFLAGS=@DEFAULT_CFLAGS@
 pkgincludesubdir=$(pkgincludedir)/randiter
-
-AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS)  $(FFLAS_FFPACK_CFLAGS)
+ 
+#AM_CPPFLAGS=-I$(top_srcdir)/linbox
+#AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS)  $(FFLAS_FFPACK_CFLAGS)
 
 BASIC_HDRS =            \
     abstract.h          \
