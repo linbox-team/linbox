@@ -1394,42 +1394,43 @@ namespace LinBox {
 	};
 
 #if 1
-	template<>
-	template<class inVector, class outVector>
-	outVector & SparseMatrix<Modular<double>, SparseMatrixFormat::CSR >::apply(outVector &Y, const inVector& X, const Element & a ) const
-	{
-		FFLAS::CSR_sub<typename Field::Element> A ;
-		// FFLAS::CSR_sub<typename Field::Element> A ;
-		A.m = rowdim();
-		A.n = coldim();
-		A.st = const_cast<index_t*>(&_start[0]);
-		A.col = const_cast<index_t*>(&_colid[0]);
-		A.dat = const_cast<typename Field::Element*>(&_data[0]);
-		// A.i0 = 0 ;
-		// A.j0 = 0 ;
-		FFLAS::VECT<typename Field::Element>  x ;
-		x.inc = 1 ;
-		x.m = X.size();
-		x.dat = X.getPointer();
-		FFLAS::VECT<typename Field::Element>  y ;
-		y.inc = 1;
-		y.m = Y.size();
-		y.dat = Y.getWritePointer();
-		// std::cout << "called" << std::endl ;
-		FFLAS::sp_fgemv((typename Field::Father_t)field(),  A, x, a, y);
-		return Y ;
-	}
 
-	template<>
-	Integer SparseMatrix<PID_integer, SparseMatrixFormat::CSR >::magnitude() const
-	{
-		// XXX this is a vector magnitude
-		Integer max_elt(0UL);
-		for (size_t i = 0 ; i < _nbnz ; ++i)
-			if (max_elt < Givaro::abs(_data[i]))
-				max_elt = Givaro::abs(_data[i]) ;
-		return max_elt ;
-	}
+	// template<>
+	// template<class inVector, class outVector>
+	// outVector & SparseMatrix<Modular<double>, SparseMatrixFormat::CSR >::apply(outVector &Y, const inVector& X, const Element & a ) const
+	// {
+	// 	FFLAS::CSR_sub<typename Field::Element> A ;
+	// 	// FFLAS::CSR_sub<typename Field::Element> A ;
+	// 	A.m = rowdim();
+	// 	A.n = coldim();
+	// 	A.st = const_cast<index_t*>(&_start[0]);
+	// 	A.col = const_cast<index_t*>(&_colid[0]);
+	// 	A.dat = const_cast<typename Field::Element*>(&_data[0]);
+	// 	// A.i0 = 0 ;
+	// 	// A.j0 = 0 ;
+	// 	FFLAS::VECT<typename Field::Element>  x ;
+	// 	x.inc = 1 ;
+	// 	x.m = X.size();
+	// 	x.dat = X.getPointer();
+	// 	FFLAS::VECT<typename Field::Element>  y ;
+	// 	y.inc = 1;
+	// 	y.m = Y.size();
+	// 	y.dat = Y.getWritePointer();
+	// 	// std::cout << "called" << std::endl ;
+	// 	FFLAS::sp_fgemv((typename Field::Father_t)field(),  A, x, a, y);
+	// 	return Y ;
+	// }
+
+	// template<>
+	// Integer SparseMatrix<PID_integer, SparseMatrixFormat::CSR >::magnitude() const
+	// {
+	// 	// XXX this is a vector magnitude
+	// 	Integer max_elt(0UL);
+	// 	for (size_t i = 0 ; i < _nbnz ; ++i)
+	// 		if (max_elt < Givaro::abs(_data[i]))
+	// 			max_elt = Givaro::abs(_data[i]) ;
+	// 	return max_elt ;
+	// }
 #endif
 
 } // LinBox
