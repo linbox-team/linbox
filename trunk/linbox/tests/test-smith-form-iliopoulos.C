@@ -134,7 +134,7 @@ bool testRandom(const Ring& R, size_t n)
 
 	report << "Using PIRModular<int32_t>\n";
 	typename Ring::Element d; R.init(d,16*101);//16*101*5*7*9);
-	for (int i = 0; i < n-1; ++i) R.mulin(d, D.getEntry(x, i, i));
+	for (size_t i = 0; i < n-1; ++i) R.mulin(d, D.getEntry(x, i, i));
 	R.write(report << "modulus: ", d) << endl;
 	//det(d, D);
 	//PIRModular<int32_t> Rd( (int32_t)(s % LINBOX_MAX_MODULUS));
