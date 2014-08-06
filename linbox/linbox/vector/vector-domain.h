@@ -231,8 +231,8 @@ VD.permute<V,PI>(v1,pb,pe)
 		 * @return reference to field
 		 */
 
-		//using VectorDomainBase<Field>::field;
-		using DotProductDomain<Field>::field;
+		using VectorDomainBase<Field>::field;
+		// using DotProductDomain<Field>::field;
 
 		/** Vector input/output operations
 		 * These routines are useful for reading and writing vectors to
