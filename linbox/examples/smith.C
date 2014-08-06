@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
 		}
 		else {
 
-			PIR R(m);
+			PIR R( (int32_t)m);
 
 			BlasMatrix<PIR> M(R);
 
