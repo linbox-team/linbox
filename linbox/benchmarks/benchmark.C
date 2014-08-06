@@ -1267,11 +1267,11 @@ namespace LinBox {
 
 			_data_.save(unique_filename,_style_.getRawTitle(),_style_.getRawTitle(1),_style_.getRawTitle(2));
 
+			load(unique_filename);
 #else
 			std::cout << "tinyxml2 is not installed, could not print" << std::endl;
 			exit(-1);
 #endif
-			load(unique_filename);
 			return ;
 		}
 

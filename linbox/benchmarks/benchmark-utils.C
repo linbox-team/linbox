@@ -191,7 +191,7 @@ namespace LinBox {
 				if (tim.size() < 3)
 					return computeMFLOPS(tim,mflo,Tag::TimeSelect::median); ;
 
-				index_t q1 = (index_t)std::round((double)tim.size()/(double)4) ;
+				index_t q1 = (index_t)((double)tim.size()/(double)4) ;
 				index_t q3 = (index_t)tim.size()-q1 ;
 				dvector_t tps (tim);
 				std::sort(tps.begin(),tps.end());

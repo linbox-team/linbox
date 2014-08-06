@@ -84,8 +84,9 @@ namespace LinBox { namespace Tag {
 /* ********************** */
 
 //! index type for tables
+#ifndef index_t
 typedef uint32_t index_t ;
-
+#endif
 //
 // typedefs data formats
 //

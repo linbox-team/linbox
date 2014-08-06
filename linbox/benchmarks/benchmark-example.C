@@ -76,7 +76,6 @@ void launch_bench_square(Field & F // const problem
 	Data.newSerie(nam.str());
 	Chrono<Timer> TW ;
 
-	typedef typename Field::Element  Element;
 	typedef typename Field::RandIter Randiter ;
 	Randiter R(F) ;
 	BlasMatrixDomain<Field> BMD(F) ;
@@ -222,7 +221,7 @@ void launch_bench_rank(const Field &F, const std::string & name
 	index_t j = 0 ;
 	while( Data.keepon(j,TW.time()) ) {
 		TW.start() ;
-		size_t d ;
+		unsigned long d ;
 		LinBox::rank(d,Mat,Method::Blackbox());
 		TW.stop();
 		++j ;
@@ -242,7 +241,7 @@ void launch_bench_rank(const Field &F, const std::string & name
 	j = 0 ;
 	while( Data.keepon(j,TW.time()) ) {
 		TW.start() ;
-		size_t d ;
+		unsigned long d ;
 		LinBox::rank(d,Mat,Method::SparseElimination());
 		TW.stop();
 		++j ;
