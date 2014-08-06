@@ -203,7 +203,7 @@ namespace LinBox
 				// A[i] = A[i,i] * n
 				// where n = normalized(A[i,i]) / A[i,i]
 				A.setEntry(i, i, nii);
-				for (int j = i+1; j < A.coldim(); j++)
+				for (size_t j = i+1; j < A.coldim(); j++)
 				{
 					Element ij;
 					A.getEntry(ij, i, j);
@@ -233,7 +233,7 @@ namespace LinBox
 					field().quo(tmp, ij, jj);
 					
 					// A[i] = A[i] - quo(A[i,j], A[j,j]) * A[j]
-					for (int k = j; k < A.coldim(); k++)
+					for (size_t k = j; k < A.coldim(); k++)
 					{
 						Element ik, jk;
 						
