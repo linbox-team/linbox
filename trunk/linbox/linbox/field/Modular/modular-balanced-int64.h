@@ -130,10 +130,12 @@ namespace LinBox
 			return x;
 		}
 
+#if 0
 		Element &init(Element &x) const
 		{
 			return x = 0 ;
 		}
+#endif
 
 
 		Element& next(Element &x) const

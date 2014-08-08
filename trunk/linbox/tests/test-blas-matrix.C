@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2014 the LinBox group
  *
@@ -82,6 +81,33 @@ int main (int argc, char **argv)
 
 	commentator().start("BlasMatrix black box test suite", "triplesbb");
 
+	{ /* Modular<float> */
+		//Field
+		typedef Modular<float> Field;
+
+		Field F (q);
+		commentator().start("Modular<float>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<float>");
+	}
+
+	{ /* ModularBalanced<float> */
+		//Field
+		typedef ModularBalanced<float> Field;
+
+		Field F (q);
+		commentator().start("ModularBalanced<float>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<float>");
+	}
+
 	{ /* Modular<double> */
 		//Field
 		typedef Modular<double> Field;
@@ -94,6 +120,19 @@ int main (int argc, char **argv)
 		pass = pass && testField<Matrix>(F,m,n);
 
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<double>");
+	}
+
+	{ /* ModularBalanced<double> */
+		//Field
+		typedef ModularBalanced<double> Field;
+
+		Field F (q);
+		commentator().start("ModularBalanced<double>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<double>");
 	}
 
 	{ /* Modular<int64_t> */
@@ -109,19 +148,63 @@ int main (int argc, char **argv)
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<int64_t>");
 	}
 
-	{ /* ModularBalanced<float> */
+	{ /* ModularBalanced<int64_t> */
+#if 1 /* not working */
 		//Field
-		typedef ModularBalanced<float> Field;
+		typedef ModularBalanced<int64_t> Field;
 
 		Field F (q);
-		commentator().start("ModularBalanced<float>");
+		commentator().start("ModularBalanced<int64_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<float>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<int64_t>");
+#endif
 	}
+
+	{ /* Modular<uint64_t> */
 #if 0 /* not working */
+		//Field
+		typedef Modular<uint64_t> Field;
+
+		Field F (q);
+		commentator().start("Modular<uint64_t>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<uint64_t>");
+#endif
+	}
+
+	{ /* ModularBalanced<uint64_t> */
+#if 0 /* not working */
+		//Field
+		typedef ModularBalanced<uint64_t> Field;
+
+		Field F (q);
+		commentator().start("ModularBalanced<uint64_t>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<uint64_t>");
+#endif
+	}
+
+	{ /* Modular<int32_t> */
+		//Field
+		typedef Modular<int32_t> Field;
+
+		Field F (q);
+		commentator().start("Modular<int32_t>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<int32_t>");
+	}
 
 	{ /* ModularBalanced<int32_t> */
 		//Field
@@ -136,7 +219,109 @@ int main (int argc, char **argv)
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<int32_t>");
 	}
 
+	{ /* Modular<uint32_t> */
+		//Field
+		typedef Modular<uint32_t> Field;
+
+		Field F (q);
+		commentator().start("Modular<uint32_t>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<uint32_t>");
+	}
+
+	{ /* ModularBalanced<uint32_t> */
+#if 0 /* not working */
+		//Field
+		typedef ModularBalanced<uint32_t> Field;
+
+		Field F (q);
+		commentator().start("ModularBalanced<uint32_t>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<uint32_t>");
+#endif
+	}
+
+	{ /* Modular<int16_t> */
+#if 0 /* not working */
+		//Field
+		typedef Modular<int16_t> Field;
+
+		Field F (q);
+		commentator().start("Modular<int16_t>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<int16_t>");
+#endif
+	}
+
+	{ /* ModularBalanced<int16_t> */
+#if 0 /* not working */
+		//Field
+		typedef ModularBalanced<int16_t> Field;
+
+		Field F (q);
+		commentator().start("ModularBalanced<int16_t>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<int16_t>");
+#endif
+	}
+
+	{ /* Modular<uint16_t> */
+#if 0 /* not working */
+		//Field
+		typedef Modular<uint16_t> Field;
+
+		Field F (q);
+		commentator().start("Modular<uint16_t>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<uint16_t>");
+#endif
+	}
+
+	{ /* ModularBalanced<uint16_t> */
+#if 0 /* not working */
+		//Field
+		typedef ModularBalanced<uint16_t> Field;
+
+		Field F (q);
+		commentator().start("ModularBalanced<uint16_t>");
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<uint16_t>");
+#endif
+	}
+
+	{ /* Modular<char> */
+#if 0 /* not working */
+		//Field
+		typedef Modular<char> Field;
+
+		Field F (q);
+
+		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+
+		pass = pass && testField<Matrix>(F,m,n);
+#endif
+	}
+
 	{ /* ModularBalanced<char> */
+#if 0 /* not working */
 		//Field
 		typedef ModularBalanced<char> Field;
 
@@ -145,11 +330,11 @@ int main (int argc, char **argv)
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-	}
 #endif
+	}
 
-#if 0 /*  bug somewhere */
 	{ /* GivaroZpz<Givaro::Unsigned32> */
+#if 0 /*  bug somewhere */
 		//Field
 		typedef GivaroZpz<Givaro::Unsigned32> Field;
 
@@ -158,8 +343,8 @@ int main (int argc, char **argv)
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-	}
 #endif
+	}
 
 	{ /* GivaroZpz<integer> */
 		//Field

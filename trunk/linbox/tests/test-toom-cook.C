@@ -79,7 +79,7 @@ namespace LinBox { namespace Protected {
 #ifdef _LB_MM_TIMING
 			chrono.clear();
 #endif
-			linbox_check(A.getPointer() == _A_.getPointer());
+			// linbox_check(A.getPointer() == _A_.getPointer());
 		}
 
 		IntegerSparseCraMatMul(IntegerMatrix& A, IntegerVector& B) :
@@ -88,7 +88,7 @@ namespace LinBox { namespace Protected {
 #ifdef _LB_MM_TIMING
 			chrono.clear();
 #endif
-			linbox_check(A.getPointer() == _A_.getPointer());
+			// linbox_check(A.getPointer() == _A_.getPointer());
 		}
 
 		ModularVector& operator()(ModularVector& Cp, const Field& F) const
@@ -156,11 +156,7 @@ namespace LinBox { namespace BLAS2 {
 		size_t PrimeSize = 22; //! @todo pourqoi ?
 
 		integer mA, mB ;
-		// MatrixDomain<typename _anyMatrix::Field> MD(A.field());
-		// VectorDomain<typename _anyMatrix::Field> VD(A.field());
-		// MD.Magnitude(mA,A);
 		mA = A.magnitude();
-		// VD.Magnitude(mB,B);
 		mB = B.magnitude();
 		integer cA = (integer) A.maxrow();
 		double logC = Givaro::naturallog(mA*mB*cA);
@@ -179,11 +175,9 @@ namespace LinBox { namespace BLAS2 {
 
 #ifdef _LB_DEBUG
 #ifdef _LB_MM_TIMING
-			// report << "Sole modular matrix multiplications: " << iteration.chrono << std::endl;
 #endif
 
 			Integer mC;
-			// VD.Magnitude(mC, C);
 			mC = C.magnitude();
 			report << "C max: " << logtwo(mC) <<  " (" << LinBox::naturallog(mC) << ')' << std::endl;
 #endif
@@ -252,11 +246,6 @@ int main(int ac, char ** av) {
 		Tim.stop();
 		report << Tim << '(' << C.getEntry(0,0) << ')' << std::endl;
 
-		// for (size_t i = 0 ; i< m ; ++i)
-		// for (size_t j = 0 ; j< n ; ++j)
-		// C.setEntry(i,j,GF.zero);
-
-		// report << "A[0,0] = " << A.getEntry(0,0) << std::endl;
 		{
 			report << "ToomCook low mem" << std::endl;
 			LinBox::BlasMatrix<GFpe> D(GF,m,n);
@@ -363,7 +352,6 @@ int main(int ac, char ** av) {
 			}
 		}
 	}
-
 
 	{ /* ZZ spmat mul */
 
