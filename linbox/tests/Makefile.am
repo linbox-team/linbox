@@ -67,7 +67,9 @@ BASIC_TESTS =  \
         test-smith-form-binary        \
         test-rational-solver          \
         test-rational-solver-adaptive \
-	test-rank                     \
+	test-rank-u32                     \
+	test-rank-md                     \
+	test-rank-Int                     \
 	test-cra                      \
 	test-blas-matrix              \
 	test-charpoly
@@ -468,8 +470,19 @@ test_det_SOURCES =                        \
         test-det.C                        \
         test-common.h
 
-test_rank_SOURCES =                        \
-        test-rank.C                        \
+test_rank_u32_SOURCES =                        \
+        test-rank-u32.C                        \
+        test-rank.h                        \
+        test-common.h
+
+test_rank_md_SOURCES =                        \
+        test-rank-md.C                        \
+        test-rank.h                        \
+        test-common.h
+
+test_rank_Int_SOURCES =                        \
+        test-rank-Int.C                        \
+        test-rank.h                        \
         test-common.h
 
 test_qlup_SOURCES =                        \
