@@ -1,10 +1,5 @@
-
-
-/* tests/test-rank.C
- * Copyright (C) 2002 Bradford Hovinen
- *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
- *
+/* tests/test-rank.h
+ * Time-stamp: <08 Aug 14 07:36:49 Jean-Guillaume.Dumas@imag.fr>
  * -----------------------------------------------------
  *
  * ========LICENCE========
@@ -27,7 +22,7 @@
  */
 
 
-/*! @file  tests/test-rank.C
+/*! @file  tests/test-rank.h
  * @ingroup tests
  * @brief  no doc
  * @test no doc.
@@ -342,68 +337,6 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 	return pass ;
 
 
-}
-
-int main (int argc, char **argv)
-{
-
-//     commentator().setMaxDetailLevel( 100000 );
-//     commentator().setMaxDepth( 100000 );
-
-	bool pass = true;
-
-	static size_t n = 40;
-	static integer q = 65519U;
-	//static integer q = 1000003U;
-	static integer bigQ("12345678901234567890123456789012345678901234568119");
-	static int iterations = 1;
-        static double sparsity = 0.05;
-
-	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		{ 's', "-s S", "Sparse matrices with density S.", TYPE_DOUBLE,     &sparsity },
-		END_OF_ARGUMENTS
-	};
-
-	parseArguments (argc, argv, args);
-
-	srand ((unsigned)time (NULL));
-	// srand48 ((unsigned)time (NULL));
-
-	commentator().start("rank solution test suite", "rank");
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-
-	Modular<uint32_t> F (q);
-	pass = pass && testSparseRank(F,n,n+1,(size_t)iterations,sparsity);
-	pass = pass && testSparseRank(F,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
-
-	Modular<double> G (q);
-	pass = pass && testSparseRank(G,n,n+1,(size_t)iterations,sparsity);
-	pass = pass && testSparseRank(G,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
-
-	// PID_integer R;
-	// pass = pass && testSparseRank(R,n,n+1,(size_t)iterations,sparsity);
-	// pass = pass && testSparseRank(R,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
-
-	GivaroZpz<Integer> Gq(bigQ);
-	pass = pass && testSparseRank(Gq,n,n+1,(size_t)iterations,sparsity);
-	pass = pass && testSparseRank(Gq,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
-
-
-
-#if 0
-	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-	<< "over GF2" << endl;
-        GF2 F2;
-	if (!testRankMethodsGF2 (F2, n, (unsigned int)iterations, sparsity)) pass = false;
-#endif
-
-
-	commentator().stop("rank solution test suite");
-	return pass ? 0 : -1;
 }
 
 // Local Variables:
