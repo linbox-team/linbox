@@ -100,7 +100,7 @@ bool testRandomSolve (const Ring& R,
 
                 //Diagonal<Ring> D(R, d);
 
-		BlasMatrix<Ring> D(R, n, n);
+		BlasMatrix<Ring> D(R, (size_t) n, (size_t) n);
 
 		for(int i = 0; i < n; ++i) R.init (D[(size_t)i][(size_t)i],  d[(size_t)i]);
 

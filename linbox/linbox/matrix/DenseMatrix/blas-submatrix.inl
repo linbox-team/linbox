@@ -526,7 +526,8 @@ namespace LinBox
 				++_cur; ++_c_idx;
 			}
 			else {
-				_cur = _cur + _stride - _c_dim + 1;
+				linbox_check(_stride > _c_dim);
+				_cur = _cur + (ptrdiff_t)(_stride - _c_dim + 1);
 				_c_idx = 0;
 			}
 
