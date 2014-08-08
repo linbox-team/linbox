@@ -134,6 +134,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	return ret;
 }
 
+#if 0 /* removed from fflas-ffpack */
 /*
  *  Testing the rank of dense matrices using TURBO algorithm
  *  construct a n*n matrices of rank r and compute the rank
@@ -211,6 +212,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 
 	return ret;
 }
+#endif
 
 
 /*
@@ -889,7 +891,7 @@ int main(int argc, char** argv)
 		if (!testLUdivine (F, m,n, iterations)) locpass = false;
 		if (!testRank (F, n, iterations))       locpass = false;
 		if (!testDet (F, n, iterations))        locpass = false;
-		if (!testTURBO (F, n, iterations))      locpass = false;
+		// if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
 		if (!testMinPoly (F,n, iterations))      locpass = false;
