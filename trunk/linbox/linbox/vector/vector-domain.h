@@ -786,7 +786,7 @@ VD.permute<V,PI>(v1,pb,pe)
 						VectorCategories::DenseVectorTag,
 						VectorCategories::DenseVectorTag) const
 		{
-			return DotProductDomain<Field>::dotSpecializedDD (res, v1, v2);
+			return DotProductDomain<Field>:: dotSpecializedDD (res, v1, v2);
 		}
 
 		template <class Vector1, class Vector2>

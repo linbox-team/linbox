@@ -292,11 +292,12 @@ namespace LinBox
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				y = fmod(y, field().modulus);
+				// y = fmod(y, field().modulus);
+				field().init(res, y);
 			}
 			else{
 				size_t i=0;
-			double t = 0.;
+				double t = 0.;
 				for (;i< v1.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
@@ -306,9 +307,10 @@ namespace LinBox
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
 				t+=fmod(y, field().modulus);
-				y = fmod(t, field().modulus);
+				// y = fmod(t, field().modulus);
+				field().init(res, t);
 			}
-			return res = y;
+			return res;
 		}
 
 		template <class Vector1, class Vector2>
@@ -321,10 +323,11 @@ namespace LinBox
 			if (v1.first.size() < _nmax) {
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				y = fmod(y, field().modulus);
+				// y = fmod(y, field().modulus);
+				field().init(res, y);
 			}
 			else {
-			double t =0.;
+				double t =0.;
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
@@ -335,9 +338,10 @@ namespace LinBox
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
 				t+= fmod(y, field().modulus);
-				y = fmod(t, field().modulus);
+				// y = fmod(t, field().modulus);
+				field().init(res, t);
 			}
-			return res = y;
+			return res ;
 		}
 	};
 }
