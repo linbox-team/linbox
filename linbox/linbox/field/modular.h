@@ -92,7 +92,8 @@ namespace LinBox
 	/**
 	 * \brief Base for prime fields where the elements are represented by various primitive types (and their operations).
 	 * \ingroup field
-	 * \defgroup Fields Fields <!--for old \ref Fields...-->
+	 * @bug no zero, one, mone !!
+	 * \defgroup Fields Fields
 	 *
 	 *
 	 * Normally use it's children.  This class is of interest for the
@@ -111,6 +112,8 @@ namespace LinBox
 		/*- Element type
 		*/
 		typedef _Element Element;
+		typedef Element * Element_ptr ;
+		typedef const Element * ConstElement_ptr;
 
 		/*- Random iterator generator type.
 		 * It must meet the common object interface of random element generators
@@ -353,7 +356,7 @@ namespace LinBox
 
 			is >> tmp;
 
-			x = abs (tmp) % integer (_modulus);
+			x = (Element)(abs (tmp) % integer (_modulus));
 			if (tmp < 0) x = _modulus - x;
 
 			return is;
@@ -396,6 +399,10 @@ namespace LinBox
 	class Modular : public ModularBase<_Element> {
 	public:
 		typedef _Element Element;
+		typedef Element * Element_ptr ;
+		typedef const Element * ConstElement_ptr;
+
+
 		typedef Modular<_Element>     Self_t;
 		typedef ModularBase<_Element> Father_t;
 		typedef typename ModularBase<_Element>::RandIter RandIter;

@@ -890,7 +890,7 @@ namespace LinBox {
 			return true ;
 		}
 
-		Element magnitude() const ;
+		// Element magnitude() const ;
 
 		size_t maxrow() const
 		{
@@ -1345,6 +1345,13 @@ namespace LinBox {
 			return ConstIndexedIterator(_start.end(), _colid.end(), _data.end(),_data.end()) ;
 		}
 
+		Integer magnitude() const
+		{
+			Integer M = 0UL;
+			for (size_t i = 0 ; i < _nbnz ; ++i)
+				M = std::max(M,Givaro::abs(_data[i]));
+					     return M;
+		}
 
 	protected :
 		friend class SparseMatrixWriteHelper<Self_t >;

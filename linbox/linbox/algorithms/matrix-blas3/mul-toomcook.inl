@@ -280,7 +280,7 @@ namespace LinBox { namespace BLAS3 {
 		size_t k = B.rowdim();
 		size_t n = C.coldim();
 
-		Zpz F ( A.field().characteristic() ); // BaseField ?
+		Zpz F ( (Integer) A.field().characteristic() ); // BaseField ?
 
 
 		if (e == 1) {
