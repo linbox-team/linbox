@@ -53,8 +53,6 @@ AC_ARG_WITH(fflas-ffpack,
         fi],
     [FFLAS_FFPACK_HOME_PATH="${DEFAULT_CHECKING_PATH}"])
 
-dnl  min_iml_version=ifelse([$1], ,1.0.3,$1)
-
 dnl -------------------- dnl
 dnl FFLAS-FFPACK VERSION dnl
 dnl -------------------- dnl
@@ -106,7 +104,7 @@ for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
 	],
        [
        ffflasffpack_found="no"
-       ffflasffpack_checked="$checked $FFLAS_FFPACK_HOME"
+       dnl  ffflasffpack_checked="$checked $FFLAS_FFPACK_HOME"
        unset FFLAS_FFPACK_CFLAGS
 	   unset FFLAS_FFPACK_LOC
 	   unset BLAS_LIBS
@@ -142,7 +140,7 @@ elif test -n "$fflasflas_problem"; then
     echo "Sorry, your FFLAS-FFPACK version is too old. Disabling."
     ifelse([$3], , :, [$3])
 elif test "x$fflasflas_found" = "xno" ; then
-    AC_MSG_RESULT(not found)
+    AC_MSG_RESULT(not found: bad version $FF_VER)
     ifelse([$3], , :, [$3])
 fi
 

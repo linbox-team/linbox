@@ -103,9 +103,9 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 	],
 	[
 	givaro_found="yes"
-	givaro_checked="$checked $GIVARO_HOME"
-#unset GIVARO_CFLAGS
-#unset GIVARO_LIBS
+	dnl  givaro_checked="$checked $GIVARO_HOME"
+dnl unset GIVARO_CFLAGS
+dnl unset GIVARO_LIBS
 	break
 
 	])
