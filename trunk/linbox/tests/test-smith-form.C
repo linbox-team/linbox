@@ -86,7 +86,7 @@ bool testRandom(const Ring& R,
 		VD.write (report, d);
                 report << endl;
 
-		BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
+		BlasMatrix<Ring> D(R, (size_t)n, (size_t)n), L(R, (size_t)n, (size_t)n), U(R, (size_t)n, (size_t)n), A(R,(size_t)n,(size_t)n);
 
 		int i, j;
 

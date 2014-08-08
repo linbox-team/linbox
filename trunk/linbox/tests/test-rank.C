@@ -116,7 +116,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 			ret = false;
 		}
 
-		unsigned long rank_Wiedemann; 
+		unsigned long rank_Wiedemann;
 		//Method::Wiedemann MW;  // rank soln needs fixing for this.
 		Method::Blackbox MW;
 		LinBox::rank (rank_Wiedemann, A, MW);
@@ -129,7 +129,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 		unsigned long rank_blas_elimination ;
 		if (F.characteristic() < LinBox::BlasBound && F.characteristic() == F.cardinality()) {
 			Method::BlasElimination MBE;
-			LinBox::rank (rank_blas_elimination, A, MBE); 
+			LinBox::rank (rank_blas_elimination, A, MBE);
 		} else {
 			rank_blas_elimination = rank_elimination;
 		}
@@ -377,20 +377,20 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
 	Modular<uint32_t> F (q);
-	pass = pass && testSparseRank(F,n,n+1,iterations,sparsity);
-	pass = pass && testSparseRank(F,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,iterations,sparsity);
+	pass = pass && testSparseRank(F,n,n+1,(size_t)iterations,sparsity);
+	pass = pass && testSparseRank(F,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
 
 	Modular<double> G (q);
-	pass = pass && testSparseRank(G,n,n+1,iterations,sparsity);
-	pass = pass && testSparseRank(G,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,iterations,sparsity);
+	pass = pass && testSparseRank(G,n,n+1,(size_t)iterations,sparsity);
+	pass = pass && testSparseRank(G,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
 
 	// PID_integer R;
-	// pass = pass && testSparseRank(R,n,n+1,iterations,sparsity);
-	// pass = pass && testSparseRank(R,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,iterations,sparsity);
+	// pass = pass && testSparseRank(R,n,n+1,(size_t)iterations,sparsity);
+	// pass = pass && testSparseRank(R,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
 
 	GivaroZpz<Integer> Gq(bigQ);
-	pass = pass && testSparseRank(Gq,n,n+1,iterations,sparsity);
-	pass = pass && testSparseRank(Gq,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,iterations,sparsity);
+	pass = pass && testSparseRank(Gq,n,n+1,(size_t)iterations,sparsity);
+	pass = pass && testSparseRank(Gq,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
 
 
 
