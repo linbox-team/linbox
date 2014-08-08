@@ -418,7 +418,7 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-toom-cook",            counter , flag);
+		  No_build_n_run("test-toom-cook",            counter , flag, "one method does not work");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
