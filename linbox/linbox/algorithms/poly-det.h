@@ -2,8 +2,9 @@
 #ifndef __LINBOX_POLY_DET_H
 #define __LINBOX_POLY_DET_H
 
-#include "linbox/field/Givaro/givaro-extension.h"
-#include "linbox/solutions/det.h"
+#include <linbox/field/Givaro/givaro-extension.h>
+#include <linbox/algorithms/poly-interpolation.h>
+#include <linbox/solutions/det.h>
 
 namespace LinBox {
 
@@ -34,22 +35,33 @@ computePolyDet(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element& result,
 		F.next(fieldElt);
 	}
 
-	std::vector<FieldElt> vals;
-	PolyInterpolation<Field,PolyDom> PI;
+	commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
+		<< "Initialized mats" << std::endl;
+
+
+	PolyInterpolation<Field,PolyDom> PI(pts,F,BR);
+#pragma omp parallel for shared(mats,A,PI,BR,F)
 	for (int i=0;i<m;++i) {
 		for (int j=0;j<n;++j) {
 			PolyElt p;
 			A.getEntry(p,i,j);
-			PI.evaluate(vals,pts,p,BR,F);
+			std::vector<FieldElt> vals;
+			PI.evaluate(vals,p,BR,F);
 			for (int k=0;k<d;++k) {
 				mats[k].setEntry(i,j,vals[k]);
 			}
 		}
 	}
+
+	commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
+		<< "Finished evaluations" << std::endl;
+
 	std::vector<FieldElt> dets(d);
+#pragma omp parallel for shared(dets,mats)
 	for (int k=0;k<d;++k) {
 		det(dets[k],mats[k],Method::Wiedemann());
 	}
+
 	PI.interpolate(result,pts,dets,BR,F);
 	return result;
 }
@@ -86,9 +98,12 @@ computePolyDetExtension(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element&
 	typedef Givaro::Poly1Dom<Field,Givaro::Dense> BasePolyDom;
 	typedef typename BasePolyDom::Element BasePolyElt;
 
-	BasePolyDom BR=A.field();
+	BasePolyDom BR=F;
 
 	int n=A.coldim(),m=A.rowdim();
+
+	commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
+		<< "Computing d" << std::endl;
 
 	int d=0;
 	BasePolyElt p;
@@ -102,6 +117,9 @@ computePolyDetExtension(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element&
 		d += rowMaxD;
 	}
 	d=roundUpPowerOfTwo(d+1);
+
+	commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
+		<< "Found d" << std::endl;
 
 	int a,e=1;
 	a=F.cardinality();
@@ -119,6 +137,9 @@ computePolyDetExtension(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element&
 	ExtField EF(F,e);
 	ExtPolyDom EPD(EF,"x");
 	Hom<Field,GivaroExtension<Field> > hom(F,EF);
+
+	commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
+		<< "Constructed new matrix" << std::endl;
 
 	EPolyMatrix Ap(EPD,m,n);
 	for (int i=0;i<m;++i) {
@@ -139,8 +160,14 @@ computePolyDetExtension(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element&
 		}
 	}
 
+	commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
+		<< "Converted matrix" << std::endl;
+
 	ExtPoly ep;
 	computePolyDet(ep,EF,Ap,d);
+
+	commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
+		<< "Computed over base field" << std::endl;
 
 	if (EPD.isZero(ep)) {
 		BR.assign(result,BR.zero);

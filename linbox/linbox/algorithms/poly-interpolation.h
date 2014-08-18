@@ -2,10 +2,15 @@
 #ifndef __LINBOX_POLY_INTERPOLATION_H
 #define __LINBOX_POLY_INTERPOLATION_H
 
+
+#include <omp.h>
+
 #include <linbox/ring/givaro-poly.h>
 
 namespace LinBox {
 
+
+	// Expects pts to have size 2^n, undefined behavior otherwise
 template<class Field, class PolyDom>
 class PolyInterpolation {
 public:
@@ -14,64 +19,11 @@ public:
 	typedef typename Field::Element FieldElt;
 	typedef std::vector<std::vector<RingElt> > ProductTree;
 
-
-
-	RingElt& interpolate(RingElt& poly,
-	                     const std::vector<FieldElt>& pts,
-	                     const std::vector<FieldElt>& vals,
-	                     PolyDom& PD,
-	                     Field& F)
+	PolyInterpolation(const std::vector<FieldElt>& pts,
+	                  Field& F,
+	                  PolyDom& PD)
 	{
 		int n=pts.size();
-		ProductTree Mtree;
-		int k=productTree(Mtree,pts,PD);
-		std::vector<FieldElt> si;
-		RingElt mprime;
-		PD.diff(mprime,Mtree[k][0]);
-		evaluate(si,mprime,Mtree,PD,F);
-		for (int i=0;i<n;++i) {
-			F.invin(si[i]);
-			F.mulin(si[i],vals[i]);
-		}
-		scaledSum(poly,si,Mtree,PD);
-		return poly;
-	}
-
-	// Expects cs.size()==2^k, will segfault otherwise
-	// FIXME: Fail gracefully
-	RingElt& scaledSum(RingElt& comb,
-	                   const std::vector<FieldElt>& cs,
-	                   const ProductTree& Mtree,
-	                   PolyDom& PD)
-	{
-		int k=Mtree.size()-1,numPts=cs.size();
-		std::vector<RingElt> fRow,tempRow;
-		fRow.resize(numPts);
-		for (int i=0;i<numPts;++i) {
-			PD.assign(fRow[i],cs[i]);
-		}
-
-		for (int i=0;i<k;++i) {
-			int rowLen=fRow.size();
-			for (int j=0;j<rowLen/2;++j) {
-				RingElt p,q;
-				PD.mul(p,fRow[2*j],Mtree[i][2*j+1]);
-				PD.mul(q,fRow[2*j+1],Mtree[i][2*j]);
-				PD.addin(p,q);
-				tempRow.push_back(p);
-			}
-			fRow.swap(tempRow);
-			tempRow.clear();
-		}
-		PD.assign(comb,fRow[0]);
-		return comb;
-	}
-
-	int productTree(ProductTree& Mtree,
-	                const std::vector<FieldElt>& pts,
-	                PolyDom& PD)
-	{
-		int n=pts.size(),k;
 
 		std::vector<RingElt> mRow;
 		for (int i=0;i<n;++i) {
@@ -81,55 +33,84 @@ public:
 			PD.subin(p,pts[i]);
 			mRow.push_back(p);
 		}
-		Mtree.push_back(mRow);
-		k=0;
-		while (Mtree[k].size()>1) {
+		Mtree_.push_back(mRow);
+		k_=0;
+		while (Mtree_[k_].size()>1) {
 			std::vector<RingElt> row;
-			for (int i=0;i<Mtree[k].size()/2;++i) {
+			for (int i=0;i<Mtree_[k_].size()/2;++i) {
 				RingElt p;
-				PD.mul(p,Mtree[k][2*i],Mtree[k][2*i+1]);
+				PD.mul(p,Mtree_[k_][2*i],Mtree_[k_][2*i+1]);
 				row.push_back(p);
 			}
-			Mtree.push_back(row);
-			++k;
+			Mtree_.push_back(row);
+			++k_;
 		}
-		return k;
+	}
+
+	RingElt& interpolate(RingElt& poly,
+	                     const std::vector<FieldElt>& pts,
+	                     const std::vector<FieldElt>& vals,
+	                     PolyDom& PD,
+	                     Field& F)
+	{
+		int n=pts.size();
+		std::vector<FieldElt> si;
+		RingElt mprime;
+		PD.diff(mprime,Mtree_[k_][0]);
+		evaluate(si,mprime,PD,F);
+		for (int i=0;i<n;++i) {
+			F.invin(si[i]);
+			F.mulin(si[i],vals[i]);
+		}
+		scaledSum(poly,si,PD);
+		return poly;
+	}
+
+	RingElt& scaledSum(RingElt& comb,
+	                   const std::vector<FieldElt>& cs,
+	                   PolyDom& PD)
+	{
+		int numPts=cs.size();
+		std::vector<RingElt> fRow,tempRow;
+		fRow.resize(numPts);
+		for (int i=0;i<numPts;++i) {
+			PD.assign(fRow[i],cs[i]);
+		}
+
+		for (int i=0;i<k_;++i) {
+			int rowLen=fRow.size();
+			tempRow.resize(rowLen/2);
+			for (int j=0;j<rowLen/2;++j) {
+				RingElt p,q;
+				PD.mul(p,fRow[2*j],Mtree_[i][2*j+1]);
+				PD.mul(q,fRow[2*j+1],Mtree_[i][2*j]);
+				PD.addin(p,q);
+				PD.assign(tempRow[j],p);
+			}
+			fRow.swap(tempRow);
+			tempRow.clear();
+		}
+		PD.assign(comb,fRow[0]);
+		return comb;
 	}
 
 	void evaluate(std::vector<FieldElt>& vals,
-	              const std::vector<FieldElt>& pts,
 	              const RingElt& poly,
 	              PolyDom& PD,
 	              Field& F)
 	{
-		ProductTree Mtree;
-		productTree(Mtree,pts,PD);
-		evaluate(vals,poly,Mtree,PD,F);
-	}
-
-	void evaluate(std::vector<FieldElt>& vals,
-	              const RingElt& poly,
-	              ProductTree& Mtree,
-	              PolyDom& PD,
-	              Field& F)
-	{
-		int k=Mtree.size()-1;
 		std::vector<RingElt> fRow,tempRow;
 		fRow.push_back(poly);
 
-		for (int i=k-1;i>=0;--i) {
+		for (int i=k_-1;i>=0;--i) {
 			int rowLen=fRow.size();
+			tempRow.resize(rowLen*2);
 			for (int j=0;j<rowLen;++j) {
-				if (PD.degree(fRow[j])==0) {
-					tempRow.push_back(fRow[j]);
-					tempRow.push_back(fRow[j]);
-				} else {
-					RingElt p;
-					PD.mod(p,fRow[j],Mtree[i][2*j]);
-					tempRow.push_back(p);
-					PD.mod(p,fRow[j],Mtree[i][2*j+1]);
-					tempRow.push_back(p);
-				}
+				RingElt p;
+				PD.mod(p,fRow[j],Mtree_[i][2*j]);
+				PD.assign(tempRow[2*j],p);
+				PD.mod(p,fRow[j],Mtree_[i][2*j+1]);
+				PD.assign(tempRow[2*j+1],p);
 			}
 			fRow.swap(tempRow);
 			tempRow.clear();
@@ -144,12 +125,13 @@ public:
 		}
 	}
 
-	void naiveInterpolate(RingElt& poly,
-	                      const std::vector<FieldElt>& vals,
-	                      const std::vector<FieldElt>& pts,
-	                      GivaroPoly<PolyDom>& R,
-	                      PolyDom& PD,
-	                      Field& F)
+
+	static void naiveInterpolate(RingElt& poly,
+	                             const std::vector<FieldElt>& vals,
+	                             const std::vector<FieldElt>& pts,
+	                             GivaroPoly<PolyDom>& R,
+	                             PolyDom& PD,
+	                             Field& F)
 	{
 		typedef GivaroPoly<PolyDom> Ring;
 		typedef typename Ring::Element RingElt;
@@ -178,7 +160,14 @@ public:
 			PD.addin(poly,mulElt);
 		}
 	}
+protected:
+
+	ProductTree Mtree_;
+
+	int k_;
+
 };
+
 
 }
 

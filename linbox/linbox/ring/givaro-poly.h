@@ -45,15 +45,13 @@ namespace LinBox
 		typedef typename Domain::Element Element;
 		typedef typename Domain::Type_t Scalar_t;
 
-		typedef GivaroPolyRandIter<GivaroPoly<Domain>> RandIter;
+		typedef GivaroPolyRandIter<GivaroPoly<Domain> > RandIter;
 
 		Element zero, one, mOne;
 
 		GivaroPoly(){}
 
-		GivaroPoly(const Domain &pd) {
-			_pd = pd;
-
+		GivaroPoly(const Domain &pd) : _pd(pd) {
 			_pd.assign(zero, _pd.zero);
 			_pd.assign(one, _pd.one);
 			_pd.assign(mOne, _pd.mOne);
@@ -272,13 +270,13 @@ namespace LinBox
 
 		// PIR Functions
 
-		Element &isDivisor(const Element &a, const Element &b) const {
-			if (a == zero) return false;
-			if (b == zero) return true;
+		bool isDivisor(const Element &a, const Element &b) const {
+			if (_pd.isZero(a)) return false;
+			if (_pd.isZero(b)) return true;
 
 			Element tmp;
-			mod(tmp, a, b);
-			return tmp == zero;
+			rem(tmp, b, a);
+			return _pd.isZero(tmp);
 		}
 		
 		// a = q b + r
@@ -292,6 +290,16 @@ namespace LinBox
 		
 		Element &divrem(Element &q, Element &r, const Element &a, const Element &b) const {
 			return _pd.divmod(q,r,a,b);
+		}
+
+		Element& normalIn(Element &x) const
+		{
+			return x;
+		}
+		
+		bool isUnit(const Element& x) const
+		{
+			return _pd.degree(x).value()==0;
 		}
 
 		// g = gcd(a,b)

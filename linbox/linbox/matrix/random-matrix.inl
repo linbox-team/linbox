@@ -328,9 +328,12 @@ namespace LinBox
 	Matrix &
 	RandomDenseMatrix<Randiter, Field>::random( Matrix & A)
 	{
+		typename Field::Element d;
 		for (size_t i = 0 ; i < A.rowdim() ; ++i)
-			for (size_t j = 0 ; j < A.coldim() ; ++j)
-				R_.random(A.refEntry(i,j));
+			for (size_t j = 0 ; j < A.coldim() ; ++j) {
+				R_.random(d);
+				A.setEntry(i,j,d);
+			}
 		return A;
 	}
 

@@ -429,6 +429,17 @@ namespace LinBox
 
 	public:
 
+		template <class Vector,class Matrix>
+		static void solve(Vector& factors,const Matrix& A)
+		{
+			Matrix B(A);
+			smithFormIn(B);
+			factors.resize(B.rowdim());
+			for (int i=0;i<B.rowdim();++i) {
+				A.field().assign(factors[i],B.getEntry(i,i));
+			}
+		}
+
 		template<class Matrix>
 		static  Matrix& smithFormIn(Matrix& A) {
 

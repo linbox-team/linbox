@@ -2,6 +2,7 @@
 #define __SLICED_DOMAIN_H
 
 #include "dense-sliced.h"
+#include "linbox/matrix/matrix-domain.h"
 
 /*
 The SlicedDomain template over a Field type parameter has constructor from an instance of Field which must represent GF(3).
@@ -15,22 +16,35 @@ SlicedDomain provides, for A a Matrix and B a Blackbox(preconditioner)
   addin(A, A2) // A += A2
 */
 
-template<class _Field, typename _WordT = unsigned long long int>
-// _Field must be able to represent GF(3).
-struct SlicedDomain : public _Field
-{
+namespace LinBox {
+
+template<class Field, class WordT=unsigned long long int>
+class SlicedField : public Field {
+public:
+	SlicedField():Field(3) {}
+	SlicedField(size_t p, size_t e=1) : Field(p)
+	{  if (p != 3 || e != 1) throw LinBoxError("bad field"); }
+};
+
+template<>
+template<class _Field,class _WordT>
+class MatrixDomain<SlicedField<_Field,_WordT> > : public _Field {
+public:
 	typedef _Field Field;
 	typedef _WordT Word_T;
 	typedef typename _Field::Element Element;
 	typedef Element Scalar;
-	typedef Sliced<SlicedDomain> Matrix;
+	typedef Sliced<MatrixDomain> Matrix;
+	typedef Sliced<MatrixDomain> OwnMatrix;
 
-	SlicedDomain () : Field(3) {}
-	//SlicedDomain (size_t p, size_t e = 1) : Field(p, e) {}
-	SlicedDomain (size_t p, size_t e = 1) : Field(p) 
+	MatrixDomain () : Field(3) {}
+	//MatrixDomain (size_t p, size_t e = 1) : Field(p, e) {}
+	MatrixDomain (size_t p, size_t e = 1) : Field(p) 
 	{  if (p != 3 || e != 1) throw LinBoxError("bad field"); }
+	MatrixDomain(const Field& F) : Field(3) {}
+	MatrixDomain(Field& F) : Field(3) {}
 
-	SlicedDomain& operator=(const SlicedDomain<Field, Word_T>& R) 
+	MatrixDomain& operator=(const MatrixDomain<SlicedField<Field, Word_T> >& R) 
 	{ static_cast<Field*>(this)->operator= (R); return *this; }
 
 // A domain provides field functions and (dense) matrix functions.
@@ -99,7 +113,11 @@ struct SlicedDomain : public _Field
 		T.init(A.rowdim(), B.coldim());
 		mul(T, A, B);
 		return addin(C, T);	
-	}	
+	}
+
+	Matrix& saxpyin(Matrix& Y, Scalar& a, Matrix& B) {
+		return axpyin(Y,a,B);
+	}
 
 	Matrix& random(Matrix &A, size_t seed=0) const {
 		return A.random(seed);
@@ -141,5 +159,7 @@ struct SlicedDomain : public _Field
 		return is; 
 	}
 };
+
+}
 	
 #endif // __SLICED_DOMAIN_H

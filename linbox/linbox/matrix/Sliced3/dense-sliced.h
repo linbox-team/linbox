@@ -19,7 +19,8 @@
 //#include "sliced-stepper.h"
 
 using namespace std;
-using namespace LinBox;
+
+namespace LinBox {
 
 /* SLICED BASE CODE 
    SlicedBase implements functios on a vector of GF(3) elements.
@@ -181,6 +182,7 @@ public:
 	//  Constructor taking dims and bool defaulting ROWPACKED
 	Sliced (Domain d, size_t m, size_t n, bool colP = false) :
 		Matrix(), _domain(d), _m(m), _n(n), _colPacked(colP), _i(0), 
+			_SIZE(8*sizeof(SlicedWord)),
 		_j(0), _loff(0), _roff(0), _sub(0) {
 			Matrix::init(colP ? (m + _SIZE - 1)/_SIZE : m, 
 					colP ? n : (n + _SIZE - 1)/_SIZE);
@@ -216,6 +218,11 @@ public:
 				setEntry(i, j, filler);
 	}
 
+	void shiftSubMatDown(int i) {
+		_i=i+_i;
+		_rep=_rep+i*_stride;
+	}
+
 	Sliced & submatrix(Sliced &other, size_t i, size_t j, size_t m, size_t n){
 		_m = m;
 		_n = n;
@@ -248,6 +255,9 @@ public:
 
 		return *this;
 	}
+
+	const Domain& field() const {return _domain;}
+	Domain& field() {return _domain;}
 
 	//  blindly assumes "other" matrix is rowpacked...
 	Sliced (Sliced &other, size_t i, size_t j, size_t m, size_t n) : Matrix(), _domain(other._domain) { 
@@ -343,6 +353,12 @@ public:
 
 		_rep[word].b0 |= b0 << index;
 		_rep[word].b1 |= b1 << index;
+	}
+
+	Scalar getEntry(size_t i, size_t j) {
+		Scalar retVal;
+		getEntry(retVal,i,j);
+		return retVal;
 	}
 
 	Scalar& getEntry(Scalar &x, size_t i, size_t j){
@@ -452,7 +468,7 @@ public:
 	//  returns an (approximately) random _SIZE-bit word
 	SlicedWord randomLL(){
 		SlicedWord r = 0;
-		for(size_t i=0; i<(_SIZE/8); i++)
+		for(size_t i=0; i<(_SIZE/8); ++i)
 			r |= ((SlicedWord)(rand()%256) << (i << 3));
 		return r;
 	}
@@ -585,7 +601,7 @@ public:
 		// std::cerr << "READ " << bytes << " BYTES." << std::endl;
 		return is;
 	}
-
+	/*
 	bool writeBinaryFile(const char *file){
 		ofstream bin;
 		bin.open(file, ios::out | ios::binary);
@@ -628,7 +644,7 @@ public:
         }
 		mmapFile(fd);
     }
-
+	*/
     void munmapBinaryFile(){
         size_t bytes = memSize();
         munmap((void *)_rep, bytes);
@@ -638,8 +654,8 @@ public:
 
 	size_t rows(){ return _m; }
 	size_t cols(){ return _n; }
-	size_t rowdim(){ return _m; }
-	size_t coldim(){ return _n; }
+	size_t rowdim()const{ return _m; }
+	size_t coldim()const{ return _n; }
 
 	size_t l(){ return _loff; }
 	size_t r(){ return _roff; }
@@ -670,5 +686,7 @@ private:
 	size_t _SIZE;
 	bool _sub;
 }; // Sliced
+
+}
 
 #endif // __DENSE_SLICED_H

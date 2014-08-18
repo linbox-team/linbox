@@ -483,7 +483,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 					if(piv==m+i){
 						for(std::set<size_t>::iterator itpi = pi.begin(); itpi != pi.end(); ++itpi){
 							Element temp;
-							field().init(temp,D.getEntry(i, *itpi));
+							field().assign(temp,D.getEntry(i, *itpi));
 							field().negin(temp);
 							field().divin(temp,pivel);
 							ColumnAdd(tau, *itpi, piv, temp);
@@ -496,18 +496,18 @@ EARLY_TERM_THRESHOLD (ett_default)
 						//Eliminate nonzero discrepancies in generator columns
 						for(typename std::set<size_t>::iterator itpi = pi.begin(); itpi != pi.end(); ++itpi){
 							Element temp;
-							field().init(temp,D.getEntry(i, *itpi));
+							field().assign(temp,D.getEntry(i, *itpi));
 							field().negin(temp);
 							field().divin(temp,pivel);
 							ColumnAdd(tau, *itpi, piv, temp);
 							ColumnAdd(D, *itpi, piv, temp);
 						}
 						Element auxel;
-						field().init(auxel,D.getEntry(i,m+i));
+						field().assign(auxel,D.getEntry(i,m+i));
 						//Perform a major change and update an initialized auxiliary column
 						if(!field().isZero(auxel)){
 							Element temp;
-							field().init(temp,D.getEntry(i, m+i));
+							field().assign(temp,D.getEntry(i, m+i));
 							field().negin(temp);
 							field().divin(temp,pivel);
 							ColumnAdd(tau, m+i, piv, temp);
@@ -822,9 +822,11 @@ EARLY_TERM_THRESHOLD (ett_default)
     }; //end of class BlockCoppersmithDomain
 
 
-                       template<class _Domain, class _Sequence>
-    std::vector<size_t>  BlockCoppersmithDomain<_Domain,
-_Sequence>::right_minpoly (std::vector<Coefficient> &P)
+	// construct P s.t. \sum_{i}P[i]A^{i}=0
+	template<class _Domain, class _Sequence>
+	std::vector<size_t>  BlockCoppersmithDomain<_Domain,
+	                                            _Sequence>::
+	right_minpoly (std::vector<Coefficient> &P)
     {
 	    //Get the row and column dimensions
 	    const size_t r = _container->rowdim();
