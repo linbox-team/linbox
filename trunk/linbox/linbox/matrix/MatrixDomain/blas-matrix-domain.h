@@ -505,6 +505,12 @@ namespace LinBox
 			return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(field(),A,B);
 		}
 
+		template <class Matrix1, class Matrix2>
+		inline Matrix1 &mulin (Matrix1 &A, const Matrix2 &B) const
+		{
+			return mulin_left (A, B);
+		}
+
 		//! axpy.
 		//! D = A*B + C
 		template <class Operand1, class Operand2, class Operand3>
@@ -611,6 +617,14 @@ namespace LinBox
 		Matrix& div( Matrix &C, const Matrix &A, const Matrix &B) const
 		{
 			return this->right_solve(C,B,A);
+		}
+
+		/** Matrix swap
+		 * B <--> A.  They must already have the same shape.
+		 * @returns Reference to B
+		 */
+		inline Matrix &swap(Matrix &B, Matrix &A) const {
+			return B.swap(A);
 		}
 
 

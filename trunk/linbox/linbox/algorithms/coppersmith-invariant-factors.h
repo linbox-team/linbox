@@ -26,19 +26,25 @@
 #define __LINBOX_coppersmith_invariant_factors_H
 
 #include "linbox/algorithms/block-coppersmith-domain.h"
-#include "linbox/algorithms/blackbox-block-container.h"
+//#include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/alt-blackbox-block-container.h"
 #include "linbox/matrix/random-matrix.h"
 
 #include <givaro/givpoly1.h>
 #include <linbox/ring/givaro-poly.h>
 #include <linbox/algorithms/smith-form-kannan-bachem.h>
+#include <linbox/algorithms/smith-form-iliopoulos.h>
+#include <linbox/algorithms/poly-det.h>
+#include "linbox/ring/givaro-poly-mod-poly.h"
+
+#include <omp.h>
 
 namespace LinBox
 {
 
 using namespace LinBox;
 
-template<class Field_,class Blackbox_>
+template<class Field_,class Blackbox_,class Field2_=Field_>
 class CoppersmithInvariantFactors {
 public:
 	typedef Field_ Field;
@@ -66,8 +72,8 @@ public:
 
 		RandIter RI(F_);
 		RandomDenseMatrix<RandIter,Field> RDM(F_,RI);
-		RDM.randomFullRank(U_);
-		RDM.randomFullRank(V_);
+		RDM.random(U_);
+		RDM.random(V_);
 	}
 
 	CoppersmithInvariantFactors(Field& F, const Blackbox& M, size_t b):
@@ -76,8 +82,8 @@ public:
 	{
 		RandIter RI(F_);
 		RandomDenseMatrix<RandIter,Field> RDM(F_,RI);
-		RDM.randomFullRank(U_);
-		RDM.randomFullRank(V_);
+		RDM.random(U_);
+		RDM.random(V_);
 	}
 
 	template <class Mat1, class Mat2>
@@ -93,23 +99,36 @@ public:
 	template <class PolyRingVector>
 	size_t computeFactors(PolyRingVector& diag, int earlyTerm=10)
 	{
-		typedef BlackboxBlockContainer<Field,Blackbox> BBC;
-		typedef BlockCoppersmithDomain<Domain,BBC> BCD;
+		typedef AltBlackboxBlockContainer<Field,Blackbox,typename MatrixDomain<Field2_>::OwnMatrix > BBC;
+		typedef BlockCoppersmithDomain<MatrixDomain<Field2_>,BBC> BCD;
 		BBC blockSeq(M_,F_,U_,V_);
-		BCD coppersmith(MD_,&blockSeq,earlyTerm);
+		MatrixDomain<Field2_> BMD(F_);
+		BCD coppersmith(BMD,&blockSeq,earlyTerm);
 
 		std::vector<size_t> deg;
-		std::vector<Block> gen;
+		std::vector<typename MatrixDomain<Field2_>::OwnMatrix > gen;
 		deg=coppersmith.right_minpoly(gen);
 		commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
 			<<"Finished computing minpoly"<<std::endl;
+
 		PolyDom PD(F_,"x");
 		PolyRing R(PD);
 		PolyMatDom PMD(R);
 		size_t d=gen.size();
 		PolyBlock MM(R,b_,b_);
-		PolyElement temp;
+		PolyElement temp,detPoly;
 		PD.init(temp,d-1);
+
+#ifdef OUTPUT_CHECKPOINTS
+		{
+			ofstream oF("checkpoint.txt");
+			for (int i=0;i<d;++i) {
+				BMD.write(oF,gen[i]);
+			}
+			oF.close();
+		}
+#endif
+
 		for (int i=0;i<b_;++i) {
 			for (int j=0;j<b_;++j) {
 				for (int k=0;k<d;++k) {
@@ -118,9 +137,38 @@ public:
 				MM.setEntry(i,j,temp);
 			}
 		}
+
+
+		computePolyDetExtension(detPoly,F_,MM);
+
+#ifdef OUTPUT_CHECKPOINTS
+		{
+			ofstream oF("polyDetCheckpoint.txt");
+			PD.write(oF,detPoly);
+			oF << std::endl;
+			oF.close();
+		}
+
+		{
+			GivaroPolyModPoly<Field2_> GPMPD(F_,detPoly);
+			GivaroPoly<typename GivaroPolyModPoly<Field2_>::Parent_t > GPMPDW(*(GPMPD.getExtension()));
+			MatrixDomain<GivaroPoly<GivaroPolyModPoly<Field2_> > > GPMPDWMD(GPMPDW);
+			typename MatrixDomain<GivaroPoly<GivaroPolyModPoly<Field2_> > >::OwnMatrix MMCopy(GPMPDW,b_,b_);
+			for (int i=0;i<b_;++i) {
+				for (int j=0;j<b_;++j) {
+					for (int k=0;k<d;++k) {
+						PD.setEntry(temp,gen[k].getEntry(i,j),k);
+					}
+					MMCopy.setEntry(i,j,temp);
+				}
+			}
+			SmithFormIliopoulos::solve(diag,MMCopy);
+		}
+#endif
 		SmithFormKannanBachemDomain<PolyMatDom> SFKB(PMD);
 		diag.resize(b_);
 		SFKB.solve(diag,MM);
+
 		for (int i=0;i<diag.size();++i) {
 			R.normalize(diag[i],diag[i]);
 		}

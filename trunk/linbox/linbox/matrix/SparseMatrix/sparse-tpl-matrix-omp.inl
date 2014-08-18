@@ -230,8 +230,6 @@ template<class Mat1, class Mat2> Mat1& SparseMatrix<Field_,SparseMatrixFormat::T
 applyLeft(Mat1 &Y, const Mat2 &X) const
 {
         Y.zero();
-        typedef AbnormalMatrix<Field_,Mat1> AbnormalMat;
-        AbnormalMat YTemp(field(),Y);
 
 #ifdef __LINBOX_USE_OPENMP
 #pragma omp parallel
@@ -253,14 +251,13 @@ applyLeft(Mat1 &Y, const Mat2 &X) const
                                                 const Index row=dataBlock->getRow((int)k);
                                                 const Index col=dataBlock->getCol((int)k);
                                                 typename Matrix::constSubMatrixType Xr(X,col,0,1,X.coldim());
-                                                YTemp.saxpyin(dataBlock->elts_[k],Xr,
-                                                              row,0,1,Y.coldim());
+                                                typename Matrix::subMatrixType Yr(Y,row,0,1,Y.coldim());
+                                                MD_.saxpyin(Yr,dataBlock->elts_[k],Xr);
                                         }
                                 }
                         }
                 }
         }
-        YTemp.normalize();
         return Y;
 }
 
