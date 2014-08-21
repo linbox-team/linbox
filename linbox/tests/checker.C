@@ -386,7 +386,10 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_runWarn("test-rank",                         counter , flag, "bb: fails to build / BlasVector/GF2");
+	//	  Build_n_runWarn("test-rank",                         counter , flag, "bb: fails to build / BlasVector/GF2");
+	Build_n_run("test-rank-u32",                         counter , flag/*, "vector (bb) responsible"*/);
+	Build_n_run("test-rank-md",                         counter , flag/*, "vector (bb) responsible"*/);
+	Build_n_run("test-rank-Int",                         counter , flag/*, "vector (bb) responsible"*/);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
