@@ -1,4 +1,4 @@
-/* tests/test-rank.C
+/* tests/test-rank-md.C
  * Time-stamp: <08 Aug 14 07:40:04 Jean-Guillaume.Dumas@imag.fr>
  * -----------------------------------------------------
  *
@@ -22,7 +22,7 @@
  */
 
 
-/*! @file  tests/test-rank.C
+/*! @file  tests/test-rank-md.C
  * @ingroup tests
  * @brief  no doc
  * @test no doc.
@@ -41,7 +41,6 @@ int main (int argc, char **argv)
 	static size_t n = 40;
 	static integer q = 65519U;
 	//static integer q = 1000003U;
-	static integer bigQ("12345678901234567890123456789012345678901234568119");
 	static int iterations = 1;
         static double sparsity = 0.05;
 
@@ -58,7 +57,7 @@ int main (int argc, char **argv)
 	srand ((unsigned)time (NULL));
 	// srand48 ((unsigned)time (NULL));
 
-	commentator().start("rank solution test suite", "rank");
+	commentator().start("Modular<double> sparse rank test suite", "rank");
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
@@ -67,15 +66,7 @@ int main (int argc, char **argv)
 	pass = pass && testSparseRank(G,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
 
 
-#if 0
-	commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-	<< "over GF2" << endl;
-        GF2 F2;
-	if (!testRankMethodsGF2 (F2, n, (unsigned int)iterations, sparsity)) pass = false;
-#endif
-
-
-	commentator().stop("rank solution test suite");
+	commentator().stop("Modular<double> SPArse rank test suite");
 	return pass ? 0 : -1;
 }
 

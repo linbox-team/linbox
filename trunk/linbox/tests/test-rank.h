@@ -286,6 +286,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 	return ret;
 }
 
+// Test the rank methods on each of several storage schemes for sparse matrices.
 template <class Field>
 bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & iterations, const double & sparsity)
 {
@@ -322,14 +323,18 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 		typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
-	// {
-	// typedef SparseMatrix<Field,SparseMatrixFormat::HYB> Blackbox;
-		// if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
-	// }
-	// {
-	// typedef SparseMatrix<Field,SparseMatrixFormat::TPL> Blackbox;
-		// if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
-	// }
+#if 0
+	{
+		TYPEdef SparseMatrix<Field,SparseMatrixFormat::HYB> Blackbox;
+		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
+	}
+#endif
+#if 0
+	{
+		typedef SparseMatrix<Field,SparseMatrixFormat::TPL> Blackbox;
+		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
+	}
+#endif
 
 
 	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
