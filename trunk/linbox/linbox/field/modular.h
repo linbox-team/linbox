@@ -854,7 +854,7 @@ namespace LinBox
 			field().assign(_y, field().zero);
 		}
 
-		inline Field &field(){ return *_field; }
+		inline const Field &field(){ return *_field; }
 
 	protected:
 
