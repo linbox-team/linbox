@@ -40,7 +40,8 @@ BASIC_HDRS =                  \
 	abnormal-helpers.h        \
 	random-matrix.h           \
 	random-matrix.inl         \
-	sliced3.h		          
+	sliced3.h		  \
+	polynomial-matrix.h                
 
 NTL_HDRS =
 GIVARO_HDRS =
