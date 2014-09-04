@@ -412,8 +412,8 @@ namespace LinBox{
 	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative4x1_SSE (Polynomial &fft) 
 	{
 		_vect128_t P,P2;
-		VEC128_SET_64(P,_pl);
-		VEC128_SET_64(P2,_dpl);
+		VEC128_SET_32(P,_pl);
+		VEC128_SET_32(P2,_dpl);
 		// Last two steps
 		if (n >= 8) {
 			_vect128_t W,Wp;
