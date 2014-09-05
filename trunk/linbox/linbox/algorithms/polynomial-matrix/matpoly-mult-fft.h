@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/* 
+/*
  * Copyright (C) 2013  Pascal Giorgi
  *                     Romain Lebreton
  *
@@ -36,14 +36,14 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/field/modular.h"
 
-#ifdef FFT_PROFILER	
+#ifdef FFT_PROFILER
 #include <iostream>
 using namespace std;
-size_t  FFT_PROF_LEVEL=1; 
-myTimer chrono;				
-#define FFT_PROF_MSG_SIZE 35						
+size_t  FFT_PROF_LEVEL=1;
+myTimer chrono;
+#define FFT_PROF_MSG_SIZE 35
 #define FFT_PROFILE_START  chrono.start();
- 
+
 #define FFT_PROFILING(lvl,msg)						\
 	if (lvl>=FFT_PROF_LEVEL) {					\
 		chrono.stop();cout<<"FFT: ";				\
@@ -61,22 +61,22 @@ myTimer chrono;
 		cout.precision(6);cout<<x<<" s"<<endl;			\
 	}
 #else
-#define FFT_PROFILE_START			
+#define FFT_PROFILE_START
 #define FFT_PROFILING(lvl,msg)
 #define FFT_PROFILE_GET(x)
-#define FFT_PROFILE(lvl,msg,x)						
-#endif						
-	
+#define FFT_PROFILE(lvl,msg,x)
+#endif
+
 
 namespace LinBox
 {
-		
+
 	template <class _Field>
 	class PolynomialMatrixFFTMulDomain ;                        // generic handler for multiplication using FFT
 	template <>
 	class PolynomialMatrixFFTMulDomain<Modular<uint32_t> > ;   // Mul in Zp[x] with p <2^32
 	class PolynomialMatrixFFTPrimeMulDomain ;                  // Mul in Zp[x] with p FFTPrime and FFLAS
-	
+
 	//template<>
 	//class PolynomialMatrixFFTMulDomain<FFPACK::UnparametricField<integer> >;           // Mul in Z[x]
 	//template <>
