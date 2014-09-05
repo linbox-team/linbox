@@ -25,13 +25,10 @@
  */
 
 #include <iostream>
-#include <gmp.h>
 
 #include <cstdlib>
 #include <vector>
 #include <list>
-
-#include "linbox-sage.h"
 
 #include "linbox/util/commentator.h"
 
@@ -59,6 +56,10 @@
 #include "linbox/field/gmp-rational.h"
 #include "linbox/ring/givaro-polynomial.h"
 #include "linbox/field/modular.h"
+
+#include <gmp.h>
+
+#include "linbox-sage.h"
 
 using namespace LinBox;
 

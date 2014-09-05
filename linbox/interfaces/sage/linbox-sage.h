@@ -25,9 +25,9 @@
  */
 
 #ifndef __LINBOX_sage_H
-#define __LINBOX_sagE_H
+#define __LINBOX_sage_H
 
-#include<stddef.h>
+#include <stddef.h>
 
 #include <cstdlib>
 #include <vector>
