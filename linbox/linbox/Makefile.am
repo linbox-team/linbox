@@ -72,6 +72,10 @@ liblinbox_la_LIBADD =           \
     algorithms/libalgorithms.la \
     $(MPFR_LIBS) $(IML_LIBS) $(BLAS_LIBS)
 
+#Cygwin ?
+liblinbox_la_LDFLAGS = \
+		      -no-undefined
+
 
 #  $(top_srcdir)/benchmarks/libbenchmarks.la \
 #
