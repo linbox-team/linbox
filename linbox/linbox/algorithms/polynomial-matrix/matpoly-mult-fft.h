@@ -70,22 +70,34 @@ myTimer chrono;
 
 namespace LinBox
 {
+	// generic handler for multiplication using FFT
+	template <class Field>
+	class PolynomialMatrixFFTMulDomain {                       
+	public:
+		inline const Field & field() const;
 
-	template <class _Field>
-	class PolynomialMatrixFFTMulDomain ;                        // generic handler for multiplication using FFT
+		PolynomialMatrixFFTMulDomain (const Field& F);
+		
+		template<typename Matrix1, typename Matrix2, typename Matrix3>
+		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b);
+
+		template<typename Matrix1, typename Matrix2, typename Matrix3>
+		void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, bool smallLeft=true, size_t n0=0,size_t n1=0);
+	};
+	
+	
+	class PolynomialMatrixFFTPrimeMulDomain ;                         // Mul in Zp[x] with p <2^32, (fflas, fourier)
+	template <>						
+	class PolynomialMatrixFFTMulDomain<Modular<int32_t> > ;           // Mul in Zp[x] with p <2^32	
+	template<>
+	class PolynomialMatrixFFTMulDomain<UnparametricField<integer> >;  // Mul in Z[x]
 	template <>
-	class PolynomialMatrixFFTMulDomain<Modular<uint32_t> > ;   // Mul in Zp[x] with p <2^32
-	class PolynomialMatrixFFTPrimeMulDomain ;                  // Mul in Zp[x] with p FFTPrime and FFLAS
-
-	//template<>
-	//class PolynomialMatrixFFTMulDomain<FFPACK::UnparametricField<integer> >;           // Mul in Z[x]
-	//template <>
-	//class PolynomialMatrixFFTMulDomain<FFPACK::Modular<integer> > ;    // Mul in Zp[x] with p multiprecision
+	class PolynomialMatrixFFTMulDomain<Modular<integer> > ;           // Mul in Zp[x] with p multiprecision
 
 } // end of namespace LinBox
 
+#include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize-fast.inl"
+#include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-multiprecision.inl"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize.inl"
-//#include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-multiprecision.inl"
-
 
 #endif

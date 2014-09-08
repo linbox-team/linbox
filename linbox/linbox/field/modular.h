@@ -54,7 +54,6 @@
 #include <iostream>
 #include <climits>
 #include <cmath>
-
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/util/field-axpy.h"
@@ -87,6 +86,7 @@ namespace LinBox
 	{
 		typedef RingCategories::ModularTag categoryTag;
 	};
+
 
 
 	/**
@@ -371,6 +371,8 @@ namespace LinBox
 
 	}; // class ModularBase
 }
+
+
 
 namespace LinBox
 { /* Modular */
@@ -871,19 +873,15 @@ namespace LinBox
 	}
 */
 
-	template <>
-	inline integer& Modular<integer>::init (integer& x, const double& y) const
-	{
-		integer tmp = (integer)y % _modulus;
-		if (tmp<0) tmp += _modulus;
-		return x = tmp;
-	}
+	// template <>
+	// inline integer& Modular<integer>::init (integer& x, const double& y) const
+	// {
+	// 	integer tmp = (integer)y % _modulus;
+	// 	if (tmp<0) tmp += _modulus;
+	// 	return x = tmp;
+	// }
 
-	template<>
-	inline integer Modular<integer>::getMaxModulus()
-	{
-		return -1 ;
-	}
+	
 
 
 
@@ -897,6 +895,7 @@ namespace LinBox {
 
 } // LinBox
 
+
 #include "linbox/field/Modular/modular-unsigned.h"
 #include "linbox/randiter/modular.h"
 #include "linbox/field/Modular/modular-int32.h"
@@ -907,6 +906,7 @@ namespace LinBox {
 #include "linbox/field/Modular/modular-byte.h"
 #include "linbox/field/Modular/modular-double.h"
 #include "linbox/field/Modular/modular-float.h"
+#include "linbox/field/Modular/modular-integer.h"
 
 #endif // __LINBOX_field_modular_H
 

@@ -199,7 +199,7 @@ namespace LinBox{
 		size_t coldim() const {return _col;}
 		size_t degree() const {return _size-1;}
 		size_t size()   const {return _size;}
-		const Field& field()  const {return *_fld;}	
+		const Field& field()  const {return *_fld;}
 
 		ostream& write(ostream& os) const { return write(os,0,_size-1);}
                 
