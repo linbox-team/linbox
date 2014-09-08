@@ -93,7 +93,7 @@ uninstall-hook:
 		"$(includedir)" ) || true
 
 
-VERSION=1.4.0
+VERSION=1.4.1
 
 EXTRA_DIST=auto-install.sh
 #incremente-versions
