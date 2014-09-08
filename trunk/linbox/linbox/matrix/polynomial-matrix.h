@@ -59,6 +59,7 @@ namespace LinBox{
 		
 		PolynomialMatrix() {}
 		
+		// construct a polynomial matrix in f[x]^(m x n) of degree (s-1)
 		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s) :
 			_repview(r*c),_rep(r*c*s,f.zero), _row(r), _col(c), _size(s), _fld(&f) {
 			for (size_t i=0;i<_row;i++)
