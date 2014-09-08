@@ -48,9 +48,11 @@ typedef Givaro::Timer myTimer;
 #include <iostream>
 #include <vector> 
 using namespace std;
-#include "linbox/randiter/random-fftprime.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/randiter/random-prime.h"
+#include "linbox/randiter/random-fftprime.h"
+#include "linbox/field/unparametric.h"
+//#include "fflas-ffpack/field/unparametric.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
@@ -356,7 +358,8 @@ void profile_matpol_mulkara(const Field& fld, const RandIter& Gen, size_t n, siz
 
 template<typename Field>
 void runTest(const Field& F, size_t n, long b, long d, long seed, string test){ 
-	typename Field::RandIter G(F,b,seed);
+	//typename Field::RandIter G(F,b,seed);
+	typename Field::RandIter G(F,seed);
 	if (test == "check"|| test == "all")
 		check_matpol_mul(F,G,n,d);		
 	if (test == "bench" || test == "all")
@@ -398,23 +401,20 @@ int main(int argc, char** argv){
 #endif
 		cout<<"Computation over Z[x]  "<<endl;
 		cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
-		PID_integer F;
-		//runTest (F,n,b,d,seed,test);		
-		cout<<"Not yet ported"<<endl;
+		UnparametricField<integer> F;
+		runTest (F,n,b,d,seed,test);				
 	}
 	else { 
 		if (b > 29){
 #ifdef FFT_PROFILER	
 			FFT_PROF_LEVEL=2;
 #endif
-			//RandomPrimeIter Rd(b,seed);
-			//integer p= Rd.random();
- 			//Modular<integer> F(p);
-			//cout<<"Computation over Fp[x] with p=  "<<p<<" (Generic prime)"<<endl;
-			cout<<"Computation over Fp[x] with p (Generic prime)"<<endl;
+			RandomPrimeIter Rd(b,seed);
+			integer p= Rd.random();
+			Modular<integer> F(p);
+			cout<<"Computation over Fp[x] with p=  "<<p<<" (Generic prime)"<<endl;
 			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
-			//runTest (F,n,b,d,seed,test);	
-			cout<<"Not yet ported"<<endl;
+			runTest (F,n,b,d,seed,test);				
 		}
 		else {
 #ifdef FFT_PROFILER	
