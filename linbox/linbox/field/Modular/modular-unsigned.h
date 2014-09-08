@@ -39,8 +39,7 @@
 
 #ifndef __LINBOX_field_modular_unsigned_H
 #define __LINBOX_field_modular_unsigned_H
-namespace LinBox
-{
+namespace LinBox { /*  uint8_t */
 	/** @brief Allows compact storage when the modulus is less than 2^8.
 	 *
 	 *  Requires <code>1 < modulus < 2^8</code>, normally prime.  See \ref
@@ -410,8 +409,7 @@ namespace LinBox
 
 }
 
-namespace LinBox
-{
+namespace LinBox { /*  uint16_t */
 	/** @brief Specialization of class Modular for uint16_t element type */
 	template <>
 	class Modular<uint16_t> : public FieldInterface, public ModularBase<uint16_t> {
@@ -764,261 +762,86 @@ namespace LinBox
 
 }
 
-namespace LinBox
-{
+#include <fflas-ffpack/field/modular-uint32.h>
+
+namespace LinBox { /*  uint32_t */
+
+	template< class Element >
+	class ModularRandIter;
+	template< class Field, class RandIter >
+	class NonzeroRandIter;
+
+	template<class Field>
+	class DotProductDomain;
+	template<class Field>
+	class FieldAXPY;
+	template<class Field>
+	class MVProductDomain;
+
+	template <class Ring>
+	struct ClassifyRing;
+
+	template <class Element>
+	struct ClassifyRing<Modular<Element> >;
+
+	// TODO: the rest !!!
+
 	/** @brief Specialization of class Modular for uint32_t element type */
 	template <>
-	class Modular<uint32_t> : public FieldInterface, public ModularBase<uint32_t> {
+	class Modular<uint32_t> : public FieldInterface
+	// , public ModularBase<uint32_t>
+	, public FFPACK::Modular<uint32_t> {
 	public:
 
-		typedef uint32_t Element;
-		typedef Element* Element_ptr ;
-		typedef const Element* ConstElement_ptr;
+		typedef FFPACK::Modular<uint32_t> Father_t;
+
+		Modular (const integer &modulus) :
+			Father_t((uint32_t)(unsigned long) modulus)
+		{
+			// do checks on p
+		}
+
+		using Father_t::Element;
 
 		typedef Modular<Element>     Self_t;
-		// typedef ModularBase<Element> Father_t;
-		typedef Modular<uint32_t> Father_t;
-		typedef ModularBase<Element>::RandIter RandIter;
+		typedef ModularRandIter<Element> RandIter;
 
-		const Element zero,one,mOne ;
-
-		Modular () :
-			zero(0),one(1),mOne(0)
-		{}
-		Modular (uint32_t modulus)  :
-			ModularBase<uint32_t> (modulus),zero(0),one(1),mOne(modulus-1)
-		{
-			init_two_64 ();
-		}
-		Modular (const integer &modulus) :
-			ModularBase<uint32_t> (modulus),zero(0),one(1),mOne(modulus-1)
-		{
-			init_two_64 ();
-		}
-
-		const Modular &operator=(const Modular &F)
-		{
-			ModularBase<Element>::_modulus = F._modulus;
-			_two_64 = F._two_64;
-			F.assign(const_cast<Element&>(one),F.one);
-			F.assign(const_cast<Element&>(zero),F.zero);
-			F.assign(const_cast<Element&>(mOne),F.mOne);
-
-			return *this;
-		}
+		using Father_t::init ;
 
 		Element &init (Element &x, const integer &y ) const
 		{
-			x = abs (y) % integer (ModularBase<Element>::_modulus);
-			if (y < 0) x = ModularBase<Element>::_modulus - x;
+			x = abs (y) % integer (_modulus);
+			if (y < 0) x = _modulus - x;
 			return x;
 		}
 
-		Element &init (Element &x, const long int &y ) const
-		{
-			x = abs (y) % integer (ModularBase<Element>::_modulus);
-			if (y < 0) x = ModularBase<Element>::_modulus - x;
-			return x;
-		}
-
-		Element &init (Element &x, const int &y ) const
-		{
-			x = abs (y) % integer (ModularBase<Element>::_modulus);
-			if (y < 0) x = ModularBase<Element>::_modulus - x;
-			return x;
-		}
-
-		Element &init (Element &x, const long unsigned int &y ) const
-		{
-			x = Element(y %  (ModularBase<Element>::_modulus));
-			return x;
-		}
-
-		Element &init (Element &x, const unsigned int &y ) const
-		{
-			x = Element(y %  (ModularBase<Element>::_modulus));
-			return x;
-		}
-
-		Element &init (Element &x, const double &y) const
-		{
-			double z = fmod(y, (double)_modulus);
-			if (z < 0) z += (double) _modulus;
-			return x = (Element) (z);
-		}
-
-		template< class XXX>
-		Element& init(Element & x, const XXX & y) const
-		{
-			return init(x,double(y));
-		}
-
-		Element &init (Element &x) const
-		{
-			return x = zero ;
-		}
+		using Father_t::convert ;
 
 		integer &convert (integer &x, const Element &y) const
 		{
 			return x = integer(y);
 		}
 
-		Element &convert (Element &x, const Element &y) const
+		using Father_t ::cardinality ;
+		integer &cardinality (integer &c) const
 		{
-			return x = y;
+			return c = integer(_modulus);
 		}
 
-		double &convert (double &x, const Element &y) const
-		{
-			return x = (double)y;
-		}
+		using Father_t ::characteristic;
+		      integer &characteristic (integer &c) const
+		      {
+			      return c = integer(_modulus);
+		      }
 
-		float &convert (float &x, const Element &y) const
-		{
-			return x = (float)y;
-		}
-
-
-		Element &add (Element &x, const Element &y, const Element &z) const
-		{
-			x = y + z;
-			if ((uint32_t) x >= (uint32_t) ModularBase<Element>::_modulus) x -= ModularBase<Element>::_modulus;
-			return x;
-		}
-
-		Element &sub (Element &x, const Element &y, const Element &z) const
-		{
-			x = y - z;
-			if ((int32_t) x < 0) x += ModularBase<Element>::_modulus;
-			return x;
-		}
-
-		Element &mul (Element &x, const Element &y, const Element &z) const
-		{
-			return x = Element( ((uint64_t) y * (uint64_t) z) % (uint64_t) ModularBase<Element>::_modulus);
-		}
-
-		Element &div (Element &x, const Element &y, const Element &z) const
-		{
-			Element temp;
-			inv (temp, z);
-			return mul (x, y, temp);
-		}
-
-		Element &neg (Element &x, const Element &y) const
-		{
-			if (y == 0)
-				return x = y;
-			else
-				return x = ModularBase<Element>::_modulus - y;
-		}
-
-		Element &inv (Element &x, const Element &y) const
-		{
-			// The extended Euclidean algoritm
-			int64_t x_int, y_int, q, tx, ty, temp;
-			x_int = ModularBase<Element>::_modulus;
-			y_int = y;
-			tx = 0;
-			ty = 1;
-
-			while (y_int != 0) {
-				// always: gcd (modulus,residue) = gcd (x_int,y_int)
-				//         sx*modulus + tx*residue = x_int
-				//         sy*modulus + ty*residue = y_int
-				q = x_int / y_int; // integer quotient
-				temp = y_int;  y_int  = x_int  - q * y_int;
-				x_int  = temp;
-				temp = ty; ty = tx - q * ty;
-				tx = temp;
-			}
-
-			if (tx < 0) tx += ModularBase<Element>::_modulus;
-
-			// now x_int = gcd (modulus,residue)
-			return x = Element(tx);
-		}
-
-		Element &axpy (Element &r,
-			       const Element &a,
-			       const Element &x,
-			       const Element &y) const
-		{
-			r = Element( ((uint64_t) a * (uint64_t) x + (uint64_t) y) % (uint64_t) ModularBase<Element>::_modulus );
-			if ((int32_t) r < 0) r += ModularBase<Element>::_modulus;
-			return r;
-		}
-
-		Element &addin (Element &x, const Element &y) const
-		{
-			x += y;
-			if ((uint32_t) x >= (uint32_t) ModularBase<Element>::_modulus) x -= ModularBase<Element>::_modulus;
-			return x;
-		}
-
-		Element &subin (Element &x, const Element &y) const
-		{
-			x -= y;
-			if ((int32_t) x < 0) x += ModularBase<Element>::_modulus;
-			return x;
-		}
-
-		Element &mulin (Element &x, const Element &y) const
-		{
-			x = Element( ((uint64_t) x * (uint64_t) y) % (uint64_t) ModularBase<Element>::_modulus );
-			return x;
-		}
-
-		Element &divin (Element &x, const Element &y) const
-		{
-			Element temp;
-			inv (temp, y);
-			return mulin (x, temp);
-		}
-
-		Element &negin (Element &x) const
-		{
-			if (x == 0)
-				return x;
-			else
-				return x = ModularBase<Element>::_modulus - x;
-		}
-
-		Element &invin (Element &x) const
-		{
-			return inv (x, x);
-		}
-
-		Element &axpyin (Element &r, const Element &a, const Element &x) const
-		{
-			r = Element( ((uint64_t) r + (uint64_t) a * (uint64_t) x) % (uint64_t) ModularBase<Element>::_modulus );
-			if ((int32_t) r < 0) r += ModularBase<Element>::_modulus;
-			return r;
-		}
-
-
-		static Element getMaxModulus()
-		{
-			return 1073741824;// 2^30 (ou plus ?)
-		}
 
 	private:
 
-		void init_two_64 ()
-		{
-			uint64_t two_64 = 2;
-
-			for (int i = 0; i < 6; ++i)
-				two_64 = (two_64 * two_64) % ModularBase<Element>::_modulus;
-
-			_two_64 = (Element) two_64;
-		}
 
 		friend class FieldAXPY<Modular<uint32_t> >;
 		friend class DotProductDomain<Modular<uint32_t> >;
 		friend class MVProductDomain<Modular<uint32_t> >;
 
-		Element _two_64;
 
 	}; // class Modular<uint32_t>
 
@@ -1158,14 +981,233 @@ namespace LinBox
 
 }
 
+#include <fflas-ffpack/field/modular-uint64.h>
+
+namespace LinBox { /*  uint64_t */
+
+	template< class Element >
+	class ModularRandIter;
+	template< class Field, class RandIter >
+	class NonzeroRandIter;
+
+	template<class Field>
+	class DotProductDomain;
+	template<class Field>
+	class FieldAXPY;
+	template<class Field>
+	class MVProductDomain;
+
+	template <class Ring>
+	struct ClassifyRing;
+
+	template <class Element>
+	struct ClassifyRing<Modular<Element> >;
+
+	// TODO: the rest !!!
+
+	/** @brief Specialization of class Modular for uint64_t element type */
+	template <>
+	class Modular<uint64_t> : public FieldInterface
+	// , public ModularBase<uint64_t>
+	, public FFPACK::Modular<uint64_t> {
+	public:
+
+		typedef FFPACK::Modular<uint64_t> Father_t;
+
+		Modular (const integer &modulus) :
+			Father_t((uint64_t)(unsigned long) modulus)
+		{
+			// do checks on p
+		}
+
+		using Father_t::Element;
+
+		typedef Modular<Element>     Self_t;
+		typedef ModularRandIter<Element> RandIter;
+
+		using Father_t::init ;
+
+		Element &init (Element &x, const integer &y ) const
+		{
+			x = abs (y) % integer (_modulus);
+			if (y < 0) x = _modulus - x;
+			return x;
+		}
+
+		using Father_t::convert ;
+
+		integer &convert (integer &x, const Element &y) const
+		{
+			return x = integer(y);
+		}
+
+		using Father_t ::cardinality ;
+		integer &cardinality (integer &c) const
+		{
+			return c = integer(_modulus);
+		}
+
+		using Father_t ::characteristic;
+		      integer &characteristic (integer &c) const
+		      {
+			      return c = integer(_modulus);
+		      }
+
+
+	private:
+
+
+		friend class FieldAXPY<Modular<uint64_t> >;
+		friend class DotProductDomain<Modular<uint64_t> >;
+		friend class MVProductDomain<Modular<uint64_t> >;
+
+
+	}; // class Modular<uint64_t>
+
+	/*! Specialization of FieldAXPY for unsigned short modular field */
+
+	template <>
+	class FieldAXPY<Modular<uint64_t> > {
+	public:
+
+		typedef uint64_t Element;
+		typedef Modular<uint64_t> Field;
+
+		FieldAXPY (const Field &F) :
+			_field (&F), _y(0)
+		{ }
+
+		FieldAXPY (const FieldAXPY &faxpy) :
+			_field (faxpy._field), _y (0)
+		{}
+
+		FieldAXPY<Modular<uint64_t> > &operator = (const FieldAXPY &faxpy)
+		{
+			_field = faxpy._field;
+			_y = faxpy._y;
+			return *this;
+		}
+
+		inline uint64_t& mulacc (const Element &a, const Element &x)
+		{
+			uint64_t t = (uint64_t) a * (uint64_t) x;
+			_y += t;
+
+			if (_y < t)
+				return _y += field()._two_64;
+			else
+				return _y;
+		}
+
+		inline uint64_t& accumulate (const Element &t)
+		{
+			_y += t;
+
+			if (_y < t)
+				return _y += field()._two_64;
+			else
+				return _y;
+		}
+
+		inline uint64_t& accumulate_special (const Element &t)
+		{
+			return _y += t;
+		}
+
+		inline Element &get (Element &y) const
+		{
+			const_cast<FieldAXPY<Field>*>(this)->_y %= (uint64_t) field()._modulus;
+			//if ((int64_t) _y < 0) const_cast<FieldAXPY<Field>*>(this)->_y += field()._modulus;
+			return y = (uint64_t) _y;
+		}
+
+		inline FieldAXPY &assign (const Element y)
+		{
+			_y = y;
+			return *this;
+		}
+
+		inline void reset() {
+			_y = 0;
+		}
+
+		inline const Field & field() const { return *_field; }
+	private:
+
+		const Field *_field;
+		uint64_t _y;
+	};
+
+	//! Specialization of DotProductDomain for uint64_t modular field
+
+	template <>
+	class DotProductDomain<Modular<uint64_t> > : private virtual VectorDomainBase<Modular<uint64_t> > {
+	public:
+
+		typedef uint64_t Element;
+
+		DotProductDomain () {}
+		DotProductDomain (const Modular<uint64_t> &F) :
+			VectorDomainBase<Modular<uint64_t> > (F)
+		{}
+		using VectorDomainBase<Modular<uint64_t> >::field;
+		using VectorDomainBase<Modular<uint64_t> >::_field;
+
+	protected:
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+	};
+
+	//! Specialization of MVProductDomain for uint64_t modular field
+
+	template <>
+	class MVProductDomain<Modular<uint64_t> > {
+	public:
+
+		typedef uint64_t Element;
+
+	protected:
+		template <class Vector1, class Matrix, class Vector2>
+		inline Vector1 &mulColDense
+		(const VectorDomain<Modular<uint64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+		{
+			return mulColDenseSpecialized (VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
+		}
+
+	private:
+		template <class Vector1, class Matrix, class Vector2>
+		Vector1 &mulColDenseSpecialized
+		(const VectorDomain<Modular<uint64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		 VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Matrix, class Vector2>
+		Vector1 &mulColDenseSpecialized
+		(const VectorDomain<Modular<uint64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		 VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Matrix, class Vector2>
+		Vector1 &mulColDenseSpecialized
+		(const VectorDomain<Modular<uint64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		 VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Matrix, class Vector2>
+		Vector1 &mulColDenseSpecialized
+		(const VectorDomain<Modular<uint64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		 VectorCategories::SparseParallelVectorTag) const;
+
+		mutable std::vector<uint64_t> _tmp;
+	};
+
+}
+
+
 #include "linbox/field/Modular/modular.inl"
 #endif // __LINBOX_field_modular_unsigned_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
