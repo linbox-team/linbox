@@ -34,7 +34,8 @@ BASIC_HDRS =            \
     modular-balanced-int64.h    \
     modular-crooked-double.h    \
     modular-double.h    \
-    modular-float.h
+    modular-float.h	\
+    modular-integer.h    
 
 
 pkgincludesub_HEADERS =     \
