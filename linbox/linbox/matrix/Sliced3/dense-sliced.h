@@ -467,10 +467,10 @@ public:
 
 	//  returns an (approximately) random _SIZE-bit word
 	SlicedWord randomLL(){
-		SlicedWord r = 0;
+		SlicedWord swr = 0;
 		for(size_t i=0; i<(_SIZE/8); ++i)
-			r |= ((SlicedWord)(rand()%256) << (i << 3));
-		return r;
+			swr |= ((SlicedWord)(rand()%256) << (i << 3));
+		return swr;
 	}
 
 	//  completely randomizes sliced block entries

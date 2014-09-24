@@ -120,6 +120,6 @@ std::ostream& operator<< (std::ostream &out, const SubMatIterator& smi){
 }
 */
 
-}; // LinBox
+} // LinBox
 
 #endif //__LINBOX_sliced3_SMI_H

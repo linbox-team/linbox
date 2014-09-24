@@ -70,7 +70,7 @@
 
 	//  specialized addin, care must be taken at beg. and end of rows
 	Sliced& s_addin(Sliced &other){
-		RawIterator r = rawBegin();
+		RawIterator rit = rawBegin();
 		RawIterator o = other.rawBegin();
 		Scalar t;
 
@@ -80,17 +80,17 @@
 			j = 0;
 			//  do first elt
 			if(_loff){
-				splitOp(*r, ADD, false, _loff, t, *o);
-				++r; ++o;
+				splitOp(*rit, ADD, false, _loff, t, *o);
+				++rit; ++o;
 				j+=_loff;
 			}
 			//  do "middle" elts
-			for(; j<cols()-_roff; j+=_SIZE, ++r, ++o)
-				(*r) += (*o);
+			for(; j<cols()-_roff; j+=_SIZE, ++rit, ++o)
+				(*rit) += (*o);
 			//  do "last" elt
 			if(_roff){
-				splitOp(*r, ADD, true, _roff, t, *o);
-				++r; ++o;
+				splitOp(*rit, ADD, true, _roff, t, *o);
+				++rit; ++o;
 			}
 		}
 		return *this;
@@ -98,70 +98,70 @@
 
 	//  specialized smulin, care must be taken at beg. and end of rows
 	Sliced& s_smulin(Scalar &x){
-		RawIterator r = rawBegin();
+		RawIterator rit = rawBegin();
 		size_t i, j;
 		//  loop all rows
 		for(i=0; i<rows(); ++i){
 			j = 0;
 			//  do first elt
 			if(_loff){
-				splitOp(*r, SMUL, false, _loff, x, *r);
-				++r;
+				splitOp(*rit, SMUL, false, _loff, x, *rit);
+				++rit;
 				j+=_loff;
 			}
 			//  do "middle" elts
 			if(x == 0){
-				for(; j<cols()-_roff; j+=_SIZE, ++r){
-					//r.pinfo();
-					(*r).zero();
+				for(; j<cols()-_roff; j+=_SIZE, ++rit){
+					//rit.pinfo();
+					(*rit).zero();
 				}
 			}
 			else{
-				for(; j<cols()-_roff; j+=_SIZE, ++r){
-					(*r) *= x;
+				for(; j<cols()-_roff; j+=_SIZE, ++rit){
+					(*rit) *= x;
 				}
 			}
 			//  do "last" elt
 			if(_roff){
 				//cerr << "ROFF" <<  _roff << endl;
-				//r.pinfo();
-				splitOp(*r, SMUL, true, _roff, x, *r);
-				++r;
+				//rit.pinfo();
+				splitOp(*rit, SMUL, true, _roff, x, *rit);
+				++rit;
 			}
 		}
 		return *this;
 	} 
 
 	//  arguments: begin iter, scalar, other mat's begin iter
-	Sliced & s_axpyin(RawIterator &r, Scalar &s, RawIterator &o){
+	Sliced & s_axpyin(RawIterator &rit, Scalar &s, RawIterator &o){
 		size_t j = 0;
 		//  NO ROWS, WE ASSUME TO WORK ON A SINGLE ROW
 			j = 0;
 			//  do first elt
 			if(_loff){
-				splitOp(*r, AXPY, false, _loff, s, *o);
-				++r; ++o;
+				splitOp(*rit, AXPY, false, _loff, s, *o);
+				++rit; ++o;
 				j+=_loff;
 			}
 			//  do "middle" elts
 			if(s == 1){
-				for(; j<cols()-_roff; j+=_SIZE, ++r, ++o)
-					(*r) += (*o);
+				for(; j<cols()-_roff; j+=_SIZE, ++rit, ++o)
+					(*rit) += (*o);
 			}
 			else if(s == 2){
-				for(; j<cols()-_roff; j+=_SIZE, ++r, ++o)
-					(*r) += (*o)*2;
+				for(; j<cols()-_roff; j+=_SIZE, ++rit, ++o)
+					(*rit) += (*o)*2;
 			}
 			//  do "last" elt
 			if(_roff)
-				splitOp(*r, ADD, true, _roff, s, *o);
+				splitOp(*rit, ADD, true, _roff, s, *o);
 		//  END OF (NO) ROWS
 		return *this;
 	}
 
 	//  specialized copy, care must be taken at beg. and end of rows
 	Sliced & s_copy(Sliced &other){
-		RawIterator r = rawBegin();
+		RawIterator rit = rawBegin();
 		RawIterator o = other.rawBegin();
 
 		Scalar t;
@@ -180,17 +180,17 @@
 			j = 0;
 			//  do first elt
 			if(_loff){
-				splitOp(*r, COPY, false, _loff, t, *o);
-				++r; ++o;
+				splitOp(*rit, COPY, false, _loff, t, *o);
+				++rit; ++o;
 				j+=_loff;
 			}
 			//  do "middle" elts // TODO could be memcpy -> faster
-			for(; j<cols()-_roff; j+=_SIZE, ++r, ++o)
-				(*r) = (*o);
+			for(; j<cols()-_roff; j+=_SIZE, ++rit, ++o)
+				(*rit) = (*o);
 			//  do "last" elt
 			if(_roff){
-				splitOp(*r, COPY, true, _roff, t, *o);
-				++r; ++o;
+				splitOp(*rit, COPY, true, _roff, t, *o);
+				++rit; ++o;
 			}
 		}
 		return *this;
@@ -212,55 +212,55 @@
 
 		//  storing temp values
 		SlicedUnit lower, upper;
-		int size = 2 * sizeof(SlicedWord);
+		int SWsize = 2 * sizeof(SlicedWord);
 
 		//  for rare case of only one sliced-word per row (< _SIZE elts)
 		bool onlyOne = false;  //  robusto
 
-		RawIterator r, e;
+		RawIterator rit, e;
 		//  loop all rows
 		for(size_t i=0; i<rows(); ++i){
 
-			r = rowBegin(i);  // first in the row
+			rit = rowBegin(i);  // first in the row
 			e = ((rowEnd(i))); // e is after the last in the row
 			--e;  // e is now the last in the row
-			if(r == e) onlyOne=true; //  if there's only one sliced word in this row
+			if(rit == e) onlyOne=true; //  if there's only one sliced word in this row
 			else --e;  //  e will now be the 2nd-to-last in the row
 
 			//  iterate until 2nd to last word:
-			for( ; r!=e; ){
+			for( ; rit!=e; ){
 				//  get "end" of "current" word and make it our beginning
-				lower = (*r);
+				lower = (*rit);
 				lower >>=A;
 				//  move to next word
-				++r;
+				++rit;
 				//  get "beginning" of "next" word and make it our end
-				upper = (*r);
+				upper = (*rit);
 				(upper &= mask_lowbits) <<= _loff;
 				lower |= upper;	 //  lower now has values we want
-				os.write((char *)&lower, size);  // write to file
+				os.write((char *)&lower, SWsize);  // write to file
 			}
 			//  process the end of the row
-			lower = (*r);
+			lower = (*rit);
 			lower >>= A;  
 			//  no further data
 			if(onlyOne){
-				os.write((char *)&lower, size);
+				os.write((char *)&lower, SWsize);
 			}
 			else{ // one more word to split up
-				++r;
-				upper = (*r);
+				++rit;
+				upper = (*rit);
 				(upper &= last_mask) <<= _loff;
 				lower |= upper;
-				os.write((char *)&lower, size);
+				os.write((char *)&lower, SWsize);
 				//  process final word, if necessary
 				if(spill > 0){
-					lower = (*r);
+					lower = (*rit);
 					lower >>= A;
 					//  mask to "our" bits
 					if(_roff)
 						lower &= ((one << spill) - one);
-					os.write((char *)&lower, size); // write 2nd-to-final
+					os.write((char *)&lower, SWsize); // write 2nd-to-final
 				}
 			}
 		}
@@ -271,7 +271,7 @@
 	//  specialized copy, care must only be taken at end of rows
 	std::ostream & s_write_bin_r(std::ostream &os){
 		//  TODO  - I can't just declare these
-		RawIterator r = rowBegin(0); RawIterator e = rowEnd(0);
+		RawIterator rit = rowBegin(0); RawIterator e = rowEnd(0);
 
 		SlicedWord one = (SlicedWord)1;
 		//  lower bits mask
@@ -281,23 +281,23 @@
 		SlicedUnit final;
 
 		//  size of a sliced unit
-		int size = 2 * sizeof(SlicedWord);
+		int SWsize = 2 * sizeof(SlicedWord);
 		//  accounts for all but the last sliced unit (the -1)
-		int bytesPerRow = (((_n + _SIZE-1)/_SIZE) - 1) * size;
+		int bytesPerRow = (((_n + _SIZE-1)/_SIZE) - 1) * SWsize;
 
 		//  loop all rows
 		for(size_t i=0; i<rows(); ++i){
 			//  set up pointers
-			r = rowBegin(i);
+			rit = rowBegin(i);
 			e = (--(rowEnd(i)));  // the last sliced unit
 
 			//  block write all but the last sliced unit:
-			os.write((char *)&(*r), bytesPerRow); 
+			os.write((char *)&(*rit), bytesPerRow); 
 
 			//  process the last unit:
 			final = (*e);
 			final &= right_mask;  //  cut down to size
-			os.write((char *)&final, size);
+			os.write((char *)&final, SWsize);
 		}
 		return os;
 	}
@@ -330,7 +330,7 @@
 	std::istream & s_read_bin_r(std::istream &is){
 		//std::cerr << "Well, here we are..." << std::endl;
 		//  TODO  - I can't just declare these
-		RawIterator r = rowBegin(0); RawIterator e = rowEnd(0);
+		RawIterator rit = rowBegin(0); RawIterator e = rowEnd(0);
 
 		//SlicedWord one = (SlicedWord)1;
 		//  lower bits mask
@@ -339,29 +339,29 @@
 		//SlicedUnit final;
 
 		//  size of a sliced unit
-		int size = 2 * sizeof(SlicedWord);
+		int SWsize = 2 * sizeof(SlicedWord);
 		//  accounts for all but the last sliced unit (the -1)
-		int bytesPerRow = (((_n + _SIZE-1)/_SIZE) - 1) * size;
+		int bytesPerRow = (((_n + _SIZE-1)/_SIZE) - 1) * SWsize;
 
 		//  loop all rows
 		for(size_t i=0; i<rows(); ++i){
 			//  set up pointers
-			r = rowBegin(i);
+			rit = rowBegin(i);
 			e = (--(rowEnd(i)));  // the last sliced unit
 
 			//  block read all but the last sliced unit:
-			is.read((char *)&(*r), bytesPerRow); 
+			is.read((char *)&(*rit), bytesPerRow); 
 
 			//  read the last one (should have zeros automatically
-			is.read((char *)&(*e), size);
+			is.read((char *)&(*e), SWsize);
 
 			// should have zeroes automatically... 
 			//  following lines (form above) not needed
 
 			//  process the last unit:
 			//final = (*e);
-			//final &= right_mask;  //  cut down to size
-			//os.write((char *)&final, size);
+			//final &= right_mask;  //  cut down to SWsize
+			//os.write((char *)&final, SWsize);
 		}
 		return is;
 	}
