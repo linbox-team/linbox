@@ -29,6 +29,7 @@
   */
 
 #include <iostream>
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/field/Givaro/givaro-gfq.h"
 #include "linbox/algorithms/gauss.h"
 
