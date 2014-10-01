@@ -1,4 +1,3 @@
-
 /* linbox/util/debug.C
  * Copyright (C) 2001 Bradford Hovinen
  *
