@@ -22,7 +22,7 @@
  */
 
 /**\file examples/nullspacebasis.C
- * @example  examples/nullspacebasis_rank.C
+ * @example  examples/nullspacebasis.C
   \brief NullSpace of sparse matrix over GFq.
   \brief nullspace is allocated m \times n.
   \ingroup examples
