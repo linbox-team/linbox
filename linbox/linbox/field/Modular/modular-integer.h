@@ -42,7 +42,17 @@ namespace LinBox {
 	class Modular<integer>	 : public FFPACK::Modular<Givaro::Integer>,
 				   public FieldInterface {
 	public:
+
+// Fix on compile-time for gcc <= 4.7 - Alexis Breust
+#ifdef __GNUC__
+#if (__GNUC__ > 4 || __GNUC_MINOR__ > 7)
 		using FFPACK::Modular<FFPACK::integer>::Modular;
+#endif // gcc >= 4.7
+#else // __GNUC
+		using FFPACK::Modular<FFPACK::integer>::Modular;
+#endif // __GNUC__
+
+
 		typedef FFPACK::Modular<FFPACK::integer> Father_t;
 			
 		inline integer getMaxModulus() const
