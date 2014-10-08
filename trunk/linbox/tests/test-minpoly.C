@@ -400,7 +400,7 @@ int main (int argc, char **argv)
 		commentator().stop("Blackbox prime field minpoly test suite");
 	}
 	//else
-	{	q = 3; e = 6;
+	{	q = 3; e = 10;
 
 		typedef GivaroGfq Field;
 		Field F (q, e);
