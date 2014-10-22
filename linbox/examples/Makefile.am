@@ -77,7 +77,7 @@ sparseelimdet_SOURCES  = sparseelimdet.C
 sparseelimrank_SOURCES = sparseelimrank.C
 polysmith_SOURCES      = poly-smith.C
 benchfft_SOURCES       = bench-fft.C
-benchmatpolymuly_SOURCES = bench-matpoly-mult.C
+benchmatpolymult_SOURCES = bench-matpoly-mult.C
 benchorderbasis_SOURCES  = bench-order-basis.C
 LINBOX=@prefix@
 
