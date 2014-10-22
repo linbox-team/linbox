@@ -217,7 +217,7 @@ namespace LinBox {
 
                                 View L1(L,0   ,0,  rank,rank);
                                 View L2(L,rank,0,m-rank,rank);
-                                FFLAS::ftrsm(field(),FFLAS::FflasRight,FFLAS::FflasLower,
+                                FFLAS::ftrsm((typename Field::Father_t)field(),FFLAS::FflasRight,FFLAS::FflasLower,
                                              FFLAS::FflasNoTrans,FFLAS::FflasUnit, 
                                              m-rank,rank, field().mOne, L1.getPointer(),m, L2.getWritePointer(),m);
 

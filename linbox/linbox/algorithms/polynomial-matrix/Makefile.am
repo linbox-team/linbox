@@ -26,10 +26,13 @@ pkgincludesub_HEADERS =         \
 	matpoly-add-domain.h	\
 	matpoly-mult-naive.h	\
 	matpoly-mult-fft.h	\
-	matpoly-mult-fft-wordsize.inl	\
-	matpoly-mult-fft-multiprecision.inl	\
 	matpoly-mult-kara.h	\
+	matpoly-mult-fft-wordsize.inl	\
+	matpoly-mult-fft-wordsize-fast.inl	\
+	matpoly-mult-fft-multiprecision.inl	\
 	polynomial-fft-transform-simd.inl	\
 	polynomial-fft-transform.h	\
+	polynomial-fft-transform.inl	\
 	polynomial-matrix-domain.h	\
-        simd.h
+        simd.h		\
+	order-basis.h
