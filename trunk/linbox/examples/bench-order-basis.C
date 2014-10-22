@@ -55,7 +55,7 @@ bool operator==(const MatPol& A, const MatPol& B){
 
 template<typename Field, typename RandIter>
 void check_sigma(const Field& F, const RandIter& Gen, size_t n, size_t d) { 
-	typedef typename Field::Element Element;
+	//typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	
 	MatrixP Serie(F, 2*n, n,  d);
@@ -95,7 +95,7 @@ void check_sigma(const Field& F, const RandIter& Gen, size_t n, size_t d) {
 
 template<typename Field, typename RandIter>
 void bench_sigma(const Field& F, const RandIter& Gen, size_t n, size_t d) { 
-	typedef typename Field::Element Element;
+	//typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	
 	MatrixP Serie(F, 2*n, n,  d);
@@ -202,7 +202,7 @@ int main(int argc, char** argv){
 	parseArguments (argc, argv, args);
 
 	typedef Modular<int32_t>           Field;
-	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
+	//typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 
 	if (b> 26){
 		cerr<<"bitsize is too large ... exiting"<<endl;
