@@ -1590,7 +1590,7 @@ int main (int argc, char **argv)
 	static size_t n = 6;
 	static size_t m = n;
 	static size_t k = 2;
-	static integer q = 2147483647U;
+	static integer q = 65521U;
 	//static integer q2 =  FieldTraits<ModularBalanced<int32_t> >::maxModulus() ;
 	//Givaro::prevprime(q2,q2);
 	static unsigned int iterations = 1;

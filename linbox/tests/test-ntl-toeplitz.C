@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 	bool pass = true;
 
 	static size_t n = 1000;
-	static long q = 2147483647;
+	static long q = 65521;
 	static int iterations = 1;
 
 	static Argument args[] = {

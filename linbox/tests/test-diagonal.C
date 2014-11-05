@@ -306,7 +306,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 2147483647U;
+	static integer q = 65521U;
 	static int iterations = 2; // was 100
 
 	static Argument args[] = {

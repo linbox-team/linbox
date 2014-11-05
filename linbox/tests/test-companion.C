@@ -52,7 +52,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static size_t q = 2147483647U;
+	static size_t q = 65521U;
 	static int iterations = 1; // was 10
 
 	static Argument args[] = {
