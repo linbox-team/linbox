@@ -309,7 +309,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 100;
-	static integer q = 2147483647U;
+	static integer q = 65521U;
 	static int iterations = 1; // was 10
 	static int k = 10;
 

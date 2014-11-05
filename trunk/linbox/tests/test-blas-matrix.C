@@ -65,8 +65,7 @@ int main (int argc, char **argv)
 	static size_t m = 4;
 	static size_t n = 20;
 	// static size_t nnz = 0;
-	static integer q = 2147483647U;
-	q = 101 ;
+	static integer q = 101 ;
 
 	static Argument args[] = {
 		{ 'm', "-m M", "Set row dimension of test matrix to M.", TYPE_INT,     &m },
