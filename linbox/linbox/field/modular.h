@@ -843,7 +843,7 @@ namespace LinBox
 			return _y+=t;
 		}
 
-		inline Element &get (Element &y) { _y %= field()._modulus; y = _y; return y;
+		inline Element &get (Element &y) { _y %= field().characteristic(); y = _y; return y;
 		}
 
 		inline FieldAXPY &assign (const Element y)
@@ -881,7 +881,7 @@ namespace LinBox
 	// 	return x = tmp;
 	// }
 
-	
+
 
 
 
