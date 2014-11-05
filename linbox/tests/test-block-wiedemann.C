@@ -90,7 +90,7 @@ int main (int argc, char **argv)
 
 	static size_t n = 9;
 //	static size_t N = 16;
-	static size_t q = 2147483647U;
+	static size_t q = 65521U;
 	static size_t blocking = 0;
 
 	static Argument args[] = {
@@ -120,7 +120,7 @@ int main (int argc, char **argv)
 		if (F.isZero(d[i])) report << "Warning: zero in vector" << endl;
 
 	// some matrices
-	ScalarMatrix<Field> SC (F, n, F.one); // identity
+	ScalarMatrix<Field> SC (F, n, n, F.one); // identity
 
 	Diagonal <Field> D (d); // random nonsingular diagonal
 

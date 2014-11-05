@@ -757,7 +757,7 @@ int main (int argc, char **argv)
 	static size_t m = 100;
 	static size_t r = 20;
 	static size_t N = 16;
-	static integer q = 2147483647U;
+	static integer q = 65521U;
 	static int iterations = 1;
 
 	static Argument args[] = {
