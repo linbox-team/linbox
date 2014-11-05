@@ -354,7 +354,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	//static integer q = 2147483647U;
+	//static integer q = 65521U;
 	static integer q = 1000003; // ok for both Modular<int> and Modular<double>
 	static int e = 1; // exponent for field characteristic
 	static int iterations = 1;

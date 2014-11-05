@@ -69,7 +69,7 @@ int main (int argc, char **argv)
 	commentator().start("ModularBalanced<float> field test suite", "ModularBalanced<float>");
 	bool pass = true;
 
-	ModularBalanced<float> F_int (4093);//(2147483629);//(2147483647);
+	ModularBalanced<float> F_int (4093);//(2147483629);//(65521);
 	ModularBalanced<float> G_int (2011);
 	ModularBalanced<float> H_int (3);
 	integer k = FieldTraits<ModularBalanced<float> >::maxModulus() ;
