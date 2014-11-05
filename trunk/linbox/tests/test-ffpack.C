@@ -123,7 +123,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 		delete[] S;
 
 		// compute the rank of A
-		unsigned int rank= (unsigned int) FFPACK::Rank( F, n, n, A, n);
+		unsigned int rank= (unsigned int) FFPACK::Rank((typename Field::Father_t) F, n, n, A, n);
                 delete[] A;
 		if (rank!=r)
 			ret=false;
@@ -195,7 +195,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 		// compute the rank of A
 		size_t * P = new size_t[n];
 		size_t * Q = new size_t[n];
-		unsigned int rank= (unsigned)FFPACK::TURBO( F, n, n,
+		unsigned int rank= (unsigned)FFPACK::TURBO((typename Field::Father_t) F, n, n,
 						  A,n, P, Q, 100);
 // 						  A, n, A+no2,n,
 // 						    A+no2*n, n, A+no2*(n+1), n );
@@ -278,7 +278,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 
 		// compute the determinant of A
-		Element det= FFPACK::Det( F, n, n, A, n);
+		Element det= FFPACK::Det((typename Field::Father_t) F, n, n, A, n);
     		delete[] A;
 
 
@@ -358,7 +358,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 		size_t * Q = new size_t[m];
 
 // 		write_field (F, cerr<<"A="<<endl, A, m, n, n);
-		size_t r = FFPACK::LUdivine( F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
+		size_t r = FFPACK::LUdivine((typename Field::Father_t) F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
 					     m, n, A, n, P, Q, FFPACK::FfpackLQUP);
 // 		write_field (F, cerr<<"LQUP(A)="<<endl, A, m, n, n);
 
@@ -375,7 +375,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 			for (size_t j = i; j < m; ++j)
 				F.assign (*(L+i*m+j), F.zero );
 		}
-		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+		FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 				m, 0,(int) r, L, m, Q);
 		for (size_t i=0; i<m; ++i)
 			F.assign( *(L+i*m+i), F.one);
@@ -389,11 +389,11 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 // 		write_field (F, cerr<<"L="<<endl, L, m, m, m);
 // 		write_field (F, cerr<<"U"<<endl, U, m, n, n);
 		// C = U*P
-		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m,
+		FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m,
 				  0, (int) r, U, n, P);
 		//		write_field (F, cerr<<"UP"<<endl, U, m, n, n);
 		// C = Q*C
-		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n,
+		FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasLeft, FFLAS::FflasTrans, n,
 				  0, (int) r, U, n, Q);
 		//		write_field (F, cerr<<"QUP"<<endl, U, m, n, n);
 
@@ -481,7 +481,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 
 		for (size_t i=0; i<n ;++i)
 			Perm[i]=0;
-		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+		FFPACK::MinPoly( (typename Field::Father_t)F, P, n, A, n, X, n, Perm );
 
 		if ( P.size() !=2 )
 			ret = false;
@@ -507,7 +507,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 
 		for (size_t i=0; i<n ;++i)
 			Perm[i]=0;
-		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+		FFPACK::MinPoly( (typename Field::Father_t)F, P, n, A, n, X, n, Perm );
 
 		if ( P.size() !=n+1 )
 			ret = false;
@@ -561,7 +561,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 		}
 		P.clear();
 
-		FFPACK::CharPoly (F, P, n, A, n);
+		FFPACK::CharPoly ((typename Field::Father_t)F, P, n, A, n);
 
 
 		typename list<Polynomial>::const_iterator P_it = P.begin();
@@ -587,7 +587,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 		F.negin(tmp);
 		P.clear();
 
-		FFPACK::CharPoly( F, P, n, A, n );
+		FFPACK::CharPoly( (typename Field::Father_t)F, P, n, A, n );
 
 		P_it = P.begin();
 
@@ -674,7 +674,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 			F.assign( *(Ab+i), *(A+i) );
 		// compute the inverse of A
 		int nullity;
-		FFPACK::Invert2 ( F, n, A, n, invA, n, nullity);
+		FFPACK::Invert2 ((typename Field::Father_t) F, n, A, n, invA, n, nullity);
 
 		// compute Ainv*A and A*Ainv
 
@@ -755,13 +755,13 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 
 		//  compute A=LS
 
-		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+		FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 				n, 0,(int)  n, A, n, P );
-		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+		FFPACK::applyP( (typename Field::Father_t)F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 				n, 0,(int)  n, A, n, P );
-		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans,
+		FFPACK::applyP( (typename Field::Father_t)F, FFLAS::FflasRight, FFLAS::FflasTrans,
 				n, 0,(int)  n, A, n, P );
-		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans,
+		FFPACK::applyP((typename Field::Father_t) F, FFLAS::FflasLeft, FFLAS::FflasTrans,
 				n, 0,(int)  n, A, n, P );
 
 		for (size_t i=0;i<n*n;++i)
@@ -976,6 +976,7 @@ int main(int argc, char** argv)
 	}
 
 	/* GivaroZpz int32_t */
+#if 0
 	{
 		typedef GivaroZpz<Givaro::Std32> Field;
 
@@ -997,6 +998,7 @@ int main(int argc, char** argv)
 		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
 		pass &= locpass ;
 	}
+#endif
 #endif
 	commentator().stop(MSG_STATUS(pass),"ffpack test suite");
 
