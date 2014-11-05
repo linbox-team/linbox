@@ -795,7 +795,7 @@ namespace LinBox { /*  uint32_t */
 
 		typedef FFPACK::Modular<uint32_t> Father_t;
 
-		Modular (const integer &modulus) :
+		Modular (const integer &modulus=0) :
 			Father_t((uint32_t)(unsigned long) modulus)
 		{
 			// do checks on p
