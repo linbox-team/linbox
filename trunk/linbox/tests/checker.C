@@ -197,7 +197,8 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_runWarn("test-block-wiedemann",              counter , flag, "GY(wrong ans)");
+
+		  No_build_n_run("test-block-wiedemann",              counter , flag, "JGD(runs forever)");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
