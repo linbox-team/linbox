@@ -458,7 +458,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 			F.assign(*(A+i*(n+1)),F.one);
 		}
 
-		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+		FFPACK::MinPoly( (typename Field::Father_t) F, P, n, A, n, X, n, Perm );
 
 		if ( P.size() !=2 )
 			ret = false;
