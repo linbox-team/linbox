@@ -65,7 +65,9 @@ int main (int argc, char **argv)
 
 	commentator().start("Trace test suite", "Trace");
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+#ifdef __LINBOX_HAVE_NTL
 	ostream& report = commentator().report();
+#endif
 
 	typedef Modular<int> Field;
 	typedef Field::Element Element;
