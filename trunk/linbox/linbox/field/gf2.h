@@ -1002,7 +1002,6 @@ namespace LinBox
 #endif /* __clang__ */
 #else
 // #include <bits/stl_bvector.h>
-namespace std
 {
 	//! @todo JGD 05.11.2009 : it should be in bits/stl_bvector.h  ...
 	inline void swap(stdBitReference __x, stdBitReference __y)

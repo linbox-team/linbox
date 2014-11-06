@@ -28,7 +28,6 @@
 
 #include <vector>
 #include <iostream>
-using namespace std;
 
 
 #include "linbox/integer.h"

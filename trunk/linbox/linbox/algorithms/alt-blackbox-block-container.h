@@ -1,4 +1,4 @@
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 #ifndef __LINBOX_alt_blackbox_block_container_H
 #define __LINBOX_alt_blackbox_block_container_H
@@ -20,7 +20,7 @@ public:
 		: U_(F,V.coldim(),M->rowdim()), V_(V),
 		  M_(M), F_(F), b_(V.coldim())
 	{
-		
+
 	}
 	*/
 

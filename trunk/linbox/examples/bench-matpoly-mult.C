@@ -34,43 +34,43 @@
 #ifdef HAVE_OPENMP
 #include <omp.h>
 #define GIVARO_USES_OMP
-#include "givaro/givtimer.h"
+#include <givaro/givtimer.h>
 #define gettime realtime
 typedef Givaro::OMPTimer myTimer;
 #else
-#include "givaro/givtimer.h"
+#include <givaro/givtimer.h>
 #define gettime usertime
-typedef Givaro::Timer myTimer; 
+typedef Givaro::Timer myTimer;
 #endif
 
 
 #include <functional>
 #include <iostream>
-#include <vector> 
+#include <vector>
 using namespace std;
-#include "linbox/field/modular.h"
-#include "linbox/randiter/random-prime.h"
-#include "linbox/randiter/random-fftprime.h"
-#include "linbox/field/unparametric.h"
-//#include "fflas-ffpack/field/unparametric.h"
-#include "linbox/matrix/matrix-domain.h"
-#include "linbox/util/commentator.h"
-#include "linbox/util/timer.h"
-#include "linbox/matrix/polynomial-matrix.h"
-#include "linbox/algorithms/polynomial-matrix/polynomial-matrix-domain.h"
+#include <linbox/field/modular.h>
+#include <linbox/randiter/random-prime.h>
+#include <linbox/randiter/random-fftprime.h>
+#include <linbox/field/unparametric.h>
+//#include <fflas-ffpack/field/unparametric.h>
+#include <linbox/matrix/matrix-domain.h>
+#include <linbox/util/commentator.h>
+#include <linbox/util/timer.h>
+#include <linbox/matrix/polynomial-matrix.h>
+#include <linbox/algorithms/polynomial-matrix/polynomial-matrix-domain.h>
 
 
 #ifdef BENCH_FLINT
 #define __GMP_BITS_PER_MP_LIMB 64
 extern "C" {
 #include "flint/longlong.h"
-#include "flint/ulong_extras.h" 
+#include "flint/ulong_extras.h"
 #include "flint/nmod_poly_mat.h"
 #include "flint/flint.h"
 }
 #endif
 
-using namespace LinBox;
+// using namespace LinBox;
 
 
 
@@ -84,7 +84,7 @@ void randomVect (Rand& r, Vect& v) {
 template <typename Rand, typename Mat>
 void randomMat (Rand& r, Mat& m) {
 	for (size_t i = 0; i < m.rowdim(); ++i)
-		for (size_t j = 0; j < m.coldim(); ++j)		
+		for (size_t j = 0; j < m.coldim(); ++j)
 			r.random(m.refEntry(i,j));
 }
 
@@ -96,7 +96,7 @@ bool operator==(const MatPol& A, const MatPol& B){
 	size_t i=0;
 	while (i<A.size() && MD.areEqual(A[i],B[i]))
 		i++;
-	
+
 	if (i<A.size() && A.rowdim()<10 && A.coldim()<10){
 		cout<<"first:"<<endl<<A<<endl;
 		cout<<"second:"<<endl<<B<<endl;
@@ -120,18 +120,18 @@ void MATPOLMUL_sanity_check(MULDOM& MulDom, const MatPol& C, const MatPol& A, co
 	MatPol CC(C.field(),C.rowdim(),C.coldim(),C.size());
 	//auto Functor = bind(f, &MulDom, ref(CC),A,B);
 	//Functor();
-#ifdef FFT_PROFILER	
+#ifdef FFT_PROFILER
 	FFT_PROF_LEVEL=3;
 #endif
 	MulDom.mul(CC,A,B);
 	msg+="  ";
 	msg.resize(45,'.');
-	cout<<"  Checking ... "<<msg 
+	cout<<"  Checking ... "<<msg
 	    << ((C==CC)?" done":" error")<<endl;
 }
 
 template<typename Field, typename RandIter>
-void check_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d) { 
+void check_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
 	typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
@@ -141,11 +141,11 @@ void check_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d)
 		randomMat(Gen,A[i]);
 		randomMat(Gen,B[i]);
 	}
-		
+
 	typedef PolynomialMatrixNaiveMulDomain<Field>       Naive;
 	typedef PolynomialMatrixKaraDomain<Field>            Kara;
 	typedef PolynomialMatrixFFTMulDomain<Field>           FFT;
-	
+
 	Naive NMD(fld);
 	Kara PMKD(fld);
 	FFT  PMFFT(fld);
@@ -160,12 +160,12 @@ void check_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d)
 
 
 	// check naive
-	MATPOLMUL_sanity_check(NMD,C,A,B, "Naive Multiplication");  
-	// check karatsuba		
-	MATPOLMUL_sanity_check(PMKD,C,A,B, "Karatsuba Multiplication");  
-	// check fft		
+	MATPOLMUL_sanity_check(NMD,C,A,B, "Naive Multiplication");
+	// check karatsuba
+	MATPOLMUL_sanity_check(PMKD,C,A,B, "Karatsuba Multiplication");
+	// check fft
 	MATPOLMUL_sanity_check(PMFFT,C,A,B, "FFT Multiplication");
-	
+
 	cout<<endl;
 }
 
@@ -188,7 +188,7 @@ void MATPOLMUL_performance(MULDOM& MulDom,  const MatPol& A, const MatPol& B, do
 			//Functor();
 			MulDom.mul(C,A,B);
 		ct+=minct;
-	} 
+	}
 
 	time = chrono.userElapsedTime()/ct;
 	Miops/=(1e6*time);
@@ -205,7 +205,7 @@ void MATPOLMUL_performance(MULDOM& MulDom,  const MatPol& A, const MatPol& B, do
 
 
 template<typename Field, typename RandIter>
-void bench_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d) { 
+void bench_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
 	typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
@@ -215,11 +215,11 @@ void bench_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d)
 		randomMat(Gen,A[i]);
 		randomMat(Gen,B[i]);
 	}
-		
+
 	typedef PolynomialMatrixNaiveMulDomain<Field>       Naive;
 	typedef PolynomialMatrixKaraDomain<Field>            Kara;
 	typedef PolynomialMatrixFFTMulDomain<Field>           FFT;
-	
+
 	Naive NMD(fld);
 	Kara PMKD(fld);
 	FFT  PMFFT(fld);
@@ -230,15 +230,15 @@ void bench_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d)
 	size_t costNaive= mmul*d*d + madd*(d-1)*(d-1);
 	size_t costKara = mmul*kara+ 6*madd*kara;
 	size_t costFFT  = mmul*2*d + 3*madd*fft;
-	
-#ifdef FFT_PROFILER	
+
+#ifdef FFT_PROFILER
 	FFT_PROF_LEVEL=3;
 #endif
 	// bench naive
-	MATPOLMUL_performance(NMD,A,B,costNaive, "Naive Multiplication");	
-	// bench karatsuba		
+	MATPOLMUL_performance(NMD,A,B,costNaive, "Naive Multiplication");
+	// bench karatsuba
 	MATPOLMUL_performance(PMKD,A,B,costKara, "Karatsuba Multiplication");
-	// bench fft		
+	// bench fft
 	MATPOLMUL_performance(PMFFT,A,B,costFFT, "FFT Multiplication");
 
 
@@ -253,7 +253,7 @@ void bench_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d)
 	flint_randinit(state);
 	nmod_poly_mat_randtest(AA,state,d);
 	nmod_poly_mat_randtest(BB,state,d);
-	cout<<"-----------------------"<<endl;	
+	cout<<"-----------------------"<<endl;
 	chrono.start();
  	nmod_poly_mat_mul(CC,AA,BB);
 	cout.precision(6);
@@ -269,14 +269,14 @@ void bench_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d)
 	cout.precision(6);
 	chrono.stop();
 	cout<<"FLINT Multiplication E/I: "<<chrono.usertime()<<" s"<<endl;
-#endif	
+#endif
 	cout<<endl;
 }
 
 
 
 template<typename Field, typename RandIter>
-void profile_matpol_mulfft(const Field& fld, const RandIter& Gen, size_t n, size_t d) { 
+void profile_matpol_mulfft(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
 	typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
@@ -287,7 +287,7 @@ void profile_matpol_mulfft(const Field& fld, const RandIter& Gen, size_t n, size
 		randomVect(Gen,B(i));
 	}
 	cout<<n<<" "<<d<<" ";
-	typedef PolynomialMatrixFFTMulDomain<Field>    FFT;	
+	typedef PolynomialMatrixFFTMulDomain<Field>    FFT;
 	FFT  PMFFT(fld);
 	myTimer chrono;
 	//size_t mmul=2*n*n*n;
@@ -312,7 +312,7 @@ void profile_matpol_mulfft(const Field& fld, const RandIter& Gen, size_t n, size
 	nmod_poly_mat_init(CC,n,n,fld.cardinality());
 	flint_rand_t state;
 	flint_randinit(state);
-	nmod_poly_mat_randtest(AA,state,d); 
+	nmod_poly_mat_randtest(AA,state,d);
 	nmod_poly_mat_randtest(BB,state,d);
 	count=0;
 	chrono.start();
@@ -331,7 +331,7 @@ void profile_matpol_mulfft(const Field& fld, const RandIter& Gen, size_t n, size
 
 
 template<typename Field, typename RandIter>
-void profile_matpol_mulkara(const Field& fld, const RandIter& Gen, size_t n, size_t d) { 
+void profile_matpol_mulkara(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
 	typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
@@ -339,10 +339,10 @@ void profile_matpol_mulkara(const Field& fld, const RandIter& Gen, size_t n, siz
 	// Generate random matrix of polynomial
 	for (size_t i=0;i<d;i++){
 		randomMat(Gen,A[i]);
-		randomMat(Gen,B[i]); 
+		randomMat(Gen,B[i]);
 	}
-		
-	typedef PolynomialMatrixKaraDomain<Field>    Kara;	
+
+	typedef PolynomialMatrixKaraDomain<Field>    Kara;
 	Kara  PM(fld);
 	Timer chrono;
 	chrono.start();
@@ -351,17 +351,17 @@ void profile_matpol_mulkara(const Field& fld, const RandIter& Gen, size_t n, siz
 	size_t madd=n*n;
 	size_t kara=pow((double)d, log(3.)/log(2.));
 	size_t costKara = mmul*kara+ 6*madd*kara;
-	cout<<"Kara Multiplication total: "<<chrono.userElapsedTime()<<" s, "		
+	cout<<"Kara Multiplication total: "<<chrono.userElapsedTime()<<" s, "
 	    <<costKara/(1e6*chrono.userElapsedTime())<<" Miops"<<endl;
 }
 
 
 template<typename Field>
-void runTest(const Field& F, size_t n, long b, long d, long seed, string test){ 
+void runTest(const Field& F, size_t n, long b, long d, long seed, string test){
 	//typename Field::RandIter G(F,b,seed);
 	typename Field::RandIter G(F,seed);
 	if (test == "check"|| test == "all")
-		check_matpol_mul(F,G,n,d);		
+		check_matpol_mul(F,G,n,d);
 	if (test == "bench" || test == "all")
 		bench_matpol_mul(F,G,n,d);
 	if (test == "fft")
@@ -369,18 +369,18 @@ void runTest(const Field& F, size_t n, long b, long d, long seed, string test){
 	if (test == "longfft"){
 		size_t N[15]={16,16,16,16,16,16,16,16,             64,128,256,512,512,1024,2048};
 		size_t D[15]={64,128,256,512,1024,2048,4096,8192,1024,512,256,512,128,  64,32 };
-		for (size_t i=0;i<32;i++)
+		for (size_t i=0;i<15;i++)
 			profile_matpol_mulfft(F,G,N[i],D[i]);
 	}
 	if (test == "kara")
-		profile_matpol_mulkara(F,G,n,d);	
+		profile_matpol_mulkara(F,G,n,d);
 }
 
 int main(int argc, char** argv){
 	static size_t  n = 32; // matrix dimension
 	static long    b = 20; // entries bitsize
-	static long    d = 32;  // matrix degree 
-	static bool    z = false; // computer over  Z[x]	
+	static long    d = 32;  // matrix degree
+	static bool    z = false; // computer over  Z[x]
 	static long    seed = time(NULL);
 	static string  test ="all";
 
@@ -392,21 +392,21 @@ int main(int argc, char** argv){
 		{ 's', "-s s", "Set the random seed to a specific value", TYPE_INT, &seed},
 		{ 't', "-t t", "Choose the targeted test {all,check,bench,fft,kara,longfft}", TYPE_STR, &test},
 		END_OF_ARGUMENTS
-	};	 
+	};
 	parseArguments (argc, argv, args);
-		
+
 	if (z){
-#ifdef FFT_PROFILER	
+#ifdef FFT_PROFILER
 		FFT_PROF_LEVEL=2;
 #endif
 		cout<<"Computation over Z[x]  "<<endl;
 		cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 		UnparametricField<integer> F;
-		runTest (F,n,b,d,seed,test);				
+		runTest (F,n,b,d,seed,test);
 	}
-	else { 
+	else {
 		if (b > 29){
-#ifdef FFT_PROFILER	
+#ifdef FFT_PROFILER
 			FFT_PROF_LEVEL=2;
 #endif
 			RandomPrimeIter Rd(b,seed);
@@ -414,10 +414,10 @@ int main(int argc, char** argv){
 			Modular<integer> F(p);
 			cout<<"Computation over Fp[x] with p=  "<<p<<" (Generic prime)"<<endl;
 			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
-			runTest (F,n,b,d,seed,test);				
+			runTest (F,n,b,d,seed,test);
 		}
 		else {
-#ifdef FFT_PROFILER	
+#ifdef FFT_PROFILER
 			FFT_PROF_LEVEL=1;
 #endif
 			RandomFFTPrime Rd(b,seed);
@@ -425,12 +425,12 @@ int main(int argc, char** argv){
 			Modular<int32_t> F((int32_t)p);
 			cout<<"Computation over Fp[x] with p=  "<<p<<" (FFT prime)"<<endl;
 			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
-			runTest (F,n,b,d,seed,test);		
+			runTest (F,n,b,d,seed,test);
 		}
 	}
 	return 0;
-} 
- 
- 
- 
-  
+}
+
+
+
+

@@ -28,7 +28,6 @@
 #include "linbox/algorithms/polynomial-matrix/matpoly-add-domain.h"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-naive.h"
 #include <algorithm>
-using namespace std;
 
 #define KARA_DEG_THRESHOLD 4
 
@@ -90,18 +89,18 @@ namespace LinBox
 #endif
 		}
 
-		
+
 	protected:
-                
+
 		template<typename PMatrix1,typename PMatrix2,typename PMatrix3, typename PMatrix4>
-                void Karatsuba_mul(PMatrix1 &C, const PMatrix2 &A, const PMatrix3& B, PMatrix4 &TMP) { 
+                void Karatsuba_mul(PMatrix1 &C, const PMatrix2 &A, const PMatrix3& B, PMatrix4 &TMP) {
 
                         //cout<<A.size()<<"x"<<B.size()<<"->"<<C.size()<<" ("<<TMP.size()<<")"<<endl;
                         Timer chrono;
                         if ((A.size() <=KARA_DEG_THRESHOLD) || (B.size()<=KARA_DEG_THRESHOLD)) {
 #ifdef KARA_TIMING
                                 chrono.start();
-#endif                     
+#endif
                                 _NMD.mul(C,A,B);
 #ifdef KARA_TIMING
                                 _timeMul+=chrono.userElapsedTime();
@@ -112,20 +111,20 @@ namespace LinBox
                                 chrono.start();
 #endif
 				size_t dA, dB, p, p2, q,qA, qB, n2;
-                                dA = A.size(); 
-                                dB = B.size(); 
+                                dA = A.size();
+                                dB = B.size();
                                 n2=dA+dB;
                                 p=std::max((dA>>1)+(dA&1),(dB>>1) +(dB&1));
                                 p2=p<<1;
                                 qA= dA - p;
                                 qB= dB - p;
-                                q=std::max(qA,qB);                                
+                                q=std::max(qA,qB);
                                 typename PMatrix2::const_view Ah,Al;
                                 typename PMatrix3::const_view Bh,Bl;
                                 typename PMatrix1::view C0,C1,C2,TMP0;
-                                Al=A.at(0,p-1); Ah=A.at(p,dA-1);                                
+                                Al=A.at(0,p-1); Ah=A.at(p,dA-1);
                                 Bl=B.at(0,p-1); Bh=B.at(p,dB-1);
-                                                                                                
+
 				// add low and high terms of A in C[0,p-1]
                                 C0=C.at(0,p-1);
                                 _PMD.add(C0,Al,Ah);
@@ -139,14 +138,14 @@ namespace LinBox
                                 // multiply the sums in TMP[0,p2-2] using C[p2,n2-2] as temporary
                                 C2=C.at(p2,n2-2);
                                 TMP0=TMP.at(0,p2-2);
-                                Karatsuba_mul(TMP0,C0,C1,C2);  
+                                Karatsuba_mul(TMP0,C0,C1,C2);
 
 				// multiply high terms in C[p2,n2-2] using C[0,q-1] as temporary
-                                C0=C.at(0,q-1); 
-                                Karatsuba_mul(C2, Ah,Bh, C0);                                 
+                                C0=C.at(0,q-1);
+                                Karatsuba_mul(C2, Ah,Bh, C0);
 #ifdef KARA_TIMING
                                 chrono.start();
-#endif                                                               
+#endif
                                 // subtract the high product from the product of the sums
                                 _PMD.subin(TMP0,C2);
 
@@ -154,7 +153,7 @@ namespace LinBox
                                 for (size_t i=p;i<=p2-1;i++) C[i]=TMP[i-p];
                                 if (p>=2){
                                         C2=C.at(p2,p2+p-2);
-                                        TMP0=TMP.at(p,p2-2); 
+                                        TMP0=TMP.at(p,p2-2);
                                         _PMD.addin(C2,TMP0);
                                 }
 #ifdef KARA_TIMING
@@ -165,10 +164,10 @@ namespace LinBox
                                 TMP0=TMP.at(0,p2-2);
                                 C0=C.at(0,p-1);
                                 Karatsuba_mul(TMP0,Al,Bl,C0);
-                                
+
 #ifdef KARA_TIMING
                                 chrono.start();
-#endif                                                                                                
+#endif
                                 // subtract the low product from result at the right place
                                 C1=C.at(p,p+p2-2);
                                 _PMD.subin(C1,TMP0);
@@ -185,7 +184,7 @@ namespace LinBox
 #endif
                         }
                 }
-                
+
                 // a is of size n
 		// b is of size 2n-1
 		// c is of size n
@@ -199,9 +198,9 @@ namespace LinBox
                         if ((A.size() <=KARA_DEG_THRESHOLD) || (B.size()<=KARA_DEG_THRESHOLD)) {
 #ifdef KARA_TIMING
                                 chrono.start();
-#endif                     
+#endif
                                 //cout<<"-------------------------------------------------"<<endl;
-                                _NMD.midproduct(C,A,B);                               
+                                _NMD.midproduct(C,A,B);
 #ifdef KARA_TIMING
                                 _timeMul+=chrono.userElapsedTime();
 #endif
@@ -225,9 +224,9 @@ namespace LinBox
                                 // cout<<"TMP SIZE:"<<TMP.size()<<endl;
                                 typename PMatrix2::const_view Ah,Al;
                                 typename PMatrix3::const_view Bh,Bm0,Bm1,Bl;
-                                typename PMatrix1::view C0,C1,TMP0,TMP1,TMP2;                                
+                                typename PMatrix1::view C0,C1,TMP0,TMP1,TMP2;
                                 Al=A.at(0,n0-1);        // size: n0
-                                Ah=A.at(n0,n-1);        // size: n1    
+                                Ah=A.at(n0,n-1);        // size: n1
                                 Bl=B.at(0,s1-1);        // size: 2n1-1
                                 Bh=B.at(2*n1,2*n1+s0-1);// size: 2n0-1
                                 Bm0=B.at(n1,n1+s0-1);   // size: 2n0-1
@@ -238,23 +237,23 @@ namespace LinBox
 				// add Bl and Bm1 in C[0,s1-1]
 
                                 C0=C.at(0,s1-1);
-                                _PMD.add(C0,Bl,Bm1);                           
+                                _PMD.add(C0,Bl,Bm1);
 #ifdef KARA_TIMING
                                 _timeAdd+=chrono.userElapsedTime();
 #endif
-                                // 1) TMP[0,n1-1]= midproduct(Ah,Bl+Bm1) using TMP[n1,n1+s1] as temporary 
+                                // 1) TMP[0,n1-1]= midproduct(Ah,Bl+Bm1) using TMP[n1,n1+s1] as temporary
                                 TMP0=TMP.at(0,n1-1);
-                                TMP1=TMP.at(n1,4*n1-1); 
-                                Karatsuba_midproduct(TMP0,Ah,C0,TMP1); 
+                                TMP1=TMP.at(n1,4*n1-1);
+                                Karatsuba_midproduct(TMP0,Ah,C0,TMP1);
                                 //cout<<"alpha=:"<<TMP0<<endl;
 #ifdef KARA_TIMING
                                 chrono.start();
-#endif     			
+#endif
                                 // copy TMP[0,n1-1] to C[0,n1-1]
                                 C0=C.at(0,n1-1);
                                 C0.copy(TMP0);
 
-                                if(n0!=n1) {               
+                                if(n0!=n1) {
                                         TMP[2*n-1]=C[n1-1];
                                         // compute Ah-x*Al in  C[n0,n-1]
                                         C1=C.at(n0,n-1);
@@ -263,28 +262,28 @@ namespace LinBox
                                         _PMD.subin(C1,Al);
                                         C1=C.at(n0,n-1);
 
-                                        // 2) T[0,n1-1]= midproduct(Ah-Al,Bm1) using TMP[n1,n1+s1] as temporary 
-                                        Karatsuba_midproduct(TMP0,C1,Bm1,TMP1);  			
+                                        // 2) T[0,n1-1]= midproduct(Ah-Al,Bm1) using TMP[n1,n1+s1] as temporary
+                                        Karatsuba_midproduct(TMP0,C1,Bm1,TMP1);
                                         //cout<<"beta=:"<<TMP0<<endl;
 
                                         C[n1-1]=TMP[2*n-1];
-                                        
+
                                         _PMD.subin(C0,TMP0);
-                                        
+
                                         C1=C.at(n1,n-1);
                                         TMP1=TMP.at(0,n0-1);
-                                        C1.copy(TMP1);                
-                                        
+                                        C1.copy(TMP1);
+
                                         TMP0=TMP.at(0,s0-1);
                                         TMP1=TMP.at(s0,s0+n0-1);
                                         TMP2=TMP.at(s0+n0,s0+4*n0-1);
-                                        
+
                                         _PMD.add(TMP0,Bm0,Bh);
 
-                                        // 3) T[s0,s0+n0-1]= midproduct(Al,Bm0+Bh) using TMP[s0+n0,2so+n0] as temporary 
+                                        // 3) T[s0,s0+n0-1]= midproduct(Al,Bm0+Bh) using TMP[s0+n0,2so+n0] as temporary
                                         Karatsuba_midproduct(TMP1,Al,TMP0,TMP2);
                                         //cout<<"gamma=:"<<TMP1<<endl;
-                                        
+
                                         C1=C.at(n1,n-1);
                                         _PMD.addin(C1,TMP1);
                                 }
@@ -292,21 +291,21 @@ namespace LinBox
                                         // add Bh and Bm in TMP[0,s0-1]
                                         TMP0=TMP.at(0,s0-1);
                                         _PMD.add(TMP0,Bh,Bm0);
-                                        
-                                        // 2) C[n1,n-1]= midproduct(Al,Bh+Bm0) using TMP[s0,2s0] as temporary 
+
+                                        // 2) C[n1,n-1]= midproduct(Al,Bh+Bm0) using TMP[s0,2s0] as temporary
                                         C1=C.at(n1,n-1);
                                         TMP1=TMP.at(s0,s0+3*n0-1);
-                                        Karatsuba_midproduct(C1,Al,TMP0,TMP1);  
+                                        Karatsuba_midproduct(C1,Al,TMP0,TMP1);
                                         //cout<<"gamma=:"<<TMP0<<endl;
-                                        
+
                                         // compute Ah-Al in  T[0,n1-1]
                                         TMP0=TMP.at(0,n1-1);
                                         TMP1=TMP.at(n1,2*n1-1);
                                         TMP2=TMP.at(2*n1,2*n1+3*n0-1);
-                                        
-                                        _PMD.sub(TMP0,Ah,Al);                           
-                                        
-                                        // 3) T[n1,2n1-1]= midproduct(Ah-Al,Bm0) using TMP[2n1,2n1+s0] as temporary 
+
+                                        _PMD.sub(TMP0,Ah,Al);
+
+                                        // 3) T[n1,2n1-1]= midproduct(Ah-Al,Bm0) using TMP[2n1,2n1+s0] as temporary
                                         Karatsuba_midproduct(TMP1,TMP0,Bm0,TMP2);
                                         //cout<<"beta=:"<<TMP1<<endl;
 
@@ -314,11 +313,11 @@ namespace LinBox
                                         _PMD.subin(C0,TMP1);
                                         _PMD.addin(C1,TMP1);
                                 }
-                                        
+
                                 //cout<<"* END ***********************************************"<<endl;
                         }
                 }
-               
+
 	}; // end of class KaratsubaMulDomain<Field, Matrix>
 
 } // end of namespace LinBox

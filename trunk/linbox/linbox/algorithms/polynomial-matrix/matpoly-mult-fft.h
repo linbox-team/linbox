@@ -1,3 +1,4 @@
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2013  Pascal Giorgi
@@ -38,61 +39,63 @@
 
 #ifdef FFT_PROFILER
 #include <iostream>
-using namespace std;
 size_t  FFT_PROF_LEVEL=1;
 myTimer chrono;
 #define FFT_PROF_MSG_SIZE 35
 #define FFT_PROFILE_START  chrono.start();
 
 #define FFT_PROFILING(lvl,msg)						\
-	if (lvl>=FFT_PROF_LEVEL) {					\
-		chrono.stop();cout<<"FFT: ";				\
-		cout.width(FFT_PROF_MSG_SIZE);cout<<std::left<<msg<<" : "; \
-		cout.precision(6);cout<<chrono.gettime()<<" s"<<endl;	\
-		chrono.start();						\
-	}
+if (lvl>=FFT_PROF_LEVEL) {					\
+	chrono.stop();cout<<"FFT: ";				\
+	cout.width(FFT_PROF_MSG_SIZE);cout<<std::left<<msg<<" : "; \
+	cout.precision(6);cout<<chrono.gettime()<<" s"<<endl;	\
+	chrono.start();						\
+}
 #define FFT_PROFILE_GET(x)					\
-	chrono.stop();x+=chrono.gettime();chrono.start();
+chrono.stop();(x)+=chrono.gettime();chrono.start();
 
 #define FFT_PROFILE(lvl,msg,x)						\
-	if (lvl>=FFT_PROF_LEVEL) {					\
-		cout<<"FFT: ";						\
-		cout.width(FFT_PROF_MSG_SIZE);cout<<std::left<<msg<<" : "; \
-		cout.precision(6);cout<<x<<" s"<<endl;			\
-	}
+if ((lvl)>=FFT_PROF_LEVEL) {					\
+	cout<<"FFT: ";						\
+	cout.width(FFT_PROF_MSG_SIZE);cout<<std::left<<msg<<" : "; \
+	cout.precision(6);cout<<x<<" s"<<endl;			\
+}
 #else
 #define FFT_PROFILE_START
 #define FFT_PROFILING(lvl,msg)
 #define FFT_PROFILE_GET(x)
 #define FFT_PROFILE(lvl,msg,x)
-#endif
+#endif // FFT_PROFILER
 
 
 namespace LinBox
 {
 	// generic handler for multiplication using FFT
 	template <class Field>
-	class PolynomialMatrixFFTMulDomain {                       
+	class PolynomialMatrixFFTMulDomain {
 	public:
 		inline const Field & field() const;
 
 		PolynomialMatrixFFTMulDomain (const Field& F);
-		
+
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
 		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b);
 
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
 		void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, bool smallLeft=true, size_t n0=0,size_t n1=0);
 	};
-	
-	
+
+
 	class PolynomialMatrixFFTPrimeMulDomain ;                         // Mul in Zp[x] with p <2^32, (fflas, fourier)
-	template <>						
-	class PolynomialMatrixFFTMulDomain<Modular<int32_t> > ;           // Mul in Zp[x] with p <2^32	
-	template<>
-	class PolynomialMatrixFFTMulDomain<UnparametricField<integer> >;  // Mul in Z[x]
-	template <>
-	class PolynomialMatrixFFTMulDomain<Modular<integer> > ;           // Mul in Zp[x] with p multiprecision
+
+	// template <>
+	// class PolynomialMatrixFFTMulDomain<Modular<int32_t> > ;           // Mul in Zp[x] with p <2^32
+
+	// template<>
+	// class PolynomialMatrixFFTMulDomain<UnparametricField<integer> >;  // Mul in Z[x]
+
+	// template <>
+	// class PolynomialMatrixFFTMulDomain<Modular<integer> > ;           // Mul in Zp[x] with p multiprecision
 
 } // end of namespace LinBox
 
@@ -100,4 +103,4 @@ namespace LinBox
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-multiprecision.inl"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize.inl"
 
-#endif
+#endif // __LINBOX_matpoly_mult_ftt_H
