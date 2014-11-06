@@ -381,9 +381,14 @@ int main(int argc, char** argv) {
 	}
 	pass = pass && part_pass;
 	if(run & 2){
+	  if (sizeof(int) < 8) {
+
+		report << "zw: not done.  Requires 64 bit architecture (maybe, needs checking -bds)." << std::endl << std::endl;
+	  } else {
 		RationalSolver<Ring, ZField, RandomPrimeIterator, NumSymNormTraits> rsolver(R);
 		part_pass = testRandomSolve(R, rsolver, A, b);
 		report << "zw: " << (part_pass ? "pass" : "fail") << std::endl << std::endl;
+	  }
 	}
 	pass = pass && part_pass;
 	if(run & 4){
