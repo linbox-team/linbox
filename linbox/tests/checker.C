@@ -500,7 +500,7 @@ int main(int argc, char* argv[])
 #endif
 */
 
-#if __FFLASFFPACK_HAVE_LAPACK
+#if __LINBOX_HAVE_LAPACK
 	if (flag > 0) cout << "	Lapack dependent tests" << endl;
 	build_n_run("test-rational-solver-adaptive", counter, flag);
 	// needs output cleanup.  Resolve whether a benchmark or a test.
