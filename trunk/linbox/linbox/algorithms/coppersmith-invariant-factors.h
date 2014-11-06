@@ -42,8 +42,6 @@
 namespace LinBox
 {
 
-using namespace LinBox;
-
 template<class Field_,class Blackbox_,class Field2_=Field_>
 class CoppersmithInvariantFactors {
 public:

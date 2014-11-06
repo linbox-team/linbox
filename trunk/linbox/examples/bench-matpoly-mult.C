@@ -70,7 +70,7 @@ extern "C" {
 }
 #endif
 
-// using namespace LinBox;
+using namespace LinBox;
 
 
 
