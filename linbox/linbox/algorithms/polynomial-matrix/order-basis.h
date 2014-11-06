@@ -27,20 +27,19 @@
 #include "linbox/algorithms/polynomial-matrix/polynomial-matrix-domain.h"
 #include <vector>
 #include <algorithm>
-using namespace std;
 
 #define MBASIS_THRESHOLD_LOG 5
 #define MBASIS_THRESHOLD (1<<MBASIS_THRESHOLD_LOG)
 
 namespace LinBox {
-        
+
         template< size_t K>
         struct EarlyTerm {
                 size_t _count;
                 size_t _val;
-                
+
                 EarlyTerm():  _count(0),_val(0){}
-                
+
                 void update(size_t r, const vector<size_t>& u){
                         vector<size_t> v(u);
                         sort(v.begin(),v.end());
@@ -52,11 +51,11 @@ namespace LinBox {
                         else{
                                 _val=x;
                                 _count=0;
-                        }                    
+                        }
                 }
-                
+
                 bool terminated() const {return _count>=K;}
-                
+
                 void reset() {_count=0;_val=0;}
         };
 
@@ -69,7 +68,7 @@ namespace LinBox {
                 const Field*                     _field;
                 PolynomialMatrixMulDomain<Field>   _PMD;
                 BlasMatrixDomain<Field>            _BMD;
-                ET                           _EarlyStop;                  
+                ET                           _EarlyStop;
         public:
                 double mul;
                 Timer tmul;
@@ -80,7 +79,7 @@ namespace LinBox {
 
                 inline const Field& field() const {return *_field;}
 
-                
+
                 // serie must have exactly order elements (i.e. its degree = order-1)
                 // sigma can have at most order+1 elements (i.e. its degree = order)
                 template<typename PMatrix1, typename PMatrix2>
@@ -89,13 +88,13 @@ namespace LinBox {
                                 size_t                order,
                                 vector<size_t>       &shift)
                 {
-                        if (order <= MBASIS_THRESHOLD) {                        
+                        if (order <= MBASIS_THRESHOLD) {
                                 return M_Basis(sigma, serie, order, shift);
                         }
-                        else {                                
+                        else {
                                 size_t ord1,ord2,d1,d2;
-                                ord1 = order>>1; 
-                                ord2 = order-ord1; // ord1+ord2=order                        
+                                ord1 = order>>1;
+                                ord2 = order-ord1; // ord1+ord2=order
                                 size_t m,n,k;
                                 m=sigma.rowdim();
                                 n=sigma.coldim();
@@ -135,7 +134,7 @@ namespace LinBox {
                                const PMatrix2    &serie,
                                size_t            order,
                                vector<size_t>   &shift)
-                {        
+                {
                         //cout<<"------------- mba : "<<order<<endl;
                         //cout<<serie<<endl;
                         size_t m=serie.rowdim();
@@ -154,7 +153,7 @@ namespace LinBox {
                         BlasPermutation<size_t> Qt(m), P(n);
                         typedef BlasSubmatrix<BlasMatrix<Field> > View;
 
-                        for (size_t k=0; k<order && !_EarlyStop.terminated(); k++){                           
+                        for (size_t k=0; k<order && !_EarlyStop.terminated(); k++){
                                 // sort the shift in ascending order (-> minimize the shifted row-degree of sigma)
                                 // -> store the permutation in Bperm
                                 // -> permute the row degree at the same time
@@ -168,7 +167,7 @@ namespace LinBox {
                                         std::swap( shift[i],  shift[idx_min]);
                                         std::swap(degree[i], degree[idx_min]);
                                         perm[i]=idx_min;
-                                }                        
+                                }
                                 BlasPermutation<size_t> Bperm(perm);
 
                                 // check if Qt is identity
@@ -178,26 +177,26 @@ namespace LinBox {
                                 // permute the row of the current sigma basis
                                 // and compute the new discrepancy
                                 //if (true){
-                                if (k==0 || lll!=m){  
+                                if (k==0 || lll!=m){
                                         _BMD.mulin_right(Bperm, sigma[0]);
-                                        _BMD.mul(delta,sigma[0],serie[k]);                        
+                                        _BMD.mul(delta,sigma[0],serie[k]);
                                         for(size_t i=1;i<=min(k,max_degree);i++){
                                                 _BMD.mulin_right(Bperm, sigma[i]);
                                                 _BMD.axpyin(delta,sigma[i],serie[k-i]);
                                         }
                                 }
-                                else{         
+                                else{
                                         // if Qt is identity then the first rank rows of delta remain unchanged
                                         View delta1(delta,   rank,0,m-rank,n);
                                         View sigma1(sigma[0],rank,0,m-rank,m);
-                                        _BMD.mul(delta1,sigma1,serie[k]);                        
+                                        _BMD.mul(delta1,sigma1,serie[k]);
                                         _BMD.mulin_right(Bperm, sigma[0]);
                                         for(size_t i=1;i<=min(k,max_degree);i++){
                                                 View sigmak(sigma[i],rank,0,m-rank,m);
-                                                _BMD.axpyin(delta1,sigmak,serie[k-i]);  
+                                                _BMD.axpyin(delta1,sigmak,serie[k-i]);
                                                 _BMD.mulin_right(Bperm, sigma[i]);
                                         }
-                                        _BMD.mulin_right(Bperm, delta);                                
+                                        _BMD.mulin_right(Bperm, delta);
                                 }
 
                                 //delta.write(cout,Tag::FileFormat::Plain);
@@ -218,7 +217,7 @@ namespace LinBox {
                                 View L1(L,0   ,0,  rank,rank);
                                 View L2(L,rank,0,m-rank,rank);
                                 FFLAS::ftrsm((typename Field::Father_t)field(),FFLAS::FflasRight,FFLAS::FflasLower,
-                                             FFLAS::FflasNoTrans,FFLAS::FflasUnit, 
+                                             FFLAS::FflasNoTrans,FFLAS::FflasUnit,
                                              m-rank,rank, field().mOne, L1.getPointer(),m, L2.getWritePointer(),m);
 
                                 // update sigma by L^(-1) (rank sensitive -> use only the left kernel basis)
@@ -226,27 +225,27 @@ namespace LinBox {
                                         // NEED TO APPLY Qt to sigma[i]
                                         View S1(sigma[i],0,0,rank,m);
                                         View S2(sigma[i],rank,0,m-rank,m);
-                                        _BMD.axpyin(S2,L2,S1); 
+                                        _BMD.axpyin(S2,L2,S1);
                                         //_BMD.mulin_right(L,sigma[i]);
 
                                 }
 
-                                size_t dmax=0, smax=0;                                                
+                                size_t dmax=0, smax=0;
                                 // update: the row-degree, the shifted row-degree,
                                 //         the max pivot degree and the maximum row degree
                                 for (size_t i=0;i<rank;++i) {
                                         dmax=max(dmax, degree[Qt[i]]);
                                         smax=max(smax, shift [Qt[i]]);
                                         degree[Qt[i]]++;
-                                        shift [Qt[i]]++;                                                        
-                                }                        
+                                        shift [Qt[i]]++;
+                                }
                                 max_degree=max(max_degree,dmax+1);
                                 for (size_t i=rank;i<m;i++){
                                         degree[Qt[i]]=max(dmax, degree[Qt[i]]);
                                         //THIS LINE IS NOT NEEDED -> shift [Qt[i]]=max(smax, shift [Qt[i]]);
                                 }
 
-                                // shift the pivot row of sigma by x 
+                                // shift the pivot row of sigma by x
                                 for (int l=max_degree-1;l>=0;l--)
                                         for (size_t i=0;i<rank;i++)
                                                 for (size_t j=0;j<m;j++)
@@ -305,7 +304,7 @@ namespace LinBox {
                         // log of the order
                         size_t log_order=integer(order).bitsize();
 
-                        //  leaf size of the recursive PM_Basis algorithm (must be a power of 2) 
+                        //  leaf size of the recursive PM_Basis algorithm (must be a power of 2)
                         size_t log_ord = MBASIS_THRESHOLD_LOG;
                         size_t ord     = min(1UL<<log_ord ,order);
 
@@ -316,36 +315,36 @@ namespace LinBox {
                         L_serie[log_order]=const_cast<PMatrix2*>(&serie);
 
                         typedef typename PMatrix2::const_view cview;
-                        list<PMatrix1*>  L_sigma;                
-                        PMatrix1*         sigmak; 
+                        list<PMatrix1*>  L_sigma;
+                        PMatrix1*         sigmak;
                         cview             seriek;
                         typedef HalflineMPDomain<Field,PMatrix2,PMatrix1,PMatrix2> HFMPD;
                         list<HFMPD*> L_mp;
                         typename list<HFMPD*>::iterator iter, t_iter;
-                        
+
                         // // Reset Early Termination
                         _EarlyStop.reset();
-                        
+
                         sigmak = new PMatrix1(field(),m,n,ord+1);
                         seriek = serie.at(0,ord-1);
-                        M_Basis(*sigmak, seriek, ord, shift);                  
+                        M_Basis(*sigmak, seriek, ord, shift);
                         L_sigma.push_back(sigmak);
                         size_t sss=0;
-                        for(size_t k=ord;k<order &&  !_EarlyStop.terminated();k+=ord,sss++){  
+                        for(size_t k=ord;k<order &&  !_EarlyStop.terminated();k+=ord,sss++){
                                 // cout<<"------------ order="<<k<<endl;
                                 l  = twoValuation(k);
-                                lp = twoValuation(k-(1<<l)); lp=(lp==0?log_order:lp); 
-                                // compute next element in the original serie and 
+                                lp = twoValuation(k-(1<<l)); lp=(lp==0?log_order:lp);
+                                // compute next element in the original serie and
                                 // update all subsequent computed series
                                 for(iter=L_mp.begin(); iter!=L_mp.end(); ){
                                         (*iter)->update(ord);
                                         t_iter=iter;
-                                        ++iter;    
-                                
+                                        ++iter;
+
                                         if ((*t_iter)->terminated()){
-                                                delete *t_iter; 
-                                                L_mp.erase(t_iter);  
-                                        }                                  
+                                                delete *t_iter;
+                                                L_mp.erase(t_iter);
+                                        }
                                 }
 
                                 // compute the serie update
@@ -354,7 +353,7 @@ namespace LinBox {
                                 //size_t update_max=min(order,1UL<<(l+1));
                                 //_PMD.midproductgen(*L_serie[l],*L_sigma.back(), seriek, true, (1UL<<l)+1,update_max);
 
-                        
+
                                 /*
                                   cout<<"---------------"<<endl;
                                   cout<<"MP "<<(1UL<<l)<<"x"<<(1UL<<(l+1))<<endl;
@@ -365,24 +364,24 @@ namespace LinBox {
 
                                 //L_mp.push_back(new HFMPD(field(),*(L_serie[l]),*(L_sigma.back()), seriek, 1UL<<l));
                                 L_mp.push_back(new HFMPD(field(),*(L_serie[l]),*(L_sigma.back()),*(L_serie[lp]), 1UL<<l));
-                   
+
                                 // compute the new sigma
                                 sigmak = new PMatrix(field(),m,n,ord+1);
                                 size_t step= min(ord,order-k); // needed if order%ord <> 0
                                 seriek = const_cast<const PMatrix2*>(L_serie[l])->at(0,step-1);
-                        
+
                                 // compute the next "step" elements of the serie L_serie[l]
                                 L_mp.back()->update(ord);
-                        
-                                M_Basis(*sigmak, seriek, step, shift);                        
+
+                                M_Basis(*sigmak, seriek, step, shift);
                                 L_sigma.push_back(sigmak);
 
                                 // update the sigma list
                                 update_sigma(m, n, L_sigma, twoValuation(k/ord+1));
                         }
-                        // get the product of all sigma                
+                        // get the product of all sigma
                         if (L_sigma.size()>1){
-                                update_sigma(m, n, L_sigma, L_sigma.size()-2);                
+                                update_sigma(m, n, L_sigma, L_sigma.size()-2);
                                 PMatrix1 *s1,*s2;
                                 s1= L_sigma.back();L_sigma.pop_back();
                                 s2= L_sigma.back();L_sigma.pop_back();
@@ -401,7 +400,7 @@ namespace LinBox {
                         //if (_EarlyStop.terminated())
                         //        cout<<"Early termination at order "<<sss<<" ("<<order<<")"<<endl;
                 }
-        
+
         };
 
 } // end of namespace LinBox

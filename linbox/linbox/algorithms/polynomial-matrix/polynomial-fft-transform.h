@@ -28,8 +28,7 @@
 #ifndef __LINBOX_polynomial_fft_transform_H
 #define __LINBOX_polynomial_fft_transform_H
 
-#include <iostream> 
-using namespace std;
+#include <iostream>
 
 #include "linbox/algorithms/polynomial-matrix/simd.h"
 #include "linbox/util/debug.h"
@@ -38,10 +37,10 @@ using namespace std;
 // template<typename T>
 // std::ostream& operator<<(std::ostream& os, const std::vector<T> &x){
 // 	std::ostream_iterator<T> out_it (os,", ");
-// 	std::copy ( x.begin(), x.end(), out_it );   
+// 	std::copy ( x.begin(), x.end(), out_it );
 // 	return os;
 // }
-	
+
 
 
 namespace LinBox {
@@ -62,7 +61,7 @@ namespace LinBox {
 		uint64_t                    _I;
 		double                   _pinv;
 		Element                     _w;
-		vector<Element>   pow_w; 
+		vector<Element>   pow_w;
 		vector<Element>  pow_wp; // Precomputations in shoup
 		//   pow_w = table of roots of unity. If w = primitive K-th root, then the table is:
 		//           1, w, w^2, ..., w^{K/2-1},
@@ -105,7 +104,7 @@ namespace LinBox {
 		FFT_transform (const Field& fld2, size_t ln2, Element w = 0)
 			: fld (fld2), n ((1U << ln2)), ln (ln2), pow_w(n - 1), pow_wp(n - 1) {
 			_pl = fld.characteristic();
-	
+
 			linbox_check((_pl >> 29) == 0 ); // 8*p < 2^31 for Harvey's butterflies
 			_dpl = (_pl << 1);
 			uint64_t                _val2p;
@@ -154,7 +153,7 @@ namespace LinBox {
 				tpts >>= 1;
 			}
 		}
-       
+
 
 		template <class Polynomial>
 		void FFT_DIF_Harvey_SSE (Polynomial &fft) {
@@ -164,7 +163,7 @@ namespace LinBox {
 				_vect256_t P;
 				VEC256_SET_32(P,(int)_pl);
 				for (size_t i = 0; i < n; i += 8)
-					reduce256_modp(&fft[i],P);	
+					reduce256_modp(&fft[i],P);
 				return;
 			}
 #else
@@ -173,7 +172,7 @@ namespace LinBox {
 			// the following code must be optimized using SSE
 			if (n >=4) {
 				_vect128_t P;
-				VEC128_SET_32(P,(int)_pl);				
+				VEC128_SET_32(P,(int)_pl);
 				for (size_t i = 0; i < n; i += 4)
 					reduce128_modp(&fft[i],P);
 			} else {
@@ -193,16 +192,16 @@ namespace LinBox {
 				for (size_t i = 0; i < n; i += 8){
 					reduce256_modp(&fft[i],P2);
 					reduce256_modp(&fft[i],P);
-				}	
+				}
 				return;
 			}
-#else 
+#else
 			FFT_DIT_Harvey_mod4p_iterative4x1_SSE(fft);
-#endif		
+#endif
 			if (n >=4) {
 				_vect128_t P,P2;
-				VEC128_SET_32(P,(int)_pl);				
-				VEC128_SET_32(P2,(int)_dpl);				
+				VEC128_SET_32(P,(int)_pl);
+				VEC128_SET_32(P2,(int)_dpl);
 				for (size_t i = 0; i < n; i += 4){
 					reduce128_modp(&fft[i],P2);
 					reduce128_modp(&fft[i],P);
@@ -223,14 +222,14 @@ namespace LinBox {
 
 		inline void reduce128_modp(Element*, const __m128i&);
 
-		
+
 		inline void Butterfly_DIF_mod2p_4x1_SSE(Element* ABCD, Element* EFGH,const Element* alpha,
 							const Element* alphap, const __m128i& P, const __m128i& P2);
 		inline void Butterfly_DIF_mod2p_4x1_SSE_laststep(Element* ABCD, Element* EFGH, const __m128i& P2);
 		inline void Butterfly_DIF_mod2p_4x2_SSE(Element* , Element* ,Element* , Element* ,
 							const Element* ,const Element* ,const Element* ,
 							const Element* ,const Element* ,const Element* ,
-							const __m128i& P, const __m128i& P2);		
+							const __m128i& P, const __m128i& P2);
 		inline void Butterfly_DIF_mod2p_4x2_SSE_last2step(Element* ABCD, Element* EFGH, const __m128i& W,
 								  const __m128i& Wp, const __m128i& P, const __m128i& P2);
 		inline void Butterfly_DIT_mod4p_4x1_SSE(Element* ABCD, Element* EFGH, const Element* alpha,
@@ -241,20 +240,20 @@ namespace LinBox {
 		inline void reduce256_modp(Element*, const __m256i&);
 
 		inline void Butterfly_DIF_mod2p_8x1_AVX(Element* ABCD, Element* EFGH, const Element* alpha,
-							const Element* alphap,const __m256i& P, const __m256i& P2);		
+							const Element* alphap,const __m256i& P, const __m256i& P2);
 		inline void Butterfly_DIF_mod2p_8x3_AVX_last3step(Element* ABCDEFGH, Element* IJKLMNOP, const __m256i& alpha,const __m256i& alphap,
 								  const __m256i& beta ,const __m256i& betap, const __m256i& P    ,const __m256i& P2);
 		inline void Butterfly_DIT_mod4p_8x1_AVX(Element* ABCD, Element* EFGH, const Element* alpha,const Element* alphap,
-			const __m256i& P, const __m256i& P2);	
-		inline void Butterfly_DIT_mod4p_8x3_AVX_first3step(Element* ABCDEFGH, Element* IJKLMNOP, const __m256i& alpha,const __m256i& alphap, 
+			const __m256i& P, const __m256i& P2);
+		inline void Butterfly_DIT_mod4p_8x3_AVX_first3step(Element* ABCDEFGH, Element* IJKLMNOP, const __m256i& alpha,const __m256i& alphap,
 								   const __m256i& beta ,const __m256i& betap, const __m256i& P    ,const __m256i& P2);
 
-		
+
 #endif
-			
-		/* 
-		 * Different implementation of DIF/DIT with Harvey's trick 
-		 */		
+
+		/*
+		 * Different implementation of DIF/DIT with Harvey's trick
+		 */
 		template <class Polynomial>
 		void FFT_DIF_Harvey_mod2p_iterative    (Polynomial &fft);
 		template <class Polynomial>
@@ -271,12 +270,12 @@ namespace LinBox {
 		template <class Polynomial>
 		void FFT_DIF_Harvey_mod2p_iterative4x2_SSE (Polynomial &fft);
 		template <class Polynomial>
-		void FFT_DIT_Harvey_mod4p_iterative4x1_SSE (Polynomial &fft);		
+		void FFT_DIT_Harvey_mod4p_iterative4x1_SSE (Polynomial &fft);
 #ifdef __AVX2__
 		template <class Polynomial>
-		void FFT_DIF_Harvey_mod2p_iterative8x1_AVX (Polynomial &fft);		
+		void FFT_DIF_Harvey_mod2p_iterative8x1_AVX (Polynomial &fft);
 		template <class Polynomial>
-		void FFT_DIT_Harvey_mod4p_iterative8x1_AVX (Polynomial &fft);			
+		void FFT_DIT_Harvey_mod4p_iterative8x1_AVX (Polynomial &fft);
 #endif
 
 	};

@@ -138,7 +138,6 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-                        using namespace std;
 			if (this->casenumber) {
                                 this->Mul(_blockW,*this->_BB,this->_blockV);
 				_BMD.mul(this->_value, this->_blockU, _blockW);

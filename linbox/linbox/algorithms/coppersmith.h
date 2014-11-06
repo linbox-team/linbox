@@ -29,7 +29,6 @@
 #include <algorithm>
 #include "givaro/givpoly1crt.h"
 #include <iostream>
-using namespace std;
 
 
 #include "linbox/integer.h"

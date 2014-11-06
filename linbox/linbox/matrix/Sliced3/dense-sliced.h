@@ -7,10 +7,10 @@
 #include <sys/fcntl.h>
 
 /**
-  The matrix class Sliced is defined.  
+  The matrix class Sliced is defined.
   It adheres to the LinBox dense matrix interface.
 
-  It depends on SlicedBase, also defined here, which packs GF(3) elements 
+  It depends on SlicedBase, also defined here, which packs GF(3) elements
   into a pair of ints. The int type is a template parameter.
 */
 
@@ -18,17 +18,16 @@
 //#include <linbox/util/timer.h>
 //#include "sliced-stepper.h"
 
-using namespace std;
 
 namespace LinBox {
 
-/* SLICED BASE CODE 
+/* SLICED BASE CODE
    SlicedBase implements functios on a vector of GF(3) elements.
-   T is an integer type of some length n. 
+   T is an integer type of some length n.
    The vectors are of length n, packed into two T words in sliced fashion.
    (Each element partakes of one bit from b0 and one bit from b1).
 
-   Most of the SlicedBase functios are in C++ operator form. 
+   Most of the SlicedBase functios are in C++ operator form.
  */
 template<class T>
 struct SlicedBase
@@ -60,7 +59,7 @@ public:
 	}
 
 	SlicedBase operator*(const T &two) const{
-		return SlicedBase(*this) *= two;	
+		return SlicedBase(*this) *= two;
 	}
 
 	//  used for masking both words
@@ -70,8 +69,8 @@ public:
 		return *this;
 	}
 
-	SlicedBase operator & (const T &rhs){ 
-		return SlicedBase(*this) &= rhs;	
+	SlicedBase operator & (const T &rhs){
+		return SlicedBase(*this) &= rhs;
 	}
 
 	//  used for shifting both words
@@ -81,8 +80,8 @@ public:
 		return *this;
 	}
 
-	SlicedBase operator >> (const T &rhs){ 
-		return SlicedBase(*this) >>= rhs;	
+	SlicedBase operator >> (const T &rhs){
+		return SlicedBase(*this) >>= rhs;
 	}
 
 	//  used for shifting both words
@@ -92,8 +91,8 @@ public:
 		return *this;
 	}
 
-	SlicedBase operator << (const T &rhs){ 
-		return SlicedBase(*this) <<= rhs;	
+	SlicedBase operator << (const T &rhs){
+		return SlicedBase(*this) <<= rhs;
 	}
 
 	//  used for combining value into both words
@@ -122,9 +121,9 @@ public:
 	}
 
 	const SlicedBase operator+(const SlicedBase &rhs){
-		return SlicedBase(*this) += rhs;	
+		return SlicedBase(*this) += rhs;
 	}
-	
+
 	//  comparison ops
 	bool operator==(const SlicedBase &rhs){
 		return b0 == rhs.bo && b1 == rhs.b1;
@@ -147,7 +146,7 @@ public:
 };
 
 /**
-	The Sliced Matrix class 
+	The Sliced Matrix class
 	_Domain must be  a GF(3) rep, BaseT must be an unsigned int type.
 	TODO more docs, discuss row/col slicing
 */
@@ -171,7 +170,7 @@ public:
 	typedef typename Base_T::RawIterator RawIterator;
 	typedef Base_T Matrix;
 
-	enum op_t { ADD, SMUL, AXPY, ZERO, COPY };   
+	enum op_t { ADD, SMUL, AXPY, ZERO, COPY };
 
 	Sliced() : Matrix(), _domain(Domain()), _m(0), _n(0), _colPacked(false),
 		_SIZE(8*sizeof(SlicedWord)), _sub(false) {}
@@ -181,10 +180,10 @@ public:
 
 	//  Constructor taking dims and bool defaulting ROWPACKED
 	Sliced (Domain d, size_t m, size_t n, bool colP = false) :
-		Matrix(), _domain(d), _m(m), _n(n), _colPacked(colP), _i(0), 
+		Matrix(), _domain(d), _m(m), _n(n), _colPacked(colP), _i(0),
 			_SIZE(8*sizeof(SlicedWord)),
 		_j(0), _loff(0), _roff(0), _sub(0) {
-			Matrix::init(colP ? (m + _SIZE - 1)/_SIZE : m, 
+			Matrix::init(colP ? (m + _SIZE - 1)/_SIZE : m,
 					colP ? n : (n + _SIZE - 1)/_SIZE);
 	}
 
@@ -237,7 +236,7 @@ public:
 
 		_loff = (_SIZE-(_j%_SIZE))%_SIZE;  // could prob. omit final mod?
 		_roff = (_j+n)%_SIZE;
-		
+
 		// _roff really an offset? or just goes to "parent" matrix's normal end
 		//if( (_j+n) == other.coldim() )
 		//	_roff = 0;
@@ -249,7 +248,7 @@ public:
 		//cerr << "LOFF: " << _loff << " ROFF: " << _roff << endl;
 		//std::cerr << "ijmn?" << i << " " << j << " " << m << " " << n << std::endl;
 		//cerr << "firstCol: " << firstCol << " _j: " << _j << " cols(): " << _cols << " other.cols(): " << other.cols() << endl;
-		
+
 		//TODO colpacked version
 		this->Matrix::submatrix(other, i, firstCol, m, (n + (_j%_SIZE) + (_SIZE - 1))/_SIZE);
 
@@ -260,7 +259,7 @@ public:
 	Domain& field() {return _domain;}
 
 	//  blindly assumes "other" matrix is rowpacked...
-	Sliced (Sliced &other, size_t i, size_t j, size_t m, size_t n) : Matrix(), _domain(other._domain) { 
+	Sliced (Sliced &other, size_t i, size_t j, size_t m, size_t n) : Matrix(), _domain(other._domain) {
 		//  we currently can't handle submatrices that reside entirely within
 		//  a single sliced unit, width-wise...
 		//  meaning < _SIZE columns, while both borders are in the same word
@@ -271,7 +270,7 @@ public:
 		if(n < _SIZE && begin%_SIZE && end%endTest){
 			size_t test = other._loff ? other._loff : _SIZE;
 			if((j+n) <= test){
-				cerr << "Unsupported submatrix request.  Submatrix entirely within a word" << 
+				cerr << "Unsupported submatrix request.  Submatrix entirely within a word" <<
 					" while not aligned with a left or right border" <<	endl;
 				//exit(-1);
 			}
@@ -296,12 +295,12 @@ public:
 		//for(; &(*a) != &(*c); ++a, ++b)
 		for(; a != c; ++a, ++b)
 			(*a) += (*b);
-		
+
 		return *this;
 	}
 
 	Sliced& smulin(Scalar &x){
-		if(x == 1) 
+		if(x == 1)
 			return *this;
 
 		if(_loff || _roff)
@@ -329,9 +328,9 @@ public:
 		SlicedWord e = static_cast<SlicedWord>(a_ij);
 		//  determine location
 		//  TODO:  THIS SEEMS TO EXCPET _rep isn't adjusted for submatrix
-		//  whereas in dense-matrix.h, submatrix adjusts _rep.  need to study 
+		//  whereas in dense-matrix.h, submatrix adjusts _rep.  need to study
 		//  the pros/cons of either approach but CANNOT MIX THEM
-		//  I think 
+		//  I think
 		//size_t word = (_i+i)*_stride + ((j+(_j%_SIZE))/_SIZE);
 		size_t word = i*_stride + ((j+(_j%_SIZE))/_SIZE);
 		//int w = i*Matrix::coldim() + ((j+(_j%_SIZE))/_SIZE);
@@ -374,7 +373,7 @@ public:
 		//std::cerr << (*word).b0 << "x" << (*word).b1 << std::endl;
 
 		//int answer = (int)((((*word).b1 >> index) & 1) + (((*word).b0 >> index) & 1));
-		size_t answer = (size_t)(((_rep[word].b1 >> index) & 1) + 
+		size_t answer = (size_t)(((_rep[word].b1 >> index) & 1) +
 				((_rep[word].b0 >> index) & 1));
 		//_domain.init(x, answer);
 		x = answer;
@@ -384,12 +383,12 @@ public:
 	//  begin, end, scalar, other begin
 	Sliced & axpyin(RawIterator &b, RawIterator &e, Scalar &s, RawIterator &ob){
 		RawIterator x = b;
-		RawIterator y = ob; 
+		RawIterator y = ob;
 
 		switch(static_cast<int>(s)){
 			case 0:
 				return *this;
-			case 1: 
+			case 1:
 				if(_loff || _roff)
 					return s_axpyin(b, s, ob);
 				for(; x!=e; ++x,++y)
@@ -398,7 +397,7 @@ public:
 			case 2:
 				if(_loff || _roff)
 					return s_axpyin(b, s, ob);
-				for(; x!=e; ++x,++y){ 
+				for(; x!=e; ++x,++y){
 					(*x) += (*y)*2;
 				}
 				return *this;
@@ -428,7 +427,7 @@ public:
 			//Timer t;
 			//t.clear(); t.start();
 			for(size_t len = 0; len < A.coldim(); ++len){
-				//  element of A goes down rows of A.  
+				//  element of A goes down rows of A.
 				//  (could improve on speed of method to get this value [step?])
 				a_ij = A.getEntry(a_ij, count, len);
 
@@ -448,7 +447,7 @@ public:
 				os << "  ";
 			for(size_t j = 0; j<_n; j++){
 				os << (size_t)getEntry(t, i, j);
-				/*  DEBUG _SIZE-BIT BOUNDARIES 
+				/*  DEBUG _SIZE-BIT BOUNDARIES
 				if(offset && j && ! ((_j+j+1)%_SIZE)){
 				if(j && ! ((_j+j+1)%_SIZE))
 					os << "|";
@@ -479,7 +478,7 @@ public:
 		//srand(seed);
 
 		RawIterator a = rawBegin();
-		//  TODO:  problem here is that 
+		//  TODO:  problem here is that
 		//  this will cause about 1/2 0's, 1/4 1's & 2's
 		for(; a != rawEnd(); ++a){
 			(*a).b0 = randomLL();
@@ -498,7 +497,7 @@ public:
 			return s_smulin(_domain.init(t,0));
 		}
 
-		//  there has to be a way to use a 
+		//  there has to be a way to use a
 		//  low level mem* function to zero out a memory block
 		RawIterator a = rawBegin();
 		RawIterator b = rawEnd();
@@ -510,7 +509,7 @@ public:
 
 	bool isEqual(Sliced &other){
         if (rows() != other.rows() || cols() != other.cols()) {
-			//std::cout << "shape mismatch" << std::endl; 
+			//std::cout << "shape mismatch" << std::endl;
 			return false;
 		}
 	//	if(_loff || _roff || other._loff || other._roff){
@@ -520,7 +519,7 @@ public:
 				for(size_t j = 0; j<cols(); ++j){
 					//std::cerr << getEntry(x, i, j) << "vs" << other.getEntry(y, i, j) << std::endl;
 					if(getEntry(x, i, j) != other.getEntry(y, i, j)) {
-						//std::cout << "entry mismatch " << i << " " << j << std::endl; 
+						//std::cout << "entry mismatch " << i << " " << j << std::endl;
 						return false;
 					}
 				}
@@ -570,7 +569,7 @@ public:
 
 	std::ostream& writeRep(std::ostream &os = std::cerr){
 		for(RawIterator i=rawBegin(); i!=rawEnd(); ++i){
-			os << "0th bits: " << (SlicedWord)(*i).b0 << " 1st bits: " << (SlicedWord)(*i).b1 << endl;	
+			os << "0th bits: " << (SlicedWord)(*i).b0 << " 1st bits: " << (SlicedWord)(*i).b1 << endl;
 		}
 		os << endl;
 		return os;
@@ -582,13 +581,13 @@ public:
 	}
 
 	std::ostream& writeBinary(std::ostream &os){
-		if(_sub){ //std::cerr << "\n\nNear death!\n\n" << std::endl; 
+		if(_sub){ //std::cerr << "\n\nNear death!\n\n" << std::endl;
 			return s_wb(os); } // TODO fix
 
 		size_t bytes = memSize();
 		//std::cerr << "WRITE " << bytes << " BYTES." << std::endl;
 		os.write((char *)&(*_rep), bytes);
-		
+
 		return os;
 	}
 
@@ -662,14 +661,14 @@ public:
 
 	//  pointer/offset info for debugging
 	void pinfo(){
-		std::cerr << "Matrix @ "; 
-		RawIterator i = rawBegin();	
+		std::cerr << "Matrix @ ";
+		RawIterator i = rawBegin();
 		i.pinfo();
 		std::cerr << "\t" << _m << " x " << _n << std::endl;
 		std::cerr << "\tLO: " << _loff << " RO: " << _roff << std::endl;
 		std::cerr << std::endl;
 	}
-		
+
 	//  size info for debugging
 	void sinfo(){
 		std::cerr << "Matrix " << _m << " by " << _n << std::endl;

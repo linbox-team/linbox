@@ -53,11 +53,11 @@
 #  ifdef __GNUC__
 #    define linbox_check(check) \
         if (!(check)) \
-                 throw LinBox::PreconditionFailed (__func__, __FILE__, __LINE__, #check); //BB : should work on non gnu compilers too
+                 throw ::LinBox::PreconditionFailed (__func__, __FILE__, __LINE__, #check); //BB : should work on non gnu compilers too
 #  else
 #    define linbox_check(check) \
         if (!(check)) \
-                 throw LinBox::PreconditionFailed (__FILE__, __LINE__, #check);
+                 throw ::LinBox::PreconditionFailed (__FILE__, __LINE__, #check);
 #  endif
 #endif
 
