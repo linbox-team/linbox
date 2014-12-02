@@ -30,7 +30,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/polynomial-matrix.h"
-
+#include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize-fast.inl"
 
 namespace LinBox {
 
