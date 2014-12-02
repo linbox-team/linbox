@@ -257,7 +257,8 @@ namespace LinBox {
                                 //cout<<sigma<<endl<<"******************"<<endl;
 
                                 // update Early Termination
-                                _EarlyStop.update(rank,shift);
+                                //_EarlyStop.update(rank,shift); 
+                                _EarlyStop.update(m-rank,shift); // codimension (m-rank) seems better
                         }
                         sigma.resize(max_degree+1);
                         return max_degree;
