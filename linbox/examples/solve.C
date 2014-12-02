@@ -96,7 +96,7 @@ int main (int argc, char **argv)
 		MatrixStream< Field > ms ( F, input );
 		SparseMatrix<Field> A (ms);  // A.write(std::cout);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
-
+                if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 		DenseVector X(F, A.coldim()),B(F, A.rowdim());
 		if (createB) {
 			cerr << "Creating a random {-1,1} vector U, B is AU (to have a consistent system)" << endl;
@@ -112,7 +112,7 @@ int main (int argc, char **argv)
 		else {
 			for(DenseVector::iterator it=B.begin();
 			    it != B.end(); ++it)
-				invect >> *it;
+				F.read(invect,*it);
 		}
 
 		//         A.write(std::cout << "A: ") << std::endl;
@@ -198,7 +198,7 @@ int main (int argc, char **argv)
 		SparseMatrix<PID_integer> A (ms);
 		PID_integer::Element d;
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
-
+                if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 		DenseVector X(ZZ, A.coldim()),B(ZZ, A.rowdim());
 
 		if (createB) {
@@ -238,17 +238,17 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 		// BlasElimination
-		std::cout << "BlasElimination" << std::endl;
-		chrono.start();
-		solve (X, d, A, B, Method::BlasElimination());
-		chrono.stop();
+                std::cout << "BlasElimination" << std::endl;
+                chrono.start();
+                solve (X, d, A, B, Method::BlasElimination());
+                chrono.stop();
 
-		std::cout << "(BlasElimination) Solution is [";
-		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
-			ZZ.write(cout, *it) << " ";
-		std::cout << "] / ";
-		ZZ.write(std::cout, d)<< std::endl;
-		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+ 		std::cout << "(BlasElimination) Solution is [";
+                for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
+ 			ZZ.write(cout, *it) << " ";
+                std::cout << "] / ";
+                ZZ.write(std::cout, d)<< std::endl;
+                std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 		// Sparse Elimination
 		std::cout << "Sparse Elimination" << std::endl;
