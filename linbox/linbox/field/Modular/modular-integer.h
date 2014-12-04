@@ -39,7 +39,7 @@ namespace LinBox {
 	
 
 	template<>
-	class Modular<integer>	 : public FFPACK::Modular<Givaro::Integer>,
+	class Modular<integer>	 : public FFPACK::Modular<FFPACK::integer>,
 				   public FieldInterface {
 	public:
 
@@ -54,6 +54,8 @@ namespace LinBox {
 
 
 		typedef FFPACK::Modular<FFPACK::integer> Father_t;
+		
+		Modular(const integer& p) : Father_t(p) {}
 			
 		inline integer getMaxModulus() const
 		{
