@@ -230,7 +230,7 @@ int main (int argc, char **argv)
 #endif
 	Field F1(q1);
 
-        GivaroZpz< Givaro::Std32> F2(q2);
+        GivaroZpz< int32_t> F2(q2);
 
 	// typedef BlasVector<Field> Vector;
 

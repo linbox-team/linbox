@@ -375,14 +375,14 @@ void testAllFields()
 	//fieldTest<GivaroZpz<Log16> >();
 	//fieldTest<NTL_zz_p>();
 
-	//fieldTest<GivaroZpz<Std16> >();
+	//fieldTest<GivaroZpz<int16_t> >();
 
 	//fieldTest<Modular<int> >();
 	fieldTest<Modular<double> >();
 
 
-	//fieldTest<GivaroZpz<Std32> >();           //broken?
-	//fieldTest<GivaroZpz<Std64> >();           //broken?
+	//fieldTest<GivaroZpz<int32_t> >();           //broken?
+	//fieldTest<GivaroZpz<int64_t> >();           //broken?
 	//fieldTest<GivaroGfq>();                   //broken?
 
 	//fieldTest<GivaroMontg>();    // appears to be broken in current build

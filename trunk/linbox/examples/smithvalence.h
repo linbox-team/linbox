@@ -71,21 +71,21 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 unsigned long& LRank(unsigned long& r, char * filename,Givaro::Integer p)
 {
 
-	Givaro::Integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz<Givaro::Std16> >::maxModulus(maxmod16);
-	Givaro::Integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz<Givaro::Std32> >::maxModulus(maxmod32);
+	Givaro::Integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz<int16_t> >::maxModulus(maxmod16);
+	Givaro::Integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz<int32_t> >::maxModulus(maxmod32);
 	Givaro::Integer maxmod53; LinBox::FieldTraits<LinBox::Modular<double> >::maxModulus(maxmod53);
-	Givaro::Integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz<Givaro::Std64> >::maxModulus(maxmod64);
+	Givaro::Integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz<int64_t> >::maxModulus(maxmod64);
 	if (p == 2) {
 		LinBox::GF2 F2;
 		return TempLRank(r, filename, F2);
 	}
 	else if (p <= maxmod16) {
-		typedef LinBox::GivaroZpz<Givaro::Std16> Field;
+		typedef LinBox::GivaroZpz<int16_t> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
 	else if (p <= maxmod32) {
-		typedef LinBox::GivaroZpz<Givaro::Std32> Field;
+		typedef LinBox::GivaroZpz<int32_t> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
@@ -95,7 +95,7 @@ unsigned long& LRank(unsigned long& r, char * filename,Givaro::Integer p)
 		return TempLRank(r, filename, F);
 	}
 	else if (p <= maxmod64) {
-		typedef LinBox::GivaroZpz<Givaro::Std64> Field;
+		typedef LinBox::GivaroZpz<int64_t> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
@@ -111,9 +111,9 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 {
 	effective_exponent = e;
 	Givaro::Integer maxmod;
-	LinBox::FieldTraits<LinBox::GivaroZpz<Givaro::Std64> >::maxModulus(maxmod);
+	LinBox::FieldTraits<LinBox::GivaroZpz<int64_t> >::maxModulus(maxmod);
 	if (p <= maxmod) {
-		typedef LinBox::GivaroZpz<Givaro::Std64> Ring;
+		typedef LinBox::GivaroZpz<int64_t> Ring;
 		int64_t lp(p);
 		Givaro::Integer q = pow(p,e); int64_t lq(q);
 		if (q >Givaro::Integer(lq)) {

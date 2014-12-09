@@ -15,7 +15,7 @@
 
 #include "linbox/solutions/det.h"
 
-#include <givaro/givzpz.h>
+#include <givaro/modular.h>
 #include <givaro/givpoly1.h>
 #include <linbox/ring/givaro-poly.h>
 #include <linbox/algorithms/smith-form-kannan-bachem.h>
@@ -32,7 +32,7 @@ typedef MatrixDomain<Field> Domain;
 typedef typename Domain::OwnMatrix Block;
 
 
-typedef Givaro::ZpzDom<Givaro::Std32> BaseDom;
+typedef Givaro::ZpzDom<int32_t> BaseDom;
 typedef Givaro::Poly1Dom<BaseDom,Givaro::Dense> PolyDom;
 typedef GivaroPoly<PolyDom> Ring;
 typedef MatrixDomain<Ring> PolyMatDom;

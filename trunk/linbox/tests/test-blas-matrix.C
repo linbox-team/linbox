@@ -336,10 +336,10 @@ int main (int argc, char **argv)
 #endif
 	}
 
-	{ /* GivaroZpz<Givaro::Unsigned32> */
+	{ /* GivaroZpz<uint32_t> */
 #if 0 /*  bug somewhere */
 		//Field
-		typedef GivaroZpz<Givaro::Unsigned32> Field;
+		typedef GivaroZpz<uint32_t> Field;
 
 		Field F (q);
 

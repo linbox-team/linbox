@@ -73,15 +73,15 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	//cout << endl << "GivaroZpz< Givaro::Unsigned32> field test suite" << endl;
+	//cout << endl << "GivaroZpz< uint32_t> field test suite" << endl;
 	//cout.flush ();
 	bool pass = true;
 
-	GivaroZpz< Givaro::Unsigned32> F1 (2);
-	GivaroZpz< Givaro::Unsigned32> F2 (q);
-	GivaroZpz< Givaro::Unsigned32> F3 (3);
-	GivaroZpz< Givaro::Unsigned32> F4 (32749);
-	GivaroZpz< Givaro::Unsigned32> F5 (65521);
+	GivaroZpz< uint32_t> F1 (2);
+	GivaroZpz< uint32_t> F2 (q);
+	GivaroZpz< uint32_t> F3 (3);
+	GivaroZpz< uint32_t> F4 (32749);
+	GivaroZpz< uint32_t> F5 (65521);
 
 	LinBox::commentator().start("Givaro-zpzuns test suite", "GivZpzu");
 	// Make sure some more detailed messages get printed
@@ -94,25 +94,25 @@ int main (int argc, char **argv)
 	if (!runFieldTests (F4, "32749", iterations, n, false)) pass = false;
 	if (!runFieldTests (F5, "65521", iterations, n, false)) pass = false;
 
-	if (!testRandomIterator (F1,  "GivaroZpz< Givaro::Unsigned32>(2)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F2,  "GivaroZpz< Givaro::Unsigned32>(10733)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F3,  "GivaroZpz< Givaro::Unsigned32>(3)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F4,  "GivaroZpz< Givaro::Unsigned32>(32749)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F5,  "GivaroZpz< Givaro::Unsigned32>(65521)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F1,  "GivaroZpz< uint32_t>(2)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F2,  "GivaroZpz< uint32_t>(10733)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F3,  "GivaroZpz< uint32_t>(3)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F4,  "GivaroZpz< uint32_t>(32749)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F5,  "GivaroZpz< uint32_t>(65521)", trials, categories, hist_level)) pass = false;
 
 #if TEST_ARCHETYPES
 
-	GivaroZpz< Givaro::Std16> * K1g = new GivaroZpz< Givaro::Std16> (101);
+	GivaroZpz< int16_t> * K1g = new GivaroZpz< int16_t> (101);
 	FieldArchetype K1(K1g);
-	if (!testField<FieldArchetype> (K1, "Testing archetype with envelope of GivaroZpz< Givaro::Std16> field"))
+	if (!testField<FieldArchetype> (K1, "Testing archetype with envelope of GivaroZpz< int16_t> field"))
 		pass = false;
 	delete K1g;
 #endif
 
 #if TEST_ARCHETYPES
-	GivaroZpz< Givaro::Unsigned32> * K2g = new GivaroZpz< Givaro::Unsigned32> (101);
+	GivaroZpz< uint32_t> * K2g = new GivaroZpz< uint32_t> (101);
 	FieldArchetype K2(K2g);
-	if (!testField<FieldArchetype> (K2, "Testing archetype with envelope of GivaroZpz< Givaro::Unsigned32> field"))
+	if (!testField<FieldArchetype> (K2, "Testing archetype with envelope of GivaroZpz< uint32_t> field"))
 		pass = false;
 	delete K2g;
 #endif

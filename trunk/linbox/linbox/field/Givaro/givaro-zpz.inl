@@ -44,10 +44,10 @@ namespace LinBox
 
 
 	template <class Vector1, class Vector2>
-	inline GivaroZpz< Givaro::Std32>::Element &DotProductDomain<GivaroZpz< Givaro::Std32> >::dotSpecializedDD
-	(GivaroZpz< Givaro::Std32>::Element &res, const Vector1 &v1, const Vector2 &v2) const
+	inline GivaroZpz< int32_t>::Element &DotProductDomain<GivaroZpz< int32_t> >::dotSpecializedDD
+	(GivaroZpz< int32_t>::Element &res, const Vector1 &v1, const Vector2 &v2) const
 	{
-		typedef typename GivaroZpz<Givaro::Std32>::Element Elem;
+		typedef typename GivaroZpz<int32_t>::Element Elem;
 		uint64_t inter,best ;
 		inter=best=0;
 		if (v1.size()==0)
@@ -85,13 +85,13 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Vector2>
-	inline GivaroZpz< Givaro::Std32>::Element &DotProductDomain<GivaroZpz< Givaro::Std32> >::dotSpecializedDSP
-	(GivaroZpz< Givaro::Std32>::Element &res, const Vector1 &v1, const Vector2 &v2) const
+	inline GivaroZpz< int32_t>::Element &DotProductDomain<GivaroZpz< int32_t> >::dotSpecializedDSP
+	(GivaroZpz< int32_t>::Element &res, const Vector1 &v1, const Vector2 &v2) const
 	{
 		uint64_t inter,best ;
 		inter=best=0;
 		if ((v1.first).size()== 0)
-			return res=GivaroZpz< Givaro::Std32>::Element(0); //!@bug zero
+			return res=GivaroZpz< int32_t>::Element(0); //!@bug zero
 		else {
 			uint64_t size      = (v1.first).size();
 			uint64_t min       = Max / (Corr+ (uint64_t)(field().characteristic()-1)*(uint64_t)(field().characteristic()-1));
@@ -118,20 +118,20 @@ namespace LinBox
 				best+= (uint64_t)*i_elt * (uint64_t)v2[*i_idx];
 			if (inter > best) best+=Corr;
 
-			return res =  (GivaroZpz< Givaro::Std32>::Element) (best % (uint64_t)field().characteristic());
+			return res =  (GivaroZpz< int32_t>::Element) (best % (uint64_t)field().characteristic());
 		}
 	}
 
 
 
 	template <class Vector1, class Vector2>
-	inline GivaroZpz< Givaro::Std16>::Element &DotProductDomain<GivaroZpz< Givaro::Std16> >::dotSpecializedDD
-	(GivaroZpz< Givaro::Std16>::Element &res, const Vector1 &v1, const Vector2 &v2) const
+	inline GivaroZpz< int16_t>::Element &DotProductDomain<GivaroZpz< int16_t> >::dotSpecializedDD
+	(GivaroZpz< int16_t>::Element &res, const Vector1 &v1, const Vector2 &v2) const
 	{
 		uint32_t inter,best ;
 		inter=best=0;
 		if (v1.size() == 0)
-			return  res=GivaroZpz< Givaro::Std16>::Element(0);
+			return  res=GivaroZpz< int16_t>::Element(0);
 		else {
 			uint32_t size      = v1.size();
 			uint32_t min       = Max / (Corr+ ((uint32_t)field().characteristic()-1)*(uint32_t)(field().characteristic()-1));
@@ -159,18 +159,18 @@ namespace LinBox
 				best+= (uint32_t)*i * (uint32_t)*j;
 			if (inter > best) best+=Corr;
 
-			return res = (GivaroZpz< Givaro::Std16>::Element)(best % (uint32_t)field().characteristic());
+			return res = (GivaroZpz< int16_t>::Element)(best % (uint32_t)field().characteristic());
 		}
 	}
 
 	template <class Vector1, class Vector2>
-	inline GivaroZpz< Givaro::Std16>::Element &DotProductDomain<GivaroZpz< Givaro::Std16> >::dotSpecializedDSP
-	(GivaroZpz< Givaro::Std16>::Element &res, const Vector1 &v1, const Vector2 &v2) const
+	inline GivaroZpz< int16_t>::Element &DotProductDomain<GivaroZpz< int16_t> >::dotSpecializedDSP
+	(GivaroZpz< int16_t>::Element &res, const Vector1 &v1, const Vector2 &v2) const
 	{
 		uint32_t inter,best ;
 		inter=best=0;
 		if ((v1.first).size()==0)
-			return  res=GivaroZpz< Givaro::Std16>::Element(0); //!@bug zero
+			return  res=GivaroZpz< int16_t>::Element(0); //!@bug zero
 		else {
 			uint32_t size      = (v1.first).size();
 			uint32_t min       = Max / (Corr+ (uint32_t)(field().characteristic()-1)*(uint32_t)(field().characteristic()-1));
@@ -196,7 +196,7 @@ namespace LinBox
 				best+= (uint32_t)*i_elt * (uint32_t)v2[*i_idx];
 			if (inter > best) best+=Corr;
 
-			return res = (GivaroZpz< Givaro::Std16>::Element) (best % (uint32_t)field().characteristic());
+			return res = (GivaroZpz< int16_t>::Element) (best % (uint32_t)field().characteristic());
 		}
 	}
 
@@ -204,10 +204,10 @@ namespace LinBox
 #ifdef XMLENABLED
 
 	template<>
-	bool GivaroZpz< Givaro::Std16>::toTag(Writer &W) const
+	bool GivaroZpz< int16_t>::toTag(Writer &W) const
 	{
 		string s;
-		int16_t m = ZpzDom< Givaro::Std16>::residu();
+		int16_t m = ZpzDom< int16_t>::residu();
 
 		W.setTagName("field");
 		W.setAttribute("implDetail", "givaro-zpz-std16");
@@ -226,10 +226,10 @@ namespace LinBox
 	}
 
 	template <>
-	bool GivaroZpz< Givaro::Std32>::toTag(Writer &W) const
+	bool GivaroZpz< int32_t>::toTag(Writer &W) const
 	{
 		string s;
-		int32_t m = ZpzDom< Givaro::Std32>::residu();
+		int32_t m = ZpzDom< int32_t>::residu();
 
 		W.setTagName("field");
 		W.setAttribute("implDetail", "givaro-zpz-std32");

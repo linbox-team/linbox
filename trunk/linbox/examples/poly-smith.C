@@ -16,7 +16,7 @@
 #include <linbox/algorithms/block-coppersmith-domain.h>
 
 #include <givaro/givtimer.h>
-#include <givaro/givzpz.h>
+#include <givaro/modular.h>
 #include <givaro/givpoly1.h>
 #include <linbox/ring/givaro-poly.h>
 #include <linbox/algorithms/smith-form-direct.h>
@@ -73,7 +73,7 @@ void normalize(PolyDom &PD, Vector &S)
 
 int main(int argc, char **argv)
 {
-	typedef Givaro::ZpzDom<Givaro::Std32> BaseDom;
+	typedef Givaro::ZpzDom<int32_t> BaseDom;
 	typedef Givaro::Poly1Dom<BaseDom, Givaro::Dense> PolyDom;
 	typedef GivaroPoly<PolyDom> Field;
 	typedef MatrixDomain<Field> MatrixDom;

@@ -58,7 +58,7 @@ int main (int argc, char **argv)
 		typedef int64_t Base;
 		Base p = atoi(argv[2]);
 		Base q = atoi(argv[3]);
-		typedef GivaroZpz<Givaro::Std64> Field;
+		typedef GivaroZpz<int64_t> Field;
 		Field F(q);
 		MatrixStream<Field> ms( F, input );
 		SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (ms);

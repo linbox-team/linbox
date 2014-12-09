@@ -182,7 +182,7 @@ int main(int argc, char **argv)
 	pass &= launch_tests(F5,n,iterations);
 
 #pragma message "#warning GivaroZpz is not working at all"
-	GivaroZpz<Givaro::Unsigned32> F6(2001);
+	GivaroZpz<uint32_t> F6(2001);
 	// pass &= launch_tests(F6,n,iterations);
 
 //#pragma message "#warning Modular<bool> is not working"
