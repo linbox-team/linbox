@@ -32,7 +32,7 @@ typedef MatrixDomain<Field> Domain;
 typedef typename Domain::OwnMatrix Block;
 
 
-typedef Givaro::ZpzDom<int32_t> BaseDom;
+typedef Givaro::Modular<int32_t> BaseDom;
 typedef Givaro::Poly1Dom<BaseDom,Givaro::Dense> PolyDom;
 typedef GivaroPoly<PolyDom> Ring;
 typedef MatrixDomain<Ring> PolyMatDom;

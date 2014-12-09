@@ -73,7 +73,7 @@ void normalize(PolyDom &PD, Vector &S)
 
 int main(int argc, char **argv)
 {
-	typedef Givaro::ZpzDom<int32_t> BaseDom;
+	typedef Givaro::Modular<int32_t> BaseDom;
 	typedef Givaro::Poly1Dom<BaseDom, Givaro::Dense> PolyDom;
 	typedef GivaroPoly<PolyDom> Field;
 	typedef MatrixDomain<Field> MatrixDom;
