@@ -422,7 +422,7 @@ namespace LinBox
 		inline void RationalReconstruction( Element& a, Element& b,
 						    const Element& f, const Element& m,
 						    const Element& k,
-						    bool reduce, bool recursive ) const
+						    bool forcereduce, bool recursive ) const
 		{
 			Element x(f);
 			if (x<0) {
@@ -441,10 +441,10 @@ namespace LinBox
 				b = 1;
 			}
 			else {
-				bool res = ratrecon(a,b,x,m,k, reduce, recursive);
+				bool res = ratrecon(a,b,x,m,k, forcereduce, recursive);
 				if (recursive)
 					for( Element newk = k + 1; (!res) && (newk<f) ; ++newk)
-						res = ratrecon(a,b,x,m,newk,reduce, true);
+						res = ratrecon(a,b,x,m,newk,forcereduce, true);
 			}
 		}
 
@@ -452,7 +452,7 @@ namespace LinBox
 		inline  bool ratrecon( Element& num, Element& den,
 				       const Element& f, const Element& m,
 				       const Element& k,
-				       bool reduce, bool recursive ) const
+				       bool forcereduce, bool recursive ) const
 		{
 
 			//std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;
@@ -479,7 +479,7 @@ namespace LinBox
 				//Integer::maxpyin(den,u,q);
 			}
 
-			if (reduce) {
+			if (forcereduce) {
 				// [GG, MCA, 1999] Theorem 5.26
 
 				// (ii)
