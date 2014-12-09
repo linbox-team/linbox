@@ -44,7 +44,7 @@
 #include "linbox/util/write-mm.h"
 //-------------------------------------
 // Files of Givaro library
-#include <givaro/givzpz.h>
+#include <givaro/modular.h>
 #include <givaro/giv_randiter.h>
 #include "linbox/field/field-traits.h"
 
@@ -61,8 +61,8 @@ namespace LinBox
 	 *
 	 *  To use these fields with the wrapper below, just replace the template
 	 *  parameter by the appropriate Tag.
-	 *  "Givaro::Std16"  for 16 bits integer
-	 *  "Givaro::Std32"  for 32 bits integer
+	 *  "int16_t"  for 16 bits integer
+	 *  "int32_t"  for 32 bits integer
 	 *  "Givaro::Log16"  for Zech log representation in 16 bits
 	 */
 	template<class Field>
@@ -84,7 +84,7 @@ namespace LinBox
 	/** \brief wrapper of Givaro's ZpzDom.
 	  \ingroup field
 
-	 *  Most methods are inherited from Givaro::ZpzDom< Givaro::Std16>, Givaro::ZpzDom< Givaro::Std32>
+	 *  Most methods are inherited from Givaro::ZpzDom< int16_t>, Givaro::ZpzDom< int32_t>
 	 *  and Givaro::ZpzDom<log16> classes of Givaro.
 	 *  These classes allow to construct only finite fields with a prime modulus.
 	 */
@@ -266,10 +266,10 @@ namespace LinBox
 	}; // class GivaroZpz<TAG>
 
 
-	template <> uint64_t GivaroZpz< Givaro::Std32>::getMaxModulus() { return 46339; } // 2^15.5-1
-	template <> uint64_t GivaroZpz< Givaro::Std64>::getMaxModulus() { return 3037000499ULL; } // 2^15.5-1
-	template <> uint64_t GivaroZpz< Givaro::Unsigned32>::getMaxModulus() { return 65535; } // 2^16-1
-	template <> uint64_t GivaroZpz< Givaro::Std16>::getMaxModulus() { return 255; }   // 2^8-1
+	template <> uint64_t GivaroZpz< int32_t>::getMaxModulus() { return 46339; } // 2^15.5-1
+	template <> uint64_t GivaroZpz< int64_t>::getMaxModulus() { return 3037000499ULL; } // 2^15.5-1
+	template <> uint64_t GivaroZpz< uint32_t>::getMaxModulus() { return 65535; } // 2^16-1
+	template <> uint64_t GivaroZpz< int16_t>::getMaxModulus() { return 255; }   // 2^8-1
 	template <> uint64_t GivaroZpz< Givaro::Log16>::getMaxModulus() { return 32767; } // 2^15 - 1
 
 	/** Specialisation of the convert function for the zech log representation
@@ -309,15 +309,15 @@ namespace LinBox
 		return x = _tab_value2rep[tmp];
 	}
 
-	/* Specialization of FieldAXPY for GivaroZpz< Givaro::Std32> Field */
+	/* Specialization of FieldAXPY for GivaroZpz< int32_t> Field */
 
 	template <>
-	class FieldAXPY<GivaroZpz< Givaro::Std32> > {
+	class FieldAXPY<GivaroZpz< int32_t> > {
 	public:
 
-		typedef GivaroZpz< Givaro::Std32>::Element Element;
+		typedef GivaroZpz< int32_t>::Element Element;
 		typedef uint64_t Abnormal;
-		typedef GivaroZpz< Givaro::Std32> Field;
+		typedef GivaroZpz< int32_t> Field;
 
 		FieldAXPY (const Field &F) :
 			_field (&F) , Corr(uint64_t(-1) % (uint64_t)F.characteristic() +1)
@@ -326,7 +326,7 @@ namespace LinBox
 			_field (faxpy._field), _y (0) , Corr(faxpy.Corr)
 		{}
 
-		FieldAXPY<GivaroZpz< Givaro::Std32> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<GivaroZpz< int32_t> > &operator = (const FieldAXPY &faxpy)
 		{ _field = faxpy._field; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
 		inline uint64_t& mulacc (const Element &a, const Element &x)
@@ -376,15 +376,15 @@ namespace LinBox
 	};
 
 
-	/* Specialization of FieldAXPY for GivaroZpz< Givaro::Std32> Field */
+	/* Specialization of FieldAXPY for GivaroZpz< int32_t> Field */
 
 	template <>
-	class FieldAXPY<GivaroZpz< Givaro::Std16> > {
+	class FieldAXPY<GivaroZpz< int16_t> > {
 	public:
 
-		typedef GivaroZpz< Givaro::Std16>::Element Element;
+		typedef GivaroZpz< int16_t>::Element Element;
 		typedef uint32_t Abnormal;
-		typedef GivaroZpz< Givaro::Std16> Field;
+		typedef GivaroZpz< int16_t> Field;
 
 		FieldAXPY (const Field &F) :
 			_field (&F) , Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1)
@@ -395,7 +395,7 @@ namespace LinBox
 			_field (faxpy._field), _y (0) , Corr(faxpy.Corr)
 		{}
 
-		FieldAXPY<GivaroZpz< Givaro::Std16> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<GivaroZpz< int16_t> > &operator = (const FieldAXPY &faxpy)
 		{
 			_field = faxpy._field;
 			_y = faxpy._y;
@@ -452,23 +452,23 @@ namespace LinBox
 		uint32_t Corr;
 	};
 
-	// Specialization of DotProductDomain for GivaroZpz< Givaro::Std32> field
+	// Specialization of DotProductDomain for GivaroZpz< int32_t> field
 
 	template <>
-	class DotProductDomain<GivaroZpz< Givaro::Std32> > :  private virtual VectorDomainBase<GivaroZpz< Givaro::Std32> > {
+	class DotProductDomain<GivaroZpz< int32_t> > :  private virtual VectorDomainBase<GivaroZpz< int32_t> > {
 
 	public:
 
-		typedef GivaroZpz< Givaro::Std32>::Element Element;
+		typedef GivaroZpz< int32_t>::Element Element;
 		DotProductDomain(){}
-		DotProductDomain (const GivaroZpz< Givaro::Std32> &F) :
-			VectorDomainBase<GivaroZpz< Givaro::Std32> > (F) ,
+		DotProductDomain (const GivaroZpz< int32_t> &F) :
+			VectorDomainBase<GivaroZpz< int32_t> > (F) ,
 			Corr(uint64_t(-1) % (uint64_t)F.characteristic() +1),
 			Max(uint64_t(-1))
 		{}
 
-		using VectorDomainBase<GivaroZpz< Givaro::Std32> >::field;
-		using VectorDomainBase<GivaroZpz< Givaro::Std32> >::_field;
+		using VectorDomainBase<GivaroZpz< int32_t> >::field;
+		using VectorDomainBase<GivaroZpz< int32_t> >::_field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
@@ -481,25 +481,25 @@ namespace LinBox
 		uint64_t Max;
 	};
 
-	// Specialization of DotProductDomain for GivaroZpz< Givaro::Std16> field
+	// Specialization of DotProductDomain for GivaroZpz< int16_t> field
 
 	template <>
-	class DotProductDomain<GivaroZpz< Givaro::Std16> > :  private virtual VectorDomainBase<GivaroZpz< Givaro::Std16> > {
+	class DotProductDomain<GivaroZpz< int16_t> > :  private virtual VectorDomainBase<GivaroZpz< int16_t> > {
 
 	public:
 
-		typedef GivaroZpz< Givaro::Std16>::Element Element;
+		typedef GivaroZpz< int16_t>::Element Element;
 
 		DotProductDomain(){}
 
-		DotProductDomain (const GivaroZpz< Givaro::Std16> &F) :
-			VectorDomainBase<GivaroZpz< Givaro::Std16> > (F) ,
+		DotProductDomain (const GivaroZpz< int16_t> &F) :
+			VectorDomainBase<GivaroZpz< int16_t> > (F) ,
 			Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1),
 			Max(uint32_t(-1))
 		{}
 
-		using VectorDomainBase<GivaroZpz< Givaro::Std16> >::field;
-		using VectorDomainBase<GivaroZpz< Givaro::Std16> >::_field;
+		using VectorDomainBase<GivaroZpz< int16_t> >::field;
+		using VectorDomainBase<GivaroZpz< int16_t> >::_field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;

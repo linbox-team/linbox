@@ -1592,7 +1592,7 @@ int main (int argc, char **argv)
 
 	Modular<uint32_t>                F1 (q);
 	ModularBalanced<int32_t>         F2 (q2);
-	GivaroZpz<Givaro::Unsigned32>    F3(q);
+	GivaroZpz<uint32_t>    F3(q);
 	/*
 	if (q2 < q/2)
 		std::cerr <<"...étrange..." << std::endl;

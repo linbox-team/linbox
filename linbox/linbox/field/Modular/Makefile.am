@@ -32,7 +32,6 @@ BASIC_HDRS =            \
     modular-balanced-float.h    \
     modular-balanced-int32.h    \
     modular-balanced-int64.h    \
-    modular-crooked-double.h    \
     modular-double.h    \
     modular-float.h	\
     modular-integer.h    

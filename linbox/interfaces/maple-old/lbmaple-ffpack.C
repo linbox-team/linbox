@@ -36,7 +36,7 @@
 using namespace LinBox;
 
 typedef Modular<double> Field;
-//typedef GivaroZpz<Std32> Field;
+//typedef GivaroZpz<int32_t> Field;
 typedef Field::Element Element;
 
 

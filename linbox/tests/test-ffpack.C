@@ -978,7 +978,7 @@ int main(int argc, char** argv)
 	/* GivaroZpz int32_t */
 #if 0
 	{
-		typedef GivaroZpz<Givaro::Std32> Field;
+		typedef GivaroZpz<int32_t> Field;
 
 		Field F (q);
 		F.write(report << "Field : " ) << std::endl;

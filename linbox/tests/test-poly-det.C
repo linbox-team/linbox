@@ -13,7 +13,7 @@
 #include "linbox/algorithms/poly-det.h"
 
 #include <givaro/givpoly1.h>
-#include <givaro/givzpz.h>
+#include <givaro/modular.h>
 
 using namespace LinBox;
 

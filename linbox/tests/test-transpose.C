@@ -180,7 +180,7 @@ int main (int argc, char **argv)
 #else
 	typedef Modular<int32_t> Field ;
 #endif
-    //typedef GivaroZpz< Givaro::Std32> Field2;
+    //typedef GivaroZpz< int32_t> Field2;
 	Field F(q);
 
 	// typedef vector<Field::Element> Vector;
