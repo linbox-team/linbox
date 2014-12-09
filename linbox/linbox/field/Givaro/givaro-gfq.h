@@ -133,7 +133,7 @@ namespace LinBox
 		}
 
 		/** Constructor from an integer
-		 *  this constructor use the ZpzDom<TAG> constructor
+		 *  this constructor use the Modular<TAG> constructor
 		 */
 		GivaroGfq(const integer& p, const integer& k=1) :
 		 Givaro::GFqDom<int32_t>(static_cast<UTT>(int32_t(p)), static_cast<UTT>(int32_t(k)))

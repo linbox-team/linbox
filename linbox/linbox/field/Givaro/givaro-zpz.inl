@@ -207,7 +207,7 @@ namespace LinBox
 	bool GivaroZpz< int16_t>::toTag(Writer &W) const
 	{
 		string s;
-		int16_t m = ZpzDom< int16_t>::residu();
+		int16_t m = Modular< int16_t>::residu();
 
 		W.setTagName("field");
 		W.setAttribute("implDetail", "givaro-zpz-std16");
@@ -229,7 +229,7 @@ namespace LinBox
 	bool GivaroZpz< int32_t>::toTag(Writer &W) const
 	{
 		string s;
-		int32_t m = ZpzDom< int32_t>::residu();
+		int32_t m = Modular< int32_t>::residu();
 
 		W.setTagName("field");
 		W.setAttribute("implDetail", "givaro-zpz-std32");
@@ -252,7 +252,7 @@ namespace LinBox
 	bool GivaroZpz<Log16>::toTag(Writer &W) const
 	{
 		string s;
-		int16_t m = ZpzDom<Log16>::residu();
+		int16_t m = Modular<Log16>::residu();
 
 		W.setTagName("field");
 		W.setAttribute("implDetail", "givaro-zpz-log16");

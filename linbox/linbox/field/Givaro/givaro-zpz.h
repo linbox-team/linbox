@@ -81,15 +81,15 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	/** \brief wrapper of Givaro's ZpzDom.
+	/** \brief wrapper of Givaro's Modular.
 	  \ingroup field
 
-	 *  Most methods are inherited from Givaro::ZpzDom< int16_t>, Givaro::ZpzDom< int32_t>
-	 *  and Givaro::ZpzDom<log16> classes of Givaro.
+	 *  Most methods are inherited from Givaro::Modular< int16_t>, Givaro::Modular< int32_t>
+	 *  and Givaro::Modular<log16> classes of Givaro.
 	 *  These classes allow to construct only finite fields with a prime modulus.
 	 */
 	template <class TAG>
-	class GivaroZpz : public Givaro::ZpzDom<TAG>, public FieldInterface {
+	class GivaroZpz : public Givaro::Modular<TAG>, public FieldInterface {
 
 	private:
 
@@ -101,34 +101,34 @@ namespace LinBox
 		//typedef integer Integer;
 
 		/** Element type.
-		 *  This type is inherited from the Givaro class Givaro::ZpzDom<TAG>
+		 *  This type is inherited from the Givaro class Givaro::Modular<TAG>
 		 */
-		typedef typename Givaro::ZpzDom<TAG>::Rep Element;
+		typedef typename Givaro::Modular<TAG>::Rep Element;
 		// Element zero,one,mOne;
-		typedef Givaro::ZpzDom<TAG> Father_t ;
+		typedef Givaro::Modular<TAG> Father_t ;
 		typedef GivaroZpz<TAG>      Self_t ;
 		using  Father_t::one ;
 		using  Father_t::zero ;
 		using  Father_t::mOne ;
 
 		/** RandIter type
-		 *  This type is inherited from the Givaro class Givaro::ZpzDom<TAG>
+		 *  This type is inherited from the Givaro class Givaro::Modular<TAG>
 		 */
-		typedef Givaro::GIV_randIter< Givaro::ZpzDom<TAG>, integer > RandIter;
+		typedef Givaro::GIV_randIter< Givaro::Modular<TAG>, integer > RandIter;
 
 		/** Constructor from an integer
-		 *  this constructor uses the Givaro::ZpzDom<TAG> constructor.
+		 *  this constructor uses the Givaro::Modular<TAG> constructor.
 		 */
 		GivaroZpz (const integer &p) :
-		 Givaro::ZpzDom<TAG> (static_cast<typename Givaro::ZpzDom<TAG>::Residu_t> (p))
+		 Givaro::Modular<TAG> (static_cast<typename Givaro::Modular<TAG>::Residu_t> (p))
 		{}
 
 
 		/** Constructor from an integer (takes degree of extension as 2nd parameter, must be 1).
-		 *  This constructor uses the Givaro::ZpzDom<TAG> constructor.
+		 *  This constructor uses the Givaro::Modular<TAG> constructor.
 		 */
 		GivaroZpz (const integer &p, const integer& k) :
-		 Givaro::ZpzDom<TAG> (static_cast<typename Givaro::ZpzDom<TAG>::Residu_t> (p))
+		 Givaro::Modular<TAG> (static_cast<typename Givaro::Modular<TAG>::Residu_t> (p))
 		{
 
 			if (k!=1)
@@ -136,10 +136,10 @@ namespace LinBox
 		}
 
 		/** Copy constructor.
-		 * This copy constructor uses the Givaro::ZpzDom<TAG> copy constructor.
+		 * This copy constructor uses the Givaro::Modular<TAG> copy constructor.
 		 */
 		GivaroZpz (const GivaroZpz<TAG>& F) :
-		 Givaro::ZpzDom<TAG> (F)
+		 Givaro::Modular<TAG> (F)
 		{}
 
 		/** Characteristic.
@@ -148,16 +148,16 @@ namespace LinBox
 		 */
 		integer &characteristic (integer &c) const
 		{
-			return c = integer ( Givaro::ZpzDom<TAG>::size ());
+			return c = integer ( Givaro::Modular<TAG>::size ());
 		}
 		unsigned long &characteristic (unsigned long &c) const
 		{
-			return c = (unsigned long) ( Givaro::ZpzDom<TAG>::size ());
+			return c = (unsigned long) ( Givaro::Modular<TAG>::size ());
 		}
 
 		long characteristic() const
 		{
-			return static_cast<int>( Givaro::ZpzDom<TAG>::size());
+			return static_cast<int>( Givaro::Modular<TAG>::size());
 		}
 
 		/** Cardinality.
@@ -166,12 +166,12 @@ namespace LinBox
 		 */
 		integer &cardinality (integer &c) const
 		{
-			return c = integer ( Givaro::ZpzDom<TAG>::size ());
+			return c = integer ( Givaro::Modular<TAG>::size ());
 		}
 
 		integer cardinality () const
 		{
-			return integer ( Givaro::ZpzDom<TAG>::size ());
+			return integer ( Givaro::Modular<TAG>::size ());
 		}
 
 		/** Conversion of field base element to an integer.
@@ -209,34 +209,34 @@ namespace LinBox
 		Element &init (Element &x , const integer &y = 0) const
 		{
 			//
-			//	AU 28/03/07 no cast to long allows to use Givaro::ZpzDom<integer>
+			//	AU 28/03/07 no cast to long allows to use Givaro::Modular<integer>
 			//
-			//Givaro::ZpzDom<TAG>::init (x, (long) (y% integer(this->_p)));
-			Givaro::ZpzDom<TAG>::init (x, (y% integer(this->_p)));
+			//Givaro::Modular<TAG>::init (x, (long) (y% integer(this->_p)));
+			Givaro::Modular<TAG>::init (x, (y% integer(this->_p)));
 			return x;
 		}
 
 		Element &init (Element &x , const long &y ) const
 		{
-			return Givaro::ZpzDom<TAG>::init (x, y ) ;
+			return Givaro::Modular<TAG>::init (x, y ) ;
 
 		}
 
 		Element &init (Element &x , const int &y ) const
 		{
-			return Givaro::ZpzDom<TAG>::init (x, y ) ;
+			return Givaro::Modular<TAG>::init (x, y ) ;
 
 		}
 
 		Element &init (Element &x , const unsigned&y ) const
 		{
-			return Givaro::ZpzDom<TAG>::init (x, y ) ;
+			return Givaro::Modular<TAG>::init (x, y ) ;
 
 		}
 
 		Element &init (Element &x , const unsigned long &y ) const
 		{
-			return Givaro::ZpzDom<TAG>::init (x, y ) ;
+			return Givaro::Modular<TAG>::init (x, y ) ;
 
 		}
 

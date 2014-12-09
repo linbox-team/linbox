@@ -89,14 +89,14 @@ namespace LinBox
 		typedef Givaro::GIV_randIter< Givaro::Montgomery< int32_t>, LinBox::integer >  RandIter;
 
 		/** Constructor from an integer
-		 *  this constructor use the ZpzDom<TAG> constructor
+		 *  this constructor use the Modular<TAG> constructor
 		 */
 		GivaroMontg(const integer& p) :
 		 Givaro::Montgomery< int32_t>((uint32_t)((unsigned long)(p)))
 		{ }
 
 		/** Constructor from an integer (takes degree of extension as 2nd parameter, must be 1)
-		 *  this constructor use the ZpzDom<TAG> constructor
+		 *  this constructor use the Modular<TAG> constructor
 		 */
 	  	GivaroMontg(const integer& p, const integer& k) :
 		 Givaro::Montgomery< int32_t>((uint32_t)((unsigned long)(p)))
