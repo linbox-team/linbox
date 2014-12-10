@@ -42,21 +42,19 @@ namespace LinBox {
 	class Modular<integer>	 : public FFPACK::Modular<FFPACK::integer>,
 				   public FieldInterface {
 	public:
+		typedef FFPACK::Modular<FFPACK::integer> Father_t;
 
 // Fix on compile-time for gcc <= 4.7 - Alexis Breust
 #ifdef __GNUC__
 #if (__GNUC__ > 4 || __GNUC_MINOR__ > 7)
 		using FFPACK::Modular<FFPACK::integer>::Modular;
+#else
+		Modular(const integer& p) : Father_t(p) {}
 #endif // gcc >= 4.7
 #else // __GNUC
 		using FFPACK::Modular<FFPACK::integer>::Modular;
 #endif // __GNUC__
 
-
-		typedef FFPACK::Modular<FFPACK::integer> Father_t;
-		
-		Modular(const integer& p) : Father_t(p) {}
-			
 		inline integer getMaxModulus() const
 		{
 			return -1 ;
@@ -65,6 +63,6 @@ namespace LinBox {
 		inline integer& convert(integer& x, const integer &y) const {
 			return x=y; 
 		}
-};
+	};
 } // end of namespace LinBox
 #endif
