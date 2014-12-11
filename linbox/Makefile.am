@@ -48,10 +48,18 @@ doc/linbox-dev-html/pages.html:
 	(cd doc; ${MAKE} docs_dev)
 
 examples:
-	(  ${MAKE} ;   ${MAKE} install ; cd examples; ${MAKE} examples ; ./test.sh )
+	(${MAKE} install; cd examples; ${MAKE} examples; ./test.sh)
 
 benchmarks:
 	(cd benchmarks; ${MAKE} benchmarks)
+
+perfpublisher: benchmarks/perfpublisher tests/perfpublisher
+
+benchmarks/perfpublisher:
+	(cd benchmarks; ${MAKE} perfpublisher)
+
+tests/perfpublisher:
+	(cd tests; ${MAKE} perfpublisher)
 
 .PHONY:examples benchmarks
 
