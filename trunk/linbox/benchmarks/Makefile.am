@@ -39,6 +39,8 @@ LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS) $(MPFR
 #  AM_LDFLAGS = .libs/benchmark.o
 
 
+PERFPUBLISHERFILE=benchmarks-report.xml
+
 
 BENCH_BASIC=               \
 		benchmark-example
@@ -81,6 +83,8 @@ pkginclude_HEADERS = \
 
 EXTRA_DIST= \
 	    benchmark.doxy
+	    
+CLEANFILES= $(EXTRA_PROGRAMS) $(PERFPUBLISHERFILE)
 
 benchmarks: ${EXTRA_PROGRAMS}
 
@@ -117,6 +121,10 @@ cleanup :
 LINBOX=@prefix@
 
 LINBOX_BIN=@bindir@
+
+# Perfpublisher script interaction - AB 2014/12/11
+perfpublisher:
+	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(EXTRA_PROGRAMS)" "$(CXX)"
 
 # for compilation of new benchmarks
 %:%.C

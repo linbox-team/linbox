@@ -46,6 +46,8 @@ EXTRA_DIST=            \
 		tests.doxy     \
 		checker.C
 
+PERFPUBLISHERFILE = tests-report.xml
+
 #  test-generic-for-quad.h
 
 
@@ -749,6 +751,10 @@ test_toom_cook_SOURCES = test-toom-cook.C
 #check: checker
 #	checker -c
 
+# Perfpublisher script interaction - AB 2014/12/11
+perfpublisher:
+	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(TESTS)" "$(CXX)"
+
 # for compilation of new non-enumerated tests
 %:%.C
 	$(CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
@@ -768,5 +774,6 @@ CLEANFILES= checker               \
 			$(FULLCHECK_TESTS)      \
 			$(NTL_TESTS)          \
 			$(GIVARO_TESTS)       \
-			$(ATLAS_TESTS)
+			$(ATLAS_TESTS)\
+			$(PERFPUBLISHERFILE)
 
