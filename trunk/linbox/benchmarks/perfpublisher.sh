@@ -12,7 +12,7 @@ COMPILER=$3
 # Plateform infos #
 #=================#
 
-COMPILERVERSION=$($COMPILER --version | head -1)
+COMPILERVERSION=$($COMPILER --version 2>&1 | head -1)
 CPUFREQ=$(lscpu | grep "MHz" | rev | cut -f1 -d' ' | rev)
 ARCH=$(uname -m)
 OSNAME=$(uname -s)
