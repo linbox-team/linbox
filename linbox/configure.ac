@@ -72,9 +72,8 @@ STDFLAG=${CXXFLAGS}
 
 CXXFLAGS=""
 
-if test "x$CCNAM" != "xgcc44" ; then
-AX_CXX_COMPILE_STDCXX_11([ext],[optional])
-fi
+# We need a C++11 compiler now - AB 2014-12-12
+AX_CXX_COMPILE_STDCXX_11([],[mandatory])
 
 AC_SUBST([DEFAULT_CFLAGS])
 AC_SUBST([DEBUG_CFLAGS])
