@@ -136,7 +136,6 @@ namespace LinBox
 	}
 }
 
-#ifdef __LINBOX_HAVE_GIVARO
 #ifndef LINBOX_EXTENSION_DEGREE_MAX
 #define LINBOX_EXTENSION_DEGREE_MAX 19
 #endif
@@ -195,8 +194,8 @@ namespace LinBox
 		}
 	}
 }
-#else
-namespace LinBox
+
+/*namespace LinBox
 {
 	// The minpoly with BlackBox Method
 	template<class Polynomial, class Blackbox>
@@ -209,8 +208,7 @@ namespace LinBox
 		commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << " WARNING, no extension available, returning only a factor of the minpoly\n";
 		return minpoly(P, A, tag, Method::Wiedemann (M));
 	}
-}
-#endif
+}*/
 
 namespace LinBox
 {

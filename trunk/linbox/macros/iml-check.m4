@@ -73,8 +73,8 @@ for IML_HOME in ${IML_HOME_PATH}
            IML_LIBS="-liml"
        fi
 
-       CXXFLAGS="${BACKUP_CXXFLAGS} ${IML_CFLAGS} ${GMP_CFLAGS}"
-       LIBS="${BACKUP_LIBS} ${IML_LIBS} ${GMP_LIBS}"
+       CXXFLAGS="${BACKUP_CXXFLAGS} ${IML_CFLAGS} ${FFLAS_FFPACK_CFLAGS}"
+       LIBS="${BACKUP_LIBS} ${IML_LIBS} ${FFLAS_FFPACK_LIBS}"
 
        AC_TRY_LINK(
        [#include <gmp.h>

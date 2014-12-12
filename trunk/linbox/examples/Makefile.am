@@ -23,8 +23,8 @@
 
 #  -DLinBoxSrcOnly
 DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR
-AM_CPPFLAGS = -I@includedir@ -I$(top_srcdir)/linbox -I$(top_srcdir) $(DEFCPPFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(BLAS_CFLAGS) $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS) $(OPTFLAGS) $(PARFLAGS)
-LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS) $(PARLIBS)
+AM_CPPFLAGS = -I@includedir@ -I$(top_srcdir)/linbox -I$(top_srcdir) $(DEFCPPFLAGS)  $(NTL_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS) $(OPTFLAGS) $(PARFLAGS)
+LDADD =  $(NTL_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS) $(PARLIBS)
 #  AM_LDFLAGS=-static
 AM_LDFLAGS=-L@libdir@ -llinbox
 if LINBOX_HAVE_OCL
@@ -34,7 +34,7 @@ endif
 
 
 
-#EX_LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS)
+#EX_LDADD = $(NTL_LIBS) $(LIDIA_LIBS) 
 #LDADD = $(LINBOX_LIBS) $(EX_LDADD)
 
 #  SUBDIRS=fields solver data blackbox
@@ -43,9 +43,7 @@ EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparse
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
 if LINBOX_HAVE_NTL
-if LINBOX_HAVE_GIVARO
 USE_GIVARONTL_EXAMPLES = $(GIVARONTL_EXAMPLES)
-endif
 endif
 
 

@@ -71,19 +71,12 @@ for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
   do
     if test -r "$FFLAS_FFPACK_HOME/include/fflas-ffpack/fflas-ffpack.h" -a -x "$FFLAS_FFPACK_HOME/bin/fflas-ffpack-config"; then
 
-		BLAS_LIBS=`$FFLAS_FFPACK_HOME/bin/fflas-ffpack-config --libs`
-		BLAS_CFLAGS=`$FFLAS_FFPACK_HOME/bin/fflas-ffpack-config --cflags`
+	# FFLAS-FFPACK Libs + CFlags contains GMP/Givaro/BLAS infos - AB 2014-12-12
+	FFLAS_FFPACK_LIBS=`$FFLAS_FFPACK_HOME/bin/fflas-ffpack-config --libs`
+	FFLAS_FFPACK_CFLAGS=`$FFLAS_FFPACK_HOME/bin/fflas-ffpack-config --cflags`
 
-
-       if test "x$FFLAS_FFPACK_HOME" != "x/usr" -a "x$FFLAS_FFPACK_HOME" != "x/usr/local"; then
-           FFLAS_FFPACK_CFLAGS=
-       else
-           FFLAS_FFPACK_CFLAGS=
-       fi
-
-       CXXFLAGS="${BACKUP_CXXFLAGS} ${FFLAS_FFPACK_CFLAGS} ${BLAS_CFLAGS} ${GMP_CFLAGS} ${GIVARO_CFLAGS}"
-       dnl  CXXFLAGS="${BACKUP_CXXFLAGS}  ${BLAS_CFLAGS}"
-       LIBS="${BACKUP_LIBS} ${BLAS_LIBS} ${GMP_LIBS} ${GIVARO_LIBS}"
+       CXXFLAGS="${BACKUP_CXXFLAGS} ${FFLAS_FFPACK_CFLAGS}"
+       LIBS="${BACKUP_LIBS} ${FFLAS_FFPACK_LIBS}"
 
        AC_TRY_LINK(
        [#include "fflas-ffpack/fflas-ffpack.h"],
@@ -106,9 +99,8 @@ for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
        ffflasffpack_found="no"
        dnl  ffflasffpack_checked="$checked $FFLAS_FFPACK_HOME"
        unset FFLAS_FFPACK_CFLAGS
+       unset FFLAS_FFPACK_LIBS
 	   unset FFLAS_FFPACK_LOC
-	   unset BLAS_LIBS
-	   unset BLAS_CFLAGS
        ])
 	   dnl  AC_MSG_RESULT(found in $ffflasffpack_checked ? $ffflasffpack_found)
     else
@@ -120,13 +112,12 @@ done
 if test "x$ffflasffpack_found" = "xyes" ; then
     AC_SUBST(FFLAS_FFPACK_CFLAGS)
     AC_SUBST(FFLAS_FFPACK_LIBS)
-	AC_SUBST(FFLAS_FFPACK_LOC)
-	AC_SUBST(BLAS_LIBS)
-	AC_SUBST(BLAS_CFLAGS)
+    
+	HAVE_FFLAS_FFPACK=yes
     AC_DEFINE(HAVE_FFLAS_FFPACK,1,[Define if FFLAS-FFPACK is installed])
 	FF_VER=`$FFLAS_FFPACK_LOC/bin/fflas-ffpack-config --decimal-version`
 	AC_DEFINE_UNQUOTED(FFLAS_FFPACK_VERSION, $FF_VER ,[what version of FFLAS-FFPACK is installed])
-	HAVE_FFLAS_FFPACK=yes
+	
     if test "x$fflasflas_cross" != "xyes"; then
         AC_MSG_RESULT(found)
     else
@@ -134,11 +125,14 @@ if test "x$ffflasffpack_found" = "xyes" ; then
         echo "WARNING: You appear to be cross compiling, so there is no way to determine"
         echo "whether your FFLAS-FFPACK version is new enough. I am assuming it is."
     fi
+    
     ifelse([$2], , :, [$2])
+    
 elif test -n "$fflasflas_problem"; then
     AC_MSG_RESULT(problem)
     echo "Sorry, your FFLAS-FFPACK version is too old. Disabling."
     ifelse([$3], , :, [$3])
+
 elif test "x$fflasflas_found" = "xno" ; then
     AC_MSG_RESULT(not found: bad version $FF_VER)
     ifelse([$3], , :, [$3])
@@ -148,6 +142,5 @@ AM_CONDITIONAL(LINBOX_HAVE_FFLAS_FFPACK, test "x$HAVE_FFLAS_FFPACK" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
-#unset LD_LIBRARY_PATH
 
 ])

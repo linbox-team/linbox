@@ -18,13 +18,13 @@
 # ========LICENCE========
 
 
-AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox $(BLAS_CFLAGS) $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS)
-LIBS=$(GIVARO_LIBS)
+AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox   
+LIBS=
 AM_CXXFLAGS=@DEFAULT_CFLAGS@
 pkgincludesubdir=$(pkgincludedir)/randiter
  
 #AM_CPPFLAGS=-I$(top_srcdir)/linbox
-#AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS)  $(FFLAS_FFPACK_CFLAGS)
+#AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS)   
 
 BASIC_HDRS =            \
     abstract.h          \
@@ -49,18 +49,12 @@ BASIC_HDRS =            \
 
 NTL_HDRS =
 
-GIVARO_HDRS =
-
 LIDIA_HDRS =            \
     lidia.h             \
     lidia-gfq.h
 
 if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
-endif
-
-if LINBOX_HAVE_GIVARO
-USE_GIVARO_HDRS = $(GIVARO_HDRS)
 endif
 
 if LINBOX_HAVE_LIDIA
@@ -70,12 +64,10 @@ endif
 pkgincludesub_HEADERS =     \
     $(BASIC_HDRS)           \
     $(USE_NTL_HDRS)         \
-    $(USE_GIVARO_HDRS)      \
     $(USE_LIDIA_HDRS)
 
 EXTRA_DIST =                \
     $(NTL_HDRS)             \
-    $(GIVARO_HDRS)          \
     $(LIDIA_HDRS)           \
     randiter.doxy           \
     archetype.doxy          \

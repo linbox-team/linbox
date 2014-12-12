@@ -21,7 +21,7 @@
 
 pkgincludesubdir=$(pkgincludedir)/field/Givaro
 
-GIVARO_HDRS =           \
+BASIC_HDRS =           \
     givaro-zpz.h        \
     givaro-montg.h      \
     givaro-zpz.inl      \
@@ -31,12 +31,8 @@ GIVARO_HDRS =           \
     givaro-field-gf2.h  \
     givaro-rational.h
 
-if LINBOX_HAVE_GIVARO
-USE_GIVARO_HDRS = $(GIVARO_HDRS)
-endif
-
 pkgincludesub_HEADERS =     \
-    $(USE_GIVARO_HDRS)
+    $(BASIC_HDRS)
 
 #  EXTRA_DIST =            \
     #  givaro.doxy

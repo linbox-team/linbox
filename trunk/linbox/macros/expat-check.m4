@@ -75,8 +75,8 @@ if test -r "$EXPAT_HOME/include/expat.h"; then
 		EXPAT_LIBS="-lexpat"
 	fi
 
-	CXXFLAGS="${BACKUP_CXXFLAGS} ${EXPAT_CFLAGS} ${GMP_CFLAGS}"
-	LIBS="${BACKUP_LIBS} ${EXPAT_LIBS} ${GMP_LIBS}"
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${EXPAT_CFLAGS} ${FFLAS_FFPACK_CFLAGS}"
+	LIBS="${BACKUP_LIBS} ${EXPAT_LIBS} ${FFLAS_FFPACK_LIBS}"
 	AC_TRY_LINK(
 	[#include <expat.h>],
 	[XML_Content_Type a;],

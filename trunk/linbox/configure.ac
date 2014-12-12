@@ -215,16 +215,17 @@ LB_DRIVER
 
 echo "-----------------------------------------------"
 
-LB_CHECK_GMP(,,[
-echo '*******************************************************************************'
-echo ' ERROR: GMP not found!'
-echo
-echo ' GMP library compiled with --enable-cxx is required for this library to compile.'
-echo ' Please make sure GMP is installed and specify its location with the option'
-echo ' --with-gmp=<prefix> when running configure.'
-echo '*******************************************************************************'
-exit 1
-])
+# Now getting GMP and Givaro from FFLAS-FFPACK - AB 2014-12-10
+#LB_CHECK_GMP(,,[
+#echo '*******************************************************************************'
+#echo ' ERROR: GMP not found!'
+#echo
+#echo ' GMP library compiled with --enable-cxx is required for this library to compile.'
+#echo ' Please make sure GMP is installed and specify its location with the option'
+#echo ' --with-gmp=<prefix> when running configure.'
+#echo '*******************************************************************************'
+#exit 1
+#])
 
 LB_CHECK_IML
 LB_CHECK_M4RI
@@ -235,16 +236,18 @@ LB_CHECK_FPLLL
 LB_CHECK_FLINT
 
 LB_CHECK_NTL
-LB_CHECK_GIVARO(,,[
-echo '*******************************************************************************'
-echo ' ERROR: GIVARO not found!'
-echo
-echo ' GIVARO library is required for this library to compile.'
-echo ' Please make sure GIVARO is installed and specify its location with the'
-echo ' option --with-givaro=<prefix> when running configure.'
-echo '*******************************************************************************'
-exit 1
-])
+
+# Getting Givaro + GMP from FFLAS-FFPACK - AB 2014-12-12
+#LB_CHECK_GIVARO(,,[
+#echo '*******************************************************************************'
+#echo ' ERROR: GIVARO not found!'
+#echo
+#echo ' GIVARO library is required for this library to compile.'
+#echo ' Please make sure GIVARO is installed and specify its location with the'
+#echo ' option --with-givaro=<prefix> when running configure.'
+#echo '*******************************************************************************'
+#exit 1
+#])
 
 
 LB_CHECK_SACLIB
@@ -300,18 +303,16 @@ if test ! -d ./benchmarks/data ; then
 	mkdir ./benchmarks/data ;
 fi
 
-# this is bogus so far as I can tell. -bds
-#CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
-#AC_SUBST(CXXFLAGS)
 
-CXXFLAGS="${GMP_CFLAGS} ${CXXFLAGS} ${STDFLAG}"
+CXXFLAGS="${FFLAS_FFPACK_CFLAGS} ${CXXFLAGS} ${STDFLAG}"
+LIBS="${FFLAS_FFPACK_LIBS}"
 
 AC_SUBST(CXXFLAGS)
 
 echo "-----------------------------------------------"
 
-MYLIBS="${GIVARO_LIBS} ${BLAS_LIBS} ${NTL_LIBS} ${GMP_LIBS} ${LIDIA_LIBS} ${MPFR_LIBS} ${FPLLL_LIBS} ${IML_LIBS} ${FLINT_LIBS} ${LDFLAGS} ${OCL_LIBS}"
-MYFLAGS="${BLAS_CFLAGS} ${FFLAS_FFPACK_CFLAGS}  ${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${LIDIA_CFLAGS} ${IML_CFLAGS} ${FLINT_CFLAGS} ${OPT_FLAGS} ${AM_CPPFLAGS}"
+MYLIBS="${NTL_LIBS} ${LIDIA_LIBS} ${MPFR_LIBS} ${FPLLL_LIBS} ${IML_LIBS} ${FLINT_LIBS} ${LDFLAGS} ${OCL_LIBS}"
+MYFLAGS="${NTL_CFLAGS} ${LIDIA_CFLAGS} ${IML_CFLAGS} ${FLINT_CFLAGS} ${OPT_FLAGS} ${AM_CPPFLAGS}"
 
 echo "CXXFLAGS       = ${CXXFLAGS}"
 echo "LIBS           = ${MYLIBS}"

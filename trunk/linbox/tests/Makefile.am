@@ -36,9 +36,9 @@ AM_CPPFLAGS+= -DLinBoxTestOnly @TESTS_CFLAGS@ @DEBUG_CFLAGS@
 
 SUBDIRS = data matrix
 
-AM_CPPFLAGS+= $(BLAS_CFLAG) $(BLAS_CFLAGS) $(FFLAS_FFPACK_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS) $(OPTFLAGS) $(PARFLAGS)
-LDADD = $(GIVARO_LIBS) $(BLAS_LIBS) $(NTL_LIBS)  $(GMP_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS)  $(IML_LIBS) $(FLINT_LIBS) $(LDFLAGS) $(PARLIBS)
-#  AM_LDFLAGS+=-static -Wl,-rpath -Wl,$(GIVARO_LIBS)
+AM_CPPFLAGS+=  $(NTL_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS) $(OPTFLAGS) $(PARFLAGS)
+LDADD =  $(NTL_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS)  $(IML_LIBS) $(FLINT_LIBS) $(LDFLAGS) $(PARLIBS)
+#  AM_LDFLAGS+=-static -Wl,-rpath -Wl,
 
 EXTRA_DIST=            \
 		test-common.C  \
@@ -74,7 +74,8 @@ BASIC_TESTS =  \
 	test-rank-Int                     \
 	test-cra                      \
 	test-blas-matrix              \
-	test-charpoly
+	test-charpoly					\
+    test-givaro-fields
 
 #  test-iml                      \
 #
@@ -199,9 +200,6 @@ BENCHMARKS =                    \
 #        Transpose is tested in test-triplesbb
 #        Compose is tested in test-butterfly
 
-GIVARO_TESTS =                        \
-        test-givaro-fields
-
 NTL_TESTS =                           \
         test-smith-form               \
         test-ntl-lzz_p                \
@@ -231,10 +229,6 @@ if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
 endif
 
-if LINBOX_HAVE_GIVARO
-USE_GIVARO_TESTS = $(GIVARO_TESTS)
-endif
-
 if LINBOX_HAVE_LIDIA
 USE_LIDIA_TESTS = $(LIDIA_TESTS)
 endif
@@ -250,7 +244,6 @@ USE_ATLAS_TESTS = $(ATLAS_TESTS)
 
 TESTS =                               \
         $(BASIC_TESTS)                \
-        $(USE_GIVARO_TESTS)           \
         $(USE_NTL_TESTS)              \
         $(USE_LIDIA_TESTS)            \
         $(USE_NONCOMPILING_TESTS)     \
@@ -262,7 +255,6 @@ TESTS =                               \
 
 EXTRA_PROGRAMS =                      \
         $(BASIC_TESTS)                \
-        $(GIVARO_TESTS)               \
         $(NTL_TESTS)                  \
         $(ATLAS_TESTS)                \
         $(LIDIA_TESTS)                \
@@ -773,7 +765,6 @@ CLEANFILES= checker               \
 			$(DUBIOUS_TESTS)      \
 			$(FULLCHECK_TESTS)      \
 			$(NTL_TESTS)          \
-			$(GIVARO_TESTS)       \
 			$(ATLAS_TESTS)\
 			$(PERFPUBLISHERFILE)
 

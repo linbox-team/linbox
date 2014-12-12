@@ -20,9 +20,9 @@
 
 
 #we now need to include givaro headers for timer ?
-AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox $(BLAS_CFLAGS) $(FFLAS_FFPACK_CFLAGS) $(GIVARO_CFLAGS)
+AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox   
 
-LIBS=$(GIVARO_LIBS)
+LIBS=
 
 AM_CXXFLAGS=@DEFAULT_CFLAGS@
 
@@ -37,7 +37,7 @@ libutil_la_SOURCES=	\
 	error.C		\
 	debug.C
 
-libutil_la_LDFLAGS=$(GIVARO_LIBS)  $(LDFLAGS)
+libutil_la_LDFLAGS=  $(LDFLAGS)
 
 #libutil_la_LIBADD=	\
 #	gmp++/libgmpxx.la

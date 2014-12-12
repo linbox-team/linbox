@@ -75,16 +75,10 @@ NTL_HDRS =			\
 	ntl-sylvester.h         \
 	ntl-sylvester.inl
 
-GIVARO_HDRS =
-
 LIDIA_HDRS =
 
 if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
-endif
-
-if LINBOX_HAVE_GIVARO
-USE_GIVARO_HDRS = $(GIVARO_HDRS)
 endif
 
 if LINBOX_HAVE_LIDIA
@@ -94,12 +88,10 @@ endif
 pkgincludesub_HEADERS =		\
 	$(BASIC_HDRS)		\
 	$(USE_NTL_HDRS)		\
-	$(USE_GIVARO_HDRS)	\
 	$(USE_LIDIA_HDRS)
 
 EXTRA_DIST = 			\
 	$(NTL_HDRS)		\
-	$(GIVARO_HDRS)		\
 	$(LIDIA_HDRS)		\
 	blackbox.doxy
 
