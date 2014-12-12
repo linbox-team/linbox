@@ -29,9 +29,9 @@ EXTRA_PROGRAMS =		\
 #AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
 #LDADD = $(top_builddir)/linbox/liblinbox.a $(GMP_LIBS) $(NTL_LIBS)
 AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
-AM_CPPFLAGS+= -DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) \
+AM_CPPFLAGS+= -DLinBoxSrcOnly  $(NTL_CFLAGS) \
 			 -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
-LDADD = $(GMP_LIBS) $(NTL_LIBS) -lgivaro -lclapack -lcblas -latlas $(LDFLAGS)
+LDADD =  $(NTL_LIBS) $(LDFLAGS)
 
 ex_fields_SOURCES           = ex-fields.C
 ex_fields_archetype_SOURCES = ex-fields-archetype.C

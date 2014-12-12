@@ -28,13 +28,10 @@
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/gmp-rational.h"
+#include "linbox/field/givaro.h"
 
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/ntl.h"
-#endif
-
-#ifdef __LINBOX_HAVE_GIVARO
-#include "linbox/field/givaro.h"
 #endif
 
 /**************************************
@@ -71,16 +68,12 @@ typedef DN3 ntl_domain_list;
 typedef LinBoxDumbType ntl_domain_list;
 #endif
 
-#ifdef __LINBOX_HAVE_GIVARO
 typedef LinBoxTypelist < LinBox::GivaroGfq, LinBoxDumbType> DG1;
 typedef LinBoxTypelist < LinBox::GivaroZpz< int32_t>, DG1> DG2;
 #ifdef __LINBOX_MINIMIZE_DOMAIN
 typedef DG1 givaro_domain_list;
 #else
 typedef DG2 givaro_domain_list;
-#endif
-#else
-typedef LinBoxDumbType givaro_domain_list;
 #endif
 
 // define DomainList to be the list of all domains
@@ -115,11 +108,10 @@ void UpdateDomain(){
 	linbox_domain.add("ntl_ring_integer"    , constructDomain<LinBox::NTL_ZZ>);
 #endif
 #endif
-#ifdef __LINBOX_HAVE_GIVARO
+
 	linbox_domain.add("givaro_field_gfq"    , constructDomain<LinBox::GivaroGfq>);
 #ifndef  __LINBOX_MINIMIZE_DOMAIN
 	linbox_domain.add("givaro_field_32"     , constructDomain<LinBox::GivaroZpz< int32_t> >);
-#endif
 #endif
 }
 

@@ -33,16 +33,10 @@ BASIC_HDRS =          \
 
 NTL_HDRS =
 
-GIVARO_HDRS =
-
 LIDIA_HDRS =
 
 if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
-endif
-
-if LINBOX_HAVE_GIVARO
-USE_GIVARO_HDRS = $(GIVARO_HDRS)
 endif
 
 if LINBOX_HAVE_LIDIA
@@ -52,12 +46,10 @@ endif
 pkginclude_HEADERS =        \
     $(BASIC_HDRS)           \
     $(USE_NTL_HDRS)         \
-    $(USE_GIVARO_HDRS)      \
     $(USE_LIDIA_HDRS)
 
 EXTRA_DIST =            \
     $(NTL_HDRS)         \
-    $(GIVARO_HDRS)      \
     $(LIDIA_HDRS)       \
     linbox.doxy         \
     archetypes.doxy
@@ -70,7 +62,7 @@ liblinbox_la_LIBADD =           \
     util/libutil.la             \
     randiter/libranditer.la     \
     algorithms/libalgorithms.la \
-    $(MPFR_LIBS) $(IML_LIBS) $(BLAS_LIBS)
+    $(MPFR_LIBS) $(IML_LIBS) 
 
 #Cygwin ?
 liblinbox_la_LDFLAGS = \

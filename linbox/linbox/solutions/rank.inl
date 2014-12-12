@@ -473,7 +473,6 @@ namespace LinBox
 } // LinBox
 
 
-#ifdef __LINBOX_HAVE_GIVARO
 #ifndef LINBOX_EXTENSION_DEGREE_MAX
 #define LINBOX_EXTENSION_DEGREE_MAX 19
 #endif
@@ -523,8 +522,8 @@ namespace LinBox
 		return r;
 	}
 }
-#else
-namespace LinBox
+
+/*namespace LinBox
 {
 	template <class Blackbox>
 	inline unsigned long &rank (unsigned long                      &r,
@@ -534,8 +533,7 @@ namespace LinBox
 	{
 		return rank(r, A, tag, Method::Wiedemann(m));
 	}
-}
-#endif // __LINBOX_HAVE_GIVARO
+}*/
 
 namespace LinBox { /*  rankin */
 

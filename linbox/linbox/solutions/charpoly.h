@@ -25,18 +25,14 @@
 #ifndef __LINBOX_charpoly_H
 #define __LINBOX_charpoly_H
 
-
-
 #include "linbox/solutions/methods.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
-
-#ifdef __LINBOX_HAVE_GIVARO
-// BBcharpoly without givaropolynomials is not yet implemented
+#include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/bbcharpoly.h"
-#endif
+
 // Namespace in which all LinBox library code resides
 
 namespace LinBox
@@ -228,9 +224,10 @@ namespace LinBox
 		return P;
 	}
 
-	//#if 0
-#if defined(__LINBOX_HAVE_NTL) && defined(__LINBOX_HAVE_GIVARO)
 }
+
+	//#if 0
+#if defined(__LINBOX_HAVE_NTL)
 
 #include "linbox/algorithms/cia.h"
 namespace LinBox
@@ -318,15 +315,14 @@ namespace LinBox
 		return P = BBcharpoly::blackboxcharpoly (Pg, A, tag, M);
 	}
 
-
-#else //  no NTL or no Givaro (??)
 }
+
+#else //  no NTL
 
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-full-multip.h"
 #include "linbox/algorithms/cra-early-multip.h"
-#include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
 namespace LinBox
@@ -443,9 +439,12 @@ namespace LinBox
 		return P;
 	}
 
+}
 
 #endif
 
+namespace LinBox
+{
 	/** Compute the characteristic polynomial over \f$\mathbf{Z}_p\f$.
 	 *
 	 * Compute the characteristic polynomial of a matrix, represented via
@@ -465,12 +464,8 @@ namespace LinBox
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
-#ifdef __LINBOX_HAVE_GIVARO
 		typename GivPolynomialRing<typename Blackbox::Field>::Element Pg;
 		return P = BBcharpoly::blackboxcharpoly (Pg, A, tag, M);
-#else
-		return charpoly(P, A, tag, Method::BlasElimination());
-#endif
 	}
 
 	template < class Blackbox, class Polynomial, class MyMethod>

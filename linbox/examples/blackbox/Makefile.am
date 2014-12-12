@@ -24,8 +24,8 @@ INCLUDES=-I$(top_srcdir)
 EXTRA_PROGRAMS = smith example ex-mat0 load-det load-minpoly load-symmetrize random-rank
 #zeroone-rank
 
-AM_CPPFLAGS=-DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
-LDADD = $(GMP_LIBS) $(NTL_LIBS) -lgivaro -lclapack -lcblas -latlas  $(LDFLAGS)
+AM_CPPFLAGS=-DLinBoxSrcOnly  $(NTL_CFLAGS) -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
+LDADD =  $(NTL_LIBS) -lgivaro -lclapack -lcblas -latlas  $(LDFLAGS)
 
 example_SOURCES  = example.C
 smith_SOURCES  = smith.C

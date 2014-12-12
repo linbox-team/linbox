@@ -21,8 +21,8 @@
 
 INCLUDES=-I$(top_srcdir)
 
-AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS)
-LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GIVARO_LIBS)  $(GMP_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) $(LDFLAGS)
+AM_CPPFLAGS=-g  $(NTL_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS)
+LDADD = $(top_builddir)/linbox/liblinbox.la  $(NTL_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) $(LDFLAGS)
 
 EXTRA_PROGRAMS=t-rdisolve
 

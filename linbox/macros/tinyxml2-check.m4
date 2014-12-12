@@ -34,12 +34,13 @@ SAVED_LIBS=$LIBS
       XMLDocument doc;
       ],
       [
-AC_MSG_RESULT( OK.)
+AC_MSG_RESULT(yes)
 AC_DEFINE(HAVE_TINYXML2,1,[Define if tinyxml2 is installed])
 XML_LIBS="-ltinyxml2"
 AC_SUBST(XML_LIBS)
 ],
-      [AC_MSG_WARN([tinyxml2 is not installed (no import/export of benchmarks).])]
+      [AC_MSG_RESULT(no)
+      AC_MSG_WARN([tinyxml2 is not installed (no import/export of benchmarks).])]
     )
     LIBS=$SAVED_LIBS
 ])

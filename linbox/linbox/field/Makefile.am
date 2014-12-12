@@ -43,6 +43,7 @@ BASIC_HDRS =            \
     local2_32.h         \
     PID-integer.h       \
     PID-double.h        \
+    givaro.h			\
     block-ring.h
 
 NTL_HDRS =              \
@@ -50,25 +51,16 @@ NTL_HDRS =              \
     PID-ntl-zz_p.h     \
     PIR-ntl-ZZ_p.h
 
-GIVARO_HDRS =           \
-    givaro.h
-
 if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
 endif
 
-if LINBOX_HAVE_GIVARO
-USE_GIVARO_HDRS = $(GIVARO_HDRS)
-endif
-
 pkgincludesub_HEADERS =     \
     $(BASIC_HDRS)           \
-    $(USE_NTL_HDRS)         \
-    $(USE_GIVARO_HDRS)
+    $(USE_NTL_HDRS)
 
 EXTRA_DIST =            \
     $(NTL_HDRS)         \
-    $(GIVARO_HDRS)      \
     field.doxy          \
     modular.doxy        \
     integers.doxy       \

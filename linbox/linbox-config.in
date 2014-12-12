@@ -72,11 +72,11 @@ while test $# -gt 0; do
 	;;
 
     --cflags)
-       	echo -n " -I${includedir} @GMP_CFLAGS@ @NTL_CFLAGS@ @GIVARO_CFLAGS@ @SACLIB_CFLAGS@ @LIDIA_CFLAGS@"
+       	echo -n " -I${includedir} @FFLAS_FFPACK_CFLAGS@ @NTL_CFLAGS@ @SACLIB_CFLAGS@ @LIDIA_CFLAGS@"
 	;;
 
     --libs)
-	echo -n " -L${libdir} -llinbox @LIDIA_LIBS@  @NTL_LIBS@ @GIVARO_LIBS@ @SACLIB_LIBS@ @GMP_LIBS@ @IML_LIBS@ @MPFR_LIBS@ @FPLLL_LIBS@ @FPLLL_LIBS@ @BLAS_LIBS@ " 
+	echo -n " -L${libdir} -llinbox @FFLAS_FFPACK_LIBS@ @LIDIA_LIBS@ @NTL_LIBS@ @SACLIB_LIBS@ @IML_LIBS@ @MPFR_LIBS@ @FPLLL_LIBS@ @FPLLL_LIBS@" 
 	;;
 
     *)
