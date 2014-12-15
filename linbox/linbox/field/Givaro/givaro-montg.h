@@ -47,7 +47,7 @@
 
 
 #include <givaro/montgomery.h>
-#include <givaro/giv_randiter.h>
+#include <givaro/givranditer.h>
 //------------------------------------
 
 // Namespace in which all LinBox code resides

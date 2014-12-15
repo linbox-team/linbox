@@ -42,7 +42,7 @@
 #include <queue>
 
 #include "linbox/ring/givaro-poly.h"
-#include "givaro/givgfq.h"
+#include "givaro/gfq.h"
 
 #include "test-field.h"
 

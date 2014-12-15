@@ -45,7 +45,7 @@
 //-------------------------------------
 // Files of Givaro library
 #include <givaro/modular.h>
-#include <givaro/giv_randiter.h>
+#include <givaro/givranditer.h>
 #include "linbox/field/field-traits.h"
 
 //--------------------------------------

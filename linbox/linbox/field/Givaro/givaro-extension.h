@@ -44,8 +44,8 @@
 
 //---------------------------------------------
 // Files of Givaro library
-#include <givaro/givextension.h>
-#include <givaro/giv_randiter.h>
+#include <givaro/extension.h>
+#include <givaro/givranditer.h>
 //---------------------------------------------
 // To convert linbox fields to Givaro interface
 #include "linbox/field/Givaro/givaro-field.h"
