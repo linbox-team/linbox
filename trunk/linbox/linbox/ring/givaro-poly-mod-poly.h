@@ -2,7 +2,7 @@
 #ifndef _GIVARO_POLY_MOD_POLY_H
 #define _GIVARO_POLY_MOD_POLY_H
 
-#include <givaro/givextension.h>
+#include <givaro/extension.h>
 #include <givaro/givindeter.h>
 #include "linbox/field/Givaro/givaro-field.h"
 

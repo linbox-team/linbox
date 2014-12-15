@@ -53,8 +53,8 @@
 
 
 #include <givaro/givtablelimits.h>
-#include <givaro/givgfq.h>
-#include <givaro/giv_randiter.h>
+#include <givaro/gfq.h>
+#include <givaro/givranditer.h>
 #include <givaro/givpoly1factor.h>
 //------------------------------------
 
