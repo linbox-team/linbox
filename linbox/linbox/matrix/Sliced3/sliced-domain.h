@@ -26,7 +26,7 @@ public:
 	{  if (p != 3 || e != 1) throw LinBoxError("bad field"); }
 };
 
-template<>
+//template<>
 template<class _Field,class _WordT>
 class MatrixDomain<SlicedField<_Field,_WordT> > : public _Field {
 public:

@@ -302,7 +302,7 @@ namespace LinBox
 				for (int i=0; i < n; ++i) {
 					z <<=(long int)(LONG_MAX-1);
 				}
-				z <= (long int)m;
+				z <<= (long int)m;
 				return z;
 			}
 
