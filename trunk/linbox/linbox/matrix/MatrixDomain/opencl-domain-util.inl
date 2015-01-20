@@ -66,7 +66,7 @@ namespace LinBox{
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	bool OpenCLMatrixDomain<Modular<double> >::oclMemCheck(
+	bool OpenCLMatrixDomain<Givaro::Modular<double> >::oclMemCheck(
 		Operand1& D,
 		const Operand2& A,
 		const Operand3& B,
@@ -98,7 +98,7 @@ namespace LinBox{
 
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	bool OpenCLMatrixDomain<Modular<float> >::oclMemCheck(
+	bool OpenCLMatrixDomain<Givaro::Modular<float> >::oclMemCheck(
 		Operand1& D,
 		const Operand2& A,
 		const Operand3& B,
@@ -130,7 +130,7 @@ namespace LinBox{
 
 	template <>
 	template <>
-	bool OpenCLMatrixDomain<Modular<double> >::oclMemCheck<std::pair<int,int> >(
+	bool OpenCLMatrixDomain<Givaro::Modular<double> >::oclMemCheck<std::pair<int,int> >(
 		std::pair<int,int>& D,
 		std::pair<int,int>& A,
 		std::pair<int,int>& B,
@@ -162,7 +162,7 @@ namespace LinBox{
 
 	template <>
 	template <>
-	bool OpenCLMatrixDomain<Modular<float> >::oclMemCheck<std::pair<int,int> >(
+	bool OpenCLMatrixDomain<Givaro::Modular<float> >::oclMemCheck<std::pair<int,int> >(
 		std::pair<int,int>& D,
 		std::pair<int,int>& A,
 		std::pair<int,int>& B,

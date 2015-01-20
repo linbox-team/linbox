@@ -27,18 +27,12 @@
 
 #include <ctime>
 #include <vector>
-#include "linbox/field/unparametric.h"
-
-// #include <fflas-ffpack/field/unparametric.h>
+#include <givaro/unparametric.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
     using Givaro::Caster;
-
-	// forward declarations
-	template <class K> class UnparametricField;
-	// using FFPACK::UnparametricField ;
 
 	/** Unparameterized random field element generator template.
 	 * Implements LinBox random field element generator common object interface
@@ -89,7 +83,7 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		UnparametricRandIter(
-				     const UnparametricField<K>& F,
+				     const Givaro::UnparametricRing<K>& F,
 				     const integer& size = 0,
 				     const integer& seed = 0
 				    ) :
@@ -110,7 +104,7 @@ namespace LinBox
 			// Seed random number generator
 			srand((unsigned)_seed);
 
-		} // UnparametricRandIter(const UnparametricField<K>&, const integer&, const integer&)
+		} // UnparametricRandIter(const Givaro::UnparametricRing<K>&, const integer&, const integer&)
 
 		/** Copy constructor.
 		 * Constructs UnparametricRandIter object by copying the random field

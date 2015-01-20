@@ -40,7 +40,7 @@ namespace LinBox {
 
 	class PolynomialMatrixFFTPrimeMulDomain {
 
-		typedef Modular<int32_t>     Field;
+		typedef Givaro::Modular<int32_t>     Field;
 		typedef Field::Element     Element;
 
 		public:

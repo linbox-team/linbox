@@ -62,7 +62,7 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	typedef Modular<uint32_t> Field;
+	typedef Givaro::Modular<uint32_t> Field;
 	Field F (q);
 
 	srand ((unsigned)time (NULL));

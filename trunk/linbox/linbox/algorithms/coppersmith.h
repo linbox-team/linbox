@@ -27,8 +27,8 @@
 #include <vector>
 #include <numeric>
 #include <algorithm>
-#include "givaro/givpoly1crt.h"
 #include <iostream>
+#include <givaro/givpoly1crt.h>
 
 
 #include "linbox/integer.h"
@@ -111,9 +111,9 @@ namespace LinBox
 			std::vector<Block> gen;
 			std::vector<size_t> deg;
 			deg = BCD.right_minpoly(gen);
-			report << "Size of gen " << gen.size() << endl;
+			report << "Size of gen " << gen.size() << std::endl;
 			for(size_t i = 0; i < gen[0].coldim(); i++)
-				report << "Column " << i << " has degree " << deg[i] << endl;
+				report << "Column " << i << " has degree " << deg[i] << std::endl;
 
 			//Reconstruct the solution
 			//Pick a column of the generator with a nonzero element in the first row of the constant coefficient
@@ -282,7 +282,7 @@ namespace LinBox
 			std::vector<size_t> deg;
 			deg = BCD.right_minpoly(gen);
 			for(size_t i = 0; i < gen[0].coldim(); i++)
-				report << "Column " << i << " has degree " << deg[i] << endl;
+				report << "Column " << i << " has degree " << deg[i] << std::endl;
 
 			//Compute the rank via the determinant of the generator
 			//Get the sum of column degrees
@@ -304,10 +304,10 @@ namespace LinBox
 			//Evaluate the generator determinant at the points
 			EvalPolyMat(evaldets, evalpoints, gen);
 			for(size_t k = 0; k <numpoints; k++)
-				report << evalpoints[k] << "  " << evaldets[k] <<endl;
+				report << evalpoints[k] << "  " << evaldets[k] << std::endl;
 			//Construct the polynomial using Givare interpolation
 			//Stolen from Pascal Giorgi, linbox/examples/omp-block-rank.C
-			typedef Givaro::Poly1CRT< typename LinBox::GivaroField<Field> >  PolyCRT;
+			typedef Givaro::Poly1CRT< Field >  PolyCRT;
 			PolyCRT Interpolator(field(), evalpoints, "x");
 			typename PolyCRT::Element Determinant;
 			Interpolator.RnsToRing(Determinant,evaldets);
@@ -316,15 +316,15 @@ namespace LinBox
 			Givaro::Degree intdetval;
 			Interpolator.getpolydom().val(intdetval,Determinant);
 			if(detdeg != (size_t) intdetdeg.value()){
-				report << "sum of column degrees " << detdeg << endl;
-				report << "interpolation degree " << intdetdeg.value() << endl;
+				report << "sum of column degrees " << detdeg << std::endl;
+				report << "interpolation degree " << intdetdeg.value() << std::endl;
 			}
-			report << "sum of column degrees " << detdeg << endl;
-			report << "interpolation degree " << intdetdeg.value() << endl;
-			report << "valence (trailing degree) " << intdetval.value() << endl;
+			report << "sum of column degrees " << detdeg << std::endl;
+			report << "interpolation degree " << intdetdeg.value() << std::endl;
+			report << "valence (trailing degree) " << intdetval.value() << std::endl;
 			for(size_t k = 0; k<gen.size(); k++)
-				domain().write(report, gen[k]) << "x^" << k << endl;
-			Interpolator.write(report << "Interpolated determinant: ", Determinant) << endl;
+				domain().write(report, gen[k]) << "x^" << k << std::endl;
+			Interpolator.write(report << "Interpolated determinant: ", Determinant) << std::endl;
 			size_t myrank = size_t(intdetdeg.value() - intdetval.value());
 			return myrank;
 		}
@@ -442,7 +442,7 @@ namespace LinBox
 			EvalPolyMat(evaldets, evalpoints, gen);
 			//Construct the polynomial using Givare interpolation
 			//Stolen from Pascal Giorgi, linbox/examples/omp-block-rank.C
-			typedef Givaro::Poly1CRT< typename LinBox::GivaroField<Field> >  PolyCRT;
+			typedef Givaro::Poly1CRT<Field>  PolyCRT;
 			PolyCRT Interpolator(field(), evalpoints, "x");
 			typename PolyCRT::Element Determinant;
 			Interpolator.RnsToRing(Determinant,evaldets);
@@ -451,10 +451,10 @@ namespace LinBox
 			Givaro::Degree intdetval(0);
 			Interpolator.getpolydom().val(intdetval,Determinant);
 			if(d != (size_t)intdetdeg.value()){
-				report << "The matrix is singular, determinant is zero" << endl;
+				report << "The matrix is singular, determinant is zero" << std::endl;
 				return field(0).zero;
 			}
-			Interpolator.write(report << "Interpolated determinant: ", Determinant) << endl;
+			Interpolator.write(report << "Interpolated determinant: ", Determinant) << std::endl;
 			Element intdeterminant(field().zero);
 			Interpolator.getpolydom().getEntry(intdeterminant,intdetval,Determinant);
 			return intdeterminant;

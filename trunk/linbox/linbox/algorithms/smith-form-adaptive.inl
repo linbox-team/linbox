@@ -84,12 +84,12 @@ namespace LinBox
 		else if (e == 1) {
 			report << "      Compute local smith at prime " << p << ", by rank.\n";
 #if 0 /*Meet trouble to call ffpack routine*/
-			Modular<double> F (p); Modular<double>::Element elt;
+			Givaro::Modular<double> F (p); Givaro::Modular<double>::Element elt;
 			int n = A. rowdim(); int m = A. coldim();
-			Modular<double>::Element* A_local = new Modular<double>::Element [n * m];
+			Givaro::Modular<double>::Element* A_local = new Givaro::Modular<double>::Element [n * m];
 			typename Matrix::ConstIndexedIterator rawi_p;
 			typename Matrix::ConstIterator raw_p;
-			Modular<double>::Element* A_local_p;
+			Givaro::Modular<double>::Element* A_local_p;
 			for (A_local_p = A_local; A_local_p != A_local + (n*m); ++ A_local_p)
 				F. assign (*A_local_p, F.zero);
 			integer tmp;
@@ -105,11 +105,11 @@ namespace LinBox
 				std::cout << *(A_local + i) << '\t';
 			std::cout << "\nbegin to call ffpack:\n";
 
-			unsigned int rank = FPACK::Rank ((Modular<double>::Father_t)(F, n, m, A_local, m);
+			unsigned int rank = FPACK::Rank ((Givaro::Modular<double>::Father_t)(F, n, m, A_local, m);
 			std::cout << "Call of ffpack is done\n";
 			delete[] A_local;
 #endif
-			typedef Modular<int32_t> Field;
+			typedef Givaro::Modular<int32_t> Field;
 			typedef BlasMatrix<Field> FMatrix;
 			MatrixRank<typename Matrix::Field, Field> MR;
 			Field F((unsigned long)p);
@@ -282,7 +282,7 @@ namespace LinBox
 		// else if bisection possible
 		else if (m > T)  {
 			report << "   Big rough part, bisection starts:\n";
-			typedef Modular<int> Field;
+			typedef Givaro::Modular<int> Field;
 			typedef typename Matrix::Field Ring;
 			typedef RationalSolverAdaptive Solver;
 			typedef LastInvariantFactor<Ring, Solver> LIF;
@@ -395,7 +395,7 @@ namespace LinBox
 		report << "Computation of the rank starts:\n";
 		typedef typename Matrix::Field Ring;
 		unsigned long r;
-		MatrixRank<Ring, Modular<int32_t> > MR;
+		MatrixRank<Ring, Givaro::Modular<int32_t> > MR;
 		r = MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << '\n';
 		report << "Computation of the rank finished.\n";
@@ -403,7 +403,7 @@ namespace LinBox
 		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
 
 		report <<"   Compute the degree of min poly of AA^T: \n";
-		typedef Modular<int32_t> Field;
+		typedef Givaro::Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
 		RandomPrimeIterator rg; rg.template setBitsField<Field>();
 		Field F ((unsigned long)*rg);
@@ -518,7 +518,7 @@ namespace LinBox
 		report << "Computation of the rank starts:" << std::endl;
 		typedef typename BlasMatrix<IRing,_Rep>::Field Ring;
 		unsigned long r;
-		MatrixRank<Ring, Modular<int32_t> > MR;
+		MatrixRank<Ring, Givaro::Modular<int32_t> > MR;
 		r = (unsigned long)MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << std::endl;
 		report << "Computation of the rank finished.\n";
@@ -528,7 +528,7 @@ namespace LinBox
 		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
 
 		report <<"   Compute the degree of min poly of AA^T: \n";
-		typedef Modular<int32_t> Field;
+		typedef Givaro::Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
 		RandomPrimeIterator rg; rg.template setBitsField<Field>();
 		Field F ((unsigned long)*rg);

@@ -43,15 +43,15 @@
 using LinBox::integer;
 typedef std::vector<long> Vectorl;
 typedef std::vector<integer> VectorI;
-typedef LinBox::TriplesBB<LinBox::Modular<long> > TriplesBBi;
-typedef LinBox::TriplesBB<LinBox::Modular<integer> > TriplesBBI;
+typedef LinBox::TriplesBB<Givaro::Modular<long> > TriplesBBi;
+typedef LinBox::TriplesBB<Givaro::Modular<integer> > TriplesBBI;
 
 /* Type references: Used to identify the type of object pointed to by
  * elements in the hash table.
  * Types:  BlackBoxi - Black Box matrix, single-word size entries
- *           Class:  LinBox::TriplesBB<LinBox::Modular<long>, std::vector<long> > (TriplesBBi)
+ *           Class:  LinBox::TriplesBB<Givaro::Modular<long>, std::vector<long> > (TriplesBBi)
  *         BlackBoxI - Black Box matrix, multi-word size entries
- *           Class:  LinBox::TriplesBB<LinBox::Modular<integer>, std::vector<integer> > (TriplesBBI)
+ *           Class:  LinBox::TriplesBB<Givaro::Modular<integer>, std::vector<integer> > (TriplesBBI)
  *         SmallV - STL vector, single-word size entries
  *           Class:  std::vector<long> (Vectorl)
  *         LargeV - STL vector, multi-word size entries
@@ -191,7 +191,7 @@ extern "C"
 	 data = (int*) RTableDataBlock(kv,args[4]);
 
 	 // Declare a new object on the heap
-	 LinBox::Modular<long> modF(p);
+	 Givaro::Modular<long> modF(p);
 	 In = new TriplesBBi(modF, m, n, nonzeros);
 
 	 // Add each entry
@@ -222,7 +222,7 @@ extern "C"
 	 nonzeros = (size_t) MapleToInteger32(kv,args[9]);
 
 	 // Declares field and blackbox
-	 LinBox::Modular<long> modF(p);
+	 Givaro::Modular<long> modF(p);
 	 In = new TriplesBBi(modF, m, n, nonzeros);
 	 // Populates blackbox w/ entries
 	 for(i = 1; i <= nonzeros; i++) {
@@ -250,7 +250,7 @@ extern "C"
 	nonzeros = (size_t) MapleToInteger32(kv,args[9]);
 
 	// Declare Field and blackbox
-	LinBox::Modular<integer> modF(iPrime);
+	Givaro::Modular<integer> modF(iPrime);
 	In = new TriplesBBI(modF, m, n, nonzeros);
 	for(i = 1; i <= nonzeros; i++) {
 	  In->addEntry( MtoLI(kv, blank, MapleListSelect(kv, args[4],i)), MapleToInteger32(kv, MapleListSelect(kv, args[5], i)), MapleToInteger32(kv, MapleListSelect(kv, args[6], i)));

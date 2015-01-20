@@ -55,14 +55,14 @@
 namespace Givaro
 {
 	template<>
-	//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const Integer &y) const
+	//	NTL::GF2E& Givaro::UnparametricRing<NTL::GF2E>::init (NTL::GF2E &x, const Integer &y) const
 	NTL::GF2E& Caster(NTL::GF2E &x, const Integer &y)
 	{
 		x=NTL::to_GF2E(static_cast<long>(y));
 		return x;
 	}
 	template<>
-	//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
+	//	NTL::GF2E& Givaro::UnparametricRing<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
 	NTL::GF2E& Caster(NTL::GF2E &x, const double &y)
 	{
 		x=NTL::to_GF2E(static_cast<long>(y));
@@ -71,7 +71,7 @@ namespace Givaro
 
 
 	template<>
-	//	Integer& UnparametricField<NTL::GF2E>::convert (Integer& x, const NTL::GF2E &y) const	{
+	//	Integer& Givaro::UnparametricRing<NTL::GF2E>::convert (Integer& x, const NTL::GF2E &y) const	{
 	Integer& Caster(Integer& x, const NTL::GF2E &y)
 	{
 		NTL::GF2X poly = rep(y);
@@ -118,7 +118,7 @@ namespace LinBox
 
 
 	/*
-	 * Define a parameterized class to easily handle UnparametricField<NTL::GF2E> field
+	 * Define a parameterized class to easily handle Givaro::UnparametricRing<NTL::GF2E> field
 	 */
 
 	class NTL_GF2E :  public NTL_GF2E_Initialiser, public FFPACK::UnparametricOperations<NTL::GF2E> {

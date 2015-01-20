@@ -59,7 +59,7 @@ namespace LinBox
 		size_t* P = new size_t[N];
 		size_t* Qt = new size_t[N-1];
 
-		FFPACK::LUdivine ((typename Field::Father_t)F, FFLAS::FflasUnit, FFLAS::FflasNoTrans, N-1, N,
+		FFPACK::LUdivine (F, FFLAS::FflasUnit, FFLAS::FflasNoTrans, N-1, N,
 				  A, lda, P, Qt);
 		typename Field::Element d;
 
@@ -75,14 +75,14 @@ namespace LinBox
 			F.negin(d);
 
 		// Trick: instead of Right-Trans, do Left-NoTrans in order to use inc*
-		FFPACK::applyP ((typename Field::Father_t)F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+		FFPACK::applyP (F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 				1, 0,(int) N-1, b, incb, P);
-		FFPACK::applyP ((typename Field::Father_t)F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+		FFPACK::applyP (F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 				1, 0,(int) N-1, c, incc, P);
-		FFLAS::ftrsv ((typename Field::Father_t)F, FFLAS::FflasUpper, FFLAS::FflasTrans,
+		FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasTrans,
 			      FFLAS::FflasUnit,
 			      N, A, lda, b, (int)incb);
-		FFLAS::ftrsv ((typename Field::Father_t)F, FFLAS::FflasUpper, FFLAS::FflasTrans,
+		FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasTrans,
 			      FFLAS::FflasUnit,
 			      N, A, lda, c, (int)incc);
 
@@ -254,7 +254,7 @@ namespace LinBox
 			//t_hd.stop();
 			//std::cerr<<"Hadamard bound = : "<<logbound<<" in "<<t_hd.usertime()<<"s"<<std::endl;
 
-			ChineseRemainder <FullMultipCRA <Modular <double> > > cra(logbound);
+			ChineseRemainder <FullMultipCRA <Givaro::Modular <double> > > cra(logbound);
 
 			//t_hd.clear();
 			//t_cra.start();
@@ -264,7 +264,7 @@ namespace LinBox
 
 		}
 		else {
-			ChineseRemainder <EarlyMultipCRA <Modular<double> > > cra(4UL);
+			ChineseRemainder <EarlyMultipCRA <Givaro::Modular<double> > > cra(4UL);
 			cra (dd, iteration, genprime);
 		}
 		F.mul (d1, dd[0], s1);

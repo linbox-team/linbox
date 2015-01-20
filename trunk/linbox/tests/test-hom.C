@@ -71,9 +71,9 @@ int main (int argc, char **argv)
 	commentator().start("Hom test suite", "Hom");
 	bool pass = true;
 
-	Modular<uint32_t> F_uint32_t ((uint32_t) q);
-	Modular<uint16_t> F_uint16_t ((uint16_t) q);
-	Hom<Modular<uint16_t>, Modular<uint32_t> > iso(F_uint16_t, F_uint32_t);
+	Givaro::Modular<uint32_t> F_uint32_t ((uint32_t) q);
+	Givaro::Modular<uint16_t> F_uint16_t ((uint16_t) q);
+	Hom<Givaro::Modular<uint16_t>, Givaro::Modular<uint32_t> > iso(F_uint16_t, F_uint32_t);
 
 	uint16_t x=2, y;
 	uint32_t z=2, w;

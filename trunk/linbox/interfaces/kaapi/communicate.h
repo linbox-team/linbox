@@ -65,7 +65,7 @@ namespace kaapi
 	 * double specialization
 	 */
 	template <>
-	struct Modular<double> : LinBox::Modular<double>
+	struct Givaro::Modular<double> : Givaro::Modular<double>
 	{
 		const double& get_modulus() const { return this->modulus; }
 		const unsigned long& get_lmodulus() const { return this->lmodulus; }
@@ -75,13 +75,13 @@ namespace kaapi
 
 } //namespace
 
-a1::OStream& operator<<( a1::OStream& out, const LinBox::Modular<double>& m)
+a1::OStream& operator<<( a1::OStream& out, const Givaro::Modular<double>& m)
 {
 	const kaapi::Modular<double>* m_tmp = static_cast<const kaapi::Modular<double>*>(&m);
 	return out << m_tmp->get_modulus() << m_tmp->get_lmodulus() ;
 }
 
-a1::IStream& operator>>( a1::IStream& in, LinBox::Modular<double>& m)
+a1::IStream& operator>>( a1::IStream& in, Givaro::Modular<double>& m)
 {
 	kaapi::Modular<double>* m_tmp = static_cast<kaapi::Modular<double>*>(&m);
 	return in >> m_tmp->get_modulus() >> m_tmp->get_lmodulus() ;

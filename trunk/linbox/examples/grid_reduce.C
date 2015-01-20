@@ -79,8 +79,8 @@ int main(int argc, char* argv[])
 	if (algo == "reduceT") out=out+"T";
 
 	typedef PID_integer Ints;
-	//typedef ModularBalanced<int> Ints;
-	//typedef Modular<int> Ints;
+	//typedef Givaro::ModularBalanced<int> Ints;
+	//typedef Givaro::Modular<int> Ints;
 	//Ints Z(m);
 	Ints Z;
 

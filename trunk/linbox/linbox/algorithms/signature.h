@@ -193,7 +193,7 @@ namespace LinBox
 			//M. write (std::cout);
 			typedef typename Matrix::Field Ring;
 			typedef typename Ring::Element Integer_t;
-			typedef Modular<double> Field;
+			typedef Givaro::Modular<double> Field;
 			typedef Field::Element Element;
 
 			size_t n = M. rowdim();
@@ -212,7 +212,7 @@ namespace LinBox
 
 			Integer_t m = 1;
 			// std::vector<Element> v(n);
-			typedef UnparametricField<Element> NoField;
+			typedef Givaro::UnparametricRing<Element> NoField;
 			NoField unF ;
 			BlasVector<NoField> v(unF,n);
 			size_t j = 0;
@@ -232,7 +232,7 @@ namespace LinBox
 					K1. init (*p, *raw_p);
 
 				//clog << "\rComputing lup mod " << prime << ". ";
-				FFPACK::LUdivine((typename Field::Father_t)K1, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
+				FFPACK::LUdivine(K1, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
 
 				faithful = true;
 				for ( j = 0, P_p = P, PQ_p = PQ; j < n; ++ j, ++ P_p, ++ PQ_p)
@@ -262,7 +262,7 @@ namespace LinBox
 					K3. init (*p, *raw_p);
 
 				//clog << "\rComputing lup mod " << prime << ". ";
-				FFPACK::LUdivine((typename Field::Father_t)K3, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
+				FFPACK::LUdivine(K3, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
 
 				faithful = true;
 				for ( j = 0, P_p = P, PQ_p = PQ; j < n; ++ j, ++ P_p, ++ PQ_p)
@@ -307,8 +307,8 @@ namespace LinBox
 		static Vector& symmetricLU (Vector& v, const Matrix& IM)
 		{
 
-			typedef Modular<int32_t> Field;
-			// typedef Modular<double> Field;
+			typedef Givaro::Modular<int32_t> Field;
+			// typedef Givaro::Modular<double> Field;
 			typedef Field::Element Element;
 			typedef BlasMatrix<Field> FMatrix;
 			RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
@@ -397,7 +397,7 @@ namespace LinBox
 
 			// typedef typename Matrix::Field Ring;
 			// typedef typename Ring::Element Integer_t;
-			typedef Modular<double> Field;
+			typedef Givaro::Modular<double> Field;
 			// typedef Field::Element Element;
 
 			int n = (int)M. rowdim();
@@ -416,7 +416,7 @@ namespace LinBox
 			for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
 				K. init (*p, *raw_p);
 
-			long r = (long)FFPACK::Rank((typename Field::Father_t) K, (size_t)n, (size_t)n, FA, (size_t)n);
+			long r = (long)FFPACK::Rank( K, (size_t)n, (size_t)n, FA, (size_t)n);
 
 			delete[] FA;
 			return r;

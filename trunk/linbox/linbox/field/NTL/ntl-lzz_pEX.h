@@ -93,7 +93,7 @@ namespace LinBox
 		 * (prime, exponent) are only used to initialize the coefficient field.
 		 */
 		NTL_zz_pEX( const integer& p, size_t e = 1 ) :
-			// UnparametricField<NTL::zz_pEX>(p, e), _CField(p,e)
+			// Givaro::UnparametricRing<NTL::zz_pEX>(p, e), _CField(p,e)
 			NTL_zz_pEX_Initialiser(p,e),Father_t ()
 			, zero( NTL::to_zz_pEX(0)),one( NTL::to_zz_pEX(1)),mOne(-one)
 			, _CField(p,e)
@@ -359,7 +359,7 @@ namespace LinBox
 		{ return NTL_zz_p::getMaxModulus(); }
 		/** Write a description of the field */
 		// Oustide of class definition so write(ostream&,const Element&) from
-		// UnparametricField still works.
+		// Givaro::UnparametricRing still works.
 
 		std::ostream& write( std::ostream& os ) const
 		{

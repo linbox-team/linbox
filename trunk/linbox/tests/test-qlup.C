@@ -363,8 +363,8 @@ int main (int argc, char **argv)
 
 	{
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-		<< "over Modular<uint32_t>" << endl;
-		typedef Modular<uint32_t> Field;
+		<< "over Givaro::Modular<uint32_t>" << endl;
+		typedef Givaro::Modular<uint32_t> Field;
 		Field F (q);
 		typedef SparseMatrix<Field, STOR_T > Blackbox;
 		typedef RandomSparseStream<Field, Blackbox::Row   > RandStream;
@@ -378,8 +378,8 @@ int main (int argc, char **argv)
 
 	{
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-		<< "over Modular<double>" << endl;
-		typedef Modular<double> Field;
+		<< "over Givaro::Modular<double>" << endl;
+		typedef Givaro::Modular<double> Field;
 		Field F (q);
 		typedef SparseMatrix<Field, STOR_T > Blackbox;
 		typedef RandomSparseStream<Field, Blackbox::Row   > RandStream;
@@ -395,8 +395,8 @@ int main (int argc, char **argv)
 	{
 
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-		<< "over GivaroZpz<Integer>" << endl;
-		typedef GivaroZpz<Integer> Field;
+		<< "over Givaro::Modular<Integer>" << endl;
+		typedef Givaro::Modular<Integer> Field;
 		Field F (bigQ);
 		typedef SparseMatrix<Field, STOR_T > Blackbox;
 		typedef RandomSparseStream<Field, Blackbox::Row   > RandStream;

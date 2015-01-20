@@ -147,7 +147,7 @@ int main (int argc, char **argv)
 	}
 	if (argc == 3) {
 
-		typedef Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 		double q = atof(argv[2]);
 		Field F(q);
 		BlasMatrix<Field> B (F);

@@ -57,7 +57,7 @@ int main (int argc, char **argv)
 	if (!input) { std::cerr << "Error opening vector file " << argv[2] << std::endl; return -1; }
 
 
-	typedef Modular<double> Field;
+	typedef Givaro::Modular<double> Field;
 	double q = atof(argv[3]);
 	Field F(q);
 	MatrixStream< Field > ms ( F, input );

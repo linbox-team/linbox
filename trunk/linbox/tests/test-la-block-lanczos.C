@@ -263,7 +263,7 @@ int main (int argc, char **argv)
 
 	bool fail = false ;
 
-	typedef Modular<uint8_t> Field;
+	typedef Givaro::Modular<uint8_t> Field;
 
 	parseArguments (argc, argv, args);
 	Field F (q);

@@ -31,7 +31,7 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/field/modular.h"
 #include "linbox/randiter/random-fftprime.h"
-#include <fflas-ffpack/field/rns-double.h>
+#include <givaro/rns-double.h>
 
 namespace LinBox{
 
@@ -39,10 +39,10 @@ namespace LinBox{
 	 **** Polynomial Matrix Multiplication over Z[x] ***
 	 ***************************************************/
 	template<>
-	class PolynomialMatrixFFTMulDomain<UnparametricField<integer> > {
+	class PolynomialMatrixFFTMulDomain<Givaro::UnparametricRing<integer> > {
 	public:
-		typedef UnparametricField<integer>       IntField;
-		typedef Modular<int32_t> ModField;
+		typedef Givaro::UnparametricRing<integer>       IntField;
+		typedef Givaro::Modular<int32_t> ModField;
 		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,ModField> MatrixP_F; // Polynomial matrix stored as a polynomial of matrix
 		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,IntField> MatrixP_I; // Polynomial matrix stored as a polynomial of matrix
 
@@ -339,11 +339,11 @@ namespace LinBox{
 	 **** Polynomial Matrix Multiplication over Fp[x], with p multiprecision ***
 	 ***************************************************************************/
 	template <>
-	class PolynomialMatrixFFTMulDomain<Modular<integer> > {
+	class PolynomialMatrixFFTMulDomain<Givaro::Modular<integer> > {
 	public:
-		typedef Modular<integer>              Field;
+		typedef Givaro::Modular<integer>              Field;
 		typedef typename Field::Element     Element;
-		typedef UnparametricField<integer>  IntField;
+		typedef Givaro::UnparametricRing<integer>  IntField;
 		// Polynomial matrix stored as a polynomial of matrix
 		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP_F;
 		// Polynomial matrix stored as a polynomial of matrix

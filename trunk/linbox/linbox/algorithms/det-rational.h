@@ -194,7 +194,7 @@ namespace LinBox
 
 		corrections(Atilde,F);
 
-		ChineseRemainder< VarPrecEarlySingleCRA<Modular<double> > > cra(3UL);
+		ChineseRemainder< VarPrecEarlySingleCRA<Givaro::Modular<double> > > cra(3UL);
 		MyRationalModularDet<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M, F);
 		MyIntegerModularDet<BlasMatrix<PID_integer>, MyMethod> iteration2(Atilde, Met);
 		MyModularDet<MyRationalModularDet<BlasMatrix<Rationals > , MyMethod>,
@@ -242,8 +242,8 @@ namespace LinBox
 		Integer lif = 1;
 		if ((s1 > 4*s2) && (!term)){
 			//cout << "lif " << std::flush;
-			RationalSolver < PID_integer , Modular<double>, RandomPrimeIterator, DixonTraits > RSolver;
-			LastInvariantFactor < PID_integer ,RationalSolver < PID_integer, Modular<double>, RandomPrimeIterator, DixonTraits > >  LIF(RSolver);
+			RationalSolver < PID_integer , Givaro::Modular<double>, RandomPrimeIterator, DixonTraits > RSolver;
+			LastInvariantFactor < PID_integer ,RationalSolver < PID_integer, Givaro::Modular<double>, RandomPrimeIterator, DixonTraits > >  LIF(RSolver);
 			IVect r_num2 (Z,Atilde. coldim());
 			t1.clear();
 			t1.start();

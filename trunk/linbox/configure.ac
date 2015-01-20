@@ -339,7 +339,6 @@ linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
 linbox/field/NTL/Makefile
-linbox/field/Givaro/Makefile
 linbox/field/Modular/Makefile
 linbox/matrix/Makefile
 linbox/matrix/SparseMatrix/Makefile

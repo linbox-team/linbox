@@ -10,7 +10,7 @@
  * 2002-04-10 Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * Rename from test-large-modular.C to test-modular.C; made other updates in
- * accordance with changes to Modular interace.
+ * accordance with changes to Givaro::Modular interace.
  * ------------------------------------
  *
  *
@@ -84,28 +84,28 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator().start("Modular<short> field test suite", "Modular<short>");
+	commentator().start("Givaro::Modular<short> field test suite", "Givaro::Modular<short>");
 	bool pass = true;
 
-	Modular<short> F_int (32749);
-	// Modular<short> F_int (101);
-	integer k = FieldTraits<Modular<short> >::maxModulus() ;
+	Givaro::Modular<short> F_int (32749);
+	// Givaro::Modular<short> F_int (101);
+	integer k = FieldTraits<Givaro::Modular<short> >::maxModulus() ;
 	prevprime(k,k);
-	Modular<short> G_int(k);
+	Givaro::Modular<short> G_int(k);
 
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F_int,  "Modular<short>",  iterations, n, false)) pass = false;
-	if (!testRandomIterator (F_int,  "Modular<short>", trials, categories, hist_level)) pass = false;
+	if (!runFieldTests (F_int,  "Givaro::Modular<short>",  iterations, n, false)) pass = false;
+	if (!testRandomIterator (F_int,  "Givaro::Modular<short>", trials, categories, hist_level)) pass = false;
 
-	if (!runFieldTests (G_int,  "Modular<short>",  iterations, n, false)) pass = false;
-	if (!testRandomIterator (G_int,  "Modular<short>", trials, categories, hist_level)) pass = false;
+	if (!runFieldTests (G_int,  "Givaro::Modular<short>",  iterations, n, false)) pass = false;
+	if (!testRandomIterator (G_int,  "Givaro::Modular<short>", trials, categories, hist_level)) pass = false;
 
 
 
-	commentator().stop("Modular<short> field test suite");
+	commentator().stop("Givaro::Modular<short> field test suite");
 	return pass ? 0 : -1;
 }
 

@@ -46,7 +46,7 @@ int main (int argc, char **argv)
 	ifstream input (argv[1]);
 	if (!input) { cerr << "Error opening matrix file " << argv[1] << endl; return -1; }
 
-	typedef Modular<double> Field;
+	typedef Givaro::Modular<double> Field;
 	double q = atof(argv[2]);
 	Field F(q);
 
@@ -56,7 +56,7 @@ int main (int argc, char **argv)
 	cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 	cout << A << std::endl;
 
-	EchelonFormDomain<Modular<double> > EFD (F);
+	EchelonFormDomain<Givaro::Modular<double> > EFD (F);
 
 	EFD.rowReducedEchelon(E,A);
 

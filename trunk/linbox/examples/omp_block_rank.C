@@ -427,7 +427,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 
 	// write_sigma(F, "bminpoly", LS2);
 
-	typedef Poly1CRT< LinBox::GivaroField<Field> >  PolyCRT;
+	typedef Poly1CRT< LinBox::Field>   PolyCRT;
 	typedef typename PolyCRT::array_T VScal;
 
 	VScal EvalPoints( LS2.size()*nb );
@@ -550,14 +550,14 @@ int main (int argc, char **argv)
 	}
 #if 0
 	if (extend > 1) {
-		typedef LinBox::GivaroGfq Field;
+		typedef LinBox::Givaro::GFq Field;
 		Field EF( (unsigned long)c, extend);
 		EF.write(std::cerr << "Using an extension field ") << std::endl;
 		return OMP_BLOCK_RANK_main(EF,argc,argv);
 	}
 #endif
 	// else {
-	typedef LinBox::Modular<double> Field;
+	typedef Givaro::Modular<double> Field;
 	Field F(c);
 	return OMP_BLOCK_RANK_main(F,argc,argv);
 	//     }

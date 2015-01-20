@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
 	report << "]\n";
 
 	// TT.setToUniModLT();
-	//  report << "Setting the matrix to UniModular Upper Triangular";
+	//  report << "Setting the matrix to UniGivaro::Modular Upper Triangular";
 	//  TT.setToUniModUT();
 	//  report << "The Upper Triangular matrix is: " << std::endl;
 	//TT.write();

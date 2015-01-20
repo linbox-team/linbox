@@ -79,7 +79,7 @@ namespace LinBox {
 
 		/** @brief Toom-Cook multiplication for GF(p^e)
 		 * A matrix over GF(p^e) is represented by a polynomial of Z/pZ matrices.
-		 * @tparam Zpz is some modular field, GFq is GivaroExtension (or the like)
+		 * @tparam Zpz is some modular field, GFq is Givaro::Extension (or the like)
 		 * @param [out] C result
 		 * @param A matrix
 		 * @param B matrix
@@ -94,7 +94,7 @@ namespace LinBox {
 
 		/** @brief Toom-Cook multiplication for GF(p^e)
                  *
-		 * @tparam Zpz is some modular field, GFq is GivaroExtension (or the like)
+		 * @tparam Zpz is some modular field, GFq is Givaro::Extension (or the like)
 		 * @param [out] C result
 		 * @param A matrix
 		 * @param B matrix
@@ -102,11 +102,11 @@ namespace LinBox {
                  * @warning p should not be too small, and e>1 (you've been warned...)
 		 */
 		template<class Zpz>
-		BlasMatrix<GivaroExtension<Zpz> >&
-		mul (BlasMatrix<GivaroExtension<Zpz> >& C,
-			 const BlasMatrix<GivaroExtension<Zpz> >& A,
-			 const BlasMatrix<GivaroExtension<Zpz> >& B,
-			 const mulMethod::ToomCook<GivaroExtension<Zpz> > & T);
+		BlasMatrix<Givaro::Extension<Zpz> >&
+		mul (BlasMatrix<Givaro::Extension<Zpz> >& C,
+			 const BlasMatrix<Givaro::Extension<Zpz> >& A,
+			 const BlasMatrix<Givaro::Extension<Zpz> >& B,
+			 const mulMethod::ToomCook<Givaro::Extension<Zpz> > & T);
 
 #if 0 /* Generic method */
 		template<class ZpzMatrix>

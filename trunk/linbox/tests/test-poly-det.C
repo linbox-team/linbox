@@ -17,7 +17,7 @@
 
 using namespace LinBox;
 
-typedef Modular<double> Field;
+typedef Givaro::Modular<double> Field;
 typedef typename Field::Element FieldElt;
 typedef Givaro::Poly1Dom<Field,Givaro::Dense> PolyDom;
 typedef GivaroPoly<PolyDom> Ring;

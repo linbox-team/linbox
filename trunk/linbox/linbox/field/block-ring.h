@@ -42,7 +42,7 @@ namespace LinBox
 	  Operations expect conformal sizes for inputs and outputs.
 
 	  You can expect good performance due to BLAS usage,
-	  especially when the Field is Modular<double> or Modular<float>.
+	  especially when the Field is Givaro::Modular<double> or Givaro::Modular<float>.
 	  */
 
 	template < class _Field >
@@ -436,7 +436,7 @@ namespace LinBox
 			}
 
 			//Scalar alpha; _field.assign(alpha, _field.one);
-			//FFLAS::faxpy((typename Field::Father_t)_field, rows*cols, alpha, a, 1, c, 1);
+			//FFLAS::faxpy(_field, rows*cols, alpha, a, 1, c, 1);
 
 			return C;
 		}

@@ -43,8 +43,8 @@ namespace LinBox
 		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const BlasMatrix<IRing>& M, const InVector& b)
 		{
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
-			typedef Modular<int32_t> Field;
-			// typedef Modular<double> Field;
+			typedef Givaro::Modular<int32_t> Field;
+			// typedef Givaro::Modular<double> Field;
 			RationalSolver<IRing, Field, RandomPrimeIterator, NumSymNormTraits> numerical_solver;
 			//RationalSolver<IRing, Field, RandomPrimeIterator, NumSymOverlapTraits> numerical_solver;
 			SolverReturnStatus ret;
@@ -72,8 +72,8 @@ namespace LinBox
 	struct RationalSolverAdaptiveClass<IRing, OutVector, Container<typename IRing::Element> > {
 		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const BlasMatrix<IRing>& M, const Container<typename IRing::Element> & b) {
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
-			typedef Modular<int32_t> Field;
-			// typedef Modular<double> Field;
+			typedef Givaro::Modular<int32_t> Field;
+			// typedef Givaro::Modular<double> Field;
 			RationalSolver<IRing, Field, RandomPrimeIterator, NumSymOverlapTraits> numerical_solver;
 			SolverReturnStatus ret;
 			ret = numerical_solver. solve(num, den, M, b);

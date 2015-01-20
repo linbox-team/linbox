@@ -48,7 +48,7 @@ namespace LinBox
 	 *                     should be a data type that can support integers
 	 *                     twice the length of the maximal modulus used
 	 */
-	template <class Ints> class PowerOfTwoModular
+	template <class Ints> class PowerOfTwoGivaro::Modular
 	{
 	public:
 
@@ -63,7 +63,7 @@ namespace LinBox
 		struct RandIter{
 			typedef Ints Element;
 
-			RandIter ( const PowerOfTwoModular<Ints>& F,
+			RandIter ( const PowerOfTwoGivaro::Modular<Ints>& F,
 				   const integer& size = 0, const integer& seed = 0){
 				if (_seed == integer(0)) _seed = integer(time(NULL));
 				srand(static_cast<long>(_seed));
@@ -92,7 +92,7 @@ namespace LinBox
 
 		/** Default constructor.
 		*/
-		PowerOfTwoModular (void) {
+		PowerOfTwoGivaro::Modular (void) {
 			_poweroftwo=sizeof(Ints)<<3;
 		}
 
@@ -566,14 +566,14 @@ protected:
 		/// Private (non-static) element for modulus
 		Element _poweroftwo;
 
-}; // class PowerOfTwoModular
+}; // class PowerOfTwoGivaro::Modular
 
 #if 0
 /* Specialization of gcd_poweroftwo for Int64
 */
 template<>
-PowerOfTwoModular<int64_t>::Element&
-PowerOfTwoModular<int64_t>::gcd_poweroftwo (Element &x,const Element &y) const
+PowerOfTwoGivaro::Modular<int64_t>::Element&
+PowerOfTwoGivaro::Modular<int64_t>::gcd_poweroftwo (Element &x,const Element &y) const
 {
 	return x=GCD2E64(y);
 }
@@ -582,7 +582,7 @@ PowerOfTwoModular<int64_t>::gcd_poweroftwo (Element &x,const Element &y) const
 } // namespace LinBox
 
 // #include "linbox/field/modular.inl"
-// #include "linbox/randiter/modular.h"
+// 
 
 #endif // __LINBOX_poweroftwomodular_H
 

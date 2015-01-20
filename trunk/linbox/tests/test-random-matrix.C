@@ -9,7 +9,7 @@ using namespace LinBox;
 
 bool testPrimeField(int p, int n, int m)
 {
-	typedef Modular<double> Field;
+	typedef Givaro::Modular<double> Field;
 	typedef MatrixDomain<Field> Domain;
 	typedef typename Domain::OwnMatrix Matrix;
 	typedef typename Field::RandIter RandIter;

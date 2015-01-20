@@ -37,11 +37,10 @@
  */
 
 
- // where is this used?
-#define __MINP_CONSTRUCT
-#include "linbox/linbox-config.h"
 #include <iostream>
 #include <string>
+
+#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 //#include "linbox/field/gf2.h"
 //#include "linbox/domain/blas_matrix_domain_gf2.h"
@@ -52,8 +51,8 @@
 // defines template<> class BlasMatrixDomain<GF3> { ... };
 // ... and template<> BlasMatrix<GF3> {}
 #include "linbox/field/modular.h"
-#include "linbox/field/modular-balanced.h"
-#include "linbox/field/givaro.h"
+#include <givaro/modular-balanced.h>
+
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/ntl.h"
 #endif
@@ -163,8 +162,8 @@ int main(int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().start("BlasMatrixDomain test suite", "BlasMatrixDomain");
 
-	Modular<double> F1 (q);
-	//Modular<int> F1 (q);
+	Givaro::Modular<double> F1 (q);
+	//Givaro::Modular<int> F1 (q);
 	pass &= launch_tests(F1,n,iterations);
 
 #pragma message "#warning GF2 -> working on m4ri wrapper"
@@ -175,18 +174,18 @@ int main(int argc, char **argv)
 	//GF3 F_3 ;
 	//pass &= launch_gf3_tests(F_3,n);
 
-	ModularBalanced<double> F4(q);
+	Givaro::ModularBalanced<double> F4(q);
 	pass &= launch_tests(F4,n,iterations);
 
-	Modular<float> F5(2011);
+	Givaro::Modular<float> F5(2011);
 	pass &= launch_tests(F5,n,iterations);
 
-#pragma message "#warning GivaroZpz is not working at all"
-	GivaroZpz<uint32_t> F6(2001);
+#pragma message "#warning Givaro::Modular is not working at all"
+	Givaro::Modular<uint32_t> F6(2001);
 	// pass &= launch_tests(F6,n,iterations);
 
-//#pragma message "#warning Modular<bool> is not working"
-	Modular<bool> F7 ;
+//#pragma message "#warning Givaro::Modular<bool> is not working"
+	Givaro::Modular<bool> F7 ;
 	//pass &= launch_tests(F7,n,iterations);
 
 #ifdef __LINBOX_HAVE_NTL
@@ -332,7 +331,7 @@ bool CheckMulAdd(const Field& Zp, const Integer & alpha ,
 	size_t M = C.rowdim();
 	size_t N = C.coldim();
 
-	//typedef Modular<double>       Field ;
+	//typedef Givaro::Modular<double>       Field ;
 	typedef typename Field::Element      Element ;
 
 	PID_integer ZZ ;

@@ -267,11 +267,11 @@ namespace LinBox { namespace BLAS3 {
 	}
 
 	template<class Zpz>
-	BlasMatrix<GivaroExtension<Zpz> >&
-	mul (BlasMatrix<GivaroExtension<Zpz> >& C,
-		 const BlasMatrix<GivaroExtension<Zpz> >& A,
-		 const BlasMatrix<GivaroExtension<Zpz> >& B,
-		 const mulMethod::ToomCook<GivaroExtension<Zpz> > & T)
+	BlasMatrix<Givaro::Extension<Zpz> >&
+	mul (BlasMatrix<Givaro::Extension<Zpz> >& C,
+		 const BlasMatrix<Givaro::Extension<Zpz> >& A,
+		 const BlasMatrix<Givaro::Extension<Zpz> >& B,
+		 const mulMethod::ToomCook<Givaro::Extension<Zpz> > & T)
 	{
 
 		size_t e = (size_t) A.field().exponent() ; // extension degree
@@ -333,7 +333,7 @@ namespace LinBox { namespace BLAS3 {
 		Protected::mul(Cbloc,Abloc,Bbloc,m,k,n,T);
 		// convert back
 
-		typedef typename GivaroExtension<Zpz>::Element Element ;
+		typedef typename Givaro::Extension<Zpz>::Element Element ;
 		for (size_t i = 0 ; i < m ; ++i) {
 			for (size_t j = 0 ; j < n ; ++j) {
 				Element x(e) ;

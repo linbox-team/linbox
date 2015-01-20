@@ -395,7 +395,7 @@ int main (int argc, char **argv)
         qs.push_back(2);
         qs.push_back(65537);
 
-        pass = testSuite<Modular<double> >(qs,report);
+        pass = testSuite<Givaro::Modular<double> >(qs,report);
 
 	commentator().stop("TriplesBBOMP black box test suite");
 	return pass ? 0 : -1;

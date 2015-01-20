@@ -139,10 +139,10 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	Modular<integer> F_integer (q1);
-	Modular<uint32_t> F_uint32_t ((uint32_t) q2);
-	Modular<uint16_t> F_uint16_t ((uint16_t) q3);
-	Modular<uint8_t> F_uint8_t ((uint8_t) q4);
+	Givaro::Modular<integer> F_integer (q1);
+	Givaro::Modular<uint32_t> F_uint32_t ((uint32_t) q2);
+	Givaro::Modular<uint16_t> F_uint16_t ((uint16_t) q3);
+	Givaro::Modular<uint8_t> F_uint8_t ((uint8_t) q4);
 	GF2 gf2(2);
 
 	commentator().start("Vector domain test suite", "VectorDomain");
@@ -152,10 +152,10 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (3);
 
-	if (!testVectorDomain (F_integer, "Modular <integer>", n, iterations)) pass = false;
-	if (!testVectorDomain (F_uint32_t, "Modular <uint32_t>", n, iterations)) pass = false;
-	if (!testVectorDomain (F_uint16_t, "Modular <uint16_t>", n, iterations)) pass = false;
-	if (!testVectorDomain (F_uint8_t, "Modular <uint8_t>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_integer, "Givaro::Modular <integer>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_uint32_t, "Givaro::Modular <uint32_t>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_uint16_t, "Givaro::Modular <uint16_t>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_uint8_t, "Givaro::Modular <uint8_t>", n, iterations)) pass = false;
 //	if (!testVectorDomain (gf2, "GF2", n, iterations)) pass = false;
 
 	commentator().stop("Vector domain test suite");

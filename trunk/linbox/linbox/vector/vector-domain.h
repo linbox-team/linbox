@@ -79,23 +79,16 @@ namespace LinBox
 	template <class Field>
 	class VectorDomainBase {
 	public:
-		VectorDomainBase () :_field(0) { /*std::cerr <<"VDB def cstor" << std::endl;*/ }
-		VectorDomainBase (const Field &F) :
-			_field (&F)//, accu(F)
-		{ /* std::cerr <<"VDB cstor " << this << std::endl;*/ }
+		VectorDomainBase () : _faxpy(nullptr) {}
+		VectorDomainBase (const Field &F) :	_faxpy(new FieldAXPY<Field>(F)) {}
+		virtual ~VectorDomainBase()	{ if (_faxpy != nullptr) delete _faxpy; }
 
-		/*VectorDomainBase& operator= (const VectorDomainBase& VD)
-		{	_field = VD._field;
-			//accu = VD.accu;
-			return *this;
-		}
-		*/
-		void init(const Field &F) { _field = &F; }
-
-		inline const Field & field() const { return *_field; }
-	//protected:
-		const Field * _field;
-		/*mutable*/ //FieldAXPY<Field> accu;
+		void init(const Field &F) { _faxpy = new FieldAXPY<Field>(F); }
+		inline const Field & field() const { return _faxpy->field(); }
+		inline const FieldAXPY<Field>& faxpy() const { return *_faxpy; }
+	
+	protected:
+		const FieldAXPY<Field> * _faxpy;
 	};
 }
 

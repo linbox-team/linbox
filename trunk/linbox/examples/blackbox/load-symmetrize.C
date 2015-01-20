@@ -45,7 +45,7 @@
 using namespace LinBox;
 using namespace std;
 
-typedef Modular<uint32_t> Field;
+typedef Givaro::Modular<uint32_t> Field;
 
 typedef vector <Field::Element> Vector;
 typedef vector <Field::Element> Polynomial;

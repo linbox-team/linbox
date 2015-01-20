@@ -267,7 +267,7 @@ namespace LinBox
 			return NormField();
 		}
 
-		Mod32Field getType(const Modular<uint32_t> &) const
+		Mod32Field getType(const Givaro::Modular<uint32_t> &) const
 		{
 			return Mod32Field();
 		}

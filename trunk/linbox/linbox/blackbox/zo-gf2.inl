@@ -131,8 +131,8 @@ namespace LinBox
 
 	inline std::istream &ZeroOne<GF2>::read (std::istream &is) {
 		// Reads a long int and take it mod 2 afterwards (v&1)
-		UnparametricField<long> Ints;
-		MatrixStream<UnparametricField<long> > S(Ints, is);
+		Givaro::UnparametricRing<long> Ints;
+		MatrixStream<Givaro::UnparametricRing<long> > S(Ints, is);
 		S.getDimensions( _rowdim, _coldim );
 		this->resize(_rowdim);
 		Index r, c;

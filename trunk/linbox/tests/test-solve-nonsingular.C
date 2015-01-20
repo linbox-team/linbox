@@ -321,8 +321,8 @@ int main(int argc, char** argv) {
 	typedef PID_integer	Ring;  		Ring R;
 
 	typedef ParamFuzzy Field;
-	typedef Modular<int32_t> ZField;
-	typedef Modular<double> DField;
+	typedef Givaro::Modular<int32_t> ZField;
+	typedef Givaro::Modular<double> DField;
 
 	typedef BlasMatrix<Field> Matrix;
 	typedef BlasMatrix<Ring> CommonMatrix;

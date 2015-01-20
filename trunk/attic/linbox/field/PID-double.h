@@ -43,7 +43,7 @@ namespace LinBox
 	/*! \ingroup integers
 	 * @brief NO DOC
 	 */
-	class PID_double : public UnparametricField<double> {
+	class PID_double : public Givaro::UnparametricRing<double> {
 
 	public:
 
@@ -330,7 +330,7 @@ namespace LinBox
 	}; //end of class PID_double
 
 	template<>
-	std::ostream &UnparametricField<double>::write (std::ostream &os) const
+	std::ostream &Givaro::UnparametricRing<double>::write (std::ostream &os) const
 	{
 		return os << "unparam<double>";
 	}

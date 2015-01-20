@@ -54,41 +54,41 @@ namespace LinBox {
 
 	template<>
 	struct AutoField<PID_Integer> {
-		typedef ModularBalanced<double> Base ;
+		typedef Givaro::ModularBalanced<double> Base ;
 
 	};
 
 	template<Field>
-	struct AutoField<GivaroExtension<Field>> {
+	struct AutoField<Givaro::Extension<Field>> {
 		// typedef AutoField<Field>::Base Base ;
 		typedef Field Base ;
 	};
 
 	template<>
-	struct AutoField<Modular<float> > {
+	struct AutoField<Givaro::Modular<float> > {
 		typedef Unparametric<float> Base ;
 	};
 
 	template<>
-	struct AutoField<ModularBalanced<float> > {
+	struct AutoField<Givaro::ModularBalanced<float> > {
 		typedef Unparametric<float> Base ;
 	};
 
 	template<>
-	struct AutoField<Modular<double> > {
+	struct AutoField<Givaro::Modular<double> > {
 		// sometimes, could be Unparametric<float>...
 		typedef Unparametric<double> Base ;
 	};
 
 	template<>
-	struct AutoField<ModularBalanced<double> > {
+	struct AutoField<Givaro::ModularBalanced<double> > {
 		typedef Unparametric<double> Base ;
 	};
 
 
 
 	template<>
-	struct AutoField<Modular<float> > {
+	struct AutoField<Givaro::Modular<float> > {
 		typedef Unparametric<float> Base ;
 	};
 #endif
@@ -1404,7 +1404,7 @@ namespace LinBox {
 
 	// template<>
 	// template<class inVector, class outVector>
-	// outVector & SparseMatrix<Modular<double>, SparseMatrixFormat::CSR >::apply(outVector &Y, const inVector& X, const Element & a ) const
+	// outVector & SparseMatrix<Givaro::Modular<double>, SparseMatrixFormat::CSR >::apply(outVector &Y, const inVector& X, const Element & a ) const
 	// {
 	// 	FFLAS::CSR_sub<typename Field::Element> A ;
 	// 	// FFLAS::CSR_sub<typename Field::Element> A ;
@@ -1424,7 +1424,7 @@ namespace LinBox {
 	// 	y.m = Y.size();
 	// 	y.dat = Y.getWritePointer();
 	// 	// std::cout << "called" << std::endl ;
-	// 	FFLAS::sp_fgemv((typename Field::Father_t)field(),  A, x, a, y);
+	// 	FFLAS::sp_fgemv(field(),  A, x, a, y);
 	// 	return Y ;
 	// }
 
@@ -1491,7 +1491,7 @@ namespace LinBox {
 		// XXX generic Tag
 		// MKL
 
-		// Modular Tag
+		// Givaro::Modular Tag
 		// sum of matrices
 		template<class inMatrix, class outMatrix>
 		outMatrix & applyLeft( outMatrix & y, const inMatrix & x, Element & alpha

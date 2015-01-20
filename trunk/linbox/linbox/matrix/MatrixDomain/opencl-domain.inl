@@ -44,19 +44,19 @@ namespace LinBox
 	/*
 	 * ******************************************************
 	 * *** Specializations for BlasMatrix<Field> where    ***
-	 * *** the Field is Modular<float> or Modular<double> ***
+	 * *** the Field is Givaro::Modular<float> or Givaro::Modular<double> ***
 	 * ******************************************************
 	 */
 
 	/*
 	 * Specialization of Mul for
 	 * multiplying two general dense matrices
-	 * over a Modular<double> Field.
+	 * over a Givaro::Modular<double> Field.
 	 * C = A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<double> >::mul(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<double> >::mul(
 		Operand1& C,
 		const Operand2& A,
 		const Operand3& B) const{
@@ -73,7 +73,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMul<Modular<double>,Operand1,Operand2,Operand3>()(
+			return BlasMatrixDomainMul<Givaro::Modular<double>,Operand1,Operand2,Operand3>()(
 				_F,
 				C,
 				A,
@@ -246,12 +246,12 @@ namespace LinBox
 	/*
 	 * Specialization of Mul for
 	 * multiplying two general dense matrices
-	 * over a Modular<float> Field.
+	 * over a Givaro::Modular<float> Field.
 	 * C = A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<float> >::mul(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<float> >::mul(
 		Operand1& C,
 		const Operand2& A,
 		const Operand3& B) const{
@@ -268,7 +268,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMul<Modular<float>,Operand1,Operand2,Operand3>()(
+			return BlasMatrixDomainMul<Givaro::Modular<float>,Operand1,Operand2,Operand3>()(
 				_F,
 				C,
 				A,
@@ -440,13 +440,13 @@ namespace LinBox
 	/*
 	 * Specialization of mulin_left for
 	 * multiplying two general dense matrices
-	 * over a Modular<double> Field.
+	 * over a Givaro::Modular<double> Field.
 	 * Places result into the left matrix.
 	 * A = A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2>
-	Operand1& OpenCLMatrixDomain<Modular<double> >::mulin_left(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<double> >::mulin_left(
 		Operand1& A,
 		const Operand2& B) const{
 
@@ -462,7 +462,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulin<Modular<double>,Operand1,Operand2>()(_F,A,B);
+			return BlasMatrixDomainMulin<Givaro::Modular<double>,Operand1,Operand2>()(_F,A,B);
 		}
 
 		Operand1 T(A);
@@ -472,13 +472,13 @@ namespace LinBox
 	/*
 	 * Specialization of mulin_left for
 	 * multiplying two general dense matrices
-	 * over a Modular<float> Field.
+	 * over a Givaro::Modular<float> Field.
 	 * Places the result into the left matrix.
 	 * A = A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2>
-	Operand1& OpenCLMatrixDomain<Modular<float> >::mulin_left(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<float> >::mulin_left(
 		Operand1& A,
 		const Operand2& B) const{
 
@@ -495,7 +495,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulin<Modular<float>,Operand1,Operand2>()(_F,A,B);
+			return BlasMatrixDomainMulin<Givaro::Modular<float>,Operand1,Operand2>()(_F,A,B);
 		}
 
 		Operand1 T(A);
@@ -505,13 +505,13 @@ namespace LinBox
 	/*
 	 * Specialization of mulin_right for
 	 * multiplying two general dense matrices
-	 * over a Modular<double> Field.
+	 * over a Givaro::Modular<double> Field.
 	 * Places the result into the right matrix.
 	 * B = A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2>
-	Operand2& OpenCLMatrixDomain<Modular<double> >::mulin_right(
+	Operand2& OpenCLMatrixDomain<Givaro::Modular<double> >::mulin_right(
 		const Operand1& A,
 		Operand2& B) const{
 
@@ -527,7 +527,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulin<Modular<double>,Operand2,Operand1>()(_F,A,B);
+			return BlasMatrixDomainMulin<Givaro::Modular<double>,Operand2,Operand1>()(_F,A,B);
 		}
 
 		Operand2 T(B);
@@ -537,13 +537,13 @@ namespace LinBox
 	/*
 	 * Specialization of mulin_right for
 	 * multiplying two general dense matrices
-	 * over a Modular<float> Field.
+	 * over a Givaro::Modular<float> Field.
 	 * Places the result into the right matrix.
 	 * B = A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2>
-	Operand2& OpenCLMatrixDomain<Modular<float> >::mulin_right(
+	Operand2& OpenCLMatrixDomain<Givaro::Modular<float> >::mulin_right(
 		const Operand1& A,
 		Operand2& B) const{
 
@@ -560,7 +560,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulin<Modular<float>,Operand2,Operand1>()(_F,A,B);
+			return BlasMatrixDomainMulin<Givaro::Modular<float>,Operand2,Operand1>()(_F,A,B);
 		}
 
 		Operand2 T(B);
@@ -569,12 +569,12 @@ namespace LinBox
 
 	/*
 	 * Specialization of general matrix-matrix multiplication and
-	 * addition with scaling over a Modular<double> Field
+	 * addition with scaling over a Givaro::Modular<double> Field
 	 * D = beta.C + alpha.A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<double> >::muladd(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<double> >::muladd(
 		Operand1& D,
 		const double& beta,
 		const Operand1& C,
@@ -590,7 +590,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<//Modular<double>,
+			return BlasMatrixDomainMulAdd<//Givaro::Modular<double>,
 				Operand1,
 				Operand2,
 				Operand3>()(D,beta,C,alpha,A,B);
@@ -771,12 +771,12 @@ namespace LinBox
 
 	/*
 	 * Specialization of general matrix-matrix multiplication and
-	 * addition with scaling over a Modular<float> Field
+	 * addition with scaling over a Givaro::Modular<float> Field
 	 * D = beta.C + alpha.A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<float> >::muladd(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<float> >::muladd(
 		Operand1& D,
 		const float& beta,
 		const Operand1& C,
@@ -792,7 +792,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<//Modular<float>,
+			return BlasMatrixDomainMulAdd<//Givaro::Modular<float>,
 				Operand1,
 				Operand2,
 				Operand3>()(D,beta,C,alpha,A,B);
@@ -973,13 +973,13 @@ namespace LinBox
 
 	/*
 	 * Specialization of general matrix-matrix multiplication and
-	 * addition with scaling over a Modular<double> Field
+	 * addition with scaling over a Givaro::Modular<double> Field
 	 * Places the results into the first genreral dense matrix
 	 * C = beta.C + alpha.A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<double> >::muladdin(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<double> >::muladdin(
 		const double& beta,
 		Operand1& C,
 		const double& alpha,
@@ -994,7 +994,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<//Modular<double>,
+			return BlasMatrixDomainMulAdd<//Givaro::Modular<double>,
 				Operand1,
 				Operand2,
 				Operand3>()(beta,C,alpha,A,B);
@@ -1006,13 +1006,13 @@ namespace LinBox
 
 	/*
 	 * Specialization of general matrix-matrix multiplication and
-	 * addition with scaling over a Modular<float> Field
+	 * addition with scaling over a Givaro::Modular<float> Field
 	 * Places the results into the first genreral dense matrix
 	 * C = beta.C + alpha.A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<float> >::muladdin(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<float> >::muladdin(
 		const float& beta,
 		Operand1& C,
 		const float& alpha,
@@ -1027,7 +1027,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<//Modular<float>,
+			return BlasMatrixDomainMulAdd<//Givaro::Modular<float>,
 				Operand1,
 				Operand2,
 				Operand3>()(beta,C,alpha,A,B);
@@ -1039,12 +1039,12 @@ namespace LinBox
 
 	/*
 	 * Specialization of multiplication with scaling over
-	 * a Modular<double> Field
+	 * a Givaro::Modular<double> Field
 	 * C = alpha.A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<double> >::mul(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<double> >::mul(
 		Operand1& C,
 		const double& alpha,
 		const Operand2& A,
@@ -1055,12 +1055,12 @@ namespace LinBox
 
 	/*
 	 * Specialization of multiplication with scaling over
-	 * a Modular<float> Field
+	 * a Givaro::Modular<float> Field
 	 * C = alpha.A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<float> >::mul(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<float> >::mul(
 		Operand1& C,
 		const float& alpha,
 		const Operand2& A,
@@ -1073,12 +1073,12 @@ namespace LinBox
 	 * Specialization of apxy for
 	 * multiplying two general dense matrices
 	 * and adding a third general dense matrix
-	 * over a Modular<double> Field.
+	 * over a Givaro::Modular<double> Field.
 	 * D = A*B + C
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<double> >::axpy(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<double> >::axpy(
 		Operand1& D,
 		const Operand2& A,
 		const Operand3& B,
@@ -1092,7 +1092,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<//Modular<double>,
+			return BlasMatrixDomainMulAdd<//Givaro::Modular<double>,
 				Operand1,
 				Operand2,
 				Operand3>()(D,_F.one,C,_F.one,A,B);
@@ -1268,12 +1268,12 @@ namespace LinBox
 	 * Specialization of apxy for
 	 * multiplying two general dense matrices
 	 * and adding a third general dense matrix
-	 * over a Modular<float> Field.
+	 * over a Givaro::Modular<float> Field.
 	 * D = A*B + C
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<float> >::axpy(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<float> >::axpy(
 		Operand1& D,
 		const Operand2& A,
 		const Operand3& B,
@@ -1287,7 +1287,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<//Modular<float>,
+			return BlasMatrixDomainMulAdd<//Givaro::Modular<float>,
 				Operand1,
 				Operand2,
 				Operand3>()(D,_F.one,C,_F.one,A,B);
@@ -1464,13 +1464,13 @@ namespace LinBox
 	 * Specialization of apxyin for
 	 * multiplying two general dense matrices
 	 * and adding a third general dense matrix
-	 * over a Modular<double> Field.
+	 * over a Givaro::Modular<double> Field.
 	 * Places the result into the first matrix.
 	 * C += A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<double> >::axpyin(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<double> >::axpyin(
 		Operand1& C,
 		const Operand2& A,
 		const Operand3& B) const{
@@ -1494,13 +1494,13 @@ namespace LinBox
 	 * Specialization of apxyin for
 	 * multiplying two general dense matrices
 	 * and adding a third general dense matrix
-	 * over a Modular<float> Field.
+	 * over a Givaro::Modular<float> Field.
 	 * Places the result into the first matrix.
 	 * C += A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<float> >::axpyin(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<float> >::axpyin(
 		Operand1& C,
 		const Operand2& A,
 		const Operand3& B) const{
@@ -1524,12 +1524,12 @@ namespace LinBox
 	 * Specialization of maxpy for
 	 * multiplying two general dense matrices
 	 * and subtracts it from a third general dense matrix
-	 * over a Modular<double> Field.
+	 * over a Givaro::Modular<double> Field.
 	 * D = C - A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<double> >::maxpy(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<double> >::maxpy(
 		Operand1& D,
 		const Operand2& A,
 		const Operand3& B,
@@ -1543,7 +1543,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<//Modular<double>,
+			return BlasMatrixDomainMulAdd<//Givaro::Modular<double>,
 				Operand1,
 				Operand2,
 				Operand3>()(D,_F.one,C,_F.mOne,A,B);
@@ -1719,12 +1719,12 @@ namespace LinBox
 	 * Specialization of maxpy for
 	 * multiplying two general dense matrices
 	 * and subtracts it from a third general dense matrix
-	 * over a Modular<float> Field.
+	 * over a Givaro::Modular<float> Field.
 	 * D = C - A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<float> >::maxpy(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<float> >::maxpy(
 		Operand1& D,
 		const Operand2& A,
 		const Operand3& B,
@@ -1738,7 +1738,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<//Modular<float>,
+			return BlasMatrixDomainMulAdd<//Givaro::Modular<float>,
 				Operand1,
 				Operand2,
 				Operand3>()(D,_F.one,C,_F.mOne,A,B);
@@ -1914,13 +1914,13 @@ namespace LinBox
 	 * Specialization of maxpyin for
 	 * multiplying two general dense matrices
 	 * and subtracts it from a third general dense matrix
-	 * over a Modular<double> Field.
+	 * over a Givaro::Modular<double> Field.
 	 * Places the results into the first gernal dense matrix.
 	 * C -= A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<double> >::maxpyin(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<double> >::maxpyin(
 		Operand1& C,
 		const Operand2& A,
 		const Operand3& B) const{
@@ -1944,13 +1944,13 @@ namespace LinBox
 	 * Specialization of maxpyin for
 	 * multiplying two general dense matrices
 	 * and subtracts it from a third general dense matrix
-	 * over a Modular<float> Field.
+	 * over a Givaro::Modular<float> Field.
 	 * Places the results into the first gernal dense matrix.
 	 * C -= A*B
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<float> >::maxpyin(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<float> >::maxpyin(
 		Operand1& C,
 		const Operand2& A,
 		const Operand3& B) const{
@@ -1974,12 +1974,12 @@ namespace LinBox
 	 * Specialization of axmy for
 	 * multiplying two general dense matrices
 	 * and subtracts a third general dense matrix from it
-	 * over a Modular<double> Field.
+	 * over a Givaro::Modular<double> Field.
 	 * D = A*B - C
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<double> >::axmy(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<double> >::axmy(
 		Operand1& D,
 		const Operand2& A,
 		const Operand3& B,
@@ -1997,7 +1997,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<//Modular<double>,
+			return BlasMatrixDomainMulAdd<//Givaro::Modular<double>,
 				Operand1,
 				Operand2,
 				Operand3>()(D,_F.mOne,C,_F.one,A,B);
@@ -2178,12 +2178,12 @@ namespace LinBox
 	 * Specialization of axmy for
 	 * multiplying two general dense matrices
 	 * and subtracts a third general dense matrix from it
-	 * over a Modular<float> Field.
+	 * over a Givaro::Modular<float> Field.
 	 * D = A*B - C
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<float> >::axmy(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<float> >::axmy(
 		Operand1& D,
 		const Operand2& A,
 		const Operand3& B,
@@ -2201,7 +2201,7 @@ namespace LinBox
 
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
-			return BlasMatrixDomainMulAdd<//Modular<float>,
+			return BlasMatrixDomainMulAdd<//Givaro::Modular<float>,
 				Operand1,
 				Operand2,
 				Operand3>()(D,_F.mOne,C,_F.one,A,B);
@@ -2382,13 +2382,13 @@ namespace LinBox
 	 * Specialization of axmyin for
 	 * multiplying two general dense matrices
 	 * and subtracts a third general dense matrix from it
-	 * over a Modular<double> Field.
+	 * over a Givaro::Modular<double> Field.
 	 * Places the results into the first general dense matrix
 	 * C = A*B - C
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<double> >::axmyin(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<double> >::axmyin(
 		Operand1& C,
 		const Operand2& A,
 		const Operand3& B) const{
@@ -2416,13 +2416,13 @@ namespace LinBox
 	 * Specialization of axmyin for
 	 * multiplying two general dense matrices
 	 * and subtracts a third general dense matrix from it
-	 * over a Modular<float> Field.
+	 * over a Givaro::Modular<float> Field.
 	 * Places the results into the first general dense matrix
 	 * C = A*B - C
 	 */
 	template <>
 	template <class Operand1, class Operand2, class Operand3>
-	Operand1& OpenCLMatrixDomain<Modular<float> >::axmyin(
+	Operand1& OpenCLMatrixDomain<Givaro::Modular<float> >::axmyin(
 		Operand1& C,
 		const Operand2& A,
 		const Operand3& B) const{

@@ -140,10 +140,12 @@ namespace LinBox
 #define LINBOX_EXTENSION_DEGREE_MAX 19
 #endif
 
+#include <givaro/extension.h>
+#include <givaro/gfq.h>
+
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/matrix-hom.h"
-#include "linbox/field/givaro.h"
 #include "linbox/field/map.h"
 
 namespace LinBox
@@ -163,16 +165,16 @@ namespace LinBox
 			unsigned long extend = (unsigned long)FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 			if (extend > 1) {
 				commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
-				GivaroExtension<Field> EF( F, extend);
+				Givaro::Extension<Field> EF( F, extend);
 
-				typedef typename Blackbox::template rebind< GivaroExtension<Field>  >::other FBlackbox;
+				typedef typename Blackbox::template rebind< Givaro::Extension<Field>  >::other FBlackbox;
 
 				FBlackbox Ap(A, EF);
 
-				BlasVector< GivaroExtension<Field> > eP(EF);
+				BlasVector< Givaro::Extension<Field> > eP(EF);
 				minpoly(eP, Ap, tag, Method::Wiedemann(M));
 
-				return PreMap<Field, GivaroExtension<Field> >(F,EF)(P, eP);
+				return PreMap<Field, Givaro::Extension<Field> >(F,EF)(P, eP);
 			}
 			else
 				return minpoly(P, A, tag, Method::Wiedemann(M));
@@ -181,12 +183,12 @@ namespace LinBox
 			unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 			if (extend > 1) {
 				commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
-				GivaroGfq EF( (unsigned long)c, extend);
-				typedef typename Blackbox::template rebind< GivaroGfq >::other FBlackbox;
+				Givaro::GFq EF( (unsigned long)c, extend);
+				typedef typename Blackbox::template rebind< Givaro::GFq >::other FBlackbox;
 				FBlackbox Ap(A, EF);
-				BlasVector< GivaroGfq > eP(EF);
+				BlasVector< Givaro::GFq > eP(EF);
 				minpoly(eP, Ap, tag, Method::Wiedemann(M));
-				return PreMap<Field, GivaroGfq >(F,EF)(P, eP);
+				return PreMap<Field, Givaro::GFq >(F,EF)(P, eP);
 
 			}
 			else

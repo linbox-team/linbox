@@ -456,7 +456,7 @@ namespace LinBox
 				    const MyMethod                    &M)
 	{
 		commentator().start ("Integer Rank", "iirank");
-		typedef Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 		integer mmodulus;
 		FieldTraits<Field>::maxModulus(mmodulus);
 		RandomPrimeIterator genprime( (unsigned) floor (log((double)mmodulus) ) );
@@ -477,7 +477,6 @@ namespace LinBox
 #define LINBOX_EXTENSION_DEGREE_MAX 19
 #endif
 
-#include "linbox/field/givaro.h"
 namespace LinBox
 {
 	template <class Blackbox>
@@ -495,8 +494,8 @@ namespace LinBox
 				unsigned long extend = (unsigned long)Givaro::FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 				if (extend > 1) {
 					commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
-					GivaroExtension<Field> EF( F, extend);
-					typedef typename Blackbox::template rebind< GivaroExtension<Field>  >::other FBlackbox;
+					Givaro::Extension<Field> EF( F, extend);
+					typedef typename Blackbox::template rebind< Givaro::Extension<Field>  >::other FBlackbox;
 					FBlackbox Ap(A, EF);
 					rank(r, Ap, tag, Method::Wiedemann(m));
 				}
@@ -507,8 +506,8 @@ namespace LinBox
 				unsigned long extend = (unsigned long)Givaro::FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 				if (extend > 1) {
 					commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
-					GivaroGfq EF( (unsigned long)c, extend);
-					typedef typename Blackbox::template rebind< GivaroGfq >::other FBlackbox;
+					Givaro::GFq EF( (unsigned long)c, extend);
+					typedef typename Blackbox::template rebind< Givaro::GFq >::other FBlackbox;
 					FBlackbox Ap(A, EF);
 					rank(r, Ap, tag, Method::Wiedemann(m));
 				}
@@ -553,7 +552,7 @@ namespace LinBox { /*  rankin */
 				      const Method::SparseElimination     &M)
 	{
 		commentator().start ("Integer Rank inplace", "irank");
-		typedef Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 		integer mmodulus;
 		FieldTraits<Field>::maxModulus(mmodulus);
 		RandomPrimeIterator genprime( (unsigned int) floor (log((double)mmodulus) ) );

@@ -78,7 +78,7 @@ class ImageField: public Target
 // Trial specialization.  Try one member. one could similarly do other member functions.
 // Delete this when better examples are available later.
 //
-template<> uint32_t& ImageField<Modular<uint16_t>, Modular<uint32_t> >::
+template<> uint32_t& ImageField<Givaro::Modular<uint16_t>, Givaro::Modular<uint32_t> >::
 smul(uint32_t& y, const uint16_t& a, const uint32_t & x)
 	{ return mul(y, static_cast<uint32_t>(a), x); }
 

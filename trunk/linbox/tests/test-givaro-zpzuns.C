@@ -73,15 +73,15 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	//cout << endl << "GivaroZpz< uint32_t> field test suite" << endl;
+	//cout << endl << "Givaro::Modular< uint32_t> field test suite" << endl;
 	//cout.flush ();
 	bool pass = true;
 
-	GivaroZpz< uint32_t> F1 (2);
-	GivaroZpz< uint32_t> F2 (q);
-	GivaroZpz< uint32_t> F3 (3);
-	GivaroZpz< uint32_t> F4 (32749);
-	GivaroZpz< uint32_t> F5 (65521);
+	Givaro::Modular< uint32_t> F1 (2);
+	Givaro::Modular< uint32_t> F2 (q);
+	Givaro::Modular< uint32_t> F3 (3);
+	Givaro::Modular< uint32_t> F4 (32749);
+	Givaro::Modular< uint32_t> F5 (65521);
 
 	LinBox::commentator().start("Givaro-zpzuns test suite", "GivZpzu");
 	// Make sure some more detailed messages get printed
@@ -94,49 +94,49 @@ int main (int argc, char **argv)
 	if (!runFieldTests (F4, "32749", iterations, n, false)) pass = false;
 	if (!runFieldTests (F5, "65521", iterations, n, false)) pass = false;
 
-	if (!testRandomIterator (F1,  "GivaroZpz< uint32_t>(2)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F2,  "GivaroZpz< uint32_t>(10733)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F3,  "GivaroZpz< uint32_t>(3)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F4,  "GivaroZpz< uint32_t>(32749)", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F5,  "GivaroZpz< uint32_t>(65521)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F1,  "Givaro::Modular< uint32_t>(2)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F2,  "Givaro::Modular< uint32_t>(10733)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F3,  "Givaro::Modular< uint32_t>(3)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F4,  "Givaro::Modular< uint32_t>(32749)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F5,  "Givaro::Modular< uint32_t>(65521)", trials, categories, hist_level)) pass = false;
 
 #if TEST_ARCHETYPES
 
-	GivaroZpz< int16_t> * K1g = new GivaroZpz< int16_t> (101);
+	Givaro::Modular< int16_t> * K1g = new Givaro::Modular< int16_t> (101);
 	FieldArchetype K1(K1g);
-	if (!testField<FieldArchetype> (K1, "Testing archetype with envelope of GivaroZpz< int16_t> field"))
+	if (!testField<FieldArchetype> (K1, "Testing archetype with envelope of Givaro::Modular< int16_t> field"))
 		pass = false;
 	delete K1g;
 #endif
 
 #if TEST_ARCHETYPES
-	GivaroZpz< uint32_t> * K2g = new GivaroZpz< uint32_t> (101);
+	Givaro::Modular< uint32_t> * K2g = new Givaro::Modular< uint32_t> (101);
 	FieldArchetype K2(K2g);
-	if (!testField<FieldArchetype> (K2, "Testing archetype with envelope of GivaroZpz< uint32_t> field"))
+	if (!testField<FieldArchetype> (K2, "Testing archetype with envelope of Givaro::Modular< uint32_t> field"))
 		pass = false;
 	delete K2g;
 #endif
 
 #if TEST_ARCHETYPES
-	GivaroZpz< Givaro::Log16> * K3g = new GivaroZpz< Givaro::Log16>(101);
+	Givaro::Modular< Givaro::Log16> * K3g = new Givaro::Modular< Givaro::Log16>(101);
 	FieldArchetype K3(K3g);
 
-	if (!testField<FieldArchetype> (K3, "Testing archetype with envelope of GivaroZpz< Givaro::Log16> field"))
+	if (!testField<FieldArchetype> (K3, "Testing archetype with envelope of Givaro::Modular< Givaro::Log16> field"))
 		pass = false;
 	delete K3g;
 #endif
 
 #if TEST_ARCHETYPES
-	GivaroGfq * K4g = new GivaroGfq(101,1);
+	Givaro::GFq * K4g = new Givaro::GFq(101,1);
 	FieldArchetype K4(K4g);
 
-	if (!testField<FieldArchetype> (K4, "Testing archetype with envelope of GivaroGfq prime field"))
+	if (!testField<FieldArchetype> (K4, "Testing archetype with envelope of Givaro::GFq prime field"))
 		pass = false;
 	delete K4g;
 #endif
 
 
-	LinBox::commentator().stop(MSG_STATUS (pass), "GivaroZpzuns test suite");
+	LinBox::commentator().stop(MSG_STATUS (pass), "Givaro::Modularuns test suite");
 	return pass ? 0 : -1;
 }
 

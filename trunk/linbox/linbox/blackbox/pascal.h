@@ -6,7 +6,10 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
+
+#ifdef __LINBOX_USE_OPENMP
 #include <omp.h>
+#endif
 
 #include "linbox/util/debug.h"
 #include "linbox/matrix/sliced3.h"
@@ -159,8 +162,10 @@ public:
 		} else {
 			int r3=r/3;
 
+#ifdef __LINBOX_USE_OPENMP
 			int threadLimit=omp_get_max_threads();
 			//int threadLimit=4;
+#endif
 
 #pragma omp parallel sections if (numThreads+2<=threadLimit) shared(lhs,rhs)
 			{

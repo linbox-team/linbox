@@ -58,9 +58,9 @@ namespace LinBox
 	  */
 
 	class PIR_ntl_ZZ_p :  public NTL_ZZ_p {
-		//public UnparametricField<NTL::ZZ_p> {
+		//public Givaro::UnparametricRing<NTL::ZZ_p> {
 
-		// typedef UnparametricField<NTL::ZZ_p> Father_t ;
+		// typedef Givaro::UnparametricRing<NTL::ZZ_p> Father_t ;
 		typedef NTL_ZZ_p Father_t ;
 	public:
 		typedef Father_t::Element Element;

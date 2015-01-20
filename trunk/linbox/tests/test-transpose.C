@@ -41,7 +41,6 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/givaro.h"
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/ntl.h"
 #endif
@@ -174,13 +173,13 @@ int main (int argc, char **argv)
 	};
 
 #ifdef __LINBOX_HAVE_NTL_blah
-//        typedef UnparametricField<NTL::zz_p> Field;
+//        typedef Givaro::UnparametricRing<NTL::zz_p> Field;
         typedef NTL_zz_p Field;
 // 	NTL::zz_p::init(q1); // Done in the constructor
 #else
-	typedef Modular<int32_t> Field ;
+	typedef Givaro::Modular<int32_t> Field ;
 #endif
-    //typedef GivaroZpz< int32_t> Field2;
+    //typedef Givaro::Modular< int32_t> Field2;
 	Field F(q);
 
 	// typedef vector<Field::Element> Vector;

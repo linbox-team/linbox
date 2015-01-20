@@ -90,13 +90,13 @@ namespace LinBox
 	
 	
 	// template <>
-	// class PolynomialMatrixFFTMulDomain<Modular<int32_t> > ;           // Mul in Zp[x] with p <2^32
+	// class PolynomialMatrixFFTMulDomain<Givaro::Modular<int32_t> > ;           // Mul in Zp[x] with p <2^32
 
 	// template<>
-	// class PolynomialMatrixFFTMulDomain<UnparametricField<integer> >;  // Mul in Z[x]
+	// class PolynomialMatrixFFTMulDomain<Givaro::UnparametricRing<integer> >;  // Mul in Z[x]
 
 	// template <>
-	// class PolynomialMatrixFFTMulDomain<Modular<integer> > ;           // Mul in Zp[x] with p multiprecision
+	// class PolynomialMatrixFFTMulDomain<Givaro::Modular<integer> > ;           // Mul in Zp[x] with p multiprecision
 
 } // end of namespace LinBox
 

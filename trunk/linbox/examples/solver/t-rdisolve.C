@@ -61,7 +61,6 @@
 
 #include "linbox/field/unparametric.h"
 #include "linbox/field/PID-integer.h"
-#include "linbox/field/PID-double.h"
 #include "linbox/field/ntl.h"
 
 #include "linbox/field/archetype.h"
@@ -82,7 +81,7 @@ using namespace LinBox;
 int  n               = 5;
 int  c               = 5;
 int  defaultPrime    = 0;
-int  primeBits       = 14;         // note: should be <= 15 to use GivaroZpz<Log16>
+int  primeBits       = 14;         // note: should be <= 15 to use Givaro::Modular<Log16>
 int  numPrimes       = 1;
 bool useDeterm       = true;
 bool useRandom       = false;
@@ -372,22 +371,22 @@ int fieldTest()
 
 void testAllFields()
 {
-	//fieldTest<GivaroZpz<Log16> >();
+	//fieldTest<Givaro::Modular<Log16> >();
 	//fieldTest<NTL_zz_p>();
 
-	//fieldTest<GivaroZpz<int16_t> >();
+	//fieldTest<Givaro::Modular<int16_t> >();
 
-	//fieldTest<Modular<int> >();
-	fieldTest<Modular<double> >();
+	//fieldTest<Givaro::Modular<int> >();
+	fieldTest<Givaro::Modular<double> >();
 
 
-	//fieldTest<GivaroZpz<int32_t> >();           //broken?
-	//fieldTest<GivaroZpz<int64_t> >();           //broken?
-	//fieldTest<GivaroGfq>();                   //broken?
+	//fieldTest<Givaro::Modular<int32_t> >();           //broken?
+	//fieldTest<Givaro::Modular<int64_t> >();           //broken?
+	//fieldTest<Givaro::GFq>();                   //broken?
 
-	//fieldTest<GivaroMontg>();    // appears to be broken in current build
+	//fieldTest<Givaro::Montgomery>();    // appears to be broken in current build
 	//fieldTest<NTL_ZZ_p>();       // appears to be broken in current build
-	//fieldTest<Modular<integer> >();
+	//fieldTest<Givaro::Modular<integer> >();
 
 	// */
 	// this takes a long time to compile with all fields

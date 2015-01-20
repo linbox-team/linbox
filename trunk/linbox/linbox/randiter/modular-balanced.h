@@ -64,7 +64,7 @@ namespace LinBox
 {
 
 	template <class Element>
-	class ModularBalanced;
+	class Givaro::ModularBalanced;
 
 	/** Random field base element generator.
 	 * This encapsulated class is a generator of random field base elements for
@@ -79,7 +79,7 @@ namespace LinBox
 	 * and also returned as a reference.
 	 */
 	template <class Element>
-	class ModularBalancedRandIter {
+	class Givaro::ModularBalancedRandIter {
 	public:
 
 		/** Constructor from field, sampling size, and seed.
@@ -95,7 +95,7 @@ namespace LinBox
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		ModularBalancedRandIter (const ModularBalanced<Element> &F,
+		Givaro::ModularBalancedRandIter (const Givaro::ModularBalanced<Element> &F,
 					 const integer &size = 0,
 					 const integer &seed = 0) :
 			_field (F), _size (size), _seed (seed)
@@ -118,26 +118,26 @@ namespace LinBox
 		}
 
 		/** Copy constructor.
-		 * Constructs ModularBalancedRandIter object by copying the random field
+		 * Constructs Givaro::ModularBalancedRandIter object by copying the random field
 		 * element generator.
 		 * This is required to allow generator objects to be passed by value
 		 * into functions.
-		 * @param  R ModularBalancedRandIter object.
+		 * @param  R Givaro::ModularBalancedRandIter object.
 		 */
-		ModularBalancedRandIter (const ModularBalancedRandIter<Element> &R) :
+		Givaro::ModularBalancedRandIter (const Givaro::ModularBalancedRandIter<Element> &R) :
 			_field (R._field), _size (R._size), _seed (R._seed)
 		{}
 
 		/** Destructor.
 		 * This destructs the random field element generator object.
 		 */
-		~ModularBalancedRandIter () {}
+		~Givaro::ModularBalancedRandIter () {}
 
 		/** Assignment operator.
-		 * Assigns ModularBalancedRandIter object R to generator.
-		 * @param  R ModularBalancedRandIter object.
+		 * Assigns Givaro::ModularBalancedRandIter object R to generator.
+		 * @param  R Givaro::ModularBalancedRandIter object.
 		 */
-		ModularBalancedRandIter<Element> &operator=(const ModularBalancedRandIter<Element> &R)
+		Givaro::ModularBalancedRandIter<Element> &operator=(const Givaro::ModularBalancedRandIter<Element> &R)
 		{
 			if (this != &R) { // guard against self-assignment
 				_size = R._size;
@@ -169,12 +169,12 @@ namespace LinBox
 			Element tmp;
 
 			random (tmp);
-			return (a = ElementEnvelope <ModularBalanced<Element> > (tmp));
+			return (a = ElementEnvelope <Givaro::ModularBalanced<Element> > (tmp));
 		}
 
 	private:
 		/// Field in which arithmetic is done
-		ModularBalanced<Element> _field;
+		Givaro::ModularBalanced<Element> _field;
 
 		/// Sampling size
 		integer _size;
@@ -182,7 +182,7 @@ namespace LinBox
 		/// Seed
 		long _seed;
 
-	}; // class ModularBalancedRandIter
+	}; // class Givaro::ModularBalancedRandIter
 
 } // namespace LinBox
 

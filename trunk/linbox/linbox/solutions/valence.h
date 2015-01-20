@@ -119,7 +119,7 @@ namespace LinBox
 		template<typename Field>
 		typename Field::Element& operator()(typename Field::Element& v, const Field& F) const
 		{
-			commentator().start ("Modular Valence", "Mvalence");
+			commentator().start ("Givaro::Modular Valence", "Mvalence");
 			std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 			F.write(report) << std::endl;
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
@@ -145,10 +145,10 @@ namespace LinBox
 		commentator().start ("Integer Valence", "Ivalence");
 #if __LINBOX_SIZEOF_LONG == 8
 		RandomPrimeIterator genprime( 31 );
-		ChineseRemainder< EarlySingleCRA< GivaroZpz< int64_t> > > cra(3UL);
+		ChineseRemainder< EarlySingleCRA< Givaro::Modular< int64_t> > > cra(3UL);
 #else
 		RandomPrimeIterator genprime( 26 );
-		ChineseRemainder< EarlySingleCRA< Modular<double> > > cra(3UL);
+		ChineseRemainder< EarlySingleCRA< Givaro::Modular<double> > > cra(3UL);
 #endif
 		IntegerModularValence<Blackbox,MyMethod> iteration(A, M);
 		cra(V, iteration, genprime);
@@ -265,7 +265,7 @@ namespace LinBox
 		static void valence(Integer& val, const Blackbox& A)
 		{
 			commentator().start ("Valence (AAT)", "Valence");
-			typedef Modular<int32_t> Field;
+			typedef Givaro::Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 			unsigned long d;
 			RandomPrimeIterator g; g.template setBitsField<Field>();
@@ -289,7 +289,7 @@ namespace LinBox
 		static void valence(Integer& val, unsigned long d, const Blackbox& A)
 		{
 
-			typedef Modular<int32_t> Field;
+			typedef Givaro::Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 
 			RandomPrimeIterator rg; rg.template setBitsField<Field>();

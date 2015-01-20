@@ -32,7 +32,6 @@ BASIC_HDRS =            \
     envelope.h          \
     gmp-rational.h      \
     param-fuzzy.h       \
-    modular.h           \
     modular-balanced.h  \
     modular-crooked.h   \
     unparametric.h      \

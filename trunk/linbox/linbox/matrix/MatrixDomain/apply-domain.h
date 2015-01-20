@@ -201,9 +201,9 @@ namespace LinBox {
 	};
 
 	template<class T, class R>
-	class applyDomain<const BlasMatrix<Modular<T>, R > >{
+	class applyDomain<const BlasMatrix<Givaro::Modular<T>, R > >{
 	public:
-		typedef Modular<T>                 Field;
+		typedef Givaro::Modular<T>                 Field;
 		typedef typename Field::Element  Element;
 	private:
 		const Field & _field ;
@@ -224,7 +224,7 @@ namespace LinBox {
 			// std::cout << x << std::endl;
 
 
-			FFLAS::fgemv((typename Field::Father_t)	_field
+			FFLAS::fgemv(_field
 				     , (FFLAS::FFLAS_TRANSPOSE)t,
 				     A.rowdim(), A.coldim(),
 				     _field.one,
@@ -233,7 +233,7 @@ namespace LinBox {
 				     _field.zero,
 				     y.getWritePointer(),y.getStride());
 
-			// FFLAS::fgemm((typename Field::Father_t)	_field
+			// FFLAS::fgemm(_field
 				     // , (FFLAS::FFLAS_TRANSPOSE)t
 				     // , FFLAS::FflasNoTrans
 				     // , A.rowdim(), 1, A.coldim()
@@ -261,7 +261,7 @@ namespace LinBox {
 			     , typename ContainerCategories::Vector ) const
 		{
 
-			FFLAS::fgemv((typename Field::Father_t)	_field
+			FFLAS::fgemv(_field
 				     , (FFLAS::FFLAS_TRANSPOSE)t,
 				     A.rowdim(), A.coldim(),
 				     _field.one,
@@ -287,7 +287,7 @@ namespace LinBox {
 		{
 			// needs to be debuged (trans?). Never Used.
 			// std::cout << "here M" << std::endl;
-			FFLAS::fgemm((typename Field::Father_t)	_field
+			FFLAS::fgemm(_field
 				     , (FFLAS::FFLAS_TRANSPOSE)t
 				     , FFLAS::FflasNoTrans
 				     , A.rowdim(), x.coldim(), A.coldim()
@@ -318,7 +318,7 @@ namespace LinBox {
 			     // , Method & m
 			   ) const
 		{
-			// std::cout << "called Modular<T>" << std::endl;
+			// std::cout << "called Givaro::Modular<T>" << std::endl;
 			return _apply(t,y,a,A,b,x
 				      ,typename ContainerTraits<_In> ::ContainerCategory()
 				      ,typename ContainerTraits<_Out>::ContainerCategory() );
@@ -327,9 +327,9 @@ namespace LinBox {
 	};
 
 	template<class T, class R>
-	class applyDomain<const BlasMatrix<ModularBalanced<T>, R > >{
+	class applyDomain<const BlasMatrix<Givaro::ModularBalanced<T>, R > >{
 	public:
-		typedef ModularBalanced<T>             Field;
+		typedef Givaro::ModularBalanced<T>             Field;
 		typedef typename Field::Element      Element;
 	private:
 		const Field & _field ;
@@ -347,7 +347,7 @@ namespace LinBox {
 			     ) const
 		{
 			// std::cout << "here V" << std::endl;
-			FFLAS::fgemv((typename Field::Father_t)	_field, (FFLAS::FFLAS_TRANSPOSE)t,
+			FFLAS::fgemv(_field, (FFLAS::FFLAS_TRANSPOSE)t,
 				     A.rowdim(), A.coldim(),
 				     _field.one,
 				     A.getPointer(), A.getStride(),
@@ -373,7 +373,7 @@ namespace LinBox {
 		{
 			// needs to be debuged (trans?). Never Used.
 			// std::cout << "here M" << std::endl;
-			FFLAS::fgemm((typename Field::Father_t)	_field
+			FFLAS::fgemm(_field
 				     , (FFLAS::FFLAS_TRANSPOSE)t
 				     , FFLAS::FflasNoTrans
 				     , A.rowdim(), x.coldim(), A.coldim()
@@ -404,7 +404,7 @@ namespace LinBox {
 			     // , Method & m
 			   ) const
 		{
-			// std::cout << "called ModularBalanced<T>" << std::endl;
+			// std::cout << "called Givaro::ModularBalanced<T>" << std::endl;
 			return _apply(t,y,a,A,b,x
 				      ,typename ContainerTraits<_In >::ContainerCategory()
 				      ,typename ContainerTraits<_Out>::ContainerCategory() );
@@ -416,13 +416,13 @@ namespace LinBox {
 	template<class _Field, class _Rep>
 	class applyDomain<BlasMatrix<_Field,_Rep> > {
 		// dispatch according to field.
-		// if modular and p small -> ModularBalanced<float>
-		// if modular and p medium -> ModularBalanced<float>
+		// if modular and p small -> Givaro::ModularBalanced<float>
+		// if modular and p medium -> Givaro::ModularBalanced<float>
 		// default to triple loop in MatrixDomain
 	};
 
 	template<class _Field, class _Rep>
-	class applyDomain<BlasMatrix<GivaroExtension<_Field>,_Rep> > {
+	class applyDomain<BlasMatrix<Givaro::Extension<_Field>,_Rep> > {
 		// if large enough: Toom Cook
 	};
 
@@ -438,12 +438,12 @@ namespace LinBox {
 	};
 
 	template<class _Rep>
-	class applyDomain<BlasMatrix<Modular<double>,_Rep> > {
+	class applyDomain<BlasMatrix<Givaro::Modular<double>,_Rep> > {
 		// Blas
 	};
 
 	template<class _Rep>
-	class applyDomain<BlasMatrix<Modular<float>,_Rep> > {
+	class applyDomain<BlasMatrix<Givaro::Modular<float>,_Rep> > {
 		// Blas
 	};
 #endif

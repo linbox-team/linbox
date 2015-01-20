@@ -733,7 +733,7 @@ namespace LinBox
 		/** @todo Non element marker.
 		 * We could end up a line with a marker.
 		 * A field F would contain an element that does not belong to
-		 * it. eg a nan for a Modular<double>. It could act as a
+		 * it. eg a nan for a Givaro::Modular<double>. It could act as a
 		 * marker.
 		 */
 		bool consistent() const

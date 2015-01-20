@@ -38,10 +38,10 @@ namespace LinBox {
          * Polynomial Matrix Multiplication over Zp[x] with p <2^32 ***
          **************************************************************/
         template <>
-        class PolynomialMatrixFFTMulDomain<Modular<int32_t> > {
+        class PolynomialMatrixFFTMulDomain<Givaro::Modular<int32_t> > {
         public:
-                typedef Modular<int32_t>              Field;
-                typedef Modular<integer>         LargeField;
+                typedef Givaro::Modular<int32_t>              Field;
+                typedef Givaro::Modular<integer>         LargeField;
                 typedef typename Field::Element     Element;
                 typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
                 typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,LargeField> MatrixP_L;
@@ -61,7 +61,7 @@ namespace LinBox {
                                 PolynomialMatrixFFTPrimeMulDomain MulDom(field());
                                 MulDom.mul(c,a,b);
                         }
-                        else {  // use computation with Modular<integer>
+                        else {  // use computation with Givaro::Modular<integer>
                                 // -> could be optimized in some cases (e.g. output entries less than 2^64)
                                 LargeField Fp(_p);
                                 PolynomialMatrixFFTMulDomain<LargeField> MulDom(Fp);
@@ -83,7 +83,7 @@ namespace LinBox {
                                 PolynomialMatrixFFTPrimeMulDomain MulDom(field());
                                 MulDom.midproduct(c,a,b,smallLeft,n0,n1);
                         }
-                        else {  // use computation with Modular<integer>
+                        else {  // use computation with Givaro::Modular<integer>
                                 //-> could be optimized in some cases (e.g. output entries less than 2^64)
                                 LargeField Fp(_p);
                                 PolynomialMatrixFFTMulDomain<LargeField> MulDom(Fp);

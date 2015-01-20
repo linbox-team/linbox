@@ -201,7 +201,7 @@ int main(int argc, char** argv){
 	
 	parseArguments (argc, argv, args);
 
-	typedef Modular<int32_t>           Field;
+	typedef Givaro::Modular<int32_t>           Field;
 	//typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 
 	if (b> 26){

@@ -40,7 +40,8 @@
 #define FmodF fmod
 #endif
 
-
+#include <math.h>
+#include <givaro/modular-float.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -49,159 +50,41 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
-#include <math.h>
 #include "linbox/field/field-traits.h"
 #include "linbox/randiter/nonzero.h"
-
-#include <fflas-ffpack/field/modular-float.h>
 
 // Namespace in which all LinBox code resides
 namespace LinBox
 {
 
-	template< class Element >
-	class Modular;
-	template< class Element >
-	class ModularRandIter;
-
-	template< class Field, class RandIter >
-	class NonzeroRandIter;
-
 	template <class Ring>
 	struct ClassifyRing;
 	template <class Element>
-	struct ClassifyRing<Modular<Element> >;
+	struct ClassifyRing<Givaro::Modular<Element> >;
 	template <>
-	struct ClassifyRing<Modular<float> > {
+	struct ClassifyRing<Givaro::Modular<float> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	class MultiModFloat;
 
-	/// \ingroup field
 	template <>
-	class Modular<float> : public FieldInterface,
-	      public FFPACK::Modular<float>	{
-
-	      public :
-		      typedef float Element;
-		      typedef FFPACK::Modular<float> Father_t ;
-		      using Father_t::one ;
-		      using Father_t::zero ;
-		      using Father_t::mOne ;
-
-	      public:
-		      friend class FieldAXPY<Modular<Element> >;
-		      friend class DotProductDomain<Modular<Element> >;
-		      friend class MultiModFloat;
-
-		      typedef ModularRandIter<Element> RandIter;
-
-		      static ClassifyRing<Modular<Element> >::categoryTag getCategory()
-		      {
-			      return ClassifyRing<Modular<Element> >::categoryTag();
-		      }
-
-		      Modular (const integer& p, int e = 1) :
-			      Father_t((unsigned long)p)
-		      {
-#ifdef DEBUG
-			      if(modulus <= 1)
-				      throw PreconditionFailed(LB_FILE_LOC,"modulus must be > 1");
-			      integer max;
-			      if(modulus > (Element) FieldTraits<Modular<Element> >::maxModulus(max))
-				      throw PreconditionFailed(LB_FILE_LOC,"modulus is too big");
-#endif
-
-		      }
-
-		      // Modular () : Father_t() {};
-
-		      using Father_t ::cardinality ;
-		      integer &cardinality (integer &c) const
-		      {
-			      return c = integer(modulus);
-		      }
-
-		      using Father_t ::characteristic;
-		      integer &characteristic (integer &c) const
-		      {
-			      return c = integer(modulus);
-		      }
-
-		      using Father_t ::convert;
-		      integer &convert (integer &x, const Element &y) const
-		      {
-			      return x = integer(y);
-		      }
-
-		      using Father_t ::init;
-		      Element &init (Element &x, const integer &y) const
-		      {
-			      x = (Element)(y%lmodulus);
-
-			      if (x<0) return x+=modulus ;
-			      return x;
-		      }
-
-		      Element &init(Element &x) const
-		      {
-			      return x = 0 ;
-		      }
-
-		      unsigned long AccBound(const Element&r) const
-		      {
-			      double max_double = (double) (1ULL<<FLT_MANT_DIG) - modulus ;
-			      double p = modulus-1 ;
-			      if (areEqual(zero,r))
-				      return (unsigned long) (double(max_double)/p) ;
-			      else if (areEqual(one,r))
-			      {
-				      if (modulus>= getMaxModulus())
-					      return 0 ;
-				      else
-					      return (unsigned long) (double(max_double)/(modulus*modulus)) ;
-			      }
-			      else
-				      throw LinboxError("Bad input, expecting 0 or 1");
-			      return 0;
-		      }
-
-		Element& next(Element &x) const
-		{
-			return addin(x,one);
-		}
-
-	      };
-
-	template <>
-	class FieldAXPY<Modular<float> > {
+	class FieldAXPY<Givaro::Modular<float> > {
 	public:
 
 		typedef float Element;
 		typedef float Abnormal;
-		typedef Modular<float> Field;
+		typedef Givaro::Modular<float> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (&F) , //_invmod(1./field().modulus),
-			_y(0.) , _bound( (float) ( (1UL << 23) - (unsigned long int) (field().modulus*field().modulus)))
+			_field (&F) , //_invmod(1./field().characteristic()),
+			_y(0.) , _bound( (float) ( (1UL << 23) - (unsigned long int) (field().characteristic()*field().characteristic())))
 		{}
 
 		FieldAXPY (const FieldAXPY &faxpy) :
 			_field (faxpy._field),// _invmod(faxpy._invmod) ,
 			_y(faxpy._y), _bound(faxpy._bound)
 		{}
-
-#if 0
-		FieldAXPY<Modular<float> > &operator = (const FieldAXPY &faxpy)
-		{
-			_field    = faxpy._field ;
-			//_invmod= faxpy._invmod;
-			_y    = faxpy._y;
-			_bound= faxpy._bound;
-			return *this;
-		}
-#endif
 
 		inline Element& mulacc (const Element &a, const Element &x)
 		{
@@ -213,14 +96,14 @@ namespace LinBox
 		{
 			_y += tmp;
 			if (_y > _bound)
-				return _y = fmodf (_y, field().modulus);
+				return _y = fmodf (_y, field().characteristic());
 			else
 				return _y;
 		}
 
 		inline Element& get (Element &y)
 		{
-			_y = fmodf (_y, field().modulus);
+			_y = fmodf (_y, field().characteristic());
 			return y=_y ;
 		}
 
@@ -235,7 +118,7 @@ namespace LinBox
 			_y = 0.;
 		}
 
-		inline const Field & field() { return *_field; }
+		inline const Field & field() const { return *_field; }
 
 	private:
 
@@ -247,7 +130,7 @@ namespace LinBox
 
 
 	template <>
-	class DotProductDomain<Modular<float> > : public virtual VectorDomainBase<Modular<float> > {
+	class DotProductDomain<Givaro::Modular<float> > : public virtual VectorDomainBase<Givaro::Modular<float> > {
 	private:
 		float _bound;
 		size_t _nmax;
@@ -255,15 +138,15 @@ namespace LinBox
 
 	public:
 		typedef float Element;
-		DotProductDomain (const Modular<float> &F) :
-			VectorDomainBase<Modular<float> > (F)
-			, _bound( (float) ( (1<<23) - (int) (field().modulus*field().modulus)))
-			//, _invmod(1./field().modulus)
+		DotProductDomain (const Givaro::Modular<float> &F) :
+			VectorDomainBase<Givaro::Modular<float> > (F)
+			, _bound( (float) ( (1<<23) - (int) (F.characteristic()*F.characteristic())))
+			//, _invmod(1./field().characteristic())
 		{
-			_nmax= (size_t)floor((double(1<<11)* double(1<<12))/ double(field().modulus * field().modulus));
+			_nmax= (size_t)floor((double(1<<11)* double(1<<12))/ double(F.characteristic() * F.characteristic()));
 		}
 
-		using VectorDomainBase<Modular<float> >::field;
+		using VectorDomainBase<Givaro::Modular<float> >::field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
@@ -273,7 +156,7 @@ namespace LinBox
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				y = fmodf(y, field().modulus);
+				y = fmodf(y, field().characteristic());
 			}
 			else {
 				float t = 0.;
@@ -282,13 +165,13 @@ namespace LinBox
 				{
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
-					t+=fmodf(y, field().modulus);
+					t+=fmodf(y, field().characteristic());
 					y=0.;
 				}
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
-				t+=fmodf(y, field().modulus);
-				y = fmodf(t, field().modulus);
+				t+=fmodf(y, field().characteristic());
+				y = fmodf(t, field().characteristic());
 			}
 			return res = y;
 		}
@@ -304,7 +187,7 @@ namespace LinBox
 			{
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				y = fmodf(y, field().modulus);
+				y = fmodf(y, field().characteristic());
 			}
 			else
 			{
@@ -314,20 +197,18 @@ namespace LinBox
 				{
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=fmodf(y, field().modulus);
+					t+=fmodf(y, field().characteristic());
 					y=0.;
 				}
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
-				t+= fmodf(y, field().modulus);
-				y = fmodf(t, field().modulus);
+				t+= fmodf(y, field().characteristic());
+				y = fmodf(t, field().characteristic());
 			}
 			return res = y;
 		}
 	};
 }
-
-#include "linbox/randiter/modular.h"
 
 #undef FmodF
 

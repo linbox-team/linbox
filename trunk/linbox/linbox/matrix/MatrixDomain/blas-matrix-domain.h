@@ -30,7 +30,7 @@
  * @ingroup matrixdomain
  * @brief NO DOC
  * @warning A <code>BlasMatrixDomain<Field></code> should be templated by a
- * \link LinBox::Modular Modular\endlink field. In particular, this domain
+ * \link Givaro::Modular Modular\endlink field. In particular, this domain
  * is not suitable for integers.
  * @warning A \e Field does mean here a \e Field and not a general \f$\mathbf{Z}/m\mathbf{Z}\f$ \e ring. You'll be warned...
  */
@@ -735,7 +735,7 @@ namespace LinBox
 		{
 
 			typedef typename Polynomial::Rep PolyRep ;
-			commentator().start ("Modular Dense Charpoly ", "MDCharpoly");
+			commentator().start ("Givaro::Modular Dense Charpoly ", "MDCharpoly");
 			std::list<PolyRep> P_list;
 			P_list.clear();
 			BlasMatrixDomainCharpoly<Field, std::list<PolyRep>, Matrix >()(field(),P_list,A);

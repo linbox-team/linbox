@@ -27,7 +27,7 @@ rowdim, 10000
 coldim, 20000
 blockcoldim, blockrowdim
 matrix class, randomMat
-field, Modular<double>(101)
+field, Givaro::Modular<double>(101)
 flops formula, (n+nnz)/time 
 comment, no parsing guidance is offered yet for mflops formula
 end, metadata
@@ -52,7 +52,7 @@ blockcoldim - col blocking used
 ...
 
 // domain of computation properties
-field - arithmetic domain class used (when it is a field) (eg. Modular<int>).
+field - arithmetic domain class used (when it is a field) (eg. Givaro::Modular<int>).
 ring - arithmetic domain class used (eg. PID_integer).
 matrix domain - arithmetic domain used (ring or field extended by matrix ops) 
 (eg. BlasMatrixDomain).

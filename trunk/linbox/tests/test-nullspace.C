@@ -133,10 +133,10 @@ int main(int argc, char** argv)
 {
 	//-----------------------------------------------------------------------
 	// Choice of the finite field representation
-	//typedef GivaroZpz<int32_t> Field;
-	typedef Modular<double> Field;
-	//typedef Modular<float> Field;
-	//typedef Modular<uint32_t> Field;
+	//typedef Givaro::Modular<int32_t> Field;
+	typedef Givaro::Modular<double> Field;
+	//typedef Givaro::Modular<float> Field;
+	//typedef Givaro::Modular<uint32_t> Field;
 	//------------------------------------------------------------------------
 
 	bool pass = true;

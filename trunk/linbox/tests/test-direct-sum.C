@@ -62,7 +62,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Modular<uint32_t> Field;
+	typedef Givaro::Modular<uint32_t> Field;
 	// typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);

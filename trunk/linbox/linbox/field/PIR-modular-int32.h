@@ -67,7 +67,7 @@ namespace LinBox
 
 	/// \ingroup ring
 	template <>
-	class PIRModular<int32_t> : public Modular<int32_t> {
+	class PIRModular<int32_t> : public Givaro::Modular<int32_t> {
 
 	public:
 
@@ -83,12 +83,12 @@ namespace LinBox
 
 		//default modular field,taking 65521 as default modulus
 		PIRModular () :
-			Modular<int32_t>(65521)
+			Givaro::Modular<int32_t>(65521)
 		{
 		}
 
 		PIRModular (int32_t value, int32_t exp = 1) :
-			Modular<int32_t>(value,exp)
+			Givaro::Modular<int32_t>(value,exp)
 		{ }
 
 
@@ -405,7 +405,7 @@ namespace LinBox
 		}
 
 		inline Element& get (Element &y) {
-			y = Element(_y % (uint64_t) field().modulus);
+			y = Element(_y % (uint64_t) field().characteristic());
 			return y;
 		}
 
@@ -455,7 +455,7 @@ namespace LinBox
 					y += (uint64_t)field()._two64;
 			}
 
-			y %= (uint64_t) field().modulus;
+			y %= (uint64_t) field().characteristic();
 			return res = Element(y);
 
 		}
@@ -478,7 +478,7 @@ namespace LinBox
 			}
 
 
-			y %= (uint64_t) field().modulus;
+			y %= (uint64_t) field().characteristic();
 
 			return res = (Element)y;
 		}
@@ -550,14 +550,14 @@ namespace LinBox
 				*l += t;
 
 				if (*l < t)
-					*l += (uint64_t)VD.field ()._two64;
+					*l += VD.faxpy()._two_64;
 			}
 		}
 
 		typename Vector1::iterator w_j;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().modulus;
+			*w_j = *l % VD.field().characteristic();
 
 		return w;
 	}
@@ -589,14 +589,14 @@ namespace LinBox
 				_tmp[k->first] += t;
 
 				if (_tmp[k->first] < t)
-					_tmp[k->first] += VD.field ()._two64;
+					_tmp[k->first] += VD.faxpy()._two_64;
 			}
 		}
 
 		typename Vector1::iterator w_j;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().modulus;
+			*w_j = *l % VD.field().characteristic();
 
 		return w;
 	}
@@ -629,14 +629,14 @@ namespace LinBox
 				_tmp[k->first] += t;
 
 				if (_tmp[k->first] < t)
-					_tmp[k->first] += VD.field ()._two64;
+					_tmp[k->first] += VD.faxpy()._two_64;
 			}
 		}
 
 		typename Vector1::iterator w_j;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().modulus;
+			*w_j = *l % VD.field().characteristic();
 
 		return w;
 	}
@@ -673,14 +673,14 @@ namespace LinBox
 				_tmp[*k_idx] += t;
 
 				if (_tmp[*k_idx] < t)
-					_tmp[*k_idx] += VD.field ()._two64;
+					_tmp[*k_idx] += VD.faxpy()._two_64;
 			}
 		}
 
 		typename Vector1::iterator w_j;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().modulus;
+			*w_j = *l % VD.field().characteristic();
 
 		return w;
 	}
@@ -688,7 +688,7 @@ namespace LinBox
 
 }
 
-#include "linbox/randiter/modular.h"
+
 #endif //__LINBOX_pir_modular_int32_H
 
 

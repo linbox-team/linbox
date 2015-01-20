@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
 	LinBox::commentator().start("Hankel black box test test suite", "Hankel");
 	report << "\tn= " <<  n << " \tq= " << q <<   endl ;
 
-	// typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
+	// typedef Givaro::UnparametricRing<NTL::ZZ_p> Field;
 	typedef LinBox::NTL_ZZ_p Field;
 	// typedef Field::Element element;
 	typedef LinBox::BlasVector<Field> Vector;
@@ -136,10 +136,10 @@ int main(int argc, char* argv[])
 	report << "]\n";
 
 /*
-	report << "Setting the matrix to UniModular Lower Triangular";
+	report << "Setting the matrix to UniGivaro::Modular Lower Triangular";
 	TT.setToUniModLT();
 	TT.print(report);
-	report << "\nSetting the matrix to UniModular Upper Triangular";
+	report << "\nSetting the matrix to UniGivaro::Modular Upper Triangular";
 	TT.setToUniModUT();
 	TT.print(report);
 */

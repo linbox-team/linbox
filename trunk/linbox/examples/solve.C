@@ -89,7 +89,7 @@ int main (int argc, char **argv)
 
 	if (ModComp) {
 
-		typedef Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 		double q = atof(argv[ModComp]);
 		typedef BlasVector<Field> DenseVector ;
 		Field F(q);

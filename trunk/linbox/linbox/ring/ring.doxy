@@ -49,7 +49,7 @@
   Local2_32 exploits a few additional functions and the type \c Exponent.  
   This concept could be used for other small rings extending tiny fields as well.
 
-  Example of BasicRing: Modular<int32_t> when the modulus may be non-prime.
+  Example of BasicRing: Givaro::Modular<int32_t> when the modulus may be non-prime.
   Example of PIR: PIRModular
   Example of PID: PIDInteger.
   Example of LocalPIR: Local2_32.

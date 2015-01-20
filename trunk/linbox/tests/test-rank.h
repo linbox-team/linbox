@@ -40,14 +40,13 @@
 
 #include <iostream>
 #include <fstream>
-
 #include <cstdio>
+#include <givaro/modular.h>
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/gf2.h"
-#include "linbox/field/givaro.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/scalar-matrix.h"
@@ -154,9 +153,9 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
 	typedef ZeroOne<GF2> Blackbox;
-	typedef SparseMatrix<Modular<double>,Vector<Modular<double> >::SparseSeq> MdBlackbox;
-	Modular<double> MdF2(2);
-	GF2::Element one; Modular<double>::Element mdone;
+	typedef SparseMatrix<Givaro::Modular<double>,Vector<Givaro::Modular<double> >::SparseSeq> MdBlackbox;
+	Givaro::Modular<double> MdF2(2);
+	GF2::Element one; Givaro::Modular<double>::Element mdone;
 	MdF2.assign(mdone,MdF2.one);
 
 

@@ -74,7 +74,7 @@ int main (int argc, char **argv)
 
 #if 0
 	FieldArchetype K(new LargeModular(101));
-	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of Modular field"))
+	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of Givaro::Modular field"))
 		pass = false;
 #endif
 

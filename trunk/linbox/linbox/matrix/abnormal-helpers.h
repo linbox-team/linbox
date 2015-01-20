@@ -64,9 +64,9 @@ protected:
 };
 
 template <>
-class AbnormalHelper<Modular<double> > {
+class AbnormalHelper<Givaro::Modular<double> > {
 public:
-	typedef Modular<double> Field;
+	typedef Givaro::Modular<double> Field;
         typedef double Element;
 	typedef double Abnormal;
 
@@ -112,9 +112,9 @@ protected:
 };
 
 template <>
-class AbnormalHelper<Modular<uint64_t> > {
+class AbnormalHelper<Givaro::Modular<uint64_t> > {
 public:
-	typedef Modular<uint64_t> Field;
+	typedef Givaro::Modular<uint64_t> Field;
         typedef uint64_t Element;
 	typedef uint64_t Abnormal;
 

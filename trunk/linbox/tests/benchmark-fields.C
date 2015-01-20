@@ -39,7 +39,7 @@
 #endif
 
 #include "linbox/field/modular.h"
-#include "linbox/field/modular-balanced.h"
+#include <givaro/modular-balanced.h>
 #include "linbox/field/Modular/modular-crooked-double.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/vector/stream.h"
@@ -348,18 +348,18 @@ int main(int argc, char** argv)
 	<< std::setw(12) << "axpy/(mul+add)"
 	<< std::endl;
 
-	doTest< Modular<int8_t> >( "Modular<int8_t>", prime, exp, iterations, fulltest );
-	doTest< Modular<int16_t> >( "Modular<int16_t>", prime, exp, iterations, fulltest );
-	doTest< Modular<int32_t> >( "Modular<int32_t>", prime, exp, iterations, fulltest );
-	//doTest< Modular<int> >( "Modular<int>", prime, exp, iterations, fulltest );
-	doTest< Modular<double> >( "Modular<double>", prime, exp, iterations, fulltest );
-	doTest< Modular<float> >( "Modular<float>", prime, exp, iterations, fulltest );
+	doTest< Givaro::Modular<int8_t> >( "Givaro::Modular<int8_t>", prime, exp, iterations, fulltest );
+	doTest< Givaro::Modular<int16_t> >( "Givaro::Modular<int16_t>", prime, exp, iterations, fulltest );
+	doTest< Givaro::Modular<int32_t> >( "Givaro::Modular<int32_t>", prime, exp, iterations, fulltest );
+	//doTest< Givaro::Modular<int> >( "Givaro::Modular<int>", prime, exp, iterations, fulltest );
+	doTest< Givaro::Modular<double> >( "Givaro::Modular<double>", prime, exp, iterations, fulltest );
+	doTest< Givaro::Modular<float> >( "Givaro::Modular<float>", prime, exp, iterations, fulltest );
 
-	//doTest< ModularBalanced<int8_t> >( "ModularBalanced<int8_t>", prime, exp, iterations, fulltest );
-	//doTest< ModularBalanced<int16_t> >( "ModularBalanced<int16_t>", prime, exp, iterations, fulltest );
-	doTest< ModularBalanced<int32_t> >( "ModularBalanced<int32_t>", prime, exp, iterations, fulltest );
-	doTest< ModularBalanced<double> >( "ModularBalanced<double>", prime, exp, iterations, fulltest );
-	doTest< ModularBalanced<float> >( "ModularBalanced<float>", prime, exp, iterations, fulltest );
+	//doTest< Givaro::ModularBalanced<int8_t> >( "Givaro::ModularBalanced<int8_t>", prime, exp, iterations, fulltest );
+	//doTest< Givaro::ModularBalanced<int16_t> >( "Givaro::ModularBalanced<int16_t>", prime, exp, iterations, fulltest );
+	doTest< Givaro::ModularBalanced<int32_t> >( "Givaro::ModularBalanced<int32_t>", prime, exp, iterations, fulltest );
+	doTest< Givaro::ModularBalanced<double> >( "Givaro::ModularBalanced<double>", prime, exp, iterations, fulltest );
+	doTest< Givaro::ModularBalanced<float> >( "Givaro::ModularBalanced<float>", prime, exp, iterations, fulltest );
 
 	doTest< ModularCrooked<double> >( "ModularCrooked<double>", prime, exp, iterations, fulltest );
 

@@ -51,7 +51,7 @@ namespace LinBox { namespace Protected {
 
 
 		typedef SparseMatrixFormat::CSR spfmt ;
-		typedef Modular<double>         Field;
+		typedef Givaro::Modular<double>         Field;
 		typedef Field::Element          Element;
 		typedef SparseMatrix<Field,spfmt>       ModularMatrix ;
 		typedef BlasVector<Field>               ModularVector;
@@ -161,7 +161,7 @@ namespace LinBox { namespace BLAS2 {
 		integer cA = (integer) A.maxrow();
 		double logC = Givaro::naturallog(mA*mB*cA);
 
-		typedef Modular<double> ModularField ;
+		typedef Givaro::Modular<double> ModularField ;
 		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 
@@ -216,9 +216,9 @@ int main(int ac, char ** av) {
 
 	LinBox::Timer Tim ;
 	{ /* Toom Cook over GivarorExtension */
-		typedef LinBox::Modular<int64_t> Zpz;
-		// typedef LinBox::Modular<double> Zpz;
-		typedef LinBox::GivaroExtension< Zpz > GFpe ;
+		typedef LinBox::Givaro::Modular<int64_t> Zpz;
+		// typedef Givaro::Modular<double> Zpz;
+		typedef LinBox::Givaro::Extension< Zpz > GFpe ;
 
 		// Z/pZ
 		Zpz F(p);

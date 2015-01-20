@@ -74,11 +74,11 @@ int main (int argc, char **argv)
 
 	commentator().start("block container test", "bbbc");
 	ostream& report = commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
-	report << "over Modular<double>" << std::endl;
-	typedef Modular<double> Field;
+	report << "over Givaro::Modular<double>" << std::endl;
+	typedef Givaro::Modular<double> Field;
 	typedef BlasMatrix<Field> Block;
 	typedef BlasMatrix<Field> Blackbox;
-	Modular<double> F (q);
+	Givaro::Modular<double> F (q);
 
 	Blackbox A(F, n, n);
 	Block U(F, k, n);
@@ -100,9 +100,9 @@ int main (int argc, char **argv)
 #include "linbox/linbox-config.h"
 
 #include <iostream>
+#include <givaro/modular.h>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
@@ -134,7 +134,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Modular<uint32_t> Field;
+	typedef Givaro::Modular<uint32_t> Field;
 
 	parseArguments (argc, argv, args);
 	Field F ((uint32_t)q);
@@ -161,20 +161,20 @@ int main (int argc, char **argv)
 	commentator().stop("SparseMatrix test");
 
 #if 0 // BlackboxBlockContainer<BlasMatrix<..> > is not working.
-	commentator().start("BlasMatrix<Modular<int> > test");
+	commentator().start("BlasMatrix<Givaro::Modular<int> > test");
 	BlasMatrix<Field> B(F, n, n);
 	for(size_t i=0; i<n;i++)
 			B.setEntry(i,i,F.one);
 	 	pass = pass and testContainer(B, r, c);
-	commentator().stop("BlasMatrix<Modular<int> > test");
+	commentator().stop("BlasMatrix<Givaro::Modular<int> > test");
 
-	commentator().start("BlasMatrix<Modular<double> > test");
-	Modular<double> G(q);
-	BlasMatrix<Modular<double> > C(G, n, n);
+	commentator().start("BlasMatrix<Givaro::Modular<double> > test");
+	Givaro::Modular<double> G(q);
+	BlasMatrix<Givaro::Modular<double> > C(G, n, n);
 	for(size_t i=0; i<n;i++)
 			C.setEntry(i,i,G.one);
 	 	pass = pass and testContainer(C, r, c);
-	commentator().stop("BlasMatrix<Modular<double> > test");
+	commentator().stop("BlasMatrix<Givaro::Modular<double> > test");
 #endif
 
 	// A more thorough test should be constructed.

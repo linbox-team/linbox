@@ -77,7 +77,7 @@ int main (int argc, char **argv)
 	}
 	if (argc == 3) {
 		double q = atof(argv[2]);
-		typedef Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 		Field F(q);
 		MatrixStream<Field> ms( F, input );
 		SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (ms);

@@ -48,7 +48,7 @@
 //#define __LINBOX_HAVE_INT64
 
 
-#include "linbox/field/modular-balanced.h"
+#include <givaro/modular-balanced.h>
 #include "linbox/field/modular.h"
 #include "fflas-ffpack/utils/Matio.h"
 #include "test-common.h"
@@ -609,7 +609,7 @@ int test_fgemm(std::ostream & report, const Field & F)
 					F.axpyin(C[i*ldc+j],alpha,temp);
 				}
 
-	FFLAS::fgemm((typename Field::Father_t)F,ATRANS,BTRANS,M,N,K,alpha,A,lda,B,ldb,beta,D,ldc);
+	FFLAS::fgemm(F,ATRANS,BTRANS,M,N,K,alpha,A,lda,B,ldb,beta,D,ldc);
 
 	int err = 0 ;
 	for (size_t i = 0 ; i < rowC && !err ; ++i)
@@ -634,14 +634,14 @@ int test_fgemm(std::ostream & report, const Field & F)
 
 int main(int ac, char ** av)
 {
-	//typedef ModularBalanced<float>  FieldF;
-	typedef Modular<float>          FieldF;
-	//typedef ModularBalanced<double> FieldD;
-	typedef Modular<double>         FieldD;
-	//typedef ModularBalanced<int32_t>  FieldI;
-	typedef Modular<int32_t>          FieldI;
+	//typedef Givaro::ModularBalanced<float>  FieldF;
+	typedef Givaro::Modular<float>          FieldF;
+	//typedef Givaro::ModularBalanced<double> FieldD;
+	typedef Givaro::Modular<double>         FieldD;
+	//typedef Givaro::ModularBalanced<int32_t>  FieldI;
+	typedef Givaro::Modular<int32_t>          FieldI;
 	//!@bug : this one completely fails :
-	//typedef Modular<Integer>          FieldI;
+	//typedef Givaro::Modular<Integer>          FieldI;
 
        	static Argument as[] = {
 		END_OF_ARGUMENTS
@@ -666,8 +666,8 @@ int main(int ac, char ** av)
 	FieldI FI2(10687);
 	int tot = 6;
 #ifdef __LINBOX_HAVE_INT64
-	//        typedef ModularBalanced<int64_t>  FieldU;
-	typedef Modular<int64_t>          FieldU;
+	//        typedef Givaro::ModularBalanced<int64_t>  FieldU;
+	typedef Givaro::Modular<int64_t>          FieldU;
 	FieldU FU(13);
 	FieldU FU2(13132153);
 	tot += 2 ;

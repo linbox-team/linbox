@@ -94,7 +94,7 @@ namespace LinBox
 		template<class Function, class PrimeIterator>
 		Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter)
 		{
-			commentator().start ("Modular iteration", "mmcrait");
+			commentator().start ("Givaro::Modular iteration", "mmcrait");
 			if (IterCounter==0) {
 				++IterCounter;
 				Domain D(*primeiter);
@@ -181,7 +181,7 @@ namespace LinBox
 		template<class Iterator, class Function, class PrimeIterator>
 		Iterator& operator() (Iterator& res, Function& Iteration, PrimeIterator& primeiter)
 		{
-			commentator().start ("Modular vectorized iteration", "mmcravit");
+			commentator().start ("Givaro::Modular vectorized iteration", "mmcravit");
 
 			if (IterCounter==0) {
 				Domain D(*primeiter);

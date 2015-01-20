@@ -456,7 +456,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Modular<uint32_t> Field; //C.Pernet: avoids confusion with givaro::uint32_t
+	typedef Givaro::Modular<uint32_t> Field; //C.Pernet: avoids confusion with givaro::uint32_t
 	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);

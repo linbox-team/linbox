@@ -270,8 +270,8 @@ public:
 		if(n < _SIZE && begin%_SIZE && end%endTest){
 			size_t test = other._loff ? other._loff : _SIZE;
 			if((j+n) <= test){
-				cerr << "Unsupported submatrix request.  Submatrix entirely within a word" <<
-					" while not aligned with a left or right border" <<	endl;
+				std::cerr << "Unsupported submatrix request.  Submatrix entirely within a word" <<
+					" while not aligned with a left or right border" <<	std::endl;
 				//exit(-1);
 			}
 		}
@@ -458,9 +458,9 @@ public:
 				*/
 					os << " ";
 			}
-			os << endl;
+			os << std::endl;
 		}
-		os << endl;
+		os << std::endl;
 		return os;
 	}
 
@@ -569,9 +569,9 @@ public:
 
 	std::ostream& writeRep(std::ostream &os = std::cerr){
 		for(RawIterator i=rawBegin(); i!=rawEnd(); ++i){
-			os << "0th bits: " << (SlicedWord)(*i).b0 << " 1st bits: " << (SlicedWord)(*i).b1 << endl;
+			os << "0th bits: " << (SlicedWord)(*i).b0 << " 1st bits: " << (SlicedWord)(*i).b1 << std::endl;
 		}
-		os << endl;
+		os << std::endl;
 		return os;
 	}
 

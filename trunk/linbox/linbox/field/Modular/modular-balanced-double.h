@@ -53,149 +53,38 @@
 #include "linbox/randiter/modular-balanced.h"
 #include "linbox/randiter/nonzero.h"
 
-#include <fflas-ffpack/field/modular-balanced-double.h>
+#include <givaro/modular-balanced-double.h>
 
 
 // Namespace in which all LinBox code resides
 namespace LinBox
 {
 
-	template< class Element >
-	class ModularBalanced;
-
 	template <class Ring>
 	struct ClassifyRing;
 
 	template <class Element>
-	struct ClassifyRing<ModularBalanced<Element> >;
+	struct ClassifyRing<Givaro::ModularBalanced<Element> >;
 
 	template <>
-	struct ClassifyRing<ModularBalanced<double> > {
+	struct ClassifyRing<Givaro::ModularBalanced<double> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	class MultiModDouble;
 
-	/*! \ingroup modular
-	 * Centered representation of \f$\mathbf{Z}/m\mathbf{Z}\f$.
-	 * If \c m is the modulus, then elements are represented in \f[ \left
-	 * \llbracket \left \lceil -\frac{m-1}{2} \right \rceil, \left \lceil
-	 * \frac{m-1}{2} \right \rceil \right \rrbracket.\f] This
-	 * representation allows more accumulations before a reduction is
-	 * necessary, at the cost of a more expensive reduction.
-	 */
-	template<>
-	class ModularBalanced<double> : public FieldInterface,
-	      public FFPACK::ModularBalanced<double> {
-
-	      public:
-		      typedef FFPACK::ModularBalanced<double> Father_t ;
-		      friend class FieldAXPY<ModularBalanced<double> >;
-		      friend class DotProductDomain<ModularBalanced<double> >;
-		      friend class MultiModDouble;
-
-		      typedef double Element;
-		      typedef ModularBalancedRandIter<double> RandIter;
-
-		      static ClassifyRing <ModularBalanced<double> >::categoryTag getCategory()
-		      {
-			      return ClassifyRing<ModularBalanced<double> >::categoryTag();
-		      }
-
-		      ModularBalanced (const integer& p, int e = 1) :
-			      Father_t((unsigned long)p)
-		      {
-#ifdef DEBUG
-			      if (p > (integer) ULONG_MAX)
-				      throw PreconditionFailed(LB_FILE_LOC,"prime too big");
-			      if(modulus <= 1)
-				      throw PreconditionFailed(LB_FILE_LOC,"modulus must be > 1");
-			      if(modulus > getMaxModulus())
-				      throw PreconditionFailed(LB_FILE_LOC,"modulus is too big");
-#endif
-
-		      }
-
-		      // ModularBalanced () : Father_t() {};
-
-		      using Father_t::cardinality ;
-		      integer &cardinality (integer &c) const
-		      {
-			      return c = integer(modulus);
-		      }
-
-		      using Father_t::characteristic ;
-		      integer &characteristic (integer &c) const
-		      {
-			      return c = integer(modulus);
-		      }
-
-		      using Father_t::convert ;
-		      integer &convert (integer &x, const Element &y) const
-		      {
-			      if (y < 0)
-				  	return x = integer (y+modulus);
-				  else
-				  	return x = integer (y);
-		      }
-
-		      using Father_t::init ;
-		      Element &init (Element &x, const integer &y) const
-		      {
-			      x = (Element)(y%lmodulus);
-			      if (x<mhalf_mod) return x += modulus ;
-			      else if (x>half_mod) return x -= modulus ;
-			      return  x ;
-		      }
-
-		      Element &init(Element &x) const
-		      {
-			      return x = 0 ;
-		      }
-
-		      //! @bug faux si modulus==2
-		      inline bool isMinusOne (const Element &x) const
-		      {
-			      return (x == -1.);
-		      }
-
-		      unsigned long AccBound(const Element&r) const
-		      {
-			      double max_double = (double) (1ULL<<DBL_MANT_DIG) - modulus ;
-			      double p = std::max(half_mod,-mhalf_mod) ;
-			      if (areEqual(zero,r))
-				      return (unsigned long) (double(max_double)/p) ;
-			      else if (areEqual(one,r))
-			      {
-				      if (modulus>= getMaxModulus())
-					      return 0 ;
-				      else
-					      return (unsigned long) (double(max_double)/(p*p)) ;
-			      }
-			      else
-				      throw LinboxError("Bad input, expecting 0 or 1");
-			      return 0;
-		      }
-
-		Element& next(Element &x) const
-		{
-			return addin(x,one);
-		}
-
-	      };
-
 	//! Specialization  of FieldAXPY.
 	template <>
-	class FieldAXPY<ModularBalanced<double> > {
+	class FieldAXPY<Givaro::ModularBalanced<double> > {
 	public:
 
 		typedef double Element;
 		typedef double Abnormal;
-		typedef ModularBalanced<double> Field;
+		typedef Givaro::ModularBalanced<double> Field;
 
 		FieldAXPY (const Field &F) :
 			_field (&F),
-			_y(0.) , _bound( (double) ((1ULL << 53) - (unsigned long) (field().modulus*field().modulus)))
+			_y(0.) , _bound( (double) ((1ULL << 53) - (unsigned long) (field().characteristic()*field().characteristic())))
 		{}
 
 		FieldAXPY (const FieldAXPY &faxpy) :
@@ -203,7 +92,7 @@ namespace LinBox
 			_y(faxpy._y), _bound(faxpy._bound)
 		{}
 
-		FieldAXPY<ModularBalanced<double> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<Givaro::ModularBalanced<double> > &operator = (const FieldAXPY &faxpy)
 		{
 			_field = faxpy._field;
 			_y= faxpy._y;
@@ -222,7 +111,7 @@ namespace LinBox
 		{
 			_y += tmp;
 			if (_y > _bound)
-				return _y = fmod (_y, field().modulus);
+				return _y = fmod (_y, field().characteristic());
 			else
 				return _y;
 		}
@@ -230,13 +119,13 @@ namespace LinBox
 		{
 			_y -= tmp;
 			if (_y < 0)
-				return _y += field().modulus;
+				return _y += field().characteristic();
 			else
 				return _y;
 		}
 
 		inline Element& get (Element &y) {
-			_y = fmod (_y, field().modulus);
+			_y = fmod (_y, field().characteristic());
 			return y=_y ;
 		}
 
@@ -252,12 +141,12 @@ namespace LinBox
 		inline Element& set (const Element &tmp) {
 			_y = tmp;
 			if (_y > _bound)
-				return _y = fmod (_y, field().modulus);
+				return _y = fmod (_y, field().characteristic());
 			else
 				return _y;
 		}
 
-		inline const Field & field() { return *_field; }
+		inline const Field & field() const { return *_field; }
 	private:
 
 		const Field *_field;
@@ -268,7 +157,7 @@ namespace LinBox
 
 	//! Specialization  of DotProductDomain.
 	template <>
-	class DotProductDomain<ModularBalanced<double> > : public virtual VectorDomainBase<ModularBalanced<double> > {
+	class DotProductDomain<Givaro::ModularBalanced<double> > : public virtual VectorDomainBase<Givaro::ModularBalanced<double> > {
 	private:
 		double _bound;
 		size_t _nmax;
@@ -276,13 +165,13 @@ namespace LinBox
 	public:
 		typedef double Element;
 		DotProductDomain(){}
-		DotProductDomain (const ModularBalanced<double> &F) :
-			VectorDomainBase<ModularBalanced<double> > (F), _bound( (double) ( (1ULL<<53) - (unsigned long) (field().modulus*field().modulus)))
+		DotProductDomain (const Givaro::ModularBalanced<double> &F) :
+			VectorDomainBase<Givaro::ModularBalanced<double> > (F), _bound( (double) ( (1ULL<<53) - (unsigned long) (field().characteristic()*field().characteristic())))
 		{
-			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (field().modulus * field().modulus));
+			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (field().characteristic() * field().characteristic()));
 		}
 
-		using VectorDomainBase<ModularBalanced<double> >::field;
+		using VectorDomainBase<Givaro::ModularBalanced<double> >::field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
@@ -292,7 +181,7 @@ namespace LinBox
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				// y = fmod(y, field().modulus);
+				// y = fmod(y, field().characteristic());
 				field().init(res, y);
 			}
 			else{
@@ -301,13 +190,13 @@ namespace LinBox
 				for (;i< v1.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
-					t+=fmod(y, field().modulus);
+					t+=fmod(y, field().characteristic());
 					y=0.;
 				}
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
-				t+=fmod(y, field().modulus);
-				// y = fmod(t, field().modulus);
+				t+=fmod(y, field().characteristic());
+				// y = fmod(t, field().characteristic());
 				field().init(res, t);
 			}
 			return res;
@@ -323,7 +212,7 @@ namespace LinBox
 			if (v1.first.size() < _nmax) {
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				// y = fmod(y, field().modulus);
+				// y = fmod(y, field().characteristic());
 				field().init(res, y);
 			}
 			else {
@@ -332,13 +221,13 @@ namespace LinBox
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=fmod(y, field().modulus);
+					t+=fmod(y, field().characteristic());
 					y=0.;
 				}
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
-				t+= fmod(y, field().modulus);
-				// y = fmod(t, field().modulus);
+				t+= fmod(y, field().characteristic());
+				// y = fmod(t, field().characteristic());
 				field().init(res, t);
 			}
 			return res ;

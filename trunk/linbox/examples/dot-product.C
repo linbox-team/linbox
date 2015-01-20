@@ -46,7 +46,7 @@
 
 using namespace LinBox;
 
-typedef Modular<uint32_t> Field;
+typedef Givaro::Modular<uint32_t> Field;
 
 /// no command line args
 int main (int argc, char **argv)

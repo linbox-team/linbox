@@ -194,7 +194,7 @@ namespace LinBox
 		BlasMatrix<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
-		ChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(4UL);
+		ChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(4UL);
 		MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
 		MyIntegerModularCharpoly<BlasMatrix<PID_integer>, MyMethod> iteration2(Atilde, Met, Di, M);
 		MyModularCharpoly<MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod>,

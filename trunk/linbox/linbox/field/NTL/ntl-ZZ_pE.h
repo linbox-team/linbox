@@ -131,7 +131,7 @@ namespace LinBox
 
 	/**
 	 * @brief Wrapper of ZZ_pE from NTL
-	 * Define a parameterized class to handle easily UnparametricField<NTL::ZZ_pE> field
+	 * Define a parameterized class to handle easily Givaro::UnparametricRing<NTL::ZZ_pE> field
 	 */
 	class NTL_ZZ_pE : public NTL_ZZ_pE_Initialiser, public UnparametricOperations<NTL::ZZ_pE> {
 	public:

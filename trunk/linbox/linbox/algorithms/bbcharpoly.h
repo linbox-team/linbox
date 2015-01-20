@@ -151,7 +151,7 @@ namespace LinBox
 			commentator().start ("Integer BlackBox Charpoly ", "IbbCharpoly");
 
 			typename BlackBox::Field intRing = A.field();
-			typedef Modular<uint32_t> Field;
+			typedef Givaro::Modular<uint32_t> Field;
 			typedef typename BlackBox::template rebind<Field>::other FieldBlackBox;
 			typedef GivPolynomialRing<typename BlackBox::Field, Givaro::Dense> IntPolyDom;
 			typedef typename IntPolyDom::Element IntPoly;
@@ -253,7 +253,7 @@ namespace LinBox
 				  const RingCategories::ModularTag                              & tag,
 				  const Method::Blackbox                                        & M)
 		{
-			commentator().start ("Modular BlackBox Charpoly ", "MbbCharpoly");
+			commentator().start ("Givaro::Modular BlackBox Charpoly ", "MbbCharpoly");
 			typedef typename BlackBox::Field Field;
 			typedef GivPolynomialRing<Field, Givaro::Dense> PolyDom;
 			typedef typename PolyDom::Element Polynomial;

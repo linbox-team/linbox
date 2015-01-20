@@ -8,7 +8,7 @@
  * 2002-04-10 Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * Rename from test-large-modular.C to test-modular.C; made other updates in
- * accordance with changes to Modular interace.
+ * accordance with changes to Givaro::Modular interace.
  * ------------------------------------
  *
  *
@@ -74,10 +74,10 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 	Vector<GF2>::Dense v1, v2;
 
-	Modular<uint16_t> MF (2);
-	VectorDomain<Modular<uint16_t> > MF_VD (MF);
+	Givaro::Modular<uint16_t> MF (2);
+	VectorDomain<Givaro::Modular<uint16_t> > MF_VD (MF);
 
-	LinBox::Vector<Modular<uint16_t> >::Dense w1 (stream1.dim ()), w2 (stream1.dim ());
+	LinBox::Vector<Givaro::Modular<uint16_t> >::Dense w1 (stream1.dim ()), w2 (stream1.dim ());
 
 	uint16_t sigma;
 	bool rho;
@@ -89,7 +89,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 	Vector<GF2>::Dense::const_iterator i1;
 	Vector<GF2>::Dense::const_iterator i2;
-	Vector<Modular<uint16_t> >::Dense::iterator j1, j2;
+	Vector<Givaro::Modular<uint16_t> >::Dense::iterator j1, j2;
 
 	Timer timer;
 	double totaltime = 0.0;
@@ -168,11 +168,11 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 	Vector<GF2>::Dense v1;
 	Vector<GF2>::Sparse v2;
 
-	Modular<uint16_t> MF (2);
-	VectorDomain<Modular<uint16_t> > MF_VD (MF);
+	Givaro::Modular<uint16_t> MF (2);
+	VectorDomain<Givaro::Modular<uint16_t> > MF_VD (MF);
 
-	LinBox::Vector<Modular<uint16_t> >::Dense w1 (stream1.dim ());
-	LinBox::Vector<Modular<uint16_t> >::SparseSeq w2;
+	LinBox::Vector<Givaro::Modular<uint16_t> >::Dense w1 (stream1.dim ());
+	LinBox::Vector<Givaro::Modular<uint16_t> >::SparseSeq w2;
 
 	uint16_t sigma;
 	bool rho;
@@ -183,7 +183,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 	Vector<GF2>::Dense::const_iterator i1;
 	Vector<GF2>::Sparse::const_iterator i2;
-	Vector<Modular<uint16_t> >::Dense::iterator j1;
+	Vector<Givaro::Modular<uint16_t> >::Dense::iterator j1;
 
 	Timer timer;
 	double totaltime = 0.0;
@@ -299,7 +299,7 @@ int main (int argc, char **argv)
 */
 #if 0
 	FieldArchetype K(new LargeModular(101));
-	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of Modular field"))
+	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of Givaro::Modular field"))
 		pass = false;
 #endif
 
