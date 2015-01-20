@@ -25,11 +25,12 @@
  \brief Valence of sparse matrix over Z or Zp.
  \ingroup examples
  */
-
+ 
+#include <givaro/modular.h>
 #include <givaro/givintnumtheo.h>
+
 #include <linbox/field/gf2.h>
 #include <linbox/field/modular.h>
-#include <linbox/field/givaro.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/blackbox/transpose.h>
 #include <linbox/blackbox/compose.h>
