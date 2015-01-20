@@ -31,7 +31,7 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/field/modular.h"
 #include "linbox/randiter/random-fftprime.h"
-#include <givaro/rns-double.h>
+#include <fflas-ffpack/field/rns-double.h>
 
 namespace LinBox{
 

@@ -30,6 +30,8 @@
 
 #include <iostream>
 #include <sstream>
+#include <givaro/unparametric.h>
+#include <givaro/givrational.h>
 
 #include <linbox/field/modular.h>
 #include <linbox/field/gf2.h>
@@ -37,7 +39,6 @@
 #include <linbox/blackbox/zero-one.h>
 #include <linbox/solutions/rank.h>
 #include <linbox/util/matrix-stream.h>
-#include <linbox/field/givaro.h>
 
 #define SP_STOR SparseMatrixFormat::SparseSeq
 // #define SP_STOR SparseMatrixFormat::COO
@@ -69,11 +70,11 @@ int main (int argc, char **argv)
 
 	long unsigned int r;
 
-	LinBox::GivaroRational ZZ;
+	Givaro::UnparametricRing<Givaro::Rational> ZZ;
 	LinBox::Timer tim ; tim.clear() ; tim.start();
-	MatrixStream<GivaroRational> ms( ZZ, input );
-	SparseMatrix<GivaroRational, SP_STOR> A ( ms );
-	// SparseMatrix<GivaroRational, SparseMatrixFormat::CSR> A ( ms );
+	MatrixStream<Givaro::UnparametricRing<Givaro::Rational>> ms( ZZ, input );
+	SparseMatrix<Givaro::UnparametricRing<Givaro::Rational>, SP_STOR> A ( ms );
+	// SparseMatrix<Givaro::UnparametricRing<Givaro::Rational>, SparseMatrixFormat::CSR> A ( ms );
 	tim.stop();
 	std::cout << "matrix is " << A.rowdim() << " by " << A.coldim() << " (" << tim << ")" << std::endl;
 	tim.clear() ; tim.start();

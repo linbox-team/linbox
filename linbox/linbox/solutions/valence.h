@@ -95,13 +95,14 @@ namespace LinBox
 
 }
 
+#include <givaro/modular.h>
+#include <typeinfo>
+
 #include "linbox/field/modular.h"
-#include "linbox/field/givaro.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-early-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
-#include <typeinfo>
 
 namespace LinBox
 {

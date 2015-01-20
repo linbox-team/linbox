@@ -26,6 +26,10 @@
 #include <functional>
 #include <iostream>
 #include <vector>
+
+#include <givaro/modular.h>
+#include <givaro/givranditer.h>
+
 using namespace std; 
 
 
@@ -177,7 +181,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		vector<Element> x(pts);
 
 		// Generate random inputs
-		typename Field::RandIter Gen(fld,fld.characteristic(),seed);
+		typename Field::RandIter Gen(fld,seed);
 		randomVect(Gen,x);
 		FFT_transform<Field> MulDom(fld,lpts);
 		typedef FFT_transform<Field> FFT_t; 
