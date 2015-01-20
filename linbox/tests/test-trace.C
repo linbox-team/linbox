@@ -69,7 +69,7 @@ int main (int argc, char **argv)
 	ostream& report = commentator().report();
 #endif
 
-	typedef Modular<int> Field;
+	typedef Givaro::Modular<int> Field;
 	typedef Field::Element Element;
 	// typedef vector<Element> Vector;
 	Field F (q);

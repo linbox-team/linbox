@@ -38,7 +38,7 @@
 
 #include <queue>
 
-#include "linbox/field/modular-balanced.h"
+#include <givaro/modular-balanced.h>
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -66,36 +66,36 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator().start("ModularBalanced<float> field test suite", "ModularBalanced<float>");
+	commentator().start("Givaro::ModularBalanced<float> field test suite", "Givaro::ModularBalanced<float>");
 	bool pass = true;
 
-	ModularBalanced<float> F_int (4093);//(2147483629);//(65521);
-	ModularBalanced<float> G_int (2011);
-	ModularBalanced<float> H_int (3);
-	integer k = FieldTraits<ModularBalanced<float> >::maxModulus() ;
+	Givaro::ModularBalanced<float> F_int (4093);//(2147483629);//(65521);
+	Givaro::ModularBalanced<float> G_int (2011);
+	Givaro::ModularBalanced<float> H_int (3);
+	integer k = FieldTraits<Givaro::ModularBalanced<float> >::maxModulus() ;
 	prevprime(k,k);
-	ModularBalanced<float> I_int(k);
+	Givaro::ModularBalanced<float> I_int(k);
 
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F_int,  "ModularBalanced<float>",  iterations, n, false)) pass = false;
-	// if (!testRandomIterator (F_int,  "ModularBalanced<float>", trials, categories, hist_level)) pass = false;
+	if (!runFieldTests (F_int,  "Givaro::ModularBalanced<float>",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (F_int,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
 
-	if (!runFieldTests (G_int,  "ModularBalanced<float>",  iterations, n, false)) pass = false;
-	// if (!testRandomIterator (G_int,  "ModularBalanced<float>", trials, categories, hist_level)) pass = false;
+	if (!runFieldTests (G_int,  "Givaro::ModularBalanced<float>",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (G_int,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
 
-	if (!runFieldTests (H_int,  "ModularBalanced<float>",  iterations, n, false)) pass = false;
-	// if (!testRandomIterator (H_int,  "ModularBalanced<float>", trials, categories, hist_level)) pass = false;
+	if (!runFieldTests (H_int,  "Givaro::ModularBalanced<float>",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (H_int,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
 
-	if (!runFieldTests (I_int,  "ModularBalanced<float>",  iterations, n, false)) pass = false;
-	// if (!testRandomIterator (I_int,  "ModularBalanced<float>", trials, categories, hist_level)) pass = false;
-
-
+	if (!runFieldTests (I_int,  "Givaro::ModularBalanced<float>",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (I_int,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
 
 
-	commentator().stop("ModularBalanced<float> field test suite");
+
+
+	commentator().stop("Givaro::ModularBalanced<float> field test suite");
 	return pass ? 0 : -1;
 }
 

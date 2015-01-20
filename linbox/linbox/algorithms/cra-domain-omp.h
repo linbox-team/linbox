@@ -66,7 +66,7 @@ namespace LinBox
 			 */
 			size_t NN = omp_get_max_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
-			// commentator().start ("Parallel OMP Modular iteration", "mmcrait");
+			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
 			int coprime =0;
@@ -156,7 +156,7 @@ namespace LinBox
 			typedef typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t ElementContainer;
 			size_t NN = omp_get_max_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
-			// commentator().start ("Parallel OMP Modular iteration", "mmcrait");
+			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
 			int coprime =0;

@@ -52,7 +52,7 @@ using namespace std;
 #include <linbox/randiter/random-prime.h>
 #include <linbox/randiter/random-fftprime.h>
 #include <linbox/field/unparametric.h>
-//#include <fflas-ffpack/field/unparametric.h>
+//#include <givaro/unparametric.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/util/commentator.h>
 #include <linbox/util/timer.h>
@@ -401,7 +401,7 @@ int main(int argc, char** argv){
 #endif
 		cout<<"Computation over Z[x]  "<<endl;
 		cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
-		UnparametricField<integer> F;
+		Givaro::UnparametricRing<integer> F;
 		runTest (F,n,b,d,seed,test);
 	}
 	else {
@@ -411,7 +411,7 @@ int main(int argc, char** argv){
 #endif
 			RandomPrimeIter Rd(b,seed);
 			integer p= Rd.random();
-			Modular<integer> F(p);
+			Givaro::Modular<integer> F(p);
 			cout<<"Computation over Fp[x] with p=  "<<p<<" (Generic prime)"<<endl;
 			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 			runTest (F,n,b,d,seed,test);
@@ -422,7 +422,7 @@ int main(int argc, char** argv){
 #endif
 			RandomFFTPrime Rd(b,seed);
 			integer p = Rd.randomPrime(integer(d).bitsize()+1);
-			Modular<int32_t> F((int32_t)p);
+			Givaro::Modular<int32_t> F((int32_t)p);
 			cout<<"Computation over Fp[x] with p=  "<<p<<" (FFT prime)"<<endl;
 			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 			runTest (F,n,b,d,seed,test);

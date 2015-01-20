@@ -28,227 +28,35 @@
 
 #ifndef __LINBOX_field_unparametric_H
 #define __LINBOX_field_unparametric_H
-#include <typeinfo>
 
+#include <typeinfo>
 #include <string>
 #include <algorithm>
-
+#include <givaro/unparametric.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
-#include "linbox/randiter/unparametric.h"
 #include "linbox/field/field-traits.h"
-#include "fflas-ffpack/field/unparametric.h"
 #include "linbox/randiter/nonzero.h"
-//#if __LINBOX_HAVE_NTL
-//#include "linbox/field/ntl-RR.h"
-//#endif // __LINBOX_HAVE_NTL
 
 
 namespace LinBox
 {
 
-    using Givaro::Caster;
-
-#if 0
-#if __LINBOX_HAVE_NTL
-	typedef NTL::RR Targ;
-	template <>
-	Targ& Caster<Targ, int> (Targ& t, const int& s)
-	{
-		return t = s;
-	}
-#endif // __LINBOX_HAVE_NTL
-#endif
-
 	template <class Ring>
 	struct ClassifyRing;
 
 	template <class K>
-	class UnparametricField;
-
-	// using FFPACK::UnparametricField ;
-	using FFPACK::UnparametricOperations;
-
-	template <class K>
-	struct ClassifyRing<UnparametricField<K> > {
+	struct ClassifyRing<Givaro::UnparametricRing<K> > {
 		typedef RingCategories::GenericTag categoryTag;
 	};
 
 	template <>
-	struct ClassifyRing<UnparametricField<integer> > {
+	struct ClassifyRing<Givaro::UnparametricRing<integer> > {
 		typedef RingCategories::IntegerTag categoryTag;
 	};
 
-
-	/** \brief Unparameterized field adapter.
-	 * \ingroup field
-	 * \defgroup UnparametricField UnparametricField
-	 *
-	 * A field having an interface similar to that of floats is adapted to
-	 * LinBox.
-	 *
-	 *  Used to generate efficient field classes for unparameterized fields
-	 *  (or hidden parameter fields).
-	 *
-	 *  Some fields are implemented by definition of the C++ arithmetic
-	 *  operators, such as <code>z = x*y</code>, for \c x, \c y, \c z
-	 *  instances of a type \c K.  The LinBox field LinBox::Unparametric<K>
-	 *  is the adaptation to LinBox.
-	 *
-	 *  For a typical unparametric field, some of the methods must be
-	 *  defined in a specialization.
-	 */
-	template <class K>
-	class UnparametricField : public FieldInterface,
-		public  FFPACK::UnparametricField<K> {
-	public:
-		typedef typename FFPACK::UnparametricField<K> Father_t ;
-
-		/** @name Common Object Interface for a LinBox Field.
-		 * These methods and member types are required of all LinBox fields.
-		 * See \ref FieldArchetype  for detailed specifications.
-		 */
-		//@{
-
-		/** The field's element type.
-		 * Type K must provide a default constructor,
-		 * a copy constructor, a destructor, and an assignment operator.
-		 */
-
-		typedef K Element;
-
-		/// Type of random field element generators.
-		typedef UnparametricRandIter<K> RandIter;
-
-		/** @name Field Object Basics.
-		*/
-		//@{
-
-		/** Builds this field to have characteristic q and cardinality q<sup>e</sup>.
-		 *  This constructor must be defined in a specialization.
-		 */
-		UnparametricField(integer q = 0, size_t e = 1) :
-			Father_t(q, e)
-			//Father_t((unsigned long)q,(unsigned long)e)
-			,_p_int(q),
-			_card_int(q == 0 ?
-			integer(-1) :
-			pow(q, e) )
-			{}  // assuming q is a prime or zero.
-
-		/// construct this field as copy of F.
-		UnparametricField (const UnparametricField &F) :
-			Father_t(F)
-			,_p_int(F.characteristic()), _card_int(F.cardinality())
-		{
-			// using _p, _card leaks in test-unparametric-field : removing.
-		}
-
-
-		// field/ntl-ZZ_p.h me les demande... //
-
-		using Father_t::inv ;
-
-		//using Father_t::read ;
-		std::istream &read(std::istream & is) { return Father_t::read(is); }
-
-		std::istream &read(std::istream & s, Element &a) const
-		{
-			Integer tmp;
-			s >> tmp;
-			init(a, tmp);
-			return s;
-		}
-
-		using Father_t::invin;
-		using Father_t::write;
-		using Father_t::isZero;
-		using Father_t::isOne;
-		using Father_t::isMOne;
-
-		template<typename Src>
-		Element&init(Element&x, const Src&s) const
-		{
-			return Caster (x, s);
-		}
-
-		Element&init(Element&x)const
-		{
-			return Caster (x, 0);
-		}
-
-		template<typename T>
-		T&convert(T&x, const Element&y) const
-		{
-			return Caster(x,y);
-		}
-
-		// fin des trucs zarbs //
-
-		/// c := cardinality of this field (-1 if infinite).
-		using Father_t::cardinality ;
-		integer &cardinality (integer &c) const
-		{
-			return c = _card_int;
-			// return c = (integer)_card ;
-		}
-
-		/// c := characteristic of this field (zero or prime).
-		using Father_t::characteristic;
-		integer &characteristic (integer &c) const
-		{
-			return c = _p_int;
-			// return c = (integer)_p ;
-		}
-
-		//@} Data Object Management
-
-
-
-
-		//@} Common Object Interface
-
-		/** @name Implementation-Specific Methods.
-		 * These methods are not required of all LinBox fields
-		 * and are included only for the implementation of this field
-		 * template.
-		 */
-		//@{
-
-		//- Default constructor
-		//UnparametricField (void) {}
-
-		/** Constructor from field object.
-		 * @param  A unparameterized field object
-		 */
-		UnparametricField (const K &A) {}
-
-		/** Constant access operator.
-		 * @return constant reference to field object
-		 */
-		const K &operator () (void) const
-		{
-			return Element ();
-		}
-
-		/** Access operator.
-		 * @return reference to field object
-		 */
-		K &operator () (void)
-		{
-			return Element ();
-		}
-
-		//@} Implementation-Specific Methods
-	protected:
-		integer _p_int; // if we never use them in actual computations, why bother ? (just copied along)
-		integer _card_int;
-		// using Father_t::_p;
-		// using Father_t::_card;
-
-	}; // template <class K> class UnparametricField
 
 	template<class Field>
 	class FieldAXPY;
@@ -257,9 +65,9 @@ namespace LinBox
 	 * @brief NO DOc
 	 */
 	template<>
-	class FieldAXPY<UnparametricField<integer> >  {
+	class FieldAXPY<Givaro::UnparametricRing<integer> >  {
 	public:
-		typedef UnparametricField<integer> Field;
+		typedef Givaro::UnparametricRing<integer> Field;
 		typedef integer Element;
 		typedef Element Abnormal;
 

@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
 	else if (algo == "local") { // m must be a prime power
 
 		if (format == "sparse" ) {
-			typedef Modular<int32_t> Field;
+			typedef Givaro::Modular<int32_t> Field;
 			Field F(m);
 			std::ifstream input (argv[4]);
 			if (!input) { std::cerr << "Error opening matrix file: " << argv[1] << std::endl; return -1; }

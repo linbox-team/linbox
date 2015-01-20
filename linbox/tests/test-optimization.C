@@ -63,7 +63,7 @@ int main (int argc, char ** argv)
 	commentator().start("Optimization suite", "Optim");
 	std::ostream& report = commentator().report();
 
-	typedef Modular<double> Field;
+	typedef Givaro::Modular<double> Field;
 	Field F(17);
 	Timer chrono;
 
@@ -76,7 +76,7 @@ int main (int argc, char ** argv)
 
 	do {
 		chrono.start();
-		FFLAS::fgemm((Field::Father_t)F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+		FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 			     n, n, n, 1., A, n, A, n, 0., C, n);
 		chrono.stop();
 		report << std::endl

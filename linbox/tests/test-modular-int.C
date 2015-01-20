@@ -10,7 +10,7 @@
  * 2002-04-10 Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * Rename from test-large-modular.C to test-modular.C; made other updates in
- * accordance with changes to Modular interace.
+ * accordance with changes to Givaro::Modular interace.
  * ------------------------------------
  *
  *
@@ -91,234 +91,234 @@ int main (int argc, char **argv)
 
 	{
 		bool part_pass = true ;
-		commentator().start("Modular<integer> field test suite", "Modular<integer>");
+		commentator().start("Givaro::Modular<integer> field test suite", "Givaro::Modular<integer>");
 
-		Modular<integer> F_int (q1);
-		// integer k = FieldTraits<Modular<integer> >::maxModulus() ;
+		Givaro::Modular<integer> F_int (q1);
+		// integer k = FieldTraits<Givaro::Modular<integer> >::maxModulus() ;
 		// prevprime(k,k);
-		Modular<integer> I_int(q5);
+		Givaro::Modular<integer> I_int(q5);
 
 
 		// Make sure some more detailed messages get printed
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-		if (!runFieldTests (F_int,  "Modular<integer>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (F_int,  "Modular<integer>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (F_int,  "Givaro::Modular<integer>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (F_int,  "Givaro::Modular<integer>", trials, categories, hist_level)) part_pass = false;
 
-		if (!runFieldTests (I_int,  "Modular<integer>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (I_int,  "Modular<integer>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (I_int,  "Givaro::Modular<integer>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (I_int,  "Givaro::Modular<integer>", trials, categories, hist_level)) part_pass = false;
 
 
-		commentator().stop(MSG_STATUS(part_pass),"Modular<integer> field test suite");
+		commentator().stop(MSG_STATUS(part_pass),"Givaro::Modular<integer> field test suite");
 		pass &= part_pass ;
 	}
 
 	{
 		bool part_pass = true ;
-		commentator().start("Modular<int32_t> field test suite", "Modular<int32_t>");
+		commentator().start("Givaro::Modular<int32_t> field test suite", "Givaro::Modular<int32_t>");
 
-		integer qq = std::min(q2, FieldTraits<Modular<int32_t> >::maxModulus());
+		integer qq = std::min(q2, FieldTraits<Givaro::Modular<int32_t> >::maxModulus());
 		// if (isOdd(qq)) --qq;
 		Givaro::prevprime(qq,qq);
-		Modular<int32_t> F_int (qq);
-		integer k = FieldTraits<Modular<int32_t> >::maxModulus() ;
+		Givaro::Modular<int32_t> F_int (qq);
+		integer k = FieldTraits<Givaro::Modular<int32_t> >::maxModulus() ;
 		prevprime(k,k);
-		Modular<int32_t> I_int(k);
+		Givaro::Modular<int32_t> I_int(k);
 
 
 		// Make sure some more detailed messages get printed
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-		if (!runFieldTests (F_int,  "Modular<int32_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (F_int,  "Modular<int32_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (F_int,  "Givaro::Modular<int32_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (F_int,  "Givaro::Modular<int32_t>", trials, categories, hist_level)) part_pass = false;
 
-		if (!runFieldTests (I_int,  "Modular<int32_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (I_int,  "Modular<int32_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (I_int,  "Givaro::Modular<int32_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (I_int,  "Givaro::Modular<int32_t>", trials, categories, hist_level)) part_pass = false;
 
 
-		commentator().stop(MSG_STATUS(part_pass),"Modular<int32_t> field test suite");
+		commentator().stop(MSG_STATUS(part_pass),"Givaro::Modular<int32_t> field test suite");
 		pass &= part_pass ;
 	}
 
 	{
 		bool part_pass = true ;
-		commentator().start("Modular<int64_t> field test suite", "Modular<int64_t>");
-		integer qq = FieldTraits<Modular<int64_t> >::maxModulus()/2 ;
+		commentator().start("Givaro::Modular<int64_t> field test suite", "Givaro::Modular<int64_t>");
+		integer qq = FieldTraits<Givaro::Modular<int64_t> >::maxModulus()/2 ;
 		prevprime(qq,qq);
-		Modular<int64_t> F_int (qq);
-		integer k = FieldTraits<Modular<int64_t> >::maxModulus() ;
+		Givaro::Modular<int64_t> F_int (qq);
+		integer k = FieldTraits<Givaro::Modular<int64_t> >::maxModulus() ;
 		prevprime(k,k);
-		Modular<int64_t> I_int(k);
+		Givaro::Modular<int64_t> I_int(k);
 
 
 		// Make sure some more detailed messages get printed
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-		if (!runFieldTests (F_int,  "Modular<int64_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (F_int,  "Modular<int64_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (F_int,  "Givaro::Modular<int64_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (F_int,  "Givaro::Modular<int64_t>", trials, categories, hist_level)) part_pass = false;
 
-		if (!runFieldTests (I_int,  "Modular<int64_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (I_int,  "Modular<int64_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (I_int,  "Givaro::Modular<int64_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (I_int,  "Givaro::Modular<int64_t>", trials, categories, hist_level)) part_pass = false;
 
 
-		commentator().stop(MSG_STATUS(part_pass),"Modular<int64_t> field test suite");
+		commentator().stop(MSG_STATUS(part_pass),"Givaro::Modular<int64_t> field test suite");
 		pass &= part_pass ;
 	}
 
 	{
 		bool part_pass = true ;
-		commentator().start("Modular<uint32_t> field test suite", "Modular<uint32_t>");
+		commentator().start("Givaro::Modular<uint32_t> field test suite", "Givaro::Modular<uint32_t>");
 
-		Modular<uint32_t> F_int (q2);
-		integer k = FieldTraits<Modular<uint32_t> >::maxModulus() ;
+		Givaro::Modular<uint32_t> F_int (q2);
+		integer k = FieldTraits<Givaro::Modular<uint32_t> >::maxModulus() ;
 		prevprime(k,k);
-		Modular<uint32_t> I_int(k);
+		Givaro::Modular<uint32_t> I_int(k);
 
 
 		// Make sure some more detailed messages get printed
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-		if (!runFieldTests (F_int,  "Modular<uint32_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (F_int,  "Modular<uint32_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (F_int,  "Givaro::Modular<uint32_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (F_int,  "Givaro::Modular<uint32_t>", trials, categories, hist_level)) part_pass = false;
 
-		if (!runFieldTests (I_int,  "Modular<uint32_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (I_int,  "Modular<uint32_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (I_int,  "Givaro::Modular<uint32_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (I_int,  "Givaro::Modular<uint32_t>", trials, categories, hist_level)) part_pass = false;
 
 
-		commentator().stop(MSG_STATUS(part_pass),"Modular<uint32_t> field test suite");
+		commentator().stop(MSG_STATUS(part_pass),"Givaro::Modular<uint32_t> field test suite");
 		pass &= part_pass ;
 	}
 
 #if 0 /*  fails */
 	{
 		bool part_pass = true ;
-		commentator().start("Modular<uint64_t> field test suite", "Modular<uint64_t>");
-		integer qq = FieldTraits<Modular<uint64_t> >::maxModulus()/2 ;
+		commentator().start("Givaro::Modular<uint64_t> field test suite", "Givaro::Modular<uint64_t>");
+		integer qq = FieldTraits<Givaro::Modular<uint64_t> >::maxModulus()/2 ;
 		prevprime(qq,qq);
-		Modular<uint64_t> F_int (qq);
-		integer k = FieldTraits<Modular<uint64_t> >::maxModulus() ;
+		Givaro::Modular<uint64_t> F_int (qq);
+		integer k = FieldTraits<Givaro::Modular<uint64_t> >::maxModulus() ;
 		prevprime(k,k);
-		Modular<uint64_t> I_int(k);
+		Givaro::Modular<uint64_t> I_int(k);
 
 
 		// Make sure some more detailed messages get printed
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-		if (!runFieldTests (F_int,  "Modular<uint64_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (F_int,  "Modular<uint64_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (F_int,  "Givaro::Modular<uint64_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (F_int,  "Givaro::Modular<uint64_t>", trials, categories, hist_level)) part_pass = false;
 
-		if (!runFieldTests (I_int,  "Modular<uint64_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (I_int,  "Modular<uint64_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (I_int,  "Givaro::Modular<uint64_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (I_int,  "Givaro::Modular<uint64_t>", trials, categories, hist_level)) part_pass = false;
 
 
-		commentator().stop(MSG_STATUS(part_pass),"Modular<uint64_t> field test suite");
+		commentator().stop(MSG_STATUS(part_pass),"Givaro::Modular<uint64_t> field test suite");
 		pass &= part_pass ;
 	}
 #endif
 
 	{
 		bool part_pass = true ;
-		commentator().start("Modular<int8_t> field test suite", "Modular<int8_t>");
+		commentator().start("Givaro::Modular<int8_t> field test suite", "Givaro::Modular<int8_t>");
 
-		Modular<int8_t> F_int (q4);
-		integer k = FieldTraits<Modular<int8_t> >::maxModulus() ;
+		Givaro::Modular<int8_t> F_int (q4);
+		integer k = FieldTraits<Givaro::Modular<int8_t> >::maxModulus() ;
 		prevprime(k,k);
-		Modular<int8_t> I_int(k);
+		Givaro::Modular<int8_t> I_int(k);
 
 
 		// Make sure some more detailed messages get printed
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-		if (!runFieldTests (F_int,  "Modular<int8_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (F_int,  "Modular<int8_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (F_int,  "Givaro::Modular<int8_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (F_int,  "Givaro::Modular<int8_t>", trials, categories, hist_level)) part_pass = false;
 
-		if (!runFieldTests (I_int,  "Modular<int8_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (I_int,  "Modular<int8_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (I_int,  "Givaro::Modular<int8_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (I_int,  "Givaro::Modular<int8_t>", trials, categories, hist_level)) part_pass = false;
 
 
-		commentator().stop(MSG_STATUS(part_pass),"Modular<int8_t> field test suite");
+		commentator().stop(MSG_STATUS(part_pass),"Givaro::Modular<int8_t> field test suite");
 		pass &= part_pass ;
 	}
 
 	{
 		bool part_pass = true ;
-		commentator().start("Modular<int16_t> field test suite", "Modular<int16_t>");
-		integer qq = FieldTraits<Modular<int16_t> >::maxModulus()/2 ;
+		commentator().start("Givaro::Modular<int16_t> field test suite", "Givaro::Modular<int16_t>");
+		integer qq = FieldTraits<Givaro::Modular<int16_t> >::maxModulus()/2 ;
 		prevprime(qq,qq);
 
-		Modular<int16_t> F_int (qq);
-		integer k = FieldTraits<Modular<int16_t> >::maxModulus() ;
+		Givaro::Modular<int16_t> F_int (qq);
+		integer k = FieldTraits<Givaro::Modular<int16_t> >::maxModulus() ;
 		prevprime(k,k);
-		Modular<int16_t> I_int(k);
+		Givaro::Modular<int16_t> I_int(k);
 
 
 		// Make sure some more detailed messages get printed
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-		if (!runFieldTests (F_int,  "Modular<int16_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (F_int,  "Modular<int16_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (F_int,  "Givaro::Modular<int16_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (F_int,  "Givaro::Modular<int16_t>", trials, categories, hist_level)) part_pass = false;
 
-		if (!runFieldTests (I_int,  "Modular<int16_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (I_int,  "Modular<int16_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (I_int,  "Givaro::Modular<int16_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (I_int,  "Givaro::Modular<int16_t>", trials, categories, hist_level)) part_pass = false;
 
 
-		commentator().stop(MSG_STATUS(part_pass),"Modular<int16_t> field test suite");
+		commentator().stop(MSG_STATUS(part_pass),"Givaro::Modular<int16_t> field test suite");
 		pass &= part_pass ;
 	}
 
 	{
 		bool part_pass = true ;
-		commentator().start("Modular<uint8_t> field test suite", "Modular<uint8_t>");
+		commentator().start("Givaro::Modular<uint8_t> field test suite", "Givaro::Modular<uint8_t>");
 
-		Modular<uint8_t> F_int ((uint32_t)q4);
-		integer k = FieldTraits<Modular<uint8_t> >::maxModulus() ;
+		Givaro::Modular<uint8_t> F_int ((uint32_t)q4);
+		integer k = FieldTraits<Givaro::Modular<uint8_t> >::maxModulus() ;
 		prevprime(k,k);
-		Modular<uint8_t> I_int(k);
+		Givaro::Modular<uint8_t> I_int(k);
 
 
 		// Make sure some more detailed messages get printed
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-		if (!runFieldTests (F_int,  "Modular<uint8_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (F_int,  "Modular<uint8_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (F_int,  "Givaro::Modular<uint8_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (F_int,  "Givaro::Modular<uint8_t>", trials, categories, hist_level)) part_pass = false;
 
-		if (!runFieldTests (I_int,  "Modular<uint8_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (I_int,  "Modular<uint8_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (I_int,  "Givaro::Modular<uint8_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (I_int,  "Givaro::Modular<uint8_t>", trials, categories, hist_level)) part_pass = false;
 
 
-		commentator().stop(MSG_STATUS(part_pass),"Modular<uint8_t> field test suite");
+		commentator().stop(MSG_STATUS(part_pass),"Givaro::Modular<uint8_t> field test suite");
 		pass &= part_pass ;
 	}
 
 	{
 		bool part_pass = true ;
-		commentator().start("Modular<uint16_t> field test suite", "Modular<uint16_t>");
-		Modular<uint16_t> F_int (q3);
-		integer k = FieldTraits<Modular<uint16_t> >::maxModulus() ;
+		commentator().start("Givaro::Modular<uint16_t> field test suite", "Givaro::Modular<uint16_t>");
+		Givaro::Modular<uint16_t> F_int (q3);
+		integer k = FieldTraits<Givaro::Modular<uint16_t> >::maxModulus() ;
 		prevprime(k,k);
-		Modular<uint16_t> I_int(k);
+		Givaro::Modular<uint16_t> I_int(k);
 
 
 		// Make sure some more detailed messages get printed
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-		if (!runFieldTests (F_int,  "Modular<uint16_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (F_int,  "Modular<uint16_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (F_int,  "Givaro::Modular<uint16_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (F_int,  "Givaro::Modular<uint16_t>", trials, categories, hist_level)) part_pass = false;
 
-		if (!runFieldTests (I_int,  "Modular<uint16_t>",  iterations, n, false)) part_pass = false;
-		if (!testRandomIterator (I_int,  "Modular<uint16_t>", trials, categories, hist_level)) part_pass = false;
+		if (!runFieldTests (I_int,  "Givaro::Modular<uint16_t>",  iterations, n, false)) part_pass = false;
+		if (!testRandomIterator (I_int,  "Givaro::Modular<uint16_t>", trials, categories, hist_level)) part_pass = false;
 
 
-		commentator().stop(MSG_STATUS(part_pass),"Modular<uint16_t> field test suite");
+		commentator().stop(MSG_STATUS(part_pass),"Givaro::Modular<uint16_t> field test suite");
 		pass &= part_pass ;
 	}
 

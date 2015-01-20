@@ -35,8 +35,8 @@
 
 using namespace LinBox;
 
-typedef Modular<double> Field;
-//typedef GivaroZpz<int32_t> Field;
+typedef Givaro::Modular<double> Field;
+//typedef Givaro::Modular<int32_t> Field;
 typedef Field::Element Element;
 
 
@@ -59,7 +59,7 @@ extern "C"
 		   9- C (matrix)
 		*/
 
-		//MaplePrintf(kv,"Modular Matrix Mutiplication using LinBox library\n");
+		//MaplePrintf(kv,"Givaro::Modular Matrix Mutiplication using LinBox library\n");
 
 		int p,m,n,k,alpha,beta;
 		p     = MapleToInteger32(kv,(ALGEB)argv[1]);
@@ -134,7 +134,7 @@ extern "C"
 		C = (Element*)RTableDataBlock(kv,Matrix);
 
 		//Ce=new Element[m*n];
-		FFLAS::fgemm((typename Field::Father_t)F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,m,n,k,a,A,k,B,n,b,C,n);
+		FFLAS::fgemm(F,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,m,n,k,a,A,k,B,n,b,C,n);
 
 		Matrix = (ALGEB)argv[9];
 		RTableGetSettings(kv,&settings,Matrix);

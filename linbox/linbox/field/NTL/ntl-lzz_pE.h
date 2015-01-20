@@ -113,7 +113,7 @@ namespace LinBox
 
 
 	/*! @brief zz_pE
-	 * Define a parameterized class to easily handle UnparametricField<NTL::zz_pE> field
+	 * Define a parameterized class to easily handle Givaro::UnparametricRing<NTL::zz_pE> field
 	 */
 
 	/// \brief for large cardinality, small prime.  \ingroup field

@@ -14,7 +14,7 @@
  * 2002-04-10 Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * Rename from test-large-modular.C to test-modular.C; made other updates in
- * accordance with changes to Modular interace.
+ * accordance with changes to Givaro::Modular interace.
  * ------------------------------------
  *
  *
@@ -72,20 +72,20 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator().start("Modular<float> field test suite", "Modular<float>");
+	commentator().start("Givaro::Modular<float> field test suite", "Givaro::Modular<float>");
 	bool pass = true;
 
-	//Modular<float> F2 (2);
-	Modular<float> F3 (3);
-	Modular<float> F5 (5);
-	Modular<float> F7 (7);
-	Modular<float> F11 (11);
-	// Modular<float> F (2011);
-	// Modular<float> G (4093);
-	//Modular<float> H (1099511627689);
-	integer k = FieldTraits<Modular<float> >::maxModulus() ;
+	//Givaro::Modular<float> F2 (2);
+	Givaro::Modular<float> F3 (3);
+	Givaro::Modular<float> F5 (5);
+	Givaro::Modular<float> F7 (7);
+	Givaro::Modular<float> F11 (11);
+	// Givaro::Modular<float> F (2011);
+	// Givaro::Modular<float> G (4093);
+	//Givaro::Modular<float> H (1099511627689);
+	integer k = FieldTraits<Givaro::Modular<float> >::maxModulus() ;
 	prevprime(k,k);
-	Modular<float> I_int(k);
+	Givaro::Modular<float> I_int(k);
 
 
 	// Make sure some more detailed messages get printed
@@ -93,23 +93,23 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 	std::ostream& report = commentator().report();
 	// report << "Field F2" << std::endl;
-	//if (!runFieldTests (F2,  "Modular<float>",  iterations, n, false)) pass = false;
+	//if (!runFieldTests (F2,  "Givaro::Modular<float>",  iterations, n, false)) pass = false;
 	report << "Field F3" << std::endl;
-	if (!runFieldTests (F3,  "Modular<float>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F3,  "Givaro::Modular<float>",  iterations, n, false)) pass = false;
 	report << "Field F5" << std::endl;
-	if (!runFieldTests (F5,  "Modular<float>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F5,  "Givaro::Modular<float>",  iterations, n, false)) pass = false;
 	report << "Field F7" << std::endl;
-	if (!runFieldTests (F7,  "Modular<float>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F7,  "Givaro::Modular<float>",  iterations, n, false)) pass = false;
 	report << "Field F11" << std::endl;
-	if (!runFieldTests (F11, "Modular<float>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F11, "Givaro::Modular<float>",  iterations, n, false)) pass = false;
 	// report << "Field F" << std::endl;
-	// if (!runFieldTests (F,   "Modular<float>",  iterations, n, false)) pass = false;
+	// if (!runFieldTests (F,   "Givaro::Modular<float>",  iterations, n, false)) pass = false;
 	// report << "Field G" << std::endl;
-	// if (!runFieldTests (G,   "Modular<float>",  iterations, n, false)) pass = false;
+	// if (!runFieldTests (G,   "Givaro::Modular<float>",  iterations, n, false)) pass = false;
 
-	if (!runFieldTests (I_int,  "Modular<float>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (I_int,  "Givaro::Modular<float>",  iterations, n, false)) pass = false;
 
-	commentator().stop("Modular<float> field test suite");
+	commentator().stop("Givaro::Modular<float> field test suite");
 	return pass ? 0 : -1;
 }
 

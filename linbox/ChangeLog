@@ -1420,9 +1420,9 @@ end newBB branch notes
 	* linbox/blackbox/zero-one.inl:  "" ZeroOne class
 	* linbox/field/gf2.h:           "" GF2 class
 	* linbox/field/gf2.inl:
-	* linbox/field/givaro-gfq.h:  "" GivaroGfq class
+	* linbox/field/givaro-gfq.h:  "" Givaro::GFq class
 	* linbox/field/givaro-zpz.h:
-	* linbox/field/givaro-zpz.inl: "" GivaroZpz class
+	* linbox/field/givaro-zpz.inl: "" Givaro::Modular class
 	* linbox/field/gmp-rational.h: "" GMPRationalField class
 	* linbox/field/lidia-gfq.h:   "" LidiaGfq class
 	* linbox/field/modular.h:  "" Modular class

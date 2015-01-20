@@ -6,7 +6,7 @@ using namespace LinBox;
 // why this test here ?
 int main(int argc, char* argv[])
 {
-	typedef Modular<double> Field;
+	typedef Givaro::Modular<double> Field;
 	typedef Field::Element Element;
 	int q=65537;
 	int n=10;

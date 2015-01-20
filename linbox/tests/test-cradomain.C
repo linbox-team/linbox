@@ -140,9 +140,9 @@ namespace LinBox
 template<typename Field>
 struct InteratorBlas : public Interator {
 	typedef typename Field::Element Element;
-	typedef LinBox::BlasMatrix<LinBox::UnparametricField<Element> > Matrix;
+	typedef LinBox::BlasMatrix<Givaro::UnparametricRing<Element> > Matrix;
 	typedef typename Matrix::pointer Pointer;
-	typename LinBox::UnparametricField<Element> _field;
+	typename Givaro::UnparametricRing<Element> _field;
 	mutable Matrix _vectC;
 
 	InteratorBlas(const BlasVector<PID_integer>& v) :
@@ -250,52 +250,52 @@ bool TestCra(size_t N, int S, size_t seed)
 
 	Interator iteration((int)N, S);
 	InteratorIt iterationIt(iteration.getVector());
-	InteratorBlas<LinBox::Modular<double> > iterationBlas(iteration.getVector());
+	InteratorBlas<Givaro::Modular<double> > iterationBlas(iteration.getVector());
 	LinBox::RandomPrimeIterator genprime( 24, new_seed );
 
 	bool pass = true;
 
-	pass &= TestOneCRA< LinBox::EarlyMultipCRA< LinBox::Modular<double> >,
+	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Givaro::Modular<double> >,
 	     Interator, LinBox::RandomPrimeIterator>(
 						     report, iteration, genprime, N, 5);
 
-	pass &= TestOneCRA< LinBox::EarlyMultipCRA< LinBox::Modular<double> >,
+	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Givaro::Modular<double> >,
 	     Interator, LinBox::RandomPrimeIterator>(
 						     report, iteration, genprime, N, 15);
 
-	pass &= TestOneCRA< LinBox::FullMultipCRA< LinBox::Modular<double> >,
+	pass &= TestOneCRA< LinBox::FullMultipCRA< Givaro::Modular<double> >,
 	     Interator, LinBox::RandomPrimeIterator>(
 						     report, iteration, genprime, N, iteration.getLogSize()+1);
 
-	pass &= TestOneCRA< LinBox::FullMultipCRA< LinBox::Modular<double> >,
+	pass &= TestOneCRA< LinBox::FullMultipCRA< Givaro::Modular<double> >,
 	     Interator, LinBox::RandomPrimeIterator>(
 						     report, iteration, genprime, N, 3*iteration.getLogSize()+15);
 
 #if 0
-	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
+	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
 	     InteratorIt, LinBox::RandomPrimeIterator>(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,iteration.getLogSize()+1));
 
-	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
+	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
 	     InteratorIt, LinBox::RandomPrimeIterator>(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,3*iteration.getLogSize()+15));
 
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
+	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
 	     InteratorIt, LinBox::RandomPrimeIterator>(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
+	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
 	     InteratorIt, LinBox::RandomPrimeIterator>(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
-	     InteratorBlas< LinBox::Modular<double> >,
+	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
+	     InteratorBlas< Givaro::Modular<double> >,
 	     LinBox::RandomPrimeIterator>(
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
-	     InteratorBlas< LinBox::Modular<double> >,
+	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
+	     InteratorBlas< Givaro::Modular<double> >,
 	     LinBox::RandomPrimeIterator>(
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
 #endif
@@ -313,7 +313,7 @@ bool TestCra(size_t N, int S, size_t seed)
         BlasVector<PID_integer> ::iterator psit = PrimeSet.begin();
 
 	pass &= TestOneCRA<
-            LinBox::GivaroRnsFixedCRA< LinBox::Modular<double> >,
+            LinBox::GivaroRnsFixedCRA< Givaro::Modular<double> >,
             Interator,
             BlasVector<PID_integer> ::iterator,
             BlasVector<PID_integer>  >(

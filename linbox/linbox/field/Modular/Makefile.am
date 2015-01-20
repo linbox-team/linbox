@@ -19,7 +19,7 @@
 
 
 
-pkgincludesubdir=$(pkgincludedir)/field/Modular
+pkgincludesubdir=$(pkgincludedir)/field/Givaro::Modular
 
 BASIC_HDRS =            \
     modular-unsigned.h  \
@@ -33,8 +33,7 @@ BASIC_HDRS =            \
     modular-balanced-int32.h    \
     modular-balanced-int64.h    \
     modular-double.h    \
-    modular-float.h	\
-    modular-integer.h    
+    modular-float.h
 
 
 pkgincludesub_HEADERS =     \

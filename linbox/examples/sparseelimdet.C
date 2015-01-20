@@ -69,7 +69,7 @@ int main (int argc, char **argv)
 		ZZ.write(cout << "Determinant is ", d) << endl;
 	}
 	if (argc == 3) { // determinant over a finite field
-		typedef Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 		double q = atof(argv[2]);
 		Field F(q);
 		SparseMatrix<Field> B (F);

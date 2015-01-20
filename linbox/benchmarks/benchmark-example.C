@@ -32,7 +32,7 @@
 #include "linbox/util/error.h"
 #include "fflas-ffpack/fflas-ffpack.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/modular-balanced.h"
+#include <givaro/modular-balanced.h>
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
@@ -123,12 +123,12 @@ void bench_square( index_t min, index_t max, index_t step, int charac )
 {
 
 	index_t nb = 1 ;// une col de plus (la première)
-	typedef LinBox::Modular<double>          Field0 ; ++nb ;
-	typedef LinBox::Modular<float>           Field1 ; ++nb ;
-	// typedef LinBox::Modular<int32_t>         Field2 ; ++nb ;
-	// typedef LinBox::ModularBalanced<double>  Field3 ; ++nb ;
-	// typedef LinBox::ModularBalanced<float>   Field4 ; ++nb ;
-	// typedef LinBox::ModularBalanced<int32_t> Field5 ; ++nb ;
+	typedef Givaro::Modular<double>          Field0 ; ++nb ;
+	typedef Givaro::Modular<float>           Field1 ; ++nb ;
+	// typedef Givaro::Modular<int32_t>         Field2 ; ++nb ;
+	// typedef Givaro::ModularBalanced<double>  Field3 ; ++nb ;
+	// typedef Givaro::ModularBalanced<float>   Field4 ; ++nb ;
+	// typedef Givaro::ModularBalanced<int32_t> Field5 ; ++nb ;
 	// GivaroZpZ
 
 	///// DATA HARVEST ////
@@ -255,7 +255,7 @@ void launch_bench_rank(const Field &F, const std::string & name
 
 void bench_rank(int carac)
 {
-	typedef LinBox::Modular<double>  Field0 ;
+	typedef Givaro::Modular<double>  Field0 ;
 	Field0 F(carac);
 	int nb = 1;
 

@@ -313,7 +313,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Modular<int32_t> Field;
+	typedef Givaro::Modular<int32_t> Field;
 	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);

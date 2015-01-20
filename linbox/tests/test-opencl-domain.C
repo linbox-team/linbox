@@ -802,15 +802,15 @@ int launch_tests(Field& F, int n, int iterations){
 
 /*
 void* performOpenCL_mul(void* t){
-	Modular<double> F(1000003U);
+	Givaro::Modular<double> F(1000003U);
 
-	OpenCLMatrixDomain<Modular<double> > OMD(F);
+	OpenCLMatrixDomain<Givaro::Modular<double> > OMD(F);
 
-	Modular<double>::RandIter G(F);
+	Givaro::Modular<double>::RandIter G(F);
 
-	BlasMatrix<Modular<double> > A(F,500,500);
-	BlasMatrix<Modular<double> > B(F,500,500);
-	BlasMatrix<Modular<double> > C(F,500,500);
+	BlasMatrix<Givaro::Modular<double> > A(F,500,500);
+	BlasMatrix<Givaro::Modular<double> > B(F,500,500);
+	BlasMatrix<Givaro::Modular<double> > C(F,500,500);
 
 	double temp;
 
@@ -852,8 +852,8 @@ int main(int argc, char** argv){
 
 	parseArguments (argc, argv, args);
 
-	Modular<double> F(1000003U);
-	Modular<float> H(3);
+	Givaro::Modular<double> F(1000003U);
+	Givaro::Modular<float> H(3);
 
 	bool pass = true;
 
@@ -865,7 +865,7 @@ int main(int argc, char** argv){
 	commentator().start("OpenCLMatrixDomain test suite", "OpenCLMatrixDomain");
 
 	//For warmup of OpenCLMatrixDomainFactory
-	OpenCLMatrixDomain<Modular<double> > OMD(F);
+	OpenCLMatrixDomain<Givaro::Modular<double> > OMD(F);
 	commentator().report() << "Number of OpenCL Devices: "
 #ifdef __LINBOX_HAVE_OCL
 	                       << OpenCLMatrixDomainFactory::oclGetNumberOfDevices()

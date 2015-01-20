@@ -72,12 +72,12 @@ int main() {
 	/* The field objects "K_o" and "Q_o" are constructed as in previous examples
 	*/
 
-	// UnparametricField<NTL::RR> Q_o;
+	// Givaro::UnparametricRing<NTL::RR> Q_o;
 	NTL_RR Q_o ;
 	NTL::RR::SetPrecision(400);
 	NTL::RR::SetOutputPrecision(50);
 
-	// UnparametricField<NTL::zz_p> K_o;
+	// Givaro::UnparametricRing<NTL::zz_p> K_o;
 	NTL::zz_p::init(553);
 	NTL_zz_p K_o ;
 

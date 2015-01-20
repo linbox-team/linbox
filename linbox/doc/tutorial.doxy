@@ -134,7 +134,7 @@ your specific field.
 #include <linbox/field/modular.h>
 
 
-typedef Modular<short> Field;
+typedef Givaro::Modular<short> Field;
 Field F(101);
 \endcode
 
@@ -145,7 +145,7 @@ href="http://shoup.net/ntl/" target="_blank">NTL</a>'s \c NTL::ZZ_p class.  The
 LinBox wrapper of that, called \p LinBox::NTL_ZZ_p is found in \c
 field/ntl-ZZ_p.h.  Or use a <a
 href="http://ljk.imag.fr/CASYS/LOGICIELS/givaro/" target="_blank">Givaro</a>
-table based representation, \c LinBox::GivaroGfq in \c field/givaro-gfq.h
+table based representation, \c LinBox::Givaro::GFq in \c field/givaro-gfq.h
 ...and there are many other options.  The program \c tests/test-fields.C will
 provide some timing data on the basic functions of each representation.  In
 %LinBox, a \p Field class and the class representing the field entries are
@@ -211,7 +211,7 @@ using namespace LinBox;
 
 main()
 {
-    typedef Modular<double> Field;
+    typedef Givaro::Modular<double> Field;
     typedef BlasMatrix<Field> Matrix;
     Field F(65521);
 	MatrixStream<Field> ms(F, std::cin);

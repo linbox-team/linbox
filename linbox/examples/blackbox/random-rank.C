@@ -47,8 +47,8 @@ using namespace LinBox;
 using namespace std;
 
 // Select our field: integers modulo a word-size (max. 31-bit) modulus
-typedef Modular<LinBox::uint32_t> Field;
-typedef GivaroGfq FieldExtn;
+typedef Givaro::Modular<LinBox::uint32_t> Field;
+typedef Givaro::GFq FieldExtn;
 
 // The Gaussian elimiation code only works with sparse sequence vectors, so we'll use those
 typedef Vector<Field>::SparseSeq Row;

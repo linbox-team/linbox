@@ -129,14 +129,14 @@ computePolyDetExtension(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element&
 		++e;
 	}
 	
-	typedef GivaroExtension<Field> ExtField;
+	typedef Givaro::Extension<Field> ExtField;
 	typedef Givaro::Poly1Dom<ExtField,Givaro::Dense> ExtPolyDom;
 	typedef typename ExtPolyDom::Element ExtPoly;
 	typedef typename Matrix::template rebind<ExtPolyDom>::other EPolyMatrix;
 
 	ExtField EF(F,e);
 	ExtPolyDom EPD(EF,"x");
-	Hom<Field,GivaroExtension<Field> > hom(F,EF);
+	Hom<Field,Givaro::Extension<Field> > hom(F,EF);
 
 	commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
 		<< "Constructed new matrix" << std::endl;

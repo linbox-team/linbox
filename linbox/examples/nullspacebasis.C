@@ -46,8 +46,8 @@ int main (int argc, char **argv)
 	std::ifstream input (argv[1]);
 	if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
 
-	//typedef Modular<int> Field;
-	typedef GivaroGfq Field;
+	//typedef Givaro::Modular<int> Field;
+	typedef Givaro::GFq Field;
 	Field F(atoi(argv[2]),argc>3?atoi(argv[3]):1);
 	SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (F);
 	B.read (input);

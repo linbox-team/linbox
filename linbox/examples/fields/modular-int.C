@@ -23,7 +23,7 @@
  */
 
 /** \file examples/fields/modular-int.C
-  \brief  Example of arithmetic in the Modular<int> finite field.
+  \brief  Example of arithmetic in the Givaro::Modular<int> finite field.
   */
 //by  Zhendong wan wan@udel.edu
 
@@ -36,10 +36,10 @@
 int main (int argc, char **argv)
 {
 	/* construct the Z/101Z field */
-	LinBox::Modular<int> F(101);
+	Givaro::Modular<int> F(101);
 
 	/* declare local variable a, b, c, x, y*/
-	LinBox::Modular<int>::Element a, b, c, x, y;
+	Givaro::Modular<int>::Element a, b, c, x, y;
 
 	// initializtion
 	F.init(a, 92);

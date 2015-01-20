@@ -71,36 +71,36 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 unsigned long& LRank(unsigned long& r, char * filename,Givaro::Integer p)
 {
 
-	Givaro::Integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz<int16_t> >::maxModulus(maxmod16);
-	Givaro::Integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz<int32_t> >::maxModulus(maxmod32);
-	Givaro::Integer maxmod53; LinBox::FieldTraits<LinBox::Modular<double> >::maxModulus(maxmod53);
-	Givaro::Integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz<int64_t> >::maxModulus(maxmod64);
+	Givaro::Integer maxmod16; LinBox::FieldTraits<Givaro::Modular<int16_t> >::maxModulus(maxmod16);
+	Givaro::Integer maxmod32; LinBox::FieldTraits<Givaro::Modular<int32_t> >::maxModulus(maxmod32);
+	Givaro::Integer maxmod53; LinBox::FieldTraits<Givaro::Modular<double> >::maxModulus(maxmod53);
+	Givaro::Integer maxmod64; LinBox::FieldTraits<Givaro::Modular<int64_t> >::maxModulus(maxmod64);
 	if (p == 2) {
 		LinBox::GF2 F2;
 		return TempLRank(r, filename, F2);
 	}
 	else if (p <= maxmod16) {
-		typedef LinBox::GivaroZpz<int16_t> Field;
+		typedef Givaro::Modular<int16_t> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
 	else if (p <= maxmod32) {
-		typedef LinBox::GivaroZpz<int32_t> Field;
+		typedef Givaro::Modular<int32_t> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
 	else if (p <= maxmod53) {
-		typedef LinBox::Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
 	else if (p <= maxmod64) {
-		typedef LinBox::GivaroZpz<int64_t> Field;
+		typedef Givaro::Modular<int64_t> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
 	else {
-		typedef LinBox::GivaroZpz<Givaro::Integer> Field;
+		typedef Givaro::Modular<Givaro::Integer> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
@@ -111,9 +111,9 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 {
 	effective_exponent = e;
 	Givaro::Integer maxmod;
-	LinBox::FieldTraits<LinBox::GivaroZpz<int64_t> >::maxModulus(maxmod);
+	LinBox::FieldTraits<Givaro::Modular<int64_t> >::maxModulus(maxmod);
 	if (p <= maxmod) {
-		typedef LinBox::GivaroZpz<int64_t> Ring;
+		typedef Givaro::Modular<int64_t> Ring;
 		int64_t lp(p);
 		Givaro::Integer q = pow(p,e); int64_t lq(q);
 		if (q >Givaro::Integer(lq)) {
@@ -162,7 +162,7 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	}
 
 	std::ifstream input(filename);
-	typedef LinBox::UnparametricField<int64_t> Ring;
+	typedef Givaro::UnparametricRing<int64_t> Ring;
 	Ring F;
 	LinBox::MatrixStream<Ring> ms( F, input );
 	LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
@@ -181,7 +181,7 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 
 std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Givaro::Integer p, size_t e, size_t intr)
 {
-	typedef LinBox::GivaroZpz<Givaro::Integer> Ring;
+	typedef Givaro::Modular<Givaro::Integer> Ring;
 	Givaro::Integer q = pow(p,e);
 	Ring F(q);
 	std::ifstream input(filename);

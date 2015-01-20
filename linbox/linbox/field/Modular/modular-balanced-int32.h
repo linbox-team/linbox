@@ -43,7 +43,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/field/Modular/modular-int32.h"
 
-#include <fflas-ffpack/field/modular-balanced-int32.h>
+#include <givaro/modular-balanced-int32.h>
 
 #ifndef LINBOX_MAX_INT /* 2147483647 */
 #define LINBOX_MAX_INT INT32_MAX
@@ -54,108 +54,24 @@
 namespace LinBox
 {
 
-	template< class Element >
-	class ModularBalanced;
-	template< class Element >
-	class ModularBalancedRandIter;
-	template< class Field, class RandIter >
-	class NonzeroRandIter;
-
-
 	template <class Ring>
 	struct ClassifyRing;
 
 	template<class Element>
-	struct ClassifyRing<ModularBalanced<Element> >;
+	struct ClassifyRing<Givaro::ModularBalanced<Element> >;
 
 	template<>
-	struct ClassifyRing<ModularBalanced<int32_t> > {
+	struct ClassifyRing<Givaro::ModularBalanced<int32_t> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	/// \ingroup field
 	template <>
-	class ModularBalanced<int32_t> : public FieldInterface,
-	      public FFPACK::ModularBalanced<int32_t>	{
-
-	public:
-		typedef FFPACK::ModularBalanced<int32_t> Father_t ;
-
-		friend class FieldAXPY<ModularBalanced<int32_t> >;
-		friend class DotProductDomain<ModularBalanced<int32_t> >;
-
-		typedef int32_t Element;
-		typedef ModularBalancedRandIter<int32_t> RandIter;
-
-		ModularBalanced(int32_t p, int32_t e=1) :
-			Father_t(p,e)
-		{}
-
-		using Father_t::cardinality;
-		integer &cardinality (integer &c) const
-		{
-			return c = modulus;
-		}
-
-		using Father_t::characteristic;
-		integer &characteristic (integer &c) const
-		{
-		       	return c = modulus;
-		}
-
-		using Father_t::convert;
-		// this function converts an int to a natural number ?
-		integer &convert (integer &x, const Element &y) const
-		{
-			if(y >= 0)
-				return x = y;
-			else
-				return x = y + modulus;
-		}
-
-		using Father_t:: init;
-		Element &init (Element &x, const integer &y) const
-		{
-			x = Element(y % (long)modulus);
-
-			if (x < mhalf_mod)
-				x += modulus;
-			else if (x > half_mod)
-				x -= modulus;
-
-			return x;
-		}
-
-		Element &init(Element &x) const
-		{
-			return x = 0 ;
-		}
-
-		using Father_t:: write;
-		std::ostream &write (std::ostream &os, std::string F) const
-		{
-			os << "ModularBalanced<" << eltype( Element() ) << " > "; // class name
-			if (F != "") {
-				integer p = cardinality();
-				os << F << "( " << p << " )"; // show constuctor args
-			}
-			return os;
-		}
-
-		Element& next(Element &x) const
-		{
-			return addin(x,one);
-		}
-
-	};
-
-	template <>
-	class FieldAXPY<ModularBalanced<int32_t> > {
+	class FieldAXPY<Givaro::ModularBalanced<int32_t> > {
 	public:
 
 		typedef int32_t Element;
 		typedef int64_t Abnormal;
-		typedef ModularBalanced<int32_t> Field;
+		typedef Givaro::ModularBalanced<int32_t> Field;
 
 		FieldAXPY (const Field &F) :
 			_field (&F),_y(0),_times(0)
@@ -167,7 +83,7 @@ namespace LinBox
 			_field (faxpy._field), _y (0),_times(0)
 		{}
 
-		FieldAXPY<ModularBalanced<int32_t> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<Givaro::ModularBalanced<int32_t> > &operator = (const FieldAXPY &faxpy)
 		{
 			_field = faxpy._field;
 			_y = faxpy._y;
@@ -212,9 +128,9 @@ namespace LinBox
 			y = Element(_y);
 
 			if (y > field().half_mod)
-				y -= field().modulus;
+				y -= field().characteristic();
 			else if (y < field().mhalf_mod)
-				y += field().modulus;
+				y += field().characteristic();
 
 			return y;
 		}
@@ -230,7 +146,7 @@ namespace LinBox
 			_y = 0;
 		}
 
-		inline const Field & field() { return *_field; }
+		inline const Field & field() const { return *_field; }
 
 	private:
 
@@ -241,14 +157,14 @@ namespace LinBox
 
 		inline void normalize()
 		{
-			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * field().modulusinv) * (int32_t)field().modulus;
+			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * field().modulusinv) * (int32_t)field().characteristic();
 		}
 
 	};
 
 
 	template <>
-	class DotProductDomain<ModularBalanced<int32_t> > : public virtual VectorDomainBase<ModularBalanced<int32_t> > {
+	class DotProductDomain<Givaro::ModularBalanced<int32_t> > : public virtual VectorDomainBase<Givaro::ModularBalanced<int32_t> > {
 
 	private:
 		int32_t blocksize;
@@ -256,11 +172,11 @@ namespace LinBox
 	public:
 		typedef int32_t Element;
 		DotProductDomain(){}
-		DotProductDomain (const ModularBalanced<int32_t> &F) :
-			VectorDomainBase<ModularBalanced<int32_t> > (F) ,blocksize(32)
+		DotProductDomain (const Givaro::ModularBalanced<int32_t> &F) :
+			VectorDomainBase<Givaro::ModularBalanced<int32_t> > (F) ,blocksize(32)
 		{ }
 
-		using VectorDomainBase<ModularBalanced<int32_t> >::field;
+		using VectorDomainBase<Givaro::ModularBalanced<int32_t> >::field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
@@ -293,8 +209,8 @@ namespace LinBox
 			normalize(y);
 			res = (Element) y;
 
-			if (res > field().half_mod) res -= field().modulus;
-			else if(res < field().mhalf_mod) res += field().modulus;
+			if (res > field().half_mod) res -= field().characteristic();
+			else if(res < field().mhalf_mod) res += field().characteristic();
 
 			return res;
 
@@ -331,15 +247,15 @@ namespace LinBox
 			normalize(y);
 
 			res = (Element) y;
-			if (res > field().half_mod) res -= field().modulus;
-			else if(res < field().mhalf_mod) res += field().modulus;
+			if (res > field().half_mod) res -= field().characteristic();
+			else if(res < field().mhalf_mod) res += field().characteristic();
 
 			return res;
 		}
 
 		inline void normalize(int64_t& _y) const
 		{
-			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * field().modulusinv) * (int32_t)field().modulus;
+			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * field().modulusinv) * (int32_t)field().characteristic();
 		}
 
 	};

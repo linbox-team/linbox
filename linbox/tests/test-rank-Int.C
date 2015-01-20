@@ -56,8 +56,8 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
-	// GivaroZpz<Integer> Gq(bigQ);
-	Modular<integer> Gq(bigQ);
+	// Givaro::Modular<Integer> Gq(bigQ);
+	Givaro::Modular<integer> Gq(bigQ);
 	pass = pass && testSparseRank(Gq,n,n+1,(size_t)iterations,sparsity);
 	pass = pass && testSparseRank(Gq,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
 

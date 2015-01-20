@@ -51,8 +51,8 @@ int main (int argc, char **argv)
   int kVal = atoi(argv[3]);
 
 
-  //typedef Modular<int> Field;
-  typedef GivaroGfq Field;
+  //typedef Givaro::Modular<int> Field;
+  typedef Givaro::GFq Field;
   Field F(pVal, argc>3?kVal:1);
   SparseMatrix<Field, SparseMatrixFormat::SparseSeq > A (F);
   A.read (input);

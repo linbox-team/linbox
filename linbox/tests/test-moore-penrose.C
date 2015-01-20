@@ -350,7 +350,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Modular<uint32_t> Field;  //C.Pernet: avoids confusion with givaro::uint32_t
+	typedef Givaro::Modular<uint32_t> Field;  //C.Pernet: avoids confusion with givaro::uint32_t
 	typedef vector<Field::Element> DenseVector;
 	typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 

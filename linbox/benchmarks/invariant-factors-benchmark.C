@@ -25,7 +25,7 @@
 
 using namespace LinBox;
 
-typedef Modular<double> Field;
+typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
 typedef SparseMatrix<Field, SparseMatrixFormat::TPL_omp> SparseMat;
 typedef MatrixDomain<Field> Domain;

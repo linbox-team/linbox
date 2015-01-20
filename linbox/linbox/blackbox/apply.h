@@ -103,7 +103,7 @@ namespace LinBox
 
 			if (( _prime > 0) && ( _prime <  67108863)) {
 
-				FFLAS::fgemv((typename Domain::Father_t) _domain, FFLAS::FflasNoTrans,
+				FFLAS::fgemv(_domain, FFLAS::FflasNoTrans,
 					      A.rowdim(), A.coldim(),
 					      _domain.one,
 					      A.getPointer(), A.getStride(),
@@ -124,7 +124,7 @@ namespace LinBox
 
 			if (( _prime > 0) && ( _prime <  67108863)) {
 
-				FFLAS::fgemv((typename Domain::Father_t) _domain, FFLAS::FflasTrans,
+				FFLAS::fgemv(_domain, FFLAS::FflasTrans,
 					      A.rowdim(), A.coldim(),
 					      _domain.one,
 					      A.getPointer(), A.getStride(),

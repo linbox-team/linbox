@@ -292,9 +292,9 @@ int main(int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	typedef Modular<double> Field;
-	//typedef Modular<int> Field;
-	//typedef Modular<float> Field;
+	typedef Givaro::Modular<double> Field;
+	//typedef Givaro::Modular<int> Field;
+	//typedef Givaro::Modular<float> Field;
 
 	Field F1 (q);
 	bool pass = true;

@@ -72,7 +72,7 @@ integer matrix[rowDim][colDim] = {
 				{1, 0, 0, -13, 0, 1, 0, 300, 0, 10, 1},
 				{0, 0, 6, 0, 0, 0, 0, 200, 0, 1, 0} };
 
-typedef UnparametricField<integer> TestField;
+typedef Givaro::UnparametricRing<integer> TestField;
 TestField ff;
 
 template <class BB>

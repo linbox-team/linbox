@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     bool pass ;
 
     // call tests
-    typedef LinBox::UnparametricField<int> Field;
+    typedef Givaro::UnparametricRing<int> Field;
     Field F;
     pass = testSubvector<Field> (F, n);
 

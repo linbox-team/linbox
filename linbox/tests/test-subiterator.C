@@ -109,7 +109,7 @@ bool test2()
 	ostream &report = commentator().report
 		(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	typedef UnparametricField<int> Ints ;
+	typedef Givaro::UnparametricRing<int> Ints ;
 	Ints I ;
 	BlasVector<Ints> v(I);
 	for (int i = 1; i <= 10; ++i) v.push_back(i);

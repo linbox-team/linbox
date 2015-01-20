@@ -10,7 +10,7 @@ namespace LinBox{
 // To fill a sliced vector
 struct stepper {
 
-	typedef SlicedDomain<LinBox::Modular<uint8_t> > Domain;
+	typedef SlicedDomain<Givaro::Modular<uint8_t> > Domain;
 	typedef Sliced<Domain > Matrix;
 	typedef Matrix::Scalar Scalar;
 	typedef Matrix::RawIterator RawIterator;

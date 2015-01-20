@@ -50,7 +50,7 @@ namespace LinBox
 	/*! \ingroup integers
 	 * @brief Domain for integer operations.
 	 */
-	class PID_integer : public LinBox::UnparametricField<integer>
+	class PID_integer : public Givaro::UnparametricRing<integer>
 	{
 
 	public:
@@ -390,9 +390,9 @@ namespace LinBox
 		 * @param  F  optional name to give the field in the description.  
 		 *   IF F is the null string, only the class typename is written.
 		 * Example: For element type double and modulus 101, 
-		 * write(os) produces      "Modular< double > ( 101 )"  on os, 
- 		 * write(os, "F") produces "Modular< double > F( 101 )" on os, and
- 		 * write(os, "") produces  "Modular< double >"          on os.
+		 * write(os) produces      "Givaro::Modular< double > ( 101 )"  on os, 
+ 		 * write(os, "F") produces "Givaro::Modular< double > F( 101 )" on os, and
+ 		 * write(os, "") produces  "Givaro::Modular< double >"          on os.
 		 */
 		inline std::ostream &write (std::ostream &os) const
 		{

@@ -67,7 +67,7 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	for (size_t i = 0 ; i < Size ; ++i)
 		residues[i] = Integer::random(PrimeSize-1);
 
-	typedef LinBox::Modular<double> ModularField ;
+	typedef Givaro::Modular<double> ModularField ;
 
 	Iterator genprime = primes.begin()  ; // prime iterator
 	Iterator residu = residues.begin()  ; // residu iterator
@@ -125,7 +125,7 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 	typedef typename std::vector<T>                     Vect ;
 	typedef typename Vect::iterator                  Iterator;
 	typedef typename std::vector<Vect>::iterator VectIterator;
-	typedef LinBox::Modular<double>             ModularField ;
+	typedef Givaro::Modular<double>             ModularField ;
 	typedef ModularField::Element                     Element;
 	typedef std::vector<Integer>                      IntVect;
 	typedef std::vector<Element>                        pVect;
@@ -204,7 +204,7 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 			    size_t Size, std::pair<size_t, size_t> dims)
 {
 
-	typedef typename LinBox::UnparametricField<T>        Unparam ;
+	typedef typename Givaro::UnparametricRing<T>        Unparam ;
 	typedef typename std::vector<T>                         Vect ;
 	typedef typename LinBox::BlasMatrix<Unparam>          Matrix ;
 	typedef typename std::vector<Matrix>                 MatVect ;
@@ -212,7 +212,7 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 	typedef typename MatVect::iterator                MatIterator;
 	typedef typename LinBox::BlasMatrix<PID_integer>   IntMatrix ;
 
-	typedef LinBox::Modular<double>                        Field ;
+	typedef Givaro::Modular<double>                        Field ;
 	typedef Field::Element                                Element;
 	typedef typename LinBox::BlasMatrix<Field>           pMatrix ;
 
@@ -311,7 +311,7 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 	typedef typename Vect::iterator                 Iterator;
 	typedef typename VectVect::iterator         VectIterator;
 
-	typedef LinBox::Modular<double >           ModularField ;
+	typedef Givaro::Modular<double >           ModularField ;
 	typedef ModularField::Element                    Element;
 	typedef typename std::vector<Element>             pVect ;
 
@@ -400,7 +400,7 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 	typedef typename Vect::iterator                 Iterator;
 	typedef typename VectVect::iterator         VectIterator;
 
-	typedef LinBox::Modular<double >           ModularField ;
+	typedef Givaro::Modular<double >           ModularField ;
 	typedef ModularField::Element                    Element;
 	typedef typename std::vector<Element>             pVect ;
 	typedef typename pVect::iterator          pVectIterator ;

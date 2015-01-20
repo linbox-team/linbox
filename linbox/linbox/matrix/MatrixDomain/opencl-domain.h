@@ -29,7 +29,7 @@
  * @ingroup opencl
  * @brief NO DOC
  * @warning An <code>OpenCLMatrixDomain<Field></code> should be templated by a
- * Modular<double> or Modular<float> field only.
+ * Givaro::Modular<double> or Givaro::Modular<float> field only.
  */
 
 #ifndef __LINBOX_opencl_matrix_domain_H
@@ -770,7 +770,7 @@ namespace LinBox{
 		template <class Polynomial,  class Matrix >
 		Polynomial& charpoly( Polynomial& P, const Matrix& A ) const{
 
-			commentator().start ("Modular Dense Charpoly ", "MDCharpoly");
+			commentator().start ("Givaro::Modular Dense Charpoly ", "MDCharpoly");
 			std::list<Polynomial> P_list;
 			P_list.clear();
 			BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(

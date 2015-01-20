@@ -66,10 +66,10 @@ namespace LinBox
 	protected:
 
 		MultiModDouble                 _field;
-		const std::vector<MatrixDomain<Modular<double> > >   _MD;
+		const std::vector<MatrixDomain<Givaro::Modular<double> > >   _MD;
 		size_t                  _row,_col;
 		Element                _One,_Zero; //! @warning used ?
-		std::vector<BlasMatrix<Modular<double> >* > _rep;
+		std::vector<BlasMatrix<Givaro::Modular<double> >* > _rep;
 		std::vector<double>       _entry;
 	public:
 
@@ -84,7 +84,7 @@ namespace LinBox
 			_field(F), _row(m) , _col(n) , _rep(F.size()),  _entry(F.size())
 		{
 			for (size_t i=0;i<_rep.size();++i)
-				_rep[i] =  new BlasMatrix<Modular<double> > (F.getBase(i), m, n);
+				_rep[i] =  new BlasMatrix<Givaro::Modular<double> > (F.getBase(i), m, n);
 		}
 
 		BlasMatrix (const BlasMatrix<MultiModDouble> & A):
@@ -93,7 +93,7 @@ namespace LinBox
 		{
 
 			for (size_t i=0;i<_rep.size();++i)
-				_rep[i]= new  BlasMatrix<Modular<double> > (const_cast<BlasMatrix<Modular<double> >& >( *A._rep[i]));
+				_rep[i]= new  BlasMatrix<Givaro::Modular<double> > (const_cast<BlasMatrix<Givaro::Modular<double> >& >( *A._rep[i]));
 		}
 
 
@@ -102,10 +102,10 @@ namespace LinBox
 			_field   = A._field;
 			_row = A._row;
 			_col = A._col;
-			_rep = std::vector<BlasMatrix<Modular<double> >* >(A._rep.size());
+			_rep = std::vector<BlasMatrix<Givaro::Modular<double> >* >(A._rep.size());
 			_entry = A._entry;
 			for (size_t i=0;i<_rep.size();++i)
-				_rep[i]= new  BlasMatrix<Modular<double> > (const_cast<BlasMatrix<Modular<double> >& >( *A._rep[i]));
+				_rep[i]= new  BlasMatrix<Givaro::Modular<double> > (const_cast<BlasMatrix<Givaro::Modular<double> >& >( *A._rep[i]));
 			return *this;
 		}
 
@@ -193,7 +193,7 @@ namespace LinBox
 			return _entry;
 		}
 
-		BlasMatrix<Modular<double> >*& getMatrix(size_t i) {return _rep[i];}
+		BlasMatrix<Givaro::Modular<double> >*& getMatrix(size_t i) {return _rep[i];}
 
 	};
 

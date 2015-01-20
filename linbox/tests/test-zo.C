@@ -60,8 +60,8 @@ int main(int argc, char **argv)
 
   LinBox::parseArguments(argc, argv, args);
 
-  typedef LinBox::Modular<uint32_t> Field;
-  //typedef LinBox::Modular<uint32_t> Field;
+  typedef Givaro::Modular<uint32_t> Field;
+  //typedef Givaro::Modular<uint32_t> Field;
   typedef LinBox::ZeroOne<Field> Matrix;
 
   Field F(p);

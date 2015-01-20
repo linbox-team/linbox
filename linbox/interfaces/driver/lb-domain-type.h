@@ -41,12 +41,12 @@
 #define __LINBOX_MINIMIZE_DOMAIN
 #define __LINBOX_DOMAIN_ONLY
 
-typedef LinBoxTypelist < LinBox::Modular<double>          , LinBoxDumbType> DL1;
+typedef LinBoxTypelist < Givaro::Modular<double>          , LinBoxDumbType> DL1;
 typedef LinBoxTypelist < LinBox::PID_integer              , DL1> DL2;
 typedef LinBoxTypelist < LinBox::GMPRationalField         , DL2> DL3;
-typedef LinBoxTypelist < LinBox::Modular<int32_t>         , DL3> DL4;
-typedef LinBoxTypelist < LinBox::Modular<int64_t>         , DL4> DL5;
-typedef LinBoxTypelist < LinBox::Modular<LinBox::integer> , DL5> DL6;
+typedef LinBoxTypelist < Givaro::Modular<int32_t>         , DL3> DL4;
+typedef LinBoxTypelist < LinBox::Givaro::Modular<int64_t>         , DL4> DL5;
+typedef LinBoxTypelist < Givaro::Modular<LinBox::integer> , DL5> DL6;
 
 #ifdef __LINBOX_MINIMIZE_DOMAIN
 typedef DL3 linbox_domain_list;
@@ -68,8 +68,8 @@ typedef DN3 ntl_domain_list;
 typedef LinBoxDumbType ntl_domain_list;
 #endif
 
-typedef LinBoxTypelist < LinBox::GivaroGfq, LinBoxDumbType> DG1;
-typedef LinBoxTypelist < LinBox::GivaroZpz< int32_t>, DG1> DG2;
+typedef LinBoxTypelist < LinBox::Givaro::GFq, LinBoxDumbType> DG1;
+typedef LinBoxTypelist < Givaro::Modular< int32_t>, DG1> DG2;
 #ifdef __LINBOX_MINIMIZE_DOMAIN
 typedef DG1 givaro_domain_list;
 #else
@@ -93,13 +93,13 @@ typedef LinBoxTL::Append< linbox_domain_list, LinBoxTL::Append< ntl_domain_list,
 extern Domain_Factory linbox_domain;
 
 void UpdateDomain(){
-	linbox_domain.add("linbox_field_dbl"      , constructDomain<LinBox::Modular<double> >);
+	linbox_domain.add("linbox_field_dbl"      , constructDomain<Givaro::Modular<double> >);
 	linbox_domain.add("linbox_field_rational" , constructDomain<LinBox::GMPRationalField>);
 	linbox_domain.add("linbox_ring_integer"   , constructDomain<LinBox::PID_integer>);
 #ifndef __LINBOX_MINIMIZE_DOMAIN
-	linbox_domain.add("linbox_field_32"       , constructDomain<LinBox::Modular<int32_t> >);
-	linbox_domain.add("linbox_field_64"       , constructDomain<LinBox::Modular<int64_t> >);
-	linbox_domain.add("linbox_field_mp"       , constructDomain<LinBox::Modular<LinBox::integer> >);
+	linbox_domain.add("linbox_field_32"       , constructDomain<Givaro::Modular<int32_t> >);
+	linbox_domain.add("linbox_field_64"       , constructDomain<LinBox::Givaro::Modular<int64_t> >);
+	linbox_domain.add("linbox_field_mp"       , constructDomain<Givaro::Modular<LinBox::integer> >);
 #endif
 #ifdef __LINBOX_HAVE_NTL
 	linbox_domain.add("ntl_field_ZZ_p"      , constructDomain<LinBox::NTL_ZZ_p>);
@@ -109,9 +109,9 @@ void UpdateDomain(){
 #endif
 #endif
 
-	linbox_domain.add("givaro_field_gfq"    , constructDomain<LinBox::GivaroGfq>);
+	linbox_domain.add("givaro_field_gfq"    , constructDomain<LinBox::Givaro::GFq>);
 #ifndef  __LINBOX_MINIMIZE_DOMAIN
-	linbox_domain.add("givaro_field_32"     , constructDomain<LinBox::GivaroZpz< int32_t> >);
+	linbox_domain.add("givaro_field_32"     , constructDomain<Givaro::Modular< int32_t> >);
 #endif
 }
 

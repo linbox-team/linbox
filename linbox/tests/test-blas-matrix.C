@@ -26,13 +26,13 @@
  * ========LICENCE========
  *.
  */
+ 
+#include <givaro/modular-balanced.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/givaro.h"
-
 #include "linbox/matrix/dense-matrix.h"
 
 #include "test-common.h"
@@ -80,240 +80,240 @@ int main (int argc, char **argv)
 
 	commentator().start("BlasMatrix black box test suite", "triplesbb");
 
-	{ /* Modular<float> */
+	{ /* Givaro::Modular<float> */
 		//Field
-		typedef Modular<float> Field;
+		typedef Givaro::Modular<float> Field;
 
 		Field F (q);
-		commentator().start("Modular<float>");
+		commentator().start("Givaro::Modular<float>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
 
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<float>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<float>");
 	}
 
-	{ /* ModularBalanced<float> */
+	{ /* Givaro::ModularBalanced<float> */
 		//Field
-		typedef ModularBalanced<float> Field;
+		typedef Givaro::ModularBalanced<float> Field;
 
 		Field F (q);
-		commentator().start("ModularBalanced<float>");
+		commentator().start("Givaro::ModularBalanced<float>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<float>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<float>");
 	}
 
-	{ /* Modular<double> */
+	{ /* Givaro::Modular<double> */
 		//Field
-		typedef Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 
 		Field F (q);
-		commentator().start("Modular<double>");
+		commentator().start("Givaro::Modular<double>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
 
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<double>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<double>");
 	}
 
-	{ /* ModularBalanced<double> */
+	{ /* Givaro::ModularBalanced<double> */
 		//Field
-		typedef ModularBalanced<double> Field;
+		typedef Givaro::ModularBalanced<double> Field;
 
 		Field F (q);
-		commentator().start("ModularBalanced<double>");
+		commentator().start("Givaro::ModularBalanced<double>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<double>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<double>");
 	}
 
-	{ /* Modular<int64_t> */
+	{ /* Givaro::Modular<int64_t> */
 #if 0 /*  bug somewhere */
 		//Field
-		typedef Modular<int64_t> Field;
+		typedef Givaro::Modular<int64_t> Field;
 
 		Field F (q);
-		commentator().start("Modular<int64_t>");
+		commentator().start("Givaro::Modular<int64_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<int64_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<int64_t>");
 #endif
 	}
 
-	{ /* ModularBalanced<int64_t> */
+	{ /* Givaro::ModularBalanced<int64_t> */
 #if 0 /* not working */
 		//Field
-		typedef ModularBalanced<int64_t> Field;
+		typedef Givaro::ModularBalanced<int64_t> Field;
 
 		Field F (q);
-		commentator().start("ModularBalanced<int64_t>");
+		commentator().start("Givaro::ModularBalanced<int64_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<int64_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<int64_t>");
 #endif
 	}
 
-	{ /* Modular<uint64_t> */
+	{ /* Givaro::Modular<uint64_t> */
 #if 0 /* not working */
 		//Field
-		typedef Modular<uint64_t> Field;
+		typedef Givaro::Modular<uint64_t> Field;
 
 		Field F (q);
-		commentator().start("Modular<uint64_t>");
+		commentator().start("Givaro::Modular<uint64_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<uint64_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<uint64_t>");
 #endif
 	}
 
-	{ /* ModularBalanced<uint64_t> */
+	{ /* Givaro::ModularBalanced<uint64_t> */
 #if 0 /* not working */
 		//Field
-		typedef ModularBalanced<uint64_t> Field;
+		typedef Givaro::ModularBalanced<uint64_t> Field;
 
 		Field F (q);
-		commentator().start("ModularBalanced<uint64_t>");
+		commentator().start("Givaro::ModularBalanced<uint64_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<uint64_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<uint64_t>");
 #endif
 	}
 
-	{ /* Modular<int32_t> */
+	{ /* Givaro::Modular<int32_t> */
 		//Field
-		typedef Modular<int32_t> Field;
+		typedef Givaro::Modular<int32_t> Field;
 
 		Field F (q);
-		commentator().start("Modular<int32_t>");
+		commentator().start("Givaro::Modular<int32_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<int32_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<int32_t>");
 	}
 
-	{ /* ModularBalanced<int32_t> */
+	{ /* Givaro::ModularBalanced<int32_t> */
 		//Field
-		typedef ModularBalanced<int32_t> Field;
+		typedef Givaro::ModularBalanced<int32_t> Field;
 
 		Field F (q);
-		commentator().start("ModularBalanced<int32_t>");
+		commentator().start("Givaro::ModularBalanced<int32_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<int32_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<int32_t>");
 	}
 
-	{ /* Modular<uint32_t> */
+	{ /* Givaro::Modular<uint32_t> */
 #if 0 /*  bug somewhere */
 		//Field
-		typedef Modular<uint32_t> Field;
+		typedef Givaro::Modular<uint32_t> Field;
 
 		Field F (q);
-		commentator().start("Modular<uint32_t>");
+		commentator().start("Givaro::Modular<uint32_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<uint32_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<uint32_t>");
 #endif
 	}
 
-	{ /* ModularBalanced<uint32_t> */
+	{ /* Givaro::ModularBalanced<uint32_t> */
 #if 0 /* not working */
 		//Field
-		typedef ModularBalanced<uint32_t> Field;
+		typedef Givaro::ModularBalanced<uint32_t> Field;
 
 		Field F (q);
-		commentator().start("ModularBalanced<uint32_t>");
+		commentator().start("Givaro::ModularBalanced<uint32_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<uint32_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<uint32_t>");
 #endif
 	}
 
-	{ /* Modular<int16_t> */
+	{ /* Givaro::Modular<int16_t> */
 #if 0 /* not working */
 		//Field
-		typedef Modular<int16_t> Field;
+		typedef Givaro::Modular<int16_t> Field;
 
 		Field F (q);
-		commentator().start("Modular<int16_t>");
+		commentator().start("Givaro::Modular<int16_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<int16_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<int16_t>");
 #endif
 	}
 
-	{ /* ModularBalanced<int16_t> */
+	{ /* Givaro::ModularBalanced<int16_t> */
 #if 0 /* not working */
 		//Field
-		typedef ModularBalanced<int16_t> Field;
+		typedef Givaro::ModularBalanced<int16_t> Field;
 
 		Field F (q);
-		commentator().start("ModularBalanced<int16_t>");
+		commentator().start("Givaro::ModularBalanced<int16_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<int16_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<int16_t>");
 #endif
 	}
 
-	{ /* Modular<uint16_t> */
+	{ /* Givaro::Modular<uint16_t> */
 #if 0 /* not working */
 		//Field
-		typedef Modular<uint16_t> Field;
+		typedef Givaro::Modular<uint16_t> Field;
 
 		Field F (q);
-		commentator().start("Modular<uint16_t>");
+		commentator().start("Givaro::Modular<uint16_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Modular<uint16_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<uint16_t>");
 #endif
 	}
 
-	{ /* ModularBalanced<uint16_t> */
+	{ /* Givaro::ModularBalanced<uint16_t> */
 #if 0 /* not working */
 		//Field
-		typedef ModularBalanced<uint16_t> Field;
+		typedef Givaro::ModularBalanced<uint16_t> Field;
 
 		Field F (q);
-		commentator().start("ModularBalanced<uint16_t>");
+		commentator().start("Givaro::ModularBalanced<uint16_t>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"ModularBalanced<uint16_t>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<uint16_t>");
 #endif
 	}
 
-	{ /* Modular<char> */
+	{ /* Givaro::Modular<char> */
 #if 0 /* not working */
 		//Field
-		typedef Modular<char> Field;
+		typedef Givaro::Modular<char> Field;
 
 		Field F (q);
 
@@ -323,10 +323,10 @@ int main (int argc, char **argv)
 #endif
 	}
 
-	{ /* ModularBalanced<char> */
+	{ /* Givaro::ModularBalanced<char> */
 #if 0 /* not working */
 		//Field
-		typedef ModularBalanced<char> Field;
+		typedef Givaro::ModularBalanced<char> Field;
 
 		Field F (q);
 
@@ -336,10 +336,10 @@ int main (int argc, char **argv)
 #endif
 	}
 
-	{ /* GivaroZpz<uint32_t> */
+	{ /* Givaro::Modular<uint32_t> */
 #if 0 /*  bug somewhere */
 		//Field
-		typedef GivaroZpz<uint32_t> Field;
+		typedef Givaro::Modular<uint32_t> Field;
 
 		Field F (q);
 
@@ -349,17 +349,17 @@ int main (int argc, char **argv)
 #endif
 	}
 
-	{ /* GivaroZpz<integer> */
+	{ /* Givaro::Modular<integer> */
 		//Field
-		typedef GivaroZpz<integer> Field;
+		typedef Givaro::Modular<integer> Field;
 
 		Field F (123456789124);
-		commentator().start("GivaroZpz<integer>");
+		commentator().start("Givaro::Modular<integer>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"GivaroZpz<integer>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<integer>");
 	}
 
 	{ /* PID_integer */
@@ -375,17 +375,17 @@ int main (int argc, char **argv)
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"PID_integer");
 	}
 
-	{ /* GivaroExtension<> */
+	{ /* Givaro::Extension<> */
 		//Field
-		typedef GivaroExtension<> Field;
+		typedef Givaro::Extension<> Field;
 
 		Field F(103,4) ;
-		commentator().start("GivaroExtension<>");
+		commentator().start("Givaro::Extension<>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testField<Matrix>(F,m,n, false);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"GivaroExtension<>");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Extension<>");
 	}
 
 	commentator().stop(MSG_STATUS(pass),(const char *) 0,"BlasMatrix BB test suite");

@@ -115,8 +115,8 @@ int main (int argc, char **argv)
 	};
 	parseArguments (argc, argv, args);
 
-	//typedef	Modular<uint32_t> Field;
-	typedef	Modular<double> Field;
+	//typedef	Givaro::Modular<uint32_t> Field;
+	typedef	Givaro::Modular<double> Field;
 	// typedef Field::Element  Element;
 
 	Field F (q);

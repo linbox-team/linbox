@@ -54,16 +54,16 @@ int main (int argc, char **argv)
 	srand ((unsigned)time (NULL));
 	// srand48 ((unsigned)time (NULL));
 
-	commentator().start("Modular<uint32_t> sparse rank test suite", "rank");
+	commentator().start("Givaro::Modular<uint32_t> sparse rank test suite", "rank");
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
-	Modular<uint32_t> F (q);
+	Givaro::Modular<uint32_t> F (q);
 	pass = pass && testSparseRank(F,n,n+1,(size_t)iterations,sparsity);
 	pass = pass && testSparseRank(F,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
 
 
-	commentator().stop("Modular<uint32_t> sparse rank test suite");
+	commentator().stop("Givaro::Modular<uint32_t> sparse rank test suite");
 	return pass ? 0 : -1;
 }
 

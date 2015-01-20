@@ -71,21 +71,21 @@ int main()
 	/* Using the parameterized domain capabilities, several domains
 	 * representing integers modulo may be used simultaneously. */
 
-	Modular<uint32_t> D(3), K(7);
+	Givaro::Modular<uint32_t> D(3), K(7);
 
 	divide_ex(D);  divide_ex(K);
 
 	// NTL arbitrary precision real field
 	// (Could be parameterized by the precision)
 
-	// UnparametricField<NTL::RR> K2;
+	// Givaro::UnparametricRing<NTL::RR> K2;
 	NTL_RR K2 ;
 	NTL::RR::SetPrecision(500);
 	NTL::RR::SetOutputPrecision(50);
 
 	// NTL modulo p field
 
-	//UnparametricField<NTL::zz_p> K2;
+	//Givaro::UnparametricRing<NTL::zz_p> K2;
 	//NTL::zz_p::init(553);
 
 	divide_ex(K2);

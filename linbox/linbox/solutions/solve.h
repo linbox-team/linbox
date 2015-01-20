@@ -347,7 +347,7 @@ namespace LinBox
 		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
 		RandomPrimeIterator genprime( bits);
 
-		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
+		RationalRemainder2< VarPrecEarlyMultipCRA< Givaro::Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
 		integer den;
 		BlasVector<PID_integer> num(A.field(),A.coldim());
@@ -536,7 +536,7 @@ namespace LinBox
 
 		commentator().start ("Padic Integer Blas-based Solving", "solving");
 
-		typedef Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrimeIterator genprime((unsigned int)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		RationalSolver<Ring, Field, RandomPrimeIterator, DixonTraits> rsolve(A.field(), genprime);
@@ -632,7 +632,7 @@ namespace LinBox
 
 		commentator().start ("Padic Integer Sparse Elimination Solving", "solving");
 
-		typedef Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrimeIterator genprime((unsigned int) (26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		RationalSolver<Ring, Field, RandomPrimeIterator, SparseEliminationTraits> rsolve(A.field(), genprime);
@@ -848,10 +848,10 @@ namespace LinBox
 		commentator().start ("Integer CRA Solve", "Isolve");
 
 		RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-		//         RationalRemainder< Modular<double> > rra((double)
+		//         RationalRemainder< Givaro::Modular<double> > rra((double)
 		//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
 
-		RationalRemainder< EarlyMultipRatCRA< Modular<double> > > rra(3UL);
+		RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 
 		// use of integer due to non genericity of rra (PG 2005-09-01)
@@ -1033,7 +1033,7 @@ namespace LinBox
 		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
 		RandomPrimeIterator genprime( (unsigned) bits);
-		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
+		RationalRemainder2< VarPrecEarlyMultipCRA< Givaro::Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
 		integer den;
 		PID_integer Z ;
@@ -1059,7 +1059,7 @@ namespace LinBox
 		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
 		RandomPrimeIterator genprime((unsigned) bits);
-		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
+		RationalRemainder2< VarPrecEarlyMultipCRA< Givaro::Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,RatVector,MethodTraits > iteration(A, b, m);
 		integer den;
 		PID_integer Z;
@@ -1114,8 +1114,8 @@ namespace LinBox {
 	{
 		//THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
 
-		typedef Modular<int32_t> ZField;
-		// typedef Modular<double> ZField;
+		typedef Givaro::Modular<int32_t> ZField;
+		// typedef Givaro::Modular<double> ZField;
 		PID_integer ZZ ;
 		RationalSolver<PID_integer, ZField, RandomPrimeIterator, NumSymNormTraits> rsolver(ZZ);
 

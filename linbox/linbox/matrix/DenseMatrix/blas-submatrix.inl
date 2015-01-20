@@ -1086,9 +1086,6 @@ namespace LinBox
 					integer c;
 					int wid;
 
-
-
-
 					_Mat.field().cardinality (c);
 
 					if (c >0)

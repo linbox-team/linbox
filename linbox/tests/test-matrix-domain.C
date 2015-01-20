@@ -55,7 +55,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/modular-balanced.h"
+#include <givaro/modular-balanced.h>
 #include "linbox/field/givaro.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/matrix/matrix-domain.h"
@@ -1574,7 +1574,7 @@ int main (int argc, char **argv)
 	static size_t m = n;
 	static size_t k = 2;
 	static integer q = 65521U;
-	static integer q2 =  FieldTraits<ModularBalanced<int32_t> >::maxModulus() ;
+	static integer q2 =  FieldTraits<Givaro::ModularBalanced<int32_t> >::maxModulus() ;
 	Givaro::prevprime(q2,q2);
 	static unsigned int iterations = 1;
 
@@ -1590,9 +1590,9 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	if (k >= m) k = m/2+1 ;
 
-	Modular<uint32_t>                F1 (q);
-	ModularBalanced<int32_t>         F2 (q2);
-	GivaroZpz<uint32_t>    F3(q);
+	Givaro::Modular<uint32_t>                F1 (q);
+	Givaro::ModularBalanced<int32_t>         F2 (q2);
+	Givaro::Modular<uint32_t>    F3(q);
 	/*
 	if (q2 < q/2)
 		std::cerr <<"...étrange..." << std::endl;

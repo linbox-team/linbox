@@ -110,7 +110,7 @@ namespace LinBox
 
 		const GF2 &field () const
 		{
-			return *_field;
+			return VectorDomainBase<GF2>::field();
 		}
 
 		template <class Vector>

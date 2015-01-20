@@ -722,10 +722,10 @@ namespace LinBox
 
 	// Specialization for extension field GFqDom
 	template <>
-	class FFTMulDomain<GivaroGfq> {
+	class FFTMulDomain<Givaro::GFq> {
 	public:
-		typedef GivaroGfq                                   Field;
-		typedef Modular<double>                      ModularField;
+		typedef Givaro::GFq                                   Field;
+		typedef Givaro::Modular<double>                      ModularField;
 		typedef typename Field::Element                   Element;
 		typedef typename ModularField::Element     ModularElement;
 		typedef SpecialFFTMulDomain<ModularField>   FFTDomainBase;

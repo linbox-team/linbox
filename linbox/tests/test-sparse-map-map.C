@@ -232,11 +232,11 @@ bool fieldTestSuite(Field& F)
 bool testSuite()
 {
 	bool pass=true;
-	Modular<double> DoubleSmallField(3),DoubleLargeField(67108859);
+	Givaro::Modular<double> DoubleSmallField(3),DoubleLargeField(67108859);
 	pass=pass&&fieldTestSuite(DoubleSmallField);
 	pass=pass&&fieldTestSuite(DoubleLargeField);
 
-	GivaroExtension<Modular<double> > ExtField(DoubleSmallField,3);
+	Givaro::Extension<Givaro::Modular<double> > ExtField(DoubleSmallField,3);
 	pass=pass&&fieldTestSuite(ExtField);
 	return pass;
 }

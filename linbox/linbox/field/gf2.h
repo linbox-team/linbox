@@ -105,10 +105,10 @@ namespace LinBox
 		}
 
 		/** Copy constructor.
-		 * Constructs Modular object by copying the field.
+		 * Constructs Givaro::Modular object by copying the field.
 		 * This is required to allow field objects to be passed by value
 		 * into functions.
-		 * @param  F Modular object.
+		 * @param  F Givaro::Modular object.
 		 */
 		GF2 (const GF2 & F ) :
 			zero(false),one(true),mOne(true) {}
@@ -116,8 +116,8 @@ namespace LinBox
 		/** Assignment operator.
 		 * Required by the archetype
 		 *
-		 * @param F constant reference to Modular object
-		 * @return reference to Modular object for self
+		 * @param F constant reference to Givaro::Modular object
+		 * @return reference to Givaro::Modular object for self
 		 */
 		GF2 &operator = (const GF2 &F)
 		{

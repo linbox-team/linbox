@@ -52,7 +52,7 @@ namespace LinBox
 	private:
 		typedef std::vector<unsigned long>  Fvect ;
 		typedef std::vector<integer>        Ivect ;
-		typedef Modular<double>             Field ;
+		typedef Givaro::Modular<double>             Field ;
 
 		Fvect               _primes_; //!< vector of integers, pairwise coprime (or pairwise different primes)
 		unsigned long         _size_; //!< number of primes
@@ -128,7 +128,7 @@ namespace LinBox
 	private:
 		typedef std::vector<unsigned long>  Fvect ;
 		typedef std::vector<integer>        Ivect ;
-		typedef Modular<double>             Field ;
+		typedef Givaro::Modular<double>             Field ;
 
 		Fvect               _primes_; //!< vector of integers, pairwise coprime (or pairwise different primes)
 		unsigned long         _size_; //!< number of primes

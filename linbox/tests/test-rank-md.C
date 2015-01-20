@@ -28,6 +28,7 @@
  * @test no doc.
  */
 
+#include <givaro/modular.h>
 #include "test-rank.h"
 
 int main (int argc, char **argv)
@@ -57,16 +58,16 @@ int main (int argc, char **argv)
 	srand ((unsigned)time (NULL));
 	// srand48 ((unsigned)time (NULL));
 
-	commentator().start("Modular<double> sparse rank test suite", "rank");
+	commentator().start("Givaro::Modular<double> sparse rank test suite", "rank");
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
-	Modular<double> G (q);
+	Givaro::Modular<double> G (q);
 	pass = pass && testSparseRank(G,n,n+1,(size_t)iterations,sparsity);
 	pass = pass && testSparseRank(G,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
 
 
-	commentator().stop("Modular<double> SPArse rank test suite");
+	commentator().stop("Givaro::Modular<double> SPArse rank test suite");
 	return pass ? 0 : -1;
 }
 

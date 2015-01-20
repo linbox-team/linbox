@@ -77,7 +77,7 @@ bool testRingTrivia
 
 #include "test-common.h"
 
-/* Modular exponentiation */
+/* Givaro::Modular exponentiation */
 using namespace std;
 
 using LinBox::commentator ;

@@ -598,7 +598,7 @@ namespace LinBox
 				// Compute the inverse of L
 				TriangularBlasMatrix<Field> invL(field(), m, m,
 								 Tag::Shape::Lower, Tag::Diag::Unit);
-				FFPACK::trinv_left((const typename Field::Father_t &)field(),m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
+				FFPACK::trinv_left((const Field &)field(),m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
 
 #ifdef  _BM_TIMING
 				chrono.stop();
@@ -856,7 +856,7 @@ namespace LinBox
 				// compute the inverse of L
 				TriangularBlasMatrix<Field> invL (field(),m+n,m+n,
 								  Tag::Shape::Lower,Tag::Diag::Unit);
-				FFPACK::trinv_left((const typename Field::Father_t &)field(),m+n, L.getPointer(), L.getStride(),
+				FFPACK::trinv_left((const Field &)field(),m+n, L.getPointer(), L.getStride(),
 						   invL.getWritePointer(), invL.getStride());
 
 
@@ -870,8 +870,8 @@ namespace LinBox
 
 
 				// Apply BPerm2 and Qt to the vector of order and increase by 1 the last n rows
-				UnparametricField<long> UF;
-				BlasMatrixDomain<UnparametricField<long> > BMDUF(UF);
+				Givaro::UnparametricRing<long> UF;
+				BlasMatrixDomain<Givaro::UnparametricRing<long> > BMDUF(UF);
 				BMDUF.mulin_right(Qt,order);
 				BMDUF.mulin_right(BPerm2,order);
 				BMDUF.mulin_right(BPerm1,degree);
@@ -1079,7 +1079,7 @@ namespace LinBox
 				// compute the inverse of L
 				TriangularBlasMatrix<Field> invL (field(),m+n,m+n,
 								  Tag::Shape::Lower,Tag::Diag::Unit);
-				FFPACK::trinv_left((typename Field::Father_t)field(),m+n,L.getPointer(),L.getStride(),
+				FFPACK::trinv_left(field(),m+n,L.getPointer(),L.getStride(),
 						   invL.getWritePointer(),invL.getStride());
 
 
@@ -1093,8 +1093,8 @@ namespace LinBox
 
 
 				// Apply BPerm2 and Qt to the vector of order and increase by 1 the last n rows
-				UnparametricField<long> UF;
-				BlasMatrixDomain<UnparametricField<long> > BMDUF(UF);
+				Givaro::UnparametricRing<long> UF;
+				BlasMatrixDomain<Givaro::UnparametricRing<long> > BMDUF(UF);
 				BMDUF.mulin_right(Qt,order);
 				BMDUF.mulin_right(BPerm2,order);
 				BMDUF.mulin_right(BPerm1,degree);

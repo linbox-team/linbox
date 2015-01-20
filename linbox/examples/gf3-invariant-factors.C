@@ -40,11 +40,11 @@ std::istream& readVector(std::istream& is,
 	return is;
 }
 
-typedef SlicedField<Modular<int64_t>,uint64_t> Field;
+typedef SlicedField<Givaro::Modular<int64_t>,uint64_t> Field;
 typedef typename Field::Element Element;
 typedef PascalBlackbox<Field> SparseMat;
 
-typedef CoppersmithInvariantFactors<Field,SparseMat,Modular<int64_t> > FactorDomain;
+typedef CoppersmithInvariantFactors<Field,SparseMat,Givaro::Modular<int64_t> > FactorDomain;
 typedef typename FactorDomain::PolyDom PolyDom;
 typedef typename FactorDomain::PolyRing PolyRing;
 typedef BlasVector<PolyRing> FactorVector;

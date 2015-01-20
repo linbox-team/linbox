@@ -182,7 +182,7 @@ namespace LinBox
 		 * valid for any modulus, only prime moduli are supported in this
 		 * implementation.  The primality of the modulus will not be checked, so
 		 * it is the programmer's responsibility to supply a prime modulus.
-		 * These specializations allow the \ref UnparametricField template class to be
+		 * These specializations allow the \ref Givaro::UnparametricRing template class to be
 		 * used to wrap NTL's <code>ZZ_p</code> class as a LinBox field.
 		 */
 		//@{

@@ -9,7 +9,7 @@
  * 2002-04-10 Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * Rename from test-large-modular.C to test-modular.C; made other updates in
- * accordance with changes to Modular interace.
+ * accordance with changes to Givaro::Modular interace.
  * ------------------------------------
  *
  *
@@ -37,8 +37,8 @@
 /*! @file  tests/test-modular.C
  * @ingroup tests
  *
- * @brief  runFieldTests on various <code>Modular<XXX></code> fields.
- * @test   runFieldTests on various <code>Modular<XXX></code> fields.
+ * @brief  runFieldTests on various <code>Givaro::Modular<XXX></code> fields.
+ * @test   runFieldTests on various <code>Givaro::Modular<XXX></code> fields.
  */
 
 
@@ -86,32 +86,32 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator().start("Modular test suite", "Modular ");
+	commentator().start("Givaro::Modular test suite", "Givaro::Modular ");
 	bool pass = true;
 
-	Modular<integer> F_integer (q1);
-	Modular<uint32_t> F_uint32_t ((uint32_t) q2);
-	Modular<uint16_t> F_uint16_t ((uint16_t) q3);
-	Modular<uint8_t> F_uint8_t ((uint8_t) q4);
-	Modular<float> F_float ((float) q4);
+	Givaro::Modular<integer> F_integer (q1);
+	Givaro::Modular<uint32_t> F_uint32_t ((uint32_t) q2);
+	Givaro::Modular<uint16_t> F_uint16_t ((uint16_t) q3);
+	Givaro::Modular<uint8_t> F_uint8_t ((uint8_t) q4);
+	Givaro::Modular<float> F_float ((float) q4);
 
 
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F_integer,"Modular<integer>", iterations, n, false)) pass = false;
-	if (!runFieldTests (F_uint32_t, "Modular<uint32_t>",  iterations, n, false)) pass = false;
-	if (!runFieldTests (F_uint16_t, "Modular<uint16_t>",  iterations, n, false)) pass = false;
-	if (!runFieldTests (F_uint8_t,  "Modular<uint8_t>",   iterations, n, false)) pass = false;
-	if (!runFieldTests (F_float,  "Modular<float>",   iterations, n, false)) pass = false;
+	if (!runFieldTests (F_integer,"Givaro::Modular<integer>", iterations, n, false)) pass = false;
+	if (!runFieldTests (F_uint32_t, "Givaro::Modular<uint32_t>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F_uint16_t, "Givaro::Modular<uint16_t>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F_uint8_t,  "Givaro::Modular<uint8_t>",   iterations, n, false)) pass = false;
+	if (!runFieldTests (F_float,  "Givaro::Modular<float>",   iterations, n, false)) pass = false;
 
-	if (!testRandomIterator (F_integer, "Modular<integer>", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F_uint32_t,  "Modular<uint32_t>",  trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F_uint16_t,  "Modular<uint16_t>",  trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F_uint8_t,    "Modular<uint8_t>",  trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F_integer, "Givaro::Modular<integer>", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F_uint32_t,  "Givaro::Modular<uint32_t>",  trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F_uint16_t,  "Givaro::Modular<uint16_t>",  trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F_uint8_t,    "Givaro::Modular<uint8_t>",  trials, categories, hist_level)) pass = false;
 
-	commentator().stop(MSG_STATUS (pass), "Modular test suite");
+	commentator().stop(MSG_STATUS (pass), "Givaro::Modular test suite");
 	return pass ? 0 : -1;
 }
 

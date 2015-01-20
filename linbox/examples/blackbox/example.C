@@ -55,8 +55,8 @@
 using namespace std;
 
 // This is the field we are going to be working with - integers mod q
-//typedef LinBox::Modular<LinBox::uint32_t> Field;
-typedef LinBox::GivaroGfq Field;
+//typedef Givaro::Modular<LinBox::uint32_t> Field;
+typedef LinBox::Givaro::GFq Field;
 
 // Some typedefs to make the type names less daunting
 typedef vector <Field::Element> Vector;

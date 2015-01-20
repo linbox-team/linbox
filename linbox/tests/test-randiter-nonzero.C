@@ -44,7 +44,6 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/randiter/modular.h"
 #include "linbox/randiter/nonzero.h"
 
 #include "test-common.h"
@@ -117,7 +116,7 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<uint32_t> F (q);
+	Givaro::Modular<uint32_t> F (q);
 
 	srand ((unsigned)time (NULL));
 

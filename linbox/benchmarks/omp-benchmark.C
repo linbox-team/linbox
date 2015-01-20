@@ -54,7 +54,7 @@
 
 using namespace LinBox;
 
-typedef Modular<double> Field;
+typedef Givaro::Modular<double> Field;
 typedef TriplesBBOMP<Field> OMPBB;
 typedef TriplesBB<Field> SeqBB;
 typedef SparseMatrix<Field,SparseMatrixFormat::VPV> VPVBB;
@@ -282,7 +282,7 @@ int main(int argc, char **argv)
 
         BenchmarkFile benchmarkFile;
 
-        benchmarkFile.addMetadata("Field-Implementation",CSString("Modular<double>"));
+        benchmarkFile.addMetadata("Field-Implementation",CSString("Givaro::Modular<double>"));
         benchmarkFile.addMetadata("num_threads",CSInt(numThreads));
         benchmarkFile.addMetadata("N*N Blackbox Dimensions",CSInt(n));
         benchmarkFile.addMetadata("Fat Vector Dimension",CSInt(m));

@@ -37,7 +37,7 @@ namespace LinBox { namespace BLAS3 { namespace Protected {
 	struct IntegerCraMatMul {
 
 
-		typedef Modular<double>     Field;
+		typedef Givaro::Modular<double>     Field;
 		typedef Field::Element      Element;
 		typedef BlasMatrix<Field>   ModularMatrix ;
 		typedef BlasMatrix<PID_integer> IntegerMatrix ;
@@ -153,7 +153,7 @@ namespace LinBox { namespace BLAS3 {
 		BMD.Magnitude(mB,B);
 		double logC = Givaro::naturallog(mA*mB*A.coldim());
 
-		typedef Modular<double> ModularField ;
+		typedef Givaro::Modular<double> ModularField ;
 
 		{
 

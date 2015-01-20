@@ -355,7 +355,7 @@ int main (int argc, char **argv)
 
 	static size_t n = 10;
 	//static integer q = 65521U;
-	static integer q = 1000003; // ok for both Modular<int> and Modular<double>
+	static integer q = 1000003; // ok for both Givaro::Modular<int> and Givaro::Modular<double>
 	static int e = 1; // exponent for field characteristic
 	static int iterations = 1;
 	static int numVectors = 1;
@@ -382,9 +382,9 @@ int main (int argc, char **argv)
 	Method::Blackbox MB;
 	//if (e == 1)
 	{
-		//typedef Modular<uint32_t> Field;
-		//typedef Modular<int> Field;
-		typedef Modular<double> Field;
+		//typedef Givaro::Modular<uint32_t> Field;
+		//typedef Givaro::Modular<int> Field;
+		typedef Givaro::Modular<double> Field;
 		Field F (q);
 		srand ((unsigned)time (NULL));
 
@@ -402,7 +402,7 @@ int main (int argc, char **argv)
 	//else
 	{	q = 3; e = 10;
 
-		typedef GivaroGfq Field;
+		typedef Givaro::GFq Field;
 		Field F (q, e);
 		srand ((unsigned)time (NULL));
 
@@ -423,8 +423,8 @@ int main (int argc, char **argv)
 // this test can only work if Extension of Extension is compiling. -bds
 
 	{	q = 3; e = 2;
-		typedef Modular<int32_t> GroundField;
-		typedef GivaroExtension<GroundField> Field;
+		typedef Givaro::Modular<int32_t> GroundField;
+		typedef Givaro::Extension<GroundField> Field;
 		GroundField K(q);
 		Field F (K, e);
 		srand ((unsigned)time (NULL));
@@ -446,7 +446,7 @@ int main (int argc, char **argv)
 
 #if 1
 
-	Modular<uint32_t> F (q);
+	Givaro::Modular<uint32_t> F (q);
 
 
 	commentator().start("Hybrid prime field minpoly test suite", "Hminpoly");

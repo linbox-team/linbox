@@ -74,9 +74,9 @@ int main (int argc, char **argv)
 
 	// need to test generic def, test nonsense attempts, etc.
 
-	Modular<uint32_t> F_uint32_t ((uint32_t) q);
-	Modular<uint16_t> F_uint16_t ((uint16_t) q);
-	ImageField<Modular<uint16_t>, Modular<uint32_t> > IF32(F_uint16_t, F_uint32_t);
+	Givaro::Modular<uint32_t> F_uint32_t ((uint32_t) q);
+	Givaro::Modular<uint16_t> F_uint16_t ((uint16_t) q);
+	ImageField<Givaro::Modular<uint16_t>, Givaro::Modular<uint32_t> > IF32(F_uint16_t, F_uint32_t);
 
 	uint16_t a=2, b;
 	uint32_t z=2, w;

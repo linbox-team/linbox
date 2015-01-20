@@ -230,7 +230,7 @@ int main(int argc, char** argv){
 	cout<<"prime : "<<p<<endl;
 	cout<<endl;
 	
-	Modular<int32_t> F(p);
+	Givaro::Modular<int32_t> F(p);
 	check_DIF(F,k,seed);
 	bench_DIF(F,k,seed);
 

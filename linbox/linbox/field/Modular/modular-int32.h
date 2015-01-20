@@ -30,6 +30,8 @@
 
 
 #include <math.h>
+#include <givaro/modular-int32.h>
+
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"
@@ -39,8 +41,6 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/util/write-mm.h"
 
-#include <fflas-ffpack/field/modular-int32.h>
-
 #ifndef LINBOX_MAX_INT /* 2147483647 */
 #define LINBOX_MAX_INT INT32_MAX
 #endif
@@ -48,13 +48,6 @@
 // Namespace in which all LinBox code resides
 namespace LinBox
 {
-
-	template< class Element >
-	class Modular;
-	template< class Element >
-	class ModularRandIter;
-	template< class Field, class RandIter >
-	class NonzeroRandIter;
 
 	template<class Field>
 	class DotProductDomain;
@@ -67,168 +60,37 @@ namespace LinBox
 	struct ClassifyRing;
 
 	template <class Element>
-	struct ClassifyRing<Modular<Element> >;
+	struct ClassifyRing<Givaro::Modular<Element> >;
 
 	template <>
-	struct ClassifyRing<Modular<int32_t> > {
+	struct ClassifyRing<Givaro::Modular<int32_t> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 
-
-	/** \brief Specialization of Modular to int32_t element type with efficient dot product.
-	 *
-	 * Efficient element operations for dot product, mul, axpy, by using floating point
-	 * inverse of modulus (borrowed from NTL) and some use of non-normalized intermediate values.
-	 *
-	 * For some uses this is the most efficient field for primes in the range from half word
-	 * to 2^30.
-	 *
-	 * Requires: Modulus < 2^30.
-	 * Intended use: 2^15 < prime modulus < 2^30.
-	 \ingroup field
-	 */
 	template <>
-	class Modular<int32_t> : public FieldInterface ,
-	      public ::FFPACK::Modular<int32_t> {
-
-	protected:
-
-	public:
-
-		friend class FieldAXPY<Modular<int32_t> >;
-		friend class DotProductDomain<Modular<int32_t> >;
-		friend class MVProductDomain<Modular<int32_t> >;
-
-		typedef FFPACK::Modular<int32_t> Father_t;
-
-		typedef int32_t Element;
-		typedef ModularRandIter<int32_t> RandIter;
-
-		Modular (integer &p) :
-			Father_t((int32_t)p)
-		{
-		}
-
-	       	Modular (int32_t value, int32_t exp=1) :
-			Father_t(value,exp)
-		      {}
-
-#if 0
-		Modular (long value) :
-			Father_t(value)
-		      {}
-
-		Modular (unsigned long value) :
-			Father_t(value)
-		      {}
-#endif
-
-		using Father_t ::cardinality;
-		 integer &cardinality (integer &c) const
-		{
-			return c = modulus;
-		}
-
-		 using Father_t ::characteristic;
-		 integer &characteristic (integer &c) const
-		{
-		       	return c = modulus;
-		}
-
-		 using Father_t ::convert;
-		 integer &convert (integer &x, const Element &y) const
-		{
-			return x = y;
-		}
-
-		 using Father_t ::init;
-		 Element &init (Element &x, const integer &y) const
-		{
-			x = Element (y % lmodulus);
-			if (x < 0) x += modulus;
-			return x;
-		}
-
-		unsigned long AccBound(const Element&r) const
-		{
-			double max_double = (double) (INT_MAX) - modulus ;
-			double p = modulus-1 ;
-			if (areEqual(zero,r))
-				return (unsigned long) (max_double/p) ;
-			else if (areEqual(one,r))
-			{
-				if (modulus>= getMaxModulus())
-					return 0 ;
-				else
-					return (unsigned long) max_double/(unsigned long)(modulus*modulus) ;
-			}
-			else
-				throw LinboxError("Bad input, expecting 0 or 1");
-			return 0;
-		}
-
-		/*- Print field as a constructor call.
-		 * @return output stream to which field is written.
-		 * @param  os  output stream to which field is written.
-		 * @param  F  optional name to give the field in the description.  IF F is the null string, only the class name is written.
-		 * Example: For element type double and modulus 101,
-		 * write(os) produces      "Modular< double > ( 101 )"  on os,
-		 * write(os, "F") produces "Modular< double > F( 101 )" on os, and
-		 * write(os, "") produces  "Modular< double >"          on os.
-		 */
-		std::ostream &write (std::ostream &os) const
-		{
-			integer p = cardinality();
-			return os << "Modular<" << eltype( Element() ) << " >( " << p << " )";
-		}
-
-		std::ostream &write (std::ostream &os, std::string F) const
-		{
-			os << "Modular<" << eltype( Element() ) << " > "; // class name
-			if (F != "") {
-				integer p = cardinality();
-				os << F << "( " << p << " )"; // show constuctor args
-			}
-			return os;
-		}
-
-		std::ostream &write (std::ostream & os, const Element & x) const
-		{
-			return Father_t::write(os,x);
-		}
-
-
-		Element& next(Element &x) const
-		{
-			return addin(x,one);
-		}
-
-	private:
-
-	};
-
-	template <>
-	class FieldAXPY<Modular<int32_t> > {
+	class FieldAXPY<Givaro::Modular<int32_t> > {
 	public:
 
 		typedef int32_t Element;
 		typedef int64_t Abnormal;
-		typedef Modular<int32_t> Field;
+		typedef Givaro::Modular<int32_t> Field;
 
-		FieldAXPY (const Field &F) :
-			_field (&F),_y(0)
-		{ }
-
-
+		FieldAXPY (const Field &F) : _field (&F), _y(0)
+		{
+			_two_64 = (uint64_t(1) << 32) % uint64_t(F.characteristic());
+			_two_64 = (_two_64 * _two_64) % uint64_t(F.characteristic());
+		}
+		
 		FieldAXPY (const FieldAXPY &faxpy) :
-			_field (faxpy._field), _y (0)
+			_two_64 (faxpy._two_64), _field (faxpy._field), _y (0)
 		{}
 
-		FieldAXPY<Modular<int32_t> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<Givaro::Modular<int32_t> > &operator = (const FieldAXPY &faxpy)
 		{
 			_field = faxpy._field;
 			_y = faxpy._y;
+			_two_64 = faxpy._two_64;
 			return *this;
 		}
 
@@ -237,7 +99,7 @@ namespace LinBox
 			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
 			if (_y < t) {
-				 _y += (uint64_t)field()._two64;
+				 _y += _two_64;
 				 return _y ;
 			}
 			else
@@ -248,14 +110,14 @@ namespace LinBox
 		{
 			_y += (uint64_t) t;
 			if (_y < (uint64_t)t)
-				return _y += (uint64_t) field()._two64;
+				return _y += _two_64;
 			else
 				return _y;
 		}
 
 		 Element& get (Element &y)
 		{
-			y = Element (_y % (uint64_t) field().modulus);
+			y = Element (_y % (uint64_t) field().characteristic());
 			return y;
 		}
 
@@ -270,7 +132,10 @@ namespace LinBox
 			_y = 0;
 		}
 
-		inline const Field & field() { return *_field; }
+		inline const Field & field() const { return *_field; }
+
+	public:
+		uint64_t _two_64;
 
 	protected:
 		const Field * _field;
@@ -279,16 +144,16 @@ namespace LinBox
 
 
 	template <>
-	class DotProductDomain<Modular<int32_t> > : public virtual VectorDomainBase<Modular<int32_t> > {
+	class DotProductDomain<Givaro::Modular<int32_t> > : public virtual VectorDomainBase<Givaro::Modular<int32_t> > {
 
 	public:
 		typedef int32_t Element;
 		DotProductDomain(){}
-		DotProductDomain (const Modular<int32_t> &F) :
-			VectorDomainBase<Modular<int32_t> > (F)
+		DotProductDomain (const Givaro::Modular<int32_t> &F) :
+			VectorDomainBase<Givaro::Modular<int32_t> > (F)
 		{}
 
-		using VectorDomainBase<Modular<int32_t> >::field;
+		using VectorDomainBase<Givaro::Modular<int32_t> >::field;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -307,10 +172,10 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += (uint64_t) field()._two64;
+					y += (uint64_t) faxpy()._two_64;
 			}
 
-			y %= (uint64_t) field().modulus;
+			y %= (uint64_t) field().characteristic();
 			return res = Element(y);
 
 		}
@@ -330,11 +195,11 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += (uint64_t) field()._two64;
+					y += (uint64_t) faxpy()._two_64;
 			}
 
 
-			y %= (uint64_t) field().modulus;
+			y %= (uint64_t) field().characteristic();
 
 			return res = (Element) y;
 		}
@@ -343,7 +208,7 @@ namespace LinBox
 	// Specialization of MVProductDomain for int32_t modular field
 
 	template <>
-	class MVProductDomain<Modular<int32_t> > {
+	class MVProductDomain<Givaro::Modular<int32_t> > {
 	public:
 
 		typedef int32_t Element;
@@ -351,7 +216,7 @@ namespace LinBox
 	protected:
 		template <class Vector1, class Matrix, class Vector2>
 		 Vector1 &mulColDense
-		(const VectorDomain<Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+		(const VectorDomain<Givaro::Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 		{
 			return mulColDenseSpecialized
 			(VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
@@ -360,27 +225,27 @@ namespace LinBox
 	private:
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Givaro::Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::DenseVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Givaro::Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseSequenceVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Givaro::Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseAssociativeVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Givaro::Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseParallelVectorTag) const;
 
 		mutable std::vector<uint64_t> _tmp;
 	};
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int32_t> >::mulColDenseSpecialized
-	(const VectorDomain<Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	Vector1 &MVProductDomain<Givaro::Modular<int32_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::DenseVectorTag) const
 	{
 
@@ -408,7 +273,7 @@ namespace LinBox
 				*l += t;
 
 				if (*l < t)
-					*l += (uint64_t) VD.field ()._two64;
+					*l += (uint64_t) VD.faxpy ()._two_64;
 			}
 		}
 
@@ -416,14 +281,14 @@ namespace LinBox
 		typedef typename Vector1::value_type elements ;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = elements(*l % VD.field ().modulus);
+			*w_j = elements(*l % VD.field ().characteristic());
 
 		return w;
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int32_t> >::mulColDenseSpecialized
-	(const VectorDomain<Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	Vector1 &MVProductDomain<Givaro::Modular<int32_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseSequenceVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -448,7 +313,7 @@ namespace LinBox
 				_tmp[k->first] += t;
 
 				if (_tmp[k->first] < t)
-					_tmp[k->first] += (uint64_t)VD.field ()._two64;
+					_tmp[k->first] += (uint64_t)VD.faxpy ()._two_64;
 			}
 		}
 
@@ -456,14 +321,14 @@ namespace LinBox
 		typedef typename Vector1::value_type val_t;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = (val_t)( (int32_t)(*l) % VD.field ().modulus );
+			*w_j = (val_t)( (int32_t)(*l) % VD.field ().characteristic() );
 
 		return w;
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int32_t> >::mulColDenseSpecialized
-	(const VectorDomain<Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	Vector1 &MVProductDomain<Givaro::Modular<int32_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseAssociativeVectorTag) const
 	{
 
@@ -491,21 +356,21 @@ namespace LinBox
 				_tmp[k->first] += t;
 
 				if (_tmp[k->first] < t)
-					_tmp[k->first] += VD.field ()._two64;
+					_tmp[k->first] += VD.faxpy ()._two_64;
 			}
 		}
 
 		typename Vector1::iterator w_j;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().modulus;
+			*w_j = *l % VD.field ().characteristic();
 
 		return w;
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int32_t> >::mulColDenseSpecialized
-	(const VectorDomain<Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	Vector1 &MVProductDomain<Givaro::Modular<int32_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseParallelVectorTag) const
 	{
 
@@ -536,22 +401,20 @@ namespace LinBox
 				_tmp[*k_idx] += t;
 
 				if (_tmp[*k_idx] < t)
-					_tmp[*k_idx] += VD.field ()._two64;
+					_tmp[*k_idx] += VD.faxpy()._two_64;
 			}
 		}
 
 		typename Vector1::iterator w_j;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().modulus;
+			*w_j = *l % VD.field().characteristic();
 
 		return w;
 	}
 
 
 }
-
-#include "linbox/randiter/modular.h"
 
 #endif //__LINBOX_modular_int32_H
 

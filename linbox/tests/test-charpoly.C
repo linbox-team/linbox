@@ -285,8 +285,8 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	// Temporarily, only Modular<double> is enabled for the givaro/ntl factorization based charpoly
-	typedef Modular<double> Field;
+	// Temporarily, only Givaro::Modular<double> is enabled for the givaro/ntl factorization based charpoly
+	typedef Givaro::Modular<double> Field;
 	typedef BlasVector<Field> DenseVector;
 	typedef SparseMatrix<Field>::Row SparseVector;
 	// typedef pair<vector<size_t>, BlasVector<Field> > SparseVector;

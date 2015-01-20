@@ -308,8 +308,8 @@ int main (int argc, char* argv[])
         parseArguments (argc, argv, args);
 
 	// create a dense-zero-one
-	typedef Modular<float> FieldF;
-	typedef Modular<double> FieldD;
+	typedef Givaro::Modular<float> FieldF;
+	typedef Givaro::Modular<double> FieldD;
 
 	BlackboxDomain<FieldF> F(f);
 	FieldF::RandIter r1(F);
@@ -339,15 +339,15 @@ int main (int argc, char* argv[])
 #if 0
 	/* basic everyday test */
 	cout << endl;
-	cout << "Domain: Modular<float>, GF(" << f << ")" << endl;
+	cout << "Domain: Givaro::Modular<float>, GF(" << f << ")" << endl;
 	testTiming(A);
 
-	cout << "Domain: Modular<double>, GF(" << d << ")" << endl;
+	cout << "Domain: Givaro::Modular<double>, GF(" << d << ")" << endl;
 	testTiming(B);
 
 	/* block size tests */
 	cout << endl;
-	cout << "Domain: Modular<double>, GF(" << d << ")" << endl << endl;
+	cout << "Domain: Givaro::Modular<double>, GF(" << d << ")" << endl << endl;
 	cout << "block Size     n     unpackingApply   unpackingApplyTranspose    Domain mul" << endl << endl;
 	for (size_t sizeU = 256; sizeU != 4096; sizeU *= 2)
 		for (int count = 500; count != 4500; count += 500){
@@ -368,7 +368,7 @@ int main (int argc, char* argv[])
 
 #if 0
 	/* stress test */
-	cout << "Domain: Modular<double>, GF(" << d << ")" << endl;
+	cout << "Domain: Givaro::Modular<double>, GF(" << d << ")" << endl;
 	DenseZeroOne<BlackboxDomain<FieldD> > C(D, 30000, 30000);
 	for (size_t i = 0; i != 30000; ++i)
 		for (size_t j = 0; j != 30000; ++j) {
@@ -380,7 +380,7 @@ int main (int argc, char* argv[])
 	stressTest(C);
 
 	/* large tests */
-	cout << "Domain: Modular<double>, GF(" << d << ")" << endl;
+	cout << "Domain: Givaro::Modular<double>, GF(" << d << ")" << endl;
 	for (size_t dim = 120000; dim < 150000; dim *= 2){
 		DenseZeroOne<BlackboxDomain<FieldD> > C(D, dim, dim);
 		for (size_t i = 0; i != dim; ++i)

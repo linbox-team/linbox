@@ -47,9 +47,9 @@ namespace LinBox
 	 * to a ring (usually field) of type Target.  The intended use is that
 	 * it will be a natural mapping.  For instance:
 	 *
-	 * Hom<Unparametric<Integers>, Modular<integer> >(Z, Zp) nat; // is the mod p mapping.
+	 * Hom<Unparametric<Integers>, Givaro::Modular<integer> >(Z, Zp) nat; // is the mod p mapping.
 	 *
-	 * Hom<<NTL_ZZp, Modular<integer> >(Zp, Mp) nat;
+	 * Hom<<NTL_ZZp, Givaro::Modular<integer> >(Zp, Mp) nat;
 	 *
 	 * // is an isomorphism, provided the Zp and Mp have same characteristic.
 	 * Hom<Unparametric<NTL_ZZp, Unparameteric<NTL_ZZpEx> >(Z3, Z27) nat;
@@ -139,27 +139,27 @@ namespace LinBox
 #ifdef __LINBOX_field_modular_H
 // including specialization to modular
 //#include "linbox/field/modular.h"
-/// Specialization to Modular<uint16_t> --> Modular<uint_32>.
+/// Specialization to Givaro::Modular<uint16_t> --> Givaro::Modular<uint_32>.
 // Just a trial.  delete this when better examples exist.
 namespace LinBox
 {
-	template<> inline Hom<Modular<uint16_t>, Modular<uint32_t> >::
-	Hom(const Modular<uint16_t>& S, const Modular<uint32_t>& T ) :
+	template<> inline Hom<Givaro::Modular<uint16_t>, Givaro::Modular<uint32_t> >::
+	Hom(const Givaro::Modular<uint16_t>& S, const Givaro::Modular<uint32_t>& T ) :
 		_source(S),_target(T)
 	{
 		integer ps, pt;
 		if (S.characteristic(ps) != T.characteristic(pt)) throw NoHomError();
 	}
 
-	template<> inline Modular<uint32_t>::Element& Hom<Modular<uint16_t>, Modular<uint32_t> >::
-	image(Modular<uint32_t>::Element& t, const Modular<uint16_t>::Element& s)
+	template<> inline Givaro::Modular<uint32_t>::Element& Hom<Givaro::Modular<uint16_t>, Givaro::Modular<uint32_t> >::
+	image(Givaro::Modular<uint32_t>::Element& t, const Givaro::Modular<uint16_t>::Element& s)
 	{
 	       	return t = s;
 	}
 
 	// assumes t normalized.
-	template<> inline Modular<uint16_t>::Element& Hom<Modular<uint16_t>, Modular<uint32_t> >::
-	preimage(Modular<uint16_t>::Element& s, const Modular<uint32_t>::Element& t)
+	template<> inline Givaro::Modular<uint16_t>::Element& Hom<Givaro::Modular<uint16_t>, Givaro::Modular<uint32_t> >::
+	preimage(Givaro::Modular<uint16_t>::Element& s, const Givaro::Modular<uint32_t>::Element& t)
 	{
 		linbox_check(t < UINT8_MAX) ;
 	       	return s = (uint16_t) t;
@@ -173,10 +173,10 @@ namespace LinBox
 {
 
 	template<class _Target>
-	class Hom<UnparametricField<integer>, _Target> {
+	class Hom<Givaro::UnparametricRing<integer>, _Target> {
 
 	public:
-		typedef UnparametricField<integer> Source;
+		typedef Givaro::UnparametricRing<integer> Source;
 		typedef _Target Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
@@ -203,11 +203,11 @@ namespace LinBox
 	}; // end Hom
 
 	template<>
-	class Hom<UnparametricField<integer>, UnparametricField<integer> > {
+	class Hom<Givaro::UnparametricRing<integer>, Givaro::UnparametricRing<integer> > {
 
 	public:
-		typedef UnparametricField<integer> Source;
-		typedef UnparametricField<integer> Target;
+		typedef Givaro::UnparametricRing<integer> Source;
+		typedef Givaro::UnparametricRing<integer> Target;
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;
 
@@ -293,15 +293,15 @@ namespace LinBox
 
 #if 0
 #ifdef __FIELD_MODULAR_H
-	// Dan Roche mapping from UnparametricField to Modular - for integer
+	// Dan Roche mapping from Givaro::UnparametricRing to Givaro::Modular - for integer
 	// computations that use mod one or more primes and possibly chinese
 	// remaindering.
 	template<class _INT1, class _INT2>
-	class Hom<UnparametricField<_INT1 >,Modular<_INT2 > > {
+	class Hom<Givaro::UnparametricRing<_INT1 >,Givaro::Modular<_INT2 > > {
 
 	public:
-		typedef UnparametricField<_INT1 > Source;
-		typedef Modular<_INT2 > Target;
+		typedef Givaro::UnparametricRing<_INT1 > Source;
+		typedef Givaro::Modular<_INT2 > Target;
 		typedef _INT1 SrcElt;
 		typedef _INT2 Elt;
 
@@ -546,13 +546,14 @@ namespace LinBox
 
 }
 
-#include "linbox/field/Givaro/givaro-extension.h"
+#include <givaro/extension.h>
+
 namespace LinBox
 {
 	template<>
-	class Hom < GF2, GivaroExtension<GF2> > {
+	class Hom < GF2, Givaro::Extension<GF2> > {
 		typedef GF2 Source;
-		typedef GivaroExtension<GF2> Target;
+		typedef Givaro::Extension<GF2> Target;
 	public:
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;
@@ -615,10 +616,10 @@ namespace LinBox
 namespace LinBox
 {
 	template<>
-	class Hom <GivaroGfq,GivaroGfq> {
+	class Hom <Givaro::GFq,Givaro::GFq> {
 	public:
-		typedef GivaroGfq Source;
-		typedef GivaroGfq Target;
+		typedef Givaro::GFq Source;
+		typedef Givaro::GFq Target;
 
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;

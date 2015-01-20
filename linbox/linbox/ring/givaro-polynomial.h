@@ -35,9 +35,9 @@
 #include <iostream>
 #include <givaro/givpoly1.h>
 #include <givaro/givpoly1factor.h>
+#include <givaro/unparametric.h>
+
 #include "linbox/integer.h"
-#include "linbox/field/unparametric.h"
-#include "linbox/field/givaro.h"
 //#include "linbox/element/givaro-polynomial.h"
 
 
@@ -53,11 +53,11 @@ namespace LinBox
 	 *  @tparam StorageTag
 	 */
 	template <class Domain, class StorageTag= Givaro::Dense>
-	class GivPolynomialRing : public Givaro::Poly1FactorDom< GivaroField<Domain>,StorageTag> {
+	class GivPolynomialRing : public Givaro::Poly1FactorDom< Domain,StorageTag> {
 	public:
 
 		//	using Givaro::Poly1FactorDom<Domain,StorageTag>::eval;
-		typedef typename Givaro::Poly1FactorDom<GivaroField<Domain>,StorageTag> Father_t;
+		typedef typename Givaro::Poly1FactorDom<Domain,StorageTag> Father_t;
 		typedef typename Father_t::Element Element;
 		typedef Element Polynomial;
 
@@ -65,11 +65,11 @@ namespace LinBox
 
 		// GivPolynomialRing () {}
 
-		GivPolynomialRing (const Domain& D) : Father_t( GivaroField<Domain>(D) )
+		GivPolynomialRing (const Domain& D) : Father_t( Domain(D) )
 		{}
 
 		GivPolynomialRing (const Domain& D, const Givaro::Indeter& I) :
-                Father_t(GivaroField<Domain>(D), I)
+                Father_t(Domain(D), I)
 		{}
 
 		template<class PolyCont>
@@ -100,7 +100,7 @@ namespace LinBox
 #include "NTL/ZZXFactoring.h"
 namespace LinBox
 {
-	typedef GivPolynomialRing<UnparametricField<integer>, Givaro::Dense> GivPolIntDense;
+	typedef GivPolynomialRing<Givaro::UnparametricRing<integer>, Givaro::Dense> GivPolIntDense;
 
 	template <>
 	template <>
@@ -202,7 +202,7 @@ namespace LinBox
 
 #endif
 
-	typedef GivPolynomialRing<Modular<double>, Givaro::Dense> GivPolMdDense;
+	typedef GivPolynomialRing<Givaro::Modular<double>, Givaro::Dense> GivPolMdDense;
 
 	template <>
 	template <>
@@ -214,7 +214,7 @@ namespace LinBox
 		integer charac;
 		_domain.characteristic(charac);
 		double p = charac;
-		typedef GivaroField<Modular<double> > GivModDouble;
+		typedef Givaro::Modular<double> GivModDouble;
 		typedef Givaro::Poly1FactorDom< GivModDouble, Givaro::Dense, GivModDouble::RandIter> PolysDouble;
 
 

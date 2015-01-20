@@ -263,7 +263,7 @@ namespace LinBox
 		std::vector<std::vector<double> > residues(_size_);
 		for (size_t i = 0 ; i < _size_ ; ++i) {
 			residues[i].resize(result.size());
-			unitCRA(residues[i],Modular<double>(_Primes_[i]));
+			unitCRA(residues[i],Givaro::Modular<double>(_Primes_[i]));
 		}
 
 		for (size_t i = 0 ; i < result.size() ; ++i) {

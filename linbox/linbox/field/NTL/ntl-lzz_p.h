@@ -123,7 +123,7 @@ namespace LinBox
 	 * moduli yield fields.  The primality of the modulus will not be checked, so
 	 * it is the programmer's responsibility to supply a prime modulus if a field is
 	 * wanted.
-	 * These specializations allow the \ref UnparametricField template class to be
+	 * These specializations allow the \ref Givaro::UnparametricRing template class to be
 	 * used to wrap NTL's <code>zz_p</code> class as a LinBox field.
 	 * Uses nice trick for mod p via floating point.
 	 \ingroup field
@@ -136,7 +136,7 @@ namespace LinBox
 		const Element zero,one,mOne ;
 
 
-		//public UnparametricField<Element> {
+		//public Givaro::UnparametricRing<Element> {
 		NTL_zz_p(integer p, size_t e = 1) :
 			NTL_zz_p_Initialiser(p,e),Father_t ()
 			,zero( NTL::to_zz_p(0)),one( NTL::to_zz_p(1)),mOne(-one)

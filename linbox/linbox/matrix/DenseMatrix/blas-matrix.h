@@ -47,7 +47,7 @@
 #include "linbox/util/matrix-stream.h"
 
 #include "linbox/field/modular.h" // just for checkBlasApply
-#include "linbox/field/modular-balanced.h" // just for checkBlasApply
+#include <givaro/modular-balanced.h> // just for checkBlasApply
 
 //! @bug this does not belong here.
 #include "blas-transposed-matrix.h"
@@ -60,7 +60,7 @@ namespace LinBox
 	{
 
 		//!@bug this does not seem right for float or any non M/modular field: doing blas wherever we have a fflas-ffpack field (?)
-		//! @bug should return true for some UnparametricField
+		//! @bug should return true for some Givaro::UnparametricRing
 		template <class Field>
 		bool checkBlasApply(const Field &F, size_t n)
 		{
@@ -80,97 +80,49 @@ namespace LinBox
 		}
 
 		template<>
-		bool checkBlasApply(const Modular<double> &, size_t)
+		bool checkBlasApply(const Givaro::Modular<double> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const ModularBalanced<double> &, size_t)
+		bool checkBlasApply(const Givaro::ModularBalanced<double> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const Modular<float> &, size_t)
+		bool checkBlasApply(const Givaro::Modular<float> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const ModularBalanced<float> &, size_t)
+		bool checkBlasApply(const Givaro::ModularBalanced<float> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const Modular<double>::Father_t &, size_t)
+		bool checkBlasApply(const Givaro::Modular<int64_t> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const ModularBalanced<double>::Father_t &, size_t)
+		bool checkBlasApply(const Givaro::ModularBalanced<int64_t> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const Modular<float>::Father_t &, size_t)
+		bool checkBlasApply(const Givaro::Modular<int32_t> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const ModularBalanced<float>::Father_t &, size_t)
-		{
-			return true;
-		}
-
-		template<>
-		bool checkBlasApply(const Modular<int64_t> &, size_t)
-		{
-			return true;
-		}
-
-		template<>
-		bool checkBlasApply(const ModularBalanced<int64_t> &, size_t)
-		{
-			return true;
-		}
-
-		template<>
-		bool checkBlasApply(const Modular<int32_t> &, size_t)
-		{
-			return true;
-		}
-
-		template<>
-		bool checkBlasApply(const ModularBalanced<int32_t> &, size_t)
-		{
-			return true;
-		}
-
-		template<>
-		bool checkBlasApply(const Modular<int64_t>::Father_t &, size_t)
-		{
-			return true;
-		}
-
-		template<>
-		bool checkBlasApply(const ModularBalanced<int64_t>::Father_t &, size_t)
-		{
-			return true;
-		}
-
-		template<>
-		bool checkBlasApply(const Modular<int32_t>::Father_t &, size_t)
-		{
-			return true;
-		}
-
-		template<>
-		bool checkBlasApply(const ModularBalanced<int32_t>::Father_t &, size_t)
+		bool checkBlasApply(const Givaro::ModularBalanced<int32_t> &, size_t)
 		{
 			return true;
 		}

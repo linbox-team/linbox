@@ -66,7 +66,7 @@ int main (int argc, char **argv)
 
 	srand ((unsigned int)time (NULL));
 
-	typedef Modular<uint32_t> Field;
+	typedef Givaro::Modular<uint32_t> Field;
 	typedef ZOQuad <Field> BlackBox;
 
 	Field F (q);

@@ -67,7 +67,7 @@ namespace LinBox
 
 	protected:
 
-		std::vector<Modular<double> >              _fields;
+		std::vector<Givaro::Modular<double> >              _fields;
 		size_t                                       _size;
 		std::vector<integer>                 _crt_constant;
 		std::vector<double >                  _crt_inverse;
@@ -93,7 +93,7 @@ namespace LinBox
 		{
 			_crt_modulo=1;
 			for (size_t i=0; i<_size; ++i){
-				_fields[i]   .assign( Modular<double> (primes[i]) );
+				_fields[i] = ( Givaro::Modular<double> (primes[i]) );
 				_crt_modulo *= primes[i];
 			}
 			double tmp;
@@ -112,7 +112,7 @@ namespace LinBox
 		{
 			_crt_modulo=1;
 			for (size_t i=0; i<_size; ++i){
-				_fields[i]  .assign( Modular<double> (primes[i]) );
+				_fields[i] = ( Givaro::Modular<double> (primes[i]) );
 				_crt_modulo *= primes[i];
 			}
 			double tmp;
@@ -143,11 +143,11 @@ namespace LinBox
 		size_t size() const
 		{return this->_size;}
 
-		const Modular<double>& getBase(size_t i) const
+		const Givaro::Modular<double>& getBase(size_t i) const
 		{ return this->_fields[i]; }
 
 		double getModulo(size_t i) const
-		{ return this->_fields[i].modulus;}
+		{ return this->_fields[i].characteristic();}
 
 
 		const integer& getCRTmodulo() const
@@ -157,7 +157,7 @@ namespace LinBox
 		{
 			c=1;
 			for (size_t i=0; i<_size; ++i){
-				c*=_fields[i].modulus;
+				c*=getModulo(i);
 			}
 			return c;
 		}
@@ -192,8 +192,8 @@ namespace LinBox
 		{
 			os << "multimod double (";
 			for (size_t i=0;i<_size-1;++i)
-				os<<integer(_fields[i].modulus)<<",";
-			os<<integer(_fields[_size-1].modulus)<<")\n";
+				os<<integer(getModulo(i))<<",";
+			os<<integer(getModulo(_size-1))<<")\n";
 			return os;
 		}
 
@@ -401,10 +401,15 @@ namespace LinBox
 			_field(F), _size(size), _seed(seed), _randiter(F._size)
 		{
 			for (size_t i=0;i< F._size;++i)
-				_randiter[i] = new Modular<double>::RandIter(F._fields[i],size,seed) ;
+				_randiter[i] = new Givaro::Modular<double>::RandIter(F._fields[i],seed) ;
 		}
 
-		~MultiModRandIter() {for  (size_t i=0;i< _randiter.size();++i) delete _randiter[i]; }
+		~MultiModRandIter()
+		{
+			for (size_t i=0;i< _randiter.size();++i) 
+				if (_randiter[i])
+					delete _randiter[i];
+		}
 
 		MultiModRandIter& operator= (const MultiModRandIter &R)
 		{
@@ -426,7 +431,7 @@ namespace LinBox
 		MultiModDouble        _field;
 		integer                _size;
 		integer                _seed;
-		std::vector<Modular<double>::RandIter*> _randiter;
+		std::vector<Givaro::Modular<double>::RandIter*> _randiter;
 
 	}; // end of class MultiModRandIter
 

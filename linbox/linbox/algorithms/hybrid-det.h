@@ -154,7 +154,7 @@ namespace LinBox
 							 const MyMethod                            &M)
 	{
 		//commentator().setReportStream(std::cout);
-		typedef Modular<double> myModular;
+		typedef Givaro::Modular<double> myModular;
 		typedef typename Blackbox::Field Integers;
 		typedef typename Integers::Element Integer_t;
 
@@ -194,7 +194,7 @@ namespace LinBox
 #endif
 		{
 			++genprime;
-			myModular D(*genprime);
+			myGivaro::Modular D(*genprime);
 			iteration.primes[early_counter] = *genprime;
 			myModular::Element r;
 			D.assign(r,D.zero);
@@ -205,7 +205,7 @@ namespace LinBox
 		while ( early_counter < myfactor && !cra.terminated() ) {
 			++genprime;
 			while (cra.noncoprime(*genprime)) ++genprime;
-			myModular D(*genprime);
+			myGivaro::Modular D(*genprime);
 			iteration.primes[early_counter] = *genprime;
 			// prime(p, early_counter);
 			myModular::Element r;
@@ -235,7 +235,7 @@ namespace LinBox
 		if (A.rowdim() < 50 ) {
 			while ( !cra.terminated() ) {
 				genprime.randomPrime(p);
-				myModular D(p);
+				myGivaro::Modular D(p);
 				iteration.primes[early_counter] = p;
 				//		prime(p, early_counter);
 				myModular::Element r;
@@ -296,12 +296,12 @@ namespace LinBox
 		iteration.Beta(beta);
 
 		//RandomPrime genprime2( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
-		EarlySingleCRA< Modular<double> > cra2(4UL);
+		EarlySingleCRA< Givaro::Modular<double> > cra2(4UL);
 		Integer_t k = 1;
 
 		early_counter = 0;
 		while ( early_counter < myfactor && !cra2.terminated() ) {
-			myModular D(iteration.primes[early_counter]);
+			myGivaro::Modular D(iteration.primes[early_counter]);
 			myModular::Element r;
 			D.assign(r,D.zero);
 			cra2.progress( D, iteration(r, D) );
@@ -333,11 +333,11 @@ namespace LinBox
 				//iteration.Moduli(moduli);
 				//iteration.Primes(primes);
 				k=1;
-				EarlySingleCRA< Modular<double> > cra3(4UL);
+				EarlySingleCRA< Givaro::Modular<double> > cra3(4UL);
 
 				early_counter = 0;
 				while ( (early_counter < myfactor) && (!cra3.terminated() )) {
-					myModular D(iteration.primes[early_counter]);
+					myGivaro::Modular D(iteration.primes[early_counter]);
 					myModular::Element r;
 					D.assign(r,D.zero);
 					cra3.progress( D, iteration(r, D));
@@ -360,7 +360,7 @@ namespace LinBox
 					while (!cra3.terminated()) {
 						++genprime;
 						while (cra3.noncoprime(*genprime)) ++genprime;
-						myModular D(*genprime);
+						myGivaro::Modular D(*genprime);
 						myModular::Element r;
 						D.assign(r,D.zero);
 						cra3.progress( D, iteration(r, D));
@@ -377,7 +377,7 @@ namespace LinBox
 				while (!cra2.terminated()) {
 					++genprime;
 					while (cra2.noncoprime(*genprime)) ++genprime;
-					myModular D(*genprime);
+					myGivaro::Modular D(*genprime);
 					myModular::Element r;
 					D.assign(r,D.zero);
 					cra2.progress( D, iteration(r, D));
@@ -392,7 +392,7 @@ namespace LinBox
 			while (!cra2.terminated()) {
 				++genprime;
 				while (cra2.noncoprime(*genprime)) ++genprime;
-				myModular D(*genprime);
+				myGivaro::Modular D(*genprime);
 				myModular::Element r;
 				D.assign(r,D.zero);
 				cra2.progress( D, iteration(r, D));
@@ -436,7 +436,7 @@ namespace LinBox
 	{
 
 		//commentator().setReportStream(std::cout);
-		typedef Modular<double> myModular;
+		typedef Givaro::Modular<double> myModular;
 		//typedef PID_integer Integers;
 		typedef typename Integers::Element Integer;
 
@@ -455,7 +455,7 @@ namespace LinBox
 
 		RandomPrime genprime( (Integer)p_size );
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "prime size: " << p_size << "\n";
-		ChineseRemainder< myModular > cra(3UL);
+		ChineseRemainder< myGivaro::Modular > cra(3UL);
 		IntegerModularDetReduced<SparseMatrix<Integers >,MyMethod> iteration(A, M, beta,myfactor);
 #if 0
 		if (A.rowdim() < 200 ) {
@@ -474,7 +474,7 @@ namespace LinBox
 		BT.start();
 
                 genprime.randomPrime(p);
-                myModular D(p);
+                myGivaro::Modular D(p);
                 iteration.primes[early_counter] = p;
                 myModular::Element r;
                 D.assign(r,D.zero);
@@ -484,7 +484,7 @@ namespace LinBox
 		while ( early_counter < myfactor && !cra.terminated() ) {
 			genprime.randomPrime(p);
 			while (cra.noncoprime(p)) genprime.randomPrime(p);
-			myModular D(p);
+			myGivaro::Modular D(p);
 			iteration.primes[early_counter] = p;
 			//          prime(p, early_counter);
 			myModular::Element r;
@@ -511,7 +511,7 @@ namespace LinBox
 		if (A.rowdim() < 50 ) {
 			while ( !cra.terminated() ) {
 				genprime.randomPrime(p);
-				myModular D(p);
+				myGivaro::Modular D(p);
 				iteration.primes[early_counter] = p;
 				//          prime(p, early_counter);
 				myModular::Element r;
@@ -567,12 +567,12 @@ namespace LinBox
 		iteration.Beta(beta);
 
 		//RandomPrime genprime2( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
-		ChineseRemainder< Modular<double> > cra2(3UL);
+		ChineseRemainder< Givaro::Modular<double> > cra2(3UL);
 		Integer k = 1;
 
 		early_counter = 0;
 		while ( early_counter < myfactor && !cra2.terminated() ) {
-			myModular D(iteration.primes[early_counter]);
+			myGivaro::Modular D(iteration.primes[early_counter]);
 			myModular::Element r;
 			D.assign(r,D.zero);
 			cra2.progress( D, iteration(r, D));
@@ -604,11 +604,11 @@ namespace LinBox
 				//iteration.Moduli(moduli);
 				//iteration.Primes(primes);
 				k=1;
-				ChineseRemainder< Modular<double> > cra3(3UL);
+				ChineseRemainder< Givaro::Modular<double> > cra3(3UL);
 
 				early_counter = 0;
 				while ( (early_counter < myfactor) && (!cra3.terminated() )) {
-					myModular D(iteration.primes[early_counter]);
+					myGivaro::Modular D(iteration.primes[early_counter]);
 					myModular::Element r;
 					D.assign(r,D.zero);
 					cra3.progress( D, iteration(r, D));
@@ -631,7 +631,7 @@ namespace LinBox
 					while (!cra3.terminated()) {
 						genprime.randomPrime(p);
 						while (cra3.noncoprime(p)) genprime.randomPrime(p);
-						myModular D(p);
+						myGivaro::Modular D(p);
 						myModular::Element r;
 						D.assign(r,D.zero);
 						cra3.progress( D, iteration(r, D));
@@ -648,7 +648,7 @@ namespace LinBox
 				while (!cra2.terminated()) {
 					genprime.randomPrime(p);
 					while (cra2.noncoprime(p)) genprime.randomPrime(p);
-					myModular D(p);
+					myGivaro::Modular D(p);
 					myModular::Element r;
 					D.assign(r,D.zero);
 					cra2.progress( D, iteration(r, D));
@@ -663,7 +663,7 @@ namespace LinBox
 			while (!cra2.terminated()) {
 				genprime.randomPrime(p);
 				while (cra2.noncoprime(p)) genprime.randomPrime(p);
-				myModular D(p);
+				myGivaro::Modular D(p);
 				myModular::Element r;
 				D.assign(r,D.zero);
 				cra2.progress( D, iteration(r, D));

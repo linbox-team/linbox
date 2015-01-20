@@ -314,7 +314,7 @@ namespace LinBox
 
 		/** Write a description of the field */
 		// Oustide of class definition so write(ostream&,const Element&) from
-		// UnparametricField still works.
+		// Givaro::UnparametricRing still works.
 		std::ostream& write( std::ostream& os ) const
 		{
 			return os << "Polynomial ring using NTL::ZZ_pX";

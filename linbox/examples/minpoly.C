@@ -100,7 +100,7 @@ int main (int argc, char **argv)
 
 	}
 	else{
-		typedef Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 		double q = atof(argv[2]);
 		Field F(q);
 		SparseMatrix<Field> B (F);

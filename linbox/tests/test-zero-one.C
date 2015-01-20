@@ -56,9 +56,9 @@ int main(int argc, char **argv)
 
 	parseArguments(argc, argv, args);
 
-	typedef LinBox::ZeroOne<LinBox::Modular<uint32_t> > Matrix;
+	typedef LinBox::ZeroOne<Givaro::Modular<uint32_t> > Matrix;
 
-	LinBox::Modular<uint32_t> afield(prime);
+	Givaro::Modular<uint32_t> afield(prime);
 
 	rows = new size_t[3 * n];
 	cols = new size_t[3 * n];

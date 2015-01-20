@@ -43,7 +43,7 @@ using namespace std;
 
 typedef PID_integer Integers;
 typedef Integers::Element Integer;
-typedef Modular<double > Field;
+typedef Givaro::Modular<double > Field;
 typedef Field::Element Element;
 typedef Vector<Integers>::Dense DVector;
 typedef GMPRationalField Rationals;

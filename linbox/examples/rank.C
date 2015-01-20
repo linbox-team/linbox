@@ -93,12 +93,12 @@ int main (int argc, char **argv)
 #if 0
 		// for prime greater than wordsize:
 		integer q (argv[2]);
-		typedef Modular<integer> Field;
+		typedef Givaro::Modular<integer> Field;
 #endif
 #if 0
 		//to use doubles, prime < 2^{23}
 		double q = atof(argv[2]);
-		typedef Modular<double> Field;
+		typedef Givaro::Modular<double> Field;
 #endif
 		//to use ints, prime < 2^{31}
 		int32_t q = atoi(argv[2]);
@@ -106,7 +106,7 @@ int main (int argc, char **argv)
                         std::cerr << "second argument should be a non-zero integer or missing\n";
                         return -1;
                 }
-		typedef Modular<int32_t> Field;
+		typedef Givaro::Modular<int32_t> Field;
 
 		Field F(q);
 		if (q > F.getMaxModulus()) {

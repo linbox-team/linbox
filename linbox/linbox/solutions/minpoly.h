@@ -245,10 +245,10 @@ namespace LinBox
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 		std::vector<integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
 #ifdef __LINBOX_HAVE_MPI
-		MPIChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(3UL, c);
+		MPIChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(3UL, c);
 		cra(PP, iteration, genprime);
 #else
-		ChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(3UL);
+		ChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(3UL);
 		cra(PP, iteration, genprime);
 #endif
 		size_t i =0;
@@ -272,7 +272,7 @@ namespace LinBox
 		commentator().start ("Rational Minpoly", "Rminpoly");
 
 		RandomPrimeIterator genprime((uint32_t)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
-		RationalRemainder2< VarPrecEarlyMultipCRA<Modular<double> > > rra(3UL);
+		RationalRemainder2< VarPrecEarlyMultipCRA<Givaro::Modular<double> > > rra(3UL);
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 
 		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04

@@ -21,7 +21,7 @@
 
 pkgincludesubdir=$(pkgincludedir)/field
 
-SUBDIRS=NTL Givaro Modular
+SUBDIRS=NTL Modular
 
 BASIC_HDRS =            \
     field-interface.h   \
@@ -34,7 +34,6 @@ BASIC_HDRS =            \
     param-fuzzy.h       \
     gmp-rational.h      \
     modular.h           \
-    modular-balanced.h  \
     gf2.h               \
     gf2.inl             \
     hom.h               \
@@ -42,8 +41,6 @@ BASIC_HDRS =            \
     PIR-modular-int32.h \
     local2_32.h         \
     PID-integer.h       \
-    PID-double.h        \
-    givaro.h			\
     block-ring.h
 
 NTL_HDRS =              \
@@ -62,6 +59,5 @@ pkgincludesub_HEADERS =     \
 EXTRA_DIST =            \
     $(NTL_HDRS)         \
     field.doxy          \
-    modular.doxy        \
     integers.doxy       \
     ntl.doxy

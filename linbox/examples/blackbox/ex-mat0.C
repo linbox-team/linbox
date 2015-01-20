@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
         char* in_file = argv[1];
         char* out_file = argv[2];
 
-        typedef Modular<uint32_t>  Field;
+        typedef Givaro::Modular<uint32_t>  Field;
 	typedef Field::Element Element;
 	typedef Field::RandIter RandIter;
 	typedef std::list< pair<size_t, Element> > Row;
