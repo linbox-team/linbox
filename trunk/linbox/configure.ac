@@ -198,15 +198,6 @@ AC_C_BIGENDIAN(
   [AC_DEFINE(HAVE_LITTLE_ENDIAN, 1, [Define that architecture uses little endian storage])],
   [])
 
-# Create some useful data types of fixed, known lengths
-
-
-
-# AC_DEFINE_UNQUOTED(INT8, $LINBOX_INT8, Canonical 8-bit data type)
-# AC_DEFINE_UNQUOTED(INT16, $LINBOX_INT16, Canonical 16-bit data type)
-# AC_DEFINE_UNQUOTED(INT32, $LINBOX_INT32, Canonical 32-bit data type)
-# AC_DEFINE_UNQUOTED(INT64, $LINBOX_INT64, Canonical 64-bit data type)
-
 echo "-----------------------------------------------"
 # Feature checks
 LB_MISC
@@ -216,58 +207,6 @@ LB_DRIVER
 echo "-----------------------------------------------"
 
 # Now getting GMP and Givaro from FFLAS-FFPACK - AB 2014-12-10
-#LB_CHECK_GMP(,,[
-#echo '*******************************************************************************'
-#echo ' ERROR: GMP not found!'
-#echo
-#echo ' GMP library compiled with --enable-cxx is required for this library to compile.'
-#echo ' Please make sure GMP is installed and specify its location with the option'
-#echo ' --with-gmp=<prefix> when running configure.'
-#echo '*******************************************************************************'
-#exit 1
-#])
-
-LB_CHECK_IML
-LB_CHECK_M4RI
-LB_CHECK_M4RIE
-LB_CHECK_MPFR
-# we nedd mpfr next :
-LB_CHECK_FPLLL
-LB_CHECK_FLINT
-
-LB_CHECK_NTL
-
-# Getting Givaro + GMP from FFLAS-FFPACK - AB 2014-12-12
-#LB_CHECK_GIVARO(,,[
-#echo '*******************************************************************************'
-#echo ' ERROR: GIVARO not found!'
-#echo
-#echo ' GIVARO library is required for this library to compile.'
-#echo ' Please make sure GIVARO is installed and specify its location with the'
-#echo ' option --with-givaro=<prefix> when running configure.'
-#echo '*******************************************************************************'
-#exit 1
-#])
-
-
-LB_CHECK_SACLIB
-LB_CHECK_LIDIA
-LB_CHECK_MAPLE
-LB_CHECK_SAGE
-#LB_CHECK_ATLAS
-
-# LB_CHECK_BLAS(,,[
-# echo ''
-# echo '*******************************************************************************'
-# echo ' ERROR: BLAS not found!'
-# echo
-# echo ' BLAS routines are required for this library to compile. Please'
-# echo ' make sure BLAS are installed and specify its location with the option'
-# echo ' --with-blas=<lib> when running configure.'
-# echo '*******************************************************************************'
-# exit 1
-# ])
-
 
 LB_CHECK_FFLAS_FFPACK(,,[
 echo ''
@@ -287,6 +226,20 @@ LB_CHECK_LAPACK
 # AC_MSG_RESULT($BLAS_LIBS)
 # AC_MSG_RESULT($BLAS_CFLAGS)
 
+LB_CHECK_IML
+LB_CHECK_M4RI
+LB_CHECK_M4RIE
+LB_CHECK_MPFR
+# we nedd mpfr next :
+LB_CHECK_FPLLL
+LB_CHECK_FLINT
+
+LB_CHECK_NTL
+
+LB_CHECK_SACLIB
+LB_CHECK_LIDIA
+LB_CHECK_MAPLE
+LB_CHECK_SAGE
 
 LB_CHECK_EXPAT
 
