@@ -121,10 +121,10 @@ namespace LinBox
 	 * Define a parameterized class to easily handle Givaro::UnparametricRing<NTL::GF2E> field
 	 */
 
-	class NTL_GF2E :  public NTL_GF2E_Initialiser, public FFPACK::UnparametricOperations<NTL::GF2E> {
+	class NTL_GF2E :  public NTL_GF2E_Initialiser, public Givaro::UnparametricOperations<NTL::GF2E> {
 	public:
 		typedef NTL::GF2E Element ;
-		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+		typedef Givaro::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
 		const Element zero,one,mOne ;

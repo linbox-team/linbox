@@ -133,10 +133,10 @@ namespace LinBox
 	 * @brief Wrapper of ZZ_pE from NTL
 	 * Define a parameterized class to handle easily Givaro::UnparametricRing<NTL::ZZ_pE> field
 	 */
-	class NTL_ZZ_pE : public NTL_ZZ_pE_Initialiser, public UnparametricOperations<NTL::ZZ_pE> {
+	class NTL_ZZ_pE : public NTL_ZZ_pE_Initialiser, public Givaro::UnparametricOperations<NTL::ZZ_pE> {
 	public:
 		typedef NTL::ZZ_pE Element ;
-		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+		typedef Givaro::UnparametricOperations<Element> Father_t ;
 
 		const Element zero,one,mOne ;
 

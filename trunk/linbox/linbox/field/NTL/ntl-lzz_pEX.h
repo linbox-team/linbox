@@ -75,10 +75,10 @@ namespace LinBox
 	 * Coeff (type), CoeffField (type), getCoeffField, setCoeff, getCoeff,
 	 * leadCoeff, deg
 	 */
-	class NTL_zz_pEX :  public NTL_zz_pEX_Initialiser, public FFPACK::UnparametricOperations<NTL::zz_pEX> {
+	class NTL_zz_pEX :  public NTL_zz_pEX_Initialiser, public Givaro::UnparametricOperations<NTL::zz_pEX> {
 	public:
 		typedef NTL::zz_pEX Element ;
-		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+		typedef Givaro::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
 
