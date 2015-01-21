@@ -117,10 +117,10 @@ namespace LinBox
 	 */
 
 	/// \brief for large cardinality, small prime.  \ingroup field
-	class NTL_zz_pE : public NTL_zz_pE_Initialiser, public FFPACK::UnparametricOperations<NTL::zz_pE> {
+	class NTL_zz_pE : public NTL_zz_pE_Initialiser, public Givaro::UnparametricOperations<NTL::zz_pE> {
 	public:
 		typedef NTL::zz_pE Element ;
-		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+		typedef Givaro::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
 		const Element zero,one,mOne ;

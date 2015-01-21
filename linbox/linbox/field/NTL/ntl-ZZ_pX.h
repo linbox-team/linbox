@@ -75,10 +75,10 @@ namespace LinBox
 	 * Coeff (type), CoeffField (type), getCoeffField, setCoeff, getCoeff,
 	 * leadCoeff, deg
 	 */
-	class NTL_ZZ_pX : public NTL_ZZ_pX_Initialiser, public FFPACK::UnparametricOperations<NTL::ZZ_pX> {
+	class NTL_ZZ_pX : public NTL_ZZ_pX_Initialiser, public Givaro::UnparametricOperations<NTL::ZZ_pX> {
 	public:
 		typedef NTL::ZZ_pX Element ;
-		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+		typedef Givaro::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
 		const Element zero,one,mOne ;
@@ -320,7 +320,7 @@ namespace LinBox
 			return os << "Polynomial ring using NTL::ZZ_pX";
 		}
 
-		std::ostream &write (std::ostream &os, const Element &x) const { return FFPACK::UnparametricOperations<Element>::write(os,x); }
+		std::ostream &write (std::ostream &os, const Element &x) const { return Givaro::UnparametricOperations<Element>::write(os,x); }
 
 
 	private:

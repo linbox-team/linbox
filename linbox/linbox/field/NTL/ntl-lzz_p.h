@@ -128,9 +128,9 @@ namespace LinBox
 	 * Uses nice trick for mod p via floating point.
 	 \ingroup field
 	 */
-	struct NTL_zz_p: public NTL_zz_p_Initialiser, public FFPACK::UnparametricOperations<NTL::zz_p> {
+	struct NTL_zz_p: public NTL_zz_p_Initialiser, public Givaro::UnparametricOperations<NTL::zz_p> {
 		typedef NTL::zz_p Element ;
-		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+		typedef Givaro::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<NTL::zz_p> RandIter;
 
 		const Element zero,one,mOne ;
@@ -307,7 +307,7 @@ namespace LinBox
 			<< Element::modulus();
 		}
 
-		std::ostream &write (std::ostream &os, const Element &x) const { return FFPACK::UnparametricOperations<Element>::write(os,x); }
+		std::ostream &write (std::ostream &os, const Element &x) const { return Givaro::UnparametricOperations<Element>::write(os,x); }
 	};
 
 	template <class Ring>

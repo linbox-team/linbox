@@ -166,9 +166,9 @@ namespace LinBox
 	 * Uses nice mod p via floating pt trick.
 	 *
 	 */
-	struct NTL_ZZ_p: public NTL_ZZ_p_Initialiser, public FFPACK::UnparametricOperations<NTL::ZZ_p> {
+	struct NTL_ZZ_p: public NTL_ZZ_p_Initialiser, public Givaro::UnparametricOperations<NTL::ZZ_p> {
 		typedef NTL::ZZ_p Element ;
-		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+		typedef Givaro::UnparametricOperations<Element> Father_t ;
 
 		typedef UnparametricRandIter<Element> RandIter;
 
@@ -435,7 +435,7 @@ namespace LinBox
 		 */
 		std::ostream &write (std::ostream &os, const Element &x) const
 		{
-		   	return FFPACK::UnparametricOperations<Element>::write(os,x);
+		   	return Givaro::UnparametricOperations<Element>::write(os,x);
 		}
 	};
 

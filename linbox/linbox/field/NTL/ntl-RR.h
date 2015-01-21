@@ -139,9 +139,9 @@ namespace LinBox
 	//@{
 
 
-	struct NTL_RR: public NTL_RR_Initialiser, public FFPACK::UnparametricOperations<NTL::RR> {
+	struct NTL_RR: public NTL_RR_Initialiser, public Givaro::UnparametricOperations<NTL::RR> {
 		typedef NTL::RR Element ;
-		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+		typedef Givaro::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
 		const Element zero,one,mOne ;
@@ -239,7 +239,7 @@ namespace LinBox
 		}
 
 		std::ostream &write (std::ostream &os, const Element &x) const {
-			return FFPACK::UnparametricOperations<Element>::write(os,x);
+			return Givaro::UnparametricOperations<Element>::write(os,x);
 		}
 
 		Element& init (Element& x) const
