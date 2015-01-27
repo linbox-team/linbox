@@ -10,7 +10,7 @@
 #include "linbox/algorithms/block-coppersmith-domain.h"
 
 using namespace LinBox;
-using namespace std; 
+using namespace std;
 
 template<typename Field, typename Mat>
 string check_sigma(const Field& F, const Mat& sigma,  Mat& serie, size_t ord){
