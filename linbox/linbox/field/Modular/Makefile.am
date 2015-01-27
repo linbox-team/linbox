@@ -19,7 +19,7 @@
 
 
 
-pkgincludesubdir=$(pkgincludedir)/field/Givaro::Modular
+pkgincludesubdir=$(pkgincludedir)/field/Modular
 
 BASIC_HDRS =            \
     modular-unsigned.h  \
