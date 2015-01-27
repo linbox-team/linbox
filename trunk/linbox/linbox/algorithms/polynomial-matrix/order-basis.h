@@ -408,7 +408,7 @@ namespace LinBox {
 } // end of namespace LinBox
 
 // Local Variables:
-// mode: C++
+// mode: C++ 
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
