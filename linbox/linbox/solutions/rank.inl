@@ -36,6 +36,11 @@
 namespace LinBox
 {
 
+	template<>
+	struct ClassifyRing<Givaro::UnparametricRing<Givaro::Rational> > {
+		typedef RingCategories::RationalTag categoryTag;
+	};
+
 
 	// error hanlder for rational domain
 	template <class Blackbox, class Method>
@@ -456,14 +461,19 @@ namespace LinBox
 				    const MyMethod                    &M)
 	{
 		commentator().start ("Integer Rank", "iirank");
-		typedef Givaro::Modular<double> Field;
+		typedef Givaro::Modular<double> projField;
 		integer mmodulus;
-		FieldTraits<Field>::maxModulus(mmodulus);
+		FieldTraits<projField>::maxModulus(mmodulus);
 		RandomPrimeIterator genprime( (unsigned) floor (log((double)mmodulus) ) );
 		++genprime;
-		typedef typename Blackbox::template rebind< Field >::other FBlackbox;
-		Field Fp(*genprime);
+		typedef typename Blackbox::template rebind< projField >::other FBlackbox;
+		const projField Fp(*genprime);
 		FBlackbox Ap(A, Fp );
+
+// 		FBlackbox Ap(Fp, A.rowdim(), A.coldim() );
+//         typename Blackbox::template rebind<projField>()(Ap,A);
+        
+
 		commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Integer Rank is done modulo " << *genprime << std::endl;
 
 		rank(r, Ap, RingCategories::ModularTag(), M);
@@ -506,7 +516,7 @@ namespace LinBox
 				unsigned long extend = (unsigned long)Givaro::FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 				if (extend > 1) {
 					commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
-					Givaro::GFq EF( (unsigned long)c, extend);
+					const Givaro::GFq EF( (unsigned long)c, extend);
 					typedef typename Blackbox::template rebind< Givaro::GFq >::other FBlackbox;
 					FBlackbox Ap(A, EF);
 					rank(r, Ap, tag, Method::Wiedemann(m));
@@ -558,7 +568,7 @@ namespace LinBox { /*  rankin */
 		RandomPrimeIterator genprime( (unsigned int) floor (log((double)mmodulus) ) );
 		++genprime;
 		typedef typename Blackbox::template rebind< Field >::other FBlackbox;
-		Field Fp(*genprime);
+		const Field Fp(*genprime);
 		FBlackbox Ap(A, Fp);
 		commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << *genprime << std::endl;
 		rankin(r, Ap, RingCategories::ModularTag(), M);
