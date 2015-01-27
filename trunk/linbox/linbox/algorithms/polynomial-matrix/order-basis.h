@@ -199,9 +199,9 @@ namespace LinBox {
                                         _BMD.mulin_right(Bperm, delta);
                                 }
 
-                                std::cout<<sigma<<std::endl;
-                                delta.write(std::cout,Tag::FileFormat::Plain);
-                                std::cout<<std::endl;
+                                //std::cout<<sigma<<std::endl;
+                                //delta.write(std::cout,Tag::FileFormat::Plain);
+                                //std::cout<<std::endl;
 
                                 // Compute LQUP of Discrepancy
                                 BlasMatrix<Field> delta_copy(delta);

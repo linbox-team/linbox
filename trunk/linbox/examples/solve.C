@@ -88,7 +88,7 @@ int main (int argc, char **argv)
 
 
 	if (ModComp) {
-
+                cout<<"Computation is done over Z/("<<atoi(argv[ModComp])<<")"<<endl;
 		typedef Givaro::Modular<double> Field;
 		double q = atof(argv[ModComp]);
 		typedef BlasVector<Field> DenseVector ;
@@ -191,7 +191,7 @@ int main (int argc, char **argv)
 
 	}
 	else {
-
+                cout<<"Computation is done over Q"<<endl;
 		PID_integer ZZ;
 		typedef BlasVector<PID_integer> DenseVector ;
 		MatrixStream< PID_integer > ms( ZZ, input );
@@ -224,19 +224,6 @@ int main (int argc, char **argv)
 
 		Timer chrono;
 
-		// Wiedemann
-		std::cout << "Wiedemann" << std::endl;
-		chrono.start();
-		solve (X, d, A, B, Method::Wiedemann());
-		chrono.stop();
-
-		std::cout << "(Wiedemann) Solution is [";
-		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
-			ZZ.write(cout, *it) << " ";
-		std::cout << "] / ";
-		ZZ.write(std::cout, d) << std::endl;
-		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
-
 		// BlasElimination
                 std::cout << "BlasElimination" << std::endl;
                 chrono.start();
@@ -263,6 +250,21 @@ int main (int argc, char **argv)
 		ZZ.write(std::cout, d)<< std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
+                		// Wiedemann
+		std::cout << "Wiedemann" << std::endl;
+		chrono.start();
+		solve (X, d, A, B, Method::Wiedemann());
+		chrono.stop();
+
+		std::cout << "(Wiedemann) Solution is [";
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
+			ZZ.write(cout, *it) << " ";
+		std::cout << "] / ";
+		ZZ.write(std::cout, d) << std::endl;
+		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+
+
+                
 #if 0
 		// Lanczos
 		std::cout << "Lanczos" << std::endl;
