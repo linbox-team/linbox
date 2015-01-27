@@ -191,7 +191,8 @@ VD.permute<V,PI>(v1,pb,pe)
 		// VectorDomain(): DotProductDomain<Field>() { /*std::cerr << "VD def cstor" << std::endl;*/ }
 		VectorDomain():DotProductDomain<Field>() {}
 
-		void init(const Field& F) { this->_field = &F; }
+                using VectorDomainBase<Field>::init;
+		//void init(const Field& F) { this->_field = &F; }
 
 		/** Copy constructor.
 		 * Constructs VectorDomain object by copying the domain.
