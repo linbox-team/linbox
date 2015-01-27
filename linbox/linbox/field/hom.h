@@ -291,6 +291,46 @@ namespace LinBox
 	}; // end Hom
 
 
+	template <class _Target>
+	class Hom<Givaro::UnparametricRing<Givaro::Rational>, _Target> {
+
+	public:
+		typedef Givaro::UnparametricRing<Givaro::Rational> Source;
+		typedef _Target Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
+
+		Hom(const Source& S, const Target& T) :
+			_source (S), _target(T)
+		{ }
+		Elt& image(Elt& t, const SrcElt& s) {
+			if (s.deno() == 1) {
+				return _target.init(t,s.nume());
+			}
+			else if (s.nume() == 1) {
+				_target.init(t,s.deno());
+				return _target.invin(t);
+			}
+			else {
+				_target. init (tmp, s.deno());
+				_target. init (t, s.nume());
+				return _target. divin (t, tmp);
+			}
+		}
+		SrcElt& preimage(SrcElt& s, const Elt& t) {
+			_target. convert (s.nume(), t);
+			_source. init (s, s.nume());
+			return s;
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	protected:
+		Elt tmp;
+		Source _source;
+		Target _target;
+	}; // end Hom
+
 #if 0
 #ifdef __FIELD_MODULAR_H
 	// Dan Roche mapping from Givaro::UnparametricRing to Givaro::Modular - for integer
