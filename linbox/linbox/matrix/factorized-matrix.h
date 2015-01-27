@@ -31,7 +31,7 @@
 
 #include <vector>
 
-#include <fflas-ffpack/ffpack/ffpack.h>
+#include <fflas-ffpack/fflas-ffpack.h>
 
 #include "linbox/matrix/DenseMatrix/blas-matrix.h"
 

@@ -49,8 +49,8 @@ namespace LinBox{
 		typedef _Field Field;
 		typedef typename Field::Element   Element;
 		typedef BlasMatrix<Field>          Matrix;
-		typedef typename vector<Element>::iterator  Iterator;
-		typedef typename vector<Element>::const_iterator  ConstIterator;
+		typedef typename std::vector<Element>::iterator  Iterator;
+		typedef typename std::vector<Element>::const_iterator  ConstIterator;
 		//typedef vector<Element>        Polynomial;
 		typedef Subvector<Iterator,ConstIterator>   Polynomial;
 		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,_Field>  Self_t;
@@ -201,9 +201,9 @@ namespace LinBox{
 		size_t size()   const {return _size;}
 		const Field& field()  const {return *_fld;}
 
-		ostream& write(ostream& os) const { return write(os,0,_size-1);}
+		std::ostream& write(std::ostream& os) const { return write(os,0,_size-1);}
 
-                ostream& write(ostream& os, size_t deg_min, size_t deg_max) const {
+                std::ostream& write(std::ostream& os, size_t deg_min, size_t deg_max) const {
                         integer c;
                         int wid,b;
                         field().cardinality (c);
@@ -236,8 +236,8 @@ namespace LinBox{
 		const Element* getPointer() const {return &_rep[0];}
 
 	private:
-		vector<Polynomial> _repview;
-		vector<Element>    _rep;
+		std::vector<Polynomial> _repview;
+		std::vector<Element>    _rep;
 		size_t             _row;
 		size_t             _col;
 		size_t            _size;
@@ -251,7 +251,7 @@ namespace LinBox{
 		typedef _Field Field;
 		typedef typename Field::Element   Element;
 		typedef BlasMatrix<Field>         Matrix;
-		typedef vector<Element>       Polynomial;
+		typedef std::vector<Element>       Polynomial;
 		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,_Field>  Self_t;
 		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,_Field> Other_t;
 		typedef Matrix value_type;
@@ -396,9 +396,9 @@ namespace LinBox{
 		inline size_t size()   const {return _size;}
 		inline const Field& field()  const {return *_fld;}
 
-		ostream& write(ostream& os) const { return write(os,0,_size-1);}
+		std::ostream& write(std::ostream& os) const { return write(os,0,_size-1);}
 
-                ostream& write(ostream& os, size_t deg_min, size_t deg_max) const {
+                std::ostream& write(std::ostream& os, size_t deg_min, size_t deg_max) const {
                         integer c;
                         int wid,b;
                         field().cardinality (c);
@@ -431,11 +431,11 @@ namespace LinBox{
                 }
 
 		// NEED FOR YUHASZ
-		typedef typename vector<Matrix>::const_iterator const_iterator;
+		typedef typename std::vector<Matrix>::const_iterator const_iterator;
 		const_iterator begin() const {return _rep.begin();}
 
 	private:
-		vector<Matrix>     _rep;
+		std::vector<Matrix>     _rep;
 		size_t             _row;
 		size_t             _col;
 		size_t            _size;
@@ -443,7 +443,7 @@ namespace LinBox{
 	};
 
 	template<typename _Field, size_t T, size_t S>
-	ostream& operator<<(ostream& os, const PolynomialMatrix<T,S,_Field>& P) {
+	std::ostream& operator<<(std::ostream& os, const PolynomialMatrix<T,S,_Field>& P) {
 		return P.write(os);
 	}
 
@@ -455,7 +455,7 @@ namespace LinBox{
 		typedef _Field Field;
 		typedef typename Field::Element   Element;
 		typedef BlasMatrix<Field>          Matrix;
-		typedef vector<Element>        Polynomial;
+		typedef std::vector<Element>        Polynomial;
 
 		PolynomialMatrix() {}
 
@@ -520,7 +520,7 @@ namespace LinBox{
 		inline view       at(size_t i, size_t j)      {return view(*this,i,j);}
 		inline const_view at(size_t i, size_t j)const {return const_view(*this,i,j);}
 
-		ostream& write(ostream& os) const { return _ptr->write(os,_shift,_shift+_size-1);}
+		std::ostream& write(std::ostream& os) const { return _ptr->write(os,_shift,_shift+_size-1);}
 
 		friend class  PolynomialMatrix<PMType::matfirst,PMStorage::const_view,Field>;
 
@@ -538,7 +538,7 @@ namespace LinBox{
 		typedef _Field Field;
 		typedef typename Field::Element   Element;
 		typedef BlasMatrix<Field>          Matrix;
-		typedef vector<Element>        Polynomial;
+		typedef std::vector<Element>        Polynomial;
 
 		PolynomialMatrix() {}
 
@@ -589,7 +589,7 @@ namespace LinBox{
 		typedef PolynomialMatrix<PMType::matfirst,PMStorage::const_view,Field> const_view;
 
 		inline const_view at(size_t i, size_t j)const {return const_view(*this,i,j);}
-		ostream& write(ostream& os) const { return _ptr->write(os,_shift,_shift+_size-1);}
+		std::ostream& write(std::ostream& os) const { return _ptr->write(os,_shift,_shift+_size-1);}
 
 	private:
 		const PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field>* _ptr;
