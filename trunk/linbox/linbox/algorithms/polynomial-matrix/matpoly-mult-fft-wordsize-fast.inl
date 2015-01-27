@@ -184,11 +184,11 @@ namespace LinBox {
 				if (smallLeft)
 					for (size_t j=0;j<a2.rowdim()*a2.coldim();j++)
 						for (size_t i=0;i<hdeg/2;i++)
-							swap(a2.ref(j,i),a2.ref(j,hdeg-1-i));
+							std::swap(a2.ref(j,i),a2.ref(j,hdeg-1-i));
 				else
 					for (size_t j=0;j<b2.rowdim()*b2.coldim();j++)
 						for (size_t i=0;i<hdeg/2;i++)
-							swap(b2.ref(j,i),b2.ref(j,hdeg-1-i));
+							std::swap(b2.ref(j,i),b2.ref(j,hdeg-1-i));
 
 				midproduct_fft (lpts,c2, a2, b2, smallLeft);
 				c.copy(c2,0,c.size()-1);

@@ -61,8 +61,8 @@ namespace LinBox {
 		uint64_t                    _I;
 		double                   _pinv;
 		Element                     _w;
-		vector<Element>   pow_w;
-		vector<Element>  pow_wp; // Precomputations in shoup
+		std::vector<Element>   pow_w;
+		std::vector<Element>  pow_wp; // Precomputations in shoup
 		//   pow_w = table of roots of unity. If w = primitive K-th root, then the table is:
 		//           1, w, w^2, ..., w^{K/2-1},
 		//           1, w^2, w^4, ..., w^{K/2-2},

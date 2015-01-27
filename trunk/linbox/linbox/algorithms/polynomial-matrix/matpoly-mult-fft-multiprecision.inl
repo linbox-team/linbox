@@ -159,8 +159,8 @@ namespace LinBox{
 			RNS.init(1, n_tb, t_b_mod, n_tb, b.getPointer(), n_tb, maxB);
 			FFT_PROFILING(2,"reduction mod pi of input matrices");
 
-			vector<MatrixP_F*> c_i (num_primes);
-			vector<ModField> f(num_primes,ModField(1));
+			std::vector<MatrixP_F*> c_i (num_primes);
+			std::vector<ModField> f(num_primes,ModField(1));
 			for (size_t l=0;l<num_primes;l++)
 				f[l]=ModField(RNS._basis[l]);
 #ifdef HAVE_OPENMP
@@ -277,7 +277,7 @@ namespace LinBox{
 			RNS.init(1, n_tb, t_b_mod, n_tb, b.getPointer(), n_tb, maxB);
 			FFT_PROFILING(2,"reduction mod pi of input matrices");
 
-			vector<MatrixP_F> c_i (num_primes);
+			std::vector<MatrixP_F> c_i (num_primes);
 
 			for (size_t l=0;l<num_primes;l++){
 				FFT_PROFILE_START;
