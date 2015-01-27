@@ -534,13 +534,14 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator().start ("Padic Integer Blas-based Solving", "solving");
+		commentator().start ("Padic Integer Blas-based Solving ICI", "solving");
 
 		typedef Givaro::Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrimeIterator genprime((unsigned int)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		RationalSolver<Ring, Field, RandomPrimeIterator, DixonTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
+
 
 		// if singularity unknown and matrix is square, we try nonsingular solver
 		switch ( m.singular() ) {
@@ -637,7 +638,7 @@ namespace LinBox
 		RandomPrimeIterator genprime((unsigned int) (26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		RationalSolver<Ring, Field, RandomPrimeIterator, SparseEliminationTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
-
+                cout<<"DEBUG 0"<<endl;
 		// if singularity unknown and matrix is square, we try nonsingular solver
 		switch ( m.singular() ) {
 		case Specifier::SINGULARITY_UNKNOWN:
@@ -879,7 +880,9 @@ namespace LinBox
 		      const RingCategories::IntegerTag & tag,
 		      const MyMethod& M)
 	{
-		return solveCRA(x,d,A,b,tag,M);
+                Method::Dixon mDixon(M);
+                return solve(x,d,A,b,tag,mDixon);
+		//return solveCRA(x,d,A,b,tag,M);
 	}
 
 
@@ -1004,6 +1007,7 @@ namespace LinBox
 			 const RingCategories::IntegerTag & tag,
 			 const MyMethod& M)
 	{
+                cout<<"SOLVE 1"<<endl;
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
@@ -1028,6 +1032,7 @@ namespace LinBox
 			 const RingCategories::RationalTag & tag,
 			 const MethodTraits& m)
 	{
+                cout<<"SOLVE 2"<<endl;
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 		commentator().start ("Rational CRA Solve", "Rsolve");
@@ -1054,6 +1059,7 @@ namespace LinBox
 			 const RingCategories::RationalTag & tag,
 			 const MethodTraits& m)
 	{
+                cout<<"SOLVE 3"<<endl;
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 		commentator().start ("Rational CRA Solve", "Rsolve");

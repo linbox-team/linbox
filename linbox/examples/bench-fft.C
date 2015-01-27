@@ -186,7 +186,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		FFT_transform<Field> MulDom(fld,lpts);
 		typedef FFT_transform<Field> FFT_t; 
 		typedef vector<Element>  Vect;
-
+#ifdef __ALL_FFT
 		// check 2x2 		
 		DFT_performance(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative2x2<Vect>,lpts, x,     "DIF_Harvey_mod2p_iterative2x2");
 		// check 3x3 		
@@ -199,9 +199,11 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		// check 8x1 AVX		
 		DFT_performance(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative8x1_AVX<Vect>,lpts, x, "DIF_Harvey_mod2p_iterative8x1_AVX");
 #endif
+#endif
 		// check Harvey SSE		
 		DFT_performance(MulDom,&FFT_t::template FFT_DIF_Harvey_SSE<Vect>,lpts, x, "DIF_Harvey_SSE");
 		cout<<"---------------------------------------------------------------"<<endl;
+#ifdef __ALL_FFT
 		// check 2x2 		
 		DFT_performance(MulDom,&FFT_t::template FFT_DIT_Harvey_mod4p_iterative2x2<Vect>,lpts, x,     "DIT_Harvey_mod4p_iterative2x2");
 		// check 3x3 		
@@ -211,6 +213,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 #ifdef __AVX2__
 		// check 8x1 AVX		
 		DFT_performance(MulDom,&FFT_t::template FFT_DIT_Harvey_mod4p_iterative8x1_AVX<Vect>,lpts, x, "DIT_Harvey_mod4p_iterative8x1_AVX");
+#endif
 #endif
 		// check Harvey SSE		
 		DFT_performance(MulDom,&FFT_t::template FFT_DIT_Harvey_SSE<Vect>,lpts, x, "DIT_Harvey_SSE");
