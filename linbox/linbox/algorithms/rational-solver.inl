@@ -808,7 +808,7 @@ namespace LinBox
 			if (trials != 0) chooseNewPrime();
 			++trials;
 #ifdef DEBUG_DIXON
-			std::cout << "_prime ICI: "<<_prime<<"\n";
+			std::cout << "_prime: "<<_prime<<"\n";
 #endif
 #ifdef RSTIMING
 			tSetup.start();
@@ -823,7 +823,6 @@ namespace LinBox
 			linbox_check(A.rowdim() == b.size());
 
 			LinBox::integer tmp;
-                        cout<<"ICI 0"<<endl;
 			Field F (_prime);
 			BlasMatrixDomain<Ring>  BMDI(_ring);
 			BlasMatrixDomain<Field> BMDF(F);
@@ -838,25 +837,21 @@ namespace LinBox
 			// such that
 			// - TAS_P . (A|b) . TAS_Q   has nonzero principal minors up to TAS_rank
 			// - TAS_Q permutes b to the (TAS_rank)th column of A iff the system is inconsistent mod p
-                        cout<<"ICI 1"<<endl;
 			BlasMatrix<Field>* TAS_factors = new BlasMatrix<Field>(F, A.coldim()+1, A.rowdim());
 			Hom<Ring, Field> Hmap(_ring, F);
 
 			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim());
 			MatrixHom::map(Ap, A);
-                        cout<<"ICI 2"<<endl;
 			for (size_t i=0;i<A.rowdim();++i)
 				for (size_t j=0;j<A.coldim();++j)
 					TAS_factors->setEntry(j,i, Ap.getEntry(i,j));
 
-                        cout<<"ICI 3"<<endl;
 			for (size_t i=0;i<A.rowdim();++i){
 				typename Field::Element tmpe;
 				F.init(tmpe);
 				F.init(tmpe,_ring.convert(tmp,b[i]));
 				TAS_factors->setEntry(A.coldim(),i, tmpe);
 			}
-                        cout<<"ICI 4"<<endl;
 #ifdef RSTIMING
 			tSetup.stop();
 			ttSetup += tSetup;
