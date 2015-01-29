@@ -35,6 +35,8 @@
 #include "linbox/field/NTL/ntl-ZZ.h"
 #endif //__LINBOX_HAVE_NTL
 
+#include "givaro/givrational.h"
+
 namespace LinBox
 {
 	/// Error object for attempt to establish a Hom that cannot exist.
