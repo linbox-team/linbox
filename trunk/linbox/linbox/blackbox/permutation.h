@@ -296,6 +296,7 @@ namespace LinBox
 
 	Storage& setStorage(const Storage& s) { return _indices=s; }
 	const Storage& getStorage() const { return _indices; }
+	Storage& getStorage() { return _indices; }
 
 	/// Generate next permutation in lex order.
 	void next()

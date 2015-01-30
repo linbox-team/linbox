@@ -1,9 +1,7 @@
 /* linbox/matrix/sparse-matrix.h
- * Copyright (C) 2001-2002 Bradford Hovinen
- *               1999-2001 William J Turner,
+ * Copyright (C) 1998-2015 Jean-Guillaume Dumas,
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
- *            Bradford Hovinen <hovinen@cis.udel.edu>
+ * Written by Jean-Guillaume.Dumas@imag.fr
  *
  * --------------------------------------------------------
  * 2003-01-11  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>

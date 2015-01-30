@@ -26,9 +26,9 @@
 #define __LINBOX_hom_H
 
 #include "linbox/linbox-config.h"
-#include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/util/error.h"
+#include <givaro/givrational.h>
 
 
 #ifdef __LINBOX_HAVE_NTL
@@ -292,6 +292,36 @@ namespace LinBox
 		Target _target;
 	}; // end Hom
 
+	// specialization for equal domain TYPES
+	// WARNING this FORBIDS same type homomorphism
+	template <>
+	class Hom<Givaro::UnparametricRing<Givaro::Rational>,Givaro::UnparametricRing<Givaro::Rational>> {
+
+	public:
+		typedef Givaro::UnparametricRing<Givaro::Rational> Source;
+		typedef Source Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
+
+		Hom(const Source& S, const Target& T) :
+			_source (S)
+		{}
+		Elt& image(Elt& t, const SrcElt& s)
+		{
+			_source. assign (t, s);
+			return t;
+		}
+		SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
+			_source. assign (s, t);
+			return s;
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _source;}
+
+	protected:
+		Source _source;
+	}; // end Hom
 
 	template <class _Target>
 	class Hom<Givaro::UnparametricRing<Givaro::Rational>, _Target> {
