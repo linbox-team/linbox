@@ -36,7 +36,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/integer.h"
-#include "linbox/field/modular.h"
+#include <givaro/modular.h>
 
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"

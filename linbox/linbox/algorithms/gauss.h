@@ -181,6 +181,16 @@ namespace LinBox
 				      unsigned long Ni,
 				      unsigned long Nj) const;
 
+		template <class Matrix, class Perm>
+		unsigned long& DenseQLUPin(unsigned long &rank,
+				      Element& determinant,
+				      std::deque<std::pair<size_t,size_t> > &invQ,
+				      Matrix	    &L,
+				      Matrix        &U,
+				      Perm	    &P,
+				      unsigned long Ni,
+				      unsigned long Nj) const;
+
 		template <class Matrix, class Perm, class Vector1, class Vector2>
 		Vector1& solve(Vector1& x, Vector1& w, unsigned long rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const;
 

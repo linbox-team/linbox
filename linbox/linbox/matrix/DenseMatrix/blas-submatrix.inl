@@ -1091,15 +1091,17 @@ namespace LinBox
 					if (c >0)
 						wid = (int) ceil (log ((double) c) / M_LN10);
 					else {
-						integer tmp;
-						size_t max=0;
-						ConstIterator it = Begin();
-						for (; it != End(); ++it){
-							_Mat.field().convert(tmp,*it);
-							if (tmp.bitsize() > max)
-								max= tmp.bitsize();
-						}
-						wid= (int) ceil ((double)max / M_LN10)+1;
+// 						integer tmp;
+// 						size_t max=0;
+// 						ConstIterator it = Begin();
+// 						for (; it != End(); ++it){
+// 							_Mat.field().convert(tmp,*it);
+// 							if (tmp.bitsize() > max)
+// 								max= tmp.bitsize();
+// 						}
+// 						wid= (int) ceil ((double)max / M_LN10)+1;
+                                            wid=1000;
+                                            
 					}
 
 					for (p = rowBegin (); p != rowEnd ();++p) {
@@ -1127,11 +1129,11 @@ namespace LinBox
 			case (Tag::FileFormat::Maple) : /*  maple format */
 				{
 
-					os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+					os << "Matrix( " << rowdim() << ',' << coldim() << ",\n[" ;
 					for (p = rowBegin (); p != rowEnd (); ) {
 						typename ConstRow::const_iterator pe;
-
-						os << " [ ";
+                                                if (p!=rowBegin()) os << ' ';
+						os << "[ ";
 
 						for (pe = p->begin (); pe != p->end (); ) {
 							_Mat.field().write (os, *pe);

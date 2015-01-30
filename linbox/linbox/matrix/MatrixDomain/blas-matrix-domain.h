@@ -47,8 +47,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
-#include "linbox/vector/blas-vector.h"
-#include "linbox/matrix/DenseMatrix/blas-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/permutation-matrix.h"
 #include "linbox/matrix/factorized-matrix.h"
 
