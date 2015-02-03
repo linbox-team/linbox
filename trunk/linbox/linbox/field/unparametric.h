@@ -131,6 +131,10 @@ namespace LinBox
 		inline void reset() {
 			_y = 0;
 		}
+		
+		const Field& field() const {
+			return _field;
+		}
 
 	private:
 

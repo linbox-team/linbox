@@ -28,6 +28,8 @@
 
 #include <math.h>
 #include <vector>
+#include <givaro/modular-int32.h>
+
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/util/debug.h"

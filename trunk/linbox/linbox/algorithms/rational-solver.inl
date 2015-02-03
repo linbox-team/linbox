@@ -1477,7 +1477,7 @@ namespace LinBox
 		typedef typename Field::Element Element_t;
 
 		// reduce the matrix mod p
-		Field F(_prime);
+		const Field F(_prime);
 		typedef typename IMatrix::template rebind<Field>::other FMatrix;
 		FMatrix Ap(A, F);
 

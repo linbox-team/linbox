@@ -118,8 +118,8 @@ namespace LinBox
 		// c is of size k
 		HalflineMPDomain(const Field& F, PMatrix1& c, const PMatrix2& a, const PMatrix3 &b,
 				 size_t k)
-		: _c(&c), _a(&a), _b(&b), _b1(b,k,min(b.size()-1,2*k-1)), _tmp(F,c.rowdim(),c.coldim(),2*k-1),
-		_i(1), _d(min(b.size()-1,2*k-1)-k+1), _PMD(F), _BMD(F), mid(0)
+		: _c(&c), _a(&a), _b(&b), _b1(b,k,std::min(b.size()-1,2*k-1)), _tmp(F,c.rowdim(),c.coldim(),2*k-1),
+		_i(1), _d(std::min(b.size()-1,2*k-1)-k+1), _PMD(F), _BMD(F), mid(0)
 		{
 			linbox_check(c.size()==k);
 			linbox_check(a.size()<=k+1);
@@ -156,7 +156,7 @@ namespace LinBox
 
 					typename PMatrix1::view     tmp = _tmp.at(0  , step-1);
 					typename PMatrix1::view       c = _c->at(_i-1, _i+step-2);
-					typename PMatrix2::const_view a = _a->at(0, min(2*step-2,_a->size()-1));
+					typename PMatrix2::const_view a = _a->at(0, std::min(2*step-2,_a->size()-1));
 					typename PMatrix3::const_view b = _b1.at(_i-step, _i-1);
 					Timer chrono;
 					chrono.start();
@@ -167,7 +167,7 @@ namespace LinBox
 				}
 				else {
 					// compute the last diagonal element
-					for(size_t i=0;i<min(_d,_a->size());i++)
+					for(size_t i=0;i<std::min(_d,_a->size());i++)
 						_BMD.axpyin((*_c)[_d-1],(*_a)[i],_b1[_d-i-1]);
 					/*
 					   cout<<"checking result of online MP ..."<<_d<<"x"<<2*_d<<"...";
