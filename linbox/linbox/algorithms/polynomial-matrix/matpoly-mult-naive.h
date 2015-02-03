@@ -73,27 +73,27 @@ namespace LinBox
 			size_t deg  = ((n1==0)?2*hdeg-1:n1);
                         //cout<<"("<<hdeg-1<<","<<deg-1<<")"<<endl;
                         if (smallLeft){
-                                // for (size_t k=hdeg-1;k<min(a.size()+b.size()-1,deg);k++){
+                                // for (size_t k=hdeg-1;k<std::min(a.size()+b.size()-1,deg);k++){
                                 //         _BMD.mul(c[k-hdeg+1],a[0],b[k]);
-                                //         for (size_t j=1;j<min(hdeg,a.size());++j)
+                                //         for (size_t j=1;j<std::min(hdeg,a.size());++j)
                                 //                 _BMD.axpyin(c[k-hdeg+1],a[j],b[k-j]);
                                 //}
-                                for (size_t k=hdeg-1;k<min(a.size()+b.size()-1,deg);k++){
-                                        size_t idx_b=min(k,b.size()-1);
+                                for (size_t k=hdeg-1;k<std::min(a.size()+b.size()-1,deg);k++){
+                                        size_t idx_b=std::min(k,b.size()-1);
                                         size_t idx_a=k-idx_b;
                                         //cout<<k<<" : "<<idx_a<<"---"<<idx_b<<endl;
                                         _BMD.mul(c[k-hdeg+1],a[idx_a],b[idx_b]);
-                                        for (size_t j=idx_a+1;j<=min(k,a.size()-1);++j){
+                                        for (size_t j=idx_a+1;j<=std::min(k,a.size()-1);++j){
                                                 //cout<<k<<" : "<<j<<"---"<<k-j<<endl;
                                                 _BMD.axpyin(c[k-hdeg+1],a[j],b[k-j]);
                                         }
                                 }
                         }else {
-                                for (size_t k=hdeg-1;k<min(a.size()+b.size()-1,deg);k++){
-                                        size_t idx_a=min(k,a.size()-1);
+                                for (size_t k=hdeg-1;k<std::min(a.size()+b.size()-1,deg);k++){
+                                        size_t idx_a=std::min(k,a.size()-1);
                                         size_t idx_b=k-idx_a;
                                         _BMD.mul(c[k-hdeg+1],a[idx_a],b[idx_b]);
-                                        for (size_t j=idx_b+1;j<=min(k,b.size()-1);++j){
+                                        for (size_t j=idx_b+1;j<=std::min(k,b.size()-1);++j){
                                                 _BMD.axpyin(c[k-hdeg+1],a[k-j],b[j]);
                                         }
                                 }

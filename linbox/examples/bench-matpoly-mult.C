@@ -132,7 +132,6 @@ void MATPOLMUL_sanity_check(MULDOM& MulDom, const MatPol& C, const MatPol& A, co
 
 template<typename Field, typename RandIter>
 void check_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
-	typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
 
@@ -206,7 +205,6 @@ void MATPOLMUL_performance(MULDOM& MulDom,  const MatPol& A, const MatPol& B, do
 
 template<typename Field, typename RandIter>
 void bench_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
-	typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
 
@@ -277,7 +275,6 @@ void bench_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d)
 
 template<typename Field, typename RandIter>
 void profile_matpol_mulfft(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
-	typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
 
@@ -332,7 +329,6 @@ void profile_matpol_mulfft(const Field& fld, const RandIter& Gen, size_t n, size
 
 template<typename Field, typename RandIter>
 void profile_matpol_mulkara(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
-	typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
 

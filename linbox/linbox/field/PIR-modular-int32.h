@@ -25,6 +25,8 @@
 #ifndef __LINBOX_pir_modular_int32_H
 #define __LINBOX_pir_modular_int32_H
 
+#include <givaro/modular-int32.h>
+
 #include "linbox/field/modular.h"
 #ifndef LINBOX_MAX_INT
 #define LINBOX_MAX_INT 2147483647
@@ -88,7 +90,7 @@ namespace LinBox
 		}
 
 		PIRModular (int32_t value, int32_t exp = 1) :
-			Givaro::Modular<int32_t>(value,exp)
+			Givaro::Modular<int32_t>(value)
 		{ }
 
 
@@ -109,10 +111,10 @@ namespace LinBox
 			XGCD (g, s, t, a, b);
 
 			if (s < 0)
-				s += modulus;
+				s += _p;
 
 			if (t < 0)
-				t += modulus;
+				t += _p;
 
 
 			return g;
@@ -155,7 +157,7 @@ namespace LinBox
 
 			else {
 
-				gcd (g, a, modulus);
+				gcd (g, a, _p);
 
 				return (b % g) == 0;
 			}
@@ -167,7 +169,7 @@ namespace LinBox
 
 			Element g, s;
 
-			HXGCD (g, s, b, modulus);
+			HXGCD (g, s, b, _p);
 
 			Element r;
 
@@ -191,7 +193,7 @@ namespace LinBox
 
 			if (b == 0) return a = 0;
 			else {
-				GCD (a, b, modulus);
+				GCD (a, b, _p);
 
 				return a;
 			}
@@ -211,7 +213,7 @@ namespace LinBox
 		{
 			if (a == 0) return a;
 			else {
-				GCD (a, a, modulus);
+				GCD (a, a, _p);
 
 				return a;
 			}
@@ -233,12 +235,12 @@ namespace LinBox
 
 			Element g;
 
-			GCD (g, a, modulus);
+			GCD (g, a, _p);
 
 
 			//	std::cout << a << " is a unit or not " << g;
 
-			//		std::cout << "modulus = " << modulus <<"\n";
+			//		std::cout << "modulus = " << _p <<"\n";
 
 			return g == 1;
 
