@@ -407,16 +407,6 @@ namespace LinBox
 			}
 		}
 
-		//!@bug work around for givvector. Should be encapsulated.
-		template<class Element>
-		void minpoly (Givaro::givvector<Element>&phi, unsigned long &rank, bool full_poly = true)
-		{
-			BlasVector<Field,Givaro::givvector<Element> > Phi(getField(),phi);
-			minpoly(Phi,rank,full_poly);
-			phi=Phi.getRep();
-
-		}
-
 	};
 
 }
