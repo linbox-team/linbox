@@ -754,7 +754,6 @@ namespace LinBox { /*  BlasSubvector */
 			setIterators();
 		}
 
-		//! @todo subvector of givvector
 		//! @todo subvector of ptr
 
 
