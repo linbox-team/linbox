@@ -229,6 +229,61 @@ namespace LinBox {
 		return res = (uint32_t)y;
 	}
 
+	template <class Vector1, class Vector2>
+	inline uint64_t &DotProductDomain<Givaro::Modular<uint64_t> >::dotSpecializedDD
+	(uint64_t &res, const Vector1 &v1, const Vector2 &v2) const
+		{
+
+			typename Vector1::const_iterator i;
+			typename Vector2::const_iterator j;
+
+			uint64_t y = 0;
+			uint64_t t;
+
+			for (i = v1.begin (), j = v2.begin (); i < v1.end (); ++i, ++j)
+			{
+				t = ( (uint64_t) *i ) * ( (uint64_t) *j );
+				y += t;
+
+				if (y < t)
+					y += faxpy()._two_64;
+			}
+
+			y %= (uint64_t) field().characteristic();
+			return res = (Element)y;
+
+		}
+
+
+	template <class Vector1, class Vector2>
+	inline uint64_t &DotProductDomain<Givaro::Modular<uint64_t> >::dotSpecializedDSP
+	(uint64_t &res, const Vector1 &v1, const Vector2 &v2) const
+		{
+			typename Vector1::first_type::const_iterator i_idx;
+			typename Vector1::second_type::const_iterator i_elt;
+
+			uint64_t y = 0;
+			uint64_t t;
+
+			for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt)
+			{
+				t = ( (uint64_t) *i_elt ) * ( (uint64_t) v2[*i_idx] );
+				y += t;
+
+				if (y < t)
+					y += faxpy()._two_64;
+			}
+
+
+			y %= (uint64_t) field().characteristic();
+
+			return res = (Element) y;
+		}	
+
+
+
+
+
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint8_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint8_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,

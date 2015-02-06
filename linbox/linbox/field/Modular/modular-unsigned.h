@@ -147,10 +147,11 @@ namespace LinBox { /*  uint8_t */
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+        
 
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
-
+        
 	};
 
 	//! Specialization of MVProductDomain for uint8_t modular field
@@ -292,9 +293,10 @@ namespace LinBox { /*  uint16_t */
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
-
+        
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+        
 	};
 
 	//! Specialization of MVProductDomain for uint16_t modular field
@@ -453,9 +455,11 @@ namespace LinBox { /*  uint32_t */
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+        
 
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+        
 	};
 
 	//! Specialization of MVProductDomain for uint32_t modular field
@@ -613,9 +617,11 @@ namespace LinBox { /*  uint64_t */
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+        
 
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+        
 	};
 
 	//! Specialization of MVProductDomain for uint64_t modular field
