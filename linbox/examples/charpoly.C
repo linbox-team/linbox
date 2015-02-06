@@ -112,7 +112,7 @@ int main (int argc, char **argv)
 		BlasMatrix<PID_integer > A (ZZ);
 		A.read (input);
 		typedef GivPolynomialRing<PID_integer, Givaro::Dense> IntPolRing;
-		IntPolRing::Element c_A;
+		BlasVector<PID_integer> c_A(ZZ);
 
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_A, A, Method::Blackbox());
@@ -132,7 +132,7 @@ int main (int argc, char **argv)
 			vector<unsigned long> exp;
 			IntPolRing IPD(ZZ);
 			tim.start();
-			IPD.factor (intFactors, exp, c_A);
+			IPD.factor (intFactors, exp, IntPolRing::Element(c_A.getRep().begin(),c_A.getRep().end()));
 			tim.stop();
 			commentator().stop("done", NULL, "NTLfac");
 			printFactorization(cout << intFactors.size() << " integer polynomial factors:" << endl, ZZ, intFactors, exp) << endl;
@@ -153,7 +153,8 @@ int main (int argc, char **argv)
 		BlasMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-		GivPolynomialRing<Field, Givaro::Dense>::Element c_B;
+// 		GivPolynomialRing<Field, Givaro::Dense>::Element c_B;
+        BlasVector<Field> c_B(F);
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_B, B);
 		tim.stop();
