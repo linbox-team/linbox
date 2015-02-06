@@ -420,10 +420,10 @@ namespace LinBox
 			_y = 0;
 		}
 
-		inline const Field & field() { return *_field; }
+		inline const Field & field() const { return _field; }
 
 	protected:
-		const Field *_field;
+		const Field &_field;
 		uint64_t _y;
 	};
 

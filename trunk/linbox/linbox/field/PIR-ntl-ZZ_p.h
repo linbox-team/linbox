@@ -627,11 +627,12 @@ namespace LinBox
 			_y = NTL::ZZ::zero();
 		}
 
+		inline const Field& field() const { return _field; }
 	private:
 
 		/// Field in which arithmetic is done
 		/// Not sure why it must be mutable, but the compiler complains otherwise
-		Field _field;
+		Field &_field;
 
 		/// Field element for arithmetic
 		NTL::ZZ _y;

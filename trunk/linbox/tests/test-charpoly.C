@@ -82,10 +82,11 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 {
 	typedef typename Dom::Element Element;
 	typedef ScalarMatrix<Dom> Blackbox;
-	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
-	// typedef BlasVector<Dom,GivPolynomialRing<Dom, Givaro::Dense> > PolDom;
-	typedef typename PolDom::Element Polynomial;
-	//typedef Vector Polynomial;
+// 	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
+//  typedef BlasVector<Dom,GivPolynomialRing<Dom, Givaro::Dense> > PolDom;
+// 	typedef typename PolDom::Element Polynomial;
+	typedef BlasVector <Dom> Vector;
+	typedef Vector Polynomial;
 
 	LinBox::commentator().start ("Testing identity Charpoly", "testIdentityCharpoly");
 
@@ -95,7 +96,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 
 	Blackbox A (Z, n, n, Z.one);
 
-	Polynomial phi;
+	Polynomial phi(Z);
 
 	charpoly (phi, A);
 
@@ -209,8 +210,8 @@ bool testRandomCharpoly (Field                 &F,
 			VectorStream<Row>    &A_stream,
 			VectorStream<Vector> &v_stream)
 {
-	//typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
-	//typedef typename PolDom::Element Polynomial;
+//     typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
+//     typedef typename PolDom::Element Polynomial;
 	typedef BlasVector<Field> Polynomial;
 	typedef SparseMatrix<Field> Blackbox;
 
@@ -230,7 +231,7 @@ bool testRandomCharpoly (Field                 &F,
 	report << "Matrix:" << endl;
 	A.write (report, Tag::FileFormat::Pretty);
 
-	Polynomial phi(F);
+    Polynomial phi(F);
 
 	charpoly (phi, A);
 

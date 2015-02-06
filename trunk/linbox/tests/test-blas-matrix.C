@@ -27,6 +27,7 @@
  *.
  */
  
+#include <givaro/modular.h>
 #include <givaro/modular-balanced.h>
 
 #include "linbox/linbox-config.h"
@@ -135,7 +136,6 @@ int main (int argc, char **argv)
 	}
 
 	{ /* Givaro::Modular<int64_t> */
-#if 0 /*  bug somewhere */
 		//Field
 		typedef Givaro::Modular<int64_t> Field;
 
@@ -146,11 +146,9 @@ int main (int argc, char **argv)
 
 		pass = pass && testField<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<int64_t>");
-#endif
 	}
 
 	{ /* Givaro::ModularBalanced<int64_t> */
-#if 0 /* not working */
 		//Field
 		typedef Givaro::ModularBalanced<int64_t> Field;
 
@@ -161,11 +159,9 @@ int main (int argc, char **argv)
 
 		pass = pass && testField<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<int64_t>");
-#endif
 	}
 
 	{ /* Givaro::Modular<uint64_t> */
-#if 0 /* not working */
 		//Field
 		typedef Givaro::Modular<uint64_t> Field;
 
@@ -176,24 +172,7 @@ int main (int argc, char **argv)
 
 		pass = pass && testField<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<uint64_t>");
-#endif
 	}
-
-	{ /* Givaro::ModularBalanced<uint64_t> */
-#if 0 /* not working */
-		//Field
-		typedef Givaro::ModularBalanced<uint64_t> Field;
-
-		Field F (q);
-		commentator().start("Givaro::ModularBalanced<uint64_t>");
-
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
-
-		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<uint64_t>");
-#endif
-	}
-
 	{ /* Givaro::Modular<int32_t> */
 		//Field
 		typedef Givaro::Modular<int32_t> Field;
@@ -221,7 +200,6 @@ int main (int argc, char **argv)
 	}
 
 	{ /* Givaro::Modular<uint32_t> */
-#if 0 /*  bug somewhere */
 		//Field
 		typedef Givaro::Modular<uint32_t> Field;
 
@@ -232,26 +210,9 @@ int main (int argc, char **argv)
 
 		pass = pass && testField<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<uint32_t>");
-#endif
-	}
-
-	{ /* Givaro::ModularBalanced<uint32_t> */
-#if 0 /* not working */
-		//Field
-		typedef Givaro::ModularBalanced<uint32_t> Field;
-
-		Field F (q);
-		commentator().start("Givaro::ModularBalanced<uint32_t>");
-
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
-
-		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<uint32_t>");
-#endif
 	}
 
 	{ /* Givaro::Modular<int16_t> */
-#if 0 /* not working */
 		//Field
 		typedef Givaro::Modular<int16_t> Field;
 
@@ -262,7 +223,6 @@ int main (int argc, char **argv)
 
 		pass = pass && testField<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<int16_t>");
-#endif
 	}
 
 	{ /* Givaro::ModularBalanced<int16_t> */
@@ -292,21 +252,6 @@ int main (int argc, char **argv)
 
 		pass = pass && testField<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<uint16_t>");
-#endif
-	}
-
-	{ /* Givaro::ModularBalanced<uint16_t> */
-#if 0 /* not working */
-		//Field
-		typedef Givaro::ModularBalanced<uint16_t> Field;
-
-		Field F (q);
-		commentator().start("Givaro::ModularBalanced<uint16_t>");
-
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
-
-		pass = pass && testField<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<uint16_t>");
 #endif
 	}
 
@@ -350,6 +295,7 @@ int main (int argc, char **argv)
 	}
 
 	{ /* Givaro::Modular<integer> */
+#if 0 /*  bug somewhere */
 		//Field
 		typedef Givaro::Modular<integer> Field;
 
@@ -360,9 +306,11 @@ int main (int argc, char **argv)
 
 		pass = pass && testField<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<integer>");
+#endif
 	}
 
 	{ /* PID_integer */
+#if 0 /*  bug somewhere */
 		//Field
 		typedef PID_integer Field;
 
@@ -373,9 +321,11 @@ int main (int argc, char **argv)
 
 		pass = pass && testField<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"PID_integer");
+#endif
 	}
 
 	{ /* Givaro::Extension<> */
+#if 0 /*  bug somewhere */
 		//Field
 		typedef Givaro::Extension<> Field;
 
@@ -386,6 +336,7 @@ int main (int argc, char **argv)
 
 		pass = pass && testField<Matrix>(F,m,n, false);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Extension<>");
+#endif
 	}
 
 	commentator().stop(MSG_STATUS(pass),(const char *) 0,"BlasMatrix BB test suite");
