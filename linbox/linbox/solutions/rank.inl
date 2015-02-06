@@ -31,7 +31,7 @@
 // #define __LINBOX_rank_sparse_elimination_format SparseMatrixFormat::COO
 // #define __LINBOX_rank_sparse_elimination_format SparseMatrixFormat::CSR
 
-
+#include <givaro/extension.h>
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
