@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 	commentator().start("GivaroPoly field test suite", "GivaroPoly");
 	bool pass = true;
 
-	typedef Givaro::GFq<int> BaseDom;
+	typedef Givaro::GFqDom<int> BaseDom;
 	typedef typename Givaro::Poly1Dom<BaseDom, Givaro::Dense> PolyDom;
 	
 	BaseDom GFq(p, e);
