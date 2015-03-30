@@ -28,7 +28,8 @@ Known values for OPTION are:
 
   --prefix		show Linbox installation prefix 
   --libs		print library linking information
-  --cflags		print pre-processor and compiler flags
+  --cflags		print pre-processor flags
+  --cflags-full	print pre-processor and compiler flags
   --help		display this help and exit
   --version		output version information string (eg @VERSION@)
   --decimal-version	output version information number (eg $decvr)
@@ -73,6 +74,10 @@ while test $# -gt 0; do
 
     --cflags)
        	echo -n " -I${includedir} @FFLAS_FFPACK_CFLAGS@ @NTL_CFLAGS@ @SACLIB_CFLAGS@ @LIDIA_CFLAGS@"
+	;;
+
+    --cflags-full)
+       	echo -n " -I${includedir} @CXXFLAGS@"
 	;;
 
     --libs)
