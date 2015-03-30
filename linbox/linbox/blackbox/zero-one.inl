@@ -341,7 +341,8 @@ namespace LinBox
 		jp=_colP;
 		size_t rowI =0;
 
-		for(; ip <_rowP+nnz(); ++ip,++jp)
+        auto ipEnd = _rowP + nnz();
+		for(; ip < ipEnd; ++ip,++jp)
 		{
 			if( *ip == rowI)
 				field().addin(*yp,*(xp +(ptrdiff_t) *jp));
@@ -358,7 +359,6 @@ namespace LinBox
 		}
 		return y;
 	}
-
 
 	template<class Field>
 	template<class OutVector, class InVector>

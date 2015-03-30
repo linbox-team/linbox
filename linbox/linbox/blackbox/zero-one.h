@@ -168,15 +168,18 @@ namespace LinBox
 		 */
 		std::istream &read (std::istream &is)
 		{
-			size_t i=0, j=0, k=0, m=0, n=0;
+			size_t i=0, j=0, m=0, n=0;
 
+            // This trick is used to get the entire line
+            // whatever way it is written: "m n M" or "m n nnz"
 			char buf[80];
 			buf[0]=0;
 			is.getline (buf, 80);
 			std::istringstream str (buf);
-			str >> m >> n >> k;
+			str >> m >> n;
 			_rows = m;
 			_cols = n;
+			
 			std::vector<size_t> rowP, colP;
 			size_t x=0;
 			while (is >> i >> j >> x) {
@@ -194,15 +197,19 @@ namespace LinBox
 			return is;
 		}
 
-		std::ostream& write(std::ostream& out =std::cout)
+		std::ostream& write(std::ostream& out = std::cout)
 		{
 			size_t* i=_rowP;
 			size_t* j=_colP;
-			std::cout<<"Row dim: "<<rowdim()
-			<<" Col dim: "<<coldim()
-			<<" Total nnz: "<<nnz()<<"\n";
-			for(;i<_rowP+nnz();++i,++j)
-				std::cout<<*i<<" "<<*j<<"\n";
+
+			out << "Row dim: " << rowdim()
+			    << " Col dim: " << coldim()
+			    << " Total nnz: " << nnz() << std::endl;
+
+            auto lastIndex = _rowP + nnz();
+			for(; i < lastIndex; ++i, ++j)
+				out << *i << " " << *j << std::endl;
+
 			return out;
 		}
 
