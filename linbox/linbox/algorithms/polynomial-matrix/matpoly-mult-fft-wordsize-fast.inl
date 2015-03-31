@@ -27,7 +27,8 @@
 #ifndef __LINBOX_matpoly_mult_ftt_wordsize_fast_INL
 #define __LINBOX_matpoly_mult_ftt_wordsize_fast_INL
 
-#include "linbox/field/modular.h"
+#include "givaro/modular.h"
+#include "fflas-ffpack/fflas-ffpack.h"
 #include "linbox/matrix/polynomial-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.h"
@@ -37,44 +38,42 @@ namespace LinBox {
 	/***********************************************************************************
 	 **** Polynomial Matrix Multiplication over Zp[x] with p (FFTPrime, FFLAS prime) ***
 	 ***********************************************************************************/
-
+	template<class Field>
 	class PolynomialMatrixFFTPrimeMulDomain {
 
-		typedef Givaro::Modular<int32_t>     Field;
-		typedef Field::Element     Element;
-
-		public:
+		//typedef Givaro::Modular<T>    Field;
+	public:
 		// Polynomial matrix stored as a matrix of polynomial
 		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 		// Polynomial matrix stored as a polynomial of matrix
 		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
 
-		private:
-		const Field            *_field;  // Read only
-		uint32_t                    _p;
-		BlasMatrixDomain<Field>   _BMD;
+	private:
+		const Field              *_field;  // Read only
+		size_t                     _p;
+		BlasMatrixDomain<Field>  _BMD;
 
-		public:
+	public:
 		inline const Field & field() const { return *_field; }
 
-		template< typename Field2>
-			PolynomialMatrixFFTPrimeMulDomain(const Field2 &F) : _field(&F), _p(field().cardinality()), _BMD(F){}
+		PolynomialMatrixFFTPrimeMulDomain(const Field &F)
+			: _field(&F), _p(field().cardinality()),  _BMD(F){}
 
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
-			void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b) {
-				linbox_check(a.coldim()==b.rowdim());
-				size_t deg  = a.size()+b.size()-1;
-				size_t lpts = 0;
-				size_t pts  = 1; while (pts < deg) { pts= pts<<1; ++lpts; }
-				// padd the input a and b to 2^lpts (convert to MatrixP representation)
-				MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
-				MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
-				a2.copy(a,0,a.size()-1);
-				b2.copy(b,0,b.size()-1);
-				MatrixP c2(field(),c.rowdim(),c.coldim(),pts);
-				mul_fft (lpts,c2, a2, b2);
-				c.copy(c2,0,deg-1);
-			}
+		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b) {
+			linbox_check(a.coldim()==b.rowdim());
+			size_t deg  = a.size()+b.size()-1;
+			size_t lpts = 0;
+			size_t pts  = 1; while (pts < deg) { pts= pts<<1; ++lpts; }
+			// padd the input a and b to 2^lpts (convert to MatrixP representation)
+			MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
+			MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
+			a2.copy(a,0,a.size()-1);
+			b2.copy(b,0,b.size()-1);
+			MatrixP c2(field(),c.rowdim(),c.coldim(),pts);
+			mul_fft (lpts,c2, a2, b2);
+			c.copy(c2,0,deg-1);
+		}
 
 		void mul (MatrixP &c, const MatrixP &a, const MatrixP &b) {
 			linbox_check(a.coldim()==b.rowdim());
@@ -82,8 +81,8 @@ namespace LinBox {
 			size_t lpts = 0;
 			size_t pts  = 1; while (pts < deg) { pts= pts<<1; ++lpts; }
 			// padd the input a and b to 2^lpts
-			MatrixP a2(a.field(),a.rowdim(),a.coldim(),pts);
-			MatrixP b2(b.field(),b.rowdim(),b.coldim(),pts);
+			MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
+			MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
 			a2.copy(a,0,a.size()-1);
 			b2.copy(b,0,b.size()-1);
 			// resize c to 2^lpts
@@ -107,27 +106,36 @@ namespace LinBox {
 
 			if ((_p-1) % pts != 0) {
 				std::cout<<"Error the prime is not a FFTPrime or it has too small power of 2\n";
+				std::cout<<"prime="<<_p<<std::endl;
+				std::cout<<"nbr points="<<pts<<std::endl;
 				throw LinboxError("LinBox ERROR: bad FFT Prime\n");
 			}
 			FFT_transform<Field> FFTer (field(), lpts);
-			Element _inv_w = FFTer._w;
-			field().invin(_inv_w);
-			FFT_transform<Field> FFTinv (field(), lpts, _inv_w);
+			FFT_transform<Field> FFTinv (field(), lpts, FFTer.getInvRoot());
 			FFT_PROFILING(1,"init");
 
+			// std::cout<<"FFT Root: "<<FFTer.getRoot()<<std::endl;
+			// std::cout<<"FFT InvRoot: "<<FFTer.getInvRoot()<<std::endl;
+			// std::cout<<a<<std::endl;
+			// std::cout<<b<<std::endl;
+			
 			// FFT transformation on the input matrices
 			for (size_t i = 0; i < m * k; i++)
-				FFTer.FFT_DIF_Harvey_SSE(a(i));
+				FFTer.FFT_DIF(&(a.ref(i,0)));
 			for (size_t i = 0; i < k * n; i++)
-				FFTer.FFT_DIF_Harvey_SSE(b(i));
+				FFTer.FFT_DIF(&(b.ref(i,0)));
 			FFT_PROFILING(1,"direct FFT_DIF");
-
-			// convert the matrix representation to matfirst
+			
+			// std::cout<<"DIF:"<<std::endl;
+			// std::cout<<a<<std::endl;
+			// std::cout<<b<<std::endl;
+			
+			
+			// convert the matrix representation to matfirst (with double coefficient)
 			PMatrix vm_c (field(), m, n, pts);
 			PMatrix vm_a (field(), m, k, pts);
 			PMatrix vm_b (field(), k, n, pts);
 			FFT_PROFILING(1,"creation of Matfirst");
-
 			vm_a.copy(a);
 			vm_b.copy(b);
 			FFT_PROFILING(1,"Polfirst to Matfirst");
@@ -136,68 +144,79 @@ namespace LinBox {
 			for (size_t i = 0; i < pts; ++i)
 				_BMD.mul(vm_c[i], vm_a[i], vm_b[i]);
 			FFT_PROFILING(1,"Pointwise mult");
-
-			// Transformation into matrix of polynomials
+			
+			// Transformation into matrix of polynomials (with int32_t coefficient)
 			c.copy(vm_c);
 			FFT_PROFILING(1,"Matfirst to Polfirst");
 
+			//std::cout<<"pointwise:"<<std::endl;
+			//std::cout<<c<<std::endl;			
+			
 			// Inverse FFT on the output matrix
 			for (size_t i = 0; i < m * n; i++)
-				FFTinv.FFT_DIT_Harvey_SSE(c(i));
+				FFTinv.FFT_DIT(&(c.ref(i,0)));
 			FFT_PROFILING(1,"inverse FFT_DIT");
 
+			// std::cout<<"DIT:"<<std::endl;
+			// std::cout<<c<<std::endl;
+
 			// Divide by pts = 2^lpts
-			Element inv_pts;
+			typename Field::Element inv_pts;
 			field().init(inv_pts, pts);
 			field().invin(inv_pts);
-			for (size_t i = 0; i < m * n; i++)
-				for (size_t j = 0; j < pts; j++)
-					field().mulin(c.ref(i,j), inv_pts);
+			// for (size_t i = 0; i < m * n; i++)
+			// 	for (size_t j = 0; j < pts; j++)
+			// 		field().mulin(c.ref(i,j), inv_pts);
+			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getWritePointer(),1);
+
+			// std::cout<<"SCALIN:"<<std::endl;
+			// std::cout<<c<<std::endl;
+
 			FFT_PROFILING(1,"scaling the result");
 		}
 
 		// compute  c= (a*b x^(-n0-1)) mod x^n1
 		// by defaut: n0=c.size() and n1=2*c.size();
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
-			void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
-					bool smallLeft=true, size_t n0=0,size_t n1=0) {
-				linbox_check(a.coldim()==b.rowdim());
-				size_t hdeg = (n0==0?c.size():n0);
-				size_t deg  = (n1==0?2*hdeg:n1);
-				linbox_check(c.size()>=deg-hdeg);
-				if (smallLeft){
-					linbox_check(b.size()<hdeg+deg);
-				}
-				else
-					linbox_check(a.size()<hdeg+deg);
-
-				size_t lpts = 0;
-				size_t pts  = 1; while (pts < deg) { pts= pts<<1; ++lpts; }
-				// padd the input a and b to 2^lpts (use MatrixP representation)
-				MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
-				MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
-				MatrixP c2(field(),c.rowdim(),c.coldim(),pts);
-				a2.copy(a,0,a.size()-1);
-				b2.copy(b,0,b.size()-1);
-
-				// reverse the element of the smallest polynomial according to h(x^-1)*x^(hdeg)
-				if (smallLeft)
-					for (size_t j=0;j<a2.rowdim()*a2.coldim();j++)
-						for (size_t i=0;i<hdeg/2;i++)
-							std::swap(a2.ref(j,i),a2.ref(j,hdeg-1-i));
-				else
-					for (size_t j=0;j<b2.rowdim()*b2.coldim();j++)
-						for (size_t i=0;i<hdeg/2;i++)
-							std::swap(b2.ref(j,i),b2.ref(j,hdeg-1-i));
-
-				midproduct_fft (lpts,c2, a2, b2, smallLeft);
-				c.copy(c2,0,c.size()-1);
+		void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
+				 bool smallLeft=true, size_t n0=0,size_t n1=0) {
+			linbox_check(a.coldim()==b.rowdim());
+			size_t hdeg = (n0==0?c.size():n0);
+			size_t deg  = (n1==0?2*hdeg:n1);
+			linbox_check(c.size()>=deg-hdeg);
+			if (smallLeft){
+				linbox_check(b.size()<hdeg+deg);
 			}
+			else
+				linbox_check(a.size()<hdeg+deg);
+
+			size_t lpts = 0;
+			size_t pts  = 1; while (pts < deg) { pts= pts<<1; ++lpts; }
+			// padd the input a and b to 2^lpts (use MatrixP representation)
+			MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
+			MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
+			MatrixP c2(field(),c.rowdim(),c.coldim(),pts);
+			a2.copy(a,0,a.size()-1);
+			b2.copy(b,0,b.size()-1);
+
+			// reverse the element of the smallest polynomial according to h(x^-1)*x^(hdeg)
+			if (smallLeft)
+				for (size_t j=0;j<a2.rowdim()*a2.coldim();j++)
+					for (size_t i=0;i<hdeg/2;i++)
+						std::swap(a2.ref(j,i),a2.ref(j,hdeg-1-i));
+			else
+				for (size_t j=0;j<b2.rowdim()*b2.coldim();j++)
+					for (size_t i=0;i<hdeg/2;i++)
+						std::swap(b2.ref(j,i),b2.ref(j,hdeg-1-i));
+
+			midproduct_fft (lpts,c2, a2, b2, smallLeft);
+			c.copy(c2,0,c.size()-1);
+		}
 
 		// a,b and c must have size: 2^lpts
 		// -> a must have been already reversed according to the midproduct algorithm
 		void midproduct_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b,
-				bool smallLeft=true) {
+				     bool smallLeft=true) {
 			FFT_PROFILE_START;
 			size_t m = a.rowdim();
 			size_t k = a.coldim();
@@ -209,35 +228,34 @@ namespace LinBox {
 #endif
 			if ((_p-1) % pts != 0) {
 				std::cout<<"Error the prime is not a FFTPrime or it has too small power of 2\n";
+				std::cout<<"prime="<<_p<<std::endl;
+				std::cout<<"nbr points="<<pts<<std::endl;
 				throw LinboxError("LinBox ERROR: bad FFT Prime\n");
 			}
 			FFT_transform<Field> FFTer (field(), lpts);
-			Element _inv_w = FFTer._w;
-			field().invin(_inv_w);
-			FFT_transform<Field> FFTinv (field(), lpts, _inv_w);
+			FFT_transform<Field> FFTinv(field(), lpts, FFTer.getInvRoot());
 			FFT_PROFILING(1,"init");
 
 			// FFT transformation on the input matrices
 			if (smallLeft){
 				for (size_t i = 0; i < m * k; i++)
-					FFTer.FFT_DIF_Harvey_SSE(a(i));
+					FFTer.FFT_DIF(&(a(i)[0]));
 				for (size_t i = 0; i < k * n; i++)
-					FFTinv.FFT_DIF_Harvey_SSE(b(i));
+					FFTinv.FFT_DIF(&(b(i)[0]));
 			}
 			else {
 				for (size_t i = 0; i < m * k; i++)
-					FFTinv.FFT_DIF_Harvey_SSE(a(i));
+					FFTinv.FFT_DIF(&(a(i)[0]));
 				for (size_t i = 0; i < k * n; i++)
-					FFTer.FFT_DIF_Harvey_SSE(b(i));
+					FFTer.FFT_DIF(&(b(i)[0]));
 			}
 			FFT_PROFILING(1,"direct FFT_DIF");
 
-			// convert the matrix representation to matfirst
+			// convert the matrix representation to matfirst (with double coefficient)
 			PMatrix vm_c (field(), m, n, pts);
 			PMatrix vm_a (field(), m, k, pts);
 			PMatrix vm_b (field(), k, n, pts);
 			FFT_PROFILING(1,"creation of Matfirst");
-
 			vm_a.copy(a);
 			vm_b.copy(b);
 			FFT_PROFILING(1,"Polfirst to Matfirst");
@@ -247,22 +265,23 @@ namespace LinBox {
 				_BMD.mul(vm_c[i], vm_a[i], vm_b[i]);
 			FFT_PROFILING(1,"pointwise mult");
 
-			// Transformation into matrix of polynomials
+			// Transformation into matrix of polynomials (with int32_t coefficient)
 			c.copy(vm_c);
 			FFT_PROFILING(1,"Matfirst to Polfirst");
 
 			// Inverse FFT on the output matrix
 			for (size_t i = 0; i < m * n; i++)
-				FFTer.FFT_DIT_Harvey_SSE(c(i));
+				FFTer.FFT_DIT(&(c(i)[0]));
 			FFT_PROFILING(1,"inverse FFT_DIT");
 
 			// Divide by pts = 2^ltps
-			Element inv_pts;
+			typename Field::Element inv_pts;
 			field().init(inv_pts, pts);
 			field().invin(inv_pts);
-			for (size_t i = 0; i < m * n; i++)
-				for (size_t j = 0; j < pts; j++)
-					field().mulin(c.ref(i,j), inv_pts);
+			// for (size_t i = 0; i < m * n; i++)
+			// 	for (size_t j = 0; j < pts; j++)
+			// 		field().mulin(c.ref(i,j), inv_pts);
+			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getWritePointer(),1);
 			FFT_PROFILING(1,"scaling the result");
 		}
 	}; // end of class special FFT mul domain

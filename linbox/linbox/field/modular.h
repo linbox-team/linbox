@@ -98,7 +98,7 @@ namespace LinBox
 		typedef Givaro::Modular<_Element> Field;
 
 		FieldAXPY (const Field &F) :
-			_field(&F), _y(0)
+			_field(&F), _y(F.zero)
 		{}
 		FieldAXPY (const FieldAXPY<Givaro::Modular<Element> > &faxpy) :
 			_field (faxpy._field), _y (faxpy._y)

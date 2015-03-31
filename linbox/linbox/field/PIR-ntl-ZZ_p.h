@@ -643,7 +643,7 @@ namespace LinBox
 	class DotProductDomain;
 
 	template <>
-	class DotProductDomain<PIR_ntl_ZZ_p> : private virtual VectorDomainBase<PIR_ntl_ZZ_p> {
+	class DotProductDomain<PIR_ntl_ZZ_p> : private  VectorDomainBase<PIR_ntl_ZZ_p> {
 
 	public:
 		typedef PIR_ntl_ZZ_p::Element Element;

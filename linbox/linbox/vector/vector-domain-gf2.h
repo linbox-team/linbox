@@ -66,7 +66,7 @@ namespace LinBox
 
 
 	template<>
-	class DotProductDomain<GF2> : private virtual VectorDomainBase<GF2> {
+	class DotProductDomain<GF2> : public  VectorDomainBase<GF2> {
 	public:
 
 		typedef bool Element;
@@ -98,19 +98,21 @@ namespace LinBox
 {
 
 	template <>
-	class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private virtual DotProductDomain<GF2> {
+	//class VectorDomain<GF2> : private virtual VectorDomainBase<GF2> , private virtual DotProductDomain<GF2> {
+        class VectorDomain<GF2> : public DotProductDomain<GF2> {
 	public:
 		typedef bool Element;
 
 		VectorDomain (const VectorDomain &VD) :
-			VectorDomainBase<GF2> (VD.field()), DotProductDomain<GF2> (VD.field())
+			//VectorDomainBase<GF2> (VD.field()), DotProductDomain<GF2> (VD.field())
+                        DotProductDomain<GF2> (VD.field())
 		{}
 
 		VectorDomain &operator = (const VectorDomain &) { return *this; }
 
 		const GF2 &field () const
 		{
-			return VectorDomainBase<GF2>::field();
+			return DotProductDomain<GF2>::field();
 		}
 
 		template <class Vector>
@@ -254,7 +256,8 @@ namespace LinBox
 		}
 
 		VectorDomain (const GF2 &F) :
-			VectorDomainBase<GF2> (F), DotProductDomain<GF2> (F)
+			//VectorDomainBase<GF2> (F), DotProductDomain<GF2> (F)
+                        DotProductDomain<GF2> (F)
 		{}
 
 

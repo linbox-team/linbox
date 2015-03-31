@@ -133,7 +133,7 @@ namespace LinBox
 
 
 	template <>
-	class DotProductDomain<Givaro::Modular<int16_t> > : public virtual VectorDomainBase<Givaro::Modular<int16_t> > {
+	class DotProductDomain<Givaro::Modular<int16_t> > : public  VectorDomainBase<Givaro::Modular<int16_t> > {
 
 	public:
 		typedef int16_t Element;

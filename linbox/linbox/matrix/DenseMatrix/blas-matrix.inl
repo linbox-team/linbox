@@ -245,7 +245,7 @@ namespace LinBox
 		,_field(&F),_MD(F),_VD(F)
 		// ,_AD(F)
 	{
-		// std::cout << "cstor 1 called" << std::endl;
+                //std::cout << "cstor 1 called" << std::endl;
 		_use_fflas = Protected::checkBlasApply(field(),_col);
 	}
 
@@ -396,8 +396,8 @@ namespace LinBox
 
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >::~BlasMatrix ()
-	{
-		// if (_ptr)
+	{                
+                // if (_ptr)
 		// free(_ptr);
 	}
 

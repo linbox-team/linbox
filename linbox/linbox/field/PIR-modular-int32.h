@@ -429,7 +429,7 @@ namespace LinBox
 
 
 	template <>
-	class DotProductDomain<PIRModular<int32_t> > : public virtual VectorDomainBase<PIRModular<int32_t> > {
+	class DotProductDomain<PIRModular<int32_t> > : public  VectorDomainBase<PIRModular<int32_t> > {
 
 	public:
 		typedef int32_t Element;

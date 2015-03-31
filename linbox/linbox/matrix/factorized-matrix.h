@@ -119,12 +119,11 @@ namespace LinBox
 			else {
 				//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
 				_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
-							 _factLU.getPointer(),_factLU.getStride(),
+                                                         _factLU.getPointer(),_factLU.getStride(),
 							 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
-			}
+                        }
 			_permP.setOrder(_rank);
 			_permQ.setOrder(_rank);
-
 		}
 
 		/*! Contruction of LQUP factorization of A (making a copy of A).

@@ -29,7 +29,9 @@
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-naive.h"
 #include <algorithm>
 
+#ifndef KARA_DEG_THRESHOLD 
 #define KARA_DEG_THRESHOLD 4
+#endif
 
 namespace LinBox
 {
@@ -41,16 +43,33 @@ namespace LinBox
                 PolynomialMatrixNaiveMulDomain<Field>     _NMD;
                 double _timeMul, _timeAdd;
 	public:
+                // Polynomial matrix stored as a matrix of polynomial
+		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
+		// Polynomial matrix stored as a polynomial of matrix
+		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
+                template <PMStorage S> using _PMatrix = PolynomialMatrix<PMType::matfirst,S,Field>;
+                
                 const Field & field() const { return *_field; }
 
 		 PolynomialMatrixKaraDomain(const Field &F) :
                          _field(&F), _PMD(F), _NMD(F){}
 
                 // c must be allocated with the right size
-                template<typename PMatrix1,typename PMatrix2,typename PMatrix3>
-                void mul(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b){
+                template<typename Matrix1,typename Matrix2,typename Matrix3>
+                void mul(Matrix1 &c, const Matrix2 &a, const Matrix3 &b)
+                {
+                        PMatrix a2(field(),a.rowdim(),a.coldim(),a.size());
+			PMatrix b2(field(),b.rowdim(),b.coldim(),b.size());
+			a2.copy(a,0,a.size()-1);
+			b2.copy(b,0,b.size()-1);
+			PMatrix c2(field(),c.rowdim(),c.coldim(),a.size()+b.size()-1);
+			mul(c2, a2, b2);
+			c.copy(c2,0,c2.size()-1);
+                }
+		
+                void mul(PMatrix &c, const PMatrix &a, const PMatrix &b){
 			linbox_check(c.size() >= (a.size()+b.size()-1));
-                        typename PMatrix1::plain t(*_field,c.rowdim(),c.coldim(),std::max(a.size(),b.size()));
+                        typename PMatrix::plain t(*_field,c.rowdim(),c.coldim(),std::max(a.size(),b.size()));
 #ifdef KARA_TIMING
                         _timeMul=_timeAdd=0.;
                         Timer chrono;
@@ -68,10 +87,22 @@ namespace LinBox
 		// b must be of size 2n-1
 		// a is of size <=n
 		// compute  c= (a*b x^(-n)) mod x^n
-                template<typename PMatrix1,typename PMatrix2,typename PMatrix3>
-                void midproduct(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b){
+
+                template<typename Matrix1,typename Matrix2,typename Matrix3>
+                void midproduct(Matrix1 &c, const Matrix2 &a, const Matrix3 &b)
+                {
+                        PMatrix a2(field(),a.rowdim(),a.coldim(),a.size());
+			PMatrix b2(field(),b.rowdim(),b.coldim(),b.size());
+			a2.copy(a,0,a.size()-1);
+			b2.copy(b,0,b.size()-1);
+			PMatrix c2(field(),c.rowdim(),c.coldim(),c.size());
+			midproduct(c2, a2, b2);
+			c.copy(c2,0,c2.size()-1);
+                }
+                
+                void midproduct(PMatrix &c, const PMatrix &a, const PMatrix &b){
 			linbox_check(2*c.size()-1==b.size());
-                        typename PMatrix1::plain t(field(),c.rowdim(),c.coldim(),3*c.size());
+                        typename PMatrix::plain t(field(),c.rowdim(),c.coldim(),3*c.size());
                         // Rk: if n is a power of two, only 2n-1 extra storage is needed
                         //     if n is odd, 5(n-1)/2 extra storage is needed
 #ifdef KARA_TIMING
@@ -79,7 +110,7 @@ namespace LinBox
                         Timer chrono;
                         chrono.start();
 #endif
-                        typename PMatrix1::plain a2(field(),a.rowdim(), a.coldim(), c.size());
+                        typename PMatrix::plain a2(field(),a.rowdim(), a.coldim(), c.size());
                         a2.copy(a,0,a.size()-1);
                         Karatsuba_midproduct(c,a2,b,t);
 #ifdef KARA_TIMING
@@ -119,9 +150,9 @@ namespace LinBox
                                 qA= dA - p;
                                 qB= dB - p;
                                 q=std::max(qA,qB);
-                                typename PMatrix2::const_view Ah,Al;
-                                typename PMatrix3::const_view Bh,Bl;
-                                typename PMatrix1::view C0,C1,C2,TMP0;
+                                typename PMatrix::const_view Ah,Al;
+                                typename PMatrix::const_view Bh,Bl;
+                                typename PMatrix::view C0,C1,C2,TMP0;
                                 Al=A.at(0,p-1); Ah=A.at(p,dA-1);
                                 Bl=B.at(0,p-1); Bh=B.at(p,dB-1);
 
@@ -222,9 +253,9 @@ namespace LinBox
                                 // cout<<"s0="<<s0<<endl;
                                 // cout<<"s1="<<s1<<endl;
                                 // cout<<"TMP SIZE:"<<TMP.size()<<endl;
-                                typename PMatrix2::const_view Ah,Al;
-                                typename PMatrix3::const_view Bh,Bm0,Bm1,Bl;
-                                typename PMatrix1::view C0,C1,TMP0,TMP1,TMP2;
+                                typename PMatrix::const_view Ah,Al;
+                                typename PMatrix::const_view Bh,Bm0,Bm1,Bl;
+                                typename PMatrix::view C0,C1,TMP0,TMP1,TMP2;
                                 Al=A.at(0,n0-1);        // size: n0
                                 Ah=A.at(n0,n-1);        // size: n1
                                 Bl=B.at(0,s1-1);        // size: 2n1-1
