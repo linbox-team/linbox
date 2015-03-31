@@ -155,6 +155,7 @@ namespace LinBox{
 	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL exiting..."<<std::endl;
 	throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
       }
+
       std::vector<double> basis(bas.size());
       std::copy(bas.begin(),bas.end(),basis.begin());
       FFPACK::rns_double RNS(basis);
@@ -182,7 +183,7 @@ namespace LinBox{
 
       std::vector<MatrixP_F*> c_i (num_primes);
       //std::vector<PMatrix_F1*> c_i (num_primes);
-      std::vector<ModField> f(num_primes,ModField(1));
+      std::vector<ModField> f(num_primes,ModField(2));
       for (size_t l=0;l<num_primes;l++)
 	f[l]=ModField(RNS._basis[l]);
 
