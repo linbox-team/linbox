@@ -79,11 +79,12 @@ namespace LinBox
 	template <class Field>
 	class VectorDomainBase {
 	public:
-		VectorDomainBase () : _faxpy(nullptr) {}
-		VectorDomainBase (const Field &F) :	_faxpy(new FieldAXPY<Field>(F)) {}
-		virtual ~VectorDomainBase()	{ if (_faxpy != nullptr) delete _faxpy; }
+		VectorDomainBase () : _faxpy(nullptr) {std::cout<<"CST DEFAULT VDB"<<std::endl;}
+		VectorDomainBase (const Field &F) :  _faxpy(new FieldAXPY<Field>(F))
+                { /*std::cerr << "VDD cstor " << this << std::endl;*/}
+                ~VectorDomainBase()	{ if (_faxpy != nullptr) delete _faxpy; }
 
-		void init(const Field &F) { _faxpy = new FieldAXPY<Field>(F); }
+		void init(const Field &F) { if (_faxpy != nullptr) delete _faxpy; _faxpy = new FieldAXPY<Field>(F); }
 		inline const Field & field() const { return _faxpy->field(); }
 		inline const FieldAXPY<Field>& faxpy() const { return *_faxpy; }
 	
@@ -106,16 +107,17 @@ namespace LinBox
 	 * class VectorDomain.
 	 */
 	template <class Field_>
-	class DotProductDomain : public virtual VectorDomainBase<Field_> {
+        //	class DotProductDomain : public virtual VectorDomainBase<Field_> {
+        class DotProductDomain : public VectorDomainBase<Field_> {
 	public:
-		DotProductDomain () { /*std::cerr << "DPD def cstor" << std::endl;*/ }// no def cstor allowed
+		//DotProductDomain () { /*std::cerr << "DPD def cstor" << std::endl;*/ }// no def cstor allowed
 
 		typedef Field_ Field;
 		typedef typename Field::Element Element;
 
 		DotProductDomain (const Field &F) :
 			VectorDomainBase<Field> (F)
-		{ /* std::cerr << "DPD cstor " << this << std::endl;*/ }
+		{  /*std::cerr << "DPD cstor " << this << std::endl; */}
 
 		using VectorDomainBase<Field>::field;
 		using VectorDomainBase<Field>::init;
@@ -181,7 +183,8 @@ VD.permute<V,PI>(v1,pb,pe)
 	// JGD 01.10.2003 : Why inherit twice from VectorDomainBase<Field> ???
 	// bds 2004Apr25 : well, g++ 3.4.3 wants explicit base domains on everything - eases that.
 	template <class Field_>
-	class VectorDomain : public virtual DotProductDomain<Field_>, public virtual VectorDomainBase<Field_> {
+        //	class VectorDomain : public virtual DotProductDomain<Field_> , public virtual VectorDomainBase<Field_> {
+        class VectorDomain : public  DotProductDomain<Field_> {
 	public:
 
 		typedef Field_ Field;
@@ -189,10 +192,10 @@ VD.permute<V,PI>(v1,pb,pe)
 		typedef typename Field::Element         Element;
 
 		// VectorDomain(): DotProductDomain<Field>() { /*std::cerr << "VD def cstor" << std::endl;*/ }
-		VectorDomain():DotProductDomain<Field>() {}
+		//VectorDomain():DotProductDomain<Field>() {}
 
-                using VectorDomainBase<Field>::init;
-		//void init(const Field& F) { this->_field = &F; }
+                //using VectorDomainBase<Field>::init;
+                using DotProductDomain<Field>::init;
 
 		/** Copy constructor.
 		 * Constructs VectorDomain object by copying the domain.
@@ -201,11 +204,19 @@ VD.permute<V,PI>(v1,pb,pe)
 		 * @param  VD VectorDomain object.
 		 */
 		VectorDomain (const VectorDomain &VD) :
-		//VectorDomainBase<Field> (VD.field()),
-		DotProductDomain<Field> (VD.field())
+                        //VectorDomainBase<Field> (VD.field()),
+                        DotProductDomain<Field> (VD.field())
 		{}
 
-		//using DotProductDomain<Field>::init;
+                /** Construct from a field.
+		 * @param F Field or ring
+		 */
+		VectorDomain (const Field &F) :
+			//VectorDomainBase<Field> (F), DotProductDomain<Field> (F)
+                        DotProductDomain<Field> (F)
+		{/* std::cerr << "VD cstor " << this << std::endl;*/}
+
+
 
 		/** Assignment operator.
 		 * Assigns VectorDomain object MD to field.
@@ -225,8 +236,8 @@ VD.permute<V,PI>(v1,pb,pe)
 		 * @return reference to field
 		 */
 
-		using VectorDomainBase<Field>::field;
-		// using DotProductDomain<Field>::field;
+		//using VectorDomainBase<Field>::field;
+                using DotProductDomain<Field>::field;
 
 		/** Vector input/output operations
 		 * These routines are useful for reading and writing vectors to
@@ -528,14 +539,7 @@ VD.permute<V,PI>(v1,pb,pe)
 
 		//@}
 
-		/** Construct from a field.
-		 * @param F Field or ring
-		 */
-		VectorDomain (const Field &F) :
-			VectorDomainBase<Field> (F), DotProductDomain<Field> (F)
-		{ /*std::cerr << "VD cstor " << this << std::endl;*/ }
-
-
+	
 		/*! Random vector.
 		 * @param v vector to be randomized.
 		 */

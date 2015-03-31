@@ -145,7 +145,7 @@ namespace LinBox
 
 
 	template <>
-	class DotProductDomain<Givaro::Modular<int64_t> > : public virtual VectorDomainBase<Givaro::Modular<int64_t> > {
+	class DotProductDomain<Givaro::Modular<int64_t> > : public VectorDomainBase<Givaro::Modular<int64_t> > {
 
 	public:
 		typedef int64_t Element;

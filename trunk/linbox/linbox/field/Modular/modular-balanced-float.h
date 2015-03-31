@@ -150,7 +150,7 @@ namespace LinBox
 
 
 	template <>
-	class DotProductDomain<Givaro::ModularBalanced<float> > : public virtual VectorDomainBase<Givaro::ModularBalanced<float> > {
+	class DotProductDomain<Givaro::ModularBalanced<float> > : public  VectorDomainBase<Givaro::ModularBalanced<float> > {
 	public:
 		typedef float Element;
 		DotProductDomain(){}

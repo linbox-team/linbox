@@ -27,14 +27,15 @@
 #ifndef __LINBOX_POLYNOMIAL_MATRIX_DOMAIN_H
 #define __LINBOX_POLYNOMIAL_MATRIX_DOMAIN_H
 
+#define KARA_DEG_THRESHOLD  2
+#define FFT_DEG_THRESHOLD   2
+
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-naive.h"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-kara.h"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft.h"
-
+#include <algorithm>
 namespace LinBox
 {
-
-#define FFT_DEG_THRESHOLD   2
 
 	template <class Field>
 	class PolynomialMatrixMulDomain {
@@ -53,7 +54,7 @@ namespace LinBox
 		void mul(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b)
 		{
 			size_t d = a.size()+b.size();
-			if (d > FFT_DEG_THRESHOLD)
+                        if (d > FFT_DEG_THRESHOLD)
 				_fft.mul(c,a,b);
 			else
 				if ( d > KARA_DEG_THRESHOLD)
@@ -118,8 +119,8 @@ namespace LinBox
 		// c is of size k
 		HalflineMPDomain(const Field& F, PMatrix1& c, const PMatrix2& a, const PMatrix3 &b,
 				 size_t k)
-		: _c(&c), _a(&a), _b(&b), _b1(b,k,std::min(b.size()-1,2*k-1)), _tmp(F,c.rowdim(),c.coldim(),2*k-1),
-		_i(1), _d(std::min(b.size()-1,2*k-1)-k+1), _PMD(F), _BMD(F), mid(0)
+                        : _c(&c), _a(&a), _b(&b), _b1(b,k,std::min(b.size()-1,2*k-1)), _tmp(F,c.rowdim(),c.coldim(),2*k-1),
+                          _i(1), _d(std::min(b.size()-1,2*k-1)-k+1), _PMD(F), _BMD(F), mid(0)
 		{
 			linbox_check(c.size()==k);
 			linbox_check(a.size()<=k+1);

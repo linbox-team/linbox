@@ -29,7 +29,8 @@
 #include "linbox/field/PID-integer.h"
 #include "linbox/util/error.h"
 #include <givaro/givrational.h>
-
+#include <givaro/modular.h>
+#include <givaro/unparametric.h>
 
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/NTL/ntl-ZZ.h"
@@ -138,42 +139,76 @@ namespace LinBox
 
 }
 
-#ifdef __LINBOX_field_modular_H
+
 // including specialization to modular
-//#include "linbox/field/modular.h"
 /// Specialization to Givaro::Modular<uint16_t> --> Givaro::Modular<uint_32>.
 // Just a trial.  delete this when better examples exist.
 namespace LinBox
 {
-	template<> inline Hom<Givaro::Modular<uint16_t>, Givaro::Modular<uint32_t> >::
-	Hom(const Givaro::Modular<uint16_t>& S, const Givaro::Modular<uint32_t>& T ) :
-		_source(S),_target(T)
-	{
-		integer ps, pt;
-		if (S.characteristic(ps) != T.characteristic(pt)) throw NoHomError();
-	}
+        // GENERIC SPECIALISATION FOR MODULAR HOMORMOPHISM
+	template<typename T1, typename T2>
+	class Hom<Givaro::Modular<T1>, Givaro::Modular<T2> >{
+	public:
+		Hom(const Givaro::Modular<T1>& S, const Givaro::Modular<T2>& T)
+		{
+			integer ps, pt;
+			if (S.characteristic(ps) != T.characteristic(pt)) throw NoHomError();
+		}
+		
+		inline T2& image(T2& t, const T1& s) const
+		{
+			return t = (T2) s;
+		}
+		
+		// assumes t normalized.
+		inline T1& preimage(T1& s, const T2& t) const
+		{
+			return s = (T1) t;
+		}
+	};
 
-	template<> inline Givaro::Modular<uint32_t>::Element& Hom<Givaro::Modular<uint16_t>, Givaro::Modular<uint32_t> >::
-	image(Givaro::Modular<uint32_t>::Element& t, const Givaro::Modular<uint16_t>::Element& s)
-	{
-	       	return t = s;
-	}
-
+        
 	// assumes t normalized.
 	template<> inline Givaro::Modular<uint16_t>::Element& Hom<Givaro::Modular<uint16_t>, Givaro::Modular<uint32_t> >::
-	preimage(Givaro::Modular<uint16_t>::Element& s, const Givaro::Modular<uint32_t>::Element& t)
+	preimage(Givaro::Modular<uint16_t>::Element& s, const Givaro::Modular<uint32_t>::Element& t) const
 	{
 		linbox_check(t < UINT8_MAX) ;
 	       	return s = (uint16_t) t;
 	}
 
 }// namespace LinBox
-#endif //__LINBOX_field_modular_H
 
-#ifdef __LINBOX_field_unparametric_H
 namespace LinBox
 {
 
+        template<class Source>
+	class Hom<Source, Givaro::UnparametricRing<integer> > {
+
+	public:
+                typedef Givaro::UnparametricRing<integer> Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
+
+		Hom(const Source& S, const Target& T) :
+			_source (S), _target (T)
+		{}
+		inline Elt& image(Elt& t, const SrcElt& s)
+		{
+			return t=s;
+		}
+		inline SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
+                        return s=(SrcElt)t;
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	protected:
+		Source _source;
+		Target _target;
+	}; // end Hom
+
+        
 	template<class _Target>
 	class Hom<Givaro::UnparametricRing<integer>, _Target> {
 
@@ -401,7 +436,7 @@ namespace LinBox
 #endif
 
 } // namespace LinBox
-#endif //__LINBOX_field_unparametric_H
+
 
 #ifdef __LINBOX_HAVE_NTL
 namespace LinBox

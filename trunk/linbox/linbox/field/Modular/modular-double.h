@@ -164,14 +164,14 @@ namespace LinBox
 	};
 
 	template <>
-	class DotProductDomain<Givaro::Modular<double> > : public virtual VectorDomainBase<Givaro::Modular<double> > {
+	class DotProductDomain<Givaro::Modular<double> > : public  VectorDomainBase<Givaro::Modular<double> > {
 	private:
 		// double _bound; // BB : not used
 		size_t _nmax;
 		//double _invmod;
 
 	public:
-		DotProductDomain () { /*std::cerr << "DPD-Md def cstor" << std::endl;*/ }
+		//DotProductDomain () { /*std::cerr << "DPD-Md def cstor" << std::endl;*/ }
 		typedef double Element;
 		DotProductDomain (const Givaro::Modular<double> &F) :
 			VectorDomainBase<Givaro::Modular<double> > (F)

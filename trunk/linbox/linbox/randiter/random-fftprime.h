@@ -138,6 +138,26 @@ namespace LinBox
                         return primes;
                 }
 
+                  // generate a vector of distinct FFT primes with largest 2-valuation
+                // s.t. their product is larger than a given bound
+                inline bool generatePrimes (const Prime_Type & bound, std::vector<Prime_Type> &primes) const {
+                        primes.clear();
+                        Prime_Type prod=1;
+                        integer tmp;
+                        for (long b = (long)_bits - 1; b >= 0; b--)
+                                for (long l = (1L << ((long)_bits - b - 1)) + 1; l < (1L << ((long)_bits - b)); l +=2) {
+                                        tmp = (1L << b) * l + 1;
+                                        if (Givaro::probab_prime(tmp, 25) >= 1) {
+                                                primes.push_back(tmp);
+                                                prod*=tmp;
+                                                if (prod > bound){
+                                                        return true;
+                                                }
+                                        }
+                                }
+                        return false; // false -> Could not find enough primes
+                }
+
 		/** @brief setSeed (unsigned long ul)
 		 *  Set the random seed to be ul.
 		 */

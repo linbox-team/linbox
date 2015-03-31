@@ -36,29 +36,38 @@
 #include "linbox/integer.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/field/modular.h"
+#include "givaro/givtimer.h"
 
 #ifdef FFT_PROFILER
 #include <iostream>
-size_t  FFT_PROF_LEVEL=1;
-myTimer chrono;
+#ifndef FFT_PROF_LEVEL
+#define  FFT_PROF_LEVEL 1
+#endif
+
+//size_t  FFT_PROF_LEVEL=1;
+Givaro::Timer mychrono;
 #define FFT_PROF_MSG_SIZE 35
-#define FFT_PROFILE_START  chrono.start();
+#define FFT_PROFILE_START  mychrono.clear();mychrono.start();
 
 #define FFT_PROFILING(lvl,msg)						\
 if (lvl>=FFT_PROF_LEVEL) {					\
-	chrono.stop();cout<<"FFT: ";				\
-	cout.width(FFT_PROF_MSG_SIZE);cout<<std::left<<msg<<" : "; \
-	cout.precision(6);cout<<chrono.gettime()<<" s"<<endl;	\
-	chrono.start();						\
+  mychrono.stop();std::cout<<"FFT: ";					\
+	std::cout.width(FFT_PROF_MSG_SIZE);std::cout<<std::left<<msg<<" : "; \
+	std::cout.precision(6);std::cout<<mychrono.usertime()<<" s (real: "<<mychrono.realtime()<<")"<<std::endl; \
+	mychrono.clear();mychrono.start();				\
 }
+#ifdef HAVE_OPENMP								
+#define FFT_PROFILE_GET(x)			\
+  mychrono.stop();(x)+=mychrono.realtime();mychrono.clear();mychrono.start();
+#else
 #define FFT_PROFILE_GET(x)					\
-chrono.stop();(x)+=chrono.gettime();chrono.start();
-
+  mychrono.stop();(x)+=mychrono.usertime();mychrono.clear();mychrono.start();
+#endif
 #define FFT_PROFILE(lvl,msg,x)						\
 if ((lvl)>=FFT_PROF_LEVEL) {					\
-	cout<<"FFT: ";						\
-	cout.width(FFT_PROF_MSG_SIZE);cout<<std::left<<msg<<" : "; \
-	cout.precision(6);cout<<x<<" s"<<endl;			\
+  std::cout<<"FFT: ";						   \
+  std::cout.width(FFT_PROF_MSG_SIZE);std::cout<<std::left<<msg<<" : ";	\
+  std::cout.precision(6);std::cout<<x<<" s"<<std::endl;			\
 }
 #else
 #define FFT_PROFILE_START
@@ -67,6 +76,10 @@ if ((lvl)>=FFT_PROF_LEVEL) {					\
 #define FFT_PROFILE(lvl,msg,x)
 #endif // FFT_PROFILER
 
+
+#ifndef FFT_DEG_THRESHOLD   
+#define FFT_DEG_THRESHOLD   4
+#endif
 
 namespace LinBox
 {
@@ -86,11 +99,10 @@ namespace LinBox
 	};
 		
 	
-	class PolynomialMatrixFFTPrimeMulDomain ;                         // Mul in Zp[x] with p <2^32, (fflas, fourier)
-	
-	
-	// template <>
-	// class PolynomialMatrixFFTMulDomain<Givaro::Modular<int32_t> > ;           // Mul in Zp[x] with p <2^32
+	//class PolynomialMatrixFFTPrimeMulDomain ;                         // Mul in Zp[x] with p <2^32, (fflas, fourier)
+		
+	// template <class T>
+	// class PolynomialMatrixFFTMulDomain<Givaro::Modular<T> > ;        // Mul in Zp[x] with p^2 storable in type T
 
 	// template<>
 	// class PolynomialMatrixFFTMulDomain<Givaro::UnparametricRing<integer> >;  // Mul in Z[x]

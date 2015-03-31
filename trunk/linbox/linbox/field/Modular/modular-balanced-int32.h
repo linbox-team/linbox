@@ -164,7 +164,7 @@ namespace LinBox
 
 
 	template <>
-	class DotProductDomain<Givaro::ModularBalanced<int32_t> > : public virtual VectorDomainBase<Givaro::ModularBalanced<int32_t> > {
+	class DotProductDomain<Givaro::ModularBalanced<int32_t> > : public  VectorDomainBase<Givaro::ModularBalanced<int32_t> > {
 
 	private:
 		int32_t blocksize;

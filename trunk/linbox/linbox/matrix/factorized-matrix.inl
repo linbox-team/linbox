@@ -1139,10 +1139,13 @@ namespace LinBox
 
 
 		_rank= FFPACK::LUdivine<Field>( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
-					 _m, _n,
-					 _factLU.getPointer(),_factLU.getStride(),
-					 _permP.getWritePointer(), _permQ.getWritePointer());
-/*					 FFPACK::FfpackLQUP );*/
+                                                _m, _n,
+                                                _factLU.getPointer(),_factLU.getStride(),
+                                                _permP.getWritePointer(), _permQ.getWritePointer());
+
+                /*					 FFPACK::FfpackLQUP );*/
+               
+                       
 		_permP.setOrder(_rank);
 		_permQ.setOrder(_rank);
 

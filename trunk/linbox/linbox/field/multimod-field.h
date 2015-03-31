@@ -437,7 +437,7 @@ namespace LinBox
 
 #if 0
 	template <>
-	class DotProductDomain<MultiModDouble > : private virtual VectorDomainBase<MultiModDouble> {
+	class DotProductDomain<MultiModDouble > : private  VectorDomainBase<MultiModDouble> {
 	private:
 		//std::vector<double> _bound;
 		std::vector<size_t>  _nmax;

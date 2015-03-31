@@ -30,7 +30,7 @@
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
 #include "linbox/matrix/matrix-domain.h"
-
+#include <algorithm>
 namespace LinBox
 {
         
@@ -40,19 +40,21 @@ namespace LinBox
 		const Field            *_field;
 		BlasMatrixDomain<Field>   _BMD;
 
+		// Polynomial matrix stored as a matrix of polynomial
+		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
+		// Polynomial matrix stored as a polynomial of matrix
+		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
+                template <PMStorage S> using _PMatrix = PolynomialMatrix<PMType::matfirst,S,Field>;
 	public:
 
                 inline const Field& field() const { return *_field; }
 
                 PolynomialMatrixNaiveMulDomain(const Field &F) :
 			_field(&F), _BMD(F){}
-                       
-                // c must be allocated with the right size
-                template<typename PMatrix1,typename PMatrix2,typename PMatrix3>
-                void mul(PMatrix1&        c, 
-                         const PMatrix2&  a, 
-                         const PMatrix3&  b)
-                {                        
+                
+
+                void mul(PMatrix&  c, const PMatrix&  a, const PMatrix&  b)
+                {
                         for (size_t k=0;k<a.size()+b.size()-1;k++){
                                 size_t idx_min= (k+1<b.size()?0:k+1-b.size());
                                 size_t idx_max=std::min(k,a.size()-1);                                
@@ -62,11 +64,37 @@ namespace LinBox
                                 }
                         }
                 }                
+
+                // c must be allocated with the right size
+                template<typename Matrix1,typename Matrix2,typename Matrix3>
+                void mul(Matrix1& c, const Matrix2&  a, const Matrix3&  b)
+                {
+                        PMatrix a2(field(),a.rowdim(),a.coldim(),a.size());
+			PMatrix b2(field(),b.rowdim(),b.coldim(),b.size());
+			a2.copy(a,0,a.size()-1);
+			b2.copy(b,0,b.size()-1);
+			PMatrix c2(field(),c.rowdim(),c.coldim(),a.size()+b.size()-1);
+			mul(c2, a2, b2);
+			c.copy(c2,0,c2.size()-1);
+                }                          
+
+
                 
                 // c must be allocated with the right size 
                 // a and b can have a size smaller than required
-                template<typename PMatrix1,typename PMatrix2,typename PMatrix3>
-                void midproduct(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
+                template<typename Matrix1,typename Matrix2,typename Matrix3>
+                void midproduct(Matrix1& c, const Matrix2&  a, const Matrix3&  b,
+                                bool smallLeft=true, size_t n0=0,size_t n1=0) 
+                {
+                        PMatrix a2(field(),a.rowdim(),a.coldim(),a.size());
+			PMatrix b2(field(),b.rowdim(),b.coldim(),b.size());
+			a2.copy(a,0,a.size()-1);
+			b2.copy(b,0,b.size()-1);
+			PMatrix c2(field(),c.rowdim(),c.coldim(),c.size());
+			midproduct(c2, a2, b2, smallLeft, n0, n1);
+			c.copy(c2,0,c2.size()-1);
+                }                          
+                void midproduct(PMatrix&  c, const PMatrix&  a, const PMatrix&  b,
                                 bool smallLeft=true, size_t n0=0,size_t n1=0) {
                         //cout<<"naive midprod "<<a.size()<<"x"<<b.size()<<"->"<<c.size()<<endl;
                         size_t hdeg = ((n0==0)?c.size():n0);

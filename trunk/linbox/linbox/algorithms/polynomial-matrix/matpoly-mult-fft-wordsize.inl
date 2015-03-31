@@ -37,13 +37,13 @@ namespace LinBox {
 	/**************************************************************
          * Polynomial Matrix Multiplication over Zp[x] with p <2^32 ***
          **************************************************************/
-        template <>
-        class PolynomialMatrixFFTMulDomain<Givaro::Modular<int32_t> > {
+        template <class T>
+        class PolynomialMatrixFFTMulDomain<Givaro::Modular<T> > {
         public:
-                typedef Givaro::Modular<int32_t>              Field;
+                typedef Givaro::Modular<T>                    Field;
                 typedef Givaro::Modular<integer>         LargeField;
-                typedef typename Field::Element     Element;
-                typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
+                typedef typename Field::Element             Element;
+                typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field>        MatrixP;
                 typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,LargeField> MatrixP_L;
 
         private:
@@ -58,20 +58,23 @@ namespace LinBox {
                 void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b) {
                         uint32_t pts= 1<<(integer(a.size()+b.size()-1).bitsize());
                         if (_p< 536870912  &&  ((_p-1) % pts)==0){
-                                PolynomialMatrixFFTPrimeMulDomain MulDom(field());
+				PolynomialMatrixFFTPrimeMulDomain<Field> MulDom(field());
                                 MulDom.mul(c,a,b);
                         }
                         else {  // use computation with Givaro::Modular<integer>
                                 // -> could be optimized in some cases (e.g. output entries less than 2^64)
-                                LargeField Fp(_p);
+				FFT_PROFILE_START;
+				LargeField Fp(_p);
                                 PolynomialMatrixFFTMulDomain<LargeField> MulDom(Fp);
                                 MatrixP_L a2(Fp,a.rowdim(),a.coldim(),a.size());
                                 MatrixP_L b2(Fp,b.rowdim(),b.coldim(),b.size());
                                 MatrixP_L c2(Fp,c.rowdim(),c.coldim(),c.size());
                                 a2.copy(a,0,a.size()-1);
                                 b2.copy(b,0,b.size()-1);
+				FFT_PROFILING(2,"converting rep of polynomial matrix input");
                                 MulDom.mul(c2,a2,b2);
                                 c.copy(c2,0,c.size()-1);
+				FFT_PROFILING(2,"converting rep of polynomial matrix output");
                         }
                 }
 
@@ -80,20 +83,25 @@ namespace LinBox {
                                  bool smallLeft=true, size_t n0=0,size_t n1=0) {
                         uint32_t pts= 1<<(integer(a.size()+b.size()-1).bitsize());
                         if (_p< 536870912  &&  ((_p-1) % pts)==0){
-                                PolynomialMatrixFFTPrimeMulDomain MulDom(field());
+				//std::cout<<"MIDP: Staying with FFT Prime Field"<<std::endl;
+                                PolynomialMatrixFFTPrimeMulDomain<Field> MulDom(field());
                                 MulDom.midproduct(c,a,b,smallLeft,n0,n1);
                         }
                         else {  // use computation with Givaro::Modular<integer>
                                 //-> could be optimized in some cases (e.g. output entries less than 2^64)
-                                LargeField Fp(_p);
+				FFT_PROFILE_START;
+				//std::cout<<"MIDP: Switching to Large Field"<<std::endl;
+				LargeField Fp(_p);
                                 PolynomialMatrixFFTMulDomain<LargeField> MulDom(Fp);
                                 MatrixP_L a2(Fp,a.rowdim(),a.coldim(),a.size());
                                 MatrixP_L b2(Fp,b.rowdim(),b.coldim(),b.size());
                                 MatrixP_L c2(Fp,c.rowdim(),c.coldim(),c.size());
                                 a2.copy(a,0,a.size()-1);
                                 b2.copy(b,0,b.size()-1);
+				FFT_PROFILING(2,"converting rep of polynomial matrix input");
                                 MulDom.midproduct(c2,a2,b2,smallLeft,n0,n1);
                                 c.copy(c2,0,c.size()-1);
+				FFT_PROFILING(2,"converting rep of polynomial matrix output");
                         }
                 }
 

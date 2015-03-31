@@ -157,7 +157,7 @@ namespace LinBox
 
 	//! Specialization  of DotProductDomain.
 	template <>
-	class DotProductDomain<Givaro::ModularBalanced<double> > : public virtual VectorDomainBase<Givaro::ModularBalanced<double> > {
+	class DotProductDomain<Givaro::ModularBalanced<double> > : public  VectorDomainBase<Givaro::ModularBalanced<double> > {
 	private:
 		double _bound;
 		size_t _nmax;

@@ -28,7 +28,8 @@
 #include <vector>
 #include <algorithm>
 
-#define MBASIS_THRESHOLD_LOG 5
+#include "fflas-ffpack/fflas-ffpack.h"
+#define MBASIS_THRESHOLD_LOG 4
 #define MBASIS_THRESHOLD (1<<MBASIS_THRESHOLD_LOG)
 
 namespace LinBox {
@@ -72,6 +73,7 @@ namespace LinBox {
         public:
                 double mul;
                 Timer tmul;
+                size_t _idx=0;
 
                 OrderBasis(const Field& f) : _field(&f), _PMD(f), _BMD(f) {
                         mul=0.;
@@ -83,15 +85,19 @@ namespace LinBox {
                 // serie must have exactly order elements (i.e. its degree = order-1)
                 // sigma can have at most order+1 elements (i.e. its degree = order)
                 template<typename PMatrix1, typename PMatrix2>
-                size_t PM_Basis(PMatrix1             &sigma,
-                                const PMatrix2       &serie,
-                                size_t                order,
+                size_t PM_Basis(PMatrix1                 &sigma,
+                                const PMatrix2           &serie,
+                                size_t                    order,
                                 std::vector<size_t>       &shift)
                 {
                         if (order <= MBASIS_THRESHOLD) {
-                                return M_Basis(sigma, serie, order, shift);
+                                return M_Basis(sigma, serie, order, shift);                            
                         }
                         else {
+#ifdef PROFILE_PMBASIS
+                                Timer chrono;
+                                chrono.start();
+#endif
                                 size_t ord1,ord2,d1,d2;
                                 ord1 = order>>1;
                                 ord2 = order-ord1; // ord1+ord2=order
@@ -100,39 +106,65 @@ namespace LinBox {
                                 n=sigma.coldim();
                                 k=serie.coldim();
 
-                                PMatrix sigma1(field(),m,n,ord1+1);
-                                //typename PMatrix1::view       sigma1=sigma.at(0,ord1);
-                                //PMatrix serie1(field(),n,k,ord1); serie1.copy(serie,0,ord1-1);
-                                typename PMatrix2::const_view serie1=serie.at(0,ord1-1);
-                                PMatrix sigma2(field(),m,n,ord2+1);
-
+                                PMatrix1 sigma1(field(),m,n,ord1+1);                                
+                                PMatrix1 sigma2(field(),m,n,ord2+1);
+                                
                                 // first recursive call
+                                //typename PMatrix2::const_view serie1=serie.at(0,ord1-1);
+                                PMatrix2 serie1(field(),n,k,ord1);serie1.copy(serie,0,ord1-1);
                                 d1 = PM_Basis(sigma1, serie1, ord1, shift);
-
+#ifdef PROFILE_PMBASIS
+                                chrono.stop();
+                                std::cout<<"PM-Basis: 1st rec call : "<<chrono.usertime()<<std::endl;
+                                chrono.clear();chrono.start();
+#endif
                                 // compute the serie update
-                                //PMatrix serie2(field(),n,k,ord2+(ord2==ord1));//serie2 size=ord1+1 -> midproduct)
-                                PMatrix serie2(field(),n,k,ord2);//serie2 size=ord1+1 -> midproduct)
+                                PMatrix2 serie2(field(),n,k,ord2);//serie2 size=ord1+1 -> midproduct)
                                 // TODO: for Block Wiedemann, this step can use only the first column of sigma
                                 _PMD.midproductgen(serie2, sigma1, serie, true, ord1+1,ord1+ord2);
-                                // cout<<"updated serie:"<<endl<<serie<<endl;
-
+#ifdef PROFILE_PMBASIS
+                                chrono.stop();
+                                std::cout<<"PM-Basis: serie update "<<chrono.usertime()<<std::endl;
+                                chrono.clear();chrono.start();
+#endif
                                 // second recursive call
                                 d2 = PM_Basis(sigma2, serie2, ord2, shift);
-
+#ifdef PROFILE_PMBASIS
+                                chrono.stop();
+                                std::cout<<"PM-Basis: 2nd rec call : "<<chrono.usertime()<<std::endl;
+                                chrono.clear();chrono.start();
+#endif                          
                                 // compute the result
                                 _PMD.mul(sigma, sigma2, sigma1);
-
-                                sigma.resize(d1+d2+1);
-
+                                sigma.resize(d1+d2+1);                               
+#ifdef PROFILE_PMBASIS
+                                chrono.stop();
+                                std::cout<<"PM-Basis: sigma mul : "<<chrono.usertime()<<" ("<<d1<<"x"<<d2<<")"<<std::endl;                                
+#endif
                                 return d1+d2;
                         }
+                }
+                // serie must have exactly order elements (i.e. its degree = order-1)
+                size_t M_Basis(MatrixP              &sigma,
+                               const MatrixP        &serie,
+                               size_t                 order,
+                               std::vector<size_t>   &shift)
+                {
+                        PMatrix sigma1(field(),sigma.rowdim(),sigma.coldim(),order+1);
+                        PMatrix serie1(field(),serie.rowdim(),serie.coldim(),order);
+                        serie1.copy(serie,0,order-1);
+                        size_t d= M_Basis(sigma1,serie1,order,shift);
+                        sigma.resize(d+1);
+                        sigma.copy(sigma1,0,d);
+                        return d;
+
                 }
 
                 // serie must have exactly order elements (i.e. its degree = order-1)
                 template<typename PMatrix1, typename PMatrix2>
-                size_t M_Basis(PMatrix1          &sigma,
-                               const PMatrix2    &serie,
-                               size_t            order,
+                size_t M_Basis(PMatrix1              &sigma,
+                               const PMatrix2        &serie,
+                               size_t                 order,
                                std::vector<size_t>   &shift)
                 {
                         //cout<<"------------- mba : "<<order<<endl;
@@ -198,37 +230,50 @@ namespace LinBox {
                                         }
                                         _BMD.mulin_right(Bperm, delta);
                                 }
-
+                                //std::cout<<"******** k="<<k<<std::endl;
                                 //std::cout<<sigma<<std::endl;
-                                //delta.write(std::cout,Tag::FileFormat::Plain);
-                                //std::cout<<std::endl;
-
-                                // Compute LQUP of Discrepancy
+                                //delta.write(std::cout,Tag::FileFormat::Maple);
                                 BlasMatrix<Field> delta_copy(delta);
-                                LQUPMatrix<Field> LQUP(delta_copy,P,Qt);
+                                //delta_copy.write(std::cout,Tag::FileFormat::Maple);
+                                //std::cout<<std::endl;                                
+#define NEWELIM
+#ifdef NEWELIM
+                                // Compute a column reduced basis of the nullspace of delta
+                                // -> [ L2 I ]                                 
+                                rank= FFPACK::PLUQ (field(), FFLAS::FflasNonUnit, m, n,
+                                                    delta_copy.getWritePointer(),delta_copy.getStride(),
+                                                    Qt.getWritePointer(), P.getWritePointer());
+                                //delta_copy.write(std::cout,Tag::FileFormat::Maple);
+                                //std::cout<<std::endl;                                
 
+                                View L1(delta_copy,0   ,0,  rank,rank);
+                                View L2(delta_copy,rank,0,m-rank,rank);
+                                FFLAS::ftrsm(field(),FFLAS::FflasRight,FFLAS::FflasLower,
+                                             FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+                                             m-rank,rank, field().mOne, L1.getPointer(),L1.getStride(), L2.getWritePointer(),L2.getStride());                                
+#else
+                                LQUPMatrix<Field> LQUP(delta_copy,P,Qt);
                                 // Get L from LQUP
                                 TriangularBlasMatrix<Field> L(field(), m, m, Tag::Shape::Lower, Tag::Diag::Unit);
                                 LQUP.getL(L);
                                 rank=LQUP.getRank();  // the first rank entries of Qt give the pivot row
-
                                 // inverse L in-place (COULD BE IMPROVED -> only compute the left kernel by trsm)
                                 //FFPACK::ftrtri(field(),FFLAS::FflasLower,FFLAS::FflasUnit,m,L.getPointer(),L.getStride());
-
                                 View L1(L,0   ,0,  rank,rank);
                                 View L2(L,rank,0,m-rank,rank);
                                 FFLAS::ftrsm(field(),FFLAS::FflasRight,FFLAS::FflasLower,
                                              FFLAS::FflasNoTrans,FFLAS::FflasUnit,
                                              m-rank,rank, field().mOne, L1.getPointer(),m, L2.getWritePointer(),m);
-
+#endif
+                                
                                 // update sigma by L^(-1) (rank sensitive -> use only the left kernel basis)
                                 for(size_t i=0;i<=max_degree;i++){
                                         // NEED TO APPLY Qt to sigma[i]
+                                        _BMD.mulin_right(Qt, sigma[i]);
                                         View S1(sigma[i],0,0,rank,m);
                                         View S2(sigma[i],rank,0,m-rank,m);
                                         _BMD.axpyin(S2,L2,S1);
                                         //_BMD.mulin_right(L,sigma[i]);
-
                                 }
 
                                 size_t dmax=0, smax=0;
@@ -245,7 +290,6 @@ namespace LinBox {
                                         degree[Qt[i]]=std::max(dmax, degree[Qt[i]]);
                                         //THIS LINE IS NOT NEEDED -> shift [Qt[i]]=max(smax, shift [Qt[i]]);
                                 }
-
                                 // shift the pivot row of sigma by x
                                 for (int l=max_degree-1;l>=0;l--)
                                         for (size_t i=0;i<rank;i++)
@@ -256,7 +300,6 @@ namespace LinBox {
                                                 sigma.ref(Qt[i],j,0)=field().zero;
                                 //cout<<"max degree="<<max_degree<<endl<<endl;
                                 //cout<<sigma<<endl<<"******************"<<endl;
-
                                 // update Early Termination
                                 //_EarlyStop.update(rank,shift); 
                                 _EarlyStop.update(m-rank,shift); // codimension (m-rank) seems better
@@ -333,7 +376,7 @@ namespace LinBox {
                         L_sigma.push_back(sigmak);
                         size_t sss=0;
                         for(size_t k=ord;k<order &&  !_EarlyStop.terminated();k+=ord,sss++){
-                                // cout<<"------------ order="<<k<<endl;
+                                //std::cout<<"------------ order="<<k<<std::endl;
                                 l  = twoValuation(k);
                                 lp = twoValuation(k-(1<<l)); lp=(lp==0?log_order:lp);
                                 // compute next element in the original serie and

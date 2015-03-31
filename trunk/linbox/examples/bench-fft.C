@@ -56,20 +56,20 @@ template<typename T>
 struct congruent{
 	T p;
 	congruent(T _p): p(_p){}
-	bool operator()(T a, T b) const { return (a%p) == (b%p);}
+	bool operator()(T a, T b) const { return ((uint64_t)a%(uint64_t)p) == ((uint64_t)b%(uint64_t)p);}
 };
 template<typename Funct, typename FFT, typename Vect>
 void DFT_sanity_check(FFT& FFTDom, Funct f, const Vect& x, const Vect& y, string msg){
 	typedef typename FFT::Element Element ;
 	Vect z(x);
-	auto Functor = bind(f, &FFTDom, ref(z));
+	auto Functor = bind(f, &FFTDom, &z[0]);
 	Functor();
 	msg+="  ";
 	msg.resize(45,'.');
 	cout<<"  Checking ... "<<msg
-	    << (equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._pl))?" done":" error")<<endl;
+	    << (equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p))?" done":" error")<<endl;
 
-	// if (!(equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._pl)))){
+	// if (!(equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p)))){
 	// 	std::ostream_iterator<Element> out_it (std::cout,", ");
 	// 	std::copy ( z.begin(), z.end(), out_it );
 	// 	std::cout<<std::endl;
@@ -96,42 +96,42 @@ void check_DIF(const Field& fld, size_t kmax, long seed) {
 		
 		FFT_transform<Field> MulDom(fld,lpts);
 		typedef FFT_transform<Field> FFT_t;
-		typedef vector<Element>  Vect;
+
 
 		/* CHECK DIF */
 		// compute the correct result
-		MulDom.FFT_DIF_Harvey_mod2p_iterative(y); 
+		MulDom.FFT_DIF_Harvey_mod2p_iterative(y.data()); 
 		// check 2x2 		
-		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative2x2<Vect>,x,y, "DIF_Harvey_mod2p_iterative2x2");
+		DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative2x2,x,y, "DIF_Harvey_mod2p_iterative2x2");
 		// check 3x3 		
-		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative3x3<Vect>,x,y, "DIF_Harvey_mod2p_iterative3x3");
+		DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative3x3,x,y, "DIF_Harvey_mod2p_iterative3x3");
 		// check 4x1 SSE		
-		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative4x1_SSE<Vect>,x,y, "DIF_Harvey_mod2p_iterative4x1_SSE");
+		//DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x1_SSE,x,y, "DIF_Harvey_mod2p_iterative4x1_SSE");
 		// check 4x2 SSE		
-		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative4x2_SSE<Vect>,x,y, "DIF_Harvey_mod2p_iterative4x2_SSE");
+		//DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x2_SSE,x,y, "DIF_Harvey_mod2p_iterative4x2_SSE");
 #ifdef __AVX2__
 		// check 8x1 AVX		
-		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative8x1_AVX<Vect>,x,y, "DIF_Harvey_mod2p_iterative8x1_AVX");
+		//DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative8x1_AVX,x,y, "DIF_Harvey_mod2p_iterative8x1_AVX");
 #endif
 		// check Harvey SSE		
-		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIF_Harvey_SSE<Vect>,x,y, "DIF_Harvey_SSE");
+		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIF<Element>,x,y, "DIF_Harvey_SSE");
 		cout<<"---------------------------------------------------------------"<<endl;
 		/* CHECK DIT */
 		// compute the correct result
 		y=x;
-		MulDom.FFT_DIT_Harvey_mod4p_iterative2x2(y);
+		MulDom.FFT_DIT_Harvey_mod4p_iterative2x2(y.data());
 		// check 2x2 		
-		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIT_Harvey_mod4p_iterative2x2<Vect>,x,y, "DIT_Harvey_mod4p_iterative2x2");
+		DFT_sanity_check(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative2x2,x,y, "DIT_Harvey_mod4p_iterative2x2");
 		// check 3x3 		
-		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIT_Harvey_mod4p_iterative3x3<Vect>,x,y, "DIT_Harvey_mod4p_iterative3x3");
+		DFT_sanity_check(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative3x3,x,y, "DIT_Harvey_mod4p_iterative3x3");
 		// check 4x1 SSE		
-		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIT_Harvey_mod4p_iterative4x1_SSE<Vect>,x,y, "DIT_Harvey_mod4p_iterative4x1_SSE");
+		//DFT_sanity_check(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative4x1_SSE,x,y, "DIT_Harvey_mod4p_iterative4x1_SSE");
 #ifdef __AVX2__
 		// check 8x1 AVX		
-		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIT_Harvey_mod4p_iterative8x1_AVX<Vect>,x,y, "DIT_Harvey_mod4p_iterative8x1_AVX");
+		//DFT_sanity_check(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative8x1_AVX,x,y, "DIT_Harvey_mod4p_iterative8x1_AVX");
 #endif
 		// check Harvey SSE		
-		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIT_Harvey_SSE<Vect>,x,y, "DIT_Harvey_SSE");
+		DFT_sanity_check(MulDom,&FFT_t::template FFT_DIT<Element>,x,y, "DIT_Harvey_SSE");
 		
 		cout<<endl;
 	}
@@ -143,7 +143,7 @@ void check_DIF(const Field& fld, size_t kmax, long seed) {
 template<typename Funct, typename FFT, typename Vect>
 void DFT_performance(FFT& FFTDom, Funct f, size_t lpts, const Vect& x, string msg){
 	Vect z(x);
-	auto Functor = bind(f, &FFTDom, ref(z));
+	auto Functor = bind(f, &FFTDom, &z[0]);
 	Timer chrono;
         double time;
         double Miops;
@@ -185,38 +185,34 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		randomVect(Gen,x);
 		FFT_transform<Field> MulDom(fld,lpts);
 		typedef FFT_transform<Field> FFT_t; 
-		typedef vector<Element>  Vect;
-#ifdef __ALL_FFT
+
 		// check 2x2 		
-		DFT_performance(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative2x2<Vect>,lpts, x,     "DIF_Harvey_mod2p_iterative2x2");
+		DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative2x2,lpts, x,     "DIF_Harvey_mod2p_iterative2x2");
 		// check 3x3 		
-		DFT_performance(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative3x3<Vect>,lpts, x,     "DIF_Harvey_mod2p_iterative3x3");
+		DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative3x3,lpts, x,     "DIF_Harvey_mod2p_iterative3x3");
 		// check 4x1 SSE		
-		DFT_performance(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative4x1_SSE<Vect>,lpts, x, "DIF_Harvey_mod2p_iterative4x1_SSE");
+		//DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x1_SSE,lpts, x, "DIF_Harvey_mod2p_iterative4x1_SSE");
 		// check 4x2 SSE		
-		DFT_performance(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative4x2_SSE<Vect>,lpts, x, "DIF_Harvey_mod2p_iterative4x2_SSE");
+		//DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x2_SSE,lpts, x, "DIF_Harvey_mod2p_iterative4x2_SSE");
 #ifdef __AVX2__
 		// check 8x1 AVX		
-		DFT_performance(MulDom,&FFT_t::template FFT_DIF_Harvey_mod2p_iterative8x1_AVX<Vect>,lpts, x, "DIF_Harvey_mod2p_iterative8x1_AVX");
-#endif
+		//DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative8x1_AVX,lpts, x, "DIF_Harvey_mod2p_iterative8x1_AVX");
 #endif
 		// check Harvey SSE		
-		DFT_performance(MulDom,&FFT_t::template FFT_DIF_Harvey_SSE<Vect>,lpts, x, "DIF_Harvey_SSE");
+		DFT_performance(MulDom,&FFT_t::template FFT_DIF<Element>,lpts, x, "DIF_Harvey_SSE");
 		cout<<"---------------------------------------------------------------"<<endl;
-#ifdef __ALL_FFT
 		// check 2x2 		
-		DFT_performance(MulDom,&FFT_t::template FFT_DIT_Harvey_mod4p_iterative2x2<Vect>,lpts, x,     "DIT_Harvey_mod4p_iterative2x2");
+		DFT_performance(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative2x2,lpts, x,     "DIT_Harvey_mod4p_iterative2x2");
 		// check 3x3 		
-		DFT_performance(MulDom,&FFT_t::template FFT_DIT_Harvey_mod4p_iterative3x3<Vect>,lpts, x,     "DIT_Harvey_mod4p_iterative3x3");
+		DFT_performance(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative3x3,lpts, x,     "DIT_Harvey_mod4p_iterative3x3");
 		// check 4x1 SSE		
-		DFT_performance(MulDom,&FFT_t::template FFT_DIT_Harvey_mod4p_iterative4x1_SSE<Vect>,lpts, x, "DIT_Harvey_mod4p_iterative4x1_SSE");
+		//DFT_performance(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative4x1_SSE,lpts, x, "DIT_Harvey_mod4p_iterative4x1_SSE");
 #ifdef __AVX2__
 		// check 8x1 AVX		
-		DFT_performance(MulDom,&FFT_t::template FFT_DIT_Harvey_mod4p_iterative8x1_AVX<Vect>,lpts, x, "DIT_Harvey_mod4p_iterative8x1_AVX");
-#endif
+		//DFT_performance(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative8x1_AVX,lpts, x, "DIT_Harvey_mod4p_iterative8x1_AVX");
 #endif
 		// check Harvey SSE		
-		DFT_performance(MulDom,&FFT_t::template FFT_DIT_Harvey_SSE<Vect>,lpts, x, "DIT_Harvey_SSE");
+		DFT_performance(MulDom,&FFT_t::template FFT_DIT<Element>,lpts, x, "DIT_Harvey_SSE");
 
 
 		cout<<endl;
@@ -237,7 +233,8 @@ int main(int argc, char** argv){
 	cout<<"prime : "<<p<<endl;
 	cout<<endl;
 	
-	Givaro::Modular<int32_t> F(p);
+	Givaro::Modular<uint32_t> F(p);
+	//Givaro::Modular<double> F(p);
 	check_DIF(F,k,seed);
 	bench_DIF(F,k,seed);
 

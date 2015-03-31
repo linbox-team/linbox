@@ -133,7 +133,7 @@ namespace LinBox { /*  uint8_t */
 	//! Specialization of DotProductDomain for unsigned short modular field
 
 	template <>
-	class DotProductDomain<Givaro::Modular<uint8_t> > : public virtual VectorDomainBase<Givaro::Modular<uint8_t> > {
+	class DotProductDomain<Givaro::Modular<uint8_t> > : public  VectorDomainBase<Givaro::Modular<uint8_t> > {
 	public:
 
 		typedef uint8_t Element;
@@ -279,7 +279,7 @@ namespace LinBox { /*  uint16_t */
 	//! Specialization of DotProductDomain for unsigned short modular field
 
 	template <>
-	class DotProductDomain<Givaro::Modular<uint16_t> > : public virtual VectorDomainBase<Givaro::Modular<uint16_t> > {
+	class DotProductDomain<Givaro::Modular<uint16_t> > : public VectorDomainBase<Givaro::Modular<uint16_t> > {
 	public:
 
 		typedef uint16_t Element;
@@ -441,7 +441,7 @@ namespace LinBox { /*  uint32_t */
 	//! Specialization of DotProductDomain for uint32_t modular field
 
 	template <>
-	class DotProductDomain<Givaro::Modular<uint32_t> > : private virtual VectorDomainBase<Givaro::Modular<uint32_t> > {
+	class DotProductDomain<Givaro::Modular<uint32_t> > : public VectorDomainBase<Givaro::Modular<uint32_t> > {
 	public:
 
 		typedef uint32_t Element;
@@ -603,7 +603,7 @@ namespace LinBox { /*  uint64_t */
 	//! Specialization of DotProductDomain for uint64_t modular field
 
 	template <>
-	class DotProductDomain<Givaro::Modular<uint64_t> > : private virtual VectorDomainBase<Givaro::Modular<uint64_t> > {
+	class DotProductDomain<Givaro::Modular<uint64_t> > : public VectorDomainBase<Givaro::Modular<uint64_t> > {
 	public:
 
 		typedef uint64_t Element;

@@ -130,7 +130,7 @@ namespace LinBox
 
 
 	template <>
-	class DotProductDomain<Givaro::Modular<float> > : public virtual VectorDomainBase<Givaro::Modular<float> > {
+	class DotProductDomain<Givaro::Modular<float> > : public VectorDomainBase<Givaro::Modular<float> > {
 	private:
 		float _bound;
 		size_t _nmax;

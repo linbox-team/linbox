@@ -27,20 +27,22 @@
 namespace LinBox {
 
 	template <class Field>
-	inline void FFT_transform<Field>::Butterfly_DIT_mod4p(Element& A, Element& B, const Element& alpha, const Element& alphap) {
+	template <class T>
+	inline void FFT_transform<Field>::Butterfly_DIT_mod4p(T& A, T& B, const uint32_t& alpha, const uint32_t& alphap) {
 		// Harvey's algorithm
 		// 0 <= A,B < 4*p, p < 2^32 / 4
 		// alphap = Floor(alpha * 2^ 32 / p])
 		if (A >= _dpl) A -= _dpl;
-		Element tmp = ((uint32_t) alphap * (uint64_t)B) >> 32;
-		tmp = alpha * B - tmp * _pl;
+		uint32_t tmp = ((uint32_t) alphap * (uint64_t)B) >> 32;
+		tmp = (uint64_t)alpha * B - tmp * _pl;
 		B = A + (_dpl - tmp);
 		//        B &= 0XFFFFFFFF;
 		A += tmp;
 	}
 
 	template <class Field>
-	inline void FFT_transform<Field>::Butterfly_DIF_mod2p(Element& A, Element& B, const Element& alpha, const Element& alphap) {
+	template <class T>
+	inline void FFT_transform<Field>::Butterfly_DIF_mod2p(T& A, T& B, const uint32_t& alpha, const uint32_t& alphap) {
 		// Harvey's algorithm
 		// 0 <= A,B < 2*p, p < 2^32 / 4
 		// alphap = Floor(alpha * 2^ 32 / p])
@@ -55,8 +57,7 @@ namespace LinBox {
 
 
 	template <class Field>
-	template <class Polynomial>
-	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative (Polynomial &fft) {
+	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative (Element *fft) {
 		for (size_t w = n >> 1, f = 1, pos_w = 0; w != 0; f <<= 1, pos_w += w, w >>= 1)
 			// w : witdh of butterflies
 			// f : # families of butterflies
@@ -67,8 +68,7 @@ namespace LinBox {
 	}
 
 	template <class Field>
-	template <class Polynomial>
-	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative2x2 (Polynomial &fft) {
+	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative2x2 (Element *fft) {
 		size_t w, f;
 		for (w = n >> 1, f = 1; w >= 2; w >>= 2, f <<= 2)
 			// w : witdh of butterflies
@@ -102,8 +102,7 @@ namespace LinBox {
 	}
 
 	template <class Field>
-	template <class Polynomial>
-	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative3x3 (Polynomial &fft) {
+	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative3x3 (Element *fft) {
 		size_t w, f;
 		for (w = n >> 1, f = 1; w >= 4; w >>= 3, f <<= 3)
 			// w : witdh of butterflies
@@ -155,8 +154,7 @@ namespace LinBox {
 
 
 	template <class Field>
-	template <class Polynomial>
-	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative2x2 (Polynomial &fft) {
+	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative2x2 (Element *fft) {
 		size_t w, f;
 		for (w = 1, f = n >> 1; f >= 2; w <<= 2, f >>= 2)
 			// w : witdh of butterflies
@@ -187,8 +185,7 @@ namespace LinBox {
 	}
 
 	template <class Field>
-	template <class Polynomial>
-	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative3x3 (Polynomial &fft) {
+	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative3x3 (Element *fft) {
 		size_t w, f;
 		for (w = 1, f = n >> 1; f >= 4; w <<= 3, f >>= 3)
 			// w : witdh of butterflies

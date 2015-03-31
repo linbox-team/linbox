@@ -28,8 +28,11 @@
 #define __LINBOX_polynomial_matrix_H
 #include <vector>
 #include "linbox/vector/subvector.h"
-#include <algorithm>
 #include "linbox/matrix/dense-matrix.h"
+#include "linbox/field/hom.h"
+#include "givaro/modular.h"
+#include <algorithm>
+
 
 #define COPY_BLOCKSIZE 32
 
@@ -56,7 +59,7 @@ namespace LinBox{
 		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,_Field>  Self_t;
 		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,_Field> Other_t;
 
-		PolynomialMatrix() {}
+		//PolynomialMatrix() {}
 
 		// construct a polynomial matrix in f[x]^(m x n) of degree (s-1)
 		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s) :
@@ -135,7 +138,7 @@ namespace LinBox{
 		// M is stored as a Polynomial of Matrices
 		template <size_t storage>
 		void copy(const PolynomialMatrix<PMType::matfirst,storage,Field>& M, size_t beg, size_t end){
-			//cout<<"copying.....matfirst to polfirst.....same field"<<endl;
+			//std::cout<<"copying.....matfirst to polfirst.....same field"<<std::endl;
 			const size_t ls = COPY_BLOCKSIZE;
 			for (size_t i = beg; i <= end; i+=ls)
 				for (size_t j = 0; j < _col * _row; j+=ls)
@@ -149,7 +152,7 @@ namespace LinBox{
 		// M is stored as a Polynomial of Matrices with a different field
 		template<size_t storage, typename OtherField>
 		void copy(const PolynomialMatrix<PMType::matfirst,storage,OtherField> & M, size_t beg, size_t end){
-			//cout<<"copying.....matfirst to polfirst.....other field"<<endl;
+			//std::cout<<"copying.....matfirst to polfirst.....other field"<<std::endl;
 			const size_t ls = COPY_BLOCKSIZE;
 			Hom<OtherField,Field> hom(M.field(),field()) ;
 			for (size_t i = beg; i <= end; i+=ls)
@@ -213,23 +216,27 @@ namespace LinBox{
                                 b= ((int) ceil (log ((double) _size) / M_LN10));
                                 wid*=10*(b*(b-1)/2.);
                         }
+			std::cout<<"Matrix([";
                         for (size_t i = 0; i< _row;++i) {
                                 os << "  [ ";
                                 for (size_t j = 0;j<_col;++j){
                                         os.width (wid);
-                                        field().write(os,get(i+j*_col,deg_min));
+                                        field().write(os,get(i,j,deg_min));
 					for (size_t k=deg_min+1;k<deg_max;++k){
                                                 os<<"+";
-                                                field().write(os,get(i+j*_col,k))<<"x^"<<k-deg_min;
+                                                field().write(os,get(i,j,k))<<"*x^"<<k-deg_min;
                                         }
                                         if (deg_max-deg_min>0){
                                                 os<<"+";
-                                                field().write(os,get(i+j*_col,deg_max))<<"x^"<<deg_max-deg_min<<"  ";
+                                                field().write(os,get(i,j,deg_max))<<"*x^"<<deg_max-deg_min;
                                         }
+					os<<(j<_col-1?",":"" );
                                 }
-                                os << "]" << std::endl;
+				os << (i<_row-1?"],":"]" )<< std::endl;
                         }
-			return os;
+			std::cout<<"]);";
+		
+                	return os;
                 }
 
 		Element* getWritePointer(){return &_rep[0];}
@@ -253,13 +260,15 @@ namespace LinBox{
 		typedef BlasMatrix<Field>         Matrix;
 		typedef std::vector<Element>       Polynomial;
 		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,_Field>  Self_t;
-		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,_Field> Other_t;
+		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,_Field> Other_t;		
+			       
 		typedef Matrix value_type;
 
 		PolynomialMatrix() {}
 
 		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s) :
-			 _rep(s,Matrix(f)), _row(r), _col(c), _size(s), _fld(&f) {
+			_rep(s,Matrix(f)), _row(r), _col(c), _size(s), _fld(&f) {
+			//_row(r), _col(c), _size(s), _fld(&f) {			
 			for(size_t i=0;i<s;i++)
 				_rep[i].init(f,r,c);
 		}
@@ -410,23 +419,25 @@ namespace LinBox{
 
 			b= ((int) ceil (log ((double) _size) / M_LN10));
 			wid*=10*(b*(b-1)/2.);
-
-                        for (size_t i = 0; i< _row;++i) {
+			std::cout<<"Matrix([";
+			for (size_t i = 0; i< _row;++i) {
                                 os << "  [ ";
                                 for (size_t j = 0;j<_col;++j){
                                         os.width (wid);
                                         field().write(os,_rep[deg_min].getEntry(i,j));
                                         for (size_t k=deg_min+1;k<deg_max;++k){
                                                 os<<"+";
-                                                field().write(os,_rep[k].getEntry(i,j))<<"x^"<<k-deg_min;
+                                                field().write(os,_rep[k].getEntry(i,j))<<"*x^"<<k-deg_min;
                                         }
                                         if (deg_max-deg_min>0){
                                                 os<<"+";
-                                                field().write(os,_rep[deg_max].getEntry(i,j))<<"x^"<<deg_max-deg_min<<"  ";
+                                                field().write(os,_rep[deg_max].getEntry(i,j))<<"*x^"<<deg_max-deg_min;
                                         }
+					os<<(j<_col-1?",":"" );
                                 }
-                                os << "]" << std::endl;
+                                os << (i<_row-1?"],":"]" )<< std::endl;
                         }
+			std::cout<<"]);";
 			return os;
                 }
 
@@ -596,6 +607,7 @@ namespace LinBox{
 		size_t  _size;
 		size_t _shift;
 	};
+
 
 
 
