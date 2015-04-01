@@ -164,9 +164,9 @@ namespace LinBox
                         primes.clear();
                         Prime_Type prod=1;
                         integer tmp;
-                        std::cout<<"rns bound: "<<bound<<std::endl;
-                        std::cout<<"2 valuation: "<<val<<std::endl;
-                        std::cout<<"prime bitmax: "<<_bits<<std::endl;
+                        //std::cout<<"rns bound: "<<bound<<std::endl;
+                        //std::cout<<"2 valuation: "<<val<<std::endl;
+                        //std::cout<<"prime bitmax: "<<_bits<<std::endl;
                         for (uint64_t b = (long)_bits; b >= val; b--)
                                 // for (uint64_t l = (1UL << ((long)_bits - b - 1)) + 1; l < (1UL << ((long)_bits - b)); l +=2) {
                                 for (long l = (1L << ((long)_bits - b)) - 1; l >=1; l -=2) {
@@ -174,7 +174,7 @@ namespace LinBox
                                         if (Givaro::probab_prime(tmp, 25) >= 1) {
                                                 primes.push_back(tmp);
                                                 prod*=tmp;
-                                                std::cout<<tmp<<" -> "<<prod<<std::endl;
+                                                //std::cout<<tmp<<" -> "<<prod<<std::endl;
                                                 if (prod > bound){
                                                         return true;
                                                 }
