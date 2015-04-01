@@ -3,6 +3,7 @@
 #include <iostream>
 #include "linbox/matrix/polynomial-matrix.h"
 #include "linbox/randiter/random-fftprime.h"
+#include "linbox/randiter/random-prime.h"
 #include "linbox/field/modular.h"
 
 #include "linbox/algorithms/polynomial-matrix/polynomial-matrix-domain.h"
@@ -67,10 +68,8 @@ void check_sigma(const Field& F, const RandIter& Gen, size_t m, size_t n, size_t
 	//typedef typename Field::Element Element;
 	//typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
-
 	MatrixP Serie(F, m, n,  d);
 	MatrixP Sigma1(F, m, m, d+1),Sigma2(F, m, m, d+1),Sigma3(F, m, m, d+1);
-
 
 	// set the Serie at random
 	for (size_t k=0;k<d;++k)
@@ -80,12 +79,12 @@ void check_sigma(const Field& F, const RandIter& Gen, size_t m, size_t n, size_t
 
 	//std::cout<<"Serie:="<<Serie<<std::endl;
 	
-	
 	// define the shift
 	vector<size_t> shift(m,0);
 	vector<size_t> shift2(shift),shift3(shift);
 
 	OrderBasis<Field> SB(F);
+
 	SB.M_Basis(Sigma3, Serie, d, shift3);
 	std::cout << "M-Basis       : " <<check_sigma(F,Sigma3,Serie,d)<<endl;
 	SB.PM_Basis(Sigma1, Serie, d, shift);
@@ -122,29 +121,34 @@ int main(int argc, char** argv){
 	typedef Givaro::Modular<double>              SmallField;	
 	typedef Givaro::Modular<Givaro::Integer>      LargeField;
 
-	RandomFFTPrime Rd(b,seed);
 	size_t logd=integer(d).bitsize();
-	if (logd>b-2){
-		std::cout<<"degree is to large for field bitsize: "<<b<<std::endl;
-		exit(0);
-	}
 	
-	integer p = Rd.randomPrime(+1);
-	std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
-	std::cout<<"  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
+	std::cout<<"###  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
 	if (b < 26){
+		if (logd>b-2){
+			std::cout<<"degree is to large for field bitsize: "<<b<<std::endl;
+			exit(0);
+		}
+		RandomFFTPrime Rd(b,seed);	
+		integer p = Rd.randomPrime(logd+1);
+		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 		SmallField F(p);
-
 		typename SmallField::RandIter G(F,0,seed);
 		check_sigma(F,G,m,n,d);
 	}
 	else {
+		RandomPrimeIterator Rd(b,seed);	
+		integer p = Rd.randomPrime();
+		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
+
 		LargeField F(p);
 		typename LargeField::RandIter G(F,0,seed);
 		check_sigma(F,G,m,n,d);
 	}
 
+
 	
 	return 0;
 }
 
+ 

@@ -150,6 +150,7 @@ namespace LinBox {
                                size_t                 order,
                                std::vector<size_t>   &shift)
                 {
+
                         PMatrix sigma1(field(),sigma.rowdim(),sigma.coldim(),order+1);
                         PMatrix serie1(field(),serie.rowdim(),serie.coldim(),order);
                         serie1.copy(serie,0,order-1);
@@ -167,6 +168,7 @@ namespace LinBox {
                                size_t                 order,
                                std::vector<size_t>   &shift)
                 {
+
                         //cout<<"------------- mba : "<<order<<endl;
                         //cout<<serie<<endl;
                         size_t m=serie.rowdim();
@@ -219,9 +221,10 @@ namespace LinBox {
                                 }
                                 else{
                                         // if Qt is identity then the first rank rows of delta remain unchanged
+
                                         View delta1(delta,   rank,0,m-rank,n);
                                         View sigma1(sigma[0],rank,0,m-rank,m);
-                                        _BMD.mul(delta1,sigma1,serie[k]);
+                                        _BMD.mul(delta1,sigma1,serie[k]);                                        
                                         _BMD.mulin_right(Bperm, sigma[0]);
                                         for(size_t i=1;i<=std::min(k,max_degree);i++){
                                                 View sigmak(sigma[i],rank,0,m-rank,m);

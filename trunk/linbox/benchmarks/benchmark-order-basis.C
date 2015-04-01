@@ -3,6 +3,7 @@
 #include <iostream>
 #include "linbox/matrix/polynomial-matrix.h"
 #include "linbox/randiter/random-fftprime.h"
+#include "linbox/randiter/random-prime.h"
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/polynomial-matrix/polynomial-matrix-domain.h"
 #include "linbox/algorithms/polynomial-matrix/order-basis.h"
@@ -126,28 +127,31 @@ int main(int argc, char** argv){
 	typedef Givaro::Modular<double>              SmallField;	
 	typedef Givaro::Modular<Givaro::Integer>      LargeField;
 
-	RandomFFTPrime Rd(b,seed);
 	size_t logd=integer(d).bitsize();
-	if (logd>b-2){
-		std::cout<<"degree is to large for field bitsize: "<<b<<std::endl;
-		exit(0);
-	}
 	
-	integer p = Rd.randomPrime(+1);
-	std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
-	std::cout<<"  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
+	std::cout<<"###  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
 	if (b < 26){
+		if (logd>b-2){
+			std::cout<<"degree is to large for field bitsize: "<<b<<std::endl;
+			exit(0);
+		}
+		RandomFFTPrime Rd(b,seed);	
+		integer p = Rd.randomPrime(logd+1);
+		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 		SmallField F(p);
-
 		typename SmallField::RandIter G(F,0,seed);
 		bench_sigma(F,G,m,n,d,target);
 	}
 	else {
+		RandomPrimeIterator Rd(b,seed);	
+		integer p = Rd.randomPrime();
+		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
+
 		LargeField F(p);
 		typename LargeField::RandIter G(F,0,seed);
 		bench_sigma(F,G,m,n,d,target);
 	}
-
+	
 	
 	return 0;
 }

@@ -71,10 +71,12 @@ namespace LinBox{
 
 		// retrieve the matrix of degree k in the polynomial matrix
 		Matrix     operator[](size_t k)const {
+
 			Matrix A(field(), _row, _col);
 			typename Matrix::Iterator it=A.Begin();
 			for(size_t i=0;i<_row*_col;i++,it++)
 				*it = get(i,k);
+
 			return A;
 		}
 		// retrieve the polynomial at entry (i,j) in the matrix
