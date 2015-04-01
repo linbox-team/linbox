@@ -151,7 +151,7 @@ namespace LinBox{
       size_t prime_bitsize= (53-lk)>>1;
       RandomFFTPrime RdFFT(prime_bitsize);
       std::vector<integer> bas;
-      if (!RdFFT.generatePrimes(bound,bas)){
+      if (!RdFFT.generatePrimes(lpts,bound,bas)){
 	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL exiting..."<<std::endl;
 	throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
       }
