@@ -344,7 +344,7 @@ namespace LinBox
 				     alpha,
 				     A.getPointer(), A.getStride(),
 				     B.getPointer(), B.getStride(),
-				     beta,
+`				     beta,
 				     D.getPointer(), D.getStride());
 			return D;
 		}
@@ -405,7 +405,7 @@ namespace LinBox
 			constSubMatrixType C_v(C);
 			subMatrixType D_v(D);
 
-			FFLAS::fgemm( C.field(), FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+                        FFLAS::fgemm( C.field(), FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				     C_v.rowdim(), C_v.coldim(), A_v.coldim(),
 				     alpha,
 				     A_v.getPointer(), A_v.getStride(),
@@ -430,7 +430,6 @@ namespace LinBox
 			constSubMatrixType A_v(A);
 			constSubMatrixType B_v(B);
 			subMatrixType C_v(C);
-
 
 			FFLAS::fgemm( C.field(), FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				     C_v.rowdim(), C_v.coldim(), A_v.coldim(),
