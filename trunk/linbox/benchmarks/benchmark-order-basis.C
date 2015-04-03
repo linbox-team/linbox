@@ -86,7 +86,7 @@ void bench_sigma(const Field& F, const RandIter& Gen, size_t m, size_t n, size_t
 
 	OrderBasis<Field> SB(F);
 	Timer chrono;
-#ifndef __MINMEMORY
+#ifdef BENCH_MBASIS
 	if (target=="ALL"){
 		MatrixP Sigma1(F, m, m, d+1);
 		chrono.start();
