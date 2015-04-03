@@ -111,24 +111,27 @@ namespace LinBox {
                                 
                                 // first recursive call
                                 //typename PMatrix2::const_view serie1=serie.at(0,ord1-1);
-                                PMatrix2 serie1(field(),n,k,ord1);serie1.copy(serie,0,ord1-1);
-                                d1 = PM_Basis(sigma1, serie1, ord1, shift);
+                                PMatrix2 *serie1=new PMatrix2(field(),n,k,ord1);
+                                serie1->copy(serie,0,ord1-1);
+                                d1 = PM_Basis(sigma1, *serie1, ord1, shift);
+                                delete serie1;
 #ifdef PROFILE_PMBASIS
                                 chrono.stop();
                                 std::cout<<"PM-Basis: 1st rec call : "<<chrono.usertime()<<std::endl;
                                 chrono.clear();chrono.start();
 #endif
                                 // compute the serie update
-                                PMatrix2 serie2(field(),n,k,ord2);//serie2 size=ord1+1 -> midproduct)
+                                PMatrix2 *serie2=new PMatrix2(field(),n,k,ord2);//serie2 size=ord1+1 -> midproduct)
                                 // TODO: for Block Wiedemann, this step can use only the first column of sigma
-                                _PMD.midproductgen(serie2, sigma1, serie, true, ord1+1,ord1+ord2);
+                                _PMD.midproductgen(*serie2, sigma1, serie, true, ord1+1,ord1+ord2);
 #ifdef PROFILE_PMBASIS
                                 chrono.stop();
                                 std::cout<<"PM-Basis: serie update "<<chrono.usertime()<<std::endl;
                                 chrono.clear();chrono.start();
 #endif
                                 // second recursive call
-                                d2 = PM_Basis(sigma2, serie2, ord2, shift);
+                                d2 = PM_Basis(sigma2, *serie2, ord2, shift);
+                                delete serie2;
 #ifdef PROFILE_PMBASIS
                                 chrono.stop();
                                 std::cout<<"PM-Basis: 2nd rec call : "<<chrono.usertime()<<std::endl;
