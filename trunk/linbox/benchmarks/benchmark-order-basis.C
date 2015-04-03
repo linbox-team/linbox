@@ -69,9 +69,10 @@ void bench_sigma(const Field& F, const RandIter& Gen, size_t m, size_t n, size_t
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 
 	MatrixP Serie(F, m, n,  d);
-	MatrixP Sigma1(F, m, m, d+1),Sigma2(F, m, m, d+1),Sigma3(F, m, m, d+1);
+	MatrixP Sigma2(F, m, m, d+1);
+	
 
-
+	
 	// set the Serie at random
 	for (size_t k=0;k<d;++k)
 		for (size_t i=0;i<m;++i)
@@ -79,17 +80,21 @@ void bench_sigma(const Field& F, const RandIter& Gen, size_t m, size_t n, size_t
 				Gen.random(Serie.ref(i,j,k));
 
 	// define the shift
-	vector<size_t> shift(m,0);
-	vector<size_t> shift2(shift),shift3(shift);
+	vector<size_t> shift1(m,0);
+	vector<size_t> shift2(shift1);
+	vector<size_t> shift3(shift1);
 
 	OrderBasis<Field> SB(F);
 	Timer chrono;
+#ifndef __MINMEMORY
 	if (target=="ALL"){
+		MatrixP Sigma1(F, m, m, d+1);
 		chrono.start();
-		SB.M_Basis(Sigma1, Serie, d, shift);
+		SB.M_Basis(Sigma1, Serie, d, shift1);
 		chrono.stop();
 		std::cout << "M-Basis       : " <<chrono.usertime()<<" s"<<std::endl;
 	}
+#endif
 	chrono.clear();		
 	chrono.start();
 	SB.PM_Basis(Sigma2, Serie, d, shift2);
@@ -97,6 +102,7 @@ void bench_sigma(const Field& F, const RandIter& Gen, size_t m, size_t n, size_t
 	std::cout << "PM-Basis      : " <<chrono.usertime()<<" s"<<std::endl;
 	chrono.clear();
 
+	// MatrixP Sigma3(F, m, m, d+1);
 	// chrono.start();
 	// SB.oPM_Basis(Sigma3, Serie, d, shift3);
 	// chrono.stop();
