@@ -364,10 +364,12 @@ namespace LinBox{
 	double *t_c_mod;
 	size_t n_tc=m*n*c.size();
 	t_c_mod = new double[n_tc*num_primes];
-	for (size_t l=0;l<num_primes;l++)
+	for (size_t l=0;l<num_primes;l++){
 	  for (size_t i=0;i<m*n;i++)
 	    for (size_t j=0;j<c.size();j++)
 	      t_c_mod[l*n_tc + (j+i*c.size())]= c_i[l]->get(i,j);
+	  delete c_i[l];
+	}
 	FFT_PROFILING(2,"linearization of results mod pi");
 
 	// reconstruct the result in C
