@@ -158,6 +158,13 @@ namespace LinBox
                         return false; // false -> Could not find enough primes
                 }
 
+                size_t twoVal(integer t) const {
+                        integer x=t;
+                        size_t v=0;
+                        while(x%2 == 0) {v++;x/=2;}
+                        return v;
+                }
+
                 // generate a vector of distinct FFT primes with  2-valuation largest than val
                 // s.t. their product is larger than a given bound
                 inline bool generatePrimes (uint64_t val, const Prime_Type & bound, std::vector<Prime_Type> &primes) const {
@@ -174,7 +181,7 @@ namespace LinBox
                                         if (Givaro::probab_prime(tmp, 25) >= 1) {
                                                 primes.push_back(tmp);
                                                 prod*=tmp;
-                                                //std::cout<<tmp<<" -> "<<prod<<std::endl;
+                                                //std::cout<<tmp<<" -> "<<tmp.bitsize()<<" (order="<<twoVal(tmp-1)<<") "<<prod<<std::endl;
                                                 if (prod > bound){
                                                         return true;
                                                 }
