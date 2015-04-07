@@ -29,6 +29,7 @@ pkgincludesub_HEADERS =         \
 	matpoly-mult-kara.h	\
 	matpoly-mult-fft-wordsize.inl	\
 	matpoly-mult-fft-wordsize-fast.inl	\
+	matpoly-mult-fft-wordsize-three-primes.inl	\
 	matpoly-mult-fft-multiprecision.inl	\
 	polynomial-fft-transform-simd.inl	\
 	polynomial-fft-transform.h	\
