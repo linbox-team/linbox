@@ -50,8 +50,8 @@ namespace LinBox {
 
 	private:
 		const Field              *_field;  // Read only
-		size_t                     _p;
-		BlasMatrixDomain<Field>  _BMD;
+		uint64_t                      _p;
+		BlasMatrixDomain<Field>     _BMD;
 
 	public:
 		inline const Field & field() const { return *_field; }

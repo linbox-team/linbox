@@ -31,6 +31,7 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/field/modular.h"
 #include "linbox/randiter/random-fftprime.h"
+#include "linbox/randiter/random-prime.h"
 #include <fflas-ffpack/field/rns-double.h>
 
 namespace LinBox{
@@ -60,8 +61,31 @@ namespace LinBox{
       return mm;
     }
 
-
   public:
+    void getFFTPrime(size_t prime_bitsize, size_t lpts, integer bound, std::vector<integer> &bas){
+      RandomFFTPrime RdFFT(prime_bitsize);
+      size_t nbp=0;
+      if (!RdFFT.generatePrimes(lpts,bound,bas)){
+	integer MM=1;
+	for(size_t i=0;i<bas.size();i++)
+	  MM*=bas[i];
+	RandomPrimeIter Rd(28);
+	integer tmp;
+	do {
+	  do {Rd.random(tmp);std::cout<<tmp<<std::endl;}
+	  while (MM%tmp==0);
+	  bas.push_back(tmp);
+	  nbp++;
+	  MM*=tmp;
+	} while (MM<bound);	
+      }
+#ifdef VERBOSE_FFT
+      std::cout<<"MatPoly Multiprecision FFT : using "<<bas.size()-nbp<<" FFT primes and "<<nbp<<" normal primes "<<std::endl;
+#endif
+    }
+
+    
+
     inline const IntField & field() const { return *_field; }
 
 
@@ -132,10 +156,6 @@ namespace LinBox{
     void mul_crtla(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
     		   const integer& maxA, const integer& maxB, const integer& bound) {
 
-      // typedef typename PMatrix1::template rebind<ModField>::Other_t PMatrix_F1;
-      // typedef typename PMatrix2::template rebind<ModField>::Other_t PMatrix_F2;
-      // typedef typename PMatrix3::template rebind<ModField>::Other_t PMatrix_F3;
-
       FFT_PROFILE_START;
       linbox_check(a.coldim() == b.rowdim());
       size_t m = a.rowdim();
@@ -149,26 +169,21 @@ namespace LinBox{
       // compute bit size of feasible prime for FFLAS
       while ( _k ) {_k>>=1; ++lk;}
       size_t prime_bitsize= (53-lk)>>1;
-      RandomFFTPrime RdFFT(prime_bitsize);
-      std::vector<integer> bas;
-      if (!RdFFT.generatePrimes(lpts,bound,bas)){
-	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL exiting..."<<std::endl;
-	throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
-      }
 
+      std::vector<integer> bas;
+      getFFTPrime(prime_bitsize,lpts,bound,bas);
+      // RandomFFTPrime RdFFT(prime_bitsize);
+      // if (!RdFFT.generatePrimes(lpts,bound,bas)){
+      // 	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL taking normal primes..."<<std::endl;
+      //        exit(1);
+      // }
+	
       std::vector<double> basis(bas.size());
       std::copy(bas.begin(),bas.end(),basis.begin());
       FFPACK::rns_double RNS(basis);
       size_t num_primes = RNS._size;
 #ifdef FFT_PROFILER
       double tMul=0.,tCopy=0;;
-      if (FFT_PROF_LEVEL<3){
-	std::cout << "number of FFT primes :" << num_primes << std::endl;
-	std::cout << "feasible prime bitsize : "<<prime_bitsize<<std::endl;
-	std::cout << "bitsize of the output: "<<bound.bitsize()
-		  <<"( "<< RNS._M.bitsize()<<" )"<<std::endl;
-	std::cout <<" +++++++++++++++++++++++++++++++"<<std::endl;
-      }
 #endif
       FFT_PROFILING(2,"init of CRT approach");
       // reduce t_a and t_b modulo each FFT primes
@@ -182,35 +197,24 @@ namespace LinBox{
       FFT_PROFILING(2,"reduction mod pi of input matrices");
 
       std::vector<MatrixP_F*> c_i (num_primes);
-      //std::vector<PMatrix_F1*> c_i (num_primes);
-      std::vector<ModField> f(num_primes,ModField(2));
-      for (size_t l=0;l<num_primes;l++)
-	f[l]=ModField(RNS._basis[l]);
-
+      
       for (size_t l=0;l<num_primes;l++){
 	FFT_PROFILE_START;
-	MatrixP_F a_i (f[l], m, k, pts);
-	MatrixP_F b_i (f[l], k, n, pts);
-	// PMatrix_F2 a_i (f[l], m, k, pts);
-	// PMatrix_F3 b_i (f[l], k, n, pts);
+	ModField f(RNS._basis[l]);
+	MatrixP_F a_i (f, m, k, pts);
+	MatrixP_F b_i (f, k, n, pts);
 	
-	c_i[l] = new MatrixP_F(f[l], m, n, pts);
-	//c_i[l] = new PMatrix_F1(f[l], m, n, pts);
+	c_i[l] = new MatrixP_F(f, m, n, pts);
 	// copy reduced data
 	for (size_t i=0;i<m*k;i++)
 	  for (size_t j=0;j<a.size();j++)
 	    a_i.ref(i,j)=t_a_mod[l*n_ta+j+i*a.size()];
 	for (size_t i=0;i<k*n;i++)
 	  for (size_t j=0;j<b.size();j++)
-	    b_i.ref(i,j)=t_b_mod[l*n_tb+j+i*b.size()];
-	// for (size_t i=0;i<n_ta;i++)
-	//   a_i.getWritePointer()[i]=t_a_mod[l*n_ta+i];
-	// for (size_t i=0;i<n_tb;i++)
-	//   b_i.getWritePointer()[i]=t_b_mod[l*n_tb+i];
-	
-	
+	    b_i.ref(i,j)=t_b_mod[l*n_tb+j+i*b.size()];	
 	FFT_PROFILE_GET(tCopy);
-	PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f[l]);
+	//PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f);
+	PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);       
 	fftdomain.mul_fft(lpts, *c_i[l], a_i, b_i);	
 	FFT_PROFILE_GET(tMul);
       }
@@ -293,12 +297,14 @@ namespace LinBox{
       // compute bit size of feasible prime for FFLAS
       while ( _k ) {_k>>=1; ++lk;}
       size_t prime_bitsize= (53-lk)>>1;
-      RandomFFTPrime RdFFT(prime_bitsize);
       std::vector<integer> bas;
-      if (!RdFFT.generatePrimes(bound,bas)){
-	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL exiting..."<<std::endl;
-	throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
-      }
+      getFFTPrime(prime_bitsize,lpts,bound,bas);      
+      //RandomFFTPrime RdFFT(prime_bitsize);
+      // if (!RdFFT.generatePrimes(bound,bas)){
+      // 	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL exiting..."<<std::endl;
+      // 	throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
+      // }
+
       std::vector<double> basis(bas.size());
       std::copy(bas.begin(),bas.end(),basis.begin());
       FFPACK::rns_double RNS(basis);
@@ -344,7 +350,8 @@ namespace LinBox{
 	    else
 	      b_i.ref(i,hdeg-1-j)=t_b_mod[l*n_tb+j+i*b.size()];
 	FFT_PROFILE_GET(tCopy);
-	PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f);
+	//PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f);
+	PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);       
 	fftdomain.midproduct_fft(lpts, *(c_i[l]), a_i, b_i, smallLeft);
 				
 	FFT_PROFILE_GET(tMul);

@@ -113,6 +113,7 @@ namespace LinBox
 } // end of namespace LinBox
 
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize-fast.inl"
+#include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize-three-primes.inl"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-multiprecision.inl"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize.inl"
 
