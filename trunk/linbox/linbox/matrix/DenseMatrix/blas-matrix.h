@@ -54,6 +54,8 @@
 #include "linbox/matrix/MatrixDomain/matrix-domain.h"
 #include "linbox/matrix/MatrixDomain/apply-domain.h"
 
+#include <givaro/modular.h>
+
 namespace LinBox
 { /*  not generic wrt Field (eg NTL_ZZ_p) */
 	namespace Protected

@@ -59,7 +59,7 @@ namespace LinBox
 	 * // is the embedding of the prime field in the extension.
 	 */
 
-	template< class Source, class Target >
+	template< class Source, class Target, class Enabled = void > // Enabled is just for std::enable_if 
 	class Hom {
 	public:
 		typedef typename Source::Element SrcElt;
@@ -119,63 +119,59 @@ namespace LinBox
 		Hom(const Source& S, const Target& T) :
 			_source (S)
 		{}
+
 		Elt& image(Elt& t, const SrcElt& s)
 		{
-			_source. assign (t, s);
+			_source.assign (t, s);
 			return t;
 		}
+
 		SrcElt& preimage(SrcElt& s, const Elt& t)
 		{
-			_source. assign (s, t);
+			_source.assign (s, t);
 			return s;
 		}
+
 		const Source& source() { return _source;}
 		const Target& target() { return _source;}
 
 	protected:
 		Source _source;
-	}; // end Hom
+	};
 
 
 }
 
-
-// including specialization to modular
-/// Specialization to Givaro::Modular<uint16_t> --> Givaro::Modular<uint_32>.
-// Just a trial.  delete this when better examples exist.
+// Specialization to modular
 namespace LinBox
 {
-        // GENERIC SPECIALISATION FOR MODULAR HOMORMOPHISM
-	template<typename T1, typename T2>
-	class Hom<Givaro::Modular<T1>, Givaro::Modular<T2> >{
+    // GENERIC SPECIALISATION FOR MODULAR HOMORMOPHISM
+    // The enable_if is to protect undetermination with Hom<Source, Source>
+	template<typename T1, typename C1, typename T2, typename C2>
+	class Hom<Givaro::Modular<T1, C1>, Givaro::Modular<T2, C2>,
+        typename std::enable_if<!std::is_same<Givaro::Modular<T1, C1>, Givaro::Modular<T2, C2>>::value>::type>
+    {
 	public:
-		Hom(const Givaro::Modular<T1>& S, const Givaro::Modular<T2>& T)
+	    using Element1 = typename Givaro::Modular<T1, C1>::Element;
+	    using Element2 = typename Givaro::Modular<T2, C2>::Element;
+	
+		Hom(const Givaro::Modular<T1, C1>& S, const Givaro::Modular<T2, C2>& T)
 		{
 			integer ps, pt;
 			if (S.characteristic(ps) != T.characteristic(pt)) throw NoHomError();
 		}
 		
-		inline T2& image(T2& t, const T1& s) const
+		inline Element2& image(Element2& t, const Element1& s) const
 		{
-			return t = (T2) s;
+			return t = static_cast<Element2>(s);
 		}
 		
 		// assumes t normalized.
-		inline T1& preimage(T1& s, const T2& t) const
+		inline Element1& preimage(Element1& s, const Element2& t) const
 		{
-			return s = (T1) t;
+			return s = static_cast<Element1>(t);
 		}
 	};
-
-        
-	// assumes t normalized.
-	template<> inline Givaro::Modular<uint16_t>::Element& Hom<Givaro::Modular<uint16_t>, Givaro::Modular<uint32_t> >::
-	preimage(Givaro::Modular<uint16_t>::Element& s, const Givaro::Modular<uint32_t>::Element& t) const
-	{
-		linbox_check(t < UINT8_MAX) ;
-	       	return s = (uint16_t) t;
-	}
-
 }// namespace LinBox
 
 namespace LinBox
