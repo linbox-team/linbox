@@ -32,7 +32,6 @@
 
 
 
-#include "linbox/field/PID-integer.h"
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/ntl.h"
 #endif
@@ -46,6 +45,7 @@
 #include "linbox/blackbox/random-matrix.h"
 #include "linbox/algorithms/rational-solver.h"
 #include <time.h>
+#include <givaro/modular.h>
 
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
