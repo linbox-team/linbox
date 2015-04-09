@@ -176,7 +176,6 @@ namespace LinBox
 		 */
 		inline  Element& lcm (Element& c, const Element& a, const Element& b) const
 		{
-
 			if ((a==Element(0)) || (b==Element(0))) return c = Element(0);
 
 			else {
@@ -194,7 +193,6 @@ namespace LinBox
 		 */
 		inline  Element& lcmin (Element& l, const Element& b) const
 		{
-
 			if ((l==Element(0)) || (b==Element(0))) return l = Element(0);
 
 			else {
@@ -217,7 +215,7 @@ namespace LinBox
 			RationalReconstruction(a,b, x, m, bound, true, true);
 		}
 
-		inline  long reconstructRational (Element& a, Element& b,
+		inline bool reconstructRational (Element& a, Element& b,
 						  const Element& x, const Element& m,
 						  const Element& a_bound, const Element& b_bound) const
 		{
@@ -225,7 +223,7 @@ namespace LinBox
 			// if (bound>a_bound) std::cerr << "a_bound: " << a_bound << ", x/b_bound: " << bound << std::endl;
 
 			RationalReconstruction(a,b,x,m, (bound>a_bound?bound:a_bound), true, false);
-			return  (b > b_bound)? 0: 1;
+			return b <= b_bound;
 		}
 
 		/** @brief quo (q, x, y)
