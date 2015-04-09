@@ -13,7 +13,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.     See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -22,187 +22,134 @@
  * ========LICENCE========
  */
 
-
 /*! @file  tests/test-rational-solver.C
  * @ingroup tests
  * @brief no doc.
  * @test no doc.
  */
 
-
-
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/randiter/random-prime.h"
-#include <iostream>
-#include "test-common.h"
 #include "linbox/vector/stream.h"
 #include "linbox/util/commentator.h"
+
+#include "test-common.h"
+
+#include <iostream>
+
 using namespace LinBox;
 
 /// Testing Nonsingular Random Diagonal solve.
 template <class Ring, class Field, class Vector>
 bool testRandomSolve (const Ring& R,
-		      const Field& f,
-		      LinBox::VectorStream<Vector>& stream1,
-		      LinBox::VectorStream<Vector>& stream2)
+              const Field& f,
+              LinBox::VectorStream<Vector>& stream1,
+              LinBox::VectorStream<Vector>& stream2)
 {
+    commentator().start("Testing Nonsingular Random Diagonal solve ",
+                        "testNonsingularRandomDiagonalSolve",
+                        stream1.size());
 
-	// std::ostringstream str;
+    bool ret = true;
 
-	commentator().start ("Testing Nonsingular Random Diagonal solve ","testNonsingularRandomDiagonalSolve", stream1.size());// "testNonsingularRandomMatrixSolve", stream1.m ());
+    VectorDomain<Ring> VD(R);
+    Vector d(R), b(R), x(R), y(R);
 
-	bool ret = true;
+    VectorWrapper::ensureDim (d, stream1.n ());
+    VectorWrapper::ensureDim (b, stream1.n ());
+    VectorWrapper::ensureDim (x, stream1.n ());
+    VectorWrapper::ensureDim (y, stream1.n ());
 
+    int n = (int)d.size();
 
-	VectorDomain<Ring> VD (R);
+    while (stream1 && stream2) {
+        commentator().startIteration ((unsigned)stream1.j ());
+        bool iter_passed = true;
 
-	Vector d(R), b(R), x(R), y(R);
+        bool zeroEntry;
+        do {
+            stream1.next (d);
+            zeroEntry = false;
+            for (size_t i=0; i<stream1.n(); i++)
+            zeroEntry |= R.isZero(d[(size_t)i]);
+        } while (zeroEntry);
 
-	VectorWrapper::ensureDim (d, stream1.n ());
-        VectorWrapper::ensureDim (b, stream1.n ());
-        VectorWrapper::ensureDim (x, stream1.n ());
-        VectorWrapper::ensureDim (y, stream1.n ());
+        stream2.next (b);
 
-	int n = (int)d. size();
+        std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        report << "Diagonal entries: ";
+        VD.write (report, d);
+        report << endl;
 
-	while (stream1 && stream2) {
+        report << "Right-hand side:  ";
+        VD.write (report, b);
+        report << endl;
 
-		commentator().startIteration ((unsigned)stream1.j ());
+        //Diagonal<Ring> D(R, d);
+        BlasMatrix<Ring> D(R, n, n);
 
-                //ActivityState state = commentator().saveActivityState ();
+        for(int i = 0; i < n; ++i) R.init (D[(size_t)i][(size_t)i],  d[(size_t)i]);
 
-                bool iter_passed = true;
+        typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> RSolver;
+        RSolver rsolver;
 
-		bool zeroEntry;
-		do {
-		  stream1.next (d);
-		  zeroEntry = false;
-		  for (size_t i=0; i<stream1.n(); i++)
-		    zeroEntry |= R.isZero(d[(size_t)i]);
-		} while (zeroEntry);
+        BlasVector<Ring> num(R,(size_t)n);
+        typename Ring::Element den;
 
-                stream2.next (b);
+        auto solveResult = rsolver.solve(num, den, D, b, 30); // often 5 primes are not enough
 
-                std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-                report << "Diagonal entries: ";
-                VD.write (report, d);
-                report << endl;
+        if (solveResult == SS_OK) {
+          D. apply (y, num);
+          VD. mulin(b, den);
 
-                report << "Right-hand side:  ";
-                VD.write (report, b);
-                report << endl;
+          if (!VD.areEqual (y, b)) {
+            ret = iter_passed = false;
+            commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+              << "ERROR: Computed solution is incorrect" << endl;
+          }
+        }
+        else {
+            ret = iter_passed = false;
+            commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+              << "ERROR: Did not return OK solving status" << endl;
+        }
 
-                //Diagonal<Ring> D(R, d);
-
-		BlasMatrix<Ring> D(R, n, n);
-
-		for(int i = 0; i < n; ++i) R.init (D[(size_t)i][(size_t)i],  d[(size_t)i]);
-
-		typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> RSolver;
-		RSolver rsolver;
-
-#if 0
-		std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
-#endif
-		BlasVector<Ring> num(R,(size_t)n);
-		typename Ring::Element den;
-
-		SolverReturnStatus solveResult = rsolver.solve(num, den, D, b, 30); //often 5 primes are not enough
-
-#if 0
-		typename Ring::Element lden;
-
-		R. assign (lden, R.one);
-
-		typename std::vector<std::pair<typename Ring::Element, typename Ring::Element> >::iterator p;
-
-		for (p = answer.begin(); p != answer.end(); ++ p)
-			R. lcm (lden, lden, p->second);
-		typename Vector::iterator p_x;
-		//typename Vector::iterator p_y;
-#endif
-
-		if (solveResult == SS_OK) {
-#if 0
-		  for (p = answer.begin(), p_x = x. begin();
-		       p != answer.end();
-		       ++ p, ++ p_x) {
-
-		    R. mul (*p_x, p->first, lden);
-
-		    R. divin (*p_x, p->second);
-
-		  }
-
-		  D. apply (y, x);
-#endif
-		  D. apply (y, num);
-
-		  VD. mulin(b, den);
-
-		  if (!VD.areEqual (y, b)) {
-		    ret = iter_passed = false;
-		    commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-		      << "ERROR: Computed solution is incorrect" << endl;
-		  }
-		}
-		else {
-		    ret = iter_passed = false;
-		    commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-		      << "ERROR: Did not return OK solving status" << endl;
-		}
-
-		commentator().stop ("done");
+        commentator().stop ("done");
                 commentator().progress ();
+    }
 
-	}
+    stream1.reset ();
+    stream2.reset ();
+    commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNonsingularRandomDiagonalSolve");
 
-
-	stream1.reset ();
-        stream2.reset ();
-
-        commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNonsingularRandomDiagonalSolve");
-
-	return ret;
+    return ret;
 }
 
 int main(int argc, char** argv)
 {
+    bool pass = true;
+    static size_t n = 10;
+    static int iterations = 1;
+    static Argument args[] = {
+        { 'n', "-n N", "Set order of test matrices to N.", TYPE_INT, &n},
+        { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations },
+        END_OF_ARGUMENTS };
 
+    parseArguments (argc, argv, args);
 
-	bool pass = true;
+    using Field = Givaro::Modular<int32_t>;
+    using Ring  = PID_integer;
 
-        static size_t n = 10;
+    Ring R;
+    Field F(101);
 
-	static int iterations = 1;
+    RandomDenseStream<Ring> s1 (R, n, (unsigned int)iterations), s2 (R, n, (unsigned int)iterations);
+    if (!testRandomSolve(R, F, s1, s2)) pass = false;
 
-        static Argument args[] = {
-                { 'n', "-n N", "Set order of test matrices to N.", TYPE_INT, &n},
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations },
-		END_OF_ARGUMENTS
-        };
-
-
-	parseArguments (argc, argv, args);
-
-	typedef Givaro::Modular<int32_t> Field;
-	// typedef Givaro::Modular<double> Field;
-
-	typedef PID_integer     Ring;
-
-	Ring R;
-
-	Field F(101);
-
-	RandomDenseStream<Ring> s1 (R, n, (unsigned int)iterations), s2 (R, n, (unsigned int)iterations);
-
-	if (!testRandomSolve(R, F, s1, s2)) pass = false;
-
-	return pass ? 0 : -1;
-
+    return pass ? 0 : -1;
 }
 
 

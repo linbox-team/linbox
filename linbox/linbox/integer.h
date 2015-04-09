@@ -199,22 +199,31 @@ namespace LinBox
 	 * get the natural representation of the permutation.
 	 * @bug does not belong here
 	 */
-	class indexDomain {
+	class indexDomain
+	{
 	public:
 		typedef size_t Element;
 		typedef Element* Element_ptr ;
 		typedef const Element* ConstElement_ptr ;
+
 	public:
 		typedef indexDomain Father_t;
 		indexDomain() {};
+		
+		size_t init(size_t& dst) const {
+			return dst = static_cast<size_t>(0);
+		}
+		
 		template <class ANY>
 		size_t init(size_t& dst, const ANY& src) const {
 			return dst = static_cast<size_t>(src);
 		}
+		
 		template <class ANY>
 		size_t assign(ANY& dst, const size_t& src) const {
 			return dst = static_cast<ANY>(src);
 		}
+
 		int characteristic() const { return 0 ; }
 	};
 }
