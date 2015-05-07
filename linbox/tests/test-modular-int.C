@@ -89,7 +89,18 @@ int main (int argc, char **argv)
 
 	bool pass = true;
 
-	{
+	/******* blocks follow for these cases in this order
+	 Modular<integer>
+	 Modular<int32_t>
+	 Modular<int64_t>
+	 Modular<uint32_t>
+	 Modular<uint64_t> 
+	 Modular<int8_t>
+	 Modular<int16_t>
+	 Modular<uint8_t>
+	 Modular<uint16_t>
+	 ******/
+	{ 
 		bool part_pass = true ;
 		commentator().start("Givaro::Modular<integer> field test suite", "Givaro::Modular<integer>");
 
@@ -114,7 +125,7 @@ int main (int argc, char **argv)
 		pass &= part_pass ;
 	}
 
-	{
+	{ 
 		bool part_pass = true ;
 		commentator().start("Givaro::Modular<int32_t> field test suite", "Givaro::Modular<int32_t>");
 
@@ -142,7 +153,7 @@ int main (int argc, char **argv)
 		pass &= part_pass ;
 	}
 
-	{
+	{ 
 		bool part_pass = true ;
 		commentator().start("Givaro::Modular<int64_t> field test suite", "Givaro::Modular<int64_t>");
 		integer qq = FieldTraits<Givaro::Modular<int64_t> >::maxModulus()/2 ;
@@ -193,7 +204,6 @@ int main (int argc, char **argv)
 		pass &= part_pass ;
 	}
 
-#if 0 /*  fails */
 	{
 		bool part_pass = true ;
 		commentator().start("Givaro::Modular<uint64_t> field test suite", "Givaro::Modular<uint64_t>");
@@ -219,7 +229,6 @@ int main (int argc, char **argv)
 		commentator().stop(MSG_STATUS(part_pass),"Givaro::Modular<uint64_t> field test suite");
 		pass &= part_pass ;
 	}
-#endif
 
 	{
 		bool part_pass = true ;

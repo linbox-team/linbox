@@ -184,14 +184,17 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
+ 
 		  Build_n_run("test-blas-domain",                  counter , flag);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  No_build_n_run("test-block-ring",                   counter , flag, "bds to fix");
-#ifdef LINBOX_HAVE_OPENMP
-#pragma omp section
-#endif
+
+// Block-ring is incompatible with all rings being commutative.  More likely a blocked matrix storage scheme would be designed as a matrix rep, so drop block-ring for now.
+//		  No_build_n_run("test-block-ring",                   counter , flag, "bds to fix");
+//#ifdef LINBOX_HAVE_OPENMP
+//#pragma omp section
+//#endif
 		  Build_n_runWarn("test-transpose",                   counter , flag, "sometimes, fails on Sparsematrix/getEntry");
 
 #ifdef LINBOX_HAVE_OPENMP
@@ -327,15 +330,8 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-modular",                      counter , flag);
-#ifdef LINBOX_HAVE_OPENMP
-#pragma omp section
-#endif
-		  Build_n_run("test-modular-balanced-int",         counter , flag);
-#ifdef LINBOX_HAVE_OPENMP
-#pragma omp section
-#endif
-		  Build_n_run("test-modular-balanced-float",       counter , flag);
+		  No_build_n_run("test-modular",                      counter , flag, 
+		  "deprecated");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -343,7 +339,16 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-modular-byte",                 counter , flag);
+		  Build_n_run("test-modular-balanced-float",       counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
+		  Build_n_run("test-modular-balanced-int",         counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
+		  No_build_n_run("test-modular-byte",                 counter , flag,
+		  "deprecated");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -355,11 +360,12 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_runWarn("test-modular-int",                  counter , flag, "fails badly for uint64_t ");
+		  Build_n_runWarn("test-modular-int",                  counter , flag, "fails badly for uint32_t ");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-modular-short",                counter , flag);
+		  No_build_n_run("test-modular-short",                counter , flag,
+		  "deprecated");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
