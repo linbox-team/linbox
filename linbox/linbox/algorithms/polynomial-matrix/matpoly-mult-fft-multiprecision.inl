@@ -190,6 +190,9 @@ namespace LinBox{
       size_t n_ta=m*k*a.size(), n_tb=k*n*b.size();
       //size_t n_ta=m*k*pts, n_tb=k*n*pts;
 
+      //std::cout<<"MUL FFT RNS: RNS -> allocating "<<(n_ta+n_tb)*num_primes*8/1000000.<<"Mo"<<std::endl;
+      //std::cout<<"MUL FFT RNS: RNS -> allocating "<<(m*n)*pts*num_primes*8/1000000.<<"Mo"<<std::endl;
+      //std::cout<<"MUL FFT RNS: "<<getCurrentRSS( )/1000000.<<"Mo"<<std::endl;
       double* t_a_mod= new double[n_ta*num_primes];
       double* t_b_mod= new double[n_tb*num_primes];
       RNS.init(1, n_ta, t_a_mod, n_ta, a.getPointer(), n_ta, maxA);
@@ -218,6 +221,8 @@ namespace LinBox{
 	fftdomain.mul_fft(lpts, *c_i[l], a_i, b_i);	
 	FFT_PROFILE_GET(tMul);
       }
+
+      
       delete[] t_a_mod;
       delete[] t_b_mod;
       FFT_PROFILE(2,"copying linear reduced matrix",tCopy);
@@ -241,7 +246,7 @@ namespace LinBox{
 
 	// reconstruct the result in C
 	RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc);
- 
+
 	delete[] t_c_mod;
 
       }
@@ -327,6 +332,9 @@ namespace LinBox{
       RNS.init(1, n_ta, t_a_mod, n_ta, a.getPointer(), n_ta, maxA);
       RNS.init(1, n_tb, t_b_mod, n_tb, b.getPointer(), n_tb, maxB);
       FFT_PROFILING(2,"reduction mod pi of input matrices");
+      //std::cout<<"MIDP FFT RNS: RNS -> allocating "<<(n_ta+n_tb)*num_primes*8/1000000.<<"Mo"<<std::endl;
+      //std::cout<<"MIDP FFT RNS: RNS -> allocating "<<(m*n)*pts*num_primes*8/1000000.<<"Mo"<<std::endl;
+      //std::cout<<"MIDP FFT RNS: "<<getCurrentRSS( )/1000000.<<"Mo"<<std::endl;
 
       std::vector<MatrixP_F*> c_i (num_primes);
 

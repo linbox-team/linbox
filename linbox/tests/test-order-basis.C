@@ -66,8 +66,8 @@ bool operator==(const MatPol& A, const MatPol& B){
 template<typename Field, typename RandIter>
 void check_sigma(const Field& F, const RandIter& Gen, size_t m, size_t n, size_t d) {
 	//typedef typename Field::Element Element;
-	//typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
-	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
+	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
+	//typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP Serie(F, m, n,  d);
 	MatrixP Sigma1(F, m, m, d+1),Sigma2(F, m, m, d+1),Sigma3(F, m, m, d+1);
 
@@ -87,10 +87,10 @@ void check_sigma(const Field& F, const RandIter& Gen, size_t m, size_t n, size_t
 
 	SB.M_Basis(Sigma3, Serie, d, shift3);
 	std::cout << "M-Basis       : " <<check_sigma(F,Sigma3,Serie,d)<<endl;
-	SB.PM_Basis(Sigma1, Serie, d, shift);
+	SB.PM_Basis2(Sigma1,Serie, d, shift);
 	std::cout << "PM-Basis      : " <<check_sigma(F,Sigma1,Serie,d)<<endl;
-	//SB.oPM_Basis(Sigma2, Serie, d, shift2);
-	//std::cout << "PM-Basis iter : " <<check_sigma(F,Sigma2,Serie,d)<<endl;
+	SB.oPM_Basis(Sigma2, Serie, d, shift2);
+	std::cout << "PM-Basis iter : " <<check_sigma(F,Sigma2,Serie,d)<<endl;
 
 	// if (!(Sigma1==Sigma2)){
 	// cout<<"---> different basis for PM-Basis and PM-Basis iter"<<endl;

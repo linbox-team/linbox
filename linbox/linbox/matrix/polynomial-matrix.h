@@ -62,13 +62,24 @@ namespace LinBox{
 		//PolynomialMatrix() {}
 
 		// construct a polynomial matrix in f[x]^(m x n) of degree (s-1)
-		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s) :
-			_repview(r*c),_rep(r*c*s,f.zero), _row(r), _col(c), _size(s), _fld(&f) {
+		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s, size_t stor=0) :
+			_store((stor?stor:s)), _repview(r*c),_rep(r*c*_store,f.zero), _row(r), _col(c), _size(s), _fld(&f) {
 			for (size_t i=0;i<_row;i++)
 				for (size_t j=0;j<_col;j++)
-					_repview[i*_col+j]= Polynomial(_rep.begin()+(i*_col+j)*_size,_size);
+					_repview[i*_col+j]= Polynomial(_rep.begin()+(i*_col+j)*_store,_size);
+			//integer p;
+			//std::cout<<"MatrixP allocating : "<<r*c*s*length(f.characteristic(p))/1000000.<<"Mo"<<std::endl;
 		}
 
+		~PolynomialMatrix(){
+			//integer p;
+			//std::cout<<"MatrixP Desallocating : "<<_row*_col*_store*length(_fld->characteristic(p))/1000000.<<"Mo"<<std::endl;
+			
+		}
+			
+		void clear(){
+			_rep.resize(0);
+		}
 		// retrieve the matrix of degree k in the polynomial matrix
 		Matrix     operator[](size_t k)const {
 
@@ -88,7 +99,7 @@ namespace LinBox{
 
 		// resize the polynomial length of the polynomial matrix
 		void resize(size_t s){
-			if (s>_size){
+			if (s>_store){
 				_rep.resize(s*_row*_col);
 				size_t k=s*_row*_col-1;
 				for(size_t i=0;i<_row*_col;i++){
@@ -96,23 +107,49 @@ namespace LinBox{
 					for(;j>=_size;j--,k--)
 						_rep[k]=_fld->zero;
 					for(;j>size_t(-1);j--,k--)
-						_rep[k]=_rep[i*_size+j];
+						_rep[k]=_rep[i*_store+j];
 				}
 			}
 			else {
 				size_t k=0;
 				for(size_t i=0;i<_row*_col;i++)
 					for (size_t j=0;j<s;j++,k++)
-						_rep[k]=_rep[i*_size+j];
+						_rep[k]=_rep[i*_store+j];
 				_rep.resize(s*_row*_col);
 			}
-			_size=s;
-
-			for (size_t i=0;i<_row;i++)
-				for (size_t j=0;j<_col;j++)
-					_repview[i*_col+j]= Polynomial(_rep.begin()+(i*_col+j)*_size,_size);
+			_store=s;
+			setsize(s);
 		}
 
+		void changesize(size_t s){
+			if (s <=_store){			
+				for (size_t i=0;i<_row*_col;i++)
+					_repview[i]= Polynomial(_rep.begin()+i*_store,s);
+				_size=s;
+			}
+			else {
+				std::cerr<<"ERROR: in PolynomialMatrix<polfirs> -> setsize with too large size"<<std::endl;				
+				throw LinboxError("LinBox ERROR: PolynomialMatrix setsize \n");
+			}
+
+		}
+		void setsize(size_t s){
+			if (s <=_store){
+				for(size_t i=0;i<_row*_col;i++){
+					for(size_t j=_size ;j<s;j++)
+						_rep[i*_store+j]=_fld->zero;
+				}
+				for (size_t i=0;i<_row*_col;i++)
+					_repview[i]= Polynomial(_rep.begin()+i*_store,s);
+				_size=s;
+			}
+			else {
+				std::cerr<<"ERROR: in PolynomialMatrix<polfirs> -> setsize with too large size"<<std::endl;				
+				throw LinboxError("LinBox ERROR: PolynomialMatrix setsize \n");
+			}	
+		}
+		
+		
 		// copy elt from M[beg..end], _size must be >= j-i
 		void copy(const Self_t& M, size_t beg, size_t end){
 			//cout<<"copying.....polfirst to polfirst.....same field"<<endl;
@@ -188,22 +225,23 @@ namespace LinBox{
 
 		// get access to the the k-th coeff  of the ith matrix entry
 		inline Element& ref(size_t i, size_t k){
-			return _rep[i*_size+k];
+			return _rep[i*_store+k];
 		}
 		inline Element& ref(size_t i, size_t j, size_t k){
 			return ref(i*_col+j,k);
 		}
 		inline Element get(size_t i, size_t k)const {
-			return _rep[i*_size+k];
+			return _rep[i*_store+k];
 		}
 		inline Element get(size_t i, size_t j, size_t k) const{
 			return get(i*_col+j,k);
 		}
 
-		size_t rowdim() const {return _row;}
-		size_t coldim() const {return _col;}
-		size_t degree() const {return _size-1;}
-		size_t size()   const {return _size;}
+		size_t rowdim()  const {return _row;}
+		size_t coldim()  const {return _col;}
+		size_t degree()  const {return _size-1;}
+		size_t size()    const {return _size;}
+		size_t storage() const {return _store;}
 		const Field& field()  const {return *_fld;}
 
 		std::ostream& write(std::ostream& os) const { return write(os,0,_size-1);}
@@ -245,6 +283,7 @@ namespace LinBox{
 		const Element* getPointer() const {return &_rep[0];}
 
 	private:
+		size_t           _store;
 		std::vector<Polynomial> _repview;
 		std::vector<Element>    _rep;
 		size_t             _row;
@@ -273,8 +312,20 @@ namespace LinBox{
 			//_row(r), _col(c), _size(s), _fld(&f) {			
 			for(size_t i=0;i<s;i++)
 				_rep[i].init(f,r,c);
+			//integer p;
+			//std::cout<<"PMatrix allocating : "<<r*c*s*length(f.characteristic(p))/1000000.<<"Mo"<<std::endl;
 		}
 
+		~PolynomialMatrix(){
+			//integer p;
+			//std::cout<<"PMatrix Desallocating : "<<_row*_col*_size*length(_fld->characteristic(p))/1000000.<<"Mo"<<std::endl;
+		}
+
+		void clear(){
+			_rep.resize(0,Matrix(*_fld));
+		}
+
+		
 		// retrieve the matrix of degree k in the polynomial matrix
 		inline Matrix&       operator[](size_t k)      {return _rep[k];}
 		inline const Matrix& operator[](size_t k)const {return _rep[k];}
@@ -304,6 +355,8 @@ namespace LinBox{
 			_size=s;
 		}
 
+		void setsize(size_t s){resize(s);}
+		
 		// copy elt from M[beg..end], _size must be >= j-i
 		template <size_t storage>
 		void copy(const PolynomialMatrix<PMType::matfirst,storage,Field>& M, size_t beg, size_t end, size_t start=0){
@@ -405,9 +458,11 @@ namespace LinBox{
 			return d;
 		}
 		inline size_t size()   const {return _size;}
+		inline size_t storage()const {return _size;}
+		
 		inline const Field& field()  const {return *_fld;}
 
-		std::ostream& write(std::ostream& os) const { return write(os,0,_size-1);}
+		std::ostream& write(std::ostream& os) const { return write(os,0,real_degree());}
 
                 std::ostream& write(std::ostream& os, size_t deg_min, size_t deg_max) const {
                         integer c;
@@ -419,7 +474,7 @@ namespace LinBox{
 			else
 				wid=(int) ceil (log ((double) _rep[0].getEntry(0,0)) / M_LN10);
 
-			b= ((int) ceil (log ((double) _size) / M_LN10));
+			b= ((int) ceil (log ((double) (deg_max-deg_min+1)) / M_LN10));
 			wid*=10*(b*(b-1)/2.);
 			std::cout<<"Matrix([";
 			for (size_t i = 0; i< _row;++i) {

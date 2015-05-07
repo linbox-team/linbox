@@ -403,6 +403,7 @@ namespace LinBox
 		void init(const Field& F )
 		{
 			_field = &F;
+#if 0 // NO MORE USEFUL
 #ifndef NDEBUG
 			if (!Givaro::probab_prime(F.characteristic())) {
 				std::cout << " *** WARNING *** "                                           << std::endl;
@@ -410,19 +411,21 @@ namespace LinBox
 				F.characteristic() << std::endl;
 			}
 #endif
+#endif
 		}
 
 		//! Copy constructor
 		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) :
 			_field(BMD._field)
 		{
+#if 0 // NO MORE USEFUL
 #ifndef NDEBUG
 			if (!Givaro::probab_prime(field().characteristic())) {
 				std::cout << " *** WARNING *** "                                           << std::endl;
 				std::cout << " You are using a BLAS Domain where your field is not prime " << std::endl;
 			}
 #endif
-
+#endif
 		}
 
 		//! Field accessor

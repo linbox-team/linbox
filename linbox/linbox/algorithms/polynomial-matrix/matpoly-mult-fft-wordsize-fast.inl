@@ -80,6 +80,7 @@ namespace LinBox {
 			size_t deg  = a.size()+b.size()-1;
 			size_t lpts = 0;
 			size_t pts  = 1; while (pts < deg) { pts= pts<<1; ++lpts; }
+			
 			// padd the input a and b to 2^lpts
 			MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
 			MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
