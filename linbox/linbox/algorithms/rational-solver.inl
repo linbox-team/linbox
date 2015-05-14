@@ -594,7 +594,7 @@ namespace LinBox
 					break;
 
 				case SS_FAILED:
-					std::cout <<"nonsingular failed\n";
+					//std::cout <<"nonsingular failed\n";  // BDS: in what sense is this part of the spec of solve?
 					break;
 
 				default:

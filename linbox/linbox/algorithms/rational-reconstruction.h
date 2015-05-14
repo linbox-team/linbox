@@ -265,7 +265,8 @@ namespace LinBox
 				// get next p-adic digit
 				bool nextResult = iter.next(dig);
 				if (!nextResult) {
-					std::cout << "ERROR in lifting container. Are you using <double> ring with large norm? (1)" << std::endl;
+				commentator().report() <<
+					"ERROR in lifting container. Are you using <double> ring with large norm? (1)" << std::endl;
 					return false;
 				}
 				//std::cout << "New digits:\n";
@@ -348,7 +349,8 @@ namespace LinBox
 				else {
 					int status= (int) _r. reconstructRational(tmp_num, tmp_den, *res_p, modulus, numbound, denbound);
 					if (!status) {
-						std::cout << "ERROR in reconstruction ? (1)\n" << std::endl;
+						commentator().report() 
+						<< "ERROR in reconstruction ? (1)\n" << std::endl;
 #ifdef DEBUG_RR
 						std::cout<<" try to reconstruct :\n";
 						//	std::cout<<"approximation: "<<*iter_approx<<std::endl;
@@ -502,7 +504,8 @@ namespace LinBox
 				// get next p-adic digit
 				bool nextResult = iter.next(digit);
 				if (!nextResult) {
-					std::cout << "ERROR in lifting container. Are you using <double> ring with large norm? (2)" << std::endl;
+					commentator().report()
+					<< "ERROR in lifting container. Are you using <double> ring with large norm? (2)" << std::endl;
 					return false;
 				}
 #ifdef RSTIMING
@@ -806,7 +809,8 @@ namespace LinBox
 
 			// problem occured during lifting
 			if (iter!= _lcontainer.end()){
-				std::cout << "ERROR in lifting container. Are you using <double> ring with large norm? (3)" << std::endl;
+				commentator().report()
+				<< "ERROR in lifting container. Are you using <double> ring with large norm? (3)" << std::endl;
 				return false;
 			}
 
@@ -896,7 +900,8 @@ namespace LinBox
 					if (!_r.reconstructRational(*iter_n, *iter_d,
 								    *iter_a, modulus, numbound, denbound))
 					{
-						std::cout << "ERROR in reconstruction ?\n" << std::endl;
+						commentator().report()
+						<< "ERROR in reconstruction ?\n" << std::endl;
 					}
 				}
 				dumb_ratrecon.stop();
@@ -944,8 +949,8 @@ namespace LinBox
 				else {
 					if  (!_r.reconstructRational(*iter_num, *iter_denom, *iter_approx, modulus, numbound, denbound))
 					{
-						std::cout << "ERROR in reconstruction ? (3)\n" << std::endl;
 #ifdef DEBUG_RR
+						std::cout << "ERROR in reconstruction ? (3)\n" << std::endl;
 						std::cout<<" try to reconstruct :\n";
 						std::cout<<"approximation: "<<*iter_approx<<std::endl;
 						std::cout<<"modulus: "<<modulus<<std::endl;
@@ -1075,7 +1080,8 @@ namespace LinBox
 				// get next p-adic digit
 				bool nextResult = iter.next(digit);
 				if (!nextResult) {
-					std::cout << "ERROR in lifting container. Are you using <double> ring with large norm? (ET)" << std::endl;
+					commentator().report()
+					<< "ERROR in lifting container. Are you using <double> ring with large norm? (ET)" << std::endl;
 					return false;
 				}
 #ifdef RSTIMING
@@ -1170,7 +1176,8 @@ namespace LinBox
 						}
 					}
 					else {
-						std::cout << "ERROR in reconstruction ? (ET)\n" << std::flush;
+						commentator().report()
+						<< "ERROR in reconstruction ? (ET)\n" << std::flush;
 					}
 
 				}
