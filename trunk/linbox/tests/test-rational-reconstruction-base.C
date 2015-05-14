@@ -47,7 +47,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
-#include "linbox/field/gmp-rational.h"
+//#include "linbox/field/gmp-rational.h"
 
 #include "linbox/algorithms/rational-cra2.h"
 #include "linbox/algorithms/varprec-cra-early-single.h"
