@@ -139,7 +139,7 @@ namespace LinBox
 			size_t *P = new size_t[M];
 			size_t *Qt = new size_t[N];
 			size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasTrans,
-						     M, N, A, lda, P, Qt, FFPACK::FfpackLQUP);
+						     M, N, A, lda, P, Qt);//, FFPACK::FfpackLQUP);
 
 
 			// write_field (F, std::cout<<"ALU :="<<std::endl, A, M, N, N, true);
@@ -267,7 +267,7 @@ namespace LinBox
 
 			//write_field (F, std::cout<<"A avant LU   ="<<std::endl, A, M, N, N, true);
 			size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
-						     M, N, A, lda, P, Q, FFPACK::FfpackLQUP);
+						     M, N, A, lda, P, Q);//, FFPACK::FfpackLQUP);
 			assert(R<=std::min(M,N));
 
 			//write_field (F, std::cout<<"ALU :="<<std::endl, A, M, N, N, true);
