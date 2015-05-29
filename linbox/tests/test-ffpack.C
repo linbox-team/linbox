@@ -38,7 +38,7 @@
 
 #include "linbox/integer.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/field/givaro.h"
+//#include "linbox/field/givaro.h"
 #include "linbox/field/modular.h"
 #include <givaro/modular-balanced.h>
 #include "fflas-ffpack/ffpack/ffpack.h"
@@ -359,7 +359,8 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 
 // 		write_field (F, cerr<<"A="<<endl, A, m, n, n);
 		size_t r = FFPACK::LUdivine( F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
-					     m, n, A, n, P, Q, FFPACK::FfpackLQUP);
+					     m, n, A, n, P, Q);
+					     //m, n, A, n, P, Q, FFPACK::FfpackLQUP);
 // 		write_field (F, cerr<<"LQUP(A)="<<endl, A, m, n, n);
 
 		Element * L = new Element[m*m];

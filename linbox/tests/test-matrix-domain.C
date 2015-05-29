@@ -55,8 +55,8 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include <givaro/modular-balanced.h>
-#include "linbox/field/givaro.h"
+//#include "givaro/modular-balanced.h"
+//#include "linbox/field/givaro.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/vector/stream.h"
