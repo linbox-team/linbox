@@ -232,7 +232,7 @@ namespace LinBox
 					K1. init (*p, *raw_p);
 
 				//clog << "\rComputing lup mod " << prime << ". ";
-				FFPACK::LUdivine(K1, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
+				FFPACK::LUdivine(K1, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ);//, FFPACK::FfpackLQUP);
 
 				faithful = true;
 				for ( j = 0, P_p = P, PQ_p = PQ; j < n; ++ j, ++ P_p, ++ PQ_p)
@@ -262,7 +262,7 @@ namespace LinBox
 					K3. init (*p, *raw_p);
 
 				//clog << "\rComputing lup mod " << prime << ". ";
-				FFPACK::LUdivine(K3, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
+				FFPACK::LUdivine(K3, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ);//, FFPACK::FfpackLQUP);
 
 				faithful = true;
 				for ( j = 0, P_p = P, PQ_p = PQ; j < n; ++ j, ++ P_p, ++ PQ_p)
