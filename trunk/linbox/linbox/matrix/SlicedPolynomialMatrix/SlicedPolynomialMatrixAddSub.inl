@@ -10,10 +10,10 @@ namespace LinBox
 									   const Vector3& B) const
 	{
 		//check dimensions
-		BlasMatrix<Field> M(F, A.rowdim(), B.coldim());
+		BlasMatrix<Vector1::IntField> M(C.fieldF(), A.rowdim(), B.coldim());
 		for (int m = 0; m < C.length(); m++)
 		{
-			BlasMatrixDomainAdd<Field, Modular<int>, Modular<int>, Modular<int>>()(C.fieldF(),
+			BlasMatrixDomainAdd<Vector1::IntField, BlasMatrix<Vector1::IntField>, BlasMatrix<Vector2::IntField>, BlasMatrix<Vector3::IntField>>()(C.fieldF(),
 				M, A.getMatrixCoefficient(m), B.getMatrixCoefficient(m));
 			C.setMatrixCoefficient(m, M);
 		}
@@ -30,7 +30,7 @@ namespace LinBox
 		BlasMatrix<Field> M(F, A.rowdim(), B.coldim());
 		for (int m = 0; m < C.length(); m++)
 		{
-			BlasMatrixDomainSub<Field, Modular<int>, Modular<int>, Modular<int>>()(C.fieldF(),
+			BlasMatrixDomainSub<Vector1::IntField, BlasMatrix<Vector1::IntField>, BlasMatrix<Vector2::IntField>, BlasMatrix<Vector3::IntField>>()(C.fieldF(),
 				M, A.getMatrixCoefficient(m), B.getMatrixCoefficient(m));
 			C.setMatrixCoefficient(m, M);
 		}
@@ -47,8 +47,8 @@ namespace LinBox
 		for (int m = 0; m < C.length(); m++)
 		{
 			M = C.getMatrixCoefficient(m);
-			BlasMatrixDomainAddin<Field, Modular<int>, Modular<int>>()(C.fieldF(),
-				M, B.getMatrixCoefficient(m));
+			BlasMatrixDomainAddin<Vector1::IntField, BlasMatrix<Vector1::IntField>, BlasMatrix<Vector3::IntField>>()(C.fieldF(),
+				M, A.getMatrixCoefficient(m), B.getMatrixCoefficient(m));
 			C.setMatrixCoefficient(m, M);
 		}
 		return C;
@@ -64,8 +64,8 @@ namespace LinBox
 		for (int m = 0; m < C.length(); m++)
 		{
 			M = C.getMatrixCoefficient(m);
-			BlasMatrixDomainSubin<Field, Modular<int>, Modular<int>>()(C.fieldF(),
-				M, B.getMatrixCoefficient(m));
+			BlasMatrixDomainAddin<Vector1::IntField, BlasMatrix<Vector1::IntField>, BlasMatrix<Vector3::IntField>>()(C.fieldF(),
+				M, A.getMatrixCoefficient(m), B.getMatrixCoefficient(m));
 			C.setMatrixCoefficient(m, M);
 		}
 		return C;
