@@ -27,7 +27,7 @@ namespace LinBox
 									   const Vector3& B) const
 	{
 		//check dimensions
-		BlasMatrix<Field> M(F, A.rowdim(), B.coldim());
+		BlasMatrix<Vector1::IntField> M(F, A.rowdim(), B.coldim());
 		for (int m = 0; m < C.length(); m++)
 		{
 			BlasMatrixDomainSub<Vector1::IntField, BlasMatrix<Vector1::IntField>, BlasMatrix<Vector2::IntField>, BlasMatrix<Vector3::IntField>>()(C.fieldF(),
@@ -43,7 +43,7 @@ namespace LinBox
 									   const Vector3& B) const
 	{
 		//check dimensions
-		BlasMatrix<Field> M(F, B.rowdim(), B.coldim());
+		BlasMatrix<Vector1::IntField> M(F, B.rowdim(), B.coldim());
 		for (int m = 0; m < C.length(); m++)
 		{
 			M = C.getMatrixCoefficient(m);
@@ -60,7 +60,7 @@ namespace LinBox
 									   const Vector3& B) const
 	{
 		//check dimensions
-		BlasMatrix<Field> M(F, B.rowdim(), B.coldim());
+		BlasMatrix<Vector1::IntField> M(F, B.rowdim(), B.coldim());
 		for (int m = 0; m < C.length(); m++)
 		{
 			M = C.getMatrixCoefficient(m);
