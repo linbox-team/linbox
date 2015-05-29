@@ -65,7 +65,8 @@ void buildBySetEntry(SM & A, size_t nnz)
 	{
 		size_t i = rand() % A.rowdim();
 		size_t j = rand() % A.coldim();
-		r.nonzerorandom(x);
+	    while (A.field().isZero(r.random(x)));
+		//r.nonzerorandom(x);
 		// r.random(x); // I want to see what happens when one reads in zero. If we don't want it, we just stop permitting setting zero... (hence the clearEntry function)
 		// std::cout << "A[ " << i+1 << ',' << j+1 << "]:=" << x << ';' << std::endl;
 		// if (A.field().isZero(x)) std::cout << "#is zero" << std::endl;

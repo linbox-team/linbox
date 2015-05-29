@@ -86,7 +86,7 @@ template <class Field>
 typename Field::Element& expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n)
 {
 	if (n == 0) {
-		F.init (res, 1);
+		F.init (res, (double)1);
 	}
 	else if (n == 1) {
 		F.assign (res, a);
@@ -100,7 +100,7 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 		n /= 2;
 		expt (F, res, a, n);
 		typename Field::Element tmp;
-		F.init(tmp,0);
+		F.init(tmp,(double)0);
 		res = F.mul (tmp, res, res);
 	}
 
@@ -137,32 +137,32 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.cardinality (q);
 	
 	typename Field::Element zero, one, mOne, two, mTwo, three, five, six, eight;
-	F.init(zero, 0); 
-	F.init(one, 1); 
+	F.init(zero, (double)0); 
+	F.init(one, (double)1); 
 	F.init(mOne); F.neg(mOne,one);
 
 	
 	if (p > 0)
 	{
-		F.init(two, 2 % p);
-		F.init(mTwo, p - 2);
-		F.init(three, 3 % p);
-		F.init(five, 5 % p);
-		F.init(six, 6 % p);
-		F.init(eight, 8 % p);
+		F.init(two, (2 % p));
+		F.init(mTwo, (p - 2));
+		F.init(three, (3 % p));
+		F.init(five, (5 % p));
+		F.init(six, (6 % p));
+		F.init(eight, (8 % p));
 	}
 	else
 	{
-		F.init(two, 2);
-		F.init(mTwo, 2); F.negin(mTwo);
-		F.init(three, 3);
-		F.init(five, 5);
-		F.init(six, 6);
-		F.init(eight, 8);
+		F.init(two, (double)2);
+		F.init(mTwo, (double)2); F.negin(mTwo);
+		F.init(three, (double)3);
+		F.init(five, (double)5);
+		F.init(six, (double)6);
+		F.init(eight, (double)8);
 	}
 		
 	typename Field::Element a, b, c, d, e, f;
-	F.init(a,0); F.init(b,0); F.init(c,0); F.init(d,0); F.init(e,0); F.init(f,0);
+	F.init(a,0.0); F.init(b,0.0); F.init(c,0.0); F.init(d,0.0); F.init(e,0.0); F.init(f,0.0);
 
 	report << " (Field self description: " << F.write (report) << ')' << endl;
 	report << "Field characteristic: " << p << endl;
@@ -208,7 +208,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 	if (p > 0) {
 		typename Field::Element mOneFromCst;
-		F.init(mOneFromCst, p-1);
+		F.init(mOneFromCst, (p-1));
 
 		if ( !F.areEqual(F.mOne,mOneFromCst)) {
 			part_pass = reportError( "isMOne (p-1) is false", pass);
@@ -314,9 +314,9 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	//,..
 	// 2^101 - 1 vs 1 + 2 + 4 + ... + 2^100
 
-	F.init (a, 1);
-	F.init (b, 1);
-	F.init (c, 0);
+	F.init (a, 1.0);
+	F.init (b, 1.0);
+	F.init (c, 0.0);
 
 	n = 101;
 	expt(F, a, two, n);
@@ -380,7 +380,7 @@ namespace field_subtests {
 		commentator().start (st, "testFieldNegation", iterations);
 
 		typename Field::Element a, neg_a, neg_a_a, zero;
-		F.init(a,0); F.init(neg_a,0); F.init(neg_a_a,0); F.init (zero, 0);
+		F.init(a,0.0); F.init(neg_a,0.0); F.init(neg_a_a,0.0); F.init (zero, 0.0);
 		typename Field::RandIter r (F);
 
 		bool ret = true;

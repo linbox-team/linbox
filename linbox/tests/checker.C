@@ -191,7 +191,7 @@ int main(int argc, char* argv[])
 #endif
 
 // Block-ring is incompatible with all rings being commutative.  More likely a blocked matrix storage scheme would be designed as a matrix rep, so drop block-ring for now.
-//		  No_build_n_run("test-block-ring",                   counter , flag, "bds to fix");
+//		  No_build_n_run("test-block-ring",                   counter , flag, "no non-commutative ring support currently");
 //#ifdef LINBOX_HAVE_OPENMP
 //#pragma omp section
 //#endif
@@ -257,7 +257,11 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_runWarn("test-ffpack",                       counter , flag , "testTURBO fails");
+		  Build_n_runWarn("test-ffpack",                       counter , flag , "testTURBO fails, move to ffpack tests?");
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
+		Build_n_runWarn("test-ftrmm", counter, flag, "should move to fflas tests");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -573,7 +577,6 @@ int main(int argc, char* argv[])
 #if 1
 	if (flag > 0) cout << "	Tests requiring further development" << endl;
 	build_n_run("test-smith-form-local", counter, flag, "bds"); //"intermittent failures");
-	no_build_n_run("test-ftrmm", counter, flag, "bb/cp");
 
 	if (flag > 0) cout << "	Immature tests" << endl;
 	Build_n_runWarn("test-quad-matrix", counter, flag , "half baked, bds responsible" );
