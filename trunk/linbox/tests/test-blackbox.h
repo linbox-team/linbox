@@ -342,8 +342,8 @@ testBlackboxNoRW(BB &A, bool zeroCheck=true)
 	{
 		size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
 		DenseVector x(F,A.coldim()), y(F,A.rowdim());
-		for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], i);
-		for(size_t i = 0; i < A.rowdim(); ++i) F.init(y[i], i);
+		for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], (double)i);
+		for(size_t i = 0; i < A.rowdim(); ++i) F.init(y[i], (double)i);
 		//A.apply(y, x);
 
 		if (A.coldim() >= largeThresh)

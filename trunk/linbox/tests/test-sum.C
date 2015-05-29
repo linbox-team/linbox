@@ -46,7 +46,7 @@
 #include "linbox/vector/stream.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/givaro.h"
+//#include "linbox/field/givaro.h"
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/ntl.h"
 #endif
@@ -226,11 +226,13 @@ int main (int argc, char **argv)
         typedef NTL_zz_p Field;
 // 	NTL::zz_p::init(q1); // Done in the constructor
 #else
-	typedef Givaro::Modular<int32_t> Field ;
+	typedef Givaro::Modular<double> Field ;
+	//typedef Givaro::Modular<int32_t> Field ;
 #endif
 	Field F1(q1);
 
-        Givaro::Modular< int32_t> F2(q2);
+        Givaro::Modular<double> F2(q2);
+        //Givaro::Modular<int32_t> F2(q2);
 
 	// typedef BlasVector<Field> Vector;
 
