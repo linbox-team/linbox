@@ -96,9 +96,9 @@ LIBTOOLIZE=glibtoolize
 }
 
 (grep "^AC_PROG_LIBTOOL" configure.ac >/dev/null) && {
-  ($LIBTOOL --version) < /dev/null > /dev/null 2>&1 || {
+  ($LIBTOOLIZE --version) < /dev/null > /dev/null 2>&1 || {
      echo
-     echo "**Error**: You must have \`libtool' installed to compile $PROJECT."
+     echo "**Error**: You must have \`libtoolize' installed to compile $PROJECT."
      echo "Download the appropriate package for your distribution,"
      echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
      DIE=1
