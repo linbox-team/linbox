@@ -79,13 +79,19 @@ int main (int argc, char **argv)
 	Polynomial p(n+1, d);
 	F.assign (d, F.one); F.assign(p[n], d);
 
+	// cstor from poly
 	Blackbox A (F, p);
-
 	pass = pass && testBlackboxNoRW(A); // no RW yet
 
+	// cstor using own randiter
 	Blackbox B (F, n);
-
 	pass = pass && testBlackboxNoRW(B); // no RW yet
+
+	Field::RandIter r(F);
+
+	// cstor from randiter
+	Blackbox C (F, n, r);
+	pass = pass && testBlackboxNoRW(C); // no RW yet
 
 	commentator().stop("companion matrix black box test suite");
 
