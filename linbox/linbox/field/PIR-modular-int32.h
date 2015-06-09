@@ -83,15 +83,25 @@ namespace LinBox
 
 		typedef ModularRandIter<int32_t> RandIter;
 
+                uint64_t _two_64;
+            
+
 		//default modular field,taking 65521 as default modulus
 		PIRModular () :
 			Givaro::Modular<int32_t>(65521)
 		{
+                    _two_64 = (uint64_t(1) << 32) % uint64_t(this->characteristic());
+                    _two_64 = (_two_64 * _two_64) % uint64_t(this->characteristic());
+
 		}
 
 		PIRModular (int32_t value, int32_t exp = 1) :
 			Givaro::Modular<int32_t>(value)
-		{ }
+		{ 
+                    _two_64 = (uint64_t(1) << 32) % uint64_t(this->characteristic());
+                    _two_64 = (_two_64 * _two_64) % uint64_t(this->characteristic());
+
+                }
 
 
 		/** PIR functions, gcd, xgcd, dxgcd */
@@ -375,7 +385,7 @@ namespace LinBox
 		typedef PIRModular<int32_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (&F),_y(0)
+			_field (F),_y(0)
 		{}
 
 
@@ -383,17 +393,17 @@ namespace LinBox
 			_field (faxpy._field), _y (0)
 		{}
 
-		FieldAXPY<PIRModular<int32_t> > &operator = (const FieldAXPY &faxpy) {
-			_field = faxpy._field;
-			_y = faxpy._y;
-			return *this;
-		}
+// 		FieldAXPY<PIRModular<int32_t> > &operator = (const FieldAXPY &faxpy) {
+// 			_field = faxpy._field;
+// 			_y = faxpy._y;
+// 			return *this;
+// 		}
 
 		inline uint64_t& mulacc (const Element &a, const Element &x) {
 			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
 			if (_y < t)
-				return _y += (uint64_t)field()._two64;
+				return _y += field()._two_64;
 			else
 				return _y;
 		}
@@ -401,7 +411,7 @@ namespace LinBox
 		inline uint64_t& accumulate (const Element &t) {
 			_y += (uint64_t)t;
 			if (_y < (uint64_t)t)
-				return _y += (uint64_t)field()._two64;
+				return _y += field()._two_64;
 			else
 				return _y;
 		}
@@ -454,7 +464,7 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += (uint64_t)field()._two64;
+					y += field()._two_64;
 			}
 
 			y %= (uint64_t) field().characteristic();
@@ -476,7 +486,7 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += (uint64_t)field()._two64;
+					y += field()._two_64;
 			}
 
 
@@ -552,7 +562,7 @@ namespace LinBox
 				*l += t;
 
 				if (*l < t)
-					*l += VD.faxpy()._two_64;
+                                    *l += VD.faxpy().field()._two_64;
 			}
 		}
 
@@ -591,7 +601,7 @@ namespace LinBox
 				_tmp[k->first] += t;
 
 				if (_tmp[k->first] < t)
-					_tmp[k->first] += VD.faxpy()._two_64;
+					_tmp[k->first] += VD.faxpy().field()._two_64;
 			}
 		}
 
@@ -631,7 +641,7 @@ namespace LinBox
 				_tmp[k->first] += t;
 
 				if (_tmp[k->first] < t)
-					_tmp[k->first] += VD.faxpy()._two_64;
+					_tmp[k->first] += VD.faxpy().field()._two_64;
 			}
 		}
 
@@ -675,7 +685,7 @@ namespace LinBox
 				_tmp[*k_idx] += t;
 
 				if (_tmp[*k_idx] < t)
-					_tmp[*k_idx] += VD.faxpy()._two_64;
+					_tmp[*k_idx] += VD.faxpy().field()._two_64;
 			}
 		}
 
