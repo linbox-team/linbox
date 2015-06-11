@@ -34,7 +34,7 @@
 
 #include "linbox/algorithms/gauss.h"
 #include "linbox/util/commentator.h"
-#include <givaro/unparametric.h>
+#include <givaro/zring.h>
 #include <utility>
 
 #ifdef __LINBOX_ALL__
@@ -342,7 +342,7 @@ namespace LinBox
 //         dP.write(std::cerr << "dP:= ") << ';' << std::endl;
         
 
-        Givaro::UnparametricRing<long> Z;
+        Givaro::ZRing<long> Z;
 
 //         std::cerr << '['; for (size_t j=0;j<sNi;j++) 
 //             std::cerr << P2[j] << ' ';

@@ -47,8 +47,8 @@
 #include <NTL/lzz_p.h>
 #include <NTL/ZZ.h>
 
-#include "linbox/field/unparametric.h"
-#include "linbox/randiter/unparametric.h"
+#include <givaro/zring.h>
+#include "linbox/randiter/zring.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/integer.h"
 
@@ -123,7 +123,7 @@ namespace LinBox
 	 * moduli yield fields.  The primality of the modulus will not be checked, so
 	 * it is the programmer's responsibility to supply a prime modulus if a field is
 	 * wanted.
-	 * These specializations allow the \ref Givaro::UnparametricRing template class to be
+	 * These specializations allow the \ref Givaro::ZRing template class to be
 	 * used to wrap NTL's <code>zz_p</code> class as a LinBox field.
 	 * Uses nice trick for mod p via floating point.
 	 \ingroup field
@@ -136,7 +136,7 @@ namespace LinBox
 		const Element zero,one,mOne ;
 
 
-		//public Givaro::UnparametricRing<Element> {
+		//public Givaro::ZRing<Element> {
 		NTL_zz_p(integer p, size_t e = 1) :
 			NTL_zz_p_Initialiser(p,e),Father_t ()
 			,zero( NTL::to_zz_p(0)),one( NTL::to_zz_p(1)),mOne(-one)

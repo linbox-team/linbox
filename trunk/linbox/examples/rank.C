@@ -30,7 +30,7 @@
 
 #include <iostream>
 #include <sstream>
-#include <givaro/unparametric.h>
+#include <givaro/zring.h>
 #include <givaro/givrational.h>
 
 #include <linbox/field/modular.h>
@@ -70,11 +70,11 @@ int main (int argc, char **argv)
 
 	long unsigned int r;
 
-	Givaro::UnparametricRing<Givaro::Rational> ZZ;
+	Givaro::ZRing<Givaro::Rational> ZZ;
 	LinBox::Timer tim ; tim.clear() ; tim.start();
-	MatrixStream<Givaro::UnparametricRing<Givaro::Rational>> ms( ZZ, input );
-	SparseMatrix<Givaro::UnparametricRing<Givaro::Rational>, SP_STOR> A ( ms );
-	// SparseMatrix<Givaro::UnparametricRing<Givaro::Rational>, SparseMatrixFormat::CSR> A ( ms );
+	MatrixStream<Givaro::ZRing<Givaro::Rational>> ms( ZZ, input );
+	SparseMatrix<Givaro::ZRing<Givaro::Rational>, SP_STOR> A ( ms );
+	// SparseMatrix<Givaro::ZRing<Givaro::Rational>, SparseMatrixFormat::CSR> A ( ms );
 	tim.stop();
 	std::cout << "matrix is " << A.rowdim() << " by " << A.coldim() << " (" << tim << ")" << std::endl;
 	tim.clear() ; tim.start();

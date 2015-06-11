@@ -34,7 +34,7 @@
 #include "linbox/integer.h"
 #include "linbox/ring/gcd32.h"
 #include "linbox/ring/gcd64.h"
-#include "linbox/randiter/unparametric.h"
+#include "linbox/randiter/zring.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox

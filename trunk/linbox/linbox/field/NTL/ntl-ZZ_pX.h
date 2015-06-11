@@ -42,7 +42,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
-#include "linbox/field/unparametric.h"
+#include <givaro/zring.h>
 #include "linbox/field/NTL/ntl-ZZ_p.h"
 #include "linbox/integer.h"
 
@@ -314,7 +314,7 @@ namespace LinBox
 
 		/** Write a description of the field */
 		// Oustide of class definition so write(ostream&,const Element&) from
-		// Givaro::UnparametricRing still works.
+		// Givaro::ZRing still works.
 		std::ostream& write( std::ostream& os ) const
 		{
 			return os << "Polynomial ring using NTL::ZZ_pX";

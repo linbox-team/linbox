@@ -163,7 +163,7 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	}
 
 	std::ifstream input(filename);
-	typedef Givaro::UnparametricRing<int64_t> Ring;
+	typedef Givaro::ZRing<int64_t> Ring;
 	Ring F;
 	LinBox::MatrixStream<Ring> ms( F, input );
 	LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);

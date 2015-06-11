@@ -50,8 +50,8 @@
 
 #include "linbox/util/debug.h"
 
-#include "linbox/field/unparametric.h"
-#include "linbox/randiter/unparametric.h"
+#include <givaro/zring.h>
+#include "linbox/randiter/zring.h"
 #include "linbox/field/field-traits.h"
 
 #include "linbox/integer.h"
@@ -132,7 +132,7 @@ namespace LinBox
 	 * This field is provided as a convenience in a few places.
 	 * Use with caution because expression swell.
 	 *
-	 * This specialization allows the \ref Givaro::UnparametricRing template class to be
+	 * This specialization allows the \ref Givaro::ZRing template class to be
 	 * used to wrap NTL's RR class as a LinBox field.
 	 \ingroup field
 	 */
@@ -326,7 +326,7 @@ namespace LinBox
 	struct ClassifyRing;
 
 	template<class Element>
-	struct ClassifyRing<Givaro::UnparametricRing<Element> >;
+	struct ClassifyRing<Givaro::ZRing<Element> >;
 
 	template<>
 	struct ClassifyRing<NTL_RR >{

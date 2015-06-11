@@ -85,7 +85,7 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
-	//Givaro::UnparametricRing<integer> ZZ;
+	//Givaro::ZRing<integer> ZZ;
 	PID_integer ZZ;
 	Matrix A(ZZ);
 	A.read (input);

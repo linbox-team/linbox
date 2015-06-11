@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     bool pass ;
 
     // call tests
-    typedef Givaro::UnparametricRing<int> Field;
+    typedef Givaro::ZRing<int> Field;
     Field F;
     pass = testSubvector<Field> (F, n);
 

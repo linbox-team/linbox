@@ -30,7 +30,7 @@
 #include "linbox/util/error.h"
 #include <givaro/givrational.h>
 #include <givaro/modular.h>
-#include <givaro/unparametric.h>
+#include <givaro/zring.h>
 
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/NTL/ntl-ZZ.h"
@@ -178,10 +178,10 @@ namespace LinBox
 {
 
         template<class Source>
-	class Hom<Source, Givaro::UnparametricRing<integer> > {
+	class Hom<Source, Givaro::ZRing<integer> > {
 
 	public:
-                typedef Givaro::UnparametricRing<integer> Target;
+                typedef Givaro::ZRing<integer> Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
 
@@ -206,10 +206,10 @@ namespace LinBox
 
         
 	template<class _Target>
-	class Hom<Givaro::UnparametricRing<integer>, _Target> {
+	class Hom<Givaro::ZRing<integer>, _Target> {
 
 	public:
-		typedef Givaro::UnparametricRing<integer> Source;
+		typedef Givaro::ZRing<integer> Source;
 		typedef _Target Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
@@ -236,11 +236,11 @@ namespace LinBox
 	}; // end Hom
 
 	template<>
-	class Hom<Givaro::UnparametricRing<integer>, Givaro::UnparametricRing<integer> > {
+	class Hom<Givaro::ZRing<integer>, Givaro::ZRing<integer> > {
 
 	public:
-		typedef Givaro::UnparametricRing<integer> Source;
-		typedef Givaro::UnparametricRing<integer> Target;
+		typedef Givaro::ZRing<integer> Source;
+		typedef Givaro::ZRing<integer> Target;
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;
 
@@ -326,10 +326,10 @@ namespace LinBox
 	// specialization for equal domain TYPES
 	// WARNING this FORBIDS same type homomorphism
 	template <>
-	class Hom<Givaro::UnparametricRing<Givaro::Rational>,Givaro::UnparametricRing<Givaro::Rational>> {
+	class Hom<Givaro::ZRing<Givaro::Rational>,Givaro::ZRing<Givaro::Rational>> {
 
 	public:
-		typedef Givaro::UnparametricRing<Givaro::Rational> Source;
+		typedef Givaro::ZRing<Givaro::Rational> Source;
 		typedef Source Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
@@ -355,10 +355,10 @@ namespace LinBox
 	}; // end Hom
 
 	template <class _Target>
-	class Hom<Givaro::UnparametricRing<Givaro::Rational>, _Target> {
+	class Hom<Givaro::ZRing<Givaro::Rational>, _Target> {
 
 	public:
-		typedef Givaro::UnparametricRing<Givaro::Rational> Source;
+		typedef Givaro::ZRing<Givaro::Rational> Source;
 		typedef _Target Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
@@ -396,14 +396,14 @@ namespace LinBox
 
 #if 0
 #ifdef __FIELD_MODULAR_H
-	// Dan Roche mapping from Givaro::UnparametricRing to Givaro::Modular - for integer
+	// Dan Roche mapping from Givaro::ZRing to Givaro::Modular - for integer
 	// computations that use mod one or more primes and possibly chinese
 	// remaindering.
 	template<class _INT1, class _INT2>
-	class Hom<Givaro::UnparametricRing<_INT1 >,Givaro::Modular<_INT2 > > {
+	class Hom<Givaro::ZRing<_INT1 >,Givaro::Modular<_INT2 > > {
 
 	public:
-		typedef Givaro::UnparametricRing<_INT1 > Source;
+		typedef Givaro::ZRing<_INT1 > Source;
 		typedef Givaro::Modular<_INT2 > Target;
 		typedef _INT1 SrcElt;
 		typedef _INT2 Elt;

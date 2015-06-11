@@ -35,7 +35,7 @@
 #include <iostream>
 #include <givaro/givpoly1.h>
 #include <givaro/givpoly1factor.h>
-#include <givaro/unparametric.h>
+#include <givaro/zring.h>
 
 #include "linbox/integer.h"
 //#include "linbox/element/givaro-polynomial.h"
@@ -100,7 +100,7 @@ namespace LinBox
 #include "NTL/ZZXFactoring.h"
 namespace LinBox
 {
-	typedef GivPolynomialRing<Givaro::UnparametricRing<integer>, Givaro::Dense> GivPolIntDense;
+	typedef GivPolynomialRing<Givaro::ZRing<integer>, Givaro::Dense> GivPolIntDense;
 
 	template <>
 	template <>

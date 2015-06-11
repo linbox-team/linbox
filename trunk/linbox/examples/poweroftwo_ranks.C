@@ -38,7 +38,7 @@
 using namespace LinBox;
 using namespace std;
 
-template<class Int_type, class Ring_type = Givaro::UnparametricRing<Int_type> >
+template<class Int_type, class Ring_type = Givaro::ZRing<Int_type> >
 void runpoweroftworank(ifstream& input, const size_t exponent) {
     typedef std::vector<std::pair<size_t,Int_type> > Smith_t;
     typedef Ring_type Ring; // signed ?
@@ -86,7 +86,7 @@ int main (int argc, char **argv) {
             runpoweroftworank<Givaro::Integer, LinBox::PID_integer>(input, exponent);
 
         } else {
-            runpoweroftworank<uint64_t, Givaro::UnparametricRing<int64_t> >(input, exponent);
+            runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, exponent);
             
         }
 

@@ -204,7 +204,7 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 			    size_t Size, std::pair<size_t, size_t> dims)
 {
 
-	typedef typename Givaro::UnparametricRing<T>        Unparam ;
+	typedef typename Givaro::ZRing<T>        Unparam ;
 	typedef typename std::vector<T>                         Vect ;
 	typedef typename LinBox::BlasMatrix<Unparam>          Matrix ;
 	typedef typename std::vector<Matrix>                 MatVect ;

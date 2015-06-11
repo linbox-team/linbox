@@ -44,8 +44,8 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
-#include "linbox/field/unparametric.h"
-#include "linbox/randiter/unparametric.h"
+#include <givaro/zring.h>
+#include "linbox/randiter/zring.h"
 #include "linbox/field/field-traits.h"
 
 
@@ -113,7 +113,7 @@ namespace LinBox
 
 
 	/*! @brief zz_pE
-	 * Define a parameterized class to easily handle Givaro::UnparametricRing<NTL::zz_pE> field
+	 * Define a parameterized class to easily handle Givaro::ZRing<NTL::zz_pE> field
 	 */
 
 	/// \brief for large cardinality, small prime.  \ingroup field

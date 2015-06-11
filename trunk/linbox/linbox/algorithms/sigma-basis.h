@@ -32,7 +32,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/field/unparametric.h"
+#include <givaro/zring.h>
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/factorized-matrix.h"
@@ -870,8 +870,8 @@ namespace LinBox
 
 
 				// Apply BPerm2 and Qt to the vector of order and increase by 1 the last n rows
-				Givaro::UnparametricRing<long> UF;
-				BlasMatrixDomain<Givaro::UnparametricRing<long> > BMDUF(UF);
+				Givaro::ZRing<long> UF;
+				BlasMatrixDomain<Givaro::ZRing<long> > BMDUF(UF);
 				BMDUF.mulin_right(Qt,order);
 				BMDUF.mulin_right(BPerm2,order);
 				BMDUF.mulin_right(BPerm1,degree);
@@ -1093,8 +1093,8 @@ namespace LinBox
 
 
 				// Apply BPerm2 and Qt to the vector of order and increase by 1 the last n rows
-				Givaro::UnparametricRing<long> UF;
-				BlasMatrixDomain<Givaro::UnparametricRing<long> > BMDUF(UF);
+				Givaro::ZRing<long> UF;
+				BlasMatrixDomain<Givaro::ZRing<long> > BMDUF(UF);
 				BMDUF.mulin_right(Qt,order);
 				BMDUF.mulin_right(BPerm2,order);
 				BMDUF.mulin_right(BPerm1,degree);

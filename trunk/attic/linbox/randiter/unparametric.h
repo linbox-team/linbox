@@ -27,7 +27,7 @@
 
 #include <ctime>
 #include <vector>
-#include <givaro/unparametric.h>
+#include <givaro/zring.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -83,7 +83,7 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		UnparametricRandIter(
-				     const Givaro::UnparametricRing<K>& F,
+				     const Givaro::ZRing<K>& F,
 				     const integer& size = 0,
 				     const integer& seed = 0
 				    ) :
@@ -104,7 +104,7 @@ namespace LinBox
 			// Seed random number generator
 			srand((unsigned)_seed);
 
-		} // UnparametricRandIter(const Givaro::UnparametricRing<K>&, const integer&, const integer&)
+		} // UnparametricRandIter(const Givaro::ZRing<K>&, const integer&, const integer&)
 
 		/** Copy constructor.
 		 * Constructs UnparametricRandIter object by copying the random field

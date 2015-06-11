@@ -28,7 +28,7 @@
 #ifndef __LINBOX_matpoly_mult_ftt_multiprecision_INL
 #define __LINBOX_matpoly_mult_ftt_multiprecision_INL
 
-#include "linbox/field/unparametric.h"
+#include <givaro/zring.h>
 #include "linbox/field/modular.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/randiter/random-prime.h"
@@ -40,9 +40,9 @@ namespace LinBox{
    **** Polynomial Matrix Multiplication over Z[x] ***
    ***************************************************/
   template<>
-  class PolynomialMatrixFFTMulDomain<Givaro::UnparametricRing<integer> > {
+  class PolynomialMatrixFFTMulDomain<Givaro::ZRing<integer> > {
   public:
-    typedef Givaro::UnparametricRing<integer>       IntField;
+    typedef Givaro::ZRing<integer>       IntField;
     //typedef Givaro::Modular<uint32_t>     ModField;
     typedef Givaro::Modular<double>                ModField;
     typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,ModField> MatrixP_F; // Polynomial matrix stored as a matrix of polynomials
@@ -405,7 +405,7 @@ namespace LinBox{
   public:
     typedef Givaro::Modular<integer>              Field;
     typedef typename Field::Element     Element;
-    typedef Givaro::UnparametricRing<integer>  IntField;
+    typedef Givaro::ZRing<integer>  IntField;
     // Polynomial matrix stored as a polynomial of matrix
     typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP_F;
     // Polynomial matrix stored as a polynomial of matrix

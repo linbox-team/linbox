@@ -45,8 +45,8 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
-#include "linbox/field/unparametric.h"
-#include "linbox/randiter/unparametric.h"
+#include <givaro/zring.h>
+#include "linbox/randiter/zring.h"
 #include "linbox/field/field-traits.h"
 
 
@@ -55,14 +55,14 @@
 namespace Givaro
 {
 	template<>
-	//	NTL::GF2E& Givaro::UnparametricRing<NTL::GF2E>::init (NTL::GF2E &x, const Integer &y) const
+	//	NTL::GF2E& Givaro::ZRing<NTL::GF2E>::init (NTL::GF2E &x, const Integer &y) const
 	NTL::GF2E& Caster(NTL::GF2E &x, const Integer &y)
 	{
 		x=NTL::to_GF2E(static_cast<long>(y));
 		return x;
 	}
 	template<>
-	//	NTL::GF2E& Givaro::UnparametricRing<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
+	//	NTL::GF2E& Givaro::ZRing<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
 	NTL::GF2E& Caster(NTL::GF2E &x, const double &y)
 	{
 		x=NTL::to_GF2E(static_cast<long>(y));
@@ -71,7 +71,7 @@ namespace Givaro
 
 
 	template<>
-	//	Integer& Givaro::UnparametricRing<NTL::GF2E>::convert (Integer& x, const NTL::GF2E &y) const	{
+	//	Integer& Givaro::ZRing<NTL::GF2E>::convert (Integer& x, const NTL::GF2E &y) const	{
 	Integer& Caster(Integer& x, const NTL::GF2E &y)
 	{
 		NTL::GF2X poly = rep(y);
@@ -118,7 +118,7 @@ namespace LinBox
 
 
 	/*
-	 * Define a parameterized class to easily handle Givaro::UnparametricRing<NTL::GF2E> field
+	 * Define a parameterized class to easily handle Givaro::ZRing<NTL::GF2E> field
 	 */
 
 	class NTL_GF2E :  public NTL_GF2E_Initialiser, public Givaro::UnparametricOperations<NTL::GF2E> {

@@ -140,9 +140,9 @@ namespace LinBox
 template<typename Field>
 struct InteratorBlas : public Interator {
 	typedef typename Field::Element Element;
-	typedef LinBox::BlasMatrix<Givaro::UnparametricRing<Element> > Matrix;
+	typedef LinBox::BlasMatrix<Givaro::ZRing<Element> > Matrix;
 	typedef typename Matrix::pointer Pointer;
-	typename Givaro::UnparametricRing<Element> _field;
+	typename Givaro::ZRing<Element> _field;
 	mutable Matrix _vectC;
 
 	InteratorBlas(const BlasVector<PID_integer>& v) :

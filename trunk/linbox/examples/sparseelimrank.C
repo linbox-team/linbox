@@ -30,7 +30,7 @@
 #include <iostream>
 #include <vector>
 #include <utility>
-#include <givaro/unparametric.h>
+#include <givaro/zring.h>
 #include <givaro/givrational.h>
 
 #include <linbox/field/modular.h>
@@ -64,9 +64,9 @@ int main (int argc, char **argv)
 		   is an integer matrix and our concept is that we are getting the rank of that
 		   matrix by some blackbox magic inside linbox.
 		   */
-		Givaro::UnparametricRing<Givaro::Rational> ZZ;
-		MatrixStream<Givaro::UnparametricRing<Givaro::Rational>> ms( ZZ, input );
-		SparseMatrix<Givaro::UnparametricRing<Givaro::Rational>, SparseMatrixFormat::SparseSeq > A ( ms );
+		Givaro::ZRing<Givaro::Rational> ZZ;
+		MatrixStream<Givaro::ZRing<Givaro::Rational>> ms( ZZ, input );
+		SparseMatrix<Givaro::ZRing<Givaro::Rational>, SparseMatrixFormat::SparseSeq > A ( ms );
         if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 
 

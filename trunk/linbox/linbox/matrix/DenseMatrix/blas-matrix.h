@@ -62,7 +62,7 @@ namespace LinBox
 	{
 
 		//!@bug this does not seem right for float or any non M/modular field: doing blas wherever we have a fflas-ffpack field (?)
-		//! @bug should return true for some Givaro::UnparametricRing
+		//! @bug should return true for some Givaro::ZRing
 		template <class Field>
 		bool checkBlasApply(const Field &F, size_t n)
 		{

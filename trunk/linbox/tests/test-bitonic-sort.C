@@ -64,7 +64,7 @@ bool testRandom (std::ostream& report, size_t s)
 
 	Comparator comp;
 
-	typedef Givaro::UnparametricRing<int> Ints ;
+	typedef Givaro::ZRing<int> Ints ;
 	Ints	I ;
 
 	BlasVector<Ints> v(I,s), d(I,s);

@@ -34,12 +34,11 @@
 
 #include <limits.h>
 #include <iostream>
-// #include <gmp++/gmp++_int.h>
 #include "linbox/integer.h"
-#include "linbox/field/unparametric.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/field/gmp-rational.h"
 
+#include <givaro/zring.h>
 
 namespace LinBox
 {
@@ -50,7 +49,7 @@ namespace LinBox
 	/*! \ingroup integers
 	 * @brief Domain for integer operations.
 	 */
-	class PID_integer : public Givaro::UnparametricRing<integer>
+	class PID_integer : public Givaro::ZRing<integer>
 	{
 
 	public:
