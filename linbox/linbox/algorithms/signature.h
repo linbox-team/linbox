@@ -212,7 +212,7 @@ namespace LinBox
 
 			Integer_t m = 1;
 			// std::vector<Element> v(n);
-			typedef Givaro::UnparametricRing<Element> NoField;
+			typedef Givaro::ZRing<Element> NoField;
 			NoField unF ;
 			BlasVector<NoField> v(unF,n);
 			size_t j = 0;

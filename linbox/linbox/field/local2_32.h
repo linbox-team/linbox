@@ -26,7 +26,7 @@
 #ifndef __LINBOX_local2_32_H
 #define __LINBOX_local2_32_H
 
-#include "linbox/field/unparametric.h"
+#include <givaro/zring.h>
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include "linbox/field/field-traits.h"
@@ -48,7 +48,7 @@ namespace LinBox
 
 	/** \brief Fast arithmetic mod 2^32, including gcd.
 	 *
-	 * Extend Givaro::UnparametricRing<uint32_t> which is a representation
+	 * Extend Givaro::ZRing<uint32_t> which is a representation
 	 * of Z_2^32. It is especially fast because it uses hardware arithmetic
 	 * directly.  This ring is a Local Principal Ideal Ring.
 	 *
@@ -63,16 +63,16 @@ namespace LinBox
 	 * \ingroup field
 	 */
 
-	struct Local2_32: public Givaro::UnparametricRing<uint32_t>
+	struct Local2_32: public Givaro::ZRing<uint32_t>
 	{
 	public:
 
-		typedef Givaro::UnparametricRing<uint32_t>::Element Element;
+		typedef Givaro::ZRing<uint32_t>::Element Element;
 		typedef enum {_min=0,_max=32} Exponent; // enum?
 		//Exponent& init(Exponent& a) { return a = 32; }
 
 		Local2_32 (int p=2, int exp=32) :
-			Givaro::UnparametricRing<uint32_t>(p,(size_t)exp)
+			Givaro::ZRing<uint32_t>(p,(size_t)exp)
 		{
 			if(p != 2) throw PreconditionFailed(LB_FILE_LOC,"modulus must be 2");
 			if(exp != 32) throw PreconditionFailed(LB_FILE_LOC,"exponent must be 32");

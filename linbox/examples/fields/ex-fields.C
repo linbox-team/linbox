@@ -78,14 +78,14 @@ int main()
 	// NTL arbitrary precision real field
 	// (Could be parameterized by the precision)
 
-	// Givaro::UnparametricRing<NTL::RR> K2;
+	// Givaro::ZRing<NTL::RR> K2;
 	NTL_RR K2 ;
 	NTL::RR::SetPrecision(500);
 	NTL::RR::SetOutputPrecision(50);
 
 	// NTL modulo p field
 
-	//Givaro::UnparametricRing<NTL::zz_p> K2;
+	//Givaro::ZRing<NTL::zz_p> K2;
 	//NTL::zz_p::init(553);
 
 	divide_ex(K2);

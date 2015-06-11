@@ -41,8 +41,8 @@
 #include <NTL/ZZ_pE.h>
 #include <NTL/ZZ.h>
 
-#include "linbox/field/unparametric.h"
-#include "linbox/randiter/unparametric.h"
+#include <givaro/zring.h>
+#include "linbox/randiter/zring.h"
 #include "linbox/field/field-traits.h"
 
 #ifdef __LINBOX_XMLENABLED
@@ -131,7 +131,7 @@ namespace LinBox
 
 	/**
 	 * @brief Wrapper of ZZ_pE from NTL
-	 * Define a parameterized class to handle easily Givaro::UnparametricRing<NTL::ZZ_pE> field
+	 * Define a parameterized class to handle easily Givaro::ZRing<NTL::ZZ_pE> field
 	 */
 	class NTL_ZZ_pE : public NTL_ZZ_pE_Initialiser, public Givaro::UnparametricOperations<NTL::ZZ_pE> {
 	public:

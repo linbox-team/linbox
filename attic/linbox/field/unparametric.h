@@ -1,5 +1,5 @@
 
-/* linbox/field/unparametric.h
+/* linbox/field/zring.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
  *               2005 Clement Pernet
@@ -32,7 +32,7 @@
 #include <typeinfo>
 #include <string>
 #include <algorithm>
-#include <givaro/unparametric.h>
+#include <givaro/zring.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -48,12 +48,12 @@ namespace LinBox
 	struct ClassifyRing;
 
 	template <class K>
-	struct ClassifyRing<Givaro::UnparametricRing<K> > {
+	struct ClassifyRing<Givaro::ZRing<K> > {
 		typedef RingCategories::GenericTag categoryTag;
 	};
 
 	template <>
-	struct ClassifyRing<Givaro::UnparametricRing<integer> > {
+	struct ClassifyRing<Givaro::ZRing<integer> > {
 		typedef RingCategories::IntegerTag categoryTag;
 	};
 
@@ -65,9 +65,9 @@ namespace LinBox
 	 * @brief NO DOc
 	 */
 	template<>
-	class FieldAXPY<Givaro::UnparametricRing<integer> >  {
+	class FieldAXPY<Givaro::ZRing<integer> >  {
 	public:
-		typedef Givaro::UnparametricRing<integer> Field;
+		typedef Givaro::ZRing<integer> Field;
 		typedef integer Element;
 		typedef Element Abnormal;
 
@@ -148,7 +148,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#include "linbox/randiter/unparametric.h"
+#include "linbox/randiter/zring.h"
 
 #endif // __LINBOX_field_unparametric_H
 

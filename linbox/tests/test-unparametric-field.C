@@ -73,23 +73,23 @@ int main (int argc, char **argv)
 ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
         report << endl << "Unparametrix<double> field test suite" << endl;
 
-	Givaro::UnparametricRing<double> F;
+	Givaro::ZRing<double> F;
 
-	if (!runFieldTests (F, "Givaro::UnparametricRing<double>", 1, n, false)) pass = false;
+	if (!runFieldTests (F, "Givaro::ZRing<double>", 1, n, false)) pass = false;
 
 // archetype no longer works
 #if 0
-	Givaro::UnparametricRing<double> * F1 = new Givaro::UnparametricRing<double>(F);
+	Givaro::ZRing<double> * F1 = new Givaro::ZRing<double>(F);
 	FieldArchetype K(F1);
 	delete F1;
 
-	// FieldArchetype K(new Givaro::UnparametricRing<double>(F);) // leaks !!!
+	// FieldArchetype K(new Givaro::ZRing<double>(F);) // leaks !!!
 
 	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField field"))
 		pass = false;
 #endif
 	// We're going to allow failed tests here.
-	// Givaro::UnparametricRing is a tool for building fields and does not of itself produce a LinBox conforming field.
+	// Givaro::ZRing is a tool for building fields and does not of itself produce a LinBox conforming field.
 	// However compilation serves some limited testing value and data is gleaned when the test is run with a report file argument.
 	// return 0;
 	// but for now accept the test.

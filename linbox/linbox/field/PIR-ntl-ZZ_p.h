@@ -26,7 +26,7 @@
 #ifndef __LINBOX_pir_ntl_zz_p_H
 #define __LINBOX_pir_ntl_zz_p_H
 
-#include "linbox/field/unparametric.h"
+#include <givaro/zring.h>
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include <NTL/ZZ.h>
@@ -58,9 +58,9 @@ namespace LinBox
 	  */
 
 	class PIR_ntl_ZZ_p :  public NTL_ZZ_p {
-		//public Givaro::UnparametricRing<NTL::ZZ_p> {
+		//public Givaro::ZRing<NTL::ZZ_p> {
 
-		// typedef Givaro::UnparametricRing<NTL::ZZ_p> Father_t ;
+		// typedef Givaro::ZRing<NTL::ZZ_p> Father_t ;
 		typedef NTL_ZZ_p Father_t ;
 	public:
 		typedef Father_t::Element Element;

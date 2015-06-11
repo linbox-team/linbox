@@ -30,7 +30,6 @@ BASIC_HDRS =            \
     abstract.h          \
     archetype.h         \
     envelope.h          \
-    unparametric.h      \
     param-fuzzy.h       \
     gmp-rational.h      \
     modular.h           \

@@ -173,7 +173,7 @@ int main (int argc, char **argv)
 	};
 
 #ifdef __LINBOX_HAVE_NTL_blah
-//        typedef Givaro::UnparametricRing<NTL::zz_p> Field;
+//        typedef Givaro::ZRing<NTL::zz_p> Field;
         typedef NTL_zz_p Field;
 // 	NTL::zz_p::init(q1); // Done in the constructor
 #else

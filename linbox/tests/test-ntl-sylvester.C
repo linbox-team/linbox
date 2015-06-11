@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 	LinBox::commentator().start("Sylvester black box test suite", "Sylvester");
 	report <<"Dimension(m+n)= " << m+n << "\t modulus= " << q << endl;
 
-	// typedef Givaro::UnparametricRing<NTL::ZZ_p> Field;
+	// typedef Givaro::ZRing<NTL::ZZ_p> Field;
 	typedef LinBox::NTL_ZZ_p Field;
 	// typedef Field::Element element;
 	typedef LinBox::BlasVector<Field> Vector;

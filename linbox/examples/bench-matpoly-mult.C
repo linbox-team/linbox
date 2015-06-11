@@ -52,7 +52,7 @@ using namespace std;
 #include <linbox/randiter/random-prime.h>
 #include <linbox/randiter/random-fftprime.h>
 #include <linbox/field/unparametric.h>
-//#include <givaro/unparametric.h>
+//#include <givaro/zring.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/util/commentator.h>
 #include <linbox/util/timer.h>
@@ -397,7 +397,7 @@ int main(int argc, char** argv){
 #endif
 		cout<<"Computation over Z[x]  "<<endl;
 		cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
-		Givaro::UnparametricRing<integer> F;
+		Givaro::ZRing<integer> F;
 		runTest (F,n,b,d,seed,test);
 	}
 	else {

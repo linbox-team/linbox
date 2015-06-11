@@ -34,7 +34,7 @@
 #include "linbox/util/timer.h"
 
 #include "linbox/integer.h"
-#include "linbox/field/unparametric.h"
+#include <givaro/zring.h>
 #include "linbox/field/modular.h"
 #include "givaro/givtimer.h"
 
@@ -105,7 +105,7 @@ namespace LinBox
 	// class PolynomialMatrixFFTMulDomain<Givaro::Modular<T> > ;        // Mul in Zp[x] with p^2 storable in type T
 
 	// template<>
-	// class PolynomialMatrixFFTMulDomain<Givaro::UnparametricRing<integer> >;  // Mul in Z[x]
+	// class PolynomialMatrixFFTMulDomain<Givaro::ZRing<integer> >;  // Mul in Z[x]
 
 	// template <>
 	// class PolynomialMatrixFFTMulDomain<Givaro::Modular<integer> > ;           // Mul in Zp[x] with p multiprecision

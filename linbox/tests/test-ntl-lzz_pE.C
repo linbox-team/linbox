@@ -60,7 +60,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	//NTL::zz_p::init(q);
-	//Givaro::UnparametricRing<NTL::zz_pE> F(q);
+	//Givaro::ZRing<NTL::zz_pE> F(q);
 	// NTL_zz_p F(q);
 	NTL_zz_pE F(q, exponent);
 

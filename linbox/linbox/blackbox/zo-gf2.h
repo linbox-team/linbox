@@ -30,7 +30,7 @@
 #include <algorithm>
 #include "linbox/blackbox/zero-one.h"
 #include "linbox/field/gf2.h"
-#include "linbox/field/unparametric.h"
+#include <givaro/zring.h>
 #include "linbox/util/matrix-stream.h"
 #include "linbox/vector/stream.h"
 #include "linbox/matrix/sparse-matrix.h"

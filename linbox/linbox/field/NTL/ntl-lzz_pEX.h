@@ -43,7 +43,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
-#include "linbox/field/unparametric.h"
+#include <givaro/zring.h>
 #include "linbox/field/NTL/ntl-lzz_pE.h"
 #include "linbox/integer.h"
 
@@ -93,7 +93,7 @@ namespace LinBox
 		 * (prime, exponent) are only used to initialize the coefficient field.
 		 */
 		NTL_zz_pEX( const integer& p, size_t e = 1 ) :
-			// Givaro::UnparametricRing<NTL::zz_pEX>(p, e), _CField(p,e)
+			// Givaro::ZRing<NTL::zz_pEX>(p, e), _CField(p,e)
 			NTL_zz_pEX_Initialiser(p,e),Father_t ()
 			, zero( NTL::to_zz_pEX(0)),one( NTL::to_zz_pEX(1)),mOne(-one)
 			, _CField(p,e)
@@ -359,7 +359,7 @@ namespace LinBox
 		{ return NTL_zz_p::getMaxModulus(); }
 		/** Write a description of the field */
 		// Oustide of class definition so write(ostream&,const Element&) from
-		// Givaro::UnparametricRing still works.
+		// Givaro::ZRing still works.
 
 		std::ostream& write( std::ostream& os ) const
 		{
