@@ -440,7 +440,7 @@ namespace LinBox
 			for (p_x = x; p_x != x + n; ++ p_x, ++ p_A) {
 				//mpz_set_d (tmp, *p_A);
 				//mpz_addmul_si (*p_y, *p_x, (int)(*p_A));
-				tmp = *p_x  * (long long int)(*p_A);
+				tmp = *p_x  * (int64_t)(*p_A);
 				integer::addin (*p_y, tmp);
 			}
 		}
