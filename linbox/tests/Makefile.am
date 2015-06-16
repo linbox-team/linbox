@@ -74,8 +74,7 @@ BASIC_TESTS =  \
 	test-rank-Int                     \
 	test-cra                      \
 	test-blas-matrix              \
-	test-charpoly					\
-    test-givaro-fields
+	test-charpoly
 
 #  test-iml                      \
 #
@@ -539,11 +538,6 @@ test_ntl_lzz_pX_SOURCES =                \
 test_ntl_lzz_pEX_SOURCES =                \
         test-ntl-lzz_pEX.C                \
         test-field.h
-
-test_givaro_fields_SOURCES =                \
-        test-givaro-fields.C                \
-        test-generic.h                   \
-        test-common.h
 
 test_lidia_gfq_SOURCES =                \
         test-lidia-gfq.C                \
