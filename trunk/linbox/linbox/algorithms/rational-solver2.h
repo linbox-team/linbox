@@ -36,7 +36,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <cmath>
 #include "linbox/integer.h"
 #include "linbox/algorithms/rational-reconstruction2.h"
 

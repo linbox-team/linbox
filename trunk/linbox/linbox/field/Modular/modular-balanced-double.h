@@ -48,7 +48,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
-#include <math.h>
+#include <cmath>
 #include "linbox/field/field-traits.h"
 #include "linbox/randiter/modular-balanced.h"
 #include "linbox/randiter/nonzero.h"

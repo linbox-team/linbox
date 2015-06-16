@@ -30,7 +30,7 @@
 #define __LINBOX_modular_short_H
 
 
-#include "math.h"
+#include "cmath"
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"

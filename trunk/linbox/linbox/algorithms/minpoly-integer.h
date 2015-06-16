@@ -28,7 +28,7 @@
 #define __LINBOX_minpoly_integer_H
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 /*! \file algorithms/minpoly-integer.h
  * Compute the minpoly of a matrix over an integer ring using modular arithmetic

@@ -39,7 +39,7 @@
 // #include <givaro/givconfig.h>
 // #include <gmp++/gmp++.h>
 #include <cfloat> // BB : needed on some rare platforms...
-#include <math.h>
+#include <cmath>
 
 #include <cctype>
 #include <iostream>

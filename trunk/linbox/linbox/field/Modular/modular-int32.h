@@ -29,7 +29,7 @@
 #define __LINBOX_modular_int32_H
 
 
-#include <math.h>
+#include <cmath>
 #include <givaro/modular-int32.h>
 
 #include "linbox/linbox-config.h"
