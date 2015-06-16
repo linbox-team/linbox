@@ -40,7 +40,7 @@
 #define FmodF fmod
 #endif
 
-#include <math.h>
+#include <cmath>
 #include <givaro/modular-float.h>
 
 #include "linbox/linbox-config.h"

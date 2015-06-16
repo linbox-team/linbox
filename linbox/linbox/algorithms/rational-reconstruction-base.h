@@ -29,7 +29,7 @@
 
 #include <iostream>
 #include <deque>
-#include <math.h>
+#include <cmath>
 
 #include "linbox/field/PID-integer.h"
 

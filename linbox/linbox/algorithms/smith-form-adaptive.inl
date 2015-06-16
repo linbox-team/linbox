@@ -26,7 +26,7 @@
 #ifndef __LINBOX_smith_form_adaptive_INL
 #define __LINBOX_smith_form_adaptive_INL
 
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <givaro/modular-int32.h>
 

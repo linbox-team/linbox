@@ -48,7 +48,7 @@
 #else
 #error "you need fplll here"
 #endif
-#include <math.h>
+#include <cmath>
 
 
 
