@@ -48,7 +48,7 @@
 #include <NTL/ZZ.h>
 
 #include <givaro/zring.h>
-#include "linbox/randiter/zring.h"
+#include <givaro/unparametric-operations.h>
 #include "linbox/field/field-traits.h"
 #include "linbox/integer.h"
 

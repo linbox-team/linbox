@@ -46,7 +46,6 @@
 #include "linbox/util/debug.h"
 
 #include <givaro/zring.h>
-#include "linbox/randiter/zring.h"
 #include "linbox/field/field-traits.h"
 
 

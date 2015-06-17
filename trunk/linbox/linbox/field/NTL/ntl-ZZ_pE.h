@@ -42,7 +42,6 @@
 #include <NTL/ZZ.h>
 
 #include <givaro/zring.h>
-#include "linbox/randiter/zring.h"
 #include "linbox/field/field-traits.h"
 
 #ifdef __LINBOX_XMLENABLED

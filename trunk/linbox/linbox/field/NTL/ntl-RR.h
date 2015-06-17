@@ -51,7 +51,7 @@
 #include "linbox/util/debug.h"
 
 #include <givaro/zring.h>
-#include "linbox/randiter/zring.h"
+#include <givaro/unparametric-operations.h>
 #include "linbox/field/field-traits.h"
 
 #include "linbox/integer.h"
@@ -124,6 +124,7 @@ namespace LinBox
 		NTL_RR_Initialiser () { }
 	};
 
+    template<class XXX> class UnparametricRandIter;
 
 
 	/** @name class RR.
