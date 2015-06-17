@@ -357,7 +357,31 @@ Using : FindPivot and LU
 		template <class Vector>
 		void FindPivot (Vector &lignepivot, unsigned long &k, long &indpermut) const;
 
+		template <class Matrix, class Perm>
+		unsigned long& SparseContinuation(unsigned long &rank,
+				      Element& determinant,
+				      std::deque<std::pair<size_t,size_t> > &invQ,
+				      Matrix	    &L,
+				      Matrix        &U,
+				      Perm	    &P,
+				      unsigned long Ni,
+				      unsigned long Nj) const;
+
+        
+		template <class Matrix, class Perm, bool hasFFLAS>
+        struct Continuation {
+            unsigned long& operator()(
+                unsigned long &rank,
+                Element& determinant,
+                std::deque<std::pair<size_t,size_t> > &invQ,
+                Matrix	    &L,
+                Matrix        &U,
+                Perm	    &P,
+                unsigned long Ni,
+                unsigned long Nj, bool) const;
+        };
 	};
+
 
 } // namespace LinBox
 

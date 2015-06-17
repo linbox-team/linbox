@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <30 Jan 15 19:35:27 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <17 Jun 15 16:57:31 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -35,7 +35,9 @@
 #include "linbox/algorithms/gauss.h"
 #include "linbox/util/commentator.h"
 #include <givaro/zring.h>
+#include <givaro/ring-interface.h>
 #include <utility>
+#include <type_traits>
 
 #ifdef __LINBOX_ALL__
 #define __LINBOX_COUNT__
@@ -104,7 +106,7 @@ namespace LinBox
             for (unsigned long k = 0; k < LigneA[(size_t)jj].size (); k++)
                 ++col_density[LigneA[(size_t)jj][k].first];
 
-        long last = (long)Ni - 1;
+        const long last = (long)Ni - 1;
         long c;
         Rank = 0;
         bool degeneratedense=false;
@@ -113,7 +115,11 @@ namespace LinBox
         long sstep = last/40;
         if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
 #else
+#  ifdef __LINBOX_FILLIN__
+        long sstep = 100;
+#  else    
         long sstep = 1000;
+#  endif
 #endif
         // Elimination steps with reordering
 
@@ -126,18 +132,14 @@ namespace LinBox
 #  ifdef _LB_DEBUG
                 std::cerr << "Dense switch: " << accumulate(col_density.begin()+Rank,col_density.end(),0) << '>' << Ni << '*' << Nj << '*' << __LINBOX_SpD_MAXSPARSITY__ << std::endl;
 #  endif
-                degeneratedense=true; break;
+                degeneratedense=std::is_base_of<Givaro::FiniteRingInterface<Element>,_Field>::value && true; break;
             }
 #endif
             
             long p = k, s = 0;
 
-#ifdef __LINBOX_FILLIN__
-            if ( ! (k % 100) )
-#else
-                if ( ! (k % sstep) )
-#endif
-                {
+            if ( ! (k % sstep) )
+            {
                     commentator().progress (k);
 #ifdef __LINBOX_FILLIN__
                     long sl(0);
@@ -150,8 +152,14 @@ namespace LinBox
                     << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
                     << double(sl)/double(Ni-k) << " avg)"
                     << std::endl;
+                    std::cerr
+                    << "Fillin (" << Rank << "/" << Ni << ") = "
+                    << sl
+                    << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
+                    << double(sl)/double(Ni-k) << " avg)"
+                    << std::endl;
 #endif
-                }
+            }
 
             long l;
             for(l = k; l < static_cast<long>(Ni); ++l) {
@@ -212,27 +220,29 @@ namespace LinBox
             
         }//for k
 
-        if (degeneratedense) {
-            DenseQLUPin(Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj);
+//         if (std::is_base_of<Givaro::FiniteRingInterface<Element>,_Field>::value && degeneratedense) {
+//             DenseQLUPin(Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj);
             
-        } else {
+//         } else {
 
-            SparseFindPivot ( LigneA[(size_t)last], Rank, c, determinant);
-            if (c != -1) {
-                if ( c != (static_cast<long>(Rank)-1) ) {
-                    P.permute(Rank-1,(size_t)c);
-                    for (long ll=0      ; ll < last ; ++ll)
-                        permute( LigneA[(size_t)ll], Rank, c);
-                }
-            }
+//             SparseFindPivot ( LigneA[(size_t)last], Rank, c, determinant);
+//             if (c != -1) {
+//                 if ( c != (static_cast<long>(Rank)-1) ) {
+//                     P.permute(Rank-1,(size_t)c);
+//                     for (long ll=0      ; ll < last ; ++ll)
+//                         permute( LigneA[(size_t)ll], Rank, c);
+//                 }
+//             }
             
-            E one((unsigned)last,field().one);
-            LigneL[(size_t)last].push_back(one);
-        }
-        
+//             E one((unsigned)last,field().one);
+//             LigneL[(size_t)last].push_back(one);
+//         }
+        Continuation<Matrix,Perm,
+            std::is_base_of<Givaro::FiniteRingInterface<Element>,_Field>::value>
+            ()(*this, Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj,degeneratedense);
 
 #ifdef __LINBOX_COUNT__
-        nbelem += LigneA[(size_t)last].size ();
+        nbelem += LigneA[(size_t)(Ni-1)].size ();
         commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
         << "Left elements : " << nbelem << std::endl;
 #endif
@@ -251,9 +261,9 @@ namespace LinBox
             field().assign(determinant,field().zero);
 
         integer card;
-        field().write(commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+        field().write(field().write(commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
                   << "Determinant : ", determinant)
-        << " over GF (" << field().cardinality (card) << ")" << std::endl;
+        << " over ") << std::endl;
 
         for(std::deque<std::pair<size_t,size_t> >::const_iterator it = invQ.begin(); it!=invQ.end();++it)
             Q.permute( it->first, it->second );
@@ -274,6 +284,84 @@ namespace LinBox
 
         return Rank;
     }
+
+
+
+    template <class _Field>
+    template <class Matrix, class Perm> inline unsigned long&
+    GaussDomain<_Field>::SparseContinuation (unsigned long &Rank,
+                     Element       &determinant,
+                     std::deque<std::pair<size_t,size_t> > &invQ,
+                     Matrix        &LigneL,
+                     Matrix        &LigneA,
+                     Perm          &P,
+                     unsigned long Ni,
+                     unsigned long Nj) const
+    {
+        typedef typename Matrix::Row        Vector;
+        typedef typename Vector::value_type E;
+
+        const long last = Ni-1;
+        long c;
+        SparseFindPivot ( LigneA[(size_t)last], Rank, c, determinant);
+        if (c != -1) {
+            if ( c != (static_cast<long>(Rank)-1) ) {
+                P.permute(Rank-1,(size_t)c);
+                for (long ll=0      ; ll < last ; ++ll)
+                    permute( LigneA[(size_t)ll], Rank, c);
+            }
+        }
+        
+        E one((unsigned)last,field().one);
+        LigneL[(size_t)last].push_back(one);
+        return Rank;
+    }
+    
+
+    template <class _Field>
+    template<class Matrix, class Perm> 
+    struct GaussDomain<_Field>::Continuation<Matrix,Perm,false> {
+        unsigned long& operator()(
+            const GaussDomain<_Field>& GD,
+            unsigned long &Rank, 
+            typename GaussDomain<_Field>::Element       &determinant,
+            std::deque<std::pair<size_t,size_t> > &invQ,
+            Matrix        &LigneL,
+            Matrix        &LigneA,
+            Perm          &P,
+            unsigned long Ni,
+            unsigned long Nj,
+            bool degeneratedense) const 
+            {
+                return GD.SparseContinuation(Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj);
+            }
+    };
+    
+    template <class _Field>
+    template <class Matrix, class Perm> 
+    struct GaussDomain<_Field>::Continuation<Matrix,Perm,true> {
+        unsigned long& operator()(
+            const GaussDomain<_Field>& GD,
+            unsigned long &Rank,
+            typename GaussDomain<_Field>::Element       &determinant,
+            std::deque<std::pair<size_t,size_t> > &invQ,
+            Matrix        &LigneL,
+            Matrix        &LigneA,
+            Perm          &P,
+            unsigned long Ni,
+            unsigned long Nj,
+            bool degeneratedense) const
+            {
+                if (degeneratedense) {
+                    return GD.DenseQLUPin(Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj);
+                } else {
+                    return GD.SparseContinuation(Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj);
+                }
+            }
+    };
+    
+
+
 
 
 
@@ -436,7 +524,7 @@ namespace LinBox
             for (unsigned long k = 0; k < LigneA[(size_t)jj].size (); k++)
                 ++col_density[LigneA[(size_t)jj][k].first];
 
-        long last = (long)Ni - 1;
+        const long last = (long)Ni - 1;
         long c;
         Rank = 0;
 
@@ -576,7 +664,7 @@ namespace LinBox
             for (unsigned long k = 0; k < LigneA[(size_t)jj].size (); k++)
                 ++col_density[LigneA[(size_t)jj][k].first];
 
-        long last = (long)Ni - 1;
+        const long last = (long)Ni - 1;
         long c;
         Rank = 0;
 
@@ -723,7 +811,7 @@ namespace LinBox
         Vector Vzer (0);
 
         field().assign(determinant,field().one);
-        long last = (long)Ni - 1;
+        const long last = (long)Ni - 1;
         long c;
         unsigned long indcol (0);
 
@@ -839,7 +927,7 @@ namespace LinBox
         // In place (A is modified)
         // Without reordering (Pivot is first non-zero in row)
         long Ni = A.rowdim ();
-        long last = Ni - 1;
+        const long last = Ni - 1;
         long c;
         unsigned long indcol = 0;
 
@@ -863,7 +951,7 @@ namespace LinBox
         // Without reordering (Pivot is first non-zero in row)
 
         long Ni = A.rowdim ();
-        long last = Ni - 1;
+        const long last = Ni - 1;
         long c;
         unsigned long indcol = 0;
 

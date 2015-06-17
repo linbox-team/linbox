@@ -33,7 +33,7 @@
 #include <givaro/zring.h>
 #include <givaro/givrational.h>
 
-#include <linbox/field/modular.h>
+#include <givaro/modular.h>
 #include <linbox/field/gf2.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/blackbox/zero-one.h>
