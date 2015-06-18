@@ -120,7 +120,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		if (q >Givaro::Integer(lq)) {
 			std::cerr << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
 			q = p;
-			for(effective_exponent=1; q <= Ring::getMaxModulus(); ++effective_exponent) {
+			for(effective_exponent=1; q <= Ring::maxCardinality(); ++effective_exponent) {
 				q *= p;
 			}
 			q/=p; --effective_exponent;
