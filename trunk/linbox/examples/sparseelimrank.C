@@ -48,6 +48,7 @@ int main (int argc, char **argv)
 	commentator().setMaxDetailLevel (-1);
 	commentator().setMaxDepth (-1);
 	commentator().setReportStream (std::cerr);
+    commentator().setBriefReportStream (std::cout);
 
 	if (argc < 2 || argc > 3)
 	{	cerr << "Usage: rank <matrix-file-in-supported-format> [<p>]" << endl; return -1; }
@@ -64,9 +65,9 @@ int main (int argc, char **argv)
 		   is an integer matrix and our concept is that we are getting the rank of that
 		   matrix by some blackbox magic inside linbox.
 		   */
-		Givaro::ZRing<Givaro::Rational> ZZ;
-		MatrixStream<Givaro::ZRing<Givaro::Rational>> ms( ZZ, input );
-		SparseMatrix<Givaro::ZRing<Givaro::Rational>, SparseMatrixFormat::SparseSeq > A ( ms );
+		Givaro::QField<Givaro::Rational> QQ;
+		MatrixStream<Givaro::QField<Givaro::Rational>> ms( QQ, input );
+		SparseMatrix<Givaro::QField<Givaro::Rational>, SparseMatrixFormat::SparseSeq > A ( ms );
         if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 
 
@@ -74,7 +75,7 @@ int main (int argc, char **argv)
 
 		LinBox::rank (r, A, Method::SparseElimination() );
 
-		cout << "Rank is " << r << endl;
+		cout << "Z Rank is " << r << endl;
 	}
 	if (argc == 3) {
 		double q = atof(argv[2]);
@@ -97,7 +98,7 @@ int main (int argc, char **argv)
 		// using Sparse Elimination
 		LinBox::rankin (r, B, SE);
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
-		cout << "Rank is " << r << endl;
+		F.write(cout << "Rank is " << r << " over ") << endl;
 
 
 	}

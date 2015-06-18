@@ -28,6 +28,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/util/error.h"
+#include <givaro/givcaster.h>
 #include <givaro/givrational.h>
 #include <givaro/modular.h>
 #include <givaro/zring.h>
@@ -100,8 +101,8 @@ namespace LinBox
 
 	private:
 		integer tmp;
-		Source _source;
-		Target _target;
+		const Source& _source;
+		const Target& _target;
 	}; // end Hom
 
 
@@ -136,80 +137,81 @@ namespace LinBox
 		const Target& target() { return _source;}
 
 	protected:
-		Source _source;
+		const Source& _source;
 	};
 
 
 }
 
-// Specialization to modular
-namespace LinBox
-{
-    // GENERIC SPECIALISATION FOR MODULAR HOMORMOPHISM
-    // The enable_if is to protect undetermination with Hom<Source, Source>
-	template<typename T1, typename C1, typename T2, typename C2>
-	class Hom<Givaro::Modular<T1, C1>, Givaro::Modular<T2, C2>,
-        typename std::enable_if<!std::is_same<Givaro::Modular<T1, C1>, Givaro::Modular<T2, C2>>::value>::type>
-    {
-	public:
-	    using Element1 = typename Givaro::Modular<T1, C1>::Element;
-	    using Element2 = typename Givaro::Modular<T2, C2>::Element;
+// // Specialization to modular
+// namespace LinBox
+// {
+//     // GENERIC SPECIALISATION FOR MODULAR HOMORMOPHISM
+//     // The enable_if is to protect undetermination with Hom<Source, Source>
+// 	template<typename T1, typename C1, typename T2, typename C2>
+// 	class Hom<Givaro::Modular<T1, C1>, Givaro::Modular<T2, C2>,
+//         typename std::enable_if<!std::is_same<Givaro::Modular<T1, C1>, Givaro::Modular<T2, C2>>::value>::type>
+//     {
+// 	public:
+// 	    using Element1 = typename Givaro::Modular<T1, C1>::Element;
+// 	    using Element2 = typename Givaro::Modular<T2, C2>::Element;
 	
-		Hom(const Givaro::Modular<T1, C1>& S, const Givaro::Modular<T2, C2>& T)
-		{
-			integer ps, pt;
-			if (S.characteristic(ps) != T.characteristic(pt)) throw NoHomError();
-		}
+// 		Hom(const Givaro::Modular<T1, C1>& S, const Givaro::Modular<T2, C2>& T)
+// 		{
+// 			integer ps, pt;
+// 			if (S.characteristic(ps) != T.characteristic(pt)) throw NoHomError();
+// 		}
 		
-		inline Element2& image(Element2& t, const Element1& s) const
-		{
-			return t = static_cast<Element2>(s);
-		}
+// 		inline Element2& image(Element2& t, const Element1& s) const
+// 		{
+// 			return Givaro::Caster<Element2,Element1>(t,s);
+// 		}
 		
-		// assumes t normalized.
-		inline Element1& preimage(Element1& s, const Element2& t) const
-		{
-			return s = static_cast<Element1>(t);
-		}
-	};
-}// namespace LinBox
+// 		// assumes t normalized.
+// 		inline Element1& preimage(Element1& s, const Element2& t) const
+// 		{
+// 			return Givaro::Caster<Element1,Element2>(s,t);
+// 		}
+// 	};
+// }// namespace LinBox
 
 namespace LinBox
 {
 
-        template<class Source>
-	class Hom<Source, Givaro::ZRing<integer> > {
+    template<class _Source>
+	class Hom<_Source, Givaro::ZRing<Integer> > {
 
 	public:
-                typedef Givaro::ZRing<integer> Target;
+        typedef Givaro::ZRing<Integer> Target;
+		typedef _Source Source;
 		typedef typename Source::Element SrcElt;
-		typedef typename Target::Element Elt;
+		typedef Integer Elt;
 
 		Hom(const Source& S, const Target& T) :
 			_source (S), _target (T)
 		{}
-		inline Elt& image(Elt& t, const SrcElt& s)
+		inline Integer& image(Integer& t, const SrcElt& s)
 		{
-			return t=s;
+			return Givaro::Caster(t,s);
 		}
-		inline SrcElt& preimage(SrcElt& s, const Elt& t)
+		inline SrcElt& preimage(SrcElt& s, const Integer& t)
 		{
-                        return s=(SrcElt)t;
+                        return Givaro::Caster(s,t);
 		}
 		const Source& source() { return _source;}
 		const Target& target() { return _target;}
 
 	protected:
-		Source _source;
-		Target _target;
+		const Source& _source;
+		const Target& _target;
 	}; // end Hom
 
         
 	template<class _Target>
-	class Hom<Givaro::ZRing<integer>, _Target> {
+	class Hom<Givaro::ZRing<Integer>, _Target> {
 
 	public:
-		typedef Givaro::ZRing<integer> Source;
+		typedef Givaro::ZRing<Integer> Source;
 		typedef _Target Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
@@ -231,134 +233,43 @@ namespace LinBox
 		const Target& target() { return _target;}
 
 	protected:
-		Source _source;
-		Target _target;
+		const Source& _source;
+		const Target& _target;
 	}; // end Hom
 
 	template<>
-	class Hom<Givaro::ZRing<integer>, Givaro::ZRing<integer> > {
+	class Hom<Givaro::ZRing<Integer>, Givaro::ZRing<Integer> > {
 
 	public:
-		typedef Givaro::ZRing<integer> Source;
-		typedef Givaro::ZRing<integer> Target;
-		typedef Source::Element SrcElt;
-		typedef Target::Element Elt;
+		typedef Givaro::ZRing<Integer> Source;
+		typedef Source Target;
+		typedef Integer SrcElt;
+		typedef Integer Elt;
 
 		Hom(const Source& S, const Target& T) :
 			_source (S), _target (T)
 		{}
 		inline Elt& image(Elt& t, const SrcElt& s)
-		{
-			t = s;
-			return t;
+        {   
+			return t=s;
 		}
 		inline SrcElt& preimage(SrcElt& s, const Elt& t)
 		{
-			s = t;
-			return s;
+			return s=t;
 		}
 		const Source& source() { return _source;}
 		const Target& target() { return _target;}
 
 	protected:
-		Source _source;
-		Target _target;
-	}; // end Hom
-
-	template<class _Target>
-	class Hom<PID_integer, _Target> {
-
-	public:
-		typedef PID_integer Source;
-		typedef _Target Target;
-		typedef typename Source::Element SrcElt;
-		typedef typename Target::Element Elt;
-
-		Hom(const Source& S, const Target& T) :
-			_source (S), _target (T)
-		{}
-		inline Elt& image(Elt& t, const SrcElt& s) {
-			_target. init (t, s);
-			return t;
-		}
-		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
-			_target. convert (s, t);
-			return s;
-		}
-		const Source& source() { return _source;}
-		const Target& target() { return _target;}
-
-	protected:
-		Source _source;
-		Target _target;
-	}; // end Hom
-
-
-	template<>
-	class Hom<PID_integer, PID_integer> {
-
-	public:
-		typedef PID_integer Source;
-		typedef Source Target;
-		typedef Source::Element SrcElt;
-		typedef Target::Element Elt;
-
-		Hom(const Source& S, const Target& T) :
-			_source (S), _target (T)
-		{}
-		inline Elt& image(Elt& t, const SrcElt& s)
-		{
-			_target. assign (t, s);
-			return t;
-		}
-		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
-			_target. assign (s, t);
-			return s;
-		}
-		const Source& source() { return _source;}
-		const Target& target() { return _target;}
-
-	protected:
-		Source _source;
-		Target _target;
-	}; // end Hom
-
-	// specialization for equal domain TYPES
-	// WARNING this FORBIDS same type homomorphism
-	template <>
-	class Hom<Givaro::ZRing<Givaro::Rational>,Givaro::ZRing<Givaro::Rational>> {
-
-	public:
-		typedef Givaro::ZRing<Givaro::Rational> Source;
-		typedef Source Target;
-		typedef typename Source::Element SrcElt;
-		typedef typename Target::Element Elt;
-
-		Hom(const Source& S, const Target& T) :
-			_source (S)
-		{}
-		Elt& image(Elt& t, const SrcElt& s)
-		{
-			_source. assign (t, s);
-			return t;
-		}
-		SrcElt& preimage(SrcElt& s, const Elt& t)
-		{
-			_source. assign (s, t);
-			return s;
-		}
-		const Source& source() { return _source;}
-		const Target& target() { return _source;}
-
-	protected:
-		Source _source;
+		const Source& _source;
+		const Target& _target;
 	}; // end Hom
 
 	template <class _Target>
-	class Hom<Givaro::ZRing<Givaro::Rational>, _Target> {
+	class Hom<Givaro::QField<Givaro::Rational>, _Target> {
 
 	public:
-		typedef Givaro::ZRing<Givaro::Rational> Source;
+		typedef Givaro::QField<Givaro::Rational> Source;
 		typedef _Target Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
@@ -367,10 +278,10 @@ namespace LinBox
 			_source (S), _target(T)
 		{ }
 		Elt& image(Elt& t, const SrcElt& s) {
-			if (s.deno() == 1) {
+			if (_source.isOne(s.deno())) {
 				return _target.init(t,s.nume());
 			}
-			else if (s.nume() == 1) {
+			else if (_source.isOne(s.nume())) {
 				_target.init(t,s.deno());
 				return _target.invin(t);
 			}
@@ -380,6 +291,7 @@ namespace LinBox
 				return _target. divin (t, tmp);
 			}
 		}
+            // Warning, by default convert only the numerator
 		SrcElt& preimage(SrcElt& s, const Elt& t) {
 			_target. convert (s.nume(), t);
 			_source. init (s, s.nume());
@@ -394,42 +306,32 @@ namespace LinBox
 		Target _target;
 	}; // end Hom
 
-#if 0
-#ifdef __FIELD_MODULAR_H
-	// Dan Roche mapping from Givaro::ZRing to Givaro::Modular - for integer
-	// computations that use mod one or more primes and possibly chinese
-	// remaindering.
-	template<class _INT1, class _INT2>
-	class Hom<Givaro::ZRing<_INT1 >,Givaro::Modular<_INT2 > > {
+
+   template<>
+	class Hom <Givaro::QField<Givaro::Rational> , Givaro::Modular<double> > {
 
 	public:
-		typedef Givaro::ZRing<_INT1 > Source;
-		typedef Givaro::Modular<_INT2 > Target;
-		typedef _INT1 SrcElt;
-		typedef _INT2 Elt;
+		typedef Givaro::QField<Givaro::Rational> Source;
+		typedef Givaro::Modular<double> Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
 
 		Hom(const Source& S, const Target& T) :
 			_source(S), _target(T)
 		{}
-
 		inline Elt& image(Elt& t, const SrcElt& s) {
-			integer temp;
-			return _target.init(t,_source.convert(temp,s));
+			return _target. reduce (t, Caster<double,Givaro::Rational>(t,s) );
 		}
 		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
-			integer temp;
-			return _source.init(s,_source.convert(temp,t));
+            return Caster<Givaro::Rational,double>(s,t);
 		}
-		const Source& source() { return _source; }
-		const Target& target() { return _target; }
+		const Source& source() const { return _source;}
+		const Target& target() const { return _target;}
 
 	protected:
-		Source _source;
-		Target _target;
+		const Source& _source;
+		const Target& _target;
 	}; // end Hom
-
-#endif // __FIELD_MODULAR_H
-#endif
 
 } // namespace LinBox
 
@@ -460,7 +362,7 @@ namespace LinBox
 		const Target& target() { return _target;}
 
 	protected:
-		integer tmp;
+		Integer tmp;
 		Source _source;
 		Target _target;
 	}; // end Hom
@@ -493,83 +395,6 @@ namespace LinBox
 }
 #endif //__LINBOX_HAVE_NTL
 
-#ifdef __LINBOX_field_gmp_rational_H
-namespace LinBox
-{
-	template <class _Target>
-	class Hom<GMPRationalField, _Target> {
-
-	public:
-		typedef GMPRationalField Source;
-		typedef _Target Target;
-		typedef typename Source::Element SrcElt;
-		typedef typename Target::Element Elt;
-
-		Hom(const Source& S, const Target& T) :
-			_source (S), _target(T)
-		{ }
-		Elt& image(Elt& t, const SrcElt& s) {
-			_source. get_num (num, s);
-			_source. get_den (den, s);
-			if (den == 1) {
-				return _target.init(t,num);
-			}
-			else if (num == 1) {
-				_target.init(t,den);
-				return _target.invin(t);
-			}
-			else {
-				_target. init (tmp, den);
-				_target. init (t, num);
-				return _target. divin (t, tmp);
-			}
-			// 			_target. init (t, den);
-			// 			return _target. invin (t);
-		}
-		SrcElt& preimage(SrcElt& s, const Elt& t) {
-			_target. convert (num, t);
-			_source. init (s, num);
-			return s;
-		}
-		const Source& source() { return _source;}
-		const Target& target() { return _target;}
-
-	protected:
-		integer num, den;
-		Elt tmp;
-		Source _source;
-		Target _target;
-	}; // end Hom
-
-	template <>
-	class Hom<GMPRationalField, GMPRationalField> {
-
-	public:
-		typedef GMPRationalField Source;
-		typedef Source Target;
-		typedef Source::Element SrcElt;
-		typedef Target::Element Elt;
-
-		Hom(const Source& S, const Target& T) :
-			_source (S), _target(T)
-		{}
-		Elt& image(Elt& t, const SrcElt& s) {
-			_target.assign(t, s);
-			return t;
-		}
-		SrcElt& preimage(SrcElt& s, const Elt& t) {
-			_source.assign(s, t);
-			return s;
-		}
-		const Source& source() { return _source;}
-		const Target& target() { return _target;}
-
-	protected:
-		Source _source;
-		Target _target;
-	}; // end Hom
-}
-#endif //__LINBOX_field_gmp_rational_H
 
 #ifdef __LINBOX_field_gf2_H
 namespace LinBox
@@ -741,7 +566,7 @@ namespace LinBox
 		 * image(t, s) implements the homomorphism, assigning the
 		 * t the value of the image of s under the mapping.
 		 *
-		 * The default behaviour goes through integers.
+		 * The default behaviour goes through Integers.
 		 */
 		Elt& image(Elt& t, const SrcElt& s)
 		{
@@ -753,7 +578,7 @@ namespace LinBox
 		 * An error may be thrown, a conventional value may be set, or
 		 * an arb value set.
 		 *
-		 * The default behaviour goes through integers.
+		 * The default behaviour goes through Integers.
 		 */
 		SrcElt& preimage(SrcElt& s, const Elt& t)
 		{
@@ -763,7 +588,7 @@ namespace LinBox
 		const Target& target() { return _target;}
 
 	private:
-		integer tmp;
+		Integer tmp;
 		Source _source;
 		Target _target;
 	}; // end Hom

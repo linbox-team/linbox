@@ -37,7 +37,7 @@ namespace LinBox
 {
 
 	template<>
-	struct ClassifyRing<Givaro::ZRing<Givaro::Rational> > {
+	struct ClassifyRing<Givaro::QField<Givaro::Rational> > {
 		typedef RingCategories::RationalTag categoryTag;
 	};
 
