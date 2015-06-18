@@ -110,7 +110,7 @@ int main (int argc, char **argv)
 		typedef Givaro::Modular<int32_t> Field;
 
 		Field F(q);
-		if (q > F.getMaxModulus()) {
+		if (q > F.maxCardinality()) {
 			std::cerr << "your number is too big for this field" << std::endl;
 			return -1 ;
 		}
