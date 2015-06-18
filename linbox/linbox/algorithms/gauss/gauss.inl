@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <17 Jun 15 16:57:31 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <18 Jun 15 14:42:01 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -81,7 +81,7 @@ namespace LinBox
         // In place (LigneA is modified)
         // With reordering (D is a density type. Density is allocated here)
         //    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
-        commentator().start ("Gaussian elimination with reordering",
+        commentator().start ("QLUPin Gaussian elimination with reordering",
                      "IPLR", Ni);
         commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
         << "Gaussian QLUP elimination on " << Ni << " x " << Nj << " matrix" << std::endl;
@@ -121,6 +121,7 @@ namespace LinBox
         long sstep = 1000;
 #  endif
 #endif
+        
         // Elimination steps with reordering
 
         typename Matrix::RowIterator LigneA_k = LigneA.rowBegin(), LigneA_p;
@@ -147,12 +148,6 @@ namespace LinBox
                         sl +=(long) LigneA[(size_t)l].size ();
 
                     commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-                    << "Fillin (" << Rank << "/" << Ni << ") = "
-                    << sl
-                    << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
-                    << double(sl)/double(Ni-k) << " avg)"
-                    << std::endl;
-                    std::cerr
                     << "Fillin (" << Rank << "/" << Ni << ") = "
                     << sl
                     << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
@@ -504,7 +499,7 @@ namespace LinBox
         // In place (LigneA is modified)
         // With reordering (D is a density type. Density is allocated here)
         //    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
-        commentator().start ("Gaussian elimination with reordering",
+        commentator().start ("IPLR Gaussian elimination with reordering",
                      "IPLR", Ni);
         field().write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
                    << "Gaussian elimination on " << Ni << " x " << Nj << " matrix, over: ") << std::endl;
@@ -646,7 +641,7 @@ namespace LinBox
         // In place (LigneA is modified)
         // With reordering (D is a density type. Density is allocated here)
         //    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
-        commentator().start ("Gaussian elimination with reordering",
+        commentator().start ("IPperm Gaussian elimination with reordering",
                      "IPLR", Ni);
         field().write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
                    << "Gaussian elimination on " << Ni << " x " << Nj << " matrix, over: ") << std::endl;

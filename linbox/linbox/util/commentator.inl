@@ -114,13 +114,13 @@ namespace LinBox
 	{
 		//registerMessageClass (BRIEF_REPORT,         out, 1, LEVEL_IMPORTANT);
 		registerMessageClass (BRIEF_REPORT,         out, 1, LEVEL_IMPORTANT);
-		registerMessageClass (PROGRESS_REPORT,      _report);
-		registerMessageClass (TIMING_MEASURE,       _report);
-		registerMessageClass (TIMING_ESTIMATE,      _report);
-		registerMessageClass (PARTIAL_RESULT,       _report);
-		registerMessageClass (INTERNAL_WARNING,     _report, 10, LEVEL_NORMAL);
-		registerMessageClass (INTERNAL_ERROR,       _report, 10, LEVEL_NORMAL);
-		registerMessageClass (INTERNAL_DESCRIPTION, _report);
+		registerMessageClass (PROGRESS_REPORT,      out);
+		registerMessageClass (TIMING_MEASURE,       out);
+		registerMessageClass (TIMING_ESTIMATE,      out);
+		registerMessageClass (PARTIAL_RESULT,       out);
+		registerMessageClass (INTERNAL_WARNING,     out, 10, LEVEL_NORMAL);
+		registerMessageClass (INTERNAL_ERROR,       out, 10, LEVEL_NORMAL);
+		registerMessageClass (INTERNAL_DESCRIPTION, out);
 	}
 
 	Commentator::~Commentator()
