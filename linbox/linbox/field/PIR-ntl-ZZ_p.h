@@ -89,7 +89,7 @@ namespace LinBox
 
 		}
 
-		inline static integer& cardinality (integer& c) {
+		inline integer& cardinality (integer& c) const {
 
 			std::stringstream io;
 
@@ -100,12 +100,12 @@ namespace LinBox
 			return c;
 		}
 
-		inline static NTL::ZZ& cardinality (NTL::ZZ& c) {
+		inline NTL::ZZ& cardinality (NTL::ZZ& c) const {
 
 			return c = NTL::ZZ_p::modulus();
 		}
 
-		inline static integer& characteristic (integer& c) {
+		inline integer& characteristic (integer& c) const {
 
 			std::stringstream  io;
 
@@ -116,7 +116,7 @@ namespace LinBox
 			return c;
 		}
 
-		static std::ostream& write (std::ostream& out)  {
+		std::ostream& write (std::ostream& out) const {
 			return out << "PIR_NTL_ZZ_p Ring";
 		}
 
@@ -128,7 +128,7 @@ namespace LinBox
 		 *  Init x from y.
 		 */
 		template<class Element2>
-		inline static Element& init (Element& x,  const Element2& y) {
+		inline Element& init (Element& x,  const Element2& y) const {
 
 			NTL::conv (x, y);
 
@@ -138,7 +138,7 @@ namespace LinBox
 		/** @brief
 		 *   Init from a NTL::ZZ_p
 		 */
-		inline static Element& init (Element& x, const Element& y) {
+		inline Element& init (Element& x, const Element& y) const {
 
 			x = y;
 
@@ -148,7 +148,7 @@ namespace LinBox
 		/** @brief
 		 *  I don't  know how to init from integer.
 		 */
-		inline static Element& init (Element& x, const integer& y) {
+		inline Element& init (Element& x, const integer& y) const {
 
 
 			NTL::conv(x, NTL::to_ZZ( (static_cast<const std::string>(y)).c_str() ) );
@@ -158,7 +158,7 @@ namespace LinBox
 		/** @brief
 		 *  Convert y to an Element.
 		 */
-		static integer& convert (integer& x, const Element& y) {
+		integer& convert (integer& x, const Element& y) const {
 			bool neg=false;
 			if (NTL::sign(NTL::rep(y)) <0)
 				neg=true;
@@ -181,21 +181,21 @@ namespace LinBox
 		/** @brief
 		 *  x = y.
 		 */
-		inline static Element&  assign (Element& x, const Element& y)  {
+		inline Element&  assign (Element& x, const Element& y) const {
 			return x = y;
 		}
 
 		/** @brief
 		 *  Test if x == y
 		 */
-		inline static bool areEqual (const Element& x ,const Element& y)  {
+		inline bool areEqual (const Element& x ,const Element& y) const {
 			return x == y;
 		}
 
 		/** @brief
 		 *  Test if x == 0
 		 */
-		inline static bool isZero (const Element& x)  {
+		inline bool isZero (const Element& x) const {
 
 			return NTL::IsZero (x);
 		}
@@ -203,7 +203,7 @@ namespace LinBox
 		/** @brief
 		 *  Test if x == 1
 		 */
-		inline static bool isOne (const Element& x)  {
+		inline bool isOne (const Element& x) const {
 			return NTL::IsOne (x);
 		}
 
@@ -219,7 +219,7 @@ namespace LinBox
 		/** @brief
 		 *  return x = y + z
 		 */
-		inline static Element& add (Element& x, const Element& y, const Element& z)  {
+		inline Element& add (Element& x, const Element& y, const Element& z) const {
 
 			NTL::add (x, y, z);
 
@@ -229,7 +229,7 @@ namespace LinBox
 		/** @brief
 		 *  return x = y - z
 		 */
-		inline static Element& sub (Element& x, const Element& y, const Element& z)  {
+		inline Element& sub (Element& x, const Element& y, const Element& z) const  {
 
 			NTL::sub (x, y, z);
 
@@ -240,7 +240,7 @@ namespace LinBox
 		 *  return x = y * z
 		 */
 		template <class Int>
-		inline static Element& mul (Element& x, const Element& y, const Int& z)  {
+		inline Element& mul (Element& x, const Element& y, const Int& z) const {
 
 			NTL::mul (x, y, z);
 
@@ -252,7 +252,7 @@ namespace LinBox
 		 *  return x = one of them.
 		 *  Otherwise, throw an exception
 		 */
-		inline static Element& div (Element& x, const Element& y, const Element& z) {
+		inline Element& div (Element& x, const Element& y, const Element& z) const {
 
 			NTL::ZZ g, s, t;
 
@@ -286,7 +286,7 @@ namespace LinBox
 		 *  If y is a unit, return x = 1 / y,
 		 *  otherwsie, throw an exception
 		 */
-		inline static Element& inv (Element& x, const Element& y) {
+		inline Element& inv (Element& x, const Element& y) const {
 
 			NTL::inv (x, y);
 
@@ -296,7 +296,7 @@ namespace LinBox
 		/** @brief
 		 *  return x = -y;
 		 */
-		inline static Element& neg (Element& x, const Element& y)  {
+		inline Element& neg (Element& x, const Element& y) const {
 
 			NTL::negate (x, y);
 
@@ -309,7 +309,7 @@ namespace LinBox
 		 */
 
 		template <class Int>
-		inline static Element& axpy (Element& r, const Element& a, const Int& x, const Element& y)  {
+		inline const Element& axpy (Element& r, const Element& a, const Int& x, const Element& y) const  {
 
 			NTL::mul (r, a, x);
 
@@ -322,7 +322,7 @@ namespace LinBox
 		/** @brief
 		 *  return x += y;
 		 */
-		inline static Element& addin (Element& x, const Element& y) {
+		inline Element& addin (Element& x, const Element& y) const {
 
 			return x += y;
 		}
@@ -330,7 +330,7 @@ namespace LinBox
 		/** @brief
 		 *  return x -= y;
 		 */
-		inline static Element& subin (Element& x, const Element& y)  {
+		inline Element& subin (Element& x, const Element& y) const {
 
 			return x -= y;
 		}
@@ -339,7 +339,7 @@ namespace LinBox
 		 *  return x *= y;
 		 */
 		template<class Int>
-		inline static Element& mulin (Element& x, const Int& y)  {
+		inline Element& mulin (Element& x, const Int& y) const {
 
 			return x *= y;
 		}
@@ -348,7 +348,7 @@ namespace LinBox
 		 *  If y divides x, return x /= y,
 		 *  otherwise throw an exception
 		 */
-		inline static Element& divin (Element& x, const Element& y) {
+		inline const Element& divin (Element& x, const Element& y) const {
 
 			div (x, x, y);
 
@@ -359,7 +359,7 @@ namespace LinBox
 		 *  If x is a unit, x = 1 / x,
 		 *  otherwise, throw an exception.
 		 */
-		inline static Element& invin (Element& x) {
+		inline Element& invin (Element& x) const {
 
 			return x = NTL::inv(x);
 		}
@@ -367,7 +367,7 @@ namespace LinBox
 		/** @brief
 		 *  return x = -x;
 		 */
-		inline static Element& negin (Element& x)  {
+		inline Element& negin (Element& x) const {
 
 			NTL::negate (x, x);
 
@@ -378,7 +378,7 @@ namespace LinBox
 		 *  return r += a x
 		 */
 		template <class Int>
-		inline static Element& axpyin (Element& r, const Element& a, const Int& x)  {
+		inline Element& axpyin (Element& r, const Element& a, const Int& x) const {
 
 			return r += a * x;
 		}
