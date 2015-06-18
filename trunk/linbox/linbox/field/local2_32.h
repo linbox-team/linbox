@@ -72,7 +72,7 @@ namespace LinBox
 		//Exponent& init(Exponent& a) { return a = 32; }
 
 		Local2_32 (int p=2, int exp=32) :
-			Givaro::ZRing<uint32_t>(p,(size_t)exp)
+			Givaro::ZRing<uint32_t>()
 		{
 			if(p != 2) throw PreconditionFailed(LB_FILE_LOC,"modulus must be 2");
 			if(exp != 32) throw PreconditionFailed(LB_FILE_LOC,"exponent must be 32");
@@ -89,7 +89,7 @@ namespace LinBox
 
 */
 		// assume k is an exponent of 2.
-		static inline Exponent& gcdin(Exponent& k, const Element& b)
+		inline Exponent& gcdin(Exponent& k, const Element& b) const
 		{   /*
 		       Element c = b >> k;
 		       c <<= k;
@@ -104,34 +104,34 @@ namespace LinBox
 			return k = Exponent(i);
 		}
 
-		static inline bool isUnit(const Exponent& a)
+		inline bool isUnit(const Exponent& a) const
 		{   return a == 0;   }
 
-		static inline bool isZero(const Element& a)
+		inline bool isZero(const Element& a) const
 		{   return a == 0;   }
 
-		static inline bool isZero(const Exponent& a)
+		inline bool isZero(const Exponent& a) const
 		{   return a >= 32;   }
 
 		// not used ...
-		static inline bool isUnit(const Element& a)
+		inline bool isUnit(const Element& a) const
 		{   return a & 1;   }
 
 		//Element& div(Element& c, const Element& a, const Element& b) const
 		//{   return c = NTL::rep(a)/NTL::GCD(NTL::rep(a),NTL::rep(b));   }
 		//
 
-		static inline Element& mulin(Element& a, const Exponent& k)
+		inline Element& mulin(Element& a, const Exponent& k) const
 		{
 			if (k >= 32) return a = 0;
 			else return a <<= k;
 		}
 
-		static inline Element& mulin(Element& a, const Element& b)  {
+		inline Element& mulin(Element& a, const Element& b)  const {
 			return a *= b;
 		}
 
-		static inline Element& axpyin(Element& r, const Element& x, const Element& y) {
+		inline Element& axpyin(Element& r, const Element& x, const Element& y)  const{
 			return r += x * y;
 		}
 
@@ -146,10 +146,10 @@ namespace LinBox
 		   */
 
 		// assume k is an exponent of 2 and the power of 2 exactly divides a
-		static inline Element& divin(Element& a, const Exponent& k)
+		inline Element& divin(Element& a, const Exponent& k) const
 		{   return a >>= k;   }
 
-		static inline Element& inv(Element& a, const Element& b) {
+		inline Element& inv(Element& a, const Element& b) const {
 
 			if (!isUnit(b))
 				throw PreconditionFailed(LB_FILE_LOC,"inv: not a unit");
@@ -168,7 +168,7 @@ namespace LinBox
 
 	protected:
 
-		static  Element& xgcd(Element& d, Element& s, Element& t, const Element& a, const Element& b)
+		Element& xgcd(Element& d, Element& s, Element& t, const Element& a, const Element& b) const
 		{
 
 			Element  u, v, u0, v0, u1, v1, u2, v2, q, r;
@@ -284,7 +284,7 @@ namespace LinBox
 		 * exists t, such that: s * a + t * b = g.
 		 * return g.
 		 */
-		static Element& HGCD (Element& g, Element& s, const Element& a, const  Element& b) {
+		Element& HGCD (Element& g, Element& s, const Element& a, const  Element& b) const {
 
 			Element  u, v, u0, u1, u2, q, r;
 
