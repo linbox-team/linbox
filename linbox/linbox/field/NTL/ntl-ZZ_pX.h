@@ -307,9 +307,9 @@ namespace LinBox
 			return c = static_cast<integer>(-1);
 		}
 
-		static inline integer getMaxModulus()
+		static inline integer maxCardinality()
 		{
-			return CoeffField::getMaxModulus();
+			return CoeffField::maxCardinality();
 		}
 
 		/** Write a description of the field */

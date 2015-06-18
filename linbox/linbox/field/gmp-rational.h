@@ -769,7 +769,7 @@ namespace LinBox
 		}
 
 		/// max modulus.
-		static inline int getMaxModulus() { return 0; } // no modulus
+		static inline int maxCardinality() { return 0; } // no modulus
 
 		/*! get numerator.
 		 * @param x  numerator of y

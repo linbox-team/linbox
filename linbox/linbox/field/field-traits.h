@@ -70,32 +70,32 @@ namespace LinBox {
 
 		static integer& maxModulus( integer& i )
 		{
-            		return Caster(i, Field::getMaxModulus());
+            		return Caster(i, Field::maxCardinality());
 		}
 
 		static uint64_t & maxModulus( uint64_t& i )
 		{
-            		return Caster(i, Field::getMaxModulus());
-// 			return i = static_cast<uint64_t>(Field::getMaxModulus());
+            		return Caster(i, Field::maxCardinality());
+// 			return i = static_cast<uint64_t>(Field::maxCardinality());
 		}
 
 		static uint32_t & maxModulus( uint32_t& i )
 		{
-            		return Caster(i, Field::getMaxModulus());
-// 			return i = static_cast<uint32_t>(Field::getMaxModulus());
+            		return Caster(i, Field::maxCardinality());
+// 			return i = static_cast<uint32_t>(Field::maxCardinality());
 		}
 
 		template<class T>
 		static T & maxModulus( T & i )
 		{
-			return i = static_cast<T>(Field::getMaxModulus());
+			return i = static_cast<T>(Field::maxCardinality());
 		}
 
 		static integer maxModulus()
 		{
             		integer maxm;
-            		return Caster(maxm, Field::getMaxModulus());
-// 			return static_cast<integer>(Field::getMaxModulus());
+            		return Caster(maxm, Field::maxCardinality());
+// 			return static_cast<integer>(Field::maxCardinality());
 		}
 
 		static bool goodModulus( const integer& i )

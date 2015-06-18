@@ -75,7 +75,7 @@ namespace LinBox
 		   Element& divin(Element& a, const Element& b) const
 		   {   return div(a, a, b);   }
 
-		   static inline double getMaxModulus() { return (double)NTL_SP_BOUND; }
+		   static inline double maxCardinality() { return (double)NTL_SP_BOUND; }
 	};
 
 } // namespace LinBox

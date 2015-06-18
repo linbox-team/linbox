@@ -163,7 +163,7 @@ namespace LinBox
 			}
 		}
 
-		static inline integer getMaxModulus()
+		static inline integer maxCardinality()
 		{ return integer( "4294967296" ); } // 2^32
 
 	protected:
@@ -319,7 +319,7 @@ namespace LinBox
 
 	template<>
 	bool FieldTraits< Local2_32 >::goodModulus( const integer& i ) {
-		return i == Local2_32::getMaxModulus();
+		return i == Local2_32::maxCardinality();
 	}
 
 } // namespace LinBox
