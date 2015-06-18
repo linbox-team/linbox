@@ -657,7 +657,7 @@ namespace LinBox
 		}
 
 
-		static inline int getMaxModulus()
+		static inline int maxCardinality()
 		{
 			return 0;
 		} // no modulus

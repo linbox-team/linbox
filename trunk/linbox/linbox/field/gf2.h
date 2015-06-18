@@ -978,7 +978,7 @@ namespace LinBox
 
 		//@} Inplace Arithmetic Operations
 
-		static inline int getMaxModulus()
+		static inline int maxCardinality()
 		{
 			return 2;
 		}

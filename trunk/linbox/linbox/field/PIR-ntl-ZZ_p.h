@@ -554,7 +554,7 @@ namespace LinBox
 			return a;
 		}
 
-		inline static integer getMaxModulus()
+		inline static integer maxCardinality()
 		{ return integer( "4294967295" ); } // 2^32 - 1
 
 	};

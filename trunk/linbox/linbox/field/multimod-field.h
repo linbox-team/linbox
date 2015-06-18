@@ -384,7 +384,7 @@ namespace LinBox
 			return r;
 		}
 
-		static inline double getMaxModulus()
+		static inline double maxCardinality()
 		{ return 94906265.0; } // floor( 2^26.5 )
 
 	};// end of class MultiModField

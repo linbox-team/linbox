@@ -355,8 +355,8 @@ namespace LinBox
 		integer& cardinality( integer& c ) const
 		{ return c = static_cast<integer>(-1); }
 
-		static inline integer getMaxModulus()
-		{ return NTL_zz_p::getMaxModulus(); }
+		static inline integer maxCardinality()
+		{ return NTL_zz_p::maxCardinality(); }
 		/** Write a description of the field */
 		// Oustide of class definition so write(ostream&,const Element&) from
 		// Givaro::ZRing still works.

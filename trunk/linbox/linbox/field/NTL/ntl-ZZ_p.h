@@ -298,7 +298,7 @@ namespace LinBox
 			return x = (ANY)(rep(y));
 		}
 
-		static inline integer getMaxModulus()
+		static inline integer maxCardinality()
 		{
 			return integer( -1 );
 		}

@@ -220,8 +220,8 @@ namespace LinBox
 			return c;
 		}
 
-		static inline integer getMaxModulus()
-        { return NTL_zz_p::getMaxModulus(); }
+		static inline integer maxCardinality()
+        { return NTL_zz_p::maxCardinality(); }
 
 
 		Element& inv(Element& x, const Element& y) const
