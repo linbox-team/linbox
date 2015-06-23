@@ -66,7 +66,7 @@ namespace LinBox
 			     const integer &size  = 0 ,
 			     const integer &seed = 0)
 		{
-			long _seed = seed;
+			int32_t _seed = seed;
 
 			if (_seed == 0) _seed = time (NULL);
 			MT.setSeed ((uint32_t)_seed);

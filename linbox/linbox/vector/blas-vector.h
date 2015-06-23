@@ -634,7 +634,7 @@ namespace LinBox { /* BlasVector */
 	template<>
 	Integer BlasVector<PID_integer>::magnitude() const
 	{
-		Integer max_elt(0UL);
+		Integer max_elt(0);
 		for (size_t i = 0 ; i < size() ; ++i)
 			if (max_elt < Givaro::abs(_ptr[i]))
 				max_elt = Givaro::abs(_ptr[i]) ;

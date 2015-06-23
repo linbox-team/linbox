@@ -124,9 +124,9 @@ namespace LinBox
                         std::vector<Prime_Type> primes;
                         Prime_Type prod=1;
                         integer tmp;
-                        for (long b = _bits - 1; b >= 0; b--)
-                                for (long l = (1L << (_bits - b - 1)) + 1; l < (1L << (_bits - b)); l +=2) {
-                                        tmp = (1L << b) * l + 1;
+                        for (int64_t b = _bits - 1; b >= 0; b--)
+                                for (int64_t l = ((int64_t)1 << (_bits - b - 1)) + 1; l < (1L << (_bits - b)); l +=2) {
+                                        tmp = ((int64_t)1 << b) * l + 1;
                                         if (Givaro::probab_prime(tmp, 25) >= 1) {
                                                 primes.push_back(tmp);
                                                 prod*=tmp;
@@ -144,8 +144,8 @@ namespace LinBox
                         primes.clear();
                         Prime_Type prod=1;
                         integer tmp;
-                        for (long b = (long)_bits - 1; b >= 0; b--)
-                                for (long l = (1L << ((long)_bits - b - 1)) + 1; l < (1L << ((long)_bits - b)); l +=2) {
+                        for (int64_t b = (int64_t)_bits - 1; b >= 0; b--)
+                                for (int64_t l = (1L << ((int64_t)_bits - b - 1)) + 1; l < (1L << ((int64_t)_bits - b)); l +=2) {
                                         tmp = (1L << b) * l + 1;
                                         if (Givaro::probab_prime(tmp, 25) >= 1) {
                                                 primes.push_back(tmp);
@@ -174,10 +174,10 @@ namespace LinBox
                         //std::cout<<"rns bound: "<<bound<<std::endl;
                         //std::cout<<"2 valuation: "<<val<<std::endl;
                         //std::cout<<"prime bitmax: "<<_bits<<std::endl;
-                        for (uint64_t b = (long)_bits; b >= val; b--)
-                                // for (uint64_t l = (1UL << ((long)_bits - b - 1)) + 1; l < (1UL << ((long)_bits - b)); l +=2) {
-                                for (long l = (1L << ((long)_bits - b)) - 1; l >=1; l -=2) {
-                                        tmp = (1UL << b) * l + 1;
+                        for (int64_t b = (int64_t)_bits; b >= val; b--)
+                                // for (uint64_t l = (1UL << ((int64_t)_bits - b - 1)) + 1; l < (1UL << ((int64_t)_bits - b)); l +=2) {
+                                for (int64_t l = ((int64_t)1 << ((int64_t)_bits - b)) - 1; l >=1; l -=2) {
+                                        tmp = ((int64_t)1 << b) * l + 1;
                                         if (Givaro::probab_prime(tmp, 25) >= 1) {
                                                 primes.push_back(tmp);
                                                 prod*=tmp;

@@ -166,7 +166,8 @@ namespace LinBox
 
 		Element &init (Element &x, const integer &y) const
 		{
-			return x = static_cast<long>(y) & 1;
+			//return x = static_cast<long>(y) & 1;
+			return x = y & (uint32_t)1;
 		}
 
 
@@ -177,12 +178,12 @@ namespace LinBox
 
 		BitVector::reference init (BitVector::reference x, const integer &y = 0) const
 		{
-			return x = long (y) & 1;
+			return x = y & (uint32_t)1;
 		}
 
 		stdBitReference init (stdBitReference x, const integer &y = 0) const
 		{
-			return x = long (y) & 1;
+			return x = y & (uint32_t)1;
 		}
 
 		/** Conversion of field base element to a template class T.

@@ -79,6 +79,13 @@ int main (int argc, char **argv)
 		PID_integer ZZ;
 		SparseMatrix<PID_integer> A (ZZ);
 		A.read (input);
+		/*
+		typedef SparseMatrix<PID_integer> SpMat;
+		SpMat B (ZZ);
+		B.read (input);
+		Transpose<SpMat> BT(B);
+		Compose<SpMat, Transpose<SpMat> > A(B,BT);
+		*/
 
 		if(process == 0)
 			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
