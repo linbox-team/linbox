@@ -64,7 +64,7 @@ namespace LinBox
 			_field (F), _size (size), _seed (seed)
 		{
 			if (seed == 0)
-				_seed = time (NULL);
+				_seed = uint32_t(time (NULL));
 		}
 
 

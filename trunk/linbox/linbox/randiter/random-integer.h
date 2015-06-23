@@ -134,12 +134,12 @@ namespace LinBox
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
-		RandomIntegerIter(unsigned int bits = 30, unsigned long seed = 0) :
+		RandomIntegerIter(unsigned int bits = 30, uint64_t seed = 0) :
 			_bits(bits)
 		{
 			linbox_check(bits>1);
 			if (! seed)
-				_seed = BaseTimer::seed() ;
+				_seed = (uint64_t)BaseTimer::seed() ;
 			else
 				_seed = seed ;
 

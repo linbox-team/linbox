@@ -46,10 +46,12 @@
 //#include "linbox/domain/blas_matrix_domain_gf2.h"
 // defines template<> class BlasMatrixDomain<GF2> { ... };
 // ... and template<> BlasMatrix<GF2> {}
+#if 0
 #include "linbox/field/gf3.h"
 //#include "linbox/domain/blas_matrix_domain_gf3.h"
 // defines template<> class BlasMatrixDomain<GF3> { ... };
 // ... and template<> BlasMatrix<GF3> {}
+#endif
 #include "linbox/field/modular.h"
 #include <givaro/modular-balanced.h>
 
@@ -133,14 +135,16 @@ int launch_tests(Field & F, size_t n, int iterations)
 ;
 bool launch_gf2_tests(GF2 & F, size_t n)
 ;
+#if 0
 bool launch_gf3_tests(GF3 & F, size_t n)
 ;
+#endif
 
 // test BlasMatrixDomain<Field> for various fields
 int main(int argc, char **argv)
 {
 
-	static size_t n = 40;
+	static size_t n = 3;
 	static integer q = 1000003U;
 	static int iterations = 2;
 
@@ -163,29 +167,29 @@ int main(int argc, char **argv)
 	commentator().start("BlasMatrixDomain test suite", "BlasMatrixDomain");
 
 	Givaro::Modular<double> F1 (q);
-	//Givaro::Modular<int> F1 (q);
+	//GF2 F2 ;
+	//GF3 F3 ;
+	Givaro::ModularBalanced<double> F4(q);
+	Givaro::Modular<float> F5(7); // (2011);
+	Givaro::Modular<uint32_t> F6(1009); // (2011);
+	Givaro::Modular<bool> F7 ;
+
 	pass &= launch_tests(F1,n,iterations);
 
 #pragma message "#warning GF2 -> working on m4ri wrapper"
-	//GF2 F2 ;
 	//pass &= launch_gf2_tests(F2,n);
 
 #pragma message "#warning GF3 -> working on sliced wrapper"
-	//GF3 F_3 ;
-	//pass &= launch_gf3_tests(F_3,n);
+	//pass &= launch_gf3_tests(F3,n);
 
-	Givaro::ModularBalanced<double> F4(q);
-	pass &= launch_tests(F4,n,iterations);
+	// pass &= launch_tests(F4,n,iterations);
 
-	Givaro::Modular<float> F5(2011);
-	pass &= launch_tests(F5,n,iterations);
+	// pass &= launch_tests(F5,n,iterations);
 
 #pragma message "#warning Givaro::Modular is not working at all"
-	Givaro::Modular<uint32_t> F6(2001);
 	// pass &= launch_tests(F6,n,iterations);
 
 //#pragma message "#warning Givaro::Modular<bool> is not working"
-	Givaro::Modular<bool> F7 ;
 	//pass &= launch_tests(F7,n,iterations);
 
 #ifdef __LINBOX_HAVE_NTL
@@ -404,6 +408,9 @@ bool CheckMulAdd(const Field& Zp, const Integer & alpha ,
 }
 
 // tests MulAdd for various parameters alpha and beta.
+// This test ignores Field F.  It tests only integer matrices.  
+// It should not really be included in launch_tests<Field>.
+// For now we'll call it when characteristic is zero.
 template <class Field>
 static bool testMulAddAgain (const Field& F, size_t n, int iterations)
 {
@@ -853,12 +860,14 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	for (size_t i=0;i<n;++i)
 		Id.setEntry(i,i,F.one);
 
+	if (n < 10) 
+		Id.write(mycommentator().report() << "Id" << std::endl) << std::endl;
 	for (int k=0;k<iterations;++k) {
 
 		mycommentator().progress(k);
 
 
-		Matrix A(F, n,n),S(F, n,n), L(F, n,n), invA(F, n,n);
+		Matrix A(F, n,n),S(F, n,n), L(F, n,n); // , invA(F, n,n);
 
 		// create S as an upper triangular matrix of full rank
 		// with nonzero random diagonal's element
@@ -878,13 +887,22 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 		//  compute A=LS
 		BMD.mul(A,L,S);
+	if (n < 10) 
+		A.write(mycommentator().report() << "A") << std::endl;
 
 		// compute the inverse of A
-		BMD.inv(invA,A);
+		Matrix invA(A);
+		//BMD.invin(invA);
+	if (n < 10) 
+		invA.write(mycommentator().report() << "invA") << std::endl;
 
 		// compute Ainv*A and A*Ainv
 		BMD.mul(L,invA,A);
+	if (n < 10) 
+		L.write(mycommentator().report() << "invA*A") << std::endl;
 		BMD.mul(S,A,invA);
+	if (n < 10) 
+		S.write(mycommentator().report() << "A*invA") << std::endl;
 
 		if (!BMD.areEqual(L,Id) || !BMD.areEqual(S,Id))
 			ret=false;
@@ -1732,7 +1750,7 @@ int launch_tests(Field & F, size_t n, int iterations)
 	// no slow test while I work on io
 	if (!testBlasMatrixConstructors(F, n, n))             pass=false;
 	if (!testMulAdd (F,n,iterations))                     pass=false;
-	if (F.cardinality()==F.characteristic()) if
+	if (0==F.characteristic()) if
 	    (!testMulAddAgain (F,n,iterations))                pass=false;
 	size_t m = n+n/2 ; size_t k = 2*n+1 ;
 	if (!testMulAddShapeTrans (F,n,m,k,iterations))       pass=false;
@@ -1760,6 +1778,7 @@ int launch_tests(Field & F, size_t n, int iterations)
 	if (!testCharPoly (F,n,iterations))                   pass=false;
 	//
 	//
+	if (not pass) F.write(cout) << endl;
 	return pass ;
 
 }
@@ -1773,6 +1792,7 @@ bool launch_gf2_tests(GF2 & F, size_t n)
 	return pass ;
 }
 
+#if 0
 bool launch_gf3_tests(GF3 & F, size_t n)
 {
 	bool pass = true;
@@ -1780,6 +1800,7 @@ bool launch_gf3_tests(GF3 & F, size_t n)
 	//pass = pass and launch_tests(F, n, 1); // fails with std BlasMatrixDomain
 	return pass ;
 }
+#endif
 
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

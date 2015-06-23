@@ -287,19 +287,22 @@ namespace LinBox
 		inline  Element powtwo(Element& z, const Element& x) const
 		{
 			z = 1;
+			Element max; init(max, (1<<30));
 			if (x < 0) return z;
-			if (x < ULONG_MAX) {
-				z<<=(unsigned long int)x;
-				//cout << "z"<< z;
+			//if (x < (Element)max-1) {
+			if (x < max) {
+				z<<=(int32_t)x;
 				return z;
 			}
 			else {
 				Element n,m;
-				quoRem(n,m,x,(Element)(LONG_MAX-1));
+				quoRem(n,m,x,max);
+				//quoRem(n,m,x,(Element)(LONG_MAX-1));
 				for (int i=0; i < n; ++i) {
-					z <<=(long int)(LONG_MAX-1);
+					z <<=(int32_t)max;
+					//z <<=(long int)(LONG_MAX-1);
 				}
-				z <<= (long int)m;
+				z <<= (int32_t)m;
 				return z;
 			}
 
@@ -341,6 +344,7 @@ namespace LinBox
 			return x=Element(y);
 		}
 
+		/*
 		inline Element& init(Element& x, const unsigned long& y) const
 		{
 			return x=Element(y);
@@ -350,6 +354,7 @@ namespace LinBox
 		{
 			return x=Element(y);
 		}
+		*/
 
 		inline Element& init(Element& x, const unsigned int & y) const
 		{
