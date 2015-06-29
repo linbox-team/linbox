@@ -90,7 +90,7 @@ namespace Givaro
  	template <>
 	Integer& Caster(Integer& x, const NTL::zz_p& y)
 	{
-		return x = static_cast<Integer>(rep(y));
+		return x = int64_t(rep(y));
 	}
 } // namespace Givaro
 
@@ -104,7 +104,7 @@ namespace LinBox
 			linbox_check(e == 1);
 			if ( q > 0 )
 				// NTL::zz_p::init(NTL::to_ZZ((std::string(q)).data())); // it's an error if q not prime, e not 1
-				NTL::zz_p::init(q); // it's an error if q not prime, e not 1
+				NTL::zz_p::init(int64_t(q)); // it's an error if q not prime, e not 1
 		}
 
 		template <class ElementInt>
@@ -161,11 +161,13 @@ namespace LinBox
 			return x = NTL::to_zz_p(tmp);
 		}
 
+/*
 		template <class ANY>
 		Element& init(Element& x, const ANY& y) const
 		{
 			return x = NTL::to_zz_p((long)(y));
 		}
+*/
 
 		Element& init(Element& x, const NTL::zz_p & y) const
 		{
@@ -180,7 +182,7 @@ namespace LinBox
 
 		static inline integer maxCardinality()
 		{
-			return integer( NTL_SP_BOUND );
+			return integer( int64_t(NTL_SP_BOUND) );
 		}
 
 		Element& pow( Element& res, const Element& x, long exp ) const
@@ -201,12 +203,12 @@ namespace LinBox
 
 		integer& cardinality(integer& c) const
 		{
-			return c = static_cast<integer>(Element::modulus());
+			return characteristic(c);
 		}
 
 		integer cardinality() const
 		{
-			return static_cast<integer>(Element::modulus());
+			return characteristic();
 		}
 
 		/** Characteristic.
@@ -217,12 +219,12 @@ namespace LinBox
 
 		integer& characteristic(integer& c) const
 		{
-			return c = static_cast<integer>(Element::modulus());
+			return c = static_cast<int64_t>(Element::modulus());
 		}
 
 		integer characteristic() const
 		{
-			return static_cast<integer>(Element::modulus());
+			return static_cast<int64_t>(Element::modulus());
 		}
 
 		/** Multiplicative Inverse.
@@ -328,7 +330,7 @@ namespace LinBox
 						 const integer& seed=0) :
 			_size(size), _seed(seed)
 		{
-			if (_seed == integer(0)) _seed = integer(time(NULL));
+			if (_seed == integer(0)) _seed = int64_t(time(NULL));
 
 			integer cardinality;
 			F.cardinality(cardinality);
@@ -341,7 +343,11 @@ namespace LinBox
 #endif // TRACE
 
 			// Seed random number generator
-			NTL::SetSeed(NTL::to_ZZ(static_cast<long>(_seed)));
+			std::stringstream s;
+			NTL::ZZ x;
+			s << _seed;
+			s >> x;
+			NTL::SetSeed(x);//NTL::to_ZZ(static_cast<long>(_seed)));
 		}
 
 		/// Random field element creator.
@@ -351,7 +357,7 @@ namespace LinBox
 				return x = NTL::random_zz_p();
 			}
 			else {
-				return x = NTL::to_zz_p(NTL::RandomBnd(static_cast<long>(_size)));
+				return x = NTL::to_zz_p(NTL::RandomBnd(static_cast<int64_t>(_size)));
 			}
 		}
 	protected :

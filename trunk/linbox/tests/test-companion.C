@@ -42,8 +42,7 @@
 #include "linbox/blackbox/companion.h"
 #include "linbox/matrix/matrix-domain.h"
 
-#include "test-common.h"
-#include "test-generic.h"
+#include "test-blackbox.h"
 
 using namespace LinBox;
 

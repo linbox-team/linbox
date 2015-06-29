@@ -41,14 +41,10 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl.h"
-#endif
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/matrix/dense-matrix.h"
-// #include "linbox/blackbox/triplesbb.h"
 #include "linbox/matrix/sparse-matrix.h"
 
 #include "test-common.h"
@@ -172,14 +168,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-#ifdef __LINBOX_HAVE_NTL_blah
-//        typedef Givaro::ZRing<NTL::zz_p> Field;
-        typedef NTL_zz_p Field;
-// 	NTL::zz_p::init(q1); // Done in the constructor
-#else
 	typedef Givaro::Modular<int32_t> Field ;
-#endif
-    //typedef Givaro::Modular< int32_t> Field2;
 	Field F(q);
 
 	// typedef vector<Field::Element> Vector;

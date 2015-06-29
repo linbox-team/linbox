@@ -46,18 +46,19 @@
 
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/util/commentator.h"
-#include "linbox/field/archetype.h"
+//#include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
 #include "linbox/randiter/nonzero.h"
-#include "linbox/solutions/minpoly.h"
-#include "linbox/solutions/rank.h"
-#include "linbox/vector/stream.h"
+//#include "linbox/solutions/minpoly.h"
+//#include "linbox/solutions/rank.h"
+//#include "linbox/vector/stream.h"
 
-#include "test-common.h"
-#include "test-generic.h"
+#include "test-blackbox.h"
+//#include "test-generic.h"
 
 using namespace LinBox;
 
+#if 0
 /* Test 1: Application of identity matrix onto random vectors
  *
  * Construct the identity matrix and a series of randomly-generated
@@ -300,6 +301,7 @@ static bool testRandomTranspose (Field &F,
 
 	return ret;
 }
+#endif
 
 int main (int argc, char **argv)
 {
@@ -317,7 +319,7 @@ int main (int argc, char **argv)
 	};
 
 	typedef Givaro::Modular<uint32_t> Field; //C.Pernet: avoids confusion with givaro::uint32_t
-	typedef BlasVector<Field> Vector;
+//	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -330,6 +332,7 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
+#if 0
 	RandomDenseStream<Field, Vector> stream1 (F, n, (unsigned int)iterations), stream2 (F, n, (unsigned int)iterations), d_stream (F, n, 1);
 	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> >
 		stream3 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, (unsigned int)iterations);
@@ -338,9 +341,10 @@ int main (int argc, char **argv)
 	if (!testRandomMinpoly    (F, stream3)) pass = false;
 	if (!testRandomLinearity  (F, d_stream, stream1, stream2)) pass = false;
 	if (!testRandomTranspose  (F, d_stream, stream1, stream2)) pass = false;
+#endif
 
         Field::RandIter iter(F);
-	LinBox::Diagonal<Field> D(F, 10, iter);
+	LinBox::Diagonal<Field> D(F, n, iter);
 	pass = pass && testBlackbox(D);
 
 	commentator().stop (MSG_STATUS (pass));

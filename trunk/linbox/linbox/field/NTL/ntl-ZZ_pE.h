@@ -66,13 +66,19 @@ namespace Givaro
 	template<>
 	NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const Integer &y)
 	{
-		x=NTL::to_ZZ_pE(static_cast<long>(y));
+		std::stringstream s;
+		s << y;
+		s >> x;
+		//x=NTL::to_ZZ_pE(static_cast<long>(y));
 		return x;
 	}
 	template<>
 	NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const double &y)
 	{
-		x=NTL::to_ZZ_pE(static_cast<long>(y));
+		std::stringstream s;
+		s << y;
+		s >> x;
+		//x=NTL::to_ZZ_pE(static_cast<long>(y));
 		return x;
 	}
 
@@ -85,14 +91,20 @@ namespace Givaro
 	Integer& Caster(Integer& c, const NTL::ZZ_pE& e)
 	{
 		NTL::ZZ_pX poly = rep(e);
-		//Integer base = _p;
-		Integer base = static_cast<Integer>(to_long(NTL::ZZ_p::modulus()));
+		Integer base, coef;
+		std::stringstream s;
+		s << NTL::ZZ_p::modulus();
+		s >> base;
+		//Integer base = static_cast<Integer>(to_long(NTL::ZZ_p::modulus()));
 		long i;
 
 		c = 0;
 		for(i = deg(poly); i >= 0; --i) {
 			c *= base;
-			c +=  NTL::to_long(rep(coeff(poly, i)));
+			s.clear();
+			s << rep(coeff(poly, i));
+			s >> coef;
+			c +=  coef; //NTL::to_long(rep(coeff(poly, i)));
 		}
 
 		return c;
@@ -170,15 +182,20 @@ namespace LinBox
 
 	integer& characteristic (integer &c) const
 	{
-		return c=static_cast<integer>(to_long(NTL::ZZ_p::modulus()));
-		//NTL::ZZ_p::modulus();
+		std::stringstream s;
+		s << NTL::ZZ_p::modulus();
+		s >> c;
+		return c;
+		//return c=static_cast<integer>(to_long(NTL::ZZ_p::modulus()));
 	}
 
 
 	integer& cardinality(integer& c) const
 	{
-		c=static_cast<integer>(to_long(NTL::ZZ_p::modulus()));
-		c=pow(c,Element::degree());
+		std::stringstream s;
+		s << NTL::ZZ_p::modulus();
+		s >> c;
+		c=pow(c,int64_t(Element::degree()));
 		return c;
 	}
 
@@ -373,8 +390,13 @@ namespace LinBox
 		{
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
-			else
-				NTL::SetSeed( NTL::to_ZZ(static_cast<long>(seed)) );
+			else {
+				NTL::ZZ x;
+				std::stringstream s;
+				s << seed;
+				s >> x;
+				NTL::SetSeed( x ); //NTL::to_ZZ(static_cast<long>(seed)) );
+			}
 		}
 
 #ifdef __LINBOX_XMLENABLED

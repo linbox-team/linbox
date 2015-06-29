@@ -66,12 +66,12 @@ namespace LinBox
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
-		RandomPrimeIterator(unsigned int bits = 27, unsigned long seed = 0) :
+		RandomPrimeIterator(uint64_t bits = 27, uint64_t seed = 0) :
 			_bits(bits), _shift(integer(1)<<_bits)
 		{
 			linbox_check(bits >1);
 			if (! seed)
-				setSeed( (unsigned long) BaseTimer::seed() );
+				setSeed( BaseTimer::seed() );
 			else
 				setSeed( seed );
 
@@ -114,7 +114,7 @@ namespace LinBox
 		 *  Set the random seed to be \p ul.
 		 *  @param ul the new seed.
 		 */
-		void static setSeed(unsigned long ul)
+		void static setSeed(uint64_t ul)
 		{
 			integer::seeding(ul);
 		}
@@ -177,7 +177,7 @@ namespace LinBox
 	 */
 	class RandomPrimeIter {
 
-		unsigned int 	_bits;  //!< max length for all primes
+		uint64_t 	_bits;  //!< max length for all primes
 		integer         _seed;  //!< the generated prime.
 
 	public:
@@ -187,12 +187,12 @@ namespace LinBox
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
-		RandomPrimeIter(unsigned int bits = 30, unsigned long seed = 0) :
+		RandomPrimeIter(uint64_t bits = 30, uint64_t seed = 0) :
 			_bits(bits)
 		{
 			linbox_check(bits >1);
 			if (! seed)
-				_seed = BaseTimer::seed() ;
+				seed = BaseTimer::seed() ;
 			else
 				_seed = seed ;
 
@@ -262,11 +262,11 @@ namespace LinBox
 			return random_exact(a);
 		}
 
-		integer & random_between (integer & a, unsigned long _low_bits) const
+		integer & random_between (integer & a, uint64_t _low_bits) const
 		{
 			linbox_check(_low_bits < _bits);
 			// integer::random_exact(a,_bits);
-			unsigned long ze_bits = (unsigned long)(_low_bits+(unsigned long)(double(_bits - _low_bits)*drand48())) ;
+			uint64_t ze_bits = (_low_bits + ((_bits - _low_bits)*drand48())) ;
 			linbox_check (!(ze_bits<_low_bits) && !(ze_bits>_bits));
 			integer::random(a,ze_bits-1); //!@todo uses random_between when givaro is released.
 			a = (integer(1)<<ze_bits) - a;
@@ -280,7 +280,7 @@ namespace LinBox
 			return a;
 		}
 
-		integer random_between ( unsigned long _low_bits) const
+		integer random_between ( uint64_t _low_bits) const
 		{
 			// std::cout << "random between " << _low_bits << " and " << _bits << std::endl;
 			integer a ;

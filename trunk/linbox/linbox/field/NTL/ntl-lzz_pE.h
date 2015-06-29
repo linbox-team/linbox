@@ -56,7 +56,7 @@ namespace Givaro
 	template<>
 	NTL::zz_pE& Caster(NTL::zz_pE &x, const Integer &y)
 	{
-		x=NTL::to_zz_pE(static_cast<long>(y));
+		x=NTL::to_zz_pE(static_cast<int64_t>(y));
 		return x;
 	}
 	template<>
@@ -69,12 +69,12 @@ namespace Givaro
 	template<>
 	Integer& Caster (Integer& x, const NTL::zz_pE &y) {
 		NTL::zz_pX poly = rep(y);
-		Integer base = static_cast<Integer>(NTL::zz_p::modulus());
+		Integer base = static_cast<int64_t>(NTL::zz_p::modulus());
 		long i = deg(poly)+1;
 		x = 0;
 		for( ; i-- ; ) {
 			x *= base;
-			x +=  NTL::to_long(rep(coeff(poly, i)));
+			x +=  int64_t(NTL::to_long(rep(coeff(poly, i))));
 		}
 		return x;
 	}
@@ -90,8 +90,8 @@ namespace LinBox
 	class NTL_zz_pE_Initialiser {
 	public :
 		NTL_zz_pE_Initialiser( const Integer & p, const Integer & k) {
-			NTL::zz_p::init( (long) p);
-			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((long) k);
+			NTL::zz_p::init( (int64_t) p);
+			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((int64_t) k);
 			NTL::zz_pE::init(irredPoly);
 
 		}
@@ -158,7 +158,7 @@ namespace LinBox
 			return NTL::IsOne(a);
 		}
 
-	bool isMOne (const Element& x) const
+		bool isMOne (const Element& x) const
 		{
 			Element y ; neg(y,x);
 			return isOne(y);
