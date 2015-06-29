@@ -1,5 +1,4 @@
-
-/* tests/smith-form-direct.h
+/* 
  * Copyright (C) 2014 Gavin Harrison,
  *
  * Written by Gavin Harrison <gmh33@drexel.edu>,
@@ -26,13 +25,13 @@
 
 #include "linbox/matrix/dense-matrix.h"
 
-#ifndef __LINBOX_smith_form_direct_domain_H
-#define __LINBOX_smith_form_direct_domain_H
+#ifndef __LINBOX_smith_form_textbook_domain_H
+#define __LINBOX_smith_form_textbook_domain_H
 
 namespace LinBox
 {
 	template<class MatrixDomain>
-	class SmithFormDirectDomain {
+	class SmithFormTextbookDomain {
 	public:
 		typedef typename MatrixDomain::Field Field;
 		typedef typename Field::Element Element;
@@ -43,8 +42,8 @@ namespace LinBox
 
 	public:
 		const Field &field() const { return _MD.field(); }
-		SmithFormDirectDomain(const MatrixDomain &MD) : _MD(MD) {}
-		SmithFormDirectDomain(const SmithFormDirectDomain &D) : _MD(D._MD) {}
+		SmithFormTextbookDomain(const MatrixDomain &MD) : _MD(MD) {}
+		SmithFormTextbookDomain(const SmithFormDirectDomain &D) : _MD(D._MD) {}
 
 	private:
 		void swapRows(Rep &A, int n, int a, int b) const
