@@ -50,7 +50,7 @@ namespace LinBox
 	private:
 		void swapRows(Rep &A, int a, int b) const
 		{
-			for (int i = 0; i < A.coldim(); i++)
+			for (size_t i = 0; i < A.coldim(); i++)
 			{
 				Element tmp1, tmp2;
 
@@ -64,7 +64,7 @@ namespace LinBox
 
 		void swapCols(Rep &A, int a, int b) const
 		{
-			for (int i = 0; i < A.rowdim(); i++)
+			for (size_t i = 0; i < A.rowdim(); i++)
 			{
 				Element tmp1, tmp2;
 
@@ -92,11 +92,11 @@ namespace LinBox
 			field().dxgcd(g,s,t,u,v,a,b);
 		}
 
-		bool findPivot(Rep &A, int n) const
+		bool findPivot(Rep &A, size_t n) const
 		{
-			for (int i = n; i < A.rowdim(); i++)
+			for (size_t i = n; i < A.rowdim(); i++)
 			{
-				for (int j = n; j < A.coldim(); j++)
+				for (size_t j = n; j < A.coldim(); j++)
 				{
 					Element tmp;
 					A.getEntry(tmp, i, j);
@@ -268,7 +268,7 @@ namespace LinBox
 
 		bool isRowDiagonalized(const Rep &A, int n) const
 		{
-			for (int i = n+1; i < A.coldim(); i++)
+			for (size_t i = n+1; i < A.coldim(); i++)
 			{
 				Element ni;
 				A.getEntry(ni, n, i);
@@ -283,9 +283,9 @@ namespace LinBox
 			Element nn;
 			A.getEntry(nn, n, n);
 
-			for (int i = n+1; i < A.rowdim(); i++)
+			for (size_t i = n+1; i < A.rowdim(); i++)
 			{
-				for (int j = i; j < A.coldim(); j++)
+				for (size_t j = i; j < A.coldim(); j++)
 				{
 					Element ij, g;
 					A.getEntry(ij, i, j);
@@ -298,7 +298,7 @@ namespace LinBox
 					if (!field().areAssociates(g, nn))
 					{
 						// Add row i to row n
-						for (int k = i; k < A.coldim(); k++)
+						for (size_t k = i; k < A.coldim(); k++)
 						{
 							Element ik;
 							A.getEntry(ik, i, k);
@@ -321,12 +321,12 @@ namespace LinBox
 
 			Rep B(A);
 
-			for (int i = 0; i < dim;)
+			for (size_t i = 0; i < dim;)
 			{
 				if (!findPivot(B, i))
 					break;
 
-				for (int j = i+1; j < dim; j++)
+				for (size_t j = i+1; j < dim; j++)
 					eliminateRow(B, i, j);
 
 				hermite(B, i);
@@ -340,7 +340,7 @@ namespace LinBox
 				i++;
 			}
 
-			for (int i = 0; i < dim; i++)
+			for (size_t i = 0; i < dim; i++)
 			{
 				Element ii;
 				B.getEntry(ii, i, i);

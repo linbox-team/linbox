@@ -19,7 +19,7 @@
 #include <givaro/modular.h>
 #include <givaro/givpoly1.h>
 #include <linbox/ring/givaro-poly.h>
-#include <linbox/algorithms/smith-form-direct.h>
+#include <linbox/algorithms/smith-form-textbook.h>
 #include <linbox/algorithms/smith-form-kannan-bachem.h>
 
 using namespace LinBox;
@@ -32,13 +32,13 @@ void printMatrix(MatrixDom MD, Matrix A)
 	typename MatrixDom::Field::Element tmp;
 	
 	cout << "<";
-	for (int i = 0; i < A.rowdim(); i++)
+	for (size_t i = 0; i < A.rowdim(); i++)
 	{
 		if (i != 0)
 			cout << ",";
 		
 		MD.field().write(cout << "<", A.getEntry(tmp, i, 0));
-		for (int j = 1; j < A.coldim(); j++)
+		for (size_t j = 1; j < A.coldim(); j++)
 		{
 			MD.field().write(cout << "|", A.getEntry(tmp, i, j));
 		}
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 	
 	// Text Book SF Domain
 	// Comment out this block if things are getting too slow
-	SmithFormDirectDomain<MatrixDom> SFD(MD);
+	SmithFormTextbookDomain<MatrixDom> SFD(MD);
 	BlasVector<Field> S1(F, n, F.zero);
 	
 	Givaro::Timer t1;
