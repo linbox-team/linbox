@@ -56,7 +56,7 @@ namespace LinBox
 		NTL_zz_pX_Initialiser( const Integer & q, size_t e = 1) {
 			linbox_check(e == 1);
 			if ( q > 0 )
-				NTL::zz_p::init(q); // it's an error if q not prime, e not 1
+				NTL::zz_p::init(int64_t(q)); // it's an error if q not prime, e not 1
 		}
 
 		// template <class ElementInt>
@@ -114,7 +114,7 @@ namespace LinBox
 			integer base;
 			_CField.cardinality(base);
 			for (int i = 0; n > 0; n /= base, ++i)
-				NTL::SetCoeff( p, i, n%base );
+				NTL::SetCoeff( p, i, int64_t(n%base) );
 			return p;
 		}
 

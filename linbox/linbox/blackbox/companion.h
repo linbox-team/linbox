@@ -78,11 +78,11 @@ namespace LinBox
 			for (typename std::vector<typename Field::Element>::iterator i = p.begin(); i != p.end(); ++i)
 				r.random(*i); // we'll pretend p[n] == 1, ok?
 
-			for (size_t i = 1; i < n; ++i) setEntry(i, i-1, F.one);
+			for (size_t i = 1; i < n; ++i) this->setEntry(i, i-1, F.one);
 			for (size_t i = 0; i < n; ++i)
 			{	typename Field::Element x;
 				F.neg(x, p[i]);
-				setEntry(i, n-1, x);
+				this->setEntry(i, n-1, x);
 			}
 
 		}

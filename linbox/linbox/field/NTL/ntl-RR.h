@@ -38,6 +38,7 @@
 #ifndef __LINBOX_field_ntl_rr_H
 #define __LINBOX_field_ntl_rr_H
 
+#include <sstream>
 #include "linbox/linbox-config.h"
 
 #ifndef __LINBOX_HAVE_NTL
@@ -74,7 +75,11 @@ namespace Givaro
 	template <>
 	NTL::RR& Caster(NTL::RR& x, const Integer& y)
 	{
-		return x = NTL::to_RR(static_cast<const long&>(y));
+		std::stringstream s;
+		s << y;
+		s >> x;
+		return x;
+		//return x = NTL::to_RR(static_cast<long>(y)); 
 	}
 	template <>
 	NTL::RR& Caster(NTL::RR& x, const double& y)
@@ -108,7 +113,11 @@ namespace Givaro
 	template <>
 	Integer& Caster(Integer& x, const NTL::RR& y)
 	{
-		return x = static_cast<Integer>(to_long(y));
+		std::stringstream s;
+		s << y;
+		s >> x;
+		return x;
+		//return x = static_cast<Integer>(to_long(y));
 	}
 } // namespace Givaro
 
@@ -231,12 +240,12 @@ namespace LinBox
 
 		integer & cardinality(integer &c) const
 		{
-			return c = -1L;
+			return c = -1;
 		}
 
 		integer & characteristic(integer &c) const
 		{
-			return c = 0UL;
+			return c = 0;
 		}
 
 		std::ostream &write (std::ostream &os, const Element &x) const {
@@ -275,7 +284,7 @@ namespace LinBox
 					       const integer& seed = 0) :
 			_size(size), _seed(seed)
 		{
-			if (_seed == integer(0)) _seed = integer(time(NULL));
+			if (_seed == integer(0)) _seed = int64_t(time(NULL));
 
 			// integer cardinality;
 			// F.cardinality(cardinality);
@@ -288,7 +297,10 @@ namespace LinBox
 #endif // TRACE
 
 			// Seed random number generator
-			NTL::SetSeed(NTL::to_ZZ(static_cast<long>(_seed)));
+			std::stringstream s; NTL::ZZ x;
+			s << _seed;
+			s >> x;
+			NTL::SetSeed(NTL::to_ZZ(x));
 		}
 
 

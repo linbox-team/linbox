@@ -80,8 +80,8 @@ namespace Givaro
 		BytesFromZZ(txt, iy, nb);
 
 		x = 0;
-		for (long i = 0; i < nb; i++) {
-			x += Integer( (unsigned long)txt[i] )<<(8*i) ;
+		for (ptrdiff_t i = 0; i < nb; i++) {
+			x += Integer( txt[i] )<<(8*i) ;
 		}
 		delete [] txt;
 		return x;
@@ -279,8 +279,8 @@ namespace LinBox
 			BytesFromZZ(txt, iy, nb);
 
 			x = 0;
-			for (long i = 0; i < nb; i++) {
-				x += LinBox::integer( (unsigned long)txt[i] )<<(8*i) ;
+			for (ptrdiff_t i = 0; i < nb; i++) {
+				x += LinBox::integer( txt[i] )<<(8*i) ;
 			}
 			delete [] txt;
 			return x;
@@ -321,12 +321,12 @@ namespace LinBox
 		 */
 		integer& cardinality(integer& c) const
 		{
-			return c = static_cast<integer>(to_long(Element::modulus()));
+			return characteristic(c);
 		}
 
 		integer cardinality() const
 		{
-			return static_cast<integer>(to_long(Element::modulus()));
+			return characteristic();
 		}
 
 		/** Characteristic.
@@ -338,17 +338,22 @@ namespace LinBox
 		//FIXME we shouldn't go thru long here as p may be larger than that.
 		// check if NTL has cast ZZp to gmp integers.
 		{
-			return c = static_cast<integer>(to_long(Element::modulus()));
+			std::stringstream s;
+			s << Element::modulus();
+			s >> c;
+			return c; 
+			//return c = static_cast<integer>(to_long(Element::modulus()));
 		}
 
 		size_t& characteristic(size_t & c) const
 		{
-			return c = (size_t)to_long(Element::modulus());
+			return c = (int64_t)to_long(Element::modulus());
 		}
 
 		integer characteristic() const
 		{
-			return static_cast<integer>(to_long(Element::modulus()));
+			integer c;
+			return characteristic(c); 
 		}
 
 		/** Multiplicative Inverse.
@@ -458,7 +463,7 @@ namespace LinBox
 						 const integer& seed = 0) :
 			_size(size), _seed(seed)
 		{
-			if (_seed == integer(0)) _seed = integer(time(NULL));
+			if (_seed == integer(0)) _seed = int64_t(time(NULL));
 
 			integer cardinality;
 			F.cardinality(cardinality);
@@ -471,7 +476,7 @@ namespace LinBox
 #endif // TRACE
 
 			// Seed random number generator
-			NTL::SetSeed(NTL::to_ZZ(static_cast<long>(_seed)));
+			NTL::SetSeed(NTL::to_ZZ(static_cast<int32_t>(_seed)));
 		}
 
 		// UnparametricRandIter<NTL::ZZ_p>(const NTL_ZZ_p& R) :
@@ -491,7 +496,7 @@ namespace LinBox
 				return x = NTL::random_ZZ_p();
 			}
 			else {
-				return x = NTL::to_ZZ_p(NTL::RandomBnd(static_cast<long>(_size)));
+				return x = NTL::to_ZZ_p(NTL::RandomBnd(static_cast<int32_t>(_size)));
 			}
 		}
 
