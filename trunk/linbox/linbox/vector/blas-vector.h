@@ -34,6 +34,7 @@
 #ifndef __LINBOX_vector_blas_vector_H
 #define __LINBOX_vector_blas_vector_H
 
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-tags.h"
 #include "linbox/field/hom.h"

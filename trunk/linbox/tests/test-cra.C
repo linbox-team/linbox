@@ -29,6 +29,7 @@
  * @test cra algorithms
  */
 
+#include <givaro/zring.h>
 #include "linbox/integer.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/cra-domain.h"
@@ -39,7 +40,6 @@
 #include "linbox/algorithms/cra-full-multip.h"
 #include "linbox/algorithms/cra-full-multip-fixed.h"
 
-#include <givaro/zring.h>
 
 #define _LB_REPEAT(command) \
 do { for (size_t i = 0 ; pass && i < iters ; ++i) {  command } } while(0)

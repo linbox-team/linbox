@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-domain-seq.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <29 May 13 16:05:20 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <29 Jun 15 18:59:17 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -29,12 +29,13 @@
 
 #ifndef __LINBOX_sequential_cra_H
 #define __LINBOX_sequential_cra_H
+#include "linbox/linbox-config.h"
 #include "linbox/util/timer.h"
-#include <stdlib.h>
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/vector/blas-vector.h"
 #include <utility>
+#include <stdlib.h>
 #include "linbox/util/commentator.h"
 
 //$define _LB_CRATIMING

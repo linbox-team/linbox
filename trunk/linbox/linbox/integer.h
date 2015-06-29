@@ -41,8 +41,8 @@
 #ifndef __LINBOX_integer_H
 #define __LINBOX_integer_H
 
+#include <givaro/givconfig.h>
 #include "linbox/linbox-config.h"
-// #include <givaro/givconfig.h>
 #include <gmp++/gmp++.h>
 
 
