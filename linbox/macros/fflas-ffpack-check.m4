@@ -78,6 +78,9 @@ for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
        CXXFLAGS="${BACKUP_CXXFLAGS} ${FFLAS_FFPACK_CFLAGS}"
        LIBS="${BACKUP_LIBS} ${FFLAS_FFPACK_LIBS}"
 
+       echo "${CXXFLAGS}"
+       echo "${LIBS}"
+
        AC_TRY_LINK(
        [#include "fflas-ffpack/fflas-ffpack.h"],
        [FFLAS::FFLAS_TRANSPOSE a;],

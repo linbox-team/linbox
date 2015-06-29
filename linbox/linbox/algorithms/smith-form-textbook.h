@@ -43,12 +43,12 @@ namespace LinBox
 	public:
 		const Field &field() const { return _MD.field(); }
 		SmithFormTextbookDomain(const MatrixDomain &MD) : _MD(MD) {}
-		SmithFormTextbookDomain(const SmithFormDirectDomain &D) : _MD(D._MD) {}
+		SmithFormTextbookDomain(const SmithFormTextbookDomain &D) : _MD(D._MD) {}
 
 	private:
 		void swapRows(Rep &A, int n, int a, int b) const
 		{
-			for (int i = n; i < A.coldim(); i++)
+			for (size_t i = n; i < A.coldim(); i++)
 			{
 				Element tmp1, tmp2;
 
@@ -62,7 +62,7 @@ namespace LinBox
 
 		void swapCols(Rep &A, int n, int a, int b) const
 		{
-			for (int i = n; i < A.rowdim(); i++)
+			for (size_t i = n; i < A.rowdim(); i++)
 			{
 				Element tmp1, tmp2;
 
@@ -90,11 +90,11 @@ namespace LinBox
 			field().dxgcd(g,s,t,u,v,a,b);
 		}
 
-		bool findPivot(Rep &A, int n) const
+		bool findPivot(Rep &A, size_t n) const
 		{
-			for (int i = n; i < A.rowdim(); i++)
+			for (size_t i = n; i < A.rowdim(); i++)
 			{
-				for (int j = n; j < A.coldim(); j++)
+				for (size_t j = n; j < A.coldim(); j++)
 				{
 					Element tmp;
 					A.getEntry(tmp, i, j);
@@ -119,7 +119,7 @@ namespace LinBox
 		{
 			bool modified = false;
 
-			for (int i = n+1; i < A.rowdim(); i++)
+			for (size_t i = n+1; i < A.rowdim(); i++)
 			{
 				Element nn, in;
 
@@ -133,7 +133,7 @@ namespace LinBox
 					Element s, t, u, v;
 					dxgcd(s, t, u, v, nn, in);
 
-					for (int j = n; j < A.coldim(); j++)
+					for (size_t j = n; j < A.coldim(); j++)
 					{
 						Element nj, ij;
 
@@ -162,7 +162,7 @@ namespace LinBox
 		{
 			int modified = false;
 
-			for (int i = n+1; i < A.coldim(); i++)
+			for (size_t i = n+1; i < A.coldim(); i++)
 			{
 				Element nn, ni;
 
@@ -176,7 +176,7 @@ namespace LinBox
 					Element s, t, u, v;
 					dxgcd(s, t, u, v, nn, ni);
 
-					for (int j = n; j < A.rowdim(); j++)
+					for (size_t j = n; j < A.rowdim(); j++)
 					{
 						Element jn, ji;
 
@@ -207,7 +207,7 @@ namespace LinBox
 
 			size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
 
-			for (int i = 0; i < (int)dim-1; i++)
+			for (size_t i = 0; i < dim-1; i++)
 			{
 				Element tmp1, tmp2;
 
@@ -246,14 +246,14 @@ namespace LinBox
 
 			do
 			{
-				for (int n = 0; n < dim && findPivot(B, n); n++)
+				for (size_t n = 0; n < dim && findPivot(B, n); n++)
 				{
 					eliminateCol(B, n);
 					while(eliminateRow(B, n) && eliminateCol(B, n));
 				}
 			} while(fixDiagonal(B));
 
-			for (int i = 0; i < dim; i++)
+			for (size_t i = 0; i < dim; i++)
 			{
 				Element tmp;
 				B.getEntry(tmp, i, i);
