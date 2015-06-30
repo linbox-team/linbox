@@ -252,7 +252,7 @@ size_t& rank(size_t& r) const
 	r = 0; 
 	Element x; field().init(x);
 	for (size_t i = 0; i < rowdim(); ++i) 
-		if (not field().isZero(getEntry(x,i,i))) r++;
+		if (! field().isZero(getEntry(x,i,i))) r++;
 	return r;
 }
 
@@ -279,13 +279,13 @@ Matrix& solveMPRight(Matrix& Y, const Matrix& X) const
 	Element d; field().init(d);
 	Y.zero();
 	for (size_t i = 0; i < coldim(); ++ i) 
-	{	if ( not field().isZero( getEntry(x, i, i) ) );
+	{	if ( ! field().isZero( getEntry(x, i, i) ) )
 		{// Todo: do this as a matrix (or vector) level operation	
 			field().inv(d, x);
 			for (size_t j = 0; j < X.coldim(); ++ j) 
 				Y.setEntry(i,j, field().mul(y, d, X.getEntry(x, i, j)));
 		/* this causes a deallocation error ??
-		{	Matrix Xrow(X, i, 0, 1, coldim());
+			Matrix Xrow(X, i, 0, 1, coldim());
 			Matrix Yrow(Y, i, 0, 1, coldim());
 			// there should be a scalar mul!
 			BlasMatrix<Field> S(field(), 1, 1); 
@@ -304,13 +304,13 @@ Matrix& solveMPLeft(Matrix& Y, const Matrix& X) const
 	Element d; field().init(d);
 	Y.zero();
 	for (size_t j = 0; j < rowdim(); ++ j) 
-	{	if ( not field().isZero( getEntry(x, j, j) ) );
+	{	if (! field().isZero( getEntry(x, j, j) ) )
 		{// Todo: do this as a matrix (or vector) level operation	
 			field().inv(d, x);
 			for (size_t i = 0; i < X.rowdim(); ++ i) 
 				Y.setEntry(i,j, field().mul(y, d, X.getEntry(x, i, j)));
 		/* this causes a deallocation error ??
-		{	Matrix Xcol(X, 0, j, rowdim(), 1);
+			Matrix Xcol(X, 0, j, rowdim(), 1);
 			Matrix Ycol(Y, 0, j, rowdim(), 1);
 			BlasMatrix<Field> S(field(), 1, 1); 
 			S.setEntry(0,0,field().invin(x));
@@ -353,7 +353,7 @@ BlasMatrix<Field>& nullspaceBasisRight(BlasMatrix<Field>& N) const
 	Element x; field().init(x);
 	size_t k = 0;
 	for (size_t i = 0; i < N.coldim(); ++i) 
-	{	if (field().isZero( getEntry(x,i,i) )); 
+	{	if (field().isZero( getEntry(x,i,i) )) 
 			N.setEntry(i,k++, field().one);
 
 	}
@@ -366,7 +366,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 	Element x; field().init(x);
 	size_t k = 0;
 	for (size_t i = 0; i < N.rowdim(); ++i) 
-	{	if (field().isZero( getEntry(x,i,i) )); 
+	{	if (field().isZero( getEntry(x,i,i) ))
 			N.setEntry(i,k++, field().one);
 
 	}

@@ -43,10 +43,10 @@
 
 #include "linbox/linbox-config.h"
 
+#include <givaro/givrational.h>
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
-#include "linbox/field/gmp-rational.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/matrix/sparse-matrix.h"
@@ -500,19 +500,19 @@ bool testRationalDetGen (size_t n, int iterations)
 
 	for (int i = 0; i < iterations; ++i) {
 		commentator().startIteration ((unsigned int)i);
-		GMPRationalField Q;
-		SparseMatrix<GMPRationalField > A (Q, n, n);
-		BlasMatrix <GMPRationalField > BB(Q, n, n);
+		QField<Rational> Q;
+		SparseMatrix<QField<Rational> > A (Q, n, n);
+		BlasMatrix <QField<Rational> > BB(Q, n, n);
 
-	 	GMPRationalField::Element pi(1,1);
- 		GMPRationalField::Element det_A, det_B,det_A_H, det_B_H, det_A_B, det_B_B, det_A_E, det_B_E;
+	 	QField<Rational>::Element pi(1,1);
+ 		QField<Rational>::Element det_A, det_B,det_A_H, det_B_H, det_A_B, det_B_B, det_A_E, det_B_E;
 
  		for (unsigned int j = 0; j < n; ++j) {
 			integer tmp_n;
 	 		integer tmp_d;
 			integer::nonzerorandom (tmp_n, 20*i + 1);
  			integer::nonzerorandom (tmp_d, 20*i + 1);
-			GMPRationalField::Element tmp;
+			QField<Rational>::Element tmp;
 			Q.init(tmp,tmp_n,tmp_d);
 			A.setEntry(j,j,tmp);
 			BB.setEntry(j,j,tmp);
