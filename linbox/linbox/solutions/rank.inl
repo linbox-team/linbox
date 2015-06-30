@@ -497,7 +497,7 @@ namespace LinBox
 			const Field& F = A.field();
 			integer a,c; F.cardinality(a); F.characteristic(c);
 			if (a != c) {
-				unsigned long extend = (unsigned long)Givaro::FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
+				uint64_t extend = (uint64_t)Givaro::FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 				if (extend > 1) {
 					commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
 					Givaro::Extension<Field> EF( F, extend);
@@ -509,10 +509,10 @@ namespace LinBox
 					rank(r, A, tag, Method::Wiedemann(m));
 			}
 			else {
-				unsigned long extend = (unsigned long)Givaro::FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
+				uint64_t extend = (uint64_t)Givaro::FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 				if (extend > 1) {
 					commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
-					const Givaro::GFqDom<int64_t> EF( (unsigned long)c, extend);
+					const Givaro::GFqDom<int64_t> EF( (uint64_t)c, extend);
 					typedef typename Blackbox::template rebind< Givaro::GFqDom<int64_t> >::other FBlackbox;
 					FBlackbox Ap(A, EF);
 					rank(r, Ap, tag, Method::Wiedemann(m));
