@@ -791,15 +791,15 @@ namespace LinBox
 		typedef typename _Matrix::Field           Field;
 		typedef typename Field::Element         Element;    //!< Element type
 		typedef typename _Matrix::Rep               Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
-		typedef BlasSubmatrix<typename _Matrix::Self_t>              Self_t;         //!< Self type
+		typedef BlasSubmatrix<_Matrix>              Self_t;         //!< Self type
 		typedef const BlasSubmatrix<typename _Matrix::constSelf_t>   constSelf_t;    //!< Self type (const)
 
 		typedef typename Rep::pointer           pointer;    //!< pointer type to elements
 		typedef const pointer             const_pointer;    //!< const pointer type
                 typedef Self_t                    subMatrixType;    //!< Submatrix type
                 typedef constSelf_t          constSubMatrixType;    //!< Submatrix type (const)
-                typedef BlasMatrix<Field,Rep>             matrixType;    //!< matrix type
-                typedef const BlasMatrix<Field,Rep>  constMatrixType;    //!< matrix type (const)
+                typedef typename _Matrix::Self_t     matrixType;    //!< non const matrix type
+                typedef typename _Matrix::constSelf_t  constMatrixType;    //!< matrix type (const)
                 typedef matrixType                     blasType;    //!< blas matrix type
                 typedef BlasVector<Field,Rep>        vectorType;    //!< blas matrix type
 

@@ -311,7 +311,6 @@ namespace LinBox
 		_use_fflas = Protected::checkBlasApply(field(), _col);
 	}
 
-
 	template < class _Field, class _Rep >
 	template <class Matrix>
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const Matrix &A) :

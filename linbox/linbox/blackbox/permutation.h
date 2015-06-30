@@ -45,7 +45,11 @@ namespace LinBox
 	  \ingroup blackbox
 	 */
 	template<class _Field>
-	class Permutation : public  FIBB<_Field> {
+	class Permutation
+#if 0
+		 : public  FIBB<_Field>
+#endif 
+	{
 		const _Field* _field;
 	public:
 		typedef Permutation<_Field>	Self_t;
@@ -163,7 +167,7 @@ namespace LinBox
 
 			return y;
 		}
-#if 1
+#if 0
 		Matrix& applyRight(Matrix& Y, const Matrix& X) const
 		{
 			for (size_t i = 0; i < rowdim(); ++i)
