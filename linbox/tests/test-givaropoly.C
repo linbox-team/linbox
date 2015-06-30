@@ -78,7 +78,7 @@ int main (int argc, char **argv)
 
 	commentator().start ("Testing GivaroPoly", "main", 10);
 	
-	if ( not testField (F, "GivaroPoly"))
+	if ( not testRing (F, "GivaroPoly"))
 		pass = false;
 	commentator().progress ();
 	
