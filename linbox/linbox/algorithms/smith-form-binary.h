@@ -243,7 +243,7 @@ namespace LinBox
 			// filter out primes in PRIME from lif
 			for ( Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
 
-				r.init (p,(unsigned long) *Prime_p);
+				r.init (p, *Prime_p);
 
 				do {
 					r.quoRem(quo,rem,fif,p);
