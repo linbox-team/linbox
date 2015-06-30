@@ -27,7 +27,7 @@
 
 #include <givaro/modular-int32.h>
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #ifndef LINBOX_MAX_INT
 #define LINBOX_MAX_INT 2147483647
 #endif
@@ -41,11 +41,11 @@
 namespace LinBox
 {
 
-	template< class Element>
+	template< class PIR>
 	class PIRModular;
 
-	template< class Element >
-	class ModularRandIter;
+	//template< class Element >
+	//class ModularRandIter;
 
 	template<class Field>
 	class DotProductDomain;
@@ -57,13 +57,13 @@ namespace LinBox
 	class MVProductDomain;
 
 	template <class Ring>
-	struct ClassifyRIng;
+	struct ClassifyRing;
 
 	template <class Element>
-	struct ClassifyRIng<PIRModular<Element> >;
+	struct ClassifyRing<PIRModular<Element> >;
 
 	template <>
-	struct ClassifyRIng<PIRModular<int32_t> >  {
+	struct ClassifyRing<PIRModular<int32_t> >  {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
@@ -81,7 +81,7 @@ namespace LinBox
 
 		typedef int32_t Element;
 
-		typedef ModularRandIter<int32_t> RandIter;
+		typedef Givaro::Modular<int32_t>::RandIter RandIter;
 
                 uint64_t _two_64;
             
@@ -216,7 +216,7 @@ namespace LinBox
 			GCD (a, a, b);
 
 
-			return a;
+			return normalIn(a); // is this efficient?
 		}
 
 		Element& normalIn (Element& a) const

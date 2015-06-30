@@ -62,39 +62,11 @@ using namespace LinBox;
  */
 
 template <class LocalPIR>
-class foobar {
-public:
-	typedef typename LocalPIR::Element first_argument_type;
-	typedef LocalPIR second_argument_type;
-	typedef void result_type;
-	void operator()(typename LocalPIR::Element& d, const LocalPIR& R) const
-	{
-		typename LocalPIR::Element x; R.init(x, 2);  R.mulin(x, d);
-		if (R.isUnit(d)) R.divin(d, d);
-		else R.gcd(d, d, x);
-	}
-};
-
-template<>
-class foobar<LinBox::Local2_32> {
-public:
-	typedef LinBox::Local2_32 LocalPIR;
-
-	typedef LocalPIR::Element first_argument_type;
-	typedef LocalPIR second_argument_type;
-	typedef void result_type;
-	void operator()(LocalPIR::Element& d, const LocalPIR& R) const
-	{
-		if(d != 0)    {
-			int r = 1;
-			while ( !(d & 1) ) {
-				d >>= 1;
-				r <<= 1;
-			}
-			d = (LocalPIR::Element)r;
-		}
-	}
-};
+typename LocalPIR::Element &
+normal(typename LocalPIR::Element &d, LocalPIR & R)
+{	typename LocalPIR::Element x; R.init(x, 2);  R.mulin(x, d);
+	return R.gcdin(d, x);
+}
 
 template <class LocalPIR>
 class pplt { // prime power less than
@@ -109,24 +81,6 @@ public:
 	//protected:
 	LocalPIR _R_;
 };
-
-#if 0
-template<>
-class pplt<LinBox::NTL_PID_zz_p> {
-public:
-	typedef LinBox::NTL_PID_zz_p LocalPIR;
-
-	pplt(LocalPIR R) : _R_(R){}
-	bool operator() (LocalPIR::Element a, LocalPIR::Element b)
-	{
-		if ( b == 0 ) return true;
-		else if ( a == 0 ) return false;
-		else return NTL::rep(a) <= NTL::rep(b);
-	}
-	//protected:
-	LocalPIR _R_;
-};
-#endif
 
 template <class LocalPIR>
 static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element>& d, string s)
@@ -151,7 +105,7 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 	// set up A equiv diag d.
 	Blackbox L (R, n, n), D (R, n, n), U (R, n, n), A (R, n, n);
 	for( i = 0; i < n; ++i )
-		{ D[i][i] = d[i]; L[i][i]=U[i][i]=1; }
+		{ R.assign(D[i][i], d[i]); L[i][i]=U[i][i]=1; }
 	for (i = 0; i < n; ++ i)
 		for ( j = 0; j < i; ++ j) {
 			D[i][j] = D[j][i] = 0;
@@ -180,7 +134,7 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 
 	// figure true invariants
 	pplt<LocalPIR> lt(R);
-	for_each(d.begin(), d.end(), bind2nd(foobar<LocalPIR>(), R));
+	for (int32_t i = 0; i < d.size(); ++i) normal(d[i], R);
 	stable_sort(d.begin(), d.end(), lt);
 	report << "True invariants: ";
 	VD.write (report, d) << endl; report.flush();
@@ -202,7 +156,7 @@ int main (int argc, char **argv)
 {
 	bool pass1 = true, pass2 = true;
 
-	static size_t n = 6;
+	static int64_t n = 6;
 	static size_t q = 10201; // 101^2
 	//static integer q = 10201; // 101^2
 
@@ -222,21 +176,21 @@ int main (int argc, char **argv)
 
   { // first local ring type
   // FIXME: incorrect for many prime powers.
-	typedef PIRModular<int32_t> LocalPID;
-	//typedef PIRModular<dense> LocalPID;
-	//LocalPID R (81); 
-	LocalPID R (q);
-	vector<LocalPID::Element> d(n);
+	typedef PIRModular<int32_t> LocalPIR;
+	//typedef PIRModular<dense> LocalPIR;
+	//LocalPIR R (81); 
+	LocalPIR R (q);
+	vector<LocalPIR::Element> d(n);
 
 	commentator().start ("Testing local smith on singular dense mat over PIRModular", "testSingular");
-	for( size_t i = 0; i < n; ++i ) d[i] = i;
-	pass1 = testLocalSmith<LocalPID> (R, d, "PIRModular<int32_t>");
+	for( int32_t i = 0; i < n; ++i ) R.init(d[i],i);
+	pass1 = testLocalSmith<LocalPIR> (R, d, "PIRModular<int32_t>");
 	commentator().stop ("testSingular");
 	if (not pass1) report << "PIRModular sing FAIL" << std::endl;
 
 	commentator().start ("Testing local smith on nonsingular dense mat over PIRModular", "testNonsingular");
-	for( size_t i = 0; i < n; ++i ) d[i] = i+1;
-	bool p = testLocalSmith<LocalPID> (R, d, "PIRModular<int32_t>");
+	for( int32_t i = 0; i < n; ++i ) R.init(d[i], i+1);
+	bool p = testLocalSmith<LocalPIR> (R, d, "PIRModular<int32_t>");
 	if (not p) report << "PIRModular nonsing FAIL" << std::endl;
 	commentator().stop ("testNonsingular");
 	pass1 = pass1 and p;
@@ -244,20 +198,20 @@ int main (int argc, char **argv)
   }
 
   { // second local ring type
-	typedef Local2_32 LocalPID;
-	LocalPID R;
-	vector<LocalPID::Element> d(n);
+	typedef Local2_32 LocalPIR;
+	LocalPIR R;
+	vector<LocalPIR::Element> d(n);
 
 	commentator().start ("Testing local smith on singular dense mat over Local2_32", "testSingular");
 	for( size_t i = 0; i < n; ++i )
-		d[i] = (LocalPID::Element) i;
-	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass2 = false;
+		d[i] = (LocalPIR::Element) i;
+	if (!testLocalSmith<LocalPIR> (R, d, "Local2_32")) pass2 = false;
 	commentator().stop ("testSingular");
 
 	commentator().start ("Testing local smith on nonsingular dense mat over Local2_32", "testNonsingular");
 	for( size_t i = 0; i < n; ++i )
-		d[i] = (LocalPID::Element) i+1;
-	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass2 = false;
+		d[i] = (LocalPIR::Element) i+1;
+	if (!testLocalSmith<LocalPIR> (R, d, "Local2_32")) pass2 = false;
 	commentator().stop ("testNonsingular");
 	if (not pass2) report << "Local2_32 FAIL" << std::endl;
   }

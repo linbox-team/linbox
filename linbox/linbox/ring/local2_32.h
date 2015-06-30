@@ -77,31 +77,39 @@ namespace LinBox
 			if(exp != 32) throw PreconditionFailed(LB_FILE_LOC,"exponent must be 32");
 		}
 
-		/*
-		   static inline Element& gcd(Element& c, Element& a, const Element& b)
-		   {   c = a | b; Exponent k = 0;
-		   while (! (c & 1)) {c >>= 1; ++k;}
-		//gcdin (k, b);
-		cout << "gcd called" << endl;
-		return c = 1 << k;
+		inline Element& gcd(Element& c, const Element& a, const Element& b) const
+		{   c = a | b; 
+			if (c == 0) return c;
+			uint32_t i = 0;
+		    while (! (c & 1)) {c >>= 1; ++i;}
+			return c = 1 << i;
 		}
 
-*/
+		inline Element& gcdin(Element& b, const Element& a) const
+		{	
+			Element c = b; return gcd(b, c, a); }
+			/*
+			if (isZero(b)) return b = a;
+			Element d = b;
+			Exponent k;
+			int32_t i;
+			for ( i = 0; (i < k) && (!(d&1)); ++ i) d >>= 1;
+			k = Exponent(i);
+			gcdin(k, a);
+			return b = 1 << k;
+		}
+		*/
 		// assume k is an exponent of 2.
 		inline Exponent& gcdin(Exponent& k, const Element& b) const
-		{   /*
-		       Element c = b >> k;
-		       c <<= k;
-		       Element d = b;
-		       std::cout << "c, b" << c << " " << b <<  "\n";
-		       if (c != b)  for(k = 0; ! (d & 1); ++k) d >>= 1;
-		       std::cout << "g, b =" << (int)k << " " << b << "\n";
-		       */
+		{   
 			Element d = b;
-			int i;
+			int32_t i;
 			for ( i = 0; (i < k) && (!(d&1)); ++ i) d >>= 1;
 			return k = Exponent(i);
 		}
+
+		inline bool isUnit(const Element& a) const
+		{   return a & 1;   }
 
 		inline bool isUnit(const Exponent& a) const
 		{   return a == 0;   }
@@ -111,10 +119,6 @@ namespace LinBox
 
 		inline bool isZero(const Exponent& a) const
 		{   return a >= 32;   }
-
-		// not used ...
-		inline bool isUnit(const Element& a) const
-		{   return a & 1;   }
 
 		//Element& div(Element& c, const Element& a, const Element& b) const
 		//{   return c = NTL::rep(a)/NTL::GCD(NTL::rep(a),NTL::rep(b));   }
@@ -194,86 +198,8 @@ namespace LinBox
 			d = u;
 			s = u1;
 			t = v1;
-			//std::cout << "XGCD is called: d, s, t, a, b, sa + tb: " << d << ' '
-			//	<< s << ' ' << t << ' ' << a << ' ' << b << ' ' << s * a + t * b << '\n';
 			return d;
 
-			/*
-
-			//Element  u, v, u0, v0, u1, v1, u2, v2, q, r;
-
-			Element u, v, q, r;
-
-			int64_t  u0, u1, u2;
-
-			u1 = 1; //v1 = 0;
-			u2 = 0; //v2 = 1;
-			u = a; v = b;
-
-			if ( b == 0) {
-			s = 1;
-			t = 0;
-			return d = a ;
-			}
-
-			if (v != 0) {
-			q = u / v;
-			//r = u % v;
-			r = u - q*v;
-			u = v;
-			v = r;
-			u0 = u2;
-			//v0 = v2;
-			u2 =  u1 - q * u2;
-			//v2 = v1- q * v2;
-			u1 = u0;
-			//v1 = v0;
-
-			}
-
-			while (v != 0) {
-			r = u;
-			while ( r >= v) {
-			r = u - v;
-
-			u2 = u1 - u2;
-			}
-			u0 = u2;
-			u1 = u0;
-			u = v;
-			v = r;
-
-
-			}
-
-
-			while (v != 0) {
-			q = u / v;
-			//r = u % v;
-			r = u - q*v;
-			u = v;
-			v = r;
-
-			u0 = u2;
-			//v0 = v2;
-			u2 =  u1 - q * u2;
-			//v2 = v1- q * v2;
-			u1 = u0;
-			//v1 = v0;
-			}
-
-
-			d = u;
-			s = u1;
-
-			t = ((int64_t) d - u1 * (int64_t) a) / (int64_t)b;
-
-			//std::cout << "XGCD is called: d, s, t, a, b, sa + tb: " << d << ' '
-			//<< s << ' ' << t << ' ' << a << ' ' << b << ' ' << s * a + t * b << '\n';
-			return d;
-
-
-			*/
 		}
 
 
