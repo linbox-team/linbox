@@ -86,6 +86,20 @@ namespace LinBox
 			return y;
 		}
 
+		Vector& apply (Vector& y, const Vector& x) const
+		{
+			linbox_check (y.size () == x.size ());
+			linbox_check (y.size () == _v.size ());
+
+			BitVector::word_iterator i = y.wordBegin ();
+			BitVector::const_word_iterator j1 = x.wordBegin (), j2 = _v.wordBegin ();
+
+			for (; i != y.wordEnd (); ++i, ++j1, ++j2)
+				*i = *j1 & *j2;
+
+			return y;
+		}
+
 		template <class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector& y, const InVector& x) const
 		{

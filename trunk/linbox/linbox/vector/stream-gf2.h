@@ -75,32 +75,7 @@
 #include <cmath>
 
 #include "linbox/field/gf2.h"
-#include "linbox/vector/bit-vector.h"
-#include "linbox/randiter/mersenne-twister.h"
 #include "linbox/vector/stream.h"
-
-namespace LinBox
-{
-	template<size_t bitsize>
-	struct MTrandomInt {
-		template<typename M32Twister>
-		uint32_t operator() (M32Twister& MT) const
-		{
-			return MT.randomInt();
-		}
-	};
-
-	template<>
-	struct MTrandomInt<64> {
-		template<typename M32Twister>
-		uint64_t operator() (M32Twister& MT) const
-		{
-			uint64_t tmp = MT.randomInt();
-			tmp <<=32;
-			return tmp += MT.randomInt();
-		}
-	};
-} 
 
 namespace LinBox
 { /*  RandomDenseStream */
@@ -156,8 +131,12 @@ namespace LinBox
 		typedef GF2 Field;
 		typedef _Vector Vector;
 
-		RandomSparseStreamGF2 (const GF2& , uint32_t seed, double p, size_t N, size_t M = 0) :
+		RandomSparseStreamGF2 (const GF2 &, uint32_t seed, double p, size_t N, size_t M = 0) :
 			MT (seed), _n (N), _m (M), _j (0)
+		{ setP (p); }
+
+		RandomSparseStreamGF2 (const GF2 &F, const GF2RandIter& r, double p, size_t N, size_t M = 0) :
+			MT (r.getMT()), _n (N), _m (M), _j (0)
 		{ setP (p); }
 
 		Vector &get (Vector &v);

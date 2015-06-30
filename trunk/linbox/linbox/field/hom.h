@@ -28,17 +28,16 @@
 #include "linbox/linbox-config.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/util/error.h"
-#include "linbox/field/gf2.h"
+#include <givaro/givcaster.h>
+#include <givaro/givrational.h>
+#include <givaro/modular.h>
+#include <givaro/zring.h>
 
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/NTL/ntl-ZZ.h"
 #endif //__LINBOX_HAVE_NTL
 
-#include <givaro/givrational.h>
-#include <givaro/givcaster.h>
-#include <givaro/givrational.h>
-#include <givaro/modular.h>
-#include <givaro/zring.h>
+#include "givaro/givrational.h"
 
 namespace LinBox
 {
@@ -452,7 +451,7 @@ namespace LinBox
 		{
 			return _target.convert(s,t);
 		}
-		GF2::BitReference preimage(GF2::BitReference s, const Elt& t) const
+		stdBitReference preimage(stdBitReference s, const Elt& t) const
 		{
 			int ts;
 			return s = _target.convert(ts, t);
@@ -519,7 +518,7 @@ namespace LinBox
 		{
 			return _target.convert(s, t);
 		}
-		GF2::BitReference preimage(GF2::BitReference s, const Elt& t) const
+		stdBitReference preimage(stdBitReference s, const Elt& t) const
 		{
 			bool ts;
 			return s = _target.convert(ts, t);

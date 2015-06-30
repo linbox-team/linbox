@@ -532,7 +532,7 @@ namespace LinBox
 		_row = m;
 		_col = n;
 		_rep.resize (m * n, val);
-		_ptr = &_rep[0];
+		_ptr = (m*n == 0 ?  0 : &(_rep[0]));
 #if 0
 		if (_ptr) {
 			if (m && n)

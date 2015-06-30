@@ -47,10 +47,9 @@
 #ifndef __LINBOX_field_vector_domain_gf2_INL
 #define __LINBOX_field_vector_domain_gf2_INL
 
+
 #include <iostream>
 #include <cctype>
-
-#include "linbox/vector/bit-vector.h"
 
 namespace LinBox
 { /*  VectorDomain */
@@ -366,8 +365,8 @@ namespace LinBox
 
 	// template<>
 	template <class Vector1, class Vector2>
-	inline GF2::BitVector::reference DotProductDomain<GF2>::dotSpecializedDD
-	(GF2::BitVector::reference res,
+	inline BitVector::reference DotProductDomain<GF2>::dotSpecializedDD
+	(BitVector::reference res,
 	 const Vector1 &v1,
 	 const Vector2 &v2) const
 	{
@@ -377,8 +376,8 @@ namespace LinBox
 
 	// template<>
 	template <class Vector1, class Vector2>
-	inline GF2::BitVector::reference DotProductDomain<GF2>::dotSpecializedDSP
-	(GF2::BitVector::reference res,
+	inline BitVector::reference DotProductDomain<GF2>::dotSpecializedDSP
+	(BitVector::reference res,
 	 const Vector1 &v1,
 	 const Vector2 &v2) const
 	{

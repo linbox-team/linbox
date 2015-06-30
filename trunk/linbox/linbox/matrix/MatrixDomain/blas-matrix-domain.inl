@@ -85,7 +85,6 @@ namespace LinBox { namespace Protected {
 		inline unsigned int operator() (const typename Matrix::Field                                &F,
 						BlasSubmatrix<Matrix>  &A) const
 		{
-
 			return (unsigned int) FFPACK::Rank(F,
 							   A.rowdim(), A.coldim(), A.getPointer(), A.getStride());
 		}
@@ -144,14 +143,12 @@ namespace LinBox
 	BlasMatrixDomainRank<Field, Matrix>::operator() (const Field   &F,
 							 const  Matrix  &A) const
 	{
-
 		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
 		typedef typename Matrix::matrixType       matrixType ;
 		matrixType A_c(A); // do copy
 		constSubMatrixType A_v(A_c);
 
 		return Protected::BlasMatrixDomainRank<Field, constSubMatrixType>()(F, A_v);
-
 	}
 
 	template<class Field, class Matrix>
