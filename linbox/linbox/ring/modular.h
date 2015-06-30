@@ -51,10 +51,11 @@
 #ifndef __LINBOX_ring_modular_H
 #define __LINBOX_ring_modular_H
 
+#include <givaro/modular.h>
+#include <givaro/gfq.h>
 #include <iostream>
 #include <climits>
 #include <cmath>
-#include <givaro/modular.h>
 
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
@@ -85,6 +86,13 @@ namespace LinBox
 	{
 		typedef RingCategories::ModularTag categoryTag;
 	};
+
+        template<typename XXX>
+        struct ClassifyRing<Givaro::GFqDom<XXX>> {
+                typedef RingCategories::ModularTag categoryTag;
+        };
+
+
 
 
 	/*! Specialization of FieldAXPY for parameterized modular field */
