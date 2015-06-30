@@ -55,7 +55,7 @@ namespace LinBox
 	public :
 		NTL_zz_pEX_Initialiser( const Integer & q, size_t e = 1) {
 			if ( q > 0 )
-				NTL::zz_p::init(q); // it's an error if q not prime
+				NTL::zz_p::init(static_cast<int64_t>(q)); // it's an error if q not prime
 			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((long) e);
 			NTL::zz_pE::init(irredPoly);
 		}

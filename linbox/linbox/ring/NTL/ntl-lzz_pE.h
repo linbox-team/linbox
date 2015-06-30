@@ -165,10 +165,10 @@ namespace LinBox
 		}
 
 		NTL::zz_pX & init(NTL::zz_pX & f, integer n, int e) const
-		{	long base = characteristic();
+		{	integer base = characteristic();
 			NTL::zz_pX x; SetCoeff(x, 1);
 			if ( n != 0 and e > 0 )
-				f = n%base + x*init(f, n/base, e-1);
+				f = static_cast<int64_t>(n%base) + x*init(f, n/base, e-1);
 			return f;
 		}
 
@@ -184,12 +184,12 @@ namespace LinBox
         integer & convert(integer & x, const Element & y) const
 	    {
 			NTL::zz_pX poly = rep(y);
-			long base = characteristic();
+			integer base = characteristic();
 			long i = deg(poly)+1;
 			x = 0;
 			for( ; i-- ; ) {
 				x *= base;
-				x +=  NTL::to_long(rep(coeff(poly, i)));
+				x +=  static_cast<int64_t>(NTL::to_long(rep(coeff(poly, i))));
 			}
 			return x;
 		}
@@ -198,7 +198,7 @@ namespace LinBox
 		{	return c = characteristic(); }
 		integer characteristic () const
 		{
-			return static_cast<integer>(NTL::zz_p::modulus());
+			return static_cast<int64_t>(NTL::zz_p::modulus());
 		}
 
 
@@ -212,10 +212,10 @@ namespace LinBox
 
 		integer cardinality() const
 		{
-			int e = exponent();
-			long p = characteristic();
+			int32_t e = exponent();
+			int64_t p = characteristic();
 		    integer c(1);
-			for(int i = 0; i < e; ++i)
+			for(int32_t i = 0; i < e; ++i)
 				c *= p;
 			return c;
 		}

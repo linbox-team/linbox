@@ -67,12 +67,12 @@ namespace Givaro
 	template <>
 	NTL::zz_p& Caster(NTL::zz_p& x, const Integer& y)
 	{
-		return x = NTL::to_zz_p( y%NTL::zz_p::modulus() );
+		return x = NTL::to_zz_p( static_cast<int64_t>(y)%NTL::zz_p::modulus() );
 	}
 	template <>
 	NTL::zz_p& Caster(NTL::zz_p& x, const double& y)
 	{
-		return x = NTL::to_zz_p((long)(y)%NTL::zz_p::modulus());
+		return x = NTL::to_zz_p(long(y)%NTL::zz_p::modulus());
 	}
 
 	/** Conversion of field element to an Integer.
@@ -177,7 +177,7 @@ namespace LinBox
 		template <class ANY>
 		ANY& convert(ANY& x, const Element& y) const
 		{
-			return x = (ANY)(rep(y));
+			return Givaro::Caster(x,y);
 		}
 
 		static inline integer maxCardinality()

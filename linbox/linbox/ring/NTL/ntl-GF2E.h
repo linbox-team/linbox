@@ -57,7 +57,7 @@ namespace Givaro
 	//	NTL::GF2E& Givaro::ZRing<NTL::GF2E>::init (NTL::GF2E &x, const Integer &y) const
 	NTL::GF2E& Caster(NTL::GF2E &x, const Integer &y)
 	{
-		x=NTL::to_GF2E(static_cast<long>(y));
+		x=NTL::to_GF2E(static_cast<int64_t>(y));
 		return x;
 	}
 	template<>
@@ -79,7 +79,7 @@ namespace Givaro
 		x = 0;
 		for(i = deg(poly); i >= 0; --i) {
 			x <<= 1;
-			x += rep(coeff(poly, i));
+			x += static_cast<int64_t>(rep(coeff(poly, i)));
 		}
 		return x;
 	}
@@ -158,7 +158,7 @@ namespace LinBox
 		integer& cardinality(integer& c) const
 		{
 			c=1;
-			c<<= Element::degree();
+			c<<= static_cast<int64_t>(Element::degree());
 			return c;
 		}
 
