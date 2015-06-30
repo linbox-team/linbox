@@ -33,8 +33,9 @@ BASIC_HDRS =            \
     param-fuzzy.h       \
     gmp-rational.h      \
     modular.h           \
-    hom.h               \
     gf2.h               \
+    gf2.inl             \
+    hom.h               \
     map.h               \
     PIR-modular-int32.h \
     local2_32.h         \

@@ -27,50 +27,46 @@
 
 #include <utility>
 #include <algorithm>
-#ifndef __LINBOX_PERMUTATION_STORAGE
-// #include "linbox/vector/light_container.h"
-// #define __LINBOX_PERMUTATION_STORAGE LightContainer< long >
-#include <vector>
-#define __LINBOX_PERMUTATION_STORAGE std::vector< long >
-#endif
 
 #include "linbox/linbox-config.h"
 #include "linbox/linbox-tags.h"
-#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h" 
 #include "linbox/randiter/mersenne-twister.h"
+#include "linbox/blackbox/fibb.h"
 
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
 
-	/** \brief size is n.
+	/** \brief 
 
 	  \ingroup blackbox
-	 * @param Storage \ref LinBox dense or sparse vector of field elements
 	 */
-	template<class _Field, class _Storage = __LINBOX_PERMUTATION_STORAGE >
-	class Permutation : public  BlackboxInterface {
+	template<class _Field>
+	class Permutation : public  FIBB<_Field> {
 		const _Field* _field;
 	public:
-		typedef Permutation<_Field, _Storage>	Self_t;
-		typedef _Storage 			Storage;
-		typedef _Field				Field;
-		typedef typename Field::Element 	Element;
+		typedef Permutation<_Field>	Self_t;
+		typedef LightContainer<long>	Storage;
+		typedef _Field			Field;
+		typedef typename Field::Element	Element;
+		typedef BlasSubmatrix<BlasMatrix<Field> > Matrix;
 
 		/** Constructor from a vector of indices.
 		 * This constructor creates a permutation matrix based on a vector of indices
 		 * @param F
 		 * @param indices Vector of indices representing the permutation
+		 * Permutation P has 1 in the P_{i, _indices[i]} positions.
 		 */
 		Permutation (Storage & indices, const Field& F = Field()) :
 			_field(&F), _indices (indices)
 		{}
 
-		/** Constructor from a dimension.
-		 * This constructor creates an n x n permutation matrix, initialized to be the identity
-		 * @param n The dimension of the matrix to create
-		 * @param F
+		/** \brief n x n permutation matrix, initially the identity.
+		 * @param n The dimension of the matrix 
+		 * @param F field or ring
 		 */
 		Permutation (int n, const Field& F = Field()) :
 			_field(&F)
@@ -92,8 +88,10 @@ namespace LinBox
 				_indices[(size_t)i] = i;
 		}
 
-		void random(size_t n)
+		//void random(size_t n)
+		void random()
 		{
+			size_t n = rowdim();
 			identity((int)n);
 			MersenneTwister r((unsigned int)time(NULL));
 			// Knuth construction
@@ -165,12 +163,77 @@ namespace LinBox
 
 			return y;
 		}
+#if 1
+		Matrix& applyRight(Matrix& Y, const Matrix& X) const
+		{
+			for (size_t i = 0; i < rowdim(); ++i)
+			{
+				Matrix Yrow(Y, i, 0, 1, Y.coldim());
+				Matrix Xrow(X, _indices[i], 0, 1, X.coldim());
+				Yrow.copy(Xrow); // right kind of copy?
+			}
+			return Y; 
+		}
+		Matrix& applyLeft(Matrix& Y, const Matrix& X) const
+		{
+			for (size_t i = 0; i < coldim(); ++i)
+			{
+				Matrix Ycol(Y, 0, _indices[i], Y.rowdim(), 1);
+				Matrix Xcol(X, 0, i, X.rowdim(), 1);
+				Ycol.copy(Xcol); 
+			}
+			return Y; 
+		}
+		/* FIBB functions */
 
+		BBType bbTag() const { return permutation; }
 
+		size_t& rank(size_t& r) const 
+		{ return r = rowdim(); }
+
+		Element& det(Element& d) const
+		{	size_t b = 0, i, j, k;
+			Storage marks(_indices.size());
+			for (i = 0; i < _indices.size(); ++i) 
+			if (not marks[i]) 
+			{	for (k = 1, j = _indices[i]; i != j; ++k, j = _indices[j])
+				;  
+				b &= k;
+			}
+			return d = b&1 ? field().one : field().mOne; 
+		}
+		Matrix& solveRight(Matrix& Y, const Matrix& X) const
+		{	for (size_t i = 0; i < rowdim(); ++i)
+			{
+				Matrix Yrow(Y, _indices[i], 0, 1, Y.coldim());
+				Matrix Xrow(X, i, 0, 1, X.coldim());
+				Yrow.copy(Xrow); 
+			}
+			return Y; 
+		}
+		Matrix& solveLeft(Matrix& Y, const Matrix& X) const
+		{	for (size_t i = 0; i < coldim(); ++i)
+			{
+				Matrix Ycol(Y, 0, i, Y.rowdim(), 1);
+				Matrix Xcol(X, 0, _indices[i], X.rowdim(), 1);
+				Ycol.copy(Xcol); 
+			}
+			return Y; 
+		}
+		Matrix& nullspaceRandomRight(Matrix& N) const 
+		{	N.zero(); return N; }
+		Matrix& nullspaceRandomLeft(Matrix& N) const 
+		{	N.zero(); return N; }
+		BlasMatrix<Field>& nullspaceBasisRight(BlasMatrix<Field>& N) const
+		{	N.resize(rowdim(), 0); return N; }
+		BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
+		{	N.resize(0, coldim()); return N; }
+		/* end FIBB section */
+#endif
 
 		template<typename _Tp1>
 		struct rebind {
-			typedef Permutation<_Tp1, Storage> other;
+			typedef Permutation<_Tp1> other;
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
 				Ap->setStorage( A.getStorage() );
 			}
@@ -200,17 +263,30 @@ namespace LinBox
 		}
 
 		/**
-		 * Add a transposition to the matrix
+		 * this <-- transposition(i,j)*this
+		 * indices (i = 0, j = 1): 
+		 * 0 2 1 * 1 0 2 = 1 2 0
+		 * matrices (corresponding):
+		 * 1 0 0   0 1 0   0 1 0
+		 * 0 0 1 * 1 0 0 = 0 0 1
+		 * 0 1 0   0 0 1   1 0 0
 		 */
-		void permute (size_t row1, size_t row2)
+		void permute (size_t i, size_t j)
 		{
-			linbox_check (/*  row1 >= 0 &&*/ row1 < _indices.size ());
-			linbox_check (/*  row2 >= 0 &&*/ row2 < _indices.size ());
-			std::swap (_indices[row1], _indices[row2]);
-
+			linbox_check (/*  i >= 0 &&*/ i < _indices.size ());
+			linbox_check (/*  j >= 0 &&*/ j < _indices.size ());
+			std::swap (_indices[i], _indices[j]);
 		}
 
 		const Field& field() const { return *_field; }
+
+		//!@bug needs a read. (needed by test-blackbox.h)
+		std::istream &read(std::istream &os) 
+		{ return os; }
+
+		//!@bug needs a MM version
+		std::ostream &write(std::ostream &os) const
+		{ return write(os, Tag::FileFormat::Plain); }
 
 		std::ostream &write(std::ostream &os, LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Plain) const
 		{
@@ -293,7 +369,6 @@ namespace LinBox
 		}
 
 
-
 	Storage& setStorage(const Storage& s) { return _indices=s; }
 	const Storage& getStorage() const { return _indices; }
 	Storage& getStorage() { return _indices; }
@@ -308,7 +383,7 @@ namespace LinBox
 		if (i < 0) {identity(n); return; }
 		for (j = i+2; j < n and _indices[(size_t)i] <= _indices[(size_t)j]; ++j);
 		std::swap(_indices[(size_t)i], _indices[(size_t)j-1]);
-		reverse(_indices.begin() + i + 1, _indices.end());
+		std::reverse(_indices.begin() + i + 1, _indices.end());
 	}
 private:
 	// Vector of indices
