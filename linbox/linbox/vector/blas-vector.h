@@ -973,6 +973,14 @@ namespace LinBox { /*  traits */
 
 #include "blas-vector.inl"
 
+namespace LinBox {
+	template<class _Field>
+	using DenseSubvector = BlasSubvector<BlasVector<_Field> >;
+	
+	template<class _Field>
+	using DenseVector = BlasVector<_Field>;
+}
+
 #endif // __LINBOX_vector_blas_vector_H
 
 // Local Variables:

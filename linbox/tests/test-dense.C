@@ -67,13 +67,12 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
-// using long on purpose
 template <class Field>
 static bool testIdentity (Field &F, size_t n, int iterations = 1)
 {
-	typedef BlasVector<Field> Vector;
-	typedef BlasMatrix<Field> Base;
-	typedef BlasMatrix<Field>           Blackbox;
+	typedef DenseVector<Field> Vector;
+	typedef DenseMatrix<Field> Base;
+	typedef DenseMatrix<Field>           Blackbox;
 
 	commentator().start ("Testing identity apply", "testIdentity", (unsigned int)iterations);
 
@@ -154,9 +153,9 @@ static bool testIdentity (Field &F, size_t n, int iterations = 1)
 template <class Field>
 static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 {
-	typedef BlasVector<Field> Vector;
-	typedef BlasVector <Field> Polynomial;
-	typedef BlasMatrix <Field> Blackbox;
+	typedef DenseVector<Field> Vector;
+	typedef DenseVector <Field> Polynomial;
+	typedef DenseMatrix <Field> Blackbox;
 
 	commentator().start ("Testing Vandermonde apply", "testVandermonde", (unsigned int)iterations);
 
@@ -165,7 +164,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 
 	int i, j, k;
 
-	Blackbox V (F, n, n);
+	Blackbox V(F, n, n); 
 
 	Vector x(F,n), v(F,n), y(F,n), f(F,n);
 	typename Field::RandIter r (F);
@@ -259,13 +258,13 @@ static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 
 template <class Field>
 static bool testRandomLinearity ( const Field & F,
-				 VectorStream<BlasVector<Field> > &A_stream,
-				 VectorStream<BlasVector<Field> > &v1_stream,
-				 VectorStream<BlasVector<Field> > &v2_stream)
+				 VectorStream<DenseVector<Field> > &A_stream,
+				 VectorStream<DenseVector<Field> > &v1_stream,
+				 VectorStream<DenseVector<Field> > &v2_stream)
 {
 	commentator().start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
-	BlasMatrix<Field> A (F, A_stream);
+	DenseMatrix<Field> A (F, A_stream);
 
 	bool ret = testLinearity (A, v1_stream, v2_stream);
 
@@ -293,13 +292,13 @@ static bool testRandomLinearity ( const Field & F,
 
 template <class Field>
 static bool testRandomTranspose (const Field                                 &F,
-				 VectorStream<BlasVector<Field> > &A_stream,
-				 VectorStream<BlasVector<Field> > &v1_stream,
-				 VectorStream<BlasVector<Field> > &v2_stream)
+				 VectorStream<DenseVector<Field> > &A_stream,
+				 VectorStream<DenseVector<Field> > &v1_stream,
+				 VectorStream<DenseVector<Field> > &v2_stream)
 {
 	commentator().start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 
-	BlasMatrix<Field> A (F, A_stream);
+	DenseMatrix<Field> A (F, A_stream);
 
 	bool ret = testTranspose (F, A, v1_stream, v2_stream);
 
@@ -334,7 +333,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator().start("Dense matrix black box test suite", "BlasMatrix");
+	commentator().start("Dense matrix black box test suite", "DenseMatrix");
 
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
@@ -345,7 +344,7 @@ int main (int argc, char **argv)
 
 	if (!testIdentity    (F, n)) pass = false;
 	if (!testVandermonde (F, n)) pass = false;
-	BlasMatrix<Field> A(F, A_stream);
+	DenseMatrix<Field> A(F, A_stream);
 	if (!testBlackbox(A)) pass = false;
 	//if (!testRandomLinearity (F, A_stream, v1_stream, v2_stream)) pass = false;
 	//if (!testRandomTranspose (F, A_stream, v1_stream, v2_stream)) pass = false;

@@ -184,19 +184,16 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
- 
 		  Build_n_run("test-blas-domain",                  counter , flag);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-
+		  Build_n_run("test-blas-matrix",            counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
 // Block-ring is incompatible with all rings being commutative.  More likely a blocked matrix storage scheme would be designed as a matrix rep, so drop block-ring for now.
 //		  No_build_n_run("test-block-ring",                   counter , flag, "no non-commutative ring support currently");
-//#ifdef LINBOX_HAVE_OPENMP
-//#pragma omp section
-//#endif
-		  Build_n_runWarn("test-transpose",                   counter , flag, "sometimes, fails on Sparsematrix/getEntry");
-
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -412,6 +409,10 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
+		  Build_n_run("test-rational-solver",              counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
 		  Build_n_run("test-rat-charpoly",                 counter , flag);//, "infinite loop, cp responsible?")
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
@@ -425,14 +426,6 @@ int main(int argc, char* argv[])
 #pragma omp section
 #endif
 		  Build_n_run("test-scalar-matrix",                counter , flag);
-#ifdef LINBOX_HAVE_OPENMP
-#pragma omp section
-#endif
-		  Build_n_run("test-blas-matrix",            counter , flag);
-#ifdef LINBOX_HAVE_OPENMP
-#pragma omp section
-#endif
-		  No_build_n_run("test-toom-cook",            counter , flag, "one method does not work");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -468,11 +461,16 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-rational-solver",              counter , flag);
+		  No_build_n_run("test-toom-cook",            counter , flag, "one method does not work");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
 		  Build_n_run("test-trace",                        counter , flag);
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
+		  Build_n_runWarn("test-transpose",                   counter , flag, "sometimes, fails on Sparsematrix/getEntry");
+
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
