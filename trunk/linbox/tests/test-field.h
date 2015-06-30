@@ -31,6 +31,7 @@
 
 /*
 // top level test that doesn't use field_subtests.
+bool testRing
 bool testField
 
 // top level test that uses subtest testRandomIteratorStep.
@@ -126,17 +127,16 @@ bool reportError(string rep, bool& flag)
  * Return true on success and false on failure
  */
 
-template<class Field>
-bool testField (Field &F, const char *title, bool fieldp = true)
+template<class Ring>
+bool testRing (Ring &F, const char *title, bool fieldp = true)
 {
-	commentator().start (title, "testField", 5);
+	commentator().start (title, "testRing", 5);
 	ostream &report = commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	LinBox::integer p, q;
 	F.characteristic(p);
-	F.cardinality (q);
 	
-	typename Field::Element zero, one, mOne, two, mTwo, three, five, six, eight;
+	typename Ring::Element zero, one, mOne, two, mTwo, three, five, six, eight;
 	F.init(zero, (double)0); 
 	F.init(one, (double)1); 
 	F.init(mOne); F.neg(mOne,one);
@@ -161,12 +161,12 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 		F.init(eight, (double)8);
 	}
 		
-	typename Field::Element a, b, c, d, e, f;
+	typename Ring::Element a, b, c, d, e, f;
 	F.init(a,0.0); F.init(b,0.0); F.init(c,0.0); F.init(d,0.0); F.init(e,0.0); F.init(f,0.0);
 
-	report << " (Field self description: " << F.write (report) << ')' << endl;
-	report << "Field characteristic: " << p << endl;
-	//	report << "field Element 2: " << F.write (report, two) << endl;
+	report << " (Ring self description: " << F.write (report) << ')' << endl;
+	report << "Ring characteristic: " << p << endl;
+	//	report << "ring Element 2: " << F.write (report, two) << endl;
 
 	LinBox::integer n, m;
 	bool pass = true, part_pass = true;
@@ -207,7 +207,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	}
 
 	if (p > 0) {
-		typename Field::Element mOneFromCst;
+		typename Ring::Element mOneFromCst;
 		F.init(mOneFromCst, (p-1));
 
 		if ( !F.areEqual(F.mOne,mOneFromCst)) {
@@ -224,7 +224,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 #if 0  
 	// test of 0..card bijection
-	typename Field::RandIter r (F);
+	typename Ring::RandIter r (F);
 	r.random(a);
 	F.write ( report << "Initial Elt to convert: ", a) << endl;
 	F.convert(n, a);
@@ -234,7 +234,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	if (not F.areEqual(a, b)) part_pass = reportError( "F.init (b, F.convert(n, a)) != a", pass);
 
 #endif
-	// test of prime subfield bijection
+	// test of prime subring bijection
 	if (p <= 0)
 		n = 0;
 	else
@@ -249,7 +249,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
 
-	commentator().start ("\t--Testing field arithmetic");
+	commentator().start ("\t--Testing ring arithmetic");
 	part_pass = true;
 
 	F.add (a, three, two); F.write (report << "Result of 2 + 3: ", a) << endl;
@@ -283,21 +283,6 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	if (!F.areEqual (a, f) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of mul incorrect", pass);
 
-	F.inv (a, one); F.write (report << "Result of inverting 1: ", a) << endl;
-	F.assign (d, one);
-	F.invin (d); F.write (report << "Result of inverting 1 (inplace): ", d) << endl;
-
-	if (!F.areEqual (a, one) || !F.areEqual (d, a))
-		part_pass = reportError( "Results of inv incorrect", pass);
-
-	if ( F.isZero(two) ) F.assign(f, three); else F.assign(f, two);
-	F.div (a, f, f); F.write ( report << "Result of f/f: ", a) << endl;
-	F.assign(d, f);
-	F.divin (d, f); F.write ( report << "Result of f/f (inplace): ", d) << endl;
-
-	if (!F.areEqual (a, one) || !F.areEqual (d, a))
-		part_pass = reportError( "Results of div incorrect", pass);
-	
 	F.axpy (a, two, three, two); F.write ( report << "Result of axpy 2*3 + 2: ", a) << endl;
 	F.assign (d, two);
 	F.axpyin (d, two, three); F.write ( report << "Result of axpy 2*3 + 2 (inplace): ", d) << endl;
@@ -356,11 +341,65 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	 * .
 	 */
 
-	commentator().stop (MSG_STATUS (pass), (const char *) 0, "testField");
+	commentator().stop (MSG_STATUS (pass), (const char *) 0, "testRing");
 
 	return pass;
 }
 
+template<class Field>
+bool testField (Field &F, const char *title, bool fieldp = true)
+{
+	commentator().start (title, "testField", 5);
+	ostream &report = commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+
+	LinBox::integer p, q;
+	F.characteristic(p);
+	F.cardinality (q);
+
+        Field::Element two, three;
+        
+	if (p > 0)
+	{
+		F.init(two, (2 % p));
+		F.init(three, (3 % p));
+	}
+	else
+	{
+		F.init(two, (double)2);
+		F.init(three, (double)3);
+	}
+		
+
+
+	commentator().start ("\t--Testing field arithmetic");
+	part_pass = true;
+
+
+
+	F.inv (a, F.one); F.write (report << "Result of inverting 1: ", a) << endl;
+	F.assign (d, F.one);
+	F.invin (d); F.write (report << "Result of inverting 1 (inplace): ", d) << endl;
+
+	if (!F.areEqual (a, one) || !F.areEqual (d, a))
+		part_pass = reportError( "Results of inv incorrect", pass);
+
+	if ( F.isZero(two) ) F.assign(f, three); else F.assign(f, two);
+	F.div (a, f, f); F.write ( report << "Result of f/f: ", a) << endl;
+	F.assign(d, f);
+	F.divin (d, f); F.write ( report << "Result of f/f (inplace): ", d) << endl;
+
+	if (!F.areEqual (a, one) || !F.areEqual (d, a))
+		part_pass = reportError( "Results of div incorrect", pass);
+	
+	commentator().stop (MSG_STATUS (part_pass));
+	commentator().progress ();
+
+
+	commentator().stop (MSG_STATUS (pass), (const char *) 0, "testField");
+
+        return pass & testRing(F,title,fieldp);
+        
+}
 
 /** Tests of algebraic properties of rings and fields */
 
