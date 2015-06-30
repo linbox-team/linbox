@@ -31,10 +31,7 @@
 
 
 #include <time.h>
-//#ifdef __LINBOX_HAVE_NTL
-//#include "linbox/field/ntl-ZZ.h"
-//#endif
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
 #include "test-common.h"

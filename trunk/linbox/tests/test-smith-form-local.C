@@ -42,9 +42,8 @@
 #include "test-common.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/PIR-modular-int32.h"
-//#include "linbox/field/PIR-modular-double.h"
-#include "linbox/field/local2_32.h"
+#include "linbox/ring/PIR-modular-int32.h"
+#include "linbox/ring/local2_32.h"
 #include "linbox/algorithms/smith-form-local.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/util/timer.h"

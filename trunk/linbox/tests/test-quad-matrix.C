@@ -38,7 +38,7 @@
 
 #include <set>
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/blackbox/quad-matrix.h"
 
 #include "test-blackbox.h"

@@ -45,7 +45,7 @@
 #include "linbox/blackbox/permutation.h"
 #include "linbox/util/commentator.h"
 #include <givaro/modular.h>
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/direct-sum.h"

@@ -78,7 +78,7 @@ FFTSeeder  FFTgenerator;
 #include <linbox/field/givaro.h>
 #define LINBOX_EXTENSION_DEGREE_MAX 20
 #include <linbox/field/givaro.h>
-#include <linbox/field/modular.h>
+#include <linbox/ring/modular.h>
 #include <linbox/blackbox/zero-one.h>
 #include <linbox/blackbox/diagonal.h>
 #include <linbox/solutions/rank.h>

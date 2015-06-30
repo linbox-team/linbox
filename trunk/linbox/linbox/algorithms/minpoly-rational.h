@@ -27,10 +27,10 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 
 //#include "linbox/field/gmp-rational.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/algorithms/cra-domain.h"

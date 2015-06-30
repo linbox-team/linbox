@@ -33,9 +33,9 @@
 
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl.h"
+#include "linbox/ring/ntl.h"
 #endif
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-rank.h"
 #include "linbox/algorithms/last-invariant-factor.h"

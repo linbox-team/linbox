@@ -30,7 +30,7 @@
 
 #include <iostream>
 
-#include <linbox/field/modular.h>
+#include <linbox/ring/modular.h>
 #include <linbox/algorithms/echelon-form.h>
 #include <fflas-ffpack/ffpack/ffpack.h>
 

@@ -36,7 +36,7 @@
 #include <fstream>
 
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "test-blackbox.h"

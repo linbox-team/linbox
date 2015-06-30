@@ -50,7 +50,7 @@
 #include <queue>
 
 #include "linbox/field/gf2.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/vector/stream-gf2.h"
 
 #include "test-field.h"

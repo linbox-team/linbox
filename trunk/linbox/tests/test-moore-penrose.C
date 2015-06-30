@@ -37,7 +37,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/randiter/nonzero.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/matrix/sparse-matrix.h"

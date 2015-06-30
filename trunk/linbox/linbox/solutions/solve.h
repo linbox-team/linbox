@@ -793,7 +793,7 @@ namespace LinBox
 
 
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/algorithms/rational-cra.h"
 #include "linbox/algorithms/rational-cra-early-multip.h"
 #include "linbox/randiter/random-prime.h"

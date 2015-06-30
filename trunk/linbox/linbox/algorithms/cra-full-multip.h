@@ -37,7 +37,7 @@
 #include "linbox/vector/blas-vector.h"
 #include <utility>
 
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/algorithms/lazy-product.h"
 
 namespace LinBox

@@ -40,7 +40,7 @@
 
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/transpose.h"

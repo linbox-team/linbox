@@ -47,7 +47,7 @@
 #include "linbox/algorithms/blackbox-block-container.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 
 #include "test-common.h"
 

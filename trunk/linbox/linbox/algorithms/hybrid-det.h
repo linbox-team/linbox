@@ -30,11 +30,11 @@
 #include "linbox/util/debug.h"
 
 #include "linbox/matrix/sparse-matrix.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/last-invariant-factor.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"

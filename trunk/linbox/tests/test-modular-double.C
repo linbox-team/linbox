@@ -53,7 +53,7 @@
 
 #include <queue>
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 
 #include "test-common.h"
 #include "test-generic.h"

@@ -39,7 +39,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/field/image-field.h"
 
 #include "test-common.h"

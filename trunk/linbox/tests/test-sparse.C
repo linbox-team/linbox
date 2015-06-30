@@ -43,7 +43,7 @@
 
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/stream.h"

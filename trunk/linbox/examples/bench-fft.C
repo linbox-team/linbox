@@ -35,7 +35,7 @@ using namespace std;
 
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.h"
 #include "linbox/randiter/random-fftprime.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 
 using namespace LinBox;
 

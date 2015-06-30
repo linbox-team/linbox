@@ -46,7 +46,7 @@
 #include "linbox/matrix/matrix-traits.h"
 #include "linbox/util/matrix-stream.h"
 
-#include "linbox/field/modular.h" // just for checkBlasApply
+#include "linbox/ring/modular.h" // just for checkBlasApply
 #include <givaro/modular-balanced.h> // just for checkBlasApply
 
 //! @bug this does not belong here.

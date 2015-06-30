@@ -45,7 +45,7 @@
 //#include "linbox/linbox-config.h"
 #include "test-common.h"
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 //#include "linbox/field/givaro.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/util/commentator.h"

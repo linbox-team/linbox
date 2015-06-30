@@ -31,7 +31,7 @@
 #include <iostream>
 
 #include <linbox/integer.h>
-#include <linbox/field/PID-integer.h>
+#include <linbox/ring/PID-integer.h>
 #include <linbox/algorithms/rational-reconstruction-base.h>
 
 #include <linbox/util/matrix-stream.h>

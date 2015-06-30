@@ -21,8 +21,6 @@
 
 pkgincludesubdir=$(pkgincludedir)/field
 
-SUBDIRS=NTL Modular
-
 BASIC_HDRS =            \
     field-interface.h   \
     field-traits.h      \
@@ -32,30 +30,13 @@ BASIC_HDRS =            \
     envelope.h          \
     param-fuzzy.h       \
     gmp-rational.h      \
-    modular.h           \
     gf2.h               \
     gf2.inl             \
     hom.h               \
-    map.h               \
-    PIR-modular-int32.h \
-    local2_32.h         \
-    PID-integer.h
-
-NTL_HDRS =              \
-    ntl.h               \
-    PID-ntl-zz_p.h     \
-    PIR-ntl-ZZ_p.h
-
-if LINBOX_HAVE_NTL
-USE_NTL_HDRS = $(NTL_HDRS)
-endif
+    map.h               
 
 pkgincludesub_HEADERS =     \
-    $(BASIC_HDRS)           \
-    $(USE_NTL_HDRS)
+    $(BASIC_HDRS)           
 
 EXTRA_DIST =            \
-    $(NTL_HDRS)         \
-    field.doxy          \
-    integers.doxy       \
-    ntl.doxy
+    field.doxy          

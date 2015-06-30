@@ -52,18 +52,18 @@
 // defines template<> class BlasMatrixDomain<GF3> { ... };
 // ... and template<> BlasMatrix<GF3> {}
 #endif
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include <givaro/modular-balanced.h>
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl.h"
+#include "linbox/ring/ntl.h"
 #endif
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/randiter/nonzero.h"
 #include "linbox/util/commentator.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 // #include "linbox/algorithms/matrix-hom.h"
 
 #include "linbox/matrix/random-matrix.h"

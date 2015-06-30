@@ -31,7 +31,7 @@
 #include <iostream>
 
 #include <linbox/linbox-config.h>
-#include <linbox/field/PID-integer.h>
+#include <linbox/ring/PID-integer.h>
 #include <linbox/util/matrix-stream.h>
 #include <linbox/solutions/det.h>
 #include <linbox/algorithms/double-det.h>

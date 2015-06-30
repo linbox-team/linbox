@@ -37,7 +37,7 @@
  */
 
 #include <iostream>
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/util/timer.h"
 #include "linbox/integer.h"
 #include <algorithm>

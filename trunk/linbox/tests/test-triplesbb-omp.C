@@ -39,7 +39,7 @@
 #include <utility>
 #include <sstream>
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 // #include "linbox/blackbox/triplesbb-omp.h"
 // #include "linbox/blackbox/triplesbb.h"

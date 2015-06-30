@@ -26,7 +26,7 @@
 #ifndef __LINBOX_ntl_pid_zz_p_H
 #define __LINBOX_ntl_pid_zz_p_H
 
-#include "linbox/field/NTL/ntl-lzz_p.h"
+#include "linbox/ring/NTL/ntl-lzz_p.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include <NTL/ZZ.h>
@@ -46,7 +46,7 @@ namespace LinBox
 	};
 
 	/** \brief extend Wrapper of zz_p from NTL.  Add PID functions
-	  \ingroup field
+	  \ingroup ring
 	  */
 	struct NTL_PID_zz_p: public NTL_zz_p
 	{

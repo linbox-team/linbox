@@ -38,7 +38,7 @@
 //#define DEBUG
 
 #include <cassert>
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/linbox-config.h"
 #include "fflas-ffpack/fflas/fflas.h"
 #include "fflas-ffpack/ffpack/ffpack.h"
@@ -49,7 +49,6 @@
 
 
 #include <givaro/modular-balanced.h>
-#include "linbox/field/modular.h"
 #include "fflas-ffpack/utils/Matio.h"
 #include "test-common.h"
 

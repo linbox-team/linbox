@@ -31,7 +31,7 @@
 #include <vector>
 #include <utility>
 
-#include <linbox/field/modular.h>
+#include <linbox/ring/modular.h>
 #include <linbox/field/gf2.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/blackbox/zero-one.h>

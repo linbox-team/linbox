@@ -40,7 +40,7 @@
 #include <queue>
 
 #include "linbox/field/gf3.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 
 #include "test-field.h"
 

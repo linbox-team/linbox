@@ -4,7 +4,7 @@
 #include "linbox/matrix/polynomial-matrix.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/randiter/random-prime.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 
 #include "linbox/algorithms/polynomial-matrix/polynomial-matrix-domain.h"
 #include "linbox/algorithms/polynomial-matrix/order-basis.h"

@@ -35,7 +35,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "linbox/field/ntl.h"
+#include "linbox/ring/ntl.h"
 
 #include "test-field.h"
 

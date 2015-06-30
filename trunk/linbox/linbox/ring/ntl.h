@@ -1,4 +1,4 @@
-/* linbox/field/ntl.h
+/* linbox/ring/ntl.h
  * Copyright (C) 1999-2002 William J Turner,
  *               2001 Bradford Hovinen
  *
@@ -8,7 +8,7 @@
  * ------------------------------------
  * Modified by William J. Turner <wjturner@acm.org>. 4 April 2002.
  *
- * Broke NTL field wrappers into separate files.
+ * Broke NTL ring wrappers into separate files.
  * ------------------------------------
  *
  *
@@ -32,22 +32,22 @@
  *.
  */
 
-#ifndef __LINBOX_field_ntl_H
-#define __LINBOX_field_ntl_H
+#ifndef __LINBOX_ring_ntl_H
+#define __LINBOX_ring_ntl_H
 
-#include "linbox/field/NTL/ntl-RR.h"
-#include "linbox/field/NTL/ntl-ZZ_p.h"
-#include "linbox/field/NTL/ntl-ZZ.h"
-#include "linbox/field/NTL/ntl-ZZ_pX.h"
-#include "linbox/field/NTL/ntl-ZZ_pE.h"
-#include "linbox/field/NTL/ntl-lzz_p.h"
-#include "linbox/field/NTL/ntl-lzz_pX.h"
-#include "linbox/field/NTL/ntl-lzz_pE.h"
-#include "linbox/field/NTL/ntl-lzz_pEX.h"
-#include "linbox/field/NTL/ntl-GF2E.h"
+#include "linbox/ring/NTL/ntl-RR.h"
+#include "linbox/ring/NTL/ntl-ZZ_p.h"
+#include "linbox/ring/NTL/ntl-ZZ.h"
+#include "linbox/ring/NTL/ntl-ZZ_pX.h"
+#include "linbox/ring/NTL/ntl-ZZ_pE.h"
+#include "linbox/ring/NTL/ntl-lzz_p.h"
+#include "linbox/ring/NTL/ntl-lzz_pX.h"
+#include "linbox/ring/NTL/ntl-lzz_pE.h"
+#include "linbox/ring/NTL/ntl-lzz_pEX.h"
+#include "linbox/ring/NTL/ntl-GF2E.h"
 
 
-#endif // __LINBOX_field_ntl_H
+#endif // __LINBOX_ring_ntl_H
 
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

@@ -46,7 +46,7 @@
 #include "test-common.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/solutions/getentry.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"

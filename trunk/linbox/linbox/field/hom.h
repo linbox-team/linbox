@@ -26,7 +26,7 @@
 #define __LINBOX_hom_H
 
 #include "linbox/linbox-config.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/util/error.h"
 #include <givaro/givcaster.h>
 #include <givaro/givrational.h>
@@ -34,7 +34,7 @@
 #include <givaro/zring.h>
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/NTL/ntl-ZZ.h"
+#include "linbox/ring/NTL/ntl-ZZ.h"
 #endif //__LINBOX_HAVE_NTL
 
 #include "givaro/givrational.h"

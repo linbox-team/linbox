@@ -515,7 +515,7 @@ namespace LinBox
 	}
 } // end of LinBox namespace
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 //#include "linbox/field/givaro-zpz.h"
 
 #ifdef __LINBOX_HAVE_MPI

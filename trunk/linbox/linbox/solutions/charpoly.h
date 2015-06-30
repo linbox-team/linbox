@@ -320,7 +320,7 @@ namespace LinBox
 
 #else //  no NTL
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-full-multip.h"
 #include "linbox/algorithms/cra-early-multip.h"

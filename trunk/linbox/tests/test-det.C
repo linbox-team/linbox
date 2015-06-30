@@ -45,8 +45,8 @@
 
 #include <givaro/givrational.h>
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/modular.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/matrix/sparse-matrix.h"

@@ -32,7 +32,7 @@
 
 #include "linbox-config.h"
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "test-blackbox.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/blackbox/fibb.h"

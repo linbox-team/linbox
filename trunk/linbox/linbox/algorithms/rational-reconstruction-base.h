@@ -31,7 +31,7 @@
 #include <deque>
 #include <cmath>
 
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 
 namespace LinBox
 {

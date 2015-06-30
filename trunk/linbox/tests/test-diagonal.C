@@ -47,7 +47,7 @@
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/util/commentator.h"
 //#include "linbox/field/archetype.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/randiter/nonzero.h"
 //#include "linbox/solutions/minpoly.h"
 //#include "linbox/solutions/rank.h"

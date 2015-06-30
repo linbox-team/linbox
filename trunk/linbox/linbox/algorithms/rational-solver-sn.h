@@ -39,7 +39,7 @@
 #include "linbox/algorithms/vector-fraction.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/util/timer.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 
 namespace LinBox {
 

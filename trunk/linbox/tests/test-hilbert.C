@@ -37,7 +37,7 @@
 #include <fstream>
 
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/blackbox/hilbert.h"
 
 #include "test-common.h"

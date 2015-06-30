@@ -32,8 +32,7 @@
 
 
 
-//#include "linbox/field/ntl-ZZ.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include <time.h>
 #include "linbox/randiter/random-prime.h"
 #include "linbox/util/commentator.h"
