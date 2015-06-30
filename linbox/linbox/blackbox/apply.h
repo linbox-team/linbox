@@ -508,7 +508,7 @@ namespace LinBox
 				// prepare special CRT
 				Element g, s, q, two;
 				_q= _rns->getCRTmodulo();
-				_domain.init(q,_q);_domain.init(two,2UL);
+				_domain.init(q,_q);_domain.init(two,2);
 				_domain.xgcd(g, _inv_q, s, q, _prime);
 				if (_domain.compare(_inv_q, _domain.zero)<0 ) _domain.addin(_inv_q,_prime);
 				_domain.mul(_pq,_prime,q);

@@ -38,7 +38,9 @@
 #include <fstream>
 
 
-#include "linbox/field/givaro.h"
+#include "givaro/modular.h"
+#include "givaro/montgomery.h"
+#include "givaro/gfq.h"
 
 #include "test-common.h"
 #include "test-field.h"
@@ -80,9 +82,9 @@ int main (int argc, char **argv)
         Givaro::Modular< int16_t> F1 ( (q<256?q:integer(101)) ); // Does not work with q > 256
 	Givaro::Modular< int32_t> F2 (q);
 	Givaro::Montgomery< int32_t > F3 (39989);
-	Givaro::GFq F4 (q, 1);
-	Givaro::GFq F5 (11, e);
- 	Givaro::Extension<Givaro::GFq> F6 (F5, e );
+	Givaro::GFqDom<int64_t> F4 (q, 1);
+	Givaro::GFqDom<int64_t> F5 (11, e);
+ 	Givaro::Extension<Givaro::GFqDom<int64_t>> F6 (F5, e );
  	Givaro::Extension<> F7 (103, 4 );
         Givaro::Modular< Givaro::Log16> F8 ( (q<256?q:integer(101)) ); // Does not work with q > 256
 
@@ -101,8 +103,8 @@ int main (int argc, char **argv)
 	if (!runFieldTests (F1, "Givaro::Modular< int16_t>", (unsigned int)iterations, n, false)) pass = false;
 	if (!runFieldTests (F2, "Givaro::Modular< int32_t>", (unsigned int)iterations, n, false)) pass = false;
 	if (!runFieldTests (F3, "Givaro::Montgomery< int32_t >", (unsigned int)iterations, n, false)) pass = false;
-	if (!runFieldTests (F4, "Givaro::GFq (prime)", (unsigned int)iterations, n, false)) pass = false;
-	if (!runFieldTests (F5, "Givaro::GFq (simple extension)", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F4, "Givaro::GFqDom<int64_t> (prime)", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F5, "Givaro::GFqDom<int64_t> (simple extension)", (unsigned int)iterations, n, false)) pass = false;
 	if (!runFieldTests (F6, "Givaro::Extension (small polynomial extension)", (unsigned int)iterations, n, false)) pass = false;
 	if (!runFieldTests (F7, "Givaro::Extension (large polynomial extension)", (unsigned int)iterations, n, false)) pass = false;
 	if (!runFieldTests (F8, "GivaroLog13", (unsigned int)iterations, n, false)) pass = false;
@@ -116,8 +118,8 @@ int main (int argc, char **argv)
 	if (!testRandomIterator (F1,  "Givaro::Modular< int16_t>", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
 	if (!testRandomIterator (F2,  "Givaro::Modular< int32_t>", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
 	if (!testRandomIterator (F3,  "Givaro::Montgomery< int32_t >", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
-	if (!testRandomIterator (F4,  "Givaro::GFq (prime)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
-	if (!testRandomIterator (F5,  "Givaro::GFq (simple extension)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F4,  "Givaro::GFqDom<int64_t> (prime)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
+	if (!testRandomIterator (F5,  "Givaro::GFqDom<int64_t> (simple extension)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
 	if (!testRandomIterator (F6,  "Givaro::Extension (small polynomial extension)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
 	if (!testRandomIterator (F7,  "Givaro::Extension (large polynomial extension)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
 	if (!testRandomIterator (F1u,  "Givaro::Modular< uint32_t>(2)", (unsigned int)trials, (unsigned int)categories, (unsigned int)hist_level)) pass = false;
@@ -165,10 +167,10 @@ int main (int argc, char **argv)
 #endif
 
 #if TEST_ARCHETYPES
-	Givaro::GFq * K4g = new Givaro::GFq (101,1);
+	Givaro::GFqDom<int64_t> * K4g = new Givaro::GFqDom<int64_t> (101,1);
 	FieldArchetype K4(K4g);
 
-	if (!testField<FieldArchetype> (K4, "Testing archetype with envelope of Givaro::GFq prime field"))
+	if (!testField<FieldArchetype> (K4, "Testing archetype with envelope of Givaro::GFqDom<int64_t> prime field"))
 		pass = false;
 	delete K4g;
 #endif

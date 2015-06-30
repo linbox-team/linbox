@@ -48,8 +48,8 @@
 
 #include <cstdio>
 
-#include "linbox/field/modular.h"
-#include "linbox/field/givaro.h"
+#include "givaro/modular.h"
+#include "givaro/gfq.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/util/commentator.h"
@@ -402,7 +402,7 @@ int main (int argc, char **argv)
 	//else
 	{	q = 3; e = 10;
 
-		typedef Givaro::GFq Field;
+		typedef Givaro::GFqDom<int64_t> Field;
 		Field F (q, e);
 		srand ((unsigned)time (NULL));
 
