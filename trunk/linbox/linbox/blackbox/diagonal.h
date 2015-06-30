@@ -52,6 +52,9 @@
 #include "linbox/solutions/solution-tags.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/util/write-mm.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/blackbox/fibb.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -84,7 +87,8 @@ namespace LinBox
 	 * and partial template specialization.
 	 */
 	template<class Field, class Trait = typename VectorTraits<typename
-	LinBox::Vector<Field>::Dense>::VectorCategory > class Diagonal {
+	LinBox::Vector<Field>::Dense>::VectorCategory > 
+	class Diagonal {
 	private:
 		/// empty constructor
 		Diagonal () {}
@@ -94,12 +98,15 @@ namespace LinBox
 	  \brief Specialization of Diagonal for application to dense vectors
 	  */
 	template <class _Field>
-	class Diagonal<_Field, VectorCategories::DenseVectorTag> {
+	class Diagonal<_Field, VectorCategories::DenseVectorTag> 
+	: public FIBB<_Field> {
 		typedef Diagonal<_Field, VectorCategories::DenseVectorTag> Self_t;
 	public:
 
 		typedef _Field Field;
 		typedef typename Field::Element    Element;
+		typedef BlasSubmatrix<BlasMatrix<Field> > Matrix;
+
 
 		/// \brief cstor ready for a read.
 		Diagonal(const Field &F) :
@@ -123,6 +130,16 @@ namespace LinBox
 
 		template <class OutVector, class InVector>
 		OutVector &applyTranspose (OutVector &y, const InVector &x) const { return apply (y, x); }
+
+		Matrix& applyRight(Matrix& Y, const Matrix& X) const // Y = AX
+		{   MatrixDomain<Field> MD(field());
+		    return MD.mul(Y, *this, X);
+		}
+
+		Matrix& applyLeft(Matrix& Y, const Matrix& X) const // Y = AX
+		{   MatrixDomain<Field> MD(field());
+		    return MD.mul(Y, X, *this);
+		}
 
 		size_t rowdim(void) const { return _n; }
 
@@ -151,7 +168,7 @@ namespace LinBox
 		 *
 		 * could throw error if j != i, but now j is ignored.
 		 */
-		void setEntry (size_t i, size_t j, Element &x)
+		void setEntry (size_t i, size_t j, const Element &x)
 		{
 			_v[i] = x;
 		}
@@ -223,6 +240,138 @@ namespace LinBox
 
 		const BlasVector<Field>& getData() const { return _v; }
 		BlasVector<Field>& getData() { return _v; }
+
+/* FIBB functions */
+/* rank, det, solveRight, solveLeft, solveMPRight, solveMPLeft, 
+nullspaceRandomRight, nullspaceRandomLeft, nullspaceBasisRight, nullspaceBasisLeft */
+
+BBType bbTag() const { return diagonal; }
+
+size_t& rank(size_t& r) const
+{ // assuming square
+	r = 0; 
+	Element x; field().init(x);
+	for (size_t i = 0; i < rowdim(); ++i) 
+		if (not field().isZero(getEntry(x,i,i))) r++;
+	return r;
+}
+
+Element& det( Element& d) const
+{	Element x; field().init(x);
+	d = field().one;
+	for (size_t i = 0; i < rowdim(); ++i) 
+		field().mulin(d, getEntry(x,i,i));
+	return d;
+}
+
+Matrix& solveRight(Matrix& Y, const Matrix& X) const
+{	 return solveMPRight(Y, X);
+}
+
+Matrix& solveLeft(Matrix& Y, const Matrix& X) const
+{	 return solveMPLeft(Y, X);
+}
+
+Matrix& solveMPRight(Matrix& Y, const Matrix& X) const
+{	BlasMatrixDomain<Field> MD(field());
+	Element x; field().init(x);
+	Element y; field().init(y);
+	Element d; field().init(d);
+	Y.zero();
+	for (size_t i = 0; i < coldim(); ++ i) 
+	{	if ( not field().isZero( getEntry(x, i, i) ) );
+		{// Todo: do this as a matrix (or vector) level operation	
+			field().inv(d, x);
+			for (size_t j = 0; j < X.coldim(); ++ j) 
+				Y.setEntry(i,j, field().mul(y, d, X.getEntry(x, i, j)));
+		/* this causes a deallocation error ??
+		{	Matrix Xrow(X, i, 0, 1, coldim());
+			Matrix Yrow(Y, i, 0, 1, coldim());
+			// there should be a scalar mul!
+			BlasMatrix<Field> S(field(), 1, 1); 
+			S.setEntry(0,0,field().invin(x));
+			MD.mul(Yrow, S, Xrow);
+		*/
+		}
+	}
+	return Y;
+}
+
+Matrix& solveMPLeft(Matrix& Y, const Matrix& X) const
+{	BlasMatrixDomain<Field> MD(field());
+	Element x; field().init(x);
+	Element y; field().init(y);
+	Element d; field().init(d);
+	Y.zero();
+	for (size_t j = 0; j < rowdim(); ++ j) 
+	{	if ( not field().isZero( getEntry(x, j, j) ) );
+		{// Todo: do this as a matrix (or vector) level operation	
+			field().inv(d, x);
+			for (size_t i = 0; i < X.rowdim(); ++ i) 
+				Y.setEntry(i,j, field().mul(y, d, X.getEntry(x, i, j)));
+		/* this causes a deallocation error ??
+		{	Matrix Xcol(X, 0, j, rowdim(), 1);
+			Matrix Ycol(Y, 0, j, rowdim(), 1);
+			BlasMatrix<Field> S(field(), 1, 1); 
+			S.setEntry(0,0,field().invin(x));
+			MD.mul(Ycol, Xcol, S);
+		*/
+		}
+	}
+	return Y;
+}
+
+Matrix& nullspaceRandomRight(Matrix& N) const
+{	N.zero();
+	Element x; field().init(x);
+	for (size_t i = 0; i < rowdim(); ++ i) 
+	{	getEntry(x, i, i);
+		if (field().isZero(x))
+		{	Matrix Nrow(N, i, 0, 1, N.coldim());
+			Nrow.random();
+		}
+	}
+	return N;
+}
+
+Matrix& nullspaceRandomLeft(Matrix& N) const 
+{	N.zero();
+	Element x; field().init(x);
+	for (size_t i = 0; i < rowdim(); ++ i) 
+	{	getEntry(x, i, i);
+		if (field().isZero(x))
+		{	Matrix Ncol(N, 0, i, N.rowdim(), 1);
+			Ncol.random();
+		}
+	}
+	return N;
+}
+
+BlasMatrix<Field>& nullspaceBasisRight(BlasMatrix<Field>& N) const
+{	size_t n = coldim(), r; rank(r);
+	N.resize(rowdim(), n-r, field().zero);
+	Element x; field().init(x);
+	size_t k = 0;
+	for (size_t i = 0; i < N.coldim(); ++i) 
+	{	if (field().isZero( getEntry(x,i,i) )); 
+			N.setEntry(i,k++, field().one);
+
+	}
+	return N;
+}
+
+BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
+{	size_t m = rowdim(), r; rank(r);
+	N.resize(m-r, coldim(), field().zero);
+	Element x; field().init(x);
+	size_t k = 0;
+	for (size_t i = 0; i < N.rowdim(); ++i) 
+	{	if (field().isZero( getEntry(x,i,i) )); 
+			N.setEntry(i,k++, field().one);
+
+	}
+	return N;
+}
 
 	protected:
 
