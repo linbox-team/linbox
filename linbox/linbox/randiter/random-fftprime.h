@@ -174,7 +174,7 @@ namespace LinBox
                         //std::cout<<"rns bound: "<<bound<<std::endl;
                         //std::cout<<"2 valuation: "<<val<<std::endl;
                         //std::cout<<"prime bitmax: "<<_bits<<std::endl;
-                        for (int64_t b = (int64_t)_bits; b >= val; b--)
+                        for (int64_t b = (int64_t)_bits; b >= (int64_t)val; b--)
                                 // for (uint64_t l = (1UL << ((int64_t)_bits - b - 1)) + 1; l < (1UL << ((int64_t)_bits - b)); l +=2) {
                                 for (int64_t l = ((int64_t)1 << ((int64_t)_bits - b)) - 1; l >=1; l -=2) {
                                         tmp = ((int64_t)1 << b) * l + 1;

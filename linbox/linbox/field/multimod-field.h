@@ -146,7 +146,7 @@ namespace LinBox
 		const Givaro::Modular<double>& getBase(size_t i) const
 		{ return this->_fields[i]; }
 
-		const Givaro::Modular<double>::Residu_t getModulo(size_t i) const
+		Givaro::Modular<double>::Residu_t getModulo(size_t i) const
 		{ return this->_fields[i].characteristic();}
 
 

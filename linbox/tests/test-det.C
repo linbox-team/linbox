@@ -620,7 +620,7 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Givaro::Modular<int> F (q);
+	Givaro::Modular<int32_t> F (q);
 
 	commentator().start("Determinant test suite", "det");
 
