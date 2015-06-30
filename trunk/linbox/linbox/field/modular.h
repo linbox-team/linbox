@@ -197,6 +197,61 @@ namespace LinBox
 		Element _y;
 	};
 
+	/*! Specialization of FieldAXPY for  modular float */
+
+	template <>
+	class FieldAXPY<Givaro::Modular<float,float> > {
+	public:
+        typedef Givaro::Modular<float,float> Field;
+        typedef Field::Element Element;
+		typedef Element Abnormal;
+
+		FieldAXPY (const Field &F) :
+			_field(F), _y(F.zero)
+		{}
+		FieldAXPY (const FieldAXPY<Givaro::Modular<Element> > &faxpy) :
+			_field (faxpy._field), _y (faxpy._y)
+		{}
+
+		FieldAXPY<Field > &operator = (const FieldAXPY &faxpy)
+		{
+			const_cast<Field&>(_field) = faxpy._field;
+			_y = faxpy._y;
+			return *this;
+		}
+
+		inline Element& mulacc (const Element &a, const Element &x)
+		{
+			return accumulate(a * x);
+		}
+
+		inline Element& accumulate (const Element &t)
+		{
+			return _y+=t;
+		}
+
+		inline Element &get (Element &y) { return field().assign(y,field().reduce(_y)); }
+        
+        
+
+		inline FieldAXPY &assign (const Element y)
+		{
+			field().assign(_y,y);
+			return *this;
+		}
+
+		inline void reset() {
+			field().assign(_y, field().zero);
+		}
+
+		inline const Field &field() const { return _field; }
+
+	protected:
+
+		const Field &_field;
+		Element _y;
+	};
+
 
 /*
 	template <>

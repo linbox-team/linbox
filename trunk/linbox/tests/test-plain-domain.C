@@ -63,7 +63,7 @@
 //#include "linbox/blackbox/matrix-blackbox.h"
 
 //#include "linbox/solutions/det.h"
-#include "linbox/matrix/plain-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 
 #include "test-matrix-domain.h"
 

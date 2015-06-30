@@ -151,7 +151,7 @@ public:
 	TODO more docs, discuss row/col slicing
 */
 template <class _Domain>
-class Sliced : public DenseMatrix<SlicedBase<typename _Domain::Word_T> >
+class Sliced : public DenseMat<SlicedBase<typename _Domain::Word_T> >
 {
 public:
 	typedef _Domain Domain;
@@ -159,7 +159,7 @@ public:
 	typedef typename Domain::Word_T SlicedWord;
 	typedef SlicedBase<SlicedWord> SlicedUnit;
 
-	typedef DenseMatrix<SlicedBase<typename _Domain::Word_T> > Base_T;
+	typedef DenseMat<SlicedBase<typename _Domain::Word_T> > Base_T;
 	using Base_T::rawBegin;
 	using Base_T::rawEnd;
 	using Base_T::rowBegin;

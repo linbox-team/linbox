@@ -10,7 +10,7 @@
 /*! @file matrix/Sliced3/dense-submatrix.h
  * @ingroup matrix
  * @brief Representation of a submatrix of a dense matrix, not resizeable.
- * This matrix type conforms to the \c LinBox::DenseMatrixBase interface.
+ * This matrix type conforms to the \c LinBox::DenseMat interface.
  * \c LinBox::BlasMatrix is an example of DenseSubmatrix.
  */
 
@@ -39,14 +39,14 @@ namespace LinBox
 	 * and all submatrices of it become invalid.
 	 *
 	 * Allocating:
-	 * DenseMatrix A(2, 3); // allocation of mem for 6 entries at construction
-	 * DenseMatrix B; B.init(10, 10); // default constr and subsequent allocation for 100 entries.
+	 * DenseMat A(2, 3); // allocation of mem for 6 entries at construction
+	 * DenseMat B; B.init(10, 10); // default constr and subsequent allocation for 100 entries.
 	 *
 	 * Allocation of memory plus entry initialization:
-	 * // a meaningful value of DenseMatrix::Entry x is set by a field or matrix domain.
-	 * DenseMatrix A(10, 10, x); 
-	 * DenseMatrix B: B.init(10, 10, x); 
-	 * DenseMatrix C(A); // allocation at copy construction.  A could be a submatrix of another.
+	 * // a meaningful value of DenseMat::Entry x is set by a field or matrix domain.
+	 * DenseMat A(10, 10, x); 
+	 * DenseMat B: B.init(10, 10, x); 
+	 * DenseMat C(A); // allocation at copy construction.  A could be a submatrix of another.
 	 * A.read(istream)
 	 *
 	 * Nonallocation sizing:
@@ -65,7 +65,7 @@ namespace LinBox
 	 \ingroup matrix
 	 */
 	template<class _Element>
-	class DenseMatrix {
+	class DenseMat {
 		typedef _Element Entry;
 	public: // protected:  //TODO scope
 		Entry *_rep; // matrix entries on the heap.
@@ -89,7 +89,7 @@ namespace LinBox
 		}
 		// no refEntry - not well supportable in some matrix domains.
 
-		DenseMatrix() : _rep(NULL), _alloc(false), _rows(0), _cols(0), _stride(0) {}
+		DenseMat() : _rep(NULL), _alloc(false), _rows(0), _cols(0), _stride(0) {}
 
 		void init(size_t m = 0, size_t n = 0) {
 			//std::cerr << m << " " << n << " <<<<<<" << std::endl;
@@ -116,9 +116,9 @@ namespace LinBox
 		/* Copy construction makes this a completely distinct copy of A.  
 		 * Entries of this are stored contiguously even if A is not contiguous (is a submatrix of another).
 		 * 
-		 * If memcpy is not valid for your entry type, specialize DenseMatrix for it.
+		 * If memcpy is not valid for your entry type, specialize DenseMat for it.
 		 */
-		DenseMatrix(const DenseMatrix& A)
+		DenseMat(const DenseMat& A)
 		: _rep(new Entry[A._rows*A._cols]), _alloc(true), _rows(A._rows), _cols(A._cols), _stride(A._cols) 
 		{	
 			//std::cout << "copy construction " << _rep << std::endl;
@@ -126,13 +126,13 @@ namespace LinBox
 			*this = A; // copy A's data into _rep
 		}
 
-		~DenseMatrix() {
+		~DenseMat() {
 			if (_alloc) delete _rep;
 		}
 
 		// For assignment, the matrices must have same size and not overlap in memory.
 		// This restriction could be loosened...
-		DenseMatrix& operator=(const DenseMatrix& B) {
+		DenseMat& operator=(const DenseMat& B) {
 			linbox_check(_rows == B._rows && _cols == B._cols);
 			if (_cols == _stride && B._cols == B._stride) // both are contiguous
 				memcpy(_rep, B._rep, sizeof(Entry)*_rows*_cols);
@@ -147,7 +147,7 @@ namespace LinBox
 		 *
 		 * For instance, B.submatrix(A, i, 0, 1, A.coldim()) makes B the i-th row of A.
 		 */
-		void submatrix(const DenseMatrix & A, size_t i, size_t j, size_t m, size_t n) {
+		void submatrix(const DenseMat & A, size_t i, size_t j, size_t m, size_t n) {
 			linbox_check(i+m <= A._rows && j+n <= A._cols);
 			if (_alloc) delete _rep; // abandon any prior def
 			_rep = A._rep + (i*A._stride + j);
@@ -327,7 +327,7 @@ namespace LinBox
 		ConstRawIterator rowEnd(size_t i) const { 
 			return rowBegin(i + 1); }
 
-		typedef DenseMatrix<_Element>   Self_t;       //!< Self type
+		typedef DenseMat<_Element>   Self_t;       //!< Self type
 
 #if 0  // TODO factor out
 		/** @name typedef'd Row Iterators.
@@ -359,7 +359,7 @@ namespace LinBox
 
 		template<typename _Tp1>
 		struct rebind {
-			typedef DenseMatrix<typename _Tp1::Element> other;
+			typedef DenseMat<typename _Tp1::Element> other;
 		};
 
 		/** Read the matrix from an input stream.
@@ -405,7 +405,7 @@ namespace LinBox
 	 * @param Mat matrix to write.
 	 */
 	template<class T>
-	std::ostream& operator<< (std::ostream & o, const DenseMatrix<T> & Mat)
+	std::ostream& operator<< (std::ostream & o, const DenseMat<T> & Mat)
 	{
 		return Mat.write(o);
 	}
@@ -415,15 +415,15 @@ namespace LinBox
 	 */
 	/*  necessary?
 	template <class Element>
-	struct MatrixTraits< DenseMatrix<Element> > {
-		typedef DenseMatrix<Element> MatrixType;
+	struct MatrixTraits< DenseMat<Element> > {
+		typedef DenseMat<Element> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 	*/
 
 	template <class _Element>
 	template <class Field>
-	std::istream& DenseMatrix<_Element>::read (std::istream &file, const Field& field)
+	std::istream& DenseMat<_Element>::read (std::istream &file, const Field& field)
 	{
 		RawIterator p;
 
@@ -438,7 +438,7 @@ namespace LinBox
 
 	template <class _Element>
 	template <class Field>
-	std::ostream &DenseMatrix<_Element>::write (std::ostream &os, const Field& field,
+	std::ostream &DenseMat<_Element>::write (std::ostream &os, const Field& field,
 						       bool mapleFormat) const
 	{
 		return os;
@@ -483,7 +483,7 @@ namespace LinBox
 	*/
 
 	template <class _Element>
-	std::ostream &DenseMatrix<_Element>::write (std::ostream &os, bool mapleFormat) const
+	std::ostream &DenseMat<_Element>::write (std::ostream &os, bool mapleFormat) const
 	{
 		return os;
 	}
