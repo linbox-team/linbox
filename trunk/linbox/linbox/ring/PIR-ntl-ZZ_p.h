@@ -44,12 +44,12 @@ namespace LinBox
 	class FieldAXPY;
 
 	template <class Ring>
-	struct ClassifyRIng;
+	struct ClassifyRing;
 
 	class PIR_ntl_ZZ_p;
 
 	template <>
-	struct ClassifyRIng<PIR_ntl_ZZ_p> {
+	struct ClassifyRing<PIR_ntl_ZZ_p> {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
