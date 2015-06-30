@@ -39,8 +39,7 @@ BASIC_HDRS =            \
     map.h               \
     PIR-modular-int32.h \
     local2_32.h         \
-    PID-integer.h       \
-    block-ring.h
+    PID-integer.h
 
 NTL_HDRS =              \
     ntl.h               \

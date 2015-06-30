@@ -285,11 +285,6 @@ test_solve_nonsingular_SOURCES =   \
 	test-solve-nonsingular.C   \
 	test-common.h
 
-test_block_ring_SOURCES =                 \
-        test-block-ring.C                 \
-        test-field.h                      \
-        test-common.h
-
 test_PID_integer_SOURCES =                 \
         test-PID-integer.C                 \
         test-field.h                      \
