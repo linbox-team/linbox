@@ -225,7 +225,7 @@ namespace LinBox {
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 				size_t j = 0 ;
 				Ap.setStart(A.getStart());
-				svector_t offset(A.rowdim()+1,0UL);
+				svector_t offset(A.rowdim()+1,0);
 				bool changed = false ;
 				for (size_t i = 0 ; i < A.rowdim() ; ++i) {
 					for (size_t k = A.getStart(i) ; k < A.getEnd(i) ; ++k) {
@@ -1347,7 +1347,7 @@ namespace LinBox {
 
 		Integer magnitude() const
 		{
-			Integer M = 0UL;
+			Integer M = 0;
 			for (size_t i = 0 ; i < _nbnz ; ++i)
 				M = std::max(M,Givaro::abs(_data[i]));
 					     return M;
@@ -1432,7 +1432,7 @@ namespace LinBox {
 	// Integer SparseMatrix<PID_integer, SparseMatrixFormat::CSR >::magnitude() const
 	// {
 	// 	// XXX this is a vector magnitude
-	// 	Integer max_elt(0UL);
+	// 	Integer max_elt(0);
 	// 	for (size_t i = 0 ; i < _nbnz ; ++i)
 	// 		if (max_elt < Givaro::abs(_data[i]))
 	// 			max_elt = Givaro::abs(_data[i]) ;
