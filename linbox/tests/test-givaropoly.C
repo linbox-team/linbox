@@ -41,7 +41,7 @@
 
 #include <queue>
 
-#include "givaro/poly1.h"
+#include "givaro/givpoly1.h"
 #include "givaro/gfq.h"
 
 #include "test-field.h"
@@ -66,10 +66,11 @@ int main (int argc, char **argv)
 
 	typedef Givaro::GFqDom<int64_t> BaseDom;
 	typedef typename Givaro::Poly1Dom<BaseDom, Givaro::Dense> PolyDom;
+	typedef typename Givaro::Poly1Dom<PolyDom, Givaro::Dense> Bivariate;
 	
 	BaseDom GFq(p, e);
 	PolyDom Poly(GFq);
-	GivaroPoly<PolyDom> F(Poly);
+	Bivariate F(Poly);
 
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
