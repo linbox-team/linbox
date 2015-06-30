@@ -345,7 +345,7 @@ namespace LinBox
 	template<class _Matrix>
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Matrix &A,  const _Field &F) :
 		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0]),
-		_field(&F),_MD(A.field() ),_VD(A.field() )
+		_field(&F),_MD(field() ),_VD(field() )
 		// ,_AD(field())
 	{
 		// std::cout << "cstor 7 called" << std::endl;

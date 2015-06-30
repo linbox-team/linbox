@@ -24,6 +24,7 @@
 
 #include "linbox/integer.h"
 #include <givaro/givcaster.h>
+#include <givaro/givrational.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox {
@@ -60,6 +61,12 @@ namespace LinBox {
 	};
 
 	using Givaro::Caster;
+
+        template<>
+        struct ClassifyRing<Givaro::QField<Givaro::Rational>> {
+                typedef RingCategories::RationalTag categoryTag;
+        };
+
 
 	/*! FieldTrait.
 	 */

@@ -500,19 +500,19 @@ bool testRationalDetGen (size_t n, int iterations)
 
 	for (int i = 0; i < iterations; ++i) {
 		commentator().startIteration ((unsigned int)i);
-		QField<Rational> Q;
-		SparseMatrix<QField<Rational> > A (Q, n, n);
-		BlasMatrix <QField<Rational> > BB(Q, n, n);
+		Givaro::QField<Givaro::Rational> Q;
+		SparseMatrix<Givaro::QField<Givaro::Rational> > A (Q, n, n);
+		BlasMatrix <Givaro::QField<Givaro::Rational> > BB(Q, n, n);
 
-	 	QField<Rational>::Element pi(1,1);
- 		QField<Rational>::Element det_A, det_B,det_A_H, det_B_H, det_A_B, det_B_B, det_A_E, det_B_E;
+	 	Givaro::QField<Givaro::Rational>::Element pi(1,1);
+ 		Givaro::QField<Givaro::Rational>::Element det_A, det_B,det_A_H, det_B_H, det_A_B, det_B_B, det_A_E, det_B_E;
 
  		for (unsigned int j = 0; j < n; ++j) {
 			integer tmp_n;
 	 		integer tmp_d;
 			integer::nonzerorandom (tmp_n, 20*i + 1);
  			integer::nonzerorandom (tmp_d, 20*i + 1);
-			QField<Rational>::Element tmp;
+			Givaro::QField<Givaro::Rational>::Element tmp;
 			Q.init(tmp,tmp_n,tmp_d);
 			A.setEntry(j,j,tmp);
 			BB.setEntry(j,j,tmp);
