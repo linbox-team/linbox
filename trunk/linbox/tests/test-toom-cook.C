@@ -37,7 +37,7 @@
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/random-matrix.h"
 // #include <fflas-ffpack/fflas/fflas.h>
-#include "linbox/field/givaro.h"
+#include "givaro/modular.h"
 #include "linbox/util/timer.h"
 
 #include "linbox/algorithms/matrix-blas3/mul.h"
@@ -216,9 +216,9 @@ int main(int ac, char ** av) {
 
 	LinBox::Timer Tim ;
 	{ /* Toom Cook over GivarorExtension */
-		typedef LinBox::Givaro::Modular<int64_t> Zpz;
+		typedef Givaro::Modular<int64_t> Zpz;
 		// typedef Givaro::Modular<double> Zpz;
-		typedef LinBox::Givaro::Extension< Zpz > GFpe ;
+		typedef Givaro::Extension< Zpz > GFpe ;
 
 		// Z/pZ
 		Zpz F(p);

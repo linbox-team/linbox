@@ -32,7 +32,7 @@
 
 #include <vector>
 #include "linbox/integer.h"
-#include <linbox/field/givaro.h>
+#include <givaro/givextension.h>
 #include <linbox/matrix/dense-matrix.h>
 
 
