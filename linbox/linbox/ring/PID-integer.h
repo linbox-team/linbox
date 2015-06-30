@@ -1,4 +1,4 @@
-/* linbox/field/PID-integer.h
+/* linbox/ring/PID-integer.h
  * Copyright (C) 2004 Pascal Giorgi
  *
  * Written by :
@@ -24,8 +24,8 @@
  * ========LICENCE========
  */
 
-/** @file field/PID-integer.h
- * @ingroup field
+/** @file ring/PID-integer.h
+ * @ingroup ring
  * @brief NO DOC
 */
 

@@ -26,7 +26,7 @@
 #define __LINBOX_signature_H
 /* Function related to the signature computation of symmetric matrices */
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/algorithms/cra-early-multip.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
 #include "linbox/randiter/random-prime.h"

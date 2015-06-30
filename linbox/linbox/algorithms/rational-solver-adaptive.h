@@ -30,7 +30,7 @@
 #include "linbox/util/debug.h"
 
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/randiter/random-prime.h"
 

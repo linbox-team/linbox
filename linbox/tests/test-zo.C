@@ -38,7 +38,7 @@
 
 #include "linbox/blackbox/zo.h"
 #include "linbox/blackbox/transpose.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/util/commentator.h"
 
 

@@ -59,7 +59,7 @@
 #include <linbox/blackbox/direct-sum.h>
 #include <linbox/blackbox/companion.h>
 #include <linbox/algorithms/matrix-hom.h>
-#include <linbox/field/ntl.h>
+#include <linbox/ring/ntl.h>
 #include <NTL/ZZX.h>
 #include <linbox/vector/blas-vector.h>
 

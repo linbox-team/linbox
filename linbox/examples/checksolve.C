@@ -27,7 +27,7 @@
   */
 #include <iostream>
 
-#include <linbox/field/modular.h>
+#include <linbox/ring/modular.h>
 #include <linbox/solutions/solve.h>
 #include <linbox/util/matrix-stream.h>
 #include <linbox/solutions/methods.h>

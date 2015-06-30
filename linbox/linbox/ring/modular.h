@@ -1,4 +1,4 @@
-/* linbox/field/modular.h
+/* linbox/ring/modular.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
  *
@@ -36,10 +36,10 @@
  *.
  */
 
-/*! @file field/modular.h
- * @ingroup field
- * @brief A Givaro::Modular field is a representations of <code>Z/mZ</code>.
- * This file groups many implementations/specialisations of modular fields.
+/*! @file ring/modular.h
+ * @ingroup ring
+ * @brief A Givaro::Modular ring is a representations of <code>Z/mZ</code>.
+ * This file groups many implementations/specialisations of modular rings.
  *   - Givaro::Modular arithmetic is provided in the <code>ModularXXX<T></code> classes.
  *   - Specialisations for \ref FieldAXPY, \ref MVProductDomain, \ref DotProductDomain.
  *   - Random Iterators
@@ -48,8 +48,8 @@
  * @bug move Element& init(const Element&) to FFPACK. use using more..
  */
 
-#ifndef __LINBOX_field_modular_H
-#define __LINBOX_field_modular_H
+#ifndef __LINBOX_ring_modular_H
+#define __LINBOX_ring_modular_H
 
 #include <iostream>
 #include <climits>

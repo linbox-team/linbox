@@ -35,9 +35,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "linbox/field/ntl.h"
+#include "linbox/ring/ntl.h"
 
-#include "linbox/field/ntl.h"
 #include "linbox/integer.h"
 #include "linbox/blackbox/ntl-hankel.h"
 

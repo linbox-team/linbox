@@ -32,8 +32,8 @@
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
-#include "linbox/field/PID-integer.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/PID-integer.h"
+#include "linbox/ring/modular.h"
 #include "linbox/matrix/dense-matrix.h"
 
 #include "test-common.h"

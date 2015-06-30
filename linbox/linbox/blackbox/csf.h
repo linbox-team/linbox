@@ -32,7 +32,7 @@
 //#include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/matrix-stream.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/blackbox/blackbox-interface.h"
 
 // For STL pair in IndexIterator

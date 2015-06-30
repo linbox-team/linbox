@@ -33,7 +33,7 @@ using namespace LinBox;
 
 
 #include <cmath>
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/util/timer.h"
 #include "linbox/util/commentator.h"
 

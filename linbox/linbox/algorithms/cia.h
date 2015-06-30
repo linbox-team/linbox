@@ -28,7 +28,7 @@
 #define __LINBOX_cia_H
 
 #include "linbox/ring/givaro-polynomial.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"

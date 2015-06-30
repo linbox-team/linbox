@@ -33,8 +33,8 @@
 #include<fstream>
 
 #include <linbox/linbox-config.h>
-#include <linbox/field/PID-integer.h>
-#include <linbox/field/modular.h>
+#include <linbox/ring/PID-integer.h>
+#include <linbox/ring/modular.h>
 #include <linbox/util/timer.h>
 #include <linbox/matrix/grid.h>
 

@@ -48,7 +48,7 @@ typedef Givaro::Timer myTimer;
 #include <iostream>
 #include <vector>
 using namespace std;
-#include <linbox/field/modular.h>
+#include <linbox/ring/modular.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/randiter/random-fftprime.h>
 #include <linbox/field/unparametric.h>

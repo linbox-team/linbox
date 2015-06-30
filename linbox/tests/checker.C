@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-// Block-ring is incompatible with all rings being commutative.  More likely a blocked matrix storage scheme would be designed as a matrix rep, so drop block-ring for now.
+// Block-ring is incompatible with all rings being commutative.  More likely a blocked matrix storage scheme would be designed as a matrix rep, so drop block-ring for now. (It is in attic.)
 //		  No_build_n_run("test-block-ring",                   counter , flag, "no non-commutative ring support currently");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section

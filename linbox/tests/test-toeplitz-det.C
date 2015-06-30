@@ -35,7 +35,7 @@
 
 #include "linbox/blackbox/toeplitz.h"
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl.h"
+#include "linbox/ring/ntl.h"
 #endif
 #include "linbox/solutions/det.h"
 #include "linbox/randiter/random-prime.h"

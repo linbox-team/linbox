@@ -33,7 +33,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "linbox/field/modular.h" /* WHY ?? */
+#include "linbox/ring/modular.h" /* WHY ?? */
 /*   otherwise the compiler says :
  *   /usr/bin/ld: test-optimization.o: undefined reference to symbol 'dtrmm_'
  *   /usr/bin/ld: note: 'dtrmm_' is defined in DSO  /usr/lib64/libblas.so.3gf so try adding it to the linker command line

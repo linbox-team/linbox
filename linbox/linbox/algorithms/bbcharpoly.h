@@ -40,7 +40,7 @@
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/sum.h"
 #include "linbox/ring/givaro-polynomial.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/solutions/det.h"
 #include "linbox/solutions/rank.h"

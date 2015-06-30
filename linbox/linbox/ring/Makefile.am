@@ -21,19 +21,37 @@
 
 pkgincludesubdir=$(pkgincludedir)/ring
 
+SUBDIRS=NTL Modular
+
 BASIC_HDRS =            \
     ring-interface.h    \
     givaro-poly.h       \
     givaro-polynomial.h \
+    modular.h           \
+    PIR-modular-int32.h \
+    local2_32.h         \
+    PID-integer.h       \
     abstract.h          \
     archetype.h         \
     envelope.h          \
     poweroftwomodular.h
 
+NTL_HDRS =              \
+    ntl.h               \
+    PID-ntl-zz_p.h     \
+    PIR-ntl-ZZ_p.h
+
+if LINBOX_HAVE_NTL
+USE_NTL_HDRS = $(NTL_HDRS)
+endif
+
+pkgincludesub_HEADERS =     \
+    $(BASIC_HDRS)           \
+    $(USE_NTL_HDRS)
+
 EXTRA_DIST =            \
+    $(NTL_HDRS)         \
     ring.doxy           \
-    polynomial.doxy
-
-pkgincludesub_HEADERS = \
-    $(BASIC_HDRS)
-
+    polynomial.doxy		\
+    integers.doxy       \
+    ntl.doxy

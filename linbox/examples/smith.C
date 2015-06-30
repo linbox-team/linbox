@@ -55,15 +55,15 @@
 using namespace std;
 
 
-#include <linbox/field/modular.h>
+#include <linbox/ring/modular.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/algorithms/smith-form-sparseelim-local.h>
 
 #include <linbox/util/timer.h>
 
 #include <linbox/field/unparametric.h>
-#include <linbox/field/local2_32.h>
-#include <linbox/field/PIR-modular-int32.h>
+#include <linbox/ring/local2_32.h>
+#include <linbox/ring/PIR-modular-int32.h>
 #include <linbox/algorithms/smith-form-local.h>
 #include <linbox/algorithms/smith-form-iliopoulos.h>
 #include <linbox/algorithms/smith-form-adaptive.h>

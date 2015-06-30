@@ -40,7 +40,7 @@ void printPolynomial (const Field &F, const Polynomial &v)
 	std::cout << std::endl;
 }
 
-#include <linbox/field/modular.h>
+#include <linbox/ring/modular.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/minpoly.h>
 

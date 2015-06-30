@@ -45,10 +45,10 @@
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
 #include "linbox/field/archetype.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 //#include "linbox/field/givaro.h"
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl.h"
+#include "linbox/ring/ntl.h"
 #endif
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/diagonal.h"

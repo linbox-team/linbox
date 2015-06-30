@@ -29,7 +29,7 @@
 
 #include <iostream>
 
-#include <linbox/field/modular.h>
+#include <linbox/ring/modular.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/det.h>
 

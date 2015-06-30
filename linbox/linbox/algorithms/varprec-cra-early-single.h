@@ -28,7 +28,7 @@
 #include "linbox/util/timer.h"
 #include <stdlib.h>
 #include "linbox/integer.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/field/gmp-rational.h"
 #include "linbox/solutions/methods.h"
 #include <utility>

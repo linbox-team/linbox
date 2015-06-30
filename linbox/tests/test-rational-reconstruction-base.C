@@ -45,8 +45,8 @@
 #include "linbox/linbox-config.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/modular.h"
+#include "linbox/ring/PID-integer.h"
 //#include "linbox/field/gmp-rational.h"
 
 #include "linbox/algorithms/rational-cra2.h"

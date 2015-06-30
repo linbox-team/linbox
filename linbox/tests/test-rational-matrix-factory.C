@@ -42,7 +42,7 @@
 #include "linbox/linbox-config.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/field/gmp-rational.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/blackbox/rational-matrix-factory.h"

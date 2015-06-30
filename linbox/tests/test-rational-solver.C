@@ -28,8 +28,8 @@
  * @test no doc.
  */
 
-#include "linbox/field/PID-integer.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/PID-integer.h"
+#include "linbox/ring/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/randiter/random-prime.h"

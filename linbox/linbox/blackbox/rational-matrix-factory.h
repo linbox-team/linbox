@@ -26,7 +26,7 @@
 
 #include "linbox/blackbox/factory.h"
 //#include "linbox/field/gmp-rational.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/integer.h"
 
 #include <vector>

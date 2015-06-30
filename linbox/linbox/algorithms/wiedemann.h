@@ -144,7 +144,7 @@ namespace LinBox
 #include <givaro/gfq.h>
 
 #include "linbox/matrix/sparse-matrix.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/field/map.h"
 

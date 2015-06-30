@@ -43,7 +43,7 @@
 #include "test-common.h"
 #include "test-field.h"
 
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 
 using namespace LinBox;
 

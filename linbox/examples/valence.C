@@ -28,7 +28,7 @@
  */
 #include <iostream>
 
-#include <linbox/field/modular.h>
+#include <linbox/ring/modular.h>
 #include <linbox/blackbox/transpose.h>
 #include <linbox/blackbox/compose.h>
 #include <linbox/matrix/sparse-matrix.h>

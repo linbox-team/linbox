@@ -42,7 +42,7 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/hilbert.h"
 #include "linbox/blackbox/inverse.h"

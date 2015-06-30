@@ -33,7 +33,7 @@
 //#ifdef __LINBOX_HAVE_NTL
 #include "linbox/algorithms/smith-form-adaptive.h"
 //#endif
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 //#include "linbox/algorithms/smith-form.h"
 //#include "linbox/algorithms/smith-form-local.h"
 

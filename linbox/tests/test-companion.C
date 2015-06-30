@@ -38,7 +38,7 @@
 #include <fstream>
 
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/blackbox/companion.h"
 #include "linbox/matrix/matrix-domain.h"
 

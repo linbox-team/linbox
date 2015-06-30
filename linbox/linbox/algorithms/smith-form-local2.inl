@@ -34,7 +34,7 @@
 #include <list>
 //#include <algorithm>
 
-#include "linbox/field/local2_32.h"
+#include "linbox/ring/local2_32.h"
 
 namespace LinBox
 {

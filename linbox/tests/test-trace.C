@@ -43,7 +43,7 @@
 
 #include "test-common.h"
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/solutions/trace.h"
 
 using namespace LinBox;

@@ -55,7 +55,7 @@
 #include "linbox/integer.h"
 #include "linbox/field/gmp-rational.h"
 #include "linbox/ring/givaro-polynomial.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 
 #include <gmp.h>
 

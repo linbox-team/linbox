@@ -2,7 +2,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/commentator.h"
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/SparseMatrix/sparse-map-map-matrix.h"

@@ -4,7 +4,7 @@
 #include <omp.h>
 
 #define __LINBOX_USE_OPENMP 1
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"

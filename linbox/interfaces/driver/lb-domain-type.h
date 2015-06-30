@@ -25,13 +25,13 @@
 #ifndef __LINBOX_lb_domain_type_H
 #define __LINBOX_lb_domain_type_H
 
-#include "linbox/field/modular.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/modular.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/field/gmp-rational.h"
 #include "linbox/field/givaro.h"
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl.h"
+#include "linbox/ring/ntl.h"
 #endif
 
 /**************************************

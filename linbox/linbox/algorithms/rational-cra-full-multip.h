@@ -25,7 +25,7 @@
 #ifndef __LINBOX_rational_full_multip_cra_H
 #define __LINBOX_rational_full_multip_cra_H
 
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 #include "linbox/algorithms/cra-full-multip.h"
 
 namespace LinBox

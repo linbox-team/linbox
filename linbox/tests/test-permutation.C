@@ -44,7 +44,7 @@
 #include "linbox/blackbox/permutation.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/vector/stream.h"
 
 #include "test-common.h"

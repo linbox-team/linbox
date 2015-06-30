@@ -46,7 +46,7 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/matrix/dense-matrix.h"
 
 #include "test-common.h"

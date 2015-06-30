@@ -38,7 +38,7 @@
 #include <fstream>
 
 
-#include "linbox/field/ntl.h"
+#include "linbox/ring/ntl.h"
 
 #include "test-common.h"
 #include "test-generic.h"

@@ -45,7 +45,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
 #include "linbox/field/archetype.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/dif.h"

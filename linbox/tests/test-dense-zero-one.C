@@ -35,7 +35,7 @@
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 
 #include "linbox/blackbox/dense-zero-one.h"
 

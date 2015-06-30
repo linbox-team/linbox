@@ -31,7 +31,7 @@
 #ifndef __LINBOX_whisart_trace_H
 #define __LINBOX_whisart_trace_H
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 
 #include "linbox/matrix/dense-matrix.h"
 

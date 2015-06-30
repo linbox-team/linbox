@@ -31,20 +31,13 @@
 
 
 
-//#include "linbox/field/ntl.h"
-//#include "linbox/field/modular.h"
-#include "linbox/field/PID-integer.h"
-#include "linbox/field/PIR-ntl-ZZ_p.h"
-#include "linbox/field/PIR-modular-int32.h"
-//#include "linbox/integer.h"
+#include "linbox/ring/PID-integer.h"
+#include "linbox/ring/PIR-ntl-ZZ_p.h"
+#include "linbox/ring/PIR-modular-int32.h"
 #include "linbox/randiter/random-prime.h"
-//#include "linbox/algorithms/last-invariant-factor.h"
 #include "linbox/algorithms/smith-form-iliopoulos.h"
 #include "linbox/matrix/matrix-domain.h"
-//#include "linbox/algorithms/rational-solver.h"
-//#include <time.h>
 #include "linbox/util/commentator.h"
-//#include "linbox/vector/stream.h"
 #include "test-common.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/solutions/det.h"

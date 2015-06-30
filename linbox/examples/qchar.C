@@ -28,8 +28,8 @@
  * @brief  Undocumented.
  */
 
-#include <linbox/field/PID-integer.h>
-#include <linbox/field/modular.h>
+#include <linbox/ring/PID-integer.h>
+#include <linbox/ring/modular.h>
 #include <linbox/field/gmp-rational.h>
 #include <linbox/matrix/dense-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>

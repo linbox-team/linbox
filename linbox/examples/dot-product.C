@@ -39,7 +39,7 @@
 
 #include <iostream>
 
-#include <linbox/field/modular.h>
+#include <linbox/ring/modular.h>
 #include <linbox/vector/vector-domain.h>
 #include <linbox/vector/stream.h>
 #include <linbox/util/commentator.h>

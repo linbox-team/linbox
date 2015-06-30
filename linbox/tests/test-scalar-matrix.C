@@ -38,7 +38,7 @@
 #include <fstream>
 
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/blackbox/scalar-matrix.h"
 
 #include "test-blackbox.h"

@@ -30,7 +30,7 @@
 #include <iomanip>
 
 #include <linbox/util/timer.h>
-#include <linbox/field/modular.h>
+#include <linbox/ring/modular.h>
 #include <linbox/field/unparametric.h>
 #include <linbox/matrix/sparse-matrix.h>
 using namespace std;
