@@ -38,7 +38,7 @@
 #include <fstream>
 
 
-#include "linbox/field/givaro.h"
+#include "givaro/modular.h"
 
 #include "test-common.h"
 #include "test-field.h"
