@@ -113,7 +113,6 @@ FULLCHECK_TESTS =                 \
         test-modular-float            \
         test-modular-int              \
         test-modular-short            \
-        test-block-ring               \
         test-PID-integer              \
         test-moore-penrose            \
 	test-nullspace                \
