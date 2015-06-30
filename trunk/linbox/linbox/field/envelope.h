@@ -510,12 +510,6 @@ namespace LinBox
 		 */
 		std::ostream& write (std::ostream& os) const { return _field.write (os); }
 
-		/** Read field.
-		 * @return input stream from which field is read.
-		 * @param  is  input stream from which field is read.
-		 */
-		std::istream& read (std::istream& is) { return _field.read (is); }
-
 		/** Print field base element.
 		 * This function assumes the field base element has already been
 		 * constructed and initialized.

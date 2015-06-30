@@ -41,7 +41,7 @@
 
 #include <queue>
 
-#include "linbox/ring/givaro-poly.h"
+#include "givaro/poly1.h"
 #include "givaro/gfq.h"
 
 #include "test-field.h"
@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 	commentator().start("GivaroPoly field test suite", "GivaroPoly");
 	bool pass = true;
 
-	typedef Givaro::GFqDom<int> BaseDom;
+	typedef Givaro::GFqDom<int64_t> BaseDom;
 	typedef typename Givaro::Poly1Dom<BaseDom, Givaro::Dense> PolyDom;
 	
 	BaseDom GFq(p, e);

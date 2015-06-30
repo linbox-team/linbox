@@ -588,12 +588,6 @@ namespace LinBox
 		 */
 		std::ostream &write (std::ostream &os) const { return _field_ptr->write (os); }
 
-		/** Read field.
-		 * @return input stream from which field is read.
-		 * @param  is  input stream from which field is read.
-		 */
-		std::istream &read (std::istream &is) { return _field_ptr->read (is); }
-
 		/** Print field element.
 		 * This function assumes the field element has already been
 		 * constructed and initialized.

@@ -127,10 +127,10 @@ int main (int argc, char **argv)
 #endif
 
 #if TEST_ARCHETYPES
-	Givaro::GFq * K4g = new Givaro::GFq(101,1);
+	Givaro::GFqDom<int64_t> * K4g = new Givaro::GFqDom<int64_t>(101,1);
 	FieldArchetype K4(K4g);
 
-	if (!testField<FieldArchetype> (K4, "Testing archetype with envelope of Givaro::GFq prime field"))
+	if (!testField<FieldArchetype> (K4, "Testing archetype with envelope of Givaro::GFqDom<int64_t> prime field"))
 		pass = false;
 	delete K4g;
 #endif

@@ -516,8 +516,8 @@ namespace LinBox
 				unsigned long extend = (unsigned long)Givaro::FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 				if (extend > 1) {
 					commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
-					const Givaro::GFq EF( (unsigned long)c, extend);
-					typedef typename Blackbox::template rebind< Givaro::GFq >::other FBlackbox;
+					const Givaro::GFqDom<int64_t> EF( (unsigned long)c, extend);
+					typedef typename Blackbox::template rebind< Givaro::GFqDom<int64_t> >::other FBlackbox;
 					FBlackbox Ap(A, EF);
 					rank(r, Ap, tag, Method::Wiedemann(m));
 				}

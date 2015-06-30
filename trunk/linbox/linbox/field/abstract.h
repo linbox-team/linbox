@@ -385,13 +385,6 @@ namespace LinBox
 		 */
 		virtual std::ostream &write (std::ostream &os) const = 0;
 
-		/** Read field.
-		 * Purely virtual.
-		 * @return input stream from which field is read.
-		 * @param  is  input stream from which field is read.
-		 */
-		virtual std::istream &read (std::istream &is) = 0;
-
 		/** Print field element.
 		 * This function assumes the field element has already been
 		 * constructed and initialized.
