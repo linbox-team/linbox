@@ -356,7 +356,9 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.characteristic(p);
 	F.cardinality (q);
 
-        Field::Element two, three;
+        typename Field::Element two, three;
+        typename Field::Element a, b, c, d, e, f;
+	F.init(a);F.init(b);F.init(c);F.init(d);F.init(e);F.init(f);
         
 	if (p > 0)
 	{
@@ -372,7 +374,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 
 	commentator().start ("\t--Testing field arithmetic");
-	part_pass = true;
+	bool part_pass = true;
 
 
 
@@ -380,24 +382,24 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.assign (d, F.one);
 	F.invin (d); F.write (report << "Result of inverting 1 (inplace): ", d) << endl;
 
-	if (!F.areEqual (a, one) || !F.areEqual (d, a))
-		part_pass = reportError( "Results of inv incorrect", pass);
+	if (!F.areEqual (a, F.one) || !F.areEqual (d, a))
+		part_pass = reportError( "Results of inv incorrect", part_pass);
 
 	if ( F.isZero(two) ) F.assign(f, three); else F.assign(f, two);
 	F.div (a, f, f); F.write ( report << "Result of f/f: ", a) << endl;
 	F.assign(d, f);
 	F.divin (d, f); F.write ( report << "Result of f/f (inplace): ", d) << endl;
 
-	if (!F.areEqual (a, one) || !F.areEqual (d, a))
-		part_pass = reportError( "Results of div incorrect", pass);
+	if (!F.areEqual (a, F.one) || !F.areEqual (d, a))
+		part_pass = reportError( "Results of div incorrect", part_pass);
 	
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
 
 
-	commentator().stop (MSG_STATUS (pass), (const char *) 0, "testField");
+	commentator().stop (MSG_STATUS (part_pass), (const char *) 0, "testField");
 
-        return pass & testRing(F,title,fieldp);
+        return part_pass & testRing(F,title,fieldp);
         
 }
 
