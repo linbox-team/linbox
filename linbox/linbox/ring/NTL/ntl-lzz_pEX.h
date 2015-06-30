@@ -23,8 +23,8 @@
  * ========LICENCE========
  */
 
-/*! @file field/NTL/ntl-lzz_pEX.h
- * @ingroup field
+/*! @file ring/NTL/ntl-lzz_pEX.h
+ * @ingroup ring
  * @ingroup NTL
  * @brief NO DOC
  */
@@ -44,7 +44,7 @@
 #include "linbox/util/debug.h"
 
 #include <givaro/zring.h>
-#include "linbox/field/NTL/ntl-lzz_pE.h"
+#include "linbox/ring/NTL/ntl-lzz_pE.h"
 #include "linbox/integer.h"
 
 
