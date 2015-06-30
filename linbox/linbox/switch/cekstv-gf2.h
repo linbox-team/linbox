@@ -51,6 +51,7 @@
 
 #include <vector>
 
+#include "linbox/vector/bit-vector.h"
 #include "linbox/field/gf2.h"
 #include "linbox/switch/cekstv.h"
 
@@ -92,14 +93,14 @@ namespace LinBox
 			return true;
 		}
 
-		bool apply (const Field &F, stdBitReference x, stdBitReference y) const
+		bool apply (const Field &F, GF2::BitReference x, GF2::BitReference y) const
 		{
 			F.axpyin (x, _a, y);
 			F.addin (y, x);
 			return true;
 		}
 
-		bool applyTranspose (const Field &F, stdBitReference x, stdBitReference y) const
+		bool applyTranspose (const Field &F, GF2::BitReference x, GF2::BitReference y) const
 		{
 			F.addin (x, y);
 			F.axpyin (y, _a, x);
