@@ -162,7 +162,7 @@ namespace LinBox
 		const Field& F = A.field();
 		integer a,c; F.cardinality(a); F.characteristic(c);
 		if (a != c) {
-			unsigned long extend = (unsigned long)FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
+			uint64_t extend = (uint64_t)FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 			if (extend > 1) {
 				commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
 				Givaro::Extension<Field> EF( F, extend);
@@ -180,11 +180,11 @@ namespace LinBox
 				return minpoly(P, A, tag, Method::Wiedemann(M));
 		}
 		else {
-			unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
+			uint64_t extend = (uint64_t)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 			if (extend > 1) {
 				commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
 				typedef Givaro::GFqDom<int64_t> Fld;
-				Fld EF( (unsigned long)c, extend);
+				Fld EF( (uint64_t)c, extend);
 				typedef typename Blackbox::template rebind< Fld >::other FBlackbox;
 				FBlackbox Ap(A, EF);
 				BlasVector< Fld > eP(EF);
