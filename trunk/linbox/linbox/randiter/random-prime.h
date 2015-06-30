@@ -31,8 +31,8 @@
 #ifndef __LINBOX_random_prime_iterator_H
 #define __LINBOX_random_prime_iterator_H
 
-#include <cstdlib> // drand48, temporary
 
+#include <givaro/givrandom.h>
 #include "linbox/util/timer.h"
 #include "linbox/util/debug.h"
 #include "linbox/integer.h"
@@ -55,7 +55,7 @@ namespace LinBox
 	class RandomPrimeIterator {
 	private:
 
-		unsigned int 	_bits;  //!< common lenght of all primes
+		uint64_t 	_bits;  //!< common lenght of all primes
 		integer        _shift;  //!< @internal used to set proper bit size
 		integer        _prime;  //!< the generated prime.
 
@@ -119,7 +119,7 @@ namespace LinBox
 			integer::seeding(ul);
 		}
 
-		void setBits(unsigned int bits) {
+		void setBits(uint64_t bits) {
 			_bits = bits;
 			_shift=(integer(1)<<_bits);
 
@@ -137,7 +137,7 @@ namespace LinBox
 			// std::cout << _bits << std::endl;
 			integer k = FieldTraits<_ModField >::maxModulus();
 			// std::cout << k << std::endl;
-			unsigned int bits = (unsigned int)(k.bitsize());
+			uint64_t bits = (uint64_t)(k.bitsize());
 			if (!bits)
 				throw("weird");
 			--bits;
@@ -158,7 +158,7 @@ namespace LinBox
 			bits -= (int)((log((double)n)/2./M_LN2));
 	//std::cout << "delcorrect: " << bits << std::endl;
 			if (bits < 0) return false;
-			if (bits < (int)_bits) setBits((unsigned int)bits);
+			if (bits < (int64_t)_bits) setBits((uint64_t)bits);
 			return true;
 		}
 
@@ -179,6 +179,7 @@ namespace LinBox
 
 		uint64_t 	_bits;  //!< max length for all primes
 		integer         _seed;  //!< the generated prime.
+		Givaro::GivRandom _generator;
 
 	public:
 		/*! Constructor.
@@ -188,7 +189,7 @@ namespace LinBox
 		 * provided seed will be use.
 		 */
 		RandomPrimeIter(uint64_t bits = 30, uint64_t seed = 0) :
-			_bits(bits)
+			_bits(bits), _generator(seed)
 		{
 			linbox_check(bits >1);
 			if (! seed)
@@ -207,7 +208,7 @@ namespace LinBox
 		/// copy constructor.
 		/// @param R random iterator to be copied.
 		RandomPrimeIter (const RandomPrimeIter &R) :
-			_bits(R._bits), _seed(R._seed)
+			_bits(R._bits), _seed(R._seed), _generator(R._generator)
 		{}
 
 		typedef integer Element ;
@@ -266,7 +267,7 @@ namespace LinBox
 		{
 			linbox_check(_low_bits < _bits);
 			// integer::random_exact(a,_bits);
-			uint64_t ze_bits = (_low_bits + ((_bits - _low_bits)*drand48())) ;
+			uint64_t ze_bits = (_low_bits + ((_bits - _low_bits)*_generator())) ;
 			linbox_check (!(ze_bits<_low_bits) && !(ze_bits>_bits));
 			integer::random(a,ze_bits-1); //!@todo uses random_between when givaro is released.
 			a = (integer(1)<<ze_bits) - a;
@@ -289,7 +290,7 @@ namespace LinBox
 			return a ;
 		}
 
-		void setBits (unsigned int  bits)
+		void setBits (uint64_t  bits)
 		{
 			_bits = bits;
 		}
