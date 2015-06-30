@@ -83,10 +83,10 @@ namespace LinBox
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
 
 		template <class Vector1, class Vector2>
-		inline BitVector::reference dotSpecializedDD (BitVector::reference res, const Vector1 &v1, const Vector2 &v2) const;
+		inline GF2::BitVector::reference dotSpecializedDD (GF2::BitVector::reference res, const Vector1 &v1, const Vector2 &v2) const;
 
 		template <class Vector1, class Vector2>
-		inline BitVector::reference dotSpecializedDSP (BitVector::reference res, const Vector1 &v1, const Vector2 &v2) const;
+		inline GF2::BitVector::reference dotSpecializedDSP (GF2::BitVector::reference res, const Vector1 &v1, const Vector2 &v2) const;
 	};
 
 
@@ -165,7 +165,7 @@ namespace LinBox
 		}
 
 		template <class Vector1, class Vector2>
-		inline BitVector::reference dot (BitVector::reference res, const Vector1 &v1, const Vector2 &v2) const
+		inline GF2::BitVector::reference dot (GF2::BitVector::reference res, const Vector1 &v1, const Vector2 &v2) const
 		{
 			return dotSpecialized (res, v1, v2,
 					 typename VectorTraits<Vector1>::VectorCategory (),
@@ -376,7 +376,7 @@ namespace LinBox
 					 VectorCategories::SparseZeroOneVectorTag) const;
 
 		template <class Vector1, class Vector2>
-		inline BitVector::reference dotSpecialized (BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
+		inline GF2::BitVector::reference dotSpecialized (GF2::BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
 							    VectorCategories::DenseZeroOneVectorTag,
 							    VectorCategories::DenseZeroOneVectorTag) const
 		{
@@ -384,7 +384,7 @@ namespace LinBox
 		}
 
 		template <class Vector1, class Vector2>
-		inline BitVector::reference dotSpecialized (BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
+		inline GF2::BitVector::reference dotSpecialized (GF2::BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
 							    VectorCategories::DenseZeroOneVectorTag,
 							    VectorCategories::SparseZeroOneVectorTag) const
 		{
@@ -392,7 +392,7 @@ namespace LinBox
 		}
 
 		template <class Vector1, class Vector2>
-		inline BitVector::reference dotSpecialized (BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
+		inline GF2::BitVector::reference dotSpecialized (GF2::BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
 							    VectorCategories::SparseZeroOneVectorTag,
 							    VectorCategories::DenseZeroOneVectorTag) const
 		{
@@ -400,7 +400,7 @@ namespace LinBox
 		}
 
 		template <class Vector1, class Vector2>
-		BitVector::reference dotSpecialized (BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
+		GF2::BitVector::reference dotSpecialized (GF2::BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
 						     VectorCategories::SparseZeroOneVectorTag,
 						     VectorCategories::SparseZeroOneVectorTag) const;
 

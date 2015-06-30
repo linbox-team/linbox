@@ -169,7 +169,7 @@ namespace LinBox
 		Rep			    _rep;
 	public:
 		bool		     _use_fflas ; //! @bug why public ?
-	//protected:
+	protected:
 		pointer			    _ptr;
 	public:
 	// protected:
@@ -719,11 +719,6 @@ namespace LinBox
 
 		template <class Vector1, class Vector2>
 		Vector1&  applyTranspose (Vector1& y, const Vector2& x) const ;
-
-		subMatrixType& applyRight(subMatrixType& Y, const subMatrixType& X)
-		{ return Y; } // temp
-		subMatrixType& applyLeft(subMatrixType& Y, const subMatrixType& X)
-		{ return Y; } // temp
 
 		const _Field& field() const;
 		//_Field& field() ;

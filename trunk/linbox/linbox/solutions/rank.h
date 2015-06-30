@@ -33,6 +33,7 @@
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/diagonal-gf2.h"
 #include "linbox/blackbox/compose.h"
+#include "linbox/blackbox/permutation.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/algorithms/blackbox-container-symmetrize.h"
 #include "linbox/algorithms/blackbox-container-symmetric.h"

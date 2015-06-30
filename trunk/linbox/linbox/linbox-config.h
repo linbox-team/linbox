@@ -61,8 +61,6 @@ using std::ptrdiff_t;
 
 namespace LinBox {
 
-	typedef ptrdiff_t index;
-
 	const int BlasBound = 1 << 26;
 
 	//! used to separate BLAS2 and BLAS3 operations

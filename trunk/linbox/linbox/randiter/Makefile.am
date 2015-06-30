@@ -34,7 +34,6 @@ BASIC_HDRS =            \
     param-fuzzy.h       \
     modular-balanced.h  \
     modular-crooked.h   \
-    gf2.h               \
     nonzero.h           \
     mersenne-twister.h  \
     ntl-ZZ.h            \
