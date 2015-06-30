@@ -107,7 +107,6 @@ static bool testZeroMinpoly (Field &F, size_t n, const Meth& M)
 template <class Field, class Meth>
 static bool testIdentityMinpoly (Field &F, size_t n, const Meth& M)
 {
-	typedef BlasVector<Field> Vector;
 	typedef BlasVector<Field> Polynomial;
 	typedef ScalarMatrix<Field> Blackbox;
 
@@ -159,7 +158,6 @@ static bool testIdentityMinpoly (Field &F, size_t n, const Meth& M)
 template <class Field, class Meth>
 static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 {
-	typedef BlasVector<Field> Vector;
 	typedef BlasVector<Field> Polynomial;
 	typedef SparseMatrix<Field> Blackbox;
 	typedef typename Blackbox::Row Row;
