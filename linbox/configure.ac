@@ -291,8 +291,6 @@ linbox/algorithms/polynomial-matrix/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
-linbox/field/NTL/Makefile
-linbox/field/Modular/Makefile
 linbox/matrix/Makefile
 linbox/matrix/SparseMatrix/Makefile
 linbox/matrix/DenseMatrix/Makefile
@@ -300,6 +298,8 @@ linbox/matrix/MatrixDomain/Makefile
 linbox/matrix/Sliced3/Makefile
 linbox/randiter/Makefile
 linbox/ring/Makefile
+linbox/ring/NTL/Makefile
+linbox/ring/Modular/Makefile
 linbox/solutions/Makefile
 linbox/switch/Makefile
 linbox/util/Makefile
