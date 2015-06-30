@@ -31,17 +31,13 @@
 // #define __LINBOX_rank_sparse_elimination_format SparseMatrixFormat::COO
 // #define __LINBOX_rank_sparse_elimination_format SparseMatrixFormat::CSR
 
+#include "linbox/field/field-traits.h"
+
 #include <givaro/extension.h>
+
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-
-	template<>
-	struct ClassifyRing<Givaro::QField<Givaro::Rational> > {
-		typedef RingCategories::RationalTag categoryTag;
-	};
-
-
 	// error hanlder for rational domain
 	template <class Blackbox, class Method>
 	inline unsigned long &rank (unsigned long                           &r,
