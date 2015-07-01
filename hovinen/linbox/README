@@ -1,0 +1,72 @@
+
+  ******  Linbox Library  ******  
+
+ 
+
+
+The Linbox library provides functionalities for linear algebra.
+
+
+          FUNCTIONALITIES :
+
+ Algorithms      : Gauss, Wiedemann, Valence, BlackBox composition, transposition ...
+ Interfaces      : BlackBox, Field, Random Generators.
+ Wrappers        : Domain (homomorphic absolute value, classical class with *,+,/..), BlackBox (vector < sparse_vector < T > >).
+ Implementations : Galois Field, Z/pZ, vector < sparse_vector< T > >.
+
+
+          AVAILABILITY :
+The sources of this library are available : http://www-apache.imag.fr/~jgdumas/Softwares/Linbox.tar.gz : 
+Linbox.tar.gz (150K, 
+Last update : Friday, March 17th 2000
+However, linbox team developers should work from the cvs repository.
+).
+
+          REQUIREMENTS :  
+
+This library requires the GNU C++ compiler (gcc-2.95.1 or newer) or any compiler supporting
+advanced template features.
+
+          INSTALLATION :
+
+To install this library,
+first extract the archive file.
+----------------------------------
+> gunzip -v Linbox.tar.gz
+
+> tar -xvf Linbox.tar 
+----------------------------------
+
+Then go to the Linbox directory and run the shell script `configure'
+in order to set up some system variables.
+----------------------------------
+> /bin/sh ./configure 
+----------------------------------
+
+If the default parameters do not suit you, try :
+
+----------------------------------
+> /bin/sh ./configure --help
+----------------------------------
+
+and follow the instructions to change parameters.
+
+Afterwards call `make' or preferably `gmake' 
+(GNU make) to compile the library.
+
+----------------------------------
+> gmake all
+----------------------------------
+
+==========================================================
+University of Delaware
+ Department of Computer & Information Sciences 
+
+Last update : Friday, March 17th 2000
+ 
+Corrections, suggestions and comments to : 
+dumas@cis.udel.edu
+ 
+ Copyright 1999 The Linbox Group.
+
+

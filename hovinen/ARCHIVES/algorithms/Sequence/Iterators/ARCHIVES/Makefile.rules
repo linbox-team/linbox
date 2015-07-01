@@ -1,0 +1,52 @@
+LAWS=header lib clean
+LISTINGSFILES=$(LISTING:%=%.h) $(LISTING:%=%.C)
+OBJ+=$(LISTINGSFILES)
+LINKS=$(OBJ:%=/users/huron/jgdumas/givaro-2.0/sparc_sun_solaris2.6/include/%)
+MAKELINKS=$(SUBDIRS:%=%/Makefile.rules) $(SUBDIRS:%=%/Make.listing)
+#DEPENDSHFILES=$(SUBDIRS:%=`pwd`/%/*.h)
+#DEPENDSIFILES=$(SUBDIRS:%=`pwd`/%/*.inl)
+#DEPENDSCFILES=$(SUBDIRS:%=`pwd`/%/*.C)
+
+listings:sublaw_listings $(LISTING:%=linbox_%.h) $(LISTING:%=linbox_%.C)
+
+$(LAWS): $(MAKELINKS)
+	$(foreach SDIR,$(SUBDIRS),$(MAKE) -C $(SDIR) $@;)
+
+sublaw_%: $(MAKELINKS)
+	$(foreach SDIR,$(SUBDIRS),$(MAKE) -C $(SDIR) $*;)
+
+lib:
+
+header : $(LINKS)
+
+%/Makefile.rules :: Makefile.rules
+	@\rm -f $@
+	ln -sf $(shell pwd)/$< $@
+
+%/Make.listing :: Make.listing
+	@\rm -f $@
+	ln -sf $(shell pwd)/$< $@
+
+/users/huron/jgdumas/givaro-2.0/sparc_sun_solaris2.6/include/% : %
+	@\rm -f $@
+	ln -sf $(shell pwd)/$< $@
+
+linbox_% : $(SUBDIRS)
+	./Make.listing $(shell basename $*)
+
+#linbox_%:$(shell ls $(DEPENDSHFILES) $(DEPENDSIFILES) $(DEPENDSCFILES))
+#	./Make.listing $(shell basename $@)
+
+distclean: makefile_clean
+
+makefile_clean: clean
+	$(foreach SDIR,$(SUBDIRS),$(MAKE) -C $(SDIR) $@;)
+	- \rm -f Makefile.rules Make.listing $(LISTINGSFILES)
+
+clean: links_clean
+
+links_clean: directory_clean
+	- \rm -f $(LINKS)
+
+directory_clean:
+	- \rm -f core *.o

@@ -1,0 +1,53 @@
+Class names:
+
+	In general: All class names now follow the Java/Smalltalk
+	MyClass style. Abbreviations have been removed in most cases.
+
+	Field::element -> Field::Element
+	Field::randIter -> Field::RandIter
+
+	sparsemat* -> SparseMatrix*
+
+	diagonal -> Diagonal
+	hilbert -> Hilbert
+	etc.
+
+Class methods:
+
+	In general: I have standardized everything on the Java
+	studlycaps style, e.g. MyClass::myMethod
+
+	The names Blackbox_archetype::applyin and
+	Blackbox_archetype::applyTransposein have been changed to
+	Blackbox_archetype::applyIn and
+	Blackbox_archetype::applyTransposeIn, respectively.
+
+Header files:
+
+	All header files that previously used '_' to separate words
+	use '-' now as '-' is easier to type.
+
+	The archetype header files have been moved into directories
+	containing objects of those archetypes and are all now named
+	"archetype.h", "abstract.h", and "envelope.h".
+
+	Header files are now installed into a tree matching that of
+	the source code as opposed to a single, flat directory. So,
+	for example, one now includes LinBox/blackbox/archetype.h as
+	opposed to LinBox/blackbox-archetype.h
+
+Miscellanae:
+
+	In the random iterator interface, the operator () has been
+	replaced by a function random accepting a single argument --
+	an element type into which the random element should be
+	placed. This eliminates the potential for memory leaks.
+
+	The blackbox container class now requires that a field be
+	passed, as it no longer retrieves the field from the black
+	box.
+
+Some terms composed of more than one word are considered to be
+compound words and do not have internal capitalization, e.g. Blackbox
+(vs. BlackBox) and minpoly (vs. minPoly).
+

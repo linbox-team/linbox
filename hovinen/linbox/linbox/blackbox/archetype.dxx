@@ -1,0 +1,17 @@
+/** @name Blackbox Matrix Archetype
+
+  The \Ref{LinBox} blackbox matrix archetype defines the blackbox matrix 
+  common object interface.This archetype is required to be used by all 
+  \Ref{LinBox} code, and all \Ref{\LinBox} blackbox matrices should be 
+  derived from it.
+
+  @see Archetypes
+
+  @memo {@link Archetypes Archetype} for implementing the \Ref{LinBox}
+        {@link "Blackbox Matrices" blackbox matrix} common object interface.
+*/
+//@{
+  //@Include: blackbox_archetype.h
+//@}
+
+

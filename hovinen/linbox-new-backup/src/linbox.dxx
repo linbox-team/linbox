@@ -1,0 +1,26 @@
+/** @name LinBox
+
+  \begin{center}
+    {\Large{\bf LinBox Symbolic Linear Algebra Software}}
+  \end{center}
+
+  Project \URL[LinBox]{http://www.cis.udel.edu/~caviness/linbox/}
+  is a collaborative effort among researchers at a number of locations in 
+  Europe and North America. The goals are to produce algorithms and software 
+  for symbolic linear algebra, particularly using black box matrix methods, 
+  i.e. iterative methods requiring only the linear transform property of the 
+  matrix (that one can compute Ax --> y).
+
+  The project is supported by the 
+  \URL[National Science Foundation]{http://www.nsf.gov/} and CNRS. 
+
+  @author	William J Turner for the LinBox group.
+*/
+
+//@{
+  //@Include: library/archetypes/archetypes.dxx
+  //@Include: library/objects/objects.dxx
+  //@Include: wrappers/wrappers.dxx
+  //@Include: examples/examples.dxx
+//@}
+

@@ -1,0 +1,15 @@
+NTL  -- a library for doing numbery theory --  version 3.7a
+
+Author: Victor Shoup (victor@shoup.net)
+
+NTL is freely available for research and educational purposes.
+I don't want to attach any legalistic licensing restrictions on
+users of NTL.  However, NTL should not be linked in a commercial program
+(although using data in a commercial product produced by a program 
+that used NTL is fine).
+
+
+Documentation is available in the file doc/tour.html, which can
+be viewed with a web browser.
+
+The latest version of NTL is available at www.shoup.net.

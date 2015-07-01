@@ -1,0 +1,10 @@
+Makefile
+Makefile.in
+example
+ex-mat0
+load-det
+load-minpoly
+load-symmetrize
+random-rank
+.deps
+.libs

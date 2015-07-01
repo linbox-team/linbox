@@ -1,0 +1,16 @@
+/** @name Dense Vector Archetype
+
+  The \Ref{LinBox} dense vector common object interface is defined by
+  the STL vector.  For this reason, there is no dense vector archetype.
+  Note \Ref{LinBox} vectors are  indexed starting at zero, not one, 
+  just like STL vectors and C-style arrays.
+
+  For information on the STL vector, see SGI's 
+  \URL[Standard Template Library Programmer's Guide]{http://www.sgi.com/Technology/STL/}.
+
+  @see Archetypes
+
+  @memo {@link Archetypes Archetype} for implementing the \Ref{LinBox}
+        dense vector common object interface.
+*/
+

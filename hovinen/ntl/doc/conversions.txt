@@ -1,0 +1,64 @@
+CONVERSIONS
+
+destination: source
+
+
+int:         int, long, ZZ, float, double, xdouble, quad_float, RR
+long:        int, long, ZZ, float, double, xdouble, quad_float, RR
+float:       int, long, ZZ, float, double, xdouble, quad_float, RR
+double:      int, long, ZZ, float, double, xdouble, quad_float, RR
+xdouble:     int, long, ZZ, float, double, xdouble, quad_float, RR, const char*
+quad_float:  int, long, ZZ, float, double, xdouble, quad_float, RR, const char*
+RR:          int, long, ZZ, float, double, xdouble, quad_float, RR, const char*
+ZZ:          int, long, ZZ, float, double, xdouble, quad_float, RR, const char*
+
+ZZ_p:        long, ZZ
+vec_ZZ_p:    vec_ZZ
+ZZ_pX:       long, ZZ_p, ZZ, ZZX, vec_ZZ_p
+
+zz_p:        long, ZZ
+vec_zz_p:    vec_ZZ
+ZZ_pX:       long, zz_p, ZZ, ZZX, vec_zz_p
+
+vec_ZZ:      vec_ZZ_p, vec_zz_p
+ZZX:         long, ZZ, ZZ_pX, zz_pX
+
+GF2:         long, ZZ
+vec_GF2:     GF2X
+GF2X:        long, ZZ, GF2, vec_GF2
+
+GF2E:        long, ZZ, GF2, GF2X
+
+GF2EX:       long, ZZ, GF2, GF2E, GF2X, vec_GF2E
+
+mat_ZZ_p:    mat_ZZ  
+
+mat_zz_p:    mat_ZZ  
+
+ZZ_pE:       long, ZZ, ZZ_p, ZZ_pX
+ZZ_pEX:      long, ZZ, ZZ_p, ZZ_pE, ZZ_pX
+
+zz_pE:       long, ZZ, zz_p, zz_pX
+zz_pEX:      long, ZZ, zz_p, zz_pE, zz_pX
+
+
+********** NOTES ***********
+
+[1] All conversion operators come in procedural or functional
+    form.  To covert a of type S to a of type T, you can write
+       conv(x, a);
+    or
+       x = to_T(a);
+
+[2] All floating point to integral conversions compute the floor
+    function.
+
+[3] All polynomial to polynomial conversions apply coefficient-wise
+    conversion.
+
+[4] All vector/matrix to vector/matrix conversions apply element-wise
+    conversion.
+
+[5] The GF2X/ZZ_pX/zz_pX to GF2E/ZZ_pE/zz_pE conversions reduce
+    the given polynomial modulo the current modulus.
+

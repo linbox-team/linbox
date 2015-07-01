@@ -1,0 +1,70 @@
+
+if  test -f GetTime.c
+then
+echo "GetTime.c installed"
+exit 0
+fi
+
+echo "does anybody really know what time it is?"
+
+CC=$1
+shift
+
+if test -f TestGetTime
+then
+rm TestGetTime
+fi
+
+echo $CC -o TestGetTime $* TestGetTime.c GetTime1.c
+$CC -o TestGetTime $* TestGetTime.c GetTime1.c > /dev/null 2>&1
+
+if test -f TestGetTime
+then
+cp GetTime1.c GetTime.c
+echo "using GetTime1.c"
+exit 0
+fi
+
+echo $CC -o TestGetTime $* TestGetTime.c GetTime2.c
+$CC -o TestGetTime $* TestGetTime.c GetTime2.c > /dev/null 2>&1
+
+if test -f TestGetTime
+then
+cp GetTime2.c GetTime.c
+echo "using GetTime2.c"
+exit 0
+fi
+
+echo $CC -o TestGetTime $* TestGetTime.c GetTime3.c
+$CC -o TestGetTime $* TestGetTime.c GetTime3.c > /dev/null 2>&1
+
+if test -f TestGetTime
+then
+cp GetTime3.c GetTime.c
+echo "using GetTime3.c"
+exit 0
+fi
+
+echo $CC -o TestGetTime $* TestGetTime.c GetTime4.c
+$CC -o TestGetTime $* TestGetTime.c GetTime4.c > /dev/null 2>&1
+
+if test -f TestGetTime
+then
+cp GetTime4.c GetTime.c
+echo "using GetTime4.c"
+exit 0
+fi
+
+echo $CC -o TestGetTime $* TestGetTime.c GetTime5.c
+$CC -o TestGetTime $* TestGetTime.c GetTime5.c > /dev/null 2>&1
+
+if test -f TestGetTime
+then
+cp GetTime5.c GetTime.c
+echo "using GetTime5.c"
+exit 0
+else
+echo "some thing is wrong..."
+exit 1
+fi
+

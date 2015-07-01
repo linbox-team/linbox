@@ -1,0 +1,7 @@
+ATTIC
+.libs
+.deps
+libranditer.la
+mersenne-twister.lo
+Makefile
+Makefile.in

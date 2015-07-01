@@ -1,0 +1,13 @@
+#undef HAVE_LC_MESSAGES
+#undef BINDIR
+#undef DATADIR
+#undef PACKAGE
+#undef PLUGINDIR 
+#undef VERSION
+#undef ENABLE_NLS
+#undef HAVE_CATGETS
+#undef HAVE_GETTEXT
+#undef HAVE_LIBSM
+#undef HAVE_STPCPY
+#undef HAVE_ORBIT
+#undef WITH_SYMBOL_UNDERSCORE

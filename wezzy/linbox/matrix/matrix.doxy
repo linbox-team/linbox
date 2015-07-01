@@ -1,0 +1,63 @@
+// Copyright 2010 LinBox. See COPYING for licence information.
+/*
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+ */
+
+/**  \ingroup linbox
+  \defgroup matrix matrix
+  \brief These matrix representations provide iterators for element access.
+
+  The class \c LinBox::DenseMatrixBase provides an archetype for matrices that
+  are "directly represented", that is, where the user has direct access to
+  iterators over the rows and columns, and to all of the elements themselves by
+  position.
+
+  The class \c LinBox::SparseMatrixBase provides an archetype for matrices that
+  are partially "directly represented", that is, where the user has direct
+  access to (sparse) iterators over the rows and columns, and to all of the
+  nonzero elements themselves by position.
+
+  The directly represented matrices are pure containers; they provide no matrix
+  arithmetic and do not implement the black box interface (but this is added in
+  their counterparts \c LinBox::DenseMatrix and \c LinBox::SparseMatrix in \ref
+  blackbox) They are parameterized solely by element type. The field is not
+  necessary.
+
+  Matrices in general may omit one of the iterators, either the row iterator or
+  the column iterator. This is useful for, e.g. sparse matrices that are
+  represented by sparse row vectors, since column vectors are computationally
+  expensive to compute without directly building the transpose of the matrix.
+
+  The class \link LinBox::MatrixDomain MatrixDomain \endlink provides a
+  complete suite of matrix arithmetic that works transparently with any class
+  meeting the interface defined by the classes below. This includes
+  matrix-matrix addition and multiplication, matrix-vector multiplication, and
+  matrix-blackbox (c.f. \link LinBox::BlackboxArchetype BlackboxArchetype
+  \endlink ) multiplication.
+
+  @todo talk about Linux::BlasPermutation
+ */
+
+ /*! @ingroup matrix
+ * @defgroup iterators Iterators
+ * @brief NO DOC YET
+ */
+
+
+// vim:syn=doxygen

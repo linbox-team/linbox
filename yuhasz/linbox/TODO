@@ -1,0 +1,15 @@
+ - Test suite for random iterators
+ - Test suite for vector stream
+ - Import commentator time estimate code
+ - 
+ - Everything in tests/TODO
+
+Before meeting:
+ - Complete GF2 tests and get them working (BitVector tested implicitly)
+ - Write tests for Compose, Permutation, Transpose
+ - Add DenseRowsMatrix test to matrix-domain test suite
+ - Fix filenames in CVS
+ - Updates to Jean-Guillaume's gauss code?
+ - Add solver, determinant to Jean-Guillaume's code?
+ - Add more pivoting strategies?
+ - New Compose implementation?

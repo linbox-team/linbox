@@ -1,0 +1,23 @@
+cvs rm field/matrix-domain.C (after verifying uselessness)
+cvs rm randiter/archetype.doxy
+file docs of examples fixed
+file docs of */archetype.h removed
+eliminate */archetype.doxy's ?
+eliminate randiter/randiters.doxy's ?
+resolve modular-balance-int32 vs modular-int32 wierdness (same ifndef, can't coexist?).
+------- older below -----------
+ - Test suite for random iterators
+ - Test suite for vector stream
+ - Import commentator time estimate code
+ - 
+ - Everything in tests/TODO
+
+Before meeting:
+ - Complete GF2 tests and get them working (BitVector tested implicitly)
+ - Write tests for Compose, Permutation, Transpose
+ - Add DenseRowsMatrix test to matrix-domain test suite
+ - Fix filenames in CVS
+ - Updates to Jean-Guillaume's gauss code?
+ - Add solver, determinant to Jean-Guillaume's code?
+ - Add more pivoting strategies?
+ - New Compose implementation?

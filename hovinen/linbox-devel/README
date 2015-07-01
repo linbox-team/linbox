@@ -1,0 +1,55 @@
+LinBox development CVS module
+
+This CVS module is intended for developers to have a forum for sharing
+their experiments and incomplete work. All developers are encouraged
+to commit any work they have to this module. Work that will be
+included in LinBox proper will be transferred to the CVS module 'linbox'.
+
+There are no requirements for committing source code to this module,
+other than respecting the integrity of the work of others. Do not
+worry about testing, documentation, naming, or stylistic
+conventions. Do not worry about breaking the build, either, since
+there is no library to distribute from these sources. Do not be
+concerned with where things should go in the directory hierarchy; the
+hierarchy supplied here is given for convenience only. If you want
+your work to go into LinBox proper, you will have to make sure it
+follows all of the necessary conventions when inserted into the module
+'linbox'.
+
+However, *please* be careful about committing changes to the core
+build system files, such as configure.in and the various
+Makefile.am's. They do not need to be pristine and orderly, but they
+should always work. If someone is working on something in this module
+and suddenly ./configure breaks, it can be very disruptive. There
+should be no need to modify configure.in in practice, and
+modifications to the various Makefile.am's are very simple (see
+below).
+
+For instructions on how to use this module, please see the file
+INSTALL
+
+Working with Makefile.am
+========================
+
+If you want to add a header file, you can just 'cvs add' and
+commit. If you want the header file to be copied to the install
+directory when you invoke 'make install', add the file to the line
+starting with 'include_HEADERS = ' in the file Makefile.am in your
+header file's directory. This step is not mandatory; if you do not use
+'make install' from the linbox-devel module, then you can skip it.
+
+To create a program that can be compiled with Make, add the name of
+the binary to the line starting with 'EXTRA_PROGRAMS = ' in the file
+Makefile.am where the source code for the program resides. Then add a
+line '<binary name>_SOURCES = <sources>' to that Makefile.am, where
+<sources> is a space-separated list of the program's source files and
+<binary name> is the name of the output binary with non-alphanumeric
+characters replaced by '_'. For example, the program "my-program", as
+given in EXTRA_PROGRAMS, with source file "my-program.C" should have a
+line 'my_program_SOURCES = my-program.C' in Makefile.am.
+
+When you are done, just cvs add and commit the source file(s) and the
+changes to Makefile.am. To compile the program, type 'make <binary>'
+where <binary> is as given in EXTRA_PROGRAMS.
+
+-Bradford Hovinen

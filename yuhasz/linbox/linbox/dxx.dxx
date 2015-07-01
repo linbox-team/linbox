@@ -1,0 +1,25 @@
+/** name dxx files
+ @memo all the subdir .dxx files
+*/
+//@{
+/*
+  //@Include: algorithms/algorithms.dxx
+  //@Include: blackbox/blackbox.dxx
+  //@Include: element/element.dxx
+  //@Include: field/abstract.dxx
+  //@Include: field/archetype.dxx
+  //@Include: field/field-wrappers.dxx
+  //@Include: field/fields.dxx
+  //@Include: field/parametric.dxx
+  //@Include: field/unparametric.dxx
+  //@Include: field/wrappers.dxx
+*/
+  //@Include: matrix/matrices.dxx
+  //@Include: randiter/archetype.dxx
+  //@Include: randiter/randiter-wrappers.dxx
+  //@Include: randiter/random.dxx
+  //@Include: vector/dense-archetype.dxx
+  //@Include: vector/dense-vectors.dxx
+  //@Include: vector/sparse-archetype.dxx
+  //@Include: vector/sparse-vectors.dxx
+//@}

@@ -1,0 +1,43 @@
+/** @name Algorithms
+
+  @memo	The core linear algebra algorithms of LinBox
+
+  @doc
+  {\bf Algorithms.}
+
+  The codes here implement core algorithms for linear algebra problems.  The names often
+  reflect the authorship of the central algorithm (Lanczos, Wiedemann, ...).  
+  In contrast, the "drivers" in the 
+  solutions directory are named for the problem solved (rank, det, ...).  
+  Those are generally wrappers of
+  algorithms from this directory.  Their purpose is to give a simple and direct user interface 
+  and sometimes to provide a solution strategy which is a hybrid of algorithms from this directory.
+
+  Algorithm classes and functions generally have the field class as a template parameter. 
+  Blackbox algorithms may have a BlackboxMatrix parameter or allow a Blackbox class as 
+  template parameter.  
+  Elimination codes work over DenseMatrix or SparseMatrix types with varying degrees of
+  substitution among the types possible.
+
+*/
+
+//@{
+  //@Include: blackbox-block-container-base.h*
+  //@Include: blackbox-block-container.h*
+  //@Include: blackbox-container-base.h
+  //@Include: blackbox-container-symmetric.h
+  //@Include: blackbox-container-symmetrize.h
+  //@Include: blackbox-container.h
+  //@Include: block-lanczos.h
+  //@Include: block-massey-domain.h
+  //@Include: cra.h
+  //@Include: dense-container.h
+  //@Include: gauss.h
+  //@Include: lanczos.h
+  //@Include: lsp.h
+  //@Include: lsp-tools.h
+  //@Include: massey-domain.h
+  //@Include: wiedemann.h
+//@}
+
+

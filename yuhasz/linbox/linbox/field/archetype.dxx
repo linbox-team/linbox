@@ -1,0 +1,16 @@
+/** @name Field Archetype
+
+  The \Ref{LinBox} field archetype defines the field common object interface.
+  This archetype is not required to be used.
+
+  @see Archetypes
+
+  @memo Archetype for implementing the LinBox
+        field common object interface.
+*/
+//@{
+  //@Include: archetype.h
+  //@Include: abstract.h
+  //@Include: envelope.h
+//@}
+

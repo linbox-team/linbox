@@ -1,0 +1,28 @@
+/** @name Fields
+
+  All \Ref{LinBox} fields must implement the field common object interface 
+  as it is defined in the field {@link Archetypes archetype}.  
+  This interface consists of the methods required of all \Ref{LinBox} fields.
+
+  @see Archetypes
+
+  @memo	\Ref{LinBox} fields and field interfaces.
+*/
+
+//@{
+  //@Include: field-interface.h
+  //@Include: archetype.h
+  //@Include: parametric.dxx
+  //@Include: givaro-gfq.h
+  //@Include: givaro-zpz.h
+  //@Include: gmp-rational.h
+  //@Include: lidia-gfq.h
+  //@Include: modular.h
+  //@Include: ntl-RR.h
+  //@Include: ntl-zz_p_2.h
+  //@Include: ntl-ZZ_pE.h
+  //@Include: ntl-zz_p.h
+  //@Include: param-fuzzy.h
+  //@Include: unparametric.h
+//@}
+

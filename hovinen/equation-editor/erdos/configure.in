@@ -1,0 +1,49 @@
+AC_INIT(erdos.c)
+
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(erdos, 0.0.1)
+AM_MAINTAINER_MODE
+AM_ACLOCAL_INCLUDE(macros)
+
+GNOME_INIT
+AC_ISC_POSIX
+AC_PROG_CC
+AC_STDC_HEADERS
+AC_ARG_PROGRAM
+AM_PROG_LIBTOOL
+
+## this should come after `AC_PROG_CC'
+GNOME_COMPILE_WARNINGS
+GNOME_XML_CHECK
+GNOME_X_CHECKS
+
+AC_SUBST(CFLAGS)
+AC_SUBST(CPPFLAGS)
+AC_SUBST(LDFLAGS)
+
+dnl ## internationalization support
+ALL_LINGUAS="pigl"
+AM_GNOME_GETTEXT
+
+
+AC_PROG_MAKE_SET
+
+AM_PATH_GLIB
+AM_PATH_GTK
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+
+dnl Checks for library functions.
+AC_CHECK_FUNCS(mkdir)
+
+AC_OUTPUT([
+Makefile
+macros/Makefile
+intl/Makefile
+po/Makefile.in
+],[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])

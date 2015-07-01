@@ -1,0 +1,15 @@
+/*- @name fields
+
+  @memo
+  LinBox field system illustrated.
+  @doc
+  These examples basic use of linbox fields and field wrappers.
+*/
+/** @name examples
+//@{
+    //@Include: *.h
+    //@Include: *.C
+    //@Include: *.cpp
+//@}
+
+

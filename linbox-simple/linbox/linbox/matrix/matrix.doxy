@@ -1,0 +1,31 @@
+/** \defgroup matrix linbox/matrix
+ These matrix representations provide iterators for element access.
+
+The class LinBox::DenseMatrixBase provides an archetype for matrices that are
+"directly represented", that is, where the user has direct access to
+iterators over the rows and columns, and to all of the elements themselves
+by position. 
+
+The class LinBox::SparseMatrixBase provides an archetype for matrices that are
+partially "directly represented", that is, where the user has direct access to
+(sparse) iterators over the rows and columns, and to all of the nonzero elements 
+themselves by position. 
+
+The directly represented matrices are pure containers; they provide no matrix
+arithmetic and do not implement the black box interface (but this is added
+in their counterparts LinBox::DenseMatrix and LinBox::SparseMatrix in \ref blackbox) 
+They are
+parameterized solely by element type. The field is not necessary.
+
+Matrices in general may omit one of the iterators, either the row iterator or
+the column iterator. This is useful for, e.g. sparse matrices that are
+represented by sparse row vectors, since column vectors are computationally
+expensive to compute without directly building the transpose of the matrix.
+
+The class \link LinBox::MatrixDomain MatrixDomain \endlink provides a 
+complete suite of matrix arithmetic
+that works transparently with any class meeting the interface defined by the
+classes below. This includes matrix-matrix addition and multiplication,
+matrix-vector multiplication, and matrix-blackbox
+(c.f. \link LinBox::BlackboxArchetype BlackboxArchetype \endlink ) multiplication.
+ */

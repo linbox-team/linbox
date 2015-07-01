@@ -1,0 +1,7 @@
+#csh
+foreach i (`ls html/*.html`)
+ sed s/Alphabetic\ index/top/ $i > $i.sed
+end
+foreach i (`ls html/*.html`)
+ mv $i.sed $i
+end

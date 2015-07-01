@@ -1,0 +1,7 @@
+module MyModule 
+{
+	interface MyInterface 
+	{
+		string randomize (in string str);
+	};
+};

@@ -1,0 +1,60 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (X11; U; SunOS 5.8 sun4u) [Netscape]">
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+&nbsp;
+<center>
+<p><b><font size=+2>How to install LinBox for developpers (cvs)</font></b></center>
+
+<p><br>
+<blockquote>See also <a href="../HACKING">HACKING</a>.&nbsp; Once the LinBox
+module has been checked out using cvs,
+<p><b>To do 0. </b>Make sure the bin of <tt>autoconf</tt>, <tt>automake</tt>
+and <tt>libtool </tt>are in your path.<b> </b>Depending on your system
+installation (see <a href="../HACKING">HACKING</a>), you may also need
+to set the environment variable <tt>ACLOCAL_FLAGS</tt> to <tt>"-I &lt;automake,
+libtool prefix>/share/aclocal"</tt>.</blockquote>
+
+<blockquote><b>To do 1.</b> Go to the newly-created linbox directory and
+run the script
+<b>autogen.sh,</b> optionally you may specify the LinBox
+installation directory or an optional package directory using prefixes:
+<blockquote><tt>> cd linbox-new</tt>
+<br><tt>> ./autogen.sh [--prefix=&lt;inst. dir.> --with-package-prefix=&lt;location>]</tt></blockquote>
+<tt><a href="http://swox.com/gmp">Gmp</a></tt> is required and its location
+must be specified &lt;gmp location> is not a standard location such as
+<tt>/usr</tt> or <tt>/usr/loca</tt>l:
+<blockquote><tt>>&nbsp;./autogen.sh --with-gmp-prefix=&lt;gmp location>
+[...]</tt></blockquote>
+This sets up the library and runs&nbsp; .<tt>/configure</tt>
+<p>Some possible prefixes:
+<blockquote>- Where to put the <tt>include/</tt> and <tt>lib/</tt> directories:
+<blockquote><tt>--prefix &lt;chosen installation directory></tt>
+<br>Ex:&nbsp; <tt>--prefix `pwd` </tt>will put the files within the current
+directory</blockquote>
+- The use of an optional package is switched on by specifying the directory
+where it can be found:
+<blockquote>--with-package-prefix=&lt;package>
+<br>Ex:&nbsp;&nbsp;&nbsp; <tt>--with-alp-prefix=&lt;alp_directory>&nbsp;&nbsp;&nbsp;
+(ALP)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; --with-givaro-prefix=&lt;givaro_directory>&nbsp;&nbsp;
+(<a href="http://www-apache.imag.fr/software/givaro/">Givaro</a>)</tt>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <tt>--with-lidia-prefix=&lt;lidia_directory>&nbsp;
+(<a href="http://www.informatik.tu-darmstadt.de/TI/LiDIA/">Lidia</a>)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; --with-ntl-prefix=&lt;ntl_directory>&nbsp;&nbsp;&nbsp;
+(<a href="http://shoup.net/ntl/">NTL</a>)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; --with-saclib-prefix=&lt;saclib_directory>&nbsp;
+(Saclib)</tt></blockquote>
+</blockquote>
+<b>To do 2.&nbsp; </b>Install the library:
+<blockquote><tt>>&nbsp; make install</tt></blockquote>
+</blockquote>
+
+<hr WIDTH="100%">
+<div align=right><font size=-1>Copyright 1999 The Linbox Group.</font></div>
+
+</body>
+</html>

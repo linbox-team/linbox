@@ -1,0 +1,17 @@
+/** @name Element Archetype
+
+  The \Ref{LinBox} element archetype defines the element common object 
+  interface.
+  This archetype is not required to be used.
+
+  @see Archetypes
+
+  @memo {@link Archetypes Archetype} for implementing the \Ref{LinBox}
+        {@link Elements element} common object interface.
+*/
+//@{
+  //@Include: archetype.h
+  //@Include: abstract.h
+  //@Include: envelope.h
+//@}
+

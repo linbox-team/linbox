@@ -1,0 +1,17 @@
+/** @name Paramteric Fields
+
+  These \Ref{LinBox} fields all meet the field common object interface
+  and are parameterized fields in that the field object contains information
+  about the field that would otherwise have to be stored in a static member.
+
+  @see Fields
+
+  @memo \Ref{LinBox} paramteric fields.
+*/
+
+//@{
+  @Include: param-modular.h
+  @Include: param-fuzzy.h
+//@}
+
+

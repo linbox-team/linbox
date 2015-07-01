@@ -1,0 +1,81 @@
+/** \defgroup algorithms linbox/algorithms
+
+The core linear algebra algorithms of LinBox
+
+The codes here implement algorithms for linear algebra problems.  The names often
+reflect the authorship of the central algorithm (Lanczos, Wiedemann, ...).  
+In contrast, the "drivers" in the 
+\ref solutions directory are named for the problem solved (rank, det, ...).  
+Those are generally wrappers of
+algorithms from this directory.  Their purpose is to give a simple and direct user interface 
+and sometimes to provide a solution strategy which is a hybrid of algorithms from this directory.
+
+%Algorithm classes and functions generally have the field class as a template parameter. 
+Blackbox algorithms may have a BlackboxMatrix parameter or allow a Blackbox class as 
+template parameter.  
+Elimination codes work over DenseMatrix or SparseMatrix types with varying degrees of
+substitution among the types possible.
+
+*/
+
+//@{
+
+/// @name Blackbox Algorithms
+//@{
+  //@Include: wiedemann.h
+  //@Include: lanczos.h
+
+
+  //@Include: blackbox-container.h
+  //@Include: blackbox-container-base.h
+  //@Include: blackbox-container-symmetric.h
+  //@Include: blackbox-container-symmetrize.h
+
+  //@Include: massey-domain.h
+  //@Include: density.h
+//@}
+
+/// @name Blackbox Block Algorithms
+//@{
+  //@Include: blackbox-block-container-base.h
+  //@Include: blackbox-block-container.h
+  //@Include: block-massey-domain.h
+
+  //@Include: block-lanczos.h
+  //@Include: dense-container.h
+  //@Include: blas-domain.h
+
+//@}
+
+/// @name Rational Solver
+//@{
+  //@Include: rational-solver.h
+  //@Include: diophantine-solver.h
+  //@Include: lifting-container.h
+  //@Include: rational-reconstruction.h
+  //@Include: matrix-inverse.h
+  //@Include: matrix-mod.h
+  //@Include: matrix-rank.h
+  //@Include: vector-fraction.h
+//@}
+
+/// @name Smith Normal Form
+//@{
+  //@Include: smith-form.h
+  //@Include: iliopoulos-elimination.h
+  //@Include: ith-invariant-factor.h
+  //@Include: last-invariant-factor.h
+
+  //@Include: local-smith.h
+  //@Include: 2local-smith.h
+  //@Include: bitonic-sort.h
+
+  //@Include: default.h
+//@}
+
+  //@Include: gauss.h
+
+  //@Include: cra.h
+//@}
+
+

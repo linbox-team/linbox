@@ -1,0 +1,17 @@
+/** @name Objects
+
+  @memo LinBox field, element, vector, random iterator, and blackbox matrix objects.
+*/
+
+//@{
+  //@Include: field/fields.dxx
+  //@Include: field/vector-domain.h
+  //@Include: field/matrix-domain.h
+  //@Include: element/elements.dxx
+  //@Include: randiter/random.dxx
+  //@Include: blackbox/blackboxes.dxx
+  //@Include: blackbox/matrices.dxx
+  //@Include: vector/dense-vectors.dxx
+  //@Include: vector/sparse-vectors.dxx
+//@}
+

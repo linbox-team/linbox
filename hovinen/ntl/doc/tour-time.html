@@ -1,0 +1,133 @@
+<html>
+<head>
+<title>
+A Tour of NTL: Some Performance Data  </title>
+</head>
+
+<body bgcolor="#fff9e6">
+<h1> 
+<p align=center>
+Some Performance Data 
+</p>
+</h1>
+
+<p>
+
+NTL is high-performance software,
+offering high-quality implementations of the best algorithms.
+Here are some timing figures from the current version of NTL.
+The figures were obtained using an IBM RS6000 Workstation, Model 43P-133,
+which has a 133 MHz PowerPC Model 604 processor.
+The operating system is AIX and the compiler is xlC.
+The compiler options were 
+<tt>-O2  -qarch=ppc</tt>
+and the NTL flags <tt>NTL_AVOID_FLOAT</tt> and <tt>NTL_TBL_REM</tt>
+were set.
+
+<p>
+
+The first problem considered is the factorization of 
+univariate polynomials modulo a prime <var>p</var>.
+As test polynomials, we take the family of polynomials
+defined in [V. Shoup, J. Symb. Comp. 20:363-397, 1995].
+For every <var>n</var>, we define <var>p</var> 
+to be the first prime greater than
+<var>2^(n-2)*PI</var>, and the polynomial is 
+<p>
+<var>sum(a[n-i]*X^i, i = 0..n), </var>
+<p>
+where <var>a[0] = 1</var>, and <var>a[i+1] = a[i]^2 + 1.</var>
+Here are some running times:
+
+<p>
+<table cellpadding=10>
+<tr>
+<td> <var>n</var> <td> 64 <td> 128 <td> 256 <td> 512 <td> 1024 
+<tr>
+<td> hh:mm:ss <td> 2 <td> 13 <td> 1:53 <td> 21:01 <td> 4:05:25
+</table>
+
+<p>
+Also of interest is space usage.
+The <var>n</var> = 512 case used 4MB main memory, 
+and the <var>n</var> = 1024 case used 17 MB main memory.
+
+<p>
+Another test suite, this time using small primes,
+was used by Kaltofen and Lobo (Proc. ISSAC '94).
+One of their polynomials is a degree 10001 polynomial,
+modulo the prime 127.
+This polynomial was factored with NTL in just over 3 hours,
+using 17MB of memory.
+
+
+<p>
+
+The second problem considered is factoring univariate polynomials 
+over the integers.
+This test suite comes from <a href="http://www.loria.fr/~zimmerma">
+Paul Zimmermann </a>.
+The polynomial <var>P1(X)</var> has
+degree 156, coefficients up to 424 digits, and 36 factors 
+(12 of degree 2, 15 of degree 4, 9 of degree 8). The
+polynomial <var>P2(X)</var> has degree 196, 
+coefficients up to 419 digits and 12 factors 
+(2 of degree 2, 4 of degree 12 and
+6 of degree 24). 
+The polynomial <var>P3(X)</var> has degree 336, 
+coefficients up to 597 digits and 16 factors (4 of degree
+12 and 12 of degree 24). 
+The polynomial <var>P4(X)</var> has degree 462, 
+coefficients up to 756 digits, and two factors
+of degree 66 and 396.
+The polynomial <var>P5(X)</var> has degree 64, coefficients of up to 40
+digits, and is irreducible.
+It is a so-called Swinnerton-Dyer polynomial,
+which is one of the most difficult types to factor (or prove irreducible).
+<a href="http://www.loria.fr/~zimmerma/mupad"> More details </a> 
+on this test suite are available.
+
+<p>
+
+Our running times (hh:mm:ss) were as follows:
+<pre>
+   15, 21, 1:12, 3:56, 2:17.
+</pre>
+In all cases less than 5MB of main memory was used.
+These times reflect significant improvements to
+the factorizer available since version 3.6a.
+As a comparison, here are the corresponding times in version 3.5a:
+<pre>
+   21, 23, 1:16, 1:37:10, 1:25:00.
+</pre>
+In addition to the above polynomials, Zimmermann has recently
+added a challenge polynomial <var>P8(X)</tt> to his list
+of challenge polynomials.
+This is a particularly hard-to-factor polynomial, but using
+new techniques, we were able to prove that it is irreducible
+in time <tt>1:41:00</tt> using 128MB of memory on a 375MHz PowerPC
+(model 43P-150).
+This technique is based on a time/space tradeoff.
+For example, using 64MB of memory, the running time for the
+same calculation was <tt>2:40:00</tt>.
+
+<p>
+NTL's lattice basis reduction code has been used to push the envelope
+on breaking new lattice-based cryptosystems.
+To date, NTL's lattice code has been used to break the
+GGH cryptosystem [Goldreich, Goldwasser, Halevi, Crypto '97]
+up to dimension 350.
+These experiments were designed
+and conducted by 
+<a href="http://www.dmi.ens.fr/~pnguyen">Phong Nguyen</a>.
+
+<p>
+
+<p align=center>
+<a href="tour-impl.html">[Previous]</a>
+ &lt;&lt;&lt;&lt; 
+ <a href="tour.html">[Up]</a> &gt;&gt;&gt;&gt; 
+ <a href="tour-roadmap.html">[Next]</a>
+</p>
+</body>
+</html>

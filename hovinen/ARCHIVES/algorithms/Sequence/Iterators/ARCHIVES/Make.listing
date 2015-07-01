@@ -1,0 +1,37 @@
+#!/bin/csh -f
+
+set output = $1
+
+set suff = `basename $1 | sed 's/.*\.//g'`
+
+set nnam = `basename $output .$suff`
+set name = `echo $nnam | nawk '{ s=toupper(substr($1,0)); for(i=2;i<NF;i++) { s=s" "toupper(substr($i,0)); } print s; }'`
+set list = (`fgrep "SUBDIRS" Makefile | sed 's/SUBDIRS//g;s/=/ /g'`)
+
+echo "//----------------------------------" > $output
+echo "// Copyright (c), The Linbox Group" >> $output
+echo "// `date`" >> $output
+echo "//----------------------------------" >> $output
+echo "#ifndef __${name}__" >> $output
+echo "#define __${name}__" >> $output
+if  ("$suff" == "C") then
+	echo "#include "\""${nnam}.h"\"  >> $output
+endif
+
+foreach rep ($list)
+	(ls $rep/*.${suff}) >& /dev/null
+	if ($status == 0) then 
+		set rlist = ($rep/*.${suff})
+		if ("$suff" == "h") then
+			(ls $rep/*.inl) >& /dev/null
+			if ($status == 0) then
+				set rlist = ($rlist $rep/*.inl)
+			endif
+		endif	
+		foreach fic ($rlist)
+			echo "#include "\"`basename $fic`\"  >> $output
+		end
+	endif
+end
+
+echo "#endif" >> $output

@@ -1,0 +1,228 @@
+In this file are instructions for developers and those wishing to
+contribute to Linbox. It is intended both for the uninitiated and for
+the reference of existing developers.
+
+I. Compilation and installation
+
+If you are installing from a tarred distribution, please see the file
+INSTALL for basic instructions on how to install Linbox. If you are
+installing from CVS, please see the instructions in section (III)
+below.
+
+II. Basic layout
+
+Linbox is a template library, so installation requires very little
+actual compilation. Nearly all of the library is in header
+files. Directories in the source distribution are as follows, relative
+to the tree's root:
+
+doc/      - Documentation (see below)
+examples/ - Simple examples to help new users get started with the
+		library
+macros/   - Files to assist the build system
+src/      - All library source (i.e. header files) goes here
+	algorithms/ - Specific algorithms
+		sequence/ - Krylov subspace and Wiedemann sequences
+		massey/   - Berlekamp-Massey implementation
+		lanczos/  - Lanczos and block Lanczos algorithm
+	blackbox/   - Black box (i.e. matrix) objects
+	element/    - Objects representing field elements
+	field/      - Objects representing fields (e.g. rationals,
+			integers modulo p, etc.)
+	iterator/   - Iterators allowing one to browse the entries in a
+			vector
+	random/     - Random number generators
+	vector/     - Vector implementations
+		sparse/ - Sparse vectors
+		dense/  - Dense vectors
+	util/	    - Utility routines that don't belong anywhere else
+test/     - Tests for library performance and correctness
+util/     - Scripts and other miscellaneous items, mostly for making
+		library maintenance easier 
+
+N.B. Though the doc/ directory contains some top-level and tutorial
+documentation, reference documentation is stored in parallel with the
+source code, under the src/ tree.
+
+III. CVS
+
+Linbox is stored in a CVS repository at the University of Delaware. To
+access the latest bleeding edge copy of Linbox from this source, you
+will need a working copy of CVS and all of the GNU development tools
+(e.g. autoconf, automake, GNU make, and so on). To access CVS:
+
+1. Set your CVSROOT environment variable (on Bourne shell):
+
+export CVSROOT=:pserver:<username>@linbox.pc.cis.udel.edu:/home/cvs
+
+(and on the C shell):
+
+setenv CVSROOT :pserver:<username>@linbox.pc.cis.udel.edu:/home/cvs
+
+2. Log in to CVS; you only ever need to do this once for any given
+Unix shell account:
+
+cvs login
+
+3. Check out the linbox module
+
+cvs -z3 co linbox
+
+The -z3 option compresses the data in transit, making the operation
+faster for remote users.
+
+4. Switch to the newly-created linbox directory and run the script
+autogen.sh, optionally specifying the installation prefix:
+
+cd linbox
+./autogen.sh [--prefix=<prefix>]
+
+5. Install the library:
+
+make install
+
+When you want to update your tree with the contents of the main CVS
+repository, issue the following command from the linbox/ directory:
+
+cvs -z3 up -dP
+
+The -z3 option is as before and the -dP option tells CVS to update the
+directory structure as well as the files. Note that the order of items
+in that command *is* important.
+
+You should receive some information on what files have been
+updated. If any files have a "C" before them, this means what you have
+conflicts with what is in the repository. In other words, you made
+changes while someone else made other changes and CVS does not know
+how to reconcile the two. You will need to edit that file manually,
+looking for and fixing lines like
+
+<<<<<<<<<<<
+
+===========
+
+>>>>>>>>>>>
+
+that show the sections that could not be reconciled.
+
+If you have made changes and would like to commit them to the global
+repository, issue the command
+
+cvs -z3 ci [<filename(s)>]
+
+The optional filename(s) argument specifies what you would like to
+commit; the default is to commit everything that has changed in the
+current directory and its descendents. When you enter this command, a
+text editor will come up prompting you for a log message. *ALWAYS
+ENTER A LOG MESSAGE DESCRIBING WHAT YOU HAVE CHANGED*. Failure to do
+so may result in your changes being backed out by the
+administrator. When you are done entering your message, simply save
+and exit the text editor.
+
+If you are not a main Linbox developer but would like to submit some
+addition or modification, your code is welcome. Please email a patch
+(use 'cvs -z3 diff -u' to form a patch) to us and we will consider
+including it.
+
+IV. Coding standards
+
+1. Indentation style
+
+We use the Linux indentation style, i.e. K&R with 8-space indents. We
+would like to keep this standard, so please use it for any code
+submitted to the project. Here is an example:
+
+void myFunction (int a, int b, int c)
+{
+	int d;
+
+	if (a == 0) {
+		d = 1;
+	}
+	else if (a == 1) {
+		d = 2;
+		myOtherFunction (b, c);
+	} else {
+		d = 3;
+	}
+}
+
+template <class T>
+class MyClass : public MyOtherClass {
+	int _b;
+
+    public:
+	MyClass (int a)
+		: MyOtherClass (a), _b (0)
+	{
+	}
+};
+
+2. Naming conventions
+
+We use Java/Smalltalk conventions for naming classes, methods, and
+variables. Classes whose names have several words have all the words
+juxtaposed without underscores, and each word has its first letter
+capitalized (e.g. MyClass, MyOtherClass). Methods are similar, except
+that the first letter of the first word is lower case
+(e.g. myMethod). Global constants should be all upper case with
+underscores between the words (e.g. MY_CONSTANT). In addition,
+variables that are members of classes should begin with an underscore
+to differentiate them from methods and parameters (e.g. int _myMember;
+int myMember () const;).
+
+Directory and file names should be in lower case, with words separated
+by a hyphen ('-'), e.g. my-file.h
+
+We generally avoid abbreviations so as to avoid confusion among users
+of the library. However, some very commonly used features are
+abbreviated and some words commonly used together are treated as a
+single word. For example, we use "minpoly" rather than
+"MinimalPolynomial" and "Blackbox" rather than "BlackBox".
+
+3. Licensing
+
+This code is licensed under the GNU Lesser General Public License (see
+COPYING for details); all contributed code should be similarly
+licensed. We cannot accept any code that is released under a license
+legally incompatible with the LGPL, so please either license the code
+under the LGPL or explicitly place it in the public domain if you are
+unsure. Technically, code released without a license at all and not
+explicitly placed in the public domain is incompatible with the LGPL,
+so licensing it is important.
+
+4. Miscellanae
+
+We put all of our declarations in the namespace LinBox. Please put the
+lines
+
+namespace LinBox
+{
+
+... // Your code here
+
+}
+
+in all header files of contributed code.
+
+All header files should have a set of preprocessor directives to
+prevent multiple inclusion. If your header file is named
+my-header-file.h, use
+
+#ifndef __MY_HEADER_FILE_H
+#define __MY_HEADER_FILE_H
+
+... // Your code here
+
+#endif // __MY_HEADER_FILE_H
+
+surrounding the whole file, except possibly any comments you have at
+the top.
+
+All files should contain a comment at the top indicating the file
+name, copyright, authors, and licensing. Additional documentation
+would be useful. You may use any of the files in this library as a
+template.
+
+===================
+The Linbox Team
