@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/field/envelope.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -5,13 +7,10 @@
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,19 +18,19 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  *
  * ------------------------------------
  * 2002-05-14 William J. Turner <wjturner@acm.org>
- *
+ * 
  * changed randIter to RandIter.
  * ------------------------------------
  */
 
-#ifndef __LINBOX_field_envelope_H
-#define __LINBOX_field_envelope_H
+#ifndef __FIELD_ENVELOPE_H
+#define __FIELD_ENVELOPE_H
 
 #include <iostream>
 
@@ -42,22 +41,22 @@
 #include "linbox/randiter/abstract.h"
 #include "linbox/randiter/envelope.h"
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-#endif //__LINBOX_XMLENABLED
+#endif
 
 // Namespace in which all LinBox code resides
-namespace LinBox
-{
+namespace LinBox 
+{ 
 	// Forward declarations
 	template <class Field> class RandIterEnvelope;
 
 	/** \brief Derived class used to implement the field archetype
-	  \ingroup field
+	\ingroup field
 
 	  Helps to minimize
 	 * code bloat.  This class implements all purely virtual member functions
@@ -66,8 +65,9 @@ namespace LinBox
 	 * field so that it might be used with the Field archetype.
 	 */
 	template <class Field>
-	class FieldEnvelope : public FieldAbstract {
-	public:
+	class FieldEnvelope : public FieldAbstract
+	{
+	    public:
 
 		/** element type.
 		 * It is derived from the class ElementAbstract, and it must contain
@@ -82,43 +82,33 @@ namespace LinBox
 		typedef RandIterEnvelope<Field> RandIter;
 
 		/** @name Object Management
-		*/
-		//@{
-
-		/** Default constructor.
-		 * In this implementation, this means copying the field \c E._field.
 		 */
-		FieldEnvelope (void) :
-			one(),zero(),mOne()
-		{}
+		//@{
+ 
+		/** Default constructor.
+		 * In this implementation, this means copying the field {\tt E.\_field}.
+		 */
+		FieldEnvelope (void) {}
 
 		/** Constructor from field to be wrapped.
 		 * @param F Field object to be wrapped.
 		 */
-		FieldEnvelope (const Field& F) :
-			_field (F)
-			,one(Element(F.one)),zero(Element(F.zero)),mOne(Element(F.mOne))
-		{}
-
+		FieldEnvelope (const Field& F) : _field (F) {}
+ 
 		/** Copy constructor.
 		 * Constructs FieldEnvelope object by copying the field.
 		 * This is required to allow field objects to be passed by value
 		 * into functions.
-		 * In this implementation, this means copying the field \c E._field.
+		 * In this implementation, this means copying the field {\tt E.\_field}.
 		 * @param  E FieldEnvelope object.
 		 */
-		FieldEnvelope (const FieldEnvelope& E) :
-			_field (E._field)
-			,one((E.one)),zero((E.zero)),mOne((E.mOne))
-		{}
+		FieldEnvelope (const FieldEnvelope& E) : _field (E._field) {}
 
 #ifdef __LINBOX_XMLENABLED
-		FieldEnvelope(Reader &R) :
-			_field(R)
-		{}
+		FieldEnvelope(Reader &R) : _field(R) {}
 #endif
 
-
+ 
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
@@ -126,7 +116,7 @@ namespace LinBox
 		 * @return pointer to new object in dynamic memory.
 		 */
 		FieldAbstract* clone () const
-		{ return new FieldEnvelope (*this); }
+			{ return new FieldEnvelope (*this); }
 
 		/** Assignment operator.
 		 * Required by abstract base class.
@@ -156,7 +146,7 @@ namespace LinBox
 			_field.init (static_cast<ElementEnvelope<Field>&> (x)._elem, y);
 			return x;
 		}
-
+ 
 		/** Conversion of field base element to a template class T.
 		 * This function assumes the output field base element x has already been
 		 * constructed, but that it is not already initialized.
@@ -169,7 +159,7 @@ namespace LinBox
 			_field.convert (x, static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
-
+ 
 		/** Assignment of one field base element to another.
 		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
@@ -192,8 +182,8 @@ namespace LinBox
 		 * @return integer representing cardinality of the domain
 		 */
 		integer& cardinality (integer& c) const
-		{ return _field.cardinality (c); }
-
+			{ return _field.cardinality (c); }
+ 
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
 		 * Returns a positive integer to all domains with finite characteristic,
@@ -201,7 +191,7 @@ namespace LinBox
 		 * @return integer representing characteristic of the domain.
 		 */
 		integer& characteristic (integer& c) const
-		{ return _field.characteristic (c); }
+			{ return _field.characteristic (c); }
 
 		//@} Object Management
 
@@ -236,15 +226,15 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		ElementAbstract& add (ElementAbstract& x,
-				      const ElementAbstract& y,
-				      const ElementAbstract& z) const
+				       const ElementAbstract& y,
+				       const ElementAbstract& z) const
 		{
 			_field.add (static_cast<ElementEnvelope<Field>&> (x)._elem,
 				    static_cast<const ElementEnvelope<Field>&> (y)._elem,
 				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
-
+ 
 		/** Subtraction.
 		 * x = y - z
 		 * This function assumes all the field base elements have already been
@@ -255,15 +245,15 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		ElementAbstract& sub (ElementAbstract& x,
-				      const ElementAbstract& y,
-				      const ElementAbstract& z) const
+				       const ElementAbstract& y,
+				       const ElementAbstract& z) const
 		{
 			_field.sub (static_cast<ElementEnvelope<Field>&> (x)._elem,
 				    static_cast<const ElementEnvelope<Field>&> (y)._elem,
 				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
-
+ 
 		/** Multiplication.
 		 * x = y * z
 		 * This function assumes all the field base elements have already been
@@ -274,15 +264,15 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		ElementAbstract& mul (ElementAbstract& x,
-				      const ElementAbstract& y,
-				      const ElementAbstract& z) const
+				       const ElementAbstract& y,
+				       const ElementAbstract& z) const
 		{
 			_field.mul (static_cast<ElementEnvelope<Field>&> (x)._elem,
 				    static_cast<const ElementEnvelope<Field>&> (y)._elem,
 				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
-
+ 
 		/** Division.
 		 * x = y / z
 		 * This function assumes all the field base elements have already been
@@ -293,15 +283,15 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		ElementAbstract& div (ElementAbstract& x,
-				      const ElementAbstract& y,
-				      const ElementAbstract& z) const
+				       const ElementAbstract& y,
+				       const ElementAbstract& z) const
 		{
 			_field.div (static_cast<ElementEnvelope<Field>&> (x)._elem,
 				    static_cast<const ElementEnvelope<Field>&> (y)._elem,
 				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
-
+ 
 		/** Additive Inverse (Negation).
 		 * x = - y
 		 * This function assumes both field base elements have already been
@@ -316,7 +306,7 @@ namespace LinBox
 				    static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
-
+ 
 		/** Multiplicative Inverse.
 		 * x = 1 / y
 		 * This function assumes both field base elements have already been
@@ -334,7 +324,7 @@ namespace LinBox
 
 		/** Natural AXPY.
 		 * r  = a * x + y
-		 * This function assumes all field elements have already been
+		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
 		 * @return reference to r.
 		 * @param  r field element (reference returned).
@@ -342,10 +332,10 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		ElementAbstract& axpy (ElementAbstract& r,
-				       const ElementAbstract& a,
-				       const ElementAbstract& x,
-				       const ElementAbstract& y) const
+		ElementAbstract& axpy (ElementAbstract& r, 
+					const ElementAbstract& a, 
+					const ElementAbstract& x, 
+					const ElementAbstract& y) const
 		{
 			_field.axpy (static_cast<ElementEnvelope<Field>&> (r)._elem,
 				     static_cast<const ElementEnvelope<Field>&> (a)._elem,
@@ -353,9 +343,9 @@ namespace LinBox
 				     static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return r;
 		}
-
+ 
 		//@} Arithmetic Operations
-
+ 
 		/** @name Inplace Arithmetic Operations
 		 * x <- x op y; x <- op x
 		 */
@@ -369,8 +359,8 @@ namespace LinBox
 		 * @param  x field base element.
 		 */
 		bool isZero (const ElementAbstract& x) const
-		{ return _field.isZero (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
-
+			{ return _field.isZero (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
+ 
 		/** One equality.
 		 * Test if field base element is equal to one.
 		 * This function assumes the field base element has already been
@@ -379,18 +369,7 @@ namespace LinBox
 		 * @param  x field base element.
 		 */
 		bool isOne (const ElementAbstract& x) const
-		{ return _field.isOne (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
-
-		/** MOne equality.
-		 * Test if field base element is equal to one.
-		 * This function assumes the field base element has already been
-		 * constructed and initialized.
-		 * @return boolean true if equals one, false if not.
-		 * @param  x field base element.
-		 */
-		bool isMOne (const ElementAbstract& x) const
-		{ return _field.isMOne (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
-
+			{ return _field.isOne (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
 
 		/** Inplace Addition.
 		 * x += y
@@ -406,7 +385,7 @@ namespace LinBox
 				      static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
-
+ 
 		/** Inplace Subtraction.
 		 * x -= y
 		 * This function assumes both field base elements have already been
@@ -421,7 +400,7 @@ namespace LinBox
 				      static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
-
+ 
 		/** Inplace Multiplication.
 		 * x *= y
 		 * This function assumes both field base elements have already been
@@ -445,14 +424,14 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		ElementAbstract& divin (ElementAbstract& x,
-					const ElementAbstract& y) const
+		ElementAbstract& divin (ElementAbstract& x, 
+					 const ElementAbstract& y) const
 		{
 			_field.divin (static_cast<ElementEnvelope<Field>&> (x)._elem,
 				      static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
-
+ 
 		/** Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
 		 * This function assumes the field base element has already been
@@ -465,7 +444,7 @@ namespace LinBox
 			_field.negin (static_cast<ElementEnvelope<Field>&> (x)._elem);
 			return x;
 		}
-
+ 
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
 		 * This function assumes the field base elementhas already been
@@ -481,23 +460,23 @@ namespace LinBox
 
 		/** Inplace AXPY.
 		 * r  += a * x
-		 * This function assumes all field elements have already been
+		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
 		 * @return reference to r.
 		 * @param  r field element (reference returned).
 		 * @param  a field element.
 		 * @param  x field element.
 		 */
-		ElementAbstract& axpyin (ElementAbstract& r,
-					 const ElementAbstract& a,
-					 const ElementAbstract& x) const
+		ElementAbstract& axpyin (ElementAbstract& r, 
+					  const ElementAbstract& a, 
+					  const ElementAbstract& x) const
 		{
 			_field.axpyin (static_cast<ElementEnvelope<Field>&> (r)._elem,
 				       static_cast<const ElementEnvelope<Field>&> (a)._elem,
 				       static_cast<const ElementEnvelope<Field>&> (x)._elem);
 			return r;
 		}
-
+ 
 		//@} Inplace Arithmetic Operations
 
 #ifndef __LINBOX_XMLENABLED
@@ -509,6 +488,12 @@ namespace LinBox
 		 * @param  os  output stream to which field is written.
 		 */
 		std::ostream& write (std::ostream& os) const { return _field.write (os); }
+ 
+		/** Read field.
+		 * @return input stream from which field is read.
+		 * @param  is  input stream from which field is read.
+		 */
+		std::istream& read (std::istream& is) { return _field.read (is); }
 
 		/** Print field base element.
 		 * This function assumes the field base element has already been
@@ -518,8 +503,8 @@ namespace LinBox
 		 * @param  x   field base element.
 		 */
 		std::ostream& write (std::ostream& os, const ElementAbstract& x) const
-		{ return _field.write (os, static_cast<const ElementEnvelope<Field>&> (x)._elem); }
-
+			{ return _field.write (os, static_cast<const ElementEnvelope<Field>&> (x)._elem); }
+ 
 		/** Read field base element.
 		 * This function assumes the field base element has already been
 		 * constructed and initialized.
@@ -528,7 +513,7 @@ namespace LinBox
 		 * @param  x   field base element.
 		 */
 		std::istream& read (std::istream& is, ElementAbstract& x) const
-		{ return _field.read (is, static_cast<ElementEnvelope<Field>&> (x)._elem); }
+			{ return _field.read (is, static_cast<ElementEnvelope<Field>&> (x)._elem); }
 
 		//@}
 #else
@@ -560,33 +545,21 @@ namespace LinBox
 			return _field.fromTag(R, static_cast<ElementEnvelope<Field>&>(x)._elem);
 		}
 #endif
+			
 
 
 
-
-	protected:
+	    protected:
 
 		friend class RandIterEnvelope<Field>;
 
 		/// Wrapped field.
 		Field _field;
 
-	public:
-		Element one,zero,mOne ;
 	}; // class FieldEnvelope
 
 } // namespace LinBox
 
 #include "linbox/randiter/envelope.h"
 
-#endif // __LINBOX_field_envelope_H
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-
+#endif // __FIELD_ENVELOPE_H

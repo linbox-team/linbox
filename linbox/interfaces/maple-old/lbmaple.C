@@ -1,26 +1,3 @@
-/* Copyright (C) LinBox
- *
- *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- */
-
 
 #include "linbox/field/modular.h"
 #include "linbox/integer.h" // <- Wrapper for gmp BIG int support
@@ -43,16 +20,16 @@
 using LinBox::integer;
 typedef std::vector<long> Vectorl;
 typedef std::vector<integer> VectorI;
-typedef LinBox::TriplesBB<Givaro::Modular<long> > TriplesBBi;
-typedef LinBox::TriplesBB<Givaro::Modular<integer> > TriplesBBI;
+typedef LinBox::TriplesBB<LinBox::Modular<long> > TriplesBBi;
+typedef LinBox::TriplesBB<LinBox::Modular<integer> > TriplesBBI;
 
 /* Type references: Used to identify the type of object pointed to by
  * elements in the hash table.
  * Types:  BlackBoxi - Black Box matrix, single-word size entries
- *           Class:  LinBox::TriplesBB<Givaro::Modular<long>, std::vector<long> > (TriplesBBi)
+ *           Class:  LinBox::TriplesBB<LinBox::Modular<long>, std::vector<long> > (TriplesBBi)
  *         BlackBoxI - Black Box matrix, multi-word size entries
- *           Class:  LinBox::TriplesBB<Givaro::Modular<integer>, std::vector<integer> > (TriplesBBI)
- *         SmallV - STL vector, single-word size entries
+ *           Class:  LinBox::TriplesBB<LinBox::Modular<integer>, std::vector<integer> > (TriplesBBI)
+ *         SmallV - STL vector, single-word size entries 
  *           Class:  std::vector<long> (Vectorl)
  *         LargeV - STL vector, multi-word size entries
  *           Class:  std::vector<integer> (VectorI)
@@ -63,7 +40,7 @@ const int BlackBoxI = 2;
 const int SmallV = 3;
 const int LargeV = 4;
 
-extern "C"
+extern "C" 
 {
   ALGEB End(MKernelVector kv, ALGEB* args);
   ALGEB initBB(MKernelVector kv, ALGEB* args);
@@ -116,7 +93,7 @@ extern "C"
       switch( f_i->second ) {
 
 	// In each case, delete the object pointed to
-        case BlackBoxi:
+        case BlackBoxi: 
 	   BBip = (TriplesBBi*) h_i->second;
 	   delete BBip;
 	   break;
@@ -139,7 +116,7 @@ extern "C"
 	   /* Of course there are more cases to follow */
       }
 
-    }
+    }    
     // When all objects are deleted, return
     return ToMapleNULL(kv);
   }
@@ -150,7 +127,7 @@ extern "C"
  * 3 vectors defining a multi-word size entry matrix
  * Declares the object in dynamic memory and hashes into hashTable and typeTable
  * using the key supplied by Maple.
- * Pre-Condition:  Called from Maple to create blackbox type
+ * Pre-Condition:  Called from Maple to create blackbox type 
  * Post-Condition:  Blackbox object exists in dynamic memory, can be called upon with key
  * supplied by Maple
  */
@@ -164,7 +141,7 @@ extern "C"
     // IN this c
     int flag = MapleToInteger32(kv,args[1]), key = MapleToInteger32(kv,args[2]);
     size_t m, n, nonzeros, i;
-
+  
     // perform an intial search to see if the key is stored in memory.  If so, return the key,
     // the object already exists
 
@@ -174,7 +151,7 @@ extern "C"
       // The first type is the Maple NAG sparse matrix.  It is passed straight into the routine
       // the prime is passed first, then the object.  All pertinant data can be lifted using
       // Maple's extensive rtable API
-       case 1: {
+       case 1: { 
 	 long p;
 	 int *data;
 	 NAG_INT *rowP, *colP;
@@ -191,7 +168,7 @@ extern "C"
 	 data = (int*) RTableDataBlock(kv,args[4]);
 
 	 // Declare a new object on the heap
-	 Givaro::Modular<long> modF(p);
+	 LinBox::Modular<long> modF(p);
 	 In = new TriplesBBi(modF, m, n, nonzeros);
 
 	 // Add each entry
@@ -204,14 +181,14 @@ extern "C"
 	 typeTable.insert(std::pair<int,int>( key, BlackBoxi ));
        }
        break;
-
+   
 
        // In the second case, the user either A) Created a BlackBox from an existing sparse
        // matrix in Maple, or created a Matrix by passing in parameters and a procedure
        // In either case, the data is formatted in Maple, and a number of parameters are passed
        // to this routine.
        // First is the prime, then the row list, then the column list, the entry list, followed
-       // by the rows, columns, and number of non-zero entries.
+       // by the rows, columns, and number of non-zero entries.  
        case 2: {
 	 long p;
 	 TriplesBBi* In;
@@ -222,7 +199,7 @@ extern "C"
 	 nonzeros = (size_t) MapleToInteger32(kv,args[9]);
 
 	 // Declares field and blackbox
-	 Givaro::Modular<long> modF(p);
+	 LinBox::Modular<long> modF(p);
 	 In = new TriplesBBi(modF, m, n, nonzeros);
 	 // Populates blackbox w/ entries
 	 for(i = 1; i <= nonzeros; i++) {
@@ -248,9 +225,9 @@ extern "C"
 	m = (size_t) MapleToInteger32(kv,args[7]);
 	n = (size_t) MapleToInteger32(kv,args[8]);
 	nonzeros = (size_t) MapleToInteger32(kv,args[9]);
-
+	
 	// Declare Field and blackbox
-	Givaro::Modular<integer> modF(iPrime);
+	LinBox::Modular<integer> modF(iPrime);
 	In = new TriplesBBI(modF, m, n, nonzeros);
 	for(i = 1; i <= nonzeros; i++) {
 	  In->addEntry( MtoLI(kv, blank, MapleListSelect(kv, args[4],i)), MapleToInteger32(kv, MapleListSelect(kv, args[5], i)), MapleToInteger32(kv, MapleListSelect(kv, args[6], i)));
@@ -261,7 +238,7 @@ extern "C"
       }
       break;
 
-
+      
       // In case some weird operation is requested, just bail.
       default:
 	MapleRaiseError(kv, "ERROR!  Confused by request.  No action performed.");
@@ -278,7 +255,7 @@ extern "C"
 
 /* initV - Backend "constructor" for LBmaple vector type.
  * Can create either a wordsize entry
- * vector, or a multi-precision vector (distinction made by entry size flag passed
+ * vector, or a multi-precision vector (distinction made by entry size flag passed 
  * from Maple).  Declares the object in dynamic memory and hashes into hashTable and typeTable
  * using the key supplied by Maple.
  * Pre-Condition:  Called from Maple with initialized data in a correct format
@@ -296,7 +273,7 @@ extern "C" {
     std::vector<long>* vP;
     std::vector<integer>* VP;
     integer blank;
-
+  
 
     // Performs a quick table check to see if the Vector has already been
     // created.  If so, simply return it
@@ -308,7 +285,7 @@ extern "C" {
     // A few good choices
     switch( flag ) {
 
-      // For this case, a complete maple list of single-word size entries is passed
+      // For this case, a complete maple list of single-word size entries is passed 
       // in that will be translated (1-1) into an STL vector and hased in.
        case 1:
 	 // First get the vector length
@@ -317,7 +294,7 @@ extern "C" {
 	 // dynamically allocate the new object, and reserve space in memory for savings
 	 vP = new std::vector<long>;
 	 vP->reserve(length);
-
+	 
 	 // initialize entries and hash into hashTable
 	 for(i = 1; i <= length; i++) {
 	   vP->push_back( MapleToInteger32(kv, MapleListSelect(kv, args[3], (M_INT) i)));
@@ -338,11 +315,11 @@ extern "C" {
 	 hashTable.insert(std::pair<int,void*>(key, VP));
 	 break;
 
-
+      
       // In this case, the vector passed in was parsed into a two lists, the first containing
       // the data entries, the second containing the indice in which this entry goes.  Each of
       // these entries are single word integers
-       case SmallV:
+       case SmallV: 
 
 	 // Initialzie variables, get length and first indice
 	 i = 1; j = 1;
@@ -363,10 +340,10 @@ extern "C" {
 	     vP->push_back(0L);
 	     ++j;
 	   }
-
+	   
 	   // Add the nonzero entry
 	   vP->push_back( (long) MapleToInteger32(kv,MapleListSelect(kv,args[4], i)));
-
+	   
 	   // ++index
 	   ++j;
 	 }
@@ -375,14 +352,14 @@ extern "C" {
 	 // Now populate the rest of V with 0's
 	 for(i = index + 1 ; i <= L; ++i)
 	   vP->push_back( 0L );
-
+	 
 	 hashTable.insert(std::pair<int,void*>(key, vP));
 	 break;
 
     // Multi-word integer case.  As above, 2 sparse lists are passed in.  The first contains
     // all the non-zero entries.  The second contains the indice of each element.
     case LargeV:
-
+      
       i = 1; j = 1;
       length = MapleToInteger32(kv,args[5]);
       L = MapleToInteger32(kv, args[6]);
@@ -401,7 +378,7 @@ extern "C" {
 
 	// Add a nonzero entry
 	VP->push_back( MtoLI(kv, blank, MapleListSelect(kv,args[4], i) ));
-
+	
 	++j;
 	// ++index :-)
 	index = MapleToInteger32(kv,MapleListSelect(kv,args[3],i));
@@ -437,7 +414,7 @@ extern "C" {
 
 /* killMatrix - BackEnd "destructor" for a Maple blackbox element that goes out of scope.
  * Deletes the blackbox.
- * Pre-condition: The object hashed to by key is an active BlackBox matrix.
+ * Pre-condition: The object hashed to by key is an active BlackBox matrix.  
  * Post-condition:  The BlackBox matrix hashed to by key is freed
  */
 
@@ -472,7 +449,7 @@ extern "C"
 	  delete ptr;
 	}
 	break;
-
+	
         case BlackBoxI: {
 	  TriplesBBI* ptr = (TriplesBBI*) h_i->second;
 	  delete ptr;
@@ -494,15 +471,15 @@ extern "C"
 
 
 
-/* killVector - Backend "destructor" for a linbox vector object in Maple.  Takes as input a key to the
+/* killVector - Backend "destructor" for a linbox vector object in Maple.  Takes as input a key to the 
  * data.  Frees up dynamic memory and removes the object from the hash tables
  * Pre-Condition: key is a key to a valid vector object
  * Post-Condition:  Dynamic memory is freed and the object is removed from the hash tables.
  */
 
-extern "C"
+extern "C" 
 {
-  ALGEB killVector(MKernelVector kv, ALGEB* args)
+  ALGEB killVector(MKernelVector kv, ALGEB* args) 
   {
     // Gets the key
     int key = MapleToInteger32(kv, args[1]), flag;
@@ -512,13 +489,13 @@ extern "C"
     std::map<int,int>::iterator f_i = typeTable.find(key);
     if( f_i == typeTable.end() )
       MapleRaiseError( kv, err);
-
+      
     // We're good otherwise
     flag = f_i->second;
 
     // In case the flag is there but the data isn't
     typeTable.erase(key);
-
+    
     // Get ahold of the data
     std::map<int,void*>::iterator h_i = hashTable.find(key);
     if( h_i != hashTable.end() ) {
@@ -539,7 +516,7 @@ extern "C"
 	 break;
 
       }
-
+      
       hashTable.erase(key);
     }
 
@@ -554,12 +531,12 @@ extern "C"
 
 
 
-/* getMatrix - Returns an rtable object initialized with the data from the blackbox.  This is a bit
- * of a hack, as the differences between Maple versions becomes an issue.  There are two methods:
- * 1)  (if using Maple 7) use string tools to build a string that embodies the proper command to
- * declare an rtable object, and invoke this command with the MapleEvalStatement() function, or
- * 2)  use Maple's RTable API to create a new RTable object (this works in Maple 8, and I'm
- * presuming Maple 6 and 5.  Special thanks to tech support at Maple Soft for informing me that in
+/* getMatrix - Returns an rtable object initialized with the data from the blackbox.  This is a bit 
+ * of a hack, as the differences between Maple versions becomes an issue.  There are two methods:  
+ * 1)  (if using Maple 7) use string tools to build a string that embodies the proper command to 
+ * declare an rtable object, and invoke this command with the MapleEvalStatement() function, or 
+ * 2)  use Maple's RTable API to create a new RTable object (this works in Maple 8, and I'm 
+ * presuming Maple 6 and 5.  Special thanks to tech support at Maple Soft for informing me that in 
  * maple 7, the RTableCreate() function has been disabled).
  * Pre-Condition:  The key provided by the call hashes to a valid BlackBox object
  * Post-Condition:  An RTable object initialized with the entries of the Black Box is returned to Maple
@@ -590,7 +567,7 @@ extern "C"
     // Check that the data is there
     std::map<int,void*>::iterator h_i = hashTable.find(key);
     if(h_i != hashTable.end() ) {
-
+  
       // Switch according to mode - regular or "special fix" mode
       switch( MapleToInteger32(kv, args[3])) {
 
@@ -644,14 +621,14 @@ extern "C"
 
 	     for(d_i = Data.begin(), r_i = Row.begin(), c_i = Col.begin(); r_i != Row.end(); ++d_i, ++r_i, ++c_i) {
 	       index[0] = *r_i; index[1] = *c_i;
-
+	  
 	       //    * Okay, here's how this line works.  Basically,
 	       //    * in order to set the entries of this RTable to
 	       //    * multi-precision integers, I have to first use my own conversion
 	       //    * method, LiToM, to convert the integer entry to a ALGEB structure,
-	       //    * then do a callback into Maple that calls the ExToM procedure,
+	       //    * then do a callback into Maple that calls the ExToM procedure, 
 	       //    * which converts the results of LiToM into a Maple multi-precision
-	       //    * integer. At the moment, this is the best idea I've got as to
+	       //    * integer. At the moment, this is the best idea I've got as to 
 	       //    * how to convert a GMP integer into a Maple representation in one shot.
 	       //    *
 
@@ -659,7 +636,7 @@ extern "C"
 	       RTableAssign(kv, rtable, index, d);
              }
 	   }
-	   break;
+	   break; 
 
 	   // In this case the object is not a BlackBox type
 	   default:
@@ -667,18 +644,18 @@ extern "C"
 	     break;
 	   }
 	break;
-
+	
       case 2: // Okay, here is the normal case.
 	      // Use RTableCreate to create a Maple rtable object
 
-	    kv->rtableGetDefaults(&s);
+	    kv->rtableGetDefaults(&s); 
 	    // Get default settings - set datatype to Maple,
-	    // DAGTAG to anything
-
+	    // DAGTAG to anything 
+	    
 	    s.subtype = RTABLE_MATRIX; // Subtype set to Matrix
 	    s.storage = RTABLE_SPARSE; // Storage set to sparse
 	    s.num_dimensions = 2; // What do you think this means :-)
-	    bound[0] = bound[2] = 1; // Set the lower bounds of each dimension to 0, which for maple is 1
+	    bound[0] = bound[2] = 1; // Set the lower bounds of each dimension to 0, which for maple is 1 
 
 	    switch(flag) { // Switch on data type
 
@@ -707,26 +684,26 @@ extern "C"
 	    case BlackBoxI: { // For multi-word entry Matrices
 	      TriplesBBI* BB = (TriplesBBI*) h_i->second;
 	      VectorI Data = BB->getData();
-
+	    
 	      // Setup the Create() call
 	      VectorI::const_iterator d_i;
 	      Row = BB->getRows();
 	      Col = BB->getCols();
-	      bound[1] = BB->rowdim();
+	      bound[1] = BB->rowdim(); 
 	      bound[3] = BB->coldim();
 	      rtable = kv->rtableCreate(&s, NULL, bound); // Create an empty RTable
-
+	    
 	      // Populate the RTable using the callback method described below
 	      for(d_i = Data.begin(), r_i = Row.begin(), c_i = Col.begin(); r_i != Row.end(); ++d_i, ++r_i, ++c_i) {
 		index[0] = *r_i; index[1] = *c_i;
-
+	  
 	    //    * Okay, here's how this line works.  Basically,
 	   //    * in order to set the entries of this RTable to
 	   //    * multi-precision integers, I have to first use my own conversion
 	   //    * method, LiToM, to convert the integer entry to a ALGEB structure,
-	   //    * then do a callback into Maple that calls the ExToM procedure,
+	   //    * then do a callback into Maple that calls the ExToM procedure, 
 	   //    * which converts the results of LiToM into a Maple multi-precision
-	   //    * integer. At the moment, this is the best idea I've got as to
+	   //    * integer. At the moment, this is the best idea I've got as to 
 	   //    * how to convert a GMP integer into a Maple representation in one shot.
 
 	      d.dag = EvalMapleProc(kv,args[2],1,LiToM(kv, *d_i, blank));
@@ -739,7 +716,7 @@ extern "C"
     }
     else
       MapleRaiseError(kv,err);
-
+    
     return rtable;
   }
 }
@@ -748,7 +725,7 @@ extern "C"
 
 
 
-/* getVector - Returns a Maple vector initalized with the data from the LinBox vector.  As above,
+/* getVector - Returns a Maple vector initalized with the data from the LinBox vector.  As above, 
  * is a hack in order to support two differing versions in Maple.  Normally, would use the RTableCreate()
  * function to properly create the Vector, but in Maple7 this isn't supported.  The code is essentially
  * the same as above, accept that we are building a vector rather than a Matrix
@@ -818,7 +795,7 @@ extern "C"
 	     sprintf(MapleStatement + strlen(MapleStatement), "%d", V->size() );
 	     strcat(MapleStatement, ",subtype=Vector[column], storage=sparse)");
 	     rtable = kv->evalMapleStatement(MapleStatement);
-
+	     
 	     // Use maple callback to call the procedure from Maple that translates a gmp integer
 	     // into a large maple integer.  Then put this into the Maple vector
 	     for(index = 1, V_i = V->begin(); V_i != V->end(); ++V_i, ++index) {
@@ -827,9 +804,9 @@ extern "C"
 		* in order to set the entries of this RTable to
 		* multi-precision integers, I have to first use my own conversion
 		* method, LiToM, to convert the integer entry to a ALGEB structure,
-		* then do a callback into Maple that calls the ExToM procedure,
+		* then do a callback into Maple that calls the ExToM procedure, 
 		* which converts the results of LiToM into a Maple multi-precision
-		* integer. At the moment, this is the best idea I've got as to
+		* integer. At the moment, this is the best idea I've got as to 
 		* how to convert a GMP integer into a Maple representation in one shot.
 		*/
 
@@ -849,9 +826,9 @@ extern "C"
 	   // that must be parsed by maple
 
 	   case 2:
-
+	     
 	     kv->rtableGetDefaults(&s); // Get default settings - set datatype to Maple,
-                               // DAGTAG to anything
+                               // DAGTAG to anything 
 	     s.subtype = 2; // Subtype set to column vector
 	     s.storage = 4; // Storage set to rectangular
 	     s.num_dimensions = 1; // What do you think this means :-)
@@ -859,7 +836,7 @@ extern "C"
 
 	     switch(flag) {// Switch on data type of vector
 	     case SmallV:{ // single word integer entry vector
-	       Vectorl* V = (Vectorl*) h_i->second;
+	       Vectorl* V = (Vectorl*) h_i->second; 
 	       Vectorl::const_iterator V_i;
 	       bound[1] = V->size();
 	       rtable = kv->rtableCreate(&s, NULL, bound); // Create the Maple vector
@@ -877,17 +854,17 @@ extern "C"
 	       VectorI::const_iterator V_i;
 	       bound[1] = V->size();
 	       rtable = kv->rtableCreate(&s, NULL, bound);
-
+	    
 	       for(index = 1, V_i = V->begin(); V_i != V->end(); ++V_i, ++index) {
-
-
+		 
+	  
 		 /* Okay, here's how this line works.  Basically,
 		  * in order to set the entries of this RTable to
 		  * multi-precision integers, I have to first use my own conversion
 		  * method, LiToM, to convert the integer entry to a ALGEB structure,
-		  * then do a callback into Maple that calls the ExToM procedure,
+		  * then do a callback into Maple that calls the ExToM procedure, 
 		  * which converts the results of LiToM into a Maple multi-precision
-		  * integer. At the moment, this is the best idea I've got as to
+		  * integer. At the moment, this is the best idea I've got as to 
 		  * how to convert a GMP integer into a Maple representation in one shot.
 		  */
 
@@ -896,15 +873,15 @@ extern "C"
 	       }
 	     }
 	     break;
-
+	     
 	     default:
 	       MapleRaiseError(kv, err);
 	       break;
 	     }
 	     break; // breaks case 2.
 	     // This was causing a wicked error :-)
-
-
+	   
+	  
       default:
 	MapleRaiseError(kv, err);
 	break;
@@ -927,7 +904,7 @@ extern "C"
 /* apply - Application function,  Takes a Blackbox A and Vector X and performs the apply Ax.
  * There's alot of code here that essentially leads to simply calling the BlackBox's apply routine,
  * but there is alot that can go wrong with this call.
- * Pre-Condition:  BlackBox & Vector objects exist in the hashtable; Blackbox data-type can handle
+ * Pre-Condition:  BlackBox & Vector objects exist in the hashtable; Blackbox data-type can handle 
  *      size of vector (ie - not trying to apply a large entry vector to a small entry Matrix
  * Post-Condition: New Vector is produced, put into hash table for future calls, access key returned
  *      to Maple
@@ -953,9 +930,9 @@ extern "C"
 
     // Hash out the blackbox type
     f_i = typeTable.find(BBKey);
-    if( f_i == typeTable.end() )
+    if( f_i == typeTable.end() ) 
       MapleRaiseError(kv, BBnoFind);
-    else
+    else 
       bflag = f_i->second;
 
     // Hash out the vector type
@@ -966,7 +943,7 @@ extern "C"
       vflag = f_i->second;
 
     // check that there isn't a type mismatch
-    if( bflag == BlackBoxi && vflag == LargeV)
+    if( bflag == BlackBoxi && vflag == LargeV) 
       // If this comes up, it means we have a large int vector, and a small int blackbox.  Bad
       MapleRaiseError(kv, MisMatchErr);
     else if( bflag == BlackBoxI && vflag == SmallV) {
@@ -976,7 +953,7 @@ extern "C"
       if( h_i == hashTable.end() )
 	MapleRaiseError(kv, BBnoFind);
       TriplesBBI* BB = (TriplesBBI*) h_i->second;
-
+      
       h_i = hashTable.find(VKey);
       if(h_i == hashTable.end() )
 	MapleRaiseError(kv, VectnoFind);
@@ -992,7 +969,7 @@ extern "C"
       // Puts tempIV on the stack, so that it will persist.  Also, set the correct size
       tempIV = new VectorI;
       tempIV->resize( BB->coldim() );
-
+      
       // Perform the apply
       BB->apply( *tempIV, newV);
       hashTable.insert(std::pair<int,void*>(nKey, tempIV));
@@ -1003,7 +980,7 @@ extern "C"
            // or multi-word entry w/ multi-word entry.  This simplifies the code a good bit
 
       switch( bflag) {
-
+	
          case BlackBoxi: {
 
 	   // Get the BlackBox
@@ -1017,12 +994,12 @@ extern "C"
 	   if( h_i == hashTable.end() )
 	     MapleRaiseError(kv, VectnoFind);
 	   vp = (Vectorl*) h_i->second;
-
+	   
 	   // Perform the apply.  Note, sets the temp vector's size to the columnar dimension
 	   tempiV = new Vectorl;
 	   tempiV->resize( BB->coldim() );
 	   BB->apply(*tempiV, *vp);
-
+	   
 	   // Hash the results
 	   hashTable.insert(std::pair<int, void*>(nKey, tempiV));
 	   typeTable.insert(std::pair<int,int>(nKey,SmallV));
@@ -1030,7 +1007,7 @@ extern "C"
 	 break;
 
          case BlackBoxI: {
-
+	   
 	   // Get the BlackBox
 	   h_i = hashTable.find(BBKey);
 	   if( h_i == hashTable.end() )
@@ -1047,7 +1024,7 @@ extern "C"
 	   tempIV = new VectorI;
 	   tempIV->resize( BB->coldim() );
 	   BB->apply( *tempIV, *Vp);
-
+	   
 	   // Hash in the results
 	   hashTable.insert(std::pair<int,void*>(nKey, tempIV));
 	   typeTable.insert(std::pair<int,int>(nKey,LargeV));
@@ -1055,7 +1032,7 @@ extern "C"
 	 break;
       }
     }
-
+    
     // If you get to this point, something has been hashed in, so return the key
     return ToMapleInteger(kv, (long) nKey);
   }
@@ -1067,7 +1044,7 @@ extern "C"
 /* applyT - Application function.  Takes a Blackbox A and Vector X and performs the transpose apply,
  * Atx.  There's alot of code here that essentially leads to simply calling the BlackBox's apply routine,
  * but there is alot that can go wrong with this call.
- * Pre-Condition:  BlackBox & Vector objects exist in the hashtable; Blackbox data-type can handle
+ * Pre-Condition:  BlackBox & Vector objects exist in the hashtable; Blackbox data-type can handle 
  *      size of vector (ie - not trying to apply a large entry vector to a small entry Matrix
  * Post-Condition: New Vector is produced, put into hash table for future calls, access key returned
  *      to Maple
@@ -1094,9 +1071,9 @@ extern "C"
 
     // Hash out the blackbox type
     f_i = typeTable.find(BBKey);
-    if( f_i == typeTable.end() )
+    if( f_i == typeTable.end() ) 
       MapleRaiseError(kv,BBnoFindErr);
-    else
+    else 
       bflag = f_i->second;
 
     // Hash out the vector type
@@ -1107,7 +1084,7 @@ extern "C"
       vflag = f_i->second;
 
     // check that there isn't a type mismatch
-    if( bflag == BlackBoxi && vflag == LargeV)
+    if( bflag == BlackBoxi && vflag == LargeV) 
       // If this comes up, it means we have a large int vector, and a small int blackbox.  Bad
       MapleRaiseError(kv, misMatchErr);
     else if( bflag == BlackBoxI && vflag == SmallV) {
@@ -1120,7 +1097,7 @@ extern "C"
       if( h_i == hashTable.end() )
 	MapleRaiseError(kv, BBnoFindErr);
       TriplesBBI* BB = (TriplesBBI*) h_i->second;
-
+      
       h_i = hashTable.find(VKey);
       if(h_i == hashTable.end() )
 	MapleRaiseError(kv, VectNoFindErr);
@@ -1134,7 +1111,7 @@ extern "C"
       // Puts tempIV on the stack, so that it will persist
       tempIV = new VectorI;
       tempIV->resize( BB->rowdim() );
-
+      
       // Perform the apply
       BB->applyTranspose( *tempIV, newV);
       hashTable.insert(std::pair<int,void*>(nKey, tempIV));
@@ -1144,7 +1121,7 @@ extern "C"
     else { // For types that match (small Blackbox w/ small Vector or large blackbox w/ large vector)
 
       switch( bflag) {
-
+	
          case BlackBoxi: {
 
 	   // Get the BlackBox
@@ -1158,12 +1135,12 @@ extern "C"
 	   if( h_i == hashTable.end() )
 	     MapleRaiseError(kv, VectNoFindErr);
 	   vp = (Vectorl*) h_i->second;
-
+	   
 	   // Perform the apply
 	   tempiV = new Vectorl;
 	   tempiV->resize( BB->rowdim() );
 	   BB->applyTranspose( *tempiV, *vp);
-
+	   
 	   // Hash the results
 	   hashTable.insert(std::pair<int, void*>(nKey, tempiV));
 	   typeTable.insert(std::pair<int,int>(nKey,SmallV));
@@ -1171,7 +1148,7 @@ extern "C"
 	 break;
 
          case BlackBoxI: {
-
+	   
 	   // Get the BlackBox
 	   h_i = hashTable.find(BBKey);
 	   if( h_i == hashTable.end() )
@@ -1188,7 +1165,7 @@ extern "C"
 	   tempIV = new VectorI;
 	   tempIV->resize( BB->rowdim() );
 	   BB->applyTranspose( *tempIV, *Vp);
-
+	   
 	   // Hash in the results
 	   hashTable.insert(std::pair<int,void*>(nKey, tempIV));
 	   typeTable.insert(std::pair<int,int>(nKey,LargeV));
@@ -1196,7 +1173,7 @@ extern "C"
 	 break;
       }
     }
-
+    
     // If you get to this point, something has been hashed in, so return the key
     return ToMapleInteger(kv, (long) nKey);
   }
@@ -1234,18 +1211,18 @@ extern "C"
     h_i = hashTable.find(key);
     if( h_i != hashTable.end() ) {
       switch( flag ) {
-	case BlackBoxi:
+	case BlackBoxi: 
 	  BBi = (TriplesBBi*) h_i->second;
 	  return ToMapleInteger(kv, LinBox::rank(result, *BBi, BBi->field() ) ); // <- actual computation starts
 	  break;                                                         //    here :-)
 
-         case BlackBoxI:
+         case BlackBoxI: 
 	  BBI = (TriplesBBI*) h_i->second;
 	  return ToMapleInteger(kv,LinBox::rank(result, *BBI, BBI->field() ));
 	  break;
       }
     }
-    else
+    else 
       MapleRaiseError(kv,err);
   }
 }
@@ -1258,7 +1235,7 @@ extern "C"
  * Post-condition: The modular determinant of the blackbox is returned as a maple integer
  */
 
-extern "C"
+extern "C" 
 {
   ALGEB det(MKernelVector kv, ALGEB* args)
   {
@@ -1289,11 +1266,11 @@ extern "C"
 	 BBi = (TriplesBBi*) h_i->second;
 	 return ToMapleInteger(kv, LinBox::det(resulti, *BBi, BBi->field() ) );
 	 break;
-
-        case BlackBoxI:
+	 
+        case BlackBoxI: 
 	 BBI = (TriplesBBI*) h_i->second;
 	 return LiToM(kv,  LinBox::det(resultI, *BBI, BBI->field() ), blank);
-
+	
 	break;
       }
     }
@@ -1341,7 +1318,7 @@ ALGEB minpoly(MKernelVector kv, ALGEB* args)
 	// polynomial.  It then builds the proper Maple list structure for this application.
 
 
-         case BlackBoxi: {
+         case BlackBoxi: {         
 	   Vectorl mpreturn;
 	    Vectorl::iterator mp_i;
 	    TriplesBBi* BB = (TriplesBBi*) h_i->second;
@@ -1360,14 +1337,14 @@ ALGEB minpoly(MKernelVector kv, ALGEB* args)
 	   retlist = MapleListAlloc(kv, mpreturn.size());
 	   for(i = 1, mp_i = mpreturn.begin(); mp_i != mpreturn.end(); ++mp_i, ++i)
 	     MapleListAssign(kv, retlist, i, LiToM(kv, *mp_i, blank));
-
+	   
 	 }
 	 break;
       }
     }
     else
       MapleRaiseError(kv,err);
-
+    
     return retlist;
 
   }
@@ -1379,7 +1356,7 @@ ALGEB minpoly(MKernelVector kv, ALGEB* args)
  * Post-Condition: Out is an initalized maple integer containing the value of In
  */
 
-ALGEB & LiToM(MKernelVector & kv, const integer & In, ALGEB & Out)
+ALGEB & LiToM(MKernelVector & kv, const integer & In, ALGEB & Out) 
 {
   // If we get lucky, this thing fits in one word, which is good, so we just
   // straight convert it
@@ -1397,8 +1374,8 @@ ALGEB & LiToM(MKernelVector & kv, const integer & In, ALGEB & Out)
 }
 
 /* MtoLI - conversion between long integers passed from maple into gmp integers
- * Uses Horners method.
- * Pre-Condition:  Out is un-initialized (or can be re-initialized), In is either an int or a
+ * Uses Horners method. 
+ * Pre-Condition:  Out is un-initialized (or can be re-initialized), In is either an int or a 
  *   list
  * Post-Condition:  Out contains a GMP version of In.
  */
@@ -1430,12 +1407,3 @@ integer & MtoLI(MKernelVector & kv, integer & Out, const ALGEB &In)
   // redundant
   return Out;
 }
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

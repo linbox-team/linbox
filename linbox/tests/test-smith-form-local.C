@@ -1,52 +1,30 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* tests/test-local-smith.C
- * Copyright (C) LinBox
  *
- * Written by David Saunders
+ * Written by David Saunders 
  *
  * --------------------------------------------------------
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *
+ * See COPYING for license information
  */
 
+#include "linbox-config.h"
 
-/*! @file  tests/test-smith-form-local.C
- * @ingroup tests
- * @brief  no doc
- * @test no doc.
- */
-
-
-
-#include "linbox/linbox-config.h"
-
-
+#include <iostream>
+#include <fstream>
+#include <vector>
 #include <functional>
 
 #include "test-common.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/ring/PIR-modular-int32.h"
-#include "linbox/ring/local2_32.h"
+#include "linbox/field/ntl-pid-lzz_p.h"
+#include "linbox/field/local2_32.h"
+#include "linbox/blackbox/dense.h"
 #include "linbox/algorithms/smith-form-local.h"
-#include "linbox/matrix/matrix-domain.h"
-#include "linbox/util/timer.h"
+#include "linbox/vector/stream.h"
+#include <linbox/matrix/matrix-domain.h>
+#include <linbox/util/timer.h>
 
 using namespace LinBox;
 
@@ -61,171 +39,239 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
-template <class LocalPIR>
-typename LocalPIR::Element &
-normal(typename LocalPIR::Element &d, LocalPIR & R)
-{	typename LocalPIR::Element x; R.init(x, 2);  R.mulin(x, d);
-	return R.gcdin(d, x);
-}
-
-template <class LocalPIR>
-class pplt { // prime power less than
-public:
-	pplt(LocalPIR R) : _R_(R){}
-	bool operator() (typename LocalPIR::Element a, typename LocalPIR::Element b)
-	{
-		if ( b == 0 ) return true;
-		else if ( a == 0 ) return false;
-		else return a <= b;
+template <class LocalPID>
+class foobar {
+	public:
+	typedef typename LocalPID::Element first_argument_type;
+	typedef LocalPID second_argument_type;
+	typedef void result_type;
+	void operator()(typename LocalPID::Element& d, const LocalPID& R) const
+	{ 
+		typename LocalPID::Element x = d;
+		R.gcd(d, x, x);
 	}
-	//protected:
-	LocalPIR _R_;
+};
+template<>
+class foobar<LinBox::Local2_32> {
+public:
+	typedef LinBox::Local2_32 LocalPID;
+	
+	typedef LocalPID::Element first_argument_type;
+	typedef LocalPID second_argument_type;
+	typedef void result_type;
+	void operator()(LocalPID::Element& d, const LocalPID& R) const
+	{
+
+
+		if(d != 0)    {
+
+			int r = 1;
+
+			while ( !(d & 1) ) {
+				d >>= 1;
+				r <<= 1;
+			}
+
+			d = r;
+		}
+		
+	 
+	}
+};
+				
+template <class LocalPID>
+class pplt
+{   public:
+	pplt(LocalPID R) : _R_(R){}
+	bool operator() (typename LocalPID::Element a, typename LocalPID::Element b)
+	{  
+	       if ( b == 0 ) return true;
+       	       else if ( a == 0 ) return false;
+	       else return a <= b;
+ 	}		
+    //protected:
+        LocalPID _R_;
 };
 
-template <class LocalPIR>
-static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element>& d, string s)
+template<>
+class pplt<LinBox::NTL_PID_zz_p> {
+public:
+	typedef LinBox::NTL_PID_zz_p LocalPID;
+	
+	pplt(LocalPID R) : _R_(R){}
+	bool operator() (LocalPID::Element a, LocalPID::Element b)
+	{  
+	       if ( b == 0 ) return true;
+       	       else if ( a == 0 ) return false;
+	       else return NTL::rep(a) <= NTL::rep(b);
+ 	}		
+    //protected:
+        LocalPID _R_;
+};
+
+template <class LocalPID>
+static bool testLocalSmith (const LocalPID &R, VectorStream<vector<typename LocalPID::Element> > &stream) 
 {
-	typedef typename LocalPIR::Element Elt;
-	typedef BlasMatrix<LocalPIR> Blackbox;
+	typedef vector <typename LocalPID::Element> Vector;
+	typedef typename LocalPID::Element Elt;
+	typedef DenseMatrix<LocalPID> Blackbox;
 
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << s << endl;
+	commentator.start ("Testing local smith on random dense matrices", "testLocalSmith", stream.m ());
 
-	MatrixDomain<LocalPIR> MR (R);
-	VectorDomain<LocalPIR> VD (R);
+	VectorDomain<LocalPID> VD (R);
 
 	bool ret = true;
-	size_t i,j;
-	size_t n = d.size();
+	size_t i;
+	size_t n = stream.n();
 
-	report << "Input vector:  ";
-	VD.write (report, d);
-	report << endl;
+	Vector d;
 
-	// set up A equiv diag d.
-	Blackbox L (R, n, n), D (R, n, n), U (R, n, n), A (R, n, n);
-	for( i = 0; i < n; ++i )
-		{ R.assign(D[i][i], d[i]); L[i][i]=U[i][i]=1; }
-	for (i = 0; i < n; ++ i)
-		for ( j = 0; j < i; ++ j) {
-			D[i][j] = D[j][i] = 0;
-			L[i][j] = rand() % 10;
-			L[j][i] = 0;
-			U[j][i] = rand() % 10;
-			U[i][j] = 0;
-		}
-	MR.mul(A,L,D);
-	MR.mulin(A,U);
+	VectorWrapper::ensureDim (d, stream.dim ());
 
-	list< Elt > Inv;
-	SmithFormLocal< LocalPIR > SmithForm;
-	//timer.start();
-	SmithForm( Inv, A, R );
-	//timer.stop();
-	//report << "Time " << timer <<"\n"; report.flush();
+	while (stream) {
+		commentator.startIteration (stream.j ());
 
-	report << "Computed invariants: ";
-	report << "[";
-	typedef typename list<Elt>::iterator listptr;
-	for (listptr p = Inv.begin(); p != Inv.end(); ++p)
-		report << *p << ", ";
-	//report << "\b\b]" << endl;
-	report << "normalize done" << endl; report.flush();
+		stream.next (d);
 
-	// figure true invariants
-	pplt<LocalPIR> lt(R);
-	for (int32_t i = 0; i < d.size(); ++i) normal(d[i], R);
-	stable_sort(d.begin(), d.end(), lt);
-	report << "True invariants: ";
-	VD.write (report, d) << endl; report.flush();
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		//ostream &report = std::cout; 
+		report << "Input vector:  ";
+		VD.write (report, d);
+		report << endl;
 
-	typename vector<Elt>::iterator q;
-	listptr p;
-	for (p = Inv.begin(), q = d.begin(); q != d.end(); ++p, ++q)
-	{
-		if ( !R.areEqual (*p, *q ) ) {
-			report << "ERROR: Computed invariants incorrect" << endl;
-			ret = false;
-		}
-		commentator().progress();
+		Blackbox Lm (R, n, n), D (R, n, n), U (R, n, n), A (R, n, n);
+		for( i = 0; i < n; ++i ) {D[i][i] = d[i];Lm[i][i]=U[i][i]=1;}
+		
+		size_t j;
+		
+		for (i = 0; i < n; ++ i) 
+		       for ( j = 0; j < i; ++ j) {
+			       
+			       D[i][j] = D[j][i] = 0;
+			       
+			       Lm[i][j] = rand() % 10;
+			       Lm[j][i] = 0;
+			       
+			       U[j][i] = rand() % 10;
+			       U[i][j] = 0;
+		       }
+
+		MatrixDomain<LocalPID> MR(R);
+		
+		Timer timer;
+		
+		report << "D\n";
+		D.write(report);
+
+		report << "L\n";
+		Lm.write(report);
+
+		report << "U\n";
+		U.write(report);
+
+		timer.start();
+		MR.mul(A,Lm,D);
+
+		report << "L D\n";
+		A.write(report);
+
+		MR.mulin(A,U);
+		timer.stop();
+		report << "Two matrix multiplication: " << timer << "\n";
+		
+		report << "A \n";
+		A.write(report);
+		//for( i = 0; i < n; ++i ) D[i][i] = rand() % 10 + 1;
+
+		list< typename LocalPID::Element > L;
+		SmithFormLocal< LocalPID > SmithForm;
+		timer.start();
+		SmithForm( L, A, R );
+		timer.stop();
+		report << "Time " << timer <<"\n";
+			
+		report.flush();
+		report << "Computed invariants: ";
+		
+		report << "[";
+		typedef typename list<Elt>::iterator listptr;
+		for (listptr p = L.begin(); p != L.end(); ++p)
+		    report << *p << ", ";
+		report << "\b\b]" << endl;
+
+		pplt<LocalPID> lt(R);
+		report << "normalize done" << endl;
+		report.flush();
+
+		for_each(d.begin(), d.end(), bind2nd(foobar<LocalPID>(), R));
+		timer.start();
+		stable_sort(d.begin(), d.end(), lt);
+		timer.stop();
+		report << "Sorting " << timer <<"\n";
+
+		report << "sort done" << endl;
+		report.flush();
+
+		report << "True invariants: ";
+		VD.write (report, d);
+		report << endl;
+		report << flush;
+
+		if ( L.size() != D.rowdim() ) {ret = false; break;}
+		typedef typename Vector::iterator vectptr;
+		listptr p; vectptr q;
+		for (p = L.begin(), q = d.begin(); 
+		     q != d.end(); 
+		     ++p, ++q)
+		    if ( !R.areEqual (*p, *q ) )
+		    {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Computed invariants incorrect" << endl;
+			 ret = false;
+		    }
+		commentator.stop("done");
+		commentator.progress();
 	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalTrace");
+
 	return ret;
 }
 
 int main (int argc, char **argv)
 {
-	bool pass1 = true, pass2 = true;
+	bool pass = true;
 
-	static int64_t n = 6;
-	static size_t q = 10201; // 101^2
-	//static integer q = 10201; // 101^2
+	static size_t n = 20;
+	static integer q = 101;
+	static int iterations = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the ring Z/qZ.", TYPE_INT, &q },
-		//{ 'q', "-q Q", "Operate over the ring Z/qZ.", TYPE_INTEGER, &q },
-		END_OF_ARGUMENTS
+		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)",  TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 10)",     TYPE_INT,     &iterations },
 	};
 
+	typedef NTL_PID_zz_p Ring;
+	typedef vector<Ring::Element> Vector;
+
 	parseArguments (argc, argv, args);
+	Ring R (536870912);
 
-	commentator().start("Local Smith Form test suite", "LocalSmith");
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << "q = " << q << std::endl;
+	cout << endl << "Random dense matrix local smith test suite" << endl;
 
-  { // first local ring type
-  // FIXME: incorrect for many prime powers.
-	typedef PIRModular<int32_t> LocalPIR;
-	//typedef PIRModular<dense> LocalPIR;
-	//LocalPIR R (81); 
-	LocalPIR R (q);
-	vector<LocalPIR::Element> d(n);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-	commentator().start ("Testing local smith on singular dense mat over PIRModular", "testSingular");
-	for( int32_t i = 0; i < n; ++i ) R.init(d[i],i);
-	pass1 = testLocalSmith<LocalPIR> (R, d, "PIRModular<int32_t>");
-	commentator().stop ("testSingular");
-	if (not pass1) report << "PIRModular sing FAIL" << std::endl;
+	RandomDenseStream<Ring, Vector> stream (R, n, iterations);
 
-	commentator().start ("Testing local smith on nonsingular dense mat over PIRModular", "testNonsingular");
-	for( int32_t i = 0; i < n; ++i ) R.init(d[i], i+1);
-	bool p = testLocalSmith<LocalPIR> (R, d, "PIRModular<int32_t>");
-	if (not p) report << "PIRModular nonsing FAIL" << std::endl;
-	commentator().stop ("testNonsingular");
-	pass1 = pass1 and p;
-	if (not pass1) report << "PIRModular FAIL" << std::endl;
-  }
+	if (!testLocalSmith<Ring> (R, stream)) pass = false;
 
-  { // second local ring type
-	typedef Local2_32 LocalPIR;
-	LocalPIR R;
-	vector<LocalPIR::Element> d(n);
+	// power of 2 test
+	Local2_32 R2;
+	RandomDenseStream<Local2_32, vector<Local2_32::Element> > 
+		stream2 (R2, n, iterations);
+	if (!testLocalSmith<Local2_32> (R2, stream2)) pass = false;
 
-	commentator().start ("Testing local smith on singular dense mat over Local2_32", "testSingular");
-	for( size_t i = 0; i < n; ++i )
-		d[i] = (LocalPIR::Element) i;
-	if (!testLocalSmith<LocalPIR> (R, d, "Local2_32")) pass2 = false;
-	commentator().stop ("testSingular");
-
-	commentator().start ("Testing local smith on nonsingular dense mat over Local2_32", "testNonsingular");
-	for( size_t i = 0; i < n; ++i )
-		d[i] = (LocalPIR::Element) i+1;
-	if (!testLocalSmith<LocalPIR> (R, d, "Local2_32")) pass2 = false;
-	commentator().stop ("testNonsingular");
-	if (not pass2) report << "Local2_32 FAIL" << std::endl;
-  }
-
-	commentator().stop("Local Smith Form test suite");
-	return pass1 and pass2 ? 0 : -1;
+	return pass ? 0 : -1;
 }
-
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

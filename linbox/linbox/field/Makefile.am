@@ -1,42 +1,80 @@
-# Copyright (c) 2010 the LinBox group
-#  ========LICENCE========
-# This file is part of the library LinBox.
-#
-# LinBox is free software: you can redistribute it and/or modify
-# it under the terms of the  GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
-#
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-# ========LICENCE========
-
-
-
 pkgincludesubdir=$(pkgincludedir)/field
 
-BASIC_HDRS =            \
-    field-interface.h   \
-    field-traits.h      \
-    rebind.h            \
-    abstract.h          \
-    archetype.h         \
-    envelope.h          \
-    param-fuzzy.h       \
-    gmp-rational.h      \
-    gf2.h               \
-    gf2.inl             \
-    hom.h               \
-    map.h               
+BASIC_HDRS =			\
+	field-interface.h	\
+	field-traits.h		\
+	rebind.h		\
+	abstract.h		\
+	archetype.h		\
+	envelope.h		\
+	unparametric.h		\
+	param-fuzzy.h		\
+	gmp-rational.h		\
+	modular.h		\
+	modular.inl		\
+	modular-int.h		\
+	modular-int32.h		\
+	modular-short.h		\
+	modular-byte.h		\
+	modular-balance-int.h	\
+	modular-balance-int32.h	\
+	modular-double.h	\
+	gf2.h			\
+	gf2.inl			\
+	hom.h			\
+	PIR-modular-int.h	\
+	PIR-modular-int32.h	\
+	local2_32.h		\
+	PID-integer.h		\
+	PID-double.h		\
+	gmp-integers.h		\
+	multimod-field.h
 
-pkgincludesub_HEADERS =     \
-    $(BASIC_HDRS)           
+NTL_HDRS =				\
+	ntl.h				\
+	ntl-RR.h			\
+	ntl-ZZ_p.h			\
+	ntl-ZZ_pE.h			\
+	ntl-lzz_p.h			\
+	ntl-ZZ.h			\
+	ntl-lzz_pE.h			\
+	ntl-GF2E.h			\
+	ntl-pid-lzz_p.h			\
+	PIR-ntl-ZZ_p.h			
 
-EXTRA_DIST =            \
-    field.doxy          
+GIVARO_HDRS =				\
+	givaro.h			\
+	givaro-zpz.h			\
+	givaro-montg.h			\
+	givaro-zpz.inl			\
+	givaro-gfq.h			\
+	givaro-extension.h		\
+	givaro-rational.h
+
+LIDIA_HDRS =				\
+	lidia.h				\
+	lidia-gfq.h
+
+if LINBOX_HAVE_NTL
+USE_NTL_HDRS = $(NTL_HDRS)
+endif
+
+if LINBOX_HAVE_GIVARO
+USE_GIVARO_HDRS = $(GIVARO_HDRS)
+endif
+
+if LINBOX_HAVE_LIDIA
+USE_LIDIA_HDRS = $(LIDIA_HDRS)
+endif
+
+pkgincludesub_HEADERS =			\
+	$(BASIC_HDRS)			\
+	$(USE_NTL_HDRS)			\
+	$(USE_GIVARO_HDRS)		\
+	$(USE_LIDIA_HDRS)	
+
+EXTRA_DIST =				\
+	$(NTL_HDRS)			\
+	$(GIVARO_HDRS)			\
+	$(LIDIA_HDRS)			\
+	field.doxy

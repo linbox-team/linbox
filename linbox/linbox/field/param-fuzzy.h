@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/field/param-fuzzy.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -7,13 +9,10 @@
  *
  * Updated by bds 8/02
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,33 +20,34 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_param_fuzzy_H
-#define __LINBOX_param_fuzzy_H
+#ifndef __FIELD_PARAM_FUZZY_H
+#define __FIELD_PARAM_FUZZY_H
 
 #include <iostream>
 
 #include "linbox/integer.h"
-#include "linbox/field/field-interface.h"
-#include "linbox/field/field-traits.h"
+#include <linbox/field/field-interface.h>
+#include <linbox/field/field-traits.h>
 
 // Namespace in which all LinBox code resides
-namespace LinBox
-{
+namespace LinBox 
+{ 
 	// Forward declarations
 	class ParamFuzzyRandIter;
 
 	/** Abstract parameterized field of "fuzzy" doubles.
-	 * Field has (non-static, non-negative) member to contain "fuzz value" of
+	 * Field has (non-static, non-negative) member to contain "fuzz value" of 
 	 * field.  Doubles within this fuzz value are considered to be equal.
-	 \ingroup field
+	\ingroup field
 	 */
-	class ParamFuzzy : public FieldInterface {
-	public:
+	class ParamFuzzy : public FieldInterface
+	{
+	    public:
 
 		/** element type.
 		 * It must meet the common object interface of elements as given in the
@@ -62,22 +62,19 @@ namespace LinBox
 		typedef ParamFuzzyRandIter RandIter;
 
 		/** @name Object Management
-		*/
+		 */
 		//@{
-#if 0
+ 
 		/** Default constructor.
-		*/
-		ParamFuzzy (void) {}
-#endif
+		 */
+		//ParamFuzzy (void) {}
+
 		/** Constructor from an integer.
-		 * Sets the fuzz value of the field throug the static member of the
+		 * Sets the fuzz value of the field throug the static member of the 
 		 * element type.
 		 * @param value constant reference to double fuzz value
 		 */
-		ParamFuzzy (const double &value = .000000001) :
-			_fuzz (value)
-			,one(1),zero(0),mOne(-one)
-		{}
+		ParamFuzzy (const double &value = .000000001) : _fuzz (value) {}
 
 		/** Copy constructor.
 		 * Constructs ParamFuzzy object by copying the field.
@@ -85,23 +82,14 @@ namespace LinBox
 		 * into functions.
 		 * @param  F ParamFuzzy object.
 		 */
-		ParamFuzzy (const ParamFuzzy &F) :
-			_fuzz (F.fuzz())
-			,one(F.one),zero(F.zero),mOne(F.mOne)
-		{}
-
+		ParamFuzzy (const ParamFuzzy &F) : _fuzz (F._fuzz) {}
+ 
 		/** Assignment operator.
 		 * @return reference to ParamFuzzy object for self
 		 * @param F constant reference to ParamFuzzy object
 		 */
 		ParamFuzzy &operator= (const ParamFuzzy &F)
-		{
-			if (&F == this)
-				return *this ;
-			this->_fuzz = F.fuzz() ;
-
-			return *this;
-		}
+			{ return *this; }
 
 		/** Initialization of field base element from an integer.
 		 * Behaves like C++ allocator construct.
@@ -113,15 +101,9 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		Element &init (Element &x, const integer &y = 0) const
-		{ return x = y; }
-
-		/*! init (from double)
-		 * @param x,y
-		 */
-		Element &init (Element &x, const double &y) const
-		{ return x = y; }
-
+		Element &init (Element &x, const integer &y) const
+			{ return x = static_cast<double> (y); }
+ 
 		/** Conversion of field base element to a template class T.
 		 * This function assumes the output field base element x has already been
 		 * constructed, but that it is not already initialized.
@@ -130,13 +112,8 @@ namespace LinBox
 		 * @param y constant field base element.
 		 */
 		integer &convert (integer &x, const Element &y) const
-		{ return x = y; }
-		/*! convert (double)
-		 * @param x,y
-		 */
-		double &convert (double &x, const Element &y) const
-		{ return x = y; }
-
+			{ return x = static_cast<integer> (y); }
+ 
 		/** Assignment of one field base element to another.
 		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
@@ -145,7 +122,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &assign (Element &x, const Element &y) const
-		{ return x = y; }
+			{ return x = y; }
 
 		/** Cardinality.
 		 * Return integer representing cardinality of the domain.
@@ -155,7 +132,7 @@ namespace LinBox
 		 * @return integer representing cardinality of the domain
 		 */
 		integer &cardinality (integer &c) const { return c = -1; }
-
+ 
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
 		 * Returns a positive integer to all domains with finite characteristic,
@@ -182,7 +159,7 @@ namespace LinBox
 		 * @param  y field base element
 		 */
 		bool areEqual (const Element &x, const Element &y) const
-		{ return ( ( x - y <= _fuzz ) && ( y - x <= _fuzz ) ); }
+			{ return ( ( x - y <= _fuzz ) && ( y - x <= _fuzz ) ); }
 
 		/** Addition.
 		 * x = y + z
@@ -194,8 +171,8 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &add (Element &x, const Element &y, const Element &z) const
-		{ return x = y + z; }
-
+			{ return x = y + z; }
+ 
 		/** Subtraction.
 		 * x = y - z
 		 * This function assumes all the field base elements have already been
@@ -206,8 +183,8 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &sub (Element &x, const Element &y, const Element &z) const
-		{ return x = y - z; }
-
+			{ return x = y - z; }
+ 
 		/** Multiplication.
 		 * x = y * z
 		 * This function assumes all the field base elements have already been
@@ -218,8 +195,8 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &mul (Element &x, const Element &y, const Element &z) const
-		{ return x = y * z; }
-
+			{ return x = y * z; }
+ 
 		/** Division.
 		 * x = y / z
 		 * This function assumes all the field base elements have already been
@@ -230,8 +207,8 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &div (Element &x, const Element &y, const Element &z) const
-		{ return x = y / z; }
-
+			{ return x = y / z; }
+ 
 		/** Additive Inverse (Negation).
 		 * x = - y
 		 * This function assumes both field base elements have already been
@@ -241,8 +218,8 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &neg (Element &x, const Element &y) const
-		{ return x = - y; }
-
+			{ return x = - y; }
+ 
 		/** Multiplicative Inverse.
 		 * x = 1 / y
 		 * This function assumes both field base elements have already been
@@ -252,11 +229,11 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &inv (Element &x, const Element &y) const
-		{ return x = static_cast<double> (1) / y; }
+			{ return x = static_cast<double> (1) / y; }
 
 		/** Natural AXPY.
 		 * r  = a * x + y
-		 * This function assumes all field elements have already been
+		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
 		 * @return reference to r.
 		 * @param  r field element (reference returned).
@@ -264,11 +241,11 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		Element &axpy (Element &r,
-			       const Element &a,
-			       const Element &x,
+		Element &axpy (Element &r, 
+			       const Element &a, 
+			       const Element &x, 
 			       const Element &y) const
-		{ return r = a * x + y; }
+			{ return r = a * x + y; }
 
 		//@} Arithmetic Operations
 
@@ -285,7 +262,7 @@ namespace LinBox
 		 * @param  x field base element.
 		 */
 		bool isZero (const Element &x) const
-		{ return ( ( x <= _fuzz ) && ( - x <= _fuzz ) ); }
+			{ return ( ( x <= _fuzz ) && ( - x <= _fuzz ) ); }
 
 		/** One equality.
 		 * Test if field base element is equal to one.
@@ -295,14 +272,7 @@ namespace LinBox
 		 * @param  x field base element.
 		 */
 		bool isOne (const Element &x) const
-		{ return ( ( x - 1 <= _fuzz ) && ( 1 - x <= _fuzz ) ); }
-
-		bool isMOne (const Element& x) const
-		{
-			Element y ; neg(y,x);
-			return isOne(y);
-		}
-
+			{ return ( ( x - 1 <= _fuzz ) && ( 1 - x <= _fuzz ) ); }
 
 		/** Inplace Addition.
 		 * x += y
@@ -312,7 +282,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &addin (Element &x, const Element &y) const { return x += y; }
+		Element &addin (Element &x, const Element &y) const { return x += y; } 
 
 		/** Inplace Subtraction.
 		 * x -= y
@@ -323,7 +293,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &subin (Element &x, const Element &y) const { return x -= y; }
-
+ 
 		/** Inplace Multiplication.
 		 * x *= y
 		 * This function assumes both field base elements have already been
@@ -333,7 +303,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &mulin (Element &x, const Element &y) const { return x *= y; }
-
+ 
 		/** Inplace Division.
 		 * x /= y
 		 * This function assumes both field base elements have already been
@@ -352,7 +322,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 */
 		Element &negin (Element &x) const { return x = -x; }
-
+ 
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
 		 * This function assumes the field base elementhas already been
@@ -361,11 +331,11 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 */
 		Element &invin (Element &x) const
-		{ return x = static_cast<double> (1) / x; }
+			{ return x = static_cast<double> (1) / x; }
 
 		/** Inplace AXPY.
 		 * r  += a * x
-		 * This function assumes all field elements have already been
+		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
 		 * Purely virtual
 		 * @return reference to r.
@@ -374,10 +344,10 @@ namespace LinBox
 		 * @param  x field element.
 		 */
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
-		{ return r += a * x; }
-
+			{ return r += a * x; }
+ 
 		//@} Inplace Arithmetic Operations
-
+		
 		/** @name Input/Output Operations */
 		//@{
 
@@ -385,9 +355,9 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		std::ostream &write (std::ostream &os) const
-		{ return os << " fuzz value " << _fuzz; }
-
+		std::ostream &write (std::ostream &os) const 
+			{ return os << " fuzz value " << _fuzz; }
+ 
 		/** Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
@@ -402,8 +372,8 @@ namespace LinBox
 		 * @param  x   field base element.
 		 */
 		std::ostream &write (std::ostream &os, const Element &x) const
-		{ return os << x; }
-
+			{ return os << x; }
+ 
 		/** Read field base element.
 		 * This function assumes the field base element has already been
 		 * constructed and initialized.
@@ -414,21 +384,15 @@ namespace LinBox
 		std::istream &read (std::istream &is, Element &x) const
 		{
 			is >> x;
-			return is;
+			return is; 
 		}
 
 		//@}
 
-		double fuzz() const
-		{
-			return _fuzz ;
-		}
-	private:
+	    private:
 
 		/// Private static double for fuzz value
 		double _fuzz;
-	public:
-		const Element one,zero,mOne;
 
 	}; // class ParamFuzzy
 
@@ -438,13 +402,4 @@ namespace LinBox
 
 #include "linbox/randiter/param-fuzzy.h"
 
-#endif // __LINBOX_param_fuzzy_H
-
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+#endif // __FIELD_PARAM_FUZZY_H

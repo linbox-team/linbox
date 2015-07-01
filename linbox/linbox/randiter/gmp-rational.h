@@ -1,16 +1,15 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/randiter/gmp-rational.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
  * Written by William J Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,24 +17,29 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-/*! @file randiter/gmp-rational.h
- * @ingroup randiter
- * @brief Generate a random rational with prescribed size.
- */
-
-#ifndef __LINBOX_randiter_gmp_rational_H
-#define __LINBOX_randiter_gmp_rational_H
+#ifndef __RANDITER_GMP_RATIONAL_H
+#define __RANDITER_GMP_RATIONAL_H
 
 #include "linbox/field/gmp-rational.h"
 #include "linbox/element/gmp-rational.h"
 #include "linbox/element/abstract.h"
 #include "linbox/element/envelope.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
+
+#ifdef __LINBOX_XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+#include <iostream>
+#include <string>
+
+#endif
 
 #include <sys/time.h>
 #include <stdlib.h>
@@ -43,140 +47,148 @@
 namespace LinBox
 {
 
-	class GMPRationalRandIter {
-	public:
+class GMPRationalRandIter
+{
+    public:
+    
+	typedef GMPRationalElement Element;
+    
+	GMPRationalRandIter (const GMPRationalField &F,
+			     const integer &size = 0,
+			     const integer &seed = 0)
+		: _F (F), _size (size), _seed (seed)
+	{
+		if (seed == 0)
+			_seed = time (NULL);
+	}
 
-		/// Element type.
-		typedef GMPRationalElement Element;
 
-		/*! Rational number random iterator.
-		 * @ingroup rationals
-		 * @ingroup randiter
-		 *
-		 * @param F rational field
-		 * @param size ??.
-		 * @param seed seed for random generator. By default it is 0
-		 * and a new one is created.
-		 */
-		GMPRationalRandIter (const GMPRationalField &F,
-				     const integer &size = 0,
-				     const integer &seed = 0) :
-			_field (F), _size (size), _seed (seed)
-		{
-			if (seed == 0)
-				_seed = uint32_t(time (NULL));
+
+	GMPRationalRandIter (const GMPRationalRandIter& R)
+		: _F (R._F), _size (R._size), _seed (R._seed) {}
+
+
+#ifdef __LINBOX_XMLENABLED
+	GMPRationalRandIter(LinBox::Reader &R) : _F(R.Down(1))
+	{
+		R.Up(1);
+		if(!R.expectTagName("randiter")) return;
+		if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
+
+		if(_seed == 0) _seed = time( NULL);
+
+		return;
+
+	}
+#endif
+
+
+	~GMPRationalRandIter() 
+	{}
+    
+	GMPRationalRandIter& operator=(const GMPRationalRandIter& R)
+	{
+		if (this != &R) { // guard against self-assignment
+			_F = R._F;
+			_seed = R._seed;
+			_size = R._size;
 		}
+		return *this;
+	}
+ 
+	Element &random (Element &a)  const
+	{
+		unsigned int s;
+		int value = 0;
 
+		if (_size == 0) {
+			s = _seed;
 
+			value = rand_r (&s);
 
-		/// Copy constructor
-		/// @param R Random iterator to copy.
-		GMPRationalRandIter (const GMPRationalRandIter& R) :
-			_field (R._field), _size (R._size), _seed (R._seed)
-		{}
+			mpz_set_si (mpq_numref (a.rep), value);
 
-		/// Destructor.
-		~GMPRationalRandIter()
-		{}
+			do {
+				value = rand_r (&s);
+			} while (value == 0);
 
-		/*! Copy.
-		* @param R Random iterator to copy.
-		* @return a reference to this copy.
-		*/
-		GMPRationalRandIter& operator=(const GMPRationalRandIter& R)
-		{
-			if (this != &R) { // guard against self-assignment
-				_field = R._field;
-				_seed = R._seed;
-				_size = R._size;
-			}
-			return *this;
+			const_cast<integer&>(_seed) = s;
+			mpz_set_si (mpq_denref (a.rep), value);
 		}
+		else {
+			unsigned int s;
+			int num, den;
 
-		/*! get a random number.
-		 * @param[out] a a random rational.
-		 */
-		Element &random (Element &a)  const
-		{
+			s = _seed;
+			num = rand_r (&s);
 
-			if (_size == 0) {
-				unsigned int s;
-				s = _seed;
-
-				//(rand_r is obsolete)
-				 srand (s);
-				 int value = rand();
-
-				mpz_set_si (mpq_numref (a.rep), value);
-
-				do {
-					value = rand();
-				} while (value == 0);
-
-				const_cast<integer&>(_seed) = s;
-				mpz_set_si (mpq_denref (a.rep), value);
-			}
-			else {
-				unsigned int s;
-				int num, den;
-
-				s = _seed;
-				srand (s);
-				num =  rand();
-
-				if (_size > 0) {
-					int tmp = (int)_size;
-					num %= tmp;
-					den = 1L;
-				}
-				else {
-					srand (s);
-					den =  rand();
-				}
-
-				const_cast<integer&>(_seed) = s;
-
-				mpz_set_si (mpq_numref (a.rep), num);
-				mpz_set_si (mpq_denref (a.rep), den);
+			if (_size > 0) {
+				unsigned long tmp = _size;
+				num %= tmp;
+				den = 1L;
+			} else {
+				den = rand_r (&s);
 			}
 
-			mpq_canonicalize (a.rep);
+			const_cast<integer&>(_seed) = s;
 
-			return a;
+			mpz_set_si (mpq_numref (a.rep), num);
+			mpz_set_si (mpq_denref (a.rep), den);
 		}
 
-		/** Random field element creator.
-		 * This returns a random field element from the information supplied
-		 * at the creation of the generator.
-		 * Required by abstract base class.
-		 * @param[out] a random field element.
-		 * @return reference to random field element \p a.
-		 */
-		ElementAbstract &random (ElementAbstract &a)  const
-		{
-			Element tmp;
+		mpq_canonicalize (a.rep);
 
-			random (tmp);
-			return (a = ElementEnvelope <GMPRationalField> (tmp));
-		}
+		return a;
+	}
+ 
+	/** Random field element creator.
+	 * This returns a random field element from the information supplied
+	 * at the creation of the generator.
+	 * Required by abstract base class.
+	 * @return reference to random field element
+	 */
+	ElementAbstract &random (ElementAbstract &a)  const
+	{
+		Element tmp;
 
-	private:
+		random (tmp);
+		return (a = ElementEnvelope <GMPRationalField> (tmp));
+	}
 
-		GMPRationalField _field; //!< @internal rational field
-		integer _size;       //!< @internal ??
-		integer _seed;       //!< @internal seed
+#ifdef __LINBOX_XMLENABLED
+	std::ostream &write(std::ostream &os) const
+	{
+		LinBox::Writer W;
+		if( toTag(W))
+			W.write(os);
 
-	}; // class GMPRationalRandIter
+		return os;
+	}
 
+	bool toTag(LinBox::Writer &W) const
+	{
+		std::string s;
+		W.setTagName("randiter");
+		W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
+		W.setAttribute("size", LinBox::Writer::numToString(s, _size));
+
+		W.addTagChild();
+		if(!_F.toTag(W)) return false;
+		W.upToParent();
+
+		return true;
+	}
+#endif
+
+    private:
+
+	GMPRationalField _F;
+
+	integer _size;
+	integer _seed;
+     
+}; // class GMPRationalRandIter
+ 
 } // namespace LinBox
 
-#endif // __LINBOX_randiter_gmp_random_H
-
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+#endif // __RANDITER_GMP_RANDOM_H

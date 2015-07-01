@@ -1,156 +1,76 @@
-/*
- * examples/rank.C
- *
- * Copyright (C) 2005, 2010 D. Saunders, J-G Dumas
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- */
-
-/**\file examples/rank.C
- * @example  examples/rank.C
-  \brief Rank of sparse matrix over Z or Zp.
-  \ingroup examples
-  */
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/** \file examples/rank.C
+\brief Rank of sparse matrix over Z or Zp.
+\ingroup examples
+*/
+//#include "linbox-config.h"
 
 #include <iostream>
-#include <sstream>
-#include <givaro/zring.h>
-#include <givaro/givrational.h>
 
-#include <linbox/ring/modular.h>
-#include <linbox/field/gf2.h>
-#include <linbox/matrix/sparse-matrix.h>
-#include <linbox/blackbox/zero-one.h>
-#include <linbox/solutions/rank.h>
-#include <linbox/util/matrix-stream.h>
-
-#define SP_STOR SparseMatrixFormat::SparseSeq
-// #define SP_STOR SparseMatrixFormat::COO
-// #define SP_STOR SparseMatrixFormat::CSR
-// #define SP_STOR SparseMatrixFormat::ELL
-// #define SP_STOR SparseMatrixFormat::ELL_R
-
-
+#include "linbox/field/modular-double.h"
+#include "linbox/field/gf2.h"
+#include "linbox/field/gmp-integers.h"
+#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/zero-one.h"
+#include "linbox/solutions/rank.h"
+#include "linbox/util/matrix-stream.h"
 
 using namespace LinBox;
+using namespace std;
 
-/// rank or rank mod p
 int main (int argc, char **argv)
 {
-	commentator().setMaxDetailLevel (-1);
-	commentator().setMaxDepth (-1);
-	commentator().setReportStream (std::cerr);
+    commentator.setMaxDetailLevel (-1);
+    commentator.setMaxDepth (-1);
+    commentator.setReportStream (std::cerr);
 
-	if (argc < 2 || argc > 3) {
-		std::cerr << "Usage: rank <matrix-file-in-supported-format> [<p>]" << std::endl;
-		return -1;
-	}
+	if (argc < 2 || argc > 3) 
+	{	cerr << "Usage: rank <matrix-file-in-supported-format> [<p>]" << endl; return -1; }
 
-	std::ifstream input (argv[1]);
-	if (!input) {
-		std::cerr << "Error opening matrix file: " << argv[1] << std::endl;
-		return -1;
-	}
+	ifstream input (argv[1]);
+	if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
 
 	long unsigned int r;
 
-	Givaro::ZRing<Givaro::Rational> ZZ;
-	LinBox::Timer tim ; tim.clear() ; tim.start();
-	MatrixStream<Givaro::ZRing<Givaro::Rational>> ms( ZZ, input );
-	SparseMatrix<Givaro::ZRing<Givaro::Rational>, SP_STOR> A ( ms );
-	// SparseMatrix<Givaro::ZRing<Givaro::Rational>, SparseMatrixFormat::CSR> A ( ms );
-	tim.stop();
-	std::cout << "matrix is " << A.rowdim() << " by " << A.coldim() << " (" << tim << ")" << std::endl;
-	tim.clear() ; tim.start();
-	if (argc == 2) { // rank over the rational numbers.
+	if (argc == 2) { // rank over the integers.
 
-		/* We could pick a random prime and work mod that prime, But
-		 * the point here is that the rank function in solutions/
-		 * handles that issue.  Our matrix here is an integer or
-		 * rational matrix and our concept is that we are getting the
-		 * rank of that matrix by some blackbox magic inside linbox.
-		 */
-		// A.write(std::cout) << std::endl;;
+	   /* We could pick a random prime and work mod that prime, But the point here 
+	   is that the rank function in solutions/ handles that issue.  Our matrix here 
+	   is an integer matrix and our concept is that we are getting the rank of that 
+	   matrix by some blackbox magic inside linbox.
+	   */
+		GMP_Integers ZZ;
+		MatrixStream<GMP_Integers> ms( ZZ, input );
+		SparseMatrix<GMP_Integers> A ( ms );
+		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		LinBox::rank (r, A);
+		rank (r, A);
+
+		cout << "Rank is " << r << endl;
 	}
-	if (argc == 3) { // rank mod a prime
-#if 0
-		// for prime greater than wordsize:
-		integer q (argv[2]);
-		typedef Givaro::Modular<integer> Field;
-#endif
-#if 0
-		//to use doubles, prime < 2^{23}
+	if (argc == 3) { 
 		double q = atof(argv[2]);
-		typedef Givaro::Modular<double> Field;
-#endif
-		//to use ints, prime < 2^{31}
-		int32_t q = atoi(argv[2]);
-                if (q == 0) {
-                        std::cerr << "second argument should be a non-zero integer or missing\n";
-                        return -1;
-                }
-		typedef Givaro::Modular<int32_t> Field;
+                    typedef Modular<double> Field;
+                    Field F(q);
+		    MatrixStream<Field> ms( F, input );
+                    SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
+                    cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+                    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 
-		Field F(q);
-		if (q > F.maxCardinality()) {
-			std::cerr << "your number is too big for this field" << std::endl;
-			return -1 ;
-		}
 
-		SparseMatrix<Field, SP_STOR > B (F, A.rowdim(), A.coldim());// modular image of A
-		MatrixHom::map(B, A);
-		std::cout << "matrix is " << B.rowdim() << " by " << B.coldim() << std::endl;
-		//if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
+			// using BlackBoxes
+                    Method::Blackbox MBB;
+                    MBB.certificate(true);
+                    rank(r, B, MBB);
+                    cout << "Rank is " << r << endl;
 
-		// Using the adaptive LinBox Solution
-		LinBox::rank(r,B);
-
-		// using BlackBoxes
-#if 0 /*  too bad */
-		   Method::Blackbox MBB;
-		   MBB.certificate(true);
-		   Linbox::rank(r, B, MBB);
-#endif
-
-		// using in place Sparse Elimination with linear pivoting
-
-#if 0 /*  too bad */
-		   Method::SparseElimination SE;
-		   SE.strategy(Specifier::PIVOT_LINEAR);
-		   rankin (r, B, SE);
-		   if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
-#endif
+			// using Sparse Elimination
+                    rankin (r, B);                    
+                    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+                    cout << "Rank is " << r << endl;
 
 
 	}
-	tim.stop();
 
-	std::cout << "Rank is " << r << " (" << tim << " )" << std::endl;
 	return 0;
 }
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

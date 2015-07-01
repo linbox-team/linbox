@@ -1,0 +1,7 @@
+ATTIC
+Makefile
+Makefile.in
+.libs
+.deps
+liblinbox.la
+*.lo

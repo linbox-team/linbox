@@ -1,15 +1,13 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* lb-minpoly.C
  * Copyright (C) 2005 Pascal Giorgi
  *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,16 +15,16 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_lb_minpoly_C
-#define __LINBOX_lb_minpoly_C
+#ifndef __LINBOX_LB_MINPOLY_C
+#define __LINBOX_LB_MINPOLY_C
 
 
-#include "linbox/solutions/minpoly.h"
+#include <linbox/solutions/minpoly.h>
 
 #include <lb-minpoly.h>
 #include <lb-blackbox-function.h>
@@ -50,7 +48,7 @@ public:
 	void operator() (Result &res, Blackbox *B) const {
 		typedef typename Blackbox::Field::Element Element;
 		std::vector<Element> * phi = static_cast<std::vector<Element>*>(res);
-		LinBox::minpoly(*phi, *B, meth);
+		LinBox::minpoly(*phi, *B, meth);	
 		res = phi;
 	}
 };
@@ -80,7 +78,7 @@ const VectorKey& lb_minpoly(const BlackboxKey& key) {
 	BlackboxTable::iterator it = blackbox_hashtable.find(key);
 	if ( it == blackbox_hashtable.end())
 		throw lb_runtime_error("LinBox ERROR: blackbox is not defined (minpoly computation impossible)");
-
+		
 	const VectorKey *res = & createVector(it->second->getDomainKey(), 0, "linbox_dense");
 	lb_minpoly(*res, key);
 	return *res;
@@ -89,12 +87,3 @@ const VectorKey& lb_minpoly(const BlackboxKey& key) {
 
 
 #endif
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

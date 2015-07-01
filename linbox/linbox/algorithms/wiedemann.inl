@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/algorithms/wiedemann.inl
  * Copyright (C) 2002 Zhendong Wan
  * Copyright (C) 2002 Bradford Hovinen
@@ -29,47 +31,27 @@
  * which one to use in different circumstances
  * ------------------------------------
  *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * See COPYING for license information.
  */
 
-#ifndef __LINBOX_wiedemann_INL
-#define __LINBOX_wiedemann_INL
+#ifndef __WIEDEMANN_INL
+#define __WIEDEMANN_INL
 
 #include <vector>
 #include <algorithm>
 
-#include "linbox/solutions/minpoly.h"
 #include "linbox/algorithms/wiedemann.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/blackbox/butterfly.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/blackbox-container-symmetric.h"
-//#include "linbox/algorithms/blackbox-container-generic.h"
-#include "linbox/algorithms/massey-domain.h"
+#include "linbox/algorithms/massey-domain.h" 
 #include "linbox/switch/cekstv.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/vector/stream.h"
 
-namespace LinBox
+namespace LinBox 
 {
 
 	template <class Field>
@@ -84,13 +66,12 @@ namespace LinBox
 			      (b.size () == A.rowdim ()));
 		linbox_check (_traits.singular () != WiedemannTraits::NONSINGULAR || A.coldim () == A.rowdim ());
 
-		commentator().start ("Solving linear system (Wiedemann)", "WiedemannSolver::solve");
+		commentator.start ("Solving linear system (Wiedemann)", "WiedemannSolver::solve");
 
 		WiedemannTraits::SingularState singular = _traits.singular ();
-		if (A.rowdim() != A.coldim() ) _traits.singular (singular = WiedemannTraits::SINGULAR);
 		ReturnStatus status = FAILED;
 
-		unsigned int tries = (unsigned int)_traits.maxTries ();
+		unsigned int tries = _traits.maxTries ();
 
 		unsigned long r = (unsigned long) -1;
 
@@ -111,11 +92,11 @@ namespace LinBox
 						break;
 
 					case SINGULAR:
-						commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-						<< "System found to be singular. Reverting to nonsingular solver." << std::endl;
-						tries = (unsigned int)_traits.maxTries ();
+						commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+							<< "System found to be singular. Reverting to nonsingular solver." << std::endl;
 						singular = WiedemannTraits::SINGULAR;
 						break;
+
 					default:
 						throw LinboxError ("Bad return value from solveNonsingular");
 					}
@@ -147,8 +128,8 @@ namespace LinBox
 				{
 					if (r == (unsigned long) -1) {
 						rank (r, A);
-						commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-						<< "Rank of A = " << r << std::endl;
+						commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+							<< "Rank of A = " << r << std::endl;
 					}
 
 					switch (solveSingular (A, x, b, u, r)) {
@@ -176,10 +157,10 @@ namespace LinBox
 		}
 
 		if (status == FAILED)
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-			<< "Maximum tries exceeded with no resolution. Giving up." << std::endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+				<< "Maximum tries exceeded with no resolution. Giving up." << std::endl;
 
-		commentator().stop ("done", NULL, "WiedemannSolver::solve");
+		commentator.stop ("done", NULL, "WiedemannSolver::solve");
 
 		return status;
 	}
@@ -192,86 +173,107 @@ namespace LinBox
 						  const Vector        &b,
 						  bool       useRandIter)
 	{
-		typedef BlasVector<Field> Polynomial;
+		typedef std::vector<typename Field::Element> Polynomial;
 		typedef typename Polynomial::iterator        PolyIterator;
 
-		commentator().start ("Solving nonsingular system (Wiedemann)", "WiedemannSolver::solveNonsingular");
+		commentator.start ("Solving nonsingular system (Wiedemann)", "WiedemannSolver::solveNonsingular");
 
-		Polynomial m_A(A.field());
-		Vector     z(A.field());
+		Polynomial m_A;
+		Vector     z;
 		bool       ret = true;
 
 		{
-			// Make it just Blackbox trait and not wiedemann:
-			// Might need extension field for minpoly
-			// Might also also use better method than Wiedemann ...
-			minpoly(m_A, A,RingCategories::ModularTag(),  Method::Blackbox(_traits) );
+			commentator.start ("Computing minimal polynomial");
+
+			unsigned long  deg;
+
+			if (!_traits.symmetric ()) {
+				typedef BlackboxContainer<Field, Blackbox> BBContainer;
+
+				if (useRandIter) {
+					BBContainer                      TF (&A, _F, _randiter);
+					MasseyDomain<Field, BBContainer> WD (&TF);
+
+					WD.minpoly (m_A, deg);
+				} else {
+					BBContainer                      TF (&A, _F, b);
+					MasseyDomain<Field, BBContainer> WD (&TF);
+
+					WD.minpoly (m_A, deg);
+				}
+			} else {
+				typedef BlackboxContainerSymmetric<Field, Blackbox> BBContainer;
+
+				if (useRandIter) {
+					BBContainer                      TF (&A, _F, _randiter);
+					MasseyDomain<Field, BBContainer> WD (&TF);
+
+					WD.minpoly (m_A, deg);
+				} else {
+					BBContainer                      TF (&A, _F, b);
+					MasseyDomain<Field, BBContainer> WD (&TF);
+
+					WD.minpoly (m_A, deg);
+				}
+			}
+
+			commentator.stop ("done");
 		}
 
-		std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Minimal polynomial of degree " << (m_A.size()-1) << std::endl;
-		if (m_A.size() < 50) {
-			report << "Minimal polynomial coefficients: ";
-			_VD.write (report, m_A) << std::endl;
-		}
+		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Minimal polynomial coefficients: ";
+		_VD.write (report, m_A) << std::endl;
 
-		if (field().isZero (m_A.front ())) {
-			commentator().stop ("singular", "System found to be singular",
+		if (_F.isZero (m_A.front ())) {
+			commentator.stop ("singular", "System found to be singular",
 					  "WiedemannSolver::solveNonsingular");
 			return SINGULAR;
 		}
 
 		{
-			commentator().start ("Preparing polynomial for application");
+			commentator.start ("Preparing polynomial for application");
 
 			PolyIterator iter = m_A.begin ();
 
 			while (++iter != m_A.end ()) {
-				field().divin (*iter, m_A.front ());
-				field().negin (*iter);
+				_F.divin (*iter, m_A.front ());
+				_F.negin (*iter);
 			}
 
-			commentator().stop ("done");
+			commentator.stop ("done");
 		}
 
 		{
-			commentator().start ("Applying polynomial via Horner's rule", NULL, m_A.size () - 1);
+			commentator.start ("Applying polynomial via Horner's rule", NULL, m_A.size () - 1);
 
 			_VD.mul (x, b, m_A.back ());
 
 			VectorWrapper::ensureDim (z, A.rowdim ());
 
-			for (int i = (int) m_A.size () - 1; --i > 0;) {
-				if (((long)m_A.size () - i) & (0xff == 0))
-					commentator().progress ((long)m_A.size () - i);
+			for (int i = m_A.size () - 1; --i > 0;) {
+				if ((m_A.size () - i) & 0xff == 0)
+					commentator.progress (m_A.size () - i);
 
 				A.apply (z, x);
-				_VD.axpy (x, m_A[(size_t)i], b, z);
+				_VD.axpy (x, m_A[i], b, z);
 			}
 
-			commentator().stop ("done");
+			commentator.stop ("done");
 		}
 
 		if (_traits.checkResult ()) {
-			commentator().start ("Checking whether Ax=b");
+			commentator.start ("Checking whether Ax=b");
 			A.apply (z, x);
 
 			if (_VD.areEqual (z, b))
 				ret = true;
-			else {
-				std::ostream& Report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-				_VD.write(Report << "x is ", x) << std::endl;
-				_VD.write(Report << "b is ", b) << std::endl;
-				_VD.write(Report << "Ax is " , z) << std::endl;
-
+			else
 				ret = false;
 
-			}
-
-			commentator().stop (MSG_STATUS (ret));
+			commentator.stop (MSG_STATUS (ret));
 		}
 
-		commentator().stop (MSG_STATUS (ret), NULL, "WiedemannSolver::solveNonsingular");
+		commentator.stop (MSG_STATUS (ret), NULL, "WiedemannSolver::solveNonsingular");
 
 		if (!ret)
 			return FAILED;
@@ -288,33 +290,33 @@ namespace LinBox
 					       Vector               &u,
 					       unsigned long         r)
 	{
-		commentator().start ("Solving singular system (Wiedemann)", "WiedemannSolver::solveSingular");
+		commentator.start ("Solving singular system (Wiedemann)", "WiedemannSolver::solveSingular");
 
-		Vector Ax(A.field());
+		Vector Ax;
 		ReturnStatus status = OK, sfrs = OK;
 
 
 		switch (_traits.preconditioner ()) {
 		case WiedemannTraits::BUTTERFLY:
 			{
-				commentator().start ("Constructing butterfly preconditioner");
+				commentator.start ("Constructing butterfly preconditioner");
 
 				CekstvSwitchFactory<Field> factory (_randiter);
 				typedef Butterfly<Field, CekstvSwitch<Field> > ButterflyP;
-				ButterflyP P(field(), A.rowdim (), factory);
-				ButterflyP Q(field(), A.coldim (), factory);
+				ButterflyP P(_F, A.rowdim (), factory);
+				ButterflyP Q(_F, A.coldim (), factory);
 				Compose< Blackbox, ButterflyP > AQ(&A, &Q);
 				Compose< ButterflyP, Compose< Blackbox, ButterflyP > > PAQ(&P, &AQ);
 
-				commentator().stop ("done");
-
+				commentator.stop ("done");
+                    
 				sfrs = findRandomSolution (PAQ, x, b, r, &P, &Q);
 				break;
 			}
 
 		case WiedemannTraits::SPARSE:
 			{
-				commentator().start ("Constructing sparse preconditioner");
+				commentator.start ("Constructing sparse preconditioner");
 
 				SparseMatrix<Field> *P, *QT;
 				P = makeLambdaSparseMatrix (A.rowdim ());
@@ -324,7 +326,7 @@ namespace LinBox
 
 				Compose< Blackbox, Transpose< SparseMatrix<Field> > > AQ(&A, &Q);
 				Compose< SparseMatrix<Field>, Compose< Blackbox, Transpose< SparseMatrix<Field> > > > PAQ(P, &AQ);
-				commentator().stop ("done");
+				commentator.stop ("done");
 
 				sfrs = findRandomSolution (PAQ, x, b, r, P, &Q);
 
@@ -332,19 +334,18 @@ namespace LinBox
 			}
 
 		case WiedemannTraits::TOEPLITZ:
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
 			break;
-
-		case WiedemannTraits::NO_PRECONDITIONER:
-			{
-				SparseMatrix<Field> *P = NULL;
-				sfrs = findRandomSolution (A, x, b, r, P, P);
-				delete P;
-				break;
-			}
+		    
+                    case WiedemannTraits::NO_PRECONDITIONER: 
+                    {
+			SparseMatrix<Field> *P = NULL;
+			sfrs = findRandomSolution (A, x, b, r, P, P);
+                        break;
+                    }
 		default:
-			throw PreconditionFailed (__func__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
+			throw PreconditionFailed (__FUNCTION__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
 		}
 
 
@@ -353,8 +354,8 @@ namespace LinBox
 
 		switch (sfrs) {
 		case BAD_PRECONDITIONER:
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-			<< "Preconditioned matrix did not have generic rank profile" << std::endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+				<< "Preconditioned matrix did not have generic rank profile" << std::endl;
 
 			status = BAD_PRECONDITIONER;
 			break;
@@ -367,8 +368,7 @@ namespace LinBox
 					status = INCONSISTENT;
 				else
 					status = FAILED;
-			}
-			else
+			} else
 				status = FAILED;
 
 			break;
@@ -384,21 +384,21 @@ namespace LinBox
 		}
 
 		if (status == OK && _traits.checkResult ()) {
-			commentator().start ("Checking system solution");
+			commentator.start ("Checking system solution");
 
 			VectorWrapper::ensureDim (Ax, A.rowdim ());
 
 			A.apply (Ax, x);
 
 			if (_VD.areEqual (Ax, b))
-				commentator().stop ("passed");
+				commentator.stop ("passed");
 			else {
-				commentator().stop ("FAILED");
+				commentator.stop ("FAILED");
 
 				if (_traits.certificate ()) {
-					commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-					<< "Computed system solution is not correct. "
-					<< "Attempting to find certificate of inconsistency." << std::endl;
+					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+						<< "Computed system solution is not correct. "
+						<< "Attempting to find certificate of inconsistency." << std::endl;
 
 					VectorWrapper::ensureDim (u, A.rowdim ());
 
@@ -406,13 +406,12 @@ namespace LinBox
 						status = INCONSISTENT;
 					else
 						status = FAILED;
-				}
-				else
+				} else
 					status = FAILED;
 			}
 		}
 
-		commentator().stop ("done", NULL, "WiedemannSolver::solveSingular");
+		commentator.stop ("done", NULL, "WiedemannSolver::solveSingular");
 
 		return status;
 	}
@@ -427,12 +426,12 @@ namespace LinBox
 						    const Prec1           *P,
 						    const Prec2           *Q)
 	{
-		commentator().start ("Solving singular system with generic rank profile (Wiedemann)",
+		commentator.start ("Solving singular system with generic rank profile (Wiedemann)",
 				   "WiedemannSolver::findRandomSolution");
 
-		Vector v(A.field()), Avpb(A.field()), PAvpb(A.field()), bp(A.field()), xp(A.field()), Qinvx(A.field());
+		Vector v, Avpb, PAvpb, bp, xp, Qinvx;
 
-		RandomDenseStream<Field, Vector> stream (field(), _randiter, A.coldim ());
+		RandomDenseStream<Field, Vector> stream (_F, _randiter, A.coldim ());
 
 		VectorWrapper::ensureDim (v, A.coldim ());
 		VectorWrapper::ensureDim (Avpb, A.rowdim ());
@@ -440,30 +439,31 @@ namespace LinBox
 		VectorWrapper::ensureDim (bp, r);
 
 		{
-			commentator().start ("Preparing right hand side");
+			commentator.start ("Preparing right hand side");
 
 			stream >> v;
+
 			A.apply (Avpb, v);
 			_VD.addin (Avpb, b);
+
 			if (P != NULL) {
 				VectorWrapper::ensureDim (PAvpb, A.rowdim ());
 				P->apply (PAvpb, Avpb);
 				_VD.copy (bp, PAvpb, 0, r);
-			}
-			else {
+			} else {
 				_VD.copy (bp, Avpb, 0, r);
 			}
 
-			commentator().stop ("done");
+			commentator.stop ("done");
 		}
 
 		Submatrix<Blackbox> Ap (&A, 0, 0, r, r);
 
 		switch (solveNonsingular (Ap, xp, bp, false)) {
 		case SINGULAR:
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-			<< "Leading principal minor was found to be singular." << std::endl;
-			commentator().stop ("bad preconditioner", "System was not well-conditioned",
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+				<< "Leading principal minor was found to be singular." << std::endl;
+			commentator.stop ("bad preconditioner", "System was not well-conditioned",
 					  "WiedemannSolver::findRandomSolution");
 			return BAD_PRECONDITIONER;
 
@@ -478,14 +478,13 @@ namespace LinBox
 			VectorWrapper::ensureDim (Qinvx, A.coldim ());
 			_VD.copy (Qinvx, xp);
 			Q->apply (x, Qinvx);
-		}
-		else {
+		} else {
 			_VD.copy (x, xp);
 		}
 
 		_VD.subin (x, v);
 
-		commentator().stop ("done", NULL, "WiedemannSolver::findRandomSolution");
+		commentator.stop ("done", NULL, "WiedemannSolver::findRandomSolution");
 
 		return OK;
 	}
@@ -496,11 +495,11 @@ namespace LinBox
 	WiedemannSolver<Field>::findNullspaceElement (Vector             &x,
 						      const Blackbox     &A)
 	{
-		commentator().start ("Finding a nullspace element (Wiedemann)", "WiedemannSolver::findNullspaceElement");
+		commentator.start ("Finding a nullspace element (Wiedemann)", "WiedemannSolver::findNullspaceElement");
 
-		Vector v(A.field()), Av(A.field()), PAv(A.field()), vp(A.field()), xp(A.field()), Qinvx(A.field());
+		Vector v, Av, PAv, vp, xp, Qinvx;
 
-		RandomDenseStream<Field, Vector> stream (field(), _randiter, A.coldim ());
+		RandomDenseStream<Field, Vector> stream (_F, _randiter, A.coldim ());
 
 		unsigned long r = (A.coldim () < A.rowdim ()) ? A.coldim () : A.rowdim ();
 
@@ -510,7 +509,7 @@ namespace LinBox
 		ReturnStatus status;
 
 		{
-			commentator().start ("Constructing right hand side");
+			commentator.start ("Constructing right hand side");
 
 			stream >> v;
 			A.apply (Av, v);
@@ -520,7 +519,7 @@ namespace LinBox
 				_VD.copy (vp, Av, 0, r);
 			}
 
-			commentator().stop ("done");
+			commentator.stop ("done");
 		}
 
 		if (A.coldim () < A.rowdim ()) {
@@ -532,21 +531,20 @@ namespace LinBox
 			VectorWrapper::ensureDim (xp, r);
 			status = solveNonsingular (Ap, xp, Av, false);
 			_VD.copy (x, xp);
-		}
-		else
+		} else
 			status = solveNonsingular (A, x, Av, false);
 
 		if (status == SINGULAR) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-			<< "Leading principal minor was found to be singular." << std::endl;
-			commentator().stop ("bad preconditioner", "System not well-conditioned",
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+				<< "Leading principal minor was found to be singular." << std::endl;
+			commentator.stop ("bad preconditioner", "System not well-conditioned",
 					  "WiedemannSolver::findNullspaceElement");
 			return BAD_PRECONDITIONER;
 		}
 
 		_VD.subin (x, v);
 
-		commentator().stop ("done", NULL, "WiedemannSolver::findNullspaceElement");
+		commentator.stop ("done", NULL, "WiedemannSolver::findNullspaceElement");
 
 		return OK;
 	}
@@ -557,10 +555,10 @@ namespace LinBox
 							   const Blackbox                  &A,
 							   const Vector                    &b)
 	{
-		commentator().start ("Obtaining certificate of inconsistency (Wiedemann)",
+		commentator.start ("Obtaining certificate of inconsistency (Wiedemann)",
 				   "WiedemannSolver::certifyInconsistency");
 
-		// Vector PTinvu(A.field());
+		Vector PTinvu;
 		typename Field::Element uTb;
 
 		WiedemannTraits cert_traits;
@@ -572,17 +570,17 @@ namespace LinBox
 		cert_traits.singular (WiedemannTraits::SINGULAR);
 		cert_traits.maxTries (1);
 
-		WiedemannSolver solver (field(), cert_traits, _randiter);
+		WiedemannSolver solver (_F, cert_traits, _randiter);
 
 		Transpose<Blackbox> AT (&A);
 
 		solver.findNullspaceElement (u, AT);
 		_VD.dot (uTb, u, b);
 
-		if (!field().isZero (uTb))
+		if (!_F.isZero (uTb))
 			ret = true;
 
-		commentator().stop (MSG_STATUS (ret), NULL, "WiedemannSolver::certifyInconsistency");
+		commentator.stop (MSG_STATUS (ret), NULL, "WiedemannSolver::certifyInconsistency");
 
 		return ret;
 	}
@@ -594,18 +592,18 @@ namespace LinBox
 		const double             LAMBDA = 3;
 		integer                  card;
 
-		field().cardinality (card);
+		_F.cardinality (card);
 
 		double                   init_p = 1.0 - 1.0 / (double) card;
 		double                   log_m = LAMBDA * log ((double) m) / M_LN2;
+		double                   new_p;
 
-		SparseMatrix<Field>    *P = new SparseMatrix<Field> (field(), m, m);
+		SparseMatrix<Field>    *P = new SparseMatrix<Field> (_F, m, m);
 
-		RandomSparseStream<Field,typename SparseMatrix<Field>::Row> stream (field(), _randiter, init_p, m, m);
+		RandomSparseStream<Field> stream (_F, _randiter, init_p, m, m);
 
 		for (unsigned int i = 0; i < m; ++i) {
-		double                   new_p;
-			new_p = log_m / double(m - i + 1);
+			new_p = log_m / (m - i + 1);
 
 			if (init_p < new_p)
 				stream.setP (init_p);
@@ -620,13 +618,4 @@ namespace LinBox
 
 }
 
-#endif // __LINBOX_wiedemann_INL
-
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+#endif // __WIEDEMANN_INL

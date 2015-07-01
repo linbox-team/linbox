@@ -1,15 +1,13 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/ring/envelope.h
- * Copyright(C) LinBox
  * Written by J-G Dumas <Jean-Guillaume.Dumas@imag.fr>,
  *            Clement Pernet <Clement.Pernet@imag.fr>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,15 +15,15 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  *
  * ------------------------------------
  */
 
-#ifndef __LINBOX_ring_envelope_H
-#define __LINBOX_ring_envelope_H
+#ifndef __RING_ENVELOPE_H
+#define __RING_ENVELOPE_H
 
 #include <iostream>
 
@@ -36,7 +34,7 @@
 #include "linbox/randiter/abstract.h"
 #include "linbox/randiter/envelope.h"
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
@@ -45,18 +43,18 @@
 #endif
 
 // Namespace in which all LinBox code resides
-namespace LinBox
-{
+namespace LinBox 
+{ 
 	// Forward declarations
 	template <class Ring> class RandIterEnvelope;
 
-	/**
-	 * \brief implement the ring archetype to minimize code bloat.
+	/** 
+	 * \brief implement the ring archetype to minimize code bloat.  
 	\ingroup ring
 
 	This class implements all purely virtual member functions
 	 * of the abstract base class.  This class is used to wrap a
-	 * \ref LinBox
+	 * \Ref{LinBox}
 	 * ring so that it might be used with the Ring archetype.
 	 */
 	template <class Ring>
@@ -80,47 +78,39 @@ namespace LinBox
 		/** @name Object Management
 		 */
 		//@{
-
+ 
 		/** Default constructor.
-		 * In this implementation, this means copying the ring \c E._field.
+		 * In this implementation, this means copying the ring {\tt E.\_field}.
 		 */
 		RingEnvelope (void) {}
 
 		/** Constructor from ring to be wrapped.
 		 * @param F Ring object to be wrapped.
 		 */
-		RingEnvelope (const Ring& F) :
-		       	FieldEnvelope<Ring> (F)
-		{}
-
+		RingEnvelope (const Ring& F) : FieldEnvelope<Ring> (F) {}
+ 
 		/** Copy constructor.
 		 * Constructs RingEnvelope object by copying the ring.
 		 * This is required to allow ring objects to be passed by value
 		 * into functions.
-		 * In this implementation, this means copying the ring \c E._field.
+		 * In this implementation, this means copying the ring {\tt E.\_field}.
 		 * @param  E RingEnvelope object.
 		 */
-		RingEnvelope (const RingEnvelope& E) :
-		       	FieldEnvelope<Ring> (E._field)
-		{}
+		RingEnvelope (const RingEnvelope& E) : FieldEnvelope<Ring> (E._field) {}
 
 #ifdef __LINBOX_XMLENABLED
-		RingEnvelope(Reader &R) :
-		       	FieldEnvelope<Ring>(R)
-	       	{}
+		RingEnvelope(Reader &R) : FieldEnvelope<Ring>(R) {}
 #endif
 
-
+ 
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
 		 * This function is not part of the common object interface.
 		 * @return pointer to new object in dynamic memory.
 		 */
-#if 0
-		RingAbstract* clone () const
-		{ return new RingEnvelope (*this); }
-#endif
+// 		RingAbstract* clone () const
+// 			{ return new RingEnvelope (*this); }
 
 		FieldAbstract* clone () const
 			{ return static_cast<RingAbstract*>( new RingEnvelope (*this)); }
@@ -177,14 +167,14 @@ namespace LinBox
 		}
 		integer& cardinality (integer& c) const{
 			return FieldEnvelope<Ring>::cardinality(c);
-
+			
 		}
 		integer& characteristic (integer& c) const{
 			return FieldEnvelope<Ring>::characteristic(c);
-
+			
 		}
 		bool areEqual (const ElementAbstract& x, const ElementAbstract& y) const{
-
+			
 			return FieldEnvelope<Ring>::areEqual(x,y);
 		}
 
@@ -209,10 +199,10 @@ namespace LinBox
 				      const ElementAbstract& z) const{
 			return FieldEnvelope<Ring>::div(x,y,z);
 		}
-
-		ElementAbstract& axpy (ElementAbstract& r,
-					const ElementAbstract& a,
-					const ElementAbstract& x,
+		
+		ElementAbstract& axpy (ElementAbstract& r, 
+					const ElementAbstract& a, 
+					const ElementAbstract& x, 
 					const ElementAbstract& y) const
 		{
 			return FieldEnvelope<Ring>::axpy(r,a,x,y);
@@ -234,9 +224,9 @@ namespace LinBox
 					const ElementAbstract& z) const{
 			return FieldEnvelope<Ring>::divin(x,z);
 		}
-
-		ElementAbstract& axpyin(ElementAbstract& r,
-					const ElementAbstract& x,
+		
+		ElementAbstract& axpyin(ElementAbstract& r, 
+					const ElementAbstract& x, 
 					const ElementAbstract& y) const
 		{
 			return FieldEnvelope<Ring>::axpyin(r,x,y);
@@ -245,7 +235,7 @@ namespace LinBox
 			return FieldEnvelope<Ring>::isZero(x);
 		}
 
-
+		
 		bool isOne (const ElementAbstract& x) const{
 			return FieldEnvelope<Ring>::isOne(x);
 		}
@@ -261,7 +251,7 @@ namespace LinBox
 
 		bool isUnit (const ElementAbstract& x) const
 			{ return _field.isUnit (static_cast<const ElementEnvelope<Ring>&> (x)._elem); }
-
+ 
 		/** Divisibility of zero test.
 		 * Test if ring element is a zero divisor.
 		 * This function assumes the ring element has already been
@@ -274,14 +264,14 @@ namespace LinBox
 			{ return _field.isZeroDivisor (static_cast<const ElementEnvelope<Ring>&> (x)._elem); }
 
 
-		std::ostream& write (std::ostream& os) const
+		std::ostream& write (std::ostream& os) const 
 		{ return  FieldEnvelope<Ring>::write (os); }
-
+		
 		std::istream& read (std::istream& is) { return FieldEnvelope<Ring>::read (is); }
 
 		std::ostream& write (std::ostream& os, const ElementAbstract& x) const
 			{ return FieldEnvelope<Ring>::write (os, x); }
-
+ 
 		std::istream& read (std::istream& is, ElementAbstract& x) const
 			{ return FieldEnvelope<Ring>::read (is, x); }
 	    private:
@@ -295,14 +285,4 @@ namespace LinBox
 
 #include "linbox/randiter/envelope.h"
 
-#endif // __LINBOX_ring_envelope_H
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-
+#endif // __RING_ENVELOPE_H

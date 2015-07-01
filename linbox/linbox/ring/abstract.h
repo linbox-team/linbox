@@ -1,15 +1,13 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/ring/abstract.h
- * Copyright(C) LinBox
  * Written by J-G Dumas <Jean-Guillaume.Dumas@imag.fr>,
  *            Clement Pernet <Clement.Pernet@imag.fr>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,20 +15,20 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_ring_abstract_H
-#define __LINBOX_ring_abstract_H
+#ifndef __RING_ABSTRACT_H
+#define __RING_ABSTRACT_H
 
 #include <iostream>
 
 #include "linbox/element/abstract.h"
 #include "linbox/randiter/abstract.h"
 #include "linbox/integer.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 #include "linbox/field/abstract.h"
 #ifdef __LINBOX_XMLENABLED
 
@@ -39,13 +37,13 @@
 
 #endif
 
-namespace LinBox
-{
+namespace LinBox 
+{ 
 
 	/** \brief Abstract ring base class.
-	\ingroup ring
+	\ingroup ring 
 
-	 * Found in the file \sa{linbox/ring/abstract.h}.
+	 * Found in the file \URL{linbox/ring/abstract.h}.
 	 * Abstract base class used to implement the ring archetype to minimize
 	 * code bloat.  All public member functions of this class are purely
 	 * virtual and must be implemented by all derived classes.
@@ -56,7 +54,8 @@ namespace LinBox
 	 * it.  This minimizes code bloat, but it also introduces indirection through
 	 * the use of pointers and virtual functions which is inefficient.
 	 */
-  class RingAbstract : public FieldAbstract {
+  class RingAbstract : public FieldAbstract
+	{
 	    public:
 
 /* 		/// element type. */
@@ -68,7 +67,7 @@ namespace LinBox
 		typedef FieldAbstract::RandIter RandIter;
 		/** @name Object Management
 		 * There are no public constructors for this class.
-		 * It should only be used in tandem with \ref FieldArchetype.
+		 * It should only be used in tandem with \Ref{FieldArchetype}.
 		 */
 		//@{
 
@@ -96,7 +95,7 @@ namespace LinBox
 		 * @param  x ring element.
 		 */
 		virtual bool isUnit (const Element &x) const = 0;
-
+ 
 		/** Divisibility of zero test.
 		 * Test if ring element is a zero divisor.
 		 * This function assumes the ring element has already been
@@ -115,16 +114,6 @@ namespace LinBox
 
 	}; // class FieldAbstract
 
-}  // namespace LinBox
+} // namespace LinBox
 
-#endif // __LINBOX_ring_abstract_H
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-
+#endif // __RING_ABSTRACT_H

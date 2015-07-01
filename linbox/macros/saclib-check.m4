@@ -1,34 +1,12 @@
-dnl Check for SACLIB
-dnl Bradford Hovinen, 2001-06-13
-dnl Modified by Pascal Giorgi, 2003-12-03
-dnl Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
-dnl Stolen from Chris Lahey       99-2-5
-dnl stolen from Manish Singh again
-dnl stolen back from Frank Belew
-dnl stolen from Manish Singh
-dnl Shamelessly stolen from Owen Taylor
-dnl Copyright (c) the LinBox group
-dnl This file is part of LinBox
-
- dnl ========LICENCE========
- dnl This file is part of the library LinBox.
- dnl 
- dnl LinBox is free software: you can redistribute it and/or modify
- dnl it under the terms of the  GNU Lesser General Public
- dnl License as published by the Free Software Foundation; either
- dnl version 2.1 of the License, or (at your option) any later version.
- dnl 
- dnl This library is distributed in the hope that it will be useful,
- dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
- dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- dnl Lesser General Public License for more details.
- dnl 
- dnl You should have received a copy of the GNU Lesser General Public
- dnl License along with this library; if not, write to the Free Software
- dnl Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- dnl ========LICENCE========
- dnl
-
+# Check for SACLIB
+# Bradford Hovinen, 2001-06-13
+# Modified by Pascal Giorgi, 2003-12-03 
+# Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
+# Stolen from Chris Lahey       99-2-5
+# stolen from Manish Singh again
+# stolen back from Frank Belew
+# stolen from Manish Singh
+# Shamelessly stolen from Owen Taylor
 
 dnl LB_CHECK_SACLIB ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
@@ -38,14 +16,13 @@ AC_DEFUN([LB_CHECK_SACLIB],
 [
 
 AC_ARG_WITH(saclib,
-[AC_HELP_STRING([--with-saclib=<path>|yes|no], [Use Saclib library. If argument is no, you do
-                              not have the library installed on your machine
-			      (set as default). If argument is yes or <empty>
-			      that means the library is reachable with the
-			      standard search path (/usr or /usr/local).
-			      Otherwise you give the <path> to the directory
-			      which contain the library.
-	     ])],
+	    [  --with-saclib=<path>|yes|no 
+					   Use Saclib library. 
+					   If argument is no, you do not have the library installed on your machine (set as default).
+					   If argument is yes or <empty> that means the library is reachable with the standard
+					   search path (/usr or /usr/local).
+	 				   Otherwise you give the <path> to the directory which contain the library. 
+	     ],
 	     [if test "$withval" = yes ; then
 			SACLIB_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	      elif test "$withval" != no ; then
@@ -65,7 +42,7 @@ if test -n  "$SACLIB_HOME_PATH"; then
 AC_MSG_CHECKING(for SACLIB >= $min_saclib_version)
 fi
 
-for SACLIB_HOME in ${SACLIB_HOME_PATH}
+for SACLIB_HOME in ${SACLIB_HOME_PATH} 
  do
 if test -r "$SACLIB_HOME/include/saclib.h"; then
 
@@ -74,11 +51,10 @@ if test -r "$SACLIB_HOME/include/saclib.h"; then
 		SACLIB_LIBS="-L${SACLIB_HOME}/lib -lsaclib"
 	else
 		SACLIB_CFLAGS=
-		SACLIB_LIBS="-lsaclib"
+		SACLIB_LIBS="-lsaclib"		
 	fi
-
-	CXXFLAGS="${BACKUP_CXXFLAGS} ${SACLIB_CFLAGS} ${FFLAS_FFPACK_CFLAGS}"
-	LIBS="${BACKUP_LIBS} ${SACLIB_LIBS} ${FFLAS_FFPACK_LIBS}"
+	
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${SACLIB_CFLAGS} ${GMP_CFLAGS}" 	LIBS="${BACKUP_LIBS} ${SACLIB_LIBS} ${GMP_LIBS}"
 
 	AC_TRY_LINK(
 	[#include <saclib.h>],
@@ -88,14 +64,14 @@ if test -r "$SACLIB_HOME/include/saclib.h"; then
 	[#include <saclib.h>
 	int main () {  if ( __GNU_MP_VERSION < 3) return -1; else return 0; }
 	],[
-	saclib_found="yes"
+	saclib_found="yes"		
 	break
 	],[
-	saclib_problem="$problem $SACLIB_HOME"
+	saclib_problem="$problem $SACLIB_HOME"	
 	unset SACLIB_CFLAGS
 	unset SACLIB_LIBS
 
-
+	
 	],[
 	saclib_found="yes"
 	saclib_cross="yes"
@@ -104,7 +80,7 @@ if test -r "$SACLIB_HOME/include/saclib.h"; then
 	],
 	[
 	saclib_found="no"
-	saclib_checked="$saclib_checked $SACLIB_HOME"
+	saclib_checked="$saclib_checked $SACLIB_HOME"	
 	unset SACLIB_CFLAGS
 	unset SACLIB_LIBS
 	])
@@ -115,7 +91,7 @@ fi
 done
 
 
-if test "x$saclib_found" = "xyes" ; then
+if test "x$saclib_found" = "xyes" ; then		
 	AC_SUBST(SACLIB_CFLAGS)
 	AC_SUBST(SACLIB_LIBS)
 	AC_DEFINE(HAVE_SACLIB,1,[Define if SACLIB is installed])
@@ -136,7 +112,7 @@ elif test -n "$saclib_problem"; then
 elif test "x$saclib_found" = "xno" ; then
 	AC_MSG_RESULT(not found)
 	ifelse([$3], , :, [$3])
-fi
+fi	
 
 
 

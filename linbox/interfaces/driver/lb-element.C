@@ -1,15 +1,13 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* lb-element.C
  * Copyright (C) 2005 Pascal Giorgi
  *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,14 +15,14 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 
-#ifndef __LINBOX_lb_element_C
-#define __LINBOX_lb_element_C
+#ifndef __LINBOX_LB_ELEMENT_C
+#define __LINBOX_LB_ELEMENT_C
 
 #include <lb-element.h>
 #include <lb-element-data.h>
@@ -38,7 +36,7 @@ EltTable element_hashtable;
 
 
 /*******************************************
- * API to contruct a element over a domain *
+ * API to contruct a element over a domain * 
  *******************************************/
 const EltKey& createElement(const DomainKey &key) {
 	EltAbstract *e = constructElt(key);
@@ -52,17 +50,17 @@ const EltKey& createElement(const DomainKey &key) {
 
 
 /*********************************************
- * API to write an a element over its domain *
+ * API to write an a element over its domain * 
  *********************************************/
 class WriteElementFunctor{
 protected:
 	std::ostream     &os;
 	EltAbstract  *elt;
-public:
+public:	
 	WriteElementFunctor(std::ostream &o, EltAbstract* e) : os(o), elt(e) {}
 
 	template<class Domain>
-	void operator() (void*, Domain *D) const {
+	void operator() (void*, Domain *D) const {	
 		if (EltEnvelope<typename Domain::Element> *ptr = dynamic_cast<EltEnvelope<typename Domain::Element>*>(elt))
 			D->write(os, *(ptr->getElement()))<<"\n";
 		else
@@ -77,7 +75,7 @@ void writeElement (const EltKey &key, std::ostream &os){
 		throw lb_runtime_error("LinBox ERROR: invalid element (writing impossible)");
 
 	WriteElementFunctor Fct(os, it->second);
-	DomainFunction::call(it->second->getDomainKey(), Fct);
+	DomainFunction::call(it->second->getDomainKey(), Fct);	
 }
 
 
@@ -118,22 +116,13 @@ public:
 	}
 };
 
-void  SerializeElement (SerialElement &s, const EltKey &key) {
+void  SerializeElement (SerialElement &s, const EltKey &key) {       
 	EltTable::iterator it = element_hashtable.find(key);
 	if ( it == element_hashtable.end())
 		throw lb_runtime_error("LinBox ERROR: invalid element (serializing impossible)");
 
 	SerializeElementFunctor Fct(it->second);
-	DomainFunction::call(s, it->second->getDomainKey(), Fct);
+	DomainFunction::call(s, it->second->getDomainKey(), Fct);	
 }
 
 #endif
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

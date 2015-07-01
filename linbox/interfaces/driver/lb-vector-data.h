@@ -1,15 +1,13 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* lb-vector-data.h
  * Copyright (C) 2005 Pascal Giorgi
  *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,16 +15,16 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_lb_vector_data_H
-#define __LINBOX_lb_vector_data_H
+#ifndef __LINBOX_LB_VECTOR_DATA_H
+#define __LINBOX_LB_VECTOR_DATA_H
 
 #include <vector>
-#include "linbox/field/hom.h"
+#include <linbox/field/hom.h>
 #include <map>
 #include <utility>
 
@@ -41,18 +39,17 @@ extern VectorTable vector_hashtable;
  * Functor to determine domain in Abstract Vectors *
  ***************************************************/
 
-template<template<class , class> class Vector, class Functor, template <class> class Alloc=std::allocator>
+template<template<class Element> class Vector, class Functor>
 class VectorSpecFunctor{
 	const Functor &fct;
 	void *ptr;
 public:
 	VectorSpecFunctor(const Functor &f, void *p) : fct(f), ptr(p) {}
-
+	
 	template<class Domain, class Result>
-	void  operator() (Result& res, Domain *d) const
-	{
-		fct(res, static_cast<Vector<typename Domain::Element, Alloc<typename Domain::Element> >*> (ptr));
-	}
+	void  operator() (Result& res, Domain *d) const {
+		fct(res, static_cast<Vector<typename Domain::Element>*> (ptr));
+	} 
 };
 
 /*****************************************
@@ -65,15 +62,15 @@ public:
 	typedef VectorAbstract* (*createVector_2_CallBack)(const DomainKey &, std::istream&, const char*);
 
 	typedef std::map<const char*, std::pair<createVector_1_CallBack, createVector_2_CallBack > , ltstr> CallBackMap;
-
+	
 	bool add(const char *name, std::pair<createVector_1_CallBack, createVector_2_CallBack> createD){
 		return _callback.insert(CallBackMap::value_type(name, createD)).second;
 	}
-
+	
 	bool remove(const char *name){
 		return _callback.erase(name) == 1;
 	}
-
+	
 	VectorAbstract* create(const char *name, const DomainKey &k, size_t n){
 		CallBackMap::iterator it = _callback.find(name);
 		if (it != _callback.end()){
@@ -95,13 +92,13 @@ public:
 			mes+= std::string(name);
 			mes+= std::string(" >>\n");
 			throw lb_runtime_error(mes.c_str());// throw an exception
-		}
-
-	}
+		}		
+		
+	}		
 
 	size_t size() { return _callback.size(); }
 
-private:
+private:	
 	CallBackMap _callback;
 };
 
@@ -113,8 +110,7 @@ private:
 class CopyVectorFunctor {
 public:
 	template<class Vector>
-	void operator()(void *&res, Vector *V) const
-	{
+	void operator()(void *&res, Vector *V) const {
 		res= new Vector(*V);
 	}
 };
@@ -124,30 +120,28 @@ public:
  * Functors to rebind Vectors *
  ******************************/
 
-template<template<class, class> class Vector, template <class> class Alloc=std::allocator>
+template<template<class T> class Vector>
 class RebindVectorFunctor{
 	void            *&ptr;
 public:
 	RebindVectorFunctor(void *&p) : ptr(p) {}
 
 	template<class Domain>
-	void operator()(const DomainKey &key, Domain *D) const
-	{
+	void operator()(const DomainKey &key, Domain *D) const {		
 		RebindVectorFunctor fct(ptr);
 		DomainFunction::call(*D, key, fct);
 	}
 
-
+	
 	template<class DomainSource, class DomainTarget>
-	void operator()(DomainSource &res, DomainTarget *D) const
-	{
-		Vector<typename DomainSource::Element,Alloc<typename DomainSource::Element> > *v_source= static_cast<Vector<typename DomainSource::Element,Alloc<typename DomainSource::Element> > * >  (ptr);
-		Vector<typename DomainTarget::Element,Alloc<typename DomainTarget::Element> > *v_target= new Vector<typename DomainTarget::Element,Alloc<typename DomainTarget::Element> >(v_source->size());
+	void operator()(DomainSource &res, DomainTarget *D) const {
+		Vector<typename DomainSource::Element> *v_source= static_cast<Vector<typename DomainSource::Element> * >  (ptr);				
+		Vector<typename DomainTarget::Element> *v_target= new Vector<typename DomainTarget::Element>(v_source->size());
 
 		LinBox::Hom<DomainSource, DomainTarget> hom(res, *D);
 		for (size_t i=0;i<v_source->size();++i)
 			hom.image((*v_target)[i], (*v_source)[i]);
-
+		
 		delete v_source;
 		ptr = v_target;
 	}
@@ -157,44 +151,37 @@ public:
  * Vector Envelope to be compliant with Vector Abstract *
  ********************************************************/
 
-template<template<class Element, class Alloc=std::allocator<Element> > class Vector>
+template<template<class Element> class Vector> 
 class VectorEnvelope : public VectorAbstract {
 protected:
 	void         *ptr;
 	DomainKey     key;
 	const char* _info;
 public:
-	VectorEnvelope(void* p, const DomainKey &k, const char* Info) :
-		ptr(p), key(k, true), _info(Info)
-	{}
+	VectorEnvelope(void* p, const DomainKey &k, const char* info) : ptr(p), key(k, true), _info(info) {}	
 
 	~VectorEnvelope() {}
-
+	
 	LINBOX_VISITABLE();
 
 	template<class Functor, class Result>
-	void  launch (Result &res, const Functor &fct) const
-	{
+	void  launch (Result &res, const Functor &fct) const {
 		VectorSpecFunctor<Vector, Functor> vs(fct, ptr);
 		DomainFunction::call(res, key, vs);
 	}
-
-	VectorAbstract* clone() const
-	{
+	
+	VectorAbstract* clone() const {
 		CopyVectorFunctor Fct;
 		void *v;
 		launch(v, Fct);
 		return new VectorEnvelope<Vector>(v, key, _info);
 	}
 
-	void * getPtr() const
-	{ return ptr;}
+	void * getPtr() const { return ptr;}
 
-	const DomainKey& getDomainKey() const
-	{return key;}
-
-	const char* info() const
-	{
+	const DomainKey& getDomainKey() const {return key;}
+	
+	const char* info() const {
 		std::string msg= "[ LinBox Vector (storage = ";
 		msg+= std::string(_info);
 		msg+= std::string(", domain = [LinBox Domain (type = ");
@@ -205,13 +192,12 @@ public:
 		return msg.c_str();
 	}
 
-	void rebind(const DomainKey &k)
-	{
-		RebindVectorFunctor<Vector> Fct(ptr);
-		DomainFunction::call(k, key, Fct);
+	void rebind(const DomainKey &k) {
+		RebindVectorFunctor<Vector> Fct(ptr);		
+		DomainFunction::call(k, key, Fct);	
 		key = k;
 		key.set_autogc();
-	}
+	}	
 };
 
 
@@ -220,33 +206,33 @@ public:
  * Functors to construct Vectors *
  *********************************/
 
-template<template<class, class> class Vector, template <class> class Alloc=std::allocator>
+template<template<class T> class Vector>
 class CreateVectorFunctor{
 	size_t &_dim;
 public:
 	CreateVectorFunctor( size_t &n) : _dim(n) {}
 
 	template<class Domain>
-	void operator()(void *&res, Domain *D) const
-	{
-		res = new Vector<typename Domain::Element, Alloc<typename Domain::Element> >(_dim, D->zero);
+	void operator()(void *&res, Domain *D) const {		
+		typename Domain::Element zero;
+		D->init(zero, 0UL);
+		res = new Vector<typename Domain::Element>(_dim, zero);	
 	}
 };
 
-template<template<class,class> class Vector, template <class> class Alloc=std::allocator>
-class CreateVectorFromStreamFunctor{
+template<template<class T> class Vector>
+class CreateVectorFromStreamFunctor{	
 	std::istream &in;
 public:
 	CreateVectorFromStreamFunctor(std::istream &i) : in(i) {}
 
 	template<class Domain>
-	void operator()(void *&res, Domain *D) const
-	{
+	void operator()(void *&res, Domain *D) const {
 		size_t n;
 		LinBox::integer tmp;
 		in>>n;
-		Vector<typename Domain::Element, Alloc<typename Domain::Element> > * v = new Vector<typename Domain::Element, Alloc<typename Domain::Element> >(n);
-		typename Vector<typename Domain::Element,Alloc<typename Domain::Element> >::iterator it = v->begin();
+		Vector<typename Domain::Element> * v = new Vector<typename Domain::Element>(n);
+		typename Vector<typename Domain::Element>::iterator it = v->begin();
 		for (; it != v->end(); ++it){
 			in>>tmp;
 			D->init(*it, tmp);
@@ -259,7 +245,7 @@ public:
  * Vector construction function used in the Factory *
  ******************************************************/
 
-template<template<class T, class Allocator=std::allocator<T> > class Vector>
+template<template<class T> class Vector>
 VectorAbstract* constructVector_from_size(const DomainKey &k, size_t n, const char* info){
 	CreateVectorFunctor<Vector> fct(n);
 	void *bb;
@@ -268,7 +254,7 @@ VectorAbstract* constructVector_from_size(const DomainKey &k, size_t n, const ch
 	return bbe;
 }
 
-template<template<class T, class Allocator=std::allocator<T> > class Vector>
+template<template<class T> class Vector>
 VectorAbstract* constructVector_from_stream (const DomainKey &k, std::istream &in, const char *info){
 	CreateVectorFromStreamFunctor<Vector> fct(in);
 	void *v;
@@ -279,12 +265,3 @@ VectorAbstract* constructVector_from_stream (const DomainKey &k, std::istream &i
 
 
 #endif
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

@@ -17,12 +17,12 @@ Class names:
 	integers is "integer", and field elements are represented by
 	"element".
 
-	ParamGivaro::Modular was first renamed LargeModular, since it works
-	over a modulus of arbitrary size. Corresponding SmallGivaro::Modular
-	(word size modulus) and TinyGivaro::Modular (half-word size modulus)
-	were planned.  All of this has become Givaro::Modular<element>, for
+	ParamModular was first renamed LargeModular, since it works
+	over a modulus of arbitrary size. Corresponding SmallModular
+	(word size modulus) and TinyModular (half-word size modulus)
+	were planned.  All of this has become Modular<element>, for
 	basic element types of the various sizes, including unsigned 
-	and floating types.  For example Givaro::Modular<uint32>.
+	and floating types.  For example Modular<uint32>.
 
 Class methods:
 

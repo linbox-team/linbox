@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-solve.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
@@ -6,43 +7,19 @@
  *
  * --------------------------------------------------------
  *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *
+ * See COPYING for license information
  */
 
-/*! @file   tests/test-solve.C
- * @ingroup tests
- * @brief no doc.
- * @test no doc.
- */
-
-
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/ring/modular.h"
-#include "linbox/matrix/sparse-matrix.h"
+#include "linbox/field/modular.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/direct-sum.h"
 //#include "linbox/blackbox/diagonal.h"
@@ -74,54 +51,53 @@ template <class Field, class Vector, class MethodTraits>
 static bool testIdentitySolve (const Field          &F,
 			       VectorStream<Vector> &stream,
 			       const char           *text,
-			       MethodTraits          method)
+			       MethodTraits          method) 
 {
 	typedef ScalarMatrix <Field> Blackbox;
 
 	ostringstream str;
 	str << "Testing identity solve (" << text << ")";
 
-	commentator().start (str.str ().c_str (), "testIdentitySolve", stream.m ());
+	commentator.start (str.str ().c_str (), "testIdentitySolve", stream.m ());
 
 	bool ret = true;
+	bool iter_passed = true;
 
 	VectorDomain<Field> VD (F);
 
 	typename Field::Element s;
-	F.assign (s, F.one);
-	Blackbox I (F, stream.n (), stream.n(), s);
+	F.init (s, 1);
+	Blackbox I (F, stream.n (), s);
 
-	size_t n = stream.n();
-	Vector v(F,n), w(F,n);
+	Vector v, w;
 
-	// VectorWrapper::ensureDim (v, stream.n ());
-	// VectorWrapper::ensureDim (w, stream.n ());
+	VectorWrapper::ensureDim (v, stream.n ());
+	VectorWrapper::ensureDim (w, stream.n ());
 
 	MethodTraits traits (method);
 
 	while (stream) {
-		commentator().startIteration ((unsigned)stream.j ());
+		commentator.startIteration (stream.j ());
 
-		bool iter_passed = true;
+		iter_passed = true;
 
 		stream.next (v);
 
-		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
 		VD.write (report, v);
 		report << endl;
 
 		try {
-			solve (w, I, v, method);
-			//solve (I, w, v, F, traits);
+			solve (I, w, v, F, traits);
 		}
 		catch (SolveFailed) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve failed to solve system" << endl;
 			ret = iter_passed = false;
 		}
 		catch (InconsistentSystem<Vector> e) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve reported an inconsistent system" << endl;
 			ret = iter_passed = false;
 		}
@@ -135,17 +111,17 @@ static bool testIdentitySolve (const Field          &F,
 				ret = iter_passed = false;
 
 			if (!iter_passed)
-				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Vectors are not equal" << endl;
 		}
 
-		commentator().stop ("done");
-		commentator().progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
 	stream.reset ();
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentitySolve");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentitySolve");
 
 	return ret;
 }
@@ -154,7 +130,7 @@ static bool testIdentitySolve (const Field          &F,
  *
  * Constructs a random nonsingular diagonal matrix D and a random right-hand
  * side b, and computes the solution to the Dx=b, checking the result
- *
+ * 
  * F - Field over which to perform computations
  * stream1 - Vector stream for diagonal entries
  * stream2 - Vector stream for right-hand sides
@@ -166,43 +142,43 @@ static bool testIdentitySolve (const Field          &F,
 
 template <class Field, class Vector, class MethodTraits>
 static bool testNonsingularSolve (const Field          &F,
-				  VectorStream<Vector> &stream1,
+				  VectorStream<Vector> &stream1, 
 				  VectorStream<Vector> &stream2,
 				  const char           *text,
-				  MethodTraits          method)
+				  MethodTraits          method) 
 {
-	typedef Diagonal <Field> Blackbox;
+	typedef Diagonal <Field, Vector> Blackbox;
 
 	ostringstream str;
 	str << "Testing nonsingular solve (" << text << ")";
 
-	commentator().start (str.str ().c_str (), "testNonsingularSolve", stream1.m ());
+	commentator.start (str.str ().c_str (), "testNonsingularSolve", stream1.m ());
 
 	VectorDomain<Field> VD (F);
 
 	bool ret = true;
+	bool iter_passed;
 
-	size_t n= stream1.n ();
-	Vector d(F,n), b(F,n), x(F,n), y(F,n);
+	Vector d, b, x, y;
 
-	// VectorWrapper::ensureDim (d, stream1.n ());
-	// VectorWrapper::ensureDim (b, stream1.n ());
-	// VectorWrapper::ensureDim (x, stream1.n ());
-	// VectorWrapper::ensureDim (y, stream1.n ());
+	VectorWrapper::ensureDim (d, stream1.n ());
+	VectorWrapper::ensureDim (b, stream1.n ());
+	VectorWrapper::ensureDim (x, stream1.n ());
+	VectorWrapper::ensureDim (y, stream1.n ());
 
 	MethodTraits traits (method);
 
 	while (stream1 && stream2) {
-		commentator().startIteration ((unsigned)stream1.j ());
+		commentator.startIteration (stream1.j ());
 
-		ActivityState state = commentator().saveActivityState ();
+		ActivityState state = commentator.saveActivityState ();
 
-		bool iter_passed = true;
+		iter_passed = true;
 
 		stream1.next (d);
 		stream2.next (b);
 
-		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
 		VD.write (report, d);
 		report << endl;
@@ -211,20 +187,20 @@ static bool testNonsingularSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		Blackbox D (d);
+		Blackbox D (F, d);
 
 		try {
-			solve (x, D, b, method);
+			solve (D, x, b, F, traits);
 		}
 		catch (SolveFailed) {
-			commentator().restoreActivityState (state);
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.restoreActivityState (state);
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: System solution failed" << endl;
 			ret = iter_passed = false;
 		}
 		catch (InconsistentSystem<Vector> e) {
-			commentator().restoreActivityState (state);
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.restoreActivityState (state);
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: solve reported inconsistent system" << endl;
 			ret = iter_passed = false;
 		}
@@ -244,18 +220,18 @@ static bool testNonsingularSolve (const Field          &F,
 				ret = iter_passed = false;
 
 			if (!iter_passed)
-				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Computed solution is incorrect" << endl;
 		}
 
-		commentator().stop ("done");
-		commentator().progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
 	stream1.reset ();
 	stream2.reset ();
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNonsingularSolve");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNonsingularSolve");
 
 	return ret;
 }
@@ -265,7 +241,7 @@ static bool testNonsingularSolve (const Field          &F,
  *
  * Constructs a random diagonal matrix D of rank r and a random right-hand
  * side b, and computes the solution to the Dx=b, checking the result
- *
+ * 
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
  * stream1 - Vector stream for diagonal entries
@@ -282,18 +258,19 @@ static bool testSingularConsistentSolve (const Field          &F,
 					 VectorStream<Vector> &stream1,
 					 VectorStream<Vector> &stream2,
 					 const char           *text,
-					 MethodTraits          method)
+					 MethodTraits          method) 
 {
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	ostringstream str;
 	str << "Testing singular consistent solve (" << text << ")";
 
-	commentator().start (str.str ().c_str (), "testSingularConsistentSolve", stream1.m ());
+	commentator.start (str.str ().c_str (), "testSingularConsistentSolve", stream1.m ());
 
 	VectorDomain<Field> VD (F);
 
 	bool ret = true;
+	bool iter_passed;
 
 	Vector d1, b1, d, b, x, y;
 
@@ -308,10 +285,11 @@ static bool testSingularConsistentSolve (const Field          &F,
 	traits.preconditioner (MethodTraits::NO_PRECONDITIONER);
 
 	while (stream1 && stream2) {
-		commentator().startIteration ((unsigned)stream1.j ());
+		commentator.startIteration (stream1.j ());
 
-		ActivityState state = commentator().saveActivityState ();
+		ActivityState state = commentator.saveActivityState ();
 
+		iter_passed = true;
 
 		stream1.next (d1);
 		stream2.next (b1);
@@ -319,7 +297,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 		VD.copy (d, d1);
 		VD.copy (b, b1);
 
-		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
 		VD.write (report, d);
 		report << endl;
@@ -331,7 +309,6 @@ static bool testSingularConsistentSolve (const Field          &F,
 		Blackbox D (F, d);
 
 		try {
-			bool iter_passed = true;
 			solve (D, x, b, F, traits);
 
 			report << "System solution:  ";
@@ -348,36 +325,36 @@ static bool testSingularConsistentSolve (const Field          &F,
 				ret = iter_passed = false;
 
 			if (!iter_passed)
-				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Computed solution is incorrect" << endl;
 		}
 		catch (SolveFailed) {
-			commentator().restoreActivityState (state);
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.restoreActivityState (state);
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: System solution failed" << endl;
 			ret = false;
 		}
 		catch (InconsistentSystem<Vector> e) {
-			commentator().restoreActivityState (state);
-			ostream &Report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
-			Report << "ERROR: Inconsistent system exception" << endl;
+			commentator.restoreActivityState (state);
+			ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+			report << "ERROR: Inconsistent system exception" << endl;
 
-			Report << "Certificate is: ";
-			VD.write (Report, e.u ()) << endl;
+			report << "Certificate is: ";
+			VD.write (report, e.u ()) << endl;
 
 			ret = false;
 
-			commentator().restoreActivityState (state);
+			commentator.restoreActivityState (state);
 		}
 
-		commentator().stop ("done");
-		commentator().progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
 	stream1.reset ();
 	stream2.reset ();
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testSingularConsistentSolve");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSingularConsistentSolve");
 
 	return ret;
 }
@@ -387,7 +364,7 @@ static bool testSingularConsistentSolve (const Field          &F,
  *
  * Constructs a random diagonal matrix D of rank r and a random right-hand
  * side b, and computes the solution to the Dx=b, checking the result
- *
+ * 
  * F - Field over which to perform computations
  * stream1 - Vector stream for diagonal entries
  * stream2 - Vector stream for right-hand sides
@@ -402,14 +379,14 @@ static bool testSingularInconsistentSolve (const Field          &F,
 					   VectorStream<Vector> &stream1,
 					   VectorStream<Vector> &stream2,
 					   const char           *text,
-					   MethodTraits          method)
+					   MethodTraits          method) 
 {
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	ostringstream str;
 	str << "Testing singular inconsistent solve (" << text << ")";
 
-	commentator().start (str.str ().c_str (), "testSingularInconsistentSolve", stream1.m ());
+	commentator.start (str.str ().c_str (), "testSingularInconsistentSolve", stream1.m ());
 
 	VectorDomain<Field> VD (F);
 
@@ -429,14 +406,14 @@ static bool testSingularInconsistentSolve (const Field          &F,
 	traits.preconditioner (MethodTraits::NONE);
 
 	while (stream1 && stream2) {
-		commentator().startIteration ((unsigned)stream1.j ());
+		commentator.startIteration (stream1.j ());
 
 		stream1.next (d1);
 		stream2.next (b);
 
 		VD.copy (d, d1);
 
-		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
 		VD.write (report, d);
 		report << endl;
@@ -466,36 +443,36 @@ static bool testSingularInconsistentSolve (const Field          &F,
 			F.write (report, uTb) << endl;
 
 			if (!VD.isZero (y)) {
-				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: u is not in the right nullspace of D" << endl;
 				ret = false;
 			}
 
 			if (F.isZero (uTb)) {
-				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: u^T b = 0" << endl;
 				ret = false;
 			}
 		}
 		else if (status == WiedemannSolver<Field>::FAILED) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solver refused to certify inconsistency" << endl;
 			ret = false;
 		}
 		else {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solver gave solution even though system is inconsistent" << endl;
 			ret = false;
 		}
 
-		commentator().stop ("done");
-		commentator().progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
 	stream1.reset ();
 	stream2.reset ();
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testSingularInconsistentSolve");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSingularInconsistentSolve");
 
 	return ret;
 }
@@ -505,7 +482,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
  *
  * Constructs a random diagonal matrix D of rank r and a random right-hand
  * side b, and computes the solution to the Dx=b, checking the result
- *
+ * 
  * F - Field over which to perform computations
  * stream1 - Vector stream for diagonal entries
  * stream2 - Vector stream for right-hand sides
@@ -520,12 +497,14 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 					     VectorStream<SparseVector>   &stream1,
 					     VectorStream<Vector>         &stream2,
 					     const char                   *text,
-					     Method::Wiedemann::Preconditioner preconditioner)
+					     Method::Wiedemann::Preconditioner preconditioner) 
 {
+	typedef SparseMatrix <Field> Blackbox;
+
 	ostringstream str;
 	str << "Testing singular preconditioned solve (" << text << ")";
 
-	commentator().start (str.str ().c_str (), "testSingularPreconditionedSolve", stream1.m ());
+	commentator.start (str.str ().c_str (), "testSingularPreconditionedSolve", stream1.m ());
 
 	VectorDomain<Field> VD (F);
 
@@ -542,20 +521,22 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 	VectorWrapper::ensureDim (x, stream2.dim ());
 	VectorWrapper::ensureDim (y, stream2.dim ());
 
+	typename Field::Element one;
 
+	F.init (one, 1);
 
 	Method::Wiedemann traits;
 	traits.preconditioner (preconditioner);
 
 	while (stream1 && stream2) {
-		commentator().startIteration ((unsigned)stream1.j ());
+		commentator.startIteration (stream1.j ());
 
 		stream1.next (d1);
 		stream2.next (b);
 
 		VD.copy (d, d1);
 
-		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
 		VD.write (report, d);
 		report << endl;
@@ -585,36 +566,36 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 			F.write (report, uTb) << endl;
 
 			if (!VD.isZero (y)) {
-				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: u is not in the right nullspace of D" << endl;
 				ret = false;
 			}
 
 			if (F.isZero (uTb)) {
-				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: u^T b = 0" << endl;
 				ret = false;
 			}
 		}
 		else if (status == WiedemannSolver<Field>::FAILED) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solver refused to certify inconsistency" << endl;
 			ret = false;
 		}
 		else {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solver gave solution even though system is inconsistent" << endl;
 			ret = false;
 		}
 
-		commentator().stop ("done");
-		commentator().progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
 	stream1.reset ();
 	stream2.reset ();
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testSingularPreconditionedSolve");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSingularPreconditionedSolve");
 
 	return ret;
 }
@@ -632,9 +613,10 @@ static bool testRandomSolve (const Field                  &F,
 	ostringstream str;
 	str << "Testing random solve (" << text << ")";
 
-	commentator().start (str.str ().c_str (), "testRandomSolve", b_stream.size ());
+	commentator.start (str.str ().c_str (), "testRandomSolve", b_stream.size ());
 
 	bool ret = true;
+	bool iter_passed = true;
 
 	VectorDomain<Field> VD (F);
 	MatrixDomain<Field> MD (F);
@@ -647,14 +629,14 @@ static bool testRandomSolve (const Field                  &F,
 	VectorWrapper::ensureDim (ATb, A_stream.dim ());
 
 	SparseMatrix<Field> A (F, A_stream);
-	SparseMatrix<Field> AT (F,A.coldim (), A.rowdim ());
-	BlasMatrix<Field> ATA (A.coldim (), A.coldim ());
+	SparseMatrixBase<typename Field::Element> AT (A.coldim (), A.rowdim ());
+	DenseMatrixBase<typename Field::Element> ATA (A.coldim (), A.coldim ());
 
 	A.transpose (AT);
 
 	MD.mul (ATA, AT, A);
 
-	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix A:" << endl;
 	A.write (report);
 
@@ -664,52 +646,52 @@ static bool testRandomSolve (const Field                  &F,
 	MethodTraits traits (method);
 
 	while (b_stream) {
-		commentator().startIteration ((unsigned)b_stream.pos ());
+		commentator.startIteration (b_stream.pos ());
 
-		bool iter_passed = true;
+		iter_passed = true;
 
 		b_stream >> b;
 
-		ostream &Report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		Report << "Right-hand side b:";
-		VD.write (Report, b) << endl;
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Right-hand side b:";
+		VD.write (report, b) << endl;
 
 		try {
 			solve (A, x, b, F, traits);
 		}
 		catch (SolveFailed) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve failed to solve system" << endl;
 			ret = iter_passed = false;
 		}
 		catch (InconsistentSystem<Vector2> e) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve reported an inconsistent system" << endl;
 			ret = iter_passed = false;
 		}
 
 		if (iter_passed) {
-			Report << "Output vector x: ";
-			VD.write (Report, x) << endl;
+			report << "Output vector x: ";
+			VD.write (report, x) << endl;
 
 			MD.vectorMul (ATAx, ATA, x);
 			MD.vectorMul (ATb, AT, b);
 
 			if (!VD.areEqual (ATAx, ATb)) {
-				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: A^T Ax != A^T b" << endl;
 				ret = iter_passed = false;
 			}
 		}
 
-		commentator().stop ("done");
-		commentator().progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
 	A_stream.reset ();
 	b_stream.reset ();
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomSolve");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomSolve");
 
 	return ret;
 }
@@ -720,13 +702,15 @@ static bool testBasicMethodsSolve (const Field &F, size_t n)
 {
 	// tests of Hybrid, Blackbox, Elimination methods
 	bool ret;
-	commentator().start ("Testing Basic Methods Solve");
-	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	commentator.start ("Testing Basic Methods Solve");
+	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-	BlasVector<Field> xd(F,n), xh(F,n), xb(F,n), xe(F,n), b(F,n, F.zero);
-	for(size_t i = 0; i < n/2; ++i) b[i] = F.one;
-	//ScalarMatrix<Field> I(F, n/2, F.one), Z(F, n/2, F.zero);
-	ScalarMatrix<Field> I(F, n, n, F.one), Z(F, 0, 0, F.zero);
+	typedef typename Field::Element Elt;
+	Elt one, zero; F.init(one, 1); F.init(zero, 0);
+	vector<Elt> xd(n), xh(n), xb(n), xe(n), b(n, zero);
+	for(size_t i = 0; i < n/2; ++i) b[i] = one;
+	//ScalarMatrix<Field> I(F, n/2, one), Z(F, n/2, zero);
+	ScalarMatrix<Field> I(F, n, one), Z(F, 0, zero);
 	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > A(I, Z);
 
 	VectorDomain<Field> VD(F);
@@ -744,7 +728,7 @@ static bool testBasicMethodsSolve (const Field &F, size_t n)
 	VD.write(report<<"xe ", xe) << endl;
 
 	ret = VD.areEqual(xd, xh) && VD.areEqual(xd, xb) && VD.areEqual(xd, xe);
-	commentator().stop (MSG_STATUS (ret));
+	commentator.stop (MSG_STATUS (ret));
 	return ret;
 }
 
@@ -757,53 +741,45 @@ int main (int argc, char **argv)
 	static size_t m = 100;
 	static size_t r = 20;
 	static size_t N = 16;
-	static integer q = 65521U;
-	static int iterations = 1;
+	static integer q = 2147483647U;
+	static int iterations = 2;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set column dimension of test matrices to N.", TYPE_INT,     &n },
-		{ 'm', "-m M", "Set row dimension of test matrices to M.", TYPE_INT,     &m },
-		{ 'r', "-r R", "Set singular system rank to R.", TYPE_INT,     &r },
-		{ 'N', "-N N", "Set blocking factor to N.", TYPE_INT,     &N },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		END_OF_ARGUMENTS
+		{ 'n', "-n N", "Set column dimension of test matrices to N (default 100)",  TYPE_INT,     &n },
+		{ 'm', "-m M", "Set row dimension of test matrices to M (default 100)",     TYPE_INT,     &m },
+		{ 'r', "-r R", "Set singular system rank to R (default 20)",                TYPE_INT,     &r },
+		{ 'N', "-N N", "Set blocking factor to N (default 16)",                      TYPE_INT,     &N },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
 	};
 
-	typedef Givaro::Modular<int64_t> Field;
+	typedef Modular<LinBox::uint32> Field;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator().start("Solve test suite", "solve");
+	std::cout << "Solve test suite" << std::endl << std::endl;
 
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator().getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().getMessageClass (PROGRESS_REPORT).setMaxDepth (5);
-	//commentator().getMessageClass (BRIEF_REPORT).setMaxDepth (4);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.getMessageClass (PROGRESS_REPORT).setMaxDepth (5);
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (4);
 
-	RandomDenseStream<Field> stream1 (F, n, (unsigned int)iterations), stream2 (F, n, (unsigned int)iterations);
-	RandomDenseStream<Field> stream3 (F, r, (unsigned int)iterations), stream4 (F, r, (unsigned int)iterations);
-	RandomSparseStream<Field> stream6 (F, (double) r / (double) n, n, (unsigned int)iterations);
+	RandomDenseStream<Field> stream1 (F, n, iterations), stream2 (F, n, iterations);
+	RandomDenseStream<Field> stream3 (F, r, iterations), stream4 (F, r, iterations);
+	RandomSparseStream<Field> stream6 (F, (double) r / (double) n, n, iterations);
 	RandomSparseStream<Field> A_stream (F, (double) r / (double) n, n, m);
 
-	Method::Wiedemann WM;
-	if (!testIdentitySolve               (F, stream1, "Wiedemann", WM))
-		pass = false;
-	if (!testNonsingularSolve            (F, stream1, stream2, "Wiedemann", WM))
+	if (!testIdentitySolve               (F, stream1,
+// 					      "BlockLanczos", Method::BlockLanczos()))
+					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
 #if 0
-/* the solve solution doesn't make the right call? */
-	Method::BlockWiedemann BWM;
-	if (!testIdentitySolve               (F, stream1, "BlockWiedemann", BWM))
+	if (!testNonsingularSolve            (F, stream1, stream2,
+					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
-	if (!testNonsingularSolve            (F, stream1, stream2, "BlockWiedemann", BWM))
-		pass = false;
-#endif
-
-#if 0
 	if (!testSingularConsistentSolve     (F, n, stream3, stream4,
 					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
@@ -811,7 +787,7 @@ int main (int argc, char **argv)
 					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
 	if (!testSingularPreconditionedSolve (F, stream6, stream2,
-					      "Sparse preconditioner", Method::Wiedemann::SPARSE))
+					      "Sparse preconditioner", Method::Wiedemann::SPARSE)) 
 		pass = false;
 	if (!testIdentitySolve               (F, stream1,
 					      "Lanczos", Method::Lanczos ()))
@@ -828,7 +804,7 @@ int main (int argc, char **argv)
 
 	if (!testRandomSolve (F, A_stream, stream1, "Lanczos", traits1))
 		pass = false;
-
+#endif
 
 	Method::BlockLanczos traits2;
 	traits2.preconditioner (Method::BlockLanczos::FULL_DIAGONAL);
@@ -836,20 +812,11 @@ int main (int argc, char **argv)
 
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))
 		pass = false;
-#endif
-    if ( ! testBasicMethodsSolve (F, n) )
+
+    if ( ! testBasicMethodsSolve (F, n) ) 
 		pass = false;
 
-	commentator().stop("solve test suite");
-    //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
+    std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
 
 	return pass ? 0 : -1;
 }
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

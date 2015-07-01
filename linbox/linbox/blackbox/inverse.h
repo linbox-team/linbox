@@ -1,15 +1,14 @@
+
+
 /* linbox/blackbox/inverse.h
  * Copyright (C) 2001 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,15 +16,15 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_inverse_H
-#define __LINBOX_inverse_H
+#ifndef __INVERSE_H
+#define __INVERSE_H
 
-#include "linbox/blackbox/blackbox-interface.h"
+#include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/blackbox/transpose.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/minpoly.h"
@@ -39,37 +38,35 @@ namespace LinBox
 	 * \ingroup blackbox
 	 *
 	 * The matrix itself is not stored in memory.  Rather, its apply
-	 * methods use a vector of @link Fields field@endlink elements, which are
+	 * methods use a vector of {@link Fields field} elements, which are 
 	 * used to "multiply" the matrix to a vector.
-	 *
-	 * This class has three template parameters.  The first is the field in
-	 * which the arithmetic is to be done.  The second is the type of
-	 * \ref LinBox vector to which to apply the matrix.  The
-	 * third is chosen be default to be the \ref LinBox vector trait
-	 * of the vector.  This class is then specialized for dense and sparse
+	 * 
+	 * This class has three template parameters.  The first is the field in 
+	 * which the arithmetic is to be done.  The second is the type of 
+	 * \ref{LinBox} vector to which to apply the matrix.  The 
+	 * third is chosen be default to be the \ref{LinBox} vector trait
+	 * of the vector.  This class is then specialized for dense and sparse 
 	 * vectors.
 	 *
-	 * @param Field \ref LinBox field
-	 * @param Vector \ref LinBox dense or sparse vector of field elements
-	 * @param Trait  Marker whether to use dense or sparse LinBox vector
-	 *               implementation.  This is chosen by a default parameter
+	 * @param Field \ref{LinBox} field
+	 * @param Vector \ref{LinBox} dense or sparse vector of field elements
+	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
+	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.  */
 	template <class Blackbox>
-	class Inverse : public BlackboxInterface {
-	public:
+	class Inverse : public BlackboxInterface
+	{
+	    public:
 
 		typedef typename Blackbox::Field Field;
 		typedef typename Field::Element   Element;
-		typedef BlasVector<Field>      Polynomial;
+		typedef std::vector<Element>      Polynomial;
 
 		/** Constructor from field and dense vector of field elements.
-		 * @param BB   Black box of which to get the inverse
+		 * @param __BB   Black box of which to get the inverse
 		 */
-		Inverse (const Blackbox *BB) :
-			_VD (BB->field()), _BB (BB)
-			, _minpoly(BB->field())
-			, _transposeMinpoly(BB->field())
-			, _z(BB->field())
+		Inverse (const Blackbox *BB)
+		    :  _VD (BB->field()), _BB (BB)
 		{
 			linbox_check ((BB->rowdim ()) == (BB->coldim ()));
 
@@ -83,12 +80,8 @@ namespace LinBox
 		 * minimal polynomial every time this black box is used inside
 		 * another black box
 		 */
-		Inverse (const Inverse &BB) :
-			_VD (BB->field()), _BB (BB._BB)
-			, _minpoly (BB._minpoly)
-			, _z(BB->field())
-			, _transposeMinpoly(BB->field())
-
+		Inverse (const Inverse &BB)
+		    : _VD (BB->field()), _BB (BB._BB), _minpoly (BB._minpoly)
 		{
 			_z.resize (_BB->coldim ());
 		}
@@ -96,20 +89,20 @@ namespace LinBox
 
 		/** Application of BlackBox matrix.
 		 * y= A*x.
-		 * Requires one vector conforming to the \ref LinBox
-		 * vector @link Archetypes archetype@endlink.
+		 * Requires one vector conforming to the \ref{LinBox}
+		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  y reference to vector into which to store the result
 		 * @param  x constant reference to vector to contain input
 		 */
 		template<class OutVector, class InVector>
-		OutVector& apply (OutVector &y, const InVector& x) const
-		{
+	        OutVector& apply (OutVector &y, const InVector& x) const
+	        {
 			int i;
 
 			if (_minpoly.empty ()) {
-				Polynomial _mp1(field());
+				Polynomial _mp1;
 				Element a0;
 
 				minpoly (_mp1, *_BB);
@@ -120,29 +113,28 @@ namespace LinBox
 				field().negin (a0);
 
 				for (i = 1; i < (int) _mp1.size (); i++)
-					field().mul (_minpoly[(size_t)i-1], _mp1[(size_t)i], a0);
+					field().mul (_minpoly[i-1], _mp1[i], a0);
 			}
 
-			int n = (int) _minpoly.size () - 1;
+			int n = _minpoly.size () - 1;
 
-			_VD.mul (y, x, _minpoly[(size_t)n]);
+			_VD.mul (y, x, _minpoly[n]);
 
 			for (i = n - 1; i >= 0; i--) {
 				_BB->apply (_z, y);
-				_VD.axpy (y, _minpoly[(size_t)i], x, _z);
+				_VD.axpy (y, _minpoly[i], x, _z);
 			}
 
 			return y;
-		}
+	        }
 
 		/** Application of BlackBox matrix transpose.
-		 * \f$ y= A^t \cdot  x.\f$
-		 * Requires one vector conforming to the \ref LinBox
-		 * vector @link Archetypes archetype@endlink.
+		 * y= transpose(A)*x.
+		 * Requires one vector conforming to the \ref{LinBox}
+		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
-		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector &y, const InVector& x) const
@@ -150,7 +142,7 @@ namespace LinBox
 			int i;
 
 			if (_transposeMinpoly.empty ()) {
-				Polynomial _mp1(field());
+				Polynomial _mp1;
 				Element a0;
 
 				Transpose<Blackbox> BBT (_BB);
@@ -163,24 +155,24 @@ namespace LinBox
 				field().negin (a0);
 
 				for (i = 1; i < (int) _mp1.size (); i++)
-					field().mul (_transposeMinpoly[(size_t)i-1], _mp1[(size_t)i], a0);
+					field().mul (_transposeMinpoly[i-1], _mp1[i], a0);
 			}
 
-			int n = (int) _transposeMinpoly.size () - 1;
+			int n = _transposeMinpoly.size () - 1;
 
-			_VD.mul (y, x, _transposeMinpoly[(size_t)n]);
+			_VD.mul (y, x, _transposeMinpoly[n]);
 
 			for (i = n - 1; i >= 0; i--) {
 				_BB->applyTranspose (_z, y);
-				_VD.axpy (y, _transposeMinpoly[(size_t)i], x, _z);
+				_VD.axpy (y, _transposeMinpoly[i], x, _z);
 			}
 
 			return y;
 		}
 
-		template<typename _Tp1>
-		struct rebind
-		{ typedef Inverse<typename Blackbox::template rebind<_Tp1>::other> other; };
+            template<typename _Tp1>
+            struct rebind
+            { typedef Inverse<typename Blackbox::template rebind<_Tp1>::other> other; };
 
 
 		/** Retreive row dimensions of BlackBox matrix.
@@ -192,7 +184,7 @@ namespace LinBox
 		{
 			return _BB->rowdim ();
 		}
-
+    
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
@@ -202,9 +194,8 @@ namespace LinBox
 			return _BB->coldim ();
 		}
 
-		const Field& field() const
-		{ return _BB->field();}
-	protected:
+		const Field& field() const { return _BB->field();}
+	    private:
 
 		const VectorDomain<Field>  _VD;
 		const Blackbox             *_BB;
@@ -219,13 +210,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __LINBOX_inverse_H
-
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+#endif // __INVERSE_H

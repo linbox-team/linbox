@@ -1,52 +1,32 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/*
- * examples/blackbox/load-minpoly.C
- *
- * Copyright (C) 2001, 2002 Bradford Hovinen <hovinen@cis.udel.edu>
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- */
-
+// Copyright (C) 2001, 2002 Bradford Hovinen
+// See COPYING for license information.
 /** @name examples/blackbox/load-minpoly.C
  *
  * @author Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * @memo
+ * @memo 
  * Small program that loads and computes the minimal polynomial of a matrix
  * whose filename is given on the command line.
  */
 //@{
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 #include <fstream>
 #include <vector>
 
 #include "linbox/field/modular.h"
-#include "linbox/matrix/sparse-matrix.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/solutions/minpoly.h"
 
 using namespace LinBox;
 using namespace std;
 
 // Select our field: integers modulo a word-size (max. 31-bit) modulus
-typedef Givaro::Modular<uint32_t> Field;
+typedef Modular<uint32> Field;
 
 // Select our black box: a sparse matrix over the above-mentioned field with
 // default application vector and row representation types
@@ -59,7 +39,7 @@ typedef Vector<Field>::Dense Polynomial;
 const int n = 1000;
 const int q = 65521U;
 
-void printPolynomial (const Field &F, const Polynomial &v)
+void printPolynomial (const Field &F, const Polynomial &v) 
 {
 	int i;
 
@@ -83,8 +63,8 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
-	commentator().setMaxDepth (2);
-	commentator().setReportStream (cout);
+	commentator.setMaxDepth (2);
+	commentator.setReportStream (cout);
 
 	Field F (q);
 
@@ -106,12 +86,3 @@ int main (int argc, char **argv)
 	return 0;
 }
 //@}
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

@@ -1,39 +1,18 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/*
- * examples/blackbox/example.C
- *
- * Copyright (C) 2001, 2002, 2010 Bradford Hovinen <hovinen@cis.udel.edu>
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- */
-
+// Copyright (C) 2001, 2002 Bradford Hovinen
 /** @name examples/blackbox/example.C
  *
  * @author Bradford Hovinen <hovinen@cis.udel.edu>
- * @memo
+ * @memo 
  * Simple example on Linbox use. Demonstrates loading and application of
  * blackbox matrix to a vector and computation of the minimal polynomial.
- * @doc
+ * @doc 
  * FIXME what is shown different that in other minpoly example?
  *
  */
 //@{
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 #include <fstream>
@@ -44,7 +23,7 @@
 #include "linbox/field/givaro-gfq.h"
 
 // Black box classes we are going to work with
-#include "linbox/matrix/sparse-matrix.h"
+#include "linbox/blackbox/sparse.h"
 
 // Minimal polynomial algorithm
 #include "linbox/solutions/minpoly.h"
@@ -55,20 +34,20 @@
 using namespace std;
 
 // This is the field we are going to be working with - integers mod q
-//typedef Givaro::Modular<LinBox::uint32_t> Field;
-typedef LinBox::Givaro::GFq Field;
+//typedef LinBox::Modular<LinBox::uint32> Field;
+typedef LinBox::GivaroGfq Field;
 
 // Some typedefs to make the type names less daunting
 typedef vector <Field::Element> Vector;
 typedef vector <Field::Element> Polynomial;
 typedef vector <pair <size_t, Field::Element> > Row;
-typedef LinBox::SparseMatrix <Field, VectorTraits<Row>::SparseFormat > Blackbox;
+typedef LinBox::SparseMatrix <Field, Row> Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 10;
 const int q = 101;
 
-void printVector (const Field &F, const Vector &v)
+void printVector (const Field &F, const Vector &v) 
 {
 	int i;
 
@@ -81,7 +60,7 @@ void printVector (const Field &F, const Vector &v)
 	cout << ')' << endl;
 }
 
-void printPolynomial (const Field &F, const Polynomial &v)
+void printPolynomial (const Field &F, const Polynomial &v) 
 {
 	int i;
 
@@ -95,7 +74,7 @@ void printPolynomial (const Field &F, const Polynomial &v)
 	cout << endl;
 }
 
-void makeTestVector (const Field &F, const Blackbox &A, Vector &v)
+void makeTestVector (const Field &F, const Blackbox &A, Vector &v) 
 {
 	int i;
 
@@ -119,7 +98,7 @@ void testApply (const Field &F, const Blackbox &A, const Vector &v)
 	cout << endl;
 }
 
-void testMinpoly (const Field &F, const Blackbox &A)
+void testMinpoly (const Field &F, const Blackbox &A) 
 {
 	Polynomial m_A;
 
@@ -155,12 +134,3 @@ int main (int argc, char **argv)
 	return 0;
 }
 //@}
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

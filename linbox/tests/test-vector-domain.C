@@ -1,16 +1,14 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-vector-domain.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,48 +16,41 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-/*! @file  tests/test-vector-domain.C
- * @ingroup tests
- * @brief no doc.
- * @test no doc.
- */
-
-
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
-
+#include <fstream>
+#include <sstream>
+#include <vector>
 
 #include "linbox/util/commentator.h"
-#include "linbox/ring/modular.h"
-#include "linbox/ring/PID-integer.h"
-#include "linbox/field/gf2.h"
-#include "linbox/vector/blas-vector.h"
+#include "linbox/field/modular.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/vector/vector-domain-gf2.h"
 #include "linbox/vector/stream.h"
+#include "linbox/util/field-axpy.h"
 
-#include "test-vector-domain.h"
+#include "test-common.h"
+#include "test-generic.h"
 
 using namespace std;
 using namespace LinBox;
 
 template <class Field>
-bool testVectorDomain (const Field &F, const char *text, size_t n, unsigned int iterations)
+bool testVectorDomain (const Field &F, const char *text, size_t n, unsigned int iterations) 
 {
-	typedef BlasVector<Field> DenseVector;
-	typedef BlasVector<Field> SparseSeqVector;
-	typedef BlasVector<Field> SparseMapVector;
-	typedef BlasVector<Field> SparseParVector;
+	typedef std::vector<typename Field::Element> DenseVector;
+	typedef std::vector<typename Field::Element> SparseSeqVector;
+	typedef std::vector<typename Field::Element> SparseMapVector;
+	typedef std::vector<typename Field::Element> SparseParVector;
 
 	ostringstream str;
 	str << "Testing VectorDomain <" << text << ">" << ends;
-	commentator().start (str.str ().c_str ());
+	commentator.start (str.str ().c_str ());
 
 	bool pass = true;
 
@@ -111,7 +102,7 @@ bool testVectorDomain (const Field &F, const char *text, size_t n, unsigned int 
 	if (!testCopyEqual (F, "sparse parallel/sparse associative", stream7, stream5)) pass = false;
 	if (!testCopyEqual (F, "sparse parallel/sparse parallel", stream7, stream8)) pass = false;
 
-	commentator().stop (MSG_STATUS (pass));
+	commentator.stop (MSG_STATUS (pass));
 
 	return pass;
 }
@@ -120,52 +111,41 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static unsigned int n = 100;
+	static long n = 100;
 	static integer q1("18446744073709551557");
-	static integer q2 = 65521U;
+	static integer q2 = 2147483647U;
 	static integer q3 = 65521U;
 	static int q4 = 101;
-	static unsigned int iterations = 2;
+	static int iterations = 100;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test vectors to N.", TYPE_INT,     &n },
-		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q1 },
-		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32_t modulus.", TYPE_INTEGER, &q2 },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16_t modulus.", TYPE_INTEGER, &q3 },
-		{ 'p', "-p P", "Operate over the \"field\" GF(P) [1] for uint8_t modulus.", TYPE_INTEGER, &q4 },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		END_OF_ARGUMENTS
+		{ 'n', "-n N", "Set dimension of test vectors to N (default 100)",   TYPE_INT,     &n },
+		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus (default 18446744073709551557)", TYPE_INTEGER, &q1 },
+		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus (default 2147483647)", TYPE_INTEGER, &q2 },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16 modulus (default 65521)", TYPE_INTEGER, &q3 },
+		{ 'p', "-p P", "Operate over the \"field\" GF(P) [1] for uint8 modulus (default 101)", TYPE_INTEGER, &q4 },
+		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);
 
-	Givaro::Modular<integer> F_integer (q1);
-	Givaro::Modular<uint32_t> F_uint32_t ((uint32_t) q2);
-	Givaro::Modular<uint16_t> F_uint16_t ((uint16_t) q3);
-	Givaro::Modular<uint8_t> F_uint8_t ((uint8_t) q4);
-	GF2 gf2(2);
+	Modular<integer> F_integer (q1);
+	Modular<uint32> F_uint32 ((uint32) q2);
+	Modular<uint16> F_uint16 ((uint16) q3);
+	Modular<uint8> F_uint8 ((uint8) q4);
 
-	commentator().start("Vector domain test suite", "VectorDomain");
+	cout << endl << "Vector domain test suite" << endl;
+	cout.flush ();
 
-	commentator().setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (3);
+	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (3);
 
-	if (!testVectorDomain (F_integer, "Givaro::Modular <integer>", n, iterations)) pass = false;
-	if (!testVectorDomain (F_uint32_t, "Givaro::Modular <uint32_t>", n, iterations)) pass = false;
-	if (!testVectorDomain (F_uint16_t, "Givaro::Modular <uint16_t>", n, iterations)) pass = false;
-	if (!testVectorDomain (F_uint8_t, "Givaro::Modular <uint8_t>", n, iterations)) pass = false;
-//	if (!testVectorDomain (gf2, "GF2", n, iterations)) pass = false;
+	if (!testVectorDomain (F_integer, "Modular <integer>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_uint32, "Modular <uint32>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_uint16, "Modular <uint16>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_uint8, "Modular <uint8>", n, iterations)) pass = false;
 
-	commentator().stop("Vector domain test suite");
 	return pass ? 0 : -1;
 }
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -1,15 +1,13 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* lb-utilities.h
  * Copyright (C) 2005 Pascal Giorgi
  *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,17 +15,17 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_lb_utilities_H
-#define __LINBOX_lb_utilities_H
+#ifndef __LINBOX_LB_UTILITIES_H
+#define __LINBOX_LB_UTILITIES_H
 
 
-#include "linbox/util/error.h"
-#include "linbox/util/debug.h"
+#include <linbox/util/error.h>
+#include <linbox/util/debug.h>
 
 #include <iostream>
 #include <sstream>
@@ -107,22 +105,22 @@ namespace LinBoxTL{
 
 	template <class List1, class List2>
 	struct Append;
-
+	
 	template <>
 	struct Append <LinBoxDumbType, LinBoxDumbType>{
-		typedef LinBoxDumbType Result;
+		typedef LinBoxDumbType Result; 
 	};
-
-	template <class T>
+	
+	template <class T> 
 	struct Append <LinBoxDumbType, T> {
 		typedef LinBoxTypelist<T, LinBoxDumbType> Result;
 	};
-
+	
 	template <class T, class U>
 	struct Append <LinBoxDumbType, LinBoxTypelist<T, U> > {
 		typedef LinBoxTypelist<T,U> Result;
 	};
-
+	
 	template <class Head, class Tail, class T>
 	struct Append <LinBoxTypelist<Head, Tail>, T > {
 		typedef LinBoxTypelist<Head, typename Append<Tail, T>::Result> Result;
@@ -130,12 +128,3 @@ namespace LinBoxTL{
 }
 
 #endif
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

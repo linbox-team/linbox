@@ -1,16 +1,14 @@
+/* -*- mode: c; style: linux -*- */
 
 /* tests/test-ntl-ZZ_p.C
  * Copyright (C) 2002 William J. Turner
  *
  * Written by William J. Turner <wjturner@math.ncsu.edu>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,27 +16,18 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-
-/*! @file  tests/test-ntl-ZZ_p.C
- * @ingroup tests
- * @brief  no doc
- * @test no doc
- */
-
-
-
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 
-
-#include "linbox/ring/ntl.h"
+#include "linbox/field/ntl.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -49,36 +38,31 @@ int main (int argc, char **argv)
 {
         static long q = 1073741789;
 	static size_t n = 10000;
-	static int iterations = 1;
+	static int iterations = 10;
 
         static Argument args[] = {
-                { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		END_OF_ARGUMENTS
+                { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 1073741789)", TYPE_INTEGER, &q },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)",      TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
+                { '\0' }
         };
 
         parseArguments (argc, argv, args);
 
-	commentator().start("NTL_ZZ_p field test suite", "NTL_ZZ_p");
+	cout << "UnparametricField<NTL::ZZ_p> field test suite" << endl << endl;
+	cout.flush ();
 	bool pass = true;
 
 	NTL::ZZ_p::init(NTL::to_ZZ(q));
-	// Givaro::ZRing<NTL::ZZ_p> F;
-	// NTL_ZZ_p F(q); // XXX is there a q ?
-	NTL_ZZ_p F;
-
-	if (F.characteristic() != q)
-		return false ;
-
+	UnparametricField<NTL::ZZ_p> F;
 
 	// Make sure some more detailed messages get printed
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	if (!runFieldTests (F, "NTL_ZZ_p", (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F, "UnparametricField<NTL::ZZ_p>", iterations, n, false)) pass = false;
 
 #if 0
-	FieldArchetype K(new NTL_ZZ_p(101));
+	FieldArchetype K(new UnparametricField<NTL::ZZ_p>(101));
 
 	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField<NTL::ZZ_p> field"))
 		pass = false;
@@ -86,33 +70,21 @@ int main (int argc, char **argv)
 
 	// Testing big ints
 	//
-        commentator().start ("\t--Testing init/convert match");
+        commentator.start ("\t--Testing init/convert match");
         bool part_pass = true;
-	// Givaro::ZRing<NTL::ZZ_p> G;
-	// NTL_ZZ_p G(q);
-	NTL_ZZ_p G;
+	UnparametricField<NTL::ZZ_p> G;
 	NTL::ZZ_p::init(NTL::to_ZZ("1234567890123456789012345678901234568123"));
-	NTL_ZZ_p::Element a;
+	UnparametricField<NTL::ZZ_p>::Element a;
 	LinBox::integer b, c("123456789012345678901234567890");
 	// LinBox::integer b, c("34");
 	G.init(a, c );
 	G.convert(b, a);
 	if ( c != b ) {
 		part_pass = false;
-                commentator().report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "Error : " << b << " != " << c << std::endl;
+                commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "Error : " << b << " != " << c << std::endl;
 	}
-        commentator().stop(MSG_STATUS (part_pass));
+        commentator.stop(MSG_STATUS (part_pass));
         pass &= part_pass;
-
-	commentator().stop("NTL_ZZ_p field test suite");
+        
 	return pass ? 0 : -1;
 }
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

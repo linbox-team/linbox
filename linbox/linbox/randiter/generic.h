@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/randiter/generic.h
  * 2004 june, bds and Dan Roche starting from:
  * Copyright (C) 1999-2001 William J Turner,
@@ -21,35 +23,11 @@
  * before.
  * ------------------------------------
  *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * See COPYING for license information.
  */
 
-/*! @file randiter/generic.h
- * @ingroup randiter
- * @brief Genric random iterator.
- */
-//#error "deprecated and not tested"
-
-#ifndef __LINBOX_generic_randiter_H
-#define __LINBOX_generic_randiter_H
+#ifndef __GENERIC_RANDITER_H
+#define __GENERIC_RANDITER_H
 
 #include <iostream>
 #include <vector>
@@ -60,40 +38,50 @@
 #include "linbox/element/envelope.h"
 #include "linbox/util/commentator.h"
 #include "linbox/randiter/mersenne-twister.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
-namespace LinBox
-{
+#ifdef __LINBOX_XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+#include <string>
+
+#endif
+
+namespace LinBox 
+{ 
 
 	/** Random field base element generator.
-	 * This is a generator of random field elements that can be used with
-	 * any field.  It initializes elements using rand().  For prime fields
-	 * with p < 2^32, a near-uniform distrubution can be expected.  For
-	 * larger fields or non-prime fields, a near-uniform distribution on an
-	 * unspecified subset of the elements can be expected.
+	  This is a generator of random field elements that can be used with
+	  any field.  It initializes elements using rand().
+	  For prime fields with p < 2^32, a near-uniform distrubution can
+	  be expected.  For larger fields or non-prime fields, a near-uniform
+	  distribution on an unspecified subset of the elements can be expected.
 	 */
 	template <class Field>
-	class GenericRandIter {
-	public:
+	class GenericRandIter
+	{
+	    public:
 
 		typedef typename Field::Element Element;
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
 		 * by seed, and it returns any one element with probability no more
-		 * than <code>1/min (size, F.characteristic(c))</code>.
+		 * than 1/min (size, F.characteristic(c)).
 		 * A sampling size of zero means to sample from the entire prime subfield.
-		 * A seed of zero means to use some arbitrary seed for the generator which will vary from run to run.
+		 * A seed of zero means to use some arbitrary seed for the generator.
 		 * @param F LinBox field in which to do arithmetic
-		 * @param size constant integer reference of sample size from which to
+		 * @param size constant integer reference of sample size from which to 
 		 *             sample (default = modulus of field)
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		GenericRandIter (const Field &F,
-				 const integer &size = 0,
-				 const integer &seed = 0) :
-			_field (F), _size (size), _seed (seed)
+		GenericRandIter (const Field &F, 
+				 const integer &size = 0, 
+				 const integer &seed = 0)
+			: _F (F), _size (size), _seed (seed)
 		{
 			if (_seed == 0) _seed = time (NULL);
 
@@ -104,22 +92,40 @@ namespace LinBox
 			if ((_size == 0) || (_size > cardinality))
 				_size = cardinality;
 
-			linbox_check(cardinality>0); // could be -1
-
-			commentator().report (10, INTERNAL_DESCRIPTION)
-			<< "Created random generator with size " << _size
-			<< " and seed " << _seed << std::endl;
+			commentator.report (10, INTERNAL_DESCRIPTION)
+				<< "Created random generator with size " << _size 
+				<< " and seed " << _seed << std::endl;
 
 			// Seed random number generator
 			srand (_seed);
 		}
 
-		GenericRandIter (const GenericRandIter<Field> &R) :
-			_field (R._field), _size (R._size), _seed (R._seed)
-		{}
+#ifdef __LINBOX_XMLENABLED
+		// XML LinBox::Reader constructor
+		GenericRandIter(LinBox::Reader &R) : _F(R.Down(1))
+		{
+			if(R.haveError()) return;
+			R.Up(1);
+			if(!R.expectTagName("randiter")) return;
+			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
+
+			if(_seed == 0) _seed = time(NULL);
+
+			// re-seed the random number generator
+			srand(_seed);
+
+			return;
+
+		}
+#endif
+
+
+
+		GenericRandIter (const GenericRandIter<Field> &R) 
+			: _F (R._F), _size (R._size), _seed (R._seed) {}
 
 		~GenericRandIter () {}
-
+    
 		GenericRandIter<Field> &operator=(const GenericRandIter<Field> &R)
 		{
 			if (this != &R) { // guard against self-assignment
@@ -129,7 +135,7 @@ namespace LinBox
 
 			return *this;
 		}
-
+ 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
 		 * at the creation of the generator.
@@ -137,7 +143,7 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		Element &random (Element &a) const
-		{ return _field.init(a,rand()); }
+		{ return _F.init(a,rand()); }
 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
@@ -153,27 +159,45 @@ namespace LinBox
 			return (a = ElementEnvelope <Field> (tmp));
 		}
 
-	private:
+#ifdef __LINBOX_XMLENABLED
+
+		std::ostream &write(std::ostream &os) const
+		{
+			LinBox::Writer W;
+			if( toTag(W))
+				W.write(os);
+
+			return os;
+		}
+
+
+		bool toTag(LinBox::Writer &W) const
+		{
+			std::string s;
+			W.setTagName("randiter");
+			W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
+			W.setAttribute("size", LinBox::Writer::numToString(s, _size));
+
+			W.addTagChild();
+			if(!_F.toTag(W)) return false;
+			W.upToParent();
+
+			return true;
+		}
+#endif
+
+
+	    private:
 
 		/// Field in which arithmetic is done
-		Field _field;
+		Field _F;
 
 		/// Sampling size
 		integer _size;
-
+    
 		/// Seed
 		long _seed;
 
 	}; // class GenericRandIter
-}
-#endif //__LINBOX_generic_randiter_H
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-
+};
+#endif //__GENERIC_RANDITER_H

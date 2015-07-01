@@ -171,7 +171,7 @@ inant computed by Maple's LinearAlgebra package:" }}}{EXCHG {PARA 0 ">
 otice that though they both return the same number, they haven't retur
 ned the same answer.  While the LinearAlgebra package's Determinant fu
 nction returns the absolute Determinant, LinBox's determinant function
- returns the Givaro::Modular Determinant.  The same is true of the Minimal Pol
+ returns the Modular Determinant.  The same is true of the Minimal Pol
 ynomial:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 20 "LBminpoly(Diag1
 s,x);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#,&*&\"#*)\"\"\"%\"xGF&F&*$)F'
 \"\"#F&F&" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 76 "LinearAlgebra[

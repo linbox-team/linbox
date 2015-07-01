@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/randiter/primes.h
  * Copyright (C) 2002 Bradford Hovinen
  *
@@ -5,31 +7,13 @@
  *
  * ------------------------------------
  *
- * 
- * ========LICENCE========
- * This file is part of the library LinBox.
- * 
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * See COPYING for license information.
  *
  * Stream of prime numbers
  */
 
-#ifndef __LINBOX_prime_stream_H
-#define __LINBOX_prime_stream_H
+#ifndef __PRIME_STREAM_H
+#define __PRIME_STREAM_H
 
 #include "linbox/integer.h"
 
@@ -39,79 +23,68 @@
 namespace LinBox
 {
 
-	/** Prime number stream
+/** Prime number stream
+ *
+ * Provides a source of prime numbers of given characteristics to use in parts
+ * of the library that need to reduce modulo one or more primes.
+ **/
+template <class Element>
+class PrimeStream
+{
+    public:
+
+	/** Constructor
 	 *
-	 * Provides a source of prime numbers of given characteristics to use in parts
-	 * of the library that need to reduce modulo one or more primes.
-	 **/
-	template <class Element>
-	class PrimeStream {
-	public:
+	 * Construct a PrimeStream object.
+	 * @param start Starting point; need not be prime itself
+	 * @param move_up true if we should move up from the starting point, false otherwise
+	 */
+	PrimeStream (Integer &start, bool move_up = true)
+		: _curr (start), _move_up (move_up) {}
 
-		/** Constructor
-		 *
-		 * Construct a PrimeStream object.
-		 * @param start Starting point; need not be prime itself
-		 * @param move_up true if we should move up from the starting point, false otherwise
-		 */
-		PrimeStream (Integer &start, bool move_up = true) :
-			_curr (start), _move_up (move_up)
-		{}
+	~PrimeStream () 
+	{}
 
-		~PrimeStream ()
-		{}
+	/** Get the next prime element
+	 *
+	 * @param a Place to store the next prime element
+	 * @return Reference to next prime element
+	 */
+	Element &next (Element &a) 
+	{
 
-		/** Get the next prime element
-		 *
-		 * @param a Place to store the next prime element
-		 * @return Reference to next prime element
-		 */
-		Element &next (Element &a)
-		{
-
-			/** @warning LinBox::Integer does not support prevprime */
-#if 0
-			if (_move_up == true) {
-				nextprime (_curr, _curr);
-				a = _curr;
-				_curr += 2L;
-			}
-			else {
-				prevprime (_curr, _curr);
-				a = _curr;
-				_curr -= 2L;
-			}
-#endif
-
+		/** LinBox::Integer doesnot support prevprime */
+		/*
+		if (_move_up == true) {
 			nextprime (_curr, _curr);
 			a = _curr;
 			_curr += 2L;
-
-			return a;
+		} else {
+			prevprime (_curr, _curr);
+			a = _curr;
+			_curr -= 2L;
 		}
-
-		/** Operator form for getting the next prime element
 		*/
-		PrimeStream<Element> &operator >> (Element &a)
+
+		nextprime (_curr, _curr);
+		a = _curr;
+		_curr += 2L;
+
+		return a;
+	}
+
+	/** Operator form for getting the next prime element
+	 */
+	PrimeStream<Element> &operator >> (Element &a) 
 		{ next (a); return *this; }
 
-	private:
+    private:
 
-		Integer _curr;
-		bool    _move_up;
-
-	}; // class PrimeStream
-
+	Integer _curr;
+	bool    _move_up;
+     
+}; // class PrimeStream
+ 
 } // namespace LinBox
 
-#endif // __LINBOX_prime_stream_H
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-
+#endif // __PRIME_STREAM_H

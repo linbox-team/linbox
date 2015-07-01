@@ -1,16 +1,14 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/matrix/matrix-category.h
  * Copyright (C) 2005 Pascal Giorgi
  *
  * Written by :
  *               Pascal Giorgi  pascal.giorgi@ens-lyon.fr
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,55 +16,61 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_matrix_category_H
-#define __LINBOX_matrix_category_H
+#ifndef __MATRIX_CATEGORY_H
+#define __MATRIX_CATEGORY_H
+
+#include <linbox/matrix/sparse.h>
+#include <linbox/matrix/dense.h>
+
+#include <linbox/blackbox/sparse.h>
+#include <linbox/blackbox/dense.h>
 
 
-namespace LinBox
-{
-
-
-	/** \brief For specializing matrix arithmetic
-	 *
-	 * This class defines matrix categories that allow us to specialize the matrix
-	 * arithmetic in \ref MatrixDomain for different matrix representations. For
-	 * example, a sparse matrix may have an efficient iterator over row vectors but
-	 * not over column vectors. Therefore, an algorithm that tries to iterate over
-	 * column vectors will run very slowly. Hence a specialization that avoids using
-	 * column vectors is used instead.
-	 */
-	struct MatrixCategories {
-		struct BlackboxTag { };
-		struct IndexedMatrixTag : public virtual BlackboxTag { } ;
-		struct RowMatrixTag : public virtual BlackboxTag { };
-		struct ColMatrixTag : public virtual BlackboxTag { };
-		struct RowColMatrixTag : public RowMatrixTag, public ColMatrixTag { };
-	};
-
+namespace LinBox{
 
 	struct MatrixContainerCategory {
 		struct BlasContainer{};
 		struct Container{};
 		struct Blackbox{};
 	};
+  
+	template <class Matrix>
+	class MatrixContainerTrait {
+	public:
+		typedef MatrixContainerCategory::Blackbox Type;
+	};
+	
 
+	template <class Field>
+	class MatrixContainerTrait<DenseMatrixBase<typename Field::Element> > {
+	public:
+		typedef MatrixContainerCategory::Container Type;
+	};
+	
+	template <class Field>
+	class MatrixContainerTrait<SparseMatrixBase<typename Field::Element> > {
+	public:
+		typedef MatrixContainerCategory::Container Type;
+	};
 
+	
+	template <class Field>
+	class MatrixContainerTrait<DenseMatrix<Field> > {
+	public:
+		typedef MatrixContainerCategory::Container Type;
+	};
 
+	template <class Field>
+	class MatrixContainerTrait<SparseMatrix<Field> > {
+	public:
+		typedef MatrixContainerCategory::Container Type;
+	};
 
 }
 
-#endif //__LINBOX_matrix_category_H
-
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+#endif

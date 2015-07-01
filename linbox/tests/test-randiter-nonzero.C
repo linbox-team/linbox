@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-randiter-nonzero.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
@@ -6,44 +7,18 @@
  *
  * ------------------------------------
  *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * See COPYING for license information.
  */
 
-
-/*! @file  tests/test-randiter-nonzero.C
- * @ingroup tests
- * @brief  no doc
- * @test no doc.
- */
-
-
-
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 #include <fstream>
-
+#include <vector>
 
 #include "linbox/util/commentator.h"
-#include "linbox/ring/modular.h"
+#include "linbox/field/modular.h"
+#include "linbox/randiter/modular.h"
 #include "linbox/randiter/nonzero.h"
 
 #include "test-common.h"
@@ -63,41 +38,40 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testNonzeroRandom (Field &F, unsigned int iterations)
+static bool testNonzeroRandom (Field &F, int iterations) 
 {
 	int i;
 
-	commentator().start ("Testing nonzero random elements", "testNonzeroRandom", iterations);
+	commentator.start ("Testing nonzero random elements", "testNonzeroRandom", iterations);
 
 	bool ret = true;
 
 	typename Field::Element x;
 	typename Field::RandIter r (F);
 
-	//NonzeroRandIter <Field, typename Field::RandIter> rp (F, r);
-	NonzeroRandIter <Field> rp (F, r);
+	NonzeroRandIter <Field, typename Field::RandIter> rp (F, r);
 
-	for (i = 0; i <(int) iterations; i++) {
-		commentator().startIteration ((unsigned int)i);
+	for (i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
 
 		rp.random (x);
 
-		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Element: ";
 		F.write (report, x);
 		report << endl;
 
 		if (F.isZero (x)) {
 			ret = false;
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Element is zero" << endl;
 		}
 
-		commentator().stop ("done");
-		commentator().progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNonzeroRandom");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNonzeroRandom");
 
 	return ret;
 }
@@ -107,35 +81,25 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static integer q = 101;
-	static unsigned int iterations = 1000;
+	static int iterations = 1000;
 
 	static Argument args[] = {
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		END_OF_ARGUMENTS
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 1000)",  TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);
-	Givaro::Modular<uint32_t> F (q);
+	Modular<uint32> F (q);
 
-	srand ((unsigned)time (NULL));
+	srand (time (NULL));
 
-	commentator().start("Nonzero random iterator test suite", "NonzeroRandIter");
+	cout << endl << "Nonzero random iterator test suite" << endl;
+	cout.flush ();
 
-	commentator().setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	if (!testNonzeroRandom (F, iterations)) pass = false;
 
-	commentator().stop("Nonzero random iterator test suite");
 	return pass ? 0 : -1;
 }
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

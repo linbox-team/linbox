@@ -1,33 +1,16 @@
-/*
- * examples/fields/ex-fields-archetype.C
- *
- * Copyright (C) 2002, 2010 G. Villard
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- */
-
-/** \file examples/fields/ex-fields-archetype.C
+/** \file examples/fields/ex-field-archetype.C
  * \author Gilles Villard
  * \brief On using the field archetype to avoid code bloat.
- *
- * Use of a function compiled with the field archetype but called
- * with two distinct field types.
- */
+ * \doc
+  Use of a function compiled with the field archetype but called
+  with two distinct field types.
+  */
+// =========================================================
+// (C) The Linbox Group 1999
+// Examples for using fields 
+// Fri Feb  8 16:25:22 MET 2002 
+// Wed Apr 17 17:37:12 MEST 2002/ Gilles Villard
+// =========================================================
 
 // ---------------------------------------------
 #include <stdio.h>
@@ -44,24 +27,24 @@
 #include "linbox/field/archetype.h"
 
 using namespace LinBox;
-
+ 
 // ---------------------------------------------
-/*  The template function "fct" reads two elements "a" and "b" of the
- *  field "K" from the standard input and writes a/b on the standard output */
+/*  The template function "fct" reads two elements "a" and "b" of the 
+ *  field "K" from the standard input and writes a/b on the standard output */ 
 
-template <class Field>
+template <class Field> 
 int fct(const Field& K) {
+ 
+  typedef typename Field::Element K_elt;
 
-	typedef typename Field::Element K_elt;
+  K_elt a,b,r; 
 
-	K_elt a,b,r;
-
-	K.init(a); K.init(b); K.init(r);
-	K.read(std::cin,a);
-	K.read(std::cin,b);
-	K.div(r,a,b);
-	K.write(std::cout,r) << "\n";
-	return 0;
+  K.init(a); K.init(b); K.init(r);
+  K.read(std::cin,a);
+  K.read(std::cin,b);
+  K.div(r,a,b);
+  K.write(std::cout,r) << "\n";
+  return 0;
 }
 
 // ---------------------------------------------
@@ -69,41 +52,30 @@ int fct(const Field& K) {
 /// no command line args
 int main() {
 
-	/* The field objects "K_o" and "Q_o" are constructed as in previous examples
-	*/
+  /* The field objects "K_o" and "Q_o" are constructed as in previous examples 
+   */ 
 
-	// Givaro::ZRing<NTL::RR> Q_o;
-	NTL_RR Q_o ;
-	NTL::RR::SetPrecision(400);
-	NTL::RR::SetOutputPrecision(50);
+  UnparametricField<NTL::RR> Q_o;
+  NTL::RR::SetPrecision(400);
+  NTL::RR::SetOutputPrecision(50);
 
-	// Givaro::ZRing<NTL::zz_p> K_o;
-	NTL::zz_p::init(553);
-	NTL_zz_p K_o ;
+  UnparametricField<NTL::zz_p> K_o;   
+  NTL::zz_p::init(553);
 
-	/* These field objects "K_o" and "Q_o" of different types can be converted to
-	 * objects Q and K of a unique type "Field_archetype" for instance using
-	 * a constructor: */
+  /* These field objects "K_o" and "Q_o" of different types can be converted to 
+   * objects Q and K of a unique type "Field_archetype" for instance using 
+   * a constructor: */ 
 
 
-	FieldArchetype Q( & Q_o );
-	FieldArchetype K( & K_o );
+  FieldArchetype Q( & Q_o );
+  FieldArchetype K( & K_o );
 
-	/* The template function "fct" is called with two different fields but the
-	 * template is instantiated only once since it is called with a unique
-	 * template parameter "Field_archetype" */
+  /* The template function "fct" is called with two different fields but the 
+   * template is instantiated only once since it is called with a unique 
+   * template parameter "Field_archetype" */
 
-	fct(Q);
-	fct(K);
+  fct(Q);
+  fct(K);
 
-	return 0;
+  return 0;
 };
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

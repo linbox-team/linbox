@@ -1,30 +1,7 @@
-
-/*
- * examples/modular-int.C
- *
- * Copyright (C) 2005, 2010 D. Saunders, Z. Wang
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- */
-
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /** \file examples/fields/modular-int.C
-  \brief  Example of arithmetic in the Givaro::Modular<int> finite field.
-  */
+\brief  Example of arithmetic in the Modular<int> finite field.
+ */
 //by  Zhendong wan wan@udel.edu
 
 
@@ -36,10 +13,10 @@
 int main (int argc, char **argv)
 {
 	/* construct the Z/101Z field */
-	Givaro::Modular<int> F(101);
+	LinBox::Modular<int> F(101);
 
 	/* declare local variable a, b, c, x, y*/
-	Givaro::Modular<int>::Element a, b, c, x, y;
+	LinBox::Modular<int>::Element a, b, c, x, y;
 
 	// initializtion
 	F.init(a, 92);
@@ -55,15 +32,15 @@ int main (int argc, char **argv)
 	/* +, -, *, / arithmetic operation */
 	//compute c <- a + b  mod 101;
 	F.add(c,a,b);
-	//output value of a
-	F.write(std::cout,a);
-	std::cout << " + ";
-	//output value of b
-	F.write(std::cout,b);
-	std::cout << " = ";
-	//output value of c
-	F.write(std::cout,c);
-	std::cout << " mod 101" << "\n";
+        //output value of a
+        F.write(std::cout,a);
+        std::cout << " + ";
+        //output value of b
+        F.write(std::cout,b);
+        std::cout << " = ";
+        //output value of c
+        F.write(std::cout,c);
+        std::cout << " mod 101" << "\n";
 
 	//compute c <- a - b mod 101;
 	F.sub(c,a,b);
@@ -79,39 +56,39 @@ int main (int argc, char **argv)
 
 	//compute c <- a * b mod 101;
 	F.mul(c,a,b);
-	//output value of a
-	F.write(std::cout,a);
-	std::cout << " * ";
-	//output value of b
-	F.write(std::cout,b);
-	std::cout << " = ";
-	//output value of c
-	F.write(std::cout,c);
-	std::cout << " mod 101" << "\n";
+        //output value of a
+        F.write(std::cout,a);
+        std::cout << " * ";
+        //output value of b
+        F.write(std::cout,b);
+        std::cout << " = ";
+        //output value of c
+        F.write(std::cout,c);
+        std::cout << " mod 101" << "\n";
 
 	//compute c <- a / b mod 101;
 	F.div(c,a,b);
-	//output value of a
-	F.write(std::cout,a);
-	std::cout << " / ";
-	//output value of b
-	F.write(std::cout,b);
-	std::cout << " = ";
-	//output value of c
-	F.write(std::cout,c);
-	std::cout << " mod 101" << "\n";
+        //output value of a
+        F.write(std::cout,a);
+        std::cout << " / ";
+        //output value of b
+        F.write(std::cout,b);
+        std::cout << " = ";
+        //output value of c
+        F.write(std::cout,c);
+        std::cout << " mod 101" << "\n";
 
 	//compute c = 1 /a mod 101;
 	F.inv(c,a);
 	std::cout << "1 / " << a << " = ";
 	//output value of c
-	F.write(std::cout,c);
-	std::cout << " mod 101" << "\n";
+        F.write(std::cout,c);
+        std::cout << " mod 101" << "\n";
 
-	/* Inplace operation */
+	/* Inplace operation */ 
 	//compute a *= b;
 	F.mulin(a,b);
-
+	
 	//compute a /= b;
 	F.divin(a,b);
 
@@ -126,34 +103,25 @@ int main (int argc, char **argv)
 	F.axpyin(c,a,x);
 
 	/* compare operation */
-	// test if a == 1 mod 101;
+	// test if a == 1 mod 101; 
 	//output value of a
 	F.write(std::cout,a);
 	std::cout << " == 1 mod 101 " << (F.isOne(a) ? "true" : "false") << "\n";
 
 	//test if a == 0 mod 101;
-	//output value of a
-	F.write(std::cout,a);
+        //output value of a
+        F.write(std::cout,a);
 	std::cout << " == 0 mod 101 " << (F.isZero(a) ? "true" : "false") << "\n" ;
 
 	// test if a == b mod 101;
 	//output value of a
-	F.write(std::cout,a);
+        F.write(std::cout,a);
 	std::cout << " == ";
-	//output value of b
-	F.write(std::cout,b);
+	//output value of b 
+        F.write(std::cout,b);
 	std::cout << " mod 101 " << (F.areEqual(a,b) ? "true" : "false") << "\n";
-
+	
 	//For performance, we recommend to use all possible operation, for example, using axpy, instead of mul, then addin.
 
 	return 0;
 }
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/element/envelope.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -5,13 +7,10 @@
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,20 +18,20 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_element_envelope_H
-#define __LINBOX_element_envelope_H
+#ifndef __ELEMENT_ENVELOPE_H
+#define __ELEMENT_ENVELOPE_H
 
 #include <iostream>
 
 #include "linbox/element/abstract.h"
 
-namespace LinBox
-{
+namespace LinBox 
+{ 
 	// Forward declarations
 	template <class Field> class RingEnvelope;
 	template <class Field> class FieldEnvelope;
@@ -44,38 +43,36 @@ namespace LinBox
 	 * to be a child class of ElementAbstract.
 	 * A concrete instance of ElementArchetype representing
 	 * the adapted class can then be constructed.
-	 *
+	 * 
 	 * All this is in support of the FieldArchetype system.
-	 \ingroup element
+\ingroup element
 
-*/
+	 */
 	template <class Field>
-	class ElementEnvelope : public ElementAbstract {
-	public:
+	class ElementEnvelope : public ElementAbstract
+	{
+	    public:
 
 		/** Default Constructor.
-		*/
+		 */
 		ElementEnvelope () {}
 
 		/** Constructor from the Field element to be wrapped.
 		 * @param elem Field element object to be wrapped.
 		 */
-		ElementEnvelope (const typename Field::Element &elem) :
-			_elem (elem)
-		{}
+		ElementEnvelope (const typename Field::Element &elem) : _elem (elem) {}
 
 		/** Copy constructor.
 		 * Constructs ElementEnvelope object by copying the element
 		 * it wraps.
 		 * This is required to allow element objects to be passed by value
 		 * into functions.
-		 * In this implementation, this means copying the element \c E._elem.
+		 * In this implementation, this means copying the element {\tt E.\_elem}.
 		 * @param  E FieldEnvelope object.
 		 */
-		ElementEnvelope (const ElementAbstract &E) :
-			_elem (static_cast<const ElementEnvelope&>(E)._elem)
-		{}
-
+		ElementEnvelope (const ElementAbstract &E)
+			: _elem (static_cast<const ElementEnvelope&>(E)._elem) {}
+  
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
@@ -85,7 +82,7 @@ namespace LinBox
 
 		/** Assignment operator.
 		 * @return reference to self
-		 * @param  E parameterized field base element
+		 * @param  x parameterized field base element
 		 */
 		ElementAbstract &operator= (const ElementAbstract &E)
 		{
@@ -95,10 +92,10 @@ namespace LinBox
 		}
 
 		/** Destructor.
-		*/
+		 */
 		~ElementEnvelope () {}
 
-	private:
+	    private:
 
 		// Friend declarations
 		friend class RingEnvelope<Field>;
@@ -111,13 +108,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __LINBOX_element_envelope_H
-
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+#endif // __ELEMENT_ENVELOPE_H

@@ -1,64 +1,36 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-diagonal.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * Time-stamp: <22 Jun 10 15:59:39 Jean-Guillaume.Dumas@imag.fr>
  * --------------------------------------------------------
  *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *
+ * See COPYING for license information
  */
 
-
-/*! @file  tests/test-diagonal.C
- * @ingroup tests
- * @brief  no doc
- * @test NO DOC
- */
-
-
-
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 #include <fstream>
-
+#include <vector>
 #include <cstdio>
 
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/util/commentator.h"
-//#include "linbox/field/archetype.h"
-#include "linbox/ring/modular.h"
+#include "linbox/field/archetype.h"
+#include "linbox/field/modular.h"
 #include "linbox/randiter/nonzero.h"
-//#include "linbox/solutions/minpoly.h"
-//#include "linbox/solutions/rank.h"
-//#include "linbox/vector/stream.h"
+#include "linbox/solutions/minpoly.h"
+#include "linbox/solutions/rank.h"
+#include "linbox/vector/stream.h"
 
-#include "test-blackbox.h"
-//#include "test-generic.h"
+#include "test-common.h"
+#include "test-generic.h"
 
 using namespace LinBox;
 
-#if 0
 /* Test 1: Application of identity matrix onto random vectors
  *
  * Construct the identity matrix and a series of randomly-generated
@@ -72,40 +44,40 @@ using namespace LinBox;
  */
 
 template <class Field, class Vector>
-static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
+static bool testIdentityApply (Field &F, VectorStream<Vector> &stream) 
 {
         typedef LinBox::Diagonal<Field> Blackbox;
 
-	commentator().start ("Testing identity apply", "testIdentityApply", stream.m ());
+	commentator.start ("Testing identity apply", "testIdentityApply", stream.m ());
 
 	bool ret = true;
-	// bool iter_passed = true;
+	bool iter_passed = true;
 
 	VectorDomain<Field> VD (F);
-	Vector d(F);
+	Vector d;
 
 	size_t i;
 
 	VectorWrapper::ensureDim (d, stream.n ());
 
 	for (i = 0; i < stream.n (); i++)
-		F.assign(VectorWrapper::ref<Field> (d, i), F.one);
+		F.init (VectorWrapper::ref<Field> (d, i), 1);
 
-	Blackbox D (d);
+	Blackbox D (F, d);
 
-	Vector v(F), w(F);
+	Vector v, w;
 
 	VectorWrapper::ensureDim (v, stream.n ());
 	VectorWrapper::ensureDim (w, stream.n ());
 
 	while (stream) {
-		commentator().startIteration ((unsigned)i);
+		commentator.startIteration (i);
 
-		bool iter_passed = true;
+		iter_passed = true;
 
 		stream.next (v);
 
-		ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
 		VD.write (report, v);
 		report << endl;
@@ -120,16 +92,16 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 
-		commentator().stop (MSG_STATUS (ret));
-		commentator().progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
 	stream.reset ();
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
 
 	return ret;
 }
@@ -148,32 +120,32 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
  */
 
 template <class Field, class Vector>
-static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
+static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream) 
 {
-	typedef BlasVector<Field> Polynomial;
+	typedef vector <typename Field::Element> Polynomial;
 	typedef LinBox::Diagonal <Field> Blackbox;
 
-	commentator().start ("Testing random minpoly", "testRandomMinpoly", stream.m ());
+	commentator.start ("Testing random minpoly", "testRandomMinpoly", stream.m ());
 
 	bool ret = true;
 
 	size_t j;
 	typename Field::Element pi;
-	Polynomial m_D(F);
+	Polynomial m_D;
 	VectorDomain<Field> VD (F);
 
-	Vector d(F);
+	Vector d;
 
 	VectorWrapper::ensureDim (d, stream.n ());
 
 	while (stream) {
-		commentator().startIteration ((unsigned)stream.j ());
+		commentator.startIteration (stream.j ());
 
-		F.assign(pi, F.one);
+		F.init (pi, 1);
 
 		stream.next (d);
 
-		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal vector: ";
 		VD.write (report, d);
 		report << endl;
@@ -185,20 +157,20 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 		F.write (report, pi);
 		report << endl;
 
-		Blackbox D (d);
+		Blackbox D (F, d);
 		minpoly (m_D, D);
 
 		report << "Minimal polynomial: ";
 		printPolynomial (F, report, m_D);
 
 		if (!F.areEqual (m_D[0], pi)) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: m_D(0) != det(D)" << endl;
 			ret = false;
 		}
 
-		commentator().stop (MSG_STATUS(ret));
-		commentator().progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
 	stream.reset ();
@@ -206,13 +178,13 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 	// try it with the random cstor of diagonal
 	LinBox::Diagonal <Field> D(F, 10);
 	unsigned long r;
-	LinBox::rank(r, D, Method::Wiedemann());
+	rank(r, D, Method::Wiedemann());
 	if (r != 10)
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: zeroes in random diagonal" << endl;
 	ret = ret && r == 10;
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly");
 
 	return ret;
 }
@@ -232,30 +204,30 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 
 template <class Field, class Vector>
 static bool testRandomLinearity (Field &F,
-				 VectorStream<BlasVector<Field> > &d_stream,
+				 VectorStream<std::vector<typename Field::Element> > &d_stream,
 				 VectorStream<Vector> &stream1,
-				 VectorStream<Vector> &stream2)
+				 VectorStream<Vector> &stream2) 
 {
 	typedef LinBox::Diagonal <Field> Blackbox;
 
-	commentator().start ("Testing random transpose", "testRandomLinearity", stream1.m ());
+	commentator.start ("Testing random transpose", "testRandomLinearity", stream1.m ());
 
 	VectorDomain<Field> VD (F);
 
-	BlasVector<Field> d(F);
+	std::vector<typename Field::Element> d;
 	VectorWrapper::ensureDim (d, stream1.n ());
 
 	d_stream.next (d);
-	Blackbox D (d);
+	Blackbox D (F, d);
 
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "Diagonal vector: ";
 	VD.write (report, d) << endl;
 
-	bool ret = testLinearity (D, stream1, stream2);
+	bool ret = testLinearity (F, D, stream1, stream2);
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
 
 	return ret;
 }
@@ -274,88 +246,75 @@ static bool testRandomLinearity (Field &F,
 
 template <class Field, class Vector>
 static bool testRandomTranspose (Field &F,
-				 VectorStream<BlasVector<Field> > &d_stream,
+				 VectorStream<std::vector<typename Field::Element> > &d_stream,
 				 VectorStream<Vector> &stream1,
-				 VectorStream<Vector> &stream2)
+				 VectorStream<Vector> &stream2) 
 {
 	typedef LinBox::Diagonal <Field> Blackbox;
 
-	commentator().start ("Testing random transpose", "testRandomTranspose", stream1.m ());
+	commentator.start ("Testing random transpose", "testRandomTranspose", stream1.m ());
 
 	VectorDomain<Field> VD (F);
 
-	BlasVector<Field> d(F);
+	std::vector<typename Field::Element> d;
 	VectorWrapper::ensureDim (d, stream1.n ());
 
 	d_stream.next (d);
-	Blackbox D (d);
+	Blackbox D (F, d);
 
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "Diagonal vector: ";
 	VD.write (report, d) << endl;
 
 	bool ret = testTranspose (F, D, stream1, stream2);
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
 	return ret;
 }
-#endif
 
 int main (int argc, char **argv)
 {
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 65521U;
-	static int iterations = 2; // was 100
+	static integer q = 2147483647U;
+	static int iterations = 100;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		END_OF_ARGUMENTS
+		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
 	};
 
-	typedef Givaro::Modular<uint32_t> Field; //C.Pernet: avoids confusion with givaro::uint32_t
-//	typedef BlasVector<Field> Vector;
+	typedef Modular<LinBox::uint32> Field; //C.Pernet: avoids confusion with givaro::uint32
+	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	srand ((unsigned)time (NULL));
+	srand (time (NULL));
 
-	commentator().start("Diagonal matrix black box test suite", "diagonal");
+	cout << endl << "Diagonal matrix black box test suite" << endl;
 
 	// Make sure some more detailed messages get printed
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-#if 0
-	RandomDenseStream<Field, Vector> stream1 (F, n, (unsigned int)iterations), stream2 (F, n, (unsigned int)iterations), d_stream (F, n, 1);
+	RandomDenseStream<Field, Vector> stream1 (F, n, iterations), stream2 (F, n, iterations), d_stream (F, n, 1);
 	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> >
-		stream3 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, (unsigned int)iterations);
+		stream3 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, iterations);
 
 	if (!testIdentityApply    (F, stream1)) pass = false;
 	if (!testRandomMinpoly    (F, stream3)) pass = false;
 	if (!testRandomLinearity  (F, d_stream, stream1, stream2)) pass = false;
 	if (!testRandomTranspose  (F, d_stream, stream1, stream2)) pass = false;
-#endif
 
         Field::RandIter iter(F);
-	LinBox::Diagonal<Field> D(F, n, iter);
-	pass = pass && testBlackbox(D);
+	LinBox::Diagonal<Field> D(F, 10, iter);
+	pass = pass && testBlackbox(F, D);
 
-	commentator().stop (MSG_STATUS (pass));
 
 	return pass ? 0 : -1;
 }
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

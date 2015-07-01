@@ -1,46 +1,23 @@
-/* Copyright (C) 2007 LinBox
- * Written by JG Dumas
- *
- *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- */
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// ======================================================================= //
+// Time-stamp: <21 Dec 06 15:22:01 Jean-Guillaume.Dumas@imag.fr> 
+// ======================================================================= //
+#ifndef __LINBOX_RATIONAL_CRA_H
+#define __LINBOX_RATIONAL_CRA_H
 
+#include "linbox/field/PID-integer.h"
+#include "linbox/algorithms/cra-domain.h"
 
-#ifndef __LINBOX_rational_cra_H
-#define __LINBOX_rational_cra_H
+namespace LinBox {
 
-#include "linbox/ring/PID-integer.h"
-
-namespace LinBox
-{
-
-#if 0
-	template<class T, template <class T> class Container>
-	std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-		for(typename Container<T>::const_iterator refs =  C.begin();
-		    refs != C.end() ;
-		    ++refs )
-			o << (*refs) << " " ;
-		return o << std::endl;
-	}
-#endif
+//     template<class T, template <class T> class Container>
+//     std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+//         for(typename Container<T>::const_iterator refs =  C.begin();
+//             refs != C.end() ;
+//             ++refs )
+//             o << (*refs) << " " ;
+//         return o << std::endl;
+//     }
 
 
 	/** \brief Chinese remainder of rationals
@@ -49,102 +26,191 @@ namespace LinBox
 	 * Either by Early Termination see [Dumas, Saunder, Villard, JSC 32 (1/2), pp 71-99, 2001],
 	 * Or via a bound on the size of the integers.
 	 */
-	template<class RatCRABase>
-	struct RationalRemainder {
-		typedef typename RatCRABase::Domain		Domain;
-		typedef typename RatCRABase::DomainElement	DomainElement;
-	protected:
-		RatCRABase Builder_;
+    template<class Domain>
+    struct RationalRemainder : public ChineseRemainder<Domain> {
+        typedef ChineseRemainder<Domain> Father_t;
+        typedef typename Father_t::DomainElement DomainElement;
+        PID_integer _ZZ;
+    public:
 
-	public:
-		template<class Param>
-		RationalRemainder(const Param& b) :
-			Builder_(b)
-		{ }
+        using Father_t::Table; 
+        using Father_t::Table0;
+        using Father_t::nextm;
+        using Father_t::Modulo0;
+        using Father_t::occurency;
+        using Father_t::EARLY_TERM_THRESHOLD;
 
-		/** \brief The Rational CRA loop.
+        RationalRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, const size_t n=1) 
+				: Father_t(EARLY, n) {}
+        
+        RationalRemainder(const double BOUND) 
+                : Father_t(BOUND) {}
 
-		  Given a function to generate residues mod a single prime,
-		  this loop produces the residues resulting from the Chinese
-		  remainder process on sufficiently many primes to meet the
-		  termination condition.
+		
+            /** \brief The Rational CRA loop
+				
+            Given a function to generate residues mod a single prime, this loop produces the residues 
+            resulting from the Chinese remainder process on sufficiently many primes to meet the 
+            termination condition.
+			
+            \parameter F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
+            This loop may be parallelized.  F must be reentrant, thread safe.
+            For example, F may be returning the coefficients of the minimal polynomial of a matrix mod p.
+            Warning - we won't detect bad primes.
+			
+            \parameter genprime - RandIter object for generating primes.
+            \result num - the rational numerator
+            \result den - the rational denominator
+            */
+        template<class Function, class RandPrime>
+        Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrime& genprime) {
+            Integer p;
+            while( ! this->Full_terminated() ) {
+                genprime.randomPrime(p);
+                while(this->Full_noncoprimality(p) )
+                    genprime.randomPrime(p);
+                Domain D(p); 
+                DomainElement r; D.init(r);
+                this->Full_progress( D, Iteration(r, D) );
+            }
+            return this->Full_result(num, den);
+        }
 
-		  \param Iteration  Function object of two arguments, \c Iteration(r, p), given
-		  prime \p p it outputs residue(s) \p r.  This loop may be
-		  parallelized.  \p Iteration must be reentrant, thread safe.  For
-		  example, \p Iteration may be returning the coefficients of the minimal
-		  polynomial of a matrix \c mod \p p.  @warning  we won't detect bad
-		  primes.
+        template<template <class T> class Vect, class Function, class RandPrime>
+        Vect<Integer> & operator() (Vect<Integer>& num, Integer& den, Function& Iteration, RandPrime& genprime) {
+            Integer p;
+            if (EARLY_TERM_THRESHOLD) {
+                {
+                    genprime.randomPrime(p);
+                    Domain D(p); 
+                    Vect<DomainElement> r; 
+                    Father_t::First_Early_progress( D, Iteration(r, D) );				
+                }
+                while( ! this->Early_terminated() ) {
+                    genprime.randomPrime(p);
+                    while(this->Early_noncoprimality(p) )
+                        genprime.randomPrime(p);
+                    Domain D(p); 
+                    Vect<DomainElement> r; 
+                    Father_t::Early_progress( D, Iteration(r, D) );
+                }
+                return this->Early_result(num, den);
+            } else {
+                while( ! this->Full_terminated() ) {
+                    genprime.randomPrime(p);
+                    while(this->Full_noncoprimality(p) )
+                        genprime.randomPrime(p);
+                    Domain D(p); 
+                    Vect<DomainElement> r; 
+                    this->Full_progress( D, Iteration(r, D) );
+                }
+                return this->Full_result(num, den);
+            }
+        }
 
-		  \param genprime  RandIter object for generating primes.
-		  \param[out] num  the rational numerator
-		  \param[out] den  the rational denominator
-		  */
-		template<class Function, class RandPrimeIterator>
-		Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
-		{
-			++genprime;
-			{
-				Domain D(*genprime);
-				DomainElement r; D.init(r);
-				Builder_.initialize( D, Iteration(r, D) );
-			}
-			while( ! Builder_.terminated() ) {
-				++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
-				Domain D(*genprime);
-				DomainElement r; D.init(r);
-				Builder_.progress( D, Iteration(r, D) );
-			}
-			return Builder_.result(num, den);
-		}
+    protected:
 
-#if 0 /*  marche pas si on remplace le premier Interger par PID_integer :-( spécialise pour BlasVector*/
-		template<template <class, class> class Vect, template <class> class Alloc,  class Function, class RandPrimeIterator>
-		Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
-		{
-			++genprime;
-			{
-				Domain D(*genprime);
-				Vect<DomainElement, Alloc<DomainElement> > r;
-				Builder_.initialize( D, Iteration(r, D) );
-			}
-			while( ! Builder_.terminated() ) {
-				++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
-				Domain D(*genprime);
-				Vect<DomainElement, Alloc<DomainElement> > r;
-				Builder_.progress( D, Iteration(r, D) );
-			}
-			return Builder_.result(num, den);
-		}
-#endif
+        Integer& Full_result (Integer &num, Integer& den){
+            std::vector<Integer> Vd; Vd.push_back(num);
+            Full_result(Vd, den);
+            return num=Vd.front();
+        }
+		
+        template<template<class T> class Vect>
+        Vect<Integer>& Full_result (Vect<Integer> &num, Integer& den){
+            num.resize( (Father_t::Table.front()).size() );
+            std::vector< LazyProduct >::iterator 			_mod_it = Father_t::Modulo.begin();
+            std::vector< std::vector< Integer > >::iterator _tab_it = Father_t::Table.begin();
+            std::vector< bool >::iterator    				_occ_it = Father_t::Occupation.begin();
+            LazyProduct Product;
+            for( ; _occ_it != Father_t::Occupation.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
+                if (*_occ_it) {
+                    Product = *_mod_it;
+                    std::vector<Integer>::iterator t0_it = num.begin();
+                    std::vector<Integer>::iterator t_it = _tab_it->begin();
+                    if (++_occ_it == Father_t::Occupation.end()) {
+                        den = 1;
+                        Integer s, nd; _ZZ.sqrt(s, _mod_it->operator()());
+                        for( ; t0_it != num.end(); ++t0_it, ++t_it) {
+                            iterativeratrecon(*t0_it = *t_it, nd, den, _mod_it->operator()(), s);
+                            if (nd > 1) {
+                                std::vector<Integer>::iterator  t02 = num.begin();
+                                for( ; t02 != t0_it ; ++t02)
+                                    *t02 *= nd;
+                                den *= nd;
+                            }
+                        }
+                        return num;
+                    } else {
+                        for( ; t0_it != num.end(); ++t0_it, ++t_it)
+                            *t0_it  = *t_it;
+                        ++_mod_it; ++_tab_it; 
+                        break;
+                    }
+                }
+            }
+            for( ; _occ_it != Father_t::Occupation.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
+                if (*_occ_it) {
+                    std::vector<Integer>::iterator t0_it = num.begin();
+                    std::vector<Integer>::const_iterator t_it = _tab_it->begin();
+                    for( ; t0_it != num.end(); ++t0_it, ++t_it)
+                        this->normalizesmallbigreconstruct(*t0_it, Product(), *t_it, _mod_it->operator()() );
+                    Product.mulin(*_mod_it);
+                }
+            }
+            den = 1;
+            Integer s, nd; _ZZ.sqrt(s, Product.operator()());
+            std::vector<Integer>::iterator t0_it = num.begin();
+            for( ; t0_it != num.end(); ++t0_it) {
+                iterativeratrecon(*t0_it, nd, den, Product.operator()(), s);
+                if (nd > 1) {
+                    std::vector<Integer>::iterator  t02 = num.begin();
+                    for( ; t02 != t0_it ; ++t02)
+                        *t02 *= nd;
+                    den *= nd;
+                }
+            }
+            return num;
+        }
+		
+        Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& s) {
+            Integer a;
+            PID_integer::reconstructRational(a, new_den, u1*=old_den, m1, s);
+            return u1=a;
+        }
 
-		template<class Function, class RandPrimeIterator>
-		BlasVector<PID_integer> & operator() ( BlasVector<PID_integer>& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
-		{
-			++genprime;
-			{
-				Domain D(*genprime);
-				BlasVector<Domain > r(D);
-				Builder_.initialize( D, Iteration(r, D) );
-			}
-			while( ! Builder_.terminated() ) {
-				++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
-				Domain D(*genprime);
-				BlasVector<Domain > r(D);
-				Builder_.progress( D, Iteration(r, D) );
-			}
-			return Builder_.result(num, den);
-		}
+        void Early_progress (const Domain& D, const DomainElement& e) {
+            DomainElement u0, m0;
 
-	};
+            fieldreconstruct(Table0, D, e, D.init(u0,Table0), D.init(m0,Modulo0), Integer(Table0), Modulo0);
+            D.characteristic( nextm );
+            Modulo0 *= nextm;
+            Integer a, b;
+            PID_integer::reconstructRational(a, b, Table0, Modulo0);
+            if ((a == Numer0) && (b == Denom0))
+                ++occurency;
+            else {
+                occurency = 0;
+                Numer0 = a;
+                Denom0 = b;
+            } 
+        }
+
+        void First_Early_progress (const Domain& D, const DomainElement& e) {
+            D.characteristic( Modulo0 );
+            D.convert(Table0, e);
+            PID_integer::reconstructRational(Numer0, Denom0, Table0, Modulo0);
+        }
+
+        template<template<class T> class Vect>
+        Vect<Integer>& Early_result(Vect<Integer>& num, Integer& den) {
+            return Full_result(num, den);
+        }
+ 
+    protected:
+        Integer					Numer0;
+        Integer					Denom0;
+    };
 }
 
-#endif //__LINBOX_rational_cra_H
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+#endif

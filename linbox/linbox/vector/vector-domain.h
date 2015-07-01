@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/vector/vector-domain.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
@@ -11,13 +13,13 @@
  * contains all functions that require only one vector type (such as axpy, mul,
  * read, and write). VectorDomain inherits VectorDomainBase and implements
  * dotprod, which requires two vector types.
- *
+ * 
  * ------------------------------------
  * Modified by Dmitriy Morozov <linbox@foxcub.org>. May 27, 2002.
  *
  * Added the modifications for categories and vector traits that were designed
  * at the Rootbeer meeting. Added parametrization of VectorTags by VectorTraits.
- *
+ * 
  * ------------------------------------
  * 2002-06-04 Bradford Hovinen <hovinen@cis.udel.edu>
  *
@@ -31,44 +33,22 @@
  * Added methods add, addin, sub, subin, areEqual, isZero, and copy.
  *
  * ------------------------------------
- * 2012Aug -bds
- * VectorDomain<F> inherits from DotProductDomain<F>, which inherits from VectorDomainBase<F>.
- * DotProductDomain<> has a generic definition here and
- * has specializations in field/Modular/ and field/Givaro/.
- * ------------------------------------
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * See COPYING for license information.
  */
 
-#ifndef __LINBOX_field_vector_domain_H
-#define __LINBOX_field_vector_domain_H
+#ifndef __FIELD_VECTOR_DOMAIN_H
+#define __FIELD_VECTOR_DOMAIN_H
 
 #include <iostream>
 
-#include "linbox/linbox-config.h"
-#include "linbox/util/debug.h"
+//#include "linbox/field/archetype.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/field-axpy.h"
+#include "linbox/util/debug.h"
 
 namespace LinBox
-{ /*  VectorDomainBase */
+{
 	/** @name Vector domain base
 	 *
 	 * This class provides a virtual base for the VectorDomain and the
@@ -77,24 +57,18 @@ namespace LinBox
 	 \ingroup vector
 	 */
 	template <class Field>
-	class VectorDomainBase {
+	class VectorDomainBase 
+	{
 	public:
-		VectorDomainBase () : _faxpy(nullptr) {std::cout<<"CST DEFAULT VDB"<<std::endl;}
-		VectorDomainBase (const Field &F) :  _faxpy(new FieldAXPY<Field>(F))
-                { /*std::cerr << "VDD cstor " << this << std::endl;*/}
-                ~VectorDomainBase()	{ if (_faxpy != nullptr) delete _faxpy; }
+		VectorDomainBase (const Field &F)
+			: _F (F), accu(F)
+		{}
 
-		void init(const Field &F) { if (_faxpy != nullptr) delete _faxpy; _faxpy = new FieldAXPY<Field>(F); }
-		inline const Field & field() const { return _faxpy->field(); }
-		inline const FieldAXPY<Field>& faxpy() const { return *_faxpy; }
-	
 	protected:
-		const FieldAXPY<Field> * _faxpy;
+		Field _F;
+		mutable FieldAXPY<Field> accu;
 	};
-}
 
-namespace LinBox
-{ /*  Dot Product */
 	/** @name Dot product domain
 	 * @brief Performance-critical dotproducts
 	 *
@@ -106,22 +80,16 @@ namespace LinBox
 	 * critical for performance, so their implementations are in the derived
 	 * class VectorDomain.
 	 */
-	template <class Field_>
-        //	class DotProductDomain : public virtual VectorDomainBase<Field_> {
-        class DotProductDomain : public VectorDomainBase<Field_> {
+	template <class Field>
+	class DotProductDomain : public virtual VectorDomainBase<Field>
+	{
 	public:
-		//DotProductDomain () { /*std::cerr << "DPD def cstor" << std::endl;*/ }// no def cstor allowed
 
-		typedef Field_ Field;
 		typedef typename Field::Element Element;
 
-		DotProductDomain (const Field &F) :
-			VectorDomainBase<Field> (F)
-		{  /*std::cerr << "DPD cstor " << this << std::endl; */}
-
-		using VectorDomainBase<Field>::field;
-		using VectorDomainBase<Field>::init;
-
+		DotProductDomain (const Field &F)
+			: VectorDomainBase<Field> (F)
+		{}
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -132,39 +100,6 @@ namespace LinBox
 
 	};
 
-}
-
-namespace LinBox
-{ /*  Vector Domain */
-/* public members
-VectorDomain<F>()
-VectorDomain<F>(VD)
-VectorDomain (F)
-VD1 = VD2
-VD.field()
-VD.write<V>(os, v)
-VD.read<V>(os, v)
-VD.copy<V1,V2>(v1,v2)
-VD.copy<V1,V2>(v1,v2,i,n)
-VD.areEqual<V1,V2>(v1,v2)
-VD.isZero<V>(v)
-VD.dot<V1,V2>(e,v1,v2) aka dotprod
-VD.add<V1,V2,V3>(v1,v2,v3)
-VD.addin<V1,V2>(v1,v2)
-VD.sub<V1,V2,V3>(v1,v2,v3)
-VD.subin<V1,V2>(v1,v2)
-VD.neg<V1,V2>(v1,v2)
-VD.negin<V>(v)
-VD.mul<V1,V2>(v1,v2,e)
-VD.mulin<V>(v,e)
-VD.axpy<V1,V2,V3>(v1,e,v2,v3)
-VD.axpyin<V1,V2>(v1,e,v2)
-VD.swap<V1,V2>(v1,v2)
-VD.random<V>(v)
-class Transposition;
-class Permutation;
-VD.permute<V,PI>(v1,pb,pe)
-*/
 
 	/** @name Vector Domain
 	 * @brief Vector arithmetic
@@ -180,65 +115,41 @@ VD.permute<V,PI>(v1,pb,pe)
 	 * as a template parameter and it will work as intended, though its
 	 * operation may not be fully optimized.
 	 */
-	// JGD 01.10.2003 : Why inherit twice from VectorDomainBase<Field> ???
-	// bds 2004Apr25 : well, g++ 3.4.3 wants explicit base domains on everything - eases that.
-	template <class Field_>
-        //	class VectorDomain : public virtual DotProductDomain<Field_> , public virtual VectorDomainBase<Field_> {
-        class VectorDomain : public  DotProductDomain<Field_> {
-	public:
-
-		typedef Field_ Field;
-
+// JGD 01.10.2003 : Why inherit twice from VectorDomainBase<Field> ???
+// bds 2004Apr25 : well, g++ 3.4.3 wants explicit base domains on everything - eases that.
+	template <class Field>
+	class VectorDomain : public virtual DotProductDomain<Field>, public virtual VectorDomainBase<Field>
+	{
+      	public:
+    
 		typedef typename Field::Element         Element;
-
-		// VectorDomain(): DotProductDomain<Field>() { /*std::cerr << "VD def cstor" << std::endl;*/ }
-		//VectorDomain():DotProductDomain<Field>() {}
-
-                //using VectorDomainBase<Field>::init;
-                using DotProductDomain<Field>::init;
 
 		/** Copy constructor.
 		 * Constructs VectorDomain object by copying the domain.
-		 * This is required to allow vector domain objects to be passed
+		 * This is required to allow matrix domain objects to be passed
 		 * by value into functions.
-		 * @param  VD VectorDomain object.
+		 * @param  MD VectorDomain object.
 		 */
-		VectorDomain (const VectorDomain &VD) :
-                        //VectorDomainBase<Field> (VD.field()),
-                        DotProductDomain<Field> (VD.field())
+		VectorDomain (const VectorDomain &VD)
+			: DotProductDomain<Field> (VD._F), VectorDomainBase<Field> (VD._F)
 		{}
-
-                /** Construct from a field.
-		 * @param F Field or ring
-		 */
-		VectorDomain (const Field &F) :
-			//VectorDomainBase<Field> (F), DotProductDomain<Field> (F)
-                        DotProductDomain<Field> (F)
-		{/* std::cerr << "VD cstor " << this << std::endl;*/}
-
-
-
+    
 		/** Assignment operator.
 		 * Assigns VectorDomain object MD to field.
-		 * @param  VD VectorDomain object.
+		 * @param  MD VectorDomain object.
 		 */
-		VectorDomain &operator = (const VectorDomain &VD)
-		{
-			this->init(VD.field());
-			//this->_field = VD._field;
-			//VectorDomainBase<Field>:: accu = VD.accu;
-			return *this;
-		}
+		VectorDomain &operator = (const VectorDomain &VD) const
+			{ VectorDomainBase<Field>::_F = VD._F; VectorDomainBase<Field>::accu = VD.accu; return *this; }
 
 		/** Retrieve the underlying field
-		 * Return a reference to the field that this vector domain
+		 * Return a reference to the field that this matrix domain
 		 * object uses
 		 * @return reference to field
 		 */
 
-		//using VectorDomainBase<Field>::field;
-                using DotProductDomain<Field>::field;
-
+		const Field &field () const
+		{ return VectorDomainBase<Field>::_F; }
+    
 		/** Vector input/output operations
 		 * These routines are useful for reading and writing vectors to
 		 * and from file streams. They are analagous to field read and
@@ -248,7 +159,7 @@ VD.permute<V,PI>(v1,pb,pe)
 		//@{
 
 		/** Print vector of field elements.
-		 * This function assumes the field element has already been
+		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 * @return output stream to which field element is written.
 		 * @param  os  output stream to which field element is written.
@@ -256,12 +167,10 @@ VD.permute<V,PI>(v1,pb,pe)
 		 */
 		template <class Vector>
 		inline std::ostream &write (std::ostream &os, const Vector &x) const
-		{
-			return writeSpecialized (os, x, typename VectorTraits<Vector>::VectorCategory ());
-		}
+		{ return writeSpecialized (os, x, typename VectorTraits<Vector>::VectorCategory ()); }
 
 		/** Read vector of field elements.
-		 * This function assumes the field element has already been
+		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 * @return input stream from which field element is read.
 		 * @param  is  input stream from which field element is read.
@@ -269,9 +178,7 @@ VD.permute<V,PI>(v1,pb,pe)
 		 */
 		template <class Vector>
 		inline std::istream &read (std::istream &is, Vector &x) const
-		{
-			return readSpecialized (is, x, typename VectorTraits<Vector>::VectorCategory ());
-		}
+		{ return readSpecialized (is, x, typename VectorTraits<Vector>::VectorCategory ()); }
 
 		//@} Input/Output Operations
 
@@ -283,7 +190,7 @@ VD.permute<V,PI>(v1,pb,pe)
 
 		//@{
 
-		/** Vector copy.
+		/** Vector copy
 		 * Copy a vector to another vector, possibly converting to a
 		 * different representation
 		 * @param res Output vector
@@ -292,13 +199,11 @@ VD.permute<V,PI>(v1,pb,pe)
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &copy (Vector1 &res, const Vector2 &v) const
-		{
-			return copySpecialized (res, v,
-						typename VectorTraits<Vector1>::VectorCategory (),
-						typename VectorTraits<Vector2>::VectorCategory ());
-		}
+		{ return copySpecialized (res, v,
+					  typename VectorTraits<Vector1>::VectorCategory (),
+					  typename VectorTraits<Vector2>::VectorCategory ()); }
 
-		/** Vector copy.
+		/** Vector copy
 		 * Copy a vector to a portion of another vector, possibly
 		 * converting to a different representation
 		 * @param res Output vector
@@ -310,60 +215,45 @@ VD.permute<V,PI>(v1,pb,pe)
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &copy (Vector1 &res, const Vector2 &v, size_t i, size_t len = 0) const
-		{
-			return copySpecialized (res, v, i, len,
-						typename VectorTraits<Vector1>::VectorCategory ());
-		}
+		{ return copySpecialized (res, v, i, len,
+					  typename VectorTraits<Vector1>::VectorCategory ()); }
 
-		/** Vector equality.
+		/** Vector equality
 		 * @param v1 Input vector
 		 * @param v2 Input vector
 		 * @returns true if and only if the vectors v1 and v2 are equal
 		 */
 		template <class Vector1, class Vector2>
 		inline bool areEqual (const Vector1 &v1, const Vector2 &v2) const
-		{
-			return areEqualSpecialized (v1, v2,
-						    typename VectorTraits<Vector1>::VectorCategory (),
-						    typename VectorTraits<Vector2>::VectorCategory ());
-		}
+		{ return areEqualSpecialized (v1, v2,
+					      typename VectorTraits<Vector1>::VectorCategory (),
+					      typename VectorTraits<Vector2>::VectorCategory ()); }
 
-		/** Vector equality with zero.
+		/** Vector equality with zero
 		 * @param v Input vector
 		 * @returns true if and only if the vector v is zero
 		 */
 		template <class Vector>
 		inline bool isZero (const Vector &v) const
-		{
-			return isZeroSpecialized (v, typename VectorTraits<Vector>::VectorCategory ());
-		}
+		{ return isZeroSpecialized (v, typename VectorTraits<Vector>::VectorCategory ()); }
 
-		/** Vector-vector dot product.
+		/** Vector-vector dot product
 		 * @param res element into which to store result
 		 * @param v1 Input vector
 		 * @param v2 Input vector
 		 */
 		template <class Vector1, class Vector2>
 		inline Element &dot (Element &res, const Vector1 &v1, const Vector2 &v2) const
-		{
-			return dotSpecialized (res, v1, v2,
-					       typename VectorTraits<Vector1>::VectorCategory (),
-					       typename VectorTraits<Vector2>::VectorCategory ());
-		}
+		{ return dotSpecialized (res, v1, v2,
+					 typename VectorTraits<Vector1>::VectorCategory (),
+					 typename VectorTraits<Vector2>::VectorCategory ()); }
 
-		/** Vector-vector dot product.
-		 * Alias for the above, to avoid source incompatibility.
-		 * @param res element into which to store result
-		 * @param v1 Input vector
-		 * @param v2 Input vector
-		 */
+		/* Alias for the above, to avoid source incompatibility */
 		template <class Vector1, class Vector2>
 		inline Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const
-		{
-			return dot (res, v1, v2);
-		}
+		{ return dot (res, v1, v2); }
 
-		/** Vector add.
+		/** Vector add
 		 * res <- y + x
 		 * @param res Vector into which to store result
 		 * @param y Input vector y
@@ -371,27 +261,23 @@ VD.permute<V,PI>(v1,pb,pe)
 		 */
 		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &add (Vector1 &res, const Vector2 &y, const Vector3 &x) const
-		{
-			return addSpecialized (res, y, x,
-					       typename VectorTraits<Vector1>::VectorCategory (),
-					       typename VectorTraits<Vector2>::VectorCategory (),
-					       typename VectorTraits<Vector3>::VectorCategory ());
-		}
+		{ return addSpecialized (res, y, x,
+					 typename VectorTraits<Vector1>::VectorCategory (),
+					 typename VectorTraits<Vector2>::VectorCategory (),
+					 typename VectorTraits<Vector3>::VectorCategory ()); }
 
-		/** Vector in-place add.
+		/** Vector in-place add
 		 * y <- y + x
 		 * @param y Input vector y; result is stored here
 		 * @param x Input vector x
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &addin (Vector1 &y, const Vector2 &x) const
-		{
-			return addinSpecialized (y, x,
-						 typename VectorTraits<Vector1>::VectorCategory (),
-						 typename VectorTraits<Vector2>::VectorCategory ());
-		}
+		{ return addinSpecialized (y, x,
+					   typename VectorTraits<Vector1>::VectorCategory (),
+					   typename VectorTraits<Vector2>::VectorCategory ()); }
 
-		/** Vector subtract.
+		/** Vector subtract
 		 * res <- y - x
 		 * @param res Vector into which to store result
 		 * @param y Input vector y
@@ -399,50 +285,42 @@ VD.permute<V,PI>(v1,pb,pe)
 		 */
 		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &sub (Vector1 &res, const Vector2 &y, const Vector3 &x) const
-		{
-			return subSpecialized (res, y, x,
-					       typename VectorTraits<Vector1>::VectorCategory (),
-					       typename VectorTraits<Vector2>::VectorCategory (),
-					       typename VectorTraits<Vector3>::VectorCategory ());
-		}
+		{ return subSpecialized (res, y, x,
+					 typename VectorTraits<Vector1>::VectorCategory (),
+					 typename VectorTraits<Vector2>::VectorCategory (),
+					 typename VectorTraits<Vector3>::VectorCategory ()); }
 
-		/** Vector in-place subtract.
+		/** Vector in-place subtract
 		 * y <- y - x
 		 * @param y Input vector y; result is stored here
 		 * @param x Input vector x
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &subin (Vector1 &y, const Vector2 &x) const
-		{
-			return subinSpecialized (y, x,
-						 typename VectorTraits<Vector1>::VectorCategory (),
-						 typename VectorTraits<Vector2>::VectorCategory ());
-		}
+		{ return subinSpecialized (y, x,
+					   typename VectorTraits<Vector1>::VectorCategory (),
+					   typename VectorTraits<Vector2>::VectorCategory ()); }
 
-		/** Vector negate.
+		/** Vector negate
 		 * res <- -x
 		 * @param res Vector into which to store result
 		 * @param x Input vector x
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &neg (Vector1 &res, const Vector2 &x) const
-		{
-			return negSpecialized (res, x,
-					       typename VectorTraits<Vector1>::VectorCategory (),
-					       typename VectorTraits<Vector2>::VectorCategory ());
-		}
+		{ return negSpecialized (res, x,
+					 typename VectorTraits<Vector1>::VectorCategory (),
+					 typename VectorTraits<Vector2>::VectorCategory ()); }
 
-		/** Vector in-place negate.
+		/** Vector in-place negate
 		 * y <- -y
 		 * @param y Input vector y; result is stored here
 		 */
 		template <class Vector>
 		inline Vector &negin (Vector &y) const
-		{
-			return neginSpecialized (y, typename VectorTraits<Vector>::VectorCategory ());
-		}
+		{ return neginSpecialized (y, typename VectorTraits<Vector>::VectorCategory ()); }
 
-		/** Scalar-vector multiplication.
+		/** Scalar-vector multiplication
 		 * res <- a * x
 		 * @param res Vector into which to store result
 		 * @param x Input vector x
@@ -450,22 +328,19 @@ VD.permute<V,PI>(v1,pb,pe)
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &mul (Vector1 &res, const Vector2 &x, const Element &a) const
-		{
-			return mulSpecialized (res, x, a, typename VectorTraits<Vector1>::VectorCategory ());
-		}
+		{ return mulSpecialized (res, x, a, typename VectorTraits<Vector1>::VectorCategory ()); }
 
-		/** In-place scalar-vector multiplication.
+		/** In-place scalar-vector multiplication
 		 * x <- a * x
+		 * @param res Vector into which to store result
 		 * @param x Input vector x
 		 * @param a Input element a
 		 */
 		template <class Vector>
 		inline Vector &mulin (Vector &x, const Element &a) const
-		{
-			return mulinSpecialized (x, a, typename VectorTraits<Vector>::VectorCategory ());
-		}
+		{ return mulinSpecialized (x, a, typename VectorTraits<Vector>::VectorCategory ()); }
 
-		/** Vector axpy.
+		/** Vector axpy
 		 * res <- y + a*x
 		 * @param res Vector into which to store result
 		 * @param a Scalar element a
@@ -474,11 +349,9 @@ VD.permute<V,PI>(v1,pb,pe)
 		 */
 		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &axpy (Vector1 &res, const Element &a, const Vector2 &x, const Vector3 &y) const
-		{
-			return axpySpecialized (res, y, a, x, typename VectorTraits<Vector1>::VectorCategory ());
-		}
+		{ return axpySpecialized (res, y, a, x, typename VectorTraits<Vector1>::VectorCategory ()); }
 
-		/** Vector in-place axpy.
+		/** Vector in-place axpy
 		 * y <- y + a*x
 		 * @param y Input vector y; result is stored here
 		 * @param a Scalar element a
@@ -486,11 +359,9 @@ VD.permute<V,PI>(v1,pb,pe)
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &axpyin (Vector1 &y, const Element &a, const Vector2 &x) const
-		{
-			return axpyinSpecialized (y, a, x,
-						  typename VectorTraits<Vector1>::VectorCategory (),
-						  typename VectorTraits<Vector2>::VectorCategory ());
-		}
+		{ return axpyinSpecialized (y, a, x,
+					    typename VectorTraits<Vector1>::VectorCategory (),
+					    typename VectorTraits<Vector2>::VectorCategory ()); }
 
 		//@} Vector arithmetic operations
 
@@ -501,7 +372,7 @@ VD.permute<V,PI>(v1,pb,pe)
 
 		//@{
 
-		/** Permutation.
+		/** Permutation
 		 *
 		 * A permutation is represented as a vector of pairs, each
 		 * pair representing a transposition.
@@ -516,12 +387,10 @@ VD.permute<V,PI>(v1,pb,pe)
 		 */
 		template <class Vector>
 		inline void swap (Vector &v1, Vector &v2) const
-		{
-			swapSpecialized (v1, v2, typename VectorTraits<Vector>::VectorCategory ());
-		}
+			{ swapSpecialized (v1, v2, typename VectorTraits<Vector>::VectorCategory ()); }
 
 		/** Permute the entries of a given vector using the given
-		 * permutation.
+		 * permutation
 		 *
 		 * @param v Vector to permute
 		 * @param P_start Iterator of the start of the permutation to apply
@@ -532,27 +401,27 @@ VD.permute<V,PI>(v1,pb,pe)
 		inline Vector &permute (Vector   &v,
 					Iterator  P_start,
 					Iterator  P_end) const
-		{
-			return permuteSpecialized (v, P_start, P_end,
-						   typename VectorTraits<Vector>::VectorCategory ());
-		}
+			{ return permuteSpecialized (v, P_start, P_end,
+						     typename VectorTraits<Vector>::VectorCategory ()); }
 
 		//@}
 
-	
-		/*! Random vector.
-		 * @param v vector to be randomized.
+		/** @name Implementation-Specific Methods.
+		 * These methods are not required of all \Ref{LinBox Fields}
+		 * and are included only for this implementation of the archetype.
 		 */
-		template <class Vector>
-		Vector& random(Vector& v)
-		{
-			typename Field::RandIter r(field());
+		//@{
 
-			typedef typename Vector::iterator iterator;
-			for (iterator p = v.begin(); p != v.end(); ++p) r.random(*p);
-			return v;
-		}
+		/** Construct from a field
+		 * @param F Field from which to construct
+		 */
+		VectorDomain (const Field &F)
+			: 
+                        VectorDomainBase<Field> (F),DotProductDomain<Field> (F)
+		{}
 
+		//@} Implementation-Specific Methods
+    
 	protected:
 
 		// Specialized function implementations
@@ -603,9 +472,7 @@ VD.permute<V,PI>(v1,pb,pe)
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::DenseVectorTag,
 					  VectorCategories::SparseSequenceVectorTag) const
-		{
-			return areEqual (v2, v1);
-		}
+		{ return areEqual (v2, v1); }
 		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::SparseSequenceVectorTag,
@@ -623,16 +490,12 @@ VD.permute<V,PI>(v1,pb,pe)
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::DenseVectorTag,
 					  VectorCategories::SparseAssociativeVectorTag) const
-		{
-			return areEqual (v2, v1);
-		}
+		{ return areEqual (v2, v1); }
 		template <class Vector1, class Vector2>
 		inline bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 						 VectorCategories::SparseSequenceVectorTag,
 						 VectorCategories::SparseAssociativeVectorTag) const
-		{
-			return areEqual (v2, v1);
-		}
+		{ return areEqual (v2, v1); }
 		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::SparseAssociativeVectorTag,
@@ -646,23 +509,17 @@ VD.permute<V,PI>(v1,pb,pe)
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::DenseVectorTag,
 					  VectorCategories::SparseParallelVectorTag) const
-		{
-			return areEqual (v2, v1);
-		}
+		{ return areEqual (v2, v1); }
 		template <class Vector1, class Vector2>
 		inline bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 						 VectorCategories::SparseSequenceVectorTag,
 						 VectorCategories::SparseParallelVectorTag) const
-		{
-			return areEqual (v2, v1);
-		}
+		{ return areEqual (v2, v1); }
 		template <class Vector1, class Vector2>
 		inline bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 						 VectorCategories::SparseAssociativeVectorTag,
 						 VectorCategories::SparseParallelVectorTag) const
-		{
-			return areEqual (v2, v1);
-		}
+		{ return areEqual (v2, v1); }
 		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::SparseParallelVectorTag,
@@ -681,8 +538,7 @@ VD.permute<V,PI>(v1,pb,pe)
 		inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 						 VectorCategories::DenseVectorTag,
 						 VectorCategories::DenseVectorTag) const
-		{ std::copy (v.begin (), v.end (), res.begin ()); return res;
-		}
+		{ std::copy (v.begin (), v.end (), res.begin ()); return res; }
 		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 					  VectorCategories::SparseSequenceVectorTag,
@@ -704,9 +560,7 @@ VD.permute<V,PI>(v1,pb,pe)
 		inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 						 VectorCategories::SparseSequenceVectorTag,
 						 VectorCategories::SparseSequenceVectorTag) const
-		{
-			res.resize (v.size ()); std::copy (v.begin (), v.end (), res.begin ()); return res;
-		}
+		{ res.resize (v.size ()); std::copy (v.begin (), v.end (), res.begin ()); return res; }
 		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 					  VectorCategories::SparseAssociativeVectorTag,
@@ -783,10 +637,7 @@ VD.permute<V,PI>(v1,pb,pe)
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::DenseVectorTag,
 						VectorCategories::DenseVectorTag) const
-		{
-			return DotProductDomain<Field>:: dotSpecializedDD (res, v1, v2);
-		}
-
+		{ return DotProductDomain<Field>::dotSpecializedDD (res, v1, v2); }
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseSequenceVectorTag,
@@ -799,17 +650,13 @@ VD.permute<V,PI>(v1,pb,pe)
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseParallelVectorTag,
 						VectorCategories::DenseVectorTag) const
-		{
-			return DotProductDomain<Field>::dotSpecializedDSP (res, v1, v2);
-		}
+		{ return DotProductDomain<Field>::dotSpecializedDSP (res, v1, v2); }
 
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::DenseVectorTag,
 						VectorCategories::SparseSequenceVectorTag) const
-		{
-			return dot (res, v2, v1);
-		}
+		{ return dot (res, v2, v1); }
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseSequenceVectorTag,
@@ -827,16 +674,12 @@ VD.permute<V,PI>(v1,pb,pe)
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::DenseVectorTag,
 						VectorCategories::SparseAssociativeVectorTag) const
-		{
-			return dot (res, v2, v1);
-		}
+		{ return dot (res, v2, v1); }
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseSequenceVectorTag,
 						VectorCategories::SparseAssociativeVectorTag) const
-		{
-			return dot (res, v2, v1);
-		}
+		{ return dot (res, v2, v1); }
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseAssociativeVectorTag,
@@ -850,23 +693,17 @@ VD.permute<V,PI>(v1,pb,pe)
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::DenseVectorTag,
 						VectorCategories::SparseParallelVectorTag) const
-		{
-			return dot (res, v2, v1);
-		}
+		{ return dot (res, v2, v1); }
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseSequenceVectorTag,
 						VectorCategories::SparseParallelVectorTag) const
-		{
-			return dot (res, v2, v1);
-		}
+		{ return dot (res, v2, v1); }
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseAssociativeVectorTag,
 						VectorCategories::SparseParallelVectorTag) const
-		{
-			return dot (res, v2, v1);
-		}
+		{ return dot (res, v2, v1); }
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseParallelVectorTag,
@@ -1113,7 +950,7 @@ VD.permute<V,PI>(v1,pb,pe)
 			add (u, w, v);
 			copy (res, u);
 
-			return res;
+			return u;
 		}
 
 		template <class Vector1, class Vector2>
@@ -1203,7 +1040,7 @@ VD.permute<V,PI>(v1,pb,pe)
 			sub (u, w, v);
 			copy (res, u);
 
-			return res;
+			return u;
 		}
 
 		template <class Vector1, class Vector2>
@@ -1277,34 +1114,33 @@ VD.permute<V,PI>(v1,pb,pe)
 			return y;
 		}
 
-		template<class Vector>
+		template <class Vector>
 		inline void swapSpecialized (Vector &v1, Vector &v2,
 					     VectorCategories::DenseVectorTag) const;
-
-		template<class _Vector> // BB : nvcc not happy with class Vector (and I agree :))
-		inline void swapSpecialized (_Vector &v1, _Vector &v2,
+		template <class Vector>
+		inline void swapSpecialized (Vector &v1, Vector &v2,
 					     VectorCategories::SparseSequenceVectorTag) const
 		{
 			typename LinBox::Vector<Field>::SparseSeq t;
 			t = v1; v1 = v2; v2 = t;
 		}
 
-		template <class _Vector>
-		inline void swapSpecialized (_Vector &v1, _Vector &v2,
+		template <class Vector>
+		inline void swapSpecialized (Vector &v1, Vector &v2,
 					     VectorCategories::SparseAssociativeVectorTag) const
 		{
 			typename LinBox::Vector<Field>::SparseMap t;
 			t = v1; v1 = v2; v2 = t;
 		}
 
-		template <class _Vector>
-		inline void swapSpecialized (_Vector &v1, _Vector &v2,
+		template <class Vector>
+		inline void swapSpecialized (Vector &v1, Vector &v2,
 					     VectorCategories::SparseParallelVectorTag) const
 		{
 			typename LinBox::Vector<Field>::SparsePar t;
 			t = v1; v1 = v2; v2 = t;
 		}
-
+	
 		template <class Vector, class Iterator>
 		inline Vector &permuteSpecialized (Vector   &v,
 						   Iterator  P_start,
@@ -1329,17 +1165,6 @@ VD.permute<V,PI>(v1,pb,pe)
 
 } // namespace LinBox
 
-
-#endif // __LINBOX_field_vector_domain_H
-
 #include "linbox/vector/vector-domain.inl"
-#include "linbox/vector/vector-domain-gf2.h"
 
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+#endif // __FIELD_MATRIX_DOMAIN_H

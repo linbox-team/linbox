@@ -1,91 +1,159 @@
-/* linbox/solutions/getentry.h
- * Copyright(C) LinBox
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
+/* linbox/solutions/trace.h
  *  Evolved from an earlier one by Bradford Hovinen <hovinen@cis.udel.edu>
  *  -bds
  *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * See COPYING for license information.
  */
 
-#ifndef __LINBOX_getentry_H
-#define __LINBOX_getentry_H
+#ifndef __GETENTRY_H
+#define __GETENTRY_H
 
-#include "linbox/matrix/sparse-matrix.h"
+#include <vector>
+
+#include "linbox/util/debug.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/blackbox/dense.h"
+#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/methods.h"
-#include "linbox/solutions/solution-tags.h"
 
-namespace LinBox
+namespace LinBox 
 {
 
-	/** \brief
-	 * Getting the i,j entry of the blackbox.
+/** \brief
+ * Getting the i,j entry of the blackbox.
+ */
+template <class BB> 
+typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j)
+{ return getEntry(x, A, i, j, Method::Hybrid()); }
+
+// Any BBs that offer a local getEntry can specialize the BB class for the Hybrid method.
+/** \brief our best guess
+
+Hybrid method will choose based on matrix size and type
+*/
+
+template <class BB> 
+typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, 
+		const Method::Hybrid& m)
+{ return getEntry(x, A, i, j, Method::Blackbox(m)); }
+
+// DenseMatrix specialization
+template <class Field> 
+typename Field::Element& getEntry(typename Field::Element& x, const DenseMatrix<Field>& A, const size_t i, const size_t j, 
+		const Method::Hybrid& m)
+{	
+	return A.getEntry(x,i,j);
+}
+
+// SparseMatrix specialization
+template <class Field> 
+typename Field::Element& getEntry(typename Field::Element& x, const SparseMatrix<Field>& A, const size_t i, const size_t j, 
+				  const Method::Hybrid& m)
+{
+	return A.getEntry(x,i,j);
+}
+
+// scalar matrix specialization 
+template <class Field>
+typename Field::Element & getEntry(typename Field::Element & x, const ScalarMatrix<Field>& A, const size_t i, const size_t j, const Method::Hybrid& m) 
+{ return A.getEntry(x, i, j); }
+
+
+// diagonal specialization 
+template <class Field, class Trait>
+typename Field::Element & getEntry(typename Field::Element & x, const Diagonal<Field, Trait>& A, const size_t i, const size_t j, const Method::Hybrid& m) 
+{ return A.getEntry(x, i, j); }
+
+/** \brief our elimination (a fake in this case)
+
+Elimination method will go to blackbox.
+*/
+template <class BB> 
+typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, const Method::Elimination& m)
+{ return getEntry(x, A, i, j, Method::Blackbox(m)); 
+}
+
+/*
+ * Copyright (C) 2001, 2002 Bradford Hovinen
+ *
+ * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ *
+ * ------------------------------------
+ * See COPYING for license information.
+ */
+
+	/** Compute the getEntry of a linear operator A, represented as a black
+	 * box. This class is parameterized by the black box type so that it can
+	 * be specialized for different black boxes.
 	 */
-	template <class BB>
-	typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j);
 
-	// Some specializations
+	template <class Blackbox>
+	typename Blackbox::Field::Element &getEntry (typename Blackbox::Field::Element &res,
+					const Blackbox          &A, const size_t i, const size_t j, 
+					const Method::Blackbox& m)
+	{
 
-	// Compose< Diagonal, BB > specialization
-	template <class Field, class Trait, class BB>
-	typename Field::Element& getEntry(typename Field::Element& x, const Compose<Diagonal<Field, Trait>, BB>& A, const size_t i, const size_t j);
+		typedef typename Blackbox::Field Field;
+		typedef std::vector<typename Field::Element> Vector;
+		Vector v, w;
+		VectorWrapper::ensureDim (v, A.coldim ());
+		VectorWrapper::ensureDim (w, A.rowdim ());
+		const Field& F = A.field();
+		typename Field::Element zero; F.init(zero, 0UL);
+		typename Vector::iterator it;
+		for (it = v.begin (); it != v.end (); ++it)
+			F.assign (*it, zero);
+		F.init(v[j],1UL);
+		F.init (res, 0);
+		A.apply (w, v);
+		F.assign (res, VectorWrapper::constRef<Field, Vector> (w, i));
+		return res;
+	}
 
-	// Compose< BB, Diagonal > specialization
-	template <class BB, class Field, class Trait>
-	typename Field::Element& getEntry(typename Field::Element& x, const Compose<BB, Diagonal<Field, Trait> >& A, const size_t i, const size_t j);
 
-	// Compose< Diagonal, Diagonal > specialization
-	template <class Field, class T1, class T2>
-	typename Field::Element& getEntry(typename Field::Element& x, const Compose<Diagonal<Field,T1>, Diagonal<Field, T2> >& A, const size_t i, const size_t j);
 
-	/// To ignore methods
-	template <class BB, class Method>
-	typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, Method & m);
 
-	/** GetEntryCategory is specialized for BB classes that offer a local getEntry
 
-	   This includes SparseMatrix, SparseMatrixBase, Diagonal, ScalarMatrix.
-	   It could and should include many more.
-	 */
-	template<class BB> struct GetEntryCategory;
+// Compose< Diagonal, BB > specialization
+template <class Field, class Trait, class BlackBox> 
+typename Field::Element& getEntry(typename Field::Element& t, const Compose<Diagonal<Field, Trait>, BlackBox>& A, const size_t i, const size_t j, const Method::Hybrid& m)
+{
+    typename Field::Element y;
+    getEntry(y, *(A.getLeftPtr()), i, i);
+    getEntry(t, *(A.getRightPtr()), i, j);
+    return A.field().mulin(t, y);
+}
 
-/************************** internal forms **********************/
-	// For the general case apply() will be used.
-	template <class BB>
-	typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, SolutionTags::Generic t);
+// Compose< BB, Diagonal > specialization
+template <class BlackBox, class Field, class Trait> 
+typename Field::Element& getEntry(typename Field::Element& t, const Compose<BlackBox, Diagonal<Field, Trait> >& A, const size_t i, const size_t j, const Method::Hybrid& m)
+{
+    typename Field::Element y;
+    getEntry(y, *(A.getLeftPtr()), i, j);
+    getEntry(t, *(A.getRightPtr()), j, j);
+    return A.field().mulin(t, y);
+}
 
-	// Some BBs have a local getEntry method
-	template <class BB>
-	typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, SolutionTags::Local t );
+// Compose< Diagonal, Diagonal > specialization
+template <class Field, class T1, class T2> 
+typename Field::Element& getEntry(typename Field::Element& t, const Compose<Diagonal<Field,T1>, Diagonal<Field, T2> >& A, const size_t i, const size_t j, const Method::Hybrid& m)
+{
+    if (i != j) 
+        return A.field().init(t, 0UL);
+    else {
+        typename Field::Element y;
+        getEntry(y, *(A.getLeftPtr()), i, i);
+        getEntry(t, *(A.getRightPtr()), j, j);
+        return A.field().mulin(t, y);
+    }
+}
 
-} // LinBox
 
-#include "linbox/solutions/getentry.inl"
+}
 
-#endif // __LINBOX_getentry_H
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+#endif // __GETENTRY_H

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/field/abstract.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -5,13 +7,10 @@
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,20 +18,20 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_abstract_H
-#define __LINBOX_abstract_H
+#ifndef __FIELD_ABSTRACT_H
+#define __FIELD_ABSTRACT_H
 
 #include <iostream>
 
 #include "linbox/element/abstract.h"
 #include "linbox/randiter/abstract.h"
 #include "linbox/integer.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -41,13 +40,13 @@
 
 #endif
 
-namespace LinBox
-{
+namespace LinBox 
+{ 
 
 	/** \brief field base class.
 	\ingroup field
 
-	 * Found in the file \sa{linbox/field/abstract.h}.
+	 * Found in the file \URL{linbox/field/abstract.h}.
 	 * Abstract base class used to implement the field archetype to minimize
 	 * code bloat.  All public member functions of this class are purely
 	 * virtual and must be implemented by all derived classes.
@@ -58,7 +57,8 @@ namespace LinBox
 	 * it.  This minimizes code bloat, but it also introduces indirection through
 	 * the use of pointers and virtual functions which is inefficient.
 	 */
-	class FieldAbstract {
+	class FieldAbstract
+	{
 	    public:
 
 		/// element type.
@@ -66,10 +66,10 @@ namespace LinBox
 
 		/// Random iterator generator type.
 		typedef RandIterAbstract RandIter;
-
+ 
 		/** @name Object Management
 		 * There are no public constructors for this class.
-		 * It should only be used in tandem with \ref FieldArchetype.
+		 * It should only be used in tandem with \ref{FieldArchetype}.
 		 */
 		//@{
 
@@ -105,7 +105,7 @@ namespace LinBox
 		 * @param y integer.
 		 */
 		virtual Element &init (Element &x, const integer &y) const = 0;
-
+ 
 		/** Conversion of field element to an integer.
 		 * This function assumes the output field element x has already been
 		 * constructed, but that it is not already initialized.
@@ -115,7 +115,7 @@ namespace LinBox
 		 * @param y constant field element.
 		 */
 		virtual integer &convert (integer &x, const Element &y) const = 0;
-
+ 
 		/** Assignment of one field element to another.
 		 * This function assumes both field elements have already been
 		 * constructed and initialized.
@@ -135,7 +135,7 @@ namespace LinBox
 		 * @return integer representing cardinality of the domain
 		 */
 		virtual integer &cardinality (integer &c) const = 0;
-
+ 
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
 		 * Returns a positive integer to all domains with finite characteristic,
@@ -178,7 +178,7 @@ namespace LinBox
 		virtual Element &add (Element       &x,
 				      const Element &y,
 				      const Element &z) const = 0;
-
+ 
 		/** Subtraction.
 		 * x = y - z
 		 * This function assumes all the field elements have already been
@@ -192,7 +192,7 @@ namespace LinBox
 		virtual Element &sub (Element       &x,
 				      const Element &y,
 				      const Element &z) const = 0;
-
+ 
 		/** Multiplication.
 		 * x = y * z
 		 * This function assumes all the field elements have already been
@@ -206,7 +206,7 @@ namespace LinBox
 		virtual Element &mul (Element       &x,
 				      const Element &y,
 				      const Element &z) const = 0;
-
+ 
 		/** Division.
 		 * x = y / z
 		 * This function assumes all the field elements have already been
@@ -219,7 +219,7 @@ namespace LinBox
 		 */
 		virtual Element &div (Element &x,
 				      const Element &y, const Element &z) const = 0;
-
+ 
 		/** Additive Inverse (Negation).
 		 * x = - y
 		 * This function assumes both field elements have already been
@@ -230,7 +230,7 @@ namespace LinBox
 		 * @param  y field element.
 		 */
 		virtual Element &neg (Element &x, const Element &y) const = 0;
-
+ 
 		/** Multiplicative Inverse.
 		 * x = 1 / y
 		 * This function assumes both field elements have already been
@@ -244,7 +244,7 @@ namespace LinBox
 
 		/** Natural AXPY.
 		 * r  = a * x + y
-		 * This function assumes all field elements have already been
+		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
 		 * Purely virtual.
 		 * @return reference to r.
@@ -253,13 +253,13 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		virtual Element &axpy (Element       &r,
-				       const Element &a,
-				       const Element &x,
+		virtual Element &axpy (Element       &r, 
+				       const Element &a, 
+				       const Element &x, 
 				       const Element &y) const = 0;
 
 		//@} Arithmetic Operations
-
+ 
 		/** @name Inplace Arithmetic Operations
 		 * x <- x op y; x <- op x
 		 */
@@ -274,7 +274,7 @@ namespace LinBox
 		 * @param  x field element.
 		 */
 		virtual bool isZero (const Element &x) const = 0;
-
+ 
 		/** One equality.
 		 * Test if field element is equal to one.
 		 * This function assumes the field element has already been
@@ -284,16 +284,6 @@ namespace LinBox
 		 * @param  x field element.
 		 */
 		virtual bool isOne (const Element &x) const = 0;
-
-		/** MOne equality.
-		 * Test if field element is equal to one.
-		 * This function assumes the field element has already been
-		 * constructed and initialized.
-		 * Purely virtual.
-		 * @return boolean true if equals one, false if not.
-		 * @param  x field element.
-		 */
-		virtual bool isMOne (const Element &x) const = 0;
 
 		/** Inplace Addition.
 		 * x += y
@@ -305,7 +295,7 @@ namespace LinBox
 		 * @param  y field element.
 		 */
 		virtual Element &addin (Element &x, const Element &y) const = 0;
-
+ 
 		/** Inplace Subtraction.
 		 * x -= y
 		 * This function assumes both field elements have already been
@@ -316,7 +306,7 @@ namespace LinBox
 		 * @param  y field element.
 		 */
 		virtual Element &subin (Element &x, const Element &y) const = 0;
-
+ 
 		/** Inplace Multiplication.
 		 * x *= y
 		 * This function assumes both field elements have already been
@@ -338,7 +328,7 @@ namespace LinBox
 		 * @param  y field element.
 		 */
 		virtual Element &divin (Element &x, const Element &y) const = 0;
-
+ 
 		/** Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
 		 * This function assumes the field element has already been
@@ -348,7 +338,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 */
 		virtual Element &negin (Element &x) const = 0;
-
+ 
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
 		 * This function assumes the field elementhas already been
@@ -361,7 +351,7 @@ namespace LinBox
 
 		/** Inplace AXPY.
 		 * r  += a * x
-		 * This function assumes all field elements have already been
+		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
 		 * Purely virtual
 		 * @return reference to r.
@@ -369,10 +359,10 @@ namespace LinBox
 		 * @param  a field element.
 		 * @param  x field element.
 		 */
-		virtual Element &axpyin (Element       &r,
-					 const Element &a,
+		virtual Element &axpyin (Element       &r, 
+					 const Element &a, 
 					 const Element &x) const = 0;
-
+ 
 		//@} Inplace Arithmetic Operations
 #ifndef __LINBOX_XMLENABLED
 		/** @name Input/Output Operations */
@@ -384,6 +374,13 @@ namespace LinBox
 		 * @param  os  output stream to which field is written.
 		 */
 		virtual std::ostream &write (std::ostream &os) const = 0;
+ 
+		/** Read field.
+		 * Purely virtual.
+		 * @return input stream from which field is read.
+		 * @param  is  input stream from which field is read.
+		 */
+		virtual std::istream &read (std::istream &is) = 0;
 
 		/** Print field element.
 		 * This function assumes the field element has already been
@@ -394,7 +391,7 @@ namespace LinBox
 		 * @param  x   field element.
 		 */
 		virtual std::ostream &write (std::ostream &os, const Element &x) const = 0;
-
+ 
 		/** Read field element.
 		 * This function assumes the field element has already been
 		 * constructed and initialized.
@@ -422,7 +419,7 @@ namespace LinBox
 		 * never be constructed by itself.
 		 */
 		FieldAbstract () {}
-
+ 
 	    private:
 
 		/// FieldArchetype is friend.
@@ -432,14 +429,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __LINBOX_abstract_H
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-
+#endif // __FIELD_ABSTRACT_H

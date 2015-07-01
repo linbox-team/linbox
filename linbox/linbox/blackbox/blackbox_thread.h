@@ -1,65 +1,43 @@
-/* Copyright (C) 2010 LinBox
- * Written by
- * zhendong wan
- *
- *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+/* file: blackbox_thread.h
+ *  Author: Zhendong Wan
  */
 
-#ifndef __LINBOX_blackbox_thread_H
-#define __LINBOX_blackbox_thread_H
+#ifndef __BLACKBOX_THREAD_H__
+#define __BLACKBOX_THREAD_H__
 
 /* create a thread, which is bound to  a lwp to run matrix apply
-*/
+ */
 
-#include "linbox/vector/subvector.h"
+#include <linbox/vector/subvector.h>
 #include <pthread.h>
 #include <signal.h>
 #include <string.h>
 
-namespace LinBox
-{
+namespace LinBox {
 
-	/** built on posix threads
-	  \ingroup blackbox
+ 	/** built on posix threads
+	\ingroup blackbox
 
-	  This is a thread interface, built on posix threads.
+ 	 This is a thread interface, built on posix threads.
 	  */
 	class Thread {
-
+	
 	public:
 
 #ifdef DEBUG
 		static int count;
 #endif
-
+	
 		// attributes for posix thread
-		static pthread_attr_t attr;
+        	static pthread_attr_t attr;
 
 		// a signal set
-		static sigset_t sigset;
+        	static sigset_t sigset; 
 
-		static const int SIGAPPLY;
+        	static const int SIGAPPLY;
 
 		static void terminate_thread (const Thread* t) {
-
+		
 			pthread_cancel(t -> getpid());
 
 			pthread_join (t -> getpid(), 0);
@@ -87,7 +65,7 @@ namespace LinBox
 
 				exit (1);
 			}
-
+			
 		}
 
 		// notify the caller
@@ -99,7 +77,7 @@ namespace LinBox
 
 		// terminate a thread
 		static void terminate_thread (const Thread& t) {
-
+		
 			pthread_cancel(t. getpid());
 
 			pthread_join (t. getpid(), 0);
@@ -125,7 +103,7 @@ namespace LinBox
 
 				exit (1);
 			}
-
+			
 		}
 
 		static void notify_parent (const Thread& t) {
@@ -139,36 +117,36 @@ namespace LinBox
 		pthread_t pid;
 
 		pthread_t ppid;
-
-	public:
+		
+	public:	
 
 		/** return the unique id associate with the thread.*/
 		pthread_t getpid ( ) const {
-
+		
 			return pid;
 		}
-
+		
 		/** set the unique id associate with the thread.*/
 		void setpid (pthread_t _pid) {
-
+			
 			pid = _pid;
 		}
-
+		
 		/** return caller's id */
 		pthread_t getppid ( ) const {
 
-			return ppid;
-		}
+                        return ppid;
+                }
 
 		/** set the caller's id */
-		void setppid (pthread_t _ppid) {
+                void setppid (pthread_t _ppid) {
 
-			ppid = _ppid;
-		}
+                        ppid = _ppid;
+                }
 
 		/** run the thread */
 		virtual void run (void) = 0;
-
+		
 		virtual ~Thread () {
 #ifdef DEBUG
 			--count;
@@ -195,26 +173,26 @@ namespace LinBox
 
 	pthread_attr_t Thread::attr = (
 
-				       pthread_attr_init (&(Thread::attr)),
+			pthread_attr_init (&(Thread::attr)),
 
-				       pthread_attr_setscope (&(Thread::attr), PTHREAD_SCOPE_SYSTEM),
+			pthread_attr_setscope (&(Thread::attr), PTHREAD_SCOPE_SYSTEM),
 
-				       Thread::attr
-				      );
+			Thread::attr
+	);
 
-	sigset_t Thread::sigset = (
+	sigset_t Thread::sigset = ( 
 
-				   sigemptyset (&(Thread::sigset)),
+			sigemptyset (&(Thread::sigset)),
 
-				   sigaddset (&(Thread::sigset), Thread::SIGAPPLY),
+			sigaddset (&(Thread::sigset), Thread::SIGAPPLY),
 
-				   (Thread::sigset)
-				  );
+			(Thread::sigset)
+	);
 
-
+	
 	/* a posix thread bound to an object of Thread */
 	void* runThread (void* arg) {
-
+		
 		Thread* t = (Thread*) arg;
 
 		pthread_setcancelstate (PTHREAD_CANCEL_ENABLE, NULL);
@@ -234,15 +212,15 @@ namespace LinBox
 
 		typedef enum {Apply, ApplyTranspose} BBType;
 
-		BBBase (const void* addr = NULL, void* outaddr = NULL,
+		BBBase (const void* addr = NULL, void* outaddr = NULL, 
 			const void* inaddr = NULL, BBType type = Apply) :
 
 			Thread (),
-			bb_addr (addr),
-			bb_outaddr (outaddr),
+		        bb_addr (addr), 
+			bb_outaddr (outaddr), 
 			bb_inaddr (inaddr),
 			bb_type(type){
-
+			
 
 #ifdef DEBUG
 				std::cout << "A blackbox was created with info:\n";
@@ -250,11 +228,11 @@ namespace LinBox
 				std::cout << "\tAddress of thread " << bb_addr << '\n';
 
 				std::cout << "\tAddrees of output " << bb_outaddr << '\n';
-
+			
 				std::cout << "\tAddress of input " << bb_inaddr << '\n';
 
 #endif
-			}
+		}
 
 		virtual ~BBBase () {
 		}
@@ -267,38 +245,37 @@ namespace LinBox
 
 		BBType bb_type;
 
-	};
+        };
 
-	class LessTypeInfo {
+        class LessTypeInfo {
 
-	public:
+		public:
 
-		bool operator() (const std::type_info* info1, const std::type_info* info2) const
-		{
+                bool operator() (const std::type_info* info1, const std::type_info* info2) const {
 
-			return info1 -> before (*info2);
-		}
-	};
+                        return info1 -> before (*info2);
+                }
+        };
 
-	typedef std::vector<BBBase*> BB_list;
+        typedef std::vector<BBBase*> BB_list;
 
-	typedef std::map <const std::type_info*, BB_list, LessTypeInfo> BB_list_list;
+        typedef std::map <const std::type_info*, BB_list, LessTypeInfo> BB_list_list;
 
 	template <class Matrix, class Out, class In>
 
 	class BBThread : public virtual BBBase {
-
-	public:
+		
+		public:
 
 		typedef Subvector<typename Out::iterator> SubOut;
 
 		typedef Subvector<typename In::const_iterator> SubIn;
-
+		
 		BBThread(const Matrix* _m = NULL, Out* _outaddr = NULL,
 			 const In* _inaddr = NULL, BBBase::BBType type= BBBase::Apply) :
-			Thread(), BBBase ((const void*)_m, (void*)_outaddr, (const void*)_inaddr, type) {
+			 Thread(), BBBase ((const void*)_m, (void*)_outaddr, (const void*)_inaddr, type) {
 
-
+			
 #ifdef DEBUG
 				std::cout << "A BB thread was created with properties:\n";
 
@@ -313,8 +290,8 @@ namespace LinBox
 				std::cout << "In address " << bb_inaddr << '\n';
 
 #endif
-			}
-
+		}
+		
 		inline void run (void) {
 
 			const Matrix& matrix = *((const Matrix*)bb_addr);
@@ -327,36 +304,36 @@ namespace LinBox
 				switch (bb_type) {
 
 					// Apply request
-				case BBBase::Apply :
+					case BBBase::Apply :
 
-					matrix. apply ( *(SubOut*)bb_outaddr,
-							*(const In*)bb_inaddr );
+						matrix. apply ( *(SubOut*)bb_outaddr, 
+						   	        *(const In*)bb_inaddr );
 
-					break;
+						break;
 
 					// ApplyTranspose request
-				case BBBase::ApplyTranspose :
+					case BBBase::ApplyTranspose :
 
-					matrix. applyTranspose (*(std::vector<typename Matrix::Field::Element>*)bb_outaddr,
-								*(const SubIn*)bb_inaddr);
-
-					break;
+						matrix. applyTranspose (*(std::vector<typename Matrix::Field::Element>*)bb_outaddr,
+									*(const SubIn*)bb_inaddr);
+					
+						break;
 
 					// othre choices
-				default :
+					default :
 
-					std::cerr << "Unknown command type\n";
+						std::cerr << "Unknown command type\n";
 
-					break;
+						break;
 				}
 
 				Thread::notify_parent (this);
 			}
 		}
-
+		
 		virtual ~BBThread () {
 
-			delete (const Matrix*)bb_addr;
+		delete (const Matrix*)bb_addr;
 
 		}
 	};
@@ -364,14 +341,14 @@ namespace LinBox
 	/*- create posix thread corresponding a BBThread, and run it */
 	template<class Matrix, class Out, class In>
 
-	BBThread<Matrix, Out, In>* createBBThread ( const Matrix* m, Out* out, const In* in) {
-
+		BBThread<Matrix, Out, In>* createBBThread ( const Matrix* m, Out* out, const In* in) {
+		
 		pthread_t id;
-
+		
 		BBThread<Matrix, Out, In>* t = new BBThread<Matrix, Out, In>(m, out, in);
-
+		
 		int ret = pthread_create (&id, &(Thread::attr), runThread, t);
-
+		
 		if (ret != 0) {
 #ifdef DEBUG
 			std::cout << "Number of thread created: " << Thread::count << '\n';
@@ -383,23 +360,13 @@ namespace LinBox
 
 			exit (1);
 		}
-
+		
 		t -> setpid (id);
 
 		t -> setppid (pthread_self ());
-
+		
 		return t;
 	}
-
+	
 }
-#endif //__LINBOX_blackbox_thread_H
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-
+#endif

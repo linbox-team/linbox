@@ -1,15 +1,13 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* lb-maple-utilities.h
  * Copyright (C) 2005 Pascal Giorgi
  *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,16 +15,16 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 
-#ifndef __LINBOX_lb_maple_utilities_H
-#define __LINBOX_lb_maple_utilities_H
+#ifndef __LINBOX_LB_MAPLE_UTILITIES_H
+#define __LINBOX_LB_MAPLE_UTILITIES_H
 
-#include "linbox/linbox-config.h"
+#include <linbox-config.h>
 #include <lb-driver.h>
 extern "C" {
 #include <gmp.h>
@@ -38,7 +36,7 @@ extern "C" {
 #define __LINBOX_GC
 
 
-
+ 
 extern "C" {
 
 #ifdef __LINBOX_MAPLE_GMP_ACCESS
@@ -72,7 +70,7 @@ extern "C" {
 		out<<t;
 		size_t l=out.str().length();
 		char* msg = new char[l];
-		strncpy(msg, out.str().c_str(), l);
+		strncpy(msg, out.str().c_str(), l); 
 		MapleRaiseError(kv, msg);
 		delete msg;
 	}
@@ -87,7 +85,7 @@ extern "C" {
 	/*********************************
 	 * Domain Key Handling           *
 	 * use maple garbage collection  *
-	 *********************************/
+	 *********************************/	
 
 	/*************************************************
 	 * functions for garbage collection and printing *
@@ -98,14 +96,14 @@ extern "C" {
 		MaplePrintf(lb_kv, "Maple Garbage marked a LinBox Domain\n");
 #endif
 	}
-
+	 
 	static void M_DECL DisposeDomainKey   (ALGEB key){
 #ifdef __LB_PRINT_GC
 		MaplePrintf(lb_kv, "Maple Garbage collected a LinBox Domain\n");
 #endif
-#ifdef __LINBOX_GC
-		const DomainKey* k = (const DomainKey*) MapleToPointer(lb_kv, key);
-		try {
+#ifdef __LINBOX_GC	
+		const DomainKey* k = (const DomainKey*) MapleToPointer(lb_kv, key);	
+		try { 
 			LB_GMP_SET();
 			deleteDomain(*k);
 			LB_GMP_RESTORE();
@@ -166,18 +164,18 @@ extern "C" {
 	static void M_DECL MarkBlackboxKey      (ALGEB key){
 #ifdef __LB_PRINT_GC
 		MaplePrintf(lb_kv, "Maple Garbage marked a LinBox Blackbox\n");
-#endif
+#endif		
 	}
 
 	static void M_DECL DisposeBlackboxKey   (ALGEB key){
 #ifdef __LB_PRINT_GC
 		MaplePrintf(lb_kv, "Maple Garbage collected a LinBox Blackbox\n");
 #endif
-#ifdef __LINBOX_GC
+#ifdef __LINBOX_GC	
 		//printf("collect blackbox");
 		const BlackboxKey* k = (const BlackboxKey*) MapleToPointer(lb_kv, key);
 		//printf("  %d\n",*k);
-		try {
+		try { 
 			LB_GMP_SET();
 			deleteBlackbox(*k);
 			LB_GMP_RESTORE();
@@ -197,7 +195,7 @@ extern "C" {
 			catch (lb_runtime_error &t)
 				{lbRaiseError(lb_kv, t);}
 		}
-		else
+		else 
 			writeBlackboxInfo(*k, out);
 		char msg[out.str().length()];
 		strcpy(msg, out.str().c_str());
@@ -252,7 +250,7 @@ extern "C" {
 #ifdef __LB_PRINT_GC
 		MaplePrintf(lb_kv, "Maple Garbage collected a LinBox Vector\n");
 #endif
-#ifdef __LINBOX_GC
+#ifdef __LINBOX_GC	
 		const VectorKey* k = (const VectorKey*) MapleToPointer(lb_kv, key);
 		try {
 			LB_GMP_SET();
@@ -326,7 +324,7 @@ extern "C" {
 #ifdef __LB_PRINT_GC
 		MaplePrintf(lb_kv, "Maple Garbage collected a LinBox Polynomial\n");
 #endif
-#ifdef __LINBOX_GC
+#ifdef __LINBOX_GC		
 		const VectorKey* k = (const VectorKey*) MapleToPointer(lb_kv, key);
 		try {
 			LB_GMP_SET();
@@ -355,7 +353,7 @@ extern "C" {
 	/*******************************************************************
 	 * conversion between PolynomialKey and corresponding Maple object *
 	 *******************************************************************/
-
+		
 	bool IsMaplePolynomialKey(MKernelVector kv, ALGEB k){
 		return (IsMaplePointer(kv, k) && (MaplePointerType(kv, k) == (M_INT)&DisposePolynomialKey));
 	}
@@ -387,20 +385,20 @@ extern "C" {
 	 *************************************************/
 
 	static void M_DECL MarkElementKey      (ALGEB key){
-#ifdef __LB_PRINT_GC
+#ifdef __LB_PRINT_GC	
 		MaplePrintf(lb_kv, "Maple Garbage marked a LinBox Element\n");
 #endif
 	}
 
-	static void M_DECL DisposeElementKey   (ALGEB key){
+	static void M_DECL DisposeElementKey   (ALGEB key){	
 #ifdef __LB_PRINT_GC
 		MaplePrintf(lb_kv, "Maple Garbage collected a LinBox Element\n");
 #endif
-#ifdef __LINBOX_GC
+#ifdef __LINBOX_GC	
 		const EltKey* k = (const EltKey*) MapleToPointer(lb_kv, key);
 		try {
 			LB_GMP_SET();
-			deleteElement(*k);
+			deleteElement(*k);		
 			LB_GMP_RESTORE();
 		}
 		catch (lb_runtime_error &t)
@@ -450,33 +448,33 @@ extern "C" {
 	/*********************************
 	 * Miscleannous functionnalities *
 	 *********************************/
-
+	  
 	/*************************************************************
 	 * Conversion between Maple GMP integers and LinBox integers *
 	 *************************************************************/
 
 	void GMPMapleToLinBox(LinBox::integer& x, MKernelVector kv, ALGEB p){
 #ifdef  __LINBOX_MAPLE_GMP_ACCESS
-		mpz_ptr ptr = MapleToGMPInteger(kv, p);
-		//LB_GMP_SET();
+		mpz_ptr ptr = MapleToGMPInteger(kv, p);	
+		//LB_GMP_SET();		
 		mpz_set(LinBox::SpyInteger::get_mpz(x), ptr);
 		//LB_GMP_RESTORE();
-
+	
 #else
  		// convert integer to string in order to convert to gmp integer
 		ALGEB f  = EvalMapleStatement(kv,"proc(n) return convert(n,string);end proc;");
 		ALGEB pp = EvalMapleProc(kv, f, 1, p);
-		char *ptr = MapleToString(kv, pp);
+		char *ptr = MapleToString(kv, pp);		
 		mpz_set_str(LinBox::SpyInteger::get_mpz(x), ptr, 10);
 #endif
 	}
 
 
 
-	ALGEB LinBoxToGMPMaple(MKernelVector kv, const LinBox::integer &p){
+	ALGEB LinBoxToGMPMaple(MKernelVector kv, const LinBox::integer &p){	
 #ifdef __LINBOX_MAPLE_GMP_ACCESS
 		return GMPIntegerToMaple(kv, LinBox::SpyInteger::get_mpz(p));
-#else
+#else	
 		std::string tp(p);
 		char *ptr = new char[tp.size()+1];
 		std::strcpy(ptr, tp.c_str());
@@ -495,27 +493,27 @@ extern "C" {
 	inline size_t idx_fortran (size_t i, size_t j, size_t stride) {  return j*stride+i;}
 	inline size_t idx_c      (size_t i, size_t j, size_t stride) {  return i*stride+j;}
 
-
+	
 	void DenseMatrixToBuffer (MKernelVector kv, ALGEB A, std::ostream& buffer, size_t m, size_t n, RTableSettings &setting) {
-
-		//RTableData tmp;
-
+		 
+		//RTableData tmp;	
+		
 		buffer<<m<<" "<<n;
 		M_INT index[2];
 		if (setting.data_type == RTABLE_INTEGER8){buffer<<"\n";
 			INTEGER8 *data = (INTEGER8*) RTableDataBlock(kv,A);
-			if (setting.order == RTABLE_FORTRAN)
+			if (setting.order == RTABLE_FORTRAN)			
 				for (size_t i=0;i<m; ++i)
 					for (size_t j=0;j<n;++j)
 						buffer<<data[idx_fortran(i,j,m)]<<"\n";
 			else
 				for (size_t i=0;i<m; ++i)
 					for (size_t j=0;j<n;++j)
-						buffer<<data[idx_c(i,j,n)]<<"\n";
+						buffer<<data[idx_c(i,j,n)]<<"\n";											
 		}
 		if (setting.data_type == RTABLE_INTEGER16){buffer<<"\n";
 			INTEGER16 *data = (INTEGER16*) RTableDataBlock(kv,A);
-			if (setting.order == RTABLE_FORTRAN)
+			if (setting.order == RTABLE_FORTRAN)			
 				for (size_t i=0;i<m; ++i)
 					for (size_t j=0;j<n;++j)
 						buffer<<data[idx_fortran(i,j,m)]<<"\n";
@@ -526,19 +524,18 @@ extern "C" {
 		}
 		if (setting.data_type == RTABLE_INTEGER32){buffer<<"\n";
 			INTEGER32 *data = (INTEGER32*) RTableDataBlock(kv,A);
-			if (setting.order == RTABLE_FORTRAN)
+			if (setting.order == RTABLE_FORTRAN)			
 				for (size_t i=0;i<m; ++i)
 					for (size_t j=0;j<n;++j)
 						buffer<<data[idx_fortran(i,j,m)]<<"\n";
 			else
 				for (size_t i=0;i<m; ++i)
-					for (size_t j=0;j<n;++j){
+					for (size_t j=0;j<n;++j)
 						buffer<<data[idx_c(i,j,n)]<<"\n";
-					}
 		}
 		if (setting.data_type == RTABLE_INTEGER64){buffer<<"\n";
 			INTEGER64 *data = (INTEGER64*) RTableDataBlock(kv,A);
-			if (setting.order == RTABLE_FORTRAN)
+			if (setting.order == RTABLE_FORTRAN)			
 				for (size_t i=0;i<m; ++i)
 					for (size_t j=0;j<n;++j)
 						buffer<<data[idx_fortran(i,j,m)]<<"\n";
@@ -549,7 +546,7 @@ extern "C" {
 		}
 		if (setting.data_type == RTABLE_FLOAT32){buffer<<"\n";
 			FLOAT32 *data = (FLOAT32*) RTableDataBlock(kv,A);
-			if (setting.order == RTABLE_FORTRAN)
+			if (setting.order == RTABLE_FORTRAN)			
 				for (size_t i=0;i<m; ++i)
 					for (size_t j=0;j<n;++j)
 						buffer<<data[idx_fortran(i,j,m)]<<"\n";
@@ -560,7 +557,7 @@ extern "C" {
 		}
 		if (setting.data_type == RTABLE_FLOAT64){buffer<<"\n";
 			FLOAT64 *data = (FLOAT64*) RTableDataBlock(kv,A);
-			if (setting.order == RTABLE_FORTRAN)
+			if (setting.order == RTABLE_FORTRAN)			
 				for (size_t i=0;i<m; ++i)
 					for (size_t j=0;j<n;++j)
 						buffer<<data[idx_fortran(i,j,m)]<<"\n";
@@ -569,13 +566,12 @@ extern "C" {
 					for (size_t j=0;j<n;++j)
 						buffer<<data[idx_c(i,j,n)]<<"\n";
 		}
-		if (setting.data_type == RTABLE_DAG){	buffer<<" \n";
-			RTableData tmp;
+		if (setting.data_type == RTABLE_DAG){	buffer<<" M\n";		
+			RTableData tmp;	
 			LinBox::integer ibuf;
 			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
 				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
-				//buffer<<i<<" "<<j<<" ";
-					tmp=RTableSelect(kv, A, index);
+					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);				
 					GMPMapleToLinBox(ibuf, kv,tmp.dag);
 					buffer<<ibuf<<"\n";
 				}
@@ -585,88 +581,84 @@ extern "C" {
 
 		if ((setting.data_type == RTABLE_COMPLEX)|| (setting.data_type == RTABLE_CXDAG))
 			MapleRaiseError(kv, "data type format in the matrix is not yet recognized by LinBox ");
-
+		
 	}
 
 	void SparseMatrixToBuffer (MKernelVector kv, ALGEB A, std::ostream &buffer, size_t m, size_t n, RTableSettings &setting) {
-
+	
+		RTableData tmp;	
+		
 		buffer<<m<<" "<<n<<" M \n";
+		M_INT index[2];
+		if (setting.data_type == RTABLE_INTEGER8){
+			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
+				for (size_t j=1;j<n+1;++j){  
+					index[1]=(M_INT)j;
+					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
+					buffer<<tmp.int8<<"\n";
+				}
+			}	
+		}
+		if (setting.data_type == RTABLE_INTEGER16){
+			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
+				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
+					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
+					buffer<<tmp.int16<<"\n";
+				}
+			}
+		}
+		if (setting.data_type == RTABLE_INTEGER32){
+			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
+				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
+					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
+					buffer<<tmp.int32<<"\n";					
+				}				
+			}
+		}
+		if (setting.data_type == RTABLE_INTEGER64){
+			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
+				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
+					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
+					buffer<<tmp.int64<<"\n";
+				}
+			}
+		}
+		if (setting.data_type == RTABLE_FLOAT32){
+			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
+				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
+					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
+					buffer<<tmp.float32<<"\n";
+				}
+			}
+		}
+		if (setting.data_type == RTABLE_FLOAT64){
 
-		// special case for DAG data type
+			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
+				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
+					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
+					buffer<<tmp.float64<<"\n";
+				}
+			}
+		}
 		if (setting.data_type == RTABLE_DAG){
 			LinBox::integer ibuf;
-			M_INT index[2];
 			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
-				for (size_t j=1;j<n+1;++j){
-					index[1]=(M_INT)j;
-					RTableData tmp=RTableSelect(kv, A, index);
+				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
+					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);				
 					GMPMapleToLinBox(ibuf, kv,tmp.dag);
-					if (ibuf != 0)
-						buffer<<i<<" "<<j<<" "<<ibuf<<"\n";
+					buffer<<ibuf<<"\n";
 				}
 			}
 		}
-		else {
-			M_INT numelem;
-			NAG_INT *row, *col;
-			row = RTableSparseIndexRow(kv, A, 1);
-			col = RTableSparseIndexRow(kv, A, 2);
-			numelem = RTableNumElements(kv,A);
-
-			if (setting.data_type == RTABLE_INTEGER8){
-				INTEGER8 *data = (INTEGER8*) RTableDataBlock(kv,A);
-				for (M_INT i=0;i<numelem;++i){
-					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
-				}
-			}
-			if (setting.data_type == RTABLE_INTEGER16){
-				INTEGER16 *data = (INTEGER16*) RTableDataBlock(kv,A);
-				for (M_INT i=0;i<numelem;++i){
-					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
-				}
-			}
-			if (setting.data_type == RTABLE_INTEGER32){
-				INTEGER32 *data = (INTEGER32*) RTableDataBlock(kv,A);
-				for (M_INT i=0;i<numelem;++i){
-					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
-				}
-			}
-			if (setting.data_type == RTABLE_INTEGER64){
-				INTEGER64 *data = (INTEGER64*) RTableDataBlock(kv,A);
-				for (M_INT i=0;i<numelem;++i){
-					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
-				}
-			}
-			if (setting.data_type == RTABLE_FLOAT32){
-				FLOAT32 *data = (FLOAT32*) RTableDataBlock(kv,A);
-				for (M_INT i=0;i<numelem;++i){
-					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
-				}
-			}
-			if (setting.data_type == RTABLE_FLOAT64){
-				FLOAT64 *data = (FLOAT64*) RTableDataBlock(kv,A);
-				for (M_INT i=0;i<numelem;++i){
-					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
-				}
-			}
-			if ((setting.data_type == RTABLE_COMPLEX)|| (setting.data_type == RTABLE_CXDAG))
-				MapleRaiseError(kv, "data type format in the matrix is not yet recognized by LinBox ");
-		}
+		if ((setting.data_type == RTABLE_COMPLEX)|| (setting.data_type == RTABLE_CXDAG))
+			MapleRaiseError(kv, "data type format in the matrix is not yet recognized by LinBox ");
+		
 		buffer<<" 0 0 0 \n";
 	}
-
+	
 
 } // end of extern "C"
 
 
 
 #endif
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

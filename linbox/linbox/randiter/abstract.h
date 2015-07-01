@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/randiter/abstract.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2002 Bradford Hovinen
@@ -5,13 +7,10 @@
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,38 +18,38 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_randiter_abstract_H
-#define __LINBOX_randiter_abstract_H
+#ifndef __RANDITER_ABSTRACT_H
+#define __RANDITER_ABSTRACT_H
 
 #include <iostream>
-#include "linbox/integer.h"
+#include <linbox/integer.h>
 
-namespace LinBox
-{
+namespace LinBox 
+{ 
 	// forward declarations
 	class FieldAbstract;
 	class ElementAbstract;
 
 	/** Random field element generator.
-	 * This encapsulated class is a generator of random field elements for
+	 * This encapsulated class is a generator of random field elements for 
 	 * the encapsulating field.
 	 * It is required to contain constructors from a field object and
-	 * two integers.  The first integer being a cardinality of a set to
-	 * draw the random elements from, and the second being a seed for the
+	 * two integers.  The first integer being a cardinality of a set to 
+	 * draw the random elements from, and the second being a seed for the 
 	 * random number generator.
 	 * It is also required to contain a copy constructor, a destructor, and
-	 * random() which acts on a reference to a field element.
-	 * The random value is written to the argument
+	 * an operator () which acts on a reference to a field element.  In this 
+	 * operator (), the random element is placed into the input field element 
 	 * and also returned as a reference.
-	 * @see \subpage randomFEGW Randiter Field Element Generator wrapper
 	 */
-	class RandIterAbstract {
-	public:
+	class RandIterAbstract
+	{
+	    public:
 
 		typedef ElementAbstract Element;
 
@@ -64,14 +63,14 @@ namespace LinBox
 		 * A seed of zero means to use some arbitrary seed for the generator.
 		 * Purely virtual.
 		 * @param F LinBox field archetype object in which to do arithmetic
-		 * @param size constant integer reference of sample size from which to
+		 * @param size constant integer reference of sample size from which to 
 		 *             sample (default = 0)
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		virtual RandIterAbstract *construct (const FieldAbstract &F,
-						     const integer &size = 0,
-						     const integer &seed = 0) const = 0;
+		virtual RandIterAbstract *construct (const FieldAbstract &F, 
+						      const integer &size = 0, 
+						      const integer &seed = 0) const = 0;
 
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
@@ -89,7 +88,7 @@ namespace LinBox
 		virtual RandIterAbstract &operator= (const RandIterAbstract &x) = 0;
 
 		/** Destructor.
-		*/
+		 */
 		virtual ~RandIterAbstract (void) {}
 
 		/** Random field element creator.
@@ -98,7 +97,7 @@ namespace LinBox
 		 */
 		virtual Element &random (Element &a) const = 0;
 
-	protected:
+	    protected:
 
 		/** Default constructor
 		 * Required by derived classes, but protected because this class should
@@ -110,14 +109,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __LINBOX_randiter_abstract_H
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-
+#endif // __RANDITER_ABSTRACT_H

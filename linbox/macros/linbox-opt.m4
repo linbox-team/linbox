@@ -1,46 +1,117 @@
-dnl Copyright (c) the LinBox group
-dnl This file is part of LinBox
-
- dnl ========LICENCE========
- dnl This file is part of the library LinBox.
- dnl
- dnl LinBox is free software: you can redistribute it and/or modify
- dnl it under the terms of the  GNU Lesser General Public
- dnl License as published by the Free Software Foundation; either
- dnl version 2.1 of the License, or (at your option) any later version.
- dnl
- dnl This library is distributed in the hope that it will be useful,
- dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
- dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- dnl Lesser General Public License for more details.
- dnl
- dnl You should have received a copy of the GNU Lesser General Public
- dnl License along with this library; if not, write to the Free Software
- dnl Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- dnl ========LICENCE========
- dnl
-
-
-
 AC_DEFUN([LB_OPT],
 [
 AC_MSG_CHECKING([whether to use run time optimization])
 
-AC_ARG_ENABLE(optimization,
-[AC_HELP_STRING([--enable-optimization], [Enable run time optimization in LinBox code (only Strassen matrix threshold for now)])],
+AC_ARG_ENABLE(optimization, [--enable-optimization  Enable run time optimization in LinBox code],
 [
-	dnl AC_DEFINE_UNQUOTED(WINOTHRESHOLD, __FFLASFFPACK_WINOTHRESHOLD) ?
+AC_MSG_RESULT(yes)
 
-	WINO="`grep "define.*__FFLASFFPACK_WINOTHRESHOLD" ${FFLAS_FFPACK_LOC}/include/fflas-ffpack/fflas-ffpack-optimise.h  | awk '{print $NF}'`"
-	AS_IF([ test -z "{WINO}"],[
-		AC_MSG_RESULT("fflas-ffpack was not optimised. Defaulting")
-		WINO="`grep "define.*__FFLASFFPACK_WINOTHRESHOLD" ${FFLAS_FFPACK_LOC}/include/fflas-ffpack/fflas-ffpack-config.h  | awk '{print $NF}'`"
+	
+BACKUP_CXXFLAGS=${CXXFLAGS}
+BACKUP_LIBS=${LIBS}
+	
+if test "x$HAVE_BLAS" = "xyes" ;then
+AC_MSG_CHECKING([best threshold for Strassen-Winograd matrix multiplication])
+
+
+CXXFLAGS="${BACKUP_CXXFLAGS} -I`pwd` ${BLAS_CFLAGS} ${GMP_CFLAGS}  ${GIVARO_CFLAGS} ${CBLAS_FLAG}" 
+LIBS="${BACKUP_LIBS} ${BLAS_LIBS} ${GMP_LIBS}" 
+
+
+echo   " #define __LINBOX_INT8  $LINBOX_INT8  	 
+	 #define __LINBOX_INT16 $LINBOX_INT16 	 
+	 #define __LINBOX_INT32 $LINBOX_INT32 	 
+	 #define __LINBOX_INT64 $LINBOX_INT64 	 
+" > linbox-config.h 
+
+
+AC_TRY_RUN([	#define LinBoxSrcOnly
+		#include <iostream>
+		#define __LINBOX_CONFIGURATION
+		#include <linbox/config-blas.h>
+		#include <linbox/field/modular-double.h>
+		#include <linbox/fflas/fflas.h>
+		#include <linbox/util/timer.h>
+
+		using namespace LinBox;
+		int main () {  
+  
+		  Modular<double> F(17);
+		  size_t n=300, nmax=5000, prec=512, nbest=0, count=0;
+		  LinBox::Timer chrono;
+		  double basetime, time;
+		  bool bound=false;
+  
+		  double *A, *C;	 
+		  A = new double[nmax*nmax];
+		  C = new double[nmax*nmax];
+		  for (size_t i=0; i<nmax*nmax;++i){
+		    A[i]=2.;		  
+	  	  }
+    
+		  do {    
+		    chrono.start();	
+		    FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+				 n, n, n, 1., A, n, A, n, 0., C, n, 0);
+		    chrono.stop();
+		std::cout << std::endl << "fgemm " << n << "x" << n << ": " << chrono.usertime() << " s, " << (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops" << std::endl;
+		    basetime= chrono.usertime();
+		    chrono.clear();
+		    chrono.start();	
+		    FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+				 n, n, n, 1., A, n, A, n, 0., C, n, 1);
+		    chrono.stop();
+		std::cout << "1Wino " << n << "x" << n << ": " << chrono.usertime() << " s, " << (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops" << std::endl;
+		    time= chrono.usertime();
+        
+		    if (basetime > time ){ 
+		      count++;
+		      if (count > 1){	
+	    		 nbest=n;
+		         bound=true;
+		         prec=prec>>1;
+		         n-=prec;     
+		      }
+		    }
+		    else{
+		      count=0;	    
+		      if (bound)
+			prec=prec>>1;
+		      n+=prec;
+		    }
+		  } while ((prec > 64 ) && (n < nmax));
+
+		  std::ofstream out("WinoThreshold");
+		  out<<nbest;
+		  out.close();
+
+		  delete[] A;		 
+		  delete[] C;  
+  
+		  return 0; 
+		}
+	],[	
+	AC_MSG_RESULT(done)
+	WT="`cat WinoThreshold`"
+	if test "$WT" != "0"; then 
+	 AC_DEFINE(STRASSEN_OPTIMIZATION,,[Define if optimized  threshold for Strassen-Winograd matrix multiplication is available])
+	 AC_DEFINE_UNQUOTED(WINOTHRESHOLD, $WT, [optimized threshold for switching to strassen matrix multiplication])
+	fi
 	],[
-	AC_MSG_RESULT(OK)
+	AC_MSG_RESULT(problem)
+	strassen_opti="no"
+	break
+	],[
+	AC_MSG_RESULT(cross compilation)
+	strassen_opti="no"
+	break
+	\rm -f linbox-config,h 2>&1 > /dev/null
 	])
-	AC_DEFINE_UNQUOTED(WINOTHRESHOLD, $WINO, [optimized threshold for switching to strassen matrix multiplication])
 
-],
-[AC_MSG_RESULT(no)])
+fi;
+],[
+AC_MSG_RESULT(no)
+\rm -r linbox-config.h  2>&1 > /dev/null
 ])
 
+])

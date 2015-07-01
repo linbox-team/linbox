@@ -1,102 +1,85 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/field/modular.h
- * Copyright(C) LinBox
- * Written by
- *    Pierrick Vignard
+ * Written by 
+ *    Pierrick Vignard 
  *    Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
  *
  *
- * 
- * ========LICENCE========
- * This file is part of the library LinBox.
- * 
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * See COPYING for license information.
  */
 
-#ifndef __LINBOX_poweroftwomodular_H
-#define __LINBOX_poweroftwomodular_H
+#ifndef __POWEROFTWOMODULAR_H
+#define __POWEROFTWOMODULAR_H
 
 #include <iostream>
 
 #include "linbox/integer.h"
 #include "linbox/ring/gcd32.h"
 #include "linbox/ring/gcd64.h"
-#include "linbox/randiter/zring.h"
+#include "linbox/randiter/unparametric.h"
 
 // Namespace in which all LinBox code resides
-namespace LinBox
-{
-
+namespace LinBox 
+{ 
+	
 	/** \brief Ring of elements modulo some power of two
-	  \ingroup ring
+	\ingroup ring
 	 *
 	 * @param element Element type, e.g. long or integer
 	 * @param Intermediate Type to use for intermediate computations. This
 	 *                     should be a data type that can support integers
 	 *                     twice the length of the maximal modulus used
 	 */
-	template <class Ints> class PowerOfTwoGivaro::Modular
+  template <class Ints> class PowerOfTwoModular 
 	{
 	public:
-
+		
 		/** Element type
-		*/
+		 */
 		typedef Ints Element;
 
 		/** Random iterator generator type.
 		 * It must meet the common object interface of random element generators
 		 * as given in the the archetype RandIterArchetype.
 		 */
-		struct RandIter{
-			typedef Ints Element;
+	        struct RandIter{
+		  typedef Ints Element;
 
-			RandIter ( const PowerOfTwoGivaro::Modular<Ints>& F,
-				   const integer& size = 0, const integer& seed = 0){
-				if (_seed == integer(0)) _seed = integer(time(NULL));
-				srand(static_cast<long>(_seed));
+		  RandIter ( const PowerOfTwoModular<Ints>& F, 
+			     const integer& size = 0, const integer& seed = 0){
+		    if (_seed == integer(0)) _seed = integer(time(NULL));
+		    srand(static_cast<long>(_seed));
+			
+		  }
 
-			}
+		  RandIter ( const RandIter& R ):_seed(R._seed){  
+		    
+		  }
 
-			RandIter ( const RandIter& R ) :
-				_seed(R._seed)
-			{ }
+		  RandIter ( void ):_seed(0){  
+		    
+		  }
 
-			RandIter ( void ) :
-				_seed(0)
-			{ }
-
-			Element& random (Element& x) const
-			{
-				return x=rand();
-			}
+		Element& random (Element& x) const
+		{
+		  return x=rand();
+		}
 		protected:
-			integer _seed;
+		  integer _seed;
 		};
 
 		/** @name Object Management
-		*/
+		 */
 		//@{
-
+ 
 		/** Default constructor.
-		*/
-		PowerOfTwoGivaro::Modular (void) {
+		 */
+		PowerOfTwoModular (void) {
 			_poweroftwo=sizeof(Ints)<<3;
 		}
 
-
+ 
 		/** Conversion of field base element to a template class T.
 		 * This function assumes the output field base element x has already been
 		 * constructed, but that it is not already initialized.
@@ -118,9 +101,9 @@ namespace LinBox
 		 * @param y integer.
 		 */
 		Element &init (Element &x, const Ints &y = 0) const
-		{
+		{ 
 			return x=y;
-		}
+		} 
 
 
 		/** Assignment of one field base element to another.
@@ -185,7 +168,7 @@ namespace LinBox
 		 */
 		bool isZero (const Element &x) const
 		{ return x == 0; }
-
+ 
 		/** One equality.
 		 * Test if field base element is equal to one.
 		 * This function assumes the field base element has already been
@@ -196,38 +179,31 @@ namespace LinBox
 		bool isOne (const Element &x) const
 		{ return x == 1; }
 
-		/*! isUnit.
-		 * @param x
-		 */
+		
 		bool isUnit (const Element &x) const
-		{ return x&1UL; }
+		  { return x&1UL; }
 
-		/*! isZeroDivisor.
-		 * @param x
-		 */
 		bool isZeroDivisor ( const Element &x ) const
-		{ return !(x&1UL); }
+		  { return !(x&1UL); }
 
-		/** Gcd with 2^_poweroftwo .
-		 * Valid for Ints up to 32 bits
+		/** Gcd with 2^_poweroftwo *
+		 * Valid for Ints up to 32 bits *
 		 * Specialization is required for bigger Ints
-		 * @param x
-		 * @param y
 		 */
 		Element &gcd_poweroftwo (Element &x,const Element &y) const
-		{
-			return x=GCD2E32(y);
+		{ 
+		  return x=GCD2E32(y);
 		}
 
 		/** Does x divide y */
 		bool doesdivide (const Element &x, const Element &y) const
-		{
+		{ 
 			Element tmp1,tmp2;
 			gcd_poweroftwo(tmp1,x),gcd_poweroftwo(tmp2,y);
 			return tmp1<=tmp2;
 		}
 
-		/** Power of two in x
+		/** Power of two in x 
 		 * Input Element x = 2^n*y where y is odd
 		 * Output n
 		 */
@@ -238,20 +214,15 @@ namespace LinBox
 			//printf("tmp = %d\n",tmp);
 			int n=0;
 			while(tmp^1)
-			{
-				tmp>>=1;
-				++n;
-				//printf("tmp = %d et n = %d\n",tmp,n);
-			}
+				{
+					tmp>>=1;
+					++n;
+					//printf("tmp = %d et n = %d\n",tmp,n);
+				}
 			return n;
-
+					
 		}
 
-		/*! bezout.
-		 * @param x,y
-		 * @param gcd
-		 * @param u,v
-		 */
 		Element &bezout(const Element &x, const Element &y, Element &gcd, Element &u, Element &v) const
 		{
 			Element v1,v2,v3,t1,t2,t3,q;
@@ -262,18 +233,18 @@ namespace LinBox
 			v2=1;
 			v3=y;
 			while(v3!=0)
-			{
-				q=gcd/v3;
-				t1=u-q*v1;
-				t2=v-q*v2;
-				t3=gcd-q*v3;
-				u=v1;
-				v=v2;
-				gcd=v3;
-				v1=t1;
-				v2=t2;
-				v3=t3;
-			}
+				{
+					q=gcd/v3;
+					t1=u-q*v1;
+					t2=v-q*v2;
+					t3=gcd-q*v3;
+					u=v1;
+					v=v2;
+					gcd=v3;
+					v1=t1;
+					v2=t2;
+					v3=t3;
+				}
 			return gcd;
 		}
 
@@ -286,7 +257,7 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		std::ostream &write (std::ostream &os) const
+		std::ostream &write (std::ostream &os) const 
 		{ return os << "integers mod 2^" << _poweroftwo; }
 
 		/** Read field.
@@ -304,7 +275,7 @@ namespace LinBox
 		 */
 		std::ostream &write (std::ostream &os, const Element &x) const
 		{ return os << x; }
-
+ 
 		/** Read field base element.
 		 * This function assumes the field base element has already been
 		 * constructed and initialized.
@@ -319,7 +290,7 @@ namespace LinBox
 
 
 
-		//@}
+		//@}  
 
 		/** @name Arithmetic Operations
 		 * x <- y op z; x <- op y
@@ -342,7 +313,7 @@ namespace LinBox
 		{
 			return x = y + z;
 		}
-
+ 
 		/** Subtraction.
 		 * x = y - z
 		 * This function assumes all the field base elements have already been
@@ -353,10 +324,10 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &sub (Element &x, const Element &y, const Element &z) const
-		{
+		{ 
 			return x = y - z;
 		}
-
+ 
 		/** Multiplication.
 		 * x = y * z
 		 * This function assumes all the field base elements have already been
@@ -368,7 +339,7 @@ namespace LinBox
 		 */
 		Element &mul (Element &x, const Element &y, const Element &z) const
 		{ return x = (y * z); }
-
+ 
 		/** Division.
 		 * x = y / z
 		 * This function assumes all the field base elements have already been
@@ -380,7 +351,7 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &div (Element &x, const Element &y, const Element &z) const
-		{
+		{ 
 			int n=poweroftwoinx(z);
 			Element tmp;
 			inv(tmp, z>>n );
@@ -398,7 +369,7 @@ namespace LinBox
 		Element &neg (Element &x, const Element &y) const
 		{ return x = (~y)+1; }
 		//{ return x = 0-y; }
-
+ 
 		/** Multiplicative Inverse.
 		 * x = 1 / y
 		 * This function assumes both field base elements have already been
@@ -414,10 +385,10 @@ namespace LinBox
 			neg(v,y>>1);
 			u=(y+(v<<2));
 			for(unsigned int puiss=2;puiss<_poweroftwo;puiss<<=1)
-			{
-				v*=v;
-				u*=(u*y+(v<<(puiss+1)));
-			}
+				{
+					v*=v;
+					u*=(u*y+(v<<(puiss+1)));
+				}
 			return x=u;
 		}
 
@@ -442,7 +413,7 @@ namespace LinBox
 
 		/** Natural AXPY.
 		 * r  = a * x + y
-		 * This function assumes all field elements have already been
+		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
 		 * @return reference to r.
 		 * @param  r field element (reference returned).
@@ -450,16 +421,16 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		Element &axpy (Element &r,
-			       const Element &a,
-			       const Element &x,
+		Element &axpy (Element &r, 
+			       const Element &a, 
+			       const Element &x, 
 			       const Element &y) const
-		{
+		{ 
 			return r = (a * x + y);
 		}
 
 		//@} Arithmetic Operations
-
+ 
 		/** @name Inplace Arithmetic Operations
 		 * x <- x op y; x <- op x
 		 */
@@ -474,10 +445,10 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &addin (Element &x, const Element &y) const
-		{
+		{ 
 			return x += y;
 		}
-
+ 
 		/** Inplace Subtraction.
 		 * x -= y
 		 * This function assumes both field base elements have already been
@@ -490,7 +461,7 @@ namespace LinBox
 		{
 			return x -= y;
 		}
-
+ 
 		/** Inplace Multiplication.
 		 * x *= y
 		 * This function assumes both field base elements have already been
@@ -503,7 +474,7 @@ namespace LinBox
 		{
 			return x*=y;
 		}
-
+ 
 		/** Inplace Division.
 		 * x /= y
 		 * This function assumes both field base elements have already been
@@ -518,7 +489,7 @@ namespace LinBox
 			inv (temp, y);
 			return mulin (x, temp);
 		}
-
+ 
 		/** Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
 		 * This function assumes the field base element has already been
@@ -530,7 +501,7 @@ namespace LinBox
 		{
 			return x = (~x)+1;
 		}
-
+ 
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
 		 * This function assumes the field base elementhas already been
@@ -543,7 +514,7 @@ namespace LinBox
 
 		/** Inplace AXPY.
 		 * r  += a * x
-		 * This function assumes all field elements have already been
+		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
 		 * Purely virtual
 		 * @return reference to r.
@@ -552,7 +523,7 @@ namespace LinBox
 		 * @param  x field element.
 		 */
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
-		{
+		{ 
 			return r = (r + a * x);
 		}
 
@@ -561,37 +532,25 @@ namespace LinBox
 
 		//@}
 
-protected:
+	protected:
 
 		/// Private (non-static) element for modulus
 		Element _poweroftwo;
 
-}; // class PowerOfTwoGivaro::Modular
-
-#if 0
-/* Specialization of gcd_poweroftwo for Int64
-*/
-template<>
-PowerOfTwoGivaro::Modular<int64_t>::Element&
-PowerOfTwoGivaro::Modular<int64_t>::gcd_poweroftwo (Element &x,const Element &y) const
-{
-	return x=GCD2E64(y);
-}
-#endif
+	}; // class PowerOfTwoModular
+	
+	/* Specialization of gcd_poweroftwo for Int64
+ 	 */
+/* 	template<> */
+/* 	  PowerOfTwoModular<int64>::Element&  */
+/* 	  PowerOfTwoModular<int64>::gcd_poweroftwo (Element &x,const Element &y) const */
+/* 		{  */
+/* 		  return x=GCD2E64(y); */
+/* 		}  */
 
 } // namespace LinBox
 
 // #include "linbox/field/modular.inl"
-// 
+// #include "linbox/randiter/modular.h"
 
-#endif // __LINBOX_poweroftwomodular_H
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-
+#endif // __POWEROFTWOMODULAR_H

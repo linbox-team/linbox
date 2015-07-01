@@ -1,33 +1,12 @@
-dnl Check for LIDIA
-dnl Pascal Giorgi, 2001-12-10
-dnl Modified by Pascal Giorgi, 2003-12-03
-dnl Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
-dnl Stolen from Chris Lahey       99-2-5
-dnl stolen from Manish Singh again
-dnl stolen back from Frank Belew
-dnl stolen from Manish Singh
-dnl Shamelessly stolen from Owen Taylor
-dnl Copyright (c) the LinBox group
-dnl This file is part of LinBox
-
- dnl ========LICENCE========
- dnl This file is part of the library LinBox.
- dnl 
- dnl LinBox is free software: you can redistribute it and/or modify
- dnl it under the terms of the  GNU Lesser General Public
- dnl License as published by the Free Software Foundation; either
- dnl version 2.1 of the License, or (at your option) any later version.
- dnl 
- dnl This library is distributed in the hope that it will be useful,
- dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
- dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- dnl Lesser General Public License for more details.
- dnl 
- dnl You should have received a copy of the GNU Lesser General Public
- dnl License along with this library; if not, write to the Free Software
- dnl Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- dnl ========LICENCE========
- dnl
+# Check for LIDIA
+# Pascal Giorgi, 2001-12-10
+# Modified by Pascal Giorgi, 2003-12-03
+# Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
+# Stolen from Chris Lahey       99-2-5
+# stolen from Manish Singh again
+# stolen back from Frank Belew
+# stolen from Manish Singh
+# Shamelessly stolen from Owen Taylor
 
 dnl LB_CHECK_LIDIA ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
@@ -37,14 +16,13 @@ AC_DEFUN([LB_CHECK_LIDIA],
 [
 
 AC_ARG_WITH(lidia,
-[AC_HELP_STRING([--with-lidia=<path>|yes|no], [Use Lidia library. If argument is no, you do not
-                             have the library installed on your machine (set
-			     as default). If argument is yes or <empty> that
-			     means the library is reachable with the standard
-			     search path (/usr or /usr/local). Otherwise you
-			     give the <path> to the directory which contain the
-			     library.
-	     ])],
+	    [  --with-lidia=<path>|yes|no 
+					   Use Lidia library. 
+					   If argument is no, you do not have the library installed on your machine (set as default).
+					   If argument is yes or <empty> that means the library is reachable with the standard
+					   search path (/usr or /usr/local).
+	 				   Otherwise you give the <path> to the directory which contain the library. 
+	     ],
 	     [if test "$withval" = yes ; then
 			LIDIA_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	      elif test "$withval" != no ; then
@@ -64,18 +42,18 @@ if test -n "$LIDIA_HOME_PATH" ; then
 AC_MSG_CHECKING(for LIDIA >= $min_lidia_version)
 fi
 
-for LIDIA_HOME in ${LIDIA_HOME_PATH}
- do
+for LIDIA_HOME in ${LIDIA_HOME_PATH} 
+ do	
 if test -r "$LIDIA_HOME/include/LiDIA/LiDIA.h"; then
 	if test "x$LIDIA_HOME" != "x/usr" -a "x$LIDIA_HOME" != "x/usr/local"; then
 		LIDIA_CFLAGS="-I${LIDIA_HOME}/include"
 		LIDIA_LIBS="-L${LIDIA_HOME}/lib -lLiDIA"
 	else
 		LIDIA_CFLAGS=
-		LIDIA_LIBS="-lLiDIA"
-	fi
-	CXXFLAGS="${BACKUP_CXXFLAGS} ${LIDIA_CFLAGS} ${FFLAS_FFPACK_CFLAGS}"
-	LIBS="${BACKUP_LIBS} ${LIDIA_LIBS} ${FFLAS_FFPACK_LIBS}"
+		LIDIA_LIBS="-lLiDIA"		
+	fi	
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${LIDIA_CFLAGS} ${GMP_CFLAGS}" 
+	LIBS="${BACKUP_LIBS} ${LIDIA_LIBS} ${GMP_LIBS}"
 
 	AC_TRY_LINK(
 	[#include <LiDIA/bigint.h>],
@@ -87,28 +65,28 @@ if test -r "$LIDIA_HOME/include/LiDIA/LiDIA.h"; then
 	],[
 	lidia_found="yes"
 	break
-	],[
-	lidia_problem="$problem $LIDIA_HOME"
+	],[	
+	lidia_problem="$problem $LIDIA_HOME"	
 	unset LIDIA_CFLAGS
 	unset LIDIA_LIBS
 	],[
 	lidia_found="yes"
 	lidia_cross="yes"
 	break
-	])
+	])	
 	],
 	[
 	lidia_found="no"
 	lidia_checked="$checked $LIDIA_HOME"
 	unset LIDIA_CFLAGS
-	unset LIDIA_LIBS
+	unset LIDIA_LIBS	
 	])
 else
 	lidia_found="no"
 fi
 done
 
-if test "x$lidia_found" = "xyes" ; then
+if test "x$lidia_found" = "xyes" ; then		
 	AC_SUBST(LIDIA_CFLAGS)
 	AC_SUBST(LIDIA_LIBS)
 	AC_DEFINE(HAVE_LIDIA,1,[Define if LIDIA is installed])
@@ -120,15 +98,15 @@ if test "x$lidia_found" = "xyes" ; then
 		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
 		echo "whether your LIDIA version is new enough. I am assuming it is."
 	fi
-	ifelse([$2], , :, [$2])
+	ifelse([$2], , :, [$2])	
 elif test -n "$lidia_problem"; then
 	AC_MSG_RESULT(problem)
 	echo "Sorry, your LIDIA version is too old. Disabling."
 	ifelse([$3], , :, [$3])
-elif test "x$lidia_found" = "xno" ; then
+elif test "x$lidia_found" = "xno" ; then	
 	AC_MSG_RESULT(not found)
 	ifelse([$3], , :, [$3])
-fi
+fi	
 
 
 AM_CONDITIONAL(LINBOX_HAVE_LIDIA, test "x$HAVE_LIDIA" = "xyes")

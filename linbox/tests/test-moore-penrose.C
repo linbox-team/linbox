@@ -1,16 +1,14 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-moore-penrose.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,29 +16,22 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-/*! @file  tests/test-moore-penrose.C
- * @ingroup tests
- * @brief no doc.
- * @test no doc.
- */
-
-
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
-
+#include <vector>
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
-#include "linbox/ring/modular.h"
+#include "linbox/field/modular.h"
 #include "linbox/randiter/nonzero.h"
 #include "linbox/blackbox/submatrix.h"
-#include "linbox/matrix/sparse-matrix.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/moore-penrose.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/vector/stream.h"
@@ -52,10 +43,8 @@ using namespace LinBox;
 
 /* Build a random sparse n x m matrix of rank r with a nonsingular leading principal minor */
 
-#define STOR_T typename VectorTraits<Row>::SparseFormat
-
 template <class Vector, class Field, class Row>
-static SparseMatrix<Field,  STOR_T>
+static SparseMatrix<Field,  Row>
 *buildRandomSparseMatrix (Field                           &F,
 			  size_t                           n,
 			  size_t                           m,
@@ -63,9 +52,9 @@ static SparseMatrix<Field,  STOR_T>
 			  double                           K,
 			  vector<typename Field::Element> &dinv,
 			  VectorStream<Row>               &top_right_stream,
-			  VectorStream<Row>               &bottom_left_stream)
+			  VectorStream<Row>               &bottom_left_stream) 
 {
-	typedef SparseMatrix<Field, STOR_T> Blackbox;
+	typedef SparseMatrix<Field, Row> Blackbox;
 
 	Blackbox *A = new Blackbox (F, n, m);
 	typename Field::RandIter rnd_p (F);
@@ -83,13 +72,13 @@ static SparseMatrix<Field,  STOR_T>
 	}
 
 	// Build top right part
-	for (typename vector<Row>::iterator i = top_right_data.begin (); i != top_right_data.end (); ++i) {
+	for (typename vector<Row>::iterator i = top_right_data.begin (); i != top_right_data.end (); i++) {
 		top_right_stream.next (*i);
 		VD.copy (A->getRow (top_right_stream.j () - 1), *i, r);
 	}
 
 	// Build bottom left part
-	for (typename vector<Row>::iterator i = bottom_left_data.begin (); i != bottom_left_data.end (); ++i) {
+	for (typename vector<Row>::iterator i = bottom_left_data.begin (); i != bottom_left_data.end (); i++) {
 		bottom_left_stream.next (*i);
 		VD.copy (A->getRow (r + bottom_left_stream.j () - 1), *i);
 	}
@@ -133,15 +122,16 @@ static bool testIdentityApply (Field                                           &
 			       size_t                                           n,
 			       size_t                                           m,
 			       size_t                                           r,
-			       VectorStream<vector<typename Field::Element> > &stream)
+			       VectorStream<vector<typename Field::Element> > &stream) 
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef SparseMatrix<Field, STOR_T> Blackbox;
+	typedef SparseMatrix <Field, Row> Blackbox;
 
-	commentator().start ("Testing identity apply", "testIdentityApply", stream.m ());
+	commentator.start ("Testing identity apply", "testIdentityApply", stream.m ());
 
 	bool ret = true;
+	bool iter_passed;
 
 	Vector v, w;
 
@@ -154,7 +144,7 @@ static bool testIdentityApply (Field                                           &
 
 	typename Field::Element x;
 
-	F.assign (x, F.one);
+	F.init (x, 1);
 
 	for (i = 0; i < r; i++)
 		A.setEntry (i, i, x);
@@ -162,13 +152,13 @@ static bool testIdentityApply (Field                                           &
 	MoorePenrose<Blackbox> Adagger (&A, r);
 
 	while (stream) {
-		commentator().startIteration ((unsigned)i);
+		commentator.startIteration (i);
 
-		bool iter_passed = true;
+		iter_passed = true;
 
 		stream.next (v);
 
-		ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		report << "Input vector:  ";
 		printVector<Field> (F, report, v);
@@ -187,14 +177,14 @@ static bool testIdentityApply (Field                                           &
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Output vector is incorrect" << endl;
 
-		commentator().stop ("done");
-		commentator().progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
 
 	return ret;
 }
@@ -225,13 +215,14 @@ static bool testRandomApply1 (Field                 &F,
 			      double                 K,
 			      VectorStream<Row>    &M_stream1,
 			      VectorStream<Row>    &M_stream2,
-			      VectorStream<Vector> &stream)
+			      VectorStream<Vector> &stream) 
 {
-	typedef SparseMatrix<Field, STOR_T> Blackbox;
+	typedef SparseMatrix <Field, Row> Blackbox;
 
-	commentator().start ("Testing random apply", "testRandomApply1", iterations);
+	commentator.start ("Testing random apply", "testRandomApply1", iterations);
 
 	bool ret = true;
+	bool iter_passed;
 
 	unsigned long rank_A;
 
@@ -250,39 +241,38 @@ static bool testRandomApply1 (Field                 &F,
 	typename Field::Element x;
 
 	for (i = 0; i < iterations; i++) {
-		commentator().startIteration ((unsigned)i);
-		bool iter_passed = true;
+		commentator.startIteration (i);
+		iter_passed = true;
 
-		commentator().start ("Building requisite random sparse matrix");
+		commentator.start ("Building requisite random sparse matrix");
 		Blackbox *A = buildRandomSparseMatrix<Vector> (F, n, m, r, K, dinv, M_stream1, M_stream2);
-		commentator().stop ("done");
+		commentator.stop ("done");
 
-		commentator().start ("Constructing Moore-Penrose inverse");
+		commentator.start ("Constructing Moore-Penrose inverse");
 		MoorePenrose<Blackbox> Adagger (A, r);
-		commentator().stop ("done");
-
+		commentator.stop ("done");
+		
 		{
-			ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "Input matrix" << endl;
-			A->write (report, Tag::FileFormat::Pretty);
+			A->write (report, FORMAT_PRETTY);
 		}
 
 		Submatrix<Blackbox> Aprime (A, 0, 0, MIN (n, m), MIN (n, m));
-		LinBox::rank (rank_A, Aprime, Method::Wiedemann());
+		rank (rank_A, Aprime, Method::Wiedemann());
 
 		if (rank_A == r) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 				<< "Rank is correct. Good." << endl;
-		}
-		else
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		} else
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "Rank is incorrect (" << rank_A << "). Not good." << endl;
 
 		while (stream) {
 			stream.next (lambda);
 			A->applyTranspose (x_correct, lambda);
 
-			ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 			A->apply (w, x_correct);
 
@@ -299,9 +289,9 @@ static bool testRandomApply1 (Field                 &F,
 			report << "Right hand side: ";
 			printVector<Field> (F, report, w);
 
-			commentator().start ("Applying Moore-Penrose inverse");
+			commentator.start ("Applying Moore-Penrose inverse");
 			Adagger.apply (x_computed, w);
-			commentator().stop ("done");
+			commentator.stop ("done");
 
 			report << "Correct output:  ";
 			printVector<Field> (F, report, x_correct);
@@ -314,17 +304,17 @@ static bool testRandomApply1 (Field                 &F,
 					ret = iter_passed = false;
 
 			if (!iter_passed)
-				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Vectors are not equal" << endl;
 		}
 
 		delete A;
 
-		commentator().stop ("done");
-		commentator().progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply1");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply1");
 
 	return ret;
 }
@@ -336,33 +326,32 @@ int main (int argc, char **argv)
 	static size_t n = 100;
 	static size_t m = 100;
 	static size_t r = 10;
-	static integer q = 65521U;
-	static unsigned int iterations = 100;
-	static unsigned int k = 1;
+	static integer q = 2147483647U;
+	static int iterations = 100;
+	static int k = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set row dimension of test matrices to N.", TYPE_INT,     &n },
-		{ 'm', "-m M", "Set column dimension of test matrices to M.", TYPE_INT,     &m },
-		{ 'r', "-r R", "Set rank of test matrices to R.", TYPE_INT,     &r },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		{ 'k', "-k K", "Apply random Moore-Penrose to K vectors.", TYPE_INT,     &k },
-		END_OF_ARGUMENTS
+		{ 'n', "-n N", "Set row dimension of test matrices to N (default 100)",     TYPE_INT,     &n },
+		{ 'm', "-m M", "Set column dimension of test matrices to M (default 100)",  TYPE_INT,     &m },
+		{ 'r', "-r R", "Set rank of test matrices to R (default 10)",               TYPE_INT,     &r },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
+		{ 'k', "-k K", "Apply random Moore-Penrose to K vectors (default 1)",       TYPE_INT,     &k },
 	};
 
-	typedef Givaro::Modular<uint32_t> Field;  //C.Pernet: avoids confusion with givaro::uint32_t
+	typedef Modular<LinBox::uint32> Field;  //C.Pernet: avoids confusion with givaro::uint32
 	typedef vector<Field::Element> DenseVector;
 	typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	srand ((unsigned)time (NULL));
+	srand (time (NULL));
 
-	commentator().start("MoorePenrose black box test suite", "MoorePenrose");
+	cout << endl << "MoorePenrose black box test suite" << endl;
 
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
 
 	RandomDenseStream<Field, DenseVector> stream1 (F, n, iterations);
 	RandomDenseStream<Field, DenseVector> stream2 (F, n, k);
@@ -376,15 +365,5 @@ int main (int argc, char **argv)
 	if (!testRandomApply2 (F, n, m, r, iterations, stream2)) pass = false;
 #endif
 
-	commentator().stop("MoorePenrose black box test suite");
 	return pass ? 0 : -1;
 }
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/vector/vector-domain.inl
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
@@ -12,9 +14,9 @@
  * ------------------------------------
  * Modified by Dmitriy Morozov <linbox@foxcub.org>
  *
- * Added the modifications for categories and vector traits that were designed
+ * Added the modifications for categories and vector traits that were designed 
  * at the Rootbeer meeting. Added parametrization of VectorTags by VectorTraits.
- *
+ * 
  * ------------------------------------
  * 2002-06-04 Bradford Hovinen <hovinen@cis.udel.edu>
  *
@@ -22,36 +24,23 @@
  * vector-domain.h  This means the functions each take a parameter tag (or, for
  * dot product, tag1 and tag2) that allows specialization by vector type.
  * ------------------------------------
- *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * 
+ * See COPYING for license information.
  */
 
-#ifndef __LINBOX_field_vector_domain_INL
-#define __LINBOX_field_vector_domain_INL
+#ifndef __FIELD_VECTOR_DOMAIN_C
+#define __FIELD_VECTOR_DOMAIN_C
 
+#include "linbox-config.h"
 
+#include <iostream>
+#include <cctype>
+
+#include "linbox/vector/vector-domain.h"
+#include "linbox/util/debug.h"
 
 namespace LinBox
-{ /*  VectorDomain */
-
+{
 	template <class Field>
 	template <class Vector>
 	std::ostream &VectorDomain<Field>::writeSpecialized (std::ostream &os, const Vector &x,
@@ -62,7 +51,7 @@ namespace LinBox
 		os << '[';
 
 		for (i = x.begin (); i != x.end ();) {
-			this->field().write (os, *i);
+			VectorDomainBase<Field>::_F.write (os, *i);
 
 			if (++i != x.end ())
 				os << ", ";
@@ -84,10 +73,10 @@ namespace LinBox
 		os << '[';
 
 		for (i = x.begin (), idx = 0; i != x.end ();) {
-			while (++idx < i->first)
+			while (idx++ < i->first)
 				os << "0, ";
 
-			field().write (os, i->second);
+			VectorDomainBase<Field>::_F.write (os, i->second);
 
 			if (++i != x.end ())
 				os << ", ";
@@ -109,10 +98,10 @@ namespace LinBox
 		os << '[';
 
 		for (i = x.begin (), idx = 0; i != x.end ();) {
-			while (++idx < i->first)
+			while (idx++ < i->first)
 				os << "0, ";
 
-			field().write (os, i->second);
+			VectorDomainBase<Field>::_F.write (os, i->second);
 
 			if (++i != x.end ())
 				os << ", ";
@@ -135,10 +124,10 @@ namespace LinBox
 		os << '[';
 
 		for (i = x.first.begin (), j = x.second.begin (), idx = 0; i != x.first.end ();) {
-			while (++idx < *i)
+			while (idx++ < *i)
 				os << "0, ";
 
-			field().write (os, *j);
+			VectorDomainBase<Field>::_F.write (os, *j);
 
 			if (++i != x.first.end ())
 				os << ", ";
@@ -168,7 +157,9 @@ namespace LinBox
 		while (i != x.end() && is) {
 			do is >> c; while (!isdigit(c) && c != '-');
 			is.unget ();
-			field().read (is, *++i);
+			VectorDomainBase<Field>::_F.read (is, *i++);
+			//std::cerr << std::endl << "just read this: ";
+			//VectorDomainBase<Field>::_F.write(cerr, *(i-1)) << " at index " << (i-x.begin());
 		}
 		if (seekrightbracket) do is >> c; while (is && c != ']');
 
@@ -194,11 +185,11 @@ namespace LinBox
 		while (is && c == ',') {
 			do is >> c; while (is && isspace (c));
 			is.unget ();
-			field().read (is, tmp);
-			if (!field().isZero (tmp))
+			VectorDomainBase<Field>::_F.read (is, tmp);
+			if (!VectorDomainBase<Field>::_F.isZero (tmp))
 				x.push_back (std::pair <size_t, typename Field::Element> (idx, tmp));
 			is >> c;
-			++idx;
+			idx++;
 		}
 
 		return is;
@@ -223,11 +214,11 @@ namespace LinBox
 		while (is && c == ',') {
 			do is >> c; while (is && isspace (c));
 			is.unget ();
-			field().read (is, tmp);
-			if (!field().isZero (tmp))
+			VectorDomainBase<Field>::_F.read (is, tmp);
+			if (!VectorDomainBase<Field>::_F.isZero (tmp))
 				x[idx] = tmp;
 			is >> c;
-			++idx;
+			idx++;
 		}
 
 		return is;
@@ -252,15 +243,15 @@ namespace LinBox
 		while (is && c == ',') {
 			do is >> c; while (is && isspace (c));
 			is.unget ();
-			field().read (is, tmp);
+			VectorDomainBase<Field>::_F.read (is, tmp);
 
-			if (!field().isZero (tmp)) {
+			if (!VectorDomainBase<Field>::_F.isZero (tmp)) {
 				x.first.push_back (idx);
 				x.second.push_back (tmp);
 			}
 
 			is >> c;
-			++idx;
+			idx++;
 		}
 
 		return is;
@@ -277,8 +268,8 @@ namespace LinBox
 
 		if (v1.size () != v2.size ()) return false;
 
-		for (i = v1.begin (), j = v2.begin (); i != v1.end (); ++i, ++j)
-			if (!field().areEqual (*i, *j))
+		for (i = v1.begin (), j = v2.begin (); i != v1.end (); i++, j++)
+			if (!VectorDomainBase<Field>::_F.areEqual (*i, *j))
 				return false;
 
 		return true;
@@ -294,13 +285,13 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		size_t idx;
 
-		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); ++j, ++idx) {
+		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); j++, idx++) {
 			if (i->first == idx) {
-				if (!field().areEqual (i->second, *j))
+				if (!VectorDomainBase<Field>::_F.areEqual (i->second, *j))
 					return false;
-				++i;
+				i++;
 			}
-			else if (!field().isZero (*j))
+			else if (!VectorDomainBase<Field>::_F.isZero (*j))
 				return false;
 		}
 
@@ -317,13 +308,13 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		size_t idx;
 
-		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); ++j, ++idx) {
+		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); j++, idx++) {
 			if (i->first == idx) {
-				if (!field().areEqual (i->second, *j))
+				if (!VectorDomainBase<Field>::_F.areEqual (i->second, *j))
 					return false;
-				++i;
+				i++;
 			}
-			else if (!field().isZero (*j))
+			else if (!VectorDomainBase<Field>::_F.isZero (*j))
 				return false;
 		}
 
@@ -343,16 +334,16 @@ namespace LinBox
 
 		for (i_idx = v1.first.begin (), i_elt = v1.second.begin (), j = v2.begin (), idx = 0;
 		     i_idx != v1.first.end () && j != v2.end ();
-		     ++j, ++idx)
+		     j++, idx++)
 		{
 			if (*i_idx == idx) {
-				if (!field().areEqual (*i_elt, *j))
+				if (!VectorDomainBase<Field>::_F.areEqual (*i_elt, *j))
 					return false;
 				++i_idx;
 				++i_elt;
 			}
 
-			else if (!field().isZero (*j))
+			else if (!VectorDomainBase<Field>::_F.isZero (*j))
 				return false;
 		}
 
@@ -370,22 +361,22 @@ namespace LinBox
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () || j != v2.end ();) {
 			while (i != v1.end () && (j == v2.end () || i->first < j->first)) {
-				if (!field().isZero (i->second))
+				if (!VectorDomainBase<Field>::_F.isZero (i->second))
 					return false;
-				++i;
+				i++;
 			}
 
 			while (j != v2.end () && (i == v1.end () || j->first < i->first)) {
-				if (!field().isZero (j->second))
+				if (!VectorDomainBase<Field>::_F.isZero (j->second))
 					return false;
-				++j;
+				j++;
 			}
 
 			if (i != v1.end () && j != v2.end () && i->first == j->first) {
-				if (!field().areEqual (i->second, j->second))
+				if (!VectorDomainBase<Field>::_F.areEqual (i->second, j->second))
 					return false;
 
-				++i; ++j;
+				i++; j++;
 			}
 		}
 
@@ -403,22 +394,22 @@ namespace LinBox
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () || j != v2.end ();) {
 			while (i != v1.end () && (j == v2.end () || i->first < j->first)) {
-				if (!field().isZero (i->second))
+				if (!VectorDomainBase<Field>::_F.isZero (i->second))
 					return false;
-				++i;
+				i++;
 			}
 
 			while (j != v2.end () && (i == v1.end () || j->first < i->first)) {
-				if (!field().isZero (j->second))
+				if (!VectorDomainBase<Field>::_F.isZero (j->second))
 					return false;
-				++j;
+				j++;
 			}
 
 			if (i != v1.end () && j != v2.end () && i->first == j->first) {
-				if (!field().areEqual (i->second, j->second))
+				if (!VectorDomainBase<Field>::_F.areEqual (i->second, j->second))
 					return false;
 
-				++i; ++j;
+				i++; j++;
 			}
 		}
 
@@ -439,23 +430,23 @@ namespace LinBox
 		     i_idx != v1.first.end () || j != v2.end ();)
 		{
 			while (i_idx != v1.first.end () && (j == v2.end () || *i_idx < j->first)) {
-				if (!field().isZero (*i_elt))
+				if (!VectorDomainBase<Field>::_F.isZero (*i_elt))
 					return false;
-				++i_idx;
-				++i_elt;
+				i_idx++;
+				i_elt++;
 			}
 
 			while (j != v2.end () && (i_idx == v1.first.end () || j->first < *i_idx)) {
-				if (!field().isZero (j->second))
+				if (!VectorDomainBase<Field>::_F.isZero (j->second))
 					return false;
-				++j;
+				j++;
 			}
 
 			if (i_idx != v1.first.end () && j != v2.end () && *i_idx == j->first) {
-				if (!field().areEqual (*i_elt, j->second))
+				if (!VectorDomainBase<Field>::_F.areEqual (*i_elt, j->second))
 					return false;
 
-				++i_idx; ++i_elt; ++j;
+				i_idx++; i_elt++; j++;
 			}
 		}
 
@@ -473,22 +464,22 @@ namespace LinBox
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () || j != v2.end ();) {
 			while (i != v1.end () && (j == v2.end () || i->first < j->first)) {
-				if (!field().isZero (i->second))
+				if (!VectorDomainBase<Field>::_F.isZero (i->second))
 					return false;
-				++i;
+				i++;
 			}
 
 			while (j != v2.end () && (i == v1.end () || j->first < i->first)) {
-				if (!field().isZero (j->second))
+				if (!VectorDomainBase<Field>::_F.isZero (j->second))
 					return false;
-				++j;
+				j++;
 			}
 
 			if (i != v1.end () && j != v2.end () && i->first == j->first) {
-				if (!field().areEqual (i->second, j->second))
+				if (!VectorDomainBase<Field>::_F.areEqual (i->second, j->second))
 					return false;
 
-				++i; ++j;
+				i++; j++;
 			}
 		}
 
@@ -507,23 +498,23 @@ namespace LinBox
 
 		while (i_idx != v1.first.end () || j != v2.end ()) {
 			while (i_idx != v1.first.end () && (j == v2.end () || *i_idx < j->first)) {
-				if (!field().isZero (*i_elt))
+				if (!VectorDomainBase<Field>::_F.isZero (*i_elt))
 					return false;
-				++i_idx;
-				++i_elt;
+				i_idx++;
+				i_elt++;
 			}
 
 			while (j != v2.end () && (i_idx == v1.first.end () || j->first < *i_idx)) {
-				if (!field().isZero (j->second))
+				if (!VectorDomainBase<Field>::_F.isZero (j->second))
 					return false;
-				++j;
+				j++;
 			}
 
 			if (i_idx != v1.first.end () && j != v2.end () && *i_idx == j->first) {
-				if (!field().areEqual (*i_elt, j->second))
+				if (!VectorDomainBase<Field>::_F.areEqual (*i_elt, j->second))
 					return false;
 
-				++i_idx; ++i_elt; ++j;
+				i_idx++; i_elt++; j++;
 			}
 		}
 
@@ -543,24 +534,24 @@ namespace LinBox
 
 		while (i_idx != v1.first.end () || j_idx != v2.first.end ()) {
 			while (i_idx != v1.first.end () && (j_idx == v2.first.end () || *i_idx < *j_idx)) {
-				if (!field().isZero (*i_elt))
+				if (!VectorDomainBase<Field>::_F.isZero (*i_elt))
 					return false;
-				++i_idx;
-				++i_elt;
+				i_idx++;
+				i_elt++;
 			}
 
 			while (j_idx != v2.first.end () && (i_idx == v1.first.end () || *j_idx < *i_idx)) {
-				if (!field().isZero (*j_elt))
+				if (!VectorDomainBase<Field>::_F.isZero (*j_elt))
 					return false;
-				++j_idx;
-				++j_elt;
+				j_idx++;
+				j_elt++;
 			}
 
 			if (i_idx != v1.first.end () && j_idx != v2.first.end () && *i_idx == *j_idx) {
-				if (!field().areEqual (*i_elt, *j_elt))
+				if (!VectorDomainBase<Field>::_F.areEqual (*i_elt, *j_elt))
 					return false;
 
-				++i_idx; ++i_elt; ++j_idx; ++j_elt;
+				i_idx++; i_elt++; j_idx++; j_elt++;
 			}
 		}
 
@@ -573,8 +564,8 @@ namespace LinBox
 	{
 		typename Vector::const_iterator i;
 
-		for (i = v.begin (); i != v.end (); ++i)
-			if (!field().isZero (*i))
+		for (i = v.begin (); i != v.end (); i++)
+			if (!VectorDomainBase<Field>::_F.isZero (*i))
 				return false;
 
 		return true;
@@ -586,8 +577,8 @@ namespace LinBox
 	{
 		typename Vector::const_iterator i;
 
-		for (i = v.begin (); i != v.end (); ++i)
-			if (!field().isZero (i->second))
+		for (i = v.begin (); i != v.end (); i++)
+			if (!VectorDomainBase<Field>::_F.isZero (i->second))
 				return false;
 
 		return true;
@@ -599,8 +590,8 @@ namespace LinBox
 	{
 		typename Vector::const_iterator i;
 
-		for (i = v.begin (); i != v.end (); ++i)
-			if (!field().isZero (i->second))
+		for (i = v.begin (); i != v.end (); i++)
+			if (!VectorDomainBase<Field>::_F.isZero (i->second))
 				return false;
 
 		return true;
@@ -612,8 +603,8 @@ namespace LinBox
 	{
 		typename Vector::second_type::const_iterator i;
 
-		for (i = v.second.begin (); i != v.second.end (); ++i)
-			if (!field().isZero (*i))
+		for (i = v.second.begin (); i != v.second.end (); i++)
+			if (!VectorDomainBase<Field>::_F.isZero (*i))
 				return false;
 
 		return true;
@@ -630,8 +621,8 @@ namespace LinBox
 
 		res.clear ();
 
-		for (i = v.begin (), idx = 0; i != v.end (); ++i, ++idx)
-			if (!field().isZero (*i))
+		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++)
+			if (!VectorDomainBase<Field>::_F.isZero (*i))
 				res.push_back (std::pair <size_t, typename Field::Element> (idx, *i));
 
 		return res;
@@ -648,8 +639,8 @@ namespace LinBox
 
 		res.clear ();
 
-		for (i = v.begin (), idx = 0; i != v.end (); ++i, ++idx)
-			if (!field().isZero (*i))
+		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++)
+			if (!VectorDomainBase<Field>::_F.isZero (*i))
 				res[idx] = *i;
 
 		return res;
@@ -667,9 +658,9 @@ namespace LinBox
 		res.first.clear ();
 		res.second.clear ();
 
-		for (i = v.begin (), idx = 0; i != v.end (); ++i, ++idx) {
-			if (!field().isZero (*i)) {
-				res.first.push_back ((size_t)idx);
+		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++) {
+			if (!VectorDomainBase<Field>::_F.isZero (*i)) {
+				res.first.push_back (idx);
 				res.second.push_back (*i);
 			}
 		}
@@ -687,10 +678,10 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		size_t idx;
 
-		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); ++i, ++j, ++idx) {
+		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); i++, j++, idx++) {
 			while (idx < j->first) {
-				field().assign(*i, field().zero);
-				++i; ++idx;
+				VectorDomainBase<Field>::_F.init (*i, 0);
+				i++; idx++;
 			}
 
 			*i = j->second;
@@ -709,7 +700,7 @@ namespace LinBox
 
 		res.clear ();
 
-		for (i = v.begin (); i != v.end (); ++i)
+		for (i = v.begin (); i != v.end (); i++)
 			res[i->first] = i->second;
 
 		return res;
@@ -726,7 +717,7 @@ namespace LinBox
 		res.first.clear ();
 		res.second.clear ();
 
-		for (i = v.begin (); i != v.end (); ++i) {
+		for (i = v.begin (); i != v.end (); i++) {
 			res.first.push_back (i->first);
 			res.second.push_back (i->second);
 		}
@@ -744,10 +735,10 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		size_t idx;
 
-		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); ++i, ++j, ++idx) {
+		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); i++, j++, idx++) {
 			while (idx < j->first) {
-				field().assign(*i, field.zero);
-				++i; ++idx;
+				VectorDomainBase<Field>::_F.init (*i, 0);
+				i++; idx++;
 			}
 
 			*i = j->second;
@@ -766,7 +757,7 @@ namespace LinBox
 
 		res.clear ();
 
-		for (i = v.begin (); i != v.end (); ++i)
+		for (i = v.begin (); i != v.end (); i++)
 			res.push_back (*i);
 
 		return res;
@@ -782,7 +773,7 @@ namespace LinBox
 
 		res.clear ();
 
-		for (i = v.begin (); i != v.end (); ++i)
+		for (i = v.begin (); i != v.end (); i++)
 			res[i->first] = i->second;
 
 		return res;
@@ -799,7 +790,7 @@ namespace LinBox
 		res.first.clear ();
 		res.second.clear ();
 
-		for (i = v.begin (); i != v.end (); ++i) {
+		for (i = v.begin (); i != v.end (); i++) {
 			res.first.push_back (i->first);
 			res.second.push_back (i->second);
 		}
@@ -813,7 +804,6 @@ namespace LinBox
 						       VectorCategories::DenseVectorTag,
 						       VectorCategories::SparseParallelVectorTag) const
 	{
-		//! @bug check sizes ??
 		typename Vector1::iterator i = res.begin ();
 		typename Vector2::first_type::const_iterator j_idx = v.first.begin ();
 		typename Vector2::second_type::const_iterator j_elt = v.second.begin ();
@@ -821,7 +811,7 @@ namespace LinBox
 
 		while (j_idx != v.first.end ()) {
 			while (idx < *j_idx) {
-				field().assign(*i, field().zero);
+				VectorDomainBase<Field>::_F.init (*i, 0);
 				++i; ++idx;
 			}
 
@@ -861,7 +851,7 @@ namespace LinBox
 
 		res.clear ();
 
-		for (; i_idx != v.first.end (); ++i_idx, ++i_elt)
+		for (; i_idx != v.first.end (); i_idx++, i_elt++)
 			res[*i_idx] = *i_elt;
 
 		return res;
@@ -887,13 +877,12 @@ namespace LinBox
 	{
 		if (i == 0 && len == 0) {
 			copy (res, v);
-		}
-		else {
+		} else {
 			Vector1 res_part;
 
 			copy (res_part, v);
 
-			std::copy (res_part.begin (), (len == 0) ? res_part.end () : res_part.begin () + (ptrdiff_t)len, res.begin () + (ptrdiff_t)i);
+			std::copy (res_part.begin (), (len == 0) ? res_part.end () : res_part.begin () + len, res.begin () + i);
 		}
 
 		return res;
@@ -916,9 +905,9 @@ namespace LinBox
 			part_end = res_part.end ();
 		else
 			part_end = std::lower_bound (res_part.begin (), res_part.end (), len,
-						     VectorWrapper::CompareSparseEntries<Element> ());
+						    VectorWrapper::CompareSparseEntries<Element> ());
 
-		for (iter = res_part.begin (); iter != part_end; ++iter)
+		for (iter = res_part.begin (); iter != part_end; iter++)
 			iter->first += i;
 
 		r_begin = std::lower_bound (res.begin (), res.end (), i, VectorWrapper::CompareSparseEntries<Element> ());
@@ -949,7 +938,7 @@ namespace LinBox
 		r_end = (len == 0) ? res.end () : res.find (i + len);
 		res.erase (r_begin, r_end);
 
-		for (iter = res_part.begin (); iter != part_end; ++iter)
+		for (iter = res_part.begin (); iter != part_end; iter++)
 			res[iter->first + i] = iter->second;
 
 		return res;
@@ -972,19 +961,18 @@ namespace LinBox
 		if (len == 0) {
 			part_idx_end = res_part.first.end ();
 			part_elt_end = res_part.second.end ();
-		}
-		else {
+		} else {
 			part_idx_end = std::lower_bound (res_part.first.begin (), res_part.first.end (), len);
-			part_elt_end = res_part.second.begin () +(ptrdiff_t) (part_idx_end - res_part.first.begin ());
+			part_elt_end = res_part.second.begin () + (part_idx_end - res_part.first.begin ());
 		}
 
-		for (iter = res_part.first.begin (); iter != part_idx_end; ++iter)
+		for (iter = res_part.first.begin (); iter != part_idx_end; iter++)
 			*iter += i;
 
 		r_idx_begin = std::lower_bound (res.first.begin (), res.first.end (), i);
-		r_elt_begin = res.second.begin () +(ptrdiff_t) (r_idx_begin - res.first.begin ());
+		r_elt_begin = res.second.begin () + (r_idx_begin - res.first.begin ());
 		r_idx_end = (len == 0) ? res.first.end () : std::lower_bound (r_idx_begin, res.first.end (), i + len);
-		r_idx_end = res.second.begin () +(ptrdiff_t) (r_idx_end - res.first.begin ());
+		r_idx_end = res.second.begin () + (r_idx_end - res.first.begin ());
 
 		r_idx_begin = res.first.erase (r_idx_begin, r_idx_end);
 		r_elt_begin = res.second.erase (r_elt_begin, r_elt_end);
@@ -999,7 +987,7 @@ namespace LinBox
 	Vector &VectorDomain<Field>::copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
 						      VectorCategories::DenseVectorTag) const
 	{
-		std::copy (v.begin (), (len == 0) ? v.end () : v.begin () + (ptrdiff_t)len, res.begin () +(ptrdiff_t) i);
+		std::copy (v.begin (), (len == 0) ? v.end () : v.begin () + len, res.begin () + i);
 		return res;
 	}
 
@@ -1024,10 +1012,10 @@ namespace LinBox
 		r_begin = res.erase (r_begin, r_end);
 		offset = r_begin - res.begin ();
 		res.insert (r_begin, v.begin (), v_end);
-		r_begin = res.begin () +(ptrdiff_t) offset;
-		r_end = r_begin +(ptrdiff_t) (v_end - v.begin ());
+		r_begin = res.begin () + offset;
+		r_end = r_begin + (v_end - v.begin ());
 
-		for (iter = r_begin; iter != r_end; ++iter)
+		for (iter = r_begin; iter != r_end; iter++)
 			iter->first += i;
 
 		return res;
@@ -1047,7 +1035,7 @@ namespace LinBox
 		r_end = (len == 0) ? res.end () : res.find (i + len);
 		res.erase (r_begin, r_end);
 
-		for (iter = v.begin (); iter != v_end; ++iter)
+		for (iter = v.begin (); iter != v_end; iter++)
 			res[iter->first + i] = iter->second;
 
 		return res;
@@ -1067,16 +1055,15 @@ namespace LinBox
 		if (len == 0) {
 			v_idx_end = v.first.end ();
 			v_elt_end = v.second.end ();
-		}
-		else {
+		} else {
 			v_idx_end = std::lower_bound (v.first.begin (), v.first.end (), len);
-			v_elt_end = v.second.begin () +(ptrdiff_t) (v_idx_end - v.first.begin ());
+			v_elt_end = v.second.begin () + (v_idx_end - v.first.begin ());
 		}
 
 		r_idx_begin = std::lower_bound (res.first.begin (), res.first.end (), i);
-		r_elt_begin = res.second.begin () +(ptrdiff_t) (r_idx_begin - res.first.begin ());
+		r_elt_begin = res.second.begin () + (r_idx_begin - res.first.begin ());
 		r_idx_end = (len == 0) ? res.first.end () : std::lower_bound (r_idx_begin, res.first.end (), i + len);
-		r_elt_end = res.second.begin () +(ptrdiff_t) (r_idx_end - res.first.begin ());
+		r_elt_end = res.second.begin () + (r_idx_end - res.first.begin ());
 
 		r_idx_begin = res.first.erase (r_idx_begin, r_idx_end);
 		r_elt_begin = res.second.erase (r_elt_begin, r_elt_end);
@@ -1085,10 +1072,10 @@ namespace LinBox
 		res.first.insert (r_idx_begin, v.first.begin (), v_idx_end);
 		res.second.insert (r_elt_begin, v.second.begin (), v_elt_end);
 
-		r_idx_begin = res.first.begin () +(ptrdiff_t) offset;
-		r_idx_end = r_idx_begin +(ptrdiff_t) (v_idx_end - v.first.begin ());
+		r_idx_begin = res.first.begin () + offset;
+		r_idx_end = r_idx_begin + (v_idx_end - v.first.begin ());
 
-		for (iter = r_idx_begin; iter != r_idx_end; ++iter)
+		for (iter = r_idx_begin; iter != r_idx_end; iter++)
 			*iter += i;
 
 		return res;
@@ -1108,8 +1095,8 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); ++i, ++j, ++k)
-			field().add (*k, *i, *j);
+		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
+			VectorDomainBase<Field>::_F.add (*k, *i, *j);
 
 		return res;
 	}
@@ -1127,26 +1114,25 @@ namespace LinBox
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
 			while (i != y.end () && i->first < j->first) {
 				res.push_back (*i);
-				++i;
+				i++;
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				field().add (tmp, i->second, j->second);
-				if (!field().isZero (tmp))
+				VectorDomainBase<Field>::_F.add (tmp, i->second, j->second);
+				if (!VectorDomainBase<Field>::_F.isZero (tmp))
 					res.push_back (std::pair <size_t, Element> (j->first, tmp));
-				++i;
-			}
-			else {
+				i++;
+			} else {
 				res.push_back (*j);
 			}
 		}
 
 		while (i != y.end ()) {
 			res.push_back (*i);
-			++i;
+			i++;
 		}
 
 		return res;
@@ -1165,24 +1151,23 @@ namespace LinBox
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
 			while (i != y.end () && i->first < j->first) {
 				res[i->first] = i->second;
-				++i;
+				i++;
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				res[j->first] = field().add (tmp, i->second, j->second);
-				++i;
-			}
-			else {
+				res[j->first] = VectorDomainBase<Field>::_F.add (tmp, i->second, j->second);
+				i++;
+			} else {
 				res[j->first] = j->second;
 			}
 		}
 
 		while (i != y.end ()) {
 			res[i->first] = i->second;
-			++i;
+			i++;
 		}
 
 		return res;
@@ -1212,14 +1197,13 @@ namespace LinBox
 			}
 
 			if (i_idx != y.first.end () && *i_idx == *j_idx) {
-				field().add (tmp, *i_elt, *j_elt);
-				if (!field().isZero (tmp)) {
+				VectorDomainBase<Field>::_F.add (tmp, *i_elt, *j_elt);
+				if (!VectorDomainBase<Field>::_F.isZero (tmp)) {
 					res.first.push_back (*j_idx);
 					res.second.push_back (tmp);
 				}
 				++i_idx; ++i_elt;
-			}
-			else {
+			} else {
 				res.first.push_back (*j_idx);
 				res.second.push_back (*j_elt);
 			}
@@ -1245,8 +1229,8 @@ namespace LinBox
 
 		linbox_check (y.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (); i != y.end (); ++i, ++j)
-			field().addin (*i, *j);
+		for (i = y.begin (), j = x.begin (); i != y.end (); i++, j++)
+			VectorDomainBase<Field>::_F.addin (*i, *j);
 
 		return y;
 	}
@@ -1273,11 +1257,11 @@ namespace LinBox
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
 
-		for (i = y.begin (), j = x.begin (); j != x.end (); ++j) {
-			while (i != y.end () && i->first < j->first) ++i;
+		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
+			while (i != y.end () && i->first < j->first) i++;
 
 			if (i != y.end () && i->first == j->first)
-				field().addin (i->second, j->second);
+				VectorDomainBase<Field>::_F.addin (i->second, j->second);
 			else
 				y[j->first] = j->second;
 		}
@@ -1312,8 +1296,8 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); ++i, ++j, ++k)
-			field().sub (*k, *i, *j);
+		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
+			VectorDomainBase<Field>::_F.sub (*k, *i, *j);
 
 		return res;
 	}
@@ -1331,26 +1315,25 @@ namespace LinBox
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
 			while (i != y.end () && i->first < j->first) {
 				res.push_back (*i);
-				++i;
+				i++;
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				field().sub (tmp, i->second, j->second);
-				if (!field().isZero (tmp))
+				VectorDomainBase<Field>::_F.sub (tmp, i->second, j->second);
+				if (!VectorDomainBase<Field>::_F.isZero (tmp))
 					res.push_back (std::pair <size_t, Element> (j->first, tmp));
-				++i;
-			}
-			else {
-				res.push_back (std::pair <size_t, Element> (j->first, field().neg (tmp, j->second)));
+				i++;
+			} else {
+				res.push_back (std::pair <size_t, Element> (j->first, VectorDomainBase<Field>::_F.neg (tmp, j->second)));
 			}
 		}
 
 		while (i != y.end ()) {
 			res.push_back (*i);
-			++i;
+			i++;
 		}
 
 		return res;
@@ -1369,24 +1352,23 @@ namespace LinBox
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
 			while (i != y.end () && i->first < j->first) {
 				res[i->first] = i->second;
-				++i;
+				i++;
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				res[j->first] = field().sub (tmp, i->second, j->second);
-				++i;
-			}
-			else {
-				res[j->first] = field().neg (tmp, j->second);
+				res[j->first] = VectorDomainBase<Field>::_F.sub (tmp, i->second, j->second);
+				i++;
+			} else {
+				res[j->first] = VectorDomainBase<Field>::_F.neg (tmp, j->second);
 			}
 		}
 
 		while (i != y.end ()) {
 			res[i->first] = i->second;
-			++i;
+			i++;
 		}
 
 		return res;
@@ -1416,16 +1398,15 @@ namespace LinBox
 			}
 
 			if (i_idx != y.first.end () && *i_idx == *j_idx) {
-				field().sub (tmp, *i_elt, *j_elt);
-				if (!field().isZero (tmp)) {
+				VectorDomainBase<Field>::_F.sub (tmp, *i_elt, *j_elt);
+				if (!VectorDomainBase<Field>::_F.isZero (tmp)) {
 					res.first.push_back (*j_idx);
 					res.second.push_back (tmp);
 				}
 				++i_idx; ++i_elt;
-			}
-			else {
+			} else {
 				res.first.push_back (*j_idx);
-				res.second.push_back (field().neg (tmp, *j_elt));
+				res.second.push_back (VectorDomainBase<Field>::_F.neg (tmp, *j_elt));
 			}
 		}
 
@@ -1449,8 +1430,8 @@ namespace LinBox
 
 		linbox_check (y.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (); i != y.end (); ++i, ++j)
-			field().subin (*i, *j);
+		for (i = y.begin (), j = x.begin (); i != y.end (); i++, j++)
+			VectorDomainBase<Field>::_F.subin (*i, *j);
 
 		return y;
 	}
@@ -1478,13 +1459,13 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		Element tmp;
 
-		for (i = y.begin (), j = x.begin (); j != x.end (); ++j) {
-			while (i != y.end () && i->first < j->first) ++i;
+		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
+			while (i != y.end () && i->first < j->first) i++;
 
 			if (i != y.end () && i->first == j->first)
-				field().subin (i->second, j->second);
+				VectorDomainBase<Field>::_F.subin (i->second, j->second);
 			else
-				y[j->first] = field().neg (tmp, j->second);
+				y[j->first] = VectorDomainBase<Field>::_F.neg (tmp, j->second);
 		}
 
 		return y;
@@ -1515,7 +1496,7 @@ namespace LinBox
 		linbox_check (res.size () == x.size ());
 
 		for (j = x.begin (), k = res.begin (); j != x.end (); ++j, ++k)
-			field().neg (*k, *j);
+			VectorDomainBase<Field>::_F.neg (*k, *j);
 
 		return res;
 	}
@@ -1532,7 +1513,7 @@ namespace LinBox
 		res.clear ();
 
 		for (j = x.begin (); j != x.end (); ++j)
-			res.push_back (std::pair <size_t, Element> (j->first, field().neg (tmp, j->second)));
+			res.push_back (std::pair <size_t, Element> (j->first, VectorDomainBase<Field>::_F.neg (tmp, j->second)));
 
 		return res;
 	}
@@ -1549,7 +1530,7 @@ namespace LinBox
 		res.clear ();
 
 		for (j = x.begin (); j != x.end (); ++j)
-			res[j->first] = field().neg (tmp, j->second);
+			res[j->first] = VectorDomainBase<Field>::_F.neg (tmp, j->second);
 
 		return res;
 	}
@@ -1569,7 +1550,7 @@ namespace LinBox
 		std::copy (x.first.begin (), x.first.end (), res.first.begin ());
 
 		for (j = x.second.begin (); j != x.second.end (); ++j)
-			res.second.push_back (field().neg (tmp, *j));
+			res.second.push_back (VectorDomainBase<Field>::_F.neg (tmp, *j));
 
 		return res;
 	}
@@ -1582,7 +1563,7 @@ namespace LinBox
 		typename Vector::iterator i;
 
 		for (i = y.begin (); i != y.end (); ++i)
-			field().negin (*i);
+			VectorDomainBase<Field>::_F.negin (*i);
 
 		return y;
 	}
@@ -1595,7 +1576,7 @@ namespace LinBox
 		typename Vector::iterator i;
 
 		for (i = y.begin (); i != y.end (); ++i)
-			field().negin (i->second);
+			VectorDomainBase<Field>::_F.negin (i->second);
 
 		return y;
 	}
@@ -1608,7 +1589,7 @@ namespace LinBox
 		typename Vector::iterator i;
 
 		for (i = y.begin (); i != y.end (); ++i)
-			field().negin (i->second);
+			VectorDomainBase<Field>::_F.negin (i->second);
 
 		return y;
 	}
@@ -1621,7 +1602,7 @@ namespace LinBox
 		typename Vector::second_type::iterator i;
 
 		for (i = y.second.begin (); i != y.second.end (); ++i)
-			field().negin (*i);
+			VectorDomainBase<Field>::_F.negin (*i);
 
 		return y;
 	}
@@ -1629,18 +1610,18 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2>
 	Vector1 &VectorDomain<Field>::mulSpecialized
-	(Vector1                                 &res,
-	 const Vector2                           &x,
-	 const typename Field::Element           &a,
-	 VectorCategories::DenseVectorTag  ) const
+		(Vector1                                 &res,
+		 const Vector2                           &x,
+		 const typename Field::Element           &a,
+		 VectorCategories::DenseVectorTag  tag) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector1::iterator j;
 
 		linbox_check (res.size () == x.size ());
-
+	
 		for (i = x.begin (), j = res.begin (); i != x.end (); ++i, ++j)
-			field().mul (*j, *i, a);
+			VectorDomainBase<Field>::_F.mul (*j, *i, a);
 
 		return res;
 	}
@@ -1648,21 +1629,21 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2>
 	Vector1 &VectorDomain<Field>::mulSpecialized
-	(Vector1                                          &res,
-	 const Vector2                                    &x,
-	 const typename Field::Element                    &a,
-	 VectorCategories::SparseSequenceVectorTag  ) const
+		(Vector1                                          &res,
+		 const Vector2                                    &x,
+		 const typename Field::Element                    &a,
+		 VectorCategories::SparseSequenceVectorTag  tag) const
 	{
 		typename Vector2::const_iterator i;
 		Element tmp;
 
 		res.clear ();
 
-		if (field().isZero (a))
+		if (VectorDomainBase<Field>::_F.isZero (a))
 			return res;
 
-		for (i = x.begin (); i != x.end (); ++i)
-			res.push_back (std::pair <size_t, Element> (i->first, field().mul (tmp, i->second, a)));
+		for (i = x.begin (); i != x.end (); i++)
+			res.push_back (std::pair <size_t, Element> (i->first, VectorDomainBase<Field>::_F.mul (tmp, i->second, a)));
 
 		return res;
 	}
@@ -1670,21 +1651,21 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2>
 	Vector1 &VectorDomain<Field>::mulSpecialized
-	(Vector1                                             &res,
-	 const Vector2                                       &x,
-	 const typename Field::Element                       &a,
-	 VectorCategories::SparseAssociativeVectorTag  ) const
+		(Vector1                                             &res,
+		 const Vector2                                       &x,
+		 const typename Field::Element                       &a,
+		 VectorCategories::SparseAssociativeVectorTag  tag) const
 	{
 		typename Vector2::const_iterator i;
 		Element tmp;
 
 		res.clear ();
 
-		if (field().isZero (a))
+		if (VectorDomainBase<Field>::_F.isZero (a))
 			return res;
 
-		for (i = x.begin (); i != x.end (); ++i)
-			res[i->first] = field().mul (tmp, i->second, a);
+		for (i = x.begin (); i != x.end (); i++)
+			res[i->first] = VectorDomainBase<Field>::_F.mul (tmp, i->second, a);
 
 		return res;
 	}
@@ -1692,10 +1673,10 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2>
 	Vector1 &VectorDomain<Field>::mulSpecialized
-	(Vector1                                          &res,
-	 const Vector2                                    &x,
-	 const typename Field::Element                    &a,
-	 VectorCategories::SparseParallelVectorTag  ) const
+		(Vector1                                          &res,
+		 const Vector2                                    &x,
+		 const typename Field::Element                    &a,
+		 VectorCategories::SparseParallelVectorTag  tag) const
 	{
 		typename Vector2::first_type::const_iterator i_idx;
 		typename Vector2::second_type::const_iterator i_elt;
@@ -1704,14 +1685,14 @@ namespace LinBox
 		res.first.clear ();
 		res.second.clear ();
 
-		if (field().isZero (a))
+		if (VectorDomainBase<Field>::_F.isZero (a))
 			return res;
 
 		for (i_idx = x.first.begin (); i_idx != x.first.end (); ++i_idx)
 			res.first.push_back (*i_idx);
 
 		for (i_elt = x.second.begin (); i_elt != x.second.end (); ++i_elt)
-			res.second.push_back (field().mul (tmp, *i_elt, a));
+			res.second.push_back (VectorDomainBase<Field>::_F.mul (tmp, *i_elt, a));
 
 		return res;
 	}
@@ -1719,14 +1700,14 @@ namespace LinBox
 	template <class Field>
 	template <class Vector>
 	Vector &VectorDomain<Field>::mulinSpecialized
-	(Vector                                  &x,
-	 const typename Field::Element           &a,
-	 VectorCategories::DenseVectorTag  ) const
+		(Vector                                  &x,
+		 const typename Field::Element           &a,
+		 VectorCategories::DenseVectorTag  tag) const
 	{
 		typename Vector::iterator i;
 
-		for (i = x.begin (); i != x.end (); ++i)
-			field().mulin (*i, a);
+		for (i = x.begin (); i != x.end (); i++)
+			VectorDomainBase<Field>::_F.mulin (*i, a);
 
 		return x;
 	}
@@ -1734,19 +1715,19 @@ namespace LinBox
 	template <class Field>
 	template <class Vector>
 	Vector &VectorDomain<Field>::mulinSpecialized
-	(Vector                                           &x,
-	 const typename Field::Element                    &a,
-	 VectorCategories::SparseSequenceVectorTag  ) const
+		(Vector                                           &x,
+		 const typename Field::Element                    &a,
+		 VectorCategories::SparseSequenceVectorTag  tag) const
 	{
 		typename Vector::iterator i;
 
-		if (field().isZero (a)) {
+		if (VectorDomainBase<Field>::_F.isZero (a)) {
 			x.clear ();
 			return x;
 		}
 
-		for (i = x.begin (); i != x.end (); ++i)
-			field().mulin (i->second, a);
+		for (i = x.begin (); i != x.end (); i++)
+			VectorDomainBase<Field>::_F.mulin (i->second, a);
 
 		return x;
 	}
@@ -1754,19 +1735,19 @@ namespace LinBox
 	template <class Field>
 	template <class Vector>
 	Vector &VectorDomain<Field>::mulinSpecialized
-	(Vector                                              &x,
-	 const typename Field::Element                       &a,
-	 VectorCategories::SparseAssociativeVectorTag  ) const
+		(Vector                                              &x,
+		 const typename Field::Element                       &a,
+		 VectorCategories::SparseAssociativeVectorTag  tag) const
 	{
 		typename Vector::iterator i;
 
-		if (field().isZero (a)) {
+		if (VectorDomainBase<Field>::_F.isZero (a)) {
 			x.clear ();
 			return x;
 		}
 
-		for (i = x.begin (); i != x.end (); ++i)
-			field().mulin (i->second, a);
+		for (i = x.begin (); i != x.end (); i++)
+			VectorDomainBase<Field>::_F.mulin (i->second, a);
 
 		return x;
 	}
@@ -1774,20 +1755,20 @@ namespace LinBox
 	template <class Field>
 	template <class Vector>
 	Vector &VectorDomain<Field>::mulinSpecialized
-	(Vector                                           &x,
-	 const typename Field::Element                    &a,
-	 VectorCategories::SparseParallelVectorTag  ) const
+		(Vector                                           &x,
+		 const typename Field::Element                    &a,
+		 VectorCategories::SparseParallelVectorTag  tag) const
 	{
 		typename Vector::second_type::iterator i;
 
-		if (field().isZero (a)) {
+		if (VectorDomainBase<Field>::_F.isZero (a)) {
 			x.first.clear ();
 			x.second.clear ();
 			return x;
 		}
 
-		for (i = x.second.begin (); i != x.second.end (); ++i)
-			field().mulin (*i, a);
+		for (i = x.second.begin (); i != x.second.end (); i++)
+			VectorDomainBase<Field>::_F.mulin (*i, a);
 
 		return x;
 	}
@@ -1795,11 +1776,11 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2, class Vector3>
 	Vector1 &VectorDomain<Field>::axpySpecialized
-	(Vector1                                 &res,
-	 const Vector2                           &y,
-	 const typename Field::Element           &a,
-	 const Vector3                           &x,
-	 VectorCategories::DenseVectorTag  ) const
+		(Vector1                                 &res,
+		 const Vector2                           &y,
+		 const typename Field::Element           &a,
+		 const Vector3                           &x,
+		 VectorCategories::DenseVectorTag  tag) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
@@ -1808,8 +1789,8 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); ++i, ++j, ++k)
-			field().axpy (*k, a, *j, *i);
+		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
+			VectorDomainBase<Field>::_F.axpy (*k, a, *j, *i);
 
 		return res;
 	}
@@ -1817,11 +1798,11 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2, class Vector3>
 	Vector1 &VectorDomain<Field>::axpySpecialized
-	(Vector1                                          &res,
-	 const Vector2                                    &y,
-	 const typename Field::Element                    &a,
-	 const Vector3                                    &x,
-	 VectorCategories::SparseSequenceVectorTag  ) const
+		(Vector1                                          &res,
+		 const Vector2                                    &y,
+		 const typename Field::Element                    &a,
+		 const Vector3                                    &x,
+		 VectorCategories::SparseSequenceVectorTag  tag) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
@@ -1829,26 +1810,26 @@ namespace LinBox
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
 			while (i != y.end () && i->first < j->first) {
 				res.push_back (*i);
-				++i;
+				i++;
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				field().axpy (tmp, a, j->second, i->second);
-				++i;
+				VectorDomainBase<Field>::_F.axpy (tmp, a, j->second, i->second);
+				i++;
 			}
 			else
-				field().mul (tmp, a, j->second);
+				VectorDomainBase<Field>::_F.mul (tmp, a, j->second);
 
-			if (!field().isZero (tmp))
+			if (!VectorDomainBase<Field>::_F.isZero (tmp))
 				res.push_back (std::pair <size_t, Element> (j->first, tmp));
 		}
 
 		while (i != y.end ()) {
 			res.push_back (*i);
-			++i;
+			i++;
 		}
 
 		return res;
@@ -1857,34 +1838,34 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2, class Vector3>
 	Vector1 &VectorDomain<Field>::axpySpecialized
-	(Vector1                                             &res,
-	 const Vector2                                       &y,
-	 const typename Field::Element                       &a,
-	 const Vector3                                       &x,
-	 VectorCategories::SparseAssociativeVectorTag  ) const
+		(Vector1                                             &res,
+		 const Vector2                                       &y,
+		 const typename Field::Element                       &a,
+		 const Vector3                                       &x,
+		 VectorCategories::SparseAssociativeVectorTag  tag) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
 
 		res.clear ();
 
-		for (j = x.begin (), i = y.begin (); j != x.end (); ++j) {
+		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
 			while (i != y.end () && i->first < j->first) {
 				res[i->first] = i->second;
-				++i;
+				i++;
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				field().axpy (res[j->first], a, j->second, i->second);
-				++i;
+				VectorDomainBase<Field>::_F.axpy (res[j->first], a, j->second, i->second);
+				i++;
 			}
 			else
-				field().mul (res[j->first], a, j->second);
+				VectorDomainBase<Field>::_F.mul (res[j->first], a, j->second);
 		}
 
 		while (i != y.end ()) {
 			res[i->first] = i->second;
-			++i;
+			i++;
 		}
 
 		return res;
@@ -1893,11 +1874,11 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2, class Vector3>
 	Vector1 &VectorDomain<Field>::axpySpecialized
-	(Vector1                                          &res,
-	 const Vector2                                    &y,
-	 const typename Field::Element                    &a,
-	 const Vector3                                    &x,
-	 VectorCategories::SparseParallelVectorTag  ) const
+		(Vector1                                          &res, 	
+		 const Vector2                                    &y,
+		 const typename Field::Element                    &a,
+		 const Vector3                                    &x,
+		 VectorCategories::SparseParallelVectorTag  tag) const
 	{
 		typename Vector2::first_type::const_iterator i_idx = y.first.begin ();
 		typename Vector3::first_type::const_iterator j_idx = x.first.begin ();
@@ -1916,16 +1897,15 @@ namespace LinBox
 			}
 
 			if (i_idx != y.first.end () && *i_idx == *j_idx) {
-				field().axpy (tmp, a, *j_elt, *i_elt);
-				if (!field().isZero (tmp)) {
+				VectorDomainBase<Field>::_F.axpy (tmp, a, *j_elt, *i_elt);
+				if (!VectorDomainBase<Field>::_F.isZero (tmp)) {
 					res.first.push_back (*j_idx);
 					res.second.push_back (tmp);
 				}
 				++i_idx; ++i_elt;
-			}
-			else {
+			} else {
 				res.first.push_back (*j_idx);
-				res.second.push_back (field().mul (tmp, *j_elt, a));
+				res.second.push_back (VectorDomainBase<Field>::_F.mul (tmp, *j_elt, a));
 			}
 		}
 
@@ -1941,11 +1921,11 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2>
 	Vector1 &VectorDomain<Field>::axpyinSpecialized
-	(Vector1                                 &y,
-	 const typename Field::Element           &a,
-	 const Vector2                           &x,
-	 VectorCategories::DenseVectorTag,
-	 VectorCategories::DenseVectorTag) const
+		(Vector1                                 &y,
+		 const typename Field::Element           &a,
+		 const Vector2                           &x,
+		 VectorCategories::DenseVectorTag,
+		 VectorCategories::DenseVectorTag) const
 	{
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
@@ -1953,7 +1933,7 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 
 		for (i = y.begin (), j = x.begin (); i != y.end (); ++i, ++j)
-			field().axpyin (*i, a, *j);
+			VectorDomainBase<Field>::_F.axpyin (*i, a, *j);
 
 		return y;
 	}
@@ -1961,16 +1941,16 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2>
 	Vector1 &VectorDomain<Field>::axpyinSpecialized
-	(Vector1                                 &y,
-	 const typename Field::Element           &a,
-	 const Vector2                           &x,
-	 VectorCategories::DenseVectorTag,
-	 VectorCategories::SparseSequenceVectorTag) const
+		(Vector1                                 &y,
+		 const typename Field::Element           &a,
+		 const Vector2                           &x,
+		 VectorCategories::DenseVectorTag,
+		 VectorCategories::SparseSequenceVectorTag) const
 	{
 		typename Vector2::const_iterator j;
 
 		for (j = x.begin (); j != x.end (); ++j)
-			field().axpyin (y[j->first], a, j->second);
+			VectorDomainBase<Field>::_F.axpyin (y[j->first], a, j->second);
 
 		return y;
 	}
@@ -1978,16 +1958,16 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2>
 	Vector1 &VectorDomain<Field>::axpyinSpecialized
-	(Vector1                                 &y,
-	 const typename Field::Element           &a,
-	 const Vector2                           &x,
-	 VectorCategories::DenseVectorTag,
-	 VectorCategories::SparseAssociativeVectorTag) const
+		(Vector1                                 &y,
+		 const typename Field::Element           &a,
+		 const Vector2                           &x,
+		 VectorCategories::DenseVectorTag,
+		 VectorCategories::SparseAssociativeVectorTag) const
 	{
 		typename Vector2::const_iterator j;
 
 		for (j = x.begin (); j != x.end (); ++j)
-			field().axpyin (y[j->first], a, j->second);
+			VectorDomainBase<Field>::_F.axpyin (y[j->first], a, j->second);
 
 		return y;
 	}
@@ -1995,17 +1975,17 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2>
 	Vector1 &VectorDomain<Field>::axpyinSpecialized
-	(Vector1                                 &y,
-	 const typename Field::Element           &a,
-	 const Vector2                           &x,
-	 VectorCategories::DenseVectorTag,
-	 VectorCategories::SparseParallelVectorTag) const
+		(Vector1                                 &y,
+		 const typename Field::Element           &a,
+		 const Vector2                           &x,
+		 VectorCategories::DenseVectorTag,
+		 VectorCategories::SparseParallelVectorTag) const
 	{
 		typename Vector2::first_type::const_iterator j_idx = x.first.begin ();
 		typename Vector2::second_type::const_iterator j_elt = x.second.begin ();
 
 		for (; j_idx != x.first.end (); ++j_idx, ++j_elt)
-			field().axpyin (y[*j_idx], a, *j_elt);
+			VectorDomainBase<Field>::_F.axpyin (y[*j_idx], a, *j_elt);
 
 		return y;
 	}
@@ -2013,11 +1993,11 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2>
 	Vector1 &VectorDomain<Field>::axpyinSpecialized
-	(Vector1                                          &y,
-	 const typename Field::Element                    &a,
-	 const Vector2                                    &x,
-	 VectorCategories::SparseSequenceVectorTag,
-	 VectorCategories::SparseSequenceVectorTag) const
+		(Vector1                                          &y,
+		 const typename Field::Element                    &a,
+		 const Vector2                                    &x,
+		 VectorCategories::SparseSequenceVectorTag,
+		 VectorCategories::SparseSequenceVectorTag) const
 	{
 		Vector1 res;
 
@@ -2029,28 +2009,28 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2>
 	Vector1 &VectorDomain<Field>::axpyinSpecialized
-	(Vector1                                             &y,
-	 const typename Field::Element                       &a,
-	 const Vector2                                       &x,
-	 VectorCategories::SparseAssociativeVectorTag,
-	 VectorCategories::SparseAssociativeVectorTag) const
+		(Vector1                                             &y,
+		 const typename Field::Element                       &a,
+		 const Vector2                                       &x,
+		 VectorCategories::SparseAssociativeVectorTag,
+		 VectorCategories::SparseAssociativeVectorTag) const
 	{
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
 		Element tmp;
 
-		if (field().isZero (a)) {
+		if (VectorDomainBase<Field>::_F.isZero (a)) {
 			y.clear ();
 			return y;
 		}
 
-		for (i = y.begin (), j = x.begin (); j != x.end (); ++j) {
-			while (i != y.end () && i->first != j->first) ++i;
+		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
+			while (i != y.end () && i->first != j->first) i++;
 
 			if (i != y.end () && i->first == j->first)
-				field().axpyin (i->second, a, j->second);
-			else if (!field().isZero (j->second))
-				y[j->first] = field().mul (tmp, a, j->second);
+				VectorDomainBase<Field>::_F.axpyin (i->second, a, j->second);
+			else if (!VectorDomainBase<Field>::_F.isZero (j->second))
+				y[j->first] = VectorDomainBase<Field>::_F.mul (tmp, a, j->second);
 		}
 
 		return y;
@@ -2059,11 +2039,11 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Vector2>
 	Vector1 &VectorDomain<Field>::axpyinSpecialized
-	(Vector1                                          &y,
-	 const typename Field::Element                    &a,
-	 const Vector2                                    &x,
-	 VectorCategories::SparseParallelVectorTag,
-	 VectorCategories::SparseParallelVectorTag) const
+		(Vector1                                          &y,
+		 const typename Field::Element                    &a,
+		 const Vector2                                    &x,
+		 VectorCategories::SparseParallelVectorTag,
+		 VectorCategories::SparseParallelVectorTag) const
 	{
 		Vector1 res;
 
@@ -2074,237 +2054,226 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector1, class Vector2>
-	inline typename Field::Element &DotProductDomain<Field>:: dotSpecializedDD
-	(typename Field::Element                  &res,
-	 const Vector1                            &v1,
-	 const Vector2                            &v2) const
+	inline typename Field::Element &DotProductDomain<Field>::dotSpecializedDD
+		(Element                                  &res,
+		 const Vector1                            &v1,
+		 const Vector2                            &v2) const
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
-		FieldAXPY<Field> accu(this->field());
-		//VectorDomainBase<Field>::accu.reset();
+		VectorDomainBase<Field>::accu.reset();
 
 		linbox_check (v1.size () == v2.size ());
 
-		for (i = v1.begin (), j = v2.begin (); i != v1.end (); ++i, ++j)
-			/*VectorDomainBase<Field>::*/accu.mulacc (*i, *j);
+		for (i = v1.begin (), j = v2.begin (); i != v1.end (); i++, j++)
+			VectorDomainBase<Field>::accu.mulacc (*i, *j);
 
-		return /*VectorDomainBase<Field>::*/accu.get (res);
+		return VectorDomainBase<Field>::accu.get (res);
 	}
 
 	template <class Field>
 	template <class Vector1, class Vector2>
 	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
-	(Element                                           &res,
-	 const Vector1                                     &v1,
-	 const Vector2                                     &v2,
-	 VectorCategories::SparseSequenceVectorTag  ,
-	 VectorCategories::DenseVectorTag           ) const
+		(Element                                           &res,
+		 const Vector1                                     &v1,
+		 const Vector2                                     &v2,
+		 VectorCategories::SparseSequenceVectorTag  tag1,
+		 VectorCategories::DenseVectorTag           tag2) const
 	{
 		typename Vector1::const_iterator i;
+		
+		VectorDomainBase<Field>::accu.reset();
 
-		FieldAXPY<Field> accu(field());
-		//VectorDomainBase<Field>::accu.reset();
+		for (i = v1.begin (); i != v1.end (); i++)
+			VectorDomainBase<Field>::accu.mulacc (i->second, v2[i->first]);
 
-		for (i = v1.begin (); i != v1.end (); ++i)
-			/*VectorDomainBase<Field>::*/accu.mulacc (i->second, v2[i->first]);
-
-		return /*VectorDomainBase<Field>::*/accu.get (res);
+		return VectorDomainBase<Field>::accu.get (res);
 	}
 
 	template <class Field>
 	template <class Vector1, class Vector2>
 	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
-	(Element                                              &res,
-	 const Vector1                                        &v1,
-	 const Vector2                                        &v2,
-	 VectorCategories::SparseAssociativeVectorTag  ,
-	 VectorCategories::DenseVectorTag              ) const
+		(Element                                              &res,
+		 const Vector1                                        &v1,
+		 const Vector2                                        &v2,
+		 VectorCategories::SparseAssociativeVectorTag  tag1,
+		 VectorCategories::DenseVectorTag              tag2) const
 	{
 		typename Vector1::const_iterator i;
-		FieldAXPY<Field> accu(field());
-		//VectorDomainBase<Field>::accu.reset();
+		VectorDomainBase<Field>::accu.reset();
 
-		for (i = v1.begin (); i != v1.end (); ++i)
-			/*VectorDomainBase<Field>::*/accu.mulacc (i->second, v2[i->first]);
+		for (i = v1.begin (); i != v1.end (); i++)
+			VectorDomainBase<Field>::accu.mulacc (i->second, v2[i->first]);
 
-		return /*VectorDomainBase<Field>::*/accu.get (res);
+		return VectorDomainBase<Field>::accu.get (res);
 	}
 
 	template <class Field>
 	template <class Vector1, class Vector2>
 	inline typename Field::Element &DotProductDomain<Field>::dotSpecializedDSP
-	(Element                                           &res,
-	 const Vector1                                     &v1,
-	 const Vector2                                     &v2) const
+		(Element                                           &res,
+		 const Vector1                                     &v1,
+		 const Vector2                                     &v2) const
 	{
 		typename Vector1::first_type::const_iterator i_idx;
 		typename Vector1::second_type::const_iterator i_elt;
-		FieldAXPY<Field> accu(this->field());
-		//VectorDomainBase<Field>::accu.reset();
+		VectorDomainBase<Field>::accu.reset();
 
 		for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt)
-			/*VectorDomainBase<Field>::*/accu.mulacc (*i_elt, v2[*i_idx]);
+			VectorDomainBase<Field>::accu.mulacc (*i_elt, v2[*i_idx]);
 
-		return /*VectorDomainBase<Field>::*/accu.get (res);
+		return VectorDomainBase<Field>::accu.get (res);
 	}
 
 	template <class Field>
 	template <class Vector1, class Vector2>
 	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
-	(Element                                              &res,
-	 const Vector1                                        &v1,
-	 const Vector2                                        &v2,
-	 VectorCategories::SparseSequenceVectorTag     ,
-	 VectorCategories::SparseSequenceVectorTag     ) const
+		(Element                                              &res,
+		 const Vector1                                        &v1,
+		 const Vector2                                        &v2,
+		 VectorCategories::SparseSequenceVectorTag     tag1,
+		 VectorCategories::SparseSequenceVectorTag     tag2) const
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
-		FieldAXPY<Field> accu(field());
-		//VectorDomainBase<Field>::accu.reset();
+		VectorDomainBase<Field>::accu.reset();
 
-		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); ++i) {
-			while (j != v2.end () && j->first < i->first) ++j;
+		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
+			while (j != v2.end () && j->first < i->first) j++;
 
 			if (j != v2.end () && j->first == i->first)
-				/*VectorDomainBase<Field>::*/accu.mulacc (i->second, j->second);
+				VectorDomainBase<Field>::accu.mulacc (i->second, j->second);
 		}
 
-		return /*VectorDomainBase<Field>::*/accu.get (res);
+		return VectorDomainBase<Field>::accu.get (res);
 	}
 
 	template <class Field>
 	template <class Vector1, class Vector2>
 	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
-	(Element                                              &res,
-	 const Vector1                                        &v1,
-	 const Vector2                                        &v2,
-	 VectorCategories::SparseAssociativeVectorTag  ,
-	 VectorCategories::SparseSequenceVectorTag     ) const
+		(Element                                              &res,
+		 const Vector1                                        &v1,
+		 const Vector2                                        &v2,
+		 VectorCategories::SparseAssociativeVectorTag  tag1,
+		 VectorCategories::SparseSequenceVectorTag     tag2) const
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
-		FieldAXPY<Field> accu(field());
-		//VectorDomainBase<Field>::accu.reset();
+		VectorDomainBase<Field>::accu.reset();
 
-		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); ++i) {
-			while (j != v2.end () && j->first < i->first) ++j;
+		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
+			while (j != v2.end () && j->first < i->first) j++;
 
 			if (j != v2.end () && j->first == i->first)
-				/*VectorDomainBase<Field>::*/accu.mulacc (i->second, j->second);
+				VectorDomainBase<Field>::accu.mulacc (i->second, j->second);
 		}
 
-		return /*VectorDomainBase<Field>::*/accu.get (res);
+		return VectorDomainBase<Field>::accu.get (res);
 	}
 
 	template <class Field>
 	template <class Vector1, class Vector2>
 	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
-	(Element                                              &res,
-	 const Vector1                                        &v1,
-	 const Vector2                                        &v2,
-	 VectorCategories::SparseParallelVectorTag     ,
-	 VectorCategories::SparseSequenceVectorTag     ) const
+		(Element                                              &res,
+		 const Vector1                                        &v1,
+		 const Vector2                                        &v2,
+		 VectorCategories::SparseParallelVectorTag     tag1,
+		 VectorCategories::SparseSequenceVectorTag     tag2) const
 	{
 		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
 		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
 		typename Vector2::const_iterator j = v2.begin ();
-		FieldAXPY<Field> accu(field());
-		//VectorDomainBase<Field>::accu.reset();
+		VectorDomainBase<Field>::accu.reset();
 
 		for (; i_idx != v1.first.end () && j != v2.end (); ++i_idx, ++i_elt) {
-			while (j != v2.end () && j->first < *i_idx) ++j;
+			while (j != v2.end () && j->first < *i_idx) j++;
 
 			if (j != v2.end () && j->first == *i_idx)
-				/*VectorDomainBase<Field>::*/accu.mulacc (*i_elt, j->second);
+				VectorDomainBase<Field>::accu.mulacc (*i_elt, j->second);
 		}
 
-		return /*VectorDomainBase<Field>::*/accu.get (res);
+		return VectorDomainBase<Field>::accu.get (res);
 	}
 
 	template <class Field>
 	template <class Vector1, class Vector2>
 	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
-	(Element                                              &res,
-	 const Vector1                                        &v1,
-	 const Vector2                                        &v2,
-	 VectorCategories::SparseAssociativeVectorTag  ,
-	 VectorCategories::SparseAssociativeVectorTag  ) const
+		(Element                                              &res,
+		 const Vector1                                        &v1,
+		 const Vector2                                        &v2,
+		 VectorCategories::SparseAssociativeVectorTag  tag1,
+		 VectorCategories::SparseAssociativeVectorTag  tag2) const
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
-		FieldAXPY<Field> accu(field());
-		//VectorDomainBase<Field>::accu.reset();
+		VectorDomainBase<Field>::accu.reset();
 
-		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); ++i) {
-			while (j != v2.end () && j->first < i->first) ++j;
+		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
+			while (j != v2.end () && j->first < i->first) j++;
 
 			if (j != v2.end () && j->first == i->first)
-				/*VectorDomainBase<Field>::*/accu.mulacc (i->second, j->second);
+				VectorDomainBase<Field>::accu.mulacc (i->second, j->second);
 		}
 
-		return /*VectorDomainBase<Field>::*/accu.get (res);
+		return VectorDomainBase<Field>::accu.get (res);
 	}
 
 	template <class Field>
 	template <class Vector1, class Vector2>
 	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
-	(Element                                              &res,
-	 const Vector1                                        &v1,
-	 const Vector2                                        &v2,
-	 VectorCategories::SparseParallelVectorTag     ,
-	 VectorCategories::SparseAssociativeVectorTag  ) const
+		(Element                                              &res,
+		 const Vector1                                        &v1,
+		 const Vector2                                        &v2,
+		 VectorCategories::SparseParallelVectorTag     tag1,
+		 VectorCategories::SparseAssociativeVectorTag  tag2) const
 	{
 		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
 		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
 		typename Vector2::const_iterator j = v2.begin ();
-		FieldAXPY<Field> accu(field());
-		//VectorDomainBase<Field>::accu.reset();
+		VectorDomainBase<Field>::accu.reset();
 
 		for (; i_idx != v1.first.end () && j != v2.end (); ++i_idx, ++i_elt) {
-			while (j != v2.end () && j->first < *i_idx) ++j;
+			while (j != v2.end () && j->first < *i_idx) j++;
 
 			if (j != v2.end () && j->first == *i_idx)
-				/*VectorDomainBase<Field>::*/accu.mulacc (*i_elt, j->second);
+				VectorDomainBase<Field>::accu.mulacc (*i_elt, j->second);
 		}
 
-		return /*VectorDomainBase<Field>::*/accu.get (res);
+		return VectorDomainBase<Field>::accu.get (res);
 	}
 
 	template <class Field>
 	template <class Vector1, class Vector2>
 	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
-	(Element                                              &res,
-	 const Vector1                                        &v1,
-	 const Vector2                                        &v2,
-	 VectorCategories::SparseParallelVectorTag     ,
-	 VectorCategories::SparseParallelVectorTag     ) const
+		(Element                                              &res,
+		 const Vector1                                        &v1,
+		 const Vector2                                        &v2,
+		 VectorCategories::SparseParallelVectorTag     tag1,
+		 VectorCategories::SparseParallelVectorTag     tag2) const
 	{
 		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
 		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
 		typename Vector2::first_type::const_iterator j_idx = v2.first.begin ();
 		typename Vector2::second_type::const_iterator j_elt = v2.second.begin ();
-		FieldAXPY<Field> accu(field());
-		//VectorDomainBase<Field>::accu.reset();
-
+		VectorDomainBase<Field>::accu.reset();
 
 		for (; i_idx != v1.first.end () && j_idx != v2.first.end (); ++i_idx, ++i_elt) {
 			while (j_idx != v2.first.end () && *j_idx < *i_idx) {
-				++j_idx; ++j_elt;
+				j_idx++; j_elt++;
 			}
 
 			if (j_idx != v2.first.end () && *j_idx == *i_idx)
-				/*VectorDomainBase<Field>::*/accu.mulacc (*i_elt, *j_elt);
+				VectorDomainBase<Field>::accu.mulacc (*i_elt, *j_elt);
 		}
 
-		return /*VectorDomainBase<Field>::*/accu.get (res);
+		return VectorDomainBase<Field>::accu.get (res);
 	}
 
 	template <class Field>
 	template <class Vector>
 	inline void VectorDomain<Field>::swapSpecialized
-	(Vector &v1, Vector &v2,
-	 VectorCategories::DenseVectorTag) const
+		(Vector &v1, Vector &v2,
+		 VectorCategories::DenseVectorTag) const 
 	{
 		typename Vector::iterator j, k;
 
@@ -2315,8 +2284,8 @@ namespace LinBox
 	template <class Field>
 	template <class Vector, class Iterator>
 	inline Vector &VectorDomain<Field>::permuteSpecialized
-	(Vector &v, Iterator P_start, Iterator P_end,
-	 VectorCategories::DenseVectorTag) const
+		(Vector &v, Iterator P_start, Iterator P_end,
+		 VectorCategories::DenseVectorTag) const 
 	{
 		Iterator i;
 
@@ -2327,10 +2296,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class _Vector, class Iterator>
-	inline _Vector &VectorDomain<Field>::permuteSpecialized
-	(_Vector &v, Iterator P_start, Iterator P_end,
-	 VectorCategories::SparseSequenceVectorTag) const
+	template <class Vector, class Iterator>
+	inline Vector &VectorDomain<Field>::permuteSpecialized
+		(Vector &v, Iterator P_start, Iterator P_end,
+		 VectorCategories::SparseSequenceVectorTag) const 
 	{
 		unsigned int max = 0;
 
@@ -2346,10 +2315,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class _Vector, class Iterator>
-	inline _Vector &VectorDomain<Field>::permuteSpecialized
-	(_Vector &v, Iterator P_start, Iterator P_end,
-	 VectorCategories::SparseAssociativeVectorTag) const
+	template <class Vector, class Iterator>
+	inline Vector &VectorDomain<Field>::permuteSpecialized
+		(Vector &v, Iterator P_start, Iterator P_end,
+		 VectorCategories::SparseAssociativeVectorTag) const 
 	{
 		unsigned int max = 0;
 
@@ -2365,16 +2334,16 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class _Vector, class Iterator>
-	inline _Vector &VectorDomain<Field>::permuteSpecialized
-	(_Vector &v, Iterator P_start, Iterator P_end,
-	 VectorCategories::SparseParallelVectorTag) const
+	template <class Vector, class Iterator>
+	inline Vector &VectorDomain<Field>::permuteSpecialized
+		(Vector &v, Iterator P_start, Iterator P_end,
+		 VectorCategories::SparseParallelVectorTag) const 
 	{
 		unsigned int max = 0;
 
 		//z.w. Does it require max bigger the maximal index of v?
-		if (v. first. size() > 0)
-			max = (unsigned)(*std::max_element(v. first. begin(), v. first. end()));
+		if (v. first. size() > 0) 
+			max = *std::max_element(v. first. begin(), v. first. end());
 
 		for (Iterator i = P_start; i != P_end; ++i)
 			max = std::max (max, std::max (i->first, i->second));
@@ -2390,14 +2359,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __LINBOX_field_vector_domain_INL
-
-
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+#endif // __FIELD_VECTOR_DOMAIN_H

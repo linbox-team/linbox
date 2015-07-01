@@ -1,15 +1,13 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* lb-domain-data.h
  * Copyright (C) 2005 Pascal Giorgi
  *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,18 +15,18 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_lb_domain_data_H
-#define __LINBOX_lb_domain_data_H
+#ifndef __LINBOX_LB_DOMAIN_DATA_H
+#define __LINBOX_LB_DOMAIN_DATA_H
 
 
-#include "linbox/linbox-config.h"
-#include "linbox/integer.h"
-#include "linbox/field/field-traits.h"
+#include <linbox-config.h>
+#include <linbox/integer.h>
+#include <linbox/field/field-traits.h>
 
 #include <map>
 #include <utility>
@@ -56,12 +54,12 @@ public:
 	bool add(const char *name, createDomainCallBack createD){
 		return _callback.insert(CallBackMap::value_type(name, createD)).second;
 	}
-
+	
 	bool remove(const char *name){
 		return _callback.erase(name) == 1;
 	}
-
-	DomainAbstract* create(const char *name, const LinBox::integer &p){
+	
+	DomainAbstract* create(const char *name, const LinBox::integer &p){		
 		CallBackMap::iterator it = _callback.find(name);
 		if (it != _callback.end()){
 			return it->second(p);
@@ -127,13 +125,13 @@ class DomainEnvelope :  public DomainAbstract {
 public:
 	typedef Domain Self_t;
 	typedef typename LinBox::FieldTraits<Domain>::categoryTag categoryTag;
-
+	
 	DomainEnvelope() {}
 
 	DomainEnvelope(const LinBox::integer &p) {
 		ptr = constructDomainFunctor<Domain, categoryTag> ()(p, categoryTag());
 	}
-
+	
 	~DomainEnvelope() {delete ptr;}
 
 	DomainAbstract* clone() const {
@@ -142,7 +140,7 @@ public:
 
 	LINBOX_VISITABLE();
 
-	Domain *getDomain() const  {return ptr;}
+	Domain *getDomain() const  {return ptr;}			
 };
 
 
@@ -160,12 +158,3 @@ DomainAbstract* constructDomain(const LinBox::integer &p) {
 
 
 #endif
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

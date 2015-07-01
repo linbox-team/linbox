@@ -1,31 +1,15 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/vector/reverse.h
  * Copyright (C) 2002 Bradford Hovinen
  *
  * ------------------------------------
  *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * See COPYING for license information.
  */
 
-#ifndef __LINBOX_reverse_H
-#define __LINBOX_reverse_H
+#ifndef __REVERSE_H
+#define __REVERSE_H
 
 #include "vector-traits.h"
 
@@ -42,7 +26,8 @@ namespace LinBox
 	 \ingroup vector
 	 */
 	template <class Vector>
-	class ReverseVector {
+	class ReverseVector
+	{
 	    public:
 		typedef typename Vector::value_type             value_type;
 		typedef typename Vector::size_type              size_type;
@@ -55,14 +40,12 @@ namespace LinBox
 		typedef typename Vector::iterator               reverse_iterator;
 		typedef typename Vector::const_iterator         const_reverse_iterator;
 
-		ReverseVector (Vector& v) :
-		       	_v (v)
-		{}
-
+		ReverseVector (Vector& v)
+			: _v (v) {}
+		
 		// Copy constructor
-		ReverseVector (const ReverseVector<Vector> &v) :
-		       	_v (v._v)
-		{}
+		ReverseVector (const ReverseVector<Vector> &v) 
+			: _v (v._v) {}
 
 		~ReverseVector () {}
 
@@ -80,27 +63,27 @@ namespace LinBox
 
 		// Element access
 
-		inline reference       operator[] (size_type n)       { return ((begin ())[(ptrdiff_t)n]); }
-		inline const_reference operator[] (size_type n) const { return ((begin ())[(ptrdiff_t)n]); }
+		inline reference       operator[] (size_type n)       { return (begin ())[n]; }
+		inline const_reference operator[] (size_type n) const { return (begin ())[n]; }
 
-		// the method "at" does appear to be implemented
+		// the method "at" does appear to be implemented 
 		// in the gnu implementation of the STL
 		reference at (size_type n)  // validity is relative to valid _begin, _end
-		{
+		{   
 			iterator p = begin () + n;
-			if (begin () <= p && p < end ())
+			if (begin () <= p && p < end ()) 
 				return *p;
 			else
-				throw std::out_of_range("out of range"); //out of range error message.
+				throw std::out_of_range(); //out of range error message.
 		}
 
-		const_reference at(size_type n) const
+		const_reference at(size_type n) const 
 		{
 			const_iterator p = begin () + n;
 			if (begin () <= p && p < end ())
 				return *p;
-			else
-				throw std::out_of_range("out of range"); //out of range error message
+			else 
+				throw std::out_of_range(); //out of range error message
 		}
 
 		inline reference       front (void)       { return *begin (); }
@@ -125,14 +108,14 @@ namespace LinBox
 //		template <class In> void assign(In first, In last);
 //		void assign(size_type n, const T& val);
 
-		// Stack operations:
+		// Stack operations:  
 		// 	not implemented because they invalidate iterators
 
 		// List operations:
 		// 	not implemented because they invalidate iterators
 
 		// Capacity
-		// 	resize, reserve: not implemented because they
+		// 	resize, reserve: not implemented because they 
 		// 		invalidate iterators
 
 		inline size_type size      (void) const { return _v.size  (); }
@@ -146,21 +129,11 @@ namespace LinBox
 	}; // template <class Vector> class ReverseVector
 
 	// Vector traits for ReverseVector wrapper
-	template <class Vector>
+	template <class Vector> 
 	struct VectorTraits<ReverseVector<Vector> >
-	{
-		typedef typename VectorTraits<Vector>::VectorCategory VectorCategory;
+	{ 
+		typedef typename VectorTraits<Vector>::VectorCategory VectorCategory; 
 	};
 
 } // namespace LinBox
-#endif //__LINBOX_reverse_H
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-
+#endif

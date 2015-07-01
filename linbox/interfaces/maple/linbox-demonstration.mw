@@ -1151,7 +1151,7 @@
 </Group>
 <Group labelreference="L254" drawlabel="true">
 <Input>
-<Text-field style="Text" layout="Normal"> <Font bold="true" italic="true" size="14">doesn't exist in Givaro::Modular Package</Font></Text-field>
+<Text-field style="Text" layout="Normal"> <Font bold="true" italic="true" size="14">doesn't exist in Modular Package</Font></Text-field>
 </Input>
 </Group>
 <Group labelreference="L136" drawlabel="true">
@@ -1239,7 +1239,7 @@
 </Group>
 <Group labelreference="L269" drawlabel="true">
 <Input>
-<Text-field style="Text" bold="true" italic="true" size="14" layout="Normal"><Font italic="true" bold="true" size="14">doesn't exist in Givaro::Modular package</Font></Text-field>
+<Text-field style="Text" bold="true" italic="true" size="14" layout="Normal"><Font italic="true" bold="true" size="14">doesn't exist in Modular package</Font></Text-field>
 </Input>
 </Group>
 <Group labelreference="L126" drawlabel="true">

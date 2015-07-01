@@ -1,15 +1,13 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* lb-garbage.C
  * Copyright (C) 2005 Pascal Giorgi
  *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,13 +15,13 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_lb_garbage_C
-#define __LINBOX_lb_garbage_C
+#ifndef __LINBOX_LB_GARBAGE_C
+#define __LINBOX_LB_GARBAGE_C
 
 #include <lb-garbage.h>
 #include <lb-domain-function.h>
@@ -40,7 +38,7 @@
 class DeleteElementFunctor{
 protected:
 	EltAbstract  *elt;
-public:
+public:	
 	DeleteElementFunctor(EltAbstract *e) : elt(e) {}
 
 	template<class Domain>
@@ -64,7 +62,7 @@ void deleteElement(const EltKey &key){
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		try {
 #endif
-		DomainFunction::call(it->second->getDomainKey(), Fct);
+		DomainFunction::call(it->second->getDomainKey(), Fct);	
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		} catch(lb_runtime_error &t){std::cout<<"LinBox exception catched\n"; exit(0);}
 #endif
@@ -93,7 +91,7 @@ void deleteDomain(const DomainKey &key) {
 	if (key.free()){
 		DomainTable::iterator it= domain_hashtable.find(key);
 		delete it->second;
-		domain_hashtable.erase(it);
+		domain_hashtable.erase(it);	
 	}
 	else{
 		key.dispose();
@@ -116,16 +114,16 @@ void collectDomain(){
  * API to delete a blackbox from its key *
  *****************************************/
 class DeleteBlackboxFunctor{
-public:
+public:	
 	template<class Blackbox>
 	void operator() (void *, Blackbox *B) const {
-		delete B;
+		delete B;		
 	}
 };
 
 void deleteBlackbox (const BlackboxKey &key){
 	BlackboxTable::iterator it = blackbox_hashtable.find(key);
-
+	
 	if ( it == blackbox_hashtable.end()){
 #ifndef __LINBOX_NO_GC_EXCEPTION
 		throw lb_runtime_error("LinBox ERROR: invalid blackbox (freeing impossible)\n");
@@ -139,11 +137,11 @@ void deleteBlackbox (const BlackboxKey &key){
 		try {
 #endif
 			BlackboxFunction::call(key, Fct);
-#ifdef __LINBOX_NO_GC_EXCEPTION
+#ifdef __LINBOX_NO_GC_EXCEPTION	
 		} catch (lb_runtime_error &t) {std::cout<<"LinBox exception catched: "<<t<<"\n"; exit(0);}
 #endif
-		delete it->second;
-		blackbox_hashtable.erase(it);
+		delete it->second;	
+		blackbox_hashtable.erase(it);		
 	}
 }
 
@@ -173,10 +171,10 @@ void collectBlackbox(){
  ***************************************/
 
 class DeleteVectorFunctor{
-public:
+public:	
 	template<class Vector>
 	void operator() (void*, Vector *V) const {
-		delete V;
+		delete V;		
 	}
 };
 
@@ -193,12 +191,12 @@ void deleteVector (const VectorKey &key){
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		try{
 #endif
-			VectorFunction::call(key, Fct);
+			VectorFunction::call(key, Fct);	
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		} catch(lb_runtime_error &t) {exit(0);}
 #endif
 		delete it->second;
-		vector_hashtable.erase(it);
+		vector_hashtable.erase(it);	
 	}
 }
 
@@ -213,7 +211,7 @@ void collectVector(){
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		try{
 #endif
-			VectorFunction::call(*it, Fct);
+			VectorFunction::call(*it, Fct);		
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		} catch (lb_runtime_error &t) {std::cout<<"LinBox exception catched\n"; exit(0);}
 #endif
@@ -227,20 +225,11 @@ void collectVector(){
  * API to collect all data allocated by LinBox *
  **********************************************/
 void LinBoxCollect(){
-	collectVector();
-	collectBlackbox();
-	collectElement();
-	collectDomain();
-}
+	collectVector();   
+	collectBlackbox();  
+	collectElement();   
+	collectDomain();    
+} 
 
 
 #endif
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

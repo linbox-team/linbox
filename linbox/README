@@ -7,19 +7,17 @@ See doc/mainpage.doxy for more info.
 
 INSTALLATION:
 
-See doc/install-dev.html for installation from the svn lastest version.
-See doc/install-dist.html for installation from a release tarball.
+See doc/install*html for particulars.
 See INSTALL for generic installation information.
 
 
 AVAILABILITY: from linalg.org
 
 
-REQUIREMENTS:  GMP, ATLAS (or other cblas, lapack), Givaro, fflas-ffpack
-OPTIONAL Dependencies: NTL, IML, FLINT, M4RI, M4RIE 
+REQUIREMENTS:  GMP, ATLAS (or other cblas, lapack), NTL, Givaro
 See  doc/install*html for details.
 
-This library requires the GNU C++ compiler (gcc-4.3 or newer) or any 
+This library requires the GNU C++ compiler (gcc-2.95.1 or newer) or any 
 compiler supporting advanced template features.
 
 
@@ -27,8 +25,8 @@ compiler supporting advanced template features.
 The linbox website is http://linalg.org
 
 Corrections, suggestions and comments to : 
-linbox-use@googlegroups.com
+Jean-Guillaume.Dumas@imag.fr
  
-Last update : 2013 June
+Last update : 2005 July
  
 

@@ -1,15 +1,13 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* lb-solve.C
  * Copyright (C) 2005 Pascal Giorgi
  *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,20 +15,19 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_lb_solve_C
-#define __LINBOX_lb_solve_C
+#ifndef __LINBOX_LB_SOLVE_C
+#define __LINBOX_LB_SOLVE_C
 
-#include "linbox/solutions/solve.h"
+#include <linbox/solutions/solve.h>
 
 #include <lb-solve.h>
 #include <lb-blackbox-function.h>
 #include <lb-vector-function.h>
-#include <lb-blackbox.h>
 #include <lb-vector.h>
 #include <lb-domain.h>
 #include <lb-garbage.h>
@@ -61,7 +58,7 @@ class LaunchSolveFunctor<Element, Element, Element, DomainCategory>{
 public:
 	template<class Result, class Blackbox, class Vector, class Method>
 	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {
-		LinBox::solve(s, *B, *v, m);
+		LinBox::solve(s, *B, *v, m);		
 	}
 };
 
@@ -72,7 +69,7 @@ class LaunchSolveFunctor<Element, Element, Element, LinBox::RingCategories::Inte
 public:
 	template<class Result, class Blackbox, class Vector, class Method>
 	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {
-		//LinBox::solve(s, *B, *v, m);
+		//LinBox::solve(s, *B, *v, m);		
 		//not yet handled
 		throw lb_runtime_error("LinBox ERROR: integer system solving with same vector type is not yet handled");
 	}
@@ -84,8 +81,8 @@ template<class Element>
 class LaunchSolveFunctor<LinBox::GMPRationalElement, Element, Element, LinBox::RingCategories::IntegerTag >{
 public:
 	template<class Result, class Blackbox, class Vector, class Method>
-	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {
-		LinBox::solve(s, *B, *v, m);
+	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {	
+		LinBox::solve(s, *B, *v, m);		
 	}
 };
 
@@ -97,20 +94,20 @@ public:
 template<class Blackbox, class Method>
 class SolvePartialFunctor{
 protected:
-	Blackbox         *_BB;
+	Blackbox         *_B;
 	const Method   &meth;
 public:
-
-	SolvePartialFunctor (Blackbox *B, const Method &m) : _BB(B), meth(m) {}
-
+	
+	SolvePartialFunctor (Blackbox *B, const Method &m) : _B(B), meth(m) {}
+	
 	template<class Vector>
 	void operator()(const VectorKey& Vkey, Vector *res) const {
 		VectorTable::iterator it = vector_hashtable.find(Vkey);
 		if (it == vector_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: right hand side vector does not exist (solving impossible)\n");
-
-		SolvePartialFunctor<Blackbox, Method> fct(_BB, meth);
-		VectorFunction::call(*res, Vkey, fct);
+		
+		SolvePartialFunctor<Blackbox, Method> fct(_B, meth);
+		VectorFunction::call(*res, Vkey, fct);		
 	}
 
       	template<class Vector, class Result>
@@ -119,7 +116,7 @@ public:
 		typedef typename Vector::value_type       VElement;
 		typedef typename Result::value_type       RElement;
 		typedef typename LinBox::FieldTraits<typename Blackbox::Field>::categoryTag categoryTag;
-		LaunchSolveFunctor<RElement, BElement, VElement, categoryTag>()(res, _BB, v, meth);
+		LaunchSolveFunctor<RElement, BElement, VElement, categoryTag>()(res, _B, v, meth);
 	}
 };
 
@@ -142,7 +139,7 @@ public:
 		const DomainKey *k= &createDomain(0, current_rational_field);
 		v->rebind(*k);
 		deleteDomain(*k);
-	}
+	}	
 };
 
 
@@ -159,7 +156,7 @@ void modifyResultVector(const VectorKey &key){
 	VectorTable::iterator it = vector_hashtable.find(key);
 	if (it == vector_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: result vector does not exist (solving impossible)\n");
-
+	
 	const DomainKey *Dkey = &(it->second->getDomainKey());
 	MutateVectorFunctor Fct;
 	DomainFunction::call(it->second, *Dkey, Fct);
@@ -191,7 +188,7 @@ public:
  * vector solution  is returned through a given vector key *
  ***********************************************************/
 
-void lb_solve(const VectorKey &res, const BlackboxKey &Bkey, const VectorKey &Vkey) {
+void lb_solve(const VectorKey &res, const BlackboxKey &Bkey, const VectorKey &Vkey) {		
 	SolveFunctor<> fct(res);
 	modifyResultVector(res);
 	BlackboxFunction::call(Vkey, Bkey, fct);
@@ -202,20 +199,8 @@ void lb_solve(const VectorKey &res, const BlackboxKey &Bkey, const VectorKey &Vk
  * vector solution  is returned through a vector key *
  *****************************************************/
 
-const VectorKey&  lb_solve(const BlackboxKey &Bkey, const VectorKey &Vkey) {
-
-	BlackboxTable::iterator it = blackbox_hashtable.find(Bkey);
-	if (it == blackbox_hashtable.end())
-		throw lb_runtime_error("LinBox ERROR: blackbox does not exist (solving impossible)\n");
-	const DomainKey *Dkey = &it->second->getDomainKey();
-
-	std::pair<size_t,size_t> dim;
-	dim = getBlackboxDimension(Bkey);
-	size_t coldim = dim.second;
-
-	//const VectorKey *res = &copyVector(Vkey);
-	const VectorKey *res = &createVector(*Dkey, coldim);
-
+const VectorKey&  lb_solve(const BlackboxKey &Bkey, const VectorKey &Vkey) {	
+	const VectorKey *res = &copyVector(Vkey);
 	lb_solve(*res, Bkey, Vkey);
 	return *res;
 }
@@ -223,12 +208,3 @@ const VectorKey&  lb_solve(const BlackboxKey &Bkey, const VectorKey &Vkey) {
 
 
 #endif
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

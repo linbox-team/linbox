@@ -1,55 +1,35 @@
+/* -*- mode: C++; style: linux -*- */
 
-/*
- * examples/blackbox/load-sylletrize.C
- *
- * Copyright (C) 2001, 2002, 2010 Bradford Hovinen <hovinen@cis.udel.edu>
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- */
-
+// Copyright (C) 2001, 2002 Bradford Hovinen
+// See COPYING for license information.
 /** @name examples/blackbox/load-symmetrize.C
  *
  * @author Bradford Hovinen <hovinen@cis.udel.edu>
- * @memo
+ * @memo 
  * Small program that loads and computes the minimal polynomial of A^T A, where
  * A is a matrix whose filename is given on the command line
  */
 //@{
 
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 #include <fstream>
 #include <vector>
 
 #include "linbox/field/modular.h"
-#include "linbox/matrix/sparse-matrix.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/algorithms/blackbox-container-symmetrize.h"
 #include "linbox/algorithms/massey-domain.h"
 
 using namespace LinBox;
 using namespace std;
 
-typedef Givaro::Modular<uint32_t> Field;
+typedef Modular<uint32> Field;
 
 typedef vector <Field::Element> Vector;
 typedef vector <Field::Element> Polynomial;
-typedef SparseMatrix <Field, VectorTraits<Vector>::SparseFormat > Blackbox;
+typedef SparseMatrix <Field, Vector> Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 1000;
@@ -63,8 +43,8 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
-	commentator().setMaxDepth (2);
-	commentator().setReportStream (cout);
+	commentator.setMaxDepth (2);
+	commentator.setReportStream (cout);
 
 	Field F (q);
 
@@ -92,12 +72,3 @@ int main (int argc, char **argv)
 	return 0;
 }
 //@}
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

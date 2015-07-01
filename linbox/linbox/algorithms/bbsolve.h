@@ -1,75 +1,57 @@
-/* Copyright (c) LinBox
- * linbox/algorithms/bbsolve.h
- * (was linbox/solutions/solve.h)
- * written
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
+/* linbox/algorithms/bbsolve.h
+ * (was linbox/sollutions/solve.h)
  *  by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * See COPYING for license information.
  */
 
-#ifndef __LINBOX_bbsolve_H
-#define __LINBOX_bbsolve_H
+#ifndef __BBSOLVE_H
+#define __BBSOLVE_H
 
+#include <vector>
 #include <algorithm>
 
 // must fix this list...
 #include "linbox/algorithms/wiedemann.h"
 #include "linbox/algorithms/lanczos.h"
 #include "linbox/algorithms/mg-block-lanczos.h"
+#include "linbox/blackbox/dense.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/methods.h"
 
-namespace LinBox
+namespace LinBox 
 {
 
-#if 0
-	/** @name Solvers
-	 * @brief Solving linear system Ax = b over the field F.
-	 */
-	@{
-#endif
+//	/** @name Solvers
+//	 * @brief Solving linear system Ax = b over the field F.
+//	 */
+//	//@{
 
-#if 0
+	/*
 	// for specialization on method.
 	template <class Field, class Vector, class Blackbox, class MyMethod>
 	Vector& solve (const Blackbox&A,
-		       Vector                          &x,
-		       const Vector                    &b,
-		       const Field                     &F,
-		       const MyMethod & m );
-#endif
+	Vector                          &x,		       
+	const Vector                    &b,
+	const Field                     &F,
+	const MyMethod & m );
+	*/
 
 	/** Solve Ax=b over field F using Wiedemann's method, with inconsistency certificate.
-	 *
+	 * 
 	 * This is a general interface for the linear system solving
 	 * capabilities of LinBox. If the system is nonsingular, it returns
 	 * the unique solution, storing it in the vector x. If the system is
 	 * consistent and singular, it returns a random solution. Repeated
 	 * calls to this function can give a complete description of the
 	 * solution manifold. If the system is inconsistent and the
-	 * \ref SolverTraits structure supplied requests certification of
+	 * \Ref{SolverTraits} structure supplied requests certification of
 	 * inconsistency, it fills in the certificate of
 	 * inconsistency. Otherwise, it runs through the number of iterations
-	 * specified in \c traits and throws a \ref SolveFailed exception
+	 * specified in @code{traits} and throws a \Ref{SolveFailed} exception
 	 * if it cannot find a solution.
 	 *
 	 * This specialization uses Wiedemann's algorithm and is the default.
@@ -79,14 +61,14 @@ namespace LinBox
 	 * @param b Right-hand side
 	 * @param u Vector in which to store certificate of inconsistency, if required
 	 * @param F Field over which to perform computations
-	 * @param traits \ref SolverTraits structure with user-specified parameters
+	 * @param traits \Ref{SolverTraits} structure with user-specified parameters
 	 * @return Reference to solution vector
 	 */
 
 	template <class Field, class Vector, class Blackbox>
-	typename WiedemannSolver<Field>::ReturnStatus
+	typename WiedemannSolver<Field>::ReturnStatus 
 	solve (const Blackbox                  &A,
-	       Vector                          &x,
+	       Vector                          &x,		       
 	       const Vector                    &b,
 	       Vector                          &u,
 	       const Field                     &F,
@@ -106,12 +88,12 @@ namespace LinBox
 
 	template <class Field, class Vector, class Blackbox>
 	Vector &solve (const Blackbox                  &A,
-		       Vector                          &x,
+		       Vector                          &x,		       
 		       const Vector                    &b,
 		       const Field                     &F,
 		       const WiedemannTraits &traits = WiedemannTraits ())
 	{
-		Vector u(A.field());
+		Vector u;
 		WiedemannSolver<Field> solver (F, traits);
 
 		VectorWrapper::ensureDim (u, A.rowdim ());
@@ -135,15 +117,15 @@ namespace LinBox
 	}
 
 	/** Solve Ax=b over field F using the Lanczos method.
-	 *
+	 * 
 	 * This is a general interface for the linear system solving capabilities of
 	 * LinBox. If the system is nonsingular, it returns the unique solution, storing
 	 * it in the vector x. If the system is consistent and singular, it returns a
 	 * random solution. Repeated calls to this function can give a complete
 	 * description of the solution manifold. If the system is inconsistent and the
-	 * \ref SolverTraits  structure has result checking turned on, it runs through
-	 * the number of iterations specified in \c traits and throws a
-	 * \ref SolveFailed  exception if it cannot find a solution.
+	 * \Ref{SolverTraits} structure has result checking turned on, it runs through
+	 * the number of iterations specified in @code{traits} and throws a
+	 * \Ref{SolveFailed} exception if it cannot find a solution.
 	 *
 	 * This specialization uses the Lanczos algorithm.
 	 *
@@ -151,13 +133,13 @@ namespace LinBox
 	 * @param x Place to store solution vector
 	 * @param b Right-hand side
 	 * @param F Field over which to perform computations
-	 * @param traits \ref SolverTraits  structure with user-specified parameters
+	 * @param traits \Ref{SolverTraits} structure with user-specified parameters
 	 * @return Reference to solution vector
 	 */
 
 	template <class Field, class Vector, class Blackbox>
 	Vector &solve (const Blackbox                  &A,
-		       Vector                          &x,
+		       Vector                          &x,		       
 		       const Vector                    &b,
 		       const Field                     &F,
 		       const LanczosTraits        &traits)
@@ -167,15 +149,15 @@ namespace LinBox
 	}
 
 	/** Solve Ax=b over field F using the block Lanczos method.
-	 *
+	 * 
 	 * This is a general interface for the linear system solving capabilities of
 	 * LinBox. If the system is nonsingular, it returns the unique solution, storing
 	 * it in the vector x. If the system is consistent and singular, it returns a
 	 * random solution. Repeated calls to this function can give a complete
 	 * description of the solution manifold. If the system is inconsistent and the
-	 * \ref SolverTraits structure has result checking turned on, it runs through
-	 * the number of iterations specified in \c traits and throws a
-	 * \ref SolveFailed exception if it cannot find a solution.
+	 * \Ref{SolverTraits} structure has result checking turned on, it runs through
+	 * the number of iterations specified in @code{traits} and throws a
+	 * \Ref{SolveFailed} exception if it cannot find a solution.
 	 *
 	 * This specialization uses the block Lanczos algorithm.
 	 *
@@ -183,13 +165,13 @@ namespace LinBox
 	 * @param x Place to store solution vector
 	 * @param b Right-hand side
 	 * @param F Field over which to perform computations
-	 * @param traits \ref SolverTraits structure with user-specified parameters
+	 * @param traits \Ref{SolverTraits} structure with user-specified parameters
 	 * @return Reference to solution vector
 	 */
 
 	template <class Field, class Vector, class Blackbox>
 	Vector &solve (const Blackbox                &A,
-		       Vector                        &x,
+		       Vector                        &x,		       
 		       const Vector                  &b,
 		       const Field                   &F,
 		       const BlockLanczosTraits &traits)
@@ -200,29 +182,29 @@ namespace LinBox
 	}
 
 	/** Solve Ax=b over field F using Gaussian elimination.
-	 *
+	 * 
 	 * This is a general interface for the linear system solving capabilities of
 	 * LinBox. If the system is nonsingular, it returns the unique solution, storing
 	 * it in the vector x. If the system is consistent and singular, it returns a
 	 * random solution. Repeated calls to this function can give a complete
 	 * description of the solution manifold. If the system is inconsistent and the
-	 * \ref SolverTraits  structure supplied requests certification of
-	 * inconsistency, it throws an \ref InconsistentSystem exception, which
+	 * \Ref{SolverTraits} structure supplied requests certification of
+	 * inconsistency, it throws an \Ref{InconsistentSystem} exception, which
 	 * includes a certificate of inconsistency. Otherwise, it runs through the
-	 * number of iterations specified in \p traits and throws a
-	 * \ref SolveFailed  exception if it cannot find a solution.
+	 * number of iterations specified in @code{traits} and throws a
+	 * \Ref{SolveFailed} exception if it cannot find a solution.
 	 *
 	 * @param A Black box matrix of the system
 	 * @param x Place to store solution vector
 	 * @param b Right-hand side
 	 * @param F Field over which to perform computations
-	 * @param traits \ref SolverTraits  structure with user-specified parameters
+	 * @param traits \Ref{SolverTraits} structure with user-specified parameters
 	 * @return Reference to solution vector
 	 */
 
 	template <class Field, class Matrix, class Vector>
 	Vector &solve (const Matrix                     &A,
-		       Vector                           &x,
+		       Vector                           &x,		       
 		       const Vector                     &b,
 		       const Field                      &F,
 		       const BlasEliminationTraits &traits)
@@ -234,13 +216,13 @@ namespace LinBox
 
 	/** Enumeration for results of next solver.
 	 *
-	 * SOLVE_SUCCESSFUL - System solution was succesful, \c x holds the solution
-	 * vector
-	 * SOLVE_INCONSISTENT - System was inconsistent, \c u holds the certificate
-	 * of inconsistency and \c x is untouched
+	 * SOLVE_SUCCESSFUL - System solution was succesful, @code{x} holds the solution
+	 * vector 
+	 * SOLVE_INCONSISTENT - System was inconsistent, @code{u} holds the certificate
+	 * of inconsistency and @code{x} is untouched
 	 * SOLVE_FAILED - Neither a system solution nor a certificate of inconsistency
-	 * could be obtained before the maximum number of trials elapsed. Both \c x
-	 * and \c u are untouched.
+	 * could be obtained before the maximum number of trials elapsed. Both @code{x}
+	 * and @code{u} are untouched.
 	 */
 
 	enum SolveResult {
@@ -249,8 +231,8 @@ namespace LinBox
 
 	/** Solve Ax=b over field F, returning consistency indicator
 	 *
-	 * This is a variant of \c solve that does not throw any exceptions unless
-	 * the user makes an error. It returns a \ref SolveResult  enum indicating
+	 * This is a variant of @code{solve} that does not throw any exceptions unless
+	 * the user makes an error. It returns a \Ref{SolveResult} enum indicating
 	 * whether the solve operation was successful, the system was inconsistent, or
 	 * the solve operation failed. The certificate of inconsistency, if requested,
 	 * is stored in a reference parameter supplied to this variant.
@@ -260,14 +242,14 @@ namespace LinBox
 	 * @param b Right-hand side
 	 * @param u Place to store certificate of inconsistency
 	 * @param F Field over which to perform computations
-	 * @param traits \ref SolverTraits  structure with user-specified parameters
-	 * @return \ref SolveResult indicating whether the solve operation was
+	 * @param traits \Ref{SolverTraits} structure with user-specified parameters
+	 * @return \Ref{SolveResult} indicating whether the solve operation was
 	 * successful
 	 */
 
 	template <class Field, class Blackbox, class Vector, class MethodTraits>
 	SolveResult solve (const Blackbox     &A,
-			   Vector             &x,
+			   Vector             &x,		       
 			   const Vector       &b,
 			   const Field        &F,
 			   Vector             &u,
@@ -287,19 +269,8 @@ namespace LinBox
 
 		return SOLVE_SUCCESSFUL;
 	}
-#if 0
-	@}
-#endif
+//	//@}
 
 }
 
-#endif // __LINBOX_bbsolve_H
-
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+#endif // __BBSOLVE_H

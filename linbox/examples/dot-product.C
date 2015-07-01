@@ -1,30 +1,7 @@
-/*
- * examples/dot-product.C
- *
- * Copyright (C) 2002, 2010 Bradford Hovinen <hovinen@cis.udel.edu>
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- */
-
+/* -*- mode: C++; style: linux -*- */
 /** \file examples/dot-product.C
- * @example  examples/dot-product.C
- * \brief Timings on dot products of random vectors.
- * \ingroup examples
+\brief Timings on dot products of random vectors.
+\ingroup examples
  *
  * \author Bradford Hovinen <hovinen@cis.udel.edu>
  *
@@ -35,30 +12,31 @@
  * required time.
  */
 
-#include <linbox/linbox-config.h>
+// Copyright (C) 2002 Bradford Hovinen
+// See COPYING for license information.
+#include "linbox-config.h"
 
 #include <iostream>
 
-#include <linbox/ring/modular.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/vector/stream.h>
-#include <linbox/util/commentator.h>
+#include "linbox/field/modular.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/vector/stream.h"
+#include "linbox/util/commentator.h"
 
 using namespace LinBox;
 
-typedef Givaro::Modular<uint32_t> Field;
+typedef Modular<uint32> Field;
+
+// Constants: we are working with an n x n matrix over GF(q)
+const int n = 10000000;
+const double p = .001;
+const int q = 32749;
 
 /// no command line args
 int main (int argc, char **argv)
 {
-	// Constants: we are working with an n x n matrix over GF(q)
-	const int    n = 10000000;
-	const double p = .001;
-	const int    q = 32749;
-
-
-	commentator().setMaxDepth (1);
-	commentator().setReportStream (std::cout);
+	commentator.setMaxDepth (1);
+	commentator.setReportStream (std::cout);
 
 	Field F (q);
 
@@ -77,29 +55,20 @@ int main (int argc, char **argv)
 	VectorDomain<Field> VD (F);
 	Field::Element res;
 
-	commentator().start ("dense/dense dot product (1)");
+	commentator.start ("dense/dense dot product (1)");
 	for (int i = 0; i < 1; i++)
 		VD.dot (res, v1, v2);
-	commentator().stop ("done");
+	commentator.stop ("done");
 
-	commentator().start ("dense/sparse sequence dot product (1000)");
+	commentator.start ("dense/sparse sequence dot product (1000)");
 	for (int i = 0; i < 1000; i++)
 		VD.dot (res, v1, v3);
-	commentator().stop ("done");
+	commentator.stop ("done");
 
-	commentator().start ("dense/sparse parallel dot product (1000)");
+	commentator.start ("dense/sparse parallel dot product (1000)");
 	for (int i = 0; i < 1000; i++)
 		VD.dot (res, v1, v4);
-	commentator().stop ("done");
+	commentator.stop ("done");
 
 	return 0;
 }
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

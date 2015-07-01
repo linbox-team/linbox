@@ -1,15 +1,13 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* lb-blackbox.C
  * Copyright (C) 2005 Pascal Giorgi
  *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,22 +15,22 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_lb_blackbox_C
-#define __LINBOX_lb_blackbox_C
+#ifndef __LINBOX_LB_BLACKBOX_C
+#define __LINBOX_LB_BLACKBOX_C
 
-#include "linbox/linbox-config.h"
+#include <linbox-config.h>
 
 #include <lb-blackbox.h>
 #include <lb-blackbox-function.h>
 
 #include <lb-domain-collection.h>
 
-//#include "linbox/matrix/matrix-category.h"
+//#include <linbox/matrix/matrix-category.h>
 
 /********************************
  * Allocate the global variable *
@@ -49,13 +47,13 @@ const char* current_blackbox  = default_blackbox;
 
 
 /*******************************************************
- * API to contruct a m x n zero blackbox over a domain *
+ * API to contruct a m x n zero blackbox over a domain * 
  *******************************************************/
 const BlackboxKey& createBlackbox(const DomainKey &k, size_t m, size_t n, const char* name){
 	const char* type = name;
 	if (type == NULL)
 		type = current_blackbox;
-
+	       
 	BlackboxAbstract* bb = linbox_blackbox.create(type, k, m , n);
 	return addBlackbox(bb);
 }
@@ -76,13 +74,13 @@ const BlackboxKey& createBlackbox(const DomainKey &k, std::istream &in, const ch
  * API to copy an existing blackbox *
  ************************************/
 const BlackboxKey& copyBlackbox(const BlackboxKey &k){
-
+	
 	BlackboxTable::iterator it = blackbox_hashtable.find(k);
 	if (it == blackbox_hashtable.end())
 		throw lb_runtime_error("LinBox ERROR: blackbox does not exist (copying impossible)\n");
-
+	
 	BlackboxAbstract *v = it->second->clone();
-	return addBlackbox(v);
+	return addBlackbox(v);       
 }
 
 /********************************************
@@ -132,7 +130,7 @@ public:
 	template<class Blackbox, class Domain>
 	void operator()(Blackbox *B, Domain *D) {
 		typename Domain::RandIter G(*D);
-		for (size_t i=0; i< B->coldim();++i)
+		for (size_t i=0; i< B->coldim();++i) 
 			for (size_t j=0;j< B->coldim();++j)
 				G.random(B->refEntry(i,j));
 	}
@@ -144,8 +142,8 @@ protected:
 	Blackbox *vect;
 public:
 	BlackboxAtRandomFunctorSpec(Blackbox *V) : vect(V) {}
-
-	template<class Domain>
+	
+	template<class Domain> 
 	void operator()(void *, Domain *D) const {
 		RandomBlackbox<typename Blackbox::Field::Element, typename Domain::Element, typename LinBox::MatrixContainerTrait<Blackbox>::Type>()(vect, D);
 	}
@@ -156,13 +154,13 @@ protected:
 	const BlackboxKey key;
 public:
 	BlackboxAtRandomFunctor(const BlackboxKey &k) : key(k) {}
-
+	
 	template<class Blackbox>
 	void operator()(void*, Blackbox *V) const {
 		BlackboxTable::iterator it = blackbox_hashtable.find(key);
 		if ( it == blackbox_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: invalid blackbox (set random value impossible)");
-
+		
 		BlackboxAtRandomFunctorSpec<Blackbox> Fct(V);
 		DomainFunction::call(it->second->getDomainKey(), Fct);
 	}
@@ -191,18 +189,18 @@ void rebindBlackbox(const BlackboxKey &Vkey, const DomainKey &Dkey){
  *************************************************/
 class WriteBlackboxFunctor{
 	std::ostream &os;
-public:
+public:	
 	WriteBlackboxFunctor(std::ostream &o) : os(o) {}
-
+	
 	template<class Blackbox>
 	void operator() (void*, Blackbox *B) const {
-		B->write(os);
+		B->write(os);	
 	}
 };
 
 void writeBlackbox (const BlackboxKey &key,  std::ostream &os){
 	WriteBlackboxFunctor Fct(os);
-	BlackboxFunction::call(key, Fct);
+	BlackboxFunction::call(key, Fct);	
 }
 
 
@@ -229,12 +227,3 @@ void writeBlackboxInfo(const BlackboxKey &k, std::ostream& os){
 
 
 #endif
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

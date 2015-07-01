@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /* linbox/randiter/nonzero.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
@@ -6,39 +8,30 @@
  *
  * ------------------------------------
  *
- * 
- * ========LICENCE========
- * This file is part of the library LinBox.
- * 
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * See COPYING for license information.
  */
 
-#ifndef __LINBOX_randiter_nonzero_H
-#define __LINBOX_randiter_nonzero_H
+#ifndef __RANDITER_NONZERO_H
+#define __RANDITER_NONZERO_H
 
 #include "linbox/field/archetype.h"
 #include "linbox/randiter/archetype.h"
 #include "linbox/element/archetype.h"
 #include "linbox/element/abstract.h"
 #include "linbox/element/envelope.h"
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <sys/time.h>
 #include <stdlib.h>
+
+#ifdef __LINBOX_XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+#include <string>
+
+#endif
 
 namespace LinBox
 {
@@ -48,36 +41,38 @@ namespace LinBox
 	 * is entirely nonzero numbers.
 	 **/
 	template <class Field, class RandIter = typename Field::RandIter>
-	class NonzeroRandIter {
-	public:
-
+	class NonzeroRandIter
+	{
+	    public:
+    
 		typedef typename Field::Element Element;
 
-		NonzeroRandIter (const Field &F, const RandIter &r) :
-			_field (F), _r (r)
-		{}
+		NonzeroRandIter (const Field &F, const RandIter &r)
+			: _F (F), _r (r) {}
 
-		NonzeroRandIter (const NonzeroRandIter& R) :
-			_field (R._field), _r (R._r)
-		{}
+		NonzeroRandIter (const NonzeroRandIter& R)
+			: _F (R._F), _r (R._r) {}
 
-		~NonzeroRandIter()
-		{}
+#ifdef __LINBOX_XMLENABLED
+		NonzeroRandIter(LinBox::Reader &R) : _F(R.Down(1)), _r(R.Up(1)) {}
+#endif
+
+		~NonzeroRandIter() 
+			{}
 
 		NonzeroRandIter& operator=(const NonzeroRandIter& R)
 		{
 			if (this != &R) { // guard against self-assignment
-				_field = R._field;
+				_F = R._F;
 				_r = R._r;
 			}
 
 			return *this;
 		}
 
-		template<class Elt>
-		Elt &random (Elt &a)  const
+		Element &random (Element &a)  const
 		{
-			do _r.random (a); while (_field.isZero (a));
+			do _r.random (a); while (_F.isZero (a));
 			return a;
 		}
 
@@ -95,23 +90,26 @@ namespace LinBox
 			return (a = ElementEnvelope <Field> (tmp));
 		}
 
-	private:
+#ifdef __LINBOX_XMLENABLED
+		ostream &write(ostream &os) const 
+		{
+			return _r.write(os);
+		}
 
-		Field    _field;
+		bool toTag(LinBox::Writer &W) const
+		{
+			return _r.toTag(W);
+		}
+#endif
+
+
+	    private:
+
+		Field    _F;
 		RandIter _r;
-
+     
 	}; // class NonzeroRandIter
-
+ 
 } // namespace LinBox
 
-#endif // __LINBOX_randiter_nonzero_H
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-
+#endif // __RANDITER_NONZERO_H

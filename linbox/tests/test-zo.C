@@ -1,137 +1,66 @@
-/* Copyright (C) LinBox
- *
- *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- */
-
-/*! @file  tests/test-zo.C
- * @ingroup tests
- *
- * @brief no doc
- *
- * @test no doc.
- */
-
-
-
 #include <fstream>
 #include <iostream>
-#include <set>
+#include <vector>
 #include <utility>
 
 #include "linbox/blackbox/zo.h"
 #include "linbox/blackbox/transpose.h"
-#include "linbox/ring/modular.h"
+#include "linbox/field/modular.h" 
 #include "linbox/util/commentator.h"
 
 
 #include "test-common.h"
-#include "test-blackbox.h"
+#include "test-generic.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   bool pass = true;
-  uint32_t p = 31337;
-  static size_t n = 1000;
+  uint32 prime = 31337;
+  static size_t n = 100, iter = 1;
 
-  static Argument args[] =
-  {
-	  { 'n', "-n N", "Set dimension of test matrix to NxN.", TYPE_INT, &n },
-	  { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &p },
-	  END_OF_ARGUMENTS
-  };
+  static Argument args[] = 
+    {{ 'n', "-n N", "Set dimension of test matrix to NxN (default 100)", TYPE_INT, &n }, 
+     { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 31337)", TYPE_INT, &prime }, 
+     { 'i', "-i I", "Perform each test for I iterations (default 1)", TYPE_INT, &iter}};
 
-  LinBox::parseArguments(argc, argv, args);
+  parseArguments(argc, argv, args);
 
-  typedef Givaro::Modular<uint32_t> Field;
-  //typedef Givaro::Modular<uint32_t> Field;
+  typedef LinBox::Modular<uint32> Field;
+  //typedef LinBox::Modular<LinBox::uint32> Field;
   typedef LinBox::ZeroOne<Field> Matrix;
 
-  Field F(p);
+  Field afield(prime);
 
-  /*
-  // "arrow" matrix
+#if 1
   size_t *rows, *cols, i;
   rows = new size_t[3 * n + 1 - 2];
   cols = new size_t[3 * n + 1 - 2];
 
+  // "arrow" matrix
   for(i = 0; i < n; i++) { rows[i] = 0; cols[i] = i; } // first row
-  for(i = 0; i < n - 1; i++)
+  for(i = 0; i < n - 1; i++) 
     { rows[n+2*i] = i + 1; cols[n+2*i] = 0; rows[n+2*i+1] = i + 1; cols[n+2*i+1] = i + 1; } // first col and the diag
-  Matrix testMatrix(F, rows, cols, n, n, 3 * n - 2);
-  */
-
-// random 3 per row matrix
-	size_t *rows, *cols, i;
-	// const size_t npr = n / 10000;
-	const size_t npr = 3;
-	rows = new size_t[npr * n];
-	cols = new size_t[npr * n];
-
-    for(i = 0; i < n; i++)
-        {
-            set<size_t> a;
-            while( a.size() < npr )
-                a.insert((size_t)rand()%n);
-            size_t j = 0;
-            for(set<size_t>::iterator iter = a.begin(); j < npr; ++j, ++iter)
-                {
-                    rows[npr*i+j] = i;
-                    cols[npr*i+j] = *iter;
-                }
-        }
-    Matrix testMatrix(F, rows, cols, n, n, npr * n );
-vector<Field::Element> y(n), x(n);
-testMatrix.apply(y, x);
-
-  /*
-  Matrix testMatrix(F);
+  Matrix testMatrix(afield, rows, cols, n, n, 3 * n - 2);
+#else
+  Matrix testMatrix(afield);
   //ifstream mat_in("data/m133.b3.200200x200200.sms");
   ifstream mat_in("data/n4c6.b9.186558x198895.sms");
   //ifstream mat_in("data/small21x21.sms");
-  //testMatrix.read(mat_in);
-  testMatrix.read(cin);
+  testMatrix.read(mat_in);
   //LinBox::Transpose<Matrix> testMat(testMatrix);
-  */
+#endif
 
   //print out the dimensions and the number of non-zero entries of the matrix
-  //std::cout << testMatrix.rowdim() << " " << testMatrix.coldim() << " " << testMatrix.nnz() << std::endl;
+  std::cout << testMatrix.rowdim() << " " << testMatrix.coldim() << " " << testMatrix.nnz() << std::endl;
 
 
-  //std::cout << std::endl << "ZeroOne matrix blackbox test suite" << std::endl;
+  std::cout << std::endl << "ZeroOne matrix blackbox test suite" << std::endl;
 
-  pass = pass && testBlackboxNoRW(testMatrix);
-  //bool pass2 = testBlackbox(testMat);
-
+  pass = pass && testBlackbox(afield, testMatrix);
+  //bool pass2 = testBlackbox(afield, testMat);
+  
   //delete [] rows;
   //delete [] cols;
 
   //return pass&&pass2 ? 0 : -1;
   return pass ? 0 : -1;
 }
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

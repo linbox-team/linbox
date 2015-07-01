@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-gf2.C
  * Copyright (C) 2003 Bradford Hovinen,
@@ -8,78 +9,44 @@
  * 2002-04-10 Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * Rename from test-large-modular.C to test-modular.C; made other updates in
- * accordance with changes to Givaro::Modular interace.
+ * accordance with changes to Modular interace.
  * ------------------------------------
  *
- *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
- *.
+ * See COPYING for license information.
  */
 
-
-/*! @file  tests/test-gf2.C
- * @ingroup tests
- * @brief  no doc
- * @test NO DOC
- */
-
-
-
-#include "linbox/linbox-config.h"
+#include "linbox-config.h"
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
+#include <vector>
 #include <queue>
 
 #include "linbox/field/gf2.h"
-#include "linbox/ring/modular.h"
-#include "linbox/vector/stream-gf2.h"
+#include "linbox/field/modular.h"
 
-#include "test-field.h"
-// #include "test-generic.h"
-// #include "test-vector-domain.h"
+#include "test-common.h"
+#include "test-generic.h"
 
 using namespace LinBox;
-//using uint16_t;
-//using uint32_t;
 
-#pragma message "#warning much of the code is dead here"
-
-#if 0 /*  dead code */
-static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
+static bool testDotProductGF2 (const GF2 &F, const char *desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,
-			       VectorStream<Vector<GF2>::Dense> &stream2)
+			       VectorStream<Vector<GF2>::Dense> &stream2) 
 {
-	LinBox::commentator().start ("Testing GF2 dot product (dense/dense)", "testDotProduct", stream1.size ());
+	LinBox::commentator.start ("Testing GF2 dot product (dense/sense)", "testDotProduct", stream1.size ());
 
 	bool ret = true;
 
 	Vector<GF2>::Dense v1, v2;
 
-	Givaro::Modular<uint16_t> MF (2);
-	VectorDomain<Givaro::Modular<uint16_t> > MF_VD (MF);
+	Modular<uint16> MF (2);
+	VectorDomain<Modular<uint16> > MF_VD (MF);
 
-	LinBox::Vector<Givaro::Modular<uint16_t> >::Dense w1 (stream1.dim ()), w2 (stream1.dim ());
+	LinBox::Vector<Modular<uint16> >::Dense w1 (stream1.dim ()), w2 (stream1.dim ());
 
-	uint16_t sigma;
+	uint16 sigma;
 	bool rho;
 
 	LinBox::VectorDomain<GF2> VD (F);
@@ -89,13 +56,13 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 	Vector<GF2>::Dense::const_iterator i1;
 	Vector<GF2>::Dense::const_iterator i2;
-	Vector<Givaro::Modular<uint16_t> >::Dense::iterator j1, j2;
+	Vector<Modular<uint16> >::Dense::iterator j1, j2;
 
 	Timer timer;
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {
-		LinBox::commentator().startIteration ((unsigned int)stream1.j ());
+		LinBox::commentator.startIteration (stream1.j ());
 
 		stream1.next (v1);
 		stream2.next (v2);
@@ -115,7 +82,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 				*j2 = 0;
 		}
 
-		std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
 		VD.write (report, v1) << std::endl;
 
@@ -138,18 +105,18 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 		if ((sigma && !rho) || (rho && !sigma)) {
 			ret = false;
-			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Dot products are not equal" << std::endl;
 		}
 
-		LinBox::commentator().stop ("done");
-		LinBox::commentator().progress ();
+		LinBox::commentator.stop ("done");
+		LinBox::commentator.progress ();
 	}
 
-	LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-		<< "Average time for dot product: " << totaltime / (double)stream1.m () << std::endl;
+	LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+		<< "Average time for dot product: " << totaltime / stream1.m () << std::endl;
 
-	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
+	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
 	stream1.reset ();
 	stream2.reset ();
@@ -157,24 +124,24 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 	return ret;
 }
 
-static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
+static bool testDotProductGF2 (const GF2 &F, const char *desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,
-			       VectorStream<Vector<GF2>::Sparse> &stream2)
+			       VectorStream<Vector<GF2>::Sparse> &stream2) 
 {
-	LinBox::commentator().start ("Testing GF2 dot product (dense/sparse)", "testDotProduct", stream1.size ());
+	LinBox::commentator.start ("Testing GF2 dot product (dense/sparse)", "testDotProduct", stream1.size ());
 
 	bool ret = true;
 
 	Vector<GF2>::Dense v1;
 	Vector<GF2>::Sparse v2;
 
-	Givaro::Modular<uint16_t> MF (2);
-	VectorDomain<Givaro::Modular<uint16_t> > MF_VD (MF);
+	Modular<uint16> MF (2);
+	VectorDomain<Modular<uint16> > MF_VD (MF);
 
-	LinBox::Vector<Givaro::Modular<uint16_t> >::Dense w1 (stream1.dim ());
-	LinBox::Vector<Givaro::Modular<uint16_t> >::SparseSeq w2;
+	LinBox::Vector<Modular<uint16> >::Dense w1 (stream1.dim ());
+	LinBox::Vector<Modular<uint16> >::SparseSeq w2;
 
-	uint16_t sigma;
+	uint16 sigma;
 	bool rho;
 
 	LinBox::VectorDomain<GF2> VD (F);
@@ -183,13 +150,13 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 	Vector<GF2>::Dense::const_iterator i1;
 	Vector<GF2>::Sparse::const_iterator i2;
-	Vector<Givaro::Modular<uint16_t> >::Dense::iterator j1;
+	Vector<Modular<uint16> >::Dense::iterator j1;
 
 	Timer timer;
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {
-		LinBox::commentator().startIteration ((unsigned int)stream1.j ());
+		LinBox::commentator.startIteration (stream1.j ());
 
 		stream1.next (v1);
 		stream2.next (v2);
@@ -205,9 +172,9 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 		w2.clear ();
 
 		for (i2 = v2.begin (); i2 != v2.end (); ++i2)
-			w2.push_back (std::pair<size_t, uint16_t> (*i2, 1));
+			w2.push_back (std::pair<size_t, uint16> (*i2, 1));
 
-		std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
 		VD.write (report, v1) << std::endl;
 
@@ -230,88 +197,104 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 		if ((sigma && !rho) || (rho && !sigma)) {
 			ret = false;
-			LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Dot products are not equal" << std::endl;
 		}
 
-		LinBox::commentator().stop ("done");
-		LinBox::commentator().progress ();
+		LinBox::commentator.stop ("done");
+		LinBox::commentator.progress ();
 	}
 
-	LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-		<< "Average time for dot product: " << totaltime / (double)stream1.m () << std::endl;
+	LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+		<< "Average time for dot product: " << totaltime / stream1.m () << std::endl;
 
-	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
+	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
 	stream1.reset ();
 	stream2.reset ();
 
 	return ret;
 }
-#endif
 
 int main (int argc, char **argv)
 {
-	static unsigned int n = 1000;
-	static int iterations = 2;
-	static int trials = 100000;
+	static unsigned int n = 10000;
+	static int iterations = 10;
+	static int trials = 1000000;
 	static int categories = 100;
 	static int hist_level = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test vectors to NxN.",      TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations.",           TYPE_INT,     &iterations },
-		{ 't', "-t T", "Number of trials for the random iterator test.", TYPE_INT, &trials },
-		{ 'c', "-c C", "Number of categories for the random iterator test.", TYPE_INT, &categories },
-		{ 'H', "-H H", "History level for random iterator test.", TYPE_INT, &hist_level },
-		END_OF_ARGUMENTS
+		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)",      TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
+		{ 't', "-t T", "Number of trials for the random iterator test (default 1000000)", TYPE_INT, &trials },
+		{ 'c', "-c C", "Number of categories for the random iterator test (default 100)", TYPE_INT, &categories },
+		{ 'H', "-H H", "History level for random iterator test (default 1)", TYPE_INT, &hist_level },
+		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
 
-	commentator().start("GF2 field test suite", "GF2");
+	cout << "GF2 field test suite" << endl << endl;
+	cout.flush ();
 	bool pass = true;
 
 	GF2 F;
 
-	uint32_t seed = (unsigned)time (NULL);
+	uint32 seed = time (NULL);
 
-	RandomDenseStreamGF2 stream1 (F, seed, n, (size_t)iterations), stream2 (F, seed ^ 0xdeadbeef, n, (size_t)iterations);
+	RandomDenseStreamGF2 stream1 (F, seed, n, iterations), stream2 (F, seed ^ 0xdeadbeef, n, iterations);
 	RandomSparseStreamGF2<Vector<GF2>::Sparse>
-		stream3 (F, seed + 2, 0.1, n, (size_t)iterations),
-		stream4 (F, seed + 3, 0.1, n, (size_t)iterations);
+		stream3 (F, seed + 2, 0.1, n, iterations),
+		stream4 (F, seed + 3, 0.1, n, iterations);
 
 	// Make sure some more detailed messages get printed
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	commentator().start ("Testing GF2", "main", 10);
+	commentator.start ("Testing GF2", "main", 10);
+	
+	if (!testFieldNegation         (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testFieldInversion        (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testFieldAxioms           (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testFieldAssociativity    (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testFieldCharacteristic   (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testGeometricSummation    (F, "GF2", iterations, 100)) pass = false; commentator.progress ();
+	if (!testFreshmansDream        (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testArithmeticConsistency (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testAxpyConsistency       (F, "GF2", iterations))      pass = false; commentator.progress ();
 
+	commentator.stop (MSG_STATUS (pass), (const char *) 0, "main");
 
-	if ( not testField (F, "GF2"))
-		pass = false;
-	commentator().progress ();
+	if (!testRandomIterator (F, "GF2", trials, categories, hist_level)) pass = false;
 
-/*
-	if ( not testDotProductGF2 (F, "Testing dot prod", stream1, stream3))
-		pass = false;
-	commentator().progress ();
-*/
+	commentator.start ("Testing VectorDomain <GF2>", "main");
+
+	if (!testDotProductGF2 (F, "dense/dense", stream1, stream2)) pass = false;
+	if (!testDotProductGF2 (F, "dense/sparse", stream1, stream3)) pass = false;
+
+	if (!testAddMul (F, "dense", stream1, stream2)) pass = false;
+	if (!testAddMul (F, "sparse", stream3, stream4)) pass = false;
+
+	if (!testSubMul (F, "dense", stream1, stream2)) pass = false;
+	if (!testSubMul (F, "sparse", stream3, stream4)) pass = false;
+
+	if (!testAXPY (F, "dense", stream1, stream2)) pass = false;
+	if (!testAXPY (F, "sparse", stream3, stream4)) pass = false;
+
+	if (!testCopyEqual (F, "dense/dense", stream1, stream2)) pass = false;
+	if (!testCopyEqual (F, "dense/sparse", stream1, stream3)) pass = false;
+	if (!testCopyEqual (F, "sparse/dense", stream3, stream1)) pass = false;
+	if (!testCopyEqual (F, "sparse/sparse", stream3, stream4)) pass = false;
+
+	commentator.stop (MSG_STATUS (pass), (const char *) 0, "main");
+
 #if 0
 	FieldArchetype K(new LargeModular(101));
-	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of Givaro::Modular field"))
+
+	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of Modular field"))
 		pass = false;
 #endif
 
-	commentator().stop("GF2 field test suite");
 	return pass ? 0 : -1;
 }
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-

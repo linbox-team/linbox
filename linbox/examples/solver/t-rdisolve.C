@@ -1,37 +1,13 @@
-/*
- * examples/solver/t-rdisolve.C
- *
- * Copyright (C) 2004, 2005, 2010  D. Pritchard, P. Giorgi
- *
- * This file is part of LinBox.
- *
- *   LinBox is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as
- *   published by the Free Software Foundation, either version 2 of
- *   the License, or (at your option) any later version.
- *
- *   LinBox is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Lesser General Public License for more details.
- *
- *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see
- *   <http://www.gnu.org/licenses/>.
- */
-
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/examples/solver/t-rdisolve.C
  * demo, testing, time-comparison of certified rational/diophantine system solver
  *
  * Written by David Pritchard  <daveagp@mit.edu>
  *
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
-  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,49 +15,52 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 #define LIFTING_PROGRESS
 #define RSTIMING
 
 
-#include "linbox/integer.h"
-#include "linbox/field/ntl-ZZ.h"
-#include "linbox/field/modular-int.h"
-#include "linbox/blackbox/diagonal.h"
-#include "linbox/algorithms/rational-solver.h"
-#include "linbox/algorithms/vector-fraction.h"
-#include "linbox/algorithms/diophantine-solver.h"
+#include <linbox/integer.h>
+#include <linbox/field/ntl-ZZ.h>
+#include <linbox/field/modular-int.h>
+#include <linbox/blackbox/dense.h>
+#include <linbox/blackbox/diagonal.h>
+#include <linbox/algorithms/rational-solver.h>
+#include <linbox/algorithms/vector-fraction.h>
+#include <linbox/matrix/dense.h>
+#include <linbox/algorithms/diophantine-solver.h>
 #include <iostream>
 #include <fstream>
-#include "linbox/randiter/random-prime.h"
+#include <linbox/randiter/random-prime.h>
 
-#include "linbox/field/unparametric.h"
-#include "linbox/field/PID-integer.h"
-#include "linbox/field/ntl.h"
+#include <linbox/field/unparametric.h>
+#include <linbox/field/PID-integer.h>
+#include <linbox/field/PID-double.h>
+#include <linbox/field/ntl.h>
 
-#include "linbox/field/archetype.h"
-//#include "linbox/field/givaro.h"
-#include "linbox/vector/vector-domain.h"
+#include <linbox/field/archetype.h>
+//#include <linbox/field/givaro.h>
+#include <linbox/vector/vector-domain.h>
 
 #include <vector>
 
-#include "linbox/field/archetype.h"
-#include "linbox/vector/vector-domain.h"
+#include <linbox/field/archetype.h>
+#include <linbox/vector/vector-domain.h>
 
-// #include "linbox/../tests/test-common.C"
+#include <linbox/../tests/test-common.C>
 using namespace std;
 using namespace LinBox;
 
 #define random_01() ((double)rand() / ((double)(RAND_MAX)+1))
 
-int  n               = 5;
+int  n               = 5;  
 int  c               = 5;
-int  defaultPrime    = 0;
-int  primeBits       = 14;         // note: should be <= 15 to use Givaro::Modular<Log16>
+int  defaultPrime    = 0; 
+int  primeBits       = 14;         // note: should be <= 15 to use GivaroZpz<Log16>
 int  numPrimes       = 1;
 bool useDeterm       = true;
 bool useRandom       = false;
@@ -95,15 +74,15 @@ integer eBoundCmd          = 1000;
 double  singularProportion = 0;
 bool    inconsistent       = false;
 
-int useTimer  = true;
-int entrySeed = 12345;
+int useTimer  = true;     
+int entrySeed = 12345;  
 int trials    = 1;
 
 int destroyColumns = 0;
 
 bool testPidDouble = false;
 
-int levelAsInt = (int)SL_CERTIFIED;
+int levelAsInt = (int)SL_CERTIFIED; 
 
 static Argument args[] = {
 	{ 'n', 0, "Row dimension of test matrix",                        TYPE_INT,     &n },
@@ -133,16 +112,15 @@ integer* Aentries;
 integer* bentries;
 
 template <class Ring, class Field>
-int test()
-{
+int test() {
 	trialCount++;
 
 	typedef typename Ring::Element RingElement;
-
+  
 	Ring R;
 	VectorDomain<Ring> VD (R);
 	typedef typename Vector<Ring>::Dense Vector;
-	typedef DenseMatrix<Ring> Matrix;
+	typedef DenseMatrix<Ring> Matrix; 
 	Matrix A(R, n, c);
 	MatrixDomain<Ring> MD(R);
 	typedef typename Ring::Element Integer;
@@ -157,26 +135,26 @@ int test()
 		n = (int) A.rowdim();
 		c = (int) A.coldim();
 		inA.close();
-		// reading b from td-b.txt
+		// reading b from td-b.txt		
 		b.resize(n);
 		inb.open("td-b.txt");
 		for (int i=0; i<n; i++)
 			inb >> b[i];
-		inb.close();
+		inb.close();		
 	}
 	else {
 		// reading A from Aentrie vector
 		for (int i=0; i<n; i++)
 			for (int j=0; j<c; j++)
-				R.init(A[i][j], Aentries[i*c+j]);
+				R.init(A[i][j], Aentries[i*c+j]);		
 		// reading b from bentry vector
 		typename Vector::iterator bi=b.begin();
 		for (int i=0; bi!=b.end(); bi++, i++)
 			R.init(*bi, bentries[i]);
 	}
+	
 
-
-	if (trialCount==1 && (printStuff>2)) {cout << "b:\n"; VD.write(cout, b);}
+       	if (trialCount==1 && (printStuff>2)) {cout << "b:\n"; VD.write(cout, b);}	
 
 	if (trialCount==1 && (printStuff>2)) {cout << "\nA:\n"; A.write(cout);}
 
@@ -186,8 +164,8 @@ int test()
 	cout<<"' and Z/pZ of type '";
 	F.write(cout)<<"'"<<endl;
 
-	typedef RationalSolver<Ring, Field, class RandomPrime, DixonTraits> QSolver;
-	typedef DiophantineSolver<QSolver> ZSolver;
+	typedef RationalSolver<Ring, Field, class RandomPrime, DixonTraits> QSolver; 
+	typedef DiophantineSolver<QSolver> ZSolver; 
 
 	//typedef std::vector<std::pair<RingElement, RingElement> > FractionVector;
 	typedef VectorFraction<Ring> FractionVector;
@@ -201,23 +179,21 @@ int test()
 		if (iteration==2 && !useDiophantine) continue;
 
 		// no more cleaning
-#if 0
-		//clear x
-		for (FractionVector::Dense::iterator i=x.begin(); i!=x.end(); i++) {
-			R.assign(i->first, R.zero);
-			R.assign(i->second, R.zero);
-		}
-#endif
+		//clear x				
+		//for (FractionVector::Dense::iterator i=x.begin(); i!=x.end(); i++) {
+		//	R.init(i->first, 0);
+ 		//	R.init(i->second, 0);
+ 		//}
 
 		QSolver* rsolver;
 		if (defaultPrime == 0)
-			rsolver = new QSolver(R, LinBox::RandomPrime(primeBits));
+			rsolver = new QSolver(R, LinBox::RandomPrime(primeBits)); 
 		else
 			rsolver = new QSolver(defaultPrime, R, LinBox::RandomPrime(primeBits));
 
 		ZSolver zsolver(*rsolver);
 		SolverReturnStatus s;
-
+	
 		if (iteration==0) {
 			cout << "Solving deterministically.\n";
 			s = zsolver.solve(x.numer, x.denom, A, b, numPrimes, level);
@@ -231,19 +207,19 @@ int test()
 			s = zsolver.diophantineSolve(x.numer, x.denom, A, b, numPrimes, level);
 		}
 		cout << "solverReturnStatus: " << solverReturnString[(int)s] << "\n";
-
+	
 #ifdef RSTIMING
 		rsolver->reportTimes(cout);
 #endif
 		if (s == SS_OK)	{
 			VectorFraction<Ring> red(x);
-
+	  
 			if (printStuff > 0) {
 				if (useDiophantine){
 					cout<<"Number of system solved   : "<<zsolver.numSolutionsNeeded<<endl;
 					cout<<"Number of system failed   : "<<zsolver.numFailedCallsToSolver<<endl;
 					cout<<"Number of system revelant : "<<zsolver.numRevelantSolutions<<endl;
-
+					
 				}
 				cout<<"Reduced solution: ";
 				integer tmp;
@@ -253,7 +229,7 @@ int test()
 					maxbits=(maxbits > tmp.bitsize() ? maxbits: tmp.bitsize());
 				}
 				R.convert(tmp,x.denom);
-				cout<<"numerators hold over "<<maxbits<<" bits and denominators hold over "<<tmp.bitsize()<<" bits\n";
+				cout<<"numerators hold over "<<maxbits<<" bits and denominators hold over "<<tmp.bitsize()<<" bits\n";				
 			}
 			if (printStuff > 1) {
 				if (useFiles){
@@ -278,22 +254,22 @@ int test()
 				if (level >= SL_LASVEGAS)
 					cout << "ERROR: Las Vegas or Certified solver should never return wrong answer" << endl;
 			}
-
+			
 			if (iteration==2 && level == SL_CERTIFIED) {
 				// check certificate of minimality z
 				// should satisfy that zA is integral, and den(z.b) == den(y)
-
+				
 				Integer dp, tmp, denzb;
 				VectorFraction<Ring> z(zsolver.lastCertificate);
-				R.assign(dp, R.zero);
+				R.init(dp, 0);
 				typename Vector::iterator zi = z.numer.begin();
 				typename Vector::iterator bi = b.begin();
 				for (; bi != b.end(); bi++, zi++)
 					R.addin(dp, R.mul(tmp, *bi, *zi));
-
+				
 				R.gcd(denzb, dp, z.denom);
 				R.div(denzb, z.denom, denzb);
-
+				
 				VectorFraction<Ring> tmpvf(x);
 				bool certified = R.areEqual(denzb, tmpvf.denom);
 				if (!certified)
@@ -301,7 +277,7 @@ int test()
 
 				bool certified2 = true;
 				Integer* nza = new Integer[c]; //z.numer * A
-				for (int i=0; i<c; i++) R.assign(nza[i], R.zero);
+				for (int i=0; i<c; i++) R.init(nza[i], 0);
 				for (int i=0; i<n; i++)
 					for (int j=0; j<c; j++)
 						R.addin(nza[j], R.mul(tmp, z.numer[i], A[i][j]));
@@ -310,7 +286,7 @@ int test()
 				if (!certified2)
 					cout << "ERROR Failed zA integral" << endl;
 
-				if (certified && certified2)
+				if (certified && certified2) 
 					cout << "Solution is certified correctly as having minimal denominator." << endl;
 			}
 		}
@@ -323,32 +299,32 @@ int test()
 			}
 			cout << endl;
 			std::vector<Integer> certA(c);
-			if (R.isZero(cert.denom))
-				cout << "ERROR: Zero denom in inc-certificate. May not have been generated." << endl;
+			if (R.isZero(cert.denom)) 
+				cout << "ERROR: Zero denom in inc-certificate. May not have been generated." << endl;	
 
 			Integer certb, tmp;
-
-			for (int i=0; i<c; i++) R.assign(certA[i], R.zero);
-			R.assign(certb, R.zero);
+			
+			for (int i=0; i<c; i++) R.init(certA[i], 0);
+			R.init(certb, 0);
 
 			for (int i=0; i<n; i++)
 				for (int j=0; j<c; j++)
 					R.addin(certA[j], R.mul(tmp, cert.numer[i], A[i][j]));
 			for (int i=0; i<n; i++)
 				R.addin(certb, R.mul(tmp, cert.numer[i], b[i]));
-
+			
 			bool certifies1 = true; //check certificate
 			if (R.isZero(certb)) {
 				cout << "ERROR: Product of certificate . b is zero!" << endl;
 				certifies1 = false;
 			}
 			bool certifies2 = true;
-			for (size_t i=0; certifies2 && i<A.rowdim(); i++)
+			for (size_t i=0; certifies2 && i<A.rowdim(); i++) 
 				if (!certifies2) {
 					certifies2 = false;
 					cout << "ERROR: entry " << i << " of certificate . A is nonzero" << endl;
 				}
-			if (certifies1 && certifies2)
+			if (certifies1 && certifies2) 
 				cout << "System is certified correctly as inconsistent." << endl;
 		}
 		delete rsolver;
@@ -361,40 +337,38 @@ template <class Field>
 int fieldTest()
 {
 	return
-	0
-	//+test<NTL_ZZ, Field>()
-	+test<PID_integer, Field>()
-	//+(testPidDouble?test<PID_double, Field>():0)
-	// */
-	;
+		0
+		//+test<NTL_ZZ, Field>()   
+		+test<PID_integer, Field>() 
+		//+(testPidDouble?test<PID_double, Field>():0) 
+		// */
+		;
 };
 
-void testAllFields()
-{
-	//fieldTest<Givaro::Modular<Log16> >();
-	//fieldTest<NTL_zz_p>();
+void testAllFields() {
+	//fieldTest<GivaroZpz<Log16> >(); 
+	//fieldTest<NTL_zz_p>();          
+	
+	//fieldTest<GivaroZpz<Std16> >(); 
+	
+	//fieldTest<Modular<int> >();   
+	fieldTest<Modular<double> >(); 
 
-	//fieldTest<Givaro::Modular<int16_t> >();
-
-	//fieldTest<Givaro::Modular<int> >();
-	fieldTest<Givaro::Modular<double> >();
-
-
-	//fieldTest<Givaro::Modular<int32_t> >();           //broken?
-	//fieldTest<Givaro::Modular<int64_t> >();           //broken?
-	//fieldTest<Givaro::GFq>();                   //broken?
-
-	//fieldTest<Givaro::Montgomery>();    // appears to be broken in current build
+	
+	//fieldTest<GivaroZpz<Std32> >();           //broken?
+	//fieldTest<GivaroZpz<Std64> >();           //broken?
+	//fieldTest<GivaroGfq>();                   //broken?
+	  
+	//fieldTest<GivaroMontg>();    // appears to be broken in current build
 	//fieldTest<NTL_ZZ_p>();       // appears to be broken in current build
-	//fieldTest<Givaro::Modular<integer> >();
-
-	// */
-	// this takes a long time to compile with all fields
+	//fieldTest<Modular<integer> >(); 
+	  
+	  // */
+	// this takes a long time to compile with all fields 
 	// so comment out unused ones when debugging
 }
 
-void genTestData()
-{
+void genTestData() {
 	bool* auxRow = new bool[n];
 	int auxRows = 0;
 	for (int i=0; i<n; i++) {
@@ -403,8 +377,8 @@ void genTestData()
 	}
 	cout << "at least " << auxRows << " dependent rows" << endl;
 
-	if (inconsistent && auxRows == 0)
-	{ auxRows++; auxRow[(int)(random_01()*n)] = true; }
+	if (inconsistent && auxRows == 0) 
+		{ auxRows++; auxRow[(int)(random_01()*n)] = true; }
 
 	integer eBound(eBoundCmd);
 	if (auxRows > 0 && auxRows < n)
@@ -416,8 +390,8 @@ void genTestData()
 
 	PID_integer Z;
 	PID_integer::RandIter ri(Z, 2*eBound,entrySeed); //for some reason this iterator tends to give numbers with
-	//large common factors, so we perturb the data a bit
-	bool notRandomEnough = (eBound >> 64) > 0;
+	                                         //large common factors, so we perturb the data a bit 
+	bool notRandomEnough = (eBound >> 64) > 0; 
 	double bigStuff = ((long long)1)<<25;
 	for (int i=0; i<n; i++) {
 		ri.random(bentries[i]);
@@ -437,7 +411,7 @@ void genTestData()
 		if (auxRow[i]) {
 			for (int j=0; j<c; j++) Aentries[c*i+j] = 0;
 			bentries[i] = 0;
-			for (int k=0; k<n; k++)
+			for (int k=0; k<n; k++) 
 				if (!auxRow[k]) {
 					int m = (int)(random_01()*2)*2 - 1;
 					for (int j=0; j<c; j++)
@@ -450,18 +424,17 @@ void genTestData()
 				whichInconsistent--;
 			}
 		}
-	delete[] auxRow ;
 	trialCount = 0; //so new data get printed
-
+	
 	int columnsToDestroy = destroyColumns;
 	if (columnsToDestroy > c) {
 		cout << "WARNING, o > c. Lowering o." << endl;
 		columnsToDestroy = c;
 	}
-
+	
 	for (int i=0; i<c; i++) {
 		if (random_01()*(c-i-1) < columnsToDestroy) {
-			for (int j=0; j<n; j++)
+			for (int j=0; j<n; j++) 
 				Aentries[c*j+i] = 0;
 			columnsToDestroy--;
 		}
@@ -476,7 +449,7 @@ int main (int argc, char **argv)
 		entrySeed = static_cast<unsigned>(time(NULL));
 		useTimer = false;
 	}
-
+	
 	writeCommandString (cout, args, argv[0]);
 
 	if (c <= 0) c += n;
@@ -489,7 +462,7 @@ int main (int argc, char **argv)
 
 	cout << "Seed: " << entrySeed <<"\n";
 	srand(entrySeed);
-
+    
 	Aentries = new integer[n*c];
 	bentries = new integer[n];
 
@@ -503,7 +476,7 @@ int main (int argc, char **argv)
 		in2.open("td-A.txt");
 		for (int i=0; i<n*c; i++)
 			in2 >> Aentries[i];
-		in2.close();
+		in2.close();		
 	}
 
 	for (int j=0; j < trials; j++) {
@@ -518,14 +491,6 @@ int main (int argc, char **argv)
 	return 0;
 }
 
-//! @todo come up with better test data, so can have a big singular matrix of all 0..9
-//! @todo change "probability of dependence" to "set X dependent rows"
-//! @bug fixme : seems to not work for n >= 10000
-
-// Local Variables:
-// mode: C++
-// tab-width: 8
-// indent-tabs-mode: nil
-// c-basic-offset: 8
-// End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// TODO: come up with better test data, so can have a big singular matrix of all 0..9
+// TODO: change "probability of dependence" to "set X dependent rows"
+// FIX: seems to not work for n >= 10000
