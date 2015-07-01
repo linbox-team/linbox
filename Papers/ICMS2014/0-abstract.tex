@@ -1,0 +1,33 @@
+\begin{abstract}
+	%
+	We describe in this paper new design techniques used in the \cpp exact
+	linear algebra library \linbox, intended to make the library
+	safer and easier to use, while keeping it generic and efficient.
+	%
+	% \par
+	% \\
+	%
+	First, we review the new simplified structure for containers, based on
+	our \emph{founding scope allocation} model. We explain design choices
+	and their impact on coding: unification of our matrix classes, clearer
+	model for matrices and submatrices, \etc
+	%
+	% \par
+	% \\
+	%
+	Then we present a variation of the \emph{strategy} design pattern that
+	is comprised of a controller--plugin system: the controller (solution)
+	chooses among plug-ins (algorithms) that always call back
+	the controllers for subtasks. We give examples using the solution \mul.
+	%
+	% \par
+	% \\
+	%
+	Finally we present a benchmark architecture that serves two purposes:
+	Providing the user with easier ways to produce graphs;
+	Creating a framework for automatically tuning the library and supporting
+	regression testing.
+	%
+        \keywords{\linbox; design pattern; algorithms and containers; benchmarking;
+	matrix multiplication algorithms; exact linear algebra.}
+\end{abstract}

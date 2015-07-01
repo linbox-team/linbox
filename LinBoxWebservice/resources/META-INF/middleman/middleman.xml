@@ -1,0 +1,54 @@
+<service name="TransferAgentMiddleman" scope="application">
+    <messageReceivers>
+        <messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-out"
+                         class="samples.quickstart.middleman.TransferAgentMiddlemanMessageReceiverInOut"/>
+    </messageReceivers>
+    <parameter locked="false" name="ServiceClass">samples.quickstart.middleman.TransferAgentMiddlemanSkeleton
+    </parameter>
+
+    <operation name="requestrank" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:requestrank</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentMiddlemanPortType/getPriceResponse</outputActionMapping>
+    </operation>
+
+    <operation name="requestdeterminant" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:requestdeterminant</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentMiddlemanPortType/getPriceResponse</outputActionMapping>
+    </operation>
+
+    <operation name="requestvalence" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:requestvalence</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentMiddlemanPortType/getPriceResponse</outputActionMapping>
+    </operation>
+
+    <operation name="requesttrace" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:requesttrace</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentMiddlemanPortType/getPriceResponse</outputActionMapping>
+    </operation>
+
+    <operation name="requestsmithNormalForm" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:requestsmithNormalForm</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentMiddlemanPortType/getPriceResponse</outputActionMapping>
+    </operation>
+
+
+    <operation name="countOperationsInQueue" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:countOperationsInQueue</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentMiddlemanPortType/getPriceResponse</outputActionMapping>
+    </operation>
+
+    <operation name="enqueueAndGetID" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:enqueueAndGetID</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentMiddlemanPortType/getPriceResponse</outputActionMapping>
+    </operation>
+
+    <operation name="checkID" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:checkID</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentMiddlemanPortType/getPriceResponse</outputActionMapping>
+    </operation>
+
+    <operation name="getTimeEstimate" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:getTimeEstimate</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentMiddlemanPortType/getPriceResponse</outputActionMapping>
+    </operation>
+</service>
