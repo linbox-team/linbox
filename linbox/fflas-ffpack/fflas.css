@@ -1,0 +1,72 @@
+#ffbench body {
+  margin-left: 5%;
+  margin-right: 5%;
+  background : #eeeeee;
+  font-size: 120%;
+}
+
+#ffbench table {
+  border : 1;
+  margin-left: 10%;
+  width: 80%;
+}
+
+#ffbench td {
+  color:#000000;
+  padding : 4px 10px;
+  text-align:center;
+  font-family: georgia;
+  /* font-size : 10 pt; */
+  font-size: 120%;
+  font-weight : bold;
+}
+
+
+#ffbench td.headdimension {
+  background-color : #99CCFF
+}
+
+#ffbench td.dimension {
+  color: #000000;
+  text-align:center;
+  font-family:georgia;
+  /* font-size : 10 pt; */
+  font-size: 120%;
+  font-weight : bold;
+  background-color : #dddddd
+}
+
+#ffbench td.headtime {
+  background-color : #CCCCFF
+}
+
+#ffbench td.time {
+  padding : 4px 10px;
+  color:#000088;
+  text-align:right;
+  font-family:georgia;
+  /* font-size : 10 pt; */
+  font-size: 120%;
+  font-weight : normal;
+  background-color : #ffffff
+}
+
+#ffbench h2 {
+  color: #880000
+}
+
+#ffbench h3 {
+  color: #000088;
+  margin: 0.2 10
+}
+
+#ffbench p {
+text-align: center;
+color: black;
+font-family: arial
+}
+
+#ffbench p.report{
+  align: center;
+
+}

@@ -1,0 +1,53 @@
+August 2014
+
+- code update :
+        * rank profile
+	* clean namespaces
+	* use field one, zero, etc
+	* fix clang warnings
+	* more blas wrappers (sger, sdot, copy, etc)
+	* simplification of fgemm
+	* simplify blas detection (+cflags)
+	* easier permutation handling
+	* improve testers
+	* use std::min, max
+	* many functions have API change to use last pointer argument for return
+	* some more doc
+	* and probably many more in 2+ years !
+
+- bugs :
+	* correct permutations
+	* fix fgemm, fgemv, ftrmm, ftrsm bugs 
+	* mem leaks
+	* bugs for degenerate cases
+	* fix bounds
+	* and probably many more in 2+ years !
+
+- new features :
+	* new pluq 2x2 recursive alg
+	* leftlooking
+	* parallel OMP fgemm, ftrmm, ftrsm
+	* parallel KAAPI fgemm, ftrmm, ftrsm
+	* new testers for pluq, fgemm, etc
+	* new tester for Bini approximate formula
+	* fadd, fsub, finit, fscal, etc
+	* vectorisation using AVX(2)
+	* in place schedules
+	* new Echelon code
+	* helper design for fgemm, fgemv, etc
+	* template factorisation for modular/multiprecision fields
+	* helper traits
+	* automatic matrix field conversion (ie double -> float)
+	* add spmv kernels
+	* enable use of sparse MKL
+	* parallel.h, avx and simd files
+	* new DSL for parallelism
+	* RNS and multiprecision fields
+	* new const_cast, fflas_new etc functions
+	* element_ptr in fields
+	* use Givaro dependency (compulsory now)
+	* new test for regressions (with tickets)
+	* and probably many more in 2+ years !
+
+
+# vim:ft=changelog

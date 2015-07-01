@@ -1,0 +1,11 @@
+June 2012
+- code update :
+        * some doc
+
+- bugs :
+	* change Invert signature (const inputs)
+        * propagate givaro caster...
+
+- new features :
+	* none
+

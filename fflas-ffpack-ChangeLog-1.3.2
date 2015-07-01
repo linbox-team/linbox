@@ -1,0 +1,59 @@
+2007-09-28 v1.3.2
+	* add routines fgetrs and fgesv (cf LAPACK), for system solving.
+	  supports rectangular, over/underdetermined systems.
+2007-08-29 v1.3.1
+	* add the benchmark directory, for automatic benchmarking against GOTO
+	and ATLAS BLAS. Adapted from Pascal Giorgi's benchmark system.
+2007-08-28 v1.3.0
+	* new version of ftrmm ftrsm: ftrsm based on a multicascade algorithm
+	reducing the number of modular reductions). Automated generation of each
+	of the 48 specializations 
+	* several bug fixes
+	* add regression tests: testeur_fgemm, testeur_lqup and testeur_ftrsm
+2007-07-05 v1.2.2
+	* add a transposed version of the LQUP decomposition routine
+	LUdivine
+	* fix many bugs in LUdivine
+	* new schedules for Winograd algorithm for matrix multiplication:
+	2 cases depending whether beta = 0 or not, taken form [Huss
+	Ledermann & Al. 96]
+	* add rowEchelon and ReducedRowEchelon routines + associated tests
+2007-06-21 v1.2.1
+	* add the use of float BLAS, if the field caradinality is small enough
+	* improve genericity: gemm can be use over any field domain (not
+	requiring any conversion to a integral representation)
+	* add a variant of Winograd's algorithm with less temporaries for
+	the operation C = AxB
+	* add ColumnEchelon and ReducedColumnEchelon routines, using an
+	inplace algorithm, based on the LQUP decompositon of LUdivine
+	* add routines ftrtri (replacing invL), ftrtrm.
+	* fix bunch of memory leaks in the tests (not yet finished)
+2007-03-13 v1.1.2
+	* change the genericity system for trsm to detect Field
+	implementations over double (compatibility with LinBox)
+2007-03-11 v1.1.1
+	* complete preconditioning phase for the new Charpoly algorithm
+	* new Charpoly algorithm renamed CharpolyArithProg
+	* add exception for failure of the LasVegas algrithm
+	* default charpoly is now: 2 attempts to CharpolyArithProg, then LUKrylov
+
+2007-02-27 v1.1.0
+	* change some naming conventions in the directories
+	* add a LQUP routine for small dimension (LUdivine_small) and the
+	cascading with LUdivine
+	* put the bound computations in the same file
+	* add dense_generator.C for the generation of random dense
+	matrices in tests
+	* add the new algorithm for characteristic polynomial (temporarily
+	named frobenius)
+	
+2006-08-11 v1.0.1
+	* add the field implementation modular-positive.h, especially for
+	p=2
+	* add a the flag 'balanced' to the finite fields modular<double>,
+	to switch to the apropriate bound computation (fgemm and trsm)
+	* fix a bug in LUDivine LQUP elimination (initialisation of the
+	permutation P for N=1 in the terminal case)
+	* fix a bug in the determination of the number of recursive levels
+	of Winograd Algorithm.
+	
