@@ -31,13 +31,14 @@
 #include "benchmarks/benchmark.h"
 #include "linbox/util/error.h"
 #include "fflas-ffpack/fflas-ffpack.h"
-#include "linbox/field/modular.h"
-#include <givaro/modular-balanced.h>
+#include "linbox/ring/modular.h"
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/solutions/rank.h"
+
+#include <givaro/modular-balanced.h>
 
 
 using namespace LinBox ;
