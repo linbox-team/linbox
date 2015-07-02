@@ -70,7 +70,7 @@ namespace LinBox
 			BlasPermutation<size_t> Q(n);
 
 			// be ready for random elements
-			NonzeroRandIter<Field> Rnz(F,R);
+			Givaro::GeneralRingNonZeroRandIter<Field> Rnz(F,R);
 
 			/* Create L a random invertible lower unit triangular matrix (m x m format) */
 			for (size_t j=0 ; j<m ; ++j)
@@ -161,7 +161,7 @@ namespace LinBox
 			Randiter S_(R);
 			S_.setBits(R.getBits()-1);
 			RandomIntegerIter<false> T_(3);
-			NonzeroRandIter<Ring,RandomIntegerIter<false> > U_(ZZ,T_);
+			Givaro::GeneralRingNonZeroRandIter<Ring,RandomIntegerIter<false> > U_(ZZ,T_);
 
 
 			/* Create L a random invertible lower unit triangular matrix (m x m format) */
