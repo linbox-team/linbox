@@ -28,9 +28,9 @@
   \ingroup examples
   */
 
+#include <givaro/gfq.h>
 #include <iostream>
 #include "linbox/matrix/dense-matrix.h"
-#include "linbox/field/Givaro/givaro-gfq.h"
 #include "linbox/algorithms/gauss.h"
 
 using namespace LinBox;
@@ -48,12 +48,11 @@ int main (int argc, char **argv)
     return -1;
   }
   int pVal = atoi(argv[2]);
-  int kVal = atoi(argv[3]);
 
 
   //typedef Givaro::Modular<int> Field;
-  typedef Givaro::GFq Field;
-  Field F(pVal, argc>3?kVal:1);
+  typedef Givaro::GFqDom<int64_t> Field;
+  Field F(pVal, argc>3?atoi(argv[3]):1);
   SparseMatrix<Field, SparseMatrixFormat::SparseSeq > A (F);
   A.read (input);
   std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
@@ -81,7 +80,7 @@ int main (int argc, char **argv)
     }
   }
   size_t nullity = A.coldim()-Rank;
-  BlasMatrix<Field> NullSpace(F,A.coldim(),nullity);
+  DenseMatrix<Field> NullSpace(F,A.coldim(),nullity);
   GD.nullspacebasis(NullSpace, Rank, A, P);
 
   NullSpace.write( std::cerr << "X:=", Tag::FileFormat::Maple ) << ';' << std::endl;

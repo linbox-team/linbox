@@ -30,7 +30,7 @@
 
 #include <iostream>
 #include "linbox/matrix/dense-matrix.h"
-#include "linbox/field/Givaro/givaro-gfq.h"
+#include <givaro/gfq.h>
 #include "linbox/algorithms/gauss.h"
 
 using namespace LinBox;
@@ -47,13 +47,13 @@ int main (int argc, char **argv)
 	if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
 
 	//typedef Givaro::Modular<int> Field;
-	typedef Givaro::GFq Field;
+	typedef Givaro::GFqDom<int64_t> Field;
 	Field F(atoi(argv[2]),argc>3?atoi(argv[3]):1);
 	SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (F);
 	B.read (input);
 	std::cout << "B is " << B.rowdim() << " by " << B.coldim() << std::endl;
 
-    BlasMatrix<Field> NullSpace(F,B.coldim(),B.coldim());
+    DenseMatrix<Field> NullSpace(F,B.coldim(),B.coldim());
     GaussDomain<Field> GD(F);
     
     GD.nullspacebasisin(NullSpace, B);
