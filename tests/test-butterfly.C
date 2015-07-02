@@ -332,8 +332,13 @@ int main (int argc, char **argv)
 
 	commentator().start("Butterfly preconditioner test suite", "butterfly preconditioner");
 
-	RandomSparseStream<Field, Vector<Field>::Sparse, Givaro::GeneralRingNonZeroRandIter<Field> >
-		stream (F, Givaro::GeneralRingNonZeroRandIter<Field> (F, Field::RandIter (F)),
+        Field::RandIter Gen(F);
+        typedef Givaro::GeneralRingNonZeroRandIter<Field> NZRand;
+        NZRand NZGen(Gen);
+        
+
+	RandomSparseStream<Field, Vector<Field>::Sparse, NZRand>
+            stream (F, NZGen,
 			(double) k / (double) n, n, (unsigned int)iterations);
 	RandomDenseStream<Field> v1_stream (F, n, (unsigned int)iterations);
 	RandomDenseStream<Field> v2_stream (F, n, (unsigned int)iterations);
