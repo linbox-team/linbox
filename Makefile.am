@@ -100,6 +100,9 @@ uninstall-hook:
 		"$(datarootdir)/" \
 		"$(includedir)" ) || true
 
+git:
+	git commit -a; git pull; git push
+
 
 VERSION=1.4.1
 

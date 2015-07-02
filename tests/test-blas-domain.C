@@ -167,27 +167,24 @@ int main(int argc, char **argv)
 	commentator().start("BlasMatrixDomain test suite", "BlasMatrixDomain");
 
 	Givaro::Modular<double> F1 (q);
-	//GF2 F2 ;
+	GF2 F2 ;
 	//GF3 F3 ;
 	Givaro::ModularBalanced<double> F4(q);
 	Givaro::Modular<float> F5(7); // (2011);
 	Givaro::Modular<uint32_t> F6(1009); // (2011);
-	Givaro::Modular<bool> F7 ;
 
 	pass &= launch_tests(F1,n,iterations);
 
-#pragma message "#warning GF2 -> working on m4ri wrapper"
-	//pass &= launch_gf2_tests(F2,n);
+        pass &= launch_gf2_tests(F2,n);
 
 #pragma message "#warning GF3 -> working on sliced wrapper"
 	//pass &= launch_gf3_tests(F3,n);
 
-	// pass &= launch_tests(F4,n,iterations);
+	pass &= launch_tests(F4,n,iterations);
 
-	// pass &= launch_tests(F5,n,iterations);
+	pass &= launch_tests(F5,n,iterations);
 
-#pragma message "#warning Givaro::Modular is not working at all"
-	// pass &= launch_tests(F6,n,iterations);
+        pass &= launch_tests(F6,n,iterations);
 
 //#pragma message "#warning Givaro::Modular<bool> is not working"
 	//pass &= launch_tests(F7,n,iterations);
