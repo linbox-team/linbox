@@ -38,7 +38,7 @@
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
-#include "linbox/randiter/nonzero.h"
+#include <givaro/givranditer.h>
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
 
@@ -143,8 +143,8 @@ namespace LinBox
 		_matV[2].resize (A.coldim (), _block);
 		_AV.resize (A.coldim (), _block);
 
-		NonzeroRandIter<Field> real_ri (field(), _randiter);
-		RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (field(), real_ri, A.coldim ());
+                Givaro::GeneralRingNonZeroRandIter<Field> real_ri (field(), _randiter);
+		RandomDenseStream<Field, Vector, Givaro::GeneralRingNonZeroRandIter<Field> > stream (field(), real_ri, A.coldim ());
 
 		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
 			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);

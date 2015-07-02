@@ -44,7 +44,7 @@
 
 #include "linbox/ring/modular.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/randiter/nonzero.h"
+#include <givaro/givranditer.h>
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
 #include "linbox/blackbox/butterfly.h"
@@ -332,8 +332,8 @@ int main (int argc, char **argv)
 
 	commentator().start("Butterfly preconditioner test suite", "butterfly preconditioner");
 
-	RandomSparseStream<Field, Vector<Field>::Sparse, NonzeroRandIter<Field> >
-		stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)),
+	RandomSparseStream<Field, Vector<Field>::Sparse, Givaro::GeneralRingNonZeroRandIter<Field> >
+		stream (F, Givaro::GeneralRingNonZeroRandIter<Field> (F, Field::RandIter (F)),
 			(double) k / (double) n, n, (unsigned int)iterations);
 	RandomDenseStream<Field> v1_stream (F, n, (unsigned int)iterations);
 	RandomDenseStream<Field> v2_stream (F, n, (unsigned int)iterations);

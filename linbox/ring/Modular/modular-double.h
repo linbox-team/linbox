@@ -44,7 +44,6 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
-#include "linbox/randiter/nonzero.h"
 
 #include "linbox/util/write-mm.h"
 

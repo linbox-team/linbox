@@ -51,7 +51,6 @@
 #include <cmath>
 #include "linbox/field/field-traits.h"
 #include "linbox/randiter/modular-balanced.h"
-#include "linbox/randiter/nonzero.h"
 
 #include <givaro/modular-balanced-float.h>
 
@@ -227,7 +226,6 @@ namespace LinBox
 } // Namespace LinBox
 
 #include "linbox/randiter/modular-balanced.h"
-#include "linbox/randiter/nonzero.h"
 
 #undef FmodF
 

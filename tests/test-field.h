@@ -71,7 +71,7 @@ bool testRingTrivia
 
 #include "linbox/util/commentator.h"
 #include "linbox/util/field-axpy.h"
-#include "linbox/randiter/nonzero.h"
+#include <givaro/givranditer.h>
 //#include "linbox/vector/stream.h"
 #include "linbox/integer.h"
 // #include "linbox/field/givaro.h"
@@ -744,7 +744,7 @@ namespace field_subtests {
 
 		typename Field::Element a, a_n, k, zero, one;
 		typename Field::RandIter r (F);
-		typename LinBox::NonzeroRandIter<Field> z(F,r);
+		typename Givaro::GeneralRingNonZeroRandIter<Field> z(F,r);
 
 		F.init (zero, 0);
 		F.init (one, 1);

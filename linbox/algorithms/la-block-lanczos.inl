@@ -42,7 +42,6 @@
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
-#include "linbox/randiter/nonzero.h"
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
 #include "linbox/algorithms/la-block-lanczos.h"

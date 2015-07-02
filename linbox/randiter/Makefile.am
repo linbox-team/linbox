@@ -35,7 +35,6 @@ BASIC_HDRS =            \
     modular-balanced.h  \
     modular-crooked.h   \
     gf2.h               \
-    nonzero.h           \
     mersenne-twister.h  \
     ntl-ZZ.h            \
     random-prime.h      \

@@ -4,7 +4,7 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * Time-stamp: <22 Jun 10 15:59:39 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <02 Jul 15 17:05:13 Jean-Guillaume.Dumas@imag.fr>
  * --------------------------------------------------------
  *
  *
@@ -48,7 +48,7 @@
 #include "linbox/util/commentator.h"
 //#include "linbox/field/archetype.h"
 #include "linbox/ring/modular.h"
-#include "linbox/randiter/nonzero.h"
+#include <givaro/givranditer.h>
 //#include "linbox/solutions/minpoly.h"
 //#include "linbox/solutions/rank.h"
 //#include "linbox/vector/stream.h"
@@ -334,8 +334,8 @@ int main (int argc, char **argv)
 
 #if 0
 	RandomDenseStream<Field, Vector> stream1 (F, n, (unsigned int)iterations), stream2 (F, n, (unsigned int)iterations), d_stream (F, n, 1);
-	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> >
-		stream3 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, (unsigned int)iterations);
+	RandomDenseStream<Field, Vector, Givaro::GeneralRingNonZeroRandIter<Field> >
+		stream3 (F, Givaro::GeneralRingNonZeroRandIter<Field> (F, Field::RandIter (F)), n, (unsigned int)iterations);
 
 	if (!testIdentityApply    (F, stream1)) pass = false;
 	if (!testRandomMinpoly    (F, stream3)) pass = false;

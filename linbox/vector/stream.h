@@ -71,13 +71,13 @@
 #ifndef __LINBOX_vector_stream_H
 #define __LINBOX_vector_stream_H
 
-#include <vector>
-#include <cmath>
 
+#include <givaro/givranditer.h>
 #include "linbox/util/debug.h"
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/vector/vector-traits.h"
-#include "linbox/randiter/nonzero.h"
+#include <vector>
+#include <cmath>
 
 
 // stream
@@ -450,7 +450,7 @@ namespace LinBox
 	private:
 		const Field                      &_field;
 		RandIter                          _r1;
-		NonzeroRandIter<Field, RandIter>  _r;
+                Givaro::GeneralRingNonZeroRandIter<Field, RandIter>  _r;
 		size_t                            _n;
 		double                            _p;
 		size_t                            _m;
@@ -528,7 +528,7 @@ namespace LinBox
 	private:
 		const Field                      &_field;
 		RandIter                          _r1;
-		NonzeroRandIter<Field, RandIter>  _r;
+		Givaro::GeneralRingNonZeroRandIter<Field, RandIter>  _r;
 		size_t                            _n;
 		double                            _p;
 		double                            _1_log_1mp;
@@ -590,7 +590,7 @@ namespace LinBox
 	private:
 		const Field                      &_field;
 		RandIter                          _r1;
-		NonzeroRandIter<Field, RandIter>  _r;
+		Givaro::GeneralRingNonZeroRandIter<Field, RandIter>  _r;
 		size_t                            _n;
 		long                              _k;
 		size_t                            _j;
@@ -670,7 +670,7 @@ namespace LinBox
 	private:
 		const Field                      &_field;
 		RandIter                          _r1;
-		NonzeroRandIter<Field, RandIter>  _r;
+                Givaro::GeneralRingNonZeroRandIter<Field, RandIter>  _r;
 		size_t                            _n;
 		double                            _p;
 		double                            _1_log_1mp;

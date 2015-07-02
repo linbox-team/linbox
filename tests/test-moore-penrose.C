@@ -38,7 +38,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
 #include "linbox/ring/modular.h"
-#include "linbox/randiter/nonzero.h"
+#include <givaro/givranditer.h>
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/moore-penrose.h"
@@ -69,7 +69,7 @@ static SparseMatrix<Field,  STOR_T>
 
 	Blackbox *A = new Blackbox (F, n, m);
 	typename Field::RandIter rnd_p (F);
-	NonzeroRandIter<Field> rnd (F, rnd_p);
+	Givaro::GeneralRingNonZeroRandIter<Field> rnd (F, rnd_p);
 	typename Field::Element factor;
 	vector<Row> bottom_left_data (n - r);
 	vector<Row> top_right_data (r);

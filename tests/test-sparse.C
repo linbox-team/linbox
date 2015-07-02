@@ -36,6 +36,7 @@
  */
 
 #include "linbox/linbox-config.h"
+#include <givaro/givranditer.h>
 
 #include <iostream>
 #include <fstream>
@@ -48,7 +49,6 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/stream.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/randiter/nonzero.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -161,7 +161,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 	A.write (report, Tag::FileFormat::Pretty);
 
 	size_t j;
-	NonzeroRandIter<Field> r (F, typename Field::RandIter (F));
+	Givaro::GeneralRingNonZeroRandIter<Field> r (F, typename Field::RandIter (F));
 
 	VectorDomain<Field> VD (F);
 	Vector v, w;

@@ -35,7 +35,6 @@
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/randiter/nonzero.h"
 #include "linbox/util/commentator.h"
 
 #include "test-common.h"

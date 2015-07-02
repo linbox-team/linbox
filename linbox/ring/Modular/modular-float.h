@@ -51,7 +51,6 @@
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
-#include "linbox/randiter/nonzero.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox

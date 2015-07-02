@@ -37,6 +37,7 @@
 
 
 #include "linbox/linbox-config.h"
+#include <givaro/givranditer.h>
 
 #include <iostream>
 #include <fstream>
@@ -44,7 +45,6 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/ring/modular.h"
-#include "linbox/randiter/nonzero.h"
 
 #include "test-common.h"
 
@@ -75,7 +75,7 @@ static bool testNonzeroRandom (Field &F, unsigned int iterations)
 	typename Field::RandIter r (F);
 
 	//NonzeroRandIter <Field, typename Field::RandIter> rp (F, r);
-	NonzeroRandIter <Field> rp (F, r);
+	Givaro::GeneralRingNonZeroRandIter <Field> rp (F, r);
 
 	for (i = 0; i <(int) iterations; i++) {
 		commentator().startIteration ((unsigned int)i);
@@ -120,7 +120,7 @@ int main (int argc, char **argv)
 
 	srand ((unsigned)time (NULL));
 
-	commentator().start("Nonzero random iterator test suite", "NonzeroRandIter");
+	commentator().start("Nonzero random iterator test suite", "Givaro::GeneralRingNonZeroRandIter");
 
 	commentator().setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
