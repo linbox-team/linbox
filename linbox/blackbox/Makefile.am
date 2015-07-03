@@ -26,6 +26,7 @@ BASIC_HDRS =			\
 	blackbox.h                \
 	factory.h                 \
 	butterfly.h               \
+	butterfly.inl               \
 	hilbert.h                 \
 	compose.h                 \
 	permutation.h             \
