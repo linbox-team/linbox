@@ -29,8 +29,7 @@
 #include <givaro/modular.h>
 #include <givaro/givintnumtheo.h>
 
-#include <linbox/field/gf2.h>
-#include <linbox/field/modular.h>
+#include <givaro/gf2.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/blackbox/transpose.h>
 #include <linbox/blackbox/compose.h>
@@ -40,6 +39,7 @@
 #include <linbox/algorithms/smith-form-sparseelim-local.h>
 #include <linbox/util/matrix-stream.h>
 #include <linbox/util/timer.h>
+#include <linbox/util/error.h>
 
 
 template<class Field>

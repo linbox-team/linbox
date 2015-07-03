@@ -69,8 +69,8 @@ namespace LinBox
 	public:
 
 		EarlySingleCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
-			primeProd_(1UL),
-			nextM_(1UL),
+			primeProd_(1U),
+			nextM_(1U),
 			occurency_(0U),
 			EARLY_TERM_THRESHOLD((unsigned)EARLY-1)
 		{
@@ -97,7 +97,7 @@ namespace LinBox
 			tInit.start();
 #endif
 			primeProd_ = D;
-			nextM_ = 1UL;
+			nextM_ = 1U;
 			residue_ = e;
 			occurency_ = 1;
 #ifdef CRATIMING
@@ -113,7 +113,7 @@ namespace LinBox
 			tInit.start();
 #endif
 			D.characteristic( primeProd_ );
-			nextM_ = 1UL;
+			nextM_ = 1U;
 			D.convert( residue_, e);
 			occurency_ = 1;
 #ifdef CRATIMING

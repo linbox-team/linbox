@@ -26,6 +26,7 @@
 #ifndef __LINBOX_transpose_H
 #define __LINBOX_transpose_H
 
+#include "linbox/util/error.h"
 #include "linbox/blackbox/blackbox-interface.h"
 
 namespace LinBox
@@ -183,7 +184,7 @@ namespace LinBox
 			return _A_ptr->write(os << "transpose of:");
 		}
 		std::istream &read(std::istream & is) {
-			throw LinBoxError("you don't want to call read here");
+			throw LinboxError("you don't want to call read here");
 			return is;
 		}
 
