@@ -291,7 +291,7 @@ namespace LinBox
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-		typename GivPolynomialRing<typename Blackbox::Field>::Element Pg;
+		typename Givaro::Poly1Dom<typename Blackbox::Field, Givaro::Dense>::Element Pg;
 		return P = cia (Pg, A, M);
 	}
 
@@ -311,7 +311,7 @@ namespace LinBox
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-// 		typename GivPolynomialRing<typename Blackbox::Field>::Element Pg;
+// 		typename Givaro::Poly1Dom<typename Blackbox::Field>::Element Pg;
 // 		return P = BBcharpoly::blackboxcharpoly (Pg, A, tag, M);
 		return BBcharpoly::blackboxcharpoly (P, A, tag, M);
 	}
@@ -465,7 +465,7 @@ namespace LinBox
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
-// 		typename GivPolynomialRing<typename Blackbox::Field>::Element Pg;
+// 		typename Givaro::Poly1Dom<typename Blackbox::Field>::Element Pg;
 // 		return P = BBcharpoly::blackboxcharpoly (Pg, A, tag, M);
 		return BBcharpoly::blackboxcharpoly (P, A, tag, M);
 	}

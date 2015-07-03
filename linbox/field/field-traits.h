@@ -66,6 +66,10 @@ namespace LinBox {
         struct ClassifyRing<Givaro::QField<Givaro::Rational>> {
                 typedef RingCategories::RationalTag categoryTag;
         };
+        template<>
+        struct ClassifyRing<Givaro::ZRing<Givaro::Integer>> {
+                typedef RingCategories::IntegerTag categoryTag;
+        };
 
 
 	/*! FieldTrait.
