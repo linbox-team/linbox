@@ -30,7 +30,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <givaro/zring.h>
 #include <givaro/givrational.h>
 
 #include <linbox/ring/modular.h>
@@ -70,10 +69,10 @@ int main (int argc, char **argv)
 
 	long unsigned int r;
 
-	Givaro::ZRing<Givaro::Rational> ZZ;
+	Givaro::QField<Givaro::Rational> ZZ;
 	LinBox::Timer tim ; tim.clear() ; tim.start();
-	MatrixStream<Givaro::ZRing<Givaro::Rational>> ms( ZZ, input );
-	SparseMatrix<Givaro::ZRing<Givaro::Rational>, SP_STOR> A ( ms );
+	MatrixStream<Givaro::QField<Givaro::Rational>> ms( ZZ, input );
+	SparseMatrix<Givaro::QField<Givaro::Rational>, SP_STOR> A ( ms );
 	// SparseMatrix<Givaro::ZRing<Givaro::Rational>, SparseMatrixFormat::CSR> A ( ms );
 	tim.stop();
 	std::cout << "matrix is " << A.rowdim() << " by " << A.coldim() << " (" << tim << ")" << std::endl;
@@ -102,7 +101,7 @@ int main (int argc, char **argv)
 		typedef Givaro::Modular<double> Field;
 #endif
 		//to use ints, prime < 2^{31}
-		int32_t q = atoi(argv[2]);
+		uint32_t q = atoi(argv[2]);
                 if (q == 0) {
                         std::cerr << "second argument should be a non-zero integer or missing\n";
                         return -1;
