@@ -31,12 +31,12 @@
 
 #include <linbox/util/timer.h>
 #include <linbox/ring/modular.h>
-#include <linbox/field/unparametric.h>
+#include <givaro/zring.h>
 #include <linbox/matrix/sparse-matrix.h>
 using namespace std;
 
 #include <linbox/solutions/charpoly.h>
-#include <linbox/ring/givaro-polynomial.h>
+#include <givaro/givpoly1.h>
 using namespace LinBox;
 
 template <class Field, class Polynomial>
@@ -83,12 +83,14 @@ std::ostream& printFactorization (std::ostream& out, const Field &F, const Facto
 	typename Factors::const_iterator itf = f.begin();
 	typename Exponents::const_iterator ite = exp.begin();
 	for ( ; itf != f.end(); ++itf, ++ite) {
-		prettyprintIntegerPolynomial(out << '(', F, *(*itf)) << ')';
+		prettyprintIntegerPolynomial(out << '(', F, *itf) << ')';
 		if (*ite > 1) out << '^' << *ite;
 		out << endl;
 	}
 	return out;
 }
+
+typedef Givaro::ZRing<Givaro::Integer> IntDom;
 
 int main (int argc, char **argv)
 {
@@ -108,11 +110,11 @@ int main (int argc, char **argv)
 
 	if (argc == 2) {
 
-		PID_integer ZZ;
-		BlasMatrix<PID_integer > A (ZZ);
+		IntDom ZZ;
+		DenseMatrix<IntDom > A (ZZ);
 		A.read (input);
-		typedef GivPolynomialRing<PID_integer, Givaro::Dense> IntPolRing;
-		BlasVector<PID_integer> c_A(ZZ);
+		typedef Givaro::Poly1FactorDom<IntDom> IntPolRing;
+		BlasVector<IntDom> c_A(ZZ);
 
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_A, A, Method::Blackbox());
@@ -122,28 +124,23 @@ int main (int argc, char **argv)
 		printPolynomial (cout, ZZ, c_A) << endl;
 		cout << tim << endl;
 
-#ifdef __LINBOX_HAVE_NTL
 		cout << "Do you want a factorization (y/n) ? ";
 		char tmp;
 		cin >> tmp;
 		if (tmp == 'y' || tmp == 'Y') {
 			commentator().start("Integer Polynomial factorization by NTL", "NTLfac");
-			vector<IntPolRing::Element*> intFactors;
-			vector<unsigned long> exp;
+			vector<IntPolRing::Element> intFactors;
+			vector<uint64_t> exp;
 			IntPolRing IPD(ZZ);
 			tim.start();
 			IPD.factor (intFactors, exp, IntPolRing::Element(c_A.getRep().begin(),c_A.getRep().end()));
 			tim.stop();
 			commentator().stop("done", NULL, "NTLfac");
 			printFactorization(cout << intFactors.size() << " integer polynomial factors:" << endl, ZZ, intFactors, exp) << endl;
-			vector<IntPolRing::Element*>::const_iterator itf = intFactors.begin();
-			for ( ; itf != intFactors.end(); ++itf)
-				delete *itf;
 
 			cout << tim << endl;
 
 		}
-#endif
 	}
 	if (argc == 3) {
 
@@ -153,7 +150,7 @@ int main (int argc, char **argv)
 		BlasMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-// 		GivPolynomialRing<Field, Givaro::Dense>::Element c_B;
+// 		Givaro::Poly1Dom<Field, Givaro::Dense>::Element c_B;
         BlasVector<Field> c_B(F);
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_B, B);

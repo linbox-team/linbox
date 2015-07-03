@@ -34,12 +34,12 @@
 #define __LINBOX_bbcharpoly_H
 
 #define _LB_MAXITER 5
-#include <vector>
-#include <map>
+
+#include <givaro/givpoly1.h>
+
 
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/sum.h"
-#include "linbox/ring/givaro-polynomial.h"
 #include "linbox/ring/modular.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/solutions/det.h"
@@ -48,6 +48,9 @@
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/blackbox/polynomial.h"
+
+#include <vector>
+#include <map>
 
 namespace LinBox
 {
@@ -153,9 +156,9 @@ namespace LinBox
 			typename BlackBox::Field intRing = A.field();
 			typedef Givaro::Modular<uint32_t> Field;
 			typedef typename BlackBox::template rebind<Field>::other FieldBlackBox;
-			typedef GivPolynomialRing<typename BlackBox::Field, Givaro::Dense> IntPolyDom;
+			typedef Givaro::Poly1FactorDom<typename BlackBox::Field, Givaro::Dense> IntPolyDom;
 			typedef typename IntPolyDom::Element IntPoly;
-			typedef GivPolynomialRing<Field>::Element FieldPoly;
+			typedef Givaro::Poly1FactorDom<Field,Givaro::Dense>::Element FieldPoly;
 			// Set of factors-multiplicities sorted by degree
 			typedef FactorMult<FieldPoly,IntPoly> FM;
 			typedef std::multimap<unsigned long,FM*> FactPoly;
@@ -175,8 +178,8 @@ namespace LinBox
 				return P = intMinPoly;
 			}
 			/* Factorization over the integers */
-			std::vector<IntPoly*> intFactors;
-			std::vector<unsigned long> exp;
+			std::vector<IntPoly> intFactors;
+			std::vector<uint64_t> exp;
 			IPD.factor (intFactors, exp, IntPoly(intMinPoly.getRep().begin(),intMinPoly.getRep().end()));
 			size_t factnum = intFactors.size();
 
@@ -189,10 +192,10 @@ namespace LinBox
 			int goal =(int) n;
 
 			for (size_t i = 0; i < intFactors.size(); ++i) {
-				unsigned long deg =  (intFactors[i]->size()-1);
+				uint64_t deg =  (intFactors[i].size()-1);
 				FactorMult<FieldPoly,IntPoly>* FFM=NULL;
 				if (exp[i] > 1) {
-					IntPoly *tmp = new IntPoly(*intFactors[i]);
+					IntPoly *tmp = new IntPoly(intFactors[i]);
 					FM* depend = NULL;
 					for (size_t j = 1; j <= exp[i]; ++j){
 						IntPoly * tmp2 = new IntPoly(*tmp);
@@ -203,21 +206,21 @@ namespace LinBox
 						factCharPoly.insert (std::pair<size_t, FM*> (deg, FFM));
 						++factnum;
 						depend = FFM;
-						deg += intFactors[i]->size()-1;
+						deg += intFactors[i].size()-1;
 						if (j < exp[i])
-							IPD.mul (*tmp, *tmp2, *intFactors[i]);
+							IPD.mul (*tmp, *tmp2, intFactors[i]);
 					}
 					delete tmp;
 					--factnum;
 					FFM->multiplicity = 1; // The last factor is present in minpoly
-					goal -= (int)deg-(int)intFactors[i]->size()+1;
+					goal -= (int)deg-(int)intFactors[i].size()+1;
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
 				}
 				else {
-					FieldPoly* fp=new FieldPoly(intFactors[i]->size());
-					typename IntPoly::template rebind<Field>() (*fp, *(intFactors[i]), F);
-					FFM = new FM (fp,intFactors[i],1,NULL);
-					factCharPoly.insert (std::pair<size_t, FM* > (intFactors[i]->size()-1, FFM));
+					FieldPoly* fp=new FieldPoly(intFactors[i].size());
+					typename IntPoly::template rebind<Field>() (*fp, (intFactors[i]), F);
+					FFM = new FM (fp,&intFactors[i],1,NULL);
+					factCharPoly.insert (std::pair<size_t, FM* > (intFactors[i].size()-1, FFM));
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
 					goal -= (int)deg;
 				}
@@ -255,7 +258,7 @@ namespace LinBox
 		{
 			commentator().start ("Givaro::Modular BlackBox Charpoly ", "MbbCharpoly");
 			typedef typename BlackBox::Field Field;
-			typedef GivPolynomialRing<Field, Givaro::Dense> PolyDom;
+			typedef Givaro::Poly1FactorDom<Field, Givaro::Dense> PolyDom;
 			typedef typename PolyDom::Element FieldPoly;
 			// Set of factors-multiplicities sorted by degree
 			typedef std::multimap<unsigned long,FactorMult<FieldPoly>* > FactPoly;
@@ -281,7 +284,7 @@ namespace LinBox
 			FieldPoly charPoly (n+1);
 
 			{	/* Factorization over the field */
-				std::vector<FieldPoly*> factors;
+				std::vector<FieldPoly> factors;
 				std::vector<unsigned long> exp;
 
 				PD.factor (factors, exp, FieldPoly(minPoly.getRep().begin(),minPoly.getRep().end()));
@@ -291,29 +294,28 @@ namespace LinBox
 				int goal = (int)n;
 
 				for (size_t i = 0; i < factors.size(); ++i) {
-					unsigned long deg =  (factors[i]->size()-1);
+					uint64_t deg =  (factors[i].size()-1);
 					FactorMult<FieldPoly>* FFM=NULL;
 					if (exp[i] > 1) {
-						FieldPoly* tmp = new FieldPoly(*factors[i]);
+                                            FieldPoly* tmp = new FieldPoly(factors[i]);
 						FactorMult<FieldPoly>* depend = NULL;
 						for (size_t j = 1; j <= exp[i]; ++j){
-							FieldPoly * tmp2 = new FieldPoly(*tmp);
+							FieldPoly* tmp2 = new FieldPoly(*tmp);
 							FFM = new FactorMult<FieldPoly> (tmp2, tmp2, 0, depend);
 							//	std::cerr<<"Inserting new factor (exp>1): "<<(*tmp2)<<std::endl;
 
 							factCharPoly.insert (std::pair<size_t, FactorMult<FieldPoly>* > (deg, FFM));
 							++factnum;
 							depend = FFM;
-							deg += factors[i]->size()-1;
+							deg += factors[i].size()-1;
 							if (j < exp[i])
-								PD.mul (*tmp, *tmp2, *factors[i]);
+								PD.mul (*tmp, *tmp2, factors[i]);
 						}
 						delete tmp;
 						--factnum;
 						FFM->multiplicity = 1; // The last factor is present in minpoly
-						goal -= (int)(deg-factors[i]->size())+1;
+						goal -= (int)(deg-factors[i].size())+1;
 						leadingBlocks.insert (std::pair<FactorMult<FieldPoly>*,bool>(FFM,false));
-						delete factors[i] ;
 					}
 					else {
 						FFM = new FactorMult<FieldPoly> (factors[i],factors[i],1,NULL);
@@ -370,7 +372,7 @@ namespace LinBox
 		{
 			typedef std::multimap<unsigned long, FactorMult<FieldPoly,IntPoly>* > FactPoly;
 			typedef typename BlackBox::Field Field;
-			typedef GivPolynomialRing<Field, Givaro::Dense> PolyDom;
+			typedef Givaro::Poly1FactorDom<Field, Givaro::Dense> PolyDom;
 			typename FactPoly::iterator itf = factCharPoly.begin();
 			typename std::multimap<FactorMult<FieldPoly,IntPoly>*,bool>::iterator lead_it;
 			Field F = A.field();
