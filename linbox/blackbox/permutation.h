@@ -289,8 +289,8 @@ namespace LinBox
 		{ return os; }
 
 		//!@bug needs a MM version
-		std::ostream &write(std::ostream &os) const
-		{ return write(os, Tag::FileFormat::Plain); }
+		//std::ostream &write(std::ostream &os) const
+		//{ return write(os, Tag::FileFormat::Plain); }
 
 		std::ostream &write(std::ostream &os, LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Plain) const
 		{

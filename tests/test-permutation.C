@@ -116,8 +116,8 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	LinBox::Permutation<Field> P(F);
-	P.random(n);
+	LinBox::Permutation<Field> P(F,n);
+	P.random();
 	pass = pass && testBlackboxNoRW(P);
 	pass = pass && testInvEqTrans(P);
 
