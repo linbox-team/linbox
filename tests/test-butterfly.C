@@ -326,9 +326,8 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (3);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator().setMaxDepth (-1);
+	commentator().setMaxDetailLevel (-1);
 
 	commentator().start("Butterfly preconditioner test suite", "butterfly preconditioner");
 
