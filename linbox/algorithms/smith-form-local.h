@@ -63,7 +63,6 @@ namespace LinBox
 		std::list<Elt>& smithStep(std::list<Elt>& L, Elt& d, Matrix& A, const LocalPID& R)
 		{
 
-			//std::cout << "Dimension: " << A.rowdim() << " " << A.coldim() <<"\n";
 			if ( A.rowdim() == 0 || A.coldim() == 0 ) return L;
 
 			Elt g; R.assign(g, R.zero);
