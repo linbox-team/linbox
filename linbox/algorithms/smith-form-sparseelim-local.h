@@ -90,12 +90,12 @@ namespace LinBox
 		template<class Modulu>
 		bool isNZero(const Modulu& a ) const { return (bool)a ;}
 		template<class Modulu>
-		bool isZero(const Modulu& a ) const { return a == 0UL;}
+		bool isZero(const Modulu& a ) const { return a == 0U;}
 
 		template<class Modulo, class Modulo2, class Modulo3>
 		Modulo& MY_Zpz_inv (Modulo& u1, const Modulo2 a, const Modulo3 _p) const
 		{
-                    u1 = Modulo(1UL);
+                    u1 = Modulo(1U);
                     Modulo r0((Modulo)_p), r1((Modulo)a); //! clang complains for examples/smith.C and examples/smithvalence.C
                     Modulo q(r0/r1);
 

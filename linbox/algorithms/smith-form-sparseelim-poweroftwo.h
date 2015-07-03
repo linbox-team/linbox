@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <27 Mar 14 10:34:29 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <03 Jul 15 13:59:19 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -93,11 +93,11 @@ namespace LinBox
             //  IEEE Transactions on Computers, 2013]  
             // http://doi.ieeecomputersociety.org/10.1109/TC.2013.94
         UInt_t& MY_Zpz_inv (UInt_t& u1, const UInt_t& a, const size_t exponent, const UInt_t& TWOTOEXPMONE) const {
-            static const UInt_t ttep2(TWOTOEXPMONE+3UL);
+            static const UInt_t ttep2(TWOTOEXPMONE+3U);
             if (this->isOne(a)) return u1=this->one;
-            REQUIRE( (one<<exponent) == (TWOTOEXPMONE+1UL) );
+            REQUIRE( (one<<exponent) == (TWOTOEXPMONE+1U) );
             REQUIRE( a <= TWOTOEXPMONE );
-            REQUIRE( (a & 1UL) );
+            REQUIRE( (a & 1U) );
             u1=ttep2-a; // 2-a
             UInt_t xmone(a-1);
             for(size_t i=2; i<exponent; i<<=1) {
@@ -106,12 +106,12 @@ namespace LinBox
                 u1 *= ++xmone; --xmone;
                 u1 &= TWOTOEXPMONE;
             }
-            ENSURE( ((a * u1) & TWOTOEXPMONE) == 1UL );
+            ENSURE( ((a * u1) & TWOTOEXPMONE) == 1U );
             return u1;
         }
 
 //         UInt_t& MY_Zpz_inv (UInt_t& u1, const UInt_t a, const UInt_t _p) const {
-//             u1 = 1UL;
+//             u1 = 1U;
 //             UInt_t r0(_p), r1(a);
 //             UInt_t q(r0/r1);
 
@@ -397,10 +397,10 @@ namespace LinBox
 
                 typedef typename BB::Row Vecteur;
                 size_t EXPONENT = EXPONENTMAX;
-                UInt_t TWOK(1UL); TWOK <<= EXPONENT;
+                UInt_t TWOK(1U); TWOK <<= EXPONENT;
                 UInt_t TWOKMONE(TWOK); --TWOKMONE;
-ENSURE( TWOK == (UInt_t(1UL) << EXPONENT) );
-ENSURE( TWOKMONE == (TWOK - 1UL) );
+ENSURE( TWOK == (UInt_t(1U) << EXPONENT) );
+ENSURE( TWOKMONE == (TWOK - 1U) );
 
 
 
@@ -484,8 +484,8 @@ ENSURE( TWOKMONE == (TWOK - 1UL) );
                         TWOK >>= 1;
                         TWOKMONE >>=1;
 
-ENSURE( TWOK == (UInt_t(1UL) << EXPONENT) );
-ENSURE( TWOKMONE == (TWOK - 1UL) );
+ENSURE( TWOK == (UInt_t(1U) << EXPONENT) );
+ENSURE( TWOKMONE == (TWOK - 1U) );
 
                         ranks.push_back( indcol );
                         ++ind_pow;

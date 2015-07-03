@@ -232,7 +232,7 @@ namespace LinBox
 
 		// compute one valence of AAT over a field
 		template <class Blackbox>
-		static void one_valence(typename Blackbox::Element& v, unsigned long& r, const Blackbox& A)
+		static void one_valence(typename Blackbox::Element& v, size_t& r, const Blackbox& A)
 		{
 			//commentator().start ("One valence", "one valence");
 			typedef BlasVector<typename Blackbox::Field> Poly;
@@ -268,7 +268,7 @@ namespace LinBox
 			commentator().start ("Valence (AAT)", "Valence");
 			typedef Givaro::Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
-			unsigned long d;
+			size_t d;
 			RandomPrimeIterator g; g.template setBitsField<Field>();
 			Field::Element v;
 			++g;
@@ -287,7 +287,7 @@ namespace LinBox
 		// compute the valence of AAT over an integer ring
 		// d, the degree of min_poly of AAT
 		template <class Blackbox>
-		static void valence(Integer& val, unsigned long d, const Blackbox& A)
+		static void valence(Integer& val, size_t d, const Blackbox& A)
 		{
 
 			typedef Givaro::Modular<int32_t> Field;
@@ -296,15 +296,15 @@ namespace LinBox
 			RandomPrimeIterator rg; rg.template setBitsField<Field>();
 			PID_integer Z;
 			BlasVector<PID_integer> Lv(Z), Lm(Z);
-			unsigned long d1; Field::Element v; integer im = 1;
+			size_t d1; Field::Element v; integer im = 1;
 			//compute an upper bound for val.
-			integer bound; cassini (bound, A); bound = pow (bound, d); bound *= 2;
+			integer bound; cassini (bound, A); bound = pow (bound, (uint64_t)d); bound *= 2;
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Bound for valence: " << bound << std::endl;
 
 			do {
 				++rg;
-				Field F((unsigned long)*rg);
+				Field F((uint64_t)*rg);
 				FBlackbox Ap(A, F);
 				one_valence(v, d1, Ap);
 				if (d1 == d) {
