@@ -40,8 +40,10 @@
 #include <functional>
 
 #include "test-common.h"
+#include "test-field.h"
 
 #include "linbox/util/commentator.h"
+#include "linbox/ring/local-PIR-modular.h"
 #include "linbox/ring/PIR-modular-int32.h"
 #include "linbox/ring/local2_32.h"
 #include "linbox/algorithms/smith-form-local.h"
@@ -105,15 +107,16 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 	// set up A equiv diag d.
 	Blackbox L (R, n, n), D (R, n, n), U (R, n, n), A (R, n, n);
 	for( i = 0; i < n; ++i )
-		{ R.assign(D[i][i], d[i]); L[i][i]=U[i][i]=1; }
+		{ R.assign(D[i][i], d[i]); L[i][i]=U[i][i]=R.one; }
 	for (i = 0; i < n; ++ i)
 		for ( j = 0; j < i; ++ j) {
-			D[i][j] = D[j][i] = 0;
-			L[i][j] = rand() % 10;
-			L[j][i] = 0;
-			U[j][i] = rand() % 10;
-			U[i][j] = 0;
+			R.assign(D[i][j], R.assign(D[j][i], 0));
+			R.assign(L[i][j], rand() % 10);
+			R.assign(L[j][i], 0);
+			R.assign(U[j][i], rand() % 10);
+			R.assign(U[i][j], 0);
 		}
+		
 	MR.mul(A,L,D);
 	MR.mulin(A,U);
 
@@ -157,12 +160,13 @@ int main (int argc, char **argv)
 	bool pass1 = true, pass2 = true;
 
 	static int64_t n = 6;
-	static size_t q = 10201; // 101^2
+	static size_t q = 3; 
+	static int32_t e = 4;
 	//static integer q = 10201; // 101^2
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the ring Z/qZ.", TYPE_INT, &q },
+		{ 'q', "-q Q", "Operate over the ring Z/q^eZ.", TYPE_INT, &q },
 		//{ 'q', "-q Q", "Operate over the ring Z/qZ.", TYPE_INTEGER, &q },
 		END_OF_ARGUMENTS
 	};
@@ -173,13 +177,25 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "q = " << q << std::endl;
+#if 1
+  { // zero-th local ring type: modulus p^e as integer.
+	typedef LocalPIRModular<integer> Ring;
+	Ring R (q, e);
+	vector<Ring::Element> d(n);
 
-  { // first local ring type
-  // FIXME: incorrect for many prime powers.
+	commentator().start ("Testing local smith over LocalPIRModular<integer>", "local smith");
+	for( int32_t i = 0; i < n; ++i ) R.init(d[i],i);
+	pass1 = testLocalSmith<Ring> (R, d, "LocalPIRModular<integer>");
+	commentator().stop ("local smith");
+	if (not pass1) report << "LocalPIRModular smith FAIL" << std::endl;
+
+  }
+#endif
+  { // first local ring type: modulus p^e as int32_t.
 	typedef PIRModular<int32_t> LocalPIR;
 	//typedef PIRModular<dense> LocalPIR;
 	//LocalPIR R (81); 
-	LocalPIR R (q);
+	LocalPIR R (q, e);
 	vector<LocalPIR::Element> d(n);
 
 	commentator().start ("Testing local smith on singular dense mat over PIRModular", "testSingular");
@@ -203,7 +219,7 @@ int main (int argc, char **argv)
 	if (not pass1) report << "PIRModular FAIL" << std::endl;
   }
 
-  { // second local ring type
+  { // second local ring type: m = 2^32
 	typedef Local2_32 LocalPIR;
 	LocalPIR R;
 	vector<LocalPIR::Element> d(n);

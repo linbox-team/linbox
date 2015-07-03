@@ -22,10 +22,12 @@
  */
 
 
-#ifndef __LINBOX_local pir_modular_H
-#define __LINBOX_local pir_modular_H
+#ifndef __LINBOX_local_pir_modular_H
+#define __LINBOX_local_pir_modular_H
 
+#include <string>
 #include <givaro/modular.h>
+#include <givaro/givpower.h>
 
 #include "linbox/field/field-traits.h"
 
@@ -34,27 +36,30 @@ namespace LinBox
 {
 
 
-	template <intType>
-	struct ClassifyRing<PIRModular<intType> >  {
+	template <typename intType>
+	class LocalPIRModular;
+
+	template <typename intType>
+	struct ClassifyRing<LocalPIRModular<intType> >  {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	/// \ingroup ring
-	template <intType>
-	class PIRModular<intType> : public Givaro::Modular<intType> {
+	template <typename intType>
+	class LocalPIRModular : public Givaro::Modular<intType> {
 
 	public:
 
 		using Parent_t = Givaro::Modular<intType>;
 	
-		using Givaro::Modular<intType>::Element;
+		using typename Givaro::Modular<intType>::Element;
 		//typedef typename Givaro::Modular<intType>::Element Element;
 
-		using Givaro::Modular<intType>::RandIter;
+		using typename Givaro::Modular<intType>::RandIter;
 
 		//No default cstor
 
-		PIRModular (intType value, uint32_t exp = 1) :
+		LocalPIRModular (intType value, uint32_t exp = 1) :
 			Givaro::Modular<intType>(Givaro::power(value, exp)), 
 			_irred(value), 
 			_exponent(exp)
@@ -118,28 +123,31 @@ namespace LinBox
         using Parent_t:: maxpyin;
 
         // ----- Random generators
-        using Parent_t:: NonZeroRandIter;
+        using typename Parent_t:: NonZeroRandIter;
         using Parent_t:: random;
         using Parent_t:: nonzerorandom;
 
         // --- IO methods
-        std::istream& read (std::istream& s);
-		{ string s; return Parent_t::read(s >> str)>> s >> _irred >> s >> _exponent; }
-        std::ostream& write(std::ostream& s) const
-		{ return Parent_t::write(s<<"Local- ") << "irred: " << _irred << ", exponent: " << _exponent; }
-        std::istream& read ;
-        std::ostream& write;
+	using Parent_t:: read ;
+	using Parent_t:: write;
+
+        std::istream& read (std::istream& is)
+	{ std::string s; return Parent_t::read(is >> s)>> s >> _irred >> s >> _exponent; }
+        std::ostream& write(std::ostream& os) const
+	{ return Parent_t::write(os<<"Local- ") << "irred: " << _irred << ", exponent: " << _exponent; }
 
 	Element& gcdin (Element& a, const Element& b) const
                 {
-                        Givarro:gcd(a, a, b);
+			Givaro::gcd(a, a, b);
+                        Givaro::gcd(a, a, Parent_t::residu()); 
+			return reduce(a);
                 }
 
 
 	bool isUnit(const Element& a) const
                 {
                         Element g;
-                        Givarro::gcd(g, a, _irred);
+                        Givaro::gcd(g, a, _irred);
                         return isOne(g);
                 }
 

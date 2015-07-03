@@ -96,7 +96,7 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_NTL
 }
 
-#include "linbox/field/ntl.h"
+#include "linbox/ring/ntl.h"
 #include "NTL/ZZXFactoring.h"
 namespace LinBox
 {
@@ -134,7 +134,7 @@ namespace LinBox
 	}
 }
 
-#include "linbox/field/PID-integer.h"
+#include "linbox/ring/PID-integer.h"
 namespace LinBox
 {
 	typedef GivPolynomialRing<PID_integer, Givaro::Dense> GivPolPIDIntDense;
