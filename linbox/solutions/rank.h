@@ -44,9 +44,6 @@
 #include "linbox/algorithms/whisart_trace.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/MatrixDomain/blas-matrix-domain.h"
-#include "linbox/switch/cekstv.h"
-#include "linbox/blackbox/butterfly.h"
-
 
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/trace.h"

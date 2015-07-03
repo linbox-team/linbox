@@ -22,419 +22,117 @@
  */
 
 
-#ifndef __LINBOX_pir_modular_int32_H
-#define __LINBOX_pir_modular_int32_H
+#ifndef __LINBOX_pir_modular_H
+#define __LINBOX_pir_modular_H
 
-#include <givaro/modular-int32.h>
+#include <givaro/modular.h>
 
-//#include "linbox/ring/modular.h"
-#ifndef LINBOX_MAX_INT
-#define LINBOX_MAX_INT 2147483647
-#endif
-
-#ifndef LINBOX_MAX_MODULUS
-#define LINBOX_MAX_MODULUS 1073741824
-#endif
 #include "linbox/field/field-traits.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox
 {
 
-	template< class PIR>
-	class PIRModular;
 
-	template< class Element >
-	class ModularRandIter;
-
-	template<class Field>
-	class DotProductDomain;
-
-	template<class Field>
-	class FieldAXPY;
-
-	template<class Field>
-	class MVProductDomain;
-
-	template <class Ring>
-	struct ClassifyRing;
-
-	template <class Element>
-	struct ClassifyRing<PIRModular<Element> >;
-
-	template <>
-	struct ClassifyRing<PIRModular<int32_t> >  {
+	template <intType>
+	struct ClassifyRing<PIRModular<intType> >  {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	/// \ingroup ring
-	template <>
-	class PIRModular<int32_t> : public Givaro::Modular<int32_t> {
+	template <intType>
+	class PIRModular<intType> : public Givaro::Modular<intType> {
 
 	public:
 
-		friend class FieldAXPY<PIRModular<int32_t> >;
-
-		friend class DotProductDomain<PIRModular<int32_t> >;
-
-		friend class MVProductDomain<PIRModular<int32_t> >;
-
-		typedef int32_t Element;
-
-		typedef Givaro::Modular<int32_t>::RandIter RandIter;
-
-                uint64_t _two_64;
-            
-
-		//default modular field,taking 65521 as default modulus
-		PIRModular () :
-			Givaro::Modular<int32_t>(65521)
-		{
-                    _two_64 = (uint64_t(1) << 32) % uint64_t(this->characteristic());
-                    _two_64 = (_two_64 * _two_64) % uint64_t(this->characteristic());
-
-		}
-
-		PIRModular (int32_t value, int32_t exp = 1) :
-			Givaro::Modular<int32_t>(value)
-		{ 
-                    _two_64 = (uint64_t(1) << 32) % uint64_t(this->characteristic());
-                    _two_64 = (_two_64 * _two_64) % uint64_t(this->characteristic());
-
-                }
-
-
-		/** PIR functions, gcd, xgcd, dxgcd */
-
-		Element& gcd (Element& g, const Element& a, const Element& b) const
-		{
-
-			GCD (g, a, b);
-
-			return g;
-
-		}
-
-		Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b) const
-		{
-
-			XGCD (g, s, t, a, b);
-
-			if (s < 0)
-				s += _p;
-
-			if (t < 0)
-				t += _p;
-
-
-			return g;
-		}
-
-		Element& dxgcd (Element& g, Element& s, Element& t, Element& a1, Element& b1,
-				const Element& a, const Element& b) const
-		{
-
-
-			xgcd (g, s, t, a, b);
-
-			if (g != 0) {
-
-				a1 = a / g;
-
-				b1 = b / g;
-			}
-
-			else {
-
-				a1 = s;
-
-				b1 = t;
-			}
-
-
-			return g;
-
-		}
-
-		bool isDivisor (const Element& a, const Element& b) const
-		{
-
-			Element g;
-
-			if (a == 0) return false;
-
-			else if (b == 0) return true;
-
-			else {
-
-				gcd (g, a, _p);
-
-				return (b % g) == 0;
-			}
-
-		}
-
-		Element& div (Element& d, const Element& a, const Element& b) const
-		{
-
-			Element g, s;
-
-			HXGCD (g, s, b, _p);
-
-			Element r;
-
-			r = a % g;
-
-			if (r != 0) throw PreconditionFailed(LB_FILE_LOC,"Div: not dividable");
-
-			else {
-
-				d = a / g;
-
-				mulin (d, s);
-			}
-
-			return d;
-
-		}
-
-		Element& normal (Element& a, const Element& b) const
-		{
-
-			if (b == 0) return a = 0;
-			else {
-				GCD (a, b, _p);
-
-				return a;
-			}
-		}
-
-
-		Element& gcdin (Element& a, const Element& b) const
-		{
-
-			GCD (a, a, b);
-
-
-			return normalIn(a); // is this efficient?
-		}
-
-		Element& normalIn (Element& a) const
-		{
-			if (a == 0) return a;
-			else {
-				GCD (a, a, _p);
-
-				return a;
-			}
-
-		}
-
-
-		Element& divin (Element& a, const Element& b) const
-		{
-
-			div (a, a, b);
-
-			return a;
-		}
-
-
-		bool isUnit(const Element& a) const
-		{
-
-			Element g;
-
-			GCD (g, a, _p);
-
-
-			//	std::cout << a << " is a unit or not " << g;
-
-			//		std::cout << "modulus = " << _p <<"\n";
-
-			return g == 1;
-
-		}
-
-	private:
-		static void GCD (int32_t& g, int32_t a, int32_t b) {
-
-			int32_t  u, v, /*  q,*/ r;
-
-			if (a < 0) {
-				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(LB_FILE_LOC,"XGCD: integer overflow");
-				a = -a;
-
-			}
-
-			if (b < 0) {
-				if (b < -LINBOX_MAX_INT) throw PreconditionFailed(LB_FILE_LOC,"XGCD: integer overflow");
-				b = -b;
-			}
-
-			u = a; v = b;
-
-			while (v != 0) {
-				// q = u / v;
-				r = u % v;
-				u = v;
-				v = r;
-			}
-
-			g = u;
-
-		}
-
-		static void XGCD(int32_t& d, int32_t& s, int32_t& t, int32_t a, int32_t b) {
-			int32_t  u, v, u0, v0, u1, v1, u2, v2, q, r;
-
-			int32_t aneg = 0, bneg = 0;
-
-			if (a < 0) {
-				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(LB_FILE_LOC,"XGCD: integer overflow");
-				a = -a;
-				aneg = 1;
-			}
-
-			if (b < 0) {
-				if (b < -LINBOX_MAX_INT) throw PreconditionFailed(LB_FILE_LOC,"XGCD: integer overflow");
-				b = -b;
-				bneg = 1;
-			}
-
-			u1 = 1; v1 = 0;
-			u2 = 0; v2 = 1;
-			u = a; v = b;
-
-			while (v != 0) {
-				q = u / v;
-				r = u % v;
-				u = v;
-				v = r;
-				u0 = u2;
-				v0 = v2;
-				u2 =  u1 - q*u2;
-				v2 = v1- q*v2;
-				u1 = u0;
-				v1 = v0;
-			}
-
-			if (aneg)
-				u1 = -u1;
-
-			if (bneg)
-				v1 = -v1;
-
-			d = u;
-			s = u1;
-			t = v1;
-		}
-
-
-		static void HXGCD (int32_t& d, int32_t& s, int32_t a, int32_t b) {
-
-			int32_t  u, v, u0, u1, u2, q, r;
-
-			int32_t aneg = 0;
-
-			if (a < 0) {
-				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(LB_FILE_LOC,"XGCD: integer overflow");
-				a = -a;
-				aneg = 1;
-			}
-
-			if (b < 0) {
-				if (b < -LINBOX_MAX_INT) throw PreconditionFailed(LB_FILE_LOC,"XGCD: integer overflow");
-				b = -b;
-			}
-
-			u1 = 1;
-			u2 = 0;
-			u = a; v = b;
-
-			while (v != 0) {
-				q = u / v;
-				r = u % v;
-				u = v;
-				v = r;
-				u0 = u2;
-
-				u2 =  u1 - q*u2;
-
-				u1 = u0;
-
-			}
-
-			if (aneg)
-				u1 = -u1;
-
-
-			d = u;
-			s = u1;
-
-		}
-
-	};
-
-	template <>
-	class FieldAXPY<PIRModular<int32_t> > {
-	public:
-
-		typedef int32_t Element;
-		typedef int64_t Abnormal;
-		typedef PIRModular<int32_t> Field;
-
-		FieldAXPY (const Field &F) :
-			_field (F),_y(0)
+		using Parent_t = Givaro::Modular<intType>;
+	
+		using Givaro::Modular<intType>::Element;
+		//typedef typename Givaro::Modular<intType>::Element Element;
+
+		using Givaro::Modular<intType>::RandIter;
+
+		//No default cstor
+
+		PIRModular (intType value, uint32_t exp = 1) :
+			Givaro::Modular<intType>(Givaro::power(value, exp)), 
+			_irred(value), 
+			_exponent(exp)
 		{}
 
+        using Parent_t:: zero;
+        using Parent_t:: one;
+        using Parent_t:: mOne;
 
-		FieldAXPY (const FieldAXPY &faxpy) :
-			_field (faxpy._field), _y (0)
-		{}
+        using Parent_t:: minElement;
+        using Parent_t:: maxElement;
 
-// 		FieldAXPY<PIRModular<int32_t> > &operator = (const FieldAXPY &faxpy) {
-// 			_field = faxpy._field;
-// 			_y = faxpy._y;
-// 			return *this;
-// 		}
+        using Parent_t:: characteristic;
+        using Parent_t:: cardinality;
+        
+        using Parent_t:: maxCardinality;
+        using Parent_t:: minCardinality;
 
-		inline uint64_t& mulacc (const Element &a, const Element &x) {
-			uint64_t t = (uint64_t) a * (uint64_t) x;
-			_y += t;
-			if (_y < t)
-				return _y += field()._two_64;
-			else
-				return _y;
-		}
+        // ----- Checkers
+        using Parent_t:: isZero;
+        using Parent_t:: isOne ;
+        using Parent_t:: isMOne;
+        using Parent_t:: areEqual;
+        using Parent_t:: length;
+        
+        // ----- Ring-wise operators
+        using Parent_t:: operator==;
+        using Parent_t:: operator!=;
+        using Parent_t:: operator=;
 
-		inline uint64_t& accumulate (const Element &t) {
-			_y += (uint64_t)t;
-			if (_y < (uint64_t)t)
-				return _y += field()._two_64;
-			else
-				return _y;
-		}
+        // ----- Initialisation
+        using Parent_t:: init ;
 
-		inline Element& get (Element &y) {
-			y = Element(_y % (uint64_t) field().characteristic());
-			return y;
-		}
+        using Parent_t:: assign ;
+    
+        using Parent_t:: convert;
 
-		inline FieldAXPY &assign (const Element y) {
-			_y = (uint64_t)y;
-			return *this;
-		}
+        using Parent_t:: reduce ;
+        
+        using Parent_t:: mul;
+        using Parent_t:: div;
+        using Parent_t:: add;
+        using Parent_t:: sub;
+        using Parent_t:: neg;
+        using Parent_t:: inv;
 
-		inline void reset() {
-			_y = 0;
-		}
+        using Parent_t:: mulin;
+        using Parent_t:: divin;
+        using Parent_t:: addin;
+        using Parent_t:: subin;
+        using Parent_t:: negin;
+        using Parent_t:: invin;
+        
+        using Parent_t:: axpy  ;
+        using Parent_t:: axpyin;
 
-		inline const Field & field() const { return _field; }
+        using Parent_t:: axmy;
+        using Parent_t:: axmyin;
 
+        using Parent_t:: maxpy;
+        using Parent_t:: maxpyin;
+
+        // ----- Random generators
+        using Parent_t:: NonZeroRandIter;
+        using Parent_t:: random;
+        using Parent_t:: nonzerorandom;
+
+        // --- IO methods
+        std::istream& read (std::istream& s);
+		{ string s; return Parent_t::read(s >> str)>> s >> _irred >> s >> _exponent; }
+        std::ostream& write(std::ostream& s) const
+		{ return Parent_t::write(s<<"Local- ") << "irred: " << _irred << ", exponent: " << _exponent; }
+        std::istream& read ;
+        std::ostream& write;
+        
 	protected:
-		const Field &_field;
-		uint64_t _y;
+		intType _irred;
+		uint32_t _exponent;
 	};
 
 

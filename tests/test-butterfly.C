@@ -47,17 +47,14 @@
 #include <givaro/givranditer.h>
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
-#include "linbox/blackbox/butterfly.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
-#include "linbox/matrix/sparse-matrix.h"
+//#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/solutions/det.h"
-#include "linbox/switch/boolean.h"
-#include "linbox/switch/cekstv.h"
+#include "linbox/blackbox/butterfly.h"
 
-#include "test-common.h"
-#include "test-generic.h"
+#include "test-blackbox.h"
 
 using namespace LinBox;
 using namespace std;
@@ -100,7 +97,7 @@ static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size
 
 		vector<bool> z_vec = setButterfly (z);
 
-		BooleanSwitchFactory factory (z_vec);
+		LinBox::BooleanSwitchFactory factory (z_vec);
 		Butterfly<Field, BooleanSwitch> P (F, stream.dim (), factory);
 
 		P.apply (w, v);
@@ -308,10 +305,10 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 100;
+	static int32_t n = 100;
 	static integer q = 65521U;
-	static int iterations = 1; // was 10
-	static int k = 10;
+	static unsigned int iterations = 1; // was 10
+	static unsigned int k = 10;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.",      TYPE_INT,     &n },
@@ -324,28 +321,28 @@ int main (int argc, char **argv)
 	typedef Givaro::Modular<uint32_t> Field;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
 
 	commentator().setMaxDepth (-1);
 	commentator().setMaxDetailLevel (-1);
 
 	commentator().start("Butterfly preconditioner test suite", "butterfly preconditioner");
 
+	Field F (q);
+
+	// SetButterfly
         Field::RandIter Gen(F);
         typedef Givaro::GeneralRingNonZeroRandIter<Field> NZRand;
         NZRand NZGen(Gen);
-        
-
 	RandomSparseStream<Field, Vector<Field>::Sparse, NZRand>
-            stream (F, NZGen,
-			(double) k / (double) n, n, (unsigned int)iterations);
-	RandomDenseStream<Field> v1_stream (F, n, (unsigned int)iterations);
-	RandomDenseStream<Field> v2_stream (F, n, (unsigned int)iterations);
+            stream (F, NZGen, (double) k / (double) n, n, iterations);
+	if (!testSetButterfly  (F, stream, k)) pass = false;
 
-	if (!testSetButterfly  (F, stream, (unsigned int)k)) pass = false;
-	if (!testCekstvSwitch  (F, (unsigned int)iterations, n, (unsigned int)k)) pass = false;
-	if (!testRandomLinearity (F, v1_stream, v2_stream)) pass = false;
-	if (!testRandomTranspose (F, v1_stream, v2_stream)) pass = false;
+	// Cekstv
+	if (!testCekstvSwitch  (F, iterations, n, k)) pass = false;
+
+	// Blackbox
+	Butterfly<Field> P(F, n);
+	if (!testBlackboxNoRW(P)) pass = false;
 
 	commentator().stop("butterfly preconditioner test suite");
 	return pass ? 0 : -1;

@@ -65,7 +65,6 @@
 #include "linbox/algorithms/blackbox-container-symmetric.h"
 //#include "linbox/algorithms/blackbox-container-generic.h"
 #include "linbox/algorithms/massey-domain.h"
-#include "linbox/switch/cekstv.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/vector/stream.h"
 
@@ -299,10 +298,9 @@ namespace LinBox
 			{
 				commentator().start ("Constructing butterfly preconditioner");
 
-				CekstvSwitchFactory<Field> factory (_randiter);
-				typedef Butterfly<Field, CekstvSwitch<Field> > ButterflyP;
-				ButterflyP P(field(), A.rowdim (), factory);
-				ButterflyP Q(field(), A.coldim (), factory);
+				typedef Butterfly<Field> ButterflyP;
+				ButterflyP P(field(), A.rowdim ());
+				ButterflyP Q(field(), A.coldim ());
 				Compose< Blackbox, ButterflyP > AQ(&A, &Q);
 				Compose< ButterflyP, Compose< Blackbox, ButterflyP > > PAQ(&P, &AQ);
 
