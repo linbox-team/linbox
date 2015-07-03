@@ -27,7 +27,7 @@
 
 #include <givaro/modular-int32.h>
 
-#include "linbox/ring/modular.h"
+//#include "linbox/ring/modular.h"
 #ifndef LINBOX_MAX_INT
 #define LINBOX_MAX_INT 2147483647
 #endif
@@ -44,8 +44,8 @@ namespace LinBox
 	template< class PIR>
 	class PIRModular;
 
-	//template< class Element >
-	//class ModularRandIter;
+	template< class Element >
+	class ModularRandIter;
 
 	template<class Field>
 	class DotProductDomain;

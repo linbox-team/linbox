@@ -21,7 +21,7 @@
 
 AM_CPPFLAGS=-I$(top_srcdir)
 
-SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions ring
+SUBDIRS=util element field randiter vector matrix blackbox algorithms solutions ring
 
 
 BASIC_HDRS =          \

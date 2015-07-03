@@ -147,7 +147,7 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 			report << "ERROR: Computed invariants incorrect" << endl;
 			ret = false;
 		}
-		commentator().progress();
+		//commentator().progress();
 	}
 	return ret;
 }
@@ -189,7 +189,13 @@ int main (int argc, char **argv)
 	if (not pass1) report << "PIRModular sing FAIL" << std::endl;
 
 	commentator().start ("Testing local smith on nonsingular dense mat over PIRModular", "testNonsingular");
-	for( int32_t i = 0; i < n; ++i ) R.init(d[i], i+1);
+	LocalPIR::RandIter r(R);
+	LocalPIR::Element e; R.init(e);
+	for( int32_t i = 0; i < n; ++i ) {	
+		r.random(e);
+		do { r.random(e); } while (R.isZero(e));
+		R.assign(d[i], e);
+	}
 	bool p = testLocalSmith<LocalPIR> (R, d, "PIRModular<int32_t>");
 	if (not p) report << "PIRModular nonsing FAIL" << std::endl;
 	commentator().stop ("testNonsingular");
