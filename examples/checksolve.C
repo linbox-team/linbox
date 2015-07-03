@@ -61,12 +61,12 @@ int main (int argc, char **argv)
 	double q = atof(argv[3]);
 	Field F(q);
 	MatrixStream< Field > ms ( F, input );
-	BlasMatrix<Field> A (ms); // A.write(std::cout);
+	DenseMatrix<Field> A (ms); // A.write(std::cout);
 	std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
 
-	BlasVector<Field> X(F, A.coldim()),B(F, A.rowdim());
+	DenseVector<Field> X(F, A.coldim()),B(F, A.rowdim());
 
-	for(BlasVector<Field>::iterator it=B.begin();
+	for(DenseVector<Field>::iterator it=B.begin();
 	    it != B.end(); ++it)
 		invect >> *it;
 
@@ -75,9 +75,9 @@ int main (int argc, char **argv)
 	solve (X, A, B, Method::BlasElimination());
 
 	std::cout << "(BlasElimination) Solution is [ "<<X<< "]" << std::endl;
-	BlasVector<Field> r(F, A.rowdim());
+	DenseVector<Field> r(F, A.rowdim());
 	BlasMatrixDomain<Field> BMD(F);
-	BMD.mul(r, static_cast<BlasMatrix<Field>& >(A), X);
+	BMD.mul(r, static_cast<DenseMatrix<Field>& >(A), X);
 	//A.apply (r,X);
 	VectorDomain<Field> VD(F);
 	if (VD.areEqual (r,B))

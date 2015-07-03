@@ -74,7 +74,7 @@ using namespace LinBox;
 
 
 template<class PIR>
-void Mat(BlasMatrix<PIR>& M, PIR& R, int n,
+void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 	 string src, string file, string format);
 
 template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
@@ -116,14 +116,14 @@ int main(int argc, char* argv[])
 	{
 		typedef PID_integer Ints;
 		Ints Z;
-		BlasMatrix<Ints> M(Z);
+		DenseMatrix<Ints> M(Z);
 
 		std::ifstream input (file);
 		//MatrixStream<Ints> ms(Z, input);
 		M.read(input);
 		//Mat(M, Z, n, src, file, format);
 
-		BlasVector<PID_integer> v(Z,(size_t)n);
+		DenseVector<PID_integer> v(Z,(size_t)n);
 		T.start();
 		SmithFormAdaptive::smithForm(v, M);
 		T.stop();
@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
 
                 PIR R( (int32_t)m);
 
-		BlasMatrix<PIR> M(R);
+		DenseMatrix<PIR> M(R);
 
 		Mat(M, R, n, src, file, format);
 
@@ -225,7 +225,7 @@ int main(int argc, char* argv[])
 
 			PIR R( (int32_t)m);
 
-			BlasMatrix<PIR> M(R);
+			DenseMatrix<PIR> M(R);
 
 			Mat(M, R, n, src, file, format);
 
@@ -259,7 +259,7 @@ int main(int argc, char* argv[])
 
 		Local2_32 R;
 
-		BlasMatrix<Local2_32> M(R);
+		DenseMatrix<Local2_32> M(R);
 
 		Mat(M, R, n, src, file, format);
 
@@ -302,7 +302,7 @@ int main(int argc, char* argv[])
 }
 
 template < class Ring >
-void scramble(BlasMatrix<Ring>& M)
+void scramble(DenseMatrix<Ring>& M)
 {
 
 	Ring R = M.field();
@@ -374,7 +374,7 @@ void scramble(BlasMatrix<Ring>& M)
 // This mat will have s, near sqrt(n), distinct invariant factors,
 // each repeated twice), involving the s primes 101, 103, ...
 template <class PIR>
-void RandomRoughMat(BlasMatrix<PIR>& M, PIR& R, int n) {
+void RandomRoughMat(DenseMatrix<PIR>& M, PIR& R, int n) {
 	M.resize((size_t)n, (size_t)n, R.zero);
 	if (n > 10000) {cerr << "n too big" << endl; exit(-1);}
 	int jth_factor[130] =
@@ -402,7 +402,7 @@ void RandomRoughMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 // This mat will have the same nontrivial invariant factors as
 // diag(1,2,3,5,8, ... 999, 0, 1, 2, ...).
 template <class PIR>
-void RandomFromDiagMat(BlasMatrix<PIR>& M, PIR& R, int n) {
+void RandomFromDiagMat(DenseMatrix<PIR>& M, PIR& R, int n) {
 	M.resize((size_t)n,(size_t) n, R.zero);
 
 	for (int i= 0 ; i < n; ++i)
@@ -419,7 +419,7 @@ void RandomFromDiagMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 // where fib(1) = 1, fib(2) = 2.  But note that, depending on n,
 // the last block may be truncated, thus repeating an earlier fibonacci number.
 template <class PIR>
-void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
+void RandomFibMat(DenseMatrix<PIR>& M, PIR& R, int n) {
 	M.resize((size_t)n,(size_t) n, R.zero);
 
 	typename PIR::Element pmone; R.assign(pmone, R.one);
@@ -454,7 +454,7 @@ void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 
 // Trefethen's challenge #7 mat (primes on diag, 1's on 2^e bands).
 template <class PIR>
-void TrefMat(BlasMatrix<PIR>& M, PIR& R, int n) {
+void TrefMat(DenseMatrix<PIR>& M, PIR& R, int n) {
 	M.resize((size_t)n, (size_t)n, R.zero);
 
 	std::vector<int> power2;
@@ -520,7 +520,7 @@ num& qread(num& Val, pwrlist& M, istream& in)
 }
 
 template <class PIR>
-void KratMat(BlasMatrix<PIR>& M, PIR& R, int q, istream& in)
+void KratMat(DenseMatrix<PIR>& M, PIR& R, int q, istream& in)
 {
 	pwrlist pwrs(q);
 	for (unsigned int i = 0; i < M.rowdim(); ++ i)
@@ -579,7 +579,7 @@ void display(I b, I e)
   Also "tref" and file with format "kdense"
   */
 template <class PIR>
-void Mat(BlasMatrix<PIR>& M, PIR& R, int n,
+void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 	 string src, string file, string format) {
 
 	if (src == "random-rough") RandomRoughMat(M, R, n);

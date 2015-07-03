@@ -91,7 +91,7 @@ int main (int argc, char **argv)
                 cout<<"Computation is done over Z/("<<atoi(argv[ModComp])<<")"<<endl;
 		typedef Givaro::Modular<double> Field;
 		double q = atof(argv[ModComp]);
-		typedef BlasVector<Field> DenseVector ;
+		typedef DenseVector<Field> DenseVector ;
 		Field F(q);
 		MatrixStream< Field > ms ( F, input );
 		SparseMatrix<Field> A (ms);  // A.write(std::cout);
@@ -193,7 +193,7 @@ int main (int argc, char **argv)
 	else {
                 cout<<"Computation is done over Q"<<endl;
 		PID_integer ZZ;
-		typedef BlasVector<PID_integer> DenseVector ;
+		typedef DenseVector<PID_integer> DenseVector ;
 		MatrixStream< PID_integer > ms( ZZ, input );
 		SparseMatrix<PID_integer> A (ms);
 		PID_integer::Element d;

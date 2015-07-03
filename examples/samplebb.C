@@ -67,7 +67,7 @@ using std::string;
 using std::list;
 using LinBox::Companion;
 using LinBox::DirectSum;
-using LinBox::BlasMatrix;
+using LinBox::DenseMatrix;
 using LinBox::NTL_ZZ;
 using NTL::ZZX;
 
@@ -121,7 +121,7 @@ void augmentBB(List& L, char* code, int e, int k, const Ring& R)
 	for(int i = 0; i < e; ++i) q *= p;
 	//std::cout <<"Polynomial: " << q << std::endl;
 
-	LinBox::BlasVector<Ring>  v(R,deg(q)+1);
+	LinBox::DenseVector<Ring>  v(R,deg(q)+1);
 	for (int i = 0; i < v.size(); ++i) v[i] = coeff(q, i);
 
 	// companion matrix of q
@@ -131,7 +131,7 @@ void augmentBB(List& L, char* code, int e, int k, const Ring& R)
 }
 
 template < class Ring >
-void scramble(BlasMatrix<Ring>& M)
+void scramble(DenseMatrix<Ring>& M)
 {
 
 	Ring R = M.field();
@@ -196,10 +196,10 @@ void printMatrix (const Matrix& A)
 	typedef typename Matrix::Field Ring;
 	typedef typename Ring::Element Element;
 	const Ring &r = A.field();
-	LinBox::BlasVector<Ring> x(r,m), y(r,n);
+	LinBox::DenseVector<Ring> x(r,m), y(r,n);
 
 	std::cout << m << " " << n <<  " M" << std::endl;
-	typename LinBox::BlasVector<Ring>::iterator y_p;
+	typename LinBox::DenseVector<Ring>::iterator y_p;
 	for (int i = 0; i < m; ++ i) {
 		r. assign (x[i], r.one);
 		A. applyTranspose(y, x);
@@ -246,7 +246,7 @@ int main(int ac, char* av[])
 	{	if (opts[0] == 'r')
 		{
 			// into sparse matrix, then 3n row ops with corresponding col ops
-			BlasMatrix<Ring> B(Z,A.rowdim(), A.coldim());
+			DenseMatrix<Ring> B(Z,A.rowdim(), A.coldim());
 			//MatrixDomain<Ring> MD(Z);
 			LinBox::MatrixHom::map (B, A);
 

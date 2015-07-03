@@ -24,7 +24,7 @@ typedef SparseMatrix<Field, SparseMatrixFormat::TPL_omp> SparseMat;
 typedef CoppersmithInvariantFactors<Field,SparseMat> FactorDomain;
 typedef typename FactorDomain::PolyDom PolyDom;
 typedef typename FactorDomain::PolyRing PolyRing;
-typedef BlasVector<PolyRing> FactorVector;
+typedef DenseVector<PolyRing> FactorVector;
 
 int main(int argc, char** argv)
 {

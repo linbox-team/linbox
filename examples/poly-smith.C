@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 	typedef Givaro::Poly1Dom<BaseDom, Givaro::Dense> PolyDom;
 	typedef GivaroPoly<PolyDom> Field;
 	typedef MatrixDomain<Field> MatrixDom;
-	typedef BlasMatrix<Field> Matrix;
+	typedef DenseMatrix<Field> Matrix;
 	
 	if (argc < 4)
 	{
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 	// Text Book SF Domain
 	// Comment out this block if things are getting too slow
 	SmithFormTextbookDomain<MatrixDom> SFD(MD);
-	BlasVector<Field> S1(F, n, F.zero);
+	DenseVector<Field> S1(F, n, F.zero);
 	
 	Givaro::Timer t1;
 	t1.start();
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 	
 	// Kannan-Bachem w/ Chou-Collins Improvement Domain 
 	SmithFormKannanBachemDomain<MatrixDom> SFKB(MD);
-	BlasVector<Field> S2(F, n, F.zero);
+	DenseVector<Field> S2(F, n, F.zero);
 	
 	Givaro::Timer t2;
 	t2.start();

@@ -90,7 +90,7 @@ int main (int argc, char **argv)
 		if(process == 0)
 			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		BlasVector<PID_integer> m_A(ZZ);
+		DenseVector<PID_integer> m_A(ZZ);
 		minpoly (m_A, A, M);
 
 		if(process == 0){
@@ -114,7 +114,7 @@ int main (int argc, char **argv)
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
-		BlasVector<Field> m_B(F);
+		DenseVector<Field> m_B(F);
 		minpoly (m_B, B);
 
 		cout << "Minimal Polynomial is ";

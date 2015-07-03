@@ -54,7 +54,7 @@ int main (int argc, char **argv)
 		return -1;
 	}
 	MatrixStream <PID_integer> ms (ZZ, input);
-	BlasMatrix <PID_integer> A (ms);
+	DenseMatrix <PID_integer> A (ms);
 	cout << "Matrix is " << A.rowdim() << " by " << A.coldim() << endl;
 
 	if (A.rowdim() != A.coldim() + 1){
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
 
 	// Check solution
 	size_t n = A.coldim();
-	BlasMatrix<PID_integer> B (ZZ, n, n);
+	DenseMatrix<PID_integer> B (ZZ, n, n);
 	for (size_t i=0; i<n-1; ++i)
 		for (size_t j=0; j<n; ++j)
 			B.setEntry (i,j,A.getEntry(i,j));

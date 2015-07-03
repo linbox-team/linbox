@@ -114,7 +114,7 @@ int main (int argc, char **argv)
 		DenseMatrix<IntDom > A (ZZ);
 		A.read (input);
 		typedef Givaro::Poly1FactorDom<IntDom> IntPolRing;
-		BlasVector<IntDom> c_A(ZZ);
+		DenseVector<IntDom> c_A(ZZ);
 
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_A, A, Method::Blackbox());
@@ -147,11 +147,11 @@ int main (int argc, char **argv)
 		typedef Givaro::Modular<double> Field;
 		double q = atof(argv[2]);
 		Field F(q);
-		BlasMatrix<Field> B (F);
+		DenseMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 // 		Givaro::Poly1Dom<Field, Givaro::Dense>::Element c_B;
-        BlasVector<Field> c_B(F);
+        DenseVector<Field> c_B(F);
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_B, B);
 		tim.stop();

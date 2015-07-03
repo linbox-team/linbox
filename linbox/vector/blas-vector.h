@@ -46,8 +46,14 @@ namespace LinBox { /* BlasVector */
 	template<class _Vector>
 	class BlasSubvector ;
 
-	template<class _Field, class _Rep>
+	template<class _Field, class _Rep=typename RawVector<typename _Field::Element>::Dense>
 	class BlasVector ;
+
+	template <class _Field>
+	using DenseVector = BlasVector<_Field> ;
+
+	template <class _Field>
+	using DenseSubvector = BlasSubvector<DenseVector<_Field> > ;
 
 	template<class _Field, class _Rep>
 	class BlasMatrix ;
@@ -62,7 +68,7 @@ namespace LinBox { /* BlasVector */
 	};
 
 
-	template<class _Field, class _blasRep=typename RawVector<typename _Field::Element>::Dense>
+	template<class _Field, class _blasRep>
 	class BlasVector : public Subvector<Subiterator<typename _blasRep::iterator > > {
 
 	public:

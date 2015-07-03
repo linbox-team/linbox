@@ -89,14 +89,14 @@ FFTSeeder  FFTgenerator;
 
 template<class Field>
 void extractLeftSigma(const Field &F,
-		      std::vector<LinBox::BlasMatrix<Field> >        &S,
-		      std::vector<LinBox::BlasMatrix<Field> >&SigmaBase,
+		      std::vector<LinBox::DenseMatrix<Field> >        &S,
+		      std::vector<LinBox::DenseMatrix<Field> >&SigmaBase,
 		      std::vector<size_t>                       &defect,
 		      size_t                                      block)
 {
 
 	typedef typename Field::Element Element;
-	LinBox::BlasMatrixDomain<Field> _BMD(F);
+	LinBox::DenseMatrixDomain<Field> _BMD(F);
 	// take the block rows which have lowest defect
 	// compute permutation such that first block rows have lowest defect
 	std::vector<size_t> Perm(2*block);
@@ -122,7 +122,7 @@ void extractLeftSigma(const Field &F,
 			max=defect[i];
 
 	// prepare S to receive the sigma base
-	const LinBox::BlasMatrix<Field> Zero(F,block,block);
+	const LinBox::DenseMatrix<Field> Zero(F,block,block);
 	S.resize(max+1, Zero);
 
 	// extract the sigma base
@@ -144,7 +144,7 @@ void extractLeftSigma(const Field &F,
 }
 
 template<class Field>
-void write_sigma(const Field &F, const char* name, const std::vector<LinBox::BlasMatrix<Field> > & P)
+void write_sigma(const Field &F, const char* name, const std::vector<LinBox::DenseMatrix<Field> > & P)
 {
 	size_t m,n;
 	m = P[0].rowdim();
@@ -195,7 +195,7 @@ void contaddin(Container1& C, const Field& F, const Container2& V)
 }
 
 template<class Field, class Array, class Matrix>
-void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::BlasMatrixDomain<Field>& D, const std::vector<Matrix>& matminpol, const Array& Points)
+void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::DenseMatrixDomain<Field>& D, const std::vector<Matrix>& matminpol, const Array& Points)
 {
 	const long nump = Points.size();
 	std::cerr << "num procs: " << omp_get_num_procs() << std::endl;
@@ -242,7 +242,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	std::ifstream input (argv[1]);
 	LinBox::MatrixStream<Field> ms( F, input );
 	typedef LinBox::SparseMatrix<Field, LinBox::SparseMatrixFormat::SparseSeq > Blackbox;
-	typedef LinBox::BlasMatrix<Field> Block_t;
+	typedef LinBox::DenseMatrix<Field> Block_t;
 
 	Blackbox B (ms);
 
@@ -278,7 +278,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 
 	chrono2.start();
 
-	typedef LinBox::BlasMatrix<Field>        Matrix;
+	typedef LinBox::DenseMatrix<Field>        Matrix;
 	typedef std::vector<Matrix>   Polynomial;
 
 
@@ -292,11 +292,11 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	Polynomial Sigma(d, SigmaZero);
 
 
-	LinBox::BlasVector<Field> d1(F,S);
+	LinBox::DenseVector<Field> d1(F,S);
 	for (int i = 0; i < S; i++)
 		do generator.random (d1[i]); while (F.isZero (d1[i]));
 	LinBox::Diagonal<Field> D1 (d1);
-	LinBox::BlasVector<Field> d2(F,R);
+	LinBox::DenseVector<Field> d2(F,R);
 	for (int i = 0; i < R; i++)
 		do generator.random (d2[i]); while (F.isZero (d2[i]));
 	LinBox::Diagonal<Field> D2 (d2);
@@ -389,7 +389,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	std::cerr<<"done with size: " << LS2.size() << std::endl;
 	std::cerr<<"Rank of the highest degree coefficient...";
 	unsigned long rdeg;
-	LinBox::BlasMatrixDomain<Field> D(F);
+	LinBox::DenseMatrixDomain<Field> D(F);
 	rdeg = D.rank(LS2[LS2.size()-1]);
 	typename Field::Element d0,de;
 	d0 = D.det(LS2[0]);

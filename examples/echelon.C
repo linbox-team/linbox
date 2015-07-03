@@ -50,9 +50,9 @@ int main (int argc, char **argv)
 	double q = atof(argv[2]);
 	Field F(q);
 
-	BlasMatrix<Field> A(F);
+	DenseMatrix<Field> A(F);
 	A.read(input);
-	BlasMatrix<Field> E(F,A.rowdim(),A.coldim());
+	DenseMatrix<Field> E(F,A.rowdim(),A.coldim());
 	cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 	cout << A << std::endl;
 
@@ -61,7 +61,7 @@ int main (int argc, char **argv)
 	EFD.rowReducedEchelon(E,A);
 
 #ifdef COMPARE_FFPACK
-	BlasMatrix<Field> G(A);
+	DenseMatrix<Field> G(A);
 	size_t * P = new size_t[G.coldim()];
 	size_t * Q = new size_t[G.rowdim()];
 	/*  size_t r = (size_t)*/

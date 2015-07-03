@@ -60,7 +60,7 @@ int main (int argc, char **argv)
 		{ cerr << "Error opening matrix file " << argv[1] << endl;
 			return -1;
 		}
-		BlasMatrix<Integers> A(ZZ); A.read(input);
+		DenseMatrix<Integers> A(ZZ); A.read(input);
 		cout << "Matrix is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		Integers::Element det_A;

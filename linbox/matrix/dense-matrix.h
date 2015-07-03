@@ -48,7 +48,7 @@ namespace LinBox { /*  forward declarations */
 	class BlasSubmatrix ;
 
 	template <class _Field>
-	using DenseSubmatrix = BlasSubmatrix<BlasMatrix<_Field> > ;
+	using DenseSubmatrix = BlasSubmatrix<DenseMatrix<_Field> > ;
 
 	template <class _Field, class _Storage=typename Vector<_Field>::Dense >
 	class TriangularBlasMatrix ;
