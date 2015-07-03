@@ -129,6 +129,20 @@ namespace LinBox
 		{ return Parent_t::write(s<<"Local- ") << "irred: " << _irred << ", exponent: " << _exponent; }
         std::istream& read ;
         std::ostream& write;
+
+	Element& gcdin (Element& a, const Element& b) const
+                {
+                        Givarro:gcd(a, a, b);
+                }
+
+
+	bool isUnit(const Element& a) const
+                {
+                        Element g;
+                        Givarro::gcd(g, a, _irred);
+                        return isOne(g);
+                }
+
         
 	protected:
 		intType _irred;
