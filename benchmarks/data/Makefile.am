@@ -1,5 +1,5 @@
 # Copyright (c) 2013 the LinBox group
-# Brice Boyer <bbboyer@ncsu.edu>
+# Brice Boyer (briceboyer) <boyer.brice@gmail.com>
 # ========LICENCE========
 # This file is part of the library LinBox.
 #

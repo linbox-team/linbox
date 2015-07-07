@@ -2,7 +2,7 @@
  *
  *
  * Written by :
- *          BB <bbboyer@ncsu.edu>
+ *          Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.

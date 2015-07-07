@@ -1,7 +1,7 @@
 dnl Check for LAPACK in fflas-ffpack
 dnl
 dnl Copyright (c) 2011 the LinBox group
-dnl Written by BB <bboyer@imag.fr>
+dnl Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
 dnl This file is part of LinBox
 
 dnl ========LICENCE========

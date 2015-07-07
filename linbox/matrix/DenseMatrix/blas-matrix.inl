@@ -5,7 +5,7 @@
  * Written by :
  *               Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
  *               Clément Pernet <clement.pernet@imag.fr>
- *               Brice Boyer    <bboyer@imag.fr>
+ *               Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -395,7 +395,7 @@ namespace LinBox
 
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >::~BlasMatrix ()
-	{                
+	{
                 // if (_ptr)
 		// free(_ptr);
 	}

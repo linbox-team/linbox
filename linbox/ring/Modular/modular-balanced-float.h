@@ -3,7 +3,7 @@
  *               2005,2008 Clement Pernet
  * Written by Clement Pernet <clement.pernet@gmail.com>
  *            Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
- * Modified   Brice Boyer <bboyer@imag.fr>
+ * Modified   Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  * ------------------------------------
  *
  *

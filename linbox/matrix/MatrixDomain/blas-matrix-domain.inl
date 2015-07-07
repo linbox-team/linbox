@@ -4,7 +4,7 @@
  * Written by :
  *               Pascal Giorgi  pascal.giorgi@ens-lyon.fr
  *               Clément Pernet clement.pernet@imag.fr
- *               BB <bbboyer@ncsu.edu>
+ *               Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  * originally linbox/algorithms/blas-domain.inl
  *

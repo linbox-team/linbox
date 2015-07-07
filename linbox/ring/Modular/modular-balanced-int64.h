@@ -1,5 +1,5 @@
 /* Copyright (C) 2010 LinBox
- * Adapted by B Boyer <brice.boyer@imag.fr>
+ * Adapted by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  * (from other modular-balanced* files)
  *
  *

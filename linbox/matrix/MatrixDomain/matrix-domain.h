@@ -4,7 +4,7 @@
  *
  * Written by Zhendong Wan <wan@mail.eecis.udel.edu>,
  *            Bradford Hovinen <bghovinen@math.uwaterloo.ca>
- *            BB <bbboyer@ncsu.edu>
+ *            Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  * ------------------------------------------------------------
  * 2002-11-26  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>

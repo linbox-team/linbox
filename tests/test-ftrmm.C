@@ -1,7 +1,7 @@
 /* fflas/test-ftrmm.inl
  * Copyright (C) 2010 LinBox
  *
- * Written by Brice Boyer <Brice.Boyer@imag.fr>
+ * Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  *
  * ========LICENCE========

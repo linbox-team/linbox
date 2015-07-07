@@ -1,5 +1,5 @@
 /* Copyright (C) 2011 LinBox
- * Written by Brice Boyer <brice.boyer@imag.fr>
+ * Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  *
  *

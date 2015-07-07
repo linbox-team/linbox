@@ -5,7 +5,7 @@
  * Written by :
  *               Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
  *               Clément Pernet <clement.pernet@imag.fr>
- *               Brice Boyer    <bboyer@imag.fr>
+ *               Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -1101,7 +1101,7 @@ namespace LinBox
 // 						}
 // 						wid= (int) ceil ((double)max / M_LN10)+1;
                                             wid=1000;
-                                            
+
 					}
 
 					for (p = rowBegin (); p != rowEnd ();++p) {

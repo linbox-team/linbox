@@ -1,6 +1,6 @@
 dnl Check for FPLLL
 dnl Copyright (c) the LinBox group
-dnl Boyer Brice <bbboyer@ncsu.edu> 10/09/13
+dnl Brice Boyer (briceboyer) <boyer.brice@gmail.com> 10/09/13
 dnl This file is part of LinBox
 
  dnl ========LICENCE========

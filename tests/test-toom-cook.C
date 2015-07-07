@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2012 the LinBox group
  *
- * written by BB <bboyer@imag.fr>
+ * written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  *
  * ========LICENCE========

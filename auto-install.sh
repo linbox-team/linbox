@@ -1,7 +1,7 @@
 #!/bin/bash - 
 
 # Copyright(c) 2011 LinBox
-# Written by BB <bboyer@imag.fr>
+# Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
 # see COPYING for more details.
 
 

@@ -1,5 +1,5 @@
 /* Copyright (C) 2010 LinBox
- * Adapted by B Boyer <brice.boyer@imag.fr>
+ * Adapted by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  * (from other modular-balanced* files)
  *
  *
@@ -84,7 +84,7 @@ namespace LinBox
 			_two_64 = (uint64_t(1) << 32) % uint64_t(F.characteristic());
 			_two_64 = (_two_64 * _two_64) % uint64_t(F.characteristic());
 		}
-		
+
 		FieldAXPY (const FieldAXPY &faxpy) :
 			_two_64 (faxpy._two_64), _field (faxpy._field), _y (0)
 		{}
@@ -134,7 +134,7 @@ namespace LinBox
 		{
 			_y = 0;
 		}
-		
+
 	public:
 		uint64_t _two_64;
 

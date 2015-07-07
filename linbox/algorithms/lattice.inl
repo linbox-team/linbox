@@ -1,6 +1,6 @@
 /* linbox/algorithms/lattice.inl
  * Copyright (C) 2011 The LinBox group
- * Written by Brice Boyer <bboyer@imag.fr>
+ * Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.

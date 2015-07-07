@@ -1,5 +1,5 @@
 dnl Copyright(c)'2011 LinBox
-dnl Written by BB <bboyer@imag.fr>
+dnl Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
 dnl This file is part of LinBox.
 
  dnl ========LICENCE========

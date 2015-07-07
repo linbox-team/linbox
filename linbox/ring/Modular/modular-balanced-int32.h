@@ -1,6 +1,6 @@
 /* Copyright (C) 2009 LinBox
  * Written by C Pernet
- * updated to compilable condition by <brice.boyer@imag.fr>
+ * updated to compilable condition by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  *
  *

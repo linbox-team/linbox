@@ -1,6 +1,6 @@
 /* Copyright (C) 2007,2010 LinBox
  * Written by <Jean-Guillaume.Dumas@imag.fr>
- * Modified by <brice.boyer@imag.fr> (RandomPrimeIter)
+ * Modified by Brice Boyer (briceboyer) <boyer.brice@gmail.com> (RandomPrimeIter)
  *
  *
  *

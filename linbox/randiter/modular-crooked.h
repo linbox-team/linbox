@@ -3,7 +3,7 @@
  * Copyright (C) 2010 LinBox
  *
  * Adapted from randiter/modular-dense.h
- * by Brice Boyer <brice.boyer@imag.fr>
+ * by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  *
  * ========LICENCE========

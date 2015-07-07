@@ -2,7 +2,7 @@
  * Copyright (C) 2014 the LinBox group
  *
  * Written by bds <saunders@udel.edu>
- *            BB <bbboyer@ncsu.edu>
+ *            Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  * --------------------------------------------------------
  *

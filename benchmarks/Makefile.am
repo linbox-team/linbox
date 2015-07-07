@@ -1,5 +1,5 @@
 # Copyright (c) 2011 the LinBox group
-# Brice Boyer <bboyer@imag.fr>
+# Brice Boyer (briceboyer) <boyer.brice@gmail.com>
 # ========LICENCE========
 # This file is part of the library LinBox.
 #
@@ -83,7 +83,7 @@ pkginclude_HEADERS = \
 
 EXTRA_DIST= \
 	    benchmark.doxy
-	    
+
 CLEANFILES= $(EXTRA_PROGRAMS) $(PERFPUBLISHERFILE)
 
 benchmarks: ${EXTRA_PROGRAMS}

@@ -1,5 +1,5 @@
 /* Copyright (C) 2013 LinBox
- * Written by bb <boyer.brice@gmail.com>
+ * Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.

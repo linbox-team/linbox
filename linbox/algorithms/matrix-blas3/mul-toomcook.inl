@@ -1,5 +1,5 @@
 /*  Copyright (C) 2012 the members of the LinBox group
- * Written by B. Boyer < bboyer@imag.fr >
+ * Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  * This file is part of the LinBox library.
  *

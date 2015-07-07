@@ -1,6 +1,7 @@
 #!/bin/bash 
 
-# written by bb <bbboyer@ncsu.edu> , part of LinBox, see COPYING
+# written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
+# part of LinBox, see COPYING
 
 set -o nounset                              # Treat unset variables as an error
 

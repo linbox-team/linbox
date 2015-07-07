@@ -1,7 +1,7 @@
 #!/bin/bash - 
 
 # Copyright (c) 2010 the LinBox group
-# written by Brice Boyer <brice.boyer@imag.fr>
+# written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
 # This file is part of LinBox
 # ========LICENCE========
 # This file is part of the library LinBox.

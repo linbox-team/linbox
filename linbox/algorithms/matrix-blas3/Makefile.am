@@ -1,5 +1,5 @@
 # Copyright (c) 2010 the LinBox group
-# written by bb <bboyer@imag.fr>
+# written by Brice Boyer <boyer.brice@gmail.com>
 # ========LICENCE========
 # This file is part of the library LinBox.
 #

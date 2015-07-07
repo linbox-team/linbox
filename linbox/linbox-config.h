@@ -1,5 +1,5 @@
 /* Copyright (C) 2013 the members of the LinBox group
- * Written by BB < bbboyer@ncsu.edu >
+ * Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  * This file is part of the LinBox library.
  *

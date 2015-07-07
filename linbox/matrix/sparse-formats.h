@@ -1,7 +1,7 @@
 /* linbox/matrix/sparse-formats.h
  * Copyright (C) 2013 the LinBox group
  *
- * Written by BB <bbboyer@ncsu.edu>,
+ * Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>,
  *
  *
  * ========LICENCE========

@@ -301,7 +301,6 @@ linbox/ring/Makefile
 linbox/ring/NTL/Makefile
 linbox/ring/Modular/Makefile
 linbox/solutions/Makefile
-linbox/switch/Makefile
 linbox/util/Makefile
 linbox/util/formats/Makefile
 linbox/vector/Makefile
@@ -318,6 +317,7 @@ benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile
 ])
+# linbox/switch/Makefile
 # linbox/algorithms/IML/Makefile
 
 # examples/Readme-make

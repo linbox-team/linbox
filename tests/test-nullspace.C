@@ -1,5 +1,5 @@
 /* Copyright (C) 2009 LinBox
- * Written by <boyer.brice@gmail.com>
+ * Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  * Inspired and adapted from test-ffpack.C
  *
  * ========LICENCE========
