@@ -83,7 +83,7 @@ LINBOX_BIN=@bindir@
 
 
 # for compilation of new examples
-new_examp_comp = $(CXX) -I@includedir@ $(CXXFLAGS) $(AM_CPPFLAGS) $(OPTFLAGS) ${INCLUDES}  $*.C -o $@ -L@libdir@ -llinbox $(AM_LDFLAGS) $(LDADD) $(LIBS)
+new_examp_comp = $(CXX) -I@includedir@ $(CXXFLAGS) $(AM_CPPFLAGS) $(OPTFLAGS) ${INCLUDES}  $< -o $@ -L@libdir@ -llinbox $(AM_LDFLAGS) $(LDADD) $(LIBS)
 
 %:%.C
 	$(new_examp_comp)
