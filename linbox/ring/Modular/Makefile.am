@@ -19,7 +19,7 @@
 
 
 
-pkgincludesubdir=$(pkgincludedir)/field/Modular
+pkgincludesubdir=$(pkgincludedir)/ring/Modular
 
 BASIC_HDRS =            \
     modular-unsigned.h  \

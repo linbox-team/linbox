@@ -19,7 +19,7 @@
 
 
 
-pkgincludesubdir=$(pkgincludedir)/field/NTL
+pkgincludesubdir=$(pkgincludedir)/ring/NTL
 
 
 NTL_HDRS =              \
