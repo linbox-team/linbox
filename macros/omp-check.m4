@@ -28,19 +28,19 @@ dnl turn on OpenMP
 AC_DEFUN([LB_OMP],[
 	AC_MSG_CHECKING(enabling OpenMP)
 
-AC_ARG_ENABLE(openmp,
-	[AC_HELP_STRING([--enable-openmp],
-	[ Use OpenMP ])
-	],
-	[ with_omp=$enable_openmp],
-	[ with_omp=yes ]
-)
+	AC_ARG_ENABLE(openmp,
+		[AC_HELP_STRING([--enable-openmp],
+		[ Use OpenMP ])
+		],
+		[ with_omp=$enable_openmp],
+		[ with_omp=yes ]
+	)
 
-AS_IF([ test "x$with_openmp" != "xno" ],
-	[
-	BACKUP_CXXFLAGS=${CXXFLAGS}
-	OMPFLAGS="-fopenmp"
-	CXXFLAGS="${BACKUP_CXXFLAGS} ${OMPFLAGS}"
+	AS_IF([ test "x$with_openmp" != "xno" ],
+		[
+			BACKUP_CXXFLAGS=${CXXFLAGS}
+			OMPFLAGS="-fopenmp"
+			CXXFLAGS="${BACKUP_CXXFLAGS} ${OMPFLAGS}"
                 AC_TRY_RUN([
 #include <omp.h>
                         int main() {
@@ -68,13 +68,10 @@ AS_IF([ test "x$with_openmp" != "xno" ],
                         ]
                 )
                 CXXFLAGS=${BACKUP_CXXFLAGS}
-
 	],[
 	AC_MSG_RESULT(no)
 	])
-]
-
 AM_CONDITIONAL(LINBOX_HAVE_OMP, test "x$HAVE_OMP" = "xyes")
-
+]
 )
 
