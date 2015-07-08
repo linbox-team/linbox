@@ -27,7 +27,7 @@
 #ifndef __LINBOX_matpoly_mult_ftt_wordsize_INL
 #define __LINBOX_matpoly_mult_ftt_wordsize_INL
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/polynomial-matrix.h"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize-three-primes.inl"

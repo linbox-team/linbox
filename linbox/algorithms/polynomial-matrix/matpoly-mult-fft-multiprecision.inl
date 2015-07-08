@@ -29,7 +29,7 @@
 #define __LINBOX_matpoly_mult_ftt_multiprecision_INL
 
 #include <givaro/zring.h>
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/randiter/random-prime.h"
 #include <fflas-ffpack/field/rns-double.h>

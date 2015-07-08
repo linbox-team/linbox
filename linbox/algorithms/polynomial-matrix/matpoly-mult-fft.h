@@ -35,7 +35,7 @@
 
 #include "linbox/integer.h"
 #include <givaro/zring.h>
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "givaro/givtimer.h"
 
 #ifdef FFT_PROFILER
