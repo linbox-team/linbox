@@ -36,7 +36,7 @@
 
 namespace LinBox {
 
-	//! @todo Vector knows Field
+	/// y <- ay.  @todo Vector knows Field
 	template<class Field, class Vector>
 	Vector & prepare(const Field & F , Vector & y, const typename Field::Element & a) {
 		if ( !F.isOne(a) ) {

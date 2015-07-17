@@ -321,6 +321,7 @@ int main (int argc, char **argv)
 	typedef Givaro::Modular<uint32_t> Field;
 
 	parseArguments (argc, argv, args);
+	srand ((unsigned int) time (NULL));
 
 	commentator().setMaxDepth (-1);
 	commentator().setMaxDetailLevel (-1);

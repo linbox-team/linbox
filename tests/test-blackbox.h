@@ -108,6 +108,7 @@ testTranspose (const Field                      &F,
 
 		//ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
+		//A.write( report << "A is ");
 		VD.write( report << "Input vector u:            ", u) << endl;
 		VD.write( report << "Input vector v:            ", v) << endl;
 
