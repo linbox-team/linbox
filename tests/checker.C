@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_runWarn("test-cradomain",                    counter , flag,"most of the test does not compile");
+		  No_build_n_run("test-cradomain",                    counter , flag,"inf loop.  most of the test does not compile");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif

@@ -312,7 +312,7 @@ namespace LinBox
 			typedef Field::Element Element;
 			typedef BlasMatrix<Field> FMatrix;
 			RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
-			Field F ((unsigned long)*primeg);
+			Field F (*primeg);
 			FMatrix FM(F, IM.rowdim(), IM.coldim());
 			//std::cout << "Random prime " << p << "\n";
 

@@ -37,10 +37,10 @@ namespace LinBox
 				     const DomainCategory  &tag,
 				     const isPositiveSemiDefiniteMethod  &M);
 
-	/** Compute the isPositiveSemiDefinite of A.
+	/** Determine if A is positive semidefinite.
 	 *
-	 * The isPositiveSemiDefinite of a linear operator A, represented as a
-	 * black box, is computed over the ring or field of A.
+	 * The positive semidefiniteness of a linear operator A, represented as a
+	 * black box, is computed over the ring or field (characteristic 0) of A.
 	 *
 	 * @param A Black box of which to compute the isPositiveSemiDefinite
 	 * @param M may be a Method::Hybrid (SemiDefault), Method::Blackbox, Method::Elimination, or of other method type.

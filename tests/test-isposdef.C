@@ -29,31 +29,25 @@
  * @test NO DOC
  */
 
-
-
 #include "linbox/linbox-config.h"
 
 #include <iostream>
-#include <fstream>
-
-#include <cstdio>
 
 #include "linbox/util/commentator.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/solutions/is-positive-definite.h"
 
-#include "test-common.h"
-
 using namespace LinBox;
 
-/* Test 1: positive definiteness of a random sparse matrix
+/* Positive definiteness check on two specific matrices
  *
- * Constructs a random sparse matrix and computes its rank using Gaussian
- * elimination (direct and blas) and Wiedemann's algorithm. Checks that the results match.
+ * Checks that I is found to be pos def and that a slight modification of I (to be singular and have a negative eigenvallue) is found to be not pos def.
+ *
+ * Sparsity is not (yet) used.
  */
 
-template <class Ring>
-bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double sparsity = 0.05)
+template <class Ring, class Method>
+bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, Method &M, double sparsity = 0.05)
 {
 	typedef SparseMatrix<Ring> Blackbox;
 
@@ -62,8 +56,7 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 	bool ret = true;
 	unsigned int i;
 
-	typename Ring::RandIter ri (Z);
-
+	// iterations since there is randomness in the alg (though none in this test).
 	for (i = 0; i < iterations; ++i) {
 		commentator().startIteration (i);
 
@@ -75,22 +68,22 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 		std::ostream & report =
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
-		Z.write( report ) << endl;
-		A.write( report ) << endl;
+		Z.write( report ) << std::endl;
+		A.write( report ) << std::endl;
 		bool p;
 		p = isPositiveDefinite(A);
-		report << "Positivedefiniteness on I computed by default (Hybrid) method: " << p << endl;
-		if (!p) {report << "ERROR: should be pos def" << endl; ret = false;}
+		report << "Positivedefiniteness on I computed by default (Hybrid) method: " << p << std::endl;
+		if (!p) {report << "ERROR: should be pos def" << std::endl; ret = false;}
 
 		Z.negin(e);
 		Z. assign(A. refEntry(n/2, n/2), e);
 		A.setEntry(1, 2, e);
 		A.setEntry(2, 1, e);
-		p = isPositiveDefinite(A);
+		p = isPositiveDefinite(A,M);
 		report << "Matrix:\n";
-		A.write( report ) << endl;
-		report << "Positivedefiniteness on indefinite example computed by default (Hybrid) method: " << p << endl;
-		if (p) {report << "ERROR: should not be pos def" << endl; ret = false;}
+		A.write( report ) << std::endl;
+		report << "Positivedefiniteness on indefinite example computed by default (Hybrid) method: " << p << std::endl;
+		if (p) {report << "ERROR: should not be pos def" << std::endl; ret = false;}
 
 		commentator().stop ("done");
 		commentator().progress ();
@@ -112,14 +105,11 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 80;
-	static integer q = 65519U;
-	//static integer q = 1000003U;
 	static unsigned int iterations = 2;
         static double sparsity = 0.05;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ 's', "-s S", "Sparse matrices with density S.", TYPE_DOUBLE,     &sparsity },
 		END_OF_ARGUMENTS
@@ -135,7 +125,10 @@ int main (int argc, char **argv)
 
 	PID_integer R;
 
-	if (!testIsPosDef(R, n, iterations, sparsity)) pass = false;
+	Method::Elimination ME;
+	pass = pass and testIsPosDef(R, n, iterations, ME, sparsity);
+	Method::Blackbox MB;
+	pass = pass and testIsPosDef(R, n, iterations, MB, sparsity);
 
 	commentator().stop("IsPositiveDefinite solution test suite");
 	return pass ? 0 : -1;
