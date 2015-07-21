@@ -484,19 +484,11 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-unparametric-field",           counter , flag) ;//has been useful in num/sym.
-#ifdef LINBOX_HAVE_OPENMP
-#pragma omp section
-#endif
 		  Build_n_run("test-vector-domain",                counter , flag);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
 		  Build_n_run("test-zero-one",                     counter , flag);
-#ifdef LINBOX_HAVE_OPENMP
-#pragma omp section
-#endif
-		  Build_n_run("test-zo",                            counter, flag);
 	  }
 
 /*  section eliminated because Givaro now is required
