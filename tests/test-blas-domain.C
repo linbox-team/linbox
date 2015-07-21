@@ -62,7 +62,6 @@
 #include "linbox/matrix/matrix-domain.h"
 #include <givaro/givranditer.h>
 #include "linbox/util/commentator.h"
-#include "linbox/matrix/matrix-domain.h"
 #include "linbox/ring/PID-integer.h"
 // #include "linbox/algorithms/matrix-hom.h"
 
@@ -145,8 +144,9 @@ int main(int argc, char **argv)
 {
 
 	static size_t n = 3;
-	static integer q = 1000003U;
-	static int iterations = 2;
+	//static integer q = 1000003U;
+	static integer q = 65521;
+	static int iterations = 1;
 
     static Argument args[] = {
         { 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
@@ -170,7 +170,7 @@ int main(int argc, char **argv)
 	GF2 F2 ;
 	//GF3 F3 ;
 	Givaro::ModularBalanced<double> F4(q);
-	Givaro::Modular<float> F5(7); // (2011);
+	Givaro::Modular<float> F5(2011);
 	Givaro::Modular<uint32_t> F6(1009); // (2011);
 
 	pass &= launch_tests(F1,n,iterations);
@@ -211,6 +211,7 @@ const char* pretty(string a)
 	 return blank.c_str();
 }
 #define mycommentator commentator
+ostream & report = mycommentator().report();
 
 template<class Vector>
  bool localAreEqual(
@@ -239,8 +240,8 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 	typedef BlasMatrix<Field>          Matrix;
 
 	//Commentator mycommentator;
-	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	//mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	//mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator().start (pretty("Testing muladd"),"testMulAdd",(unsigned int)iterations);
 
 	RandIter G(F);
@@ -289,27 +290,28 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 		}
 
 		// compute z = beta.y + alpha.A*x
-		// std::cout << "beta := " << beta <<  ";"  << std::endl;
-		// std::cout << "y := " <<y <<  ";" << std::endl;
-		// std::cout << "alpha := " << alpha <<  ";" << std::endl;
-		// A.write(std::cout << "A :=",Tag::FileFormat::Maple) << ";" << std::endl;
-		// std::cout << "x := " << x << std::endl;
+		// report << "beta := " << beta <<  ";"  << std::endl;
+		// report << "y := " <<y <<  ";" << std::endl;
+		// report << "alpha := " << alpha <<  ";" << std::endl;
+		// A.write(report << "A :=",Tag::FileFormat::Maple) << ";" << std::endl;
+		// report << "x := " << x << std::endl;
 
 		BMD.muladd(z,beta,y,alpha,A,x);
-		// std::cout << "z := "<< z << std::endl;
+		// report << "z := "<< z << std::endl;
 
-		// std::cout << "#apply" <<std::endl;
+		// report << "#apply" <<std::endl;
 		A.apply(t, x);
 		//MD.vectorMul(t,A,x);
 		for (size_t i=0;i<n;++i){
 			F.mulin(t[i],alpha);
 			F.axpyin(t[i],beta,y[i]);
 		}
-		// std::cout << "t := "<< t << std::endl;
+		// report << "t := "<< t << std::endl;
 
 		if (!localAreEqual(t,z)){
 			exit(-1);
-			std::cout << "2 alpha = " << alpha << "mod " << F.characteristic() << std::endl;
+			report << "2 alpha = " << alpha << "mod " << F.characteristic() << std::endl;
+			//report << "2 alpha = " << alpha << "mod " << F.characteristic() << std::endl;
 			ret=false;
 		}
 	}
@@ -374,21 +376,21 @@ bool CheckMulAdd(const Field& Zp, const Integer & alpha ,
 	bool pass = BMD.areEqual(Ep,Dp);
 	if (!pass) {
 #if 0 /*  maple check on stdout */
-		std::cout << "#########################################" << std::endl;
-		std::cout << "p := " << p << ';' << std::endl;
-		std::cout << "ap,bp := " << ap << ',' << bp << ';' << std::endl;
-		Ap.write(std::cout << "Ap :=", Tag::FileFormat::Maple) << ";" << std::endl;
-		Bp.write(std::cout << "Bp :=", Tag::FileFormat::Maple) << ";" << std::endl;
-		Cp.write(std::cout << "Cp :=", Tag::FileFormat::Maple) << ";" << std::endl;
-		Dp.write(std::cout << "Dp :=", Tag::FileFormat::Maple) << ";" << std::endl;
-		Ep.write(std::cout << "Ep :=", Tag::FileFormat::Maple) << ";" << std::endl;
-		std::cout << "alpha,beta := " << alpha << ',' << beta << ';' << std::endl;
-		A.write(std::cout << "A :=",Tag::FileFormat::Maple) << ';' << std::endl;
-		B.write(std::cout << "B :=",Tag::FileFormat::Maple) << ';' << std::endl;
-		C.write(std::cout << "C :=",Tag::FileFormat::Maple) << ';' << std::endl;
-		D.write(std::cout << "E :=",Tag::FileFormat::Maple) << ';' << std::endl;
-		std::cout << "evalm(E-alpha*A.B-beta*C);" << std::endl;
-		std::cout << "#########################################" << std::endl;
+		report << "#########################################" << std::endl;
+		report << "p := " << p << ';' << std::endl;
+		report << "ap,bp := " << ap << ',' << bp << ';' << std::endl;
+		Ap.write(report << "Ap :=", Tag::FileFormat::Maple) << ";" << std::endl;
+		Bp.write(report << "Bp :=", Tag::FileFormat::Maple) << ";" << std::endl;
+		Cp.write(report << "Cp :=", Tag::FileFormat::Maple) << ";" << std::endl;
+		Dp.write(report << "Dp :=", Tag::FileFormat::Maple) << ";" << std::endl;
+		Ep.write(report << "Ep :=", Tag::FileFormat::Maple) << ";" << std::endl;
+		report << "alpha,beta := " << alpha << ',' << beta << ';' << std::endl;
+		A.write(report << "A :=",Tag::FileFormat::Maple) << ';' << std::endl;
+		B.write(report << "B :=",Tag::FileFormat::Maple) << ';' << std::endl;
+		C.write(report << "C :=",Tag::FileFormat::Maple) << ';' << std::endl;
+		D.write(report << "E :=",Tag::FileFormat::Maple) << ';' << std::endl;
+		report << "evalm(E-alpha*A.B-beta*C);" << std::endl;
+		report << "#########################################" << std::endl;
 #endif
 		mycommentator().report() << " *** BMD ERROR (" << alpha << ',' << beta << ") *** " << std::endl;
 	}
@@ -884,12 +886,19 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 		//  compute A=LS
 		BMD.mul(A,L,S);
+		//for (size_t i=0;i<n;++i){A.setEntry(i,i,F.one); }
+		//A.setEntry(0, n-1, F.mOne);
+
 	if (n < 10) 
 		A.write(mycommentator().report() << "A") << std::endl;
 
 		// compute the inverse of A
 		Matrix invA(A);
-		//BMD.invin(invA);
+	if (n < 10) 
+		invA.write(mycommentator().report() << "before inversion, invA") << std::endl;
+	//int nullity;
+	//FFPACK::Invert2 (F, invA.rowdim(), A.getPointer(), A.getStride(), invA.getPointer(), invA.getStride(), nullity);
+		BMD.invin(invA);
 	if (n < 10) 
 		invA.write(mycommentator().report() << "invA") << std::endl;
 
@@ -1175,7 +1184,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 				// P[i] = i;
 		// }
 
-		//std::cerr<<P<<std::endl;
+		//report<<P<<std::endl;
 		Matrix A(F, m,m), Abis(F, m,m), B(F, m,m), C(F, m,m), D(F, m,m);
 		BlasVector<Field> a(F,m),abis(F,m),b(F,m),c(F,m), d(F,m);
 		BlasPermutation<size_t>  Perm(m);
@@ -1743,7 +1752,7 @@ template<class Field>
 int launch_tests(Field & F, size_t n, int iterations)
 {
 	bool pass = true ;
-	//std::cout << "no blas tests for now" << std::endl;
+	//report << "no blas tests for now" << std::endl;
 	// no slow test while I work on io
 	if (!testBlasMatrixConstructors(F, n, n))             pass=false;
 	if (!testMulAdd (F,n,iterations))                     pass=false;
@@ -1775,7 +1784,7 @@ int launch_tests(Field & F, size_t n, int iterations)
 	if (!testCharPoly (F,n,iterations))                   pass=false;
 	//
 	//
-	if (not pass) F.write(cout) << endl;
+	if (not pass) F.write(report) << endl;
 	return pass ;
 
 }

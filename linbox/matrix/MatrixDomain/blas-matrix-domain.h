@@ -605,10 +605,11 @@ namespace LinBox
 		template <class Matrix>
 		Matrix& invin(Matrix &A) const
 		{
-			Matrix tmp(A.rowdim(), A.coldim());
-			tmp = A;
-			BlasMatrixDomainInv<Field,Matrix,Matrix>()(field(),A,tmp);
-			return A;
+			Matrix tmp(A);
+			//Matrix tmp(A.rowdim(), A.coldim());
+			//tmp = A;
+			//BlasMatrixDomainInv<Field,Matrix,Matrix>()(field(),A,tmp);
+			return inv(A, tmp);
 		}
 
 
