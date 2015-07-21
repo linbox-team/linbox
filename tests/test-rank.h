@@ -229,7 +229,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
  *
  */
 template <class Field>
-bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
+bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations = 1)
 {
 	typedef ScalarMatrix<Field> Blackbox;
 
@@ -290,14 +290,17 @@ template <class Field>
 bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & iterations, const double & sparsity)
 {
 	bool pass = true ;
+	ostream & report = commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 	F.write(commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over ") << endl;
 
 	{
+		report << "SparseSeq " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::SparseSeq > Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
 	{
+		report << "SparsePar " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::SparsePar > Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
@@ -307,18 +310,22 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 		// if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
 	{
+		report << "COO " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::COO> Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
 	{
+		report << "CSR " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
 	{
+		report << "ELL " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::ELL> Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
 	{
+		report << "ELL_R " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
@@ -336,6 +343,7 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 #endif
 
 
+	report << "Scalar mats " << endl;
 	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
 
 	return pass ;

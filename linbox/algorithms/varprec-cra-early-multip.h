@@ -410,7 +410,7 @@ namespace LinBox
 
 				typename Vect<Integer, Alloc<Integer> >::const_iterator it = vz.begin();
 				for (; it!= vz.end(); ++it) {
-					q.push_back(Quotient(*it,1UL));
+					q.push_back(Quotient(*it,1));
 				}
 				return q;
 			}
@@ -455,8 +455,8 @@ namespace LinBox
 
 			//clear CRAEarlySingle;
 			EarlySingleCRA<Domain>::occurency_ = 0;
-			EarlySingleCRA<Domain>::nextM_ = 1UL;
-			EarlySingleCRA<Domain>::primeProd_ = 1UL;
+			EarlySingleCRA<Domain>::nextM_ = 1;
+			EarlySingleCRA<Domain>::primeProd_ = 1;
 			EarlySingleCRA<Domain>::residue_ = 0;
 
 			//Computation of residue_
@@ -561,7 +561,7 @@ namespace LinBox
 			typename BlasVector<PID_integer >::const_iterator v1_p;
 			typename Vect2::const_iterator v2_p;
 			for (v1_p  = v1. begin(), v2_p = v2. begin(); v1_p != v1. end(); ++ v1_p, ++ v2_p) {
-				z = (z + (*v1_p)*(*v2_p))%D;
+				z = (z + (*v1_p)*int64_t(*v2_p))%D;
 			}
 			return z;
 		}

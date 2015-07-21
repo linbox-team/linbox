@@ -37,7 +37,6 @@
 #include <string>
 
 #include "test-common.h"
-#include "linbox/field/unparametric.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/integer.h"
 #include "linbox/matrix/sparse-matrix.h"

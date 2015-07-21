@@ -34,7 +34,6 @@
 #include "linbox/linbox-config.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/unparametric.h"
 #include "linbox/vector/subvector.h"
 
 #include "linbox/vector/blas-vector.h"
