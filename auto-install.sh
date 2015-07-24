@@ -85,7 +85,7 @@ help() {
 	echo
 	echo " * usage :"
 	echo
-	echo " --stable=[yes,no]     : install latest stable versions or latest svn versions."
+	echo " --stable=[yes,no]     : install latest stable versions or latest git versions."
 	echo "                         Default : yes, even if switch ommitted. No argument means yes"
 
 	echo " --prefix=MY/PATH      : install all libraries under MY/PATH."
@@ -392,7 +392,7 @@ if [ "$STABLE_VAR" = "true" ]; then
 	fi
 else
 	OK=0 ;
-	svn co svn://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/givaro/trunk 2>&1 >/dev/null && OK=1 
+	git clone https://github.com/linbox-team/givaro.git 2>&1 >/dev/null && OK=1 
 	[ "$OK" = "1" ] &&  cool  || die 
 fi
 
@@ -420,7 +420,7 @@ if [ "$STABLE_VAR" = "true" ]; then
 	fi
 else
 	OK=0 ;
-	svn co svn://linalg.org/fflas-ffpack 2>&1 >/dev/null && OK=1 
+	git clone https://github.com/linbox-team/fflas-ffpack.git 2>&1 >/dev/null && OK=1 
 	[ "$OK" = "1" ] &&  cool  || die
 fi
 
@@ -456,7 +456,7 @@ fi
 if [ "$STABLE_VAR" = "true" ]; then
 	cd givaro-$STABLE_GIVARO || die
 else
-	cd trunk/ || die
+	cd givaro/ || die
 fi
 
 if [ -f Makefile ] ; then
