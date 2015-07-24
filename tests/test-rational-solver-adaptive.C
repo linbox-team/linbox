@@ -87,22 +87,29 @@ bool testRandomSolve (const Ring& R,
 		    zeroEntry |= R.isZero(d[(size_t)i]);
 		} while (zeroEntry);
 
-                stream2.next (b);
+        stream2.next (b);
 
-                std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-                report << "Diagonal entries: ";
-                VD.write (report, d);
-                report << endl;
+        std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        report << "Diagonal entries: ";
+        VD.write (report, d);
+        report << endl;
 
-                report << "Right-hand side:  ";
-                VD.write (report, b);
-                report << endl;
+        report << "Right-hand side:  ";
+        VD.write (report, b);
+        report << endl;
 
-                //Diagonal<Ring> D(R, d);
+        //Diagonal<Ring> D(R, d);
 
 		BlasMatrix<Ring> D(R, (size_t) n, (size_t) n);
 
-		for(int i = 0; i < n; ++i) R.init (D[(size_t)i][(size_t)i],  d[(size_t)i]);
+		for(size_t i = 0; i < n; ++i) {
+			typename Ring::Element x; R.init(x, d[i]);
+			D.setEntry(i, i, x);
+			//for(size_t j = 0; j < n; ++j) 
+			//	if (j != i) D.setEntry(i,j,R.zero);
+		}
+
+		D.write(report<<"Matrix: \n");	
 
 		typedef RationalSolverAdaptive RSolver;
 		RSolver rsolver;
@@ -112,6 +119,9 @@ bool testRandomSolve (const Ring& R,
 
 		SolverReturnStatus solveResult = rsolver.solveNonsingular(num, den, D, b); //often 5 primes are not enough
 
+        report << "Solution numerator: ";
+        VD.write (report, num);
+        report << ", denominator: " << den << endl;
 #if 0
 		typename Ring::Element lden;
 

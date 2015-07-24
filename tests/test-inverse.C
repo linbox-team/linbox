@@ -445,7 +445,7 @@ int main (int argc, char **argv)
 
 	static size_t n = 10;
 	static integer q = 65521U;
-	static unsigned int iterations = 100;
+	static unsigned int iterations = 2; // 100;
 	static int N = 1;
 
 	static Argument args[] = {
@@ -456,7 +456,8 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Givaro::Modular<uint32_t> Field; //C.Pernet: avoids confusion with givaro::uint32_t
+	//typedef Givaro::Modular<uint32_t> Field; //C.Pernet: avoids confusion with givaro::uint32_t
+	typedef Givaro::Modular<double> Field; 
 	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);

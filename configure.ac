@@ -317,7 +317,6 @@ benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile
 ])
-# linbox/switch/Makefile
 # linbox/algorithms/IML/Makefile
 
 # examples/Readme-make

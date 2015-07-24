@@ -58,7 +58,7 @@
 functions compiled with the blackbox archetype.
 
 Blackboxes exist in 3 states: bare, shaped, and ready.
-A bare blackbox results from default construction.  Only shaping function may be used on bare blackboxes.
+A bare blackbox results from default construction.  Only shaping functions may be used on bare blackboxes.
 Shaping functions establish the field of the elements and the row and column dimensions.
 Functions field(), rowdim(), coldim(), and initializing functions may be used on shaped matrices.
 initializing functions include read() and, in some cases, setEntry().

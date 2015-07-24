@@ -45,7 +45,6 @@
 #include "linbox/util/commentator.h"
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
-#include "linbox/matrix/sparse-matrix.h"
 
 
 #include "test-blackbox.h"
@@ -55,7 +54,7 @@ using namespace LinBox;
 template <class SM>
 void buildBySetEntry(SM & A, size_t nnz)
 {
-	typename SM::Field::RandIter r(A.field(),0);
+	typename SM::Field::RandIter r(A.field(),0,1);
 	srand(0);
 
 	//size_t i, j, k;
@@ -65,19 +64,10 @@ void buildBySetEntry(SM & A, size_t nnz)
 	{
 		size_t i = rand() % A.rowdim();
 		size_t j = rand() % A.coldim();
-	    while (A.field().isZero(r.random(x)));
-		//r.nonzerorandom(x);
-		// r.random(x); // I want to see what happens when one reads in zero. If we don't want it, we just stop permitting setting zero... (hence the clearEntry function)
-		// std::cout << "A[ " << i+1 << ',' << j+1 << "]:=" << x << ';' << std::endl;
-		// if (A.field().isZero(x)) std::cout << "#is zero" << std::endl;
-		// std::cout << i << ',' << j << ',' << x << std::endl;
+		while (A.field().isZero(r.random(x)));
 		A.setEntry(i,j,x);
 	}
-	// std::cout << "---" << std::endl;
 	A.finalize();
-	// std::cout << "B :=" << std::endl;
-	// A.write(std::cout);
-	// std::cout << ';' << std::endl;
 }
 
 template <class SM>

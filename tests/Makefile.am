@@ -151,10 +151,6 @@ NONCOMPLIANT_TESTS =                   \
 #These need clapack
 #test-rational-solver-adaptive
 
-DUBIOUS_TESTS =                 \
-	test-unparametric-field       \
-		test-zo
-
 #  test-bmseq		\
 #  test-quad-matrix
 
@@ -308,11 +304,6 @@ test_givaropoly_SOURCES = \
 test_gmp_rational_SOURCES =               \
         test-gmp-rational.C               \
         test-generic.h                    \
-        test-common.h
-
-test_unparametric_field_SOURCES =        \
-        test-unparametric-field.C        \
-        test-generic.h                   \
         test-common.h
 
 test_randiter_nonzero_SOURCES =          \
@@ -548,11 +539,6 @@ test_param_fuzzy_SOURCES =                \
 #  test-generic-for-quad.h           \
 #  test-generic.h                    \
 #  test-common.h
-
-test_zo_SOURCES =                        \
-        test-zo.C                        \
-        test-generic.h                   \
-        test-common.h
 
 test_zero_one_SOURCES =                       \
         test-zero-one.C                       \

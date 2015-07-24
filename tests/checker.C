@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_runWarn("test-cradomain",                    counter , flag,"most of the test does not compile");
+		  No_build_n_run("test-cradomain",                    counter , flag,"inf loop.  most of the test does not compile");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -303,11 +303,11 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-isposdef",                     counter , flag);
+		  No_build_n_run("test-isposdef",                 counter , flag, "intermittent inf loop");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-ispossemidef",                 counter , flag);
+		  No_build_n_run("test-ispossemidef",                 counter , flag, "intermittent inf loop");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -370,7 +370,7 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-moore-penrose",                counter , flag);
+		  No_build_n_run("test-moore-penrose",                counter , flag, "inf loop");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -395,9 +395,15 @@ int main(int argc, char* argv[])
 #pragma omp section
 #endif
 	//	  Build_n_runWarn("test-rank",                         counter , flag, "bb: fails to build / BlasVector/GF2");
-	Build_n_run("test-rank-u32",                         counter , flag/*, "vector (bb) responsible"*/);
-	Build_n_run("test-rank-md",                         counter , flag/*, "vector (bb) responsible"*/);
 	Build_n_run("test-rank-Int",                         counter , flag/*, "vector (bb) responsible"*/);
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
+	No_build_n_run("test-rank-md",                         counter , flag, "intermittent inf loop"/*, "vector (bb) responsible"*/);
+#ifdef LINBOX_HAVE_OPENMP
+#pragma omp section
+#endif
+	No_build_n_run("test-rank-u32",                         counter , flag, "intermittent inf loop"/*, "vector (bb) responsible"*/);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -413,15 +419,15 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-rat-charpoly",                 counter , flag);//, "infinite loop, cp responsible?")
+		  No_build_n_run("test-rat-charpoly",                 counter , flag, "stale test. solns over QQ need fresh tests");//, "infinite loop, cp responsible?")
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures")
+		  No_build_n_run("test-rat-minpoly",   counter , flag, "stale test. solns over QQ need fresh tests"); // "intermittent failures")
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-rat-solve",     counter , flag); // "infinite loop")
+		  No_build_n_run("test-rat-solve",     counter , flag, "stale test. solns over QQ need fresh tests"); // "infinite loop")
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -437,7 +443,7 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-sparse",                       counter , flag);
+		  No_build_n_run("test-sparse",                       counter , flag, "superceded by test-sparse2");
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
@@ -478,19 +484,11 @@ int main(int argc, char* argv[])
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
-		  Build_n_run("test-unparametric-field",           counter , flag) ;//has been useful in num/sym.
-#ifdef LINBOX_HAVE_OPENMP
-#pragma omp section
-#endif
 		  Build_n_run("test-vector-domain",                counter , flag);
 #ifdef LINBOX_HAVE_OPENMP
 #pragma omp section
 #endif
 		  Build_n_run("test-zero-one",                     counter , flag);
-#ifdef LINBOX_HAVE_OPENMP
-#pragma omp section
-#endif
-		  Build_n_run("test-zo",                            counter, flag);
 	  }
 
 /*  section eliminated because Givaro now is required

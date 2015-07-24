@@ -57,7 +57,7 @@ namespace LinBox { namespace Protected {
 			linbox_check( A.rowdim() == Ainv.rowdim());
 			linbox_check( A.coldim() == Ainv.coldim());
 			int nullity;
-			FFPACK::Invert (F, A.rowdim(), A.getPointer(), A.getStride(),
+			FFPACK::Invert2 (F, A.rowdim(), A.getPointer(), A.getStride(),
 					Ainv.getPointer(), Ainv.getStride(),nullity);
 			return nullity;
 		}

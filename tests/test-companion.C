@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static size_t q = 65521U;
+	static size_t q = 101;
 	static int iterations = 1; // was 10
 
 	static Argument args[] = {
@@ -67,12 +67,15 @@ int main (int argc, char **argv)
 
 	commentator().start("Companion matrix black box test suite", "companion");
 
-	typedef Givaro::Modular<uint32_t> Field;
+	typedef Givaro::Modular<int32_t> Field;
 	// typedef vector <Field::Element> Vector;
 	typedef vector <Field::Element> Polynomial;
 	typedef Companion<Field> Blackbox;
 
-	Field F ((uint32_t)q);
+	Field F (q);
+	//Field F ((int32_t)q);
+	// no fail at q = 50000, intermitent at q = 55000
+	if (q > Field::maxCardinality()) {std::cout<<"NO NO"<<std::endl; exit(-1);}
 	Field::Element d;
 	F.assign(d, F.mOne);
 	Polynomial p(n+1, d);

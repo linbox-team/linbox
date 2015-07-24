@@ -38,9 +38,9 @@ namespace LinBox
 	 * @warning companion would be faster if built direct, using one axpy per entry: y_i = x_i-1 + p_i*x_n
 	 */
 	template<class Field_>
-	struct Companion: public SparseMatrix<Field_,SparseMatrixFormat::TPL> {
+	struct Companion: public SparseMatrix<Field_,SparseMatrixFormat::CSR> {
 		typedef Field_ Field;
-		typedef SparseMatrix<Field,SparseMatrixFormat::TPL> Father_t;
+		typedef SparseMatrix<Field,SparseMatrixFormat::CSR> Father_t;
 
 		/// This is the n by n companion matrix of a given polynomial of degree n.
 		template<class Polynomial>

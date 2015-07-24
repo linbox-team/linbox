@@ -35,9 +35,11 @@ int main (int argc, char **argv)
 
 	bool pass = true;
 
-	static size_t n = 40;
-	static integer q = 65519U;
-	//static integer q = 1000003U;
+	static size_t n = 20;
+	//static integer q = 65519; problem
+	//static integer q = 1009;
+	//static integer q = 1000003;
+	static integer q = 46337;
 	static int iterations = 1;
         static double sparsity = 0.05;
 

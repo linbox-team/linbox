@@ -64,7 +64,7 @@ bool operator==(const MatPol& A, const MatPol& B){
  
 
 template<typename Field, typename RandIter>
-void check_sigma(const Field& F, const RandIter& Gen, size_t m, size_t n, size_t d) {
+void check_sigma(const Field& F, RandIter& Gen, size_t m, size_t n, size_t d) {
 	//typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	//typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;

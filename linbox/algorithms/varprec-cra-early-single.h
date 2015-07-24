@@ -280,8 +280,8 @@ namespace LinBox
 
 			//clear CRAEarlySingle;
 			EarlySingleCRA<Domain>::occurency_ = 0;
-			EarlySingleCRA<Domain>::nextM_ = 1UL;
-			EarlySingleCRA<Domain>::primeProd_ = 1UL;
+			EarlySingleCRA<Domain>::nextM_ = 1;
+			EarlySingleCRA<Domain>::primeProd_ = 1;
 			EarlySingleCRA<Domain>::residue_ = 0;
 
 			//Computation of residue_

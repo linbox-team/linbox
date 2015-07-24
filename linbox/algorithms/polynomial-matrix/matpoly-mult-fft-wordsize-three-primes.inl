@@ -216,7 +216,7 @@ namespace LinBox {
 			size_t k = a.coldim();
 			size_t n = b.coldim();
 			size_t _k=k,lk=0;
-			integer bound=integer(_p)*integer(_p)*integer(k)*pts;
+			integer bound=integer(_p)*integer(_p)*integer(k)*integer(pts);
 			// compute bit size of feasible prime for FFLAS
 			while ( _k ) {_k>>=1; ++lk;}
 			size_t prime_bitsize= (53-lk)>>1;

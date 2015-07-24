@@ -342,7 +342,7 @@ bool testIntegerDet (size_t n, int iterations)
 		PID_integer R;
 		SparseMatrix<PID_integer> A (R, n, n);
 
-	 	integer pi = 1L;
+	 	integer pi = 1;
  		integer det_A_wiedemann, det_A_symm_wied, det_A_blas_elimination;
 
  		for (unsigned int j = 0; j < n; ++j) {
@@ -420,7 +420,7 @@ bool testIntegerDetGen (size_t n, int iterations)
 		PID_integer R;
 		SparseMatrix<PID_integer> A (R, n, n);
 
-	 	integer pi = 1L;
+	 	integer pi = 1;
  		integer det_A, det_A_H, det_A_B, det_A_E;
 
  		for (unsigned int j = 0; j < n; ++j) {

@@ -42,7 +42,6 @@
 #include "linbox/util/commentator.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/vector/stream.h"
-//#include "linbox/vector/vector-domain.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/util/matrix-stream.h"
 
@@ -108,6 +107,7 @@ testTranspose (const Field                      &F,
 
 		//ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
+		//A.write( report << "A is ");
 		VD.write( report << "Input vector u:            ", u) << endl;
 		VD.write( report << "Input vector v:            ", v) << endl;
 
@@ -365,19 +365,19 @@ testBlackboxNoRW(BB &A, bool zeroCheck=true)
 
 	size_t iterations = 1;
 	typename Field::RandIter r(F);
-	LinBox::RandomDenseStream<Field, DenseVector> stream1 (F, r, A.rowdim(), iterations);
+	LinBox::RandomSparseStream<Field, DenseVector> stream1 (F, r, 1.0, A.rowdim(), iterations, 11);
 	//typename Field::Element x;
 	//r.random(x);
-	LinBox::RandomDenseStream<Field, DenseVector> stream2 (F, r, A.coldim(), iterations);
+	LinBox::RandomSparseStream<Field, DenseVector> stream2 (F, r, 1.0, A.coldim(), iterations);
 	ret = ret && testLinearity (A, stream1, stream2);
 
-	LinBox::RandomDenseStream<Field, DenseVector> stream3 (F, r, A.rowdim(), iterations);
-	LinBox::RandomDenseStream<Field, DenseVector> stream4 (F, r, A.coldim(), iterations);
+	LinBox::RandomSparseStream<Field, DenseVector> stream3 (F, r, 1.0, A.rowdim(), iterations);
+	LinBox::RandomSparseStream<Field, DenseVector> stream4 (F, r, 1.0, A.coldim(), iterations);
 	ret = ret && testTranspose (F, A, stream3, stream4);
 
 	DenseVector x(F,A.coldim()), y(F,A.rowdim());
 	if (zeroCheck) {
-		LinBox::RandomDenseStream<Field, DenseVector> stream5 (F, r, A.coldim(), 10);
+		LinBox::RandomSparseStream<Field, DenseVector> stream5 (F, r, 1.0, A.coldim(), 10);
 		ret = ret & not LooksLikeZero(A, stream5);
 	}
 
