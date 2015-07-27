@@ -53,16 +53,6 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/ring/modular.h"
-//#include <givaro/modular-balanced.h>
-//#include "linbox/field/givaro.h"
-//#include "linbox/vector/vector-domain.h"
-//#include "linbox/matrix/matrix-domain.h"
-//#include "linbox/vector/stream.h"
-//#include "linbox/matrix/dense-matrix.h"
-//#include "linbox/matrix/sparse-matrix.h"
-//#include "linbox/blackbox/matrix-blackbox.h"
-
-//#include "linbox/solutions/det.h"
 #include "linbox/matrix/matrix-domain.h"
 
 #include "test-matrix-domain.h"
@@ -1615,7 +1605,7 @@ int main (int argc, char **argv)
 	//if (q2 < q/2)
 	//	std::cerr <<"...étrange..." << std::endl;
 
-	commentator().start("Matrix domain test suite", "MatrixDomain");
+	commentator().start("Plain matrix domain test suite", "PlainDomain");
 
 	commentator().setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
 
@@ -1625,11 +1615,10 @@ int main (int argc, char **argv)
 	//pass &= launchTestMatrixDomain(F2,m,n,k,iterations);
 	//pass &= launchTestMatrixDomain(F3,m,n,k,iterations);
 
-	commentator().stop (MSG_STATUS (pass), "Matrix domain test suite");
+	commentator().stop (MSG_STATUS (pass), "Plain matrix domain test suite");
 	return pass ? 0 : -1;
 }
 
-// Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil

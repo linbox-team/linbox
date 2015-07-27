@@ -181,8 +181,8 @@ bool testMatrixDomain(const MDom& MD, int n) {
 	MD.mulin_left(A, B);
 	MD.mulin_right(A, B);
 	MD.axpyin(C, A, B);
-	std::cout << MD.cardinality() << std::endl;
-	std::cout << MD.characteristic() << std::endl;
+	MD.cardinality();
+	MD.characteristic();
 
 	pass = pass and runBasicRingTests(MD, "matrix domain", 1, false);
 	pass = pass and runFieldTests<MDom>(MD, "matrix domain", 1,0, false);

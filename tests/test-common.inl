@@ -1,4 +1,4 @@
-/* linbox/tests/test-common.C
+/* linbox/tests/test-common.inl
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -23,15 +23,15 @@
  */
 
 
-/*! @file  tests/test-common.C
+/*! @file  tests/test-common.inl
  * @ingroup tests
  * @brief  no doc
  */
 
 
 
-#ifndef __LINBOX_test_common_C
-#define __LINBOX_test_common_C
+#ifndef __LINBOX_test_common_inl
+#define __LINBOX_test_common_inl
 
 
 #include "linbox/linbox-config.h"
@@ -80,7 +80,7 @@ double chiSquaredCDF (double chi_sqr, double df)
 {
 	return incompleteGamma (df / 2.0, chi_sqr / 2.0, 1e-10) / exp (lgamma (df / 2.0));
 }
-#endif // __LINBOX_test_common_C
+#endif // __LINBOX_test_common_inl
 
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

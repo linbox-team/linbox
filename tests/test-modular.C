@@ -54,7 +54,7 @@
 #include "linbox/ring/modular.h"
 
 #include "test-common.h"
-#include "test-generic.h"
+#include "test-field.h"
 
 using namespace LinBox;
 using namespace std;

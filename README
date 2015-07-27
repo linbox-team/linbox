@@ -2,17 +2,17 @@
 
 PURPOSE:
 
-The Linbox library provides functionalities for exact linear algebra.
+The Linbox library provides functionality for exact linear algebra.
 See doc/mainpage.doxy for more info.
 
 INSTALLATION:
 
-See doc/install-dev.html for installation from the svn lastest version.
+See doc/install-dev.html for installation from the git lastest version.
 See doc/install-dist.html for installation from a release tarball.
 See INSTALL for generic installation information.
 
 
-AVAILABILITY: from linalg.org
+AVAILABILITY: from linalg.org and from github.com/linbox-team
 
 
 REQUIREMENTS:  GMP, ATLAS (or other cblas, lapack), Givaro, fflas-ffpack
@@ -29,6 +29,6 @@ The linbox website is http://linalg.org
 Corrections, suggestions and comments to : 
 linbox-use@googlegroups.com
  
-Last update : 2013 June
+Last update : 2015 July
  
 

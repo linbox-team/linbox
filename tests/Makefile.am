@@ -17,8 +17,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 # ========LICENCE========
 
-
-
+# All tests should appear in one of the lists of this makefile (and sources given). 
+# Tests not used for target "check" can be in the FULLCHECK_TESTS list.
+# All tests will be processed by checker.C (target fullcheck), 
+# where skips can be specified, warnings issued, package dependency handled.
 
 AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 # AM_LDFLAGS = -llapack -lcblas -latlas
@@ -40,192 +42,165 @@ AM_CPPFLAGS+=  $(NTL_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS) $(OPT
 LDADD =  $(NTL_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS)  $(IML_LIBS) $(FLINT_LIBS) $(LDFLAGS) $(PARLIBS) ${FFLAS_FFPACK_LIBS}
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,
 
-EXTRA_DIST=            \
-		test-common.C  \
-		test-matrix-utils.h \
-		tests.doxy     \
-		checker.C
+EXTRA_DIST =					\
+		test-blackbox.h			\					
+		test-common.h			\
+		test-common.inl			\
+		test-field.h			\
+		test-generic.h			\
+		test-matrix-utils.h		\
+		test-matrix-domain.h	\
+		test-rank.h				\
+		test-vector-domain.h	\
+		tests.doxy				\
+		checker.C				\
 
 PERFPUBLISHERFILE = tests-report.xml
-
-#  test-generic-for-quad.h
-
 
 #  tutorial-1: tutorial-1.C
 
 #  test-tutorial$(EXEEXT): test-tutorial.C tutorial-1
 
-# Put an entry for your test-mycomponent.C here (or in one of the other test groups).
+# Put an entry for your test-mycomponent.C in one of the test groups.
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 #
 # Once present, tests should remain present, being moved from one group to another.
 # Note that among the available groups are NONCOMPILING_TESTS and FAILING_TESTS, which
 # will be ignored by "make check" and can be temporary storage for problematic tests.
-BASIC_TESTS =  \
-        test-commentator              \
-        test-det                      \
-        test-frobenius                \
-        test-solve                    \
-        test-smith-form-binary        \
-        test-rational-solver          \
-        test-rational-solver-adaptive \
-	test-rank-u32                     \
-	test-rank-md                     \
-	test-rank-Int                     \
-	test-cra                      \
-	test-blas-matrix              \
-	test-charpoly
+BASIC_TESTS =					\
+	test-commentator			\
+	test-det					\
+	test-frobenius              \
+	test-solve                  \
+	test-smith-form-binary      \
+	test-rational-solver        \
+	test-rational-solver-adaptive \
+	test-rank-u32				\
+	test-rank-md				\
+	test-rank-Int				\
+	test-cra					\
+	test-blas-matrix			\
+	test-charpoly				\
 
-#  test-iml                      \
-#
+# All other tests.  
+# The checker.C determines which of these are built and run in "make fullcheck".
+FULLCHECK_TESTS =               \
+	test-bitonic-sort           \
+	test-blackbox-block-container \
+	test-blas-domain            \
+	test-block-ring				\
+	test-block-wiedemann		\
+	test-butterfly				\
+	test-companion				\
+	test-cradomain				\
+	test-dense					\
+	test-dense-zero-one      	\
+	test-diagonal				\
+	test-dif					\
+	test-direct-sum				\
+	test-dyadic-to-rational  	\
+	test-echelon-form			\
+	test-ffpack					\
+	test-fibb					\
+	test-ftrmm					\
+	test-getentry				\
+	test-gf2					\
+	test-gf3					\
+	test-givaropoly				\
+	test-gmp-rational			\
+	test-hilbert				\
+	test-hom					\
+	test-image-field			\
+	test-inverse				\
+	test-isposdef				\
+	test-ispossemidef			\
+	test-la-block-lanczos		\
+	test-last-invariant-factor  \
+	test-lidia-gfq				\
+	test-matrix-domain			\
+	test-matrix-stream			\
+	test-mg-block-lanczos    	\
+	test-minpoly				\
+	test-modular				\
+	test-modular-balanced-double \
+	test-modular-balanced-float  \
+	test-modular-balanced-int   \
+	test-modular-byte			\
+	test-modular-double			\
+	test-modular-float			\
+	test-modular-int			\
+	test-modular-short			\
+	test-moore-penrose			\
+	test-ntl-hankel             \
+	test-ntl-lzz_p              \
+	test-ntl-lzz_pE             \
+	test-ntl-lzz_pEX            \
+	test-ntl-lzz_pX             \
+	test-ntl-RR					\
+	test-ntl-sylvester          \
+	test-ntl-toeplitz           \
+	test-ntl-ZZ_p               \
+	test-nullspace				\
+	test-optimization			\
+	test-order-basis			\
+	test-param-fuzzy			\
+	test-permutation			\
+	test-PID-integer			\
+	test-plain-domain			\
+	test-poly-det				\
+	test-qlup					\
+	test-quad-matrix			\
+	test-randiter-nonzero		\
+	test-random-matrix			\
+	test-rat-charpoly			\
+	test-rational-matrix-factory \
+	test-rational-reconstruction-base \
+	test-rat-minpoly			\
+	test-rat-solve				\
+	test-scalar-matrix			\
+	test-smith-form             \
+	test-smith-form-adaptive 	\
+	test-smith-form-iliopoulos  \
+	test-smith-form-local    	\
+	test-solve-nonsingular		\
+	test-sparse					\
+	test-sparse2				\
+	test-subiterator			\
+	test-submatrix				\
+	test-subvector				\
+	test-sum					\
+	test-toom-cook				\
+	test-trace					\
+	test-transpose				\
+	test-triplesbb				\
+	test-triplesbb-omp			\
+	test-tutorial				\
+	test-vector-domain			\
+	test-zero-one				\
 
+# benchmarkers, (should be moved to benchmarks/)
+BENCHMARKS = benchmark-fields benchmark-blas-domain
 
-FULLCHECK_TESTS =                 \
-        test-bitonic-sort             \
-        test-blackbox-block-container \
-        test-blas-domain              \
-	test-block-wiedemann		  \
-        test-butterfly                \
-        test-companion                \
-        test-dense                    \
-        test-diagonal                 \
-        test-dif                      \
-        test-direct-sum               \
-        test-echelon-form             \
-        test-ffpack                   \
-        test-getentry                 \
-        test-gf2                      \
-        test-gmp-rational             \
-        test-hilbert                  \
-        test-hom                      \
-        test-inverse                  \
-        test-isposdef                 \
-        test-ispossemidef             \
-        test-matrix-domain            \
-        test-matrix-stream            \
-        test-minpoly                  \
-        test-modular                  \
-        test-modular-balanced-int     \
-        test-modular-balanced-float   \
-        test-modular-balanced-double  \
-        test-modular-byte             \
-        test-modular-double           \
-        test-modular-float            \
-        test-modular-int              \
-        test-modular-short            \
-        test-PID-integer              \
-        test-moore-penrose            \
-	test-nullspace                \
-        test-randiter-nonzero         \
-        test-rational-matrix-factory  \
-        test-scalar-matrix            \
-        test-solve-nonsingular        \
-        test-sparse                   \
-        test-sparse2                  \
-        test-subiterator              \
-        test-submatrix                \
-        test-subvector                \
-        test-sum                      \
-        test-trace                    \
-        test-transpose                \
-        test-triplesbb                \
-	test-permutation              \
-        test-triplesbb-omp            \
-        test-tutorial                 \
-        test-vector-domain            \
-        test-qlup                     \
-        test-zero-one                 \
-        test-last-invariant-factor    \
-        test-cradomain                \
-        test-rational-reconstruction-base \
-        test-givaropoly
-
-#  test-blas-subvector
-#  test-integer-tools
-
-# tests of components not adhering to LinBox requirements.
-NONCOMPLIANT_TESTS =                   \
-        test-ntl-RR                    \
-        test-param-fuzzy
-
-#These need clapack
-#test-rational-solver-adaptive
-
-#  test-bmseq		\
-#  test-quad-matrix
-
-NONCOMPILING_TESTS =           \
-        test-dense-zero-one
-
-FAILING_TESTS =                  \
-        test-rat-charpoly        \
-		test-rat-solve           \
-		test-rat-minpoly         \
-		test-smith-form-local    \
-		test-smith-form-adaptive \
-		test-dyadic-to-rational  \
-		test-mg-block-lanczos    \
-		test-ftrmm               \
-        test-la-block-lanczos
-
-USE_NONCOMPILING_TESTS =
-USE_FAILING_TESTS =
-# comment out these two lines to avoid facing reality
-#USE_NONCOMPILING_TESTS += $(NONCOMPILING_TESTS)
-#USE_FAILING_TESTS += $(FAILING_TESTS)
-
-# a benchmarker, not to be included in check.
-BENCHMARKS =                    \
-        benchmark-fields        \
-        benchmark-blas-domain
-
-# historical tests, no longer in use
-#        test-nag-sparse                  replaced by tripplesbb
-#       test-lsp         lsp.h superceded by factorized-matrix.h
-# removed test
-#        test-nag-sparse
-#        test-image-field       replaced by hom
-#       test-lsp
-# I put test-gssv_rank in hmrg:~saunders/gen_superlu.  It is not linbox until and unless it is made to work
-# test-gssv is an ntl test
-
-
-# no explicit test needed, I guess...
-#        Transpose is tested in test-triplesbb
-#        Compose is tested in test-butterfly
-
-NTL_TESTS =                           \
-        test-smith-form               \
-        test-ntl-lzz_p                \
-        test-ntl-lzz_pE                \
-        test-ntl-lzz_pX                \
-        test-ntl-lzz_pEX                \
-        test-ntl-ZZ_p                 \
-        test-ntl-toeplitz             \
-        test-ntl-hankel               \
-        test-ntl-sylvester            \
-        test-smith-form-iliopoulos    \
-        test-toeplitz-det
-
-LIDIA_TESTS =                         \
-        test-lidia-gfq
-
-ATLAS_TESTS =                         \
-        test-optimization
-
-BLAS3_UNIT_TESTS = \
-		   test-toom-cook
-
-OCL_TESTS =                           \
-        test-opencl-domain
+# Really just one or two of these would be enough for target check.
+# The rest can be in target fullcheck.
+NTL_TESTS =                     \
+	test-smith-form             \
+	test-ntl-lzz_p              \
+	test-ntl-lzz_pE             \
+	test-ntl-lzz_pX             \
+	test-ntl-lzz_pEX            \
+	test-ntl-ZZ_p               \
+	test-ntl-toeplitz           \
+	test-ntl-hankel             \
+	test-ntl-sylvester          \
+	test-smith-form-iliopoulos  \
+	test-toeplitz-det			\		
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
 endif
 
-if LINBOX_HAVE_LIDIA
-USE_LIDIA_TESTS = $(LIDIA_TESTS)
-endif
+OCL_TESTS = test-opencl-domain             
 
 if LINBOX_HAVE_OCL
 USE_OCL_TESTS = $(OCL_TESTS)
@@ -233,489 +208,132 @@ AM_CPPFLAGS += $(OCL_CFLAGS)
 LDADD += $(OCL_LIBS)
 endif
 
-USE_ATLAS_TESTS = $(ATLAS_TESTS)
-
-
-TESTS =                               \
-        $(BASIC_TESTS)                \
-        $(USE_NTL_TESTS)              \
-        $(USE_LIDIA_TESTS)            \
-        $(USE_NONCOMPILING_TESTS)     \
-        $(USE_FAILING_TESTS)          \
-        $(USE_ATLAS_TESTS)            \
-        $(USE_OCL_TESTS)
-
-
-
-EXTRA_PROGRAMS =                      \
-        $(BASIC_TESTS)                \
-        $(NTL_TESTS)                  \
-        $(ATLAS_TESTS)                \
-        $(LIDIA_TESTS)                \
-        $(BENCHMARKS)                 \
-        $(NONEXISTING_TESTS)          \
-        $(NONCOMPILING_TESTS)         \
-        $(NONCOMPLIANT_TESTS)         \
-        $(DUBIOUS_TESTS)              \
-        $(FULLCHECK_TESTS)            \
-        $(FAILING_TESTS)              \
-        $(BLAS3_UNIT_TESTS)           \
-        $(USE_OCL_TESTS)
-
-
-test_commentator_SOURCES =                \
-        test-commentator.C                \
-        test-common.h
-
-test_modular_SOURCES =                        \
-        test-modular.C                        \
-        test-generic.h                        \
-        test-common.h
-
-test_blackbox_block_container_SOURCES =   \
-	test-blackbox-block-container.C    \
-	test-common.h
-
-test_solve_nonsingular_SOURCES =   \
-	test-solve-nonsingular.C   \
-	test-common.h
-
-test_PID_integer_SOURCES =                 \
-        test-PID-integer.C                 \
-        test-field.h                      \
-        test-common.h
-
-test_hom_SOURCES =                        \
-        test-hom.C                        \
-        test-generic.h                    \
-        test-common.h
-
-test_gf2_SOURCES =                        \
-        test-gf2.C                        \
-        test-generic.h                    \
-        test-common.h
-
-test_givaropoly_SOURCES = \
-		test-givaropoly.C \
-		test-generic.h \
-		test-common.h
-
-
-test_gmp_rational_SOURCES =               \
-        test-gmp-rational.C               \
-        test-generic.h                    \
-        test-common.h
-
-test_randiter_nonzero_SOURCES =          \
-        test-randiter-nonzero.C          \
-        test-common.h
-
-test_rational_matrix_factory_SOURCES =  \
-        test-rational-matrix-factory.C  \
-        test-common.h
-
-test_rational_reconstruction_base_SOURCES =  \
-	  test-rational-reconstruction-base.C  \
-	  test-common.h
-
-test_rat_solve_SOURCES =                \
-        test-rat-solve.C                \
-        test-common.h
-
-test_rat_charpoly_SOURCES =             \
-        test-rat-charpoly.C             \
-        test-common.h
-
-test_rat_minpoly_SOURCES =              \
-        test-rat-minpoly.C              \
-        test-common.h
-
-test_subiterator_SOURCES =              \
-        test-subiterator.C              \
-        test-common.h
-
-test_subvector_SOURCES =                \
-        test-subvector.C                \
-        test-common.h
-
-test_vector_domain_SOURCES =            \
-        test-vector-domain.C            \
-        test-vector-domain.h
-
-test_matrix_domain_SOURCES =            \
-        test-matrix-domain.C            \
-        test-common.h
-
-test_dense_SOURCES =                    \
-        test-dense.C                    \
-        test-common.h
-
-test_sparse_SOURCES =                   \
-        test-sparse.C                   \
-        test-common.h
-
-test_sparse2_SOURCES =                   \
-        test-sparse2.C                   \
-        test-common.h
-
-
-
-test_submatrix_SOURCES =                \
-        test-submatrix.C                \
-        test-common.h
-
-test_scalar_matrix_SOURCES =            \
-        test-scalar-matrix.C            \
-        test-generic.h                  \
-        test-common.h
-
-#  test_bmseq_SOURCES =            \
-	#  test-bmseq.C            \
-	#  test-common.h
-
-test_butterfly_SOURCES =                \
-        test-vector-domain.h            \
-        test-blackbox.h                 \
-        test-butterfly.C                \
-        test-generic.h                  \
-        test-common.h
-
-test_charpoly_SOURCES =                 \
-	test-charpoly.C                 \
-	test-common.h
-
-test_diagonal_SOURCES =                 \
-        test-diagonal.C                 \
-        test-generic.h                  \
-        test-common.h
-
-test_sum_SOURCES =                      \
-        test-sum.C                      \
-        test-generic.h                  \
-        test-common.h
-
-test_dif_SOURCES =                          \
-        test-dif.C        test-generic.h    \
-        test-common.h
-
-test_triplesbb_SOURCES =                \
-        test-triplesbb.C                \
-        test-generic.h                  \
-        test-common.h
-
-test_triplesbb_omp_SOURCES =                \
-        test-triplesbb-omp.C                \
-        test-generic.h                  \
-        test-common.h
-
-
-test_tutorial_SOURCES =                \
-        test-tutorial.C
-
-test_hilbert_SOURCES =                        \
-        test-hilbert.C        test-generic.h        \
-        test-common.h
-
-test_ntl_toeplitz_SOURCES =                \
-        test-ntl-toeplitz.C                \
-        test-common.h
-
-test_ntl_hankel_SOURCES =                \
-        test-ntl-hankel.C                \
-        test-common.h
-
-
-test_ntl_sylvester_SOURCES =                \
-        test-ntl-sylvester.C                \
-        test-common.h
-
-test_toeplitz_det_SOURCES =                \
-        test-toeplitz-det.C
-
-test_trace_SOURCES =                         \
-        test-trace.C                         \
-        test-common.h
-
-test_getentry_SOURCES =                         \
-        test-getentry.C                         \
-        test-common.h
-
-test_minpoly_SOURCES =                         \
-        test-minpoly.C                         \
-        test-common.h
-
-test_det_SOURCES =                        \
-        test-det.C                        \
-        test-common.h
-
-test_rank_u32_SOURCES =                        \
-        test-rank-u32.C                        \
-        test-rank.h                        \
-        test-common.h
-
-test_rank_md_SOURCES =                        \
-        test-rank-md.C                        \
-        test-rank.h                        \
-        test-common.h
-
-test_rank_Int_SOURCES =                        \
-        test-rank-Int.C                        \
-        test-rank.h                        \
-        test-common.h
-
-test_qlup_SOURCES =                        \
-        test-qlup.C                        \
-        test-common.h
-
-test_solve_SOURCES =                        \
-        test-solve.C                        \
-        test-common.h
-
-test_direct_sum_SOURCES =                \
-        test-direct-sum.C                \
-        test-generic.h                   \
-        test-common.h
-
-test_echelon_form_SOURCES =                \
-        test-echelon-form.C                \
-        test-common.h
-
-test_frobenius_SOURCES =                \
-        test-frobenius.C                \
-        test-generic.h                  \
-        test-common.h
-
-test_companion_SOURCES =                \
-        test-companion.C                \
-        test-generic.h                  \
-        test-common.h
-
-test_inverse_SOURCES =                        \
-        test-inverse.C                        \
-        test-common.h
-
-test_moore_penrose_SOURCES =                \
-        test-moore-penrose.C                \
-        test-common.h
-
-test_ntl_RR_SOURCES =                        \
-        test-ntl-RR.C                        \
-        test-generic.h                       \
-        test-common.h
-
-test_ntl_ZZ_p_SOURCES =                        \
-        test-ntl-ZZ_p.C                        \
-        test-generic.h                         \
-        test-common.h
-
-test_ntl_lzz_p_SOURCES =                \
-        test-ntl-lzz_p.C                \
-        test-field.h
-
-test_ntl_lzz_pE_SOURCES =                \
-        test-ntl-lzz_pE.C                \
-        test-field.h
-
-test_ntl_lzz_pX_SOURCES =                \
-        test-ntl-lzz_pX.C                \
-        test-field.h
-
-test_ntl_lzz_pEX_SOURCES =                \
-        test-ntl-lzz_pEX.C                \
-        test-field.h
-
-test_lidia_gfq_SOURCES =                \
-        test-lidia-gfq.C                \
-        test-generic.h                  \
-        test-common.h
-
-test_param_fuzzy_SOURCES =                \
-        test-param-fuzzy.C                \
-        test-generic.h                    \
-        test-common.h
-
-#  test_quad_matrix_SOURCES =                \
-#  test-quad-matrix.C                \
-#  test-generic-for-quad.h           \
-#  test-generic.h                    \
-#  test-common.h
-
-test_zero_one_SOURCES =                       \
-        test-zero-one.C                       \
-        test-generic.h                        \
-        test-common.h
-
-test_modular_int_SOURCES =                \
-        test-modular-int.C                \
-        test-common.h
-
-test_modular_short_SOURCES =                \
-        test-modular-short.C                \
-        test-generic.h                      \
-        test-common.h
-
-test_modular_double_SOURCES =                \
-        test-modular-double.C                \
-        test-generic.h                       \
-        test-common.h
-
-test_modular_float_SOURCES =                \
-        test-modular-float.C                \
-        test-generic.h                       \
-        test-common.h
-
-
-test_modular_byte_SOURCES =          \
-        test-modular-byte.C          \
-        test-generic.h               \
-        test-common.h
-
-test_modular_balanced_int_SOURCES =  \
-        test-modular-balanced-int.C  \
-        test-generic.h               \
-        test-common.h
-
-test_modular_balanced_double_SOURCES =  \
-        test-modular-balanced-double.C  \
-        test-generic.h               \
-        test-common.h
-
-test_modular_balanced_float_SOURCES =  \
-        test-modular-balanced-float.C  \
-        test-generic.h               \
-        test-common.h
-
-test_smith_form_iliopoulos_SOURCES=  \
-        test-common.h                \
-        test-smith-form-iliopoulos.C
-
-test_smith_form_binary_SOURCES=  \
-        test-common.h            \
-        test-smith-form-binary.C
-
-test_smith_form_SOURCES=    \
-        test-common.h       \
-        test-smith-form.C
-
-test_last_invariant_factor_SOURCES=    \
-        test-common.h                  \
-        test-last-invariant-factor.C
-
-test_smith_form_local_SOURCES=    \
-        test-common.h             \
-        test-smith-form-local.C
-
-test_optimization_SOURCES=    \
-        test-common.h         \
-        test-optimization.C
-
-test_nullspace_SOURCES=    \
-	test-common.h      \
-	test-nullspace.C
-
-test_bitonic_sort_SOURCES=              \
-        test-common.h                   \
-        test-bitonic-sort.C
-
-test_rational_solver_SOURCES =          \
-        test-common.h                   \
-        test-rational-solver.C
-
-test_blas_domain_SOURCES=               \
-        test-common.h                   \
-        test-blas-domain.C
-
-test_ffpack_SOURCES=                    \
-        test-common.h                   \
-        test-ffpack.C
-
-test_matrix_stream_SOURCES =            \
-        test-matrix-stream.C
-
-test_la_block_lanczos_SOURCES =         \
-        test-la-block-lanczos.C
-
-test_mg_block_lanczos_SOURCES =         \
-        test-mg-block-lanczos.C
-
-test_block_wiedemann_SOURCES =         \
-        test-block-wiedemann.C
-
-test_rational_solver_adaptive_SOURCES = \
-        test-rational-solver-adaptive.C \
-        test-common.h
-
-test_dyadic_to_rational_SOURCES = \
-        test-dyadic-to-rational.C \
-        test-common.h
-
-test_cra_SOURCES =                      \
-        test-cra.C                      \
-        test-common.h
-
-test_cradomain_SOURCES =                \
-        test-cradomain.C                \
-        test-common.h
-
-# NTL test
-
-test_smith_form_adaptive_SOURCES=      \
-        test-common.h                  \
-        test-smith-form-adaptive.C
-
-test_transpose_SOURCES =                \
-        test-transpose.C                \
-        test-common.h
-
-benchmark_fields_SOURCES=              \
-        test-common.h                  \
-        benchmark-fields.C
-
-benchmark_blas_domain_SOURCES=         \
-        test-common.h                  \
-        benchmark-blas-domain.C
-
-test_isposdef_SOURCES=                 \
-        test-common.h                  \
-        test-isposdef.C
-
-test_dense_zero_one_SOURCES=           \
-        test-blackbox.h                \
-        test-dense-zero-one.C
-
-test_ispossemidef_SOURCES=            \
-        test-common.h                 \
-        test-ispossemidef.C
-
-test_ftrmm_SOURCES =                  \
-        test-ftrmm.C
-
-test_permutation_SOURCES =                  \
-        test-common.h                  \
-	test-permutation.C
-
-
-test_blas_matrix_SOURCES =              \
-	test-common.h                   \
-	test-blas-matrix.C
-
-#  test_iml_SOURCES =                    \
-#  test-iml.C
-
-
-# OCL Test
-
-test_opencl_domain_SOURCES=           \
-        test-common.h                 \
-        test-opencl-domain.C
-
-test_toom_cook_SOURCES = test-toom-cook.C
-
-#  test_integer_tools_SOURCES =          \
-#  test-integer-tools.C
-
+# check builds and runs these
+TESTS =                 \
+	$(BASIC_TESTS)		\
+	$(USE_NTL_TESTS)	\
+	$(USE_OCL_TESTS)	\
+
+# alternate definition of check target
 #check: checker
 #	checker -c
+
+EXTRA_PROGRAMS =		\
+	$(BASIC_TESTS)		\
+	$(NTL_TESTS)		\
+	$(BENCHMARKS		\
+	$(FULLCHECK_TESTS) 	\
+	$(OCL_TEST			\
+
+benchmark_blas_domain_SOURCES =         benchmark-blas-domain.C 
+benchmark_fields_SOURCES =              benchmark-fields.C 
+test_bitonic_sort_SOURCES =             test-bitonic-sort.C 
+test_blackbox_block_container_SOURCES = test-blackbox-block-container.C
+test_blas_domain_SOURCES =              test-blas-domain.C 
+test_blas_matrix_SOURCES =              test-blas-matrix.C
+test_block-ring_SOURCES =				test-block-ring.C
+test_block_wiedemann_SOURCES =          test-block-wiedemann.C
+test_butterfly_SOURCES = test-butterfly.C test-vector-domain.h test-blackbox.h
+test_charpoly_SOURCES =                 test-charpoly.C
+test_commentator_SOURCES =              test-commentator.C
+test_companion_SOURCES =                test-companion.C
+test_cradomain_SOURCES =                test-cradomain.C test-common.h
+test_cra_SOURCES =                      test-cra.C test-common.h
+test_dense_SOURCES =                    test-dense.C test-common.h
+test_dense_zero_one_SOURCES =           test-dense-zero-one.C 
+test_det_SOURCES =                      test-det.C
+test_diagonal_SOURCES =                 test-diagonal.C
+test_dif_SOURCES =                      test-dif.C
+test_direct_sum_SOURCES =               test-direct-sum.C
+test_dyadic_to_rational_SOURCES =       test-dyadic-to-rational.C
+test_echelon_form_SOURCES =             test-echelon-form.C
+test_ffpack_SOURCES =                   test-ffpack.C
+test_fibb_SOURCES =						test-fibb.C	
+test_frobenius_SOURCES =                test-frobenius.C
+test_ftrmm_SOURCES =                    test-ftrmm.C 
+test_getentry_SOURCES =                 test-getentry.C
+test_gf2_SOURCES =                      test-gf2.C
+test_gf3_SOURCES =						test-gf3.C
+test_givaropoly_SOURCES =               test-givaropoly.C
+test_gmp_rational_SOURCES =             test-gmp-rational.C
+test_hilbert_SOURCES =                  test-hilbert.C
+test_hom_SOURCES =                      test-hom.C
+test_image_field_SOURCES =				test-image-field.C
+test_inverse_SOURCES =                  test-inverse.C
+test_isposdef_SOURCES =                 test-isposdef.C 
+test_ispossemidef_SOURCES =             test-ispossemidef.C 
+test_la_block_lanczos_SOURCES =         test-la-block-lanczos.C
+test_last_invariant_factor_SOURCES =    test-last-invariant-factor.C 
+test_lidia_gfq_SOURCES =                test-lidia-gfq.C
+test_matrix_domain_SOURCES =            test-matrix-domain.C test-common.h
+test_matrix_stream_SOURCES =            test-matrix-stream.C
+test_mg_block_lanczos_SOURCES =         test-mg-block-lanczos.C
+test_minpoly_SOURCES =                  test-minpoly.C
+test_modular_balanced_double_SOURCES =  test-modular-balanced-double.C
+test_modular_balanced_float_SOURCES =   test-modular-balanced-float.C
+test_modular_balanced_int_SOURCES =     test-modular-balanced-int.C
+test_modular_byte_SOURCES =             test-modular-byte.C
+test_modular_double_SOURCES =           test-modular-double.C
+test_modular_float_SOURCES =            test-modular-float.C
+test_modular_int_SOURCES =              test-modular-int.C
+test_modular_short_SOURCES =            test-modular-short.C
+test_modular_SOURCES =                  test-modular.C
+test_moore_penrose_SOURCES =            test-moore-penrose.C
+test_ntl_hankel_SOURCES =               test-ntl-hankel.C
+test_ntl_lzz_pE_SOURCES =               test-ntl-lzz_pE.C test-field.h
+test_ntl_lzz_pEX_SOURCES =              test-ntl-lzz_pEX.C test-field.h
+test_ntl_lzz_p_SOURCES =                test-ntl-lzz_p.C test-field.h
+test_ntl_lzz_pX_SOURCES =               test-ntl-lzz_pX.C test-field.h
+test_ntl_RR_SOURCES =                   test-ntl-RR.C
+test_ntl_sylvester_SOURCES =            test-ntl-sylvester.C
+test_ntl_toeplitz_SOURCES =             test-ntl-toeplitz.C
+test_ntl_ZZ_p_SOURCES =                 test-ntl-ZZ_p.C
+test_nullspace_SOURCES =                test-nullspace.C 
+test_opencl_domain_SOURCES =            test-opencl-domain.C
+test_optimization_SOURCES =             test-optimization.C 
+test_order_basis_SOURCES =				test-order-basis.C
+test_param_fuzzy_SOURCES =              test-param-fuzzy.C
+test_permutation_SOURCES =              test-permutation.C 
+test_PID_integer_SOURCES =              test-PID-integer.C
+test_plain_domain_SOURCES =				test-plain-domain.C
+test_poly_det_SOURCES =					test-poly-det.C
+test_qlup_SOURCES =                     test-qlup.C
+test_quad_matrix_SOURCES =           	test-quad-matrix.C 
+test_randiter_nonzero_SOURCES =         test-randiter-nonzero.C
+test_random_matrix_SOURCES =			test-random-matrix.C
+test_rank_Int_SOURCES =                 test-rank-Int.C test-rank.h
+test_rank_md_SOURCES =                  test-rank-md.C test-rank.h
+test_rank_u32_SOURCES =                 test-rank-u32.C
+test_rat_charpoly_SOURCES =             test-rat-charpoly.C test-common.h
+test_rational_matrix_factory_SOURCES =  test-rational-matrix-factory.C
+test_rational_reconstruction_base_SOURCES =  test-rational-reconstruction-base.C
+test_rational_solver_adaptive_SOURCES = test-rational-solver-adaptive.C test-common.h
+test_rational_solver_SOURCES =          test-rational-solver.C 
+test_rat_minpoly_SOURCES =              test-rat-minpoly.C test-common.h
+test_rat_solve_SOURCES =                test-rat-solve.C test-common.h
+test_scalar_matrix_SOURCES =            test-scalar-matrix.C
+test_smith_form_adaptive_SOURCES =      test-smith-form-adaptive.C test-common.h
+test_smith_form_binary_SOURCES =        test-smith-form-binary.C 
+test_smith_form_iliopoulos_SOURCES =    test-smith-form-iliopoulos.C 
+test_smith_form_local_SOURCES =         test-smith-form-local.C 
+test_smith_form_SOURCES =               test-smith-form.C 
+test_solve_nonsingular_SOURCES =        test-solve-nonsingular.C
+test_solve_SOURCES =                    test-solve.C
+test_sparse2_SOURCES =                  test-sparse2.C test-common.h
+test_sparse_SOURCES =                   test-sparse.C test-common.h
+test_subiterator_SOURCES =              test-subiterator.C test-common.h
+test_submatrix_SOURCES =                test-submatrix.C test-common.h
+test_subvector_SOURCES =                test-subvector.C test-common.h
+test_sum_SOURCES =                      test-sum.C
+test_toeplitz_det_SOURCES =             test-toeplitz-det.C
+test_toom_cook_SOURCES =                test-toom-cook.C
+test_trace_SOURCES =                    test-trace.C
+test_transpose_SOURCES =                test-transpose.C
+test_triplesbb_omp_SOURCES =            test-triplesbb-omp.C
+test_triplesbb_SOURCES =                test-triplesbb.C
+test_tutorial_SOURCES =                 test-tutorial.C
+test_vector_domain_SOURCES =            test-vector-domain.C test-vector-domain.h
+test_zero_one_SOURCES =                 test-zero-one.C
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
