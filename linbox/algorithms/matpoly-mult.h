@@ -996,7 +996,7 @@ namespace LinBox
 			_field(&F), _MD(F), _BMD(F)
 		{
 			F.characteristic(_p);
-			_pl = _p;
+			_pl = int64_t(_p);
 			fftadd= fftmul = fftcopy=0.;
 
 			// find a pseudo primitive element of the multiplicative group _p -1
@@ -1058,7 +1058,7 @@ namespace LinBox
 			// find a pseudo nth primitive root of unity
 			for (;;) {
 				// compute the nth primitive root
-				w=  (int64_t) Givaro::powmod(_gen, int64_t(_pl>>lpts), _p);
+				w=  (int64_t) Givaro::powmod(int64_t(_gen), int64_t(_pl>>lpts), _p);
 				if ((w !=1) && (w != _pl-1))
 					break;
 
@@ -1092,8 +1092,8 @@ namespace LinBox
 
 			// compute w^(-1) mod p using extended euclidean algorithm
 			long x_int, y_int, tx, ty;
-			x_int = (long) _p;
-			y_int = (long) w;
+			x_int = (int64_t) _p;
+			y_int = (int64_t) w;
 			tx = 0; ty = 1;
 			while (y_int != 0) {
 				long q,temp;
@@ -1103,7 +1103,7 @@ namespace LinBox
 				temp = ty; ty = tx - q * ty;
 				tx = temp;
 			}
-			if (tx < 0) tx += (long) _p;
+			if (tx < 0) tx += (int64_t) _p;
 			inv_w = tx;
 
 
@@ -1278,7 +1278,7 @@ namespace LinBox
 			for (;;) {
 
 				// compute the nth primitive root
-				w=  (int64_t) Givaro::powmod(_gen, int64_t(_pl>>lpts), _p);
+				w=  (int64_t) Givaro::powmod(int64_t(_gen), int64_t(_pl>>lpts), _p);
 				//std::cout<<w<<" : "<<_gen<<"\n"<<(_pl>>lpts)<<"\n";
 
 				if ((w !=1) && (w != _pl-1))
@@ -1314,8 +1314,8 @@ namespace LinBox
 
 			// compute w^(-1) mod p using extended euclidean algorithm
 			long x_int, y_int, tx, ty;
-			x_int = (long) _p;
-			y_int = (long) w;
+			x_int = (int64_t) _p;
+			y_int = (int64_t) w;
 			tx = 0; ty = 1;
 			while (y_int != 0) {
 				long q,temp;
@@ -1325,7 +1325,7 @@ namespace LinBox
 				temp = ty; ty = tx - q * ty;
 				tx = temp;
 			}
-			if (tx < 0) tx += (long) _p;
+			if (tx < 0) tx += (int64_t) _p;
 			inv_w = tx;
 
 

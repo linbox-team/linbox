@@ -103,8 +103,8 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	//typedef Givaro::Modular<double> Field;
-	typedef Givaro::Modular<uint32_t> Field;
+	typedef Givaro::Modular<double> Field;
+	//typedef Givaro::Modular<uint32_t> Field;
 	typedef BlasVector<Field> Vector;
 
 	Field F ( (uint32_t) q);

@@ -63,10 +63,10 @@ namespace LinBox
 		const Field & field() const { return _BMD.field(); }
 
 		BlockWiedemannSolver (const Context_ &C) :
-			_BMD(C.field()), _VDF(C.field()), _rand(C.field())
+			_BMD(C.field()), _VDF(C.field()), _rand(const_cast<Field&>(C.field()))
 		{}
 
-		BlockWiedemannSolver (const Field &F, const RandIter &rand) :
+		BlockWiedemannSolver (const Field &F, RandIter &rand) :
 			_BMD(F), _VDF(F), _rand(rand)
 		{}
 
