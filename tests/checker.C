@@ -101,7 +101,7 @@ skip("test-dense-zero-one", "half baked, bds responsible");
 skip("test-la-block-lanczos", "not maintained. operator >> missing");
 
 
-//// optional dependency section ////
+//// optional package dependency section ////
 	set< string> ntl_tests;
 	ntl_tests.insert("test-ntl-hankel");
 	ntl_tests.insert("test-ntl-lzz_p");
@@ -152,7 +152,7 @@ skip("test-la-block-lanczos", "not maintained. operator >> missing");
 	while (tests >> t) {t.resize(t.size()-2); all_tests.push_back(t);}
 #ifdef LINBOX_HAVE_OPENMP
 //#pragma omp parallel for num_threads(4)
-#pragma omp parallel for 
+//#pragma omp parallel for 
 #endif
 	for (size_t i = 0; i < all_tests.size(); ++i) {
 		t = all_tests[i];
@@ -172,9 +172,9 @@ skip("test-la-block-lanczos", "not maintained. operator >> missing");
 			cmd = "make " + t + " 2> /dev/null > /dev/null";
 			report << "build ";
 			int status = system(cmd.c_str());
-			#ifndef LINBOX_HAVE_OPENMP
+//			#ifndef LINBOX_HAVE_OPENMP
 			if (status == 2) break; 
-			#endif
+//			#endif
 			if (status != 0) { // build failure
 				buildfail++;
 				report << "FAIL ";
@@ -183,9 +183,9 @@ skip("test-la-block-lanczos", "not maintained. operator >> missing");
 				std::ostringstream prog ;
 				prog << "./" << t ;
 				status = system(prog.str().c_str());
-				#ifndef LINBOX_HAVE_OPENMP
+//				#ifndef LINBOX_HAVE_OPENMP
 				if (status == 2) break;
-				#endif
+//				#endif
 				if (status == 0) {
 					report << "OK.  " + warn_note[t];
 					pass++;

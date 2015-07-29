@@ -175,9 +175,9 @@ std::istream& SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::read(std::istrea
 	Index r, c;
 	typename Field::Element v; field().init(v);
 	MatrixStream<Field> ms(field(), in);
-	ms.getDimensions(r, c);
+	ms.getDimensions((size_t&)r, (size_t&)c);
 	shape(field(), r, c);
-	while (ms.nextTriple(r, c, v)) setEntry(r, c, v);
+	while (ms.nextTriple((size_t&)r, (size_t&)c, v)) setEntry((size_t)r, (size_t)c, v);
 	return in;
 }
 

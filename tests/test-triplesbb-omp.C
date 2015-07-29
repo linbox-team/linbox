@@ -328,7 +328,7 @@ bool runSizeSuite(int n, int m, int p,
 }
 
 template<class Field>
-bool testSuite(std::vector<int>& qs, ostream &report)
+bool testSuite(std::vector<int>& qs, ostream &report, bool extensive)
 {
         bool pass=true;
 
@@ -339,6 +339,7 @@ bool testSuite(std::vector<int>& qs, ostream &report)
         numThreads.push_back(4);
         bool shouldFail=false,isRight=false;
         do {
+			if (extensive){
                 pass=pass&&runSizeSuite<Field>(10000,10,1,0.01,qs,numThreads,shouldFail,isRight,report);
                 pass=pass&&runSizeSuite<Field>(10000,10,10,0.01,qs,numThreads,shouldFail,isRight,report);
                 pass=pass&&runSizeSuite<Field>(10,10000,1,0.01,qs,numThreads,shouldFail,isRight,report);
@@ -346,15 +347,18 @@ bool testSuite(std::vector<int>& qs, ostream &report)
                 pass=pass&&runSizeSuite<Field>(1,10000,1,0.1,qs,numThreads,shouldFail,isRight,report);
 
                 pass=pass&&runSizeSuite<Field>(10000,10000,1,0.0,qs,numThreads,shouldFail,isRight,report);
+			}
 
                 pass=pass&&runSizeSuite<Field>(2,2,1,1.0,qs,numThreads,shouldFail,isRight,report);
                 pass=pass&&runSizeSuite<Field>(2,2,10000,1.0,qs,numThreads,shouldFail,isRight,report);
 
+			if (extensive) {
                 pass=pass&&runSizeSuite<Field>(10000,10000,1,0.0001,qs,numThreads,shouldFail,isRight,report);
                 pass=pass&&runSizeSuite<Field>(10000,10000,10,0.0001,qs,numThreads,shouldFail,isRight,report);
+			}
 
-                shouldFail^=isRight;
-                isRight=!isRight;
+            shouldFail^=isRight;
+            isRight=!isRight;
         } while (shouldFail || isRight);
 
         return pass;
@@ -362,7 +366,6 @@ bool testSuite(std::vector<int>& qs, ostream &report)
 
 int main (int argc, char **argv)
 {
-
 	bool pass = true;
 
 	static size_t m = 400;
@@ -372,7 +375,7 @@ int main (int argc, char **argv)
 
         // TODO: Remove this, it's no longer used
 	static Argument args[] = {
-		{ 'm', "-m M", "Set row dimension of test matrix to M.", TYPE_INT,     &m },
+		{ 'm', "-m M", "Temporary: set m > 999 for fuller test. was: Set row dimension of test matrix to M.", TYPE_INT,     &m },
 		{ 'n', "-n N", "Set col dimension of test matrix to N.", TYPE_INT,     &n },
 		{ 'z', "-z NNZ", "Set number of nonzero entries in test matrix.", TYPE_INT,     &nnz },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
@@ -395,7 +398,7 @@ int main (int argc, char **argv)
         qs.push_back(2);
         qs.push_back(65537);
 
-        pass = testSuite<Givaro::Modular<double> >(qs,report);
+		pass = testSuite<Givaro::Modular<double> >(qs,report, m > 999);
 
 	commentator().stop("TriplesBBOMP black box test suite");
 	return pass ? 0 : -1;

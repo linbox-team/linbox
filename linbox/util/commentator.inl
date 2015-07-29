@@ -171,7 +171,7 @@ namespace LinBox
 
 	void Commentator::stop (const char *msg, const char *long_msg, const char *fn)
 	{
-		double realtime, usertime, systime;
+		double realtime; //, usertime, systime;
 		Activity *top_act;
 
 		linbox_check (_activities.top () != (Activity *) 0);
@@ -184,13 +184,13 @@ namespace LinBox
 
 		top_act->_timer.stop ();
 
-		realtime = top_act->_timer.realtime ();
-		usertime = top_act->_timer.usertime ();
-		systime  = top_act->_timer.systime ();
+		realtime = top_act->_timer.time ();
+		//usertime = top_act->_timer.usertime ();
+		//systime  = top_act->_timer.systime ();
 
 		if (realtime < 0) realtime = 0;
-		if (usertime < 0) usertime = 0;
-		if (systime < 0) systime = 0;
+		//if (usertime < 0) usertime = 0;
+		//if (systime < 0) systime = 0;
 
 		if (fn != (const char *) 0 &&
 		    _activities.size () > 0 &&
@@ -214,19 +214,19 @@ namespace LinBox
 			std::ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 			output.precision (4);
 			output << "Finished activity (rea: " << realtime << "s, cpu: ";
-			output.precision (4);
-			output << usertime << "s, sys: ";
-			output.precision (4);
-			output << systime << "s): " << long_msg << std::endl;
+			//output.precision (4);
+			//output << usertime << "s, sys: ";
+			//output.precision (4);
+			//output << systime << "s): " << long_msg << std::endl;
 		}
 		else if (isPrinted (_activities.size (), LEVEL_IMPORTANT, INTERNAL_DESCRIPTION, fn)) {
 			std::ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 			output.precision (4);
 			output << "Completed activity: " << top_act->_desc << " (r: " << realtime << "s, u: ";
-			output.precision (4);
-			output << usertime << "s, s: ";
-			output.precision (4);
-			output << systime << "s) " << long_msg << std::endl;
+			//output.precision (4);
+			//output << usertime << "s, s: ";
+			//output.precision (4);
+			//output << systime << "s) " << long_msg << std::endl;
 		}
 
 		delete top_act;
@@ -237,7 +237,7 @@ namespace LinBox
 		linbox_check (_activities.top () != (Activity *) 0);
 
 		Activity *act = _activities.top ();
-		Givaro::Timer tmp = act->_timer;
+		Givaro::RealTimer tmp = act->_timer;
 		act->_timer.stop ();
 
 		if (k == -1)
@@ -255,7 +255,7 @@ namespace LinBox
 		rep.precision (3);
 		rep.setf (std::ios::fixed);
 		rep << "Progress: " << act->_progress << " out of " << act->_len
-		<< " (" << act->_timer.realtime () << "s elapsed)" << std::endl;
+		<< " (" << act->_timer.time () << "s elapsed)" << std::endl;
 
 		if (_show_progress && isPrinted (_activities.size () - 1, LEVEL_IMPORTANT, BRIEF_REPORT, act->_fn))
 			updateActivityReport (*act);
@@ -512,7 +512,7 @@ namespace LinBox
 				messageClass._stream << msg;
 
 				if (_show_timing)
-					messageClass._stream << " (" << activity._timer.usertime () << " s)" << std::endl;
+					messageClass._stream << " (" << activity._timer.time () << " s)" << std::endl;
 				else
 					messageClass._stream << std::endl;
 			}
@@ -524,7 +524,7 @@ namespace LinBox
 				//messageClass._stream << "Done: " << msg;
 
 				if (_show_timing)
-					messageClass._stream << " (" << activity._timer.usertime () << " s)" << std::endl;
+					messageClass._stream << " (" << activity._timer.time () << " s)" << std::endl;
 				else
 					messageClass._stream << std::endl;
 			}

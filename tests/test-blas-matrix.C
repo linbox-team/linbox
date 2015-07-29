@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t m = 4;
-	static size_t n = 20;
+	static size_t n = 10;
 	// static size_t nnz = 0;
 	static integer q = 101 ;
 
