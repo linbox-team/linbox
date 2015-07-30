@@ -46,7 +46,7 @@ namespace LinBox
 	 */
 	template<class _Field>
 	class Permutation
-#if 0
+#if 1
 		 : public  FIBB<_Field>
 #endif 
 	{
@@ -167,7 +167,7 @@ namespace LinBox
 
 			return y;
 		}
-#if 0
+#if 1
 		Matrix& applyRight(Matrix& Y, const Matrix& X) const
 		{
 			for (size_t i = 0; i < rowdim(); ++i)
@@ -289,10 +289,10 @@ namespace LinBox
 		{ return os; }
 
 		//!@bug needs a MM version
-		//std::ostream &write(std::ostream &os) const
-		//{ return write(os, Tag::FileFormat::Plain); }
+		std::ostream &write(std::ostream &os) const
+		{ return write(os, Tag::FileFormat::Plain); }
 
-		std::ostream &write(std::ostream &os, LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Plain) const
+		std::ostream &write(std::ostream &os, LINBOX_enum(Tag::FileFormat) format) const
 		{
 
 			// Avoid unneeded overhead in the case that this

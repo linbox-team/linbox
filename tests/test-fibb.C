@@ -32,14 +32,14 @@
 
 #include "linbox-config.h"
 #include "linbox/util/commentator.h"
-#include "linbox/ring/modular.h"
+#include "givaro/modular-double.h"
 #include "test-blackbox.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/blackbox/fibb.h"
 #include "linbox/blackbox/diagonal.h"
 //#include "linbox/matrix/permutation-matrix.h"
 #include "linbox/blackbox/permutation.h"
-#include "linbox/blackbox/triangular.h"
+//#include "linbox/blackbox/triangular.h"
 
 
 using namespace LinBox;
@@ -172,7 +172,8 @@ int main (int argc, char **argv)
 	//srand(time(NULL));
 
 	static size_t n = 10;
-	static uint32_t q = 2147483647U;
+	static int32_t q = 101;
+	//static uint32_t q = 2147483647U;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
@@ -184,7 +185,7 @@ int main (int argc, char **argv)
 	commentator().start("FIBB test suite", "fibb");
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-	typedef Modular<uint32_t> Field; 
+	typedef Givaro::Modular<double> Field; 
 	Field F (q);
 	//MatrixDomain<Field> MD(F);
 
@@ -194,29 +195,33 @@ int main (int argc, char **argv)
 	Diagonal<Field> D3(F, n, true); 
 	for (size_t i = 0; i < n; ++i) D3.setEntry(i,i,F.zero); // zero matrix
 
+	pass = pass and testFibb(D1); // nonsing
+	pass = pass and testFibb(D2); // sing
+	pass = pass and testFibb(D3); // zero
+
 	FIBBProduct<Field> Pr1(D1, D1); // nonsing product
 	FIBBProduct<Field> Pr2(D1, D2); // sing product
 	FIBBProduct<Field> Pr3(D3, D1); // zero product
 
+	pass = pass and testFibb(Pr1); // nonsing product
+	pass = pass and testFibb(Pr2); // sing product
+	pass = pass and testFibb(Pr3); // zero product
+
+#if 0
 	Permutation<Field> P1(F, n, n); // ident
 	Permutation<Field> P2(F, n, n); P2.random(); 
+
+	pass = pass and testFibb(P1); // ident
+	pass = pass and testFibb(P2); // random perm
 
 	FIBBProduct<Field> Pr4(P1, D1, P2); // nonsing product
 	FIBBProduct<Field> Pr5(P1, D2, P2); // sing product
 	FIBBProduct<Field> Pr6(P1, D3, P2); // zero product 
 
-	pass = pass and testFibb(D1); // nonsing
-	pass = pass and testFibb(D2); // sing
-	pass = pass and testFibb(D3); // zero
-#if 0
-	pass = pass and testFibb(Pr1); // nonsing product
-	pass = pass and testFibb(Pr2); // sing product
-	pass = pass and testFibb(Pr3); // zero product
-	pass = pass and testFibb(P1); // ident
-	pass = pass and testFibb(P2); // random perm
 	pass = pass and testFibb(Pr4); // nonsing product
 	pass = pass and testFibb(Pr5); // sing product
 	pass = pass and testFibb(Pr6); // zero product
+
 #endif
 	report << "Done with diag products" << std::endl;
 #if 0

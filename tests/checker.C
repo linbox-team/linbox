@@ -59,9 +59,9 @@ int main(int argc, char* argv[]) {
 skip("test-block-ring", "non commutative rings not supported");
 skip("test-cradomain", "inf loop.  most of the test does not compile");
 warn("test-echelon-form", "new");
-skip("test-fibb",  "immature");
-warn("test-ffpack", "testTURBO fails, move to ffpack tests?");
-warn("test-ftrmm", "should move to fflas tests");
+warn("test-fibb",  "incomplete");
+skip("test-ffpack", "testTURBO fails, move to ffpack tests?");
+skip("test-ftrmm", "should move to fflas tests?");
 warn("test-gf2", "not much is tested there");
 skip("test-gf3", "immature");
 skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
@@ -132,16 +132,16 @@ skip("test-la-block-lanczos", "not maintained. operator >> missing");
 	// process optional dependencies 
 	#ifndef LINBOX_HAVE_OCL
     for (set< string>::iterator i = ocl_tests.begin(); i != ocl_tests.end(); ++i) 
-		skip(*i, "no OpenCL");
+		skip(*i, "OpenCL not present");
 	#endif
 	#ifndef LINBOX_HAVE_LIDIA
     for (set< string>::iterator i = lidia_tests.begin(); i != lidia_tests.end(); ++i)
-		skip(*i, "no Lidia");
+		skip(*i, "Lidia not present");
 	
 	#endif
 	#ifndef LINBOX_HAVE_NTL
     for (set< string>::iterator i = ntl_tests.begin(); i != ntl_tests.end(); ++i) 
-		skip(*i, "no NTL");
+		skip(*i, "NTL not present");
 	#endif
 // build and run the tests section
 	string t, cmd;

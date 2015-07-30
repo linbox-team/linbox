@@ -25,6 +25,8 @@ struct BB
 	//typedef BlasMatrix<Field, std::vector<typename Ring::Element> > ResizableMatrix;
 	typedef BlasSubmatrix<ResizableMatrix> Matrix;
 
+	virtual ~BB(){}
+
 	virtual BBType bbTag() const 
 	= 0;
 	virtual size_t rowdim() const
@@ -96,6 +98,8 @@ struct FIBB : public BB<Ring>
 	typedef BlasSubmatrix<ResizableMatrix> Matrix;
 
 //	virtual const Field& field() const = 0;
+
+	virtual ~FIBB(){}
 
 	virtual size_t& rank(size_t& r) const
 	= 0;
@@ -190,7 +194,8 @@ struct FIBBProduct : public FIBB<Field_> { // Fast Inverse BlackBox
   protected: 
     const Father_t* Ap;
     const Father_t* Bp;
-	bool alloc; // true only if new used within init
+	bool allocA; // true only if new used within init
+	bool allocB; // true only if new used within init
   public:
 	typedef typename Field::Element Element;
 	typedef BlasMatrix<Field> ResizableMatrix;
@@ -241,8 +246,8 @@ struct FIBBProduct : public FIBB<Field_> { // Fast Inverse BlackBox
 	FIBBProduct(const FIBB<Field>& A1, const FIBB<Field>& A2, 
 				const FIBB<Field>& A3, const FIBB<Field>& A4, 
 				const FIBB<Field>& A5);
-	~FIBBProduct();
-	protected:  void munch(const FIBB<Field>*); // used by ~FIBBProduct
+	~FIBBProduct(){ if (allocA) delete Ap; if (allocB) delete Bp; }
+	//protected:  void munch(const FIBB<Field>*); // used by ~FIBBProduct
 	public:
 	FIBBProduct& init(const FIBB<Field>& A1, const FIBB<Field>& A2);
 	FIBBProduct& init(const FIBB<Field>& A1, const FIBB<Field>& A2, 
@@ -417,13 +422,7 @@ nullspaceBasisLeft( BlasMatrix<Field>& N ) const
 
 /* cstors, dstor */
 template<class Field> FIBBProduct<Field>::
-FIBBProduct() :Ap(0), Bp(0), alloc(false) {}
-
-/*
-template<class Field> FIBBProduct<Field>:: 
-FIBBProduct(const FIBBProduct& A1) 
-{ init(A1); }
-*/
+FIBBProduct() :Ap(0), Bp(0), allocA(false), allocB(false) {}
 
 template<class Field> FIBBProduct<Field>:: 
 FIBBProduct( const FIBB<Field>& A1, const FIBB<Field>& A2 ) 
@@ -445,6 +444,7 @@ FIBBProduct( const FIBB<Field>& A1, const FIBB<Field>& A2,
 			 const FIBB<Field>& A5 ) 
 { init(A1, A2, A3, A4, A5); }
 
+/*
 template<class Field> FIBBProduct<Field>:: 
 ~FIBBProduct() { munch(Ap); munch(Bp); }
 
@@ -452,34 +452,34 @@ template<class Field> void FIBBProduct<Field>::
 munch( const FIBB<Field>* p ) 
 {	const FIBBProduct<Field>* q = static_cast<const FIBBProduct<Field>*>(p);
 	if (p->bbTag() == product and q->alloc) 
-	{	munch(q->Ap); munch(q->Bp); delete p; }
+	{	munch(q->Ap); munch(q->Bp); delete q; }
 }
+*/
 
 /* initializers */
 
 template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
 init( const FIBB<Field>& A1, const FIBB<Field>& A2 )
-{ Ap = &A1; Bp = &A2; return *this; }
+{ Ap = &A1; Bp = &A2; allocA = allocB = false; return *this; }
 
 template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
 init( const FIBB<Field>& A1, const FIBB<Field>& A2, 
 	  const FIBB<Field>& A3 )
 { Ap = &A1; 
-  FIBBProduct* p = new FIBBProduct (A2, A3); 
-  p->alloc = true;
-  Bp = p;
+  allocA = false;
+  Bp = new FIBBProduct (A2, A3); 
+  allocB = true;
   return *this; 
 }
 
 template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
 init( const FIBB<Field>& A1, const FIBB<Field>& A2, 
 	  const FIBB<Field>& A3, const FIBB<Field>& A4 )
-{ FIBBProduct* ap = new FIBBProduct (A1, A2); 
-  ap->alloc = true;
-  Ap = ap; 
-  FIBBProduct* bp = new FIBBProduct (A3, A4); 
-  bp->alloc = true;
-  Bp = bp;
+{ 
+  Ap = new FIBBProduct (A1, A2); 
+  allocA = true;
+  Bp = new FIBBProduct (A3, A4); 
+  allocB = true;
   return *this; 
 }
 template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
@@ -487,9 +487,9 @@ init( const FIBB<Field>& A1, const FIBB<Field>& A2,
 	  const FIBB<Field>& A3, const FIBB<Field>& A4, 
   	  const FIBB<Field>& A5 )
 { Ap = &A1;
-  FIBBProduct* p = new FIBBProduct (A1, A2, A3, A4); 
-  p->alloc = true;
-  Bp = p; 
+  allocA = false;
+  Bp = new FIBBProduct (A1, A2, A3, A4); 
+  allocB = true;
   return *this; 
 }
 

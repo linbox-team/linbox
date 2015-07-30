@@ -125,6 +125,8 @@ namespace LinBox
 
 		Diagonal(const Field &F, const size_t n, typename Field::RandIter& iter);
 
+		~Diagonal(){}
+
 		template <class OutVector, class InVector>
 		OutVector &apply (OutVector &y, const InVector &x) const;
 

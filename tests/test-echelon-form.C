@@ -51,6 +51,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/echelon-form.h"
+#include "givaro/givranditer.h"
 
 using namespace LinBox;
 
@@ -79,15 +80,14 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 {
 
 	typedef typename Field::Element Element;
-	typedef typename Field::RandIter RandIter;
 
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator().start (pretty("Testing rank"),"testRank",(unsigned int)iterations);
 
-	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
+	typename Field::RandIter G(F);
+	typename Field::NonzeroRandIter Gn(F,G);
 	Element tmp;
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);

@@ -151,7 +151,7 @@ namespace LinBox
 	public:
 		typedef _Field                                  Field;
 		typedef typename Field::Element               Element;    //!< Element type
-		typedef _Storage                                  Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		typedef _Storage                                  Rep;    //!< Actually a <code>std::vector<Element></code> (or alike: cstor(n), cstor(n, val), operator[], resize(n).)
 		typedef typename Rep::pointer                 pointer;    //!< pointer type to elements
 		typedef const pointer                   const_pointer;    //!< const pointer type
 		typedef BlasMatrix<Field,Rep>                  Self_t;    //!< Self typeype
@@ -790,7 +790,7 @@ namespace LinBox
 	public :
 		typedef typename _Matrix::Field           Field;
 		typedef typename Field::Element         Element;    //!< Element type
-		typedef typename _Matrix::Rep               Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		typedef typename _Matrix::Rep               Rep;    
 		typedef BlasSubmatrix<_Matrix>              Self_t;         //!< Self type
 		typedef const BlasSubmatrix<typename _Matrix::constSelf_t>   constSelf_t;    //!< Self type (const)
 
