@@ -35,7 +35,7 @@
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/ring/ntl.h"
 #endif
-#include "linbox/ring/modular.h"
+//#include "linbox/ring/modular.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-rank.h"
 #include "linbox/algorithms/last-invariant-factor.h"
@@ -90,7 +90,7 @@ bool testRandom(const Ring& R,
 		VD.write (report, d);
                 report << endl;
 
-		BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
+		DenseMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
 		int i, j;
 
@@ -111,7 +111,7 @@ bool testRandom(const Ring& R,
 
 		BlasVector<Ring> tmp1(R,(size_t)n), tmp2(R,(size_t)n), e(R,(size_t)n);
 
-		typename BlasMatrix<Ring>::ColIterator col_p;
+		typename DenseMatrix<Ring>::ColIterator col_p;
 
 		i = 0;
 		for (col_p = A.colBegin();

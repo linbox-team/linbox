@@ -255,7 +255,7 @@ int main(int ac, char ** av) {
 			report << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
 
 			if (!MD.areEqual(D,C)) {
-				report << "error" << std::endl;
+				report << "low mem error" << std::endl;
 				return 1;
 			}
 		}
@@ -269,7 +269,7 @@ int main(int ac, char ** av) {
 			report << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
 
 			if (!MD.areEqual(D,C)) {
-				report << "error" << std::endl;
+				report << "high mem error" << std::endl;
 				return 1;
 			}
 		}
@@ -283,7 +283,7 @@ int main(int ac, char ** av) {
 			report << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
 
 			if (!MD.areEqual(D,C)) {
-				report << "error" << std::endl;
+				report << "Matrix Domain error" << std::endl;
 				return 1;
 			}
 		}
@@ -316,7 +316,7 @@ int main(int ac, char ** av) {
 			report << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
 
 			if (!MD.areEqual(D,C)) {
-				report << "error" << std::endl;
+				report << "FLINT error" << std::endl;
 				return 1;
 			}
 		}
@@ -331,7 +331,7 @@ int main(int ac, char ** av) {
 			report << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
 
 			if (!MD.areEqual(D,C)) {
-				report << "error" << std::endl;
+				report << "Matrix Domain error" << std::endl;
 				return 1;
 			}
 		}
@@ -347,7 +347,7 @@ int main(int ac, char ** av) {
 			if (!MD.areEqual(D,C)) {
 				// report << D << std::endl;
 				// report << C << std::endl;
-				report << "error" << std::endl;
+				report << "CRA error" << std::endl;
 				return 1;
 			}
 		}
@@ -396,7 +396,7 @@ int main(int ac, char ** av) {
 			if (!MD.areEqual(y,z)) {
 				// report << D << std::endl;
 				// report << C << std::endl;
-				report << "error" << std::endl;
+				report << "CRA error" << std::endl;
 				return 1;
 			}
 		}

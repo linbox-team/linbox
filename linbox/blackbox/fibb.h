@@ -21,9 +21,9 @@ template <class Ring>
 struct BB 
 {
 	typedef Ring Field;
-	typedef BlasMatrix<Field> ResizableMatrix;
-	//typedef BlasMatrix<Field, std::vector<typename Ring::Element> > ResizableMatrix;
-	typedef BlasSubmatrix<ResizableMatrix> Matrix;
+	typedef DenseMatrix<Field> ResizableMatrix;
+	//typedef DenseMatrix<Field, std::vector<typename Ring::Element> > ResizableMatrix;
+	typedef DenseMatrix<Field> Matrix;
 
 	virtual ~BB(){}
 
@@ -93,9 +93,10 @@ namespace LinBox{
 template <class Ring>
 struct FIBB : public BB<Ring> 
 {
-	typedef Ring Field;
-	typedef BlasMatrix<Field>  ResizableMatrix;
-	typedef BlasSubmatrix<ResizableMatrix> Matrix;
+	using Field = Ring;
+	using Element = typename Ring::Element;
+	using ResizableMatrix = DenseMatrix<Field>;
+	using Matrix = DenseMatrix<Field>;
 
 //	virtual const Field& field() const = 0;
 
@@ -104,7 +105,7 @@ struct FIBB : public BB<Ring>
 	virtual size_t& rank(size_t& r) const
 	= 0;
 
-	virtual typename Field::Element& det(typename Field::Element& d) const
+	virtual Element& det( Element& d) const
 	= 0;
 
 	// solveRight and solveLeft
@@ -148,10 +149,10 @@ struct FIBB : public BB<Ring>
 
 /// N: AN = 0, each col random.
 template<class Field>
-BlasSubmatrix<BlasMatrix<Field> >& genericNullspaceRandomRight(BlasSubmatrix<BlasMatrix<Field> >& N, const FIBB<Field>& A)
-//BlasSubmatrix<BlasMatrix<Field, std::vector<typename Field::Element> > >& genericNullspaceRandomRight(BlasSubmatrix<BlasMatrix<Field, std::vector<typename Field::Element> > >& N, const FIBB<Field>& A)
-{	typedef BlasMatrix<Field> ResizableMatrix;
-	typedef BlasSubmatrix<ResizableMatrix> Matrix;
+DenseMatrix<Field>& genericNullspaceRandomRight(DenseMatrix<Field>& N, const FIBB<Field>& A)
+//DenseMatrix<Field, std::vector<typename Field::Element> >& genericNullspaceRandomRight(DenseMatrix<Field, std::vector<typename Field::Element> >& N, const FIBB<Field>& A)
+{	typedef DenseMatrix<Field> ResizableMatrix;
+	typedef DenseMatrix<Field> Matrix;
 	ResizableMatrix Xb(A.field(), N.rowdim(), N.coldim());
 	ResizableMatrix Yb(A.field(), A.rowdim(), N.coldim());
 	Matrix X(Xb); X.random();
@@ -164,10 +165,10 @@ BlasSubmatrix<BlasMatrix<Field> >& genericNullspaceRandomRight(BlasSubmatrix<Bla
 
 /// N: NA = 0, each row random.
 template<class Field>
-BlasSubmatrix<BlasMatrix<Field> >& genericNullspaceRandomLeft(BlasSubmatrix<BlasMatrix<Field> >& N, const FIBB<Field>& A)
-//BlasSubmatrix<BlasMatrix<Field, std::vector<typename Field::Element> > >& genericNullspaceRandomLeft(BlasSubmatrix<BlasMatrix<Field, std::vector<typename Field::Element> > >& N, const FIBB<Field>& A)
-{	typedef BlasMatrix<Field> ResizableMatrix;
-	typedef BlasSubmatrix<ResizableMatrix> Matrix;
+DenseMatrix<Field>& genericNullspaceRandomLeft(DenseMatrix<Field>& N, const FIBB<Field>& A)
+//DenseMatrix<Field, std::vector<typename Field::Element> >& genericNullspaceRandomLeft(DenseMatrix<Field, std::vector<typename Field::Element> >& N, const FIBB<Field>& A)
+{	typedef DenseMatrix<Field> ResizableMatrix;
+	typedef DenseMatrix<Field> Matrix;
 	ResizableMatrix Xb(A.field(), N.rowdim(), N.coldim());
 	ResizableMatrix Yb(A.field(), N.rowdim(), A.coldim());
 	Matrix X(Xb); X.random();
@@ -197,9 +198,9 @@ struct FIBBProduct : public FIBB<Field_> { // Fast Inverse BlackBox
 	bool allocA; // true only if new used within init
 	bool allocB; // true only if new used within init
   public:
-	typedef typename Field::Element Element;
-	typedef BlasMatrix<Field> ResizableMatrix;
-	typedef BlasSubmatrix<ResizableMatrix> Matrix;
+    using Element = typename Father_t::Element;
+    using ResizableMatrix = typename Father_t::ResizableMatrix;
+    using Matrix = typename Father_t::Matrix;
 
 	/* Blackbox functions */
 	BBType bbTag() const { return product; }
@@ -232,9 +233,9 @@ struct FIBBProduct : public FIBB<Field_> { // Fast Inverse BlackBox
 		B is resized and filled so that:
 		(1) AB = 0, (2) Ax = 0 => exists y: x = By, and (3) B has full rank.
 	*/
-	BlasMatrix<Field>& nullspaceBasisRight(BlasMatrix<Field>& B) const; 
+	DenseMatrix<Field>& nullspaceBasisRight(DenseMatrix<Field>& B) const; 
 	/// BA= 0 and xA = 0 => exists y: x = yB and B full rank.
-	BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& B) const; 
+	DenseMatrix<Field>& nullspaceBasisLeft(DenseMatrix<Field>& B) const; 
 
 	/* cstors, dstor, initializers */
 	FIBBProduct();
@@ -267,9 +268,6 @@ struct FIBBProduct : public FIBB<Field_> { // Fast Inverse BlackBox
 #define LB_FIBBProduct_INL
 namespace LinBox {
 
-#define Matrix typename FIBBProduct<Field>::Matrix
-
-
 // Blackbox interface
 template<class Field> size_t FIBBProduct<Field>:: 
 rowdim() const { return Ap->rowdim(); }
@@ -280,19 +278,17 @@ coldim() const { return Bp->coldim(); }
 template<class Field> const Field& FIBBProduct<Field>:: 
 field() const { return Ap->field(); }
 
-template<class Field> Matrix & FIBBProduct<Field>:: 
-applyRight(Matrix & Y, const Matrix & X) const
-{	BlasMatrix<Field> X1b(field(), Bp->rowdim(), X.coldim());
-	Matrix X1(X1b);
+template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
+applyRight(typename FIBBProduct<Field>::Matrix& Y, const typename FIBBProduct<Field>::Matrix& X) const
+{	Matrix X1(field(), Bp->rowdim(), X.coldim());
 	Bp->applyRight(X1, X);
 	Ap->applyRight(Y, X1);
 	return Y;
 }
 
-template<class Field> Matrix & FIBBProduct<Field>:: 
-applyLeft(Matrix & Y, const Matrix & X) const
-{	BlasMatrix<Field> X1b(field(), X.rowdim(), Ap->coldim());
-	Matrix X1(X1b);
+template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
+applyLeft(typename FIBBProduct<Field>::Matrix& Y, const typename FIBBProduct<Field>::Matrix& X) const
+{	Matrix X1(field(), X.rowdim(), Ap->coldim());
 	Ap->applyLeft(X1, X);
 	Bp->applyLeft(Y, X1);
   	return Y;
@@ -318,50 +314,48 @@ template<class Field> size_t& FIBBProduct<Field>::
 rank( size_t& r ) const
 {	size_t s, t; return r = std::min(Ap->rank(s), Bp->rank(t)); }
 
-template<class Field> typename Field::Element& FIBBProduct<Field>:: 
-det( typename Field::Element& d ) const
+template<class Field> typename FIBBProduct<Field>::Element& FIBBProduct<Field>:: 
+det( typename FIBBProduct<Field>::Element& d ) const
 {	Ap->det(d); 
 	typename Field::Element e; Ap->field().init(e);
 	Bp->det(e);
 	return Ap->field().mulin(d, e);
 }
 
-template<class Field> Matrix& FIBBProduct<Field>:: 
-solveRight( Matrix& Y, const Matrix& X ) const
-{	BlasMatrix<Field> Zbase(field(), Ap->coldim(), X.coldim());
-	Matrix Z(Zbase);
+template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
+solveRight( typename FIBBProduct<Field>::Matrix& Y, const typename FIBBProduct<Field>::Matrix& X ) const
+{	Matrix Z(field(), Ap->coldim(), X.coldim());
 	Ap->solveRight(Z,X); // A1*Z = X
 	return Bp->solveRight(Y,Z); // A2*Y = Z
 }
 
-template<class Field> Matrix& FIBBProduct<Field>:: 
-solveLeft( Matrix& Y, const Matrix& X ) const
-{	BlasMatrix<Field> Zbase(field(), X.rowdim(), Ap->coldim()); 
-	Matrix Z(Zbase);
+template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
+solveLeft( typename FIBBProduct<Field>::Matrix& Y, const typename FIBBProduct<Field>::Matrix& X ) const
+{	Matrix Z(field(), X.rowdim(), Ap->coldim()); 
 	Bp->solveLeft(Z,X); // Z*A2 = X
 	return Ap->solveLeft(Y,Z); // Y*A1 = Z
 }
 
-template<class Field> Matrix& FIBBProduct<Field>:: 
-nullspaceRandomRight( Matrix& N ) const // N: ABN = 0
+template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
+nullspaceRandomRight( typename FIBBProduct<Field>::Matrix& N ) const // N: ABN = 0
 {	size_t r;
 	if (Ap->rowdim() == Ap->coldim() and Ap->rank(r) == Ap->coldim())
 		return Bp->nullspaceRandomRight(N);
 	else
-	{	BlasMatrix<Field> N1base(N); Matrix N1(N1base);
+	{	Matrix N1(N);
 		Ap->nullspaceRandomRight(N1);
 		return Bp->solveRight(N,N1);
 		// a solveRightin would be good if B is a perm.
 	}
 }
 
-template<class Field> Matrix& FIBBProduct<Field>:: 
-nullspaceRandomLeft( Matrix& N ) const
+template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
+nullspaceRandomLeft( typename FIBBProduct<Field>::Matrix& N ) const
 {	size_t r;
 	if (Bp->rowdim() == Bp->coldim() and Bp->rank(r) == Bp->coldim())
 		return Ap->nullspaceRandomLeft(N);
 	else
-	{	BlasMatrix<Field> N1base(N); Matrix N1(N1base);
+	{	Matrix N1(N);
 		Bp->nullspaceRandomLeft(N1);
 		return Ap->solveLeft(N,N1);
 		// a solveLeftin would be good if A is a perm.
@@ -369,20 +363,20 @@ nullspaceRandomLeft( Matrix& N ) const
 }
 
 /*
-template<class Field> Matrix& FIBBProduct<Field>:: 
-genericNullspaceRandomRight( Matrix& N ) const
-{	BlasMatrix<Field> Xbase(field(), rowdim(), N.coldim()); Matrix X(Xbase);
-	BlasMatrix<Field> Rbase(field(), coldim(), N.coldim() ); Matrix R(Rbase);
+template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
+genericNullspaceRandomRight( typename FIBBProduct<Field>::Matrix& N ) const
+{	Matrix X(field(), rowdim(), N.coldim());
+	Matrix R(field(), coldim(), N.coldim());
 	R.random();
 	applyRight(X, R); // X: X = AR
 	solveRight(N, X); // N: AN = X = AR
-	return BlasMatrixDomain<Field>(field()).subin(N, R);
+	return DenseMatrixDomain<Field>(field()).subin(N, R);
 }
 
 template<class Field> Matrix& FIBBProduct<Field>:: 
 genericNullspaceRandomLeft( Matrix& N ) const
-{	BlasMatrix<Field> Xbase(field(), N.rowdim(), rowdim()); Matrix X(Xbase);
-	BlasMatrix<Field> Rbase(field(), N.rowdim(), coldim()); Matrix R(Rbase);
+{	Matrix X(field(), N.rowdim(), rowdim());
+	Matrix R(field(), N.rowdim(), coldim());
 	R.random();
 	applyLeft(X, R); // X: X = RA
 	solveLeft(N, X); // N: NA = RA
@@ -390,32 +384,30 @@ genericNullspaceRandomLeft( Matrix& N ) const
 }
 */
 
-template<class Field> BlasMatrix<Field>& FIBBProduct<Field>:: 
-nullspaceBasisRight( BlasMatrix<Field>& N ) const
+template<class Field> DenseMatrix<Field>& FIBBProduct<Field>:: 
+nullspaceBasisRight( DenseMatrix<Field>& N ) const
 {	size_t r;
 	if (Ap->rowdim() == Ap->coldim() and Ap->rank(r) == Ap->rowdim())
 	 	Bp->nullspaceBasisRight(N);
 	else 
-	{	BlasMatrix<Field> N1(field());
+	{	Matrix N1(field());
 		Ap->nullspaceBasisRight(N1);
 		N.resize(N1.rowdim(), N1.coldim());
-		Matrix N1s(N1), Ns(N);
-		Bp->solveRight(Ns, N1s);
+		Bp->solveRight(N, N1);
 	}
 	return N;
 }
 
-template<class Field> BlasMatrix<Field>& FIBBProduct<Field>:: 
-nullspaceBasisLeft( BlasMatrix<Field>& N ) const
+template<class Field> DenseMatrix<Field>& FIBBProduct<Field>:: 
+nullspaceBasisLeft( DenseMatrix<Field>& N ) const
 {	size_t r;
 	if (Bp->rowdim() == Bp->coldim() and Bp->rank(r) == Bp->rowdim())
 	 	Ap->nullspaceBasisLeft(N);
 	else 
-	{	BlasMatrix<Field> N1(field());
+	{	Matrix N1(field());
 		Bp->nullspaceBasisLeft(N1);
 		N.resize(N1.rowdim(), N1.coldim());
-		Matrix N1s(N1), Ns(N);
-		Ap->solveLeft(Ns, N1s);
+		Ap->solveLeft(N, N1);
 	}
 	return N;
 }

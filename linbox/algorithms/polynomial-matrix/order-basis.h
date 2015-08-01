@@ -434,7 +434,7 @@ namespace LinBox {
 
                         //  leaf size of the recursive PM_Basis algorithm (must be a power of 2)
                         size_t log_ord = MBASIS_THRESHOLD_LOG;
-                        size_t ord     = std::min(1UL<<log_ord ,order);
+                        size_t ord     = std::min(size_t(1)<<log_ord ,order);
 
                         // prepare the storage for each serie update
                         std::vector<PMatrix2*> L_serie(log_order+1);

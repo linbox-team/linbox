@@ -56,7 +56,7 @@ namespace LinBox
 		typedef LightContainer<long>	Storage;
 		typedef _Field			Field;
 		typedef typename Field::Element	Element;
-		typedef BlasSubmatrix<BlasMatrix<Field> > Matrix;
+		typedef DenseMatrix<Field> Matrix;
 
 		/** Constructor from a vector of indices.
 		 * This constructor creates a permutation matrix based on a vector of indices
@@ -170,22 +170,38 @@ namespace LinBox
 #if 1
 		Matrix& applyRight(Matrix& Y, const Matrix& X) const
 		{
+			Element x; field().init(x);
+			for (size_t i = 0; i < Y.rowdim(); ++i){
+				size_t k = _indices[i];
+				for (size_t j = 0; j < Y.coldim(); ++j)
+					Y.setEntry(i,j, X.getEntry(x, k, j));
+			}
+		/* desired form
 			for (size_t i = 0; i < rowdim(); ++i)
 			{
 				Matrix Yrow(Y, i, 0, 1, Y.coldim());
 				Matrix Xrow(X, _indices[i], 0, 1, X.coldim());
 				Yrow.copy(Xrow); // right kind of copy?
 			}
+		*/
 			return Y; 
 		}
 		Matrix& applyLeft(Matrix& Y, const Matrix& X) const
 		{
+			Element x; field().init(x);
+			for (size_t i = 0; i < Y.coldim(); ++i){
+				size_t k = _indices[i];
+				for (size_t j = 0; j < Y.rowdim(); ++j)
+					Y.setEntry(j,k, X.getEntry(x, j, i));
+			}
+		/* desired form
 			for (size_t i = 0; i < coldim(); ++i)
 			{
 				Matrix Ycol(Y, 0, _indices[i], Y.rowdim(), 1);
 				Matrix Xcol(X, 0, i, X.rowdim(), 1);
 				Ycol.copy(Xcol); 
 			}
+		*/
 			return Y; 
 		}
 		/* FIBB functions */
@@ -204,24 +220,40 @@ namespace LinBox
 				;  
 				b &= k;
 			}
-			return d = b&1 ? field().one : field().mOne; 
+			return d = b&1 ? field().mOne : field().one; 
 		}
 		Matrix& solveRight(Matrix& Y, const Matrix& X) const
-		{	for (size_t i = 0; i < rowdim(); ++i)
+		{	Element x; field().init(x);
+			for (size_t i = 0; i < Y.rowdim(); ++i){
+				size_t k = _indices[i];
+				for (size_t j = 0; j < Y.coldim(); ++j)
+					Y.setEntry(k,j, X.getEntry(x, i, j));
+			}
+		/* desired form
+		 	for (size_t i = 0; i < rowdim(); ++i)
 			{
 				Matrix Yrow(Y, _indices[i], 0, 1, Y.coldim());
 				Matrix Xrow(X, i, 0, 1, X.coldim());
 				Yrow.copy(Xrow); 
 			}
+		*/
 			return Y; 
 		}
 		Matrix& solveLeft(Matrix& Y, const Matrix& X) const
-		{	for (size_t i = 0; i < coldim(); ++i)
+		{	Element x; field().init(x);
+			for (size_t i = 0; i < Y.coldim(); ++i){
+				size_t k = _indices[i];
+				for (size_t j = 0; j < Y.rowdim(); ++j)
+					Y.setEntry(j,i, X.getEntry(x, j, k));
+			}
+		/* desired form
+			for (size_t i = 0; i < coldim(); ++i)
 			{
 				Matrix Ycol(Y, 0, i, Y.rowdim(), 1);
 				Matrix Xcol(X, 0, _indices[i], X.rowdim(), 1);
 				Ycol.copy(Xcol); 
 			}
+		*/
 			return Y; 
 		}
 		Matrix& nullspaceRandomRight(Matrix& N) const 

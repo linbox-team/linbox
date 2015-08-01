@@ -47,7 +47,7 @@ using namespace LinBox;
  */
 
 template <class Ring, class Method>
-bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, Method &M, double sparsity = 0.05)
+bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, Method &M, std::string methodName, double sparsity = 0.05)
 {
 	typedef SparseMatrix<Ring> Blackbox;
 
@@ -71,8 +71,8 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, Method &M, d
 		Z.write( report ) << std::endl;
 		A.write( report ) << std::endl;
 		bool p;
-		p = isPositiveDefinite(A);
-		report << "Positivedefiniteness on I computed by default (Hybrid) method: " << p << std::endl;
+		p = isPositiveDefinite(A,M);
+		report << "Positivedefiniteness on I computed by " << methodName << ", " << p << std::endl;
 		if (!p) {report << "ERROR: should be pos def" << std::endl; ret = false;}
 
 		Z.negin(e);
@@ -82,7 +82,7 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, Method &M, d
 		p = isPositiveDefinite(A,M);
 		report << "Matrix:\n";
 		A.write( report ) << std::endl;
-		report << "Positivedefiniteness on indefinite example computed by default (Hybrid) method: " << p << std::endl;
+		report << "Positivedefiniteness on indefinite example computed by " << methodName << ", " << p << std::endl;
 		if (p) {report << "ERROR: should not be pos def" << std::endl; ret = false;}
 
 		commentator().stop ("done");
@@ -125,10 +125,12 @@ int main (int argc, char **argv)
 
 	PID_integer R;
 
+	Method::Hybrid MH;
+	pass = pass and testIsPosDef(R, n, iterations, MH, "Method::Hybrid", sparsity);
 	Method::Elimination ME;
-	pass = pass and testIsPosDef(R, n, iterations, ME, sparsity);
+	pass = pass and testIsPosDef(R, n, iterations, MH, "Method::Elimination", sparsity);
 	Method::Blackbox MB;
-	pass = pass and testIsPosDef(R, n, iterations, MB, sparsity);
+	pass = pass and testIsPosDef(R, n, iterations, MB, "Method::Blackbox", sparsity);
 
 	commentator().stop("IsPositiveDefinite solution test suite");
 	return pass ? 0 : -1;
