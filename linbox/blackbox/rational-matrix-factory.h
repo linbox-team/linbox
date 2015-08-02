@@ -119,7 +119,6 @@ namespace LinBox
 		Integer& denominator(Integer& da) const {
 			if (_denA ==1 ) {
 				ConstIterator i;
-				//_denA = 1L;
 				for (i = _matA->Begin (); i != _matA->End (); ++i) {
 					Integer d;
 					_ratField.get_den(d,*i);
@@ -146,7 +145,7 @@ namespace LinBox
 		//returns max of abs(numerators) and denominators of _matA
 		Integer& rationalNorm(Integer& res) const {
 			ConstIterator i;
-			res = 0L;
+			res = int64_t(0);
 			Integer tmp;
 			for (i = _matA->Begin (); i != _matA->End (); ++i) {
 				Integer n ;
@@ -174,7 +173,7 @@ namespace LinBox
 
 		//returns norm of tilde{A} = diag(_denAi[(size_t)i])_matA
 		Integer& normAtilde(Integer& res) const {
-			res = 0L;
+			res = int64_t(0);
 			double dres = 0;
 			//int i=0;
 			Integer tmp;
@@ -201,9 +200,9 @@ namespace LinBox
 		 * optimization: computes normAprim, normAprim, rationalNormat the same time
 		 */
 		Integer getNorms(Integer& ratnorm, Integer& normaprim, Integer& normatilde) const {
-			ratnorm = 0L; normaprim=0L; normatilde= 0L;
-			Integer da=1L;
-			std::vector<integer> di(_matA->rowdim(),1L);
+			ratnorm = int64_t(0); normaprim=int64_t(0); normatilde= int64_t(0);
+			Integer da=int64_t(1);
+			std::vector<integer> di(_matA->rowdim(),int64_t(1));
 
 			for (size_t i=0; i < _matA->rowdim(); ++i)  {
 				if (_denAi[(size_t)i]==1) {

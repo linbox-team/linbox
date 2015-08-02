@@ -40,6 +40,10 @@
 
 #include <givaro/modular-balanced.h>
 
+#include "linbox/util/commentator.h"
+#include "linbox/util/debug.h"
+
+
 #include "test-common.h"
 #include "test-generic.h"
 
@@ -69,30 +73,41 @@ int main (int argc, char **argv)
 	commentator().start("Givaro::ModularBalanced<float> field test suite", "Givaro::ModularBalanced<float>");
 	bool pass = true;
 
-	Givaro::ModularBalanced<float> F_int (4093);//(2147483629);//(65521);
-	Givaro::ModularBalanced<float> G_int (2011);
-	Givaro::ModularBalanced<float> H_int (3);
-	integer k = FieldTraits<Givaro::ModularBalanced<float> >::maxModulus() ;
-	prevprime(k,k);
-	Givaro::ModularBalanced<float> I_int(k);
+	integer k; 
+	nextprime(k,k = Givaro::ModularBalanced<float>::minCardinality()-1);
+	Givaro::ModularBalanced<float> Fmin (k);
+	Givaro::ModularBalanced<float> F5 (5);
+	Givaro::ModularBalanced<float> F7 (7);
+
+	prevprime(k,k = Givaro::ModularBalanced<float>::maxCardinality()+1);
+	Givaro::ModularBalanced<float> Fmax(k);
+	prevprime(k,k /= 2);
+	Givaro::ModularBalanced<float> Fmid(k);
 
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F_int,  "Givaro::ModularBalanced<float>",  iterations, n, false)) pass = false;
-	// if (!testRandomIterator (F_int,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
+	commentator().report() << "Fmin modulus is " << Fmin.cardinality() << std::endl;
+	if (!runFieldTests (Fmin,  "Givaro::ModularBalanced<float> Fmin",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (Fmin,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
 
-	if (!runFieldTests (G_int,  "Givaro::ModularBalanced<float>",  iterations, n, false)) pass = false;
-	// if (!testRandomIterator (G_int,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
+	commentator().report() << "F5 modulus is " << F5.cardinality() << std::endl;
+	if (!runFieldTests (F5,  "Givaro::ModularBalanced<float> F5",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (F5,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
 
-	if (!runFieldTests (H_int,  "Givaro::ModularBalanced<float>",  iterations, n, false)) pass = false;
-	// if (!testRandomIterator (H_int,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
+	commentator().report() << "F7 modulus is " << F7.cardinality() << std::endl;
+	if (!runFieldTests (F7,  "Givaro::ModularBalanced<float> F7",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (F7,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
 
-	if (!runFieldTests (I_int,  "Givaro::ModularBalanced<float>",  iterations, n, false)) pass = false;
-	// if (!testRandomIterator (I_int,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
+	commentator().report() << "Fmax modulus is " << Fmax.cardinality() << std::endl;
+	commentator().report() << "maxCardinality is " << Givaro::ModularBalanced<float>::maxCardinality() << std::endl;
+	if (!runFieldTests (Fmax,  "Givaro::ModularBalanced<float> Fmax",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (Fmax,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
 
-
+	commentator().report() << "Fmid modulus is " << Fmid.cardinality() << std::endl;
+	if (!runFieldTests (Fmid,  "Givaro::ModularBalanced<float> Fmid",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (Fmid,  "Givaro::ModularBalanced<float>", trials, categories, hist_level)) pass = false;
 
 
 	commentator().stop("Givaro::ModularBalanced<float> field test suite");

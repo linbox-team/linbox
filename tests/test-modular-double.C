@@ -44,20 +44,9 @@
  * @test  tests only runFieldTests for modular-double.
  */
 
-
 #include "linbox/linbox-config.h"
-
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
-#include <queue>
-
 #include "linbox/ring/modular.h"
-
-#include "test-common.h"
-#include "test-generic.h"
-
+#include "test-field.h"
 using namespace LinBox;
 
 int main (int argc, char **argv)
@@ -76,17 +65,15 @@ int main (int argc, char **argv)
 	commentator().start("Givaro::Modular<double> field test suite", "Givaro::Modular<double>");
 	bool pass = true;
 
-	//Givaro::Modular<double> F2 (2);
-	Givaro::Modular<double> F3 (3);
+	Givaro::Modular<double> F2 (2);
 	Givaro::Modular<double> F5 (5);
 	Givaro::Modular<double> F7 (7);
-	Givaro::Modular<double> F11 (11);
-	Givaro::Modular<double> F (32749);
-	Givaro::Modular<double> G (65521);
-	//Givaro::Modular<double> H (1099511627689);
-	integer k = FieldTraits<Givaro::Modular<double> >::maxModulus() ;
-	prevprime(k,k);
-	Givaro::Modular<double> I_int(k);
+	integer k = Givaro::Modular<double>::maxCardinality()+1;
+	Givaro::prevprime(k, k);
+	Givaro::Modular<double> Fmax(k);
+	k /= 2;
+	Givaro::prevprime(k, k);
+	Givaro::Modular<double> Fmid(k);
 
 
 	// Make sure some more detailed messages get printed
@@ -94,21 +81,15 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 	std::ostream& report = commentator().report();
 	report << "Field F2" << std::endl;
-	//if (!runFieldTests (F2,  "Givaro::Modular<double>",  iterations, n, false)) pass = false;
-	report << "Field F3" << std::endl;
-	if (!runFieldTests (F3,  "Givaro::Modular<double>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F2,  "Givaro::Modular<double>",  iterations, n, false)) pass = false;
 	report << "Field F5" << std::endl;
 	if (!runFieldTests (F5,  "Givaro::Modular<double>",  iterations, n, false)) pass = false;
 	report << "Field F7" << std::endl;
 	if (!runFieldTests (F7,  "Givaro::Modular<double>",  iterations, n, false)) pass = false;
-	report << "Field F11" << std::endl;
-	if (!runFieldTests (F11,  "Givaro::Modular<double>",  iterations, n, false)) pass = false;
-	report << "Field F" << std::endl;
-	if (!runFieldTests (F,  "Givaro::Modular<double>",  iterations, n, false)) pass = false;
-	report << "Field G" << std::endl;
-	if (!runFieldTests (G,  "Givaro::Modular<double>",  iterations, n, false)) pass = false;
-
-	if (!runFieldTests (I_int,  "Givaro::Modular<double>",  iterations, n, false)) pass = false;
+	report << "Field Fmax" << std::endl;
+	if (!runFieldTests (Fmax,  "Givaro::Modular<double>",  iterations, n, false)) pass = false;
+	report << "Field Fmid" << std::endl;
+	if (!runFieldTests (Fmid,  "Givaro::Modular<double>",  iterations, n, false)) pass = false;
 
 	commentator().stop("Givaro::Modular<double> field test suite");
 	return pass ? 0 : -1;

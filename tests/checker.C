@@ -39,16 +39,18 @@ void skip(const string& t, const string& w) { skip_note[t] = w; skips.insert(t);
 
 int main(int argc, char* argv[]) {
 	int arg;
-	bool force_build = false, reporting = true;
+	bool force_build = false, reporting = true, honor_skips = true;
 	for (arg = 1; arg < argc; ++arg)
 		for (char * i = argv[arg]; *i != 0; ++i){
 			if (*i == 'r') force_build = true;
 			if (*i == 's') reporting = false;
+			if (*i == 'a') honor_skips = false;
 		}
-    if (argc > 1 and not force_build and reporting){ // bogus arg
+    if (argc > 1 and not force_build and reporting and honor_skips){ // bogus arg
 		cout << "usage: " << argv[0] << " [-][r][s]" << endl;
-		cout << "  -r to force recompilation of each test."<< endl;
-		cout << "  -s for a summary only: 3 lines printed (default: also one line per test." << endl;
+		cout << "  -r Force recompilation of each test."<< endl;
+		cout << "  -s Summary only: 3 lines printed. (Default is one line per test.)" << endl;
+		cout << "  -a Build and run all. (Ignore skip commands.)" << endl;
 		return 0;
 	}
 
@@ -56,48 +58,53 @@ int main(int argc, char* argv[]) {
 
 //// notes section (customize fullcheck here) ////
 
+if (honor_skips) {
 skip("test-block-ring", "non commutative rings not supported");
 skip("test-cradomain", "inf loop.  most of the test does not compile");
-warn("test-echelon-form", "new");
-warn("test-fibb",  "incomplete");
 skip("test-ffpack", "testTURBO fails, move to ffpack tests?");
 skip("test-ftrmm", "should move to fflas tests?");
-warn("test-gf2", "not much is tested there");
-skip("test-gf3", "immature");
 skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
-warn("test-givaro-zpz", "tested in Givaro?");
-warn("test-givaro-zpzuns", "tested in Givaro?");
 skip("test-image-field", "deprecated");
 skip("test-isposdef", "intermittent inf loop");
 skip("test-ispossemidef", "intermittent inf loop");
-warn("test-matrix-domain", "intermittent row permutation failure");
 skip("test-mg-block-lanczos", "not maintained");
 skip("test-modular", "deprecated");
 skip("test-modular-byte",  "deprecated");
-warn("test-modular-int", "fails badly for uint32_t ");
 skip("test-modular-short",  "deprecated");
+skip("test-modular-balanced-int",  "test and modular-balanced disagree on init/convert");
+skip("test-modular-balanced-double",  "test and modular-balanced disagree on init/convert");
 skip("test-moore-penrose", "inf loop");
 skip("test-optimization", "not in test form");
-warn("test-param-fuzzy", "Noncompliant field");
-warn("test-qlup", "GF2 fails to compile");
+skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
 skip("test-rank-md", "intermittent inf loop"/*, "vector (bb) responsible"*/);
 skip("test-rank-u32", "intermittent inf loop"/*, "vector (bb) responsible"*/);
-warn("test-rat-charpoly", "stale test. solns over QQ need fresh tests");//, "infinite loop, cp responsible?")
-warn("test-rat-minpoly", "intermittent failures");
+skip("test-rational-reconstruction-base", "inf loop");
 skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
-warn("test-rat-solve", "infinite loop");
 skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infinite loop")
-//warn("test-smith-form-local", "bds, intermittent failures");
-warn("test-solve", "most of the tests are commented out");
 skip("test-solve-nonsingular", "BY responsible");
 skip("test-sparse", "superceded by test-sparse2");
-warn("test-toom-cook", "one method does not work");
-warn("test-transpose", "sometimes, fails on Sparsematrix/getEntry");
-
+skip("test-sparse-map-map", "const issue in givranditer, curious use of nonexistant next() in Extension");
 //Tests requiring further development
 skip("test-tutorial", "incomplete test");
-warn("test-quad-matrix", "half baked, bds responsible");
 skip("test-dense-zero-one", "half baked, bds responsible");
+}
+
+warn("test-echelon-form", "new");
+warn("test-fibb",  "incomplete");
+warn("test-gf2", "not much is tested there");
+warn("test-givaro-zpz", "tested in Givaro?");
+warn("test-givaro-zpzuns", "tested in Givaro?");
+warn("test-matrix-domain", "intermittent row permutation failure");
+warn("test-param-fuzzy", "Noncompliant field");
+warn("test-qlup", "GF2 fails to compile");
+warn("test-rat-charpoly", "stale test. solns over QQ need fresh tests");//, "infinite loop, cp responsible?")
+warn("test-rat-minpoly", "intermittent failures");
+warn("test-rat-solve", "infinite loop");
+//warn("test-smith-form-local", "bds, intermittent failures");
+warn("test-solve", "most of the tests are commented out");
+warn("test-toom-cook", "one method does not work");
+warn("test-transpose", "sometimes, fails on Sparsematrix/getEntry");
+warn("test-quad-matrix", "half baked, bds responsible");
 skip("test-la-block-lanczos", "not maintained. operator >> missing");
 
 

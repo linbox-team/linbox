@@ -103,7 +103,6 @@ FULLCHECK_TESTS =               \
 	test-ftrmm					\
 	test-getentry				\
 	test-gf2					\
-	test-gf3					\
 	test-givaropoly				\
 	test-gmp-rational			\
 	test-hilbert				\
@@ -253,7 +252,6 @@ test_frobenius_SOURCES =                test-frobenius.C
 test_ftrmm_SOURCES =                    test-ftrmm.C
 test_getentry_SOURCES =                 test-getentry.C
 test_gf2_SOURCES =                      test-gf2.C
-test_gf3_SOURCES =                      test-gf3.C
 test_givaropoly_SOURCES =               test-givaropoly.C
 test_gmp_rational_SOURCES =             test-gmp-rational.C
 test_hilbert_SOURCES =                  test-hilbert.C
