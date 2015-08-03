@@ -68,11 +68,12 @@ namespace LinBox
 		{
 			std::cout<<"ist used\n";
 			std::vector<integer> tmp(_size);
+			Givaro::IntPrimeDom IPD;
 			for (size_t i=0;i<_size; ++i){
 				do {
 					integer::random(tmp[i],_bits-1);
 					tmp[i]= _shift-tmp[i];
-					nextprime(tmp[i],tmp[i]);
+					IPD.nextprimein(tmp[i]);
 			}
 				while (std::find(tmp.begin(), tmp.begin()+(long)i, tmp[i]) != (tmp.begin()+(long)i ));
 			}
@@ -84,11 +85,12 @@ namespace LinBox
 		 */
 		inline Prime_Type randomPrime (Prime_Type& p) const
 		{
+			Givaro::IntPrimeDom IPD;
 			for (size_t i=0;i<p.size(); ++i){
 				do {
 					integer::random(p[i],_bits-1);
 					p[i]= _shift-p[i];
-					nextprime(p[i],p[i]);
+					IPD.nextprimein(p[i]);
 			}
 				while (std::find(p.begin(), p.begin()+(long)(i-1), p[i]) != (p.begin()+(long)(i-1) ));
 			}
@@ -109,9 +111,9 @@ namespace LinBox
 		{
 			Prime_Type tmp;
 			integer acc=1, cur=maxPrime;
-
+			Givaro::IntPrimeDom IPD;
 			do {
-				prevprime(cur, cur);
+				IPD.prevprimein(cur);
 				tmp.push_back(cur);
 				acc*=cur;
 			} while (acc < productBound);

@@ -79,10 +79,10 @@ namespace LinBox
 					integer::random(t,cbits);
 					t = t*p+1;
 					tresh--;
-				} while (!Givaro::probab_prime(t,25) && (tresh));
+				} while (!Givaro::Protected::probab_prime(t,25) && (tresh));
 			}
 			while(tresh==0);
-                        linbox_check(Givaro::probab_prime(t,25))
+                        linbox_check(Givaro::Protected::probab_prime(t,25))
 			return t;
 		}
 
@@ -110,7 +110,7 @@ namespace LinBox
 					integer::random(t,cbits);
 					t = t*p+1;
 					tresh--;
-				} while (!Givaro::probab_prime(t,25) && (tresh));
+				} while (!Givaro::Protected::probab_prime(t,25) && (tresh));
 				cbits++;
 			}
 			while(tresh==0);
@@ -127,7 +127,7 @@ namespace LinBox
                         for (int64_t b = _bits - 1; b >= 0; b--)
                                 for (int64_t l = ((int64_t)1 << (_bits - b - 1)) + 1; l < (1L << (_bits - b)); l +=2) {
                                         tmp = ((int64_t)1 << b) * l + 1;
-                                        if (Givaro::probab_prime(tmp, 25) >= 1) {
+                                        if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {
                                                 primes.push_back(tmp);
                                                 prod*=tmp;
                                                 if (prod > bound)
@@ -147,7 +147,7 @@ namespace LinBox
                         for (int64_t b = (int64_t)_bits - 1; b >= 0; b--)
                                 for (int64_t l = (1L << ((int64_t)_bits - b - 1)) + 1; l < (1L << ((int64_t)_bits - b)); l +=2) {
                                         tmp = (1L << b) * l + 1;
-                                        if (Givaro::probab_prime(tmp, 25) >= 1) {
+                                        if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {
                                                 primes.push_back(tmp);
                                                 prod*=tmp;
                                                 if (prod > bound){
@@ -178,7 +178,7 @@ namespace LinBox
                                 // for (uint64_t l = (1UL << ((int64_t)_bits - b - 1)) + 1; l < (1UL << ((int64_t)_bits - b)); l +=2) {
                                 for (int64_t l = ((int64_t)1 << ((int64_t)_bits - b)) - 1; l >=1; l -=2) {
                                         tmp = ((int64_t)1 << b) * l + 1;
-                                        if (Givaro::probab_prime(tmp, 25) >= 1) {
+                                        if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {
                                                 primes.push_back(tmp);
                                                 prod*=tmp;
                                                 //std::cout<<tmp<<" -> "<<tmp.bitsize()<<" (order="<<twoVal(tmp-1)<<") "<<prod<<std::endl;

@@ -242,9 +242,9 @@ namespace LinBox
 				else
 					result = 0;
 
-				importWords(tmp2, (size_t)rclen, -1, 1, 0, 0, combined1+i*rclen);
+				Givaro::Protected::importWords(tmp2, (size_t)rclen, -1, 1, 0, 0, combined1+i*rclen);
 				result += tmp2;
-				importWords(tmp2, (size_t)rclen, -1, 1, 0, 0, combined2+i*rclen);
+				Givaro::Protected::importWords(tmp2, (size_t)rclen, -1, 1, 0, 0, combined2+i*rclen);
 				result += tmp2;
 
 				_domain.init(y[i], result);
@@ -642,7 +642,7 @@ namespace LinBox
 
 							for (int j=0; j<rc; j++) {
 								unsigned char* thispos = combined + (size_t)rclen*((size_t)j*_n+i);
-								importWords(tmp, (size_t)rclen, -1, 1, 0, 0, thispos);
+								Givaro::Protected::importWords(tmp, (size_t)rclen, -1, 1, 0, 0, thispos);
 								result += tmp;
 							}
 							_domain.init(y[i], result);
@@ -740,7 +740,7 @@ namespace LinBox
 								*(reinterpret_cast<long long*>(BitDest) ) |= mask;
 								BitDest+=rc*chunk_byte;
 							}
-							importWords(val, (size_t)rclen, -1, 1, 0, 0, combined);
+							Givaro::Protected::importWords(val, (size_t)rclen, -1, 1, 0, 0, combined);
 							result+=val;
 						}
 						_domain.init(y[i], result);
@@ -997,7 +997,7 @@ namespace LinBox
 
 						for (int j=0; j<rc; j++) {
 							unsigned char* thispos = combined + (unsigned char) rclen*((size_t)j*_m*_k+i);
-							importWords(tmp, (size_t)rclen, -1, 1, 0, 0, thispos);
+							Givaro::Protected::importWords(tmp, (size_t)rclen, -1, 1, 0, 0, thispos);
 							result += tmp;
 #ifdef DEBUG_CHUNK_APPLYM
 							cout << "rc[" << j << "," << i << "]:" << tmp << endl;
