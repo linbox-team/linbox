@@ -42,6 +42,7 @@
 #ifndef __LINBOX_benchmarks_benchmark_H
 #define __LINBOX_benchmarks_benchmark_H
 
+#include "linbox/linbox-config.h"
 #include <stdlib.h>
 #include "linbox/integer.h"
 #include "linbox/util/debug.h"

@@ -84,11 +84,11 @@ namespace LinBox
 		std::vector<FieldPoly> fieldFactors (nf);
 		integer tmp_convert; // PG 2005-08-04
 		for (size_t i = 0; i < nf; ++i){
-			size_t d= intFactors[i]->size();
+			size_t d= intFactors[i].size();
 			fieldFactors[i].resize(d);
 			for (size_t j = 0; j < d; ++j)
 				//F.init ((fieldFactors[i])[j], (*intFactors[i])[j]);
-				F.init ((fieldFactors[i])[j], intRing.convert(tmp_convert,(*intFactors[i])[j]));// PG 2005-08-04
+				F.init ((fieldFactors[i])[j], intRing.convert(tmp_convert,(intFactors[i])[j]));// PG 2005-08-04
 		}
 
 		FieldPoly currPol = fieldCharPoly;
@@ -110,7 +110,7 @@ namespace LinBox
 		IntPoly intCharPoly (A.coldim());
 		intRing.assign (intCharPoly[0], intRing.one);
 		for (size_t i = 0; i < nf; ++i){
-			IPD.pow( P, *intFactors[i], multip[i] );
+			IPD.pow( P, intFactors[i], multip[i] );
 			IPD.mulin( intCharPoly, P );
 		}
 		//for (size_t i = 0; i < nf; ++i)
