@@ -435,7 +435,7 @@ namespace LinBox{
 		OpenCLMatrixDomain(const Field& F ) : _F(F), setupCorrect(false){
 
 #ifndef NDEBUG
-			if(!Givaro::probab_prime(_F.characteristic())){
+			if(!Givaro::Protected::probab_prime(_F.characteristic())){
 				std::cout << " *** WARNING *** " << std::endl;
 				std::cout << " You are using a OpenCL Matrix Domain"
 				          << " where your field is not prime "
@@ -455,7 +455,7 @@ namespace LinBox{
 			setupCorrect(false){
 
 #ifndef NDEBUG
-			if(!Givaro::probab_prime(_F.characteristic())){
+			if(!Givaro::Protected::probab_prime(_F.characteristic())){
 				std::cout << " *** WARNING *** " << std::endl;
 				std::cout << " You are using a OpenCL Matrix Domain"
 				          << " where your field is not prime "
