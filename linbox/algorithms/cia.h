@@ -27,7 +27,7 @@
 #ifndef __LINBOX_cia_H
 #define __LINBOX_cia_H
 
-#include <givaro/givpoly1.h>
+#include <givaro/givpoly1factor.h>
 #include "linbox/ring/modular.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/matrix/dense-matrix.h"
@@ -54,8 +54,8 @@ namespace LinBox
 		typename Blackbox::Field intRing = A.field();
 		typedef Givaro::Modular<double> Field;
 		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-		typedef Givaro::Poly1Dom<typename Blackbox::Field, Givaro::Dense> IntPolyDom;
-		typedef Givaro::Poly1Dom<Field, Givaro::Dense>                  FieldPolyDom;
+		typedef Givaro::Poly1FactorDom<typename Blackbox::Field, Givaro::Dense> IntPolyDom;
+		typedef Givaro::Poly1FactorDom<Field, Givaro::Dense>                  FieldPolyDom;
 		typedef typename IntPolyDom::Element IntPoly;
 		typedef typename FieldPolyDom::Element FieldPoly;
 

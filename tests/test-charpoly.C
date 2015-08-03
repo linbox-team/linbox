@@ -300,11 +300,11 @@ int main (int argc, char **argv)
 
 	ostream &report = LinBox::commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << endl << "Black box characteristic polynomial of a matrix over a prime field test suite" << endl;
-
-	RandomDenseStream<Field, DenseVector, NonzeroRandIter<Field> >
-		v_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, (size_t)numVectors);
-	RandomSparseStream<Field, SparseVector, NonzeroRandIter<Field> >
-		A_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), (double) k / (double) n, n, n);
+	Field::RandIter mygen(F);
+	RandomDenseStream<Field, DenseVector, Givaro::GeneralRingNonZeroRandIter<Field> >
+		v_stream (F, Givaro::GeneralRingNonZeroRandIter<Field> (mygen), n, (size_t)numVectors);
+	RandomSparseStream<Field, SparseVector, Givaro::GeneralRingNonZeroRandIter<Field> >
+		A_stream (F, Givaro::GeneralRingNonZeroRandIter<Field> (mygen), (double) k / (double) n, n, n);
 
 	if (!testNilpotentCharpoly (F, n)) pass = false;
 	if (!testRandomCharpoly    (F, A_stream, v_stream)) pass = false;
@@ -313,8 +313,8 @@ int main (int argc, char **argv)
 	if (!testIdentityCharpoly  (F, n, true)) pass = false;
 	//need other tests...
 
-	PID_integer Z ;
-	typedef BlasVector<PID_integer> ZDenseVector;
+	Givaro::ZRing<integer>  Z ;
+	typedef BlasVector<Givaro::ZRing<integer>> ZDenseVector;
 
 	srand ((unsigned)time (NULL));
 
@@ -324,10 +324,11 @@ int main (int argc, char **argv)
 
 	report << endl << "Black box characteristic polynomial of an integer matrix test suite" << endl;
 
-	RandomDenseStream<PID_integer, ZDenseVector, NonzeroRandIter<PID_integer> >
-		zv_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), n, (size_t)numVectors);
-	RandomSparseStream<PID_integer, SparseVector, NonzeroRandIter<PID_integer> >
-		zA_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), (double) k / (double) n, n, n);
+	Givaro::ZRing<integer>::RandIter myZgen(Z);
+	RandomDenseStream<Givaro::ZRing<integer>, ZDenseVector, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> >
+		zv_stream (Z, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> (myZgen), n, (size_t)numVectors);
+	RandomSparseStream<Givaro::ZRing<integer>, SparseVector, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> >
+		zA_stream (Z, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> (myZgen), (double) k / (double) n, n, n);
 
 	//no symmetrizing
 	if (!testIdentityCharpoly  (Z, n)) pass = false;
