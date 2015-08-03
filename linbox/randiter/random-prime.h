@@ -230,10 +230,11 @@ namespace LinBox
 		integer & random (integer & a) const
 		{
 			integer::random(a,_bits);
+			Givaro::IntPrimeDom IPD;
 
-			nextprime( a, a);
+			IPD.nextprimein(a);
 			while (a.bitsize()>_bits)
-				prevprime(a,a);
+				IPD.prevprimein(a);
 
 			return a;
 		}
