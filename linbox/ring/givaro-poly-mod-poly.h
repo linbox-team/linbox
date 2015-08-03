@@ -4,7 +4,7 @@
 
 #include <givaro/extension.h>
 #include <givaro/givindeter.h>
-#include "linbox/field/Givaro/givaro-field.h"
+//#include "linbox/field/Givaro/givaro-field.h"
 
 namespace LinBox {
 
@@ -30,7 +30,7 @@ private:
 
 	BaseField *F_;
 
-	Givaro::Poly1FactorDom<BaseField,Givaro::Dense FactorDom_>;
+	Givaro::Poly1FactorDom<BaseField,Givaro::Dense> FactorDom_;
 
 	Givaro::Extension<BaseField>  ExtensionField_;
 

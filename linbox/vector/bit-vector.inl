@@ -83,6 +83,9 @@ namespace LinBox
 			return *this;
 		}
 
+		// fake, to satisfy compiler, can't be used.
+		std::iterator_traits<BitVector::iterator>::pointer operator & () const { return 0; }
+
 		reference &operator &= (reference &a)
 		{
 			*_word &= ~(1UL << _pos) | (a.get_bit () << (_pos - a._pos));
@@ -176,6 +179,9 @@ namespace LinBox
 
 		~const_reference () {}
 
+		// fake, to satisfy compiler, can't be used.
+		std::iterator_traits<BitVector::iterator>::pointer operator & () const { return 0; }
+
 		operator bool (void) const
 		{
 			return (*_word >> _pos) & 1UL;
@@ -221,6 +227,9 @@ namespace LinBox
 			_ref._pos = i._ref._pos;
 			return *this;
 		}
+		// fakes to please compiler.  Not to be used.
+		iterator &operator = (const reference* i) { return *this; }
+		iterator &operator = (const bool* i) { return *this; }
 
 		iterator &operator ++ ()
 		{

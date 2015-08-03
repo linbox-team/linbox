@@ -2,7 +2,7 @@
 #ifndef __LINBOX_POLY_DET_H
 #define __LINBOX_POLY_DET_H
 
-#include <linbox/field/Givaro/givaro-extension.h>
+#include <givaro/extension.h>
 #include <linbox/algorithms/poly-interpolation.h>
 #include <linbox/solutions/det.h>
 

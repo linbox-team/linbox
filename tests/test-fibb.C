@@ -32,30 +32,34 @@
 
 #include "linbox-config.h"
 #include "linbox/util/commentator.h"
-#include "linbox/ring/modular.h"
+#include "givaro/modular-double.h"
 #include "test-blackbox.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/blackbox/fibb.h"
 #include "linbox/blackbox/diagonal.h"
 //#include "linbox/matrix/permutation-matrix.h"
 #include "linbox/blackbox/permutation.h"
-#include "linbox/blackbox/triangular.h"
+//#include "linbox/blackbox/triangular.h"
 
 
 using namespace LinBox;
 
-template<class Field>
-bool testFibb(FIBB<Field>& A) 
-{
 /*
+check rank, det.  
+Neg rk means we don't know rank, 
+Zero dt with full rank  means we don't know det.
+
 Verify solve with apply (first provide consistent RHS).
 check NSR in NS (no check of randomness) and NSB 
 */
+template<class Field>
+bool testFibb(FIBB<Field>& A, const typename Field::Element& dt, int64_t rk = -1) 
+{
 	typedef typename Field::Element Element;
 	commentator().start("testFibb", "fibb");
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	bool pass = true, trial;
-	typedef BlasSubmatrix<BlasMatrix<Field> > Matrix;
+	typedef DenseMatrix<Field> Matrix;
 	const Field& F(A.field());
 	BlasMatrixDomain<Field> MD(F);
 	size_t m = A.rowdim();
@@ -63,27 +67,45 @@ check NSR in NS (no check of randomness) and NSB
 	size_t n = A.coldim();
 	report << "coldim " << n << std::endl;
 	size_t r = A.rank(r);
-	report << "rank " << r << std::endl;
-	Element d; F.init(d, 1);
-	F.write(report << "det ", d) << std::endl;
+	if (rk >= 0) pass = pass and r == rk;
+	if (m < 8  and n < 8) A.write(report << "A: " << std::endl) << std::endl;
+	report << "rank " << r << ", expected " << rk << std::endl;
+
+	Element d; F.init(d);
+	A.det(d);
+	if (rk == n and rk == m and F.isZero(dt))
+		F.write(report << "det ", d) << ", unchecked" << std::endl;
+	else 
+		F.write(F.write(report << "det ", d) << ", expected ", dt) << std::endl;
+	if (rk == n and not F.isZero(dt)) pass = pass and F.areEqual(d, dt);
 	if (m == n)
 	{	typename Field::Element d; F.init(d);
 		if (r < m and not F.isZero(A.det(d))) 
-		{	report << "problem in  det" << std::endl;
+		{	report << "problem in rank or det" << std::endl;
 			pass = false;
 		}
 	}
-	if (pass) report << "dims, rank, and det run fine (but values were not checked)" << std::endl;
+	if (pass) report << "dims, rank, and det run fine (values partially checked)" << std::endl;
 
-	/* right side stuff */
-	{
+/* right side stuff */
+{
+#if 1
 	// Solve consistent  
 	size_t b = (n/2 > 5) ? 5 : n/2;
-	BlasMatrix<Field> Bn(F,m,b), Xn(F, n, b), Yn(F, m, b), Zn(F, n, b);
-	Matrix B(Bn), X(Xn), Y(Yn), Z(Zn);
+	Matrix B(F,m,b), X(F, n, b), Y(F, m, b), Z(F, n, b);
 	X.random();
 	A.applyRight(B, X); // B: B = AX
-	A.solveRight(Z, B);  // Z: AZ = B = AX
+	if (not F.isZero(dt)) { // check for zero apply
+		if (MD.isZero(X)) { 
+			X.write(report << "unlucky X" << std::endl, Tag::FileFormat::Plain) << std::endl;
+			pass = false;
+		}
+		if (MD.isZero(B)) { 
+			B.write(report << "bad apply, B" << std::endl, Tag::FileFormat::Plain) << std::endl;
+			pass = false;
+		}
+	}
+	A.solveRight(Z, B); // Z: AZ = B = AX
 	A.applyRight(Y, Z); // Y: Y = AZ = B
 	trial = MD.areEqual(Y, B);
 	if (m == n and m == r) trial = trial and MD.areEqual(Z,X); // nonsing case
@@ -99,31 +121,43 @@ check NSR in NS (no check of randomness) and NSB
 	if (not trial) report << "problem in NSR Right" << std::endl;
 	if (trial) report << " no problem in NSR Right" << std::endl;
 	// NSB
-	BlasMatrix<Field> N(F);
+	Matrix N(F);
 	A.nullspaceBasisRight(N);
 	trial = N.rowdim() == n and N.coldim() == n-r; // proper num of cols.
 	if (n != r)
 	{	trial = trial and n-r == MD.rank(N); // indep cols.
-		BlasMatrix<Field> Nim_base(F, N.rowdim(), N.coldim()); 
-		Matrix Ns(N), Nim(Nim_base);
-		A.applyRight(Nim, Ns);
+		Matrix Nim(F, N.rowdim(), N.coldim()); 
+		A.applyRight(Nim, N);
 		trial = trial and MD.isZero(Nim); // in nullsp.
+		if (n < 8) Nim.write(report << "Nim " << std::endl, Tag::FileFormat::Plain) << std::endl;
 	}
+	if (n < 8) N.write(report << "N " << std::endl, Tag::FileFormat::Plain) << std::endl;
 	pass = pass and trial;
 	if (not trial) report << "problem in NSB Right " << m << " " << n << " " << r << " " << N.rowdim() << " " << N.coldim() << std::endl;
 	if (trial) report << " no problem in NSB Right" << std::endl;
-	}
+#endif
+} // right side 
 	report << " done with right side" << std::endl;
 
-	/* left side stuff */
-	{
+/* left side stuff */
+{
 	// Solve consistent
 	size_t b = (n/2 > 6) ? 6 : n/2;
-	BlasMatrix<Field> Bn(F,b,n), Xn(F, b, m), Yn(F, b, n), Zn(F, b, m);
-	Matrix B(Bn), X(Xn), Y(Yn), Z(Zn);
+	Matrix B(F,b,n), X(F, b, m), Y(F, b, n), Z(F, b, m);
 	X.random();
 	A.applyLeft(B, X); // B: B = XA
-	A.solveLeft(Z, B);  // Z: ZA = B = XA
+#if 1
+	if (not F.isZero(dt)) { // check for zero apply
+		if (MD.isZero(X)) { 
+			X.write(report << "unlucky X" << std::endl, Tag::FileFormat::Plain) << std::endl;
+			pass = false;
+		}
+		if (MD.isZero(B)) { 
+			B.write(report << "bad apply, B" << std::endl, Tag::FileFormat::Plain) << std::endl;
+			pass = false;
+		}
+	}
+	A.solveLeft(Z, B); // Z: ZA = B = XA
 	A.applyLeft(Y, Z); // Y: Y = ZA
 	trial = MD.areEqual(Y, B);
 	if (m == n and m == r) trial = trial and MD.areEqual(Z,X); // nonsing case
@@ -145,23 +179,25 @@ check NSR in NS (no check of randomness) and NSB
 	if (not trial) report << "problem in NSR Left" << std::endl;
 	if (trial) report << " no problem in NSR Left" << std::endl;
 	// NSB
-	BlasMatrix<Field> N(F);
+	Matrix N(F);
 	A.nullspaceBasisLeft(N);
 	trial = (N.rowdim() == m-r and N.coldim() == m); // proper num of rows.
 	// todo: this rank should work on empty matrix, but doesn't
 	if (m != r)
 	{	trial = (trial and m-r == MD.rank(N)); // indep cols.
-		BlasMatrix<Field> Nim_base(F, N.rowdim(), N.coldim()); 
-		Matrix Ns(N), Nim(Nim_base);
-		A.applyLeft(Nim, Ns);
+		Matrix Nim(F, N.rowdim(), N.coldim()); 
+		A.applyLeft(Nim, N);
 		trial = trial and MD.isZero(Nim); // in nullsp.
+		if (n < 8) Nim.write(report<< "Nim " << std::endl, Tag::FileFormat::Plain);
 	}
+	if (n < 8) N.write(report << "N " << std::endl, Tag::FileFormat::Plain) << std::endl;
 	pass = pass and trial;
 	if (not trial) report << "problem in NSB Left" << std::endl;
 	if (trial) report << " no problem in NSB Left" << std::endl;
-	}
-
+#endif
+} // left side
 	report << " done with left side" << std::endl;
+
 	commentator().stop (MSG_STATUS (pass));
 	return pass;
 }
@@ -172,7 +208,8 @@ int main (int argc, char **argv)
 	//srand(time(NULL));
 
 	static size_t n = 10;
-	static uint32_t q = 2147483647U;
+	static int32_t q = 101;
+	//static uint32_t q = 2147483647U;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
@@ -184,7 +221,7 @@ int main (int argc, char **argv)
 	commentator().start("FIBB test suite", "fibb");
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-	typedef Modular<uint32_t> Field; 
+	typedef Givaro::Modular<double> Field; 
 	Field F (q);
 	//MatrixDomain<Field> MD(F);
 
@@ -194,34 +231,36 @@ int main (int argc, char **argv)
 	Diagonal<Field> D3(F, n, true); 
 	for (size_t i = 0; i < n; ++i) D3.setEntry(i,i,F.zero); // zero matrix
 
+	pass = pass and testFibb(D1, F.zero, n); // nonsing
+	pass = pass and testFibb(D2, F.zero, n-n/2); // sing
+	pass = pass and testFibb(D3, F.zero, 0); // zero
+
 	FIBBProduct<Field> Pr1(D1, D1); // nonsing product
 	FIBBProduct<Field> Pr2(D1, D2); // sing product
 	FIBBProduct<Field> Pr3(D3, D1); // zero product
 
+	pass = pass and testFibb(Pr1, F.zero, n); // nonsing product
+	pass = pass and testFibb(Pr2, F.zero, n-n/2); // sing product
+	pass = pass and testFibb(Pr3, F.zero, 0); // zero product
+
 	Permutation<Field> P1(F, n, n); // ident
 	Permutation<Field> P2(F, n, n); P2.random(); 
+
+	pass = pass and testFibb(P1, F.one, n); // ident
+	pass = pass and testFibb(P2, F.zero, n); // random perm
 
 	FIBBProduct<Field> Pr4(P1, D1, P2); // nonsing product
 	FIBBProduct<Field> Pr5(P1, D2, P2); // sing product
 	FIBBProduct<Field> Pr6(P1, D3, P2); // zero product 
 
-	pass = pass and testFibb(D1); // nonsing
-	pass = pass and testFibb(D2); // sing
-	pass = pass and testFibb(D3); // zero
-#if 0
-	pass = pass and testFibb(Pr1); // nonsing product
-	pass = pass and testFibb(Pr2); // sing product
-	pass = pass and testFibb(Pr3); // zero product
-	pass = pass and testFibb(P1); // ident
-	pass = pass and testFibb(P2); // random perm
-	pass = pass and testFibb(Pr4); // nonsing product
-	pass = pass and testFibb(Pr5); // sing product
-	pass = pass and testFibb(Pr6); // zero product
-#endif
+	pass = pass and testFibb(Pr4, F.zero, n); // nonsing product
+	pass = pass and testFibb(Pr5, F.zero, n-n/2); // sing product
+	pass = pass and testFibb(Pr6, F.zero, 0); // zero product
+
 	report << "Done with diag products" << std::endl;
 #if 0
 	std::cout << "Triangular" << std::endl;
-	BlasMatrix<Field> M(F, 3, 3); 
+	Matrix M(F, 3, 3); 
 	//M.random();
 	for (size_t i = 0; i < 3; ++i)
 	for (size_t j = 0; j < 3; ++j)
@@ -229,11 +268,11 @@ int main (int argc, char **argv)
 	M.write(report << "base matrix " << std::endl) << std::endl;
 	BlasMatrixDomain<Field> BMD(F);
 	size_t r; 
-	BlasSubmatrix<BlasMatrix<Field> > SM(M);
+	Matrix SM(M);
 	r = BMD.rank(SM);
 	report << "underlying rank " << r << std::endl;
-	TriangularBlasMatrix<Field> U(M, Tag::Shape::Upper, Tag::Diag::NonUnit); 
-	TriangularBlasMatrix<Field> L(M, Tag::Shape::Lower, Tag::Diag::Unit); 
+	TriangularDenseMatrix<Field> U(M, Tag::Shape::Upper, Tag::Diag::NonUnit); 
+	TriangularDenseMatrix<Field> L(M, Tag::Shape::Lower, Tag::Diag::Unit); 
 	report << "Upper " << (int)Tag::Shape::Upper << ", Lower " << (int)Tag::Shape::Lower << std::endl;
 	report << "Unit " << (int)Tag::Diag::Unit << ", NonUnit " << (int)Tag::Diag::NonUnit << std::endl;
 	Triangular<Field> UU(U);

@@ -1,71 +1,97 @@
-/* Copyright (C) LinBox
+/* tests/test-modular-balanced-int.C
+ * Copyright (C) 2001, 2002 Bradford Hovinen,
+ * Copyright (C) 2002, 2015 Dave Saunders
  *
+ * Written by Bradford Hovinen <hovinen@cis.udel.edu>,
+ *            Dave Saunders <saunders@cis.udel.edu>
+ *
+ * ------------------------------------
+ * 2002-04-10 Bradford Hovinen <hovinen@cis.udel.edu>
+ *
+ * Rename from test-large-modular.C to test-modular.C; made other updates in
+ * accordance with changes to Givaro::ModularBalanced interace.
+ * ------------------------------------
  *
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
+ *.
  */
 
-
-/*! @file  tests/test-modular-balanced-int.C
+/*! @file   tests/test-modular-balanced-int.C
  * @ingroup tests
- * @brief  tests only runFieldTests on modular-balanced-int32_t
- * @test   tests only runFieldTests on modular-balanced-int32_t
+ * @brief For each integer type T, Givaro::ModularBalanced<T> is tested with a small primm and with a large prime using runFieldTests and testRandomIterator.
  */
-
-
 
 #include "linbox/linbox-config.h"
-
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
-#include <queue>
-
-#include <givaro/modular-balanced.h>
-
-#include "test-common.h"
-#include "test-generic.h"
-
+#include "givaro/modular-balanced.h"
+#include "test-field.h"
 using namespace LinBox;
 
-/*! @bug the arguments are meaningless
- */
+template<class int_type>
+bool launchTests(string int_type_name, integer q, size_t n, uint32_t trials, uint32_t categories, uint32_t hist_level) 
+	{ 
+		using Field = Givaro::ModularBalanced<int_type>;
+		bool pass = true ;
+
+		string field_name = "Givaro::ModularBalanced<" + int_type_name + ">";
+		string title = field_name + " field test suite";
+
+		commentator().start(title.c_str(), field_name.c_str());
+		// Make sure some more detailed messages get printed
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+
+		commentator().report() << field_name << " range: [" << Field::minCardinality() << "," << Field::maxCardinality() << "]" << std::endl;
+
+		Field FS(q);
+		pass &= runFieldTests (FS,  field_name.c_str(), 1, n, false);
+		pass &= testRandomIterator (FS, field_name.c_str(), trials, categories, hist_level);
+
+		integer k = Field::maxCardinality();
+		if (k > 0) {
+			prevprime(k,k += 1);
+		} else {
+			static integer qi("18446744073709551557");
+			k = qi;
+		}
+		Field FL(k);
+		pass &= runFieldTests (FL,  field_name.c_str(), 1, n, false);
+		pass &= testRandomIterator (FL, field_name.c_str(), trials, categories, hist_level);
+
+		commentator().stop(MSG_STATUS(pass), "field test-suite");
+		return pass;
+	}
+
 int main (int argc, char **argv)
 {
-	static integer q1("18446744073709551557");
-	static integer q2 = 65521;
-	static integer q3 = 65521U;
-	static int q4 = 101;
-	static size_t n = 1000;
-	static unsigned int iterations = 1;
+	// for field testing
+	static integer q = 5; // small prime valid for for all int types.
+
+	// for randiter testing
+	static size_t n = 10000;
 	static unsigned int trials = 10000;
 	static unsigned int categories = 1000;
 	static unsigned int hist_level = 10;
 
 	static Argument args[] = {
-		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q1 },
-		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32_t modulus.", TYPE_INTEGER, &q2 },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16_t modulus.", TYPE_INTEGER, &q3 },
-		{ 'p', "-p P", "Operate over the \"field\" GF(Q) [1] for uint8_t modulus.", TYPE_INT, &q4 },
+		{ 'K', "-K Q", "to use ModularBalanced<T> F(q). Must be valid for all int types T. (A large prime is also used.)", TYPE_INTEGER, &q },
 		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ 't', "-t T", "Number of trials for the random iterator test.", TYPE_INT, &trials },
 		{ 'c', "-c C", "Number of categories for the random iterator test.", TYPE_INT, &categories },
 		{ 'H', "-H H", "History level for random iterator test.", TYPE_INT, &hist_level },
@@ -74,44 +100,30 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator().start("Givaro::ModularBalanced<int32_t> field test suite", "Givaro::ModularBalanced<int32_t>");
 	bool pass = true;
 
-	// Givaro::ModularBalanced<int32_t> F_int (1073741789);//(2147483629);//(65521);
-	Givaro::ModularBalanced<int32_t> F_int (91673);
-	Givaro::ModularBalanced<int32_t> G_int (2557);
-	Givaro::ModularBalanced<int32_t> H_int (3);
-	integer k = FieldTraits<Givaro::ModularBalanced<int32_t> >::maxModulus() ;
-	prevprime(k,k);
-	Givaro::ModularBalanced<int32_t> I_int(k);
 
-	// Make sure some more detailed messages get printed
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	pass &= launchTests<int64_t>("int64_t",q,n,trials,categories,hist_level);
+	pass &= launchTests<int32_t>("int32_t",q,n,trials,categories,hist_level);
 
-	if (!runFieldTests (F_int,  "Givaro::ModularBalanced<int32_t>",  iterations, n, false)) pass = false;
-	if (!testRandomIterator (F_int,  "Givaro::ModularBalanced<int32_t>", trials, categories, hist_level)) pass = false;
+/*  these are not in givaro/modular-balanced.h
+	pass &= launchTests<integer>("integer",q,n,trials,categories,hist_level);
+	pass &= launchTests<uint64_t>("uint64_t",q,n,trials,categories,hist_level);
+	pass &= launchTests<uint32_t>("uint32_t",q,n,trials,categories,hist_level);
+	pass &= launchTests<int16_t>("int16_t",q,n,trials,categories,hist_level);
+	pass &= launchTests<int8_t>("int8_t",q,n,trials,categories,hist_level);
+	pass &= launchTests<uint16_t>("uint16_t",q,n,trials,categories,hist_level);
+	pass &= launchTests<uint8_t>("uint8_t",q,n,trials,categories,hist_level);
+*/
 
-	if (!runFieldTests (G_int,  "Givaro::ModularBalanced<int32_t>",  iterations, n, false)) pass = false;
-	if (!testRandomIterator (G_int,  "Givaro::ModularBalanced<int32_t>", trials, categories, hist_level)) pass = false;
-
-	if (!runFieldTests (H_int,  "Givaro::ModularBalanced<int32_t>",  iterations, n, false)) pass = false;
-	if (!testRandomIterator (H_int,  "Givaro::ModularBalanced<int32_t>", trials, categories, hist_level)) pass = false;
-
-
-	if (!runFieldTests (I_int,  "Givaro::ModularBalanced<int32_t>",  iterations, n, false)) pass = false;
-	// if (!testRandomIterator (I_int,  "Givaro::ModularBalanced<int32_t>", trials, categories, hist_level)) pass = false;
-
-
-	commentator().stop("Givaro::ModularBalanced<int32_t> field test suite");
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

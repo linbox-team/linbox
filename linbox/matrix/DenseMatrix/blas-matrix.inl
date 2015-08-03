@@ -531,7 +531,7 @@ namespace LinBox
 		_row = m;
 		_col = n;
 		_rep.resize (m * n, val);
-		_ptr = (m*n == 0 ?  0 : &(_rep[0]));
+		_ptr = (m*n == 0 ?  0 : &_rep[0]);
 #if 0
 		if (_ptr) {
 			if (m && n)
@@ -593,14 +593,13 @@ namespace LinBox
 	template < class _Field, class _Rep >
 	const typename _Field::Element & BlasMatrix< _Field, _Rep >::getEntry (size_t i, size_t j) const
 	{
-		return _ptr[i * _col + j];
+		return _rep[i * _col + j];
 	}
 
 	template < class _Field, class _Rep >
 	typename _Field::Element & BlasMatrix< _Field, _Rep >::getEntry (Element &x, size_t i, size_t j) const
 	{
-		x = _ptr[i * _col + j];
-		return x;
+		return x = _rep[i * _col + j];
 	}
 
 } // LinBox

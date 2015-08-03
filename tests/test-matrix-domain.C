@@ -1590,9 +1590,9 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	if (k >= m) k = m/2+1 ;
 
-	Givaro::Modular<uint32_t>                F1 (q);
+	Givaro::Modular<uint32_t>                F1 (101);
 	Givaro::ModularBalanced<int32_t>         F2 (q2);
-	Givaro::Modular<uint32_t>    F3(q);
+	Givaro::Modular<double>    F3(q);
 	/*
 	if (q2 < q/2)
 		std::cerr <<"...étrange..." << std::endl;

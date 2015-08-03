@@ -103,10 +103,10 @@ namespace LinBox
 		typedef Diagonal<_Field, VectorCategories::DenseVectorTag> Self_t;
 	public:
 
-		typedef _Field Field;
-		typedef typename Field::Element    Element;
-		typedef BlasSubmatrix<BlasMatrix<Field> > Matrix;
-
+		using Father_t = FIBB<_Field>;
+		using Field = _Field;
+		using Element = typename Father_t::Element;
+		using Matrix = typename Father_t::Matrix;
 
 		/// \brief cstor ready for a read.
 		Diagonal(const Field &F) :
@@ -125,13 +125,15 @@ namespace LinBox
 
 		Diagonal(const Field &F, const size_t n, typename Field::RandIter& iter);
 
+		~Diagonal(){}
+
 		template <class OutVector, class InVector>
 		OutVector &apply (OutVector &y, const InVector &x) const;
 
 		template <class OutVector, class InVector>
 		OutVector &applyTranspose (OutVector &y, const InVector &x) const { return apply (y, x); }
 
-		Matrix& applyRight(Matrix& Y, const Matrix& X) const // Y = AX
+		virtual Matrix& applyRight(Matrix& Y, const Matrix& X) const // Y = AX
 		{   MatrixDomain<Field> MD(field());
 		    return MD.mul(Y, *this, X);
 		}
@@ -211,7 +213,7 @@ namespace LinBox
 			size_t c, i, j;
 			if( !ms.getDimensions(_n, c) || c != _n )
 				throw ms.reportError(__FUNCTION__,__LINE__);
-			typename Field::Element x; field().assign(x, field().zero);
+			Element x; field().assign(x, field().zero);
 			_v.resize(_n);
 			for (size_t k = 0; k < _n; ++ k) {
 				ms.nextTriple(i, j, x);
@@ -229,7 +231,7 @@ namespace LinBox
 			size_t c, i, j;
 			if( !ms.getDimensions(_n, c) || c != _n )
 				throw ms.reportError(__FUNCTION__,__LINE__);
-			typename Field::Element x; field().assign(x, field().zero);
+			Element x; field().assign(x, field().zero);
 			_v.resize(_n);
 			for (size_t k = 0; k < _n; ++ k) {
 				ms.nextTriple(i, j, x);
@@ -251,13 +253,15 @@ size_t& rank(size_t& r) const
 { // assuming square
 	r = 0; 
 	Element x; field().init(x);
-	for (size_t i = 0; i < rowdim(); ++i) 
-		if (! field().isZero(getEntry(x,i,i))) r++;
+	size_t n = (rowdim() > coldim()) ? rowdim() : coldim();
+	for (size_t i = 0; i < n; ++i) 
+		if (not field().isZero(getEntry(x,i,i))) r++;
 	return r;
 }
 
 Element& det( Element& d) const
-{	Element x; field().init(x);
+{	if (rowdim() != coldim()) return d = field().zero;
+    Element x; field().init(x);
 	d = field().one;
 	for (size_t i = 0; i < rowdim(); ++i) 
 		field().mulin(d, getEntry(x,i,i));
@@ -288,7 +292,7 @@ Matrix& solveMPRight(Matrix& Y, const Matrix& X) const
 			Matrix Xrow(X, i, 0, 1, coldim());
 			Matrix Yrow(Y, i, 0, 1, coldim());
 			// there should be a scalar mul!
-			BlasMatrix<Field> S(field(), 1, 1); 
+			Matrix S(field(), 1, 1); 
 			S.setEntry(0,0,field().invin(x));
 			MD.mul(Yrow, S, Xrow);
 		*/
@@ -312,7 +316,7 @@ Matrix& solveMPLeft(Matrix& Y, const Matrix& X) const
 		/* this causes a deallocation error ??
 			Matrix Xcol(X, 0, j, rowdim(), 1);
 			Matrix Ycol(Y, 0, j, rowdim(), 1);
-			BlasMatrix<Field> S(field(), 1, 1); 
+			Matrix S(field(), 1, 1); 
 			S.setEntry(0,0,field().invin(x));
 			MD.mul(Ycol, Xcol, S);
 		*/

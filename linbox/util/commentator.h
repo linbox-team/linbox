@@ -47,7 +47,8 @@
 #include <fstream>
 #include <cstring>
 
-#include "linbox/util/timer.h"
+//#include "linbox/util/timer.h"
+#include "givaro/givtimer.h"
 
 #ifndef MAX
 #  define MAX(a,b) (((a) > (b)) ? (a) : (b))
@@ -633,7 +634,7 @@ namespace LinBox
 			const char              *_fn;
 			unsigned long            _len;
 			unsigned long            _progress;
-		 Givaro::Timer                    _timer;
+		 Givaro::RealTimer                    _timer;
 			Estimator                _estimate;
 		};
 

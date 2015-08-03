@@ -43,7 +43,7 @@ LDADD =  $(NTL_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS)  $(IML_LIBS) $(FLI
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,
 
 EXTRA_DIST =					\
-		test-blackbox.h			\					
+		test-blackbox.h			\
 		test-common.h			\
 		test-common.inl			\
 		test-field.h			\
@@ -53,7 +53,7 @@ EXTRA_DIST =					\
 		test-rank.h				\
 		test-vector-domain.h	\
 		tests.doxy				\
-		checker.C				\
+		checker.C				
 
 PERFPUBLISHERFILE = tests-report.xml
 
@@ -65,8 +65,6 @@ PERFPUBLISHERFILE = tests-report.xml
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 #
 # Once present, tests should remain present, being moved from one group to another.
-# Note that among the available groups are NONCOMPILING_TESTS and FAILING_TESTS, which
-# will be ignored by "make check" and can be temporary storage for problematic tests.
 BASIC_TESTS =					\
 	test-commentator			\
 	test-det					\
@@ -80,7 +78,7 @@ BASIC_TESTS =					\
 	test-rank-Int				\
 	test-cra					\
 	test-blas-matrix			\
-	test-charpoly				\
+	test-charpoly				
 
 # All other tests.  
 # The checker.C determines which of these are built and run in "make fullcheck".
@@ -105,7 +103,6 @@ FULLCHECK_TESTS =               \
 	test-ftrmm					\
 	test-getentry				\
 	test-gf2					\
-	test-gf3					\
 	test-givaropoly				\
 	test-gmp-rational			\
 	test-hilbert				\
@@ -176,10 +173,7 @@ FULLCHECK_TESTS =               \
 	test-triplesbb-omp			\
 	test-tutorial				\
 	test-vector-domain			\
-	test-zero-one				\
-
-# benchmarkers, (should be moved to benchmarks/)
-BENCHMARKS = benchmark-fields benchmark-blas-domain
+	test-zero-one				
 
 # Really just one or two of these would be enough for target check.
 # The rest can be in target fullcheck.
@@ -194,13 +188,13 @@ NTL_TESTS =                     \
 	test-ntl-hankel             \
 	test-ntl-sylvester          \
 	test-smith-form-iliopoulos  \
-	test-toeplitz-det			\		
+	test-toeplitz-det					
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
 endif
 
-OCL_TESTS = test-opencl-domain             
+OCL_TESTS = test-opencl-domain
 
 if LINBOX_HAVE_OCL
 USE_OCL_TESTS = $(OCL_TESTS)
@@ -210,9 +204,9 @@ endif
 
 # check builds and runs these
 TESTS =                 \
-	$(BASIC_TESTS)		\
-	$(USE_NTL_TESTS)	\
-	$(USE_OCL_TESTS)	\
+    $(BASIC_TESTS)        \
+    $(USE_NTL_TESTS)    \
+    $(USE_OCL_TESTS)
 
 # alternate definition of check target
 #check: checker
@@ -221,17 +215,22 @@ TESTS =                 \
 EXTRA_PROGRAMS =		\
 	$(BASIC_TESTS)		\
 	$(NTL_TESTS)		\
-	$(BENCHMARKS		\
 	$(FULLCHECK_TESTS) 	\
-	$(OCL_TEST			\
+	$(OCL_TESTS)
 
-benchmark_blas_domain_SOURCES =         benchmark-blas-domain.C 
-benchmark_fields_SOURCES =              benchmark-fields.C 
-test_bitonic_sort_SOURCES =             test-bitonic-sort.C 
+CLEANFILES= checker               \
+			$(TESTS)              \
+			$(BASIC_TESTS)        \
+			$(FULLCHECK_TESTS)      \
+			$(NTL_TESTS)          \
+			$(OCL_TESTS)          \
+			$(PERFPUBLISHERFILE)
+
+test_bitonic_sort_SOURCES =             test-bitonic-sort.C
 test_blackbox_block_container_SOURCES = test-blackbox-block-container.C
-test_blas_domain_SOURCES =              test-blas-domain.C 
+test_blas_domain_SOURCES =              test-blas-domain.C
 test_blas_matrix_SOURCES =              test-blas-matrix.C
-test_block-ring_SOURCES =				test-block-ring.C
+test_block_ring_SOURCES =               test-block-ring.C
 test_block_wiedemann_SOURCES =          test-block-wiedemann.C
 test_butterfly_SOURCES = test-butterfly.C test-vector-domain.h test-blackbox.h
 test_charpoly_SOURCES =                 test-charpoly.C
@@ -240,7 +239,7 @@ test_companion_SOURCES =                test-companion.C
 test_cradomain_SOURCES =                test-cradomain.C test-common.h
 test_cra_SOURCES =                      test-cra.C test-common.h
 test_dense_SOURCES =                    test-dense.C test-common.h
-test_dense_zero_one_SOURCES =           test-dense-zero-one.C 
+test_dense_zero_one_SOURCES =           test-dense-zero-one.C
 test_det_SOURCES =                      test-det.C
 test_diagonal_SOURCES =                 test-diagonal.C
 test_dif_SOURCES =                      test-dif.C
@@ -248,22 +247,21 @@ test_direct_sum_SOURCES =               test-direct-sum.C
 test_dyadic_to_rational_SOURCES =       test-dyadic-to-rational.C
 test_echelon_form_SOURCES =             test-echelon-form.C
 test_ffpack_SOURCES =                   test-ffpack.C
-test_fibb_SOURCES =						test-fibb.C	
+test_fibb_SOURCES =                     test-fibb.C
 test_frobenius_SOURCES =                test-frobenius.C
-test_ftrmm_SOURCES =                    test-ftrmm.C 
+test_ftrmm_SOURCES =                    test-ftrmm.C
 test_getentry_SOURCES =                 test-getentry.C
 test_gf2_SOURCES =                      test-gf2.C
-test_gf3_SOURCES =						test-gf3.C
 test_givaropoly_SOURCES =               test-givaropoly.C
 test_gmp_rational_SOURCES =             test-gmp-rational.C
 test_hilbert_SOURCES =                  test-hilbert.C
 test_hom_SOURCES =                      test-hom.C
-test_image_field_SOURCES =				test-image-field.C
+test_image_field_SOURCES =              test-image-field.C
 test_inverse_SOURCES =                  test-inverse.C
-test_isposdef_SOURCES =                 test-isposdef.C 
-test_ispossemidef_SOURCES =             test-ispossemidef.C 
+test_isposdef_SOURCES =                 test-isposdef.C
+test_ispossemidef_SOURCES =             test-ispossemidef.C
 test_la_block_lanczos_SOURCES =         test-la-block-lanczos.C
-test_last_invariant_factor_SOURCES =    test-last-invariant-factor.C 
+test_last_invariant_factor_SOURCES =    test-last-invariant-factor.C
 test_lidia_gfq_SOURCES =                test-lidia-gfq.C
 test_matrix_domain_SOURCES =            test-matrix-domain.C test-common.h
 test_matrix_stream_SOURCES =            test-matrix-stream.C
@@ -288,35 +286,35 @@ test_ntl_RR_SOURCES =                   test-ntl-RR.C
 test_ntl_sylvester_SOURCES =            test-ntl-sylvester.C
 test_ntl_toeplitz_SOURCES =             test-ntl-toeplitz.C
 test_ntl_ZZ_p_SOURCES =                 test-ntl-ZZ_p.C
-test_nullspace_SOURCES =                test-nullspace.C 
+test_nullspace_SOURCES =                test-nullspace.C
 test_opencl_domain_SOURCES =            test-opencl-domain.C
-test_optimization_SOURCES =             test-optimization.C 
-test_order_basis_SOURCES =				test-order-basis.C
+test_optimization_SOURCES =             test-optimization.C
+test_order_basis_SOURCES =              test-order-basis.C
 test_param_fuzzy_SOURCES =              test-param-fuzzy.C
-test_permutation_SOURCES =              test-permutation.C 
+test_permutation_SOURCES =              test-permutation.C
 test_PID_integer_SOURCES =              test-PID-integer.C
-test_plain_domain_SOURCES =				test-plain-domain.C
-test_poly_det_SOURCES =					test-poly-det.C
+test_plain_domain_SOURCES =             test-plain-domain.C
+test_poly_det_SOURCES =                 test-poly-det.C
 test_qlup_SOURCES =                     test-qlup.C
-test_quad_matrix_SOURCES =           	test-quad-matrix.C 
+test_quad_matrix_SOURCES =              test-quad-matrix.C
 test_randiter_nonzero_SOURCES =         test-randiter-nonzero.C
-test_random_matrix_SOURCES =			test-random-matrix.C
+test_random_matrix_SOURCES =            test-random-matrix.C
 test_rank_Int_SOURCES =                 test-rank-Int.C test-rank.h
 test_rank_md_SOURCES =                  test-rank-md.C test-rank.h
-test_rank_u32_SOURCES =                 test-rank-u32.C
+test_rank_u32_SOURCES =                 test-rank-u32.C test-rank.h
 test_rat_charpoly_SOURCES =             test-rat-charpoly.C test-common.h
 test_rational_matrix_factory_SOURCES =  test-rational-matrix-factory.C
 test_rational_reconstruction_base_SOURCES =  test-rational-reconstruction-base.C
 test_rational_solver_adaptive_SOURCES = test-rational-solver-adaptive.C test-common.h
-test_rational_solver_SOURCES =          test-rational-solver.C 
+test_rational_solver_SOURCES =          test-rational-solver.C
 test_rat_minpoly_SOURCES =              test-rat-minpoly.C test-common.h
 test_rat_solve_SOURCES =                test-rat-solve.C test-common.h
 test_scalar_matrix_SOURCES =            test-scalar-matrix.C
 test_smith_form_adaptive_SOURCES =      test-smith-form-adaptive.C test-common.h
-test_smith_form_binary_SOURCES =        test-smith-form-binary.C 
-test_smith_form_iliopoulos_SOURCES =    test-smith-form-iliopoulos.C 
-test_smith_form_local_SOURCES =         test-smith-form-local.C 
-test_smith_form_SOURCES =               test-smith-form.C 
+test_smith_form_binary_SOURCES =        test-smith-form-binary.C
+test_smith_form_iliopoulos_SOURCES =    test-smith-form-iliopoulos.C
+test_smith_form_local_SOURCES =         test-smith-form-local.C
+test_smith_form_SOURCES =               test-smith-form.C
 test_solve_nonsingular_SOURCES =        test-solve-nonsingular.C
 test_solve_SOURCES =                    test-solve.C
 test_sparse2_SOURCES =                  test-sparse2.C test-common.h
@@ -339,24 +337,10 @@ test_zero_one_SOURCES =                 test-zero-one.C
 perfpublisher:
 	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(TESTS)" "$(CXX)"
 
-# for compilation of new non-enumerated tests
+# for compilation of non-enumerated programs
 %:%.C
 	$(CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
 
 fullcheck: checker
 	./checker
-
-checker: checker.C
-
-CLEANFILES= checker               \
-			$(TESTS)              \
-			$(BASIC_TESTS)        \
-			$(FAILING_TESTS)      \
-			$(NONCOMPLIANT_TESTS) \
-			$(BENCHMARKS)         \
-			$(DUBIOUS_TESTS)      \
-			$(FULLCHECK_TESTS)      \
-			$(NTL_TESTS)          \
-			$(ATLAS_TESTS)\
-			$(PERFPUBLISHERFILE)
 

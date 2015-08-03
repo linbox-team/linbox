@@ -350,8 +350,8 @@ namespace LinBox
 				aistar=distar=1;
 				bistar=cistar=0;
 
-				Element mstar = m >> (long unsigned int) lambda;
-				Element nstar = n >> (long unsigned int) lambda;
+				Element mstar = m >> (uint64_t) lambda;
+				Element nstar = n >> (uint64_t) lambda;
 
 				size_t log_mstar = 2*h+1;
 				if (nstar > 0) if (!fastEEA(aistar, bistar, cistar, distar, mstar, log_mstar,nstar, powh, h)) return false;
@@ -961,8 +961,8 @@ namespace LinBox
 				aistar=distar=1;
 				bistar=cistar=0;
 
-				Element mstar = m >> (long unsigned int) lambda;
-				Element nstar = n >> (long unsigned int) lambda;
+				Element mstar = m >> (uint64_t) lambda;
+				Element nstar = n >> (uint64_t) lambda;
 
 				size_t log_mstar = 2*h+1;
 
