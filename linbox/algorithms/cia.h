@@ -67,8 +67,8 @@ namespace LinBox
 		minpoly (intMinPoly, A, RingCategories::IntegerTag(), M);
 
 		/* Factorization over the integers */
-		std::vector<IntPoly*> intFactors;
-		std::vector<unsigned long> mult;
+		std::vector<IntPoly> intFactors;
+		std::vector<uint64_t> mult;
 		IPD.factor (intFactors, mult, intMinPoly);
 		size_t nf = intFactors.size();
 
@@ -113,8 +113,8 @@ namespace LinBox
 			IPD.pow( P, *intFactors[i], multip[i] );
 			IPD.mulin( intCharPoly, P );
 		}
-		for (size_t i = 0; i < nf; ++i)
-			delete intFactors[i];
+		//for (size_t i = 0; i < nf; ++i)
+		//delete intFactors[i];
 		commentator().stop ("done", NULL, "CIA");
 
 		return P = intCharPoly;
