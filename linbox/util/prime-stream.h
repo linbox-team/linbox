@@ -69,23 +69,16 @@ namespace LinBox
 		Element &next (Element &a)
 		{
 
-			/** @warning LinBox::Integer does not support prevprime */
-#if 0
 			if (_move_up == true) {
-				nextprime (_curr, _curr);
+				_IPD.nextprimein(_curr);
 				a = _curr;
 				_curr += 2L;
 			}
 			else {
-				prevprime (_curr, _curr);
+				_IPD.prevprimein(_curr);
 				a = _curr;
 				_curr -= 2L;
 			}
-#endif
-
-			nextprime (_curr, _curr);
-			a = _curr;
-			_curr += 2L;
 
 			return a;
 		}
@@ -99,6 +92,7 @@ namespace LinBox
 
 		Integer _curr;
 		bool    _move_up;
+		Givaro::IntPrimeDom _IPD; //!< empty struct dealing with primality
 
 	}; // class PrimeStream
 

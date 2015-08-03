@@ -33,6 +33,7 @@
 
 
 #include <givaro/givrandom.h>
+#include <givaro/givintprime.h>
 #include "linbox/util/timer.h"
 #include "linbox/util/debug.h"
 #include "linbox/integer.h"
@@ -58,6 +59,7 @@ namespace LinBox
 		uint64_t 	_bits;  //!< common lenght of all primes
 		integer        _shift;  //!< @internal used to set proper bit size
 		integer        _prime;  //!< the generated prime.
+		Givaro::IntPrimeDom _IPD; //!< empty struct dealing with primality.
 
 	public:
 		/*! Constructor.
@@ -77,7 +79,7 @@ namespace LinBox
 
 			integer::random(_prime,_bits-1);
 			_prime = _shift - _prime;
-			nextprime( _prime, _prime);
+			_IPD.nextprimein(_prime);
 		}
 
 		typedef integer Prime_Type ;
@@ -89,7 +91,7 @@ namespace LinBox
 		{
 			integer::random(_prime,_bits-1);
 			_prime = _shift - _prime;
-			nextprime( _prime, _prime);
+			_IPD.nextprimein(_prime);
 			return *this;
 		}
 
@@ -127,7 +129,7 @@ namespace LinBox
 
 			integer::random(_prime,_bits-1);
 			_prime = _shift - _prime;
-			nextprime( _prime, _prime);
+			_IPD.nextprimein(_prime);
 
 		}
 
@@ -180,6 +182,7 @@ namespace LinBox
 		uint64_t 	_bits;  //!< max length for all primes
 		integer         _seed;  //!< the generated prime.
 		Givaro::GivRandom _generator;
+		Givaro::IntPrimeDom _IPD;
 
 	public:
 		/*! Constructor.
@@ -230,11 +233,10 @@ namespace LinBox
 		integer & random (integer & a) const
 		{
 			integer::random(a,_bits);
-			Givaro::IntPrimeDom IPD;
 
-			IPD.nextprimein(a);
+			_IPD.nextprimein(a);
 			while (a.bitsize()>_bits)
-				IPD.prevprimein(a);
+				_IPD.prevprimein(a);
 
 			return a;
 		}
@@ -251,9 +253,9 @@ namespace LinBox
 			integer::random(a,_bits-1); //!@todo uses random_exact when givaro is released.
 			a = (integer(1)<<_bits) - a;
 
-			nextprime( a, a);
+			_IPD.nextprimein(a);
 			while (a.bitsize()>_bits)
-				prevprime(a,a);
+				_IPD.prevprimein(a);
 
 			return a;
 		}
@@ -273,9 +275,9 @@ namespace LinBox
 			integer::random(a,ze_bits-1); //!@todo uses random_between when givaro is released.
 			a = (integer(1)<<ze_bits) - a;
 
-			nextprime( a, a);
+			_IPD.nextprimein(a);
 			while (a.bitsize()>_bits)
-				prevprime(a,a);
+				_IPD.prevprimein(a);
 
 			linbox_check(a.bitsize() >= _low_bits && a.bitsize() <= _bits) ;
 
