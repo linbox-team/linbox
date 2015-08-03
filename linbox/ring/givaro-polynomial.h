@@ -74,7 +74,7 @@ namespace LinBox
 
 		template<class PolyCont>
 		PolyCont& factor (PolyCont& factors,
-				  std::vector<unsigned long>& exp,
+				  std::vector<uint64_t>& exp,
 				  const Polynomial& P)
             {
 
@@ -208,7 +208,7 @@ namespace LinBox
 	template <>
 	std::vector<GivPolMdDense::Element *>&
 	GivPolMdDense::factor (std::vector<GivPolMdDense::Element* > & factors,
-			       std::vector<unsigned long>& exp,
+			       std::vector<uint64_t>& exp,
 			       const GivPolMdDense::Element& P)
 	{
 		integer charac;

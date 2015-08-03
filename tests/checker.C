@@ -103,7 +103,7 @@ warn("test-rat-solve", "infinite loop");
 //warn("test-smith-form-local", "bds, intermittent failures");
 warn("test-solve", "most of the tests are commented out");
 warn("test-toom-cook", "one method does not work");
-warn("test-transpose", "sometimes, fails on Sparsematrix/getEntry");
+warn("test-transpose", "sometimes fails on Sparsematrix/getEntry");
 warn("test-quad-matrix", "half baked, bds responsible");
 skip("test-la-block-lanczos", "not maintained. operator >> missing");
 

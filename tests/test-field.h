@@ -87,7 +87,7 @@ template <class Field>
 typename Field::Element& expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n)
 {
 	if (n == 0) {
-		F.init (res, (double)1);
+		F.init (res, (int64_t)1);
 	}
 	else if (n == 1) {
 		F.assign (res, a);
@@ -101,7 +101,7 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 		n /= 2;
 		expt (F, res, a, n);
 		typename Field::Element tmp;
-		F.init(tmp,(double)0);
+		F.init(tmp,(int64_t)0);
 		res = F.mul (tmp, res, res);
 	}
 
@@ -137,32 +137,33 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 	F.characteristic(p);
 	
 	typename Ring::Element zero, one, mOne, two, mTwo, three, five, six, eight;
-	F.init(zero, (double)0); 
-	F.init(one, (double)1); 
+	F.init(zero, (int64_t)0); 
+	F.init(one, (int64_t)1); 
 	F.init(mOne); F.neg(mOne,one);
 
 	
 	if (p > 0)
 	{
-		F.init(two, (2 % p));
-		F.init(mTwo, (p - 2));
-		F.init(three, (3 % p));
-		F.init(five, (5 % p));
-		F.init(six, (6 % p));
-		F.init(eight, (8 % p));
+		F.init(two, (int64_t)(2 % p));
+		F.init(mTwo, (int64_t)(p - 2));
+		F.init(three, (int64_t)(3 % p));
+		F.init(five, (int64_t)(5 % p));
+		F.init(six, (int64_t)(6 % p));
+		F.init(eight, (int64_t)(8 % p));
 	}
 	else
 	{
-		F.init(two, (double)2);
-		F.init(mTwo, (double)2); F.negin(mTwo);
-		F.init(three, (double)3);
-		F.init(five, (double)5);
-		F.init(six, (double)6);
-		F.init(eight, (double)8);
+		F.init(two, (int64_t)2);
+		F.init(mTwo, (int64_t)2); F.negin(mTwo);
+		F.init(three, (int64_t)3);
+		F.init(five, (int64_t)5);
+		F.init(six, (int64_t)6);
+		F.init(eight, (int64_t)8);
 	}
 		
 	typename Ring::Element a, b, c, d, e, f;
-	F.init(a,0.0); F.init(b,0.0); F.init(c,0.0); F.init(d,0.0); F.init(e,0.0); F.init(f,0.0);
+	int64_t z = 0;
+	F.init(a,z); F.init(b,z); F.init(c,z); F.init(d,z); F.init(e,z); F.init(f,z);
 
 	report << " (Ring self description: " << F.write (report) << ')' << endl;
 	report << "Ring characteristic: " << p << endl;
@@ -208,7 +209,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 
 	if (p > 0) {
 		typename Ring::Element mOneFromCst;
-		F.init(mOneFromCst, (p-1));
+		F.init(mOneFromCst, (int64_t)(p-1));
 
 		if ( !F.areEqual(F.mOne,mOneFromCst)) {
 			part_pass = reportError( "isMOne (p-1) is false", pass);
@@ -229,7 +230,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 	F.write ( report << "Initial Elt to convert: ", a) << endl;
 	F.convert(n, a);
 	report << "Result of convert: " << n << endl;
-	F.init(b, n);
+	F.init(b, (int64_t)n);
 	F.write ( report << "Result of init: ", b) << endl;
 	if (not F.areEqual(a, b)) part_pass = reportError( "F.init (b, F.convert(n, a)) != a", pass);
 
@@ -241,7 +242,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 		n = rand()%p;
 	report << "Initial integer: " << n << endl;
 
-	F.init (a, n);  F.write ( report << "Result of init: ", a) << endl;
+	F.init (a, (int64_t)n);  F.write ( report << "Result of init: ", a) << endl;
 	F.convert (m, a); report << "Result of convert: " << m << endl;
 
 	if (m != n) part_pass = reportError( "F.convert (m, F.init (a, n)) != n", pass);
@@ -299,9 +300,9 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 	//,..
 	// 2^101 - 1 vs 1 + 2 + 4 + ... + 2^100
 
-	F.init (a, 1.0);
-	F.init (b, 1.0);
-	F.init (c, 0.0);
+	F.init (a, (int64_t)1.0);
+	F.init (b, (int64_t)1.0);
+	F.init (c, (int64_t)0.0);
 
 	n = 101;
 	expt(F, a, two, n);
@@ -362,13 +363,13 @@ bool testField (Field &F, const char *title, bool fieldp = true)
         
 	if (p > 0)
 	{
-		F.init(two, (2 % p));
-		F.init(three, (3 % p));
+		F.init(two, (int64_t)(2 % p));
+		F.init(three, (int64_t)(3 % p));
 	}
 	else
 	{
-		F.init(two, (double)2);
-		F.init(three, (double)3);
+		F.init(two, (int64_t)2);
+		F.init(three, (int64_t)3);
 	}
 		
 
@@ -421,7 +422,8 @@ namespace field_subtests {
 		commentator().start (st, "testFieldNegation", iterations);
 
 		typename Field::Element a, neg_a, neg_a_a, zero;
-		F.init(a,0.0); F.init(neg_a,0.0); F.init(neg_a_a,0.0); F.init (zero, 0.0);
+		int64_t z = 0;
+		F.init(a,z); F.init(neg_a,z); F.init(neg_a_a,z); F.init (zero, z);
 		typename Field::RandIter r (F);
 
 		bool ret = true;
@@ -471,10 +473,10 @@ namespace field_subtests {
 		commentator().start (st, "testFieldInversion", iterations);
 
 		typename Field::Element a, ainv, aainv, one;
-		F.init (a,0);
-		F.init (ainv,0);
-		F.init (aainv,0);
-		F.init (one, 1);
+		F.init (a,(int64_t)0);
+		F.init (ainv,(int64_t)0);
+		F.init (aainv,(int64_t)0);
+		F.init (one, (int64_t)1);
 		typename Field::RandIter r (F);
 
 		bool ret = true;
@@ -525,10 +527,11 @@ namespace field_subtests {
 		commentator().start (st, "testFieldDistributivity", iterations);
 
 		typename Field::Element a, b, c, a_b, a_bc, ac, bc, ac_bc, ca_b, ca, cb, ca_cb;
-		F.init (a,0); F.init (b,0); F.init (c,0);
-		F.init (a_b,0); F.init (a_bc,0); F.init (ac,0); F.init (bc,0);
-		F.init (ac_bc,0);
-		F.init (ca_b,0); F.init (ca,0); F.init (cb,0); F.init (ca_cb,0);
+		int64_t z = 0;
+		F.init (a,z); F.init (b,z); F.init (c,z);
+		F.init (a_b,z); F.init (a_bc,z); F.init (ac,z); F.init (bc,z);
+		F.init (ac_bc,z);
+		F.init (ca_b,z); F.init (ca,z); F.init (cb,z); F.init (ca_cb,z);
 
 		typename Field::RandIter r (F);
 
@@ -599,9 +602,9 @@ namespace field_subtests {
 		commentator().start (st, "testFieldCommutativity", iterations);
 
 		typename Field::Element a, b, ab, ba, a_b, b_a;
-		F.init (a,0); F.init (b,0);
-		F.init (ab,0); F.init (ba,0);
-		F.init (a_b,0); F.init (b_a,0);
+		F.init (a,(int64_t)0); F.init (b,(int64_t)0);
+		F.init (ab,(int64_t)0); F.init (ba,(int64_t)0);
+		F.init (a_b,(int64_t)0); F.init (b_a,(int64_t)0);
 
 
 		typename Field::RandIter r (F);
@@ -672,8 +675,8 @@ namespace field_subtests {
 		commentator().start (st, "testFieldAssociativity", iterations);
 
 		typename Field::Element a, b, c, a_b, b_c, a_bc, ab_c;
-		F.init (a,0); F.init (b,0); F.init (c,0);
-		F.init (a_b,0); F.init (b_c,0); F.init (a_bc,0); F.init (ab_c,0);
+		F.init (a,(int64_t)0); F.init (b,(int64_t)0); F.init (c,(int64_t)0);
+		F.init (a_b,(int64_t)0); F.init (b_c,(int64_t)0); F.init (a_bc,(int64_t)0); F.init (ab_c,(int64_t)0);
 		typename Field::RandIter r (F);
 
 		bool ret = true;
@@ -746,9 +749,9 @@ namespace field_subtests {
 		typename Field::RandIter r (F);
 		typename Givaro::GeneralRingNonZeroRandIter<Field> z(F,r);
 
-		F.init (zero, 0);
-		F.init (one, 1);
-		F.init (a,0); F.init (a_n,0); F.init (k,0);
+		F.init (zero, (int64_t)0);
+		F.init (one, (int64_t)1);
+		F.init (a,(int64_t)0); F.init (a_n,(int64_t)0); F.init (k,(int64_t)0);
 
 		bool ret = true;
 		LinBox::Integer card; F.cardinality(card);
@@ -829,8 +832,8 @@ namespace field_subtests {
 		typename Field::RandIter r (F);
 
 		F.characteristic (p);
-		F.init (zero, 0);
-		F.init (a,0); F.init (sigma,0);
+		F.init (zero, (int64_t)0);
+		F.init (a,(int64_t)0); F.init (sigma,(int64_t)0);
 
 		bool ret = true;
 
@@ -897,8 +900,8 @@ namespace field_subtests {
 		typename Field::RandIter r (F);
 		typename Field::Element a, b, a_b, a_b_p, a_p, b_p, a_p_b_p;
 
-		F.init (a,0); F.init (b,0); F.init (a_b,0);
-		F.init (a_b_p,0); F.init (a_p,0); F.init (b_p,0); F.init (a_p_b_p,0);
+		F.init (a,(int64_t)0); F.init (b,(int64_t)0); F.init (a_b,(int64_t)0);
+		F.init (a_b_p,(int64_t)0); F.init (a_p,(int64_t)0); F.init (b_p,(int64_t)0); F.init (a_p_b_p,(int64_t)0);
 
 		for (unsigned int i = 0; i < iterations; i++) {
 			commentator().startIteration (i);
@@ -972,7 +975,7 @@ namespace field_subtests {
 
 		typename Field::RandIter r (F);
 		typename Field::Element a, b, c1, c2;
-		F.init (a,0); F.init (b,0); F.init (c1,0); F.init (c2,0);
+		F.init (a,(int64_t)0); F.init (b,(int64_t)0); F.init (c1,(int64_t)0); F.init (c2,(int64_t)0);
 
 		for (unsigned int i = 0; i < iterations; i++) {
 			commentator().startIteration (i);
@@ -1051,7 +1054,8 @@ namespace field_subtests {
 
 		typename Field::RandIter r (F);
 		typename Field::Element a, b, c1, c2;
-		F.init (a,0); F.init (b,0); F.init (c1,0); F.init (c2,0);
+		uint64_t zero = 0;
+		F.init (a,zero); F.init (b,zero); F.init (c1,zero); F.init (c2,zero);
 
 		for (unsigned int i = 0; i < iterations; i++) {
 			commentator().startIteration (i);
@@ -1197,8 +1201,8 @@ namespace field_subtests {
 
 		typename Field::RandIter r (F);
 		typename Field::Element a, x, y, c1, c2, c3;
-		F.init (a,0); F.init (x,0); F.init (y,0);
-		F.init (c1,0); F.init (c2,0); F.init (c3,0);
+		F.init (a,(int64_t)0); F.init (x,(int64_t)0); F.init (y,(int64_t)0);
+		F.init (c1,(int64_t)0); F.init (c2,(int64_t)0); F.init (c3,(int64_t)0);
 
 		for (unsigned int i = 0; i < iterations; i++) {
 			commentator().startIteration (i);
@@ -1252,7 +1256,7 @@ namespace field_subtests {
 
 		typename Field::RandIter r (F);
 		typename Field::Element a;
-		F.init (a,0);
+		F.init (a,(int64_t)0);
 
 		if (iterations < 20) iterations = 20;
 		for (unsigned int i = 0; i < iterations; i++) {

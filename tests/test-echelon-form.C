@@ -1,7 +1,7 @@
 /* Copyright (C) 2012 bds
  * tests/test-echelon-form.C
  *
- * adapted by bds from test-blas-domain Written by Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+ * Adapted by bds from test-blas-domain written by Pascal Giorgi 
  *
  * ---------------------------------------------------------
  *
@@ -36,11 +36,8 @@
  */
 
 
- // where is this used?
-//#define __MINP_CONSTRUCT
 #include <iostream>
 #include <string>
-
 
 //#include "linbox/linbox-config.h"
 #include "test-common.h"
@@ -87,7 +84,7 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 	mycommentator().start (pretty("Testing rank"),"testRank",(unsigned int)iterations);
 
 	typename Field::RandIter G(F);
-	typename Field::NonzeroRandIter Gn(F,G);
+	typename Field::NonZeroRandIter Gn(F,G);
 	Element tmp;
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
@@ -163,6 +160,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
+	typedef typename Field::NonZeroRandIter         NonZeroRandIter;
 
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -170,11 +168,12 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 	mycommentator().start (pretty("Testing LQUP factorization"),"testLQUP",(unsigned int)iterations);
 
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
+	NonZeroRandIter Gn(F,G);
 
 	bool ret = true;
 	MatrixDomain<Field> MD(F);
 	BlasMatrixDomain<Field> BMD(F);
+	Element tmp; F.init(tmp);
 
 	for (int k=0;k<iterations;++k) {
 
@@ -208,8 +207,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
 		LQUPMatrix<Field> X(A,P,Q);
 
-		TriangularBlasMatrix<Field> L(F,m,m,Tag::Lower,Tag::Unit);
-		TriangularBlasMatrix<Field> U(F,m,n,Tag::Upper,Tag::NonUnit);
+		TriangularBlasMatrix<Field> L(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
+		TriangularBlasMatrix<Field> U(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
 		X.getL(L);
 		X.getU(U);
 		P=X.getP();
@@ -234,8 +233,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 
 		LQUPMatrix<Field> Y(A,P,Q);
 
-		TriangularBlasMatrix<Field> L2(F,m,m,Tag::Lower,Tag::Unit);
-		TriangularBlasMatrix<Field> U2(F,m,n,Tag::Upper,Tag::NonUnit);
+		TriangularBlasMatrix<Field> L2(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
+		TriangularBlasMatrix<Field> U2(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
 		Y.getL(L2);
 		Y.getU(U2);
 		P=Y.getP();
