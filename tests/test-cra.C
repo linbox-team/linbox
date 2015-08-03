@@ -29,6 +29,7 @@
  * @test cra algorithms
  */
 
+#include "linbox/linbox-config.h"
 #include <givaro/zring.h>
 #include "linbox/integer.h"
 #include "linbox/randiter/random-prime.h"
