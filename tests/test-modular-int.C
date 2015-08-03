@@ -38,6 +38,7 @@
  * @brief For each integer type T, Givaro::Modular<T> is tested with a small primm and with a large prime using runFieldTests and testRandomIterator.
  */
 
+#include "givaro/givintprime.h"
 #include "linbox/linbox-config.h"
 #include "linbox/ring/modular.h"
 #include "test-field.h"
@@ -63,9 +64,10 @@ bool launchTests(string int_type_name, integer q, size_t n, uint32_t trials, uin
 		pass &= runFieldTests (FS,  field_name.c_str(), 1, n, false);
 		pass &= testRandomIterator (FS, field_name.c_str(), trials, categories, hist_level);
 
+		Givaro::IntPrimeDom IPD;
 		integer k = Field::maxCardinality();
 		if (k > 0) {
-			prevprime(k,k);
+			IPD.prevprime(k,k);
 		} else {
 			static integer qi("18446744073709551557");
 			k = qi;

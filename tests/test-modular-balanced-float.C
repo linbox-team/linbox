@@ -28,18 +28,10 @@
  * @test   tests only runFieldTests on modular-balanced-float
  */
 
-
+#include <givaro/modular-balanced.h>
+#include <givaro/givintprime.h>
 
 #include "linbox/linbox-config.h"
-
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
-#include <queue>
-
-#include <givaro/modular-balanced.h>
-
 #include "linbox/util/commentator.h"
 #include "linbox/util/debug.h"
 
@@ -73,15 +65,16 @@ int main (int argc, char **argv)
 	commentator().start("Givaro::ModularBalanced<float> field test suite", "Givaro::ModularBalanced<float>");
 	bool pass = true;
 
+	Givaro::IntPrimeDom IPD;
 	integer k; 
-	nextprime(k,k = Givaro::ModularBalanced<float>::minCardinality()-1);
+	IPD.nextprime(k,Givaro::ModularBalanced<float>::minCardinality()-1);
 	Givaro::ModularBalanced<float> Fmin (k);
 	Givaro::ModularBalanced<float> F5 (5);
 	Givaro::ModularBalanced<float> F7 (7);
 
-	prevprime(k,k = Givaro::ModularBalanced<float>::maxCardinality()+1);
+	IPD.prevprime(k,Givaro::ModularBalanced<float>::maxCardinality()+1);
 	Givaro::ModularBalanced<float> Fmax(k);
-	prevprime(k,k /= 2);
+	IPD.prevprime(k,k/2);
 	Givaro::ModularBalanced<float> Fmid(k);
 
 	// Make sure some more detailed messages get printed

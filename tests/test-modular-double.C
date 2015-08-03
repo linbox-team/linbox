@@ -44,6 +44,7 @@
  * @test  tests only runFieldTests for modular-double.
  */
 
+#include "givaro/givintprime.h"
 #include "linbox/linbox-config.h"
 #include "linbox/ring/modular.h"
 #include "test-field.h"
@@ -68,11 +69,11 @@ int main (int argc, char **argv)
 	Givaro::Modular<double> F2 (2);
 	Givaro::Modular<double> F5 (5);
 	Givaro::Modular<double> F7 (7);
+	Givaro::IntPrimeDom IPD;
 	integer k = Givaro::Modular<double>::maxCardinality()+1;
-	Givaro::prevprime(k, k);
+	IPD.prevprime(k, k);
 	Givaro::Modular<double> Fmax(k);
-	k /= 2;
-	Givaro::prevprime(k, k);
+	IPD.prevprime(k, k/2);
 	Givaro::Modular<double> Fmid(k);
 
 
