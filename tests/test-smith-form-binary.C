@@ -31,6 +31,7 @@
 
 
 
+#include "linbox/linbox-config.h"
 
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/ring/ntl.h"

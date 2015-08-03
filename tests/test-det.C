@@ -36,13 +36,10 @@
 
 
 
+#include "linbox/linbox-config.h"
 #include <iostream>
 #include <fstream>
-
 #include <cstdio>
-
-#include "linbox/linbox-config.h"
-
 #include <givaro/givrational.h>
 #include "linbox/util/commentator.h"
 #include "linbox/ring/modular.h"

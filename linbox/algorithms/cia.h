@@ -27,7 +27,7 @@
 #ifndef __LINBOX_cia_H
 #define __LINBOX_cia_H
 
-#include <givaro/givpoly1.h>
+#include <givaro/givpoly1factor.h>
 #include "linbox/ring/modular.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/matrix/dense-matrix.h"
@@ -54,8 +54,8 @@ namespace LinBox
 		typename Blackbox::Field intRing = A.field();
 		typedef Givaro::Modular<double> Field;
 		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-		typedef Givaro::Poly1Dom<typename Blackbox::Field, Givaro::Dense> IntPolyDom;
-		typedef Givaro::Poly1Dom<Field, Givaro::Dense>                  FieldPolyDom;
+		typedef Givaro::Poly1FactorDom<typename Blackbox::Field, Givaro::Dense> IntPolyDom;
+		typedef Givaro::Poly1FactorDom<Field, Givaro::Dense>                  FieldPolyDom;
 		typedef typename IntPolyDom::Element IntPoly;
 		typedef typename FieldPolyDom::Element FieldPoly;
 
@@ -84,11 +84,11 @@ namespace LinBox
 		std::vector<FieldPoly> fieldFactors (nf);
 		integer tmp_convert; // PG 2005-08-04
 		for (size_t i = 0; i < nf; ++i){
-			size_t d= intFactors[i]->size();
+			size_t d= intFactors[i].size();
 			fieldFactors[i].resize(d);
 			for (size_t j = 0; j < d; ++j)
 				//F.init ((fieldFactors[i])[j], (*intFactors[i])[j]);
-				F.init ((fieldFactors[i])[j], intRing.convert(tmp_convert,(*intFactors[i])[j]));// PG 2005-08-04
+				F.init ((fieldFactors[i])[j], intRing.convert(tmp_convert,(intFactors[i])[j]));// PG 2005-08-04
 		}
 
 		FieldPoly currPol = fieldCharPoly;
@@ -110,7 +110,7 @@ namespace LinBox
 		IntPoly intCharPoly (A.coldim());
 		intRing.assign (intCharPoly[0], intRing.one);
 		for (size_t i = 0; i < nf; ++i){
-			IPD.pow( P, *intFactors[i], multip[i] );
+			IPD.pow( P, intFactors[i], multip[i] );
 			IPD.mulin( intCharPoly, P );
 		}
 		//for (size_t i = 0; i < nf; ++i)

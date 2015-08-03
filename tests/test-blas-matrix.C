@@ -27,10 +27,10 @@
  *.
  */
  
+#include "linbox/linbox-config.h"
 #include <givaro/modular.h>
 #include <givaro/modular-balanced.h>
 
-#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/ring/PID-integer.h"
 #include "linbox/ring/modular.h"

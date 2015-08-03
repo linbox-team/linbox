@@ -32,6 +32,7 @@
 
 
 
+#include "linbox/linbox-config.h"
 #include "linbox/ring/PID-integer.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/vector/blas-vector.h"
