@@ -287,7 +287,7 @@ namespace LinBox
 		inline  Element powtwo(Element& z, const Element& x) const
 		{
 			z = 1;
-			Element max; init(max, (1<<30));
+			Element max; init(max, (int64_t)(1<<30));
 			if (x < 0) return z;
 			//if (x < (Element)max-1) {
 			if (x < max) {
@@ -356,12 +356,12 @@ namespace LinBox
 		}
 		*/
 
-		inline Element& init(Element& x, const unsigned int & y) const
+		inline Element& init(Element& x, const uint64_t & y) const
 		{
 			return x=Element(y);
 		}
 
-		inline Element& init(Element& x, const int& y) const
+		inline Element& init(Element& x, const int64_t & y) const
 		{
 			return x=Element(y);
 		}
