@@ -134,16 +134,17 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		Element &init (Element &x, const int &y ) const
+		Element &init (Element &x, const int64_t &y ) const
 		{
 			return x = y & 1;
 		}
 
-		Element &init (Element &x, const unsigned int &y ) const
+		Element &init (Element &x, const uint64_t &y ) const
 		{
 			return x = y & 1;
 		}
 
+/*
 		Element &init (Element &x, const long &y ) const
 		{
 			return x = y & 1;
@@ -159,6 +160,7 @@ namespace LinBox
 			return x = static_cast<unsigned char>(y) & 1;
 		}
 
+*/
 		Element &init (Element &x, const double &y) const
 		{
 			return x = static_cast<unsigned char>(y) & 1;

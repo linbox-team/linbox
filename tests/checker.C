@@ -89,6 +89,7 @@ skip("test-tutorial", "incomplete test");
 skip("test-dense-zero-one", "half baked, bds responsible");
 }
 
+warn("test-blas-matrix", "intermittently fails");
 warn("test-echelon-form", "new");
 warn("test-fibb",  "incomplete");
 warn("test-gf2", "not much is tested there");
