@@ -226,9 +226,9 @@ namespace LinBox
 
 			typename IVector::iterator r_p;
 			for (r_p = r1. begin(); r_p != r1. end(); ++ r_p)
-				_r. init (*r_p, rand());
+				_r. init (*r_p, int64_t(rand()));
 			for (r_p = r2. begin(); r_p != r2. end(); ++ r_p)
-				_r. init (*r_p, rand());
+				_r. init (*r_p, int64_t(rand()));
 
 			//std::cout << "Random vecotor1: " ;
 			//print (r1);
@@ -918,7 +918,7 @@ namespace LinBox
 			Integer common_den, common_den_mod_prod, bound,two,tmp;
 			_r.assign(common_den,_r.one);
 			_r.assign(common_den_mod_prod,_r.one);
-			_r.init(two,2);
+			_r.init(two,int64_t(2));
 
 			Vector denominator(_r,num.size());
 

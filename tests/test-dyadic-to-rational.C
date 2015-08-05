@@ -66,7 +66,7 @@ When dxa^2 <= denBs, 2 should be returned.
 	int ret = 2;
 
 	// check of individual reconstructions
-	Int dx; Z.init(dx, dxa);
+	Int dx; Z.init(dx, uint64_t(dxa));
 	int c;
 	// individual reconstructions
 	for (size_t i = 0; i < kp2 ; ++i) {
@@ -143,7 +143,7 @@ bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 
 #if 1
 // special case 1
-	Int B; Z.init(B, 1000000000);
+	Int B; Z.init(B, int64_t(1000000000));
 	Int B2; Z.init(B2); B2 = B*B;
 	Int denB = 4*B+294967296; // 2^32
 

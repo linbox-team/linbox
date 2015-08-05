@@ -1,29 +1,37 @@
-
 #ifndef __LINBOX_POLY_DET_H
 #define __LINBOX_POLY_DET_H
+/* by Alex Stachnik
+*/
 
 #include <givaro/extension.h>
 #include <linbox/algorithms/poly-interpolation.h>
 #include <linbox/solutions/det.h>
 
 namespace LinBox {
+/*  
+Matrix is a polynomial matrix.  
+result is set to its determinant and returned (a polynomial).
+d is the number of evaluation points.
 
+The method is to compute dets at each evaluation point and interpolate.
+ (note by bds)
+ */
 template <class Field,class Matrix>
 typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element&
 computePolyDet(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element& result,
-               Field& F,
-               Matrix& A, 
+				DenseMatrix<Givaro::Poly1Dom<Field,Givaro::Dense> >& A, 
                int d)
 {
 	typedef Givaro::Poly1Dom<Field,Givaro::Dense> PolyDom;
 	typedef typename PolyDom::Element PolyElt;
 	typedef typename Field::Element FieldElt;
-	typedef MatrixDomain<Field> FieldMatDom;
-	typedef typename FieldMatDom::OwnMatrix FieldMat;
+	//typedef MatrixDomain<Field> FieldMatDom;
+	typedef DenseMatrix<Field> FieldMat;
 
 	int n=A.coldim(),m=A.rowdim();
 
 	PolyDom BR=A.field();
+	Field F(BR.subDomain()); // coeff field
 
 	std::vector<FieldMat> mats;
 	std::vector<FieldElt> pts(d);
@@ -31,8 +39,7 @@ computePolyDet(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element& result,
 	F.assign(fieldElt,F.zero);
 	for (int i=0;i<d;++i) {
 		mats.push_back(FieldMat(F,m,n));
-		F.assign(pts[i],fieldElt);
-		F.next(fieldElt);
+		F.init(pts[i],int64_t(i));
 	}
 
 	commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
@@ -59,7 +66,7 @@ computePolyDet(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element& result,
 	std::vector<FieldElt> dets(d);
 #pragma omp parallel for shared(dets,mats)
 	for (int k=0;k<d;++k) {
-		det(dets[k],mats[k],Method::Wiedemann());
+		det(dets[k],mats[k],Method::Elimination());
 	}
 
 	PI.interpolate(result,pts,dets,BR,F);

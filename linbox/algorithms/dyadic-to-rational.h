@@ -123,10 +123,10 @@ bool partial_hegcd(Ring& Z, typename Ring::Element& e, typename Ring::Element& b
 	Int quo, r, tmp;  Z.init(quo); Z.init(r); Z.init(tmp);
 	bool withinbound, wellapproximated;
 
-	Int b0; Z.assign(b0, Z.one); // and a0 = -0
-	Int r0; Z.init(r0, n); // so that r0 = b0*n - a0*d
-	Int b1; Z.assign(b1, Z.zero); // and a1 = 1
-	Int r1; Z.init(r1, d); // so that r1 = b1*n - a1*d
+	Int b0; Z.init(b0); Z.assign(b0, Z.one); // and a0 = -0
+	Int r0; Z.init(r0); Z.assign(r0, n); // so that r0 = b0*n - a0*d
+	Int b1; Z.init(b1); Z.assign(b1, Z.zero); // and a1 = 1
+	Int r1; Z.init(r1); Z.assign(r1, d); // so that r1 = b1*n - a1*d
 //std::cout << "init 1 -0: " << b0 << " " << b1 << std::endl;
 
 	do {
@@ -163,13 +163,13 @@ int dyadicToRational(
 	typedef typename Ring::Element Int;
 	Int q, rem, tmp_den, nx;
 	Z.init(q); Z.init(rem); Z.init(tmp_den); Z.init(nx);
-	Int two; Z.init(two, 2);
-	Int denx2;
-	Z.init(denx2, denx); Z.divin(denx2, two);// denx2 = denx/2, for balancing remainders.
+	Int two; Z.init(two, int64_t(2));
+	Int denx2; Z.init(denx2);
+	Z.assign(denx2, denx); Z.divin(denx2, two);// denx2 = denx/2, for balancing remainders.
 	std::stack<std::pair<size_t, Int> > S;
 	Int tmp; Z.init(tmp);
 
-	Int den_lcm; Z.assign(den_lcm, Z.one);
+	Int den_lcm; Z.init(den_lcm); Z.assign(den_lcm, Z.one);
 	den = den_lcm; // = 1.
 
 	S.push(std::pair<int, Int>(0, Z.one));

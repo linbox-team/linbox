@@ -99,9 +99,9 @@ bool testRandom(const Ring& R,
 
 			for (j = 0; j < i; ++ j) {
 
-				R.init(L[(size_t)i][(size_t)j], rand() % 10);
+				R.init(L[(size_t)i][(size_t)j], int64_t(rand() % 10));
 
-				R.init(U[(size_t)j][(size_t)i], rand() % 10);
+				R.init(U[(size_t)j][(size_t)i], int64_t(rand() % 10));
 			}
 
 

@@ -69,7 +69,7 @@ int main(int argc, char** argv)
 	FieldElt d;
 	PolyInterpolation<Field,PolyDom> PO(pts,F,PD);
 	PO.evaluate(vals,P1,PD,F);
-	for (int i=0;i<vals.size();++i) {
+	for (size_t i=0;i<vals.size();++i) {
 		PD.eval(d,P1,pts[i]);
 		pass=pass&&F.areEqual(d,vals[i]);
 	}
