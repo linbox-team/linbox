@@ -65,7 +65,7 @@ namespace LinBox
 				for (int i = 0; i < rowdim; ++ i) {
 					Ap -> setEntry ((size_t)i,(size_t) i, f.one);
 					for (int j = rowdim; j < coldim; ++ j){
-						f. init (elt, rand()%10);
+						f. init (elt, (uint64_t)(rand()%10));
 						Ap -> setEntry ((size_t)i, (size_t)j, elt);
 					}
 				}
@@ -73,7 +73,7 @@ namespace LinBox
 				for (int i = 0; i < coldim; ++ i) {
 					Ap -> setEntry ((size_t)i,(size_t) i, f.one);
 					for (int j = coldim; j < rowdim; ++ j) {
-						f. init (elt, rand()%10);
+						f. init (elt, (uint64_t)(rand()%10));
 						Ap -> setEntry ((size_t)j,(size_t) i, elt);
 					}
 				}

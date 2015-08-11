@@ -156,7 +156,7 @@ namespace LinBox
 		/** clear and resize without construction */
 		void clearAndResize(size_t size)
 		{
-			_domain.init(denom, 1);
+			_domain.init(denom, (int64_t)1);
 			typename Vector::iterator i;
 			numer.resize(size);
 			for (i=numer.begin(); i!=numer.end(); ++i)
