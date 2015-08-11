@@ -318,9 +318,9 @@ namespace LinBox
 						leadingBlocks.insert (std::pair<FactorMult<FieldPoly>*,bool>(FFM,false));
 					}
 					else {
-						FFM = new FactorMult<FieldPoly> (factors[i],factors[i],1U,NULL);
+						FFM = new FactorMult<FieldPoly> (&factors[i],&factors[i],1U,NULL);
 						//std::cerr<<"Inserting new factor : "<<*factors[i]<<std::endl;
-						factCharPoly.insert (std::pair<size_t, FactorMult<FieldPoly>* > (factors[i]->size()-1, FFM));
+						factCharPoly.insert (std::pair<size_t, FactorMult<FieldPoly>* > (factors[i].size()-1, FFM));
 						leadingBlocks.insert (std::pair<FactorMult<FieldPoly>*,bool>(FFM,false));
 						goal -= (int)deg;
 					}

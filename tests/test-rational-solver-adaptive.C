@@ -103,7 +103,7 @@ bool testRandomSolve (const Ring& R,
 
 		BlasMatrix<Ring> D(R, (size_t) n, (size_t) n);
 
-		for(size_t i = 0; i < n; ++i) {
+		for(size_t i = 0; i < (size_t)n; ++i) {
 			typename Ring::Element x; R.init(x, d[i]);
 			D.setEntry(i, i, x);
 			//for(size_t j = 0; j < n; ++j) 
