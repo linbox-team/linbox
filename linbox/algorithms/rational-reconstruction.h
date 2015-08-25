@@ -55,6 +55,33 @@
 #endif
 
 
+namespace Givaro
+{
+    inline void reconstructRational (Integer& a, Integer& b, const Integer& x, const Integer& m, const Integer& bound)
+    {
+        Rational rr(x,m,bound);
+        a = rr.nume();
+        b = rr.deno();
+    }
+    
+    inline void reconstructRational (Integer& a, Integer& b, const Integer& x, const Integer& m)
+    {
+        reconstructRational(a,b, x, m, Givaro::sqrt(m));
+    }
+    
+    inline bool reconstructRational (Integer& a, Integer& b,
+                                     const Integer& x, const Integer& m,
+                                     const Integer& a_bound, const Integer& b_bound)
+    {
+        Integer bound = x/b_bound;
+			// if (bound>a_bound) std::cerr << "a_bound: " << a_bound << ", x/b_bound: " << bound << std::endl;
+        
+        reconstructRational(a,b,x,m, (bound>a_bound?bound:a_bound));
+        
+        return b<= b_bound;
+    }
+    
+}
 
 
 namespace LinBox
@@ -63,6 +90,9 @@ namespace LinBox
 	{
 		return ( (m.bitsize()+7 )/8) ;
 	}
+
+
+    
 
 	/*! \brief Limited doc so far.
 	 * Used, for instance, after LiftingContainer.
@@ -285,14 +315,14 @@ namespace LinBox
 				if ((step % _threshold) == 0) {
 
 					//std::cout << "Previous (Current) modulus: " << pmodulus << "( " << modulus << ")\n";
-					dot (tmp, r1, dig); _r. remin (tmp, prime); _r. axpyin (c1, tmp, pmodulus);
+					dot (tmp, r1, dig); _r. modin (tmp, prime); _r. axpyin (c1, tmp, pmodulus);
 					//std::cout << "r1 * digit: " << tmp << '\n';
-					dot (tmp, r2, dig); _r. remin (tmp, prime); _r. axpyin (c2, tmp, pmodulus);
+					dot (tmp, r2, dig); _r. modin (tmp, prime); _r. axpyin (c2, tmp, pmodulus);
 					//std::cout << "r2 * digit: " << tmp << '\n';
 					//std::cout << "c1, c2: " << c1 << ", " << c2 << "\n";
 
-					_r. mul (rem1, c1, c1_den); _r. subin (rem1, c1_num); _r. remin (rem1, modulus);
-					_r. mul (rem2, c2, c2_den); _r. subin (rem2, c2_num); _r. remin (rem2, modulus);
+					_r. mul (rem1, c1, c1_den); _r. subin (rem1, c1_num); _r. modin (rem1, modulus);
+					_r. mul (rem2, c2, c2_den); _r. subin (rem2, c2_num); _r. modin (rem2, modulus);
 
 					//Early termination condition is met.
 
@@ -302,14 +332,14 @@ namespace LinBox
 					}
 
 					if (!_r. isZero (rem1)) {
-						int status = (int)_r.reconstructRational(tmp_num, tmp_den, c1, modulus, numbound, denbound);
+						int status = (int)Givaro::reconstructRational(tmp_num, tmp_den, c1, modulus, numbound, denbound);
 						if(status) {
 							_r. assign (c1_den, tmp_den); _r. assign (c1_num, tmp_num);
 						}
 					}
 
 					if (!_r. isZero (rem2)) {
-						int  status =(int)  _r.reconstructRational(tmp_num, tmp_den, c2, modulus, numbound, denbound);
+						int  status =(int) Givaro::reconstructRational(tmp_num, tmp_den, c2, modulus, numbound, denbound);
 						if(status) {
 							_r. assign (c2_den, tmp_den); _r. assign (c2_num, tmp_num);
 						}
@@ -338,7 +368,7 @@ namespace LinBox
 			int counter=0;
 			for (num_p = num. begin(), res_p = res. begin(); num_p != num. end(); ++ num_p, ++ res_p) {
 				_r. mul (tmp_res, *res_p, den);
-				_r. remin (tmp_res, modulus);
+				_r. modin (tmp_res, modulus);
 				_r. sub (neg_res, tmp_res, modulus);
 				_r. abs (abs_neg, neg_res);
 
@@ -347,7 +377,7 @@ namespace LinBox
 				else if (_r. compare(abs_neg, numbound) < 0)
 					_r. assign (*num_p, neg_res);
 				else {
-					int status= (int) _r. reconstructRational(tmp_num, tmp_den, *res_p, modulus, numbound, denbound);
+					int status= (int)Givaro::reconstructRational(tmp_num, tmp_den, *res_p, modulus, numbound, denbound);
 					if (!status) {
 						commentator().report() 
 						<< "ERROR in reconstruction ? (1)\n" << std::endl;
@@ -570,7 +600,7 @@ namespace LinBox
 						Integer tmp_num, tmp_den;
 						_r. assign (tmp_den, den);
 						_r. mul (tmp_num, den, *zz_p);
-						_r. remin (tmp_num, modulus);
+						_r. modin (tmp_num, modulus);
 
 						// assign tmp_num = one of tmp_num and tmp_num - modulus with smallest absolute value.
 						Integer n_num;
@@ -599,7 +629,7 @@ namespace LinBox
 						justConfirming = false;
 						// if no answer yet (or last answer became invalid)
 						// try to reconstruct a rational number
-						tmp = _r.reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
+						tmp = Givaro::reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
 						// update 'accuracy' according to whether it worked or not
 						if (tmp) {
 							linbox_check (!_r.isZero(tmp_den));
@@ -633,7 +663,7 @@ namespace LinBox
 							// check if the rational number works for _zz_p mod _modulus
 							_r. mul (tmp_i, den, *zz_p);
 							_r. subin (tmp_i, *num_p);
-							_r. remin (tmp_i, modulus);
+							_r. modin (tmp_i, modulus);
 							if (_r.isZero (tmp_i)) {
 								*accuracy_p = i;
 								numConfirmed++;
@@ -641,7 +671,7 @@ namespace LinBox
 							else {
 								// previous result is fake, reconstruct new answer
 								Integer tmp_den;
-								tmp = _r.reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
+								tmp = Givaro::reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
 								if (tmp) {
 									linbox_check (!_r.isZero(den));
 									if (! _r. areEqual (tmp_den, den)) {
@@ -897,7 +927,7 @@ namespace LinBox
 				typename Vector::iterator   iter_d  = den_r.begin();
 
 				for (size_t i=0; iter_a != real_approximation.end(); ++iter_a, ++ iter_n, ++iter_d, ++i){
-					if (!_r.reconstructRational(*iter_n, *iter_d,
+					if (!Givaro::reconstructRational(*iter_n, *iter_d,
 								    *iter_a, modulus, numbound, denbound))
 					{
 						commentator().report()
@@ -934,7 +964,7 @@ namespace LinBox
 			for (size_t i=0; iter_approx != real_approximation.end(); ++iter_approx, ++ iter_num, ++iter_denom, ++i){
 				//_r.mulin( *iter_approx , common_den_mod_prod);
 				_r.mulin( *iter_approx , common_den);
-				_r.remin( *iter_approx , modulus);
+				_r.modin( *iter_approx , modulus);
 				_r. sub (neg_approx, *iter_approx, modulus);
 				_r. abs (abs_approx, neg_approx);
 
@@ -947,7 +977,7 @@ namespace LinBox
 					_r.assign(*iter_denom, _r.one);
 				}
 				else {
-					if  (!_r.reconstructRational(*iter_num, *iter_denom, *iter_approx, modulus, numbound, denbound))
+					if  (!Givaro::reconstructRational(*iter_num, *iter_denom, *iter_approx, modulus, numbound, denbound))
 					{
 #ifdef DEBUG_RR
 						std::cout << "ERROR in reconstruction ? (3)\n" << std::endl;
@@ -977,10 +1007,10 @@ namespace LinBox
 							_r.assign(modulus,tmp);
 							_r.div(tmp,modulus,prime);
 						}
-						_r.rem(tmp , *iter_denom , modulus);
-						_r.remin(common_den_mod_prod , modulus);
+						_r.mod(tmp , *iter_denom , modulus);
+						_r.modin(common_den_mod_prod , modulus);
 						_r.mulin(common_den_mod_prod , tmp);
-						_r.remin(common_den_mod_prod , modulus);
+						_r.modin(common_den_mod_prod , modulus);
 					}
 #endif
 
@@ -1114,7 +1144,7 @@ namespace LinBox
 					terminated = true;
 					for ( zz_p = zz.begin(), num_p = num.begin(); zz_p != zz.end();  ++ zz_p, ++ num_p) {
 						Integer a = *num_p;
-						Integer bx= *zz_p; _r. mulin (bx, den); _r. remin(bx, modulus);
+						Integer bx= *zz_p; _r. mulin (bx, den); _r. modin(bx, modulus);
 						Integer _bx = bx-modulus;
 						if (!_r.areEqual(a,bx) && !_r.areEqual(a,_bx)) {
 							terminated = false;
@@ -1132,8 +1162,8 @@ namespace LinBox
 					Integer tmp_den=0;
 					Integer zz_p_den (*zz_p);
 					_r. mulin (zz_p_den,den);
-					_r. remin (zz_p_den,modulus);
-					bool tmp = RR.reconstructRational(*num_p, tmp_den, zz_p_den, modulus);
+					_r. modin (zz_p_den,modulus);
+					bool tmp = Givaro::reconstructRational(*num_p, tmp_den, zz_p_den, modulus);
 #ifdef RSTIMING
 					++counter;
 #endif
@@ -1161,9 +1191,9 @@ namespace LinBox
 					Integer tmp_den;
 					Integer zz_p_den (*zz_p);
 					_r. mulin (zz_p_den,den);
-					_r. remin (zz_p_den,modulus);
+					_r. modin (zz_p_den,modulus);
 
-					bool tmp = RR.reconstructRational(*num_p, tmp_den, zz_p_den, modulus, _lcontainer.numbound(), _lcontainer.denbound());
+					bool tmp = Givaro::reconstructRational(*num_p, tmp_den, zz_p_den, modulus, _lcontainer.numbound(), _lcontainer.denbound());
 #ifdef RSTIMING
 					++counter;
 #endif
@@ -1454,7 +1484,7 @@ namespace LinBox
 					// compute the numerators and check their validity according to the numerator  bound
 					for (size_t i=0;i<size;++i){
 						_r.mulin(real_approximation[(size_t)i], denom);
-						_r.remin(real_approximation[(size_t)i], modulus);
+						_r.modin(real_approximation[(size_t)i], modulus);
 						_r. sub (neg_approx, real_approximation[(size_t)i], modulus);
 						_r. abs (abs_approx, neg_approx);
 
@@ -1802,7 +1832,7 @@ namespace LinBox
 					// compute the numerators and check their validity according to the numerator  bound
 					for (size_t i=0;i<size;++i){
 						_r.mulin(real_approximation[(size_t)i], common_denom);
-						_r.remin(real_approximation[(size_t)i], modulus);
+						_r.modin(real_approximation[(size_t)i], modulus);
 						_r. sub (neg_approx, real_approximation[(size_t)i], modulus);
 						_r. abs (abs_approx, neg_approx);
 
@@ -2111,7 +2141,7 @@ namespace LinBox
 					// compute the numerators and check their validity according to the numerator  bound
 					for (size_t i=0;i<size;++i){
 						_r.mulin(real_approximation[(size_t)i], common_denom);
-						_r.remin(real_approximation[(size_t)i], modulus);
+						_r.modin(real_approximation[(size_t)i], modulus);
 						_r. sub (neg_approx, real_approximation[(size_t)i], modulus);
 						_r. abs (abs_approx, neg_approx);
 

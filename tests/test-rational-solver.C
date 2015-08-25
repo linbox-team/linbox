@@ -28,7 +28,6 @@
  * @test no doc.
  */
 
-#include "linbox/ring/PID-integer.h"
 #include "linbox/ring/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/algorithms/rational-solver.h"
@@ -141,7 +140,7 @@ int main(int argc, char** argv)
     parseArguments (argc, argv, args);
 
     using Field = Givaro::Modular<int32_t>;
-    using Ring  = PID_integer;
+    using Ring  = Givaro::IntegerDom;
 
     Ring R;
     Field F(101);

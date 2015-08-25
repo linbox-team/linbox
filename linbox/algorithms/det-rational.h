@@ -30,7 +30,7 @@
 #include "linbox/ring/modular.h"
 
 //#include "linbox/field/gmp-rational.h"
-#include "linbox/ring/PID-integer.h"
+#include "givaro/givinteger.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
 #include "linbox/algorithms/varprec-cra-early-single.h"
 #include "linbox/algorithms/cra-domain.h"
@@ -165,7 +165,7 @@ namespace LinBox
 	{
 
 // 		typedef typename Rationals::Element Quotient;
-		typedef BlasVector<PID_integer>       IVect ;
+		typedef BlasVector<Givaro::IntegerDom>       IVect ;
 
 		commentator().start ("Rational Det", "Rdeterminant");
 
@@ -175,7 +175,7 @@ namespace LinBox
 		Integer M = 1;
 
 		//BlasMatrixBase<Quotient> ABase(A);
-		RationalMatrixFactory<PID_integer,Rationals, BlasMatrix<Rationals > > FA(&A);
+		RationalMatrixFactory<Givaro::IntegerDom,Rationals, BlasMatrix<Rationals > > FA(&A);
 		Integer di=1;
 
 		for (int i=(int)A.rowdim()-1; i >= 0 ; --i) {
@@ -183,8 +183,8 @@ namespace LinBox
 			M *=di;
 		}
 
-		PID_integer Z;
-		BlasMatrix<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
+		Givaro::IntegerDom Z;
+		BlasMatrix<Givaro::IntegerDom> Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
 		UserTimer t0, t1,t2;
@@ -196,11 +196,11 @@ namespace LinBox
 
 		ChineseRemainder< VarPrecEarlySingleCRA<Givaro::Modular<double> > > cra(3UL);
 		MyRationalModularDet<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M, F);
-		MyIntegerModularDet<BlasMatrix<PID_integer>, MyMethod> iteration2(Atilde, Met);
+		MyIntegerModularDet<BlasMatrix<Givaro::IntegerDom>, MyMethod> iteration2(Atilde, Met);
 		MyModularDet<MyRationalModularDet<BlasMatrix<Rationals > , MyMethod>,
-		MyIntegerModularDet<BlasMatrix<PID_integer>, MyMethod> >  iteration(&iteration1,&iteration2);
+		MyIntegerModularDet<BlasMatrix<Givaro::IntegerDom>, MyMethod> >  iteration(&iteration1,&iteration2);
 
-		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR;
+		RReconstruction<Givaro::IntegerDom, ClassicMaxQRationalReconstruction<Givaro::IntegerDom> > RR;
 
 		Integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
 		size_t k = 4;
@@ -242,8 +242,8 @@ namespace LinBox
 		Integer lif = 1;
 		if ((s1 > 4*s2) && (!term)){
 			//cout << "lif " << std::flush;
-			RationalSolver < PID_integer , Givaro::Modular<double>, RandomPrimeIterator, DixonTraits > RSolver;
-			LastInvariantFactor < PID_integer ,RationalSolver < PID_integer, Givaro::Modular<double>, RandomPrimeIterator, DixonTraits > >  LIF(RSolver);
+			RationalSolver < Givaro::IntegerDom , Givaro::Modular<double>, RandomPrimeIterator, DixonTraits > RSolver;
+			LastInvariantFactor < Givaro::IntegerDom ,RationalSolver < Givaro::IntegerDom, Givaro::Modular<double>, RandomPrimeIterator, DixonTraits > >  LIF(RSolver);
 			IVect r_num2 (Z,Atilde. coldim());
 			t1.clear();
 			t1.start();

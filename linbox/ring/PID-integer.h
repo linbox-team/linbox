@@ -153,7 +153,7 @@ namespace LinBox
 		 *  Euclidean algorithm applied to |a| and |b|, with the signs then
 		 *  adjusted according to the signs of a and b.
 		 */
-		inline  Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b) const
+		inline  Element& gcd (Element& g, Element& s, Element& t, const Element& a, const Element& b) const
 		{
 #if (GIVARO_VERSION < 30500) // newer givaro has gcd with constant signature "guvab"
 			return Givaro::gcd(g,a,b,s,t);
@@ -164,7 +164,7 @@ namespace LinBox
 		
 		Element &dxgcd(Element &g, Element &s, Element &t, Element &u, Element &v, const Element &a, const Element &b) const
 		{
-			xgcd(g,s,t,a,b);
+			gcd(g,s,t,a,b);
 			div(u,a,g);
 			div(v,b,g);
 			return g;
@@ -206,12 +206,12 @@ namespace LinBox
 
 		inline  void reconstructRational (Element& a, Element& b, const Element& x, const Element& m) const
 		{
-			RationalReconstruction(a,b, x, m, Givaro::sqrt(m), true, true);
+			this->RationalReconstruction(a,b, x, m, Givaro::sqrt(m), true, true);
 		}
 
 		inline  void reconstructRational (Element& a, Element& b, const Element& x, const Element& m, const Element& bound) const
 		{
-			RationalReconstruction(a,b, x, m, bound, true, true);
+			this->RationalReconstruction(a,b, x, m, bound, true, true);
 		}
 
 		inline bool reconstructRational (Element& a, Element& b,
@@ -221,7 +221,7 @@ namespace LinBox
 			Element bound = x/b_bound;
 			// if (bound>a_bound) std::cerr << "a_bound: " << a_bound << ", x/b_bound: " << bound << std::endl;
 
-			RationalReconstruction(a,b,x,m, (bound>a_bound?bound:a_bound), true, false);
+			this->RationalReconstruction(a,b,x,m, (bound>a_bound?bound:a_bound), true, false);
 			return b <= b_bound;
 		}
 

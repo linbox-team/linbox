@@ -509,7 +509,7 @@ namespace LinBox
 				Element g, s, q, two;
 				_q= _rns->getCRTmodulo();
 				_domain.init(q,_q);_domain.init(two,int64_t(2));
-				_domain.xgcd(g, _inv_q, s, q, _prime);
+				_domain.gcd(g, _inv_q, s, q, _prime);
 				if (_domain.compare(_inv_q, _domain.zero)<0 ) _domain.addin(_inv_q,_prime);
 				_domain.mul(_pq,_prime,q);
 				_domain.sub(_h_pq,_pq, _domain.one);
@@ -860,10 +860,10 @@ namespace LinBox
 					Element y_cur, b_cur;
 					// finish crt according to b
 					for (size_t i=0;i<_m;++i){
-						_domain.rem(b_cur, b[i], _prime);
+						_domain.mod(b_cur, b[i], _prime);
 						_domain.sub(y_cur, b_cur, y[i]);//std::cout<<"(b-y): "<<y_cur<<std::endl;
 						_domain.mulin(y_cur, _inv_q);//std::cout<<"((b-y)/q): "<<y_cur<<std::endl;
-						_domain.remin(y_cur, _prime);//std::cout<<"((b-y)/q mod p): "<<y_cur<<std::endl;
+						_domain.modin(y_cur, _prime);//std::cout<<"((b-y)/q mod p): "<<y_cur<<std::endl;
 						_domain.axpyin(y[i],_q, y_cur);//std::cout<<"y+p((b-y)/q mod p): "<<y[i]<<std::endl;
 						if ( y[i] > _h_pq) y[i]-=_pq;
 					}

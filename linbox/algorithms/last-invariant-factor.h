@@ -53,6 +53,7 @@ namespace LinBox
 
 		typedef BlasVector<Ring>         DVect;
 		Ring        r;
+        mutable typename Ring::RandIter _gen;
 		Solver solver;
 		int threshold;
 
@@ -64,7 +65,7 @@ namespace LinBox
 		LastInvariantFactor(const Solver& _solver = Solver(),
 				    const Ring& _r =Ring(),
 				    int _threshold =DEFAULTLIFTHRESHOLD) :
-			r(_r),solver(_solver), threshold(_threshold)
+                r(_r), _gen(r),solver(_solver), threshold(_threshold)
 		{
 
 			if ( _threshold <= 1) threshold = DEFAULTLIFTHRESHOLD;
@@ -114,13 +115,15 @@ namespace LinBox
 			typename std::vector<int>::iterator b_p;
 			typename Vector::const_iterator Prime_p;
 
-			Integer pri, quo, rem;
+			Integer pri, quo, rem, itmp;
 
 			for (; count < threshold; ++ count) {
 				// assign b to be a random vector
 				for (b_p = b.begin(); b_p != b.end(); ++ b_p) {
-					* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
-					// dpritcha, 2004-07-26
+// 					* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
+// 					// dpritcha, 2004-07-26
+                    _gen( itmp );
+                    * b_p = (int)itmp;
 				}
 
 				// try to solve Ax = b over Ring
@@ -140,7 +143,7 @@ namespace LinBox
 				      ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
-						r.quoRem(quo,rem,lif,pri);
+						r.divmod(quo,rem,lif,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);
 						else break;
 					}
@@ -178,10 +181,12 @@ namespace LinBox
 			for (; count < (threshold + 1) / 2; ++ count) {
 				// assign b to be a random vector
 				for (b_p = b1. begin(); b_p != b1. end(); ++ b_p) {
-					* b_p = rand();
+// 					* b_p = rand();
+                    _gen(* b_p);
 				}
 				for (b_p = b2. begin(); b_p != b2. end(); ++ b_p) {
-					* b_p = rand();
+// 					* b_p = rand();
+                    _gen(* b_p);
 				}
 				// try to solve Ax = b1, b2 over Ring
 				tmp1 = solver. solveNonsingular(r1_num, r1_den, A, b1);
@@ -205,8 +210,10 @@ namespace LinBox
 				int i;
 				for (i = 0; i < 20; ++ i) {
 					for (r1_p = r1. begin(), r2_p = r2. begin(); r1_p != r1. end(); ++ r1_p, ++ r2_p) {
-						r. init (*r1_p, rand());
-						r. init (*r2_p, rand());
+// 						r. init (*r1_p, rand());
+// 						r. init (*r2_p, rand());
+						r. init (*r1_p); _gen(*r1_p);
+						r. init (*r2_p); _gen(*r2_p);
 					}
 					r. assign(a11, r.zero); r. assign (a12, r.zero); r. assign (a21, r.zero); r. assign (a22, r.zero);
 					for (r1_p = r1. begin(), num1_p = r1_num. begin(); r1_p != r1. end(); ++ r1_p, ++ num1_p)
@@ -239,7 +246,7 @@ namespace LinBox
 				for ( Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
-						r.quoRem(quo,rem,lif,pri);
+						r.divmod(quo,rem,lif,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);
 						else break;
 					} while (true);
@@ -249,7 +256,7 @@ namespace LinBox
 				for ( Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
-						r.quoRem(quo,rem,Bonus,pri);
+						r.divmod(quo,rem,Bonus,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);
 						else break;
 					} while (true);
@@ -275,8 +282,10 @@ namespace LinBox
 
 			// assign b to be a random vector
 			for (b_p = b.begin(); b_p != b.end(); ++ b_p) {
-				* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
-				// dpritcha, 2004-07-26
+// 				* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
+// 				// dpritcha, 2004-07-26
+                _gen( * b_p );
+                
 			}
 			//report <<"try to solve Ax = b over Ring";
 			// try to solve Ax = b over Ring
@@ -317,8 +326,10 @@ namespace LinBox
 			int i;
 			for (i = 0; i < 20; ++ i) {
 				for (r1_p = r1. begin(), r2_p = r2. begin(); r1_p != r1. end(); ++ r1_p, ++ r2_p) {
-					r. init (*r1_p, rand());
-					r. init (*r2_p, rand());
+// 					r. init (*r1_p, rand());
+// 					r. init (*r2_p, rand());
+					r. init (*r1_p); _gen(*r1_p);
+					r. init (*r2_p); _gen(*r2_p);
 				}
 				r. assign (a11, r.zero); r. assign (a12, r.zero); r. assign (a21, r.zero); r. assign (a22, r.zero);
 				for (r1_p = r1. begin(), num1_p = r1_num. begin(); r1_p != r1. end(); ++ r1_p, ++ num1_p)

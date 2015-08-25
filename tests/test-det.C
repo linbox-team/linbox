@@ -42,8 +42,7 @@
 #include <cstdio>
 #include <givaro/givrational.h>
 #include "linbox/util/commentator.h"
-#include "linbox/ring/modular.h"
-#include "linbox/ring/PID-integer.h"
+#include "givaro/modular.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/matrix/sparse-matrix.h"
@@ -336,8 +335,8 @@ bool testIntegerDet (size_t n, int iterations)
 
 	for (int i = 0; i < iterations; ++i) {
 		commentator().startIteration ((unsigned int)i);
-		PID_integer R;
-		SparseMatrix<PID_integer> A (R, n, n);
+		Givaro::IntegerDom R;
+		SparseMatrix<Givaro::IntegerDom> A (R, n, n);
 
 	 	integer pi = 1;
  		integer det_A_wiedemann, det_A_symm_wied, det_A_blas_elimination;
@@ -414,8 +413,8 @@ bool testIntegerDetGen (size_t n, int iterations)
 
 	for (int i = 0; i < iterations; ++i) {
 		commentator().startIteration ((unsigned int)i);
-		PID_integer R;
-		SparseMatrix<PID_integer> A (R, n, n);
+		Givaro::IntegerDom R;
+		SparseMatrix<Givaro::IntegerDom> A (R, n, n);
 
 	 	integer pi = 1;
  		integer det_A, det_A_H, det_A_B, det_A_E;

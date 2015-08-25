@@ -220,7 +220,7 @@ int main(int argc, char** argv)
 	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	{
-		typedef PID_integer Ring;
+		typedef Givaro::IntegerDom Ring;
 
 		Ring R;
 

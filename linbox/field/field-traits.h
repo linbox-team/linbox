@@ -70,6 +70,10 @@ namespace LinBox {
         struct ClassifyRing<Givaro::ZRing<Givaro::Integer>> {
                 typedef RingCategories::IntegerTag categoryTag;
         };
+        template<>
+        struct ClassifyRing<Givaro::IntegerDom> {
+                typedef RingCategories::IntegerTag categoryTag;
+        };
 
 
 	/*! FieldTrait.
