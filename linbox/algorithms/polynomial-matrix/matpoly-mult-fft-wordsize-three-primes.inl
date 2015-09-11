@@ -111,7 +111,7 @@ namespace LinBox {
 			size_t n = b.coldim();
 			
 			size_t _k=k,lk=0;
-			integer bound=integer(_p)*integer(_p)*integer(k)*pts;
+			integer bound=integer((uint64_t)_p)*integer((uint64_t)_p)*integer((uint64_t)k)*integer((uint64_t)pts);
 			// compute bit size of feasible prime for FFLAS
 			while ( _k ) {_k>>=1; ++lk;}
 			size_t prime_bitsize= (53-lk)>>1;
@@ -163,7 +163,7 @@ namespace LinBox {
 				delete c_i[i];
 		}
 
-				// compute  c= (a*b x^(-n0-1)) mod x^n1
+		// compute  c= (a*b x^(-n0-1)) mod x^n1
 		// by defaut: n0=c.size() and n1=2*c.size();
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
 		void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
@@ -216,7 +216,7 @@ namespace LinBox {
 			size_t k = a.coldim();
 			size_t n = b.coldim();
 			size_t _k=k,lk=0;
-			integer bound=integer(_p)*integer(_p)*integer(k)*integer(pts);
+			integer bound=integer(_p)*integer(_p)*integer((uint64_t)k)*integer((uint64_t)pts);
 			// compute bit size of feasible prime for FFLAS
 			while ( _k ) {_k>>=1; ++lk;}
 			size_t prime_bitsize= (53-lk)>>1;

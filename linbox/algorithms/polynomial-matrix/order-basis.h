@@ -34,6 +34,45 @@
 
 namespace LinBox {
 
+#ifdef __CHECK_ORDERBASIS
+#define __CHECK_MBASIS
+#define __CHECK_PMBASIS
+#endif
+        
+#if (__CHECK_MBASIS) or (__CHECK_PMBASIS)
+#include <string>
+        template<typename Field, typename Mat>
+        std::string check_orderbasis(const Field& F, const Mat& sigma,  const Mat& serie, size_t ord){
+                Mat T(F,sigma.rowdim(),serie.coldim(),sigma.size()+serie.size()-1);
+                PolynomialMatrixMulDomain<Field> PMD(F);
+                PMD.mul(T,sigma,serie);
+                MatrixDomain<Field> MD(F);
+                size_t i=0;
+                std::string msg(".....");
+                bool nul_sigma=true;
+                while(i<ord && MD.isZero(T[i])){
+                        if (!MD.isZero(sigma[i])) nul_sigma=false;		
+                        i++;
+                }
+                if (i<ord){
+                        std::cout<<"error at degree="<<i<<std::endl;
+                        T[i].write(std::cout, Tag::FileFormat::Plain);
+                        std::cout<<"***"<<std::endl;
+                        std::cout<<serie<<std::endl;
+                        std::cout<<sigma<<std::endl;
+                        exit(1);
+                }
+	
+	
+                if (i==ord && !nul_sigma)
+                        msg+="done";
+                else
+                        msg+="error";
+                return msg;
+        }
+#endif
+
+        
         template< size_t K>
         struct EarlyTerm {
                 size_t _count;
@@ -60,7 +99,7 @@ namespace LinBox {
                 void reset() {_count=0;_val=0;}
         };
 
-        template<class Field, class ET=EarlyTerm<4> >
+        template<class Field, class ET=EarlyTerm<-1> >
         class OrderBasis {
         public:
                 typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
@@ -71,7 +110,7 @@ namespace LinBox {
                 BlasMatrixDomain<Field>            _BMD;
                 ET                           _EarlyStop;
         public:
-#ifdef PROFILE_PMBASIS                
+#if (PROFILE_PMBASIS) or (__CHECK_MBASIS)or (__CHECK_PMBASIS)
                 size_t _idx=0;
                 size_t _target=0;
 #endif
@@ -105,12 +144,12 @@ namespace LinBox {
                 {
 
 #ifdef PROFILE_PMBASIS
-                        std::cout<<"Start PM-Basis : "<<order<<" ("<<_idx<<"/"<<_target<<")] : "<<MEMINFO<<std::endl;
+                        std::cout<<"Start PM-Basis : "<<order<<" ("<<_idx<<"/"<<_target<<")] : "<<std::endl;//MEMINFO<<std::endl;
                         if (_target==0) _target=order;
 #endif
                         
                         if (order <= MBASIS_THRESHOLD) {
-#ifdef PROFILE_PMBASIS
+#if (PROFILE_PMBASIS) or (__CHECK_PMBASIS)
                                 _idx+=order;
 #endif
                                 return M_Basis(sigma, serie, order, shift);                            
@@ -135,7 +174,11 @@ namespace LinBox {
                                 serie1->copy(serie,0,ord1-1);
                                 d1 = PM_Basis(sigma1, *serie1, ord1, shift);
                                 delete serie1;                                
-
+                                if (_EarlyStop.terminated()){
+                                        sigma=sigma1;
+                                        return d1;
+                                }
+                                
 #ifdef PROFILE_PMBASIS
                                 chrono.stop();
                                 //std::cout<<"[PM-Basis : "<<ord1<<" ("<<_idx<<"/"<<_target<<")] : "<<chrono.usertime()
@@ -148,7 +191,7 @@ namespace LinBox {
                                 _PMD.midproductgen(*serie2, sigma1, serie, true, ord1+1,ord1+ord2);
 #ifdef PROFILE_PMBASIS
                                 chrono.stop();
-                                std::cout<<"      -> serie update "<<sigma1.size()<<"x"<<order<<" --> "<<chrono.usertime()<<MEMINFO<<std::endl;
+                                std::cout<<"      -> serie update "<<sigma1.size()<<"x"<<order<<" --> "<<chrono.usertime()<<std::endl;//MEMINFO<<std::endl;
                                 chrono.clear();chrono.start();
 #endif
                                 // second recursive call
@@ -168,6 +211,10 @@ namespace LinBox {
 #ifdef PROFILE_PMBASIS
                                 chrono.stop();
                                 //std::cout<<"      -> basis product "<<sigma1.size()<<"x"<<sigma2.size()<<" = "<<d1+d2+1<<" -->"<<chrono.usertime()<<MEMINFO<<std::endl;
+#endif
+
+#ifdef __CHECK_PMBASIS
+                                std::cout<<"PMBASIS: order "<<_idx<<check_orderbasis(field(),sigma,serie,order)<<std::endl;
 #endif
                                 return d1+d2;
                         }
@@ -196,17 +243,18 @@ namespace LinBox {
                                size_t                 order,
                                std::vector<size_t>   &shift)
                 {
-
-                        //std::cout<<"------------- mba : "<<order<<std::endl;
-                        //std::cout<<serie<<std::endl;
+#ifdef __DEBUG_MBASIS
+                        std::cout<<"------------- mba : "<<order<<std::endl;
+                        std::cout<<serie<<std::endl;
+#endif
                         size_t m=serie.rowdim();
                         size_t n=serie.coldim();
                         size_t rank=0;
                         BlasMatrix<Field> delta(field(),m,n);
-                        //size_t max_degree=0;        // a bound on the row degree of sigma
-                        //std::vector<size_t> degree(m,0); // a bound on each row degree of sigma
-                        auto degree=shift;
-                        size_t max_degree=*std::max_element(degree.begin(),degree.end());
+                        size_t max_degree=0;        // a bound on the row degree of sigma
+                        std::vector<size_t> degree(m,0); // a bound on each row degree of sigma
+                        //auto degree=shift;
+                        //size_t max_degree=*std::max_element(degree.begin(),degree.end());
 
                         // set sigma to identity
                         for(size_t i=0;i<m*m;i++)
@@ -219,8 +267,12 @@ namespace LinBox {
                         typedef BlasSubmatrix<BlasMatrix<Field> > View;
                         size_t k=0;
                         for (; k<order && !_EarlyStop.terminated(); k++){
-                                //std::cout<<std::endl<<"****************** "<<k<<std::endl;
-                                //std::cout<<"shift=";std::copy(shift.begin(),shift.end(),std::ostream_iterator<size_t>(std::cout,","));std::cout<<std::endl;
+#ifdef __DEBUG_MBASIS
+                                std::cout<<std::endl<<"****************** "<<k<<std::endl;
+                                std::cout<<"shift=";std::copy(shift.begin(),shift.end(),std::ostream_iterator<size_t>(std::cout,","));std::cout<<std::endl;
+                                std::cout<<"degree=";std::copy(degree.begin(),degree.end(),std::ostream_iterator<size_t>(std::cout,","));std::cout<<std::endl;                                
+                                
+#endif
                                 // sort the shift in ascending order (-> minimize the shifted row-degree of sigma)
                                 // -> store the permutation in Bperm
                                 // -> permute the row degree at the same time
@@ -236,11 +288,13 @@ namespace LinBox {
                                         perm[i]=idx_min;
                                 }
                                 BlasPermutation<size_t> Bperm(perm);
-
-                                // std::cout<<"Bp=";
-                                // Bperm.write(std::cout,false);
-                                // std::cout<<std::endl;                                
-                                // std::cout<<"Bp.shift=";std::copy(shift.begin(),shift.end(),std::ostream_iterator<size_t>(std::cout,","));std::cout<<std::endl;
+#ifdef __DEBUG_MBASIS
+                                std::cout<<"Bp=";
+                                Bperm.write(std::cout,false);
+                                std::cout<<std::endl;                                
+                                std::cout<<"Bp.shift=";std::copy(shift.begin(),shift.end(),std::ostream_iterator<size_t>(std::cout,","));std::cout<<std::endl;
+                                std::cout<<"Bp.degree=";std::copy(degree.begin(),degree.end(),std::ostream_iterator<size_t>(std::cout,","));std::cout<<std::endl;                                
+#endif
                                 // check if Qt is identity
                                 //size_t lll=0;
                                 //while(lll<m && Qt[lll]==lll) lll++;
@@ -275,9 +329,11 @@ namespace LinBox {
                                         _BMD.mulin_right(Bperm, delta);
                                 }
                                 //std::cout<<"******** k="<<k<<std::endl;
-                                //std::cout<<sigma<<std::endl;
-                                //delta.write(std::cout,Tag::FileFormat::Maple);
-                                //std::cout<<std::endl;                                
+#ifdef __DEBUG_MBASIS
+                                std::cout<<sigma<<std::endl;
+                                delta.write(std::cout,Tag::FileFormat::Maple);
+                                std::cout<<std::endl;                                
+#endif
                                 BlasMatrix<Field> delta_copy(delta);
                                 //delta_copy.write(std::cout,Tag::FileFormat::Plain);
                                 
@@ -312,7 +368,7 @@ namespace LinBox {
 #endif
                                 
                                 // update sigma by L^(-1) (rank sensitive -> use only the left kernel basis)
-                                for(size_t i=0;i<=max_degree;i++){
+                                for(size_t i=0;i<=std::min(k,max_degree);i++){
                                         // NEED TO APPLY Qt to sigma[i]
                                         _BMD.mulin_right(Qt, sigma[i]);                                        
                                         View S1(sigma[i],0,0,rank,m);
@@ -320,13 +376,14 @@ namespace LinBox {
                                         _BMD.axpyin(S2,L2,S1);
                                         //_BMD.mulin_right(L,sigma[i]);
                                 }
-                                // std::cout<<"Qt=";
-                                // Qt.write(std::cout,false);
-                                // std::cout<<"\nP=";
-                                // P.write(std::cout,false);
+#ifdef __DEBUG_MBASIS
+                                std::cout<<"Qt=";
+                                Qt.write(std::cout,false);
+                                std::cout<<"\nP=";
+                                P.write(std::cout,false);
 
-                                //std::cout<<std::endl<<"rank="<<rank<<" Qt size: "<<Qt.getSize()<<std::endl;
-                               
+                                std::cout<<std::endl<<"rank="<<rank<<" Qt size: "<<Qt.getSize()<<std::endl;
+#endif
 #if 0
                                 size_t dmax=0, smax=0;
                                 // update: the row-degree, the shifted row-degree,
@@ -353,17 +410,28 @@ namespace LinBox {
 
                                 TTT.mulin_right(Qt, degree);
                                 TTT.mulin_right(Qt, shift);
-                                //std::cout<<"Qt.Bp.shift=";std::copy(shift.begin(),shift.end(),std::ostream_iterator<size_t>(std::cout,","));std::cout<<std::endl;                                
+#ifdef __DEBUG_MBASIS
+                                std::cout<<"Qt.Bp.shift=";std::copy(shift.begin(),shift.end(),std::ostream_iterator<size_t>(std::cout,","));std::cout<<std::endl;
+                                std::cout<<"Qt.Bp.degree=";std::copy(degree.begin(),degree.end(),std::ostream_iterator<size_t>(std::cout,","));std::cout<<std::endl;                                
 
-                                //std::cout<<std::endl;
+                                std::cout<<std::endl;
+#endif
+#endif
+                                
                                 for (size_t i=0;i<rank;++i) {
                                         dmax=std::max(dmax, degree[i]);
                                         degree[i]++;
                                         shift [i]++;
                                 }
-                                max_degree=std::min(order,std::max(max_degree,dmax+1));
-                                //std::cout<<"max degree:"<<max_degree<<std::endl;
-                            
+                                for (size_t i=rank;i<m;i++){
+                                        degree[i]=std::max(degree[i],dmax);
+                                }
+                                max_degree=std::min(order,std::max(max_degree,dmax+1));                     
+#ifdef __DEBUG_MBASIS
+                                std::cout<<"max degree:"<<max_degree<<std::endl;
+                                std::cout<<"Qt.Bp.shift=";std::copy(shift.begin(),shift.end(),std::ostream_iterator<size_t>(std::cout,","));std::cout<<std::endl;
+                                std::cout<<"Qt.Bp.degree=";std::copy(degree.begin(),degree.end(),std::ostream_iterator<size_t>(std::cout,","));std::cout<<std::endl;                                
+                                
 #endif
                                 // shift the pivot row of sigma by x
                                 for (int l=max_degree-1;l>=0;l--)
@@ -374,19 +442,24 @@ namespace LinBox {
                                 for (size_t i=0;i<rank;i++)
                                         for (size_t j=0;j<m;j++)
                                                 sigma.ref(i,j,0)=field().zero;
-                                //cout<<"max degree="<<max_degree<<endl<<endl;
-                                //std::cout<<"F"<<k<<":="<<sigma<<std::endl<<"******************"<<std::endl;
-                                //std::cout<<std::endl;
+#ifdef __DEBUG_MBASIS
+                                std::cout<<"max degree="<<max_degree<<std::endl<<std::endl;
+                                std::cout<<"F"<<k<<":="<<sigma<<std::endl<<"******************"<<std::endl;
+                                std::cout<<std::endl;
+#endif
                                 // update Early Termination
                                 //_EarlyStop.update(rank,shift); 
+#ifdef __CHECK_MBASIS
+                                std::cout<<"MBASIS: order "<<k<<check_orderbasis(field(),sigma,serie,k+1)<<std::endl;
+#endif
                                 
                                 _EarlyStop.update(m-rank,shift); // codimension (m-rank) seems better
                         }
                         
-                        // if (_EarlyStop.terminated()) { 
-                        //         std::cout<<"OrderBasis: Early Termination at :"<<k<<"/"<<order<<std::endl;
-                        // }
-                        
+                        if (_EarlyStop.terminated()) { 
+                                std::cout<<"OrderBasis: Early Termination at :"<<k<<"/"<<order<<std::endl;
+                        }
+                         
                         sigma.resize(max_degree+1);
                         return max_degree;
                 }

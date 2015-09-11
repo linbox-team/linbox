@@ -1006,7 +1006,7 @@ namespace LinBox
 		BlasMatrix<Field, _Rep>& operator()( const Field& F,
 						     const BlasPermutation<size_t>& B,
 						     BlasMatrix<Field, _Rep>& A) const
-		{
+		{                        
 			if (B.isIdentity()) return A ;
 			linbox_check( A.rowdim() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,

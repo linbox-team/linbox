@@ -51,8 +51,8 @@ using namespace std;
 #include <linbox/ring/modular.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/randiter/random-fftprime.h>
-#include <linbox/field/unparametric.h>
-//#include <givaro/zring.h>
+//#include <linbox/field/unparametric.h>
+#include <givaro/zring.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/util/commentator.h>
 #include <linbox/util/timer.h>
@@ -131,7 +131,7 @@ void MATPOLMUL_sanity_check(MULDOM& MulDom, const MatPol& C, const MatPol& A, co
 }
 
 template<typename Field, typename RandIter>
-void check_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
+void check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
 
@@ -163,7 +163,7 @@ void check_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d)
 	// check karatsuba
 	MATPOLMUL_sanity_check(PMKD,C,A,B, "Karatsuba Multiplication");
 	// check fft
-	MATPOLMUL_sanity_check(PMFFT,C,A,B, "FFT Multiplication");
+	//MATPOLMUL_sanity_check(PMFFT,C,A,B, "FFT Multiplication");
 
 	cout<<endl;
 }
@@ -204,7 +204,7 @@ void MATPOLMUL_performance(MULDOM& MulDom,  const MatPol& A, const MatPol& B, do
 
 
 template<typename Field, typename RandIter>
-void bench_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
+void bench_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
 
@@ -237,7 +237,7 @@ void bench_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d)
 	// bench karatsuba
 	MATPOLMUL_performance(PMKD,A,B,costKara, "Karatsuba Multiplication");
 	// bench fft
-	MATPOLMUL_performance(PMFFT,A,B,costFFT, "FFT Multiplication");
+	//MATPOLMUL_performance(PMFFT,A,B,costFFT, "FFT Multiplication");
 
 
 
@@ -274,7 +274,7 @@ void bench_matpol_mul(const Field& fld, const RandIter& Gen, size_t n, size_t d)
 
 
 template<typename Field, typename RandIter>
-void profile_matpol_mulfft(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
+void profile_matpol_mulfft(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
 
@@ -328,7 +328,7 @@ void profile_matpol_mulfft(const Field& fld, const RandIter& Gen, size_t n, size
 
 
 template<typename Field, typename RandIter>
-void profile_matpol_mulkara(const Field& fld, const RandIter& Gen, size_t n, size_t d) {
+void profile_matpol_mulkara(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
 
@@ -375,7 +375,7 @@ void runTest(const Field& F, size_t n, long b, long d, long seed, string test){
 int main(int argc, char** argv){
 	static size_t  n = 32; // matrix dimension
 	static long    b = 20; // entries bitsize
-	static long    d = 32;  // matrix degree
+	static uint64_t d = 32;  // matrix degree
 	static bool    z = false; // computer over  Z[x]
 	static long    seed = time(NULL);
 	static string  test ="all";
@@ -418,7 +418,8 @@ int main(int argc, char** argv){
 #endif
 			RandomFFTPrime Rd(b,seed);
 			integer p = Rd.randomPrime(integer(d).bitsize()+1);
-			Givaro::Modular<int32_t> F((int32_t)p);
+			//Givaro::Modular<int32_t> F((int32_t)p);
+			Givaro::Modular<double> F((int32_t)p);
 			cout<<"Computation over Fp[x] with p=  "<<p<<" (FFT prime)"<<endl;
 			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 			runTest (F,n,b,d,seed,test);

@@ -56,8 +56,10 @@ namespace LinBox{
     size_t logmax(const PMatrix1 A) const {
       size_t mm=A.get(0,0,0).bitsize();
       for(size_t k=0;k<A.size();k++)
-	for (size_t i=0;i<A.rowdim()*A.coldim();i++)
-	  mm=std::max(mm,A.get(i,k).bitsize());
+	for (size_t i=0;i<A.rowdim()*A.coldim();i++){
+	  size_t tmp=A.get(i,k).bitsize();
+	  mm=std::max(mm,tmp);
+	}
       return mm;
     }
 
@@ -99,10 +101,10 @@ namespace LinBox{
       integer maxA,maxB;
       maxA=maxB=_maxnorm;			
       if (_maxnorm==0){
-	maxA=1;maxA<<=(logmax(a));
-	maxB=1;maxB<<=(logmax(b));
+	maxA=1;maxA<<=uint64_t(logmax(a));
+	maxB=1;maxB<<=uint64_t(logmax(b));
       }
-      integer bound=2*maxA*maxB*a.coldim()*(std::min(a.size(),b.size()));
+      integer bound=2*maxA*maxB*uint64_t(a.coldim())*uint64_t(std::min(a.size(),b.size()));
       FFT_PROFILING(2,"max norm computation");
 
       mul_crtla(c,a,b,maxA,maxB,bound);
@@ -116,14 +118,14 @@ namespace LinBox{
       integer maxA,maxB;
       maxA=maxB=_maxnorm;
       if (_maxnorm==0){
-	maxA=1;maxA<<=(logmax(a));
-	maxB=1;maxB<<=(logmax(b));
+	maxA=1;maxA<<=uint64_t(logmax(a));
+	maxB=1;maxB<<=uint64_t(logmax(b));
       }
-      integer bound=2*maxA*maxB*a.coldim()*(std::min(a.size(),b.size()));;
+      integer bound=2*maxA*maxB*integer((uint64_t)a.coldim())*integer((uint64_t)std::min(a.size(),b.size()));;
       if (smallLeft)
-	bound*= a.size();
+	bound*= (uint64_t)a.size();
       else
-	bound*= b.size();
+	bound*= (uint64_t)b.size();
 
       FFT_PROFILING(2,"max norm computation");
 
@@ -345,6 +347,7 @@ namespace LinBox{
 	MatrixP_F b_i (f, k, n, pts);
 	c_i[l] = new MatrixP_F(f, m, n, pts);
 	// copy reduced data and reversed when necessary according to midproduct algo
+	//std::cout<<"hdeg-size: "<<hdeg<<" <-> "<<a.size()<<std::endl;
 	for (size_t i=0;i<m*k;i++)
 	  for (size_t j=0;j<a.size();j++)
 	    if (smallLeft)
@@ -444,7 +447,7 @@ namespace LinBox{
       FFT_PROFILE_START;
       IntField Z;      
       PolynomialMatrixFFTMulDomain<IntField> Zmul(Z,_p);
-      integer bound=2*_p*_p*a.coldim()*(std::min(a.size(),b.size()));
+      integer bound=2*_p*_p*integer((uint64_t)a.coldim())*integer((uint64_t)std::min(a.size(),b.size()));
       Zmul.mul_crtla(c,a,b,_p,_p,bound);
       
       // reduce the result mod p

@@ -89,8 +89,8 @@ void check_sigma(const Field& F, RandIter& Gen, size_t m, size_t n, size_t d) {
 	std::cout << "M-Basis       : " <<check_sigma(F,Sigma3,Serie,d)<<endl;
 	SB.PM_Basis2(Sigma1,Serie, d, shift);
 	std::cout << "PM-Basis      : " <<check_sigma(F,Sigma1,Serie,d)<<endl;
-	SB.oPM_Basis(Sigma2, Serie, d, shift2);
-	std::cout << "PM-Basis iter : " <<check_sigma(F,Sigma2,Serie,d)<<endl;
+	//SB.oPM_Basis(Sigma2, Serie, d, shift2);
+	//std::cout << "PM-Basis iter : " <<check_sigma(F,Sigma2,Serie,d)<<endl;
 
 	// if (!(Sigma1==Sigma2)){
 	// cout<<"---> different basis for PM-Basis and PM-Basis iter"<<endl;

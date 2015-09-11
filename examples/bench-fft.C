@@ -228,13 +228,13 @@ int main(int argc, char** argv){
 	size_t bits =atoi(argv[1]);
 	long seed=((argc>2)?atoi(argv[2]):time(NULL));	
 	RandomFFTPrime Rd(bits,seed);
-	size_t p = Rd.randomPrime(5);
+	uint32_t p = (uint32_t)Rd.randomPrime(5);
 	size_t k = bits-4;
 	cout<<"prime : "<<p<<endl;
 	cout<<endl;
 	
-	Givaro::Modular<uint32_t> F(p);
-	//Givaro::Modular<double> F(p);
+	//Givaro::Modular<uint32_t> F(p);
+	Givaro::Modular<double> F(p);
 	check_DIF(F,k,seed);
 	bench_DIF(F,k,seed);
 

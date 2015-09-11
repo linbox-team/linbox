@@ -816,7 +816,7 @@ namespace LinBox
 		{
 			integer y; get_den(y,q);
 			integer x; get_num(x,q);
-			bs = x.bitsize() + y.bitsize();
+			bs = uint64_t (x.bitsize() + y.bitsize());
 			return bs;
 		}
 
