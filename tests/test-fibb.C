@@ -39,7 +39,7 @@
 #include "linbox/blackbox/diagonal.h"
 //#include "linbox/matrix/permutation-matrix.h"
 #include "linbox/blackbox/permutation.h"
-//#include "linbox/blackbox/triangular.h"
+#include "linbox/blackbox/triangular-fibb.h"
 
 
 using namespace LinBox;

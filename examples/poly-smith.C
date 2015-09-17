@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	
 	if (argc < 4)
 	{
-		cout << "Genertes a random GF(p)^(n-by-n) with polynomial coefficients with degree=d" << endl;
+		cout << "Generates a random GF(p)^(n-by-n) with polynomial coefficients with degree=d" << endl;
 		cout << "Use: ./polysmith <p> <n> <d>" << endl;
 		return 1;
 	}

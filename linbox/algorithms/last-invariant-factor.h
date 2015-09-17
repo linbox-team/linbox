@@ -143,7 +143,7 @@ namespace LinBox
 				      ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
-						r.divmod(quo,rem,lif,pri);
+						r.quoRem(quo,rem,lif,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);
 						else break;
 					}
@@ -246,7 +246,7 @@ namespace LinBox
 				for ( Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
-						r.divmod(quo,rem,lif,pri);
+						r.quoRem(quo,rem,lif,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);
 						else break;
 					} while (true);
@@ -256,7 +256,7 @@ namespace LinBox
 				for ( Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
-						r.divmod(quo,rem,Bonus,pri);
+						r.quoRem(quo,rem,Bonus,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);
 						else break;
 					} while (true);

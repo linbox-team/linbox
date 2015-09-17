@@ -57,7 +57,7 @@ namespace LinBox
 	protected:
 		Context_     _BMD;
 		VectorDomain<Field>         _VDF;
-		RandIter                   _rand;
+		const RandIter                   _rand;
 
 	public:
 		const Field & field() const { return _BMD.field(); }
@@ -95,11 +95,11 @@ namespace LinBox
 
 			for (size_t i=0;i<n;++i)
 				for (size_t j=0;j<q;++j)
-					_rand.random(V.refEntry(i,j));
+					const_cast<RandIter>(_rand).random(V.refEntry(i,j));
 
 			for (size_t i=0;i<p-1;++i)
 				for (size_t j=0;j<m;++j)
-					_rand.random(UA.refEntry(i,j));
+					const_cast<RandIter>(_rand).random(UA.refEntry(i,j));
 
 			typename Block::RowIterator        iter_U  = U.rowBegin();
 			typename Block::ConstRowIterator   iter_UA = UA.rowBegin();
