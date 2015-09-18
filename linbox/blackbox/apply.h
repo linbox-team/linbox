@@ -32,6 +32,7 @@
 #define __LINBOX_apply_H
 
 #include "linbox/linbox-config.h"
+#include "givaro-config.h"
 #include "linbox/integer.h"
 #include "linbox/util/debug.h"
 // #if defined(__LINBOX_field_multimod_field_H) && !defined(__LINBOX_blas_matrix_domain_H)
