@@ -60,7 +60,7 @@
 	  <ol style="list-style: upper-roman;">
 	    <li><a href="#compilation">Compilation and installation</a></li>
 	    <li><a href="#layout">Basic layout</a></li>
-	    <li><a href="#source">Subversion</a></li>
+	    <li><a href="#source">git</a></li>
 	    <li><a href="#standards">Coding standards</a></li>
 	    <li><a href="#checklist">Checklist for adding files</a></li>
 	    <li><a href="#website">Website maintenance</a></li>
@@ -72,9 +72,9 @@
 	  <p>
 	  <p> See the <a href="http://www.linalg.org/linbox-html/index.html">documentation</a>.
 	  Quick link to the <a href="http://www.linalg.org/linbox-html/install-dist.html">tarball</a> and
-	  <a href="http://www.linalg.org/linbox-html/install-dev.html">subversion</a> installation notes.
+	  <a href="http://www.linalg.org/linbox-html/install-dev.html">git</a> installation notes.
 
-	    If you are installing from Subversion, please continue reading
+	    If you are installing from the git repository, please continue reading
 	    the instructions in the <a href="#source">section</a> below.
 	  </p>
 
@@ -179,24 +179,19 @@
 	  </p>
 
 	  <a name="source"></a>
-	  <h2>Subversion</h2>
+	  <h2>git</h2>
 
 	  <p>
-	    LinBox is stored in a Subversion repository at the University of
-	    Delaware. To access the latest bleeding edge copy of
+	    LinBox is a project maintained at github.com.
+	    To access the latest bleeding edge copy of
 	    LinBox from this source, you will need a working copy of
-	    Subversion and all of the GNU development tools (e.g. autoconf,
-	    automake, GNU make, and so on). To access Subversion:
+	    git and all of the GNU development tools (e.g. autoconf,
+	    automake, GNU make, and so on). 
 	  </p>
 
 	  <ol style="list-style: decimal;">
 	    <li>
 	      Make sure you have the necessary tools installed
-
-	      <p>
-		You will need <a href="http://subversion.tigris.org/">Subversion</a> installed.
-		Also you will need to know how to do a svn login.
-	      </p>
 
 	      <p>
 		You will need GNU Autoconf, GNU Automake, and GNU Libtool.
@@ -229,8 +224,8 @@
 
 	      <p>
 		GNU Autoconf, GNU Automake, and GNU Libtool are only
-		required for checkouts from subversion.
-		  But whether you are installing from a tarball release or from an svn revision, the packages on which LinBox depends will be needed: 
+		required for checkouts from the git repository.
+		  But whether you are installing from a tarball release or from an git revision, the packages on which LinBox depends will be needed: 
 		the GNU multiprecision library (GMP), Givaro, fflas-ffpack, and a BLAS implementation, optionally NTL. 
 	      </p>
 
@@ -239,7 +234,7 @@
 	    <li>
 	      Check out the LinBox project source code from the trunk of the repository
 
-	      <p><tt>svn co svn://linalg.org/linalg/trunk/linbox/</tt></p>
+	      <p><tt>git clone https://github.com/linbox-team/linbox</tt></p>
 	    </li>
 
 	    <li>
@@ -307,18 +302,18 @@
 
 	  <p>
 	    When you want to update your tree with the contents of
-	    the LinBox Subversion repository, issue the following command
+	    the LinBox Git repository, issue the following command
 	    from the linbox/ directory:
 	  </p>
 
-	  <p><tt>svn up</tt></p>
+	  <p><tt>git pull</tt></p>
 
 	  <p>
 	    You should receive some information on what files have
 	    been updated. If any files have a "C" before them,
 	    this means what you have conflicts with what is in the
 	    repository. In other words, you made changes while
-	    someone else made other changes and Subversion does not know
+	    someone else made other changes and git does not know
 	    how to reconcile the two. You will need to edit that
 	    file manually, looking for and fixing lines like
 	  </p>
@@ -335,10 +330,11 @@
 
 	  <p>
 	    If you have made changes and would like to commit them to
-	    the global repository, issue the command
-	  </p>
+	    the global repository, use </p>
+	  <p><tt>git add [&lt;filename(s)&gt;]</tt></p>
+	  <p><tt>git commit -m "&lt;useful log entry&gt;"</tt></p>
+	  <p><tt>git push</tt></p>
 
-	  <p><tt>svn ci [&lt;filename(s)&gt;]</tt></p>
 
 	  <p>
 	    The optional filename(s) argument specifies what you would
@@ -357,7 +353,7 @@
 	    If you are not a main LinBox developer but would like to
 	    submit some addition or modification, your code is
 	    welcome. Please email a patch
-        (use '<tt>svn diff</tt>' to form a patch)
+        (use '<tt>git diff</tt>' to form a patch)
         to us and we will consider including it.
         Or, even better, attach your patch to a ticket in
         <a href="http://linalg.org/projects/linalg/">our Trac database</a>.
@@ -611,14 +607,8 @@ namespace LinBox
 	    </li>
 
 	    <li>
-	      Run the command "<tt>svn add &lt;filename&gt;</tt>" from
-	      the directory where the file is located.
-	    </li>
-
-	    <li>
-	      Commit your changes with "<tt>svn ci</tt>", issued from
-	      the linbox directory. Be sure to include a meaningful comment
-          that summarizes the changes you have made!
+	      Add the file with git and check it in to the github master.
+	      Please strive for a meaningful, useful log entry.
 	    </li>
 	  </ol>
 
@@ -668,23 +658,18 @@ test_sparse_matrix_SOURCES = 		\
 	    </li>
 
 	    <li>
-	      Add the file to Subversion with "<tt>svn add &lt;test-source&gt;</tt>"
-	    </li>
-
-	    <li>
-	      Commit your changes with "<tt>svn ci tests</tt>", issued
-	      from the linbox directory. Again, include a meaningful log entry.
+	      Add the file with git and check it in to the github master.
+	      Please strive for a meaningful, useful log entry.
 	    </li>
 	  </ol>
 	  <a name="website"></a>
 	  <h2>Website maintenance</h2>
 
 	  <ul>
+	  <li> The website repository is the www branch of linbox-team/linbox on github.com, https://github.com/linbox-team/linbox/tree/www
+	  <li> The website is served from linalg.org:/var/www/linbox/, which is a checkout from the repository.
 	  <li>
-	    To modify the website,
-	      <p><tt>svn co svn://linalg.org/linalg/trunk/www/</tt></p>
-
-		  Then make your changes and check them in to svn.
+	    To modify the website, checkout an instance of the www branch, make your changes and commit/push.
 		  They automatically propagate to the public website.
 
 	  <li> When updating the website, please also make an up-to-date version of the html
