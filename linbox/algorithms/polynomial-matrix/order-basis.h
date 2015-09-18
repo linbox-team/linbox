@@ -110,7 +110,7 @@ namespace LinBox {
                 BlasMatrixDomain<Field>            _BMD;
                 ET                           _EarlyStop;
         public:
-#if (PROFILE_PMBASIS) or (__CHECK_MBASIS)or (__CHECK_PMBASIS)
+#if 1 or (PROFILE_PMBASIS) or (__CHECK_MBASIS)or (__CHECK_PMBASIS)
                 size_t _idx=0;
                 size_t _target=0;
 #endif
@@ -143,13 +143,13 @@ namespace LinBox {
                                 std::vector<size_t>       &shift)
                 {
 
-#ifdef PROFILE_PMBASIS
-                        std::cout<<"Start PM-Basis : "<<order<<" ("<<_idx<<"/"<<_target<<")] : "<<std::endl;//MEMINFO<<std::endl;
+#if 1 or (PROFILE_PMBASIS)
+                        //std::cout<<"Start PM-Basis : "<<order<<" ("<<_idx<<"/"<<_target<<")] : "<<std::endl;//MEMINFO<<std::endl;
                         if (_target==0) _target=order;
 #endif
                         
                         if (order <= MBASIS_THRESHOLD) {
-#if (PROFILE_PMBASIS) or (__CHECK_PMBASIS)
+#if 1 or (PROFILE_PMBASIS) or (__CHECK_PMBASIS)
                                 _idx+=order;
 #endif
                                 return M_Basis(sigma, serie, order, shift);                            
@@ -166,11 +166,19 @@ namespace LinBox {
                                 m=sigma.rowdim();
                                 n=sigma.coldim();
                                 k=serie.coldim();
-                                
+                                integer p;
+
                                 // first recursive call
                                 PMatrix1 sigma1(field(),m,n,ord1+1);                                
+
+#ifdef MEM_PMBASIS
+                                std::cout<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Sigma1] -> "<<MB(m*n*(ord1+1)*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+#endif
                                 //typename PMatrix2::const_view serie1=serie.at(0,ord1-1);
                                 PMatrix2 *serie1=new PMatrix2(field(),n,k,ord1);
+#ifdef MEM_PMBASIS
+                                std::cout<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Serie1] -> "<<MB(n*k*ord1*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+#endif
                                 serie1->copy(serie,0,ord1-1);
                                 d1 = PM_Basis(sigma1, *serie1, ord1, shift);
                                 delete serie1;                                
@@ -179,43 +187,47 @@ namespace LinBox {
                                         return d1;
                                 }
                                 
-#ifdef PROFILE_PMBASIS
-                                chrono.stop();
-                                //std::cout<<"[PM-Basis : "<<ord1<<" ("<<_idx<<"/"<<_target<<")] : "<<chrono.usertime()
-                                //<<MEMINFO<<std::endl;
-                                chrono.clear();chrono.start();
-#endif
                                 // compute the serie update
                                 // TODO: for Block Wiedemann, this step can use only the first column of sigma
                                 PMatrix2 *serie2=new PMatrix2(field(),n,k,ord2);//serie2 size=ord1+1 -> midproduct)
+#ifdef MEM_PMBASIS
+                                std::cout<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Serie2] -> "<<MB(n*k*ord2*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+#endif              
                                 _PMD.midproductgen(*serie2, sigma1, serie, true, ord1+1,ord1+ord2);
 #ifdef PROFILE_PMBASIS
-                                chrono.stop();
-                                std::cout<<"      -> serie update "<<sigma1.size()<<"x"<<order<<" --> "<<chrono.usertime()<<std::endl;//MEMINFO<<std::endl;
-                                chrono.clear();chrono.start();
+                                //chrono.stop();
+                                //std::cout<<"      -> serie update "<<sigma1.size()<<"x"<<order<<" --> "<<chrono.usertime()<<std::endl;//MEMINFO<<std::endl;
+                                //chrono.clear();chrono.start();
 #endif
                                 // second recursive call
+
                                 PMatrix1 sigma2(field(),m,n,ord2+1);
+#ifdef MEM_PMBASIS
+                                std::cout<<"[PM-Basis("<<order<<") "<<_idx<<"/"<<_target<<"] [Sigma2] -> "<<MB(m*n*(ord1+1)*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+#endif
                                 d2 = PM_Basis(sigma2, *serie2, ord2, shift);
                                 delete serie2;                                 
-#ifdef PROFILE_PMBASIS
-                                chrono.stop();
-                                //std::cout<<"[PM-Basis : "<<ord2<<" ("<<_idx<<"/"<<_target<<")] : "<<chrono.usertime()
-                                //<<MEMINFO<<std::endl;
-                                chrono.clear();chrono.start();
-#endif                          
+
                                 // compute the result
                                 _PMD.mul(sigma, sigma2, sigma1);
                                 //sigma.resize(d1+d2+1);
                                 sigma.setsize(d1+d2+1);                               
 #ifdef PROFILE_PMBASIS
-                                chrono.stop();
+                                //chrono.stop();
                                 //std::cout<<"      -> basis product "<<sigma1.size()<<"x"<<sigma2.size()<<" = "<<d1+d2+1<<" -->"<<chrono.usertime()<<MEMINFO<<std::endl;
 #endif
 
 #ifdef __CHECK_PMBASIS
                                 std::cout<<"PMBASIS: order "<<_idx<<check_orderbasis(field(),sigma,serie,order)<<std::endl;
 #endif
+#ifdef PROFILE_PMBASIS
+                                chrono.stop();
+                                std::cout<<"[PM-Basis : "<<ord<<" ("<<_idx-ord<<"/"<<_target<<")] : "<<chrono.usertime()
+                                <<MEMINFO<<std::endl;
+                                chrono.clear();chrono.start();
+#endif
+
+
                                 return d1+d2;
                         }
                 }
