@@ -26,7 +26,6 @@
 #define __LINBOX_hom_H
 
 #include "linbox/linbox-config.h"
-#include "linbox/ring/PID-integer.h"
 #include "linbox/util/error.h"
 #include <givaro/givcaster.h>
 #include <givaro/givrational.h>

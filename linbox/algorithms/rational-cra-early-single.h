@@ -25,7 +25,7 @@
 #ifndef __LINBOX_rational_early_single_cra_H
 #define __LINBOX_rational_early_single_cra_H
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/algorithms/cra-early-single.h"
 
 namespace LinBox

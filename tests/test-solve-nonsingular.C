@@ -34,7 +34,7 @@
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/randiter/random-prime.h"
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/field/param-fuzzy.h"
 #include "tests/test-common.h"
 #include "linbox/vector/stream.h"

@@ -58,7 +58,7 @@
 #include "linbox/randiter/random-prime.h"
 
 #include "linbox/field/unparametric.h"
-#include "linbox/field/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/field/ntl.h"
 
 #include "linbox/field/archetype.h"

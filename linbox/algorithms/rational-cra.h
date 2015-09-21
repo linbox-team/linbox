@@ -26,7 +26,7 @@
 #ifndef __LINBOX_rational_cra_H
 #define __LINBOX_rational_cra_H
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 
 namespace LinBox
 {
@@ -119,7 +119,7 @@ namespace LinBox
 #endif
 
 		template<class Function, class RandPrimeIterator>
-		BlasVector<Givaro::ZRing<Integer>> & operator() ( BlasVector<Givaro::ZRing<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
 		{
 			++genprime;
 			{

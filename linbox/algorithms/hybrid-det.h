@@ -30,7 +30,7 @@
 #include "linbox/util/debug.h"
 
 #include "linbox/matrix/sparse-matrix.h"
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/last-invariant-factor.h"

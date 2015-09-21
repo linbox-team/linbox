@@ -30,7 +30,7 @@
 #include "linbox/ring/modular.h"
 
 //#include "linbox/field/gmp-rational.h"
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/algorithms/cra-domain.h"

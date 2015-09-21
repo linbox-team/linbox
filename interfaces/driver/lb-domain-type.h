@@ -26,7 +26,7 @@
 #define __LINBOX_lb_domain_type_H
 
 #include "linbox/ring/modular.h"
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/field/gmp-rational.h"
 #include "linbox/field/givaro.h"
 
