@@ -114,7 +114,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	if (! Z.areEqual(val, phi[0])) ret = false;
 	// value at -1 should be (-2)^n
 	eval(Z, val2, phi, Z.mOne);
-	Z.init(neg2, -2); Z.assign(pow2, Z.one);
+	Z.init(neg2, -2L); Z.assign(pow2, Z.one);
 	for (size_t i = 0; i < n; ++i) Z.mulin(pow2, neg2);
 	if (! Z.areEqual(val2, pow2)) ret = false;
 
@@ -314,7 +314,7 @@ int main (int argc, char **argv)
 	//need other tests...
 
 	Givaro::ZRing<integer>  Z ;
-	typedef BlasVector<Givaro::ZRing<integer>> ZDenseVector;
+        typedef BlasVector<Givaro::ZRing<integer>> ZDenseVector;
 
 	srand ((unsigned)time (NULL));
 

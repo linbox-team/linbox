@@ -135,15 +135,15 @@ namespace LinBox
 		};
 
 		template<class Field, class _Rep>
-		class BlasMatrixMAP<Field, BlasMatrix<PID_integer,_Rep>, MatrixContainerCategory::BlasContainer> {
+		class BlasMatrixMAP<Field, BlasMatrix<Givaro::ZRing<Integer>,_Rep>, MatrixContainerCategory::BlasContainer> {
 		public:
 			template<class _Rep2>
-			void operator() (BlasMatrix<Field,_Rep2> &Ap, const BlasMatrix<PID_integer,_Rep> &A, MatrixContainerCategory::BlasContainer type)
+			void operator() (BlasMatrix<Field,_Rep2> &Ap, const BlasMatrix<Givaro::ZRing<Integer>,_Rep> &A, MatrixContainerCategory::BlasContainer type)
 			{
-				PID_integer ZZ ;
-				Hom<PID_integer , Field> hom(ZZ, Ap.field());
+				Givaro::ZRing<Integer> ZZ ;
+				Hom<Givaro::ZRing<Integer> , Field> hom(ZZ, Ap.field());
 
-				typename BlasMatrix<PID_integer,_Rep>::ConstIterator        iterA  = A.Begin();
+				typename BlasMatrix<Givaro::ZRing<Integer>,_Rep>::ConstIterator        iterA  = A.Begin();
 				typename BlasMatrix<Field,_Rep2>::Iterator iterAp = Ap.Begin();
 
 				for(; iterA != A.End(); ++iterA, ++iterAp)

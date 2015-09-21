@@ -42,7 +42,7 @@
 #define __LINBOX_DOMAIN_ONLY
 
 typedef LinBoxTypelist < Givaro::Modular<double>          , LinBoxDumbType> DL1;
-typedef LinBoxTypelist < LinBox::PID_integer              , DL1> DL2;
+typedef LinBoxTypelist < LinBox::Givaro::ZRing<Integer>              , DL1> DL2;
 typedef LinBoxTypelist < LinBox::GMPRationalField         , DL2> DL3;
 typedef LinBoxTypelist < Givaro::Modular<int32_t>         , DL3> DL4;
 typedef LinBoxTypelist < LinBox::Givaro::Modular<int64_t>         , DL4> DL5;
@@ -95,7 +95,7 @@ extern Domain_Factory linbox_domain;
 void UpdateDomain(){
 	linbox_domain.add("linbox_field_dbl"      , constructDomain<Givaro::Modular<double> >);
 	linbox_domain.add("linbox_field_rational" , constructDomain<LinBox::GMPRationalField>);
-	linbox_domain.add("linbox_ring_integer"   , constructDomain<LinBox::PID_integer>);
+	linbox_domain.add("linbox_ring_integer"   , constructDomain<LinBox::Givaro::ZRing<Integer> >);
 #ifndef __LINBOX_MINIMIZE_DOMAIN
 	linbox_domain.add("linbox_field_32"       , constructDomain<Givaro::Modular<int32_t> >);
 	linbox_domain.add("linbox_field_64"       , constructDomain<LinBox::Givaro::Modular<int64_t> >);

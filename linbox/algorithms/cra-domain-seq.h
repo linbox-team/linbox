@@ -191,7 +191,6 @@ namespace LinBox
 				typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
 				Builder_.initialize( D, Iteration(r, D) );
 			}
-
 			int coprime =0, nbprimes=0;
 			int maxnoncoprime = 1000;
 
@@ -205,10 +204,10 @@ namespace LinBox
 						return Builder_.result(res);
 					}
 				}
-                coprime = 0;
-                Domain D(*primeiter);
+                                coprime = 0;
+                                Domain D(*primeiter);
 				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                ++primeiter; ++nbprimes;
+                                ++primeiter; ++nbprimes;
 				typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
 				Builder_.progress( D, Iteration(r, D) );
 			}

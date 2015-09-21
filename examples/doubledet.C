@@ -30,8 +30,8 @@
 
 #include <iostream>
 
+#include <givaro/zring.h>
 #include <linbox/linbox-config.h>
-#include <linbox/ring/PID-integer.h>
 #include <linbox/util/matrix-stream.h>
 #include <linbox/solutions/det.h>
 #include <linbox/algorithms/double-det.h>
@@ -46,15 +46,15 @@ int main (int argc, char **argv)
 	//     commentator().setMaxDepth (-1);
 	//     commentator().setReportStream (std::cerr);
 
-	PID_integer ZZ;
+	Givaro::ZRing<Integer> ZZ;
 
 	ifstream input (argv[1]);
 	if (!input)
 	{ cerr << "Error opening matrix file " << argv[1] << endl;
 		return -1;
 	}
-	MatrixStream <PID_integer> ms (ZZ, input);
-	DenseMatrix <PID_integer> A (ms);
+	MatrixStream <Givaro::ZRing<Integer> > ms (ZZ, input);
+	DenseMatrix <Givaro::ZRing<Integer> > A (ms);
 	cout << "Matrix is " << A.rowdim() << " by " << A.coldim() << endl;
 
 	if (A.rowdim() != A.coldim() + 1){
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
 
 	// Check solution
 	size_t n = A.coldim();
-	DenseMatrix<PID_integer> B (ZZ, n, n);
+	DenseMatrix<Givaro::ZRing<Integer> > B (ZZ, n, n);
 	for (size_t i=0; i<n-1; ++i)
 		for (size_t j=0; j<n; ++j)
 			B.setEntry (i,j,A.getEntry(i,j));

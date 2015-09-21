@@ -31,7 +31,7 @@
 
 
 #include <time.h>
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
 #include "test-common.h"
@@ -41,7 +41,7 @@ using LinBox::parseArguments;
 using LinBox::commentator;
 using LinBox::Commentator;
 using LinBox::integer;
-using LinBox::PID_integer;
+using LinBox::Givaro::ZRing<Integer>;
 using LinBox::BlasMatrix;
 using LinBox::BlasVector;
 
@@ -120,9 +120,9 @@ bool testRandom(const Ring& R,
 		}
 
 		typename Vector::iterator x_p;
-		PID_integer Z;
-		BlasVector<PID_integer> xi(Z,A. rowdim());
-		BlasVector<PID_integer>::iterator xi_p;
+		Givaro::ZRing<Integer> Z;
+		BlasVector<Givaro::ZRing<Integer> > xi(Z,A. rowdim());
+		BlasVector<Givaro::ZRing<Integer> >::iterator xi_p;
 		std::list<std::pair<integer, size_t> > cpt;
 		smithForm (cpt, A);
 		std::list<std::pair<integer, size_t> >::iterator cpt_p;
@@ -193,7 +193,7 @@ int main(int argc, char** argv)
 
 	parseArguments (argc, argv, args);
 	//!@bug should be tried on NTZ_LL too
-	typedef LinBox::PID_integer      Ring;
+	typedef LinBox::Givaro::ZRing<Integer>      Ring;
 
 	Ring R;
 

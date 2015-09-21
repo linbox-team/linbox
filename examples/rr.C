@@ -40,7 +40,7 @@
 using namespace LinBox;
 using namespace std;
 
-typedef PID_integer Ints;
+typedef Givaro::ZRing<Integer> Ints;
 //typedef Ints::Element Integer;
 
 int main (int argc, char **argv)

@@ -52,15 +52,15 @@ int main (int argc, char **argv)
 	std::ifstream input (argv[1]);
 	if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
 
-	PID_integer ZZ;
-	MatrixStream< PID_integer > ms( ZZ, input );
-	typedef SparseMatrix<PID_integer>  Blackbox;
+	Givaro::ZRing<Integer> ZZ;
+	MatrixStream< Givaro::ZRing<Integer> > ms( ZZ, input );
+	typedef SparseMatrix<Givaro::ZRing<Integer>>  Blackbox;
 	Blackbox A (ms);
 	input.close();
 
 	std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
 
-	PID_integer::Element val_A;
+	Givaro::ZRing<Integer>::Element val_A;
 
 	LinBox::Timer chrono; chrono.start();
 	if (argc >= 3) {

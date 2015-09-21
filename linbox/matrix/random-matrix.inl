@@ -251,10 +251,10 @@ namespace LinBox
 		}
 
 		template<class Randiter>
-		BlasBlackbox<PID_integer> &
-		random_rankupdate( PID_integer               & F //!@bug const !
+		BlasBlackbox<Givaro::ZRing<Integer> > &
+		random_rankupdate( Givaro::ZRing<Integer>               & F //!@bug const !
 				   ,const Randiter           & R
-				   ,BlasBlackbox<PID_integer> & A
+				   ,BlasBlackbox<Givaro::ZRing<Integer> > & A
 				   , int                     & rank
 				 )
 		{
@@ -262,16 +262,16 @@ namespace LinBox
 			size_t m = A.rowdim();
 			size_t n = A.coldim();
 
-			BlasBlackbox<PID_integer> D(F,(size_t)m,(size_t)rank) ;
-			BlasBlackbox<PID_integer> G(F,(size_t)rank,(size_t)n) ;
+			BlasBlackbox<Givaro::ZRing<Integer> > D(F,(size_t)m,(size_t)rank) ;
+			BlasBlackbox<Givaro::ZRing<Integer> > G(F,(size_t)rank,(size_t)n) ;
 			Randiter S_(R);
 			S_.setBits(R.getBits()-1);
-			RandomBlasBlackbox<Randiter,PID_integer > RandMatGen(F,S_);
+			RandomBlasBlackbox<Randiter,Givaro::ZRing<Integer> > RandMatGen(F,S_);
 			RandMatGen.random(D) ;
 			RandomIntegerIter<false> T_(3);
-			RandomBlasBlackbox<RandomIntegerIter<false>,PID_integer > RandSmallMatGen(F,T_);
+			RandomBlasBlackbox<RandomIntegerIter<false>,Givaro::ZRing<Integer> > RandSmallMatGen(F,T_);
 			RandMatGen.random(G) ;
-			MatrixDomain<PID_integer> MD(F);
+			MatrixDomain<Givaro::ZRing<Integer> > MD(F);
 			MD.mul(A,D,G);
 			return A ;
 		}
@@ -311,8 +311,8 @@ namespace LinBox
 			RandomBlasPermutation(P);
 			RandomBlasPermutation(Q);
 
-			PID_integer ZZ ;
-			BlasMatrixDomain< PID_integer > BMD(ZZ) ;
+			Givaro::ZRing<Integer> ZZ ;
+			BlasMatrixDomain< Givaro::ZRing<Integer> > BMD(ZZ) ;
 
 			BMD.mulin_left (A,Q);
 			BMD.mulin_right(P,A);

@@ -318,7 +318,7 @@ int main(int argc, char** argv) {
 
 	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	typedef PID_integer	Ring;  		Ring R;
+	typedef Givaro::ZRing<Integer>	Ring;  		Ring R;
 
 	typedef ParamFuzzy Field;
 	typedef Givaro::Modular<int32_t> ZField;

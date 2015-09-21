@@ -30,7 +30,6 @@
 #include "linbox/ring/modular.h"
 
 //#include "linbox/field/gmp-rational.h"
-#include "linbox/ring/PID-integer.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/algorithms/cra-domain.h"
@@ -175,7 +174,7 @@ namespace LinBox
 		std::vector<Integer> M(A.rowdim()+1,1);
 		std::vector<Integer> Di(A.rowdim());
 
-		RationalMatrixFactory<PID_integer,Rationals,BlasMatrix<Rationals > > FA(&A);
+		RationalMatrixFactory<Givaro::ZRing<Integer>,Rationals,BlasMatrix<Rationals > > FA(&A);
 		Integer da=1, di=1; Integer D=1;
 		FA.denominator(da);
 
@@ -190,17 +189,17 @@ namespace LinBox
 			gcd(M[(size_t)i],M[(size_t)i],D);
 		}
 
-		PID_integer Z;
-		BlasMatrix<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
+		Givaro::ZRing<Integer> Z;
+		BlasMatrix<Givaro::ZRing<Integer> > Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
 		ChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(4UL);
 		MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
-		MyIntegerModularCharpoly<BlasMatrix<PID_integer>, MyMethod> iteration2(Atilde, Met, Di, M);
+		MyIntegerModularCharpoly<BlasMatrix<Givaro::ZRing<Integer> >, MyMethod> iteration2(Atilde, Met, Di, M);
 		MyModularCharpoly<MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod>,
-		MyIntegerModularCharpoly<BlasMatrix<PID_integer>, MyMethod> >  iteration(&iteration1,&iteration2);
+		MyIntegerModularCharpoly<BlasMatrix<Givaro::ZRing<Integer> >, MyMethod> >  iteration(&iteration1,&iteration2);
 
-		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR;
+		RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > RR;
 
 		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
 		UserTimer t1,t2;

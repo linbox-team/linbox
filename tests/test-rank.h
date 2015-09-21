@@ -83,7 +83,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 	bool ret = true;
 	unsigned int i;
 
-	unsigned long rank_blackbox, rank_elimination, rank_hybrid;
+	unsigned long rank_blackbox, rank_elimination;
 
 	typename Field::RandIter ri (F);
 

@@ -32,7 +32,7 @@
 
 
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include <time.h>
 #include "linbox/randiter/random-prime.h"
 #include "linbox/util/commentator.h"
@@ -120,12 +120,12 @@ bool testRandom(const Ring& R,
 
 
 
-			PID_integer Z; //! why switch from Ring ????
-			BlasVector<PID_integer> xi(Z,A. rowdim());
+			Givaro::ZRing<Integer> Z; //! why switch from Ring ????
+			BlasVector<Givaro::ZRing<Integer> > xi(Z,A. rowdim());
 
 			SF.smithForm (xi, A);
 			typename Vector::iterator x_p;
-			BlasVector<PID_integer>::iterator xi_p;
+			BlasVector<Givaro::ZRing<Integer> >::iterator xi_p;
 			for (x_p = x. begin(), xi_p = xi. begin(); x_p != x. end(); ++ x_p, ++ xi_p)
 				A. field (). init (*x_p, *xi_p);
 
@@ -216,11 +216,11 @@ int main(int argc, char** argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
 	//typedef NTL_ZZ Ring; Ring R;
-	typedef PID_integer Ring; Ring R;
+	typedef Givaro::ZRing<Integer> Ring; Ring R;
 	RandomDenseStream<Ring> s1 (R, n, iterations);
 	pass = testRandom(R, sf, s1);
 
-	typedef PID_integer Ring2; Ring2 S;
+	typedef Givaro::ZRing<Integer> Ring2; Ring2 S;
 	RandomDenseStream<Ring2> s2 (S, n, iterations);
 	pass = pass && testRandom(S, sf, s2);
 

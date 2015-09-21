@@ -132,7 +132,7 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
-    PID_integer R;
+        Givaro::ZRing<Integer> R;
 
 	Method::Blackbox MB;
 	Method::Elimination ME;

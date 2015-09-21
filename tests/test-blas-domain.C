@@ -62,7 +62,7 @@
 #include "linbox/matrix/matrix-domain.h"
 #include <givaro/givranditer.h>
 #include "linbox/util/commentator.h"
-#include "linbox/ring/PID-integer.h"
+#include "gviaro/zring.h"
 // #include "linbox/algorithms/matrix-hom.h"
 
 #include "linbox/matrix/random-matrix.h"
@@ -325,10 +325,10 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 // actually we check the mod p muladd here...
 template <class Field>
 bool CheckMulAdd(const Field& Zp, const Integer & alpha ,
-		  const BlasMatrix<PID_integer> & A ,
-		  const BlasMatrix<PID_integer> & B ,
+		  const BlasMatrix<Givaro::ZRing<Integer> > & A ,
+		  const BlasMatrix<Givaro::ZRing<Integer> > & B ,
 		  const Integer & beta ,
-		  const BlasMatrix<PID_integer> & C)
+		  const BlasMatrix<Givaro::ZRing<Integer> > & C)
 {
 
 	size_t M = C.rowdim();
@@ -337,11 +337,11 @@ bool CheckMulAdd(const Field& Zp, const Integer & alpha ,
 	//typedef Givaro::Modular<double>       Field ;
 	typedef typename Field::Element      Element ;
 
-	PID_integer ZZ ;
+	Givaro::ZRing<Integer> ZZ ;
 	// compiles, but wrong if BlasMatrixDomain is used
-	MatrixDomain<PID_integer> ZMD(ZZ);
+	MatrixDomain<Givaro::ZRing<Integer> > ZMD(ZZ);
 
-	BlasMatrix<PID_integer> D(ZZ,M,N);
+	BlasMatrix<Givaro::ZRing<Integer> > D(ZZ,M,N);
 
 /*
 	Integer p = Integer::random_between(10,12) ;
@@ -414,8 +414,8 @@ template <class Field>
 static bool testMulAddAgain (const Field& F, size_t n, int iterations)
 {
 
-	PID_integer ZZ ;
-	typedef BlasMatrix<PID_integer>         IMatrix;
+	Givaro::ZRing<Integer> ZZ ;
+	typedef BlasMatrix<Givaro::ZRing<Integer> >         IMatrix;
 
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -431,10 +431,10 @@ static bool testMulAddAgain (const Field& F, size_t n, int iterations)
 	size_t lB = 18 ;
 	size_t lC = 19 ;
 
-	PID_integer ZZ ;
+	Givaro::ZRing<Integer> ZZ ;
 
 	typedef RandomIntegerIter<>                       IntRandIter ;
-	typedef RandomDenseMatrix<IntRandIter, PID_integer > IntRand_t;
+	typedef RandomDenseMatrix<IntRandIter, Givaro::ZRing<Integer> > IntRand_t;
 
 	IntRandIter RA(lA);
 	IntRandIter RB(lB);

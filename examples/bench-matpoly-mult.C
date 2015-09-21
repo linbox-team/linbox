@@ -224,10 +224,10 @@ void bench_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	size_t mmul=2*n*n*n;
 	size_t madd=n*n;
 	size_t kara=pow((double)d, log(3.)/log(2.));
-	size_t fft= 17 *d *log(2.*d)/log(2.);
+	    //size_t fft= 17 *d *log(2.*d)/log(2.);
 	size_t costNaive= mmul*d*d + madd*(d-1)*(d-1);
 	size_t costKara = mmul*kara+ 6*madd*kara;
-	size_t costFFT  = mmul*2*d + 3*madd*fft;
+	    //size_t costFFT  = mmul*2*d + 3*madd*fft;
 
 #ifdef FFT_PROFILER
 	FFT_PROF_LEVEL=3;

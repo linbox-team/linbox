@@ -52,7 +52,7 @@ int main (int argc, char **argv)
 		// For a small integer matrix test, do "det data/mat2S".
 		// It is a 2 by 2 matrix with determinant = -2.
 
-		typedef PID_integer Integers;
+		typedef Givaro::ZRing<Integer> Integers;
 		Integers ZZ;
 
 		ifstream input (argv[1]);

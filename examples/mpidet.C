@@ -54,7 +54,7 @@ int main (int argc, char **argv)
 		Communicator *Cptr = NULL;
 		Cptr = new Communicator(&argc, &argv);
 
-		typedef PID_integer Integers;
+		typedef Givaro::ZRing<Integer> Integers;
 		Integers ZZ;
 
 		ifstream input (argv[1]);

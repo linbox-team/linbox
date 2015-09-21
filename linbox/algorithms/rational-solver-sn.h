@@ -39,7 +39,7 @@
 #include "linbox/algorithms/vector-fraction.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/util/timer.h"
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 
 namespace LinBox {
 
@@ -172,8 +172,8 @@ namespace LinBox {
 
 			loopBound *= (2*mnorm + zw_dmax((int)n, &*(r.begin()), 1));
 
-			PID_integer Z;
-			BlasVector<PID_integer> numx(Z,n), tnum(Z,n); // numerator of binary expansion
+			Givaro::ZRing<Integer> Z;
+			BlasVector<Givaro::ZRing<Integer> > numx(Z,n), tnum(Z,n); // numerator of binary expansion
 			integer denx = 1, tden; // denominator of binary expansion (denx is a power of 2).
 
 			FVector x(field(),n), xs_int(field(),n), xs_frac(field(),n);

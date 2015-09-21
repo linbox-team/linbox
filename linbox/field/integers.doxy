@@ -29,9 +29,8 @@
  * LinBox provides :
  * - LinBox::Integer is the Givaro representation of an integer (Givaro::Integer).
  * - LinBox::integer is a synonym
- * - LinBox::PID_integer is a domain (ref ???) to perform integers operation on.
- * - Others ?
- *
+ * 
+ * The Ring of integers is provided by Givaro: Givaro::ZRing<Integer>
  *
  * other use of integers ?
  *

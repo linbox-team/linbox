@@ -28,7 +28,7 @@
 #define CRATIMING
 
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/algorithms/rational-reconstruction-base.h"
 #include "linbox/algorithms/classic-rational-reconstruction.h"
@@ -56,10 +56,10 @@ namespace LinBox
 	 * Either by Early Termination see [Dumas, Saunder, Villard, JSC 32 (1/2), pp 71-99, 2001],
 	 * Or via a bound on the size of the Integers.
 	 */
-	//typedef PID_integer Integers;
+	//typedef Givaro::ZRing<Integer> Integers;
 	//typedef Integers::Element Integer;
 
-	template<class RatCRABase, class RatRecon = RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > >
+	template<class RatCRABase, class RatRecon = RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > >
 	struct RationalRemainder2 {
 
 
@@ -326,7 +326,7 @@ namespace LinBox
 		}
 
 		template<class Function, class RandPrimeIterator>
-		BlasVector<PID_integer> & operator() (BlasVector<PID_integer >& num, Integer& den
+		BlasVector<Givaro::ZRing<Integer> > & operator() (BlasVector<Givaro::ZRing<Integer> >& num, Integer& den
 						      , Function& Iteration, RandPrimeIterator& genprime)
 		{
 			{
@@ -340,8 +340,8 @@ namespace LinBox
 			int coprime =0;
 			int maxnoncoprime = 1000;
 
-			PID_integer Z;
-			BlasVector<PID_integer> f_in(Z),m_in(Z);
+			Givaro::ZRing<Integer> Z;
+			BlasVector<Givaro::ZRing<Integer> > f_in(Z),m_in(Z);
 			Builder_.getPreconditioner(f_in,m_in);
 
 			//while( ! Builder_.terminated() )
@@ -367,10 +367,10 @@ namespace LinBox
 					Integer Mint ; Builder_.getModulus(Mint);
 					if ( Builder_.terminated() ) {//early or full termination occurred, check reconstruction of the whole vector
 						//early or full termination
-						BlasVector<PID_integer> r_v(Z) ;
+						BlasVector<Givaro::ZRing<Integer> > r_v(Z) ;
 						Builder_.getResidue(r_v);
 						if (RR_.reconstructRational(num,den,r_v,Mint) ) {
-							BlasVector<PID_integer > vnum(num),vden(Z,m_in.size(),den);
+							BlasVector<Givaro::ZRing<Integer> > vnum(num),vden(Z,m_in.size(),den);
 							for (int i=0; i < (int)vnum.size(); ++ i) {
 								if (vnum[(size_t)i]==0) vnum[(size_t)i] = 1; // no prec
 							}
@@ -398,7 +398,7 @@ namespace LinBox
 						Builder_.getResidue(rint);
 						Integer n,d;
 						if (RR_.reconstructRational(n,d,rint,Mint)) {
-							BlasVector<PID_integer> vden(Z,m_in.size(),d);
+							BlasVector<Givaro::ZRing<Integer> > vden(Z,m_in.size(),d);
 							Builder_.productin(vden,m_in);
 							Builder_.changePreconditioner(f_in,vden);
 							int k; Builder_.getThreshold(k);
@@ -510,7 +510,7 @@ namespace LinBox
 
 		// temp. spec. for BlasVector
 		template<class Function, class RandPrimeIterator>
-		bool operator() (const int k, BlasVector<PID_integer  >& num
+		bool operator() (const int k, BlasVector<Givaro::ZRing<Integer>  >& num
 				 , Integer& den, Function& Iteration, RandPrimeIterator& genprime)
 		{
 			if ((IterCounter==0) && (k != 0)) {
@@ -522,9 +522,9 @@ namespace LinBox
 			}
 			int coprime =0;
 			int maxnoncoprime = 1000;
-			PID_integer Z;
+			Givaro::ZRing<Integer> Z;
 
-			BlasVector<PID_integer > f_in(Z),m_in(Z);
+			BlasVector<Givaro::ZRing<Integer> > f_in(Z),m_in(Z);
 			Builder_.getPreconditioner(f_in,m_in);
 			for (int i=0; ((k<0) && Builder_.terminated()) || (i <k); ++i ) {
 				//++IterCounter;
@@ -548,9 +548,9 @@ namespace LinBox
 #if 0
 				Integer M ; Builder_.getModulus(M);
 				if ( Builder_.terminated() ) {
-					BlasVector<PID_integer> r ; Builder_.getResidue(r);
+					BlasVector<Givaro::ZRing<Integer> > r ; Builder_.getResidue(r);
 					if (RR_.reconstructRational(num,den,r,M) ) {
-						BlasVector<PID_integer> vnum(num),vden(m_in.size(),den);
+						BlasVector<Givaro::ZRing<Integer> > vnum(num),vden(m_in.size(),den);
 						Builder_.productin(vnum, f_in); Builder_.productin(vden,m_in);
 						if (Builder_.changePreconditioner(vnum,vden)) break;
 						else Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
@@ -560,7 +560,7 @@ namespace LinBox
 					Integer r ; Builder_.getResidue(r);
 					Integer n,d;
 					if (RR_.reconstructRational(n,d,r,M)) {
-						BlasVector<PID_integer > vden(m_in.size(),d);
+						BlasVector<Givaro::ZRing<Integer> > vden(m_in.size(),d);
 						Builder_.productin(vden,m_in);
 						if (Builder_.changePreconditioner(f_in,vden)) break;
 						else Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
@@ -569,12 +569,12 @@ namespace LinBox
 #endif
 			}
 			if (Builder_.terminated()) {
-				//BlasVector<PID_integer> p_mul, p_div,res, g;
+				//BlasVector<Givaro::ZRing<Integer> > p_mul, p_div,res, g;
 				//Builder_.getPreconditioner(p_div,p_mul);
 				Builder_.result(num,den);
 #if 0
 				num = Builder_productin(res,p_div);
-				typename BlasVector<PID_integer>::iterator itnum,itden,ittmp;
+				typename BlasVector<Givaro::ZRing<Integer> >::iterator itnum,itden,ittmp;
 				den = 1; Integer denold = 1;
 				for (itnum = num.begin(), itden=p_mul.begin(); itnum != num.end(); ++itnum,++itden) {
 					lcm(den,den,*itden);

@@ -98,7 +98,7 @@ namespace LinBox
 			return Builder_.result(num, den);
 		}
 
-#if 0 /*  marche pas si on remplace le premier Interger par PID_integer :-( spécialise pour BlasVector*/
+#if 0 /*  marche pas si on remplace le premier Interger par Givaro::ZRing<Integer> :-( spécialise pour BlasVector*/
 		template<template <class, class> class Vect, template <class> class Alloc,  class Function, class RandPrimeIterator>
 		Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
 		{
@@ -119,7 +119,7 @@ namespace LinBox
 #endif
 
 		template<class Function, class RandPrimeIterator>
-		BlasVector<PID_integer> & operator() ( BlasVector<PID_integer>& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		BlasVector<Givaro::ZRing<Integer>> & operator() ( BlasVector<Givaro::ZRing<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
 		{
 			++genprime;
 			{

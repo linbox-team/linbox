@@ -50,7 +50,7 @@
 using namespace LinBox;
 using namespace std;
 
-typedef PID_integer Integers;
+typedef Givaro::ZRing<Integer> Integers;
 
 struct  cra_det_task {
 
@@ -68,7 +68,7 @@ struct  cra_det_task {
 		SparseMatrix<Integers> sparseMatrix (ZZ);
 		sparseMatrix.read(input);
 		Util::logfile() << "matrix created" << std::endl;
-		PID_integer::Element det_A;
+		Givaro::ZRing<Integer>::Element det_A;
 		try {
 			cra_det(det_A, sparseMatrix, RingCategories::IntegerTag(), Method::Hybrid() );
 		}

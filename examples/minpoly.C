@@ -76,11 +76,11 @@ int main (int argc, char **argv)
 		M.communicatorp(&C);
 #endif
 
-		PID_integer ZZ;
-		SparseMatrix<PID_integer> A (ZZ);
+		Givaro::ZRing<Integer> ZZ;
+		SparseMatrix<Givaro::ZRing<Integer>> A (ZZ);
 		A.read (input);
 		/*
-		typedef SparseMatrix<PID_integer> SpMat;
+		typedef SparseMatrix<Givaro::ZRing<Integer>> SpMat;
 		SpMat B (ZZ);
 		B.read (input);
 		Transpose<SpMat> BT(B);
@@ -90,7 +90,7 @@ int main (int argc, char **argv)
 		if(process == 0)
 			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		DenseVector<PID_integer> m_A(ZZ);
+		DenseVector<Givaro::ZRing<Integer> > m_A(ZZ);
 		minpoly (m_A, A, M);
 
 		if(process == 0){

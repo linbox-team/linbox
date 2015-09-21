@@ -134,10 +134,10 @@ namespace LinBox
 	}
 }
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 namespace LinBox
 {
-	typedef GivPolynomialRing<PID_integer, Givaro::Dense> GivPolPIDIntDense;
+	typedef GivPolynomialRing<Givaro::ZRing<Integer>, Givaro::Dense> GivPolPIDIntDense;
 	template <>
 	template <>
 	std::vector<GivPolPIDIntDense::Element* >&

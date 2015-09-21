@@ -33,8 +33,7 @@
 #include<fstream>
 
 #include <linbox/linbox-config.h>
-#include <linbox/ring/PID-integer.h>
-#include <linbox/ring/modular.h>
+#include <givaro/modular.h>
 #include <linbox/util/timer.h>
 #include <linbox/matrix/grid.h>
 
@@ -78,7 +77,7 @@ int main(int argc, char* argv[])
 	out=out+"z";
 	if (algo == "reduceT") out=out+"T";
 
-	typedef PID_integer Ints;
+	typedef Givaro::ZRing<Integer> Ints;
 	//typedef Givaro::ModularBalanced<int> Ints;
 	//typedef Givaro::Modular<int> Ints;
 	//Ints Z(m);

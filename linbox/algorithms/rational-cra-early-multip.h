@@ -131,7 +131,7 @@ namespace LinBox
 			return FullMultipRatCRA<Domain>::result(num, den);
 		}
 
-		BlasVector<PID_integer >& result(BlasVector<PID_integer>& num, PID_integer::Element& den)
+		BlasVector<Givaro::ZRing<Integer> >& result(BlasVector<Givaro::ZRing<Integer>>& num, Givaro::ZRing<Integer>::Element& den)
 		{
 			return FullMultipRatCRA<Domain>::result(num, den);
 		}

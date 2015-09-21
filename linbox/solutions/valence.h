@@ -178,9 +178,9 @@ namespace LinBox
 			typedef typename Blackbox::Field Ring;
 			_aat_diag = 0; _aat_radius = 0, _aat_radius1 = 0;
 
-			PID_integer ZZ;
-			BlasVector< PID_integer > d(ZZ, A. rowdim()),w(ZZ, A. coldim());
-			BlasVector<PID_integer>::iterator di, wi;
+			Givaro::ZRing<Integer> ZZ;
+			BlasVector< Givaro::ZRing<Integer> > d(ZZ, A. rowdim()),w(ZZ, A. coldim());
+			BlasVector<Givaro::ZRing<Integer>>::iterator di, wi;
 			for(wi = w.begin();wi!= w.end();++wi)
 				*wi = 0;
 			for(di = d.begin();di!= d.end();++di)
@@ -294,8 +294,8 @@ namespace LinBox
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 
 			RandomPrimeIterator rg; rg.template setBitsField<Field>();
-			PID_integer Z;
-			BlasVector<PID_integer> Lv(Z), Lm(Z);
+			Givaro::ZRing<Integer> Z;
+			BlasVector<Givaro::ZRing<Integer> > Lv(Z), Lm(Z);
 			size_t d1; Field::Element v; integer im = 1;
 			//compute an upper bound for val.
 			integer bound; cassini (bound, A); bound = pow (bound, (uint64_t)d); bound *= 2;
@@ -314,7 +314,7 @@ namespace LinBox
 			} while (im < bound);
 
 			val = 0;
-			BlasVector<PID_integer>::iterator Lv_p, Lm_p; integer tmp, a, b, g;
+			BlasVector<Givaro::ZRing<Integer> >::iterator Lv_p, Lm_p; integer tmp, a, b, g;
 			for (Lv_p = Lv. begin(), Lm_p = Lm. begin(); Lv_p != Lv. end(); ++ Lv_p, ++ Lm_p) {
 				tmp = im / *Lm_p;
 				gcd (g, *Lm_p, tmp, a, b);

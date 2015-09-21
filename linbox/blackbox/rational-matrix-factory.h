@@ -26,8 +26,7 @@
 
 #include "linbox/blackbox/factory.h"
 //#include "linbox/field/gmp-rational.h"
-#include "linbox/ring/PID-integer.h"
-#include "linbox/integer.h"
+#include "givaro/zring.h"
 
 #include <vector>
 
@@ -49,9 +48,6 @@ namespace LinBox
 	class RationalMatrixFactory /*: public MatrixFactory<Integers,typename Rationals::Element >*/ {
 		//typedef GMPRationalField Rationals;
 		typedef typename Rationals::Element Quotient;
-		//typedef PID_integer Integers;
-		//typedef typename PID_integer::Element Integer;
-		//
 
 	private:
 		const QMatrix*  _matA;

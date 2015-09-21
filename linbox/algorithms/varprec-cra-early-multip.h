@@ -28,7 +28,6 @@
 #include "linbox/util/timer.h"
 #include <stdlib.h>
 #include "linbox/integer.h"
-#include "linbox/ring/PID-integer.h"
 #include "linbox/field/gmp-rational.h"
 #include "linbox/solutions/methods.h"
 #include <vector>
@@ -49,7 +48,7 @@ namespace LinBox
 	 * FullMulpitCRA should consist of vectors of size 0, but errors happen.
 	 */
 
-	//typedef PID_Integer Integers;
+	//typedef Givaro::ZRing<Integer> Integers;
 	//typedef Integers::Element Integer;
 
 	template<class Domain_Type>
@@ -63,15 +62,15 @@ namespace LinBox
 		typedef VarPrecEarlyMultipCRA<Domain> Self_t;
 
 	protected:
-		BlasVector< PID_integer > vfactor_;
-		BlasVector< PID_integer > vmultip_;
+		BlasVector< Givaro::ZRing<Integer> > vfactor_;
+		BlasVector< Givaro::ZRing<Integer> > vmultip_;
 
 		std::vector< unsigned long > randv;
 		Integer& result(Integer &d) {return d;}; // DON'T TOUCH
 	public:
 		VarPrecEarlyMultipCRA(const unsigned long EARLY = DEFAULT_EARLY_TERM_THRESHOLD, const double b=0.0,
-				      const BlasVector<PID_integer>& vf = BlasVector<PID_integer>(PID_integer()),
-				      const BlasVector<PID_integer>& vm = BlasVector<PID_integer>(PID_integer())) :
+				      const BlasVector<Givaro::ZRing<Integer> >& vf = BlasVector<Givaro::ZRing<Integer> >(Givaro::ZRing<Integer>()),
+				      const BlasVector<Givaro::ZRing<Integer> >& vm = BlasVector<Givaro::ZRing<Integer> >(Givaro::ZRing<Integer>())) :
 			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(b), vfactor_(vf), vmultip_(vm)
 		{
 			for (int i=0; i < (int)vfactor_.size(); ++i) {
@@ -358,7 +357,7 @@ namespace LinBox
 			}
 		}
 
-		BlasVector<PID_integer >& result(BlasVector<PID_integer >& num, Integer& den)
+		BlasVector<Givaro::ZRing<Integer> >& result(BlasVector<Givaro::ZRing<Integer> >& num, Integer& den)
 		{
 			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
 				FullMultipCRA<Domain>::result(num);
@@ -366,17 +365,17 @@ namespace LinBox
 				return num;
 			}
 			else {
-				PID_integer Z;
-				BlasVector<PID_integer > z(Z),vf(Z), vm(Z);
+				Givaro::ZRing<Integer> Z;
+				BlasVector<Givaro::ZRing<Integer> > z(Z),vf(Z), vm(Z);
 				FullMultipCRA<Domain>::result(z);//vector of non prec results
 
-				typename BlasVector<PID_integer >::const_iterator it,itf,itm;
-				typename BlasVector<PID_integer >::iterator itt;
+				typename BlasVector<Givaro::ZRing<Integer> >::const_iterator it,itf,itm;
+				typename BlasVector<Givaro::ZRing<Integer> >::iterator itt;
 
 				Integer M; getModulus(M);
 				getPreconditioner(vf,vm);
 
-				BlasVector<PID_integer > residue(Z);//vector of residues
+				BlasVector<Givaro::ZRing<Integer> > residue(Z);//vector of residues
 				getResidue(residue);
 
 				num.clear();
@@ -450,7 +449,7 @@ namespace LinBox
 			}
 			vmultip_ = vm;
 
-			PID_integer Z;
+			Givaro::ZRing<Integer> Z;
 			Vect e(Z,vfactor_.size());
 
 			//clear CRAEarlySingle;
@@ -463,7 +462,7 @@ namespace LinBox
 
 			//std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
 			std::vector< LazyProduct >::iterator _mod_it = FullMultipCRA<Domain>::RadixPrimeProd_.end();// list of prime products
-			std::vector< BlasVector<PID_integer> >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.end();// list of residues as vectors of size 1
+			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.end();// list of residues as vectors of size 1
 			std::vector< bool >::iterator    _occ_it = FullMultipCRA<Domain>::RadixOccupancy_.end();//flags of occupied fields
 			int n = (int)FullMultipCRA<Domain>::RadixOccupancy_.size();
 			//std::vector<Integer> ri(1); LazyProduct mi; double di;
@@ -555,10 +554,10 @@ namespace LinBox
 		}
 
 		template<class Vect2>
-		Integer& dot (Integer& z, const Integer& D, const BlasVector<PID_integer >& v1, const Vect2& v2)
+		Integer& dot (Integer& z, const Integer& D, const BlasVector<Givaro::ZRing<Integer> >& v1, const Vect2& v2)
 		{
 			z = 0;
-			typename BlasVector<PID_integer >::const_iterator v1_p;
+			typename BlasVector<Givaro::ZRing<Integer> >::const_iterator v1_p;
 			typename Vect2::const_iterator v2_p;
 			for (v1_p  = v1. begin(), v2_p = v2. begin(); v1_p != v1. end(); ++ v1_p, ++ v2_p) {
 				z = (z + (*v1_p)*int64_t(*v2_p))%D;

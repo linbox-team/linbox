@@ -351,7 +351,7 @@ EXTERN float* linbox_modn_dense_matrix_matrix_general_multiply_float (float modu
   dense over ZZ
  *************************************************************************/
 
-typedef PID_integer IntegerRing;
+typedef Givaro::ZRing<Integer> IntegerRing;
 
 template <class Field, class Polynomial>
 void printPolynomial (const Field &F, const Polynomial &v)
@@ -545,7 +545,7 @@ BlasMatrix<NTL_ZZ> new_matrix_integer_dense_ntl(mpz_t** matrix, size_t nrows, si
 	for (i=0; i < nrows; ++i) {
 		for (j=0; j < ncols; ++j) {
 			NTL_ZZ::Element t;
-			PID_integer::Element s;
+			Givaro::ZRing<Integer>::Element s;
 			mpz_set(spy.get_mpz(s), matrix[i][j]);
 			Z.init(t, s);
 			A.setEntry(i, j, t);
@@ -570,13 +570,13 @@ void linbox_integer_dense_double_det (mpz_t  ans1, mpz_t ans2, mpz_t **a, mpz_t 
 		}
 	}
 	for (j=0; j < n; ++j) {
-		PID_integer::Element t;
+		Givaro::ZRing<Integer>::Element t;
 		mpz_set(spy.get_mpz(t), b[0][j]);
 		A.setEntry (n-1, j, t);
 		mpz_set (spy.get_mpz(t), c[0][j]);
 		A.setEntry (n, j, t);
 	}
-	PID_integer::Element d1,d2;
+	Givaro::ZRing<Integer>::Element d1,d2;
 	doubleDet (d1, d2, A, proof);
 	mpz_set(ans1, spy.get_mpz(d1));
 	mpz_set(ans2, spy.get_mpz(d2));

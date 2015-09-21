@@ -76,7 +76,7 @@ namespace LinBox
 	}
 
 	template<>
-	inline bool checkBlasPrime(const BlasVector<PID_integer> p)
+	inline bool checkBlasPrime(const BlasVector<Givaro::ZRing<Integer> > p)
 	{
 		bool tmp=true;
 		for (size_t i=0;i<p.size();++i)
@@ -963,8 +963,8 @@ namespace LinBox
 #ifdef RSTIMING
 				tCheckConsistency.start();
 #endif
-				PID_integer Z;
-				BlasVector<PID_integer> zt(Z,rank);
+				Givaro::ZRing<Integer> Z;
+				BlasVector<Givaro::ZRing<Integer> > zt(Z,rank);
 				for (size_t i=0; i<rank; ++i)
 					_ring.assign(zt[i], A.getEntry(srcRow[rank], srcCol[i]));
 
@@ -1272,9 +1272,9 @@ namespace LinBox
 				// so it corresponds to b instead of newb
 
 				//q in {0, 1}^rank
-				PID_integer Z;
-				BlasVector<PID_integer> q(Z,rank);
-				typename BlasVector<PID_integer>::iterator q_iter;
+				Givaro::ZRing<Integer> Z;
+				BlasVector<Givaro::ZRing<Integer> > q(Z,rank);
+				typename BlasVector<Givaro::ZRing<Integer> >::iterator q_iter;
 
 				bool allzero;
 				do {

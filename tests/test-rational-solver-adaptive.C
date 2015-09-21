@@ -201,7 +201,7 @@ int main(int argc, char** argv)
 	typedef Givaro::Modular<int32_t> Field;
 	// typedef Givaro::Modular<double> Field;
 
-	typedef PID_integer     Ring;
+	typedef Givaro::ZRing<Integer>     Ring;
 
 	Ring R;
 

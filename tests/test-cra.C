@@ -211,13 +211,13 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 	typedef typename std::vector<Matrix>                 MatVect ;
 	typedef typename Vect::iterator                      Iterator;
 	typedef typename MatVect::iterator                MatIterator;
-	typedef typename LinBox::BlasMatrix<PID_integer>   IntMatrix ;
+	typedef typename LinBox::BlasMatrix<Givaro::ZRing<Integer> >  IntMatrix ;
 
 	typedef Givaro::Modular<double>                        Field ;
 	typedef Field::Element                                Element;
 	typedef typename LinBox::BlasMatrix<Field>           pMatrix ;
 
-	PID_integer Z ;
+	Givaro::ZRing<Integer> Z ;
 
 	Vect primes(Size) ;
 	/*  probably not all coprime... */

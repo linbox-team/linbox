@@ -29,9 +29,9 @@
   */
 #include <linbox/linbox-config.h>
 
+#include <givaro/zring.h>
 #include <iostream>
 
-#include <linbox/field/givaro.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
 
@@ -83,7 +83,7 @@ int main (int argc, char **argv) {
         LinBox::Timer tim;
         size_t exponent = atoi(argv[2]);
         if (exponent > 63) {
-            runpoweroftworank<Givaro::Integer, LinBox::PID_integer>(input, exponent);
+            runpoweroftworank<Givaro::Integer, Givaro::ZRing<Integer> >(input, exponent);
 
         } else {
             runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, exponent);

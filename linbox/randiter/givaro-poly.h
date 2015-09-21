@@ -46,12 +46,10 @@ namespace LinBox
 		typedef typename Field::Element Element;
 		
 		GivaroPolyRandIter(Field pd, 
-			const integer& size = 0,
-			const integer& seed = 0) 
-		{
-			_pd = pd;
-			_randIter = Givaro::GIV_randIter<SubDomain,integer>(pd.subdomain(), size, seed);
-		}
+                                   const integer& size = 0,
+                                   const integer& seed = 0) :
+                        _randIter(Givaro::GIV_randIter<SubDomain,integer>(pd.subdomain(), size, seed))
+		{_pd = pd;}
 		
 		GivaroPolyRandIter(const GivaroPolyRandIter &R)
 			: _pd(R._pd), _randIter(R._randIter), _size(R._size), _seed(R._seed) {}
@@ -60,11 +58,11 @@ namespace LinBox
 			return *this;
 		}
 		
-		Element &random(Element &a) const {
+		Element &random(Element &a)  {
 			return _pd.domain().random(_randIter, a);
 		}
 		
-		Element &random(Element &a, Givaro::Degree d) const {
+		Element &random(Element &a, Givaro::Degree d)  {
 			return _pd.domain().random(_randIter, a, d);
 		}
 		

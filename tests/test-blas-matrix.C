@@ -32,7 +32,7 @@
 #include <givaro/modular-balanced.h>
 
 #include "linbox/integer.h"
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/dense-matrix.h"
 
@@ -310,18 +310,18 @@ int main (int argc, char **argv)
 #endif
 	}
 
-	{ /* PID_integer */
+	{ /* Givaro::ZRing<Integer> */
 #if 0 /*  bug somewhere */
 		//Field
-		typedef PID_integer Field;
+		typedef Givaro::ZRing<Integer> Field;
 
 		Field F ;
-		commentator().start("PID_integer");
+		commentator().start("Givaro::ZRing<Integer>");
 
 		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
-		commentator().stop(MSG_STATUS (pass), (const char *) 0,"PID_integer");
+		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ZRing<Integer>");
 #endif
 	}
 

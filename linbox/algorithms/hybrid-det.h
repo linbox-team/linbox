@@ -55,10 +55,10 @@ namespace LinBox
 		integer                             beta;
 
 		size_t                            factor;
-		PID_integer                           ZZ; //! @todo is it \c A.field()?
+		Givaro::ZRing<Integer>                           ZZ; //! @todo is it \c A.field()?
 		size_t                        iter_count;
 		size_t                       iter_count2;
-		typedef  BlasVector<PID_integer>  IVect ;
+		typedef  BlasVector<Givaro::ZRing<Integer> >  IVect ;
 		IVect                            moduli ;
 
 	public:
@@ -80,7 +80,7 @@ namespace LinBox
 			A(b), M(n)
 			, beta(divisor)
 			, factor(fs)
-			,ZZ(PID_integer())
+			,ZZ(Givaro::ZRing<Integer>())
 			,moduli(ZZ,fs),primes(ZZ,fs)
 		{
 			// moduli.resize(factor);
@@ -437,7 +437,7 @@ namespace LinBox
 
 		//commentator().setReportStream(std::cout);
 		typedef Givaro::Modular<double> mymodular;
-		//typedef PID_integer Integers;
+		//typedef Givaro::ZRing<Integer> Integers;
 		typedef typename Integers::Element Integer;
 
 		commentator().start ("Integer Determinant - hybrid version for sparse matrices", "det");

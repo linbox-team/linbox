@@ -52,7 +52,7 @@ namespace LinBox
 		const size_t				nbloops;
 		size_t					iterationnumber;
 
-		std::vector< BlasVector< PID_integer > > 	residues;
+		std::vector< BlasVector< Givaro::ZRing<Integer> > > 	residues;
 		integer _product;
 		integer _midprod;
 
@@ -61,7 +61,7 @@ namespace LinBox
 				: Father_t(primes),
 				  nbloops(primes.size()),
 				  iterationnumber(0)
-				  , residues(0,BlasVector<PID_integer>(PID_integer()))
+				  , residues(0,BlasVector<Givaro::ZRing<Integer> >(Givaro::ZRing<Integer>()))
 				  , _product(1)
 		{
 			for(size_t i=0; i<primes.size(); ++i)
@@ -69,11 +69,11 @@ namespace LinBox
 			Givaro::Integer::div(_midprod,_product,2);
 		}
 
-		GivaroRnsFixedCRA(const BlasVector<PID_integer>& primes)
+		GivaroRnsFixedCRA(const BlasVector<Givaro::ZRing<Integer> >& primes)
 				: Father_t(primes.getRep()), // refRep ?
 				  nbloops(primes.size()),
 				  iterationnumber(0)
-				  , residues(0,BlasVector<PID_integer>(PID_integer()))
+				  , residues(0,BlasVector<Givaro::ZRing<Integer> >(Givaro::ZRing<Integer>()))
 				  , _product(1)
 		{
 			for(size_t i=0; i<primes.size(); ++i)
@@ -102,8 +102,8 @@ namespace LinBox
 
 		void initialize (const Domain& D, const BlasVector<Domain >& e)
 		{
-			PID_integer ZZ;
-			BlasVector<PID_integer> Z(ZZ);
+			Givaro::ZRing<Integer> ZZ;
+			BlasVector<Givaro::ZRing<Integer> > Z(ZZ);
 			residues.resize(e.size(),Z);
 			this->progress(D,e);
 		}
@@ -128,7 +128,7 @@ namespace LinBox
 		{
 			++iterationnumber;
 			typename BlasVector<Domain >::const_iterator eit=e.begin();
-			std::vector<BlasVector< PID_integer > >::iterator rit = residues.begin();
+			std::vector<BlasVector< Givaro::ZRing<Integer> > >::iterator rit = residues.begin();
 
 			for( ; eit != e.end(); ++eit, ++rit) {
 				Integer tmp;
@@ -157,10 +157,10 @@ namespace LinBox
 		}
 
 
-		BlasVector<PID_integer>& result (BlasVector<PID_integer > &d)
+		BlasVector<Givaro::ZRing<Integer> >& result (BlasVector<Givaro::ZRing<Integer> > &d)
 		{
 			d.resize(0);
-			for(std::vector<BlasVector< PID_integer > >::const_iterator rit = residues.begin(); rit != residues.end(); ++rit) {
+			for(std::vector<BlasVector< Givaro::ZRing<Integer> > >::const_iterator rit = residues.begin(); rit != residues.end(); ++rit) {
 				Integer tmp;
 				RnsToRing(tmp, *rit);
 				linbox_check(tmp>=0);

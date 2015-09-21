@@ -40,6 +40,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/field/hom.h"
 #include "sparse-domain.h"
+#include "givaro/zring.h"
 
 #ifndef LINBOX_CSR_TRANSPOSE
 #define LINBOX_CSR_TRANSPOSE 1000
@@ -53,7 +54,7 @@ namespace LinBox {
 	};
 
 	template<>
-	struct AutoField<PID_Integer> {
+	struct AutoField<Givaro::ZRing<Integer> > {
 		typedef Givaro::ModularBalanced<double> Base ;
 
 	};
@@ -1429,7 +1430,7 @@ namespace LinBox {
 	// }
 
 	// template<>
-	// Integer SparseMatrix<PID_integer, SparseMatrixFormat::CSR >::magnitude() const
+	// Integer SparseMatrix<Givaro::ZRing<Integer>, SparseMatrixFormat::CSR >::magnitude() const
 	// {
 	// 	// XXX this is a vector magnitude
 	// 	Integer max_elt(0);

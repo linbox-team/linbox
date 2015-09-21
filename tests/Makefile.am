@@ -142,7 +142,6 @@ FULLCHECK_TESTS =               \
 	test-order-basis			\
 	test-param-fuzzy			\
 	test-permutation			\
-	test-PID-integer			\
 	test-plain-domain			\
 	test-poly-det				\
 	test-qlup					\
@@ -292,7 +291,6 @@ test_optimization_SOURCES =             test-optimization.C
 test_order_basis_SOURCES =              test-order-basis.C
 test_param_fuzzy_SOURCES =              test-param-fuzzy.C
 test_permutation_SOURCES =              test-permutation.C
-test_PID_integer_SOURCES =              test-PID-integer.C
 test_plain_domain_SOURCES =             test-plain-domain.C
 test_poly_det_SOURCES =                 test-poly-det.C
 test_qlup_SOURCES =                     test-qlup.C

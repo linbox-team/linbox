@@ -37,7 +37,7 @@ namespace LinBox
 		typedef EarlySingleCRA<Domain> 			Father_t;
 		typedef typename Father_t::DomainElement 	DomainElement;
 		typedef EarlySingleRatCRA<Domain>		Self_t;
-		PID_integer _ZZ;
+		Givaro::ZRing<Integer> _ZZ;
 
 		Integer					Numer0;
 		Integer					Denom0;

@@ -31,7 +31,7 @@
 
 
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/ring/PIR-ntl-ZZ_p.h"
 #include "linbox/ring/PIR-modular-int32.h"
 #include "linbox/randiter/random-prime.h"
@@ -163,7 +163,7 @@ int main(int argc, char** argv)
 	commentator().start("Ilioloulos Smith Form test suite", "Ilioloulos");
         commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-        PID_integer R; // Ring of integers
+        Givaro::ZRing<Integer> R; // Ring of integers
         //NTL_ZZ R;
 
         if (!testRandom(R, n)) pass = false;

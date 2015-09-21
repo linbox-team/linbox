@@ -427,7 +427,7 @@ namespace LinBox {
 	};
 
 	template<class _Rep>
-	class applyDomain<BlasMatrix<PID_integer,_Rep> > {
+	class applyDomain<BlasMatrix<Givaro::ZRing<Integer>,_Rep> > {
 		// if large : flint
 	};
 

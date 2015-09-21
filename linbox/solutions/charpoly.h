@@ -32,7 +32,6 @@
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/bbcharpoly.h"
-
 // Namespace in which all LinBox library code resides
 
 namespace LinBox
@@ -202,7 +201,9 @@ namespace LinBox
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
-			return charpoly( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+
+                        return charpoly( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+                        // std::cerr << "Charpoly(A) mod "<<F.characteristic()<<" = "<<P;
 			// 			integer p;
 			// 			F.characteristic(p);
 			//			std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
@@ -480,8 +481,8 @@ namespace LinBox
 		RationalRemainder2< VarPrecEarlyMultipCRA<Givaro::Modular<double> > > rra(3UL);
 		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
 
-		PID_integer Z;
-		BlasVector<PID_integer> PP(Z); // use of integer due to non genericity of cra. PG 2005-08-04
+		Givaro::ZRing<Integer> Z;
+		BlasVector<Givaro::ZRing<Integer> > PP(Z); // use of integer due to non genericity of cra. PG 2005-08-04
 		Integer den;
 		rra(PP,den, iteration, genprime);
 		size_t i =0;
