@@ -143,7 +143,7 @@ namespace LinBox
 				      ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
-						r.divmod(quo,rem,lif,pri);
+						r.quoRem(quo,rem,lif,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);
 						else break;
 					}

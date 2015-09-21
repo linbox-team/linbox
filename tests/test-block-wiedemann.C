@@ -25,7 +25,7 @@
  *
  */
 
-/*! @file   tests/test-solve.C
+/*! @file   tests/test-block-wiedemann.C
  * @ingroup tests
  * @brief no doc.
  * @test no doc.

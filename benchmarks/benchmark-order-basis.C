@@ -4,7 +4,9 @@
 size_t getPeakRSS( );
 size_t getCurrentRSS( );
 //#define MEMINFO std::right<<std::setw(20)<<"                     ---->   Max Mem: "<<getPeakRSS()/1000000.<<"Mo"
-#define MEMINFO std::right<<std::setw(20)<<"                     ---->   Mem: "<<getCurrentRSS()/1000000.<<"Mo  (Max: "<<getPeakRSS()/1000000.<<"Mo)"  
+#define MB(x) ((x)/(double)(1<<20))
+//#define MB(x) ((x)>>20)
+#define MEMINFO std::right<<std::setw(20)<<"                     ---->   Mem: "<<MB(getCurrentRSS())<<" Mo  (Max: "<<MB(getPeakRSS())<<" Mo)"  
 #include "linbox/matrix/polynomial-matrix.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/randiter/random-prime.h"
@@ -260,29 +262,39 @@ void bench_sigma(const Field& F,  RandIter& Gen, size_t m, size_t n, size_t d, s
 	//typedef typename Field::Element Element;
 	//typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
-
+	
 	integer p;
 	F.characteristic(p);
-	size_t data_in=3*m*n*d*length(p);
-	size_t data_out=2*m*m*(d+1)*length(p);
-	size_t data_comp= 2*m*m*d*length(m*p*p*d);
-	std::cout<<"length(p)="<<length(p)<<std::endl;
-	std::cout<<"Memory usage --> approximatively "<< (data_in+data_out+data_comp)/1000000.<<"Mo"<<std::endl;
-	std::cout<<getMemorySize()/1000000000.<<std::endl;
+	size_t memp=length(p)+(p.bitsize()>=26?8:0);
+	size_t data_in=3*m*n*d*memp;
+	size_t data_out=2*m*m*(d+1)*memp;
+	size_t data_comp= 2*m*m*d*(length(uint64_t(m*d)*p*p)+(p.bitsize()>26?8:0));
+	std::cout<<"**************************"<<std::endl;
+	std::cout<<"mem(p)        : "<<memp<<std::endl;
+	std::cout<<"mem(p)        : "<<sizeof(p)<<std::endl;
+	std::cout<<"Projected Memory : "<< MB(data_in+data_out+data_comp)<<"Mo"<<std::endl;
+	std::cout<<"Available memory : "<<MB(getMemorySize())<<std::endl;
+	std::cout<<"**************************"<<std::endl;
+	std::cout<<"**************************"<<std::endl<<std::endl<<std::endl;
+	std::cout<<"[begin ] : "<<MEMINFO<<std::endl; 
 
-	std::cout<<"Memory for sequence: "<<(m*n*d*length(p))/1000000.<<"Mo"<<std::endl;
-	std::cout<<"Memory for sigma: "<<(m*m*(d+1)*length(p))/1000000.<<"Mo"<<std::endl;
-	std::cout<<"Real memory usage: "<<getCurrentRSS()/1000000.<<"Mo"<<std::endl;
-	MatrixP Serie(F, m, n,  d);
-	MatrixP Sigma2(F, m, m, d+1);
-	std::cout<<"Real memory usage: "<<getCurrentRSS()/1000000.<<"Mo"<<std::endl;
+	
+	MatrixP Serie(F, m, n, d);	
+	std::cout<<"[initial sequence] : "<<MB(m*n*d*memp)<<"Mo"<<MEMINFO<<std::endl;
+	std::cout<<"--> " <<MB(Serie.realmeminfo())<<std::endl;
+	std::cout<<"--> " <<MB(Serie.meminfo())<<" "<<std::endl;
 	// set the Serie at random
 	for (size_t k=0;k<d;++k)
 		for (size_t i=0;i<m;++i)
 			for (size_t j=0;j<n;++j)
 				Gen.random(Serie.ref(i,j,k));
-	std::cout<<"Real memory usage: "<<getCurrentRSS()/1000000.<<"Mo"<<std::endl;
-
+	std::cout<<"[initial sequence] : "<<MB(m*n*d*memp)<<"Mo"<<MEMINFO<<std::endl;
+	
+	MatrixP Sigma2(F, m, m, d+1);
+	std::cout<<"[output sigma    ] : "<<MB(m*m*(d+1)*memp)<<"Mo"<<MEMINFO<<std::endl;
+	std::cout<<"--> " <<MB(Sigma2.meminfo())<<std::endl;
+	std::cout<<"--> " <<MB(Sigma2.realmeminfo())<<std::endl;
+		
 	// define the shift
 	vector<size_t> shift(m,0);
 
@@ -300,7 +312,6 @@ void bench_sigma(const Field& F,  RandIter& Gen, size_t m, size_t n, size_t d, s
 #endif
 	chrono.clear();		
 	chrono.start();
-	std::cout<<"Real memory usage: "<<getCurrentRSS()/1000000.<<"Mo"<<std::endl;
 	SB.PM_Basis(Sigma2, Serie, d, shift);
 	chrono.stop();
 	std::cout << "PM-Basis      : " <<chrono.usertime()<<" s"<<std::endl;
@@ -313,11 +324,23 @@ void bench_sigma(const Field& F,  RandIter& Gen, size_t m, size_t n, size_t d, s
 	// chrono.stop();
 	// std::cout << "PM-Basis iter : " <<chrono.usertime()<<" s"<<std::endl;
 	std::cout<<endl;
-
-	std::cout<<"Max memory usage: "<<getPeakRSS()/1000000.<<"Mo"<<std::endl;
+	std::cout<<"[end] :  "<<MEMINFO<<std::endl;
 }
 
 int main(int argc, char** argv){
+
+	// std::cout<<"Real memory usage: "<<MEMINFO<<std::endl;
+	// const size_t N=32<<20;
+	// double * T= new double[N];
+	// std::cout<<"allocating :"<<((N*sizeof(double))>>20)<<"Mo"<<std::endl;
+	// T[0]=1;
+	// for (size_t i=1;i<N;i++)
+	// 	T[i]=T[i-1];
+	// std::cout<<"Real memory usage: "<<MEMINFO<<std::endl;
+	// delete[] T;
+	// std::cout<<"Real memory usage: "<<MEMINFO<<std::endl;
+	
+	
 	static size_t  m = 64; // matrix dimension
 	static size_t  n = 32; // matrix dimension
 	static size_t  b = 20; // entries bitsize
@@ -340,7 +363,7 @@ int main(int argc, char** argv){
 	typedef Givaro::Modular<double>              SmallField;	
 	typedef Givaro::Modular<Givaro::Integer>      LargeField;
 
-	size_t logd=integer(d).bitsize();	
+	size_t logd=integer((uint64_t)d).bitsize();	
 	
 	std::cout<<"###  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
 	if (b < 26){
@@ -348,7 +371,7 @@ int main(int argc, char** argv){
 			std::cout<<"degree is to large for field bitsize: "<<b<<std::endl;
 			exit(0);
 		}
-		RandomFFTPrime Rd(b,seed);	
+		RandomFFTPrime Rd(1<<b,seed);	
 		integer p = Rd.randomPrime(logd+1);
 		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 		SmallField F(p);

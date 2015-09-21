@@ -35,11 +35,14 @@ namespace LinBox
 
 	class RandomFFTPrime {
 	public:
-
-		size_t         _bits;
-
-		RandomFFTPrime(size_t bits = 20, unsigned long seed = 0) :
-			_bits(bits)
+                // define the prime type
+		typedef integer Prime_Type;
+                
+		uint64_t           _bits;
+                Prime_Type  _prime_bound;
+                
+		RandomFFTPrime(Prime_Type pbound=0x100000, unsigned long seed = 0) :
+			_bits(pbound.bitsize()), _prime_bound(pbound)
 		{
 			if (! seed)
 				RandomFFTPrime::setSeed( (unsigned long)BaseTimer::seed() );
@@ -47,9 +50,7 @@ namespace LinBox
 				RandomFFTPrime::setSeed( seed );
 		}
 
-		// define the prime type
-		typedef integer Prime_Type;
-
+		
                  /** @brief randomPrime(size_t b)
 		 *  return a random FFT prime with a 2-valuation larger than b in its order
                  *  the randomness is on the FFT primes lying in the given range
@@ -167,17 +168,22 @@ namespace LinBox
 
                 // generate a vector of distinct FFT primes with  2-valuation largest than val
                 // s.t. their product is larger than a given bound
-                inline bool generatePrimes (uint64_t val, const Prime_Type & bound, std::vector<Prime_Type> &primes) const {
+                inline bool generatePrimes ( uint64_t val, const Prime_Type & bound, std::vector<Prime_Type> &primes) const {
                         primes.clear();
                         Prime_Type prod=1;
                         integer tmp;
-                        //std::cout<<"rns bound: "<<bound<<std::endl;
-                        //std::cout<<"2 valuation: "<<val<<std::endl;
-                        //std::cout<<"prime bitmax: "<<_bits<<std::endl;
+                        // std::cout<<"rns bound: "<<bound<<std::endl;
+                        // std::cout<<"2 valuation: "<<val<<std::endl;
+                        // std::cout<<"prime bitmax: "<<_bits<<std::endl;
+                        // std::cout<<"prime max: "<<_prime_bound<<std::endl;
+
+                        if (val > _bits) return false;
+
+#if 0
                         for (int64_t b = (int64_t)_bits; b >= (int64_t)val; b--)
                                 // for (uint64_t l = (1UL << ((int64_t)_bits - b - 1)) + 1; l < (1UL << ((int64_t)_bits - b)); l +=2) {
                                 for (int64_t l = ((int64_t)1 << ((int64_t)_bits - b)) - 1; l >=1; l -=2) {
-                                        tmp = ((int64_t)1 << b) * l + 1;
+                                        tmp = ((int64_t)1 << b) * l + 1;                                        
                                         if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {
                                                 primes.push_back(tmp);
                                                 prod*=tmp;
@@ -187,6 +193,21 @@ namespace LinBox
                                                 }
                                         }
                                 }
+#else
+                        for (int64_t l = (_prime_bound -1) >>val ; l >=1; l -=1) {
+                                tmp = ((int64_t)1 << val) * l + 1;                                        
+                                if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {
+                                        primes.push_back(tmp);
+                                        prod*=tmp;
+                                        //std::cout<<tmp<<" -> "<<tmp.bitsize()<<" (order="<<twoVal(tmp-1)<<") "<<prod<<std::endl;
+                                        if (prod > bound){
+                                                return true;
+                                        }
+                                }
+                        }
+                                
+                        
+#endif
                         return false; // false -> Could not find enough primes
                 }
 

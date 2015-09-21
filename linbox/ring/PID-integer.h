@@ -314,7 +314,7 @@ namespace LinBox
 
 		inline  Element logtwo(Element& z, const Element& x) const
 		{
-			z = x.bitsize()-1;
+			z = (uint64_t)x.bitsize()-1;
 			return z;
 			/*
 			   if (x<1) return z=-1;

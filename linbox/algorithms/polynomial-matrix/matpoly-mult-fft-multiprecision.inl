@@ -33,7 +33,10 @@
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/randiter/random-prime.h"
 #include <fflas-ffpack/field/rns-double.h>
-
+#define MB(x) ((x)/(double)(1<<20))
+#ifndef MEMINFO
+#define MEMINFO ""
+#endif
 namespace LinBox{
 
   /***************************************************
@@ -64,17 +67,18 @@ namespace LinBox{
     }
 
   public:
-    void getFFTPrime(size_t prime_bitsize, size_t lpts, integer bound, std::vector<integer> &bas){
-      RandomFFTPrime RdFFT(prime_bitsize);
+    void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas){
+
+      RandomFFTPrime RdFFT(prime_max);
       size_t nbp=0;
       if (!RdFFT.generatePrimes(lpts,bound,bas)){
 	integer MM=1;
 	for(size_t i=0;i<bas.size();i++)
 	  MM*=bas[i];
-	RandomPrimeIter Rd(28);
+	RandomPrimeIter Rd(integer(prime_max).bitsize());
 	integer tmp;
 	do {
-	  do {Rd.random(tmp);std::cout<<tmp<<std::endl;}
+	  do {Rd.random(tmp);}
 	  while (MM%tmp==0);
 	  bas.push_back(tmp);
 	  nbp++;
@@ -167,13 +171,16 @@ namespace LinBox{
       c.resize(s);
       size_t lpts=0;
       size_t pts  = 1; while (pts < s) { pts= pts<<1; ++lpts; }
-      size_t _k=k,lk=0;
-      // compute bit size of feasible prime for FFLAS
-      while ( _k ) {_k>>=1; ++lk;}
-      size_t prime_bitsize= (53-lk)>>1;
 
+      // compute bit size of feasible prime for FFLAS
+      // size_t _k=k,lk=0;
+      //while ( _k ) {_k>>=1; ++lk;}
+      //size_t prime_bitsize= (53-lk)>>1;
+
+      // compute max prime value for FFLAS      
+      uint64_t prime_max= std::sqrt( (1UL<<53) / k)+1;
       std::vector<integer> bas;
-      getFFTPrime(prime_bitsize,lpts,bound,bas);
+      getFFTPrime(prime_max,lpts,bound,bas);
       // RandomFFTPrime RdFFT(prime_bitsize);
       // if (!RdFFT.generatePrimes(lpts,bound,bas)){
       // 	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL taking normal primes..."<<std::endl;
@@ -191,10 +198,11 @@ namespace LinBox{
       // reduce t_a and t_b modulo each FFT primes
       size_t n_ta=m*k*a.size(), n_tb=k*n*b.size();
       //size_t n_ta=m*k*pts, n_tb=k*n*pts;
-
-      //std::cout<<"MUL FFT RNS: RNS -> allocating "<<(n_ta+n_tb)*num_primes*8/1000000.<<"Mo"<<std::endl;
-      //std::cout<<"MUL FFT RNS: RNS -> allocating "<<(m*n)*pts*num_primes*8/1000000.<<"Mo"<<std::endl;
-      //std::cout<<"MUL FFT RNS: "<<getCurrentRSS( )/1000000.<<"Mo"<<std::endl;
+      //std::cout<<"----------------------------------------------"<<std::endl;
+      //std::cout<<"MUL FFT RNS: "<<MEMINFO<<std::endl;
+      //std::cout<<"MUL FFT RNS: need "<<MB((m*n*pts+n_ta+n_tb)*num_primes*8 + 2*(m*k+k*n)*pts*8)<<"Mo"<<std::endl;
+      
+      //std::cout<<"MUL FFT RNS: RNS -> allocating "<<MB((n_ta+n_tb)*num_primes*8)<<"Mo"<<std::endl;
       double* t_a_mod= new double[n_ta*num_primes];
       double* t_b_mod= new double[n_tb*num_primes];
       RNS.init(1, n_ta, t_a_mod, n_ta, a.getPointer(), n_ta, maxA);
@@ -202,7 +210,8 @@ namespace LinBox{
       FFT_PROFILING(2,"reduction mod pi of input matrices");
 
       std::vector<MatrixP_F*> c_i (num_primes);
-      
+      //std::cout<<"MUL FFT RNS: RNS -> allocating "<<MB((m*n*pts)*num_primes*8)<<"Mo"<<std::endl;
+      //std::cout<<"MUL FFT RNS: RNS -> allocating "<<MB((2*(m*k+k*n)*pts)*8)<<"Mo"<<std::endl;
       for (size_t l=0;l<num_primes;l++){
 	FFT_PROFILE_START;
 	ModField f(RNS._basis[l]);
@@ -224,7 +233,6 @@ namespace LinBox{
 	FFT_PROFILE_GET(tMul);
       }
 
-      
       delete[] t_a_mod;
       delete[] t_b_mod;
       FFT_PROFILE(2,"copying linear reduced matrix",tCopy);
@@ -237,6 +245,7 @@ namespace LinBox{
 	FFT_PROFILE_START;
 	// construct contiguous storage for c_i
 	size_t n_tc=m*n*s;
+	//std::cout<<"MUL FFT RNS: RNS -> allocating "<<MB(n_tc*num_primes*8)<<"Mo"<<std::endl;
 	double *t_c_mod = new double[n_tc*num_primes];
 	for (size_t l=0;l<num_primes;l++){
 	  for (size_t i=0;i<m*n;i++)
@@ -248,7 +257,8 @@ namespace LinBox{
 
 	// reconstruct the result in C
 	RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc);
-
+	//std::cout<<"MUL FFT RNS: "<<MEMINFO<<std::endl;
+	//std::cout<<"----------------------------------------------"<<std::endl;
 	delete[] t_c_mod;
 
       }
@@ -300,12 +310,17 @@ namespace LinBox{
       //size_t hdeg= deg/2;
       size_t lpts=0;
       size_t pts  = 1; while (pts < deg) { pts= pts<<1; ++lpts; }
-      size_t _k=k,lk=0;
+
+
       // compute bit size of feasible prime for FFLAS
-      while ( _k ) {_k>>=1; ++lk;}
-      size_t prime_bitsize= (53-lk)>>1;
+      // size_t _k=k,lk=0;
+      //while ( _k ) {_k>>=1; ++lk;}
+      //size_t prime_bitsize= (53-lk)>>1;
+
+      // compute max prime value for FFLAS
+      uint64_t prime_max= std::sqrt( (1UL<<53) / k)+1;
       std::vector<integer> bas;
-      getFFTPrime(prime_bitsize,lpts,bound,bas);      
+      getFFTPrime(prime_max,lpts,bound,bas);
       //RandomFFTPrime RdFFT(prime_bitsize);
       // if (!RdFFT.generatePrimes(bound,bas)){
       // 	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL exiting..."<<std::endl;
@@ -320,7 +335,7 @@ namespace LinBox{
       double tMul=0.,tCopy=0;;
       if (FFT_PROF_LEVEL<3){
 	std::cout << "number of FFT primes :" << num_primes << std::endl;
-	std::cout << "feasible prime bitsize : "<<prime_bitsize<<std::endl;
+	std::cout << "max prime            : "<<prime_max<<" ("<<prime_max.bitsize()<<")"<<std::endl;
 	std::cout << "bitsize of the output: "<<bound.bitsize()
 		  <<"( "<< RNS._M.bitsize()<<" )"<<std::endl;
 	std::cout <<" +++++++++++++++++++++++++++++++"<<std::endl;
@@ -334,9 +349,15 @@ namespace LinBox{
       RNS.init(1, n_ta, t_a_mod, n_ta, a.getPointer(), n_ta, maxA);
       RNS.init(1, n_tb, t_b_mod, n_tb, b.getPointer(), n_tb, maxB);
       FFT_PROFILING(2,"reduction mod pi of input matrices");
-      //std::cout<<"MIDP FFT RNS: RNS -> allocating "<<(n_ta+n_tb)*num_primes*8/1000000.<<"Mo"<<std::endl;
-      //std::cout<<"MIDP FFT RNS: RNS -> allocating "<<(m*n)*pts*num_primes*8/1000000.<<"Mo"<<std::endl;
-      //std::cout<<"MIDP FFT RNS: "<<getCurrentRSS( )/1000000.<<"Mo"<<std::endl;
+
+      //std::cout<<"----------------------------------------------"<<std::endl;
+      //std::cout<<"MIDP FFT RNS: "<<MEMINFO<<std::endl;
+      //std::cout<<"MIDP FFT RNS: need "<<MB((m*n*pts+n_ta+n_tb)*num_primes*8 + 2*(m*k+k*n)*pts*8)<<"Mo"<<std::endl;
+
+      
+      //std::cout<<"MIDP FFT RNS: RNS -> allocating "<<MB((n_ta+n_tb)*num_primes*8)<<"Mo"<<std::endl;
+      //std::cout<<"MIDP FFT RNS: RNS -> allocating "<<MB((m*n)*pts*num_primes*8)<<"Mo"<<std::endl;
+      //std::cout<<"MIDP FFT RNS: "<<MEMINFO<<std::endl;
 
       std::vector<MatrixP_F*> c_i (num_primes);
 
@@ -392,7 +413,11 @@ namespace LinBox{
 
 	// reconstruct the result in C
 	RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc);
+	//std::cout<<"MIDP FFT RNS: "<<MEMINFO<<std::endl;
 	delete[] t_c_mod;
+
+	//std::cout<<"MUL FFT RNS: "<<MEMINFO<<std::endl;
+	//std::cout<<"----------------------------------------------"<<std::endl;
 
 	FFT_PROFILING(2,"k prime reconstruction");
       }

@@ -282,6 +282,9 @@ namespace LinBox{
 		Element* getWritePointer(){return &_rep[0];}
 		const Element* getPointer() const {return &_rep[0];}
 
+		size_t realmeminfo()const { return _rep.capacity()*sizeof(Element)+_repview.capacity()*sizeof(Polynomial);}
+		size_t meminfo()const { return _rep.size()*sizeof(Element);}
+		
 	private:
 		size_t           _store;
 		std::vector<Polynomial> _repview;
@@ -334,7 +337,7 @@ namespace LinBox{
 		inline Polynomial  operator()(size_t i, size_t j) const {
 			Polynomial A(_size);
 			for(size_t k=0;k<_size;k++)
-				A[k]=_rep[k].refEntry(i,j);
+				A[k]=_rep[k].getEntry(i,j);
 			return A;
 		}
 		// retrieve the polynomial at psotion (i) in the storage of the matrix

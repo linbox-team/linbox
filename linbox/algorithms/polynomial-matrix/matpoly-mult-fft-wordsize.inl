@@ -56,7 +56,7 @@ namespace LinBox {
 
                 template<typename Matrix1, typename Matrix2, typename Matrix3>
                 void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b) {
-                        uint64_t pts= 1<<(integer(a.size()+b.size()-1).bitsize());
+                        uint64_t pts= 1<<(integer((uint64_t)a.size()+b.size()-1).bitsize());
                         if ( _p< 536870912ULL  &&  ((_p-1) % pts)==0){
 				PolynomialMatrixFFTPrimeMulDomain<Field> MulDom(field());
                                 MulDom.mul(c,a,b);
@@ -88,7 +88,7 @@ namespace LinBox {
                 template<typename Matrix1, typename Matrix2, typename Matrix3>
                 void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
                                  bool smallLeft=true, size_t n0=0,size_t n1=0) {
-                        uint64_t pts= 1<<(integer(a.size()+b.size()-1).bitsize());
+                        uint64_t pts= 1<<(integer((uint64_t)a.size()+b.size()-1).bitsize());
                         if (_p< 536870912ULL  &&  ((_p-1) % pts)==0){
 				//std::cout<<"MIDP: Staying with FFT Prime Field"<<std::endl;
                                 PolynomialMatrixFFTPrimeMulDomain<Field> MulDom(field());
