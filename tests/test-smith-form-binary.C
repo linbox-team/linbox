@@ -147,7 +147,8 @@ bool testRandom(const Ring& R,
 
 			for ( p2 = p1 + 1; p2 != d.end(); ++ p2) {
 
-				if (R. isUnit(*p1))  break;
+                                    // CP: changed isUnit to isOne || isMOne as it is only called with ZRing<Integer>.
+				if (R. isOne (*p1) || R. isMOne(*p1))  break;
 
 				else if (R. isZero (*p2)) continue;
 
@@ -220,7 +221,8 @@ int main(int argc, char** argv)
 	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	{
-		typedef Givaro::IntegerDom Ring;
+//		typedef Givaro::IntegerDom Ring;
+		typedef Givaro::ZRing<Integer> Ring;
 
 		Ring R;
 

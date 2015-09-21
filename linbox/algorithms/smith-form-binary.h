@@ -246,7 +246,7 @@ namespace LinBox
 				r.init (p, *Prime_p);
 
 				do {
-					r.divmod(quo,rem,fif,p);
+					r.quoRem(quo,rem,fif,p);
 
 					if (r.isZero( rem )) r.assign(fif,quo);
 					else break;
