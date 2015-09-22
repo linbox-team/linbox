@@ -319,10 +319,10 @@ namespace LinBox
 			_source(S), _target(T)
 		{}
 		inline Elt& image(Elt& t, const SrcElt& s) {
-			return _target. reduce (t, Caster<double,Givaro::Rational>(t,s) );
+			return _target. reduce (t, Givaro::Caster<double,Givaro::Rational>(t,s) );
 		}
 		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
-            return Caster<Givaro::Rational,double>(s,t);
+                        return Givaro::Caster<Givaro::Rational,double>(s,t);
 		}
 		const Source& source() const { return _source;}
 		const Target& target() const { return _target;}
