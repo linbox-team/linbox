@@ -29,7 +29,7 @@
 #include <cstdlib>
 #include <vector>
 #include <list>
-
+#include "linbox/linbox-config.h"
 #include "linbox/util/commentator.h"
 
 #include "linbox/matrix/sparse-matrix.h"
@@ -55,7 +55,7 @@
 #include "linbox/integer.h"
 #include "linbox/field/gmp-rational.h"
 #include "linbox/ring/givaro-polynomial.h"
-#include "linbox/ring/modular.h"
+#include "givaro/modular.h"
 
 #include <gmp.h>
 
@@ -82,7 +82,7 @@ template <class Element>
 unsigned long int linbox_modn_dense_echelonize (Element modulus, Element* matrix,
 						size_t nrows, size_t ncols)
 {
-	Givaro::Modular<Element> F.characteristic());
+	Givaro::Modular<Element> F(modulus);
 
 	size_t * P=new size_t[ncols];
 	size_t * Q=new size_t[nrows];
@@ -166,7 +166,7 @@ Element* linbox_modn_dense_minpoly (Element modulus, Element ** mp, size_t* degr
 	typedef  Givaro::Modular<Element> Field;
 	typedef  std::vector<Element> Polynomial;
 
-	Givaro::Modular<Element> F.characteristic());
+	Givaro::Modular<Element> F(modulus);
 	// Warning: super sketchy memory alloc here!!!!
 	std::vector<Element> *minP=new std::vector<Element>(n);
 	Element * X = new Element[n*(n+1)];
@@ -212,7 +212,7 @@ template<class Element>
 Element* linbox_modn_dense_charpoly (Element modulus, Element *& cp, size_t n, Element *matrix)
 {
 
-	Givaro::Modular<Element> F.characteristic());
+	Givaro::Modular<Element> F(modulus);
 
 	// FIXME: check the memory management: better to allocate mp in sage
 	std::list<std::vector<Element> > P_list;
@@ -308,7 +308,7 @@ Element* linbox_modn_dense_matrix_matrix_multiply (Element modulus, Element *ans
 						   size_t m, size_t n, size_t k)
 {
 
-	Givaro::Modular<Element> F.characteristic());
+	Givaro::Modular<Element> F(modulus);
 
 	FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,k, 1.0,
 		      A, k, B, n, 0.0, ans, n);
@@ -332,7 +332,7 @@ Element *  linbox_modn_dense_matrix_matrix_general_multiply(Element modulus,
 							    Element *A, Element *B,
 							    size_t m, size_t n, size_t k)
 {
-	Givaro::Modular<Element> F.characteristic());
+	Givaro::Modular<Element> F(modulus);
 	FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,k, alpha,
 		      A, k, B, n, beta,ans, n);
 	return ans;
@@ -624,7 +624,7 @@ typedef SparseMatrix<GFp, VectorTraits<SparseSeqVectorGFp>::SparseFormat> Sparse
 
 static SparseMatrixGFp linbox_new_modn_sparse_matrix(mod_int modulus, size_t numrows, size_t numcols, void *rows)
 {
-	GFp F.characteristic());
+	GFp F(modulus);
 	SparseMatrixGFp M(F, numrows, numcols);
 
 	struct c_vector_modint_linbox *A = static_cast<struct c_vector_modint_linbox *>(rows);
@@ -639,7 +639,7 @@ static SparseMatrixGFp linbox_new_modn_sparse_matrix(mod_int modulus, size_t num
 
 static std::vector<GFpElement> linbox_new_modn_sparse_vector(mod_int modulus, size_t len, void *_vec)
 {
-	GFp F.characteristic());
+	GFp F(modulus);
 
 	std::vector<GFpElement> A(len);
 
@@ -658,7 +658,7 @@ unsigned long linbox_modn_sparse_matrix_rank(mod_int modulus,
 					     size_t numrows, size_t numcols,
 					     void *rows, int gauss)
 {
-	GFp F.characteristic());
+	GFp F(modulus);
 	unsigned long M_rank;
 	GFpElement M_det;
 	GaussDomain<GFp> dom(F);
@@ -688,8 +688,10 @@ std::vector<mod_int> linbox_modn_sparse_matrix_solve(mod_int p, size_t numrows, 
 	// solve ax = b, for x, a matrix, b vector, x vector
 	GFp F(p);
 
-	std::vector<mod_int> X( numrows);
-	std::vector<mod_int> B( linbox_new_modn_sparse_vector(p, numcols, b));
+        DenseVector<GFp> X(F, numrows);
+        DenseVector<GFp> B(F, linbox_new_modn_sparse_vector(p, numcols, b) );
+	// std::vector<mod_int> X( numrows);
+	// std::vector<mod_int> B( linbox_new_modn_sparse_vector(p, numcols, b));
 
 	SparseMatrixGFp A(linbox_new_modn_sparse_matrix(p, numrows, numcols, _a));
 
@@ -709,7 +711,7 @@ std::vector<mod_int> linbox_modn_sparse_matrix_solve(mod_int p, size_t numrows, 
 	default:
 		solve(X, A, B);
 	}
-	return X;
+	return X.refRep();
 }
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
