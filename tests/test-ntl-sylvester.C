@@ -47,6 +47,7 @@
 
 
 using namespace std;
+using namespace LinBox;
 
 int main(int argc, char* argv[])
 {
@@ -57,14 +58,14 @@ int main(int argc, char* argv[])
 	bool pass = true;
 
 	static size_t n = 1000;
-	static long q = 134217689;
+	static int64_t q = 134217689;
 	//   q = 101;
 	static int iterations = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT, &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].",
-			TYPE_INT, &q },
+//		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].",
+//			TYPE_INT, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.",
 			TYPE_INT, &iterations },
 		END_OF_ARGUMENTS
