@@ -39,7 +39,7 @@ endif
 
 #  SUBDIRS=fields solver data blackbox
 
-EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly polysmith benchfft benchmatpolymult benchorderbasis
+EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly polysmith benchfft benchmatpolymult 
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
 if LINBOX_HAVE_NTL
@@ -76,7 +76,6 @@ sparseelimrank_SOURCES = sparseelimrank.C
 polysmith_SOURCES      = poly-smith.C
 benchfft_SOURCES       = bench-fft.C
 benchmatpolymult_SOURCES = bench-matpoly-mult.C
-benchorderbasis_SOURCES  = bench-order-basis.C
 LINBOX=@prefix@
 
 LINBOX_BIN=@bindir@

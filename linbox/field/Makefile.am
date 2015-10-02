@@ -33,7 +33,8 @@ BASIC_HDRS =            \
     gf2.h               \
     gf2.inl             \
     hom.h               \
-    map.h               
+    map.h               \
+    multimod-field.h
 
 pkgincludesub_HEADERS =     \
     $(BASIC_HDRS)           

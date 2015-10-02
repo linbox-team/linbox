@@ -53,5 +53,4 @@ EXTRA_DIST =            \
     $(NTL_HDRS)         \
     ring.doxy           \
     polynomial.doxy		\
-    integers.doxy       \
     ntl.doxy
