@@ -367,7 +367,7 @@ void printPolynomial (const Field &F, const Polynomial &v)
 SpyInteger spy;
 typedef GivPolynomialRing<IntegerRing, Givaro::Dense> IntPolRing;
 
-void get_matrix(BlasMatrix<IntegerRing> &A, mpz_t** matrix)
+void get_matrix(DenseMatrix<IntegerRing> &A, mpz_t** matrix)
 {
 
 	size_t i, j;
@@ -381,7 +381,7 @@ void get_matrix(BlasMatrix<IntegerRing> &A, mpz_t** matrix)
 }
 
 template<class Field>
-void set_matrix(mpz_t** matrix, BlasMatrix<Field>& A)
+void set_matrix(mpz_t** matrix, DenseMatrix<Field>& A)
 {
 	size_t i, j;
 	for (i=0; i < A.rowdim(); ++i) {
@@ -390,6 +390,7 @@ void set_matrix(mpz_t** matrix, BlasMatrix<Field>& A)
 		}
 	}
 }
+
 
 // void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, mpz_t** matrix, int do_minpoly)
 // {
@@ -405,7 +406,7 @@ void set_matrix(mpz_t** matrix, BlasMatrix<Field>& A)
 // 	}
 //         IntegerRing ZZ;
 
-// 	BlasMatrix<IntegerRing> A(ZZ, m, m);
+// 	DenseMatrix<IntegerRing> A(ZZ, m, m);
 
 //         get_matrix<IntegerRing>(A, matrix);
 
@@ -454,7 +455,7 @@ void set_matrix(mpz_t** matrix, BlasMatrix<Field>& A)
 void linbox_integer_dense_charpoly(mpz_t* &mp, size_t& degree, size_t n, mpz_t** matrix)
 {
         IntegerRing ZZ;
-	BlasMatrix<IntegerRing> A(ZZ, n, n);
+	DenseMatrix<IntegerRing> A(ZZ, n, n);
         get_matrix(A, matrix);
 
 	IntPolRing::Element m_A;
@@ -472,7 +473,7 @@ void linbox_integer_dense_charpoly(mpz_t* &mp, size_t& degree, size_t n, mpz_t**
 void linbox_integer_dense_minpoly(mpz_t* &mp, size_t& degree, size_t n, mpz_t** matrix)
 {
         IntegerRing ZZ;
-	BlasMatrix<IntegerRing> A(ZZ, n, n);
+	DenseMatrix<IntegerRing> A(ZZ, n, n);
         get_matrix(A, matrix);
 
 	IntPolRing::Element m_A;
@@ -495,9 +496,9 @@ int linbox_integer_dense_matrix_matrix_multiply(mpz_t** ans, mpz_t **A, mpz_t **
 						size_t A_nr, size_t A_nc,size_t B_nc)
 {
         IntegerRing ZZ;
-	BlasMatrix<IntegerRing> AA(ZZ, A_nr, A_nc);
-	BlasMatrix<IntegerRing> BB(ZZ, A_nc, B_nc);
-	BlasMatrix<IntegerRing> CC(ZZ, A_nr, B_nc);
+	DenseMatrix<IntegerRing> AA(ZZ, A_nr, A_nc);
+	DenseMatrix<IntegerRing> BB(ZZ, A_nc, B_nc);
+	DenseMatrix<IntegerRing> CC(ZZ, A_nr, B_nc);
 
         get_matrix(AA, A);
         get_matrix(BB, B);
@@ -514,7 +515,7 @@ unsigned long linbox_integer_dense_rank(mpz_t** matrix, size_t nrows,
 					size_t ncols)
 {
         IntegerRing ZZ;
-	BlasMatrix<IntegerRing> A(ZZ, nrows, ncols);
+	DenseMatrix<IntegerRing> A(ZZ, nrows, ncols);
         get_matrix(A, matrix);
 	unsigned long r;
 	rank(r, A);
@@ -528,7 +529,7 @@ void linbox_integer_dense_det(mpz_t ans, mpz_t** matrix, size_t nrows,
 	commentator().setMaxDepth (0);
 
         IntegerRing ZZ;
-	BlasMatrix<IntegerRing> A ( ZZ, nrows, ncols);
+	DenseMatrix<IntegerRing> A ( ZZ, nrows, ncols);
         get_matrix(A, matrix);
 	IntegerRing::Element d;
 
@@ -537,10 +538,10 @@ void linbox_integer_dense_det(mpz_t ans, mpz_t** matrix, size_t nrows,
 }
 
 #ifdef __LINBOX_HAVE_NTL
-BlasMatrix<NTL_ZZ> new_matrix_integer_dense_ntl(mpz_t** matrix, size_t nrows, size_t ncols)
+DenseMatrix<NTL_ZZ> new_matrix_integer_dense_ntl(mpz_t** matrix, size_t nrows, size_t ncols)
 {
 	NTL_ZZ Z;
-	BlasMatrix<NTL_ZZ> A (Z,nrows, ncols);
+	DenseMatrix<NTL_ZZ> A (Z,nrows, ncols);
 	size_t i, j;
 	for (i=0; i < nrows; ++i) {
 		for (j=0; j < ncols; ++j) {
@@ -560,7 +561,7 @@ void linbox_integer_dense_double_det (mpz_t  ans1, mpz_t ans2, mpz_t **a, mpz_t 
 {
 
 	IntegerRing ZZ;
-	BlasMatrix<IntegerRing> A(ZZ, n+1, n);
+	DenseMatrix<IntegerRing> A(ZZ, n+1, n);
 	size_t i, j;
 	for (i=0; i < n-1; ++i) {
 		for (j=0; j < n; ++j) {
@@ -590,7 +591,7 @@ void linbox_integer_dense_smithform(mpz_t **v,
 {
 	typedef NTL_ZZ Ints;
 	Ints Z;
-	BlasMatrix<Ints> M(new_matrix_integer_dense_ntl(matrix, nrows, ncols));
+	DenseMatrix<Ints> M(new_matrix_integer_dense_ntl(matrix, nrows, ncols));
 	std::vector<integer> w(ncols);
 	SmithFormAdaptive::smithForm(w, M);
 
@@ -622,25 +623,29 @@ typedef GFp::Element  GFpElement;
 typedef std::vector <std::pair <size_t, GFpElement> > SparseSeqVectorGFp;
 typedef SparseMatrix<GFp, VectorTraits<SparseSeqVectorGFp>::SparseFormat> SparseMatrixGFp;
 
-static SparseMatrixGFp linbox_new_modn_sparse_matrix(mod_int modulus, size_t numrows, size_t numcols, void *rows)
+SparseMatrixGFp* linbox_new_modn_sparse_matrix(mod_int modulus, size_t numrows, size_t numcols, void *rows)
 {
-	GFp F(modulus);
-	SparseMatrixGFp M(F, numrows, numcols);
+	GFp *F=new GFp(modulus);
+	SparseMatrixGFp* M=new SparseMatrixGFp(*F, numrows, numcols);
 
 	struct c_vector_modint_linbox *A = static_cast<struct c_vector_modint_linbox *>(rows);
 
 	for(size_t i = 0; i < numrows; ++i) {
 		for(size_t j = 0; j < A[i].num_nonzero; ++j) {
-			M.setEntry(i, A[i].positions[j], A[i].entries[j]);
+                        M->setEntry(i, A[i].positions[j], A[i].entries[j]);
 		}
 	}
 	return M;
 }
 
+void linbox_delete_modn_sparse_matrix (SparseMatrixGFp * A) {
+        const GFp * F = &A->field();
+        delete A;
+        delete F;
+}
+
 static std::vector<GFpElement> linbox_new_modn_sparse_vector(mod_int modulus, size_t len, void *_vec)
 {
-	GFp F(modulus);
-
 	std::vector<GFpElement> A(len);
 
 	if (_vec==NULL) {
@@ -658,18 +663,18 @@ unsigned long linbox_modn_sparse_matrix_rank(mod_int modulus,
 					     size_t numrows, size_t numcols,
 					     void *rows, int gauss)
 {
-	GFp F(modulus);
 	unsigned long M_rank;
 	GFpElement M_det;
+
+	SparseMatrixGFp *M = linbox_new_modn_sparse_matrix(modulus, numrows, numcols, rows) ;
+	const GFp &F = M->field();
 	GaussDomain<GFp> dom(F);
 
-	SparseMatrixGFp M( linbox_new_modn_sparse_matrix(modulus, numrows, numcols, rows) );
-
 	if(!gauss) {
-		dom.InPlaceLinearPivoting(M_rank, M_det, M, numrows, numcols);
+		dom.InPlaceLinearPivoting(M_rank, M_det, *M, numrows, numcols);
 	}
 	else {
-		dom.NoReordering(M_rank, M_det, M, numrows, numcols);
+		dom.NoReordering(M_rank, M_det, *M, numrows, numcols);
 	}
 
 	//*pivots = (int*)calloc(sizeof(int), dom.pivots.size());
@@ -678,7 +683,7 @@ unsigned long linbox_modn_sparse_matrix_rank(mod_int modulus,
 	//   for(std::vector<int>::const_iterator i= dom.pivots.begin(); i!= dom.pivots.end(); ++i, ++j){
 	//     (*pivots)[j] = *i;
 	//   }
-
+        linbox_delete_modn_sparse_matrix(M);
 	return M_rank;
 }
 
@@ -686,31 +691,33 @@ std::vector<mod_int> linbox_modn_sparse_matrix_solve(mod_int p, size_t numrows, 
 						     void *_a, void *b, int method)
 {
 	// solve ax = b, for x, a matrix, b vector, x vector
-	GFp F(p);
+
+	SparseMatrixGFp *A =linbox_new_modn_sparse_matrix(p, numrows, numcols, _a);
+
+	const GFp & F = A->field();
 
         DenseVector<GFp> X(F, numrows);
         DenseVector<GFp> B(F, linbox_new_modn_sparse_vector(p, numcols, b) );
-	// std::vector<mod_int> X( numrows);
-	// std::vector<mod_int> B( linbox_new_modn_sparse_vector(p, numcols, b));
-
-	SparseMatrixGFp A(linbox_new_modn_sparse_matrix(p, numrows, numcols, _a));
 
 	switch(method) {
 	case 1:
-		solve(X, A, B, Method::BlasElimination());
+		solve(X, *A, B, Method::BlasElimination());
 		break;
 
 	case 2:
-		solve(X, A, B, Method::Blackbox());
+		solve(X, *A, B, Method::Blackbox());
 		break;
 
 	case 3:
-		solve(X, A, B, Method::Wiedemann());
+		solve(X, *A, B, Method::Wiedemann());
 		break;
 
 	default:
-		solve(X, A, B);
+		solve(X, *A, B);
 	}
+
+        linbox_delete_modn_sparse_matrix(A);
+
 	return X.refRep();
 }
 
