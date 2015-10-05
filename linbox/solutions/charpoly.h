@@ -222,7 +222,7 @@ namespace LinBox
                     // bb method broken, default to dense method
 		if (1/* (A.rowdim() < 1000) && (A.coldim() <1000) */)
 			charpoly(P, A, tag, Method::BlasElimination(M) );
-		else
+                else
 			charpoly(P, A, tag, Method::Blackbox(M) );
 		commentator().stop ("done", NULL, "Icharpoly");
 		return P;
@@ -230,8 +230,8 @@ namespace LinBox
 
 }
 
-	//#if 0
-#if defined(__LINBOX_HAVE_NTL)
+#if 0 // CIA is buggy (try with matrix(ZZ,4,[1..16]) )
+//#if defined(__LINBOX_HAVE_NTL)
 
 #include "linbox/algorithms/cia.h"
 namespace LinBox
