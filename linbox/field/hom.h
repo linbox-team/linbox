@@ -27,6 +27,7 @@
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/error.h"
+#include "linbox/integer.h"
 #include <givaro/givcaster.h>
 #include <givaro/givrational.h>
 #include <givaro/modular.h>
