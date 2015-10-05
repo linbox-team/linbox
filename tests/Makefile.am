@@ -22,10 +22,10 @@
 # All tests will be processed by checker.C (target fullcheck), 
 # where skips can be specified, warnings issued, package dependency handled.
 
-AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
+AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox -I${PREFIX}/include
 # AM_LDFLAGS = -llapack -lcblas -latlas
 #  AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
-AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la
+AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la -L${PREFIX}/lib -llinboxsage
 #  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
 #AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxTestOnly
@@ -78,7 +78,8 @@ BASIC_TESTS =					\
 	test-rank-Int				\
 	test-cra					\
 	test-blas-matrix			\
-	test-charpoly				
+	test-charpoly			\
+	test-regression
 
 # All other tests.  
 # The checker.C determines which of these are built and run in "make fullcheck".
@@ -307,6 +308,7 @@ test_rational_solver_adaptive_SOURCES = test-rational-solver-adaptive.C test-com
 test_rational_solver_SOURCES =          test-rational-solver.C
 test_rat_minpoly_SOURCES =              test-rat-minpoly.C test-common.h
 test_rat_solve_SOURCES =                test-rat-solve.C test-common.h
+test_regression_SOURCES =               test-regression.C
 test_scalar_matrix_SOURCES =            test-scalar-matrix.C
 test_smith_form_adaptive_SOURCES =      test-smith-form-adaptive.C test-common.h
 test_smith_form_binary_SOURCES =        test-smith-form-binary.C

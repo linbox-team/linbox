@@ -41,9 +41,9 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 20;
-	//static integer q = 65519U;
-	//static integer q = 1000003U;
-	static integer q = 67108859; // = prevprime(maxCardinality())
+        //static integer q = 65519U;
+        //static integer q = 1000003U;
+        static integer q = 67108859; // = prevprime(maxCardinality())
 	static int iterations = 1;
         static double sparsity = 0.05;
 
@@ -65,8 +65,8 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
 	Givaro::Modular<double> G (q);
-	pass = pass && testSparseRank(G,n,n+1,(size_t)iterations,sparsity);
-	pass = pass && testSparseRank(G,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
+        pass = pass && testSparseRank(G,n,n+1,(size_t)iterations,sparsity);
+        pass = pass && testSparseRank(G,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
 
 
 	commentator().stop("Givaro::Modular<double> SPArse rank test suite");

@@ -338,11 +338,11 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 		typedef SparseMatrix<Field,SparseMatrixFormat::ELL> Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
-	{
-		report << "ELL_R " << endl;
-		typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
-		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
-	}
+	// {
+	// 	report << "ELL_R " << endl;
+	// 	typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
+	// 	if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
+	// }
 #if 0
 	{
 		TYPEdef SparseMatrix<Field,SparseMatrixFormat::HYB> Blackbox;
