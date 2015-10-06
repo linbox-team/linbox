@@ -44,19 +44,19 @@ namespace LinBox
 
 	  \ingroup blackbox
 	 */
-	template<class _Field>
+	template<class _Field, class _Matrix=DenseMatrix<_Field>>
 	class Permutation
 #if 1
-		 : public  FIBB<_Field>
+		 : public  FIBB<_Field,_Matrix>
 #endif 
 	{
 		const _Field* _field;
 	public:
-		typedef Permutation<_Field>	Self_t;
+		typedef Permutation<_Field>		Self_t;
 		typedef LightContainer<long>	Storage;
-		typedef _Field			Field;
+		typedef _Field					Field;
 		typedef typename Field::Element	Element;
-		typedef DenseMatrix<Field> Matrix;
+		typedef _Matrix					Matrix;
 
 		/** Constructor from a vector of indices.
 		 * This constructor creates a permutation matrix based on a vector of indices
@@ -257,12 +257,12 @@ namespace LinBox
 			return Y; 
 		}
 		Matrix& nullspaceRandomRight(Matrix& N) const 
-		{	N.zero(); return N; }
+		{	N.resize(rowdim(),0); return N; }
 		Matrix& nullspaceRandomLeft(Matrix& N) const 
-		{	N.zero(); return N; }
-		BlasMatrix<Field>& nullspaceBasisRight(BlasMatrix<Field>& N) const
+		{	N.resize(0, coldim()); return N; }
+		Matrix& nullspaceBasisRight(Matrix& N) const
 		{	N.resize(rowdim(), 0); return N; }
-		BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
+		Matrix& nullspaceBasisLeft(Matrix& N) const
 		{	N.resize(0, coldim()); return N; }
 		/* end FIBB section */
 #endif

@@ -17,13 +17,13 @@ namespace LinBox {
 // for now, only the FIBB tags.
 enum BBType {diagonal, permutation, triangular, product, other};
 
-template <class Ring>
+template <class Ring, class _Matrix=DenseMatrix<Ring> >
 struct BB 
 {
 	typedef Ring Field;
-	typedef DenseMatrix<Field> ResizableMatrix;
+	typedef _Matrix ResizableMatrix;
 	//typedef DenseMatrix<Field, std::vector<typename Ring::Element> > ResizableMatrix;
-	typedef DenseMatrix<Field> Matrix;
+	typedef _Matrix Matrix;
 
 	virtual ~BB(){}
 
@@ -90,13 +90,13 @@ THe FIBBs are Diagonal, Permutation, Triangular, and products of FIBBs in which 
 */
 namespace LinBox{
 
-template <class Ring>
-struct FIBB : public BB<Ring> 
+template <class Ring, class _Matrix=DenseMatrix<Ring> >
+struct FIBB : public BB<Ring,_Matrix> 
 {
 	using Field = Ring;
 	using Element = typename Ring::Element;
-	using ResizableMatrix = DenseMatrix<Field>;
-	using Matrix = DenseMatrix<Field>;
+	using ResizableMatrix = _Matrix;
+	using Matrix = _Matrix;
 
 //	virtual const Field& field() const = 0;
 
