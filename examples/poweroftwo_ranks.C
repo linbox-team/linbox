@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <27 Mar 14 10:19:58 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <04 Sep 15 16:41:47 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-#include <linbox/field/givaro.h>
+#include <givaro/modular.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
 

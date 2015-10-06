@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-#include <linbox/field/givaro.h>
+#include <givaro/modular.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/algorithms/smith-form-sparseelim-local.h>
 

@@ -178,7 +178,7 @@ namespace LinBox
 				return true;
 			}
 			Element s, t, g;
-			_domain.xgcd(g, s, t, denom, other.denom);
+			_domain.gcd(g, s, t, denom, other.denom);
 			if (_domain.areEqual(g, denom)) ; //do nothing
 			else {
 				denom = g;
