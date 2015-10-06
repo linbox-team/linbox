@@ -65,25 +65,25 @@ namespace LinBox {
 
 } // LinBox
 
-#include "SparseMatrix/read-write-sparse.h"
+#include "sparsematrix/read-write-sparse.h"
 
-#include "SparseMatrix/sparse-generic.h"
+#include "sparsematrix/sparse-generic.h"
 
-#include "SparseMatrix/sparse-coo-matrix.h"
-// #include "SparseMatrix/sparse-coo-1-matrix.h"
-#include "SparseMatrix/sparse-csr-matrix.h"
-// #include "SparseMatrix/sparse-csr-1-matrix.h"
-#include "SparseMatrix/sparse-ell-matrix.h"
-#include "SparseMatrix/sparse-ellr-matrix.h"
-// #include "SparseMatrix/sparse-ellr-1-matrix.h"
-// #include "SparseMatrix/sparse-bcsr-matrix.h"
-// #include "SparseMatrix/sparse-dia-matrix.h"
-// #include "SparseMatrix/sparse-hyb-matrix.h"
+#include "sparsematrix/sparse-coo-matrix.h"
+// #include "sparsematrix/sparse-coo-1-matrix.h"
+#include "sparsematrix/sparse-csr-matrix.h"
+// #include "sparsematrix/sparse-csr-1-matrix.h"
+#include "sparsematrix/sparse-ell-matrix.h"
+#include "sparsematrix/sparse-ellr-matrix.h"
+// #include "sparsematrix/sparse-ellr-1-matrix.h"
+// #include "sparsematrix/sparse-bcsr-matrix.h"
+// #include "sparsematrix/sparse-dia-matrix.h"
+// #include "sparsematrix/sparse-hyb-matrix.h"
 
-#include "SparseMatrix/sparse-tpl-matrix.h"
+#include "sparsematrix/sparse-tpl-matrix.h"
 // #ifdef __LINBOX_USES_OPENMP
 #ifdef _OPENMP
-#include "SparseMatrix/sparse-tpl-matrix-omp.h"
+#include "sparsematrix/sparse-tpl-matrix-omp.h"
 #endif
 
 namespace LinBox { /*  MatrixContainerTraits */

@@ -19,38 +19,25 @@
 
 
 
-pkgincludesubdir=$(pkgincludedir)/ring
-
-SUBDIRS=ntl modular
+pkgincludesubdir=$(pkgincludedir)/ring/modular
 
 BASIC_HDRS =            \
-    ring-interface.h    \
-    givaro-poly.h       \
-    givaro-polynomial.h \
-    modular.h           \
-    local-PIR-modular.h \
-    PIR-modular-int32.h \
-    local2_32.h         \
-    abstract.h          \
-    archetype.h         \
-    envelope.h          \
-    poweroftwomodular.h
+    modular-unsigned.h  \
+    modular.inl         \
+    modular-int32.h     \
+    modular-int64.h     \
+    modular-short.h     \
+    modular-byte.h      \
+    modular-balanced-double.h   \
+    modular-balanced-float.h    \
+    modular-balanced-int32.h    \
+    modular-balanced-int64.h    \
+    modular-double.h    \
+    modular-float.h
 
-NTL_HDRS =              \
-    ntl.h               \
-    PID-ntl-zz_p.h     \
-    PIR-ntl-ZZ_p.h
-
-if LINBOX_HAVE_NTL
-USE_NTL_HDRS = $(NTL_HDRS)
-endif
 
 pkgincludesub_HEADERS =     \
-    $(BASIC_HDRS)           \
-    $(USE_NTL_HDRS)
+    $(BASIC_HDRS)
 
-EXTRA_DIST =            \
-    $(NTL_HDRS)         \
-    ring.doxy           \
-    polynomial.doxy		\
-    ntl.doxy
+#  EXTRA_DIST =            \
+    #  modular.doxy

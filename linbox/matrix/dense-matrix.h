@@ -75,9 +75,9 @@ namespace LinBox { /*  forward declarations */
 
 }
 
-#include "linbox/matrix/DenseMatrix/blas-matrix.h"
-// #include "linbox/matrix/DenseMatrix/blas-matrix-multimod.h"
-// #include "linbox/matrix/DenseMatrix/m4ri-matrix.h"
+#include "linbox/matrix/densematrix/blas-matrix.h"
+// #include "linbox/matrix/densematrix/blas-matrix-multimod.h"
+// #include "linbox/matrix/densematrix/m4ri-matrix.h"
 
 namespace LinBox { /*  MatrixContainerTrait */
 

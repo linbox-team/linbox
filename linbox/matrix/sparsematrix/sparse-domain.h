@@ -1,13 +1,13 @@
-/* linbox/matrix/sparse-matrix.h
+/* linbox/matrix/sparse-domain.h
  * Copyright (C) 2013 the LinBox
  *
  * Written by :
- * bsy <bryouse@udel.edu>
+ * Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -23,17 +23,43 @@
  * ========LICENCE========
  */
 
-/*! @file matrix/sliced3.h
- * @ingroup matrix
+/*! @file matrix/sparsematrix/sparse-domain.h
+ * @ingroup sparsematrix
  */
 
-#ifndef __LINBOX_matrix_sliced3_H
-#define __LINBOX_matrix_sliced3_H
 
-#include "sliced3/dense-sliced.h"
-#include "sliced3/sliced-domain.h"
+#ifndef __LINBOX_matrix_sparsematrix_sparse_domain_H
+#define __LINBOX_matrix_sparsematrix_sparse_domain_H
 
-#endif // __LINBOX_matrix_sliced3_H
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
+
+namespace LinBox {
+
+	/// y <- ay.  @todo Vector knows Field
+	template<class Field, class Vector>
+	Vector & prepare(const Field & F , Vector & y, const typename Field::Element & a) {
+		if ( !F.isOne(a) ) {
+			if ( F.isZero(a) ) {
+				for (size_t i = 0 ; i < y.size() ; ++i)
+					F.assign(y[i],F.zero);
+			}
+			else if (F.isMOne(a)) {
+				for (size_t i = 0 ; i < y.size() ; ++i)
+					F.negin(y[i]);
+			}
+			else {
+				for (size_t i = 0 ; i < y.size() ; ++i)
+					F.mulin(y[i],a);
+			}
+
+		}
+		return y ;
+	}
+
+} // LinBox
+
+#endif // __LINBOX_matrix_sparsematrix_sparse_domain_H
 
 // Local Variables:
 // mode: C++

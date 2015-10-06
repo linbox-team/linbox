@@ -33,7 +33,7 @@
 
 #include <fflas-ffpack/fflas-ffpack.h>
 
-#include "linbox/matrix/DenseMatrix/blas-matrix.h"
+#include "linbox/matrix/densematrix/blas-matrix.h"
 
 #include "linbox/matrix/permutation-matrix.h"
 

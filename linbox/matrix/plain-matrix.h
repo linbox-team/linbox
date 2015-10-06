@@ -21,7 +21,7 @@
 
 #include "linbox/util/debug.h"
 
-#include "linbox/matrix/MatrixDomain/plain-domain.h"
+#include "linbox/matrix/matrixdomain/plain-domain.h"
 
 namespace LinBox
 {

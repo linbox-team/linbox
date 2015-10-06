@@ -34,7 +34,7 @@
 #include <givaro/zring.h>
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/ring/NTL/ntl-ZZ.h"
+#include "linbox/ring/ntl/ntl-ZZ.h"
 #endif //__LINBOX_HAVE_NTL
 
 #include "givaro/givrational.h"
