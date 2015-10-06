@@ -107,6 +107,7 @@ namespace LinBox
 		using Field = _Field;
 		using Element = typename Father_t::Element;
 		using Matrix = typename Father_t::Matrix;
+		using Vector_t = BlasVector<Field>;
 
 		/// \brief cstor ready for a read.
 		Diagonal(const Field &F) :
@@ -118,7 +119,7 @@ namespace LinBox
 		/// \brief cstor from vector of elements.
 		// Diagonal(const Field &F, const std::vector<typename Field::Element>& v);
 
-		Diagonal(const BlasVector<Field>& v);
+		Diagonal(const Vector_t& v);
 
 		// construct random nonsingular n by n diagonal matrix.
 		Diagonal(const Field &F, const size_t n, bool nonsing=true);
@@ -185,7 +186,7 @@ namespace LinBox
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
 
 				typename BlasVector<_Tp1>::iterator nit = Ap.getData().begin();
-				typename BlasVector<Field>::const_iterator oit = A.getData().begin();
+				typename Vector_t::const_iterator oit = A.getData().begin();
 				for( ; oit != A.getData().end() ; ++nit, ++oit)
 					hom.image (*nit, *oit);
 			}
@@ -240,8 +241,8 @@ namespace LinBox
 			}
 		}
 
-		const BlasVector<Field>& getData() const { return _v; }
-		BlasVector<Field>& getData() { return _v; }
+		const Vector_t& getData() const { return _v; }
+		Vector_t& getData() { return _v; }
 
 /* FIBB functions */
 /* rank, det, solveRight, solveLeft, solveMPRight, solveMPLeft, 
@@ -386,7 +387,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		BlasVector<Field> _v;
+		Vector_t _v;
 
 	}; // template <Field, Vector> class Diagonal<DenseVectorTag>
 
@@ -401,10 +402,11 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 
 		typedef _Field Field;
 		typedef typename Field::Element    Element;
+        typedef BlasVector<Field> Vector_t;
 
 		// Diagonal(const Field &F, const std::vector<typename Field::Element>& v);
 
-		Diagonal(const BlasVector<Field>& v);
+		Diagonal(const Vector_t& v);
 
 		Diagonal(const Field &F, const size_t n, typename Field::RandIter& iter);
 
@@ -457,8 +459,8 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 
 
 
-		const BlasVector<Field>& getData() const { return _v; }
-		BlasVector<Field>& getData() { return _v; }
+		const Vector_t& getData() const { return _v; }
+		Vector_t& getData() { return _v; }
 
 
 	protected:
@@ -470,7 +472,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		BlasVector<Field> _v;
+		Vector_t _v;
 
 	}; // template <Field, Vector> class Diagonal<SparseSequenceVectorTag>
 
@@ -486,8 +488,10 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 
 		typedef _Field Field;
 		typedef typename Field::Element    Element;
+        typedef BlasVector<Field> Vector_t;
+        
 
-		Diagonal(const BlasVector<Field>& v);
+		Diagonal(const Vector_t& v);
 
 		Diagonal(const Field &F, const size_t n, typename Field::RandIter& iter);
 
@@ -539,8 +543,8 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
 		}
 
-		const BlasVector<Field>& getData() const { return _v; }
-		BlasVector<Field>& getData() { return _v; }
+		const Vector_t& getData() const { return _v; }
+		Vector_t& getData() { return _v; }
 
 
 
@@ -553,14 +557,14 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		BlasVector<Field> _v;
+		Vector_t _v;
 
 	}; // template <Field, Vector> class Diagonal<SparseAssociativeVectorTag>
 
 	// Method implementations for dense vectors
 	/// constructor from vector
 	template <class Field>
-	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal( const BlasVector<Field>& v) :
+	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal( const Vector_t& v) :
 		_field(&v.field()), _n(v.size()), _v(v)
 	{
 		// std::cout << _v.size() << ',' << _v.getPointer() << std::endl;
@@ -606,7 +610,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>::random()
 	{
 		typename Field::RandIter r(field());
-		typedef typename BlasVector<Field>::iterator iter;
+		typedef typename Vector_t::iterator iter;
 		for (iter i = _v.begin(); i < _v.end(); ++i)
 			r.random(*i);
 	}
@@ -616,7 +620,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>::randomNonsingular()
 	{
 		typename Field::RandIter r(field());
-		typedef typename BlasVector<Field>::iterator iter;
+		typedef typename Vector_t::iterator iter;
 		for (iter i = _v.begin(); i < _v.end(); ++i)
 			while (field().isZero(r.random(*i))) ;
 	}
@@ -633,7 +637,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 		linbox_check (_n == x.size ());
 
 		// Create iterators for input, output, and stored vectors
-		typename BlasVector<Field>::const_iterator v_iter;
+		typename Vector_t::const_iterator v_iter;
 		typename InVector::const_iterator x_iter;
 		typename OutVector::iterator y_iter;
 
@@ -658,7 +662,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 	 * @param v  vector
 	 */
 	template <class Field>
-	inline Diagonal<Field, VectorCategories::SparseSequenceVectorTag >::Diagonal( const BlasVector<Field>& v) :
+	inline Diagonal<Field, VectorCategories::SparseSequenceVectorTag >::Diagonal( const Vector_t& v) :
 		_field(&v.field()), _n(v.size()), _v(v)
 	{}
 
@@ -679,7 +683,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 		field().assign (entry, field().zero);
 
 		// Create iterators for input and stored vectors
-		typename BlasVector<Field>::const_iterator v_iter;
+		typename Vector_t::const_iterator v_iter;
 		typename InVector::const_iterator x_iter;
 
 		// Start at beginning of _v vector
@@ -705,7 +709,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 	 * @param v  vector
 	 */
 	template <class Field>
-	inline Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >::Diagonal(const BlasVector<Field>& v) :
+	inline Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >::Diagonal(const Vector_t& v) :
 		_field(&v.field()), _n(v.size()), _v(v)
 	{}
 
@@ -726,7 +730,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 		field().assing (entry, field().zero);
 
 		// Create iterators for input and stored vectors
-		typename BlasVector<Field>::const_iterator v_iter;
+		typename Vector_t::const_iterator v_iter;
 		typename InVector::const_iterator x_iter;
 
 		// Start at beginning of _v vector
