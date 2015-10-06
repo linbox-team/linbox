@@ -26,10 +26,10 @@
 #ifndef __LINBOX_ntl_pid_zz_p_H
 #define __LINBOX_ntl_pid_zz_p_H
 
-#include "linbox/ring/NTL/ntl-lzz_p.h"
+#include "linbox/ring/ntl/ntl-lzz_p.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
-#include <NTL/ZZ.h>
+#include <ntl/ZZ.h>
 #include "linbox/field/field-traits.h"
 
 // Namespace in which all LinBox library code resides

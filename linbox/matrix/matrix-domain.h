@@ -32,7 +32,7 @@
 #define __LINBOX_matrix_matrix_domain_H
 
 #include "linbox/vector/vector-domain.h"
-// #include "linbox/matrix/DenseMatrix/blas-matrix.h"
+// #include "linbox/matrix/densematrix/blas-matrix.h"
 
 namespace LinBox {
 #if 1
@@ -63,13 +63,13 @@ namespace LinBox {
 	};
 }
 
-#include "MatrixDomain/matrix-domain.h" // needed by BlasMatrix
-#include "MatrixDomain/blas-matrix-domain.h"
-#include "MatrixDomain/matrix-domain-gf2.h"
-// #include "MatrixDomain/matrix-domain-m4ri.h"
-#include "MatrixDomain/plain-domain.h"
+#include "matrixdomain/matrix-domain.h" // needed by BlasMatrix
+#include "matrixdomain/blas-matrix-domain.h"
+#include "matrixdomain/matrix-domain-gf2.h"
+// #include "matrixdomain/matrix-domain-m4ri.h"
+#include "matrixdomain/plain-domain.h"
 
-#include "MatrixDomain/opencl-domain.h"
+#include "matrixdomain/opencl-domain.h"
 
 
 #endif // __LINBOX_matrix_matrix_domain_H
