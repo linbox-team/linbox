@@ -32,7 +32,7 @@
 #include <iostream>
 
 #include <linbox/blackbox/zero-one.h>
-#include <linbox/ring/PID-integer.h>
+#include <givaro/zring.h>
 #include <linbox/solutions/charpoly.h>
 #include <linbox/ring/givaro-polynomial.h>
 #include <linbox/solutions/methods.h>
@@ -65,8 +65,8 @@ void printPolynomial(const Field& F, const Polynomial& P)
 }
 
 
-typedef ZeroOne<PID_integer> Matrix;
-typedef GivPolynomialRing<PID_integer, Givaro::Dense> IntPolRing;
+typedef ZeroOne<Givaro::ZRing<Integer> > Matrix;
+typedef GivPolynomialRing<Givaro::ZRing<Integer>, Givaro::Dense> IntPolRing;
 
 int main (int argc, char **argv)
 {
@@ -86,7 +86,7 @@ int main (int argc, char **argv)
 	}
 
 	//Givaro::ZRing<integer> ZZ;
-	PID_integer ZZ;
+	Givaro::ZRing<Integer> ZZ;
 	Matrix A(ZZ);
 	A.read (input);
 	commentator().report(1, BRIEF_REPORT)<< "A is " << A.rowdim() << " by " << A.coldim() << endl;

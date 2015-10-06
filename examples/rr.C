@@ -31,7 +31,7 @@
 #include <iostream>
 
 #include <linbox/integer.h>
-#include <linbox/ring/PID-integer.h>
+#include <givaro/zring.h>
 #include <linbox/algorithms/rational-reconstruction-base.h>
 
 #include <linbox/util/matrix-stream.h>
@@ -40,7 +40,7 @@
 using namespace LinBox;
 using namespace std;
 
-typedef PID_integer Ints;
+typedef Givaro::ZRing<Integer> Ints;
 //typedef Ints::Element Integer;
 
 int main (int argc, char **argv)

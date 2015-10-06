@@ -30,7 +30,8 @@
 
 #include <iostream>
 
-#include <linbox/ring/modular.h>
+#include <givaro/modular.h>
+#include <givaro/zring.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/solve.h>
 #include <linbox/util/matrix-stream.h>
@@ -192,11 +193,11 @@ int main (int argc, char **argv)
 	}
 	else {
                 cout<<"Computation is done over Q"<<endl;
-		PID_integer ZZ;
-		typedef DenseVector<PID_integer> DenseVector ;
-		MatrixStream< PID_integer > ms( ZZ, input );
-		SparseMatrix<PID_integer> A (ms);
-		PID_integer::Element d;
+		Givaro::ZRing<Integer> ZZ;
+		typedef DenseVector<Givaro::ZRing<Integer> > DenseVector ;
+		MatrixStream< Givaro::ZRing<Integer> > ms( ZZ, input );
+		SparseMatrix<Givaro::ZRing<Integer> > A (ms);
+		Givaro::ZRing<Integer>::Element d;
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
                 if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 		DenseVector X(ZZ, A.coldim()),B(ZZ, A.rowdim());

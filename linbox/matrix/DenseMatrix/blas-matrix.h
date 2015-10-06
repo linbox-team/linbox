@@ -48,7 +48,7 @@
 
 #include "linbox/ring/modular.h" // just for checkBlasApply
 #include <givaro/modular-balanced.h> // just for checkBlasApply
-
+#include "givaro/zring.h"
 //! @bug this does not belong here.
 #include "blas-transposed-matrix.h"
 #include "linbox/matrix/MatrixDomain/matrix-domain.h"
@@ -1213,7 +1213,7 @@ namespace LinBox
 	//! @todo b should be the random generator
 	template<>
 	template<>
-	void BlasMatrix<PID_integer, Vector<PID_integer>::Dense >::random<unsigned>(const unsigned & b)
+	void BlasMatrix<Givaro::ZRing<Integer>, Vector<Givaro::ZRing<Integer>>::Dense >::random<unsigned>(const unsigned & b)
 	{
 		// std::cout << "randomized " <<  b << std::endl;
 		RandomIntegerIter<false> R((unsigned)b);

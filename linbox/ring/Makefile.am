@@ -31,7 +31,6 @@ BASIC_HDRS =            \
     local-PIR-modular.h \
     PIR-modular-int32.h \
     local2_32.h         \
-    PID-integer.h       \
     abstract.h          \
     archetype.h         \
     envelope.h          \
@@ -54,5 +53,4 @@ EXTRA_DIST =            \
     $(NTL_HDRS)         \
     ring.doxy           \
     polynomial.doxy		\
-    integers.doxy       \
     ntl.doxy

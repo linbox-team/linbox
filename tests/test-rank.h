@@ -52,7 +52,6 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations = 1
 
 #include "linbox/util/commentator.h"
 #include "linbox/ring/modular.h"
-#include "linbox/ring/PID-integer.h"
 #include "linbox/field/gf2.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/matrix/sparse-matrix.h"
@@ -83,7 +82,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 	bool ret = true;
 	unsigned int i;
 
-	unsigned long rank_blackbox, rank_elimination, rank_hybrid;
+	unsigned long rank_blackbox, rank_elimination;
 
 	typename Field::RandIter ri (F);
 
@@ -339,11 +338,11 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 		typedef SparseMatrix<Field,SparseMatrixFormat::ELL> Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
-	{
-		report << "ELL_R " << endl;
-		typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
-		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
-	}
+	// {
+	// 	report << "ELL_R " << endl;
+	// 	typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
+	// 	if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
+	// }
 #if 0
 	{
 		TYPEdef SparseMatrix<Field,SparseMatrixFormat::HYB> Blackbox;

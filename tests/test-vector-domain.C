@@ -37,7 +37,6 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/ring/modular.h"
-#include "linbox/ring/PID-integer.h"
 #include "linbox/field/gf2.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/vector/vector-domain.h"

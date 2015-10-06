@@ -33,7 +33,7 @@
 //#ifdef __LINBOX_HAVE_NTL
 #include "linbox/algorithms/smith-form-adaptive.h"
 //#endif
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 //#include "linbox/algorithms/smith-form.h"
 //#include "linbox/algorithms/smith-form-local.h"
 
@@ -159,12 +159,12 @@ namespace LinBox
 	*/
 	template<class Output> Output&
 	smithForm(Output & S,
-		  const BlasMatrix<PID_integer> 	&A,
+		  const BlasMatrix<Givaro::ZRing<Integer> > 	&A,
 		  const RingCategories::IntegerTag      &tag,
 		  const Method::Hybrid			& M)
 	{
-		PID_integer Z;
-		BlasVector<PID_integer> v (Z,A.rowdim() < A.coldim() ? A.rowdim() : A.coldim());
+		Givaro::ZRing<Integer> Z;
+		BlasVector<Givaro::ZRing<Integer> > v (Z,A.rowdim() < A.coldim() ? A.rowdim() : A.coldim());
 		SmithFormAdaptive::smithForm(v, A);
 		distinct(v.begin(), v.end(), S);
 

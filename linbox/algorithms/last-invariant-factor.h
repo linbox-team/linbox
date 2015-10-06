@@ -143,7 +143,7 @@ namespace LinBox
 				      ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
-						r.divmod(quo,rem,lif,pri);
+						r.quoRem(quo,rem,lif,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);
 						else break;
 					}
@@ -182,11 +182,11 @@ namespace LinBox
 				// assign b to be a random vector
 				for (b_p = b1. begin(); b_p != b1. end(); ++ b_p) {
 // 					* b_p = rand();
-                    _gen(* b_p);
+                                        *b_p = _gen.random();//(* b_p);
 				}
 				for (b_p = b2. begin(); b_p != b2. end(); ++ b_p) {
 // 					* b_p = rand();
-                    _gen(* b_p);
+                                        *b_p = _gen.random();//(* b_p);
 				}
 				// try to solve Ax = b1, b2 over Ring
 				tmp1 = solver. solveNonsingular(r1_num, r1_den, A, b1);
@@ -246,7 +246,7 @@ namespace LinBox
 				for ( Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
-						r.divmod(quo,rem,lif,pri);
+						r.quoRem(quo,rem,lif,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);
 						else break;
 					} while (true);
@@ -256,7 +256,7 @@ namespace LinBox
 				for ( Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
-						r.divmod(quo,rem,Bonus,pri);
+						r.quoRem(quo,rem,Bonus,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);
 						else break;
 					} while (true);

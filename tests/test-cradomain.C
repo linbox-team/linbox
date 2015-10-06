@@ -43,13 +43,13 @@
 using namespace LinBox;
 
 struct Interator {
-	BlasVector<PID_integer> _v;
+	BlasVector<Givaro::ZRing<Integer> > _v;
 	double maxsize;
 
-	Interator(const BlasVector<PID_integer>& v) :
+	Interator(const BlasVector<Givaro::ZRing<Integer> >& v) :
 		_v(v), maxsize(0.0)
 	{
-		for(BlasVector<PID_integer> ::const_iterator it=_v.begin();
+		for(BlasVector<Givaro::ZRing<Integer> > ::const_iterator it=_v.begin();
 		    it != _v.end(); ++it) {
 			//!@bug bb: *it < 0 ?
 			double ds = Givaro::naturallog(*it);
@@ -58,9 +58,9 @@ struct Interator {
 	}
 
 	Interator(int n, int s) :
-		_v(PID_integer(),(size_t)n), maxsize(0.0)
+		_v(Givaro::ZRing<Integer>(),(size_t)n), maxsize(0.0)
 	{
-		for(BlasVector<PID_integer>::iterator it=_v.begin();
+		for(BlasVector<Givaro::ZRing<Integer> >::iterator it=_v.begin();
 		    it != _v.end(); ++it) {
 			Integer::random<false>(*it, s);
 			double ds = Givaro::naturallog(*it);
@@ -68,7 +68,7 @@ struct Interator {
 		}
 	}
 
-	const BlasVector<PID_integer>& getVector()
+	const BlasVector<Givaro::ZRing<Integer> >& getVector()
 	{
 	       	return _v;
        	}
@@ -82,7 +82,7 @@ struct Interator {
 				      const Field& F) const
 	{
 		v.resize(_v.size());
-		BlasVector<PID_integer>::const_iterator vit=_v.begin();
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator vit=_v.begin();
 		typename BlasVector<Field>::iterator eit=v.begin();
 		for( ; vit != _v.end(); ++vit, ++eit){
 			F.init(*eit, *vit);
@@ -106,7 +106,7 @@ struct InteratorIt : public Interator {
 	// could use BlasVector and changeField
 	mutable std::vector<double> _vectC;
 
-	InteratorIt(const BlasVector<PID_integer>& v) :
+	InteratorIt(const BlasVector<Givaro::ZRing<Integer> >& v) :
 		Interator(v), _vectC(v.size())
 	{}
 	InteratorIt(int n, int s) :
@@ -116,7 +116,7 @@ struct InteratorIt : public Interator {
 	template<typename Iterator, typename Field>
 	Iterator& operator()(Iterator& res, const Field& F) const
 	{
-		BlasVector<PID_integer>::const_iterator vit=this->_v.begin();
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator vit=this->_v.begin();
 		std::vector<double>::iterator eit=_vectC.begin();
 		for( ; vit != _v.end(); ++vit, ++eit) {
 			F.init(*eit, *vit);
@@ -145,7 +145,7 @@ struct InteratorBlas : public Interator {
 	typename Givaro::ZRing<Element> _field;
 	mutable Matrix _vectC;
 
-	InteratorBlas(const BlasVector<PID_integer>& v) :
+	InteratorBlas(const BlasVector<Givaro::ZRing<Integer> >& v) :
 		Interator(v),
 		_field(),
 		_vectC(_field,(int)v.size(), (int)1)
@@ -158,7 +158,7 @@ struct InteratorBlas : public Interator {
 
 	Pointer& operator()(Pointer& res, const Field& F) const
 	{
-		BlasVector<PID_integer>::const_iterator vit=this->_v.begin();
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator vit=this->_v.begin();
 		res = _vectC.getWritePointer();
 		for( ; vit != _v.end(); ++vit, ++res)
 			F.init(*res, *vit);
@@ -176,15 +176,15 @@ bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-	PID_integer Z;
-	BlasVector<PID_integer> Res(Z,N);
+	Givaro::ZRing<Integer> Z;
+	BlasVector<Givaro::ZRing<Integer> > Res(Z,N);
 	cra( Res, iteration, genprime);
 	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
 	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	else {
 		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
-		BlasVector<PID_integer>::const_iterator Rit=Res.begin();
-		BlasVector<PID_integer>::const_iterator Oit=iteration.getVector().begin();
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator Rit=Res.begin();
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator Oit=iteration.getVector().begin();
 		for( ; Rit!=Res.end(); ++Rit, ++Oit)
 			if (*Rit != *Oit)
 				report << *Rit <<  " != " << * Oit << std::endl;
@@ -196,18 +196,18 @@ bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t
 template<typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRAbegin(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
 {
-	PID_integer Z;
+	Givaro::ZRing<Integer> Z;
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-	BlasVector<PID_integer> Res(Z,N);
-	BlasVector<PID_integer>::iterator ResIT= Res.begin();
+	BlasVector<Givaro::ZRing<Integer> > Res(Z,N);
+	BlasVector<Givaro::ZRing<Integer> >::iterator ResIT= Res.begin();
 	cra( ResIT, iteration, genprime);
 	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
 	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	else {
 		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
-		BlasVector<PID_integer>::const_iterator Rit=Res.begin();
-		BlasVector<PID_integer>::const_iterator Oit=iteration.getVector().begin();
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator Rit=Res.begin();
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator Oit=iteration.getVector().begin();
 		for( ; Rit!=Res.end(); ++Rit, ++Oit)
 			if (*Rit != *Oit)
 				report << *Rit <<  " != " << * Oit << std::endl;
@@ -221,8 +221,8 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-	PID_integer Z ;
-	LinBox::BlasMatrix<PID_integer> Res(Z, (int)N, (int)N);
+	Givaro::ZRing<Integer> Z ;
+	LinBox::BlasMatrix<Givaro::ZRing<Integer> > Res(Z, (int)N, (int)N);
 	cra( Res.getWritePointer(), iteration, genprime);
 	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getWritePointer() );
 
@@ -242,7 +242,7 @@ bool TestCra(size_t N, int S, size_t seed)
 	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
 	// std::ostream &report = std::cout;
-	PID_integer Z;
+	Givaro::ZRing<Integer> Z;
 
 	size_t new_seed = (seed?(seed):((size_t)BaseTimer::seed())) ;
 	report << "TestCra(" << N << ',' << S << ',' << new_seed << ')' << std::endl;
@@ -301,7 +301,7 @@ bool TestCra(size_t N, int S, size_t seed)
 #endif
 
 
-        BlasVector<PID_integer>  PrimeSet(Z);
+        BlasVector<Givaro::ZRing<Integer> >  PrimeSet(Z);
         double PrimeSize = 0.0;
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
             if (std::find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
@@ -310,13 +310,13 @@ bool TestCra(size_t N, int S, size_t seed)
             }
         }
 
-        BlasVector<PID_integer> ::iterator psit = PrimeSet.begin();
+        BlasVector<Givaro::ZRing<Integer> > ::iterator psit = PrimeSet.begin();
 
 	pass &= TestOneCRA<
             LinBox::GivaroRnsFixedCRA< Givaro::Modular<double> >,
             Interator,
-            BlasVector<PID_integer> ::iterator,
-            BlasVector<PID_integer>  >(
+            BlasVector<Givaro::ZRing<Integer> > ::iterator,
+            BlasVector<Givaro::ZRing<Integer> >  >(
                  report, iteration, psit, N, PrimeSet);
 
 

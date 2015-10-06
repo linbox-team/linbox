@@ -25,7 +25,7 @@
 #ifndef __LINBOX_rational_early_single_cra_H
 #define __LINBOX_rational_early_single_cra_H
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/algorithms/cra-early-single.h"
 
 namespace LinBox
@@ -37,7 +37,7 @@ namespace LinBox
 		typedef EarlySingleCRA<Domain> 			Father_t;
 		typedef typename Father_t::DomainElement 	DomainElement;
 		typedef EarlySingleRatCRA<Domain>		Self_t;
-		PID_integer _ZZ;
+		Givaro::ZRing<Integer> _ZZ;
 
 		Integer					Numer0;
 		Integer					Denom0;

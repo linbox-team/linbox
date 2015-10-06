@@ -134,40 +134,40 @@ namespace LinBox
 	}
 }
 
-#include "linbox/ring/PID-integer.h"
-namespace LinBox
-{
-	typedef GivPolynomialRing<PID_integer, Givaro::Dense> GivPolPIDIntDense;
-	template <>
-	template <>
-	std::vector<GivPolPIDIntDense::Element* >&
-	GivPolPIDIntDense::factor<std::vector<GivPolPIDIntDense::Element* > > (std::vector<GivPolPIDIntDense::Element* >& factors,
-			std::vector<unsigned long>& exp,
-			const GivPolPIDIntDense::Element &P)
-	{
-		NTL::ZZXFac_InitNumPrimes = 1;
-		NTL::ZZX f;
-		for (size_t i = 0; i < P.size(); ++i){
-			NTL::SetCoeff (f, (long)i, NTL::to_ZZ((std::string( P[(size_t)i] )).c_str()) );
-		}
-		NTL::vec_pair_ZZX_long ntlfactors;
-		NTL::ZZ c;
-		NTL::factor (c, ntlfactors, f);
+// #include "givaro/zring.h"
+ namespace LinBox
+ {
+// 	typedef GivPolynomialRing<Givaro::ZRing<Integer>, Givaro::Dense> GivPolPIDIntDense;
+// 	template <>
+// 	template <>
+// 	std::vector<GivPolPIDIntDense::Element* >&
+// 	GivPolPIDIntDense::factor<std::vector<GivPolPIDIntDense::Element* > > (std::vector<GivPolPIDIntDense::Element* >& factors,
+// 			std::vector<unsigned long>& exp,
+// 			const GivPolPIDIntDense::Element &P)
+// 	{
+// 		NTL::ZZXFac_InitNumPrimes = 1;
+// 		NTL::ZZX f;
+// 		for (size_t i = 0; i < P.size(); ++i){
+// 			NTL::SetCoeff (f, (long)i, NTL::to_ZZ((std::string( P[(size_t)i] )).c_str()) );
+// 		}
+// 		NTL::vec_pair_ZZX_long ntlfactors;
+// 		NTL::ZZ c;
+// 		NTL::factor (c, ntlfactors, f);
 
-		NTL::ZZ t;
-		NTL_ZZ NTLIntDom;
-		factors.resize((size_t)ntlfactors.length());
-		exp.resize((size_t)ntlfactors.length());
-		for (int i= 0; i<ntlfactors.length(); ++i) {
-			factors[(size_t)i] = new GivPolPIDIntDense::Element( (size_t)deg(ntlfactors[i].a)+1 );
-			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
-				NTL::GetCoeff(t,ntlfactors[i].a,j);
-				NTLIntDom.convert( factors[(size_t)i]->operator[]((size_t)j), t );
-			}
-			exp[(size_t)i] = (unsigned long)ntlfactors[i].b;
-		}
-		return factors;
-	}
+// 		NTL::ZZ t;
+// 		NTL_ZZ NTLIntDom;
+// 		factors.resize((size_t)ntlfactors.length());
+// 		exp.resize((size_t)ntlfactors.length());
+// 		for (int i= 0; i<ntlfactors.length(); ++i) {
+// 			factors[(size_t)i] = new GivPolPIDIntDense::Element( (size_t)deg(ntlfactors[i].a)+1 );
+// 			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
+// 				NTL::GetCoeff(t,ntlfactors[i].a,j);
+// 				NTLIntDom.convert( factors[(size_t)i]->operator[]((size_t)j), t );
+// 			}
+// 			exp[(size_t)i] = (unsigned long)ntlfactors[i].b;
+// 		}
+// 		return factors;
+// 	}
 
 	typedef GivPolynomialRing< NTL_ZZ , Givaro::Dense> GivPolZZDense;
 	template <>

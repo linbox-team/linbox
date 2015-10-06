@@ -28,8 +28,7 @@
  * @brief  Undocumented.
  */
 
-#include <linbox/ring/PID-integer.h>
-#include <linbox/ring/modular.h>
+#include <givaro/modular.h>
 #include <linbox/field/gmp-rational.h>
 #include <linbox/matrix/dense-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>
@@ -41,7 +40,7 @@
 using namespace LinBox;
 using namespace std;
 
-typedef PID_integer Integers;
+typedef Givaro::ZRing<Integer> Integers;
 typedef Integers::Element Integer;
 typedef Givaro::Modular<double > Field;
 typedef Field::Element Element;

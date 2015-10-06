@@ -70,8 +70,8 @@ static bool testNonsingularRatIntSolve (size_t n, unsigned int iterations)
 	GMPRationalField Q;
 	SparseMatrix<GMPRationalField > A(Q,n,n);
 
-	PID_integer Z;
-	BlasVector<PID_integer> b(Z,n);
+	Givaro::ZRing<Integer> Z;
+	BlasVector<Givaro::ZRing<Integer> > b(Z,n);
 	BlasVector<GMPRationalField> true_x(Q,n),x(Q,n);
 
 	for (i=0; i < (int)iterations; i++) {
@@ -127,7 +127,7 @@ static bool testNonsingularRatRatSolve (size_t n, unsigned int iterations)
 	GMPRationalField Q;
 	SparseMatrix<GMPRationalField > A(Q,n,n);
 
-	PID_integer Z;
+	Givaro::ZRing<Integer> Z;
 	BlasVector<GMPRationalField> b(Q,n);
 	BlasVector<GMPRationalField> true_x(Q,n),x(Q,n);
 

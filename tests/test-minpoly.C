@@ -463,10 +463,10 @@ int main (int argc, char **argv)
 	commentator().stop("Elimination prime field minpoly test suite");
 
 	// /////////////// integer part //////////////////
-	typedef vector<PID_integer::Element> ZDenseVector;
-	typedef SparseMatrix<PID_integer>::Row ZSparseVector;
+	typedef vector<Givaro::ZRing<Integer>::Element> ZDenseVector;
+	typedef SparseMatrix<Givaro::ZRing<Integer> >::Row ZSparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
-	PID_integer Z;
+	Givaro::ZRing<Integer> Z;
 	srand ((unsigned)time (NULL));
 
 	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
@@ -475,10 +475,10 @@ int main (int argc, char **argv)
 
 	commentator().start("Blackbox integer minpoly test suite", "WIminpoly");
 
-	RandomDenseStream<PID_integer, ZDenseVector, NonzeroRandIter<PID_integer> >
-	zv_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), n, numVectors);
-	RandomSparseStream<PID_integer, ZSparseVector, NonzeroRandIter<PID_integer> >
-	zA_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), (double) k / (double) n, n, n);
+	RandomDenseStream<Givaro::ZRing<Integer>, ZDenseVector, NonzeroRandIter<Givaro::ZRing<Integer> > >
+	zv_stream (Z, NonzeroRandIter<Givaro::ZRing<Integer> > (Z, Givaro::ZRing<Integer>::RandIter (Z)), n, numVectors);
+	RandomSparseStream<Givaro::ZRing<Integer>, ZSparseVector, NonzeroRandIter<Givaro::ZRing<Integer> > >
+	zA_stream (Z, NonzeroRandIter<Givaro::ZRing<Integer> > (Z, Givaro::ZRing<Integer>::RandIter (Z)), (double) k / (double) n, n, n);
 
 	if (!testIdentityMinpoly  (Z, n, MB)) pass = false;
 	if (!testNilpotentMinpoly (Z, n, MB)) pass = false;

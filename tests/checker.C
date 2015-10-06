@@ -29,6 +29,7 @@ The current convention is that (1) linbox' checker.C, runs the tests with no com
 #include <vector>
 //#include <iomanip>
 using namespace std;
+#include "linbox/linbox-config.h"
 
 // globals
 map< string, string> skip_note;
@@ -147,7 +148,7 @@ skip("test-la-block-lanczos", "not maintained. operator >> missing");
 		skip(*i, "Lidia not present");
 	
 	#endif
-	#ifndef LINBOX_HAVE_NTL
+	#ifndef __LINBOX_HAVE_NTL
     for (set< string>::iterator i = ntl_tests.begin(); i != ntl_tests.end(); ++i) 
 		skip(*i, "NTL not present");
 	#endif

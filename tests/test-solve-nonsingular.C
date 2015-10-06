@@ -34,7 +34,7 @@
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/randiter/random-prime.h"
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/field/param-fuzzy.h"
 #include "tests/test-common.h"
 #include "linbox/vector/stream.h"
@@ -318,7 +318,7 @@ int main(int argc, char** argv) {
 
 	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	typedef PID_integer	Ring;  		Ring R;
+	typedef Givaro::ZRing<Integer>	Ring;  		Ring R;
 
 	typedef ParamFuzzy Field;
 	typedef Givaro::Modular<int32_t> ZField;

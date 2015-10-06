@@ -31,7 +31,7 @@
 #include <deque>
 #include <cmath>
 
-#include "linbox/ring/PID-integer.h"
+#include <givaro/zring.h>
 
 namespace LinBox
 {
@@ -40,7 +40,7 @@ namespace LinBox
 		INCREMENTAL, QUADRATIC, GEOMETRIC, CERTIFIED
 	};
 
-	template <class Ring=PID_integer>
+	template <class Ring=Givaro::ZRing<Integer> >
 	class RReconstructionBase;
 
 	/*
@@ -48,12 +48,12 @@ namespace LinBox
 	 * together with method reconstructRational(a,b,x,m)
 	 * implements scheduling INCREMENTAL, QUADRATIC, GEOMETRIC, CERTIFIED
 	 * implements vector reconstruction
-	 * _intRing is the integer ring used for reconstruction, default PID_integer
+	 * _intRing is the integer ring used for reconstruction, default Givaro::ZRing<Integer>
 	 * _RR is the rational reconstruction method, see fast-ratioinal-reconstruction.h, classic-rational-reconstruction.h
 	 * THRESHOLD_ - treshold for INCREMENTAL schedule
 	 * rbound_ - min number of iterations for all schedule
 	 */
-	template <class Ring=PID_integer, class RRBase=RReconstructionBase<PID_integer> >
+	template <class Ring=Givaro::ZRing<Integer>, class RRBase=RReconstructionBase<Givaro::ZRing<Integer> > >
 	struct RReconstruction {
 	protected:
 		Ring _intRing;
@@ -314,12 +314,12 @@ namespace LinBox
 	};
 
 	/*
-	 * This is the default RReconstruction, using PID_Integer and ClassicRationalReconstruction of Wang
+	 * This is the default RReconstruction, using ZRing<Integer> and ClassicRationalReconstruction of Wang
 	 */
 	template <>
-	class RReconstructionBase<PID_integer> {
+	class RReconstructionBase<Givaro::ZRing<Integer> > {
 	public:
-		typedef PID_integer Ring;
+		typedef Givaro::ZRing<Integer> Ring;
 		Ring _intRing;
 		mutable OpCounter C;
 		typedef Ring::Element Element;

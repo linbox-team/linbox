@@ -48,18 +48,18 @@ namespace LinBox
 		 * Should work with SparseMatrix and BlasMatrix
 		 */
 		template <class Matrix>
-		static void compute_local_long (BlasVector<PID_integer>& s, const Matrix& A, long p, long e);
+		static void compute_local_long (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long p, long e);
 
 		/* Compute the local smith form at prime p, when modular (p^e) doesnot fit in long
 		 * Should work with SparseMatrix and BlasMatrix
 		 */
 		template <class Matrix>
-		static void compute_local_big (BlasVector<PID_integer>& s, const Matrix& A, long p, long e);
+		static void compute_local_big (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long p, long e);
 
 		/* Compute the local smith form at prime p
 		*/
 		template <class Matrix>
-		static void compute_local (BlasVector<PID_integer>& s, const Matrix& A, long p, long e);
+		static void compute_local (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long p, long e);
 
 		/* Compute the k-smooth part of the invariant factor, where k = 100.
 		 * @param sev is the exponent part ...
@@ -67,14 +67,14 @@ namespace LinBox
 		 * Should work with SparseMatrix and BlasMatrix
 		 */
 		template <class Matrix>
-		static void smithFormSmooth (BlasVector<PID_integer>& s, const Matrix& A, long r, const std::vector<long>& sev);
+		static void smithFormSmooth (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long r, const std::vector<long>& sev);
 
 		/* Compute the k-rough part of the invariant factor, where k = 100.
 		 * By EGV+ algorithm or Iliopoulos' algorithm for Smith form.
 		 * Should work with BlasMatrix
 		 */
 		template <class Matrix>
-		static void smithFormRough  (BlasVector<PID_integer>& s, const Matrix& A, integer m );
+		static void smithFormRough  (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, integer m );
 
 		/* Compute the Smith form via valence algorithms
 		 * Compute the local Smith form at each possible prime
@@ -82,7 +82,7 @@ namespace LinBox
 		 * Should work with SparseMatrix and BlasMatrix
 		 */
 		template <class Matrix>
-		static void smithFormVal (BlasVector<PID_integer>&s, const Matrix& A, long r, const std::vector<long>& sev);
+		static void smithFormVal (BlasVector<Givaro::ZRing<Integer> >&s, const Matrix& A, long r, const std::vector<long>& sev);
 
 		/** \brief Smith form of a dense matrix by adaptive algorithm.
 		 *
@@ -91,12 +91,12 @@ namespace LinBox
 		 * Should work with SparseMatrix and BlasMatrix
 		 */
 		template <class Matrix>
-		static void smithForm (BlasVector<PID_integer>& s, const Matrix& A);
+		static void smithForm (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A);
 		/** Specialization for dense case*/
 		// template <class IRing>
-		// static void smithForm (BlasVector<PID_integer>& s, const BlasMatrix<IRing>& A);
+		// static void smithForm (BlasVector<Givaro::ZRing<Integer> >& s, const BlasMatrix<IRing>& A);
 		template <class IRing, class _Rep>
-		static void smithForm (BlasVector<PID_integer>& s, const BlasMatrix<IRing, _Rep>& A);
+		static void smithForm (BlasVector<Givaro::ZRing<Integer> >& s, const BlasMatrix<IRing, _Rep>& A);
 
 	};
 	const long SmithFormAdaptive::prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};

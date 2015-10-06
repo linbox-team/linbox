@@ -144,12 +144,12 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 	
 	if (p > 0)
 	{
-		F.init(two, (int64_t)(2 % p));
-		F.init(mTwo, (int64_t)(p - 2));
-		F.init(three, (int64_t)(3 % p));
-		F.init(five, (int64_t)(5 % p));
-		F.init(six, (int64_t)(6 % p));
-		F.init(eight, (int64_t)(8 % p));
+		F.init(two, ((LinBox::integer)2 % p));
+		F.init(mTwo, (p - (LinBox::integer)2));
+		F.init(three, ((LinBox::integer)3 % p));
+		F.init(five, ((LinBox::integer)5 % p));
+		F.init(six, ((LinBox::integer)6 % p));
+		F.init(eight, ((LinBox::integer)8 % p));
 	}
 	else
 	{
@@ -209,7 +209,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 
 	if (p > 0) {
 		typename Ring::Element mOneFromCst;
-		F.init(mOneFromCst, (int64_t)(p-1));
+		F.init(mOneFromCst, (LinBox::integer)(p-1));
 
 		if ( !F.areEqual(F.mOne,mOneFromCst)) {
 			part_pass = reportError( "isMOne (p-1) is false", pass);

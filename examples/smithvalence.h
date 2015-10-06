@@ -203,7 +203,7 @@ std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Gi
 
 std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, char * filename, size_t e, size_t intr)
 {
-	typedef LinBox::PID_integer Ring;
+	typedef Givaro::ZRing<Givaro::Integer> Ring;
 	Ring ZZ;
 	std::ifstream input(filename);
 	LinBox::MatrixStream<Ring> ms( ZZ, input );

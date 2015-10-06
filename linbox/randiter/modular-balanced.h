@@ -63,8 +63,9 @@
 namespace LinBox
 {
 
-	template <class Element>
-	class Givaro::ModularBalanced;
+#if 0
+	 template <class Element>
+	 class Givaro::ModularBalanced<Element>;
 
 	/** Random field base element generator.
 	 * This encapsulated class is a generator of random field base elements for
@@ -183,7 +184,7 @@ namespace LinBox
 		long _seed;
 
 	}; // class Givaro::ModularBalancedRandIter
-
+#endif
 } // namespace LinBox
 
 #endif //__LINBOX_randiter_modular_balanced_H

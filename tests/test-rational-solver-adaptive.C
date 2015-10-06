@@ -33,7 +33,7 @@
 
 
 #include "linbox/linbox-config.h"
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/algorithms/rational-solver-adaptive.h"
@@ -201,7 +201,7 @@ int main(int argc, char** argv)
 	typedef Givaro::Modular<int32_t> Field;
 	// typedef Givaro::Modular<double> Field;
 
-	typedef PID_integer     Ring;
+	typedef Givaro::ZRing<Integer>     Ring;
 
 	Ring R;
 

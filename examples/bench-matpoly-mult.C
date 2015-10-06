@@ -224,10 +224,10 @@ void bench_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	size_t mmul=2*n*n*n;
 	size_t madd=n*n;
 	size_t kara=pow((double)d, log(3.)/log(2.));
-	size_t fft= 17 *d *log(2.*d)/log(2.);
+	    //size_t fft= 17 *d *log(2.*d)/log(2.);
 	size_t costNaive= mmul*d*d + madd*(d-1)*(d-1);
 	size_t costKara = mmul*kara+ 6*madd*kara;
-	size_t costFFT  = mmul*2*d + 3*madd*fft;
+	    //size_t costFFT  = mmul*2*d + 3*madd*fft;
 
 #ifdef FFT_PROFILER
 	FFT_PROF_LEVEL=3;
@@ -283,7 +283,7 @@ void profile_matpol_mulfft(const Field& fld,  RandIter& Gen, size_t n, size_t d)
 		randomVect(Gen,A(i));
 		randomVect(Gen,B(i));
 	}
-	cout<<n<<" "<<d<<" ";
+	std::cout<<n<<" "<<d<<" "<<std::endl;
 	typedef PolynomialMatrixFFTMulDomain<Field>    FFT;
 	FFT  PMFFT(fld);
 	myTimer chrono;
@@ -416,7 +416,7 @@ int main(int argc, char** argv){
 #ifdef FFT_PROFILER
 			FFT_PROF_LEVEL=1;
 #endif
-			RandomFFTPrime Rd(b,seed);
+			RandomFFTPrime Rd(1<<b,seed);
 			integer p = Rd.randomPrime(integer(d).bitsize()+1);
 			//Givaro::Modular<int32_t> F((int32_t)p);
 			Givaro::Modular<double> F((int32_t)p);

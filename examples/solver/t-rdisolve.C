@@ -47,10 +47,8 @@
 #define LIFTING_PROGRESS
 #define RSTIMING
 
-
-#include "linbox/integer.h"
-#include "linbox/field/ntl-ZZ.h"
-#include "linbox/field/modular-int.h"
+#include "givaro/modular.h"
+#include "givaro/zring.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/vector-fraction.h"
@@ -60,7 +58,7 @@
 #include "linbox/randiter/random-prime.h"
 
 #include "linbox/field/unparametric.h"
-#include "linbox/field/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/field/ntl.h"
 
 #include "linbox/field/archetype.h"
@@ -363,7 +361,7 @@ int fieldTest()
 	return
 	0
 	//+test<NTL_ZZ, Field>()
-	+test<PID_integer, Field>()
+	+test<Givaro::ZRing<Integer>, Field>()
 	//+(testPidDouble?test<PID_double, Field>():0)
 	// */
 	;
@@ -414,8 +412,8 @@ void genTestData()
 		eBound = 1;
 	}
 
-	PID_integer Z;
-	PID_integer::RandIter ri(Z, 2*eBound,entrySeed); //for some reason this iterator tends to give numbers with
+	Givaro::ZRing<Integer> Z;
+	Givaro::ZRing<Integer>::RandIter ri(Z, 2*eBound,entrySeed); //for some reason this iterator tends to give numbers with
 	//large common factors, so we perturb the data a bit
 	bool notRandomEnough = (eBound >> 64) > 0;
 	double bigStuff = ((long long)1)<<25;

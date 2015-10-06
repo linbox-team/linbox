@@ -61,7 +61,7 @@ namespace LinBox
 		typedef std::vector<double>::iterator        DoubleVect_Iterator ;
 		typedef std::vector< bool >::iterator          BoolVect_Iterator ;
 		typedef std::vector< LazyProduct >::iterator   LazyVect_Iterator ;
-		typedef BlasVector< PID_integer >                        IntVect ;
+		typedef BlasVector< Givaro::ZRing<Integer> >                        IntVect ;
 		typedef IntVect::iterator                       IntVect_Iterator ;
 		typedef std::vector< IntVect >::iterator    IntVectVect_Iterator ;
 		typedef IntVect::const_iterator            IntVect_ConstIterator ;
@@ -77,8 +77,8 @@ namespace LinBox
 		{
 			this->RadixSizes_.resize(1);
 			this->RadixPrimeProd_.resize(1);
-			PID_integer ZZ ;
-			this->RadixResidues_.resize(1,BlasVector<PID_integer>(ZZ));
+			Givaro::ZRing<Integer> ZZ ;
+			this->RadixResidues_.resize(1,BlasVector<Givaro::ZRing<Integer>>(ZZ));
 			this->RadixOccupancy_.resize(1);
 			this->RadixOccupancy_.front() = false;
 		}
@@ -123,7 +123,7 @@ namespace LinBox
 			IntVectVect_Iterator _tab_it = this->RadixResidues_.begin();
 			BoolVect_Iterator    _occ_it = this->RadixOccupancy_.begin();
 
-			PID_integer ZZ;
+			Givaro::ZRing<Integer> ZZ;
 			IntVect ri(ZZ,this->size);
 			LazyProduct mi;
 			double di;
@@ -312,7 +312,7 @@ namespace LinBox
 		typedef std::vector<double>::iterator        DoubleVect_Iterator ;
 		typedef std::vector< bool >::iterator          BoolVect_Iterator ;
 		typedef std::vector< LazyProduct >::iterator   LazyVect_Iterator ;
-		typedef BlasVector< PID_integer >                        IntVect ;
+		typedef BlasVector< Givaro::ZRing<Integer> >                        IntVect ;
 		typedef IntVect::iterator                       IntVect_Iterator ;
 		typedef std::vector< IntVect >::iterator    IntVectVect_Iterator ;
 		typedef IntVect::const_iterator            IntVect_ConstIterator ;
@@ -328,8 +328,8 @@ namespace LinBox
 		{
 			this->RadixSizes_.resize(1);
 			this->RadixPrimeProd_.resize(1);
-			PID_integer ZZ ;
-			this->RadixResidues_.resize(1,BlasVector<PID_integer>(ZZ));
+			Givaro::ZRing<Integer> ZZ ;
+			this->RadixResidues_.resize(1,BlasVector<Givaro::ZRing<Integer>>(ZZ));
 			this->RadixOccupancy_.resize(1);
 			this->RadixOccupancy_.front() = false;
 		}
@@ -371,7 +371,7 @@ namespace LinBox
 			IntVectVect_Iterator _tab_it = this->RadixResidues_.begin();
 			BoolVect_Iterator    _occ_it = this->RadixOccupancy_.begin();
 
-			PID_integer ZZ;
+			Givaro::ZRing<Integer> ZZ;
 			IntVect ri(ZZ,this->size);
 			LazyProduct mi;
 			double di;

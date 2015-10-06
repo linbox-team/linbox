@@ -31,7 +31,7 @@
 #ifndef __LINBOX_linbox_tags_H
 #define __LINBOX_linbox_tags_H
 
-#include <fflas-ffpack/fflas/fflas.h>
+#include <fflas-ffpack/fflas/fflas_enum.h>
 #include "linbox/linbox-config.h"
 
 #if HAVE_CXX11

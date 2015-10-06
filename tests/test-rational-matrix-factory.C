@@ -42,7 +42,7 @@
 #include "linbox/linbox-config.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/field/gmp-rational.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
@@ -84,7 +84,7 @@ static bool testDiagonalMatrix (size_t n)
 		lcm(lcm_n,lcm_n,j+1);
 	}
 
-	RationalMatrixFactory<PID_integer, GMPRationalField, BlasMatrix<GMPRationalField > > FA(&A);
+	RationalMatrixFactory<Givaro::ZRing<Integer>, GMPRationalField, BlasMatrix<GMPRationalField > > FA(&A);
 
 	integer ratnorm,aprimnorm,atildenorm;
 	FA.getNorms(ratnorm,aprimnorm,atildenorm);
@@ -144,9 +144,9 @@ static bool testDiagonalMatrix (size_t n)
 		}
 	}
 
-	PID_integer Z;
-	BlasMatrix<PID_integer> Aprim(Z,n,n);
-	BlasMatrix<PID_integer> Atilde(Z,n,n);
+	Givaro::ZRing<Integer> Z;
+	BlasMatrix<Givaro::ZRing<Integer> > Aprim(Z,n,n);
+	BlasMatrix<Givaro::ZRing<Integer> > Atilde(Z,n,n);
 
 	FA.makeAprim(Aprim);
 	FA.makeAtilde(Atilde);

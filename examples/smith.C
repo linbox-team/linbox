@@ -61,7 +61,6 @@ using namespace std;
 
 #include <linbox/util/timer.h>
 
-#include <linbox/field/unparametric.h>
 #include <linbox/ring/local2_32.h>
 #include <linbox/ring/PIR-modular-int32.h>
 #include <linbox/algorithms/smith-form-local.h>
@@ -114,7 +113,7 @@ int main(int argc, char* argv[])
 
 	if (algo == "adaptive")
 	{
-		typedef PID_integer Ints;
+		typedef Givaro::ZRing<Integer> Ints;
 		Ints Z;
 		DenseMatrix<Ints> M(Z);
 
@@ -123,7 +122,7 @@ int main(int argc, char* argv[])
 		M.read(input);
 		//Mat(M, Z, n, src, file, format);
 
-		DenseVector<PID_integer> v(Z,(size_t)n);
+		DenseVector<Givaro::ZRing<Integer> > v(Z,(size_t)n);
 		T.start();
 		SmithFormAdaptive::smithForm(v, M);
 		T.stop();
@@ -191,10 +190,11 @@ int main(int argc, char* argv[])
 
 			Integer p(m), im(m);
 			// Should better ask user to give the prime !!!
-			for(unsigned int k = 2; ( ( ! Givaro::probab_prime(p) ) && (p > 1) ); ++k)
-			 Givaro::root( p, im, k );
+                        Givaro::IntPrimeDom IPD;
+			for(unsigned int k = 2; ( ( ! IPD.isprime(p) ) && (p > 1) ); ++k)
+                                Givaro::root( p, im, k );
 
-			// using Sparse Elimination
+                        // using Sparse Elimination
 			LinBox::PowerGaussDomain< Field > PGD( F );
 			std::vector<std::pair<size_t,Field::Element> > local;
 

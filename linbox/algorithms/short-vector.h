@@ -37,7 +37,7 @@
  */
 
 #include <iostream>
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/util/timer.h"
 #include "linbox/integer.h"
 #include <algorithm>
@@ -446,8 +446,8 @@ namespace LinBox
 
 		void print()
 		{
-			PID_integer Z;
-			BlasMatrix<PID_integer> M(Z,3,3);
+			Givaro::ZRing<Integer> Z;
+			BlasMatrix<Givaro::ZRing<Integer> > M(Z,3,3);
 			M.setEntry(0,0,b1[0]);
 			M.setEntry(0,1,b1[1]);
 			M.setEntry(0,2,b1[2]);

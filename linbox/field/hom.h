@@ -26,8 +26,8 @@
 #define __LINBOX_hom_H
 
 #include "linbox/linbox-config.h"
-#include "linbox/ring/PID-integer.h"
 #include "linbox/util/error.h"
+#include "linbox/integer.h"
 #include <givaro/givcaster.h>
 #include <givaro/givrational.h>
 #include <givaro/modular.h>
@@ -320,10 +320,10 @@ namespace LinBox
 			_source(S), _target(T)
 		{}
 		inline Elt& image(Elt& t, const SrcElt& s) {
-			return _target. reduce (t, Caster<double,Givaro::Rational>(t,s) );
+			return _target. reduce (t, Givaro::Caster<double,Givaro::Rational>(t,s) );
 		}
 		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
-            return Caster<Givaro::Rational,double>(s,t);
+                        return Givaro::Caster<Givaro::Rational,double>(s,t);
 		}
 		const Source& source() const { return _source;}
 		const Target& target() const { return _target;}

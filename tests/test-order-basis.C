@@ -121,7 +121,7 @@ int main(int argc, char** argv){
 	typedef Givaro::Modular<double>              SmallField;	
 	typedef Givaro::Modular<Givaro::Integer>      LargeField;
 
-	size_t logd=integer(d).bitsize();
+	size_t logd=integer((uint64_t)d).bitsize();
 	
 	std::cout<<"###  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
 	if (b < 26){
@@ -129,7 +129,7 @@ int main(int argc, char** argv){
 			std::cout<<"degree is to large for field bitsize: "<<b<<std::endl;
 			exit(0);
 		}
-		RandomFFTPrime Rd(b,seed);	
+		RandomFFTPrime Rd(1<<b,seed);	
 		integer p = Rd.randomPrime(logd+1);
 		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 		SmallField F(p);

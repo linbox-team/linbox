@@ -228,7 +228,7 @@ int dyadicToRational(
 #if 0
 // vector rational reconstruction building num, den from numx, denx
 // This one -- very inefficient -- just reconstructs each one, then goes thru to fix for lcm.
-void rational_reconstruction(BlasVector<PID_integer>& num, integer& den, BlasVector<PID_integer>& numx, integer& denx, integer& denBound) {
+void rational_reconstruction(BlasVector<Givaro::ZRing<Integer> >& num, integer& den, BlasVector<Givaro::ZRing<Integer> >& numx, integer& denx, integer& denBound) {
 	integer den_tmp, missing_factor;
 	den = 1;
 	for (size_t i = 0; i < numx.size(); ++i) {

@@ -55,8 +55,8 @@ namespace LinBox { namespace Protected {
 		typedef Field::Element          Element;
 		typedef SparseMatrix<Field,spfmt>       ModularMatrix ;
 		typedef BlasVector<Field>               ModularVector;
-		typedef BlasVector<PID_integer>         IntegerVector;
-		typedef SparseMatrix<PID_integer,spfmt> IntegerMatrix ;
+		typedef BlasVector<Givaro::ZRing<Integer> >         IntegerVector;
+		typedef SparseMatrix<Givaro::ZRing<Integer>,spfmt> IntegerMatrix ;
 
 #ifdef _LB_MM_TIMING
 #ifdef _OPENMP
@@ -291,11 +291,11 @@ int main(int ac, char ** av) {
 
 	{ /* ZZ mat mul */
 
-		LinBox::PID_integer ZZ ;
-		LinBox::MatrixDomain<LinBox::PID_integer> MD(ZZ);
-		LinBox::BlasMatrix<LinBox::PID_integer> A(ZZ,m,k) ;
-		LinBox::BlasMatrix<LinBox::PID_integer> B(ZZ,k,n) ;
-		LinBox::BlasMatrix<LinBox::PID_integer> C(ZZ,m,n) ;
+		LinBox::Givaro::ZRing<Integer> ZZ ;
+		LinBox::MatrixDomain<LinBox::Givaro::ZRing<Integer> > MD(ZZ);
+		LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > A(ZZ,m,k) ;
+		LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > B(ZZ,k,n) ;
+		LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > C(ZZ,m,n) ;
 
 		A.random((unsigned)b);
 		B.random((unsigned)b);
@@ -309,7 +309,7 @@ int main(int ac, char ** av) {
 #ifdef __LINBOX_HAVE_FLINT
 		{
 			report << "FLINT " << std::endl;
-			LinBox::BlasMatrix<LinBox::PID_integer> D(ZZ,m,n);
+			LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > D(ZZ,m,n);
 			Tim.clear(); Tim.start();
 			LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::FLINT());
 			Tim.stop();
@@ -324,7 +324,7 @@ int main(int ac, char ** av) {
 
 		{
 			report << "Matrix Domain" << std::endl;
-			LinBox::BlasMatrix<LinBox::PID_integer> D(ZZ,m,n);
+			LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > D(ZZ,m,n);
 			Tim.clear(); Tim.start();
 			MD.mul(D,A,B);
 			Tim.stop();
@@ -338,7 +338,7 @@ int main(int ac, char ** av) {
 
 		{
 			report << "CRA " << std::endl;
-			LinBox::BlasMatrix<LinBox::PID_integer> D(ZZ,m,n);
+			LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > D(ZZ,m,n);
 			Tim.clear(); Tim.start();
 			LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::CRA());
 			Tim.stop();
@@ -355,11 +355,11 @@ int main(int ac, char ** av) {
 
 	{ /* ZZ spmat mul */
 
-		typedef LinBox::PID_integer Field;
+		typedef LinBox::Givaro::ZRing<Integer> Field;
 		typedef LinBox::SparseMatrix<Field,LinBox::SparseMatrixFormat::CSR> BlackBox;
 		Field ZZ ;
 
-		LinBox::VectorDomain<LinBox::PID_integer> MD(ZZ);
+		LinBox::VectorDomain<LinBox::Givaro::ZRing<Integer> > MD(ZZ);
 
 		// typename Field::RandIter ri (ZZ,b);
 		LinBox::RandomIntegerIter<false> ri((unsigned int)b);
@@ -387,7 +387,7 @@ int main(int ac, char ** av) {
 		{
 
 
-			LinBox::BlasVector<LinBox::PID_integer> z(ZZ,m);
+			LinBox::BlasVector<LinBox::Givaro::ZRing<Integer> > z(ZZ,m);
 			Tim.clear(); Tim.start();
 			LinBox::BLAS2::mul(z,A,x,LinBox::BLAS3::mulMethod::CRA());
 			Tim.stop();

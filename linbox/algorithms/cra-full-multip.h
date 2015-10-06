@@ -37,7 +37,6 @@
 #include "linbox/vector/blas-vector.h"
 #include <utility>
 
-#include "linbox/ring/PID-integer.h"
 #include "linbox/algorithms/lazy-product.h"
 
 namespace LinBox
@@ -59,7 +58,7 @@ namespace LinBox
 	protected:
 		std::vector< double >           	RadixSizes_;
 		std::vector< LazyProduct >      	RadixPrimeProd_;
-		std::vector< BlasVector<PID_integer> >  RadixResidues_;
+		std::vector< BlasVector<Givaro::ZRing<Integer> > >  RadixResidues_;
 		std::vector< bool >             	RadixOccupancy_;
 		const double				LOGARITHMIC_UPPER_BOUND;
 		double					totalsize;
@@ -73,8 +72,8 @@ namespace LinBox
 
 		Integer& getModulus(Integer& m)
 		{
-			PID_integer ZZ;
-			BlasVector<PID_integer> r(ZZ); result(r);
+			Givaro::ZRing<Integer> ZZ;
+			BlasVector<Givaro::ZRing<Integer> > r(ZZ); result(r);
 			return m=RadixPrimeProd_.back()();
 		}
 
@@ -91,22 +90,22 @@ namespace LinBox
 		{
 			RadixSizes_.resize(1);
 			RadixPrimeProd_.resize(1);
-			PID_integer ZZ ;
-			const BlasVector<PID_integer>z(ZZ);
+			Givaro::ZRing<Integer> ZZ ;
+			const BlasVector<Givaro::ZRing<Integer> >z(ZZ);
 			RadixResidues_.resize(1,z);
 			RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
 			progress( D, e);
 #if 0
 			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
 			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector<PID_integer> >::iterator _tab_it = RadixResidues_.begin();
+			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
 			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
 			_mod_it->initialize(D);
 			*_dsz_it =  Givaro::naturallog(D);
 
 			typename Vect::const_iterator e_it = e.begin();
 			_tab_it->resize(e.size());
-			BlasVector<PID_integer>::iterator t0_it= _tab_it->begin();
+			BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
 			for( ; e_it != e.end(); ++e_it, ++ t0_it)
 				*t0_it = *e_it;
 			*_occ_it = true;
@@ -119,8 +118,8 @@ namespace LinBox
 		{
 			RadixSizes_.resize(1);
 			RadixPrimeProd_.resize(1);
-			PID_integer ZZ;
-			RadixResidues_.resize(1,BlasVector<PID_integer>(ZZ));
+			Givaro::ZRing<Integer> ZZ;
+			RadixResidues_.resize(1,BlasVector<Givaro::ZRing<Integer> >(ZZ));
 			RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
 			progress(D, e);
 		}
@@ -130,8 +129,8 @@ namespace LinBox
 		{
 			RadixSizes_.resize(1);
 			RadixPrimeProd_.resize(1);
-			PID_integer ZZ ;
-			RadixResidues_.resize(1,BlasVector<PID_integer>(ZZ));
+			Givaro::ZRing<Integer> ZZ ;
+			RadixResidues_.resize(1,BlasVector<Givaro::ZRing<Integer> >(ZZ));
 			RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
 			progress(D, e);
 		}
@@ -144,15 +143,15 @@ namespace LinBox
 		{
 			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
 			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector<PID_integer> >::iterator _tab_it = RadixResidues_.begin();
+			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
 			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-			BlasVector<PID_integer> ri(e.field(),e.size());
+			BlasVector<Givaro::ZRing<Integer> > ri(e.field(),e.size());
 			LazyProduct mi;
 			double di;
 			if (*_occ_it) {
 				typename Vect<Integer,Alloc<Integer> >::const_iterator  e_it = e.begin();
-				BlasVector<PID_integer>::iterator       ri_it = ri.begin();
-				BlasVector<PID_integer>::const_iterator t0_it = _tab_it->begin();
+				BlasVector<Givaro::ZRing<Integer> >::iterator       ri_it = ri.begin();
+				BlasVector<Givaro::ZRing<Integer> >::const_iterator t0_it = _tab_it->begin();
 				Integer invprod; precomputeInvProd(invprod, D, _mod_it->operator()());
 				for( ; e_it != e.end(); ++e_it, ++ri_it, ++ t0_it) {
 					*ri_it =* e_it;
@@ -170,7 +169,7 @@ namespace LinBox
 				*_dsz_it = Givaro::naturallog(tmp);
 				typename Vect<Integer, Alloc<Integer> >::const_iterator e_it = e.begin();
 				_tab_it->resize(e.size());
-				BlasVector<PID_integer>::iterator t0_it= _tab_it->begin();
+				BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
 				for( ; e_it != e.end(); ++e_it, ++ t0_it)
 					*t0_it = *e_it;
 				*_occ_it = true;
@@ -178,8 +177,8 @@ namespace LinBox
 			}
 			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
 				if (*_occ_it) {
-					BlasVector<PID_integer>::iterator      ri_it = ri.begin();
-					BlasVector<PID_integer>::const_iterator t_it= _tab_it->begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator      ri_it = ri.begin();
+					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it= _tab_it->begin();
 					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
 					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
 						smallbigreconstruct(*ri_it, *t_it, invprod);
@@ -203,18 +202,18 @@ namespace LinBox
 		}
 
 		// spec for BlasVector
-		void progress (const Integer& D, const BlasVector<PID_integer >& e)
+		void progress (const Integer& D, const BlasVector<Givaro::ZRing<Integer> >& e)
 		{
 			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
 			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector<PID_integer> >::iterator _tab_it = RadixResidues_.begin();
+			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
 			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-			BlasVector<PID_integer> ri(e.field(),e.size());
+			BlasVector<Givaro::ZRing<Integer> > ri(e.field(),e.size());
 			LazyProduct mi; double di;
 			if (*_occ_it) {
-				typename BlasVector<PID_integer >::const_iterator  e_it = e.begin();
-				BlasVector<PID_integer>::iterator       ri_it = ri.begin();
-				BlasVector<PID_integer>::const_iterator t0_it = _tab_it->begin();
+				typename BlasVector<Givaro::ZRing<Integer> >::const_iterator  e_it = e.begin();
+				BlasVector<Givaro::ZRing<Integer> >::iterator       ri_it = ri.begin();
+				BlasVector<Givaro::ZRing<Integer> >::const_iterator t0_it = _tab_it->begin();
 				Integer invprod; precomputeInvProd(invprod, D, _mod_it->operator()());
 				for( ; e_it != e.end(); ++e_it, ++ri_it, ++ t0_it) {
 					*ri_it =* e_it;
@@ -230,9 +229,9 @@ namespace LinBox
 				Integer tmp = D;
 				_mod_it->initialize(tmp);
 				*_dsz_it = Givaro::naturallog(tmp);
-				typename BlasVector<PID_integer >::const_iterator e_it = e.begin();
+				typename BlasVector<Givaro::ZRing<Integer> >::const_iterator e_it = e.begin();
 				_tab_it->resize(e.size());
-				BlasVector<PID_integer>::iterator t0_it= _tab_it->begin();
+				BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
 				for( ; e_it != e.end(); ++e_it, ++ t0_it)
 					*t0_it = *e_it;
 				*_occ_it = true;
@@ -240,8 +239,8 @@ namespace LinBox
 			}
 			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
 				if (*_occ_it) {
-					BlasVector<PID_integer>::iterator      ri_it = ri.begin();
-					BlasVector<PID_integer>::const_iterator t_it= _tab_it->begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator      ri_it = ri.begin();
+					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it= _tab_it->begin();
 					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
 					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
 						smallbigreconstruct(*ri_it, *t_it, invprod);
@@ -270,18 +269,18 @@ namespace LinBox
 			// Radix shelves
 			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
 			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector<PID_integer> >::iterator _tab_it = RadixResidues_.begin();
+			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
 			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-			PID_integer ZZ;
-			BlasVector<PID_integer> ri(ZZ,e.size());
+			Givaro::ZRing<Integer> ZZ;
+			BlasVector<Givaro::ZRing<Integer> > ri(ZZ,e.size());
 			LazyProduct mi; double di;
 			if (*_occ_it) {
 				// If lower shelf is occupied
 				// Combine it with the new residue
 				// The for loop will try to put the resulting combination on the upper shelf
 				typename Vect<DomainElement, Alloc<DomainElement> >::const_iterator  e_it = e.begin();
-				BlasVector<PID_integer>::iterator       ri_it = ri.begin();
-				BlasVector<PID_integer>::const_iterator t0_it = _tab_it->begin();
+				BlasVector<Givaro::ZRing<Integer> >::iterator       ri_it = ri.begin();
+				BlasVector<Givaro::ZRing<Integer> >::const_iterator t0_it = _tab_it->begin();
 				DomainElement invP0; precomputeInvP0(invP0, D, _mod_it->operator()() );
 				for( ; ri_it != ri.end(); ++e_it, ++ri_it, ++ t0_it)
 					fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0, (*_mod_it).operator()() );
@@ -303,7 +302,7 @@ namespace LinBox
 				totalsize += ltp;
 				typename Vect<DomainElement, Alloc<DomainElement> >::const_iterator e_it = e.begin();
 				_tab_it->resize(e.size());
-				BlasVector<PID_integer>::iterator t0_it= _tab_it->begin();
+				BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
 				for( ; e_it != e.end(); ++e_it, ++ t0_it)
 					D.convert(*t0_it, *e_it);
 				*_occ_it = true;
@@ -316,8 +315,8 @@ namespace LinBox
 					// This shelf is occupied
 					// Combine it with the new combination
 					// The loop will try to put it on the upper shelf
-					BlasVector<PID_integer>::iterator      ri_it = ri.begin();
-					BlasVector<PID_integer>::const_iterator t_it= _tab_it->begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator      ri_it = ri.begin();
+					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it= _tab_it->begin();
 
 					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
 					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
@@ -360,18 +359,18 @@ namespace LinBox
 			// Radix shelves
 			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
 			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector<PID_integer> >::iterator _tab_it = RadixResidues_.begin();
+			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
 			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-			PID_integer ZZ;
+			Givaro::ZRing<Integer> ZZ;
 			LazyProduct mi; double di;
-			BlasVector<PID_integer> ri(ZZ,e.size());
+			BlasVector<Givaro::ZRing<Integer> > ri(ZZ,e.size());
 			if (*_occ_it) {
 				// If lower shelf is occupied
 				// Combine it with the new residue
 				// The for loop will try to put the resulting combination on the upper shelf
 				typename BlasVector<Domain>::const_iterator  e_it = e.begin();
-				BlasVector<PID_integer>::iterator       ri_it = ri.begin();
-				BlasVector<PID_integer>::const_iterator t0_it = _tab_it->begin();
+				BlasVector<Givaro::ZRing<Integer> >::iterator       ri_it = ri.begin();
+				BlasVector<Givaro::ZRing<Integer> >::const_iterator t0_it = _tab_it->begin();
 				DomainElement invP0; precomputeInvP0(invP0, D, _mod_it->operator()() );
 				for( ; ri_it != ri.end(); ++e_it, ++ri_it, ++ t0_it)
 					fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0, (*_mod_it).operator()() );
@@ -393,7 +392,7 @@ namespace LinBox
 				totalsize += ltp;
 				typename BlasVector<Domain>::const_iterator e_it = e.begin();
 				_tab_it->resize(e.size());
-				BlasVector<PID_integer>::iterator t0_it= _tab_it->begin();
+				BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
 				for( ; e_it != e.end(); ++e_it, ++ t0_it)
 					D.convert(*t0_it, *e_it);
 				*_occ_it = true;
@@ -406,8 +405,8 @@ namespace LinBox
 					// This shelf is occupied
 					// Combine it with the new combination
 					// The loop will try to put it on the upper shelf
-					BlasVector<PID_integer>::iterator      ri_it = ri.begin();
-					BlasVector<PID_integer>::const_iterator t_it= _tab_it->begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator      ri_it = ri.begin();
+					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it= _tab_it->begin();
 
 					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
 					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
@@ -450,7 +449,7 @@ namespace LinBox
 		{
 			d.resize( (RadixResidues_.front()).size() );
 			std::vector< LazyProduct >::iterator          _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector< PID_integer > >::iterator _tab_it = RadixResidues_.begin();
+			std::vector< BlasVector< Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
 			std::vector< bool >::iterator                _occ_it = RadixOccupancy_.begin();
 			LazyProduct Product;
 			// We have to find to lowest occupied shelf
@@ -458,8 +457,8 @@ namespace LinBox
 				if (*_occ_it) {
 					// Found the lowest occupied shelf
 					Product = *_mod_it;
-					BlasVector<PID_integer>::iterator t0_it = d.begin();
-					BlasVector<PID_integer>::iterator t_it = _tab_it->begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator t0_it = d.begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator t_it = _tab_it->begin();
 					if (++_occ_it == RadixOccupancy_.end()) {
 						// It is the only shelf of the radix
 						// We normalize the result and output it
@@ -483,8 +482,8 @@ namespace LinBox
 				if (*_occ_it) {
 					// This shelf is occupied
 					// We need to combine it with the actual value of the result
-					BlasVector<PID_integer>::iterator t0_it = d.begin();
-					BlasVector<PID_integer>::const_iterator t_it = _tab_it->begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator t0_it = d.begin();
+					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it = _tab_it->begin();
 					Integer invprod;
 					precomputeInvProd(invprod, Product(), _mod_it->operator()() );
 
@@ -513,8 +512,8 @@ namespace LinBox
 			RadixPrimeProd_.front() = Product;
 			RadixSizes_.resize(1);
 			RadixSizes_.front() =  Givaro::naturallog(Product());
-			PID_integer ZZ;
-			RadixResidues_.resize(1,BlasVector<PID_integer>(ZZ));
+			Givaro::ZRing<Integer> ZZ;
+			RadixResidues_.resize(1,BlasVector<Givaro::ZRing<Integer> >(ZZ));
 			RadixResidues_.front() = d;
 			RadixOccupancy_.resize(1);
 			RadixOccupancy_.front() = true;
@@ -523,11 +522,11 @@ namespace LinBox
 		}
 
 		// spec for BlasVector
-		BlasVector<PID_integer>& result (BlasVector<PID_integer> &d)
+		BlasVector<Givaro::ZRing<Integer> >& result (BlasVector<Givaro::ZRing<Integer> > &d)
 		{
 			d.resize( (RadixResidues_.front()).size() );
 			std::vector< LazyProduct >::iterator          _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector< PID_integer > >::iterator _tab_it = RadixResidues_.begin();
+			std::vector< BlasVector< Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
 			std::vector< bool >::iterator                _occ_it = RadixOccupancy_.begin();
 			LazyProduct Product;
 			// We have to find to lowest occupied shelf
@@ -535,8 +534,8 @@ namespace LinBox
 				if (*_occ_it) {
 					// Found the lowest occupied shelf
 					Product = *_mod_it;
-					BlasVector<PID_integer>::iterator t0_it = d.begin();
-					BlasVector<PID_integer>::iterator t_it = _tab_it->begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator t0_it = d.begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator t_it = _tab_it->begin();
 					if (++_occ_it == RadixOccupancy_.end()) {
 						// It is the only shelf of the radix
 						// We normalize the result and output it
@@ -560,8 +559,8 @@ namespace LinBox
 				if (*_occ_it) {
 					// This shelf is occupied
 					// We need to combine it with the actual value of the result
-					BlasVector<PID_integer>::iterator t0_it = d.begin();
-					BlasVector<PID_integer>::const_iterator t_it = _tab_it->begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator t0_it = d.begin();
+					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it = _tab_it->begin();
 					Integer invprod;
 					precomputeInvProd(invprod, Product(), _mod_it->operator()() );
 
@@ -590,8 +589,8 @@ namespace LinBox
 			RadixPrimeProd_.front() = Product;
 			RadixSizes_.resize(1);
 			RadixSizes_.front() =  Givaro::naturallog(Product());
-			PID_integer Z;
-			RadixResidues_.resize(1,BlasVector<PID_integer>(Z));
+			Givaro::ZRing<Integer> Z;
+			RadixResidues_.resize(1,BlasVector<Givaro::ZRing<Integer> >(Z));
 			RadixResidues_.front() = d;
 			RadixOccupancy_.resize(1);
 			RadixOccupancy_.front() = true;

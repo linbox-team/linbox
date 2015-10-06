@@ -26,8 +26,6 @@ EXTRA_DIST=\
 	   debug.m4                \
 	   expat-check.m4          \
 	   fflas-ffpack-check.m4   \
-	   givaro-check.m4         \
-	   gmp-check.m4            \
 	   iml-check.m4            \
 	   lidia-check.m4          \
 	   linbox-benchmark.m4     \

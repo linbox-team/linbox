@@ -25,7 +25,7 @@
 #ifndef __LINBOX_rational_early_multip_cra_H
 #define __LINBOX_rational_early_multip_cra_H
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/algorithms/rational-cra-early-single.h"
 #include "linbox/algorithms/rational-cra-full-multip.h"
 
@@ -131,7 +131,7 @@ namespace LinBox
 			return FullMultipRatCRA<Domain>::result(num, den);
 		}
 
-		BlasVector<PID_integer >& result(BlasVector<PID_integer>& num, PID_integer::Element& den)
+		BlasVector<Givaro::ZRing<Integer> >& result(BlasVector<Givaro::ZRing<Integer>>& num, Givaro::ZRing<Integer>::Element& den)
 		{
 			return FullMultipRatCRA<Domain>::result(num, den);
 		}

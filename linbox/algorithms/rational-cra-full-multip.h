@@ -25,7 +25,7 @@
 #ifndef __LINBOX_rational_full_multip_cra_H
 #define __LINBOX_rational_full_multip_cra_H
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/algorithms/cra-full-multip.h"
 
 namespace LinBox
@@ -48,7 +48,7 @@ namespace LinBox
 		typedef FullMultipCRA<Domain> 			Father_t;
 		typedef typename Father_t::DomainElement 	DomainElement;
 		typedef FullMultipRatCRA<Domain>		Self_t;
-		PID_integer _ZZ;
+		Givaro::ZRing<Integer> _ZZ;
 	public:
 
 		using Father_t::RadixSizes_;
@@ -130,25 +130,25 @@ namespace LinBox
 			return num;
 		}
 
-		BlasVector<PID_integer >& result (BlasVector<PID_integer> &num, Integer& den)
+		BlasVector<Givaro::ZRing<Integer> >& result (BlasVector<Givaro::ZRing<Integer>> &num, Integer& den)
 		{
 			num.resize( (Father_t::RadixResidues_.front()).size() );
 			std::vector< LazyProduct >::iterator            _mod_it = Father_t::RadixPrimeProd_.begin();
-			std::vector< BlasVector<PID_integer> >::iterator _tab_it = Father_t::RadixResidues_.begin();
+			std::vector< BlasVector<Givaro::ZRing<Integer>> >::iterator _tab_it = Father_t::RadixResidues_.begin();
 			std::vector< bool >::iterator                   _occ_it = Father_t::RadixOccupancy_.begin();
 			LazyProduct Product;
 			for( ; _occ_it != Father_t::RadixOccupancy_.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
 				if (*_occ_it) {
 					Product = *_mod_it;
-					BlasVector<PID_integer>::iterator t0_it = num.begin();
-					BlasVector<PID_integer>::iterator t_it = _tab_it->begin();
+					BlasVector<Givaro::ZRing<Integer>>::iterator t0_it = num.begin();
+					BlasVector<Givaro::ZRing<Integer>>::iterator t_it = _tab_it->begin();
 					if (++_occ_it == Father_t::RadixOccupancy_.end()) {
 						den = 1;
 						Integer s, nd; _ZZ.sqrt(s, _mod_it->operator()());
 						for( ; t0_it != num.end(); ++t0_it, ++t_it) {
 							iterativeratrecon(*t0_it = *t_it, nd, den, _mod_it->operator()(), s);
 							if (nd > 1) {
-								BlasVector<PID_integer>::iterator  t02 = num.begin();
+								BlasVector<Givaro::ZRing<Integer>>::iterator  t02 = num.begin();
 								for( ; t02 != t0_it ; ++t02)
 									*t02 *= nd;
 								den *= nd;
@@ -166,8 +166,8 @@ namespace LinBox
 			}
 			for( ; _occ_it != Father_t::RadixOccupancy_.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
 				if (*_occ_it) {
-					BlasVector<PID_integer>::iterator t0_it = num.begin();
-					BlasVector<PID_integer>::const_iterator t_it = _tab_it->begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator t0_it = num.begin();
+					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it = _tab_it->begin();
 					Integer invprod;
 					this->precomputeInvProd(invprod, Product(), _mod_it->operator()() );
 					for( ; t0_it != num.end(); ++t0_it, ++t_it)
@@ -184,11 +184,11 @@ namespace LinBox
 			}
 			den = 1;
 			Integer s, nd; _ZZ.sqrt(s, Product.operator()());
-			BlasVector<PID_integer>::iterator t0_it = num.begin();
+			BlasVector<Givaro::ZRing<Integer> >::iterator t0_it = num.begin();
 			for( ; t0_it != num.end(); ++t0_it) {
 				iterativeratrecon(*t0_it, nd, den, Product.operator()(), s);
 				if (nd > 1) {
-					BlasVector<PID_integer>::iterator  t02 = num.begin();
+					BlasVector<Givaro::ZRing<Integer> >::iterator  t02 = num.begin();
 					for( ; t02 != t0_it ; ++t02)
 						*t02 *= nd;
 					den *= nd;

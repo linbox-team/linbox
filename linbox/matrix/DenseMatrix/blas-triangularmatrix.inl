@@ -1,4 +1,4 @@
-/* linbox/matrix/dense-matrix.h
+/* linbox/matrix/blas-triangularmatrix.inl
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
  * Written by :
@@ -26,7 +26,7 @@
  */
 
 /*!@internal
- * @file matrix/blas-matrix.inl
+ * @file matrix/blas-triangularmatrix.inl
  * @ingroup matrix
  * A \c BlasMatrix<\c _Field > represents a matrix as an array of
  * <code>_Field</code>s.

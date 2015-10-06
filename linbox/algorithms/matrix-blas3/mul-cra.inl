@@ -40,7 +40,7 @@ namespace LinBox { namespace BLAS3 { namespace Protected {
 		typedef Givaro::Modular<double>     Field;
 		typedef Field::Element      Element;
 		typedef BlasMatrix<Field>   ModularMatrix ;
-		typedef BlasMatrix<PID_integer> IntegerMatrix ;
+		typedef BlasMatrix<Givaro::ZRing<Integer> > IntegerMatrix ;
 
 #ifdef _LB_MM_TIMING
 #ifdef _OPENMP

@@ -57,13 +57,13 @@ int main (int argc, char **argv)
 
 	if (argc == 2) { // determinant over the integers.
 
-		PID_integer ZZ;
-		SparseMatrix<PID_integer> A ( ZZ );
+		Givaro::ZRing<Integer> ZZ;
+		SparseMatrix<Givaro::ZRing<Integer> > A ( ZZ );
 		A.read(input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		SE.strategy(Specifier::PIVOT_LINEAR);
-		PID_integer::Element d;
+		Givaro::ZRing<Integer>::Element d;
 		det (d, A, SE);
 
 		ZZ.write(cout << "Determinant is ", d) << endl;

@@ -33,7 +33,7 @@
  *
  * @todo Create a BlasMatrix<NTL_ZZ> that is just like a mat_ZZ !
  * @todo Create a BlasMatrix<FPLLL_ZZ> that is just like a IntMatrix !
- * @todo This will avoid copy back/forth a BlasMatrix<PID_integer>
+ * @todo This will avoid copy back/forth a BlasMatrix<Givaro::ZRing<Integer> >
  */
 
 #if !defined(__LINBOX_HAVE_FPLLL) && !defined(__LINBOX_HAVE_NTL)

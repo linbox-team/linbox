@@ -32,7 +32,7 @@
 
 
 
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/ring/modular.h"
 #include "linbox/algorithms/matrix-rank.h"
@@ -196,7 +196,7 @@ int main(int argc, char** argv)
 
 	parseArguments (argc, argv, args);
 
-        typedef PID_integer      Ring;
+        typedef Givaro::ZRing<Integer>      Ring;
 
         Ring R;
 

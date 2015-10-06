@@ -95,7 +95,7 @@ namespace IML {
 	}
 
 #define REINTERP_IML_CONST(GivMat) \
-	reinterpret_cast<mpz_t*>(const_cast<PID_integer::Element*>((GivMat)))
+	reinterpret_cast<mpz_t*>(const_cast<Givaro::ZRing<Integer>::Element*>((GivMat)))
 #define REINTERP_IML(GivMat) \
 	reinterpret_cast<mpz_t*>((GivMat))
 

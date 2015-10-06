@@ -350,12 +350,12 @@ namespace LinBox
 		RationalRemainder2< VarPrecEarlyMultipCRA< Givaro::Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
 		integer den;
-		BlasVector<PID_integer> num(A.field(),A.coldim());
+		BlasVector<Givaro::ZRing<Integer> > num(A.field(),A.coldim());
 
 		rra(num, den, iteration, genprime);
 
 		typename RatVector::iterator it_x= x.begin();
-		typename BlasVector<PID_integer>::const_iterator it_num= num.begin();
+		typename BlasVector<Givaro::ZRing<Integer> >::const_iterator it_num= num.begin();
 
 		for (; it_x != x.end(); ++it_x, ++it_num){
 			integer g = gcd( *it_num, den);
@@ -856,12 +856,12 @@ namespace LinBox
 
 		// use of integer due to non genericity of rra (PG 2005-09-01)
 		Integer den;
-		BlasVector<PID_integer> num(A.field(),A.coldim());
+		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		rra(num, den, iteration, genprime);
 		//rra(x, d, iteration, genprime);
 
 		typename Vector::iterator it_x= x.begin();
-		typename BlasVector<PID_integer>::const_iterator it_num= num.begin();
+		typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
 
 		// convert the result
 		for (; it_x != x.end(); ++it_x, ++it_num)
@@ -906,9 +906,9 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_IML
 	//! IML wrapper.
 	//! @bug not recognised as template spec...
-	BlasVector<PID_integer>&
-	solveIML(BlasVector<PID_integer>& x, PID_integer::Element & d,
-			 const BlasMatrix<PID_integer>& B, const BlasVector<PID_integer>& b,
+	BlasVector<Givaro::ZRing<Integer>>&
+	solveIML(BlasVector<Givaro::ZRing<Integer>>& x, Givaro::ZRing<Integer>::Element & d,
+			 const BlasMatrix<Givaro::ZRing<Integer>>& B, const BlasVector<Givaro::ZRing<Integer>>& b,
 			 const Method::IML& m)
 	{
 		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
@@ -916,7 +916,7 @@ namespace LinBox
 		case(1) : { /*  non singular */
 					  linbox_check(B.rowdim()==B.coldim());
 					  mpz_t * mp_A = REINTERP_IML_CONST(B.getPointer()) ;
-					  // reinterpret_cast<mpz_t*>(const_cast<PID_integer::Element*>((B.getPointer())));
+					  // reinterpret_cast<mpz_t*>(const_cast<Givaro::ZRing<Integer>::Element*>((B.getPointer())));
 					  //B.getConstPointer() ?
 					  mpz_t * mp_B = REINTERP_IML_CONST(&b[0]);
 					  mpz_t * mp_N = REINTERP_IML(&x[0]);
@@ -963,7 +963,7 @@ namespace LinBox
 			  break;
 		case (2) : { /*  certified */
 				   mpz_t * mp_A = REINTERP_IML_CONST(B.getPointer()) ;
-				   // reinterpret_cast<mpz_t*>(const_cast<PID_integer::Element*>((B.getPointer())));
+				   // reinterpret_cast<mpz_t*>(const_cast<Givaro::ZRing<Integer>::Element*>((B.getPointer())));
 				   //B.getConstPointer() ?
 				   mpz_t * mp_b = REINTERP_IML_CONST(&b[0]);
 				   mpz_t * mp_N = REINTERP_IML(&x[0]);
@@ -1038,11 +1038,11 @@ namespace LinBox
 		RationalRemainder2< VarPrecEarlyMultipCRA< Givaro::Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
 		integer den;
-		PID_integer Z ;
-		BlasVector<PID_integer> num(Z,A.coldim());
+		Givaro::ZRing<Integer> Z ;
+		BlasVector<Givaro::ZRing<Integer>> num(Z,A.coldim());
 		rra(num, den, iteration, genprime);
 		typename RatVector::iterator it_x= x.begin();
-		typename BlasVector<PID_integer>::const_iterator it_num= num.begin();
+		typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
 		for (; it_x != x.end(); ++it_x, ++it_num){
 			integer g = gcd( *it_num, den);
 			*it_x = typename RatVector::value_type(*it_num/g, den/g);
@@ -1064,11 +1064,11 @@ namespace LinBox
 		RationalRemainder2< VarPrecEarlyMultipCRA< Givaro::Modular<double> > > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,RatVector,MethodTraits > iteration(A, b, m);
 		integer den;
-		PID_integer Z;
-		BlasVector<PID_integer> num(Z,A.coldim());
+		Givaro::ZRing<Integer> Z;
+		BlasVector<Givaro::ZRing<Integer>> num(Z,A.coldim());
 		rra(num, den, iteration, genprime);
 		typename RatVector::iterator it_x= x.begin();
-		typename BlasVector<PID_integer>::const_iterator it_num= num.begin();
+		typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
 		for (; it_x != x.end(); ++it_x, ++it_num){
 			integer g = gcd( *it_num, den);
 			*it_x = typename RatVector::value_type(*it_num/g, den/g);
@@ -1084,9 +1084,9 @@ namespace LinBox
 #include "linbox/algorithms/numeric-solver-lapack.h"
 #include "linbox/algorithms/rational-solver-sn.h"
 namespace LinBox {
-	BlasVector<PID_integer>&
-	solveNum(BlasVector<PID_integer>& x, PID_integer::Element & d,
-		 const BlasMatrix<PID_integer>& B, const BlasVector<PID_integer>& b,
+	BlasVector<Givaro::ZRing<Integer>>&
+	solveNum(BlasVector<Givaro::ZRing<Integer>>& x, Givaro::ZRing<Integer>::Element & d,
+		 const BlasMatrix<Givaro::ZRing<Integer>>& B, const BlasVector<Givaro::ZRing<Integer>>& b,
 		 const Method::NumSymOverlap & m)
 	{
 		THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
@@ -1097,8 +1097,8 @@ namespace LinBox {
 		typedef LPS<FMatrix > NumSolver;
 		NumSolver numSolver;
 		bool e = false ;
-		PID_integer Z;
-		RationalSolverSN<PID_integer, NumSolver > rsolver(Z, numSolver, e);
+		Givaro::ZRing<Integer> Z;
+		RationalSolverSN<Givaro::ZRing<Integer>, NumSolver > rsolver(Z, numSolver, e);
 
 		int status = rsolver.solve(x, d, B, b);
 		if (status)
@@ -1109,17 +1109,17 @@ namespace LinBox {
 #endif
 
 namespace LinBox {
-	BlasVector<PID_integer>&
-	solveNum(BlasVector<PID_integer>& x, PID_integer::Element & d,
-		 const BlasMatrix<PID_integer>& B, const BlasVector<PID_integer>& b,
+	BlasVector<Givaro::ZRing<Integer>>&
+	solveNum(BlasVector<Givaro::ZRing<Integer>>& x, Givaro::ZRing<Integer>::Element & d,
+		 const BlasMatrix<Givaro::ZRing<Integer>>& B, const BlasVector<Givaro::ZRing<Integer>>& b,
 		 const Method::NumSymNorm & m)
 	{
 		//THIS_CODE_COMPILES_BUT_IS_NOT_TESTED; // NOT MUCH
 
 		typedef Givaro::Modular<int32_t> ZField;
 		// typedef Givaro::Modular<double> ZField;
-		PID_integer ZZ ;
-		RationalSolver<PID_integer, ZField, RandomPrimeIterator, NumSymNormTraits> rsolver(ZZ);
+		Givaro::ZRing<Integer> ZZ ;
+		RationalSolver<Givaro::ZRing<Integer>, ZField, RandomPrimeIterator, NumSymNormTraits> rsolver(ZZ);
 
 		int status = rsolver.solve(x, d, B, b);
 		if (status)

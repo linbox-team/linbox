@@ -33,7 +33,7 @@ using namespace LinBox;
 
 
 #include <cmath>
-#include "linbox/ring/PID-integer.h"
+#include "givaro/zring.h"
 #include "linbox/util/timer.h"
 #include "linbox/util/commentator.h"
 
@@ -45,7 +45,7 @@ by something over dxa and when the denominator bound (for k) is denBs.
 Values of numerator i from -k-2 to k+2 are checked.
 When dxa^2 <= denBs, 2 should be returned.
 */
-	typedef PID_integer Ring;
+	typedef Givaro::ZRing<Integer> Ring;
 	Ring Z;
 	typedef Ring::Element Int;
 
@@ -118,7 +118,7 @@ When dxa^2 <= denBs, 2 should be returned.
 
 bool testDyadicToRational(size_t k = 10, bool benchmarking = false)
 {
-	typedef PID_integer Ring;
+	typedef Givaro::ZRing<Integer> Ring;
 	Ring Z;
 	typedef Ring::Element Int;
 	bool pass = true;

@@ -91,8 +91,8 @@ namespace LinBox { /*  MatrixContainerTraits */
 	template <class Field, class Storage>
 	class MatrixContainerTrait<SparseMatrix<Field,Storage> > {
 	public:
-		typedef MatrixContainerCategory::Blackbox Type;
-		// typedef MatrixContainerCategory::Container Type;
+                    //typedef MatrixContainerCategory::Blackbox Type;
+                typedef MatrixContainerCategory::Container Type;
 	};
 
 	// template <class _Field, class _Storage>

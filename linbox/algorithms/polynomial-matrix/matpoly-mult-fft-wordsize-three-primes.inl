@@ -32,7 +32,7 @@
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.h"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize-fast.inl"
 #include "linbox/randiter/random-fftprime.h"
-
+#include <cmath>
 
 namespace LinBox {
 
@@ -59,7 +59,7 @@ namespace LinBox {
 			: _field(&F), _p(field().cardinality())
 		{
 			if (integer(_p).bitsize()>29) {
-				std::cout<<"MatPoly MUL FFT 3-primes: error initial prime has more than 29 bits exiting..."<<std::endl;
+				std::cout<<"MatPoly MUL FFT 3-primes: error initial prime has more than 29 bits exiting.."<<std::endl;
 				throw LinboxError("LinBox ERROR: too large FFT Prime (more than 29 bits \n");
 			}
 		}
@@ -102,7 +102,7 @@ namespace LinBox {
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftprime_domain (field());
 				fftprime_domain.mul_fft(lpts,c,a,b);
 				return;
-			}
+			}			
 			//std::cout<<"a:="<<a<<std::endl;
 			//std::cout<<"b:="<<b<<std::endl;			
 			linbox_check(a.coldim() == b.rowdim());
@@ -110,17 +110,23 @@ namespace LinBox {
 			size_t k = a.coldim();
 			size_t n = b.coldim();
 			
-			size_t _k=k,lk=0;
+
 			integer bound=integer((uint64_t)_p)*integer((uint64_t)_p)*integer((uint64_t)k)*integer((uint64_t)pts);
 			// compute bit size of feasible prime for FFLAS
-			while ( _k ) {_k>>=1; ++lk;}
-			size_t prime_bitsize= (53-lk)>>1;
-			RandomFFTPrime RdFFT(prime_bitsize);
+			// size_t _k=k,lk=0;
+			// while ( _k ) {_k>>=1; ++lk;}
+			// size_t prime_bitsize= (53-lk)>>1;
+
+			// compute max prime value for FFLAS
+			uint64_t prime_max= std::sqrt( (1UL<<53) / k)+1;
+			RandomFFTPrime RdFFT(prime_max);
 			std::vector<integer> bas;
 			if (!RdFFT.generatePrimes(lpts,bound,bas)){
-				std::cout<<"COULD NOT FIND ENOUGH FFT PRIME for in MatPoly 3-Primes FFT MUL exiting..."<<std::endl;
+				std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly 3-Primes FFT MUL exiting..."<<std::endl;
+				std::cout<<"Parameters : ("<<m<<"x"<<k<<") ("<<k<<"x"<<n<<") with "<<pts<<" points with prime= "<<_p<<std::endl; 
 				throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
 			}
+			std::cout<<"MUL FFT 3-PRIME found enough prime"<<std::endl;
 			size_t num_primes = bas.size();
 			std::vector<double> basis(num_primes);
 			std::copy(bas.begin(),bas.end(),basis.begin());
@@ -215,15 +221,24 @@ namespace LinBox {
 			size_t m = a.rowdim();
 			size_t k = a.coldim();
 			size_t n = b.coldim();
-			size_t _k=k,lk=0;
+
 			integer bound=integer(_p)*integer(_p)*integer((uint64_t)k)*integer((uint64_t)pts);
+
 			// compute bit size of feasible prime for FFLAS
-			while ( _k ) {_k>>=1; ++lk;}
-			size_t prime_bitsize= (53-lk)>>1;
-			RandomFFTPrime RdFFT(prime_bitsize);
+			// size_t _k=k,lk=0;
+			// while ( _k ) {_k>>=1; ++lk;}
+			// size_t prime_bitsize= (53-lk)>>1;
+
+			// compute max prime value for FFLAS
+			uint64_t prime_max= std::sqrt( (1UL<<53) / k)+1;
+			RandomFFTPrime RdFFT(prime_max);
+
 			std::vector<integer> bas;
+
+			
 			if (!RdFFT.generatePrimes(lpts,bound,bas)){
-				std::cout<<"COULD NOT FIND ENOUGH FFT PRIME for in MatPoly 3-Primes FFT MUL exiting..."<<std::endl;
+				std::cout<<"COULD NOT FIND ENOUGH FFT PRIME  in MatPoly 3-Primes FFT MIDP exiting..."<<std::endl;
+				std::cout<<"Parameters : ("<<m<<"x"<<k<<") ("<<k<<"x"<<n<<") with "<<pts<<" points with prime= "<<_p<<std::endl; 
 				throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
 			}
 			size_t num_primes = bas.size();
