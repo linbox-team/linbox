@@ -314,6 +314,10 @@ namespace LinBox
 			std::swap (_indices[i], _indices[j]);
 		}
 
+        size_t operator[](size_t i) const {
+            return _indices[i];
+        }        
+
 		const Field& field() const { return *_field; }
 
 		//!@bug needs a read. (needed by test-blackbox.h)
