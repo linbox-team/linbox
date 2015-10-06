@@ -20,7 +20,7 @@
 
 
 
-pkgincludesubdir=$(pkgincludedir)/matrix/MatrixDomain
+pkgincludesubdir=$(pkgincludedir)/matrix/matrixdomain
 
 
 OCL_HDRS =                                  \

@@ -20,7 +20,7 @@
 
 
 
-pkgincludesubdir=$(pkgincludedir)/matrix/DenseMatrix
+pkgincludesubdir=$(pkgincludedir)/matrix/densematrix
 
 
 pkgincludesub_HEADERS =         \
