@@ -292,15 +292,15 @@ namespace LinBox {
 } // LinBox
 
 
-// #include "linbox/field/Modular/modular-unsigned.h"
-// #include "linbox/field/Modular/modular-int32.h"
+// #include "linbox/field/modular/modular-unsigned.h"
+// #include "linbox/field/modular/modular-int32.h"
 // // #ifdef __LINBOX_HAVE_INT64
-// #include "linbox/field/Modular/modular-int64.h"
+// #include "linbox/field/modular/modular-int64.h"
 // // #endif
-// #include "linbox/field/Modular/modular-short.h"
-// #include "linbox/field/Modular/modular-byte.h"
-// #include "linbox/field/Modular/modular-double.h"
-// #include "linbox/field/Modular/modular-float.h"
+// #include "linbox/field/modular/modular-short.h"
+// #include "linbox/field/modular/modular-byte.h"
+// #include "linbox/field/modular/modular-double.h"
+// #include "linbox/field/modular/modular-float.h"
 
 #endif // __LINBOX_field_modular_H
 

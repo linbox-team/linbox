@@ -1,5 +1,5 @@
-# Copyright (c) 2010 the LinBox group
-# ========LICENCE========
+# Copyright (c) 2013 the LinBox group
+#  ========LICENCE========
 # This file is part of the library LinBox.
 #
 # LinBox is free software: you can redistribute it and/or modify
@@ -17,40 +17,14 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 # ========LICENCE========
 
+pkgincludesubdir=$(pkgincludedir)/matrix/sliced3
 
 
-pkgincludesubdir=$(pkgincludedir)/ring
+pkgincludesub_HEADERS =         \
+	dense-matrix.h			\
+	dense-sliced.h			\
+	dense-sliced.inl		\
+	sliced-domain.h			\
+	sliced-stepper.h		\
+	submat-iterator.h
 
-SUBDIRS=ntl modular
-
-BASIC_HDRS =            \
-    ring-interface.h    \
-    givaro-poly.h       \
-    givaro-polynomial.h \
-    modular.h           \
-    local-PIR-modular.h \
-    PIR-modular-int32.h \
-    local2_32.h         \
-    abstract.h          \
-    archetype.h         \
-    envelope.h          \
-    poweroftwomodular.h
-
-NTL_HDRS =              \
-    ntl.h               \
-    PID-ntl-zz_p.h     \
-    PIR-ntl-ZZ_p.h
-
-if LINBOX_HAVE_NTL
-USE_NTL_HDRS = $(NTL_HDRS)
-endif
-
-pkgincludesub_HEADERS =     \
-    $(BASIC_HDRS)           \
-    $(USE_NTL_HDRS)
-
-EXTRA_DIST =            \
-    $(NTL_HDRS)         \
-    ring.doxy           \
-    polynomial.doxy		\
-    ntl.doxy
