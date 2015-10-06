@@ -258,12 +258,14 @@ int main (int argc, char **argv)
 	pass = pass and testFibb(Pr6, F.zero, 0); // zero product
 
 	report << "Done with diag products" << std::endl;
-#if 0
+#if 1
 	std::cout << "Triangular" << std::endl;
-	Matrix M(F, 3, 3); 
+	typedef DenseMatrix<Field> Matrix;
+	typedef TriangularBlasMatrix<Field> TriangularMatrix;
+	Matrix M(F, n, n); 
 	//M.random();
-	for (size_t i = 0; i < 3; ++i)
-	for (size_t j = 0; j < 3; ++j)
+	for (size_t i = 0; i < n; ++i)
+	for (size_t j = 0; j < n; ++j)
 	if ( i == 0 or i == j) M.setEntry(i, j, F.one);
 	M.write(report << "base matrix " << std::endl) << std::endl;
 	BlasMatrixDomain<Field> BMD(F);
@@ -271,26 +273,27 @@ int main (int argc, char **argv)
 	Matrix SM(M);
 	r = BMD.rank(SM);
 	report << "underlying rank " << r << std::endl;
-	TriangularDenseMatrix<Field> U(M, Tag::Shape::Upper, Tag::Diag::NonUnit); 
-	TriangularDenseMatrix<Field> L(M, Tag::Shape::Lower, Tag::Diag::Unit); 
+	TriangularMatrix U(M, Tag::Shape::Upper, Tag::Diag::NonUnit); 
+	TriangularMatrix L(M, Tag::Shape::Lower, Tag::Diag::Unit); 
 	report << "Upper " << (int)Tag::Shape::Upper << ", Lower " << (int)Tag::Shape::Lower << std::endl;
 	report << "Unit " << (int)Tag::Diag::Unit << ", NonUnit " << (int)Tag::Diag::NonUnit << std::endl;
-	Triangular<Field> UU(U);
-	Triangular<Field> LL(L);
+	TriangularFIBB<Field> UU(U);
+	TriangularFIBB<Field> LL(L);
 	FIBBProduct<Field> Pr7(LL, UU); // nonsing product
 	FIBBProduct<Field> Pr8(P1, LL, UU, P2); // nonsing product
 	FIBBProduct<Field> Pr9(LL, P1, UU, P2); // nonsing product
 
 	report << "Triangular, " << (int)U.getDiag() << " " << (int)U.getUpLo() << std::endl;
-	pass = pass and testFibb(UU); // Upper NonUnit
+	pass = pass and testFibb(UU, F.one, n); // Upper NonUnit
+	std::cout << "Triangular" << std::endl;
 	report << "Triangular, " << (int)L.getDiag() << " " << (int)L.getUpLo() << std::endl;
-	pass = pass and testFibb(LL); // Lower Unit
+	pass = pass and testFibb(LL, F.one, n); // Lower Unit
 	report << "LU pattern nonsing" << std::endl;
-	pass = pass and testFibb(Pr7); // LU pattern nonsing
+	pass = pass and testFibb(Pr7, F.one, n); // LU pattern nonsing
 	report << "PLUQ pattern nonsing" << std::endl;
-	pass = pass and testFibb(Pr8); // PLUQ pattern nonsing
+	pass = pass and testFibb(Pr8, F.one, n); // PLUQ pattern nonsing
 	report << "LQUP pattern nonsing" << std::endl;
-	pass = pass and testFibb(Pr9); // LQUP pattern nonsing
+	pass = pass and testFibb(Pr9, F.one, n); // LQUP pattern nonsing
 #endif
 	//FactorizedMatrix<Field> F(...);
 

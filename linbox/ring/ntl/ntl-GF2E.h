@@ -38,8 +38,8 @@
 #error "you need NTL here"
 #endif
 
-#include <ntl/GF2XFactoring.h>
-#include <ntl/GF2E.h>
+#include <NTL/GF2XFactoring.h>
+#include <NTL/GF2E.h>
 #include <time.h>
 
 #include "linbox/linbox-config.h"

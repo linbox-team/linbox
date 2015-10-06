@@ -44,8 +44,8 @@
 #include <time.h>
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
-#include <ntl/lzz_p.h>
-#include <ntl/ZZ.h>
+#include <NTL/lzz_p.h>
+#include <NTL/ZZ.h>
 
 #include <givaro/zring.h>
 #include <givaro/unparametric-operations.h>

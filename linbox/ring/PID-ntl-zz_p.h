@@ -29,7 +29,7 @@
 #include "linbox/ring/ntl/ntl-lzz_p.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
-#include <ntl/ZZ.h>
+//#include <NTL/ZZ.h>
 #include "linbox/field/field-traits.h"
 
 // Namespace in which all LinBox library code resides

@@ -47,7 +47,7 @@ namespace LinBox
 	template<class _Field, class _Matrix=DenseMatrix<_Field>>
 	class Permutation
 #if 1
-		 : public  FIBB<_Field,_Matrix>
+		 : public  FIBB<_Field>
 #endif 
 	{
 		const _Field* _field;
