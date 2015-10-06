@@ -322,7 +322,7 @@ namespace LinBox
 
 		//!@bug needs a read. (needed by test-blackbox.h)
 		std::istream &read(std::istream &os) 
-		{ return os; }
+		{ return read(os, Tag::FileFormat::Plain); }
 
 		//!@bug needs a MM version
 		std::ostream &write(std::ostream &os) const
@@ -402,9 +402,27 @@ namespace LinBox
 		}
 
 		//!@bug there is no read here. (needed by test-blackbox.h)
-		std::istream &read(std::istream &is, LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Plain) const
+		std::istream &read(std::istream &is, LINBOX_enum(Tag::FileFormat) format)
 		{
-			throw NotImplementedYet();
+            switch (format) {
+                case Tag::FileFormat::Plain:
+                {
+                    char t;
+                    is >> t;
+                    Storage::value_type val;
+                    _indices.resize(0);
+                    while( t != '}') {
+                        is >> val;
+                        _indices.push_back(val);                        
+                        is >> t; 
+                        if (t!='}') is.putback (t);
+                    }
+                    break;
+                    
+                }
+                default:
+                    throw NotImplementedYet();
+            }
 			return is ;
 		}
 
