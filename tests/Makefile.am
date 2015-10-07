@@ -195,7 +195,8 @@ USE_NTL_TESTS = $(NTL_TESTS)
 endif
 
 if LINBOX_HAVE_SAGE
-test_regression_LDADD = -L$(PREFIX)/lib -llinboxsage
+SAGE_LIBS = -L@libdir@ -llinboxsage
+test_regression_LDFLAGS = $(SAGE_LIBS)
 endif
 
 OCL_TESTS = test-opencl-domain
