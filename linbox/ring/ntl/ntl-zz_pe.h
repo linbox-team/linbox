@@ -44,19 +44,6 @@
 #include <givaro/zring.h>
 #include "linbox/field/field-traits.h"
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-
-#endif //__LINBOX_XMLENABLED
-
-
 
 #include "linbox/integer.h"
 

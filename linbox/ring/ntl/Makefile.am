@@ -23,16 +23,16 @@ pkgincludesubdir=$(pkgincludedir)/ring/ntl
 
 
 NTL_HDRS =              \
-    ntl-RR.h            \
-    ntl-ZZ_p.h          \
-    ntl-ZZ_pE.h         \
-    ntl-ZZ_pX.h         \
-    ntl-ZZ.h            \
+    ntl-rr.h            \
+    ntl-zz_p.h          \
+    ntl-zz_pe.h         \
+    ntl-zz_px.h         \
+    ntl-zz.h            \
     ntl-lzz_p.h         \
-    ntl-lzz_pE.h        \
-    ntl-lzz_pX.h        \
-    ntl-lzz_pEX.h       \
-    ntl-GF2E.h
+    ntl-lzz_pe.h        \
+    ntl-lzz_px.h        \
+    ntl-lzz_pex.h       \
+    ntl-gf2e.h
 
 
 if LINBOX_HAVE_NTL

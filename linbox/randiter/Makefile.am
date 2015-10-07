@@ -36,7 +36,6 @@ BASIC_HDRS =            \
     modular-crooked.h   \
     gf2.h               \
     mersenne-twister.h  \
-    ntl-ZZ.h            \
     random-prime.h      \
     random-integer.h    \
     gmp-random-prime.h  \
@@ -44,7 +43,7 @@ BASIC_HDRS =            \
     multimod-randomprime.h \
     givaro-poly.h
 
-NTL_HDRS =
+NTL_HDRS = ntl-zz.h
 
 LIDIA_HDRS =            \
     lidia.h             \

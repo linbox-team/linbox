@@ -35,16 +35,16 @@
 #ifndef __LINBOX_ring_ntl_H
 #define __LINBOX_ring_ntl_H
 
-#include "linbox/ring/ntl/ntl-RR.h"
-#include "linbox/ring/ntl/ntl-ZZ_p.h"
-#include "linbox/ring/ntl/ntl-ZZ.h"
-#include "linbox/ring/ntl/ntl-ZZ_pX.h"
-#include "linbox/ring/ntl/ntl-ZZ_pE.h"
+#include "linbox/ring/ntl/ntl-rr.h"
+#include "linbox/ring/ntl/ntl-zz_p.h"
+#include "linbox/ring/ntl/ntl-zz.h"
+#include "linbox/ring/ntl/ntl-zz_px.h"
+#include "linbox/ring/ntl/ntl-zz_pe.h"
 #include "linbox/ring/ntl/ntl-lzz_p.h"
-#include "linbox/ring/ntl/ntl-lzz_pX.h"
-#include "linbox/ring/ntl/ntl-lzz_pE.h"
-#include "linbox/ring/ntl/ntl-lzz_pEX.h"
-#include "linbox/ring/ntl/ntl-GF2E.h"
+#include "linbox/ring/ntl/ntl-lzz_px.h"
+#include "linbox/ring/ntl/ntl-lzz_pe.h"
+#include "linbox/ring/ntl/ntl-lzz_pex.h"
+#include "linbox/ring/ntl/ntl-gf2e.h"
 
 
 #endif // __LINBOX_ring_ntl_H

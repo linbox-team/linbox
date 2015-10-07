@@ -43,7 +43,7 @@
 #include "linbox/util/debug.h"
 
 #include <givaro/zring.h>
-#include "linbox/ring/ntl/ntl-ZZ_p.h"
+#include "linbox/ring/ntl/ntl-zz_p.h"
 #include "linbox/integer.h"
 
 

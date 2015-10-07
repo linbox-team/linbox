@@ -34,7 +34,7 @@
 #include "linbox/integer.h"
 #include <iostream>
 #include "linbox/util/debug.h"
-#include "linbox/randiter/ntl-ZZ.h"
+#include "linbox/randiter/ntl-zz.h"
 #include "linbox/field/field-traits.h"
 
 namespace LinBox

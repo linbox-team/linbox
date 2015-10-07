@@ -44,7 +44,7 @@
 #include "linbox/util/debug.h"
 
 #include <givaro/zring.h>
-#include "linbox/ring/ntl/ntl-lzz_pE.h"
+#include "linbox/ring/ntl/ntl-lzz_pe.h"
 #include "linbox/integer.h"
 
 
