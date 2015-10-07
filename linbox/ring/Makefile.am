@@ -38,8 +38,8 @@ BASIC_HDRS =            \
 
 NTL_HDRS =              \
     ntl.h               \
-    PID-ntl-zz_p.h     \
-    PIR-ntl-ZZ_p.h
+    pid-ntl-zz_p.h     \
+    pir-ntl-zz_p.h
 
 if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
