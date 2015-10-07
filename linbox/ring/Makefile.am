@@ -28,8 +28,8 @@ BASIC_HDRS =            \
     givaro-poly.h       \
     givaro-polynomial.h \
     modular.h           \
-    local-PIR-modular.h \
-    PIR-modular-int32.h \
+    local-pir-modular.h \
+    pir-modular-int32.h \
     local2_32.h         \
     abstract.h          \
     archetype.h         \
