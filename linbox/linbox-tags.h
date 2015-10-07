@@ -34,10 +34,12 @@
 #include <fflas-ffpack/fflas/fflas_enum.h>
 #include "linbox/linbox-config.h"
 
-#if HAVE_CXX11
 #define LINBOX_enum(name) name
+
+#if HAVE_CXX11
+#define SCOPED(name) struct name : int32_t
 #else
-#define LINBOX_enum(name) name::enum_t
+#define SCOPED(name) name 
 #endif
 
 namespace LinBox
@@ -56,25 +58,14 @@ namespace LinBox
 	 */
 	namespace Tag {
 		//! Left/Right Tag
-#if HAVE_CXX11
-		enum struct Side : int32_t
-#else
-		struct Side { enum enum_t
-#endif
+		enum SCOPED(Side)
 			{
 				Left  = FFLAS::FflasLeft, //!< Left
 				Right = FFLAS::FflasRight  //!< Right
 			};
 
 					   //! (No)Transpose Tag
-#if HAVE_CXX11
-
-		enum struct Transpose : int32_t
-#else
-		};
-
-		struct Transpose { enum enum_t
-#endif
+		enum SCOPED(Transpose)
 		{
 
 			NoTrans = FFLAS::FflasNoTrans,
@@ -82,39 +73,23 @@ namespace LinBox
 		};
 
 		//! (Upp/Low)er Tag
-#if HAVE_CXX11
-		enum struct Shape : int32_t
-#else
-		};
-
-		struct Shape { enum  enum_t
-#endif
+		enum SCOPED(UpLo)
 		{
 			Upper = FFLAS::FflasUpper,
 			Lower = FFLAS::FflasLower
 		} ;
 
-		//! (Non)Unit Diagonal Tag
-#if HAVE_CXX11
-		enum struct Diag : int32_t
-#else
-		};
+		using Shape = UpLo;
 
-		struct Diag { enum enum_t
-#endif
+		//! (Non)Unit Diagonal Tag
+		enum SCOPED(Diag)
 		{
 			NonUnit = FFLAS::FflasNonUnit,
 			Unit    = FFLAS::FflasUnit
 		} ;
 
 		//! Dense format (table) output Tag
-#if HAVE_CXX11
-		enum  class FileFormat : int32_t
-#else
-		};
-
-		struct FileFormat { enum  enum_t
-#endif
+		enum SCOPED(FileFormat)
 		{
 			Plain = 0,
 			Maple = 1,
@@ -133,25 +108,13 @@ namespace LinBox
 
 
 
-#if HAVE_CXX11
-		enum struct Direction : int32_t
-#else
-		} ;
-
-		struct Direction {  enum enum_t
-#endif
+		enum SCOPED(Direction)
 		{
 			Row = 10 ,
 			Col = 11
 		} ;
 
-#if HAVE_CXX11
-		enum struct Sign : int32_t
-#else
-		};
-
-		struct Sign { enum enum_t
-#endif
+		enum SCOPED(Sign)
 		{
 			Positive    = 500 , //! is  >0 (strictement positif)
 			Negative    = 501 , //! is  <0 (strictement négatif)
@@ -162,14 +125,10 @@ namespace LinBox
 
 		};
 
-#if HAVE_CXX11
-#else
-		};
-#endif
-	}
+	} // namespace Tag
 
-}
-
+} // namespace LinBox
+#undef SCOPE
 #endif // __LINBOX_linbox_tags_H
 
 // Local Variables:

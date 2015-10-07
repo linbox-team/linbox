@@ -1017,7 +1017,7 @@ namespace LinBox {
 		 */
 		std::string getPlotCommand(const std::string & File) ;
 
-		void print( LINBOX_enum(Tag::Printer) pt = Tag::Printer::xml) ;
+		void print( Tag::Printer pt = Tag::Printer::xml) ;
 
 		void save() ;
 

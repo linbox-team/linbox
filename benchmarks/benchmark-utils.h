@@ -42,7 +42,7 @@ namespace LinBox { namespace Tag {
 #if HAVE_CXX11
 	enum struct TimeSelect : int32_t
 #else
-				 struct TimeSelect { enum enum_t
+				 enum TimeSelect 
 #endif
 					 {
 						 average   = 1, //!< select the average
@@ -51,16 +51,12 @@ namespace LinBox { namespace Tag {
 						 median    = 4, //!< median
 						 medmean   = 5  //!< interquartile mean (remove 25% extremes and average the rest)
 					 };
-#if HAVE_CXX11
-#else
-				 };
-#endif
 
 	//! selection of printers
 #if HAVE_CXX11
 	enum struct Printer : int32_t
 #else
-			      struct Printer { enum enum_t
+			      enum Printer 
 #endif
 				      {
 					      dat       = 1, //!< print data  raw (format chosen by implementation)
@@ -70,13 +66,8 @@ namespace LinBox { namespace Tag {
 					      csv       = 5, //!< coma separated values
 					      html      = 6  //!< coma separated values
 				      };
-#if HAVE_CXX11
-#else
-			      };
-#endif
 
-
-} // Tag
+	} // Tag
 } // LinBox
 
 /* ********************** */
@@ -268,7 +259,7 @@ namespace LinBox {
 	 * @param ts number of experiences to select. @see TimeSelect. Default to the best three
 	 * @return mflo/(tim*rpt)
 	 */
-	double computeMFLOPS(const dvector_t & tim, const double mflo, LINBOX_enum(Tag::TimeSelect) ts = Tag::TimeSelect::bestThree);
+	double computeMFLOPS(const dvector_t & tim, const double mflo, Tag::TimeSelect ts = Tag::TimeSelect::bestThree);
 
 }
 

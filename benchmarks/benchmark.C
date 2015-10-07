@@ -1532,7 +1532,7 @@ namespace LinBox {
 			return PC ;
 		}
 
-		void PlotGraph::print( LINBOX_enum(Tag::Printer) pt ) {
+		void PlotGraph::print( Tag::Printer pt ) {
 			switch (pt) {
 			case (Tag::Printer::xml):
 				{
