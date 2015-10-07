@@ -25,7 +25,7 @@
 AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox -I${PREFIX}/include
 # AM_LDFLAGS = -llapack -lcblas -latlas
 #  AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
-AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la -L${PREFIX}/lib -llinboxsage
+AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la 
 #  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
 #AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxTestOnly
@@ -192,6 +192,10 @@ NTL_TESTS =                     \
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
+endif
+
+if LINBOX_HAVE_SAGE
+test_regression_LDADD = -L$(PREFIX)/lib -llinboxsage
 endif
 
 OCL_TESTS = test-opencl-domain

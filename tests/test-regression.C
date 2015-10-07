@@ -32,8 +32,6 @@
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/vector/blas-vector.h"
 #include "solutions/solve.h"
-#include "linbox/linbox-sage.h"
-
 using namespace LinBox;
 
 bool testSolveSparse(){
@@ -67,6 +65,8 @@ bool testSolveSparse(){
     return true;
 }
 
+#if LINBOX_HAVE_SAGE
+#include "linbox/linbox-sage.h"
 struct c_vector_modint_linbox {
 	// copy of the declaration in vector_modn_sparse.pxi
 	int *entries;
@@ -76,8 +76,6 @@ struct c_vector_modint_linbox {
 	size_t num_nonzero;
 };
 bool testSolveSparseSage(){
-
-
     size_t p = 127;
     c_vector_modint_linbox * A = new c_vector_modint_linbox[3];
     c_vector_modint_linbox  b;
@@ -118,6 +116,10 @@ bool testSolveSparseSage(){
     
     return true;
 }
+#else
+bool testSolveSparseSage(){return true;}
+#endif
+
 int main (int argc, char **argv)
 {
     bool pass = true;
