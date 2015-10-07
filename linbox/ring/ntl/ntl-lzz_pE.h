@@ -38,8 +38,8 @@
 #error "you need NTL here"
 #endif
 
-#include <ntl/lzz_pXFactoring.h>
-#include <ntl/lzz_pE.h>
+#include <NTL/lzz_pXFactoring.h>
+#include <NTL/lzz_pE.h>
 #include <time.h>
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"

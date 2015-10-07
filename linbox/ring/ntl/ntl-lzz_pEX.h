@@ -37,7 +37,7 @@
 #endif
 
 #include <vector>
-#include <ntl/lzz_pEX.h>
+#include <NTL/lzz_pEX.h>
 
 
 #include "linbox/linbox-config.h"

@@ -30,7 +30,7 @@
 #ifndef __LINBOX_ntl_zz_H
 #define __LINBOX_ntl_zz_H
 
-#include <ntl/ZZ.h>
+#include <NTL/ZZ.h>
 #include "linbox/integer.h"
 #include <iostream>
 #include "linbox/util/debug.h"

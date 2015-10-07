@@ -15,15 +15,15 @@
 namespace LinBox {
 
 // for now, only the FIBB tags.
-enum BBType {diagonal, permutation, triangular, product, other};
+enum BBType {diagonal, permutation, triangular, product, lqup, pluq, other};
 
-template <class Ring, class _Matrix=DenseMatrix<Ring> >
+template <class Ring>
 struct BB 
 {
 	typedef Ring Field;
-	typedef _Matrix ResizableMatrix;
+	typedef DenseMatrix<Field> ResizableMatrix;
 	//typedef DenseMatrix<Field, std::vector<typename Ring::Element> > ResizableMatrix;
-	typedef _Matrix Matrix;
+	typedef DenseMatrix<Field> Matrix;
 
 	virtual ~BB(){}
 
@@ -90,13 +90,13 @@ THe FIBBs are Diagonal, Permutation, Triangular, and products of FIBBs in which 
 */
 namespace LinBox{
 
-template <class Ring, class _Matrix=DenseMatrix<Ring> >
-struct FIBB : public BB<Ring,_Matrix> 
+template <class Ring>
+struct FIBB : public BB<Ring> 
 {
 	using Field = Ring;
 	using Element = typename Ring::Element;
-	using ResizableMatrix = _Matrix;
-	using Matrix = _Matrix;
+	using ResizableMatrix = DenseMatrix<Field>;
+	using Matrix = DenseMatrix<Field>;
 
 //	virtual const Field& field() const = 0;
 
@@ -248,7 +248,6 @@ struct FIBBProduct : public FIBB<Field_> { // Fast Inverse BlackBox
 				const FIBB<Field>& A3, const FIBB<Field>& A4, 
 				const FIBB<Field>& A5);
 	~FIBBProduct(){ if (allocA) delete Ap; if (allocB) delete Bp; }
-	//protected:  void munch(const FIBB<Field>*); // used by ~FIBBProduct
 	public:
 	FIBBProduct& init(const FIBB<Field>& A1, const FIBB<Field>& A2);
 	FIBBProduct& init(const FIBB<Field>& A1, const FIBB<Field>& A2, 
@@ -436,18 +435,6 @@ FIBBProduct( const FIBB<Field>& A1, const FIBB<Field>& A2,
 			 const FIBB<Field>& A5 ) 
 { init(A1, A2, A3, A4, A5); }
 
-/*
-template<class Field> FIBBProduct<Field>:: 
-~FIBBProduct() { munch(Ap); munch(Bp); }
-
-template<class Field> void FIBBProduct<Field>:: 
-munch( const FIBB<Field>* p ) 
-{	const FIBBProduct<Field>* q = static_cast<const FIBBProduct<Field>*>(p);
-	if (p->bbTag() == product and q->alloc) 
-	{	munch(q->Ap); munch(q->Bp); delete q; }
-}
-*/
-
 /* initializers */
 
 template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
@@ -474,6 +461,7 @@ init( const FIBB<Field>& A1, const FIBB<Field>& A2,
   allocB = true;
   return *this; 
 }
+
 template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
 init( const FIBB<Field>& A1, const FIBB<Field>& A2, 
 	  const FIBB<Field>& A3, const FIBB<Field>& A4, 
@@ -484,8 +472,6 @@ init( const FIBB<Field>& A1, const FIBB<Field>& A2,
   allocB = true;
   return *this; 
 }
-
-#undef Matrix
 
 }// namespace LinBox
 

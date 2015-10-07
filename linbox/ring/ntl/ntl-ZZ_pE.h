@@ -37,9 +37,9 @@
 #include <time.h>
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
-#include <ntl/ZZ_pXFactoring.h>
-#include <ntl/ZZ_pE.h>
-#include <ntl/ZZ.h>
+#include <NTL/ZZ_pXFactoring.h>
+#include <NTL/ZZ_pE.h>
+#include <NTL/ZZ.h>
 
 #include <givaro/zring.h>
 #include "linbox/field/field-traits.h"

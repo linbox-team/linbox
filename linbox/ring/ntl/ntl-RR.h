@@ -46,8 +46,8 @@
 #endif
 
 
-#include <ntl/tools.h>
-#include <ntl/RR.h>
+#include <NTL/tools.h>
+#include <NTL/RR.h>
 
 #include "linbox/util/debug.h"
 

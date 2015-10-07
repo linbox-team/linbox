@@ -1,5 +1,5 @@
 // Copyright (C) 2005 David Saunders, 2010 LinBox. This file is part of LinBox,
-// GNU LGPL, see COPYING for lincene information.
+// GNU LGPL, see COPYING for license information.
 /*
  * Coypright (c) LinBox
  * ========LICENCE========
@@ -119,10 +119,10 @@
  * discussions).
  *
  * \authors Members of the \link AUTHORS %LinBox group\endlink.  The most
- * prolific documenters have been first William J Turner, then Bradford
- * Hovinen, and David Saunders.
+ * prolific documenters have been William J Turner, Bradford Hovinen, 
+ * David Saunders, Brice Boyer.
  *
- * \version 1.3.3
+ * \version 1.4.0
  *
  * \par Support.
  * The project is supported by the National Science Foundation
@@ -130,8 +130,9 @@
  */
 
  /*! \page copy Copyright and Licencing
-  * The copyright and licensing (GNU LGPL) info of %LinBox is in \c COPYING
-  * \verbinclude "COPYING".
+  * The copyright and licensing (GNU LGPL) info of %LinBox is in \c COPYING.LESSER (and below).
+  * It gives permissions in addition to those of the GPL, see \c COPYING.
+  * \verbinclude "COPYING.LESSER".
   */
 
 /*!  \page inst Installing LinBox

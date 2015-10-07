@@ -19,7 +19,7 @@
 
 
 
-pkgincludesubdir=$(pkgincludedir)/matrix/SparseMatrix
+pkgincludesubdir=$(pkgincludedir)/matrix/sparsematrix
 
 
 pkgincludesub_HEADERS =         \
@@ -31,7 +31,7 @@ pkgincludesub_HEADERS =         \
 	sparse-ellr-matrix.h    \
 	sparse-hyb-matrix.h     \
 	sparse-tpl-matrix.h     \
-       	sparse-tpl-matrix.inl   \
+	sparse-tpl-matrix.inl   \
 	sparse-tpl-matrix-omp.h  \
 	sparse-tpl-matrix-omp.inl  \
 	sparse-generic.h \

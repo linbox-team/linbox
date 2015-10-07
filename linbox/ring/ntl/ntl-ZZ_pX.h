@@ -37,7 +37,7 @@
 #endif
 
 #include <vector>
-#include <ntl/ZZ_pX.h>
+#include <NTL/ZZ_pX.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
