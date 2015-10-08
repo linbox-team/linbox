@@ -165,7 +165,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 	int64_t z = 0;
 	F.init(a,z); F.init(b,z); F.init(c,z); F.init(d,z); F.init(e,z); F.init(f,z);
 
-	report << " (Ring self description: " << F.write (report) << ')' << endl;
+	F.write(report << " (Ring self description: ") << ')' << endl;
 	report << "Ring characteristic: " << p << endl;
 	//	report << "ring Element 2: " << F.write (report, two) << endl;
 

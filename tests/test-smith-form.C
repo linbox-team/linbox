@@ -26,12 +26,13 @@
  * @ingroup tests
  * @brief no doc.
  * @test no doc.
-	//!@bug should work for NTL integers too
+	//!@bug should work for NTL Integers too
  */
 
 
 #include <time.h>
 #include "givaro/zring.h"
+#include "givaro/givinteger.h"
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
 #include "test-common.h"
@@ -40,8 +41,8 @@
 using LinBox::parseArguments;
 using LinBox::commentator;
 using LinBox::Commentator;
-using LinBox::integer;
-using LinBox::Givaro::ZRing<Integer>;
+using Givaro::Integer;
+using Givaro::ZRing;
 using LinBox::BlasMatrix;
 using LinBox::BlasVector;
 
@@ -123,9 +124,9 @@ bool testRandom(const Ring& R,
 		Givaro::ZRing<Integer> Z;
 		BlasVector<Givaro::ZRing<Integer> > xi(Z,A. rowdim());
 		BlasVector<Givaro::ZRing<Integer> >::iterator xi_p;
-		std::list<std::pair<integer, size_t> > cpt;
+		std::list<std::pair<Integer, size_t> > cpt;
 		smithForm (cpt, A);
-		std::list<std::pair<integer, size_t> >::iterator cpt_p;
+		std::list<std::pair<Integer, size_t> >::iterator cpt_p;
 
 		xi_p = xi. begin();
 		for (cpt_p = cpt.begin(); cpt_p != cpt.end(); ++ cpt_p) {
@@ -193,7 +194,7 @@ int main(int argc, char** argv)
 
 	parseArguments (argc, argv, args);
 	//!@bug should be tried on NTZ_LL too
-	typedef LinBox::Givaro::ZRing<Integer>      Ring;
+	typedef Givaro::ZRing<Integer>      Ring;
 
 	Ring R;
 
