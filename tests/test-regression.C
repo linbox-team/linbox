@@ -65,16 +65,10 @@ bool testSolveSparse(){
     return true;
 }
 
-#if LINBOX_HAVE_SAGE
-#include "linbox/linbox-sage.h"
-struct c_vector_modint_linbox {
-	// copy of the declaration in vector_modn_sparse.pxi
-	int *entries;
-	int p;
-	size_t *positions;
-	size_t degree;
-	size_t num_nonzero;
-};
+#if __LINBOX_HAVE_SAGE
+// CP: Include the .C file instead of linking to the linboxsage lib: 
+// avoid requiring to make install before make check.
+#include "interfaces/sage/linbox-sage.C" 
 bool testSolveSparseSage(){
     size_t p = 127;
     c_vector_modint_linbox * A = new c_vector_modint_linbox[3];

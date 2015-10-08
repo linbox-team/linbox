@@ -28,9 +28,11 @@ AC_MSG_CHECKING([whether to compile the SAGE interface])
 AC_ARG_ENABLE(sage,
 [AC_HELP_STRING([--enable-sage], [Enable the compilation of the SAGE interface])])
 AM_CONDITIONAL(LINBOX_HAVE_SAGE, test "x$enable_sage" = "xyes")
+
 AS_IF([test "x$enable_sage" = "xyes"],
 [
 AC_MSG_RESULT(yes)
+AC_DEFINE(HAVE_SAGE,1,[Define if SageMath interface is built])
 
 dnl  if test "x$HAVE_NTL" = "xyes" ; then
 	dnl  AC_CHECK_TOOL(OBJDUMP, objdump, false)
