@@ -222,7 +222,7 @@ namespace LinBox {
 #endif
 #ifdef PROFILE_PMBASIS
                                 chrono.stop();
-                                std::cout<<"[PM-Basis : "<<ord<<" ("<<_idx-ord<<"/"<<_target<<")] : "<<chrono.usertime()
+                                std::cerr<<"[PM-Basis : "<<order<<" ("<<_idx-order<<"/"<<_target<<")] : "<<chrono.usertime()
                                 <<MEMINFO<<std::endl;
                                 chrono.clear();chrono.start();
 #endif
