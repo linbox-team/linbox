@@ -147,7 +147,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		ElementAbstract &random (ElementAbstract &a) const
+		ElementAbstract &random (ElementAbstract &a)
 		//{ return  _randIter.random (a); }
 		// GV Thu Apr 18 14:46:46 MEST 2002
 		// modify by P.G. 2004-07-16
