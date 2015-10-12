@@ -106,7 +106,7 @@ namespace LinBox
 	template <>
 	std::vector<GivPolIntDense::Element* >&
 	GivPolIntDense::factor (std::vector<GivPolIntDense::Element* >& factors,
-				std::vector<unsigned long>& exp,
+				std::vector<uint64_t>& exp,
 				const GivPolIntDense::Element &P)
 	{
 		NTL::ZZXFac_InitNumPrimes = 1;
@@ -175,7 +175,7 @@ namespace LinBox
 	std::vector<GivPolZZDense::Element* >&
 	GivPolZZDense::factor<std::vector<GivPolZZDense::Element* > >
 	(std::vector<GivPolZZDense::Element* >& factors,
-	 std::vector<unsigned long>& exp,
+	 std::vector<uint64_t>& exp,
 	 const GivPolZZDense::Element &P)
 	{
 		NTL::ZZXFac_InitNumPrimes = 1;

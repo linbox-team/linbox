@@ -5,7 +5,7 @@
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/matrix/SparseMatrix/sparse-map-map-matrix.h"
+#include "linbox/matrix/sparsematrix/sparse-map-map-matrix.h"
 #include "linbox/solutions/charpoly.h"
 #include "linbox/algorithms/coppersmith-invariant-factors.h"
 #include "linbox/vector/blas-vector.h"

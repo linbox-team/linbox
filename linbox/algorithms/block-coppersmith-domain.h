@@ -119,7 +119,7 @@ EARLY_TERM_THRESHOLD (ett_default)
         std::vector<size_t> /* & */ operator()(std::vector<Coefficient> &P)
         {
 		return right_minpoly(P);
-	}
+		}
 
 
     private:

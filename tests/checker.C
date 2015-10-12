@@ -32,11 +32,13 @@ using namespace std;
 #include "linbox/linbox-config.h"
 
 // globals
-map< string, string> skip_note;
+//map< string, string> skip_note;
 map< string, string> warn_note;
 set< string> skips;
+set< string> hides;
 void warn(const string& t, const string& w) { warn_note[t] = w; }
-void skip(const string& t, const string& w) { skip_note[t] = w; skips.insert(t); }
+void skip(const string& t, const string& w) { warn_note[t] = w; skips.insert(t); }
+void hide(const string& t, const string& w) { warn_note[t] = w; hides.insert(t); }
 
 int main(int argc, char* argv[]) {
 	int arg;
@@ -48,42 +50,42 @@ int main(int argc, char* argv[]) {
 			if (*i == 'a') honor_skips = false;
 		}
     if (argc > 1 and not force_build and reporting and honor_skips){ // bogus arg
-		cout << "usage: " << argv[0] << " [-][r][s]" << endl;
+		cout << "usage: " << argv[0] << " [-][r][s][a]" << endl;
 		cout << "  -r Force recompilation of each test."<< endl;
 		cout << "  -s Summary only: 3 lines printed. (Default is one line per test.)" << endl;
-		cout << "  -a Build and run all. (Ignore skip commands.)" << endl;
+		cout << "  -a Build and run all. (Ignore skip and hide commands.)" << endl;
 		return 0;
 	}
 
-// fullcheck customization: skips, warnings, optional package dependencies
+// fullcheck customization: warnings, skips, hides, optional package dependencies
 
 //// notes section (customize fullcheck here) ////
 
 if (honor_skips) {
-skip("test-block-ring", "non commutative rings not supported");
-skip("test-cradomain", "inf loop.  most of the test does not compile");
-skip("test-ffpack", "testTURBO fails, move to ffpack tests?");
-skip("test-ftrmm", "should move to fflas tests?");
+hide("test-block-ring", "non commutative rings not supported");
+hide("test-ffpack", "testTURBO fails, move to ffpack tests?");
+hide("test-ftrmm", "should move to fflas tests?");
 skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
-skip("test-image-field", "deprecated");
-skip("test-isposdef", "intermittent inf loop");
-skip("test-ispossemidef", "intermittent inf loop");
-skip("test-mg-block-lanczos", "not maintained");
-skip("test-modular", "deprecated");
-skip("test-modular-byte",  "deprecated");
-skip("test-modular-short",  "deprecated");
+hide("test-image-field", "deprecated");
+//skip("test-isposdef", "intermittent inf loop");
+//skip("test-ispossemidef", "intermittent inf loop");
+hide("test-la-block-lanczos", "not maintained. operator >> missing");
+hide("test-mg-block-lanczos", "not maintained");
+hide("test-modular", "deprecated");
+hide("test-modular-byte",  "deprecated");
+hide("test-modular-short",  "deprecated");
 skip("test-modular-balanced-int",  "test and modular-balanced disagree on init/convert");
 skip("test-modular-balanced-double",  "test and modular-balanced disagree on init/convert");
 skip("test-moore-penrose", "inf loop");
 skip("test-optimization", "not in test form");
 skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
-skip("test-rank-md", "intermittent inf loop"/*, "vector (bb) responsible"*/);
-skip("test-rank-u32", "intermittent inf loop"/*, "vector (bb) responsible"*/);
-skip("test-rational-reconstruction-base", "inf loop");
+//skip("test-rank-md", "intermittent inf loop"/*, "vector (bb) responsible"*/);
+//skip("test-rank-u32", "intermittent inf loop"/*, "vector (bb) responsible"*/);
+//skip("test-rational-reconstruction-base", "inf loop");
 skip("test-rat-charpoly", "inf loop");
 skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
 skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infinite loop")
-skip("test-solve-nonsingular", "BY responsible");
+//skip("test-solve-nonsingular", "BY responsible");
 skip("test-sparse", "superceded by test-sparse2");
 skip("test-sparse-map-map", "const issue in givranditer, curious use of nonexistant next() in Extension");
 //Tests requiring further development
@@ -92,23 +94,24 @@ skip("test-dense-zero-one", "half baked, bds responsible");
 }
 
 warn("test-blas-matrix", "intermittently fails");
+warn("test-cradomain", "most of the test does not compile");
 warn("test-echelon-form", "new");
 warn("test-fibb",  "incomplete");
 warn("test-gf2", "not much is tested there");
 warn("test-givaro-zpz", "tested in Givaro?");
 warn("test-givaro-zpzuns", "tested in Givaro?");
-warn("test-matrix-domain", "intermittent row permutation failure");
+//warn("test-matrix-domain", "intermittent row permutation failure");
 warn("test-param-fuzzy", "Noncompliant field");
 warn("test-qlup", "GF2 fails to compile");
+warn("test-rank-u32", "intermittent failure"/*, "vector (bb) responsible"*/);
 warn("test-rat-charpoly", "stale test. solns over QQ need fresh tests");//, "infinite loop, cp responsible?")
 warn("test-rat-minpoly", "intermittent failures");
 warn("test-rat-solve", "infinite loop");
 //warn("test-smith-form-local", "bds, intermittent failures");
 warn("test-solve", "most of the tests are commented out");
 warn("test-toom-cook", "one method does not work");
-warn("test-transpose", "sometimes fails on Sparsematrix/getEntry");
+//warn("test-transpose", "sometimes fails on Sparsematrix/getEntry");
 warn("test-quad-matrix", "half baked, bds responsible");
-skip("test-la-block-lanczos", "not maintained. operator >> missing");
 
 
 //// optional package dependency section ////
@@ -166,14 +169,14 @@ skip("test-la-block-lanczos", "not maintained. operator >> missing");
 #endif
 	for (size_t i = 0; i < all_tests.size(); ++i) {
 		t = all_tests[i];
+		if (hides.count(t) > 0) continue; // ignore entirely
 		stringstream report;
 		report.width(35);
 		report << left << t;
-		if (skips.count(t) > 0) {
-			report << "skipped, " + skip_note[t];
+		if (skips.count(t) > 0) { // print skip message
+			report << "skipped, " + warn_note[t];
 			skipped++;
-		}
-		else { // do build
+		} else { // do build
 			if (force_build) {
 				cmd = "touch " + t + ".C";
 				system(cmd.c_str());

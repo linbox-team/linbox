@@ -19,7 +19,8 @@ using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
-typedef SparseMatrix<Field, SparseMatrixFormat::TPL_omp> SparseMat;
+typedef SparseMatrix<Field, SparseMatrixFormat::TPL> SparseMat;
+//typedef SparseMatrix<Field, SparseMatrixFormat::TPL_omp> SparseMat;
 
 typedef CoppersmithInvariantFactors<Field,SparseMat> FactorDomain;
 typedef typename FactorDomain::PolyDom PolyDom;
@@ -29,7 +30,7 @@ typedef DenseVector<PolyRing> FactorVector;
 int main(int argc, char** argv)
 {
 	int earlyTerm;
-	int p,b;
+	int p = 3, b = 3;
 	std::string mFname,oFname;
 
 	static Argument args[] = {

@@ -16,7 +16,7 @@ d is the number of evaluation points.
 The method is to compute dets at each evaluation point and interpolate.
  (note by bds)
  */
-template <class Field,class Matrix>
+template <class Field>
 typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element&
 computePolyDet(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element& result,
 				DenseMatrix<Givaro::Poly1Dom<Field,Givaro::Dense> >& A, 
@@ -139,7 +139,8 @@ computePolyDetExtension(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element&
 	typedef Givaro::Extension<Field> ExtField;
 	typedef Givaro::Poly1Dom<ExtField,Givaro::Dense> ExtPolyDom;
 	typedef typename ExtPolyDom::Element ExtPoly;
-	typedef typename Matrix::template rebind<ExtPolyDom>::other EPolyMatrix;
+	//typedef typename Matrix::template rebind<ExtPolyDom>::other EPolyMatrix;
+	typedef DenseMatrix<ExtPolyDom> EPolyMatrix;
 
 	ExtField EF(F,e);
 	ExtPolyDom EPD(EF,"x");
@@ -171,7 +172,8 @@ computePolyDetExtension(typename Givaro::Poly1Dom<Field,Givaro::Dense>::Element&
 		<< "Converted matrix" << std::endl;
 
 	ExtPoly ep;
-	computePolyDet(ep,EF,Ap,d);
+	computePolyDet<ExtField>(ep,Ap,d);
+	//computePolyDet(ep,EF,Ap,d);
 
 	commentator().report(Commentator::LEVEL_IMPORTANT,PROGRESS_REPORT)
 		<< "Computed over base field" << std::endl;

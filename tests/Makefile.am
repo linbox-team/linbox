@@ -191,7 +191,10 @@ NTL_TESTS =                     \
 	test-toeplitz-det					
 
 if LINBOX_HAVE_NTL
-USE_NTL_TESTS = $(NTL_TESTS)
+#USE_NTL_TESTS = $(NTL_TESTS)
+USE_NTL_TESTS = \
+	test-ntl-lzz_pex            \
+	test-toeplitz-det					
 endif
 
 # if LINBOX_HAVE_SAGE

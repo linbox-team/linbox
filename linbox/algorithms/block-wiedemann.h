@@ -95,11 +95,13 @@ namespace LinBox
 
 			for (size_t i=0;i<n;++i)
 				for (size_t j=0;j<q;++j)
-					const_cast<RandIter>(_rand).random(V.refEntry(i,j));
+					_rand.random(V.refEntry(i,j));
+					//const_cast<RandIter>(_rand).random(V.refEntry(i,j));
 
 			for (size_t i=0;i<p-1;++i)
 				for (size_t j=0;j<m;++j)
-					const_cast<RandIter>(_rand).random(UA.refEntry(i,j));
+					_rand.random(UA.refEntry(i,j));
+					//const_cast<RandIter>(_rand).random(UA.refEntry(i,j));
 
 			typename Block::RowIterator        iter_U  = U.rowBegin();
 			typename Block::ConstRowIterator   iter_UA = UA.rowBegin();

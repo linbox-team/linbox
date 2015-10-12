@@ -257,9 +257,9 @@ namespace LinBox
 			return Y; 
 		}
 		Matrix& nullspaceRandomRight(Matrix& N) const 
-		{	N.resize(rowdim(),0); return N; }
+		{	N.zero(); return N; }
 		Matrix& nullspaceRandomLeft(Matrix& N) const 
-		{	N.resize(0, coldim()); return N; }
+		{	N.zero(); return N; }
 		Matrix& nullspaceBasisRight(Matrix& N) const
 		{	N.resize(rowdim(), 0); return N; }
 		Matrix& nullspaceBasisLeft(Matrix& N) const

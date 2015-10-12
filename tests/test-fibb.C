@@ -36,27 +36,28 @@
 #include "test-blackbox.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/blackbox/fibb.h"
+#include "linbox/blackbox/fibb-product.h"
 #include "linbox/blackbox/diagonal.h"
 //#include "linbox/matrix/permutation-matrix.h"
 #include "linbox/blackbox/permutation.h"
 #include "linbox/blackbox/triangular-fibb.h"
 
-
 using namespace LinBox;
 
 /*
-check rank, det.  
-Neg rk means we don't know rank, 
+check rk = rank(A), dt = det(A)
+Neg rk argument means we don't know rank, 
 Zero dt with full rank  means we don't know det.
+In these cases the test passes without checking rank,det.
 
 Verify solve with apply (first provide consistent RHS).
 check NSR in NS (no check of randomness) and NSB 
 */
 template<class Field>
-bool testFibb(FIBB<Field>& A, const typename Field::Element& dt, int64_t rk = -1) 
+bool testFibb(FIBB<Field>& A, string title, const typename Field::Element& dt, int64_t rk = -1) 
 {
 	typedef typename Field::Element Element;
-	commentator().start("testFibb", "fibb");
+	commentator().start(title.c_str(), "fibb");
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	bool pass = true, trial;
 	typedef DenseMatrix<Field> Matrix;
@@ -231,35 +232,34 @@ int main (int argc, char **argv)
 	Diagonal<Field> D3(F, n, true); 
 	for (size_t i = 0; i < n; ++i) D3.setEntry(i,i,F.zero); // zero matrix
 
-	pass = pass and testFibb(D1, F.zero, n); // nonsing
-	pass = pass and testFibb(D2, F.zero, n-n/2); // sing
-	pass = pass and testFibb(D3, F.zero, 0); // zero
+	pass = pass and testFibb(D1, "D1 nonsing", F.zero, n); // nonsing
+	pass = pass and testFibb(D2, "D2 sing", F.zero, n-n/2); // sing
+	pass = pass and testFibb(D3, "D3 zero", F.zero, 0); // zero
 
 	FIBBProduct<Field> Pr1(D1, D1); // nonsing product
 	FIBBProduct<Field> Pr2(D1, D2); // sing product
 	FIBBProduct<Field> Pr3(D3, D1); // zero product
 
-	pass = pass and testFibb(Pr1, F.zero, n); // nonsing product
-	pass = pass and testFibb(Pr2, F.zero, n-n/2); // sing product
-	pass = pass and testFibb(Pr3, F.zero, 0); // zero product
+	pass = pass and testFibb(Pr1, "Pr1 nonsing product", F.zero, n); // nonsing product
+	pass = pass and testFibb(Pr2, "Pr2 sing product", F.zero, n-n/2); // sing product
+	pass = pass and testFibb(Pr3, "Pr3 zero product", F.zero, 0); // zero product
 
 	Permutation<Field> P1(F, n, n); // ident
 	Permutation<Field> P2(F, n, n); P2.random(); 
 
-	pass = pass and testFibb(P1, F.one, n); // ident
-	pass = pass and testFibb(P2, F.zero, n); // random perm
+	pass = pass and testFibb(P1, "P1 ident", F.one, n); // ident
+	pass = pass and testFibb(P2, "P2 random perm", F.zero, n); // random perm
 
 	FIBBProduct<Field> Pr4(P1, D1, P2); // nonsing product
 	FIBBProduct<Field> Pr5(P1, D2, P2); // sing product
 	FIBBProduct<Field> Pr6(P1, D3, P2); // zero product 
 
-	pass = pass and testFibb(Pr4, F.zero, n); // nonsing product
-	pass = pass and testFibb(Pr5, F.zero, n-n/2); // sing product
-	pass = pass and testFibb(Pr6, F.zero, 0); // zero product
+	pass = pass and testFibb(Pr4, "Pr4 nonsing product", F.zero, n); // nonsing product
+	pass = pass and testFibb(Pr5, "Pr5 sing product", F.zero, n-n/2); // sing product
+	pass = pass and testFibb(Pr6, "Pr6 zero product", F.zero, 0); // zero product
 
-	report << "Done with diag products" << std::endl;
+	report << "Done with diag and permutation products" << std::endl;
 #if 1
-	std::cout << "Triangular" << std::endl;
 	typedef DenseMatrix<Field> Matrix;
 	typedef TriangularBlasMatrix<Field> TriangularMatrix;
 	Matrix M(F, n, n); 
@@ -269,10 +269,12 @@ int main (int argc, char **argv)
 	if ( i == 0 or i == j) M.setEntry(i, j, F.one);
 	M.write(report << "base matrix " << std::endl) << std::endl;
 	BlasMatrixDomain<Field> BMD(F);
+	/*
 	size_t r; 
 	Matrix SM(M);
 	r = BMD.rank(SM);
 	report << "underlying rank " << r << std::endl;
+	*/
 	TriangularMatrix U(M, Tag::Shape::Upper, Tag::Diag::NonUnit); 
 	TriangularMatrix L(M, Tag::Shape::Lower, Tag::Diag::Unit); 
 	report << "Upper " << (int)Tag::Shape::Upper << ", Lower " << (int)Tag::Shape::Lower << std::endl;
@@ -284,17 +286,17 @@ int main (int argc, char **argv)
 	FIBBProduct<Field> Pr9(LL, P1, UU, P2); // nonsing product
 
 	report << "Triangular, " << (int)U.getDiag() << " " << (int)U.getUpLo() << std::endl;
-	pass = pass and testFibb(UU, F.one, n); // Upper NonUnit
-	std::cout << "Triangular" << std::endl;
+	pass = pass and testFibb(UU, "UU nonU", F.one, n); // Upper NonUnit
 	report << "Triangular, " << (int)L.getDiag() << " " << (int)L.getUpLo() << std::endl;
-	pass = pass and testFibb(LL, F.one, n); // Lower Unit
+	pass = pass and testFibb(LL, "LL unit", F.one, n); // Lower Unit
 	report << "LU pattern nonsing" << std::endl;
-	pass = pass and testFibb(Pr7, F.one, n); // LU pattern nonsing
+	pass = pass and testFibb(Pr7, "Pr7 LU", F.one, n); // LU pattern nonsing
 	report << "PLUQ pattern nonsing" << std::endl;
-	pass = pass and testFibb(Pr8, F.one, n); // PLUQ pattern nonsing
+	pass = pass and testFibb(Pr8, "Pr8 PLUQ", F.one, n); // PLUQ pattern nonsing
 	report << "LQUP pattern nonsing" << std::endl;
-	pass = pass and testFibb(Pr9, F.one, n); // LQUP pattern nonsing
+	pass = pass and testFibb(Pr9, "Pr8 LQUP", F.one, n); // LQUP pattern nonsing
 #endif
+	report << "Done with triangular and permutation products" << std::endl;
 	//FactorizedMatrix<Field> F(...);
 
 	commentator().stop (MSG_STATUS (pass));
