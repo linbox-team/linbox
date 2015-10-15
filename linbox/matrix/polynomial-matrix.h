@@ -80,14 +80,17 @@ namespace LinBox{
 		void clear(){
 			_rep.resize(0);
 		}
-		// retrieve the matrix of degree k in the polynomial matrix
-		Matrix     operator[](size_t k)const {
 
-			Matrix A(field(), _row, _col);
+		// set the matrix A to the matrix of degree k in the polynomial matrix
+		void setMatrix(Matrix& A, size_t k) const {
 			typename Matrix::Iterator it=A.Begin();
 			for(size_t i=0;i<_row*_col;i++,it++)
-				*it = get(i,k);
-
+				*it = get(i,k);			
+		}
+		// retrieve the matrix of degree k in the polynomial matrix
+		Matrix     operator[](size_t k)const {
+			Matrix A(field(), _row, _col);
+			setMatrix(A,k);
 			return A;
 		}
 		// retrieve the polynomial at entry (i,j) in the matrix
@@ -284,6 +287,8 @@ namespace LinBox{
 
 		size_t realmeminfo()const { return _rep.capacity()*sizeof(Element)+_repview.capacity()*sizeof(Polynomial);}
 		size_t meminfo()const { return _rep.size()*sizeof(Element);}
+
+		void changeField(const Field& F){_fld=&F;}
 		
 	private:
 		size_t           _store;
