@@ -79,15 +79,14 @@ uninstall-hook:
 		"$(includedir)/linbox/algorithms" \
 		"$(includedir)/linbox/blackbox" \
 		"$(includedir)/linbox/element" \
-		"$(includedir)/linbox/field/Givaro" \
-		"$(includedir)/linbox/field/Modular" \
-		"$(includedir)/linbox/field/NTL" \
+		"$(includedir)/linbox/ring/modular" \
+		"$(includedir)/linbox/ring/ntl" \
 		"$(includedir)/linbox/field/" \
 		"$(includedir)/linbox/kaapi" \
-		"$(includedir)/linbox/matrix/SparseMatrix" \
-		"$(includedir)/linbox/matrix/DenseMatrix" \
-		"$(includedir)/linbox/matrix/MatrixDomain" \
-		"$(includedir)/linbox/matrix/Sliced3" \
+		"$(includedir)/linbox/matrix/sparsematrix" \
+		"$(includedir)/linbox/matrix/densedatrix" \
+		"$(includedir)/linbox/matrix/matrixdomain" \
+		"$(includedir)/linbox/matrix/sliced3" \
 		"$(includedir)/linbox/matrix" \
 		"$(includedir)/linbox/randiter" \
 		"$(includedir)/linbox/ring" \
@@ -104,7 +103,7 @@ git:
 	git commit -a; git pull; git push
 
 
-VERSION=1.4.1
+VERSION=1.4.0rc0
 
 EXTRA_DIST=auto-install.sh
 #incremente-versions

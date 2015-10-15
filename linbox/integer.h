@@ -35,7 +35,7 @@
  * It is a wrapper of <a href=http://gmplib.org>GMP</a> integers.  Arithmetic operations are via
  * \c C++ infix operator forms (eg. \c a*b) . It is for ``casual'' uses such as characteristics and
  * cardinalities and when initializing field elements.  The integers are also represented as a
- * LinBox ring for use in integer matrix computation, see PID-integer.h  or see  field/ntl-ZZ.h.
+ * ring for use in integer matrix computation, see <givaro/zring.h> or ring/ntl/ntl-zz.h.
  */
 
 #ifndef __LINBOX_integer_H

@@ -24,6 +24,7 @@ pkgincludesubdir=$(pkgincludedir)/blackbox
 BASIC_HDRS =			\
 	archetype.h               \
 	blackbox.h                \
+	fibb.h                \
 	factory.h                 \
 	butterfly.h               \
 	butterfly.inl               \
@@ -68,7 +69,9 @@ BASIC_HDRS =			\
 	jit-matrix.h              \
 	toeplitz.h              \
 	toeplitz.inl            \
-	rational-matrix-factory.h
+	rational-matrix-factory.h\
+	fibb.h			\
+	pascal.h
 
 NTL_HDRS =			\
 	ntl-hankel.h            \

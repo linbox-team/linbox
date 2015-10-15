@@ -22,6 +22,7 @@
  */
 
 
+#include "linbox/linbox-config.h"
 #include "linbox/algorithms/diophantine-solver.h"
 
 namespace LinBox

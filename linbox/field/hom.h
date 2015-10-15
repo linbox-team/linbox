@@ -27,13 +27,14 @@
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/error.h"
+#include "linbox/integer.h"
 #include <givaro/givcaster.h>
 #include <givaro/givrational.h>
 #include <givaro/modular.h>
 #include <givaro/zring.h>
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/ring/NTL/ntl-ZZ.h"
+#include "linbox/ring/ntl/ntl-zz.h"
 #endif //__LINBOX_HAVE_NTL
 
 #include "givaro/givrational.h"

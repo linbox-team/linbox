@@ -44,7 +44,7 @@ namespace LinBox
 
 	  \ingroup blackbox
 	 */
-	template<class _Field>
+	template<class _Field, class _Matrix=DenseMatrix<_Field>>
 	class Permutation
 #if 1
 		 : public  FIBB<_Field>
@@ -52,11 +52,11 @@ namespace LinBox
 	{
 		const _Field* _field;
 	public:
-		typedef Permutation<_Field>	Self_t;
+		typedef Permutation<_Field>		Self_t;
 		typedef LightContainer<long>	Storage;
-		typedef _Field			Field;
+		typedef _Field					Field;
 		typedef typename Field::Element	Element;
-		typedef DenseMatrix<Field> Matrix;
+		typedef _Matrix					Matrix;
 
 		/** Constructor from a vector of indices.
 		 * This constructor creates a permutation matrix based on a vector of indices
@@ -257,12 +257,12 @@ namespace LinBox
 			return Y; 
 		}
 		Matrix& nullspaceRandomRight(Matrix& N) const 
-		{	N.zero(); return N; }
+		{	N.resize(rowdim(),0); return N; }
 		Matrix& nullspaceRandomLeft(Matrix& N) const 
-		{	N.zero(); return N; }
-		BlasMatrix<Field>& nullspaceBasisRight(BlasMatrix<Field>& N) const
+		{	N.resize(0, coldim()); return N; }
+		Matrix& nullspaceBasisRight(Matrix& N) const
 		{	N.resize(rowdim(), 0); return N; }
-		BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
+		Matrix& nullspaceBasisLeft(Matrix& N) const
 		{	N.resize(0, coldim()); return N; }
 		/* end FIBB section */
 #endif
@@ -314,11 +314,15 @@ namespace LinBox
 			std::swap (_indices[i], _indices[j]);
 		}
 
+        size_t operator[](size_t i) const {
+            return _indices[i];
+        }        
+
 		const Field& field() const { return *_field; }
 
 		//!@bug needs a read. (needed by test-blackbox.h)
 		std::istream &read(std::istream &os) 
-		{ return os; }
+		{ return read(os, Tag::FileFormat::Plain); }
 
 		//!@bug needs a MM version
 		std::ostream &write(std::ostream &os) const
@@ -398,9 +402,27 @@ namespace LinBox
 		}
 
 		//!@bug there is no read here. (needed by test-blackbox.h)
-		std::istream &read(std::istream &is, LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Plain) const
+		std::istream &read(std::istream &is, LINBOX_enum(Tag::FileFormat) format)
 		{
-			throw NotImplementedYet();
+            switch (format) {
+                case Tag::FileFormat::Plain:
+                {
+                    char t;
+                    is >> t;
+                    Storage::value_type val;
+                    _indices.resize(0);
+                    while( t != '}') {
+                        is >> val;
+                        _indices.push_back(val);                        
+                        is >> t; 
+                        if (t!='}') is.putback (t);
+                    }
+                    break;
+                    
+                }
+                default:
+                    throw NotImplementedYet();
+            }
 			return is ;
 		}
 

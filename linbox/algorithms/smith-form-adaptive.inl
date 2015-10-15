@@ -33,7 +33,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/util/debug.h"
-#include "linbox/ring/PIR-modular-int32.h"
+#include "linbox/ring/pir-modular-int32.h"
 #include "linbox/ring/local2_32.h"
 #include "linbox/algorithms/smith-form-iliopoulos.h"
 #include "linbox/algorithms/smith-form-local.h"
@@ -52,7 +52,7 @@
 
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/ring/PIR-ntl-ZZ_p.h"
+#include "linbox/ring/pir-ntl-zz_p.h"
 #endif
 
 namespace LinBox

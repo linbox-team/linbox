@@ -29,6 +29,7 @@ The current convention is that (1) linbox' checker.C, runs the tests with no com
 #include <vector>
 //#include <iomanip>
 using namespace std;
+#include "linbox/linbox-config.h"
 
 // globals
 map< string, string> skip_note;
@@ -79,6 +80,7 @@ skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
 skip("test-rank-md", "intermittent inf loop"/*, "vector (bb) responsible"*/);
 skip("test-rank-u32", "intermittent inf loop"/*, "vector (bb) responsible"*/);
 skip("test-rational-reconstruction-base", "inf loop");
+skip("test-rat-charpoly", "inf loop");
 skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
 skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infinite loop")
 skip("test-solve-nonsingular", "BY responsible");
@@ -147,7 +149,7 @@ skip("test-la-block-lanczos", "not maintained. operator >> missing");
 		skip(*i, "Lidia not present");
 	
 	#endif
-	#ifndef LINBOX_HAVE_NTL
+	#ifndef __LINBOX_HAVE_NTL
     for (set< string>::iterator i = ntl_tests.begin(); i != ntl_tests.end(); ++i) 
 		skip(*i, "NTL not present");
 	#endif

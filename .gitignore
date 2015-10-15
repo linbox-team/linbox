@@ -20,6 +20,7 @@ tests/test-rational-solver
 tests/test-rational-solver-adaptive
 tests/test-smith-form-binary
 tests/test-solve
+tests/test-regression
 INSTALL
 _configs.sed
 aclocal.m4

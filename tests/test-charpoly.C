@@ -114,7 +114,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	if (! Z.areEqual(val, phi[0])) ret = false;
 	// value at -1 should be (-2)^n
 	eval(Z, val2, phi, Z.mOne);
-	Z.init(neg2, -2L); Z.assign(pow2, Z.one);
+	Z.init(neg2, -2_i64); Z.assign(pow2, Z.one);
 	for (size_t i = 0; i < n; ++i) Z.mulin(pow2, neg2);
 	if (! Z.areEqual(val2, pow2)) ret = false;
 
@@ -188,6 +188,25 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentCharpoly");
 
 	return ret;
+}
+
+static bool testSageBug(){
+
+        Givaro::ZRing<Givaro::Integer> Z;
+        DenseMatrix<Givaro::ZRing<Givaro::Integer> > A(Z,4,4);
+        for (size_t i=0; i<4; ++i)
+                for (size_t j=0; j<4; ++j)
+                        A.setEntry(i,j, i*4+j+1);
+        typedef BlasVector <Givaro::ZRing<Givaro::Integer> > Polynomial;
+        Polynomial phi(Z);
+        charpoly(phi,A);
+        if (Z.areEqual(phi[0],0) &&
+            Z.areEqual(phi[1],0) &&
+            Z.areEqual(phi[2],-80) &&
+            Z.areEqual(phi[3],-34) &&
+            Z.areEqual(phi[4],1) )
+            return true;
+        else return false;
 }
 
 #if 1
@@ -306,8 +325,8 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field, SparseVector, Givaro::GeneralRingNonZeroRandIter<Field> >
 		A_stream (F, Givaro::GeneralRingNonZeroRandIter<Field> (mygen), (double) k / (double) n, n, n);
 
-	if (!testNilpotentCharpoly (F, n)) pass = false;
-	if (!testRandomCharpoly    (F, A_stream, v_stream)) pass = false;
+        if (!testNilpotentCharpoly (F, n)) pass = false;
+        if (!testRandomCharpoly    (F, A_stream, v_stream)) pass = false;
 
 	// symmetrizing
 	if (!testIdentityCharpoly  (F, n, true)) pass = false;
@@ -330,10 +349,10 @@ int main (int argc, char **argv)
 	RandomSparseStream<Givaro::ZRing<integer>, SparseVector, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> >
 		zA_stream (Z, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> (myZgen), (double) k / (double) n, n, n);
 
-	//no symmetrizing
-	if (!testIdentityCharpoly  (Z, n)) pass = false;
-	if (!testNilpotentCharpoly (Z, n)) pass = false;
-
+            //no symmetrizing
+        if (!testIdentityCharpoly  (Z, n)) pass = false;
+        if (!testNilpotentCharpoly (Z, n)) pass = false;
+        
 	//Comment by Z. Wan. Stream doesn't work here
 	//if (!testRandomCharpoly    (Z, zA_stream, zv_stream)) pass = false;
 
@@ -341,6 +360,7 @@ int main (int argc, char **argv)
 	if (!testIdentityCharpoly  (Z, n, true)) pass = false;
 	//need other tests...
 
+        testSageBug();
 	return pass ? 0 : -1;
 }
 

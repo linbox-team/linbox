@@ -172,12 +172,12 @@ namespace LinBox {
                                 PMatrix1 sigma1(field(),m,n,ord1+1);                                
 
 #ifdef MEM_PMBASIS
-                                std::cout<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Sigma1] -> "<<MB(m*n*(ord1+1)*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+                                std::cerr<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Sigma1] -> "<<MB(m*n*(ord1+1)*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
 #endif
                                 //typename PMatrix2::const_view serie1=serie.at(0,ord1-1);
                                 PMatrix2 *serie1=new PMatrix2(field(),n,k,ord1);
 #ifdef MEM_PMBASIS
-                                std::cout<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Serie1] -> "<<MB(n*k*ord1*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+                                std::cerr<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Serie1] -> "<<MB(n*k*ord1*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
 #endif
                                 serie1->copy(serie,0,ord1-1);
                                 d1 = PM_Basis(sigma1, *serie1, ord1, shift);
@@ -191,7 +191,7 @@ namespace LinBox {
                                 // TODO: for Block Wiedemann, this step can use only the first column of sigma
                                 PMatrix2 *serie2=new PMatrix2(field(),n,k,ord2);//serie2 size=ord1+1 -> midproduct)
 #ifdef MEM_PMBASIS
-                                std::cout<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Serie2] -> "<<MB(n*k*ord2*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+                                std::cerr<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Serie2] -> "<<MB(n*k*ord2*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
 #endif              
                                 _PMD.midproductgen(*serie2, sigma1, serie, true, ord1+1,ord1+ord2);
 #ifdef PROFILE_PMBASIS
@@ -203,7 +203,7 @@ namespace LinBox {
 
                                 PMatrix1 sigma2(field(),m,n,ord2+1);
 #ifdef MEM_PMBASIS
-                                std::cout<<"[PM-Basis("<<order<<") "<<_idx<<"/"<<_target<<"] [Sigma2] -> "<<MB(m*n*(ord1+1)*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+                                std::cerr<<"[PM-Basis("<<order<<") "<<_idx<<"/"<<_target<<"] [Sigma2] -> "<<MB(m*n*(ord1+1)*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
 #endif
                                 d2 = PM_Basis(sigma2, *serie2, ord2, shift);
                                 delete serie2;                                 
@@ -222,7 +222,7 @@ namespace LinBox {
 #endif
 #ifdef PROFILE_PMBASIS
                                 chrono.stop();
-                                std::cout<<"[PM-Basis : "<<ord<<" ("<<_idx-ord<<"/"<<_target<<")] : "<<chrono.usertime()
+                                std::cerr<<"[PM-Basis : "<<order<<" ("<<_idx-order<<"/"<<_target<<")] : "<<chrono.usertime()
                                 <<MEMINFO<<std::endl;
                                 chrono.clear();chrono.start();
 #endif

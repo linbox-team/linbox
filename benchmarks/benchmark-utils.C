@@ -114,7 +114,7 @@ namespace LinBox {
 		return tim3 ;
 	}
 
-	double computeMFLOPS(const dvector_t & tim, const double mflo, LINBOX_enum(Tag::TimeSelect) ts )
+	double computeMFLOPS(const dvector_t & tim, const double mflo, Tag::TimeSelect ts )
 	{
 		linbox_check(tim.size());
 		switch (ts) {

@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <27 Mar 14 10:19:58 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <04 Sep 15 16:41:47 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -29,9 +29,9 @@
   */
 #include <linbox/linbox-config.h>
 
-#include <givaro/zring.h>
 #include <iostream>
 
+#include <givaro/modular.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
 
@@ -83,7 +83,7 @@ int main (int argc, char **argv) {
         LinBox::Timer tim;
         size_t exponent = atoi(argv[2]);
         if (exponent > 63) {
-            runpoweroftworank<Givaro::Integer, Givaro::ZRing<Integer> >(input, exponent);
+            runpoweroftworank<Givaro::Integer, LinBox::PID_integer>(input, exponent);
 
         } else {
             runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, exponent);

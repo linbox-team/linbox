@@ -21,7 +21,7 @@
 
 AC_PREREQ([2.61])
 
-AC_INIT([LinBox], [1.4.1],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.4.0],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 
 AC_CONFIG_MACRO_DIR([macros])
@@ -292,14 +292,14 @@ linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
 linbox/matrix/Makefile
-linbox/matrix/SparseMatrix/Makefile
-linbox/matrix/DenseMatrix/Makefile
-linbox/matrix/MatrixDomain/Makefile
-linbox/matrix/Sliced3/Makefile
+linbox/matrix/sparsematrix/Makefile
+linbox/matrix/densematrix/Makefile
+linbox/matrix/matrixdomain/Makefile
+linbox/matrix/sliced3/Makefile
 linbox/randiter/Makefile
 linbox/ring/Makefile
-linbox/ring/NTL/Makefile
-linbox/ring/Modular/Makefile
+linbox/ring/ntl/Makefile
+linbox/ring/modular/Makefile
 linbox/solutions/Makefile
 linbox/util/Makefile
 linbox/util/formats/Makefile

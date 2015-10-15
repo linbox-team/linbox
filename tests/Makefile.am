@@ -22,10 +22,10 @@
 # All tests will be processed by checker.C (target fullcheck), 
 # where skips can be specified, warnings issued, package dependency handled.
 
-AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
+AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox -I${PREFIX}/include
 # AM_LDFLAGS = -llapack -lcblas -latlas
 #  AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
-AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la
+AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la 
 #  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
 #AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxTestOnly
@@ -78,7 +78,8 @@ BASIC_TESTS =					\
 	test-rank-Int				\
 	test-cra					\
 	test-blas-matrix			\
-	test-charpoly				
+	test-charpoly			\
+	test-regression
 
 # All other tests.  
 # The checker.C determines which of these are built and run in "make fullcheck".
@@ -130,13 +131,13 @@ FULLCHECK_TESTS =               \
 	test-moore-penrose			\
 	test-ntl-hankel             \
 	test-ntl-lzz_p              \
-	test-ntl-lzz_pE             \
-	test-ntl-lzz_pEX            \
-	test-ntl-lzz_pX             \
-	test-ntl-RR					\
+	test-ntl-lzz_pe             \
+	test-ntl-lzz_pex            \
+	test-ntl-lzz_px             \
+	test-ntl-rr					\
 	test-ntl-sylvester          \
 	test-ntl-toeplitz           \
-	test-ntl-ZZ_p               \
+	test-ntl-zz_p               \
 	test-nullspace				\
 	test-optimization			\
 	test-order-basis			\
@@ -179,10 +180,10 @@ FULLCHECK_TESTS =               \
 NTL_TESTS =                     \
 	test-smith-form             \
 	test-ntl-lzz_p              \
-	test-ntl-lzz_pE             \
-	test-ntl-lzz_pX             \
-	test-ntl-lzz_pEX            \
-	test-ntl-ZZ_p               \
+	test-ntl-lzz_pe             \
+	test-ntl-lzz_px             \
+	test-ntl-lzz_pex            \
+	test-ntl-zz_p               \
 	test-ntl-toeplitz           \
 	test-ntl-hankel             \
 	test-ntl-sylvester          \
@@ -192,6 +193,11 @@ NTL_TESTS =                     \
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
 endif
+
+# if LINBOX_HAVE_SAGE
+# SAGE_LIBS = -L@libdir@ -llinboxsage
+# test_regression_LDFLAGS = $(SAGE_LIBS)
+# endif
 
 OCL_TESTS = test-opencl-domain
 
@@ -277,14 +283,14 @@ test_modular_short_SOURCES =            test-modular-short.C
 test_modular_SOURCES =                  test-modular.C
 test_moore_penrose_SOURCES =            test-moore-penrose.C
 test_ntl_hankel_SOURCES =               test-ntl-hankel.C
-test_ntl_lzz_pE_SOURCES =               test-ntl-lzz_pE.C test-field.h
-test_ntl_lzz_pEX_SOURCES =              test-ntl-lzz_pEX.C test-field.h
+test_ntl_lzz_pe_SOURCES =               test-ntl-lzz_pe.C test-field.h
+test_ntl_lzz_pex_SOURCES =              test-ntl-lzz_pex.C test-field.h
 test_ntl_lzz_p_SOURCES =                test-ntl-lzz_p.C test-field.h
-test_ntl_lzz_pX_SOURCES =               test-ntl-lzz_pX.C test-field.h
-test_ntl_RR_SOURCES =                   test-ntl-RR.C
+test_ntl_lzz_px_SOURCES =               test-ntl-lzz_px.C test-field.h
+test_ntl_rr_SOURCES =                   test-ntl-rr.C
 test_ntl_sylvester_SOURCES =            test-ntl-sylvester.C
 test_ntl_toeplitz_SOURCES =             test-ntl-toeplitz.C
-test_ntl_ZZ_p_SOURCES =                 test-ntl-ZZ_p.C
+test_ntl_zz_p_SOURCES =                 test-ntl-zz_p.C
 test_nullspace_SOURCES =                test-nullspace.C
 test_opencl_domain_SOURCES =            test-opencl-domain.C
 test_optimization_SOURCES =             test-optimization.C
@@ -307,6 +313,7 @@ test_rational_solver_adaptive_SOURCES = test-rational-solver-adaptive.C test-com
 test_rational_solver_SOURCES =          test-rational-solver.C
 test_rat_minpoly_SOURCES =              test-rat-minpoly.C test-common.h
 test_rat_solve_SOURCES =                test-rat-solve.C test-common.h
+test_regression_SOURCES =               test-regression.C
 test_scalar_matrix_SOURCES =            test-scalar-matrix.C
 test_smith_form_adaptive_SOURCES =      test-smith-form-adaptive.C test-common.h
 test_smith_form_binary_SOURCES =        test-smith-form-binary.C
