@@ -101,9 +101,10 @@ int test_ftrmm(std::ostream & report, const Field & F)
 	assert(D);
 
 	typedef typename Field::RandIter RandIter;
+	typedef typename Field::NonZeroRandIter NonZeroRandIter;
 	report << '#' ;
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
+	NonZeroRandIter Gn(F,G);
 
 	/* init A,B,C and more...*/
 	for (size_t i = 0 ; i < rows*lda ; ++i) G.random( *(A+i) ) ;
@@ -431,9 +432,10 @@ int test_applyP(std::ostream & report, const Field & F)
 	assert(B);
 
 	typedef typename Field::RandIter RandIter;
+	typedef typename Field::NonZeroRandIter NonZeroRandIter;
 	report << '#' ;
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
+	NonZeroRandIter Gn(F,G);
 
 	/* init A,B,C and more...*/
 	for (size_t i = 0 ; i < M*lda ; ++i) G.random( *(A+i) ) ;
@@ -532,9 +534,10 @@ int test_fgemm(std::ostream & report, const Field & F)
 #endif
 
 	typedef typename Field::RandIter RandIter;
+	typedef typename Field::NonZeroRandIter NonZeroRandIter;
 	report << "#" ;
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
+	NonZeroRandIter Gn(F,G);
 	typedef typename Field::Element Element;
 
 	Element alpha, beta ;

@@ -128,6 +128,17 @@ namespace LinBox
 		{
 			return true;
 		}
+		template<>
+		bool checkBlasApply(const Givaro::Modular<int16_t> &, size_t)
+		{
+			return true;
+		}
+
+		template<>
+		bool checkBlasApply(const Givaro::ModularBalanced<int16_t> &, size_t)
+		{
+			return true;
+		}
 
 	}
 }

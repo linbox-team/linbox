@@ -15,14 +15,23 @@ template<class Field_>
 struct FIBBProduct : public FIBB<Field_> { // Fast Inverse BlackBox
 	typedef Field_ Field;
 	typedef FIBB<Field> Father_t;
+	typedef FIBBProduct<Field> Self_t;
   protected: 
-    const Father_t* Ap;
-    const Father_t* Bp;
-	bool allocA; // true only if new used within init
-	bool allocB; // true only if new used within init
+	const Field* field_;
+	const FIBB<Field>** factors_;
+	size_t n_;
+	bool alloc_; // true only if new used within construction of factors_
+	bool alloc_members_; // true only if new used to construct members.
+	// (all or nothing ownership of members)
+	const FIBB<Field>& head() const { return *(factors_[0]); }
+	FIBBProduct<Field>& tail (FIBBProduct<Field>& A) const
+	{ A.field_ = field_; 
+	  A.factors_ = factors_ + 1; A.n_ = n_-1; 
+	  A.alloc_ = A.alloc_members_ = false; 
+	  return A;
+	}
   public:
     using Element = typename Father_t::Element;
-    using ResizableMatrix = typename Father_t::ResizableMatrix;
     using Matrix = typename Father_t::Matrix;
 
 	/* Blackbox functions */
@@ -50,7 +59,7 @@ struct FIBBProduct : public FIBB<Field_> { // Fast Inverse BlackBox
 	/// N: NA = 0, each row random.
 	Matrix& nullspaceRandomLeft(Matrix& N) const; 
 
-	// nullspaceBasisRight and nullspaceBasisLeft
+	/* nullspaceBasisRight and nullspaceBasisLeft */
 	/** B: columns are a right nullspace basis for this A.
 		
 		B is resized and filled so that:
@@ -61,7 +70,9 @@ struct FIBBProduct : public FIBB<Field_> { // Fast Inverse BlackBox
 	DenseMatrix<Field>& nullspaceBasisLeft(DenseMatrix<Field>& B) const; 
 
 	/* cstors, dstor, initializers */
-	FIBBProduct();
+//	FIBBProduct();
+	FIBBProduct(const Field& F);
+//	FIBBProduct(const FIBBProduct<Field>& A);
 	FIBBProduct(const FIBB<Field>& A1, const FIBB<Field>& A2);
 	FIBBProduct(const FIBB<Field>& A1, const FIBB<Field>& A2, 
 				const FIBB<Field>& A3);
@@ -70,8 +81,8 @@ struct FIBBProduct : public FIBB<Field_> { // Fast Inverse BlackBox
 	FIBBProduct(const FIBB<Field>& A1, const FIBB<Field>& A2, 
 				const FIBB<Field>& A3, const FIBB<Field>& A4, 
 				const FIBB<Field>& A5);
-	~FIBBProduct(){ if (allocA) delete Ap; if (allocB) delete Bp; }
-	public:
+	~FIBBProduct();
+	FIBBProduct& init(const FIBB<Field>& A1);
 	FIBBProduct& init(const FIBB<Field>& A1, const FIBB<Field>& A2);
 	FIBBProduct& init(const FIBB<Field>& A1, const FIBB<Field>& A2, 
 					  const FIBB<Field>& A3);
@@ -80,6 +91,11 @@ struct FIBBProduct : public FIBB<Field_> { // Fast Inverse BlackBox
 	FIBBProduct& init(const FIBB<Field>& A1, const FIBB<Field>& A2, 
 					  const FIBB<Field>& A3, const FIBB<Field>& A4, 
 					  const FIBB<Field>& A5);
+    // product and owner of heap allocated FIBBs
+	FIBBProduct& incorporate(const FIBB<Field>* A1,
+			const FIBB<Field>* A2 = NULL, const FIBB<Field>* A3 = NULL,
+			const FIBB<Field>* A4 = NULL, const FIBB<Field>* A5 = NULL);
+	const FIBB<Field>& operator[](size_t i) ;
 
 }; // class FIBBProduct
 }// namespace LinBox
@@ -92,27 +108,35 @@ namespace LinBox {
 
 // Blackbox interface
 template<class Field> size_t FIBBProduct<Field>:: 
-rowdim() const { return Ap->rowdim(); }
+rowdim() const { return n_ > 0 ? factors_[0]->rowdim() : 0; }
 
 template<class Field> size_t FIBBProduct<Field>:: 
-coldim() const { return Bp->coldim(); }
+coldim() const { return n_ > 0 ? factors_[n_-1]->coldim() : 0; }
 
 template<class Field> const Field& FIBBProduct<Field>:: 
-field() const { return Ap->field(); }
+field() const { return *field_; }
 
 template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
 applyRight(typename FIBBProduct<Field>::Matrix& Y, const typename FIBBProduct<Field>::Matrix& X) const
-{	Matrix X1(field(), Bp->rowdim(), X.coldim());
-	Bp->applyRight(X1, X);
-	Ap->applyRight(Y, X1);
+{	if (n_==0) return Y;
+	if (n_==1) return head().applyRight(Y,X);
+	const FIBB<Field>& A = head();
+	FIBBProduct<Field> B(field()); tail(B);
+	Matrix X1(field(), B.rowdim(), X.coldim());
+	B.applyRight(X1, X);
+	A.applyRight(Y, X1);
 	return Y;
 }
 
 template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
 applyLeft(typename FIBBProduct<Field>::Matrix& Y, const typename FIBBProduct<Field>::Matrix& X) const
-{	Matrix X1(field(), X.rowdim(), Ap->coldim());
-	Ap->applyLeft(X1, X);
-	Bp->applyLeft(Y, X1);
+{	if (n_==0) return Y;
+	if (n_==1) return head().applyLeft(Y,X);
+	const FIBB<Field>& A = head();
+	FIBBProduct<Field> B(field()); tail(B);
+	Matrix X1(field(), X.rowdim(), B.coldim());
+	A.applyLeft(X1, X);
+	B.applyLeft(Y, X1);
   	return Y;
 }
 
@@ -127,59 +151,86 @@ template<class Field> std::ostream& FIBBProduct<Field>::
 write(std::ostream& os) const
 {	os << std::endl << "%%MatrixMarket matrix composite integer general" << std::endl;
 	field().write(os << "% written by LinBox::FIBBProduct< ") << " >" << std::endl;
-	Ap->write(os<<std::endl);
-	Bp->write(os<<std::endl);
+	os << n_;
+	for (size_t i = 0; i < n_; ++i) 
+		factors_[i]->write(os << std::endl);
 	return os;
 }
 
 template<class Field> size_t& FIBBProduct<Field>:: 
 rank( size_t& r ) const
-{	size_t s, t; return r = std::min(Ap->rank(s), Bp->rank(t)); }
+{	if (n_ == 0) return r = 0;
+	factors_[0]->rank(r);
+	size_t s;
+	for (size_t i = 1; i < n_; ++i) 
+		r = std::min(r, factors_[i]->rank(s));
+	return r;
+}
 
 template<class Field> typename FIBBProduct<Field>::Element& FIBBProduct<Field>:: 
 det( typename FIBBProduct<Field>::Element& d ) const
-{	Ap->det(d); 
-	typename Field::Element e; Ap->field().init(e);
-	Bp->det(e);
-	return Ap->field().mulin(d, e);
+{	if (n_==0) return field().assign(d, field().one);
+	factors_[0]->det(d); 
+	typename Field::Element e; field().init(e);
+	for (size_t i = 1; i < n_; ++i) 
+		field().mulin(d, factors_[i]->det(e));
+	return d;
 }
 
 template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
 solveRight( typename FIBBProduct<Field>::Matrix& Y, const typename FIBBProduct<Field>::Matrix& X ) const
-{	Matrix Z(field(), Ap->coldim(), X.coldim());
-	Ap->solveRight(Z,X); // A1*Z = X
-	return Bp->solveRight(Y,Z); // A2*Y = Z
+{	if (n_==0) return Y;
+	if (n_==1) return head().solveRight(Y,X);
+	const FIBB<Field>& A = head();
+	FIBBProduct<Field> B(field()); tail(B);
+	Matrix Z(field(), A.coldim(), X.coldim());
+	A.solveRight(Z,X); // A1*Z = X
+	return B.solveRight(Y,Z); // A2*Y = Z
 }
 
 template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
 solveLeft( typename FIBBProduct<Field>::Matrix& Y, const typename FIBBProduct<Field>::Matrix& X ) const
-{	Matrix Z(field(), X.rowdim(), Ap->coldim()); 
-	Bp->solveLeft(Z,X); // Z*A2 = X
-	return Ap->solveLeft(Y,Z); // Y*A1 = Z
+{	if (n_==0) return Y;
+	if (n_==1) return head().solveLeft(Y,X);
+	const FIBB<Field>& A = head();
+	FIBBProduct<Field> B(field()); tail(B);
+	Matrix Z(field(), X.rowdim(), A.coldim()); 
+	B.solveLeft(Z,X); // Z*A2 = X
+	return A.solveLeft(Y,Z); // Y*A1 = Z
 }
 
 template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
 nullspaceRandomRight( typename FIBBProduct<Field>::Matrix& N ) const // N: ABN = 0
-{	size_t r;
-	if (Ap->rowdim() == Ap->coldim() and Ap->rank(r) == Ap->coldim())
-		return Bp->nullspaceRandomRight(N);
+{
+ 	if (n_==0) return N;
+	if (n_==1) return head().nullspaceRandomRight(N);
+	size_t r;
+	const FIBB<Field>& A = head();
+	FIBBProduct<Field> B(field()); tail(B);
+	if (A.rowdim() == A.coldim() and A.rank(r) == A.coldim())
+		return B.nullspaceRandomRight(N);
 	else
 	{	Matrix N1(N);
-		Ap->nullspaceRandomRight(N1);
-		return Bp->solveRight(N,N1);
+		A.nullspaceRandomRight(N1);
+		B.solveRight(N,N1);
+		return N;
 		// a solveRightin would be good if B is a perm.
 	}
 }
 
 template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>:: 
 nullspaceRandomLeft( typename FIBBProduct<Field>::Matrix& N ) const
-{	size_t r;
-	if (Bp->rowdim() == Bp->coldim() and Bp->rank(r) == Bp->coldim())
-		return Ap->nullspaceRandomLeft(N);
+{	if (n_==0) return N;
+	if (n_==1) return head().nullspaceRandomLeft(N);
+	size_t r;
+	const FIBB<Field>& A = head();
+	FIBBProduct<Field> B(field()); tail(B);
+	if (B.rowdim() == B.coldim() and B.rank(r) == B.coldim())
+		return A.nullspaceRandomLeft(N);
 	else
 	{	Matrix N1(N);
-		Bp->nullspaceRandomLeft(N1);
-		return Ap->solveLeft(N,N1);
+		B.nullspaceRandomLeft(N1);
+		return A.solveLeft(N,N1);
 		// a solveLeftin would be good if A is a perm.
 	}
 }
@@ -208,93 +259,159 @@ genericNullspaceRandomLeft( Matrix& N ) const
 
 template<class Field> DenseMatrix<Field>& FIBBProduct<Field>:: 
 nullspaceBasisRight( DenseMatrix<Field>& N ) const
-{	size_t r;
-	if (Ap->rowdim() == Ap->coldim() and Ap->rank(r) == Ap->rowdim())
-	 	Bp->nullspaceBasisRight(N);
+{	if (n_==0) { N.resize(0,0); return N; }
+	if (n_==1) return head().nullspaceBasisRight(N);
+	size_t r;
+	const FIBB<Field>& A = head();
+	FIBBProduct<Field> B(field()); tail(B);
+	if (A.rowdim() == A.coldim() and A.rank(r) == A.rowdim())
+	 	B.nullspaceBasisRight(N);
 	else 
 	{	Matrix N1(field());
-		Ap->nullspaceBasisRight(N1);
+		A.nullspaceBasisRight(N1);
 		N.resize(N1.rowdim(), N1.coldim());
-		Bp->solveRight(N, N1);
+		B.solveRight(N, N1);
 	}
 	return N;
 }
 
 template<class Field> DenseMatrix<Field>& FIBBProduct<Field>:: 
 nullspaceBasisLeft( DenseMatrix<Field>& N ) const
-{	size_t r;
-	if (Bp->rowdim() == Bp->coldim() and Bp->rank(r) == Bp->rowdim())
-	 	Ap->nullspaceBasisLeft(N);
+{	if (n_==0) { N.resize(0,0); return N; }
+	if (n_==1) return head().nullspaceBasisLeft(N);
+	size_t r;
+	const FIBB<Field>& A = head();
+
+	FIBBProduct<Field> B(field()); tail(B);
+	if (B.rowdim() == B.coldim() and B.rank(r) == B.rowdim())
+	 	A.nullspaceBasisLeft(N);
 	else 
 	{	Matrix N1(field());
-		Bp->nullspaceBasisLeft(N1);
+		B.nullspaceBasisLeft(N1);
 		N.resize(N1.rowdim(), N1.coldim());
-		Ap->solveLeft(N, N1);
+		A.solveLeft(N, N1);
 	}
 	return N;
 }
 
 /* cstors, dstor */
 template<class Field> FIBBProduct<Field>::
-FIBBProduct() :Ap(0), Bp(0), allocA(false), allocB(false) {}
+FIBBProduct(const Field& F) 
+: field_(&F), factors_(0), n_(0), alloc_(false), alloc_members_(false) 
+{}
+
+//template<class Field> FIBBProduct<Field>::
+//FIBBProduct(const FIBBProduct<Field>& A): Ap(A.Ap), Bp(A.Bp), allocA(A.allocA), allocB(A.allocB)
+//{}
 
 template<class Field> FIBBProduct<Field>:: 
 FIBBProduct( const FIBB<Field>& A1, const FIBB<Field>& A2 ) 
+: field_(0), factors_(0), n_(0), alloc_(false), alloc_members_(false) 
 { init(A1, A2); } 
 
 template<class Field> FIBBProduct<Field>:: 
 FIBBProduct( const FIBB<Field>& A1, const FIBB<Field>& A2, 
 			 const FIBB<Field>& A3 ) 
+: field_(0), factors_(0), n_(0), alloc_(false), alloc_members_(false) 
 { init(A1, A2, A3); }
 
 template<class Field> FIBBProduct<Field>:: 
 FIBBProduct( const FIBB<Field>& A1, const FIBB<Field>& A2, 
 			 const FIBB<Field>& A3, const FIBB<Field>& A4 ) 
+: field_(0), factors_(0), n_(0), alloc_(false), alloc_members_(false) 
 { init(A1, A2, A3, A4); }
 
 template<class Field> FIBBProduct<Field>:: 
 FIBBProduct( const FIBB<Field>& A1, const FIBB<Field>& A2, 
 			 const FIBB<Field>& A3, const FIBB<Field>& A4, 
 			 const FIBB<Field>& A5 ) 
+: field_(0), factors_(0), n_(0), alloc_(false), alloc_members_(false) 
 { init(A1, A2, A3, A4, A5); }
+
+template<class Field> FIBBProduct<Field>:: 
+~FIBBProduct()
+{	if (alloc_members_) 
+		for(size_t i = 0; i < n_; ++i) delete factors_[i];
+	if (alloc_) delete[] factors_; 
+}
 
 /* initializers */
 
 template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
+init( const FIBB<Field>& A )
+{	field_ = &(A.field()); 
+	if (alloc_ and factors_) delete[] factors_;
+	factors_ = new const FIBB<Field>*[1]; n_ = 1; 
+	alloc_ = true; alloc_members_ = false;
+	factors_[0] = &A;
+	return *this;
+}
+
+template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
 init( const FIBB<Field>& A1, const FIBB<Field>& A2 )
-{ Ap = &A1; Bp = &A2; allocA = allocB = false; return *this; }
+{	field_ = &(A1.field()); 
+	if (alloc_ and factors_) delete[] factors_;
+	factors_ = new const FIBB<Field>*[2]; n_ = 2; 
+	alloc_ = true; alloc_members_ = false;
+	factors_[0] = &A1; factors_[1] = &A2; 
+	return *this;
+}
 
 template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
 init( const FIBB<Field>& A1, const FIBB<Field>& A2, 
 	  const FIBB<Field>& A3 )
-{ Ap = &A1; 
-  allocA = false;
-  Bp = new FIBBProduct (A2, A3); 
-  allocB = true;
-  return *this; 
+{	field_ = &(A1.field()); 
+	if (alloc_ and factors_) delete[] factors_;
+	factors_ = new const FIBB<Field>*[3]; n_ = 3; 
+	alloc_ = true; alloc_members_ = false;
+	factors_[0] = &A1; factors_[1] = &A2; 
+	factors_[2] = &A3; 
+	return *this;
 }
 
 template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
 init( const FIBB<Field>& A1, const FIBB<Field>& A2, 
 	  const FIBB<Field>& A3, const FIBB<Field>& A4 )
-{ 
-  Ap = new FIBBProduct (A1, A2); 
-  allocA = true;
-  Bp = new FIBBProduct (A3, A4); 
-  allocB = true;
-  return *this; 
+{	field_ = &(A1.field()); 
+	if (alloc_ and factors_) delete[] factors_;
+	factors_ = new const FIBB<Field>*[4]; n_ = 4; 
+	alloc_ = true; alloc_members_ = false;
+	factors_[0] = &A1; factors_[1] = &A2; 
+	factors_[2] = &A3; factors_[3] = &A4; 
+	return *this;
 }
 
 template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
 init( const FIBB<Field>& A1, const FIBB<Field>& A2, 
 	  const FIBB<Field>& A3, const FIBB<Field>& A4, 
   	  const FIBB<Field>& A5 )
-{ Ap = &A1;
-  allocA = false;
-  Bp = new FIBBProduct (A1, A2, A3, A4); 
-  allocB = true;
-  return *this; 
+{	field_ = &(A1.field()); 
+	if (alloc_ and factors_) delete[] factors_;
+	factors_ = new const FIBB<Field>*[5]; n_ = 5; 
+	alloc_ = true; alloc_members_ = false;
+	factors_[0] = &A1; factors_[1] = &A2; 
+	factors_[2] = &A3; factors_[3] = &A4; 
+	factors_[4] = &A5;
+	return *this;
 }
+
+template<class Field> FIBBProduct<Field>& FIBBProduct<Field>:: 
+incorporate(const FIBB<Field>* A1,
+			const FIBB<Field>* A2, const FIBB<Field>* A3,
+			const FIBB<Field>* A4, const FIBB<Field>* A5)
+{
+	if (A2 == NULL) init(*A1);
+	if (A3 == NULL) init(*A1,*A2);
+	if (A4 == NULL) init(*A1,*A2,*A3);
+	if (A5 == NULL) init(*A1,*A2,*A3,*A4);
+	else 			init(*A1,*A2,*A3,*A4,*A5);
+	alloc_members_ = true;
+	return *this;
+}
+
+template<class Field> const FIBB<Field>& FIBBProduct<Field>::
+operator[](size_t i) 
+{ return *(factors_[i]); }
 
 }// namespace LinBox
 

@@ -35,8 +35,6 @@
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/blackbox/fibb.h"
 
-
-// Namespace in which all LinBox library code resides
 namespace LinBox
 {
 
@@ -45,18 +43,19 @@ namespace LinBox
 	  \ingroup blackbox
 	 */
 	template<class _Field, class _Matrix=DenseMatrix<_Field>>
-	class Permutation
-#if 1
-		 : public  FIBB<_Field>
-#endif 
-	{
-		const _Field* _field;
+	class Permutation : public  FIBB<_Field>
+	{ 
 	public:
-		typedef Permutation<_Field>		Self_t;
-		typedef LightContainer<long>	Storage;
 		typedef _Field					Field;
 		typedef typename Field::Element	Element;
+		typedef Permutation<Field>		Self_t;
+		typedef LightContainer<long>	Storage;
 		typedef _Matrix					Matrix;
+	protected:
+		Storage _indices; // Vector of indices
+		bool alloc; //
+		const Field* _field;
+	public:
 
 		/** Constructor from a vector of indices.
 		 * This constructor creates a permutation matrix based on a vector of indices
@@ -67,6 +66,17 @@ namespace LinBox
 		Permutation (Storage & indices, const Field& F = Field()) :
 			_field(&F), _indices (indices)
 		{}
+
+		Self_t& init(size_t* P, size_t n) 
+		{	_indices.resize(n); 
+			for (size_t i = 0; i < n; ++i) 
+				_indices[i] = P[i]; 
+			return *this;
+		}
+
+		Permutation (size_t* P, size_t n, const Field& F = Field()) 
+		: _field(&F) 
+		{ init(P, n); }
 
 		/** \brief n x n permutation matrix, initially the identity.
 		 * @param n The dimension of the matrix 
@@ -83,6 +93,7 @@ namespace LinBox
 		{
 			identity((int)n);
 		}
+
 
 		//!@bug should be size_t
 		void identity(int n)
@@ -222,6 +233,7 @@ namespace LinBox
 			}
 			return d = b&1 ? field().mOne : field().one; 
 		}
+		
 		Matrix& solveRight(Matrix& Y, const Matrix& X) const
 		{	Element x; field().init(x);
 			for (size_t i = 0; i < Y.rowdim(); ++i){
@@ -443,9 +455,6 @@ namespace LinBox
 		std::swap(_indices[(size_t)i], _indices[(size_t)j-1]);
 		std::reverse(_indices.begin() + i + 1, _indices.end());
 	}
-private:
-	// Vector of indices
-	Storage _indices;
 
 }; // template <Vector> class Permutation
 

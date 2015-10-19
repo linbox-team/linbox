@@ -226,10 +226,10 @@ int main (int argc, char **argv)
 	Field F (q);
 	//MatrixDomain<Field> MD(F);
 
-	Diagonal<Field> D1(F, n, true); // nonsing
-	Diagonal<Field> D2(F, n, true); 
+	Diagonal<Field> D1(F, n); // random nonsing
+	Diagonal<Field> D2(F, n); 
 	for (size_t i = 0; i < n/2; ++i) D2.setEntry(i,i,F.zero); // rank half
-	Diagonal<Field> D3(F, n, true); 
+	Diagonal<Field> D3(F, n); 
 	for (size_t i = 0; i < n; ++i) D3.setEntry(i,i,F.zero); // zero matrix
 
 	pass = pass and testFibb(D1, "D1 nonsing", F.zero, n); // nonsing
@@ -294,7 +294,7 @@ int main (int argc, char **argv)
 	report << "PLUQ pattern nonsing" << std::endl;
 	pass = pass and testFibb(Pr8, "Pr8 PLUQ", F.one, n); // PLUQ pattern nonsing
 	report << "LQUP pattern nonsing" << std::endl;
-	pass = pass and testFibb(Pr9, "Pr8 LQUP", F.one, n); // LQUP pattern nonsing
+	pass = pass and testFibb(Pr9, "Pr9 LQUP", F.one, n); // LQUP pattern nonsing
 #endif
 	report << "Done with triangular and permutation products" << std::endl;
 	//FactorizedMatrix<Field> F(...);

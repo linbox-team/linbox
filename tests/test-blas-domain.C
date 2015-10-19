@@ -62,7 +62,7 @@
 #include "linbox/matrix/matrix-domain.h"
 #include <givaro/givranditer.h>
 #include "linbox/util/commentator.h"
-#include "gviaro/zring.h"
+#include "givaro/zring.h"
 // #include "linbox/algorithms/matrix-hom.h"
 
 #include "linbox/matrix/random-matrix.h"

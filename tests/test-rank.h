@@ -79,7 +79,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 	typedef typename BlackBox::Field Field ;
 	commentator().start ("Testing elimination-based and blackbox rank", "testRankMethods", (unsigned int)iterations);
 
-	bool ret = true;
+	bool ret = true, equalRank = true;
 	unsigned int i;
 
 	unsigned long rank_blackbox, rank_elimination;
@@ -96,57 +96,53 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 		F.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl;
 		A.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),Tag::FileFormat::Maple ) << endl;
 
-		Method::Blackbox MB;
-//		LinBox::rank (rank_blackbox, A, MB);
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "blackbox rank " << rank_blackbox << endl;
 
-		Method::Elimination ME;
+		Method::Elimination ME; // will this be sparse elim?
 		LinBox::rank (rank_elimination, A, ME);
-rank_blackbox = rank_elimination;
-		if (rank_blackbox != rank_elimination) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: blackbox rank != elimination rank " << rank_elimination << endl;
-			ret = false;
-		}
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "XXX elimination rank " << rank_elimination << endl;
+
+#if 1
+		Method::Blackbox MB;
+		LinBox::rank (rank_blackbox, A, MB);
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "XXX blackbox rank " << rank_blackbox << endl;
+		equalRank = equalRank and rank_blackbox == rank_elimination;
+#endif
 
 #if 0
 		Method::Hybrid MH;
 		LinBox::rank (rank_hybrid, A, MH);
-		if (rank_blackbox != rank_hybrid) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: blackbox rank != hybrid rank " << rank_hybrid << endl;
-			ret = false;
-		}
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "XXX hybrid rank " << rank_hybrid << endl;
+		equalRank = equalRank and rank_hybrid == rank_elimination;
+#endif
+#if 0
+		unsigned long rank_Wiedemann;
+		Method::Wiedemann MW;  // rank soln needs fixing for this.
+		LinBox::rank (rank_Wiedemann, A, MW);
+		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "XXX Wiedemann rank " << rank_Wiedemann << endl;
+		equalRank = equalRank and rank_Wiedemann == rank_elimination;
 #endif
 
-		unsigned long rank_Wiedemann;
-		//Method::Wiedemann MW;  // rank soln needs fixing for this.
-		Method::Blackbox MW;
-//		LinBox::rank (rank_Wiedemann, A, MW);
-rank_Wiedemann = rank_blackbox;
-		if (rank_Wiedemann != rank_blackbox ) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Ranks are not equal" << endl;
-			ret = false;
-		}
-
 		unsigned long rank_blas_elimination ;
-		if (F.characteristic() < LinBox::BlasBound && F.characteristic() == F.cardinality()) {
+		if (F.characteristic() < LinBox::BlasBound 
+				and
+			F.characteristic() == F.cardinality())
+		{
 			Method::BlasElimination MBE;
 			LinBox::rank (rank_blas_elimination, A, MBE);
-		} else {
-			rank_blas_elimination = rank_elimination;
+			commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			<< "XXX Blas elimination rank " << rank_blas_elimination << endl;
+			equalRank = equalRank and rank_blas_elimination == rank_elimination;
 		}
 
-		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-		<< "Rank computed by Wiedemann: " << rank_Wiedemann << endl
-		<< "Rank computed by sparse elimination: " << rank_elimination << endl
-		<< "Rank computed by blas_elimination: " << rank_blas_elimination << endl;
 
-		if ( rank_blackbox != rank_blas_elimination) {
+		if	( not equalRank )
+		{
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Ranks are not equal" << endl;
+				<< "ERROR: Ranks are not equal" << endl;
 			ret = false;
 		}
 
@@ -318,11 +314,14 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 		typedef SparseMatrix<Field,SparseMatrixFormat::SparsePar > Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
+#if 0
 	{
-		// typedef SparseMatrix<Field,SparseMatrixFormat::SparseMap > Blackbox;
-		// typedef Protected::SparseMatrixGeneric<Field,typename Vector<Field>::SparseMap > Blackbox;
-		// if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
+		report << "SparseMap " << endl;
+		typedef SparseMatrix<Field,SparseMatrixFormat::SparseMap > Blackbox;
+		typedef Protected::SparseMatrixGeneric<Field,typename Vector<Field>::SparseMap > Blackbox;
+		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
+#endif
 	{
 		report << "COO " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::COO> Blackbox;
@@ -338,19 +337,23 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 		typedef SparseMatrix<Field,SparseMatrixFormat::ELL> Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
-	// {
-	// 	report << "ELL_R " << endl;
-	// 	typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
-	// 	if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
-	// }
 #if 0
 	{
-		TYPEdef SparseMatrix<Field,SparseMatrixFormat::HYB> Blackbox;
+		report << "ELL_R " << endl;
+		typedef SparseMatrix<Field,SparseMatrixFormat::ELL_R> Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
 #endif
 #if 0
 	{
+		report << "HYB " << endl;
+		typedef SparseMatrix<Field,SparseMatrixFormat::HYB> Blackbox;
+		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
+	}
+#endif
+#if 0
+	{	
+		report << "TPL " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::TPL> Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}

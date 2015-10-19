@@ -33,6 +33,7 @@
 
 #include <iostream>
 #include "linbox-config.h"
+#include "linbox/integer.h"
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/random-matrix.h"
@@ -192,6 +193,7 @@ namespace LinBox { namespace BLAS2 {
 } // BLAS2
 } // LinBox
 
+using namespace LinBox;
 int main(int ac, char ** av) {
 	static int p = 1009;
 	static int e = 3 ;
@@ -209,12 +211,12 @@ int main(int ac, char ** av) {
 	};
 
 
-	LinBox::parseArguments (ac, av, as);
-	LinBox::commentator().start("toom-cook suite", "toom");
-	ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	parseArguments (ac, av, as);
+	commentator().start("toom-cook suite", "toom");
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 
-	LinBox::Timer Tim ;
+	Timer Tim ;
 	{ /* Toom Cook over GivarorExtension */
 		typedef Givaro::Modular<int64_t> Zpz;
 		// typedef Givaro::Modular<double> Zpz;
@@ -224,33 +226,33 @@ int main(int ac, char ** av) {
 		Zpz F(p);
 		// GF(p^e) ;
 		GFpe GF (F, 2);
-		LinBox::MatrixDomain<GFpe> MD(GF);
+		MatrixDomain<GFpe> MD(GF);
 
-		GF.write(report << "This is the field with " << (LinBox::Integer)pow((LinBox::Integer)p,e) << " elements: ") << ", using: "   << GF.irreducible() << " as irreducible polynomial" << std::endl;
+		GF.write(report << "This is the field with " << (Integer)pow((Integer)p,e) << " elements: ") << ", using: "   << GF.irreducible() << " as irreducible polynomial" << std::endl;
 		report << "matrices are " << m << 'x' << k << " and " << k << 'x' << n <<  std::endl;
 
-		LinBox::BlasMatrix<GFpe> A(GF,m,k);
-		LinBox::BlasMatrix<GFpe> B(GF,k,n);
-		LinBox::BlasMatrix<GFpe> C(GF,m,n);
+		BlasMatrix<GFpe> A(GF,m,k);
+		BlasMatrix<GFpe> B(GF,k,n);
+		BlasMatrix<GFpe> C(GF,m,n);
 
 		typedef GFpe::RandIter Randiter;
 		Randiter R(GF);
-		LinBox::RandomDenseMatrix<Randiter,GFpe> randomizer(GF,R) ;
+		RandomDenseMatrix<Randiter,GFpe> randomizer(GF,R) ;
 		randomizer.random(A);
 		// report << "A[0,0] = " << A.getEntry(0,0) << std::endl;
 		randomizer.random(B);
 
 		report << "naive over GFq" << std::endl;
 		Tim.clear(); Tim.start();
-		LinBox::BLAS3::mul(C,A,B,LinBox::BLAS3::mulMethod::naive());
+		BLAS3::mul(C,A,B,BLAS3::mulMethod::naive());
 		Tim.stop();
 		report << Tim << '(' << C.getEntry(0,0) << ')' << std::endl;
 
 		{
 			report << "ToomCook low mem" << std::endl;
-			LinBox::BlasMatrix<GFpe> D(GF,m,n);
+			BlasMatrix<GFpe> D(GF,m,n);
 			Tim.clear(); Tim.start();
-			LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::ToomCook<GFpe>(GF,false));
+			BLAS3::mul(D,A,B,BLAS3::mulMethod::ToomCook<GFpe>(GF,false));
 			Tim.stop();
 			report << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
 
@@ -262,9 +264,9 @@ int main(int ac, char ** av) {
 
 		{
 			report << "ToomCook high mem" << std::endl;
-			LinBox::BlasMatrix<GFpe> D(GF,m,n);
+			BlasMatrix<GFpe> D(GF,m,n);
 			Tim.clear(); Tim.start();
-			LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::ToomCook<GFpe>(GF,true));
+			BLAS3::mul(D,A,B,BLAS3::mulMethod::ToomCook<GFpe>(GF,true));
 			Tim.stop();
 			report << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
 
@@ -276,7 +278,7 @@ int main(int ac, char ** av) {
 
 		{
 			report << "Matrix Domain" << std::endl;
-			LinBox::BlasMatrix<GFpe> D(GF,m,n);
+			BlasMatrix<GFpe> D(GF,m,n);
 			Tim.clear(); Tim.start();
 			MD.mul(D,A,B);
 			Tim.stop();
@@ -291,27 +293,27 @@ int main(int ac, char ** av) {
 
 	{ /* ZZ mat mul */
 
-		LinBox::Givaro::ZRing<Integer> ZZ ;
-		LinBox::MatrixDomain<LinBox::Givaro::ZRing<Integer> > MD(ZZ);
-		LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > A(ZZ,m,k) ;
-		LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > B(ZZ,k,n) ;
-		LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > C(ZZ,m,n) ;
+            Givaro::ZRing<Integer> ZZ ;
+		MatrixDomain<Givaro::ZRing<Integer> > MD(ZZ);
+		BlasMatrix<Givaro::ZRing<Integer> > A(ZZ,m,k) ;
+		BlasMatrix<Givaro::ZRing<Integer> > B(ZZ,k,n) ;
+		BlasMatrix<Givaro::ZRing<Integer> > C(ZZ,m,n) ;
 
 		A.random((unsigned)b);
 		B.random((unsigned)b);
 
 		report << "Naïve " << std::endl ;
 		Tim.clear() ; Tim.start() ;
-		LinBox::BLAS3::mul(C,A,B,LinBox::BLAS3::mulMethod::naive());
+		BLAS3::mul(C,A,B,BLAS3::mulMethod::naive());
 		Tim.stop();
 		report << Tim << '(' << C.getEntry(0,0) << ')' << std::endl;
 
 #ifdef __LINBOX_HAVE_FLINT
 		{
 			report << "FLINT " << std::endl;
-			LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > D(ZZ,m,n);
+			BlasMatrix<Givaro::ZRing<Integer> > D(ZZ,m,n);
 			Tim.clear(); Tim.start();
-			LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::FLINT());
+			BLAS3::mul(D,A,B,BLAS3::mulMethod::FLINT());
 			Tim.stop();
 			report << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
 
@@ -324,7 +326,7 @@ int main(int ac, char ** av) {
 
 		{
 			report << "Matrix Domain" << std::endl;
-			LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > D(ZZ,m,n);
+			BlasMatrix<Givaro::ZRing<Integer> > D(ZZ,m,n);
 			Tim.clear(); Tim.start();
 			MD.mul(D,A,B);
 			Tim.stop();
@@ -338,9 +340,9 @@ int main(int ac, char ** av) {
 
 		{
 			report << "CRA " << std::endl;
-			LinBox::BlasMatrix<LinBox::Givaro::ZRing<Integer> > D(ZZ,m,n);
+			BlasMatrix<Givaro::ZRing<Integer> > D(ZZ,m,n);
 			Tim.clear(); Tim.start();
-			LinBox::BLAS3::mul(D,A,B,LinBox::BLAS3::mulMethod::CRA());
+			BLAS3::mul(D,A,B,BLAS3::mulMethod::CRA());
 			Tim.stop();
 			report << Tim << '(' << D.getEntry(0,0) << ')' << std::endl;
 
@@ -355,25 +357,25 @@ int main(int ac, char ** av) {
 
 	{ /* ZZ spmat mul */
 
-		typedef LinBox::Givaro::ZRing<Integer> Field;
-		typedef LinBox::SparseMatrix<Field,LinBox::SparseMatrixFormat::CSR> BlackBox;
+		typedef Givaro::ZRing<Integer> Field;
+		typedef SparseMatrix<Field,SparseMatrixFormat::CSR> BlackBox;
 		Field ZZ ;
 
-		LinBox::VectorDomain<LinBox::Givaro::ZRing<Integer> > MD(ZZ);
+		VectorDomain<Givaro::ZRing<Integer> > MD(ZZ);
 
 		// typename Field::RandIter ri (ZZ,b);
-		LinBox::RandomIntegerIter<false> ri((unsigned int)b);
+		RandomIntegerIter<false> ri((unsigned int)b);
 		double sparsity = 0.05;
-		LinBox::RandomSparseStream<Field, typename BlackBox::Row, LinBox::RandomIntegerIter<false> > stream (ZZ, ri, sparsity, k, m);
+		RandomSparseStream<Field, typename BlackBox::Row, RandomIntegerIter<false> > stream (ZZ, ri, sparsity, k, m);
 
 		BlackBox A (ZZ, stream);
 
-		typedef LinBox::BlasVector<Field> Vector ;
+		typedef BlasVector<Field> Vector ;
 		Vector x(ZZ,k);
 		Vector y(ZZ,m);
 
 		// size_t iter = 1 ;
-		// LinBox::RandomDenseStream<Field, Vector> vs (ZZ, k, iter);
+		// RandomDenseStream<Field, Vector> vs (ZZ, k, iter);
 		x.random(ri);
 
 		report << "Naïve " << std::endl ;
@@ -387,9 +389,9 @@ int main(int ac, char ** av) {
 		{
 
 
-			LinBox::BlasVector<LinBox::Givaro::ZRing<Integer> > z(ZZ,m);
+			BlasVector<Givaro::ZRing<Integer> > z(ZZ,m);
 			Tim.clear(); Tim.start();
-			LinBox::BLAS2::mul(z,A,x,LinBox::BLAS3::mulMethod::CRA());
+			BLAS2::mul(z,A,x,BLAS3::mulMethod::CRA());
 			Tim.stop();
 			report << Tim << '(' << z[0] << ')' << std::endl;
 
@@ -401,7 +403,7 @@ int main(int ac, char ** av) {
 			}
 		}
 	}
-	LinBox::commentator().stop("toom-cook suite");
+	commentator().stop("toom-cook suite");
 
 	return 0;
 }

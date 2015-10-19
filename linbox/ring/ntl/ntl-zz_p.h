@@ -158,8 +158,11 @@ namespace LinBox
 		NTL_ZZ_p_Initialiser () { }
 
 	};
-
-	/**
+	
+            // CP: to be changed in to a Givaro::GeneralRingRandIter ?
+        template <class Element>
+	class UnparametricRandIter;
+        /**
 	 *
 	 * @brief Wrapper of zz_p from NTL.
 	 * Uses nice mod p via floating pt trick.

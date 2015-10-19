@@ -39,33 +39,37 @@ namespace LinBox
 
 	  \ingroup blackbox
 	 */
-	template<class _Field>
-	class TriangularFIBB : public  FIBB<_Field>
+	template<class Field_>
+	struct TriangularFIBB : public  FIBB<Field_>
 	{
-		typedef TriangularBlasMatrix<_Field> Rep_t;
-		Rep_t & _rep;
+		typedef Field_			Field;
+	protected:
+		typedef TriangularBlasMatrix<Field> Rep_t;
+		Rep_t * rep_;
+		const Field* field_;
 	public:
-		typedef TriangularFIBB<_Field>	Self_t;
-		typedef _Field			Field;
+		typedef TriangularFIBB<Field>	Self_t;
 		typedef typename Field::Element	Element;
 		typedef DenseMatrix<Field> Matrix;
 
-		/// Constructor from a TriangularBLasMatrix
-		TriangularFIBB(Rep_t& T)
-		:	_rep(T)
-		{}
+		Self_t& init(Rep_t& T) const
+		{ rep_ = &T; field_ = &(T.field()); return *this; }
 
-		void random() { _rep.random(); }
+		TriangularFIBB(const Field& F): field_(&F) {}
+		/// Constructor from a TriangularBlasMatrix
+		TriangularFIBB(Rep_t& T): rep_(&T), field_(&T.field()) {}
+
+		void random() { rep_->random(); }
 		/*
 		void random(size_t n)
 		{
 			size_t n = rowdim();
-			_rep.identity((int)n);
+			rep_->identity((int)n);
 			MersenneTwister r((unsigned int)time(NULL));
 			// Knuth construction
 			for (size_t i = 0; i < n-1; ++i) {
 				size_t j = i + r.randomInt()%(n-i);
-				std::swap(_rep._indices[i], _rep._indices[j]);
+				std::swap(rep_->_indices[i], rep_->_indices[j]);
 			}
 		}
 		*/
@@ -76,7 +80,7 @@ namespace LinBox
 		 * @param M constant reference to compose black box matrix
 		 */
 		TriangularFIBB (const TriangularFIBB &Mat) :
-			_rep(Mat._rep)
+			rep_(Mat.rep_)
 		{}
 
 		// Destructor
@@ -92,14 +96,14 @@ namespace LinBox
 			B.copy(A);
 			FFLAS::ftrmm<Field> (field(), 
 				side,
-				FFLAS::FFLAS_UPLO(_rep.getUpLo()), //const FFLAS_UPLO Uplo,
+				FFLAS::FFLAS_UPLO(rep_->getUpLo()), //const FFLAS_UPLO Uplo,
 		    	FFLAS::FflasNoTrans, //const FFLAS_TRANSPOSE TransA,
-				FFLAS::FFLAS_DIAG(_rep.getDiag()), //const FFLAS_DIAG Diag,
+				FFLAS::FFLAS_DIAG(rep_->getDiag()), //const FFLAS_DIAG Diag,
 				B.rowdim(), //const size_t M, 
 				B.coldim(), //const size_t N,
 				field().one, //const typename Field::Element alpha,
-				_rep.getPointer(), //typename Field::Element_ptr A, 
-				_rep.getStride(), //const size_t lda,
+				rep_->getPointer(), //typename Field::Element_ptr A, 
+				rep_->getStride(), //const size_t lda,
 				B.getPointer(), //typename Field::Element_ptr B, 
 				B.getStride() //const size_t ldb)
 			);
@@ -113,7 +117,7 @@ namespace LinBox
 			Element x; field().init(x);
 			if (rowdim() == 1) ...//TODO == quit here
 			for (size_t i = 0; i < Y.rowdim(); ++i){
-				size_t k = _rep._indices[i];
+				size_t k = rep_->_indices[i];
 				for (size_t j = 0; j < Y.coldim(); ++j)
 					Y.setEntry(i,j, X.getEntry(x, k, j));
 			}
@@ -121,7 +125,7 @@ namespace LinBox
 			for (size_t i = 0; i < rowdim(); ++i)
 			{
 				Matrix Yrow(Y, i, 0, 1, Y.coldim());
-				Matrix Xrow(X, _rep._indices[i], 0, 1, X.coldim());
+				Matrix Xrow(X, rep_->_indices[i], 0, 1, X.coldim());
 				Yrow.copy(Xrow); // right kind of copy?
 			}
 		*/
@@ -131,14 +135,14 @@ namespace LinBox
 		{
 			Element x; field().init(x);
 			for (size_t i = 0; i < Y.coldim(); ++i){
-				size_t k = _rep._indices[i];
+				size_t k = rep_->_indices[i];
 				for (size_t j = 0; j < Y.rowdim(); ++j)
 					Y.setEntry(j,k, X.getEntry(x, j, i));
 			}
 		/* desired form
 			for (size_t i = 0; i < coldim(); ++i)
 			{
-				Matrix Ycol(Y, 0, _rep._indices[i], Y.rowdim(), 1);
+				Matrix Ycol(Y, 0, rep_->_indices[i], Y.rowdim(), 1);
 				Matrix Xcol(X, 0, i, X.rowdim(), 1);
 				Ycol.copy(Xcol); 
 		*/
@@ -152,13 +156,13 @@ namespace LinBox
 		size_t& rank(size_t& r) const 
 		{	size_t m = rowdim(), n = coldim();
 			size_t k = m < n ? m : n;
-			if (_rep.getDiag() == Tag::Diag::Unit) {
+			if (rep_->getDiag() == Tag::Diag::Unit) {
 				r = k;
 			} else {
 				// assume trapezoid for now, later fix to allow echelon 
 				Element x;
 				r = 0;
-				while (r < k and not field().isZero(_rep.getEntry(x,r,r))) 
+				while (r < k and not field().isZero(rep_->getEntry(x,r,r))) 
 					++r;
 			}
 			return r;
@@ -168,13 +172,13 @@ namespace LinBox
 		{	size_t m = rowdim(), n = coldim();
 			if (m != n) {
 				field().assign(d,field().zero);
-			} else if (_rep.getDiag() == Tag::Diag::Unit) {
+			} else if (rep_->getDiag() == Tag::Diag::Unit) {
 				field().assign(d,field().one);
 			} else {
 				Element x;
 				field().assign(d, field().one);
 				for (size_t i = 0; i < m; ++i) 
-					field().mulin(d,_rep.getEntry(x,i,i));
+					field().mulin(d,rep_->getEntry(x,i,i));
 			}
 			return d;
 		}
@@ -189,14 +193,14 @@ namespace LinBox
 		{
 			B.copy(A);
 			FFLAS::ftrsm<Field> (field(), FFLAS::FFLAS_SIDE(side),
-				FFLAS::FFLAS_UPLO(_rep.getUpLo()), //const FFLAS_UPLO Uplo,
+				FFLAS::FFLAS_UPLO(rep_->getUpLo()), //const FFLAS_UPLO Uplo,
 		    	FFLAS::FflasNoTrans, //const FFLAS_TRANSPOSE TransA,
-				FFLAS::FFLAS_DIAG(_rep.getDiag()), //const FFLAS_DIAG Diag,
+				FFLAS::FFLAS_DIAG(rep_->getDiag()), //const FFLAS_DIAG Diag,
 				B.rowdim(), //const size_t M, 
 				B.coldim(), //const size_t N,
 				field().one, //const typename Field::Element alpha,
-				_rep.getPointer(), //typename Field::Element_ptr A, 
-				_rep.getStride(), //const size_t lda,
+				rep_->getPointer(), //typename Field::Element_ptr A, 
+				rep_->getStride(), //const size_t lda,
 				B.getPointer(), //typename Field::Element_ptr B, 
 				B.getStride() //const size_t ldb)
 			);
@@ -207,14 +211,14 @@ namespace LinBox
 		Matrix& solveRight(Matrix& Y, const Matrix& X) const
 		{	Element x; field().init(x);
 			for (size_t i = 0; i < Y.rowdim(); ++i){
-				size_t k = _rep._indices[i];
+				size_t k = rep_->_indices[i];
 				for (size_t j = 0; j < Y.coldim(); ++j)
 					Y.setEntry(k,j, X.getEntry(x, i, j));
 			}
 		/* desired form
 		 	for (size_t i = 0; i < rowdim(); ++i)
 			{
-				Matrix Yrow(Y, _rep._indices[i], 0, 1, Y.coldim());
+				Matrix Yrow(Y, rep_->_indices[i], 0, 1, Y.coldim());
 				Matrix Xrow(X, i, 0, 1, X.coldim());
 				Yrow.copy(Xrow); 
 			}
@@ -224,7 +228,7 @@ namespace LinBox
 		Matrix& solveLeft(Matrix& Y, const Matrix& X) const
 		{	Element x; field().init(x);
 			for (size_t i = 0; i < Y.coldim(); ++i){
-				size_t k = _rep._indices[i];
+				size_t k = rep_->_indices[i];
 				for (size_t j = 0; j < Y.rowdim(); ++j)
 					Y.setEntry(j,i, X.getEntry(x, j, k));
 			}
@@ -232,7 +236,7 @@ namespace LinBox
 			for (size_t i = 0; i < coldim(); ++i)
 			{
 				Matrix Ycol(Y, 0, i, Y.rowdim(), 1);
-				Matrix Xcol(X, 0, _rep._indices[i], X.rowdim(), 1);
+				Matrix Xcol(X, 0, rep_->_indices[i], X.rowdim(), 1);
 				Ycol.copy(Xcol); 
 			}
 		*/
@@ -251,7 +255,7 @@ namespace LinBox
 
 		template<typename _Tp1>
 		struct rebind {
-			typedef Permutation<_Tp1> other;
+			typedef TriangularFIBB<_Tp1> other;
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
 				Ap->setStorage( A.getStorage() );
 			}
@@ -267,7 +271,7 @@ namespace LinBox
 		/// rowdim
 		size_t rowdim (void) const
 		{
-			return _rep.rowdim();
+			return rep_->rowdim();
 		}
 
 		/* Retreive column dimensions of BlackBox matrix.
@@ -277,18 +281,18 @@ namespace LinBox
 		/// coldim
 		size_t coldim (void) const
 		{
-			return _rep.coldim();
+			return rep_->coldim();
 		}
 
-		const Field& field() const { return _rep.field(); }
-		const Field& ring() const { return _rep.field(); }
+		const Field& field() const { return rep_->field(); }
+		const Field& ring() const { return rep_->field(); }
 
 		//!@bug needs a MM version
 		std::ostream &write(std::ostream &os) const
-		{ return _rep.write(os, Tag::FileFormat::Plain); }
+		{ return rep_->write(os, Tag::FileFormat::Plain); }
 
 		std::ostream &write(std::ostream &os, LINBOX_enum(Tag::FileFormat) format) const
-		{ return _rep.write(os, format); }
+		{ return rep_->write(os, format); }
 
 		//!@bug there is no read here. (needed by test-blackbox.h)
 		std::istream &read(std::istream &is) 
@@ -302,6 +306,7 @@ namespace LinBox
 		}
 
 }; // template <Vector> class TriangularFIBB
+
 
 } // namespace LinBox
 

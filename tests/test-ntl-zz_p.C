@@ -47,7 +47,7 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-        static long q = 1073741789;
+        static integer q = 1073741789;
 	static size_t n = 10000;
 	static int iterations = 1;
 
@@ -63,7 +63,7 @@ int main (int argc, char **argv)
 	commentator().start("NTL_ZZ_p field test suite", "NTL_ZZ_p");
 	bool pass = true;
 
-	NTL::ZZ_p::init(NTL::to_ZZ(q));
+	NTL::ZZ_p::init(NTL::to_ZZ(long(int64_t(q))));
 	// Givaro::ZRing<NTL::ZZ_p> F;
 	// NTL_ZZ_p F(q); // XXX is there a q ?
 	NTL_ZZ_p F;
