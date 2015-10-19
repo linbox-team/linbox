@@ -74,6 +74,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
+	typedef typename Field::NonZeroRandIter NonZeroRandIter;
 
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -81,7 +82,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	commentator().start (pretty("Testing rank"),"testRank",(unsigned int)iterations);
 
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
+	NonZeroRandIter Gn(F,G);
 
 	bool ret = true;
 
@@ -134,86 +135,6 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	return ret;
 }
 
-#if 0 /* removed from fflas-ffpack */
-/*
- *  Testing the rank of dense matrices using TURBO algorithm
- *  construct a n*n matrices of rank r and compute the rank
- */
-template <class Field>
-static bool testTURBO (const Field& F,size_t n, int iterations)
-{
-
-	typedef typename Field::Element Element;
-	typedef typename Field::RandIter RandIter;
-
-	//Commentator commentator;
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator().start (pretty("Testing TURBO"),"testTURBO",(unsigned int)iterations);
-
-	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
-
-	bool ret = true;
-
-	for (int k=0;k<iterations; ++k) {
-
-	unsigned int r;
-		commentator().progress(k);
-		Element * A = new Element[n*n];
-		Element * S = new Element[n*n];
-		Element * L = new Element[n*n];
-
-		r = (unsigned)((size_t)rand() % n);
-		// create S as an upper triangular matrix with r nonzero rows
-		for (size_t i=0;i<r;++i){
-			for (size_t j=0;j<i;++j)
-				F.assign(*(S+j+i*n),F.zero);
-			Gn.random(*(S+i*n+i));
-			for (size_t j=i+1;j<n;++j)
-				G.random(*(S+i*n+j));
-		}
-		for (size_t i=r; i<n; ++i)
-			for (size_t j=0;j<n;++j)
-				F.assign( *(S+i*n+j),F.zero);
-		// create L as a lower triangular matrix with nonzero elements on the diagonal
-		for (size_t i=0;i<n;++i){
-			for (size_t j=0;j<i;++j)
-				G.random(*(L+i*n+j));
-			Gn.random(*(L+i*n+i));
-			for (size_t j=i+1;j<n;++j)
-				F.assign(*(L+j+i*n),F.zero);
-		}
-
-
-		//  compute A=LS
-		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
-			      F.one, L, n, S, n, F.zero, A, n );
-
-		delete[] L;
-		delete[] S;
-		// compute the rank of A
-		size_t * P = new size_t[n];
-		size_t * Q = new size_t[n];
-		unsigned int rank= (unsigned)FFPACK::TURBO( F, n, n,
-						  A,n, P, Q, 100);
-// 						  A, n, A+no2,n,
-// 						    A+no2*n, n, A+no2*(n+1), n );
-
-		delete[] P;
-		delete[] Q;
-		delete[] A;
-
-		if (rank!=r)
-			ret=false;
-	}
-
-	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testTURBO");
-
-	return ret;
-}
-#endif
-
 
 /*
  *  Testing the determinant of dense matrices using BlasDomain
@@ -225,6 +146,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
+	typedef typename Field::NonZeroRandIter NonZeroRandIter;
 
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -233,7 +155,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 	Element d;
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
+	NonZeroRandIter Gn(F,G);
 
 	bool ret = true;
 
@@ -300,6 +222,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
+	typedef typename Field::NonZeroRandIter                NonZeroRandIter;
 
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -307,7 +230,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 	commentator().start (pretty("Testing LQUP factorization"),"testLQUP",(unsigned int)iterations);
 
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
+	NonZeroRandIter Gn(F,G);
 
 	bool ret = true;
 
@@ -433,6 +356,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 {
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
+	typedef typename Field::NonZeroRandIter                NonZeroRandIter;
 	typedef vector<Element>                       Polynomial;
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -440,7 +364,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	commentator().start (pretty("Testing minpoly"),"testMinPoly",(unsigned int)iterations);
 	Element tmp ;
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
+	NonZeroRandIter Gn(F,G);
 	bool ret = true;
 
 	for (int k=0;k<iterations;++k) {
@@ -535,6 +459,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 {
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
+	typedef typename Field::NonZeroRandIter         NonZeroRandIter;
 	typedef vector<Element>                       Polynomial;
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -542,7 +467,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	commentator().start (pretty("Testing charpoly"),"testCharPoly",(unsigned int)iterations);
 	Element tmp;
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
+	NonZeroRandIter Gn(F,G);
 	bool ret = true;
 
 	for (int k=0;k<iterations;++k) {
@@ -615,6 +540,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
+	typedef typename Field::NonZeroRandIter NonZeroRandIter;
 
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -622,7 +548,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	commentator().start (pretty("Testing inverse"),"testInv",(unsigned int)iterations);
 
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G);
+	NonZeroRandIter Gn(F,G);
 
 	bool ret = true;
 
@@ -818,7 +744,6 @@ int main(int argc, char** argv)
 		if (!testLUdivine (F, m,n, iterations)) locpass = false;
 		if (!testRank (F, n, iterations))       locpass = false;
 		if (!testDet (F, n, iterations))        locpass = false;
-		// if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
 		if (!testMinPoly (F,n, iterations))      locpass = false;
@@ -844,7 +769,6 @@ int main(int argc, char** argv)
 		if (!testLUdivine (F, m,n, iterations)) locpass = false;
 		if (!testRank (F, n, iterations))       locpass = false;
 		if (!testDet (F, n, iterations))        locpass = false;
-		//if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
 		if (!testMinPoly (F,n, iterations))      locpass = false;
@@ -868,7 +792,6 @@ int main(int argc, char** argv)
 		if (!testLUdivine (F, m,n, iterations)) locpass = false;
 		if (!testRank (F, n, iterations))       locpass = false;
 		if (!testDet (F, n, iterations))        locpass = false;
-		// if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
 		if (!testMinPoly (F,n, iterations))      locpass = false;
@@ -892,7 +815,6 @@ int main(int argc, char** argv)
 		if (!testLUdivine (F, m,n, iterations)) locpass = false;
 		if (!testRank (F, n, iterations))       locpass = false;
 		if (!testDet (F, n, iterations))        locpass = false;
-		// if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
 		if (!testMinPoly (F,n, iterations))      locpass = false;
@@ -915,7 +837,6 @@ int main(int argc, char** argv)
 		if (!testLUdivine (F, m,n, iterations)) locpass = false;
 		if (!testRank (F, n, iterations))       locpass = false;
 		if (!testDet (F, n, iterations))        locpass = false;
-		//if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
 		if (!testMinPoly (F,n, iterations))      locpass = false;
@@ -926,9 +847,6 @@ int main(int argc, char** argv)
 
 	}
 
-//#pragma message "#warning Givaro::ModularBalanced<int32_t > fails"
-#if 1 // fails
-#pragma message "#warning TURBO fails except on Givaro::ModularBalanced<float>"
 	/* Givaro::Modular Balanced int32_t */
 	{
 		typedef Givaro::ModularBalanced<int32_t > Field ;
@@ -943,7 +861,6 @@ int main(int argc, char** argv)
 		if (!testLUdivine (F, m,n, iterations)) locpass = false;
 		if (!testRank (F, n, iterations))       locpass = false;
 		if (!testDet (F, n, iterations))        locpass = false;
-		//if (!testTURBO (F, n, iterations))      locpass = false;
 		if (!testapplyP  (F, n, iterations))    locpass = false;
 		if (!testInv  (F, n, iterations))       locpass = false;
 		if (!testMinPoly (F,n, iterations))      locpass = false;
@@ -951,7 +868,6 @@ int main(int argc, char** argv)
 		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
 		pass &= locpass ;
 	}
-#endif
 
 	/* Givaro::Modular uint32_t */
 	{
@@ -967,7 +883,6 @@ int main(int argc, char** argv)
 		if (!testLUdivine (F, m,n, iterations)) locpass = false;
 		if (!testRank (F, n, iterations))   locpass     = false;
 		if (!testDet (F, n, iterations))   locpass      = false;
-		//if (!testTURBO (F, n, iterations))   locpass    = false;
 		if (!testapplyP  (F, n, iterations)) locpass    = false;
 		if (!testInv  (F, n, iterations)) locpass       = false;
 		if (!testMinPoly (F,n, iterations)) locpass      = false;
@@ -991,7 +906,6 @@ int main(int argc, char** argv)
 		if (!testLUdivine (F, m,n, iterations)) locpass = false;
 		if (!testRank (F, n, iterations))   locpass     = false;
 		if (!testDet (F, n, iterations))   locpass      = false;
-		//if (!testTURBO (F, n, iterations))   locpass    = false;
 		if (!testapplyP  (F, n, iterations)) locpass    = false;
 		if (!testInv  (F, n, iterations)) locpass       = false;
 		if (!testMinPoly (F,n, iterations)) locpass      = false;

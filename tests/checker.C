@@ -62,7 +62,6 @@ int main(int argc, char* argv[]) {
 if (honor_skips) {
 skip("test-block-ring", "non commutative rings not supported");
 skip("test-cradomain", "inf loop.  most of the test does not compile");
-skip("test-ffpack", "testTURBO fails, move to ffpack tests?");
 skip("test-ftrmm", "should move to fflas tests?");
 skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
 skip("test-image-field", "deprecated");
@@ -91,7 +90,6 @@ skip("test-tutorial", "incomplete test");
 skip("test-dense-zero-one", "half baked, bds responsible");
 }
 
-warn("test-blas-matrix", "intermittently fails");
 warn("test-echelon-form", "new");
 warn("test-fibb",  "incomplete");
 warn("test-gf2", "not much is tested there");
