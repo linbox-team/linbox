@@ -83,6 +83,7 @@ skip("test-rat-charpoly", "inf loop");
 skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
 skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infinite loop")
 skip("test-solve-nonsingular", "BY responsible");
+skip("test-poly-det", "incomplete test (if still relevant)");
 skip("test-sparse", "superceded by test-sparse2");
 skip("test-sparse-map-map", "const issue in givranditer, curious use of nonexistant next() in Extension");
 //Tests requiring further development
