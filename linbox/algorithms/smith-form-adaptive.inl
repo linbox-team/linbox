@@ -61,7 +61,7 @@ namespace LinBox
 	/* Compute the local smith form at prime p, when modular (p^e) fits in long
 	*/
 	template <class Matrix>
-	void SmithFormAdaptive::compute_local_long (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long p, long e)
+	void SmithFormAdaptive::compute_local_long (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 
@@ -114,7 +114,7 @@ namespace LinBox
 			typedef Givaro::Modular<int32_t> Field;
 			typedef BlasMatrix<Field> FMatrix;
 			MatrixRank<typename Matrix::Field, Field> MR;
-			Field F((unsigned long)p);
+			Field F(p);
 			FMatrix A_local(A, F);
 			long rank = MR. rankIn (A_local);
 
@@ -127,7 +127,7 @@ namespace LinBox
 		}
 		else {
 			report << "      Compute local smith at " << p <<'^' << e << " using PIRModular<int32_t>\n";
-			long m = 1;
+			int64_t m = 1;
 			int i = 0;
 			for (i = 0; i < e; ++ i)
 				m *= p;
@@ -151,7 +151,7 @@ namespace LinBox
 	/* Compute the local smith form at prime p, when modular (p^e) doesnot fit in long
 	*/
 	template <class Matrix>
-	void SmithFormAdaptive::compute_local_big (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long p, long e)
+	void SmithFormAdaptive::compute_local_big (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
 
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
@@ -182,7 +182,7 @@ namespace LinBox
 	}
 #else
 	template <class Matrix>
-	void SmithFormAdaptive::compute_local_big (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long p, long e)
+	void SmithFormAdaptive::compute_local_big (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
 		throw(LinBoxError("you need NTL to use SmithFormAdaptive",LB_FILE_LOC));
 	}
@@ -192,7 +192,7 @@ namespace LinBox
 	/* Compute the local smith form at prime p
 	*/
 	template <class Matrix>
-	void SmithFormAdaptive::compute_local (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long p, long e)
+	void SmithFormAdaptive::compute_local (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
 
 		linbox_check ((p > 0) && ( e >= 0));
@@ -213,7 +213,7 @@ namespace LinBox
 	 * r >= 2;
 	 */
 	template <class Matrix>
-	void SmithFormAdaptive::smithFormSmooth (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long r, const std::vector<long>& sev)
+	void SmithFormAdaptive::smithFormSmooth (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long r, const std::vector<int64_t>& sev)
 	{
 		Givaro::ZRing<Integer> Z;
 		//....
@@ -221,7 +221,7 @@ namespace LinBox
 		report << "Computation the k-smooth part of the invariant factors starts(via local and rank):" << std::endl;
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
-		std::vector<long>::const_iterator sev_p; const long* prime_p; BlasVector<Givaro::ZRing<Integer> >::iterator s_p;
+		std::vector<int64_t>::const_iterator sev_p; const int64_t* prime_p; BlasVector<Givaro::ZRing<Integer> >::iterator s_p;
 		BlasVector<Givaro::ZRing<Integer> > local(Z,(size_t)order);
 		BlasVector<Givaro::ZRing<Integer> >::iterator local_p;
 
@@ -292,7 +292,7 @@ namespace LinBox
 			SmithFormBinary<Ring, OIF, MatrixRank<Ring, Field > > sf;;
 			sf. setOIFThreshold (2);
 			sf. setLIFThreshold (2);
-			std::vector<long> primeL (prime, prime + NPrime);
+			std::vector<int64_t> primeL (prime, prime + NPrime);
 			std::vector<typename Ring::Element> out ((size_t)order);
 			sf. smithForm (out, A, primeL);
 			typename std::vector<typename Ring::Element>::iterator out_p;
@@ -327,7 +327,7 @@ namespace LinBox
 	 * r >= 2;
 	 */
 	template <class Matrix>
-	void SmithFormAdaptive::smithFormVal (BlasVector<Givaro::ZRing<Integer> >&s, const Matrix& A, long r, const std::vector<long>& sev)
+	void SmithFormAdaptive::smithFormVal (BlasVector<Givaro::ZRing<Integer> >&s, const Matrix& A, long r, const std::vector<int64_t>& sev)
 	{
 		//....
 		Givaro::ZRing<Integer> Z;
@@ -336,8 +336,8 @@ namespace LinBox
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
 
-		std::vector<long>::const_iterator sev_p;
-		const long* prime_p;
+		std::vector<int64_t>::const_iterator sev_p;
+		const int64_t* prime_p;
 
 		BlasVector<Givaro::ZRing<Integer> >::iterator s_p;
 		BlasVector<Givaro::ZRing<Integer> > local(Z,(size_t)order);
@@ -401,14 +401,14 @@ namespace LinBox
 		r = MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << '\n';
 		report << "Computation of the rank finished.\n";
-		const long* prime_p;
-		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
+		const int64_t* prime_p;
+		std::vector<int64_t> e(NPrime); std::vector<int64_t>::iterator e_p;
 
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Givaro::Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
 		RandomPrimeIterator rg; rg.template setBitsField<Field>();
-		Field F ((unsigned long)*rg);
+		Field F (*rg);
 		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
 		MatrixHom::map (Ap, A);
 		Valence::one_valence (v, degree, Ap);
@@ -526,14 +526,15 @@ namespace LinBox
 		report << "Computation of the rank finished.\n";
 		// a hack
 		if (r == 0) { for (size_t i = 0; i <  order; ++i) s[i]=0; return; }
-		const long* prime_p;
-		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
+		const int64_t* prime_p;
+		std::vector<int64_t> e(NPrime); std::vector<int64_t>::iterator e_p;
 
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Givaro::Modular<int32_t> Field;
-		integer Val; Field::Element v; unsigned long degree;
+		integer Val; Field::Element v; size_t degree;
+		//integer Val; Field::Element v; unsigned long degree;
 		RandomPrimeIterator rg; rg.template setBitsField<Field>();
-		Field F ((unsigned long)*rg);
+		Field F (*rg);
 		typename MatrixHomTrait<BlasMatrix <IRing, _Rep>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A);
 		Valence::one_valence (v, degree, Ap);

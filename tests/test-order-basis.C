@@ -13,6 +13,9 @@
 using namespace LinBox;
 using namespace std;
 
+ostream& report = commentator().report();
+//ostream& report = std::cout;
+
 template<typename Field, typename Mat>
 string check_sigma(const Field& F, const Mat& sigma,  Mat& serie, size_t ord){
 	Mat T(F,sigma.rowdim(),serie.coldim(),sigma.size()+serie.size()-1);
@@ -28,7 +31,7 @@ string check_sigma(const Field& F, const Mat& sigma,  Mat& serie, size_t ord){
 	}
 	if (i<ord){
 		cout<<"error at degree="<<i<<endl;
-		T[i].write(std::cout, Tag::FileFormat::Plain);
+		T[i].write(report, Tag::FileFormat::Plain);
 		cout<<"***"<<endl;
 		cout<<serie<<endl;
 		cout<<sigma<<endl;	
@@ -77,7 +80,7 @@ void check_sigma(const Field& F, RandIter& Gen, size_t m, size_t n, size_t d) {
 			for (size_t j=0;j<n;++j)
 				Gen.random(Serie.ref(i,j,k));
 
-	//std::cout<<"Serie:="<<Serie<<std::endl;
+	//report<<"Serie:="<<Serie<<std::endl;
 	
 	// define the shift
 	vector<size_t> shift(m,0);
@@ -86,11 +89,11 @@ void check_sigma(const Field& F, RandIter& Gen, size_t m, size_t n, size_t d) {
 	OrderBasis<Field> SB(F);
 
 	SB.M_Basis(Sigma3, Serie, d, shift3);
-	std::cout << "M-Basis       : " <<check_sigma(F,Sigma3,Serie,d)<<endl;
+	report << "M-Basis       : " <<check_sigma(F,Sigma3,Serie,d)<<endl;
 	SB.PM_Basis2(Sigma1,Serie, d, shift);
-	std::cout << "PM-Basis      : " <<check_sigma(F,Sigma1,Serie,d)<<endl;
+	report << "PM-Basis      : " <<check_sigma(F,Sigma1,Serie,d)<<endl;
 	//SB.oPM_Basis(Sigma2, Serie, d, shift2);
-	//std::cout << "PM-Basis iter : " <<check_sigma(F,Sigma2,Serie,d)<<endl;
+	//report << "PM-Basis iter : " <<check_sigma(F,Sigma2,Serie,d)<<endl;
 
 	// if (!(Sigma1==Sigma2)){
 	// cout<<"---> different basis for PM-Basis and PM-Basis iter"<<endl;
@@ -123,15 +126,15 @@ int main(int argc, char** argv){
 
 	size_t logd=integer((uint64_t)d).bitsize();
 	
-	std::cout<<"###  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
+	report<<"###  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
 	if (b < 26){
 		if (logd>b-2){
-			std::cout<<"degree is to large for field bitsize: "<<b<<std::endl;
+			report<<"degree is to large for field bitsize: "<<b<<std::endl;
 			exit(0);
 		}
 		RandomFFTPrime Rd(1<<b,seed);	
 		integer p = Rd.randomPrime(logd+1);
-		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
+		report<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 		SmallField F(p);
 		typename SmallField::RandIter G(F,0,seed);
 		check_sigma(F,G,m,n,d);
@@ -139,7 +142,7 @@ int main(int argc, char** argv){
 	else {
 		RandomPrimeIterator Rd(b,seed);	
 		integer p = Rd.randomPrime();
-		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
+		report<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 
 		LargeField F(p);
 		typename LargeField::RandIter G(F,0,seed);

@@ -63,8 +63,8 @@ int main(int argc, char* argv[]) {
 
 if (honor_skips) {
 hide("test-block-ring", "non commutative rings not supported");
-hide("test-ffpack", "testTURBO fails, move to ffpack tests?");
-hide("test-ftrmm", "should move to fflas tests?");
+//hide("test-ffpack", "testTURBO fails, move to ffpack tests?");
+hide("test-ftrmm", "should move to attic");
 skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
 hide("test-image-field", "deprecated");
 //skip("test-isposdef", "intermittent inf loop");
@@ -79,9 +79,9 @@ skip("test-modular-balanced-double",  "test and modular-balanced disagree on ini
 skip("test-moore-penrose", "inf loop");
 skip("test-optimization", "not in test form");
 skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
-//skip("test-rank-md", "intermittent inf loop"/*, "vector (bb) responsible"*/);
-//skip("test-rank-u32", "intermittent inf loop"/*, "vector (bb) responsible"*/);
-//skip("test-rational-reconstruction-base", "inf loop");
+skip("test-rank-md", "intermittent inf loop"/*, "vector (bb) responsible"*/);
+skip("test-rank-u32", "intermittent inf loop"/*, "vector (bb) responsible"*/);
+skip("test-rational-reconstruction-base", "inf loop");
 skip("test-rat-charpoly", "inf loop");
 skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
 skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infinite loop")
@@ -97,8 +97,6 @@ skip("test-dense-zero-one", "half baked, bds responsible");
 warn("test-echelon-form", "new");
 warn("test-fibb",  "incomplete");
 warn("test-gf2", "not much is tested there");
-warn("test-givaro-zpz", "tested in Givaro?");
-warn("test-givaro-zpzuns", "tested in Givaro?");
 //warn("test-matrix-domain", "intermittent row permutation failure");
 warn("test-param-fuzzy", "Noncompliant field");
 warn("test-qlup", "GF2 fails to compile");
