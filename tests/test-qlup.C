@@ -1,7 +1,7 @@
 /* tests/test-qlup.C
  * Copyright (C) The LinBox group
  *
- * Time-stamp: <30 Jan 15 19:07:07 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <23 Oct 15 14:49:40 Jean-Guillaume.Dumas@imag.fr>
  * -----------------------------------------------------
  *
  * ========LICENCE========
@@ -360,8 +360,8 @@ int main (int argc, char **argv)
 
 	{
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-		<< "over Givaro::Modular<uint32_t>" << endl;
-		typedef Givaro::Modular<uint32_t> Field;
+		<< "over Givaro::Modular<uint32_t,uint64_t>" << endl;
+		typedef Givaro::Modular<uint32_t,uint64_t> Field;
 		Field F (q);
 		typedef SparseMatrix<Field, STOR_T > Blackbox;
 		typedef RandomSparseStream<Field, Blackbox::Row   > RandStream;

@@ -500,7 +500,7 @@ namespace LinBox
 				uint64_t extend = (uint64_t)Givaro::FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 				if (extend > 1) {
 					commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
-					Givaro::Extension<Field> EF( F, extend);
+					Givaro::Extension<Field> EF( F, typename Givaro::Extension<Field>::Residu_t(extend));
 					typedef typename Blackbox::template rebind< Givaro::Extension<Field>  >::other FBlackbox;
 					FBlackbox Ap(A, EF);
 					rank(r, Ap, tag, Method::Wiedemann(m));
