@@ -75,14 +75,14 @@ namespace LinBox
 	template <class Ring>
 	struct ClassifyRing;
 
-	template <class Element>
-	struct ClassifyRing<Givaro::Modular<Element> >
+	template <class Element, class Compute>
+	struct ClassifyRing<Givaro::Modular<Element,Compute> >
 	{
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	template <class Element>
-	struct ClassifyRing<Givaro::Modular<Element> const>
+	template <class Element, class Compute>
+	struct ClassifyRing<Givaro::Modular<Element,Compute> const>
 	{
 		typedef RingCategories::ModularTag categoryTag;
 	};
@@ -94,171 +94,6 @@ namespace LinBox
 
 
 
-
-	/*! Specialization of FieldAXPY for parameterized modular field */
-
-	template <class _Element>
-	class FieldAXPY<Givaro::Modular<_Element> > {
-	public:
-
-		typedef _Element Element;
-		typedef Element Abnormal;
-		typedef Givaro::Modular<_Element> Field;
-
-		FieldAXPY (const Field &F) :
-			_field(&F), _y(F.zero)
-		{}
-		FieldAXPY (const FieldAXPY<Givaro::Modular<Element> > &faxpy) :
-			_field (faxpy._field), _y (faxpy._y)
-		{}
-
-		FieldAXPY<Givaro::Modular <Element> > &operator = (const FieldAXPY &faxpy)
-		{
-			_field = faxpy._field;
-			_y = faxpy._y;
-			return *this;
-		}
-
-		inline Element& mulacc (const Element &a, const Element &x)
-		{
-			return accumulate(a * x);
-		}
-
-		inline Element& accumulate (const Element &t)
-		{
-			return _y+=t;
-		}
-
-		inline Element &get (Element &y) { _y %= field().characteristic(); y = _y; return y;
-		}
-
-		inline FieldAXPY &assign (const Element y)
-		{
-			_y = y;
-			return *this;
-		}
-
-		inline void reset() {
-			field().assign(_y, field().zero);
-		}
-
-		inline const Field &field() const { return *_field; }
-
-	protected:
-
-		const Field *_field;
-		Element _y;
-	};
-
-	/*! Specialization of FieldAXPY for  modular double */
-
-	template <>
-	class FieldAXPY<Givaro::Modular<double,double> > {
-	public:
-        typedef Givaro::Modular<double,double> Field;
-        typedef Field::Element Element;
-		typedef Element Abnormal;
-
-		FieldAXPY (const Field &F) :
-			_field(F), _y(F.zero)
-		{}
-		FieldAXPY (const FieldAXPY<Givaro::Modular<Element> > &faxpy) :
-			_field (faxpy._field), _y (faxpy._y)
-		{}
-
-		FieldAXPY<Field > &operator = (const FieldAXPY &faxpy)
-		{
-			const_cast<Field&>(_field) = faxpy._field;
-			_y = faxpy._y;
-			return *this;
-		}
-
-		inline Element& mulacc (const Element &a, const Element &x)
-		{
-			return accumulate(a * x);
-		}
-
-		inline Element& accumulate (const Element &t)
-		{
-			return _y+=t;
-		}
-
-		inline Element &get (Element &y) { return field().assign(y,field().reduce(_y)); }
-        
-        
-
-		inline FieldAXPY &assign (const Element y)
-		{
-			field().assign(_y,y);
-			return *this;
-		}
-
-		inline void reset() {
-			field().assign(_y, field().zero);
-		}
-
-		inline const Field &field() const { return _field; }
-
-	protected:
-
-		const Field &_field;
-		Element _y;
-	};
-
-	/*! Specialization of FieldAXPY for  modular float */
-
-	template <>
-	class FieldAXPY<Givaro::Modular<float,float> > {
-	public:
-        typedef Givaro::Modular<float,float> Field;
-        typedef Field::Element Element;
-		typedef Element Abnormal;
-
-		FieldAXPY (const Field &F) :
-			_field(F), _y(F.zero)
-		{}
-		FieldAXPY (const FieldAXPY<Givaro::Modular<Element> > &faxpy) :
-			_field (faxpy._field), _y (faxpy._y)
-		{}
-
-		FieldAXPY<Field > &operator = (const FieldAXPY &faxpy)
-		{
-			const_cast<Field&>(_field) = faxpy._field;
-			_y = faxpy._y;
-			return *this;
-		}
-
-		inline Element& mulacc (const Element &a, const Element &x)
-		{
-			return accumulate(a * x);
-		}
-
-		inline Element& accumulate (const Element &t)
-		{
-			return _y+=t;
-		}
-
-		inline Element &get (Element &y) { return field().assign(y,field().reduce(_y)); }
-        
-        
-
-		inline FieldAXPY &assign (const Element y)
-		{
-			field().assign(_y,y);
-			return *this;
-		}
-
-		inline void reset() {
-			field().assign(_y, field().zero);
-		}
-
-		inline const Field &field() const { return _field; }
-
-	protected:
-
-		const Field &_field;
-		Element _y;
-	};
 
 
 /*
@@ -283,6 +118,7 @@ namespace LinBox
 
 } // namespace LinBox
 
+
 #include "linbox/vector/vector-domain.h"
 
 namespace LinBox {
@@ -292,15 +128,14 @@ namespace LinBox {
 } // LinBox
 
 
-// #include "linbox/field/modular/modular-unsigned.h"
-// #include "linbox/field/modular/modular-int32.h"
-// // #ifdef __LINBOX_HAVE_INT64
-// #include "linbox/field/modular/modular-int64.h"
-// // #endif
-// #include "linbox/field/modular/modular-short.h"
-// #include "linbox/field/modular/modular-byte.h"
-// #include "linbox/field/modular/modular-double.h"
-// #include "linbox/field/modular/modular-float.h"
+/*! Specialization of FieldAXPY and DotProducts for parameterized modular field */
+#include "linbox/ring/modular/modular-int32.h"
+#include "linbox/ring/modular/modular-int64.h"
+#include "linbox/ring/modular/modular-short.h"
+#include "linbox/ring/modular/modular-byte.h"
+#include "linbox/ring/modular/modular-double.h"
+#include "linbox/ring/modular/modular-float.h"
+#include "linbox/ring/modular/modular-unsigned.h"
 
 #endif // __LINBOX_field_modular_H
 

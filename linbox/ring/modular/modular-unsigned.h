@@ -1,4 +1,4 @@
-/* linbox/field/modular.h
+/* linbox/ring/modular.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
  * Copyright (C) 2011 LinBox
@@ -663,7 +663,7 @@ namespace LinBox { /*  uint64_t */
 
 }
 
-#include "linbox/field/modular/modular.inl"
+//#include "linbox/ring/modular/modular.inl"
 
 #endif // __LINBOX_field_modular_unsigned_H
 

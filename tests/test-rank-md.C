@@ -29,7 +29,8 @@
  */
 
 #include "linbox/linbox-config.h"
-#include <givaro/modular.h>
+//#include <givaro/modular.h>
+#include "linbox/ring/modular/modular-double.h"
 #include "test-rank.h"
 
 int main (int argc, char **argv)

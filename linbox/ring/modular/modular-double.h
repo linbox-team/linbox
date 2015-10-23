@@ -71,7 +71,6 @@ namespace LinBox
 // FieldAXPY/DotProductDomain
 namespace LinBox
 {
-
 	template <>
 	class FieldAXPY<Givaro::Modular<double> > {
 	public:
