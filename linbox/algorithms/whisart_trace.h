@@ -1,7 +1,7 @@
 /* linbox/algorithms/whisart_trace.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <19 Apr 10 18:35:14 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <23 Oct 15 17:07:37 Jean-Guillaume.Dumas@imag.fr>
  * Computes the trace of D1 B D2 B^T D1 or D1 B^T D2 B D1
  *
  * ========LICENCE========
@@ -158,7 +158,7 @@ namespace LinBox
 			typename Field::Element tmp,e,f;
 			F.init(tmp);
 			F.init(e);
-			F.init(i);
+			F.init(f);
 			F.mul(tmp,it,it);
 			ExtD.getEntry(e, i, i);
 			F.mulin(tmp,e);
