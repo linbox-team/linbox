@@ -81,6 +81,7 @@ namespace LinBox
 		/** Element type
 		*/
 		typedef bool Element;
+		typedef bool Residu_t;
 
 		/** Random iterator generator type.
 		 * It must meet the common object interface of random element generators
