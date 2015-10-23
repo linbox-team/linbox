@@ -80,8 +80,8 @@ namespace LinBox
 		typedef Givaro::Modular<double> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (&F) , //_invmod(1./field().characteristic()),
-			_y(0.) , _bound( (double) ((1ULL << 53) - (unsigned long int) (field().characteristic()*field().characteristic())))
+			_field (&F) , //_invmod(1./field().fcharacteristic()),
+			_y(0.) , _bound( (double) ((1_i64 << 53) - (uint64_t) (field().characteristic()*field().characteristic())))
 		{}
 
 		FieldAXPY (const FieldAXPY &faxpy) :
@@ -111,7 +111,7 @@ namespace LinBox
 		{
 			_y += tmp;
 			if (_y > _bound)
-				return _y = fmod (_y, field().characteristic());
+				return _y = fmod (_y, field().fcharacteristic());
 			else
 				return _y;
 		}
@@ -120,14 +120,14 @@ namespace LinBox
 		{
 			_y -= tmp;
 			if (_y < 0)
-				return _y += field().characteristic();
+				return _y += field().fcharacteristic();
 			else
 				return _y;
 		}
 
 		 Element& get (Element &y)
 		{
-			_y = fmod (_y, field().characteristic());
+			_y = fmod (_y, field().fcharacteristic());
 			return y=_y ;
 		}
 
@@ -146,7 +146,7 @@ namespace LinBox
 		{
 			_y = tmp;
 			if (_y > _bound)
-				return _y = fmod (_y, field().characteristic());
+				return _y = fmod (_y, field().fcharacteristic());
 			else
 				return _y;
 		}
@@ -176,7 +176,7 @@ namespace LinBox
 			// , _bound( (double) ( (1ULL<<53) - (unsigned long int) (F.characteristic()*F.characteristic())))
 			, _nmax(0)//, _invmod(1./field().characteristic())
 		{
-			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (F.characteristic() * F.characteristic()));
+			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (F.fcharacteristic() * F.fcharacteristic()));
 			_nmax = (_nmax>0?_nmax:1);
 		}
 
@@ -191,7 +191,7 @@ namespace LinBox
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				y = fmod(y, field().characteristic());
+				y = fmod(y, field().fcharacteristic());
 			}
 			else{
 				double t = 0.;
@@ -199,13 +199,13 @@ namespace LinBox
 				for (;i< v1.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
-					t+=fmod(y, field().characteristic());
+					t+=fmod(y, field().fcharacteristic());
 					y=0.;
 				}
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
-				t+=fmod(y, field().characteristic());
-				y = fmod(t, field().characteristic());
+				t+=fmod(y, field().fcharacteristic());
+				y = fmod(t, field().fcharacteristic());
 			}
 			return res = y;
 		}
@@ -220,20 +220,20 @@ namespace LinBox
 			if (v1.first.size() < _nmax) {
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				y = fmod(y, field().characteristic());
+				y = fmod(y, field().fcharacteristic());
 			} else {
 				double t = 0.;
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=fmod(y, field().characteristic());
+					t+=fmod(y, field().fcharacteristic());
 					y=0.;
 				}
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
-				t+= fmod(y, field().characteristic());
-				y = fmod(t, field().characteristic());
+				t+= fmod(y, field().fcharacteristic());
+				y = fmod(t, field().fcharacteristic());
 			}
 			return res = y;
 		}

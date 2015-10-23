@@ -76,8 +76,8 @@ namespace LinBox
 		typedef Givaro::Modular<float> Field;
 
 		FieldAXPY (const Field &F) :
-			_field (&F) , //_invmod(1./field().characteristic()),
-			_y(0.) , _bound( (float) ( (1UL << 23) - (unsigned long int) (field().characteristic()*field().characteristic())))
+			_field (&F) , //_invmod(1./field().fcharacteristic()),
+			_y(0.) , _bound( (float) ( (1_i32 << 23) - (uint32_t) (field().characteristic()*field().characteristic())))
 		{}
 
 		FieldAXPY (const FieldAXPY &faxpy) :
@@ -95,14 +95,14 @@ namespace LinBox
 		{
 			_y += tmp;
 			if (_y > _bound)
-				return _y = fmodf (_y, field().characteristic());
+				return _y = fmodf (_y, field().fcharacteristic());
 			else
 				return _y;
 		}
 
 		inline Element& get (Element &y)
 		{
-			_y = fmodf (_y, field().characteristic());
+			_y = fmodf (_y, field().fcharacteristic());
 			return y=_y ;
 		}
 
@@ -139,10 +139,10 @@ namespace LinBox
 		typedef float Element;
 		DotProductDomain (const Givaro::Modular<float> &F) :
 			VectorDomainBase<Givaro::Modular<float> > (F)
-			, _bound( (float) ( (1<<23) - (int) (F.characteristic()*F.characteristic())))
-			//, _invmod(1./field().characteristic())
+			, _bound( (float) ( (1<<23) - (uint32_t) (F.characteristic()*F.characteristic())))
+			//, _invmod(1./field().fcharacteristic())
 		{
-			_nmax= (size_t)floor((double(1<<11)* double(1<<12))/ double(F.characteristic() * F.characteristic()));
+			_nmax= (size_t)floor((double(1<<11)* double(1<<12))/ double(F.fcharacteristic() * F.fcharacteristic()));
 		}
 
 		using VectorDomainBase<Givaro::Modular<float> >::field;
@@ -155,7 +155,7 @@ namespace LinBox
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				y = fmodf(y, field().characteristic());
+				y = fmodf(y, field().fcharacteristic());
 			}
 			else {
 				float t = 0.;
@@ -164,13 +164,13 @@ namespace LinBox
 				{
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
-					t+=fmodf(y, field().characteristic());
+					t+=fmodf(y, field().fcharacteristic());
 					y=0.;
 				}
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
-				t+=fmodf(y, field().characteristic());
-				y = fmodf(t, field().characteristic());
+				t+=fmodf(y, field().fcharacteristic());
+				y = fmodf(t, field().fcharacteristic());
 			}
 			return res = y;
 		}
@@ -186,7 +186,7 @@ namespace LinBox
 			{
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				y = fmodf(y, field().characteristic());
+				y = fmodf(y, field().fcharacteristic());
 			}
 			else
 			{
@@ -196,13 +196,13 @@ namespace LinBox
 				{
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=fmodf(y, field().characteristic());
+					t+=fmodf(y, field().fcharacteristic());
 					y=0.;
 				}
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
-				t+= fmodf(y, field().characteristic());
-				y = fmodf(t, field().characteristic());
+				t+= fmodf(y, field().fcharacteristic());
+				y = fmodf(t, field().fcharacteristic());
 			}
 			return res = y;
 		}

@@ -127,7 +127,7 @@ namespace LinBox { /*  uint8_t */
 	private:
 		const Field *_field;
 		uint64_t _y;
-		int i;
+		int64_t i;
 	};
 
 	//! Specialization of DotProductDomain for unsigned short modular field
@@ -273,7 +273,7 @@ namespace LinBox { /*  uint16_t */
 	private:
 		const Field *_field;
 		uint64_t _y;
-		int i;
+		int64_t i;
 	};
 
 	//! Specialization of DotProductDomain for unsigned short modular field
