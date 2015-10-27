@@ -36,6 +36,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"
+#include "linbox/ring/modular.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/util/field-axpy.h"
@@ -53,17 +54,6 @@
 // Namespace in which all LinBox code resides
 namespace LinBox
 {
-
-	template <class Ring>
-	struct ClassifyRing;
-
-	template<class Element>
-	struct ClassifyRing<Givaro::ModularBalanced<Element> >;
-
-	template<>
-	struct ClassifyRing<Givaro::ModularBalanced<int32_t> > {
-		typedef RingCategories::ModularTag categoryTag;
-	};
 
 	template <>
 	class FieldAXPY<Givaro::ModularBalanced<int32_t> > {

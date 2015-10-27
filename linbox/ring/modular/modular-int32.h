@@ -37,6 +37,7 @@
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/field/field-traits.h"
+#include "linbox/ring/modular.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/util/write-mm.h"
@@ -55,15 +56,6 @@ namespace LinBox
 	class FieldAXPY;
 	template<class Field>
 	class MVProductDomain;
-
-	template <class Ring>
-	struct ClassifyRing;
-
-	template <>
-	template<class Compute>
-	struct ClassifyRing<Givaro::Modular<int32_t,Compute> > {
-		typedef RingCategories::ModularTag categoryTag;
-	};
 
 	template <>
 	template<class Compute>

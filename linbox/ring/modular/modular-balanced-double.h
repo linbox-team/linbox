@@ -42,6 +42,7 @@
 #endif
 
 #include "linbox/linbox-config.h"
+#include "linbox/ring/modular.h"
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"
@@ -58,17 +59,6 @@
 // Namespace in which all LinBox code resides
 namespace LinBox
 {
-
-	template <class Ring>
-	struct ClassifyRing;
-
-	template <class Element>
-	struct ClassifyRing<Givaro::ModularBalanced<Element> >;
-
-	template <>
-	struct ClassifyRing<Givaro::ModularBalanced<double> > {
-		typedef RingCategories::ModularTag categoryTag;
-	};
 
 	class MultiModDouble;
 

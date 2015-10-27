@@ -33,6 +33,7 @@
 #include <cmath>
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
+#include "linbox/ring/modular.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/field/field-traits.h"
@@ -59,15 +60,6 @@ namespace LinBox
 	class FieldAXPY;
 	template<class Field>
 	class MVProductDomain;
-
-	template <class Ring>
-	struct ClassifyRing;
-
-	template <>
-	template <typename Compute_t>
-	struct ClassifyRing<Givaro::Modular<int64_t,Compute_t> > {
-	       	typedef RingCategories::ModularTag categoryTag;
-	};
 
 	template <>
 	template <typename Compute_t>

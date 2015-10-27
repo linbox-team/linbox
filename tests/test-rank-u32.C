@@ -29,6 +29,7 @@
  */
 
 #include "test-rank.h"
+#include "linbox/ring/modular/modular-unsigned.h"
 
 int main (int argc, char **argv)
 {

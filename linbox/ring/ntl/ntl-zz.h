@@ -62,6 +62,7 @@ namespace LinBox
 		typedef NTL_ZZ Father_t ;
 
 		typedef NTL::ZZ Element;
+		typedef NTL::ZZ Residu_t;
 		Element zero,one,mOne;
 
 		NTL_ZZ(int p = 0, int exp = 1)

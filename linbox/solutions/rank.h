@@ -26,7 +26,7 @@
 #define __LINBOX_rank_H
 
 //#include "linbox/linbox-config.h"
-#include <givaro/modular-double.h>
+#include "linbox/ring/modular.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/matrix/sparse-matrix.h"

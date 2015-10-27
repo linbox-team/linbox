@@ -358,8 +358,6 @@ namespace LinBox { /*  uint32_t */
 	template<class Field>
 	class MVProductDomain;
 
-	template <class Ring>
-	struct ClassifyRing;
 
 	/*! Specialization of FieldAXPY for unsigned short modular field */
 
@@ -523,9 +521,6 @@ namespace LinBox { /*  uint64_t */
 	class FieldAXPY;
 	template<class Field>
 	class MVProductDomain;
-
-	template <class Ring>
-	struct ClassifyRing;
 
 	/*! Specialization of FieldAXPY for unsigned short modular field */
 

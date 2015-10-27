@@ -52,6 +52,7 @@
 #define __LINBOX_ring_modular_H
 
 #include <givaro/modular.h>
+#include <givaro/modular-balanced.h>
 #include <givaro/gfq.h>
 #include <iostream>
 #include <climits>
@@ -80,6 +81,17 @@ namespace LinBox
 	{
 		typedef RingCategories::ModularTag categoryTag;
 	};
+
+	template <class Element, class Compute>
+	struct ClassifyRing<Givaro::Modular<Element,Compute>>
+	{
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
+        template<class Element>
+        struct ClassifyRing<Givaro::ModularBalanced<Element> > {
+                typedef RingCategories::ModularTag categoryTag;
+        };
 
         template<typename XXX>
         struct ClassifyRing<Givaro::GFqDom<XXX>> {
