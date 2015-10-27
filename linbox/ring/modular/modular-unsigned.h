@@ -145,8 +145,8 @@ namespace LinBox { /*  uint8_t */
 		DotProductDomain (const Field &F) :
 			VectorDomainBase<Field> (F)
 		{}
-		using VectorDomainBase<Field>::faxpy;
 		using VectorDomainBase<Field>::field;
+		using VectorDomainBase<Field>::faxpy;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -316,7 +316,8 @@ namespace LinBox { /*  uint16_t */
 		DotProductDomain (const Field &F) :
 			VectorDomainBase<Field > (F)
 		{}
-		using VectorDomainBase<Field >::field;
+		using VectorDomainBase<Field>::field;
+		using VectorDomainBase<Field>::faxpy;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -480,6 +481,7 @@ namespace LinBox { /*  uint32_t */
 			VectorDomainBase<Field > (F)
 		{}
 		using VectorDomainBase<Field >::field;
+		using VectorDomainBase<Field >::faxpy;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -644,6 +646,7 @@ namespace LinBox { /*  uint64_t */
 			VectorDomainBase<Field > (F)
 		{}
 		using VectorDomainBase<Field >::field;
+		using VectorDomainBase<Field >::faxpy;
 
 	protected:
 		template <class Vector1, class Vector2>
