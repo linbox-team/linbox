@@ -42,8 +42,9 @@
 
 namespace LinBox {
 
+        template<typename Compute_t>
 	template <class Vector1, class Vector2>
-	inline uint8_t &DotProductDomain<Givaro::Modular<uint8_t> >::dotSpecializedDD
+	inline uint8_t &DotProductDomain<Givaro::Modular<uint8_t,Compute_t> >::dotSpecializedDD
 	(uint8_t &res, const Vector1 &v1, const Vector2 &v2) const
 	{
 		typename Vector1::const_iterator i = v1.begin ();
@@ -73,8 +74,9 @@ namespace LinBox {
 		return res = (uint8_t) y;
 	}
 
+        template<typename Compute_t>
 	template <class Vector1, class Vector2>
-	inline uint8_t &DotProductDomain<Givaro::Modular<uint8_t> >::dotSpecializedDSP
+	inline uint8_t &DotProductDomain<Givaro::Modular<uint8_t,Compute_t> >::dotSpecializedDSP
 	(uint8_t &res, const Vector1 &v1, const Vector2 &v2) const
 	{
 		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
@@ -113,8 +115,9 @@ namespace LinBox {
 		}
 	}
 
+        template<typename Compute_t>
 	template <class Vector1, class Vector2>
-	inline uint16_t &DotProductDomain<Givaro::Modular<uint16_t> >::dotSpecializedDD
+	inline uint16_t &DotProductDomain<Givaro::Modular<uint16_t,Compute_t> >::dotSpecializedDD
 	(uint16_t &res, const Vector1 &v1, const Vector2 &v2) const
 	{
 		typename Vector1::const_iterator i = v1.begin ();
@@ -144,8 +147,8 @@ namespace LinBox {
 		return res = (uint16_t) y;
 	}
 
-	template <class Vector1, class Vector2>
-	inline uint16_t &DotProductDomain<Givaro::Modular<uint16_t> >::dotSpecializedDSP
+	template<typename Compute_t> template <classVector1, class Vector2>
+	inline uint16_t &DotProductDomain<Givaro::Modular<uint16_t,Compute_t> >::dotSpecializedDSP
 	(uint16_t &res, const Vector1 &v1, const Vector2 &v2) const
 	{
 		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
@@ -184,8 +187,8 @@ namespace LinBox {
 		}
 	}
 
-	template <class Vector1, class Vector2>
-	inline uint32_t &DotProductDomain<Givaro::Modular<uint32_t> >::dotSpecializedDD
+	template<typename Compute_t> template <classVector1, class Vector2>
+	inline uint32_t &DotProductDomain<Givaro::Modular<uint32_t,Compute_t> >::dotSpecializedDD
 	(uint32_t &res, const Vector1 &v1, const Vector2 &v2) const
 	{
 		typename Vector1::const_iterator i;
@@ -207,8 +210,8 @@ namespace LinBox {
 		return res = (uint32_t) y;
 	}
 
-	template <class Vector1, class Vector2>
-	inline uint32_t &DotProductDomain<Givaro::Modular<uint32_t> >::dotSpecializedDSP
+	template<typename Compute_t> template <classVector1, class Vector2>
+	inline uint32_t &DotProductDomain<Givaro::Modular<uint32_t,Compute_t> >::dotSpecializedDSP
 	(uint32_t &res, const Vector1 &v1, const Vector2 &v2) const
 	{
 		typename Vector1::first_type::const_iterator i_idx;
@@ -229,8 +232,8 @@ namespace LinBox {
 		return res = (uint32_t)y;
 	}
 
-	template <class Vector1, class Vector2>
-	inline uint64_t &DotProductDomain<Givaro::Modular<uint64_t> >::dotSpecializedDD
+	template<typename Compute_t> template <classVector1, class Vector2>
+	inline uint64_t &DotProductDomain<Givaro::Modular<uint64_t,Compute_t> >::dotSpecializedDD
 	(uint64_t &res, const Vector1 &v1, const Vector2 &v2) const
 		{
 
@@ -255,8 +258,8 @@ namespace LinBox {
 		}
 
 
-	template <class Vector1, class Vector2>
-	inline uint64_t &DotProductDomain<Givaro::Modular<uint64_t> >::dotSpecializedDSP
+	template<typename Compute_t> template <classVector1, class Vector2>
+	inline uint64_t &DotProductDomain<Givaro::Modular<uint64_t,Compute_t> >::dotSpecializedDSP
 	(uint64_t &res, const Vector1 &v1, const Vector2 &v2) const
 		{
 			typename Vector1::first_type::const_iterator i_idx;
@@ -284,9 +287,9 @@ namespace LinBox {
 
 
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint8_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint8_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint8_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint8_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::DenseVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -327,9 +330,9 @@ namespace LinBox {
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint8_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint8_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint8_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint8_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseSequenceVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -371,9 +374,9 @@ namespace LinBox {
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint8_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint8_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint8_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint8_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseAssociativeVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -414,9 +417,9 @@ namespace LinBox {
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint8_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint8_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint8_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint8_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseParallelVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -461,9 +464,9 @@ namespace LinBox {
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint16_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint16_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint16_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint16_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::DenseVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -506,9 +509,9 @@ namespace LinBox {
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint16_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint16_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint16_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint16_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseSequenceVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -551,9 +554,9 @@ namespace LinBox {
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint16_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint16_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint16_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint16_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseAssociativeVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -596,9 +599,9 @@ namespace LinBox {
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint16_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint16_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint16_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint16_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseParallelVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -647,9 +650,9 @@ namespace LinBox {
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint32_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint32_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint32_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::DenseVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -687,9 +690,9 @@ namespace LinBox {
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint32_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint32_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint32_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseSequenceVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -727,9 +730,9 @@ namespace LinBox {
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint32_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint32_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint32_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseAssociativeVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -766,9 +769,9 @@ namespace LinBox {
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<uint32_t> >::mulColDenseSpecialized
-	(const VectorDomain<Givaro::Modular<uint32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	Vector1 &MVProductDomain<Givaro::Modular<uint32_t,Compute_t> >::mulColDenseSpecialized
+	(const VectorDomain<Givaro::Modular<uint32_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseParallelVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
