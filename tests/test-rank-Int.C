@@ -28,6 +28,7 @@
  * @test no doc.
  */
 
+#include <givaro/modular-integer.h>
 #include "test-rank.h"
 
 int main (int argc, char **argv)

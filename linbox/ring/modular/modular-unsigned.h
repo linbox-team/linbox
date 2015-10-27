@@ -376,9 +376,6 @@ namespace LinBox { /*  uint32_t */
 	template <class Ring>
 	struct ClassifyRing;
 
-	template <class Element, class Compute_t>
-	struct ClassifyRing<Givaro::Modular<Element, Compute_t> >;
-
 	/*! Specialization of FieldAXPY for unsigned short modular field */
 
 	template <>
@@ -543,9 +540,6 @@ namespace LinBox { /*  uint64_t */
 
 	template <class Ring>
 	struct ClassifyRing;
-
-	template <class Element>
-	struct ClassifyRing<Givaro::Modular<Element> >;
 
 	/*! Specialization of FieldAXPY for unsigned short modular field */
 

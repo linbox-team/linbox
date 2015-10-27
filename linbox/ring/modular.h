@@ -76,12 +76,6 @@ namespace LinBox
 	struct ClassifyRing;
 
 	template <class Element, class Compute>
-	struct ClassifyRing<Givaro::Modular<Element,Compute> >
-	{
-		typedef RingCategories::ModularTag categoryTag;
-	};
-
-	template <class Element, class Compute>
 	struct ClassifyRing<Givaro::Modular<Element,Compute> const>
 	{
 		typedef RingCategories::ModularTag categoryTag;
