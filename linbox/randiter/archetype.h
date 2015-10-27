@@ -90,7 +90,7 @@ namespace LinBox
 		RandIterArchetype (const FieldArchetype &F,
 				   const integer &size = 0,
 				   const integer &seed = 0)
-		{ _randIter_ptr = F._randIter_ptr->construct (*F._field_ptr, size, seed); }
+                        {_randIter_ptr = F._randIter_ptr->construct (*(F._field_ptr), size, seed);}
 
 		/** Copy constructor.
 		 * Constructs RandIterArchetype object by copying the random field
