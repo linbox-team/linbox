@@ -252,7 +252,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 #endif
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
-
+#endif
 	commentator().start ("\t--Testing ring arithmetic");
 	part_pass = true;
 
@@ -1345,6 +1345,7 @@ namespace field_subtests {
 
 		LinBox::integer card;
 		unsigned int i;
+//                std::cerr<<"num_categories = "<<num_categories<<std::endl;
 		std::vector<int> categories1 (num_categories, 0);
 		std::vector<int> categories2 (num_categories, 0);
 		std::list<std::vector<int> > diff_categories;
@@ -1366,17 +1367,21 @@ namespace field_subtests {
 		for (i = 0; i < num_trials; ++i) {
 			LinBox::integer ix, id;
 			F.convert(ix, iter.random (x));
-
-
-			categories1[ix % num_categories]++;
-			categories2[(unsigned int) (double (ix) / double (card) * num_categories)]++;
+                        
+                        LinBox::Integer ix2 = ix % num_categories;
+                        if (ix2<0) ix2+=num_categories;
+			categories1[ix2]++;
+			categories2[(unsigned int) (double (ix2) / double (card) * num_categories) %num_categories]++;
 
 			typename std::list<typename Field::Element>::iterator x_queue_iter = x_queue.begin ();
 			diff_cat_iter = diff_categories.begin ();
 
+//                        std::cerr<<x_queue.size()<<" "<<diff_categories.size()<<std::endl;
 			for (; x_queue_iter != x_queue.end (); ++x_queue_iter, ++diff_cat_iter) {
 				F.convert(id, F.sub (d, *x_queue_iter, x));
-				(*diff_cat_iter)[id % num_categories]++;
+                                id %= num_categories;
+                                if (id<0) id += num_categories;
+				(*diff_cat_iter)[(size_t) id]++;
 			}
 
 			x_queue.push_front (x);
