@@ -223,18 +223,20 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 	commentator().start ("\t--Testing init/convert");
 	part_pass = true;
 
-#if 0  
+#if 1  
 	// test of 0..card bijection
-	typename Ring::RandIter r (F);
-	r.random(a);
+	//typename Ring::RandIter r (F);
+	//r.random(a);
+	F.assign(a, F.mOne);
 	F.write ( report << "Initial Elt to convert: ", a) << endl;
 	F.convert(n, a);
 	report << "Result of convert: " << n << endl;
-	F.init(b, (int64_t)n);
+	F.init(b, n);
 	F.write ( report << "Result of init: ", b) << endl;
 	if (not F.areEqual(a, b)) part_pass = reportError( "F.init (b, F.convert(n, a)) != a", pass);
 
 #endif
+#if 0
 	// test of prime subring bijection
 	if (p <= 0)
 		n = 0;
@@ -247,6 +249,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 
 	if (m != n) part_pass = reportError( "F.convert (m, F.init (a, n)) != n", pass);
 
+#endif
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
 

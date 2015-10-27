@@ -45,12 +45,13 @@ namespace LinBox { /*  uint8_t */
 	/*! Specialization of FieldAXPY for uint8_t modular field */
 
 	template <>
-	class FieldAXPY<Givaro::Modular<uint8_t> > {
+	template<class Compute_t>
+	class FieldAXPY<Givaro::Modular<uint8_t,Compute_t > > {
 	public:
 
 		typedef uint8_t Element;
 		typedef uint64_t Abnormal;
-		typedef Givaro::Modular<uint8_t> Field;
+		typedef Givaro::Modular<uint8_t, Compute_t> Field;
 
 		FieldAXPY (const Field &F) :
 			_k (((uint64_t) -1LL) / ((F.characteristic() - 1) * (F.characteristic() - 1))),
@@ -67,7 +68,7 @@ namespace LinBox { /*  uint8_t */
 			i (_k)
 		{}
 
-		FieldAXPY<Givaro::Modular<uint8_t> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<Field> &operator = (const FieldAXPY &faxpy)
 		{
 			_field = faxpy._field;
 			_y = faxpy._y;
@@ -133,17 +134,18 @@ namespace LinBox { /*  uint8_t */
 	//! Specialization of DotProductDomain for unsigned short modular field
 
 	template <>
-	class DotProductDomain<Givaro::Modular<uint8_t> > : public  VectorDomainBase<Givaro::Modular<uint8_t> > {
+	template <class Compute_t>
+	class DotProductDomain<Givaro::Modular<uint8_t, Compute_t> > : public  VectorDomainBase<Givaro::Modular<uint8_t, Compute_t> > {
 	public:
 
 		typedef uint8_t Element;
+		typedef Givaro::Modular<uint8_t, Compute_t> field;
 
 		DotProductDomain(){}
-		DotProductDomain (const Givaro::Modular<uint8_t> &F) :
-			VectorDomainBase<Givaro::Modular<uint8_t> > (F)
+		DotProductDomain (const field &F) :
+			VectorDomainBase<field> (F)
 		{}
 
-		using VectorDomainBase<Givaro::Modular<uint8_t> >::field;
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
@@ -157,15 +159,17 @@ namespace LinBox { /*  uint8_t */
 	//! Specialization of MVProductDomain for uint8_t modular field
 
 	template <>
-	class MVProductDomain<Givaro::Modular<uint8_t> > {
+	template<class Compute_t>
+	class MVProductDomain<Givaro::Modular<uint8_t,Compute_t> > {
 	public:
 
 		typedef uint8_t Element;
+		typedef Givaro::Modular<uint8_t,Compute_t> Field;
 
 	protected:
 		template <class Vector1, class Matrix, class Vector2>
 		inline Vector1 &mulColDense
-		(const VectorDomain<Givaro::Modular<uint8_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+		(const VectorDomain<Field> &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 		{
 			return mulColDenseSpecialized (VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
 		}
@@ -173,19 +177,19 @@ namespace LinBox { /*  uint8_t */
 	private:
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint8_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::DenseVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint8_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseSequenceVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint8_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseAssociativeVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint8_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseParallelVectorTag) const;
 
 		mutable std::vector<uint32_t> _tmp;
@@ -352,17 +356,18 @@ namespace LinBox { /*  uint32_t */
 	template <class Ring>
 	struct ClassifyRing;
 
-	template <class Element>
-	struct ClassifyRing<Givaro::Modular<Element> >;
+	template <class Element, class Compute_t>
+	struct ClassifyRing<Givaro::Modular<Element, Compute_t> >;
 
 	/*! Specialization of FieldAXPY for unsigned short modular field */
 
 	template <>
-	class FieldAXPY<Givaro::Modular<uint32_t> > {
+	template<class Compute_t>
+	class FieldAXPY<Givaro::Modular<uint32_t, Compute_t> > {
 	public:
 
 		typedef uint32_t Element;
-		typedef Givaro::Modular<uint32_t> Field;
+		typedef Givaro::Modular<uint32_t, Compute_t> Field;
 
 		FieldAXPY (const Field &F) :
 			_field (&F), _y(0)
@@ -375,7 +380,7 @@ namespace LinBox { /*  uint32_t */
 			_two_64 (faxpy._two_64), _field (faxpy._field), _y (0)
 		{}
 
-		FieldAXPY<Givaro::Modular<uint32_t> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<Field > &operator = (const FieldAXPY &faxpy)
 		{
 			_field = faxpy._field;
 			_y = faxpy._y;
@@ -441,16 +446,18 @@ namespace LinBox { /*  uint32_t */
 	//! Specialization of DotProductDomain for uint32_t modular field
 
 	template <>
-	class DotProductDomain<Givaro::Modular<uint32_t> > : public VectorDomainBase<Givaro::Modular<uint32_t> > {
+	template<class Compute_t>
+	class DotProductDomain<Givaro::Modular<uint32_t,Compute_t> > : public VectorDomainBase<Givaro::Modular<uint32_t,Compute_t> > {
 	public:
 
 		typedef uint32_t Element;
+		typedef Givaro::Modular<uint32_t, Compute_t> Field;
 
 		DotProductDomain () {}
-		DotProductDomain (const Givaro::Modular<uint32_t> &F) :
-			VectorDomainBase<Givaro::Modular<uint32_t> > (F)
+		DotProductDomain (const Field &F) :
+			VectorDomainBase<Field > (F)
 		{}
-		using VectorDomainBase<Givaro::Modular<uint32_t> >::field;
+		using VectorDomainBase<Field >::field;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -465,15 +472,17 @@ namespace LinBox { /*  uint32_t */
 	//! Specialization of MVProductDomain for uint32_t modular field
 
 	template <>
-	class MVProductDomain<Givaro::Modular<uint32_t> > {
+	template <class Compute_t>
+	class MVProductDomain<Givaro::Modular<uint32_t,Compute_t> > {
 	public:
 
 		typedef uint32_t Element;
+		typedef Givaro::Modular<uint32_t,Compute_t> Field;
 
 	protected:
 		template <class Vector1, class Matrix, class Vector2>
 		inline Vector1 &mulColDense
-		(const VectorDomain<Givaro::Modular<uint32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 		{
 			return mulColDenseSpecialized (VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
 		}
@@ -481,19 +490,19 @@ namespace LinBox { /*  uint32_t */
 	private:
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::DenseVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseSequenceVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseAssociativeVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseParallelVectorTag) const;
 
 		mutable std::vector<uint64_t> _tmp;
