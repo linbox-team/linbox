@@ -252,7 +252,6 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 #endif
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
-#endif
 	commentator().start ("\t--Testing ring arithmetic");
 	part_pass = true;
 

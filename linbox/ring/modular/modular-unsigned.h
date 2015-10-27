@@ -9,8 +9,8 @@
  * ------------------------------------
  * 2002-04-10 Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * LargeGivaro::Modular is now replace by a class Givaro::Modular parameterized on the element
- * type. So, the old LargeGivaro::Modular is equivalent to Givaro::Modular<integer>. All other
+ * LargeModular is now replace by a class Givaro::Modular parameterized on the element
+ * type. So, the old LargeModular is equivalent to Givaro::Modular<integer>. All other
  * interface details are exactly the same.
  *
  * Renamed from large-modular.h to modular.h
@@ -145,11 +145,31 @@ namespace LinBox { /*  uint8_t */
 		DotProductDomain (const field &F) :
 			VectorDomainBase<field> (F)
 		{}
+		using VectorDomainBase<field>::faxpy;
 
 	protected:
 		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
-        
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
+		{
+			typename Vector1::const_iterator i;
+			typename Vector2::const_iterator j;
+
+			uint64_t y = 0;
+			uint64_t t;
+
+			for (i = v1.begin (), j = v2.begin (); i < v1.end (); ++i, ++j)
+			{
+				t = ( (uint64_t) *i ) * ( (uint64_t) *j );
+				y += t;
+
+				if (y < t)
+					y += (uint64_t) faxpy()._two_64;
+			}
+
+			y %= (uint64_t) field().characteristic();
+			return res = Element(y);
+
+		}
 
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
