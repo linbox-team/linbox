@@ -544,11 +544,12 @@ namespace LinBox { /*  uint64_t */
 	/*! Specialization of FieldAXPY for unsigned short modular field */
 
 	template <>
-	class FieldAXPY<Givaro::Modular<uint64_t> > {
+	template<typename Compute_t>
+	class FieldAXPY<Givaro::Modular<uint64_t,Compute_t> > {
 	public:
 
 		typedef uint64_t Element;
-		typedef Givaro::Modular<uint64_t> Field;
+		typedef Givaro::Modular<uint64_t,Compute_t> Field;
 
 		FieldAXPY (const Field &F) :
 			_field (&F), _y(0)
@@ -561,7 +562,7 @@ namespace LinBox { /*  uint64_t */
 			_two_64 (faxpy._two_64), _field (faxpy._field), _y (0)
 		{}
 
-		FieldAXPY<Givaro::Modular<uint64_t> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<Field > &operator = (const FieldAXPY &faxpy)
 		{
 			_field = faxpy._field;
 			_y = faxpy._y;
@@ -626,16 +627,18 @@ namespace LinBox { /*  uint64_t */
 	//! Specialization of DotProductDomain for uint64_t modular field
 
 	template <>
-	class DotProductDomain<Givaro::Modular<uint64_t> > : public VectorDomainBase<Givaro::Modular<uint64_t> > {
+	template <typename Compute_t>
+	class DotProductDomain<Givaro::Modular<uint64_t,Compute_t>> : public VectorDomainBase<Givaro::Modular<uint64_t,Compute_t> > {
 	public:
 
 		typedef uint64_t Element;
+		typedef Givaro::Modular<uint64_t,Compute_t> Field;
 
 		DotProductDomain () {}
-		DotProductDomain (const Givaro::Modular<uint64_t> &F) :
-			VectorDomainBase<Givaro::Modular<uint64_t> > (F)
+		DotProductDomain (const Field &F) :
+			VectorDomainBase<Field > (F)
 		{}
-		using VectorDomainBase<Givaro::Modular<uint64_t> >::field;
+		using VectorDomainBase<Field >::field;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -650,15 +653,17 @@ namespace LinBox { /*  uint64_t */
 	//! Specialization of MVProductDomain for uint64_t modular field
 
 	template <>
-	class MVProductDomain<Givaro::Modular<uint64_t> > {
+	template <typename Compute_t>
+	class MVProductDomain<Givaro::Modular<uint64_t,Compute_t> > {
 	public:
 
 		typedef uint64_t Element;
+		typedef Givaro::Modular<uint64_t,Compute_t> Field;
 
 	protected:
 		template <class Vector1, class Matrix, class Vector2>
 		inline Vector1 &mulColDense
-		(const VectorDomain<Givaro::Modular<uint64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 		{
 			return mulColDenseSpecialized (VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
 		}
@@ -666,19 +671,19 @@ namespace LinBox { /*  uint64_t */
 	private:
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::DenseVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseSequenceVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseAssociativeVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Givaro::Modular<uint64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseParallelVectorTag) const;
 
 		mutable std::vector<uint64_t> _tmp;
@@ -686,7 +691,7 @@ namespace LinBox { /*  uint64_t */
 
 }
 
-//#include "linbox/ring/modular/modular.inl"
+#include "linbox/ring/modular/modular-unsigned.inl"
 
 #endif // __LINBOX_field_modular_unsigned_H
 

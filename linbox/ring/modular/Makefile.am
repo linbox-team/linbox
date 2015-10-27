@@ -23,7 +23,7 @@ pkgincludesubdir=$(pkgincludedir)/ring/modular
 
 BASIC_HDRS =            \
     modular-unsigned.h  \
-    modular.inl         \
+    modular-unsigned.inl         \
     modular-int32.h     \
     modular-int64.h     \
     modular-short.h     \

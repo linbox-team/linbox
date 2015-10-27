@@ -64,11 +64,11 @@ bool testRandomSolve (const Ring& R,
 	VectorDomain<Ring> VD (R);
 
 	int n = (int)stream1.n();
-	Vector d(R,n), b(R,n), x(R,n), y(R,n);
+	Vector d(R,n), b(R,n), X(R,n), y(R,n);
 
 	// VectorWrapper::ensureDim (d, stream1.n ());
 	// VectorWrapper::ensureDim (b, stream1.n ());
-	// VectorWrapper::ensureDim (x, stream1.n ());
+	// VectorWrapper::ensureDim (X, stream1.n ());
 	// VectorWrapper::ensureDim (y, stream1.n ());
 
 
@@ -138,7 +138,7 @@ bool testRandomSolve (const Ring& R,
 
 		if (solveResult == SS_OK) {
 #if 0
-		  for (p = answer.begin(), p_x = x. begin();
+		  for (p = answer.begin(), p_x = X. begin();
 		       p != answer.end();
 		       ++ p, ++ p_x) {
 
@@ -148,7 +148,7 @@ bool testRandomSolve (const Ring& R,
 
 		  }
 
-		  D. apply (y, x);
+		  D. apply (y, X);
 #endif
 		  D. apply (y, num);
 
