@@ -146,6 +146,7 @@ namespace LinBox { /*  uint8_t */
 			VectorDomainBase<Field> (F)
 		{}
 		using VectorDomainBase<Field>::faxpy;
+		using VectorDomainBase<Field>::field;
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -221,6 +222,7 @@ namespace LinBox { /*  uint16_t */
 
 	/*! Specialization of FieldAXPY for uint16_t modular field */
 	template <>
+	template<class Compute_t>
 	class FieldAXPY<Givaro::Modular<uint16_t,Compute_t> > {
 	public:
 
@@ -303,6 +305,7 @@ namespace LinBox { /*  uint16_t */
 	//! Specialization of DotProductDomain for unsigned short modular field
 
 	template <>
+	template<class Compute_t>
 	class DotProductDomain<Givaro::Modular<uint16_t,Compute_t> > : public VectorDomainBase<Givaro::Modular<uint16_t,Compute_t> > {
 	public:
 
@@ -327,6 +330,7 @@ namespace LinBox { /*  uint16_t */
 	//! Specialization of MVProductDomain for uint16_t modular field
 
 	template <>
+	template<class Compute_t>
 	class MVProductDomain<Givaro::Modular<uint16_t,Compute_t> > {
 	public:
 
