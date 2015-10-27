@@ -84,7 +84,7 @@ bool launchTests(string int_type_name, integer q, size_t n, uint32_t trials, uin
 int main (int argc, char **argv)
 {
 	// for field testing
-	static integer q = 5; // small prime valid for for all int types.
+	static integer q = 5; // small prime valid for all int types.
 
 	// for randiter testing
 	static size_t n = 10000;

@@ -74,14 +74,14 @@ hide("test-mg-block-lanczos", "not maintained");
 hide("test-modular", "deprecated");
 hide("test-modular-byte",  "deprecated");
 hide("test-modular-short",  "deprecated");
-skip("test-modular-balanced-int",  "test and modular-balanced disagree on init/convert");
-skip("test-modular-balanced-double",  "test and modular-balanced disagree on init/convert");
-skip("test-moore-penrose", "inf loop");
+//skip("test-modular-balanced-int",  "test and modular-balanced disagree on init/convert");
+//skip("test-modular-balanced-double",  "test and modular-balanced disagree on init/convert");
+//skip("test-moore-penrose", "inf loop");
 skip("test-optimization", "not in test form");
 skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
-skip("test-rank-md", "intermittent inf loop"/*, "vector (bb) responsible"*/);
-skip("test-rank-u32", "intermittent inf loop"/*, "vector (bb) responsible"*/);
-skip("test-rational-reconstruction-base", "inf loop");
+//skip("test-rank-md", "intermittent inf loop"/*, "vector (bb) responsible"*/);
+//skip("test-rank-u32", "intermittent inf loop"/*, "vector (bb) responsible"*/);
+//skip("test-rational-reconstruction-base", "inf loop");
 skip("test-rat-charpoly", "inf loop");
 skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
 skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infinite loop")

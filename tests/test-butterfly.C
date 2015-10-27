@@ -318,7 +318,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Givaro::Modular<uint32_t> Field;
+	typedef Givaro::Modular<uint32_t, uint64_t> Field;
 
 	parseArguments (argc, argv, args);
 	srand ((unsigned int) time (NULL));

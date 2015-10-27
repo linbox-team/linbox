@@ -134,7 +134,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Givaro::Modular<uint32_t> Field;
+	typedef Givaro::Modular<uint64_t> Field;
 
 	parseArguments (argc, argv, args);
 	Field F ((uint32_t)q);
