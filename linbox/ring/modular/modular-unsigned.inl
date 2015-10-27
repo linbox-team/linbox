@@ -147,7 +147,7 @@ namespace LinBox {
 		return res = (uint16_t) y;
 	}
 
-	template<typename Compute_t> template <classVector1, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Vector2>
 	inline uint16_t &DotProductDomain<Givaro::Modular<uint16_t,Compute_t> >::dotSpecializedDSP
 	(uint16_t &res, const Vector1 &v1, const Vector2 &v2) const
 	{
@@ -187,7 +187,7 @@ namespace LinBox {
 		}
 	}
 
-	template<typename Compute_t> template <classVector1, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Vector2>
 	inline uint32_t &DotProductDomain<Givaro::Modular<uint32_t,Compute_t> >::dotSpecializedDD
 	(uint32_t &res, const Vector1 &v1, const Vector2 &v2) const
 	{
@@ -210,7 +210,7 @@ namespace LinBox {
 		return res = (uint32_t) y;
 	}
 
-	template<typename Compute_t> template <classVector1, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Vector2>
 	inline uint32_t &DotProductDomain<Givaro::Modular<uint32_t,Compute_t> >::dotSpecializedDSP
 	(uint32_t &res, const Vector1 &v1, const Vector2 &v2) const
 	{
@@ -232,7 +232,7 @@ namespace LinBox {
 		return res = (uint32_t)y;
 	}
 
-	template<typename Compute_t> template <classVector1, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Vector2>
 	inline uint64_t &DotProductDomain<Givaro::Modular<uint64_t,Compute_t> >::dotSpecializedDD
 	(uint64_t &res, const Vector1 &v1, const Vector2 &v2) const
 		{
@@ -258,7 +258,7 @@ namespace LinBox {
 		}
 
 
-	template<typename Compute_t> template <classVector1, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Vector2>
 	inline uint64_t &DotProductDomain<Givaro::Modular<uint64_t,Compute_t> >::dotSpecializedDSP
 	(uint64_t &res, const Vector1 &v1, const Vector2 &v2) const
 		{
@@ -287,7 +287,7 @@ namespace LinBox {
 
 
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint8_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint8_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::DenseVectorTag) const
@@ -330,7 +330,7 @@ namespace LinBox {
 		return w;
 	}
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint8_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint8_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseSequenceVectorTag) const
@@ -374,7 +374,7 @@ namespace LinBox {
 		return w;
 	}
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint8_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint8_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseAssociativeVectorTag) const
@@ -417,7 +417,7 @@ namespace LinBox {
 		return w;
 	}
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint8_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint8_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseParallelVectorTag) const
@@ -464,7 +464,7 @@ namespace LinBox {
 		return w;
 	}
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint16_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint16_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::DenseVectorTag) const
@@ -509,7 +509,7 @@ namespace LinBox {
 		return w;
 	}
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint16_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint16_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseSequenceVectorTag) const
@@ -554,7 +554,7 @@ namespace LinBox {
 		return w;
 	}
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint16_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint16_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseAssociativeVectorTag) const
@@ -599,7 +599,7 @@ namespace LinBox {
 		return w;
 	}
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint16_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint16_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseParallelVectorTag) const
@@ -650,7 +650,7 @@ namespace LinBox {
 		return w;
 	}
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint32_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint32_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::DenseVectorTag) const
@@ -690,7 +690,7 @@ namespace LinBox {
 		return w;
 	}
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint32_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint32_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseSequenceVectorTag) const
@@ -730,7 +730,7 @@ namespace LinBox {
 		return w;
 	}
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint32_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint32_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseAssociativeVectorTag) const
@@ -769,7 +769,7 @@ namespace LinBox {
 		return w;
 	}
 
-	template<typename Compute_t> template <classVector1, class Matrix, class Vector2>
+	template<typename Compute_t> template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Givaro::Modular<uint32_t,Compute_t> >::mulColDenseSpecialized
 	(const VectorDomain<Givaro::Modular<uint32_t,Compute_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseParallelVectorTag) const
