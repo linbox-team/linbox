@@ -129,7 +129,7 @@ namespace LinBox
 					     const integer &size = 0,
 					     const integer &seed = 0) const
 		{
-			return new RandIterEnvelope (static_cast<const FieldEnvelope<Field>&> (F)._field, size, seed);
+			return new RandIterEnvelope (static_cast<const FieldEnvelope<Field>&> (F), size, seed);
 		}
 
 		/** Virtual copy constructor.

@@ -586,7 +586,7 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		std::ostream &write (std::ostream &os) const { return _field_ptr->write (os); }
+		std::ostream &write (std::ostream &os) const { return _field_ptr->write (os<<"Archetype of "); }
 
 		/** Print field element.
 		 * This function assumes the field element has already been
@@ -642,12 +642,11 @@ namespace LinBox
 		 */
 		FieldArchetype (FieldAbstract    *field_ptr,
 				ElementAbstract  *elem_ptr,
-				RandIterAbstract *randIter_ptr = 0) :
+				RandIterAbstract *randIter_ptr) :
 			_field_ptr (field_ptr->clone ()),
-			_elem_ptr (elem_ptr->clone ())
-		{
-			if (randIter_ptr != 0) _randIter_ptr = randIter_ptr->clone ();
-		}
+			_elem_ptr (elem_ptr->clone ()),
+                        _randIter_ptr (randIter_ptr->clone ())
+                        {}
 
 
 		/** Constructor.

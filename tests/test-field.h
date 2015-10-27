@@ -225,9 +225,8 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 
 #if 1  
 	// test of 0..card bijection
-	//typename Ring::RandIter r (F);
-	//r.random(a);
-	F.assign(a, F.mOne);
+	typename Ring::RandIter r (F);
+        r.random(a);
 	F.write ( report << "Initial Elt to convert: ", a) << endl;
 	F.convert(n, a);
 	report << "Result of convert: " << n << endl;
