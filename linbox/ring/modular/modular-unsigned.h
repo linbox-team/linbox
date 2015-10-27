@@ -150,28 +150,7 @@ namespace LinBox { /*  uint8_t */
 
 	protected:
 		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
-		{
-			typename Vector1::const_iterator i;
-			typename Vector2::const_iterator j;
-
-			uint64_t y = 0;
-			uint64_t t;
-
-			for (i = v1.begin (), j = v2.begin (); i < v1.end (); ++i, ++j)
-			{
-				t = ( (uint64_t) *i ) * ( (uint64_t) *j );
-				y += t;
-
-				if (y < t)
-					y += (uint64_t) faxpy()._two_64;
-			}
-
-			y %= (uint64_t) field().characteristic();
-			return res = Element(y);
-
-		}
-
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
         
