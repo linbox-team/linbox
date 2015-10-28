@@ -15,7 +15,7 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * License along with this library; if not, write to tthe Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
  *.
@@ -128,7 +128,7 @@ bool reportError(string rep, bool& flag)
  */
 
 template<class Ring>
-bool testRing (Ring &F, const char *title, bool fieldp = true)
+bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConvertIdentity=true)
 {
 	commentator().start (title, "testRing", 5);
 	ostream &report = commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -220,6 +220,8 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
 
+        if (runInitConvertIdentity) {
+                
 	commentator().start ("\t--Testing init/convert");
 	part_pass = true;
 
@@ -251,6 +253,8 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 #endif
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
+        }
+        
 	commentator().start ("\t--Testing ring arithmetic");
 	part_pass = true;
 
@@ -349,7 +353,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true)
 }
 
 template<class Field>
-bool testField (Field &F, const char *title, bool fieldp = true)
+bool testField (Field &F, const char *title, bool fieldp = true, bool runInitConvertIdentity=true)
 {
 	commentator().start (title, "testField", 5);
 	ostream &report = commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -401,7 +405,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 	commentator().stop (MSG_STATUS (part_pass), (const char *) 0, "testField");
 
-        return part_pass & testRing(F,title,fieldp);
+        return part_pass & testRing(F,title,fieldp,runInitConvertIdentity);
         
 }
 
@@ -1274,7 +1278,7 @@ namespace field_subtests {
 
 /* Convenience function to run all of the basic ring tests */
 template <class Ring>
-bool runBasicRingTests (const Ring &F, const char *desc, unsigned int iterations, bool runCharacteristicTest = true)
+bool runBasicRingTests (const Ring &F, const char *desc, unsigned int iterations, bool runCharacteristicTest = true, bool runInitConvertIdentity=true)
 {
 	bool pass = true;
 	ostringstream str;
@@ -1285,7 +1289,7 @@ bool runBasicRingTests (const Ring &F, const char *desc, unsigned int iterations
 
 	commentator().start (st, "runBasicRingTests", runCharacteristicTest ? 11 : 10);
 
-	if (!testField                     (F, string(str.str()).c_str()))           pass = false;
+	if (!testField                     (F, string(str.str()).c_str(),true,runInitConvertIdentity))           pass = false;
 	commentator().progress ();
 	if (!field_subtests::testFieldNegation             (F, desc, iterations))                    pass = false;
 	commentator().progress ();
@@ -1446,7 +1450,7 @@ namespace field_subtests {
 }// namespace field_subtests
 
 template <class Field>
-bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true)
+bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true, bool runInitConvertIdentity=true)
 	// n is not used.
 {
 	ostringstream str;
@@ -1455,7 +1459,7 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
 	commentator().start (st, "runFieldTests");
-	bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest) ;
+	bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest, runInitConvertIdentity) ;
 	ret &= field_subtests::testInvDivConsistency(F, desc, iterations) ;
 	ret &= field_subtests::testFieldInversion (F, desc, iterations) ;
 	ret &= field_subtests::testFieldCommutativity (F, desc, iterations) ;

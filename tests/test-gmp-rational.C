@@ -71,7 +71,7 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F,  "GMP Rational",  (unsigned int)iterations, n, false)) pass = false;
+	if (!runFieldTests (F,  "GMP Rational",  (unsigned int)iterations, n, false,false)) pass = false;
 
 	commentator().stop("GMP rational field test suite");
 	return pass ? 0 : -1;

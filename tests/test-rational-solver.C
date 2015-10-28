@@ -28,6 +28,7 @@
  * @test no doc.
  */
 
+#include "linbox/linbox-config.h"
 #include "linbox/ring/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/algorithms/rational-solver.h"
