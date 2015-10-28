@@ -43,8 +43,8 @@
 #include "test-field.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/ring/local-PIR-modular.h"
-#include "linbox/ring/PIR-modular-int32.h"
+#include "linbox/ring/local-pir-modular.h"
+#include "linbox/ring/pir-modular-int32.h"
 #include "linbox/ring/local2_32.h"
 #include "linbox/algorithms/smith-form-local.h"
 #include "linbox/matrix/matrix-domain.h"
