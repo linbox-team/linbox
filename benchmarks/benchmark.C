@@ -47,12 +47,12 @@ namespace LinBox {
 		XMLElement * data = doc.NewElement( "data" );
 
 		selectFirstSeries();
-		for (index_t i = 0 ; i < size() ; ++i  ) {
+		for (size_t i = 0 ; i < size() ; ++i  ) {
 
 			XMLElement * serie = doc.NewElement ( "serie" );
 			serie->SetAttribute("name",unfortifyString(getCurrentSerieName()).c_str());
 
-			for (index_t j = 0 ;  j < getCurrentSerieSize() ; ++j)
+			for (size_t j = 0 ;  j < getCurrentSerieSize() ; ++j)
 			{
 				XMLElement * point = doc.NewElement ( "point" );
 				point->SetAttribute("x",unfortifyString(getCurrentSeriesEntry(j,Point::Labels() )).c_str());
@@ -92,16 +92,16 @@ namespace LinBox {
 	{
 	}
 
-	index_t PlotData::selectIndex(const std::string & nom)
+	size_t PlotData::selectIndex(const std::string & nom)
 	{
 
 		std::string nomf = fortifyString(nom);
-		index_t j ;
+		size_t j ;
 		bool ok = findKeyword(j,_serie_label_.begin() , _serie_label_.end() , nomf);
 
 
 		if ( ! ok ) {
-			linbox_check(j ==(index_t)_serie_label_.size() );
+			linbox_check(j ==(size_t)_serie_label_.size() );
 			_serie_label_.push_back(fortifyString(nom));
 			_tableau_.resize(j+1);
 		}
@@ -111,11 +111,11 @@ namespace LinBox {
 		return j ;
 	}
 
-	index_t PlotData::getIndex(const std::string & nom) const
+	size_t PlotData::getIndex(const std::string & nom) const
 	{
 
 		std::string nomf = fortifyString(nom);
-		index_t j ;
+		size_t j ;
 #ifdef NDEBUG 
                 findKeyword(j,_serie_label_.begin() , _serie_label_.end() , nomf);
 #else 
@@ -136,31 +136,31 @@ namespace LinBox {
 
 	void PlotData::merge(const PlotData &PD)
 	{
-		for (index_t i = 0 ; i < (index_t)PD.size() ; ++i) {
+		for (size_t i = 0 ; i < (size_t)PD.size() ; ++i) {
 			_tableau_.push_back(PD.getSeries(i));
 			_serie_label_.push_back(fortifyString(PD.getSerieName(i)));
 		}
 		return ;
 	}
 
-	index_t PlotData::size() const
+	size_t PlotData::size() const
 	{
 		linbox_check(_tableau_.size() == _serie_label_.size());
-		return (index_t)_tableau_.size() ;
+		return (size_t)_tableau_.size() ;
 	}
 
-	index_t PlotData::getCurrentSerieNumber() const
+	size_t PlotData::getCurrentSerieNumber() const
 	{
 		return _curr_serie_ ;
 	}
 
-	void PlotData::setSerieName(const index_t & i, const std::string & nom)
+	void PlotData::setSerieName(const size_t & i, const std::string & nom)
 	{
 		linbox_check(i<size());
 		_serie_label_[i] = fortifyString(nom) ;
 	}
 
-	const std::string & PlotData::getSerieName(const index_t & i) const
+	const std::string & PlotData::getSerieName(const size_t & i) const
 	{
 		linbox_check(i<size());
 		return _serie_label_[i] ;
@@ -176,7 +176,7 @@ namespace LinBox {
 		return setSerieName(_curr_serie_,nom);
 	}
 
-	void PlotData::initWatch ( const index_t & i)
+	void PlotData::initWatch ( const size_t & i)
 	{
 		linbox_check(i < size());
 		_curr_serie_ = i ;
@@ -191,7 +191,7 @@ namespace LinBox {
 	void PlotData::newSerie(const std::string & nom )
 	{
 
-		index_t old_size = size() ;
+		size_t old_size = size() ;
 		_curr_serie_ = old_size ;
 
 		_tableau_.resize(old_size+1);
@@ -214,13 +214,13 @@ namespace LinBox {
 	{
 	}
 
-	const DataSeries & PlotData::getSeries(const index_t  &i) const
+	const DataSeries & PlotData::getSeries(const size_t  &i) const
 	{
 		linbox_check(i < size());
 		return _tableau_[i] ;
 	}
 
-	const DataSeries & PlotData::selectSeries(const index_t  &i)
+	const DataSeries & PlotData::selectSeries(const size_t  &i)
 	{
 		initWatch(i);
 		return getSeries(i) ;
@@ -231,7 +231,7 @@ namespace LinBox {
 		return selectSeries(selectIndex(name));
 	}
 
-	DataSeries & PlotData::refSeries(const index_t  &i)
+	DataSeries & PlotData::refSeries(const size_t  &i)
 	{
 		linbox_check(i < size());
 		return _tableau_[i] ;
@@ -252,12 +252,12 @@ namespace LinBox {
 		return refSeries(_curr_serie_);
 	}
 
-	index_t PlotData::getSerieSize(const index_t & i) const
+	size_t PlotData::getSerieSize(const size_t & i) const
 	{
 		return getSeries(i).size();
 	}
 
-	index_t PlotData::getCurrentSerieSize() const
+	size_t PlotData::getCurrentSerieSize() const
 	{
 		return getSeries(_curr_serie_).size();
 	}
@@ -281,13 +281,13 @@ namespace LinBox {
 		return false;
 	}
 
-	void PlotData::setCurrentSeriesPointLabel(const index_t & j, const std::string & nom)
+	void PlotData::setCurrentSeriesPointLabel(const size_t & j, const std::string & nom)
 	{
 		return setSeriesPointLabel(_curr_serie_,j,nom);
 	}
 
 
-	std::string  PlotData::getSerieLabel(const index_t & i) const
+	std::string  PlotData::getSerieLabel(const size_t & i) const
 	{
 		linbox_check(i<size());
 		linbox_check(i<_serie_label_.size() );
@@ -302,7 +302,7 @@ namespace LinBox {
 	}
 
 
-	void PlotData::setSeriesEntry(const index_t &i, const std::string & nam, const double & val
+	void PlotData::setSeriesEntry(const size_t &i, const std::string & nam, const double & val
 				      , const double & xval , const double & yval)
 	{
 		refSeries(i).push_back(fortifyString(nam),val,xval,yval);
@@ -327,7 +327,7 @@ namespace LinBox {
 		return _tableau_ ;
 	}
 
-	bool PlotData::keepon(index_t & repet, double tim, bool usePrediction)
+	bool PlotData::keepon(size_t & repet, double tim, bool usePrediction)
 	{
 		return _time_watch_.keepon(repet,tim, usePrediction);
 	}
@@ -431,12 +431,12 @@ namespace LinBox {
 
 		{ // point metadata
 			XMLElement * metapoint = doc.NewElement( "PointMetaData" );
-			for (index_t i = 0 ; i < _meta_data_.MetaDataVec.size() ; ++i)
+			for (size_t i = 0 ; i < _meta_data_.MetaDataVec.size() ; ++i)
 			{
 				XMLElement * item = NULL ;
 				_meta_data_.MetaDataVec[i].writeMetaData(&item,doc);
 				std::string pts = "";
-				for (index_t j = 0 ; j < _meta_data_.MetaDataIDs[i].size(); ++j){
+				for (size_t j = 0 ; j < _meta_data_.MetaDataIDs[i].size(); ++j){
 					pts += _meta_data_.MetaDataIDs[i][j] ;
 					if (j+1 < _meta_data_.MetaDataIDs[i].size()  )
 						pts += ',';
@@ -666,7 +666,7 @@ namespace LinBox {
 		_styleopts_ += "\n" + style ;
 	}
 
-	void PlotStyle::setUsingSeries(index_t col, const std::string & moreargs)
+	void PlotStyle::setUsingSeries(size_t col, const std::string & moreargs)
 	{
 		linbox_check(col>1);
 		std::ostringstream usingcols ;
@@ -680,7 +680,7 @@ namespace LinBox {
 		_usingcols_ = usingcols.str();
 	}
 
-	void PlotStyle::addUsingSeries(index_t col, const std::string & moreargs)
+	void PlotStyle::addUsingSeries(size_t col, const std::string & moreargs)
 	{
 		linbox_check(col>2);
 		linbox_check(!_usingcols_.empty()); // we don't add if nothing was set
@@ -692,10 +692,10 @@ namespace LinBox {
 		_usingcols_ += usingcols.str();
 	}
 
-	void PlotStyle::setUsingSeries(std::list<index_t> cols, const std::string & moreargs)
+	void PlotStyle::setUsingSeries(std::list<size_t> cols, const std::string & moreargs)
 	{
 		linbox_check(!cols.empty());
-		std::list<index_t>::iterator it = cols.begin();
+		std::list<size_t>::iterator it = cols.begin();
 		// no way to check *it< coldim...
 		std::ostringstream usingcols ;
 		if ( _plot_type_ == Plot::histo ) {
@@ -718,11 +718,11 @@ namespace LinBox {
 		return;
 	}
 
-	void PlotStyle::addUsingSeries(std::list<index_t> cols, const std::string & moreargs)
+	void PlotStyle::addUsingSeries(std::list<size_t> cols, const std::string & moreargs)
 	{
 		linbox_check(!cols.empty());
 		linbox_check(!_usingcols_.empty()); // we don't add if nothing was set
-		std::list<index_t>::iterator it = cols.begin();
+		std::list<size_t>::iterator it = cols.begin();
 		std::ostringstream usingcols ;
 		if (_plot_type_ == Plot::histo) {
 			for (;it != cols.end();++it) {
@@ -740,7 +740,7 @@ namespace LinBox {
 		return;
 	}
 
-	void PlotStyle::setUsingSeries(std::pair<index_t,index_t> cols, const std::string & moreargs)
+	void PlotStyle::setUsingSeries(std::pair<size_t,size_t> cols, const std::string & moreargs)
 	{
 		std::ostringstream usingcols ;
 		if (_plot_type_ == Plot::histo) {
@@ -758,7 +758,7 @@ namespace LinBox {
 
 	}
 
-	void PlotStyle::addUsingSeries(std::pair<index_t,index_t> cols, const std::string & moreargs)
+	void PlotStyle::addUsingSeries(std::pair<size_t,size_t> cols, const std::string & moreargs)
 	{
 		linbox_check(!_usingcols_.empty()); // we don't add if nothing was set
 		std::ostringstream usingcols ;
@@ -790,7 +790,7 @@ namespace LinBox {
 	// fit X[nn-1,nn],Y[nn-1,nn] and return evaluation at x.
 	double fit2(const dvector_t & X, const dvector_t & Y, int nn, double x)
 	{
-		index_t n = (index_t) nn;
+		size_t n = (size_t) nn;
 		assert(n>0);
 		if ( n==1 ) {
 			if ( X[0]==X[1] ) {
@@ -823,8 +823,8 @@ namespace LinBox {
 		int ldv = deg ;
 
 #if 0 // Clapack (not working)
-		for(index_t i = 0 ; i < (index_t)n; ++i) {
-			for (index_t j = 0 ; j < (index_t)ldv; ++j) {
+		for(size_t i = 0 ; i < (size_t)n; ++i) {
+			for (size_t j = 0 ; j < (size_t)ldv; ++j) {
 				V[i*ldv+j] = std::pow(X[i],j);
 			}
 		}
@@ -836,9 +836,9 @@ namespace LinBox {
 
 #if 1 /* basic least squares */
 		// std::cout << V.size() << std::endl;
-		for(index_t i = 0 ; i < (index_t)n; ++i) {
-			for (index_t j = 0 ; j < (index_t)ldv; ++j) {
-				V[i+j*(index_t)n] = std::pow(X[i],j);
+		for(size_t i = 0 ; i < (size_t)n; ++i) {
+			for (size_t j = 0 ; j < (size_t)ldv; ++j) {
+				V[i+j*(size_t)n] = std::pow(X[i],j);
 			}
 		}
 
@@ -880,7 +880,7 @@ namespace LinBox {
 		double res = 0.0;
 
 		for(int i=deg-1; i >= 0; i--) {
-			res = res * x + Y[(index_t)i];
+			res = res * x + Y[(size_t)i];
 		}
 		return res;
 	}
@@ -937,10 +937,10 @@ namespace LinBox {
 		return ((a1*x+a2)*x+a3)/d ;
 #else // __LINBOX_HAVE_LAPACK
 		int m = min(n,5);
-		dvector_t X1((index_t)m) ;
-		dvector_t Y1((index_t)m) ;
-		for (int i = 0 ; i < m ; ++i) X1[(index_t)i] = X[(index_t)(n-m+i)] ;
-		for (int i = 0 ; i < m ; ++i) Y1[(index_t)i] = Y[(index_t)(n-m+i)] ;
+		dvector_t X1((size_t)m) ;
+		dvector_t Y1((size_t)m) ;
+		for (int i = 0 ; i < m ; ++i) X1[(size_t)i] = X[(size_t)(n-m+i)] ;
+		for (int i = 0 ; i < m ; ++i) Y1[(size_t)i] = Y[(size_t)(n-m+i)] ;
 		return fit_lapack3(X1,Y1,x);
 
 #endif // __LINBOX_HAVE_LAPACK
@@ -999,7 +999,7 @@ namespace LinBox {
 	// we don't assume that t(0sec) = 0 unless nothing has been computed yet.
 	double TimeWatcher::predict(double x)
 	{
-		index_t Current_ = size();
+		size_t Current_ = size();
 		if (Current_ == 0)
 			return 0 ;
 		if (Current_ ==1 )
@@ -1010,7 +1010,7 @@ namespace LinBox {
 		return fit3(refX(),refY(), (int) Current_-1,x);
 	}
 
-	bool TimeWatcher::keepon( index_t & repet, double tim, bool usePrediction )
+	bool TimeWatcher::keepon( size_t & repet, double tim, bool usePrediction )
 	{
 
 		if (aborted_)
@@ -1032,14 +1032,14 @@ namespace LinBox {
 		return false ;
 	}
 
-	index_t TimeWatcher::size() const
+	size_t TimeWatcher::size() const
 	{
 		if (Points_ == NULL || Values_ == NULL) {
 			linbox_check(Values_ == NULL && Points_ == NULL);
 			return  0 ;
 		}
 		linbox_check(Points_->size() == Values_->size());
-		return (index_t)Points_->size();
+		return (size_t)Points_->size();
 	}
 
 	void TimeWatcher::clear()
@@ -1068,7 +1068,7 @@ namespace LinBox {
 
 #if 0
 	void
-	DataSeries::resize(const index_t & n)
+	DataSeries::resize(const size_t & n)
 	{
 		linbox_check(n == Values.size()+1);
 		PointLabels.resize(n);
@@ -1081,7 +1081,7 @@ namespace LinBox {
 	}
 #endif
 
-	index_t
+	size_t
 	DataSeries::size() const
 	{
 		linbox_check(PointLabels.size() == Points.size())
@@ -1089,7 +1089,7 @@ namespace LinBox {
 		linbox_check(Times.size() == Values.size())
 		linbox_check(Times.size() == UID.size())
 
-		return (index_t)Values.size();
+		return (size_t)Values.size();
 	}
 
 	void DataSeries::push_back(const std::string & nam, const double & val, const double & x , const double &y )
@@ -1147,24 +1147,24 @@ namespace LinBox {
 				     , dmatrix_t & merge_data
 				     , const svector_t & pts
 				     , const dvector_t & dat
-				     , const index_t & idx) const
+				     , const size_t & idx) const
 		{
-			index_t data_size = (index_t)merge_points.size();
-			linbox_check(data_size == (index_t)merge_data[0].size());
+			size_t data_size = (size_t)merge_points.size();
+			linbox_check(data_size == (size_t)merge_data[0].size());
 
 			merge_data[idx].resize(data_size,NAN);
 			typename svector_t::iterator it ;
 
-			for (index_t i = 0 ; i < pts.size() ; ++i) {
+			for (size_t i = 0 ; i < pts.size() ; ++i) {
 
-				index_t k ;
+				size_t k ;
 			       bool ok = findKeyword(k, merge_points.begin(), merge_points.begin()+data_size,pts[i]);
 
 				if ( ok ){
 					merge_data[idx][k] = dat[i] ;
 				}
 				else {
-					for (index_t j = 0 ; j < idx ; ++j) {
+					for (size_t j = 0 ; j < idx ; ++j) {
 						merge_data[j].push_back(NAN);
 					}
 
@@ -1190,7 +1190,7 @@ namespace LinBox {
 			// std::cout << "merge points " << _merge_points_ << std::endl;
 			// std::cout << "merge data   " << _merge_data_ << std::endl;
 
-			for (index_t i = 1 ; i < _data_.size() ; ++i) {
+			for (size_t i = 1 ; i < _data_.size() ; ++i) {
 				_data_. selectNextSeries() ;
 				// std::cout << "to be merged "  << i << " : "  << std::endl;
 				// std::cout << "new points " << _data_.getCurrentSeriesPointLabel() << std::endl;
@@ -1212,8 +1212,8 @@ namespace LinBox {
 		{
 			char comma   = ',';
 			char comment = '#';
-			index_t nb_points = (index_t)_merge_points_.size() ;
-			index_t nb_series = (index_t)_data_.size() ;
+			size_t nb_points = (size_t)_merge_points_.size() ;
+			size_t nb_series = (size_t)_data_.size() ;
 
 			std::string unique_filename  = getFileName();
 			std::string DataFileName = unique_filename + ".csv" ;
@@ -1230,16 +1230,16 @@ namespace LinBox {
 
 			// data
 			DF << fortifyString(_style_.getRawTitle(1)) << comma ;
-			for (index_t i = 0 ; i < nb_series ; ++i) {
+			for (size_t i = 0 ; i < nb_series ; ++i) {
 				DF << _data_.getSerieLabel(i) ;
 				if (i != nb_series -1)
 					DF << comma ;
 			}
 			DF << std::endl;
 
-			for (index_t j = 0 ; j < nb_points ; ++j) {
+			for (size_t j = 0 ; j < nb_points ; ++j) {
 				DF << _merge_points_[j] << comma;
-				for (index_t i = 0 ; i < nb_series ; ++i) {
+				for (size_t i = 0 ; i < nb_series ; ++i) {
 					DF  << _merge_data_[i][j] ;
 					if (i != nb_series -1)
 						DF << comma ;
@@ -1278,8 +1278,8 @@ namespace LinBox {
 
 			std::string comment_in = "<!--";
 			std::string comment_out = "-->";
-			index_t nb_points = (index_t)_merge_points_.size() ;
-			index_t nb_series = (index_t)_data_.size() ;
+			size_t nb_points = (size_t)_merge_points_.size() ;
+			size_t nb_series = (size_t)_data_.size() ;
 
 			std::string unique_filename  = getFileName();
 			std::string DataFileName = unique_filename + ".html" ;
@@ -1299,15 +1299,15 @@ namespace LinBox {
 			DF << "<caption> " <<  (_style_.getRawTitle()) << " (data in " << _style_.getRawTitle(2) << ')'  << " </caption>" << std::endl;
 			DF << "<tr> " << std::endl;
 			DF << "<th> " << _style_.getRawTitle(1) << " </th>";
-			for (index_t i = 0 ; i < nb_series ; ++i) {
+			for (size_t i = 0 ; i < nb_series ; ++i) {
 				DF << "<th> " << unfortifyString(_data_.getSerieLabel(i)) << " </th>";
 			}
 			DF << " </tr>" << std::endl;
 
-			for (index_t j = 0 ; j < nb_points ; ++j) {
+			for (size_t j = 0 ; j < nb_points ; ++j) {
 				DF << "<tr> " << std::endl;
 				DF << "<th> " << unfortifyString(_merge_points_[j]) << " </th>";
-				for (index_t i = 0 ; i < nb_series ; ++i) {
+				for (size_t i = 0 ; i < nb_series ; ++i) {
 					DF  << "<td> " << _merge_data_[i][j]  << " </td>";
 
 				}
@@ -1323,8 +1323,8 @@ namespace LinBox {
 
 		void PlotGraph::print_latex()
 		{
-			index_t nb_points = (index_t)_merge_points_.size();
-			index_t nb_series = _data_.size();
+			size_t nb_points = (size_t)_merge_points_.size();
+			size_t nb_series = _data_.size();
 
 			linbox_check(nb_points);
 			linbox_check(nb_series);
@@ -1341,7 +1341,7 @@ namespace LinBox {
 			FN << "\\centering"    << std::endl;
 			// format
 			FN << "\\begin{tabular}{c||" ;
-			for (index_t j = nb_points ; j-- ; )
+			for (size_t j = nb_points ; j-- ; )
 				FN << 'c' ;
 			FN << "|}" << std::endl;
 			// top left case
@@ -1354,15 +1354,15 @@ namespace LinBox {
 				FN << series ;
 			}
 			// first line
-			for (index_t j = 0 ; j < nb_points ; ++j ) {
+			for (size_t j = 0 ; j < nb_points ; ++j ) {
 				FN << " & " <<  _merge_points_[j] ;
 			}
 			// lines of data
 			FN << std::endl << "\\hline" << std::endl;
 			FN.precision(2);
-			for (index_t i = 0 ; i < nb_series ; ++i) {
+			for (size_t i = 0 ; i < nb_series ; ++i) {
 				FN << _data_.getSerieLabel(i) ;
-				for (index_t j =  0 ; j < nb_points ; ++j )
+				for (size_t j =  0 ; j < nb_points ; ++j )
 					FN << " & " << _merge_data_[i][j] ;
 				if (i+1 < nb_series )
 					FN << "\\\\" ;
@@ -1386,8 +1386,8 @@ namespace LinBox {
 #ifndef __LINBOX_HAVE_GNUPLOT
 			std::cout << "gnuplot is not available on your system. only the data will be printed" << std::endl;
 #endif
-			index_t nb_points = (index_t)_merge_points_.size() ;
-			index_t nb_series = (index_t)_data_.size() ;
+			size_t nb_points = (size_t)_merge_points_.size() ;
+			size_t nb_series = (size_t)_data_.size() ;
 
 			std::string unique_filename  = getFileName();
 			std::string DataFileName = unique_filename + ".dat" ;
@@ -1408,14 +1408,14 @@ namespace LinBox {
 
 
 			DF << "legend " ;
-			for (index_t i = 0 ; i < nb_series ; ++i) {
+			for (size_t i = 0 ; i < nb_series ; ++i) {
 				DF << _data_.getSerieLabel(i) << ' ' ;
 			}
 			DF << std::endl;
 
-			for (index_t j = 0 ; j < nb_points ; ++j) {
+			for (size_t j = 0 ; j < nb_points ; ++j) {
 				DF << _merge_points_[j] ;
-				for (index_t i = 0 ; i < nb_series ; ++i) {
+				for (size_t i = 0 ; i < nb_series ; ++i) {
 					DF << " " << _merge_data_[i][j] ;
 				}
 				DF << std::endl;
@@ -1520,7 +1520,7 @@ namespace LinBox {
 			// mutable _style_ ?
 			linbox_check(_merge_points_.size());
 			if (_style_.getUsingSeries().empty()) {
-				_style_.setUsingSeries(std::pair<index_t,index_t>((index_t)2,(index_t)_merge_data_.size()+1));
+				_style_.setUsingSeries(std::pair<size_t,size_t>((size_t)2,(size_t)_merge_data_.size()+1));
 			}
 			return _style_.getUsingSeries();
 		}

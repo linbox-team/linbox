@@ -45,7 +45,7 @@ using namespace LinBox ;
 using Givaro::Timer;
 
 /* compute MegaFLOPS for mat mul (2 m n k) */
-double mm_mflops(index_t m, index_t n, index_t k)
+double mm_mflops(size_t m, size_t n, size_t k)
 {
 	return 2*(double)m/100*(double)n/100*(double)k/100 ;
 }
@@ -63,7 +63,7 @@ double mm_mflops(index_t m, index_t n, index_t k)
  */
 template<class Field>
 void launch_bench_square(Field & F // const problem
-			 , index_t min, index_t max, index_t step // no negative step
+			 , size_t min, size_t max, size_t step // no negative step
 			 , PlotData & Data
 			)
 {
@@ -82,7 +82,7 @@ void launch_bench_square(Field & F // const problem
 	BlasMatrixDomain<Field> BMD(F) ;
 	RandomDenseMatrix<Randiter,Field> RandMat(F,R);
 
-	for ( index_t i = min ; i < max ; i += step ) {
+	for ( size_t i = min ; i < max ; i += step ) {
 
 		showAdvanceLinear(i,min,max);
 		size_t ii = i ;
@@ -90,13 +90,13 @@ void launch_bench_square(Field & F // const problem
 		BlasMatrix<Field> B (F,ii,ii);
 		BlasMatrix<Field> C (F,ii,ii);
 
-		index_t j = 0 ; // number of repets.
+		size_t j = 0 ; // number of repets.
 
 		RandMat.random(A);
 		RandMat.random(B);
 		RandMat.random(C);
 		TW.clear() ;
-		while( Data.keepon(j,TW.time()) ) {
+		while( Data.keepon(j,TW.time(),false) ) {
 			TW.start() ;
 			BMD.mul(C,A,B) ; // C = AB
 			TW.stop();
@@ -120,10 +120,10 @@ void launch_bench_square(Field & F // const problem
  * @param step step of the size between 2 benchmarks
  * @param charac characteristic of the field.
  */
-void bench_square( index_t min, index_t max, index_t step, int charac )
+void bench_square( size_t min, size_t max, size_t step, int charac )
 {
 
-	index_t nb = 1 ;// une col de plus (la première)
+	size_t nb = 1 ;// une col de plus (la première)
 	typedef Givaro::Modular<double>          Field0 ; ++nb ;
 	typedef Givaro::Modular<float>           Field1 ; ++nb ;
 	// typedef Givaro::Modular<int32_t>         Field2 ; ++nb ;
@@ -219,7 +219,7 @@ void launch_bench_rank(const Field &F, const std::string & name
 	showAdvanceLinear(1,1,2);
 
 	TW.clear() ;
-	index_t j = 0 ;
+	size_t j = 0 ;
 	while( Data.keepon(j,TW.time()) ) {
 		TW.start() ;
 		unsigned long d ;
@@ -267,7 +267,7 @@ void bench_rank(int carac)
 	std::string m3 = "matrix/bibd_14_7_91x3432.sms" ; ++nb;
 
 	PlotData  Data;
-	showProgression Show((index_t)nb) ;
+	showProgression Show((size_t)nb) ;
 
 	launch_bench_rank(F,m1,Data);
 	Show.FinishIter();
@@ -311,9 +311,9 @@ int main( int ac, char ** av)
 {
 	/*  Argument parsing/setting */
 
-	static index_t       min  = 100;     /*  min size */
-	static index_t       max  = 1500;    /*  max size (not included) */
-	static index_t       step = 300;    /*  step between 2 sizes */
+	static size_t       min  = 100;     /*  min size */
+	static size_t       max  = 1500;    /*  max size (not included) */
+	static size_t       step = 300;    /*  step between 2 sizes */
 	// static std::list<int> lst  ;       /*  what bench to start ? */
 	// lst.push_front(1);// ={1,2} vivement le nouveau std...
 	// lst.push_front(2);

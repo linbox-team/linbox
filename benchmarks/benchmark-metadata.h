@@ -178,7 +178,7 @@ namespace LinBox {
 		template<class T>
 		void changeValue(const std::string & keyword, T& value)
 		{
-			index_t i ;
+			size_t i ;
 		       	bool ok = findKeyword(i, keys.begin(), keys.end(), keyword);
 			if ( !ok )
 				// throw LinBoxError("undefined keyword",keyword);
@@ -191,7 +191,7 @@ namespace LinBox {
 
 		const std::string & getValue(const std::string & keyword)
 		{
-			index_t i ;
+			size_t i ;
 		       	bool ok = findKeyword(i, keys.begin(), keys.end(), keyword);
 			if ( !ok )
 				// throw LinBoxError("undefined keyword",keyword);
@@ -242,11 +242,11 @@ namespace LinBox {
 			(*data)->SetAttribute("hash",getHash().c_str());
 #endif
 
-			for (index_t i = 0 ; i < keys.size() ; ++i  ) {
+			for (size_t i = 0 ; i < keys.size() ; ++i  ) {
 				(*data)->SetAttribute(keys[i].c_str(),vals[i].c_str());
 			}
 
-			for (index_t i = 0 ; i < getMetaDataSize() ; ++i  ) {
+			for (size_t i = 0 ; i < getMetaDataSize() ; ++i  ) {
 				XMLElement * child = NULL ;
 				getMetaData(i)->writeMetaData(&child,doc);
 				(*data)->InsertEndChild( child );
@@ -474,7 +474,7 @@ namespace LinBox {
 			MetaDataVec(0)
 			, MetaDataIDs(0)
 		{};
-		// bool exists(index_t & j, const MetaData & m);
+		// bool exists(size_t & j, const MetaData & m);
 		// uses hashes to search for metadata.
 		void push_back(const std::string & pointID, const MetaData & pointMD)
 		{

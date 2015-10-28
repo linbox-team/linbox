@@ -40,26 +40,26 @@
 
 namespace LinBox {
 
-	void showAdvanceLinear(index_t curr, index_t min, index_t max)
+	void showAdvanceLinear(size_t curr, size_t min, size_t max)
 	{
 		std::cout << std::setprecision(4) << "\033[2K" << "\033[30D" << min <<std::flush;
 		std::cout << '<' << curr << '<' << max << " (" << std::flush;
 		std::cout << double(curr-min)/double(max-min)*100 << "%)" << std::flush;
 	}
 
-	void showFinish(index_t curr, index_t all)
+	void showFinish(size_t curr, size_t all)
 	{
 		std::cout <<  "\033[2K" << "\033[30D" << "finished : " << curr << std::flush;
 		std::cout << '/' << all-1 << std::flush << std::endl;
 	}
 
-	void showSkip(index_t curr, index_t all)
+	void showSkip(size_t curr, size_t all)
 	{
 		std::cout <<  "\033[2K" << "\033[30D" << "skipped : " << curr << std::flush;
 		std::cout << '/' << all-1 << std::flush << std::endl;
 	}
 
-	showProgression::showProgression (index_t tot) :
+	showProgression::showProgression (size_t tot) :
 		_cur_(0)
 		,_tot_(tot)
 	{}
@@ -87,7 +87,7 @@ namespace LinBox {
 
 namespace LinBox {
 
-	double computeMFLOPS(const double & tim, const double mflo, const index_t rpt)
+	double computeMFLOPS(const double & tim, const double mflo, const size_t rpt)
 	{
 		linbox_check(rpt);
 		// linbox_check(tim != 0.);
@@ -123,7 +123,7 @@ namespace LinBox {
 				double tps = 0 ;
 				for (size_t i = 0 ; i < tim.size() ; ++i)
 					tps += tim[i] ;
-				return computeMFLOPS(tps,mflo,(index_t)tim.size());
+				return computeMFLOPS(tps,mflo,(size_t)tim.size());
 			}
 		case (Tag::TimeSelect::bestThree) :
 			{
@@ -178,7 +178,7 @@ namespace LinBox {
 
 				dvector_t tps (tim);
 				std::sort(tps.begin(),tps.end());
-				index_t mid = (index_t)tps.size()/2 ;
+				size_t mid = (size_t)tps.size()/2 ;
 				double t1 ;
 				if (isOdd(tps.size()))
 					t1 = tps[mid] ;
@@ -191,8 +191,8 @@ namespace LinBox {
 				if (tim.size() < 3)
 					return computeMFLOPS(tim,mflo,Tag::TimeSelect::median); ;
 
-				index_t q1 = (index_t)((double)tim.size()/(double)4) ;
-				index_t q3 = (index_t)tim.size()-q1 ;
+				size_t q1 = (size_t)((double)tim.size()/(double)4) ;
+				size_t q3 = (size_t)tim.size()-q1 ;
 				dvector_t tps (tim);
 				std::sort(tps.begin(),tps.end());
 				dvector_t tps2 (tim.begin()+q1,tim.begin()+q3);

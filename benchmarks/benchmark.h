@@ -82,8 +82,8 @@ namespace LinBox {
 		dvector_t  *    Points_; //!< Points data. If <code>Points_[i] = x</code>, then <code>Values_[i]=f(x)<code>.
 		dvector_t  *    Values_; //!< Time data. See \p Points_ .
 
-		index_t       MaxRepet_; //!< Maximum number of repetitions of timings
-		index_t       MinRepet_; //!< Minimum number of repetitions of timings
+		size_t       MaxRepet_; //!< Maximum number of repetitions of timings
+		size_t       MinRepet_; //!< Minimum number of repetitions of timings
 		double         MaxTime_; //!< Maximum time to be spent on repetitions (after MinRepet_ iters have been done)
 		double       AbortTime_; //!< Time to abort a series of computation.
 		bool           aborted_; //!< abort any subsequent computation
@@ -128,10 +128,10 @@ namespace LinBox {
 		 * @pre \c tim should have been started previously !
 		 *
 		 */
-		bool keepon(index_t & repet, double tim, bool usePrediction = false) ;
+		bool keepon(size_t & repet, double tim, bool usePrediction = false) ;
 
 		//! size
-		index_t size() const;
+		size_t size() const;
 
 		//! clear the pointers (not the settings)
 		void clear();
@@ -166,11 +166,11 @@ namespace LinBox {
 		 * @param n new size
 		 * @pre the size before was n-1
 		 */
-		void resize(const index_t & n);
+		void resize(const size_t & n);
 #endif
 
 		//! Size of the series of measurements.
-		index_t size() const;
+		size_t size() const;
 
 		//! add some new data.
 		void push_back(const std::string & nam, const double & val, const double & x = NAN, const double &y = NAN);
@@ -396,27 +396,27 @@ namespace LinBox {
 		 * @param col a column to use.
 		 * @param moreargs more stuff
 		 */
-		void setUsingSeries(index_t col, const std::string &  moreargs= "") ;
+		void setUsingSeries(size_t col, const std::string &  moreargs= "") ;
 
 		/*! @brief adds a column to use
 		 * @param col a  column to use.
 		 * @param moreargs more stuff
 		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has already been called.
 		 */
-		void addUsingSeries(index_t col, const std::string &  moreargs= "") ;
+		void addUsingSeries(size_t col, const std::string &  moreargs= "") ;
 
 		/*! @brief tells which columns to use.
 		 * @param cols a list of column to use.
 		 * @param moreargs more stuff
 		 */
-		void setUsingSeries(std::list<index_t> cols, const std::string & moreargs= "") ;
+		void setUsingSeries(std::list<size_t> cols, const std::string & moreargs= "") ;
 
 		/*! @brief adds a set of columns to use.
 		 * @param cols a list of column to use.
 		 * @param moreargs more stuff
 		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has already been called.
 		 */
-		void addUsingSeries(std::list<index_t> cols, const std::string & moreargs= "") ;
+		void addUsingSeries(std::list<size_t> cols, const std::string & moreargs= "") ;
 
 		/*! @brief tells which columns to use.
 		 * @param cols all colums between \c cols.first and \c cols.second (included)
@@ -424,7 +424,7 @@ namespace LinBox {
 		 * @param moreargs more stuff
 		 *
 		 */
-		void setUsingSeries(std::pair<index_t,index_t> cols, const std::string & moreargs= "") ;
+		void setUsingSeries(std::pair<size_t,size_t> cols, const std::string & moreargs= "") ;
 
 		/*! @brief adds contiguous columns to use.
 		 * @param cols all colums between \c cols.first and \c
@@ -434,7 +434,7 @@ namespace LinBox {
 		 * already been called.
 		 *
 		 */
-		void addUsingSeries(std::pair<index_t,index_t> cols, const std::string & moreargs= "") ;
+		void addUsingSeries(std::pair<size_t,size_t> cols, const std::string & moreargs= "") ;
 
 		const std::string & getUsingSeries() const ;
 
@@ -521,7 +521,7 @@ namespace LinBox {
 	private :
 		std::vector<DataSeries >      _tableau_  ;   //!< data. \c _tableau_[i] represents a series of measurements. A data series is augmented only via the \c push_back method. A series may be accessed by its name, its number or it is the current working series.
 		svector_t                  _serie_label_ ;   //!< label for each serie of measures. Used in the legend of the plots/tables of points.
-		mutable index_t            _curr_serie_  ;   //!< index of the current series of measurements.
+		mutable size_t            _curr_serie_  ;   //!< index of the current series of measurements.
 		mutable TimeWatcher        _time_watch_  ;   //!< time predictor, helper. See \c TimeWatcher.
 		MetaData                     _plot_data_ ;   //!< information abouth the benchmark
 		MetaDataSeries               _meta_data_ ;   //!< information about each point
@@ -536,25 +536,25 @@ namespace LinBox {
 		 * @param nom name of the series
 		 * @return its index
 		 */
-		index_t getIndex(const std::string & nom) const ;
+		size_t getIndex(const std::string & nom) const ;
 
 		/** Finds the index of a series by its name.
 		 * @param nom name of the series
 		 * @return its index
 		 */
-		index_t selectIndex(const std::string & nom) ;
+		size_t selectIndex(const std::string & nom) ;
 
 	public :
 
 		/*! Returns the ith series of measurements.
 		 * @param i ith series to be returned
 		 */
-		const DataSeries & getSeries(const index_t  &i) const ;
+		const DataSeries & getSeries(const size_t  &i) const ;
 
 		/*! Returns the ith series of measurements.
 		 * @param i ith series to be returned
 		 */
-		const DataSeries & selectSeries(const index_t  &i) ;
+		const DataSeries & selectSeries(const size_t  &i) ;
 
 		/*! Returns the series of measurements after its name.
 		 * @param nom name of series to be returned
@@ -568,7 +568,7 @@ namespace LinBox {
 		/*! Returns the ith series of measurements.
 		 * @param i ith series to be returned
 		 */
-		DataSeries & refSeries(const index_t  &i) ;
+		DataSeries & refSeries(const size_t  &i) ;
 
 		/*! Returns the ith series of measurements.
 		 * @param i ith series to be returned
@@ -605,22 +605,22 @@ namespace LinBox {
 		/*! @brief get the number of series.
 		 * @return number of series.
 		 */
-		index_t size() const ;
+		size_t size() const ;
 
 		/** @brief gets the current series number.
 		*/
-		index_t getCurrentSerieNumber() const ;
+		size_t getCurrentSerieNumber() const ;
 
 		/*! @brief Sets the name of a serie.
 		 * @param i index of the serie
 		 * @param nom name of the serie
 		 */
-		void setSerieName(const index_t & i, const std::string & nom) ;
+		void setSerieName(const size_t & i, const std::string & nom) ;
 
 		// ref  Series
 
 		template<class Pt>
-		std::vector<typename Pt::type> & refSeries(const index_t & i,  Pt kind) ;
+		std::vector<typename Pt::type> & refSeries(const size_t & i,  Pt kind) ;
 
 		template<class Pt>
 		std::vector<typename Pt::type> & refSeries(const std::string & name,  Pt kind)
@@ -631,7 +631,7 @@ namespace LinBox {
 		// get Series
 
 		template<class Pt>
-		const std::vector<typename Pt::type> & getSeries(const index_t & i,  Pt kind) const ;
+		const std::vector<typename Pt::type> & getSeries(const size_t & i,  Pt kind) const ;
 
 		template<class Pt>
 		const std::vector<typename Pt::type> & getSeries(const std::string & name,  Pt kind) const
@@ -646,20 +646,20 @@ namespace LinBox {
 		}
 
 		template<class Pt>
-		const typename Pt::type & getSeriesEntry(const index_t & i, const index_t & j, Pt kind) const
+		const typename Pt::type & getSeriesEntry(const size_t & i, const size_t & j, Pt kind) const
 		{
 			linbox_check(j<getSerieSize(i));
 			return (getSeries(i,kind)[j]) ;
 		}
 
 		template<class Pt>
-		const typename Pt::type & getSeriesEntry(const std::string & name, const index_t & j, Pt kind) const
+		const typename Pt::type & getSeriesEntry(const std::string & name, const size_t & j, Pt kind) const
 		{
 			return getSeriesEntry(getIndex(name),j,kind);
 		}
 
 		template<class Pt>
-		const typename Pt::type & getSeriesEntry(const index_t & i,  Pt kind) const
+		const typename Pt::type & getSeriesEntry(const size_t & i,  Pt kind) const
 		{
 			return ( getSeries(i,kind).back() ) ;
 		}
@@ -671,7 +671,7 @@ namespace LinBox {
 		}
 
 		template<class Pt>
-		const typename Pt::type & getCurrentSeriesEntry(const index_t & j, Pt kind) const
+		const typename Pt::type & getCurrentSeriesEntry(const size_t & j, Pt kind) const
 		{
 			return getSeriesEntry(_curr_serie_, j, kind);
 		}
@@ -688,7 +688,7 @@ namespace LinBox {
 		/** Gets the name of a serie.
 		 * @param i index of the serie
 		 */
-		const std::string &  getSerieName(const index_t & i) const ;
+		const std::string &  getSerieName(const size_t & i) const ;
 
 		/** Gets the name of the current serie.
 		*/
@@ -702,7 +702,7 @@ namespace LinBox {
 		/** Inits the watch on a series
 		 * @param i index of a series
 		 */
-		void initWatch ( const index_t & i) ;
+		void initWatch ( const size_t & i) ;
 
 		/** Inits the watch to current series
 		*/
@@ -723,11 +723,11 @@ namespace LinBox {
 		/** @brief size of a series.
 		 * @param i index of the series
 		 */
-		index_t getSerieSize(const index_t & i) const ;
+		size_t getSerieSize(const size_t & i) const ;
 
 		/** @brief size of the current series.
 		*/
-		index_t getCurrentSerieSize() const ;
+		size_t getCurrentSerieSize() const ;
 
 		/*! goes to the next series of points
 		*/
@@ -743,7 +743,7 @@ namespace LinBox {
 		 * @param nom name of the point
 		 */
 		template<class T>
-		void setSeriesPointLabel(const index_t & i, const index_t & j, const T & nom)
+		void setSeriesPointLabel(const size_t & i, const size_t & j, const T & nom)
 		{
 			std::string nom_s = fortifyString(toString(nom));
 			linbox_check(j<getSerieSize(i) );
@@ -756,7 +756,7 @@ namespace LinBox {
 		 * @param j index for the the point
 		 * @param nom name of the point
 		 */
-		void setCurrentSeriesPointLabel(const index_t & j, const std::string & nom) ;
+		void setCurrentSeriesPointLabel(const size_t & j, const std::string & nom) ;
 
 
 
@@ -765,7 +765,7 @@ namespace LinBox {
 		 * @param i its index.
 		 * @return its name.
 		 */
-		std::string getSerieLabel(const index_t & i) const ;
+		std::string getSerieLabel(const size_t & i) const ;
 
 		/*! @brief gets the name of a serie.
 		 * Defaults to \c "serie.i"
@@ -791,7 +791,7 @@ namespace LinBox {
 		 * @param xval x value of the point (eg size of the matrix, of a sparse matrix,...)
 		 * @param yval time for this computation (seconds)
 		 */
-		void setSeriesEntry(const index_t &i, const std::string & nam, const double & val
+		void setSeriesEntry(const size_t &i, const std::string & nam, const double & val
 				    , const double & xval = NAN, const double & yval = NAN) ;
 
 		/*! @brief sets a new entry.
@@ -837,7 +837,7 @@ namespace LinBox {
 		 * @param tim    time previously spent on the measures.
 		 * @return true if one more measure can be done
 		 */
-		bool keepon(index_t & repet, double tim, bool usePrediction=false) ;
+		bool keepon(size_t & repet, double tim, bool usePrediction=false) ;
 
 		void load( const std::string & filename) ;
 
@@ -867,7 +867,7 @@ namespace LinBox {
 		/** @brief returns the unique ID of the current series j'th entry.
 		 * @param j index of the entry.
 		 */
-		const std::string & getCurrentSeriesId(const index_t & j) const
+		const std::string & getCurrentSeriesId(const size_t & j) const
 		{
 			return   (getCurrentSeries().UID[j]);
 		}
@@ -876,7 +876,7 @@ namespace LinBox {
 		 * @param i index of the series.
 		 * @param j index of the entry.
 		 */
-		const std::string & getId(const index_t & i, const index_t & j)
+		const std::string & getId(const size_t & i, const size_t & j)
 		{
 			return   (selectSeries(i).UID[j]);
 		}
@@ -885,7 +885,7 @@ namespace LinBox {
 		 * @param i index of the series.
 		 * @param j index of the entry.
 		 */
-		const std::string & getId(const std::string & name, const index_t & j)
+		const std::string & getId(const std::string & name, const size_t & j)
 		{
 			return   (selectSeries(name).UID[j]);
 		}
@@ -938,7 +938,7 @@ namespace LinBox {
 				     , dmatrix_t & merge_data
 				     , const svector_t & pts
 				     , const dvector_t & dat
-				     , const index_t & idx) const ;
+				     , const size_t & idx) const ;
 
 		//! merge all series of points into a vector of absissa points  and a vector of vector of data points
 		void mergeSeries();
