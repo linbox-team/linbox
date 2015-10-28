@@ -79,8 +79,6 @@ hide("test-modular-short",  "deprecated");
 //skip("test-moore-penrose", "inf loop");
 skip("test-optimization", "not in test form");
 skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
-//skip("test-rank-md", "intermittent inf loop"/*, "vector (bb) responsible"*/);
-//skip("test-rank-u32", "intermittent inf loop"/*, "vector (bb) responsible"*/);
 //skip("test-rational-reconstruction-base", "inf loop");
 skip("test-rat-charpoly", "inf loop");
 skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
@@ -94,13 +92,13 @@ skip("test-tutorial", "incomplete test");
 skip("test-dense-zero-one", "half baked, bds responsible");
 }
 
-warn("test-echelon-form", "new");
+//warn("test-echelon-form", "new");
 warn("test-fibb",  "incomplete");
 warn("test-gf2", "not much is tested there");
 //warn("test-matrix-domain", "intermittent row permutation failure");
 warn("test-param-fuzzy", "Noncompliant field");
 warn("test-qlup", "GF2 fails to compile");
-warn("test-rank-u32", "intermittent failure"/*, "vector (bb) responsible"*/);
+//warn("test-rank-u32", "intermittent failure"/*, "vector (bb) responsible"*/);
 warn("test-rat-charpoly", "stale test. solns over QQ need fresh tests");//, "infinite loop, cp responsible?")
 warn("test-rat-minpoly", "intermittent failures");
 warn("test-rat-solve", "infinite loop");

@@ -211,7 +211,8 @@ static bool testNonsingularSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		Blackbox D (d);
+		BlasVector<Field> dd(F,d);
+		Blackbox D (dd);
 
 		try {
 			solve (x, D, b, method);
@@ -328,7 +329,9 @@ static bool testSingularConsistentSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		Blackbox D (F, d);
+		BlasVector<Field> dd(F,d);
+		Blackbox D (dd);
+		//Blackbox D (d);
 
 		try {
 			bool iter_passed = true;
@@ -445,7 +448,9 @@ static bool testSingularInconsistentSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		Blackbox D (F, d);
+		BlasVector<Field> dd(F,d);
+		Blackbox D (dd);
+		//Blackbox D (d);
 
 		status = solve (D, x, b, u, F, traits);
 
@@ -564,7 +569,9 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 		VD.write (report, b);
 		report << endl;
 
-		Diagonal<Field> A (F, d);
+		BlasVector<Field> dd(F,d);
+		Diagonal<Field> A (dd);
+		//Diagonal<Field> A (F, d);
 
 		status = solve (A, x, b, u, F, traits);
 
@@ -794,8 +801,7 @@ int main (int argc, char **argv)
 		pass = false;
 	if (!testNonsingularSolve            (F, stream1, stream2, "Wiedemann", WM))
 		pass = false;
-#if 0
-/* the solve solution doesn't make the right call? */
+#if 1
 	Method::BlockWiedemann BWM;
 	if (!testIdentitySolve               (F, stream1, "BlockWiedemann", BWM))
 		pass = false;
@@ -810,9 +816,15 @@ int main (int argc, char **argv)
 	if (!testSingularInconsistentSolve   (F, stream3, stream2,
 					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
+#endif
+
+#if 0
 	if (!testSingularPreconditionedSolve (F, stream6, stream2,
 					      "Sparse preconditioner", Method::Wiedemann::SPARSE))
 		pass = false;
+#endif
+
+#if 0
 	if (!testIdentitySolve               (F, stream1,
 					      "Lanczos", Method::Lanczos ()))
 		pass = false;
@@ -828,8 +840,9 @@ int main (int argc, char **argv)
 
 	if (!testRandomSolve (F, A_stream, stream1, "Lanczos", traits1))
 		pass = false;
+#endif
 
-
+#if 0
 	Method::BlockLanczos traits2;
 	traits2.preconditioner (Method::BlockLanczos::FULL_DIAGONAL);
 	traits2.blockingFactor (N);
