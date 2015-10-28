@@ -87,7 +87,7 @@ template <class Field>
 typename Field::Element& expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n)
 {
 	if (n == 0) {
-		F.init (res, (int64_t)1);
+		F.init (res);
 	}
 	else if (n == 1) {
 		F.assign (res, a);
@@ -101,7 +101,7 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 		n /= 2;
 		expt (F, res, a, n);
 		typename Field::Element tmp;
-		F.init(tmp,(int64_t)0);
+		F.init(tmp);
 		res = F.mul (tmp, res, res);
 	}
 
@@ -137,15 +137,19 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	F.characteristic(p);
 	
 	typename Ring::Element zero, one, mOne, two, mTwo, three, five, six, eight;
-	F.init(zero, (int64_t)0); 
-	F.init(one, (int64_t)1); 
-	F.init(mOne); F.neg(mOne,one);
+	//F.init(zero, (int64_t)0); 
+	F.assign(zero, F.zero);
+	//F.init(one, (int64_t)1); 
+	F.assign(one, F.one);
+	//F.init(mOne); F.neg(mOne,one);
+	F.assign(mOne, F.mOne);
 
 	
 	if (p > 0)
 	{
 		F.init(two, ((LinBox::integer)2 % p));
-		F.init(mTwo, (p - (LinBox::integer)2));
+		//F.init(mTwo, (p - (LinBox::integer)2));
+		F.init(mTwo); F.assign(mTwo, F.mOne); F.addin(mTwo, F.mOne);
 		F.init(three, ((LinBox::integer)3 % p));
 		F.init(five, ((LinBox::integer)5 % p));
 		F.init(six, ((LinBox::integer)6 % p));
@@ -207,6 +211,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 		part_pass = reportError( "isMOne (-One) is false", pass);
 	}
 
+/* this is not required of init
 	if (p > 0) {
 		typename Ring::Element mOneFromCst;
 		F.init(mOneFromCst, (LinBox::integer)(p-1));
@@ -215,6 +220,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 			part_pass = reportError( "isMOne (p-1) is false", pass);
 		}
 	}
+*/
 
 
 	commentator().stop (MSG_STATUS (part_pass));
@@ -306,8 +312,11 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	// 2^101 - 1 vs 1 + 2 + 4 + ... + 2^100
 
 	F.init (a, (int64_t)1.0);
+	F.assign(a, F.one);
 	F.init (b, (int64_t)1.0);
+	F.assign(b, F.one);
 	F.init (c, (int64_t)0.0);
+	F.assign(c, F.zero);
 
 	n = 101;
 	expt(F, a, two, n);
@@ -1140,42 +1149,41 @@ namespace field_subtests {
 		ostream &rapport = commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		//!@todo enable init with 1UL et -1L pour GMPRationalElement
-		typename Field::Element one, mOne, zero ;
-		LinBox::integer pun = 1 ;
-		LinBox::integer mun = -1 ;
-		LinBox::integer zer = 0 ;
-		F.init(one,pun);
-		F.init(mOne,mun); F.neg(mOne,one);
-		F.neg(mOne,one);
-		// F.init(mOne,-1L);
-		F.init(zero,zer);
+		//typename Field::Element one, mOne, zero ;
+		//LinBox::integer pun = 1 ;
+		//LinBox::integer zer = 0 ;
+		//F.init(one,pun);
+		//F.neg(mOne,one);
+		//F.init(zero,zer);
 
 		rapport << "1 - 1 = " ;
 		typename Field::Element nil ;
+		F.init(nil);
 
-		F.add(nil,one,mOne);
+		F.add(nil,F.one,F.mOne);
 
 		F.write(rapport,nil) << std::endl ;
 
-		if ( !F.areEqual(nil,zero) ) {
-			reportError("1+1!=0", ret);
+		if ( !F.areEqual(nil,F.zero) ) {
+			reportError("1+-1!=0", ret);
 		}
 
 		typename Field::Element un ;
+		F.init(un);
 		rapport << "-1 * -1 = " ;
-		F.mul(un,mOne,mOne);
+		F.mul(un,F.mOne,F.mOne);
 		F.write(rapport,un) << std::endl ;
 
-		if ( !F.areEqual(un,one) ) {
+		if ( !F.areEqual(un,F.one) ) {
 			reportError("-1 * -1 != 1", ret);
 		}
 
-		F.init(nil,pun);
+		//F.init(nil,pun);
 		rapport << "-1 +  -1 * -1 = " ;
-		F.axpy(nil,mOne,mOne,mOne) ;
+		F.axpy(nil,F.mOne,F.mOne,F.mOne) ;
 		F.write(rapport,nil) << std::endl ;
 
-		if ( !F.areEqual(nil,zero) ) {
+		if ( !F.areEqual(nil,F.zero) ) {
 			reportError("-1+(-1*-1)!=0", ret);
 		}
 
