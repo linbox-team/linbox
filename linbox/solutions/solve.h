@@ -763,7 +763,9 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 		// adapt to earlier signature of wiedemann solver
-		BlockWiedemannSolver<typename BB::Field> BWS(A.field());
+		typedef BlasMatrixDomain<typename BB::Field> Context;
+		Context BMD(A.field());
+		BlockWiedemannSolver<Context> BWS(BMD);
 		BWS.solveNonSingular(x, A, b);
 		return x;
 	}
