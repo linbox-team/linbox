@@ -132,20 +132,12 @@ warn("test-quad-matrix", "half baked, bds responsible");
 	set< string> ocl_tests;
 	ocl_tests.insert("test-opencl-domain");
 
-	set< string> lidia_tests;
-	lidia_tests.insert("test-lidia-gfq");
-
 //// Things are automatic from here onward. ////
 
 	// process optional dependencies 
 	#ifndef LINBOX_HAVE_OCL
     for (set< string>::iterator i = ocl_tests.begin(); i != ocl_tests.end(); ++i) 
 		skip(*i, "OpenCL not present");
-	#endif
-	#ifndef LINBOX_HAVE_LIDIA
-    for (set< string>::iterator i = lidia_tests.begin(); i != lidia_tests.end(); ++i)
-		skip(*i, "Lidia not present");
-	
 	#endif
 	#ifndef __LINBOX_HAVE_NTL
     for (set< string>::iterator i = ntl_tests.begin(); i != ntl_tests.end(); ++i) 
@@ -160,7 +152,7 @@ warn("test-quad-matrix", "half baked, bds responsible");
 	while (tests >> t) {t.resize(t.size()-2); all_tests.push_back(t);}
 #ifdef LINBOX_HAVE_OPENMP
 //#pragma omp parallel for num_threads(4)
-//#pragma omp parallel for 
+#pragma omp parallel for 
 #endif
 	for (size_t i = 0; i < all_tests.size(); ++i) {
 		t = all_tests[i];
