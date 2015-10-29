@@ -96,7 +96,7 @@ void launch_bench_square(Field & F // const problem
 		RandMat.random(B);
 		RandMat.random(C);
 		TW.clear() ;
-		while( Data.keepon(j,TW.time()) ) {
+		while( Data.keepon(j,TW.time(),false) ) {
 			TW.start() ;
 			BMD.mul(C,A,B) ; // C = AB
 			TW.stop();

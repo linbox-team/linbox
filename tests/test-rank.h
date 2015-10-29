@@ -129,7 +129,10 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 		unsigned long rank_blas_elimination ;
 		if (F.characteristic() < LinBox::BlasBound 
 				and
-			F.characteristic() == F.cardinality())
+			F.characteristic() == F.cardinality()
+				and
+			numeric_limits<typename Field::Element>::is_signed
+		   )
 		{
 			Method::BlasElimination MBE;
 			LinBox::rank (rank_blas_elimination, A, MBE);
@@ -172,7 +175,6 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 	unsigned int i;
 
 	unsigned long rank_blackbox, rank_elimination, rank_sparselimination, rank_sparse;
-	//unsigned long rank_Wiedemann, rank_elimination, rank_blas_elimination;
 
 	GF2::RandIter ri (F2);
 
