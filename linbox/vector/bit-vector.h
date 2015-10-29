@@ -180,6 +180,15 @@ namespace LinBox
 
 	}; // template <class Vector> class ReverseVector
 
+
+} // namespace LinBox
+
+#include "linbox/vector/bit-vector.inl"
+#include "linbox/vector/vector-traits.h"
+
+// RawVector for GF2
+namespace LinBox
+{
 	// Vector traits for BitVector wrapper
 	template <>
 	struct VectorTraits<BitVector>
@@ -188,11 +197,6 @@ namespace LinBox
 		typedef VectorCategories::DenseZeroOneVectorTag VectorCategory;
 	};
 
-} // namespace LinBox
-
-// RawVector for GF2
-namespace LinBox
-{
 	template <>
 	struct RawVector<bool> {
 	public:
@@ -204,7 +208,6 @@ namespace LinBox
 	};
 
 }
-#include "linbox/vector/bit-vector.inl"
 
 #endif // __LINBOX_bit_vector_H
 

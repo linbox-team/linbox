@@ -32,6 +32,7 @@
 
 
 
+#include <linbox/linbox-config.h>
 #include "givaro/zring.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/ring/modular.h"

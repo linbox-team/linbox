@@ -28,6 +28,7 @@
  * @test no doc.
  */
 
+#include "linbox/linbox-config.h"
 #include "test-rank.h"
 #include "linbox/ring/modular/modular-unsigned.h"
 
