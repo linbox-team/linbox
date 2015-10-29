@@ -338,7 +338,8 @@ namespace LinBox
 		fplll::ZZ_mat<ZT> B(H.rowdim(),H.coldim()) ;
 		for (size_t i = 0 ; i < H.rowdim() ; ++i) {
 			for (size_t j = 0 ; j < H.coldim() ; ++j) {
-				B.Set(i,j,fplll::Z_NR<ZT>(H.getEntry(i,j)) );
+                                fplll::Z_NR<ZT> x = H.getEntry(i,j);
+                                B.Set((int)i,(int)j,x);
 			}
 		}
 		// LLL()

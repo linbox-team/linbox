@@ -2103,7 +2103,7 @@ namespace LinBox
 
 
 				// check if the 1st row is the short vector
-				latticeOK=true;
+				bool latticeOK=true;
 				tmp = Givaro::abs(L3[0][0]*ratio);
 				for (size_t i=1;i<k+1;++i){
 					for (size_t j=0;j<k+1;++j)
