@@ -137,11 +137,11 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	F.characteristic(p);
 	
 	typename Ring::Element zero, one, mOne, two, mTwo, three, five, six, eight;
-	//F.init(zero, (int64_t)0); 
+	F.init(zero); 
 	F.assign(zero, F.zero);
-	//F.init(one, (int64_t)1); 
+	F.init(one); 
 	F.assign(one, F.one);
-	//F.init(mOne); F.neg(mOne,one);
+	F.init(mOne); 
 	F.assign(mOne, F.mOne);
 
 	
