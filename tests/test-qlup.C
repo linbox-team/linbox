@@ -1,7 +1,7 @@
 /* tests/test-qlup.C
  * Copyright (C) The LinBox group
  *
- * Time-stamp: <23 Oct 15 14:49:40 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <29 Oct 15 19:13:28 Jean-Guillaume.Dumas@imag.fr>
  * -----------------------------------------------------
  *
  * ========LICENCE========
@@ -85,8 +85,8 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		F.write( report ) << endl;
 		A.write( report,Tag::FileFormat::Maple ) << endl;
 
-		BlasVector<Field> u(F,Nj), v(F,Ni), w1(F,Nj), w2(F,Ni), w3(F,Ni), w(F,Ni);
-		for(typename BlasVector<Field>::iterator it=u.begin();it!=u.end();++it)
+		DenseVector<Field> u(F,Nj), v(F,Ni), w1(F,Nj), w2(F,Ni), w3(F,Ni), w(F,Ni);
+		for(auto it=u.begin();it!=u.end();++it)
 			generator.random (*it);
 
 		A.apply(v,u);
@@ -109,8 +109,8 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		Q.apply(w, L.apply(w3, A.apply(w2, P.apply(w1,u) ) ) );
 
 		bool error = false;
-		typename BlasVector<Field>::const_iterator itv=v.begin();
-		typename BlasVector<Field>::const_iterator itw=w.begin();
+		auto itv=v.begin();
+		auto itw=w.begin();
 		for( ; itw!=w.end();++itw,++itv) {
 			if (! F.areEqual(*itw,*itv) ) {
 				error = true;
@@ -121,27 +121,27 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 			res = false;
 
 			report << "ERROR : matrix(" << u.size() << ",1,[";
-			for(typename BlasVector<Field>::const_iterator itu=u.begin(); itu!=u.end();++itu)
+			for(auto itu=u.begin(); itu!=u.end();++itu)
 				report << *itu << ',';
 			report << "]);\n[";
-			for(typename BlasVector<Field>::const_iterator itv2=v.begin(); itv2!=v.end();++itv2)
+			for(auto itv2=v.begin(); itv2!=v.end();++itv2)
 				report << *itv2 << ' ';
 			report << "]  !=  [";
-			for(typename BlasVector<Field>::const_iterator itw2=w.begin(); itw2!=w.end();++itw2)
+			for(auto itw2=w.begin(); itw2!=w.end();++itw2)
 				report << *itw2 << ' ';
 			report << "]" << std::endl;
 
 
 			report << "w1: [";
-			for(typename BlasVector<Field>::const_iterator itw2=w1.begin(); itw2!=w1.end();++itw2)
+			for(auto itw2=w1.begin(); itw2!=w1.end();++itw2)
 				report << *itw2 << ' ';
 			report << "]" << std::endl;
 			report << "w2: [";
-			for(typename BlasVector<Field>::const_iterator itw2=w2.begin(); itw2!=w2.end();++itw2)
+			for(auto itw2=w2.begin(); itw2!=w2.end();++itw2)
 				report << *itw2 << ' ';
 			report << "]" << std::endl;
 			report << "w3: [";
-			for(typename BlasVector<Field>::const_iterator itw2=w3.begin(); itw2!=w3.end();++itw2)
+			for(auto itw2=w3.begin(); itw2!=w3.end();++itw2)
 				report << *itw2 << ' ';
 			report << "]" << std::endl;
 		}
@@ -189,8 +189,8 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 		F.write( report ) << endl;
 		A.write( report, Tag::FileFormat::Maple ) << endl;
 
-		BlasVector<Field> u(F,Nj), v(F,Ni), x(F,Nj), y(F,Ni);
-		for(typename BlasVector<Field>::iterator it=u.begin();it!=u.end();++it)
+		DenseVector<Field> u(F,Nj), v(F,Ni), x(F,Nj), y(F,Ni);
+		for(auto it=u.begin();it!=u.end();++it)
 			generator.random (*it);
 
 		A.apply(v,u);
@@ -215,17 +215,17 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 			A.write( report, Tag::FileFormat::Maple ) << endl;
 
 			report << "ERROR v: matrix(" << v.size() << ",1,[";
-			for(typename BlasVector<Field>::const_iterator itu=v.begin(); itu!=v.end();++itu)
+			for(auto itu=v.begin(); itu!=v.end();++itu)
 				report << *itu << ',';
 			report << "]);\n[";
 			report << "ERROR y: matrix(" << y.size() << ",1,[";
-			for(typename BlasVector<Field>::const_iterator itu=y.begin(); itu!=y.end();++itu)
+			for(auto itu=y.begin(); itu!=y.end();++itu)
 				report << *itu << ',';
 			report << "]);\n[";
-			for(typename BlasVector<Field>::const_iterator itv=x.begin(); itv!=x.end();++itv)
+			for(auto itv=x.begin(); itv!=x.end();++itv)
 				report << *itv << ' ';
 			report << "]  !=  [";
-			for(typename BlasVector<Field>::const_iterator itw=y.begin(); itw!=y.end();++itw)
+			for(auto itw=y.begin(); itw!=y.end();++itw)
 				report << *itw << ' ';
 			report << "]" << std::endl;
 
@@ -282,14 +282,14 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 		size_t nullity = X.coldim();
 
-		BlasVector<Field> u(F,nullity);
-		for(typename BlasVector<Field>::iterator it=u.begin();it!=u.end();++it)
+		DenseVector<Field> u(F,nullity);
+		for(auto it=u.begin();it!=u.end();++it)
 			generator.random (*it);
-		BlasVector<Field> v(F,Nj);
+		DenseVector<Field> v(F,Nj);
 		X.apply(v,u);
 		report << "Random combination of the rows of the NullSpace basis" << std::endl;
 
-		BlasVector<Field> w(F,Ni);
+		DenseVector<Field> w(F,Ni);
 		A.apply(w, v);
 
 		VectorDomain<Field> VD(F);
@@ -299,14 +299,14 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 			A.write( report, Tag::FileFormat::Maple ) << endl;
 
 			report << "ERROR u: matrix(" << u.size() << ",1,[";
-			for(typename BlasVector<Field>::const_iterator itu=u.begin(); itu!=u.end();++itu)
+			for(auto itu=u.begin(); itu!=u.end();++itu)
 				report << *itu << ',';
 			report << "]);\n[";
 			report << "ERROR v: matrix(" << v.size() << ",1,[";
-			for(typename BlasVector<Field>::const_iterator itu=v.begin(); itu!=v.end();++itu)
+			for(auto itu=v.begin(); itu!=v.end();++itu)
 				report << *itu << ',';
 			report << "]);\n[";
-			for(typename BlasVector<Field>::const_iterator itv=w.begin(); itv!=w.end();++itv)
+			for(auto itv=w.begin(); itv!=w.end();++itv)
 				report << *itv << ' ';
 			report << "]  !=  0" << std::endl;
 
@@ -406,7 +406,7 @@ int main (int argc, char **argv)
 // 			pass = false;
 // 	}
 
-#if 0 /*  fails to build */
+#if 1
 	{
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "specialized over GF2>" << endl;

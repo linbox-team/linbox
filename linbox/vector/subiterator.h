@@ -122,7 +122,12 @@ namespace LinBox
 		}
 
 		// Access operations
-		reference operator * () const
+		const reference operator * () const
+		{
+			return *_iter;
+		}
+
+		reference operator * ()
 		{
 			return *_iter;
 		}
@@ -132,7 +137,12 @@ namespace LinBox
 			return _iter;
 		}
 
-		reference operator [] (difference_type n) const
+		reference operator [] (difference_type n) 
+		{
+			return _iter[n * _stride];
+		}
+
+		const reference operator [] (difference_type n) const
 		{
 			return _iter[n * _stride];
 		}
@@ -140,7 +150,7 @@ namespace LinBox
 		// Iteration operations
 
 		Subiterator& operator ++ ()
-		{
+		{ 
 			_iter += _stride;
 			return *this;
 		}

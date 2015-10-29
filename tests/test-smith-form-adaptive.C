@@ -32,6 +32,8 @@
 
 
 
+#include <linbox/linbox-config.h>
+
 #include "givaro/zring.h"
 #include <time.h>
 #include "linbox/randiter/random-prime.h"

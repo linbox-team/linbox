@@ -38,10 +38,11 @@
  * @brief For each integer type T, Givaro::ModularBalanced<T> is tested with a small primm and with a large prime using runFieldTests and testRandomIterator.
  */
 
+#include <linbox/linbox-config.h>
+
 #include "givaro/modular-balanced.h"
 #include "givaro/givintprime.h"
 
-#include "linbox/linbox-config.h"
 #include "test-field.h"
 using namespace LinBox;
 

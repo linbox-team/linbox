@@ -125,7 +125,7 @@ namespace LinBox
 		// Element access
 
 		reference       operator[] (size_type n)       { return _begin[(ptrdiff_t)n]; }
-		const_reference operator[] (size_type n) const { return _begin[(ptrdiff_t)n]; }
+		const_reference operator[] (size_type n) const { return const_cast<iterator*>(&_begin)->operator[]((ptrdiff_t)n); }
 
 		// the method "at" does appear to be implemented
 		// in the gnu implementation of the STL

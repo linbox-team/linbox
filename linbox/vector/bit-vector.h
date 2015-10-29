@@ -27,11 +27,10 @@
 #ifndef __LINBOX_bit_vector_H
 #define __LINBOX_bit_vector_H
 
+#include <linbox/linbox-config.h>
 #include <iterator>
 #include <vector>
 #include <stdexcept>
-
-#include "linbox/vector/vector-traits.h"
 
 namespace LinBox
 {
@@ -72,7 +71,7 @@ namespace LinBox
 #else
 #pragma message "error SIZEOF_LONG not defined !"
 #endif
-
+ 
 	/** A vector of boolean 0-1 values, stored compactly to save space.
 	 *
 	 * BitVector provides an additional iterator, word_iterator, that gives
@@ -98,6 +97,14 @@ namespace LinBox
 		BitVector (std::vector<unsigned long> &v) :
 		       	_v (v), _size (_v.size () * __LINBOX_BITSOF_LONG) {}
 		BitVector (size_t n, bool val = false)
+		{ resize (n, val); }
+
+                
+		template <class F2Field> BitVector (const F2Field&, std::vector<bool> &v)
+		{ *this = v; }
+		template <class F2Field> BitVector (const F2Field&, std::vector<unsigned long> &v) :
+		       	_v (v), _size (_v.size () * __LINBOX_BITSOF_LONG) {}
+		template <class F2Field> BitVector (const F2Field&, size_t n, bool val = false)
 		{ resize (n, val); }
 
 		// Copy constructor

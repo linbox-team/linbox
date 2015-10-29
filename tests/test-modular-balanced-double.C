@@ -28,6 +28,7 @@
  * @test   tests only runFieldTests on modular-balanced-double
  */
 
+#include <linbox/linbox-config.h>
 #include <givaro/modular-balanced.h>
 #include <givaro/givintprime.h>
 

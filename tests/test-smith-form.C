@@ -30,6 +30,8 @@
  */
 
 
+#include <linbox/linbox-config.h>
+
 #include <time.h>
 #include "givaro/zring.h"
 #include "givaro/givinteger.h"

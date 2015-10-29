@@ -31,6 +31,8 @@
 
 
 
+#include <linbox/linbox-config.h>
+
 #include <iostream>
 
 #include "linbox/blackbox/toeplitz.h"

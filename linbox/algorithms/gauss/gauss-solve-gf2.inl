@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2009
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <23 Mar 12 17:32:19 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <29 Oct 15 20:18:20 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -43,7 +43,8 @@ namespace LinBox
 					 const Vector2& b) const
 	{
 
-		Vector2 y(U.rowdim()), v(U.rowdim());
+                const GF2 F2;
+		Vector2 y(F2, U.rowdim()), v(F2, U.rowdim());
 
 		Q.applyTranspose(y, b);
 
@@ -69,7 +70,7 @@ namespace LinBox
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
-		Vector1 w(A.coldim());
+		Vector1 w(F2, A.coldim());
 
         for(typename Vector1::iterator it=w.begin()+(ptrdiff_t)Rank;it!=w.end();++it)
 				F2.assign(*it,F2.zero);
@@ -93,7 +94,7 @@ namespace LinBox
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
-		Vector1 w(A.coldim());
+		Vector1 w(F2, A.coldim());
 
         for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
             generator.random( *it );

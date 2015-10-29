@@ -30,9 +30,11 @@
  * @test toom-cook multiplication routine
  */
 
+#include <linbox/linbox-config.h>
 
-#include <iostream>
+
 #include "linbox-config.h"
+#include <iostream>
 #include "linbox/integer.h"
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/dense-matrix.h"

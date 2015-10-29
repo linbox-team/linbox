@@ -28,9 +28,9 @@
  * @brief  no doc
  * @test NO DOC
  */
-#include <iostream>
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
+#include <iostream>
 #include "linbox/util/commentator.h"
 #include "givaro/modular-double.h"
 #include "test-blackbox.h"

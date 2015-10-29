@@ -31,9 +31,9 @@
  * @test no doc.
  */
 
-#include <iostream>
 
 #include "linbox/linbox-config.h"
+#include <iostream>
 
 #include "linbox/util/commentator.h"
 #include "linbox/ring/modular.h"

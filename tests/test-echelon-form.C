@@ -36,11 +36,11 @@
  */
 
 
+#include "linbox/linbox-config.h"
+#include "test-common.h"
 #include <iostream>
 #include <string>
 
-//#include "linbox/linbox-config.h"
-#include "test-common.h"
 
 #include "linbox/ring/modular.h"
 //#include "linbox/field/givaro.h"

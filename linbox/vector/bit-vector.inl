@@ -220,6 +220,9 @@ namespace LinBox
 		iterator (const iterator &i) :
 			std::vector<bool>::iterator(),_ref (i._ref._word, i._ref._pos)
 		{}
+		iterator (const pointer i) :
+			_ref (std::vector<unsigned long>::iterator (), 0UL)
+		{}
 
 		iterator &operator = (const iterator &i)
 		{

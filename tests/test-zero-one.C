@@ -28,6 +28,7 @@
  */
 
 
+#include <linbox/linbox-config.h>
 
 #include <iostream>
 #include <utility>

@@ -37,10 +37,10 @@
  */
 
 
+#include <linbox/linbox-config.h>
 #include <iostream>
 #include <string>
 
-#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 //#include "linbox/field/gf2.h"
 //#include "linbox/domain/blas_matrix_domain_gf2.h"

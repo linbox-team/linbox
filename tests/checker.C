@@ -97,7 +97,8 @@ warn("test-fibb",  "incomplete");
 warn("test-gf2", "not much is tested there");
 //warn("test-matrix-domain", "intermittent row permutation failure");
 warn("test-param-fuzzy", "Noncompliant field");
-warn("test-qlup", "GF2 fails to compile");
+//		template <class F2Field> BitVector (const F2Field&) {}
+//warn("test-qlup", "GF2 fails to compile");
 //warn("test-rank-u32", "intermittent failure"/*, "vector (bb) responsible"*/);
 warn("test-rat-charpoly", "stale test. solns over QQ need fresh tests");//, "infinite loop, cp responsible?")
 warn("test-rank-md", "intermittent failures");

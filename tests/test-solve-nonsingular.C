@@ -24,6 +24,8 @@
 /* File: solve-nonsigular.C
 	This file was used to generate solver comparison data for the paper "Symbolic-Numeric Exact Rational Linear System Solver" submitted to ISSAC'11
 */
+#include <linbox/linbox-config.h>
+
 
 #include <iostream>
 #include <fstream>
