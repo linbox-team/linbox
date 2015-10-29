@@ -36,17 +36,17 @@ namespace LinBox
 	// Dot product structure enabling std::transform call
 	template<class Blackbox, class InVector>
 	struct dotp {
-		const typename Blackbox::Field* _field;
+		const typename Blackbox::Field& _field;
 		const InVector& _x;
 		dotp(const typename Blackbox::Field& F, const InVector& x) :
-			_field(&F), _x(x)
+			_field(F), _x(x)
 		{}
 
 		bool operator()(const typename Blackbox::Row_t& row) const
 		{
 			bool tmp(false);
 			for(typename Blackbox::Row_t::const_iterator loc = row.begin(); loc != row.end(); ++loc) {
-				_field->addin(tmp,_x[*loc]);
+				_field.addin(tmp,_x[*loc]);
 			}
 			return tmp;
 		}
