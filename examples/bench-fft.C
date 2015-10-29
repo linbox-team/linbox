@@ -23,6 +23,8 @@
  * ========LICENCE========
  */
 
+#include <linbox/linbox-config.h>
+
 #include <functional>
 #include <iostream>
 #include <vector>

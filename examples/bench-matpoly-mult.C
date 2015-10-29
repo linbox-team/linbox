@@ -22,6 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
  */
+#include <linbox/linbox-config.h>
 #ifdef VERB
 #define KARA_TIMING
 #define FFT_PROFILE

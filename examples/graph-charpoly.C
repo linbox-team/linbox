@@ -29,6 +29,8 @@
  * Example for Pr G. Royle.
  */
 
+#include <linbox/linbox-config.h>
+
 #include <iostream>
 
 #include <linbox/blackbox/zero-one.h>
