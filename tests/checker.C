@@ -114,22 +114,21 @@ warn("test-quad-matrix", "half baked, bds responsible");
 	set< string> ntl_tests;
 	ntl_tests.insert("test-ntl-hankel");
 	ntl_tests.insert("test-ntl-lzz_p");
-	ntl_tests.insert("test-ntl-lzz_pE");
-	ntl_tests.insert("test-ntl-lzz_pX");
-	ntl_tests.insert("test-ntl-lzz_pEX");
+	ntl_tests.insert("test-ntl-lzz_pe");
+	ntl_tests.insert("test-ntl-lzz_px");
+	ntl_tests.insert("test-ntl-lzz_pex");
 	warn("test-toeplitz-det", "we should have a non NTL version.");
 	ntl_tests.insert("test-toeplitz-det");
-	warn("test-ntl-RR", "floating point equality");
-	ntl_tests.insert("test-ntl-RR");
+	warn("test-ntl-rr", "floating point equality");
+	ntl_tests.insert("test-ntl-rr");
 	ntl_tests.insert("test-ntl-sylvester");
 	ntl_tests.insert("test-ntl-toeplitz");
-	ntl_tests.insert("test-ntl-ZZ_p");
+	ntl_tests.insert("test-ntl-zz_p");
 
 	// are these really ntl dependent?
 	ntl_tests.insert("test-smith-form");
 	ntl_tests.insert("test-smith-form-adaptive");
 	ntl_tests.insert("test-smith-form-iliopoulos");
-
 	set< string> ocl_tests;
 	ocl_tests.insert("test-opencl-domain");
 
