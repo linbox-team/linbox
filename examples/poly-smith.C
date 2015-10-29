@@ -1,10 +1,10 @@
+#include <linbox/linbox-config.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <map>
 
-#include <linbox/linbox-config.h>
 
 #include <linbox/util/commentator.h>
 #include <linbox/ring/modular.h>

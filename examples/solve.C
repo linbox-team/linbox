@@ -28,6 +28,8 @@
  * @example  examples/solve.C
  */
 
+#include <linbox/linbox-config.h>
+
 #include <iostream>
 
 #include <givaro/modular.h>

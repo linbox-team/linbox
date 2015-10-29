@@ -28,6 +28,7 @@
  * @test no doc.
  */
 
+#include "linbox/linbox-config.h"
 #include <givaro/modular-integer.h>
 #include "test-rank.h"
 

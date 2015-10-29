@@ -30,6 +30,7 @@ The current convention is that (1) linbox' checker.C, runs the tests with no com
 //#include <iomanip>
 using namespace std;
 #include "linbox/linbox-config.h"
+//#include "fflas-ffpack/fflas-ffpack.h"
 
 // globals
 //map< string, string> skip_note;
@@ -83,7 +84,6 @@ skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
 skip("test-rat-charpoly", "inf loop");
 skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
 skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infinite loop")
-skip("test-solve-nonsingular", "BY responsible");
 skip("test-poly-det", "incomplete test (if still relevant)");
 skip("test-sparse", "superceded by test-sparse2");
 skip("test-sparse-map-map", "const issue in givranditer, curious use of nonexistant next() in Extension");
@@ -100,6 +100,7 @@ warn("test-param-fuzzy", "Noncompliant field");
 warn("test-qlup", "GF2 fails to compile");
 //warn("test-rank-u32", "intermittent failure"/*, "vector (bb) responsible"*/);
 warn("test-rat-charpoly", "stale test. solns over QQ need fresh tests");//, "infinite loop, cp responsible?")
+warn("test-rank-md", "intermittent failures");
 warn("test-rat-minpoly", "intermittent failures");
 warn("test-rat-solve", "infinite loop");
 //warn("test-smith-form-local", "bds, intermittent failures");
@@ -150,11 +151,12 @@ warn("test-quad-matrix", "half baked, bds responsible");
 	int buildfail = 0, runfail = 0, skipped = 0, pass = 0; // counts
 	vector<string> all_tests;
 	while (tests >> t) {t.resize(t.size()-2); all_tests.push_back(t);}
-#ifdef LINBOX_HAVE_OPENMP
-//#pragma omp parallel for num_threads(4)
-#pragma omp parallel for 
-#endif
-	for (size_t i = 0; i < all_tests.size(); ++i) {
+//#ifdef LINBOX_HAVE_OPENMP
+//#pragma omp parallel for 
+//PARFOR1D(i, 0, all_tests.size(), SPLITTER(),
+//#endif
+	for (size_t i = 0; i < all_tests.size(); ++i) 
+	{
 		t = all_tests[i];
 		if (hides.count(t) > 0) continue; // ignore entirely
 		stringstream report;
@@ -173,7 +175,7 @@ warn("test-quad-matrix", "half baked, bds responsible");
 			report << "build ";
 			int status = system(cmd.c_str());
 //			#ifndef LINBOX_HAVE_OPENMP
-			if (status == 2) break; 
+//			if (status == 2) break; 
 //			#endif
 			if (status != 0) { // build failure
 				buildfail++;
@@ -184,7 +186,7 @@ warn("test-quad-matrix", "half baked, bds responsible");
 				prog << "./" << t ;
 				status = system(prog.str().c_str());
 //				#ifndef LINBOX_HAVE_OPENMP
-				if (status == 2) break;
+//				if (status == 2) break;
 //				#endif
 				if (status == 0) {
 					report << "OK.  " + warn_note[t];
@@ -196,7 +198,8 @@ warn("test-quad-matrix", "half baked, bds responsible");
 			}
 		}
 		if (reporting) cout << report.str() << endl;
-	} // while t
+	} // for i
+	//); // parfor
 
 	//// summary ////
 	cout << "--------------------------------------------------------------------" << endl;

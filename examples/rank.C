@@ -28,6 +28,7 @@
   \ingroup examples
   */
 
+#include <linbox/linbox-config.h>
 #include <iostream>
 #include <sstream>
 #include <givaro/givrational.h>

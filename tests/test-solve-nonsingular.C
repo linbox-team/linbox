@@ -321,7 +321,7 @@ int main(int argc, char** argv) {
 	typedef Givaro::ZRing<Integer>	Ring;  		Ring R;
 
 	typedef ParamFuzzy Field;
-	typedef Givaro::Modular<int32_t> ZField;
+	typedef Givaro::Modular<int64_t> ZField;
 	typedef Givaro::Modular<double> DField;
 
 	typedef BlasMatrix<Field> Matrix;

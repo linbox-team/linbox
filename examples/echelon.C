@@ -28,6 +28,8 @@
   \ingroup examples
   */
 
+#include <linbox/linbox-config.h>
+
 #include <iostream>
 
 #include <linbox/ring/modular.h>

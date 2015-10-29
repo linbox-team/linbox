@@ -27,6 +27,8 @@
  \ingroup examples
  */
 
+#include <linbox/linbox-config.h>
+
 #include <iostream>
 #include <vector>
 #include <utility>

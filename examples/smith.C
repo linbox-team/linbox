@@ -47,6 +47,8 @@
   This example was used during the design process of the adaptive algorithm.
   */
 
+#include <linbox/linbox-config.h>
+
 #include <iostream>
 #include <string>
 #include <vector>

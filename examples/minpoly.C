@@ -27,6 +27,7 @@
   \brief Minimal polynomial of a sparse matrix.
   \ingroup examples
   */
+#include <linbox/linbox-config.h>
 #include <iostream>
 //! @bug this should be elsewhere
 template <class Field, class Polynomial>
