@@ -28,6 +28,7 @@
  * @brief computes doubleDet.
  */
 
+#include <linbox/linbox-config.h>
 #include <iostream>
 
 #include <givaro/zring.h>

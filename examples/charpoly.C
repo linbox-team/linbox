@@ -26,6 +26,8 @@
   \brief Characteristic polynomial of matrix over Z or Zp.
   \ingroup examples
   */
+#include <linbox/linbox-config.h>
+
 #include <iostream>
 #include <iomanip>
 
