@@ -355,7 +355,7 @@ inline IVector& update_num (IVector& num, const FVector& d)
 	for (size_t i = 0; i < n; ++i) {
 		_ring.init(d_i[i], d[i]);
 	}
-	Int scalar; _ring.init(scalar, 1UL << shift);
+	Int scalar; _ring.init(scalar, uint64_t(1 << shift));
 	//  TODO - analyze GMP shifting capability
 	_VDR.mulin(num, scalar);
 	_VDR.addin(num, d_i);
