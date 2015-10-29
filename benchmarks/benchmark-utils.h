@@ -74,10 +74,6 @@ namespace LinBox { namespace Tag {
 /*        Outils          */
 /* ********************** */
 
-//! index type for tables
-#ifndef index_t
-typedef uint32_t index_t ;
-#endif
 //
 // typedefs data formats
 //
@@ -136,11 +132,11 @@ namespace LinBox {
 	}
 
 	//! finds keyword betwen begin and end, return true if found and i is the index where it is (possibly correspondig to end)
-	bool findKeyword(index_t & i, const svector_t::const_iterator & begin, const svector_t::const_iterator & end, const std::string & keyword)
+	bool findKeyword(size_t & i, const svector_t::const_iterator & begin, const svector_t::const_iterator & end, const std::string & keyword)
 		{
 			svector_t::const_iterator it ;
 			it = std::find(begin, end, keyword);
-			i = (index_t)std::distance(begin, it);
+			i = (size_t)std::distance(begin, it);
 			return (it != end) ;
 
 		}
@@ -198,28 +194,28 @@ namespace LinBox {
 	 * @param min starting iteration
 	 * @param max terminal iteration
 	 */
-	void showAdvanceLinear(index_t curr, index_t min, index_t max);
+	void showAdvanceLinear(size_t curr, size_t min, size_t max);
 
 	/*! tells the current series of measure has completed (on the terminal)
 	 * @param curr current iteration
 	 * @param all number of iterations
 	 */
-	void showFinish(index_t curr, index_t all);
+	void showFinish(size_t curr, size_t all);
 
 	/*! tells the current series of measure was skipped (on the terminal)
 	 * @param curr current iteration
 	 * @param all number of iterations
 	 */
-	void showSkip(index_t curr, index_t all);
+	void showSkip(size_t curr, size_t all);
 
 	//! Show progression on the terminal (helper)
 	class showProgression {
 	private :
-		index_t _cur_ ; //!< current iter
-		index_t _tot_ ; //!< max iter
+		size_t _cur_ ; //!< current iter
+		size_t _tot_ ; //!< max iter
 	public :
 		//! constructor
-		showProgression (index_t tot) ;
+		showProgression (size_t tot) ;
 
 		//! show an inter has finished
 		void FinishIter();
@@ -242,7 +238,7 @@ namespace LinBox {
 	 * @param rpt number of experiences
 	 * @return mflo/(tim*rpt)
 	 */
-	double computeMFLOPS(const double & tim, const double mflo, const index_t rpt = 1);
+	double computeMFLOPS(const double & tim, const double mflo, const size_t rpt = 1);
 
 	/*! @internal @brief inserts a time in a vector of 3 best times.
 	 * @param tim3 ordered form min to max vector of 3 best times
