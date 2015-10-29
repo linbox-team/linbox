@@ -26,6 +26,8 @@
  * \ingroup examples
  * @example  examples/valence.C
  */
+#include <linbox/linbox-config.h>
+
 #include <iostream>
 
 #include <linbox/ring/modular.h>
