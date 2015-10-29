@@ -38,8 +38,8 @@ AM_CPPFLAGS+= -DLinBoxTestOnly @TESTS_CFLAGS@ @DEBUG_CFLAGS@
 
 SUBDIRS = data matrix
 
-AM_CPPFLAGS+=  $(NTL_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS) $(OPTFLAGS) $(PARFLAGS) ${FFLAS_FFPACK_CFLAGS}
-LDADD =  $(NTL_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS)  $(IML_LIBS) $(FLINT_LIBS) $(LDFLAGS) $(PARLIBS) ${FFLAS_FFPACK_LIBS}
+AM_CPPFLAGS+=  $(NTL_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS) $(OPTFLAGS) $(PARFLAGS) ${FFLAS_FFPACK_CFLAGS}
+LDADD =  $(NTL_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS)  $(IML_LIBS) $(FLINT_LIBS) $(LDFLAGS) $(PARLIBS) ${FFLAS_FFPACK_LIBS}
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,
 
 EXTRA_DIST =					\
@@ -114,7 +114,6 @@ FULLCHECK_TESTS =               \
 	test-ispossemidef			\
 	test-la-block-lanczos		\
 	test-last-invariant-factor  \
-	test-lidia-gfq				\
 	test-matrix-domain			\
 	test-matrix-stream			\
 	test-mg-block-lanczos    	\
@@ -270,7 +269,6 @@ test_isposdef_SOURCES =                 test-isposdef.C
 test_ispossemidef_SOURCES =             test-ispossemidef.C
 test_la_block_lanczos_SOURCES =         test-la-block-lanczos.C
 test_last_invariant_factor_SOURCES =    test-last-invariant-factor.C
-test_lidia_gfq_SOURCES =                test-lidia-gfq.C
 test_matrix_domain_SOURCES =            test-matrix-domain.C test-common.h
 test_matrix_stream_SOURCES =            test-matrix-stream.C
 test_mg_block_lanczos_SOURCES =         test-mg-block-lanczos.C
