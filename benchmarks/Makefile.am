@@ -31,9 +31,9 @@ pkgincludesubdir=$(pkgincludedir)/benchmarks
 
 
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/linbox
-AM_CPPFLAGS +=  $(NTL_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS) $(PARFLAGS)
+AM_CPPFLAGS +=  $(NTL_CFLAGS) $(IML_CFLAGS) $(PARFLAGS)
 AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
-LDADD =  $(NTL_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS) $(XML_LIBS) $(PARLIBS)
+LDADD =  $(NTL_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS) $(XML_LIBS) $(PARLIBS)
 #  AM_LDFLAGS=-static $(LDFLAGS)
 #  AM_LDFLAGS = .libs/libbenchmarks.la
 #  AM_LDFLAGS = .libs/benchmark.o

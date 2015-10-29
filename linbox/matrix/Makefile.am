@@ -44,24 +44,17 @@ BASIC_HDRS =                  \
 	polynomial-matrix.h                
 
 NTL_HDRS =
-LIDIA_HDRS =
 
 if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
 endif
 
-if LINBOX_HAVE_LIDIA
-USE_LIDIA_HDRS = $(LIDIA_HDRS)
-endif
-
 pkgincludesub_HEADERS =     \
     $(BASIC_HDRS)           \
-    $(USE_NTL_HDRS)         \
-    $(USE_LIDIA_HDRS)
+    $(USE_NTL_HDRS)
 
 EXTRA_DIST =            \
     $(NTL_HDRS)         \
-    $(LIDIA_HDRS)       \
     matrix.doxy \
     sparse-matrix.doxy \
     dense-matrix.doxy \
