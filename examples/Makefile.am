@@ -23,8 +23,8 @@
 
 #  -DLinBoxSrcOnly
 DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR
-AM_CPPFLAGS = -I@includedir@ -I$(top_srcdir)/linbox -I$(top_srcdir) $(DEFCPPFLAGS)  $(NTL_CFLAGS) $(LIDIA_CFLAGS) $(IML_CFLAGS) $(OPTFLAGS) $(PARFLAGS)
-LDADD =  $(NTL_LIBS) $(LIDIA_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS) $(PARLIBS)
+AM_CPPFLAGS = -I@includedir@ -I$(top_srcdir)/linbox -I$(top_srcdir) $(DEFCPPFLAGS)  $(NTL_CFLAGS) $(IML_CFLAGS) $(OPTFLAGS) $(PARFLAGS)
+LDADD =  $(NTL_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS) $(PARLIBS)
 #  AM_LDFLAGS=-static
 AM_LDFLAGS=-L@libdir@ -llinbox
 if LINBOX_HAVE_OCL
@@ -34,7 +34,7 @@ endif
 
 
 
-#EX_LDADD = $(NTL_LIBS) $(LIDIA_LIBS) 
+#EX_LDADD = $(NTL_LIBS)
 #LDADD = $(LINBOX_LIBS) $(EX_LDADD)
 
 #  SUBDIRS=fields solver data blackbox

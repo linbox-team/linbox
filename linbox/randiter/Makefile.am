@@ -45,26 +45,16 @@ BASIC_HDRS =            \
 
 NTL_HDRS = ntl-zz.h
 
-LIDIA_HDRS =            \
-    lidia.h             \
-    lidia-gfq.h
-
 if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
 endif
 
-if LINBOX_HAVE_LIDIA
-USE_LIDIA_HDRS = $(LIDIA_HDRS)
-endif
-
 pkgincludesub_HEADERS =     \
     $(BASIC_HDRS)           \
-    $(USE_NTL_HDRS)         \
-    $(USE_LIDIA_HDRS)
+    $(USE_NTL_HDRS)
 
 EXTRA_DIST =                \
     $(NTL_HDRS)             \
-    $(LIDIA_HDRS)           \
     randiter.doxy           \
     archetype.doxy          \
     randiter-wrappers.doxy
