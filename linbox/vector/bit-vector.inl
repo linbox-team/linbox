@@ -216,7 +216,7 @@ namespace LinBox
 		{}
 		iterator (std::vector<unsigned long>::iterator word, uint8_t position) :
 			_ref (word, position)
-		{}
+		{} 
 		iterator (const iterator &i) :
 			std::vector<bool>::iterator(),_ref (i._ref._word, i._ref._pos)
 		{}

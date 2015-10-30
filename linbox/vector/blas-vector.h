@@ -38,34 +38,17 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-tags.h"
 #include "linbox/field/hom.h"
+#include "linbox/vector/vector.h"
 #include "linbox/vector/subvector.h"
 #include "linbox/vector/subiterator.h"
 
 namespace LinBox { /* BlasVector */
-
-	template<class _Vector>
-	class BlasSubvector ;
-
-	template<class _Field, class _Rep=typename RawVector<typename _Field::Element>::Dense>
-	class BlasVector ;
-
-	template <class _Field>
-	using DenseVector = BlasVector<_Field> ;
-
-	template <class _Field>
-	using DenseSubvector = BlasSubvector<DenseVector<_Field> > ;
 
 	template<class _Field, class _Rep>
 	class BlasMatrix ;
 
 	template<class _Matrix>
 	class BlasSubmatrix ;
-
-	template <class Field, class _Rep>
-	struct VectorTraits< BlasVector<Field,_Rep> > {
-		typedef typename VectorCategories::DenseVectorTag VectorCategory;
-		typedef BlasVector<Field,_Rep>                          VectorType;
-	};
 
 
 	template<class _Field, class _blasRep>
@@ -637,6 +620,13 @@ namespace LinBox { /* BlasVector */
 
 
 	};// BlasVector
+
+	template <class Field, class _Rep>
+	struct VectorTraits< BlasVector<Field,_Rep> > {
+		typedef typename VectorCategories::DenseVectorTag VectorCategory;
+		typedef BlasVector<Field,_Rep>                          VectorType;
+	};
+
 
         template <typename Field, typename Rep>
         bool operator==(const BlasVector<Field,Rep>& v1, const BlasVector<Field,Rep>& v2)

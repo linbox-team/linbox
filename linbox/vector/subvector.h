@@ -140,6 +140,8 @@ namespace LinBox
 
 		const_reference at(size_type n) const
 		{
+std::cerr << "n: " << n << std::endl;
+std::cerr << "_end-_begin: " << (int)(_end-_begin) << std::endl;
 			const_iterator p = _begin + n;
 			if ( _begin <= p && p < _end)
 				return *p;

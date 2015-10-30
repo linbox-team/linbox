@@ -89,6 +89,7 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		for(auto it=u.begin();it!=u.end();++it)
 			generator.random (*it);
 
+
 		A.apply(v,u);
 
 

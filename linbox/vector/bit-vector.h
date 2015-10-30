@@ -1,5 +1,5 @@
 /* linbox/vector/bit-vector.h
- * Copyright (C) 2003 Bradford Hovinen
+ * Copyright (C) 2003 LinBox
  *
  * -------------------------------------------------
  *
@@ -28,6 +28,7 @@
 #define __LINBOX_bit_vector_H
 
 #include <linbox/linbox-config.h>
+#include "linbox/vector/vector.h"
 #include <iterator>
 #include <vector>
 #include <stdexcept>
@@ -97,7 +98,9 @@ namespace LinBox
 		BitVector (std::vector<unsigned long> &v) :
 		       	_v (v), _size (_v.size () * __LINBOX_BITSOF_LONG) {}
 		BitVector (size_t n, bool val = false)
-		{ resize (n, val); }
+		{ resize (n, val);
+	std::cerr << "bV: " << _size << ", _v: " << _v.size() << std::endl;
+		}
 
                 
 		template <class F2Field> BitVector (const F2Field&, std::vector<bool> &v)

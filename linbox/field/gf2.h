@@ -29,11 +29,11 @@
 #ifndef __LINBOX_field_gf2_H
 #define __LINBOX_field_gf2_H
 
+#include "linbox/linbox-config.h"
 #include <iostream>
 #include <climits>
 #include <cmath>
 
-#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
@@ -988,6 +988,11 @@ namespace LinBox
 		}
 
 	}; // class GF2
+
+        template<>
+        struct DenseVectorChooser<GF2> {
+                typedef BitVector type;
+        };
 
 } // namespace LinBox
 

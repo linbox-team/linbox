@@ -42,11 +42,12 @@ namespace LinBox
 			_field(F), _x(x)
 		{}
 
+
 		bool operator()(const typename Blackbox::Row_t& row) const
 		{
 			bool tmp(false);
 			for(typename Blackbox::Row_t::const_iterator loc = row.begin(); loc != row.end(); ++loc) {
-				_field.addin(tmp,_x[*loc]);
+				_field.addin(tmp,_x.at(*loc));
 			}
 			return tmp;
 		}
