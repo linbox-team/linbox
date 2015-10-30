@@ -29,6 +29,7 @@ pkgincludesub_HEADERS=		\
 	light_container.h	\
 	sparse.h		\
 	vector-traits.h		\
+	vector.h		\
 	subvector.h		\
 	subiterator.h		\
 	reverse.h		\
