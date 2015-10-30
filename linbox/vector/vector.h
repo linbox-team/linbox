@@ -35,6 +35,7 @@
 #define __LINBOX_vector_dense_vector_H
 
 #include "linbox/linbox-config.h"
+#include "linbox/vector/vector-traits.h"
 
 namespace LinBox { /* BlasVector */
 
