@@ -135,11 +135,10 @@ public:
 				MM.setEntry(i,j,temp);
 			}
 		}
-
-
-		computePolyDetExtension(detPoly,F_,MM);
-
+		
 #ifdef OUTPUT_CHECKPOINTS
+		computePolyDetExtension(detPoly,F_,MM);
+		
 		{
 			ofstream oF("polyDetCheckpoint.txt");
 			PD.write(oF,detPoly);
