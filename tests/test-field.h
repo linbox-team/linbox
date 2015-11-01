@@ -1,5 +1,5 @@
 /* linbox/tests/test-field.h
- * Copyright (C) 2001, 2002 Bradford Hovinen
+ * Extracted and evolved by bds from test-generic.h, written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -18,9 +18,6 @@
  * License along with this library; if not, write to tthe Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
- *.
- *
- * Extracted and evolved by bds from test-generic.h, written by Bradford Hovinen <hovinen@cis.udel.edu>
  */
 
 /*! @file tests/test-field.h
@@ -133,45 +130,28 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	commentator().start (title, "testRing", 5);
 	ostream &report = commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
+	typedef typename Ring::Element Element;
 	LinBox::integer p, q;
 	F.characteristic(p);
 	
-	typename Ring::Element zero, one, mOne, two, mTwo, three, five, six, eight;
-	F.init(zero); 
-	F.assign(zero, F.zero);
-	F.init(one); 
-	F.assign(one, F.one);
-	F.init(mOne); 
-	F.assign(mOne, F.mOne);
+	Element zero, one, mOne, two, mTwo, three, five, six, eight;
+	F.init(zero); F.assign(zero, F.zero);
+	F.init(one); F.assign(one, F.one);
+	F.init(mOne); F.assign(mOne, F.mOne);
 
-	
-	if (p > 0)
-	{
-		F.init(two, ((LinBox::integer)2 % p));
-		//F.init(mTwo, (p - (LinBox::integer)2));
-		F.init(mTwo); F.assign(mTwo, F.mOne); F.addin(mTwo, F.mOne);
-		F.init(three, ((LinBox::integer)3 % p));
-		F.init(five, ((LinBox::integer)5 % p));
-		F.init(six, ((LinBox::integer)6 % p));
-		F.init(eight, ((LinBox::integer)8 % p));
-	}
-	else
-	{
-		F.init(two, (int64_t)2);
-		F.init(mTwo, (int64_t)2); F.negin(mTwo);
-		F.init(three, (int64_t)3);
-		F.init(five, (int64_t)5);
-		F.init(six, (int64_t)6);
-		F.init(eight, (int64_t)8);
-	}
-		
-	typename Ring::Element a, b, c, d, e, f;
+	F.init(two); F.add(two, one, one);
+	F.init(mTwo); F.add(mTwo, mOne, F.mOne);
+	F.init(three); F.add(three, two, one);
+	F.init(five); F.add(five, three, one); F.addin(five, one);
+	F.init(six); F.add(six, five, one);
+	F.init(eight); F.add(eight, six, one); F.addin(eight, one);
+
+	Element a, b, c, d, e, f;
 	int64_t z = 0;
 	F.init(a,z); F.init(b,z); F.init(c,z); F.init(d,z); F.init(e,z); F.init(f,z);
 
 	F.write(report << " (Ring self description: ") << ')' << endl;
 	report << "Ring characteristic: " << p << endl;
-	//	report << "ring Element 2: " << F.write (report, two) << endl;
 
 	LinBox::integer n, m;
 	bool pass = true, part_pass = true;
@@ -189,31 +169,22 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	commentator().start ("\t--Testing correctness of 0 and 1");
 	part_pass = true;
 
-	if (!F.isZero (zero)) {
+	if ( not F.isZero (zero) or not F.isZero(F.zero) ) 
 		part_pass = reportError( "isZero (0) is false", pass);
-	}
-	if (F.isZero (one)) part_pass = reportError( "isZero (1) is true", pass);
-	if (F.isOne (zero)) part_pass = reportError( "isOne (0) is true", pass);
-	if (!F.isOne (one)) {
+	
+	if ( F.isZero (one) or F.isZero(F.one) ) 
+		part_pass = reportError( "isZero (1) is true", pass);
+	if ( F.isOne (zero) or F.isOne(F.zero) ) 
+		part_pass = reportError( "isOne (0) is true", pass);
+	if ( not F.isOne (one) or not F.isOne(F.one) ) 
 		part_pass = reportError( "isOne (1) is false", pass);
-	}
-
-	if (!F.isZero (F.zero)) {
-		part_pass = reportError( "isZero (0) is false", pass);
-	}
-	if (F.isZero (F.one)) part_pass = reportError( "isZero (1) is true", pass);
-	if (F.isOne (F.zero)) part_pass = reportError( "isOne (0) is true", pass);
-	if (!F.isOne (F.one)) {
-		part_pass = reportError( "isOne (1) is false", pass);
-	}
-
 	if ( !F.areEqual(F.mOne,mOne)) {
 		part_pass = reportError( "isMOne (-One) is false", pass);
 	}
 
 /* this is not required of init
 	if (p > 0) {
-		typename Ring::Element mOneFromCst;
+		Element mOneFromCst;
 		F.init(mOneFromCst, (LinBox::integer)(p-1));
 
 		if ( !F.areEqual(F.mOne,mOneFromCst)) {
@@ -226,23 +197,20 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
 
-        if (runInitConvertIdentity) {
+    if (runInitConvertIdentity) {
                 
 	commentator().start ("\t--Testing init/convert");
 	part_pass = true;
 
-#if 1  
-	// test of 0..card bijection
+	// test of 0..card-1 bijection
 	typename Ring::RandIter r (F);
         r.random(a);
-	F.write ( report << "Initial Elt to convert: ", a) << endl;
 	F.convert(n, a);
-	report << "Result of convert: " << n << endl;
+	F.write(report, a) << " --(convert)--> " << n << endl;
 	F.init(b, n);
-	F.write ( report << "Result of init: ", b) << endl;
+	F.write(report << n << " --(init)--> ") << b << endl;
 	if (not F.areEqual(a, b)) part_pass = reportError( "F.init (b, F.convert(n, a)) != a", pass);
 
-#endif
 #if 0
 	// test of prime subring bijection
 	if (p <= 0)
@@ -255,8 +223,8 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	F.convert (m, a); report << "Result of convert: " << m << endl;
 
 	if (m != n) part_pass = reportError( "F.convert (m, F.init (a, n)) != n", pass);
-
 #endif
+
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
         }
@@ -311,13 +279,6 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	//,..
 	// 2^101 - 1 vs 1 + 2 + 4 + ... + 2^100
 
-	F.init (a, (int64_t)1.0);
-	F.assign(a, F.one);
-	F.init (b, (int64_t)1.0);
-	F.assign(b, F.one);
-	F.init (c, (int64_t)0.0);
-	F.assign(c, F.zero);
-
 	n = 101;
 	expt(F, a, two, n);
 	F.subin (a, one);
@@ -371,27 +332,15 @@ bool testField (Field &F, const char *title, bool fieldp = true, bool runInitCon
 	F.characteristic(p);
 	F.cardinality (q);
 
-        typename Field::Element two, three;
-        typename Field::Element a, b, c, d, e, f;
+    typename Field::Element two, three;
+	F.init(two); F.add(two, F.one, F.one);
+	F.init(three); F.add(three, two, F.one);
+
+    typename Field::Element a, b, c, d, e, f;
 	F.init(a);F.init(b);F.init(c);F.init(d);F.init(e);F.init(f);
         
-	if (p > 0)
-	{
-		F.init(two, (int64_t)(2 % p));
-		F.init(three, (int64_t)(3 % p));
-	}
-	else
-	{
-		F.init(two, (int64_t)2);
-		F.init(three, (int64_t)3);
-	}
-		
-
-
 	commentator().start ("\t--Testing field arithmetic");
 	bool part_pass = true;
-
-
 
 	F.inv (a, F.one); F.write (report << "Result of inverting 1: ", a) << endl;
 	F.assign (d, F.one);
@@ -486,11 +435,10 @@ namespace field_subtests {
 		strcpy (st, str.str().c_str());
 		commentator().start (st, "testFieldInversion", iterations);
 
-		typename Field::Element a, ainv, aainv, one;
+		typename Field::Element a, ainv, aainv;
 		F.init (a,(int64_t)0);
 		F.init (ainv,(int64_t)0);
 		F.init (aainv,(int64_t)0);
-		F.init (one, (int64_t)1);
 		typename Field::RandIter r (F);
 
 		bool ret = true;
@@ -513,7 +461,7 @@ namespace field_subtests {
 
 			report << "a a^{-1} = ";  F.write (report, aainv) << endl;
 
-			if (!F.areEqual (aainv, one)) reportError("a a^-1 != 1", ret);
+			if (!F.areEqual (aainv, F.one)) reportError("a a^-1 != 1", ret);
 
 			commentator().stop ("done");
 			commentator().progress ();

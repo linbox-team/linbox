@@ -1,6 +1,6 @@
 /* tests/test-charpoly.C
  * Copyright (C) LinBox
- * Written by bds (starting from test-charpoly.C)
+ * Written by bds ++
  *
  *
  * ========LICENCE========
@@ -269,7 +269,6 @@ bool testRandomCharpoly (Field                 &F,
 		applyPoly (F, w, A, phi, v);
 		VD.write (report << "Output vector " << v_stream.j () << ": ", w) << endl;
 
-		//bds: VD.isZero fails to work right when -O2 using gcc 4.2
 		if (!VD.isZero (w)) { ret = false; break; }
 	}
 
@@ -305,62 +304,58 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
+	LinBox::commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	LinBox::commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	LinBox::commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	ostream &report = LinBox::commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	srand ((unsigned)time (NULL));
+
+/**************/
+	report << endl << "Black box characteristic polynomial over a prime field test suite" << endl;
+
 	// Temporarily, only Givaro::Modular<double> is enabled for the givaro/ntl factorization based charpoly
 	typedef Givaro::Modular<double> Field;
 	typedef BlasVector<Field> DenseVector;
 	typedef SparseMatrix<Field>::Row SparseVector;
-	// typedef pair<vector<size_t>, BlasVector<Field> > SparseVector;
 	Field F (q);
-	srand ((unsigned)time (NULL));
-
-	LinBox::commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	LinBox::commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	LinBox::commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-
-	ostream &report = LinBox::commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << endl << "Black box characteristic polynomial of a matrix over a prime field test suite" << endl;
 	Field::RandIter mygen(F);
 	RandomDenseStream<Field, DenseVector, Givaro::GeneralRingNonZeroRandIter<Field> >
-		v_stream (F, Givaro::GeneralRingNonZeroRandIter<Field> (mygen), n, (size_t)numVectors);
+	v_stream (F, Givaro::GeneralRingNonZeroRandIter<Field> (mygen), n, (size_t)numVectors);
 	RandomSparseStream<Field, SparseVector, Givaro::GeneralRingNonZeroRandIter<Field> >
-		A_stream (F, Givaro::GeneralRingNonZeroRandIter<Field> (mygen), (double) k / (double) n, n, n);
+	A_stream (F, Givaro::GeneralRingNonZeroRandIter<Field> (mygen), (double) k / (double) n, n, n);
 
-        if (!testNilpotentCharpoly (F, n)) pass = false;
-        if (!testRandomCharpoly    (F, A_stream, v_stream)) pass = false;
+	if (!testNilpotentCharpoly (F, n)) pass = false;
+	if (!testRandomCharpoly    (F, A_stream, v_stream)) pass = false;
 
 	// symmetrizing
 	if (!testIdentityCharpoly  (F, n, true)) pass = false;
 	//need other tests...
 
+/**************/
+	report << endl << "Black box characteristic polynomial over Z test suite" << endl;
+
 	Givaro::ZRing<integer>  Z ;
-        typedef BlasVector<Givaro::ZRing<integer>> ZDenseVector;
-
-	srand ((unsigned)time (NULL));
-
-	LinBox::commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	LinBox::commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	LinBox::commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-
-	report << endl << "Black box characteristic polynomial of an integer matrix test suite" << endl;
+	typedef BlasVector<Givaro::ZRing<integer>> ZDenseVector;
 
 	Givaro::ZRing<integer>::RandIter myZgen(Z);
 	RandomDenseStream<Givaro::ZRing<integer>, ZDenseVector, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> >
-		zv_stream (Z, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> (myZgen), n, (size_t)numVectors);
+	zv_stream (Z, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> (myZgen), n, (size_t)numVectors);
 	RandomSparseStream<Givaro::ZRing<integer>, SparseVector, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> >
-		zA_stream (Z, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> (myZgen), (double) k / (double) n, n, n);
+	zA_stream (Z, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> (myZgen), (double) k / (double) n, n, n);
 
-            //no symmetrizing
-        if (!testIdentityCharpoly  (Z, n)) pass = false;
-        if (!testNilpotentCharpoly (Z, n)) pass = false;
+	//no symmetrizing
+	if (!testIdentityCharpoly  (Z, n)) pass = false;
+	if (!testNilpotentCharpoly (Z, n)) pass = false;
         
 	//Comment by Z. Wan. Stream doesn't work here
-	//if (!testRandomCharpoly    (Z, zA_stream, zv_stream)) pass = false;
+//	if (!testRandomCharpoly    (Z, zA_stream, zv_stream)) pass = false;
 
 	// symmetrizing
 	if (!testIdentityCharpoly  (Z, n, true)) pass = false;
 	//need other tests...
 
-        testSageBug();
+	if (not testSageBug()) pass = false;
+
 	return pass ? 0 : -1;
 }
 
