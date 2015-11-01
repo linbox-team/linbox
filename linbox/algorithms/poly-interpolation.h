@@ -37,7 +37,7 @@ public:
 		k_=0;
 		while (Mtree_[k_].size()>1) {
 			std::vector<RingElt> row;
-			for (int i=0;i<Mtree_[k_].size()/2;++i) {
+			for (uint32_t i = 0; i < Mtree_[k_].size()/2; ++i) {
 				RingElt p;
 				PD.mul(p,Mtree_[k_][2*i],Mtree_[k_][2*i+1]);
 				row.push_back(p);

@@ -127,9 +127,9 @@ public:
 		}
 #endif
 
-		for (int i=0;i<b_;++i) {
-			for (int j=0;j<b_;++j) {
-				for (int k=0;k<d;++k) {
+		for (uint32_t i = 0; i < b_; ++i) {
+			for (uint32_t j = 0; j < b_; ++j) {
+				for (uint32_t k = 0; k < d; ++k) {
 					PD.setEntry(temp,gen[k].getEntry(i,j),k);
 				}
 				MM.setEntry(i,j,temp);
@@ -167,7 +167,7 @@ public:
 		diag.resize(b_);
 		SFKB.solve(diag,MM);
 
-		for (int i=0;i<diag.size();++i) {
+		for (uint32_t i = 0; i < diag.size(); ++i) {
 			R.normalize(diag[i],diag[i]);
 		}
 
