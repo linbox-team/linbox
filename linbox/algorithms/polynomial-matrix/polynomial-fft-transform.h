@@ -41,7 +41,7 @@
 // 	return os;
 // }
 
-
+#include "fflas-ffpack/utils/align-allocator.h"
 
 namespace LinBox {
 
@@ -61,9 +61,10 @@ namespace LinBox {
 		//double                    _pinv;
 		uint32_t                      _w;
 		uint32_t                   _invw;
-		std::vector<uint32_t>     pow_w;
-		std::vector<uint32_t>    pow_wp; // Precomputations in shoup
-		std::vector<uint32_t>     _data;
+		typedef std::vector<uint32_t,AlignedAllocator<uint32_t, Alignment::DEFAULT> > VECT;
+		VECT    pow_w;
+		VECT   pow_wp; // Precomputations in shoup
+		VECT    _data;
 		Element                      _p;
 		//   pow_w = table of roots of unity. If w = primitive K-th root, then the table is:
 		//           1, w, w^2, ..., w^{K/2-1},
