@@ -70,8 +70,21 @@ extern "C" {
 #include "flint/flint.h"
 }
 #endif
+#ifdef BENCH_MMX
+#include <numerix/modular_int.hpp>
+#include <algebramix/polynomial.hpp>
+#include <algebramix/polynomial_modular_int.hpp>
+#include <algebramix/polynomial_tft.hpp>
+#include <algebramix/matrix.hpp>
+#include <algebramix/matrix_modular_int.hpp>
+#include <algebramix/matrix_tft.hpp>
+#define Prime_field(C, n, p)						\
+	modular<modulus<C, modulus_int_preinverse<n> >, modular_fixed<int,p> >
+
+#endif
 
 using namespace LinBox;
+
 
 
 
@@ -117,7 +130,7 @@ struct congruent{
 };
 
 template<typename MULDOM, typename MatPol>
-void MATPOLMUL_sanity_check(MULDOM& MulDom, const MatPol& C, const MatPol& A, const MatPol& B, string msg){
+void MATPOLMUL_sanity_check(MULDOM& MulDom, const MatPol& C, const MatPol& A, const MatPol& B, std::string msg){
 	MatPol CC(C.field(),C.rowdim(),C.coldim(),C.size());
 	//auto Functor = bind(f, &MulDom, ref(CC),A,B);
 	//Functor();
@@ -174,7 +187,7 @@ void check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
  ****** MATPOLY MUL  PERFORMANCE FUNCTION ******
  ***********************************************/
 template<typename MULDOM, typename MatPol>
-void MATPOLMUL_performance(MULDOM& MulDom,  const MatPol& A, const MatPol& B, double Miops, string msg){
+void MATPOLMUL_performance(MULDOM& MulDom,  const MatPol& A, const MatPol& B, double Miops, std::string msg){
 	MatPol C(A.field(),A.rowdim(),A.coldim(),A.size()+B.size()-1);
 	//auto Functor = bind(f, &MulDom, ref(C),A,B);
 	Timer chrono;
@@ -225,10 +238,10 @@ void bench_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	size_t mmul=2*n*n*n;
 	size_t madd=n*n;
 	size_t kara=pow((double)d, log(3.)/log(2.));
-	    //size_t fft= 17 *d *log(2.*d)/log(2.);
+	//size_t fft= 17 *d *log(2.*d)/log(2.);
 	size_t costNaive= mmul*d*d + madd*(d-1)*(d-1);
 	size_t costKara = mmul*kara+ 6*madd*kara;
-	    //size_t costFFT  = mmul*2*d + 3*madd*fft;
+	//size_t costFFT  = mmul*2*d + 3*madd*fft;
 
 #ifdef FFT_PROFILER
 	FFT_PROF_LEVEL=3;
@@ -241,13 +254,12 @@ void bench_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	//MATPOLMUL_performance(PMFFT,A,B,costFFT, "FFT Multiplication");
 
 
-
-#ifdef BENCH_FLINT
 	Timer chrono;
+#ifdef BENCH_FLINT
 	nmod_poly_mat_t AA,BB,CC;
-	nmod_poly_mat_init(AA,n,n,fld.cardinality());
-	nmod_poly_mat_init(BB,n,n,fld.cardinality());
-	nmod_poly_mat_init(CC,n,n,fld.cardinality());
+	nmod_poly_mat_init(AA,n,n,(uint64_t)fld.cardinality());
+	nmod_poly_mat_init(BB,n,n,(uint64_t)fld.cardinality());
+	nmod_poly_mat_init(CC,n,n,(uint64_t)fld.cardinality());
 	flint_rand_t state;
 	flint_randinit(state);
 	nmod_poly_mat_randtest(AA,state,d);
@@ -269,6 +281,8 @@ void bench_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	chrono.stop();
 	cout<<"FLINT Multiplication E/I: "<<chrono.usertime()<<" s"<<endl;
 #endif
+	
+	
 	cout<<endl;
 }
 
@@ -305,9 +319,9 @@ void profile_matpol_mulfft(const Field& fld,  RandIter& Gen, size_t n, size_t d)
 
 #ifdef BENCH_FLINT
 	nmod_poly_mat_t AA,BB,CC;
-	nmod_poly_mat_init(AA,n,n,fld.cardinality());
-	nmod_poly_mat_init(BB,n,n,fld.cardinality());
-	nmod_poly_mat_init(CC,n,n,fld.cardinality());
+	nmod_poly_mat_init(AA,n,n,(uint64_t)fld.cardinality());
+	nmod_poly_mat_init(BB,n,n,(uint64_t)fld.cardinality());
+	nmod_poly_mat_init(CC,n,n,(uint64_t)fld.cardinality());
 	flint_rand_t state;
 	flint_randinit(state);
 	nmod_poly_mat_randtest(AA,state,d);
@@ -317,11 +331,47 @@ void profile_matpol_mulfft(const Field& fld,  RandIter& Gen, size_t n, size_t d)
 	do {
 		nmod_poly_mat_mul(CC,AA,BB);
 		count++;
-	} while (count<20 && chrono.userElapsedTime()<1);
+	} while (false);//(count<20 && chrono.userElapsedTime()<1);
 	cout<<chrono.userElapsedTime()/count<<" ";
 	//cout<<"FLINT Multiplication: "<<chrono.userElapsedTime()<<" s, "
 	//    <<costFFT/(1e6*chrono.userElapsedTime())<<" Miops"<<endl;
 
+#endif
+	
+#ifdef BENCH_MMX
+	{
+		mmx::threads_set_number (1);
+		srand(time(NULL));
+		//typedef mmx::modulus<uint32_t,mmx::modulus_int_preinverse<29> > MOD;
+		// typedef mmx::modulus<uint64_t > MOD;
+		// typedef mmx::modular<MOD> COEFF;
+		// MOD M((uint64_t)fld.cardinality());
+		// COEFF::set_modulus(M);
+		typedef mmx::modular<mmx::modulus<uint32_t,mmx::modulus_int_preinverse<29> >, mmx::modular_fixed<mmx::nat,469762049>> COEFF;
+		//mmx::mmout <<"\n MMX mod :"<< COEFF::get_modulus()<<"\n";
+		typedef mmx::polynomial_tft<mmx::polynomial_naive> PV;
+		typedef mmx::matrix_tft<mmx::matrix_naive> MV;
+		typedef mmx::polynomial<COEFF,PV> POLY;
+		typedef mmx::matrix<POLY,MV> MATRIX;
+		MATRIX AAA(1,n,n), BBB(1,n,n), CCC(1,n,n);
+		for (mmx::nat i=0; i<n; i++)
+			for (mmx::nat j=0; j<n; j++) {
+				mmx::vector<COEFF> vA,vB;
+				for(size_t h=0;h<d;h++){
+					vA<<COEFF(rand()%(uint64_t)fld.cardinality());
+					vB<<COEFF(rand()%(uint64_t)fld.cardinality());
+				}
+				AAA(i,j)=POLY(vA);
+				BBB(i,j)=POLY(vB);
+				//mmx::mmout<<AAA(i,j)<<"\n";
+				//mmx::mmout<<BBB(i,j)<<"\n";
+			}
+		chrono.clear();
+		chrono.start();
+		CCC=AAA*BBB;
+		//mmx::mmout<<CCC;
+		cout<<chrono.userElapsedTime()/count<<" ";
+	}
 #endif
 	cout<<endl;
 }
@@ -354,7 +404,7 @@ void profile_matpol_mulkara(const Field& fld,  RandIter& Gen, size_t n, size_t d
 
 
 template<typename Field>
-void runTest(const Field& F, size_t n, long b, long d, long seed, string test){
+void runTest(const Field& F, size_t n, long b, long d, long seed, std::string test){
 	//typename Field::RandIter G(F,b,seed);
 	typename Field::RandIter G(F,seed);
 	if (test == "check"|| test == "all")
@@ -379,7 +429,7 @@ int main(int argc, char** argv){
 	static uint64_t d = 32;  // matrix degree
 	static bool    z = false; // computer over  Z[x]
 	static long    seed = time(NULL);
-	static string  test ="all";
+	static std::string  test ="all";
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
@@ -394,7 +444,7 @@ int main(int argc, char** argv){
 
 	if (z){
 #ifdef FFT_PROFILER
-		FFT_PROF_LEVEL=2;
+		FFT_PROF_LEVEL=2;		
 #endif
 		cout<<"Computation over Z[x]  "<<endl;
 		cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
@@ -403,7 +453,7 @@ int main(int argc, char** argv){
 	}
 	else {
 		if (b > 29){
-#ifdef FFT_PROFILER
+#ifdef FFT_PROFILER		
 			FFT_PROF_LEVEL=2;
 #endif
 			RandomPrimeIter Rd(b,seed);

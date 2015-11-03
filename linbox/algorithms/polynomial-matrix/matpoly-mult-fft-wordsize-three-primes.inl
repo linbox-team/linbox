@@ -126,7 +126,7 @@ namespace LinBox {
 				std::cout<<"Parameters : ("<<m<<"x"<<k<<") ("<<k<<"x"<<n<<") with "<<pts<<" points with prime= "<<_p<<std::endl; 
 				throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
 			}
-			std::cout<<"MUL FFT 3-PRIME found enough prime"<<std::endl;
+			//std::cout<<"MUL FFT 3-PRIME found enough prime"<<std::endl;
 			size_t num_primes = bas.size();
 			std::vector<double> basis(num_primes);
 			std::copy(bas.begin(),bas.end(),basis.begin());
