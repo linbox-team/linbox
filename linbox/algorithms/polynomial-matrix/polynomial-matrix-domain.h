@@ -55,16 +55,16 @@ namespace LinBox
 		{
 			size_t d = a.size()+b.size();
                         if (d > FFT_DEG_THRESHOLD){
-                                std::cout<<"PolMul FFT"<<std::endl;
+                                //std::cout<<"PolMul FFT"<<std::endl;
 				_fft.mul(c,a,b);
                         }
 			else
 				if ( d > KARA_DEG_THRESHOLD){
-                                        std::cout<<"PolMul Kara"<<std::endl;
+                                        //std::cout<<"PolMul Kara"<<std::endl;
 					_kara.mul(c,a,b);
                                 }
 				else {
-                                        std::cout<<"PolMul Naive"<<std::endl;
+                                        //std::cout<<"PolMul Naive"<<std::endl;
 					_naive.mul(c,a,b);
                                 }
 		}
