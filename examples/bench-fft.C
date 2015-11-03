@@ -84,7 +84,7 @@ void DFT_sanity_check(FFT& FFTDom, Funct f, const Vect& x, const Vect& y, string
 template<typename Field>
 void check_DIF(const Field& fld, size_t kmax, long seed) {  
 	typedef typename Field::Element Element;
-	for (size_t lpts = 4; lpts < kmax ; lpts++){
+	for (size_t lpts = 1; lpts < kmax ; lpts++){
 		size_t pts = 1 << lpts;
 		cout<<"********************************************************"<<endl;
 		cout<<"*** Testing polynomials of size 2^" << lpts <<endl;
@@ -227,9 +227,9 @@ int main(int argc, char** argv){
 		cerr<<"usage : prime_bitsize , (seed)"<<endl;
 		exit(0);
 	}
-	size_t bits =atoi(argv[1]);
+	uint64_t bits =atoi(argv[1]);
 	long seed=((argc>2)?atoi(argv[2]):time(NULL));	
-	RandomFFTPrime Rd(bits,seed);
+	RandomFFTPrime Rd(1<<bits,seed);
 	uint32_t p = (uint32_t)Rd.randomPrime(5);
 	size_t k = bits-4;
 	cout<<"prime : "<<p<<endl;

@@ -137,7 +137,7 @@ namespace LinBox {
 			size_t pos = 0;
 			uint64_t wi = 1;
 			uint64_t __w = _w;
-			if (ln>1){
+			if (ln>0){
 				size_t tpts = 1 << (ln - 1);
 				while (tpts > 0) {
 					for (size_t i = 0; i < tpts; i++, pos++) {
@@ -159,13 +159,13 @@ namespace LinBox {
 		Element getInvRoot() const {return _invw;}
 
 		
-		void FFT_DIF_Harvey (uint32_t *fft) {
+		void FFT_DIF_Harvey (uint32_t *fft) {			
 #ifdef __AVX2__
 			FFT_DIF_Harvey_mod2p_iterative8x1_AVX(fft);
 			if (n>=8){
 				_vect256_t P;
 				VEC256_SET_32(P,_pl);
-				for (size_t i = 0; i < n; i += 8)
+				for (uint64_t i = 0; i < n; i += 8)
 					reduce256_modp(fft+i,P);
 				return;
 			}
@@ -175,13 +175,13 @@ namespace LinBox {
 			if (n >=4) {
 				_vect128_t P;
 				VEC128_SET_32(P,_pl);
-				for (size_t i = 0; i < n; i += 4)
+				for (uint64_t i = 0; i < n; i += 4)
 					reduce128_modp(fft+i,P);
 			} else {
-				for (size_t i = 0; i < n; i++)
+				for (uint64_t i = 0; i < n; i++)
 					if (fft[i] >= _pl) fft[i] -= _pl;
 			}
-	}
+		}
 
 		
 		void FFT_DIT_Harvey (uint32_t *fft) {
@@ -192,7 +192,7 @@ namespace LinBox {
 				_vect256_t P,P2;
 				VEC256_SET_32(P, _pl);
 				VEC256_SET_32(P2,_dpl);
-				for (size_t i = 0; i < n; i += 8){
+				for (uint64_t i = 0; i < n; i += 8){
 					reduce256_modp(&fft[i],P2);
 					reduce256_modp(&fft[i],P);
 				}
@@ -205,12 +205,12 @@ namespace LinBox {
 				_vect128_t P,P2;
 				VEC128_SET_32(P,_pl);
 				VEC128_SET_32(P2,_dpl);
-				for (size_t i = 0; i < n; i += 4){
+				for (uint64_t i = 0; i < n; i += 4){
 					reduce128_modp(&fft[i],P2);
 					reduce128_modp(&fft[i],P);
 				}
 			} else {
-				for (size_t i = 0; i < n; i++) {
+				for (uint64_t i = 0; i < n; i++) {
 					if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
 					if (fft[i] >= _pl) fft[i] -= _pl;
 				}
@@ -233,20 +233,20 @@ namespace LinBox {
 		template <typename T=Element>
 		typename std::enable_if<!std::is_same<T,uint32_t>::value>::type
 		FFT_DIF (T *fft) {
-			for(size_t i=0;i<n;i++)
+			for(uint64_t i=0;i<n;i++)
 				_data[i]=fft[i];
 			FFT_DIF_Harvey(&_data[0]);
-			for(size_t i=0;i<n;i++)
+			for(uint64_t i=0;i<n;i++)
 				fft[i]=_data[i];
 			
 		}
 		template <typename T=Element>
 		typename std::enable_if<!std::is_same<T,uint32_t>::value>::type
 		FFT_DIT (T *fft) {
-			for(size_t i=0;i<n;i++)
+			for(uint64_t i=0;i<n;i++)
 				_data[i]=fft[i];
 			FFT_DIT_Harvey(&_data[0]);
-			for(size_t i=0;i<n;i++)
+			for(uint64_t i=0;i<n;i++)
 				fft[i]=_data[i];			
 		}
 				

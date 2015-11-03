@@ -73,7 +73,7 @@ namespace LinBox{
       size_t nbp=0;
       if (!RdFFT.generatePrimes(lpts,bound,bas)){
 	integer MM=1;
-	for(size_t i=0;i<bas.size();i++)
+	for(std::vector<integer>::size_type i=0;i<bas.size();i++)
 	  MM*=bas[i];
 	RandomPrimeIter Rd(integer(prime_max).bitsize());
 	integer tmp;
@@ -193,6 +193,13 @@ namespace LinBox{
       size_t num_primes = RNS._size;
 #ifdef FFT_PROFILER
       double tMul=0.,tCopy=0;;
+      if (FFT_PROF_LEVEL<3){
+	std::cout << "number of FFT primes :" << num_primes << std::endl;
+	std::cout << "max prime            : "<<prime_max<<" ("<<integer(prime_max).bitsize()<<")"<<std::endl;
+	std::cout << "bitsize of the output: "<<bound.bitsize()
+		  <<"( "<< RNS._M.bitsize()<<" )"<<std::endl;
+	std::cout <<" +++++++++++++++++++++++++++++++"<<std::endl;
+      }
 #endif
       FFT_PROFILING(2,"init of CRT approach");
       // reduce t_a and t_b modulo each FFT primes
@@ -335,7 +342,7 @@ namespace LinBox{
       double tMul=0.,tCopy=0;;
       if (FFT_PROF_LEVEL<3){
 	std::cout << "number of FFT primes :" << num_primes << std::endl;
-	std::cout << "max prime            : "<<prime_max<<" ("<<prime_max.bitsize()<<")"<<std::endl;
+	std::cout << "max prime            : "<<prime_max<<" ("<<integer(prime_max).bitsize()<<")"<<std::endl;
 	std::cout << "bitsize of the output: "<<bound.bitsize()
 		  <<"( "<< RNS._M.bitsize()<<" )"<<std::endl;
 	std::cout <<" +++++++++++++++++++++++++++++++"<<std::endl;

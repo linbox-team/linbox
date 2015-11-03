@@ -68,7 +68,7 @@ namespace LinBox
                  *  the randomness is on the FFT primes lying in the given range
                  *  an error is thrown if no such prime exist
 		 */
-		inline Prime_Type randomPrime (Prime_Type& t, size_t b) const
+		inline Prime_Type randomPrime (Prime_Type& t, uint64_t b) const
 		{
                         linbox_check(b<_bits);
 			size_t tresh;
@@ -102,7 +102,7 @@ namespace LinBox
 		 */
 		inline Prime_Type generatePrime (Prime_Type& t) const
 		{
-			size_t cbits=5;
+			size_t cbits=1;
 			size_t tresh;
 			do {
 				tresh = 1<<(cbits);
