@@ -181,7 +181,7 @@ namespace LinBox
 
 #if 0
                         for (int64_t b = (int64_t)_bits; b >= (int64_t)val; b--)
-                                // for (uint64_t l = (1UL << ((int64_t)_bits - b - 1)) + 1; l < (1UL << ((int64_t)_bits - b)); l +=2) {
+                                // for (uint64_t l = (1ULL << ((int64_t)_bits - b - 1)) + 1; l < (1ULL << ((int64_t)_bits - b)); l +=2) {
                                 for (int64_t l = ((int64_t)1 << ((int64_t)_bits - b)) - 1; l >=1; l -=2) {
                                         tmp = ((int64_t)1 << b) * l + 1;                                        
                                         if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {

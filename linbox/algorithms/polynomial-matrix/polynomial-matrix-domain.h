@@ -153,7 +153,7 @@ namespace LinBox
 			if (!terminated()){ // compute product at step _i
 				//cout<<"read coeff <="<<_d+_i-1<<" of "<< 2*_d<<" ..."<<endl;;
 				size_t m = twoValuation(_i);
-				size_t step=  1UL<<m;
+				size_t step=  1ULL<<m;
 				//typename PMatrix3::const_view bb = _b->at(0, 2*_d-1);
 
 				if (step<_d) {
