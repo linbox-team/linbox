@@ -100,8 +100,10 @@ namespace LinBox {
 			size_t k = a.coldim();
 			size_t n = b.coldim();
 			size_t pts=c.size();
-			//cout<<"mul : "<<pts<<endl;
+			//std::cout<<"mul : 2^"<<lpts<<std::endl;
 #ifdef FFT_PROFILER
+			Timer totalTime;
+			totalTime.start();
 			if (FFT_PROF_LEVEL==1) std::cout<<"FFT: points "<<pts<<"\n";
 #endif
 
@@ -127,13 +129,27 @@ namespace LinBox {
 				FFTer.FFT_DIF(&(b.ref(i,0)));
 			FFT_PROFILING(1,"direct FFT_DIF");
 			
-			// std::cout<<"DIF:"<<std::endl;
-			// std::cout<<a<<std::endl;
-			// std::cout<<b<<std::endl;
+			//std::cout<<"DIF:  w="<<FFTer._w<<std::endl;
+			//std::cout<<a<<std::endl;
+			//std::cout<<b<<std::endl;
 			
 			
 			// convert the matrix representation to matfirst (with double coefficient)
 			PMatrix vm_c (field(), m, n, pts);
+#ifdef TRY1
+			BlasMatrix<Field> vm_a(field(),m,k);
+			BlasMatrix<Field> vm_b(field(),k,n);
+			FFT_PROFILING(1,"creation of Matfirst");
+
+			// Pointwise multiplication
+			for (size_t i = 0; i < pts; ++i){
+				a.setMatrix(vm_a,i);
+				b.setMatrix(vm_b,i);
+				_BMD.mul(vm_c[i], vm_a, vm_b);
+			}
+			FFT_PROFILING(1,"Pointwise mult");
+			
+#else
 			PMatrix vm_a (field(), m, k, pts);
 			PMatrix vm_b (field(), k, n, pts);
 			FFT_PROFILING(1,"creation of Matfirst");
@@ -145,7 +161,7 @@ namespace LinBox {
 			for (size_t i = 0; i < pts; ++i)
 				_BMD.mul(vm_c[i], vm_a[i], vm_b[i]);
 			FFT_PROFILING(1,"Pointwise mult");
-			
+#endif			
 			// Transformation into matrix of polynomials (with int32_t coefficient)
 			c.copy(vm_c);
 			FFT_PROFILING(1,"Matfirst to Polfirst");
@@ -174,6 +190,10 @@ namespace LinBox {
 			// std::cout<<c<<std::endl;
 
 			FFT_PROFILING(1,"scaling the result");
+#ifdef FFT_PROFILER
+			totalTime.stop();
+			cout<<"FFT: total time : "<<totalTime.usertime()<<" s"<<endl;
+#endif
 		}
 
 		// compute  c= (a*b x^(-n0-1)) mod x^n1

@@ -30,6 +30,7 @@
 #include "linbox/vector/subvector.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/field/hom.h"
+#include "fflas-ffpack/utils/align-allocator.h"
 #include "givaro/modular.h"
 #include <algorithm>
 
@@ -52,8 +53,11 @@ namespace LinBox{
 		typedef _Field Field;
 		typedef typename Field::Element   Element;
 		typedef BlasMatrix<Field>          Matrix;
-		typedef typename std::vector<Element>::iterator  Iterator;
-		typedef typename std::vector<Element>::const_iterator  ConstIterator;
+		//typedef typename std::vector<Element>::iterator  Iterator;
+		//typedef typename std::vector<Element>::const_iterator  ConstIterator;
+		typedef std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> VECT;
+		typedef typename VECT::iterator  Iterator;
+		typedef typename VECT::const_iterator  ConstIterator;
 		//typedef vector<Element>        Polynomial;
 		typedef Subvector<Iterator,ConstIterator>   Polynomial;
 		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,_Field>  Self_t;
@@ -293,7 +297,8 @@ namespace LinBox{
 	private:
 		size_t           _store;
 		std::vector<Polynomial> _repview;
-		std::vector<Element>    _rep;
+		//std::vector<Element>    _rep;
+		VECT _rep;
 		size_t             _row;
 		size_t             _col;
 		size_t            _size;

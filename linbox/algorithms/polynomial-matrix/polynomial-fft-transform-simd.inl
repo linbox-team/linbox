@@ -782,7 +782,7 @@ namespace LinBox {
 			tmp[2]=tmp[6]=pow_wp[n-6];
 			tmp[3]=tmp[7]=pow_wp[n-5];
 			VEC256_LOADU(betap,tmp);
-			for (size_t i = 0; i < n; i+=16)
+			for (uint64_t i = 0; i < n; i+=16)
 				Butterfly_DIT_mod4p_8x3_AVX_first3step(&fft[i],&fft[i+8],alpha,alphap,beta,betap,P,P2);
 			uint32_t * tab_w = &pow_w [n-16];
 			uint32_t * tab_wp= &pow_wp[n-16];

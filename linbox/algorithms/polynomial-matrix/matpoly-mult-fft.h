@@ -41,7 +41,8 @@
 #ifdef FFT_PROFILER
 #include <iostream>
 #ifndef FFT_PROF_LEVEL
-#define  FFT_PROF_LEVEL 1
+//#define  FFT_PROF_LEVEL 1
+int  FFT_PROF_LEVEL=1;
 #endif
 
 //size_t  FFT_PROF_LEVEL=1;

@@ -68,7 +68,7 @@ namespace LinBox
                  *  the randomness is on the FFT primes lying in the given range
                  *  an error is thrown if no such prime exist
 		 */
-		inline Prime_Type randomPrime (Prime_Type& t, size_t b) const
+		inline Prime_Type randomPrime (Prime_Type& t, uint64_t b) const
 		{
                         linbox_check(b<_bits);
 			size_t tresh;
@@ -102,7 +102,7 @@ namespace LinBox
 		 */
 		inline Prime_Type generatePrime (Prime_Type& t) const
 		{
-			size_t cbits=5;
+			size_t cbits=1;
 			size_t tresh;
 			do {
 				tresh = 1<<(cbits);
@@ -181,7 +181,7 @@ namespace LinBox
 
 #if 0
                         for (int64_t b = (int64_t)_bits; b >= (int64_t)val; b--)
-                                // for (uint64_t l = (1UL << ((int64_t)_bits - b - 1)) + 1; l < (1UL << ((int64_t)_bits - b)); l +=2) {
+                                // for (uint64_t l = (1ULL << ((int64_t)_bits - b - 1)) + 1; l < (1ULL << ((int64_t)_bits - b)); l +=2) {
                                 for (int64_t l = ((int64_t)1 << ((int64_t)_bits - b)) - 1; l >=1; l -=2) {
                                         tmp = ((int64_t)1 << b) * l + 1;                                        
                                         if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {

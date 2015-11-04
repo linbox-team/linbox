@@ -43,6 +43,7 @@ namespace LinBox {
 	template <class Field>
 	template <class T>
 	inline void FFT_transform<Field>::Butterfly_DIF_mod2p(T& A, T& B, const uint32_t& alpha, const uint32_t& alphap) {
+		//std::cout<<A<<" $$ "<<B<<"("<<alpha<<","<<alphap<<" ) -> ";
 		// Harvey's algorithm
 		// 0 <= A,B < 2*p, p < 2^32 / 4
 		// alphap = Floor(alpha * 2^ 32 / p])
@@ -53,6 +54,7 @@ namespace LinBox {
 		tmp = ((uint32_t) alphap * (uint64_t)B) >> 32;
 		B = (uint64_t)alpha * B - tmp * _pl;
 		//B &= 0xFFFFFFFF;
+		//std::cout<<A<<" $$ "<<B<<"\n ";
 	}
 
 

@@ -561,22 +561,22 @@ namespace LinBox {
                                 }
 
                                 // compute the serie update
-                                //seriek = const_cast<const PMatrix2*>(L_serie[lp])->at(0,min(order,(1UL<<(l+1)))-1);
+                                //seriek = const_cast<const PMatrix2*>(L_serie[lp])->at(0,min(order,(1ULL<<(l+1)))-1);
 
-                                //size_t update_max=min(order,1UL<<(l+1));
-                                //_PMD.midproductgen(*L_serie[l],*L_sigma.back(), seriek, true, (1UL<<l)+1,update_max);
+                                //size_t update_max=min(order,1ULL<<(l+1));
+                                //_PMD.midproductgen(*L_serie[l],*L_sigma.back(), seriek, true, (1ULL<<l)+1,update_max);
 
-
+ 
                                 /*
                                   cout<<"---------------"<<endl;
-                                  cout<<"MP "<<(1UL<<l)<<"x"<<(1UL<<(l+1))<<endl;
+                                  cout<<"MP "<<(1ULL<<l)<<"x"<<(1ULL<<(l+1))<<endl;
                                   cout<<*(L_sigma.back())<<endl;
                                   cout<<lp<<" ----- "<<endl<<*(L_serie[lp])<<endl;
                                   cout<<"---------------"<<endl;
                                 */
 
-                                //L_mp.push_back(new HFMPD(field(),*(L_serie[l]),*(L_sigma.back()), seriek, 1UL<<l));
-                                L_mp.push_back(new HFMPD(field(),*(L_serie[l]),*(L_sigma.back()),*(L_serie[lp]), 1UL<<l));
+                                //L_mp.push_back(new HFMPD(field(),*(L_serie[l]),*(L_sigma.back()), seriek, 1ULL<<l));
+                                L_mp.push_back(new HFMPD(field(),*(L_serie[l]),*(L_sigma.back()),*(L_serie[lp]), 1ULL<<l));
 
                                 // compute the new sigma
                                 sigmak = new PMatrix(field(),m,n,ord+1);

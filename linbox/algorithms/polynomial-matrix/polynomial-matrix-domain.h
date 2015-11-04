@@ -54,13 +54,19 @@ namespace LinBox
 		void mul(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b)
 		{
 			size_t d = a.size()+b.size();
-                        if (d > FFT_DEG_THRESHOLD)
+                        if (d > FFT_DEG_THRESHOLD){
+                                //std::cout<<"PolMul FFT"<<std::endl;
 				_fft.mul(c,a,b);
+                        }
 			else
-				if ( d > KARA_DEG_THRESHOLD)
+				if ( d > KARA_DEG_THRESHOLD){
+                                        //std::cout<<"PolMul Kara"<<std::endl;
 					_kara.mul(c,a,b);
-				else
+                                }
+				else {
+                                        //std::cout<<"PolMul Naive"<<std::endl;
 					_naive.mul(c,a,b);
+                                }
 		}
 
 		template< class PMatrix1,class PMatrix2,class PMatrix3>
@@ -147,7 +153,7 @@ namespace LinBox
 			if (!terminated()){ // compute product at step _i
 				//cout<<"read coeff <="<<_d+_i-1<<" of "<< 2*_d<<" ..."<<endl;;
 				size_t m = twoValuation(_i);
-				size_t step=  1UL<<m;
+				size_t step=  1ULL<<m;
 				//typename PMatrix3::const_view bb = _b->at(0, 2*_d-1);
 
 				if (step<_d) {
