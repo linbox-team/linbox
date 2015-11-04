@@ -38,6 +38,7 @@ using namespace std;
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/ring/modular.h"
+#include "fflas-ffpack/utils/align-allocator.h"
 
 using namespace LinBox;
 
@@ -89,7 +90,8 @@ void check_DIF(const Field& fld, size_t kmax, long seed) {
 		cout<<"********************************************************"<<endl;
 		cout<<"*** Testing polynomials of size 2^" << lpts <<endl;
 		cout<<"********************************************************"<<endl;
-		vector<Element> x(pts),y(pts);
+		//vector<Element> x(pts),y(pts);
+		std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> x(pts),y(pts);
 
 		// Generate random inputs
 		typename Field::RandIter Gen(fld);//,fld.characteristic(),seed);
