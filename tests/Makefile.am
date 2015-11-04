@@ -105,6 +105,8 @@ FULLCHECK_TESTS =               \
 	test-getentry				\
 	test-gf2					\
 	test-givaropoly				\
+	test-givaro-zpz				\
+	test-givaro-zpzuns				\
 	test-gmp-rational			\
 	test-hilbert				\
 	test-hom					\
@@ -260,6 +262,8 @@ test_ftrmm_SOURCES =                    test-ftrmm.C
 test_getentry_SOURCES =                 test-getentry.C
 test_gf2_SOURCES =                      test-gf2.C
 test_givaropoly_SOURCES =               test-givaropoly.C
+test_givaro_zpz_SOURCES =               test-givaro-zpz.C
+test_givaro_zpzuns_SOURCES =            test-givaro-zpzuns.C
 test_gmp_rational_SOURCES =             test-gmp-rational.C
 test_hilbert_SOURCES =                  test-hilbert.C
 test_hom_SOURCES =                      test-hom.C
