@@ -167,7 +167,7 @@ public:
 		SFKB.solve(diag,MM);
 
 		for (uint32_t i = 0; i < diag.size(); ++i) {
-			R.normalize(diag[i],diag[i]);
+			R.normalizeIn(diag[i]);
 		}
 
 		return diag.size();
