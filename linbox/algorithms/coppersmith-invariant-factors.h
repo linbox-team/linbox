@@ -26,8 +26,8 @@
 #define __LINBOX_coppersmith_invariant_factors_H
 
 #include "linbox/algorithms/block-coppersmith-domain.h"
-//#include "linbox/algorithms/blackbox-block-container.h"
-#include "linbox/algorithms/alt-blackbox-block-container.h"
+#include "linbox/algorithms/blackbox-block-container.h"
+//#include "linbox/algorithms/alt-blackbox-block-container.h"
 #include "linbox/matrix/random-matrix.h"
 
 #include <givaro/givpoly1.h>
@@ -97,7 +97,8 @@ public:
 	template <class PolyRingVector>
 	size_t computeFactors(PolyRingVector& diag, int earlyTerm=10)
 	{
-		typedef AltBlackboxBlockContainer<Field,Blackbox,typename MatrixDomain<Field2_>::OwnMatrix > BBC;
+		//typedef AltBlackboxBlockContainer<Field,Blackbox,typename MatrixDomain<Field2_>::OwnMatrix > BBC;
+		typedef AltBlackboxBlockContainer<Field,Blackbox> BBC;
 		typedef BlockCoppersmithDomain<MatrixDomain<Field2_>,BBC> BCD;
 		BBC blockSeq(M_,F_,U_,V_);
 		MatrixDomain<Field2_> BMD(F_);
