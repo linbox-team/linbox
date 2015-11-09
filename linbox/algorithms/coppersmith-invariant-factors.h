@@ -98,7 +98,7 @@ public:
 	size_t computeFactors(PolyRingVector& diag, int earlyTerm=10)
 	{
 		//typedef AltBlackboxBlockContainer<Field,Blackbox,typename MatrixDomain<Field2_>::OwnMatrix > BBC;
-		typedef AltBlackboxBlockContainer<Field,Blackbox> BBC;
+		typedef BlackboxBlockContainer<Field,Blackbox> BBC;
 		typedef BlockCoppersmithDomain<MatrixDomain<Field2_>,BBC> BCD;
 		BBC blockSeq(M_,F_,U_,V_);
 		MatrixDomain<Field2_> BMD(F_);
