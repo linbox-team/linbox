@@ -41,12 +41,6 @@
 #include <linbox/util/matrix-stream.h>
 
 #define SP_STOR SparseMatrixFormat::SparseSeq
-// #define SP_STOR SparseMatrixFormat::COO
-// #define SP_STOR SparseMatrixFormat::CSR
-// #define SP_STOR SparseMatrixFormat::ELL
-// #define SP_STOR SparseMatrixFormat::ELL_R
-
-
 
 using namespace LinBox;
 
@@ -74,40 +68,28 @@ int main (int argc, char **argv)
 	LinBox::Timer tim ; tim.clear() ; tim.start();
 	MatrixStream<Givaro::QField<Givaro::Rational>> ms( ZZ, input );
 	SparseMatrix<Givaro::QField<Givaro::Rational>, SP_STOR> A ( ms );
-	// SparseMatrix<Givaro::ZRing<Givaro::Rational>, SparseMatrixFormat::CSR> A ( ms );
+
 	tim.stop();
 	std::cout << "matrix is " << A.rowdim() << " by " << A.coldim() << " (" << tim << ")" << std::endl;
 	tim.clear() ; tim.start();
+	
 	if (argc == 2) { // rank over the rational numbers.
-
 		/* We could pick a random prime and work mod that prime, But
 		 * the point here is that the rank function in solutions/
 		 * handles that issue.  Our matrix here is an integer or
 		 * rational matrix and our concept is that we are getting the
 		 * rank of that matrix by some blackbox magic inside linbox.
 		 */
-		// A.write(std::cout) << std::endl;;
-
 		LinBox::rank (r, A);
 	}
+	
 	if (argc == 3) { // rank mod a prime
-#if 0
-		// for prime greater than wordsize:
-		integer q (argv[2]);
-		typedef Givaro::Modular<integer> Field;
-#endif
-#if 0
-		//to use doubles, prime < 2^{23}
-		double q = atof(argv[2]);
-		typedef Givaro::Modular<double> Field;
-#endif
-		//to use ints, prime < 2^{31}
 		uint32_t q = atoi(argv[2]);
-                if (q == 0) {
-                        std::cerr << "second argument should be a non-zero integer or missing\n";
-                        return -1;
-                }
-		typedef Givaro::Modular<int32_t> Field;
+		if (q == 0) {
+				std::cerr << "second argument should be a non-zero integer or missing\n";
+				return -1;
+		}
+		typedef Givaro::Modular<double> Field;
 
 		Field F(q);
 		if (q > F.maxCardinality()) {
@@ -122,24 +104,6 @@ int main (int argc, char **argv)
 
 		// Using the adaptive LinBox Solution
 		LinBox::rank(r,B);
-
-		// using BlackBoxes
-#if 0 /*  too bad */
-		   Method::Blackbox MBB;
-		   MBB.certificate(true);
-		   Linbox::rank(r, B, MBB);
-#endif
-
-		// using in place Sparse Elimination with linear pivoting
-
-#if 0 /*  too bad */
-		   Method::SparseElimination SE;
-		   SE.strategy(Specifier::PIVOT_LINEAR);
-		   rankin (r, B, SE);
-		   if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
-#endif
-
-
 	}
 	tim.stop();
 
