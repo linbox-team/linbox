@@ -340,7 +340,7 @@ namespace LinBox
 
 				i++;
 				
-				std::cout << i << "/" << dim << std::endl;
+				//std::cout << i << "/" << dim << std::endl;
 			}
 
 			for (size_t i = 0; i < dim; i++)
