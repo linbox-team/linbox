@@ -88,7 +88,7 @@ namespace LinBox
 			while (tmp != 0)
 			{
 				Element xi;
-				_pd.init(xi, Givaro::Degree(i), tmp % q);
+				_pd.init(xi, Givaro::Degree(int64_t(i)), tmp % q);
 				_pd.addin(x, xi);
 
 				i++;

@@ -24,6 +24,7 @@
  *.
  */
 
+#include <iostream>
 #include "linbox/matrix/dense-matrix.h"
 
 #ifndef __LINBOX_smith_form_kannan_bachem_domain_H
@@ -338,6 +339,8 @@ namespace LinBox
 					continue;
 
 				i++;
+				
+				//std::cout << i << "/" << dim << std::endl;
 			}
 
 			for (size_t i = 0; i < dim; i++)
