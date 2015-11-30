@@ -380,7 +380,7 @@ namespace LinBox
 			// Check Qadic matrix reprentation possibility
 			LinBox::integer maxChunkVal = 1;
 			maxChunkVal <<= 53;
-			maxChunkVal /= (prime-1) * _n;
+			maxChunkVal /= (prime-1) * uint64_t(_n);
 			chunk_size = maxChunkVal.bitsize();
 			use_chunks = (chunk_size >= 16);
 			//std::cout<<"max bit= "<<maxBitSize<<" "<<maxValue.size_in_base(4)*2<<"\n";std::cout<<"max value= "<<maxValue<<"\n";
@@ -392,7 +392,7 @@ namespace LinBox
 				// Check Qadic vector representation possibility
 				maxChunkVal = 1;
 				maxChunkVal <<= 53;
-				maxChunkVal /= 2*maxValue * _n;
+				maxChunkVal /= 2*maxValue * uint64_t(_n);
 				chunk_size = maxChunkVal.bitsize();
 				use_chunks = (chunk_size >= 16);
 
@@ -490,8 +490,8 @@ namespace LinBox
 					maxValue= maxValue<<1;
 					// maxBitSize+=1;
 				}
-				integer a_bound= maxValue*_n+1;
-				integer b_bound= sqrt(integer("9007199254740992")/_n);	std::cout<<"max prime: "<<b_bound<<" max rns: "<<a_bound<<std::endl;
+				integer a_bound= maxValue*uint64_t(_n)+1;
+				integer b_bound= sqrt(integer("9007199254740992")/uint64_t(_n));	std::cout<<"max prime: "<<b_bound<<" max rns: "<<a_bound<<std::endl;
 				MultiModRandomPrime mmrp;
 				std::vector<integer> rns_basis = mmrp.createPrimes(b_bound, a_bound);
 				_rns = new MultiModDouble(rns_basis);
