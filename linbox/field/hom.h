@@ -307,32 +307,6 @@ namespace LinBox
 	}; // end Hom
 
 
-   template<>
-	class Hom <Givaro::QField<Givaro::Rational> , Givaro::Modular<double> > {
-
-	public:
-		typedef Givaro::QField<Givaro::Rational> Source;
-		typedef Givaro::Modular<double> Target;
-		typedef typename Source::Element SrcElt;
-		typedef typename Target::Element Elt;
-
-		Hom(const Source& S, const Target& T) :
-			_source(S), _target(T)
-		{}
-		inline Elt& image(Elt& t, const SrcElt& s) {
-			return _target. reduce (t, Givaro::Caster<double,Givaro::Rational>(t,s) );
-		}
-		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
-                        return Givaro::Caster<Givaro::Rational,double>(s,t);
-		}
-		const Source& source() const { return _source;}
-		const Target& target() const { return _target;}
-
-	protected:
-		const Source& _source;
-		const Target& _target;
-	}; // end Hom
-
 } // namespace LinBox
 
 
