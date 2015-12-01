@@ -86,7 +86,7 @@ namespace LinBox
 		VectorWrapper::ensureDim (_w[1], A.coldim ());
 		VectorWrapper::ensureDim (_Aw, A.coldim ());
 
-		Givaro::GeneralRingNonZeroRandIter<Field> real_ri (field(), _randiter);
+		Givaro::GeneralRingNonZeroRandIter<Field> real_ri (_randiter);
 		RandomDenseStream<Field, LVector, Givaro::GeneralRingNonZeroRandIter<Field> > stream (field(), real_ri, A.coldim ());
 
 		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {

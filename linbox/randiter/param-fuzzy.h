@@ -99,6 +99,8 @@ namespace LinBox
 			return (a = ElementEnvelope <ParamFuzzy> (tmp));
 		}
 
+        const ParamFuzzy& ring() { return _field; }
+
 	    private:
 
 		/// Field in which arithmetic is done

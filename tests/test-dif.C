@@ -208,7 +208,9 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	RandomDenseStream<Field> stream1 (F, n, (unsigned int)iterations1), stream2 (F, n, (unsigned int)iterations2);
+    Field::RandIter gen(F);
+    
+	RandomDenseStream<Field> stream1 (F, gen, n, (unsigned int)iterations1), stream2 (F, gen, n, (unsigned int)iterations2);
 
 	if (!testZeroApply (F, stream1, stream2)) pass = false;
 

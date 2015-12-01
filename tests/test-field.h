@@ -761,7 +761,7 @@ namespace field_subtests {
 
 		typename Field::Element a, a_n, k, zero, one;
 		typename Field::RandIter r (F);
-		typename Givaro::GeneralRingNonZeroRandIter<Field> z(F,r);
+		typename Givaro::GeneralRingNonZeroRandIter<Field> z(r);
 
 		F.init (zero, (int64_t)0);
 		F.init (one, (int64_t)1);

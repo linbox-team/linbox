@@ -320,11 +320,11 @@ int main (int argc, char **argv)
 	ostream &report = LinBox::commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << endl << "Black box characteristic polynomial of a matrix over a prime field test suite" << endl;
 	Field::RandIter mygen(F);
-	RandomDenseStream<Field, DenseVector, Givaro::GeneralRingNonZeroRandIter<Field> >
-		v_stream (F, Givaro::GeneralRingNonZeroRandIter<Field> (mygen), n, (size_t)numVectors);
-	RandomSparseStream<Field, SparseVector, Givaro::GeneralRingNonZeroRandIter<Field> >
-		A_stream (F, Givaro::GeneralRingNonZeroRandIter<Field> (mygen), (double) k / (double) n, n, n);
-
+    Givaro::GeneralRingNonZeroRandIter<Field> myNZgen(mygen);
+    
+	RandomDenseStream<Field, DenseVector, Givaro::GeneralRingNonZeroRandIter<Field> > v_stream (F, myNZgen, n, (size_t)numVectors); 
+    RandomSparseStream<Field, SparseVector, Givaro::GeneralRingNonZeroRandIter<Field> > A_stream (F, myNZgen, (double) k / (double) n, n, n);
+    
         if (!testNilpotentCharpoly (F, n)) pass = false;
         if (!testRandomCharpoly    (F, A_stream, v_stream)) pass = false;
 
@@ -344,10 +344,12 @@ int main (int argc, char **argv)
 	report << endl << "Black box characteristic polynomial of an integer matrix test suite" << endl;
 
 	Givaro::ZRing<integer>::RandIter myZgen(Z);
+    Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> myNzZgen(myZgen);
+
 	RandomDenseStream<Givaro::ZRing<integer>, ZDenseVector, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> >
-		zv_stream (Z, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> (myZgen), n, (size_t)numVectors);
+		zv_stream (Z, myNzZgen, n, (size_t)numVectors);
 	RandomSparseStream<Givaro::ZRing<integer>, SparseVector, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> >
-		zA_stream (Z, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> (myZgen), (double) k / (double) n, n, n);
+		zA_stream (Z, myNzZgen, (double) k / (double) n, n, n);
 
             //no symmetrizing
         if (!testIdentityCharpoly  (Z, n)) pass = false;

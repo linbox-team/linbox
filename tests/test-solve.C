@@ -780,7 +780,7 @@ int main (int argc, char **argv)
 	typedef Givaro::Modular<int64_t> Field;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F (q); Field::RandIter gen(F);
 
 	commentator().start("Solve test suite", "solve");
 
@@ -791,10 +791,10 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (PROGRESS_REPORT).setMaxDepth (5);
 	//commentator().getMessageClass (BRIEF_REPORT).setMaxDepth (4);
 
-	RandomDenseStream<Field> stream1 (F, n, (unsigned int)iterations), stream2 (F, n, (unsigned int)iterations);
-	RandomDenseStream<Field> stream3 (F, r, (unsigned int)iterations), stream4 (F, r, (unsigned int)iterations);
-	RandomSparseStream<Field> stream6 (F, (double) r / (double) n, n, (unsigned int)iterations);
-	RandomSparseStream<Field> A_stream (F, (double) r / (double) n, n, m);
+	RandomDenseStream<Field> stream1 (F, gen, n, (unsigned int)iterations), stream2 (F, gen, n, (unsigned int)iterations);
+	RandomDenseStream<Field> stream3 (F, gen, r, (unsigned int)iterations), stream4 (F, gen, r, (unsigned int)iterations);
+	RandomSparseStream<Field> stream6 (F, gen, (double) r / (double) n, n, (unsigned int)iterations);
+	RandomSparseStream<Field> A_stream (F, gen, (double) r / (double) n, n, m);
 
 	Method::Wiedemann WM;
 	if (!testIdentitySolve               (F, stream1, "Wiedemann", WM))

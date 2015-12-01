@@ -218,12 +218,12 @@ int main(int argc, char** argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
 	//typedef NTL_ZZ Ring; Ring R;
-	typedef Givaro::ZRing<Integer> Ring; Ring R;
-	RandomDenseStream<Ring> s1 (R, n, iterations);
+	typedef Givaro::ZRing<Integer> Ring; Ring R; Ring::RandIter gen(R);
+	RandomDenseStream<Ring> s1 (R, gen, n, iterations);
 	pass = testRandom(R, sf, s1);
 
-	typedef Givaro::ZRing<Integer> Ring2; Ring2 S;
-	RandomDenseStream<Ring2> s2 (S, n, iterations);
+	typedef Givaro::ZRing<Integer> Ring2; Ring2 S;Ring2::RandIter gen2(S);
+	RandomDenseStream<Ring2> s2 (S, gen2, n, iterations);
 	pass = pass && testRandom(S, sf, s2);
 
 	commentator().stop(MSG_STATUS(pass));

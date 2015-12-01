@@ -159,6 +159,10 @@ namespace LinBox
 			random (tmp);
 			return (a = ElementEnvelope <GMPRationalField> (tmp));
 		}
+        
+        const GMPRationalField& ring() const { return _field; }
+        
+                
 
 	private:
 

@@ -172,7 +172,7 @@ void RandomMatrixWithRank(const Field & F,
 
 	//                srandom( (unsigned) time(NULL)  ) ; // on met une nouvelle graine.
 	typename Field::RandIter G(F);
-	typename Field::NonZeroRandIter Gn(F,G);
+	typename Field::NonZeroRandIter Gn(G);
 	typedef element_t(Field) Element;
 
 	Element * B = new Element[m*m];
@@ -231,7 +231,7 @@ void RandomMatrixWithDet(const Field & F,
 			 const element_t(Field) & det)
 {
 	typename Field::RandIter G(F);
-	typename Field::NonZeroRandIter Gn(F,G);
+	typename Field::NonZeroRandIter Gn(G);
 	typedef element_t(Field) Element;
 
 	Element * B = new Element[m*m];

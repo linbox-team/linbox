@@ -151,7 +151,7 @@ namespace LinBox
 		_matV[2].resize (A.coldim (), _block);
 		_AV.resize (A.coldim (), _block);
 
-                Givaro::GeneralRingNonZeroRandIter<Field> real_ri (field(), _randiter);
+        Givaro::GeneralRingNonZeroRandIter<Field> real_ri (_randiter);
 		RandomDenseStream<Field, Vector, Givaro::GeneralRingNonZeroRandIter<Field> > stream (field(), real_ri, A.coldim ());
 
 		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
@@ -358,7 +358,7 @@ namespace LinBox
 
 		typename Matrix::ColIterator xi = x.colBegin ();
 
-                Givaro::GeneralRingNonZeroRandIter<Field> real_ri (field(), _randiter);
+        Givaro::GeneralRingNonZeroRandIter<Field> real_ri (_randiter);
 		RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense, Givaro::GeneralRingNonZeroRandIter<Field> > d_stream (field(), real_ri, A.coldim ());
 
 		TransposeMatrix<Matrix> bT (_b);

@@ -82,7 +82,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	commentator().start (pretty("Testing rank"),"testRank",(unsigned int)iterations);
 
 	RandIter G(F);
-	NonZeroRandIter Gn(F,G);
+	NonZeroRandIter Gn(G);
 
 	bool ret = true;
 
@@ -155,7 +155,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 	Element d;
 	RandIter G(F);
-	NonZeroRandIter Gn(F,G);
+	NonZeroRandIter Gn(G);
 
 	bool ret = true;
 
@@ -230,7 +230,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 	commentator().start (pretty("Testing LQUP factorization"),"testLQUP",(unsigned int)iterations);
 
 	RandIter G(F);
-	NonZeroRandIter Gn(F,G);
+	NonZeroRandIter Gn(G);
 
 	bool ret = true;
 
@@ -364,7 +364,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	commentator().start (pretty("Testing minpoly"),"testMinPoly",(unsigned int)iterations);
 	Element tmp ;
 	RandIter G(F);
-	NonZeroRandIter Gn(F,G);
+	NonZeroRandIter Gn(G);
 	bool ret = true;
 
 	for (int k=0;k<iterations;++k) {
@@ -467,7 +467,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	commentator().start (pretty("Testing charpoly"),"testCharPoly",(unsigned int)iterations);
 	Element tmp;
 	RandIter G(F);
-	NonZeroRandIter Gn(F,G);
+	NonZeroRandIter Gn(G);
 	bool ret = true;
 
 	for (int k=0;k<iterations;++k) {
@@ -548,7 +548,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	commentator().start (pretty("Testing inverse"),"testInv",(unsigned int)iterations);
 
 	RandIter G(F);
-	NonZeroRandIter Gn(F,G);
+	NonZeroRandIter Gn(G);
 
 	bool ret = true;
 

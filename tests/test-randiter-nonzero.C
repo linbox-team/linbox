@@ -75,7 +75,7 @@ static bool testNonzeroRandom (Field &F, unsigned int iterations)
 	typename Field::RandIter r (F);
 
 	//NonzeroRandIter <Field, typename Field::RandIter> rp (F, r);
-	Givaro::GeneralRingNonZeroRandIter <Field> rp (F, r);
+	Givaro::GeneralRingNonZeroRandIter <Field> rp (r);
 
 	for (i = 0; i <(int) iterations; i++) {
 		commentator().startIteration ((unsigned int)i);

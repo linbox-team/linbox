@@ -459,12 +459,13 @@ namespace LinBox
 	class UnparametricRandIter<NTL::ZZ_p> {
 	protected:
 		integer _size,_seed;
+        const NTL_ZZ_p & _ring;
 	public:
 
 		UnparametricRandIter<NTL::ZZ_p> (const NTL_ZZ_p & F,
 						 const integer& size = 0,
 						 const integer& seed = 0) :
-			_size(size), _seed(seed)
+                _size(size), _seed(seed), _ring(F)
 		{
 			if (_seed == integer(0)) _seed = int64_t(time(NULL));
 
@@ -481,6 +482,9 @@ namespace LinBox
 			// Seed random number generator
 			NTL::SetSeed(NTL::to_ZZ(static_cast<int32_t>(_seed)));
 		}
+
+        const NTL_ZZ_p& ring() const { return _ring; }
+                
 
 		// UnparametricRandIter<NTL::ZZ_p>(const NTL_ZZ_p& R) :
 			// _size(R._size), _seed(R._seed)

@@ -400,7 +400,7 @@ namespace LinBox
 						 const size_t& size = 0,
 						 const size_t& seed = 0
 						) :
-			_size(size), _seed(seed)
+                _size(size), _seed(seed), _ring(F)
 		{
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
@@ -408,8 +408,10 @@ namespace LinBox
 				NTL::SetSeed(NTL::to_ZZ(_seed));
 		}
 
+        const NTL_zz_pEX& ring() const { return _ring; }
+
 		UnparametricRandIter<NTL::zz_pEX>(const UnparametricRandIter<NTL::zz_pEX>& R) :
-			_size(R._size), _seed(R._seed)
+                _size(R._size), _seed(R._seed), _ring(R._ring)
 
 		{
 			if(_seed == 0)
@@ -427,6 +429,7 @@ namespace LinBox
 	protected:
 		size_t _size;
 		size_t _seed;
+        const NTL_zz_pEX& _ring;
 	}; // class UnparametricRandIters
 
 } // end of namespace LinBox

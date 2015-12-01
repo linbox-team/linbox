@@ -198,20 +198,21 @@ int main(int argc, char** argv)
 	//!@bug should be tried on NTZ_LL too
 	typedef Givaro::ZRing<Integer>      Ring;
 
-	Ring R;
+	Ring R; Ring::RandIter gen(R);
+    
 
 	commentator().start("Smith form test suite", "Smith");
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-	LinBox::RandomDenseStream<Ring> s1 (R, n, (unsigned int)iterations);
+	LinBox::RandomDenseStream<Ring> s1 (R, gen, n, (unsigned int)iterations);
 	if (!testRandom(R, s1)) pass = false;
 
 #if 0
 #ifdef __LINBOX_HAVE_NTL
-	typedef LinBox::NTL_ZZ      Ring2;
-	Ring2 R2;
+	typedef LinBox::NTL_ZZ      Ring2; 
+	Ring2 R2;Ring2::RandIter gen2(R2);
 
-	LinBox::RandomDenseStream<Ring2> s2 (R2, n, (unsigned int)iterations);
+	LinBox::RandomDenseStream<Ring2> s2 (R2, gen2, n, (unsigned int)iterations);
 	if (!testRandom(R2, s2)) pass = false;
 
 #endif

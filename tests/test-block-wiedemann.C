@@ -66,7 +66,8 @@ bool testBlockSolver(Solver & S, Blackbox & M, string desc){
 	bool pass = true;
 	size_t n = M.coldim();
 	Vector b(M.field(),n), x(M.field(),n), y(M.field(),n);
-	RandomDenseStream<Field> s (M.field(), n, 1);
+    typename Field::RandIter gen(M.field());
+	RandomDenseStream<Field> s (M.field(), gen, n, 1);
 	s.next (b);
 	VectorDomain<Field> VD (M.field());
 	VD.write (report << "Right-hand side: b =  ", b) << endl;
@@ -107,13 +108,13 @@ int main (int argc, char **argv)
 	//typedef Givaro::Modular<uint32_t> Field;
 	typedef BlasVector<Field> Vector;
 
-	Field F ( (uint32_t) q);
+	Field F ( (uint32_t) q); Field::RandIter gen(F);
 	MatrixDomain<Field> MD(F);
 
 	commentator().start("block wiedemann test suite", "block-wiedemann");
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	RandomDenseStream<Field> s(F, n, 2);
+	RandomDenseStream<Field> s(F, gen, n, 2);
 	Vector d(F,n);
 	s.next (d);
 	for (size_t i = 0; i < d.size(); ++i) 

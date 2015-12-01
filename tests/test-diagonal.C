@@ -4,7 +4,7 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * Time-stamp: <02 Jul 15 17:05:13 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <01 Dec 15 12:14:49 Jean-Guillaume.Dumas@imag.fr>
  * --------------------------------------------------------
  *
  *
@@ -335,7 +335,7 @@ int main (int argc, char **argv)
 #if 0
 	RandomDenseStream<Field, Vector> stream1 (F, n, (unsigned int)iterations), stream2 (F, n, (unsigned int)iterations), d_stream (F, n, 1);
 	RandomDenseStream<Field, Vector, Givaro::GeneralRingNonZeroRandIter<Field> >
-		stream3 (F, Givaro::GeneralRingNonZeroRandIter<Field> (F, Field::RandIter (F)), n, (unsigned int)iterations);
+		stream3 (F, Givaro::GeneralRingNonZeroRandIter<Field> (Field::RandIter (F)), n, (unsigned int)iterations);
 
 	if (!testIdentityApply    (F, stream1)) pass = false;
 	if (!testRandomMinpoly    (F, stream3)) pass = false;

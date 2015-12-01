@@ -69,7 +69,7 @@ static SparseMatrix<Field,  STOR_T>
 
 	Blackbox *A = new Blackbox (F, n, m);
 	typename Field::RandIter rnd_p (F);
-	Givaro::GeneralRingNonZeroRandIter<Field> rnd (F, rnd_p);
+	Givaro::GeneralRingNonZeroRandIter<Field> rnd (rnd_p);
 	typename Field::Element factor;
 	vector<Row> bottom_left_data (n - r);
 	vector<Row> top_right_data (r);

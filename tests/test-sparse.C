@@ -161,7 +161,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 	A.write (report, Tag::FileFormat::Pretty);
 
 	size_t j;
-	Givaro::GeneralRingNonZeroRandIter<Field> r (F, typename Field::RandIter (F));
+	Givaro::GeneralRingNonZeroRandIter<Field> r (typename Field::RandIter (F));
 
 	VectorDomain<Field> VD (F);
 	Vector v, w;
