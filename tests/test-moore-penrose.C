@@ -355,7 +355,7 @@ int main (int argc, char **argv)
 	typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F (q); Field::RandIter gen(F);
 
 	srand ((unsigned)time (NULL));
 
@@ -364,11 +364,11 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
 
-	RandomDenseStream<Field, DenseVector> stream1 (F, n, iterations);
-	RandomDenseStream<Field, DenseVector> stream2 (F, n, k);
+	RandomDenseStream<Field, DenseVector> stream1 (F, gen, n, iterations);
+	RandomDenseStream<Field, DenseVector> stream2 (F, gen, n, k);
 
-	RandomSparseStream<Field, SparseVector> M_stream1 (F, 0.1, n - r, r);
-	RandomSparseStream<Field, SparseVector> M_stream2 (F, 0.1, r, m - r);
+	RandomSparseStream<Field, SparseVector> M_stream1 (F, gen, 0.1, n - r, r);
+	RandomSparseStream<Field, SparseVector> M_stream2 (F, gen, 0.1, r, m - r);
 
 	if (!testIdentityApply (F, n, m, r, stream1)) pass = false;
 	if (!testRandomApply1 (F, n, m, r, iterations, 1.0 / (double) r, M_stream1, M_stream2, stream2)) pass = false;

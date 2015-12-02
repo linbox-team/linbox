@@ -36,10 +36,14 @@
 #include "linbox/util/timer.h"
 #include "linbox/util/debug.h"
 
+namespace std {
+    template <bool B>
+    using bool_constant = integral_constant<bool, B>;
+}
+
 namespace LinBox
 {
-
-	/*!@brief Random Prime Generator.
+	/*!@brief Random Integer Iterator.
 	 * @ingroup integers
 	 * @ingroup randiter
 	 *
@@ -47,38 +51,60 @@ namespace LinBox
 	 * @tparam _Unsigned if \c true, then only non negative integers
 	 * are generated, if \c false, their sign is random.
 	 */
-	template<bool _Unsigned=true>
+	template<bool _Unsigned=true, bool _Exact_Size=false>
 	class RandomIntegerIterator {
 
-		unsigned int    _bits;  //!< common lenght of all integers
-		integer      _integer;  //!< the generated integer.
+		size_t    _bits;  //!< common lenght of all integers
+		integer   _integer;  //!< the generated integer.
 
+        typedef typename 
+        std::bool_constant<_Exact_Size>::type _Exact_Size_t;
+        
 	public:
+		typedef integer Integer_Type ;
+		typedef integer Element ;
+
 		/*! Constructor.
 		 * @param bits size of integers (in bits)
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
-		RandomIntegerIterator(unsigned int bits = 30, unsigned long seed = 0) :
+		RandomIntegerIterator(size_t bits = 30, uint64_t seed = 0) :
 			_bits(bits)
 		{
 			linbox_check(bits>1);
 			if (! seed)
-				setSeed( BaseTimer::seed() );
+				setSeed( static_cast<uint64_t>(BaseTimer::seed()) );
 			else
 				setSeed( seed );
 
-			integer::random_exact<_Unsigned>(_integer,_bits);
+			this->operator++();
 		}
 
-		typedef integer Integer_Type ;
+		/// copy constructor.
+		/// @param R random iterator to be copied.
+		RandomIntegerIterator (const RandomIntegerIterator &R) :
+			_bits(R._bits), _integer(R._integer)
+		{}
+
+		/// copy.
+		/// @param R random iterator to be copied.
+		RandomIntegerIterator &operator=(const RandomIntegerIterator &R)
+		{
+			if (this != &R) {
+				_bits = R._bits;
+				_integer = R._integer;
+			}
+			return *this;
+		}
+
 
 		/** @brief operator++()
 		 *  creates a new random integer.
 		 */
 		inline RandomIntegerIterator &operator ++ ()
 		{
-			integer::random_exact<_Unsigned>(_integer,_bits);
+			this->nextRandom(_Exact_Size_t(), _integer);
 			return *this;
 		}
 
@@ -99,94 +125,45 @@ namespace LinBox
 			return _integer;
 		}
 
+		Integer_Type & random (Integer_Type & a) const
+		{
+			return this->nextRandom(_Exact_Size_t(), a);
+		}
+
 		/** @brief Sets the seed.
 		 *  Set the random seed to be \p ul.
 		 *  @param ul the new seed.
 		 */
-		void static setSeed(unsigned long ul)
+		void static setSeed(uint64_t ul)
 		{
 			integer::seeding(ul);
 		}
 
-
-	};
-
-	/*! @brief Random Integer Iterator.
-	 * @ingroup integers
-	 * @ingroup randiter
-	 *
-	 * Generates integers of size smaller than a prescribed one.
-	 * This class is closer to the LinBox::RandIterArchetype.
-	 * @todo
-	 * one could create the same one on a LinBox::PID_double ?
-	 * @tparam _Unsigned if \c true, then only non negative integers
-	 * are generated, if \c false, their sign is random.
-	 */
-	template<bool _Unsigned=true>
-	class RandomIntegerIter {
-
-		unsigned int 	_bits;  //!< max length for all integers
-		integer         _seed;  //!< the generated integer.
-
-	public:
-		/*! Constructor.
-		 * @param bits max size of integers (in bits)
-		 * @param seed if \c 0 a seed will be generated, otherwise, the
-		 * provided seed will be use.
-		 */
-		RandomIntegerIter(unsigned int bits = 30, uint64_t seed = 0) :
-			_bits(bits)
-		{
-			linbox_check(bits>1);
-			if (! seed)
-				_seed = (uint64_t)BaseTimer::seed() ;
-			else
-				_seed = seed ;
-
-			integer::seeding(_seed);
-		}
-
-		/// destructor.
-		~RandomIntegerIter() {}
-
-		/// copy constructor.
-		/// @param R random iterator to be copied.
-		RandomIntegerIter (const RandomIntegerIter &R) :
-			_bits(R._bits), _seed(R._seed)
-		{}
-
-		typedef integer Element ;
-
-		/// copy.
-		/// @param R random iterator to be copied.
-		RandomIntegerIter &operator=(const RandomIntegerIter &R)
-		{
-			if (this != &R) {
-				_bits = R._bits;
-				_seed = R._seed;
-			}
-			return *this;
-		}
-
-		/** @brief get the random integer.
-		 * @param[out] a the new integer number
-		 */
-		const integer & random (integer & a) const
-		{
-			integer::random_lessthan<_Unsigned>(a,_bits);
-
-			return a;
-		}
-
-		void setBits (unsigned int  bits)
+		void setBits (size_t  bits)
 		{
 			_bits = bits;
 		}
 
-		unsigned int getBits () const
+		size_t getBits () const
 		{
 			return _bits ;
 		}
+
+        const Givaro::ZRing<Integer_Type> ring() const
+        { 
+            return Givaro::ZRing<Integer_Type>();
+        }
+        
+                
+
+    protected:
+        inline Integer_Type& nextRandom(std::true_type,  Integer_Type & a) const {
+			return integer::random_exact<_Unsigned>(a,_bits);
+        }
+        inline Integer_Type& nextRandom(std::false_type, Integer_Type & a) const {
+			return integer::random_lessthan<_Unsigned>(a,_bits);
+        }
+
 
 	};
 

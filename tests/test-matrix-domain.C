@@ -1347,7 +1347,7 @@ bool testPermutation (const Field &F, const char *text, const Matrix &M)
 }
 
 template <class Field, class Blackbox, class Matrix>
-bool testMatrixDomain (const Field &F, const char *text,
+bool testMatrixDomain (const Field &F, typename Field::RandIter& gen, const char *text,
 		       Matrix &M1, Matrix &M2, Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
@@ -1359,7 +1359,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 
 	bool pass = true;
 
-	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, A.coldim (), iterations);
+	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, gen, A.coldim (), iterations);
 
 	if (!testCopyEqual (F, text, M1))               pass = false;
 	if (!testSubinIsZero (F, text, M1))             pass = false;
@@ -1395,7 +1395,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 }
 
 template <class Field, class Blackbox, class Matrix>
-bool testMatrixDomain (const Field &F, const char *text,
+bool testMatrixDomain (const Field &F, typename Field::RandIter& gen, const char *text,
 		       Matrix &M1, Matrix &M2, Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
@@ -1407,7 +1407,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 
 	bool pass = true;
 
-	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, A.coldim (), iterations);
+	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, gen, A.coldim (), iterations);
 
 	if (!testCopyEqual (F, text, M1))              pass = false;
 	if (!testSubinIsZero (F, text, M1))            pass = false;
@@ -1435,7 +1435,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 }
 
 template <class Field, class Blackbox, class Matrix>
-bool testMatrixDomain (const Field &F, const char *text,
+bool testMatrixDomain (const Field &F, typename Field::RandIter& gen, const char *text,
 		       Matrix &M1, Matrix &M2, Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
@@ -1447,7 +1447,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 
 	bool pass = true;
 
-	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, A.coldim (), iterations);
+	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, gen, A.coldim (), iterations);
 
 	if (!testCopyEqual (F, text, M1))               pass = false;
 	if (!testSubinIsZero (F, text, M1))             pass = false;
@@ -1474,7 +1474,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 }
 
 template <class Field, class Blackbox, class Matrix>
-bool testMatrixDomain (const Field &F, const char *text,
+bool testMatrixDomain (const Field &F, typename Field::RandIter& gen, const char *text,
 		       Matrix &M1, Matrix &M2, Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
@@ -1486,7 +1486,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 
 	bool pass = true;
 
-	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, A.coldim (), iterations);
+	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, gen, A.coldim (), iterations);
 
 	if (!testRightBlackboxMul (F, text, A, stream)) pass = false;
 
@@ -1506,7 +1506,9 @@ bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, unsign
 	BlasMatrix<Field> M3 (F, m, m);
 	MatrixBlackbox<Field, BlasMatrix<Field> > A1 (F, n, m);
 
-	RandomDenseStream<Field, typename BlasMatrix<Field>::Row> stream1 (F, m);
+    typename Field::RandIter gen(F);
+
+	RandomDenseStream<Field, typename BlasMatrix<Field>::Row> stream1 (F, gen, m);
 
 	typename BlasMatrix<Field>::RowIterator i;
 
@@ -1522,11 +1524,11 @@ bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, unsign
 	for (i = A1.rep ().rowBegin (); i != A1.rep ().rowEnd (); ++i)
 		stream1 >> *i;
 
-	if (!testMatrixDomain (F, "dense", M1, M2, M3, A1, iterations,
+	if (!testMatrixDomain (F, gen, "dense", M1, M2, M3, A1, iterations,
 			       typename MatrixTraits<BlasMatrix<Field> >::MatrixCategory ()))
 		pass = false;
 	Diagonal<Field> A1b (F, n, true); // random, nonsingular
-	if (!testMatrixDomain (F, "blackbox", M1, M2, M3, A1b, iterations,
+	if (!testMatrixDomain (F, gen, "blackbox", M1, M2, M3, A1b, iterations,
 			       typename MatrixTraits<Diagonal<Field> >::MatrixCategory ()))
 		pass = false;
 
@@ -1535,7 +1537,7 @@ bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, unsign
 	SparseMatrix<Field> M6 (F,m, m);
 	MatrixBlackbox<Field, SparseMatrix<Field> > A2 (F, n, m);
 
-	RandomSparseStream<Field, typename SparseMatrix<Field>::Row> stream2 (F, (double) k / (double) n, m);
+	RandomSparseStream<Field, typename SparseMatrix<Field>::Row> stream2 (F, gen, (double) k / (double) n, m);
 
 	typename SparseMatrix<Field>::RowIterator i2;
 
@@ -1551,7 +1553,7 @@ bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, unsign
 	for (i2 = A2.rep ().rowBegin (); i2 != A2.rep ().rowEnd (); ++i2)
 		stream2 >> *i2;
 
-	if (!testMatrixDomain (F, "sparse row-wise", M4, M5, M6, A2, iterations,
+	if (!testMatrixDomain (F, gen, "sparse row-wise", M4, M5, M6, A2, iterations,
 			       typename MatrixTraits<SparseMatrix<Field> >::MatrixCategory ()))
 		pass = false;
 
@@ -1559,7 +1561,7 @@ bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, unsign
 	TransposeMatrix<SparseMatrix<Field> > M8 (M5);
 	TransposeMatrix<SparseMatrix<Field> > M9 (M6);
 
-	if (!testMatrixDomain (F, "sparse column-wise", M7, M8, M9, A2, iterations,
+	if (!testMatrixDomain (F, gen, "sparse column-wise", M7, M8, M9, A2, iterations,
 			       typename MatrixTraits<TransposeMatrix<SparseMatrix<Field> > >::MatrixCategory ()))
 		pass = false;
 

@@ -1227,7 +1227,7 @@ namespace LinBox
 	void BlasMatrix<Givaro::ZRing<Integer>, Vector<Givaro::ZRing<Integer>>::Dense >::random<unsigned>(const unsigned & b)
 	{
 		// std::cout << "randomized " <<  b << std::endl;
-		RandomIntegerIter<false> R((unsigned)b);
+		RandomIntegerIterator<false> R((unsigned)b);
 		for (size_t i = 0 ; i < rowdim() ; ++i)
 			for (size_t j = 0 ; j < coldim() ; ++j)
 				R.random(refEntry(i,j));

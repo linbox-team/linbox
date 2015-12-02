@@ -199,13 +199,13 @@ int main(int argc, char** argv)
 
         typedef Givaro::ZRing<Integer>      Ring;
 
-        Ring R;
+        Ring R; Ring::RandIter gen(R);
 
 	commentator().start("Last invariant factor test suite", "LIF");
 
         commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-        RandomDenseStream<Ring> s1 (R, n, iterations);
+        RandomDenseStream<Ring> s1 (R, gen, n, iterations);
 
 	typedef RationalSolver<Ring, Givaro::Modular<int32_t>, LinBox::RandomPrimeIterator> Solver;
 	// typedef RationalSolver<Ring, Givaro::Modular<double>, LinBox::RandomPrimeIterator> Solver;
