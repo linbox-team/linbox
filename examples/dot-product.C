@@ -60,11 +60,11 @@ int main (int argc, char **argv)
 	commentator().setMaxDepth (1);
 	commentator().setReportStream (std::cout);
 
-	Field F (q);
+	Field F (q); Field::RandIter gen(F);
 
-	RandomDenseStream<Field, Vector<Field>::Dense> factory1 (F, n);
-	RandomSparseStream<Field, Vector<Field>::SparseSeq> factory2 (F, p, n);
-	RandomSparseStream<Field, Vector<Field>::SparsePar> factory3 (F, p, n);
+	RandomDenseStream<Field, Vector<Field>::Dense> factory1 (F, gen, n);
+	RandomSparseStream<Field, Vector<Field>::SparseSeq> factory2 (F, gen, p, n);
+	RandomSparseStream<Field, Vector<Field>::SparsePar> factory3 (F, gen, p, n);
 
 	Vector<Field>::Dense v1 (n), v2 (n);
 	Vector<Field>::SparseSeq v3;
