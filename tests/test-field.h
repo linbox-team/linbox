@@ -486,11 +486,10 @@ namespace field_subtests {
 		strcpy (st, str.str().c_str());
 		commentator().start (st, "testFieldInversion", iterations);
 
-		typename Field::Element a, ainv, aainv, one;
+		typename Field::Element a, ainv, aainv;
 		F.init (a,(int64_t)0);
 		F.init (ainv,(int64_t)0);
 		F.init (aainv,(int64_t)0);
-		F.init (one, (int64_t)1);
 		typename Field::RandIter r (F);
 
 		bool ret = true;
@@ -513,7 +512,7 @@ namespace field_subtests {
 
 			report << "a a^{-1} = ";  F.write (report, aainv) << endl;
 
-			if (!F.areEqual (aainv, one)) reportError("a a^-1 != 1", ret);
+			if (!F.areEqual (aainv, F.one)) reportError("a a^-1 != 1", ret);
 
 			commentator().stop ("done");
 			commentator().progress ();
@@ -759,12 +758,10 @@ namespace field_subtests {
 		strcpy (st, str.str().c_str());
 		commentator().start (st, "testGeometricSummation", iterations);
 
-		typename Field::Element a, a_n, k, zero, one;
+		typename Field::Element a, a_n, k;
 		typename Field::RandIter r (F);
 		typename Givaro::GeneralRingNonZeroRandIter<Field> z(r);
 
-		F.init (zero, (int64_t)0);
-		F.init (one, (int64_t)1);
 		F.init (a,(int64_t)0); F.init (a_n,(int64_t)0); F.init (k,(int64_t)0);
 
 		bool ret = true;
@@ -774,7 +771,7 @@ namespace field_subtests {
 			commentator().startIteration (i);
 
 			size_t no_bad_loop = card+10 ;
-			do z.random (a); while (F.areEqual (a, one) && --no_bad_loop);
+			do z.random (a); while (F.areEqual (a, F.one) && --no_bad_loop);
 			if (!no_bad_loop) {
 				reportError(" *** ERROR *** could not find an element different form 1...",ret);
 				break;
@@ -784,7 +781,7 @@ namespace field_subtests {
 			report << "Random element a: ";
 			F.write (report, a) << endl;
 
-			F.assign (k, one);
+			F.assign (k, F.one);
 			F.assign (a_n, a);
 
 			for (unsigned int j = 0; j < n; ++j) {
@@ -800,11 +797,11 @@ namespace field_subtests {
 			report << "sum(a^i, i = 0..n-1) = ";
 			F.write (report, k) << endl;
 
-			F.subin (a_n, one);
+			F.subin (a_n, F.one);
 			report << "(a^n - 1) = ";
 			F.write (report, a_n) << endl;
 
-			F.subin (a, one);
+			F.subin (a, F.one);
 			report << "(a - 1) = ";
 			F.write (report, a) << endl;
 
@@ -842,11 +839,10 @@ namespace field_subtests {
 		commentator().start (string(str.str()).c_str(), "testFieldCharacteristic", iterations);
 
 		LinBox::integer p, j;
-		typename Field::Element a, sigma, zero;
+		typename Field::Element a, sigma;
 		typename Field::RandIter r (F);
 
 		F.characteristic (p);
-		F.init (zero, (int64_t)0);
 		F.init (a,(int64_t)0); F.init (sigma,(int64_t)0);
 
 		bool ret = true;
@@ -863,7 +859,7 @@ namespace field_subtests {
 			Report << "Random element a: ";
 			F.write (Report, a) << endl;
 
-			F.assign (sigma, zero);
+			F.assign (sigma, F.zero);
 
 			// suggestion: make this run in time O(lg(p)), then take the conditional out of the run...Tests
 			for (j = 0; j < p; j += 1)

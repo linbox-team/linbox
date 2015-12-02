@@ -518,7 +518,7 @@ namespace LinBox
 
 		RandomSparseStream (const Field &F, RandIter &r, double p, size_t N,
 				    size_t M = 0, int seed=(int)time (NULL)) :
-			_field (F), _r1 (F), _r (_r1), _n (N), _k ((long) (p * N)), _j (0), _m (M),
+			_field (F), _r1 (r), _r (_r1), _n (N), _k ((long) (p * N)), _j (0), _m (M),
 			MT ((uint32_t) seed)
 		{}
 

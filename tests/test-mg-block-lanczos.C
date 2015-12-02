@@ -208,7 +208,7 @@ int main (int argc, char **argv)
 	typedef Givaro::Modular<uint8_t> Field;
 
 	parseArguments (argc, argv, args);
-	Field F ((uint32_t)q);
+	Field F ((uint32_t)q); Field::RandIter gen(F);
 
 	commentator().start("Montgomery block Lanczos test suite");
 
@@ -218,8 +218,8 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().getMessageClass (PROGRESS_REPORT).setMaxDepth (0);
 
-	RandomSparseStream<Field> A_stream (F, (double) k / (double) n, (size_t)n, (size_t)n);
-	RandomDenseStream<Field> y_stream (F, (size_t)n, (size_t)i);
+	RandomSparseStream<Field> A_stream (F, gen, (double) k / (double) n, (size_t)n, (size_t)n);
+	RandomDenseStream<Field> y_stream (F, gen, (size_t)n, (size_t)i);
 
 	if (!testRandomSolve (F, A_stream, y_stream, (size_t)N)) pass=false;;
 	commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)

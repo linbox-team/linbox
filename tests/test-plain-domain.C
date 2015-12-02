@@ -1540,7 +1540,7 @@ bool launchTestMatrixDomain(const MatDomain& MD, size_t m, size_t n, size_t k)
 	SparseMatrix<Field> M6 (F,m, m);
 	MatrixBlackbox<Field, SparseMatrix<Field> > A2 (F, n, m);
 
-	RandomSparseStream<Field, typename SparseMatrix<Field>::Row> stream2 (F, (double) k / (double) n, m);
+	RandomSparseStream<Field, typename SparseMatrix<Field>::Row> stream2 (F, gen, (double) k / (double) n, m);
 
 	typename SparseMatrix<Field>::RowIterator i2;
 

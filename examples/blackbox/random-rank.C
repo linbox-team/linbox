@@ -73,11 +73,11 @@ int main (int argc, char **argv)
 	commentator().setMaxDepth (2);
 	commentator().setReportStream (cout);
 
-	Field F (q);
-	FieldExtn E (q, 10);
+	Field F (q); Field::RandIter gen(F);
+	FieldExtn E (q, 10); FieldExtn::RandIter Egen(E);
 
-	RandomSparseStream<Field, Row> A_stream (F, p, n, n);
-	RandomSparseStream<FieldExtn, RowE> B_stream (E, p, n, n);
+	RandomSparseStream<Field, Row> A_stream (F, gen, p, n, n);
+	RandomSparseStream<FieldExtn, RowE> B_stream (E, Egen, p, n, n);
 
 	Blackbox A (F, A_stream);
 	BlackboxE B (E, B_stream);
