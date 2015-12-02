@@ -53,15 +53,11 @@ namespace LinBox
 	 */
 	template<bool _Unsigned=true, bool _Exact_Size=false>
 	class RandomIntegerIterator {
-
-		size_t    _bits;  //!< common lenght of all integers
-		integer   _integer;  //!< the generated integer.
-
         typedef typename 
         std::bool_constant<_Exact_Size>::type _Exact_Size_t;
-        
 	public:
 		typedef integer Integer_Type ;
+		typedef Givaro::ZRing<Integer_Type> Integer_Domain ;
 		typedef integer Element ;
 
 		/*! Constructor.
@@ -69,8 +65,8 @@ namespace LinBox
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
-		RandomIntegerIterator(size_t bits = 30, uint64_t seed = 0) :
-			_bits(bits)
+		RandomIntegerIterator(const Integer_Domain& D, size_t bits = 30, uint64_t seed = 0) :
+                _bits(bits), _integer(), _ring(D)
 		{
 			linbox_check(bits>1);
 			if (! seed)
@@ -84,7 +80,7 @@ namespace LinBox
 		/// copy constructor.
 		/// @param R random iterator to be copied.
 		RandomIntegerIterator (const RandomIntegerIterator &R) :
-			_bits(R._bits), _integer(R._integer)
+                _bits(R._bits), _integer(R._integer), _ring(R._ring)
 		{}
 
 		/// copy.
@@ -94,6 +90,7 @@ namespace LinBox
 			if (this != &R) {
 				_bits = R._bits;
 				_integer = R._integer;
+                const_cast<Integer_Domain&>(_ring)=R._ring;
 			}
 			return *this;
 		}
@@ -149,9 +146,9 @@ namespace LinBox
 			return _bits ;
 		}
 
-        const Givaro::ZRing<Integer_Type> ring() const
+        const Givaro::ZRing<Integer_Type>& ring() const
         { 
-            return Givaro::ZRing<Integer_Type>();
+            return _ring;
         }
         
                 
@@ -164,7 +161,10 @@ namespace LinBox
 			return integer::random_lessthan<_Unsigned>(a,_bits);
         }
 
-
+		size_t    _bits;  //!< common lenght of all integers
+		integer   _integer;  //!< the generated integer.
+        const Integer_Domain& _ring;
+        
 	};
 
 }

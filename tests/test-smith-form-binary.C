@@ -224,13 +224,13 @@ int main(int argc, char** argv)
 //		typedef Givaro::IntegerDom Ring;
 		typedef Givaro::ZRing<Integer> Ring;
 
-		Ring R;
+		Ring R; Ring::RandIter gen(R);
 
 		report << std::endl << "EGV++ algorithm test suite with LinBox/Givaro PID:\n";
 
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-		RandomDenseStream<Ring> s1 (R, n, (unsigned int) iterations);
+		RandomDenseStream<Ring> s1 (R, gen, n, (unsigned int) iterations);
 
 		typedef Givaro::Modular<int32_t> Field;
 		typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> Solver;
@@ -251,12 +251,12 @@ int main(int argc, char** argv)
 	{
 		typedef NTL_ZZ Ring;
 
-		Ring R;
+		Ring R; Ring::RandIter gen(R);
 
 		report << std::endl << "EGV++ algorithm test suite with NTL_ZZ :\n";
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-		RandomDenseStream<Ring> s1 (R, n, (unsigned int)iterations);
+		RandomDenseStream<Ring> s1 (R, gen, n, (unsigned int)iterations);
 
 		typedef Givaro::Modular<int32_t> Field;
 		typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> Solver;

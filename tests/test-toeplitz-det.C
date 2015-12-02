@@ -69,14 +69,13 @@ int main(int argc, char* argv[])
 #ifdef __LINBOX_HAVE_NTL
 	srand((unsigned)time(0));
 	RandomPrimeIterator rp;
-	NTL_zz_p::RandIter randit;
+	NTL_zz_p CF( *rp ); NTL_zz_p::RandIter randit(CF);
+	NTL_zz_pX PF(CF);
+	
 	report << "\tUsing random primes and square matrices of size 2 to " << N_BOUND << endl;
 	//for( int i = 0; pass && i < 2; ++i ) {
 	size_t n;
 	do { n = (size_t)rand() % N_BOUND; } while( n < 2 );
-
-	NTL_zz_p CF( *rp );
-	NTL_zz_pX PF(CF);
 
 	BlasMatrix<NTL_zz_p> A(CF,n,n);
 

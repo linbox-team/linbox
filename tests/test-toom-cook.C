@@ -366,7 +366,7 @@ int main(int ac, char ** av) {
 		VectorDomain<Givaro::ZRing<Integer> > MD(ZZ);
 
 		// typename Field::RandIter ri (ZZ,b);
-		RandomIntegerIterator<false> ri((unsigned int)b);
+		RandomIntegerIterator<false> ri(ZZ,(size_t)b);
 		double sparsity = 0.05;
 		RandomSparseStream<Field, typename BlackBox::Row, RandomIntegerIterator<false> > stream (ZZ, ri, sparsity, k, m);
 

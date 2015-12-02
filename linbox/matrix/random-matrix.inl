@@ -160,7 +160,7 @@ namespace LinBox
 			// be ready for random elements
 			Randiter S_(R);
 			S_.setBits(R.getBits()-1);
-			RandomIntegerIterator<false> T_(3);
+			RandomIntegerIterator<false> T_(ZZ,3);
 			Givaro::GeneralRingNonZeroRandIter<Ring,RandomIntegerIterator<false> > U_(T_);
 
 
@@ -268,7 +268,7 @@ namespace LinBox
 			S_.setBits(R.getBits()-1);
 			RandomBlasBlackbox<Randiter,Givaro::ZRing<Integer> > RandMatGen(F,S_);
 			RandMatGen.random(D) ;
-			RandomIntegerIterator<false> T_(3);
+			RandomIntegerIterator<false> T_(F,3);
 			RandomBlasBlackbox<RandomIntegerIterator<false>,Givaro::ZRing<Integer> > RandSmallMatGen(F,T_);
 			RandMatGen.random(G) ;
 			MatrixDomain<Givaro::ZRing<Integer> > MD(F);
@@ -295,7 +295,7 @@ namespace LinBox
 			S_.setBits(R.getBits()-1);
 			RandomDenseMatrix<Randiter,Field > RandMatGen(F,S_);
 			RandMatGen.random(D) ;
-			RandomIntegerIterator<false> T_(3);
+			RandomIntegerIterator<false> T_(F,3);
 			RandomDenseMatrix<RandomIntegerIterator<false>,Field > RandSmallMatGen(F,T_);
 			RandMatGen.random(G) ;
 

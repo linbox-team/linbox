@@ -436,9 +436,9 @@ static bool testMulAddAgain (const Field& F, size_t n, int iterations)
 	typedef RandomIntegerIterator<>                       IntRandIter ;
 	typedef RandomDenseMatrix<IntRandIter, Givaro::ZRing<Integer> > IntRand_t;
 
-	IntRandIter RA(lA);
-	IntRandIter RB(lB);
-	IntRandIter RC(lC);
+	IntRandIter RA(ZZ,lA);
+	IntRandIter RB(ZZ,lB);
+	IntRandIter RC(ZZ,lC);
 
 	IntRand_t Arand (ZZ,RA);
 	IntRand_t Brand (ZZ,RB);

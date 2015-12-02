@@ -203,11 +203,11 @@ int main(int argc, char** argv)
 
 	typedef Givaro::ZRing<Integer>     Ring;
 
-	Ring R;
+	Ring R; Ring::RandIter gen(R);
 
 	Field F(101);
 
-	RandomDenseStream<Ring,BlasVector<Ring> > s1 (R, n, (unsigned int)iterations), s2 (R, n, (unsigned int)iterations);
+	RandomDenseStream<Ring,BlasVector<Ring> > s1 (R, gen, n, (unsigned int)iterations), s2 (R, gen, n, (unsigned int)iterations);
 
 
 
