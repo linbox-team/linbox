@@ -31,6 +31,7 @@
 #ifndef __LINBOX_matrix_matrix_domain_H
 #define __LINBOX_matrix_matrix_domain_H
 
+#include <linbox/linbox-config.h>
 #include "linbox/vector/vector-domain.h"
 // #include "linbox/matrix/densematrix/blas-matrix.h"
 

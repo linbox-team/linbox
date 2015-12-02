@@ -33,6 +33,7 @@
 
 
 //! @bug those are not just traits:
+#include "linbox/linbox-config.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/matrix/matrix-traits.h"
 

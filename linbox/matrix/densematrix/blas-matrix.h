@@ -36,6 +36,7 @@
 #ifndef __LINBOX_matrix_densematrix_blas_matrix_H
 #define __LINBOX_matrix_densematrix_blas_matrix_H
 
+#include <linbox/linbox-config.h>
 #include "linbox/util/debug.h"
 #include "linbox/linbox-tags.h"
 #include "linbox/vector/stream.h"
