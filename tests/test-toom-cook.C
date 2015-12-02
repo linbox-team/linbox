@@ -377,7 +377,7 @@ int main(int ac, char ** av) {
 		Vector y(ZZ,m);
 
 		// size_t iter = 1 ;
-		// RandomDenseStream<Field, Vector> vs (ZZ, k, iter);
+		// RandomDenseStream<Field, Vector> vs (ZZ, ri, k, iter);
 		x.random(ri);
 
 		report << "Naïve " << std::endl ;

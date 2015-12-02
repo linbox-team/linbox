@@ -4,7 +4,7 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * Time-stamp: <01 Dec 15 12:14:49 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <02 Dec 15 11:45:00 Jean-Guillaume.Dumas@imag.fr>
  * --------------------------------------------------------
  *
  *
@@ -333,7 +333,8 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 #if 0
-	RandomDenseStream<Field, Vector> stream1 (F, n, (unsigned int)iterations), stream2 (F, n, (unsigned int)iterations), d_stream (F, n, 1);
+    Field::RandIter gen(F);
+	RandomDenseStream<Field, Vector> stream1 (F, gen, n, (unsigned int)iterations), stream2 (F, gen, n, (unsigned int)iterations), d_stream (F, gen, n, 1);
 	RandomDenseStream<Field, Vector, Givaro::GeneralRingNonZeroRandIter<Field> >
 		stream3 (F, Givaro::GeneralRingNonZeroRandIter<Field> (Field::RandIter (F)), n, (unsigned int)iterations);
 
