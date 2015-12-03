@@ -208,7 +208,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	F.convert(n, a);
 	F.write(report, a) << " --(convert)--> " << n << endl;
 	F.init(b, n);
-	F.write(report << n << " --(init)--> ") << b << endl;
+	F.write(report << n << " --(init)--> ", b) << endl;
 	if (not F.areEqual(a, b)) part_pass = reportError( "F.init (b, F.convert(n, a)) != a", pass);
 
 #if 0

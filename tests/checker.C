@@ -193,7 +193,7 @@ warn("test-quad-matrix", "half baked, bds responsible");
 					pass++;
 				} else {
 					runfail++;
-					report << "FAIL";
+					report << "FAIL" + warn_note[t];
 				}
 			}
 		}

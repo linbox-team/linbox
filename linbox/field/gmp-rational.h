@@ -41,7 +41,6 @@
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
 
-// Namespace in which all LinBox library code resides
 namespace LinBox
 {
 

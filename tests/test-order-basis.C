@@ -134,7 +134,7 @@ int main(int argc, char** argv){
 		}
 		RandomFFTPrime Rd(1<<b,seed);	
 		integer p = Rd.randomPrime(logd+1);
-		report<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
+		report<<"# starting sigma basis computation over SmallField [x] with p="<<p<<endl;;		
 		SmallField F(p);
 		typename SmallField::RandIter G(F,0,seed);
 		check_sigma(F,G,m,n,d);
@@ -142,7 +142,7 @@ int main(int argc, char** argv){
 	else {
 		RandomPrimeIterator Rd(b,seed);	
 		integer p = Rd.randomPrime();
-		report<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
+		report<<"# starting sigma basis computation over LargeField Fp[x] with p="<<p<<endl;;		
 
 		LargeField F(p);
 		typename LargeField::RandIter G(F,0,seed);
