@@ -38,6 +38,7 @@
 #ifndef __LINBOX_blas_matrix_domain_H
 #define __LINBOX_blas_matrix_domain_H
 
+#include <linbox/linbox-config.h>
 #include <iostream>
 #include <vector>
 

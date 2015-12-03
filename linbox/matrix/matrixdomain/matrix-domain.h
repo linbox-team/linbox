@@ -42,6 +42,7 @@
 #ifndef __LINBOX_matrixdomain_matrix_domain_H
 #define __LINBOX_matrixdomain_matrix_domain_H
 
+#include <linbox/linbox-config.h>
 #include <iostream>
 #include <vector>
 

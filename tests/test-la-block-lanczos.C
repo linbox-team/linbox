@@ -266,7 +266,7 @@ int main (int argc, char **argv)
 	typedef Givaro::Modular<uint8_t> Field;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F (q); Field::RandIter gen(F);
 
 	std::cout << "Lookahead-based block Lanczos test suite" << std::endl << std::endl;
 
@@ -276,8 +276,8 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().getMessageClass (PROGRESS_REPORT).setMaxDepth (0);
 
-	RandomSparseStream<Field> A_stream (F, (double) k / (double) n, n, n);
-	RandomDenseStream<Field> y_stream (F, n, i);
+	RandomSparseStream<Field> A_stream (F, gen, (double) k / (double) n, n, n);
+	RandomDenseStream<Field> y_stream (F, gen, n, i);
 
 	fail |= testRandomSolve (F, A_stream, y_stream, N);
 	fail |= testSampleNullspace (F, A_stream, N, i);

@@ -55,17 +55,18 @@ bool testVectorDomain (const Field &F, const char *text, size_t n, unsigned int 
 	typedef BlasVector<Field> SparseSeqVector;
 	typedef BlasVector<Field> SparseMapVector;
 	typedef BlasVector<Field> SparseParVector;
-
+    
 	ostringstream str;
 	str << "Testing VectorDomain <" << text << ">" << ends;
 	commentator().start (str.str ().c_str ());
 
 	bool pass = true;
+    typename Field::RandIter gen(F);
 
-	RandomDenseStream<Field, DenseVector> stream1 (F, n, iterations), stream2 (F, n, iterations);
-	RandomSparseStream<Field, SparseSeqVector> stream3 (F, 0.1, n, iterations), stream4 (F, 0.1, n, iterations);
-	RandomSparseStream<Field, SparseMapVector> stream5 (F, 0.1, n, iterations), stream6 (F, 0.1, n, iterations);
-	RandomSparseStream<Field, SparseParVector> stream7 (F, 0.1, n, iterations), stream8 (F, 0.1, n, iterations);
+	RandomDenseStream<Field, DenseVector> stream1 (F, gen, n, iterations), stream2 (F, gen, n, iterations);
+	RandomSparseStream<Field, SparseSeqVector> stream3 (F, gen, 0.1, n, iterations), stream4 (F, gen, 0.1, n, iterations);
+	RandomSparseStream<Field, SparseMapVector> stream5 (F, gen, 0.1, n, iterations), stream6 (F, gen, 0.1, n, iterations);
+	RandomSparseStream<Field, SparseParVector> stream7 (F, gen, 0.1, n, iterations), stream8 (F, gen, 0.1, n, iterations);
 
 	if (!testDotProduct (F, "dense/dense", stream1, stream2)) pass = false;
 	if (!testDotProduct (F, "sparse sequence/dense", stream3, stream1)) pass = false;

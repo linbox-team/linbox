@@ -84,7 +84,7 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 	mycommentator().start (pretty("Testing rank"),"testRank",(unsigned int)iterations);
 
 	typename Field::RandIter G(F);
-	typename Field::NonZeroRandIter Gn(F,G);
+	typename Field::NonZeroRandIter Gn(G);
 	Element tmp;
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
@@ -168,7 +168,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 	mycommentator().start (pretty("Testing LQUP factorization"),"testLQUP",(unsigned int)iterations);
 
 	RandIter G(F);
-	NonZeroRandIter Gn(F,G);
+	NonZeroRandIter Gn(G);
 
 	bool ret = true;
 	MatrixDomain<Field> MD(F);

@@ -317,12 +317,12 @@ int main (int argc, char **argv)
 	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F (q); Field::RandIter gen(F);
 
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().start("getEntry solution test suite", "getEntry");
 
-	RandomDenseStream<Field, Vector> stream (F, n, (unsigned int)iterations);
+	RandomDenseStream<Field, Vector> stream (F, gen, n, (unsigned int)iterations);
 
 	if (!testGenericBBgetEntry (F, n)) pass = false;
 	if (!testScalarMatrixgetEntry (F, n)) pass = false;

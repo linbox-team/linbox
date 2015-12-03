@@ -40,14 +40,14 @@ namespace LinBox
 	class MultiModRandomPrime {
 	protected:
 
-		size_t   _bits;
+		uint64_t   _bits;
 		size_t   _size;
 		integer _shift;
 
 	public:
 
 
-		MultiModRandomPrime(size_t n=1, size_t bits = 30, unsigned long seed = 0) :
+		MultiModRandomPrime(size_t n=1, uint64_t bits = 30, unsigned long seed = 0) :
 			_bits(bits), _size(n)
 		{
 			_shift = integer(1)<<_bits;

@@ -161,7 +161,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 	A.write (report, Tag::FileFormat::Pretty);
 
 	size_t j;
-	Givaro::GeneralRingNonZeroRandIter<Field> r (F, typename Field::RandIter (F));
+	Givaro::GeneralRingNonZeroRandIter<Field> r (typename Field::RandIter (F));
 
 	VectorDomain<Field> VD (F);
 	Vector v, w;
@@ -508,7 +508,8 @@ bool runSparseMatrixTestsByVector (const Field           &F,
 }
 
 template <class Field, class Row>
-bool runSparseMatrixTests (const Field       &F,
+bool runSparseMatrixTests (const Field       &F, 
+                           typename Field::RandIter& gen,
 			   const char        *desc,
 			   int                iterations,
 			   VectorStream<Row> &A_stream,
@@ -526,14 +527,14 @@ bool runSparseMatrixTests (const Field       &F,
 	str4 << desc << "/sparse associative" << ends;
 	str5 << desc << "/sparse parallel" << ends;
 
-	RandomDenseStream<Field, typename Vector<Field>::Dense>     dense_stream1 (F, A_stream.n (), (size_t)iterations);
-	RandomDenseStream<Field, typename Vector<Field>::Dense>     dense_stream2 (F, A_stream.m (), (size_t)iterations);
-	RandomSparseStream<Field, typename Vector<Field>::SparseSeq> sparse_seq_stream1 (F, 0.1, A_stream.n (), iterations);
-	RandomSparseStream<Field, typename Vector<Field>::SparseSeq> sparse_seq_stream2 (F, 0.1, A_stream.m (), iterations);
-	RandomSparseStream<Field, typename Vector<Field>::SparseMap> sparse_map_stream1 (F, 0.1, A_stream.n (), iterations);
-	RandomSparseStream<Field, typename Vector<Field>::SparseMap> sparse_map_stream2 (F, 0.1, A_stream.m (), iterations);
-	RandomSparseStream<Field, typename Vector<Field>::SparsePar> sparse_par_stream1 (F, 0.1, A_stream.n (), iterations);
-	RandomSparseStream<Field, typename Vector<Field>::SparsePar> sparse_par_stream2 (F, 0.1, A_stream.m (), iterations);
+	RandomDenseStream<Field, typename Vector<Field>::Dense>     dense_stream1 (F, gen, A_stream.n (), (size_t)iterations);
+	RandomDenseStream<Field, typename Vector<Field>::Dense>     dense_stream2 (F, gen, A_stream.m (), (size_t)iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparseSeq> sparse_seq_stream1 (F, gen, 0.1, A_stream.n (), iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparseSeq> sparse_seq_stream2 (F, gen, 0.1, A_stream.m (), iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparseMap> sparse_map_stream1 (F, gen, 0.1, A_stream.n (), iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparseMap> sparse_map_stream2 (F, gen, 0.1, A_stream.m (), iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparsePar> sparse_par_stream1 (F, gen, 0.1, A_stream.n (), iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparsePar> sparse_par_stream2 (F, gen, 0.1, A_stream.m (), iterations);
 
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), (unsigned int)iterations,
 					   dense_stream1, dense_stream2, A_stream, testRW))
@@ -583,7 +584,7 @@ int main (int argc, char **argv)
 	typedef	Givaro::Modular<double> Field;
 	// typedef Field::Element  Element;
 
-	Field F (q);
+	Field F (q); Field::RandIter gen(F); 
 
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
@@ -591,18 +592,18 @@ int main (int argc, char **argv)
 	commentator().start("Sparse matrix black box test suite", "Sparse");
 
 	RandomSparseStream<Field, Vector<Field>::SparseSeq>
-		stream1 (F, (double) k / (double) n, n, m);
+		stream1 (F, gen, (double) k / (double) n, n, m);
 	RandomSparseStream<Field, Vector<Field>::SparseMap>
-		stream2 (F, (double) k / (double) n, n, m);
+		stream2 (F, gen, (double) k / (double) n, n, m);
 	RandomSparseStream<Field, Vector<Field>::SparsePar>
-		stream3 (F, (double) k / (double) n, n, m);
+		stream3 (F, gen, (double) k / (double) n, n, m);
 
 	bool testRW = true;
-	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1, !testRW))
+	if (!runSparseMatrixTests (F, gen, "sparse sequence",    iterations, stream1, !testRW))
 		pass = false;
-	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2, !testRW))
+	if (!runSparseMatrixTests (F, gen, "sparse associative", iterations, stream2, !testRW))
 		pass = false;
-	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3, testRW))
+	if (!runSparseMatrixTests (F, gen, "sparse parallel",    iterations, stream3, testRW))
 		pass = false;
 
 	commentator().stop("Sparse matrix black box test suite");

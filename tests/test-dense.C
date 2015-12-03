@@ -331,16 +331,16 @@ int main (int argc, char **argv)
 	typedef Givaro::Modular<uint32_t> Field;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F (q); Field::RandIter gen(F);
 
 	commentator().start("Dense matrix black box test suite", "DenseMatrix");
 
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	RandomDenseStream<Field> A_stream (F, n, n);
-	RandomDenseStream<Field> v1_stream (F, n, (unsigned int)iterations);
-	RandomDenseStream<Field> v2_stream (F, n, (unsigned int)iterations);
+	RandomDenseStream<Field> A_stream (F, gen, n, n);
+	RandomDenseStream<Field> v1_stream (F, gen, n, (unsigned int)iterations);
+	RandomDenseStream<Field> v2_stream (F, gen, n, (unsigned int)iterations);
 
 	if (!testIdentity    (F, n)) pass = false;
 	if (!testVandermonde (F, n)) pass = false;

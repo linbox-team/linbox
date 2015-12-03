@@ -162,8 +162,8 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 	unsigned int failures = 0;
 
 	typename Vector<Field>::SparsePar d1;
-
-	RandomSparseStream<Field, typename Vector<Field>::SparsePar> stream (F, (double) r / (double) n, n, iterations);
+    typename Field::RandIter gen(F);
+	RandomSparseStream<Field, typename Vector<Field>::SparsePar> stream (F, gen, (double) r / (double) n, n, iterations);
 	VectorDomain<Field> VD (F);
 
 	// unsigned long real_r;

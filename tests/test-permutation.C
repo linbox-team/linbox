@@ -3,7 +3,7 @@
  * bds
  * adapted from test-diagonal by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * Time-stamp: <22 Jun 10 15:59:39 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <01 Dec 15 18:50:35 Jean-Guillaume.Dumas@imag.fr>
  * --------------------------------------------------------
  *
  *
@@ -62,7 +62,9 @@ static bool testInvEqTrans (Blackbox & P)
 
 	Transpose<Blackbox> PT(P);
 
-	RandomDenseStream<Field, Vector> stream1 (F, P.rowdim(), 3);
+    typename Field::RandIter gen(F);
+    
+	RandomDenseStream<Field, Vector> stream1 (F, gen, P.rowdim(), 3);
 	commentator().start ("Testing PP^T = I", "testInvEqTrans", stream1.m ());
 
 	Vector u(F), v(F), w(F);

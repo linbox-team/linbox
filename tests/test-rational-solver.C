@@ -143,10 +143,10 @@ int main(int argc, char** argv)
     using Field = Givaro::Modular<int32_t>;
     using Ring  = Givaro::IntegerDom;
 
-    Ring R;
-    Field F(101);
+    Ring R; Ring::RandIter gen(R);
+    Field F(101); 
 
-    RandomDenseStream<Ring> s1 (R, n, (unsigned int)iterations), s2 (R, n, (unsigned int)iterations);
+    RandomDenseStream<Ring> s1 (R, gen, n, (unsigned int)iterations), s2 (R, gen, n, (unsigned int)iterations);
     if (!testRandomSolve(R, F, s1, s2)) pass = false;
 
     return pass ? 0 : -1;

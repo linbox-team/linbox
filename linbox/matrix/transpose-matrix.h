@@ -35,6 +35,7 @@
 #ifndef __LINBOX_matrix_transpose_INL
 #define __LINBOX_matrix_transpose_INL
 
+#include <linbox/linbox-config.h>
 #include <iostream>
 #include <vector>
 #include <fstream>

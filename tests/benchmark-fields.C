@@ -94,7 +94,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 
 #if 0
 	// initialize and fill array of random elements.
-	typename Field::RandIter r(f);
+	typename Field::RandIter gen(f);
 	typename Field::Element *elements;
 	elements = new typename Field::Element[ iter * 3 ];
 	for( int i = 0; i < iter*3; i++ ) {
@@ -103,14 +103,14 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 	}
 
 	// initialize random vector streams
-	RandomDenseStream<Field> dense( f, vectorSize, 2);
+	RandomDenseStream<Field> dense( f, gen, vectorSize, 2);
 	typename RandomDenseStream<Field>::Vector dv1; dense.get( dv1 );
 	typename RandomDenseStream<Field>::Vector dv2; dense.get( dv2 );
-	RandomSparseStream<Field> sparse( f, sparsity, vectorSize );
+	RandomSparseStream<Field> sparse( f, gen, sparsity, vectorSize );
 	typename RandomSparseStream<Field>::Vector sv; sparse.get( sv );
 
-	RandomDenseStream<Field> dense1( f, vectorSize, iter/vectorSize );
-	RandomDenseStream<Field> dense2( f, vectorSize, iter/vectorSize );
+	RandomDenseStream<Field> dense1( f, gen, vectorSize, iter/vectorSize );
+	RandomDenseStream<Field> dense2( f, gen, vectorSize, iter/vectorSize );
 	RandomSparseStream<Field> sparse( f, sparsity, vectorSize );
 
 	// initialize individual vectors to hold results

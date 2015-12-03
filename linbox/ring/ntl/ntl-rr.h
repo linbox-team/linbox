@@ -270,12 +270,13 @@ namespace LinBox
 		typedef NTL::RR Element ;
 	protected:
 		integer _size,_seed;
+        const NTL_RR& _ring;
 	public:
 
 		UnparametricRandIter<NTL::RR> (const NTL_RR & F,
 					       const integer& size = 0,
 					       const integer& seed = 0) :
-			_size(size), _seed(seed)
+                _size(size), _seed(seed), _ring(F)
 		{
 			if (_seed == integer(0)) _seed = int64_t(time(NULL));
 
@@ -296,6 +297,7 @@ namespace LinBox
 			NTL::SetSeed(NTL::to_ZZ(x));
 		}
 
+        const NTL_RR& ring() const { return _ring; }
 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied

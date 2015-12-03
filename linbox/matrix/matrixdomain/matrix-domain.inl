@@ -30,6 +30,7 @@
 #ifndef __LINBOX_matrix_domain_INL
 #define __LINBOX_matrix_domain_INL
 
+#include <linbox/linbox-config.h>
 #include "linbox/matrix/transpose-matrix.h"
 #include "linbox/blackbox/dif.h"
 

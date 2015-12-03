@@ -461,7 +461,7 @@ int main (int argc, char **argv)
 	typedef BlasVector<Field> Vector;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F (q); Field::RandIter gen(F);
 
 	srand ((unsigned)time (NULL));
 
@@ -469,8 +469,9 @@ int main (int argc, char **argv)
 
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
-	RandomDenseStream<Field, Vector> stream1 (F, n, iterations), stream2 (F, n, iterations);
-	RandomDenseStream<Field, Vector> stream3 (F, n, (size_t)N);
+	RandomDenseStream<Field, Vector> stream1 (F, gen, n, iterations), 
+        							 stream2 (F, gen, n, iterations);
+	RandomDenseStream<Field, Vector> stream3 (F, gen, n, (size_t)N);
 
 	if (!testIdentityInverse    (F, stream1)) pass = false;
 	if (!testVandermondeInverse (F, stream1, stream3)) pass = false;

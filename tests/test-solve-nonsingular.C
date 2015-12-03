@@ -320,7 +320,8 @@ int main(int argc, char** argv) {
 
 	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	typedef Givaro::ZRing<Integer>	Ring;  		Ring R;
+	typedef Givaro::ZRing<Integer>	Ring;  		
+    Ring R; Ring::RandIter gen(R);
 
 	typedef ParamFuzzy Field;
 	typedef Givaro::Modular<int64_t> ZField;
@@ -333,7 +334,7 @@ int main(int argc, char** argv) {
 	if(mt == Hadamard)
 		n = nextPower2(n);
 
-	RandomDenseStream<Ring> s1 (R, n, 1), s2 (R, n, 1);
+	RandomDenseStream<Ring> s1 (R, gen, n, 1), s2 (R, gen, n, 1);
 
 	CommonMatrix A(R, n, n);
 	Vector b(R,n);

@@ -522,7 +522,7 @@ namespace LinBox
 				size_t bit = std::max((53-ln)>>1, _p.bitsize());
 
 				// get number of necessary primes
-				integer ibound = n * _p * _p * std::max(b.size(), c.size());
+				integer ibound = uint64_t(n) * _p * _p * std::max(b.size(), c.size());
 				integer primesprod;
 				size_t nbrprimes=1;
 				RandomFFTPrime fftprime((size_t)bit, FFT_PRIME_SEED);
@@ -638,7 +638,7 @@ namespace LinBox
 				size_t bit = std::max((53-ln)>>1, _p.bitsize());
 
 				// get number of necessary primes
-				integer ibound = n * _p * _p * std::max(b.size(), c.size());
+				integer ibound = uint64_t(n) * _p * _p * std::max(b.size(), c.size());
 				integer primesprod;
 				size_t nbrprimes=1;
 				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);

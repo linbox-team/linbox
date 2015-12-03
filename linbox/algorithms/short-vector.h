@@ -151,7 +151,7 @@ namespace LinBox
 		inline void maxpyin(integer r[3], const integer &a, const integer y[3])
 		{
 			if ((a.bitsize()<32) && (a >= 0)){
-				unsigned long aa= a;
+				uint64_t aa= a;
 				mpz_submul_ui(r[0].get_mpz(), y[0].get_mpz_const(), aa);
 				mpz_submul_ui(r[1].get_mpz(), y[1].get_mpz_const(), aa);
 				mpz_submul_ui(r[2].get_mpz(), y[2].get_mpz_const(), aa);
@@ -166,7 +166,7 @@ namespace LinBox
 		inline void axpyin(integer r[3], const integer &a, const integer y[3])
 		{
 			if ((a.bitsize()<32) && (a >= 0)){
-				unsigned long aa= a;
+				uint64_t aa= a;
 				mpz_addmul_ui(r[0].get_mpz(), y[0].get_mpz_const(), aa);
 				mpz_addmul_ui(r[1].get_mpz(), y[1].get_mpz_const(), aa);
 				mpz_addmul_ui(r[2].get_mpz(), y[2].get_mpz_const(), aa);
@@ -511,7 +511,7 @@ namespace LinBox
 			else{
 				// x = (_m* 0x1P53);//9007199254740992;
 				x = (_m* 9007199254740992UL);
-				x = x<<(_e-53);
+				x = x<<(int64_t(_e)-53);
 				return x;
 			}
 		}

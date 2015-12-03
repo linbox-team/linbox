@@ -490,7 +490,7 @@ namespace LinBox
 					_r.convert(iD, _lcontainer.numbound());
 					_r.convert(iN, _lcontainer.denbound());
 					_r.convert(pPower, prime);
-					pPower = pow(pPower, len-1);
+					pPower = pow(pPower, uint64_t(len)-1);
 
 					tmp = pPower * iN;
 					tmp /= iD;
@@ -1515,7 +1515,7 @@ namespace LinBox
 						}
 
 						// check the validity of the solution according to n.||A||.||num||+ d.||b|| < modulus
-						integer check= size*MagnA*maxnum+dd*Magnb;
+						integer check= uint64_t(size)*MagnA*maxnum+dd*Magnb;
 
 						checksol.stop();
 						std::cout<<"checking solution time :        "<<checksol<<"\n\n";
@@ -1863,7 +1863,7 @@ namespace LinBox
 						}
 
 						// check the validity of the solution according to n.||A||.||num||+ d.||b|| < modulus
-						integer check= size*MagnA*maxnum+dd*Magnb;
+						integer check= uint64_t(size)*MagnA*maxnum+dd*Magnb;
 
 						checksol.stop();
 						std::cout<<"checking solution time :        "<<checksol<<"\n\n";
@@ -2172,7 +2172,7 @@ namespace LinBox
 						}
 
 						// check the validity of the solution according to n.||A||.||num||+ d.||b|| < modulus
-						integer check= size*MagnA*maxnum+dd*Magnb;
+						integer check= uint64_t(size)*MagnA*maxnum+dd*Magnb;
 
 						checksol.stop();
 						std::cout<<"checking solution time :        "<<checksol<<"\n\n";

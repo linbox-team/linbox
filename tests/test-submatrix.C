@@ -258,17 +258,18 @@ int main (int argc, char **argv)
 	typedef Givaro::Modular<uint32_t> Field;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F (q); Field::RandIter gen(F);
+    
 
 	commentator().start("Submatrix black box test suite", "Submatrix");
 
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	RandomDenseStream<Field> stream (F, n, N);
-	RandomDenseStream<Field> A_stream (F, n, n);
-	RandomDenseStream<Field> v1_stream (F, n / 2, iterations);
-	RandomDenseStream<Field> v2_stream (F, n / 2, iterations);
+	RandomDenseStream<Field> stream (F, gen, n, N);
+	RandomDenseStream<Field> A_stream (F, gen, n, n);
+	RandomDenseStream<Field> v1_stream (F, gen, n / 2, iterations);
+	RandomDenseStream<Field> v2_stream (F, gen, n / 2, iterations);
 
 #if 0
 	if (!testRandomApply (F, iterations, n, stream)) pass = false;

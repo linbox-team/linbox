@@ -229,7 +229,8 @@ int main (int argc, char **argv)
 	typedef Givaro::Modular<double> Field ;
 	//typedef Givaro::Modular<int32_t> Field ;
 #endif
-	Field F1(q1);
+	Field F1(q1); Field::RandIter gen(F1);
+    
 
         Givaro::Modular<double> F2(q2);
         //Givaro::Modular<int32_t> F2(q2);
@@ -243,12 +244,12 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	RandomDenseStream<Field> stream1 (F1, n, iterations1), stream2 (F1, n, iterations2);
+	RandomDenseStream<Field> stream1 (F1, gen, n, iterations1), stream2 (F1, gen, n, iterations2);
 
 	if (!testZeroApply (F1, F2, stream1, stream2)) pass = false;
 
 	n = 10;
-	RandomDenseStream<Field> stream3 (F1, n, iterations1), stream4 (F1, n, iterations2);
+	RandomDenseStream<Field> stream3 (F1, gen, n, iterations1), stream4 (F1, gen, n, iterations2);
 
 	// Vector d1(n), d2(n);
 	// stream3.next (d1);

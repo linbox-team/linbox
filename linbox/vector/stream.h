@@ -231,14 +231,6 @@ namespace LinBox
 		typedef _Vector Vector;
 		typedef RandomDenseStream<Field, Vector, RandIter, Trait> Self_t;
 
-		/** Constructor
-		 * Construct a new stream with the given field and vector size.
-		 * @param F Field over which to create random vectors
-		 * @param n Size of vectors
-		 * @param m Number of vectors to return (0 for unlimited)
-		 */
-		RandomDenseStream (const Field &F, size_t n, size_t m = 0);
-
 		/** Constructor.
 		 * Construct a new stream with the given field and vector size.
 		 * @param F Field over which to create random vectors
@@ -246,7 +238,7 @@ namespace LinBox
 		 * @param n Size of vectors
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
-		RandomDenseStream (const Field &F, const RandIter &r, size_t n, size_t m = 0);
+		RandomDenseStream (const Field &F, RandIter &r, size_t n, size_t m = 0);
 
 		/** Get next element
 		 * @param v Vector into which to generate random vector
@@ -286,11 +278,7 @@ namespace LinBox
 		typedef _Vector Vector;
 		typedef RandomDenseStream<Field, Vector, RandIter, VectorCategories::DenseVectorTag > Self_t;
 
-		RandomDenseStream (const Field &F, size_t nn, size_t mm = 0) :
-			_field (F), _r (F), _n (nn), _m (mm), _j (0)
-		{}
-
-		RandomDenseStream (const Field &F, const RandIter &r, size_t nn, size_t mm = 0) :
+		RandomDenseStream (const Field &F, RandIter &r, size_t nn, size_t mm = 0) :
 			_field (F), _r (r), _n (nn), _m (mm), _j (0)
 		{}
 
@@ -319,7 +307,7 @@ namespace LinBox
 
 	private:
 		const Field &_field;
-		RandIter     _r;
+		RandIter     & _r;
 		size_t       _n;
 		size_t       _m;
 		size_t       _j;
@@ -340,15 +328,6 @@ namespace LinBox
 		typedef _Vector Vector;
 		typedef RandomSparseStream<Field, Vector, RandIter, Trait > Self_t;
 
-		/** Constructor
-		 * Construct a new stream with the given field and vector size.
-		 * @param F Field over which to create random vectors
-		 * @param p Proportion of nonzero entries
-		 * @param n Size of vectors
-		 * @param m Number of vectors to return (0 for unlimited)
-		 */
-		RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0);
-
 		/** Constructor.
 		 * Construct a new stream with the given field and vector size.
 		 * @param F Field over which to create random vectors
@@ -358,7 +337,7 @@ namespace LinBox
 		 * @param m Number of vectors to return (0 for unlimited)
 		 * @param seed
 		 */
-		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL));
+		RandomSparseStream (const Field &F, RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL));
 
 		/** Get next element
 		 * @param v Vector into which to generate random vector
@@ -402,16 +381,8 @@ namespace LinBox
 		typedef _Vector Vector;
 		typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::DenseVectorTag > Self_t;
 
-		RandomSparseStream (const Field &F, double p, size_t N, size_t M = 0) :
-			_field (F), _r1 (F), _r (F, _r1),
-			_n (N), _p (p), _m (M), _j (0),
-			MT ((uint32_t)time (NULL))
-		{
-			linbox_check ((p >= 0.0) && (p <= 1.0));
-		}
-
-		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL)) :
-			_field (F), _r1 (r), _r (F, _r1), _n (n), _p (p), _m (m), _j (0),
+		RandomSparseStream (const Field &F, RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL)) :
+			_field (F), _r1 (r), _r (_r1), _n (n), _p (p), _m (m), _j (0),
 			MT ((uint32_t)seed)
 		{
 			linbox_check ((p >= 0.0) && (p <= 1.0));
@@ -449,8 +420,8 @@ namespace LinBox
 
 	private:
 		const Field                      &_field;
-		RandIter                          _r1;
-                Givaro::GeneralRingNonZeroRandIter<Field, RandIter>  _r;
+		RandIter                         & _r1;
+        Givaro::GeneralRingNonZeroRandIter<Field, RandIter>  _r;
 		size_t                            _n;
 		double                            _p;
 		size_t                            _m;
@@ -462,18 +433,19 @@ namespace LinBox
 	template <class Field, class _Vector, class RandIter>
 	class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSequenceVectorTag > : public VectorStream<_Vector> {
 	public:
+		typedef RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSequenceVectorTag > Self_t;
 		typedef _Vector Vector;
-		typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseSequenceVectorTag > Self_t;
 
-		RandomSparseStream (const Field &F, double p, size_t N, size_t M = 0) :
-			_field (F), _r1 (F), _r (F, _r1), _n (N), _m (M), _j (0),
-			MT ((uint32_t)time (NULL))
-		{ setP (p); }
-
-		RandomSparseStream (const Field &F, const RandIter &r, double p,
+		RandomSparseStream (const Field &F, RandIter &r, double p,
 				    size_t N, size_t M = 0, int seed=(int)time (NULL)) :
-			_field (F), _r1 (r), _r (F, _r1), _n (N), _p (p), _m (M), _j (0),
-			MT ((uint32_t)seed)
+                _field (F), 
+                _r1 (r), 
+                _r (r), 
+                _n (N), 
+                _p (p), 
+                _m (M), 
+                _j (0),
+                MT ((uint32_t)seed)
 		{ setP (p); }
 
 		Vector &get (Vector &v)
@@ -527,7 +499,7 @@ namespace LinBox
 
 	private:
 		const Field                      &_field;
-		RandIter                          _r1;
+		RandIter                         & _r1;
 		Givaro::GeneralRingNonZeroRandIter<Field, RandIter>  _r;
 		size_t                            _n;
 		double                            _p;
@@ -544,15 +516,9 @@ namespace LinBox
 		typedef _Vector Vector;
 		typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseAssociativeVectorTag > Self_t;
 
-		RandomSparseStream (const Field &F, double p, size_t N, size_t M = 0) :
-			_field (F), _r1 (F), _r (F, _r1),
-			_n (N), _k ((long) (p * (double)N)), _j (0), _m (M),
-			MT ((uint32_t)time (NULL))
-		{}
-
-		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t N,
+		RandomSparseStream (const Field &F, RandIter &r, double p, size_t N,
 				    size_t M = 0, int seed=(int)time (NULL)) :
-			_field (F), _r1 (F), _r (F, _r1), _n (N), _k ((long) (p * N)), _j (0), _m (M),
+			_field (F), _r1 (r), _r (_r1), _n (N), _k ((long) (p * N)), _j (0), _m (M),
 			MT ((uint32_t) seed)
 		{}
 
@@ -589,8 +555,8 @@ namespace LinBox
 
 	private:
 		const Field                      &_field;
-		RandIter                          _r1;
-		Givaro::GeneralRingNonZeroRandIter<Field, RandIter>  _r;
+		RandIter                         & _r1;
+		Givaro::GeneralRingNonZeroRandIter<Field, RandIter> _r;
 		size_t                            _n;
 		long                              _k;
 		size_t                            _j;
@@ -605,13 +571,8 @@ namespace LinBox
 		typedef _Vector Vector;
 		typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseParallelVectorTag > Self_t;
 
-		RandomSparseStream (const Field &F, double p, size_t nn, size_t mm = 0) :
-			_field (F), _r1 (F), _r (F, _r1), _n (nn), _m (mm), _j (0),
-			MT ((uint32_t)time (NULL))
-		{ setP (p); }
-
-		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t nn, size_t mm = 0, int seed=(int)time (NULL)) :
-			_field (F), _r1 (r), _r (F, _r1), _n (nn), _m (mm), _j (0),
+		RandomSparseStream (const Field &F, RandIter &r, double p, size_t nn, size_t mm = 0, int seed=(int)time (NULL)) :
+			_field (F), _r1 (r), _r (_r1), _n (nn), _m (mm), _j (0),
 			MT ((uint32_t)seed)
 		{ setP (p); }
 
@@ -669,8 +630,8 @@ namespace LinBox
 
 	private:
 		const Field                      &_field;
-		RandIter                          _r1;
-                Givaro::GeneralRingNonZeroRandIter<Field, RandIter>  _r;
+		RandIter                         & _r1;
+        Givaro::GeneralRingNonZeroRandIter<Field, RandIter>  _r;
 		size_t                            _n;
 		double                            _p;
 		double                            _1_log_1mp;

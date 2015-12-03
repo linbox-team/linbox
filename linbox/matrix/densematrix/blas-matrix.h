@@ -36,6 +36,7 @@
 #ifndef __LINBOX_matrix_densematrix_blas_matrix_H
 #define __LINBOX_matrix_densematrix_blas_matrix_H
 
+#include <linbox/linbox-config.h>
 #include "linbox/util/debug.h"
 #include "linbox/linbox-tags.h"
 #include "linbox/vector/stream.h"
@@ -1224,10 +1225,11 @@ namespace LinBox
 	//! @todo b should be the random generator
 	template<>
 	template<>
-	void BlasMatrix<Givaro::ZRing<Integer>, Vector<Givaro::ZRing<Integer>>::Dense >::random<unsigned>(const unsigned & b)
+	void BlasMatrix<Givaro::ZRing<Integer>, Vector<Givaro::ZRing<Integer>>::Dense >::random<size_t>(const size_t & b)
 	{
 		// std::cout << "randomized " <<  b << std::endl;
-		RandomIntegerIter<false> R((unsigned)b);
+		Givaro::ZRing<Integer> ZZ;
+        RandomIntegerIterator<false> R(ZZ,b);
 		for (size_t i = 0 ; i < rowdim() ; ++i)
 			for (size_t j = 0 ; j < coldim() ; ++j)
 				R.random(refEntry(i,j));

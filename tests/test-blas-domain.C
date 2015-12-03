@@ -433,12 +433,12 @@ static bool testMulAddAgain (const Field& F, size_t n, int iterations)
 
 	Givaro::ZRing<Integer> ZZ ;
 
-	typedef RandomIntegerIter<>                       IntRandIter ;
+	typedef RandomIntegerIterator<>                       IntRandIter ;
 	typedef RandomDenseMatrix<IntRandIter, Givaro::ZRing<Integer> > IntRand_t;
 
-	IntRandIter RA(lA);
-	IntRandIter RB(lB);
-	IntRandIter RC(lC);
+	IntRandIter RA(ZZ,lA);
+	IntRandIter RB(ZZ,lB);
+	IntRandIter RC(ZZ,lC);
 
 	IntRand_t Arand (ZZ,RA);
 	IntRand_t Brand (ZZ,RB);
@@ -721,7 +721,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	mycommentator().start (pretty("Testing rank"),"testRank",(unsigned int)iterations);
 
 	RandIter G(F);
-	Givaro::GeneralRingNonZeroRandIter<Field> Gn(F,G);
+	Givaro::GeneralRingNonZeroRandIter<Field> Gn(G);
 	Element tmp;
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
@@ -785,7 +785,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 	mycommentator().start (pretty("Testing determinant"),"testDet",(unsigned int)iterations);
 
 	RandIter G(F);
-	Givaro::GeneralRingNonZeroRandIter<Field> Gn(F,G);
+	Givaro::GeneralRingNonZeroRandIter<Field> Gn(G);
 	Element tmp,d;
 
 	bool ret = true;
@@ -849,7 +849,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	mycommentator().start (pretty("Testing inverse"),"testInv",(unsigned int)iterations);
 
 	RandIter G(F);
-	Givaro::GeneralRingNonZeroRandIter<Field> Gn(F,G);
+	Givaro::GeneralRingNonZeroRandIter<Field> Gn(G);
 	Element tmp;
 
 	bool ret = true;
@@ -938,7 +938,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 	mycommentator().start (pretty("Testing triangular solver"),"testTriangularSolve",(unsigned int)iterations);
 
 	RandIter G(F);
-	Givaro::GeneralRingNonZeroRandIter<Field> Gn(F,G);
+	Givaro::GeneralRingNonZeroRandIter<Field> Gn(G);
 	Element tmp;
 
 	bool ret = true;
@@ -1047,7 +1047,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 	mycommentator().start (pretty("Testing solver"),"testTriangularSolve",(unsigned int)iterations);
 
 	RandIter G(F);
-	Givaro::GeneralRingNonZeroRandIter<Field> Gn(F,G);
+	Givaro::GeneralRingNonZeroRandIter<Field> Gn(G);
 	Element tmp;
 
 	bool ret = true;
@@ -1161,7 +1161,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 	mycommentator().start (pretty("Testing permutations"),"testPermutation",(unsigned int)iterations);
 
 	RandIter G(F);
-	Givaro::GeneralRingNonZeroRandIter<Field> Gn(F,G);
+	Givaro::GeneralRingNonZeroRandIter<Field> Gn(G);
 	Element tmp;
 
 	bool ret = true;
@@ -1464,7 +1464,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 	mycommentator().start (pretty("Testing LQUP factorization"),"testLQUP",(unsigned int)iterations);
 
 	RandIter G(F);
-	Givaro::GeneralRingNonZeroRandIter<Field> Gn(F,G);
+	Givaro::GeneralRingNonZeroRandIter<Field> Gn(G);
 	Element tmp;
 
 	bool ret = true;
@@ -1565,7 +1565,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	mycommentator().start (pretty("Testing minpoly"),"testMinPoly",(unsigned int)iterations);
 	Element tmp  ;
 	RandIter G(F);
-	Givaro::GeneralRingNonZeroRandIter<Field> Gn(F,G);
+	Givaro::GeneralRingNonZeroRandIter<Field> Gn(G);
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 
@@ -1643,7 +1643,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	mycommentator().start (pretty("Testing charpoly"),"testCharPoly",(unsigned int)iterations);
 	Element tmp ;
 	RandIter G(F);
-	Givaro::GeneralRingNonZeroRandIter<Field> Gn(F,G);
+	Givaro::GeneralRingNonZeroRandIter<Field> Gn(G);
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 
