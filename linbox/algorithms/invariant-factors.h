@@ -36,7 +36,7 @@
 namespace LinBox
 {
 
-template<class Field_,class Blackbox_,class Field2_=Field_>
+template<class Field_,class Blackbox_>
 class InvariantFactors {
 public:
 	typedef Field_ Field;
@@ -51,9 +51,8 @@ public:
 	typedef typename PolyMatDom::OwnMatrix PolyBlock;
 	typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
 	typedef SmithFormKannanBachemDomain<PolyMatDom> SmithKbDomain;
-		
-	typedef BlackboxBlockContainer<Field,Blackbox> BBC;
-	typedef BlockCoppersmithDomain<MatrixDomain<Field>,BBC> BCD;
+	typedef BlackboxBlockContainer<Field,Blackbox> Sequence;
+	typedef BlockCoppersmithDomain<Domain, Sequence> CoppersmithDomain;
 	
 protected:
 	Domain MD_;
@@ -93,15 +92,15 @@ public:
 		RDM.random(U);
 		RDM.random(V);
 		
-		BBC blockSeq(&M, F_, U, V);
-		BCD coppersmith(MD_, &blockSeq, earlyTerm);
+		Sequence blockSeq(&M, F_, U, V);
+		CoppersmithDomain coppersmith(MD_, &blockSeq, earlyTerm);
 		
 		std::vector<size_t> deg;
-		std::vector<typename MatrixDomain<Field2_>::OwnMatrix > gen;
+		std::vector<Block> gen;
 		deg=coppersmith.right_minpoly(gen);
 		
 		size_t d=gen.size();
-		PolyBlock MM(R,b,b);
+		PolyBlock MM(R, b, b);
 		PolyElement temp;
 		PD.init(temp, d-1);
 		
