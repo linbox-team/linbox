@@ -36,7 +36,7 @@
 namespace LinBox
 {
 
-template<class _Field,class _Blackbox>
+template<class _Field, class _Blackbox>
 class InvariantFactors {
 public:
 	typedef _Field Field;
@@ -117,7 +117,7 @@ public:
 	}
 	
 	template <class PolyRingVector>
-	void smithFormKB(PolyRingVector &diag, const PolyBlock &M, size_t b)
+	void computeSmithForm(PolyRingVector &diag, const PolyBlock &M, size_t b)
 	{
 		diag.resize(b);
 		_SFKB.solve(diag, M);
@@ -140,11 +140,10 @@ public:
 		PolyBlock MM(_R, b, b);
 		convertSequenceToPolyMatrix(MM, gen);
 		
-		smithFormKB(diag, MM, b);
+		computeSmithForm(diag, MM, b);
 	}
 };
 
 }
-
 
 #endif //__LINBOX_invariant_factors_H
