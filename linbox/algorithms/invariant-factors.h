@@ -1,7 +1,7 @@
 /* linbox/algorithms/coppersmith-invariant-factors.h
- * Copyright (C) 2014 Alex Stachnik
+ * Copyright (C) 2015 Gavin Harrison
  *
- * Written by Alex Stachnik <stachnik@udel.edu>
+ * Written by Gavin Harrison <gavin.har@gmail.com>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
