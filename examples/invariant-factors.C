@@ -2,15 +2,13 @@
 
 #include <iostream>
 #include <vector>
-//#include <omp.h>
 
-//#define LINBOX_USES_OMP 1
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 
-#include "linbox/algorithms/coppersmith-invariant-factors.h"
+#include "linbox/algorithms/invariant-factors.h"
 
 // Computes the invariant factors of a sparse matrix (given in Matrix Market Format)
 // Effectively times: TPL_omp, BlockCoppersmithDomain and KannanBachem
@@ -20,9 +18,8 @@ using namespace LinBox;
 typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
 typedef SparseMatrix<Field, SparseMatrixFormat::TPL> SparseMat;
-//typedef SparseMatrix<Field, SparseMatrixFormat::TPL_omp> SparseMat;
 
-typedef CoppersmithInvariantFactors<Field,SparseMat> FactorDomain;
+typedef InvariantFactors<Field,SparseMat> FactorDomain;
 typedef typename FactorDomain::PolyDom PolyDom;
 typedef typename FactorDomain::PolyRing PolyRing;
 typedef DenseVector<PolyRing> FactorVector;
@@ -59,9 +56,9 @@ int main(int argc, char** argv)
 	PolyDom PD(F,"x");
 	PolyRing R(PD);
 	FactorVector factorList(R);
-	FactorDomain CIF(F,M,b);
+	FactorDomain CIF(F);
 
-	size_t numFactors=CIF.computeFactors(factorList,earlyTerm);
+	size_t numFactors=CIF.computeFactors(factorList,M,b,earlyTerm);
 	std::cout << "Finished computing factors" << std::endl;
 
 	{
