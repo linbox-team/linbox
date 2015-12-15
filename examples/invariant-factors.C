@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 	PolyDom PD(F,"x");
 	PolyRing R(PD);
 	FactorVector factorList(R);
-	FactorDomain CIF(F);
+	FactorDomain CIF(F, R);
 
 	CIF.computeFactors(factorList, M, b, earlyTerm);
 	std::cout << "Finished computing factors" << std::endl;

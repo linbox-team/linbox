@@ -66,14 +66,14 @@ protected:
 	
 public:
 	
-	InvariantFactors(Field &F) :
+	InvariantFactors(Field &F, PolyRing &R) :
 		_MD(F),
 		_F(F),
 		_RI(F),
 		_RDM(F, _RI),
-		_PD(F, "x"),
-		_R(_PD),
-		_PMD(_R),
+		_PD(R.domain()),
+		_R(R),
+		_PMD(R),
 		_SFKB(_PMD)
 	{
 	}
