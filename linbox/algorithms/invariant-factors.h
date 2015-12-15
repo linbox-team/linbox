@@ -36,11 +36,11 @@
 namespace LinBox
 {
 
-template<class Field_,class Blackbox_>
+template<class _Field,class _Blackbox>
 class InvariantFactors {
 public:
-	typedef Field_ Field;
-	typedef Blackbox_ Blackbox;
+	typedef _Field Field;
+	typedef _Blackbox Blackbox;
 	typedef MatrixDomain<Field> Domain;
 	typedef typename Domain::OwnMatrix Block;
 	typedef typename Field::RandIter RandIter;
@@ -55,44 +55,44 @@ public:
 	typedef BlockCoppersmithDomain<Domain, Sequence> CoppersmithDomain;
 	
 protected:
-	Domain MD_;
-	Field F_;
-	RandIter RI;
-	RandomMatrix RDM;
-	PolyDom PD;
-	PolyRing R;
-	PolyMatDom PMD;
-	SmithKbDomain SFKB;
+	Domain _MD;
+	Field _F;
+	RandIter _RI;
+	RandomMatrix _RDM;
+	PolyDom _PD;
+	PolyRing _R;
+	PolyMatDom _PMD;
+	SmithKbDomain _SFKB;
 	
 public:
 	
-	InvariantFactors(Field& F) :
-		MD_(F),
-		F_(F),
-		RI(F),
-		RDM(F, RI),
-		PD(F, "x"),
-		R(PD),
-		PMD(R),
-		SFKB(PMD)
+	InvariantFactors(Field &F) :
+		_MD(F),
+		_F(F),
+		_RI(F),
+		_RDM(F, _RI),
+		_PD(F, "x"),
+		_R(_PD),
+		_PMD(_R),
+		_SFKB(_PMD)
 	{
 	}
 	
 	void computeGenerator(
 		std::vector<Block> &gen,
-		const Blackbox& M,
+		const Blackbox &M,
 		size_t b,
 		int earlyTerm)
 	{
 		size_t n = M.rowdim();
-		Block U(F_, b, n);
-		Block V(F_, n, b);
+		Block U(_F, b, n);
+		Block V(_F, n, b);
 		
-		RDM.random(U);
-		RDM.random(V);
+		_RDM.random(U);
+		_RDM.random(V);
 		
-		Sequence blockSeq(&M, F_, U, V);
-		CoppersmithDomain coppersmith(MD_, &blockSeq, earlyTerm);
+		Sequence blockSeq(&M, _F, U, V);
+		CoppersmithDomain coppersmith(_MD, &blockSeq, earlyTerm);
 		
 		coppersmith.right_minpoly(gen);
 	}
@@ -103,13 +103,13 @@ public:
 	{
 		PolyElement temp;
 		size_t d = gen.size();
-		PD.init(temp, d-1);
+		_PD.init(temp, d-1);
 		
 		size_t b = MM.rowdim();
 		for (uint32_t i = 0; i < b; i++) {
 			for (uint32_t j = 0; j < b; j++) {
 				for (uint32_t k = 0; k < d; k++) {
-					PD.setEntry(temp, gen[k].getEntry(i,j), k);
+					_PD.setEntry(temp, gen[k].getEntry(i,j), k);
 				}
 				MM.setEntry(i,j,temp);
 			}
@@ -117,27 +117,27 @@ public:
 	}
 	
 	template <class PolyRingVector>
-	void smithFormKB(PolyRingVector& diag, const PolyBlock &M, size_t b)
+	void smithFormKB(PolyRingVector &diag, const PolyBlock &M, size_t b)
 	{
 		diag.resize(b);
-		SFKB.solve(diag, M);
+		_SFKB.solve(diag, M);
 		
-		for (uint32_t i = 0; i < diag.size(); ++i) {
-			R.normalizeIn(diag[i]);
+		for (uint32_t i = 0; i < diag.size(); i++) {
+			_R.normalizeIn(diag[i]);
 		}
 	}
 	
 	template <class PolyRingVector>
 	void computeFactors(
-		PolyRingVector& diag,
-		const Blackbox& M,
+		PolyRingVector &diag,
+		const Blackbox &M,
 		size_t b,
-		int earlyTerm=10)
+		int earlyTerm = 10)
 	{
 		std::vector<Block> gen;
 		computeGenerator(gen, M, b, earlyTerm);
 		
-		PolyBlock MM(R, b, b);
+		PolyBlock MM(_R, b, b);
 		convertSequenceToPolyMatrix(MM, gen);
 		
 		smithFormKB(diag, MM, b);
