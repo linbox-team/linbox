@@ -78,12 +78,11 @@ public:
 	{
 	}
 	
-	template <class PolyRingVector>
-	size_t computeFactors(
-		PolyRingVector& diag,
+	void computeGenerator(
+		std::vector<Block> &gen,
 		const Blackbox& M,
 		size_t b,
-		int earlyTerm=10)
+		int earlyTerm)
 	{
 		size_t n = M.rowdim();
 		Block U(F_, b, n);
@@ -95,32 +94,53 @@ public:
 		Sequence blockSeq(&M, F_, U, V);
 		CoppersmithDomain coppersmith(MD_, &blockSeq, earlyTerm);
 		
-		std::vector<size_t> deg;
-		std::vector<Block> gen;
-		deg=coppersmith.right_minpoly(gen);
-		
-		size_t d=gen.size();
-		PolyBlock MM(R, b, b);
+		coppersmith.right_minpoly(gen);
+	}
+	
+	void convertSequenceToPolyMatrix(
+		PolyBlock &MM,
+		const std::vector<Block> &gen)
+	{
 		PolyElement temp;
+		size_t d = gen.size();
 		PD.init(temp, d-1);
 		
-		for (uint32_t i = 0; i < b; ++i) {
-			for (uint32_t j = 0; j < b; ++j) {
-				for (uint32_t k = 0; k < d; ++k) {
-					PD.setEntry(temp,gen[k].getEntry(i,j),k);
+		size_t b = MM.rowdim();
+		for (uint32_t i = 0; i < b; i++) {
+			for (uint32_t j = 0; j < b; j++) {
+				for (uint32_t k = 0; k < d; k++) {
+					PD.setEntry(temp, gen[k].getEntry(i,j), k);
 				}
 				MM.setEntry(i,j,temp);
 			}
 		}
-		
+	}
+	
+	template <class PolyRingVector>
+	void smithFormKB(PolyRingVector& diag, const PolyBlock &M, size_t b)
+	{
 		diag.resize(b);
-		SFKB.solve(diag,MM);
+		SFKB.solve(diag, M);
 		
 		for (uint32_t i = 0; i < diag.size(); ++i) {
 			R.normalizeIn(diag[i]);
 		}
+	}
+	
+	template <class PolyRingVector>
+	void computeFactors(
+		PolyRingVector& diag,
+		const Blackbox& M,
+		size_t b,
+		int earlyTerm=10)
+	{
+		std::vector<Block> gen;
+		computeGenerator(gen, M, b, earlyTerm);
 		
-		return diag.size();
+		PolyBlock MM(R, b, b);
+		convertSequenceToPolyMatrix(MM, gen);
+		
+		smithFormKB(diag, MM, b);
 	}
 };
 

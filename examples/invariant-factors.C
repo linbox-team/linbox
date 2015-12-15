@@ -58,12 +58,12 @@ int main(int argc, char** argv)
 	FactorVector factorList(R);
 	FactorDomain CIF(F);
 
-	size_t numFactors=CIF.computeFactors(factorList,M,b,earlyTerm);
+	CIF.computeFactors(factorList, M, b, earlyTerm);
 	std::cout << "Finished computing factors" << std::endl;
 
 	{
 		std::ofstream out(oFname);
-		for (size_t i=0;i<numFactors;++i) {
+		for (size_t i = 0; i<factorList.size(); i++) {
 			R.write(out,factorList[i]);
 			out << std::endl;
 		}
