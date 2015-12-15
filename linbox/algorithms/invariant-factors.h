@@ -49,14 +49,33 @@ public:
 	typedef typename PolyRing::Element PolyElement;
 	typedef MatrixDomain<PolyRing> PolyMatDom;
 	typedef typename PolyMatDom::OwnMatrix PolyBlock;
+	typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
+	typedef SmithFormKannanBachemDomain<PolyMatDom> SmithKbDomain;
+		
+	typedef BlackboxBlockContainer<Field,Blackbox> BBC;
+	typedef BlockCoppersmithDomain<MatrixDomain<Field>,BBC> BCD;
 	
 protected:
 	Domain MD_;
 	Field F_;
+	RandIter RI;
+	RandomMatrix RDM;
+	PolyDom PD;
+	PolyRing R;
+	PolyMatDom PMD;
+	SmithKbDomain SFKB;
 	
 public:
 	
-	InvariantFactors(Field& F) : MD_(F), F_(F)
+	InvariantFactors(Field& F) :
+		MD_(F),
+		F_(F),
+		RI(F),
+		RDM(F, RI),
+		PD(F, "x"),
+		R(PD),
+		PMD(R),
+		SFKB(PMD)
 	{
 	}
 	
@@ -71,28 +90,20 @@ public:
 		Block U(F_, b, n);
 		Block V(F_, n, b);
 		
-		RandIter RI(F_);
-		RandomDenseMatrix<RandIter,Field> RDM(F_,RI);
 		RDM.random(U);
 		RDM.random(V);
 		
-		typedef BlackboxBlockContainer<Field,Blackbox> BBC;
-		typedef BlockCoppersmithDomain<MatrixDomain<Field2_>,BBC> BCD;
-		BBC blockSeq(&M,F_,U,V);
-		MatrixDomain<Field2_> BMD(F_);
-		BCD coppersmith(BMD,&blockSeq,earlyTerm);
+		BBC blockSeq(&M, F_, U, V);
+		BCD coppersmith(MD_, &blockSeq, earlyTerm);
 		
 		std::vector<size_t> deg;
 		std::vector<typename MatrixDomain<Field2_>::OwnMatrix > gen;
 		deg=coppersmith.right_minpoly(gen);
 		
-		PolyDom PD(F_, "x");
-		PolyRing R(PD);
-		PolyMatDom PMD(R);
 		size_t d=gen.size();
 		PolyBlock MM(R,b,b);
-		PolyElement temp,detPoly;
-		PD.init(temp,d-1);
+		PolyElement temp;
+		PD.init(temp, d-1);
 		
 		for (uint32_t i = 0; i < b; ++i) {
 			for (uint32_t j = 0; j < b; ++j) {
@@ -103,7 +114,6 @@ public:
 			}
 		}
 		
-		SmithFormKannanBachemDomain<PolyMatDom> SFKB(PMD);
 		diag.resize(b);
 		SFKB.solve(diag,MM);
 		
