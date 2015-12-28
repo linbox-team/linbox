@@ -33,7 +33,6 @@
 #include "linbox/matrix/matrix-domain.h"
 
 #include "linbox/algorithms/invariant-factors.h"
-#include "linbox/algorithms/smith-form-iliopoulos2.h"
 
 using namespace LinBox;
 
@@ -79,9 +78,8 @@ int main(int argc, char** argv)
 	PolyRing R(PD);
 	FactorVector factorList(R);
 	FactorDomain CIF(F, R);
-	IliopoulosDomain<PolyRing> ID(R);
 
-	CIF.computeFactors(factorList, M, b, earlyTerm);
+	CIF.solve(factorList, M, b, 10, 2, earlyTerm);
 	std::cout << "Finished computing factors" << std::endl;
 
 	{

@@ -68,7 +68,6 @@ protected:
 	IliopoulosDom _SFI;
 	
 public:
-	
 	InvariantFactors(Field &F, PolyRing &R) :
 		_MD(F),
 		_F(F),
@@ -81,7 +80,8 @@ public:
 		_SFI(R)
 	{
 	}
-	
+
+protected:
 	void computeGenerator(
 		std::vector<Block> &gen,
 		const Blackbox &M,
@@ -149,7 +149,7 @@ public:
 	void computeSmithForm(
 		PolyRingVector &diag,
 		const PolyBlock &M,
-		PolyElement &d,
+		const PolyElement &d,
 		size_t b)
 	{
 		diag.resize(b);
@@ -161,7 +161,6 @@ public:
 		PolyRingVector &diag,
 		const Blackbox &M,
 		size_t b,
-		size_t n,
 		int earlyTerm = 10)
 	{
 		std::vector<Block> gen;
@@ -177,23 +176,10 @@ public:
 	void computeFactors(
 		PolyRingVector &diag,
 		const Blackbox &M,
+		const PolyElement &d,
 		size_t b,
 		int earlyTerm = 10)
 	{
-		size_t b1 = 5;
-		size_t r = 1;
-		
-		PolyRingVector partialResult;
-		computeFactors(partialResult, M, b1, r, earlyTerm);
-		
-		for (size_t i = 0; i < b1; i++) {
-			_R.write(std::cout, partialResult[i]) << std::endl;
-		}
-		std::cout << std::endl;
-		
-		PolyElement d;
-		_R.assign(d, partialResult[b1 - r]);
-		
 		std::vector<Block> gen;
 		computeGenerator(gen, M, b, earlyTerm);
 		
@@ -201,8 +187,41 @@ public:
 		convertSequenceToPolyMatrix(MM, gen);
 		
 		modMatrix(MM, d);
-		
 		computeSmithForm(diag, MM, d, b);
+	}
+
+public:
+	template <class PolyRingVector>
+	void solve(
+		PolyRingVector &diag,
+		const Blackbox &M,
+		size_t b,
+		size_t b1,
+		size_t r,
+		int earlyTerm = 10)
+	{
+		// Compute first b1 factors
+		PolyRingVector partialResult;
+		computeFactors(partialResult, M, b1, earlyTerm);
+		
+		// get r-th factor
+		PolyElement d;
+		_R.assign(d, partialResult[b1 - r]);
+		
+		// Compute factors mod r-th factor
+		computeFactors(diag, M, d, b, earlyTerm);
+		
+		// Fill in zeros before r-th factor with r-th factor
+		for (size_t i = 0; i < b - r; i++) {
+			if (_R.isZero(diag[i])) {
+				_R.assign(diag[i], d);
+			}
+		}
+		
+		// Fill in remaining factors with original values
+		for (size_t i = b - r; i < b; i++) {
+			diag[i] = partialResult[i - b + b1];
+		}
 	}
 };
 
