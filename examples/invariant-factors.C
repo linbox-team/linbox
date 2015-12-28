@@ -48,13 +48,15 @@ typedef DenseVector<PolyRing> FactorVector;
 int main(int argc, char** argv)
 {
 	int earlyTerm;
-	int p = 3, b = 3;
+	int p = 3, b = 10, r = 2, t = 5;
 	std::string mFname,oFname;
 
 	static Argument args[] = {
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
-		{ 't', "-t T", "Early term threshold", TYPE_INT, &earlyTerm},
+		{ 'e', "-e E", "Early term threshold", TYPE_INT, &earlyTerm},
 		{ 'b', "-b B", "Blocking factor", TYPE_INT, &b},
+		{ 't', "-t T", "First blocking factor", TYPE_INT, &t},
+		{ 'r', "-r R", "R-th factor used as mod for iliopoulos", TYPE_INT, &r},
 		{ 'm', "-m M", "Name of file for matrix M", TYPE_STR, &mFname},
 		{ 'o', "-o O", "Name of file for output", TYPE_STR, &oFname},
 		END_OF_ARGUMENTS
@@ -79,7 +81,7 @@ int main(int argc, char** argv)
 	FactorVector factorList(R);
 	FactorDomain CIF(F, R);
 
-	CIF.solve(factorList, M, b, 10, 2, earlyTerm);
+	CIF.solve(factorList, M, b, t, r, earlyTerm);
 	std::cout << "Finished computing factors" << std::endl;
 
 	{

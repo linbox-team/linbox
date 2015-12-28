@@ -34,6 +34,8 @@
 #include <linbox/algorithms/smith-form-kannan-bachem.h>
 #include <linbox/algorithms/smith-form-iliopoulos2.h>
 
+#include <givaro/givtimer.h>
+
 namespace LinBox
 {
 
@@ -66,6 +68,7 @@ protected:
 	PolyMatDom _PMD;
 	SmithKbDomain _SFKB;
 	IliopoulosDom _SFI;
+	Givaro::Timer timer;
 	
 public:
 	InvariantFactors(Field &F, PolyRing &R) :
@@ -163,13 +166,36 @@ protected:
 		size_t b,
 		int earlyTerm = 10)
 	{
+		timer.clear();
+		timer.start();
 		std::vector<Block> gen;
 		computeGenerator(gen, M, b, earlyTerm);
+		timer.stop();
 		
+		std::cout << "Time to compute first generator: " << std::endl;
+		timer.print(std::cout);
+		std::cout << std::endl;
+		
+		timer.clear();
+		
+		timer.start();
 		PolyBlock MM(_R, b, b);
 		convertSequenceToPolyMatrix(MM, gen);
+		timer.stop();
 		
+		std::cout << "Time to convert first matrix to poly matrix: " << std::endl;
+		timer.print(std::cout);
+		std::cout << std::endl;
+		
+		timer.clear();
+		
+		timer.start();
 		computeSmithForm(diag, MM, b);
+		timer.stop();
+		
+		std::cout << "Time to compute smith form kb: " << std::endl;
+		timer.print(std::cout);
+		std::cout << std::endl;
 	}
 	
 	template <class PolyRingVector>
@@ -180,14 +206,35 @@ protected:
 		size_t b,
 		int earlyTerm = 10)
 	{
+		timer.clear();
+		timer.start();
 		std::vector<Block> gen;
 		computeGenerator(gen, M, b, earlyTerm);
+		timer.stop();
 		
+		std::cout << "Time to compute second generator: " << std::endl;
+		timer.print(std::cout);
+		std::cout << std::endl;
+		
+		timer.clear();
+		timer.start();
 		PolyBlock MM(_R, b, b);
 		convertSequenceToPolyMatrix(MM, gen);
+		timer.stop();
 		
+		std::cout << "Time to convert second matrix to poly matrix: " << std::endl;
+		timer.print(std::cout);
+		std::cout << std::endl;
+		
+		timer.clear();
+		timer.start();
 		modMatrix(MM, d);
 		computeSmithForm(diag, MM, d, b);
+		timer.stop();
+		
+		std::cout << "Time to compute smith form iliopoulos: " << std::endl;
+		timer.print(std::cout);
+		std::cout << std::endl;
 	}
 
 public:
