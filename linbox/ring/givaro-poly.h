@@ -303,8 +303,13 @@ namespace LinBox
 		}
 
 		// g = gcd(a,b)
-		void gcd(Element &g, const Element &a, const Element &b) const {
-			_pd.gcd(g,a,b);
+		Element& gcd(Element &g, const Element &a, const Element &b) const {
+			return _pd.gcd(g,a,b);
+		}
+		
+		// g = gcd(a,b)
+		Element& gcd(Element &g, Element &s, Element &t, const Element &a, const Element &b) const {
+			return _pd.gcd(g,s,t,a,b);
 		}
 
 		// g = gcd(a,b) = a*s + b*t
