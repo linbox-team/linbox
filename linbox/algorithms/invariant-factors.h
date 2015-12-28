@@ -32,6 +32,7 @@
 #include <givaro/givpoly1.h>
 #include <linbox/ring/givaro-poly.h>
 #include <linbox/algorithms/smith-form-kannan-bachem.h>
+#include <linbox/algorithms/smith-form-iliopoulos2.h>
 
 namespace LinBox
 {
@@ -53,6 +54,7 @@ public:
 	typedef SmithFormKannanBachemDomain<PolyMatDom> SmithKbDomain;
 	typedef BlackboxBlockContainer<Field,Blackbox> Sequence;
 	typedef BlockCoppersmithDomain<Domain, Sequence> CoppersmithDomain;
+	typedef IliopoulosDomain<PolyRing> IliopoulosDom;
 	
 protected:
 	Domain _MD;
@@ -63,6 +65,7 @@ protected:
 	PolyRing _R;
 	PolyMatDom _PMD;
 	SmithKbDomain _SFKB;
+	IliopoulosDom _SFI;
 	
 public:
 	
@@ -74,7 +77,8 @@ public:
 		_PD(R.domain()),
 		_R(R),
 		_PMD(R),
-		_SFKB(_PMD)
+		_SFKB(_PMD),
+		_SFI(R)
 	{
 	}
 	
@@ -123,6 +127,22 @@ public:
 		_SFKB.solve(diag, M);
 		
 		for (uint32_t i = 0; i < diag.size(); i++) {
+			_R.normalizeIn(diag[i]);
+		}
+	}
+	
+	template <class PolyRingVector>
+	void computeSmithForm(
+		PolyRingVector &diag,
+		const PolyBlock &M,
+		PolyElement &d,
+		size_t b)
+	{
+		diag.resize(b);
+		_SFI.smithFormIn(M, d);
+		
+		for (int i = 0; i < b; i++) {
+			M.getEntry(diag[i], i, i);
 			_R.normalizeIn(diag[i]);
 		}
 	}
