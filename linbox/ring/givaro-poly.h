@@ -271,11 +271,8 @@ namespace LinBox
 		// PIR Functions
 
 		bool isDivisor(const Element &a, const Element &b) const {
-			if (_pd.isZero(a)) return false;
-			if (_pd.isZero(b)) return true;
-
 			Element tmp;
-			rem(tmp, b, a);
+			rem(tmp, a, b);
 			return _pd.isZero(tmp);
 		}
 		
@@ -290,6 +287,10 @@ namespace LinBox
 		
 		Element &divrem(Element &q, Element &r, const Element &a, const Element &b) const {
 			return _pd.divmod(q,r,a,b);
+		}
+		
+		Element &modin(Element &a, const Element &b) const {
+			return _pd.modin(a, b);
 		}
 
 		Element& normalIn(Element &x) const

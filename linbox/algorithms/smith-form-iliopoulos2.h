@@ -446,7 +446,8 @@ public:
 		}
 	}
 	
-	void smithForm(std::vector<Field> &diag, const Matrix &A, const Element &d)
+	template <class PolyRingVector>
+	void smithForm(PolyRingVector &diag, const Matrix &A, const Element &d)
 	{
 		size_t n = A.coldim();
 		
@@ -454,6 +455,11 @@ public:
 		_MD.copy(B, A);
 		
 		smithFormIn(B, d);
+		
+		for (int i = 0; i < n; i++) {
+			B.getEntry(diag[i], i, i);
+			_F.normalizeIn(diag[i]);
+		}
 	}
 };
 
