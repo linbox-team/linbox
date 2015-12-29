@@ -271,11 +271,8 @@ namespace LinBox
 		// PIR Functions
 
 		bool isDivisor(const Element &a, const Element &b) const {
-			if (_pd.isZero(a)) return false;
-			if (_pd.isZero(b)) return true;
-
 			Element tmp;
-			rem(tmp, b, a);
+			rem(tmp, a, b);
 			return _pd.isZero(tmp);
 		}
 		
@@ -291,6 +288,10 @@ namespace LinBox
 		Element &divrem(Element &q, Element &r, const Element &a, const Element &b) const {
 			return _pd.divmod(q,r,a,b);
 		}
+		
+		Element &modin(Element &a, const Element &b) const {
+			return _pd.modin(a, b);
+		}
 
 		Element& normalIn(Element &x) const
 		{
@@ -303,8 +304,13 @@ namespace LinBox
 		}
 
 		// g = gcd(a,b)
-		void gcd(Element &g, const Element &a, const Element &b) const {
-			_pd.gcd(g,a,b);
+		Element& gcd(Element &g, const Element &a, const Element &b) const {
+			return _pd.gcd(g,a,b);
+		}
+		
+		// g = gcd(a,b)
+		Element& gcd(Element &g, Element &s, Element &t, const Element &a, const Element &b) const {
+			return _pd.gcd(g,s,t,a,b);
 		}
 
 		// g = gcd(a,b) = a*s + b*t
