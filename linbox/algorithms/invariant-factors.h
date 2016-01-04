@@ -172,8 +172,7 @@ protected:
 		computeGenerator(gen, M, b, earlyTerm);
 		timer.stop();
 		
-		std::cout << "Time to compute first generator: " << std::endl;
-		timer.print(std::cout);
+		std::cout << "Time to compute first generator: "  << timer.usertime();
 		std::cout << std::endl;
 		
 		timer.clear();
@@ -183,8 +182,7 @@ protected:
 		convertSequenceToPolyMatrix(MM, gen);
 		timer.stop();
 		
-		std::cout << "Time to convert first matrix to poly matrix: " << std::endl;
-		timer.print(std::cout);
+		std::cout << "Time to convert first matrix to poly matrix: "  << timer.usertime();
 		std::cout << std::endl;
 		
 		timer.clear();
@@ -193,8 +191,7 @@ protected:
 		computeSmithForm(diag, MM, b);
 		timer.stop();
 		
-		std::cout << "Time to compute smith form kb: " << std::endl;
-		timer.print(std::cout);
+		std::cout << "Time to compute smith form kb: " << timer.usertime();
 		std::cout << std::endl;
 	}
 	
@@ -212,8 +209,7 @@ protected:
 		computeGenerator(gen, M, b, earlyTerm);
 		timer.stop();
 		
-		std::cout << "Time to compute second generator: " << std::endl;
-		timer.print(std::cout);
+		std::cout << "Time to compute second generator: " << timer.usertime();
 		std::cout << std::endl;
 		
 		timer.clear();
@@ -222,8 +218,7 @@ protected:
 		convertSequenceToPolyMatrix(MM, gen);
 		timer.stop();
 		
-		std::cout << "Time to convert second matrix to poly matrix: " << std::endl;
-		timer.print(std::cout);
+		std::cout << "Time to convert second matrix to poly matrix: " << timer.usertime();
 		std::cout << std::endl;
 		
 		timer.clear();
@@ -232,8 +227,7 @@ protected:
 		computeSmithForm(diag, MM, d, b);
 		timer.stop();
 		
-		std::cout << "Time to compute smith form iliopoulos: " << std::endl;
-		timer.print(std::cout);
+		std::cout << "Time to compute smith form iliopoulos: " << timer.usertime();
 		std::cout << std::endl;
 	}
 
