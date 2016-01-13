@@ -37,7 +37,6 @@ BASIC_HDRS =            \
     gf2.h               \
     mersenne-twister.h  \
     random-prime.h      \
-    random-integer.h    \
     gmp-random-prime.h  \
     random-fftprime.h   \
     multimod-randomprime.h \
