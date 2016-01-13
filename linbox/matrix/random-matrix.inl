@@ -160,8 +160,8 @@ namespace LinBox
 			// be ready for random elements
 			Randiter S_(R);
 			S_.setBits(R.getBits()-1);
-			RandomIntegerIterator<false> T_(ZZ,3);
-			Givaro::GeneralRingNonZeroRandIter<Ring,RandomIntegerIterator<false> > U_(T_);
+			typename Ring::Randiter T_(ZZ,3);
+			Givaro::GeneralRingNonZeroRandIter<Ring > U_(T_);
 
 
 			/* Create L a random invertible lower unit triangular matrix (m x m format) */
@@ -268,8 +268,8 @@ namespace LinBox
 			S_.setBits(R.getBits()-1);
 			RandomBlasBlackbox<Randiter,Givaro::ZRing<Integer> > RandMatGen(F,S_);
 			RandMatGen.random(D) ;
-			RandomIntegerIterator<false> T_(F,3);
-			RandomBlasBlackbox<RandomIntegerIterator<false>,Givaro::ZRing<Integer> > RandSmallMatGen(F,T_);
+			Givaro::ZRing<Integer> >::RandIter T_(F,3);
+			RandomBlasBlackbox<Givaro::ZRing<Integer> >::RandIter,Givaro::ZRing<Integer> > RandSmallMatGen(F,T_);
 			RandMatGen.random(G) ;
 			MatrixDomain<Givaro::ZRing<Integer> > MD(F);
 			MD.mul(A,D,G);
@@ -295,8 +295,8 @@ namespace LinBox
 			S_.setBits(R.getBits()-1);
 			RandomDenseMatrix<Randiter,Field > RandMatGen(F,S_);
 			RandMatGen.random(D) ;
-			RandomIntegerIterator<false> T_(F,3);
-			RandomDenseMatrix<RandomIntegerIterator<false>,Field > RandSmallMatGen(F,T_);
+			typename Field::Randiter T_(F,3);
+			RandomDenseMatrix<typename Field::Randiter, Field> RandSmallMatGen(F,T_);
 			RandMatGen.random(G) ;
 
 			MatrixDomain<Field> MD(F);
