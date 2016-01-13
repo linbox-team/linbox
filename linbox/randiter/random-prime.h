@@ -33,6 +33,7 @@
 
 
 #include <givaro/givrandom.h>
+#include <givaro/random-integer.h>
 #include <givaro/givintprime.h>
 #include "linbox/util/timer.h"
 #include "linbox/util/debug.h"

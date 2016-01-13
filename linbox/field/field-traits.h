@@ -24,7 +24,9 @@
 
 #include "linbox/integer.h"
 #include <givaro/givcaster.h>
+#include <givaro/givinteger.h>
 #include <givaro/givrational.h>
+#include <givaro/zring.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox {

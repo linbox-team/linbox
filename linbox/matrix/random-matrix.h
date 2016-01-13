@@ -38,7 +38,6 @@
  */
 
 #include "linbox/matrix/dense-matrix.h"
-#include "linbox/randiter/random-integer.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/matrix/permutation-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
