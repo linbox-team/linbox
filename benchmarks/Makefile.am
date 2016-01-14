@@ -43,7 +43,8 @@ PERFPUBLISHERFILE=benchmarks-report.xml
 
 
 BENCH_BASIC=               \
-		benchmark-example
+		benchmark-example\
+		benchmark-order-basis
 
 FAILS=    \
 		benchmark-ftrXm \
@@ -97,6 +98,7 @@ benchmarks: ${EXTRA_PROGRAMS}
 #  benchmark_crafixed_SOURCES      = benchmark-crafixed.C
 
 benchmark_example_SOURCES       = benchmark-example.C
+benchmark_order_basis_SOURCES       = benchmark-order-basis.C
 
 #  benchmark_matmul_SOURCES         = benchmark-matmul.C
 #  benchmark_spmv_SOURCES           = benchmark-spmv.C
