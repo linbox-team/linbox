@@ -27,7 +27,7 @@
 #include "linbox/algorithms/polynomial-matrix/polynomial-matrix-domain.h"
 #include <vector>
 #include <algorithm>
-
+#include <chrono>
 #include "fflas-ffpack/fflas-ffpack.h"
 #define MBASIS_THRESHOLD_LOG 5
 #define MBASIS_THRESHOLD (1<<MBASIS_THRESHOLD_LOG)
@@ -113,6 +113,9 @@ namespace LinBox {
 #if 1 or (PROFILE_PMBASIS) or (__CHECK_MBASIS)or (__CHECK_PMBASIS)
                 size_t _idx=0;
                 size_t _target=0;
+                double  _eta=0.;
+                std::chrono::time_point<std::chrono::system_clock> _start, _end;
+                bool _started=false;
 #endif
                 OrderBasis(const Field& f) : _field(&f), _PMD(f), _BMD(f) {                 
                 }
@@ -146,6 +149,8 @@ namespace LinBox {
 #if 1 or (PROFILE_PMBASIS)
                         //std::cout<<"Start PM-Basis : "<<order<<" ("<<_idx<<"/"<<_target<<")] : "<<std::endl;//MEMINFO<<std::endl;
                         if (_target==0) _target=order;
+                        if (!_started) {_started=true; _start = std::chrono::system_clock::now();}
+                        std::chrono::time_point<std::chrono::system_clock> _chrono_start=std::chrono::system_clock::now();
 #endif
                         
                         if (order <= MBASIS_THRESHOLD) {
@@ -222,8 +227,17 @@ namespace LinBox {
 #endif
 #ifdef PROFILE_PMBASIS
                                 chrono.stop();
-                                std::cerr<<"[PM-Basis : "<<order<<" ("<<_idx-order<<"/"<<_target<<")] : "<<chrono.usertime()
-                                <<MEMINFO<<std::endl;
+                                _end = std::chrono::system_clock::now();                                
+                                std::chrono::duration<double> elapsed_beginning = _end-_start;
+                                std::chrono::duration<double> elapsed_comp      = _end-_chrono_start;
+
+                                double magicnumber=double(_target)/double(order)*log(double(_target)/double(order))/log(2.);
+                                double tcomp = elapsed_comp.count();
+                                double telap = elapsed_beginning.count();
+                                
+                                _eta=(_eta!=0.0?std::min(_eta,tcomp*magicnumber):tcomp*magicnumber);
+                                std::cerr<<"[PM-Basis : "<<order<<" ("<<_idx<<"/"<<_target<<")] : "<<chrono.usertime()
+                                         << " (ETA: "<< telap<<"s / "<<_eta<<"s)"<<MEMINFO<<std::endl;
                                 chrono.clear();chrono.start();
 #endif
 
