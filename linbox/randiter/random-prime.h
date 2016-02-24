@@ -32,8 +32,9 @@
 #define __LINBOX_random_prime_iterator_H
 
 
-#include <givaro/givrandom.h>
-#include <givaro/random-integer.h>
+#include <givaro/givinteger.h>
+//#include <givaro/givrandom.h>
+//#include <givaro/random-integer.h>
 #include <givaro/givintprime.h>
 #include "linbox/util/timer.h"
 #include "linbox/util/debug.h"
