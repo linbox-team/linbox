@@ -111,6 +111,7 @@ namespace LinBox
 			std::vector<Block> gen;
 			std::vector<size_t> deg;
 			deg = BCD.right_minpoly(gen);
+			report << "Size of blockseq " << blockseq.size() << std::endl;
 			report << "Size of gen " << gen.size() << std::endl;
 			for(size_t i = 0; i < gen[0].coldim(); i++)
 				report << "Column " << i << " has degree " << deg[i] << std::endl;
@@ -326,6 +327,7 @@ namespace LinBox
 				domain().write(report, gen[k]) << "x^" << k << std::endl;
 			Interpolator.write(report << "Interpolated determinant: ", Determinant) << std::endl;
 			size_t myrank = size_t(intdetdeg.value() - intdetval.value());
+			commentator().stop ("done", NULL, "Coppersmith rank");
 			return myrank;
 		}
 
@@ -384,7 +386,7 @@ namespace LinBox
 		template <class Blackbox>
 		Element det (const Blackbox &B) const
 		{
-			commentator().start ("Coppersmith rank", "rank");
+			commentator().start ("Coppersmith determinant", "determinant");
 #if 1
 			std::ostream& report = commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 #endif
@@ -457,6 +459,7 @@ namespace LinBox
 			Interpolator.write(report << "Interpolated determinant: ", Determinant) << std::endl;
 			Element intdeterminant(field().zero);
 			Interpolator.getpolydom().getEntry(intdeterminant,intdetval,Determinant);
+			commentator().stop ("done", NULL, "Coppersmith determinant");
 			return intdeterminant;
 		}
 

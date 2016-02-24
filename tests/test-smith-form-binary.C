@@ -167,28 +167,21 @@ bool testRandom(const Ring& R,
 				}
 			}
 		}
+		// normalize to positive
+		for (p1 = d.begin(); p1 != d.end(); ++ p1) if (*p1 < 0) R.negin(*p1);
 
-
-		report << "Expected smith form:\n";
-
-		VD.write (report, d);
-
-		report << '\n';
+		VD.write (report << "Expected smith form:\n", d) << '\n';
 
 		if (!VD.areEqual (d, x))
-
 			ret = iter_passed = false;
 
-                if (!iter_passed)
-
-                        commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+        if (!iter_passed)
+            commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed Smith form is incorrect" << endl;
 
+        commentator().stop ("done");
 
-
-                commentator().stop ("done");
-
-                commentator().progress ();
+        commentator().progress ();
 
 	 }
 

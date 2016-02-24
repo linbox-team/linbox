@@ -26,7 +26,8 @@
 #ifndef __LINBOX_SIMD__
 #define __LINBOX_SIMD__
 
-#include <immintrin.h> 
+//#include <immintrin.h>
+#include "fflas-ffpack/utils/fflas_intrinsic.h"
 #include <iostream>
 
 

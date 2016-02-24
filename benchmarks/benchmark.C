@@ -49,10 +49,10 @@ namespace LinBox {
 		selectFirstSeries();
 		for (size_t i = 0 ; i < size() ; ++i  ) {
 
-			XMLElement * serie = doc.NewElement ( "serie" );
-			serie->SetAttribute("name",unfortifyString(getCurrentSerieName()).c_str());
+			XMLElement * series = doc.NewElement ( "series" );
+			series->SetAttribute("name",unfortifyString(getCurrentSeriesName()).c_str());
 
-			for (size_t j = 0 ;  j < getCurrentSerieSize() ; ++j)
+			for (size_t j = 0 ;  j < getCurrentSeriesSize() ; ++j)
 			{
 				XMLElement * point = doc.NewElement ( "point" );
 				point->SetAttribute("x",unfortifyString(getCurrentSeriesEntry(j,Point::Labels() )).c_str());
@@ -61,10 +61,10 @@ namespace LinBox {
 				point->SetAttribute("xval",getCurrentSeriesEntry(j,Point::Points() ));
 				point->SetAttribute("id",getCurrentSeriesId(j).c_str());
 
-				serie->InsertEndChild( point );
+				series->InsertEndChild( point );
 			}
 
-			data->InsertEndChild( serie );
+			data->InsertEndChild( series );
 
 			selectNextSeries();
 		}
@@ -76,8 +76,8 @@ namespace LinBox {
 
 	PlotData::PlotData() :
 		_tableau_      (0)
-		,_serie_label_ (0)
-		,_curr_serie_  ( )
+		,_series_label_ (0)
+		,_curr_series_  ( )
 		,_time_watch_  ( )
 	{
 	}
@@ -86,9 +86,9 @@ namespace LinBox {
 
 	PlotData::PlotData(const PlotData & PD):
 		_tableau_(PD.getTable())
-		,_serie_label_(PD.getSerieLabels())
-		,_curr_serie_(PD.getCurrentSerieNumber())
-		,_time_watch_  (_tableau_[_curr_serie_].Points,_tableau_[_curr_serie_].Times)
+		,_series_label_(PD.getSeriesLabels())
+		,_curr_series_(PD.getCurrentSeriesNumber())
+		,_time_watch_  (_tableau_[_curr_series_].Points,_tableau_[_curr_series_].Times)
 	{
 	}
 
@@ -97,12 +97,12 @@ namespace LinBox {
 
 		std::string nomf = fortifyString(nom);
 		size_t j ;
-		bool ok = findKeyword(j,_serie_label_.begin() , _serie_label_.end() , nomf);
+		bool ok = findKeyword(j,_series_label_.begin() , _series_label_.end() , nomf);
 
 
 		if ( ! ok ) {
-			linbox_check(j ==(size_t)_serie_label_.size() );
-			_serie_label_.push_back(fortifyString(nom));
+			linbox_check(j ==(size_t)_series_label_.size() );
+			_series_label_.push_back(fortifyString(nom));
 			_tableau_.resize(j+1);
 		}
 
@@ -117,9 +117,9 @@ namespace LinBox {
 		std::string nomf = fortifyString(nom);
 		size_t j ;
 #ifdef NDEBUG 
-                findKeyword(j,_serie_label_.begin() , _serie_label_.end() , nomf);
+                findKeyword(j,_series_label_.begin() , _series_label_.end() , nomf);
 #else 
-		bool ok = findKeyword(j,_serie_label_.begin() , _serie_label_.end() , nomf);
+		bool ok = findKeyword(j,_series_label_.begin() , _series_label_.end() , nomf);
 		linbox_check(ok);
 #endif
 
@@ -129,8 +129,8 @@ namespace LinBox {
 	void PlotData::clear()
 	{
 		_tableau_.resize(0);
-		_serie_label_.resize(0);
-		_curr_serie_ =  0;
+		_series_label_.resize(0);
+		_curr_series_ =  0;
 		_time_watch_.clear();
 	}
 
@@ -138,79 +138,79 @@ namespace LinBox {
 	{
 		for (size_t i = 0 ; i < (size_t)PD.size() ; ++i) {
 			_tableau_.push_back(PD.getSeries(i));
-			_serie_label_.push_back(fortifyString(PD.getSerieName(i)));
+			_series_label_.push_back(fortifyString(PD.getSeriesName(i)));
 		}
 		return ;
 	}
 
 	size_t PlotData::size() const
 	{
-		linbox_check(_tableau_.size() == _serie_label_.size());
+		linbox_check(_tableau_.size() == _series_label_.size());
 		return (size_t)_tableau_.size() ;
 	}
 
-	size_t PlotData::getCurrentSerieNumber() const
+	size_t PlotData::getCurrentSeriesNumber() const
 	{
-		return _curr_serie_ ;
+		return _curr_series_ ;
 	}
 
-	void PlotData::setSerieName(const size_t & i, const std::string & nom)
+	void PlotData::setSeriesName(const size_t & i, const std::string & nom)
 	{
 		linbox_check(i<size());
-		_serie_label_[i] = fortifyString(nom) ;
+		_series_label_[i] = fortifyString(nom) ;
 	}
 
-	const std::string & PlotData::getSerieName(const size_t & i) const
+	const std::string & PlotData::getSeriesName(const size_t & i) const
 	{
 		linbox_check(i<size());
-		return _serie_label_[i] ;
+		return _series_label_[i] ;
 	}
 
-	const std::string & PlotData::getCurrentSerieName() const
+	const std::string & PlotData::getCurrentSeriesName() const
 	{
-		return getSerieName(_curr_serie_) ;
+		return getSeriesName(_curr_series_) ;
 	}
 
-	void PlotData::setCurrentSerieName(const std::string & nom)
+	void PlotData::setCurrentSeriesName(const std::string & nom)
 	{
-		return setSerieName(_curr_serie_,nom);
+		return setSeriesName(_curr_series_,nom);
 	}
 
 	void PlotData::initWatch ( const size_t & i)
 	{
 		linbox_check(i < size());
-		_curr_serie_ = i ;
+		_curr_series_ = i ;
 		_time_watch_.init(_tableau_[i].Points,_tableau_[i].Times);
 	}
 
 	void PlotData::initCurrentSeriesWatch ()
 	{
-		initWatch(_curr_serie_);
+		initWatch(_curr_series_);
 	}
 
-	void PlotData::newSerie(const std::string & nom )
+	void PlotData::newSeries(const std::string & nom )
 	{
 
 		size_t old_size = size() ;
-		_curr_serie_ = old_size ;
+		_curr_series_ = old_size ;
 
 		_tableau_.resize(old_size+1);
-		_serie_label_.resize(old_size+1);
+		_series_label_.resize(old_size+1);
 
 		if (nom.empty()) {
 			std::ostringstream emptytitle ;
-			emptytitle << "serie." << _curr_serie_ ;
-			setCurrentSerieName(emptytitle.str());
+			emptytitle << "series." << _curr_series_ ;
+			setCurrentSeriesName(emptytitle.str());
 		}
 		else
-			setCurrentSerieName(nom);
+			setCurrentSeriesName(nom);
 
 		initCurrentSeriesWatch();
 
 		return;
 	}
 
-	void PlotData::finishSerie()
+	void PlotData::finishSeries()
 	{
 	}
 
@@ -244,22 +244,22 @@ namespace LinBox {
 
 	const DataSeries & PlotData::getCurrentSeries() const
 	{
-		return getSeries(_curr_serie_);
+		return getSeries(_curr_series_);
 	}
 
 	DataSeries & PlotData::refCurrentSeries()
 	{
-		return refSeries(_curr_serie_);
+		return refSeries(_curr_series_);
 	}
 
-	size_t PlotData::getSerieSize(const size_t & i) const
+	size_t PlotData::getSeriesSize(const size_t & i) const
 	{
 		return getSeries(i).size();
 	}
 
-	size_t PlotData::getCurrentSerieSize() const
+	size_t PlotData::getCurrentSeriesSize() const
 	{
-		return getSeries(_curr_serie_).size();
+		return getSeries(_curr_series_).size();
 	}
 
 
@@ -272,10 +272,10 @@ namespace LinBox {
 
 	bool PlotData::selectNextSeries()
 	{
-		linbox_check(_curr_serie_ < size());
-		++_curr_serie_ ;
-		if (_curr_serie_ < size()) {
-			selectSeries(_curr_serie_);
+		linbox_check(_curr_series_ < size());
+		++_curr_series_ ;
+		if (_curr_series_ < size()) {
+			selectSeries(_curr_series_);
 			return true;
 		}
 		return false;
@@ -283,22 +283,22 @@ namespace LinBox {
 
 	void PlotData::setCurrentSeriesPointLabel(const size_t & j, const std::string & nom)
 	{
-		return setSeriesPointLabel(_curr_serie_,j,nom);
+		return setSeriesPointLabel(_curr_series_,j,nom);
 	}
 
 
-	std::string  PlotData::getSerieLabel(const size_t & i) const
+	std::string  PlotData::getSeriesLabel(const size_t & i) const
 	{
 		linbox_check(i<size());
-		linbox_check(i<_serie_label_.size() );
-		linbox_check(! _serie_label_[i].empty()) ;
+		linbox_check(i<_series_label_.size() );
+		linbox_check(! _series_label_[i].empty()) ;
 
-		return(_serie_label_[i]);
+		return(_series_label_[i]);
 	}
 
-	const svector_t &  PlotData::getSerieLabels() const
+	const svector_t &  PlotData::getSeriesLabels() const
 	{
-		return _serie_label_ ;
+		return _series_label_ ;
 	}
 
 
@@ -345,13 +345,13 @@ namespace LinBox {
 		linbox_check(bench);
 		XMLElement* data = bench -> FirstChildElement( "data" ) ;
 		linbox_check(data);
-		XMLElement* series = data -> FirstChildElement( "serie" ) ;
+		XMLElement* series = data -> FirstChildElement( "series" ) ;
 
 		clear();
 
 		while (series)
 		{
-			newSerie( series->Attribute( "name" ) );
+			newSeries( series->Attribute( "name" ) );
 			XMLElement * points = series->FirstChildElement() ;
 			while (points) {
 				std::string x = points->Attribute( "x" );
@@ -1231,7 +1231,7 @@ namespace LinBox {
 			// data
 			DF << fortifyString(_style_.getRawTitle(1)) << comma ;
 			for (size_t i = 0 ; i < nb_series ; ++i) {
-				DF << _data_.getSerieLabel(i) ;
+				DF << _data_.getSeriesLabel(i) ;
 				if (i != nb_series -1)
 					DF << comma ;
 			}
@@ -1300,7 +1300,7 @@ namespace LinBox {
 			DF << "<tr> " << std::endl;
 			DF << "<th> " << _style_.getRawTitle(1) << " </th>";
 			for (size_t i = 0 ; i < nb_series ; ++i) {
-				DF << "<th> " << unfortifyString(_data_.getSerieLabel(i)) << " </th>";
+				DF << "<th> " << unfortifyString(_data_.getSeriesLabel(i)) << " </th>";
 			}
 			DF << " </tr>" << std::endl;
 
@@ -1361,7 +1361,7 @@ namespace LinBox {
 			FN << std::endl << "\\hline" << std::endl;
 			FN.precision(2);
 			for (size_t i = 0 ; i < nb_series ; ++i) {
-				FN << _data_.getSerieLabel(i) ;
+				FN << _data_.getSeriesLabel(i) ;
 				for (size_t j =  0 ; j < nb_points ; ++j )
 					FN << " & " << _merge_data_[i][j] ;
 				if (i+1 < nb_series )
@@ -1409,7 +1409,7 @@ namespace LinBox {
 
 			DF << "legend " ;
 			for (size_t i = 0 ; i < nb_series ; ++i) {
-				DF << _data_.getSerieLabel(i) << ' ' ;
+				DF << _data_.getSeriesLabel(i) << ' ' ;
 			}
 			DF << std::endl;
 

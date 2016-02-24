@@ -31,6 +31,8 @@
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
+#include "linbox/blackbox/transpose.h"
+#include "linbox/blackbox/compose.h"
 
 #include "linbox/algorithms/invariant-factors.h"
 
@@ -48,8 +50,8 @@ typedef DenseVector<PolyRing> FactorVector;
 int main(int argc, char** argv)
 {
 	int earlyTerm;
-	int p = 3, b = 10, r = 2, t = 5;
-	std::string mFname,oFname;
+	int p = 99991, b = 30, r = 3, t = 5;
+	std::string mFname = "jumat",oFname="";
 
 	static Argument args[] = {
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
@@ -74,16 +76,52 @@ int main(int argc, char** argv)
 		iF.close();
 	}
 
-	std::cout << "Finished reading" << std::endl;
+	std::cout << "Finished reading, dimension " << M.rowdim() << "x" << M.coldim() << ", nnz " << M.size() << std::endl;
 
 	PolyDom PD(F,"x");
 	PolyRing R(PD);
-	FactorVector factorList(R);
+	FactorVector List1(R), List2(R), factorList(R);
 	FactorDomain CIF(F, R);
 
+#if 1
 	CIF.solve(factorList, M, b, t, r, earlyTerm);
-	std::cout << "Finished computing factors" << std::endl;
+#else
+	// from solve in invariant-factors.h
+        // Compute first b1 factors
+        CIF.computeFactors(List1, M, t, earlyTerm);
 
+	std::cout << "Finished computing early factors" << std::endl;
+	{
+		for (int i = List1.size()-1; i >= 0; i--) {
+			std::cout << PD.degree(List1[i]) << ", ";
+		}
+		std::cout << std::endl;
+	}
+
+        // get r-th factor
+		PolyRing::Element d; R.assign(d, List1[t - r]);
+
+        // Compute factors mod r-th factor
+        CIF.computeFactors(List2, M, d, b, earlyTerm);
+
+	// Fill in zeros before r-th factor with r-th factor
+	    for (int i = 0; i < b - r; i++) {
+			if (R.isZero(List2[i])) R.assign(List2[i], d);
+		}
+
+        // Fill in remaining factors with original values
+		factorList.resize(b);
+        for (int i = 0; i < r; i++) 
+			factorList[i] = List1[t-1-i];
+        for (int i = r; i < b; i++) 
+			factorList[i] = List2[b-1-i];
+#endif
+	std::cout << "Finished computing factors" << std::endl;
+		for (size_t i = 0; i<factorList.size(); i++) 
+			std::cout << PD.degree(factorList[i]) << ", ";
+		std::cout << std::endl;
+
+	if (oFname.size() > 0) 
 	{
 		std::ofstream out(oFname);
 		for (size_t i = 0; i<factorList.size(); i++) {

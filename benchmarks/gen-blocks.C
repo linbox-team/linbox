@@ -9,7 +9,7 @@
 #include <utility>
 #include <sstream>
 
-#include "linbox/field/modular.h"
+#include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/vector/vector-domain.h"
@@ -31,6 +31,7 @@
 // with block-coppersmith-benchmark and invariant-factors-benchmark.
 // Also computes the min-poly and saves that as well
 
+using namespace std;
 using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;

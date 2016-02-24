@@ -34,7 +34,7 @@
 #include <linbox/linbox-config.h>
 
 #include "givaro/zring.h"
-#include "linbox/ring/pir-ntl-zz_p.h"
+//#include "linbox/ring/pir-ntl-zz_p.h"
 #include "linbox/ring/pir-modular-int32.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/smith-form-iliopoulos.h"

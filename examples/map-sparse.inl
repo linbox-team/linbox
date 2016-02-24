@@ -316,7 +316,7 @@ void MapSparse<Field_>::randomSim(Index nz, int seed)
 		r = s;
 	}
 	while (nnz() < nz)
-	{	r.nonzerorandom(a);
+	{	field().nonzerorandom(r,a);
 		i = ri.randomIntRange(0, rowdim()); j = ri.randomIntRange(0, coldim());
 		addCol(a, i, j);
 		//std::cout << nnz() << std::endl;

@@ -29,8 +29,8 @@ typedef DenseVector<PolyRing> FactorVector;
 
 int main(int argc, char** argv)
 {
-	int earlyTerm;
-	int p = 3, b = 3;
+	int earlyTerm = 10;
+	int p = 97, b = 3;
 	std::string mFname,oFname;
 
 	static Argument args[] = {

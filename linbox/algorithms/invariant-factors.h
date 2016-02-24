@@ -84,7 +84,7 @@ public:
 	{
 	}
 
-protected:
+//protected:
 	void computeGenerator(
 		std::vector<Block> &gen,
 		const Blackbox &M,
@@ -182,8 +182,8 @@ protected:
 		convertSequenceToPolyMatrix(MM, gen);
 		timer.stop();
 		
-		std::cout << "Time to convert first matrix to poly matrix: "  << timer.usertime();
-		std::cout << std::endl;
+		//std::cout << "Time to convert first matrix to poly matrix: "  << timer.usertime();
+		//std::cout << std::endl;
 		
 		timer.clear();
 		
@@ -218,8 +218,8 @@ protected:
 		convertSequenceToPolyMatrix(MM, gen);
 		timer.stop();
 		
-		std::cout << "Time to convert second matrix to poly matrix: " << timer.usertime();
-		std::cout << std::endl;
+		//std::cout << "Time to convert second matrix to poly matrix: " << timer.usertime();
+		//std::cout << std::endl;
 		
 		timer.clear();
 		timer.start();

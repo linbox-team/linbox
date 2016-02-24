@@ -41,6 +41,7 @@
 
 #ifndef __LINBOX_benchmarks_benchmark_H
 #define __LINBOX_benchmarks_benchmark_H
+// here classes TimeWatcher, PlotStyle, PlotData are declared
 
 #include "linbox/linbox-config.h"
 #include <stdlib.h>
@@ -520,8 +521,8 @@ namespace LinBox {
 	class PlotData {
 	private :
 		std::vector<DataSeries >      _tableau_  ;   //!< data. \c _tableau_[i] represents a series of measurements. A data series is augmented only via the \c push_back method. A series may be accessed by its name, its number or it is the current working series.
-		svector_t                  _serie_label_ ;   //!< label for each serie of measures. Used in the legend of the plots/tables of points.
-		mutable size_t            _curr_serie_  ;   //!< index of the current series of measurements.
+		svector_t                  _series_label_ ;   //!< label for each series of measures. Used in the legend of the plots/tables of points.
+		mutable size_t            _curr_series_  ;   //!< index of the current series of measurements.
 		mutable TimeWatcher        _time_watch_  ;   //!< time predictor, helper. See \c TimeWatcher.
 		MetaData                     _plot_data_ ;   //!< information abouth the benchmark
 		MetaDataSeries               _meta_data_ ;   //!< information about each point
@@ -580,7 +581,7 @@ namespace LinBox {
 		DataSeries & refCurrentSeries() ;
 
 		/*! Inits a plot with series of data.
-		 * @param nb_pts number of points in each serie.
+		 * @param nb_pts number of points in each series.
 		 * @param nb_srs number of series of points. Default is 1.
 		 */
 		PlotData() ;
@@ -609,13 +610,13 @@ namespace LinBox {
 
 		/** @brief gets the current series number.
 		*/
-		size_t getCurrentSerieNumber() const ;
+		size_t getCurrentSeriesNumber() const ;
 
-		/*! @brief Sets the name of a serie.
-		 * @param i index of the serie
-		 * @param nom name of the serie
+		/*! @brief Sets the name of a series.
+		 * @param i index of the series
+		 * @param nom name of the series
 		 */
-		void setSerieName(const size_t & i, const std::string & nom) ;
+		void setSeriesName(const size_t & i, const std::string & nom) ;
 
 		// ref  Series
 
@@ -642,13 +643,13 @@ namespace LinBox {
 		template<class Pt>
 		const std::vector<typename Pt::type> & getCurrentSeries( Pt kind) const
 		{
-			return getSeries(_curr_serie_, kind);
+			return getSeries(_curr_series_, kind);
 		}
 
 		template<class Pt>
 		const typename Pt::type & getSeriesEntry(const size_t & i, const size_t & j, Pt kind) const
 		{
-			linbox_check(j<getSerieSize(i));
+			linbox_check(j<getSeriesSize(i));
 			return (getSeries(i,kind)[j]) ;
 		}
 
@@ -673,31 +674,31 @@ namespace LinBox {
 		template<class Pt>
 		const typename Pt::type & getCurrentSeriesEntry(const size_t & j, Pt kind) const
 		{
-			return getSeriesEntry(_curr_serie_, j, kind);
+			return getSeriesEntry(_curr_series_, j, kind);
 		}
 
 		template<class Pt>
 		const typename Pt::type & getCurrentSeriesEntry( Pt kind) const
 		{
-			return getSeriesEntry(_curr_serie_, kind);
+			return getSeriesEntry(_curr_series_, kind);
 		}
 
 
 		// set Series
 
-		/** Gets the name of a serie.
-		 * @param i index of the serie
+		/** Gets the name of a series.
+		 * @param i index of the series
 		 */
-		const std::string &  getSerieName(const size_t & i) const ;
+		const std::string &  getSeriesName(const size_t & i) const ;
 
-		/** Gets the name of the current serie.
+		/** Gets the name of the current series.
 		*/
-		const std::string &  getCurrentSerieName() const ;
+		const std::string &  getCurrentSeriesName() const ;
 
-		/*! @brief Sets the name of the current serie.
-		 * @param nom name of the serie
+		/*! @brief Sets the name of the current series.
+		 * @param nom name of the series
 		 */
-		void setCurrentSerieName(const std::string & nom) ;
+		void setCurrentSeriesName(const std::string & nom) ;
 
 		/** Inits the watch on a series
 		 * @param i index of a series
@@ -713,21 +714,21 @@ namespace LinBox {
 		 * \c getCurrentSeries() points to it.
 		 * @param nom name of the new series
 		 */
-		void newSerie(const std::string & nom = "") ;
+		void newSeries(const std::string & nom = "") ;
 
-		/** Finish a serie of measurements.
+		/** Finish a series of measurements.
 		 * Nothing is done for the moment.
 		 */
-		void finishSerie() ;
+		void finishSeries() ;
 
 		/** @brief size of a series.
 		 * @param i index of the series
 		 */
-		size_t getSerieSize(const size_t & i) const ;
+		size_t getSeriesSize(const size_t & i) const ;
 
 		/** @brief size of the current series.
 		*/
-		size_t getCurrentSerieSize() const ;
+		size_t getCurrentSeriesSize() const ;
 
 		/*! goes to the next series of points
 		*/
@@ -746,7 +747,7 @@ namespace LinBox {
 		void setSeriesPointLabel(const size_t & i, const size_t & j, const T & nom)
 		{
 			std::string nom_s = fortifyString(toString(nom));
-			linbox_check(j<getSerieSize(i) );
+			linbox_check(j<getSeriesSize(i) );
 			refSeries(i).PointLabels[j] = nom_s ;
 
 			return;
@@ -760,24 +761,24 @@ namespace LinBox {
 
 
 
-		/*! @brief gets the name of a serie.
-		 * Defaults to \c "serie.i"
+		/*! @brief gets the name of a series.
+		 * Defaults to \c "series.i"
 		 * @param i its index.
 		 * @return its name.
 		 */
-		std::string getSerieLabel(const size_t & i) const ;
+		std::string getSeriesLabel(const size_t & i) const ;
 
-		/*! @brief gets the name of a serie.
-		 * Defaults to \c "serie.i"
+		/*! @brief gets the name of a series.
+		 * Defaults to \c "series.i"
 		 * @param i its index.
 		 * @return its name.
 		 */
-		std::string  getCurrentSerieLabel() const;
+		std::string  getCurrentSeriesLabel() const;
 
 		/*! @brief gets all the names in the series.
 		 * @return a vector of names.
 		 */
-		const svector_t  & getSerieLabels() const ;
+		const svector_t  & getSeriesLabels() const ;
 
 
 
@@ -815,7 +816,7 @@ namespace LinBox {
 					   , const double & xval = NAN, const double & yval = NAN)
 		{
 			std::string nam_s = fortifyString(toString(nam));
-			return setSeriesEntry(_curr_serie_,nam_s,val,xval,yval) ;
+			return setSeriesEntry(_curr_series_,nam_s,val,xval,yval) ;
 		}
 
 

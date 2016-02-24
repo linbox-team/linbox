@@ -49,7 +49,9 @@ namespace LinBox
 	protected:
 		/** \brief eliminationRow will make the first row (*, 0, ..., 0)
 		 *  by col operations.
-		 *  It is the implementation of Iliopoulos algorithm
+		 *  It is the implementation of Iliopoulos algorithm.
+		 *  A Ring has basic ring functions 
+		 *  plus gcd, xgcd, isDivisor, isUnit, normalIn
 		 */
 		template<class Matrix, class Ring>
 		static Matrix& eliminationRow (Matrix& A, const Ring& r)

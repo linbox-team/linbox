@@ -70,7 +70,6 @@ BASIC_TESTS =					\
 	test-det					\
 	test-frobenius              \
 	test-solve                  \
-	test-smith-form-binary      \
 	test-rational-solver        \
 	test-rational-solver-adaptive \
 	test-rank-u32				\
@@ -158,6 +157,7 @@ FULLCHECK_TESTS =               \
 	test-scalar-matrix			\
 	test-smith-form             \
 	test-smith-form-adaptive 	\
+	test-smith-form-binary      \
 	test-smith-form-iliopoulos  \
 	test-smith-form-local    	\
 	test-solve-nonsingular		\

@@ -28,7 +28,7 @@ coldim, 20000
 blockcoldim, blockrowdim
 matrix class, randomMat
 field, Givaro::Modular<double>(101)
-flops formula, (n+nnz)/time 
+flops formula, (n*nnz)/time 
 comment, no parsing guidance is offered yet for mflops formula
 end, metadata
 time, nnz, blockrowdim, threads, algorithm, comment

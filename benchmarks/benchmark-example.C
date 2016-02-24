@@ -72,9 +72,9 @@ void launch_bench_square(Field & F // const problem
 
 	std::ostringstream nam ;
 	F.write(nam);
-	// Data.setCurrentSerieName(nam.str());
+	// Data.setCurrentSeriesName(nam.str());
 
-	Data.newSerie(nam.str());
+	Data.newSeries(nam.str());
 	Chrono<Timer> TW ;
 
 	typedef typename Field::RandIter Randiter ;
@@ -108,7 +108,7 @@ void launch_bench_square(Field & F // const problem
 
 	}
 
-	Data.finishSerie();
+	Data.finishSeries();
 }
 
 /* Collects Benchmarks */
@@ -213,7 +213,7 @@ void launch_bench_rank(const Field &F, const std::string & name
 
 	MatrixMetaData mmd (Mat,name);
 
-	// Data.newSerie(name);
+	// Data.newSeries(name);
 	Chrono<Timer> TW ;
 
 	showAdvanceLinear(1,1,2);
@@ -232,7 +232,7 @@ void launch_bench_rank(const Field &F, const std::string & name
 
 	Data.setSeriesEntry("Rank (Blackbox)",name,TW.time(),(double)Mat.size(),TW.time());
 	Data.addCurrentEntryMetaData(mmd);
-	// Data.addCurrentSerieMetaData(mmd);
+	// Data.addCurrentSeriesMetaData(mmd);
 	// Data.addMetaData(mmd);
 
 
@@ -284,8 +284,10 @@ void bench_rank(int carac)
 	Style.setTitle("Rank algorithms","seconds","matrices");
 	Style.setXtics(LinBox::PlotStyle::Options::oblique);
 
+	/* default
 	Style.setPlotType(LinBox::PlotStyle::Plot::histo);
 	Style.setLineType(LinBox::PlotStyle::Line::histogram);
+	*/
 
 
 	LinBox::PlotGraph Graph(Data,Style);
@@ -336,11 +338,13 @@ int main( int ac, char ** av)
 	}
 
 	/* square for various fields */
+#if 1
 	{
 		std::cout << " *** Lines plot *** " << std::endl;
 		std::cout << "Benchmark square matrix multiplication via BMD.mul()" << std::endl;
 		bench_square(min,max,step,13);
 	}
+#endif
 
 	/* different sparse matrix   */
 

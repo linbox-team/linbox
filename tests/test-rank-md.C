@@ -66,12 +66,11 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
 	Givaro::Modular<double> G (q);
-        pass = pass && testSparseRank(G,n,n+1,(size_t)iterations,sparsity);
-		// the 2nd and 3rd args are matrix size, so this parameter usage seems very odd. ? -bds
-        // pass = pass && testSparseRank(G,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
+    pass = pass && testSparseRank(G,n,n+1,(size_t)iterations,sparsity);
+	// the 2nd and 3rd args are matrix size, so this parameter usage seems very odd. ? -bds
+    // pass = pass && testSparseRank(G,LINBOX_USE_BLACKBOX_THRESHOLD+n,LINBOX_USE_BLACKBOX_THRESHOLD+n-1,(size_t)iterations,sparsity);
 
-
-	commentator().stop("Givaro::Modular<double> SPArse rank test suite");
+	commentator().stop("Givaro::Modular<double> sparse rank test suite");
 	return pass ? 0 : -1;
 }
 
