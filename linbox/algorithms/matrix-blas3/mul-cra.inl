@@ -28,7 +28,7 @@
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-full-multip-fixed.h"
 
-#include "linbox/randiter/random-integer.h"
+#include "givaro/random-integer.h"
 #include "linbox/randiter/random-prime.h"
 
 
