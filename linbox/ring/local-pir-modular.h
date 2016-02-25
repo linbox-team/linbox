@@ -46,7 +46,7 @@ namespace LinBox
 
 	/// \ingroup ring
 	template <typename intType>
-	class LocalPIRModular : public Givaro::Modular<intType> {
+	class LocalPIRModular : public Givaro::Modular<intType>  {
 
 	public:
 
@@ -64,7 +64,9 @@ namespace LinBox
 			_irred(value), 
 			_exponent(exp)
 		{}
-
+        
+                ~LocalPIRModular() noexcept {};
+        
         using Parent_t:: zero;
         using Parent_t:: one;
         using Parent_t:: mOne;
