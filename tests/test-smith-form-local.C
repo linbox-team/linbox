@@ -137,7 +137,7 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 
 	// figure true invariants
 	pplt<LocalPIR> lt(R);
-	for (int32_t i = 0; i < d.size(); ++i) normal(d[i], R);
+	for (size_t i = 0; i < d.size(); ++i) normal(d[i], R);
 	stable_sort(d.begin(), d.end(), lt);
 	report << "True invariants: ";
 	VD.write (report, d) << endl; report.flush();
@@ -225,13 +225,13 @@ int main (int argc, char **argv)
 	vector<LocalPIR::Element> d(n);
 
 	commentator().start ("Testing local smith on singular dense mat over Local2_32", "testSingular");
-	for( size_t i = 0; i < n; ++i )
+	for( int64_t i = 0; i < n; ++i )
 		d[i] = (LocalPIR::Element) i;
 	if (!testLocalSmith<LocalPIR> (R, d, "Local2_32")) pass2 = false;
 	commentator().stop ("testSingular");
 
 	commentator().start ("Testing local smith on nonsingular dense mat over Local2_32", "testNonsingular");
-	for( size_t i = 0; i < n; ++i )
+	for( int64_t i = 0; i < n; ++i )
 		d[i] = (LocalPIR::Element) i+1;
 	if (!testLocalSmith<LocalPIR> (R, d, "Local2_32")) pass2 = false;
 	commentator().stop ("testNonsingular");
