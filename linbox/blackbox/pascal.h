@@ -162,28 +162,31 @@ public:
 		} else {
 			int r3=r/3;
 
-#ifdef __LINBOX_USE_OPENMP
-			int threadLimit=omp_get_max_threads();
-			//int threadLimit=4;
-#endif
+//CP: removing all explicit OMP calls
+//    to be replaced by calls to FFLAS-FFPACK's DSL
 
-#pragma omp parallel sections if (numThreads+2<=threadLimit) shared(lhs,rhs)
-			{
-#pragma omp section
+// #ifdef __LINBOX_USE_OPENMP
+// 			int threadLimit=omp_get_max_threads();
+// 			//int threadLimit=4;
+// #endif
+
+// #pragma omp parallel sections if (numThreads+2<=threadLimit) shared(lhs,rhs)
+// 			{
+// #pragma omp section
 				applyLeft(i0,j0,r3,lhs,rhs,flip,numThreads+2);
-#pragma omp section
+// #pragma omp section
 				applyLeft(i0+r3,j0,r3,lhs,rhs,flip,numThreads+2);
-#pragma omp section
+// #pragma omp section
 				applyLeft(i0+2*r3,j0,r3,lhs,rhs,flip,numThreads+2);
-			}
+// 			}
 
-#pragma omp parallel sections if (numThreads+1<=threadLimit) shared(lhs,rhs)
-			{
-#pragma omp section
+// #pragma omp parallel sections if (numThreads+1<=threadLimit) shared(lhs,rhs)
+// 			{
+// #pragma omp section
 				applyLeft(i0,j0+r3,r3,lhs,rhs,flip,numThreads+1);
-#pragma omp section
+// #pragma omp section
 				applyLeft(i0+r3,j0+r3,r3,lhs,rhs,!flip,numThreads);
-			}
+			// }
 
 
 			applyLeft(i0,j0+2*r3,r3,lhs,rhs,flip,numThreads+1);

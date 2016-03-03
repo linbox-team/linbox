@@ -36,7 +36,7 @@ AC_DEFUN([LB_OMP],[
 		[ with_omp=yes ]
 	)
 
-	AS_IF([ test "x$with_openmp" != "xno" ],
+	AS_IF([ test "x$with_omp" != "xno" ],
 		[
 			BACKUP_CXXFLAGS=${CXXFLAGS}
 			OMPFLAGS="-fopenmp"
