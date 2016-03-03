@@ -54,7 +54,7 @@ liblinbox_la_LIBADD =           \
     util/libutil.la             \
     randiter/libranditer.la     \
     algorithms/libalgorithms.la \
-    $(MPFR_LIBS) $(IML_LIBS) 
+    $(MPFR_LIBS) $(IML_LIBS) $(OCL_LIBS)
 
 #Cygwin ?
 liblinbox_la_LDFLAGS = \
