@@ -709,29 +709,27 @@ namespace field_subtests {
 
 		typename Field::Element a, a_n, k;
 		typename Field::RandIter r (F);
-		typename Givaro::GeneralRingNonZeroRandIter<Field> z(r);
+//		typename Givaro::GeneralRingNonZeroRandIter<Field> z(r);
 
 		F.init (a,(int64_t)0); F.init (a_n,(int64_t)0); F.init (k,(int64_t)0);
 
 		bool ret = true;
 		LinBox::Integer card; F.cardinality(card);
-
 		for (unsigned int i = 0; i < iterations; i++) {
 			commentator().startIteration (i);
 
-			size_t no_bad_loop = card+10 ;
-			do z.random (a); while (F.areEqual (a, F.one) && --no_bad_loop);
-			if (!no_bad_loop) {
-				reportError(" *** ERROR *** could not find an element different form 1...",ret);
-				break;
-			}
+//			size_t no_bad_loop = card+10 ;
+//			do z.random (a); while (F.areEqual (a, F.one) && --no_bad_loop);
+//			if (!no_bad_loop) {
+//				reportError(" *** ERROR *** could not find an element different from 1...",ret);
+//				break;
 
 			ostream &report = commentator().report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "Random element a: ";
 			F.write (report, a) << endl;
 
-			F.assign (k, F.one);
-			F.assign (a_n, a);
+			F.assign (k, F.zero);
+			F.assign (a_n, F.one);
 
 			for (unsigned int j = 0; j < n; ++j) {
 				F.addin (k, a_n);
@@ -754,7 +752,10 @@ namespace field_subtests {
 			report << "(a - 1) = ";
 			F.write (report, a) << endl;
 
-			F.divin (a_n, a);
+			if (not F.isZero(a))
+				F.divin (a_n, a);
+			else
+				F.mulin(k, a);
 
 			report << "(a^n - 1) / (a - 1) = ";
 			F.write (report, a_n) << endl;

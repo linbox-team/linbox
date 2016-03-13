@@ -126,6 +126,7 @@ namespace LinBox
 	void BlasMatrix< _Field, _Rep >::createBlasMatrix (const Matrix& A,
 							   MatrixContainerCategory::Blackbox)
 	{
+		// std::cout << "creator 6" << std::endl;
 		linbox_check( areFieldEqual(A.field(),field()) );
 
 		BlasVector<Field> e(A.field(),A.coldim(), field().zero), tmp(A.field(),A.rowdim());

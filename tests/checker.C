@@ -85,7 +85,6 @@ skip("test-rat-charpoly", "inf loop");
 skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
 skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infinite loop")
 skip("test-poly-det", "incomplete test (if still relevant)");
-skip("test-sparse", "superceded by test-sparse2");
 skip("test-sparse-map-map", "const issue in givranditer, curious use of nonexistant next() in Extension");
 //Tests requiring further development
 skip("test-tutorial", "incomplete test");
@@ -94,15 +93,12 @@ skip("test-dense-zero-one", "half baked, bds responsible");
 
 //warn("test-echelon-form", "new");
 warn("test-fibb",  "incomplete");
-warn("test-gf2", "not much is tested there");
 //warn("test-matrix-domain", "intermittent row permutation failure");
 warn("test-param-fuzzy", "Noncompliant field");
 //		template <class F2Field> BitVector (const F2Field&) {}
 //warn("test-qlup", "GF2 fails to compile");
 //warn("test-rank-u32", "intermittent failure"/*, "vector (bb) responsible"*/);
 warn("test-rat-charpoly", "stale test. solns over QQ need fresh tests");//, "infinite loop, cp responsible?")
-warn("test-rank-md", "intermittent failures");
-warn("test-rat-minpoly", "intermittent failures");
 warn("test-rat-solve", "infinite loop");
 //warn("test-smith-form-local", "bds, intermittent failures");
 warn("test-solve", "most of the tests are commented out");

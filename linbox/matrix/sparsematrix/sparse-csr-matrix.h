@@ -1159,6 +1159,64 @@ namespace LinBox {
 
 		};
 
+#if 1
+		// This simplified indexed iterator conquers a bug and 
+		// supports all tested uses.
+
+		/** a forward iterator. 
+		  
+		  Allows traversing the nonzero values, with position info.  
+		  Used, for example, in building an equivalent dense matrix.
+
+		  Preincrement, ++i, is provided, but not postincrement, i++.
+		  Dereference, *i, is replaced by i.rowIndex(), i.colIndex(), i.value().
+
+		  No distinction is made between IndexedIterator and ConstIndexedIterator.  
+		  In particular, value() is not a reference.  
+		  To modify the matrix use setEntry().
+		 */
+		class IndexedIterator {
+			public:
+				typedef SparseMatrix<Field, Storage> CSR_Matrix;
+				typedef CSR_Matrix::Element value_type;
+			private: 
+				const CSR_Matrix *Ap_;
+				index_t row_; // row number, index for Ap_->_start
+				index_t i_; // index for Ap_->_colid, Ap_->_data
+			public:
+				IndexedIterator(){}
+
+				// cstor used by indexedBegin and indexedEnd
+				IndexedIterator(const CSR_Matrix * A, index_t m, index_t n)
+				: Ap_(A), row_(m), i_(n) {}
+
+				IndexedIterator & operator++() {
+					i_ += 1;
+					// Deal with arrival at end
+					if (i_ == Ap_->_data.size()) row_ = Ap_->rowdim();
+					// Attend to empty rows
+					else if (i_ == Ap_->_start[row_+1]) row_ += 1;
+					while(Ap_->_start[row_] == Ap_->_start[row_+1]) ++row_;
+					return *this;
+				}
+
+				index_t rowIndex() const { return  row_; }
+
+				index_t colIndex() const { return Ap_->_colid[i_]; }
+
+				value_type value() const { return Ap_->_data[i_]; }
+
+				bool operator == (const IndexedIterator & I) const {
+					return row_ == I.row_ and i_ == I.i_;
+				}
+
+				bool operator != (const IndexedIterator & I) const {
+					return row_ != I.row_ or i_ != I.i_;
+				}
+		};
+
+		typedef typename Self_t::IndexedIterator ConstIndexedIterator;
+#else
 		template<class index_iterator, class element_iterator, class Element>
 		class _IndexedIterator {
 		private :
@@ -1183,7 +1241,6 @@ namespace LinBox {
 				, _data_beg(e)
 				, _data_end(e_e)
 			{}
-
 			_IndexedIterator (const _IndexedIterator &iter) :
 				_start_it(iter._start_it)
 				, _start_beg(iter._start_beg)
@@ -1298,12 +1355,12 @@ namespace LinBox {
 
 
 		};
-
+#endif
 		typedef _Iterator<typename std::vector<Element>::iterator, Element> Iterator;
 		typedef _Iterator<typename std::vector<Element>::const_iterator, constElement> ConstIterator;
 
-		typedef _IndexedIterator<svector_t::iterator, typename std::vector<Element>::iterator, Element> IndexedIterator;
-		typedef _IndexedIterator<svector_t::const_iterator, typename std::vector<Element>::const_iterator, constElement> ConstIndexedIterator;
+//		typedef _IndexedIterator<svector_t::iterator, typename std::vector<Element>::iterator, Element> IndexedIterator;
+//		typedef _IndexedIterator<svector_t::const_iterator, typename std::vector<Element>::const_iterator, constElement> ConstIndexedIterator;
 
 
 		Iterator      Begin ()
@@ -1326,18 +1383,28 @@ namespace LinBox {
 			return ConstIterator(_data.end(), _data.end()) ;
 		}
 
-		IndexedIterator      IndexedBegin ()
+		IndexedIterator      IndexedBegin () const
 		{
-			return IndexedIterator(_start.begin(), _colid.begin(), _data.begin(),_data.end()) ;
+			if (_data.size() == 0) return IndexedEnd();
+			// Take care for empty first row(s).
+			index_t i = 0;
+			while (_start[i] == _start[i+1]) ++i;
+			return IndexedIterator(this, i, 0);
+
+			// bug for empty first row
+			//return IndexedIterator(_start.begin(), _colid.begin(), _data.begin(),_data.end()) ;
 		}
 
-		IndexedIterator      IndexedEnd   ()
+		IndexedIterator      IndexedEnd   () const
 		{
-			return IndexedIterator(_start.end(), _colid.end(), _data.end(),_data.end()) ;
+			return IndexedIterator(this, rowdim(), _data.size());
+			//return IndexedIterator(_start.end(), _colid.end(), _data.end(),_data.end()) ;
 		}
+
+#if 0
 
 		ConstIndexedIterator      IndexedBegin () const
-		{
+		{	// bug for empty first row.
 			return ConstIndexedIterator(_start.begin(), _colid.begin(), _data.begin(),_data.end()) ;
 		}
 
@@ -1345,6 +1412,7 @@ namespace LinBox {
 		{
 			return ConstIndexedIterator(_start.end(), _colid.end(), _data.end(),_data.end()) ;
 		}
+#endif
 
 		Integer magnitude() const
 		{

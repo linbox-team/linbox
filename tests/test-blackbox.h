@@ -386,9 +386,9 @@ testBlackboxNoRW(BB &A, bool zeroCheck=true)
 
 template <class BB>
 static bool
-testBlackbox(BB &A, bool read_write=true)
+testBlackbox(BB &A, bool read_write=true, bool zero_check = true)
 {
-	bool ok = testBlackboxNoRW(A);
+	bool ok = testBlackboxNoRW(A,zero_check);
 	if (ok && read_write)
 			return testReadWrite(A);
 	return ok ;
