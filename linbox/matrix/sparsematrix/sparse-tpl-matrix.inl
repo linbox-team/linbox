@@ -1,4 +1,4 @@
-/* linbox/blackbox/triplesbb.inl
+/* linbox/matrix/sparsematrix/sparse-tpl-matrix-omp.inl
  * Copyright (c) LinBox
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -22,7 +22,7 @@
  * with mods by bds and Alex Stachnik
  */
 
-/** @file blackbox/triplesbb.h
+/** @file matrix/sparsematrix/sparse-tpl-matrix-omp.inl
  * @ingroup blackbox
  * @brief A COO (vector of i,j,v triples) sparse matrix rep.
  */
@@ -117,18 +117,6 @@ SparseMatrix(const SparseMatrix<Field_,SparseMatrixFormat::TPL> & B)
 : MD_(B.field()), data_ ( B.data_ ), rows_ ( B.rows_ ), cols_ ( B.cols_ ),
    sort_ ( B.sort_ )
 {}
-
-template<class Field_>
- SparseMatrix<Field_,SparseMatrixFormat::TPL>& SparseMatrix<Field_,SparseMatrixFormat::TPL>::
-operator=(const SparseMatrix<Field_,SparseMatrixFormat::TPL> & rhs)
-{	if (rhs == this) return ;
-	MD_.init(rhs.field_);
-	data_ = rhs.data_;
-	rows_ = rhs.rows_;
-	cols_ = rhs.cols_;
-	sort_ = rhs.sort_;
-	return *this;
-}
 
 template<class Field_>
 

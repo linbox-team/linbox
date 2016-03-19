@@ -1,4 +1,4 @@
-/* linbox/blackbox/triplesbb.h
+/* linbox/blackbox/matrix/sparsematrix/sparse-tpl-matrix.h
  * Copyright (c) Linbox
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -22,7 +22,7 @@
  * with mods by bds
  */
 
-/*! @file matrix/sparsematrix/sparse-tpl-matrix.h
+/** @file matrix/sparsematrix/sparse-tpl-matrix.h
  * @ingroup sparsematrix
  * @brief
  * A <code>SparseMatrix<_Field, SparseMatrixFormat::TPL ></code>
@@ -65,13 +65,10 @@ namespace LinBox
 	typedef size_t Index; // would prefer a signed type
 	enum sortPolicy {unsorted, cacheOpt, rowMajor, colMajor};
 
-
 	// Default constructor.
 	// SparseMatrix();
 
 	SparseMatrix(const SparseMatrix & B);
-
-	SparseMatrix & operator=(const SparseMatrix & B);
 
 	SparseMatrix(const Field& F, std::istream& in);
 	SparseMatrix(MatrixStream<Field>& ms);

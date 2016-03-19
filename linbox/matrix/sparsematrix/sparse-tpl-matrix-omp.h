@@ -1,4 +1,4 @@
-/* linbox/blackbox/triplesbb-omp.h
+/* linbox/matrix/sparsematrix/sparse-tpl-matrix-omp.h
  * Copyright (c) Linbox
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -249,8 +249,6 @@ class SparseMatrix<Field_, SparseMatrixFormat::TPL_omp> : public BlackboxInterfa
 	SparseMatrix();
 
 	SparseMatrix(const SparseMatrix & B);
-
-	SparseMatrix & operator=(const SparseMatrix & B);
 
 	SparseMatrix(const Field& F, std::istream& in);
 

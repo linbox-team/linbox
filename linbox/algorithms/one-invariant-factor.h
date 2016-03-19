@@ -96,7 +96,7 @@ namespace LinBox
 
 		void setCrossover(double t)
 		{
-			if(0 <= t <= 1)
+			if(0 <= t and t <= 1)
 				crossover = t;
 
 		}
