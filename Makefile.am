@@ -103,7 +103,7 @@ git:
 	git commit -a; git pull; git push
 
 
-VERSION=1.4.0
+VERSION=1.4.1rc1
 
 EXTRA_DIST=auto-install.sh
 #incremente-versions
