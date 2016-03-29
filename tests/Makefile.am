@@ -162,7 +162,6 @@ FULLCHECK_TESTS =               \
 	test-smith-form-local    	\
 	test-solve-nonsingular		\
 	test-sparse					\
-	test-sparse2				\
 	test-subiterator			\
 	test-submatrix				\
 	test-subvector				\
@@ -327,7 +326,6 @@ test_smith_form_local_SOURCES =         test-smith-form-local.C
 test_smith_form_SOURCES =               test-smith-form.C
 test_solve_nonsingular_SOURCES =        test-solve-nonsingular.C
 test_solve_SOURCES =                    test-solve.C
-test_sparse2_SOURCES =                  test-sparse2.C test-common.h
 test_sparse_SOURCES =                   test-sparse.C test-common.h
 test_subiterator_SOURCES =              test-subiterator.C test-common.h
 test_submatrix_SOURCES =                test-submatrix.C test-common.h
