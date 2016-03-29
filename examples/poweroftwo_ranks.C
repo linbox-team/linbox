@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <04 Sep 15 16:41:47 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <29 Mar 16 15:58:16 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -53,7 +53,7 @@ void runpoweroftworank(ifstream& input, const size_t exponent) {
     cout << "B is " << A.rowdim() << " by " << A.coldim() << endl;
 //     R.write(std::cerr << "Last entry: ", A.getEntry(A.rowdim()-1,A.coldim()-1)) << std::endl;
 
-    LinBox::Timer tim; 
+    Givaro::Timer tim; 
     tim.clear(); tim.start();
     PGD(local, A, exponent);
     tim.stop();
@@ -71,30 +71,33 @@ int main (int argc, char **argv) {
     commentator().setMaxDepth (-1);
     commentator().setReportStream (std::cerr);
 
-    if (argc < 3 || argc > 3)
-    {	cerr << "Usage: rank <matrix-file-in-supported-format> <power of two exponent>]" << endl; return -1; }
+    if (argc < 3 || argc > 4)
+    {	cerr << "Usage: rank <matrix-file-in-supported-format> <power of two exponent> [<method>]" << endl; return -1; }
 
     ifstream input (argv[1]);
     if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
-
-    // long unsigned int r;
-
-    if (argc == 3) {
-        LinBox::Timer tim;
-        size_t exponent = atoi(argv[2]);
-        if (exponent > 63) {
-            runpoweroftworank<Givaro::Integer, LinBox::PID_integer>(input, exponent);
-
-        } else {
+    size_t method( argc>3? atoi(argv[3]): 0 );
+    
+    Givaro::Timer tim;
+    size_t exponent = atoi(argv[2]);
+    if ((method == 2) || ((method == 0) && (exponent >= (1<<10))) ) {
+        runpoweroftworank<Givaro::Integer>(input, exponent);
+    } else {
+        if ((method == 1) || ((method == 0) && (exponent < 64)) ) {
             runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, exponent);
-            
+        } else {
+            switch (method) {
+                case 6: runpoweroftworank<RecInt::ruint<6>>(input, exponent); break;
+                case 7: runpoweroftworank<RecInt::ruint<7>>(input, exponent); break;
+                case 8: runpoweroftworank<RecInt::ruint<8>>(input, exponent); break;
+                case 9: runpoweroftworank<RecInt::ruint<9>>(input, exponent); break;
+                case 10: runpoweroftworank<RecInt::ruint<10>>(input, exponent); break;
+                case 11: runpoweroftworank<RecInt::ruint<11>>(input, exponent); break;
+            }
         }
-
-
-
-        std::cerr << tim << std::endl;
     }
 
+    std::cerr << tim << std::endl;
     return 0;
 }
 
