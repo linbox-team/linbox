@@ -39,53 +39,74 @@ using namespace LinBox;
 using namespace std;
 
 
-
-int main (int argc, char **argv)
+template<typename Base>
+int tmain (int argc, char **argv)
 {
 	commentator().setMaxDetailLevel (-1);
 	commentator().setMaxDepth (-1);
 	commentator().setReportStream (std::cerr);
 
-	if (argc < 4 || argc > 4)
-	{	cerr << "Usage: rank <matrix-file-in-supported-format> <prime> <prime-power>]" << endl; return -1; }
-
 	ifstream input (argv[1]);
 	if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
 
-	// long unsigned int r;
-
-	if (argc == 4) {
-		typedef int64_t Base;
-		Base p = atoi(argv[2]);
-		Base q = atoi(argv[3]);
-		typedef Givaro::Modular<int64_t> Field;
-		Field F(q);
-		MatrixStream<Field> ms( F, input );
-		SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (ms);
-		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+    Base p; Givaro::Caster(p,Givaro::Integer(argv[2]));
+    Base q; Givaro::Caster(q,Givaro::Integer(argv[3]));
+    typedef Givaro::Modular<Base> Field;
+    Field F(q);
+    MatrixStream<Field> ms( F, input );
+    SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (ms);
+    cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 
 		// using Sparse Elimination
-		PowerGaussDomain< Field > PGD( F );
-		std::vector<std::pair<size_t,Base> > local;
+    PowerGaussDomain< Field > PGD( F );
+    std::vector<std::pair<size_t,Base> > local;
 
-		Timer tq; tq.clear(); tq.start();
-		PGD(local, B, q, p);
-		tq.stop();
-
-
-		std::cout << "Local Smith Form : (";
-		for (std::vector<std::pair<size_t,Base> >::const_iterator  ip = local.begin();
-		     ip != local.end(); ++ip)
-			std::cout << ip->first << " " << ip->second << ", ";
-		cout << ")" << endl;
+    Givaro::Timer tq; tq.clear(); tq.start();
+    PGD(local, B, q, p);
+    tq.stop();
 
 
-		std::cerr << tq << std::endl;
-	}
+    F.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
+    for (auto ip = local.begin(); ip != local.end(); ++ip) 
+        std::cout << ip->first << " " << ip->second << ", ";
+    cout << ")" << endl;
+
+
+    std::cerr << tq << std::endl;
 
 	return 0;
 }
+
+int main(int argc, char ** argv) {
+	if (argc < 4 || argc > 5) {	
+        cerr << "Usage: rank <matrix-file-in-supported-format> <prime> <prime-power> [<method>]" << endl; return -1; }
+
+    Givaro::Integer q(argv[3]);
+    size_t method( argc>4? atoi(argv[4]) : 0);
+    const size_t logq( (size_t)ceil(logtwo(q)) );
+    
+    if ( (method == 1) || ( (method==0) && (logq<63) ) ) {
+        return tmain<int64_t>(argc,argv);
+    } else {
+        if ( (method == 2) ) {
+            return tmain<Givaro::Integer>(argc,argv);
+        } else {
+            if (! method) method = (size_t)std::max(6.,  ceil(log(logq)/log(2.))  );
+            switch (method) {
+                case 6: return tmain<RecInt::ruint<6>>(argc,argv);
+                case 7: return tmain<RecInt::ruint<7>>(argc,argv); 
+                case 8: return tmain<RecInt::ruint<8>>(argc,argv);
+                case 9: return tmain<RecInt::ruint<9>>(argc,argv);
+                case 10: return tmain<RecInt::ruint<10>>(argc,argv);
+                case 11: return tmain<RecInt::ruint<11>>(argc,argv);
+            }
+        }
+    }
+    
+    return 0;
+}
+
 
 // Local Variables:
 // mode: C++
