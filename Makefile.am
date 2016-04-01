@@ -23,7 +23,10 @@
 
 ACLOCAL_AMFLAGS = -I macros
 
-SUBDIRS=benchmarks linbox macros tests interfaces doc examples
+SUBDIRS=linbox benchmarks macros tests interfaces doc examples
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = linbox.pc
 
 #  include_HEADERS=linbox-config.h
 # I intend to pare down the target "check" so as to be a smaller check used

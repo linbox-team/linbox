@@ -255,21 +255,25 @@ if test ! -d ./benchmarks/data ; then
 	mkdir ./benchmarks/data ;
 fi
 
+DEPS_CFLAGS="${FFLAS_FFPACK_CFLAGS} ${NTL_CFLAGS} ${MPFR_CFLAGS} ${FPLLL_CFLAGS} ${IML_CFLAGS} ${FLINT_CFLAGS}"
+DEPS_LIBS="${FFLAS_FFPACK_LIBS} ${NTL_LIBS} ${MPFR_LIBS} ${FPLLL_LIBS} ${IML_LIBS} ${FLINT_LIBS} ${OCL_LIBS}"
 
-CXXFLAGS="${CXXFLAGS} ${STDFLAG} ${FFLAS_FFPACK_CFLAGS}"
-LIBS="${LIBS} ${FFLAS_FFPACK_LIBS}"
+CXXFLAGS="${CXXFLAGS} ${STDFLAG}"
 
 AC_SUBST(CXXFLAGS)
+AC_SUBST(DEPS_CFLAGS)
+AC_SUBST(DEPS_LIBS)
 
 echo "-----------------------------------------------"
 
-dnl MYLIBS="${NTL_LIBS} ${MPFR_LIBS} ${FPLLL_LIBS} ${IML_LIBS} ${FLINT_LIBS} ${LDFLAGS} ${OCL_LIBS}"
-MYLIBS="${LIBS}"
-MYFLAGS="${NTL_CFLAGS} ${IML_CFLAGS} ${FLINT_CFLAGS} ${OPT_FLAGS} ${AM_CPPFLAGS}"
+dnl MYLIBS="${FFLAS_FFPACK_LIBS} ${NTL_LIBS} ${MPFR_LIBS} ${FPLLL_LIBS} ${IML_LIBS} ${FLINT_LIBS} ${LDFLAGS} ${OCL_LIBS}"
+dnl MYLIBS="${LIBS}"
+dnl MYFLAGS="${FFLAS_FFPACK_CFLAGS} ${NTL_CFLAGS} ${MPFR_CFLAGS} ${FPLLL_CFLAGS} ${IML_CFLAGS} ${FLINT_CFLAGS} ${OPT_FLAGS}"
 
 echo "CXXFLAGS       = ${CXXFLAGS}"
-echo "LIBS           = ${MYLIBS}"
-echo "FLAGS          = ${MYFLAGS}"
+echo "LIBS           = ${LIBS}"
+echo "DEPS_CFLAGS    = ${DEPS_CFLAGS}"
+echo "DEPS_LIBS      = ${DEPS_LIBS}"
 echo "DEFAULT CFLAGS = ${DEFAULT_CFLAGS}"
 echo "TESTS CFLAGS   = ${TESTS_CFLAGS}"
 
@@ -316,6 +320,7 @@ macros/Makefile
 benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile
+linbox.pc
 ])
 # linbox/algorithms/IML/Makefile
 

@@ -22,7 +22,7 @@
 # All tests will be processed by checker.C (target fullcheck), 
 # where skips can be specified, warnings issued, package dependency handled.
 
-AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox -I${PREFIX}/include
+#AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox -I${PREFIX}/include
 # AM_LDFLAGS = -llapack -lcblas -latlas
 #  AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
 AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la 
@@ -32,14 +32,17 @@ AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la
 #  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly
 #AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly -O2
 #  AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -DDEBUG -O0
-AM_CPPFLAGS+= -DLinBoxTestOnly @TESTS_CFLAGS@ @DEBUG_CFLAGS@
+
+AM_CPPFLAGS = -DLinBoxTestOnly @TESTS_CFLAGS@ @DEBUG_CFLAGS@
+
 # AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
 # AM_CFLAGS = -g -Wall
 
 SUBDIRS = data matrix
 
-AM_CPPFLAGS+=  $(NTL_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS) $(OPTFLAGS) $(PARFLAGS) ${FFLAS_FFPACK_CFLAGS}
-LDADD =  $(NTL_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS)  $(IML_LIBS) $(FLINT_LIBS) $(LDFLAGS) $(PARLIBS) ${FFLAS_FFPACK_LIBS}
+AM_CPPFLAGS+= -I$(top_srcdir)/linbox $(DEPS_CFLAGS)
+LDADD = $(DEPS_LIBS)
+
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,
 
 EXTRA_DIST =					\
