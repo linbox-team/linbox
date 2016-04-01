@@ -24,8 +24,8 @@
 #  -DLinBoxSrcOnly
 DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR
 AM_CPPFLAGS = -I$(top_srcdir)/linbox $(DEFCPPFLAGS) $(DEPS_CFLAGS)
-LDADD =  -L$(top_builddir)/linbox -llinbox $(DEPS_LIBS)
-
+LDADD = $(DEPS_LIBS) $(LDFLAGS)
+LDADD += $(top_builddir)/linbox/liblinbox.la
 #  AM_LDFLAGS=-static
 
 #AM_LDFLAGS=-L@libdir@ -llinbox
