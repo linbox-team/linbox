@@ -19,7 +19,11 @@
 # ========LICENCE========
 #/
 
-AM_CPPFLAGS=-I$(top_srcdir)
+AM_CPPFLAGS= -I$(top_srcdir)/linbox $(DEPS_CFLAGS)
+LDADD = $(DEPS_LIBS) $(LDFLAGS)
+
+#AM_CPPFLAGS = -I@includedir@ -I$(top_srcdir)/linbox -I$(top_srcdir) $(DEFCPPFLAGS) $(OPTFLAGS) $(FFLAS_FFPACK_CFLAGS) $(NTL_CFLAGS) $(MPFR_CFLAGS) $(FPLLL_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS) $(PARFLAGS)
+#LDADD = $(FFLAS_FFPACK_LIBS) $(NTL_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(IML_LIBS) $(FLINT_LIBS) $(OCL_LIBS)
 
 SUBDIRS=util element field randiter vector matrix blackbox algorithms solutions ring
 
@@ -57,8 +61,7 @@ liblinbox_la_LIBADD =           \
     $(MPFR_LIBS) $(IML_LIBS) $(OCL_LIBS)
 
 #Cygwin ?
-liblinbox_la_LDFLAGS = \
-		      -no-undefined
+liblinbox_la_LDFLAGS = $(DEPS_LIBS) $(LDFLAGS) -no-undefined
 
 
 #  $(top_srcdir)/benchmarks/libbenchmarks.la \

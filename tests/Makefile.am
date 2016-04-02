@@ -22,24 +22,27 @@
 # All tests will be processed by checker.C (target fullcheck), 
 # where skips can be specified, warnings issued, package dependency handled.
 
-AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox -I${PREFIX}/include
+#AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox -I${PREFIX}/include
 # AM_LDFLAGS = -llapack -lcblas -latlas
 #  AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
-AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la 
+#AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la
 #  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
 #AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxTestOnly
 #  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly
 #AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly -O2
 #  AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -DDEBUG -O0
-AM_CPPFLAGS+= -DLinBoxTestOnly @TESTS_CFLAGS@ @DEBUG_CFLAGS@
+
+AM_CPPFLAGS = -DLinBoxTestOnly @TESTS_CFLAGS@ @DEBUG_CFLAGS@
+
 # AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
 # AM_CFLAGS = -g -Wall
 
 SUBDIRS = data matrix
 
-AM_CPPFLAGS+=  $(NTL_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS) $(OPTFLAGS) $(PARFLAGS) ${FFLAS_FFPACK_CFLAGS}
-LDADD =  $(NTL_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS)  $(IML_LIBS) $(FLINT_LIBS) $(LDFLAGS) $(PARLIBS) ${FFLAS_FFPACK_LIBS}
+AM_CPPFLAGS+= -I$(top_srcdir)/linbox $(DEPS_CFLAGS)
+LDADD = $(DEPS_LIBS) $(LDFLAGS)
+LDADD += $(top_builddir)/linbox/liblinbox.la
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,
 
 EXTRA_DIST =					\
@@ -206,8 +209,8 @@ OCL_TESTS = test-opencl-domain
 
 if LINBOX_HAVE_OCL
 USE_OCL_TESTS = $(OCL_TESTS)
-AM_CPPFLAGS += $(OCL_CFLAGS)
-LDADD += $(OCL_LIBS)
+#AM_CPPFLAGS += $(OCL_CFLAGS)
+#LDADD += $(OCL_LIBS)
 endif
 
 # check builds and runs these

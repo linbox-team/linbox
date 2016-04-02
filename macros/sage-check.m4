@@ -33,7 +33,7 @@ AS_IF([test "x$enable_sage" = "xyes"],
 [
 AC_MSG_RESULT(yes)
 AC_DEFINE(HAVE_SAGE,1,[Define if SageMath interface is built])
-
+LINBOXSAGE_LIBS="-llinboxsage"
 dnl  if test "x$HAVE_NTL" = "xyes" ; then
 	dnl  AC_CHECK_TOOL(OBJDUMP, objdump, false)
 	dnl  AC_MSG_CHECKING([whether NTL was built with -fPIC])
@@ -59,5 +59,7 @@ dnl  fi
 
 ],[
 AC_MSG_RESULT(no)
+LINBOXSAGE_LIBS=""
 ])
 ])
+AC_SUBST(LINBOXSAGE_LIBS)

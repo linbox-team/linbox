@@ -20,22 +20,25 @@
 #/
 
 SUBDIRS=data matrix
-
+DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/linbox $(DEFCPPFLAGS)  $(DEPS_CFLAGS)
+LDADD =   $(DEPS_LIBS) $(LDFLAGS)
+LDADD += $(top_builddir)/linbox/liblinbox.la
 pkgincludesubdir=$(pkgincludedir)/benchmarks
 
-#  noinst_LTLIBRARIES=libbenchmarks.la
-#  libbenchmarks_la_SOURCES= benchmark.C
-#  libbenchmarks_la_LDFLAGS=$(LDFLAGS)
+noinst_LTLIBRARIES=libbenchmarks.la
+libbenchmarks_la_SOURCES= benchmark.C
+libbenchmarks_la_LDFLAGS=$(LDFLAGS) $(DEPS_LIBS)
+libbenchmarks_la_LIBADD=$(top_builddir)/linbox/liblinbox.la
+#libbenchmarks_la_LIBADD+=$(top_builddir)/linbox/util/.libs/libutil.la
 
-#  libbenchmarks_la_LIBADD=$(top_srcdir)/linbox/.libs/liblinbox.la
 
-
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/linbox
-AM_CPPFLAGS +=  $(NTL_CFLAGS) $(IML_CFLAGS) $(PARFLAGS)
-AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
-LDADD =  $(NTL_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS) $(XML_LIBS) $(PARLIBS)
+# AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/linbox
+# AM_CPPFLAGS +=  $(NTL_CFLAGS) $(IML_CFLAGS) $(PARFLAGS)
+# AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
+# LDADD =  $(NTL_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS) $(XML_LIBS) $(PARLIBS)
 #  AM_LDFLAGS=-static $(LDFLAGS)
-#  AM_LDFLAGS = .libs/libbenchmarks.la
+ AM_LDFLAGS = .libs/libbenchmarks.la
 #  AM_LDFLAGS = .libs/benchmark.o
 
 
@@ -130,7 +133,7 @@ perfpublisher:
 
 # for compilation of new benchmarks
 %:%.C
-	$(CXX) $(AM_CXXFLAGS) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a
+	$(CXX) $(AM_CXXFLAGS) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDFLAGS) $(LDADD)
 
 %:%.cpp
-	$(CXX)  $(AM_CXXFLAGS) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.cpp -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a
+	$(CXX)  $(AM_CXXFLAGS) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.cpp -o $@ $(LDFLAGS) $(LDADD)

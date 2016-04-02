@@ -30,7 +30,10 @@ libalgorithms_la_SOURCES= diophantine-solver.C
 
 #  AM_CPPFLAGS= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS)  
 
-AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR   $(NTL_CFLAGS) $(ATLAS_CFLAGS)  $(FPLLL_CFLAGS) $(OCL_CFLAGS) $(OMPFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir)/linbox $(DEPS_CFLAGS)
+LDADD = $(DEPS_LIBS)
+
+#AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR   $(NTL_CFLAGS) $(ATLAS_CFLAGS)  $(FPLLL_CFLAGS) $(OCL_CFLAGS) $(OMPFLAGS)
 
 OCL_HDRS =                                  \
     opencl-resource-controller.h            \

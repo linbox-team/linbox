@@ -21,9 +21,12 @@
 
 if LINBOX_HAVE_SAGE
 
-AM_CPPFLAGS=-I$(top_srcdir) -I. -I../../linbox
+#AM_CPPFLAGS=-I$(top_srcdir) -I. -I../../linbox
 
-AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR  $(NTL_CFLAGS) $(OPTFLAGS) $(PARFLAGS)
+AM_CPPFLAGS = -DDISABLE_COMMENTATOR -I$(top_srcdir)/linbox $(DEPS_CFLAGS)
+LDADD = $(DEPS_LIBS) $(LDFLAGS)
+
+#AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR  $(NTL_CFLAGS) $(OPTFLAGS) $(PARFLAGS)
 
 lib_LTLIBRARIES = liblinboxsage.la
 
@@ -35,5 +38,5 @@ pkginclude_HEADERS = linbox-sage.h
 #gentoo's linbox-1.1.6-fix-undefined-symbols.patch
 liblinboxsage_la_LIBADD = $(top_builddir)/linbox/liblinbox.la
 
-liblinboxsage_la_LDFLAGS =    $(NTL_LIBS)  $(MAPLE_LIBS) $(LDFLAGS) $(PARLIBS) -version-info 0:0:0 #-Wl,-zmuldefs
+liblinboxsage_la_LDFLAGS = $(DEPS_LIBS) $(LDFLAGS) -version-info 0:0:0 #-Wl,-zmuldefs
 endif
