@@ -119,6 +119,21 @@ SparseMatrix(const SparseMatrix<Field_,SparseMatrixFormat::TPL> & B)
 {}
 
 template<class Field_>
+<<<<<<< Updated upstream
+=======
+ SparseMatrix<Field_,SparseMatrixFormat::TPL>& SparseMatrix<Field_,SparseMatrixFormat::TPL>::
+operator=(const SparseMatrix<Field_,SparseMatrixFormat::TPL> & rhs)
+{	if (rhs == this) return *this;
+	MD_.init(rhs.field_);
+	data_ = rhs.data_;
+	rows_ = rhs.rows_;
+	cols_ = rhs.cols_;
+	sort_ = rhs.sort_;
+	return *this;
+}
+
+template<class Field_>
+>>>>>>> Stashed changes
 
 template<class Mat1, class Mat2> Mat1& SparseMatrix<Field_,SparseMatrixFormat::TPL>::
 // I do not like this need to templatize -bds

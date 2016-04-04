@@ -397,7 +397,7 @@ namespace LinBox
 
 		MultiModRandIter(const MultiModDouble &F,
 				 const integer   &size=0,
-				 const integer   &seed=0) :
+				 const size_t   &seed=0) :
 			_field(F), _size(size), _seed(seed), _randiter(F._size)
 		{
 			for (size_t i=0;i< F._size;++i)
@@ -430,7 +430,7 @@ namespace LinBox
 	protected:
 		MultiModDouble        _field;
 		integer                _size;
-		integer                _seed;
+		size_t                 _seed;
 		std::vector<Givaro::Modular<double>::RandIter*> _randiter;
 
 	}; // end of class MultiModRandIter

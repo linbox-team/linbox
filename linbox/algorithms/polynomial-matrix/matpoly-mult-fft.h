@@ -41,28 +41,26 @@
 #ifdef FFT_PROFILER
 #include <iostream>
 #ifndef FFT_PROF_LEVEL
-//#define  FFT_PROF_LEVEL 1
 int  FFT_PROF_LEVEL=1;
 #endif
-
-//size_t  FFT_PROF_LEVEL=1;
-Givaro::Timer mychrono;
+Givaro::Timer mychrono[3];
 #define FFT_PROF_MSG_SIZE 35
-#define FFT_PROFILE_START  mychrono.clear();mychrono.start();
+#define FFT_PROFILE_START(lvl)  mychrono[lvl].clear();mychrono[lvl].start();
 
 #define FFT_PROFILING(lvl,msg)						\
-if (lvl>=FFT_PROF_LEVEL) {					\
-  mychrono.stop();std::cout<<"FFT: ";					\
-	std::cout.width(FFT_PROF_MSG_SIZE);std::cout<<std::left<<msg<<" : "; \
-	std::cout.precision(6);std::cout<<mychrono.usertime()<<" s (real: "<<mychrono.realtime()<<")"<<std::endl; \
-	mychrono.clear();mychrono.start();				\
+  if (lvl>=FFT_PROF_LEVEL) {						\
+    mychrono[lvl].stop();std::cout<<"FFT("<<lvl<<"):";			\
+    std::cout.width(FFT_PROF_MSG_SIZE);std::cout<<std::left<<msg<<" : "; \
+    std::cout.precision(6);std::cout<<mychrono[lvl]<<std::endl;		\
+    mychrono[lvl].clear();mychrono[lvl].start();					\
 }
+  
 #ifdef HAVE_OPENMP								
-#define FFT_PROFILE_GET(x)			\
-  mychrono.stop();(x)+=mychrono.realtime();mychrono.clear();mychrono.start();
+#define FFT_PROFILE_GET(lvl,x)						\
+  // mychrono.stop();(x)+=mychrono.realtime();mychrono.clear();mychrono.start();
 #else
-#define FFT_PROFILE_GET(x)					\
-  mychrono.stop();(x)+=mychrono.usertime();mychrono.clear();mychrono.start();
+#define FFT_PROFILE_GET(lvl,x)						\
+  mychrono[lvl].stop();(x)+=mychrono[lvl].usertime();mychrono[lvl].clear();mychrono[lvl].start();
 #endif
 #define FFT_PROFILE(lvl,msg,x)						\
 if ((lvl)>=FFT_PROF_LEVEL) {					\
@@ -71,9 +69,9 @@ if ((lvl)>=FFT_PROF_LEVEL) {					\
   std::cout.precision(6);std::cout<<x<<" s"<<std::endl;			\
 }
 #else
-#define FFT_PROFILE_START
+#define FFT_PROFILE_START(lvl)
 #define FFT_PROFILING(lvl,msg)
-#define FFT_PROFILE_GET(x)
+#define FFT_PROFILE_GET(lv,x)
 #define FFT_PROFILE(lvl,msg,x)
 #endif // FFT_PROFILER
 
@@ -116,6 +114,7 @@ namespace LinBox
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize-fast.inl"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize-three-primes.inl"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-multiprecision.inl"
+#include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-recint.inl"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize.inl"
 
 #endif // __LINBOX_matpoly_mult_ftt_H
