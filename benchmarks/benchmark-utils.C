@@ -180,7 +180,7 @@ namespace LinBox {
 				std::sort(tps.begin(),tps.end());
 				size_t mid = (size_t)tps.size()/2 ;
 				double t1 ;
-				if (isOdd(tps.size()))
+				if (isOdd((uint64_t)tps.size()))
 					t1 = tps[mid] ;
 				else
 					t1 = (tps[mid-1]+tps[mid])/2;
