@@ -119,8 +119,6 @@ SparseMatrix(const SparseMatrix<Field_,SparseMatrixFormat::TPL> & B)
 {}
 
 template<class Field_>
-<<<<<<< Updated upstream
-=======
  SparseMatrix<Field_,SparseMatrixFormat::TPL>& SparseMatrix<Field_,SparseMatrixFormat::TPL>::
 operator=(const SparseMatrix<Field_,SparseMatrixFormat::TPL> & rhs)
 {	if (rhs == this) return *this;
@@ -133,8 +131,6 @@ operator=(const SparseMatrix<Field_,SparseMatrixFormat::TPL> & rhs)
 }
 
 template<class Field_>
->>>>>>> Stashed changes
-
 template<class Mat1, class Mat2> Mat1& SparseMatrix<Field_,SparseMatrixFormat::TPL>::
 // I do not like this need to templatize -bds
 //typename SparseMatrix<Field_,SparseMatrixFormat::TPL>::Matrix& SparseMatrix<Field_,SparseMatrixFormat::TPL>::

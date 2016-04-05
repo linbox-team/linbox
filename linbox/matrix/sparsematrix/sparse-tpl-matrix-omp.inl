@@ -211,8 +211,6 @@ SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::SparseMatrix(const SparseMatri
 {}
 
 template<class Field_>
-<<<<<<< Updated upstream
-=======
 SparseMatrix<Field_,SparseMatrixFormat::TPL_omp> & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::operator=(const SparseMatrix<Field_,SparseMatrixFormat::TPL_omp> & rhs)
 {
 	if (rhs == this)
@@ -228,7 +226,6 @@ SparseMatrix<Field_,SparseMatrixFormat::TPL_omp> & SparseMatrix<Field_,SparseMat
 }
 
 template<class Field_>
->>>>>>> Stashed changes
 template<class Mat1, class Mat2> Mat1& SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::
 applyLeft(Mat1 &Y, const Mat2 &X) const
 {
