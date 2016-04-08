@@ -1,10 +1,15 @@
+2016-02-24 cpernet v1.4.1
+	* update the build system (add pkgconfig file, and a more consistent way
+	of dealing with dependencies)
+	* fix all remaining issues for the integration in SageMath
+
 2016-02-24 cpernet
 	* move almost all finite fields to givaro
 	* cleanup dead code
 	* many bug fixes
 	* change in some parts of the API
 	* improved order basis computations
-	
+
 2011-03-10 briceboyer
         * Implement DublinBox Mother model for dense matrices (BlasM* own, BlasS* share)
 	* Change BlasSubmatrix private members (and add one to make Iterators faster)
