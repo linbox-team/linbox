@@ -42,7 +42,7 @@ SUBDIRS = data matrix
 
 AM_CPPFLAGS+= -I$(top_srcdir)/linbox $(DEPS_CFLAGS)
 LDADD = $(DEPS_LIBS) $(LDFLAGS)
-LDADD += $(top_builddir)/linbox/liblinbox.la
+AM_LDFLAGS = $(top_builddir)/linbox/liblinbox.la
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,
 
 EXTRA_DIST =					\
