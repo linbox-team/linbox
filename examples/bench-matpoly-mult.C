@@ -54,6 +54,7 @@ using namespace std;
 #include <linbox/randiter/random-fftprime.h>
 //#include <linbox/field/unparametric.h>
 #include <givaro/zring.h>
+#include <recint/rint.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/util/commentator.h>
 #include <linbox/util/timer.h>
@@ -146,9 +147,10 @@ void MATPOLMUL_sanity_check(MULDOM& MulDom, const MatPol& C, const MatPol& A, co
 
 template<typename Field, typename RandIter>
 void check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
-	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
-	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
-
+	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
+	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
+	PMatrix A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
+	MatrixP AA(fld,n,n,d),BB(fld,n,n,d),CC(fld,n,n,2*d-1);
 	// Generate random matrix of polynomial
 	for (size_t i=0;i<d;i++){
 		randomMat(Gen,A[i]);
@@ -176,8 +178,12 @@ void check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	MATPOLMUL_sanity_check(NMD,C,A,B, "Naive Multiplication");
 	// check karatsuba
 	MATPOLMUL_sanity_check(PMKD,C,A,B, "Karatsuba Multiplication");
+
+	AA.copy(A);
+	BB.copy(B);
+	CC.copy(C);
 	// check fft
-	//MATPOLMUL_sanity_check(PMFFT,C,A,B, "FFT Multiplication");
+	MATPOLMUL_sanity_check(PMFFT,CC,AA,BB, "FFT Multiplication");
 
 	cout<<endl;
 }
@@ -315,8 +321,11 @@ void profile_matpol_mulfft(const Field& fld,  RandIter& Gen, size_t n, size_t d)
 	//cout<<"FFT Multiplication total: "<<chrono.userElapsedTime()<<" s, "
 	//   <<costFFT/(1e6*chrono.userElapsedTime())<<" Miops"<<endl;
 	chrono.stop();
-	cout<<chrono.gettime()/count<<" ";
-
+	//cout<<chrono.userElapsedTime()/count<<" (";
+	//cout<<chrono.realElapsedTime()/count<<") ";
+	//cout<<chrono.gettime()/count<<" ";
+	cout<<chrono<<" ";
+	
 #ifdef BENCH_FLINT
 	nmod_poly_mat_t AA,BB,CC;
 	nmod_poly_mat_init(AA,n,n,(uint64_t)fld.cardinality());
@@ -332,7 +341,8 @@ void profile_matpol_mulfft(const Field& fld,  RandIter& Gen, size_t n, size_t d)
 		nmod_poly_mat_mul(CC,AA,BB);
 		count++;
 	} while (false);//(count<20 && chrono.userElapsedTime()<1);
-	cout<<chrono.userElapsedTime()/count<<" ";
+	cout<<chrono.userElapsedTime()/count<<" (";
+	cout<<chrono.realElapsedTime()/count<<") ";
 	//cout<<"FLINT Multiplication: "<<chrono.userElapsedTime()<<" s, "
 	//    <<costFFT/(1e6*chrono.userElapsedTime())<<" Miops"<<endl;
 
@@ -459,13 +469,14 @@ int main(int argc, char** argv){
 			RandomPrimeIter Rd(b,seed);
 			integer p= Rd.random();
 			Givaro::Modular<integer> F(p);
+			//Givaro::Modular<RecInt::ruint128,RecInt::ruint512> F(p);
 			cout<<"Computation over Fp[x] with p=  "<<p<<" (Generic prime)"<<endl;
 			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 			runTest (F,n,b,d,seed,test);
 		}
 		else {
-#ifdef FFT_PROFILER
-			FFT_PROF_LEVEL=1;
+#ifdef FFT_PROFILER 
+			FFT_PROF_LEVEL=1; 
 #endif
 			RandomFFTPrime Rd(1<<b,seed);
 			integer p = Rd.randomPrime(integer(d).bitsize()+1);
@@ -478,7 +489,7 @@ int main(int argc, char** argv){
 	}
 	return 0;
 } 
-
+ 
 
 
 

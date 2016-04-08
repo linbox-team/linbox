@@ -69,7 +69,7 @@ namespace LinBox {
 				else {
 					// use computation with Givaro::Modular<integer>
 					// -> could be optimized in some cases (e.g. output entries less than 2^64)
-					FFT_PROFILE_START;
+					FFT_PROFILE_START(2);
 					LargeField Fp(_p);
 					PolynomialMatrixFFTMulDomain<LargeField> MulDom(Fp);
 					MatrixP_L a2(Fp,a.rowdim(),a.coldim(),a.size());
@@ -101,7 +101,7 @@ namespace LinBox {
 				}
 				else {  // use computation with Givaro::Modular<integer>
 					//-> could be optimized in some cases (e.g. output entries less than 2^64)
-					FFT_PROFILE_START;
+					FFT_PROFILE_START(2);
 					//std::cout<<"MIDP: Switching to Large Field"<<std::endl;
 					LargeField Fp(_p);
 					PolynomialMatrixFFTMulDomain<LargeField> MulDom(Fp);

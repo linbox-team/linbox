@@ -58,6 +58,12 @@ using std::ptrdiff_t;
 #endif
 #endif
 
+#ifdef __FFLASFFPACK_USE_SIMD
+#define __LINBOX_USE_SIMD
+#else
+#define __LINBOX_NO_SIMD
+#endif
+
 
 namespace LinBox {
 

@@ -95,7 +95,7 @@ namespace LinBox {
 		// a,b and c must have size: 2^lpts
 		// -> use TFT to circumvent the padding issue
 		void mul_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b) {
-			FFT_PROFILE_START;
+			FFT_PROFILE_START(1);
 			size_t m = a.rowdim();
 			size_t k = a.coldim();
 			size_t n = b.coldim();
@@ -192,7 +192,7 @@ namespace LinBox {
 			FFT_PROFILING(1,"scaling the result");
 #ifdef FFT_PROFILER
 			totalTime.stop();
-			cout<<"FFT: total time : "<<totalTime.usertime()<<" s"<<endl;
+			//std::cout<<"FFT(1): total time : "<<totalTime<<std::endl;
 #endif
 		}
 
@@ -238,7 +238,7 @@ namespace LinBox {
 		// -> a must have been already reversed according to the midproduct algorithm
 		void midproduct_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b,
 				     bool smallLeft=true) {
-			FFT_PROFILE_START;
+			FFT_PROFILE_START(1);
 			size_t m = a.rowdim();
 			size_t k = a.coldim();
 			size_t n = b.coldim();

@@ -29,7 +29,7 @@
 #define __LINBOX_polynomial_fft_transform_H
 
 #include <iostream>
-
+#include "linbox/linbox-config.h"
 #include "linbox/algorithms/polynomial-matrix/simd.h"
 #include "linbox/util/debug.h"
 #include "givaro/givinteger.h"
@@ -161,6 +161,7 @@ namespace LinBox {
 
 		
 		void FFT_DIF_Harvey (uint32_t *fft) {			
+#ifdef __LINBOX_USE_SIMD
 #ifdef __AVX2__
 			FFT_DIF_Harvey_mod2p_iterative8x1_AVX(fft);
 			if (n>=8){
@@ -182,11 +183,18 @@ namespace LinBox {
 				for (uint64_t i = 0; i < n; i++)
 					if (fft[i] >= _pl) fft[i] -= _pl;
 			}
+#else
+			// FALLBACK WHEN NO SIMD VERSION
+			FFT_DIF_Harvey_mod2p_iterative2x2(fft);
+			for (uint64_t i = 0; i < n; i++) {
+				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
+				if (fft[i] >= _pl) fft[i] -= _pl;
+			}			
+#endif 
 		}
-
 		
 		void FFT_DIT_Harvey (uint32_t *fft) {
-
+#ifdef __LINBOX_USE_SIMD
 #ifdef __AVX2__
 			FFT_DIT_Harvey_mod4p_iterative8x1_AVX(fft);
 			if (n>=8){
@@ -216,6 +224,14 @@ namespace LinBox {
 					if (fft[i] >= _pl) fft[i] -= _pl;
 				}
 			}
+#else
+			// FALLBACK WHEN NO SIMD VERSION
+			FFT_DIT_Harvey_mod4p_iterative2x2(fft);
+			for (uint64_t i = 0; i < n; i++) {
+				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
+				if (fft[i] >= _pl) fft[i] -= _pl;
+			}			
+#endif 
 		}
 		
 		// FFT without conversion
@@ -307,7 +323,9 @@ namespace LinBox {
 } // end of namespace LinBox
 
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.inl"
+#ifdef __LINBOX_USE_SIMD
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform-simd.inl"
+#endif
 #endif // __LINBOX_FFT_H
 
 

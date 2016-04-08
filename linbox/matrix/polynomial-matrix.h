@@ -255,7 +255,7 @@ namespace LinBox{
 
                 std::ostream& write(std::ostream& os, size_t deg_min, size_t deg_max) const {
                         integer c;
-                        int wid,b;
+                        int wid=-1,b;
                         field().cardinality (c);
 
                         if (c >0){

@@ -210,6 +210,21 @@ SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::SparseMatrix(const SparseMatri
           rowBlocks_(B.rowBlocks_),colBlocks_(B.colBlocks_)
 {}
 
+// template<class Field_>
+// SparseMatrix<Field_,SparseMatrixFormat::TPL_omp> & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::operator=(const SparseMatrix<Field_,SparseMatrixFormat::TPL_omp> & rhs)
+// {
+// 	if (rhs == this)
+// 		return *this;
+//         MD_.init(rhs.field);
+// 	data_ = rhs.data_;
+// 	rows_ = rhs.rows_;
+// 	cols_ = rhs.cols_;
+// 	sortType_ = rhs.sortType_;
+//         rowBlocks_=rhs.rowBlocks_;
+//         colBlocks_=rhs.colBlocks_;
+// 	return *this;
+// }
+
 template<class Field_>
 template<class Mat1, class Mat2> Mat1& SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::
 applyLeft(Mat1 &Y, const Mat2 &X) const
