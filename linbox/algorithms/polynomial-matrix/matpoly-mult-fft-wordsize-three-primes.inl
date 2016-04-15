@@ -118,7 +118,7 @@ namespace LinBox {
 			// size_t prime_bitsize= (53-lk)>>1;
 
 			// compute max prime value for FFLAS
-			uint64_t prime_max= std::sqrt( (1ULL<<53) / k)+1;
+			uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality()));
 			RandomFFTPrime RdFFT(prime_max);
 			std::vector<integer> bas;
 			if (!RdFFT.generatePrimes(lpts,bound,bas)){
@@ -230,7 +230,8 @@ namespace LinBox {
 			// size_t prime_bitsize= (53-lk)>>1;
 
 			// compute max prime value for FFLAS
-			uint64_t prime_max= std::sqrt( (1ULL<<53) / k)+1;
+			uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality()));
+
 			RandomFFTPrime RdFFT(prime_max);
 
 			std::vector<integer> bas;

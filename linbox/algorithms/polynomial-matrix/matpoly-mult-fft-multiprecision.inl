@@ -56,7 +56,7 @@ namespace LinBox{
     integer           _maxnorm;
 
     template<typename PMatrix1>
-    size_t logmax(const PMatrix1 A) const {
+    size_t logmax(const PMatrix1& A) const {
       size_t mm=A.get(0,0,0).bitsize();
       for(size_t k=0;k<A.size();k++)
 	for (size_t i=0;i<A.rowdim()*A.coldim();i++){
@@ -79,7 +79,7 @@ namespace LinBox{
 	integer tmp;
 	do {
 	  do {Rd.random(tmp);}
-	  while (MM%tmp==0);
+	  while (MM%tmp==0 || tmp>prime_max);
 	  bas.push_back(tmp);
 	  nbp++;
 	  MM*=tmp;
@@ -88,6 +88,8 @@ namespace LinBox{
 #ifdef VERBOSE_FFT
       std::cout<<"MatPoly Multiprecision FFT : using "<<bas.size()-nbp<<" FFT primes and "<<nbp<<" normal primes "<<std::endl;
 #endif
+      for(auto i: bas)
+	if (i>prime_max) std::cout<<"ERROR\n";
     }
 
     
@@ -178,7 +180,7 @@ namespace LinBox{
       //size_t prime_bitsize= (53-lk)>>1;
 
       // compute max prime value for FFLAS      
-      uint64_t prime_max= std::sqrt( (1ULL<<53) / k)+1;
+      uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality()));
       std::vector<integer> bas;
       getFFTPrime(prime_max,lpts,bound,bas);
       // RandomFFTPrime RdFFT(prime_bitsize);
@@ -296,7 +298,7 @@ namespace LinBox{
       size_t pts  = 1; while (pts < s) { pts= pts<<1; ++lpts; }
 
       // compute max prime value for FFLAS      
-      uint64_t prime_max= std::sqrt( (1ULL<<53) / k)+1;
+      uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality()));
       std::vector<integer> bas;
       getFFTPrime(prime_max,lpts,bound,bas);
       
@@ -409,6 +411,7 @@ namespace LinBox{
       // std::cout<<"CC:="<<c<<std::endl;
       // std::cout<<"<-----------------: "<<std::endl;;
     }
+
 
 
 
