@@ -222,210 +222,175 @@ namespace LinBox
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
 		(const VectorDomain<Field> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-		 VectorCategories::DenseVectorTag) const;
+		 VectorCategories::DenseVectorTag) const
+                {
+
+                        linbox_check (A.coldim () == v.size ());
+                        linbox_check (A.rowdim () == w.size ());
+
+                        typename Matrix::ConstColIterator i = A.colBegin ();
+                        typename Vector2::const_iterator j;
+                        typename Matrix::Column::const_iterator k;
+                        std::vector<uint64_t>::iterator l;
+
+                        uint64_t t;
+
+                        if (_tmp.size () < w.size ())
+                                _tmp.resize (w.size ());
+
+                        std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+                        for (j = v.begin (); j != v.end (); ++j, ++i)
+                                {
+                                        for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
+                                                {
+                                                        t = ((uint64_t) *k) * ((uint64_t) *j);
+
+                                                        *l += t;
+
+                                                        if (*l < t)
+                                                                *l += VD.faxpy()._two_64;
+                                                }
+                                }
+
+                        typename Vector1::iterator w_j;
+
+                        for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+                                *w_j = *l % VD.field ().characteristic();
+
+                        return w;
+                }
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
 		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-		 VectorCategories::SparseSequenceVectorTag) const;
+		 VectorCategories::SparseSequenceVectorTag) const
+                {
+                        linbox_check (A.coldim () == v.size ());
+                        linbox_check (A.rowdim () == w.size ());
+
+                        typename Matrix::ConstColIterator i = A.colBegin ();
+                        typename Vector2::const_iterator j;
+                        typename Matrix::Column::const_iterator k;
+                        std::vector<uint64_t>::iterator l;
+
+                        uint64_t t;
+
+                        if (_tmp.size () < w.size ())
+                                _tmp.resize (w.size ());
+
+                        std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+                        for (j = v.begin (); j != v.end (); ++j, ++i)
+                                {
+                                        for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
+                                                {
+                                                        t = ((uint64_t) k->second) * ((uint64_t) *j);
+
+                                                        _tmp[k->first] += t;
+
+                                                        if (_tmp[k->first] < t)
+                                                                _tmp[k->first] += VD.faxpy()._two_64;
+                                                }
+                                }
+
+                        typename Vector1::iterator w_j;
+
+                        for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+                                *w_j = *l % VD.field ().characteristic();
+
+                        return w;
+                }
+
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
 		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-		 VectorCategories::SparseAssociativeVectorTag) const;
+		 VectorCategories::SparseAssociativeVectorTag) const
+                {
+
+                        linbox_check (A.coldim () == v.size ());
+                        linbox_check (A.rowdim () == w.size ());
+
+                        typename Matrix::ConstColIterator i = A.colBegin ();
+                        typename Vector2::const_iterator j;
+                        typename Matrix::Column::const_iterator k;
+                        std::vector<uint64_t>::iterator l;
+
+                        uint64_t t;
+
+                        if (_tmp.size () < w.size ())
+                                _tmp.resize (w.size ());
+
+                        std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+                        for (j = v.begin (); j != v.end (); ++j, ++i)
+                                {
+                                        for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
+                                                {
+                                                        t = ((uint64_t) k->second) * ((uint64_t) *j);
+
+                                                        _tmp[k->first] += t;
+
+                                                        if (_tmp[k->first] < t)
+                                                                _tmp[k->first] += VD.faxpy()._two_64;
+                                                }
+                                }
+
+                        typename Vector1::iterator w_j;
+
+                        for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+                                *w_j = *l % VD.field ().characteristic();
+
+                        return w;
+                }
+
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
 		(const VectorDomain<Field > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-		 VectorCategories::SparseParallelVectorTag) const;
+		 VectorCategories::SparseParallelVectorTag) const
+                {
+
+                        linbox_check (A.coldim () == v.size ());
+                        linbox_check (A.rowdim () == w.size ());
+
+                        typename Matrix::ConstColIterator i = A.colBegin ();
+                        typename Vector2::const_iterator j;
+                        typename Matrix::Column::first_type::const_iterator k_idx;
+                        typename Matrix::Column::second_type::const_iterator k_elt;
+                        std::vector<uint64_t>::iterator l;
+
+                        uint64_t t;
+
+                        if (_tmp.size () < w.size ())
+                                _tmp.resize (w.size ());
+
+                        std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+                        for (j = v.begin (); j != v.end (); ++j, ++i)
+                                {
+                                        for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();
+                                             k_idx != i->first.end ();
+                                             ++k_idx, ++k_elt, ++l)
+                                                {
+                                                        t = ((uint64_t) *k_elt) * ((uint64_t) *j);
+
+                                                        _tmp[*k_idx] += t;
+
+                                                        if (_tmp[*k_idx] < t)
+                                                                _tmp[*k_idx] += VD.faxpy()._two_64;
+                                                }
+                                }
+
+                        typename Vector1::iterator w_j;
+
+                        for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+                                *w_j = *l % VD.field ().characteristic();
+
+                        return w;
+                }
+
 
 		mutable std::vector<uint64_t> _tmp;
 	};
-	
-	template <typename Compute_t>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 & MVProductDomain<Givaro::Modular<int64_t,Compute_t> >::
-	mulColDenseSpecialized (const VectorDomain<Givaro::Modular<int64_t,Compute_t> > &VD,
-				Vector1 &w,
-				const Matrix &A,
-				const Vector2 &v,
-				VectorCategories::DenseVectorTag) const
-	{
-
-		linbox_check (A.coldim () == v.size ());
-		linbox_check (A.rowdim () == w.size ());
-
-		typename Matrix::ConstColIterator i = A.colBegin ();
-		typename Vector2::const_iterator j;
-		typename Matrix::Column::const_iterator k;
-		std::vector<uint64_t>::iterator l;
-
-		uint64_t t;
-
-		if (_tmp.size () < w.size ())
-			_tmp.resize (w.size ());
-
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
-
-		for (j = v.begin (); j != v.end (); ++j, ++i)
-		{
-			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
-			{
-				t = ((uint64_t) *k) * ((uint64_t) *j);
-
-				*l += t;
-
-				if (*l < t)
-					*l += VD.faxpy()._two_64;
-			}
-		}
-
-		typename Vector1::iterator w_j;
-
-		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().characteristic();
-
-		return w;
-	}
-
-	template <typename Compute_t>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<int64_t,Compute_t> >::
-	mulColDenseSpecialized (const VectorDomain<Givaro::Modular<int64_t,Compute_t> > &VD,
-				Vector1 &w,
-				const Matrix &A,
-				const Vector2 &v,
-				VectorCategories::SparseSequenceVectorTag) const
-	{
-		linbox_check (A.coldim () == v.size ());
-		linbox_check (A.rowdim () == w.size ());
-
-		typename Matrix::ConstColIterator i = A.colBegin ();
-		typename Vector2::const_iterator j;
-		typename Matrix::Column::const_iterator k;
-		std::vector<uint64_t>::iterator l;
-
-		uint64_t t;
-
-		if (_tmp.size () < w.size ())
-			_tmp.resize (w.size ());
-
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
-
-		for (j = v.begin (); j != v.end (); ++j, ++i)
-		{
-			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
-			{
-				t = ((uint64_t) k->second) * ((uint64_t) *j);
-
-				_tmp[k->first] += t;
-
-				if (_tmp[k->first] < t)
-					_tmp[k->first] += VD.faxpy()._two_64;
-			}
-		}
-
-		typename Vector1::iterator w_j;
-
-		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().characteristic();
-
-		return w;
-	}
-
-	template <typename Compute_t>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<int64_t,Compute_t> > ::
-	mulColDenseSpecialized(const VectorDomain<Givaro::Modular<int64_t,Compute_t> > &VD,
-			       Vector1 &w,
-			       const Matrix &A,
-			       const Vector2 &v,
-			       VectorCategories::SparseAssociativeVectorTag) const
-	{
-
-		linbox_check (A.coldim () == v.size ());
-		linbox_check (A.rowdim () == w.size ());
-
-		typename Matrix::ConstColIterator i = A.colBegin ();
-		typename Vector2::const_iterator j;
-		typename Matrix::Column::const_iterator k;
-		std::vector<uint64_t>::iterator l;
-
-		uint64_t t;
-
-		if (_tmp.size () < w.size ())
-			_tmp.resize (w.size ());
-
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
-
-		for (j = v.begin (); j != v.end (); ++j, ++i)
-		{
-			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
-			{
-				t = ((uint64_t) k->second) * ((uint64_t) *j);
-
-				_tmp[k->first] += t;
-
-				if (_tmp[k->first] < t)
-					_tmp[k->first] += VD.faxpy()._two_64;
-			}
-		}
-
-		typename Vector1::iterator w_j;
-
-		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().characteristic();
-
-		return w;
-	}
-
-	template <typename Compute_t>
-	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Givaro::Modular<int64_t,Compute_t> > ::
-	mulColDenseSpecialized (const VectorDomain<Givaro::Modular<int64_t,Compute_t> > &VD,
-				Vector1 &w,
-				const Matrix &A,
-				const Vector2 &v,
-				VectorCategories::SparseParallelVectorTag) const
-	{
-
-		linbox_check (A.coldim () == v.size ());
-		linbox_check (A.rowdim () == w.size ());
-
-		typename Matrix::ConstColIterator i = A.colBegin ();
-		typename Vector2::const_iterator j;
-		typename Matrix::Column::first_type::const_iterator k_idx;
-		typename Matrix::Column::second_type::const_iterator k_elt;
-		std::vector<uint64_t>::iterator l;
-
-		uint64_t t;
-
-		if (_tmp.size () < w.size ())
-			_tmp.resize (w.size ());
-
-		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
-
-		for (j = v.begin (); j != v.end (); ++j, ++i)
-		{
-			for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();
-			     k_idx != i->first.end ();
-			     ++k_idx, ++k_elt, ++l)
-			{
-				t = ((uint64_t) *k_elt) * ((uint64_t) *j);
-
-				_tmp[*k_idx] += t;
-
-				if (_tmp[*k_idx] < t)
-					_tmp[*k_idx] += VD.faxpy()._two_64;
-			}
-		}
-
-		typename Vector1::iterator w_j;
-
-		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().characteristic();
-
-		return w;
-	}
-
-
 }
 
 #undef LINBOX_MAX_INT64
