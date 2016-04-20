@@ -197,11 +197,11 @@ typedef __m128i  _vect128_t;
 #define VEC128_UNPACK_HI_32(C,A,B)			\
 	 C = _mm_unpackhi_epi32(A,B);
 
-// C = unpack_lo32(A,B)
+// C = unpack_lo64(A,B)
 #define VEC128_UNPACK_LO_64(C,A,B)			\
 	 C = _mm_unpacklo_epi64(A,B);
 
-// C = unpack_hi32(A,B)
+// C = unpack_hi64(A,B)
 #define VEC128_UNPACK_HI_64(C,A,B)			\
 	 C = _mm_unpackhi_epi64(A,B);
 
