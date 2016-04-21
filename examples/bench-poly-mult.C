@@ -22,6 +22,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
  */
+
+#define __FFLASFFPACK_SEQUENTIAL
+
+
 #include <linbox/linbox-config.h>
 #ifdef VERB
 #define KARA_TIMING
@@ -63,32 +67,12 @@ using namespace std;
 #include <linbox/algorithms/polynomial-matrix/polynomial-mul.h>
 
 
-#ifdef BENCH_FLINT
-#define __GMP_BITS_PER_MP_LIMB 64
-extern "C" {
-#include "flint/longlong.h"
-#include "flint/ulong_extras.h"
-#include "flint/nmod_poly_mat.h"
-#include "flint/flint.h"
-}
-#endif
-#ifdef BENCH_MMX
-#include <numerix/modular_int.hpp>
-#include <algebramix/polynomial.hpp>
-#include <algebramix/polynomial_modular_int.hpp>
-#include <algebramix/polynomial_tft.hpp>
-#include <algebramix/matrix.hpp>
-#include <algebramix/matrix_modular_int.hpp>
-#include <algebramix/matrix_tft.hpp>
-#define Prime_field(C, n, p)						\
-	modular<modulus<C, modulus_int_preinverse<n> >, modular_fixed<int,p> >
-
-#endif
 
 using namespace LinBox;
 
-
-
+#ifdef BENCH_NTL
+#include "eric-mul.h"
+#endif
 
 template <typename Rand, typename Vect>
 void randomVect (Rand& r, Vect& v) {
@@ -101,7 +85,6 @@ void randomVect (Rand& r, Vect& v) {
 template<typename Field, typename RandIter>
 void check_pol_mulfft(const Field& fld,  RandIter& Gen, size_t d) {
 	typedef typename  Field::Element Element;
-	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 
 	std::vector<Element> A(d),B(d),C(2*d-1),D(2*d-1,0);
 	// Generate random matrix of polynomial
@@ -119,6 +102,7 @@ void check_pol_mulfft(const Field& fld,  RandIter& Gen, size_t d) {
 	size_t count=0;
 	bool correct=true;
 	do {
+		std::vector<Element> D(2*d-1,0);
 		PMFFT.mul(C,A,B);
 		for(size_t i=0;i<d;i++)
 			for(size_t j=0;j<d;j++)
@@ -137,15 +121,14 @@ void check_pol_mulfft(const Field& fld,  RandIter& Gen, size_t d) {
 	}
 
 		count++;
-	} while (count<3 && correct);
+	} while (count<1 && correct);
 	cout<<"polmul fft is "<<(correct?" OK":" KO")<<endl;
 	cout<<endl;
 }
 
 
 template<typename Field, typename RandIter>
-void profile_pol_mulfft(const Field& fld,  RandIter& Gen, size_t d) {
-	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
+void profile_pol_mulfft(const Field& fld,  RandIter& Gen, size_t d,size_t b) {
 
 	std::vector<typename Field::Element> A(d),B(d),C(2*d-1);
 	// Generate random matrix of polynomial
@@ -172,8 +155,33 @@ void profile_pol_mulfft(const Field& fld,  RandIter& Gen, size_t d) {
 	//cout<<chrono.userElapsedTime()/count<<" (";
 	//cout<<chrono.realElapsedTime()/count<<") ";
 	//cout<<chrono.gettime()/count<<" ";
-	cout<<chrono<<" ";
-	cout<<endl;
+	cout<<endl<<endl;
+	cout<<"FFLAS code : "<<chrono<<endl;
+
+#ifdef BENCH_NTL
+	ZZ p;
+	p = RandomBits_ZZ(b);
+	p = 2*p + 1;
+	ZZ_p::init(p);
+	
+	ZZ_pX f = random_ZZ_pX(d);
+	ZZ_pX g = random_ZZ_pX(d);
+	ZZ_pX h;
+	
+	chrono.clear();
+	chrono.start();
+	my_mul(h, f, g);
+	chrono.stop();
+	cout<<"Eric code  : "<<chrono<<endl;
+	chrono.clear();
+	chrono.start();	
+	ZZ_pX h2 = f*g;
+	chrono.stop();
+	cout<<"NTL code   : "<<chrono<<endl;
+#endif
+
+
+	
 }
 
 
@@ -187,16 +195,16 @@ void runTest(const Field& F, long b, long d, long seed, std::string test){
 	//typename Field::RandIter G(F,seed);
 	if (test == "all"){
 		check_pol_mulfft(F,G,d);
-		profile_pol_mulfft(F,G,d);
+		profile_pol_mulfft(F,G,d,b);
 	}
 	if (test == "check")
 		check_pol_mulfft(F,G,d);
 	if (test == "fft")
-		profile_pol_mulfft(F,G,d);
+		profile_pol_mulfft(F,G,d,b);
 	if (test == "longfft"){
 		size_t D[15]={64,128,256,512,1024,2048,4096,8192};
 		for (auto x:D)
-			profile_pol_mulfft(F,G,x);
+			profile_pol_mulfft(F,G,x,b);
 	}
 }
 
@@ -206,13 +214,15 @@ int main(int argc, char** argv){
 	static bool    z = false; // computer over  Z[x]
 	static long    seed = time(NULL);
 	static std::string  test ="all";
-
+	static bool genprime=false;
+	
 	static Argument args[] = {
 		{ 'd', "-d D", "Set degree of test matrices to D.", TYPE_INT,     &d },
 		{ 'b', "-b B", "Set bitsize of the matrix entries", TYPE_INT, &b },
 		{ 'z', "-z y", "Perform the computation over Z[x]", TYPE_BOOL, &z},
 		{ 's', "-s s", "Set the random seed to a specific value", TYPE_INT, &seed},
 		{ 't', "-t t", "Choose the targeted test {all,check,fft,longfft}", TYPE_STR, &test},
+		{ 'g', "-g y", "Perform the computation with generic prime", TYPE_BOOL, &genprime},
 		END_OF_ARGUMENTS
 	};
 	parseArguments (argc, argv, args);
@@ -243,11 +253,17 @@ int main(int argc, char** argv){
 #ifdef FFT_PROFILER 
 			FFT_PROF_LEVEL=1; 
 #endif
-			RandomFFTPrime Rd(1<<b,seed);
-			integer p = Rd.randomPrime(integer(d).bitsize()+1);
-			//Givaro::Modular<int32_t> F((int32_t)p);
+			integer p;
+			if (genprime){
+				RandomPrimeIter Rd(b,seed);
+				p= Rd.random();
+			}else {
+				RandomFFTPrime Rd(1<<b,seed);
+				p = Rd.randomPrime(integer(d).bitsize()+1);
+			}
+			//Givaro::Modular<int32_t,int64_t> F((int32_t)p);
 			Givaro::Modular<double> F((int32_t)p);
-			cout<<"Computation over Fp[x] with p=  "<<p<<" (FFT prime)"<<endl;
+			cout<<"Computation over Fp[x] with p=  "<<p<< (genprime?" (Generic prime)":" (FFT prime)")<<endl;
 			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 			runTest (F,b,d,seed,test);
 		}

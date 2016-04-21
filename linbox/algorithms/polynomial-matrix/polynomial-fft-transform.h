@@ -33,6 +33,11 @@
 #include "linbox/algorithms/polynomial-matrix/simd.h"
 #include "linbox/util/debug.h"
 #include "givaro/givinteger.h"
+#include <fflas-ffpack/fflas/fflas_simd.h>
+#include <fflas-ffpack/fflas/fflas_simd/simd_modular.inl>
+#ifndef ROUND_DOWN
+#define ROUND_DOWN(x, s) ((x) & ~((s)-1))
+#endif
 
 // template<typename T>
 // std::ostream& operator<<(std::ostream& os, const std::vector<T> &x){
@@ -110,15 +115,14 @@ namespace LinBox {
 			linbox_check((_pl >> 29) == 0 ); // 8*p < 2^31 for Harvey's butterflies
 			_dpl = (_pl << 1);
 			//_pinv = 1 / (double) _pl;
-							
+			Givaro::Timer chrono;							
+			
 			if (w == 0){   // find a pseudo 2^lpts-th primitive root of unity
+
+				chrono.start();
+				
 				uint64_t _val2p = 0;
 				uint64_t     _m = _pl;
-				uint64_t  _logp = 0;
-				while (_m) {
-					_m >>= 1;
-					_logp++;
-				}
 				_m = _pl - 1;
 				while ((_m & 1) == 0) {
 					_m >>= 1;
@@ -127,32 +131,86 @@ namespace LinBox {
 				//_I = (1L << (_logp << 1)) / _pl;
 				uint64_t _gen = find_gen (_m, _val2p);
 				_w = Givaro::powmod(_gen, 1<<(_val2p-ln), _pl);
+		
 			}
 			else {
 				_w = (uint32_t)w;
 			}
+			chrono.clear();
+			chrono.start();				
 			
 			// compute w^(-1) mod p = w^(2^lpts - 1)
 			_invw = Givaro::powmod(_w, (1<<ln) - 1, _pl);
 			
 			size_t pos = 0;
-			uint64_t wi = 1;
-			uint64_t __w = _w;
+			//uint64_t wi = 1;
+			uint32_t wi = 1;
+			uint32_t __w = _w;
+			uint64_t  _logp = Givaro::Integer(_pl).bitsize() -1;
+			uint32_t BAR= (Givaro::Integer(1)<<(32+_logp))/Givaro::Integer(_pl);
+			uint32_t Q;
+			//cout<<"log Bar: "<<Integer(BAR).bitsize()<<endl;
 			if (ln>0){
+#ifdef MYOLD_FFTINIT
 				size_t tpts = 1 << (ln - 1);
 				while (tpts > 0) {
 					for (size_t i = 0; i < tpts; i++, pos++) {
+
 						pow_w[pos] = wi;
 						pow_wp[pos] = ((uint64_t) pow_w[pos] << 32UL) / _pl;
 						wi= (wi*__w)%_pl;
-						//field().mulin(wi, __w);
 					}
 					wi = 1;
 					__w = (__w * __w) % _pl;
 					//field().mulin(__w, __w);
 					tpts >>= 1;
 				}
-			}
+#else
+				using simd=Simd<uint32_t>;
+				using vect_t =typename simd::vect_t;
+				
+				size_t tpts = 1 << (ln - 1);
+				size_t i=0;
+				for( ;i<std::min(simd::vect_size+1, tpts);i++,pos++){
+					pow_w[pos] = wi;
+					pow_wp[pos] = ((uint64_t) pow_w[pos] << 32UL) / _pl;
+					wi= ((uint64_t)wi*__w)%_pl;
+				}
+				vect_t wp_vect, Q_vect,BAR_vect,w_vect,pow_w_vect,pow_wp_vect, pl_vect;
+				BAR_vect= simd::set1(BAR);
+				wp_vect = simd::set1(pow_wp[simd::vect_size]);
+				w_vect  = simd::set1(pow_w[simd::vect_size]);
+				pl_vect = simd::set1(_pl);
+				/*				
+				for (; i < ROUND_DOWN(tpts,simd::vect_size);
+				     i+=simd::vect_size,pos+=simd::vect_size) {
+					pow_w_vect  = simd::loadu((int32_t*)pow_w.data()+pos-simd::vect_size);
+					Q_vect=simd::mulhi(pow_w_vect,wp_vect);
+					pow_w_vect = simd::sub(simd::mullo(pow_w_vect,w_vect),simd::mullo(Q_vect,pl_vect));
+					pow_w_vect=simd::sub(pow_w_vect, simd::vandnot(simd::greater(pow_w_vect,pl_vect),pl_vect));
+					simd::storeu((int32_t*)pow_w.data()+pos,pow_w_vect);
+					pow_wp_vect= simd::mulhi(simd::sll(pow_w_vect,32-_logp),BAR_vect);
+					simd::storeu((int32_t*)pow_wp.data()+pos,pow_wp_vect);
+				}
+				*/
+				for( ;i<tpts;i++,pos++){
+					pow_w[pos] = wi;
+					pow_wp[pos]= (((uint64_t)wi*BAR)>>_logp);
+					Q= ((uint64_t)wi*pow_wp[1])>>32;
+					wi= (uint32_t)(wi*__w - Q*_pl);
+					wi-=(wi>=_pl?_pl:0);
+				}
+				
+				for(size_t k=2;k<tpts;k<<=1)
+					for(size_t i=0;i<tpts;i+=k,pos++){
+						pow_w[pos]  = pow_w[i];
+						pow_wp[pos] = pow_wp[i];
+					}
+#endif	
+				
+			}	
+			chrono.stop();
+			//cout<<"FFT: table="<<chrono<<endl;
 		}
 
 
@@ -250,21 +308,29 @@ namespace LinBox {
 		template <typename T=Element>
 		typename std::enable_if<!std::is_same<T,uint32_t>::value>::type
 		FFT_DIF (T *fft) {
-			for(uint64_t i=0;i<n;i++)
-				_data[i]=fft[i];
-			FFT_DIF_Harvey(&_data[0]);
-			for(uint64_t i=0;i<n;i++)
-				fft[i]=_data[i];
-			
+			// for(uint64_t i=0;i<n;i++)
+			// 	_data[i]=fft[i];
+			// FFT_DIF_Harvey(&_data[0]);
+			// for(uint64_t i=0;i<n;i++)
+			// 	fft[i]=_data[i];
+			std::copy(fft,fft+n,_data.data());
+			FFT_DIF_Harvey(_data.data());
+			std::copy(_data.begin(),_data.end(),fft);
+
 		}
 		template <typename T=Element>
 		typename std::enable_if<!std::is_same<T,uint32_t>::value>::type
 		FFT_DIT (T *fft) {
-			for(uint64_t i=0;i<n;i++)
-				_data[i]=fft[i];
-			FFT_DIT_Harvey(&_data[0]);
-			for(uint64_t i=0;i<n;i++)
-				fft[i]=_data[i];			
+			// for(uint64_t i=0;i<n;i++)
+			// 	_data[i]=fft[i];
+			// FFT_DIT_Harvey(&_data[0]);
+			// for(uint64_t i=0;i<n;i++)
+			// 	fft[i]=_data[i];			
+			std::copy(fft,fft+n,_data.data());
+			FFT_DIT_Harvey(_data.data());
+			std::copy(_data.begin(),_data.end(),fft);
+
+
 		}
 				
 		/*
@@ -319,8 +385,8 @@ namespace LinBox {
 		void FFT_DIT_Harvey_mod4p_iterative8x1_AVX (uint32_t *fft);
 #endif
 
-	};
-} // end of namespace LinBox
+		};
+	} // end of namespace LinBox
 
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.inl"
 #ifdef __LINBOX_USE_SIMD
