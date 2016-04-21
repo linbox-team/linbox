@@ -148,6 +148,8 @@ pkgincludesub_HEADERS =            \
 	short-vector.h                     \
 	rns.h                              \
 	rns.inl                            \
+	invariant-factors.h                \
+	smith-form-iliopolous2.h           \
 	$(USE_OCL_HDRS)
 
 #  iml.h                              \
