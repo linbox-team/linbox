@@ -30,7 +30,6 @@
 
 #include <iostream>
 #include "linbox/linbox-config.h"
-#include "linbox/algorithms/polynomial-matrix/simd.h"
 #include "linbox/util/debug.h"
 #include "givaro/givinteger.h"
 #include <fflas-ffpack/fflas/fflas_simd.h>
@@ -47,6 +46,26 @@
 // }
 
 #include "fflas-ffpack/utils/align-allocator.h"
+
+#ifdef __LINBOX_USE_SIMD
+
+//#include "linbox/algorithms/polynomial-matrix/simd.h"
+
+#include "fflas-ffpack/fflas/fflas_simd.h"
+
+#ifdef __AVX2__
+/* 256 bits CODE HERE */
+#define __LINBOX_HAVE_AVX2
+
+// define 256 bits simd vector type
+typedef __m256i  _vect256_t;
+
+#endif
+
+// define 128 bits simd vector type
+typedef __m128i  _vect128_t;
+
+#endif
 
 namespace LinBox {
 
@@ -218,13 +237,13 @@ namespace LinBox {
 		Element getInvRoot() const {return _invw;}
 
 		
-		void FFT_DIF_Harvey (uint32_t *fft) {			
+		void FFT_DIF_Harvey (uint32_t *fft) {
 #ifdef __LINBOX_USE_SIMD
 #ifdef __AVX2__
 			FFT_DIF_Harvey_mod2p_iterative8x1_AVX(fft);
 			if (n>=8){
 				_vect256_t P;
-				VEC256_SET_32(P,_pl);
+				P = Simd256<uint32_t>::set1(_pl);
 				for (uint64_t i = 0; i < n; i += 8)
 					reduce256_modp(fft+i,P);
 				return;
@@ -234,7 +253,7 @@ namespace LinBox {
 #endif
 			if (n >=4) {
 				_vect128_t P;
-				VEC128_SET_32(P,_pl);
+				P = Simd128<uint32_t>::set1(_pl);
 				for (uint64_t i = 0; i < n; i += 4)
 					reduce128_modp(fft+i,P);
 			} else {
@@ -257,8 +276,8 @@ namespace LinBox {
 			FFT_DIT_Harvey_mod4p_iterative8x1_AVX(fft);
 			if (n>=8){
 				_vect256_t P,P2;
-				VEC256_SET_32(P, _pl);
-				VEC256_SET_32(P2,_dpl);
+				P = Simd256<uint32_t>::set1( _pl);
+				P2 = Simd256<uint32_t>::set1(_dpl);
 				for (uint64_t i = 0; i < n; i += 8){
 					reduce256_modp(&fft[i],P2);
 					reduce256_modp(&fft[i],P);
@@ -270,8 +289,8 @@ namespace LinBox {
 #endif
 			if (n >=4) {
 				_vect128_t P,P2;
-				VEC128_SET_32(P,_pl);
-				VEC128_SET_32(P2,_dpl);
+				P = Simd128<uint32_t>::set1(_pl);
+				P2 = Simd128<uint32_t>::set1(_dpl);
 				for (uint64_t i = 0; i < n; i += 4){
 					reduce128_modp(&fft[i],P2);
 					reduce128_modp(&fft[i],P);
