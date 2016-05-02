@@ -189,11 +189,13 @@ namespace LinBox {
 			std::vector<double> basis(num_primes);
 			std::copy(bas.begin(),bas.end(),basis.begin());
 
-#ifdef FFT_PROFILER
-			std::cout << "number of FFT primes :" << num_primes << std::endl;
-			std::cout << "max prime            : "<<prime_max<<" ("<<integer(prime_max).bitsize()<<")"<<std::endl;
-			std::cout << "bitsize of the output: "<<bound.bitsize();
-			std::cout <<" +++++++++++++++++++++++++++++++"<<std::endl;	
+#if defined(FFT_PROFILER)
+			if (FFT_PROF_LEVEL<2){
+				std::cout << "number of FFT primes :" << num_primes << std::endl;
+				std::cout << "max prime            : "<<prime_max<<" ("<<integer(prime_max).bitsize()<<")"<<std::endl;
+				std::cout << "bitsize of the output: "<<bound.bitsize();
+				std::cout <<" +++++++++++++++++++++++++++++++"<<std::endl;
+			}
 #endif
 			Polynomial c_i(num_primes*pts);
 			Polynomial ai(pts),bi(pts);
@@ -201,10 +203,10 @@ namespace LinBox {
 			for (size_t l=0;l<num_primes;l++){
 				ModField F(basis[l]);
 				PolynomialFFTPrimeMulDomain<ModField> fftdomain (F);
-				//FFLAS::fassign(F,pts,a,1,ai.data(),1);
-				//FFLAS::fassign(F,pts,b,1,bi.data(),1);
-				//fftdomain.mul_fft(lpts, c_i.data()+l*pts, ai.data(), bi.data());
-				fftdomain.mul_fft(lpts, c_i.data()+l*pts, a, b);				
+				FFLAS::fassign(F,pts,a,1,ai.data(),1);
+				FFLAS::fassign(F,pts,b,1,bi.data(),1);
+				fftdomain.mul_fft(lpts, c_i.data()+l*pts, ai.data(), bi.data());
+				//fftdomain.mul_fft(lpts, c_i.data()+l*pts, a, b);				
 			}
 			FFT_PROFILING(1,"3Primes: red+mul");
 	    

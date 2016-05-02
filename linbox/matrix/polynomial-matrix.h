@@ -34,6 +34,15 @@
 #include "givaro/modular.h"
 #include <algorithm>
 
+#ifdef TRACK_MEMORY
+uint64_t max_memory=0, cur_memory=0;
+#define ADD_MEM(x) cur_memory+=x; max_memory=std::max(max_memory,cur_memory);
+#define DEL_MEM(x) cur_memory-=x;
+#define PRINT_MEMINFO std::cerr<<"Memory Info: max="<<max_memory/1000000.<<" Mo"<<std::endl;
+#else
+#define ADD_MEM(X) ;
+#define DEL_MEM(X) ;     
+#endif
 
 #define COPY_BLOCKSIZE 32
 
@@ -73,9 +82,14 @@ namespace LinBox{
 					_repview[i*_col+j]= Polynomial(_rep.begin()+(i*_col+j)*_store,_size);
 			//integer p;
 			//std::cout<<"MatrixP allocating : "<<r*c*s*length(f.characteristic(p))/1000000.<<"Mo"<<std::endl;
+			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
+			ADD_MEM(_row*_col*(_size*bb+2*sizeof(Iterator)));
 		}
 
 		~PolynomialMatrix(){
+			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
+			DEL_MEM(_row*_col*(_size*bb+2*sizeof(Iterator)));
+
 			//integer p;
 			//std::cout<<"MatrixP Desallocating : "<<_row*_col*_store*length(_fld->characteristic(p))/1000000.<<"Mo"<<std::endl;
 			
@@ -327,9 +341,14 @@ namespace LinBox{
 				_rep[i].init(f,r,c);
 			//integer p;
 			//std::cout<<"PMatrix allocating : "<<r*c*s*length(f.characteristic(p))/1000000.<<"Mo"<<std::endl;
+			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
+			ADD_MEM((_size*(_row*_col*bb+sizeof(Matrix))));
+
 		}
 
 		~PolynomialMatrix(){
+			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
+			DEL_MEM((_size*(_row*_col*bb+sizeof(Matrix))));
 			//integer p;
 			//std::cout<<"PMatrix Desallocating : "<<_row*_col*_size*length(_fld->characteristic(p))/1000000.<<"Mo"<<std::endl;
 		}

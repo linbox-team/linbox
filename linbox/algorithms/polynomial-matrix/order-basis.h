@@ -32,13 +32,16 @@
 #define MBASIS_THRESHOLD_LOG 5
 #define MBASIS_THRESHOLD (1<<MBASIS_THRESHOLD_LOG)
 
+
 namespace LinBox {
 
 #ifdef __CHECK_ORDERBASIS
 #define __CHECK_MBASIS
 #define __CHECK_PMBASIS
 #endif
+
         
+
 #if (__CHECK_MBASIS) or (__CHECK_PMBASIS)
 #include <string>
         template<typename Field, typename Mat>
@@ -119,7 +122,10 @@ namespace LinBox {
 #endif
                 OrderBasis(const Field& f) : _field(&f), _PMD(f), _BMD(f) {                 
                 }
-
+#ifdef TRACK_MEMORY
+                ~OrderBasis() { PRINT_MEMINFO;}
+#endif
+                
                 inline const Field& field() const {return *_field;}
 
                 // serie must have exactly order elements (i.e. its degree = order-1)

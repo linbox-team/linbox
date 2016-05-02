@@ -1,4 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+#define __FFLASFFPACK_SEQUENTIAL
+
 #include <iostream>
 #include <iomanip>
 size_t getPeakRSS( );
