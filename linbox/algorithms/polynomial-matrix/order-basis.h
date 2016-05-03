@@ -32,14 +32,17 @@
 #define MBASIS_THRESHOLD_LOG 5
 #define MBASIS_THRESHOLD (1<<MBASIS_THRESHOLD_LOG)
 
+
 namespace LinBox {
 
 #ifdef __CHECK_ORDERBASIS
 #define __CHECK_MBASIS
 #define __CHECK_PMBASIS
 #endif
+
         
-#if (__CHECK_MBASIS) or (__CHECK_PMBASIS)
+
+#if defined (__CHECK_MBASIS) or defined (__CHECK_PMBASIS)
 #include <string>
         template<typename Field, typename Mat>
         std::string check_orderbasis(const Field& F, const Mat& sigma,  const Mat& serie, size_t ord){
@@ -110,7 +113,7 @@ namespace LinBox {
                 BlasMatrixDomain<Field>            _BMD;
                 ET                           _EarlyStop;
         public:
-#if 1 or (PROFILE_PMBASIS) or (__CHECK_MBASIS)or (__CHECK_PMBASIS)
+#if  defined(PROFILE_PMBASIS) or defined(__CHECK_MBASIS) or defined(__CHECK_PMBASIS)
                 size_t _idx=0;
                 size_t _target=0;
                 double  _eta=0.;
@@ -119,7 +122,10 @@ namespace LinBox {
 #endif
                 OrderBasis(const Field& f) : _field(&f), _PMD(f), _BMD(f) {                 
                 }
-
+#ifdef TRACK_MEMORY
+                ~OrderBasis() { PRINT_MEMINFO;}
+#endif
+                
                 inline const Field& field() const {return *_field;}
 
                 // serie must have exactly order elements (i.e. its degree = order-1)
@@ -146,7 +152,7 @@ namespace LinBox {
                                 std::vector<size_t>       &shift)
                 {
 
-#if 1 or (PROFILE_PMBASIS)
+#ifdef PROFILE_PMBASIS
                         //std::cout<<"Start PM-Basis : "<<order<<" ("<<_idx<<"/"<<_target<<")] : "<<std::endl;//MEMINFO<<std::endl;
                         if (_target==0) _target=order;
                         if (!_started) {_started=true; _start = std::chrono::system_clock::now();}
@@ -154,7 +160,7 @@ namespace LinBox {
 #endif
                         
                         if (order <= MBASIS_THRESHOLD) {
-#if 1 or (PROFILE_PMBASIS) or (__CHECK_PMBASIS)
+#if defined (PROFILE_PMBASIS) or defined(__CHECK_PMBASIS)
                                 _idx+=order;
 #endif
                                 return M_Basis(sigma, serie, order, shift);                            

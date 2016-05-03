@@ -91,9 +91,9 @@ using namespace LinBox;
 
 template <typename Rand, typename Vect>
 void randomVect (Rand& r, Vect& v) {
-	size_t s = v.size();
+	size_t s = v.size();				   
 	for (size_t i = 0; i < s; ++i)
-		r.random(v[i]);
+		r.random(v[i]); 
 }
 
 template <typename Rand, typename Mat>
@@ -298,7 +298,6 @@ template<typename Field, typename RandIter>
 void profile_matpol_mulfft(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
-
 	// Generate random matrix of polynomial
 	for (size_t i=0;i<n*n;i++){
 		randomVect(Gen,A(i));
@@ -415,8 +414,9 @@ void profile_matpol_mulkara(const Field& fld,  RandIter& Gen, size_t n, size_t d
 
 template<typename Field>
 void runTest(const Field& F, size_t n, long b, long d, long seed, std::string test){
-	//typename Field::RandIter G(F,b,seed);
-	typename Field::RandIter G(F,seed);
+	
+	typename Field::RandIter G(F,b,seed);
+	//typename Field::RandIter G(F,seed);	
 	if (test == "check"|| test == "all")
 		check_matpol_mul(F,G,n,d);
 	if (test == "bench" || test == "all")
