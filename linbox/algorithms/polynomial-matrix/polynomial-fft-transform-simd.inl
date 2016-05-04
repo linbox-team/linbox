@@ -51,19 +51,19 @@
 
 // C=A*B (4 op 32x32->32 high product) // A and with a mask can be used to remove the last two shift with C
 #define VEC128_MUL_HI_32(C,A,B,A1,B1)			\
-	C  = Simd128<uint64_t>::mulux(A,B);				\
+	C  = Simd128<uint64_t>::mulx(A,B);				\
 	A1 = Simd128<uint64_t>::srl(A,32);			\
 	B1 = Simd128<uint64_t>::srl(B,32);			\
-	A1 = Simd128<uint64_t>::mulux(A1,B1);			\
+	A1 = Simd128<uint64_t>::mulx(A1,B1);			\
 	C  = Simd128<uint64_t>::srl(C,32);			\
 	A1 = Simd128<uint64_t>::srl(A1,32);			\
 	A1 = Simd128<uint64_t>::sll(A1,32);			\
 	C  = Simd128<uint64_t>::vor(C,A1);
 #define VEC256_MUL_HI_32(C,A,B,A1,B1)			\
-	C  = Simd256<uint64_t>::mulux(A,B);				\
+	C  = Simd256<uint64_t>::mulx(A,B);				\
 	A1 = Simd256<uint64_t>::srl(A,32);			\
 	B1 = Simd256<uint64_t>::srl(B,32);			\
-	A1 = Simd256<uint64_t>::mulux(A1,B1);			\
+	A1 = Simd256<uint64_t>::mulx(A1,B1);			\
 	C  = Simd256<uint64_t>::srl(C,32);			\
 	A1 = Simd256<uint64_t>::srl(A1,32);			\
 	A1 = Simd256<uint64_t>::sll(A1,32);			\
@@ -285,7 +285,7 @@ namespace LinBox {
 		VEC128_UNPACK_HI_32(V4,V2,V2);
 		// V6 = V4 * Wp mod 2^64
 		// Wp = [Wp ? Wp ?]
-		V7 = Simd128<uint64_t>::mulux(V4,Wp);
+		V7 = Simd128<uint64_t>::mulx(V4,Wp);
 		V5 = Simd128<uint32_t>::mullo(V7,P);
 		// At this point V4= [? Q_D*p ? Q_H*p]
 		// V5 = [D D H H] * [W W W W] mod 2^32
@@ -368,7 +368,7 @@ namespace LinBox {
 		VEC128_UNPACK_HI_32(T1,V4,V4);
 		// T2 = T1 * Wp mod 2^64
 		// Wp = [Wp ? Wp ?]
-		T2 = Simd128<uint64_t>::mulux(T1,Wp);
+		T2 = Simd128<uint64_t>::mulx(T1,Wp);
 		T3 = Simd128<uint32_t>::mullo(T2,P);
 		// At this point T3= [? Q_D*p ? Q_H*p]
 		// T4 = [D D H H] * [W W W W] mod 2^32
@@ -638,7 +638,7 @@ namespace LinBox {
 
 		// Q = V4 * beta mod 2^64 = [* Qd * Qh * Ql * Qp]
 		// with betap= [ betap * betap * betap * betap *]
-		Q = Simd256<uint64_t>::mulux(V4,betap);
+		Q = Simd256<uint64_t>::mulx(V4,betap);
 		// V5 = [* Qd.P * Qh.P * Ql.P * Qp.P]
 		V5 = Simd256<uint32_t>::mullo(Q,P);
 		// V6 = V4 * beta mod 2^32
@@ -805,7 +805,7 @@ namespace LinBox {
 		VEC256_UNPACK_HI_32(V5,V2,V2);
 		// Q = V5 * alpha mod 2^64 = [* Qd * Qh * Ql * Qp]
 		// with betap= [ alphap * alphap * alphap * alphap *]
-		Q = Simd256<uint64_t>::mulux(V5,alphap);
+		Q = Simd256<uint64_t>::mulx(V5,alphap);
 		// V6 = [* Qd.P * Qh.P * Ql.P * Qp.P]
 		V6 = Simd256<uint32_t>::mullo(Q,P);
 		// V7 = V5 * alpha mod 2^32
