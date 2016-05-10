@@ -630,8 +630,12 @@ namespace LinBox{
       IntField Z;      
       PolynomialMatrixFFTMulDomain<IntField> Zmul(Z,_p);
       integer bound=2*_p*_p*integer((uint64_t)a.coldim())*integer((uint64_t)std::min(a.size(),b.size()));
+#ifdef TRY1
+      Zmul.mul_crtla2(c,a,b,_p,_p,bound); 
+#else
       Zmul.mul_crtla(c,a,b,_p,_p,bound);
-      //Zmul.mul_crtla2(c,a,b,_p,_p,bound); 
+#endif
+      
       
       // reduce the result mod p
       FFT_PROFILE_START(2);

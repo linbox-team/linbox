@@ -33,7 +33,7 @@
 #include "linbox/util/debug.h"
 #include "givaro/givinteger.h"
 #include <fflas-ffpack/fflas/fflas_simd.h>
-#include <fflas-ffpack/fflas/fflas_simd/simd_modular.inl>
+
 #ifndef ROUND_DOWN
 #define ROUND_DOWN(x, s) ((x) & ~((s)-1))
 #endif
