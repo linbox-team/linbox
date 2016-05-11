@@ -67,15 +67,20 @@ namespace LinBox{
     }
 
   public:
-    void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas){
+    void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas, size_t k, size_t d){
 
       RandomFFTPrime RdFFT(prime_max);
       size_t nbp=0;
       if (!RdFFT.generatePrimes(lpts,bound,bas)){
 	integer MM=1;
-	for(std::vector<integer>::size_type i=0;i<bas.size();i++)
+	for(std::vector<integer>::size_type i=0;i<bas.size();i++){
 	  MM*=bas[i];
-	RandomPrimeIter Rd(integer(prime_max).bitsize());
+	  std::cout<<bas[i]<<std::endl;
+	}
+	//RandomPrimeIter Rd(integer(prime_max).bitsize());
+	// compute max bitsize for prime allowing three prime fft
+	integer prime_max_tp=MM/uint64_t(d*k);
+	RandomPrimeIter Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize()));
 	integer tmp;
 	do {
 	  do {Rd.random(tmp);}
@@ -86,6 +91,7 @@ namespace LinBox{
 	} while (MM<bound);	
       }
 #ifdef VERBOSE_FFT
+      std::cout<<"normal prime bitmax: "<<std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())<<std::endl;
       std::cout<<"MatPoly Multiprecision FFT : using "<<bas.size()-nbp<<" FFT primes and "<<nbp<<" normal primes "<<std::endl;
 #endif
       for(auto i: bas)
@@ -182,7 +188,7 @@ namespace LinBox{
       // compute max prime value for FFLAS      
       uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality()));
       std::vector<integer> bas;
-      getFFTPrime(prime_max,lpts,bound,bas);
+      getFFTPrime(prime_max,lpts,bound,bas,k,s);
       // RandomFFTPrime RdFFT(prime_bitsize);
       // if (!RdFFT.generatePrimes(lpts,bound,bas)){
       // 	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL taking normal primes..."<<std::endl;
@@ -304,7 +310,7 @@ namespace LinBox{
       // compute max prime value for FFLAS      
       uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality()));
       std::vector<integer> bas;
-      getFFTPrime(prime_max,lpts,bound,bas);
+      getFFTPrime(prime_max,lpts,bound,bas,k,s);
       
       std::vector<double> basis(bas.size());
       std::copy(bas.begin(),bas.end(),basis.begin());
@@ -474,7 +480,7 @@ namespace LinBox{
       // compute max prime value for FFLAS
       uint64_t prime_max= std::sqrt( (1ULL<<53) / k)+1;
       std::vector<integer> bas;
-      getFFTPrime(prime_max,lpts,bound,bas);
+      getFFTPrime(prime_max,lpts,bound,bas,k,deg);
       //RandomFFTPrime RdFFT(prime_bitsize);
       // if (!RdFFT.generatePrimes(bound,bas)){
       // 	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL exiting..."<<std::endl;
