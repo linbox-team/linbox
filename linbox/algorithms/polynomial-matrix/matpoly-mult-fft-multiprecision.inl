@@ -80,7 +80,10 @@ namespace LinBox{
 	//RandomPrimeIter Rd(integer(prime_max).bitsize());
 	// compute max bitsize for prime allowing three prime fft
 	integer prime_max_tp=MM/uint64_t(d*k);
-	RandomPrimeIter Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize()));
+	RandomPrimeIter Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())-1);
+#ifdef VERBOSE_FFT
+	std::cout<<"normal prime bitmax: "<<std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize()-1)<<std::endl;
+#endif
 	integer tmp;
 	do {
 	  do {Rd.random(tmp);}
@@ -90,8 +93,7 @@ namespace LinBox{
 	  MM*=tmp;
 	} while (MM<bound);	
       }
-#ifdef VERBOSE_FFT
-      std::cout<<"normal prime bitmax: "<<std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())<<std::endl;
+#ifdef VERBOSE_FFT      
       std::cout<<"MatPoly Multiprecision FFT : using "<<bas.size()-nbp<<" FFT primes and "<<nbp<<" normal primes "<<std::endl;
 #endif
       for(auto i: bas)
@@ -220,7 +222,10 @@ namespace LinBox{
       //std::cout<<"MUL FFT RNS: RNS -> allocating "<<MB((n_ta+n_tb)*num_primes*8)<<"Mo"<<std::endl;
       double* t_a_mod= new double[n_ta*num_primes];
       double* t_b_mod= new double[n_tb*num_primes];
-      ADD_MEM(8*(n_ta+n_tb)*num_primes);
+      //ADD_MEM(8*(n_ta+n_tb)*num_primes);
+      //std::cout<<"MUL FFT RNS: input RNS -> allocating "<<MB((n_ta+n_tb)*num_primes*8)<<"Mo"<<std::endl;
+
+      
       RNS.init(1, n_ta, t_a_mod, n_ta, a.getPointer(), n_ta, maxA);
       RNS.init(1, n_tb, t_b_mod, n_tb, b.getPointer(), n_tb, maxB);
       FFT_PROFILING(2,"reduction mod pi of input matrices");
@@ -232,14 +237,23 @@ namespace LinBox{
       // FFT_PROFILE_START(2);
       // auto sp=SPLITTER();
       // PARFOR1D(l,num_primes,sp,
+      //ModField f0(RNS._basis[0]);
+      //MatrixP_F a_i (f0, m, k, pts);
+      //MatrixP_F b_i (f0, k, n, pts);
+      //std::cout<<"a:="<<a<<";\n";
+      //std::cout<<"b:="<<b<<";\n";
+
       for (size_t l=0;l<num_primes;l++)
 	{
 	  //FFT_PROFILE_START;
 	  ModField f(RNS._basis[l]);
 	  MatrixP_F a_i (f, m, k, pts);
 	  MatrixP_F b_i (f, k, n, pts);
-	
+	  //a_i.changeField(f);
+	  //b_i.changeField(f);
+
 	  c_i[l] = new MatrixP_F(f, m, n, pts);
+
 	  // copy reduced data
 	  for (size_t i=0;i<m*k;i++)
 	    for (size_t j=0;j<a.size();j++)
@@ -247,17 +261,23 @@ namespace LinBox{
 	  for (size_t i=0;i<k*n;i++)
 	    for (size_t j=0;j<b.size();j++)
 	      b_i.ref(i,j)=t_b_mod[l*n_tb+j+i*b.size()];	
+	  //std::cout<<"a"<<l<<":="<<a_i<<";\n";
+	  //std::cout<<"b"<<l<<":="<<b_i<<";\n";
+	  
 	  //FFT_PROFILE_GET(tCopy);
 	  //PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f);
 	  PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);       
-	  fftdomain.mul_fft(lpts, *c_i[l], a_i, b_i);	
+	  fftdomain.mul_fft(lpts, *c_i[l], a_i, b_i);
+	  //std::cout<<"c"<<l<<":="<<*c_i[l]<<";\n";
+	  //std::cout<<"p"<<l<<":="<<uint64_t(RNS._basis[l])<<";\n";
 	  //FFT_PROFILE_GET(tMul);
 	}
+      //std::cout<<"MUL FFT RNS: output polmat -> allocating "<<MB(num_primes*c_i[0]->realmeminfo())<<"Mo"<<std::endl;
       //)
       FFT_PROFILING(2,"FFTprime mult+copying");
       delete[] t_a_mod;
       delete[] t_b_mod;
-      DEL_MEM(8*(n_ta+n_tb)*num_primes);
+      //DEL_MEM(8*(n_ta+n_tb)*num_primes);
       //FFT_PROFILE(2,"copying linear reduced matrix",tCopy);
       //FFT_PROFILE(2,"FFTprime multiplication",tMul);
       
@@ -270,14 +290,15 @@ namespace LinBox{
 	size_t n_tc=m*n*s;
 	//std::cout<<"MUL FFT RNS: RNS -> allocating "<<MB(n_tc*num_primes*8)<<"Mo"<<std::endl;
 	double *t_c_mod = new double[n_tc*num_primes];
-	ADD_MEM(8*n_tc*num_primes);
+	//std::cout<<"MUL FFT RNS: output RNS -> allocating "<<MB((n_tc)*num_primes*8)<<"Mo"<<std::endl;
+	//ADD_MEM(8*n_tc*num_primes);
 	for (size_t l=0;l<num_primes;l++){
 	  for (size_t i=0;i<m*n;i++)
 	    for (size_t j=0;j<s;j++)
 	      t_c_mod[l*n_tc + (j+i*s)]= c_i[l]->get(i,j);
 	  delete c_i[l];
 	}
-	DEL_MEM(8*n_tc*num_primes);
+	//DEL_MEM(8*n_tc*num_primes);
 	FFT_PROFILING(2,"linearization of results mod pi");
 
 	// reconstruct the result in C
@@ -340,7 +361,7 @@ namespace LinBox{
       size_t CRT_NBPRIME=4;
       double* t_a_mod= new double[n_ta*CRT_NBPRIME];
       double* t_b_mod= new double[n_tb*CRT_NBPRIME];
-      ADD_MEM(8*(n_ta+n_tb)*CRT_NBPRIME);
+      //ADD_MEM(8*(n_ta+n_tb)*CRT_NBPRIME);
       
       // std::cout<<"MUL FFT RNS: input/output data: "<< MB((n_ta*(maxA.bitsize()+128) +n_tb*(maxB.bitsize()+128) +m*k*s*(bound.bitsize()+128))/8)<<"Mo"<<std::endl;
       // std::cout<<"MUL FFT RNS: initial need "<<MB((m*n*pts+n_ta+n_tb)*num_primes*8 + 2*(m*k+k*n)*pts*8)<<"Mo"<<std::endl;
@@ -393,7 +414,7 @@ namespace LinBox{
       } // end of loop for memory saving
 	delete[] t_a_mod;
 	delete[] t_b_mod;
-	DEL_MEM(8*(n_ta+n_tb)*CRT_NBPRIME);
+	//DEL_MEM(8*(n_ta+n_tb)*CRT_NBPRIME);
       
       if (num_primes < 2) {
 	FFT_PROFILE_START(2);	
@@ -404,7 +425,7 @@ namespace LinBox{
 	size_t n_tc=m*n*s;
 	//std::cout<<"MUL FFT RNS: RNS -> allocating "<<MB(n_tc*num_primes*8)<<"Mo"<<std::endl;
 	double *t_c_mod = new double[n_tc*num_primes];
-	ADD_MEM(8*(n_tc)*num_primes);
+	//ADD_MEM(8*(n_tc)*num_primes);
 	for (size_t l=0;l<num_primes;l++){
 	  for (size_t i=0;i<m*n;i++)
 	    for (size_t j=0;j<s;j++)
@@ -506,7 +527,8 @@ namespace LinBox{
       size_t n_ta=m*k*a.size(), n_tb=k*n*b.size();
       double* t_a_mod= new double[n_ta*num_primes];
       double* t_b_mod= new double[n_tb*num_primes];
-      ADD_MEM(8*(n_ta+n_tb)*num_primes);
+      //ADD_MEM(8*(n_ta+n_tb)*num_primes);
+      //std::cout<<"MIDP FFT RNS: input RNS -> allocating "<<MB((n_ta+n_tb)*num_primes*8)<<"Mo"<<std::endl;
 
       RNS.init(1, n_ta, t_a_mod, n_ta, a.getPointer(), n_ta, maxA);
       RNS.init(1, n_tb, t_b_mod, n_tb, b.getPointer(), n_tb, maxB);
@@ -523,11 +545,16 @@ namespace LinBox{
 
       std::vector<MatrixP_F*> c_i (num_primes);
 
+      //ModField f0(RNS._basis[0]);
+      //MatrixP_F a_i (f0, m, k, pts);
+      //MatrixP_F b_i (f0, k, n, pts);
       for (size_t l=0;l<num_primes;l++){
 	FFT_PROFILE_START(2);
 	ModField f(RNS._basis[l]);
 	MatrixP_F a_i (f, m, k, pts);
 	MatrixP_F b_i (f, k, n, pts);
+	//a_i.changeField(f);
+	//b_i.changeField(f);
 	c_i[l] = new MatrixP_F(f, m, n, pts);
 	// copy reduced data and reversed when necessary according to midproduct algo
 	//std::cout<<"hdeg-size: "<<hdeg<<" <-> "<<a.size()<<std::endl;
@@ -550,9 +577,11 @@ namespace LinBox{
 				
 	FFT_PROFILE_GET(2,tMul);
       }
+      //std::cout<<"MIDP FFT RNS: output polmat -> allocating "<<MB(num_primes*c_i[0]->realmeminfo())<<"Mo"<<std::endl;
       delete[] t_a_mod;
       delete[] t_b_mod;
-      DEL_MEM(8*(n_ta+n_tb)*num_primes);
+      //std::cout<<"MIDP FFT RNS: input RNS -> freing "<<MB((n_ta+n_tb)*num_primes*8)<<"Mo"<<std::endl;
+      //DEL_MEM(8*(n_ta+n_tb)*num_primes);
       FFT_PROFILE(2,"copying linear reduced matrix",tCopy);
       FFT_PROFILE(2,"FFTprime multiplication",tMul);
 
@@ -565,7 +594,8 @@ namespace LinBox{
 	double *t_c_mod;
 	size_t n_tc=m*n*c.size();
 	t_c_mod = new double[n_tc*num_primes];
-	ADD_MEM(8*(n_tc)*num_primes);
+	//std::cout<<"MIDP FFT RNS: output RNS -> allocating "<<MB((n_tc)*num_primes*8)<<"Mo"<<std::endl;
+	//ADD_MEM(8*(n_tc)*num_primes);
 	for (size_t l=0;l<num_primes;l++){
 	  for (size_t i=0;i<m*n;i++)
 	    for (size_t j=0;j<c.size();j++)
@@ -577,7 +607,9 @@ namespace LinBox{
 	// reconstruct the result in C
 	RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc);
 	//std::cout<<"MIDP FFT RNS: "<<MEMINFO<<std::endl;
+	//std::cout<<"MIDP FFT RNS: output RNS -> freeing "<<MB((n_tc)*num_primes*8)<<"Mo"<<std::endl;
 	delete[] t_c_mod;
+
 
 	//std::cout<<"MUL FFT RNS: "<<MEMINFO<<std::endl;
 	//std::cout<<"----------------------------------------------"<<std::endl;
@@ -631,7 +663,7 @@ namespace LinBox{
     
     // Matrix with polynomials  
     void mul (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b) {
-      
+
       FFT_PROFILE_START(2);
       IntField Z;      
       PolynomialMatrixFFTMulDomain<IntField> Zmul(Z,_p);
