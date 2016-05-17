@@ -22,8 +22,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
  */
+
+
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/polynomial-matrix.h"
+#ifdef TRACK_MEMORY
+#define MEMINFO2 STR_MEMINFO<<MEMINFO
+#else
+#define MEMINFO2 ""
+#endif
 #include "linbox/algorithms/polynomial-matrix/polynomial-matrix-domain.h"
 #include <vector>
 #include <algorithm>
@@ -61,8 +68,8 @@ namespace LinBox {
                         std::cout<<"error at degree="<<i<<std::endl;
                         T[i].write(std::cout, Tag::FileFormat::Plain);
                         std::cout<<"***"<<std::endl;
-                        std::cout<<serie<<std::endl;
-                        std::cout<<sigma<<std::endl;
+                        //std::cout<<serie<<std::endl;
+                        //std::cout<<sigma<<std::endl;
                         exit(1);
                 }
 	
@@ -153,7 +160,7 @@ namespace LinBox {
                 {
 
 #ifdef PROFILE_PMBASIS
-                        //std::cout<<"Start PM-Basis : "<<order<<" ("<<_idx<<"/"<<_target<<")] : "<<std::endl;//MEMINFO<<std::endl;
+                        //std::cout<<"Start PM-Basis : "<<order<<" ("<<_idx<<"/"<<_target<<")] : "<<std::endl;//MEMINFO2<<std::endl;
                         if (_target==0) _target=order;
                         if (!_started) {_started=true; _start = std::chrono::system_clock::now();}
                         std::chrono::time_point<std::chrono::system_clock> _chrono_start=std::chrono::system_clock::now();
@@ -180,52 +187,65 @@ namespace LinBox {
                                 integer p;
 
                                 // first recursive call
-                                PMatrix1 sigma1(field(),m,n,ord1+1);                                
+                                PMatrix1 sigma1(field(),m,n,ord1+1);
+                                //ADD_MEM(sigma1.realmeminfo());
 
 #ifdef MEM_PMBASIS
-                                std::cerr<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Sigma1] -> "<<MB(m*n*(ord1+1)*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+                                std::cerr<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Sigma1] -> "<<MB(sigma1->realmeminfo())<<"Mo"<<MEMINFO2<<std::endl;
 #endif
                                 //typename PMatrix2::const_view serie1=serie.at(0,ord1-1);
-                                PMatrix2 *serie1=new PMatrix2(field(),n,k,ord1);
+                                PMatrix2 *serie1 = new PMatrix2(field(),n,k,ord1);
+                                //ADD_MEM(serie1->realmeminfo())
 #ifdef MEM_PMBASIS
-                                std::cerr<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Serie1] -> "<<MB(n*k*ord1*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+                                std::cerr<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Serie1] -> "<<MB(serie1->realmeminfo())<<"Mo"<<MEMINFO2<<std::endl;
 #endif
                                 serie1->copy(serie,0,ord1-1);
                                 d1 = PM_Basis(sigma1, *serie1, ord1, shift);
+                                //DEL_MEM(serie1->realmeminfo())
                                 delete serie1;                                
                                 if (_EarlyStop.terminated()){
                                         sigma=sigma1;
                                         return d1;
                                 }
-                                
+
+                                //std::cout<<"Serie:="<<serie<<";\n";
+                                //std::cout<<"S1:="<<sigma1<<";\n";
                                 // compute the serie update
                                 // TODO: for Block Wiedemann, this step can use only the first column of sigma
                                 PMatrix2 *serie2=new PMatrix2(field(),n,k,ord2);//serie2 size=ord1+1 -> midproduct)
+                                //ADD_MEM(serie2->realmeminfo());
 #ifdef MEM_PMBASIS
-                                std::cerr<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Serie2] -> "<<MB(n*k*ord2*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+                                std::cerr<<"[PM-Basis ("<<order<<") "<<_idx<<"/"<<_target<<"] [Serie2] -> "<<MB(serie2->realmeminfo())<<"Mo"<<MEMINFO2<<std::endl;
 #endif              
                                 _PMD.midproductgen(*serie2, sigma1, serie, true, ord1+1,ord1+ord2);
+
+                                //std::cout<<"Serie2:="<<*serie2<<";\n";
 #ifdef PROFILE_PMBASIS
                                 //chrono.stop();
-                                //std::cout<<"      -> serie update "<<sigma1.size()<<"x"<<order<<" --> "<<chrono.usertime()<<std::endl;//MEMINFO<<std::endl;
+                                //std::cout<<"      -> serie update "<<sigma1.size()<<"x"<<order<<" --> "<<chrono.usertime()<<std::endl;//MEMINFO2<<std::endl;
                                 //chrono.clear();chrono.start();
 #endif
                                 // second recursive call
-
+                                
                                 PMatrix1 sigma2(field(),m,n,ord2+1);
+                                //ADD_MEM(sigma2.realmeminfo())
 #ifdef MEM_PMBASIS
-                                std::cerr<<"[PM-Basis("<<order<<") "<<_idx<<"/"<<_target<<"] [Sigma2] -> "<<MB(m*n*(ord1+1)*length(field().characteristic(p)))<<"Mo"<<MEMINFO<<std::endl;
+                                std::cerr<<"[PM-Basis("<<order<<") "<<_idx<<"/"<<_target<<"] [Sigma2] -> "<<MB(sigma2->realmeminfo())<<"Mo"<<MEMINFO2<<std::endl;
 #endif
                                 d2 = PM_Basis(sigma2, *serie2, ord2, shift);
+                                //std::cout<<"S2:="<<sigma2<<";\n";
+                                //DEL_MEM(serie2->realmeminfo());
                                 delete serie2;                                 
 
                                 // compute the result
                                 _PMD.mul(sigma, sigma2, sigma1);
-                                //sigma.resize(d1+d2+1);
-                                sigma.setsize(d1+d2+1);                               
+                                //std::cout<<"S:="<<sigma<<";\n";
+                                //DEL_MEM(sigma1.realmeminfo());
+                                //DEL_MEM(sigma2.realmeminfo());
+                                sigma.resize(d1+d2+1);                                
 #ifdef PROFILE_PMBASIS
                                 //chrono.stop();
-                                //std::cout<<"      -> basis product "<<sigma1.size()<<"x"<<sigma2.size()<<" = "<<d1+d2+1<<" -->"<<chrono.usertime()<<MEMINFO<<std::endl;
+                                //std::cout<<"      -> basis product "<<sigma1.size()<<"x"<<sigma2.size()<<" = "<<d1+d2+1<<" -->"<<chrono.usertime()<<MEMINFO2<<std::endl;
 #endif
 
 #ifdef __CHECK_PMBASIS
@@ -243,7 +263,7 @@ namespace LinBox {
                                 
                                 _eta=(_eta!=0.0?std::min(_eta,tcomp*magicnumber):tcomp*magicnumber);
                                 std::cerr<<"[PM-Basis : "<<order<<" ("<<_idx<<"/"<<_target<<")] : "<<chrono.usertime()
-                                         << " (ETA: "<< telap<<"s / "<<_eta<<"s)"<<MEMINFO<<std::endl;
+                                         << " (ETA: "<< telap<<"s / "<<_eta<<"s)"<<MEMINFO2<<std::endl;
                                 chrono.clear();chrono.start();
 #endif
 
@@ -267,7 +287,9 @@ namespace LinBox {
                         return d;
 
                 }
-
+                
+          
+                
                 // serie must have exactly order elements (i.e. its degree = order-1)
                 template<typename PMatrix1, typename PMatrix2>
                 size_t M_Basis(PMatrix1              &sigma,
@@ -636,6 +658,39 @@ namespace LinBox {
 
         };
 
+        
+        typedef Givaro::Modular<RecInt::ruint128,RecInt::ruint256>   MYRECINT;
+        template<>
+        size_t OrderBasis<MYRECINT,EarlyTerm<-1> >::M_Basis(PolynomialMatrix<PMType::polfirst,PMStorage::plain, MYRECINT>            &sigma,
+                                                            const PolynomialMatrix<PMType::polfirst,PMStorage::plain, MYRECINT>      &serie,
+                                                            size_t                 order,
+                                                            std::vector<size_t>   &shift)
+        {
+                Givaro::Integer p; field().cardinality(p);
+                typedef Givaro::Modular<Givaro::Integer> NewField;
+                NewField F(p);
+                OrderBasis<NewField > SB(F);
+                typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain, NewField> NewMatrix;
+                
+                NewMatrix sigma1(F,sigma.rowdim(),sigma.coldim(),order+1);
+                NewMatrix serie1(F,serie.rowdim(),serie.coldim(),order);
+                serie1.copy(serie,0,order-1);
+
+                //std::cout<<"Serie: "<<serie<<std::endl;
+                //std::cout<<"Serie1: "<<serie1<<std::endl;
+
+                size_t d= SB.M_Basis(sigma1,serie1,order,shift);
+                sigma.resize(d+1);
+                sigma.copy(sigma1,0,d);
+                
+                //std::cout<<"Sigma1: "<<sigma1<<std::endl;
+                //std::cout<<"Sigma: "<<sigma<<std::endl;
+
+
+                return d;
+        }
+        
+        
 } // end of namespace LinBox
 
 // Local Variables:

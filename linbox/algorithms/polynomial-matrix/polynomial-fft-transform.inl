@@ -60,13 +60,13 @@ namespace LinBox {
 
 	template <class Field>
 	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative (Element *fft) {
-		for (size_t w = n >> 1, f = 1, pos_w = 0; w != 0; f <<= 1, pos_w += w, w >>= 1)
+		for (size_t w = n >> 1, f = 1, pos_w = 0; w != 0; f <<= 1, pos_w += w, w >>= 1){
 			// w : witdh of butterflies
 			// f : # families of butterflies
-			for (size_t i = 0; i < f; i++){
+			for (size_t i = 0; i < f; i++)
 				for (size_t j = 0; j < w; j++)
-					Butterfly_DIF_mod2p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], pow_w[j*f], pow_wp[j*f]);				
-			}
+					Butterfly_DIF_mod2p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], pow_w[j*f], pow_wp[j*f]);
+		}
 	}
 
 	template <class Field>

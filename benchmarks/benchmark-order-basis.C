@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-#define __FFLASFFPACK_SEQUENTIAL
+//#define __FFLASFFPACK_SEQUENTIAL
 
 #include <iostream>
 #include <iomanip>
@@ -8,7 +8,7 @@ size_t getCurrentRSS( );
 //#define MEMINFO std::right<<std::setw(20)<<"                     ---->   Max Mem: "<<getPeakRSS()/1000000.<<"Mo"
 #define MB(x) ((x)/(double)(1<<20))
 //#define MB(x) ((x)>>20)
-#define MEMINFO std::right<<std::setw(20)<<"                     ---->   Mem: "<<MB(getCurrentRSS())<<" Mo  (Max: "<<MB(getPeakRSS())<<" Mo)"  
+#define MEMINFO std::right<<" ---->   Mem: "<<MB(getCurrentRSS())<<" Mo  (Max: "<<MB(getPeakRSS())<<" Mo)"  
 #include "linbox/matrix/polynomial-matrix.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/randiter/random-prime.h"
@@ -264,17 +264,16 @@ void bench_sigma(const Field& F,  RandIter& Gen, size_t m, size_t n, size_t d, s
 	//typedef typename Field::Element Element;
 	//typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
-	
+	std::cout<<"Order Basis computation over ";F.write(cout)<<endl;
 	integer p;
 	F.characteristic(p);
-	size_t memp=length(p)+(p.bitsize()>=26?8:0);
-	size_t data_in=3*m*n*d*memp;
-	size_t data_out=2*m*m*(d+1)*memp;
-	size_t data_comp= 2*m*m*d*(length(uint64_t(m*d)*p*p)+(p.bitsize()>26?8:0));
+	size_t memp=length(p)+(p.bitsize()>=64?16:0);
+	//size_t data_in=3*m*n*d*memp;
+	//size_t data_out=2*m*m*(d+1)*memp;
+	//size_t data_comp= 2*m*m*d*(length(uint64_t(m*d)*p*p)+(p.bitsize()>26?8:0));
 	std::cout<<"**************************"<<std::endl;
 	std::cout<<"mem(p)        : "<<memp<<std::endl;
-	std::cout<<"mem(p)        : "<<sizeof(p)<<std::endl;
-	std::cout<<"Projected Memory : "<< MB(data_in+data_out+data_comp)<<"Mo"<<std::endl;
+	//std::cout<<"Projected Memory : "<< MB(data_in+data_out+data_comp)<<"Mo"<<std::endl;
 	std::cout<<"Available memory : "<<MB(getMemorySize())<<std::endl;
 	std::cout<<"**************************"<<std::endl;
 	std::cout<<"**************************"<<std::endl<<std::endl<<std::endl;
@@ -282,24 +281,19 @@ void bench_sigma(const Field& F,  RandIter& Gen, size_t m, size_t n, size_t d, s
 
 	
 	MatrixP Serie(F, m, n, d);	
-	std::cout<<"[initial sequence] : "<<MB(m*n*d*memp)<<"Mo"<<MEMINFO<<std::endl;
-	std::cout<<"--> " <<MB(Serie.realmeminfo())<<std::endl;
-	std::cout<<"--> " <<MB(Serie.meminfo())<<" "<<std::endl;
 	// set the Serie at random
 	for (size_t k=0;k<d;++k)
 		for (size_t i=0;i<m;++i)
 			for (size_t j=0;j<n;++j)
 				Gen.random(Serie.ref(i,j,k));
-	std::cout<<"[initial sequence] : "<<MB(m*n*d*memp)<<"Mo"<<MEMINFO<<std::endl;
+	std::cout<<"[initial sequence] : "<<MB(Serie.realmeminfo())<<"Mo"<<MEMINFO<<std::endl;
 	
 	MatrixP Sigma2(F, m, m, d+1);
-	std::cout<<"[output sigma    ] : "<<MB(m*m*(d+1)*memp)<<"Mo"<<MEMINFO<<std::endl;
-	std::cout<<"--> " <<MB(Sigma2.meminfo())<<std::endl;
-	std::cout<<"--> " <<MB(Sigma2.realmeminfo())<<std::endl;
+	std::cout<<"[output sigma    ] : "<<MB(Sigma2.realmeminfo())<<"Mo"<<MEMINFO<<std::endl;	
 		
 	// define the shift
 	vector<size_t> shift(m,0);
-
+	
 	OrderBasis<Field> SB(F);
 	Timer chrono;
 #ifdef BENCH_MBASIS
@@ -364,11 +358,17 @@ int main(int argc, char** argv){
 	
 	typedef Givaro::Modular<double>              SmallField;	
 	typedef Givaro::Modular<Givaro::Integer>      LargeField;
+	//typedef Givaro::Modular<RecInt::ruint128,RecInt::ruint256>  LargeField;
 
-	size_t logd=integer((uint64_t)d).bitsize();	
+	size_t logd=integer((uint64_t)d).bitsize();
+
 	
 	std::cout<<"###  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
 	if (b < 26){
+#ifdef FFT_PROFILER		
+		FFT_PROF_LEVEL=1;
+#endif
+
 		if (logd>b-4){
 			std::cout<<"degree is to large for field bitsize: "<<b<<std::endl;
 			exit(0);
@@ -381,11 +381,15 @@ int main(int argc, char** argv){
 		bench_sigma(F,G,m,n,d,target);
 	}
 	else {
+#ifdef FFT_PROFILER		
+			FFT_PROF_LEVEL=2;
+#endif
+
 		RandomPrimeIterator Rd(b,seed);	
 		integer p = Rd.randomPrime();
 		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
-		LargeField F(p);
-		typename LargeField::RandIter G(F,0,seed);
+		LargeField F(p);		
+		typename LargeField::RandIter G(F,b,seed);
 
 		
 		bench_sigma(F,G,m,n,d,target);

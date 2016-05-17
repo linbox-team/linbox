@@ -201,6 +201,21 @@ namespace LinBox
                                         prod*=tmp;
                                         //std::cout<<tmp<<" -> "<<tmp.bitsize()<<" (order="<<twoVal(tmp-1)<<") "<<prod<<std::endl;
                                         if (prod > bound){
+                                                // try to replace the last prime with a smallest one
+                                                for (int64_t k=1;k<l;k++){
+                                                        tmp = ((int64_t)1 << val) * k + 1;
+                                                        if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {
+                                                                if (prod*tmp > bound*primes.back()){
+                                                                        //std::cout<<"replacing prime "<<primes.back()<<" with "<<tmp<< " -> "<<tmp.bitsize()<<" (order="<<twoVal(tmp-1)<<") ";
+                                                                        prod/=primes.back();
+                                                                        primes.back()=tmp;
+                                                                        prod*=tmp;
+                                                                        //std::cout<<prod<<std::endl;
+                                                                        return true;
+                                                                }
+                                                        }
+                                                }
+                                                
                                                 return true;
                                         }
                                 }

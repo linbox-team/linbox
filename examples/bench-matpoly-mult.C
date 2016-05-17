@@ -468,8 +468,8 @@ int main(int argc, char** argv){
 #endif
 			RandomPrimeIter Rd(b,seed);
 			integer p= Rd.random();
-			Givaro::Modular<integer> F(p);
-			//Givaro::Modular<RecInt::ruint128,RecInt::ruint512> F(p);
+			//Givaro::Modular<integer> F(p);			
+			Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F(p);
 			cout<<"Computation over Fp[x] with p=  "<<p<<" (Generic prime)"<<endl;
 			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 			runTest (F,n,b,d,seed,test);
