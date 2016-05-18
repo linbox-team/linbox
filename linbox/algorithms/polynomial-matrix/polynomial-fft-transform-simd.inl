@@ -35,12 +35,12 @@
 
 // C = A mod P using T as temporary  (A must lie in [0 2P[ )
 #define VEC128_MOD_P(C,A,P,T)						\
-	T=_mm_cmplt_epi32(A,P);						\
-	C=_mm_sub_epi32(A,_mm_andnot_si128(T,P));
+	T=Simd128<uint32_t>::greater(P,A);						\
+	C=Simd128<uint32_t>::sub(A, Simd128<uint32_t>::vandnot(P,T));
 // Rk: __m128i _mm_cmpgt_epi64 (__m128d a, __m128d b) // compare a>b si vrai renvoi 0xFFFFFFFFFFFFFFFF
 #define VEC256_MOD_P(C,A,P,T)						\
-	T=_mm256_cmpgt_epi32(P,A);					\
-	C=_mm256_sub_epi32(A,_mm256_andnot_si256(T,P));
+	T=Simd256<uint32_t>::greater(P,A);					\
+	C=Simd256<uint32_t>::sub(A, Simd256<uint32_t>::vandnot(P,T));
 
 // C= A+B mod P using T as temporary
 #define VEC128_ADD_MOD(C,A,B,P,T)			\
@@ -82,53 +82,6 @@
 	T1 = Simd256<uint32_t>::mullo(Q,P);			\
 	C = Simd256<uint32_t>::sub(C,T1);
 
-// C =shuffle_32(A,X)
-#define VEC128_SHUFFLE_32(C,A,X)			\
-	C = _mm_shuffle_epi32(A,X);
-
-// C =shuffle_32(A,X)
-#define VEC256_SHUFFLE_32(C,A,X)		\
-	C = _mm256_shuffle_epi32(A,X);
-
-// C = unpack_lo32(A,B)
-#define VEC128_UNPACK_LO_32(C,A,B)			\
-	 C = _mm_unpacklo_epi32(A,B);
-
-// C = unpack_hi32(A,B)
-#define VEC128_UNPACK_HI_32(C,A,B)			\
-	 C = _mm_unpackhi_epi32(A,B);
-
-// C = unpack_lo64(A,B)
-#define VEC128_UNPACK_LO_64(C,A,B)			\
-	 C = _mm_unpacklo_epi64(A,B);
-
-// C = unpack_hi64(A,B)
-#define VEC128_UNPACK_HI_64(C,A,B)			\
-	 C = _mm_unpackhi_epi64(A,B);
-
-// C = unpack_lo32(A,B)
-#define VEC256_UNPACK_LO_32(C,A,B)			\
-	 C = _mm256_unpacklo_epi32(A,B);
-
-// C = unpack_hi32(A,B)
-#define VEC256_UNPACK_HI_32(C,A,B)			\
-	 C = _mm256_unpackhi_epi32(A,B);
-
-// C = unpack_lo32(A,B)
-#define VEC256_UNPACK_LO_64(C,A,B)			\
-	 C = _mm256_unpacklo_epi64(A,B);
-
-// C = unpack_hi32(A,B)
-#define VEC256_UNPACK_HI_64(C,A,B)			\
-	 C = _mm256_unpackhi_epi64(A,B);
-
-// C = unpack_lo128(A,B)
-#define VEC256_UNPACK_LO_128(C,A,B)			\
-	C = _mm256_permute2x128_si256(A,B,32);
-
-// C = unpack_hi128(A,B)
-#define VEC256_UNPACK_HI_128(C,A,B)			\
-	C = _mm256_permute2x128_si256(A,B,49);
 
 namespace LinBox {
 
@@ -183,11 +136,11 @@ namespace LinBox {
 		V1 = Simd128<uint32_t>::load(ABCD);
 		V2 = Simd128<uint32_t>::load(EFGH);
 		// V3 = [A C B D], V4 = [E G F H]
-		VEC128_SHUFFLE_32(V3,V1,0xD8);
-		VEC128_SHUFFLE_32(V4,V2,0xD8);
+		V3 = Simd128<uint32_t>::shuffle(V1,0xD8);
+		V4 = Simd128<uint32_t>::shuffle(V2,0xD8);
 		// V1 = [A E C G], V2 = [B F D H]
-		VEC128_UNPACK_LO_32(V1,V3,V4);
-		VEC128_UNPACK_HI_32(V2,V3,V4);
+		V1 = Simd128<uint32_t>::unpacklo(V3,V4);
+		V2 = Simd128<uint32_t>::unpackhi(V3,V4);
 		// V3 = V1 + V2 mod 2P
 		VEC128_ADD_MOD(V3,V1,V2,P2,V5);
 		// V4 = V1 + (2P - V2) mod 2P
@@ -195,11 +148,11 @@ namespace LinBox {
 		V2 = Simd128<uint32_t>::sub(V1,V5);
 		VEC128_MOD_P(V4,V2,P2,V5);
 		// V1 = [A C E G], V2 = [B D F H]
-		VEC128_SHUFFLE_32(V1,V3,0xD8);
-		VEC128_SHUFFLE_32(V2,V4,0xD8);
+		V1 = Simd128<uint32_t>::shuffle(V3,0xD8);
+		V2 = Simd128<uint32_t>::shuffle(V4,0xD8);
 		// V3 = [A B C D], V4 = [E F G H]
-		VEC128_UNPACK_LO_32(V3,V1,V2);
-		VEC128_UNPACK_HI_32(V4,V1,V2);
+		V3 = Simd128<uint32_t>::unpacklo(V1,V2);
+		V4 = Simd128<uint32_t>::unpackhi(V1,V2);
 		// Store
 		Simd128<uint32_t>::store(ABCD,V3);
 		Simd128<uint32_t>::store(EFGH,V4);
@@ -272,8 +225,8 @@ namespace LinBox {
 		V1 = Simd128<uint32_t>::load(ABCD);
 		V2 = Simd128<uint32_t>::load(EFGH);
 		// V3=[A E B F], V4=[C G D H]
-		VEC128_UNPACK_LO_32(V3,V1,V2);
-		VEC128_UNPACK_HI_32(V4,V1,V2);
+		V3 = Simd128<uint32_t>::unpacklo(V1,V2);
+		V4 = Simd128<uint32_t>::unpackhi(V1,V2);
 		// V1 = V3 + V4 mod 2P
 		// P2 = [2p 2p 2p 2p]
 		VEC128_ADD_MOD(V1,V3,V4,P2,V5);
@@ -282,7 +235,7 @@ namespace LinBox {
 		V6 = Simd128<uint32_t>::sub(V3,V5);
 		VEC128_MOD_P(V2,V6,P2,V2);
 		// V4 = [D D H H]
-		VEC128_UNPACK_HI_32(V4,V2,V2);
+		V4 = Simd128<uint32_t>::unpackhi(V2,V2);
 		// V6 = V4 * Wp mod 2^64
 		// Wp = [Wp ? Wp ?]
 		V7 = Simd128<uint64_t>::mulx(V4,Wp);
@@ -291,12 +244,12 @@ namespace LinBox {
 		// V5 = [D D H H] * [W W W W] mod 2^32
 		V6 = Simd128<uint32_t>::mullo(V4,W);
 		V4 = Simd128<uint32_t>::sub(V6,V5);
-		VEC128_SHUFFLE_32(V3,V4,0xDD);
+		V3 = Simd128<uint32_t>::shuffle(V4,0xDD);
 		//At this point, V2 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
 		// At this time I have V1=[A E B F], V2=[C G ? ?], V3=[? ? D H]
 		// I need V3 = [A C E G], V4 = [B D F H]
-		VEC128_UNPACK_HI_32(V4,V1,V3);
-		VEC128_UNPACK_LO_32(V3,V1,V2);
+		V4 = Simd128<uint32_t>::unpackhi(V1,V3);
+		V3 = Simd128<uint32_t>::unpacklo(V1,V2);
 		// V1 = V3 + V4 mod 2P
 		VEC128_ADD_MOD(V1,V3,V4,P2,V5);
 		// V2 = V3 + (2P - V4) mod 2P
@@ -305,8 +258,8 @@ namespace LinBox {
 		VEC128_MOD_P(V2,V6,P2,V2);
 		// Result in V1 = [A C E G]  and V2 = [B D F H]
 		// Transform to V3=[A B C D], V4=[E F G H]
-		VEC128_UNPACK_LO_32(V3,V1,V2);
-		VEC128_UNPACK_HI_32(V4,V1,V2);
+		V3 = Simd128<uint32_t>::unpacklo(V1,V2);
+		V4 = Simd128<uint32_t>::unpackhi(V1,V2);
 		// Store
 		Simd128<uint32_t>::store(ABCD,V3);
 		Simd128<uint32_t>::store(EFGH,V4);
@@ -352,11 +305,11 @@ namespace LinBox {
 		V1 = Simd128<uint32_t>::load(ABCD);
 		V2 = Simd128<uint32_t>::load(EFGH);
 		// T1 = [A C B D], T2 = [E G F H]
-		VEC128_SHUFFLE_32(T1,V1,0xD8);
-		VEC128_SHUFFLE_32(T2,V2,0xD8);
+		T1 = Simd128<uint32_t>::shuffle(V1,0xD8);
+		T2 = Simd128<uint32_t>::shuffle(V2,0xD8);
 		// V1 = [A E C G], V2 = [B F D H]
-		VEC128_UNPACK_LO_32(V1,T1,T2);
-		VEC128_UNPACK_HI_32(V2,T1,T2);
+		V1 = Simd128<uint32_t>::unpacklo(T1,T2);
+		V2 = Simd128<uint32_t>::unpackhi(T1,T2);
 		// V3 = V1 + V2
 		// Rk: No need for (. mod 2P) since entries are <P
 		V3 = Simd128<uint32_t>::add(V1,V2);
@@ -365,7 +318,7 @@ namespace LinBox {
 		T1 = Simd128<uint32_t>::sub(V2,P);
 		V4 = Simd128<uint32_t>::sub(V1,T1);
 		// T1 = [D D H H]
-		VEC128_UNPACK_HI_32(T1,V4,V4);
+		T1 = Simd128<uint32_t>::unpackhi(V4,V4);
 		// T2 = T1 * Wp mod 2^64
 		// Wp = [Wp ? Wp ?]
 		T2 = Simd128<uint64_t>::mulx(T1,Wp);
@@ -374,12 +327,12 @@ namespace LinBox {
 		// T4 = [D D H H] * [W W W W] mod 2^32
 		T4 = Simd128<uint32_t>::mullo(T1,W);
 		T1 = Simd128<uint32_t>::sub(T4,T3);
-		VEC128_SHUFFLE_32(T2,T1,0XDD);
+		T2 = Simd128<uint32_t>::shuffle(T1,0XDD);
 		//At this point, T2 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
 		// At this time I have V3=[A E C G], V4=[B F ? ?], T2=[? ? D H]
 		// I need V1 = [A B E F], V2 = [C D G H]
-		VEC128_UNPACK_LO_32(V1,V3,V4);
-		VEC128_UNPACK_HI_32(V2,V3,T2);
+		V1 = Simd128<uint32_t>::unpacklo(V3,V4);
+		V2 = Simd128<uint32_t>::unpackhi(V3,T2);
 		// T1 = V1 + V2
 		T1 = Simd128<uint32_t>::add(V1,V2);
 		// T2 = V1 - (V2 - 2P)
@@ -387,11 +340,11 @@ namespace LinBox {
 		T2 = Simd128<uint32_t>::sub(V1,T3);
 		// Result in T1 = [A B E F]  and T2 = [C D G H]
 		// Transform to V1=[A C B D], V2=[E G F H]
-		VEC128_UNPACK_LO_32(V1,T1,T2);
-		VEC128_UNPACK_HI_32(V2,T1,T2);
+		V1 = Simd128<uint32_t>::unpacklo(T1,T2);
+		V2 = Simd128<uint32_t>::unpackhi(T1,T2);
 		// Then T1=[A B C D], T2=[E F G H]
-		VEC128_SHUFFLE_32(T1,V1,0xD8);
-		VEC128_SHUFFLE_32(T2,V2,0xD8);
+		T1 = Simd128<uint32_t>::shuffle(V1,0xD8);
+		T2 = Simd128<uint32_t>::shuffle(V2,0xD8);
 		// Store
 		Simd128<uint32_t>::store(ABCD,T1);
 		Simd128<uint32_t>::store(EFGH,T2);
@@ -604,8 +557,8 @@ namespace LinBox {
 
 		/* 1st step */
 		// V3=[A B C D I J K L] V4=[E F G H M N O P]
-		VEC256_UNPACK_LO_128(V3,V1,V2);
-		VEC256_UNPACK_HI_128(V4,V1,V2);
+		V3 = Simd256<uint64_t>::unpacklo128(V1,V2);
+		V4 = Simd256<uint64_t>::unpackhi128(V1,V2);
 
 		// V1 = V3 + V4 mod 2P
 		// P2 = [2p 2p 2p 2p]
@@ -620,8 +573,8 @@ namespace LinBox {
 		/* 2nd step */
 
 		// V3=[A E B F I M J N] V4=[C G D H K O L P]
-		VEC256_UNPACK_LO_32(V3,V1,V2);
-		VEC256_UNPACK_HI_32(V4,V1,V2);
+		V3 = Simd256<uint32_t>::unpacklo(V1,V2);
+		V4 = Simd256<uint32_t>::unpackhi(V1,V2);
 
 		// V1 = V3 + V4 mod 2P
 		// P2 = [2p 2p 2p 2p]
@@ -634,7 +587,7 @@ namespace LinBox {
 		VEC256_MOD_P(V7,V6,P2,V2);
 
 		// V4 = [D D H H L L P P ]
-		VEC256_UNPACK_HI_32(V4,V7,V7);
+		V4 = Simd256<uint32_t>::unpackhi(V7,V7);
 
 		// Q = V4 * beta mod 2^64 = [* Qd * Qh * Ql * Qp]
 		// with betap= [ betap * betap * betap * betap *]
@@ -646,13 +599,13 @@ namespace LinBox {
 		// V3 = V6 - V5 = [* (D.beta mod p) * (H.beta mod p) * (L.beta mod p) * (P.beta mod p)]
 		V3 = Simd256<uint32_t>::sub(V6,V5);
 		// V2=[* * D H * * L P]
-		VEC256_SHUFFLE_32(V2,V3,0xDD);
+		V2 = Simd256<uint32_t>::shuffle_twice(V3,0xDD);
 
 		/* 3nd step */
 		// At this time I have V1=[A B E F I J M N], V7=[C G * * K O * *], V2=[* * D H * * L P]
 		// I need V3 = [A C E G I K M O], V4=[B D F H J L N P]
-		VEC256_UNPACK_LO_32(V3,V1,V7);
-		VEC256_UNPACK_HI_32(V4,V1,V2);
+		V3 = Simd256<uint32_t>::unpacklo(V1,V7);
+		V4 = Simd256<uint32_t>::unpackhi(V1,V2);
 
 		// V1 = V3 + V4 mod 2P
 		VEC256_ADD_MOD(V1,V3,V4,P2,V5);
@@ -664,12 +617,12 @@ namespace LinBox {
 
 		// Result in    V1=[A C E G I K M O] V2=[B D F H J L N P]
 		// Transform to V3=[A B C D I J K L],V4=[E F G H M N O P]
-		VEC256_UNPACK_LO_32(V3,V1,V2);
-		VEC256_UNPACK_HI_32(V4,V1,V2);
+		V3 = Simd256<uint32_t>::unpacklo(V1,V2);
+		V4 = Simd256<uint32_t>::unpackhi(V1,V2);
 
 		// Transform to V1=[A B C D E F G H], V2=[I J K L M N O P]
-		VEC256_UNPACK_LO_128(V1,V3,V4);
-		VEC256_UNPACK_HI_128(V2,V3,V4);
+		V1 = Simd256<uint64_t>::unpacklo128(V3,V4);
+		V2 = Simd256<uint64_t>::unpackhi128(V3,V4);
 
 		// Store
 		Simd256<uint32_t>::storeu(ABCDEFGH,V1);
@@ -782,10 +735,10 @@ namespace LinBox {
 		/* 1st STEP */
 		/*********************************************/
 		// Transform to V3=[A I C K E M G O], V4=[B J D L F N H P]
-		VEC256_UNPACK_LO_32(V6,V1,V2); // V6=[A I B J E M F N]
-		VEC256_UNPACK_HI_32(V7,V1,V2); // V7=[C K D L G O H P]
-		VEC256_UNPACK_LO_64(V3,V6,V7); // V3=[A I C K E M G O]
-		VEC256_UNPACK_HI_64(V4,V6,V7); // V4=[B J D L F N H P]
+		V6 = Simd256<uint32_t>::unpacklo(V1,V2); // V6=[A I B J E M F N]
+		V7 = Simd256<uint32_t>::unpackhi(V1,V2); // V7=[C K D L G O H P]
+		V3 = Simd256<uint64_t>::unpacklo(V6,V7); // V3=[A I C K E M G O]
+		V4 = Simd256<uint64_t>::unpackhi(V6,V7); // V4=[B J D L F N H P]
 
 
 
@@ -803,7 +756,7 @@ namespace LinBox {
 		/* 2nd STEP */
 		/*********************************************/
 		// V5 = [D D L L H H P P]
-		VEC256_UNPACK_HI_32(V5,V2,V2);
+		V5 = Simd256<uint32_t>::unpackhi(V2,V2);
 		// Q = V5 * alpha mod 2^64 = [* Qd * Qh * Ql * Qp]
 		// with betap= [ alphap * alphap * alphap * alphap *]
 		Q = Simd256<uint64_t>::mulx(V5,alphap);
@@ -814,12 +767,12 @@ namespace LinBox {
 		// V3 = V7 - V6 = [* (D.alpha mod p) * (L.alpha mod p) * (H.alpha mod p) * (P.alpha mod p)]
 		V3 = Simd256<uint32_t>::sub(V7,V6);
 		// V7=[D L * * H P * *]
-		VEC256_SHUFFLE_32(V7,V3,0xFD);
+		V7 = Simd256<uint32_t>::shuffle_twice(V3,0xFD);
 		// V6 = [B J D L F N H P]
-		VEC256_UNPACK_LO_64(V6,V2,V7);
+		V6 = Simd256<uint64_t>::unpacklo(V2,V7);
 		// V3= [A B I J E F M N], V4=[C D K L G H O P]
-		VEC256_UNPACK_LO_32(V3,V1,V6);
-		VEC256_UNPACK_HI_32(V4,V1,V6);
+		V3 = Simd256<uint32_t>::unpacklo(V1,V6);
+		V4 = Simd256<uint32_t>::unpackhi(V1,V6);
 
 		// V1 = V3+V4
 		V1 = Simd256<uint32_t>::add(V3,V4);
@@ -831,10 +784,10 @@ namespace LinBox {
 		/* 3nd STEP */
 		/*********************************************/
 		// V3= [A B C D I J K L] V4= [E F G H M N O P]
-		VEC256_UNPACK_LO_64(V6,V1,V2);
-		VEC256_UNPACK_HI_64(V7,V1,V2);
-		VEC256_UNPACK_LO_128(V3,V6,V7);
-		VEC256_UNPACK_HI_128(V4,V6,V7);
+		V6 = Simd256<uint64_t>::unpacklo(V1,V2);
+		V7 = Simd256<uint64_t>::unpackhi(V1,V2);
+		V3 = Simd256<uint64_t>::unpacklo128(V6,V7);
+		V4 = Simd256<uint64_t>::unpackhi128(V6,V7);
 
 		// V6= V3 mod 2P
 		VEC256_MOD_P(V6,V3,P2,V7);
@@ -851,8 +804,8 @@ namespace LinBox {
 
 		/*********************************************/
 		// V3=[A B C D E F G H] V4=[I J K L M N O P]
-		VEC256_UNPACK_LO_128(V3,V1,V2);
-		VEC256_UNPACK_HI_128(V4,V1,V2);
+		V3 = Simd256<uint64_t>::unpacklo128(V1,V2);
+		V4 = Simd256<uint64_t>::unpackhi128(V1,V2);
 
 		// Store
 		Simd256<uint32_t>::storeu(ABCDEFGH,V3);
