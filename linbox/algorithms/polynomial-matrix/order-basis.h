@@ -26,6 +26,8 @@
 
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/polynomial-matrix.h"
+
+
 #ifdef TRACK_MEMORY
 #define MEMINFO2 STR_MEMINFO<<MEMINFO
 #else
@@ -130,7 +132,7 @@ namespace LinBox {
                 OrderBasis(const Field& f) : _field(&f), _PMD(f), _BMD(f) {                 
                 }
 #ifdef TRACK_MEMORY
-                ~OrderBasis() { PRINT_MEMINFO;}
+                ~OrderBasis() {}
 #endif
                 
                 inline const Field& field() const {return *_field;}
@@ -680,7 +682,6 @@ namespace LinBox {
                 //std::cout<<"Serie1: "<<serie1<<std::endl;
 
                 size_t d= SB.M_Basis(sigma1,serie1,order,shift);
-                sigma.resize(d+1);
                 sigma.copy(sigma1,0,d);
                 
                 //std::cout<<"Sigma1: "<<sigma1<<std::endl;

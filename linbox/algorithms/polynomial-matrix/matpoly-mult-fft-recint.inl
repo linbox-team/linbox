@@ -36,6 +36,11 @@
 #ifndef MEMINFO
 #define MEMINFO ""
 #endif
+
+#ifdef LOW_MEMORY
+#define MEMFACTOR 4
+#endif
+
 namespace LinBox{
 
   /***************************************************
@@ -150,21 +155,11 @@ namespace LinBox{
       size_t lpts=0;
       size_t pts  = 1; while (pts < s) { pts= pts<<1; ++lpts; }
 
-      // compute bit size of feasible prime for FFLAS
-      // size_t _k=k,lk=0;
-      //while ( _k ) {_k>>=1; ++lk;}
-      //size_t prime_bitsize= (53-lk)>>1;
-
       // compute max prime value for FFLAS      
       uint64_t prime_max= std::sqrt( (1ULL<<52) / k)+1;
       std::vector<integer> bas;
       getFFTPrime(prime_max,lpts,bound,bas);
-      // RandomFFTPrime RdFFT(prime_bitsize);
-      // if (!RdFFT.generatePrimes(lpts,bound,bas)){
-      // 	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL taking normal primes..."<<std::endl;
-      //        exit(1);
-      // }
-	
+      
       std::vector<double> basis(bas.size());
       std::copy(bas.begin(),bas.end(),basis.begin());
       FFPACK::rns_double RNS(basis);
@@ -181,51 +176,15 @@ namespace LinBox{
 #endif
       FFT_PROFILING(2,"init of CRT approach");
       // reduce t_a and t_b modulo each FFT primes
-      size_t n_ta=m*k*a.size(), n_tb=k*n*b.size();
-      //size_t n_ta=m*k*pts, n_tb=k*n*pts;
-      //std::cout<<"----------------------------------------------"<<std::endl;
-      //std::cout<<"MUL FFT RNS: "<<MEMINFO<<std::endl;
-      //std::cout<<"MUL FFT RNS: need "<<MB((m*n*pts+n_ta+n_tb)*num_primes*8 + 2*(m*k+k*n)*pts*8)<<"Mo"<<std::endl;
-      
-      //std::cout<<"MUL FFT RNS: RNS -> allocating "<<MB((n_ta+n_tb)*num_primes*8)<<"Mo"<<std::endl;
-
-      // std::cout<<"a"<<":="<<a<<";\n";
-      // std::cout<<"b"<<":="<<b<<";\n";
-      // for(size_t i=0;i<n_ta;i++)
-      // 	std::cout<<a.getPointer()[i]<<" , ";
-      // std::cout<<std::endl;
-      // std::cout<<"*************"<<std::endl;
-      // for(size_t i=0;i<m*k*a.storage();i++)
-      // 	std::cout<<a.getPointer()[i]<<" , ";
-      // std::cout<<std::endl;
-      size_t kA = maxA.bitsize()/16 + (maxA.bitsize()%16?1:0);
-      size_t kB = maxB.bitsize()/16 + (maxB.bitsize()%16?1:0);
-      size_t rns_mem1,rns_mem2;
-      rns_mem1= (n_ta+n_tb)*num_primes + std::max(n_ta*kA, n_tb*kB);
-      rns_mem1*=8;
-      //std::cout<<"RNS NEED1: "<<MB(rns_mem1)<<"Mo"<<std::endl;
-      //      std::cout<<"could be -> "<<MB(((n_ta+n_tb)*num_primes + 0.33*std::max(n_ta*kA, n_tb*kB))*8)<<std::endl;
-      rns_mem2= (m*n*s)*(num_primes+RNS._ldm) ;
-      rns_mem2*=8;
-      //std::cout<<"RNS NEED2: "<<MB(rns_mem2)<<"Mo"<<std::endl;
-      //std::cout<<"could be -> "<<MB((m*n*s)*(num_primes+RNS._ldm*0.33) *8)<<std::endl;
-      
+      size_t n_ta=m*k*a.size(), n_tb=k*n*b.size();      
       ADD_MEM(8*(n_ta+n_tb)*num_primes);
       double* t_a_mod= new double[n_ta*num_primes];
       double* t_b_mod= new double[n_tb*num_primes];
       RNS.init(1, n_ta, t_a_mod, n_ta, a.getPointer(), n_ta, maxA);
       RNS.init(1, n_tb, t_b_mod, n_tb, b.getPointer(), n_tb, maxB);
-      ADD_MEM(n_ta* (maxA.bitsize()/16 + (maxA.bitsize()%16?1:0)) *8); // needed by RNS init
-      DEL_MEM(n_ta* (maxA.bitsize()/16 + (maxA.bitsize()%16?1:0)) *8);
-      ADD_MEM(n_tb* (maxB.bitsize()/16 + (maxB.bitsize()%16?1:0)) *8); // needed by RNS init
-      DEL_MEM(n_tb* (maxB.bitsize()/16 + (maxB.bitsize()%16?1:0)) *8);
       FFT_PROFILING(2,"reduction mod pi of input matrices");
 
-
-      
       std::vector<MatrixP_F*> c_i (num_primes);
-      //std::cout<<"MUL FFT RNS: RNS -> allocating "<<MB((m*n*pts)*num_primes*8)<<"Mo"<<std::endl;
-      //std::cout<<"MUL FFT RNS: RNS -> allocating "<<MB((2*(m*k+k*n)*pts)*8)<<"Mo"<<std::endl;
       FFT_PROFILE_START(2);
       auto sp=SPLITTER();
       PARFOR1D(l,num_primes,sp,
@@ -269,9 +228,10 @@ namespace LinBox{
 	//c.copy(*c_i[0],0,s-1);
       } else {
 	FFT_PROFILE_START(2);
+
+#ifndef LOW_MEMORY
 	// construct contiguous storage for c_i
 	size_t n_tc=m*n*s;
-	//std::cout<<"MUL FFT RNS: RNS -> allocating "<<MB(n_tc*num_primes*8)<<"Mo"<<std::endl;
 	ADD_MEM(8*n_tc*num_primes);
 	double *t_c_mod = new double[n_tc*num_primes];
 	for (size_t l=0;l<num_primes;l++){
@@ -284,14 +244,48 @@ namespace LinBox{
 
 	// reconstruct the result in C
 	RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc, _maxnorm);
-	ADD_MEM(n_tc*RNS._ldm*8);
-	DEL_MEM(n_tc*RNS._ldm*8);
-	//std::cout<<"MUL FFT RNS: "<<MEMINFO<<std::endl;
-	//std::cout<<"----------------------------------------------"<<std::endl;
 	DEL_MEM(8*n_tc*num_primes);
 	delete[] t_c_mod;
+#else
+	size_t s_small= s/MEMFACTOR + 1;
+	size_t s_last = s- s_small*(MEMFACTOR-1);
+	size_t n_tc_small= m*n*s_small;
+	size_t n_tc_last = m*n*s_last;
+	{
+	  ADD_MEM(8*n_tc_small*num_primes);
+	  double *t_c_mod = new double[n_tc_small*num_primes];
+	  for (size_t memiter=0;memiter<MEMFACTOR-1;memiter++){	 
+	    for (size_t l=0;l<num_primes;l++){
+	      for (size_t i=0;i<m*n;i++)
+		for (size_t j=0;j<s_small;j++)
+		  t_c_mod[l*n_tc_small + (j+i*s_small)]= c_i[l]->get(i,memiter*s_small+j);
+	    }	
+	    // reconstruct the result in C
+	    RNS.convert(m*n,s_small,0,c.getWritePointer()+memiter*s_small,s, t_c_mod, n_tc_small, _maxnorm);
+	  }
+	  DEL_MEM(8*n_tc_small*num_primes);
+	  delete[] t_c_mod;
+	}	
+	{
+	  ADD_MEM(8*n_tc_last*num_primes);
+	  double *t_c_mod = new double[n_tc_last*num_primes];
+	  // perform the last step
+	  for (size_t l=0;l<num_primes;l++){
+	    for (size_t i=0;i<m*n;i++)
+	      for (size_t j=0;j<s_last;j++)
+		t_c_mod[l*n_tc_last + (j+i*s_last)]= c_i[l]->get(i,(MEMFACTOR-1)*s_small+j);
+	    delete c_i[l];
+	  }	  
+	  // reconstruct the result in C
+	  RNS.convert(m*n,s_last,0,c.getWritePointer()+(MEMFACTOR-1)*s_small,s, t_c_mod, n_tc_last, _maxnorm);
+	  DEL_MEM(8*n_tc_last*num_primes);
+	  delete[] t_c_mod;
+	}
+	
+#endif
 
       }
+      
       //      std::cout<<"c"<<":="<<c<<";\n";
       FFT_PROFILING(2,"k prime reconstruction");
       // std::cout<<"CC:="<<c<<std::endl;
@@ -411,8 +405,8 @@ template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
 
 	// reconstruct the result in C
 	RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc, _maxnorm);
-	ADD_MEM(n_tc*RNS._ldm*8);
-	DEL_MEM(n_tc*RNS._ldm*8);
+	//ADD_MEM(n_tc*RNS._ldm*8);
+	//DEL_MEM(n_tc*RNS._ldm*8);
 	
 	//std::cout<<"MUL FFT RNS: "<<MEMINFO<<std::endl;
 	//std::cout<<"----------------------------------------------"<<std::endl;
@@ -455,22 +449,11 @@ template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
       size_t lpts=0;
       size_t pts  = 1; while (pts < deg) { pts= pts<<1; ++lpts; }
 
-
-      // compute bit size of feasible prime for FFLAS
-      // size_t _k=k,lk=0;
-      //while ( _k ) {_k>>=1; ++lk;}
-      //size_t prime_bitsize= (53-lk)>>1;
-
       // compute max prime value for FFLAS
       uint64_t prime_max= std::sqrt( (1ULL<<53) / k)+1;
       std::vector<integer> bas;
       getFFTPrime(prime_max,lpts,bound,bas);
-      //RandomFFTPrime RdFFT(prime_bitsize);
-      // if (!RdFFT.generatePrimes(bound,bas)){
-      // 	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL exiting..."<<std::endl;
-      // 	throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
-      // }
-
+      
       std::vector<double> basis(bas.size());
       std::copy(bas.begin(),bas.end(),basis.begin());
       FFPACK::rns_double RNS(basis);
@@ -488,38 +471,12 @@ template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
       FFT_PROFILING(2,"init of CRT approach");
       // reduce t_a and t_b modulo each FFT primes
       size_t n_ta=m*k*a.size(), n_tb=k*n*b.size();
-
-      size_t kA = maxA.bitsize()/16 + (maxA.bitsize()%16?1:0);
-      size_t kB = maxB.bitsize()/16 + (maxB.bitsize()%16?1:0);
-      size_t rns_mem1,rns_mem2;
-      rns_mem1= (n_ta+n_tb)*num_primes + std::max(n_ta*kA, n_tb*kB);
-      rns_mem1*=8;
-      std::cout<<"RNS NEED1: "<<MB(rns_mem1)<<"Mo"<<std::endl;
-      rns_mem2= (m*n*c.size())*(num_primes+RNS._ldm) ;
-      rns_mem2*=8;
-      std::cout<<"RNS NEED2: "<<MB(rns_mem2)<<"Mo"<<std::endl;
-
-
       ADD_MEM(8*(n_ta+n_tb)*num_primes);
       double* t_a_mod= new double[n_ta*num_primes];
       double* t_b_mod= new double[n_tb*num_primes];
       RNS.init(1, n_ta, t_a_mod, n_ta, a.getPointer(), n_ta, maxA);
       RNS.init(1, n_tb, t_b_mod, n_tb, b.getPointer(), n_tb, maxB);
-      ADD_MEM(n_ta* (maxA.bitsize()/16 + (maxA.bitsize()%16?1:0)) *8); // needed by RNS init
-      DEL_MEM(n_ta* (maxA.bitsize()/16 + (maxA.bitsize()%16?1:0)) *8);
-      ADD_MEM(n_tb* (maxB.bitsize()/16 + (maxB.bitsize()%16?1:0)) *8); // needed by RNS init
-      DEL_MEM(n_tb* (maxB.bitsize()/16 + (maxB.bitsize()%16?1:0)) *8);
-      
       FFT_PROFILING(2,"reduction mod pi of input matrices");
-
-      //std::cout<<"----------------------------------------------"<<std::endl;
-      //std::cout<<"MIDP FFT RNS: "<<MEMINFO<<std::endl;
-      //std::cout<<"MIDP FFT RNS: need "<<MB((m*n*pts+n_ta+n_tb)*num_primes*8 + 2*(m*k+k*n)*pts*8)<<"Mo"<<std::endl;
-
-      
-      //std::cout<<"MIDP FFT RNS: RNS -> allocating "<<MB((n_ta+n_tb)*num_primes*8)<<"Mo"<<std::endl;
-      //std::cout<<"MIDP FFT RNS: RNS -> allocating "<<MB((m*n)*pts*num_primes*8)<<"Mo"<<std::endl;
-      //std::cout<<"MIDP FFT RNS: "<<MEMINFO<<std::endl;
 
       std::vector<MatrixP_F*> c_i (num_primes);
 
@@ -544,10 +501,11 @@ template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
 	    else
 	      b_i.ref(i,hdeg-1-j)=t_b_mod[l*n_tb+j+i*b.size()];
 	FFT_PROFILE_GET(2,tCopy);
+	
 	//PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f);
 	PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);       
 	fftdomain.midproduct_fft(lpts, *(c_i[l]), a_i, b_i, smallLeft);
-				
+	
 	FFT_PROFILE_GET(2,tMul);
       }
       DEL_MEM(8*(n_ta+n_tb)*num_primes);
@@ -559,37 +517,67 @@ template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
       if (num_primes < 2) {
 	FFT_PROFILE_START(2);
 	c.copy(*(c_i[0]),0,c.size()-1);
-	//std::cerr<<"Problem with matpoly-mult-fft-recint.inl : num_prime < 2 not yet supported... aborting"<<std::endl;
-	//std::terminate();
       } else {
 	FFT_PROFILE_START(2);
+
+	size_t s=c.size();
+#ifndef LOW_MEMORY
 	// construct contiguous storage for c_i
-	double *t_c_mod;
-	size_t n_tc=m*n*c.size();
-	ADD_MEM(8*(n_tc)*num_primes);
-	t_c_mod = new double[n_tc*num_primes];
+	size_t n_tc=m*n*s;
+	ADD_MEM(8*n_tc*num_primes);
+	double *t_c_mod = new double[n_tc*num_primes];
 	for (size_t l=0;l<num_primes;l++){
 	  for (size_t i=0;i<m*n;i++)
-	    for (size_t j=0;j<c.size();j++)
-	      t_c_mod[l*n_tc + (j+i*c.size())]= c_i[l]->get(i,j);
+	    for (size_t j=0;j<s;j++)
+	      t_c_mod[l*n_tc + (j+i*s)]= c_i[l]->get(i,j);
 	  delete c_i[l];
 	}
 	FFT_PROFILING(2,"linearization of results mod pi");
 
 	// reconstruct the result in C
 	RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc, _maxnorm);
-	ADD_MEM(n_tc*RNS._ldm*8);
-	DEL_MEM(n_tc*RNS._ldm*8);
-
-	//std::cout<<"MIDP FFT RNS: "<<MEMINFO<<std::endl;
 	DEL_MEM(8*n_tc*num_primes);
 	delete[] t_c_mod;
-	//std::cout<<"MUL FFT RNS: "<<MEMINFO<<std::endl;
-	//std::cout<<"----------------------------------------------"<<std::endl;
-
-	FFT_PROFILING(2,"k prime reconstruction");
+#else
+	size_t s_small= s/MEMFACTOR + 1;
+	size_t s_last = s- s_small*(MEMFACTOR-1);
+	size_t n_tc_small= m*n*s_small;
+	size_t n_tc_last = m*n*s_last;
+	{
+	  ADD_MEM(8*n_tc_small*num_primes);
+	  double *t_c_mod = new double[n_tc_small*num_primes];
+	  for (size_t memiter=0;memiter<MEMFACTOR-1;memiter++){	 
+	    for (size_t l=0;l<num_primes;l++){
+	      for (size_t i=0;i<m*n;i++)
+		for (size_t j=0;j<s_small;j++)
+		  t_c_mod[l*n_tc_small + (j+i*s_small)]= c_i[l]->get(i,memiter*s_small+j);
+	    }	
+	    // reconstruct the result in C
+	    RNS.convert(m*n,s_small,0,c.getWritePointer()+memiter*s_small,s, t_c_mod, n_tc_small, _maxnorm);
+	  }
+	  DEL_MEM(8*n_tc_small*num_primes);
+	  delete[] t_c_mod;
+	}	
+	{
+	  ADD_MEM(8*n_tc_last*num_primes);
+	  double *t_c_mod = new double[n_tc_last*num_primes];
+	  // perform the last step
+	  for (size_t l=0;l<num_primes;l++){
+	    for (size_t i=0;i<m*n;i++)
+	      for (size_t j=0;j<s_last;j++)
+		t_c_mod[l*n_tc_last + (j+i*s_last)]= c_i[l]->get(i,(MEMFACTOR-1)*s_small+j);
+	    delete c_i[l];
+	  }	  
+	  // reconstruct the result in C
+	  RNS.convert(m*n,s_last,0,c.getWritePointer()+(MEMFACTOR-1)*s_small,s, t_c_mod, n_tc_last, _maxnorm);
+	  DEL_MEM(8*n_tc_last*num_primes);
+	  delete[] t_c_mod;
+	}
+	
+#endif
       }
     }
+      
   };
 
 
