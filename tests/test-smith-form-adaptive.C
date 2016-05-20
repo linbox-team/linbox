@@ -1,7 +1,7 @@
 /* Copyright (C) LinBox
  *
  *  Author: Zhendong Wan
- *
+ *  mods: bds
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -40,191 +40,56 @@
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
 #include "linbox/algorithms/smith-form-adaptive.h"
-#include "test-common.h"
-using namespace LinBox; // fragile
+using namespace LinBox; 
 
-
-template <class Ring, class SmithForm, class Vector>
-bool testRandom(const Ring& R,
-		const SmithForm& SF,
-		LinBox::VectorStream<Vector>& stream1)
-{
-
-
-	std::ostringstream str;
-
-	str << "Testing the adaptive algorithm for Smith form computation:\n";
-
-	commentator().start (str.str ().c_str (), "testRandom");//, stream1.m ());
-
-	bool ret = true;
-
-	VectorDomain<Ring> VD (R);
-
-	Vector d(R), x(R);
-
-	VectorWrapper::ensureDim (d, stream1.n ());
-
-	VectorWrapper::ensureDim (x, stream1.n ());
-
-
-	int n = (int)d. size();
-
-	while (stream1) {
-
-		commentator().startIteration ((unsigned)stream1.j ());
-
-		std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-
-		bool iter_passed = true;
-
-		stream1.next (d);
-
-		report << "Input vector:  ";
-		VD.write (report, d);
-		report << endl;
-
-		BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
-
-		int i, j;
-
-		for(i = 0; i < n; ++i) {
-			R. assign (D[(size_t)i][(size_t)i], d[(size_t)i]);
-			R. assign(L[(size_t)i][(size_t)i], R.one);
-			R. assign (U[(size_t)i][(size_t)i], R.one);}
-
-			for (i = 0; i < n; ++ i)
-
-				for (j = 0; j < i; ++ j) {
-
-					R.init(L[(size_t)i][(size_t)j], rand() % 10);
-
-					R.init(U[(size_t)j][(size_t)i], rand() % 10);
-				}
-
-
-			BlasVector<Ring> tmp1(R,(size_t)n), tmp2(R,(size_t)n), e(R,(size_t)n);
-
-			typename BlasMatrix<Ring>::ColIterator col_p;
-
-			i = 0;
-			for (col_p = A.colBegin();
-			     col_p != A.colEnd(); ++ col_p, ++ i) {
-
-				R.assign(e[(size_t)i],R.one);
-				U.apply(tmp1, e);
-				D.apply(tmp2, tmp1);
-				// LinBox::BlasSubvector<BlasVector<Ring> > col_p_v (R, *col_p);
-				// L.apply(col_p_v, tmp2);
-				L.apply(*col_p, tmp2);
-				R.assign(e[(size_t)i],R.zero);
-			}
-
-
-
-			Givaro::ZRing<Integer> Z; //! why switch from Ring ????
-			BlasVector<Givaro::ZRing<Integer> > xi(Z,A. rowdim());
-
-			SF.smithForm (xi, A);
-			typename Vector::iterator x_p;
-			BlasVector<Givaro::ZRing<Integer> >::iterator xi_p;
-			for (x_p = x. begin(), xi_p = xi. begin(); x_p != x. end(); ++ x_p, ++ xi_p)
-				A. field (). init (*x_p, *xi_p);
-
-
-			report << "Computed Smith form: \n";
-
-			VD. write (report, x);
-
-			report << '\n';
-
-
-			typename BlasVector<Ring>::iterator p1, p2;
-			typename Ring::Element g;
-
-
-			for (p1 = d.begin(); p1 != d.end(); ++ p1) {
-
-				for ( p2 = p1 + 1; p2 != d.end(); ++ p2) {
-
-					if (R. isUnit(*p1))  break;
-
-					else if (R. isZero (*p2)) continue;
-
-					else if (R. isZero (*p1)) {
-						std::swap (*p1, *p2);
-					}
-
-					else {
-						R. gcd (g, *p1, *p2);
-
-						R. divin (*p2, g);
-
-						R. mulin (*p2, *p1);
-
-						R. assign (*p1, g);
-					}
-				}
-			}
-
-
-			report << "Expected smith form:\n";
-
-			VD.write (report, d);
-
-			report << '\n';
-
-			if (!VD.areEqual (d, x))
-
-				ret = iter_passed = false;
-
-			if (!iter_passed)
-
-				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Computed Smith form is incorrect" << endl;
-
-
-
-			commentator().stop ("done");
-
-			commentator().progress ();
-
-	}
-
-	//stream1.reset ();
-
-	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
-
-	return ret;
-
-}
+#include "test-smith-form.h"
 
 int main(int argc, char** argv)
 {
 
 	bool pass = true;
+	static size_t m = 3;
 	static size_t n = 35;
-	static unsigned int iterations = 1;
 	static Argument args[] = {
+		{ 'm', "-m M", "Set order of test matrices to M.", TYPE_INT,  &m },
 		{ 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,  &n },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations },
 		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);
-	SmithFormAdaptive sf;
 
 	commentator().start("Smith form adaptive algorithm test suite", "EGV++");
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-	//typedef NTL_ZZ Ring; Ring R;
-	typedef Givaro::ZRing<Integer> Ring; Ring R; Ring::RandIter gen(R);
-	RandomDenseStream<Ring> s1 (R, gen, n, iterations);
-	pass = testRandom(R, sf, s1);
+	//!@bug should be tried on NTZ_LL too
+	typedef Givaro::ZRing<Integer> PIR;
+	PIR R;
 
-	typedef Givaro::ZRing<Integer> Ring2; Ring2 S;Ring2::RandIter gen2(S);
-	RandomDenseStream<Ring2> s2 (S, gen2, n, iterations);
-	pass = pass && testRandom(S, sf, s2);
+	size_t k = std::min(m,n);
+	DenseMatrix<PIR> A(R,m,n);
+	BlasVector<PIR> d(R,k), x(R,k), bumps(R,k), lumps(R,19);
+	for (size_t i = 0; i <10; ++i) lumps[i] = i;
+	for (size_t i = 10; i <19; ++i) lumps[i] = i-19;
+
+	makeBumps(bumps, 0);
+	makeSNFExample(A,d,bumps,lumps);
+	SmithFormAdaptive::smithForm (x, A);
+	pass = pass and checkSNFExample(d,x);
+
+	makeBumps(bumps, 1);
+	makeSNFExample(A,d,bumps,lumps);
+	SmithFormAdaptive::smithForm (x, A);
+	pass = pass and checkSNFExample(d,x);
+
+	makeBumps(bumps, 2);
+	makeSNFExample(A,d,bumps,lumps);
+	SmithFormAdaptive::smithForm (x, A);
+	pass = pass and checkSNFExample(d,x);
+
+	makeBumps(bumps, 3);
+	makeSNFExample(A,d,bumps,lumps);
+	SmithFormAdaptive::smithForm (x, A);
+	pass = pass and checkSNFExample(d,x);
+
 
 	commentator().stop(MSG_STATUS(pass));
 	return pass ? 0 : -1;

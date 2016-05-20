@@ -26,6 +26,8 @@
 #define __LINBOX_pir_modular_int32_H
 
 #include <givaro/modular-int32.h>
+//#include <linbox/util/debug.h>
+#include <linbox/vector/vector-domain.h>
 
 //#include "linbox/ring/modular.h"
 #ifndef LINBOX_MAX_INT

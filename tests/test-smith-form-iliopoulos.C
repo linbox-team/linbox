@@ -53,6 +53,7 @@
 
 using namespace LinBox;
 
+#if 0
 template <class Ring>
 bool testRead(const Ring& R, string file) {
 	BlasMatrix<Ring> A(R);
@@ -82,6 +83,7 @@ bool testRead(const Ring& R, string file) {
 	SmithFormIliopoulos::smithFormIn (B);
 	return BMD.areEqual(A, B);
 }
+#endif
 
 template <class Ring>
 bool testRandom(const Ring& R, size_t n)
