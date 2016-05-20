@@ -64,6 +64,13 @@ using std::ptrdiff_t;
 #define __LINBOX_NO_SIMD
 #endif
 
+#ifdef __FFLASFFPACK_USE_AVX
+#define __LINBOX_USE_AVX
+#endif
+
+#ifdef __FFLASFFPACK_USE_AVX2
+#define __LINBOX_USE_AVX2
+#endif
 
 namespace LinBox {
 
