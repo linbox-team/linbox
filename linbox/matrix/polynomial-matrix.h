@@ -36,9 +36,10 @@
 
 #ifdef TRACK_MEMORY
 uint64_t max_memory=0, cur_memory=0;
-#define ADD_MEM(x) cur_memory+=x; max_memory=std::max(max_memory,cur_memory);
-#define DEL_MEM(x) cur_memory-=x;
-#define PRINT_MEMINFO std::cerr<<"Memory Info: max="<<max_memory/1000000.<<" Mo"<<std::endl;
+#define ADD_MEM(x) {cur_memory+=x; max_memory=std::max(max_memory,cur_memory);}
+#define DEL_MEM(x) {cur_memory-=x;}
+#define STR_MEMINFO std::right<<"\033[31m [ MEM: cur="<<cur_memory/1000000.<<" Mo --- max="<<max_memory/1000000.<<" Mo \033[0m]"
+#define PRINT_MEMINFO std::cerr<<"\033[31m[ MEM: cur="<<cur_memory/1000000.<<" Mo --- max="<<max_memory/1000000.<<" Mo ]\033[0m"<<std::endl;
 #else
 #define ADD_MEM(X) ;
 #define DEL_MEM(X) ;     
@@ -55,6 +56,9 @@ namespace LinBox{
 	template<size_t type, size_t storage, class Field>
 	class PolynomialMatrix;
 
+	template<typename Field> uint64_t element_storage(const Field& F)      { integer p;F.characteristic(p); return length(p);}
+	template<> uint64_t element_storage(const Givaro::Modular<Givaro::Integer> &F) { integer p;F.characteristic(p); return length(p)+sizeof(Givaro::Integer);}
+	
 	// Class for Polynomial Matrix stored as a Matrix of Polynomials
 	template<class _Field>
 	class PolynomialMatrix<PMType::polfirst,PMStorage::plain,_Field> {
@@ -82,13 +86,15 @@ namespace LinBox{
 					_repview[i*_col+j]= Polynomial(_rep.begin()+(i*_col+j)*_store,_size);
 			//integer p;
 			//std::cout<<"MatrixP allocating : "<<r*c*s*length(f.characteristic(p))/1000000.<<"Mo"<<std::endl;
-			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
-			ADD_MEM(_row*_col*(_size*bb+2*sizeof(Iterator)));
+			//std::cout<<"(ALLOC) PolynomialMatrix<polfirst> at "<<this<<" : "<<r<<"x"<<c<<" - size= "<<s<<" ==> "<<MB(realmeminfo())<<" Mo   "<<STR_MEMINFO<<std::endl;
+			ADD_MEM(realmeminfo());
 		}
 
+		PolynomialMatrix(const Self_t&) = delete;
+		
 		~PolynomialMatrix(){
-			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
-			DEL_MEM(_row*_col*(_size*bb+2*sizeof(Iterator)));
+			DEL_MEM(realmeminfo());
+			//std::cout<<"(FREE) PolynomialMatrix<polfirst> at "<<this<<" : "<<_row<<"x"<<_col<<" - size= "<<_store<<" ==> "<<MB(realmeminfo())<<" Mo   "<<STR_MEMINFO<<std::endl;
 
 			//integer p;
 			//std::cout<<"MatrixP Desallocating : "<<_row*_col*_store*length(_fld->characteristic(p))/1000000.<<"Mo"<<std::endl;
@@ -120,6 +126,7 @@ namespace LinBox{
 
 		// resize the polynomial length of the polynomial matrix
 		void resize(size_t s){
+			DEL_MEM(realmeminfo());
 			if (s>_store){
 				_rep.resize(s*_row*_col);
 				size_t k=s*_row*_col-1;
@@ -137,9 +144,13 @@ namespace LinBox{
 					for (size_t j=0;j<s;j++,k++)
 						_rep[k]=_rep[i*_store+j];
 				_rep.resize(s*_row*_col);
+				_rep.shrink_to_fit();
 			}
+			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
+
 			_store=s;
 			setsize(s);
+			ADD_MEM(realmeminfo());
 		}
 
 		void changesize(size_t s){
@@ -303,7 +314,10 @@ namespace LinBox{
 		Element* getWritePointer(){return &_rep[0];}
 		const Element* getPointer() const {return &_rep[0];}
 
-		size_t realmeminfo()const { return _rep.capacity()*sizeof(Element)+_repview.capacity()*sizeof(Polynomial);}
+		size_t realmeminfo()const {
+			return _row*_col*(_store*element_storage(field())+sizeof(Polynomial));}
+		// return _rep.capacity()*sizeof(Element)+_repview.capacity()*sizeof(Polynomial);}
+	
 		size_t meminfo()const { return _rep.size()*sizeof(Element);}
 
 		void changeField(const Field& F){_fld=&F;}
@@ -334,21 +348,21 @@ namespace LinBox{
 
 		PolynomialMatrix() {}
 
+		PolynomialMatrix(const Self_t&) = delete;
+		
 		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s) :
 			_rep(s,Matrix(f)), _row(r), _col(c), _size(s), _fld(&f) {
 			//_row(r), _col(c), _size(s), _fld(&f) {			
 			for(size_t i=0;i<s;i++)
 				_rep[i].init(f,r,c);
 			//integer p;
-			//std::cout<<"PMatrix allocating : "<<r*c*s*length(f.characteristic(p))/1000000.<<"Mo"<<std::endl;
-			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
-			ADD_MEM((_size*(_row*_col*bb+sizeof(Matrix))));
-
+			//std::cout<<"(ALLOC) matfirst at "<<this<<" : "<<r<<"x"<<c<<" - size= "<<s<<" ==> "<<MB(realmeminfo())<<" Mo"<<std::endl;
+			ADD_MEM(realmeminfo());
 		}
 
 		~PolynomialMatrix(){
-			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
-			DEL_MEM((_size*(_row*_col*bb+sizeof(Matrix))));
+			DEL_MEM(realmeminfo());
+			//std::cout<<"(FREE) matfirst at "<<this<<" : "<<_row<<"x"<<_col<<" - size= "<<_size<<" ==> "<<MB(realmeminfo())<<" Mo"<<std::endl;
 			//integer p;
 			//std::cout<<"PMatrix Desallocating : "<<_row*_col*_size*length(_fld->characteristic(p))/1000000.<<"Mo"<<std::endl;
 		}
@@ -530,6 +544,11 @@ namespace LinBox{
 			return os;
                 }
 
+		size_t realmeminfo()const {
+			
+			return _size*(_row*_col*element_storage(field())+sizeof(Matrix));
+		}
+		
 		// NEED FOR YUHASZ
 		typedef typename std::vector<Matrix>::const_iterator const_iterator;
 		const_iterator begin() const {return _rep.begin();}

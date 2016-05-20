@@ -72,13 +72,13 @@ void DFT_sanity_check(FFT& FFTDom, Funct f, const Vect& x, const Vect& y, string
 	cout<<"  Checking ... "<<msg
 	    << (equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p))?" done":" error")<<endl;
 
-	// if (!(equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p)))){
-	// 	std::ostream_iterator<Element> out_it (std::cout,", ");
-	// 	std::copy ( z.begin(), z.end(), out_it );
-	// 	std::cout<<std::endl;
-	// 	std::copy ( y.begin(), y.end(), out_it );
-	// 	std::cout<<std::endl; 
-	// }
+	if (!(equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p)))){
+		std::ostream_iterator<Element> out_it (std::cout,", ");
+		std::copy ( z.begin(), z.end(), out_it );
+		std::cout<<std::endl;
+		std::copy ( y.begin(), y.end(), out_it );
+		std::cout<<std::endl; 
+	}
 
 }
 

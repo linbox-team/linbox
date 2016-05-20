@@ -220,7 +220,7 @@ namespace LinBox {
 					wi-=(wi>=_pl?_pl:0);
 				}
 				
-				for(size_t k=2;k<tpts;k<<=1)
+				for(size_t k=2;k<=tpts;k<<=1)
 					for(size_t i=0;i<tpts;i+=k,pos++){
 						pow_w[pos]  = pow_w[i];
 						pow_wp[pos] = pow_wp[i];

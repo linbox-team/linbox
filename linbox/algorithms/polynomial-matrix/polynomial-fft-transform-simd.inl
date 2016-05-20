@@ -730,6 +730,7 @@ namespace LinBox {
 					for (size_t j = 0; j < w; j++)
 						Butterfly_DIF_mod2p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], tab_w[j], tab_wp[j]);
 		}
+		
 	}
 
 

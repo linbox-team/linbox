@@ -31,6 +31,7 @@ pkgincludesub_HEADERS =         \
 	matpoly-mult-fft-wordsize-fast.inl	\
 	matpoly-mult-fft-wordsize-three-primes.inl	\
 	matpoly-mult-fft-multiprecision.inl	\
+	matpoly-mult-fft-recint.inl	\
 	polynomial-fft-transform-simd.inl	\
 	polynomial-fft-transform.h	\
 	polynomial-fft-transform.inl	\

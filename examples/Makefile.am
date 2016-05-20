@@ -42,7 +42,7 @@ LDADD += $(top_builddir)/linbox/liblinbox.la
 
 #  SUBDIRS=fields solver data blackbox
 
-EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly polysmith benchfft benchmatpolymult 
+EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly polysmith #bench-fft bench-matpoly-mult
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
 if LINBOX_HAVE_NTL
@@ -77,18 +77,22 @@ smithvalence_SOURCES   = smithvalence.C
 sparseelimdet_SOURCES  = sparseelimdet.C
 sparseelimrank_SOURCES = sparseelimrank.C
 polysmith_SOURCES      = poly-smith.C
-benchfft_SOURCES       = bench-fft.C
-benchmatpolymult_SOURCES = bench-matpoly-mult.C
+#bench_fft_SOURCES       = bench-fft.C
+#bench_matpoly_mult_SOURCES = bench-matpoly-mult.C
 LINBOX=@prefix@
 
 LINBOX_BIN=@bindir@
 
 
 # for compilation of new examples
-new_examp_comp = $(CXX) -I@includedir@ $(CXXFLAGS) $(AM_CPPFLAGS) $(OPTFLAGS) ${INCLUDES}  $< -o $@ -L@libdir@ -llinbox $(AM_LDFLAGS) $(LDADD) $(LIBS)
+#new_examp_comp = $(CXX) -I@includedir@ $(CXXFLAGS) $(AM_CPPFLAGS) $(OPTFLAGS) ${INCLUDES}  $< -o $@ -L@libdir@ -llinbox $(AM_LDFLAGS) $(LDADD) $(LIBS)
 
 %:%.C
-	$(new_examp_comp)
+#	$(LTCXXCOMPILE) -c -o $@.$(OBJEXT) $<
+	$(AM_V_CXX)$(CXXCOMPILE) -c -o $@.$(OBJEXT) $<
+	$(AM_V_CXXLD)$(CXXLINK) $@.$(OBJEXT) $(LDADD)
 
 %:%.cpp
-	$(new_examp_comp)
+#	$(LTCXXCOMPILE) -c -o $@.$(OBJEXT) $<
+	$(AM_V_CXX)$(CXXCOMPILE) -c -o $@.$(OBJEXT) $<
+	$(AM_V_CXXLD)$(CXXLINK) $@.$(OBJEXT) $(LDADD)
