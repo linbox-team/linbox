@@ -357,8 +357,8 @@ int main(int argc, char** argv){
 	parseArguments (argc, argv, args);
 	
 	typedef Givaro::Modular<double>              SmallField;	
-	typedef Givaro::Modular<Givaro::Integer>      LargeField;
-	//typedef Givaro::Modular<RecInt::ruint128,RecInt::ruint256>  LargeField;
+	//typedef Givaro::Modular<Givaro::Integer>      LargeField;
+	typedef Givaro::Modular<RecInt::ruint128,RecInt::ruint256>  LargeField;
 
 	size_t logd=integer((uint64_t)d).bitsize();
 

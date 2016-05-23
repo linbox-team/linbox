@@ -28,7 +28,7 @@
 #include "linbox/matrix/polynomial-matrix.h"
 
 
-#ifdef TRACK_MEMORY
+#ifdef TRACK_MEMORY_MATPOL
 #define MEMINFO2 STR_MEMINFO<<MEMINFO
 #else
 #define MEMINFO2 ""
@@ -63,7 +63,7 @@ namespace LinBox {
                 std::string msg(".....");
                 bool nul_sigma=true;
                 while(i<ord && MD.isZero(T[i])){
-                        if (!MD.isZero(sigma[i])) nul_sigma=false;		
+                        if (i<sigma.size() && !MD.isZero(sigma[i])) nul_sigma=false;		
                         i++;
                 }
                 if (i<ord){

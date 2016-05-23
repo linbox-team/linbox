@@ -34,7 +34,7 @@
 #include "givaro/modular.h"
 #include <algorithm>
 
-#ifdef TRACK_MEMORY
+#ifdef TRACK_MEMORY_MATPOL
 uint64_t max_memory=0, cur_memory=0;
 #define ADD_MEM(x) {cur_memory+=x; max_memory=std::max(max_memory,cur_memory);}
 #define DEL_MEM(x) {cur_memory-=x;}

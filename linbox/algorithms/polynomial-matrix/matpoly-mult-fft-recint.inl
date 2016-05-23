@@ -37,7 +37,7 @@
 #define MEMINFO ""
 #endif
 
-#ifdef LOW_MEMORY
+#ifdef LOW_MEMORY_PMBASIS
 #define MEMFACTOR 4
 #endif
 
