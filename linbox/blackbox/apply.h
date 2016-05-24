@@ -158,7 +158,7 @@ namespace LinBox
 
 			integer tmp;
 			bool use_neg=false;
-			size_t maxword=0;
+			uint32_t maxword=0;
 			for (size_t i=0;i<n;++i){
 				_domain.convert(tmp,x[i]);
 				if (tmp <0)
@@ -424,7 +424,7 @@ namespace LinBox
 					maxBitSize+=1;
 				}
 				// compute the number of chunk
-				if (maxValue*prime*_matM.coldim() < integer("9007199254740992")){
+				if (maxValue*prime* uint32_t(_matM.coldim()) < integer("9007199254740992")){
 					num_chunks=1;
 					use_neg=false;
 				}
@@ -988,7 +988,7 @@ namespace LinBox
 						LinBox::integer result, tmp;
 						if (use_neg) {
 							result = -ctd[i];
-							result <<= (num_chunks-1)*16;
+							result <<= uint64_t((num_chunks-1)*16);
 #ifdef DEBUG_CHUNK_APPLYM
 							cout << "rcneg: " << result << endl;
 #endif

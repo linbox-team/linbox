@@ -198,7 +198,7 @@ namespace LinBox { /* BlasVector */
 #if (__GNUC__ == 4 && __GNUC_MINOR__ ==4 && __GNUC_PATCHLEVEL__==5)
 		BlasVector (const _Field &F, const long &m, const Element e=Element()) :
 			Father_t(),
-			_size((size_t)m),_1stride(1),_rep((size_t)_size, e),_ptr(&_rep[0]),_field(&F)
+			_size((uint32_t)m),_1stride(1),_rep(_size, e),_ptr(&_rep[0]),_field(&F)
 		{
 			// Father_t is garbage until then:
 			setIterators();
@@ -212,7 +212,7 @@ namespace LinBox { /* BlasVector */
 #if defined(__APPLE__) || (defined(__s390__) && !defined(__s390x__))
 		BlasVector (const _Field &F, const unsigned long &m, const Element e=Element())  :
 			Father_t(),
-			_size((size_t)m),_1stride(1),_rep((size_t)_size, e),_ptr(&_rep[0]),_field(&F)
+			_size((uint32_t)m),_1stride(1),_rep(_size, e),_ptr(&_rep[0]),_field(&F)
 		{
 			// Father_t is garbage until then:
 			setIterators();
@@ -273,7 +273,7 @@ namespace LinBox { /* BlasVector */
 
 		BlasVector (const _Field &F, const Integer & m, const Element e=Element())  :
 			Father_t(),
-			_size((size_t)m),_1stride(1),_rep((size_t)_size, e),_ptr(&_rep[0]),_field(&F)
+			_size((uint32_t)m),_1stride(1),_rep(_size, e),_ptr(&_rep[0]),_field(&F)
 		{
 	// Father_t is garbage until then:
 			setIterators();

@@ -76,7 +76,7 @@ namespace LinBox
 			//Set up the projection matrices and their dimensions
 			size_t d = B.coldim();
 			size_t r,c;
-			integer tmp = d;
+			integer tmp = uint64_t(d);
 
 			//Set the blocking size, Using Pascal Giorgi's convention
 			if(blocking==0){
@@ -256,7 +256,7 @@ namespace LinBox
 			//Set up the projection matrices and their dimensions
 			size_t d = B.coldim();
 			size_t r,c;
-			integer tmp = d;
+			integer tmp = uint64_t(d);
 
 			//Set the blocking size, Using Pascal Giorgi's convention
 			if(blocking==0){
@@ -394,7 +394,7 @@ namespace LinBox
 			//Set up the projection matrices and their dimensions
 			size_t d = B.coldim();
 			size_t r,c;
-			integer tmp = d;
+			integer tmp = uint64_t(d);
 
 			//Use given blocking size, if not given use Pascal Giorgi's convention
 			if(blocking==0){

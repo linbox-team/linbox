@@ -523,7 +523,7 @@ namespace LinBox
 #endif
 		// m = n =
 		root(tmproot, tmp,3);
-		m = n = tmproot;
+		m = n = uint32_t(tmproot);
 		// 		std::cout<<"block factor= "<<m<<"\n";;
 		typedef SparseMatrix<Field> FMatrix;
 
