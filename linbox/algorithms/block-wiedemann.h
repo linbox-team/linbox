@@ -79,12 +79,13 @@ namespace LinBox
 			m = A.rowdim();
 			n = A.coldim();
 
-			size_t p,q;
+			uint32_t p,q;
+                        // CP : converting to GMP int to get the bitsize is unsane ! Should be replaced by a tablelookup
 			integer tmp;
-			tmp = m;
+			tmp = uint32_t(m);
 			p = tmp.bitsize()-1;
 			//p=sqrt(tmp);
-			tmp = n;
+			tmp = uint32_t(n);
 			q = tmp.bitsize()-1;
 			//q=sqrt(tmp);
 			//std::cout<<"row block: "<<p<<std::endl;

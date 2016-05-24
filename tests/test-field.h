@@ -1321,10 +1321,10 @@ namespace field_subtests {
 		// C++ ints. Otherwise, I don't know how to place the numbers into
 		// categories in any well-defined manner.
 		for (i = 0; i < num_trials; ++i) {
-			LinBox::integer ix, id;
+			LinBox::integer ix;
 			F.convert(ix, iter.random (x));
-                        
-                        LinBox::Integer ix2 = ix % num_categories;
+                        int32_t id;
+                        int32_t ix2 = ix % num_categories;
                         if (ix2<0) ix2+=num_categories;
 			categories1[ix2]++;
 			categories2[(unsigned int) (double (ix2) / double (card) * num_categories) %num_categories]++;
@@ -1337,7 +1337,7 @@ namespace field_subtests {
 				F.convert(id, F.sub (d, *x_queue_iter, x));
                                 id %= num_categories;
                                 if (id<0) id += num_categories;
-				(*diff_cat_iter)[(size_t) id]++;
+				(*diff_cat_iter)[id]++;
 			}
 
 			x_queue.push_front (x);

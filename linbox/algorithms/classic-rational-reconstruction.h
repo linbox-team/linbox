@@ -260,7 +260,7 @@ namespace LinBox
 				b=1;
 				//Element s0,s; s0=1,s=0;//test time gcdex;
 
-				Element T = m.bitsize();
+				Element T = (uint32_t) m.bitsize();
 				int c = 5;	//should be changed here to enhance probability of correctness
 
 				while((a>0) && (r0.bitsize() > T.bitsize() + (unsigned long)c))
