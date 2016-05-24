@@ -508,9 +508,7 @@ namespace LinBox {
 
 		// V3 = V1 + V2 mod
 
-		//		V3 = add_mod<Simd256<uint32_t> >(V1,V2,P2);
-		FieldSimd<Givaro::Modular<uint32_t> > fldsimd (2*this->field().characteristic());
-		fldsimd.add(V3,V1,V2);
+		V3 = add_mod<Simd256<uint32_t> >(V1,V2,P2);
 
 		Simd256<uint32_t>::storeu(ABCDEFGH,V3);
 
