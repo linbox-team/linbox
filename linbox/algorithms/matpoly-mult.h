@@ -485,7 +485,7 @@ namespace LinBox
 
 			_fftsize=0;
 			//check if field is based on fft prime
-			size_t p = _p;
+			uint64_t p = _p;
 			if (p&1){
 				p-=1;
 				do { p=p>>1; _fftsize++;} while(!(p&0x0001));
@@ -519,13 +519,13 @@ namespace LinBox
 				while ( k ) {k>>=1; ++ln;}
 
 				// taking primes greater than current prime
-				size_t bit = std::max((53-ln)>>1, _p.bitsize());
+				uint64_t bit = std::max((53-ln)>>1, _p.bitsize());
 
 				// get number of necessary primes
-				integer ibound = uint64_t(n) * _p * _p * std::max(b.size(), c.size());
+				integer ibound = uint64_t(n) * _p * _p * uint64_t(std::max(b.size(), c.size()));
 				integer primesprod;
 				size_t nbrprimes=1;
-				RandomFFTPrime fftprime((size_t)bit, FFT_PRIME_SEED);
+				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
 				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
 				lprimes[0] = fftprime.generatePrime();
 				primesprod = lprimes[0];
@@ -635,10 +635,10 @@ namespace LinBox
 				}
 
 				// taking primes greater than current prime
-				size_t bit = std::max((53-ln)>>1, _p.bitsize());
+				uint64_t bit = std::max((53-ln)>>1, _p.bitsize());
 
 				// get number of necessary primes
-				integer ibound = uint64_t(n) * _p * _p * std::max(b.size(), c.size());
+				integer ibound = uint64_t(n) * _p * _p * uint64_t(std::max(b.size(), c.size()));
 				integer primesprod;
 				size_t nbrprimes=1;
 				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
@@ -1044,7 +1044,7 @@ namespace LinBox
 
 			size_t deg     = b.size()+c.size()-1;
 			size_t lpts = 0;
-			size_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
+			uint64_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
 
 #ifdef FFT_TIMING
 			std::cout<<"FFT: points "<<pts<<"\n";
@@ -1266,7 +1266,7 @@ namespace LinBox
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0;
-			size_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
+			uint64_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
 
 			if (_p%pts != 1) {
 				std::cout<<"Error the prime is not a FFTPrime or it has too small power of 2\n";

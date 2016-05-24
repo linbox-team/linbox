@@ -93,9 +93,9 @@ namespace LinBox
 
 }
 
-#if defined(LinBoxSrcOnly) or defined(LinBoxTestOnly)
-#include "linbox/randiter/mersenne-twister.C"
-#endif
+//#if defined(LinBoxSrcOnly) or defined(LinBoxTestOnly)
+//#include "linbox/randiter/mersenne-twister.C"
+//#endif
 #endif // __LINBOX_mersenne_twister_H
 
 

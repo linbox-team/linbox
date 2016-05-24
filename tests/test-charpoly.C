@@ -194,9 +194,9 @@ static bool testSageBug(){
 
         Givaro::ZRing<Givaro::Integer> Z;
         DenseMatrix<Givaro::ZRing<Givaro::Integer> > A(Z,4,4);
-        for (size_t i=0; i<4; ++i)
-                for (size_t j=0; j<4; ++j)
-                        A.setEntry(i,j, i*4+j+1);
+        for (uint32_t i=0; i<4; ++i)
+                for (uint32_t j=0; j<4; ++j)
+                        A.setEntry(i,j, Givaro::Integer(i*4+j+1));
         typedef BlasVector <Givaro::ZRing<Givaro::Integer> > Polynomial;
         Polynomial phi(Z);
         charpoly(phi,A);

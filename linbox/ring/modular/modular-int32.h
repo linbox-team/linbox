@@ -57,8 +57,7 @@ namespace LinBox
 	template<class Field>
 	class MVProductDomain;
 
-	template <>
-	template<class Compute>
+        template<class Compute>
 	class FieldAXPY<Givaro::Modular<int32_t,Compute> > {
 	public:
 
@@ -133,7 +132,6 @@ namespace LinBox
 	};
 
 
-	template <>
 	template <class Compute>
 	class DotProductDomain<Givaro::Modular<int32_t,Compute> > : public VectorDomainBase<Givaro::Modular<int32_t,Compute> > {
 
@@ -201,7 +199,6 @@ namespace LinBox
 
 	// Specialization of MVProductDomain for int32_t modular field
 
-	template <>
 	template <class Compute>
 	class MVProductDomain<Givaro::Modular<int32_t,Compute> > {
 	public:

@@ -39,25 +39,32 @@
 
 namespace LinBox
 {
-	//! no doc.
-	template<class I1, class Lp>
-	void distinct (I1 a, I1 b, Lp& c)
+
+	// EC: pair(e,c) denotes c repetitions of element e.
+#define EC(Elt) std::pair<typename Elt, size_t>
+	// EC_LIST: list of such pairs, compact form of invariant list.
+#define EC_LIST(Elt) std::list<EC(Elt) > 
+	// Convert from vector of invariants (with repeats) to EC_LIST form.
+	template<class Ring>
+	EC_LIST(Ring::Element) & 
+	distinct(EC_LIST(Ring::Element) & c, const BlasVector<Ring>& v) 
 	{
-		typename iterator_traits<I1>::value_type e;
+		typename Ring::Element e;
 		size_t count = 0;
-		if (a != b) {e = *a; ++a; count = 1;}
-		else return;
-		while (a != b)
-		{	if (*a == e)
-			++count;
+		const Ring& R = v.field();
+		size_t n = v.size();
+		if (n > 0) R.assign(e, v[0]); else return c;
+		count = 1;
+		for (size_t i = 1; i < v.size(); ++i) 
+		{	if (R.areEqual(v[i], e))
+				++count;
 			else
-			{	c.push_back(typename Lp::value_type(e, count));
-				e = *a; count = 1;
+			{	c.push_back(EC(Ring::Element)(e, count));
+				R.assign(e, v[i]); count = 1;
 			}
-			++a;
 		}
-		c.push_back(typename Lp::value_type(e, count));
-		return;
+		c.push_back(EC(Ring::Element)(e, count));
+		return c;
 	}
 
 
@@ -75,13 +82,36 @@ namespace LinBox
 	 For now see the examples/smith.C
 	 for ways to call other smith form algorithms.
 	 */
-	template <class Output, class Blackbox, class MyMethod>
-	Output &smithForm(Output & S,
-			  const Blackbox                              &A,
-			  const MyMethod                           &M)
+	/*
+	BB has to be dense matrix
+	PL means EC_list (list of value repcount pairs)
+	VL means diag of smith form as a BlasVector.
+	SNF function forms:
+	template<BB> smithForm(PL, BB) -> add Hybrid
+	template<BB> smithForm(VL, BB) -> add Hybrid
+	template<BB,Meth> smithForm(PL, BB, Meth) -> add IntegerTag
+	template<BB,Meth> smithForm(VL, BB, Meth) -> add IntegerTag
+	smithForm(PL, BB, IntegerTag, Hybrid) -> call adaptive
+	smithForm(VL, BB, IntegerTag, Hybrid) -> call adaptive
+	*/
+
+	template <class Blackbox, class Method>
+	EC_LIST(Blackbox::Field::Element) & 
+	smithForm(EC_LIST(Blackbox::Field::Element) & S,
+			  const Blackbox                     & A,
+			  const Method                     & M)
 	{
 		smithForm(S, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 		return S;
+	}
+	template <class Blackbox, class Method>
+	BlasVector<typename Blackbox::Field> & 
+	smithForm(BlasVector<typename Blackbox::Field> & V,
+			  const Blackbox                     & A,
+			  const Method                     & M)
+	{
+		smithForm(V, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+		return V;
 	}
 
 #if 0
@@ -97,13 +127,21 @@ namespace LinBox
 
 #endif
 	// The smithForm with default Method
-	template<class Output, class Blackbox>
-	Output &smithForm(Output& S,
+	template<class Blackbox>
+	EC_LIST(Blackbox::Field::Element) & 
+	smithForm(EC_LIST(Blackbox::Field::Element) & S,
 			  const Blackbox& A)
 	{
-
 		smithForm(S, A, Method::Hybrid());
 		return S;
+	}
+	template<class Blackbox>
+	BlasVector<typename Blackbox::Field> & 
+	smithForm(BlasVector<typename Blackbox::Field> & V,
+			  const Blackbox& A)
+	{
+		smithForm(V, A, Method::Hybrid());
+		return V;
 	}
 
 #if 0
@@ -125,7 +163,7 @@ namespace LinBox
 		}
 		else
 		{
-			integr x; size_t c;
+			integer x; size_t c;
 			for(x = p, c = 0; divides(2, x); x /= 2, ++c);
 
 			if (x == 1 && c <= 32) // (a low power of 2)
@@ -157,8 +195,8 @@ namespace LinBox
 	std::list<std::pair<integer, size_t> > &
 	smithForm(std::list<std::pair<integer, size_t> >& S,
 	*/
-	template<class Output> Output&
-	smithForm(Output & S,
+	EC_LIST(Givaro::ZRing<Integer>::Element) &
+	smithForm(EC_LIST(Givaro::ZRing<Integer>::Element) & S,
 		  const BlasMatrix<Givaro::ZRing<Integer> > 	&A,
 		  const RingCategories::IntegerTag      &tag,
 		  const Method::Hybrid			& M)
@@ -166,9 +204,18 @@ namespace LinBox
 		Givaro::ZRing<Integer> Z;
 		BlasVector<Givaro::ZRing<Integer> > v (Z,A.rowdim() < A.coldim() ? A.rowdim() : A.coldim());
 		SmithFormAdaptive::smithForm(v, A);
-		distinct(v.begin(), v.end(), S);
-
-		return S;
+		//distinct(v.begin(), v.end(), S);
+		return distinct(S,v);
+	}
+	BlasVector<typename Givaro::ZRing<Integer> > &
+	smithForm(BlasVector<typename Givaro::ZRing<Integer> > & V,
+		  const BlasMatrix<Givaro::ZRing<Integer> > 	&A,
+		  const RingCategories::IntegerTag      &tag,
+		  const Method::Hybrid			& M)
+	{
+		Givaro::ZRing<Integer> Z;
+		SmithFormAdaptive::smithForm(V, A);
+		return V;
 	}
 
 //#endif
@@ -185,6 +232,8 @@ namespace LinBox
 	}
 #endif
 
+#undef EC 
+#undef EC_LIST
 
 } // end of LinBox namespace
 #endif // __LINBOX_smith_form_H
