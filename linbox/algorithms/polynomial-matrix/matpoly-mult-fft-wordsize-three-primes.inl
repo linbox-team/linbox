@@ -96,7 +96,7 @@ namespace LinBox {
 			c.resize(deg);
 		}
 
-		void mul_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b) {
+		void mul_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b, size_t maxdeg=0) {
 			size_t pts=c.size();
 			if ((_p-1) % pts == 0){
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftprime_domain (field());
@@ -111,14 +111,18 @@ namespace LinBox {
 			size_t n = b.coldim();
 			
 
-			integer bound=integer((uint64_t)_p)*integer((uint64_t)_p)*integer((uint64_t)k)*integer((uint64_t)pts);
+			integer bound=integer((uint64_t)_p)*integer((uint64_t)_p)*integer((uint64_t)k);
+			if (maxdeg) bound*=(uint64_t)maxdeg;
+			else        bound*=(uint64_t)pts;
 			// compute bit size of feasible prime for FFLAS
 			// size_t _k=k,lk=0;
 			// while ( _k ) {_k>>=1; ++lk;}
 			// size_t prime_bitsize= (53-lk)>>1;
 
 			// compute max prime value for FFLAS
-			uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality()));
+
+			//uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality()));
+			uint64_t prime_max=maxFFTPrimeValue(k,pts); // CAREFUL: only for Modular<double>;
 			RandomFFTPrime RdFFT(prime_max);
 			std::vector<integer> bas;
 			if (!RdFFT.generatePrimes(lpts,bound,bas)){
@@ -230,8 +234,9 @@ namespace LinBox {
 			// size_t prime_bitsize= (53-lk)>>1;
 
 			// compute max prime value for FFLAS
-			uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality()));
-
+			//uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality())) 
+			uint64_t prime_max=maxFFTPrimeValue(k,pts); // CAREFUL: only for Modular<double>;
+			
 			RandomFFTPrime RdFFT(prime_max);
 
 			std::vector<integer> bas;

@@ -1,5 +1,5 @@
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
  * Copyright (C) 2015  Pascal Giorgi
  *
@@ -66,28 +66,6 @@ namespace LinBox{
     }
 
   public:
-    void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas){
-
-      RandomFFTPrime RdFFT(prime_max);
-      size_t nbp=0;
-      if (!RdFFT.generatePrimes(lpts,bound,bas)){
-	integer MM=1;
-	for(std::vector<integer>::size_type i=0;i<bas.size();i++)
-	  MM*=bas[i];
-	RandomPrimeIter Rd(integer(prime_max).bitsize());
-	integer tmp;
-	do {
-	  do {Rd.random(tmp);}
-	  while (MM%tmp==0);
-	  bas.push_back(tmp);
-	  nbp++;
-	  MM*=tmp;
-	} while (MM<bound);	
-      }
-#ifdef VERBOSE_FFT
-      std::cout<<"MatPoly Multiprecision FFT : using "<<bas.size()-nbp<<" FFT primes and "<<nbp<<" normal primes "<<std::endl;
-#endif
-    }
 
     
 
@@ -125,8 +103,8 @@ namespace LinBox{
 	maxA=1;maxA<<=uint64_t(logmax(a));
 	maxB=1;maxB<<=uint64_t(logmax(b));
       }
-       integer bound=maxA*maxB*integer((uint64_t)a.coldim());
-       if (_maxnorm==0) bound*=2; //seems to compute over Z, need to double to handle possible negative value
+      integer bound=maxA*maxB*integer((uint64_t)a.coldim());
+      if (_maxnorm==0) bound*=2; //seems to compute over Z, need to double to handle possible negative value
       if (smallLeft)
 	bound*= (uint64_t)a.size();
       else
@@ -142,7 +120,7 @@ namespace LinBox{
     // WARNING: Polynomial Matrix should stored as matrix of polynomial with integer coefficient 
     template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
     void mul_crtla(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
-    		   const integer& maxA, const integer& maxB, const integer& bound) {
+		   const integer& maxA, const integer& maxB, const integer& bound) {
 
 
       FFT_PROFILE_START(2);
@@ -156,9 +134,11 @@ namespace LinBox{
       size_t pts  = 1; while (pts < s) { pts= pts<<1; ++lpts; }
 
       // compute max prime value for FFLAS      
-      uint64_t prime_max= std::sqrt( (1ULL<<52) / k)+1;
+      //uint64_t prime_max=std::sqrt( (1ULL<<53) /k)+1;
+      uint64_t prime_max=maxFFTPrimeValue(k,pts); // CAREFUL: only for Modular<double>
+      
       std::vector<integer> bas;
-      getFFTPrime(prime_max,lpts,bound,bas);
+      getFFTPrime(prime_max,lpts,bound,bas,k,s);
       
       std::vector<double> basis(bas.size());
       std::copy(bas.begin(),bas.end(),basis.begin());
@@ -188,7 +168,7 @@ namespace LinBox{
       FFT_PROFILE_START(2);
       auto sp=SPLITTER();
       PARFOR1D(l,num_primes,sp,
-      //for (size_t l=0;l<num_primes;l++)
+	       //for (size_t l=0;l<num_primes;l++)
 	       {
 		 //FFT_PROFILE_START;
 		 ModField f(RNS._basis[l]);
@@ -210,12 +190,12 @@ namespace LinBox{
 		 //std::cout<<"b"<<l<<":="<<b_i<<";\n";
 
 		 PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);       
-		 fftdomain.mul_fft(lpts, *c_i[l], a_i, b_i);
+		 fftdomain.mul_fft(lpts, *c_i[l], a_i, b_i, std::min(a.size(),b.size()));
 		 //std::cout<<"c"<<l<<":="<<*c_i[l]<<";\n";
 		 //FFT_PROFILE_GET(tMul);
 	       }
 	       )
-	       FFT_PROFILING(2,"FFTprime mult+copying");
+	FFT_PROFILING(2,"FFTprime mult+copying");
       DEL_MEM(8*(n_ta+n_tb)*num_primes);
       delete[] t_a_mod;
       delete[] t_b_mod;
@@ -229,7 +209,7 @@ namespace LinBox{
       } else {
 	FFT_PROFILE_START(2);
 
-#ifndef LOW_MEMORY
+#ifndef LOW_MEMORY_PMBASIS
 	// construct contiguous storage for c_i
 	size_t n_tc=m*n*s;
 	ADD_MEM(8*n_tc*num_primes);
@@ -292,7 +272,7 @@ namespace LinBox{
       // std::cout<<"<-----------------: "<<std::endl;;
     }
 
-template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
+    template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
     void mul_crtla_2(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
 		     const integer& maxA, const integer& maxB, const integer& bound) {
 
@@ -314,7 +294,7 @@ template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
       // compute max prime value for FFLAS      
       uint64_t prime_max= std::sqrt( (1ULL<<53) / k)+1;
       std::vector<integer> bas;
-      getFFTPrime(prime_max,lpts,bound,bas);
+      getFFTPrime(prime_max,lpts,bound,bas,k,s);
       // RandomFFTPrime RdFFT(prime_bitsize);
       // if (!RdFFT.generatePrimes(lpts,bound,bas)){
       // 	std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly FFTMUL taking normal primes..."<<std::endl;
@@ -356,7 +336,7 @@ template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
       FFT_PROFILE_START(2);
       auto sp=SPLITTER();
       PARFOR1D(l,num_primes,sp,
-      //for (size_t l=0;l<num_primes;l++)
+	       //for (size_t l=0;l<num_primes;l++)
 	       {
 		 //FFT_PROFILE_START;
 		 ModField f(RNS._basis[l]);
@@ -379,7 +359,7 @@ template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
 		 //FFT_PROFILE_GET(tMul);		 
 	       }
 	       )
-	       FFT_PROFILING(2,"FFTprime mult+copying");
+	FFT_PROFILING(2,"FFTprime mult+copying");
       //delete[] t_a_mod;
       //delete[] t_b_mod;
       //FFT_PROFILE(2,"copying linear reduced matrix",tCopy);
@@ -438,10 +418,10 @@ template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
       linbox_check(c.size()>=deg-hdeg);
       
       if (smallLeft){
-      	linbox_check(b.size()<hdeg+deg);
+	linbox_check(b.size()<hdeg+deg);
       }
       else
-      	linbox_check(a.size()<hdeg+deg);
+	linbox_check(a.size()<hdeg+deg);
 
       //linbox_check(2*c.size()-1 == b.size());
       //size_t deg= b.size()+1;
@@ -452,7 +432,7 @@ template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
       // compute max prime value for FFLAS
       uint64_t prime_max= std::sqrt( (1ULL<<53) / k)+1;
       std::vector<integer> bas;
-      getFFTPrime(prime_max,lpts,bound,bas);
+      getFFTPrime(prime_max,lpts,bound,bas,k,deg);
       
       std::vector<double> basis(bas.size());
       std::copy(bas.begin(),bas.end(),basis.begin());
@@ -521,7 +501,7 @@ template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
 	FFT_PROFILE_START(2);
 
 	size_t s=c.size();
-#ifndef LOW_MEMORY
+#ifndef LOW_MEMORY_PMBASIS
 	// construct contiguous storage for c_i
 	size_t n_tc=m*n*s;
 	ADD_MEM(8*n_tc*num_primes);

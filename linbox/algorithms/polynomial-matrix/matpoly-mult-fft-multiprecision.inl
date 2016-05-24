@@ -67,39 +67,40 @@ namespace LinBox{
     }
 
   public:
-    void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas, size_t k, size_t d){
 
-      RandomFFTPrime RdFFT(prime_max);
-      size_t nbp=0;
-      if (!RdFFT.generatePrimes(lpts,bound,bas)){
-	integer MM=1;
-	for(std::vector<integer>::size_type i=0;i<bas.size();i++){
-	  MM*=bas[i];
-	  std::cout<<bas[i]<<std::endl;
-	}
-	//RandomPrimeIter Rd(integer(prime_max).bitsize());
-	// compute max bitsize for prime allowing three prime fft
-	integer prime_max_tp=MM/uint64_t(d*k);
-	RandomPrimeIter Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())-1);
-#ifdef VERBOSE_FFT
-	std::cout<<"normal prime bitmax: "<<std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize()-1)<<std::endl;
-#endif
-	integer tmp;
-	do {
-	  do {Rd.random(tmp);}
-	  while (MM%tmp==0 || tmp>prime_max);
-	  bas.push_back(tmp);
-	  nbp++;
-	  MM*=tmp;
-	} while (MM<bound);	
-      }
-#ifdef VERBOSE_FFT      
-      std::cout<<"MatPoly Multiprecision FFT : using "<<bas.size()-nbp<<" FFT primes and "<<nbp<<" normal primes "<<std::endl;
-#endif
-      for(auto i: bas)
-	if (i>prime_max) std::cout<<"ERROR\n";
-    }
+    // void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas, size_t k, size_t d){
 
+//       RandomFFTPrime RdFFT(prime_max);
+//       size_t nbp=0;
+//       if (!RdFFT.generatePrimes(lpts,bound,bas)){
+// 	integer MM=1;
+// 	for(std::vector<integer>::size_type i=0;i<bas.size();i++){
+// 	  MM*=bas[i];
+// 	  std::cout<<bas[i]<<std::endl;
+// 	}
+// 	//RandomPrimeIter Rd(integer(prime_max).bitsize());
+// 	// compute max bitsize for prime allowing three prime fft
+// 	integer prime_max_tp=MM/uint64_t(d*k);
+// 	RandomPrimeIter Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())-1);
+// #ifdef VERBOSE_FFT
+// 	std::cout<<"normal prime bitmax: "<<std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize()-1)<<std::endl;
+// #endif
+// 	integer tmp;
+// 	do {
+// 	  do {Rd.random(tmp);}
+// 	  while (MM%tmp==0 || tmp>prime_max);
+// 	  bas.push_back(tmp);
+// 	  nbp++;
+// 	  MM*=tmp;
+// 	} while (MM<bound);	
+//       }
+// #ifdef VERBOSE_FFT      
+//       std::cout<<"MatPoly Multiprecision FFT : using "<<bas.size()-nbp<<" FFT primes and "<<nbp<<" normal primes "<<std::endl;
+// #endif
+//       for(auto i: bas)
+// 	if (i>prime_max) std::cout<<"ERROR\n";
+//     }
+    
     
 
     inline const IntField & field() const { return *_field; }

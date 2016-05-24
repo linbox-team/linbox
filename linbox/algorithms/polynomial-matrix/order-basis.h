@@ -131,10 +131,7 @@ namespace LinBox {
 #endif
                 OrderBasis(const Field& f) : _field(&f), _PMD(f), _BMD(f) {                 
                 }
-#ifdef TRACK_MEMORY
-                ~OrderBasis() {}
-#endif
-                
+
                 inline const Field& field() const {return *_field;}
 
                 // serie must have exactly order elements (i.e. its degree = order-1)

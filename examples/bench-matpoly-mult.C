@@ -149,8 +149,12 @@ template<typename Field, typename RandIter>
 void check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
-	PMatrix A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
-	MatrixP AA(fld,n,n,d),BB(fld,n,n,d),CC(fld,n,n,2*d-1);
+
+	// product m*n n*m
+	size_t m=n;
+	
+	PMatrix A(fld,m,n,d),B(fld,n,m,d),C(fld,m,m,2*d-1);
+	MatrixP AA(fld,m,n,d),BB(fld,n,m,d),CC(fld,m,m,2*d-1);
 	// Generate random matrix of polynomial
 	for (size_t i=0;i<d;i++){
 		randomMat(Gen,A[i]);
@@ -164,10 +168,10 @@ void check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	Naive NMD(fld);
 	Kara PMKD(fld);
 	FFT  PMFFT(fld);
-
+	
 	// compute the correct result
-	for (size_t r=0;r<n;r++)
-		for (size_t c=0;c<n;c++)
+	for (size_t r=0;r<m;r++)
+		for (size_t c=0;c<m;c++)
 			for (size_t k=0;k<n;k++)
 				for (size_t i=0;i<A.size();i++)
 					for (size_t j=0;j<B.size();j++)
@@ -182,6 +186,7 @@ void check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	AA.copy(A);
 	BB.copy(B);
 	CC.copy(C);
+	
 	// check fft
 	MATPOLMUL_sanity_check(PMFFT,CC,AA,BB, "FFT Multiplication");
 
