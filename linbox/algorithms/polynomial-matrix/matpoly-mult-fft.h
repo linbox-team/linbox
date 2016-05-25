@@ -52,8 +52,8 @@ Givaro::Timer mychrono[3];
     mychrono[lvl].stop();std::cout<<"FFT("<<lvl<<"):";			\
     std::cout.width(FFT_PROF_MSG_SIZE);std::cout<<std::left<<msg<<" : "; \
     std::cout.precision(6);std::cout<<mychrono[lvl]<<std::endl;		\
-    mychrono[lvl].clear();mychrono[lvl].start();					\
-}
+    mychrono[lvl].clear();mychrono[lvl].start();			\
+  }
   
 #ifdef HAVE_OPENMP								
 #define FFT_PROFILE_GET(lvl,x)						\
@@ -63,11 +63,11 @@ Givaro::Timer mychrono[3];
   mychrono[lvl].stop();(x)+=mychrono[lvl].usertime();mychrono[lvl].clear();mychrono[lvl].start();
 #endif
 #define FFT_PROFILE(lvl,msg,x)						\
-if ((lvl)>=FFT_PROF_LEVEL) {					\
-  std::cout<<"FFT: ";						   \
-  std::cout.width(FFT_PROF_MSG_SIZE);std::cout<<std::left<<msg<<" : ";	\
-  std::cout.precision(6);std::cout<<x<<" s"<<std::endl;			\
-}
+  if ((lvl)>=FFT_PROF_LEVEL) {						\
+			      std::cout<<"FFT: ";			\
+			      std::cout.width(FFT_PROF_MSG_SIZE);std::cout<<std::left<<msg<<" : "; \
+			      std::cout.precision(6);std::cout<<x<<" s"<<std::endl; \
+  }
 #else
 #define FFT_PROFILE_START(lvl)
 #define FFT_PROFILING(lvl,msg)
@@ -82,33 +82,94 @@ if ((lvl)>=FFT_PROF_LEVEL) {					\
 
 namespace LinBox
 {
-	// generic handler for multiplication using FFT
-	template <class Field>
-	class PolynomialMatrixFFTMulDomain {
-	public:
-		inline const Field & field() const;
+// generic handler for multiplication using FFT
+  template <class Field>
+    class PolynomialMatrixFFTMulDomain {
+  public:
+    inline const Field & field() const;
 
-		PolynomialMatrixFFTMulDomain (const Field& F);
+    PolynomialMatrixFFTMulDomain (const Field& F);
 
-		template<typename Matrix1, typename Matrix2, typename Matrix3>
-		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b);
+    template<typename Matrix1, typename Matrix2, typename Matrix3>
+      void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b);
 
-		template<typename Matrix1, typename Matrix2, typename Matrix3>
-		void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, bool smallLeft=true, size_t n0=0,size_t n1=0);
-	};
+    template<typename Matrix1, typename Matrix2, typename Matrix3>
+      void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, bool smallLeft=true, size_t n0=0,size_t n1=0);
+  };
 		
 	
-	//class PolynomialMatrixFFTPrimeMulDomain ;                         // Mul in Zp[x] with p <2^32, (fflas, fourier)
+  //class PolynomialMatrixFFTPrimeMulDomain ;                         // Mul in Zp[x] with p <2^32, (fflas, fourier)
 		
-	// template <class T>
-	// class PolynomialMatrixFFTMulDomain<Givaro::Modular<T> > ;        // Mul in Zp[x] with p^2 storable in type T
+  // template <class T>
+  // class PolynomialMatrixFFTMulDomain<Givaro::Modular<T> > ;        // Mul in Zp[x] with p^2 storable in type T
 
-	// template<>
-	// class PolynomialMatrixFFTMulDomain<Givaro::ZRing<integer> >;  // Mul in Z[x]
+  // template<>
+  // class PolynomialMatrixFFTMulDomain<Givaro::ZRing<integer> >;  // Mul in Z[x]
 
-	// template <>
-	// class PolynomialMatrixFFTMulDomain<Givaro::Modular<integer> > ;           // Mul in Zp[x] with p multiprecision
+  // template <>
+  // class PolynomialMatrixFFTMulDomain<Givaro::Modular<integer> > ;           // Mul in Zp[x] with p multiprecision
 
+  // get the maximum prime for fft with modular<double> (matrix dim =k, nbr point = pts)
+  uint64_t maxFFTPrimeValue(uint64_t k, uint64_t pts) {
+    uint64_t prime_max=std::sqrt( (1ULL<<53) /k)+1;
+    size_t c=1;
+    const int fct=24;
+    while (c<k && prime_max < (1UL<<26) && prime_max< pts*fct){
+      prime_max=std::sqrt( (1ULL<<53) /(k/c))+1;
+      c<<=1;
+    }
+
+    //std::cout<<"maxFFTPrime: pts -> "<<pts<<std::endl;
+    //std::cout<<"maxFFTPrime: replacing "<<k<<" -> "<<k/c<<std::endl;
+	  
+    if (c>=k){
+      std::cout<<"MatPoly FFT (maxPrimeValue): impossible to find enough FFT Prime\n";
+      std::terminate();
+    }
+	  
+    return std::min(prime_max, uint64_t(Givaro::Modular<double>::maxCardinality()));
+  }
+
+  void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas, size_t k, size_t d){
+	  
+    RandomFFTPrime RdFFT(prime_max);
+    size_t nbp=0;
+	  
+    if (!RdFFT.generatePrimes(lpts,bound,bas)){ // not enough FFT prime found 
+      integer MM=1;
+      for(std::vector<integer>::size_type i=0;i<bas.size();i++){
+	MM*=bas[i];
+	//std::cout<<bas[i]<<std::endl;
+      }
+	    
+      // compute max bitsize for prime allowing three prime fft
+      integer prime_max_tp=MM/uint64_t(d*k);
+      while (k>1 && prime_max_tp<100) {k/=2;prime_max_tp*=2;}
+      if (k<=1) {std::cout<<"getFFTPrime error: impossible to have enough primes satisfying constraints: FFLAS prime (<2^26) and FFT (2^"<<lpts<<")\n";}
+	
+      RandomPrimeIter Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())-1);
+#ifdef VERBOSE_FFT
+      std::cout<<"MM="<<MM<<std::endl;
+      std::cout<<"normal primemax: "<<prime_max_tp<<" "<<prime_max<<std::endl;
+      std::cout<<"normal prime bitmax: "<<std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize()-1)<<std::endl;
+#endif
+      integer tmp;
+      do {
+	do {Rd.random(tmp);}
+	while (MM%tmp==0 || tmp>prime_max);
+	bas.push_back(tmp);
+	nbp++;
+	MM*=tmp;
+      } while (MM<bound);	
+    }
+#ifdef VERBOSE_FFT      
+    std::cout<<"MatPoly Multiprecision FFT : using "<<bas.size()-nbp<<" FFT primes and "<<nbp<<" normal primes "<<std::endl;
+#endif
+    for(auto i: bas)
+      if (i>prime_max) std::cout<<"ERROR\n";
+  }
+
+	
 } // end of namespace LinBox
 
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize-fast.inl"
