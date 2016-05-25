@@ -1,4 +1,5 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /*
  * Copyright (C) 2014  Pascal Giorgi, Romain Lebreton
  *
@@ -47,7 +48,7 @@ namespace LinBox {
 		// Harvey's algorithm
 		// 0 <= A,B < 2*p, p < 2^32 / 4
 		// alphap = Floor(alpha * 2^ 32 / p])
-		uint64_t tmp = A;
+		uint32_t tmp = A;
 		A += B;
 		if (A >= _dpl) A -= _dpl;
 		B = tmp + (_dpl - B);		
@@ -60,7 +61,7 @@ namespace LinBox {
 
 	template <class Field>
 	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative (Element *fft) {
-		for (size_t w = n >> 1, f = 1, pos_w = 0; w != 0; f <<= 1, pos_w += w, w >>= 1){
+		for (size_t w = n >> 1, f = 1; w != 0; f <<= 1, w >>= 1){
 			// w : witdh of butterflies
 			// f : # families of butterflies
 			for (size_t i = 0; i < f; i++)
@@ -154,6 +155,14 @@ namespace LinBox {
 					Butterfly_DIF_mod2p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], pow_w[j*f], pow_wp[j*f]);
 	}
 
+
+	template <class Field>
+	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative (Element *fft) {
+		for (size_t w = 1, f = n >> 1; f >= 1; w <<= 1, f >>= 1)
+			for (size_t i = 0; i < f; i++)
+				for (size_t j = 0; j < w; j++)
+					Butterfly_DIT_mod4p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], pow_w[j*f], pow_wp[j*f]);
+	}
 
 	template <class Field>
 	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative2x2 (Element *fft) {

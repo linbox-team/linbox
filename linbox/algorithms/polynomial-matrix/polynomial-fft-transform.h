@@ -71,24 +71,23 @@ typedef __m128i  _vect128_t;
 namespace LinBox {
 
 
-	enum SimdLevel {NOSIMD,SSE41,AVX,AVX2};
+//	enum SimdLevel {NOSIMD,SSE41,AVX,AVX2};
 
-	struct SimdLevelFinder {
-#ifdef __LINBOX_USE_AVX2
-		SimdLevel simdlevel = AVX2;
-#else
-#ifdef __LINBOX_USE_AVX
-		SimdLevel simdlevel = AVX;
-#else
-#ifdef __LINBOX_USE_SIMD
-		SimdLevel simdlevel = SSE41;
-#else
-		// __LINBOX_NO_SIMD
-		SimdLevel simdlevel = NOSIMD;
-#endif
-#endif
-#endif
-	};
+//	struct SimdLevelFinder {
+//#ifdef __LINBOX_USE_AVX2
+//		const static SimdLevel simdlevel = AVX2;
+//#else
+//#ifdef __LINBOX_USE_AVX
+//		const static SimdLevel simdlevel = AVX;
+//#else
+//#ifdef __LINBOX_USE_SIMD
+//		const static SimdLevel simdlevel = SSE41;
+//#else
+//		const static SimdLevel simdlevel = NOSIMD;
+//#endif
+//#endif
+//#endif
+//	};
 
 	// class to handle FFT transform over wordsize prime field Fp (p < 2^29)
 	template <class Field>
@@ -418,6 +417,7 @@ namespace LinBox {
 		void FFT_DIF_Harvey_mod2p_iterative    (Element *fft);
 		void FFT_DIF_Harvey_mod2p_iterative2x2 (Element *fft);
 		void FFT_DIF_Harvey_mod2p_iterative3x3 (Element *fft);
+		void FFT_DIT_Harvey_mod4p_iterative    (Element *fft);
 		void FFT_DIT_Harvey_mod4p_iterative2x2 (Element *fft);
 		void FFT_DIT_Harvey_mod4p_iterative3x3 (Element *fft);
 		// SIMD implementations follow

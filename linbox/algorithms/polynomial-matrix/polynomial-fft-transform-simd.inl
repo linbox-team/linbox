@@ -29,10 +29,12 @@
 #ifndef __LINBOX_polynomial_fft_transform_simd_INL
 #define __LINBOX_polynomial_fft_transform_simd_INL
 
-
 #include "fflas-ffpack/fflas/fflas_simd.h"
 
 //#include "linbox/algorithms/polynomial-matrix/simd.h"
+
+#ifndef additional_modular_simd_functions
+#define additional_modular_simd_functions
 
 #define Simd_vect typename Simd::vect_t
 
@@ -56,6 +58,7 @@ inline Simd_vect mul_mod (const Simd_vect a, const Simd_vect b, const Simd_vect 
 	return Simd::sub(c,t);
 }
 #undef Simd_vect
+#endif
 
 namespace LinBox {
 
@@ -102,7 +105,7 @@ namespace LinBox {
 		Simd128<uint32_t>::store(EFGH,T);
 	}
 
-
+/*
 	template <class Field>
 	inline void FFT_transform<Field>::Butterfly_DIF_mod2p_4x1_SSE_laststep(uint32_t* ABCD, uint32_t* EFGH, const _vect128_t& P2) {
 		_vect128_t V1,V2,V3,V4,V5;
@@ -110,8 +113,8 @@ namespace LinBox {
 		V1 = Simd128<uint32_t>::load(ABCD);
 		V2 = Simd128<uint32_t>::load(EFGH);
 		// V3 = [A C B D], V4 = [E G F H]
-		V3 = Simd128<uint32_t>::shuffle(V1,0xD8);
-		V4 = Simd128<uint32_t>::shuffle(V2,0xD8);
+		V3 = Simd128<uint32_t>::shuffle<0xD8>(V1);
+		V4 = Simd128<uint32_t>::shuffle<0xD8>(V2);
 		// V1 = [A E C G], V2 = [B F D H]
 		V1 = Simd128<uint32_t>::unpacklo(V3,V4);
 		V2 = Simd128<uint32_t>::unpackhi(V3,V4);
@@ -122,8 +125,8 @@ namespace LinBox {
 		V2 = Simd128<uint32_t>::sub(V1,V5);
 		V4 = reduce<Simd128<uint32_t> >(V2, P2);
 		// V1 = [A C E G], V2 = [B D F H]
-		V1 = Simd128<uint32_t>::shuffle(V3,0xD8);
-		V2 = Simd128<uint32_t>::shuffle(V4,0xD8);
+		V1 = Simd128<uint32_t>::shuffle<0xD8>(V3);
+		V2 = Simd128<uint32_t>::shuffle<0xD8>(V4);
 		// V3 = [A B C D], V4 = [E F G H]
 		V3 = Simd128<uint32_t>::unpacklo(V1,V2);
 		V4 = Simd128<uint32_t>::unpackhi(V1,V2);
@@ -131,6 +134,7 @@ namespace LinBox {
 		Simd128<uint32_t>::store(ABCD,V3);
 		Simd128<uint32_t>::store(EFGH,V4);
 	}
+*/
 
 	template <class Field>
 	inline void FFT_transform<Field>::Butterfly_DIF_mod2p_4x2_SSE(uint32_t* ABCD, uint32_t* EFGH, uint32_t* IJKL, uint32_t* MNOP,
@@ -218,7 +222,7 @@ namespace LinBox {
 		// V5 = [D D H H] * [W W W W] mod 2^32
 		V6 = Simd128<uint32_t>::mullo(V4,W);
 		V4 = Simd128<uint32_t>::sub(V6,V5);
-		V3 = Simd128<uint32_t>::shuffle(V4,0xDD);
+		V3 = Simd128<uint32_t>::shuffle<0xDD>(V4);
 		//At this point, V2 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
 		// At this time I have V1=[A E B F], V2=[C G ? ?], V3=[? ? D H]
 		// I need V3 = [A C E G], V4 = [B D F H]
@@ -279,8 +283,8 @@ namespace LinBox {
 		V1 = Simd128<uint32_t>::load(ABCD);
 		V2 = Simd128<uint32_t>::load(EFGH);
 		// T1 = [A C B D], T2 = [E G F H]
-		T1 = Simd128<uint32_t>::shuffle(V1,0xD8);
-		T2 = Simd128<uint32_t>::shuffle(V2,0xD8);
+		T1 = Simd128<uint32_t>::shuffle<0xD8>(V1);
+		T2 = Simd128<uint32_t>::shuffle<0xD8>(V2);
 		// V1 = [A E C G], V2 = [B F D H]
 		V1 = Simd128<uint32_t>::unpacklo(T1,T2);
 		V2 = Simd128<uint32_t>::unpackhi(T1,T2);
@@ -301,7 +305,7 @@ namespace LinBox {
 		// T4 = [D D H H] * [W W W W] mod 2^32
 		T4 = Simd128<uint32_t>::mullo(T1,W);
 		T1 = Simd128<uint32_t>::sub(T4,T3);
-		T2 = Simd128<uint32_t>::shuffle(T1,0XDD);
+		T2 = Simd128<uint32_t>::shuffle<0xDD>(T1);
 		//At this point, T2 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
 		// At this time I have V3=[A E C G], V4=[B F ? ?], T2=[? ? D H]
 		// I need V1 = [A B E F], V2 = [C D G H]
@@ -317,8 +321,8 @@ namespace LinBox {
 		V1 = Simd128<uint32_t>::unpacklo(T1,T2);
 		V2 = Simd128<uint32_t>::unpackhi(T1,T2);
 		// Then T1=[A B C D], T2=[E F G H]
-		T1 = Simd128<uint32_t>::shuffle(V1,0xD8);
-		T2 = Simd128<uint32_t>::shuffle(V2,0xD8);
+		T1 = Simd128<uint32_t>::shuffle<0xD8>(V1);
+		T2 = Simd128<uint32_t>::shuffle<0xD8>(V2);
 		// Store
 		Simd128<uint32_t>::store(ABCD,T1);
 		Simd128<uint32_t>::store(EFGH,T2);
@@ -331,8 +335,8 @@ namespace LinBox {
 	template <class Field>
 	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative4x1_SSE (uint32_t *fft) {
 		_vect128_t P,P2;
-		P  = _mm_set1_epi32(_pl);
-		P2 = _mm_set1_epi32(_dpl);
+		P  = Simd128<uint32_t>::set1(_pl);
+		P2 = Simd128<uint32_t>::set1(_dpl);
 		uint32_t * tab_w = &pow_w [0];
 		uint32_t * tab_wp= &pow_wp[0];
 		size_t w, f;
@@ -352,8 +356,8 @@ namespace LinBox {
 		// Last two steps
 		if (n >= 8) {
 				_vect128_t W,Wp;
-				W = _mm_set1_epi32 ((int)tab_w [1]);
-				Wp= _mm_set1_epi32 ((int)tab_wp[1]);
+				W = Simd128<uint32_t>::set1 ((int)tab_w [1]);
+				Wp= Simd128<uint32_t>::set1 ((int)tab_wp[1]);
 
 				for (size_t i = 0; i < f; i+=2)
 #define A0 &fft[0] +  (i << 2)
@@ -374,8 +378,8 @@ namespace LinBox {
 	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative4x2_SSE (uint32_t *fft) {
 		size_t w, f;
 		_vect128_t P,P2;
-		P  = _mm_set1_epi32(_pl);
-		P2 = _mm_set1_epi32(_dpl);
+		P  = Simd128<uint32_t>::set1(_pl);
+		P2 = Simd128<uint32_t>::set1(_dpl);
 		uint32_t * tab_w =  &pow_w[0];
 		uint32_t * tab_wp= &pow_wp[0];
 		for (w = n >> 1, f = 1; w >= 8; tab_w+=w+(w>>1), tab_wp+=w+(w>>1), w >>= 2, f <<= 2)
@@ -414,8 +418,8 @@ namespace LinBox {
 					}
 
 				_vect128_t W,Wp;
-				W = _mm_set1_epi32 ((int)tab_w [1]);
-				Wp= _mm_set1_epi32 ((int)tab_wp[1]);
+				W = Simd128<uint32_t>::set1 ((int)tab_w [1]);
+				Wp= Simd128<uint32_t>::set1 ((int)tab_wp[1]);
 
 				for (size_t i = 0; i < f; i+=2)
 #define A0 &fft[0] +  (i << 2)
@@ -440,8 +444,8 @@ namespace LinBox {
 		// Last two steps
 		if (n >= 8) {
 				_vect128_t W,Wp;
-				W = _mm_set1_epi32 ((int)pow_w [n-3]);
-				Wp= _mm_set1_epi32 ((int)pow_wp[n-3]);
+				W = Simd128<uint32_t>::set1 ((int)pow_w [n-3]);
+				Wp= Simd128<uint32_t>::set1 ((int)pow_wp[n-3]);
 
 				for (size_t i = 0; i < n; i+=8)
 					Butterfly_DIT_mod4p_4x2_SSE_first2step(&fft[i],&fft[i+4],W,Wp,P,P2);
@@ -575,7 +579,7 @@ namespace LinBox {
 		// V3 = V6 - V5 = [* (D.beta mod p) * (H.beta mod p) * (L.beta mod p) * (P.beta mod p)]
 		V3 = Simd256<uint32_t>::sub(V6,V5);
 		// V2=[* * D H * * L P]
-		V2 = Simd256<uint32_t>::shuffle_twice(V3,0xDD);
+		V2 = Simd256<uint32_t>::shuffle_twice<0xDD>(V3);
 
 		/* 3nd step */
 		// At this time I have V1=[A B E F I J M N], V7=[C G * * K O * *], V2=[* * D H * * L P]
@@ -743,7 +747,7 @@ namespace LinBox {
 		// V3 = V7 - V6 = [* (D.alpha mod p) * (L.alpha mod p) * (H.alpha mod p) * (P.alpha mod p)]
 		V3 = Simd256<uint32_t>::sub(V7,V6);
 		// V7=[D L * * H P * *]
-		V7 = Simd256<uint32_t>::shuffle_twice(V3,0xFD);
+		V7 = Simd256<uint32_t>::shuffle_twice<0xFD>(V3);
 		// V6 = [B J D L F N H P]
 		V6 = Simd256<uint64_t>::unpacklo(V2,V7);
 		// V3= [A B I J E F M N], V4=[C D K L G H O P]
