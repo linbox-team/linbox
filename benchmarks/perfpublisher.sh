@@ -57,8 +57,8 @@ echo '<report name="benchmarks-report" categ="benchmarks">' >> $XMLFILE
 #=======#
 
 echo '<start>' >> $XMLFILE
-echo '<date format="YYYYMMDD" val="'$(date +%Y%m%d)'" />' >> $XMLFILE
-echo '<time format="HHMMSS" val="'$(date +%H%M%S)'" />' >> $XMLFILE
+echo '<date format="YYYYMMDD" val="'$($DATE +%Y%m%d)'" />' >> $XMLFILE
+echo '<time format="HHMMSS" val="'$($DATE +%H%M%S)'" />' >> $XMLFILE
 echo '</start>' >> $XMLFILE
 
 #============#
@@ -71,9 +71,9 @@ do
 	then
 		#File does not exist: compile it
 		echo '[Compiling]' $benchmark
-		COMPILESTART=$(date +%s%3N)
+		COMPILESTART=$($DATE +%s%3N)
 		COMPILELOG=$(make $benchmark 2>&1; echo 'Returned state: '$?)
-		COMPILEEND=$(date +%s%3N)
+		COMPILEEND=$($DATE +%s%3N)
 		COMPILETIME=$(($COMPILEEND - $COMPILESTART))
 		COMPILECHECK=$(echo $COMPILELOG | grep -o '[^ ]*$')
 		COMPILETIMERELEVANT='true'
