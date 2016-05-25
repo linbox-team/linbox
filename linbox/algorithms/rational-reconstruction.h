@@ -445,7 +445,7 @@ namespace LinBox
 			std::vector<Integer> zz(_lcontainer.size(), modulus);   // stores each truncated p-adic approximation
 			_r.assign(modulus, _r.one);
 
-			size_t len = _lcontainer.length();
+			uint64_t len = _lcontainer.length();
 			/* should be ceil(log(2*numbound*denbound)/log(prime))
 			 *
 			 * should grow in rough proportion to overall
@@ -490,7 +490,7 @@ namespace LinBox
 					_r.convert(iD, _lcontainer.numbound());
 					_r.convert(iN, _lcontainer.denbound());
 					_r.convert(pPower, prime);
-					pPower = pow(pPower, uint64_t(len)-1);
+					pPower = Givaro::pow(pPower, uint64_t(len-1));
 
 					tmp = pPower * iN;
 					tmp /= iD;

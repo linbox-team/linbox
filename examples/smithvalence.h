@@ -116,7 +116,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 	if (p <= maxmod) {
 		typedef Givaro::Modular<int64_t> Ring;
 		int64_t lp(p);
-		Givaro::Integer q = pow(p,e); int64_t lq(q);
+		Givaro::Integer q = pow(p,uint64_t(e)); int64_t lq(q);
 		if (q >Givaro::Integer(lq)) {
 			std::cerr << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
 			q = p;
@@ -183,7 +183,7 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Givaro::Integer p, size_t e, size_t intr)
 {
 	typedef Givaro::Modular<Givaro::Integer> Ring;
-	Givaro::Integer q = pow(p,e);
+	Givaro::Integer q = pow(p,uint64_t(e));
 	Ring F(q);
 	std::ifstream input(filename);
 	LinBox::MatrixStream<Ring> ms( F, input );

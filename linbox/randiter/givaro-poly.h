@@ -48,7 +48,7 @@ namespace LinBox
 		GivaroPolyRandIter(Field pd, 
                                    const integer& size = 0,
                                    const integer& seed = 0) :
-                        _randIter(Givaro::GIV_randIter<SubDomain,integer>(pd.subdomain(), size, seed))
+		_randIter(Givaro::GIV_randIter<SubDomain,integer>(pd.subdomain(), uint64_t(size), seed))
 		{_pd = pd;}
 		
 		GivaroPolyRandIter(const GivaroPolyRandIter &R)
