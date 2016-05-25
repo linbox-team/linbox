@@ -8,12 +8,24 @@ XMLFILE=$1
 tests=$2
 COMPILER=$3
 
+# choose gdate on OS X
+if command -v "gdate" >/dev/null; then
+    DATE=gdate
+else
+    DATE=date
+fi
 #=================#
 # Plateform infos #
 #=================#
 
 COMPILERVERSION=$($COMPILER --version 2>&1 | head -1)
-CPUFREQ=$(lscpu | grep "MHz" | rev | cut -f1 -d' ' | rev)
+
+if command -v "lscpu" >/dev/null; then
+    CPUFREQ=$(lscpu | grep "MHz" | rev | cut -f1 -d' ' | rev)
+else
+    CPUFREQ=$((`sysctl -n hw.cpufrequency`/1000000))
+fi
+
 ARCH=$(uname -m)
 OSNAME=$(uname -s)
 OSVERSION=$(uname -r)
