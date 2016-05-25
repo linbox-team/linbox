@@ -274,7 +274,7 @@ namespace LinBox
 
 			// find A s.t. gcd(denBound, denom + A*other.denom) = g
 			// strategy: pick random values of A <= lcm(d(denom), d(other.denom))
-			integer tmp;
+			uint64_t tmp;
 			_domain.mul(tmpe, denom, other.denom);
 			_domain.convert(tmp, tmpe);
 			typename Domain::RandIter randiter(_domain, tmp); //seed omitted
