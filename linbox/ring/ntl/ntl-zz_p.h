@@ -81,7 +81,7 @@ namespace Givaro
 
 		x = 0;
 		for (ptrdiff_t i = 0; i < nb; i++) {
-			x += Integer( txt[i] )<<(8*i) ;
+			x += Integer( txt[i] )<< int32_t(8*i) ;
 		}
 		delete [] txt;
 		return x;
