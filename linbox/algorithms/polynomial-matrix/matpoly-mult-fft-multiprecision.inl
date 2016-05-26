@@ -66,42 +66,7 @@ namespace LinBox{
       return mm;
     }
 
-  public:
-
-    // void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas, size_t k, size_t d){
-
-//       RandomFFTPrime RdFFT(prime_max);
-//       size_t nbp=0;
-//       if (!RdFFT.generatePrimes(lpts,bound,bas)){
-// 	integer MM=1;
-// 	for(std::vector<integer>::size_type i=0;i<bas.size();i++){
-// 	  MM*=bas[i];
-// 	  std::cout<<bas[i]<<std::endl;
-// 	}
-// 	//RandomPrimeIter Rd(integer(prime_max).bitsize());
-// 	// compute max bitsize for prime allowing three prime fft
-// 	integer prime_max_tp=MM/uint64_t(d*k);
-// 	RandomPrimeIter Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())-1);
-// #ifdef VERBOSE_FFT
-// 	std::cout<<"normal prime bitmax: "<<std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize()-1)<<std::endl;
-// #endif
-// 	integer tmp;
-// 	do {
-// 	  do {Rd.random(tmp);}
-// 	  while (MM%tmp==0 || tmp>prime_max);
-// 	  bas.push_back(tmp);
-// 	  nbp++;
-// 	  MM*=tmp;
-// 	} while (MM<bound);	
-//       }
-// #ifdef VERBOSE_FFT      
-//       std::cout<<"MatPoly Multiprecision FFT : using "<<bas.size()-nbp<<" FFT primes and "<<nbp<<" normal primes "<<std::endl;
-// #endif
-//       for(auto i: bas)
-// 	if (i>prime_max) std::cout<<"ERROR\n";
-//     }
-    
-    
+  public: 
 
     inline const IntField & field() const { return *_field; }
 
@@ -110,7 +75,7 @@ namespace LinBox{
       _field(&F), _maxnorm(maxnorm) {}
 
     template<typename PMatrix1, typename PMatrix2, typename PMatrix3>
-    void mul (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b) {
+    void mul (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b, size_t max_rowdeg=0) {
       //compute a bound on the entry of the input matrix a and b
       FFT_PROFILE_START(2);
       integer maxA,maxB;
@@ -123,7 +88,7 @@ namespace LinBox{
       if (_maxnorm==0) bound*=2; //seems to compute over Z, need to double to handle possible negative value
       FFT_PROFILING(2,"max norm computation");
 
-      mul_crtla(c,a,b,maxA,maxB,bound);
+      mul_crtla(c,a,b,maxA,maxB,bound,max_rowdeg);
     }
 
     template<typename PMatrix1, typename PMatrix2, typename PMatrix3>
@@ -177,7 +142,7 @@ namespace LinBox{
     // WARNING: Polynomial Matrix should stored as matrix of polynomial with integer coefficient 
     template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
     void mul_crtla(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
-    		   const integer& maxA, const integer& maxB, const integer& bound) {
+    		   const integer& maxA, const integer& maxB, const integer& bound, size_t max_rowdeg=0) {
 
       FFT_PROFILE_START(2);
       linbox_check(a.coldim() == b.rowdim());
@@ -185,6 +150,7 @@ namespace LinBox{
       size_t k = a.coldim();
       size_t n = b.coldim();
       size_t s= a.size()+b.size()-1;
+      if (max_rowdeg!=0) s = max_rowdeg+1;
       c.resize(s);
       size_t lpts=0;
       size_t pts  = 1; while (pts < s) { pts= pts<<1; ++lpts; }
@@ -259,8 +225,11 @@ namespace LinBox{
 	  
 	  //FFT_PROFILE_GET(tCopy);
 	  //PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f);
-	  PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);       
-	  fftdomain.mul_fft(lpts, *c_i[l], a_i, b_i);
+	  PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);
+	  integer bound=integer(RNS._basis[l]-1)*integer(RNS._basis[l]-1)
+	    *integer((uint64_t) k)*integer((uint64_t)std::min(a.size(),b.size()));
+
+	  fftdomain.mul_fft(lpts, *c_i[l], a_i, b_i, bound);
 	  //std::cout<<"c"<<l<<":="<<*c_i[l]<<";\n";
 	  //std::cout<<"p"<<l<<":="<<uint64_t(RNS._basis[l])<<";\n";
 	  //FFT_PROFILE_GET(tMul);
@@ -389,8 +358,11 @@ namespace LinBox{
 		b_i.ref(i,j)=t_b_mod[l*n_tb+j+i*b.size()];	
 	    //FFT_PROFILE_GET(tCopy);
 	    //PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f);
-	    PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);       
-	    fftdomain.mul_fft(lpts, *c_i[loop+l], a_i, b_i);	
+	    PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);
+	    integer bound=integer(smallRNS._basis[l]-1)*integer(smallRNS._basis[l]-1)
+	      *integer(k)*integer((uint64_t)std::min(a.size(),b.size()));
+	    
+	    fftdomain.mul_fft(lpts, *c_i[loop+l], a_i, b_i, bound);	
 	    //FFT_PROFILE_GET(tMul);
 	  }      
 	FFT_PROFILING(2,"FFTprime mult+copying");
@@ -620,7 +592,7 @@ namespace LinBox{
     }
 
     template<typename Matrix1, typename Matrix2, typename Matrix3>
-    void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b) {
+    void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) {
       FFT_PROFILE_START(2);
       MatrixP_F a2(field(),a.rowdim(),a.coldim(),a.size());
       MatrixP_F b2(field(),b.rowdim(),b.coldim(),b.size());
@@ -628,7 +600,7 @@ namespace LinBox{
       a2.copy(a,0,a.size()-1);
       b2.copy(b,0,b.size()-1);
       FFT_PROFILING(2,"converting rep of input");
-      mul(c2,a2,b2);
+      mul(c2,a2,b2, max_rowdeg);
       FFT_PROFILE_START(2);
       c.copy(c2,0,c.size()-1);
       FFT_PROFILING(2,"converting rep of output");
@@ -636,7 +608,7 @@ namespace LinBox{
     }
     
     // Matrix with polynomials  
-    void mul (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b) {
+    void mul (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b, size_t max_rowdeg=0) {
 
       FFT_PROFILE_START(2);
       IntField Z;      
@@ -645,7 +617,7 @@ namespace LinBox{
 #ifdef TRY1
       Zmul.mul_crtla2(c,a,b,_p,_p,bound); 
 #else
-      Zmul.mul_crtla(c,a,b,_p,_p,bound);
+      Zmul.mul_crtla(c,a,b,_p,_p,bound, max_rowdeg);
 #endif
       
       

@@ -280,17 +280,14 @@ void bench_sigma(const Field& F,  RandIter& Gen, size_t m, size_t n, size_t d, s
 	std::cout<<"[begin ] : "<<MEMINFO<<std::endl; 
 
 	
-	MatrixP Serie(F, m, n, d);	
+	MatrixP *Serie = new MatrixP(F, m, n, d);	
 	// set the Serie at random
 	for (size_t k=0;k<d;++k)
 		for (size_t i=0;i<m;++i)
 			for (size_t j=0;j<n;++j)
-				Gen.random(Serie.ref(i,j,k));
-	std::cout<<"[initial sequence] : "<<MB(Serie.realmeminfo())<<"Mo"<<MEMINFO<<std::endl;
-	
-	MatrixP Sigma2(F, m, m, d+1);
-	std::cout<<"[output sigma    ] : "<<MB(Sigma2.realmeminfo())<<"Mo"<<MEMINFO<<std::endl;	
-		
+				Gen.random(Serie->ref(i,j,k));
+	std::cout<<"[initial sequence] : "<<MB(Serie->realmeminfo())<<"Mo"<<MEMINFO<<std::endl;
+			
 	// define the shift
 	vector<size_t> shift(m,0);
 	
@@ -301,18 +298,36 @@ void bench_sigma(const Field& F,  RandIter& Gen, size_t m, size_t n, size_t d, s
 		MatrixP Sigma1(F, m, m, d+1);
 		vector<size_t> shift2(m,0);
 		chrono.start();
-		SB.M_Basis(Sigma1, Serie, d, shift2);
+		SB.M_Basis(Sigma1, *Serie, d, shift2);
 		chrono.stop();
 		std::cout << "M-Basis       : " <<chrono.usertime()<<" s"<<std::endl;
 	}
 #endif
+
+
+#ifndef  LOW_MEMORY_PMBASIS
+	MatrixP Sigma2(F, m, m, d+1);
+	std::cout<<"[output sigma    ] : "<<MB(Sigma2.realmeminfo())<<"Mo"<<MEMINFO<<std::endl;	
 	chrono.clear();		
 	chrono.start();
-	SB.PM_Basis(Sigma2, Serie, d, shift);
+	SB.PM_Basis(Sigma2, *Serie, d, shift);
 	chrono.stop();
 	std::cout << "PM-Basis      : " <<chrono.usertime()<<" s"<<std::endl;
 	chrono.clear();
+	delete Serie;
+#else
+	MatrixP* sigma_ptr;
+	chrono.clear();		
+	chrono.start();
+	SB.PM_Basis_low(sigma_ptr, Serie, d, shift);
+	// Serie is deleted within PM_Basis_low
+	chrono.stop();
+	std::cout << "PM-Basis      : " <<chrono.usertime()<<" s"<<std::endl;
+	chrono.clear();
+	delete sigma_ptr;
+#endif
 
+	
 	// MatrixP Sigma3(F, m, m, d+1);
 	//vector<size_t> shift3(m,0);
 	// chrono.start();
@@ -324,18 +339,6 @@ void bench_sigma(const Field& F,  RandIter& Gen, size_t m, size_t n, size_t d, s
 }
 
 int main(int argc, char** argv){
-
-	// std::cout<<"Real memory usage: "<<MEMINFO<<std::endl;
-	// const size_t N=32<<20;
-	// double * T= new double[N];
-	// std::cout<<"allocating :"<<((N*sizeof(double))>>20)<<"Mo"<<std::endl;
-	// T[0]=1;
-	// for (size_t i=1;i<N;i++)
-	// 	T[i]=T[i-1];
-	// std::cout<<"Real memory usage: "<<MEMINFO<<std::endl;
-	// delete[] T;
-	// std::cout<<"Real memory usage: "<<MEMINFO<<std::endl;
-	
 	
 	static size_t  m = 64; // matrix dimension
 	static size_t  n = 32; // matrix dimension
