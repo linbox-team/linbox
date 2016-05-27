@@ -94,6 +94,7 @@ namespace LinBox{
 		
 		~PolynomialMatrix(){
 			DEL_MEM(realmeminfo());
+			_rep.clear();
 			//std::cout<<"(FREE) PolynomialMatrix<polfirst> at "<<this<<" : "<<_row<<"x"<<_col<<" - size= "<<_store<<" ==> "<<MB(realmeminfo())<<" Mo   "<<STR_MEMINFO<<std::endl;
 
 			//integer p;
@@ -126,7 +127,8 @@ namespace LinBox{
 
 		// resize the polynomial length of the polynomial matrix
 		void resize(size_t s){
-			DEL_MEM(realmeminfo());
+			if (s==_store) return;
+			//std::cout<<"MATPOL RESIZING : "<<_store<<" --> "<<s<<std::endl;
 			if (s>_store){
 				_rep.resize(s*_row*_col);
 				size_t k=s*_row*_col-1;
@@ -144,13 +146,14 @@ namespace LinBox{
 					for (size_t j=0;j<s;j++,k++)
 						_rep[k]=_rep[i*_store+j];
 				_rep.resize(s*_row*_col);
-				_rep.shrink_to_fit();
+				//_rep.shrink_to_fit();
 			}
 			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
-
+			size_t mem=realmeminfo();
 			_store=s;
 			setsize(s);
 			ADD_MEM(realmeminfo());
+			DEL_MEM(mem);
 		}
 
 		void changesize(size_t s){

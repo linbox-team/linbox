@@ -128,7 +128,7 @@ namespace LinBox
 
 		const Element zero,one,mOne ;
 
-		NTL_GF2E (const integer &p, const integer &k) :
+		NTL_GF2E (const integer &p, const int32_t &k) :
 			NTL_GF2E_Initialiser(p,k),Father_t ()
 			,zero( NTL::to_GF2E(0)),one( NTL::to_GF2E(1)),mOne(-one)
 		{ }
