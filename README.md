@@ -1,6 +1,8 @@
 # The Linbox Library
 
-[![Build Status](https://ci.inria.fr/linbox/buildStatus/icon?job=Givaro)](https://ci.inria.fr/linbox/job/Givaro/)
+LinBox status: [![Build Status](https://ci.inria.fr/linbox/buildStatus/icon?job=Givaro)](https://ci.inria.fr/linbox/job/LinBox/)
+
+LinBox with NTL status: [![Build Status](https://ci.inria.fr/linbox/buildStatus/icon?job=Givaro)](https://ci.inria.fr/linbox/job/LinBox-NTL/)
 
 ## Purpose
 
