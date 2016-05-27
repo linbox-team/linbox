@@ -64,7 +64,7 @@ using namespace std;
 #include <linbox/util/timer.h>
 
 #include <linbox/ring/local2_32.h>
-#include <linbox/ring/PIR-modular-int32.h>
+#include <linbox/ring/pir-modular-int32.h>
 #include <linbox/algorithms/smith-form-local.h>
 #include <linbox/algorithms/smith-form-iliopoulos.h>
 #include <linbox/algorithms/smith-form-adaptive.h>
