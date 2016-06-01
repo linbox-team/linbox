@@ -394,11 +394,11 @@ namespace LinBox {
 		 * Different implementation of DIF/DIT with Harvey's trick
 		 */
 
-		void FFT_DIF_Harvey_mod2p_iterative    (Element *fft);
-		void FFT_DIF_Harvey_mod2p_iterative2x2 (Element *fft);
-		void FFT_DIF_Harvey_mod2p_iterative3x3 (Element *fft);
-		void FFT_DIT_Harvey_mod4p_iterative2x2 (Element *fft);
-		void FFT_DIT_Harvey_mod4p_iterative3x3 (Element *fft);
+		void FFT_DIF_Harvey_mod2p_iterative    (uint32_t *fft);
+		void FFT_DIF_Harvey_mod2p_iterative2x2 (uint32_t *fft);
+		void FFT_DIF_Harvey_mod2p_iterative3x3 (uint32_t *fft);
+		void FFT_DIT_Harvey_mod4p_iterative2x2 (uint32_t *fft);
+		void FFT_DIT_Harvey_mod4p_iterative3x3 (uint32_t *fft);
 		// SIMD implementations follow
 		void FFT_DIF_Harvey_mod2p_iterative4x1_SSE (uint32_t *fft);
 		void FFT_DIF_Harvey_mod2p_iterative4x2_SSE (uint32_t *fft);

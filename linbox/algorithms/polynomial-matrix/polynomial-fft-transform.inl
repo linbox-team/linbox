@@ -59,7 +59,7 @@ namespace LinBox {
 
 
 	template <class Field>
-	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative (Element *fft) {
+	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative (uint32_t *fft) {
 		for (size_t w = n >> 1, f = 1, pos_w = 0; w != 0; f <<= 1, pos_w += w, w >>= 1){
 			// w : witdh of butterflies
 			// f : # families of butterflies
@@ -70,7 +70,7 @@ namespace LinBox {
 	}
 
 	template <class Field>
-	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative2x2 (Element *fft) {
+	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative2x2 (uint32_t *fft) {
 		size_t w, f;
 		for (w = n >> 1, f = 1; w >= 2; w >>= 2, f <<= 2)
 			// w : witdh of butterflies
@@ -104,7 +104,7 @@ namespace LinBox {
 	}
 
 	template <class Field>
-	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative3x3 (Element *fft) {
+	void FFT_transform<Field>::FFT_DIF_Harvey_mod2p_iterative3x3 (uint32_t *fft) {
 		size_t w, f;
 		for (w = n >> 1, f = 1; w >= 4; w >>= 3, f <<= 3)
 			// w : witdh of butterflies
@@ -156,7 +156,7 @@ namespace LinBox {
 
 
 	template <class Field>
-	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative2x2 (Element *fft) {
+	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative2x2 (uint32_t *fft) {
 		size_t w, f;
 		for (w = 1, f = n >> 1; f >= 2; w <<= 2, f >>= 2)
 			// w : witdh of butterflies
@@ -187,7 +187,7 @@ namespace LinBox {
 	}
 
 	template <class Field>
-	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative3x3 (Element *fft) {
+	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative3x3 (uint32_t *fft) {
 		size_t w, f;
 		for (w = 1, f = n >> 1; f >= 4; w <<= 3, f >>= 3)
 			// w : witdh of butterflies
