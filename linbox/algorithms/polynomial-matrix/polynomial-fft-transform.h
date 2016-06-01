@@ -185,22 +185,24 @@ namespace LinBox {
 					tpts >>= 1;
 				}
 #else
-				using simd=Simd<uint32_t>;
-				using vect_t =typename simd::vect_t;
+//				using simd=Simd<uint32_t>;
+//				using vect_t =typename simd::vect_t;
 				
 				size_t tpts = 1 << (ln - 1);
 				size_t i=0;
-				for( ;i<std::min(simd::vect_size+1, tpts);i++,pos++){
+//				for( ;i<std::min(simd::vect_size+1, tpts);i++,pos++){
+				// Precompute pow_wp[1] for faster mult by pow_w[1]
+				for( ;i<std::min((size_t) 2, tpts);i++,pos++){
 					pow_w[pos] = wi;
 					pow_wp[pos] = ((uint64_t) pow_w[pos] << 32UL) / _pl;
 					wi= ((uint64_t)wi*__w)%_pl;
 				}
+				/*
 				vect_t wp_vect, Q_vect,BAR_vect,w_vect,pow_w_vect,pow_wp_vect, pl_vect;
 				BAR_vect= simd::set1(BAR);
 				wp_vect = simd::set1(pow_wp[simd::vect_size]);
 				w_vect  = simd::set1(pow_w[simd::vect_size]);
 				pl_vect = simd::set1(_pl);
-				/*				
 				for (; i < ROUND_DOWN(tpts,simd::vect_size);
 				     i+=simd::vect_size,pos+=simd::vect_size) {
 					pow_w_vect  = simd::loadu((int32_t*)pow_w.data()+pos-simd::vect_size);
@@ -212,6 +214,7 @@ namespace LinBox {
 					simd::storeu((int32_t*)pow_wp.data()+pos,pow_wp_vect);
 				}
 				*/
+				// Use pow_wp[1] for speed-up mult by pow_w[1]
 				for( ;i<tpts;i++,pos++){
 					pow_w[pos] = wi;
 					pow_wp[pos]= (((uint64_t)wi*BAR)>>_logp);
@@ -220,6 +223,7 @@ namespace LinBox {
 					wi-=(wi>=_pl?_pl:0);
 				}
 				
+				// Other pow_w elements can be read from previously computed pow_w
 				for(size_t k=2;k<=tpts;k<<=1)
 					for(size_t i=0;i<tpts;i+=k,pos++){
 						pow_w[pos]  = pow_w[i];
