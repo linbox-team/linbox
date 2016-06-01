@@ -55,16 +55,19 @@ namespace LinBox {
                 PolynomialMatrixFFTMulDomain (const Field& F) : _field(&F), _p(F.cardinality()) {}
 
                 template<typename Matrix1, typename Matrix2, typename Matrix3>
-                void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b) {
-                        uint64_t pts= 1<<(integer((uint64_t)a.size()+b.size()-1).bitsize());
+                void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) {
+			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
+			c.resize(deg+1);
+			size_t lpts = 0;
+			size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
                         if ( _p< 536870912ULL  &&  ((_p-1) % pts)==0){
 				PolynomialMatrixFFTPrimeMulDomain<Field> MulDom(field());
-                                MulDom.mul(c,a,b);
+                                MulDom.mul(c,a,b, max_rowdeg);
                         }
                         else {
 				if (_p< 536870912ULL){
 					PolynomialMatrixThreePrimesFFTMulDomain<Field> MulDom(field());
-					MulDom.mul(c,a,b);
+					MulDom.mul(c,a,b, max_rowdeg);
 				}
 				else {
 					// use computation with Givaro::Modular<integer>
@@ -75,11 +78,11 @@ namespace LinBox {
 					MatrixP_L a2(Fp,a.rowdim(),a.coldim(),a.size());
 					MatrixP_L b2(Fp,b.rowdim(),b.coldim(),b.size());
 					MatrixP_L c2(Fp,c.rowdim(),c.coldim(),c.size());
-					a2.copy(a,0,a.size()-1);
-					b2.copy(b,0,b.size()-1);
+					a2.copy(a,0,a.degree());
+					b2.copy(b,0,b.degree());
 					FFT_PROFILING(2,"converting rep of polynomial matrix input");
-					MulDom.mul(c2,a2,b2);
-					c.copy(c2,0,c.size()-1);
+					MulDom.mul(c2,a2,b2, max_rowdeg);
+					c.copy(c2,0,c.degree());
 					FFT_PROFILING(2,"converting rep of polynomial matrix output");
 				}
                         }

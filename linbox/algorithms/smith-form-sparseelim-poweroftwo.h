@@ -396,7 +396,7 @@ namespace LinBox
                 ranks.resize(0);
 
                 typedef typename BB::Row Vecteur;
-                size_t EXPONENT = EXPONENTMAX;
+                uint64_t EXPONENT = EXPONENTMAX;
                 UInt_t TWOK(1U); TWOK <<= EXPONENT;
                 UInt_t TWOKMONE(TWOK); --TWOKMONE;
 ENSURE( TWOK == (UInt_t(1U) << EXPONENT) );

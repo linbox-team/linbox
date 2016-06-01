@@ -92,7 +92,7 @@ namespace LinBox
 		/** Standard LinBox field constructor.  The paramters here
 		 * (prime, exponent) are only used to initialize the coefficient field.
 		 */
-		NTL_zz_pEX( const integer& p, size_t e = 1 ) :
+		NTL_zz_pEX( const integer& p, int32_t e = 1 ) :
 			// Givaro::ZRing<NTL::zz_pEX>(p, e), _CField(p,e)
 			NTL_zz_pEX_Initialiser(p,e),Father_t ()
 			, zero( NTL::to_zz_pEX(0)),one( NTL::to_zz_pEX(1)),mOne(-one)

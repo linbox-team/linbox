@@ -8,12 +8,24 @@ XMLFILE=$1
 tests=$2
 COMPILER=$3
 
+# choose gdate on OS X
+if command -v "gdate" >/dev/null; then
+    DATE=gdate
+else
+    DATE=date
+fi
 #=================#
 # Plateform infos #
 #=================#
 
 COMPILERVERSION=$($COMPILER --version 2>&1 | head -1)
-CPUFREQ=$(lscpu | grep "MHz" | rev | cut -f1 -d' ' | rev)
+
+if command -v "lscpu" >/dev/null; then
+    CPUFREQ=$(lscpu | grep "MHz" | rev | cut -f1 -d' ' | rev)
+else
+    CPUFREQ=$((`sysctl -n hw.cpufrequency`/1000000))
+fi
+
 ARCH=$(uname -m)
 OSNAME=$(uname -s)
 OSVERSION=$(uname -r)
@@ -45,8 +57,8 @@ echo '<report name="tests-report" categ="tests">' >> $XMLFILE
 #=======#
 
 echo '<start>' >> $XMLFILE
-echo '<date format="YYYYMMDD" val="'$(date +%Y%m%d)'" />' >> $XMLFILE
-echo '<time format="HHMMSS" val="'$(date +%H%M%S)'" />' >> $XMLFILE
+echo '<date format="YYYYMMDD" val="'$($DATE +%Y%m%d)'" />' >> $XMLFILE
+echo '<time format="HHMMSS" val="'$($DATE +%H%M%S)'" />' >> $XMLFILE
 echo '</start>' >> $XMLFILE
 
 #=======#
@@ -59,9 +71,9 @@ do
 	then
 		#File does not exist: compile it
 		echo '[Compiling]' $test
-		COMPILESTART=$(date +%s%3N)
+		COMPILESTART=$($DATE +%s%3N)
 		COMPILELOG=$(make $test 2>&1; echo 'Returned state: '$?)
-		COMPILEEND=$(date +%s%3N)
+		COMPILEEND=$($DATE +%s%3N)
 		COMPILETIME=$(($COMPILEEND - $COMPILESTART))
 		COMPILECHECK=$(echo $COMPILELOG | grep -o '[^ ]*$')
 		COMPILETIMERELEVANT='true'
@@ -92,9 +104,9 @@ do
 		#Compilation success
 		echo '[Executing]' $test
 		EXECUTED='yes'
-		EXECUTIONSTART=$(date +%s%3N)
+		EXECUTIONSTART=$($DATE +%s%3N)
 		EXECUTIONLOG=$(./$test  2>&1; echo 'Returned state: '$?)
-		EXECUTIONEND=$(date +%s%3N)
+		EXECUTIONEND=$($DATE +%s%3N)
 		EXECUTIONTIME=$(($EXECUTIONEND - $EXECUTIONSTART))
 		EXECUTIONCHECK=$(echo $EXECUTIONLOG | grep -o '[^ ]*$')
 		

@@ -38,7 +38,7 @@ namespace LinBox {
 
 	/***********************************************************************************
 	 **** Polynomial Matrix Multiplication over Zp[x] with p (FFLAS prime) ***
-	 ***********************************************************************************/
+	 *********************************x**************************************************/
 	template<class Field>
 	class PolynomialMatrixThreePrimesFFTMulDomain {
 	public:
@@ -65,39 +65,48 @@ namespace LinBox {
 		}
 
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
-		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b) {
+		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) {
 			linbox_check(a.coldim()==b.rowdim());
-			size_t deg  = a.size()+b.size()-1;
+			// deg is the max rowdegree of the product
+			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
+			c.resize(deg+1);
 			size_t lpts = 0;
-			size_t pts  = 1; while (pts < deg) { pts= pts<<1; ++lpts; }
+			size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
 			// padd the input a and b to 2^lpts (convert to MatrixP representation)
 			MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
 			MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
-			a2.copy(a,0,a.size()-1);
-			b2.copy(b,0,b.size()-1);
+			a2.copy(a,0,a.degree());
+			b2.copy(b,0,b.degree());
 			MatrixP c2(field(),c.rowdim(),c.coldim(),pts);
-			mul_fft (lpts,c2, a2, b2);
-			c.copy(c2,0,deg-1);
+			integer bound=integer(_p-1)*integer(_p-1)
+				*integer((uint64_t)a.coldim())*integer((uint64_t)std::min(a.size(),b.size()));
+			mul_fft (lpts,c2, a2, b2, bound);
+			c.copy(c2,0,deg);
 		}
 
-		void mul (MatrixP &c, const MatrixP &a, const MatrixP &b) {
+		void mul (MatrixP &c, const MatrixP &a, const MatrixP &b, size_t max_rowdeg=0) {
 			linbox_check(a.coldim()==b.rowdim());
-			size_t deg  = a.size()+b.size()-1;
+			// deg is the max rowdegree of the product
+			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
 			size_t lpts = 0;
-			size_t pts  = 1; while (pts < deg) { pts= pts<<1; ++lpts; }
+			size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
 			// padd the input a and b to 2^lpts
 			MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
 			MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
-			a2.copy(a,0,a.size()-1);
-			b2.copy(b,0,b.size()-1);
+			a2.copy(a,0,a.degree());
+			b2.copy(b,0,b.degree());
 			// resize c to 2^lpts
 			c.resize(pts);
-			mul_fft (lpts,c, a2, b2);
-			c.resize(deg);
-		}
+			integer bound=integer(_p-1)*integer(_p-1)
+				*integer((uint64_t)a.coldim())*integer((uint64_t)std::min(a.size(),b.size()));
 
-		void mul_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b) {
-			size_t pts=c.size();
+			mul_fft (lpts,c, a2, b2, bound);
+			c.resize(deg+1);
+		}
+		
+		// a,b and c must have size: 2^lpts
+		void mul_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b, const integer& bound) {
+			size_t pts=c.size();			
 			if ((_p-1) % pts == 0){
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftprime_domain (field());
 				fftprime_domain.mul_fft(lpts,c,a,b);
@@ -110,15 +119,7 @@ namespace LinBox {
 			size_t k = a.coldim();
 			size_t n = b.coldim();
 			
-
-			integer bound=integer((uint64_t)_p)*integer((uint64_t)_p)*integer((uint64_t)k)*integer((uint64_t)pts);
-			// compute bit size of feasible prime for FFLAS
-			// size_t _k=k,lk=0;
-			// while ( _k ) {_k>>=1; ++lk;}
-			// size_t prime_bitsize= (53-lk)>>1;
-
-			// compute max prime value for FFLAS
-			uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality()));
+			uint64_t prime_max=maxFFTPrimeValue(k,pts); // CAREFUL: only for Modular<double>;
 			RandomFFTPrime RdFFT(prime_max);
 			std::vector<integer> bas;
 			if (!RdFFT.generatePrimes(lpts,bound,bas)){
@@ -202,8 +203,10 @@ namespace LinBox {
 				for (size_t j=0;j<b2.rowdim()*b2.coldim();j++)
 					for (size_t i=0;i<hdeg/2;i++)
 						std::swap(b2.ref(j,i),b2.ref(j,hdeg-1-i));
-
-			midproduct_fft (lpts,c2, a2, b2, smallLeft);
+			integer bound=integer(_p-1)*integer(_p-1)
+				*integer((uint64_t)a.coldim())*integer((uint64_t)std::min(a.size(),b.size()));
+			
+			midproduct_fft (lpts,c2, a2, b2, bound, smallLeft);
 			c.copy(c2,0,c.size()-1);
 		}
 
@@ -211,7 +214,7 @@ namespace LinBox {
 		// a,b and c must have size: 2^lpts
 		// -> a must have been already reversed according to the midproduct algorithm
 		void midproduct_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b,
-				     bool smallLeft=true) {
+				     const integer& bound, bool smallLeft=true) {
 			size_t pts=c.size();			
 			if ((_p-1) % pts == 0){
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftprime_domain (field());
@@ -222,16 +225,15 @@ namespace LinBox {
 			size_t k = a.coldim();
 			size_t n = b.coldim();
 
-			integer bound=integer(_p)*integer(_p)*integer((uint64_t)k)*integer((uint64_t)pts);
-
 			// compute bit size of feasible prime for FFLAS
 			// size_t _k=k,lk=0;
 			// while ( _k ) {_k>>=1; ++lk;}
 			// size_t prime_bitsize= (53-lk)>>1;
 
 			// compute max prime value for FFLAS
-			uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality()));
-
+			//uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality())) 
+			uint64_t prime_max=maxFFTPrimeValue(k,pts); // CAREFUL: only for Modular<double>;
+			
 			RandomFFTPrime RdFFT(prime_max);
 
 			std::vector<integer> bas;

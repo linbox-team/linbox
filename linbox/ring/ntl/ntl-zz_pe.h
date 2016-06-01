@@ -139,7 +139,7 @@ namespace LinBox
 		const Element zero,one,mOne ;
 
 
-		NTL_ZZ_pE (const integer &p, const integer &k) :
+		NTL_ZZ_pE (const integer &p, const int32_t &k) :
 			NTL_ZZ_pE_Initialiser(p,k),Father_t ()
 			,zero( NTL::to_ZZ_pE(0)),one( NTL::to_ZZ_pE(1)),mOne(-one)
 
@@ -370,8 +370,8 @@ namespace LinBox
 	public:
 		typedef NTL::ZZ_pE Element;
 		UnparametricRandIter<NTL::ZZ_pE>(const NTL_ZZ_pE & F ,
-						 const integer& size =0,
-						 const integer& seed =0
+						 const int32_t& size =0,
+						 const int32_t& seed =0
 						) :
                 _size(size), _seed(seed), _ring(F)
 		{
