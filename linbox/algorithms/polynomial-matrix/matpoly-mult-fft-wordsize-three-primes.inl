@@ -76,7 +76,7 @@ namespace LinBox {
 			MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
 			MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
 			a2.copy(a,0,a.degree());
-			b2.copy(b,0,b.degree);
+			b2.copy(b,0,b.degree());
 			MatrixP c2(field(),c.rowdim(),c.coldim(),pts);
 			integer bound=integer(_p-1)*integer(_p-1)
 				*integer((uint64_t)a.coldim())*integer((uint64_t)std::min(a.size(),b.size()));
