@@ -237,10 +237,12 @@ int main(int argc, char** argv){
 	cout<<"prime : "<<p<<endl;
 	cout<<endl;
 	
-	//Givaro::Modular<uint32_t,uint64_t> F(p);
-	Givaro::Modular<double> F(p);
-	check_DIF(F,k,seed);
-	bench_DIF(F,k,seed);
+	Givaro::Modular<uint32_t,uint64_t> Fu32(p);
+//	Givaro::Modular<double> Fd(p);
+	check_DIF(Fu32,k,seed);
+//	check_DIF(Fd,k,seed);
+	bench_DIF(Fu32,k,seed);
+//	bench_DIF(Fd,k,seed);
 
 
 	return 0;
