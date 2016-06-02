@@ -553,8 +553,8 @@ namespace LinBox {
 		/* 2nd step */
 
 		// V3=[A E B F I M J N] V4=[C G D H K O L P]
-		V3 = Simd256<uint32_t>::unpacklo(V1,V2);
-		V4 = Simd256<uint32_t>::unpackhi(V1,V2);
+		V3 = Simd256<uint32_t>::unpacklo_twice(V1,V2);
+		V4 = Simd256<uint32_t>::unpackhi_twice(V1,V2);
 
 		// V1 = V3 + V4 mod 2P
 		// P2 = [2p 2p 2p 2p]
@@ -567,7 +567,7 @@ namespace LinBox {
 		V7 = reduce<Simd256<uint32_t> >(V6, P2);
 
 		// V4 = [D D H H L L P P ]
-		V4 = Simd256<uint32_t>::unpackhi(V7,V7);
+		V4 = Simd256<uint32_t>::unpackhi_twice(V7,V7);
 
 		// Q = V4 * beta mod 2^64 = [* Qd * Qh * Ql * Qp]
 		// with betap= [ betap * betap * betap * betap *]
@@ -584,8 +584,8 @@ namespace LinBox {
 		/* 3nd step */
 		// At this time I have V1=[A B E F I J M N], V7=[C G * * K O * *], V2=[* * D H * * L P]
 		// I need V3 = [A C E G I K M O], V4=[B D F H J L N P]
-		V3 = Simd256<uint32_t>::unpacklo(V1,V7);
-		V4 = Simd256<uint32_t>::unpackhi(V1,V2);
+		V3 = Simd256<uint32_t>::unpacklo_twice(V1,V7);
+		V4 = Simd256<uint32_t>::unpackhi_twice(V1,V2);
 
 		// V1 = V3 + V4 mod 2P
 		V1 = add_mod<Simd256<uint32_t> >(V3,V4,P2);
@@ -597,8 +597,8 @@ namespace LinBox {
 
 		// Result in    V1=[A C E G I K M O] V2=[B D F H J L N P]
 		// Transform to V3=[A B C D I J K L],V4=[E F G H M N O P]
-		V3 = Simd256<uint32_t>::unpacklo(V1,V2);
-		V4 = Simd256<uint32_t>::unpackhi(V1,V2);
+		V3 = Simd256<uint32_t>::unpacklo_twice(V1,V2);
+		V4 = Simd256<uint32_t>::unpackhi_twice(V1,V2);
 
 		// Transform to V1=[A B C D E F G H], V2=[I J K L M N O P]
 		V1 = Simd256<uint64_t>::unpacklo128(V3,V4);
@@ -715,10 +715,10 @@ namespace LinBox {
 		/* 1st STEP */
 		/*********************************************/
 		// Transform to V3=[A I C K E M G O], V4=[B J D L F N H P]
-		V6 = Simd256<uint32_t>::unpacklo(V1,V2); // V6=[A I B J E M F N]
-		V7 = Simd256<uint32_t>::unpackhi(V1,V2); // V7=[C K D L G O H P]
-		V3 = Simd256<uint64_t>::unpacklo(V6,V7); // V3=[A I C K E M G O]
-		V4 = Simd256<uint64_t>::unpackhi(V6,V7); // V4=[B J D L F N H P]
+		V6 = Simd256<uint32_t>::unpacklo_twice(V1,V2); // V6=[A I B J E M F N]
+		V7 = Simd256<uint32_t>::unpackhi_twice(V1,V2); // V7=[C K D L G O H P]
+		V3 = Simd256<uint64_t>::unpacklo_twice(V6,V7); // V3=[A I C K E M G O]
+		V4 = Simd256<uint64_t>::unpackhi_twice(V6,V7); // V4=[B J D L F N H P]
 
 
 
@@ -736,7 +736,7 @@ namespace LinBox {
 		/* 2nd STEP */
 		/*********************************************/
 		// V5 = [D D L L H H P P]
-		V5 = Simd256<uint32_t>::unpackhi(V2,V2);
+		V5 = Simd256<uint32_t>::unpackhi_twice(V2,V2);
 		// Q = V5 * alpha mod 2^64 = [* Qd * Qh * Ql * Qp]
 		// with betap= [ alphap * alphap * alphap * alphap *]
 		Q = Simd256<uint64_t>::mulx(V5,alphap);
@@ -749,10 +749,10 @@ namespace LinBox {
 		// V7=[D L * * H P * *]
 		V7 = Simd256<uint32_t>::shuffle_twice<0xFD>(V3);
 		// V6 = [B J D L F N H P]
-		V6 = Simd256<uint64_t>::unpacklo(V2,V7);
+		V6 = Simd256<uint64_t>::unpacklo_twice(V2,V7);
 		// V3= [A B I J E F M N], V4=[C D K L G H O P]
-		V3 = Simd256<uint32_t>::unpacklo(V1,V6);
-		V4 = Simd256<uint32_t>::unpackhi(V1,V6);
+		V3 = Simd256<uint32_t>::unpacklo_twice(V1,V6);
+		V4 = Simd256<uint32_t>::unpackhi_twice(V1,V6);
 
 		// V1 = V3+V4
 		V1 = Simd256<uint32_t>::add(V3,V4);
@@ -764,8 +764,8 @@ namespace LinBox {
 		/* 3nd STEP */
 		/*********************************************/
 		// V3= [A B C D I J K L] V4= [E F G H M N O P]
-		V6 = Simd256<uint64_t>::unpacklo(V1,V2);
-		V7 = Simd256<uint64_t>::unpackhi(V1,V2);
+		V6 = Simd256<uint64_t>::unpacklo_twice(V1,V2);
+		V7 = Simd256<uint64_t>::unpackhi_twice(V1,V2);
 		V3 = Simd256<uint64_t>::unpacklo128(V6,V7);
 		V4 = Simd256<uint64_t>::unpackhi128(V6,V7);
 
