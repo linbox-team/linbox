@@ -105,7 +105,7 @@ namespace LinBox {
 		Element                      _w;
 		Element                   _invw;
 		// Du type qui est donné aux Butterfly
-		typedef std::vector<uint32_t,AlignedAllocator<uint32_t, Alignment::DEFAULT> > VECT;
+		typedef std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT> > VECT;
 		VECT    pow_w;
 		VECT   pow_wp; // Precomputations in shoup
 		VECT    _data;

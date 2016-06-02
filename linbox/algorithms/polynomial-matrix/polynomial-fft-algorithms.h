@@ -39,8 +39,13 @@ namespace LinBox {
 
 	template<typename Field, typename simd = Simd<typename Field::Element>, uint8_t vect_size = simd::vect_size>
 	class FFT_algorithms : public FFT_butterflies<Field, simd, vect_size> {
-		public:
+	public:
+		using Element = typename Field::Element;
 		FFT_algorithms(const FFT_init<Field>& f_i) : FFT_butterflies<Field, simd, vect_size>(f_i) {}
+		void DIF_mod2p (Element *fft);
+		void DIT_mod4p (Element *fft);
+		void DIF (Element *fft);
+		void DIT (Element *fft);
 	}; // FFT_algorithms
 
 	template<typename Field>
@@ -124,7 +129,7 @@ namespace LinBox {
 				//std::cout<<fft<<std::endl;
 			}
 			// Last two steps
-			if (n >= 8) {
+			if (false) { // HERE ! n >= 8
 				vect_t W,Wp;
 				W = simd::set1 ((int)tab_w [1]);
 				Wp= simd::set1 ((int)tab_wp[1]);
@@ -154,7 +159,7 @@ namespace LinBox {
 			vect_t P,P2;
 			P = simd::set1(_pl);
 			P2 = simd::set1(_dpl);
-			// Last two steps
+			// First two steps
 			if (n >= 8) {
 				vect_t W,Wp;
 				W = simd::set1 ((int)(this->pow_w) [n-3]);
@@ -191,6 +196,7 @@ namespace LinBox {
 		}
 
 		//TODO : Same functions DIF DIT in FFT_algorithms<Field, simd, 8>
+		//TODO : Use Simd here !
 		void DIF (Element *fft) {
 			// TODO reduce with SIMD
 			DIF_mod2p(fft);
