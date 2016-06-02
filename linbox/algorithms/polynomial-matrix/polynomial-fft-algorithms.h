@@ -129,7 +129,7 @@ namespace LinBox {
 				//std::cout<<fft<<std::endl;
 			}
 			// Last two steps
-			if (false) { // HERE ! n >= 8
+			if (n >= 8) {
 				vect_t W,Wp;
 				W = simd::set1 ((int)tab_w [1]);
 				Wp= simd::set1 ((int)tab_wp[1]);
@@ -201,7 +201,7 @@ namespace LinBox {
 			// TODO reduce with SIMD
 			DIF_mod2p(fft);
 			for (uint64_t i = 0; i < this->n; i++) {
-				//				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
+//				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
 				if (fft[i] >= this->_pl) fft[i] -= this->_pl;
 			}
 		}

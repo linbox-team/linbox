@@ -397,6 +397,7 @@ namespace LinBox {
 		void FFT_DIF_Harvey_mod2p_iterative    (uint32_t *fft);
 		void FFT_DIF_Harvey_mod2p_iterative2x2 (uint32_t *fft);
 		void FFT_DIF_Harvey_mod2p_iterative3x3 (uint32_t *fft);
+		void FFT_DIT_Harvey_mod4p_iterative    (uint32_t *fft);
 		void FFT_DIT_Harvey_mod4p_iterative2x2 (uint32_t *fft);
 		void FFT_DIT_Harvey_mod4p_iterative3x3 (uint32_t *fft);
 		// SIMD implementations follow

@@ -103,13 +103,13 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		randomVect(Gen,y);
 		x=y;
 		
-		FFT_transform<Field> MulDom(fld,lpts);
-		typedef FFT_transform<Field> FFT_t;
+//		FFT_transform<Field> MulDom(fld,lpts);
+//		typedef FFT_transform<Field> FFT_t;
 
 		FFT_init<Field> fft_init (fld, lpts);
 
 		FFT_algorithms<Field,NoSimd<typename Field::Element> > fft_algo_nosimd (fft_init);
-		using FFT_a = FFT_algorithms<Field,NoSimd<typename Field::Element> >;
+//		using FFT_a = FFT_algorithms<Field,NoSimd<typename Field::Element> >;
 
 		FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
 		using FFT_a128 = FFT_algorithms<Field,Simd128<typename Field::Element> >;
@@ -120,13 +120,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 
 		/* CHECK DIF */
 		// compute the correct result
-		MulDom.FFT_DIF_Harvey_mod2p_iterative(y.data());
-		// check 2x2
-		//		passed &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative2x2,x,y, "DIF_Harvey_mod2p_iterative2x2");
-		// check 3x3
-		//		passed &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative3x3,x,y, "DIF_Harvey_mod2p_iterative3x3");
-		// check FFT_algorithms::DIF
-		passed &= DFT_sanity_check(fft_algo_nosimd,&FFT_a::DIF,x,y, "FFT_algorithms<Field,NoSimd>::DIF");
+		fft_algo_nosimd.DIF(y.data());
 
 		// check FFT_algorithms::DIF
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8)
@@ -135,42 +129,20 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		// check FFT_algorithms::DIF
 		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8)
 			passed &= DFT_sanity_check(fft_algo_simd256,&FFT_a256::DIF,x,y, "FFT_algorithms<Field,Simd256>::DIF");
-
-		// check 4x1 SSE
-		//result &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x1_SSE,x,y, "DIF_Harvey_mod2p_iterative4x1_SSE");
-		// check 4x2 SSE
-		//result &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x2_SSE,x,y, "DIF_Harvey_mod2p_iterative4x2_SSE");
-#ifdef __AVX2__
-		// check 8x1 AVX
-		//result &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative8x1_AVX,x,y, "DIF_Harvey_mod2p_iterative8x1_AVX");
-#endif
-		// check Harvey SSE
-		//		passed &= DFT_sanity_check(MulDom,&FFT_t::template FFT_DIF<Element>,x,y, "DIF_Harvey_SSE");
 		cout<<"---------------------------------------------------------------"<<endl;
+
 		/* CHECK DIT */
 		// compute the correct result
 		y=x;
-		MulDom.FFT_DIT_Harvey_mod4p_iterative2x2(y.data());
-		// check 2x2
-		//		passed &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative2x2,x,y, "DIT_Harvey_mod4p_iterative2x2");
-		// check 3x3
-		//		passed &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative3x3,x,y, "DIT_Harvey_mod4p_iterative3x3");
-		// check FFT_algorithms::DIT
-		passed &= DFT_sanity_check(fft_algo_nosimd,&FFT_a::DIT,x,y, "FFT_algorithms<Field,NoSimd>::DIT");
+		fft_algo_nosimd.DIT(y.data());
+
 		// check FFT_algorithms::DIT
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8)
 			passed &= DFT_sanity_check(fft_algo_simd128,&FFT_a128::DIT,x,y, "FFT_algorithms<Field,Simd128>::DIT");
+
 		// check FFT_algorithms::DIT
 		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8)
 			passed &= DFT_sanity_check(fft_algo_simd256,&FFT_a256::DIT,x,y, "FFT_algorithms<Field,Simd256>::DIT");
-		// check 4x1 SSE
-		//result &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative4x1_SSE,x,y, "DIT_Harvey_mod4p_iterative4x1_SSE");
-#ifdef __AVX2__
-		// check 8x1 AVX
-		//result &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative8x1_AVX,x,y, "DIT_Harvey_mod4p_iterative8x1_AVX");
-#endif
-		// check Harvey SSE
-		//		passed &= DFT_sanity_check(MulDom,&FFT_t::template FFT_DIT<Element>,x,y, "DIT_Harvey_SSE");
 		cout<<endl;
 	}
 	return passed;
@@ -222,38 +194,31 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		// Generate random inputs
 		typename Field::RandIter Gen(fld,seed);
 		randomVect(Gen,x);
-		FFT_transform<Field> MulDom(fld,lpts);
-		typedef FFT_transform<Field> FFT_t;
 
-		// check 2x2
-		DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative2x2,lpts, x,     "DIF_Harvey_mod2p_iterative2x2");
-		// check 3x3
-		DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative3x3,lpts, x,     "DIF_Harvey_mod2p_iterative3x3");
-		// check 4x1 SSE
-		//DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x1_SSE,lpts, x, "DIF_Harvey_mod2p_iterative4x1_SSE");
-		// check 4x2 SSE
-		//DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x2_SSE,lpts, x, "DIF_Harvey_mod2p_iterative4x2_SSE");
-#ifdef __AVX2__
-		// check 8x1 AVX
-		//DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative8x1_AVX,lpts, x, "DIF_Harvey_mod2p_iterative8x1_AVX");
-#endif
-		// check Harvey SSE
-		DFT_performance(MulDom,&FFT_t::template FFT_DIF<Element>,lpts, x, "DIF_Harvey_SSE");
+		FFT_init<Field> fft_init (fld, lpts);
+
+		FFT_algorithms<Field,NoSimd<typename Field::Element> > fft_algo_nosimd (fft_init);
+		using FFT_a = FFT_algorithms<Field,NoSimd<typename Field::Element> >;
+
+		FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
+		using FFT_a128 = FFT_algorithms<Field,Simd128<typename Field::Element> >;
+
+		FFT_algorithms<Field,Simd256<typename Field::Element> > fft_algo_simd256 (fft_init);
+		using FFT_a256 = FFT_algorithms<Field,Simd256<typename Field::Element> >;
+
+		DFT_performance(fft_algo_nosimd,&FFT_a::DIF, lpts, x, "FFT_algorithms<Field,NoSimd>::DIF");
+		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8)
+			DFT_performance(fft_algo_simd128,&FFT_a128::DIF, lpts, x, "FFT_algorithms<Field,Simd128>::DIF");
+		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8)
+			DFT_performance(fft_algo_simd256,&FFT_a256::DIF, lpts, x, "FFT_algorithms<Field,Simd256>::DIF");
 		cout<<"---------------------------------------------------------------"<<endl;
-		// check 2x2
-		DFT_performance(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative2x2,lpts, x,     "DIT_Harvey_mod4p_iterative2x2");
-		// check 3x3
-		DFT_performance(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative3x3,lpts, x,     "DIT_Harvey_mod4p_iterative3x3");
-		// check 4x1 SSE
-		//DFT_performance(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative4x1_SSE,lpts, x, "DIT_Harvey_mod4p_iterative4x1_SSE");
-#ifdef __AVX2__
-		// check 8x1 AVX
-		//DFT_performance(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative8x1_AVX,lpts, x, "DIT_Harvey_mod4p_iterative8x1_AVX");
-#endif
-		// check Harvey SSE
-		DFT_performance(MulDom,&FFT_t::template FFT_DIT<Element>,lpts, x, "DIT_Harvey_SSE");
 
 
+		DFT_performance(fft_algo_nosimd,&FFT_a::DIT, lpts, x, "FFT_algorithms<Field,NoSimd>::DIT");
+		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8)
+			DFT_performance(fft_algo_simd128,&FFT_a128::DIT, lpts, x, "FFT_algorithms<Field,Simd128>::DIT");
+		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8)
+			DFT_performance(fft_algo_simd256,&FFT_a256::DIT, lpts, x, "FFT_algorithms<Field,Simd256>::DIT");
 		cout<<endl;
 	}
 }
@@ -292,6 +257,8 @@ int main(int argc, char** argv){
 
 	Givaro::Modular<uint32_t,uint64_t> Fi32(p);
 	cout << "Test : " << ((check_DIF(Fi32,k,seed))?"OK":"KO!!!!") << endl;
+
+//	bench_DIF(Fi32,k,seed);
 
 
 	//Modular<uint16_t,uint32_t>

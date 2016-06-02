@@ -81,6 +81,24 @@ inline Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Sim
 #endif
 }
 
+/* Load operations
+ * call load  (16 bits alignement)        if Simd128
+ * call loadu (no alignement requirement) if Simd256
+*/
+template<class T, class Simd = Simd<T>>
+struct Load {
+	static inline simd_vect load (const T* const p);
+};
+
+template<class T>
+struct Load<T, Simd128<T>> {
+	static inline simd_vect load (const T* const p) {return simd::load(p);}
+};
+
+template<class T>
+struct Load<T, Simd256<T>> {
+	static inline simd_vect load (const T* const p) {return simd::loadu(p);}
+};
 
 /* First swizzle operation
  * [ABCD], [EFGH] => [AECG], [BFDH]
@@ -276,10 +294,10 @@ namespace LinBox {
 										 const vect_t& P, const vect_t& P2) {
 			vect_t V1,V2,V3,V4,W,Wp,T1;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
-			V1 = simd::load(ABCD);
-			V2 = simd::load(EFGH);
-			W  = simd::load(alpha);
-			Wp = simd::load(alphap);
+			V1 = simd::loadu(ABCD);
+			V2 = simd::loadu(EFGH);
+			W  = simd::loadu(alpha);
+			Wp = simd::loadu(alphap);
 
 			// V3 = V1 mod 2P
 			V3 = reduce<simd>(V1, P2);
@@ -305,8 +323,8 @@ namespace LinBox {
 			// First step
 			vect_t V1,V2,V3,V4,T1,T2,T3,T4;
 			// V1=[A B C D], V2=[E F G H]
-			V1 = simd::load(ABCD);
-			V2 = simd::load(EFGH);
+			V1 = simd::loadu(ABCD);
+			V2 = simd::loadu(EFGH);
 
 			// V1=[AECG], V2=[BFDH]
 			swizzle_1<Element, simd>::swizzle(V1,V2,V1,V2);
@@ -351,10 +369,10 @@ namespace LinBox {
 										 const vect_t& P, const vect_t& P2) {
 			vect_t V1,V2,V3,V4,W,Wp,T;
 			// V1=[A B C D], V2=[E F G H]
-			V1 = simd::load(ABCD);
-			V2 = simd::load(EFGH);
-			W  = simd::load(alpha);
-			Wp = simd::load(alphap);
+			V1 = simd::loadu(ABCD);
+			V2 = simd::loadu(EFGH);
+			W  = simd::loadu(alpha);
+			Wp = simd::loadu(alphap);
 			// V3 = V1 + V2 mod
 			V3 = add_mod<simd >(V1,V2,P2);
 			simd::storeu(ABCD,V3);
@@ -371,8 +389,8 @@ namespace LinBox {
 												  const vect_t& P, const vect_t& P2) {
 			vect_t V1,V2,V3,V4,V5,V6,V7;
 			// V1=[A B C D], V2=[E F G H]
-			V1 = simd::load(ABCD);
-			V2 = simd::load(EFGH);
+			V1 = simd::loadu(ABCD);
+			V2 = simd::loadu(EFGH);
 
 			swizzle_2<Element,simd>::swizzle(V3,V4,V1,V2);
 //			// V3=[A E B F], V4=[C G D H]
@@ -434,10 +452,10 @@ namespace LinBox {
 										 const vect_t& P, const vect_t& P2) {
 			vect_t V1,V2,V3,V4,W,Wp,T1;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
-			V1 = simd::load(ABCDEFGH);
-			V2 = simd::load(IJKLMNOP);
-			W  = simd::load(alpha);
-			Wp = simd::load(alphap);
+			V1 = simd::loadu(ABCDEFGH);
+			V2 = simd::loadu(IJKLMNOP);
+			W  = simd::loadu(alpha);
+			Wp = simd::loadu(alphap);
 
 			// V3 = V1 mod 2P
 			V3 = reduce<simd>(V1, P2);
@@ -462,8 +480,8 @@ namespace LinBox {
 			// First 3 steps
 			vect_t V1,V2,V3,V4,V5,V6,V7,Q;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
-			V1 = simd::load(ABCDEFGH);
-			V2 = simd::load(IJKLMNOP);
+			V1 = simd::loadu(ABCDEFGH);
+			V2 = simd::loadu(IJKLMNOP);
 
 			/*********************************************/
 			/* 1st STEP */
@@ -543,10 +561,10 @@ namespace LinBox {
 										 const vect_t& P, const vect_t& P2) {
 			vect_t V1,V2,V3,V4,W,Wp,T;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
-			V1 = simd::load(ABCDEFGH);
-			V2 = simd::load(IJKLMNOP);
-			W  = simd::load(alpha);
-			Wp = simd::load(alphap);
+			V1 = simd::loadu(ABCDEFGH);
+			V2 = simd::loadu(IJKLMNOP);
+			W  = simd::loadu(alpha);
+			Wp = simd::loadu(alphap);
 
 			// V3 = V1 + V2 mod
 
@@ -569,8 +587,8 @@ namespace LinBox {
 			vect_t V1,V2,V3,V4,V5,V6,V7,Q;
 
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
-			V1 = simd::load(ABCDEFGH);
-			V2 = simd::load(IJKLMNOP);
+			V1 = simd::loadu(ABCDEFGH);
+			V2 = simd::loadu(IJKLMNOP);
 
 			/* 1st step */
 			// V3=[A B C D I J K L] V4=[E F G H M N O P]

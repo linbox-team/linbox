@@ -245,12 +245,11 @@ int main(int argc, char** argv){
 	cout<<"prime : "<<p<<endl;
 	cout<<endl;
 	
+	// No need to test on Modular<double> since the implementation will convert to uint32
+	// and use the uint32 implementation
 	Givaro::Modular<uint32_t,uint64_t> Fi(p);
-	Givaro::Modular<double> Fd(p);
 	cout << "Test : " << ((check_DIF(Fi,k,seed))?"OK":"KO!!!!") << endl;
-	cout << "Test : " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
-//	bench_DIF(Fi,k,seed);
-//	bench_DIF(Fd,k,seed);
+	bench_DIF(Fi,k,seed);
 
 
 	return 0;
