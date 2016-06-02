@@ -128,19 +128,19 @@ namespace LinBox {
 		}
 
 		FFT_transform (const Field& fld2, size_t ln2, Element w = 0)
-			: fld (&fld2), n ((1U << ln2)), ln (ln2), pow_w(n - 1), pow_wp(n - 1), _data(n) {
+			: fld (&fld2), n ((1UL << ln2)), ln (ln2), pow_w(n - 1), pow_wp(n - 1), _data(n) {
 			_pl = fld->characteristic();
 			_p  = fld->characteristic();
 
 			linbox_check((_pl >> 29) == 0 ); // 8*p < 2^31 for Harvey's butterflies
 			_dpl = (_pl << 1);
 			//_pinv = 1 / (double) _pl;
-			Givaro::Timer chrono;							
+			Givaro::Timer chrono;
 			
 			if (w == 0){   // find a pseudo 2^lpts-th primitive root of unity
 
 				chrono.start();
-				
+
 				uint64_t _val2p = 0;
 				uint64_t     _m = _pl;
 				_m = _pl - 1;
@@ -157,10 +157,10 @@ namespace LinBox {
 				_w = (uint32_t)w;
 			}
 			chrono.clear();
-			chrono.start();				
+			chrono.start();
 			
 			// compute w^(-1) mod p = w^(2^lpts - 1)
-			_invw = Givaro::powmod(_w, (1<<ln) - 1, _pl);
+			_invw = Givaro::powmod(_w, (1UL<<ln) - 1, _pl);
 			
 			size_t pos = 0;
 			//uint64_t wi = 1;
@@ -175,7 +175,6 @@ namespace LinBox {
 				size_t tpts = 1 << (ln - 1);
 				while (tpts > 0) {
 					for (size_t i = 0; i < tpts; i++, pos++) {
-
 						pow_w[pos] = wi;
 						pow_wp[pos] = ((uint64_t) pow_w[pos] << 32UL) / _pl;
 						wi= (wi*__w)%_pl;
@@ -204,9 +203,8 @@ namespace LinBox {
 				wp_vect = simd::set1(pow_wp[simd::vect_size]);
 				w_vect  = simd::set1(pow_w[simd::vect_size]);
 				pl_vect = simd::set1(_pl);
-				/*				
 				for (; i < ROUND_DOWN(tpts,simd::vect_size);
-				     i+=simd::vect_size,pos+=simd::vect_size) {
+					 i+=simd::vect_size,pos+=simd::vect_size) {
 					pow_w_vect  = simd::loadu((int32_t*)pow_w.data()+pos-simd::vect_size);
 					Q_vect=simd::mulhi(pow_w_vect,wp_vect);
 					pow_w_vect = simd::sub(simd::mullo(pow_w_vect,w_vect),simd::mullo(Q_vect,pl_vect));
@@ -245,7 +243,7 @@ namespace LinBox {
 		
 		void FFT_DIF_Harvey (uint32_t *fft) {
 #ifdef __LINBOX_USE_SIMD
-#ifdef __AVX2__
+#ifdef __LINBOX_USE_AVX2
 			FFT_DIF_Harvey_mod2p_iterative8x1_AVX(fft);
 			if (n>=8){
 				_vect256_t P;
@@ -270,9 +268,9 @@ namespace LinBox {
 			// FALLBACK WHEN NO SIMD VERSION
 			FFT_DIF_Harvey_mod2p_iterative2x2(fft);
 			for (uint64_t i = 0; i < n; i++) {
-				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
+//				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
 				if (fft[i] >= _pl) fft[i] -= _pl;
-			}			
+			}
 #endif 
 		}
 		
@@ -313,7 +311,7 @@ namespace LinBox {
 			for (uint64_t i = 0; i < n; i++) {
 				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
 				if (fft[i] >= _pl) fft[i] -= _pl;
-			}			
+			}
 #endif 
 		}
 		
@@ -329,7 +327,7 @@ namespace LinBox {
 			FFT_DIT_Harvey(fft);
 		}
 		
-		// FFT with conversion from Element to uint32_t		
+		// FFT with conversion from Element to uint32_t
 		template <typename T=Element>
 		typename std::enable_if<!std::is_same<T,uint32_t>::value>::type
 		FFT_DIF (T *fft) {
@@ -350,14 +348,14 @@ namespace LinBox {
 			// 	_data[i]=fft[i];
 			// FFT_DIT_Harvey(&_data[0]);
 			// for(uint64_t i=0;i<n;i++)
-			// 	fft[i]=_data[i];			
+			// 	fft[i]=_data[i];
 			std::copy(fft,fft+n,_data.data());
 			FFT_DIT_Harvey(_data.data());
 			std::copy(_data.begin(),_data.end(),fft);
 
 
 		}
-				
+
 		/*
 		 * Different implementations for the butterfly operations
 		 */
@@ -370,24 +368,24 @@ namespace LinBox {
 		inline void Butterfly_DIF_mod2p_4x1_SSE(uint32_t* ABCD, uint32_t* EFGH,const uint32_t* alpha, const uint32_t* alphap, const __m128i& P, const __m128i& P2);
 		inline void Butterfly_DIF_mod2p_4x1_SSE_laststep(uint32_t* ABCD, uint32_t* EFGH, const __m128i& P2);
 		inline void Butterfly_DIF_mod2p_4x2_SSE(uint32_t* , uint32_t* ,uint32_t* , uint32_t* ,
-							const uint32_t* ,const uint32_t* ,const uint32_t* ,
-							const uint32_t* ,const uint32_t* ,const uint32_t* ,
-							const __m128i& P, const __m128i& P2);
+												const uint32_t* ,const uint32_t* ,const uint32_t* ,
+												const uint32_t* ,const uint32_t* ,const uint32_t* ,
+												const __m128i& P, const __m128i& P2);
 		inline void Butterfly_DIF_mod2p_4x2_SSE_last2step(uint32_t* ABCD, uint32_t* EFGH, const __m128i& W,
-								  const __m128i& Wp, const __m128i& P, const __m128i& P2);
+														  const __m128i& Wp, const __m128i& P, const __m128i& P2);
 		inline void Butterfly_DIT_mod4p_4x1_SSE(uint32_t* ABCD, uint32_t* EFGH, const uint32_t* alpha,
-							const uint32_t* alphap,const __m128i& P, const __m128i& P2);
+												const uint32_t* alphap,const __m128i& P, const __m128i& P2);
 		inline void Butterfly_DIT_mod4p_4x2_SSE_first2step(uint32_t* ABCD, uint32_t* EFGH, const __m128i& W,
-								   const __m128i& Wp, const __m128i& P, const __m128i& P2);
+														   const __m128i& Wp, const __m128i& P, const __m128i& P2);
 #ifdef __LINBOX_USE_AVX2
 		inline void reduce256_modp(uint32_t*, const __m256i&);
 		inline void Butterfly_DIF_mod2p_8x1_AVX(uint32_t* ABCD, uint32_t* EFGH, const uint32_t* alpha,const uint32_t* alphap,const __m256i& P, const __m256i& P2);
 		inline void Butterfly_DIF_mod2p_8x3_AVX_last3step(uint32_t* ABCDEFGH, uint32_t* IJKLMNOP, const __m256i& alpha,const __m256i& alphap,
-								  const __m256i& beta ,const __m256i& betap, const __m256i& P    ,const __m256i& P2);
+														  const __m256i& beta ,const __m256i& betap, const __m256i& P    ,const __m256i& P2);
 		inline void Butterfly_DIT_mod4p_8x1_AVX(uint32_t* ABCD, uint32_t* EFGH, const uint32_t* alpha,const uint32_t* alphap,
-							const __m256i& P, const __m256i& P2);
+												const __m256i& P, const __m256i& P2);
 		inline void Butterfly_DIT_mod4p_8x3_AVX_first3step(uint32_t* ABCDEFGH, uint32_t* IJKLMNOP, const __m256i& alpha,const __m256i& alphap,
-								   const __m256i& beta ,const __m256i& betap, const __m256i& P    ,const __m256i& P2);
+														   const __m256i& beta ,const __m256i& betap, const __m256i& P    ,const __m256i& P2);
 
 
 #endif
@@ -405,13 +403,14 @@ namespace LinBox {
 		void FFT_DIF_Harvey_mod2p_iterative4x1_SSE (uint32_t *fft);
 		void FFT_DIF_Harvey_mod2p_iterative4x2_SSE (uint32_t *fft);
 		void FFT_DIT_Harvey_mod4p_iterative4x1_SSE (uint32_t *fft);
-#ifdef __AVX2__
+#ifdef __LINBOX_USE_AVX2
 		void FFT_DIF_Harvey_mod2p_iterative8x1_AVX (uint32_t *fft);
 		void FFT_DIT_Harvey_mod4p_iterative8x1_AVX (uint32_t *fft);
 #endif
 
-		};
-	} // end of namespace LinBox
+	}; // class FFT_transform
+
+} // end of namespace LinBox
 
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.inl"
 #ifdef __LINBOX_USE_SIMD
