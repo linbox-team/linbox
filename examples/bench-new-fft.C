@@ -258,7 +258,7 @@ int main(int argc, char** argv){
 	Givaro::Modular<uint32_t,uint64_t> Fi32(p);
 	cout << "Test : " << ((check_DIF(Fi32,k,seed))?"OK":"KO!!!!") << endl;
 
-//	bench_DIF(Fi32,k,seed);
+	bench_DIF(Fi32,k,seed);
 
 
 	//Modular<uint16_t,uint32_t>

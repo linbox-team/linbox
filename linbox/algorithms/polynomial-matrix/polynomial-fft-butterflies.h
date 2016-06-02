@@ -81,23 +81,32 @@ inline Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Sim
 #endif
 }
 
-/* Load operations
- * call load  (16 bits alignement)        if Simd128
- * call loadu (no alignement requirement) if Simd256
+/* Memory operations
+ * call load /store  (16 bits alignement)        if Simd128
+ * call loadu/storeu (no alignement requirement) if Simd256
 */
 template<class T, class Simd = Simd<T>>
-struct Load {
-	static inline simd_vect load (const T* const p);
+struct MemoryOp {
+	static inline Simd_vect load (const T* const p);
+	static inline void store(T *p, Simd_vect v);
 };
 
 template<class T>
-struct Load<T, Simd128<T>> {
+struct MemoryOp<T, Simd128<T>> {
+	using simd = Simd128<T>;
+	using simd_vect = typename simd::vect_t;
+
 	static inline simd_vect load (const T* const p) {return simd::load(p);}
+	static inline void store(T *p, simd_vect v) {return simd::store(p, v);}
 };
 
 template<class T>
-struct Load<T, Simd256<T>> {
+struct MemoryOp<T, Simd256<T>> {
+	using simd = Simd256<T>;
+	using simd_vect = typename simd::vect_t;
+
 	static inline simd_vect load (const T* const p) {return simd::loadu(p);}
+	static inline void store(T *p, simd_vect v) {return simd::storeu(p, v);}
 };
 
 /* First swizzle operation
@@ -294,10 +303,10 @@ namespace LinBox {
 										 const vect_t& P, const vect_t& P2) {
 			vect_t V1,V2,V3,V4,W,Wp,T1;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
-			V1 = simd::loadu(ABCD);
-			V2 = simd::loadu(EFGH);
-			W  = simd::loadu(alpha);
-			Wp = simd::loadu(alphap);
+			V1 = MemoryOp<Element,simd>::load(ABCD);
+			V2 = MemoryOp<Element,simd>::load(EFGH);
+			W  = MemoryOp<Element,simd>::load(alpha);
+			Wp = MemoryOp<Element,simd>::load(alphap);
 
 			// V3 = V1 mod 2P
 			V3 = reduce<simd>(V1, P2);
@@ -307,12 +316,12 @@ namespace LinBox {
 
 			// V1 = V3 + V4
 			V1 = simd::add(V3,V4);
-			simd::storeu(ABCD,V1);
+			MemoryOp<Element,simd>::store(ABCD,V1);
 
 			// V2 = V3 - (V4 - 2P)
 			T1 = simd::sub(V4,P2);
 			V2 = simd::sub(V3,T1);
-			simd::storeu(EFGH,V2);
+			MemoryOp<Element,simd>::store(EFGH,V2);
 		}
 
 		inline void Butterfly_DIT_mod4p_firststeps (Element* ABCD, Element* EFGH,
@@ -323,8 +332,8 @@ namespace LinBox {
 			// First step
 			vect_t V1,V2,V3,V4,T1,T2,T3,T4;
 			// V1=[A B C D], V2=[E F G H]
-			V1 = simd::loadu(ABCD);
-			V2 = simd::loadu(EFGH);
+			V1 = MemoryOp<Element,simd>::load(ABCD);
+			V2 = MemoryOp<Element,simd>::load(EFGH);
 
 			// V1=[AECG], V2=[BFDH]
 			swizzle_1<Element, simd>::swizzle(V1,V2,V1,V2);
@@ -360,8 +369,8 @@ namespace LinBox {
 			swizzle_3<Element, simd>::swizzle(V1,V2,T1,T2);
 
 			// Store
-			simd::store(ABCD,V1);
-			simd::store(EFGH,V2);
+			MemoryOp<Element,simd>::store(ABCD,V1);
+			MemoryOp<Element,simd>::store(EFGH,V2);
 		}
 
 		inline void Butterfly_DIF_mod2p (Element* ABCD, Element* EFGH,
@@ -369,18 +378,18 @@ namespace LinBox {
 										 const vect_t& P, const vect_t& P2) {
 			vect_t V1,V2,V3,V4,W,Wp,T;
 			// V1=[A B C D], V2=[E F G H]
-			V1 = simd::loadu(ABCD);
-			V2 = simd::loadu(EFGH);
-			W  = simd::loadu(alpha);
-			Wp = simd::loadu(alphap);
+			V1 = MemoryOp<Element,simd>::load(ABCD);
+			V2 = MemoryOp<Element,simd>::load(EFGH);
+			W  = MemoryOp<Element,simd>::load(alpha);
+			Wp = MemoryOp<Element,simd>::load(alphap);
 			// V3 = V1 + V2 mod
 			V3 = add_mod<simd >(V1,V2,P2);
-			simd::storeu(ABCD,V3);
+			MemoryOp<Element,simd>::store(ABCD,V3);
 			// V4 = (V1+(2P-V2))alpha mod 2P
 			T = simd::sub(V2,P2);
 			V4 = simd::sub(V1,T);
 			T = mul_mod<simd >(V4,W,P,Wp);// T is the result
-			simd::storeu(EFGH,T);
+			MemoryOp<Element,simd>::store(EFGH,T);
 		}
 
 		inline void Butterfly_DIF_mod2p_laststeps(Element* ABCD, Element* EFGH,
@@ -389,8 +398,8 @@ namespace LinBox {
 												  const vect_t& P, const vect_t& P2) {
 			vect_t V1,V2,V3,V4,V5,V6,V7;
 			// V1=[A B C D], V2=[E F G H]
-			V1 = simd::loadu(ABCD);
-			V2 = simd::loadu(EFGH);
+			V1 = MemoryOp<Element,simd>::load(ABCD);
+			V2 = MemoryOp<Element,simd>::load(EFGH);
 
 			swizzle_2<Element,simd>::swizzle(V3,V4,V1,V2);
 //			// V3=[A E B F], V4=[C G D H]
@@ -427,8 +436,8 @@ namespace LinBox {
 			V3 = simd::unpacklo(V1,V2);
 			V4 = simd::unpackhi(V1,V2);
 			// Store
-			simd::store(ABCD,V3);
-			simd::store(EFGH,V4);
+			MemoryOp<Element,simd>::store(ABCD,V3);
+			MemoryOp<Element,simd>::store(EFGH,V4);
 		}
 
 	}; // FFT_butterflies<Field, 4>
@@ -452,10 +461,10 @@ namespace LinBox {
 										 const vect_t& P, const vect_t& P2) {
 			vect_t V1,V2,V3,V4,W,Wp,T1;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
-			V1 = simd::loadu(ABCDEFGH);
-			V2 = simd::loadu(IJKLMNOP);
-			W  = simd::loadu(alpha);
-			Wp = simd::loadu(alphap);
+			V1 = MemoryOp<Element,simd>::load(ABCDEFGH);
+			V2 = MemoryOp<Element,simd>::load(IJKLMNOP);
+			W  = MemoryOp<Element,simd>::load(alpha);
+			Wp = MemoryOp<Element,simd>::load(alphap);
 
 			// V3 = V1 mod 2P
 			V3 = reduce<simd>(V1, P2);
@@ -465,12 +474,12 @@ namespace LinBox {
 
 			// V1 = V3 + V4
 			V1 = simd::add(V3,V4);
-			simd::storeu(ABCDEFGH,V1);
+			MemoryOp<Element,simd>::store(ABCDEFGH,V1);
 
 			// V2 = V3 - (V4 - 2P)
 			T1 = simd::sub(V4,P2);
 			V2 = simd::sub(V3,T1);
-			simd::storeu(IJKLMNOP,V2);
+			MemoryOp<Element,simd>::store(IJKLMNOP,V2);
 		}
 
 		inline void Butterfly_DIT_mod4p_firststeps (Element* ABCDEFGH, Element* IJKLMNOP,
@@ -480,8 +489,8 @@ namespace LinBox {
 			// First 3 steps
 			vect_t V1,V2,V3,V4,V5,V6,V7,Q;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
-			V1 = simd::loadu(ABCDEFGH);
-			V2 = simd::loadu(IJKLMNOP);
+			V1 = MemoryOp<Element,simd>::load(ABCDEFGH);
+			V2 = MemoryOp<Element,simd>::load(IJKLMNOP);
 
 			/*********************************************/
 			/* 1st STEP */
@@ -552,8 +561,8 @@ namespace LinBox {
 			V4 = SimdComp::unpackhi128(V1,V2);
 
 			// Store
-			simd::storeu(ABCDEFGH,V3);
-			simd::storeu(IJKLMNOP,V4);
+			MemoryOp<Element,simd>::store(ABCDEFGH,V3);
+			MemoryOp<Element,simd>::store(IJKLMNOP,V4);
 		}
 
 		inline void Butterfly_DIF_mod2p (Element* ABCDEFGH, Element* IJKLMNOP,
@@ -561,22 +570,22 @@ namespace LinBox {
 										 const vect_t& P, const vect_t& P2) {
 			vect_t V1,V2,V3,V4,W,Wp,T;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
-			V1 = simd::loadu(ABCDEFGH);
-			V2 = simd::loadu(IJKLMNOP);
-			W  = simd::loadu(alpha);
-			Wp = simd::loadu(alphap);
+			V1 = MemoryOp<Element,simd>::load(ABCDEFGH);
+			V2 = MemoryOp<Element,simd>::load(IJKLMNOP);
+			W  = MemoryOp<Element,simd>::load(alpha);
+			Wp = MemoryOp<Element,simd>::load(alphap);
 
 			// V3 = V1 + V2 mod
 
 			V3 = add_mod<simd >(V1,V2,P2);
 
-			simd::storeu(ABCDEFGH,V3);
+			MemoryOp<Element,simd>::store(ABCDEFGH,V3);
 
 			// V4 = (V1+(2P-V2))alpha mod 2P
 			T = simd::sub(V2,P2);
 			V4 = simd::sub(V1,T);
 			T = mul_mod<simd >(V4,W,P,Wp);// T is the result
-			simd::storeu(IJKLMNOP,T);
+			MemoryOp<Element,simd>::store(IJKLMNOP,T);
 		}
 
 		inline void Butterfly_DIF_mod2p_laststeps(Element* ABCDEFGH, Element* IJKLMNOP,
@@ -587,8 +596,8 @@ namespace LinBox {
 			vect_t V1,V2,V3,V4,V5,V6,V7,Q;
 
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
-			V1 = simd::loadu(ABCDEFGH);
-			V2 = simd::loadu(IJKLMNOP);
+			V1 = MemoryOp<Element,simd>::load(ABCDEFGH);
+			V2 = MemoryOp<Element,simd>::load(IJKLMNOP);
 
 			/* 1st step */
 			// V3=[A B C D I J K L] V4=[E F G H M N O P]
@@ -653,8 +662,8 @@ namespace LinBox {
 			V2 = SimdComp::unpackhi128(V3,V4);
 
 			// Store
-			simd::storeu(ABCDEFGH,V1);
-			simd::storeu(IJKLMNOP,V2);
+			MemoryOp<Element,simd>::store(ABCDEFGH,V1);
+			MemoryOp<Element,simd>::store(IJKLMNOP,V2);
 
 
 		}
