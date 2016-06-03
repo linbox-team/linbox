@@ -237,15 +237,15 @@ int main(int argc, char** argv){
 	uint32_t p;
 
 	//Modular<int64_t,uint128_t>
-	bits = 59;
-	Rd = RandomFFTPrime (1<<bits,seed);
-	p = (uint32_t)Rd.randomPrime(l2n);
+//	bits = 59;
+//	Rd = RandomFFTPrime (1<<bits,seed);
+//	p = (uint32_t)Rd.randomPrime(l2n);
 
-	cout<<"prime : "<<p<<endl;
-	cout<<endl;
+//	cout<<"prime : "<<p<<endl;
+//	cout<<endl;
 
-	Givaro::Modular<uint64_t,uint128_t> Fi64(p);
-	cout << "Test : " << ((check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << endl;
+//	Givaro::Modular<uint64_t,uint128_t> Fi64(p);
+//	cout << "Test : " << ((check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << endl;
 
 	//Modular<uint32_t,uint64_t>
 	bits = 28;
@@ -258,7 +258,7 @@ int main(int argc, char** argv){
 	Givaro::Modular<uint32_t,uint64_t> Fi32(p);
 	cout << "Test : " << ((check_DIF(Fi32,k,seed))?"OK":"KO!!!!") << endl;
 
-	bench_DIF(Fi32,k,seed);
+//	bench_DIF(Fi32,k,seed);
 
 
 	//Modular<uint16_t,uint32_t>
