@@ -34,378 +34,9 @@
 #include "linbox/linbox-config.h"
 #include "fflas-ffpack/fflas/fflas_simd.h"
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
-
-#ifndef additional_modular_simd_functions
-#define additional_modular_simd_functions
+#include "linbox/algorithms/polynomial-matrix/simd-additional-functions.h"
 
 namespace LinBox {
-
-#define Simd_vect typename Simd::vect_t
-
-	template <class Simd>
-	inline Simd_vect reduce (const Simd_vect& a, const Simd_vect& p) {
-		Simd_vect t = Simd::greater(p,a);
-		return Simd::sub(a, Simd::vandnot(p,t));
-	}
-
-	template <class Simd>
-	inline Simd_vect add_mod (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p) {
-		Simd_vect c = Simd::add(a,b);
-		return reduce<Simd>(c, p);
-	}
-
-	template <class Simd>
-	inline Simd_vect mul_mod (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p, const Simd_vect& bp) {
-		Simd_vect q = Simd::mulhi(a,bp);
-		Simd_vect c = Simd::mullo(a,b);
-		Simd_vect t = Simd::mullo(q,p);
-		return Simd::sub(c,t);
-	}
-
-	/*
- * a = [a0, a0, a2, a2, ...]
- * b = [?, b0, ?, b2, ...] with bp its shoup mul_mod precomputation [b0p ? b2p ?, ... ]
- * Return [?, (a0*b0) mod p, ?, (a2*b2) mod p, ... ]
- */
-	template <class Simd, class SimdCompute_t>
-	inline Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p, const Simd_vect& bp) {
-#if 1
-		return mul_mod<Simd>(a, b , p, bp);
-#else
-		// T2 = a * bp mod 2^64 (for Modular<Element = uint32, Compute_t = uint64>)
-		// bp = [b0p ? b2p ?, ... ] is enough
-		Simd_vect T2 = SimdCompute_t::mulx(a,bp);
-		Simd_vect T3 = Simd::mullo(T2,p);
-		// At this point T3= [? quo(D)*p ? quo(H)*p] mod 2^32
-		// T4 = [D D H H] * [?, b0, ?, b2] mod 2^32
-		T2 = Simd::mullo(a,b);
-		return Simd::sub(T2,T3);
-#endif
-	}
-
-	/* Memory operations
-	*/
-	template<class T, class Simd = Simd<T>>
-	struct MemoryOp {
-
-		// Call load /store  (16 bits alignement)        if Simd128
-		static inline Simd_vect load (const T* const p);
-
-		// Call loadu/storeu (no alignement requirement) if Simd256
-		static inline void store(T *p, Simd_vect v);
-
-		static inline Simd_vect unpacklo2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-
-		static inline Simd_vect unpackhi2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-
-		static inline Simd_vect unpacklo_twice2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo_twice4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo_twice8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo_twice16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-
-		static inline Simd_vect unpackhi_twice2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi_twice4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi_twice8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi_twice16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-
-		static inline Simd_vect unpacklohi_twice2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi_twice4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi_twice8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi_twice16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-
-		static inline Simd_vect unpacklohi2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-
-	}; // MemoryOp
-
-	template<class T>
-	struct MemoryOp<T, Simd128<T>> {
-		using simd = Simd128<T>;
-		using simd_vect = typename simd::vect_t;
-
-		/**************/
-		/* load/store */
-		/**************/
-		static inline simd_vect load (const T* const p) {return simd::load(p);}
-		static inline void store(T *p, simd_vect v) {return simd::store(p, v);}
-
-		/********************/
-		/* unpacklo         */
-		/********************/
-		static inline simd_vect unpacklo2 (const simd_vect& a, const simd_vect& b) {return Simd128<uint64_t>::unpacklo(a,b); }
-		static inline simd_vect unpacklo4 (const simd_vect& a, const simd_vect& b) {return Simd128<uint32_t>::unpacklo(a,b); }
-		static inline simd_vect unpacklo8 (const simd_vect& a, const simd_vect& b) {return Simd128<uint16_t>::unpacklo(a,b); }
-
-		/********************/
-		/* unpackhi         */
-		/********************/
-		static inline simd_vect unpackhi2 (const simd_vect& a, const simd_vect& b) {return Simd128<uint64_t>::unpackhi(a,b); }
-		static inline simd_vect unpackhi4 (const simd_vect& a, const simd_vect& b) {return Simd128<uint32_t>::unpackhi(a,b); }
-		static inline simd_vect unpackhi8 (const simd_vect& a, const simd_vect& b) {return Simd128<uint16_t>::unpackhi(a,b); }
-
-		/**************/
-		/* unpacklohi */
-		/**************/
-		static inline void unpacklohi2 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			using simd128_64 = Simd128<uint64_t>;
-			s1 = simd128_64::unpacklo(a, b);
-			s2 = simd128_64::unpackhi(a, b);
-		}
-
-		static inline void unpacklohi4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			using simd128_32 = Simd128<uint32_t>;
-			s1 = simd128_32::unpacklo(a, b);
-			s2 = simd128_32::unpackhi(a, b);
-		}
-
-		static inline void unpacklohi8 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			using simd128_16 = Simd128<uint16_t>;
-			s1 = simd128_16::unpacklo(a, b);
-			s2 = simd128_16::unpackhi(a, b);
-		}
-
-		/********************/
-		/* unpacklo_twice   */
-		/********************/
-		static inline simd_vect unpacklo_twice2 (const simd_vect& a, const simd_vect& b) { return unpacklo2(a,b); }
-
-		static inline simd_vect unpacklo_twice4 (const simd_vect& a, const simd_vect& b) {
-			using simd128_32 = Simd128<uint32_t>;
-			simd_vect a1 = simd128_32::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd128_32::template shuffle<0xD8>(b);
-			return simd128_32::unpacklo(a1,b1);
-		}
-
-		static inline simd_vect unpacklo_twice8 (const simd_vect& a, const simd_vect& b) {
-			using simd128_16 = Simd128<uint16_t>;
-			using simd128_32 = Simd128<uint32_t>;
-			simd_vect a1 = simd128_32::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd128_32::template shuffle<0xD8>(b);
-			return simd128_16::unpacklo(a1,b1);
-		}
-
-		/********************/
-		/* unpackhi_twice   */
-		/********************/
-		static inline simd_vect unpackhi_twice2 (const simd_vect& a, const simd_vect& b) { return unpackhi2(a,b); }
-
-		static inline simd_vect unpackhi_twice4 (const simd_vect& a, const simd_vect& b) {
-			using simd128_32 = Simd128<uint32_t>;
-			simd_vect a1 = simd128_32::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd128_32::template shuffle<0xD8>(b);
-			return simd128_32::unpackhi(a1,b1);
-		}
-
-		static inline simd_vect unpackhi_twice8 (const simd_vect& a, const simd_vect& b) {
-			using simd128_16 = Simd128<uint16_t>;
-			using simd128_32 = Simd128<uint32_t>;
-			simd_vect a1 = simd128_32::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd128_32::template shuffle<0xD8>(b);
-			return simd128_16::unpackhi(a1,b1);
-		}
-
-		/********************/
-		/* unpacklohi_twice */
-		/********************/
-		static inline void unpacklohi_twice2 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			unpacklohi2(s1, s2, a, b);
-		}
-
-		static inline void unpacklohi_twice4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			using simd128_32 = Simd128<uint32_t>;
-			simd_vect a1 = simd128_32::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd128_32::template shuffle<0xD8>(b);
-			s1 = simd128_32::unpacklo(a1,b1);
-			s2 = simd128_32::unpackhi(a1,b1);
-		}
-
-		static inline void unpacklohi_twice8 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			using simd128_16 = Simd128<uint16_t>;
-			using simd128_32 = Simd128<uint32_t>;
-			simd_vect a1 = simd128_32::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd128_32::template shuffle<0xD8>(b);
-			s1 = simd128_16::unpacklo(a1,b1);
-			s2 = simd128_16::unpackhi(a1,b1);
-		}
-	}; // MemoryOp<T, Simd128<T>>
-
-
-	template<class T>
-	struct MemoryOp<T, Simd256<T>> {
-		using simd = Simd256<T>;
-		using simd_vect = typename simd::vect_t;
-
-		/**************/
-		/* load/store */
-		/**************/
-		static inline simd_vect load (const T* const p) {return simd::loadu(p);}
-		static inline void store(T *p, simd_vect v) {return simd::storeu(p, v);}
-
-		/********************/
-		/* unpacklo         */
-		/********************/
-		static inline simd_vect unpacklo2 (const simd_vect& a, const simd_vect& b) {return simd::unpacklo128(a, b); }
-
-		static inline simd_vect unpacklo4 (const simd_vect& a, const simd_vect& b) {
-			using simd256_64 = Simd256<uint64_t>;
-			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
-			return simd256_64::unpacklo_twice(a1,b1);
-		}
-
-		static inline simd_vect unpacklo8 (const simd_vect& a, const simd_vect& b) {
-			using simd256_32 = Simd256<uint32_t>;
-			using simd256_64 = Simd256<uint64_t>;
-			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
-			return simd256_32::unpacklo_twice(a1, b1);
-		}
-
-		static inline simd_vect unpacklo16 (const simd_vect& a, const simd_vect& b) {
-			using simd256_16 = Simd256<uint16_t>;
-			using simd256_64 = Simd256<uint64_t>;
-			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
-			return simd256_16::unpacklo_twice(a1, b1);
-		}
-
-		/********************/
-		/* unpackhi         */
-		/********************/
-		static inline simd_vect unpackhi2 (const simd_vect& a, const simd_vect& b) {return simd::unpackhi128(a, b); }
-
-		static inline simd_vect unpackhi4 (const simd_vect& a, const simd_vect& b) {
-			using simd256_64 = Simd256<uint64_t>;
-			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
-			return simd256_64::unpackhi_twice(a1,b1);
-		}
-
-		static inline simd_vect unpackhi8 (const simd_vect& a, const simd_vect& b) {
-			using simd256_32 = Simd256<uint32_t>;
-			using simd256_64 = Simd256<uint64_t>;
-			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
-			return simd256_32::unpackhi_twice(a1, b1);
-		}
-
-		static inline simd_vect unpackhi16 (const simd_vect& a, const simd_vect& b) {
-			using simd256_16 = Simd256<uint16_t>;
-			using simd256_64 = Simd256<uint64_t>;
-			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
-			return simd256_16::unpackhi_twice(a1, b1);
-		}
-
-		/**************/
-		/* unpacklohi */
-		/**************/
-		static inline void unpacklohi2 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			s1 = simd::unpacklo128(a, b);
-			s2 = simd::unpackhi128(a, b);
-		}
-
-		static inline void unpacklohi4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			using simd256_64 = Simd256<uint64_t>;
-			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
-			s1 = simd256_64::unpacklo_twice(a1, b1);
-			s2 = simd256_64::unpackhi_twice(a1, b1);
-		}
-
-		static inline void unpacklohi8 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			using simd256_32 = Simd256<uint32_t>;
-			using simd256_64 = Simd256<uint64_t>;
-			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
-			s1 = simd256_32::unpacklo_twice(a1, b1);
-			s2 = simd256_32::unpackhi_twice(a1, b1);
-		}
-
-		static inline void unpacklohi16 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			using simd256_16 = Simd256<uint16_t>;
-			using simd256_64 = Simd256<uint64_t>;
-			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
-			s1 = simd256_16::unpacklo_twice(a1, b1);
-			s2 = simd256_16::unpackhi_twice(a1, b1);
-		}
-
-		/********************/
-		/* unpacklo_twice   */
-		/********************/
-		static inline simd_vect unpacklo_twice2 (const simd_vect& a, const simd_vect& b) { return unpacklo2(a,b); }
-
-		static inline simd_vect unpacklo_twice4 (const simd_vect& a, const simd_vect& b) { return Simd256<uint64_t>::unpacklo_twice(a, b); }
-
-		static inline simd_vect unpacklo_twice8 (const simd_vect& a, const simd_vect& b) { return Simd256<uint32_t>::unpacklo_twice(a, b); }
-
-		static inline simd_vect unpacklo_twice16 (const simd_vect& a, const simd_vect& b) { return Simd256<uint16_t>::unpacklo_twice(a, b); }
-
-		/********************/
-		/* unpackhi_twice   */
-		/********************/
-		static inline simd_vect unpackhi_twice2 (const simd_vect& a, const simd_vect& b) { return unpackhi2(a,b); }
-
-		static inline simd_vect unpackhi_twice4 (const simd_vect& a, const simd_vect& b) { return Simd256<uint64_t>::unpackhi_twice(a, b); }
-
-		static inline simd_vect unpackhi_twice8 (const simd_vect& a, const simd_vect& b) { return Simd256<uint32_t>::unpackhi_twice(a, b); }
-
-		static inline simd_vect unpackhi_twice16 (const simd_vect& a, const simd_vect& b) { return Simd256<uint16_t>::unpackhi_twice(a, b); }
-
-		/********************/
-		/* unpacklohi_twice */
-		/********************/
-		static inline void unpacklohi_twice2 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			unpacklohi2(s1, s2, a, b);
-		}
-
-		static inline void unpacklohi_twice4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			using simd256_64 = Simd256<uint64_t>;
-			s1 = simd256_64::unpacklo_twice(a, b);
-			s2 = simd256_64::unpackhi_twice(a, b);
-		}
-
-		static inline void unpacklohi_twice8 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			using simd256_32 = Simd256<uint32_t>;
-			s1 = simd256_32::unpacklo_twice(a, b);
-			s2 = simd256_32::unpackhi_twice(a, b);
-		}
-
-		static inline void unpacklohi_twice16 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			using simd256_16 = Simd256<uint16_t>;
-			s1 = simd256_16::unpacklo_twice(a, b);
-			s2 = simd256_16::unpackhi_twice(a, b);
-		}
-
-	};// MemoryOp<T, Simd256<T>>
-
-#undef Simd_vect
-#endif
-
-	template <typename simd, typename Field>
-	struct SimdCompute_t {};
-
-	template <typename Field>
-	struct SimdCompute_t<Simd128<typename Field::Element>, Field> {
-		using Compute_t = Simd128<typename Field::Compute_t>;
-	};
-
-	template <typename Field>
-	struct SimdCompute_t<Simd256<typename Field::Element>, Field> {
-		using Compute_t = Simd256<typename Field::Compute_t>;
-	};
-
-
-	// TODO : template by the number of steps
 
 	template<typename Field, typename simd = Simd<typename Field::Element>, uint8_t byn = simd::vect_size>
 	class FFT_butterflies : public FFT_init<Field> {
@@ -535,7 +166,9 @@ namespace LinBox {
 
 			T2 = mul_mod_half<simd, SimdComp>(T1, W, P, Wp);
 
-			T2 = simd::template shuffle<0xDD>(T2);
+			T2 = MemoryOp<Element,simd>::shuffle4_DD (T2);
+			//T2 = simd::template shuffle<0xDD>(T2);
+
 			//At this point, T2 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
 
 			// At this time I have V3=[A E C G], V4=[B F ? ?], T2=[? ? D H]
@@ -600,8 +233,10 @@ namespace LinBox {
 
 			// V3 = [* D * H]
 			V3 = mul_mod_half<simd, SimdComp>(V4, W, P, Wp);
+
 			//At this point, V3 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
-			V3 = simd::template shuffle<0xDD>(V3); // 0xDD = [3 1 3 1]_base4
+			V3 = MemoryOp<Element,simd>::shuffle4_DD (V3);
+			//V3 = simd::template shuffle<0xDD>(V3); // 0xDD = [3 1 3 1]_base4
 
 			// At this time I have V1=[A E B F], V2=[C G ? ?], V3=[? ? D H]
 			// I need V3 = [A C E G], V4 = [B D F H]
@@ -701,7 +336,8 @@ namespace LinBox {
 			V3 = mul_mod_half<simd,SimdComp>(V5,alpha,P,alphap);
 
 			// V7 = [D L D L H P H P]
-			V7 = simd::template shuffle_twice<0xDD>(V3); // 0xDD = 221 = [3 1 3 1]_base4
+			V7 = MemoryOp<Element,simd>::shuffletwice8_DD(V3);
+			//V7 = simd::template shuffle_twice<0xDD>(V3); // 0xDD = 221 = [3 1 3 1]_base4
 
 			// V3= [A B I J E F M N], V4=[C D K L G H O P]
 			V3 = MemoryOp<Element,simd>::unpacklo_twice8(V1,V2);
@@ -811,14 +447,15 @@ namespace LinBox {
 			// V3 = [ * D * H * L * P]
 			V3 = mul_mod_half<simd,SimdComp>(V4,beta,P,betap);
 
-			// V2=[* * D H * * L P]
-			V2 = simd::template shuffle_twice<0xDD>(V3); // 0xDD = 221 = [3 1 3 1]_base4
+			// V2=[D H D H L P L P] but only [* * D H * * L P] matters
+			V2 = MemoryOp<Element,simd>::shuffletwice8_DD(V3);
+			//V2 = simd::template shuffle_twice<0xDD>(V3); // 0xDD = 221 = [3 1 3 1]_base4
 
 			/* 3rd step */
 			// At this time I have V1=[A B E F I J M N], V7=[C G * * K O * *], V2=[* * D H * * L P]
 			// I need V3 = [A C E G I K M O], V4=[B D F H J L N P]
-			V3 = simd::unpacklo_twice(V1,V7);
-			V4 = simd::unpackhi_twice(V1,V2);
+			V3 = MemoryOp<Element,simd>::unpacklo_twice8(V1,V7);
+			V4 = MemoryOp<Element,simd>::unpackhi_twice8(V1,V2);
 
 			// V1 = V3 + V4 mod 2P
 			V1 = add_mod<simd >(V3,V4,P2);

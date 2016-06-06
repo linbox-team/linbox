@@ -32,6 +32,7 @@
 #include <iostream>
 #include "linbox/linbox-config.h"
 #include "fflas-ffpack/fflas/fflas_simd.h"
+#include "linbox/algorithms/polynomial-matrix/simd-additional-functions.h"
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-butterflies.h"
 
@@ -255,12 +256,12 @@ namespace LinBox {
 				tmp[1]=tmp[5]=tab_w[1];
 				tmp[2]=tmp[6]=tab_w[2];
 				tmp[3]=tmp[7]=tab_w[3];
-				alpha = simd::loadu(tmp);
+				alpha = MemoryOp<Element,simd>::load(tmp);
 				tmp[0]=tmp[4]=tab_wp[0];
 				tmp[1]=tmp[5]=tab_wp[1];
 				tmp[2]=tmp[6]=tab_wp[2];
 				tmp[3]=tmp[7]=tab_wp[3];
-				alphap = simd::loadu(tmp);
+				alphap = MemoryOp<Element,simd>::load(tmp);
 				beta = simd::set1(tab_w [5]);
 				betap = simd::set1(tab_wp [5]);
 
@@ -299,12 +300,12 @@ namespace LinBox {
 				tmp[1]=tmp[5]=(this->pow_w)[n-7];
 				tmp[2]=tmp[6]=(this->pow_w)[n-6];
 				tmp[3]=tmp[7]=(this->pow_w)[n-5];
-				beta = simd::loadu(tmp);
+				beta = MemoryOp<Element,simd>::load(tmp);
 				tmp[0]=tmp[4]=(this->pow_wp)[n-8];
 				tmp[1]=tmp[5]=(this->pow_wp)[n-7];
 				tmp[2]=tmp[6]=(this->pow_wp)[n-6];
 				tmp[3]=tmp[7]=(this->pow_wp)[n-5];
-				betap = simd::loadu(tmp);
+				betap = MemoryOp<Element,simd>::load(tmp);
 				for (uint64_t i = 0; i < n; i+=16)
 					this->Butterfly_DIT_mod4p_firststeps(&fft[i],&fft[i+8],alpha,alphap,beta,betap,P,P2);
 				Element * tab_w = &(this->pow_w) [n-16];

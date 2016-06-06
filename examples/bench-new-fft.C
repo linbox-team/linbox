@@ -111,11 +111,10 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		FFT_algorithms<Field,NoSimd<typename Field::Element> > fft_algo_nosimd (fft_init);
 //		using FFT_a = FFT_algorithms<Field,NoSimd<typename Field::Element> >;
 
-		FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
-		using FFT_a128 = FFT_algorithms<Field,Simd128<typename Field::Element> >;
 
-		FFT_algorithms<Field,Simd256<typename Field::Element> > fft_algo_simd256 (fft_init);
-		using FFT_a256 = FFT_algorithms<Field,Simd256<typename Field::Element> >;
+
+
+
 
 
 		/* CHECK DIF */
@@ -123,12 +122,18 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		fft_algo_nosimd.DIF(y.data());
 
 		// check FFT_algorithms::DIF
-		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8)
+		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){
+			FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
+			using FFT_a128 = FFT_algorithms<Field,Simd128<typename Field::Element> >;
 			passed &= DFT_sanity_check(fft_algo_simd128,&FFT_a128::DIF,x,y, "FFT_algorithms<Field,Simd128>::DIF");
+		}
 
 		// check FFT_algorithms::DIF
-		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8)
+		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8){
+			FFT_algorithms<Field,Simd256<typename Field::Element> > fft_algo_simd256 (fft_init);
+			using FFT_a256 = FFT_algorithms<Field,Simd256<typename Field::Element> >;
 			passed &= DFT_sanity_check(fft_algo_simd256,&FFT_a256::DIF,x,y, "FFT_algorithms<Field,Simd256>::DIF");
+		}
 		cout<<"---------------------------------------------------------------"<<endl;
 
 		/* CHECK DIT */
@@ -137,12 +142,19 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		fft_algo_nosimd.DIT(y.data());
 
 		// check FFT_algorithms::DIT
-		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8)
+		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){
+			FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
+			using FFT_a128 = FFT_algorithms<Field,Simd128<typename Field::Element> >;
 			passed &= DFT_sanity_check(fft_algo_simd128,&FFT_a128::DIT,x,y, "FFT_algorithms<Field,Simd128>::DIT");
+		}
 
 		// check FFT_algorithms::DIT
-		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8)
+		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8){
+			FFT_algorithms<Field,Simd256<typename Field::Element> > fft_algo_simd256 (fft_init);
+			using FFT_a256 = FFT_algorithms<Field,Simd256<typename Field::Element> >;
 			passed &= DFT_sanity_check(fft_algo_simd256,&FFT_a256::DIT,x,y, "FFT_algorithms<Field,Simd256>::DIT");
+		}
+
 		cout<<endl;
 	}
 	return passed;
@@ -245,7 +257,7 @@ int main(int argc, char** argv){
 //	cout<<endl;
 
 //	Givaro::Modular<uint64_t,uint128_t> Fi64(p);
-//	cout << "Test : " << ((check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << endl;
+//	cout << "Test Modular<int64_t,uint128_t> : " << ((check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << endl;
 
 	//Modular<uint32_t,uint64_t>
 	bits = 28;
@@ -256,21 +268,22 @@ int main(int argc, char** argv){
 	cout<<endl;
 
 	Givaro::Modular<uint32_t,uint64_t> Fi32(p);
-	cout << "Test : " << ((check_DIF(Fi32,k,seed))?"OK":"KO!!!!") << endl;
+	cout << "Test Modular<uint32_t,uint64_t>: " << ((check_DIF(Fi32,k,seed))?"OK":"KO!!!!") << endl;
 
 //	bench_DIF(Fi32,k,seed);
 
 
 	//Modular<uint16_t,uint32_t>
-//	bits = 12;
-//	Rd = RandomFFTPrime (1<<bits,seed);
-//	p = (uint32_t)Rd.randomPrime(l2n);
+	bits = 12;
+	k = l2n = 8;
+	Rd = RandomFFTPrime (1<<bits,seed);
+	p = (uint32_t)Rd.randomPrime(l2n);
 
-//	cout<<"prime : "<<p<<endl;
-//	cout<<endl;
+	cout<<"prime : "<<p<<endl;
+	cout<<endl;
 
-//	Givaro::Modular<uint16_t,uint32_t> Fi16(p);
-//	cout << "Test : " << ((check_DIF(Fi16,k,seed))?"OK":"KO!!!!") << endl;
+	Givaro::Modular<uint16_t,uint32_t> Fi16(p);
+	cout << "Test Modular<uint16_t,uint32_t> : " << ((check_DIF(Fi16,k,seed))?"OK":"KO!!!!") << endl;
 
 
 	// Bench FFT
