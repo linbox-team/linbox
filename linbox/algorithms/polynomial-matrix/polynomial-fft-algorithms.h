@@ -132,8 +132,8 @@ namespace LinBox {
 			// Last two steps
 			if (n >= 8) {
 				vect_t W,Wp;
-				W = simd::set1 ((int)tab_w [1]);
-				Wp= simd::set1 ((int)tab_wp[1]);
+				W = simd::set1 (tab_w [1]);
+				Wp= simd::set1 (tab_wp[1]);
 
 				for (size_t i = 0; i < f; i+=2)
 #define A0 &fft[0] +  (i << 2)
@@ -163,8 +163,8 @@ namespace LinBox {
 			// First two steps
 			if (n >= 8) {
 				vect_t W,Wp;
-				W = simd::set1 ((int)(this->pow_w) [n-3]);
-				Wp= simd::set1 ((int)(this->pow_wp)[n-3]);
+				W = simd::set1 ((this->pow_w) [n-3]);
+				Wp= simd::set1 ((this->pow_wp)[n-3]);
 
 				for (size_t i = 0; i < n; i+=8)
 					this->Butterfly_DIT_mod4p_firststeps(&fft[i],&fft[i+4],W,Wp,P,P2);

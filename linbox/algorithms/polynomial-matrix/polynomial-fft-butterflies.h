@@ -75,6 +75,7 @@ namespace LinBox {
 
 		inline void Butterfly_DIF_mod2p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
 			//std::cout<<A<<" $$ "<<B<<"("<<alpha<<","<<alphap<<" ) -> ";
+			using Compute_t = typename Field::Compute_t;
 			// Harvey's algorithm
 			// 0 <= A,B < 2*p, p < 2^32 / 4
 			// alphap = Floor(alpha * 2^ 32 / p])
@@ -167,7 +168,7 @@ namespace LinBox {
 
 			T2 = mul_mod_half<simd, SimdComp>(T1, W, P, Wp);
 
-			T2 = MemoryOp<Element,simd>::shuffle4_DD (T2);
+			T2 = simd::template shuffle<0xDD>(T2);
 			//T2 = simd::template shuffle<0xDD>(T2);
 
 			//At this point, T2 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
@@ -206,6 +207,7 @@ namespace LinBox {
 			// V4 = (V1+(2P-V2))alpha mod 2P
 			T = simd::sub(V2,P2);
 			V4 = simd::sub(V1,T);
+
 			T = mul_mod<simd >(V4,W,P,Wp);// T is the result
 			MemoryOp<Element,simd>::store(EFGH,T);
 		}
@@ -219,6 +221,7 @@ namespace LinBox {
 			V1 = MemoryOp<Element,simd>::load(ABCD);
 			V2 = MemoryOp<Element,simd>::load(EFGH);
 
+			/* 1st step */
 			// V3=[A E B F], V4=[C G D H]
 			MemoryOp<Element,simd>::unpacklohi4(V3,V4,V1,V2);
 
@@ -236,7 +239,7 @@ namespace LinBox {
 			V3 = mul_mod_half<simd, SimdComp>(V4, W, P, Wp);
 
 			//At this point, V3 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
-			V3 = MemoryOp<Element,simd>::shuffle4_DD (V3);
+			V3 = simd::template shuffle<0xDD>(V3);
 			//V3 = simd::template shuffle<0xDD>(V3); // 0xDD = [3 1 3 1]_base4
 
 			// At this time I have V1=[A E B F], V2=[C G ? ?], V3=[? ? D H]
@@ -245,6 +248,7 @@ namespace LinBox {
 			V4 = MemoryOp<Element,simd>::unpackhi4(V1,V3);
 			V3 = MemoryOp<Element,simd>::unpacklo4(V1,V2);
 
+			/* 2nd step */
 			// V1 = V3 + V4 mod 2P
 			V1 = add_mod<simd >(V3,V4,P2);
 			// V2 = V3 + (2P - V4) mod 2P

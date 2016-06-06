@@ -94,7 +94,6 @@ namespace LinBox {
 		// Call loadu/storeu (no alignement requirement) if Simd256
 		static inline void store(T *p, Simd_vect v);
 
-		static inline Simd_vect shuffle4_DD (Simd_vect& s1);
 		static inline Simd_vect shuffletwice8_DD (Simd_vect& s1);
 
 		static inline Simd_vect unpacklo2 (const Simd_vect& a, const Simd_vect& b);
@@ -145,11 +144,6 @@ namespace LinBox {
 		/*********************/
 		/* Specific shuffles */
 		/*********************/
-		static inline simd_vect shuffle4_DD (simd_vect& s1) {
-			using simd128_32 = Simd128<uint32_t>;
-			return simd128_32::template shuffle<0xDD>(s1);
-		}
-
 		static inline simd_vect shuffletwice8_DD (simd_vect& s1) {
 			using simd128_16 = Simd128<uint16_t>;
 			using simd128_64 = Simd128<uint64_t>;
@@ -272,15 +266,6 @@ namespace LinBox {
 		/*********************/
 		/* Specific shuffles */
 		/*********************/
-		static inline simd_vect shuffle4_DD (simd_vect& s1) {
-			using simd256_64 = Simd256<uint64_t>;
-#if 0
-			return simd256_64::template shuffle<0xDD>(s1);
-#else
-			return simd256_64::unpackhi_twice(s1);
-#endif
-		}
-
 		static inline simd_vect shuffletwice8_DD (simd_vect& s1) {
 			using simd256_32 = Simd256<uint32_t>;
 			return simd256_32::template shuffle_twice<0xDD>(s1);
