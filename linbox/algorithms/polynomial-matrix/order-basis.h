@@ -110,7 +110,7 @@ namespace LinBox {
                 void reset() {_count=0;_val=0;}
         };
 
-        template<class Field, class ET=EarlyTerm<-1> >
+		template<class Field, class ET=EarlyTerm<(size_t) -1> >
         class OrderBasis {
         public:
                 typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
@@ -776,7 +776,7 @@ namespace LinBox {
         
         typedef Givaro::Modular<RecInt::ruint128,RecInt::ruint256>   MYRECINT;
         template<>
-        size_t OrderBasis<MYRECINT,EarlyTerm<-1> >::M_Basis(PolynomialMatrix<PMType::polfirst,PMStorage::plain, MYRECINT>            &sigma,
+		size_t OrderBasis<MYRECINT,EarlyTerm<(size_t) -1> >::M_Basis(PolynomialMatrix<PMType::polfirst,PMStorage::plain, MYRECINT>            &sigma,
                                                             const PolynomialMatrix<PMType::polfirst,PMStorage::plain, MYRECINT>      &serie,
                                                             size_t                 order,
                                                             std::vector<size_t>   &shift)
