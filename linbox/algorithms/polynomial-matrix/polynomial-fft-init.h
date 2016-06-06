@@ -91,9 +91,9 @@ namespace LinBox {
 	template <class Field>
 	class FFT_init {
 	public:
-		typedef typename Field::Element Element;
-		typedef typename Field::Compute_t Compute_t;
-		typedef typename Field::Residu_t Residu_t;
+		using Element = typename Field::Element;
+		using Compute_t = typename Field::Compute_t;
+		using Residu_t = typename Field::Residu_t;
 
 		const Field                *fld;
 		Residu_t              _pl, _dpl;
@@ -188,8 +188,10 @@ namespace LinBox {
 			Element wi = 1;
 			Element __w = _w;
 			size_t _logp = Givaro::Integer(_pl).bitsize() - 1;
-			uint32_t BAR= (Givaro::Integer(1)<<(32+_logp))/Givaro::Integer(_pl);
-			uint32_t Q;
+
+			// Precomp Quo(2^32,p)
+			Element BAR= (Givaro::Integer(1)<<(8*sizeof(Element)+_logp))/Givaro::Integer(_pl);
+			Element Q;
 			//cout<<"log Bar: "<<Integer(BAR).bitsize()<<endl;
 			if (ln>0){
 //				using simd=Simd<uint32_t>;
@@ -201,8 +203,8 @@ namespace LinBox {
 				// Precompute pow_wp[1] for faster mult by pow_w[1]
 				for( ;i<std::min((size_t) 2, tpts);i++,pos++){
 					pow_w[pos] = wi;
-					pow_wp[pos] = ((uint64_t) pow_w[pos] << 32UL) / _pl;
-					wi= ((uint64_t)wi*__w)%_pl;
+					pow_wp[pos] = ((Compute_t) pow_w[pos] << (8*sizeof(Element))) / _pl;
+					wi= ((Compute_t)wi*__w)%_pl;
 				}
 				/*
 				vect_t wp_vect, Q_vect,BAR_vect,w_vect,pow_w_vect,pow_wp_vect, pl_vect;
@@ -224,9 +226,9 @@ namespace LinBox {
 				// Use pow_wp[1] for speed-up mult by pow_w[1]
 				for( ;i<tpts;i++,pos++){
 					pow_w[pos] = wi;
-					pow_wp[pos]= (((uint64_t)wi*BAR)>>_logp);
-					Q= ((uint64_t)wi*pow_wp[1])>>32;
-					wi= (uint32_t)(wi*__w - Q*_pl);
+					pow_wp[pos]= (((Compute_t)wi*BAR)>>_logp);
+					Q= ((Compute_t)wi*pow_wp[1])>>(8*sizeof(Element));
+					wi= (Element)(wi*__w - Q*_pl);
 					wi-=(wi>=_pl?_pl:0);
 				}
 

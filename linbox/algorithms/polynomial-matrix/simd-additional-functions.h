@@ -67,7 +67,7 @@ namespace LinBox {
  */
 	template <class Simd, class SimdCompute_t>
 	inline Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p, const Simd_vect& bp) {
-#if 1
+#if 0
 		return mul_mod<Simd>(a, b , p, bp);
 #else
 		// T2 = a * bp mod 2^64 (for Modular<Element = uint32, Compute_t = uint64>)
@@ -97,35 +97,35 @@ namespace LinBox {
 		static inline Simd_vect shuffle4_DD (Simd_vect& s1);
 		static inline Simd_vect shuffletwice8_DD (Simd_vect& s1);
 
-		static inline Simd_vect unpacklo2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklo2 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklo4 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklo8 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklo16 (const Simd_vect& a, const Simd_vect& b);
 
-		static inline Simd_vect unpackhi2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpackhi2 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpackhi4 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpackhi8 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpackhi16 (const Simd_vect& a, const Simd_vect& b);
 
-		static inline Simd_vect unpacklo_twice2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo_twice4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo_twice8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklo_twice16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklo_twice2 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklo_twice4 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklo_twice8 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklo_twice16 (const Simd_vect& a, const Simd_vect& b);
 
-		static inline Simd_vect unpackhi_twice2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi_twice4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi_twice8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpackhi_twice16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpackhi_twice2 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpackhi_twice4 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpackhi_twice8 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpackhi_twice16 (const Simd_vect& a, const Simd_vect& b);
 
-		static inline Simd_vect unpacklohi_twice2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi_twice4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi_twice8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi_twice16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklohi_twice2 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklohi_twice4 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklohi_twice8 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklohi_twice16 (const Simd_vect& a, const Simd_vect& b);
 
-		static inline Simd_vect unpacklohi2 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi4 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi8 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
-		static inline Simd_vect unpacklohi16 (Simd_vect& s1, Simd_vect& s2, const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklohi2 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklohi4 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklohi8 (const Simd_vect& a, const Simd_vect& b);
+		static inline Simd_vect unpacklohi16 (const Simd_vect& a, const Simd_vect& b);
 
 	}; // MemoryOp
 
@@ -152,9 +152,9 @@ namespace LinBox {
 
 		static inline simd_vect shuffletwice8_DD (simd_vect& s1) {
 			using simd128_16 = Simd128<uint16_t>;
-			using simd128_32 = Simd128<uint32_t>;
-			simd_vect s2 = simd128_32::srl(s1,16);
-			return simd128_16::template blend<0x55>(s1,s2); // 0x55 = [0 1 0 1 0 1 0 1]_base2
+			using simd128_64 = Simd128<uint64_t>;
+			simd_vect s2 = simd128_64::sll(s1,16);
+			return simd128_16::template blend<0x44>(s1,s2); // 0x44 = [0 1 0 0 0 1 0 0]_base2
 		}
 
 		/********************/

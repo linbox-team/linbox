@@ -55,6 +55,7 @@ namespace LinBox {
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {}
 
 		inline void Butterfly_DIT_mod4p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
+			using Compute_t = typename Field::Compute_t;
 			// Harvey's algorithm
 			// 0 <= A,B < 4*p, p < 2^32 / 4
 			// alphap = Floor(alpha * 2^ 32 / p])
@@ -63,8 +64,8 @@ namespace LinBox {
 			if (A >= this->_dpl) A -= this->_dpl;
 
 			// TODO : replace by mul_mod_shoup
-			Element tmp = ((uint32_t) alphap * (uint64_t)B) >> 32;
-			tmp = (uint64_t)alpha * B - tmp * this->_pl;
+			Element tmp = ((Element) alphap * (Compute_t)B) >> (8*sizeof(Element));
+			tmp = alpha * B - tmp * this->_pl;
 
 			// TODO : replace by add_r and sub_r
 			B = A + (this->_dpl - tmp);
@@ -86,8 +87,8 @@ namespace LinBox {
 
 			B = tmp + (this->_dpl - B);
 
-			tmp = ((uint32_t) alphap * (uint64_t)B) >> 32;
-			B = (uint64_t)alpha * B - tmp * this->_pl;
+			tmp = ((Element) alphap * (Compute_t) B) >> (8*sizeof(Element));
+			B = alpha * B - tmp * this->_pl;
 			//B &= 0xFFFFFFFF;
 			//std::cout<<A<<" $$ "<<B<<"\n ";
 		}
