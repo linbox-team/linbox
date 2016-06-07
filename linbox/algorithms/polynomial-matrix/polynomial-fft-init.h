@@ -152,7 +152,7 @@ namespace LinBox {
 			_pl = fld->characteristic();
 			_p  = fld->characteristic();
 
-			linbox_check((_pl >> 29) == 0 ); // 8*p < 2^31 for Harvey's butterflies
+			linbox_check(_pl <= (field()->maxCardinality() >> 3)); // 8*p <= field()->maxCardinality() for Harvey's butterflies
 			_dpl = (_pl << 1);
 			//_pinv = 1 / (double) _pl;
 
