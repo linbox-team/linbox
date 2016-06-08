@@ -172,7 +172,7 @@ namespace LinBox {
 			if (w == 0){   // find a pseudo 2^lpts-th primitive root of unity
 				//_I = (1L << (_logp << 1)) / _pl;
 				Element _gen = find_gen (_m, _val2p);
-				_w = Givaro::powmod(_gen, 1UL<<(_val2p-ln), _pl);
+				_w = Givaro::powmod(_gen, (uint64_t)1<<(_val2p-ln), _pl);
 			}
 			else {
 				_w = w;
@@ -181,13 +181,13 @@ namespace LinBox {
 			chrono.start();
 
 			// compute w^(-1) mod p = w^(2^lpts - 1)
-			_invw = Givaro::powmod(_w, (1UL<<ln) - 1, _pl);
+			_invw = Givaro::powmod(_w, ((uint64_t)1<<ln) - 1, _pl);
 
 			size_t pos = 0;
 			//uint64_t wi = 1;
 			Element wi = 1;
 			Element __w = _w;
-			size_t _logp = Givaro::Integer(_pl).bitsize() - 1;
+			uint64_t _logp = Givaro::Integer(_pl).bitsize() - 1;
 
 			// Precomp Quo(2^32,p)
 			Element BAR= (Givaro::Integer(1)<<(8*sizeof(Element)+_logp))/Givaro::Integer(_pl);
