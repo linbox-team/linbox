@@ -280,12 +280,12 @@ int main(int argc, char** argv){
 //	cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
 
 	//Modular<int64_t,uint128_t>
-//	bits = 59;
-//	Rd = RandomFFTPrime (1<<bits,seed);
-//	p = (uint32_t)Rd.randomPrime(l2n);
+	bits = 59;
+	Rd = RandomFFTPrime (1ul<<bits,seed);
+	p = (uint64_t)Rd.randomPrime(l2n);
 
-//	cout<<"prime : "<<p<<endl;
-//	cout<<endl;
+	cout<<"prime : "<<p<<endl;
+	cout<<endl;
 
 //	Givaro::Modular<uint64_t,uint128_t> Fi64(p);
 //	cout << "Test Modular<int64_t,uint128_t> : " << ((check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << endl;
