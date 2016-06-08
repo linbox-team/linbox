@@ -147,41 +147,8 @@ namespace LinBox {
 			return _gen;
 		}
 
-		FFT_init (const Field& fld2, size_t ln2, Element w = 0)
-			: fld (&fld2), n ((1UL << ln2)), ln (ln2), pow_w(n - 1), pow_wp(n - 1), _data(n) {
-			_pl = fld->characteristic();
-			_p  = fld->characteristic();
-
-			linbox_check(_pl <= (field()->maxCardinality() >> 3)); // 8*p <= field()->maxCardinality() for Harvey's butterflies
-			_dpl = (_pl << 1);
-			//_pinv = 1 / (double) _pl;
-
-			Givaro::Timer chrono;
-			chrono.start();
-
-			uint64_t _val2p = 0;
-			Residu_t     _m = _pl;
-			_m = _pl - 1;
-			while ((_m & 1) == 0) {
-				_m >>= 1;
-				_val2p++;
-			}
-
-			linbox_check(ln <= _val2p);      // Otherwise no 2 _ln roots of unity
-
-			if (w == 0){   // find a pseudo 2^lpts-th primitive root of unity
-				//_I = (1L << (_logp << 1)) / _pl;
-				Element _gen = find_gen (_m, _val2p);
-				_w = Givaro::powmod(_gen, 1UL<<(_val2p-ln), _pl);
-			}
-			else {
-				_w = w;
-			}
-			chrono.clear();
-			chrono.start();
-
-			// compute w^(-1) mod p = w^(2^lpts - 1)
-			_invw = Givaro::powmod(_w, (1UL<<ln) - 1, _pl);
+		template<typename T=Element>
+		typename std::enable_if<std::is_integral<T>::value>::type init_powers () {
 
 			size_t pos = 0;
 			//uint64_t wi = 1;
@@ -194,12 +161,12 @@ namespace LinBox {
 			Element Q;
 			//cout<<"log Bar: "<<Integer(BAR).bitsize()<<endl;
 			if (ln>0){
-//				using simd=Simd<uint32_t>;
-//				using vect_t =typename simd::vect_t;
+				//				using simd=Simd<uint32_t>;
+				//				using vect_t =typename simd::vect_t;
 
 				size_t tpts = 1 << (ln - 1);
 				size_t i=0;
-//				for( ;i<std::min(simd::vect_size+1, tpts);i++,pos++){
+				//				for( ;i<std::min(simd::vect_size+1, tpts);i++,pos++){
 				// Precompute pow_wp[1] for faster mult by pow_w[1]
 				for( ;i<std::min((size_t) 2, tpts);i++,pos++){
 					pow_w[pos] = wi;
@@ -240,6 +207,71 @@ namespace LinBox {
 					}
 
 			}
+		}
+
+		template<typename T=Element>
+		typename std::enable_if<std::is_floating_point<T>::value>::type init_powers () {
+
+			size_t pos = 0;
+			//uint64_t wi = 1;
+			Element wi = 1;
+
+			if (ln>0){
+				size_t tpts = 1 << (ln - 1);
+
+				for(size_t i=0; i<tpts;i++,pos++){
+					pow_w[pos] = wi;
+					fld->mulin(wi,_w);
+				}
+
+				// Other pow_w elements can be read from previously computed pow_w
+				for(size_t k=2;k<=tpts;k<<=1)
+					for(size_t i=0;i<tpts;i+=k,pos++){
+						pow_w[pos]  = pow_w[i];
+					}
+
+			}
+		}
+
+		FFT_init (const Field& fld2, size_t ln2, Element w = 0)
+			: fld (&fld2), n ((1UL << ln2)), ln (ln2), pow_w(n - 1), pow_wp(n - 1), _data(n) {
+			_pl = fld->characteristic();
+			_p  = fld->characteristic();
+
+			linbox_check(_pl <= (field()->maxCardinality() >> 3)); // 8*p <= field()->maxCardinality() for Harvey's butterflies
+			_dpl = (_pl << 1);
+			//_pinv = 1 / (double) _pl;
+
+			Givaro::Timer chrono;
+			chrono.start();
+
+			uint64_t _val2p = 0;
+			Residu_t     _m = _pl;
+			_m = _pl - 1;
+			while ((_m & 1) == 0) {
+				_m >>= 1;
+				_val2p++;
+			}
+
+			linbox_check(ln <= _val2p);      // Otherwise no 2 _ln roots of unity
+
+			if (w == 0){   // find a pseudo 2^lpts-th primitive root of unity
+				//_I = (1L << (_logp << 1)) / _pl;
+				Element _gen = find_gen (_m, _val2p);
+				_w = Givaro::powmod(_gen, 1UL<<(_val2p-ln), _pl);
+			}
+			else {
+				_w = w;
+			}
+
+			// compute w^(-1) mod p = w^(2^lpts - 1)
+			_invw = Givaro::powmod(_w, (1UL<<ln) - 1, _pl);
+
+			chrono.clear();
+			chrono.start();
+
+			init_powers();
+
 			chrono.stop();
 			//cout<<"FFT: table="<<chrono<<endl;
 		}
