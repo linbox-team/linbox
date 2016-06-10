@@ -56,7 +56,7 @@
 #include "fflas-ffpack/fflas/fflas_simd.h"
 
 #ifdef __LINBOX_USE_AVX2
-/* 256 bits CODE HERE */
+/* 256 bits CODE */
 #define __LINBOX_USE_AVX2
 // define 256 bits simd vector type
 typedef __m256i  _vect256_t;
@@ -153,25 +153,27 @@ namespace LinBox {
 			size_t pos = 0;
 			//uint64_t wi = 1;
 			Element wi = 1;
-			Element __w = _w;
-			size_t _logp = Givaro::Integer(_pl).bitsize() - 1;
 
 			// Precomp Quo(2^32,p)
-			Element BAR= (Givaro::Integer(1)<<(8*sizeof(Element)+_logp))/Givaro::Integer(_pl);
-			Element Q;
-			//cout<<"log Bar: "<<Integer(BAR).bitsize()<<endl;
+			Compute_t invp; fld->precomp_p(invp);
+
 			if (ln>0){
-				//				using simd=Simd<uint32_t>;
-				//				using vect_t =typename simd::vect_t;
+//				using simd=Simd<uint32_t>;
+//				using vect_t =typename simd::vect_t;
 
 				size_t tpts = 1 << (ln - 1);
 				size_t i=0;
-				//				for( ;i<std::min(simd::vect_size+1, tpts);i++,pos++){
+//				for( ;i<std::min(simd::vect_size+1, tpts);i++,pos++){
 				// Precompute pow_wp[1] for faster mult by pow_w[1]
 				for( ;i<std::min((size_t) 2, tpts);i++,pos++){
 					pow_w[pos] = wi;
-					pow_wp[pos] = ((Compute_t) pow_w[pos] << (8*sizeof(Element))) / _pl;
-					wi= ((Compute_t)wi*__w)%_pl;
+
+					// Fake conversion since precomp_b will be used as a Compute_t in mul_precomp_b
+					Compute_t temp;
+					fld->precomp_b(temp, wi); //(((Compute_t)wi*invp)>>(fld->_bitsizep));
+					pow_wp[pos] = static_cast<Element>(temp);
+
+					fld->mulin(wi, _w);
 				}
 				/*
 				vect_t wp_vect, Q_vect,BAR_vect,w_vect,pow_w_vect,pow_wp_vect, pl_vect;
@@ -193,10 +195,13 @@ namespace LinBox {
 				// Use pow_wp[1] for speed-up mult by pow_w[1]
 				for( ;i<tpts;i++,pos++){
 					pow_w[pos] = wi;
-					pow_wp[pos]= (((Compute_t)wi*BAR)>>_logp);
-					Q= ((Compute_t)wi*pow_wp[1])>>(8*sizeof(Element));
-					wi= (Element)(wi*__w - Q*_pl);
-					wi-=(wi>=_pl?_pl:0);
+
+					// Fake conversion since precomp_b will be used as a Compute_t in mul_precomp_b
+					Compute_t temp;
+					fld->precomp_b(temp, wi); //(((Compute_t)wi*invp)>>(fld->_bitsizep));
+					pow_wp[pos] = static_cast<Element>(temp);
+
+					fld->mul_precomp_b(wi, wi, _w, static_cast<Compute_t>(pow_wp[1]));
 				}
 
 				// Other pow_w elements can be read from previously computed pow_w
@@ -206,6 +211,13 @@ namespace LinBox {
 						pow_wp[pos] = pow_wp[i];
 					}
 
+//				std::cout << "Check precomputations : pow_w, pow_wp \n";
+//				std::cout << "[";
+//				for (size_t i=0; i < tpts; i++) std::cout << pow_w[i] << ", ";
+//				std::cout << "]\n";
+//				std::cout << "[";
+//				for (size_t i=0; i < tpts; i++) std::cout << pow_wp[i] << ", ";
+//				std::cout << "]\n\n";
 			}
 		}
 
