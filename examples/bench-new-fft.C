@@ -268,16 +268,29 @@ int main(int argc, char** argv){
 	RandomFFTPrime Rd;
 	uint32_t p;
 
+	//Modular<double,double>
+	bits = 22;
+	Rd = RandomFFTPrime (1<<bits,seed);
+	p = (double)Rd.randomPrime(l2n);
+
+	cout<<"prime : "<<p<<endl;
+	cout<<endl;
+
+	Givaro::Modular<double,double> Fd(p);
+//	cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
+
+#ifdef __FFLASFFPACK_HAVE_INT128
 	//Modular<int64_t,uint128_t>
-//	bits = 59;
-//	Rd = RandomFFTPrime (1<<bits,seed);
-//	p = (uint32_t)Rd.randomPrime(l2n);
+	bits = 59;
+	Rd = RandomFFTPrime (1ul<<bits,seed);
+	p = (uint64_t)Rd.randomPrime(l2n);
 
-//	cout<<"prime : "<<p<<endl;
-//	cout<<endl;
+	cout<<"prime : "<<p<<endl;
+	cout<<endl;
 
-//	Givaro::Modular<uint64_t,uint128_t> Fi64(p);
-//	cout << "Test Modular<int64_t,uint128_t> : " << ((check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << endl;
+	Givaro::Modular<uint64_t,uint128_t> Fi64(p);
+	cout << "Test Modular<int64_t,uint128_t> : " << ((check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << endl;
+#endif
 
 	//Modular<uint32_t,uint64_t>
 	bits = 28;

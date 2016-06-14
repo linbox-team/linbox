@@ -55,7 +55,7 @@
 #include "fflas-ffpack/fflas/fflas_simd.h"
 
 #ifdef __LINBOX_USE_AVX2
-/* 256 bits CODE HERE */
+/* 256 bits CODE */
 #define __LINBOX_USE_AVX2
 
 // define 256 bits simd vector type

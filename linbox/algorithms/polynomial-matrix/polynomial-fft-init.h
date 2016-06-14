@@ -147,6 +147,104 @@ namespace LinBox {
 			return _gen;
 		}
 
+		template<typename T=Element>
+		typename std::enable_if<std::is_integral<T>::value>::type init_powers () {
+
+			size_t pos = 0;
+			//uint64_t wi = 1;
+			Element wi = 1;
+
+			// Precomp Quo(2^32,p)
+			Compute_t invp; fld->precomp_p(invp);
+
+			if (ln>0){
+//				using simd=Simd<uint32_t>;
+//				using vect_t =typename simd::vect_t;
+
+				size_t tpts = 1 << (ln - 1);
+				size_t i=0;
+//				for( ;i<std::min(simd::vect_size+1, tpts);i++,pos++){
+				// Precompute pow_wp[1] for faster mult by pow_w[1]
+				for( ;i<std::min((size_t) 2, tpts);i++,pos++){
+					pow_w[pos] = wi;
+
+					// Fake conversion since precomp_b will be used as a Compute_t in mul_precomp_b
+					Compute_t temp;
+					fld->precomp_b(temp, wi); //(((Compute_t)wi*invp)>>(fld->_bitsizep));
+					pow_wp[pos] = static_cast<Element>(temp);
+
+					fld->mulin(wi, _w);
+				}
+				/*
+				vect_t wp_vect, Q_vect,BAR_vect,w_vect,pow_w_vect,pow_wp_vect, pl_vect;
+				BAR_vect= simd::set1(BAR);
+				wp_vect = simd::set1(pow_wp[simd::vect_size]);
+				w_vect  = simd::set1(pow_w[simd::vect_size]);
+				pl_vect = simd::set1(_pl);
+				for (; i < ROUND_DOWN(tpts,simd::vect_size);
+					 i+=simd::vect_size,pos+=simd::vect_size) {
+					pow_w_vect  = simd::loadu((int32_t*)pow_w.data()+pos-simd::vect_size);
+					Q_vect=simd::mulhi(pow_w_vect,wp_vect);
+					pow_w_vect = simd::sub(simd::mullo(pow_w_vect,w_vect),simd::mullo(Q_vect,pl_vect));
+					pow_w_vect=simd::sub(pow_w_vect, simd::vandnot(simd::greater(pow_w_vect,pl_vect),pl_vect));
+					simd::storeu((int32_t*)pow_w.data()+pos,pow_w_vect);
+					pow_wp_vect= simd::mulhi(simd::sll(pow_w_vect,32-_logp),BAR_vect);
+					simd::storeu((int32_t*)pow_wp.data()+pos,pow_wp_vect);
+				}
+				*/
+				// Use pow_wp[1] for speed-up mult by pow_w[1]
+				for( ;i<tpts;i++,pos++){
+					pow_w[pos] = wi;
+
+					// Fake conversion since precomp_b will be used as a Compute_t in mul_precomp_b
+					Compute_t temp;
+					fld->precomp_b(temp, wi); //(((Compute_t)wi*invp)>>(fld->_bitsizep));
+					pow_wp[pos] = static_cast<Element>(temp);
+
+					fld->mul_precomp_b(wi, wi, _w, static_cast<Compute_t>(pow_wp[1]));
+				}
+
+				// Other pow_w elements can be read from previously computed pow_w
+				for(size_t k=2;k<=tpts;k<<=1)
+					for(size_t i=0;i<tpts;i+=k,pos++){
+						pow_w[pos]  = pow_w[i];
+						pow_wp[pos] = pow_wp[i];
+					}
+
+//				std::cout << "Check precomputations : pow_w, pow_wp \n";
+//				std::cout << "[";
+//				for (size_t i=0; i < tpts; i++) std::cout << pow_w[i] << ", ";
+//				std::cout << "]\n";
+//				std::cout << "[";
+//				for (size_t i=0; i < tpts; i++) std::cout << pow_wp[i] << ", ";
+//				std::cout << "]\n\n";
+			}
+		}
+
+		template<typename T=Element>
+		typename std::enable_if<std::is_floating_point<T>::value>::type init_powers () {
+
+			size_t pos = 0;
+			//uint64_t wi = 1;
+			Element wi = 1;
+
+			if (ln>0){
+				size_t tpts = 1 << (ln - 1);
+
+				for(size_t i=0; i<tpts;i++,pos++){
+					pow_w[pos] = wi;
+					fld->mulin(wi,_w);
+				}
+
+				// Other pow_w elements can be read from previously computed pow_w
+				for(size_t k=2;k<=tpts;k<<=1)
+					for(size_t i=0;i<tpts;i+=k,pos++){
+						pow_w[pos]  = pow_w[i];
+					}
+
+			}
+		}
+
 		FFT_init (const Field& fld2, size_t ln2, Element w = 0)
 			: fld (&fld2), n ((1UL << ln2)), ln (ln2), pow_w(n - 1), pow_wp(n - 1), _data(n) {
 			_pl = fld->characteristic();
@@ -172,74 +270,20 @@ namespace LinBox {
 			if (w == 0){   // find a pseudo 2^lpts-th primitive root of unity
 				//_I = (1L << (_logp << 1)) / _pl;
 				Element _gen = find_gen (_m, _val2p);
-				_w = Givaro::powmod(_gen, (uint64_t)1<<(_val2p-ln), _pl);
+				_w = Givaro::powmod(_gen, 1UL<<(_val2p-ln), _pl);
 			}
 			else {
 				_w = w;
 			}
+
+			// compute w^(-1) mod p = w^(2^lpts - 1)
+			_invw = Givaro::powmod(_w, (1UL<<ln) - 1, _pl);
+
 			chrono.clear();
 			chrono.start();
 
-			// compute w^(-1) mod p = w^(2^lpts - 1)
-			_invw = Givaro::powmod(_w, ((uint64_t)1<<ln) - 1, _pl);
+			init_powers();
 
-			size_t pos = 0;
-			//uint64_t wi = 1;
-			Element wi = 1;
-			Element __w = _w;
-			uint64_t _logp = Givaro::Integer(_pl).bitsize() - 1;
-
-			// Precomp Quo(2^32,p)
-			Element BAR= (Givaro::Integer(1)<<(8*sizeof(Element)+_logp))/Givaro::Integer(_pl);
-			Element Q;
-			//cout<<"log Bar: "<<Integer(BAR).bitsize()<<endl;
-			if (ln>0){
-//				using simd=Simd<uint32_t>;
-//				using vect_t =typename simd::vect_t;
-
-				size_t tpts = 1 << (ln - 1);
-				size_t i=0;
-//				for( ;i<std::min(simd::vect_size+1, tpts);i++,pos++){
-				// Precompute pow_wp[1] for faster mult by pow_w[1]
-				for( ;i<std::min((size_t) 2, tpts);i++,pos++){
-					pow_w[pos] = wi;
-					pow_wp[pos] = ((Compute_t) pow_w[pos] << (8*sizeof(Element))) / _pl;
-					wi= ((Compute_t)wi*__w)%_pl;
-				}
-				/*
-				vect_t wp_vect, Q_vect,BAR_vect,w_vect,pow_w_vect,pow_wp_vect, pl_vect;
-				BAR_vect= simd::set1(BAR);
-				wp_vect = simd::set1(pow_wp[simd::vect_size]);
-				w_vect  = simd::set1(pow_w[simd::vect_size]);
-				pl_vect = simd::set1(_pl);
-				for (; i < ROUND_DOWN(tpts,simd::vect_size);
-					 i+=simd::vect_size,pos+=simd::vect_size) {
-					pow_w_vect  = simd::loadu((int32_t*)pow_w.data()+pos-simd::vect_size);
-					Q_vect=simd::mulhi(pow_w_vect,wp_vect);
-					pow_w_vect = simd::sub(simd::mullo(pow_w_vect,w_vect),simd::mullo(Q_vect,pl_vect));
-					pow_w_vect=simd::sub(pow_w_vect, simd::vandnot(simd::greater(pow_w_vect,pl_vect),pl_vect));
-					simd::storeu((int32_t*)pow_w.data()+pos,pow_w_vect);
-					pow_wp_vect= simd::mulhi(simd::sll(pow_w_vect,32-_logp),BAR_vect);
-					simd::storeu((int32_t*)pow_wp.data()+pos,pow_wp_vect);
-				}
-				*/
-				// Use pow_wp[1] for speed-up mult by pow_w[1]
-				for( ;i<tpts;i++,pos++){
-					pow_w[pos] = wi;
-					pow_wp[pos]= (((Compute_t)wi*BAR)>>_logp);
-					Q= ((Compute_t)wi*pow_wp[1])>>(8*sizeof(Element));
-					wi= (Element)(wi*__w - Q*_pl);
-					wi-=(wi>=_pl?_pl:0);
-				}
-
-				// Other pow_w elements can be read from previously computed pow_w
-				for(size_t k=2;k<=tpts;k<<=1)
-					for(size_t i=0;i<tpts;i+=k,pos++){
-						pow_w[pos]  = pow_w[i];
-						pow_wp[pos] = pow_wp[i];
-					}
-
-			}
 			chrono.stop();
 			//cout<<"FFT: table="<<chrono<<endl;
 		}
