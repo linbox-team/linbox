@@ -270,14 +270,14 @@ namespace LinBox {
 			if (w == 0){   // find a pseudo 2^lpts-th primitive root of unity
 				//_I = (1L << (_logp << 1)) / _pl;
 				Element _gen = find_gen (_m, _val2p);
-				_w = Givaro::powmod(_gen, 1UL<<(_val2p-ln), _pl);
+				_w = Givaro::powmod(_gen, (int64_t)1<<(_val2p-ln), _pl);
 			}
 			else {
 				_w = w;
 			}
 
 			// compute w^(-1) mod p = w^(2^lpts - 1)
-			_invw = Givaro::powmod(_w, (1UL<<ln) - 1, _pl);
+			_invw = Givaro::powmod(_w, ((int64_t)1<<ln) - 1, _pl);
 
 			chrono.clear();
 			chrono.start();
