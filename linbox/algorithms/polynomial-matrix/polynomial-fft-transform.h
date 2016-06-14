@@ -55,7 +55,7 @@
 #include "fflas-ffpack/fflas/fflas_simd.h"
 
 #ifdef __LINBOX_USE_AVX2
-/* 256 bits CODE HERE */
+/* 256 bits CODE */
 #define __LINBOX_USE_AVX2
 
 // define 256 bits simd vector type
@@ -160,7 +160,7 @@ namespace LinBox {
 			chrono.start();
 			
 			// compute w^(-1) mod p = w^(2^lpts - 1)
-			_invw = Givaro::powmod(_w, (1UL<<ln) - 1, _pl);
+			_invw = Givaro::powmod(_w, ((uint64_t)1<<ln) - 1, _pl);
 			
 			size_t pos = 0;
 			//uint64_t wi = 1;
