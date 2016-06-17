@@ -33,8 +33,8 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include "fflas-ffpack/fflas/fflas_simd.h"
-#include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
 #include "linbox/algorithms/polynomial-matrix/simd-additional-functions.h"
+#include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
 
 namespace LinBox {
 
@@ -54,44 +54,50 @@ namespace LinBox {
 
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {}
 
-		inline void Butterfly_DIT_mod4p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
-			using Compute_t = typename Field::Compute_t;
+		template<typename _Element = Element>
+		inline
+		typename std::enable_if<std::is_integral<_Element>::value>::type
+		Butterfly_DIT_mod4p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
 			// Harvey's algorithm
 			// 0 <= A,B < 4*p, p < 2^32 / 4
 			// alphap = Floor(alpha * 2^ 32 / p])
 
-			// TODO : replace by substract if greater
-			if (A >= this->_dpl) A -= this->_dpl;
-
-			// TODO : replace by mul_mod_shoup
-			Element tmp = ((Element) alphap * (Compute_t)B) >> (8*sizeof(Element));
-			tmp = alpha * B - tmp * this->_pl;
-
-			// TODO : replace by add_r and sub_r
+			// if (A >= 2*p) A -= 2*p;
+			A -= (A >= this->_dpl)?this->_dpl:0;
+			Element tmp;
+			this->fld->mul_precomp_b(tmp, B, alpha, alphap);
 			B = A + (this->_dpl - tmp);
-			//        B &= 0XFFFFFFFF;
+			A += tmp;
+		}
+
+		template<typename _Element = Element>
+		inline
+		typename std::enable_if<std::is_floating_point<_Element>::value>::type
+		Butterfly_DIT_mod4p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
+			// Harvey's algorithm
+			// 0 <= A,B < 4*p, p < 2^32 / 4
+			// alphap = Floor(alpha * 2^ 32 / p])
+
+			// if (A >= 2*p) A -= 2*p;
+			A -= (A >= this->_dpl)?this->_dpl:0;
+			Element tmp;
+			this->fld->mul(tmp, B, alpha);
+			B = A + (this->_dpl - tmp);
 			A += tmp;
 		}
 
 		inline void Butterfly_DIF_mod2p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
-			//std::cout<<A<<" $$ "<<B<<"("<<alpha<<","<<alphap<<" ) -> ";
-			using Compute_t = typename Field::Compute_t;
 			// Harvey's algorithm
 			// 0 <= A,B < 2*p, p < 2^32 / 4
 			// alphap = Floor(alpha * 2^ 32 / p])
 
 			Element tmp = A;
-
 			A += B;
-
-			if (A >= this->_dpl) A -= this->_dpl;
-
+			// if (A >= 2*p) A -= 2*p;
+			A -= (A >= this->_dpl)?this->_dpl:0;
 			B = tmp + (this->_dpl - B);
+				this->fld->mul(B, B, alpha);
 
-			tmp = ((Element) alphap * (Compute_t) B) >> (8*sizeof(Element));
-			B = alpha * B - tmp * this->_pl;
-			//B &= 0xFFFFFFFF;
-			//std::cout<<A<<" $$ "<<B<<"\n ";
 		}
 
 	}; // FFT_butterflies<Field, 1>
@@ -104,7 +110,6 @@ namespace LinBox {
 
 		using Element = typename Field::Element;
 		using vect_t = typename simd::vect_t;
-		using SimdComp = typename SimdCompute_t<simd,Field>::Compute_t;
 
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {
 			linbox_check(simd::vect_size == 4);
@@ -166,10 +171,9 @@ namespace LinBox {
 			// T1 = [D D H H]
 			T1 = MemoryOp<Element,simd>::unpackhi4(V4,V4);
 
-			T2 = mul_mod_half<simd, SimdComp>(T1, W, P, Wp);
+			T2 = mul_mod_half<Field,simd>(T1, W, P, Wp);
 
 			T2 = simd::template shuffle<0xDD>(T2);
-			//T2 = simd::template shuffle<0xDD>(T2);
 
 			//At this point, T2 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
 
@@ -236,11 +240,10 @@ namespace LinBox {
 			V4 = MemoryOp<Element,simd>::unpackhi4(V2,V2);
 
 			// V3 = [* D * H]
-			V3 = mul_mod_half<simd, SimdComp>(V4, W, P, Wp);
+			V3 = mul_mod_half<Field,simd>(V4, W, P, Wp);
 
 			//At this point, V3 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
-			V3 = simd::template shuffle<0xDD>(V3);
-			//V3 = simd::template shuffle<0xDD>(V3); // 0xDD = [3 1 3 1]_base4
+			V3 = simd::template shuffle<0xDD>(V3); // 0xDD = [3 1 3 1]_base4
 
 			// At this time I have V1=[A E B F], V2=[C G ? ?], V3=[? ? D H]
 			// I need V3 = [A C E G], V4 = [B D F H]
@@ -272,7 +275,6 @@ namespace LinBox {
 
 		using Element = typename Field::Element;
 		using vect_t = typename simd::vect_t;
-		using SimdComp = typename SimdCompute_t<simd,Field>::Compute_t;
 
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {
 			linbox_check(simd::vect_size == 8);
@@ -338,7 +340,7 @@ namespace LinBox {
 			V5 = MemoryOp<Element,simd>::unpackhi_twice8(V2,V2);
 
 			// V3 = [* D * L * H * P]
-			V3 = mul_mod_half<simd,SimdComp>(V5,alpha,P,alphap);
+			V3 = mul_mod_half<Field,simd>(V5,alpha,P,alphap);
 
 			// V7 = [D L D L H P H P]
 			V7 = MemoryOp<Element,simd>::shuffletwice8_DD(V3);
@@ -450,7 +452,7 @@ namespace LinBox {
 			V4 = MemoryOp<Element,simd>::unpackhi_twice8(V7,V7);
 
 			// V3 = [ * D * H * L * P]
-			V3 = mul_mod_half<simd,SimdComp>(V4,beta,P,betap);
+			V3 = mul_mod_half<Field,simd>(V4,beta,P,betap);
 
 			// V2=[D H D H L P L P] but only [* * D H * * L P] matters
 			V2 = MemoryOp<Element,simd>::shuffletwice8_DD(V3);
