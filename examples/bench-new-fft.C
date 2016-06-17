@@ -32,8 +32,12 @@
 
 #include <givaro/modular.h>
 #include <givaro/givranditer.h>
+#include <givaro/modular-extended.h>
 
 using namespace std; 
+
+#include "fflas-ffpack/utils/align-allocator.h"
+#include "fflas-ffpack/fflas-ffpack-config.h"
 
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-butterflies.h"
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-algorithms.h"
@@ -41,7 +45,6 @@ using namespace std;
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/ring/modular.h"
-#include "fflas-ffpack/utils/align-allocator.h"
 
 using namespace LinBox;
 
@@ -263,13 +266,14 @@ int main(int argc, char** argv){
 	//	}
 	uint64_t bits = 0; //atoi(argv[1]);
 	long seed=((argc>2)?atoi(argv[2]):time(NULL));
-	size_t l2n = 12;
-	size_t k = l2n;
+	size_t l2n, k;
 	RandomFFTPrime Rd;
 	uint32_t p;
+	bool passed = true;
+	bool pt = true;
 
 	//Modular<double,double>
-	bits = 22;
+	bits = 22; k = l2n = 12;
 	Rd = RandomFFTPrime (1<<bits,seed);
 	p = (double)Rd.randomPrime(l2n);
 
@@ -277,11 +281,38 @@ int main(int argc, char** argv){
 	cout<<endl;
 
 	Givaro::Modular<double,double> Fd(p);
-//	cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
+	cout << "Test Modular<double,double>: " << ((pt =  check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
+	passed &= pt;
+
+
+	//Modular<float,float>
+	bits = 9; k = l2n = 6;
+	Rd = RandomFFTPrime (1_ui64<<bits,seed);
+	p = (float)Rd.randomPrime(l2n);
+
+	cout<<"prime : "<<p<<endl;
+	cout<<endl;
+
+	Givaro::Modular<float> Ff(p);
+	cout << "Test Modular<float>: " << ((pt =  check_DIF(Ff,k,seed))?"OK":"KO!!!!") << endl;
+	//passed &= pt;
+
+	//ModularExtended<double,double>
+	bits = 50; k = l2n = 12;
+	Rd = RandomFFTPrime (1_ui64<<bits,seed);
+	p = (double)Rd.randomPrime(l2n);
+
+	cout<<"prime : "<<p<<endl;
+	cout<<endl;
+
+	Givaro::ModularExtended<double> Fed(p);
+	// no type named 'Compute_t' in 'class Givaro::ModularExtended<double>'
+	//cout << "Test ModularExtended<double,double>: " << ((pt =  check_DIF(Fed,k,seed))?"OK":"KO!!!!") << endl;
+	//passed &= pt;
 
 #ifdef __FFLASFFPACK_HAVE_INT128
 	//Modular<int64_t,uint128_t>
-	bits = 59;
+	bits = 59; k = l2n = 12;
 	Rd = RandomFFTPrime (1ul<<bits,seed);
 	p = (uint64_t)Rd.randomPrime(l2n);
 
@@ -289,11 +320,12 @@ int main(int argc, char** argv){
 	cout<<endl;
 
 	Givaro::Modular<uint64_t,uint128_t> Fi64(p);
-	cout << "Test Modular<int64_t,uint128_t> : " << ((check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << endl;
+	cout << "Test Modular<int64_t,uint128_t> : " << ((pt =  check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << endl;
+	passed &= pt;
 #endif
 
 	//Modular<uint32_t,uint64_t>
-	bits = 28;
+	bits = 28; k = l2n = 12;
 	Rd = RandomFFTPrime (1<<bits,seed);
 	p = (uint32_t)Rd.randomPrime(l2n);
 
@@ -301,14 +333,14 @@ int main(int argc, char** argv){
 	cout<<endl;
 
 	Givaro::Modular<uint32_t,uint64_t> Fi32(p);
-	cout << "Test Modular<uint32_t,uint64_t>: " << ((check_DIF(Fi32,k,seed))?"OK":"KO!!!!") << endl;
+	cout << "Test Modular<uint32_t,uint64_t>: " << ((pt =  check_DIF(Fi32,k,seed))?"OK":"KO!!!!") << endl;
+	passed &= pt;
 
 //	bench_DIF(Fi32,k,seed);
 
 
 	//Modular<uint16_t,uint32_t>
-	bits = 12;
-	k = l2n = 8;
+	bits = 12; k = l2n = 8;
 	Rd = RandomFFTPrime (1<<bits,seed);
 	p = (uint16_t)Rd.randomPrime(l2n);
 
@@ -316,8 +348,11 @@ int main(int argc, char** argv){
 	cout<<endl;
 
 	Givaro::Modular<uint16_t,uint32_t> Fi16(p);
-	cout << "Test Modular<uint16_t,uint32_t> : " << ((check_DIF(Fi16,k,seed))?"OK":"KO!!!!") << endl;
+	cout << "Test Modular<uint16_t,uint32_t> : " << ((pt =  check_DIF(Fi16,k,seed))?"OK":"KO!!!!") << endl;
+	passed &= pt;
 
+
+	cout << "All tests " << (passed?"passed":"did not pass") << endl;
 
 	// Bench FFT
 

@@ -243,24 +243,33 @@ namespace LinBox {
 		/********************/
 		/* unpacklo         */
 		/********************/
-		static INLINE simd_vect unpacklo2 (const simd_vect& a, const simd_vect& b) {return simd_2::unpacklo(a,b); }
-		static INLINE simd_vect unpacklo4 (const simd_vect& a, const simd_vect& b) {return simd_4::unpacklo(a,b); }
+		static INLINE __m128d unpacklo2 (const __m128d& a, const __m128d& b) {return simd_2::unpacklo(a,b); }
+		static INLINE __m128 unpacklo2 (const __m128& a, const __m128& b) {
+			return _mm_castpd_ps(unpacklo2(_mm_castps_pd(a),_mm_castps_pd(b)));
+		}
+		static INLINE __m128 unpacklo4 (const __m128& a, const __m128& b) {return simd_4::unpacklo(a,b); }
 
 		/********************/
 		/* unpackhi         */
 		/********************/
-		static INLINE simd_vect unpackhi2 (const simd_vect& a, const simd_vect& b) {return simd_2::unpackhi(a,b); }
-		static INLINE simd_vect unpackhi4 (const simd_vect& a, const simd_vect& b) {return simd_4::unpackhi(a,b); }
+		static INLINE __m128d unpackhi2 (const __m128d& a, const __m128d& b) {return simd_2::unpackhi(a,b); }
+		static INLINE __m128 unpackhi2 (const __m128& a, const __m128& b) {
+			return _mm_castpd_ps(unpackhi2(_mm_castps_pd(a),_mm_castps_pd(b)));
+		}
+		static INLINE __m128 unpackhi4 (const __m128& a, const __m128& b) {return simd_4::unpackhi(a,b); }
 
 		/**************/
 		/* unpacklohi */
 		/**************/
-		static INLINE void unpacklohi2 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
+		static INLINE void unpacklohi2 (__m128d& s1, __m128d& s2, const __m128d& a, const __m128d& b) {
 			s1 = simd_2::unpacklo(a, b);
 			s2 = simd_2::unpackhi(a, b);
 		}
-
-		static INLINE void unpacklohi4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
+		static INLINE void unpacklohi2 (__m128& s1, __m128& s2, const __m128& a, const __m128& b) {
+			s1 = _mm_castpd_ps(simd_2::unpacklo(_mm_castps_pd(a), _mm_castps_pd(b)));
+			s2 = _mm_castpd_ps(simd_2::unpackhi(_mm_castps_pd(a), _mm_castps_pd(b)));
+		}
+		static INLINE void unpacklohi4 (__m128& s1, __m128& s2, const __m128& a, const __m128& b) {
 			s1 = simd_4::unpacklo(a, b);
 			s2 = simd_4::unpackhi(a, b);
 		}
@@ -269,10 +278,9 @@ namespace LinBox {
 		/* unpacklo_twice   */
 		/********************/
 		static INLINE simd_vect unpacklo_twice2 (const simd_vect& a, const simd_vect& b) { return unpacklo2(a,b); }
-
-		static INLINE simd_vect unpacklo_twice4 (const simd_vect& a, const simd_vect& b) {
-			simd_vect a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd_4::template shuffle<0xD8>(b);
+		static INLINE __m128 unpacklo_twice4 (const __m128& a, const __m128& b) {
+			__m128 a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
+			__m128 b1 = simd_4::template shuffle<0xD8>(b);
 			return simd_4::unpacklo(a1,b1);
 		}
 
@@ -281,9 +289,9 @@ namespace LinBox {
 		/********************/
 		static INLINE simd_vect unpackhi_twice2 (const simd_vect& a, const simd_vect& b) { return unpackhi2(a,b); }
 
-		static INLINE simd_vect unpackhi_twice4 (const simd_vect& a, const simd_vect& b) {
-			simd_vect a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd_4::template shuffle<0xD8>(b);
+		static INLINE __m128 unpackhi_twice4 (const __m128& a, const __m128& b) {
+			__m128 a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
+			__m128 b1 = simd_4::template shuffle<0xD8>(b);
 			return simd_4::unpackhi(a1,b1);
 		}
 
@@ -294,9 +302,9 @@ namespace LinBox {
 			unpacklohi2(s1, s2, a, b);
 		}
 
-		static INLINE void unpacklohi_twice4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			simd_vect a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd_4::template shuffle<0xD8>(b);
+		static INLINE void unpacklohi_twice4 (__m128& s1, __m128& s2, const __m128& a, const __m128& b) {
+			__m128 a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
+			__m128 b1 = simd_4::template shuffle<0xD8>(b);
 			s1 = simd_4::unpacklo(a1,b1);
 			s2 = simd_4::unpackhi(a1,b1);
 		}
@@ -464,7 +472,7 @@ namespace LinBox {
 		/*********************/
 		/* Specific shuffles */
 		/*********************/
-		static INLINE simd_vect shuffletwice8_DD (simd_vect& s1) {
+		static INLINE __m256 shuffletwice8_DD (__m256& s1) {
 			return simd_8::template shuffle_twice<0xDD>(s1);
 		}
 
@@ -473,15 +481,21 @@ namespace LinBox {
 		/********************/
 		static INLINE simd_vect unpacklo2 (const simd_vect& a, const simd_vect& b) {return simd::unpacklo128(a, b); }
 
-		static INLINE simd_vect unpacklo4 (const simd_vect& a, const simd_vect& b) {
-			simd_vect a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd_4::template shuffle<0xD8>(b);
+		static INLINE __m256d unpacklo4 (const __m256d& a, const __m256d& b) {
+			__m256d a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
+			__m256d b1 = simd_4::template shuffle<0xD8>(b);
 			return simd_4::unpacklo_twice(a1,b1);
 		}
 
-		static INLINE simd_vect unpacklo8 (const simd_vect& a, const simd_vect& b) {
-			simd_vect a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd_4::template shuffle<0xD8>(b);
+		static INLINE __m256 unpacklo4 (const __m256& a, const __m256& b) {
+			__m256d a1 = simd_4::template shuffle<0xD8>(_mm256_castps_pd(a)); // 0xD8 = 3120 base_4
+			__m256d b1 = simd_4::template shuffle<0xD8>(_mm256_castps_pd(b));
+			return _mm256_castpd_ps(simd_4::unpacklo_twice(a1,b1));
+		}
+
+		static INLINE __m256 unpacklo8 (const __m256& a, const __m256& b) {
+			__m256 a1 = _mm256_castpd_ps(simd_4::template shuffle<0xD8>(_mm256_castps_pd(a))); // 0xD8 = 3120 base_4
+			__m256 b1 = _mm256_castpd_ps(simd_4::template shuffle<0xD8>(_mm256_castps_pd(b)));
 			return simd_8::unpacklo_twice(a1, b1);
 		}
 
@@ -490,15 +504,21 @@ namespace LinBox {
 		/********************/
 		static INLINE simd_vect unpackhi2 (const simd_vect& a, const simd_vect& b) {return simd::unpackhi128(a, b); }
 
-		static INLINE simd_vect unpackhi4 (const simd_vect& a, const simd_vect& b) {
-			simd_vect a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd_4::template shuffle<0xD8>(b);
+		static INLINE __m256d unpackhi4 (const __m256d& a, const __m256d& b) {
+			__m256d a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
+			__m256d b1 = simd_4::template shuffle<0xD8>(b);
 			return simd_4::unpackhi_twice(a1,b1);
 		}
 
-		static INLINE simd_vect unpackhi8 (const simd_vect& a, const simd_vect& b) {
-			simd_vect a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd_4::template shuffle<0xD8>(b);
+		static INLINE __m256 unpackhi4 (const __m256& a, const __m256& b) {
+			__m256d a1 = simd_4::template shuffle<0xD8>(_mm256_castps_pd(a)); // 0xD8 = 3120 base_4
+			__m256d b1 = simd_4::template shuffle<0xD8>(_mm256_castps_pd(b));
+			return _mm256_castpd_ps(simd_4::unpackhi_twice(a1,b1));
+		}
+
+		static INLINE __m256 unpackhi8 (const __m256& a, const __m256& b) {
+			__m256 a1 = _mm256_castpd_ps(simd_4::template shuffle<0xD8>(_mm256_castps_pd(a))); // 0xD8 = 3120 base_4
+			__m256 b1 = _mm256_castpd_ps(simd_4::template shuffle<0xD8>(_mm256_castps_pd(b)));
 			return simd_8::unpackhi_twice(a1, b1);
 		}
 
@@ -510,16 +530,23 @@ namespace LinBox {
 			s2 = simd::unpackhi128(a, b);
 		}
 
-		static INLINE void unpacklohi4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			simd_vect a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd_4::template shuffle<0xD8>(b);
+		static INLINE void unpacklohi4 (__m256d& s1, __m256d& s2, const __m256d& a, const __m256d& b) {
+			__m256d a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
+			__m256d b1 = simd_4::template shuffle<0xD8>(b);
 			s1 = simd_4::unpacklo_twice(a1, b1);
 			s2 = simd_4::unpackhi_twice(a1, b1);
 		}
 
-		static INLINE void unpacklohi8 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
-			simd_vect a1 = simd_4::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
-			simd_vect b1 = simd_4::template shuffle<0xD8>(b);
+		static INLINE void unpacklohi4 (__m256& s1, __m256& s2, const __m256& a, const __m256& b) {
+			__m256d a1 = simd_4::template shuffle<0xD8>(_mm256_castps_pd(a)); // 0xD8 = 3120 base_4
+			__m256d b1 = simd_4::template shuffle<0xD8>(_mm256_castps_pd(b));
+			s1 = _mm256_castpd_ps(simd_4::unpacklo_twice(a1, b1));
+			s2 = _mm256_castpd_ps(simd_4::unpackhi_twice(a1, b1));
+		}
+
+		static INLINE void unpacklohi8 (__m256& s1, __m256& s2, const __m256& a, const __m256& b) {
+			__m256 a1 = _mm256_castpd_ps(simd_4::template shuffle<0xD8>(_mm256_castps_pd(a))); // 0xD8 = 3120 base_4
+			__m256 b1 = _mm256_castpd_ps(simd_4::template shuffle<0xD8>(_mm256_castps_pd(b)));
 			s1 = simd_8::unpacklo_twice(a1, b1);
 			s2 = simd_8::unpackhi_twice(a1, b1);
 		}
@@ -529,18 +556,30 @@ namespace LinBox {
 		/********************/
 		static INLINE simd_vect unpacklo_twice2 (const simd_vect& a, const simd_vect& b) { return unpacklo2(a,b); }
 
-		static INLINE simd_vect unpacklo_twice4 (const simd_vect& a, const simd_vect& b) { return simd_4::unpacklo_twice(a, b); }
+		static INLINE __m256d unpacklo_twice4 (const __m256d& a, const __m256d& b) {
+			return simd_4::unpacklo_twice(a, b);
+		}
 
-		static INLINE simd_vect unpacklo_twice8 (const simd_vect& a, const simd_vect& b) { return simd_8::unpacklo_twice(a, b); }
+		static INLINE __m256 unpacklo_twice4 (const __m256& a, const __m256& b) {
+			return _mm256_castpd_ps(simd_4::unpacklo_twice(_mm256_castps_pd(a), _mm256_castps_pd(b)));
+		}
+
+		static INLINE __m256 unpacklo_twice8 (const __m256& a, const __m256& b) { return simd_8::unpacklo_twice(a, b); }
 
 		/********************/
 		/* unpackhi_twice   */
 		/********************/
 		static INLINE simd_vect unpackhi_twice2 (const simd_vect& a, const simd_vect& b) { return unpackhi2(a,b); }
 
-		static INLINE simd_vect unpackhi_twice4 (const simd_vect& a, const simd_vect& b) { return simd_4::unpackhi_twice(a, b); }
+		static INLINE __m256d unpackhi_twice4 (const __m256d& a, const __m256d& b) {
+			return simd_4::unpackhi_twice(a, b);
+		}
 
-		static INLINE simd_vect unpackhi_twice8 (const simd_vect& a, const simd_vect& b) { return simd_8::unpackhi_twice(a, b); }
+		static INLINE __m256 unpackhi_twice4 (const __m256& a, const __m256& b) {
+			return _mm256_castpd_ps(simd_4::unpackhi_twice(_mm256_castps_pd(a), _mm256_castps_pd(b)));
+		}
+
+		static INLINE __m256 unpackhi_twice8 (const __m256& a, const __m256& b) { return simd_8::unpackhi_twice(a, b); }
 
 		/********************/
 		/* unpacklohi_twice */
@@ -549,12 +588,17 @@ namespace LinBox {
 			unpacklohi2(s1, s2, a, b);
 		}
 
-		static INLINE void unpacklohi_twice4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
+		static INLINE void unpacklohi_twice4 (__m256d& s1, __m256d& s2, const __m256d& a, const __m256d& b) {
 			s1 = simd_4::unpacklo_twice(a, b);
 			s2 = simd_4::unpackhi_twice(a, b);
 		}
 
-		static INLINE void unpacklohi_twice8 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
+		static INLINE void unpacklohi_twice4 (__m256& s1, __m256& s2, const __m256& a, const __m256& b) {
+			s1 = _mm256_castpd_ps(simd_4::unpacklo_twice(_mm256_castps_pd(a), _mm256_castps_pd(b)));
+			s2 = _mm256_castpd_ps(simd_4::unpackhi_twice(_mm256_castps_pd(a), _mm256_castps_pd(b)));
+		}
+
+		static INLINE void unpacklohi_twice8 (__m256& s1, __m256& s2, const __m256& a, const __m256& b) {
 			s1 = simd_8::unpacklo_twice(a, b);
 			s2 = simd_8::unpackhi_twice(a, b);
 		}
@@ -637,11 +681,11 @@ namespace LinBox {
 
 #define IS_INTEGRAL_AND_COMPUTET_INT128(Field)                              \
 	std::enable_if<(std::is_integral<typename Field::Element>::value) &     \
-					(std::is_same<typename Field::Compute_t,uint128_t>::value) >::type* = nullptr
+	(std::is_same<typename Field::Compute_t,uint128_t>::value) >::type* = nullptr
 
 #define IS_INTEGRAL_AND_COMPUTET_NOT_INT128(Field)                                  \
 	std::enable_if<(std::is_integral<typename Field::Element>::value) &             \
-				   !(std::is_same<typename Field::Compute_t,uint128_t>::value) >::type* = nullptr
+	!(std::is_same<typename Field::Compute_t,uint128_t>::value) >::type* = nullptr
 
 	/*
 	 * a = [a0, a0, a2, a2, ...]
