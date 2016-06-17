@@ -501,7 +501,7 @@ namespace LinBox {
 				S._start[i+1] +=  S._start[i] ;
 
 			{
-				size_t i = 0 ;
+				index_t i = 0 ;
 				svector_t done_col(S.rowdim(),0);
 				for (size_t nextlig = 1 ; nextlig <= rowdim() ; ++nextlig) {
 					// treating line before nextlig
@@ -635,7 +635,7 @@ namespace LinBox {
 		/// make matrix ready to use after a sequence of setEntry calls.
 		void finalize()
 		{
-			if (_start[rowdim()] != _nbnz) { /* if it is so, then all before are 0 and we are fine... */
+			if (_start[rowdim()] != (index_t)_nbnz) { /* if it is so, then all before are 0 and we are fine... */
 				for (size_t i = 2 ; i <= rowdim() ; ++i)
 					_start[i] += _start[i-1];
 				linbox_check(_start[rowdim()] == _nbnz);
@@ -685,7 +685,7 @@ namespace LinBox {
 			myIterator low = std::lower_bound (beg, end, j);
 			ibeg = (index_t)(low-_colid.begin());
 			// insert
-			if ( low == end || j != _colid[ibeg] ) {
+			if ( low == end || (index_t)j != _colid[ibeg] ) {
 				// std::cout << "# 2 insert " << i << ',' << j << ':' << e << std::endl;
 				for (size_t k = i+1 ; k <= _rownb ; ++k)
 					_start[k] += 1 ;
