@@ -13,11 +13,13 @@
 using namespace LinBox;
 using namespace std;
 
-ostream& report = commentator().report();
+
+//ostream& report = commentator().report();
 //ostream& report = std::cout;
 
 template<typename Field, typename Mat>
 string check_sigma(const Field& F, const Mat& sigma,  Mat& serie, size_t ord){
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	Mat T(F,sigma.rowdim(),serie.coldim(),sigma.size()+serie.size()-1);
 	PolynomialMatrixMulDomain<Field> PMD(F);
 	PMD.mul(T,sigma,serie);
@@ -30,11 +32,11 @@ string check_sigma(const Field& F, const Mat& sigma,  Mat& serie, size_t ord){
 		i++;
 	}
 	if (i<ord){
-		cout<<"error at degree="<<i<<endl;
+		report<<"error at degree="<<i<<endl;
 		T[i].write(report, Tag::FileFormat::Plain);
-		cout<<"***"<<endl;
-		cout<<serie<<endl;
-		cout<<sigma<<endl;	
+		report<<"***"<<endl;
+		report<<serie<<endl;
+		report<<sigma<<endl;	
 	}
 	
 	
@@ -47,9 +49,10 @@ string check_sigma(const Field& F, const Mat& sigma,  Mat& serie, size_t ord){
 
 template<typename MatPol>
 bool operator==(const MatPol& A, const MatPol& B){
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	MatrixDomain<typename MatPol::Field> MD(A.field());
 	if (A.real_degree()!=B.real_degree()|| A.rowdim()!= B.rowdim() || A.coldim()!=B.coldim()){
-		cout<<A.size()<<"("<<A.rowdim()<<"x"<<A.coldim()<<") <> "
+		report<<A.size()<<"("<<A.rowdim()<<"x"<<A.coldim()<<") <> "
 		    <<B.size()<<"("<<B.rowdim()<<"x"<<B.coldim()<<") <> "<<endl;
 		return false;
 	}
@@ -58,8 +61,8 @@ bool operator==(const MatPol& A, const MatPol& B){
 		i++;
 
 	if (i<=A.real_degree() && A.rowdim()<10 && A.coldim()<10){
-		cout<<"first:"<<endl<<A<<endl;
-		cout<<"second:"<<endl<<B<<endl;
+		report<<"first:"<<endl<<A<<endl;
+		report<<"second:"<<endl<<B<<endl;
 	}
 
 	return i>A.real_degree();
@@ -68,6 +71,7 @@ bool operator==(const MatPol& A, const MatPol& B){
 
 template<typename Field, typename RandIter>
 void check_sigma(const Field& F, RandIter& Gen, size_t m, size_t n, size_t d) {
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	//typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	//typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
@@ -90,17 +94,17 @@ void check_sigma(const Field& F, RandIter& Gen, size_t m, size_t n, size_t d) {
 
 	SB.M_Basis(Sigma3, Serie, d, shift3);
 	report << "M-Basis       : " <<check_sigma(F,Sigma3,Serie,d)<<endl;
-	SB.PM_Basis2(Sigma1,Serie, d, shift);
+	SB.PM_Basis(Sigma1,Serie, d, shift);
 	report << "PM-Basis      : " <<check_sigma(F,Sigma1,Serie,d)<<endl;
 	//SB.oPM_Basis(Sigma2, Serie, d, shift2);
 	//report << "PM-Basis iter : " <<check_sigma(F,Sigma2,Serie,d)<<endl;
 
 	// if (!(Sigma1==Sigma2)){
-	// cout<<"---> different basis for PM-Basis and PM-Basis iter"<<endl;
-	// cout<<Sigma1<<endl;
-	// cout<<Sigma2<<endl;
+	// report<<"---> different basis for PM-Basis and PM-Basis iter"<<endl;
+	// report<<Sigma1<<endl;
+	// report<<Sigma2<<endl;
 	// }
-	cout<<endl;
+	report<<endl;
 }
 
 int main(int argc, char** argv){
@@ -118,14 +122,17 @@ int main(int argc, char** argv){
 		{ 's', "-s s", "Set the random seed to a specific value", TYPE_INT, &seed},
 		END_OF_ARGUMENTS
 	};
-
+	
 	parseArguments (argc, argv, args);
 
 	typedef Givaro::Modular<double>              SmallField;	
 	typedef Givaro::Modular<Givaro::Integer>      LargeField;
 
 	size_t logd=integer((uint64_t)d).bitsize();
+	commentator().start ("Testing order basis computation", "testOrderBasis", 1);
+
 	
+	ostream &report = commentator().report (Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION);
 	report<<"###  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
 	if (b < 26){
 		if (logd>b-2){
@@ -149,8 +156,7 @@ int main(int argc, char** argv){
 		check_sigma(F,G,m,n,d);
 	}
 
-
-	
+	commentator().stop (MSG_STATUS (true), (const char *) 0, "testOrderBasis"); 
 	return 0;
 }
 
