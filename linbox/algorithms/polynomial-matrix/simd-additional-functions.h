@@ -643,34 +643,22 @@ namespace LinBox {
 	}
 
 	template <class Simd, typename IS_INTEGRAL(Simd)>
-	INLINE Simd_vect mul_mod (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p, const Simd_vect& bp) {
-		//		std::cout << "Inputs of mul_mod : a, b, p, bp, q, c, t, c - t\n";
+	INLINE Simd_vect mul_mod (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p,
+							  const Simd_vect& bp, const Simd_vect& u = Simd::set1((typename Simd::scalar_t) 1)) {
 		Simd_vect q = Simd::mulhi(a,bp);
 		Simd_vect c = Simd::mullo(a,b);
 		Simd_vect t = Simd::mullo(q,p);
-		//		FFLAS::print<Simd>(std::cout, a); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, b); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, p); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, bp); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, q); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, c); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, t); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, Simd::sub(c,t)); std::cout << "\n\n";
 		return Simd::sub(c,t);
 	}
 
 	template <class Simd, typename IS_FLOATINGPOINT(Simd)>
-	INLINE Simd_vect mul_mod (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p, const Simd_vect& bp) {
-		// TODO : Should precomp u = 1/p
-		Simd_vect one = Simd::set1((typename Simd::scalar_t) 1);
-		Simd_vect u = Simd::div(one,p);
-
+	INLINE Simd_vect mul_mod (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p,
+							  const Simd_vect& bp, const Simd_vect& u = Simd::set1((typename Simd::scalar_t) 1)) {
 		Simd_vect h = Simd::mul(a, b);
 		Simd_vect l = Simd::fmsub(h, a, b);
 		Simd_vect q = Simd::floor(Simd::mul(h, u));
 		Simd_vect d = Simd::fnmadd(h, q, p);
 		Simd_vect g = Simd::add(d, l);
-
 		// if(g > p) g -= p;
 		Simd_vect t = Simd::sub(g,p);
 		g = Simd::blendv(t, g, t);
@@ -694,12 +682,14 @@ namespace LinBox {
 	*/
 	// Special template if COmpute_t == uint128_t since Simd128<uint128> and Simd256<uint128> do not exist
 	template <typename Field, class Simd, typename IS_INTEGRAL_AND_COMPUTET_INT128(Field)>
-	INLINE Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p, const Simd_vect& bp) {
+	INLINE Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p,
+								   const Simd_vect& bp, const Simd_vect& u = Simd::set1((typename Simd::scalar_t) 1)) {
 		return mul_mod<Simd>(a, b , p, bp);
 	}
 
 	template <typename Field, class Simd, typename IS_INTEGRAL_AND_COMPUTET_NOT_INT128(Field)>
-	INLINE Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p, const Simd_vect& bp) {
+	INLINE Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p,
+								   const Simd_vect& bp, const Simd_vect& u = Simd::set1((typename Simd::scalar_t) 1)) {
 		using SimdComp = typename SimdCompute_t<Simd,Field>::Compute_t;
 		// T2 = a * bp mod 2^64 (for Modular<Element = uint32, Compute_t = uint64>)
 		// bp = [b0p ? b2p ?, ... ] is enough
@@ -712,8 +702,9 @@ namespace LinBox {
 	}
 
 	template <typename Field, class Simd, typename IS_FLOATINGPOINT(Simd)>
-	INLINE Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p, const Simd_vect& bp) {
-		return mul_mod<Simd>(a, b , p, bp);
+	INLINE Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p,
+								   const Simd_vect& bp, const Simd_vect& u = Simd::set1((typename Simd::scalar_t) 1)) {
+		return mul_mod<Simd>(a, b , p, bp, u);
 	}
 
 #undef IS_NOT_COMPUTET_INT128

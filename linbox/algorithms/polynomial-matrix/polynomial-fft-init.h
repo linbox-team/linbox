@@ -121,6 +121,22 @@ namespace LinBox {
 
 		inline const Field & field() const { return *fld; }
 
+		void binpow (Element& res, const Field& F, const Element& x, const size_t& e) {
+			Element x2;
+			if (e == 0) {
+				F.init(res,F.one);
+				return;
+			}
+			if (e == 1) {
+				res = x;
+				return;
+			}
+			F.mul(x2,x,x);
+			binpow(res, F, x2, e >> 1);
+			if (e & 1 == 1)
+				F.mulin(res,x);
+		}
+
 		Element find_gen (Residu_t _m, uint64_t _val2p) {
 			// find a primitive 2^k root of unity where
 			// _p - 1 = 2^val2p * m
@@ -131,7 +147,10 @@ namespace LinBox {
 			for (;;) {
 				fld->init(_gen,rand());
 				fld->init(z, 1);
-				for (Residu_t i=0; i < _m; ++i) fld->mulin(z,_gen); // z = z*_gen;
+
+//				for (Residu_t i=0; i < _m; ++i) fld->mulin(z,_gen); // z = z*_gen;
+				binpow(z, *fld, _gen, (size_t) _m);
+
 				if (z == 1) continue;
 				// _gen^i =/ 1 pour 0 <= i < m
 				_gen = z;
@@ -270,7 +289,8 @@ namespace LinBox {
 			if (w == 0){   // find a pseudo 2^lpts-th primitive root of unity
 				//_I = (1L << (_logp << 1)) / _pl;
 				Element _gen = find_gen (_m, _val2p);
-				_w = Givaro::powmod(_gen, (int64_t)1<<(_val2p-ln), _pl);
+//				_w = Givaro::powmod(_gen, (int64_t)1<<(_val2p-ln), _pl);
+				binpow(_w, *fld, _gen, (int64_t)1<<(_val2p-ln));
 			}
 			else {
 				_w = w;

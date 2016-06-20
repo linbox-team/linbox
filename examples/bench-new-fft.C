@@ -75,18 +75,19 @@ bool DFT_sanity_check(FFT& FFTDom, Funct f, const Vect& x, const Vect& y, string
 	Functor();
 	msg+="  ";
 	msg.resize(45,'.');
-	cout<<"  Checking ... "<<msg
-	   << (equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p))?" done":" error")<<endl;
 
-	if (!(equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p)))){
+	bool passed = equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p));
+
+	cout<<"  Checking ... "<< msg  << (passed?" done":" error")<<endl;
+
+//	if (!(equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p)))){
 //		std::ostream_iterator<Element> out_it (std::cout,", ");
 //		std::copy ( z.begin(), z.end(), out_it );
 //		std::cout<<std::endl;
 //		std::copy ( y.begin(), y.end(), out_it );
 //		std::cout<<std::endl;
-		return false;
-	}
-	return true;
+//	}
+	return passed;
 }
 
 template<typename Field>
@@ -268,7 +269,7 @@ int main(int argc, char** argv){
 	long seed=((argc>2)?atoi(argv[2]):time(NULL));
 	size_t l2n, k;
 	RandomFFTPrime Rd;
-	uint32_t p;
+	uint64_t p;
 	bool passed = true;
 	bool pt = true;
 
