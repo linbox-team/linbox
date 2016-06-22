@@ -32,9 +32,8 @@
 #include <iostream>
 
 
-#ifdef __AVX2__
+#ifdef __LINBOX_USE_AVX2
 /* 256 bits CODE HERE */
-#define __LINBOX_HAVE_AVX2
 
 // define 256 bits simd vector type
 typedef __m256i  _vect256_t; 

@@ -1,4 +1,5 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /*
  * Copyright (C) 2014  Pascal Giorgi, Romain Lebreton
  *
@@ -154,6 +155,13 @@ namespace LinBox {
 					Butterfly_DIF_mod2p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], pow_w[j*f], pow_wp[j*f]);
 	}
 
+	template <class Field>
+	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative (uint32_t *fft) {
+		for (size_t w = 1, f = n >> 1; f >= 1; w <<= 1, f >>= 1)
+			for (size_t i = 0; i < f; i++)
+				for (size_t j = 0; j < w; j++)
+					Butterfly_DIT_mod4p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], pow_w[j*f], pow_wp[j*f]);
+	}
 
 	template <class Field>
 	void FFT_transform<Field>::FFT_DIT_Harvey_mod4p_iterative2x2 (uint32_t *fft) {
