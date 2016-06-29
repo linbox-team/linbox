@@ -77,16 +77,14 @@ namespace LinBox {
 			DIF_mod2p(fft);
 			//DIF_mod2p_iterative(fft);
 			for (uint64_t i = 0; i < this->n; i++) {
-				//				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
 				if (fft[i] >= this->_pl) fft[i] -= this->_pl;
 			}
 		}
 
 		void DIT (Element *fft) {
 			DIT_mod4p(fft);
-			//DIF_mod2p_iterative(fft);
 			for (uint64_t i = 0; i < this->n; i++) {
-				if (fft[i] >= (this->_pl << 1)) fft[i] -= (this->_pl << 1);
+				if (fft[i] >= this->_dpl) fft[i] -= this->_dpl;
 				if (fft[i] >= this->_pl) fft[i] -= this->_pl;
 			}
 		}
@@ -190,7 +188,7 @@ namespace LinBox {
 			DIF_mod2p(fft);
 
 			if (this->n >= 4) {
-				for (uint64_t i = 0; i < this->n; i += 8)
+				for (uint64_t i = 0; i < this->n; i += simd::vect_size)
 					reduce<Element,simd>(&fft[i],this->P);
 				return;
 			} else {
@@ -202,8 +200,8 @@ namespace LinBox {
 		void DIT (Element *fft) {
 			DIT_mod4p(fft);
 
-			if (this->n >= 4) {
-				for (uint64_t i = 0; i < this->n; i += 8){
+			if (this->n >= simd::vect_size) {
+				for (uint64_t i = 0; i < this->n; i += simd::vect_size){
 					reduce<Element,simd>(&fft[i],this->P2);
 					reduce<Element,simd>(&fft[i],this->P);
 				}
@@ -211,8 +209,8 @@ namespace LinBox {
 
 			} else {
 				for (uint64_t i = 0; i < this->n; i++) {
-					if (fft[i] >= (this->_pl << 1)) fft[i] -= (this->_pl << 1);
-					if (fft[i] >= this->_pl) fft[i] -= this->_pl;
+					if (fft[i] >= this->_dpl) fft[i] -= this->_dpl;
+					if (fft[i] >= this->_pl ) fft[i] -= this->_pl;
 				}
 			}
 		}
@@ -336,8 +334,8 @@ namespace LinBox {
 		void DIF (Element *fft) {
 			DIF_mod2p(fft);
 
-			if (this->n >= 8) {
-				for (uint64_t i = 0; i < this->n; i += 8){
+			if (this->n >= simd::vect_size) {
+				for (uint64_t i = 0; i < this->n; i += simd::vect_size){
 					reduce<Element,simd>(&fft[i],this->P);
 				}
 				return;
@@ -351,8 +349,8 @@ namespace LinBox {
 		void DIT (Element *fft) {
 			DIT_mod4p(fft);
 
-			if (this->n >= 8) {
-				for (uint64_t i = 0; i < this->n; i += 8){
+			if (this->n >= simd::vect_size) {
+				for (uint64_t i = 0; i < this->n; i += simd::vect_size){
 					reduce<Element,simd>(&fft[i],this->P2);
 					reduce<Element,simd>(&fft[i],this->P);
 				}
@@ -360,7 +358,7 @@ namespace LinBox {
 
 			} else {
 				for (uint64_t i = 0; i < this->n; i++) {
-					if (fft[i] >= (this->_pl << 1)) fft[i] -= (this->_pl << 1);
+					if (fft[i] >= this->_dpl) fft[i] -= this->_dpl;
 					if (fft[i] >= this->_pl) fft[i] -= this->_pl;
 				}
 			}

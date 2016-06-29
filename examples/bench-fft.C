@@ -239,9 +239,9 @@ int main(int argc, char** argv){
 	}
 	uint64_t bits =atoi(argv[1]);
 	long seed=((argc>2)?atoi(argv[2]):time(NULL));	
-	RandomFFTPrime Rd(1<<bits,seed);
-	uint32_t p = (uint32_t)Rd.randomPrime(5);
+	RandomFFTPrime Rd(1<<(bits-1),seed);
 	size_t k = bits-4;
+	uint64_t p = Rd.randomPrime(k);
 	cout<<"prime : "<<p<<endl;
 	cout<<endl;
 	
