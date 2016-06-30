@@ -55,8 +55,8 @@ namespace LinBox
 		
 		/** @brief randomPrime(size_t b)
 		 *  return a random FFT prime with a 2-valuation larger than b in its order
-				 *  the randomness is on the FFT primes lying in the given range
-				 *  an error is thrown if no such prime exist
+		 *  the randomness is on the FFT primes lying in the given range
+		 *  an error is thrown if no such prime exist
 		 */
 		inline Prime_Type randomPrime (size_t b) const
 		{
@@ -67,26 +67,37 @@ namespace LinBox
 
 		/** @brief randomPrime(Prime_Type& p, size_t b)
 		 *  return a random FFT prime with a 2-valuation larger than b in its order
-				 *  the randomness is on the FFT primes lying in the given range
-				 *  an error is thrown if no such prime exist
+		 *  the randomness is on the FFT primes lying in the given range
+		 *  an error is thrown if no such prime exist
 		 */
 		inline Prime_Type randomPrime (Prime_Type& t, uint64_t b) const
 		{
 			linbox_check(b<_bits);
-			size_t tresh;
+			size_t cbits= _bits - b;
+			integer pow2 = integer(1)<<b;
+			size_t tresh = 1000;
 			do {
-				size_t cbits= (size_t)rand() %(_bits-b);
-				tresh = 1<<(cbits);
-				uint64_t p = 1<<((size_t)_bits-cbits);
-				do {
-					integer::random(t,cbits);
-					t = t*integer(p)+1;
-					tresh--;
-				} while (!Givaro::Protected::probab_prime(t,25) && (tresh));
-			}
-			while(tresh==0);
-			linbox_check(Givaro::Protected::probab_prime(t,25))
-					return t;
+				integer::random(t,cbits);
+				t = t * pow2 + 1;
+				tresh--;
+			} while (!Givaro::Protected::probab_prime(t,25) && (tresh));
+
+
+//			do {
+//				size_t cbits= (size_t)rand() %(_bits-b);
+//				tresh = 1<<(cbits);
+//				integer p = integer(1)<<((size_t)_bits-cbits);
+//				do {
+//					integer::random(t,cbits);
+//					t = t * p+1;
+//					tresh--;
+//				} while (!Givaro::Protected::probab_prime(t,25) && (tresh));
+//			}
+//			while(tresh==0);
+//			linbox_check(Givaro::Protected::probab_prime(t,25));
+
+			linbox_check(Givaro::Protected::probab_prime(t,25)) // No FFT prime found after 1000 trys
+			return t;
 		}
 
 		/** @brief generatePrime()
