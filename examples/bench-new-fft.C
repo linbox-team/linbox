@@ -72,7 +72,7 @@ struct congruent{
 
 template<typename Funct, typename FFT, typename Vect>
 bool DFT_sanity_check(FFT& FFTDom, Funct f, const Vect& x, const Vect& y, string msg){
-	typedef typename FFT::Element Element ;
+//	typedef typename FFT::Element Element ;
 	Vect z(x);
 	auto Functor = bind(f, &FFTDom, &z[0]);
 	Functor();
@@ -292,19 +292,19 @@ int main(int argc, char** argv){
 	cout << std::setprecision(std::numeric_limits<double>::digits10 + 1);
 
 	//Modular<double>
-	bits = 26; k = l2n = 19;
+	bits = 23; k = l2n = 19;
 	Rd = RandomFFTPrime (1<<(bits-1),seed);
 	p = (double)Rd.randomPrime(l2n);
 
 	Givaro::Modular<double> Fd(p);
 	printPrimeInfo(p);
-	cout << "Test Modular<double>: " << ((pt =  check_DIF(Fd,k,seed))?"OK":"KO!!!!") << "\n\n\n";
+//	cout << "Test Modular<double>: " << ((pt =  check_DIF(Fd,k,seed))?"OK":"KO!!!!") << "\n\n\n";
 	passed &= pt;
 
 //	bench_DIF(Fd,k,seed);
 
 	//Modular<float,float>
-	bits = 9; k = l2n = 6;
+	bits = 8; k = l2n = 6;
 	Rd = RandomFFTPrime (1_ui64<<(bits-1),seed);
 	p = Rd.randomPrime(l2n);
 
@@ -314,7 +314,7 @@ int main(int argc, char** argv){
 	passed &= pt;
 
 	//ModularExtended<double,double>
-	bits = 50; k = l2n = 22;
+	bits = 47; k = l2n = 22;
 	Rd = RandomFFTPrime (1_ui64<<(bits-1),seed);
 	p = Rd.randomPrime(l2n);
 
