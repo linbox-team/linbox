@@ -128,8 +128,18 @@ namespace LinBox {
 		/**************/
 		/* load/store */
 		/**************/
-		static INLINE simd_vect load (const T* const p) {return simd::load(p);}
-		static INLINE void store(T *p, simd_vect v) {return simd::store(p, v);}
+		static INLINE simd_vect load (const T* const p) {
+#ifndef NDEBUG
+			assert(simd::valid(p));
+#endif
+			return simd::load(p);
+		}
+		static INLINE void store(T *p, simd_vect v) {
+#ifndef NDEBUG
+			assert(simd::valid(p));
+#endif
+			return simd::store(p, v);
+		}
 
 		/*********************/
 		/* Specific shuffles */
@@ -237,8 +247,18 @@ namespace LinBox {
 		/**************/
 		/* load/store */
 		/**************/
-		static INLINE simd_vect load (const T* const p) {return simd::load(p);}
-		static INLINE void store(T *p, simd_vect v) {return simd::store(p, v);}
+		static INLINE simd_vect load (const T* const p) {
+#ifndef NDEBUG
+			assert(simd::valid(p));
+#endif
+			return simd::load(p);
+		}
+		static INLINE void store(T *p, simd_vect v) {
+#ifndef NDEBUG
+			assert(simd::valid(p));
+#endif
+			return simd::store(p, v);
+		}
 
 		/********************/
 		/* unpacklo         */
@@ -325,8 +345,20 @@ namespace LinBox {
 		/**************/
 		/* load/store */
 		/**************/
-		static INLINE simd_vect load (const T* const p) {return simd::loadu(p);}
-		static INLINE void store(T *p, simd_vect v) {return simd::storeu(p, v);}
+		static INLINE simd_vect load (const T* const p) {
+#ifndef NDEBUG
+			assert(simd::valid(p));
+#endif
+			return simd::load(p);
+			// {return simd::loadu(p);}
+		}
+		static INLINE void store(T *p, simd_vect v) {
+#ifndef NDEBUG
+			assert(simd::valid(p));
+#endif
+			return simd::store(p, v);
+			// {return simd::storeu(p, v);}
+		}
 
 		/*********************/
 		/* Specific shuffles */
@@ -466,8 +498,20 @@ namespace LinBox {
 		/**************/
 		/* load/store */
 		/**************/
-		static INLINE simd_vect load (const T* const p) {return simd::loadu(p);}
-		static INLINE void store(T *p, simd_vect v) {return simd::storeu(p, v);}
+		static INLINE simd_vect load (const T* const p) {
+#ifndef NDEBUG
+			assert(simd::valid(p));
+#endif
+			return simd::load(p);
+			// {return simd::loadu(p);}
+		}
+		static INLINE void store(T *p, simd_vect v) {
+#ifndef NDEBUG
+			assert(simd::valid(p));
+#endif
+			return simd::store(p, v);
+			// {return simd::storeu(p, v);}
+		}
 
 		/*********************/
 		/* Specific shuffles */

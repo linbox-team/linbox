@@ -247,17 +247,17 @@ namespace LinBox {
 			// Last three steps
 			if (this->n >= 16) {
 				vect_t alpha,alphap,beta,betap;
-				Element tmp[8];
+				std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> tmp(8);
 				tmp[0]=tmp[4]=tab_w[0];
 				tmp[1]=tmp[5]=tab_w[1];
 				tmp[2]=tmp[6]=tab_w[2];
 				tmp[3]=tmp[7]=tab_w[3];
-				alpha = MemoryOp<Element,simd>::load(tmp);
+				alpha = MemoryOp<Element,simd>::load(&tmp[0]);
 				tmp[0]=tmp[4]=tab_wp[0];
 				tmp[1]=tmp[5]=tab_wp[1];
 				tmp[2]=tmp[6]=tab_wp[2];
 				tmp[3]=tmp[7]=tab_wp[3];
-				alphap = MemoryOp<Element,simd>::load(tmp);
+				alphap = MemoryOp<Element,simd>::load(&tmp[0]);
 				beta = simd::set1(tab_w [5]);
 				betap = simd::set1(tab_wp [5]);
 
@@ -290,17 +290,17 @@ namespace LinBox {
 				vect_t alpha,alphap,beta,betap;
 				alpha = simd::set1((pow_w)[n-3]);
 				alphap = simd::set1((pow_wp)[n-3]);
-				Element tmp[8];
+				std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> tmp(8);
 				tmp[0]=tmp[4]=(pow_w)[n-8];
 				tmp[1]=tmp[5]=(pow_w)[n-7];
 				tmp[2]=tmp[6]=(pow_w)[n-6];
 				tmp[3]=tmp[7]=(pow_w)[n-5];
-				beta = MemoryOp<Element,simd>::load(tmp);
+				beta = MemoryOp<Element,simd>::load(&tmp[0]);
 				tmp[0]=tmp[4]=(pow_wp)[n-8];
 				tmp[1]=tmp[5]=(pow_wp)[n-7];
 				tmp[2]=tmp[6]=(pow_wp)[n-6];
 				tmp[3]=tmp[7]=(pow_wp)[n-5];
-				betap = MemoryOp<Element,simd>::load(tmp);
+				betap = MemoryOp<Element,simd>::load(&tmp[0]);
 				for (uint64_t i = 0; i < n; i+=16) {
 					this->Butterfly_DIT_mod4p_firststeps(&fft[i],&fft[i+8],alpha,alphap,beta,betap);
 				}

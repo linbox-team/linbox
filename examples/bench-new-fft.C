@@ -212,7 +212,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		cout<<"*********************************************************"<<endl;
 		cout<<"*** Benching polynomials of size 2^" << lpts <<endl;
 		cout<<"*********************************************************"<<endl;
-		vector<Element> x(pts);
+		std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> x(pts);
 
 		// Generate random inputs
 		typename Field::RandIter Gen(fld,seed);
