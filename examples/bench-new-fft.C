@@ -274,13 +274,36 @@ void printPrimeInfo (uint64_t p) {
 	cout << "Prime " << p << " of bitsize " << bs << " and whose valuation in 2 is " << v2 << endl << endl;
 }
 
+#define COMMA ,
+
+#define InitField(Type, Name, Nbits, sizefft)		\
+	bits = Nbits; k = l2n = sizefft;				\
+	Rd = RandomFFTPrime (1_ui64<<(bits-1),seed);	\
+	p = Rd.randomPrime(l2n);						\
+	Type Name(p);
+
+#define TestField(Name, Field)												\
+	cout << "Test " << #Name << " :\n";													\
+	printPrimeInfo(p);														\
+	cout << ((pt =  check_DIF(Field,k,seed))?"OK":"KO!!!!") << "\n\n\n";	\
+	passed &= pt;
+
+#define BenchField(Name, Field)									\
+	cout << "Bench " << #Name << " :\n";							\
+	printPrimeInfo(p);											\
+	bench_DIF(Field,k,seed); cout << "\n\n\n";
+
 int main(int argc, char** argv){
-	//	if (argc < 2 || argc >3){
-	//		cerr<<"usage : prime_bitsize , (seed)"<<endl;
-	//		exit(0);
-	//	}
-	uint64_t bits = 0; //atoi(argv[1]);
-	long seed=((argc>2)?atoi(argv[2]):time(NULL));
+
+	static std::string  test ="all";
+	static Argument args[] = {
+		{ 't', "-t t", "Choose the targeted test {all,check,bench}", TYPE_STR, &test},
+		END_OF_ARGUMENTS
+	};
+	parseArguments (argc, argv, args);
+
+	uint64_t bits = 0;
+	long seed=time(NULL);
 	size_t l2n, k;
 	RandomFFTPrime Rd;
 	uint64_t p;
@@ -291,88 +314,53 @@ int main(int argc, char** argv){
 	cout.setf(std::ios_base::scientific, std::ios_base::floatfield);
 	cout << std::setprecision(std::numeric_limits<double>::digits10 + 1);
 
-	//Modular<double>
-	bits = 23; k = l2n = 19;
-	Rd = RandomFFTPrime (1<<(bits-1),seed);
-	p = (double)Rd.randomPrime(l2n);
+	// Create all the Fields
+	InitField(Givaro::Modular<float> , Ff, 8, 6);
+	InitField(Givaro::Modular<double>, Fd, 23, 19);
+	InitField(Givaro::ModularExtended<float> , Fef, 18, 15);
+	InitField(Givaro::ModularExtended<double>, Fed, 47, 22);
 
-	Givaro::Modular<double> Fd(p);
-	printPrimeInfo(p);
-//	cout << "Test Modular<double>: " << ((pt =  check_DIF(Fd,k,seed))?"OK":"KO!!!!") << "\n\n\n";
-	passed &= pt;
-
-//	bench_DIF(Fd,k,seed);
-
-	//Modular<float,float>
-	bits = 8; k = l2n = 6;
-	Rd = RandomFFTPrime (1_ui64<<(bits-1),seed);
-	p = Rd.randomPrime(l2n);
-
-	Givaro::Modular<float> Ff(p);
-	printPrimeInfo(p);
-	cout << "Test Modular<float>: " << ((pt =  check_DIF(Ff,k,seed))?"OK":"KO!!!!") << "\n\n\n";
-	passed &= pt;
-
-	//ModularExtended<double,double>
-	bits = 47; k = l2n = 22;
-	Rd = RandomFFTPrime (1_ui64<<(bits-1),seed);
-	p = Rd.randomPrime(l2n);
-
-	Givaro::ModularExtended<double> Fed(p);
-	// no type named 'Compute_t' in 'class Givaro::ModularExtended<double>'
-	printPrimeInfo(p);
-	cout << "Test ModularExtended<double,double>: " << ((pt =  check_DIF(Fed,k,seed))?"OK":"KO!!!!") << "\n\n\n";
-	passed &= pt;
-
-//	bench_DIF(Fed,k,seed);
-
+	InitField(Givaro::Modular<uint16_t COMMA uint32_t>, Fi16, 12, 8);
+	InitField(Givaro::Modular<uint32_t COMMA uint64_t>, Fi32, 28, 25);
 #ifdef __FFLASFFPACK_HAVE_INT128
-	//Modular<uint64_t,uint128_t>
-	bits = 59; k = l2n = 20;
-	Rd = RandomFFTPrime (1_ui64<<(bits-1),seed);
-	p = Rd.randomPrime(l2n);
-
-	Givaro::Modular<uint64_t,uint128_t> Fi64(p);
-	printPrimeInfo(p);
-	cout << "Test Modular<uint64_t,uint128_t> : " << ((pt =  check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << "\n\n\n";
-	passed &= pt;
+	InitField(Givaro::Modular<uint64_t COMMA uint128_t>, Fi64, 59, 20);
 #endif
 
-	//Modular<uint32_t,uint64_t>
-	bits = 28; k = l2n = 25;
-	Rd = RandomFFTPrime (1<<(bits-1),seed);
-	p = Rd.randomPrime(l2n);
+	// Launch tests
+	if (test == "all" || test == "check") {
+		TestField(Modular<float> , Ff);
+		TestField(Modular<double>, Fd);
+		TestField(ModularExtended<float> , Fef);
+		TestField(ModularExtended<double>, Fed);
 
-	Givaro::Modular<uint32_t,uint64_t> Fi32(p);
-	printPrimeInfo(p);
-	cout << "Test Modular<uint32_t,uint64_t>: " << ((pt =  check_DIF(Fi32,k,seed))?"OK":"KO!!!!") << "\n\n\n";
-	passed &= pt;
-
-//	bench_DIF(Fi32,k,seed);
-
-
-	//Modular<uint16_t,uint32_t>
-	bits = 12; k = l2n = 8;
-	Rd = RandomFFTPrime (1<<(bits-1),seed);
-	p = Rd.randomPrime(l2n);
-
-	Givaro::Modular<uint16_t,uint32_t> Fi16(p);
-	printPrimeInfo(p);
-	cout << "Test Modular<uint16_t,uint32_t> : " << ((pt =  check_DIF(Fi16,k,seed))?"OK":"KO!!!!") << "\n\n\n";
-	passed &= pt;
-
-
+		TestField(Modular<uint16_t>, Fi16);
+		TestField(Modular<uint32_t>, Fi32);
+	#ifdef __FFLASFFPACK_HAVE_INT128
+		TestField(Modular<uint64_t>, Fi64);
+	#endif
+	}
 	cout << "All tests " << (passed?"passed":"did not pass") << endl;
+	if (!passed) return EXIT_FAILURE;
 
-	// Bench FFT
+	// Launch benchs
+	if (test == "all" || test == "bench") {
+		BenchField(Modular<float> , Ff);
+		BenchField(Modular<double>, Fd);
+		BenchField(ModularExtended<float> , Fef);
+		BenchField(ModularExtended<double>, Fed);
 
-	//	cout << "Test : " << ((check_DIF(Fi16,k,seed))?"OK":"KO!!!!") << endl;
-	//	cout << "Test : " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
-	//	bench_DIF(Fi,k,seed);
-	//	bench_DIF(Fd,k,seed);
+		BenchField(Modular<uint16_t>, Fi16);
+		BenchField(Modular<uint32_t>, Fi32);
+	#ifdef __FFLASFFPACK_HAVE_INT128
+		BenchField(Modular<uint64_t>, Fi64);
+	#endif
+	}
 
-
-	return 0;
+	return EXIT_SUCCESS;
 }
 
+#undef COMMA
+#undef InitField
+#undef TestField
+#undef BenchField
 
