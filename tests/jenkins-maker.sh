@@ -70,8 +70,8 @@ fi
 # Automated installation and tests #
 #==================================#
 
-echo "|=== JENKINS AUTOMATED SCRIPT ===| ./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL --with-gmp=$GMP_PATH --with-givaro=$GIVARO_PATH $LINBOX_NTLFLAG"
-./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" --with-gmp=$GMP_PATH --with-givaro=$GIVARO_PATH "$LINBOX_NTLFLAG"
+echo "|=== JENKINS AUTOMATED SCRIPT ===| ./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL $LINBOX_NTLFLAG"
+./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG"
 V="$?"; if test "x$V" != "x0";then exit "$V"; fi
 
 echo "|=== JENKINS AUTOMATED SCRIPT ===| make install"
