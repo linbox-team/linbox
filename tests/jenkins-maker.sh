@@ -1,5 +1,5 @@
 #!/bin/bash
-# This file is part of the FFLAS-FFPACK library.
+# This file is part of the LinBox library.
 # It is distributed under the terms of the LGPL licence version 2.1 or later 
 # (see COPYING)
 # Created by AB - 2014/12/03
@@ -30,12 +30,7 @@ export PATH=$PATH:/usr/local/bin:"$LOCAL_DIR/$CXX/bin"
 echo $PATH
 # Add specific locations (if needed)
 LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib:"$LOCAL_DIR/$CXX/lib"
-
-# Where is FFLAS-FFPACK installed (using compiler CXX)
-# Keep default if you did not modified PREFIX_INSTALL
-FFLAS_FFPACK_PATH="$LOCAL_DIR/$CXX"/withSSE
-GMP_PATH="$LOCAL_DIR/$CXX"
-GIVARO_PATH="$LOCAL_DIR/$CXX"
+PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:"$LOCAL_DIR/$CXX/lib/pkgconfig":"$LOCAL_DIR/$CXX"/withSSE
 
 # Where to install linbox binaries
 # Keep default for local installation.
@@ -73,8 +68,8 @@ fi
 # Automated installation and tests #
 #==================================#
 
-echo "|=== JENKINS AUTOMATED SCRIPT ===| ./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL --with-gmp=$GMP_PATH --with-givaro=$GIVARO_PATH --with-fflas-ffpack=$FFLAS_FFPACK_PATH $LINBOX_NTLFLAG"
-./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" --with-gmp=$GMP_PATH --with-givaro=$GIVARO_PATH --with-fflas-ffpack="$FFLAS_FFPACK_PATH" "$LINBOX_NTLFLAG"
+echo "|=== JENKINS AUTOMATED SCRIPT ===| ./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL --with-gmp=$GMP_PATH --with-givaro=$GIVARO_PATH $LINBOX_NTLFLAG"
+./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" --with-gmp=$GMP_PATH --with-givaro=$GIVARO_PATH "$LINBOX_NTLFLAG"
 V="$?"; if test "x$V" != "x0";then exit "$V"; fi
 
 echo "|=== JENKINS AUTOMATED SCRIPT ===| make install"
