@@ -207,19 +207,20 @@ LB_DRIVER
 echo "-----------------------------------------------"
 
 # Now getting GMP and Givaro from FFLAS-FFPACK - AB 2014-12-10
+PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack])
 
-LB_CHECK_FFLAS_FFPACK(,,[
-echo ''
-echo '*******************************************************************************'
-echo ' ERROR: Fflas-Ffpack not found!'
-echo
-echo ' Fflas-Ffpack routines are required for this library to compile. Please'
-echo ' make sure they are installed and specify its location with the option'
-echo ' --with-fflas-ffpack=<lib> when running configure.'
-echo ' Also make sure your compiler supports cxx-11...'
-echo '*******************************************************************************'
-exit 1
-])
+dnl LB_CHECK_FFLAS_FFPACK(,,[
+dnl echo ''
+dnl echo '*******************************************************************************'
+dnl echo ' ERROR: Fflas-Ffpack not found!'
+dnl echo
+dnl echo ' Fflas-Ffpack routines are required for this library to compile. Please'
+dnl echo ' make sure they are installed and specify its location with the option'
+dnl echo ' --with-fflas-ffpack=<lib> when running configure.'
+dnl echo ' Also make sure your compiler supports cxx-11...'
+dnl echo '*******************************************************************************'
+dnl exit 1
+dnl ])
 
 LB_CHECK_LAPACK
 

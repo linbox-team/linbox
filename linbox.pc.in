@@ -1,6 +1,6 @@
 /------------------ linbox.pc ------------------------
 prefix=@prefix@
-exec_prefix=@prefix@/bin
+exec_prefix=@prefix@
 libdir=@prefix@/lib
 includedir=@prefix@/include
 

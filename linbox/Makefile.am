@@ -19,7 +19,7 @@
 # ========LICENCE========
 #/
 
-AM_CPPFLAGS= -I$(top_srcdir)/linbox $(DEPS_CFLAGS)
+AM_CPPFLAGS= -I$(top_srcdir)/linbox $(DEPS_CFLAGS) $(DEFAULT_CFLAGS)
 LDADD = $(DEPS_LIBS) $(LDFLAGS)
 
 #AM_CPPFLAGS = -I@includedir@ -I$(top_srcdir)/linbox -I$(top_srcdir) $(DEFCPPFLAGS) $(OPTFLAGS) $(FFLAS_FFPACK_CFLAGS) $(NTL_CFLAGS) $(MPFR_CFLAGS) $(FPLLL_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS) $(PARFLAGS)
