@@ -29,8 +29,10 @@ LOCAL_DIR="$JENKINS_DIR"/local
 export PATH=$PATH:/usr/local/bin:"$LOCAL_DIR/$CXX/bin"
 echo $PATH
 # Add specific locations (if needed)
-LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib:"$LOCAL_DIR/$CXX/lib"
-PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:"$LOCAL_DIR/$CXX/lib/pkgconfig":"$LOCAL_DIR/$CXX"/withSSE
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib:"$LOCAL_DIR/$CXX/lib":"$LOCAL_DIR/$CXX/withSSE/lib"
+echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
+export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:"$LOCAL_DIR/$CXX/lib/pkgconfig":"$LOCAL_DIR/$CXX/withSSE/lib/pkgconfig"
+echo "PKG_CONFIG_PATH = $PKG_CONFIG_PATH"
 
 # Where to install linbox binaries
 # Keep default for local installation.
