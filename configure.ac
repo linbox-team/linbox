@@ -21,7 +21,7 @@
 
 AC_PREREQ([2.61])
 
-AC_INIT([LinBox], [1.4.1],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.4.2],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 
 AC_CONFIG_MACRO_DIR([macros])
@@ -79,7 +79,7 @@ AC_SUBST([DEFAULT_CFLAGS])
 AC_SUBST([DEBUG_CFLAGS])
 AC_SUBST([TESTS_CFLAGS])
 
-TESTS_CFLAGS="-O0"
+TESTS_CFLAGS="-O2"
 DEBUG_CFLAGS="-g"
 DEFAULT_CFLAGS=""
 WARN_CFLAGS="-Wall"
@@ -207,19 +207,20 @@ LB_DRIVER
 echo "-----------------------------------------------"
 
 # Now getting GMP and Givaro from FFLAS-FFPACK - AB 2014-12-10
+PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack])
 
-LB_CHECK_FFLAS_FFPACK(,,[
-echo ''
-echo '*******************************************************************************'
-echo ' ERROR: Fflas-Ffpack not found!'
-echo
-echo ' Fflas-Ffpack routines are required for this library to compile. Please'
-echo ' make sure they are installed and specify its location with the option'
-echo ' --with-fflas-ffpack=<lib> when running configure.'
-echo ' Also make sure your compiler supports cxx-11...'
-echo '*******************************************************************************'
-exit 1
-])
+dnl LB_CHECK_FFLAS_FFPACK(,,[
+dnl echo ''
+dnl echo '*******************************************************************************'
+dnl echo ' ERROR: Fflas-Ffpack not found!'
+dnl echo
+dnl echo ' Fflas-Ffpack routines are required for this library to compile. Please'
+dnl echo ' make sure they are installed and specify its location with the option'
+dnl echo ' --with-fflas-ffpack=<lib> when running configure.'
+dnl echo ' Also make sure your compiler supports cxx-11...'
+dnl echo '*******************************************************************************'
+dnl exit 1
+dnl ])
 
 LB_CHECK_LAPACK
 

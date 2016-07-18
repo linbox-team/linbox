@@ -21,7 +21,7 @@
 
 #we now need to include givaro headers for timer ?
 
-AM_CPPFLAGS= -I$(top_srcdir)/linbox $(DEPS_CFLAGS)
+AM_CPPFLAGS= -I$(top_srcdir)/linbox $(DEPS_CFLAGS) $(DEFAULT_CFLAGS)
 LDADD = $(DEPS_LIBS) $(LDFLAGS)
 
 SUBDIRS=formats
