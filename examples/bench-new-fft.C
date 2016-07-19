@@ -298,13 +298,13 @@ int main(int argc, char** argv){
 
 	Givaro::Modular<double> Fd(p);
 	printPrimeInfo(p);
-//	cout << "Test Modular<double>: " << ((pt =  check_DIF(Fd,k,seed))?"OK":"KO!!!!") << "\n\n\n";
-	passed &= pt;
+	//	cout << "Test Modular<double>: " << ((pt =  check_DIF(Fd,k,seed))?"OK":"KO!!!!") << "\n\n\n";
+	//passed &= pt;
+   	//bench_DIF(Fd,k,seed);
 
-//	bench_DIF(Fd,k,seed);
 
 	//Modular<float,float>
-	bits = 8; k = l2n = 6;
+	bits = 12; k = l2n = 9;
 	Rd = RandomFFTPrime (1_ui64<<(bits-1),seed);
 	p = Rd.randomPrime(l2n);
 
@@ -312,7 +312,9 @@ int main(int argc, char** argv){
 	printPrimeInfo(p);
 	cout << "Test Modular<float>: " << ((pt =  check_DIF(Ff,k,seed))?"OK":"KO!!!!") << "\n\n\n";
 	passed &= pt;
+	bench_DIF(Ff,k,seed);
 
+#if 0
 	//ModularExtended<double,double>
 	bits = 47; k = l2n = 22;
 	Rd = RandomFFTPrime (1_ui64<<(bits-1),seed);
@@ -324,7 +326,7 @@ int main(int argc, char** argv){
 	cout << "Test ModularExtended<double,double>: " << ((pt =  check_DIF(Fed,k,seed))?"OK":"KO!!!!") << "\n\n\n";
 	passed &= pt;
 
-//	bench_DIF(Fed,k,seed);
+	bench_DIF(Fed,k,seed);
 
 #ifdef __FFLASFFPACK_HAVE_INT128
 	//Modular<uint64_t,uint128_t>
@@ -348,7 +350,7 @@ int main(int argc, char** argv){
 	cout << "Test Modular<uint32_t,uint64_t>: " << ((pt =  check_DIF(Fi32,k,seed))?"OK":"KO!!!!") << "\n\n\n";
 	passed &= pt;
 
-//	bench_DIF(Fi32,k,seed);
+	bench_DIF(Fi32,k,seed);
 
 
 	//Modular<uint16_t,uint32_t>
@@ -363,7 +365,7 @@ int main(int argc, char** argv){
 
 
 	cout << "All tests " << (passed?"passed":"did not pass") << endl;
-
+#endif
 	// Bench FFT
 
 	//	cout << "Test : " << ((check_DIF(Fi16,k,seed))?"OK":"KO!!!!") << endl;

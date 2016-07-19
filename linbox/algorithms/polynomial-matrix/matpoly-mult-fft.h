@@ -32,6 +32,8 @@
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/timer.h"
+#include "linbox/randiter/random-fftprime.h"
+#include "linbox/randiter/random-prime.h"
 
 #include "linbox/integer.h"
 #include <givaro/zring.h>
@@ -112,8 +114,8 @@ namespace LinBox
   // get the maximum prime for fft with modular<double> (matrix dim =k, nbr point = pts)
   uint64_t maxFFTPrimeValue(uint64_t k, uint64_t pts) {
     uint64_t prime_max=std::sqrt( (1ULL<<53) /k)+1;
-    size_t c=1;
-    const int fct=24;
+    uint64_t c=1;
+    const uint64_t fct=24;
     while (c<k && prime_max < (1UL<<26) && prime_max< pts*fct){
       prime_max=std::sqrt( (1ULL<<53) /(k/c))+1;
       c<<=1;
