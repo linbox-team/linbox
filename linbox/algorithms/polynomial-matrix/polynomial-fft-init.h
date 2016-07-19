@@ -443,7 +443,7 @@ namespace LinBox {
 			chrono.start();
 			size_t ct = 0;
 			while (chrono.realElapsedTime() < 0.1){
-				InitPowers<Field, Simd<Element> >::init_powers(pow_w_bis, pow_wp_bis, fld, _w, ln);
+				InitPowers<Field, Simd<Element> >::init_powers(pow_w, pow_wp, fld, _w, ln);
 				ct++;
 			}
 			chrono.stop();
@@ -454,7 +454,7 @@ namespace LinBox {
 			chrono.start();
 			ct = 0;
 			while (chrono.realElapsedTime() < 0.1){
-				InitPowers<Field, NoSimd<Element> >::init_powers(pow_w, pow_wp, fld, _w, ln);
+				InitPowers<Field, NoSimd<Element> >::init_powers(pow_w_bis, pow_wp_bis, fld, _w, ln);
 				ct++;
 			}
 			chrono.stop();
