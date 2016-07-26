@@ -1,8 +1,6 @@
 # The Linbox Library
 
-[![Build Status](https://ci.inria.fr/linbox/buildStatus/icon?job=LinBox)](https://ci.inria.fr/linbox/job/LinBox/) : LinBox
-
-[![Build Status](https://ci.inria.fr/linbox/buildStatus/icon?job=LinBox-NTL)](https://ci.inria.fr/linbox/job/LinBox-NTL/) : LinBox with NTL
+[![Build Status](https://ci.inria.fr/linbox/buildStatus/icon?job=LinBox)](https://ci.inria.fr/linbox/job/LinBox/)
 
 ## Purpose
 
