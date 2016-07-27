@@ -97,7 +97,7 @@ help() {
 	echo 
 	echo " --with-gmp=GMP/PATH   : tell where gmp is."
 	echo "                         Default : /usr, /usr/local. No argument is Default"
-	echo " --with-blas=BLAS/PATH : same as GMP for BLAS. (will check anyway)"
+	echo " --with-blas-libs=BLAS/PATH : same as GMP for BLAS. (will check anyway)"
 	echo " --with-ntl=NTL/PATH   : same as GMP for NTL. (default)"
 	echo " --with-iml=IML/PATH   : same as GMP for IML. (default)"
 	echo " --extra-flags=\"\"      : give extra compiler flags."
@@ -254,7 +254,7 @@ for i in "$@" ; do
 				GMP="$i"
 				GMP_VAR="true"
 				;;
-			"--with-blas")
+			"--with-blas-libs")
 				if	[ "x$BLAS_VAR" = "xtrue" ] ; then  echo "BLAS path already set ?" ;      help ; exit -1; fi
 				BLAS=$QUI=\"$QUOI\"
 				BLAS_VAR="true"
@@ -342,6 +342,10 @@ done
 
 MAKEPROG="make ${MAKEOPT}"
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PREFIX_LOC/lib/pkgconfig
+echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PREFIX_LOC/lib
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+
 ######################
 #  create build dir  #
 ######################
@@ -504,9 +508,6 @@ ${MAKEPROG} install | tee -a ../../auto-install.log|| die
 
 #return in build
 cd ..
-
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${PREFIX_LOC}/lib
-
 
 cool| tee -a ../auto-install.log
 
