@@ -80,6 +80,7 @@ namespace LinBox {
 		// Call loadu/storeu (no alignement requirement) if Simd256
 		static INLINE void store(T *p, Simd_vect v);
 
+		//		static INLINE Simd_vect shuffle4_DD (Simd_vect& s1);
 		static INLINE Simd_vect shuffletwice8_DD (Simd_vect& s1);
 
 		static INLINE Simd_vect unpacklo2 (const Simd_vect& a, const Simd_vect& b);
@@ -711,6 +712,8 @@ namespace LinBox {
 		return Simd::blendv(g, t, g);
 	}
 
+#ifdef __FFLASFFPACK_HAVE_INT128
+
 #define IS_INTEGRAL_AND_COMPUTET_INT128(Field)                              \
 	std::enable_if<(std::is_integral<typename Field::Element>::value) &     \
 	(std::is_same<typename Field::Compute_t,uint128_t>::value) >::type* = nullptr
@@ -724,13 +727,28 @@ namespace LinBox {
 	* b = [?, b0, ?, b2, ...] with bp its shoup mul_mod precomputation [b0p ? b2p ?, ... ]
 	* Return [?, (a0*b0) mod p, ?, (a2*b2) mod p, ... ]
 	*/
-	// Special template if COmpute_t == uint128_t since Simd128<uint128> and Simd256<uint128> do not exist
+	// Special template if Compute_t == uint128_t since Simd128<uint128> and Simd256<uint128> do not exist
 	template <typename Field, class Simd, typename IS_INTEGRAL_AND_COMPUTET_INT128(Field)>
 	INLINE Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p,
 								   const Simd_vect& bp, const Simd_vect& u = Simd::set1((typename Simd::scalar_t) 1)) {
 		return mul_mod<Simd>(a, b , p, bp);
 	}
 
+#undef IS_INTEGRAL_AND_COMPUTET_INT128
+
+#else //__FFLASFFPACK_HAVE_INT128
+
+#define IS_INTEGRAL_AND_COMPUTET_NOT_INT128(Field)                                  \
+	std::enable_if<(std::is_integral<typename Field::Element>::value)>::type* = nullptr
+
+
+#endif //__FFLASFFPACK_HAVE_INT128
+
+	/*
+	 * a = [a0, a0, a2, a2, ...]
+	* b = [?, b0, ?, b2, ...] with bp its shoup mul_mod precomputation [b0p ? b2p ?, ... ]
+	* Return [?, (a0*b0) mod p, ?, (a2*b2) mod p, ... ]
+	*/
 	template <typename Field, class Simd, typename IS_INTEGRAL_AND_COMPUTET_NOT_INT128(Field)>
 	INLINE Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p,
 								   const Simd_vect& bp, const Simd_vect& u = Simd::set1((typename Simd::scalar_t) 1)) {
@@ -751,8 +769,9 @@ namespace LinBox {
 		return mul_mod<Simd>(a, b , p, bp, u);
 	}
 
-#undef IS_NOT_COMPUTET_INT128
-#undef IS_COMPUTET_INT128
+#undef IS_INTEGRAL_AND_COMPUTET_NOT_INT128
+
+
 #undef IS_FLOATINGPOINT
 #undef IS_INTEGRAL
 #undef Simd_vect
