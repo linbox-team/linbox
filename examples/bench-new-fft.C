@@ -47,7 +47,7 @@ using namespace std;
 #include "linbox/ring/modular.h"
 
 using namespace LinBox;
-
+using namespace Givaro;
 
 
 template <typename Rand, typename Vect>
@@ -284,13 +284,13 @@ void printPrimeInfo (uint64_t p) {
 
 #define TestField(Name, Field, maxsizefft)									\
 	cout << "Test " << #Name << " :\n";										\
-	printPrimeInfo(p);														\
+	printPrimeInfo(Field.characteristic());							\
 	cout << ((pt =  check_DIF(Field,maxsizefft,seed))?"OK":"KO!!!!") << "\n\n\n";	\
 	passed &= pt;
 
 #define BenchField(Name, Field, maxsizefft)							\
 	cout << "Bench " << #Name << " :\n";							\
-	printPrimeInfo(p);											\
+	printPrimeInfo(Field.characteristic());											\
 	bench_DIF(Field,maxsizefft,seed); cout << "\n\n\n";
 
 int main(int argc, char** argv){
@@ -315,15 +315,15 @@ int main(int argc, char** argv){
 	cout << std::setprecision(std::numeric_limits<double>::digits10 + 1);
 
 	// Create all the Fields
-	InitField(Givaro::Modular<float> , Ff, 8, 6);
-	InitField(Givaro::Modular<double>, Fd, 23, 19);
-	InitField(Givaro::ModularExtended<float> , Fef, 18, 15);
-	InitField(Givaro::ModularExtended<double>, Fed, 47, 22);
+	InitField(Modular<float> , Ff, 8, 6);
+	InitField(Modular<double>, Fd, 23, 19);
+	InitField(ModularExtended<float> , Fef, 18, 15);
+	InitField(ModularExtended<double>, Fed, 47, 22);
 
-	InitField(Givaro::Modular<uint16_t COMMA uint32_t>, Fi16, 12, 8);
-	InitField(Givaro::Modular<uint32_t COMMA uint64_t>, Fi32, 28, 25);
+	InitField(Modular<uint16_t COMMA uint32_t>, Fi16, 12, 8);
+	InitField(Modular<uint32_t COMMA uint64_t>, Fi32, 28, 25);
 #ifdef __FFLASFFPACK_HAVE_INT128
-	InitField(Givaro::Modular<uint64_t COMMA uint128_t>, Fi64, 59, 25);
+	InitField(Modular<uint64_t COMMA uint128_t>, Fi64, 59, 25);
 #endif
 
 	// Launch tests
@@ -333,11 +333,12 @@ int main(int argc, char** argv){
 		TestField(ModularExtended<float> , Fef, 15);
 		TestField(ModularExtended<double>, Fed, 22);
 
-		TestField(Modular<uint16_t>, Fi16, 8);
-		TestField(Modular<uint32_t>, Fi32, 25);
-	#ifdef __FFLASFFPACK_HAVE_INT128
-		TestField(Modular<uint64_t>, Fi64, 25);
-	#endif
+		TestField(Modular<uint16_t COMMA uint32_t>, Fi16, 8);
+		TestField(Modular<uint32_t COMMA uint64_t>, Fi32, 25);
+#ifdef __FFLASFFPACK_HAVE_INT128
+		TestField(Modular<uint64_t COMMA uint128_t>, Fi64, 25);
+#endif
+
 	}
 	cout << "All tests " << (passed?"passed":"did not pass") << endl;
 	if (!passed) return EXIT_FAILURE;
@@ -349,11 +350,11 @@ int main(int argc, char** argv){
 		BenchField(ModularExtended<float> , Fef, 15);
 		BenchField(ModularExtended<double>, Fed, 22);
 
-		BenchField(Modular<uint16_t>, Fi16, 8);
-		BenchField(Modular<uint32_t>, Fi32, 25);
-	#ifdef __FFLASFFPACK_HAVE_INT128
-		BenchField(Modular<uint64_t>, Fi64, 25);
-	#endif
+		BenchField(Modular<uint16_t COMMA uint32_t>, Fi16, 8);
+		BenchField(Modular<uint32_t COMMA uint64_t>, Fi32, 25);
+#ifdef __FFLASFFPACK_HAVE_INT128
+		BenchField(Modular<uint64_t COMMA uint128_t>, Fi64, 25);
+#endif
 	}
 
 	return EXIT_SUCCESS;
