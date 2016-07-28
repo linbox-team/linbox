@@ -35,7 +35,7 @@ OPTIM="--enable-optimization"
 OPTIM_VAR=""
 CHECK_VAR=""
 #options
-PREFIX_LOC="/usr/local"
+PREFIX_LOC="/tmp"
 PREFIX_VAR=""
 PREFIX="--prefix=$PREFIX_LOC"
 BLAS=""
@@ -86,7 +86,7 @@ help() {
 	echo " * usage :"
 	echo
 	echo " --stable=[yes,no]     : install latest stable versions or latest git versions."
-	echo "                         Default : yes, even if switch ommitted. No argument means yes"
+	echo "                         Default : no, even if switch ommitted. No argument means no"
 
 	echo " --prefix=MY/PATH      : install all libraries under MY/PATH."
 	echo "                         Default : /tmp/"
@@ -97,7 +97,7 @@ help() {
 	echo 
 	echo " --with-gmp=GMP/PATH   : tell where gmp is."
 	echo "                         Default : /usr, /usr/local. No argument is Default"
-	echo " --with-blas=BLAS/PATH : same as GMP for BLAS. (will check anyway)"
+	echo " --with-blas-libs=BLAS/PATH : same as GMP for BLAS. (will check anyway)"
 	echo " --with-ntl=NTL/PATH   : same as GMP for NTL. (default)"
 	echo " --with-iml=IML/PATH   : same as GMP for IML. (default)"
 	echo " --extra-flags=\"\"      : give extra compiler flags."
@@ -254,8 +254,8 @@ for i in "$@" ; do
 				GMP="$i"
 				GMP_VAR="true"
 				;;
-			"--with-blas")
-				if	[ "x$BLAS_VAR" = "xtrue" ] ; then  echo "GMP path already set ?" ;      help ; exit -1; fi
+			"--with-blas-libs")
+				if	[ "x$BLAS_VAR" = "xtrue" ] ; then  echo "BLAS path already set ?" ;      help ; exit -1; fi
 				BLAS=$QUI=\"$QUOI\"
 				BLAS_VAR="true"
 				;;
@@ -341,6 +341,10 @@ esac
 done
 
 MAKEPROG="make ${MAKEOPT}"
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PREFIX_LOC/lib/pkgconfig
+echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PREFIX_LOC/lib
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
 ######################
 #  create build dir  #
@@ -505,9 +509,6 @@ ${MAKEPROG} install | tee -a ../../auto-install.log|| die
 #return in build
 cd ..
 
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${PREFIX_LOC}/lib
-
-
 cool| tee -a ../auto-install.log
 
 ##########################
@@ -537,14 +538,14 @@ if [ "$STABLE_VAR" = "true" ]; then
 	chmod +x configure.fflas.exe
 	./configure.fflas.exe| tee -a ../../auto-install.log
 	rm -rf configure.fflas.exe
-	#./configure  "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
+	#./configure  "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS"  "$WARNINGS" || die
 else
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"| tee -a ../../auto-install.log
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS" > configure.fflas.exe
 	chmod +x configure.fflas.exe
 	./configure.fflas.exe| tee -a ../../auto-install.log
 	rm -rf configure.fflas.exe
-	#./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
+	#./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS"  "$WARNINGS" || die
 fi
 
 echo -e "${BEG}building Fflas-Ffpack..."| tee -a ../../auto-install.log
@@ -592,16 +593,13 @@ echo -e " * to ensure you don't get undefined symbols !"| tee -a ./auto-install.
 echo  ""| tee -a ./auto-install.log
 
 
-GIVARO="--with-givaro=$PREFIX_LOC"
-FFLAFLAS="--with-fflas-ffpack=$PREFIX_LOC"
-
 if [ -x autogen.sh ] ;  then 
-	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"| tee -a ./auto-install.log
-	./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$GIVARO" "$FFLAFLAS" "$WARNINGS" "$IML" "$SAGE" "$DRIV" | tee -a ./auto-install.log|| die
+	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $SAGE $DRIV"| tee -a ./auto-install.log
+	./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$SAGE" "$DRIV" | tee -a ./auto-install.log|| die
 else
-	echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"| tee -a ./auto-install.log
-	# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS  $IML $SAGE $DRIV || die
-	./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$GIVARO" "$FFLAFLAS" "$WARNINGS" "$IML" "$SAGE" "$DRIV" | tee -a ./auto-install.log|| die
+	echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $SAGE $DRIV"| tee -a ./auto-install.log
+	# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS  $IML $SAGE $DRIV || die
+	./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$SAGE" "$DRIV" | tee -a ./auto-install.log|| die
 fi
 
 echo -e "${BEG}building LinBox..."| tee -a ./auto-install.log
