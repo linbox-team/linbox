@@ -32,8 +32,12 @@
 
 #include <givaro/modular.h>
 #include <givaro/givranditer.h>
+#include <givaro/modular-extended.h>
 
 using namespace std; 
+
+#include "fflas-ffpack/utils/align-allocator.h"
+#include "fflas-ffpack/fflas-ffpack-config.h"
 
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-butterflies.h"
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-algorithms.h"
@@ -41,10 +45,9 @@ using namespace std;
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/ring/modular.h"
-#include "fflas-ffpack/utils/align-allocator.h"
 
 using namespace LinBox;
-
+using namespace Givaro;
 
 
 template <typename Rand, typename Vect>
@@ -62,28 +65,33 @@ template<typename T>
 struct congruent{
 	T p;
 	congruent(T _p): p(_p){}
-	bool operator()(T a, T b) const { return ((uint64_t)a%(uint64_t)p) == ((uint64_t)b%(uint64_t)p);}
+	bool operator()(T a, T b) const {
+		return ((uint64_t)a%(uint64_t)p) == ((uint64_t)b%(uint64_t)p);
+	}
 };
+
 template<typename Funct, typename FFT, typename Vect>
 bool DFT_sanity_check(FFT& FFTDom, Funct f, const Vect& x, const Vect& y, string msg){
-	typedef typename FFT::Element Element ;
+//	typedef typename FFT::Element Element ;
 	Vect z(x);
 	auto Functor = bind(f, &FFTDom, &z[0]);
 	Functor();
 	msg+="  ";
 	msg.resize(45,'.');
-	cout<<"  Checking ... "<<msg
-	   << (equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p))?" done":" error")<<endl;
 
-	if (!(equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p)))){
+	//bool passed = equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p));
+	bool passed = equal(y.begin(),y.end(),z.begin());
+
+	cout<<"  Checking ... "<< msg  << (passed?" done":" error")<<endl;
+
+//	if (!(equal(y.begin(),y.end(),z.begin(),congruent<Element>(FFTDom._p)))){
 //		std::ostream_iterator<Element> out_it (std::cout,", ");
 //		std::copy ( z.begin(), z.end(), out_it );
 //		std::cout<<std::endl;
 //		std::copy ( y.begin(), y.end(), out_it );
 //		std::cout<<std::endl;
-		return false;
-	}
-	return true;
+//	}
+	return passed;
 }
 
 template<typename Field>
@@ -133,7 +141,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 			passed &= DFT_sanity_check(fft_algo_simd256,&FFT_a256::DIF,x,y, "FFT_algorithms<Field,Simd256>::DIF");
 		}
 #endif
-		cout<<"---------------------------------------------------------------"<<endl;
+//		cout<<"---------------------------------------------------------------"<<endl;
 
 		/* CHECK DIT */
 		// compute the correct result
@@ -158,7 +166,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		}
 #endif
 
-		cout<<endl;
+//		cout<<endl;
 	}
 	return passed;
 }
@@ -204,7 +212,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		cout<<"*********************************************************"<<endl;
 		cout<<"*** Benching polynomials of size 2^" << lpts <<endl;
 		cout<<"*********************************************************"<<endl;
-		vector<Element> x(pts);
+		std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> x(pts);
 
 		// Generate random inputs
 		typename Field::RandIter Gen(fld,seed);
@@ -255,79 +263,105 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 	}
 }
 
-
-int main(int argc, char** argv){
-	//	if (argc < 2 || argc >3){
-	//		cerr<<"usage : prime_bitsize , (seed)"<<endl;
-	//		exit(0);
-	//	}
-	uint64_t bits = 0; //atoi(argv[1]);
-	long seed=((argc>2)?atoi(argv[2]):time(NULL));
-	size_t l2n = 12;
-	size_t k = l2n;
-	RandomFFTPrime Rd;
-	uint32_t p;
-
-	//Modular<double,double>
-	bits = 22;
-	Rd = RandomFFTPrime (1<<bits,seed);
-	p = (double)Rd.randomPrime(l2n);
-
-	cout<<"prime : "<<p<<endl;
-	cout<<endl;
-
-	Givaro::Modular<double,double> Fd(p);
-//	cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
-
-#ifdef __FFLASFFPACK_HAVE_INT128
-	//Modular<int64_t,uint128_t>
-	bits = 59;
-	Rd = RandomFFTPrime (1ul<<bits,seed);
-	p = (uint64_t)Rd.randomPrime(l2n);
-
-	cout<<"prime : "<<p<<endl;
-	cout<<endl;
-
-	Givaro::Modular<uint64_t,uint128_t> Fi64(p);
-	cout << "Test Modular<int64_t,uint128_t> : " << ((check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << endl;
-#endif
-
-	//Modular<uint32_t,uint64_t>
-	bits = 28;
-	Rd = RandomFFTPrime (1<<bits,seed);
-	p = (uint32_t)Rd.randomPrime(l2n);
-
-	cout<<"prime : "<<p<<endl;
-	cout<<endl;
-
-	Givaro::Modular<uint32_t,uint64_t> Fi32(p);
-	cout << "Test Modular<uint32_t,uint64_t>: " << ((check_DIF(Fi32,k,seed))?"OK":"KO!!!!") << endl;
-
-//	bench_DIF(Fi32,k,seed);
-
-
-	//Modular<uint16_t,uint32_t>
-	bits = 12;
-	k = l2n = 8;
-	Rd = RandomFFTPrime (1<<bits,seed);
-	p = (uint16_t)Rd.randomPrime(l2n);
-
-	cout<<"prime : "<<p<<endl;
-	cout<<endl;
-
-	Givaro::Modular<uint16_t,uint32_t> Fi16(p);
-	cout << "Test Modular<uint16_t,uint32_t> : " << ((check_DIF(Fi16,k,seed))?"OK":"KO!!!!") << endl;
-
-
-	// Bench FFT
-
-	//	cout << "Test : " << ((check_DIF(Fi16,k,seed))?"OK":"KO!!!!") << endl;
-	//	cout << "Test : " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
-	//	bench_DIF(Fi,k,seed);
-	//	bench_DIF(Fd,k,seed);
-
-
-	return 0;
+void printPrimeInfo (uint64_t p) {
+	size_t bs = Givaro::Integer(p).bitsize();
+	uint64_t pm1 = p - 1;
+	size_t v2 = 0;
+	while ((pm1 & (uint64_t(1))) == 0) { // while pm1 even
+		v2++;
+		pm1 >>= 1;
+	}
+	cout << "Prime " << p << " of bitsize " << bs << " and whose valuation in 2 is " << v2 << endl << endl;
 }
 
+#define COMMA ,
+
+#define InitField(Type, Name, Nbits, maxsizefft)		\
+	bits = Nbits; l2n = maxsizefft;				\
+	Rd = RandomFFTPrime (1_ui64<<(bits-1),seed);	\
+	p = Rd.randomPrime(l2n);						\
+	Type Name(p);
+
+#define TestField(Name, Field, maxsizefft)									\
+	cout << "Test " << #Name << " :\n";										\
+	printPrimeInfo(Field.characteristic());							\
+	cout << ((pt =  check_DIF(Field,maxsizefft,seed))?"OK":"KO!!!!") << "\n\n\n";	\
+	passed &= pt;
+
+#define BenchField(Name, Field, maxsizefft)							\
+	cout << "Bench " << #Name << " :\n";							\
+	printPrimeInfo(Field.characteristic());											\
+	bench_DIF(Field,maxsizefft,seed); cout << "\n\n\n";
+
+int main(int argc, char** argv){
+
+	static std::string  test ="all";
+	static Argument args[] = {
+		{ 't', "-t t", "Choose the targeted test {all,check,bench}", TYPE_STR, &test},
+		END_OF_ARGUMENTS
+	};
+	parseArguments (argc, argv, args);
+
+	uint64_t bits = 0;
+	long seed=time(NULL);
+	size_t l2n;
+	RandomFFTPrime Rd;
+	uint64_t p;
+	bool passed = true;
+	bool pt = true;
+
+//	cout.setf(std::ios_base::fixed, std::ios_base::floatfield);
+	cout.setf(std::ios_base::scientific, std::ios_base::floatfield);
+	cout << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+
+	// Create all the Fields
+	InitField(Modular<float> , Ff, 8, 6);
+	InitField(Modular<double>, Fd, 23, 19);
+	InitField(ModularExtended<float> , Fef, 18, 15);
+	InitField(ModularExtended<double>, Fed, 47, 22);
+
+	InitField(Modular<uint16_t COMMA uint32_t>, Fi16, 12, 8);
+	InitField(Modular<uint32_t COMMA uint64_t>, Fi32, 28, 25);
+#ifdef __FFLASFFPACK_HAVE_INT128
+	InitField(Modular<uint64_t COMMA uint128_t>, Fi64, 59, 25);
+#endif
+
+	// Launch tests
+	if (test == "all" || test == "check") {
+		TestField(Modular<float> , Ff, 6);
+		TestField(Modular<double>, Fd, 19);
+		TestField(ModularExtended<float> , Fef, 15);
+		TestField(ModularExtended<double>, Fed, 22);
+
+		TestField(Modular<uint16_t COMMA uint32_t>, Fi16, 8);
+		TestField(Modular<uint32_t COMMA uint64_t>, Fi32, 25);
+#ifdef __FFLASFFPACK_HAVE_INT128
+		TestField(Modular<uint64_t COMMA uint128_t>, Fi64, 25);
+#endif
+
+		cout << "All tests " << (passed?"passed":"did not pass") << endl;
+	}
+	if (!passed) return EXIT_FAILURE;
+
+	// Launch benchs
+	if (test == "all" || test == "bench") {
+		BenchField(Modular<float> , Ff, 6);
+		BenchField(Modular<double>, Fd, 19);
+		BenchField(ModularExtended<float> , Fef, 15);
+		BenchField(ModularExtended<double>, Fed, 22);
+
+		BenchField(Modular<uint16_t COMMA uint32_t>, Fi16, 8);
+		BenchField(Modular<uint32_t COMMA uint64_t>, Fi32, 25);
+#ifdef __FFLASFFPACK_HAVE_INT128
+		BenchField(Modular<uint64_t COMMA uint128_t>, Fi64, 25);
+#endif
+	}
+
+	return EXIT_SUCCESS;
+}
+
+#undef COMMA
+#undef InitField
+#undef TestField
+#undef BenchField
 

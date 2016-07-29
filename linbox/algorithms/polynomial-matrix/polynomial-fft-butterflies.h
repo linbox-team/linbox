@@ -33,8 +33,8 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include "fflas-ffpack/fflas/fflas_simd.h"
-#include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
 #include "linbox/algorithms/polynomial-matrix/simd-additional-functions.h"
+#include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
 
 namespace LinBox {
 
@@ -54,49 +54,63 @@ namespace LinBox {
 
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {}
 
-		inline void Butterfly_DIT_mod4p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
-			using Compute_t = typename Field::Compute_t;
+		template<typename _Element = Element>
+		inline
+		typename std::enable_if<std::is_integral<_Element>::value>::type
+		Butterfly_DIT_mod4p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
 			// Harvey's algorithm
 			// 0 <= A,B < 4*p, p < 2^32 / 4
 			// alphap = Floor(alpha * 2^ 32 / p])
 
-			// TODO : replace by substract if greater
-			if (A >= this->_dpl) A -= this->_dpl;
-
-			// TODO : replace by mul_mod_shoup
-			Element tmp = ((Element) alphap * (Compute_t)B) >> (8*sizeof(Element));
-			tmp = alpha * B - tmp * this->_pl;
-
-			// TODO : replace by add_r and sub_r
+			// if (A >= 2*p) A -= 2*p;
+			A -= (A >= this->_dpl)?this->_dpl:0;
+			Element tmp;
+			this->fld->mul_precomp_b(tmp, B, alpha, alphap);
 			B = A + (this->_dpl - tmp);
-			//        B &= 0XFFFFFFFF;
 			A += tmp;
 		}
 
-		inline void Butterfly_DIF_mod2p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
-			//std::cout<<A<<" $$ "<<B<<"("<<alpha<<","<<alphap<<" ) -> ";
-			using Compute_t = typename Field::Compute_t;
+		template<typename _Element = Element>
+		inline
+		typename std::enable_if<std::is_floating_point<_Element>::value>::type
+		Butterfly_DIT_mod4p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
 			// Harvey's algorithm
-			// 0 <= A,B < 2*p, p < 2^32 / 4
+			// 0 <= A,B < 4*p, p < 2^32 / 4
 			// alphap = Floor(alpha * 2^ 32 / p])
 
+			// if (A >= 2*p) A -= 2*p;
+			A -= (A >= this->_dpl)?this->_dpl:0;
+			Element tmp;
+			this->fld->mul(tmp, B, alpha);
+			B = A + (this->_dpl - tmp);
+			A += tmp;
+		}
+
+		template<typename _Element = Element>
+		inline
+		typename std::enable_if<std::is_integral<_Element>::value>::type
+		Butterfly_DIF_mod2p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
 			Element tmp = A;
-
 			A += B;
-
-			if (A >= this->_dpl) A -= this->_dpl;
-
+			// if (A >= 2*p) A -= 2*p;
+			A -= (A >= this->_dpl)?this->_dpl:0;
 			B = tmp + (this->_dpl - B);
+			this->fld->mul_precomp_b(B, B, alpha, alphap);
+		}
 
-			tmp = ((Element) alphap * (Compute_t) B) >> (8*sizeof(Element));
-			B = alpha * B - tmp * this->_pl;
-			//B &= 0xFFFFFFFF;
-			//std::cout<<A<<" $$ "<<B<<"\n ";
+		template<typename _Element = Element>
+		inline
+		typename std::enable_if<std::is_floating_point<_Element>::value>::type
+		Butterfly_DIF_mod2p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
+			Element tmp = A;
+			A += B;
+			// if (A >= 2*p) A -= 2*p;
+			A -= (A >= this->_dpl)?this->_dpl:0;
+			B = tmp + (this->_dpl - B);
+			this->fld->mul(B, B, alpha);
 		}
 
 	}; // FFT_butterflies<Field, 1>
-
-	// ATTENTION à tous les uint64_t, SimdComp restants !!!!
 
 	template<typename Field, typename simd>
 	class FFT_butterflies<Field, simd, 4> : public FFT_init<Field> {
@@ -104,17 +118,37 @@ namespace LinBox {
 
 		using Element = typename Field::Element;
 		using vect_t = typename simd::vect_t;
-		using SimdComp = typename SimdCompute_t<simd,Field>::Compute_t;
+
+		vect_t P, P2, U;
 
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {
 			linbox_check(simd::vect_size == 4);
+			P  = simd::set1(this->_pl);
+			P2 = simd::set1(this->_dpl);
+			initU();
+		}
+
+		template<typename T = Element, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+		void initU() {
+			// U will not be used if Element is an integer type
+			U  = simd::set1((typename simd::scalar_t) 1);
+		}
+
+		template<typename T = Element, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+		void initU() {
+			U  = simd::div(simd::set1((typename simd::scalar_t) 1),P);
+
+#ifdef MYDEBUG
+			cout << "U initialized to ";
+			FFLAS::print<simd>(cout, U);
+			cout << endl;
+#endif
 		}
 
 		// TODO include P, P2 in precomp
 		// TODO : Same functions Butterfly_DIT_mod4p Butterfly_DIF_mod2p in FFT_butterflies<Field, 8>
 		inline void Butterfly_DIT_mod4p (Element* ABCD, Element* EFGH,
-										 const Element* alpha, const Element* alphap,
-										 const vect_t& P, const vect_t& P2) {
+										 const Element* alpha, const Element* alphap) {
 			vect_t V1,V2,V3,V4,W,Wp,T1;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
 			V1 = MemoryOp<Element,simd>::load(ABCD);
@@ -126,7 +160,7 @@ namespace LinBox {
 			V3 = reduce<simd>(V1, P2);
 
 			// V4 = V2 * W mod P
-			V4 = mul_mod<simd>(V2,W,P,Wp);
+			V4 = mul_mod<simd>(V2,W,P,Wp,U);
 
 			// V1 = V3 + V4
 			V1 = simd::add(V3,V4);
@@ -139,9 +173,7 @@ namespace LinBox {
 		}
 
 		inline void Butterfly_DIT_mod4p_firststeps (Element* ABCD, Element* EFGH,
-													const vect_t& W,
-													const vect_t& Wp,
-													const vect_t& P, const vect_t& P2) {
+													const vect_t& W, const vect_t& Wp) {
 			// First 2 steps
 			// First step
 			vect_t V1,V2,V3,V4,T1,T2,T3,T4;
@@ -166,10 +198,9 @@ namespace LinBox {
 			// T1 = [D D H H]
 			T1 = MemoryOp<Element,simd>::unpackhi4(V4,V4);
 
-			T2 = mul_mod_half<simd, SimdComp>(T1, W, P, Wp);
+			T2 = mul_mod_half<Field,simd>(T1, W, P, Wp, U);
 
 			T2 = simd::template shuffle<0xDD>(T2);
-			//T2 = simd::template shuffle<0xDD>(T2);
 
 			//At this point, T2 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
 
@@ -193,14 +224,20 @@ namespace LinBox {
 		}
 
 		inline void Butterfly_DIF_mod2p (Element* ABCD, Element* EFGH,
-										 const Element* alpha, const Element* alphap,
-										 const vect_t& P, const vect_t& P2) {
+										 const Element* alpha, const Element* alphap) {
 			vect_t V1,V2,V3,V4,W,Wp,T;
 			// V1=[A B C D], V2=[E F G H]
 			V1 = MemoryOp<Element,simd>::load(ABCD);
 			V2 = MemoryOp<Element,simd>::load(EFGH);
 			W  = MemoryOp<Element,simd>::load(alpha);
 			Wp = MemoryOp<Element,simd>::load(alphap);
+
+#ifdef MYDEBUG
+			std::cout << "Inside Butterfly_DIF_mod2p :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V1); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V2); std::cout << "]\n\n";
+#endif
+
 			// V3 = V1 + V2 mod
 			V3 = add_mod<simd >(V1,V2,P2);
 			MemoryOp<Element,simd>::store(ABCD,V3);
@@ -208,18 +245,34 @@ namespace LinBox {
 			T = simd::sub(V2,P2);
 			V4 = simd::sub(V1,T);
 
-			T = mul_mod<simd >(V4,W,P,Wp);// T is the result
+#ifdef MYDEBUG
+			std::cout << "Inside Butterfly_DIF_mod2p, before mul_mod :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V3); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V4); std::cout << "]\n\n";
+#endif
+
+			T = mul_mod<simd >(V4,W,P,Wp,U);// T is the result
+
+#ifdef MYDEBUG
+			std::cout << "Inside Butterfly_DIF_mod2p, after mul_mod :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,T); std::cout << "]\n\n";
+#endif
+
 			MemoryOp<Element,simd>::store(EFGH,T);
 		}
 
 		inline void Butterfly_DIF_mod2p_laststeps(Element* ABCD, Element* EFGH,
-												  const vect_t& W,
-												  const vect_t& Wp,
-												  const vect_t& P, const vect_t& P2) {
+												  const vect_t& W, const vect_t& Wp) {
 			vect_t V1,V2,V3,V4,V5,V6,V7;
 			// V1=[A B C D], V2=[E F G H]
 			V1 = MemoryOp<Element,simd>::load(ABCD);
 			V2 = MemoryOp<Element,simd>::load(EFGH);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 4 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V1); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V2); std::cout << "]\n\n";
+#endif
 
 			/* 1st step */
 			// V3=[A E B F], V4=[C G D H]
@@ -235,18 +288,32 @@ namespace LinBox {
 			// V4 = [D D H H]
 			V4 = MemoryOp<Element,simd>::unpackhi4(V2,V2);
 
+#ifdef MYDEBUG
+			std::cout << "Inputs of mul_mod_half : [D D H H], W \n";
+			FFLAS::print<simd>(std::cout,V4);
+			std::cout << "\n";
+			FFLAS::print<simd>(std::cout,W);
+			std::cout << "\n\n";
+#endif
+
 			// V3 = [* D * H]
-			V3 = mul_mod_half<simd, SimdComp>(V4, W, P, Wp);
+			V3 = mul_mod_half<Field,simd>(V4, W, P, Wp, U);
 
 			//At this point, V3 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
-			V3 = simd::template shuffle<0xDD>(V3);
-			//V3 = simd::template shuffle<0xDD>(V3); // 0xDD = [3 1 3 1]_base4
+			V3 = simd::template shuffle<0xDD>(V3); // 0xDD = [3 1 3 1]_base4
 
 			// At this time I have V1=[A E B F], V2=[C G ? ?], V3=[? ? D H]
 			// I need V3 = [A C E G], V4 = [B D F H]
 			// This is not refactored in MemoryOp::... because of different arguments (V1,V3) and (V1,V2)
 			V4 = MemoryOp<Element,simd>::unpackhi4(V1,V3);
 			V3 = MemoryOp<Element,simd>::unpacklo4(V1,V2);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 2 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,MemoryOp<Element,simd>::unpacklo4(V3,V4)); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,MemoryOp<Element,simd>::unpackhi4(V3,V4)); std::cout << "]\n\n";
+#endif
+
 
 			/* 2nd step */
 			// V1 = V3 + V4 mod 2P
@@ -258,6 +325,13 @@ namespace LinBox {
 			// Result in V1 = [A C E G]  and V2 = [B D F H]
 			// Transform to V3=[A B C D], V4=[E F G H]
 			MemoryOp<Element,simd>::unpacklohi4(V3,V4,V1,V2);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 4 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V3); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V4); std::cout << "]\n\n";
+#endif
+
 			// Store
 			MemoryOp<Element,simd>::store(ABCD,V3);
 			MemoryOp<Element,simd>::store(EFGH,V4);
@@ -272,16 +346,36 @@ namespace LinBox {
 
 		using Element = typename Field::Element;
 		using vect_t = typename simd::vect_t;
-		using SimdComp = typename SimdCompute_t<simd,Field>::Compute_t;
+
+		vect_t P, P2, U;
 
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {
 			linbox_check(simd::vect_size == 8);
+			P  = simd::set1(this->_pl);
+			P2 = simd::set1(this->_dpl);
+			initU();
+		}
+
+		template<typename T = Element, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+		void initU() {
+			// U will not be used if Element is an integer type
+			U  = simd::set1((typename simd::scalar_t) 1);
+		}
+
+		template<typename T = Element, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+		void initU() {
+			U  = simd::div(simd::set1((typename simd::scalar_t) 1),P);
+
+#ifdef MYDEBUG
+			cout << "U initialized to ";
+			FFLAS::print<simd>(cout, U);
+			cout << endl;
+#endif
 		}
 
 		// TODO include P, P2 in precomp
 		inline void Butterfly_DIT_mod4p (Element* ABCDEFGH, Element* IJKLMNOP,
-										 const Element* alpha, const Element* alphap,
-										 const vect_t& P, const vect_t& P2) {
+										 const Element* alpha, const Element* alphap) {
 			vect_t V1,V2,V3,V4,W,Wp,T1;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
 			V1 = MemoryOp<Element,simd>::load(ABCDEFGH);
@@ -293,7 +387,7 @@ namespace LinBox {
 			V3 = reduce<simd>(V1, P2);
 
 			// V4 = V2 * W mod P
-			V4 = mul_mod<simd>(V2,W,P,Wp);
+			V4 = mul_mod<simd>(V2,W,P,Wp,U);
 
 			// V1 = V3 + V4
 			V1 = simd::add(V3,V4);
@@ -307,8 +401,7 @@ namespace LinBox {
 
 		inline void Butterfly_DIT_mod4p_firststeps (Element* ABCDEFGH, Element* IJKLMNOP,
 													const vect_t& alpha,const vect_t& alphap,
-													const vect_t& beta ,const vect_t& betap,
-													const vect_t& P    ,const vect_t& P2) {
+													const vect_t& beta ,const vect_t& betap) {
 			// First 3 steps
 			vect_t V1,V2,V3,V4,V5,V6,V7,Q;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
@@ -338,7 +431,7 @@ namespace LinBox {
 			V5 = MemoryOp<Element,simd>::unpackhi_twice8(V2,V2);
 
 			// V3 = [* D * L * H * P]
-			V3 = mul_mod_half<simd,SimdComp>(V5,alpha,P,alphap);
+			V3 = mul_mod_half<Field,simd>(V5,alpha,P,alphap, U);
 
 			// V7 = [D L D L H P H P]
 			V7 = MemoryOp<Element,simd>::shuffletwice8_DD(V3);
@@ -365,7 +458,7 @@ namespace LinBox {
 			V6 = reduce<simd >(V3, P2);
 
 			// V7= V4.beta mod p
-			V7 = mul_mod<simd >(V4,beta,P,betap);
+			V7 = mul_mod<simd >(V4,beta,P,betap,U);
 
 			// V1 = V6+V7
 			V1 = simd::add(V6,V7);
@@ -384,8 +477,7 @@ namespace LinBox {
 		}
 
 		inline void Butterfly_DIF_mod2p (Element* ABCDEFGH, Element* IJKLMNOP,
-										 const Element* alpha, const Element* alphap,
-										 const vect_t& P, const vect_t& P2) {
+										 const Element* alpha, const Element* alphap) {
 			vect_t V1,V2,V3,V4,W,Wp,T;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
 			V1 = MemoryOp<Element,simd>::load(ABCDEFGH);
@@ -402,20 +494,25 @@ namespace LinBox {
 			// V4 = (V1+(2P-V2))alpha mod 2P
 			T = simd::sub(V2,P2);
 			V4 = simd::sub(V1,T);
-			T = mul_mod<simd >(V4,W,P,Wp);// T is the result
+			T = mul_mod<simd >(V4,W,P,Wp,U);// T is the result
 			MemoryOp<Element,simd>::store(IJKLMNOP,T);
 		}
 
 		inline void Butterfly_DIF_mod2p_laststeps(Element* ABCDEFGH, Element* IJKLMNOP,
 												  const vect_t& alpha,const vect_t& alphap,
-												  const vect_t& beta ,const vect_t& betap,
-												  const vect_t& P, const vect_t& P2) {
+												  const vect_t& beta ,const vect_t& betap) {
 			// Last 3 steps
 			vect_t V1,V2,V3,V4,V5,V6,V7,Q;
 
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
 			V1 = MemoryOp<Element,simd>::load(ABCDEFGH);
 			V2 = MemoryOp<Element,simd>::load(IJKLMNOP);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 8 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V1); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V2); std::cout << "]\n\n";
+#endif
 
 			/* 1st step */
 			// V3=[A B C D I J K L] V4=[E F G H M N O P]
@@ -429,7 +526,14 @@ namespace LinBox {
 			V5 = simd::sub(V4,P2);
 			V6 = simd::sub(V3,V5);
 			V7 = reduce<simd >(V6, P2);
-			V2 = mul_mod<simd >(V7,alpha,P,alphap);
+			V2 = mul_mod<simd >(V7,alpha,P,alphap,U);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 4 :\n";
+			MemoryOp<Element,simd>::unpacklohi2(V3,V4,V1,V2);
+			std::cout << "["; FFLAS::print<simd>(std::cout,V3); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V4); std::cout << "]\n\n";
+#endif
 
 			/* 2nd step */
 
@@ -449,8 +553,16 @@ namespace LinBox {
 			// V4 = [D D H H L L P P ]
 			V4 = MemoryOp<Element,simd>::unpackhi_twice8(V7,V7);
 
+#ifdef MYDEBUG
+			std::cout << "Inputs of mul_mod_half : [D D L L H H P P], beta \n";
+			FFLAS::print<simd>(std::cout,V4);
+			std::cout << "\n";
+			FFLAS::print<simd>(std::cout,beta);
+			std::cout << "\n\n";
+#endif
+
 			// V3 = [ * D * H * L * P]
-			V3 = mul_mod_half<simd,SimdComp>(V4,beta,P,betap);
+			V3 = mul_mod_half<Field,simd>(V4,beta,P,betap, U);
 
 			// V2=[D H D H L P L P] but only [* * D H * * L P] matters
 			V2 = MemoryOp<Element,simd>::shuffletwice8_DD(V3);
@@ -461,6 +573,12 @@ namespace LinBox {
 			// I need V3 = [A C E G I K M O], V4=[B D F H J L N P]
 			V3 = MemoryOp<Element,simd>::unpacklo_twice8(V1,V7);
 			V4 = MemoryOp<Element,simd>::unpackhi_twice8(V1,V2);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 2 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,MemoryOp<Element,simd>::unpacklo8(V3,V4)); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,MemoryOp<Element,simd>::unpackhi8(V3,V4)); std::cout << "]\n\n";
+#endif
 
 			// V1 = V3 + V4 mod 2P
 			V1 = add_mod<simd >(V3,V4,P2);
@@ -476,6 +594,12 @@ namespace LinBox {
 
 			// Transform to V1=[A B C D E F G H], V2=[I J K L M N O P]
 			MemoryOp<Element,simd>::unpacklohi2(V1,V2,V3,V4);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 1 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V1); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V2); std::cout << "]\n\n";
+#endif
 
 			// Store
 			MemoryOp<Element,simd>::store(ABCDEFGH,V1);

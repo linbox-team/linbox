@@ -63,6 +63,13 @@ namespace LinBox {
 				for (size_t i = 0; i < f; i++)
 					for (size_t j = 0; j < w; j++)
 						this->Butterfly_DIF_mod2p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], (this->pow_w)[j*f], (this->pow_wp)[j*f]);
+
+#ifdef MYDEBUG
+				cout << "Etape : " << w << endl;
+				for (size_t rom = 0; rom < this->n; rom++)
+					cout << fft[rom] << ", ";
+				cout << endl;
+#endif
 			}
 		}
 
@@ -77,16 +84,14 @@ namespace LinBox {
 			DIF_mod2p(fft);
 			//DIF_mod2p_iterative(fft);
 			for (uint64_t i = 0; i < this->n; i++) {
-				//				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
 				if (fft[i] >= this->_pl) fft[i] -= this->_pl;
 			}
 		}
 
 		void DIT (Element *fft) {
 			DIT_mod4p(fft);
-			//DIF_mod2p_iterative(fft);
 			for (uint64_t i = 0; i < this->n; i++) {
-				if (fft[i] >= (this->_pl << 1)) fft[i] -= (this->_pl << 1);
+				if (fft[i] >= this->_dpl) fft[i] -= this->_dpl;
 				if (fft[i] >= this->_pl) fft[i] -= this->_pl;
 			}
 		}
@@ -107,12 +112,7 @@ namespace LinBox {
 
 		void DIF_mod2p (Element *fft) {
 			const uint64_t& n = this->n;
-			const Residu_t& _pl = this->_pl;
-			const Residu_t& _dpl = this->_dpl;
 
-			vect_t P,P2;
-			P  = simd::set1(_pl);
-			P2 = simd::set1(_dpl);
 			Element * tab_w = &(this->pow_w) [0];
 			Element * tab_wp= &(this->pow_wp)[0];
 			size_t w, f;
@@ -124,7 +124,7 @@ namespace LinBox {
 
 #define A0 &fft[0] +  (i << 1)   *w+ j
 #define A4 &fft[0] + ((i << 1)+1)*w+ j
-						this->Butterfly_DIF_mod2p(A0,A4, tab_w+j,tab_wp+j,P,P2);
+						this->Butterfly_DIF_mod2p(A0,A4, tab_w+j,tab_wp+j);
 #undef A0
 #undef A4
 				//std::cout<<fft<<std::endl;
@@ -138,7 +138,7 @@ namespace LinBox {
 				for (size_t i = 0; i < f; i+=2)
 #define A0 &fft[0] +  (i << 2)
 #define A4 &fft[0] + ((i << 2)+4)
-					this->Butterfly_DIF_mod2p_laststeps(A0,A4,W,Wp,P,P2);
+					this->Butterfly_DIF_mod2p_laststeps(A0,A4,W,Wp);
 				//std::cout<<fft<<std::endl;
 #undef A0
 #undef A4
@@ -154,12 +154,7 @@ namespace LinBox {
 
 		void DIT_mod4p (Element *fft) {
 			const uint64_t& n = this->n;
-			const Residu_t& _pl = this->_pl;
-			const Residu_t& _dpl = this->_dpl;
 
-			vect_t P,P2;
-			P = simd::set1(_pl);
-			P2 = simd::set1(_dpl);
 			// First two steps
 			if (n >= 8) {
 				vect_t W,Wp;
@@ -167,7 +162,7 @@ namespace LinBox {
 				Wp= simd::set1 ((this->pow_wp)[n-3]);
 
 				for (size_t i = 0; i < n; i+=8)
-					this->Butterfly_DIT_mod4p_firststeps(&fft[i],&fft[i+4],W,Wp,P,P2);
+					this->Butterfly_DIT_mod4p_firststeps(&fft[i],&fft[i+4],W,Wp);
 
 				Element * tab_w = &(this->pow_w) [n-8];
 				Element * tab_wp= &(this->pow_wp)[n-8];
@@ -178,7 +173,7 @@ namespace LinBox {
 						for (size_t j = 0; j < w; j+=4)
 #define A0 &fft[0] +  (i << 1)   *w+ j
 #define A4 &fft[0] + ((i << 1)+1)*w+ j
-							this->Butterfly_DIT_mod4p(A0,A4, tab_w+j,tab_wp+j,P,P2);
+							this->Butterfly_DIT_mod4p(A0,A4, tab_w+j,tab_wp+j);
 
 #undef A0
 #undef A4
@@ -200,10 +195,8 @@ namespace LinBox {
 			DIF_mod2p(fft);
 
 			if (this->n >= 4) {
-				vect_t P;
-				P  = simd::set1(this->_pl);
-				for (uint64_t i = 0; i < this->n; i += 8)
-					reduce<Element,simd>(&fft[i],P);
+				for (uint64_t i = 0; i < this->n; i += simd::vect_size)
+					reduce<Element,simd>(&fft[i],this->P);
 				return;
 			} else {
 				for (uint64_t i = 0; i < this->n; i++)
@@ -214,20 +207,17 @@ namespace LinBox {
 		void DIT (Element *fft) {
 			DIT_mod4p(fft);
 
-			if (this->n >= 4) {
-				vect_t P,P2;
-				P  = simd::set1(this->_pl);
-				P2 = simd::set1(this->_dpl);
-				for (uint64_t i = 0; i < this->n; i += 8){
-					reduce<Element,simd>(&fft[i],P2);
-					reduce<Element,simd>(&fft[i],P);
+			if (this->n >= simd::vect_size) {
+				for (uint64_t i = 0; i < this->n; i += simd::vect_size){
+					reduce<Element,simd>(&fft[i],this->P2);
+					reduce<Element,simd>(&fft[i],this->P);
 				}
 				return;
 
 			} else {
 				for (uint64_t i = 0; i < this->n; i++) {
-					if (fft[i] >= (this->_pl << 1)) fft[i] -= (this->_pl << 1);
-					if (fft[i] >= this->_pl) fft[i] -= this->_pl;
+					if (fft[i] >= this->_dpl) fft[i] -= this->_dpl;
+					if (fft[i] >= this->_pl ) fft[i] -= this->_pl;
 				}
 			}
 		}
@@ -245,10 +235,6 @@ namespace LinBox {
 		}
 
 		void DIF_mod2p (Element *fft) {
-			vect_t P,P2;
-			P = simd::set1(this->_pl);
-			P2 = simd::set1(this->_dpl);
-
 			Element * tab_w = &(this->pow_w) [0];
 			Element * tab_wp= &(this->pow_wp)[0];
 			size_t w, f;
@@ -259,7 +245,7 @@ namespace LinBox {
 					for (size_t j = 0; j < w; j+=8)
 #define A0 &fft[0] +  (i << 1)   *w+ j
 #define A4 &fft[0] + ((i << 1)+1)*w+ j
-						this->Butterfly_DIF_mod2p(A0,A4, tab_w+j,tab_wp+j,P,P2);
+						this->Butterfly_DIF_mod2p(A0,A4, tab_w+j,tab_wp+j);
 
 #undef A0
 #undef A4
@@ -268,24 +254,24 @@ namespace LinBox {
 			// Last three steps
 			if (this->n >= 16) {
 				vect_t alpha,alphap,beta,betap;
-				Element tmp[8];
+				std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> tmp(8);
 				tmp[0]=tmp[4]=tab_w[0];
 				tmp[1]=tmp[5]=tab_w[1];
 				tmp[2]=tmp[6]=tab_w[2];
 				tmp[3]=tmp[7]=tab_w[3];
-				alpha = MemoryOp<Element,simd>::load(tmp);
+				alpha = MemoryOp<Element,simd>::load(&tmp[0]);
 				tmp[0]=tmp[4]=tab_wp[0];
 				tmp[1]=tmp[5]=tab_wp[1];
 				tmp[2]=tmp[6]=tab_wp[2];
 				tmp[3]=tmp[7]=tab_wp[3];
-				alphap = MemoryOp<Element,simd>::load(tmp);
+				alphap = MemoryOp<Element,simd>::load(&tmp[0]);
 				beta = simd::set1(tab_w [5]);
 				betap = simd::set1(tab_wp [5]);
 
 				for (size_t i = 0; i < f; i+=2)
 #define A0 &fft[0] + (i << 3)
 #define A4 &fft[0] + (i << 3)+8
-					this->Butterfly_DIF_mod2p_laststeps(A0,A4,alpha,alphap,beta,betap,P,P2);
+					this->Butterfly_DIF_mod2p_laststeps(A0,A4,alpha,alphap,beta,betap);
 #undef A0
 #undef A4
 				//std::cout<<fft<<std::endl;
@@ -306,28 +292,24 @@ namespace LinBox {
 			const auto &pow_wp = this->pow_wp;
 			const uint64_t &n = this->n;
 
-			vect_t P,P2;
-			P = simd::set1(this->_pl);
-			P2 = simd::set1(this->_dpl);
-
 			// first three steps
 			if (n >= 16) {
 				vect_t alpha,alphap,beta,betap;
 				alpha = simd::set1((pow_w)[n-3]);
 				alphap = simd::set1((pow_wp)[n-3]);
-				Element tmp[8];
+				std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> tmp(8);
 				tmp[0]=tmp[4]=(pow_w)[n-8];
 				tmp[1]=tmp[5]=(pow_w)[n-7];
 				tmp[2]=tmp[6]=(pow_w)[n-6];
 				tmp[3]=tmp[7]=(pow_w)[n-5];
-				beta = MemoryOp<Element,simd>::load(tmp);
+				beta = MemoryOp<Element,simd>::load(&tmp[0]);
 				tmp[0]=tmp[4]=(pow_wp)[n-8];
 				tmp[1]=tmp[5]=(pow_wp)[n-7];
 				tmp[2]=tmp[6]=(pow_wp)[n-6];
 				tmp[3]=tmp[7]=(pow_wp)[n-5];
-				betap = MemoryOp<Element,simd>::load(tmp);
+				betap = MemoryOp<Element,simd>::load(&tmp[0]);
 				for (uint64_t i = 0; i < n; i+=16) {
-					this->Butterfly_DIT_mod4p_firststeps(&fft[i],&fft[i+8],alpha,alphap,beta,betap,P,P2);
+					this->Butterfly_DIT_mod4p_firststeps(&fft[i],&fft[i+8],alpha,alphap,beta,betap);
 				}
 				const Element * tab_w = &(pow_w) [n-16];
 				const Element * tab_wp= &(pow_wp)[n-16];
@@ -338,7 +320,7 @@ namespace LinBox {
 						for (size_t j = 0; j < w; j+=8) {
 #define A0 &fft[0] +  (i << 1)   *w+ j
 #define A4 &fft[0] + ((i << 1)+1)*w+ j
-							this->Butterfly_DIT_mod4p(A0,A4, tab_w+j,tab_wp+j,P,P2);
+							this->Butterfly_DIT_mod4p(A0,A4, tab_w+j,tab_wp+j);
 #undef A0
 #undef A4
 						}
@@ -359,11 +341,9 @@ namespace LinBox {
 		void DIF (Element *fft) {
 			DIF_mod2p(fft);
 
-			if (this->n >= 8) {
-				vect_t P;
-				P  = simd::set1(this->_pl);
-				for (uint64_t i = 0; i < this->n; i += 8){
-					reduce<Element,simd>(&fft[i],P);
+			if (this->n >= simd::vect_size) {
+				for (uint64_t i = 0; i < this->n; i += simd::vect_size){
+					reduce<Element,simd>(&fft[i],this->P);
 				}
 				return;
 
@@ -376,19 +356,16 @@ namespace LinBox {
 		void DIT (Element *fft) {
 			DIT_mod4p(fft);
 
-			if (this->n >= 8) {
-				vect_t P,P2;
-				P  = simd::set1(this->_pl);
-				P2 = simd::set1(this->_dpl);
-				for (uint64_t i = 0; i < this->n; i += 8){
-					reduce<Element,simd>(&fft[i],P2);
-					reduce<Element,simd>(&fft[i],P);
+			if (this->n >= simd::vect_size) {
+				for (uint64_t i = 0; i < this->n; i += simd::vect_size){
+					reduce<Element,simd>(&fft[i],this->P2);
+					reduce<Element,simd>(&fft[i],this->P);
 				}
 				return;
 
 			} else {
 				for (uint64_t i = 0; i < this->n; i++) {
-					if (fft[i] >= (this->_pl << 1)) fft[i] -= (this->_pl << 1);
+					if (fft[i] >= this->_dpl) fft[i] -= this->_dpl;
 					if (fft[i] >= this->_pl) fft[i] -= this->_pl;
 				}
 			}

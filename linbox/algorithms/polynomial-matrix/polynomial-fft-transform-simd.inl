@@ -483,7 +483,7 @@ namespace LinBox {
 	 ******************************************************************************************************************/
 
 
-#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
+#ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 
 	template <class Field>
 	inline void FFT_transform<Field>::reduce256_modp(uint32_t* ABCD, const _vect256_t& P) {
@@ -816,20 +816,22 @@ namespace LinBox {
 				tmp[2]=tmp[6]=pow_wp[n-6];
 				tmp[3]=tmp[7]=pow_wp[n-5];
 				betap = Simd256<uint32_t>::loadu(tmp);
-				for (uint64_t i = 0; i < n; i+=16)
+				for (uint64_t i = 0; i < n; i+=16) {
 					Butterfly_DIT_mod4p_8x3_AVX_first3step(&fft[i],&fft[i+8],alpha,alphap,beta,betap,P,P2);
+				}
 				uint32_t * tab_w = &pow_w [n-16];
 				uint32_t * tab_wp= &pow_wp[n-16];
 				for (size_t w = 8, f = n >> 4; f >= 1; w <<= 1, f >>= 1, tab_w-=w, tab_wp-=w){
 						// w : witdh of butterflies
 						// f : # families of butterflies
 						for (size_t i = 0; i < f; i++)
-							for (size_t j = 0; j < w; j+=8)
+							for (size_t j = 0; j < w; j+=8) {
 #define A0 &fft[0] +  (i << 1)   *w+ j
 #define A4 &fft[0] + ((i << 1)+1)*w+ j
 								Butterfly_DIT_mod4p_8x1_AVX(A0,A4, tab_w+j,tab_wp+j,P,P2);
 #undef A0
 #undef A4
+							}
 					}
 			} else {
 				uint32_t * tab_w = &pow_w [n-2];

@@ -115,7 +115,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		//passed &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x1_SSE,x,y, "DIF_Harvey_mod2p_iterative4x1_SSE");
 		// check 4x2 SSE		
 		//passed &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x2_SSE,x,y, "DIF_Harvey_mod2p_iterative4x2_SSE");
-#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
+#ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 		// check 8x1 AVX		
 		//passed &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative8x1_AVX,x,y, "DIF_Harvey_mod2p_iterative8x1_AVX");
 #endif
@@ -133,7 +133,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		passed &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative3x3,x,y, "DIT_Harvey_mod4p_iterative3x3");
 		// check 4x1 SSE		
 		//passed &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative4x1_SSE,x,y, "DIT_Harvey_mod4p_iterative4x1_SSE");
-#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
+#ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 		// check 8x1 AVX		
 		//passed &= DFT_sanity_check(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative8x1_AVX,x,y, "DIT_Harvey_mod4p_iterative8x1_AVX");
 #endif
@@ -203,7 +203,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		//DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x1_SSE,lpts, x, "DIF_Harvey_mod2p_iterative4x1_SSE");
 		// check 4x2 SSE		
 		//DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative4x2_SSE,lpts, x, "DIF_Harvey_mod2p_iterative4x2_SSE");
-#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
+#ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 		// check 8x1 AVX		
 		//DFT_performance(MulDom,&FFT_t::FFT_DIF_Harvey_mod2p_iterative8x1_AVX,lpts, x, "DIF_Harvey_mod2p_iterative8x1_AVX");
 #endif
@@ -219,7 +219,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		DFT_performance(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative3x3,lpts, x,     "DIT_Harvey_mod4p_iterative3x3");
 		// check 4x1 SSE		
 		//DFT_performance(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative4x1_SSE,lpts, x, "DIT_Harvey_mod4p_iterative4x1_SSE");
-#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
+#ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 		// check 8x1 AVX		
 		//DFT_performance(MulDom,&FFT_t::FFT_DIT_Harvey_mod4p_iterative8x1_AVX,lpts, x, "DIT_Harvey_mod4p_iterative8x1_AVX");
 #endif
@@ -239,9 +239,9 @@ int main(int argc, char** argv){
 	}
 	uint64_t bits =atoi(argv[1]);
 	long seed=((argc>2)?atoi(argv[2]):time(NULL));	
-	RandomFFTPrime Rd(1<<bits,seed);
-	uint32_t p = (uint32_t)Rd.randomPrime(5);
+	RandomFFTPrime Rd(1<<(bits-1),seed);
 	size_t k = bits-4;
+	uint64_t p = Rd.randomPrime(k);
 	cout<<"prime : "<<p<<endl;
 	cout<<endl;
 	

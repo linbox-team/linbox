@@ -69,7 +69,7 @@ using std::ptrdiff_t;
 #endif
 
 #ifdef __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS
-#define __LINBOX_HAVE_AVX_INSTRUCTIONS2
+#define __LINBOX_HAVE_AVX2_INSTRUCTIONS
 #endif
 
 namespace LinBox {
