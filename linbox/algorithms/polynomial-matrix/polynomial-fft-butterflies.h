@@ -110,10 +110,7 @@ namespace LinBox {
 			this->fld->mul(B, B, alpha);
 		}
 
-
 	}; // FFT_butterflies<Field, 1>
-
-	// ATTENTION à tous les uint64_t, SimdComp restants !!!!
 
 	template<typename Field, typename simd>
 	class FFT_butterflies<Field, simd, 4> : public FFT_init<Field> {

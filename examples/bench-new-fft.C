@@ -339,8 +339,8 @@ int main(int argc, char** argv){
 		TestField(Modular<uint64_t COMMA uint128_t>, Fi64, 25);
 #endif
 
+		cout << "All tests " << (passed?"passed":"did not pass") << endl;
 	}
-	cout << "All tests " << (passed?"passed":"did not pass") << endl;
 	if (!passed) return EXIT_FAILURE;
 
 	// Launch benchs
