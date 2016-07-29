@@ -54,19 +54,18 @@
 
 #include "fflas-ffpack/fflas/fflas_simd.h"
 
-#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
+#ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 /* 256 bits CODE */
-#define __LINBOX_HAVE_AVX_INSTRUCTIONS2
 
 // define 256 bits simd vector type
 typedef __m256i  _vect256_t;
 
-#endif
+#endif // __LINBOX_HAVE_AVX2_INSTRUCTIONS
 
 // define 128 bits simd vector type
 typedef __m128i  _vect128_t;
 
-#endif
+#endif // __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
 
 namespace LinBox {
 
@@ -243,7 +242,7 @@ namespace LinBox {
 		
 		void FFT_DIF_Harvey (uint32_t *fft) {
 #ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
-#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
+#ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 			FFT_DIF_Harvey_mod2p_iterative8x1_AVX(fft);
 			if (n>=8){
 				_vect256_t P;
@@ -254,7 +253,7 @@ namespace LinBox {
 			}
 #else
 			FFT_DIF_Harvey_mod2p_iterative4x2_SSE(fft);
-#endif
+#endif // __LINBOX_HAVE_AVX2_INSTRUCTIONS
 			if (n >=4) {
 				_vect128_t P;
 				P = Simd128<uint32_t>::set1(_pl);
@@ -271,12 +270,12 @@ namespace LinBox {
 //				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
 				if (fft[i] >= _pl) fft[i] -= _pl;
 			}
-#endif 
+#endif // __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
 		}
 		
 		void FFT_DIT_Harvey (uint32_t *fft) {
 #ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
-#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
+#ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 			FFT_DIT_Harvey_mod4p_iterative8x1_AVX(fft);
 			if (n>=8){
 				_vect256_t P,P2;
@@ -290,7 +289,7 @@ namespace LinBox {
 			}
 #else
 			FFT_DIT_Harvey_mod4p_iterative4x1_SSE(fft);
-#endif
+#endif // __LINBOX_HAVE_AVX2_INSTRUCTIONS
 			if (n >=4) {
 				_vect128_t P,P2;
 				P = Simd128<uint32_t>::set1(_pl);
@@ -312,7 +311,7 @@ namespace LinBox {
 				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
 				if (fft[i] >= _pl) fft[i] -= _pl;
 			}
-#endif 
+#endif // __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
 		}
 		
 		// FFT without conversion
@@ -377,7 +376,7 @@ namespace LinBox {
 												const uint32_t* alphap,const __m128i& P, const __m128i& P2);
 		inline void Butterfly_DIT_mod4p_4x2_SSE_first2step(uint32_t* ABCD, uint32_t* EFGH, const __m128i& W,
 														   const __m128i& Wp, const __m128i& P, const __m128i& P2);
-#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
+#ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 		inline void reduce256_modp(uint32_t*, const __m256i&);
 		inline void Butterfly_DIF_mod2p_8x1_AVX(uint32_t* ABCD, uint32_t* EFGH, const uint32_t* alpha,const uint32_t* alphap,const __m256i& P, const __m256i& P2);
 		inline void Butterfly_DIF_mod2p_8x3_AVX_last3step(uint32_t* ABCDEFGH, uint32_t* IJKLMNOP, const __m256i& alpha,const __m256i& alphap,
@@ -388,7 +387,7 @@ namespace LinBox {
 														   const __m256i& beta ,const __m256i& betap, const __m256i& P    ,const __m256i& P2);
 
 
-#endif
+#endif // __LINBOX_HAVE_AVX2_INSTRUCTIONS
 
 		/*
 		 * Different implementation of DIF/DIT with Harvey's trick
@@ -404,7 +403,7 @@ namespace LinBox {
 		void FFT_DIF_Harvey_mod2p_iterative4x1_SSE (uint32_t *fft);
 		void FFT_DIF_Harvey_mod2p_iterative4x2_SSE (uint32_t *fft);
 		void FFT_DIT_Harvey_mod4p_iterative4x1_SSE (uint32_t *fft);
-#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
+#ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 		void FFT_DIF_Harvey_mod2p_iterative8x1_AVX (uint32_t *fft);
 		void FFT_DIT_Harvey_mod4p_iterative8x1_AVX (uint32_t *fft);
 #endif
