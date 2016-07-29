@@ -51,14 +51,14 @@ namespace LinBox {
 	template <typename simd, typename Field>
 	struct SimdCompute_t {};
 
-#if defined(__FFLASFFPACK_USE_SIMD)
+#if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 	template <typename Field>
 	struct SimdCompute_t<Simd128<typename Field::Element>, Field> {
 		using Compute_t = Simd128<typename Field::Compute_t>;
 	};
 #endif
 
-#if defined(__FFLASFFPACK_USE_AVX)
+#if defined(__FFLASFFPACK_HAVE_AVX_INSTRUCTIONS)
 	template <typename Field>
 	struct SimdCompute_t<Simd256<typename Field::Element>, Field> {
 		using Compute_t = Simd256<typename Field::Compute_t>;
@@ -116,7 +116,7 @@ namespace LinBox {
 
 #undef Simd_vect
 
-#if defined(__FFLASFFPACK_USE_SIMD)
+#if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 	template<class T>
 	struct MemoryOp<T, Simd128<T>> {
 		using simd = Simd128<T>;
@@ -242,7 +242,7 @@ namespace LinBox {
 	}; // MemoryOp<T, Simd128<T>>
 #endif
 
-#if defined(__FFLASFFPACK_USE_AVX2)
+#if defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
 	template<class T>
 	struct MemoryOp<T, Simd256<T>> {
 		using simd = Simd256<T>;

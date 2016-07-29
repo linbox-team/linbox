@@ -49,7 +49,7 @@
 
 #include "fflas-ffpack/utils/align-allocator.h"
 
-#ifdef __LINBOX_USE_SIMD
+#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
 
 //#include "linbox/algorithms/polynomial-matrix/simd.h"
 

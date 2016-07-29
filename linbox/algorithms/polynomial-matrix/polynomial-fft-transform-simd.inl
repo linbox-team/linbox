@@ -483,7 +483,7 @@ namespace LinBox {
 	 ******************************************************************************************************************/
 
 
-#ifdef __LINBOX_USE_AVX2
+#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
 
 	template <class Field>
 	inline void FFT_transform<Field>::reduce256_modp(uint32_t* ABCD, const _vect256_t& P) {

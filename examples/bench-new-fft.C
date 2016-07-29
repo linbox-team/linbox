@@ -116,7 +116,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		// compute the correct result
 		fft_algo_nosimd.DIF(y.data());
 
-#if defined(__FFLASFFPACK_USE_SIMD)
+#if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 		// check FFT_algorithms::DIF
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
@@ -125,7 +125,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		}
 #endif
 
-#if defined(__FFLASFFPACK_USE_AVX2)
+#if defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
 		// check FFT_algorithms::DIF
 		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd256<typename Field::Element> > fft_algo_simd256 (fft_init);
@@ -140,7 +140,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		y=x;
 		fft_algo_nosimd.DIT(y.data());
 
-#if defined(__FFLASFFPACK_USE_SIMD)
+#if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 		// check FFT_algorithms::DIT
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
@@ -149,7 +149,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		}
 #endif
 
-#if defined(__FFLASFFPACK_USE_AVX2)
+#if defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
 		// check FFT_algorithms::DIT
 		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd256<typename Field::Element> > fft_algo_simd256 (fft_init);
@@ -216,7 +216,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		using FFT_a = FFT_algorithms<Field,NoSimd<typename Field::Element> >;
 		DFT_performance(fft_algo_nosimd,&FFT_a::DIF, lpts, x, "FFT_algorithms<Field,NoSimd>::DIF");
 
-#if defined(__FFLASFFPACK_USE_SIMD)
+#if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
 			using FFT_a128 = FFT_algorithms<Field,Simd128<typename Field::Element> >;
@@ -224,7 +224,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		}
 #endif
 
-#if defined(__FFLASFFPACK_USE_AVX2)
+#if defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
 		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd256<typename Field::Element> > fft_algo_simd256 (fft_init);
 			using FFT_a256 = FFT_algorithms<Field,Simd256<typename Field::Element> >;
@@ -235,7 +235,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 
 		DFT_performance(fft_algo_nosimd,&FFT_a::DIT, lpts, x, "FFT_algorithms<Field,NoSimd>::DIT");
 
-#if defined(__FFLASFFPACK_USE_SIMD)
+#if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
 			using FFT_a128 = FFT_algorithms<Field,Simd128<typename Field::Element> >;
@@ -243,7 +243,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		}
 #endif
 
-#if defined(__FFLASFFPACK_USE_AVX2)
+#if defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
 		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd256<typename Field::Element> > fft_algo_simd256 (fft_init);
 			using FFT_a256 = FFT_algorithms<Field,Simd256<typename Field::Element> >;

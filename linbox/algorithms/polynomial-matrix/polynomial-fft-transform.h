@@ -48,15 +48,15 @@
 
 #include "fflas-ffpack/utils/align-allocator.h"
 
-#ifdef __LINBOX_USE_SIMD
+#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
 
 //#include "linbox/algorithms/polynomial-matrix/simd.h"
 
 #include "fflas-ffpack/fflas/fflas_simd.h"
 
-#ifdef __LINBOX_USE_AVX2
+#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
 /* 256 bits CODE */
-#define __LINBOX_USE_AVX2
+#define __LINBOX_HAVE_AVX_INSTRUCTIONS2
 
 // define 256 bits simd vector type
 typedef __m256i  _vect256_t;
@@ -242,8 +242,8 @@ namespace LinBox {
 
 		
 		void FFT_DIF_Harvey (uint32_t *fft) {
-#ifdef __LINBOX_USE_SIMD
-#ifdef __LINBOX_USE_AVX2
+#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
+#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
 			FFT_DIF_Harvey_mod2p_iterative8x1_AVX(fft);
 			if (n>=8){
 				_vect256_t P;
@@ -275,8 +275,8 @@ namespace LinBox {
 		}
 		
 		void FFT_DIT_Harvey (uint32_t *fft) {
-#ifdef __LINBOX_USE_SIMD
-#ifdef __LINBOX_USE_AVX2
+#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
+#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
 			FFT_DIT_Harvey_mod4p_iterative8x1_AVX(fft);
 			if (n>=8){
 				_vect256_t P,P2;
@@ -377,7 +377,7 @@ namespace LinBox {
 												const uint32_t* alphap,const __m128i& P, const __m128i& P2);
 		inline void Butterfly_DIT_mod4p_4x2_SSE_first2step(uint32_t* ABCD, uint32_t* EFGH, const __m128i& W,
 														   const __m128i& Wp, const __m128i& P, const __m128i& P2);
-#ifdef __LINBOX_USE_AVX2
+#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
 		inline void reduce256_modp(uint32_t*, const __m256i&);
 		inline void Butterfly_DIF_mod2p_8x1_AVX(uint32_t* ABCD, uint32_t* EFGH, const uint32_t* alpha,const uint32_t* alphap,const __m256i& P, const __m256i& P2);
 		inline void Butterfly_DIF_mod2p_8x3_AVX_last3step(uint32_t* ABCDEFGH, uint32_t* IJKLMNOP, const __m256i& alpha,const __m256i& alphap,
@@ -404,7 +404,7 @@ namespace LinBox {
 		void FFT_DIF_Harvey_mod2p_iterative4x1_SSE (uint32_t *fft);
 		void FFT_DIF_Harvey_mod2p_iterative4x2_SSE (uint32_t *fft);
 		void FFT_DIT_Harvey_mod4p_iterative4x1_SSE (uint32_t *fft);
-#ifdef __LINBOX_USE_AVX2
+#ifdef __LINBOX_HAVE_AVX_INSTRUCTIONS2
 		void FFT_DIF_Harvey_mod2p_iterative8x1_AVX (uint32_t *fft);
 		void FFT_DIT_Harvey_mod4p_iterative8x1_AVX (uint32_t *fft);
 #endif
@@ -414,7 +414,7 @@ namespace LinBox {
 } // end of namespace LinBox
 
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.inl"
-#ifdef __LINBOX_USE_SIMD
+#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform-simd.inl"
 #endif
 #endif // __LINBOX_FFT_H
