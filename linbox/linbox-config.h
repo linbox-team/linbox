@@ -58,18 +58,18 @@ using std::ptrdiff_t;
 #endif
 #endif
 
-#ifdef __FFLASFFPACK_USE_SIMD
-#define __LINBOX_USE_SIMD
+#ifdef __FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS
+#define __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
 #else
 #define __LINBOX_NO_SIMD
 #endif
 
-#ifdef __FFLASFFPACK_USE_AVX
-#define __LINBOX_USE_AVX
+#ifdef __FFLASFFPACK_HAVE_AVX_INSTRUCTIONS
+#define __LINBOX_HAVE_AVX_INSTRUCTIONS
 #endif
 
-#ifdef __FFLASFFPACK_USE_AVX2
-#define __LINBOX_USE_AVX2
+#ifdef __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS
+#define __LINBOX_HAVE_AVX_INSTRUCTIONS2
 #endif
 
 namespace LinBox {
