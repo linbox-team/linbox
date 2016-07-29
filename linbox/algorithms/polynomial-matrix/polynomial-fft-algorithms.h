@@ -63,6 +63,13 @@ namespace LinBox {
 				for (size_t i = 0; i < f; i++)
 					for (size_t j = 0; j < w; j++)
 						this->Butterfly_DIF_mod2p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], (this->pow_w)[j*f], (this->pow_wp)[j*f]);
+
+#ifdef MYDEBUG
+				cout << "Etape : " << w << endl;
+				for (size_t rom = 0; rom < this->n; rom++)
+					cout << fft[rom] << ", ";
+				cout << endl;
+#endif
 			}
 		}
 

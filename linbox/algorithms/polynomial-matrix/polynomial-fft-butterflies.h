@@ -137,6 +137,12 @@ namespace LinBox {
 		template<typename T = Element, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
 		void initU() {
 			U  = simd::div(simd::set1((typename simd::scalar_t) 1),P);
+
+#ifdef MYDEBUG
+			cout << "U initialized to ";
+			FFLAS::print<simd>(cout, U);
+			cout << endl;
+#endif
 		}
 
 		// TODO include P, P2 in precomp
@@ -225,6 +231,13 @@ namespace LinBox {
 			V2 = MemoryOp<Element,simd>::load(EFGH);
 			W  = MemoryOp<Element,simd>::load(alpha);
 			Wp = MemoryOp<Element,simd>::load(alphap);
+
+#ifdef MYDEBUG
+			std::cout << "Inside Butterfly_DIF_mod2p :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V1); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V2); std::cout << "]\n\n";
+#endif
+
 			// V3 = V1 + V2 mod
 			V3 = add_mod<simd >(V1,V2,P2);
 			MemoryOp<Element,simd>::store(ABCD,V3);
@@ -232,7 +245,19 @@ namespace LinBox {
 			T = simd::sub(V2,P2);
 			V4 = simd::sub(V1,T);
 
+#ifdef MYDEBUG
+			std::cout << "Inside Butterfly_DIF_mod2p, before mul_mod :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V3); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V4); std::cout << "]\n\n";
+#endif
+
 			T = mul_mod<simd >(V4,W,P,Wp,U);// T is the result
+
+#ifdef MYDEBUG
+			std::cout << "Inside Butterfly_DIF_mod2p, after mul_mod :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,T); std::cout << "]\n\n";
+#endif
+
 			MemoryOp<Element,simd>::store(EFGH,T);
 		}
 
@@ -242,6 +267,12 @@ namespace LinBox {
 			// V1=[A B C D], V2=[E F G H]
 			V1 = MemoryOp<Element,simd>::load(ABCD);
 			V2 = MemoryOp<Element,simd>::load(EFGH);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 4 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V1); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V2); std::cout << "]\n\n";
+#endif
 
 			/* 1st step */
 			// V3=[A E B F], V4=[C G D H]
@@ -257,6 +288,14 @@ namespace LinBox {
 			// V4 = [D D H H]
 			V4 = MemoryOp<Element,simd>::unpackhi4(V2,V2);
 
+#ifdef MYDEBUG
+			std::cout << "Inputs of mul_mod_half : [D D H H], W \n";
+			FFLAS::print<simd>(std::cout,V4);
+			std::cout << "\n";
+			FFLAS::print<simd>(std::cout,W);
+			std::cout << "\n\n";
+#endif
+
 			// V3 = [* D * H]
 			V3 = mul_mod_half<Field,simd>(V4, W, P, Wp, U);
 
@@ -269,6 +308,13 @@ namespace LinBox {
 			V4 = MemoryOp<Element,simd>::unpackhi4(V1,V3);
 			V3 = MemoryOp<Element,simd>::unpacklo4(V1,V2);
 
+#ifdef MYDEBUG
+			std::cout << "Input before step 2 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,MemoryOp<Element,simd>::unpacklo4(V3,V4)); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,MemoryOp<Element,simd>::unpackhi4(V3,V4)); std::cout << "]\n\n";
+#endif
+
+
 			/* 2nd step */
 			// V1 = V3 + V4 mod 2P
 			V1 = add_mod<simd >(V3,V4,P2);
@@ -279,6 +325,13 @@ namespace LinBox {
 			// Result in V1 = [A C E G]  and V2 = [B D F H]
 			// Transform to V3=[A B C D], V4=[E F G H]
 			MemoryOp<Element,simd>::unpacklohi4(V3,V4,V1,V2);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 4 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V3); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V4); std::cout << "]\n\n";
+#endif
+
 			// Store
 			MemoryOp<Element,simd>::store(ABCD,V3);
 			MemoryOp<Element,simd>::store(EFGH,V4);
@@ -312,6 +365,12 @@ namespace LinBox {
 		template<typename T = Element, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
 		void initU() {
 			U  = simd::div(simd::set1((typename simd::scalar_t) 1),P);
+
+#ifdef MYDEBUG
+			cout << "U initialized to ";
+			FFLAS::print<simd>(cout, U);
+			cout << endl;
+#endif
 		}
 
 		// TODO include P, P2 in precomp
@@ -449,6 +508,12 @@ namespace LinBox {
 			V1 = MemoryOp<Element,simd>::load(ABCDEFGH);
 			V2 = MemoryOp<Element,simd>::load(IJKLMNOP);
 
+#ifdef MYDEBUG
+			std::cout << "Input before step 8 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V1); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V2); std::cout << "]\n\n";
+#endif
+
 			/* 1st step */
 			// V3=[A B C D I J K L] V4=[E F G H M N O P]
 			MemoryOp<Element,simd>::unpacklohi2(V3,V4,V1,V2);
@@ -462,6 +527,13 @@ namespace LinBox {
 			V6 = simd::sub(V3,V5);
 			V7 = reduce<simd >(V6, P2);
 			V2 = mul_mod<simd >(V7,alpha,P,alphap,U);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 4 :\n";
+			MemoryOp<Element,simd>::unpacklohi2(V3,V4,V1,V2);
+			std::cout << "["; FFLAS::print<simd>(std::cout,V3); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V4); std::cout << "]\n\n";
+#endif
 
 			/* 2nd step */
 
@@ -481,6 +553,14 @@ namespace LinBox {
 			// V4 = [D D H H L L P P ]
 			V4 = MemoryOp<Element,simd>::unpackhi_twice8(V7,V7);
 
+#ifdef MYDEBUG
+			std::cout << "Inputs of mul_mod_half : [D D L L H H P P], beta \n";
+			FFLAS::print<simd>(std::cout,V4);
+			std::cout << "\n";
+			FFLAS::print<simd>(std::cout,beta);
+			std::cout << "\n\n";
+#endif
+
 			// V3 = [ * D * H * L * P]
 			V3 = mul_mod_half<Field,simd>(V4,beta,P,betap, U);
 
@@ -493,6 +573,12 @@ namespace LinBox {
 			// I need V3 = [A C E G I K M O], V4=[B D F H J L N P]
 			V3 = MemoryOp<Element,simd>::unpacklo_twice8(V1,V7);
 			V4 = MemoryOp<Element,simd>::unpackhi_twice8(V1,V2);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 2 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,MemoryOp<Element,simd>::unpacklo8(V3,V4)); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,MemoryOp<Element,simd>::unpackhi8(V3,V4)); std::cout << "]\n\n";
+#endif
 
 			// V1 = V3 + V4 mod 2P
 			V1 = add_mod<simd >(V3,V4,P2);
@@ -508,6 +594,12 @@ namespace LinBox {
 
 			// Transform to V1=[A B C D E F G H], V2=[I J K L M N O P]
 			MemoryOp<Element,simd>::unpacklohi2(V1,V2,V3,V4);
+
+#ifdef MYDEBUG
+			std::cout << "Input before step 1 :\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V1); std::cout << "]\n";
+			std::cout << "["; FFLAS::print<simd>(std::cout,V2); std::cout << "]\n\n";
+#endif
 
 			// Store
 			MemoryOp<Element,simd>::store(ABCDEFGH,V1);
