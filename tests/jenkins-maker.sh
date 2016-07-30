@@ -70,8 +70,8 @@ fi
 # Automated installation and tests #
 #==================================#
 
-echo "|=== JENKINS AUTOMATED SCRIPT ===| ./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL $LINBOX_NTLFLAG"
-./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG"
+echo "|=== JENKINS AUTOMATED SCRIPT ===| ./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL $LINBOX_NTLFLAG $LINBOX_FFLASFFPACKFLAG""
+./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG" "$LINBOX_FFLASFFPACKFLAG"
 V="$?"; if test "x$V" != "x0";then exit "$V"; fi
 
 echo "|=== JENKINS AUTOMATED SCRIPT ===| make install"

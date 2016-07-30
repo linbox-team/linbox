@@ -1,3 +1,7 @@
+2016-07-30 cpernet v1.4.2
+	* cleanup and new features on polynomial matrices
+	* many bug fixes ensuring support of gcc-4.8, 5.3, 6.1 clang-3.4 and
+	icpc on i386, x86_64, ubuntu osx, fedora and ppcle
 2016-02-24 cpernet v1.4.1
 	* update the build system (add pkgconfig file, and a more consistent way
 	of dealing with dependencies)
