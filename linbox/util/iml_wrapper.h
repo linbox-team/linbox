@@ -43,7 +43,12 @@ namespace IML {
 	extern "C" {
 #include "iml.h"
 
-		/*  basisop.c */
+/* Pretend that IML was not included. This is needed if some other
+ * library also wants to include iml.h */
+#undef IML_H
+#undef ENUM_DEFINED_H
+
+                /*  basisop.c */
 		void
 		maxMagnMP (mpz_t *mp_A, const long n, const long m, const long lda, \
 			              mpz_t mp_max) ;
