@@ -445,6 +445,9 @@ namespace LinBox
 		bool isMOne (const Element &x) const
 		{ return mpq_cmp_ui (x.rep, 1L, 1L) == 0; }
 
+		bool isUnit (const Element &x) const
+		{ return !isZero(x); }
+
 
 		/** Inplace Addition.
 		 * x += y

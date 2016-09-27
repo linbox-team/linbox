@@ -391,6 +391,17 @@ namespace LinBox
 		bool isMOne (const ElementAbstract& x) const
 		{ return _field.isMOne (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
 
+		/** invertibility.
+		 * Test if field element is a unit.
+		 * This function assumes the field element has already been
+		 * constructed and initialized.
+		 * Purely virtual.
+		 * @return boolean true if is a unit, false if not.
+		 * @param  x field element.
+		 */
+		bool isUnit (const ElementAbstract& x) const
+		{ return _field.isUnit (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
+
 
 		/** Inplace Addition.
 		 * x += y

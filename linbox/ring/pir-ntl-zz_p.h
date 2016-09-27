@@ -207,12 +207,11 @@ namespace LinBox
 			return NTL::IsOne (x);
 		}
 
-	bool isMOne (const Element& x) const
+        inline bool isMOne (const Element& x) const
 		{
 			Element y ; neg(y,x);
 			return isOne(y);
 		}
-
 
 		// arithmetic
 
@@ -413,14 +412,11 @@ namespace LinBox
 		/** @brief
 		 *  Test if x is a unit.
 		 */
-		inline static bool isUnit (const Element& x) {
+		inline bool isUnit(const Element& x) const {
+            NTL::ZZ d;
+            return !NTL::InvModStatus(d,rep(x),NTL::ZZ_p::modulus());
+        }
 
-			NTL::ZZ g;
-
-			NTL::GCD (g, NTL::rep(x), NTL::ZZ_p::modulus());
-
-			return NTL::IsOne (g);
-		}
 
 		/** @brief
 		 *  return g = gcd (a, b)
@@ -906,8 +902,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

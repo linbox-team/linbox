@@ -303,6 +303,9 @@ namespace LinBox
 			return isOne(y);
 		}
 
+		bool isUnit (const Element &x) const
+		{ return !isZero(x); }
+
 
 		/** Inplace Addition.
 		 * x += y

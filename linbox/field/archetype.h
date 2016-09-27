@@ -441,6 +441,20 @@ namespace LinBox
 		bool isMOne (const Element &x) const
 		{ return _field_ptr->isMOne (*x._elem_ptr); }
 
+		/** Units.
+		 * Test if field element is a unit.
+		 * This function assumes the field element has already been
+		 * constructed and initialized.
+		 *
+		 * In this implementation, this means the <tt> _elem_ptr</tt>
+		 *of x exists and does not point to null.
+		 *
+		 * @return boolean true if is a unit, false if not.
+		 * @param  x field element.
+		 */
+		bool isUnit (const Element &x) const
+		{ return _field_ptr->isUnit (*x._elem_ptr); }
+
 		//@}
 
 		/** @name Inplace Arithmetic Operations

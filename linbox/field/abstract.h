@@ -295,6 +295,16 @@ namespace LinBox
 		 */
 		virtual bool isMOne (const Element &x) const = 0;
 
+		/** invertibility.
+		 * Test if field element is a unit.
+		 * This function assumes the field element has already been
+		 * constructed and initialized.
+		 * Purely virtual.
+		 * @return boolean true if is a unit, false if not.
+		 * @param  x field element.
+		 */
+		virtual bool isUnit (const Element &x) const = 0;
+
 		/** Inplace Addition.
 		 * x += y
 		 * This function assumes both field elements have already been

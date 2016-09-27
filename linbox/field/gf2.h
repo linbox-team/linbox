@@ -347,6 +347,18 @@ namespace LinBox
 			return x;
 		}
 
+		/** Invertibility.
+		 * Test if field base element is a unit.
+		 * This function assumes the field base element has already been
+		 * constructed and initialized.
+		 * @return boolean true if is a unit, false if not.
+		 * @param  x field base element.
+		 */
+		bool isUnit (Element x) const
+		{
+			return x;
+		}
+
 		//@} Arithmetic Operations
 
 		/** @name Input/Output Operations */

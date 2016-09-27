@@ -163,6 +163,7 @@ FULLCHECK_TESTS =               \
 	test-smith-form-binary      \
 	test-smith-form-iliopoulos  \
 	test-smith-form-local    	\
+	test-smith-form-kannan-bachem	\
 	test-solve-nonsingular		\
 	test-sparse					\
 	test-subiterator			\
@@ -325,6 +326,7 @@ test_scalar_matrix_SOURCES =            test-scalar-matrix.C
 test_smith_form_adaptive_SOURCES =      test-smith-form-adaptive.C test-common.h
 test_smith_form_binary_SOURCES =        test-smith-form-binary.C
 test_smith_form_iliopoulos_SOURCES =    test-smith-form-iliopoulos.C
+test_smith_form_kannan_bachem_SOURCES = test-smith-form-kannan-bachem.C
 test_smith_form_local_SOURCES =         test-smith-form-local.C
 test_smith_form_SOURCES =               test-smith-form.C
 test_solve_nonsingular_SOURCES =        test-solve-nonsingular.C
