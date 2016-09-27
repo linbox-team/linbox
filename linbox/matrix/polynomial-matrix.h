@@ -149,11 +149,14 @@ namespace LinBox{
 				//_rep.shrink_to_fit();
 			}
 			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
+
+#ifdef MEM_PMBASIS
 			size_t mem=realmeminfo();
-			_store=s;
-			setsize(s);
 			ADD_MEM(realmeminfo());
 			DEL_MEM(mem);
+#endif			
+			_store=s;
+			setsize(s);
 		}
 
 		void changesize(size_t s){
@@ -279,6 +282,15 @@ namespace LinBox{
 		size_t storage() const {return _store;}
 		const Field& field()  const {return *_fld;}
 
+		void dump(std::ostream& os) const {
+			os<<_row<<" "<<_col<<" "<<_size<<std::endl;
+			for(size_t i=0;i<_row*_col;i++)
+				for(size_t k=0;k<_size;k++)
+					os<<get(i,k)<<" ";
+
+			os<<std::endl;
+		}
+		
 		std::ostream& write(std::ostream& os) const { return write(os,0,_size-1);}
 
                 std::ostream& write(std::ostream& os, size_t deg_min, size_t deg_max) const {
@@ -511,6 +523,15 @@ namespace LinBox{
 		
 		inline const Field& field()  const {return *_fld;}
 
+		void dump(std::ostream& os) const {
+			os<<_row<<" "<<_col<<" "<<_size<<std::endl;
+			for(size_t k=0;k<_size;k++)
+				for(size_t i=0;i<_row*_col;i++)		
+					os<<get(i,k)<<" ";
+			os<<std::endl;
+		}
+
+		
 		std::ostream& write(std::ostream& os) const { return write(os,0,real_degree());}
 
                 std::ostream& write(std::ostream& os, size_t deg_min, size_t deg_max) const {
