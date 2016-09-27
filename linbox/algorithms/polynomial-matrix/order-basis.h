@@ -24,9 +24,11 @@
  */
 
 
+
+
+
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/polynomial-matrix.h"
-
 
 #ifdef TRACK_MEMORY_MATPOL
 #define MEMINFO2 STR_MEMINFO<<MEMINFO
@@ -36,6 +38,7 @@
 #include "linbox/algorithms/polynomial-matrix/polynomial-matrix-domain.h"
 #include <vector>
 #include <algorithm>
+#include <fstream>
 #include <chrono>
 #include "fflas-ffpack/fflas-ffpack.h"
 #define MBASIS_THRESHOLD_LOG 5
@@ -44,20 +47,44 @@
 
 namespace LinBox {
 
+
+#ifdef __MINPOLY_SETTING
+#define __CHECK_PMBASIS
+#define __PROBA_CHECK
+#define __DUMP_ORDERBASIS
+#define __CHECK_PMBASIS_THRESHOLD 1023
+#define  PROFILE_PMBASIS
+#endif
+
+        
 #ifdef __CHECK_ORDERBASIS
 #define __CHECK_MBASIS
 #define __CHECK_PMBASIS
 #endif
 
+#ifndef __CHECK_PMBASIS_THRESHOLD 
+#define __CHECK_PMBASIS_THRESHOLD MBASIS_THRESHOLD
+#endif        
 
 #if defined (__CHECK_MBASIS) or defined (__CHECK_PMBASIS)
 #include <string>
         template<typename Field, typename Mat>
-        std::string check_orderbasis(const Field& F, const Mat& sigma,  const Mat& serie, size_t ord){
-                Mat T(F,sigma.rowdim(),serie.coldim(),sigma.size()+serie.size()-1);
+        std::string check_orderbasis(const Field& F, const Mat& sigma,  const Mat& serie, size_t ord, int val,std::vector<size_t> &shift){
                 PolynomialMatrixMulDomain<Field> PMD(F);
-                PMD.mul(T,sigma,serie);
                 MatrixDomain<Field> MD(F);
+#ifdef __PROBA_CHECK
+                Mat T(F,sigma.rowdim(),1,sigma.size()+serie.size()-1);
+                Mat U(F,serie.coldim(),1,1), serieU(F,serie.rowdim(),1,sigma.size()+serie.size()-1);
+                typename Field::RandIter Gen(F);
+                for (size_t i=0;i<serie.coldim();i++)
+                        Gen.random(U.ref(i,0,0));
+                PMD.mul(serieU,serie,U);                
+                PMD.mul(T,sigma,serieU);
+#else
+                Mat T(F,sigma.rowdim(),serie.coldim(),sigma.size()+serie.size()-1);
+                PMD.mul(T,sigma,serie);
+#endif
+
                 size_t i=0;
                 std::string msg(".....");
                 bool nul_sigma=true;
@@ -69,16 +96,45 @@ namespace LinBox {
                         std::cout<<"error at degree="<<i<<std::endl;
                         T[i].write(std::cout, Tag::FileFormat::Plain);
                         std::cout<<"***"<<std::endl;
-                        //std::cout<<serie<<std::endl;
-                        //std::cout<<sigma<<std::endl;
+                        std::cout<<serie<<std::endl;
+                        std::cout<<sigma<<std::endl;
                         exit(1);
                 }
 	
 	
-                if (i==ord && !nul_sigma)
+                if (i==ord && !nul_sigma){
                         msg+="done";
-                else
+#ifdef __DUMP_ORDERBASIS
+                        std::string file_str("orderbasis-");
+                        file_str+= std::to_string(ord)+"-"+std::to_string(val)+".dump";
+                        std::ofstream file(file_str);
+                        file<<"# order = "<<ord<<std::endl;
+                        file<<"# shifted degree =";
+                        std::copy(shift.begin(), shift.end(), std::ostream_iterator<size_t>(file, " "));
+                        file<<"\n # orderbasis: \n";                        
+                        sigma.dump(file);
+                        file.close();
+                        msg+="   ---> dumping it to "+file_str;                        
+#endif
+                }
+                else {
                         msg+="error";
+#ifdef __DUMP_ORDERBASIS
+                        std::string file_str("orderbasis-bad-");
+                        file_str+= std::to_string(ord)+"-"+std::to_string(val)+".dump";
+                        std::ofstream file(file_str);
+                        file<<"# order = "<<ord<<std::endl;
+                        file<<"# shift =";
+                        std::copy(shift.begin(), shift.end(), std::ostream_iterator<size_t>(file, " "));
+                        file<<"\n # orderbasis: \n";                        
+                        sigma.dump(file);
+                        file.close();
+                        msg+="   ---> dumping it to "+file_str;
+                        std::cerr<<msg<<std::endl;
+                        std::cerr<<"Aborting order basis computation ...\n";
+                        std::terminate();
+#endif
+                }
                 return msg;
         }
 #endif
@@ -175,8 +231,10 @@ namespace LinBox {
                                 chrono.start();
 #endif
                                 size_t ord1,ord2,d1,d2;
-                                ord1 = order>>1;
-                                ord2 = order-ord1; // ord1+ord2=order
+                                //ord1 = order>>1;
+                                //ord2 = order-ord1; // ord1+ord2=order
+                                ord2 = order>>1;
+                                ord1 = order-ord2; // ord1+ord2=order
                                 size_t m,n,k;
                                 m=sigma.rowdim();
                                 n=sigma.coldim();
@@ -234,7 +292,7 @@ namespace LinBox {
 #endif
 
 #ifdef __CHECK_PMBASIS
-                                std::cout<<"PMBASIS: order "<<_idx<<check_orderbasis(field(),sigma,serie,order)<<std::endl;
+                                std::cout<<"PMBASIS: order "<<order<<check_orderbasis(field(),sigma,serie,order,((_idx/order)+1)&1,shift)<<std::endl;
 #endif
 #ifdef PROFILE_PMBASIS
                                 chrono.stop();
@@ -383,14 +441,21 @@ namespace LinBox {
                                 rank= FFPACK::PLUQ (field(), FFLAS::FflasNonUnit, m, n,
                                                     delta_copy.getWritePointer(),delta_copy.getStride(),
                                                     Qt.getWritePointer(), P.getWritePointer());
-                                //delta_copy.write(std::cout,Tag::FileFormat::Maple);
-                                //std::cout<<std::endl;                                
-
+#ifdef __DEBUG_MBASIS
+                                delta_copy.write(std::cout,Tag::FileFormat::Maple);
+                                std::cout<<std::endl;                                
+#endif
                                 View L1(delta_copy,0   ,0,  rank,rank);
                                 View L2(delta_copy,rank,0,m-rank,rank);
                                 FFLAS::ftrsm(field(),FFLAS::FflasRight,FFLAS::FflasLower,
                                              FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-                                             m-rank,rank, field().mOne, L1.getPointer(),L1.getStride(), L2.getWritePointer(),L2.getStride());                                
+                                             m-rank,rank, field().mOne, L1.getPointer(),L1.getStride(), L2.getWritePointer(),L2.getStride());
+#ifdef __DEBUG_MBASIS
+                                delta_copy.write(std::cout,Tag::FileFormat::Maple);
+                                std::cout<<std::endl;                                
+#endif
+
+                                
 #else
                                 LQUPMatrix<Field> LQUP(delta_copy,P,Qt);
                                 // Get L from LQUP
@@ -489,7 +554,7 @@ namespace LinBox {
                                 // update Early Termination
                                 //_EarlyStop.update(rank,shift); 
 #ifdef __CHECK_MBASIS
-                                std::cout<<"MBASIS: order "<<k<<check_orderbasis(field(),sigma,serie,k+1)<<std::endl;
+                                std::cout<<"MBASIS: order "<<k<<check_orderbasis(field(),sigma,serie,k+1,0,shift)<<std::endl;
 #endif
                                 
                                 _EarlyStop.update(m-rank,shift); // codimension (m-rank) seems better
@@ -674,8 +739,10 @@ namespace LinBox {
                                 chrono.start();
 #endif
                                 size_t ord1,ord2,d1,d2;
-                                ord1 = order>>1;
-                                ord2 = order-ord1; // ord1+ord2=order
+                                //ord1 = order>>1;
+                                //ord2 = order-ord1; // ord1+ord2=order
+                                ord2 = order>>1;
+                                ord1 = order-ord2; // ord1+ord2=order
                                 size_t m,n,k;
                                 m=serie_ptr->rowdim();
                                 n=serie_ptr->rowdim();
@@ -745,7 +812,9 @@ namespace LinBox {
 #endif
 
 #ifdef __CHECK_PMBASIS
-                                std::cout<<"PMBASIS: order "<<_idx<<check_orderbasis(field(),*sigma_ptr,*serie_ptr,order)<<std::endl;
+                                if(order >= __CHECK_PMBASIS_THRESHOLD){
+                                        std::cout<<"PMBASIS: order "<<order<<check_orderbasis(field(),*sigma_ptr,*serie_ptr,order,((_idx/order)+1)&1,shift)<<std::endl;                                        
+                                }
                                 delete serie_ptr;
 #endif
 #ifdef PROFILE_PMBASIS
