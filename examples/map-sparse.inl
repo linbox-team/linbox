@@ -88,7 +88,7 @@ MapSparse<Field_>::MapSparse(const MapSparse& M):
 template<class Field_>
 MapSparse<Field_>& MapSparse<Field_>::operator=(const MapSparse<Field_>& rhs)
 {
-	if (rhs==this) return;
+	if (rhs==*this) return *this;
 	MD_.init(rhs.MD_);
 	numCols_=rhs.numCols_;
 	numRows_=rhs.numRows_;
