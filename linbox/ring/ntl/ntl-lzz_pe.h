@@ -161,9 +161,11 @@ namespace LinBox
 		bool isUnit (const Element& x) const
             {
                 if (deg(rep(x))==0) {
-                    NTL::zz_p u(rep(x)[0]);
-                    long d;
-                    return !NTL::InvModStatus(d,rep(u),NTL::zz_p::modulus());
+                    NTL::zz_p c(rep(x)[0]);
+                    long d,u;
+                    Givaro::invext(u,d,rep(c),NTL::zz_p::modulus());
+                    return (d==1) || (d==-1);
+//                     return !NTL::InvModStatus(d,rep(c),NTL::zz_p::modulus());
                 } else
                     return false;
             }
